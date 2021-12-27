@@ -31,7 +31,11 @@ public:
     amrex::Real mean_temperature_heights(
         const FieldPlaneAveraging&, std::unique_ptr<ABLWRFfile>&);
 
+    amrex::Real mean_temperature_heights(std::unique_ptr<ABLWRFfile>&);
+  
     void mean_temperature_init(const FieldPlaneAveraging&, const ABLWRFfile&);
+
+    void mean_temperature_init(const ABLWRFfile&);
 
     void invertMat(const amrex::Array2D<amrex::Real,0,3,0,3>&, amrex::Array2D<amrex::Real,0,3,0,3>&);
 

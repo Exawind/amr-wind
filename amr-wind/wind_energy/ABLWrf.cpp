@@ -2,6 +2,7 @@
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "AMReX_ParallelDescriptor.H"
 #include "AMReX_Print.H"
+#include "AMReX_ParmParse.H"
 
 namespace amr_wind {
 
@@ -32,6 +33,9 @@ ABLWRFfile::ABLWRFfile(const std::string filewrf)
     ncf.var("wrf_temperature").get(m_wrf_temp.data());
     ncf.var("wrf_tflux").get(m_wrf_tflux.data());
 
+    amrex::ParmParse pp("ABL");
+    pp.query("WRF_tendency_forcing", m_abl_wrf_tendency);
+
 }
 
 const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_heights() const
@@ -48,6 +52,8 @@ const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_v() const { return m_wrf_v; }
 const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_temp() const { return m_wrf_temp; }
 
 const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_tflux() const { return m_wrf_tflux; }
+
+ bool ABLWRFfile::is_wrf_tendency_forcing() const {return m_abl_wrf_tendency; }
 
 int ABLWRFfile::nheights() const { return m_wrf_nheight; }
 int ABLWRFfile::times() const { return m_wrf_ntime; }

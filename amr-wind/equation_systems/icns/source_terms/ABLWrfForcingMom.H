@@ -47,6 +47,10 @@ public:
 
   void indirectForcingInit();
 
+  void mean_velocity_heights(std::unique_ptr<ABLWRFfile>&);
+
+  void mean_velocity_init(const ABLWRFfile&);
+
   amrex::Vector<amrex::Real>& mom_u_wrf_error(){
     return m_err_U;}
   amrex::Vector<amrex::Real>& mom_v_wrf_error(){
@@ -56,7 +60,8 @@ public:
   const SimTime& m_time;
 
   const amrex::AmrCore& m_mesh;
-  
+
+  std::string m_forcing_tendency;
   std::string m_forcing_scheme;
 
   amrex::Gpu::DeviceVector<amrex::Real> m_velAvg_ht;

@@ -133,15 +133,26 @@ void ABL::pre_advance_work()
         m_abl_mean_bous->mean_temperature_update(m_stats->theta_profile());
 
     if (m_abl_wrf_forcing != nullptr) {
-        m_abl_wrf_forcing->mean_velocity_heights(
-            m_stats->vel_profile(), m_wrf_file);
+
+        if (m_wrf_file->is_wrf_tendency_forcing()) {
+            m_abl_wrf_forcing->mean_velocity_heights(m_wrf_file);
+        } else {
+            m_abl_wrf_forcing->mean_velocity_heights(
+                m_stats->vel_profile(), m_wrf_file);
+        }
     }
 
     if (m_abl_wrf_theta_forcing != nullptr) {
         amrex::Real interpTflux;
-        interpTflux = m_abl_wrf_theta_forcing->mean_temperature_heights(
-            m_stats->theta_profile(), m_wrf_file);
-        m_abl_wall_func.update_tflux(interpTflux);
+        if (m_wrf_file->is_wrf_tendency_forcing()) {
+            interpTflux =
+                m_abl_wrf_theta_forcing->mean_temperature_heights(m_wrf_file);
+            m_abl_wall_func.update_tflux(interpTflux);
+        } else {
+            interpTflux = m_abl_wrf_theta_forcing->mean_temperature_heights(
+                m_stats->theta_profile(), m_wrf_file);
+            m_abl_wall_func.update_tflux(interpTflux);
+        }
     }
 
     m_bndry_plane->pre_advance_work();

@@ -133,6 +133,7 @@ private:
     mutable pde::temperature::ABLWrfForcingTemp* m_abl_wrf_theta_forcing{nullptr};
 
     std::unique_ptr<ABLWRFfile> m_wrf_file;
+
 };
 
 } // namespace amr_wind

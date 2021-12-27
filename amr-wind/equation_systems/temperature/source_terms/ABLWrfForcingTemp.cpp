@@ -6,7 +6,9 @@
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
 #include "AMReX_Print.H"
+#include "amr-wind/wind_energy/ABLWrf.H"
 #include <AMReX_REAL.H>
+#include <memory>
 
 namespace amr_wind {
 namespace pde {
@@ -43,7 +45,18 @@ ABLWrfForcingTemp::ABLWrfForcingTemp(const CFDSim& sim)
 }
 
 ABLWrfForcingTemp::~ABLWrfForcingTemp() = default;
+void ABLWrfForcingTemp::mean_temperature_init(const ABLWRFfile& wrfFile){
 
+  m_error_wrf_avg_theta.resize(wrfFile.nheights());
+  m_wrf_theta_vals.resize(wrfFile.nheights());
+  m_wrf_ht.resize(wrfFile.nheights());
+  m_err_Theta.resize(wrfFile.nheights());
+
+  amrex::Gpu::copy(
+      amrex::Gpu::hostToDevice, wrfFile.wrf_heights().begin(),
+      wrfFile.wrf_heights().end(), m_wrf_ht.begin());
+
+}
 void ABLWrfForcingTemp::mean_temperature_init(
     const FieldPlaneAveraging& tavg, const ABLWRFfile& wrfFile)
 {
@@ -161,6 +174,50 @@ void ABLWrfForcingTemp::invertMat(
     im(3, 3) = det * (m(0, 0) * A1212 - m(0, 1) * A0212 + m(0, 2) * A0112);
 }
 
+amrex::Real ABLWrfForcingTemp::mean_temperature_heights(std::unique_ptr<ABLWRFfile>& wrfFile){
+
+  amrex::Real currtime;
+  currtime = m_time.current_time();
+
+  // First the index in time
+  m_idx_time = closest_index(wrfFile->wrf_times(), currtime);
+
+  amrex::Array<amrex::Real, 2> coeff_interp{{0.0, 0.0}};
+
+  amrex::Real denom =
+      wrfFile->wrf_times()[m_idx_time + 1] - wrfFile->wrf_times()[m_idx_time];
+
+  coeff_interp[0] = (wrfFile->wrf_times()[m_idx_time + 1] - currtime) / denom;
+  coeff_interp[1] = 1.0 - coeff_interp[0];
+
+  amrex::Real interpTflux;
+
+  interpTflux = coeff_interp[0] * wrfFile->wrf_tflux()[m_idx_time] +
+      coeff_interp[1] * wrfFile->wrf_tflux()[m_idx_time + 1];
+
+  int num_wrf_ht = wrfFile->nheights();
+
+  amrex::Vector<amrex::Real> wrfInterptheta(num_wrf_ht);
+
+  for (int i = 0; i < num_wrf_ht; i++) {
+    int lt = m_idx_time * num_wrf_ht + i;
+    int rt = (m_idx_time + 1) * num_wrf_ht + i;
+
+    wrfInterptheta[i] = coeff_interp[0] * wrfFile->wrf_temp()[lt] +
+                            coeff_interp[1] * wrfFile->wrf_temp()[rt];
+    }
+
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, wrfInterptheta.begin(), wrfInterptheta.end(),m_error_wrf_avg_theta.begin());
+
+    for (int ih = 0; ih < num_wrf_ht; ih++) {
+      m_err_Theta[ih] = wrfInterptheta[ih];
+    }
+
+    return interpTflux;
+  
+}
+
 amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
     const FieldPlaneAveraging& tavg, std::unique_ptr<ABLWRFfile>& wrfFile)
 {
@@ -266,9 +323,9 @@ void ABLWrfForcingTemp::operator()(
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
 
     const int idir = m_axis;
-    const int nh_max = m_theta_ht.size() - 2;
+    const int nh_max =  m_wrf_ht.size() - 2; 
     const int lp1 = lev + 1;
-    const amrex::Real* theights = m_theta_ht.data();
+    const amrex::Real* theights =  m_wrf_ht.data();
     const amrex::Real* theta_error_val = m_error_wrf_avg_theta.data();
     const amrex::Real kcoeff = m_gain_coeff;
 

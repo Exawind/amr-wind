@@ -37,14 +37,35 @@ ABLWrfForcingMom::ABLWrfForcingMom(const CFDSim& sim)
     abl.abl_statistics().register_wrf_forcing_mom(this);
 
     amrex::ParmParse pp(identifier());
-    pp.query("forcing_scheme", m_forcing_scheme);
 
-    mean_velocity_init(abl.abl_statistics().vel_profile(), abl.abl_wrf_file());
-
-    pp.query("control_gain", m_gain_coeff);
+    if (!abl.abl_wrf_file().is_wrf_tendency_forcing()) {
+        pp.query("forcing_scheme", m_forcing_scheme);
+        mean_velocity_init(
+            abl.abl_statistics().vel_profile(), abl.abl_wrf_file());
+        pp.query("control_gain", m_gain_coeff);
+    } else {
+        mean_velocity_init(abl.abl_wrf_file());
+    }
 }
 
 ABLWrfForcingMom::~ABLWrfForcingMom() = default;
+
+void ABLWrfForcingMom::mean_velocity_init(const ABLWRFfile& wrfFile)
+{
+
+    m_wrf_ht.resize(wrfFile.nheights());
+
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, wrfFile.wrf_heights().begin(),
+        wrfFile.wrf_heights().end(), m_wrf_ht.begin());
+
+    m_error_wrf_avg_U.resize(wrfFile.nheights());
+    m_error_wrf_avg_V.resize(wrfFile.nheights());
+
+    m_err_U.resize(wrfFile.nheights());
+    m_err_V.resize(wrfFile.nheights());
+
+}
 
 void ABLWrfForcingMom::mean_velocity_init(
     const VelPlaneAveraging& vavg, const ABLWRFfile& wrfFile)
@@ -166,6 +187,51 @@ void ABLWrfForcingMom::invertMat(
     im(3, 2) = det * -(m(0, 0) * A1213 - m(0, 1) * A0213 + m(0, 2) * A0113);
     im(3, 3) = det * (m(0, 0) * A1212 - m(0, 1) * A0212 + m(0, 2) * A0112);
 }
+void ABLWrfForcingMom::mean_velocity_heights(std::unique_ptr<ABLWRFfile>& wrfFile)
+{
+    amrex::Real currtime;
+    currtime = m_time.current_time();
+
+    // First the index in time
+    m_idx_time = closest_index(wrfFile->wrf_times(), currtime);
+
+    amrex::Array<amrex::Real, 2> coeff_interp{{0.0, 0.0}};
+
+    amrex::Real denom =
+        wrfFile->wrf_times()[m_idx_time + 1] - wrfFile->wrf_times()[m_idx_time];
+
+    coeff_interp[0] = (wrfFile->wrf_times()[m_idx_time + 1] - currtime) / denom;
+    coeff_interp[1] = 1.0 - coeff_interp[0];
+
+    int num_wrf_ht = wrfFile->nheights();
+
+    amrex::Vector<amrex::Real> wrfInterpU(num_wrf_ht);
+    amrex::Vector<amrex::Real> wrfInterpV(num_wrf_ht);
+
+    for (int i = 0; i < num_wrf_ht; i++) {
+        int lt = m_idx_time * num_wrf_ht + i;
+        int rt = (m_idx_time + 1) * num_wrf_ht + i;
+
+        wrfInterpU[i] = coeff_interp[0] * wrfFile->wrf_u()[lt] +
+                        coeff_interp[1] * wrfFile->wrf_u()[rt];
+
+        wrfInterpV[i] = coeff_interp[0] * wrfFile->wrf_v()[lt] +
+                        coeff_interp[1] * wrfFile->wrf_v()[rt];
+    }
+
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, wrfInterpU.begin(), wrfInterpU.end(),
+        m_error_wrf_avg_U.begin());
+
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, wrfInterpV.begin(), wrfInterpV.end(),
+        m_error_wrf_avg_V.begin());
+
+    for (int ih = 0; ih < num_wrf_ht; ih++) {
+        m_err_U[ih] = wrfInterpU[ih];
+        m_err_V[ih] = wrfInterpV[ih];
+    }
+}
 
 void ABLWrfForcingMom::mean_velocity_heights(
     const VelPlaneAveraging& vavg, std::unique_ptr<ABLWRFfile>& wrfFile)
@@ -286,11 +352,10 @@ void ABLWrfForcingMom::mean_velocity_heights(
         amrex::Gpu::hostToDevice, error_V.begin(), error_V.end(),
         m_error_wrf_avg_V.begin());
 
-        for (size_t ih = 0; ih < n_levels; ih++) {
-            m_err_U[ih] = error_U[ih]*m_gain_coeff;
-            m_err_V[ih] = error_V[ih]*m_gain_coeff;
-        }
-    
+    for (size_t ih = 0; ih < n_levels; ih++) {
+        m_err_U[ih] = error_U[ih] * m_gain_coeff;
+        m_err_V[ih] = error_V[ih] * m_gain_coeff;
+    }
 }
 
 void ABLWrfForcingMom::operator()(
@@ -307,7 +372,7 @@ void ABLWrfForcingMom::operator()(
     const int idir = m_axis;
     const int nh_max = m_velAvg_ht.size() - 2;
     const int lp1 = lev + 1;
-    const amrex::Real* vheights = m_velAvg_ht.data();
+    const amrex::Real* vheights = m_wrf_ht.data();
     const amrex::Real* u_error_val = m_error_wrf_avg_U.data();
     const amrex::Real* v_error_val = m_error_wrf_avg_V.data();
     const amrex::Real kcoeff = m_gain_coeff;

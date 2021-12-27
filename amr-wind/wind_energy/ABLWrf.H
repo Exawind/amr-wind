@@ -12,25 +12,26 @@ class ABLWRFfile
 {
 
 public:
-  ABLWRFfile(const std::string);
+    ABLWRFfile(const std::string);
 
     // ~ABLWRFfile() = default;
 
-  const amrex::Vector<amrex::Real>& wrf_heights() const; 
+    const amrex::Vector<amrex::Real>& wrf_heights() const;
 
-  const amrex::Vector<amrex::Real>& wrf_times() const ; 
+    const amrex::Vector<amrex::Real>& wrf_times() const;
 
-  const amrex::Vector<amrex::Real>& wrf_u() const; 
+    const amrex::Vector<amrex::Real>& wrf_u() const;
 
-  const amrex::Vector<amrex::Real>& wrf_v() const; 
+    const amrex::Vector<amrex::Real>& wrf_v() const;
 
-  const amrex::Vector<amrex::Real>& wrf_temp() const; 
+    const amrex::Vector<amrex::Real>& wrf_temp() const;
 
-  const amrex::Vector<amrex::Real>& wrf_tflux() const; 
+    const amrex::Vector<amrex::Real>& wrf_tflux() const;
 
-  int nheights() const; 
-  int times() const; 
+    bool is_wrf_tendency_forcing() const;
 
+    int nheights() const;
+    int times() const;
 
 private:
     std::string m_wrf_filename;
@@ -45,6 +46,7 @@ private:
 
     int m_wrf_nheight;
     int m_wrf_ntime;
+    bool m_abl_wrf_tendency;
 };
 
 } // namespace amr_wind
