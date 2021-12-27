@@ -38,9 +38,12 @@ ABLWrfForcingTemp::ABLWrfForcingTemp(const CFDSim& sim)
     amrex::ParmParse pp(identifier());
     pp.query("forcing_scheme", m_forcing_scheme);
 
-    mean_temperature_init(
-        abl.abl_statistics().theta_profile(), abl.abl_wrf_file());
-
+    if (!abl.abl_wrf_file().is_wrf_tendency_forcing()) {
+      mean_temperature_init(
+          abl.abl_statistics().theta_profile(), abl.abl_wrf_file());
+    } else{
+      mean_temperature_init(abl.abl_wrf_file());
+    }
     pp.query("control_gain", m_gain_coeff);
 }
 

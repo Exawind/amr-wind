@@ -37,6 +37,7 @@ ABLWrfForcingMom::ABLWrfForcingMom(const CFDSim& sim)
     abl.abl_statistics().register_wrf_forcing_mom(this);
 
     amrex::ParmParse pp(identifier());
+    pp.query("control_gain", m_gain_coeff);
 
     if (!abl.abl_wrf_file().is_wrf_tendency_forcing()) {
         pp.query("forcing_scheme", m_forcing_scheme);
