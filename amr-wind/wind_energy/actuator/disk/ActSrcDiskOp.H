@@ -57,6 +57,7 @@ void ActSrcOp<
     std::enable_if_t<std::is_base_of<DiskType, ActTrait>::value>>::
 operator()(const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
 {
+    // cppcheck-suppress unreadVariable
     const std::string fname = ActTrait::identifier() + ActSrcDisk::identifier();
     BL_PROFILE("amr-wind::ActSrcOp<" + fname + ">");
     m_spreading(*this, lev, mfi, geom);

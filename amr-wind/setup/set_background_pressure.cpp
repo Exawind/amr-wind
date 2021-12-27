@@ -30,6 +30,7 @@ void incflo::set_background_pressure()
 
             if (delp_dir == -1) {
                 delp_dir = dir;
+                // cppcheck-suppress unreadVariable
                 m_gp0[dir] =
                     (pressure()
                          .bc_values()[Orientation(dir, Orientation::high)][0] -

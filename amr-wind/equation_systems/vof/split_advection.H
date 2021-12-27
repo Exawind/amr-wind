@@ -100,7 +100,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void eulerian_implicit(
         fit_plane(i, j, k, volfrac, mx, my, mz, alpha);
         // Eulerian advection
         x0 = 0.0;
-        deltax = 1.0;
         if (dir == 0) {
             if (aL < 0.0) {
                 deltax = -aL;

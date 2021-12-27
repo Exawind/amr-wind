@@ -64,6 +64,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
 
     auto& tke_lhs = (this->m_sim).repo().get_field("tke_lhs_src_term");
     tke_lhs.setVal(0.0);
+    // cppcheck-suppress constVariable
     auto& sdr_lhs = (this->m_sim).repo().get_field("sdr_lhs_src_term");
 
     const amrex::Real deltaT = (this->m_sim).time().deltaT();

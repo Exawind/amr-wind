@@ -236,6 +236,7 @@ void FastIface::fast_init_turbine(FastTurbine& fi)
     }
 }
 
+// cppcheck-suppress constParameter
 void FastIface::fast_replay_turbine(FastTurbine& fi)
 {
 #ifdef AMR_WIND_USE_NETCDF

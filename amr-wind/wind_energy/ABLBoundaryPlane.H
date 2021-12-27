@@ -142,7 +142,7 @@ private:
 
 #ifdef AMR_WIND_USE_NETCDF
     void write_data(
-        ncutils::NCGroup& grp,
+        const ncutils::NCGroup& grp,
         const amrex::Orientation,
         const int,
         const Field*);
