@@ -101,7 +101,7 @@ add_executable(${amr_wind_exe_name})
 init_code_checks()
 if(CLANG_TIDY_EXE)
   set_target_properties(${amr_wind_lib_name} ${aw_api_lib} ${amr_wind_exe_name}
-                        PROPERTIES CXX_CLANG_TIDY ${CLANG_TIDY_EXE})
+                        PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY_EXE};-fix")
 endif()
 
 include(set_compile_flags)
@@ -165,7 +165,7 @@ if (AMR_WIND_ENABLE_UNIT_TESTS OR AMR_WIND_ENABLE_TESTS)
   add_executable(${amr_wind_unit_test_exe_name})
   if(CLANG_TIDY_EXE)
     set_target_properties(${amr_wind_unit_test_exe_name}
-                          PROPERTIES CXX_CLANG_TIDY ${CLANG_TIDY_EXE})
+                          PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY_EXE};-fix")
   endif()
   add_subdirectory("submods/googletest")
   add_subdirectory("unit_tests")

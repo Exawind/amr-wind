@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "MeshTest.H"
 #include "pp_utils.H"
 
@@ -7,7 +9,7 @@ void MeshTest::create_mesh_instance()
 {
     if (!m_mesh) {
         reset_prob_domain();
-        m_mesh.reset(new AmrTestMesh());
+        m_mesh = std::make_unique<AmrTestMesh>();
     }
 }
 

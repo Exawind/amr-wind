@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "amr-wind/wind_energy/ABL.H"
 #include "amr-wind/wind_energy/ABLFieldInit.H"
 #include "amr-wind/wind_energy/ABLBoundaryPlane.H"
@@ -35,10 +37,10 @@ ABL::ABL(CFDSim& sim)
     }
 
     // Instantiate the ABL field initializer
-    m_field_init.reset(new ABLFieldInit());
+    m_field_init = std::make_unique<ABLFieldInit>();
 
     // Instantiate the ABL boundary plane IO
-    m_bndry_plane.reset(new ABLBoundaryPlane(sim));
+    m_bndry_plane = std::make_unique<ABLBoundaryPlane>(sim);
 }
 
 ABL::~ABL() = default;

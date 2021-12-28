@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "amr-wind/utilities/sampling/Sampling.H"
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
@@ -75,7 +77,7 @@ void Sampling::update_container()
     BL_PROFILE("amr-wind::Sampling::update_container");
 
     // Initialize the particle container based on user inputs
-    m_scontainer.reset(new SamplingContainer(m_sim.mesh()));
+    m_scontainer = std::make_unique<SamplingContainer>(m_sim.mesh());
     m_scontainer->setup_container(m_ncomp);
     m_scontainer->initialize_particles(m_samplers);
     // Redistribute particles to appropriate boxes/MPI ranks

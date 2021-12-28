@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "amr-wind/core/FieldRepo.H"
 
 namespace amr_wind {
@@ -14,7 +16,7 @@ void FieldRepo::make_new_level_from_scratch(
     const amrex::DistributionMapping& dm)
 {
     BL_PROFILE("amr-wind::FieldRepo::make_new_level_from_scratch");
-    m_leveldata[lev].reset(new LevelDataHolder());
+    m_leveldata[lev] = std::make_unique<LevelDataHolder>();
 
     allocate_field_data(
         ba, dm, *m_leveldata[lev], *(m_leveldata[lev]->m_factory));
