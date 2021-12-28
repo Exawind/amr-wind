@@ -6,6 +6,33 @@
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind {
+namespace channel_map {
+
+namespace {
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_fac(
+    const amrex::Real x,
+    const amrex::Real beta,
+    const amrex::Real prob_lo,
+    const amrex::Real len)
+{
+    return beta *
+           (1 - std::pow(std::tanh(beta * (1 - 2 * (x - prob_lo) / len)), 2)) /
+           std::tanh(beta);
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_coord(
+    const amrex::Real x,
+    const amrex::Real beta,
+    const amrex::Real prob_lo,
+    const amrex::Real len)
+{
+    return prob_lo + len / 2 *
+                         (1 - std::tanh(beta * (1 - 2 * (x - prob_lo) / len)) /
+                                  std::tanh(beta));
+}
+
+} // namespace
 
 ChannelFlowScaling::ChannelFlowScaling(const CFDSim& sim)
     : m_mesh_scale_fac_cc(sim.repo().get_field("mesh_scaling_factor_cc"))
@@ -58,27 +85,9 @@ void ChannelFlowScaling::create_cell_node_map(
                 amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
                 amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
 
-                amrex::Real fac_x =
-                    beta[0] *
-                    (1 - std::pow(
-                             std::tanh(
-                                 beta[0] * (1 - 2 * (x - prob_lo[0]) / len[0])),
-                             2)) /
-                    std::tanh(beta[0]);
-                amrex::Real fac_y =
-                    beta[1] *
-                    (1 - std::pow(
-                             std::tanh(
-                                 beta[1] * (1 - 2 * (y - prob_lo[1]) / len[1])),
-                             2)) /
-                    std::tanh(beta[1]);
-                amrex::Real fac_z =
-                    beta[2] *
-                    (1 - std::pow(
-                             std::tanh(
-                                 beta[2] * (1 - 2 * (z - prob_lo[2]) / len[2])),
-                             2)) /
-                    std::tanh(beta[2]);
+                amrex::Real fac_x = eval_fac(x, beta[0], prob_lo[0], len[0]);
+                amrex::Real fac_y = eval_fac(y, beta[1], prob_lo[1], len[1]);
+                amrex::Real fac_z = eval_fac(z, beta[2], prob_lo[2], len[2]);
 
                 bool in_domain =
                     ((x > prob_lo[0]) && (x < prob_hi[0]) && (y > prob_lo[1]) &&
@@ -101,27 +110,9 @@ void ChannelFlowScaling::create_cell_node_map(
                 amrex::Real y = prob_lo[1] + j * dx[1];
                 amrex::Real z = prob_lo[2] + k * dx[2];
 
-                amrex::Real fac_x =
-                    beta[0] *
-                    (1 - std::pow(
-                             std::tanh(
-                                 beta[0] * (1 - 2 * (x - prob_lo[0]) / len[0])),
-                             2)) /
-                    std::tanh(beta[0]);
-                amrex::Real fac_y =
-                    beta[1] *
-                    (1 - std::pow(
-                             std::tanh(
-                                 beta[1] * (1 - 2 * (y - prob_lo[1]) / len[1])),
-                             2)) /
-                    std::tanh(beta[1]);
-                amrex::Real fac_z =
-                    beta[2] *
-                    (1 - std::pow(
-                             std::tanh(
-                                 beta[2] * (1 - 2 * (z - prob_lo[2]) / len[2])),
-                             2)) /
-                    std::tanh(beta[2]);
+                amrex::Real fac_x = eval_fac(x, beta[0], prob_lo[0], len[0]);
+                amrex::Real fac_y = eval_fac(y, beta[1], prob_lo[1], len[1]);
+                amrex::Real fac_z = eval_fac(z, beta[2], prob_lo[2], len[2]);
 
                 bool in_domain =
                     ((x >= prob_lo[0] - eps) && (x <= prob_hi[0] + eps) &&
@@ -167,27 +158,9 @@ void ChannelFlowScaling::create_face_map(int lev, const amrex::Geometry& geom)
                 amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
                 amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
 
-                amrex::Real fac_x =
-                    beta[0] *
-                    (1 - std::pow(
-                             std::tanh(
-                                 beta[0] * (1 - 2 * (x - prob_lo[0]) / len[0])),
-                             2)) /
-                    std::tanh(beta[0]);
-                amrex::Real fac_y =
-                    beta[1] *
-                    (1 - std::pow(
-                             std::tanh(
-                                 beta[1] * (1 - 2 * (y - prob_lo[1]) / len[1])),
-                             2)) /
-                    std::tanh(beta[1]);
-                amrex::Real fac_z =
-                    beta[2] *
-                    (1 - std::pow(
-                             std::tanh(
-                                 beta[2] * (1 - 2 * (z - prob_lo[2]) / len[2])),
-                             2)) /
-                    std::tanh(beta[2]);
+                amrex::Real fac_x = eval_fac(x, beta[0], prob_lo[0], len[0]);
+                amrex::Real fac_y = eval_fac(y, beta[1], prob_lo[1], len[1]);
+                amrex::Real fac_z = eval_fac(z, beta[2], prob_lo[2], len[2]);
 
                 bool in_domain =
                     ((x >= prob_lo[0] - eps) && (x <= prob_hi[0] + eps) &&
@@ -214,27 +187,9 @@ void ChannelFlowScaling::create_face_map(int lev, const amrex::Geometry& geom)
                 amrex::Real y = prob_lo[1] + j * dx[1];
                 amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
 
-                amrex::Real fac_x =
-                    beta[0] *
-                    (1 - std::pow(
-                             std::tanh(
-                                 beta[0] * (1 - 2 * (x - prob_lo[0]) / len[0])),
-                             2)) /
-                    std::tanh(beta[0]);
-                amrex::Real fac_y =
-                    beta[1] *
-                    (1 - std::pow(
-                             std::tanh(
-                                 beta[1] * (1 - 2 * (y - prob_lo[1]) / len[1])),
-                             2)) /
-                    std::tanh(beta[1]);
-                amrex::Real fac_z =
-                    beta[2] *
-                    (1 - std::pow(
-                             std::tanh(
-                                 beta[2] * (1 - 2 * (z - prob_lo[2]) / len[2])),
-                             2)) /
-                    std::tanh(beta[2]);
+                amrex::Real fac_x = eval_fac(x, beta[0], prob_lo[0], len[0]);
+                amrex::Real fac_y = eval_fac(y, beta[1], prob_lo[1], len[1]);
+                amrex::Real fac_z = eval_fac(z, beta[2], prob_lo[2], len[2]);
 
                 bool in_domain =
                     ((x > prob_lo[0]) && (x < prob_hi[0]) &&
@@ -261,27 +216,9 @@ void ChannelFlowScaling::create_face_map(int lev, const amrex::Geometry& geom)
                 amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
                 amrex::Real z = prob_lo[2] + k * dx[2];
 
-                amrex::Real fac_x =
-                    beta[0] *
-                    (1 - std::pow(
-                             std::tanh(
-                                 beta[0] * (1 - 2 * (x - prob_lo[0]) / len[0])),
-                             2)) /
-                    std::tanh(beta[0]);
-                amrex::Real fac_y =
-                    beta[1] *
-                    (1 - std::pow(
-                             std::tanh(
-                                 beta[1] * (1 - 2 * (y - prob_lo[1]) / len[1])),
-                             2)) /
-                    std::tanh(beta[1]);
-                amrex::Real fac_z =
-                    beta[2] *
-                    (1 - std::pow(
-                             std::tanh(
-                                 beta[2] * (1 - 2 * (z - prob_lo[2]) / len[2])),
-                             2)) /
-                    std::tanh(beta[2]);
+                amrex::Real fac_x = eval_fac(x, beta[0], prob_lo[0], len[0]);
+                amrex::Real fac_y = eval_fac(y, beta[1], prob_lo[1], len[1]);
+                amrex::Real fac_z = eval_fac(z, beta[2], prob_lo[2], len[2]);
 
                 bool in_domain =
                     ((x > prob_lo[0]) && (x < prob_hi[0]) && (y > prob_lo[1]) &&
@@ -340,27 +277,9 @@ void ChannelFlowScaling::create_non_uniform_mesh(
                 amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
                 amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
 
-                amrex::Real x_non_uni =
-                    prob_lo[0] +
-                    len[0] / 2 *
-                        (1 -
-                         std::tanh(
-                             beta[0] * (1 - 2 * (x - prob_lo[0]) / len[0])) /
-                             std::tanh(beta[0]));
-                amrex::Real y_non_uni =
-                    prob_lo[1] +
-                    len[1] / 2 *
-                        (1 -
-                         std::tanh(
-                             beta[1] * (1 - 2 * (y - prob_lo[1]) / len[1])) /
-                             std::tanh(beta[1]));
-                amrex::Real z_non_uni =
-                    prob_lo[2] +
-                    len[2] / 2 *
-                        (1 -
-                         std::tanh(
-                             beta[2] * (1 - 2 * (z - prob_lo[2]) / len[2])) /
-                             std::tanh(beta[2]));
+                amrex::Real x_non_uni = eval_coord(x, beta[0], prob_lo[0], len[0]);
+                amrex::Real y_non_uni = eval_coord(y, beta[1], prob_lo[1], len[1]);
+                amrex::Real z_non_uni = eval_coord(z, beta[2], prob_lo[2], len[2]);
 
                 bool in_domain =
                     ((x > prob_lo[0]) && (x < prob_hi[0]) && (y > prob_lo[1]) &&
@@ -383,27 +302,9 @@ void ChannelFlowScaling::create_non_uniform_mesh(
                 amrex::Real y = prob_lo[1] + j * dx[1];
                 amrex::Real z = prob_lo[2] + k * dx[2];
 
-                amrex::Real x_non_uni =
-                    prob_lo[0] +
-                    len[0] / 2 *
-                        (1 -
-                         std::tanh(
-                             beta[0] * (1 - 2 * (x - prob_lo[0]) / len[0])) /
-                             std::tanh(beta[0]));
-                amrex::Real y_non_uni =
-                    prob_lo[1] +
-                    len[1] / 2 *
-                        (1 -
-                         std::tanh(
-                             beta[1] * (1 - 2 * (y - prob_lo[1]) / len[1])) /
-                             std::tanh(beta[1]));
-                amrex::Real z_non_uni =
-                    prob_lo[2] +
-                    len[2] / 2 *
-                        (1 -
-                         std::tanh(
-                             beta[2] * (1 - 2 * (z - prob_lo[2]) / len[2])) /
-                             std::tanh(beta[2]));
+                amrex::Real x_non_uni = eval_coord(x, beta[0], prob_lo[0], len[0]);
+                amrex::Real y_non_uni = eval_coord(y, beta[1], prob_lo[1], len[1]);
+                amrex::Real z_non_uni = eval_coord(z, beta[2], prob_lo[2], len[2]);
 
                 bool in_domain =
                     ((x >= prob_lo[0] - eps) && (x <= prob_hi[0] + eps) &&
@@ -420,4 +321,5 @@ void ChannelFlowScaling::create_non_uniform_mesh(
     }
 }
 
+} // namespace channel_map
 } // namespace amr_wind

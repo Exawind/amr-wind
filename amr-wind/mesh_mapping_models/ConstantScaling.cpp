@@ -4,6 +4,7 @@
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind {
+namespace const_map {
 
 ConstantScaling::ConstantScaling(const CFDSim& sim)
     : m_mesh_scale_fac_cc(sim.repo().get_field("mesh_scaling_factor_cc"))
@@ -153,4 +154,5 @@ void ConstantScaling::create_non_uniform_mesh(
     }
 }
 
+} // namespace const_map
 } // namespace amr_wind

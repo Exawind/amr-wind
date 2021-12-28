@@ -5,6 +5,7 @@
 #include "amr-wind/core/Field.H"
 
 namespace amr_wind {
+namespace channel_map {
 
 /** Channel flow scaling mesh map
  *  \ingroup mesh_map
@@ -46,6 +47,7 @@ private:
     void create_non_uniform_mesh(int, const amrex::Geometry&) override;
 };
 
+} // namespace channel_map
 } // namespace amr_wind
 
 #endif /* CHANNELFLOWSCALING_H */

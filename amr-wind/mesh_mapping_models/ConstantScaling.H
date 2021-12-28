@@ -5,6 +5,7 @@
 #include "amr-wind/core/Field.H"
 
 namespace amr_wind {
+namespace const_map {
 
 /** Coonstant scaling mesh map
  *  \ingroup mesh_map
@@ -43,6 +44,7 @@ private:
     void create_non_uniform_mesh(int, const amrex::Geometry&) override;
 };
 
+} // namespace const_map
 } // namespace amr_wind
 
 #endif /* CONSTANTSCALING_H */
