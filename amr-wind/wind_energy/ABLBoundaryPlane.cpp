@@ -600,7 +600,7 @@ void ABLBoundaryPlane::populate_data(
 
 #ifdef AMR_WIND_USE_NETCDF
 void ABLBoundaryPlane::write_data(
-    ncutils::NCGroup& grp,
+    const ncutils::NCGroup& grp,
     const amrex::Orientation ori,
     const int lev,
     const Field* fld)

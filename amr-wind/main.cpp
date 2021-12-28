@@ -15,7 +15,10 @@ int main(int argc, char* argv[])
         amr_wind::io::print_error(
             MPI_COMM_WORLD, "No input file provided. Exiting!!");
         return 1;
-    } else if (argc >= 2) {
+    }
+
+    // cppcheck-suppress knownConditionTrueFalse
+    if (argc >= 2) {
         // Look for "-h" or "--help" flag and print usage
         for (auto i = 1; i < argc; i++) {
             const std::string param(argv[i]);

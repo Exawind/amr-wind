@@ -73,6 +73,7 @@ struct AdvectionOp<
         const auto& geom = repo.mesh().Geom();
 
         const auto& src_term = fields.src_term;
+        // cppcheck-suppress constVariable
         auto& conv_term = fields.conv_term;
         auto& dof_field = fields.field.state(fstate);
 

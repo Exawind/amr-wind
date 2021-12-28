@@ -47,7 +47,9 @@ struct InitDataOp<Sphere>
         const auto& wdata = data.meta();
 
         auto& sim = data.sim();
+        // cppcheck-suppress constVariable
         auto& mask_node = sim.repo().get_int_field("mask_node");
+        // cppcheck-suppress constVariable
         auto& levelset = sim.repo().get_field("ib_levelset");
 
         auto nlevels = sim.repo().num_active_levels();

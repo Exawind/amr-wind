@@ -23,6 +23,7 @@ struct AdvectionOp<
     fvm::MOL,
     typename std::enable_if<std::is_base_of<ScalarTransport, PDE>::value>::type>
 {
+    // cppcheck-suppress uninitMemberVar
     AdvectionOp(
         PDEFields& fields_in,
         bool /* has_overset */,
@@ -42,6 +43,7 @@ struct AdvectionOp<
         auto& repo = fields.repo;
         auto& geom = repo.mesh().Geom();
 
+        // cppcheck-suppress constVariable
         auto& conv_term = fields.conv_term.state(fstate);
         auto& dof_field = fields.field.state(fstate);
         const auto& den = density.state(fstate);

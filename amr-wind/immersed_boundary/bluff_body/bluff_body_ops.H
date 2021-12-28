@@ -72,7 +72,7 @@ struct UpdateVelOp<
     {
         BL_PROFILE("amr-wind::ib::IB::update_velocities");
 
-        auto& wdata = data.meta();
+        const auto& wdata = data.meta();
         auto& sim = data.sim();
 
         if (wdata.is_mms) {

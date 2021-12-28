@@ -260,6 +260,7 @@ void Field::advance_states() noexcept
 void Field::copy_state(FieldState to_state, FieldState from_state) noexcept
 {
     BL_PROFILE("amr-wind::Field::copy_state");
+    // cppcheck-suppress constVariable
     auto& to_field = state(to_state);
     const auto& from_field = state(from_state);
 

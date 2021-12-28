@@ -13,7 +13,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: DoozyX/clang-format-lint-action@v0.11
       with:
-        source: './amr-wind ./unit_tests'
+        source: './amr-wind ./unit_tests ./tools/utilities'
         exclude: '.'
         extensions: 'H,h,cpp'
         clangFormatVersion: 11
@@ -116,8 +116,7 @@ jobs:
         run: |
           echo "::add-matcher::.github/problem-matchers/cppcheck.json"
           cat cppcheck-ci-report.txt
-          #exit $(tail -n 1 cppcheck-ci-report.txt | awk '{print $2}')
-          exit 0
+          exit $(tail -n 1 cppcheck-ci-report.txt | awk '{print $2}')
   clang-tidy:
     needs: Formatting
     runs-on: ubuntu-latest

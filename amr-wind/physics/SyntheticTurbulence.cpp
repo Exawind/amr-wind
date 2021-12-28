@@ -104,7 +104,7 @@ namespace {
  *. @param turbFile Information regarding NetCDF data identifiers
  *. @param turbGrid Turbulence data
  */
-void process_nc_file(std::string& turb_filename, SynthTurbData& turb_grid)
+void process_nc_file(const std::string& turb_filename, SynthTurbData& turb_grid)
 {
 #ifdef AMR_WIND_USE_NETCDF
     auto ncf = ncutils::NCFile::open(turb_filename, NC_NOWRITE);
