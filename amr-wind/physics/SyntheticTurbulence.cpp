@@ -378,7 +378,8 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
         amrex::Vector<amrex::Real> vel;
         pp_vel.getarr("value", vel);
         amrex::Real wind_speed = vs::mag(vs::Vector{vel[0], vel[1], vel[2]});
-        m_wind_profile = std::make_unique<synth_turb::MeanProfile>(wind_speed, 2);
+        m_wind_profile =
+            std::make_unique<synth_turb::MeanProfile>(wind_speed, 2);
     } else if (mean_wind_type == "LinearProfile") {
         amrex::ParmParse pp_vel("LinearProfile.velocity");
 
