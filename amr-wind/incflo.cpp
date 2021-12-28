@@ -29,7 +29,7 @@ incflo::incflo()
     set_background_pressure();
 }
 
-incflo::~incflo() {}
+incflo::~incflo() = default;
 
 /** Initialize AMR mesh data structure.
  *
