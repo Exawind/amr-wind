@@ -43,9 +43,11 @@ public:
 
 private:
 
+    amrex::Gpu::DeviceVector<amrex::Real> m_wrf_ht;
+    amrex::Gpu::DeviceVector<amrex::Real> m_wrf_theta_vals;
+
     amrex::Gpu::DeviceVector<amrex::Real> m_theta_ht;
     amrex::Gpu::DeviceVector<amrex::Real> m_theta_vals;
-    amrex::Gpu::DeviceVector<amrex::Real> m_wrf_theta_vals;
 
     amrex::Gpu::DeviceVector<amrex::Real> m_error_wrf_avg_theta; 
 

@@ -57,13 +57,14 @@ public:
 
 //std::string m_forcing_tendency;
 
-  amrex::Gpu::DeviceVector<amrex::Real> m_velAvg_ht;
-  amrex::Gpu::DeviceVector<amrex::Real> m_uAvg_vals;
-  amrex::Gpu::DeviceVector<amrex::Real> m_vAvg_vals;
-
+  amrex::Gpu::DeviceVector<amrex::Real> m_wrf_ht;
   amrex::Gpu::DeviceVector<amrex::Real> m_wrf_u_vals;
   amrex::Gpu::DeviceVector<amrex::Real> m_wrf_v_vals;
   amrex::Gpu::DeviceVector<amrex::Real> m_wrf_avg_error;
+
+  amrex::Gpu::DeviceVector<amrex::Real> m_velAvg_ht;
+  amrex::Gpu::DeviceVector<amrex::Real> m_uAvg_vals;
+  amrex::Gpu::DeviceVector<amrex::Real> m_vAvg_vals;
 
   amrex::Gpu::DeviceVector<amrex::Real> m_error_wrf_avg_U;
   amrex::Gpu::DeviceVector<amrex::Real> m_error_wrf_avg_V;
