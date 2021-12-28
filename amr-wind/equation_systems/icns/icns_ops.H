@@ -108,13 +108,13 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
                         amrex::Real rhoinv = 1.0 / rho(i, j, k);
 
                         vf(i, j, k, 0) =
-                            -(det_j / fac(i, j, k, 0) * gp(i, j, k, 0)) *
+                            -(1.0 / fac(i, j, k, 0) * gp(i, j, k, 0)) *
                             rhoinv;
                         vf(i, j, k, 1) =
-                            -(det_j / fac(i, j, k, 1) * gp(i, j, k, 1)) *
+                            -(1.0 / fac(i, j, k, 1) * gp(i, j, k, 1)) *
                             rhoinv;
                         vf(i, j, k, 2) =
-                            -(det_j / fac(i, j, k, 2) * gp(i, j, k, 2)) *
+                            -(1.0 / fac(i, j, k, 2) * gp(i, j, k, 2)) *
                             rhoinv;
                     });
 
