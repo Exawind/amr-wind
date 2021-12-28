@@ -29,15 +29,11 @@ closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
 } // namespace
 
 ABLWrfForcingTemp::ABLWrfForcingTemp(const CFDSim& sim)
-    : ABLWrfForcing(sim)
+    : ABLWrfForcing(sim,identifier())
 {
     const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
     abl.register_wrf_temp_forcing(this);
     abl.abl_statistics().register_wrf_forcing_temp(this);
-
-    amrex::ParmParse pp(identifier());
-    pp.query("forcing_scheme", m_forcing_scheme);
-    pp.query("control_gain", m_gain_coeff);
 
     if (!abl.abl_wrf_file().is_wrf_tendency_forcing()) {
       mean_temperature_init(

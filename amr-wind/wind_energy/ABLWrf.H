@@ -12,7 +12,7 @@ class ABLWrfForcing
 {
 
 public:
-    ABLWrfForcing(const CFDSim& sim);
+    ABLWrfForcing(const CFDSim& sim, const std::string identifier);
 
     void indirectForcingInit();
     void invertMat(

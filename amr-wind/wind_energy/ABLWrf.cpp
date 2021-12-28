@@ -20,9 +20,13 @@ closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
 }
 } // namespace
 
-ABLWrfForcing::ABLWrfForcing(const CFDSim& sim)
+ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
     : m_time(sim.time()), m_mesh(sim.mesh())
-{}
+{
+    amrex::ParmParse pp(identifier);
+    pp.query("forcing_scheme", m_forcing_scheme);
+    pp.query("control_gain", m_gain_coeff);
+}
 
 void ABLWrfForcing::indirectForcingInit()
 {
