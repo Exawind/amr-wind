@@ -61,18 +61,27 @@ bool CFDSim::has_overset() const { return (static_cast<bool>(m_overset_mgr)); }
 
 void CFDSim::activate_mesh_map()
 {
-    // declare nodal and cell-centered mesh mapping array
-    auto& mesh_scale_fac_cc = m_repo.declare_cc_field(
+    // declare nodal, cell-centered, and face-centered mesh mapping array
+    m_repo.declare_cc_field(
         "mesh_scaling_factor_cc", AMREX_SPACEDIM, m_pde_mgr.num_ghost_state(),
         1);
-    auto& mesh_scale_fac_nd = m_repo.declare_nd_field(
+    m_repo.declare_nd_field(
         "mesh_scaling_factor_nd", AMREX_SPACEDIM, m_pde_mgr.num_ghost_state(),
+        1);
+    m_repo.declare_xf_field(
+        "mesh_scaling_factor_xf", AMREX_SPACEDIM, m_pde_mgr.num_ghost_state(),
+        1);
+    m_repo.declare_yf_field(
+        "mesh_scaling_factor_yf", AMREX_SPACEDIM, m_pde_mgr.num_ghost_state(),
+        1);
+    m_repo.declare_zf_field(
+        "mesh_scaling_factor_zf", AMREX_SPACEDIM, m_pde_mgr.num_ghost_state(),
         1);
 
     // declare nodal and cell-centered non-uniform mesh
-    auto& non_uniform_coord_cc = m_repo.declare_cc_field(
+    m_repo.declare_cc_field(
         "non_uniform_coord_cc", AMREX_SPACEDIM, m_pde_mgr.num_ghost_state(), 1);
-    auto& non_uniform_coord_nd = m_repo.declare_nd_field(
+    m_repo.declare_nd_field(
         "non_uniform_coord_nd", AMREX_SPACEDIM, m_pde_mgr.num_ghost_state(), 1);
 
     // TODO: Create BCNoOP fill patch operators for mesh scaling fields

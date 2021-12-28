@@ -136,7 +136,10 @@ public:
         auto& divtau = m_pdefields.diff_term.state(tau_state);
         const auto& density = m_density.state(fstate);
         const auto& viscosity = m_pdefields.mueff;
-        const auto& mesh_fac = repo.get_field("mesh_scaling_factor_cc");
+        const auto& mesh_fac_cc = repo.get_field("mesh_scaling_factor_cc");
+        const auto& mesh_fac_xf = repo.get_field("mesh_scaling_factor_xf");
+        const auto& mesh_fac_yf = repo.get_field("mesh_scaling_factor_yf");
+        const auto& mesh_fac_zf = repo.get_field("mesh_scaling_factor_zf");
 
         const amrex::Real alpha = 0.0;
         const amrex::Real beta = -1.0;
@@ -160,7 +163,7 @@ public:
             for (amrex::MFIter mfi(density(lev)); mfi.isValid(); ++mfi) {
 
                 const auto& rho = density(lev).array(mfi);
-                const auto& fac = mesh_fac(lev).array(mfi);
+                const auto& fac = mesh_fac_cc(lev).array(mfi);
                 const auto& prod = (*rho_times_det_j)(lev).array(mfi);
 
                 const auto& bx = mfi.growntilebox();
@@ -180,36 +183,16 @@ public:
         ///////////////////////////////////////////////////////////////////
 
         //////////////////////////B coeffs/////////////////////////////////
-        // Hold mesh scaling factor on faces
         // TODO: should box loops below be over grown tile box ?
-        std::unique_ptr<ScratchField> mesh_fac_xf, mesh_fac_yf, mesh_fac_zf;
-        mesh_fac_xf = m_pdefields.repo.create_scratch_field(
-            AMREX_SPACEDIM, 0, amr_wind::FieldLoc::XFACE);
-        mesh_fac_yf = m_pdefields.repo.create_scratch_field(
-            AMREX_SPACEDIM, 0, amr_wind::FieldLoc::YFACE);
-        mesh_fac_zf = m_pdefields.repo.create_scratch_field(
-            AMREX_SPACEDIM, 0, amr_wind::FieldLoc::ZFACE);
-
-        amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>>
-            mesh_fac_face(nlevels);
-
-        // set B coeffs
         for (int lev = 0; lev < nlevels; ++lev) {
             auto b = diffusion::average_velocity_eta_to_faces(
                 geom[lev], viscosity(lev));
-
-            // average mesh scaling factor to faces
-            mesh_fac_face[lev][0] = &(*mesh_fac_xf)(lev);
-            mesh_fac_face[lev][1] = &(*mesh_fac_yf)(lev);
-            mesh_fac_face[lev][2] = &(*mesh_fac_zf)(lev);
-            amrex::average_cellcenter_to_face(
-                mesh_fac_face[lev], mesh_fac(lev), geom[lev], AMREX_SPACEDIM);
 
             // beta accounted for mesh mapping (x-face) = J/fac^2 * mu
             for (amrex::MFIter mfi(b[0]); mfi.isValid(); ++mfi) {
                 amrex::Array4<amrex::Real> const& mu = b[0].array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
-                    mesh_fac_face[lev][0]->const_array(mfi);
+                    mesh_fac_xf(lev).array(mfi);
 
                 amrex::ParallelFor(
                     mfi.tilebox(),
@@ -225,7 +208,7 @@ public:
             for (amrex::MFIter mfi(b[1]); mfi.isValid(); ++mfi) {
                 amrex::Array4<amrex::Real> const& mu = b[1].array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
-                    mesh_fac_face[lev][1]->const_array(mfi);
+                    mesh_fac_yf(lev).array(mfi);
 
                 amrex::ParallelFor(
                     mfi.tilebox(),
@@ -241,7 +224,7 @@ public:
             for (amrex::MFIter mfi(b[2]); mfi.isValid(); ++mfi) {
                 amrex::Array4<amrex::Real> const& mu = b[2].array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
-                    mesh_fac_face[lev][2]->const_array(mfi);
+                    mesh_fac_zf(lev).array(mfi);
 
                 amrex::ParallelFor(
                     mfi.tilebox(),
@@ -286,6 +269,7 @@ public:
     {
         const FieldState fstate = FieldState::New;
         auto& repo = m_pdefields.repo;
+        const auto& geom = repo.mesh().Geom();
         auto& field = m_pdefields.field;
         const auto& density = m_density.state(fstate);
         const int nlevels = repo.num_active_levels();
@@ -293,7 +277,9 @@ public:
         auto rhs_ptr = repo.create_scratch_field("rhs", field.num_comp(), 0);
         const auto& viscosity = m_pdefields.mueff;
         const auto& mesh_fac = repo.get_field("mesh_scaling_factor_cc");
-        const auto& geom = repo.mesh().Geom();
+        const auto& mesh_fac_xf = repo.get_field("mesh_scaling_factor_xf");
+        const auto& mesh_fac_yf = repo.get_field("mesh_scaling_factor_yf");
+        const auto& mesh_fac_zf = repo.get_field("mesh_scaling_factor_zf");
 
         const amrex::Real alpha = 1.0;
         const amrex::Real beta = dt;
@@ -337,36 +323,16 @@ public:
         ///////////////////////////////////////////////////////////////////
 
         //////////////////////////B coeffs/////////////////////////////////
-        // Hold mesh scaling factor on faces
         // TODO: should box loops below be over grown tile box ?
-        std::unique_ptr<ScratchField> mesh_fac_xf, mesh_fac_yf, mesh_fac_zf;
-        mesh_fac_xf = m_pdefields.repo.create_scratch_field(
-            AMREX_SPACEDIM, 0, amr_wind::FieldLoc::XFACE);
-        mesh_fac_yf = m_pdefields.repo.create_scratch_field(
-            AMREX_SPACEDIM, 0, amr_wind::FieldLoc::YFACE);
-        mesh_fac_zf = m_pdefields.repo.create_scratch_field(
-            AMREX_SPACEDIM, 0, amr_wind::FieldLoc::ZFACE);
-
-        amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>>
-            mesh_fac_face(nlevels);
-
-        // set B coeffs
         for (int lev = 0; lev < nlevels; ++lev) {
             auto b = diffusion::average_velocity_eta_to_faces(
                 geom[lev], viscosity(lev));
-
-            // average mesh scaling factor to faces
-            mesh_fac_face[lev][0] = &(*mesh_fac_xf)(lev);
-            mesh_fac_face[lev][1] = &(*mesh_fac_yf)(lev);
-            mesh_fac_face[lev][2] = &(*mesh_fac_zf)(lev);
-            amrex::average_cellcenter_to_face(
-                mesh_fac_face[lev], mesh_fac(lev), geom[lev], AMREX_SPACEDIM);
 
             // beta accounted for mesh mapping (x-face) = J/fac^2 * mu
             for (amrex::MFIter mfi(b[0]); mfi.isValid(); ++mfi) {
                 amrex::Array4<amrex::Real> const& mu = b[0].array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
-                    mesh_fac_face[lev][0]->const_array(mfi);
+                    mesh_fac_xf(lev).array(mfi);
 
                 amrex::ParallelFor(
                     mfi.tilebox(),
@@ -382,7 +348,7 @@ public:
             for (amrex::MFIter mfi(b[1]); mfi.isValid(); ++mfi) {
                 amrex::Array4<amrex::Real> const& mu = b[1].array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
-                    mesh_fac_face[lev][1]->const_array(mfi);
+                    mesh_fac_yf(lev).array(mfi);
 
                 amrex::ParallelFor(
                     mfi.tilebox(),
@@ -398,7 +364,7 @@ public:
             for (amrex::MFIter mfi(b[2]); mfi.isValid(); ++mfi) {
                 amrex::Array4<amrex::Real> const& mu = b[2].array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
-                    mesh_fac_face[lev][2]->const_array(mfi);
+                    mesh_fac_zf(lev).array(mfi);
 
                 amrex::ParallelFor(
                     mfi.tilebox(),

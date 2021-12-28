@@ -66,38 +66,23 @@ protected:
         const int nlevels = m_pdefields.repo.num_active_levels();
         const auto& viscosity = m_pdefields.mueff;
         const auto& geom = m_pdefields.repo.mesh().Geom();
-        const auto& mesh_fac =
-            m_pdefields.repo.get_field("mesh_scaling_factor_cc");
+        const auto& mesh_fac_xf =
+            m_pdefields.repo.get_field("mesh_scaling_factor_xf");
+        const auto& mesh_fac_yf =
+            m_pdefields.repo.get_field("mesh_scaling_factor_yf");
+        const auto& mesh_fac_zf =
+            m_pdefields.repo.get_field("mesh_scaling_factor_zf");
 
-        // Hold density and mesh scaling factor on faces
         // TODO: should box loops below be over grown tile box ?
-        std::unique_ptr<ScratchField> mesh_fac_xf, mesh_fac_yf, mesh_fac_zf;
-        mesh_fac_xf = m_pdefields.repo.create_scratch_field(
-            AMREX_SPACEDIM, 0, amr_wind::FieldLoc::XFACE);
-        mesh_fac_yf = m_pdefields.repo.create_scratch_field(
-            AMREX_SPACEDIM, 0, amr_wind::FieldLoc::YFACE);
-        mesh_fac_zf = m_pdefields.repo.create_scratch_field(
-            AMREX_SPACEDIM, 0, amr_wind::FieldLoc::ZFACE);
-
-        amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>>
-            mesh_fac_face(nlevels);
-
         for (int lev = 0; lev < nlevels; ++lev) {
             auto b = diffusion::average_velocity_eta_to_faces(
                 geom[lev], viscosity(lev));
-
-            // average mesh scaling factor to faces
-            mesh_fac_face[lev][0] = &(*mesh_fac_xf)(lev);
-            mesh_fac_face[lev][1] = &(*mesh_fac_yf)(lev);
-            mesh_fac_face[lev][2] = &(*mesh_fac_zf)(lev);
-            amrex::average_cellcenter_to_face(
-                mesh_fac_face[lev], mesh_fac(lev), geom[lev], AMREX_SPACEDIM);
 
             // beta accounted for mesh mapping (x-face) = J/fac^2 * mu
             for (amrex::MFIter mfi(b[0]); mfi.isValid(); ++mfi) {
                 amrex::Array4<amrex::Real> const& mu = b[0].array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
-                    mesh_fac_face[lev][0]->const_array(mfi);
+                    mesh_fac_xf(lev).array(mfi);
 
                 amrex::ParallelFor(
                     mfi.tilebox(),
@@ -113,7 +98,7 @@ protected:
             for (amrex::MFIter mfi(b[1]); mfi.isValid(); ++mfi) {
                 amrex::Array4<amrex::Real> const& mu = b[1].array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
-                    mesh_fac_face[lev][1]->const_array(mfi);
+                    mesh_fac_yf(lev).array(mfi);
 
                 amrex::ParallelFor(
                     mfi.tilebox(),
@@ -129,7 +114,7 @@ protected:
             for (amrex::MFIter mfi(b[2]); mfi.isValid(); ++mfi) {
                 amrex::Array4<amrex::Real> const& mu = b[2].array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
-                    mesh_fac_face[lev][2]->const_array(mfi);
+                    mesh_fac_zf(lev).array(mfi);
 
                 amrex::ParallelFor(
                     mfi.tilebox(),
@@ -155,38 +140,23 @@ protected:
         const int nlevels = m_pdefields.repo.num_active_levels();
         const auto& viscosity = m_pdefields.mueff;
         const auto& geom = m_pdefields.repo.mesh().Geom();
-        const auto& mesh_fac =
-            m_pdefields.repo.get_field("mesh_scaling_factor_cc");
+        const auto& mesh_fac_xf =
+            m_pdefields.repo.get_field("mesh_scaling_factor_xf");
+        const auto& mesh_fac_yf =
+            m_pdefields.repo.get_field("mesh_scaling_factor_yf");
+        const auto& mesh_fac_zf =
+            m_pdefields.repo.get_field("mesh_scaling_factor_zf");
 
-        // Hold density and mesh scaling factor on faces
         // TODO: should box loops below be over grown tile box ?
-        std::unique_ptr<ScratchField> mesh_fac_xf, mesh_fac_yf, mesh_fac_zf;
-        mesh_fac_xf = m_pdefields.repo.create_scratch_field(
-            AMREX_SPACEDIM, 0, amr_wind::FieldLoc::XFACE);
-        mesh_fac_yf = m_pdefields.repo.create_scratch_field(
-            AMREX_SPACEDIM, 0, amr_wind::FieldLoc::YFACE);
-        mesh_fac_zf = m_pdefields.repo.create_scratch_field(
-            AMREX_SPACEDIM, 0, amr_wind::FieldLoc::ZFACE);
-
-        amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>>
-            mesh_fac_face(nlevels);
-
         for (int lev = 0; lev < nlevels; ++lev) {
             auto b = diffusion::average_velocity_eta_to_faces(
                 geom[lev], viscosity(lev));
-
-            // average mesh scaling factor to faces
-            mesh_fac_face[lev][0] = &(*mesh_fac_xf)(lev);
-            mesh_fac_face[lev][1] = &(*mesh_fac_yf)(lev);
-            mesh_fac_face[lev][2] = &(*mesh_fac_zf)(lev);
-            amrex::average_cellcenter_to_face(
-                mesh_fac_face[lev], mesh_fac(lev), geom[lev], AMREX_SPACEDIM);
 
             // beta accounted for mesh mapping (x-face) = J/fac^2 * mu
             for (amrex::MFIter mfi(b[0]); mfi.isValid(); ++mfi) {
                 amrex::Array4<amrex::Real> const& mu = b[0].array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
-                    mesh_fac_face[lev][0]->const_array(mfi);
+                    mesh_fac_xf(lev).array(mfi);
 
                 amrex::ParallelFor(
                     mfi.tilebox(),
@@ -202,7 +172,7 @@ protected:
             for (amrex::MFIter mfi(b[1]); mfi.isValid(); ++mfi) {
                 amrex::Array4<amrex::Real> const& mu = b[1].array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
-                    mesh_fac_face[lev][1]->const_array(mfi);
+                    mesh_fac_yf(lev).array(mfi);
 
                 amrex::ParallelFor(
                     mfi.tilebox(),
@@ -218,7 +188,7 @@ protected:
             for (amrex::MFIter mfi(b[2]); mfi.isValid(); ++mfi) {
                 amrex::Array4<amrex::Real> const& mu = b[2].array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
-                    mesh_fac_face[lev][2]->const_array(mfi);
+                    mesh_fac_zf(lev).array(mfi);
 
                 amrex::ParallelFor(
                     mfi.tilebox(),
