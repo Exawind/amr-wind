@@ -8,6 +8,35 @@
 
 namespace amr_wind {
 
+class ABLWrfForcing
+{
+
+public:
+    ABLWrfForcing(const CFDSim& sim);
+
+    void indirectForcingInit();
+    void invertMat(
+        const amrex::Array2D<amrex::Real,0,3,0,3>&,
+        amrex::Array2D<amrex::Real,0,3,0,3>&);
+
+protected:
+    const SimTime& m_time;
+    const amrex::AmrCore& m_mesh;
+
+    std::string m_forcing_scheme;
+    amrex::Real m_gain_coeff{0.2};
+
+    amrex::Gpu::DeviceVector<amrex::Real> m_wrf_ht;
+    amrex::Vector<amrex::Real> m_zht;
+
+    int m_nht;
+    int m_idx_time;
+    int m_axis{2};
+  //int m_ind_polyOrder;
+    amrex::Array2D<amrex::Real,0,3,0,3> m_im_zTz;
+
+};
+
 class ABLWRFfile
 {
 

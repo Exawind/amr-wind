@@ -14,7 +14,8 @@ namespace amr_wind {
 namespace pde {
 namespace temperature {
 
-class ABLWrfForcingTemp : public TemperatureSource::Register<ABLWrfForcingTemp>
+class ABLWrfForcingTemp : public ABLWrfForcing,
+                          public TemperatureSource::Register<ABLWrfForcingTemp>
 {
 public:
     static const std::string identifier() { return "ABLWrfForcingTemp"; }
@@ -37,39 +38,20 @@ public:
 
     void mean_temperature_init(const ABLWRFfile&);
 
-    void invertMat(const amrex::Array2D<amrex::Real,0,3,0,3>&, amrex::Array2D<amrex::Real,0,3,0,3>&);
-
-    void indirectForcingInit();
-
   amrex::Vector<amrex::Real>& theta_wrf_error(){
     return m_err_Theta;} 
 
 private:
-    const SimTime& m_time;
-    const amrex::AmrCore& m_mesh;
-    std::string m_forcing_scheme;
 
     amrex::Gpu::DeviceVector<amrex::Real> m_theta_ht;
     amrex::Gpu::DeviceVector<amrex::Real> m_theta_vals;
     amrex::Gpu::DeviceVector<amrex::Real> m_wrf_theta_vals;
-    amrex::Gpu::DeviceVector<amrex::Real> m_wrf_ht;
 
     amrex::Gpu::DeviceVector<amrex::Real> m_error_wrf_avg_theta; 
 
-    int m_idx_time;
-
-    int m_axis{2};
-
-    amrex::Vector<amrex::Real> m_zht;
     amrex::Vector<amrex::Real> m_err_Theta;
 
-    int m_nht;
-
-    amrex::Array2D<amrex::Real,0,3,0,3> m_im_zTz;
-
     amrex::Array<amrex::Real, 4> m_poly_coeff_theta;
-
-    amrex::Real m_gain_coeff{0.2};
 
 };
 
