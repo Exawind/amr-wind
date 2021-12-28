@@ -1,7 +1,6 @@
 #ifndef DTUSPINNERSAMPLER_H
 #define DTUSPINNERSAMPLER_H
 
-//~ #include "amr-wind/utilities/sampling/LineSampler.H"
 #include "amr-wind/utilities/sampling/LidarSampler.H"
 #include "amr-wind/core/vs/vector_space.H"
 
