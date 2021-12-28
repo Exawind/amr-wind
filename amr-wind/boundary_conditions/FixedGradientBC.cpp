@@ -12,7 +12,7 @@ amrex::Box lower_boundary_faces(const amrex::Box& b, int dir)
     hi.setVal(dir, sm - 1);
     amrex::IndexType bxtype(b.ixType());
     bxtype.set(dir);
-    return amrex::Box(lo, hi, bxtype);
+    return {lo, hi, bxtype};
 }
 } // namespace
 

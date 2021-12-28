@@ -325,10 +325,9 @@ amrex::RealBox compute_bounding_box(const UniformCt::MetaType& meta)
     const auto dvec = norm * nl + cVec * dl + vs::Vector::khat() * dl;
     const auto p1 = cc - dvec; // front
     const auto p2 = cc + dvec; // back
-    return amrex::RealBox(
-        amrex::min(p1.x(), p2.x()), amrex::min(p1.y(), p2.y()),
-        amrex::min(p1.z(), p2.z()), amrex::max(p1.x(), p2.x()),
-        amrex::max(p1.y(), p2.y()), amrex::max(p1.z(), p2.z()));
+    return {amrex::min(p1.x(), p2.x()), amrex::min(p1.y(), p2.y()),
+            amrex::min(p1.z(), p2.z()), amrex::max(p1.x(), p2.x()),
+            amrex::max(p1.y(), p2.y()), amrex::max(p1.z(), p2.z())};
 }
 
 void do_parse_based_computations(UniformCt::DataType& data)
