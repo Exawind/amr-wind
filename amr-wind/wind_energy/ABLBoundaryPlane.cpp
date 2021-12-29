@@ -524,6 +524,7 @@ void ABLBoundaryPlane::read_file()
 #endif
 }
 
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 void ABLBoundaryPlane::populate_data(
     const int lev,
     const amrex::Real time,
