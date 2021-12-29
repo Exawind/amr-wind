@@ -50,7 +50,7 @@ struct FlatPlate : public act::WingType
     using MetaType = act::WingBaseData;
     using DataType = act::ActDataHolder<FlatPlate>;
 
-    static const std::string identifier() { return "TestFlatPlate"; }
+    static std::string identifier() { return "TestFlatPlate"; }
 };
 
 } // namespace
