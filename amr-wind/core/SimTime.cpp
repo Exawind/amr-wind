@@ -8,8 +8,8 @@ namespace amr_wind {
 void SimTime::parse_parameters()
 {
     // Initialize deltaT to negative values
-    for (int i = 0; i < max_time_states; ++i) {
-        m_dt[i] = -1.0;
+    for (double& i : m_dt) {
+        i = -1.0;
     }
 
     // Parse options in "time" namespace
