@@ -19,7 +19,7 @@ class FieldNorms : public PostProcessBase::Register<FieldNorms>
 public:
     static const std::string identifier() { return "FieldNorms"; }
 
-    FieldNorms(CFDSim&, const std::string&);
+    FieldNorms(CFDSim&, std::string);
 
     ~FieldNorms();
 

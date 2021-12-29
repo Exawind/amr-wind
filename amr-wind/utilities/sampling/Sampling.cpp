@@ -1,4 +1,5 @@
 #include <memory>
+#include <utility>
 
 #include "amr-wind/utilities/sampling/Sampling.H"
 #include "amr-wind/utilities/io_utils.H"
@@ -9,8 +10,8 @@
 namespace amr_wind {
 namespace sampling {
 
-Sampling::Sampling(CFDSim& sim, const std::string& label)
-    : m_sim(sim), m_label(label)
+Sampling::Sampling(CFDSim& sim, std::string label)
+    : m_sim(sim), m_label(std::move(label))
 {}
 
 Sampling::~Sampling() = default;

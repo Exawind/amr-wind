@@ -2,14 +2,15 @@
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include <AMReX_MultiFabUtil.H>
+#include <utility>
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/IOManager.H"
 
 namespace amr_wind {
 namespace field_norms {
 
-FieldNorms::FieldNorms(CFDSim& sim, const std::string& label)
-    : m_sim(sim), m_label(label)
+FieldNorms::FieldNorms(CFDSim& sim, std::string label)
+    : m_sim(sim), m_label(std::move(label))
 {}
 
 FieldNorms::~FieldNorms() = default;

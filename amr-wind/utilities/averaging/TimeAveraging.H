@@ -51,7 +51,7 @@ class TimeAveraging : public PostProcessBase::Register<TimeAveraging>
 public:
     static std::string identifier() { return "TimeAveraging"; }
 
-    TimeAveraging(CFDSim&, const std::string&);
+    TimeAveraging(CFDSim&, std::string);
 
     virtual ~TimeAveraging();
 

@@ -2,6 +2,7 @@
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include <AMReX_MultiFabUtil.H>
+#include <utility>
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/IOManager.H"
 #include "amr-wind/fvm/vorticity_mag.H"
@@ -9,9 +10,9 @@
 namespace amr_wind {
 namespace enstrophy {
 
-Enstrophy::Enstrophy(CFDSim& sim, const std::string& label)
+Enstrophy::Enstrophy(CFDSim& sim, std::string label)
     : m_sim(sim)
-    , m_label(label)
+    , m_label(std::move(label))
     , m_velocity(sim.repo().get_field("velocity"))
     , m_density(sim.repo().get_field("density"))
 {}

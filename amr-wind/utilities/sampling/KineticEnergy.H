@@ -19,7 +19,7 @@ class KineticEnergy : public PostProcessBase::Register<KineticEnergy>
 public:
     static const std::string identifier() { return "KineticEnergy"; }
 
-    KineticEnergy(CFDSim&, const std::string&);
+    KineticEnergy(CFDSim&, std::string);
 
     ~KineticEnergy();
 
