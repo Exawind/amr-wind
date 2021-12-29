@@ -26,6 +26,7 @@ protected:
     std::string m_forcing_scheme;
     amrex::Real m_gain_coeff{0.2};
 
+    // planar averaging heights
     amrex::Vector<amrex::Real> m_zht;
     int m_nht;
 

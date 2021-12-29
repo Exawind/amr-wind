@@ -23,9 +23,13 @@ closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
 ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
     : m_time(sim.time()), m_mesh(sim.mesh())
 {
+    amrex::Print() << "Constructing " << identifier << " object" << std::endl;
+
     amrex::ParmParse pp(identifier);
     pp.query("forcing_scheme", m_forcing_scheme);
     pp.query("control_gain", m_gain_coeff);
+    amrex::Print() << "  forcing_scheme : " << m_forcing_scheme << std::endl;
+    amrex::Print() << "  control_gain   : " << m_gain_coeff << std::endl;
 }
 
 void ABLWrfForcing::indirectForcingInit()
@@ -46,6 +50,7 @@ void ABLWrfForcing::indirectForcingInit()
                     zTz(irow, icol) +
                     std::pow(m_zht[iht] * scaleFact, (icol + irow));
             }
+            //amrex::Print()<< "Z^T W Z ["<<irow<<","<<icol<<"] : " << zTz(irow,icol) << std::endl;
         }
     }
     // Invert the matrix Z^T W Z

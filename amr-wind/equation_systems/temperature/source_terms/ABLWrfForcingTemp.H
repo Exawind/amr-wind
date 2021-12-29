@@ -43,16 +43,20 @@ public:
 
 private:
 
+    // these are inputs
     amrex::Gpu::DeviceVector<amrex::Real> m_wrf_ht;
     amrex::Gpu::DeviceVector<amrex::Real> m_wrf_theta_vals;
 
+    // this is the instantaneous planar average (at AMR-Wind levels)
     amrex::Gpu::DeviceVector<amrex::Real> m_theta_ht;
     amrex::Gpu::DeviceVector<amrex::Real> m_theta_vals;
 
+    // this specifies the source term
     amrex::Gpu::DeviceVector<amrex::Real> m_error_wrf_avg_theta; 
 
     amrex::Vector<amrex::Real> m_err_Theta;
 
+    // this should be m_ind_polyOrder+1 (currently, cubic polynomial is assumed)
     amrex::Array<amrex::Real, 4> m_poly_coeff_theta;
 
 };

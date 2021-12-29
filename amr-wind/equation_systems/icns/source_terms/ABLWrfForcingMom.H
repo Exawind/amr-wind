@@ -57,21 +57,25 @@ public:
 
 //std::string m_forcing_tendency;
 
+  // these are inputs
   amrex::Gpu::DeviceVector<amrex::Real> m_wrf_ht;
   amrex::Gpu::DeviceVector<amrex::Real> m_wrf_u_vals;
   amrex::Gpu::DeviceVector<amrex::Real> m_wrf_v_vals;
   amrex::Gpu::DeviceVector<amrex::Real> m_wrf_avg_error;
 
+  // these are the instantaneous planar averages
   amrex::Gpu::DeviceVector<amrex::Real> m_velAvg_ht;
   amrex::Gpu::DeviceVector<amrex::Real> m_uAvg_vals;
   amrex::Gpu::DeviceVector<amrex::Real> m_vAvg_vals;
 
+  // these specify the source term
   amrex::Gpu::DeviceVector<amrex::Real> m_error_wrf_avg_U;
   amrex::Gpu::DeviceVector<amrex::Real> m_error_wrf_avg_V;
 
   amrex::Vector<amrex::Real> m_err_U;
   amrex::Vector<amrex::Real> m_err_V;
 
+  // these should be m_ind_polyOrder+1 (currently, cubic polynomials are assumed)
   amrex::Array<amrex::Real, 4> m_poly_coeff_U;
   amrex::Array<amrex::Real, 4> m_poly_coeff_V;
 
