@@ -131,7 +131,7 @@ void incflo::ReadCheckpointFile()
         }
     }
 
-    bool replicate = (rep == IntVect::TheUnitVector()) ? false : true;
+    bool replicate = (rep != IntVect::TheUnitVector());
 
     if (replicate) {
         amrex::Print() << "replicating restart file: " << rep << std::endl;
