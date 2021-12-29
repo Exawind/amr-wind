@@ -18,21 +18,19 @@ amrex::Real MOData::calc_psi_m(amrex::Real zeta) const
 {
     if (zeta > 0) {
         return -gamma_m * zeta;
-    } else {
-        amrex::Real x = std::sqrt(std::sqrt(1 - beta_m * zeta));
-        return 2.0 * std::log(0.5 * (1.0 + x)) + log(0.5 * (1 + x * x)) -
-               2.0 * std::atan(x) + utils::half_pi();
     }
+    amrex::Real x = std::sqrt(std::sqrt(1 - beta_m * zeta));
+    return 2.0 * std::log(0.5 * (1.0 + x)) + log(0.5 * (1 + x * x)) -
+           2.0 * std::atan(x) + utils::half_pi();
 }
 
 amrex::Real MOData::calc_psi_h(amrex::Real zeta) const
 {
     if (zeta > 0) {
         return -gamma_h * zeta;
-    } else {
-        amrex::Real x = std::sqrt(1 - beta_h * zeta);
-        return 2.0 * std::log(0.5 * (1 + x));
     }
+    amrex::Real x = std::sqrt(1 - beta_h * zeta);
+    return 2.0 * std::log(0.5 * (1 + x));
 }
 
 void MOData::update_fluxes(int max_iters)
