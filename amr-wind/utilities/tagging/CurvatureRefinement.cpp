@@ -27,7 +27,7 @@ void CurvatureRefinement::initialize(const std::string& key)
     amrex::Vector<double> curv_value;
     pp.queryarr("values", curv_value);
 
-    if ((curv_value.size() == 0u))
+    if ((curv_value.empty()))
         amrex::Abort("CurvatureRefinement: Must specify at least one value");
 
     {

@@ -16,7 +16,7 @@ void inject_turbulence_src_terms(
     pp.queryarr("sources", srcin);
 
     // If there are no sources (usually the case) then add sources and return
-    if (srcin.size() < 1) {
+    if (srcin.empty()) {
         pp.addarr("sources", terms);
         return;
     }

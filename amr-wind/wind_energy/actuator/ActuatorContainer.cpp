@@ -84,9 +84,9 @@ void ActuatorContainer::initialize_particles(const int total_pts)
 
     // query the particle ID from the container. We should always be starting
     // from 1.
-    ParticleType::NextID(1u);
+    ParticleType::NextID(1U);
     const auto id_start = ParticleType::NextID();
-    AMREX_ALWAYS_ASSERT(id_start == 1u);
+    AMREX_ALWAYS_ASSERT(id_start == 1U);
     const int iproc = amrex::ParallelDescriptor::MyProc();
 
     // Flag indicating if a tile was found where all particles were deposited.
