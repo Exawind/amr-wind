@@ -58,7 +58,7 @@ protected:
     virtual void prepare_outputs();
 
 private:
-    void update_positions();
+    static void update_positions();
 
     void update_velocities();
 
