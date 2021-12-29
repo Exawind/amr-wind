@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "amr-wind/equation_systems/icns/icns_advection.H"
 #include "amr-wind/core/MLMGOptions.H"
 #include "amr-wind/utilities/console_io.H"
@@ -51,8 +53,8 @@ MacProjOp::MacProjOp(FieldRepo& repo, bool has_overset, bool variable_density)
 
 void MacProjOp::init_projector(const MacProjOp::FaceFabPtrVec& beta) noexcept
 {
-    m_mac_proj.reset(new amrex::MacProjector(
-        m_repo.mesh().Geom(0, m_repo.num_active_levels() - 1)));
+    m_mac_proj = std::make_unique<amrex::MacProjector>(
+        m_repo.mesh().Geom(0, m_repo.num_active_levels() - 1));
     m_mac_proj->initProjector(
         m_options.lpinfo(), beta,
         m_has_overset ? m_repo.get_int_field("mask_cell").vec_const_ptrs()
@@ -74,8 +76,8 @@ void MacProjOp::init_projector(const MacProjOp::FaceFabPtrVec& beta) noexcept
 
 void MacProjOp::init_projector(const amrex::Real beta) noexcept
 {
-    m_mac_proj.reset(new amrex::MacProjector(
-        m_repo.mesh().Geom(0, m_repo.num_active_levels() - 1)));
+    m_mac_proj = std::make_unique<amrex::MacProjector>(
+        m_repo.mesh().Geom(0, m_repo.num_active_levels() - 1));
     m_mac_proj->initProjector(
         m_repo.mesh().boxArray(0, m_repo.num_active_levels() - 1),
         m_repo.mesh().DistributionMap(0, m_repo.num_active_levels() - 1),

@@ -5,6 +5,7 @@
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/utilities/IOManager.H"
 
+#include <memory>
 #include <numeric>
 
 namespace amr_wind {
@@ -238,7 +239,7 @@ void TiogaInterface::amr_to_tioga_mesh()
         }
     }
 
-    m_amr_data.reset(new AMROversetInfo(ngrids_global, ngrids_local));
+    m_amr_data = std::make_unique<AMROversetInfo>(ngrids_global, ngrids_local);
     std::vector<int> lgrid_id(nproc, 0);
 
     int igp = 0; // Global index of the grid

@@ -1,4 +1,5 @@
 #include <AMReX_BC_TYPES.H>
+#include <memory>
 #include "amr-wind/incflo.H"
 #include "amr-wind/core/MLMGOptions.H"
 #include "amr-wind/utilities/console_io.H"
@@ -238,17 +239,17 @@ void incflo::ApplyProjection(
 
     amr_wind::MLMGOptions options("nodal_proj");
     if (variable_density) {
-        nodal_projector.reset(new NodalProjector(
+        nodal_projector = std::make_unique<NodalProjector>(
             vel, GetVecOfConstPtrs(sigma), Geom(0, finest_level),
-            options.lpinfo()));
+            options.lpinfo());
     } else {
         amrex::Real rho_0 = 1.0;
         amrex::ParmParse pp("incflo");
         pp.query("density", rho_0);
 
-        nodal_projector.reset(new NodalProjector(
+        nodal_projector = std::make_unique<NodalProjector>(
             vel, scaling_factor / rho_0, Geom(0, finest_level),
-            options.lpinfo()));
+            options.lpinfo());
     }
 
     // Set MLMG and NodalProjector options

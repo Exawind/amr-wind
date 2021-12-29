@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "amr-wind/physics/SyntheticTurbulence.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
@@ -41,7 +43,7 @@ public:
         , m_op{h_min, h_max, vel_start, vel_stop}
     {}
 
-    virtual ~LinearShearProfile() = default;
+    ~LinearShearProfile() override = default;
 
     LinearShearOp device_instance() const { return m_op; }
 
@@ -83,7 +85,7 @@ public:
         , m_op{ref_vel, ref_height, alpha, h_offset, umin, umax}
     {}
 
-    virtual ~PowerLawProfile() = default;
+    ~PowerLawProfile() override = default;
 
     PowerLawOp device_instance() const { return m_op; }
 
@@ -376,7 +378,8 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
         amrex::Vector<amrex::Real> vel;
         pp_vel.getarr("value", vel);
         amrex::Real wind_speed = vs::mag(vs::Vector{vel[0], vel[1], vel[2]});
-        m_wind_profile.reset(new synth_turb::MeanProfile(wind_speed, 2));
+        m_wind_profile =
+            std::make_unique<synth_turb::MeanProfile>(wind_speed, 2);
     } else if (mean_wind_type == "LinearProfile") {
         amrex::ParmParse pp_vel("LinearProfile.velocity");
 
@@ -391,11 +394,11 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
         int shear_dir = 2;
         pp_vel.query("direction", shear_dir);
 
-        m_wind_profile.reset(new synth_turb::LinearShearProfile(
+        m_wind_profile = std::make_unique<synth_turb::LinearShearProfile>(
             zmin, zmax,
             vs::mag(vs::Vector{start_val[0], start_val[1], start_val[2]}),
             vs::mag(vs::Vector{stop_val[0], stop_val[1], stop_val[2]}),
-            shear_dir));
+            shear_dir);
     } else if (mean_wind_type == "PowerLawProfile") {
         amrex::ParmParse pp_vel("PowerLawProfile.velocity");
 
@@ -417,8 +420,8 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
 
         umin /= wind_speed;
         umax /= wind_speed;
-        m_wind_profile.reset(new synth_turb::PowerLawProfile(
-            wind_speed, zref, alpha, shear_dir, zoffset, umin, umax));
+        m_wind_profile = std::make_unique<synth_turb::PowerLawProfile>(
+            wind_speed, zref, alpha, shear_dir, zoffset, umin, umax);
     } else {
         amrex::Abort(
             "SyntheticTurbulence: invalid mean wind type specified = " +
