@@ -71,11 +71,11 @@ void incflo::PrintMaxGp(int lev)
 void incflo::CheckForNans(int lev)
 {
     BL_PROFILE("amr-wind::incflo::CheckForNans");
-    bool ro_has_nans = density()(lev).contains_nan(0);
-    bool ug_has_nans = velocity()(lev).contains_nan(0);
-    bool vg_has_nans = velocity()(lev).contains_nan(1);
-    bool wg_has_nans = velocity()(lev).contains_nan(2);
-    bool pg_has_nans = pressure()(lev).contains_nan(0);
+    bool ro_has_nans = density()(lev).contains_nan(false);
+    bool ug_has_nans = velocity()(lev).contains_nan(false);
+    bool vg_has_nans = velocity()(lev).contains_nan(true);
+    bool wg_has_nans = velocity()(lev).contains_nan(true);
+    bool pg_has_nans = pressure()(lev).contains_nan(false);
 
     if (ro_has_nans) amrex::Print() << "WARNING: ro contains NaNs!!!";
 

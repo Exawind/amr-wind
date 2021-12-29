@@ -7,7 +7,7 @@
 namespace amr_wind {
 namespace udf {
 
-LinearProfile::LinearProfile(const Field& fld) : m_op()
+LinearProfile::LinearProfile(const Field& fld)
 {
     amrex::ParmParse pp("LinearProfile." + fld.name());
 
