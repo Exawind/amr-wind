@@ -49,25 +49,19 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
         } else {
             // default is to have uniform weighting throughout
             amrex::Print() << "  using default weighting" << std::endl;
-
-            //const auto& minBox = m_mesh.boxArray(0).minimalBox();
-            //const auto& dx = m_mesh.Geom(0).CellSizeArray();
-            //int nz = minBox.length(m_axis);
-            //amrex::Print() << minBox << std::endl;
             amrex::Real zmin = m_mesh.Geom(0).ProbLo(m_axis);
             amrex::Real zmax = m_mesh.Geom(0).ProbHi(m_axis);
             m_weighting_heights = {zmin,zmax};
             m_weighting_values = {1.0,1.0};
-            amrex::Print() << "  z W(z)" << std::endl;
-            for(int i=0; i < m_weighting_heights.size(); ++i) {
-                amrex::Print() << "  " << m_weighting_heights[i] << " " << m_weighting_values[i] << std::endl;
-            }
         }
+        //amrex::Print() << "  z W(z)" << std::endl;
+        //for(int i=0; i < m_weighting_heights.size(); ++i) {
+        //    amrex::Print() << "  " << m_weighting_heights[i] << " " << m_weighting_values[i] << std::endl;
+        //}
 
         if(!pp.query("forcing_transition", m_forcing_transition)) {
             m_forcing_transition = "none";
-        }
-        else {
+        } else if (amrex::toLower(m_forcing_transition) != "none") {
             pp.get("transition_thickness", m_transition_thickness); // constant, required
             if(!pp.query("constant_transition_height", m_transition_height)) {
                 // optional; if not read, then expect transition_height in netCDF input file
@@ -83,7 +77,7 @@ void ABLWrfForcing::updateWeights()
     amrex::Print() << "Updating weights" << std::endl;
     for (int i=0; i<m_nht; ++i) {
         m_W[i] = interp::linear(m_weighting_heights, m_weighting_values, m_zht[i]);
-        amrex::Print() << "  " << m_zht[i] << " " << m_W[i] << std::endl;
+        //amrex::Print() << "  " << m_zht[i] << " " << m_W[i] << std::endl;
     }
 }
 
