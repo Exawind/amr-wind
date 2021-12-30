@@ -57,8 +57,16 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
             }
         }
 
-        if(!pp.query("forcing_transition", m_forcing_transition))
+        if(!pp.query("forcing_transition", m_forcing_transition)) {
             m_forcing_transition = "none";
+        }
+        else {
+            pp.get("transition_thickness", m_transition_thickness); // constant, required
+            if(!pp.query("constant_transition_height", m_transition_height)) {
+                // optional; if not read, then expect transition_height in netCDF input file
+                m_read_transition_height = true;
+            }
+        }
 
     } // if forcing scheme is "indirect"
 }
