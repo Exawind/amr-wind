@@ -56,7 +56,7 @@ TEST_F(PhysicsTest, physics_test_duplicates)
     EXPECT_FALSE(phy_mgr.contains(PhysicsEx::identifier()));
     auto& pex1 = phy_mgr.create("PhysicsEx", sim());
     auto& pex2 = phy_mgr.create("PhysicsEx", sim());
-    EXPECT_EQ(phy_mgr.objects().size(), 1u);
+    EXPECT_EQ(phy_mgr.objects().size(), 1U);
     EXPECT_TRUE(phy_mgr.contains(PhysicsEx::identifier()));
 
     EXPECT_EQ(&pex1, &pex2);

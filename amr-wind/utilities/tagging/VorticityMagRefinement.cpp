@@ -27,7 +27,7 @@ void VorticityMagRefinement::initialize(const std::string& key)
 
     pp.queryarr("values", vort_value);
 
-    if (vort_value.size() == 0u)
+    if (vort_value.empty())
         amrex::Abort(
             "VorticityMagRefinement: Must specify at least one of value");
 

@@ -31,7 +31,7 @@ void FieldRefinement::initialize(const std::string& key)
     pp.queryarr("field_error", field_err);
     pp.queryarr("grad_error", grad_err);
 
-    if ((field_err.size() == 0u) && (grad_err.size() == 0u))
+    if ((field_err.empty()) && (grad_err.empty()))
         amrex::Abort(
             "FieldRefinement: Must specify at least one of field_error or "
             "grad_error");

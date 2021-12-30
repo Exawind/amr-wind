@@ -191,7 +191,7 @@ void print_tpls(std::ostream& out)
     tpls.push_back(std::string("ASCENT    ") + ASCENT_VERSION);
 #endif
 
-    if (tpls.size() > 0) {
+    if (!tpls.empty()) {
         out << "  Enabled third-party libraries: ";
         for (const auto& val : tpls) {
             out << "\n    " << val;

@@ -27,7 +27,7 @@ void GradientMagRefinement::initialize(const std::string& key)
     amrex::Vector<double> gradmag_value;
     pp.queryarr("values", gradmag_value);
 
-    if ((gradmag_value.size() == 0u))
+    if ((gradmag_value.empty()))
         amrex::Abort("GradientMagRefinement: Must specify at least one value");
 
     {

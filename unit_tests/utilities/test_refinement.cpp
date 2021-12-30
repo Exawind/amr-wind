@@ -149,8 +149,8 @@ TEST_F(NestRefineTest, bbox_limits)
     box_refine->read_inputs(mesh(), ss);
 
     auto targets = box_refine->boxarray_vec();
-    EXPECT_EQ(targets.size(), 1u);
-    EXPECT_EQ(targets[0].size(), 1u);
+    EXPECT_EQ(targets.size(), 1U);
+    EXPECT_EQ(targets[0].size(), 1U);
 
     auto domain = mesh().Geom(0).Domain();
     auto bx = targets[0][0];
