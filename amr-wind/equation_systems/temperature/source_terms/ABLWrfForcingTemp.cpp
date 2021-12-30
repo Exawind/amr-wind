@@ -92,10 +92,6 @@ void ABLWrfForcingTemp::mean_temperature_init(
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, wrfFile.wrf_heights().begin(),
         wrfFile.wrf_heights().end(), m_wrf_ht.begin());
-
-    if (amrex::toLower(m_forcing_scheme) == "indirect") {
-        indirectForcingInit();
-    }
 }
 
 amrex::Real ABLWrfForcingTemp::mean_temperature_heights(std::unique_ptr<ABLWRFfile>& wrfFile){
@@ -193,6 +189,9 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
     }
 
     if (amrex::toLower(m_forcing_scheme) == "indirect") {
+        if (amrex::toLower(m_forcing_transition) == "none")
+            indirectForcingInit();
+
         amrex::Array<amrex::Real, 4> ezP_T;
 
         for (int i = 0; i < 4; i++) {

@@ -106,10 +106,6 @@ void ABLWrfForcingMom::mean_velocity_init(
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, wrfFile.wrf_heights().begin(),
         wrfFile.wrf_heights().end(), m_wrf_ht.begin());
-
-    if (amrex::toLower(m_forcing_scheme) == "indirect") {
-        indirectForcingInit();
-    }
 }
 
 void ABLWrfForcingMom::mean_velocity_heights(std::unique_ptr<ABLWRFfile>& wrfFile)
@@ -227,6 +223,9 @@ void ABLWrfForcingMom::mean_velocity_heights(
     }
 
     if (amrex::toLower(m_forcing_scheme) == "indirect") {
+        if (amrex::toLower(m_forcing_transition) != "none")
+            indirectForcingInit();
+
         amrex::Array<amrex::Real, 4> ezP_U;
         amrex::Array<amrex::Real, 4> ezP_V;
 

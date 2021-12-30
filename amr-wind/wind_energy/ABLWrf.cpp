@@ -79,7 +79,7 @@ void ABLWrfForcing::indirectForcingInit()
         amrex::Print() << "Initializing indirect forcing" << std::endl;
         m_W.resize(m_nht);
         updateWeights();
-    } else if (amrex::toLower(m_forcing_scheme) != "none") {
+    } else if (amrex::toLower(m_forcing_transition) != "none") {
         amrex::Print() << "Reinitializing indirect forcing" << std::endl;
         updateWeights();
     } else {
