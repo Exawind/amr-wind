@@ -195,14 +195,12 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
     if (amrex::toLower(m_forcing_scheme) == "indirect") {
         amrex::Array<amrex::Real, 4> ezP_T;
 
-        amrex::Real scaleFact = 1e-3;
-
         for (int i = 0; i < 4; i++) {
             ezP_T[i] = 0.0;
 
             for (int ih = 0; ih < m_nht; ih++) {
                 ezP_T[i] =
-                    ezP_T[i] + error_T[ih] * std::pow(m_zht[ih] * scaleFact, i);
+                    ezP_T[i] + error_T[ih] * std::pow(m_zht[ih] * m_scaleFact, i);
             }
         }
 
@@ -219,7 +217,7 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
             for (int j = 0; j < 4; j++) {
                 error_T[ih] =
                     error_T[ih] +
-                    m_poly_coeff_theta[j] * std::pow(m_zht[ih] * scaleFact, j);
+                    m_poly_coeff_theta[j] * std::pow(m_zht[ih] * m_scaleFact, j);
             }
         }
     }

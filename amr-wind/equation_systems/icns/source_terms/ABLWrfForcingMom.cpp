@@ -230,17 +230,15 @@ void ABLWrfForcingMom::mean_velocity_heights(
         amrex::Array<amrex::Real, 4> ezP_U;
         amrex::Array<amrex::Real, 4> ezP_V;
 
-        amrex::Real scaleFact = 1e-3;
-
         for (int i = 0; i < 4; i++) {
             ezP_U[i] = 0.0;
             ezP_V[i] = 0.0;
 
             for (int ih = 0; ih < m_nht; ih++) {
                 ezP_U[i] =
-                    ezP_U[i] + error_U[ih] * std::pow(m_zht[ih] * scaleFact, i);
+                    ezP_U[i] + error_U[ih] * std::pow(m_zht[ih] * m_scaleFact, i);
                 ezP_V[i] =
-                    ezP_V[i] + error_V[ih] * std::pow(m_zht[ih] * scaleFact, i);
+                    ezP_V[i] + error_V[ih] * std::pow(m_zht[ih] * m_scaleFact, i);
             }
         }
 
@@ -261,10 +259,10 @@ void ABLWrfForcingMom::mean_velocity_heights(
             for (int j = 0; j < 4; j++) {
                 error_U[ih] =
                     error_U[ih] +
-                    m_poly_coeff_U[j] * std::pow(m_zht[ih] * scaleFact, j);
+                    m_poly_coeff_U[j] * std::pow(m_zht[ih] * m_scaleFact, j);
                 error_V[ih] =
                     error_V[ih] +
-                    m_poly_coeff_V[j] * std::pow(m_zht[ih] * scaleFact, j);
+                    m_poly_coeff_V[j] * std::pow(m_zht[ih] * m_scaleFact, j);
             }
         }
     }

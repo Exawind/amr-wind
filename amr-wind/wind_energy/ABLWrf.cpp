@@ -35,7 +35,6 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
 void ABLWrfForcing::indirectForcingInit()
 {
     amrex::Print() << "Initializing indirect forcing" << std::endl;
-    amrex::Real scaleFact = 1e-3;
 
     amrex::Array2D<amrex::Real, 0, 3, 0, 3> zTz;
 
@@ -48,7 +47,7 @@ void ABLWrfForcing::indirectForcingInit()
             for (int iht = 0; iht < m_nht; iht++) {
                 zTz(irow, icol) =
                     zTz(irow, icol) +
-                    std::pow(m_zht[iht] * scaleFact, (icol + irow));
+                    std::pow(m_zht[iht] * m_scaleFact, (icol + irow));
             }
             //amrex::Print()<< "Z^T W Z ["<<irow<<","<<icol<<"] : " << zTz(irow,icol) << std::endl;
         }
