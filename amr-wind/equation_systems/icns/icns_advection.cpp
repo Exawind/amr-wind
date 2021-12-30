@@ -123,7 +123,7 @@ void MacProjOp::init_projector(const amrex::Real beta) noexcept
 void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
 {
     BL_PROFILE("amr-wind::ICNS::advection_mac_project");
-    auto& geom = m_repo.mesh().Geom();
+    const auto& geom = m_repo.mesh().Geom();
     const auto& pressure = m_repo.get_field("p");
     auto& u_mac = m_repo.get_field("u_mac");
     auto& v_mac = m_repo.get_field("v_mac");

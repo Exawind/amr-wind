@@ -18,7 +18,7 @@ void incflo::set_inflow_velocity(
     auto& phy_mgr = m_sim.physics_manager();
     if (phy_mgr.contains("ABL")) {
         auto& abl = phy_mgr.get<amr_wind::ABL>();
-        auto& bndry_plane = abl.bndry_plane();
+        const auto& bndry_plane = abl.bndry_plane();
         bndry_plane.populate_data(lev, time, velocity, vel);
     }
 }

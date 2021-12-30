@@ -35,7 +35,7 @@ void VortexPatch::initialize_fields(int level, const amrex::Geometry& geom)
     const amrex::Real zc = m_loc[2];
     const amrex::Real radius = m_radius;
 
-    auto& mphase = m_sim.physics_manager().get<MultiPhase>();
+    const auto& mphase = m_sim.physics_manager().get<MultiPhase>();
     const amrex::Real rho1 = mphase.rho1();
     const amrex::Real rho2 = mphase.rho2();
 
