@@ -27,15 +27,19 @@ protected:
     amrex::Real m_gain_coeff{0.2};
 
     const amrex::Real m_scaleFact = 1e-3; // to improve conditioning of regression matrix
+    int m_idx_time;
+    int m_axis{2};
 
     // planar averaging heights
     amrex::Vector<amrex::Real> m_zht;
     int m_nht;
 
-    int m_idx_time;
-    int m_axis{2};
+    // regression vars for indirect forcing
   //int m_ind_polyOrder;
     amrex::Array2D<amrex::Real,0,3,0,3> m_im_zTz;
+
+    amrex::Vector<amrex::Real> m_W_heights;
+    amrex::Vector<amrex::Real> m_W_values;
 
 };
 

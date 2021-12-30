@@ -4,6 +4,9 @@ Eliot Quon, Shashank Yellapantula
 TODOs:
 - [ ] Implement general input for weighting matrix
 - [ ] Generalize polynomial fit (i.e., implement `m_ind_polyOrder`)
+- [ ] Generalize "Wrf" naming in code to "Meso"
+- [ ] Deal with assumption that the ABL statistics class computes statistics at the cell-centeres
+      only on level 0
 
 
 ## Differences from SOWFA
