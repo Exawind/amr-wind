@@ -194,12 +194,13 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
 
         amrex::Array<amrex::Real, 4> ezP_T;
 
+        // form Z^T W y
         for (int i = 0; i < 4; i++) {
             ezP_T[i] = 0.0;
 
             for (int ih = 0; ih < m_nht; ih++) {
                 ezP_T[i] =
-                    ezP_T[i] + error_T[ih] * std::pow(m_zht[ih] * m_scaleFact, i);
+                    ezP_T[i] + error_T[ih] * m_W[ih] * std::pow(m_zht[ih] * m_scaleFact, i);
             }
         }
 
@@ -211,13 +212,17 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
             }
         }
 
+        amrex::Print() << "direct vs indirect temperature error profile" << std::endl;
+        amrex::Vector<amrex::Real> error_T_direct(n_levels);
         for (size_t ih = 0; ih < n_levels; ih++) {
+            error_T_direct[ih] = error_T[ih];
             error_T[ih] = 0.0;
             for (int j = 0; j < 4; j++) {
                 error_T[ih] =
                     error_T[ih] +
                     m_poly_coeff_theta[j] * std::pow(m_zht[ih] * m_scaleFact, j);
             }
+            amrex::Print() << m_zht[ih] << " " << error_T_direct[ih] << " " << error_T[ih] << std::endl;
         }
     }
 

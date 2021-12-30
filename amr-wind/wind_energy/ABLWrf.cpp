@@ -97,7 +97,7 @@ void ABLWrfForcing::indirectForcingInit()
             for (int iht = 0; iht < m_nht; iht++) {
                 zTz(irow, icol) =
                     zTz(irow, icol) +
-                    std::pow(m_zht[iht] * m_scaleFact, (icol + irow));
+                    m_W[iht] * std::pow(m_zht[iht] * m_scaleFact, (icol + irow));
             }
             //amrex::Print()<< "Z^T W Z ["<<irow<<","<<icol<<"] : " << zTz(irow,icol) << std::endl;
         }

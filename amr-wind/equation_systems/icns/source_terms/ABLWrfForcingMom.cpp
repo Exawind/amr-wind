@@ -229,15 +229,16 @@ void ABLWrfForcingMom::mean_velocity_heights(
         amrex::Array<amrex::Real, 4> ezP_U;
         amrex::Array<amrex::Real, 4> ezP_V;
 
+        // form Z^T W y
         for (int i = 0; i < 4; i++) {
             ezP_U[i] = 0.0;
             ezP_V[i] = 0.0;
 
             for (int ih = 0; ih < m_nht; ih++) {
                 ezP_U[i] =
-                    ezP_U[i] + error_U[ih] * std::pow(m_zht[ih] * m_scaleFact, i);
+                    ezP_U[i] + error_U[ih] * m_W[i] * std::pow(m_zht[ih] * m_scaleFact, i);
                 ezP_V[i] =
-                    ezP_V[i] + error_V[ih] * std::pow(m_zht[ih] * m_scaleFact, i);
+                    ezP_V[i] + error_V[ih] * m_W[i] * std::pow(m_zht[ih] * m_scaleFact, i);
             }
         }
 
@@ -252,7 +253,11 @@ void ABLWrfForcingMom::mean_velocity_heights(
             }
         }
 
+        amrex::Vector<amrex::Real> error_U_direct(n_levels);
+        amrex::Vector<amrex::Real> error_V_direct(n_levels);
         for (size_t ih = 0; ih < n_levels; ih++) {
+            error_U_direct[ih] = error_U[ih];
+            error_V_direct[ih] = error_V[ih];
             error_U[ih] = 0.0;
             error_V[ih] = 0.0;
             for (int j = 0; j < 4; j++) {
