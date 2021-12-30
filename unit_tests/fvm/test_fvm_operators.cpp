@@ -58,7 +58,7 @@ amrex::Real grad_test_impl(amr_wind::Field& vel, const int pdegree)
     amrex::Gpu::DeviceVector<amrex::Real> cv(ncoeff, 0.00213);
     amrex::Gpu::DeviceVector<amrex::Real> cw(ncoeff, 0.00346);
 
-    auto& geom = vel.repo().mesh().Geom();
+    const auto& geom = vel.repo().mesh().Geom();
 
     run_algorithm(vel, [&](const int lev, const amrex::MFIter& mfi) {
         auto vel_arr = vel(lev).array(mfi);
@@ -139,7 +139,7 @@ amrex::Real laplacian_test_impl(amr_wind::Field& vel, const int pdegree)
     amrex::Gpu::DeviceVector<amrex::Real> cv(ncoeff, 0.00213);
     amrex::Gpu::DeviceVector<amrex::Real> cw(ncoeff, 0.00346);
 
-    auto& geom = vel.repo().mesh().Geom();
+    const auto& geom = vel.repo().mesh().Geom();
 
     run_algorithm(vel, [&](const int lev, const amrex::MFIter& mfi) {
         auto vel_arr = vel(lev).array(mfi);
@@ -196,7 +196,7 @@ amrex::Real divergence_test_impl(amr_wind::Field& vel, const int pdegree)
     amrex::Gpu::DeviceVector<amrex::Real> cv(ncoeff, 0.00213);
     amrex::Gpu::DeviceVector<amrex::Real> cw(ncoeff, 0.00346);
 
-    auto& geom = vel.repo().mesh().Geom();
+    const auto& geom = vel.repo().mesh().Geom();
 
     run_algorithm(vel, [&](const int lev, const amrex::MFIter& mfi) {
         auto vel_arr = vel(lev).array(mfi);

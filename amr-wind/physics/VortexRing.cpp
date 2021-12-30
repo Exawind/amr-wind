@@ -186,7 +186,7 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
     }
 
     amrex::LPInfo info;
-    auto& mesh = m_velocity.repo().mesh();
+    const auto& mesh = m_velocity.repo().mesh();
 
     amrex::MLNodeLaplacian linop(
         mesh.Geom(0, mesh.finestLevel()), mesh.boxArray(0, mesh.finestLevel()),

@@ -49,7 +49,7 @@ void BCIface::read_bctype()
 {
     const std::string key = m_field.name() + "_type";
     auto& ibctype = m_field.bc_type();
-    auto& geom = m_field.repo().mesh().Geom(0);
+    const auto& geom = m_field.repo().mesh().Geom(0);
     for (amrex::OrientationIter oit; oit; ++oit) {
         auto ori = oit();
         const auto& bcid = bcnames[ori];

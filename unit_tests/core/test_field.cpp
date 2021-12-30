@@ -28,7 +28,7 @@ TEST_F(FieldRepoTest, field_pre_declare)
     int num_cc = 0;
     int num_nd = 0;
     int num_invalid = 0;
-    for (auto& field : frepo.fields()) {
+    for (const auto& field : frepo.fields()) {
         switch (field->field_location()) {
         case amr_wind::FieldLoc::CELL:
             ++num_cc;

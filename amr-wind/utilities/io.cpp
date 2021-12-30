@@ -194,7 +194,7 @@ void incflo::ReadCheckpointFile()
 
             for (int d = 0; d < AMREX_SPACEDIM; d++) {
                 auto new_domain = ba_rep.minimalBox();
-                auto hi_vect = new_domain.hiVect();
+                const auto* hi_vect = new_domain.hiVect();
 
                 if (hi_vect[d] + 1 != n_cell_input[d]) {
                     amrex::Abort(

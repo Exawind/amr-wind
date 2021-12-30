@@ -102,7 +102,7 @@ amrex::Real MultiPhase::volume_fraction_sum()
     BL_PROFILE("amr-wind::multiphase::ComputeVolumeFractionSum");
     const int nlevels = m_sim.repo().num_active_levels();
     const auto& geom = m_sim.mesh().Geom();
-    auto& mesh = m_sim.mesh();
+    const auto& mesh = m_sim.mesh();
 
     amrex::Real total_volume_frac = 0.0;
 

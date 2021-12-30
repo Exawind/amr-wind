@@ -102,7 +102,7 @@ void SamplingContainer::initialize_particles(
     if (owner != iproc) return;
 
     int num_particles = 0;
-    for (auto& probes : samplers) num_particles += probes->num_points();
+    for (const auto& probes : samplers) num_particles += probes->num_points();
     m_total_particles = num_particles;
 
     const int grid_id = 0;
@@ -116,7 +116,7 @@ void SamplingContainer::initialize_particles(
     const int nextid = ParticleType::NextID();
     auto* pstruct = ptile.GetArrayOfStructs()().data();
     SamplerBase::SampleLocType locs;
-    for (auto& probe : samplers) {
+    for (const auto& probe : samplers) {
         probe->sampling_locations(locs);
         const int npts = locs.size();
         const auto probe_id = probe->id();

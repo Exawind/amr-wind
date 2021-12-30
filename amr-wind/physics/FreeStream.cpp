@@ -27,12 +27,12 @@ void FreeStream::pre_init_actions()
     const auto& repo = m_sim.repo();
     m_field_funcs["density"] = process_field_func(repo.get_field("density"));
 
-    auto& pde_mgr = m_sim.pde_manager();
+    const auto& pde_mgr = m_sim.pde_manager();
     {
         auto& vel = pde_mgr.icns().fields().field;
         m_field_funcs[vel.name()] = process_field_func(vel);
     }
-    for (auto& eqn : pde_mgr.scalar_eqns()) {
+    for (const auto& eqn : pde_mgr.scalar_eqns()) {
         auto& fld = eqn->fields().field;
         m_field_funcs[fld.name()] = process_field_func(fld);
     }

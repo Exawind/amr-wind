@@ -104,7 +104,7 @@ bool DerivedQtyMgr::contains(const std::string& key) const noexcept
 void DerivedQtyMgr::var_names(
     amrex::Vector<std::string>& plt_var_names) const noexcept
 {
-    for (auto& qty : m_derived_vec) {
+    for (const auto& qty : m_derived_vec) {
         qty->var_names(plt_var_names);
     }
 }

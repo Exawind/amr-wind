@@ -157,7 +157,7 @@ void ActuatorContainer::update_positions()
     AMREX_ALWAYS_ASSERT(m_container_initialized && !m_is_scattered);
 
     const auto dpos = gpu::device_view(m_data.position);
-    const auto dptr = dpos.data();
+    const auto* const dptr = dpos.data();
     const int nlevels = m_mesh.finestLevel() + 1;
     for (int lev = 0; lev < nlevels; ++lev) {
         for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
