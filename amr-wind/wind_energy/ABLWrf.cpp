@@ -32,6 +32,13 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
     amrex::Print() << "  forcing_scheme : " << m_forcing_scheme << std::endl;
     amrex::Print() << "  control_gain   : " << m_gain_coeff << std::endl;
 
+    if (pp.query("normalize_by_zmax",m_norm_zmax) && (m_norm_zmax != 0))
+    {
+        amrex::Real zmax = m_mesh.Geom(0).ProbHi(m_axis);
+        m_scaleFact = 1.0 / zmax;
+        amrex::Print() << "  set scaling factor to " << m_scaleFact << std::endl;
+    }
+
     if (amrex::toLower(m_forcing_scheme) == "indirect")
     {
         if (pp.queryarr("weighting_heights", m_weighting_heights)) {
