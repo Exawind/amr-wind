@@ -1,5 +1,6 @@
 #include "amr-wind/wind_energy/ABLWrf.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
+#include "amr-wind/utilities/linear_interpolation.H"
 #include "AMReX_ParallelDescriptor.H"
 #include "AMReX_Print.H"
 #include "AMReX_ParmParse.H"
@@ -55,12 +56,35 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
                 amrex::Print() << "  " << m_weighting_heights[i] << " " << m_weighting_values[i] << std::endl;
             }
         }
+
+        if(!pp.query("forcing_transition", m_forcing_transition))
+            m_forcing_transition = "none";
+
+    } // if forcing scheme is "indirect"
+}
+
+void ABLWrfForcing::updateWeights()
+{
+    amrex::Print() << "Updating weights" << std::endl;
+    for (int i=0; i<m_nht; ++i) {
+        m_W[i] = interp::linear(m_weighting_heights, m_weighting_values, m_zht[i]);
+        amrex::Print() << "  " << m_zht[i] << " " << m_W[i] << std::endl;
     }
 }
 
 void ABLWrfForcing::indirectForcingInit()
 {
-    amrex::Print() << "Initializing indirect forcing" << std::endl;
+    if (m_W.size() == 0)
+    {
+        amrex::Print() << "Initializing indirect forcing" << std::endl;
+        m_W.resize(m_nht);
+        updateWeights();
+    } else if (amrex::toLower(m_forcing_scheme) != "none") {
+        amrex::Print() << "Reinitializing indirect forcing" << std::endl;
+        updateWeights();
+    } else {
+        return;
+    }
 
     amrex::Array2D<amrex::Real, 0, 3, 0, 3> zTz;
 

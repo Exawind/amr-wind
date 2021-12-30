@@ -38,9 +38,16 @@ protected:
   //int m_ind_polyOrder;
     amrex::Array2D<amrex::Real,0,3,0,3> m_im_zTz;
 
+    // - input (or current, if forcing_transition is specified) regression weighting profile
+    std::string m_forcing_transition;
     amrex::Vector<amrex::Real> m_weighting_heights;
     amrex::Vector<amrex::Real> m_weighting_values;
 
+    // - W(z) at planar averaging heights
+    amrex::Vector<amrex::Real> m_W;
+
+    // interpolate current weighting profile to planar averaging heights
+    void updateWeights();
 };
 
 class ABLWRFfile
