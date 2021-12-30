@@ -147,7 +147,7 @@ void SimTime::set_current_cfl(
                        << "; dt_inp: " << m_fixed_dt << std::endl;
 }
 
-bool SimTime::continue_simulation()
+bool SimTime::continue_simulation() const
 {
     constexpr double eps = 1.0e-12;
     bool stop_simulation = false;
@@ -163,7 +163,7 @@ bool SimTime::continue_simulation()
     return !(stop_simulation);
 }
 
-bool SimTime::do_regrid()
+bool SimTime::do_regrid() const
 {
     return (
         (m_regrid_interval > 0) &&
@@ -171,28 +171,28 @@ bool SimTime::do_regrid()
         ((m_time_index - m_regrid_start_index) % m_regrid_interval == 0));
 }
 
-bool SimTime::write_plot_file()
+bool SimTime::write_plot_file() const
 {
     return (
         (m_plt_interval > 0) &&
         ((m_time_index - m_plt_start_index) % m_plt_interval == 0));
 }
 
-bool SimTime::write_checkpoint()
+bool SimTime::write_checkpoint() const
 {
     return (
         (m_chkpt_interval > 0) &&
         ((m_time_index - m_chkpt_start_index) % m_chkpt_interval == 0));
 }
 
-bool SimTime::write_last_plot_file()
+bool SimTime::write_last_plot_file() const
 {
     return (
         (m_plt_interval > 0) &&
         ((m_time_index - m_plt_start_index) % m_plt_interval != 0));
 }
 
-bool SimTime::write_last_checkpoint()
+bool SimTime::write_last_checkpoint() const
 {
     return (
         (m_chkpt_interval > 0) &&
