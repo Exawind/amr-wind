@@ -48,7 +48,7 @@ void incflo::PrintMaxValues(const std::string& header)
 //
 // Print the maximum values of the velocity components and velocity divergence
 //
-void incflo::PrintMaxVel(int lev)
+void incflo::PrintMaxVel(int lev) const
 {
     BL_PROFILE("amr-wind::incflo::PrintMaxVel");
     amrex::Print() << "max(abs(u/v/w))  = " << velocity()(lev).norm0(0) << "  "
@@ -59,7 +59,7 @@ void incflo::PrintMaxVel(int lev)
 //
 // Print the maximum values of the pressure gradient components and pressure
 //
-void incflo::PrintMaxGp(int lev)
+void incflo::PrintMaxGp(int lev) const
 {
     BL_PROFILE("amr-wind::incflo::PrintMaxGp");
     amrex::Print() << "max(abs(gpx/gpy/gpz/p))  = " << grad_p()(lev).norm0(0)
@@ -68,7 +68,7 @@ void incflo::PrintMaxGp(int lev)
                    << "  " << std::endl;
 }
 
-void incflo::CheckForNans(int lev)
+void incflo::CheckForNans(int lev) const
 {
     BL_PROFILE("amr-wind::incflo::CheckForNans");
     bool ro_has_nans = density()(lev).contains_nan(false);

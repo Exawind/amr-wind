@@ -27,27 +27,27 @@ public:
 
     /** Return true if simulation should continue
      */
-    bool continue_simulation();
+    bool continue_simulation() const;
 
     /** Return true if mesh refinement should be performed at this timestep
      */
-    bool do_regrid();
+    bool do_regrid() const;
 
     /** Return true if plot files should be written at this timestep
      */
-    bool write_plot_file();
+    bool write_plot_file() const;
 
     /** Return true if checkpoint files should be written at this timestep
      */
-    bool write_checkpoint();
+    bool write_checkpoint() const;
 
     /** Return true if plot files should be written at this timestep
      */
-    bool write_last_plot_file();
+    bool write_last_plot_file() const;
 
     /** Return true if checkpoint files should be written at this timestep
      */
-    bool write_last_checkpoint();
+    bool write_last_checkpoint() const;
 
     /** Set current CFL and update timestep based on CFL components
      *
