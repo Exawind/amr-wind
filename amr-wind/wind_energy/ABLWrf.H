@@ -38,8 +38,8 @@ protected:
   //int m_ind_polyOrder;
     amrex::Array2D<amrex::Real,0,3,0,3> m_im_zTz;
 
-    amrex::Vector<amrex::Real> m_W_heights;
-    amrex::Vector<amrex::Real> m_W_values;
+    amrex::Vector<amrex::Real> m_weighting_heights;
+    amrex::Vector<amrex::Real> m_weighting_values;
 
 };
 

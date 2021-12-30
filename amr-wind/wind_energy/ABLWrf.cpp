@@ -33,10 +33,10 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
 
     if (amrex::toLower(m_forcing_scheme) == "indirect")
     {
-        if (pp.queryarr("weighting_heights", m_W_heights)) {
-            pp.getarr("weighting_values", m_W_values);
+        if (pp.queryarr("weighting_heights", m_weighting_heights)) {
+            pp.getarr("weighting_values", m_weighting_values);
 
-            AMREX_ALWAYS_ASSERT(m_W_heights.size() == m_W_values.size());
+            AMREX_ALWAYS_ASSERT(m_weighting_heights.size() == m_weighting_values.size());
 
         } else {
             // default is to have uniform weighting throughout
@@ -48,11 +48,11 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
             //amrex::Print() << minBox << std::endl;
             amrex::Real zmin = m_mesh.Geom(0).ProbLo(m_axis);
             amrex::Real zmax = m_mesh.Geom(0).ProbHi(m_axis);
-            m_W_heights = {zmin,zmax};
-            m_W_values = {1.0,1.0};
+            m_weighting_heights = {zmin,zmax};
+            m_weighting_values = {1.0,1.0};
             amrex::Print() << "  z W(z)" << std::endl;
-            for(int i=0; i < m_W_heights.size(); ++i) {
-                amrex::Print() << "  " << m_W_heights[i] << " " << m_W_values[i] << std::endl;
+            for(int i=0; i < m_weighting_heights.size(); ++i) {
+                amrex::Print() << "  " << m_weighting_heights[i] << " " << m_weighting_values[i] << std::endl;
             }
         }
     }
