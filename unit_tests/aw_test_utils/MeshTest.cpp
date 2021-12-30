@@ -36,7 +36,8 @@ void MeshTest::reset_prob_domain()
 
     if (gg != nullptr) {
         amrex::Geometry::ResetDefaultProbDomain(rb);
-        amrex::Geometry::ResetDefaultPeriodicity({{periodic[0], periodic[1], periodic[2]}});
+        amrex::Geometry::ResetDefaultPeriodicity(
+            {{periodic[0], periodic[1], periodic[2]}});
     }
 }
 
