@@ -4,6 +4,7 @@ Eliot Quon, Shashank Yellapantula
 TODOs:
 - [x] Implement general input for weighting matrix
 - [x] Update z normaliation in regression matrix
+- [ ] Add error profile output (to netcdf? instead of to screen)
 - [ ] Generalize polynomial fit (i.e., implement `m_ind_polyOrder`)
 - [ ] Generalize "Wrf" naming in code to "Meso"
 - [ ] Deal with assumption that the ABL statistics class computes statistics at the cell-centers

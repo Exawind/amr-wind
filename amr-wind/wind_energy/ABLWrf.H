@@ -23,10 +23,13 @@ protected:
     const SimTime& m_time;
     const amrex::AmrCore& m_mesh;
 
-    std::string m_forcing_scheme;
-    amrex::Real m_gain_coeff{0.2};
     int m_idx_time;
     int m_axis{2};
+
+    // inputs
+    std::string m_forcing_scheme;
+    amrex::Real m_gain_coeff{0.2}; // relaxation factor for all forcing schemes
+    bool m_debug = false; // print out profiles for debugging
 
     // planar averaging heights
     amrex::Vector<amrex::Real> m_zht;

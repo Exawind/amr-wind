@@ -218,7 +218,8 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
             }
         }
 
-        amrex::Print() << "direct vs indirect temperature error profile" << std::endl;
+        if (m_debug)
+            amrex::Print() << "direct vs indirect temperature error profile" << std::endl;
         amrex::Vector<amrex::Real> error_T_direct(n_levels);
         for (size_t ih = 0; ih < n_levels; ih++) {
             error_T_direct[ih] = error_T[ih];
@@ -228,21 +229,29 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
                     error_T[ih] +
                     m_poly_coeff_theta[j] * std::pow(m_zht[ih] * m_scaleFact, j);
             }
-            amrex::Print() << m_zht[ih] << " " << error_T_direct[ih] << " " << error_T[ih] << std::endl;
+
+            if (m_debug)
+                amrex::Print() << m_zht[ih] << " " << error_T_direct[ih] << " " << error_T[ih] << std::endl;
         }
 
         if (amrex::toLower(m_forcing_transition) == "indirecttodirect") {
             blendForcings(error_T, error_T_direct, error_T);
-            for (size_t ih=0; ih < n_levels; ih++) {
-                amrex::Print() << m_zht[ih] << " " << error_T[ih] << std::endl;
+
+            if (m_debug) {
+                for (size_t ih=0; ih < n_levels; ih++) {
+                    amrex::Print() << m_zht[ih] << " " << error_T[ih] << std::endl;
+                }
             }
         }
     }
 
     if (forcingToConstant()) {
         constantForcingTransition(error_T);
-        for (size_t ih=0; ih < n_levels; ih++) {
-            amrex::Print() << m_zht[ih] << " " << error_T[ih] << std::endl;
+
+        if (m_debug) {
+            for (size_t ih=0; ih < n_levels; ih++) {
+                amrex::Print() << m_zht[ih] << " " << error_T[ih] << std::endl;
+            }
         }
     }
 

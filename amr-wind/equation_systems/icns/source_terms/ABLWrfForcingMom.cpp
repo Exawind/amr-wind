@@ -259,6 +259,8 @@ void ABLWrfForcingMom::mean_velocity_heights(
             }
         }
 
+        if (m_debug)
+            amrex::Print() << "direct vs indirect velocity error profile" << std::endl;
         amrex::Vector<amrex::Real> error_U_direct(n_levels);
         amrex::Vector<amrex::Real> error_V_direct(n_levels);
         for (size_t ih = 0; ih < n_levels; ih++) {
@@ -274,17 +276,33 @@ void ABLWrfForcingMom::mean_velocity_heights(
                     error_V[ih] +
                     m_poly_coeff_V[j] * std::pow(m_zht[ih] * m_scaleFact, j);
             }
+
+            if (m_debug)
+                amrex::Print() << m_zht[ih] << " " << error_U_direct[ih] << " " << error_U[ih]
+                                            << " " << error_V_direct[ih] << " " << error_V[ih] << std::endl;
         }
 
         if (amrex::toLower(m_forcing_transition) == "indirecttodirect") {
             blendForcings(error_U, error_U_direct, error_U);
             blendForcings(error_V, error_V_direct, error_V);
+
+            if (m_debug) {
+                for (size_t ih=0; ih < n_levels; ih++) {
+                    amrex::Print() << m_zht[ih] << " " << error_U[ih] << " " << error_V[ih] << std::endl;
+                }
+            }
         }
     }
 
     if (forcingToConstant()) {
         constantForcingTransition(error_U);
         constantForcingTransition(error_V);
+
+        if (m_debug) {
+            for (size_t ih=0; ih < n_levels; ih++) {
+                amrex::Print() << m_zht[ih] << " " << error_U[ih] << " " << error_V[ih] << std::endl;
+            }
+        }
     }
 
     amrex::Gpu::copy(
