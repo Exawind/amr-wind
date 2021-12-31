@@ -75,6 +75,13 @@ protected:
     //   to 0 at (m_transition_height + m_transition_thicnkess)
     void constantForcingTransition(amrex::Vector<amrex::Real>&);
 
+    // - blend between a lower and upper forcing profile; the blending fraction is assumed to be
+    //   equal to W(z), but this is not a requirement; W=1 and W=0 correspond to the lower and upper
+    //   profiles, respectively
+    void blendForcings(const amrex::Vector<amrex::Real>,
+                       const amrex::Vector<amrex::Real>,
+                       amrex::Vector<amrex::Real>&);
+
 };
 
 class ABLWRFfile

@@ -230,6 +230,13 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
             }
             amrex::Print() << m_zht[ih] << " " << error_T_direct[ih] << " " << error_T[ih] << std::endl;
         }
+
+        if (amrex::toLower(m_forcing_transition) == "indirecttodirect") {
+            blendForcings(error_T, error_T_direct, error_T);
+            for (size_t ih=0; ih < n_levels; ih++) {
+                amrex::Print() << m_zht[ih] << " " << error_T[ih] << std::endl;
+            }
+        }
     }
 
     if (forcingToConstant()) {

@@ -251,6 +251,16 @@ void ABLWrfForcing::constantForcingTransition(amrex::Vector<amrex::Real>& error)
     }
 }
 
+void ABLWrfForcing::blendForcings(const amrex::Vector<amrex::Real> lower, //W=1
+                                  const amrex::Vector<amrex::Real> upper, //W=0
+                                  amrex::Vector<amrex::Real>& error)
+{
+    amrex::Print() << "Blending forcings" << std::endl;
+    for (int iht = 0; iht < m_nht; iht++)
+    {
+        error[iht] = m_W[iht] * lower[iht] + (1.0-m_W[iht]) * upper[iht];
+    }
+}
 
 ABLWRFfile::ABLWRFfile(const std::string filewrf)
     : m_wrf_filename(filewrf)

@@ -275,6 +275,11 @@ void ABLWrfForcingMom::mean_velocity_heights(
                     m_poly_coeff_V[j] * std::pow(m_zht[ih] * m_scaleFact, j);
             }
         }
+
+        if (amrex::toLower(m_forcing_transition) == "indirecttodirect") {
+            blendForcings(error_U, error_U_direct, error_U);
+            blendForcings(error_V, error_V_direct, error_V);
+        }
     }
 
     if (forcingToConstant()) {
