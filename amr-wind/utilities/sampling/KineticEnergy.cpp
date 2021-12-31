@@ -2,15 +2,16 @@
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include <AMReX_MultiFabUtil.H>
+#include <utility>
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/IOManager.H"
 
 namespace amr_wind {
 namespace kinetic_energy {
 
-KineticEnergy::KineticEnergy(CFDSim& sim, const std::string& label)
+KineticEnergy::KineticEnergy(CFDSim& sim, std::string label)
     : m_sim(sim)
-    , m_label(label)
+    , m_label(std::move(label))
     , m_velocity(sim.repo().get_field("velocity"))
     , m_density(sim.repo().get_field("density"))
 {}
