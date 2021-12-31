@@ -41,7 +41,7 @@ protected:
     // - input (or current, if forcing_transition is specified) regression weighting profile
     std::string m_forcing_transition;
     amrex::Real m_transition_height; // constant or variable
-    bool m_read_transition_height = false;
+    bool m_update_transition_height = false;
     amrex::Real m_transition_thickness; // constant
     amrex::Vector<amrex::Real> m_weighting_heights; // constant or variable
     amrex::Vector<amrex::Real> m_weighting_values; // constant or variable

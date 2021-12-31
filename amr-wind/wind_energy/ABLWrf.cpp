@@ -43,6 +43,10 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
     {
         if (pp.queryarr("weighting_heights", m_weighting_heights)) {
             pp.getarr("weighting_values", m_weighting_values);
+            amrex::Print() << "  given weighting profile" << std::endl;
+            for(int i=0; i < m_weighting_heights.size(); ++i) {
+                amrex::Print() << "  " << m_weighting_heights[i] << " " << m_weighting_values[i] << std::endl;
+            }
 
             AMREX_ALWAYS_ASSERT(m_weighting_heights.size() == m_weighting_values.size());
 
@@ -54,10 +58,6 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
             m_weighting_heights = {zmin,zmax};
             m_weighting_values = {1.0,1.0};
         }
-        //amrex::Print() << "  z W(z)" << std::endl;
-        //for(int i=0; i < m_weighting_heights.size(); ++i) {
-        //    amrex::Print() << "  " << m_weighting_heights[i] << " " << m_weighting_values[i] << std::endl;
-        //}
 
         if(!pp.query("forcing_transition", m_forcing_transition)) {
             amrex::Print() << "  using full profile assimilation by default" << std::endl;
@@ -66,7 +66,7 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
             pp.get("transition_thickness", m_transition_thickness); // constant, required
             if(!pp.query("constant_transition_height", m_transition_height)) {
                 // optional; if not read, then expect transition_height in netCDF input file
-                m_read_transition_height = true;
+                m_update_transition_height = true;
             }
         }
 

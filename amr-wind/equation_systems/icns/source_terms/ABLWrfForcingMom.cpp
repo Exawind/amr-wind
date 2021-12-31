@@ -43,11 +43,8 @@ ABLWrfForcingMom::ABLWrfForcingMom(const CFDSim& sim)
         mean_velocity_init(abl.abl_wrf_file());
     }
 
-    if ((amrex::toLower(m_forcing_scheme) == "indirect") &&
-        (amrex::toLower(m_forcing_transition) == "none")) {
-        // Calculate this once
-        indirectForcingInit();
-    }
+    if ((amrex::toLower(m_forcing_scheme) == "indirect") && !m_update_transition_height)
+        indirectForcingInit(); // do this once
 }
 
 ABLWrfForcingMom::~ABLWrfForcingMom() = default;
@@ -229,7 +226,7 @@ void ABLWrfForcingMom::mean_velocity_heights(
     }
 
     if (amrex::toLower(m_forcing_scheme) == "indirect") {
-        if (amrex::toLower(m_forcing_transition) != "none")
+        if (m_update_transition_height)
             indirectForcingInit();
 
         amrex::Array<amrex::Real, 4> ezP_U;

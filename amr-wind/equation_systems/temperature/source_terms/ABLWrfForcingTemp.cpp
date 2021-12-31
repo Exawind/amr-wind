@@ -42,11 +42,8 @@ ABLWrfForcingTemp::ABLWrfForcingTemp(const CFDSim& sim)
       mean_temperature_init(abl.abl_wrf_file());
     }
 
-    if ((amrex::toLower(m_forcing_scheme) == "indirect") &&
-        (amrex::toLower(m_forcing_transition) == "none")) {
-        // Calculate this once
-        indirectForcingInit();
-    }
+    if ((amrex::toLower(m_forcing_scheme) == "indirect") && !m_update_transition_height)
+        indirectForcingInit(); // do this once
 }
 
 ABLWrfForcingTemp::~ABLWrfForcingTemp() = default;
@@ -195,7 +192,7 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
     }
 
     if (amrex::toLower(m_forcing_scheme) == "indirect") {
-        if (amrex::toLower(m_forcing_transition) != "none")
+        if (m_update_transition_height)
             indirectForcingInit();
 
         amrex::Array<amrex::Real, 4> ezP_T;
