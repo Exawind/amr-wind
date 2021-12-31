@@ -64,7 +64,7 @@ void MLMGOptions::operator()(amrex::MLMG& mlmg)
 
     if (do_fixed_iters) mlmg.setFixedIter(max_iter);
 
-    mlmg.setNSolve(do_nsolve);
+    mlmg.setNSolve(static_cast<int>(do_nsolve));
     mlmg.setNSolveGridSize(nsolve_grid_size);
     mlmg.setPreSmooth(num_pre_smooth);
     mlmg.setPostSmooth(num_post_smooth);
