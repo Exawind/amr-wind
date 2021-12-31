@@ -22,7 +22,7 @@ public:
         Field& field,
         const amrex::AmrCore& mesh,
         const SimTime& time,
-        const ABLBoundaryPlane& abl_bc);
+        const ABLBoundaryPlane& bndry_plane);
 
     virtual ~ABLFillInflow();
 

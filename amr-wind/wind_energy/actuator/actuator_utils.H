@@ -27,7 +27,7 @@ namespace utils {
  * turbine
  */
 std::set<int> determine_influenced_procs(
-    const amrex::AmrCore& mesh, const amrex::RealBox& rbox);
+    const amrex::AmrCore& mesh, const amrex::RealBox& rbx);
 
 void determine_root_proc(ActInfo&, amrex::Vector<int>&);
 

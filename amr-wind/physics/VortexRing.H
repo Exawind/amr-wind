@@ -29,7 +29,7 @@ public:
     void post_advance_work() override {}
 
     template <typename VortexRingType>
-    void initialize_velocity(const VortexRingType& core);
+    void initialize_velocity(const VortexRingType& vorticity_theta);
 
 private:
     const CFDSim& m_sim;

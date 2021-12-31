@@ -17,7 +17,7 @@ void print_summary(std::ostream&);
 
 void print_mlmg_header(const std::string&);
 
-void print_mlmg_info(const std::string& solver, const amrex::MLMG& mlmg);
+void print_mlmg_info(const std::string& solve_name, const amrex::MLMG& mlmg);
 
 void print_tpls(std::ostream&);
 
