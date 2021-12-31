@@ -29,7 +29,7 @@ protected:
     // inputs
     std::string m_forcing_scheme;
     amrex::Real m_gain_coeff{0.2}; // relaxation factor for all forcing schemes
-    bool m_debug = false; // print out profiles for debugging
+    int m_debug = 0; // print out profiles for debugging
 
     // planar averaging heights
     amrex::Vector<amrex::Real> m_zht;
