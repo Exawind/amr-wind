@@ -298,7 +298,7 @@ public:
     std::unique_ptr<ScratchField> create_scratch_field(
         const std::string& name,
         const int ncomp = 1,
-        const int ngrow = 0,
+        const int nghost = 0,
         const FieldLoc floc = FieldLoc::CELL) const;
 
     /** Create a scratch field
@@ -313,7 +313,7 @@ public:
      */
     std::unique_ptr<ScratchField> create_scratch_field(
         const int ncomp = 1,
-        const int ngrow = 0,
+        const int nghost = 0,
         const FieldLoc floc = FieldLoc::CELL) const;
 
     //! Advance all fields with more than one timestate to the new timestep
@@ -373,7 +373,7 @@ protected:
     void allocate_field_data(
         int lev,
         const Field& field,
-        LevelDataHolder& fdata,
+        LevelDataHolder& level_data,
         const amrex::FabFactory<amrex::FArrayBox>& factory);
 
     //! Allocate field data at all levels
@@ -383,18 +383,18 @@ protected:
     void allocate_field_data(
         const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm,
-        LevelDataHolder& fdata,
+        LevelDataHolder& level_data,
         const amrex::FabFactory<amrex::FArrayBox>& factory);
 
-    void
-    allocate_field_data(int lev, const IntField& field, LevelDataHolder& fdata);
+    void allocate_field_data(
+        int lev, const IntField& field, LevelDataHolder& level_data);
 
     void allocate_field_data(const IntField& field);
 
     void allocate_field_data(
         const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm,
-        LevelDataHolder& fdata,
+        LevelDataHolder& level_data,
         const amrex::FabFactory<amrex::IArrayBox>& factory);
 
     //! Reference to the mesh instance

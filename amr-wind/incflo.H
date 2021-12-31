@@ -211,9 +211,9 @@ private:
     //
     ///////////////////////////////////////////////////////////////////////////
     void PrintMaxValues(const std::string& header);
-    void PrintMaxVel(int lev);
-    void PrintMaxGp(int lev);
-    void CheckForNans(int lev);
+    void PrintMaxVel(int lev) const;
+    void PrintMaxGp(int lev) const;
+    void CheckForNans(int lev) const;
 };
 
 #endif

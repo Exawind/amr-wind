@@ -237,6 +237,7 @@ void FastIface::fast_init_turbine(FastTurbine& fi)
 }
 
 // cppcheck-suppress constParameter
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 void FastIface::fast_replay_turbine(FastTurbine& fi)
 {
 #ifdef AMR_WIND_USE_NETCDF
@@ -283,6 +284,7 @@ void FastIface::fast_replay_turbine(FastTurbine& fi)
 #endif
 }
 
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 void FastIface::fast_restart_turbine(FastTurbine&)
 {
     BL_PROFILE("amr-wind::FastIface::restart_turbine");

@@ -49,7 +49,7 @@ public:
     /** evaluate line average at specific location for any average component */
     amrex::Real line_average_interpolated(amrex::Real x, int comp) const;
     /** evaluate line average at specific cell for any average component */
-    amrex::Real line_average_cell(int cell, int comp) const;
+    amrex::Real line_average_cell(int ind, int comp) const;
 
     /** evaluate line average derivative at specific location for any average
         component */
@@ -168,7 +168,7 @@ public: // public for GPU
     amrex::Real line_hvelmag_average_interpolated(amrex::Real x) const;
     /** evaluate line average at specific cell for horizontal velocity magnitude
      */
-    amrex::Real line_hvelmag_average_cell(int cell) const;
+    amrex::Real line_hvelmag_average_cell(int ind) const;
 
     /** compute derivatives of horizontal velocity magnitude */
     void compute_line_hvelmag_derivatives();

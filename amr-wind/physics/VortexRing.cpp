@@ -27,9 +27,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real FatCore::operator()(
     const amrex::Real ssq = std::pow(z, 2) + std::pow(r - R, 2);
     if (ssq <= Rsq) {
         return 0.54857674 * Gamma / Rsq * std::exp(-4 * ssq / (Rsq - ssq));
-    } else {
-        return 0.0;
     }
+    return 0.0;
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real CollidingRings::operator()(
@@ -187,7 +186,7 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
     }
 
     amrex::LPInfo info;
-    auto& mesh = m_velocity.repo().mesh();
+    const auto& mesh = m_velocity.repo().mesh();
 
     amrex::MLNodeLaplacian linop(
         mesh.Geom(0, mesh.finestLevel()), mesh.boxArray(0, mesh.finestLevel()),

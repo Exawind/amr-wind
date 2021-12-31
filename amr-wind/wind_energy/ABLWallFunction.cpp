@@ -169,10 +169,10 @@ void ABLVelWallFunc::wall_model(
         const auto& domain = geom.Domain();
         amrex::MFItInfo mfi_info{};
 
-        auto& rho_lev = density(lev);
+        const auto& rho_lev = density(lev);
         auto& vold_lev = velocity.state(FieldState::Old)(lev);
         auto& vel_lev = velocity(lev);
-        auto& eta_lev = viscosity(lev);
+        const auto& eta_lev = viscosity(lev);
 
         if (amrex::Gpu::notInLaunchRegion()) mfi_info.SetDynamic(true);
 #ifdef _OPENMP
@@ -293,11 +293,11 @@ void ABLTempWallFunc::wall_model(
         const auto& domain = geom.Domain();
         amrex::MFItInfo mfi_info{};
 
-        auto& rho_lev = density(lev);
+        const auto& rho_lev = density(lev);
         auto& vold_lev = velocity.state(FieldState::Old)(lev);
         auto& told_lev = temperature.state(FieldState::Old)(lev);
         auto& theta = temperature(lev);
-        auto& eta_lev = alpha(lev);
+        const auto& eta_lev = alpha(lev);
 
         if (amrex::Gpu::notInLaunchRegion()) mfi_info.SetDynamic(true);
 #ifdef _OPENMP

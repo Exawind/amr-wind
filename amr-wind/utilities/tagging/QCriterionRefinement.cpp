@@ -27,7 +27,7 @@ void QCriterionRefinement::initialize(const std::string& key)
 
     pp.queryarr("values", qc_value);
 
-    if (qc_value.size() == 0u)
+    if (qc_value.empty())
         amrex::Abort(
             "QCriterionRefinement: Must specify at least one of value");
 

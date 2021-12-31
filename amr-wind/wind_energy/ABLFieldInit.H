@@ -27,7 +27,7 @@ public:
         const amrex::Geometry& geom,
         const amrex::Array4<amrex::Real>& velocity,
         const amrex::Array4<amrex::Real>& density,
-        const amrex::Array4<amrex::Real>& tracer) const;
+        const amrex::Array4<amrex::Real>& temperature) const;
 
     /** Add temperature perturbations
      *
@@ -35,7 +35,7 @@ public:
      *  pushes the field to device.
      */
     void perturb_temperature(
-        const int lev, const amrex::Geometry& geom, Field& temperature);
+        const int lev, const amrex::Geometry& geom, Field& temperature) const;
 
     //! Flag indicating whether temperature field needs perturbations
     bool add_temperature_perturbations() const { return m_perturb_theta; }

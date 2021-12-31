@@ -111,7 +111,7 @@ void FreeSurface::post_advance_work()
                 level_mask.setVal(1);
             }
 
-            auto& vof = m_vof(lev);
+            const auto& vof = m_vof(lev);
             const auto& geom = m_sim.mesh().Geom(lev);
             const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx =
                 geom.CellSizeArray();

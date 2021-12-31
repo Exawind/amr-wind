@@ -9,7 +9,7 @@
 namespace amr_wind {
 namespace udf {
 
-PowerLawProfile::PowerLawProfile(const Field& fld) : m_op()
+PowerLawProfile::PowerLawProfile(const Field& fld)
 {
     AMREX_ALWAYS_ASSERT(fld.name() == pde::ICNS::var_name());
     AMREX_ALWAYS_ASSERT(fld.num_comp() == AMREX_SPACEDIM);

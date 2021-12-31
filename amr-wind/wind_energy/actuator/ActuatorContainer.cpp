@@ -84,9 +84,9 @@ void ActuatorContainer::initialize_particles(const int total_pts)
 
     // query the particle ID from the container. We should always be starting
     // from 1.
-    ParticleType::NextID(1u);
+    ParticleType::NextID(1U);
     const auto id_start = ParticleType::NextID();
-    AMREX_ALWAYS_ASSERT(id_start == 1u);
+    AMREX_ALWAYS_ASSERT(id_start == 1U);
     const int iproc = amrex::ParallelDescriptor::MyProc();
 
     // Flag indicating if a tile was found where all particles were deposited.
@@ -157,7 +157,7 @@ void ActuatorContainer::update_positions()
     AMREX_ALWAYS_ASSERT(m_container_initialized && !m_is_scattered);
 
     const auto dpos = gpu::device_view(m_data.position);
-    const auto dptr = dpos.data();
+    const auto* const dptr = dpos.data();
     const int nlevels = m_mesh.finestLevel() + 1;
     for (int lev = 0; lev < nlevels; ++lev) {
         for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {

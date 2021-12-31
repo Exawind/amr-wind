@@ -210,10 +210,10 @@ TEST_F(UniformCtTest, yawed_normal_is_opposite_expected_wind_dir)
     const vs::Vector west = vs::Vector::ihat();
 
     std::vector<std::pair<vs::Vector, amrex::Real>> couplets;
-    couplets.push_back(std::make_pair(north, 0.0));
-    couplets.push_back(std::make_pair(south, 180.0));
-    couplets.push_back(std::make_pair(west, 270.0));
-    couplets.push_back(std::make_pair(east, 90.0));
+    couplets.emplace_back(north, 0.0);
+    couplets.emplace_back(south, 180.0);
+    couplets.emplace_back(west, 270.0);
+    couplets.emplace_back(east, 90.0);
 
     amrex::ParmParse pp("Actuator.UniformCtDisk");
     act::utils::ActParser ap("Actuator.UniformCtDisk", "Actuator");
@@ -239,10 +239,10 @@ TEST_F(UniformCtTest, sample_yawed_normal_is_opposite_expected_wind_dir)
     const vs::Vector west = vs::Vector::ihat();
 
     std::vector<std::pair<vs::Vector, amrex::Real>> couplets;
-    couplets.push_back(std::make_pair(north, 0.0));
-    couplets.push_back(std::make_pair(south, 180.0));
-    couplets.push_back(std::make_pair(west, 270.0));
-    couplets.push_back(std::make_pair(east, 90.0));
+    couplets.emplace_back(north, 0.0);
+    couplets.emplace_back(south, 180.0);
+    couplets.emplace_back(west, 270.0);
+    couplets.emplace_back(east, 90.0);
 
     amrex::ParmParse pp("Actuator.UniformCtDisk");
     act::utils::ActParser ap("Actuator.UniformCtDisk", "Actuator");

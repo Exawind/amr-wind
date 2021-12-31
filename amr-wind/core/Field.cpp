@@ -41,7 +41,7 @@ bool FieldInfo::bc_initialized()
     // Check that BC has been initialized properly
     bool has_bogus = false;
     for (int dir = 0; dir < m_ncomp; ++dir) {
-        auto* bcrec = m_bcrec[dir].vect();
+        const auto* bcrec = m_bcrec[dir].vect();
         for (int i = 0; i < AMREX_SPACEDIM * 2; ++i) {
             if (bcrec[i] == amrex::BCType::bogus) {
                 has_bogus = true;

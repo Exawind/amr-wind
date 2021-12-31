@@ -67,7 +67,7 @@ void ScratchField::fillpatch(
     amrex::MultiFab& mfab,
     const amrex::IntVect& nghost) noexcept
 {
-    auto& mesh = repo().mesh();
+    const auto& mesh = repo().mesh();
     auto bcrec = scratch_field_bcrec(mesh.Geom(lev), num_comp());
     fillpatch(lev, time, mfab, nghost, bcrec);
 }
@@ -79,7 +79,7 @@ void ScratchField::fillpatch(
     const amrex::IntVect& nghost,
     amrex::Vector<amrex::BCRec>& bcrec) noexcept
 {
-    auto& mesh = repo().mesh();
+    const auto& mesh = repo().mesh();
     amrex::Interpolater* mapper = &amrex::cell_cons_interp;
 
     if (lev == 0) {

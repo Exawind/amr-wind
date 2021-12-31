@@ -31,9 +31,9 @@ public:
     amrex::Real line_average_interpolated(amrex::Real x, int comp) const;
     /** evaluate third moment at specific cell for both components */
     amrex::Real
-    line_average_cell(int cell, int comp1, int comp2, int comp3) const;
+    line_average_cell(int ind, int comp1, int comp2, int comp3) const;
     /** evaluate third moment at specific cell for each component */
-    amrex::Real line_average_cell(int cell, int comp) const;
+    amrex::Real line_average_cell(int ind, int comp) const;
 
     const amrex::Vector<amrex::Real>& line_moment()
     {
