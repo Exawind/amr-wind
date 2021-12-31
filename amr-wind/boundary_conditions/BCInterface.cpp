@@ -39,7 +39,7 @@ void BCIface::operator()(const amrex::Real value)
 inline void BCIface::set_default_value(const amrex::Real value)
 {
     auto& bcval = m_field.bc_values();
-    for (amrex::OrientationIter oit; oit; ++oit) {
+    for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
         for (int i = 0; i < m_field.num_comp(); ++i) bcval[ori][i] = value;
     }
@@ -50,7 +50,7 @@ void BCIface::read_bctype()
     const std::string key = m_field.name() + "_type";
     auto& ibctype = m_field.bc_type();
     const auto& geom = m_field.repo().mesh().Geom(0);
-    for (amrex::OrientationIter oit; oit; ++oit) {
+    for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
         const auto& bcid = bcnames[ori];
         amrex::ParmParse pp(bcid);
@@ -104,7 +104,7 @@ void BCIface::read_bctype()
 void BCIface::set_bcfuncs()
 {
     const auto& ibctype = m_field.bc_type();
-    for (amrex::OrientationIter oit; oit; ++oit) {
+    for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
         const auto bct = ibctype[ori];
 
@@ -130,7 +130,7 @@ std::pair<const std::string, const std::string> BCIface::get_dirichlet_udfs()
     bool has_inflow_udf = false;
     bool has_wall_udf = false;
 
-    for (amrex::OrientationIter oit; oit; ++oit) {
+    for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
         const auto& bcid = bcnames[ori];
         const auto bct = bctype[ori];
@@ -182,7 +182,7 @@ void BCVelocity::set_bcrec()
     const auto& ibctype = m_field.bc_type();
     auto& bcrec = m_field.bcrec();
 
-    for (amrex::OrientationIter oit; oit; ++oit) {
+    for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
         const auto side = ori.faceDir();
         const auto bct = ibctype[ori];
@@ -240,7 +240,7 @@ void BCVelocity::read_values()
     const auto& bctype = m_field.bc_type();
     auto& bcval = m_field.bc_values();
     const int ndim = m_field.num_comp();
-    for (amrex::OrientationIter oit; oit; ++oit) {
+    for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
         const auto& bcid = bcnames[ori];
         const auto bct = bctype[ori];
@@ -267,7 +267,7 @@ void BCVelocity::read_values()
 void BCScalar::set_bcrec()
 {
     const auto& ibctype = m_field.bc_type();
-    for (amrex::OrientationIter oit; oit; ++oit) {
+    for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
         const auto side = ori.faceDir();
         const auto bct = ibctype[ori];
@@ -320,7 +320,7 @@ void BCScalar::read_values()
     const auto& bctype = m_field.bc_type();
     auto& bcval = m_field.bc_values();
     const int ndim = m_field.num_comp();
-    for (amrex::OrientationIter oit; oit; ++oit) {
+    for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
         const auto& bcid = bcnames[ori];
         const auto bct = bctype[ori];
@@ -344,7 +344,7 @@ void BCPressure::read_values()
     const auto& bctype = m_field.bc_type();
     auto& bcval = m_field.bc_values();
     const int ndim = m_field.num_comp();
-    for (amrex::OrientationIter oit; oit; ++oit) {
+    for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
         const auto& bcid = bcnames[ori];
         const auto bct = bctype[ori];
@@ -365,7 +365,7 @@ void BCPressure::read_values()
 void BCSrcTerm::set_bcrec()
 {
     const auto& ibctype = m_field.bc_type();
-    for (amrex::OrientationIter oit; oit; ++oit) {
+    for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
         const auto side = ori.faceDir();
         const auto bct = ibctype[ori];
@@ -392,7 +392,7 @@ void BCSrcTerm::set_bcrec()
 void BCFillPatchExtrap::set_bcrec()
 {
     const auto& ibctype = m_field.bc_type();
-    for (amrex::OrientationIter oit; oit; ++oit) {
+    for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
         const auto side = ori.faceDir();
         const auto bct = ibctype[ori];
