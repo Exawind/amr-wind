@@ -109,10 +109,14 @@ void LidarSampler::output_netcdf_data(
     xyz.put(&locs[0][0], start, count);
 }
 #else
-void LidarSampler::define_netcdf_metadata(const ncutils::NCGroup&) const {}
-void LidarSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
+void LidarSampler::define_netcdf_metadata(
+    const ncutils::NCGroup& /*unused*/) const
+{}
+void LidarSampler::populate_netcdf_metadata(
+    const ncutils::NCGroup& /*unused*/) const
+{}
 void LidarSampler::output_netcdf_data(
-    const ncutils::NCGroup&, const size_t) const
+    const ncutils::NCGroup& /*unused*/, const size_t /*unused*/) const
 {}
 #endif
 

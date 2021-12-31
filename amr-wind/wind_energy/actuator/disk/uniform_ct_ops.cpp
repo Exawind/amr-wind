@@ -70,7 +70,7 @@ void write_netcdf(
     const std::string& ncfile,
     const UniformCtData& meta,
     const ActInfo& info,
-    const ActGrid&,
+    const ActGrid& /*unused*/,
     const amrex::Real time)
 {
 #ifdef AMR_WIND_USE_NETCDF

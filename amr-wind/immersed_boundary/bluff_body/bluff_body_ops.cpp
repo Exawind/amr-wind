@@ -16,7 +16,9 @@ namespace ib {
 namespace bluff_body {
 
 void read_inputs(
-    BluffBodyBaseData& wdata, IBInfo&, const ::amr_wind::utils::MultiParser& pp)
+    BluffBodyBaseData& wdata,
+    IBInfo& /*unused*/,
+    const ::amr_wind::utils::MultiParser& pp)
 {
     pp.query("has_wall_model", wdata.has_wall_model);
     pp.query("is_moving", wdata.is_moving);
@@ -24,7 +26,7 @@ void read_inputs(
     pp.queryarr("vel_bc", wdata.vel_bc);
 }
 
-void init_data_structures(BluffBodyBaseData&) {}
+void init_data_structures(BluffBodyBaseData& /*unused*/) {}
 
 void apply_mms_vel(CFDSim& sim)
 {

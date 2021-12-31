@@ -124,7 +124,7 @@ void CartBoxRefinement::read_inputs(
 }
 
 void CartBoxRefinement::operator()(
-    int level, amrex::TagBoxArray& tags, amrex::Real, int)
+    int level, amrex::TagBoxArray& tags, amrex::Real /*time*/, int /*ngrow*/)
 {
     if (level < m_nlevels) tags.setVal(m_boxarrays[level], amrex::TagBox::SET);
 }

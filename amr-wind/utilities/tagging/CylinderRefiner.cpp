@@ -6,7 +6,8 @@
 namespace amr_wind {
 namespace tagging {
 
-CylinderRefiner::CylinderRefiner(const CFDSim&, const std::string& key)
+CylinderRefiner::CylinderRefiner(
+    const CFDSim& /*unused*/, const std::string& key)
 {
     amrex::ParmParse pp(key);
 

@@ -80,8 +80,12 @@ void LineSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
 
 void LineSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
 #else
-void LineSampler::define_netcdf_metadata(const ncutils::NCGroup&) const {}
-void LineSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
+void LineSampler::define_netcdf_metadata(
+    const ncutils::NCGroup& /*unused*/) const
+{}
+void LineSampler::populate_netcdf_metadata(
+    const ncutils::NCGroup& /*unused*/) const
+{}
 #endif
 
 } // namespace sampling

@@ -33,9 +33,9 @@ protected:
 namespace {
 
 void initialize_volume_fractions(
-    const amrex::Geometry&,
+    const amrex::Geometry& /*unused*/,
     const amrex::Box& bx,
-    const int,
+    const int /*unused*/,
     const amrex::Array4<amrex::Real>& vof_arr)
 {
 

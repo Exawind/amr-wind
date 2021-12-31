@@ -11,17 +11,17 @@ namespace amr_wind {
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real FatCore::operator()(
     const amrex::Real r,
-    const amrex::Real,
+    const amrex::Real /*unused*/,
     const amrex::Real z,
     const amrex::Real R,
     const amrex::Real Gamma,
-    const amrex::Real,
-    const amrex::Real,
-    const amrex::Real,
-    const int,
-    const int*,
-    const amrex::Real*,
-    const amrex::Real*) const
+    const amrex::Real /*unused*/,
+    const amrex::Real /*unused*/,
+    const amrex::Real /*unused*/,
+    const int /*unused*/,
+    const int* /*unused*/,
+    const amrex::Real* /*unused*/,
+    const amrex::Real* /*unused*/) const
 {
     amrex::Real Rsq = std::pow(R, 2);
     const amrex::Real ssq = std::pow(z, 2) + std::pow(r - R, 2);

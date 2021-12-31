@@ -7,7 +7,7 @@
 namespace amr_wind {
 namespace sampling {
 
-PlaneSampler::PlaneSampler(const CFDSim&) {}
+PlaneSampler::PlaneSampler(const CFDSim& /*unused*/) {}
 
 PlaneSampler::~PlaneSampler() = default;
 
@@ -87,8 +87,12 @@ void PlaneSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
 
 void PlaneSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
 #else
-void PlaneSampler::define_netcdf_metadata(const ncutils::NCGroup&) const {}
-void PlaneSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
+void PlaneSampler::define_netcdf_metadata(
+    const ncutils::NCGroup& /*unused*/) const
+{}
+void PlaneSampler::populate_netcdf_metadata(
+    const ncutils::NCGroup& /*unused*/) const
+{}
 #endif
 
 } // namespace sampling

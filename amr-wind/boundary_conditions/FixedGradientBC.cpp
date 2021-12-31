@@ -20,7 +20,7 @@ FixedGradientBC::FixedGradientBC(Field& field, amrex::Orientation ori)
     : m_field(field), m_ori(ori)
 {}
 
-void FixedGradientBC::operator()(Field& field, const FieldState)
+void FixedGradientBC::operator()(Field& field, const FieldState /*rho_state*/)
 {
     const auto& repo = m_field.repo();
     const auto bcvals = field.bc_values_device();
