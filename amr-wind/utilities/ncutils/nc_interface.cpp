@@ -399,7 +399,8 @@ bool NCGroup::has_dim(const std::string& name) const
 
 bool NCGroup::has_var(const std::string& name) const
 {
-    int ierr = nc_inq_varid(ncid, name.data(), NULL);
+    int rh_id;
+    int ierr = nc_inq_varid(ncid, name.data(), &rh_id);
     return (ierr == NC_NOERR);
 }
 
