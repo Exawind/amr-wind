@@ -277,7 +277,7 @@ TurbulenceModel::CoeffsDictType OneEqKsgsS94<Transport>::model_coeffs() const
 template <typename Transport>
 void OneEqKsgsS94<Transport>::update_turbulent_viscosity(
     const FieldState // fstate
-)
+    /*unused*/)
 {
     BL_PROFILE(
         "amr-wind::" + this->identifier() + "::update_turbulent_viscosity");

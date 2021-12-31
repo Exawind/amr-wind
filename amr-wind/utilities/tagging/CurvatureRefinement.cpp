@@ -38,7 +38,7 @@ void CurvatureRefinement::initialize(const std::string& key)
 }
 
 void CurvatureRefinement::operator()(
-    int level, amrex::TagBoxArray& tags, amrex::Real time, int)
+    int level, amrex::TagBoxArray& tags, amrex::Real time, int /*ngrow*/)
 {
     const bool tag_field = level <= m_max_lev_field;
     if (tag_field) {

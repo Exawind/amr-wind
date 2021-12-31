@@ -470,7 +470,9 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
                    << " deg; type = " << mean_wind_type << std::endl;
 }
 
-void SyntheticTurbulence::initialize_fields(int, const amrex::Geometry&) {}
+void SyntheticTurbulence::initialize_fields(
+    int /*level*/, const amrex::Geometry& /*geom*/)
+{}
 
 void SyntheticTurbulence::pre_advance_work()
 {

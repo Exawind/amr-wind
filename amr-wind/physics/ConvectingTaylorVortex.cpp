@@ -37,22 +37,22 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real VExact::operator()(
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real WExact::operator()(
-    const amrex::Real,
-    const amrex::Real,
-    const amrex::Real,
-    const amrex::Real,
-    const amrex::Real,
-    const amrex::Real) const
+    const amrex::Real /*unused*/,
+    const amrex::Real /*unused*/,
+    const amrex::Real /*unused*/,
+    const amrex::Real /*unused*/,
+    const amrex::Real /*unused*/,
+    const amrex::Real /*unused*/) const
 {
     return 0.0;
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GpxExact::operator()(
     const amrex::Real u0,
-    const amrex::Real,
+    const amrex::Real /*unused*/,
     const amrex::Real omega,
     const amrex::Real x,
-    const amrex::Real,
+    const amrex::Real /*unused*/,
     const amrex::Real t) const
 {
     return 0.5 * amr_wind::utils::pi() *
@@ -61,10 +61,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GpxExact::operator()(
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GpyExact::operator()(
-    const amrex::Real,
+    const amrex::Real /*unused*/,
     const amrex::Real v0,
     const amrex::Real omega,
-    const amrex::Real,
+    const amrex::Real /*unused*/,
     const amrex::Real y,
     const amrex::Real t) const
 {
@@ -74,12 +74,12 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GpyExact::operator()(
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GpzExact::operator()(
-    const amrex::Real,
-    const amrex::Real,
-    const amrex::Real,
-    const amrex::Real,
-    const amrex::Real,
-    const amrex::Real) const
+    const amrex::Real /*unused*/,
+    const amrex::Real /*unused*/,
+    const amrex::Real /*unused*/,
+    const amrex::Real /*unused*/,
+    const amrex::Real /*unused*/,
+    const amrex::Real /*unused*/) const
 {
     return 0.0;
 }

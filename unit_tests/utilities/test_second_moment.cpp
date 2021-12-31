@@ -17,7 +17,7 @@ namespace amr_wind_tests {
 class SecondMomentAveragingTest : public MeshTest
 {
 public:
-    void test_dir(int);
+    void test_dir(int /*dir*/);
 };
 
 TEST_F(SecondMomentAveragingTest, test_constant)

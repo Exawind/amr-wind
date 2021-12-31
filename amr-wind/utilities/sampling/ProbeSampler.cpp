@@ -6,7 +6,7 @@
 namespace amr_wind {
 namespace sampling {
 
-ProbeSampler::ProbeSampler(const CFDSim&) {}
+ProbeSampler::ProbeSampler(const CFDSim& /*unused*/) {}
 
 ProbeSampler::~ProbeSampler() = default;
 
@@ -41,7 +41,9 @@ void ProbeSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
     grp.put_attr("sampling_type", identifier());
 }
 #else
-void ProbeSampler::define_netcdf_metadata(const ncutils::NCGroup&) const {}
+void ProbeSampler::define_netcdf_metadata(
+    const ncutils::NCGroup& /*unused*/) const
+{}
 #endif
 
 } // namespace sampling

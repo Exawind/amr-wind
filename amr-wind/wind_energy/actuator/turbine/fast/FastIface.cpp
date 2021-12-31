@@ -41,7 +41,7 @@ inline void copy_filename(const std::string& inp, char* out)
 
 } // namespace
 
-FastIface::FastIface(const amr_wind::CFDSim&) {}
+FastIface::FastIface(const amr_wind::CFDSim& /*unused*/) {}
 
 FastIface::~FastIface()
 {
@@ -285,7 +285,7 @@ void FastIface::fast_replay_turbine(FastTurbine& fi)
 }
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void FastIface::fast_restart_turbine(FastTurbine&)
+void FastIface::fast_restart_turbine(FastTurbine& /*unused*/)
 {
     BL_PROFILE("amr-wind::FastIface::restart_turbine");
 }
@@ -380,10 +380,12 @@ void FastIface::read_velocity_data(
 
 #else
 
-void FastIface::prepare_netcdf_file(FastTurbine&) {}
-void FastIface::write_velocity_data(const FastTurbine&) {}
+void FastIface::prepare_netcdf_file(FastTurbine& /*unused*/) {}
+void FastIface::write_velocity_data(const FastTurbine& /*unused*/) {}
 void FastIface::read_velocity_data(
-    FastTurbine&, const ncutils::NCFile&, const size_t)
+    FastTurbine& /*unused*/,
+    const ncutils::NCFile& /*unused*/,
+    const size_t /*unused*/)
 {}
 
 #endif

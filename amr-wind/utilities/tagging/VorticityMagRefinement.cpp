@@ -39,7 +39,7 @@ void VorticityMagRefinement::initialize(const std::string& key)
 }
 
 void VorticityMagRefinement::operator()(
-    int level, amrex::TagBoxArray& tags, amrex::Real time, int)
+    int level, amrex::TagBoxArray& tags, amrex::Real time, int /*ngrow*/)
 {
     const bool tag_field = level <= m_max_lev_field;
 

@@ -18,7 +18,7 @@ template <
     typename Transport,
     typename std::enable_if<Transport::constant_properties>::type* = nullptr>
 inline void laminar_visc_update(
-    Field& evisc, Laminar<Transport>&, const Transport& transport)
+    Field& evisc, Laminar<Transport>& /*unused*/, const Transport& transport)
 {
     evisc.setVal(transport.viscosity());
 }
@@ -26,8 +26,8 @@ inline void laminar_visc_update(
 template <
     typename Transport,
     typename std::enable_if<!Transport::constant_properties>::type* = nullptr>
-inline void
-laminar_visc_update(Field& evisc, Laminar<Transport>& lam, const Transport&)
+inline void laminar_visc_update(
+    Field& evisc, Laminar<Transport>& lam, const Transport& /*unused*/)
 {
     field_ops::copy(evisc, *lam.mu(), 0, 0, evisc.num_comp(), evisc.num_grow());
 }
@@ -36,7 +36,7 @@ template <
     typename Transport,
     typename std::enable_if<Transport::constant_properties>::type* = nullptr>
 inline void laminar_alpha_update(
-    Field& evisc, Laminar<Transport>&, const Transport& transport)
+    Field& evisc, Laminar<Transport>& /*unused*/, const Transport& transport)
 {
     evisc.setVal(transport.thermal_diffusivity());
 }
@@ -44,8 +44,8 @@ inline void laminar_alpha_update(
 template <
     typename Transport,
     typename std::enable_if<!Transport::constant_properties>::type* = nullptr>
-inline void
-laminar_alpha_update(Field& evisc, Laminar<Transport>& lam, const Transport&)
+inline void laminar_alpha_update(
+    Field& evisc, Laminar<Transport>& lam, const Transport& /*unused*/)
 {
     field_ops::copy(
         evisc, *lam.alpha(), 0, 0, evisc.num_comp(), evisc.num_grow());
@@ -56,7 +56,7 @@ template <
     typename std::enable_if<Transport::constant_properties>::type* = nullptr>
 inline void laminar_scal_diff_update(
     Field& evisc,
-    Laminar<Transport>&,
+    Laminar<Transport>& /*unused*/,
     const Transport& transport,
     const std::string& name)
 {
@@ -69,7 +69,7 @@ template <
 inline void laminar_scal_diff_update(
     Field& evisc,
     Laminar<Transport>& lam,
-    const Transport&,
+    const Transport& /*unused*/,
     const std::string& name)
 {
     field_ops::copy(

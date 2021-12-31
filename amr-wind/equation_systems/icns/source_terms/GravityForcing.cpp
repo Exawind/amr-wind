@@ -14,7 +14,7 @@ namespace icns {
  *
  *  - `gravity` acceleration due to gravity (m/s)
  */
-GravityForcing::GravityForcing(const CFDSim&)
+GravityForcing::GravityForcing(const CFDSim& /*unused*/)
 {
     amrex::ParmParse pp("incflo");
     pp.queryarr("gravity", m_gravity);
@@ -31,10 +31,10 @@ GravityForcing::~GravityForcing() = default;
  *  @param vel_forces Forcing source term
  */
 void GravityForcing::operator()(
-    const int,
-    const amrex::MFIter&,
+    const int /*lev*/,
+    const amrex::MFIter& /*mfi*/,
     const amrex::Box& bx,
-    const FieldState,
+    const FieldState /*fstate*/,
     const amrex::Array4<amrex::Real>& vel_forces) const
 {
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{

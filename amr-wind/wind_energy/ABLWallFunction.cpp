@@ -127,7 +127,8 @@ void ABLWallFunction::update_umean(
     m_mo.update_fluxes();
 }
 
-ABLVelWallFunc::ABLVelWallFunc(Field&, const ABLWallFunction& wall_func)
+ABLVelWallFunc::ABLVelWallFunc(
+    Field& /*unused*/, const ABLWallFunction& wall_func)
     : m_wall_func(wall_func)
 {
     amrex::ParmParse pp("ABL");
@@ -256,7 +257,8 @@ void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
     }
 }
 
-ABLTempWallFunc::ABLTempWallFunc(Field&, const ABLWallFunction& wall_fuc)
+ABLTempWallFunc::ABLTempWallFunc(
+    Field& /*unused*/, const ABLWallFunction& wall_fuc)
     : m_wall_func(wall_fuc)
 {
     amrex::ParmParse pp("ABL");

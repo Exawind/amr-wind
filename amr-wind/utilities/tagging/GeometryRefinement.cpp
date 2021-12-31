@@ -32,7 +32,7 @@ void GeometryRefinement::initialize(const std::string& key)
 }
 
 void GeometryRefinement::operator()(
-    int level, amrex::TagBoxArray& tags, amrex::Real, int)
+    int level, amrex::TagBoxArray& tags, amrex::Real /*time*/, int /*ngrow*/)
 {
     // If the user has requested a particular level then check for it and exit
     // early

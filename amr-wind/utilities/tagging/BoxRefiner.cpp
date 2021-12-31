@@ -75,7 +75,7 @@ compute_face_normals(const amrex::Vector<vs::Vector>& hex_nodes)
 
 } // namespace
 
-BoxRefiner::BoxRefiner(const CFDSim&, const std::string& key)
+BoxRefiner::BoxRefiner(const CFDSim& /*unused*/, const std::string& key)
 {
     amrex::ParmParse pp(key);
     const auto origin = parse_vector(pp, "origin");

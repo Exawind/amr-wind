@@ -19,7 +19,7 @@ void OversetRefinement::initialize(const std::string& key)
 }
 
 void OversetRefinement::operator()(
-    int level, amrex::TagBoxArray& tags, amrex::Real, int)
+    int level, amrex::TagBoxArray& tags, amrex::Real /*time*/, int /*ngrow*/)
 {
     if (level > m_max_lev) return;
 
