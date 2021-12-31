@@ -1,5 +1,5 @@
 ---
-Checks:          'clang-diagnostic-*,clang-analyzer-*,corecppguidelines-*,modernize-*,readability-*,-readability-magic-numbers,-readability-identifier-naming,-modernize-avoid-c-arrays,-modernize-use-trailing-return-type,-readability-named-parameter,-readability-implicit-bool-conversion,-readability-isolate-declaration,-readability-braces-around-statements,-modernize-pass-by-value,-clang-analyzer-optin.cplusplus.VirtualCall,-clang-analyzer-core.NonNullParamChecker'
+Checks:          'clang-diagnostic-*,clang-analyzer-*,corecppguidelines-*,modernize-*,readability-*,-readability-magic-numbers,-readability-identifier-naming,-modernize-avoid-c-arrays,-modernize-use-trailing-return-type,-readability-named-parameter,-readability-implicit-bool-conversion,-readability-isolate-declaration,-readability-braces-around-statements,-clang-analyzer-optin.cplusplus.VirtualCall,-clang-analyzer-core.NonNullParamChecker'
 WarningsAsErrors: ''
 HeaderFilterRegex: '^((?!/amrex/Src/|/googletest/).)*$'
 AnalyzeTemporaryDtors: false

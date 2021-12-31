@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "amr-wind/core/IntField.H"
 #include "amr-wind/core/FieldRepo.H"
 
@@ -5,13 +7,13 @@ namespace amr_wind {
 
 IntField::IntField(
     FieldRepo& repo,
-    const std::string& name,
+    std::string name,
     const unsigned fid,
     const int ncomp,
     const int ngrow,
     const FieldLoc floc)
     : m_repo(repo)
-    , m_name(name)
+    , m_name(std::move(name))
     , m_id(fid)
     , m_ncomp(ncomp)
     , m_ngrow(ngrow)

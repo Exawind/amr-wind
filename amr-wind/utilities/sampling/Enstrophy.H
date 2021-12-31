@@ -19,7 +19,7 @@ class Enstrophy : public PostProcessBase::Register<Enstrophy>
 public:
     static const std::string identifier() { return "Enstrophy"; }
 
-    Enstrophy(CFDSim&, const std::string&);
+    Enstrophy(CFDSim&, std::string);
 
     ~Enstrophy();
 

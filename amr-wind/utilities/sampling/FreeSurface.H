@@ -32,7 +32,7 @@ class FreeSurface : public PostProcessBase::Register<FreeSurface>
 public:
     static const std::string identifier() { return "FreeSurface"; }
 
-    FreeSurface(CFDSim&, const std::string&);
+    FreeSurface(CFDSim&, std::string);
 
     ~FreeSurface();
 

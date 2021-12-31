@@ -31,7 +31,7 @@ struct FieldInfo
     static constexpr int max_field_states = 5;
 
     FieldInfo(
-        const std::string& basename,
+        std::string basename,
         const int ncomp,
         const int ngrow,
         const int nstates,
@@ -360,8 +360,8 @@ public:
 protected:
     Field(
         FieldRepo& repo,
-        const std::string& name,
-        const std::shared_ptr<FieldInfo>& finfo,
+        std::string name,
+        std::shared_ptr<FieldInfo> finfo,
         const unsigned fid,
         FieldState state);
 

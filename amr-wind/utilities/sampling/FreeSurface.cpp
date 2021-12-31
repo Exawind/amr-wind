@@ -1,6 +1,7 @@
 #include "amr-wind/utilities/sampling/FreeSurface.H"
 #include "amr-wind/utilities/io_utils.H"
 #include <AMReX_MultiFabUtil.H>
+#include <utility>
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 
 #include "AMReX_ParmParse.H"
@@ -8,8 +9,8 @@
 namespace amr_wind {
 namespace free_surface {
 
-FreeSurface::FreeSurface(CFDSim& sim, const std::string& label)
-    : m_sim(sim), m_label(label), m_vof(sim.repo().get_field("vof"))
+FreeSurface::FreeSurface(CFDSim& sim, std::string label)
+    : m_sim(sim), m_label(std::move(label)), m_vof(sim.repo().get_field("vof"))
 {
 #ifdef AMREX_USE_GPU
     amrex::Print() << "WARNING: FreeSurface: Running on GPUs..." << std::endl;

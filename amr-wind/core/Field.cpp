@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "amr-wind/core/Field.H"
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/core/FieldFillPatchOps.H"
@@ -8,12 +10,12 @@
 namespace amr_wind {
 
 FieldInfo::FieldInfo(
-    const std::string& basename,
+    std::string basename,
     const int ncomp,
     const int ngrow,
     const int nstates,
     const FieldLoc floc)
-    : m_basename(basename)
+    : m_basename(std::move(basename))
     , m_ncomp(ncomp)
     , m_ngrow(ngrow)
     , m_nstates(nstates)
@@ -84,11 +86,15 @@ void FieldInfo::copy_bc_to_device() noexcept
 
 Field::Field(
     FieldRepo& repo,
-    const std::string& name,
-    const std::shared_ptr<FieldInfo>& info,
+    std::string name,
+    std::shared_ptr<FieldInfo> info,
     const unsigned fid,
     const FieldState state)
-    : m_repo(repo), m_name(name), m_info(info), m_id(fid), m_state(state)
+    : m_repo(repo)
+    , m_name(std::move(name))
+    , m_info(std::move(info))
+    , m_id(fid)
+    , m_state(state)
 {}
 
 Field::~Field() = default;

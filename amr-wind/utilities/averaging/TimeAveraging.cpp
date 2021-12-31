@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "amr-wind/utilities/averaging/TimeAveraging.H"
 #include "amr-wind/utilities/averaging/ReAveraging.H"
 #include "amr-wind/CFDSim.H"
@@ -7,8 +9,8 @@
 namespace amr_wind {
 namespace averaging {
 
-TimeAveraging::TimeAveraging(CFDSim& sim, const std::string& label)
-    : m_sim(sim), m_label(label)
+TimeAveraging::TimeAveraging(CFDSim& sim, std::string label)
+    : m_sim(sim), m_label(std::move(label))
 {}
 
 TimeAveraging::~TimeAveraging() = default;
