@@ -50,6 +50,7 @@ protected:
     amrex::Vector<amrex::Real> m_W;
 
     // interpolate current weighting profile to planar averaging heights
+    void setTransitionWeighting(); // will override weighting profile
     void updateWeights();
 };
 

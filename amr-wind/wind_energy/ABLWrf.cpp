@@ -52,7 +52,7 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
 
         } else {
             // default is to have uniform weighting throughout
-            amrex::Print() << "  using default weighting" << std::endl;
+            amrex::Print() << "  setting default weighting" << std::endl;
             amrex::Real zmin = m_mesh.Geom(0).ProbLo(m_axis);
             amrex::Real zmax = m_mesh.Geom(0).ProbHi(m_axis);
             m_weighting_heights = {zmin,zmax};
@@ -64,13 +64,33 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
             m_forcing_transition = "none";
         } else if (amrex::toLower(m_forcing_transition) != "none") {
             pp.get("transition_thickness", m_transition_thickness); // constant, required
-            if(!pp.query("constant_transition_height", m_transition_height)) {
-                // optional; if not read, then expect transition_height in netCDF input file
+            if(pp.query("constant_transition_height", m_transition_height)) {
+                // automatically set weighting profile
+                setTransitionWeighting();
+            } else {
+                // expect to read transition_height history in netCDF input file
                 m_update_transition_height = true;
             }
         }
 
     } // if forcing scheme is "indirect"
+}
+
+void ABLWrfForcing::setTransitionWeighting()
+{
+    amrex::Real zmin = m_mesh.Geom(0).ProbLo(m_axis);
+    amrex::Real zmax = m_mesh.Geom(0).ProbHi(m_axis);
+    m_weighting_heights = {
+        zmin,
+        m_transition_height,
+        m_transition_height+m_transition_thickness,
+        zmax
+    };
+    m_weighting_values = {1.0, 1.0, 0.0, 0.0};
+    amrex::Print() << "setting new weighting profile" << std::endl;
+    for(int i=0; i < m_weighting_heights.size(); ++i) {
+        amrex::Print() << "  " << m_weighting_heights[i] << " " << m_weighting_values[i] << std::endl;
+    }
 }
 
 void ABLWrfForcing::updateWeights()
@@ -86,13 +106,20 @@ void ABLWrfForcing::indirectForcingInit()
 {
     if (m_W.size() == 0)
     {
+        // Will be here for:
+        // - full profile assimilation
+        // - partial profile assim w/ constant transition height
+        // - partial profile assim w/ variable transition height (1st step only)
         amrex::Print() << "Initializing indirect forcing" << std::endl;
         m_W.resize(m_nht);
         updateWeights();
     } else if (amrex::toLower(m_forcing_transition) != "none") {
+        // Will be here for:
+        // - partial profile assim w/ variable transition height
         amrex::Print() << "Reinitializing indirect forcing" << std::endl;
         updateWeights();
     } else {
+        amrex::Print() << "Should not be reinitializing indirect forcing!" << std::endl;
         return;
     }
 

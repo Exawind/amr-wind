@@ -192,8 +192,11 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
     }
 
     if (amrex::toLower(m_forcing_scheme) == "indirect") {
-        if (m_update_transition_height)
+        if (m_update_transition_height) {
+            //m_transition_height = 
+            setTransitionWeighting();
             indirectForcingInit();
+        }
 
         amrex::Array<amrex::Real, 4> ezP_T;
 
