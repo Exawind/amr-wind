@@ -232,6 +232,13 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
         }
     }
 
+    if (forcingToConstant()) {
+        constantForcingTransition(error_T);
+        for (size_t ih=0; ih < n_levels; ih++) {
+            amrex::Print() << m_zht[ih] << " " << error_T[ih] << std::endl;
+        }
+    }
+
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, error_T.begin(), error_T.end(),
         m_error_wrf_avg_theta.begin());

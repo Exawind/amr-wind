@@ -277,6 +277,11 @@ void ABLWrfForcingMom::mean_velocity_heights(
         }
     }
 
+    if (forcingToConstant()) {
+        constantForcingTransition(error_U);
+        constantForcingTransition(error_V);
+    }
+
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, error_U.begin(), error_U.end(),
         m_error_wrf_avg_U.begin());

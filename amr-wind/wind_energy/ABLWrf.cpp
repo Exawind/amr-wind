@@ -191,6 +191,62 @@ void ABLWrfForcing::invertMat(
     im(3, 3) = det * (m(0, 0) * A1212 - m(0, 1) * A0212 + m(0, 2) * A0112);
 }
 
+void ABLWrfForcing::constantForcingTransition(amrex::Vector<amrex::Real>& error) {
+    // based on SOWFA6/src/ABLForcing/drivingForce/drivingForce.C
+    
+    // find indices
+    int hLevelBlend0 = -1;
+    int hLevelBlend1 = -1;
+    int hLevelBlendMax = -1;
+    for (int iht = 0; iht < m_nht; iht++) {
+        if ((hLevelBlend1 < 0) && (m_zht[iht] >= m_transition_height)) {
+            hLevelBlend1 = iht;
+            hLevelBlend0 = iht - 1;
+        }
+        else if (m_zht[iht] >= m_transition_height + m_transition_thickness) {
+            hLevelBlendMax = iht;
+            break;
+        }
+    }
+
+    // error checking
+    if (hLevelBlend1 < 0) {
+        amrex::Print() << "Note: Did not find bottom of transition layer" << std::endl;
+        hLevelBlend0 = m_nht - 1;
+        hLevelBlend1 = m_nht - 1;
+        hLevelBlendMax = m_nht - 1;
+    }
+    else if (hLevelBlendMax < 0) {
+        amrex::Print() << "Note: Did not find top of transition layer" << std::endl;
+        hLevelBlendMax = m_nht - 1;
+    }
+
+    amrex::Print() << "Forcing transition to constant"
+        << " from " << m_zht[hLevelBlend1]
+        << " to " << m_zht[hLevelBlendMax] << std::endl;
+
+    // calculate initial slope
+    amrex::Real slope0 = (error[hLevelBlend1] - error[hLevelBlend0])
+                       / (m_zht[hLevelBlend1] - m_zht[hLevelBlend0]);
+    amrex::Real dslope = -slope0 / (m_zht[hLevelBlendMax] - m_zht[hLevelBlend1]);
+
+    // march from hLevelBlend1 (z >= m_transition_height)
+    // up to hLevelBlendMax (z >= m_transition_height + m_transition_thickness)
+    // as the slope decreases linearly to 0
+    for (int iht=hLevelBlend1; iht <= hLevelBlendMax; iht++)
+    {
+        amrex::Real slope = slope0 + dslope*(m_zht[iht] - m_zht[hLevelBlend1]);
+        error[iht] = error[iht-1] + slope*(m_zht[iht] - m_zht[iht-1]);
+    }
+
+    // set the remaining levels above hLevelBlendMax to the last value
+    for (int iht=hLevelBlendMax+1; iht < m_nht; iht++)
+    {
+        error[iht] = error[hLevelBlendMax];
+    }
+}
+
+
 ABLWRFfile::ABLWRFfile(const std::string filewrf)
     : m_wrf_filename(filewrf)
 {

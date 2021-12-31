@@ -51,7 +51,24 @@ protected:
 
     // interpolate current weighting profile to planar averaging heights
     void setTransitionWeighting(); // will override weighting profile
-    void updateWeights();
+    void updateWeights(); // interpolate current profile to planar averaging heights
+
+    //
+    // forcing profile manipulation
+    //
+    bool forcingToConstant() {
+        // - check if m_forcing_transition ends with "Constant"
+        if (m_forcing_transition.length() >= 8) {
+            return (0 == m_forcing_transition.compare(m_forcing_transition.length()-8, 8, "Constant"));
+        } else {
+            return false;
+        }
+    }
+
+    // - slope varies linearly from the actual gradient of the forcing profile at m_transition_height
+    //   to 0 at (m_transition_height + m_transition_thicnkess)
+    void constantForcingTransition(amrex::Vector<amrex::Real>&);
+
 };
 
 class ABLWRFfile
