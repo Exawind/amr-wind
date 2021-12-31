@@ -25,8 +25,6 @@ protected:
 
     std::string m_forcing_scheme;
     amrex::Real m_gain_coeff{0.2};
-    int m_norm_zmax = 0;
-    amrex::Real m_scaleFact = 1e-3; // to improve conditioning of regression matrix
     int m_idx_time;
     int m_axis{2};
 
@@ -34,22 +32,30 @@ protected:
     amrex::Vector<amrex::Real> m_zht;
     int m_nht;
 
+    //
     // regression vars for indirect forcing
+    //
   //int m_ind_polyOrder;
+    int m_norm_zmax = 0;
+    amrex::Real m_scaleFact = 1e-3; // to improve conditioning of regression matrix
+
     amrex::Array2D<amrex::Real,0,3,0,3> m_im_zTz;
 
-    // - input (or current, if forcing_transition is specified) regression weighting profile
+    // - input (or current value of, if forcing_transition is specified) regression weighting profile
     std::string m_forcing_transition;
     amrex::Real m_transition_height; // constant or variable
     bool m_update_transition_height = false;
     amrex::Real m_transition_thickness; // constant
+
     amrex::Vector<amrex::Real> m_weighting_heights; // constant or variable
     amrex::Vector<amrex::Real> m_weighting_values; // constant or variable
 
     // - W(z) at planar averaging heights
     amrex::Vector<amrex::Real> m_W;
 
-    // interpolate current weighting profile to planar averaging heights
+    //
+    // weighting profile manipulation
+    //
     void setTransitionWeighting(); // will override weighting profile
     void updateWeights(); // interpolate current profile to planar averaging heights
 

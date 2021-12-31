@@ -32,45 +32,50 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
     amrex::Print() << "  forcing_scheme : " << m_forcing_scheme << std::endl;
     amrex::Print() << "  control_gain   : " << m_gain_coeff << std::endl;
 
-    if (pp.query("normalize_by_zmax",m_norm_zmax) && (m_norm_zmax != 0))
-    {
-        amrex::Real zmax = m_mesh.Geom(0).ProbHi(m_axis);
-        m_scaleFact = 1.0 / zmax;
-        amrex::Print() << "  set scaling factor to " << m_scaleFact << std::endl;
+    if(!pp.query("forcing_transition", m_forcing_transition)) {
+        amrex::Print() << "  using full profile assimilation by default" << std::endl;
+        m_forcing_transition = "none";
     }
 
     if (amrex::toLower(m_forcing_scheme) == "indirect")
     {
-        if (pp.queryarr("weighting_heights", m_weighting_heights)) {
-            pp.getarr("weighting_values", m_weighting_values);
-            amrex::Print() << "  given weighting profile" << std::endl;
-            for(int i=0; i < m_weighting_heights.size(); ++i) {
-                amrex::Print() << "  " << m_weighting_heights[i] << " " << m_weighting_values[i] << std::endl;
+        if (amrex::toLower(m_forcing_transition) == "none")
+        {
+            if (pp.queryarr("weighting_heights", m_weighting_heights)) {
+                pp.getarr("weighting_values", m_weighting_values);
+                amrex::Print() << "  given weighting profile" << std::endl;
+                for(int i=0; i < m_weighting_heights.size(); ++i) {
+                    amrex::Print() << "  " << m_weighting_heights[i] << " " << m_weighting_values[i] << std::endl;
+                }
+                AMREX_ALWAYS_ASSERT(m_weighting_heights.size() == m_weighting_values.size());
+
+            } else {
+                // default is to have uniform weighting throughout
+                amrex::Print() << "  setting default weighting" << std::endl;
+                amrex::Real zmin = m_mesh.Geom(0).ProbLo(m_axis);
+                amrex::Real zmax = m_mesh.Geom(0).ProbHi(m_axis);
+                m_weighting_heights = {zmin,zmax};
+                m_weighting_values = {1.0,1.0};
             }
-
-            AMREX_ALWAYS_ASSERT(m_weighting_heights.size() == m_weighting_values.size());
-
-        } else {
-            // default is to have uniform weighting throughout
-            amrex::Print() << "  setting default weighting" << std::endl;
-            amrex::Real zmin = m_mesh.Geom(0).ProbLo(m_axis);
-            amrex::Real zmax = m_mesh.Geom(0).ProbHi(m_axis);
-            m_weighting_heights = {zmin,zmax};
-            m_weighting_values = {1.0,1.0};
         }
-
-        if(!pp.query("forcing_transition", m_forcing_transition)) {
-            amrex::Print() << "  using full profile assimilation by default" << std::endl;
-            m_forcing_transition = "none";
-        } else if (amrex::toLower(m_forcing_transition) != "none") {
+        else // weightings will be automatically set based on forcing transition
+        {
             pp.get("transition_thickness", m_transition_thickness); // constant, required
             if(pp.query("constant_transition_height", m_transition_height)) {
-                // automatically set weighting profile
+                // set weighting profile
                 setTransitionWeighting();
             } else {
                 // expect to read transition_height history in netCDF input file
+                // weighting profile will be updated at every step
                 m_update_transition_height = true;
             }
+        }
+
+        if (pp.query("normalize_by_zmax",m_norm_zmax) && (m_norm_zmax != 0))
+        {
+            amrex::Real zmax = m_mesh.Geom(0).ProbHi(m_axis);
+            m_scaleFact = 1.0 / zmax;
+            amrex::Print() << "  set scaling factor to " << m_scaleFact << std::endl;
         }
 
     } // if forcing scheme is "indirect"
