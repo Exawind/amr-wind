@@ -60,6 +60,7 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
         //}
 
         if(!pp.query("forcing_transition", m_forcing_transition)) {
+            amrex::Print() << "  using full profile assimilation by default" << std::endl;
             m_forcing_transition = "none";
         } else if (amrex::toLower(m_forcing_transition) != "none") {
             pp.get("transition_thickness", m_transition_thickness); // constant, required

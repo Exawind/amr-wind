@@ -42,6 +42,12 @@ ABLWrfForcingMom::ABLWrfForcingMom(const CFDSim& sim)
     } else {
         mean_velocity_init(abl.abl_wrf_file());
     }
+
+    if ((amrex::toLower(m_forcing_scheme) == "indirect") &&
+        (amrex::toLower(m_forcing_transition) == "none")) {
+        // Calculate this once
+        indirectForcingInit();
+    }
 }
 
 ABLWrfForcingMom::~ABLWrfForcingMom() = default;
