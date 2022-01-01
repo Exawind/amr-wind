@@ -130,7 +130,9 @@ void incflo::ApplyProjection(
     auto& velocity = icns().fields().field;
 
     // Do the pre pressure correction work -- this applies to IB only
-    for (auto& pp : m_sim.physics()) pp->pre_pressure_correction_work();
+    for (auto& pp : m_sim.physics()) {
+        pp->pre_pressure_correction_work();
+    }
 
     // Add the ( grad p /ro ) back to u* (note the +dt)
     if (!incremental) {

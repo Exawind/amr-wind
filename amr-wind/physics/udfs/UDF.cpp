@@ -24,7 +24,9 @@ ConstValue::ConstValue(Field& fld) : m_field(fld)
 void ConstValue::operator()(int level, const amrex::Geometry& /*geom*/)
 {
     auto& mfab = m_field(level);
-    for (int i = 0; i < m_field.num_comp(); ++i) mfab.setVal(m_value[i], i, 1);
+    for (int i = 0; i < m_field.num_comp(); ++i) {
+        mfab.setVal(m_value[i], i, 1);
+    }
 }
 
 template <typename T>

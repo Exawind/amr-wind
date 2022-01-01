@@ -92,7 +92,9 @@ void KineticEnergy::post_advance_work()
     const auto& time = m_sim.time();
     const int tidx = time.time_index();
     // Skip processing if it is not an output timestep
-    if (!(tidx % m_out_freq == 0)) return;
+    if (!(tidx % m_out_freq == 0)) {
+        return;
+    }
 
     m_total_kinetic_energy = calculate_kinetic_energy();
 

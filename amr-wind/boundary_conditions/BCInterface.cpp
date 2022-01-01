@@ -14,14 +14,18 @@ inline void
 BCIface::set_bcrec_lo(int dir, amrex::BCType::mathematicalBndryTypes bcrec)
 {
     auto& fbcrec = m_field.bcrec();
-    for (int i = 0; i < m_field.num_comp(); ++i) fbcrec[i].setLo(dir, bcrec);
+    for (int i = 0; i < m_field.num_comp(); ++i) {
+        fbcrec[i].setLo(dir, bcrec);
+    }
 }
 
 inline void
 BCIface::set_bcrec_hi(int dir, amrex::BCType::mathematicalBndryTypes bcrec)
 {
     auto& fbcrec = m_field.bcrec();
-    for (int i = 0; i < m_field.num_comp(); ++i) fbcrec[i].setHi(dir, bcrec);
+    for (int i = 0; i < m_field.num_comp(); ++i) {
+        fbcrec[i].setHi(dir, bcrec);
+    }
 }
 
 void BCIface::operator()(const amrex::Real value)
@@ -41,7 +45,9 @@ inline void BCIface::set_default_value(const amrex::Real value)
     auto& bcval = m_field.bc_values();
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
-        for (int i = 0; i < m_field.num_comp(); ++i) bcval[ori][i] = value;
+        for (int i = 0; i < m_field.num_comp(); ++i) {
+            bcval[ori][i] = value;
+        }
     }
 }
 
@@ -190,27 +196,30 @@ void BCVelocity::set_bcrec()
 
         switch (bct) {
         case BC::periodic:
-            if (side == amrex::Orientation::low)
+            if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, amrex::BCType::int_dir);
-            else
+            } else {
                 set_bcrec_hi(dir, amrex::BCType::int_dir);
+            }
             break;
 
         case BC::pressure_inflow:
         case BC::pressure_outflow:
         case BC::zero_gradient:
-            if (side == amrex::Orientation::low)
+            if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, amrex::BCType::foextrap);
-            else
+            } else {
                 set_bcrec_hi(dir, amrex::BCType::foextrap);
+            }
             break;
 
         case BC::mass_inflow:
         case BC::no_slip_wall:
-            if (side == amrex::Orientation::low)
+            if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, amrex::BCType::ext_dir);
-            else
+            } else {
                 set_bcrec_hi(dir, amrex::BCType::ext_dir);
+            }
             break;
 
         case BC::slip_wall:
@@ -275,27 +284,30 @@ void BCScalar::set_bcrec()
 
         switch (bct) {
         case BC::periodic:
-            if (side == amrex::Orientation::low)
+            if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, amrex::BCType::int_dir);
-            else
+            } else {
                 set_bcrec_hi(dir, amrex::BCType::int_dir);
+            }
             break;
 
         case BC::pressure_inflow:
         case BC::pressure_outflow:
         case BC::zero_gradient:
-            if (side == amrex::Orientation::low)
+            if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, amrex::BCType::foextrap);
-            else
+            } else {
                 set_bcrec_hi(dir, amrex::BCType::foextrap);
+            }
             break;
 
         case BC::mass_inflow:
         case BC::no_slip_wall:
-            if (side == amrex::Orientation::low)
+            if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, amrex::BCType::ext_dir);
-            else
+            } else {
                 set_bcrec_hi(dir, amrex::BCType::ext_dir);
+            }
             break;
 
         case BC::slip_wall:
@@ -373,17 +385,19 @@ void BCSrcTerm::set_bcrec()
 
         switch (bct) {
         case BC::periodic:
-            if (side == amrex::Orientation::low)
+            if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, amrex::BCType::int_dir);
-            else
+            } else {
                 set_bcrec_hi(dir, amrex::BCType::int_dir);
+            }
             break;
 
         default:
-            if (side == amrex::Orientation::low)
+            if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, amrex::BCType::foextrap);
-            else
+            } else {
                 set_bcrec_hi(dir, amrex::BCType::foextrap);
+            }
             break;
         }
     }
@@ -400,17 +414,19 @@ void BCFillPatchExtrap::set_bcrec()
 
         switch (bct) {
         case BC::periodic:
-            if (side == amrex::Orientation::low)
+            if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, amrex::BCType::int_dir);
-            else
+            } else {
                 set_bcrec_hi(dir, amrex::BCType::int_dir);
+            }
             break;
 
         default:
-            if (side == amrex::Orientation::low)
+            if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, m_extrap_type);
-            else
+            } else {
                 set_bcrec_hi(dir, m_extrap_type);
+            }
             break;
         }
     }

@@ -35,7 +35,9 @@ void FixedGradientBC::operator()(Field& field, const FieldState /*rho_state*/)
         const auto& domain = repo.mesh().Geom(lev).Domain();
 
         amrex::MFItInfo mfi_info{};
-        if (amrex::Gpu::notInLaunchRegion()) mfi_info.SetDynamic(true);
+        if (amrex::Gpu::notInLaunchRegion()) {
+            mfi_info.SetDynamic(true);
+        }
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
@@ -47,8 +49,9 @@ void FixedGradientBC::operator()(Field& field, const FieldState /*rho_state*/)
                 amrex::ParallelFor(
                     lower_boundary_faces(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        for (int n = 0; n < ncomp; ++n)
+                        for (int n = 0; n < ncomp; ++n) {
                             bc_a(i, j, k, n) = bcvals[idx][n];
+                        }
                     });
             }
 
@@ -56,8 +59,9 @@ void FixedGradientBC::operator()(Field& field, const FieldState /*rho_state*/)
                 amrex::ParallelFor(
                     amrex::bdryHi(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        for (int n = 0; n < ncomp; ++n)
+                        for (int n = 0; n < ncomp; ++n) {
                             bc_a(i, j, k, n) = bcvals[idx][n];
+                        }
                     });
             }
         }

@@ -102,8 +102,9 @@ void incflo::InitialIterations()
     }
 
     for (int iter = 0; iter < m_initial_iterations; ++iter) {
-        if (m_verbose != 0)
+        if (m_verbose != 0) {
             amrex::Print() << "In initial_iterations: iter = " << iter << "\n";
+        }
 
         ApplyPredictor(true);
 

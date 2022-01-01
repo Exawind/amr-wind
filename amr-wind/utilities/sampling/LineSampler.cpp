@@ -61,12 +61,14 @@ void LineSampler::sampling_locations(SampleLocType& locs) const
     const amrex::Real ndiv = amrex::max(m_npts - 1, 1);
     amrex::Array<amrex::Real, AMREX_SPACEDIM> dx;
 
-    for (int d = 0; d < AMREX_SPACEDIM; ++d)
+    for (int d = 0; d < AMREX_SPACEDIM; ++d) {
         dx[d] = (m_end[d] - m_start[d]) / ndiv;
+    }
 
     for (int i = 0; i < m_npts; ++i) {
-        for (int d = 0; d < AMREX_SPACEDIM; ++d)
+        for (int d = 0; d < AMREX_SPACEDIM; ++d) {
             locs[i][d] = m_start[d] + i * dx[d];
+        }
     }
 }
 

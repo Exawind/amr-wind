@@ -55,7 +55,9 @@ void IB::post_init_actions()
     BL_PROFILE("amr-wind::ib::IB::post_init_actions");
     m_ib_levelset.setVal(1e30);
 
-    for (auto& ib : m_ibs) ib->init_ib();
+    for (auto& ib : m_ibs) {
+        ib->init_ib();
+    }
 }
 
 void IB::post_regrid_actions() {}

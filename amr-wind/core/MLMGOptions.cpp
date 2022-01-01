@@ -62,7 +62,9 @@ void MLMGOptions::operator()(amrex::MLMG& mlmg)
     mlmg.setMaxIter(max_iter);
     mlmg.setMaxFmgIter(max_fmg_iters);
 
-    if (do_fixed_iters) mlmg.setFixedIter(max_iter);
+    if (do_fixed_iters) {
+        mlmg.setFixedIter(max_iter);
+    }
 
     mlmg.setNSolve(static_cast<int>(do_nsolve));
     mlmg.setNSolveGridSize(nsolve_grid_size);

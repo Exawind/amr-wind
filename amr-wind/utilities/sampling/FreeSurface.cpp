@@ -68,7 +68,9 @@ void FreeSurface::initialize()
         }
     }
 
-    if (m_out_fmt == "netcdf") prepare_netcdf_file();
+    if (m_out_fmt == "netcdf") {
+        prepare_netcdf_file();
+    }
 }
 
 void FreeSurface::post_advance_work()
@@ -78,7 +80,9 @@ void FreeSurface::post_advance_work()
     const auto& time = m_sim.time();
     const int tidx = time.time_index();
     // Skip processing if it is not an output timestep
-    if (!(tidx % m_out_freq == 0)) return;
+    if (!(tidx % m_out_freq == 0)) {
+        return;
+    }
 
     // Zero data in output array
     for (int n = 0; n < m_npts * m_ninst; n++) {
@@ -325,7 +329,9 @@ void FreeSurface::write_ascii()
 
         File.open(fname.c_str(), std::ios::out | std::ios::trunc);
 
-        if (!File.good()) amrex::FileOpenFailed(fname);
+        if (!File.good()) {
+            amrex::FileOpenFailed(fname);
+        }
 
         // Metadata
         File << m_npts << '\n';
@@ -344,8 +350,9 @@ void FreeSurface::write_ascii()
 
         File.close();
 
-        if (!File.good())
+        if (!File.good()) {
             amrex::Abort("FreeSurface::write_ascii(): problem writing file");
+        }
     }
 }
 

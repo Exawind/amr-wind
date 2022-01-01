@@ -80,10 +80,11 @@ void ABLStats::initialize()
     }
     m_dn = geom.CellSize()[m_normal_dir];
 
-    if (m_out_fmt == "netcdf")
+    if (m_out_fmt == "netcdf") {
         prepare_netcdf_file();
-    else
+    } else {
         prepare_ascii_file();
+    }
 }
 
 void ABLStats::calc_averages()
@@ -132,9 +133,10 @@ void ABLStats::calc_sfs_stress_avgs(
                         -mueff_arr(i, j, k) *
                         (gradVel_arr(i, j, k, 5) + gradVel_arr(i, j, k, 7));
 
-                    for (int icomp = 0; icomp < AMREX_SPACEDIM; icomp++)
+                    for (int icomp = 0; icomp < AMREX_SPACEDIM; icomp++) {
                         t_sfs_arr(i, j, k, icomp) =
                             -alphaeff_arr(i, j, k) * gradT_arr(i, j, k, icomp);
+                    }
                 });
         }
     }
@@ -150,7 +152,9 @@ void ABLStats::post_advance_work()
     const auto& time = m_sim.time();
     const int tidx = time.time_index();
     // Skip processing if it is not an output timestep
-    if (!(tidx % m_out_freq == 0)) return;
+    if (!(tidx % m_out_freq == 0)) {
+        return;
+    }
 
     switch (m_normal_dir) {
     case 0:
@@ -266,7 +270,9 @@ void ABLStats::write_ascii()
         time.time_index(), time.current_time());
 
     // Only I/O processor handles this file I/O
-    if (!amrex::ParallelDescriptor::IOProcessor()) return;
+    if (!amrex::ParallelDescriptor::IOProcessor()) {
+        return;
+    }
 
     amrex::RealArray abl_forcing = {{0.0, 0.0, 0.0}};
     if (m_abl_forcing != nullptr) {
@@ -275,7 +281,9 @@ void ABLStats::write_ascii()
 
     double wstar = 0.0;
     auto Q = m_abl_wall_func.mo().surf_temp_flux;
-    if (Q > 1e-10) wstar = std::cbrt(m_gravity * Q * m_zi / m_ref_theta);
+    if (Q > 1e-10) {
+        wstar = std::cbrt(m_gravity * Q * m_zi / m_ref_theta);
+    }
     auto L = m_abl_wall_func.mo().obukhov_len;
 
     std::ofstream outfile;
@@ -303,7 +311,9 @@ void ABLStats::prepare_ascii_file()
                    << std::endl;
 
     // Only I/O processor handles this file I/O
-    if (!amrex::ParallelDescriptor::IOProcessor()) return;
+    if (!amrex::ParallelDescriptor::IOProcessor()) {
+        return;
+    }
 
     const std::string stat_dir = "post_processing";
     const std::string sname =

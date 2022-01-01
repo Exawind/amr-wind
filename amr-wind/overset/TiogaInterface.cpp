@@ -113,8 +113,9 @@ void TiogaInterface::post_overset_conn_work()
 
     // Update equation systems after a connectivity update
     m_sim.pde_manager().icns().post_regrid_actions();
-    for (auto& eqn : m_sim.pde_manager().scalar_eqns())
+    for (auto& eqn : m_sim.pde_manager().scalar_eqns()) {
         eqn->post_regrid_actions();
+    }
 }
 
 void TiogaInterface::register_solution(
@@ -235,7 +236,9 @@ void TiogaInterface::amr_to_tioga_mesh()
 
         const auto& dmap = mesh.DistributionMap(lev);
         for (long d = 0; d < dmap.size(); ++d) {
-            if (dmap[d] == iproc) ++ngrids_local;
+            if (dmap[d] == iproc) {
+                ++ngrids_local;
+            }
         }
     }
 

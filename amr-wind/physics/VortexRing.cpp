@@ -108,7 +108,9 @@ void VortexRing::post_init_actions()
 {
 
     // only call for startup and not for restart
-    if (m_sim.time().time_index() > 0) return;
+    if (m_sim.time().time_index() > 0) {
+        return;
+    }
 
     if (m_vortexringtype == "fatcore") {
         initialize_velocity(FatCore());

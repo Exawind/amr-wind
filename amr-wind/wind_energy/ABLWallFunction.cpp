@@ -46,18 +46,18 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     } else if (pp.contains("surface_temp_rate")) {
         m_tempflux = false;
         pp.get("surface_temp_rate", m_surf_temp_rate);
-        if (pp.contains("surface_temp_init"))
+        if (pp.contains("surface_temp_init")) {
             pp.get("surface_temp_init", m_surf_temp_init);
-        else {
+        } else {
             amrex::Print()
                 << "ABLWallFunction: Initial surface temperature not found for "
                    "ABL. Assuming to be equal to the reference temperature "
                 << m_mo.ref_temp << std::endl;
             m_surf_temp_init = m_mo.ref_temp;
         }
-        if (pp.contains("surface_temp_rate_tstart"))
+        if (pp.contains("surface_temp_rate_tstart")) {
             pp.get("surface_temp_rate_tstart", m_surf_temp_rate_tstart);
-        else {
+        } else {
             amrex::Print()
                 << "ABLWallFunction: Surface temperature heating/cooling start "
                    "time (surface_temp_rate_tstart) not found for ABL. "
@@ -138,10 +138,10 @@ ABLVelWallFunc::ABLVelWallFunc(
     if (m_wall_shear_stress_type == "constant" ||
         m_wall_shear_stress_type == "local" ||
         m_wall_shear_stress_type == "schumann" ||
-        m_wall_shear_stress_type == "moeng")
+        m_wall_shear_stress_type == "moeng") {
         amrex::Print() << "Shear Stress model: " << m_wall_shear_stress_type
                        << std::endl;
-    else {
+    } else {
         amrex::Abort("Shear Stress wall model input mistake");
     }
 }
@@ -175,7 +175,9 @@ void ABLVelWallFunc::wall_model(
         auto& vel_lev = velocity(lev);
         const auto& eta_lev = viscosity(lev);
 
-        if (amrex::Gpu::notInLaunchRegion()) mfi_info.SetDynamic(true);
+        if (amrex::Gpu::notInLaunchRegion()) {
+            mfi_info.SetDynamic(true);
+        }
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
@@ -301,7 +303,9 @@ void ABLTempWallFunc::wall_model(
         auto& theta = temperature(lev);
         const auto& eta_lev = alpha(lev);
 
-        if (amrex::Gpu::notInLaunchRegion()) mfi_info.SetDynamic(true);
+        if (amrex::Gpu::notInLaunchRegion()) {
+            mfi_info.SetDynamic(true);
+        }
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif

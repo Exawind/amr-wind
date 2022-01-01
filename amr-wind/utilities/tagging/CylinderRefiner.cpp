@@ -16,12 +16,16 @@ CylinderRefiner::CylinderRefiner(
     // Start of the cylinder
     pp.getarr("start", tmp_vec);
     AMREX_ALWAYS_ASSERT(tmp_vec.size() == AMREX_SPACEDIM);
-    for (int i = 0; i < AMREX_SPACEDIM; ++i) m_start[i] = tmp_vec[i];
+    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+        m_start[i] = tmp_vec[i];
+    }
 
     // End point of cylinder
     pp.getarr("end", tmp_vec);
     AMREX_ALWAYS_ASSERT(tmp_vec.size() == AMREX_SPACEDIM);
-    for (int i = 0; i < AMREX_SPACEDIM; ++i) m_end[i] = tmp_vec[i];
+    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+        m_end[i] = tmp_vec[i];
+    }
 
     // Outer radial extent of the cylinder, always read in from input file
     pp.get("outer_radius", m_outer_radius);
@@ -59,8 +63,9 @@ void CylinderRefiner::operator()(
             const amrex::Real d2 = (pvec & pvec) - (daxis * daxis) / magax;
 
             // Check if the cell center lies within the radius specified
-            if ((d2 <= outer) && (d2 >= inner))
+            if ((d2 <= outer) && (d2 >= inner)) {
                 tag(i, j, k) = amrex::TagBox::SET;
+            }
         }
     });
 }

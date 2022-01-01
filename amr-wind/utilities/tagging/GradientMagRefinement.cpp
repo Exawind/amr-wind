@@ -27,13 +27,15 @@ void GradientMagRefinement::initialize(const std::string& key)
     amrex::Vector<double> gradmag_value;
     pp.queryarr("values", gradmag_value);
 
-    if ((gradmag_value.empty()))
+    if ((gradmag_value.empty())) {
         amrex::Abort("GradientMagRefinement: Must specify at least one value");
+    }
 
     {
         size_t fcount = std::min(gradmag_value.size(), m_gradmag_value.size());
-        for (size_t i = 0; i < fcount; ++i)
+        for (size_t i = 0; i < fcount; ++i) {
             m_gradmag_value[i] = gradmag_value[i];
+        }
         m_max_lev_field = fcount - 1;
     }
 }
@@ -71,7 +73,9 @@ void GradientMagRefinement::operator()(
                     0.5 * (farr(i, j, k + 1) - farr(i, j, k - 1)) * idx[2];
 
                 const auto grad_mag = sqrt(gx * gx + gy * gy + gz * gz);
-                if (grad_mag > gradmag_val) tag(i, j, k) = amrex::TagBox::SET;
+                if (grad_mag > gradmag_val) {
+                    tag(i, j, k) = amrex::TagBox::SET;
+                }
             });
     }
 }

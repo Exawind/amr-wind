@@ -70,7 +70,9 @@ void Sampling::initialize()
 
     update_container();
 
-    if (m_out_fmt == "netcdf") prepare_netcdf_file();
+    if (m_out_fmt == "netcdf") {
+        prepare_netcdf_file();
+    }
 }
 
 void Sampling::update_container()
@@ -104,7 +106,9 @@ void Sampling::post_advance_work()
     const auto& time = m_sim.time();
     const int tidx = time.time_index();
     // Skip processing if it is not an output timestep
-    if (!(tidx % m_out_freq == 0)) return;
+    if (!(tidx % m_out_freq == 0)) {
+        return;
+    }
 
     update_sampling_locations();
 

@@ -43,7 +43,9 @@ void FreeStream::pre_init_actions()
         pp.queryarr("fields", fields);
         for (const auto& fname : fields) {
             const auto it = m_field_funcs.find(fname);
-            if (it != m_field_funcs.end()) continue;
+            if (it != m_field_funcs.end()) {
+                continue;
+            }
 
             if (!repo.field_exists(fname)) {
                 amrex::Abort("FreeStream: Invalid field requested: " + fname);

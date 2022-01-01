@@ -39,7 +39,9 @@ void FieldRepo::make_new_level_from_coarse(
     allocate_field_data(ba, dm, *ldata, *(ldata->m_int_fact));
 
     for (auto& field : m_field_vec) {
-        if (!field->fillpatch_on_regrid()) continue;
+        if (!field->fillpatch_on_regrid()) {
+            continue;
+        }
 
         field->fillpatch_from_coarse(lev, time, ldata->m_mfabs[field->id()], 0);
     }
@@ -61,7 +63,9 @@ void FieldRepo::remake_level(
     allocate_field_data(ba, dm, *ldata, *(ldata->m_int_fact));
 
     for (auto& field : m_field_vec) {
-        if (!field->fillpatch_on_regrid()) continue;
+        if (!field->fillpatch_on_regrid()) {
+            continue;
+        }
 
         field->fillpatch(lev, time, ldata->m_mfabs[field->id()], 0);
     }
@@ -125,7 +129,9 @@ Field& FieldRepo::declare_field(
             new Field(*this, fname, finfo, fid, fstate));
         // If declare field is called after mesh has been initialized create
         // field multifabs
-        if (m_is_initialized) allocate_field_data(*field);
+        if (m_is_initialized) {
+            allocate_field_data(*field);
+        }
 
         // Add reference to states lookup
         finfo->m_states[i] = field.get();
@@ -202,7 +208,9 @@ IntField& FieldRepo::declare_int_field(
         std::unique_ptr<IntField> field(
             new IntField(*this, fname, fid, ncomp, ngrow, floc));
 
-        if (m_is_initialized) allocate_field_data(*field);
+        if (m_is_initialized) {
+            allocate_field_data(*field);
+        }
 
         m_int_field_vec.emplace_back(std::move(field));
         m_int_fid_map[fname] = fid;
@@ -271,7 +279,9 @@ std::unique_ptr<ScratchField> FieldRepo::create_scratch_field(
 void FieldRepo::advance_states() noexcept
 {
     for (auto& it : m_field_vec) {
-        if (it->field_state() != FieldState::New) continue;
+        if (it->field_state() != FieldState::New) {
+            continue;
+        }
         it->advance_states();
     }
 }
@@ -375,7 +385,9 @@ Field& FieldRepo::create_state(Field& infield, const FieldState fstate) noexcept
 
     // Create the half state
     std::unique_ptr<Field> field(new Field(*this, fname, finfo, fid, fstate));
-    if (m_is_initialized) allocate_field_data(*field);
+    if (m_is_initialized) {
+        allocate_field_data(*field);
+    }
 
     // Add reference to states lookup
     finfo->m_states[i] = field.get();

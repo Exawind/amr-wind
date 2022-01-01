@@ -26,7 +26,9 @@ FieldInfo::FieldInfo(
     , m_bcrec_d(ncomp)
     , m_states(FieldInfo::max_field_states, nullptr)
 {
-    for (int i = 0; i < AMREX_SPACEDIM * 2; ++i) m_bc_type[i] = BC::undefined;
+    for (int i = 0; i < AMREX_SPACEDIM * 2; ++i) {
+        m_bc_type[i] = BC::undefined;
+    }
 }
 
 FieldInfo::~FieldInfo() = default;
@@ -35,7 +37,9 @@ bool FieldInfo::bc_initialized()
 {
     bool has_undefined = false;
     for (int i = 0; i < AMREX_SPACEDIM * 2; ++i) {
-        if (m_bc_type[i] == BC::undefined) has_undefined = true;
+        if (m_bc_type[i] == BC::undefined) {
+            has_undefined = true;
+        }
     }
 
     // Check that BC has been initialized properly
@@ -54,7 +58,9 @@ bool FieldInfo::bc_initialized()
 
 void FieldInfo::copy_bc_to_device() noexcept
 {
-    if (!bc_initialized()) amrex::Abort("Invalid BC type encountered");
+    if (!bc_initialized()) {
+        amrex::Abort("Invalid BC type encountered");
+    }
 
     amrex::Vector<amrex::Real> h_data(m_ncomp * AMREX_SPACEDIM * 2);
 
@@ -62,7 +68,9 @@ void FieldInfo::copy_bc_to_device() noexcept
     {
         amrex::Real* hp = h_data.data();
         for (const auto& v : m_bc_values) {
-            for (const auto& x : v) *(hp++) = x;
+            for (const auto& x : v) {
+                *(hp++) = x;
+            }
         }
     }
 
@@ -230,7 +238,9 @@ void Field::fillphysbc(amrex::Real time) noexcept
 void Field::apply_bc_funcs(const FieldState rho_state) noexcept
 {
     BL_ASSERT(m_info->bc_initialized() && m_info->m_bc_copied_to_device);
-    for (auto& func : m_info->m_bc_func) (*func)(*this, rho_state);
+    for (auto& func : m_info->m_bc_func) {
+        (*func)(*this, rho_state);
+    }
 }
 
 void Field::set_inflow(
@@ -249,7 +259,9 @@ void Field::set_inflow(
 void Field::advance_states() noexcept
 {
     BL_PROFILE("amr-wind::Field::advance_states");
-    if (num_time_states() < 2) return;
+    if (num_time_states() < 2) {
+        return;
+    }
 
     for (int i = num_time_states() - 1; i > 0; --i) {
         const auto sold = static_cast<FieldState>(i);

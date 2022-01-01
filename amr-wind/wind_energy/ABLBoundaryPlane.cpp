@@ -203,7 +203,9 @@ ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
 
 void ABLBoundaryPlane::post_init_actions()
 {
-    if (!m_is_initialized) return;
+    if (!m_is_initialized) {
+        return;
+    }
     initialize_data();
     write_header();
     write_file();
@@ -213,13 +215,17 @@ void ABLBoundaryPlane::post_init_actions()
 
 void ABLBoundaryPlane::pre_advance_work()
 {
-    if (!m_is_initialized) return;
+    if (!m_is_initialized) {
+        return;
+    }
     read_file();
 }
 
 void ABLBoundaryPlane::post_advance_work()
 {
-    if (!m_is_initialized) return;
+    if (!m_is_initialized) {
+        return;
+    }
     write_file();
 }
 

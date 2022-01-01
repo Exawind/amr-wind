@@ -123,8 +123,9 @@ void ABL::pre_advance_work()
         m_abl_forcing->set_mean_velocities(vx, vy);
     }
 
-    if (m_abl_mean_bous != nullptr)
+    if (m_abl_mean_bous != nullptr) {
         m_abl_mean_bous->mean_temperature_update(m_stats->theta_profile());
+    }
 
     m_bndry_plane->pre_advance_work();
 }

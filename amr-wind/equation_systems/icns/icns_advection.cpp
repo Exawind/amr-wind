@@ -171,17 +171,19 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
             rho_face_const.push_back(GetArrOfConstPtrs(rho_face[lev]));
         }
 
-        if (m_need_init)
+        if (m_need_init) {
             init_projector(rho_face_const);
-        else
+        } else {
             m_mac_proj->updateBeta(rho_face_const);
+        }
 
     } else {
 
-        if (m_need_init)
+        if (m_need_init) {
             init_projector(factor / m_rho_0);
-        else
+        } else {
             m_mac_proj->updateBeta(factor / m_rho_0);
+        }
     }
 
     for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
@@ -195,9 +197,10 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
 
     if (m_has_overset) {
         auto phif = m_repo.create_scratch_field(1, 1, amr_wind::FieldLoc::CELL);
-        for (int lev = 0; lev < m_repo.num_active_levels(); ++lev)
+        for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
             amrex::average_node_to_cellcenter(
                 (*phif)(lev), 0, pressure(lev), 0, 1);
+        }
 
         m_mac_proj->project(
             phif->vec_ptrs(), m_options.rel_tol, m_options.abs_tol);
