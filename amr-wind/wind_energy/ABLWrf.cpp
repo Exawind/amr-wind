@@ -286,17 +286,21 @@ ABLWRFfile::ABLWRFfile(const std::string filewrf)
     m_wrf_v.resize(m_wrf_nheight * m_wrf_ntime);
     m_wrf_temp.resize(m_wrf_nheight * m_wrf_ntime);
     m_wrf_tflux.resize(m_wrf_ntime);
-    m_wrf_transition_height.resize(m_wrf_ntime);
 
     ncf.var("wrf_momentum_u").get(m_wrf_u.data());
     ncf.var("wrf_momentum_v").get(m_wrf_v.data());
     ncf.var("wrf_temperature").get(m_wrf_temp.data());
     ncf.var("wrf_tflux").get(m_wrf_tflux.data());
 
-    if (ncf.has_var("transition_height")) {
-        amrex::Print() << "found transition_height in WRFforcing file" << std::endl;
-        ncf.var("transition_height").get(m_wrf_transition_height.data());
-    }
+    // ***FIXME***
+    // MUST COMMENT THIS LINE OUT (resize cmd) to consistently fix problem:
+    //
+    //m_wrf_transition_height.resize(m_wrf_ntime);
+    //
+    //if (ncf.has_var("transition_height")) {
+    //    amrex::Print() << "found transition_height in WRFforcing file" << std::endl;
+    //    ncf.var("transition_height").get(m_wrf_transition_height.data());
+    //}
 
     amrex::ParmParse pp("ABL");
     pp.query("WRF_tendency_forcing", m_abl_wrf_tendency);
@@ -318,7 +322,8 @@ const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_temp() const { return m_wrf_te
 
 const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_tflux() const { return m_wrf_tflux; }
 
-const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_transition_height() const { return m_wrf_transition_height; }
+// ***FIXME***
+//const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_transition_height() const { return m_wrf_transition_height; }
 
  bool ABLWRFfile::is_wrf_tendency_forcing() const {return m_abl_wrf_tendency; }
 

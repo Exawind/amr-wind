@@ -107,7 +107,8 @@ public:
 
     const amrex::Vector<amrex::Real>& wrf_tflux() const;
 
-    const amrex::Vector<amrex::Real>& wrf_transition_height() const;
+    // ***FIXME***
+    //const amrex::Vector<amrex::Real>& wrf_transition_height() const;
 
     bool is_wrf_tendency_forcing() const;
 
@@ -126,7 +127,11 @@ private:
     amrex::Vector<amrex::Real> m_wrf_tflux;
 
     // optional input for partial profile assimilation
-    amrex::Vector<amrex::Real> m_wrf_transition_height;
+    // ***FIXME***
+    // unexpected behaviors, as described in ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7
+    // MUST COMMENT THIS LINE OUT (variable def) to consistently fix problem:
+    //
+    //amrex::Vector<amrex::Real> m_wrf_transition_height;
 
     int m_wrf_nheight;
     int m_wrf_ntime;
