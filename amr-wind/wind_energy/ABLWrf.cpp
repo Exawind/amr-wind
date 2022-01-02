@@ -5,6 +5,9 @@
 #include "AMReX_Print.H"
 #include "AMReX_ParmParse.H"
 
+// WORKAROUND
+#include <fstream>
+
 namespace amr_wind {
 
 namespace {
@@ -69,6 +72,27 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
                 // expect to read transition_height history in netCDF input file
                 // weighting profile will be updated at every step
                 m_update_transition_height = true;
+
+                // ***WORKAROUND***
+                // after commenting out code to read in transition_heights from the WRF file (see FIXME lines)
+                std::string fname;
+                pp.get("transition_heights_file",fname);
+                std::ifstream datfile(fname);
+                amrex::Real tval, zval;
+                int ntimes = 0;
+                while (datfile >> tval >> zval)
+                {
+                    ntimes++;
+                }
+                datfile.clear();
+                datfile.seekg(0);
+                m_transition_height_hist.resize(ntimes);
+                amrex::Print() << "WORKAROUND: Reading transition heights from " << fname << std::endl;
+                for (int itime=0; itime < ntimes; itime++) {
+                    datfile >> tval >> zval;
+                    amrex::Print() << tval << " " << zval << std::endl;
+                }
+                amrex::Print() << "Note: the times in ABL.WRFforcing must match these " << ntimes << " values" << std::endl;
             }
         }
 

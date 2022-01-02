@@ -50,6 +50,9 @@ protected:
     bool m_update_transition_height = false;
     amrex::Real m_transition_thickness; // constant
 
+    // - WORKAROUND
+    amrex::Vector<amrex::Real> m_transition_height_hist;
+
     amrex::Vector<amrex::Real> m_weighting_heights; // constant or variable
     amrex::Vector<amrex::Real> m_weighting_values; // constant or variable
 
