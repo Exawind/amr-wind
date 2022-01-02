@@ -107,6 +107,8 @@ public:
 
     const amrex::Vector<amrex::Real>& wrf_tflux() const;
 
+    const amrex::Vector<amrex::Real>& wrf_transition_height() const;
+
     bool is_wrf_tendency_forcing() const;
 
     int nheights() const;
@@ -122,6 +124,9 @@ private:
     amrex::Vector<amrex::Real> m_wrf_v;
     amrex::Vector<amrex::Real> m_wrf_temp;
     amrex::Vector<amrex::Real> m_wrf_tflux;
+
+    // optional input for partial profile assimilation
+    amrex::Vector<amrex::Real> m_wrf_transition_height;
 
     int m_wrf_nheight;
     int m_wrf_ntime;
