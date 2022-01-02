@@ -199,6 +199,10 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
             //
             //m_transition_height = coeff_interp[0] * wrfFile->wrf_transition_height()[m_idx_time] +
             //                      coeff_interp[1] * wrfFile->wrf_transition_height()[m_idx_time + 1];
+
+            // WORKAROUND
+            m_transition_height = coeff_interp[0] * m_transition_height_hist[m_idx_time] +
+                                  coeff_interp[1] * m_transition_height_hist[m_idx_time + 1];
             amrex::Print() << "current transition height = " << m_transition_height << std::endl;
 
             setTransitionWeighting();

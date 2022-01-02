@@ -78,6 +78,7 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
                 std::string fname;
                 pp.get("transition_heights_file",fname);
                 std::ifstream datfile(fname);
+                AMREX_ALWAYS_ASSERT(datfile.is_open());
                 amrex::Real tval, zval;
                 int ntimes = 0;
                 while (datfile >> tval >> zval)
@@ -90,6 +91,7 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
                 amrex::Print() << "WORKAROUND: Reading transition heights from " << fname << std::endl;
                 for (int itime=0; itime < ntimes; itime++) {
                     datfile >> tval >> zval;
+                    m_transition_height_hist[itime] = zval;
                     amrex::Print() << tval << " " << zval << std::endl;
                 }
                 amrex::Print() << "Note: the times in ABL.WRFforcing must match these " << ntimes << " values" << std::endl;
