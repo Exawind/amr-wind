@@ -385,6 +385,104 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real cut_volume(
     return FL3D;
 }
 
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::GpuArray<amrex::Real, 8>
+cut_volume_oct(
+    amrex::Real m1, amrex::Real m2, amrex::Real m3, amrex::Real alpha) noexcept
+{
+    amrex::Real const_tiny = std::numeric_limits<amrex::Real>::epsilon();
+    amrex::GpuArray<amrex::Real, 8> out_vol;
+    amrex::Real al;
+    amrex::Real r1, r2, r3;
+    // Measuring octants - makes size 1/2
+    const amrex::Real dr0 = 0.5;
+
+    // Loop through octants and modify r values
+    for (int n = 0; n < 8; ++n) {
+
+        // Octants switch left-right, bottom-top, then back-front
+        r1 = amrex::Real(n % 2) * 0.5;
+        r2 = amrex::Real((n % 4) / 2) * 0.5;
+        r3 = amrex::Real(n / 4) * 0.5;
+
+        // move origin to x0
+        al = alpha - m1 * r1 - m2 * r2 - m3 * r3;
+
+        // reflect the figure when negative coefficients
+        al = al + amrex::max(0.0, -m1 * dr0) + amrex::max(0.0, -m2 * dr0) +
+             amrex::max(0.0, -m3 * dr0);
+
+        // normalized equation: m1*y1 + m2*y2 + m3*y3 = alh, with 0 <= m1 <= m2
+        // <= m3 the problem is then solved again in the unit cube
+        amrex::Real tmp =
+            std::abs(m1) * dr0 + std::abs(m2) * dr0 + std::abs(m3) * dr0;
+        amrex::Real n1 = std::abs(m1) / tmp; // need positive coefficients
+        amrex::Real n2 = std::abs(m2) / tmp;
+        amrex::Real n3 = std::abs(m3) / tmp;
+        al = amrex::max(
+            0.0, amrex::min(1.0, al / tmp)); // get new al within safe limits
+        amrex::Real al0 = amrex::min(al, 1.0 - al); // limit to: 0 < alh < 1/2
+
+        // Order coefficients
+        amrex::Real b1 = amrex::min(n1 * dr0, n2 * dr0); // order coefficients
+        amrex::Real b3 = amrex::max(n1 * dr0, n2 * dr0);
+        amrex::Real b2 = n3 * dr0;
+
+        if (b2 < b1) {
+            tmp = b1;
+            b1 = b2;
+            b2 = tmp;
+        } else if (b2 > b3) {
+            tmp = b3;
+            b3 = b2;
+            b2 = tmp;
+        }
+
+        amrex::Real b12 = b1 + b2;
+        // amrex::Real bm = amrex::min(b12, b3);
+        // amrex::Real pr = amrex::max(6.0 * m1 * m2 * m3, const_tiny);
+
+        // Compute volume fraction using Aoki Kawano (Computer & Fluids 2016)
+        // method
+        amrex::Real vm1 = b1;
+        amrex::Real vm3 = b3;
+        amrex::Real vm2 = b2;
+        amrex::Real vm12 = b12;
+        amrex::Real a = al0;
+        amrex::Real v = 0.0;
+
+        if (a > 0.0) {
+            if (a < vm1) {
+                v = a * a * a / (6.0 * vm1 * vm2 * vm3);
+            } else if (a < vm2) {
+                v = a * (a - vm1) / (2.0 * vm2 * vm3) +
+                    vm1 * vm1 / (6.0 * vm2 * vm3 + const_tiny);
+            } else if (a < amrex::min(vm12, vm3)) {
+                v = (a * a * (3.0 * vm12 - a) + vm1 * vm1 * (vm1 - 3.0 * a) +
+                     vm2 * vm2 * (vm2 - 3.0 * a)) /
+                    (6.0 * vm1 * vm2 * vm3);
+            } else if (vm3 < vm12) {
+                v = (a * a * (3.0 - 2.0 * a) + vm1 * vm1 * (vm1 - 3.0 * a) +
+                     vm2 * vm2 * (vm2 - 3.0 * a) +
+                     vm3 * vm3 * (vm3 - 3.0 * a)) /
+                    (6.0 * vm1 * vm2 * vm3);
+            } else {
+                v = (a - 0.5 * vm12) / vm3;
+            }
+        }
+
+        tmp = v;
+        amrex::Real FL3D;
+        if (al <= 0.5) {
+            FL3D = tmp; // * dr1 * dr2 * dr3;
+        } else {
+            FL3D = (1.0 - tmp); // * dr1 * dr2 * dr3;
+        }
+
+        out_vol[n] = FL3D;
+    }
+    return out_vol;
+}
+
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fit_plane(
     const int i,
     const int j,
