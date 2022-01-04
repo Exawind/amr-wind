@@ -41,9 +41,6 @@ private:
     //! Not const because calculation of VOF takes place during initialize
     CFDSim& m_sim;
 
-    //! Not const because calculation of VOF takes place during initialize
-    CFDSim& m_sim;
-
     //! Initial Rain Drop location
     amrex::Vector<amrex::Real> m_loc{{0.006, 0.006, 0.006}};
 

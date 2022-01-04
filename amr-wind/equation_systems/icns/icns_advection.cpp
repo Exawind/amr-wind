@@ -3,6 +3,7 @@
 #include "amr-wind/equation_systems/icns/icns_advection.H"
 #include "amr-wind/core/MLMGOptions.H"
 #include "amr-wind/utilities/console_io.H"
+#include "amr-wind/equation_systems/vof/vof_face_fv.H"
 
 #include "AMReX_MultiFabUtil.H"
 #include "hydro_MacProjector.H"
@@ -51,6 +52,10 @@ MacProjOp::MacProjOp(
 {
     amrex::ParmParse pp("incflo");
     pp.query("rho_0", m_rho_0);
+    amrex::ParmParse pp_multiphase("MultiPhase");
+    pp_multiphase.query("interface_capturing_method", m_icm);
+    pp_multiphase.query("density_fluid1", m_rho1);
+    pp_multiphase.query("density_fluid2", m_rho2);
 }
 
 void MacProjOp::init_projector(const MacProjOp::FaceFabPtrVec& beta) noexcept
@@ -154,14 +159,29 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
         amrex::Vector<amrex::Array<amrex::MultiFab*, ICNS::ndim>> rho_face(
             m_repo.num_active_levels());
 
+        // Check for VOF and create scratch field if used
+        std::unique_ptr<ScratchField> vof_half;
+        bool check_vof = (amrex::toLower(m_icm) != "levelset" && m_rho1 != 0.0);
+        if (check_vof) {
+            vof_half =
+                m_repo.create_scratch_field(6, 1, amr_wind::FieldLoc::CELL);
+        }
+
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
             rho_face[lev][0] = &(*rho_xf)(lev);
             rho_face[lev][1] = &(*rho_yf)(lev);
             rho_face[lev][2] = &(*rho_zf)(lev);
 
-            amrex::average_cellcenter_to_face(
-                rho_face[lev], density(lev), geom[lev]);
-
+            // Conditional - use different method when using VOF
+            // Since VOF is default capturing method, have to check this way
+            if (check_vof) {
+                amr_wind::multiphase::set_density_face_via_vof(
+                    rho_face[lev], m_repo.get_field("vof")(lev),
+                    (*vof_half)(lev), m_rho1, m_rho2);
+            } else {
+                amrex::average_cellcenter_to_face(
+                    rho_face[lev], density(lev), geom[lev]);
+            }
             if (m_mesh_mapping) {
                 mac_proj_to_uniform_space(
                     m_repo, u_mac, v_mac, w_mac, rho_face[lev], factor, lev);

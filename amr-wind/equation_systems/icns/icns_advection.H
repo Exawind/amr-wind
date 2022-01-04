@@ -46,6 +46,10 @@ private:
     bool m_variable_density{false};
     bool m_mesh_mapping{false};
     amrex::Real m_rho_0{1.0};
+
+    std::string m_icm{"none"};
+    amrex::Real m_rho1{0.0};
+    amrex::Real m_rho2{0.0};
 };
 
 /** Godunov scheme for ICNS
