@@ -6,6 +6,7 @@
 
 namespace amr_wind {
 
+// cppcheck-suppress uninitMemberVar
 GradientMagRefinement::GradientMagRefinement(const CFDSim& sim)
     : m_sim(sim)
     , m_gradmag_value(

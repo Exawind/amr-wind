@@ -45,7 +45,7 @@ private:
     void write_ascii();
 
     //! store the total kinetic energy
-    amrex::Real m_total_kinetic_energy;
+    amrex::Real m_total_kinetic_energy{0.0};
 
     //! Reference to the CFD sim
     CFDSim& m_sim;

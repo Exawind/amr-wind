@@ -40,7 +40,7 @@ private:
 
     amrex::Vector<amrex::Real> m_gradmag_value;
 
-    int m_max_lev_field;
+    int m_max_lev_field{-1};
 };
 
 } // namespace amr_wind

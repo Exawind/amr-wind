@@ -44,8 +44,8 @@ private:
     amrex::Vector<amrex::Real> m_field_error;
     amrex::Vector<amrex::Real> m_grad_error;
 
-    int m_max_lev_field;
-    int m_max_lev_grad;
+    int m_max_lev_field{-1};
+    int m_max_lev_grad{-1};
 };
 
 } // namespace amr_wind

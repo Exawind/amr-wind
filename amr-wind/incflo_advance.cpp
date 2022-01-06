@@ -220,10 +220,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
         if (m_use_godunov) {
             auto& velocity_forces = icns_fields.src_term;
             // only the old states are used in predictor
-            auto& divtau =
-                m_use_godunov
-                    ? icns_fields.diff_term
-                    : icns_fields.diff_term.state(amr_wind::FieldState::Old);
+            auto& divtau = icns_fields.diff_term;
 
             amr_wind::field_ops::add(
                 velocity_forces, divtau, 0, 0, AMREX_SPACEDIM, 0);

@@ -6,6 +6,7 @@
 
 namespace amr_wind {
 
+// cppcheck-suppress uninitMemberVar
 CurvatureRefinement::CurvatureRefinement(const CFDSim& sim)
     : m_sim(sim)
     , m_curv_value(

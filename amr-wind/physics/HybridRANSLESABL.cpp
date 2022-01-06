@@ -7,6 +7,7 @@
 namespace amr_wind {
 namespace hybrid_rans_les_abl {
 
+// cppcheck-suppress uninitMemberVar
 HybridRANSLESABL::HybridRANSLESABL(const CFDSim& sim) : m_sim(sim) {}
 
 /** Initialize the sdr field at the beginning of the simulation.
