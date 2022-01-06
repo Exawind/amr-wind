@@ -164,7 +164,9 @@ void FastIface::advance_turbine(const int local_id)
 void FastIface::init_turbine(const int local_id)
 {
     AMREX_ALWAYS_ASSERT(local_id < static_cast<int>(m_turbine_data.size()));
-    if (!m_is_initialized) allocate_fast_turbines();
+    if (!m_is_initialized) {
+        allocate_fast_turbines();
+    }
     auto& fi = *m_turbine_data[local_id];
 
     switch (fi.sim_mode) {

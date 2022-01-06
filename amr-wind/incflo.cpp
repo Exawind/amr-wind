@@ -42,7 +42,9 @@ void incflo::init_mesh()
     // Initialize I/O manager to enable restart and outputs
     auto& io_mgr = m_sim.io_manager();
     io_mgr.initialize_io();
-    for (auto& pp : m_sim.physics()) pp->pre_init_actions();
+    for (auto& pp : m_sim.physics()) {
+        pp->pre_init_actions();
+    }
 
     if (!io_mgr.is_restart()) {
         // This tells the AmrMesh class not to iterate when creating the initial
@@ -96,10 +98,14 @@ void incflo::init_amr_wind_modules()
         mask_node.setVal(1);
     }
 
-    for (auto& pp : m_sim.physics()) pp->post_init_actions();
+    for (auto& pp : m_sim.physics()) {
+        pp->post_init_actions();
+    }
 
     icns().initialize();
-    for (auto& eqn : scalar_eqns()) eqn->initialize();
+    for (auto& eqn : scalar_eqns()) {
+        eqn->initialize();
+    }
 
     m_sim.pde_manager().fillpatch_state_fields(m_time.current_time());
     m_sim.post_manager().post_init_actions();
@@ -117,7 +123,9 @@ void incflo::prepare_for_time_integration()
 {
     BL_PROFILE("amr-wind::incflo::prepare_for_time_integration");
     // Don't perform initial work if this is a restart
-    if (m_sim.io_manager().is_restart()) return;
+    if (m_sim.io_manager().is_restart()) {
+        return;
+    }
 
     if (m_do_initial_proj) {
         InitialProjection();
@@ -127,8 +135,12 @@ void incflo::prepare_for_time_integration()
     }
 
     // Plot initial distribution
-    if (m_time.write_plot_file()) m_sim.io_manager().write_plot_file();
-    if (m_time.write_checkpoint()) m_sim.io_manager().write_checkpoint_file();
+    if (m_time.write_plot_file()) {
+        m_sim.io_manager().write_plot_file();
+    }
+    if (m_time.write_checkpoint()) {
+        m_sim.io_manager().write_checkpoint_file();
+    }
 }
 
 /** Perform all initialization actions for AMR-Wind.
@@ -178,8 +190,12 @@ bool incflo::regrid_and_update()
         m_sim.pde_manager().fillpatch_state_fields(m_time.current_time());
 
         icns().post_regrid_actions();
-        for (auto& eqn : scalar_eqns()) eqn->post_regrid_actions();
-        for (auto& pp : m_sim.physics()) pp->post_regrid_actions();
+        for (auto& eqn : scalar_eqns()) {
+            eqn->post_regrid_actions();
+        }
+        for (auto& pp : m_sim.physics()) {
+            pp->post_regrid_actions();
+        }
         m_sim.post_manager().post_regrid_actions();
     }
 
@@ -204,10 +220,14 @@ void incflo::post_advance_work()
 
     m_sim.turbulence_model().post_advance_work();
 
-    for (auto& pp : m_sim.physics()) pp->post_advance_work();
+    for (auto& pp : m_sim.physics()) {
+        pp->post_advance_work();
+    }
 
     m_sim.post_manager().post_advance_work();
-    if (m_verbose > 1) PrintMaxValues("end of timestep");
+    if (m_verbose > 1) {
+        PrintMaxValues("end of timestep");
+    }
 
     if (m_time.write_plot_file()) {
         m_sim.io_manager().write_plot_file();
@@ -259,10 +279,13 @@ void incflo::Evolve()
                    << std::endl;
 
     // Output at final time
-    if (m_time.write_last_plot_file()) m_sim.io_manager().write_plot_file();
+    if (m_time.write_last_plot_file()) {
+        m_sim.io_manager().write_plot_file();
+    }
 
-    if (m_time.write_last_checkpoint())
+    if (m_time.write_last_checkpoint()) {
         m_sim.io_manager().write_checkpoint_file();
+    }
 }
 
 // Make a new level from scratch using provided BoxArray and
@@ -302,7 +325,9 @@ void incflo::init_physics_and_pde()
         bool activate_overset = false;
         pp.query("activate_overset", activate_overset);
 
-        if (activate_overset) m_sim.activate_overset();
+        if (activate_overset) {
+            m_sim.activate_overset();
+        }
     }
 
     auto& pde_mgr = m_sim.pde_manager();
@@ -313,10 +338,11 @@ void incflo::init_physics_and_pde()
     // Register density first so that we can compute its `n+1/2` state before
     // other scalars attempt to use it in their computations.
     if (!m_constant_density) {
-        if (!pde_mgr.scalar_eqns().empty())
+        if (!pde_mgr.scalar_eqns().empty()) {
             amrex::Abort(
                 "For non-constant density, it must be the first equation "
                 "registered for the scalar equations");
+        }
         pde_mgr.register_transport_pde("Density");
     }
 

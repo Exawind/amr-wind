@@ -144,10 +144,11 @@ void ABLFieldInit::perturb_temperature(
                     int i, int j, int k,
                     const amrex::RandomEngine& engine) noexcept {
                 const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                if (z < theta_cutoff_height)
+                if (z < theta_cutoff_height) {
                     theta(i, j, k) =
                         deltaT * amrex::RandomNormal(
                                      theta_gauss_mean, theta_gauss_var, engine);
+                }
             });
     }
 }

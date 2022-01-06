@@ -87,7 +87,9 @@ BoxRefiner::BoxRefiner(const CFDSim& /*unused*/, const std::string& key)
     const auto face_normals = compute_face_normals(hex_corners);
     // Index of the starting corner for each face in the hex nodes list
     const amrex::Vector<int> face_origin{0, 1, 0, 2, 0, 4};
-    for (int i = 0; i < 8; ++i) amrex::Print() << hex_corners[i] << std::endl;
+    for (int i = 0; i < 8; ++i) {
+        amrex::Print() << hex_corners[i] << std::endl;
+    }
 
     // Setup data on device
     m_hex_corners.resize(8);
@@ -132,10 +134,14 @@ void BoxRefiner::operator()(
             // Cell center w.r.t. to face origin
             const auto ptloc = pt - forigin;
 
-            if ((ptloc & face_normals[f]) > 0.0) inside = false;
+            if ((ptloc & face_normals[f]) > 0.0) {
+                inside = false;
+            }
         }
 
-        if (inside) tag(i, j, k) = amrex::TagBox::SET;
+        if (inside) {
+            tag(i, j, k) = amrex::TagBox::SET;
+        }
     });
 }
 

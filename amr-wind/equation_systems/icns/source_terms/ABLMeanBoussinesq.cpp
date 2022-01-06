@@ -120,7 +120,9 @@ void ABLMeanBoussinesq::mean_temperature_init(const FieldPlaneAveraging& tavg)
 
 void ABLMeanBoussinesq::mean_temperature_update(const FieldPlaneAveraging& tavg)
 {
-    if (m_const_profile) return;
+    if (m_const_profile) {
+        return;
+    }
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, tavg.line_average().begin(),
         tavg.line_average().end(), m_theta_vals.begin());
@@ -139,7 +141,9 @@ void ABLMeanBoussinesq::read_temperature_profile(std::string profile_file_name)
     theta_vals.resize(n_hts);
     m_theta_ht.resize(n_hts);
     m_theta_vals.resize(n_hts);
-    for (int i = 0; i < n_hts; i++) infile >> theta_ht[i] >> theta_vals[i];
+    for (int i = 0; i < n_hts; i++) {
+        infile >> theta_ht[i] >> theta_vals[i];
+    }
     infile.close();
 
     // Now copy to GPU Device memory

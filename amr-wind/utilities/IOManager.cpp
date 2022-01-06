@@ -44,20 +44,29 @@ void IOManager::initialize_io()
     pp.queryarr("skip_outputs", out_skip_vars);
 
     // We process the input vector to eliminate duplicates
-    for (const auto& name : out_vars) outputs.insert(name);
-    for (const auto& name : out_skip_vars) skip_outputs.insert(name);
-    for (const auto& name : out_int_vars) int_outputs.insert(name);
+    for (const auto& name : out_vars) {
+        outputs.insert(name);
+    }
+    for (const auto& name : out_skip_vars) {
+        skip_outputs.insert(name);
+    }
+    for (const auto& name : out_int_vars) {
+        int_outputs.insert(name);
+    }
 
     // If the user hasn't disabled default output variables, then we append them
     // to the list so that we don't end up with any duplicates (in case user
     // also added the variable explicitly in the input file)
     if (m_output_default_vars) {
         for (const auto& name : m_pltvars_default) {
-            if (skip_outputs.find(name) == skip_outputs.end())
+            if (skip_outputs.find(name) == skip_outputs.end()) {
                 outputs.insert(name);
+            }
         }
 
-        for (const auto& name : m_int_pltvars_default) int_outputs.insert(name);
+        for (const auto& name : m_int_pltvars_default) {
+            int_outputs.insert(name);
+        }
     }
 
     amrex::Print() << "Initializing I/O manager" << std::endl;
@@ -258,7 +267,9 @@ void IOManager::read_checkpoint_fields(
 
 void IOManager::write_header(const std::string& chkname, const int start_level)
 {
-    if (!amrex::ParallelDescriptor::IOProcessor()) return;
+    if (!amrex::ParallelDescriptor::IOProcessor()) {
+        return;
+    }
 
     const std::string hdr_name(chkname + "/Header");
     amrex::VisMF::IO_Buffer io_buf(amrex::VisMF::IO_Buffer_Size);
@@ -286,9 +297,13 @@ void IOManager::write_header(const std::string& chkname, const int start_level)
         << time.deltaTNm2() << "\n";
 
     const auto geom = mesh.Geom(0);
-    for (int i = 0; i < AMREX_SPACEDIM; ++i) hdr << geom.ProbLo(i) << " ";
+    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+        hdr << geom.ProbLo(i) << " ";
+    }
     hdr << "\n";
-    for (int i = 0; i < AMREX_SPACEDIM; ++i) hdr << geom.ProbHi(i) << " ";
+    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+        hdr << geom.ProbHi(i) << " ";
+    }
     hdr << "\n";
 
     for (int lev = start_level; lev < mesh.finestLevel() + 1; ++lev) {
@@ -301,7 +316,9 @@ void IOManager::write_header(const std::string& chkname, const int start_level)
 
 void IOManager::write_info_file(const std::string& path)
 {
-    if (!amrex::ParallelDescriptor::IOProcessor()) return;
+    if (!amrex::ParallelDescriptor::IOProcessor()) {
+        return;
+    }
 
     const std::string dash_line = "\n" + std::string(78, '-') + "\n";
     const std::string fname(path + "/amr_wind_info");
@@ -319,8 +336,9 @@ void IOManager::write_info_file(const std::string& path)
            << "    num. boxes = " << mesh.boxArray().size() << "\n"
            << "    maximum zones = ";
 
-        for (int dir = 0; dir < AMREX_SPACEDIM; ++dir)
+        for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
             fh << mesh.Geom(lev).Domain().length(dir) << " ";
+        }
         fh << "\n";
     }
 

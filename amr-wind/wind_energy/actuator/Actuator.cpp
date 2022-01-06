@@ -52,7 +52,9 @@ void Actuator::post_init_actions()
     BL_PROFILE("amr-wind::actuator::Actuator::post_init_actions");
 
     amrex::Vector<int> act_proc_count(amrex::ParallelDescriptor::NProcs(), 0);
-    for (auto& act : m_actuators) act->determine_root_proc(act_proc_count);
+    for (auto& act : m_actuators) {
+        act->determine_root_proc(act_proc_count);
+    }
 
     {
         // Sanity check that we have processed the turbines correctly
@@ -61,7 +63,9 @@ void Actuator::post_init_actions()
         AMREX_ALWAYS_ASSERT(num_actuators() == nact);
     }
 
-    for (auto& act : m_actuators) act->init_actuator_source();
+    for (auto& act : m_actuators) {
+        act->init_actuator_source();
+    }
 
     setup_container();
     update_positions();
@@ -73,7 +77,9 @@ void Actuator::post_init_actions()
 
 void Actuator::post_regrid_actions()
 {
-    for (auto& act : m_actuators) act->determine_influenced_procs();
+    for (auto& act : m_actuators) {
+        act->determine_influenced_procs();
+    }
 
     setup_container();
 }

@@ -35,8 +35,9 @@ OneEqKsgsM84<Transport>::OneEqKsgsM84(CFDSim& sim)
 {
 
     auto& phy_mgr = this->m_sim.physics_manager();
-    if (!phy_mgr.contains("ABL"))
+    if (!phy_mgr.contains("ABL")) {
         amrex::Abort("OneEqKsgsM84 model only works with ABL physics");
+    }
 
     {
         const std::string coeffs_dict = this->model_name() + "_coeffs";
@@ -130,12 +131,13 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
                           gradT_arr(i, j, k, 1) * gravity[1] +
                           gradT_arr(i, j, k, 2) * gravity[2]) *
                         beta;
-                    if (stratification > 1e-10)
+                    if (stratification > 1e-10) {
                         tlscale_arr(i, j, k) = amrex::min(
                             ds, 0.76 * std::sqrt(
                                            tke_arr(i, j, k) / stratification));
-                    else
+                    } else {
                         tlscale_arr(i, j, k) = ds;
+                    }
 
                     mu_arr(i, j, k) = rho_arr(i, j, k) * Ce *
                                       tlscale_arr(i, j, k) *
@@ -218,7 +220,9 @@ template <typename Transport>
 void OneEqKsgsM84<Transport>::post_advance_work()
 {
 
-    if (!m_hybrid_rl) return;
+    if (!m_hybrid_rl) {
+        return;
+    }
 
     BL_PROFILE("amr-wind::" + this->identifier() + "::post_advance_work");
 

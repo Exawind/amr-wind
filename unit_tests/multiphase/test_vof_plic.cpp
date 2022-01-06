@@ -42,9 +42,15 @@ void initialize_volume_fractions(
     // grow the box by 1 so that x,y,z go out of bounds and min(max()) corrects
     // it and it fills the ghosts with wall values
     amrex::ParallelFor(grow(bx, 1), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-        if (i + k > 3) vof_arr(i, j, k) = 0.0;
-        if (i + k == 3) vof_arr(i, j, k) = 0.5;
-        if (i + k < 3) vof_arr(i, j, k) = 1.0;
+        if (i + k > 3) {
+            vof_arr(i, j, k) = 0.0;
+        }
+        if (i + k == 3) {
+            vof_arr(i, j, k) = 0.5;
+        }
+        if (i + k < 3) {
+            vof_arr(i, j, k) = 1.0;
+        }
     });
 }
 

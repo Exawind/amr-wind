@@ -84,7 +84,9 @@ void ChannelFlow::initialize_fields(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 const int n_ind = idxOp(i, j, k);
                 amrex::Real h = problo[n_idx] + (n_ind + 0.5) * dx[n_idx];
-                if (h > 1.0) h = 2.0 - h;
+                if (h > 1.0) {
+                    h = 2.0 - h;
+                }
                 wd(i, j, k) = h;
                 const amrex::Real hp = h / y_tau;
                 vel(i, j, k, 0) =

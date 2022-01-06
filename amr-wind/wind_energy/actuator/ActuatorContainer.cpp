@@ -358,7 +358,9 @@ void ActuatorContainer::compute_local_coordinates()
 
         const int nbx = dm.size();
         for (int i = 0; (i < nbx) && !assigned; ++i) {
-            if (dm[i] != iproc) continue;
+            if (dm[i] != iproc) {
+                continue;
+            }
 
             const auto& geom = m_mesh.Geom(lev);
             const auto& dx = geom.CellSize();

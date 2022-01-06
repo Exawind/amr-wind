@@ -27,13 +27,16 @@ void VorticityMagRefinement::initialize(const std::string& key)
 
     pp.queryarr("values", vort_value);
 
-    if (vort_value.empty())
+    if (vort_value.empty()) {
         amrex::Abort(
             "VorticityMagRefinement: Must specify at least one of value");
+    }
 
     {
         size_t fcount = std::min(vort_value.size(), m_vort_value.size());
-        for (size_t i = 0; i < fcount; ++i) m_vort_value[i] = vort_value[i];
+        for (size_t i = 0; i < fcount; ++i) {
+            m_vort_value[i] = vort_value[i];
+        }
         m_max_lev_field = fcount - 1;
     }
 }
@@ -43,7 +46,9 @@ void VorticityMagRefinement::operator()(
 {
     const bool tag_field = level <= m_max_lev_field;
 
-    if (!tag_field) return;
+    if (!tag_field) {
+        return;
+    }
 
     m_vel->fillpatch(level, time, (*m_vel)(level), 1);
 
@@ -82,7 +87,9 @@ void VorticityMagRefinement::operator()(
                     std::pow(uy - vx, 2) + std::pow(vz - wy, 2) +
                     std::pow(wx - uz, 2));
 
-                if (vort > vort_val) tag(i, j, k) = amrex::TagBox::SET;
+                if (vort > vort_val) {
+                    tag(i, j, k) = amrex::TagBox::SET;
+                }
             });
     }
 }

@@ -129,7 +129,9 @@ void fixup_eta_on_domain_faces(
 
     const Box& domain = geom.Domain();
     MFItInfo mfi_info{};
-    if (Gpu::notInLaunchRegion()) mfi_info.SetDynamic(true);
+    if (Gpu::notInLaunchRegion()) {
+        mfi_info.SetDynamic(true);
+    }
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif

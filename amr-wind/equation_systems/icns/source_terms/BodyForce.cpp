@@ -19,7 +19,9 @@ BodyForce::BodyForce(const CFDSim& sim) : m_time(sim.time())
     pp.query("type", m_type);
     m_type = amrex::toLower(m_type);
     pp.getarr("magnitude", m_body_force);
-    if (m_type == "oscillatory") pp.get("angular_frequency", m_omega);
+    if (m_type == "oscillatory") {
+        pp.get("angular_frequency", m_omega);
+    }
 }
 
 BodyForce::~BodyForce() = default;

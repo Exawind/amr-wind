@@ -230,7 +230,9 @@ void get_lr_indices(
 
     il = static_cast<int>(amrex::Math::floor(xbox / turb_grid.dx[dir]));
     ir = il + 1;
-    if (ir >= turb_grid.box_dims[dir]) ir -= turb_grid.box_dims[dir];
+    if (ir >= turb_grid.box_dims[dir]) {
+        ir -= turb_grid.box_dims[dir];
+    }
 }
 
 /** Determine the left/right indices for a given point along a particular
@@ -261,7 +263,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void get_lr_indices(
 
     il = static_cast<int>(amrex::Math::floor(xbox / turb_grid.dx[dir]));
     ir = il + 1;
-    if (ir >= turb_grid.box_dims[dir]) ir -= turb_grid.box_dims[dir];
+    if (ir >= turb_grid.box_dims[dir]) {
+        ir -= turb_grid.box_dims[dir];
+    }
 
     const amrex::Real xfrac = xbox - turb_grid.dx[dir] * il;
     rxl = xfrac / turb_grid.dx[dir];
@@ -322,7 +326,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void interp_perturb_vel(
                wt.yr * wt.zr * t_grid.wvel[qidx[2]] +
                wt.yl * wt.zr * t_grid.wvel[qidx[3]];
 
-    for (int& i : qidx) i += nynz;
+    for (int& i : qidx) {
+        i += nynz;
+    }
 
     // Right quad (t = t+deltaT)
     vel_r[0] = wt.yl * wt.zl * t_grid.uvel[qidx[0]] +
@@ -476,7 +482,9 @@ void SyntheticTurbulence::initialize_fields(
 
 void SyntheticTurbulence::pre_advance_work()
 {
-    if (m_is_init) initialize();
+    if (m_is_init) {
+        initialize();
+    }
 
     update();
 }
@@ -510,9 +518,10 @@ void SyntheticTurbulence::update()
         turb_grid, 0, eqiv_len, weights.il, weights.ir, weights.xl, weights.xr);
 
     // Check if we need to refresh the planes
-    if (weights.il != m_turb_grid.ileft)
+    if (weights.il != m_turb_grid.ileft) {
         load_turb_plane_data(
             m_turb_filename, m_turb_grid, weights.il, weights.ir);
+    }
 
     if (m_mean_wind_type == "ConstValue") {
         update_impl(turb_grid, weights, m_wind_profile->device_instance());

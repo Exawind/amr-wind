@@ -27,13 +27,16 @@ void QCriterionRefinement::initialize(const std::string& key)
 
     pp.queryarr("values", qc_value);
 
-    if (qc_value.empty())
+    if (qc_value.empty()) {
         amrex::Abort(
             "QCriterionRefinement: Must specify at least one of value");
+    }
 
     {
         size_t fcount = std::min(qc_value.size(), m_qc_value.size());
-        for (size_t i = 0; i < fcount; ++i) m_qc_value[i] = qc_value[i];
+        for (size_t i = 0; i < fcount; ++i) {
+            m_qc_value[i] = qc_value[i];
+        }
         m_max_lev_field = fcount - 1;
     }
 
@@ -45,7 +48,9 @@ void QCriterionRefinement::operator()(
 {
     const bool tag_field = level <= m_max_lev_field;
 
-    if (!tag_field) return;
+    if (!tag_field) {
+        return;
+    }
 
     m_vel->fillpatch(level, time, (*m_vel)(level), 1);
 
@@ -100,10 +105,11 @@ void QCriterionRefinement::operator()(
                 const auto qc_nondim =
                     0.5 * (W2 / amrex::max(S2, 1.0e-12) - 1.0);
 
-                if (nondim && qc_nondim > qc_val)
+                if (nondim && qc_nondim > qc_val) {
                     tag(i, j, k) = amrex::TagBox::SET;
-                else if (!nondim && amrex::Math::abs(qc) > qc_val)
+                } else if (!nondim && amrex::Math::abs(qc) > qc_val) {
                     tag(i, j, k) = amrex::TagBox::SET;
+                }
             });
     }
 }

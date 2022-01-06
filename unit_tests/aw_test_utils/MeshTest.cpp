@@ -15,7 +15,9 @@ void MeshTest::create_mesh_instance()
 
 void MeshTest::initialize_mesh()
 {
-    if (m_need_params) populate_parameters();
+    if (m_need_params) {
+        populate_parameters();
+    }
     create_mesh_instance();
 
     m_mesh->initialize_mesh(0.0);

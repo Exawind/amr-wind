@@ -23,8 +23,12 @@ void inject_turbulence_src_terms(
 
     // There are source terms defined by user... so need to combine terms
     std::set<std::string> sterm_set;
-    for (const auto& sname : srcin) sterm_set.insert(sname);
-    for (const auto& sname : terms) sterm_set.insert(sname);
+    for (const auto& sname : srcin) {
+        sterm_set.insert(sname);
+    }
+    for (const auto& sname : terms) {
+        sterm_set.insert(sname);
+    }
 
     // Now convert the combined terms back into a vector for insertion in input
     // dictionary
@@ -32,7 +36,9 @@ void inject_turbulence_src_terms(
 
     // Prefer to use emplace_back here
     // cppcheck-suppress useStlAlgorithm
-    for (const auto& sname : sterm_set) srcin.emplace_back(sname);
+    for (const auto& sname : sterm_set) {
+        srcin.emplace_back(sname);
+    }
     pp.addarr("sources", srcin);
 }
 

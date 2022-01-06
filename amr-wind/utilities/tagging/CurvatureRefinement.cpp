@@ -27,12 +27,15 @@ void CurvatureRefinement::initialize(const std::string& key)
     amrex::Vector<double> curv_value;
     pp.queryarr("values", curv_value);
 
-    if ((curv_value.empty()))
+    if ((curv_value.empty())) {
         amrex::Abort("CurvatureRefinement: Must specify at least one value");
+    }
 
     {
         size_t fcount = std::min(curv_value.size(), m_curv_value.size());
-        for (size_t i = 0; i < fcount; ++i) m_curv_value[i] = curv_value[i];
+        for (size_t i = 0; i < fcount; ++i) {
+            m_curv_value[i] = curv_value[i];
+        }
         m_max_lev_field = fcount - 1;
     }
 }
@@ -112,7 +115,9 @@ void CurvatureRefinement::operator()(
                     std::pow(phix * phix + phiy * phiy + phiz * phiz, 1.5);
                 const auto curv_min =
                     std::min(curv_val, std::cbrt(idx[0] * idx[1] * idx[2]));
-                if (curv_mag > curv_min) tag(i, j, k) = amrex::TagBox::SET;
+                if (curv_mag > curv_min) {
+                    tag(i, j, k) = amrex::TagBox::SET;
+                }
             });
     }
 }

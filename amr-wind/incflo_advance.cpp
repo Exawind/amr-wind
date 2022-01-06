@@ -24,7 +24,9 @@ void incflo::pre_advance_stage1()
 void incflo::pre_advance_stage2()
 {
     BL_PROFILE("amr-wind::incflo::pre_advance_stage2");
-    for (auto& pp : m_sim.physics()) pp->pre_advance_work();
+    for (auto& pp : m_sim.physics()) {
+        pp->pre_advance_work();
+    }
 }
 
 /** Advance simulation state by one timestep
@@ -52,7 +54,9 @@ void incflo::advance()
 
     ApplyPredictor();
 
-    if (!m_use_godunov) ApplyCorrector();
+    if (!m_use_godunov) {
+        ApplyCorrector();
+    }
 }
 
 // Apply predictor step
@@ -167,12 +171,15 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // We use the new time value for things computed on the "*" state
     Real new_time = m_time.new_time();
 
-    if (m_verbose > 2) PrintMaxValues("before predictor step");
+    if (m_verbose > 2) {
+        PrintMaxValues("before predictor step");
+    }
 
-    if (m_use_godunov)
+    if (m_use_godunov) {
         amr_wind::io::print_mlmg_header("Godunov:");
-    else
+    } else {
         amr_wind::io::print_mlmg_header("Predictor:");
+    }
 
     auto& icns_fields = icns().fields();
     auto& velocity_new = icns_fields.field;
@@ -188,8 +195,9 @@ void incflo::ApplyPredictor(bool incremental_projection)
     m_sim.turbulence_model().update_turbulent_viscosity(
         amr_wind::FieldState::Old);
     icns().compute_mueff(amr_wind::FieldState::Old);
-    for (auto& eqns : scalar_eqns())
+    for (auto& eqns : scalar_eqns()) {
         eqns->compute_mueff(amr_wind::FieldState::Old);
+    }
 
     // *************************************************************************************
     // Define the forcing terms to use in the Godunov prediction
@@ -232,10 +240,11 @@ void incflo::ApplyPredictor(bool incremental_projection)
 
             eqn->compute_diffusion_term(amr_wind::FieldState::Old);
 
-            if (m_use_godunov)
+            if (m_use_godunov) {
                 amr_wind::field_ops::add(
                     eqn->fields().src_term, eqn->fields().diff_term, 0, 0,
                     field.num_comp(), 0);
+            }
         }
     }
 
@@ -426,7 +435,9 @@ void incflo::ApplyCorrector()
     // We use the new time value for things computed on the "*" state
     Real new_time = m_time.new_time();
 
-    if (m_verbose > 2) PrintMaxValues("before corrector step");
+    if (m_verbose > 2) {
+        PrintMaxValues("before corrector step");
+    }
 
     amr_wind::io::print_mlmg_header("Corrector:");
 
@@ -450,8 +461,9 @@ void incflo::ApplyCorrector()
     m_sim.turbulence_model().update_turbulent_viscosity(
         amr_wind::FieldState::New);
     icns().compute_mueff(amr_wind::FieldState::New);
-    for (auto& eqns : scalar_eqns())
+    for (auto& eqns : scalar_eqns()) {
         eqns->compute_mueff(amr_wind::FieldState::New);
+    }
 
     // Here we create divtau of the (n+1,*) state that was computed in the
     // predictor;

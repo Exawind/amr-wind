@@ -135,12 +135,14 @@ void collect_parse_dependencies(
     const std::string& p2,
     std::ostringstream& ss)
 {
-    if (pp.contains(p1) && !pp.contains(p2))
+    if (pp.contains(p1) && !pp.contains(p2)) {
         ss << "UniformCt Dependency Missing: " << p2 << " required with " << p1
            << std::endl;
-    if (!pp.contains(p1) && pp.contains(p2))
+    }
+    if (!pp.contains(p1) && pp.contains(p2)) {
         ss << "UniformCt Dependency Missing: " << p1 << " required with " << p2
            << std::endl;
+    }
 }
 
 void required_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp)
@@ -271,17 +273,19 @@ void check_for_parse_conflicts(const utils::ActParser& pp)
     if (pp.contains("wind_speed")) {
         RealList vel;
         pp.getarr("wind_speed", vel);
-        if (vel.size() != ct.size())
+        if (vel.size() != ct.size()) {
             error_collector << "UniformCt Conflict: wind_speed and "
                                "thrust_coeff must have the same number of "
                                "values"
                             << std::endl;
+        }
     }
 
-    if (!error_collector.str().empty())
+    if (!error_collector.str().empty()) {
         amrex::Abort(
             "Errors found while parsing in Actuator.UniformCt:\n" +
             error_collector.str());
+    }
 }
 
 void compute_and_normalize_coplanar_vector(UniformCt::MetaType& meta)

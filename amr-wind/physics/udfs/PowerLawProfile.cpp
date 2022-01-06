@@ -28,7 +28,9 @@ PowerLawProfile::PowerLawProfile(const Field& fld)
     m_op.uref = vs::mag(vs::Vector{vel[0], vel[1], vel[2]});
     m_op.umin /= m_op.uref;
     m_op.umax /= m_op.uref;
-    for (int i = 0; i < AMREX_SPACEDIM; ++i) m_op.uvec[i] = vel[i];
+    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+        m_op.uvec[i] = vel[i];
+    }
 }
 
 } // namespace udf

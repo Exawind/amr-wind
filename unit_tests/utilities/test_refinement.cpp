@@ -29,7 +29,9 @@ protected:
     void ErrorEst(
         int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow) override
     {
-        for (auto& ref : m_refine_crit) (*ref)(lev, tags, time, ngrow);
+        for (auto& ref : m_refine_crit) {
+            (*ref)(lev, tags, time, ngrow);
+        }
     }
 
 private:

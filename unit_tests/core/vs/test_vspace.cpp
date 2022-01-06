@@ -129,8 +129,9 @@ void test_device_lists_impl()
         amrex::Gpu::deviceToHost, dvectors.begin(), dvectors.end(),
         hvectors.begin());
 
-    for (int i = 0; i < 3; ++i)
+    for (int i = 0; i < 3; ++i) {
         EXPECT_NEAR(vs::mag(htrue[i] - hvectors[i]), 0.0, tol);
+    }
 }
 
 } // namespace

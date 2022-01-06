@@ -51,9 +51,11 @@ TEST_F(SecondMomentAveragingTest, test_constant)
         uu();
 
         amrex::Real x = 0.5 * (problo[dir] + probhi[dir]);
-        for (int i = 0; i < 3; ++i)
-            for (int j = 0; j < 3; ++j)
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 3; ++j) {
                 EXPECT_NEAR(uu.line_average_interpolated(x, i, j), 0.0, tol);
+            }
+        }
     }
 }
 

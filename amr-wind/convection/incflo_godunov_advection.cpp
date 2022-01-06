@@ -360,10 +360,11 @@ void godunov::compute_fluxes(
                      ? 0.5 * (stl + sth)
                      : qx;
 
-            if (iconserv[n] != 0)
+            if (iconserv[n] != 0) {
                 fx(i, j, k, n) = umac(i, j, k) * qx;
-            else
+            } else {
                 fx(i, j, k, n) = qx;
+            }
         });
 
     //
@@ -466,10 +467,11 @@ void godunov::compute_fluxes(
                      ? 0.5 * (stl + sth)
                      : qy;
 
-            if (iconserv[n] != 0)
+            if (iconserv[n] != 0) {
                 fy(i, j, k, n) = vmac(i, j, k) * qy;
-            else
+            } else {
                 fy(i, j, k, n) = qy;
+            }
         });
 
     //
@@ -571,10 +573,11 @@ void godunov::compute_fluxes(
                      ? 0.5 * (stl + sth)
                      : qz;
 
-            if (iconserv[n] != 0)
+            if (iconserv[n] != 0) {
                 fz(i, j, k, n) = wmac(i, j, k) * qz;
-            else
+            } else {
                 fz(i, j, k, n) = qz;
+            }
         });
 }
 

@@ -89,8 +89,9 @@ TEST(Configuration, GPU)
 
 TEST(Configuration, TPLs)
 {
-    if (amrex::ParallelDescriptor::IOProcessor())
+    if (amrex::ParallelDescriptor::IOProcessor()) {
         amr_wind::io::print_tpls(std::cout);
+    }
 }
 
 } // namespace amr_wind_tests
