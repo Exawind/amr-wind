@@ -73,8 +73,6 @@ protected:
     int m_num_sc_inputs{0};
     int m_num_sc_outputs{0};
 
-    // char m_errmsg[fast_strlen()];
-
     bool m_is_initialized{false};
 };
 
