@@ -107,13 +107,13 @@ public:
             m_solver_scalar.reset(new amrex::MLABecLaplacian(
                 mesh.Geom(0, mesh.finestLevel()),
                 mesh.boxArray(0, mesh.finestLevel()),
-                mesh.DistributionMap(0, mesh.finestLevel()), imask, isolve,
-                {}, AMREX_SPACEDIM));
+                mesh.DistributionMap(0, mesh.finestLevel()), imask, isolve, {},
+                AMREX_SPACEDIM));
             m_applier_scalar.reset(new amrex::MLABecLaplacian(
                 mesh.Geom(0, mesh.finestLevel()),
                 mesh.boxArray(0, mesh.finestLevel()),
-                mesh.DistributionMap(0, mesh.finestLevel()), imask, iapply,
-                {}, AMREX_SPACEDIM));
+                mesh.DistributionMap(0, mesh.finestLevel()), imask, iapply, {},
+                AMREX_SPACEDIM));
         }
 
         m_solver_scalar->setMaxOrder(m_options.max_order);
