@@ -45,7 +45,7 @@ void FieldRefinement::initialize(const std::string& key)
         m_max_lev_field = fcount - 1;
     }
     {
-        int fcount = std::min(grad_err.size(), m_grad_error.size());
+        const int fcount = std::min(grad_err.size(), m_grad_error.size());
         for (int i = 0; i < fcount; ++i) {
             m_grad_error[i] = grad_err[i];
         }

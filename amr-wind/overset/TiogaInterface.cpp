@@ -235,7 +235,7 @@ void TiogaInterface::amr_to_tioga_mesh()
         ngrids_global += mesh.boxArray(lev).size();
 
         const auto& dmap = mesh.DistributionMap(lev);
-        for (size_t d = 0; d < static_cast<size_t>(dmap.size()); ++d) {
+        for (long d = 0; d < dmap.size(); ++d) {
             if (dmap[d] == iproc) {
                 ++ngrids_local;
             }
@@ -255,7 +255,7 @@ void TiogaInterface::amr_to_tioga_mesh()
         const amrex::Real* dx = mesh.Geom(lev).CellSize();
 
         auto& ad = *m_amr_data;
-        for (size_t d = 0; d < static_cast<size_t>(dm.size()); ++d) {
+        for (long d = 0; d < dm.size(); ++d) {
             ad.level.h_view[iix] = lev;      // AMR Level of this patch
             ad.mpi_rank.h_view[iix] = dm[d]; // MPI rank of this patch
             ad.local_id.h_view[iix] =
