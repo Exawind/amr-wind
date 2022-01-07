@@ -6,7 +6,6 @@
 
 namespace amr_wind {
 
-// cppcheck-suppress uninitMemberVar
 FieldRefinement::FieldRefinement(const CFDSim& sim)
     : m_sim(sim)
     , m_field_error(

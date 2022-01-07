@@ -6,7 +6,6 @@
 
 namespace amr_wind {
 
-// cppcheck-suppress uninitMemberVar
 QCriterionRefinement::QCriterionRefinement(const CFDSim& sim)
     : m_sim(sim)
     , m_qc_value(

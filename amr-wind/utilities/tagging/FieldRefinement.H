@@ -39,7 +39,7 @@ public:
 private:
     const CFDSim& m_sim;
 
-    Field* m_field;
+    Field* m_field{nullptr};
 
     amrex::Vector<amrex::Real> m_field_error;
     amrex::Vector<amrex::Real> m_grad_error;

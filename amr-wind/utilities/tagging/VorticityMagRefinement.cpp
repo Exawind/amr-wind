@@ -6,7 +6,6 @@
 
 namespace amr_wind {
 
-// cppcheck-suppress uninitMemberVar
 VorticityMagRefinement::VorticityMagRefinement(const CFDSim& sim)
     : m_sim(sim)
     , m_vort_value(

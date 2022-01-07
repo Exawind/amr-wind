@@ -37,7 +37,7 @@ public:
 private:
     const CFDSim& m_sim;
 
-    Field* m_vel;
+    Field* m_vel{nullptr};
 
     amrex::Vector<amrex::Real> m_vort_value;
 
