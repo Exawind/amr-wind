@@ -36,7 +36,7 @@ public:
 private:
     const CFDSim& m_sim;
 
-    Field* m_field;
+    Field* m_field{nullptr};
 
     amrex::Vector<amrex::Real> m_curv_value;
 
