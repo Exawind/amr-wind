@@ -38,8 +38,8 @@ public:
 private:
     const CFDSim& m_sim;
 
-    Field* m_tke;
-    Field* m_sdr;
+    Field* m_tke{nullptr};
+    Field* m_sdr{nullptr};
 
     //! Turbulence model constant
     amrex::Real m_Ce{0.1};
