@@ -33,8 +33,8 @@ void VorticityMagRefinement::initialize(const std::string& key)
     }
 
     {
-        size_t fcount = std::min(vort_value.size(), m_vort_value.size());
-        for (size_t i = 0; i < fcount; ++i) {
+        const int fcount = std::min(vort_value.size(), m_vort_value.size());
+        for (int i = 0; i < fcount; ++i) {
             m_vort_value[i] = vort_value[i];
         }
         m_max_lev_field = fcount - 1;

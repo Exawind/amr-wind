@@ -76,7 +76,7 @@ void ABLMeanBoussinesq::operator()(
     // cell-centers for the lo/hi cells.
     //
     const int idir = m_axis;
-    const int nh_max = m_theta_ht.size() - 2;
+    const int nh_max = static_cast<int>(m_theta_ht.size()) - 2;
     const int lp1 = lev + 1;
     const amrex::Real* theights = m_theta_ht.data();
     const amrex::Real* tvals = m_theta_vals.data();

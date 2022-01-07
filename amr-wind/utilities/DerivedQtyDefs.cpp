@@ -113,7 +113,7 @@ FieldComponents::FieldComponents(
     m_fld = &repo.get_field(args[0]);
     AMREX_ALWAYS_ASSERT(static_cast<int>(nargs - 1) < m_fld->num_comp());
 
-    m_ncomp = nargs - 1;
+    m_ncomp = static_cast<int>(nargs) - 1;
     m_comp.resize(nargs - 1);
     for (size_t i = 1; i < nargs; ++i) {
         m_comp[i - 1] = std::stoi(args[i]);

@@ -371,7 +371,7 @@ void FieldRepo::allocate_field_data(const IntField& field)
     }
 }
 
-Field& FieldRepo::create_state(Field& infield, const FieldState fstate) noexcept
+Field& FieldRepo::create_state(Field& infield, const FieldState fstate)
 {
     BL_PROFILE("amr-wind::FieldRepo::create_state");
     AMREX_ASSERT((fstate == FieldState::NPH));

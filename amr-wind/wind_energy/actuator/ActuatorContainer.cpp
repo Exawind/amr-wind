@@ -381,7 +381,8 @@ void ActuatorContainer::compute_local_coordinates()
 
     // Share position vectors with every process
     amrex::ParallelDescriptor::ReduceRealSum(
-        &(m_proc_pos[0].x()), m_proc_pos.size() * vs::Vector::ncomp);
+        &(m_proc_pos[0].x()),
+        static_cast<int>(m_proc_pos.size()) * vs::Vector::ncomp);
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, m_proc_pos.begin(), m_proc_pos.end(),
         m_pos_device.begin());
