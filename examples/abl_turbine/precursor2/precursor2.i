@@ -1,7 +1,7 @@
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            SIMULATION STOP            #
 #.......................................#
-time.stop_time               =   20100.0     # Max (simulated) time to evolve
+time.stop_time               =   22000.0     # Max (simulated) time to evolve
 time.max_step                =   44000          # Max number of time steps
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
@@ -13,6 +13,7 @@ time.cfl              =   0.95         # CFL factor
 #.......................................#
 time.plot_interval            =  5000       # Steps between plot files
 time.checkpoint_interval      =  5000       # Steps between checkpoint files
+io.restart_file = "../precursor/chk40000"
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
 #.......................................#
@@ -22,12 +23,9 @@ incflo.use_godunov = 1
 transport.viscosity = 1.0e-5
 transport.laminar_prandtl = 0.7
 transport.turbulent_prandtl = 0.3333
-#turbulence.model = Smagorinsky
-turbulence.model = OneEqKsgsM84
-TKE.source_terms = KsgsM84Src
+turbulence.model = Smagorinsky
 Smagorinsky_coeffs.Cs = 0.135
 incflo.physics = ABL
-#ICNS.source_terms = CoriolisForcing GeostrophicForcing
 ICNS.source_terms = CoriolisForcing ABLForcing
 BoussinesqBuoyancy.reference_temperature = 290.0
 ABL.reference_temperature = 290.0
@@ -54,7 +52,7 @@ ABL.bndry_file = "bndry_file.nc"
 ABL.bndry_io_mode = 0
 ABL.bndry_planes = ylo xlo
 ABL.bndry_output_start_time = 20000.0
-ABL.bndry_var_names = velocity temperature tke
+ABL.bndry_var_names = velocity temperature # tke
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#

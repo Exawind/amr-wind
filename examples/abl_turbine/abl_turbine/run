@@ -3,10 +3,9 @@
 #SBATCH --job-name=amr_turb
 #SBATCH --account=hfm
 #####SBATCH --nodes=29
-#SBATCH --nodes=8
-#######SBATCH --nodes=5
+#SBATCH --nodes=4
 #####SBATCH --time=14:15:00
-#SBATCH --time=02:15:00
+#SBATCH --time=47:15:00
 #SBATCH --output=out.%x_%j
 #####SBATCH --qos=high
 
@@ -34,5 +33,5 @@ echo "Working dir    = $PWD"
 
 cp ${amr_exec} $(pwd)/amr_wind
 
-#srun -n 512  -c 1 --cpu_bind=cores $(pwd)/amr_wind abl_bndry_output.i  > out.log 2>&1
-srun -n 256  -c 1 --cpu_bind=cores $(pwd)/amr_wind abl_bndry_input.i > out.log 2>&1
+#srun -n 512  -c 1 --cpu_bind=cores $(pwd)/amr_wind abl_bndry_input.i > out.log 2>&1
+srun -n 128  -c 1 --cpu_bind=cores $(pwd)/amr_wind abl_bndry_input.i > out.log 2>&1
