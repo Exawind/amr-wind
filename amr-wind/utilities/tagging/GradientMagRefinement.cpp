@@ -32,8 +32,9 @@ void GradientMagRefinement::initialize(const std::string& key)
     }
 
     {
-        size_t fcount = std::min(gradmag_value.size(), m_gradmag_value.size());
-        for (size_t i = 0; i < fcount; ++i) {
+        const int fcount =
+            std::min(gradmag_value.size(), m_gradmag_value.size());
+        for (int i = 0; i < fcount; ++i) {
             m_gradmag_value[i] = gradmag_value[i];
         }
         m_max_lev_field = fcount - 1;

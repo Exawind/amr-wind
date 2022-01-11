@@ -228,7 +228,9 @@ void ABLStats::compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel)
         for (size_t i = 0; i < m_ncells_h1 * m_ncells_h2; i++) {
             m_zi += gtemp_grad[i].max_grad_loc;
         }
-        m_zi /= (m_ncells_h1 * m_ncells_h2);
+        m_zi /=
+            (static_cast<double>(m_ncells_h1) *
+             static_cast<double>(m_ncells_h2));
     }
 }
 

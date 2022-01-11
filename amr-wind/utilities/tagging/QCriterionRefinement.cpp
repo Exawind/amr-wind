@@ -33,8 +33,8 @@ void QCriterionRefinement::initialize(const std::string& key)
     }
 
     {
-        size_t fcount = std::min(qc_value.size(), m_qc_value.size());
-        for (size_t i = 0; i < fcount; ++i) {
+        const int fcount = std::min(qc_value.size(), m_qc_value.size());
+        for (int i = 0; i < fcount; ++i) {
             m_qc_value[i] = qc_value[i];
         }
         m_max_lev_field = fcount - 1;
@@ -105,9 +105,8 @@ void QCriterionRefinement::operator()(
                 const auto qc_nondim =
                     0.5 * (W2 / amrex::max(S2, 1.0e-12) - 1.0);
 
-                if (nondim && qc_nondim > qc_val) {
-                    tag(i, j, k) = amrex::TagBox::SET;
-                } else if (!nondim && amrex::Math::abs(qc) > qc_val) {
+                if ((nondim && qc_nondim > qc_val) ||
+                    (!nondim && amrex::Math::abs(qc) > qc_val)) {
                     tag(i, j, k) = amrex::TagBox::SET;
                 }
             });

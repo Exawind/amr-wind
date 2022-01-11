@@ -32,8 +32,8 @@ void CurvatureRefinement::initialize(const std::string& key)
     }
 
     {
-        size_t fcount = std::min(curv_value.size(), m_curv_value.size());
-        for (size_t i = 0; i < fcount; ++i) {
+        const int fcount = std::min(curv_value.size(), m_curv_value.size());
+        for (int i = 0; i < fcount; ++i) {
             m_curv_value[i] = curv_value[i];
         }
         m_max_lev_field = fcount - 1;

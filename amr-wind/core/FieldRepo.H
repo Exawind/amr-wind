@@ -367,7 +367,7 @@ protected:
     }
 
     //! Create a new state for a field
-    Field& create_state(Field& field, const FieldState fstate) noexcept;
+    Field& create_state(Field& field, const FieldState fstate);
 
     //! Allocate field data for a single level outside of regrid
     void allocate_field_data(
