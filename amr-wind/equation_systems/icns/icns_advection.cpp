@@ -4,8 +4,8 @@
 #include "amr-wind/core/MLMGOptions.H"
 #include "amr-wind/utilities/console_io.H"
 
-#include "AMReX_MacProjector.H"
 #include "AMReX_MultiFabUtil.H"
+#include "hydro_MacProjector.H"
 
 namespace amr_wind {
 namespace pde {
@@ -53,7 +53,7 @@ MacProjOp::MacProjOp(FieldRepo& repo, bool has_overset, bool variable_density)
 
 void MacProjOp::init_projector(const MacProjOp::FaceFabPtrVec& beta) noexcept
 {
-    m_mac_proj = std::make_unique<amrex::MacProjector>(
+    m_mac_proj = std::make_unique<Hydro::MacProjector>(
         m_repo.mesh().Geom(0, m_repo.num_active_levels() - 1));
     m_mac_proj->initProjector(
         m_options.lpinfo(), beta,
@@ -76,7 +76,7 @@ void MacProjOp::init_projector(const MacProjOp::FaceFabPtrVec& beta) noexcept
 
 void MacProjOp::init_projector(const amrex::Real beta) noexcept
 {
-    m_mac_proj = std::make_unique<amrex::MacProjector>(
+    m_mac_proj = std::make_unique<Hydro::MacProjector>(
         m_repo.mesh().Geom(0, m_repo.num_active_levels() - 1));
     m_mac_proj->initProjector(
         m_repo.mesh().boxArray(0, m_repo.num_active_levels() - 1),
