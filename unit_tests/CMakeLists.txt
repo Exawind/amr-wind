@@ -27,7 +27,7 @@ target_link_libraries(${amr_wind_unit_test_exe_name} PRIVATE gtest)
 target_include_directories(${amr_wind_unit_test_exe_name} SYSTEM PRIVATE
   ${CMAKE_SOURCE_DIR}/submods/googletest/googletest/include)
 
-target_link_libraries(${amr_wind_unit_test_exe_name} PUBLIC ${amr_wind_lib_name})
+target_link_libraries(${amr_wind_unit_test_exe_name} PUBLIC ${amr_wind_lib_name} amrex_hydro)
 
 #Define what we want to be installed during a make install
 install(TARGETS ${amr_wind_unit_test_exe_name}
