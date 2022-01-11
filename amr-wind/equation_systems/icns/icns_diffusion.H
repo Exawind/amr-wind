@@ -90,39 +90,37 @@ public:
         const auto& bchi = diffusion::get_diffuse_tensor_bc(
             m_pdefields.field, amrex::Orientation::high);
 
-        for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-            if (!has_overset) {
-                m_solver_scalar.reset(new amrex::MLABecLaplacian(
-                    mesh.Geom(0, mesh.finestLevel()),
-                    mesh.boxArray(0, mesh.finestLevel()),
-                    mesh.DistributionMap(0, mesh.finestLevel()), isolve, {},
-                    AMREX_SPACEDIM));
-                m_applier_scalar.reset(new amrex::MLABecLaplacian(
-                    mesh.Geom(0, mesh.finestLevel()),
-                    mesh.boxArray(0, mesh.finestLevel()),
-                    mesh.DistributionMap(0, mesh.finestLevel()), iapply, {},
-                    AMREX_SPACEDIM));
-            } else {
-                auto imask =
-                    fields.repo.get_int_field("mask_cell").vec_const_ptrs();
-                m_solver_scalar.reset(new amrex::MLABecLaplacian(
-                    mesh.Geom(0, mesh.finestLevel()),
-                    mesh.boxArray(0, mesh.finestLevel()),
-                    mesh.DistributionMap(0, mesh.finestLevel()), imask, isolve,
-                    {}, AMREX_SPACEDIM));
-                m_applier_scalar.reset(new amrex::MLABecLaplacian(
-                    mesh.Geom(0, mesh.finestLevel()),
-                    mesh.boxArray(0, mesh.finestLevel()),
-                    mesh.DistributionMap(0, mesh.finestLevel()), imask, iapply,
-                    {}, AMREX_SPACEDIM));
-            }
-
-            m_solver_scalar->setMaxOrder(m_options.max_order);
-            m_applier_scalar->setMaxOrder(m_options.max_order);
-
-            m_solver_scalar->setDomainBC(bclo, bchi);
-            m_applier_scalar->setDomainBC(bclo, bchi);
+        if (!has_overset) {
+            m_solver_scalar.reset(new amrex::MLABecLaplacian(
+                mesh.Geom(0, mesh.finestLevel()),
+                mesh.boxArray(0, mesh.finestLevel()),
+                mesh.DistributionMap(0, mesh.finestLevel()), isolve, {},
+                AMREX_SPACEDIM));
+            m_applier_scalar.reset(new amrex::MLABecLaplacian(
+                mesh.Geom(0, mesh.finestLevel()),
+                mesh.boxArray(0, mesh.finestLevel()),
+                mesh.DistributionMap(0, mesh.finestLevel()), iapply, {},
+                AMREX_SPACEDIM));
+        } else {
+            auto imask =
+                fields.repo.get_int_field("mask_cell").vec_const_ptrs();
+            m_solver_scalar.reset(new amrex::MLABecLaplacian(
+                mesh.Geom(0, mesh.finestLevel()),
+                mesh.boxArray(0, mesh.finestLevel()),
+                mesh.DistributionMap(0, mesh.finestLevel()), imask, isolve, {},
+                AMREX_SPACEDIM));
+            m_applier_scalar.reset(new amrex::MLABecLaplacian(
+                mesh.Geom(0, mesh.finestLevel()),
+                mesh.boxArray(0, mesh.finestLevel()),
+                mesh.DistributionMap(0, mesh.finestLevel()), imask, iapply, {},
+                AMREX_SPACEDIM));
         }
+
+        m_solver_scalar->setMaxOrder(m_options.max_order);
+        m_applier_scalar->setMaxOrder(m_options.max_order);
+
+        m_solver_scalar->setDomainBC(bclo, bchi);
+        m_applier_scalar->setDomainBC(bclo, bchi);
     }
 
     template <typename Scheme>
