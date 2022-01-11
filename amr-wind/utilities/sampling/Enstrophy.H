@@ -45,7 +45,7 @@ private:
     void write_ascii();
 
     //! store the total enstrophy
-    amrex::Real m_total_enstrophy;
+    amrex::Real m_total_enstrophy{0.0};
 
     //! Reference to the CFD sim
     CFDSim& m_sim;

@@ -100,7 +100,7 @@ private:
 
     //! Number or points on 2D grid in each direction
     amrex::Vector<int> m_npts_dir;
-    int m_npts;
+    int m_npts{0};
     //! Number of instances (possible sampling points per location, like in the
     //! case of a breaking wave)
     int m_ninst{1};

@@ -26,7 +26,7 @@ protected:
     Field& m_buoy_prod;
     Field& m_rho;
 
-    Field* m_tke;
+    Field* m_tke{nullptr};
 
     //! Turbulence constant
     amrex::Real m_Ce{0.1};

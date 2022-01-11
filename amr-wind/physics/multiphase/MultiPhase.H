@@ -83,7 +83,7 @@ private:
     int m_verbose{0};
 
     // sum of volume fractions (for vof only)
-    amrex::Real m_total_volfrac;
+    amrex::Real m_total_volfrac{0.0};
 };
 
 } // namespace amr_wind

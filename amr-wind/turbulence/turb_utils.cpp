@@ -35,7 +35,6 @@ void inject_turbulence_src_terms(
     srcin.clear();
 
     // Prefer to use emplace_back here
-    // cppcheck-suppress useStlAlgorithm
     for (const auto& sname : sterm_set) {
         srcin.emplace_back(sname);
     }

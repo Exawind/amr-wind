@@ -37,11 +37,11 @@ public:
 private:
     const CFDSim& m_sim;
 
-    Field* m_vel;
+    Field* m_vel{nullptr};
 
     amrex::Vector<amrex::Real> m_qc_value;
 
-    int m_max_lev_field;
+    int m_max_lev_field{-1};
 
     bool m_nondim{true};
 };

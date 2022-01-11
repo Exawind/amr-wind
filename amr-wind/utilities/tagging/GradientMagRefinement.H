@@ -36,11 +36,11 @@ public:
 private:
     const CFDSim& m_sim;
 
-    Field* m_field;
+    Field* m_field{nullptr};
 
     amrex::Vector<amrex::Real> m_gradmag_value;
 
-    int m_max_lev_field;
+    int m_max_lev_field{-1};
 };
 
 } // namespace amr_wind
