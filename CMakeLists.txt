@@ -187,33 +187,33 @@ if(AMR_WIND_ENABLE_TESTS)
   add_subdirectory(test)
 endif()
 
-#Define what we want to be installed during a make install
-# install(
-#  TARGETS ${amr_wind_exe_name} ${amr_wind_unit_test_exe_name}
-#  ${aw_api_lib} ${amr_wind_lib_name} buildInfo${amr_wind_lib_name}
-#  EXPORT ${PROJECT_NAME}Targets
-#  RUNTIME DESTINATION bin
-#  ARCHIVE DESTINATION lib
-#  LIBRARY DESTINATION lib)
+# Define what we want to be installed during a make install
+install(
+  TARGETS ${amr_wind_exe_name} ${amr_wind_unit_test_exe_name}
+  ${aw_api_lib} ${amr_wind_lib_name} buildInfo${amr_wind_lib_name}
+  EXPORT ${PROJECT_NAME}Targets
+  RUNTIME DESTINATION bin
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib)
 
-#install(
-#  DIRECTORY ${PROJECT_SOURCE_DIR}/amr-wind
-#  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-#  FILES_MATCHING PATTERN "*.H")
+install(
+  DIRECTORY ${PROJECT_SOURCE_DIR}/amr-wind
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  FILES_MATCHING PATTERN "*.H")
 
-#install(
-#  EXPORT ${PROJECT_NAME}Targets
-#  NAMESPACE ${PROJECT_NAME}::
-#  DESTINATION lib/cmake/${PROJECT_NAME})
+install(
+  EXPORT ${PROJECT_NAME}Targets
+  NAMESPACE ${PROJECT_NAME}::
+  DESTINATION lib/cmake/${PROJECT_NAME})
 
-#configure_package_config_file(
-#  cmake/${PROJECT_NAME}Config.cmake.in
-#  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-#  INSTALL_DESTINATION lib/cmake/${PROJECT_NAME})
-#install(FILES
-#  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-#  DESTINATION lib/cmake/${PROJECT_NAME})
-#install(FILES
-#  ${PROJECT_SOURCE_DIR}/cmake/FindMASA.cmake
-#  ${PROJECT_SOURCE_DIR}/cmake/FindNetCDF.cmake
-#  DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/Modules)
+configure_package_config_file(
+  cmake/${PROJECT_NAME}Config.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+  INSTALL_DESTINATION lib/cmake/${PROJECT_NAME})
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+  DESTINATION lib/cmake/${PROJECT_NAME})
+install(FILES
+  ${PROJECT_SOURCE_DIR}/cmake/FindMASA.cmake
+  ${PROJECT_SOURCE_DIR}/cmake/FindNetCDF.cmake
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/Modules)
