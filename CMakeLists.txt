@@ -189,7 +189,7 @@ endif()
 
 # Define what we want to be installed during a make install
 install(
-  TARGETS ${amr_wind_exe_name} ${amr_wind_unit_test_exe_name}
+  TARGETS amrex_hydro ${amr_wind_exe_name} ${amr_wind_unit_test_exe_name}
   ${aw_api_lib} ${amr_wind_lib_name} buildInfo${amr_wind_lib_name}
   EXPORT ${PROJECT_NAME}Targets
   RUNTIME DESTINATION bin
@@ -200,12 +200,12 @@ install(
   DIRECTORY ${PROJECT_SOURCE_DIR}/amr-wind
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
   FILES_MATCHING PATTERN "*.H")
-
+  
 install(
   EXPORT ${PROJECT_NAME}Targets
   NAMESPACE ${PROJECT_NAME}::
   DESTINATION lib/cmake/${PROJECT_NAME})
-
+  
 configure_package_config_file(
   cmake/${PROJECT_NAME}Config.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
