@@ -29,7 +29,6 @@ namespace transport {
 class TransportModel
 {
 public:
-
     virtual ~TransportModel() = default;
 
     //! Dynamic laminar viscosity (kg/m/s)

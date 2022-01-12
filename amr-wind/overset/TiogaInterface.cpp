@@ -235,7 +235,9 @@ void TiogaInterface::amr_to_tioga_mesh()
         ngrids_global += mesh.boxArray(lev).size();
 
         const auto& dmap = mesh.DistributionMap(lev);
-        AMREX_ALWAYS_ASSERT(dmap.size() < static_cast<amrex::Long>(std::numeric_limits<int>::max()));
+        AMREX_ALWAYS_ASSERT(
+            dmap.size() <
+            static_cast<amrex::Long>(std::numeric_limits<int>::max()));
         for (int d = 0; d < static_cast<int>(dmap.size()); ++d) {
             if (dmap[d] == iproc) {
                 ++ngrids_local;
