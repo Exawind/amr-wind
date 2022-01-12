@@ -5,7 +5,7 @@
 #include <AMReX_MultiFabUtil.H>
 #include <AMReX_ParmParse.H>
 #include <AMReX_iMultiFab.H>
-#include <hydro_NodalProjector.H>
+#include <AMReX_NodalProjector.H>
 
 #include "amr-wind/incflo_enums.H"
 #include "amr-wind/CFDSim.H"
