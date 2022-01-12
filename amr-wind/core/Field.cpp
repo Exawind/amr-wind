@@ -28,6 +28,7 @@ FieldInfo::FieldInfo(
 {
     for (int i = 0; i < AMREX_SPACEDIM * 2; ++i) {
         m_bc_type[i] = BC::undefined;
+        m_bc_values_d[i] = nullptr;
     }
 }
 

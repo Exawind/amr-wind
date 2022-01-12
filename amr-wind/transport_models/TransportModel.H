@@ -29,7 +29,6 @@ namespace transport {
 class TransportModel
 {
 public:
-    static constexpr bool constant_properties = false;
 
     virtual ~TransportModel() = default;
 
