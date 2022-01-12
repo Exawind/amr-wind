@@ -40,7 +40,6 @@ void multiphase::split_advection(
     Array4<Real> fluxC = makeArray4(p, bxg1, 1);
     p += fluxC.size();
     Array4<Real> fluxR = makeArray4(p, bxg1, 1);
-    p += fluxR.size(); // NOLINT: Value not read warning
 
     if (!is_lagrangian) {
         amrex::ParallelFor(

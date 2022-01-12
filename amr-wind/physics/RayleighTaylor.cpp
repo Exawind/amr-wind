@@ -9,10 +9,8 @@ namespace amr_wind {
 RayleighTaylor::RayleighTaylor(const CFDSim& sim)
     : m_velocity(sim.repo().get_field("velocity"))
     , m_density(sim.repo().get_field("density"))
-{
-    // Instantiate the RayleighTaylor field initializer
-    m_field_init = std::make_unique<RayleighTaylorFieldInit>();
-}
+    , m_field_init(std::make_unique<RayleighTaylorFieldInit>())
+{}
 
 /** Initialize the velocity and density fields at the beginning of the
  *  simulation.
