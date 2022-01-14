@@ -33,6 +33,7 @@ option(AMR_WIND_ENABLE_TINY_PROFILE "Enable AMReX TinyProfile support" OFF)
 
 # Third party libraries
 option(AMR_WIND_USE_INTERNAL_AMREX "Add AMReX as subproject" ON)
+option(AMR_WIND_USE_INTERNAL_AMREX_HYDRO "Add AMReX-Hydro as subproject" ON)
 option(AMR_WIND_ENABLE_NETCDF "Enable NetCDF library" OFF)
 option(AMR_WIND_ENABLE_MASA "Enable MASA library" OFF)
 option(AMR_WIND_ENABLE_HYPRE "Enable HYPRE integration" OFF)
@@ -189,7 +190,7 @@ endif()
 
 #Define what we want to be installed during a make install
 install(
-  TARGETS amrex_hydro ${amr_wind_exe_name} ${amr_wind_unit_test_exe_name}
+  TARGETS ${amr_wind_exe_name} ${amr_wind_unit_test_exe_name}
   ${aw_api_lib} ${amr_wind_lib_name} buildInfo${amr_wind_lib_name}
   EXPORT ${PROJECT_NAME}Targets
   RUNTIME DESTINATION bin
