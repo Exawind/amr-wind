@@ -1,7 +1,7 @@
-#ifndef LIDARSAMPLER_H
-#define LIDARSAMPLER_H
+#ifndef DTUSPINNERSAMPLER_H
+#define DTUSPINNERSAMPLER_H
 
-#include "amr-wind/utilities/sampling/LineSampler.H"
+#include "amr-wind/utilities/sampling/LidarSampler.H"
 #include "amr-wind/core/vs/vector_space.H"
 
 namespace amr_wind {
@@ -16,12 +16,12 @@ namespace sampling {
  * segements as determined by `num_points`. The length of each segment is given
  * by \f[ m_length / (num_points - 1) \f]
  */
-class LidarSampler : public LineSampler
+class DTUSpinnerSampler : public LidarSampler
 {
 public:
-    static const std::string identifier() { return "LidarSampler"; }
+    static const std::string identifier() { return "DTUSpinnerSampler"; }
 
-    explicit LidarSampler(const CFDSim&);
+    explicit DTUSpinnerSampler(const CFDSim&);
 
     /** Read user inputs and initialize the sampling object
      *
@@ -33,22 +33,30 @@ public:
      *
      *
      */
+    //~ void update_sampling_locations() override;
+    void sampling_locations(SampleLocType&) const override;
+
+    /** Determine how the subsampling will be done
+     *
+     */
     void update_sampling_locations() override;
+
+    int num_points() const override { return (m_npts * m_ns); }
+
+    bool output_netcdf_field(double*, ncutils::NCVar&) override;
 
     void define_netcdf_metadata(const ncutils::NCGroup&) const override;
     void populate_netcdf_metadata(const ncutils::NCGroup&) const override;
     void
     output_netcdf_data(const ncutils::NCGroup&, const size_t) const override;
 
-protected:
-    amrex::Vector<amrex::Real> m_origin;
-    amrex::Vector<amrex::Real> m_time_table;
-    amrex::Vector<amrex::Real> m_azimuth_table;
-    amrex::Vector<amrex::Real> m_elevation_table;
-    amrex::Real m_length{0};
+private:
+    int m_ns{1};
+    amrex::Real m_dt_s{0.01};
+    amrex::Real m_time_sampling{0};
 };
 
 } // namespace sampling
 } // namespace amr_wind
 
-#endif /* LIDARSAMPLER_H */
+#endif /* DTUSPINNERSAMPLER_H */

@@ -90,7 +90,7 @@ void Sampling::update_container()
 
 void Sampling::update_sampling_locations()
 {
-    BL_PROFILE("amr-wind::Sampling::pre_advance_work");
+    BL_PROFILE("amr-wind::Sampling::update_sampling_locations");
 
     for (const auto& obj : m_samplers) {
         obj->update_sampling_locations();
@@ -260,11 +260,16 @@ void Sampling::write_netcdf()
         count[1] = 0;
         int offset = iv * m_scontainer->num_sampling_particles();
         for (const auto& obj : m_samplers) {
-            count[1] = obj->num_points();
             auto grp = ncf.group(obj->label());
             auto var = grp.var(m_var_names[iv]);
-            var.put(&buf[offset], start, count);
-            offset += count[1];
+            // Do sampler specific output if needed
+            bool do_output = obj->output_netcdf_field(&buf[offset], var);
+            // Do generic output if specific output returns true
+            if (do_output) {
+                count[1] = obj->num_points();
+                var.put(&buf[offset], start, count);
+                offset += count[1];
+            }
         }
     }
     ncf.close();
