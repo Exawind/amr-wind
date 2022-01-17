@@ -222,7 +222,7 @@ void DTUSpinnerSampler::populate_netcdf_metadata(
 {}
 
 void DTUSpinnerSampler::output_netcdf_data(
-    const ncutils::NCGroup&, const size_t) const
+    const ncutils::NCGroup& /*unused*/, const size_t /*unused*/) const
 {}
 
 #endif
