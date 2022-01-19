@@ -5,8 +5,8 @@
 #include "amr-wind/equation_systems/AdvOp_MOL.H"
 #include "amr-wind/equation_systems/icns/icns.H"
 
-#include "AMReX_MacProjector.H"
 #include "AMReX_MultiFabUtil.H"
+#include "hydro_MacProjector.H"
 
 namespace amr_wind {
 namespace pde {
@@ -26,7 +26,7 @@ private:
     void init_projector(const amrex::Real) noexcept;
 
     FieldRepo& m_repo;
-    std::unique_ptr<amrex::MacProjector> m_mac_proj;
+    std::unique_ptr<Hydro::MacProjector> m_mac_proj;
     MLMGOptions m_options;
     bool m_has_overset{false};
     bool m_need_init{true};

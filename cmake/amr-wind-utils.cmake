@@ -71,6 +71,18 @@ macro(init_amrex)
   endif()
 endmacro(init_amrex)
 
+macro(init_amrex_hydro)
+  if (${AMR_WIND_USE_INTERNAL_AMREX_HYDRO})
+    set(AMREX_HYDRO_SUBMOD_LOCATION "${CMAKE_SOURCE_DIR}/submods/AMReX-Hydro")
+    include(${CMAKE_SOURCE_DIR}/cmake/set_amrex_hydro_options.cmake)
+    add_subdirectory(${AMREX_HYDRO_SUBMOD_LOCATION})
+  else()
+    set(CMAKE_PREFIX_PATH ${AMReX-Hydro_DIR} ${CMAKE_PREFIX_PATH})
+    find_package(AMReX-Hydro CONFIG REQUIRED)
+    message(STATUS "Found AMReX-Hydro = ${AMReX-Hydro_DIR}")
+  endif()
+endmacro(init_amrex_hydro)
+
 macro(init_code_checks)
   if(AMR_WIND_ENABLE_CLANG_TIDY)
     find_program(CLANG_TIDY_EXE NAMES "clang-tidy")
@@ -96,7 +108,7 @@ macro(init_code_checks)
           COMMAND ${CMAKE_COMMAND} -E make_directory cppcheck/cppcheck-wd
           # cppcheck ignores -isystem directories, so we change them to regular -I include directories (with no spaces either)
           COMMAND sed "s/isystem /I/g" ${CMAKE_BINARY_DIR}/compile_commands.json > cppcheck_compile_commands.json
-          COMMAND ${CPPCHECK_EXE} --template=gcc --inline-suppr --suppress=unusedFunction --suppress=useStlAlgorithm --std=c++14 --language=c++ --enable=all --project=cppcheck_compile_commands.json --cppcheck-build-dir=cppcheck-wd -i ${CMAKE_SOURCE_DIR}/submods/amrex/Src -i ${CMAKE_SOURCE_DIR}/submods/googletest --output-file=cppcheck-full-report.txt -j ${NP}
+          COMMAND ${CPPCHECK_EXE} --template=gcc --inline-suppr --suppress=unusedFunction --suppress=useStlAlgorithm --std=c++14 --language=c++ --enable=all --project=cppcheck_compile_commands.json --cppcheck-build-dir=cppcheck-wd -i ${CMAKE_SOURCE_DIR}/submods/amrex/Src -i ${CMAKE_SOURCE_DIR}/submods/AMReX-Hydro -i ${CMAKE_SOURCE_DIR}/submods/googletest --output-file=cppcheck-full-report.txt -j ${NP}
           COMMENT "Run cppcheck on project compile_commands.json"
           BYPRODUCTS cppcheck-full-report.txt
           WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/cppcheck

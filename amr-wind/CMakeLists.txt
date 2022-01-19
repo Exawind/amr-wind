@@ -39,9 +39,9 @@ generate_buildinfo(${amr_wind_lib_name} ${CMAKE_SOURCE_DIR})
 configure_file("${CMAKE_SOURCE_DIR}/cmake/AMRWindVersion.H.in"
   "${CMAKE_CURRENT_BINARY_DIR}/AMRWindVersion.H" @ONLY)
 
-target_link_libraries_system(${amr_wind_lib_name} PUBLIC AMReX::amrex)
-target_link_libraries(${amr_wind_exe_name} PRIVATE ${amr_wind_lib_name})
-target_link_libraries(${aw_api_lib} PUBLIC ${amr_wind_lib_name})
+target_link_libraries_system(${amr_wind_lib_name} PUBLIC AMReX::amrex AMReX-Hydro::amrex_hydro_api)
+target_link_libraries(${amr_wind_exe_name} PRIVATE ${amr_wind_lib_name} AMReX-Hydro::amrex_hydro_api)
+target_link_libraries(${aw_api_lib} PUBLIC ${amr_wind_lib_name} AMReX-Hydro::amrex_hydro_api)
 
 # Set -fpic options
 set_target_properties(${amr_wind_lib_name} buildInfo${amr_wind_lib_name}
