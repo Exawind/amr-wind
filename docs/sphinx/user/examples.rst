@@ -1,4 +1,4 @@
-.. _build:
+.. _examples:
 
 Examples
 ========
