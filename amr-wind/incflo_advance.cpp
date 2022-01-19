@@ -501,10 +501,10 @@ void incflo::ApplyCorrector()
         amr_wind::field_ops::copy(density_nph, density_old, 0, 0, 1, 1);
     }
 
-    // TODO: This sub-section has not been adjusted for mesh mapping - adjust in corrector too
-    // Perform scalar update one at a time. This is to allow an updated density
-    // at `n+1/2` to be computed before other scalars use it when computing
-    // their source terms.
+    // TODO: This sub-section has not been adjusted for mesh mapping - adjust in
+    // corrector too Perform scalar update one at a time. This is to allow an
+    // updated density at `n+1/2` to be computed before other scalars use it
+    // when computing their source terms.
     for (auto& eqn : scalar_eqns()) {
         // Compute (recompute for Godunov) the scalar forcing terms
         // Note this is (rho * scalar) and not just scalar

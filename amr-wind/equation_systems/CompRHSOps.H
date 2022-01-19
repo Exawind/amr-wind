@@ -102,7 +102,8 @@ struct ComputeRHSOp
                             fld(i, j, k, n) =
                                 rho_o(i, j, k) * det_j * fld_o(i, j, k, n) +
                                 static_cast<amrex::Real>(imask(i, j, k)) * dt *
-                                    (ddt_o(i, j, k, n) + det_j*src(i, j, k, n) +
+                                    (ddt_o(i, j, k, n) +
+                                     det_j * src(i, j, k, n) +
                                      factor * diff(i, j, k, n));
 
                             fld(i, j, k, n) /= rho(i, j, k);
@@ -123,7 +124,8 @@ struct ComputeRHSOp
                             fld(i, j, k, n) =
                                 det_j * fld_o(i, j, k, n) +
                                 static_cast<amrex::Real>(imask(i, j, k)) * dt *
-                                    (ddt_o(i, j, k, n) + det_j*src(i, j, k, n) +
+                                    (ddt_o(i, j, k, n) +
+                                     det_j * src(i, j, k, n) +
                                      factor * diff(i, j, k, n));
 
                             if (difftype == DiffusionType::Explicit) {
@@ -221,7 +223,8 @@ struct ComputeRHSOp
                                     (0.5 *
                                          (ddt_o(i, j, k, n) + ddt(i, j, k, n)) +
                                      ofac * diff_o(i, j, k, n) +
-                                     nfac * diff(i, j, k, n) + det_j*src(i, j, k, n));
+                                     nfac * diff(i, j, k, n) +
+                                     det_j * src(i, j, k, n));
 
                             fld(i, j, k, n) /= rho(i, j, k);
 
@@ -244,7 +247,8 @@ struct ComputeRHSOp
                                     (0.5 *
                                          (ddt_o(i, j, k, n) + ddt(i, j, k, n)) +
                                      ofac * diff_o(i, j, k, n) +
-                                     nfac * diff(i, j, k, n) + det_j*src(i, j, k, n));
+                                     nfac * diff(i, j, k, n) +
+                                     det_j * src(i, j, k, n));
 
                             if (difftype == DiffusionType::Explicit) {
                                 fld(i, j, k, n) /= det_j;

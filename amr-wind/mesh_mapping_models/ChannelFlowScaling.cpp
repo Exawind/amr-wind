@@ -277,9 +277,12 @@ void ChannelFlowScaling::create_non_uniform_mesh(
                 amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
                 amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
 
-                amrex::Real x_non_uni = eval_coord(x, beta[0], prob_lo[0], len[0]);
-                amrex::Real y_non_uni = eval_coord(y, beta[1], prob_lo[1], len[1]);
-                amrex::Real z_non_uni = eval_coord(z, beta[2], prob_lo[2], len[2]);
+                amrex::Real x_non_uni =
+                    eval_coord(x, beta[0], prob_lo[0], len[0]);
+                amrex::Real y_non_uni =
+                    eval_coord(y, beta[1], prob_lo[1], len[1]);
+                amrex::Real z_non_uni =
+                    eval_coord(z, beta[2], prob_lo[2], len[2]);
 
                 bool in_domain =
                     ((x > prob_lo[0]) && (x < prob_hi[0]) && (y > prob_lo[1]) &&
@@ -302,9 +305,12 @@ void ChannelFlowScaling::create_non_uniform_mesh(
                 amrex::Real y = prob_lo[1] + j * dx[1];
                 amrex::Real z = prob_lo[2] + k * dx[2];
 
-                amrex::Real x_non_uni = eval_coord(x, beta[0], prob_lo[0], len[0]);
-                amrex::Real y_non_uni = eval_coord(y, beta[1], prob_lo[1], len[1]);
-                amrex::Real z_non_uni = eval_coord(z, beta[2], prob_lo[2], len[2]);
+                amrex::Real x_non_uni =
+                    eval_coord(x, beta[0], prob_lo[0], len[0]);
+                amrex::Real y_non_uni =
+                    eval_coord(y, beta[1], prob_lo[1], len[1]);
+                amrex::Real z_non_uni =
+                    eval_coord(z, beta[2], prob_lo[2], len[2]);
 
                 bool in_domain =
                     ((x >= prob_lo[0] - eps) && (x <= prob_hi[0] + eps) &&
