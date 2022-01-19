@@ -135,6 +135,7 @@ void incflo::ApplyProjection(
     // Do the pre pressure correction work -- this applies to IB only
     for (auto& pp : m_sim.physics()) {
         pp->pre_pressure_correction_work();
+    }
 
     // ensure velocity is in unmapped mesh space
     if (velocity.is_mesh_mapped()) {
