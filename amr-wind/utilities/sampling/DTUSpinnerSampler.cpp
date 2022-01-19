@@ -64,14 +64,13 @@ void DTUSpinnerSampler::initialize(const std::string& key)
 void DTUSpinnerSampler::sampling_locations(SampleLocType& locs) const
 {
 
-    // Index used to offset the 1d array lookup
-    int offset = 0;
-
     // The total number of points at this time step
     int n_samples = m_npts * m_ns;
 
     // Resize to number of points in line times number of sampling times
-    if (locs.size() < n_samples) locs.resize(n_samples);
+    if (locs.size() < n_samples) {
+        locs.resize(n_samples);
+    }
 
     const amrex::Real ndiv = amrex::max(m_npts - 1, 1);
     amrex::Array<amrex::Real, AMREX_SPACEDIM> dx;
@@ -79,7 +78,7 @@ void DTUSpinnerSampler::sampling_locations(SampleLocType& locs) const
     // Loop per subsampling
     for (int k = 0; k < m_ns; ++k) {
 
-        offset = k * AMREX_SPACEDIM;
+        int offset = k * AMREX_SPACEDIM;
 
         // Loop per spacial dimension
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
@@ -100,9 +99,6 @@ void DTUSpinnerSampler::update_sampling_locations()
     BL_PROFILE(
         "amr-wind::Sampling::DTUSpinnerSampler::update_sampling_locations");
 
-    // Index used to offset the 1d array lookup
-    int offset = 0;
-
     amrex::Real time = m_sim.time().current_time();
     amrex::Real start_time = m_sim.time().start_time();
     amrex::Real dt_sim = m_sim.time().deltaT();
@@ -110,7 +106,9 @@ void DTUSpinnerSampler::update_sampling_locations()
     m_ns = 0;
 
     // Initialize the sampling time to the first time in the simulation
-    if (time == start_time) m_time_sampling = time;
+    if (time == start_time) {
+        m_time_sampling = time;
+    }
     amrex::Real time_tmp = m_time_sampling;
     bool cond = true;
     constexpr double eps = 1.0e-12;
@@ -124,13 +122,17 @@ void DTUSpinnerSampler::update_sampling_locations()
 
     int n_size = AMREX_SPACEDIM * m_ns;
     // Resize these variables so they can store all the locations
-    if (m_start.size() < n_size) m_start.resize(n_size);
-    if (m_end.size() < n_size) m_end.resize(n_size);
+    if (m_start.size() < n_size) {
+        m_start.resize(n_size);
+    }
+    if (m_end.size() < n_size) {
+        m_end.resize(n_size);
+    }
 
     // Loop per subsampling
     for (int k = 0; k < m_ns; ++k) {
 
-        offset = k * AMREX_SPACEDIM;
+        int offset = k * AMREX_SPACEDIM;
 
         m_time_sampling += m_dt_s;
 
@@ -168,7 +170,8 @@ void DTUSpinnerSampler::update_sampling_locations()
 
 #ifdef AMR_WIND_USE_NETCDF
 
-bool DTUSpinnerSampler::output_netcdf_field(double*, ncutils::NCVar&)
+bool DTUSpinnerSampler::output_netcdf_field(
+    double* /*unused*/, ncutils::NCVar& /*unused*/)
 {
     return true;
 }
@@ -185,8 +188,10 @@ void DTUSpinnerSampler::define_netcdf_metadata(
     grp.def_var("points", NC_DOUBLE, {"num_time_steps", "num_points", "ndim"});
 }
 
-void DTUSpinnerSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const
+void DTUSpinnerSampler::populate_netcdf_metadata(
+    const ncutils::NCGroup& /*unused*/) const
 {}
+
 void DTUSpinnerSampler::output_netcdf_data(
     const ncutils::NCGroup& grp, const size_t nt) const
 {
@@ -199,16 +204,25 @@ void DTUSpinnerSampler::output_netcdf_data(
     count[1] = num_points();
     xyz.put(&locs[0][0], start, count);
 }
+
 #else
-bool DTUSpinnerSampler::output_netcdf_field(double*, ncutils::NCVar&)
+
+bool DTUSpinnerSampler::output_netcdf_field(
+    double* /*unused*/, ncutils::NCVar& /*unused*/)
 {
     return true;
 }
-void DTUSpinnerSampler::define_netcdf_metadata(const ncutils::NCGroup&) const {}
-void DTUSpinnerSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const
+
+void DTUSpinnerSampler::define_netcdf_metadata(
+    const ncutils::NCGroup& /*unused*/) const
 {}
+
+void DTUSpinnerSampler::populate_netcdf_metadata(
+    const ncutils::NCGroup& /*unused*/) const
+{}
+
 void DTUSpinnerSampler::output_netcdf_data(
-    const ncutils::NCGroup&, const size_t) const
+    const ncutils::NCGroup& /*unused*/, const size_t /*unused*/) const
 {}
 
 #endif
