@@ -3,7 +3,6 @@
 #include <chrono>
 #include <ctime>
 #include <fstream>
-#include <netcdf.h>
 
 #include "amr-wind/utilities/IOManager.H"
 #include "amr-wind/CFDSim.H"

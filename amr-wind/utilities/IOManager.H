@@ -132,8 +132,6 @@ private:
 
     //! Flag indicating whether we should allow missing restart fields
     bool m_allow_missing_restart_fields{true};
-
-    std::string m_netcdf_prefix{"ncdf_plt_"};
 };
 
 } // namespace amr_wind
