@@ -273,19 +273,18 @@ void incflo::ApplyProjection(
 
     amr_wind::MLMGOptions options("nodal_proj");
 
-//    if (variable_density) {
-    nodal_projector.reset(std::make_unique<Hydro::NodalProjector>(
-        vel, GetVecOfConstPtrs(sigma), Geom(0, finest_level),
-        options.lpinfo()));
-//    } else {
-//        amrex::Real rho_0 = 1.0;
-//        amrex::ParmParse pp("incflo");
-//        pp.query("density", rho_0);
-//
-//        nodal_projector.reset(std::make_unique<Hydro::NodalProjector>(
-//            vel, scaling_factor / rho_0, Geom(0, finest_level),
-//            options.lpinfo()));
-//    }
+    //    if (variable_density) {
+    nodal_projector = std::make_unique<Hydro::NodalProjector>(
+        vel, GetVecOfConstPtrs(sigma), Geom(0, finest_level), options.lpinfo());
+    //    } else {
+    //        amrex::Real rho_0 = 1.0;
+    //        amrex::ParmParse pp("incflo");
+    //        pp.query("density", rho_0);
+    //
+    //        nodal_projector = std::make_unique<Hydro::NodalProjector>(
+    //            vel, scaling_factor / rho_0, Geom(0, finest_level),
+    //            options.lpinfo());
+    //    }
 
     // Set MLMG and NodalProjector options
     options(*nodal_projector);
