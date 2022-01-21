@@ -180,32 +180,34 @@ amrex::Real ChannelFlow::compute_error()
         const auto& nu_coord = nu_coord_cc(lev);
         const auto& vel = velocity(lev);
 
-        error += amrex::ReduceSum(
-            vel, mesh_fac, nu_coord, level_mask, 0,
-            [=] AMREX_GPU_HOST_DEVICE(
-                amrex::Box const& bx,
-                amrex::Array4<amrex::Real const> const& vel_arr,
-                amrex::Array4<amrex::Real const> const& fac_cc_arr,
-                amrex::Array4<amrex::Real const> const& nu_coord_arr,
-                amrex::Array4<int const> const& mask_arr) -> amrex::Real {
-                amrex::Real err_fab = 0.0;
+        auto const& fac_cc = mesh_fac.const_arrays();
+        auto const& nu_cc = nu_coord.const_arrays();
+        auto const& vel_arr = vel.const_arrays();
+        auto const& mask_arr = level_mask.const_arrays();
 
-                amrex::Loop(bx, [=, &err_fab](int i, int j, int k) noexcept {
-                    amrex::Real y = nu_coord_arr(i, j, k, 1);
+        error += amrex::ParReduce(
+            amrex::TypeList<amrex::ReduceOpSum>{},
+            amrex::TypeList<amrex::Real>{}, vel, amrex::IntVect(0),
+            [=] AMREX_GPU_HOST_DEVICE(int box_no, int i, int j, int k)
+                -> amrex::GpuTuple<amrex::Real> {
+                auto const& fac_bx = fac_cc[box_no];
+                auto const& nu_cc_bx = nu_cc[box_no];
+                auto const& vel_bx = vel_arr[box_no];
+                auto const& mask_bx = mask_arr[box_no];
 
-                    const amrex::Real u = vel_arr(i, j, k, 0);
+                amrex::Real y = nu_cc_bx(i, j, k, 1);
 
-                    const amrex::Real u_exact =
-                        1 / (2 * mu) * -dpdx * (y * y - y * ht);
+                const amrex::Real u = vel_bx(i, j, k, 0);
 
-                    const amrex::Real cell_vol =
-                        dx[0] * fac_cc_arr(i, j, k, 0) * dx[1] *
-                        fac_cc_arr(i, j, k, 1) * dx[2] * fac_cc_arr(i, j, k, 2);
+                const amrex::Real u_exact =
+                    1 / (2 * mu) * -dpdx * (y * y - y * ht);
 
-                    err_fab += cell_vol * mask_arr(i, j, k) * (u - u_exact) *
-                               (u - u_exact);
-                });
-                return err_fab;
+                const amrex::Real cell_vol = dx[0] * fac_bx(i, j, k, 0) *
+                                             dx[1] * fac_bx(i, j, k, 1) *
+                                             dx[2] * fac_bx(i, j, k, 2);
+
+                return cell_vol * mask_bx(i, j, k) * (u - u_exact) *
+                       (u - u_exact);
             });
     }
 

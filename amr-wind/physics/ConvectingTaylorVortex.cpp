@@ -3,6 +3,7 @@
 #include "AMReX_iMultiFab.H"
 #include "AMReX_MultiFabUtil.H"
 #include "AMReX_ParmParse.H"
+#include "AMReX_ParReduce.H"
 #include "amr-wind/utilities/trig_ops.H"
 
 namespace amr_wind {
@@ -241,33 +242,33 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
         auto& nu_coord_cc = m_nu_coord_cc(lev);
         const auto& fld = field(lev);
 
-        error += amrex::ReduceSum(
-            fld, mesh_fac_cc, nu_coord_cc, level_mask, 0,
-            [=] AMREX_GPU_HOST_DEVICE(
-                amrex::Box const& bx,
-                amrex::Array4<amrex::Real const> const& fld_arr,
-                amrex::Array4<amrex::Real const> const& fac_cc,
-                amrex::Array4<amrex::Real const> const& nu_cc,
-                amrex::Array4<int const> const& mask_arr) -> amrex::Real {
-                amrex::Real err_fab = 0.0;
+        auto const& fld_arr = fld.const_arrays();
+        auto const& fac_cc = mesh_fac_cc.const_arrays();
+        auto const& nu_cc = nu_coord_cc.const_arrays();
+        auto const& mask_arr = level_mask.const_arrays();
 
-                amrex::Loop(bx, [=, &err_fab](int i, int j, int k) noexcept {
-                    amrex::Real x = nu_cc(i, j, k, 0);
-                    amrex::Real y = nu_cc(i, j, k, 1);
+        error += amrex::ParReduce(
+            amrex::TypeList<amrex::ReduceOpSum>{},
+            amrex::TypeList<amrex::Real>{}, fld, amrex::IntVect(0),
+            [=] AMREX_GPU_HOST_DEVICE(int box_no, int i, int j, int k)
+                -> amrex::GpuTuple<amrex::Real> {
+                auto const& fld_bx = fld_arr[box_no];
+                auto const& fac_bx = fac_cc[box_no];
+                auto const& nu_cc_bx = nu_cc[box_no];
+                auto const& mask_bx = mask_arr[box_no];
 
-                    const amrex::Real u = fld_arr(i, j, k, comp);
+                const amrex::Real u = fld_bx(i, j, k, comp);
 
-                    const amrex::Real u_exact =
-                        f_exact(u0, v0, omega, x, y, time);
+                const amrex::Real u_exact = f_exact(
+                    u0, v0, omega, nu_cc_bx(i, j, k, 0), nu_cc_bx(i, j, k, 1),
+                    time);
 
-                    const amrex::Real cell_vol = dx[0] * fac_cc(i, j, k, 0) *
-                                                 dx[1] * fac_cc(i, j, k, 1) *
-                                                 dx[2] * fac_cc(i, j, k, 2);
+                const amrex::Real cell_vol = dx[0] * fac_bx(i, j, k, 0) *
+                                             dx[1] * fac_bx(i, j, k, 1) *
+                                             dx[2] * fac_bx(i, j, k, 2);
 
-                    err_fab += cell_vol * mask_arr(i, j, k) * (u - u_exact) *
-                               (u - u_exact);
-                });
-                return err_fab;
+                return cell_vol * mask_bx(i, j, k) * (u - u_exact) *
+                       (u - u_exact);
             });
     }
 
