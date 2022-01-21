@@ -62,15 +62,16 @@ void ChannelFlowScaling::create_map(int lev, const amrex::Geometry& geom)
 void ChannelFlowScaling::create_cell_node_map(
     int lev, const amrex::Geometry& geom)
 {
-    const auto beta = m_beta;
-    const auto do_map = m_map;
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> beta{
+        {m_beta[0], m_beta[1], m_beta[2]}};
+    amrex::GpuArray<int, AMREX_SPACEDIM> do_map{{m_map[0], m_map[1], m_map[2]}};
     const auto eps = m_eps;
 
     const auto& dx = geom.CellSizeArray();
     const auto& prob_lo = geom.ProbLoArray();
     const auto& prob_hi = geom.ProbHiArray();
 
-    amrex::Vector<amrex::Real> len{
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> len{
         {prob_hi[0] - prob_lo[0], prob_hi[1] - prob_lo[1],
          prob_hi[2] - prob_lo[2]}};
 
@@ -135,15 +136,16 @@ void ChannelFlowScaling::create_cell_node_map(
  */
 void ChannelFlowScaling::create_face_map(int lev, const amrex::Geometry& geom)
 {
-    const auto beta = m_beta;
-    const auto do_map = m_map;
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> beta{
+        {m_beta[0], m_beta[1], m_beta[2]}};
+    amrex::GpuArray<int, AMREX_SPACEDIM> do_map{{m_map[0], m_map[1], m_map[2]}};
     const auto eps = m_eps;
 
     const auto& dx = geom.CellSizeArray();
     const auto& prob_lo = geom.ProbLoArray();
     const auto& prob_hi = geom.ProbHiArray();
 
-    amrex::Vector<amrex::Real> len{
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> len{
         {prob_hi[0] - prob_lo[0], prob_hi[1] - prob_lo[1],
          prob_hi[2] - prob_lo[2]}};
 
@@ -254,15 +256,16 @@ void ChannelFlowScaling::create_non_uniform_mesh(
         }
     }
 
-    const auto beta = m_beta;
-    const auto do_map = m_map;
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> beta{
+        {m_beta[0], m_beta[1], m_beta[2]}};
+    amrex::GpuArray<int, AMREX_SPACEDIM> do_map{{m_map[0], m_map[1], m_map[2]}};
     const auto eps = m_eps;
 
     const auto& dx = geom.CellSizeArray();
     const auto& prob_lo = geom.ProbLoArray();
     const auto& prob_hi = geom.ProbHiArray();
 
-    amrex::Vector<amrex::Real> len{
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> len{
         {probhi_physical[0] - prob_lo[0], probhi_physical[1] - prob_lo[1],
          probhi_physical[2] - prob_lo[2]}};
 

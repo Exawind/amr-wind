@@ -37,7 +37,6 @@ public:
     //! Construct mesh scaling field
     virtual void create_map(int, const amrex::Geometry&) = 0;
 
-private:
     //! Construct mesh scaling field on cell centers and nodes
     virtual void create_cell_node_map(int, const amrex::Geometry&) = 0;
 
@@ -46,6 +45,8 @@ private:
 
     //! Construct the non-uniform mesh field
     virtual void create_non_uniform_mesh(int, const amrex::Geometry&) = 0;
+
+private:
 };
 
 /** A collection of \ref mesh_map instances

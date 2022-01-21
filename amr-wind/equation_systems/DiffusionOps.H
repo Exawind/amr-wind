@@ -45,16 +45,6 @@ public:
 
     virtual void linsys_solve_impl();
 
-protected:
-    //! Sets up the linear operator (e.g., setup BCs, etc.)
-    virtual void setup_operator(
-        LinOp& linop,
-        const amrex::Real alpha,
-        const amrex::Real beta,
-        const FieldState fstate);
-
-    virtual void setup_solver(amrex::MLMG& mlmg);
-
     virtual void set_acoeffs(LinOp& linop, const FieldState fstate);
 
     template <typename L>
@@ -204,6 +194,16 @@ protected:
             linop.setBCoeffs(lev, amrex::GetArrOfConstPtrs(b));
         }
     }
+
+protected:
+    //! Sets up the linear operator (e.g., setup BCs, etc.)
+    virtual void setup_operator(
+        LinOp& linop,
+        const amrex::Real alpha,
+        const amrex::Real beta,
+        const FieldState fstate);
+
+    virtual void setup_solver(amrex::MLMG& mlmg);
 
     PDEFields& m_pdefields;
     Field& m_density;
