@@ -249,6 +249,25 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
         // MAC projection
         m_macproj_op(fstate, dt);
+    }
+
+    void operator()(const FieldState fstate, const amrex::Real dt)
+    {
+        auto& repo = fields.repo;
+        auto& geom = repo.mesh().Geom();
+
+        const auto& src_term = fields.src_term;
+        auto& conv_term = fields.conv_term;
+        auto& dof_field = fields.field.state(fstate);
+
+        auto flux_x =
+            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::XFACE);
+        auto flux_y =
+            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::YFACE);
+        auto flux_z =
+            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::ZFACE);
+
+        auto bcrec_device = dof_field.bcrec_device();
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             u_mac(lev).FillBoundary(geom[lev].periodicity());
