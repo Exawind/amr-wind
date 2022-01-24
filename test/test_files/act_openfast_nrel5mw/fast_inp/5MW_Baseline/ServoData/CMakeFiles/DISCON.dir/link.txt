@@ -1,1 +1,0 @@
-/nopt/nrel/ecom/hpacf/software/2020-07/spack/opt/spack/linux-centos7-skylake_avx512/intel-18.0.4/intel-mpi-2018.4.274-2auf5bfz5v7fmijcburii43z5x3vekoe/compilers_and_libraries_2018.5.274/linux/mpi/intel64/bin/mpiifort -fPIC  -xSKYLAKE-AVX512 -O3  -shared -nofor_main -Wl,-soname,libDISCON.so -o libDISCON.so CMakeFiles/DISCON.dir/DISCON.F90.o 
