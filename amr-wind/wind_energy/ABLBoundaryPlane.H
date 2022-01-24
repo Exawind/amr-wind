@@ -5,6 +5,7 @@
 #include "amr-wind/CFDSim.H"
 #include "AMReX_Gpu.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
+#include <AMReX_BndryRegister.H>
 
 namespace amr_wind {
 
@@ -23,7 +24,6 @@ struct BufferData
  *  This class contains the inlet data structures and operations to
  *  read and interpolate inflow data.
  */
-#ifdef AMR_WIND_USE_NETCDF
 class InletData
 {
     using PlaneVector = amrex::Vector<amrex::FArrayBox>;
@@ -38,6 +38,7 @@ public:
     void define_level_data(
         const amrex::Orientation, const amrex::Box&, const size_t);
 
+#ifdef AMR_WIND_USE_NETCDF
     void read_data(
         ncutils::NCGroup&,
         const amrex::Orientation,
@@ -45,6 +46,15 @@ public:
         const Field*,
         const amrex::Real,
         const amrex::Vector<amrex::Real>&);
+
+#else
+    void read_data_native(amrex::BndryRegister &bndry_n,
+                          amrex::BndryRegister &bndry_np1,
+                          const int lev,
+                          const Field*,
+                          const amrex::Real time,
+                          const amrex::Vector<amrex::Real>&);
+#endif
 
     void interpolate(const amrex::Real);
     bool is_populated(amrex::Orientation) const;
@@ -84,7 +94,6 @@ private:
     //! Map of `{variableId : component}`
     std::unordered_map<int, int> m_components;
 };
-#endif
 
 /** Interface for ABL boundary plane I/O
  *  \ingroup we_abl
@@ -146,6 +155,7 @@ private:
         const amrex::Orientation,
         const int,
         const Field*);
+#endif
 
     std::string m_title{"ABL boundary planes"};
 
@@ -168,6 +178,9 @@ private:
     //! File name for IO
     std::string m_filename{""};
 
+    //! File name for Native time file
+    std::string m_time_file{""};
+
     //! Variables for IO
     amrex::Vector<std::string> m_var_names;
 
@@ -179,13 +192,18 @@ private:
 
     //! Inlet data
     InletData m_in_data;
-#endif
 
     //! IO mode
     io_mode m_io_mode{io_mode::undefined};
 
     //! Flag indicating if this capability is available
     bool m_is_initialized{false};
+
+    //! controls extents on native bndry output
+    const int m_in_rad = 1;
+    const int m_out_rad = 1;
+    const int m_extent_rad = 0;
+
 };
 
 } // namespace amr_wind
