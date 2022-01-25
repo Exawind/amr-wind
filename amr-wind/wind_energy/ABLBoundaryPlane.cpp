@@ -165,7 +165,7 @@ void InletData::read_data_native(
         auto ori = oit();
         const int normal = ori.coordDir();
         const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
-        const auto& bx = (*m_data_n[ori])[lev].box();
+        const auto& dbx = (*m_data_n[ori])[lev].box();
         const auto& datn = ((*m_data_n[ori])[lev]).array();
         const amrex::IntVect v_offset = offset(ori.faceDir(), normal);
 
@@ -176,6 +176,9 @@ void InletData::read_data_native(
 
             const auto& tbx = mfi.tilebox();
             const auto& bndry_n_arr = bndry_n[ori].array(mfi);
+
+            const auto& bx = dbx & tbx;
+            if (bx.isEmpty()) continue;
 
             //       FIXME: ugh need to use the bx from bndry_n since it is smaller
             amrex::LoopOnCpu(bx, nc, [=](int i, int j, int k, int n) noexcept {
@@ -194,6 +197,10 @@ void InletData::read_data_native(
              mfi.isValid(); ++mfi) {
             const auto& tbx = mfi.tilebox();
             const auto& bndry_np1_arr = bndry_np1[ori].array(mfi);
+
+            const auto& bx = dbx & tbx;
+            if (bx.isEmpty()) continue;
+
             amrex::LoopOnCpu(bx, nc, [=](int i, int j, int k, int n) noexcept {
                 datnp1(i, j, k, n + nstart) =
                     0.5 *
@@ -695,12 +702,13 @@ void ABLBoundaryPlane::read_header()
         amrex::ParallelDescriptor::IOProcessorNumber(),
         amrex::ParallelDescriptor::Communicator());
 
-    size_t nc = 0;
+    int nc = 0;
     for (auto* fld : m_fields) {
         m_in_data.component(fld->id()) = nc;
         nc += fld->num_comp();
     }
 
+    //FIXME: need to generalize to lev > 0 somehow
     const int lev = 0;
     for (amrex::OrientationIter oit; oit; ++oit) {
         auto ori = oit();
@@ -772,6 +780,7 @@ void ABLBoundaryPlane::read_file()
     std::string header_file1 = chkname1 + "/header";
     std::string header_file2 = chkname2 + "/header";
 
+    // FIXME: could check if t_step1 was loaded last time and skip for loop with read
     const int lev = 0;
     for (auto* fld : m_fields) {
 
