@@ -46,8 +46,8 @@ public:
         const Field*,
         const amrex::Real,
         const amrex::Vector<amrex::Real>&);
+#endif
 
-#else
     void read_data_native(
         amrex::BndryRegister& bndry_n,
         amrex::BndryRegister& bndry_np1,
@@ -55,7 +55,6 @@ public:
         const Field*,
         const amrex::Real time,
         const amrex::Vector<amrex::Real>&);
-#endif
 
     void interpolate(const amrex::Real);
     bool is_populated(amrex::Orientation) const;
@@ -131,6 +130,7 @@ public:
     void
     populate_data(const int, const amrex::Real, Field&, amrex::MultiFab&) const;
 
+#ifdef AMR_WIND_USE_NETCDF
     void impl_buffer_field(
         const amrex::Box&,
         const int,
@@ -139,6 +139,7 @@ public:
         const amrex::IntVect&,
         const amrex::Array4<const amrex::Real>&,
         amrex::Gpu::ManagedVector<amrex::Real>&);
+#endif
 
     bool is_initialized() const { return m_is_initialized; }
 
@@ -173,8 +174,10 @@ private:
     //! Start outputting after this time
     amrex::Real m_out_start_time{0.0};
 
+#ifdef AMR_WIND_USE_NETCDF
     //! NetCDF time output counter
     size_t m_out_counter{0};
+#endif
 
     //! File name for IO
     std::string m_filename{""};
@@ -205,6 +208,13 @@ private:
     const int m_in_rad = 1;
     const int m_out_rad = 1;
     const int m_extent_rad = 0;
+
+#ifdef AMR_WIND_USE_NETCDF
+    std::string m_out_fmt{"netcdf"};
+#else
+    std::string m_out_fmt{"native"};
+#endif
+
 };
 
 } // namespace amr_wind
