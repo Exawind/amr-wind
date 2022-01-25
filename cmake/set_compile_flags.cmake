@@ -17,10 +17,6 @@ if(AMR_WIND_ENABLE_ALL_WARNINGS)
   endif()
 endif()
 
-if(AMR_WIND_ENABLE_WERROR)
-  list(APPEND AMR_WIND_CXX_FLAGS "-Werror")
-endif()
-
 # Add our extra flags according to language
 separate_arguments(AMR_WIND_CXX_FLAGS)
 target_compile_options(
@@ -34,15 +30,20 @@ if (AMR_WIND_ENABLE_CUDA)
     CUDA_SEPARABLE_COMPILATION ON)
 endif()
 
-# Disable loop not vectorized warnings on Clang. This generates a lot of
-# diagnostic messages when compiling AMReX that we can't do anything about
-# within amr-wind
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
     CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
   if (${AMR_WIND_USE_INTERNAL_AMREX})
+    if ((CMAKE_CXX_COMPILER_ID STREQUAL "Clang") AND AMR_WIND_ENABLE_FPE_TRAP_FOR_TESTS)
+      target_compile_options(
+        amrex PUBLIC $<$<COMPILE_LANGUAGE:CXX>:-ffp-exception-behavior=maytrap>)
+    endif()
     target_compile_options(
       amrex PUBLIC $<$<COMPILE_LANGUAGE:CXX>:-Wno-pass-failed>)
   else()
+    if ((CMAKE_CXX_COMPILER_ID STREQUAL "Clang") AND AMR_WIND_ENABLE_FPE_TRAP_FOR_TESTS)
+      target_compile_options(
+        ${amr_wind_lib_name} PUBLIC $<$<COMPILE_LANGUAGE:CXX>:-ffp-exception-behavior=maytrap>)
+    endif()
     target_compile_options(
       ${amr_wind_lib_name} PUBLIC $<$<COMPILE_LANGUAGE:CXX>:-Wno-pass-failed>)
   endif()
