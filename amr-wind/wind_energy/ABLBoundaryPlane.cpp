@@ -111,9 +111,9 @@ void InletData::read_data(
     const size_t n0 = bx.length(perp[0]);
     const size_t n1 = bx.length(perp[1]);
 
-    amrex::Vector<size_t> start{
-        static_cast<size_t>(idx), static_cast<size_t>(lo[perp[0]]),
-        static_cast<size_t>(lo[perp[1]]), 0};
+    amrex::Vector<size_t> start{static_cast<size_t>(idx),
+                                static_cast<size_t>(lo[perp[0]]),
+                                static_cast<size_t>(lo[perp[1]]), 0};
     amrex::Vector<size_t> count{1, n0, n1, nc};
     amrex::Vector<amrex::Real> buffer(n0 * n1 * nc);
     grp.var(fld->name()).get(buffer.data(), start, count);
@@ -143,8 +143,8 @@ void InletData::read_data(
 #else
 
 void InletData::read_data_native(
-                                 amrex::BndryRegister &bndry_n,
-                                 amrex::BndryRegister &bndry_np1,
+    amrex::BndryRegister& bndry_n,
+    amrex::BndryRegister& bndry_np1,
     const int lev,
     const Field* fld,
     const amrex::Real time,
@@ -166,52 +166,64 @@ void InletData::read_data_native(
         const int normal = ori.coordDir();
         const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
         const auto& bx = (*m_data_n[ori])[lev].box();
-        amrex::Print() << "m data box: " << bx << std::endl;
+        //        amrex::Print() << "m data box: " << bx << std::endl;
 
         const auto& datn = ((*m_data_n[ori])[lev]).array();
-//        const auto& bndry_n_arr = bndry_n[ori].arrays();
-        amrex::Print() << bndry_n[ori].boxArray();
+        //        const auto& bndry_n_arr = bndry_n[ori].arrays();
+        //        amrex::Print() << bndry_n[ori].boxArray();
         const amrex::IntVect v_offset = offset(ori.faceDir(), normal);
-        amrex::Print() << "offset: " << v_offset << std::endl;
-//        amrex::LoopOnCpu(bx, nc, [=](int i, int j, int k, int n) noexcept {
-//
-//            //FIXME: need to shift index based on oit
-//            datn(i, j, k, n + nstart) = 0.5 * (bndry_n_arr(i,j,k,n) + bndry_n_arr(i+v_offset[0],j+v_offset[1],k+v_offset[2],n));
-//        });
+        //        amrex::Print() << "offset: " << v_offset << std::endl;
+        //        amrex::LoopOnCpu(bx, nc, [=](int i, int j, int k, int n)
+        //        noexcept {
+        //
+        //            //FIXME: need to shift index based on oit
+        //            datn(i, j, k, n + nstart) = 0.5 * (bndry_n_arr(i,j,k,n) +
+        //            bndry_n_arr(i+v_offset[0],j+v_offset[1],k+v_offset[2],n));
+        //        });
 
-        amrex::Print() << nstart << std::endl;
+        //        amrex::Print() << nstart << std::endl;
 
-        for (amrex::MFIter mfi(bndry_n[ori].boxArray(), bndry_n[ori].DistributionMap(), false); mfi.isValid(); ++mfi) {
+        for (amrex::MFIter mfi(
+                 bndry_n[ori].boxArray(), bndry_n[ori].DistributionMap(),
+                 false);
+             mfi.isValid(); ++mfi) {
             const auto& tbx = mfi.tilebox();
             const auto& bndry_n_arr = bndry_n[ori].array(mfi);
             amrex::LoopOnCpu(bx, nc, [=](int i, int j, int k, int n) noexcept {
-                datn(i, j, k, n + nstart) = 0.5 * (bndry_n_arr(i,j,k,n) + bndry_n_arr(i+v_offset[0],j+v_offset[1],k+v_offset[2],n));
+                datn(i, j, k, n + nstart) =
+                    0.5 *
+                    (bndry_n_arr(i, j, k, n) +
+                     bndry_n_arr(
+                         i + v_offset[0], j + v_offset[1], k + v_offset[2], n));
             });
-
         }
 
         const auto& datnp1 = ((*m_data_np1[ori])[lev]).array();
-//        amrex::LoopOnCpu(bx, nc, [=](int i, int j, int k, int n) noexcept {
-//            datnp1(i, j, k, n + nstart) = 0.0;//d_buffer[((i0 * n1) + i1) * nc + n];
-//        });
+        //        amrex::LoopOnCpu(bx, nc, [=](int i, int j, int k, int n)
+        //        noexcept {
+        //            datnp1(i, j, k, n + nstart) = 0.0;//d_buffer[((i0 * n1) +
+        //            i1) * nc + n];
+        //        });
 
-
-//       FIXME: ugh need to use the bx from bndry_n since it is smaller
-        for (amrex::MFIter mfi(bndry_np1[ori].boxArray(), bndry_np1[ori].DistributionMap(), false); mfi.isValid(); ++mfi) {
+        //       FIXME: ugh need to use the bx from bndry_n since it is smaller
+        for (amrex::MFIter mfi(
+                 bndry_np1[ori].boxArray(), bndry_np1[ori].DistributionMap(),
+                 false);
+             mfi.isValid(); ++mfi) {
             const auto& tbx = mfi.tilebox();
             const auto& bndry_np1_arr = bndry_np1[ori].array(mfi);
             amrex::LoopOnCpu(bx, nc, [=](int i, int j, int k, int n) noexcept {
-                datnp1(i, j, k, n + nstart) = 0.5 * (bndry_np1_arr(i,j,k,n) + bndry_np1_arr(i+v_offset[0],j+v_offset[1],k+v_offset[2],n));
+                datnp1(i, j, k, n + nstart) =
+                    0.5 *
+                    (bndry_np1_arr(i, j, k, n) +
+                     bndry_np1_arr(
+                         i + v_offset[0], j + v_offset[1], k + v_offset[2], n));
             });
-
         }
-
 
         ((*m_data_n[ori])[lev]).prefetchToDevice();
         ((*m_data_np1[ori])[lev]).prefetchToDevice();
-
     }
-
 }
 
 #endif
@@ -270,10 +282,7 @@ ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
 
 #ifndef AMR_WIND_USE_NETCDF
     m_time_file = m_filename + "/time.dat";
-    std::ofstream oftime(m_time_file, std::ios::out);
-    oftime.close();
 #endif
-
 }
 
 void ABLBoundaryPlane::post_init_actions()
@@ -324,9 +333,10 @@ void ABLBoundaryPlane::initialize_data()
 
 void ABLBoundaryPlane::write_header()
 {
-#ifdef AMR_WIND_USE_NETCDF
     BL_PROFILE("amr-wind::ABLBoundaryPlane::write_header");
     if (m_io_mode != io_mode::output) return;
+
+#ifdef AMR_WIND_USE_NETCDF
 
     amrex::Print() << "Creating output NetCDF file: " << m_filename
                    << std::endl;
@@ -433,6 +443,14 @@ void ABLBoundaryPlane::write_header()
 
     amrex::Print() << "NetCDF file created successfully: " << m_filename
                    << std::endl;
+#else
+
+    if (amrex::ParallelDescriptor::IOProcessor()) {
+        // generate time file
+        std::ofstream oftime(m_time_file, std::ios::out);
+        oftime.close();
+    }
+
 #endif
 }
 
@@ -486,15 +504,17 @@ void ABLBoundaryPlane::write_file()
 
 #else
 
+    if (amrex::ParallelDescriptor::IOProcessor()) {
+        std::ofstream oftime(m_time_file, std::ios::out | std::ios::app);
+        oftime << t_step << ' ' << time << '\n';
+        oftime.close();
+    }
 
-     std::ofstream oftime(m_time_file, std::ios::out|std::ios::app);
-     oftime << t_step << ' ' << time << '\n';
-     oftime.close();
+    const std::string chkname =
+        m_filename + amrex::Concatenate("/bndry_output", t_step);
 
-    const std::string chkname = m_filename + amrex::Concatenate("/bndry_output", t_step);
-
-    amrex::Print() << "Writing abl boundary checkpoint file " << chkname << " at time "
-                   << time << std::endl;
+    amrex::Print() << "Writing abl boundary checkpoint file " << chkname
+                   << " at time " << time << std::endl;
 
     const std::string level_prefix = "Level_";
     amrex::PreBuildDirectorHierarchy(chkname, level_prefix, 1, true);
@@ -510,25 +530,28 @@ void ABLBoundaryPlane::write_file()
 
         amrex::Box domain = geom[lev].Domain();
         amrex::BoxArray ba(domain);
-        amrex::DistributionMapping dm {ba};
+        amrex::DistributionMapping dm{ba};
 
+        amrex::BndryRegister bndry(
+            ba, dm, m_in_rad, m_out_rad, m_extent_rad, field.num_comp());
 
-        amrex::BndryRegister bndry(ba, dm, m_in_rad, m_out_rad, m_extent_rad, field.num_comp());
+        bndry.copyFrom(
+            field(lev), 0, 0, 0, field.num_comp(), geom[lev].periodicity());
 
-        bndry.copyFrom(field(lev), 0, 0, 0, field.num_comp(), geom[lev].periodicity());
+        std::string filename = amrex::MultiFabFileFullPrefix(
+            lev, chkname, level_prefix, field.name());
 
-        std::string filename = amrex::MultiFabFileFullPrefix(lev , chkname, level_prefix, field.name());
-
-        // FIXME: this header is overwritten for each field kinda sloppy but makes loading fields easier later
+        // FIXME: this header is overwritten for each field kinda sloppy but
+        // makes loading fields easier later
         std::string header_file = chkname + "/header";
         std::ofstream ofh(header_file, std::ios::out);
         ofh << "time: " << time << '\n';
         bndry.write(filename, ofh);
         ofh.close();
-
     }
 
-    // this is cleaner but ordering could be an issue if someone changes the input file
+    // this is cleaner but ordering could be an issue if someone changes the
+    // input file
     //    auto& field = m_fields[0];
     //    const auto& geom = field->repo().mesh().Geom();
     //
@@ -542,19 +565,21 @@ void ABLBoundaryPlane::write_file()
     //    const int out_rad = 1;
     //    const int extent_rad = 1;
     //
-    //    bndry = std::make_unique<amrex::BndryRegister> (ba, dm, in_rad, out_rad, extent_rad, nc);
+    //    bndry = std::make_unique<amrex::BndryRegister> (ba, dm, in_rad,
+    //    out_rad, extent_rad, nc);
     //
     //    int nstart = 0;
     //    for (auto* fld : m_fields) {
     //        auto& field = *fld;
-    //        amrex::Print() << "nstart: " << nstart << field.num_comp() << std::endl;
-    //        constexpr int nghost = 0;
-    //        constexpr int src_comp = 0;
-    //        bndry->copyFrom(field(lev), nghost, src_comp, nstart, field.num_comp(), geom[0].periodicity());
-    //        nstart += field.num_comp();
+    //        amrex::Print() << "nstart: " << nstart << field.num_comp() <<
+    //        std::endl; constexpr int nghost = 0; constexpr int src_comp = 0;
+    //        bndry->copyFrom(field(lev), nghost, src_comp, nstart,
+    //        field.num_comp(), geom[0].periodicity()); nstart +=
+    //        field.num_comp();
     //    }
     //
-    //    std::string filename = amrex::MultiFabFileFullPrefix(lev , chkname, level_prefix, "data");
+    //    std::string filename = amrex::MultiFabFileFullPrefix(lev , chkname,
+    //    level_prefix, "data");
     //
     //    std::string header_file = chkname + "/header";
     //    std::ofstream ofh(header_file, std::ios::out);
@@ -564,7 +589,6 @@ void ABLBoundaryPlane::write_file()
     //    ofh.close();
 
 #endif
-
 }
 
 void ABLBoundaryPlane::read_header()
@@ -651,13 +675,43 @@ void ABLBoundaryPlane::read_header()
                    << std::endl;
 #else
 
-    //
-// FIXME: read in file and allocate m_in_times
-    //    std::ifstream iftime(m_time_file, std::ios::in);
-//    iftime >> t_step >> ' ' >> time << '\n';
-//    iftime.close();
-    m_in_times.resize(100);
-    for(int i=0;i<100;++i) m_in_times[i]= 2.0 + 0.5*i;
+    int time_file_length = 0;
+
+    if (amrex::ParallelDescriptor::IOProcessor()) {
+
+        std::string line;
+        std::ifstream time_file(m_time_file);
+        while (std::getline(time_file, line)) {
+            ++time_file_length;
+        }
+
+        time_file.close();
+    }
+
+    amrex::ParallelDescriptor::Bcast(
+        &time_file_length, 1, amrex::ParallelDescriptor::IOProcessorNumber(),
+        amrex::ParallelDescriptor::Communicator());
+
+    m_in_times.resize(time_file_length);
+    m_in_timesteps.resize(time_file_length);
+
+    if (amrex::ParallelDescriptor::IOProcessor()) {
+        std::ifstream time_file(m_time_file);
+        for (int i = 0; i < time_file_length; ++i) {
+            time_file >> m_in_timesteps[i] >> m_in_times[i];
+        }
+        time_file.close();
+    }
+
+    amrex::ParallelDescriptor::Bcast(
+        m_in_timesteps.data(), time_file_length,
+        amrex::ParallelDescriptor::IOProcessorNumber(),
+        amrex::ParallelDescriptor::Communicator());
+
+    amrex::ParallelDescriptor::Bcast(
+        m_in_times.data(), time_file_length,
+        amrex::ParallelDescriptor::IOProcessorNumber(),
+        amrex::ParallelDescriptor::Communicator());
 
     size_t nc = 0;
     for (auto* fld : m_fields) {
@@ -719,6 +773,22 @@ void ABLBoundaryPlane::read_file()
 
 #else
 
+    const int index = closest_index(m_in_times, time);
+    const int t_step1 = m_in_timesteps[index];
+    const int t_step2 = t_step1 + 1;
+
+    AMREX_ALWAYS_ASSERT(
+        (m_in_times[index] <= time) && (time <= m_in_times[index + 1]));
+
+    const std::string chkname1 =
+        m_filename + amrex::Concatenate("/bndry_output", t_step1);
+    const std::string chkname2 =
+        m_filename + amrex::Concatenate("/bndry_output", t_step2);
+
+    const std::string level_prefix = "Level_";
+
+    std::string header_file1 = chkname1 + "/header";
+    std::string header_file2 = chkname2 + "/header";
 
     const int lev = 0;
     for (auto* fld : m_fields) {
@@ -728,38 +798,29 @@ void ABLBoundaryPlane::read_file()
 
         amrex::Box domain = geom[lev].Domain();
         amrex::BoxArray ba(domain);
-        amrex::DistributionMapping dm {ba};
+        amrex::DistributionMapping dm{ba};
 
-        amrex::BndryRegister bndry1(ba, dm, m_in_rad, m_out_rad, m_extent_rad, field.num_comp());
-        amrex::BndryRegister bndry2(ba, dm, m_in_rad, m_out_rad, m_extent_rad, field.num_comp());
+        amrex::BndryRegister bndry1(
+            ba, dm, m_in_rad, m_out_rad, m_extent_rad, field.num_comp());
+        amrex::BndryRegister bndry2(
+            ba, dm, m_in_rad, m_out_rad, m_extent_rad, field.num_comp());
 
-//
-//        bndry1 = std::make_unique<amrex::BndryRegister>(ba, dm, in_rad, out_rad, extent_rad, field.num_comp());
-//        bndry2 = std::make_unique<amrex::BndryRegister>(ba, dm, in_rad, out_rad, extent_rad, field.num_comp());
-
-        // FIXME: gotta fix this too:
-        int t_step1 = 5;
-        int t_step2 = 6;
-
-        const std::string chkname1 = m_filename + amrex::Concatenate("/bndry_output", t_step1);
-        const std::string chkname2 = m_filename + amrex::Concatenate("/bndry_output", t_step2);
-
-        const std::string level_prefix = "Level_";
-
-        std::string header_file1 = chkname1 + "/header";
-        std::string header_file2 = chkname2 + "/header";
-
+        // FIXME: check if files loaded correctly
         std::ifstream ifh1(header_file1, std::ios::in);
         std::ifstream ifh2(header_file2, std::ios::in);
 
-        std::string filename1 = amrex::MultiFabFileFullPrefix(lev , chkname1, level_prefix, field.name());
-        std::string filename2 = amrex::MultiFabFileFullPrefix(lev , chkname2, level_prefix, field.name());
+        std::string filename1 = amrex::MultiFabFileFullPrefix(
+            lev, chkname1, level_prefix, field.name());
+        std::string filename2 = amrex::MultiFabFileFullPrefix(
+            lev, chkname2, level_prefix, field.name());
 
         std::string dummy;
         amrex::Real time1, time2;
         ifh1 >> dummy >> time1;
         ifh2 >> dummy >> time2;
-        amrex::Print() << "time: " << time1 << ' ' << time2 << std::endl;
+
+        AMREX_ALWAYS_ASSERT((time1 <= time) && (time <= time2));
+
         bndry1.read(filename1, ifh1);
         bndry2.read(filename2, ifh2);
 
@@ -767,8 +828,6 @@ void ABLBoundaryPlane::read_file()
         ifh2.close();
 
         m_in_data.read_data_native(bndry1, bndry2, lev, fld, time, m_in_times);
-
-
     }
 #endif
 
@@ -844,7 +903,6 @@ void ABLBoundaryPlane::populate_data(
     const auto& geom = fld.repo().mesh().Geom();
     mfab.EnforcePeriodicity(
         0, mfab.nComp(), amrex::IntVect(1), geom[lev].periodicity());
-
 }
 
 #ifdef AMR_WIND_USE_NETCDF
@@ -907,9 +965,8 @@ void ABLBoundaryPlane::write_data(
                 lbx, n1, nc, perp, v_offset, fld_arr, buffer.data);
             amrex::Gpu::streamSynchronize();
 
-            buffer.start = {
-                m_out_counter, static_cast<size_t>(lo[perp[0]]),
-                static_cast<size_t>(lo[perp[1]]), 0};
+            buffer.start = {m_out_counter, static_cast<size_t>(lo[perp[0]]),
+                            static_cast<size_t>(lo[perp[1]]), 0};
             buffer.count = {1, n0, n1, nc};
         } else if (bhi[normal] == dhi[normal] && ori.isHigh()) {
             amrex::IntVect lo(blo);
@@ -930,9 +987,8 @@ void ABLBoundaryPlane::write_data(
                 lbx, n1, nc, perp, v_offset, fld_arr, buffer.data);
             amrex::Gpu::streamSynchronize();
 
-            buffer.start = {
-                m_out_counter, static_cast<size_t>(lo[perp[0]]),
-                static_cast<size_t>(lo[perp[1]]), 0};
+            buffer.start = {m_out_counter, static_cast<size_t>(lo[perp[0]]),
+                            static_cast<size_t>(lo[perp[1]]), 0};
             buffer.count = {1, n0, n1, nc};
         }
     }

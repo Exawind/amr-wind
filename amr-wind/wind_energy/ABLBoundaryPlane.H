@@ -48,12 +48,13 @@ public:
         const amrex::Vector<amrex::Real>&);
 
 #else
-    void read_data_native(amrex::BndryRegister &bndry_n,
-                          amrex::BndryRegister &bndry_np1,
-                          const int lev,
-                          const Field*,
-                          const amrex::Real time,
-                          const amrex::Vector<amrex::Real>&);
+    void read_data_native(
+        amrex::BndryRegister& bndry_n,
+        amrex::BndryRegister& bndry_np1,
+        const int lev,
+        const Field*,
+        const amrex::Real time,
+        const amrex::Vector<amrex::Real>&);
 #endif
 
     void interpolate(const amrex::Real);
@@ -189,6 +190,7 @@ private:
 
     //! NetCDF input level time
     amrex::Vector<amrex::Real> m_in_times;
+    amrex::Vector<int> m_in_timesteps;
 
     //! Inlet data
     InletData m_in_data;
@@ -203,7 +205,6 @@ private:
     const int m_in_rad = 1;
     const int m_out_rad = 1;
     const int m_extent_rad = 0;
-
 };
 
 } // namespace amr_wind
