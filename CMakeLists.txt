@@ -22,6 +22,7 @@ option(AMR_WIND_ENABLE_UNIT_TESTS "Enable unit testing" ON)
 option(AMR_WIND_ENABLE_TESTS "Enable testing suite" OFF)
 option(AMR_WIND_TEST_WITH_FCOMPARE "Check test plots against gold files" OFF)
 option(AMR_WIND_SAVE_GOLDS "Provide a directory in which to save golds during testing" OFF)
+option(AMR_WIND_ENABLE_FPE_TRAP_FOR_TESTS "Enable FPE trapping in tests" ON)
 
 #Options for the executable
 option(AMR_WIND_ENABLE_MPI "Enable MPI" OFF)
@@ -69,6 +70,10 @@ if(AMR_WIND_TEST_WITH_FCOMPARE)
   set(AMR_WIND_ENABLE_FCOMPARE ON)
 endif()
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+  set(PELEC_ENABLE_FPE_TRAP_FOR_TESTS OFF)
+  message(WARNING "Disabling FPE trapping for tests when using AppleClang.")
+endif()
 
 ########################### AMReX #####################################
 init_amrex()
