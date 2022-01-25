@@ -180,7 +180,6 @@ void InletData::read_data_native(
             const auto& bx = dbx & tbx;
             if (bx.isEmpty()) continue;
 
-            //       FIXME: ugh need to use the bx from bndry_n since it is smaller
             amrex::LoopOnCpu(bx, nc, [=](int i, int j, int k, int n) noexcept {
                 datn(i, j, k, n + nstart) =
                     0.5 *
@@ -530,52 +529,12 @@ void ABLBoundaryPlane::write_file()
         std::string filename = amrex::MultiFabFileFullPrefix(
             lev, chkname, level_prefix, field.name());
 
-        // FIXME: this header is overwritten for each field kinda sloppy but
-        // makes loading fields easier later
         std::string header_file = chkname + "/header";
         std::ofstream ofh(header_file, std::ios::out);
         ofh << "time: " << time << '\n';
         bndry.write(filename, ofh);
         ofh.close();
     }
-
-    // this is cleaner but ordering could be an issue if someone changes the
-    // input file
-    //    auto& field = m_fields[0];
-    //    const auto& geom = field->repo().mesh().Geom();
-    //
-    //    amrex::Box domain = geom[lev].Domain();
-    //    amrex::BoxArray ba(domain);
-    //    amrex::DistributionMapping dm {ba};
-    //
-    //    std::unique_ptr<amrex::BndryRegister> bndry;
-    //
-    //    const int in_rad = 1;
-    //    const int out_rad = 1;
-    //    const int extent_rad = 1;
-    //
-    //    bndry = std::make_unique<amrex::BndryRegister> (ba, dm, in_rad,
-    //    out_rad, extent_rad, nc);
-    //
-    //    int nstart = 0;
-    //    for (auto* fld : m_fields) {
-    //        auto& field = *fld;
-    //        amrex::Print() << "nstart: " << nstart << field.num_comp() <<
-    //        std::endl; constexpr int nghost = 0; constexpr int src_comp = 0;
-    //        bndry->copyFrom(field(lev), nghost, src_comp, nstart,
-    //        field.num_comp(), geom[0].periodicity()); nstart +=
-    //        field.num_comp();
-    //    }
-    //
-    //    std::string filename = amrex::MultiFabFileFullPrefix(lev , chkname,
-    //    level_prefix, "data");
-    //
-    //    std::string header_file = chkname + "/header";
-    //    std::ofstream ofh(header_file, std::ios::out);
-    //    ofh << "time: " << time << '\n';
-    //    bndry->write(filename, ofh);
-    //
-    //    ofh.close();
 
 #endif
 }
@@ -670,6 +629,9 @@ void ABLBoundaryPlane::read_header()
 
         std::string line;
         std::ifstream time_file(m_time_file);
+        if (!time_file.good()) {
+            amrex::Abort("Cannot find time file: " + m_time_file);
+        }
         while (std::getline(time_file, line)) {
             ++time_file_length;
         }
@@ -796,9 +758,15 @@ void ABLBoundaryPlane::read_file()
         amrex::BndryRegister bndry2(
             ba, dm, m_in_rad, m_out_rad, m_extent_rad, field.num_comp());
 
-        // FIXME: check if files loaded correctly
         std::ifstream ifh1(header_file1, std::ios::in);
         std::ifstream ifh2(header_file2, std::ios::in);
+
+        if (!ifh1.good()) {
+            amrex::Abort("Cannot find bndry header file1: " + header_file1);
+        }
+        if (!ifh2.good()) {
+            amrex::Abort("Cannot find bndry header file2: " + header_file2);
+        }
 
         std::string filename1 = amrex::MultiFabFileFullPrefix(
             lev, chkname1, level_prefix, field.name());
