@@ -12,7 +12,6 @@ include(amr-wind-utils)
 
 #General options for the project
 option(AMR_WIND_ENABLE_ALL_WARNINGS "Show most warnings for most compilers" ON)
-option(AMR_WIND_ENABLE_WERROR "Treat compiler warnings as errors" OFF)
 option(AMR_WIND_ENABLE_CLANG_TIDY "Compile with clang-tidy static analysis" OFF)
 option(AMR_WIND_ENABLE_CPPCHECK "Enable cppcheck static analysis target" OFF)
 option(AMR_WIND_ENABLE_FCOMPARE "Enable building fcompare when not testing" OFF)
