@@ -166,29 +166,18 @@ void InletData::read_data_native(
         const int normal = ori.coordDir();
         const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
         const auto& bx = (*m_data_n[ori])[lev].box();
-        //        amrex::Print() << "m data box: " << bx << std::endl;
-
         const auto& datn = ((*m_data_n[ori])[lev]).array();
-        //        const auto& bndry_n_arr = bndry_n[ori].arrays();
-        //        amrex::Print() << bndry_n[ori].boxArray();
         const amrex::IntVect v_offset = offset(ori.faceDir(), normal);
-        //        amrex::Print() << "offset: " << v_offset << std::endl;
-        //        amrex::LoopOnCpu(bx, nc, [=](int i, int j, int k, int n)
-        //        noexcept {
-        //
-        //            //FIXME: need to shift index based on oit
-        //            datn(i, j, k, n + nstart) = 0.5 * (bndry_n_arr(i,j,k,n) +
-        //            bndry_n_arr(i+v_offset[0],j+v_offset[1],k+v_offset[2],n));
-        //        });
-
-        //        amrex::Print() << nstart << std::endl;
 
         for (amrex::MFIter mfi(
                  bndry_n[ori].boxArray(), bndry_n[ori].DistributionMap(),
                  false);
              mfi.isValid(); ++mfi) {
+
             const auto& tbx = mfi.tilebox();
             const auto& bndry_n_arr = bndry_n[ori].array(mfi);
+
+            //       FIXME: ugh need to use the bx from bndry_n since it is smaller
             amrex::LoopOnCpu(bx, nc, [=](int i, int j, int k, int n) noexcept {
                 datn(i, j, k, n + nstart) =
                     0.5 *
@@ -199,13 +188,6 @@ void InletData::read_data_native(
         }
 
         const auto& datnp1 = ((*m_data_np1[ori])[lev]).array();
-        //        amrex::LoopOnCpu(bx, nc, [=](int i, int j, int k, int n)
-        //        noexcept {
-        //            datnp1(i, j, k, n + nstart) = 0.0;//d_buffer[((i0 * n1) +
-        //            i1) * nc + n];
-        //        });
-
-        //       FIXME: ugh need to use the bx from bndry_n since it is smaller
         for (amrex::MFIter mfi(
                  bndry_np1[ori].boxArray(), bndry_np1[ori].DistributionMap(),
                  false);
