@@ -70,7 +70,7 @@ if(AMR_WIND_TEST_WITH_FCOMPARE)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-  set(PELEC_ENABLE_FPE_TRAP_FOR_TESTS OFF)
+  set(AMR_WIND_ENABLE_FPE_TRAP_FOR_TESTS OFF)
   message(WARNING "Disabling FPE trapping for tests when using AppleClang.")
 endif()
 
