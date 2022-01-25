@@ -176,7 +176,7 @@ void InletData::read_data_native(
                  false);
              mfi.isValid(); ++mfi) {
 
-            const auto& tbx = mfi.tilebox();
+            const auto& tbx = mfi.validbox();
             const auto& bndry_n_arr = bndry_n[ori].array(mfi);
 
             const auto& bx = dbx & tbx;
@@ -196,7 +196,7 @@ void InletData::read_data_native(
                  bndry_np1[ori].boxArray(), bndry_np1[ori].DistributionMap(),
                  false);
              mfi.isValid(); ++mfi) {
-            const auto& tbx = mfi.tilebox();
+            const auto& tbx = mfi.validbox();
             const auto& bndry_np1_arr = bndry_np1[ori].array(mfi);
 
             const auto& bx = dbx & tbx;
@@ -270,15 +270,16 @@ ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
     pp.query("bndry_output_format", m_out_fmt);
 
 #ifndef AMR_WIND_USE_NETCDF
-    if(m_out_fmt == "netcdf") {
-        amrex::Print() << "Error: output format using netcdf must link netcdf library, changing output to native format" << std::endl;
+    if (m_out_fmt == "netcdf") {
+        amrex::Print() << "Error: output format using netcdf must link netcdf "
+                          "library, changing output to native format"
+                       << std::endl;
         m_out_fmt = "native";
     }
 #endif
 
     // only used for native format
     m_time_file = m_filename + "/time.dat";
-
 }
 
 void ABLBoundaryPlane::post_init_actions()
@@ -334,7 +335,7 @@ void ABLBoundaryPlane::write_header()
 
 #ifdef AMR_WIND_USE_NETCDF
 
-    if(m_out_fmt == "netcdf") {
+    if (m_out_fmt == "netcdf") {
         amrex::Print() << "Creating output NetCDF file: " << m_filename
                        << std::endl;
 
@@ -395,7 +396,8 @@ void ABLBoundaryPlane::write_header()
                     const std::string name = fld->name();
                     if (fld->num_comp() == 1) {
                         lev_grp.def_var(
-                            name, NC_DOUBLE, {"nt", dirs[perp[0]], dirs[perp[1]]});
+                            name, NC_DOUBLE,
+                            {"nt", dirs[perp[0]], dirs[perp[1]]});
                     } else if (fld->num_comp() == AMREX_SPACEDIM) {
                         lev_grp.def_var(
                             name, NC_DOUBLE,
@@ -421,7 +423,8 @@ void ABLBoundaryPlane::write_header()
                 const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
                 const auto& lo = minBox.loVect();
                 const auto& hi = minBox.hiVect();
-                const amrex::Vector<amrex::Real> pdx{{dx[perp[0]], dx[perp[1]]}};
+                const amrex::Vector<amrex::Real> pdx{
+                    {dx[perp[0]], dx[perp[1]]}};
                 const amrex::Vector<amrex::Real> los{
                     {lo[perp[0]] * dx[perp[0]], lo[perp[1]] * dx[perp[1]]}};
                 const amrex::Vector<amrex::Real> his{
@@ -449,7 +452,6 @@ void ABLBoundaryPlane::write_header()
         std::ofstream oftime(m_time_file, std::ios::out);
         oftime.close();
     }
-
 }
 
 void ABLBoundaryPlane::write_file()
@@ -469,7 +471,7 @@ void ABLBoundaryPlane::write_file()
 
 #ifdef AMR_WIND_USE_NETCDF
 
-    if(m_out_fmt == "netcdf") {
+    if (m_out_fmt == "netcdf") {
         amrex::Print() << "\nWriting NetCDF file " << m_filename << " at time "
                        << time << std::endl;
 
@@ -504,7 +506,7 @@ void ABLBoundaryPlane::write_file()
 
 #endif
 
-    if(m_out_fmt == "native") {
+    if (m_out_fmt == "native") {
         if (amrex::ParallelDescriptor::IOProcessor()) {
             std::ofstream oftime(m_time_file, std::ios::out | std::ios::app);
             oftime << t_step << ' ' << time << '\n';
@@ -549,7 +551,6 @@ void ABLBoundaryPlane::write_file()
             ofh.close();
         }
     }
-
 }
 
 void ABLBoundaryPlane::read_header()
@@ -561,84 +562,86 @@ void ABLBoundaryPlane::read_header()
 
 #ifdef AMR_WIND_USE_NETCDF
 
-    if(m_out_fmt == "netcdf") {
-    amrex::Print() << "Reading input NetCDF file: " << m_filename << std::endl;
-    auto ncf = ncutils::NCFile::open_par(
-        m_filename, NC_NOWRITE | NC_NETCDF4 | NC_MPIIO,
-        amrex::ParallelContext::CommunicatorSub(), MPI_INFO_NULL);
+    if (m_out_fmt == "netcdf") {
+        amrex::Print() << "Reading input NetCDF file: " << m_filename
+                       << std::endl;
+        auto ncf = ncutils::NCFile::open_par(
+            m_filename, NC_NOWRITE | NC_NETCDF4 | NC_MPIIO,
+            amrex::ParallelContext::CommunicatorSub(), MPI_INFO_NULL);
 
-    // Store the input file times and reset to start at 0
-    const size_t nt = ncf.dim("nt").len();
-    m_in_times.resize(nt);
-    ncf.var("time").get(m_in_times.data());
+        // Store the input file times and reset to start at 0
+        const size_t nt = ncf.dim("nt").len();
+        m_in_times.resize(nt);
+        ncf.var("time").get(m_in_times.data());
 
-    // Sanity check the input file time
-    AMREX_ALWAYS_ASSERT(m_in_times[0] <= m_time.current_time());
+        // Sanity check the input file time
+        AMREX_ALWAYS_ASSERT(m_in_times[0] <= m_time.current_time());
 
-    for (auto& plane_grp : ncf.all_groups()) {
-        int normal, face_dir;
-        plane_grp.var("normal").get(&normal);
-        plane_grp.var("side").get(&face_dir);
-        const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
-        const amrex::Orientation ori(
-            normal, amrex::Orientation::Side(face_dir));
+        for (auto& plane_grp : ncf.all_groups()) {
+            int normal, face_dir;
+            plane_grp.var("normal").get(&normal);
+            plane_grp.var("side").get(&face_dir);
+            const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
+            const amrex::Orientation ori(
+                normal, amrex::Orientation::Side(face_dir));
 
-        m_in_data.define_plane(ori);
+            m_in_data.define_plane(ori);
 
-        const int nlevels = plane_grp.num_groups();
-        // FIXME Do not support multi-level input mode yet.
-        // this is due to interpolation issues at the coarse-fine interface
-        if (nlevels > 1) {
-            amrex::Abort("Not supporting multi-level input mode yet.");
-        }
-        for (int lev = 0; lev < nlevels; ++lev) {
-            auto lev_grp = plane_grp.group(level_name(lev));
-
-            // sanity checks to ensure grid-to-grid matching
-            const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
-            const auto& lo = minBox.loVect();
-            const auto& hi = minBox.hiVect();
-            const auto& dx = m_mesh.Geom(lev).CellSizeArray();
-            const amrex::Vector<amrex::Real> pdx{{dx[perp[0]], dx[perp[1]]}};
-            const amrex::Vector<amrex::Real> los{
-                {lo[perp[0]] * pdx[0], lo[perp[1]] * pdx[1]}};
-            const amrex::Vector<amrex::Real> his{
-                {(hi[perp[0]] + 1) * pdx[0], (hi[perp[1]] + 1) * pdx[1]}};
-            const amrex::Vector<amrex::Real> lengths{
-                {minBox.length(perp[0]) * pdx[0],
-                 minBox.length(perp[1]) * pdx[1]}};
-
-            amrex::Vector<amrex::Real> nc_dat{{0, 0}};
-            lev_grp.var("lengths").get(nc_dat.data());
-            AMREX_ALWAYS_ASSERT(nc_dat == lengths);
-            lev_grp.var("lo").get(nc_dat.data());
-            AMREX_ALWAYS_ASSERT(nc_dat == los);
-            lev_grp.var("hi").get(nc_dat.data());
-            AMREX_ALWAYS_ASSERT(nc_dat == his);
-            lev_grp.var("dx").get(nc_dat.data());
-            AMREX_ALWAYS_ASSERT(nc_dat == pdx);
-
-            // Create the data structures for the input data
-            amrex::IntVect plo(lo);
-            amrex::IntVect phi(hi);
-            plo[normal] = ori.isHigh() ? hi[normal] + 1 : -1;
-            phi[normal] = ori.isHigh() ? hi[normal] + 1 : -1;
-            const amrex::Box pbx(plo, phi);
-            size_t nc = 0;
-            for (auto* fld : m_fields) {
-                m_in_data.component(fld->id()) = nc;
-                nc += fld->num_comp();
+            const int nlevels = plane_grp.num_groups();
+            // FIXME Do not support multi-level input mode yet.
+            // this is due to interpolation issues at the coarse-fine interface
+            if (nlevels > 1) {
+                amrex::Abort("Not supporting multi-level input mode yet.");
             }
-            m_in_data.define_level_data(ori, pbx, nc);
-        }
-    }
+            for (int lev = 0; lev < nlevels; ++lev) {
+                auto lev_grp = plane_grp.group(level_name(lev));
 
-    amrex::Print() << "NetCDF file read successfully: " << m_filename
-                   << std::endl;
+                // sanity checks to ensure grid-to-grid matching
+                const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
+                const auto& lo = minBox.loVect();
+                const auto& hi = minBox.hiVect();
+                const auto& dx = m_mesh.Geom(lev).CellSizeArray();
+                const amrex::Vector<amrex::Real> pdx{
+                    {dx[perp[0]], dx[perp[1]]}};
+                const amrex::Vector<amrex::Real> los{
+                    {lo[perp[0]] * pdx[0], lo[perp[1]] * pdx[1]}};
+                const amrex::Vector<amrex::Real> his{
+                    {(hi[perp[0]] + 1) * pdx[0], (hi[perp[1]] + 1) * pdx[1]}};
+                const amrex::Vector<amrex::Real> lengths{
+                    {minBox.length(perp[0]) * pdx[0],
+                     minBox.length(perp[1]) * pdx[1]}};
+
+                amrex::Vector<amrex::Real> nc_dat{{0, 0}};
+                lev_grp.var("lengths").get(nc_dat.data());
+                AMREX_ALWAYS_ASSERT(nc_dat == lengths);
+                lev_grp.var("lo").get(nc_dat.data());
+                AMREX_ALWAYS_ASSERT(nc_dat == los);
+                lev_grp.var("hi").get(nc_dat.data());
+                AMREX_ALWAYS_ASSERT(nc_dat == his);
+                lev_grp.var("dx").get(nc_dat.data());
+                AMREX_ALWAYS_ASSERT(nc_dat == pdx);
+
+                // Create the data structures for the input data
+                amrex::IntVect plo(lo);
+                amrex::IntVect phi(hi);
+                plo[normal] = ori.isHigh() ? hi[normal] + 1 : -1;
+                phi[normal] = ori.isHigh() ? hi[normal] + 1 : -1;
+                const amrex::Box pbx(plo, phi);
+                size_t nc = 0;
+                for (auto* fld : m_fields) {
+                    m_in_data.component(fld->id()) = nc;
+                    nc += fld->num_comp();
+                }
+                m_in_data.define_level_data(ori, pbx, nc);
+            }
+        }
+
+        amrex::Print() << "NetCDF file read successfully: " << m_filename
+                       << std::endl;
     }
 #endif
 
-    if(m_out_fmt == "native") {
+    if (m_out_fmt == "native") {
 
         int time_file_length = 0;
 
@@ -657,7 +660,8 @@ void ABLBoundaryPlane::read_header()
         }
 
         amrex::ParallelDescriptor::Bcast(
-            &time_file_length, 1, amrex::ParallelDescriptor::IOProcessorNumber(),
+            &time_file_length, 1,
+            amrex::ParallelDescriptor::IOProcessorNumber(),
             amrex::ParallelDescriptor::Communicator());
 
         m_in_times.resize(time_file_length);
@@ -687,7 +691,7 @@ void ABLBoundaryPlane::read_header()
             nc += fld->num_comp();
         }
 
-        //FIXME: need to generalize to lev > 0 somehow
+        // FIXME: need to generalize to lev > 0 somehow
         const int lev = 0;
         for (amrex::OrientationIter oit; oit; ++oit) {
             auto ori = oit();
@@ -706,7 +710,6 @@ void ABLBoundaryPlane::read_header()
             m_in_data.define_level_data(ori, pbx, nc);
         }
     }
-
 }
 
 void ABLBoundaryPlane::read_file()
@@ -719,7 +722,7 @@ void ABLBoundaryPlane::read_file()
     AMREX_ALWAYS_ASSERT((m_in_times[0] <= time) && (time < m_in_times.back()));
 
     // return early if current data files can still be interpolated in time
-    if( (m_in_data.tn() <= time) && (time < m_in_data.tnp1()) ) {
+    if ((m_in_data.tn() <= time) && (time < m_in_data.tnp1())) {
         m_in_data.interpolate(time);
         return;
     }
@@ -748,7 +751,7 @@ void ABLBoundaryPlane::read_file()
 
 #endif
 
-    if(m_out_fmt == "native") {
+    if (m_out_fmt == "native") {
 
         const int index = closest_index(m_in_times, time);
         const int t_step1 = m_in_timesteps[index];
@@ -767,7 +770,8 @@ void ABLBoundaryPlane::read_file()
         std::string header_file1 = chkname1 + "/header";
         std::string header_file2 = chkname2 + "/header";
 
-        // FIXME: could check if t_step1 was loaded last time and skip for loop with read
+        // FIXME: could check if t_step1 was loaded last time and skip for loop
+        // with read
         const int lev = 0;
         for (auto* fld : m_fields) {
 
@@ -811,9 +815,9 @@ void ABLBoundaryPlane::read_file()
             ifh1.close();
             ifh2.close();
 
-            m_in_data.read_data_native(bndry1, bndry2, lev, fld, time, m_in_times);
+            m_in_data.read_data_native(
+                bndry1, bndry2, lev, fld, time, m_in_times);
         }
-
     }
 
     m_in_data.interpolate(time);
