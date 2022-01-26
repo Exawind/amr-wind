@@ -35,6 +35,10 @@ struct AdvectionOp<VOF, fvm::Godunov>
         auto& repo = fields.repo;
         const auto& geom = repo.mesh().Geom();
 
+        auto& aa_x = repo.get_field("advalpha_x");
+        auto& aa_y = repo.get_field("advalpha_y");
+        auto& aa_z = repo.get_field("advalpha_z");
+
         auto& dof_field = fields.field;
         //
         // Advect volume using either the Explicit Lagrangian onto-cell or
@@ -66,7 +70,8 @@ struct AdvectionOp<VOF, fvm::Godunov>
                 multiphase::split_advection(
                     lev, bx, isweep, dof_field(lev).array(mfi),
                     u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
-                    w_mac(lev).const_array(mfi),
+                    w_mac(lev).const_array(mfi), aa_x(lev).array(mfi),
+                    aa_y(lev).array(mfi), aa_z(lev).array(mfi),
                     dof_field.bcrec_device().data(), tmpfab.dataPtr(), geom, dt,
                     m_use_lagrangian);
 

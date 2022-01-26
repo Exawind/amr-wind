@@ -15,6 +15,9 @@ void multiphase::split_advection(
     amrex::Array4<amrex::Real const> const& umac,
     amrex::Array4<amrex::Real const> const& vmac,
     amrex::Array4<amrex::Real const> const& wmac,
+    amrex::Array4<amrex::Real> const& aax,
+    amrex::Array4<amrex::Real> const& aay,
+    amrex::Array4<amrex::Real> const& aaz,
     amrex::BCRec const* pbc,
     amrex::Real* p,
     amrex::Vector<amrex::Geometry> geom,
@@ -40,6 +43,11 @@ void multiphase::split_advection(
     Array4<Real> fluxC = makeArray4(p, bxg1, 1);
     p += fluxC.size();
     Array4<Real> fluxR = makeArray4(p, bxg1, 1);
+    p += fluxR.size(); // NOLINT: Value not read warning
+    Array4<Real> vofL = makeArray4(p, bxg1, 1);
+    p += vofL.size();
+    Array4<Real> vofR = makeArray4(p, bxg1, 1);
+    p += vofR.size();
 
     if (!is_lagrangian) {
         amrex::ParallelFor(
@@ -50,34 +58,34 @@ void multiphase::split_advection(
 
     if (isweep % 3 == 0) {
         sweep(
-            2, bx, dtdz, wmac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.z,
-            domhi.z, is_lagrangian);
+            2, bx, dtdz, wmac, volfrac, fluxL, fluxC, fluxR, vofL, vofR, aaz,
+            pbc, domlo.z, domhi.z, is_lagrangian);
         sweep(
-            0, bx, dtdx, umac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.x,
-            domhi.x, is_lagrangian);
+            0, bx, dtdx, umac, volfrac, fluxL, fluxC, fluxR, vofL, vofR, aax,
+            pbc, domlo.x, domhi.x, is_lagrangian);
         sweep(
-            1, bx, dtdy, vmac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.y,
-            domhi.y, is_lagrangian);
+            1, bx, dtdy, vmac, volfrac, fluxL, fluxC, fluxR, vofL, vofR, aay,
+            pbc, domlo.y, domhi.y, is_lagrangian);
     } else if (isweep % 3 == 1) {
         sweep(
-            1, bx, dtdy, vmac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.y,
-            domhi.y, is_lagrangian);
+            1, bx, dtdy, vmac, volfrac, fluxL, fluxC, fluxR, vofL, vofR, aay,
+            pbc, domlo.y, domhi.y, is_lagrangian);
         sweep(
-            2, bx, dtdz, wmac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.z,
-            domhi.z, is_lagrangian);
+            2, bx, dtdz, wmac, volfrac, fluxL, fluxC, fluxR, vofL, vofR, aaz,
+            pbc, domlo.z, domhi.z, is_lagrangian);
         sweep(
-            0, bx, dtdx, umac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.x,
-            domhi.x, is_lagrangian);
+            0, bx, dtdx, umac, volfrac, fluxL, fluxC, fluxR, vofL, vofR, aax,
+            pbc, domlo.x, domhi.x, is_lagrangian);
     } else {
         sweep(
-            0, bx, dtdx, umac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.x,
-            domhi.x, is_lagrangian);
+            0, bx, dtdx, umac, volfrac, fluxL, fluxC, fluxR, vofL, vofR, aax,
+            pbc, domlo.x, domhi.x, is_lagrangian);
         sweep(
-            1, bx, dtdy, vmac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.y,
-            domhi.y, is_lagrangian);
+            1, bx, dtdy, vmac, volfrac, fluxL, fluxC, fluxR, vofL, vofR, aay,
+            pbc, domlo.y, domhi.y, is_lagrangian);
         sweep(
-            2, bx, dtdz, wmac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.z,
-            domhi.z, is_lagrangian);
+            2, bx, dtdz, wmac, volfrac, fluxL, fluxC, fluxR, vofL, vofR, aaz,
+            pbc, domlo.z, domhi.z, is_lagrangian);
     }
 
     // Remove VOF debris
@@ -95,6 +103,9 @@ void multiphase::sweep(
     amrex::Array4<amrex::Real> const& fluxL,
     amrex::Array4<amrex::Real> const& fluxC,
     amrex::Array4<amrex::Real> const& fluxR,
+    amrex::Array4<amrex::Real> const& vofL,
+    amrex::Array4<amrex::Real> const& vofR,
+    amrex::Array4<amrex::Real> const& advalpha_f,
     amrex::BCRec const* pbc,
     const int dimLow,
     const int dimHigh,
@@ -130,15 +141,16 @@ void multiphase::sweep(
                 amrex::Real velL = vel_mac(i, j, k);
                 amrex::Real velR = vel_mac(i + ii, j + jj, k + kk);
                 multiphase::eulerian_implicit(
-                    i, j, k, dir, dtdx, velL, velR, volfrac, fluxL, fluxR);
+                    i, j, k, dir, dtdx, velL, velR, volfrac, fluxL, fluxR, vofL,
+                    vofR);
             });
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real velL = vel_mac(i, j, k) * dtdx;
                 amrex::Real velR = vel_mac(i + ii, j + jj, k + kk) * dtdx;
                 multiphase::balance_eulerian_fluxes(
-                    i, j, k, dir, velL, velR, volfrac, fluxL, fluxC, fluxR, pbc,
-                    dimLow, dimHigh);
+                    i, j, k, dir, bx, velL, velR, volfrac, fluxL, fluxC, fluxR,
+                    vofL, vofR, advalpha_f, pbc, dimLow, dimHigh);
             });
     }
 }
