@@ -212,7 +212,6 @@ private:
 
     //! output format for bndry output
     std::string m_out_fmt{"native"};
-
 };
 
 } // namespace amr_wind
