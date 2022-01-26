@@ -146,6 +146,7 @@ void InletData::read_data(
 #endif
 
 void InletData::read_data_native(
+    const amrex::OrientationIter oit,
     amrex::BndryRegister& bndry_n,
     amrex::BndryRegister& bndry_np1,
     const int lev,
@@ -164,67 +165,64 @@ void InletData::read_data_native(
 
     AMREX_ALWAYS_ASSERT(((m_tn <= time) && (time <= m_tnp1)));
 
-    for (amrex::OrientationIter oit; oit; ++oit) {
-        auto ori = oit();
-        const int normal = ori.coordDir();
-        const auto& dbx = (*m_data_n[ori])[lev].box();
-        const auto& datn = ((*m_data_n[ori])[lev]).array();
-        const amrex::IntVect v_offset = offset(ori.faceDir(), normal);
+    auto ori = oit();
+    const int normal = ori.coordDir();
+    const auto& dbx = (*m_data_n[ori])[lev].box();
+    const auto& datn = ((*m_data_n[ori])[lev]).array();
+    const amrex::IntVect v_offset = offset(ori.faceDir(), normal);
 
-        for (amrex::MFIter mfi(
-                 bndry_n[ori].boxArray(), bndry_n[ori].DistributionMap(),
-                 false);
-             mfi.isValid(); ++mfi) {
+    for (amrex::MFIter mfi(
+             bndry_n[ori].boxArray(), bndry_n[ori].DistributionMap(), false);
+         mfi.isValid(); ++mfi) {
 
-            const auto& tbx = mfi.validbox();
-            const auto& bndry_n_arr = bndry_n[ori].array(mfi);
+        const auto& tbx = mfi.validbox();
+        const auto& bndry_n_arr = bndry_n[ori].array(mfi);
 
-            const auto& bx = dbx & tbx;
-            if (bx.isEmpty()) continue;
+        const auto& bx = dbx & tbx;
+        if (bx.isEmpty()) continue;
 
-            amrex::LoopOnCpu(bx, nc, [=](int i, int j, int k, int n) noexcept {
-                datn(i, j, k, n + nstart) =
-                    0.5 *
-                    (bndry_n_arr(i, j, k, n) +
-                     bndry_n_arr(
-                         i + v_offset[0], j + v_offset[1], k + v_offset[2], n));
-            });
-        }
-
-        const auto& datnp1 = ((*m_data_np1[ori])[lev]).array();
-        for (amrex::MFIter mfi(
-                 bndry_np1[ori].boxArray(), bndry_np1[ori].DistributionMap(),
-                 false);
-             mfi.isValid(); ++mfi) {
-            const auto& tbx = mfi.validbox();
-            const auto& bndry_np1_arr = bndry_np1[ori].array(mfi);
-
-            const auto& bx = dbx & tbx;
-            if (bx.isEmpty()) continue;
-
-            amrex::LoopOnCpu(bx, nc, [=](int i, int j, int k, int n) noexcept {
-                datnp1(i, j, k, n + nstart) =
-                    0.5 *
-                    (bndry_np1_arr(i, j, k, n) +
-                     bndry_np1_arr(
-                         i + v_offset[0], j + v_offset[1], k + v_offset[2], n));
-            });
-        }
-
-        ((*m_data_n[ori])[lev]).prefetchToDevice();
-        ((*m_data_np1[ori])[lev]).prefetchToDevice();
-
-        // FIXME: hack for now but at least now we can test
-        // broadcast bndry FArrayBox from root to all other procs
-        int bndry_root = bndry_n[ori].DistributionMap()[0];
-        amrex::ParallelDescriptor::Bcast(
-            (*m_data_n[ori])[lev].dataPtr(), (*m_data_n[ori])[lev].size(),
-            bndry_root, amrex::ParallelDescriptor::Communicator());
-
-        amrex::ParallelDescriptor::Bcast(
-            (*m_data_np1[ori])[lev].dataPtr(), (*m_data_np1[ori])[lev].size(),
-            bndry_root, amrex::ParallelDescriptor::Communicator());
+        amrex::LoopOnCpu(bx, nc, [=](int i, int j, int k, int n) noexcept {
+            datn(i, j, k, n + nstart) =
+                0.5 *
+                (bndry_n_arr(i, j, k, n) +
+                 bndry_n_arr(
+                     i + v_offset[0], j + v_offset[1], k + v_offset[2], n));
+        });
     }
+
+    const auto& datnp1 = ((*m_data_np1[ori])[lev]).array();
+    for (amrex::MFIter mfi(
+             bndry_np1[ori].boxArray(), bndry_np1[ori].DistributionMap(),
+             false);
+         mfi.isValid(); ++mfi) {
+        const auto& tbx = mfi.validbox();
+        const auto& bndry_np1_arr = bndry_np1[ori].array(mfi);
+
+        const auto& bx = dbx & tbx;
+        if (bx.isEmpty()) continue;
+
+        amrex::LoopOnCpu(bx, nc, [=](int i, int j, int k, int n) noexcept {
+            datnp1(i, j, k, n + nstart) =
+                0.5 *
+                (bndry_np1_arr(i, j, k, n) +
+                 bndry_np1_arr(
+                     i + v_offset[0], j + v_offset[1], k + v_offset[2], n));
+        });
+    }
+
+    ((*m_data_n[ori])[lev]).prefetchToDevice();
+    ((*m_data_np1[ori])[lev]).prefetchToDevice();
+
+    // FIXME: hack for now but at least now we can test
+    // broadcast bndry FArrayBox from root to all other procs
+    int bndry_root = bndry_n[ori].DistributionMap()[0];
+    amrex::ParallelDescriptor::Bcast(
+        (*m_data_n[ori])[lev].dataPtr(), (*m_data_n[ori])[lev].size(),
+        bndry_root, amrex::ParallelDescriptor::Communicator());
+
+    amrex::ParallelDescriptor::Bcast(
+        (*m_data_np1[ori])[lev].dataPtr(), (*m_data_np1[ori])[lev].size(),
+        bndry_root, amrex::ParallelDescriptor::Communicator());
 }
 
 void InletData::interpolate(const amrex::Real time)
@@ -565,11 +563,26 @@ void ABLBoundaryPlane::write_file()
             std::string filename = amrex::MultiFabFileFullPrefix(
                 lev, chkname, level_prefix, field.name());
 
-            std::string header_file = chkname + "/header";
-            std::ofstream ofh(header_file, std::ios::out);
-            ofh << "time: " << time << '\n';
-            bndry.write(filename, ofh);
-            ofh.close();
+            // print all boundaries and a header file
+            //            std::string header_file = chkname + "/header";
+            //            std::ofstream ofh(header_file, std::ios::out);
+            //            ofh << "time: " << time << '\n';
+            //            bndry.write(filename, ofh);
+            //            ofh.close();
+
+            // print individual faces
+            for (amrex::OrientationIter oit; oit; ++oit) {
+                auto ori = oit();
+                const std::string plane = m_plane_names[ori];
+
+                if (std::find(m_planes.begin(), m_planes.end(), plane) ==
+                    m_planes.end())
+                    continue;
+
+                std::string facename =
+                    amrex::Concatenate(filename + '_', ori, 1);
+                bndry[ori].write(facename);
+            }
         }
     }
 }
@@ -579,6 +592,7 @@ void ABLBoundaryPlane::read_header()
     BL_PROFILE("amr-wind::ABLBoundaryPlane::read_header");
     if (m_io_mode != io_mode::input) return;
 
+    // FIXME: overallocate this for now
     m_in_data.resize(2 * AMREX_SPACEDIM);
 
 #ifdef AMR_WIND_USE_NETCDF
@@ -716,6 +730,12 @@ void ABLBoundaryPlane::read_header()
         const int lev = 0;
         for (amrex::OrientationIter oit; oit; ++oit) {
             auto ori = oit();
+
+            const std::string plane = m_plane_names[ori];
+
+            // FIXME: would be safer and less storage to not allocate all of
+            // these but we do not use m_planes for input and need to detect
+            // mass inflow from field bcs same for define level data below
             m_in_data.define_plane(ori);
 
             const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
@@ -788,9 +808,6 @@ void ABLBoundaryPlane::read_file()
 
         const std::string level_prefix = "Level_";
 
-        std::string header_file1 = chkname1 + "/header";
-        std::string header_file2 = chkname2 + "/header";
-
         const int lev = 0;
         for (auto* fld : m_fields) {
 
@@ -806,36 +823,32 @@ void ABLBoundaryPlane::read_file()
             amrex::BndryRegister bndry2(
                 ba, dm, m_in_rad, m_out_rad, m_extent_rad, field.num_comp());
 
-            std::ifstream ifh1(header_file1, std::ios::in);
-            std::ifstream ifh2(header_file2, std::ios::in);
-
-            if (!ifh1.good()) {
-                amrex::Abort("Cannot find bndry header file1: " + header_file1);
-            }
-            if (!ifh2.good()) {
-                amrex::Abort("Cannot find bndry header file2: " + header_file2);
-            }
+            bndry1.setVal(1.0e13);
+            bndry2.setVal(1.0e13);
 
             std::string filename1 = amrex::MultiFabFileFullPrefix(
                 lev, chkname1, level_prefix, field.name());
             std::string filename2 = amrex::MultiFabFileFullPrefix(
                 lev, chkname2, level_prefix, field.name());
 
-            std::string dummy;
-            amrex::Real time1, time2;
-            ifh1 >> dummy >> time1;
-            ifh2 >> dummy >> time2;
+            for (amrex::OrientationIter oit; oit; ++oit) {
+                auto ori = oit();
 
-            AMREX_ALWAYS_ASSERT((time1 <= time) && (time <= time2));
+                if ((!m_in_data.is_populated(ori)) ||
+                    (field.bc_type()[ori] != BC::mass_inflow))
+                    continue;
 
-            bndry1.read(filename1, ifh1);
-            bndry2.read(filename2, ifh2);
+                std::string facename1 =
+                    amrex::Concatenate(filename1 + '_', ori, 1);
+                std::string facename2 =
+                    amrex::Concatenate(filename2 + '_', ori, 1);
 
-            ifh1.close();
-            ifh2.close();
+                bndry1[ori].read(facename1);
+                bndry2[ori].read(facename2);
 
-            m_in_data.read_data_native(
-                bndry1, bndry2, lev, fld, time, m_in_times);
+                m_in_data.read_data_native(
+                    oit, bndry1, bndry2, lev, fld, time, m_in_times);
+            }
         }
     }
 
