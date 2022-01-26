@@ -34,6 +34,9 @@ public:
         amrex::Real /*ovst_fac*/,
         int /*lev*/) noexcept;
 
+    amrex::Real density1() { return m_rho1; }
+    amrex::Real density2() { return m_rho2; }
+
 private:
     void init_projector(const FaceFabPtrVec& /*beta*/) noexcept;
     void init_projector(const amrex::Real /*beta*/) noexcept;
@@ -99,7 +102,11 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         }
 
         // TODO: Need iconserv flag to be adjusted???
-        iconserv.resize(ICNS::ndim, 0);
+        iconserv.resize(ICNS::ndim, 1);
+
+        // Setup density factor arrays for multiplying velocity flux
+        fields_in.repo.declare_face_normal_field(
+            {"advalpha_x", "advalpha_y", "advalpha_z"}, 1, fvm::Godunov::nghost_mac, 1);
     }
 
     void preadvect(const FieldState fstate, const amrex::Real dt)
@@ -249,25 +256,6 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
         // MAC projection
         m_macproj_op(fstate, dt);
-    }
-
-    void operator()(const FieldState fstate, const amrex::Real dt)
-    {
-        auto& repo = fields.repo;
-        auto& geom = repo.mesh().Geom();
-
-        const auto& src_term = fields.src_term;
-        auto& conv_term = fields.conv_term;
-        auto& dof_field = fields.field.state(fstate);
-
-        auto flux_x =
-            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::XFACE);
-        auto flux_y =
-            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::YFACE);
-        auto flux_z =
-            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::ZFACE);
-
-        auto bcrec_device = dof_field.bcrec_device();
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             u_mac(lev).FillBoundary(geom[lev].periodicity());
@@ -293,10 +281,18 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         auto flux_z =
             repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::ZFACE);
 
+        auto& aa_x = repo.get_field("advalpha_x");
+        auto& aa_y = repo.get_field("advalpha_y");
+        auto& aa_z = repo.get_field("advalpha_z");
+
         //
         // Advect momentum eqns
         //
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+
+            aa_x(lev).FillBoundary(geom[lev].periodicity());
+            aa_y(lev).FillBoundary(geom[lev].periodicity());
+            aa_z(lev).FillBoundary(geom[lev].periodicity());
 
             amrex::MFItInfo mfi_info;
             if (amrex::Gpu::notInLaunchRegion()) {
@@ -319,6 +315,14 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                     w_mac(lev).const_array(mfi), src_term(lev).const_array(mfi),
                     dof_field.bcrec_device().data(), iconserv.data(),
                     tmpfab.dataPtr(), geom, dt, godunov_scheme);
+
+                // Multiply fluxes by density contribution
+                multiply_fluxes(
+                    bx, amrex::grow(bx, 1), (*flux_x)(lev).array(mfi),
+                    (*flux_y)(lev).array(mfi), (*flux_z)(lev).array(mfi),
+                    aa_x(lev).array(mfi), aa_y(lev).array(mfi),
+                    aa_z(lev).array(mfi), m_macproj_op.density1(),
+                    m_macproj_op.density2());
 
                 amrex::Gpu::streamSynchronize();
             }
@@ -359,6 +363,49 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                     iconserv.data(), geom);
             }
         }
+    }
+
+    // Multiply fluxes by density contribution
+    void multiply_fluxes(
+        amrex::Box const& bx,
+        amrex::Box const& bxg1,
+        amrex::Array4<amrex::Real> const& Fx,
+        amrex::Array4<amrex::Real> const& Fy,
+        amrex::Array4<amrex::Real> const& Fz,
+        amrex::Array4<amrex::Real> const& advalpha_x,
+        amrex::Array4<amrex::Real> const& advalpha_y,
+        amrex::Array4<amrex::Real> const& advalpha_z,
+        amrex::Real rho1,
+        amrex::Real rho2)
+    {
+        amrex::ParallelFor(
+            bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                // At current cell, use half-cell VOF field to get left,
+                // bottom, and top face densities. Use dedicated boxes to assign
+                // to faces, avoid going out of bounds.
+                amrex::Box const& xbx = amrex::surroundingNodes(bx, 0);
+                amrex::Box const& ybx = amrex::surroundingNodes(bx, 1);
+                amrex::Box const& zbx = amrex::surroundingNodes(bx, 2);
+
+                // NOTE: This step assumes constant density in each phase
+                // and constant cell size on the current level.
+                amrex::Real rhof;
+                if (xbx.contains(i, j, k)) {
+                    rhof = rho1 * advalpha_x(i, j, k) +
+                           rho2 * (1.0 - advalpha_x(i, j, k));
+                    Fx(i, j, k) = rhof * Fx(i, j, k);
+                }
+                if (ybx.contains(i, j, k)) {
+                    rhof = rho1 * advalpha_y(i, j, k) +
+                           rho2 * (1.0 - advalpha_y(i, j, k));
+                    Fy(i, j, k) = rhof * Fy(i, j, k);
+                }
+                if (zbx.contains(i, j, k)) {
+                    rhof = rho1 * advalpha_z(i, j, k) +
+                           rho2 * (1.0 - advalpha_z(i, j, k));
+                    Fz(i, j, k) = rhof * Fz(i, j, k);
+                }
+            });
     }
 
     PDEFields& fields;

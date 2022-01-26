@@ -349,7 +349,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
     //
     // ************************************************************************************
     ApplyProjection(
-        (density_nph).vec_const_ptrs(), new_time, m_time.deltaT(),
+        (density_new).vec_const_ptrs(), new_time, m_time.deltaT(),
         incremental_projection);
 }
 
@@ -564,5 +564,5 @@ void incflo::ApplyCorrector()
     // *************************************************************************************
     bool incremental = false;
     ApplyProjection(
-        (density_nph).vec_const_ptrs(), new_time, m_time.deltaT(), incremental);
+        (density_new).vec_const_ptrs(), new_time, m_time.deltaT(), incremental);
 }
