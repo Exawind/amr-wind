@@ -213,6 +213,17 @@ void InletData::read_data_native(
 
         ((*m_data_n[ori])[lev]).prefetchToDevice();
         ((*m_data_np1[ori])[lev]).prefetchToDevice();
+
+        // FIXME: hack for now but at least now we can test
+        // broadcast bndry FArrayBox from root to all other procs
+        int bndry_root = bndry_n[ori].DistributionMap()[0];
+        amrex::ParallelDescriptor::Bcast(
+            (*m_data_n[ori])[lev].dataPtr(), (*m_data_n[ori])[lev].size(),
+            bndry_root, amrex::ParallelDescriptor::Communicator());
+
+        amrex::ParallelDescriptor::Bcast(
+            (*m_data_np1[ori])[lev].dataPtr(), (*m_data_np1[ori])[lev].size(),
+            bndry_root, amrex::ParallelDescriptor::Communicator());
     }
 }
 
@@ -271,12 +282,20 @@ ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
 
 #ifndef AMR_WIND_USE_NETCDF
     if (m_out_fmt == "netcdf") {
-        amrex::Print() << "Error: output format using netcdf must link netcdf "
-                          "library, changing output to native format"
-                       << std::endl;
+        amrex::Print()
+            << "Error: boundary output format using netcdf must link netcdf "
+               "library, changing output to native format"
+            << std::endl;
         m_out_fmt = "native";
     }
 #endif
+
+    if (!(m_out_fmt == "native" || m_out_fmt == "netcdf")) {
+        amrex::Print() << "Error: boundary output format not recognized, "
+                          "changing to native format"
+                       << std::endl;
+        m_out_fmt = "native";
+    }
 
     // only used for native format
     m_time_file = m_filename + "/time.dat";
@@ -531,6 +550,8 @@ void ABLBoundaryPlane::write_file()
 
             const auto& geom = field.repo().mesh().Geom();
 
+            // note: by using the entire domain box we end up using 1 processor
+            // to hold all boundaries
             amrex::Box domain = geom[lev].Domain();
             amrex::BoxArray ba(domain);
             amrex::DistributionMapping dm{ba};
@@ -558,7 +579,7 @@ void ABLBoundaryPlane::read_header()
     BL_PROFILE("amr-wind::ABLBoundaryPlane::read_header");
     if (m_io_mode != io_mode::input) return;
 
-    m_in_data.resize(6);
+    m_in_data.resize(2 * AMREX_SPACEDIM);
 
 #ifdef AMR_WIND_USE_NETCDF
 
@@ -770,8 +791,6 @@ void ABLBoundaryPlane::read_file()
         std::string header_file1 = chkname1 + "/header";
         std::string header_file2 = chkname2 + "/header";
 
-        // FIXME: could check if t_step1 was loaded last time and skip for loop
-        // with read
         const int lev = 0;
         for (auto* fld : m_fields) {
 
