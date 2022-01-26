@@ -281,7 +281,7 @@ ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
 #ifndef AMR_WIND_USE_NETCDF
     if (m_out_fmt == "netcdf") {
         amrex::Print()
-            << "Error: boundary output format using netcdf must link netcdf "
+            << "Warning: boundary output format using netcdf must link netcdf "
                "library, changing output to native format"
             << std::endl;
         m_out_fmt = "native";
@@ -289,7 +289,7 @@ ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
 #endif
 
     if (!(m_out_fmt == "native" || m_out_fmt == "netcdf")) {
-        amrex::Print() << "Error: boundary output format not recognized, "
+        amrex::Print() << "Warning: boundary output format not recognized, "
                           "changing to native format"
                        << std::endl;
         m_out_fmt = "native";

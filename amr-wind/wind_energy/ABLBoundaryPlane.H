@@ -211,11 +211,8 @@ private:
     const int m_extent_rad = 0;
 
     //! output format for bndry output
-#ifdef AMR_WIND_USE_NETCDF
-    std::string m_out_fmt{"netcdf"};
-#else
     std::string m_out_fmt{"native"};
-#endif
+
 };
 
 } // namespace amr_wind
