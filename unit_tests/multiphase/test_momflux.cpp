@@ -173,6 +173,10 @@ TEST_F(MassMomFluxOpTest, fluxface)
     // Get advected alpha
     auto& advalphax = repo.get_field("advalpha_x");
 
+    // Get convective term
+    auto& conv_term =
+        mom_eqn.fields().conv_term.state(amr_wind::FieldState::New);
+
     // Base level
     int lev = 0;
     const auto& dx = geom[lev].CellSizeArray();
@@ -185,6 +189,8 @@ TEST_F(MassMomFluxOpTest, fluxface)
         amrex::Array4<amrex::Real const> const& v = vmac(lev).array(mfi);
         amrex::Array4<amrex::Real const> const& w = wmac(lev).array(mfi);
         amrex::Array4<amrex::Real const> const& afx = advalphax(lev).array(mfi);
+        amrex::Array4<amrex::Real const> const& dqdt =
+            conv_term(lev).array(mfi);
 
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -202,16 +208,29 @@ TEST_F(MassMomFluxOpTest, fluxface)
 
                 // Test volume fractions at faces
                 if (x == 0.5) {
+                    // Center face (coming from left cell)
                     EXPECT_NEAR(afx(i, j, k), 1.0, tol);
                 } else {
                     if (x == 0.0) {
+                        // Left face (coming from right cell, periodic BC)
                         EXPECT_NEAR(afx(i, j, k), 0.0, tol);
                     }
                 }
 
-                // Get resulting face densities
-
-                // Test momentum fluxes: F_{\rho u} = \rho_f u F_{vol}
+                // Test momentum fluxes by checking convective term
+                if (i == 0) {
+                    // Left cell (gas entering, liquid leaving)
+                    EXPECT_NEAR(
+                        dqdt(i, j, k, 0),
+                        m_uvel * m_uvel * (m_rho2 - m_rho1) / 0.5, tol);
+                } else {
+                    if (i == 1) {
+                        // Right cell (liquid entering, gas leaving)
+                        EXPECT_NEAR(
+                            dqdt(i, j, k, 0),
+                            m_uvel * m_uvel * (m_rho1 - m_rho2) / 0.5, tol);
+                    }
+                }
             });
     }
 }
