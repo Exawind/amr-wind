@@ -68,6 +68,12 @@ protected:
             amrex::ParmParse pp("time");
             pp.add("fixed_dt", dt);
         }
+        {
+            amrex::ParmParse pp("transport");
+            pp.add("model", (std::string) "TwoPhaseTransport");
+            pp.add("viscosity_fluid1", (amrex::Real)0.0);
+            pp.add("viscosity_fluid2", (amrex::Real)0.0);
+        }
     }
     const amrex::Real m_rho1 = 1000.0;
     const amrex::Real m_rho2 = 1.0;
@@ -152,8 +158,27 @@ TEST_F(MassMomFluxOpTest, fluxface)
         }
     }
 
+    // Zero unused momentum terms: src (pressure)
+    auto& grad_p = repo.get_field("gp");
+    run_algorithm(grad_p, [&](const int lev, const amrex::MFIter& mfi) {
+        auto gp = grad_p(lev).array(mfi);
+        const auto& bx = mfi.validbox();
+        amrex::ParallelFor(
+            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                gp(i, j, k, 0) = 0.0;
+                gp(i, j, k, 1) = 0.0;
+                gp(i, j, k, 2) = 0.0;
+            });
+    });
+    // Setup mask_cell array to avoid errors in solve
+    auto& mask_cell = repo.declare_int_field("mask_cell", 1, 1);
+    mask_cell.setVal(1);
+
     // Perform momentum solve
     mom_eqn.compute_advection_term(amr_wind::FieldState::Old);
+    mom_eqn.compute_diffusion_term(amr_wind::FieldState::New);
+    mom_eqn.compute_source_term(amr_wind::FieldState::New);
+    mom_eqn.compute_predictor_rhs(DiffusionType::Explicit);
 
     // Get MAC velocities for use in testing
     auto& umac = repo.get_field("u_mac");
@@ -167,34 +192,45 @@ TEST_F(MassMomFluxOpTest, fluxface)
     auto& conv_term =
         mom_eqn.fields().conv_term.state(amr_wind::FieldState::New);
 
+    // Get velocity solution
+    auto& vel_new = mom_eqn.fields().field.state(amr_wind::FieldState::Old);
+
     // Base level
     int lev = 0;
     const auto& dx = geom[lev].CellSizeArray();
     const auto& problo = geom[lev].ProbLoArray();
     const auto& probhi = geom[lev].ProbHiArray();
     for (amrex::MFIter mfi(vof(lev)); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.validbox();
+        const auto& bx = mfi.validbox();
 
-        amrex::Array4<amrex::Real const> const& u = umac(lev).array(mfi);
-        amrex::Array4<amrex::Real const> const& v = vmac(lev).array(mfi);
-        amrex::Array4<amrex::Real const> const& w = wmac(lev).array(mfi);
-        amrex::Array4<amrex::Real const> const& afx = advalphax(lev).array(mfi);
-        amrex::Array4<amrex::Real const> const& dqdt =
+        const auto& um = umac(lev).array(mfi);
+        const auto& vm = vmac(lev).array(mfi);
+        const auto& wm = wmac(lev).array(mfi);
+        const auto& vel = vel_new(lev).array(mfi);
+        const auto& afx = advalphax(lev).array(mfi);
+        const auto& dqdt =
             conv_term(lev).array(mfi);
 
         amrex::ParallelFor(
-            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 // x is face location
                 const amrex::Real x = problo[0] + i * dx[0];
 
                 // UMAC
-                EXPECT_NEAR(u(i, j, k), m_uvel, tol);
+                EXPECT_NEAR(um(i, j, k), m_uvel, tol);
+                // U
+                EXPECT_NEAR(vel(i, j, k, 0), m_uvel, tol);
 
                 // VMAC
-                EXPECT_NEAR(v(i, j, k), m_vvel, tol);
+                EXPECT_NEAR(vm(i, j, k), m_vvel, tol);
+                // V
+                EXPECT_NEAR(vel(i, j, k, 1), m_vvel, tol);
 
                 // WMAC
-                EXPECT_NEAR(w(i, j, k), m_wvel, tol);
+                EXPECT_NEAR(wm(i, j, k), m_wvel, tol);
+                // W
+                EXPECT_NEAR(vel(i, j, k, 2), m_wvel, tol);
+
 
                 // Test volume fractions at faces
                 if (x == 0.5) {
