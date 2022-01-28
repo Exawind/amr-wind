@@ -195,7 +195,6 @@ void InletData::read_data_native(
                     (bndry_n_arr(i, j, k, n) +
                      bndry_n_arr(
                          i + v_offset[0], j + v_offset[1], k + v_offset[2], n));
-
             });
     }
 
