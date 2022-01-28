@@ -193,10 +193,10 @@ void InletData::read_data_native(
                 bndry_arr(i, j, k, n) =
                     0.5 *
                     (bndry_n_arr(i, j, k, n) +
-                    bndry_n_arr(
-                        i + v_offset[0], j + v_offset[1], k + v_offset[2], n));
+                     bndry_n_arr(
+                         i + v_offset[0], j + v_offset[1], k + v_offset[2], n));
 
-        });
+            });
     }
 
     bndry.copyTo((*m_data_n[ori])[lev], 0, nstart, nc);
@@ -216,9 +216,9 @@ void InletData::read_data_native(
                 bndry_arr(i, j, k, n) =
                     0.5 *
                     (bndry_np1_arr(i, j, k, n) +
-                    bndry_np1_arr(
-                        i + v_offset[0], j + v_offset[1], k + v_offset[2], n));
-        });
+                     bndry_np1_arr(
+                         i + v_offset[0], j + v_offset[1], k + v_offset[2], n));
+            });
     }
 
     bndry.copyTo((*m_data_np1[ori])[lev], 0, nstart, nc);
