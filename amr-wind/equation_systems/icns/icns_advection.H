@@ -106,7 +106,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
         // Setup density factor arrays for multiplying velocity flux
         fields_in.repo.declare_face_normal_field(
-            {"advalpha_x", "advalpha_y", "advalpha_z"}, 1, fvm::Godunov::nghost_mac, 1);
+            {"advalpha_x", "advalpha_y", "advalpha_z"}, 1,
+            fvm::Godunov::nghost_mac, 1);
     }
 
     void preadvect(const FieldState fstate, const amrex::Real dt)

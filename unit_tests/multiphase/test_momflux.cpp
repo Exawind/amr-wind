@@ -14,21 +14,13 @@ void init_field3(
     const auto& mesh = fld.repo().mesh();
     const int nlevels = fld.repo().num_active_levels();
 
-    amrex::Real offset = 0.0;
-    if (fld.field_location() == amr_wind::FieldLoc::CELL) offset = 0.5;
-
     for (int lev = 0; lev < nlevels; ++lev) {
-        //const auto& dx = mesh.Geom(lev).CellSizeArray();
-        //const auto& problo = mesh.Geom(lev).ProbLoArray();
 
         for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
             auto bx = mfi.growntilebox();
             const auto& farr = fld(lev).array(mfi);
 
             amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-                //const amrex::Real x = problo[0] + (i + offset) * dx[0];
-                //const amrex::Real y = problo[1] + (j + offset) * dx[1];
-                //const amrex::Real z = problo[2] + (k + offset) * dx[2];
 
                 farr(i, j, k, 0) = in0;
                 farr(i, j, k, 1) = in1;
@@ -69,9 +61,8 @@ protected:
             amrex::ParmParse pp("incflo");
             amrex::Vector<std::string> physics{"MultiPhase"};
             pp.addarr("physics", physics);
-            pp.add("use_godunov", (int) 1);
+            pp.add("use_godunov", (int)1);
             pp.add("godunov_type", (std::string) "weno");
-            //transport.model = TwoPhaseTransport
         }
         {
             amrex::ParmParse pp("time");
@@ -129,7 +120,6 @@ TEST_F(MassMomFluxOpTest, fluxface)
     auto& pde_mgr = sim().pde_manager();
     auto& mom_eqn = pde_mgr.register_icns();
     mom_eqn.initialize();
-    //vof_eqn.initialize();
 
     // Initialize physics for the sake of MultiPhase routines
     sim().init_physics();
@@ -158,7 +148,7 @@ TEST_F(MassMomFluxOpTest, fluxface)
         if (seqn->fields().field.base_name() == "vof") {
             seqn->initialize();
             seqn->compute_advection_term(amr_wind::FieldState::Old);
-            //seqn->post_solve_actions();
+            seqn->post_solve_actions();
         }
     }
 
