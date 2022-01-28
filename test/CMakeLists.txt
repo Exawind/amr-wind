@@ -225,6 +225,8 @@ endif()
 #=============================================================================
 add_test_red(abl_bndry_input_native abl_bndry_output_native)
 add_test_red(abl_godunov_restart abl_godunov)
+add_test_red(abl_bndry_input_amr_native abl_bndry_output_native)
+
 if (AMR_WIND_ENABLE_NETCDF)
   add_test_red(abl_bndry_input abl_bndry_output)
   add_test_red(abl_bndry_input_amr abl_bndry_output)
