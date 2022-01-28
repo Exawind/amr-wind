@@ -189,11 +189,12 @@ void InletData::read_data_native(
         }
 
         amrex::ParallelFor(
-                bx, nc, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-            bndry_arr(i, j, k, n) = 0.5 * (bndry_n_arr(i, j, k, n) +
-                                           bndry_n_arr(
-                                               i + v_offset[0], j + v_offset[1],
-                                               k + v_offset[2], n));
+            bx, nc, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                bndry_arr(i, j, k, n) =
+                    0.5 *
+                    (bndry_n_arr(i, j, k, n) +
+                    bndry_n_arr(
+                        i + v_offset[0], j + v_offset[1], k + v_offset[2], n));
 
         });
     }
@@ -211,16 +212,16 @@ void InletData::read_data_native(
         }
 
         amrex::ParallelFor(
-                bx, nc, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-            bndry_arr(i, j, k, n) = 0.5 * (bndry_np1_arr(i, j, k, n) +
-                                           bndry_np1_arr(
-                                               i + v_offset[0], j + v_offset[1],
-                                               k + v_offset[2], n));
+            bx, nc, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                bndry_arr(i, j, k, n) =
+                    0.5 *
+                    (bndry_np1_arr(i, j, k, n) +
+                    bndry_np1_arr(
+                        i + v_offset[0], j + v_offset[1], k + v_offset[2], n));
         });
     }
 
     bndry.copyTo((*m_data_np1[ori])[lev], 0, nstart, nc);
-
 }
 
 void InletData::interpolate(const amrex::Real time)
