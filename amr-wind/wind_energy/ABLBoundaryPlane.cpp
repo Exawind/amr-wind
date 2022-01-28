@@ -163,66 +163,60 @@ void InletData::read_data_native(
     m_tn = times[idx];
     m_tnp1 = times[idxp1];
 
-    AMREX_ALWAYS_ASSERT(((m_tn <= time) && (time <= m_tnp1)));
-
     auto ori = oit();
+
+    AMREX_ALWAYS_ASSERT(((m_tn <= time) && (time <= m_tnp1)));
+    AMREX_ALWAYS_ASSERT(fld->num_comp() == bndry_n[ori].nComp());
+    AMREX_ASSERT(bndry_n[ori].boxArray() == bndry_np1[ori].boxArray());
+
     const int normal = ori.coordDir();
-    const auto& dbx = (*m_data_n[ori])[lev].box();
-    const auto& datn = ((*m_data_n[ori])[lev]).array();
+    const auto& bbx = (*m_data_n[ori])[lev].box();
     const amrex::IntVect v_offset = offset(ori.faceDir(), normal);
 
-    for (amrex::MFIter mfi(
-             bndry_n[ori].boxArray(), bndry_n[ori].DistributionMap(), false);
-         mfi.isValid(); ++mfi) {
+    amrex::MultiFab bndry(
+        bndry_n[ori].boxArray(), bndry_n[ori].DistributionMap(),
+        bndry_n[ori].nComp(), 0, amrex::MFInfo());
 
-        const auto& tbx = mfi.validbox();
+    for (amrex::MFIter mfi(bndry); mfi.isValid(); ++mfi) {
+
+        const auto& vbx = mfi.validbox();
         const auto& bndry_n_arr = bndry_n[ori].array(mfi);
+        const auto& bndry_arr = bndry.array(mfi);
 
-        const auto& bx = dbx & tbx;
-        if (bx.isEmpty()) continue;
+        const auto& bx = bbx & vbx;
+        if (bx.isEmpty()) {
+            continue;
+        }
 
         amrex::LoopOnCpu(bx, nc, [=](int i, int j, int k, int n) noexcept {
-            datn(i, j, k, n + nstart) =
-                0.5 *
-                (bndry_n_arr(i, j, k, n) +
-                 bndry_n_arr(
-                     i + v_offset[0], j + v_offset[1], k + v_offset[2], n));
+            bndry_arr(i, j, k, n) = 0.5 * (bndry_n_arr(i, j, k, n) +
+                                           bndry_n_arr(
+                                               i + v_offset[0], j + v_offset[1],
+                                               k + v_offset[2], n));
         });
     }
 
-    const auto& datnp1 = ((*m_data_np1[ori])[lev]).array();
-    for (amrex::MFIter mfi(
-             bndry_np1[ori].boxArray(), bndry_np1[ori].DistributionMap(),
-             false);
-         mfi.isValid(); ++mfi) {
-        const auto& tbx = mfi.validbox();
+    bndry.copyTo((*m_data_n[ori])[lev], 0, nstart, nc);
+
+    for (amrex::MFIter mfi(bndry); mfi.isValid(); ++mfi) {
+        const auto& vbx = mfi.validbox();
         const auto& bndry_np1_arr = bndry_np1[ori].array(mfi);
+        const auto& bndry_arr = bndry.array(mfi);
 
-        const auto& bx = dbx & tbx;
-        if (bx.isEmpty()) continue;
+        const auto& bx = bbx & vbx;
+        if (bx.isEmpty()) {
+            continue;
+        }
 
         amrex::LoopOnCpu(bx, nc, [=](int i, int j, int k, int n) noexcept {
-            datnp1(i, j, k, n + nstart) =
-                0.5 *
-                (bndry_np1_arr(i, j, k, n) +
-                 bndry_np1_arr(
-                     i + v_offset[0], j + v_offset[1], k + v_offset[2], n));
+            bndry_arr(i, j, k, n) = 0.5 * (bndry_np1_arr(i, j, k, n) +
+                                           bndry_np1_arr(
+                                               i + v_offset[0], j + v_offset[1],
+                                               k + v_offset[2], n));
         });
     }
 
-    ((*m_data_n[ori])[lev]).prefetchToDevice();
-    ((*m_data_np1[ori])[lev]).prefetchToDevice();
-
-    // FIXME: hack for now but at least now we can test
-    // broadcast bndry FArrayBox from root to all other procs
-    int bndry_root = bndry_n[ori].DistributionMap()[0];
-    amrex::ParallelDescriptor::Bcast(
-        (*m_data_n[ori])[lev].dataPtr(), (*m_data_n[ori])[lev].size(),
-        bndry_root, amrex::ParallelDescriptor::Communicator());
-
-    amrex::ParallelDescriptor::Bcast(
-        (*m_data_np1[ori])[lev].dataPtr(), (*m_data_np1[ori])[lev].size(),
-        bndry_root, amrex::ParallelDescriptor::Communicator());
+    bndry.copyTo((*m_data_np1[ori])[lev], 0, nstart, nc);
 }
 
 void InletData::interpolate(const amrex::Real time)
@@ -230,7 +224,9 @@ void InletData::interpolate(const amrex::Real time)
     m_tinterp = time;
     for (amrex::OrientationIter oit; oit; ++oit) {
         auto ori = oit();
-        if (!this->is_populated(ori)) continue;
+        if (!this->is_populated(ori)) {
+            continue;
+        }
 
         const int nlevels = m_data_n[ori]->size();
         for (int lev = 0; lev < nlevels; ++lev) {
@@ -348,7 +344,9 @@ void ABLBoundaryPlane::initialize_data()
 void ABLBoundaryPlane::write_header()
 {
     BL_PROFILE("amr-wind::ABLBoundaryPlane::write_header");
-    if (m_io_mode != io_mode::output) return;
+    if (m_io_mode != io_mode::output) {
+        return;
+    }
 
 #ifdef AMR_WIND_USE_NETCDF
 
@@ -730,8 +728,6 @@ void ABLBoundaryPlane::read_header()
         const int lev = 0;
         for (amrex::OrientationIter oit; oit; ++oit) {
             auto ori = oit();
-
-            const std::string plane = m_plane_names[ori];
 
             // FIXME: would be safer and less storage to not allocate all of
             // these but we do not use m_planes for input and need to detect
