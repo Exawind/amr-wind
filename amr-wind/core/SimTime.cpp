@@ -95,7 +95,9 @@ void SimTime::set_current_cfl(
     const amrex::Real cd_cfl = conv_cfl + diff_cfl;
     const amrex::Real cfl_unit_time =
         cd_cfl + std::sqrt(cd_cfl * cd_cfl + 4.0 * src_cfl);
-    amrex::Real dt_new = 2.0 * m_max_cfl / cfl_unit_time;
+    amrex::Real dt_new =
+        2.0 * m_max_cfl /
+        amrex::max(cfl_unit_time, std::numeric_limits<amrex::Real>::epsilon());
 
     // Restrict timestep during initialization phase
     if (m_is_init) {
