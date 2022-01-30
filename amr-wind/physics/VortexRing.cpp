@@ -25,7 +25,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real FatCore::operator()(
 {
     amrex::Real Rsq = std::pow(R, 2);
     const amrex::Real ssq = std::pow(z, 2) + std::pow(r - R, 2);
-    if (ssq <= Rsq) {
+    if (ssq < Rsq) {
         return 0.54857674 * Gamma / Rsq * std::exp(-4 * ssq / (Rsq - ssq));
     }
     return 0.0;
