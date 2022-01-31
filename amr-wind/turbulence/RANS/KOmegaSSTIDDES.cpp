@@ -25,6 +25,7 @@ KOmegaSSTIDDES<Transport>::KOmegaSSTIDDES(CFDSim& sim)
 template <typename Transport>
 void KOmegaSSTIDDES<Transport>::parse_model_coeffs()
 {
+    KOmegaSST<Transport>::parse_model_coeffs();
     const std::string coeffs_dict = this->model_name() + "_coeffs";
     amrex::ParmParse pp(coeffs_dict);
     pp.query("Cdes1", this->m_Cdes1);
