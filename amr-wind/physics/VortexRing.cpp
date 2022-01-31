@@ -235,7 +235,9 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
     const amrex::Real rel_tol = 1.0e-13;
     const amrex::Real abs_tol = 1.0e-13;
 
-    (*vectorpotential)(0).setVal(0.0, 0, AMREX_SPACEDIM, 1);
+    for (int level = 0; level <= m_repo.mesh().finestLevel(); ++level) {
+        (*vectorpotential)(level).setVal(0.0, 0, AMREX_SPACEDIM, 1);
+    }
 
     // might be able to skip z-dir since vorticity is 0.0
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {
