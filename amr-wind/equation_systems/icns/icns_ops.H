@@ -88,6 +88,7 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
             mesh_mapping
                 ? &(this->fields.repo.get_mesh_mapping_field(FieldLoc::CELL))
                 : nullptr;
+        bool src_for_RHS (fstate == amr_wind::FieldState::New);
 
         const int nlevels = this->fields.repo.num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {
@@ -107,7 +108,9 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
 
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-                        amrex::Real rhoinv = 1.0 / rho(i, j, k);
+                        amrex::Real rhoinv = 1.0;
+                        // Only divide by rho if not being used for icns RHS
+                        if (!src_for_RHS) rhoinv /= rho(i, j, k);
                         amrex::Real fac_x =
                             mesh_mapping ? (fac(i, j, k, 0)) : 1.0;
                         amrex::Real fac_y =
