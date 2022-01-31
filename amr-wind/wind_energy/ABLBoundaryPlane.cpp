@@ -43,7 +43,9 @@ AMREX_FORCE_INLINE amrex::IntVect offset(const int face_dir, const int normal)
 {
     amrex::IntVect offset(amrex::IntVect::TheDimensionVector(normal));
     if (face_dir == 1) {
-        for (auto& o : offset) o *= -1;
+        for (auto& o : offset) {
+            o *= -1;
+        }
     }
     return offset;
 }
@@ -74,15 +76,17 @@ void InletData::resize(const int size)
 
 void InletData::define_plane(const amrex::Orientation ori)
 {
-    m_data_n[ori] = std::unique_ptr<PlaneVector>(new PlaneVector);
-    m_data_np1[ori] = std::unique_ptr<PlaneVector>(new PlaneVector);
-    m_data_interp[ori] = std::unique_ptr<PlaneVector>(new PlaneVector);
+    m_data_n[ori] = std::make_unique<PlaneVector>(new PlaneVector);
+    m_data_np1[ori] = std::make_unique<PlaneVector>(new PlaneVector);
+    m_data_interp[ori] = std::make_unique<PlaneVector>(new PlaneVector);
 }
 
 void InletData::define_level_data(
     const amrex::Orientation ori, const amrex::Box& bx, const size_t nc)
 {
-    if (!this->is_populated(ori)) return;
+    if (!this->is_populated(ori)) {
+        return;
+    }
     m_data_n[ori]->push_back(amrex::FArrayBox(bx, nc));
     m_data_np1[ori]->push_back(amrex::FArrayBox(bx, nc));
     m_data_interp[ori]->push_back(amrex::FArrayBox(bx, nc));
@@ -226,7 +230,7 @@ void InletData::read_data_native(
 void InletData::interpolate(const amrex::Real time)
 {
     m_tinterp = time;
-    for (amrex::OrientationIter oit; oit; ++oit) {
+    for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
         if (!this->is_populated(ori)) {
             continue;
@@ -481,8 +485,9 @@ void ABLBoundaryPlane::write_file()
 
     // Only output data if at the desired timestep
     if ((t_step % m_write_frequency != 0) || ((m_io_mode != io_mode::output)) ||
-        (time < m_out_start_time))
+        (time < m_out_start_time)) {
         return;
+    }
 
     for (auto* fld : m_fields) {
         fld->fillpatch(m_time.current_time());
@@ -573,13 +578,14 @@ void ABLBoundaryPlane::write_file()
             //            ofh.close();
 
             // print individual faces
-            for (amrex::OrientationIter oit; oit; ++oit) {
+            for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
                 auto ori = oit();
                 const std::string plane = m_plane_names[ori];
 
                 if (std::find(m_planes.begin(), m_planes.end(), plane) ==
-                    m_planes.end())
+                    m_planes.end()) {
                     continue;
+                }
 
                 std::string facename =
                     amrex::Concatenate(filename + '_', ori, 1);
@@ -592,7 +598,9 @@ void ABLBoundaryPlane::write_file()
 void ABLBoundaryPlane::read_header()
 {
     BL_PROFILE("amr-wind::ABLBoundaryPlane::read_header");
-    if (m_io_mode != io_mode::input) return;
+    if (m_io_mode != io_mode::input) {
+        return;
+    }
 
     // FIXME: overallocate this for now
     m_in_data.resize(2 * AMREX_SPACEDIM);
@@ -724,13 +732,13 @@ void ABLBoundaryPlane::read_header()
 
         int nc = 0;
         for (auto* fld : m_fields) {
-            m_in_data.component(fld->id()) = nc;
+            m_in_data.component(static_cast<int> (fld->id())) = nc;
             nc += fld->num_comp();
         }
 
         // FIXME: need to generalize to lev > 0 somehow
         const int lev = 0;
-        for (amrex::OrientationIter oit; oit; ++oit) {
+        for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
             auto ori = oit();
 
             // FIXME: would be safer and less storage to not allocate all of
@@ -756,7 +764,9 @@ void ABLBoundaryPlane::read_header()
 void ABLBoundaryPlane::read_file()
 {
     BL_PROFILE("amr-wind::ABLBoundaryPlane::read_file");
-    if (m_io_mode != io_mode::input) return;
+    if (m_io_mode != io_mode::input) {
+        return;
+    }
 
     // populate planes and interpolate
     const amrex::Real time = m_time.new_time();
@@ -831,12 +841,13 @@ void ABLBoundaryPlane::read_file()
             std::string filename2 = amrex::MultiFabFileFullPrefix(
                 lev, chkname2, level_prefix, field.name());
 
-            for (amrex::OrientationIter oit; oit; ++oit) {
+            for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
                 auto ori = oit();
 
                 if ((!m_in_data.is_populated(ori)) ||
-                    (field.bc_type()[ori] != BC::mass_inflow))
+                    (field.bc_type()[ori] != BC::mass_inflow)) {
                     continue;
+                }
 
                 std::string facename1 =
                     amrex::Concatenate(filename1 + '_', ori, 1);
@@ -865,17 +876,20 @@ void ABLBoundaryPlane::populate_data(
 
     BL_PROFILE("amr-wind::ABLBoundaryPlane::populate_data");
 
-    if (m_io_mode != io_mode::input) return;
+    if (m_io_mode != io_mode::input) {
+        return;
+    }
 
     AMREX_ALWAYS_ASSERT(
         ((m_in_data.tn() <= time) || (time <= m_in_data.tnp1())));
     AMREX_ALWAYS_ASSERT(amrex::Math::abs(time - m_in_data.tinterp()) < 1e-12);
 
-    for (amrex::OrientationIter oit; oit; ++oit) {
+    for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
         if ((!m_in_data.is_populated(ori)) ||
-            (fld.bc_type()[ori] != BC::mass_inflow))
+            (fld.bc_type()[ori] != BC::mass_inflow)) {
             continue;
+        }
 
         // Ensure the fine level does not touch the inflow boundary
         if (lev > 0) {
@@ -906,13 +920,15 @@ void ABLBoundaryPlane::populate_data(
              ++mfi) {
 
             const auto& sbx = mfi.growntilebox(1);
-            auto& src = m_in_data.interpolate_data(ori, lev);
+            const auto& src = m_in_data.interpolate_data(ori, lev);
             const auto& bx = sbx & src.box();
-            if (bx.isEmpty()) continue;
+            if (bx.isEmpty()) {
+                continue;
+            }
 
             const auto& dest = mfab.array(mfi);
             const auto& src_arr = src.array();
-            const int nstart = m_in_data.component(fld.id());
+            const int nstart = static_cast<int> (m_in_data.component(fld.id()));
             amrex::ParallelFor(
                 bx, nc,
                 [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
