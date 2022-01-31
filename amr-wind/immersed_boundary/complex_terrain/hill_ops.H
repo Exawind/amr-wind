@@ -63,20 +63,18 @@ struct InitDataOp<Hill>
                         const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
                         const amrex::Real phi_glob = phi(i, j, k);
-                        const amrex::Real dist = std::sqrt(
-                            (x - x0) * (x - x0) + (y - y0) * (y - y0) +
-                            (z - z0) * (z - z0));
-                        const amrex::Real hill =
-                            h * std::pow(
-                                    std::cos(
-                                        M_PI *
-                                        std::sqrt(
-                                            (x - x0) * (x - x0) +
-                                            (y - y0) * (y - y0)) /
-                                        (2. * b)),
-                                    2.);
-
+                        const amrex::Real dist = z - z0;
+                        const amrex::Real r = std::sqrt(
+                            (x - x0) * (x - x0) + (y - y0) * (y - y0));
+                        amrex::Real hill;
+                        if (r <= b) {
+                            hill =
+                                h * std::pow(std::cos(M_PI * r / (2. * b)), 2.);
+                        } else {
+                            hill = 0.0;
+                        }
                         amrex::Real phi_loc = dist - hill;
+
                         phi(i, j, k) = std::min(phi_loc, phi_glob);
                     });
 
@@ -88,18 +86,11 @@ struct InitDataOp<Hill>
                         const amrex::Real y = problo[1] + j * dx[1];
                         const amrex::Real z = problo[2] + k * dx[2];
 
-                        const amrex::Real dist = std::sqrt(
-                            (x - x0) * (x - x0) + (y - y0) * (y - y0) +
-                            (z - z0) * (z - z0));
+                        const amrex::Real dist = z - z0;
+                        const amrex::Real r = std::sqrt(
+                            (x - x0) * (x - x0) + (y - y0) * (y - y0));
                         const amrex::Real hill =
-                            h * std::pow(
-                                    std::cos(
-                                        M_PI *
-                                        std::sqrt(
-                                            (x - x0) * (x - x0) +
-                                            (y - y0) * (y - y0)) /
-                                        (2. * b)),
-                                    2.);
+                            h * std::pow(std::cos(M_PI * r / (2. * b)), 2.);
                         if (dist <= hill) {
                             epsilon_node(i, j, k) = 0;
                         }

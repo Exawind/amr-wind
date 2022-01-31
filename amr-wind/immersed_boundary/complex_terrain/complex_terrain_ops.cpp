@@ -63,12 +63,7 @@ void apply_dirichlet_vel(CFDSim& sim, const amrex::Vector<amrex::Real>& vel_bc)
                         norm_arr(i, j, k, 0) = 0.;
                         norm_arr(i, j, k, 1) = 0.;
                         norm_arr(i, j, k, 2) = 0.;
-                    } else if (
-                        phi_arr(i, j, k) < phi_b && phi_arr(i, j, k) >= 0.) {
-                        varr(i, j, k, 0) = velx;
-                        varr(i, j, k, 1) = vely;
-                        varr(i, j, k, 2) = velz;
-                    } else {
+                    } else if (phi_arr(i, j, k) > phi_b) {
                         norm_arr(i, j, k, 0) = 0.;
                         norm_arr(i, j, k, 1) = 0.;
                         norm_arr(i, j, k, 2) = 0.;
