@@ -11,7 +11,6 @@ void init_field3(
     const amrex::Real in1,
     const amrex::Real in2)
 {
-    const auto& mesh = fld.repo().mesh();
     const int nlevels = fld.repo().num_active_levels();
 
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -199,7 +198,6 @@ TEST_F(MassMomFluxOpTest, fluxface)
     int lev = 0;
     const auto& dx = geom[lev].CellSizeArray();
     const auto& problo = geom[lev].ProbLoArray();
-    const auto& probhi = geom[lev].ProbHiArray();
     for (amrex::MFIter mfi(vof(lev)); mfi.isValid(); ++mfi) {
         const auto& bx = mfi.validbox();
 
