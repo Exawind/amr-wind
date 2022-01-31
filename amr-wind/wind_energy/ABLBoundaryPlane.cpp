@@ -732,7 +732,7 @@ void ABLBoundaryPlane::read_header()
 
         int nc = 0;
         for (auto* fld : m_fields) {
-            m_in_data.component(static_cast<int> (fld->id())) = nc;
+            m_in_data.component(static_cast<int>(fld->id())) = nc;
             nc += fld->num_comp();
         }
 
@@ -928,7 +928,7 @@ void ABLBoundaryPlane::populate_data(
 
             const auto& dest = mfab.array(mfi);
             const auto& src_arr = src.array();
-            const int nstart = static_cast<int> (m_in_data.component(fld.id()));
+            const int nstart = static_cast<int>(m_in_data.component(fld.id()));
             amrex::ParallelFor(
                 bx, nc,
                 [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
