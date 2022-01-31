@@ -27,6 +27,9 @@ void init_data_structures(CFDSim&);
  */
 void apply_dirichlet_vel(CFDSim&, const amrex::Vector<amrex::Real>& vel_bc);
 
+void compute_wall_stresses(
+    CFDSim& sim, const amrex::Vector<amrex::Real>& tau_wall);
+
 void prepare_netcdf_file(
     const std::string&, const ComplexTerrainBaseData&, const IBInfo&);
 

@@ -73,6 +73,10 @@ void apply_dirichlet_vel(CFDSim& sim, const amrex::Vector<amrex::Real>& vel_bc)
     }
 }
 
+void compute_wall_stresses(
+    CFDSim& sim, const amrex::Vector<amrex::Real>& tau_wall)
+{}
+
 void prepare_netcdf_file(
     const std::string& ncfile,
     const ComplexTerrainBaseData& meta,

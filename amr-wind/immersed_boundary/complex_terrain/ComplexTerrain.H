@@ -20,9 +20,12 @@ struct ComplexTerrainBaseData
 
     bool has_wall_model{false};
 
+    //! IB velocity in the interior (solid cells)
     amrex::Vector<amrex::Real> vel_bc{{0.0, 0.0, 0.0}};
 
-    //! Total integrated drag forces on the immersed body
+    amrex::Vector<amrex::Vector<amrex::Real>> tau_wall[3][3];
+
+    //! Total integrated drag forces over the complex terrain
     amrex::Vector<amrex::Real> frc{{0.0, 0.0, 0.0}};
 };
 
