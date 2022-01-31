@@ -20,18 +20,19 @@ KOmegaSSTIDDES<Transport>::~KOmegaSSTIDDES() = default;
 template <typename Transport>
 KOmegaSSTIDDES<Transport>::KOmegaSSTIDDES(CFDSim& sim)
     : KOmegaSST<Transport>(sim)
-{
+{}
 
-    {
-        const std::string coeffs_dict = this->model_name() + "_coeffs";
-        amrex::ParmParse pp(coeffs_dict);
-        pp.query("Cdes1", this->m_Cdes1);
-        pp.query("Cdes2", this->m_Cdes2);
-        pp.query("Cdt1", this->m_Cdt1);
-        pp.query("Cdt2", this->m_Cdt2);
-        pp.query("Cw", this->m_Cw);
-        pp.query("kappa", this->m_kappa);
-    }
+template <typename Transport>
+void KOmegaSSTIDDES<Transport>::parse_model_coeffs()
+{
+    const std::string coeffs_dict = this->model_name() + "_coeffs";
+    amrex::ParmParse pp(coeffs_dict);
+    pp.query("Cdes1", this->m_Cdes1);
+    pp.query("Cdes2", this->m_Cdes2);
+    pp.query("Cdt1", this->m_Cdt1);
+    pp.query("Cdt2", this->m_Cdt2);
+    pp.query("Cw", this->m_Cw);
+    pp.query("kappa", this->m_kappa);
 }
 
 template <typename Transport>

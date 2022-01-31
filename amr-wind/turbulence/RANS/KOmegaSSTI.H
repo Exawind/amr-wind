@@ -32,19 +32,6 @@ KOmegaSST<Transport>::KOmegaSST(CFDSim& sim)
     auto& sdr_eqn =
         sim.pde_manager().register_transport_pde(pde::SDR::pde_name());
     m_sdr = &(sdr_eqn.fields().field);
-    {
-        const std::string coeffs_dict = this->model_name() + "_coeffs";
-        amrex::ParmParse pp(coeffs_dict);
-        pp.query("beta_star", this->m_beta_star);
-        pp.query("alpha1", this->m_alpha1);
-        pp.query("alpha2", this->m_alpha2);
-        pp.query("beta1", this->m_beta1);
-        pp.query("beta2", this->m_beta2);
-        pp.query("sigma_k1", this->m_sigma_k1);
-        pp.query("sigma_k2", this->m_sigma_k2);
-        pp.query("sigma_omega1", this->m_sigma_omega1);
-        pp.query("sigma_omega2", this->m_sigma_omega2);
-    }
 
     // TKE source term to be added to PDE
     turb_utils::inject_turbulence_src_terms(pde::TKE::pde_name(), {"KwSSTSrc"});
@@ -52,6 +39,22 @@ KOmegaSST<Transport>::KOmegaSST(CFDSim& sim)
 
 template <typename Transport>
 KOmegaSST<Transport>::~KOmegaSST() = default;
+
+template <typename Transport>
+void KOmegaSST<Transport>::parse_model_coeffs()
+{
+    const std::string coeffs_dict = this->model_name() + "_coeffs";
+    amrex::ParmParse pp(coeffs_dict);
+    pp.query("beta_star", this->m_beta_star);
+    pp.query("alpha1", this->m_alpha1);
+    pp.query("alpha2", this->m_alpha2);
+    pp.query("beta1", this->m_beta1);
+    pp.query("beta2", this->m_beta2);
+    pp.query("sigma_k1", this->m_sigma_k1);
+    pp.query("sigma_k2", this->m_sigma_k2);
+    pp.query("sigma_omega1", this->m_sigma_omega1);
+    pp.query("sigma_omega2", this->m_sigma_omega2);
+}
 
 } // namespace turbulence
 } // namespace amr_wind

@@ -41,13 +41,6 @@ OneEqKsgsM84<Transport>::OneEqKsgsM84(CFDSim& sim)
     }
 
     {
-        const std::string coeffs_dict = this->model_name() + "_coeffs";
-        amrex::ParmParse pp(coeffs_dict);
-        pp.query("Ceps", this->m_Ceps);
-        pp.query("Ce", this->m_Ce);
-    }
-
-    {
         amrex::ParmParse pp("ABL");
         pp.get("reference_temperature", m_ref_theta);
         pp.query("enable_hybrid_rl_mode", m_hybrid_rl);
@@ -72,6 +65,15 @@ OneEqKsgsM84<Transport>::OneEqKsgsM84(CFDSim& sim)
 
 template <typename Transport>
 OneEqKsgsM84<Transport>::~OneEqKsgsM84() = default;
+
+template <typename Transport>
+void OneEqKsgsM84<Transport>::parse_model_coeffs()
+{
+    const std::string coeffs_dict = this->model_name() + "_coeffs";
+    amrex::ParmParse pp(coeffs_dict);
+    pp.query("Ceps", this->m_Ceps);
+    pp.query("Ce", this->m_Ce);
+}
 
 template <typename Transport>
 TurbulenceModel::CoeffsDictType OneEqKsgsM84<Transport>::model_coeffs() const
@@ -261,10 +263,6 @@ void OneEqKsgsM84<Transport>::post_advance_work()
 template <typename Transport>
 OneEqKsgsS94<Transport>::OneEqKsgsS94(CFDSim& sim) : OneEqKsgs<Transport>(sim)
 {
-    const std::string coeffs_dict = this->model_name() + "_coeffs";
-    amrex::ParmParse pp(coeffs_dict);
-    pp.query("Ceps", this->m_Ceps);
-
     // TKE source term to be added to PDE
     turb_utils::inject_turbulence_src_terms(
         pde::TKE::pde_name(), {"KsgsS94Src"});
@@ -272,6 +270,14 @@ OneEqKsgsS94<Transport>::OneEqKsgsS94(CFDSim& sim) : OneEqKsgs<Transport>(sim)
 
 template <typename Transport>
 OneEqKsgsS94<Transport>::~OneEqKsgsS94() = default;
+
+template <typename Transport>
+void OneEqKsgsS94<Transport>::parse_model_coeffs()
+{
+    const std::string coeffs_dict = this->model_name() + "_coeffs";
+    amrex::ParmParse pp(coeffs_dict);
+    pp.query("Ceps", this->m_Ceps);
+}
 
 template <typename Transport>
 TurbulenceModel::CoeffsDictType OneEqKsgsS94<Transport>::model_coeffs() const

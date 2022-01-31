@@ -33,6 +33,9 @@ public:
     //! No post advance work for this model
     virtual void post_advance_work() override {}
 
+    //! No model specific coefficient for this model
+    virtual void parse_model_coeffs() override {}
+
     //! Return the turbulent viscosity field (just the same as the effective
     //! field)
     virtual Field& mu_turb() override { return this->mueff(); }

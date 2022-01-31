@@ -97,6 +97,9 @@ public:
     //! Interface to update scalar diffusivity based on Schmidt number
     virtual void update_scalar_diff(Field& deff, const std::string& name) = 0;
 
+    //! Parse turbulence model coefficients
+    virtual void parse_model_coeffs() = 0;
+
     //! Return model coefficients dictionary
     virtual CoeffsDictType model_coeffs() const = 0;
 };
