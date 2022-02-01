@@ -928,7 +928,7 @@ void ABLBoundaryPlane::populate_data(
 
             const auto& dest = mfab.array(mfi);
             const auto& src_arr = src.array();
-            const int nstart = static_cast<int>(m_in_data.component(fld.id()));
+            const int nstart = m_in_data.component(static_cast<int>(fld.id()));
             amrex::ParallelFor(
                 bx, nc,
                 [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
