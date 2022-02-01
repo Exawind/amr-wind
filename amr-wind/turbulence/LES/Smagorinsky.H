@@ -31,6 +31,9 @@ public:
     //! No post advance work for this model
     virtual void post_advance_work() override {}
 
+    //! Parse turbulence model coefficients
+    virtual void parse_model_coeffs() override;
+
     //! Return model coefficients dictionary
     TurbulenceModel::CoeffsDictType model_coeffs() const override;
 

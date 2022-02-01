@@ -35,6 +35,7 @@ void CFDSim::create_turbulence_model()
 
     const std::string identifier = turbulence_model + "-" + transport_model;
     m_turbulence = turbulence::TurbulenceModel::create(identifier, *this);
+    m_turbulence->parse_model_coeffs();
 }
 
 void CFDSim::init_physics()

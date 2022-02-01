@@ -14,6 +14,22 @@ namespace amr_wind {
 namespace turbulence {
 
 template <typename Transport>
+void KOmegaSST<Transport>::parse_model_coeffs()
+{
+    const std::string coeffs_dict = this->model_name() + "_coeffs";
+    amrex::ParmParse pp(coeffs_dict);
+    pp.query("beta_star", this->m_beta_star);
+    pp.query("alpha1", this->m_alpha1);
+    pp.query("alpha2", this->m_alpha2);
+    pp.query("beta1", this->m_beta1);
+    pp.query("beta2", this->m_beta2);
+    pp.query("sigma_k1", this->m_sigma_k1);
+    pp.query("sigma_k2", this->m_sigma_k2);
+    pp.query("sigma_omega1", this->m_sigma_omega1);
+    pp.query("sigma_omega2", this->m_sigma_omega2);
+}
+
+template <typename Transport>
 TurbulenceModel::CoeffsDictType KOmegaSST<Transport>::model_coeffs() const
 {
     return TurbulenceModel::CoeffsDictType{

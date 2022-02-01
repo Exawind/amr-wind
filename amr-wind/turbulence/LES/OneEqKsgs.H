@@ -68,6 +68,9 @@ public:
     virtual void
     update_scalar_diff(Field& deff, const std::string& name) override;
 
+    //! Parse turbulence model coefficients
+    virtual void parse_model_coeffs() override;
+
     //! Return turbulence model coefficients
     TurbulenceModel::CoeffsDictType model_coeffs() const override;
 
@@ -116,6 +119,9 @@ public:
     //! Update the effective scalar diffusivity field
     virtual void
     update_scalar_diff(Field& deff, const std::string& name) override;
+
+    //! Parse turbulence model coefficients
+    virtual void parse_model_coeffs() override;
 
     //! Return turbulence model coefficients
     TurbulenceModel::CoeffsDictType model_coeffs() const override;
