@@ -108,9 +108,7 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
 
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-                        amrex::Real rhoinv = 1.0;
-                        // Only divide by rho if not being used for icns RHS
-                        if (!src_for_RHS) rhoinv /= rho(i, j, k);
+                        amrex::Real rhoinv = 1.0 / rho(i, j, k);
                         amrex::Real fac_x =
                             mesh_mapping ? (fac(i, j, k, 0)) : 1.0;
                         amrex::Real fac_y =
@@ -128,6 +126,16 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
 
                 for (auto& src : this->sources) {
                     (*src)(lev, mfi, bx, fstate, vf);
+                }
+
+                // Multiply src terms by rho if being used for icns RHS
+                if (src_for_RHS) {
+                    amrex::ParallelFor(
+                        bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                            vf(i, j, k, 0) *= rho(i, j, k);
+                            vf(i, j, k, 1) *= rho(i, j, k);
+                            vf(i, j, k, 2) *= rho(i, j, k);
+                        });
                 }
             }
         }
