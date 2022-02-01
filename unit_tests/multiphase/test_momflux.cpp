@@ -79,7 +79,6 @@ protected:
     const amrex::Real m_uvel = 5.0;
     const amrex::Real m_vvel = 0.0;
     const amrex::Real m_wvel = 0.0;
-    const amrex::Real tol = 1e-8;
     const amrex::Real dt = 0.1 * 0.5 / m_uvel;
 };
 
