@@ -2,7 +2,7 @@
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            SIMULATION STOP            #
 #.......................................#
-time.stop_time               =   200.00     # Max (simulated) time to evolve
+time.stop_time               =   100.00     # Max (simulated) time to evolve
 time.max_step                =   -1000       # Max number of time steps
 incflo.initial_iterations    = 0
 incflo.do_initial_proj       = 0
@@ -60,6 +60,9 @@ incflo.diffusion_type   = 2
 # Boundary conditions
 ylo.type =   "no_slip_wall"
 yhi.type =   "no_slip_wall"
+
+diffusion.bottom_solver = hypre
+diffusion.max_coarsening_level = 0
 
 incflo.verbose  = 0
 nodal_proj.mg_atol = 1.0e-09
