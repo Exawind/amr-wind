@@ -29,14 +29,11 @@ struct Gradient
     template <typename Stencil>
     void apply(const int lev, const amrex::MFIter& mfi) const
     {
-        const auto& repo = m_phi.repo();
         const int ncomp = m_phi.num_comp();
-        const auto& geom = repo.mesh().Geom(lev);
+        const auto& geom = m_phi.repo().mesh().Geom(lev);
         const auto& idx = geom.InvCellSizeArray();
         const auto& gradphi_arr = m_gradphi(lev).array(mfi);
         const auto& phi_arr = m_phi(lev).const_array(mfi);
-        auto& mesh_fac_cc = repo.get_field("mesh_scaling_factor_cc");
-        const auto& fac_cc_arr = mesh_fac_cc(lev).const_array(mfi);
 
         const auto& bx_in = mfi.tilebox();
         const auto& bx = Stencil::box(bx_in, geom);
@@ -52,7 +49,7 @@ struct Gradient
                         (cp1 * phi_arr(i + 1, j, k, icomp) +
                          c * phi_arr(i, j, k, icomp) +
                          cm1 * phi_arr(i - 1, j, k, icomp)) *
-                        idx[0] / fac_cc_arr(i, j, k, 0);
+                        idx[0];
 
                     cp1 = Stencil::c10;
                     c = Stencil::c11;
@@ -61,7 +58,7 @@ struct Gradient
                         (cp1 * phi_arr(i, j + 1, k, icomp) +
                          c * phi_arr(i, j, k, icomp) +
                          cm1 * phi_arr(i, j - 1, k, icomp)) *
-                        idx[1] / fac_cc_arr(i, j, k, 1);
+                        idx[1];
 
                     cp1 = Stencil::c20;
                     c = Stencil::c21;
@@ -70,7 +67,7 @@ struct Gradient
                         (cp1 * phi_arr(i, j, k + 1, icomp) +
                          c * phi_arr(i, j, k, icomp) +
                          cm1 * phi_arr(i, j, k - 1, icomp)) *
-                        idx[2] / fac_cc_arr(i, j, k, 2);
+                        idx[2];
                 }
             });
     }
