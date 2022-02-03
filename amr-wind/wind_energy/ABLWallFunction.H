@@ -97,6 +97,38 @@ private:
     std::string m_wall_shear_stress_type{"moeng"};
 };
 
+class ABLTKEWallFunc : public FieldBCIface
+{
+public:
+    ABLTKEWallFunc(Field& tke, const ABLWallFunction& wall_fuc);
+
+    void operator()(Field& tke, const FieldState rho_state) override;
+
+    template <typename ShearStress>
+    void wall_model(
+        Field& tke, const FieldState rho_state, const ShearStress& tau);
+
+private:
+    const ABLWallFunction& m_wall_func;
+    std::string m_wall_shear_stress_type{"moeng"};
+};
+
+class ABLSDRWallFunc : public FieldBCIface
+{
+public:
+    ABLSDRWallFunc(Field& sdr, const ABLWallFunction& wall_fuc);
+
+    void operator()(Field& sdr, const FieldState rho_state) override;
+
+    template <typename ShearStress>
+    void wall_model(
+        Field& sdr, const FieldState rho_state, const ShearStress& tau);
+
+private:
+    const ABLWallFunction& m_wall_func;
+    std::string m_wall_shear_stress_type{"moeng"};
+};
+
 } // namespace amr_wind
 
 #endif /* ABLWALLFUNCTION_H */

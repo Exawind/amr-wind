@@ -379,4 +379,77 @@ void ABLTempWallFunc::operator()(Field& temperature, const FieldState rho_state)
     }
 }
 
+template <typename ShearStress>
+void ABLTKEWallFunc::wall_model(
+    Field& tke, const FieldState rho_state, const ShearStress& tau)
+{
+    constexpr int idim = 2;
+    auto& repo = tke.repo();
+
+    // TODO: FILL IN HERE
+}
+
+void ABLTKEWallFunc::operator()(Field& tke, const FieldState rho_state)
+{
+    const auto& mo = m_wall_func.mo();
+
+    if (m_wall_shear_stress_type == "moeng") {
+
+        auto tau = ShearStressMoeng(mo);
+        wall_model(tke, rho_state, tau);
+
+    } else if (m_wall_shear_stress_type == "constant") {
+
+        auto tau = ShearStressConstant(mo);
+        wall_model(tke, rho_state, tau);
+
+    } else if (m_wall_shear_stress_type == "local") {
+
+        auto tau = ShearStressLocal(mo);
+        wall_model(tke, rho_state, tau);
+
+    } else if (m_wall_shear_stress_type == "schumann") {
+
+        auto tau = ShearStressSchumann(mo);
+        wall_model(tke, rho_state, tau);
+    }
+}
+
+template <typename ShearStress>
+void ABLSDRWallFunc::wall_model(
+    Field& sdr, const FieldState rho_state, const ShearStress& tau)
+{
+    constexpr int idim = 2;
+    auto& repo = sdr.repo();
+
+    // TODO: FILL IN HERE
+}
+
+void ABLSDRWallFunc::operator()(Field& sdr, const FieldState rho_state)
+{
+    const auto& mo = m_wall_func.mo();
+
+    if (m_wall_shear_stress_type == "moeng") {
+
+        auto tau = ShearStressMoeng(mo);
+        wall_model(sdr, rho_state, tau);
+
+    } else if (m_wall_shear_stress_type == "constant") {
+
+        auto tau = ShearStressConstant(mo);
+        wall_model(sdr, rho_state, tau);
+
+    } else if (m_wall_shear_stress_type == "local") {
+
+        auto tau = ShearStressLocal(mo);
+        wall_model(sdr, rho_state, tau);
+
+    } else if (m_wall_shear_stress_type == "schumann") {
+
+        auto tau = ShearStressSchumann(mo);
+        wall_model(sdr, rho_state, tau);
+    }
+}
+
+
 } // namespace amr_wind
