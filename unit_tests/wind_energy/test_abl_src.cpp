@@ -25,6 +25,7 @@ TEST_F(ABLMeshTest, abl_forcing)
     constexpr amrex::Real tol = 1.0e-12;
     utils::populate_abl_params();
     initialize_mesh();
+    sim().activate_mesh_map();
 
     auto& pde_mgr = sim().pde_manager();
     pde_mgr.register_icns();
@@ -86,6 +87,7 @@ TEST_F(ABLMeshTest, body_force)
     constexpr amrex::Real tol = 1.0e-12;
     utils::populate_abl_params();
     initialize_mesh();
+    sim().activate_mesh_map();
 
     auto& pde_mgr = sim().pde_manager();
     pde_mgr.register_icns();
@@ -144,6 +146,7 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
     pp.add("latitude", 90.0);
 
     initialize_mesh();
+    sim().activate_mesh_map();
 
     auto& pde_mgr = sim().pde_manager();
     pde_mgr.register_icns();
@@ -324,6 +327,7 @@ TEST_F(ABLMeshTest, boussinesq)
     // Initialize parameters
     utils::populate_abl_params();
     initialize_mesh();
+    sim().activate_mesh_map();
 
     auto& pde_mgr = sim().pde_manager();
     pde_mgr.register_icns();
@@ -370,6 +374,7 @@ TEST_F(ABLMeshTest, boussinesq_nph)
     // Initialize parameters
     utils::populate_abl_params();
     initialize_mesh();
+    sim().activate_mesh_map();
 
     auto& pde_mgr = sim().pde_manager();
     pde_mgr.register_icns();
@@ -439,6 +444,7 @@ TEST_F(ABLMeshTest, densitybuoyancy)
     // Initialize parameters
     utils::populate_abl_params();
     initialize_mesh();
+    sim().activate_mesh_map();
 
     auto& pde_mgr = sim().pde_manager();
     pde_mgr.register_icns();

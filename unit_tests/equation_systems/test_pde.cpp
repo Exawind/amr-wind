@@ -13,13 +13,15 @@ TEST_F(PDETest, test_pde_create_godunov)
     pp.add("use_godunov", 1);
 
     initialize_mesh();
+    sim().activate_mesh_map();
+
     auto& pde_mgr = mesh().sim().pde_manager();
     pde_mgr.register_icns();
     pde_mgr.register_transport_pde("Temperature");
 
     EXPECT_EQ(pde_mgr.scalar_eqns().size(), 1);
 
-    EXPECT_EQ(mesh().field_repo().num_fields(), 21);
+    EXPECT_EQ(mesh().field_repo().num_fields(), 28);
 }
 
 TEST_F(PDETest, test_pde_create_mol)
@@ -29,13 +31,15 @@ TEST_F(PDETest, test_pde_create_mol)
     pp.add("use_godunov", 0);
 
     initialize_mesh();
+    sim().activate_mesh_map();
+
     auto& pde_mgr = mesh().sim().pde_manager();
     pde_mgr.register_icns();
     pde_mgr.register_transport_pde("Temperature");
 
     EXPECT_EQ(pde_mgr.scalar_eqns().size(), 1);
 
-    EXPECT_EQ(mesh().field_repo().num_fields(), 25);
+    EXPECT_EQ(mesh().field_repo().num_fields(), 32);
 }
 
 } // namespace amr_wind_tests
