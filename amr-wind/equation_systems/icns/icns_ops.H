@@ -82,7 +82,7 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
 
     void operator()(const FieldState fstate, const bool mesh_mapping)
     {
-        const auto rhostate = field_impl::phi_state(fstate);
+        const auto rhostate = fstate;
         const auto& density = m_density.state(rhostate);
         Field const* mesh_fac =
             mesh_mapping

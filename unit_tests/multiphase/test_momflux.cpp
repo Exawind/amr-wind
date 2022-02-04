@@ -107,7 +107,7 @@ void initialize_volume_fractions(
 TEST_F(MassMomFluxOpTest, fluxface)
 {
 
-    constexpr double tol = 1.0e-11;
+    constexpr double tol = 1.0e-16;
 
     populate_parameters();
     {
