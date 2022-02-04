@@ -24,6 +24,8 @@ struct AdvectionOp<VOF, fvm::Godunov>
         pp_multiphase.query("use_lagrangian", m_use_lagrangian);
     }
 
+    void preadvect(const FieldState, const amrex::Real) {}
+
     void operator()(const FieldState, const amrex::Real dt)
     {
         static_assert(
