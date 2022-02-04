@@ -381,9 +381,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     {
         amrex::ParallelFor(
             bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                // At current cell, use half-cell VOF field to get left,
-                // bottom, and top face densities. Use dedicated boxes to assign
-                // to faces, avoid going out of bounds.
+                // Use dedicated boxes to modify fluxes at faces and avoid going
+                // out of bounds.
                 amrex::Box const& xbx = amrex::surroundingNodes(bx, 0);
                 amrex::Box const& ybx = amrex::surroundingNodes(bx, 1);
                 amrex::Box const& zbx = amrex::surroundingNodes(bx, 2);
