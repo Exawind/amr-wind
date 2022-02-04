@@ -202,6 +202,7 @@ add_test_re(abl_bndry_output_native)
 if (NOT AMR_WIND_ENABLE_CUDA)
   add_test_re(ctv_godunov_plm)
   add_test_re(ctv_mol_mesh_map)
+  add_test_re(ctv_mol_mesh_map_explicit)
 endif()
 
 if (AMR_WIND_ENABLE_NETCDF)
