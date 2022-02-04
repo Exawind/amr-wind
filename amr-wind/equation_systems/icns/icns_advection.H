@@ -83,10 +83,9 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     {
 
         auto& repo = fields.repo;
-        auto& geom = repo.mesh().Geom();
+        const auto& geom = repo.mesh().Geom();
 
         const auto& src_term = fields.src_term;
-        // cppcheck-suppress constVariable
         auto& dof_field = fields.field.state(fstate);
         auto bcrec_device = dof_field.bcrec_device();
 
@@ -232,7 +231,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     void operator()(const FieldState fstate, const amrex::Real dt)
     {
         auto& repo = fields.repo;
-        auto& geom = repo.mesh().Geom();
+        const auto& geom = repo.mesh().Geom();
 
         const auto& src_term = fields.src_term;
         // cppcheck-suppress constVariable
@@ -245,8 +244,6 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::YFACE);
         auto flux_z =
             repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::ZFACE);
-
-        auto bcrec_device = dof_field.bcrec_device();
 
         //
         // Advect momentum eqns
@@ -349,7 +346,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
     {
 
         auto& repo = fields.repo;
-        auto& geom = repo.mesh().Geom();
+        const auto& geom = repo.mesh().Geom();
         auto& dof_field = fields.field.state(fstate);
 
         //
@@ -386,7 +383,8 @@ struct AdvectionOp<ICNS, fvm::MOL>
     {
 
         auto& repo = fields.repo;
-        auto& geom = repo.mesh().Geom();
+        const auto& geom = repo.mesh().Geom();
+        // cppcheck-suppress constVariable
         auto& conv_term = fields.conv_term.state(fstate);
         auto& dof_field = fields.field.state(fstate);
 
