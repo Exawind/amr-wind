@@ -231,7 +231,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     void operator()(const FieldState fstate, const amrex::Real dt)
     {
         auto& repo = fields.repo;
-        auto& geom = repo.mesh().Geom();
+        const auto& geom = repo.mesh().Geom();
 
         const auto& src_term = fields.src_term;
         // cppcheck-suppress constVariable
@@ -245,8 +245,9 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         auto flux_z =
             repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::ZFACE);
 
-        auto bcrec_device = dof_field.bcrec_device();
-
+        //
+        // Advect momentum eqns
+        //
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             u_mac(lev).FillBoundary(geom[lev].periodicity());
             v_mac(lev).FillBoundary(geom[lev].periodicity());
