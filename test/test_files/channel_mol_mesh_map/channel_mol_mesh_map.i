@@ -61,7 +61,6 @@ incflo.diffusion_type   = 2
 ylo.type =   "no_slip_wall"
 yhi.type =   "no_slip_wall"
 
-diffusion.bottom_solver = hypre
 diffusion.max_coarsening_level = 0
 
 incflo.verbose  = 0
