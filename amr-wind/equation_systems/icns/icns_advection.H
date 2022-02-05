@@ -319,11 +319,11 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
                 // Multiply fluxes by density contribution
                 multiply_fluxes(
-                    bx, amrex::grow(bx, 1), (*flux_x)(lev).array(mfi),
-                    (*flux_y)(lev).array(mfi), (*flux_z)(lev).array(mfi),
-                    aa_x(lev).array(mfi), aa_y(lev).array(mfi),
-                    aa_z(lev).array(mfi), m_macproj_op.density1(),
-                    m_macproj_op.density2());
+                    bx, amrex::grow(bx, 1), ICNS::ndim,
+                    (*flux_x)(lev).array(mfi), (*flux_y)(lev).array(mfi),
+                    (*flux_z)(lev).array(mfi), aa_x(lev).array(mfi),
+                    aa_y(lev).array(mfi), aa_z(lev).array(mfi),
+                    m_macproj_op.density1(), m_macproj_op.density2());
 
                 amrex::Gpu::streamSynchronize();
             }
@@ -370,6 +370,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     void multiply_fluxes(
         amrex::Box const& bx,
         amrex::Box const& bxg1,
+        const int ncomp,
         amrex::Array4<amrex::Real> const& Fx,
         amrex::Array4<amrex::Real> const& Fy,
         amrex::Array4<amrex::Real> const& Fz,
@@ -380,7 +381,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         amrex::Real rho2)
     {
         amrex::ParallelFor(
-            bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            bxg1, ncomp,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
                 // Use dedicated boxes to modify fluxes at faces and avoid going
                 // out of bounds.
                 amrex::Box const& xbx = amrex::surroundingNodes(bx, 0);
@@ -393,17 +395,17 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                 if (xbx.contains(i, j, k)) {
                     rhof = rho1 * advalpha_x(i, j, k) +
                            rho2 * (1.0 - advalpha_x(i, j, k));
-                    Fx(i, j, k) = rhof * Fx(i, j, k);
+                    Fx(i, j, k, n) = rhof * Fx(i, j, k, n);
                 }
                 if (ybx.contains(i, j, k)) {
                     rhof = rho1 * advalpha_y(i, j, k) +
                            rho2 * (1.0 - advalpha_y(i, j, k));
-                    Fy(i, j, k) = rhof * Fy(i, j, k);
+                    Fy(i, j, k, n) = rhof * Fy(i, j, k, n);
                 }
                 if (zbx.contains(i, j, k)) {
                     rhof = rho1 * advalpha_z(i, j, k) +
                            rho2 * (1.0 - advalpha_z(i, j, k));
-                    Fz(i, j, k) = rhof * Fz(i, j, k);
+                    Fz(i, j, k, n) = rhof * Fz(i, j, k, n);
                 }
             });
     }
