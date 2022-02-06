@@ -52,7 +52,6 @@ geometry.is_periodic    =   1   0   1   # Periodicity x y z (0/1)
 
 geometry.mesh_mapping   = ChannelFlowScaling
 ChannelFlowScaling.beta = 0 3 0
-ChannelFlowScaling.do_map = 0 1 0
 
 velocity_diffusion.use_tensor_operator = false
 incflo.diffusion_type   = 2
