@@ -101,7 +101,9 @@ void ChannelFlow::initialize_fields(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const int n_ind = idxOp(i, j, k);
                     amrex::Real h = problo[n_idx] + (n_ind + 0.5) * dx[n_idx];
-                    if (h > 1.0) h = 2.0 - h;
+                    if (h > 1.0) {
+                        h = 2.0 - h;
+                    }
                     wd(i, j, k) = h;
                     const amrex::Real hp = h / y_tau;
                     vel(i, j, k, 0) =
@@ -156,9 +158,9 @@ amrex::Real ChannelFlow::compute_error()
         ht = probhi_physical[1] - problo[1];
     }
 
-    auto& velocity = m_repo.get_field("velocity");
-    auto& mesh_fac_cc = m_repo.get_field("mesh_scaling_factor_cc");
-    auto& nu_coord_cc = m_repo.get_field("non_uniform_coord_cc");
+    const auto& velocity = m_repo.get_field("velocity");
+    const auto& mesh_fac_cc = m_repo.get_field("mesh_scaling_factor_cc");
+    const auto& nu_coord_cc = m_repo.get_field("non_uniform_coord_cc");
 
     const int nlevels = m_repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -233,12 +235,16 @@ void ChannelFlow::output_error()
 
 void ChannelFlow::post_init_actions()
 {
-    if (m_laminar) output_error();
+    if (m_laminar) {
+        output_error();
+    }
 }
 
 void ChannelFlow::post_advance_work()
 {
-    if (m_laminar) output_error();
+    if (m_laminar) {
+        output_error();
+    }
 }
 
 } // namespace channel_flow

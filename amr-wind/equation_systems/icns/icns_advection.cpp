@@ -233,10 +233,11 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
             rho_face_const.push_back(GetArrOfConstPtrs(rho_face[lev]));
         }
 
-        if (m_need_init)
+        if (m_need_init) {
             init_projector(rho_face_const);
-        else
+        } else {
             m_mac_proj->updateBeta(rho_face_const);
+        }
     }
     //    } else {
     //

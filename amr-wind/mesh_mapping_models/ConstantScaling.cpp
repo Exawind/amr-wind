@@ -32,9 +32,6 @@ void ConstantScaling::create_map(int lev, const amrex::Geometry& geom)
  */
 void ConstantScaling::create_cell_node_map(int lev, const amrex::Geometry& geom)
 {
-    const auto& problo = geom.ProbLoArray();
-    const auto& dx = geom.CellSizeArray();
-
     amrex::Real fac_x = m_fac[0];
     amrex::Real fac_y = m_fac[1];
     amrex::Real fac_z = m_fac[2];
@@ -67,9 +64,6 @@ void ConstantScaling::create_cell_node_map(int lev, const amrex::Geometry& geom)
  */
 void ConstantScaling::create_face_map(int lev, const amrex::Geometry& geom)
 {
-    const auto& problo = geom.ProbLoArray();
-    const auto& dx = geom.CellSizeArray();
-
     amrex::Real fac_x = m_fac[0];
     amrex::Real fac_y = m_fac[1];
     amrex::Real fac_z = m_fac[2];

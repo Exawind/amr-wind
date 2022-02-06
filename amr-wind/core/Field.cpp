@@ -367,7 +367,7 @@ void Field::to_mapped_mesh() noexcept
     } else {
         amrex::Abort("Field location must be CELL or NODE");
     }
-    auto& mesh_fac = m_repo.get_field(mesh_fac_name);
+    const auto& mesh_fac = m_repo.get_field(mesh_fac_name);
 
     // scale velocity to accommodate for mesh mapping -> U^bar = U * J/fac
     for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
@@ -410,7 +410,7 @@ void Field::to_unmapped_mesh() noexcept
     } else {
         amrex::Abort("Field location must be CELL or NODE");
     }
-    auto& mesh_fac = m_repo.get_field(mesh_fac_name);
+    const auto& mesh_fac = m_repo.get_field(mesh_fac_name);
 
     // scale field back to unmapped mesh -> U = U^bar * fac/J
     for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {

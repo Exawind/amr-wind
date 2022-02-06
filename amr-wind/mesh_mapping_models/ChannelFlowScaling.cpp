@@ -16,9 +16,13 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_fac(
     const amrex::Real prob_lo,
     const amrex::Real len)
 {
-    return beta *
-           (1 - std::pow(std::tanh(beta * (1 - 2 * (x - prob_lo) / len)), 2)) /
-           std::tanh(beta);
+    return (beta == 0.0)
+               ? 1.0
+               : (beta *
+                  (1 -
+                   std::pow(
+                       std::tanh(beta * (1 - 2 * (x - prob_lo) / len)), 2)) /
+                  std::tanh(beta));
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_coord(
@@ -27,9 +31,12 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_coord(
     const amrex::Real prob_lo,
     const amrex::Real len)
 {
-    return prob_lo + len / 2 *
-                         (1 - std::tanh(beta * (1 - 2 * (x - prob_lo) / len)) /
-                                  std::tanh(beta));
+    return (beta == 0.0)
+               ? x
+               : (prob_lo +
+                  len / 2 *
+                      (1 - std::tanh(beta * (1 - 2 * (x - prob_lo) / len)) /
+                               std::tanh(beta)));
 }
 
 } // namespace
@@ -45,7 +52,6 @@ ChannelFlowScaling::ChannelFlowScaling(const CFDSim& sim)
 {
     amrex::ParmParse pp("ChannelFlowScaling");
     pp.queryarr("beta", m_beta, 0, AMREX_SPACEDIM);
-    pp.queryarr("do_map", m_map, 0, AMREX_SPACEDIM);
 }
 
 /** Construct the mesh mapping field
@@ -64,7 +70,6 @@ void ChannelFlowScaling::create_cell_node_map(
 {
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> beta{
         {m_beta[0], m_beta[1], m_beta[2]}};
-    amrex::GpuArray<int, AMREX_SPACEDIM> do_map{{m_map[0], m_map[1], m_map[2]}};
     const auto eps = m_eps;
 
     const auto& dx = geom.CellSizeArray();
@@ -94,12 +99,9 @@ void ChannelFlowScaling::create_cell_node_map(
                     ((x > prob_lo[0]) && (x < prob_hi[0]) && (y > prob_lo[1]) &&
                      (y < prob_hi[1]) && (z > prob_lo[2]) && (z < prob_hi[2]));
 
-                scale_fac_cc(i, j, k, 0) =
-                    (do_map[0] && in_domain) ? fac_x : 1.0;
-                scale_fac_cc(i, j, k, 1) =
-                    (do_map[1] && in_domain) ? fac_y : 1.0;
-                scale_fac_cc(i, j, k, 2) =
-                    (do_map[2] && in_domain) ? fac_z : 1.0;
+                scale_fac_cc(i, j, k, 0) = in_domain ? fac_x : 1.0;
+                scale_fac_cc(i, j, k, 1) = in_domain ? fac_y : 1.0;
+                scale_fac_cc(i, j, k, 2) = in_domain ? fac_z : 1.0;
             });
 
         const auto& nbx = mfi.grownnodaltilebox();
@@ -120,12 +122,9 @@ void ChannelFlowScaling::create_cell_node_map(
                      (y >= prob_lo[1] - eps) && (y <= prob_hi[1] + eps) &&
                      (z >= prob_lo[2] - eps) && (z <= prob_hi[2] + eps));
 
-                scale_fac_nd(i, j, k, 0) =
-                    (do_map[0] && in_domain) ? fac_x : 1.0;
-                scale_fac_nd(i, j, k, 1) =
-                    (do_map[1] && in_domain) ? fac_y : 1.0;
-                scale_fac_nd(i, j, k, 2) =
-                    (do_map[2] && in_domain) ? fac_z : 1.0;
+                scale_fac_nd(i, j, k, 0) = in_domain ? fac_x : 1.0;
+                scale_fac_nd(i, j, k, 1) = in_domain ? fac_y : 1.0;
+                scale_fac_nd(i, j, k, 2) = in_domain ? fac_z : 1.0;
             });
     }
 
@@ -138,7 +137,6 @@ void ChannelFlowScaling::create_face_map(int lev, const amrex::Geometry& geom)
 {
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> beta{
         {m_beta[0], m_beta[1], m_beta[2]}};
-    amrex::GpuArray<int, AMREX_SPACEDIM> do_map{{m_map[0], m_map[1], m_map[2]}};
     const auto eps = m_eps;
 
     const auto& dx = geom.CellSizeArray();
@@ -169,12 +167,9 @@ void ChannelFlowScaling::create_face_map(int lev, const amrex::Geometry& geom)
                      (y > prob_lo[1]) && (y < prob_hi[1]) && (z > prob_lo[2]) &&
                      (z < prob_hi[2]));
 
-                scale_fac_xf(i, j, k, 0) =
-                    (do_map[0] && in_domain) ? fac_x : 1.0;
-                scale_fac_xf(i, j, k, 1) =
-                    (do_map[1] && in_domain) ? fac_y : 1.0;
-                scale_fac_xf(i, j, k, 2) =
-                    (do_map[2] && in_domain) ? fac_z : 1.0;
+                scale_fac_xf(i, j, k, 0) = in_domain ? fac_x : 1.0;
+                scale_fac_xf(i, j, k, 1) = in_domain ? fac_y : 1.0;
+                scale_fac_xf(i, j, k, 2) = in_domain ? fac_z : 1.0;
             });
     }
 
@@ -198,12 +193,9 @@ void ChannelFlowScaling::create_face_map(int lev, const amrex::Geometry& geom)
                      (y >= prob_lo[1] - eps) && (y <= prob_hi[1] + eps) &&
                      (z > prob_lo[2]) && (z < prob_hi[2]));
 
-                scale_fac_yf(i, j, k, 0) =
-                    (do_map[0] && in_domain) ? fac_x : 1.0;
-                scale_fac_yf(i, j, k, 1) =
-                    (do_map[1] && in_domain) ? fac_y : 1.0;
-                scale_fac_yf(i, j, k, 2) =
-                    (do_map[2] && in_domain) ? fac_z : 1.0;
+                scale_fac_yf(i, j, k, 0) = in_domain ? fac_x : 1.0;
+                scale_fac_yf(i, j, k, 1) = in_domain ? fac_y : 1.0;
+                scale_fac_yf(i, j, k, 2) = in_domain ? fac_z : 1.0;
             });
     }
 
@@ -227,12 +219,9 @@ void ChannelFlowScaling::create_face_map(int lev, const amrex::Geometry& geom)
                      (y < prob_hi[1]) && (z >= prob_lo[2] - eps) &&
                      (z <= prob_hi[2] + eps));
 
-                scale_fac_zf(i, j, k, 0) =
-                    (do_map[0] && in_domain) ? fac_x : 1.0;
-                scale_fac_zf(i, j, k, 1) =
-                    (do_map[1] && in_domain) ? fac_y : 1.0;
-                scale_fac_zf(i, j, k, 2) =
-                    (do_map[2] && in_domain) ? fac_z : 1.0;
+                scale_fac_zf(i, j, k, 0) = in_domain ? fac_x : 1.0;
+                scale_fac_zf(i, j, k, 1) = in_domain ? fac_y : 1.0;
+                scale_fac_zf(i, j, k, 2) = in_domain ? fac_z : 1.0;
             });
     }
 
@@ -258,7 +247,6 @@ void ChannelFlowScaling::create_non_uniform_mesh(
 
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> beta{
         {m_beta[0], m_beta[1], m_beta[2]}};
-    amrex::GpuArray<int, AMREX_SPACEDIM> do_map{{m_map[0], m_map[1], m_map[2]}};
     const auto eps = m_eps;
 
     const auto& dx = geom.CellSizeArray();
@@ -291,12 +279,9 @@ void ChannelFlowScaling::create_non_uniform_mesh(
                     ((x > prob_lo[0]) && (x < prob_hi[0]) && (y > prob_lo[1]) &&
                      (y < prob_hi[1]) && (z > prob_lo[2]) && (z < prob_hi[2]));
 
-                nu_coord_cc(i, j, k, 0) =
-                    (do_map[0] && in_domain) ? x_non_uni : x;
-                nu_coord_cc(i, j, k, 1) =
-                    (do_map[1] && in_domain) ? y_non_uni : y;
-                nu_coord_cc(i, j, k, 2) =
-                    (do_map[2] && in_domain) ? z_non_uni : z;
+                nu_coord_cc(i, j, k, 0) = in_domain ? x_non_uni : x;
+                nu_coord_cc(i, j, k, 1) = in_domain ? y_non_uni : y;
+                nu_coord_cc(i, j, k, 2) = in_domain ? z_non_uni : z;
             });
 
         const auto& nbx = mfi.grownnodaltilebox();
@@ -320,12 +305,9 @@ void ChannelFlowScaling::create_non_uniform_mesh(
                      (y >= prob_lo[1] - eps) && (y <= prob_hi[1] + eps) &&
                      (z >= prob_lo[2] - eps) && (z <= prob_hi[2] + eps));
 
-                nu_coord_nd(i, j, k, 0) =
-                    (do_map[0] && in_domain) ? x_non_uni : x;
-                nu_coord_nd(i, j, k, 1) =
-                    (do_map[1] && in_domain) ? y_non_uni : y;
-                nu_coord_nd(i, j, k, 2) =
-                    (do_map[2] && in_domain) ? z_non_uni : z;
+                nu_coord_nd(i, j, k, 0) = in_domain ? x_non_uni : x;
+                nu_coord_nd(i, j, k, 1) = in_domain ? y_non_uni : y;
+                nu_coord_nd(i, j, k, 2) = in_domain ? z_non_uni : z;
             });
     }
 }
