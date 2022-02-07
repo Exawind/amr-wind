@@ -50,8 +50,8 @@ geometry.prob_lo        =   0.0  0.0  0.0  # Lo corner coordinates
 geometry.prob_hi        =   6.0  1.0  1.0  # Hi corner coordinates
 geometry.is_periodic    =   1   0   1   # Periodicity x y z (0/1)
 
-geometry.mesh_mapping   = ChannelFlowScaling
-ChannelFlowScaling.beta = 0 3 0
+geometry.mesh_mapping = ChannelFlowMap
+ChannelFlowMap.beta = 0 3 0
 
 velocity_diffusion.use_tensor_operator = false
 incflo.diffusion_type   = 2

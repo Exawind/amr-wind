@@ -1,7 +1,6 @@
 #include <cmath>
 
-#include "amr-wind/mesh_mapping_models/ChannelFlowScaling.H"
-#include "amr-wind/CFDSim.H"
+#include "amr-wind/mesh_mapping_models/ChannelFlowMap.H"
 
 #include "AMReX_ParmParse.H"
 
@@ -41,22 +40,15 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_coord(
 
 } // namespace
 
-ChannelFlowScaling::ChannelFlowScaling(const CFDSim& sim)
-    : m_mesh_scale_fac_cc(sim.repo().get_field("mesh_scaling_factor_cc"))
-    , m_mesh_scale_fac_nd(sim.repo().get_field("mesh_scaling_factor_nd"))
-    , m_mesh_scale_fac_xf(sim.repo().get_field("mesh_scaling_factor_xf"))
-    , m_mesh_scale_fac_yf(sim.repo().get_field("mesh_scaling_factor_yf"))
-    , m_mesh_scale_fac_zf(sim.repo().get_field("mesh_scaling_factor_zf"))
-    , m_non_uniform_coord_cc(sim.repo().get_field("non_uniform_coord_cc"))
-    , m_non_uniform_coord_nd(sim.repo().get_field("non_uniform_coord_nd"))
+ChannelFlowMap::ChannelFlowMap()
 {
-    amrex::ParmParse pp("ChannelFlowScaling");
+    amrex::ParmParse pp("ChannelFlowMap");
     pp.queryarr("beta", m_beta, 0, AMREX_SPACEDIM);
 }
 
 /** Construct the mesh mapping field
  */
-void ChannelFlowScaling::create_map(int lev, const amrex::Geometry& geom)
+void ChannelFlowMap::create_map(int lev, const amrex::Geometry& geom)
 {
     create_cell_node_map(lev, geom);
     create_face_map(lev, geom);
@@ -65,8 +57,7 @@ void ChannelFlowScaling::create_map(int lev, const amrex::Geometry& geom)
 
 /** Construct the mesh mapping field on cell centers and nodes
  */
-void ChannelFlowScaling::create_cell_node_map(
-    int lev, const amrex::Geometry& geom)
+void ChannelFlowMap::create_cell_node_map(int lev, const amrex::Geometry& geom)
 {
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> beta{
         {m_beta[0], m_beta[1], m_beta[2]}};
@@ -80,11 +71,11 @@ void ChannelFlowScaling::create_cell_node_map(
         {prob_hi[0] - prob_lo[0], prob_hi[1] - prob_lo[1],
          prob_hi[2] - prob_lo[2]}};
 
-    for (amrex::MFIter mfi(m_mesh_scale_fac_cc(lev)); mfi.isValid(); ++mfi) {
+    for (amrex::MFIter mfi((*m_mesh_scale_fac_cc)(lev)); mfi.isValid(); ++mfi) {
 
         const auto& bx = mfi.growntilebox();
         amrex::Array4<amrex::Real> const& scale_fac_cc =
-            m_mesh_scale_fac_cc(lev).array(mfi);
+            (*m_mesh_scale_fac_cc)(lev).array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
@@ -106,7 +97,7 @@ void ChannelFlowScaling::create_cell_node_map(
 
         const auto& nbx = mfi.grownnodaltilebox();
         amrex::Array4<amrex::Real> const& scale_fac_nd =
-            m_mesh_scale_fac_nd(lev).array(mfi);
+            (*m_mesh_scale_fac_nd)(lev).array(mfi);
         amrex::ParallelFor(
             nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real x = prob_lo[0] + i * dx[0];
@@ -128,12 +119,12 @@ void ChannelFlowScaling::create_cell_node_map(
             });
     }
 
-    // TODO: Call fill patch operators
+    // TODO: Call fill patch operators ?
 }
 
 /** Construct the mesh mapping field on cell faces
  */
-void ChannelFlowScaling::create_face_map(int lev, const amrex::Geometry& geom)
+void ChannelFlowMap::create_face_map(int lev, const amrex::Geometry& geom)
 {
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> beta{
         {m_beta[0], m_beta[1], m_beta[2]}};
@@ -147,11 +138,11 @@ void ChannelFlowScaling::create_face_map(int lev, const amrex::Geometry& geom)
         {prob_hi[0] - prob_lo[0], prob_hi[1] - prob_lo[1],
          prob_hi[2] - prob_lo[2]}};
 
-    for (amrex::MFIter mfi(m_mesh_scale_fac_xf(lev)); mfi.isValid(); ++mfi) {
+    for (amrex::MFIter mfi((*m_mesh_scale_fac_xf)(lev)); mfi.isValid(); ++mfi) {
 
         const auto& bx = mfi.growntilebox();
         amrex::Array4<amrex::Real> const& scale_fac_xf =
-            m_mesh_scale_fac_xf(lev).array(mfi);
+            (*m_mesh_scale_fac_xf)(lev).array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real x = prob_lo[0] + i * dx[0];
@@ -173,11 +164,11 @@ void ChannelFlowScaling::create_face_map(int lev, const amrex::Geometry& geom)
             });
     }
 
-    for (amrex::MFIter mfi(m_mesh_scale_fac_yf(lev)); mfi.isValid(); ++mfi) {
+    for (amrex::MFIter mfi((*m_mesh_scale_fac_yf)(lev)); mfi.isValid(); ++mfi) {
 
         const auto& bx = mfi.growntilebox();
         amrex::Array4<amrex::Real> const& scale_fac_yf =
-            m_mesh_scale_fac_yf(lev).array(mfi);
+            (*m_mesh_scale_fac_yf)(lev).array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
@@ -199,11 +190,11 @@ void ChannelFlowScaling::create_face_map(int lev, const amrex::Geometry& geom)
             });
     }
 
-    for (amrex::MFIter mfi(m_mesh_scale_fac_zf(lev)); mfi.isValid(); ++mfi) {
+    for (amrex::MFIter mfi((*m_mesh_scale_fac_zf)(lev)); mfi.isValid(); ++mfi) {
 
         const auto& bx = mfi.growntilebox();
         amrex::Array4<amrex::Real> const& scale_fac_zf =
-            m_mesh_scale_fac_zf(lev).array(mfi);
+            (*m_mesh_scale_fac_zf)(lev).array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
@@ -225,12 +216,12 @@ void ChannelFlowScaling::create_face_map(int lev, const amrex::Geometry& geom)
             });
     }
 
-    // TODO: Call fill patch operators
+    // TODO: Call fill patch operators ?
 }
 
 /** Construct the non-uniform mesh field
  */
-void ChannelFlowScaling::create_non_uniform_mesh(
+void ChannelFlowMap::create_non_uniform_mesh(
     int lev, const amrex::Geometry& geom)
 {
     amrex::Vector<amrex::Real> probhi_physical{{0.0, 0.0, 0.0}};
@@ -257,11 +248,12 @@ void ChannelFlowScaling::create_non_uniform_mesh(
         {probhi_physical[0] - prob_lo[0], probhi_physical[1] - prob_lo[1],
          probhi_physical[2] - prob_lo[2]}};
 
-    for (amrex::MFIter mfi(m_non_uniform_coord_cc(lev)); mfi.isValid(); ++mfi) {
+    for (amrex::MFIter mfi((*m_non_uniform_coord_cc)(lev)); mfi.isValid();
+         ++mfi) {
 
         const auto& bx = mfi.growntilebox();
         amrex::Array4<amrex::Real> const& nu_coord_cc =
-            m_non_uniform_coord_cc(lev).array(mfi);
+            (*m_non_uniform_coord_cc)(lev).array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
@@ -286,7 +278,7 @@ void ChannelFlowScaling::create_non_uniform_mesh(
 
         const auto& nbx = mfi.grownnodaltilebox();
         amrex::Array4<amrex::Real> const& nu_coord_nd =
-            m_non_uniform_coord_nd(lev).array(mfi);
+            (*m_non_uniform_coord_nd)(lev).array(mfi);
         amrex::ParallelFor(
             nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real x = prob_lo[0] + i * dx[0];

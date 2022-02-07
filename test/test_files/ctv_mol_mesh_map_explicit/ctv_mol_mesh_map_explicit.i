@@ -43,8 +43,8 @@ geometry.prob_hi        =   1.  1.  1.  # Hi corner coordinates
 geometry.prob_hi_physical  =   2.  2.  2.
 geometry.is_periodic    =   1   1   1   # Periodicity x y z (0/1)
 
-geometry.mesh_mapping          = ConstantScaling
-ConstantScaling.scaling_factor = 2.0 2.0 2.0
+geometry.mesh_mapping = ConstantMap
+ConstantMap.scaling_factor = 2.0 2.0 2.0
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #          INITIAL CONDITIONS           #

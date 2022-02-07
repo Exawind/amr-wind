@@ -1,8 +1,7 @@
-#ifndef CHANNELFLOWSCALING_H
-#define CHANNELFLOWSCALING_H
+#ifndef CHANNELFLOWMAP_H
+#define CHANNELFLOWMAP_H
 
 #include "amr-wind/core/MeshMap.H"
-#include "amr-wind/core/Field.H"
 
 namespace amr_wind {
 namespace channel_map {
@@ -10,14 +9,14 @@ namespace channel_map {
 /** Channel flow scaling mesh map
  *  \ingroup mesh_map
  */
-class ChannelFlowScaling : public MeshMap::Register<ChannelFlowScaling>
+class ChannelFlowMap : public MeshMap::Register<ChannelFlowMap>
 {
 public:
-    static const std::string identifier() { return "ChannelFlowScaling"; }
+    static const std::string identifier() { return "ChannelFlowMap"; }
 
-    explicit ChannelFlowScaling(const CFDSim& sim);
+    explicit ChannelFlowMap();
 
-    virtual ~ChannelFlowScaling() = default;
+    virtual ~ChannelFlowMap() = default;
 
     //! Construct the mesh scaling field
     void create_map(int, const amrex::Geometry&) override;
@@ -32,14 +31,6 @@ public:
     void create_non_uniform_mesh(int, const amrex::Geometry&) override;
 
 private:
-    Field& m_mesh_scale_fac_cc;
-    Field& m_mesh_scale_fac_nd;
-    Field& m_mesh_scale_fac_xf;
-    Field& m_mesh_scale_fac_yf;
-    Field& m_mesh_scale_fac_zf;
-    Field& m_non_uniform_coord_cc;
-    Field& m_non_uniform_coord_nd;
-
     //! User input parameters
     amrex::Vector<amrex::Real> m_beta{{0.0, 3.0, 0.0}};
 
@@ -49,4 +40,4 @@ private:
 } // namespace channel_map
 } // namespace amr_wind
 
-#endif /* CHANNELFLOWSCALING_H */
+#endif /* CHANNELFLOWMAP_H */

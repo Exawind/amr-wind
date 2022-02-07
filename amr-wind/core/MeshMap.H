@@ -3,6 +3,7 @@
 
 #include "amr-wind/core/CollMgr.H"
 #include "amr-wind/core/Factory.H"
+#include "amr-wind/core/Field.H"
 
 #include "AMReX_MultiFab.H"
 #include "AMReX_Geometry.H"
@@ -27,12 +28,15 @@ class CFDSim;
  *  mesh mapping that will be used to scale the mesh. The most common use-case
  *  for this class is to perform RANS simulations.
  */
-class MeshMap : public Factory<MeshMap, CFDSim&>
+class MeshMap : public Factory<MeshMap>
 {
 public:
     static const std::string base_identifier() { return "MeshMap"; }
 
     virtual ~MeshMap() = default;
+
+    //! declare mesh mapping fields
+    void declare_mapping_fields(const CFDSim&, int);
 
     //! Construct mesh scaling field
     virtual void create_map(int, const amrex::Geometry&) = 0;
@@ -46,31 +50,14 @@ public:
     //! Construct the non-uniform mesh field
     virtual void create_non_uniform_mesh(int, const amrex::Geometry&) = 0;
 
-private:
-};
-
-/** A collection of \ref mesh_map instances
- *
- *  \ingroup mesh_map
- */
-class MeshMapMgr : public CollMgr<MeshMapMgr, MeshMap>
-{
-public:
-    //! Return a concrete mesh mapping instance
-    template <typename T>
-    T& get()
-    {
-        AMREX_ASSERT(contains(T::identifier()));
-        return dynamic_cast<T&>(operator()(T::identifier()));
-    }
-
-    //! Return a concrete mesh mapping instance
-    template <typename T>
-    const T& get() const
-    {
-        AMREX_ASSERT(contains(T::identifier()));
-        return dynamic_cast<const T&>(operator()(T::identifier()));
-    }
+protected:
+    Field* m_mesh_scale_fac_cc{nullptr};
+    Field* m_mesh_scale_fac_nd{nullptr};
+    Field* m_mesh_scale_fac_xf{nullptr};
+    Field* m_mesh_scale_fac_yf{nullptr};
+    Field* m_mesh_scale_fac_zf{nullptr};
+    Field* m_non_uniform_coord_cc{nullptr};
+    Field* m_non_uniform_coord_nd{nullptr};
 };
 
 } // namespace amr_wind

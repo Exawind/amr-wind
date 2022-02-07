@@ -72,12 +72,6 @@ public:
         return m_physics_mgr.objects();
     }
 
-    MeshMapMgr::TypePtr& mesh_mapping() { return m_mesh_map_mgr.objects()[0]; }
-    const amr_wind::MeshMapMgr::TypePtr& mesh_mapping() const
-    {
-        return m_mesh_map_mgr.objects()[0];
-    }
-
     turbulence::TurbulenceModel& turbulence_model() { return *m_turbulence; }
     const turbulence::TurbulenceModel& turbulence_model() const
     {
@@ -95,6 +89,9 @@ public:
     {
         return m_overset_mgr.get();
     }
+
+    MeshMap* mesh_mapping() { return m_mesh_map.get(); }
+    const MeshMap* mesh_mapping() const { return m_mesh_map.get(); }
 
     ExtSolverMgr& ext_solver_manager() { return *m_ext_solver_mgr; }
     const ExtSolverMgr& ext_solver_manager() const { return *m_ext_solver_mgr; }
@@ -124,8 +121,6 @@ private:
 
     PhysicsMgr m_physics_mgr;
 
-    MeshMapMgr m_mesh_map_mgr;
-
     std::unique_ptr<turbulence::TurbulenceModel> m_turbulence;
 
     std::unique_ptr<IOManager> m_io_mgr;
@@ -133,6 +128,8 @@ private:
     std::unique_ptr<PostProcessManager> m_post_mgr;
 
     std::unique_ptr<OversetManager> m_overset_mgr;
+
+    std::unique_ptr<MeshMap> m_mesh_map;
 
     std::unique_ptr<ExtSolverMgr> m_ext_solver_mgr;
 };

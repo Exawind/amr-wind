@@ -1,8 +1,7 @@
-#ifndef CONSTANTSCALING_H
-#define CONSTANTSCALING_H
+#ifndef CONSTANTMAP_H
+#define CONSTANTMAP_H
 
 #include "amr-wind/core/MeshMap.H"
-#include "amr-wind/core/Field.H"
 
 namespace amr_wind {
 namespace const_map {
@@ -10,14 +9,14 @@ namespace const_map {
 /** Coonstant scaling mesh map
  *  \ingroup mesh_map
  */
-class ConstantScaling : public MeshMap::Register<ConstantScaling>
+class ConstantMap : public MeshMap::Register<ConstantMap>
 {
 public:
-    static const std::string identifier() { return "ConstantScaling"; }
+    static const std::string identifier() { return "ConstantMap"; }
 
-    explicit ConstantScaling(const CFDSim& sim);
+    explicit ConstantMap();
 
-    virtual ~ConstantScaling() = default;
+    virtual ~ConstantMap() = default;
 
     //! Construct the mesh scaling field
     void create_map(int, const amrex::Geometry&) override;
@@ -32,14 +31,6 @@ public:
     void create_non_uniform_mesh(int, const amrex::Geometry&) override;
 
 private:
-    Field& m_mesh_scale_fac_cc;
-    Field& m_mesh_scale_fac_nd;
-    Field& m_mesh_scale_fac_xf;
-    Field& m_mesh_scale_fac_yf;
-    Field& m_mesh_scale_fac_zf;
-    Field& m_non_uniform_coord_cc;
-    Field& m_non_uniform_coord_nd;
-
     //! Factor to scale the mesh by
     amrex::Vector<amrex::Real> m_fac{{1.0, 1.0, 1.0}};
 };
@@ -47,4 +38,4 @@ private:
 } // namespace const_map
 } // namespace amr_wind
 
-#endif /* CONSTANTSCALING_H */
+#endif /* CONSTANTMAP_H */
