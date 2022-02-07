@@ -149,7 +149,7 @@ public:
             m_applier_scalar->setLevelBC(lev, &m_pdefields.field(lev));
         }
 
-        //////////////////////////A coeffs/////////////////////////////////
+        // A coeffs
         // TODO: Create a permanent field for det_j updated only upon regrid
         //  scratch field for determinant
         auto rho_times_det_j = repo.create_scratch_field(
@@ -180,9 +180,8 @@ public:
         for (int lev = 0; lev < nlevels; ++lev) {
             m_applier_scalar->setACoeffs(lev, (*rho_times_det_j)(lev));
         }
-        ///////////////////////////////////////////////////////////////////
 
-        //////////////////////////B coeffs/////////////////////////////////
+        // B coeffs
         // TODO: should box loops below be over grown tile box ?
         for (int lev = 0; lev < nlevels; ++lev) {
             auto b = diffusion::average_velocity_eta_to_faces(
@@ -239,7 +238,6 @@ public:
 
             m_applier_scalar->setBCoeffs(lev, amrex::GetArrOfConstPtrs(b));
         }
-        ///////////////////////////////////////////////////////////////////
 
         amrex::MLMG mlmg(*m_applier_scalar);
         mlmg.apply(divtau.vec_ptrs(), m_pdefields.field.vec_ptrs());
@@ -289,7 +287,7 @@ public:
             m_solver_scalar->setLevelBC(lev, &m_pdefields.field(lev));
         }
 
-        //////////////////////////A coeffs/////////////////////////////////
+        // A coeffs
         // TODO: Create a permanent field for det_j updated only upon regrid
         //  scratch field for determinant
         auto rho_times_det_j = repo.create_scratch_field(
@@ -320,9 +318,8 @@ public:
         for (int lev = 0; lev < nlevels; ++lev) {
             m_solver_scalar->setACoeffs(lev, (*rho_times_det_j)(lev));
         }
-        ///////////////////////////////////////////////////////////////////
 
-        //////////////////////////B coeffs/////////////////////////////////
+        // B coeffs
         // TODO: should box loops below be over grown tile box ?
         for (int lev = 0; lev < nlevels; ++lev) {
             auto b = diffusion::average_velocity_eta_to_faces(
@@ -379,7 +376,6 @@ public:
 
             m_solver_scalar->setBCoeffs(lev, amrex::GetArrOfConstPtrs(b));
         }
-        ///////////////////////////////////////////////////////////////////
 
         // Always multiply with rho since there is no diffusion term for density
         for (int lev = 0; lev < nlevels; ++lev) {
