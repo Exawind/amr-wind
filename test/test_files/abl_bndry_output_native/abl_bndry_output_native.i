@@ -6,14 +6,13 @@ time.max_step                =   10          # Max number of time steps
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
-time.fixed_dt         =   0.4        # Use this constant dt if > 0
+time.fixed_dt         =   0.5        # Use this constant dt if > 0
 time.cfl              =   0.95         # CFL factor
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-io.restart_file = "../abl_bndry_output/chk00005"
 time.plot_interval            =  10       # Steps between plot files
-time.checkpoint_interval      =  -1       # Steps between checkpoint files
+time.checkpoint_interval      =  5       # Steps between checkpoint files
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
 #.......................................#
@@ -47,10 +46,12 @@ ABL.deltaU = 1.0
 ABL.deltaV = 1.0
 ABL.kappa = .41
 ABL.surface_roughness_z0 = 0.01
-ABL.bndry_file = "../abl_bndry_output/bndry_file.nc"
-ABL.bndry_io_mode = 1
+ABL.bndry_file = "bndry_files"
+ABL.bndry_io_mode = 0
+ABL.bndry_planes = ylo xlo
+ABL.bndry_output_start_time = 2.0
 ABL.bndry_var_names = velocity temperature
-ABL.bndry_output_format = netcdf
+ABL.bndry_output_format = native
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
@@ -61,18 +62,11 @@ amr.max_level           = 0           # Max AMR level in hierarchy
 #.......................................#
 geometry.prob_lo        =   0.       0.     0.  # Lo corner coordinates
 geometry.prob_hi        =   1000.  1000.  1000.  # Hi corner coordinates
-geometry.is_periodic    =   0   0   0   # Periodicity x y z (0/1)
+geometry.is_periodic    =   1   1   0   # Periodicity x y z (0/1)
 incflo.delp             =   0.  0.  0.  # Prescribed (cyclic) pressure gradient
 # Boundary conditions
-xlo.type = "mass_inflow"
-xlo.density = 1.0
-xlo.temperature = 0.0
-xhi.type = "pressure_outflow"
-ylo.type = "mass_inflow"
-ylo.density = 1.0
-ylo.temperature = 0.0
-yhi.type = "pressure_outflow"
 zlo.type =   "wall_model"
+
 zhi.type =   "slip_wall"
 zhi.temperature_type = "fixed_gradient"
 zhi.temperature = 0.0

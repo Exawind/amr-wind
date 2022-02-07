@@ -11,7 +11,7 @@ time.cfl              =   0.95         # CFL factor
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-io.restart_file = "../abl_bndry_output/chk00005"
+io.restart_file = "../abl_bndry_output_native/chk00005"
 time.plot_interval            =  10       # Steps between plot files
 time.checkpoint_interval      =  -1       # Steps between checkpoint files
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -47,15 +47,18 @@ ABL.deltaU = 1.0
 ABL.deltaV = 1.0
 ABL.kappa = .41
 ABL.surface_roughness_z0 = 0.01
-ABL.bndry_file = "../abl_bndry_output/bndry_file.nc"
+ABL.bndry_file = "../abl_bndry_output_native/bndry_files"
 ABL.bndry_io_mode = 1
 ABL.bndry_var_names = velocity temperature
-ABL.bndry_output_format = netcdf
+ABL.bndry_output_format = native
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
 amr.n_cell              = 48 48 48    # Grid cells at coarsest AMRlevel
-amr.max_level           = 0           # Max AMR level in hierarchy 
+amr.max_level           = 2           # Max AMR level in hierarchy
+tagging.labels = "static"
+tagging.static.type = "CartBoxRefinement"
+tagging.static.static_refinement_def = "static_box.txt"
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
 #.......................................#
