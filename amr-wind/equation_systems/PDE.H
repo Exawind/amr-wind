@@ -70,7 +70,8 @@ public:
              m_sim.physics_manager().contains("MultiPhase"));
 
         m_adv_op.reset(new AdvectionOp<PDE, Scheme>(
-            m_fields, m_sim.has_overset(), variable_density));
+            m_fields, m_sim.has_overset(), variable_density,
+            m_sim.has_mesh_mapping()));
         m_src_op.init_source_terms(m_sim);
     }
 
@@ -89,7 +90,8 @@ public:
              m_sim.physics_manager().contains("MultiPhase"));
 
         m_adv_op.reset(new AdvectionOp<PDE, Scheme>(
-            m_fields, m_sim.has_overset(), variable_density));
+            m_fields, m_sim.has_overset(), variable_density,
+            m_sim.has_mesh_mapping()));
     }
 
     //! Return the object holding the fields necessary for solving this PDE

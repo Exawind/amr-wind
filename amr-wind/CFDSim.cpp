@@ -63,7 +63,7 @@ void CFDSim::activate_mesh_map()
 {
     amrex::ParmParse pp("geometry");
     std::string mesh_map_name("ConstantMap"); // default
-    pp.query("mesh_mapping", mesh_map_name);
+    m_mesh_mapping = pp.query("mesh_mapping", mesh_map_name);
     m_mesh_map = MeshMap::create(mesh_map_name);
     m_mesh_map->declare_mapping_fields(*this, m_pde_mgr.num_ghost_state());
 }

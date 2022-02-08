@@ -110,6 +110,8 @@ public:
     //! Activate mesh mapping
     void activate_mesh_map();
 
+    bool has_mesh_mapping() { return m_mesh_mapping; }
+
 private:
     amrex::AmrCore& m_mesh;
 
@@ -132,6 +134,8 @@ private:
     std::unique_ptr<MeshMap> m_mesh_map;
 
     std::unique_ptr<ExtSolverMgr> m_ext_solver_mgr;
+
+    bool m_mesh_mapping;
 };
 
 } // namespace amr_wind

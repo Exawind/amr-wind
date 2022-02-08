@@ -125,6 +125,8 @@ void incflo::ApplyProjection(
         (!m_sim.pde_manager().constant_density() ||
          m_sim.physics_manager().contains("MultiPhase"));
 
+    bool mesh_mapping = m_sim.has_mesh_mapping();
+
     auto& grad_p = m_repo.get_field("gp");
     auto& pressure = m_repo.get_field("p");
     auto& velocity = icns().fields().field;
@@ -227,8 +229,7 @@ void incflo::ApplyProjection(
     // Create sigma while accounting for mesh mapping
     // sigma = 1/(fac^2)*J * dt/rho
     Vector<amrex::MultiFab> sigma(finest_level + 1);
-    //    if (variable_density)
-    {
+    if (variable_density || mesh_mapping) {
         for (int lev = 0; lev <= finest_level; ++lev) {
             sigma[lev].define(
                 grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo(),
@@ -273,18 +274,19 @@ void incflo::ApplyProjection(
 
     amr_wind::MLMGOptions options("nodal_proj");
 
-    //    if (variable_density) {
-    nodal_projector = std::make_unique<Hydro::NodalProjector>(
-        vel, GetVecOfConstPtrs(sigma), Geom(0, finest_level), options.lpinfo());
-    //    } else {
-    //        amrex::Real rho_0 = 1.0;
-    //        amrex::ParmParse pp("incflo");
-    //        pp.query("density", rho_0);
-    //
-    //        nodal_projector = std::make_unique<Hydro::NodalProjector>(
-    //            vel, scaling_factor / rho_0, Geom(0, finest_level),
-    //            options.lpinfo());
-    //    }
+    if (variable_density || mesh_mapping) {
+        nodal_projector = std::make_unique<Hydro::NodalProjector>(
+            vel, GetVecOfConstPtrs(sigma), Geom(0, finest_level),
+            options.lpinfo());
+    } else {
+        amrex::Real rho_0 = 1.0;
+        amrex::ParmParse pp("incflo");
+        pp.query("density", rho_0);
+
+        nodal_projector = std::make_unique<Hydro::NodalProjector>(
+            vel, scaling_factor / rho_0, Geom(0, finest_level),
+            options.lpinfo());
+    }
 
     // Set MLMG and NodalProjector options
     options(*nodal_projector);

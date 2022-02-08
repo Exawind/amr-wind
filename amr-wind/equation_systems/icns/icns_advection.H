@@ -17,7 +17,7 @@ public:
     using FaceFabPtrVec =
         amrex::Vector<amrex::Array<const amrex::MultiFab*, ICNS::ndim>>;
 
-    MacProjOp(FieldRepo&, bool, bool);
+    MacProjOp(FieldRepo&, bool, bool, bool);
 
     void operator()(const FieldState fstate, const amrex::Real dt);
 
@@ -30,6 +30,8 @@ private:
     MLMGOptions m_options;
     bool m_has_overset{false};
     bool m_need_init{true};
+    bool m_variable_density{false};
+    bool m_mesh_mapping{false};
     amrex::Real m_rho_0{1.0};
 };
 
@@ -39,12 +41,16 @@ private:
 template <>
 struct AdvectionOp<ICNS, fvm::Godunov>
 {
-    AdvectionOp(PDEFields& fields_in, bool has_overset, bool variable_density)
+    AdvectionOp(
+        PDEFields& fields_in,
+        bool has_overset,
+        bool variable_density,
+        bool mesh_mapping)
         : fields(fields_in)
         , u_mac(fields_in.repo.get_field("u_mac"))
         , v_mac(fields_in.repo.get_field("v_mac"))
         , w_mac(fields_in.repo.get_field("w_mac"))
-        , m_macproj_op(fields.repo, has_overset, variable_density)
+        , m_macproj_op(fields.repo, has_overset, variable_density, mesh_mapping)
     {
 
         amrex::ParmParse pp("incflo");
@@ -336,12 +342,16 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 template <>
 struct AdvectionOp<ICNS, fvm::MOL>
 {
-    AdvectionOp(PDEFields& fields_in, bool has_overset, bool variable_density)
+    AdvectionOp(
+        PDEFields& fields_in,
+        bool has_overset,
+        bool variable_density,
+        bool mesh_mapping)
         : fields(fields_in)
         , u_mac(fields_in.repo.get_field("u_mac"))
         , v_mac(fields_in.repo.get_field("v_mac"))
         , w_mac(fields_in.repo.get_field("w_mac"))
-        , m_macproj_op(fields.repo, has_overset, variable_density)
+        , m_macproj_op(fields.repo, has_overset, variable_density, mesh_mapping)
     {}
 
     void preadvect(const FieldState fstate, const amrex::Real dt)

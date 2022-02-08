@@ -41,8 +41,13 @@ amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> get_projection_bc(
 
 } // namespace
 
-MacProjOp::MacProjOp(FieldRepo& repo, bool has_overset, bool variable_density)
-    : m_repo(repo), m_options("mac_proj"), m_has_overset(has_overset)
+MacProjOp::MacProjOp(
+    FieldRepo& repo, bool has_overset, bool variable_density, bool mesh_mapping)
+    : m_repo(repo)
+    , m_options("mac_proj")
+    , m_has_overset(has_overset)
+    , m_variable_density(variable_density)
+    , m_mesh_mapping(mesh_mapping)
 {
     amrex::ParmParse pp("incflo");
     pp.query("rho_0", m_rho_0);
@@ -126,23 +131,9 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
     auto& v_mac = m_repo.get_field("v_mac");
     auto& w_mac = m_repo.get_field("w_mac");
     const auto& density = m_repo.get_field("density", fstate);
-    const auto& mesh_fac_xf = m_repo.get_field("mesh_scaling_factor_xf");
-    const auto& mesh_fac_yf = m_repo.get_field("mesh_scaling_factor_yf");
-    const auto& mesh_fac_zf = m_repo.get_field("mesh_scaling_factor_zf");
 
-    // This will hold density on faces
-    std::unique_ptr<ScratchField> rho_xf, rho_yf, rho_zf;
-
-    amrex::Vector<amrex::Array<amrex::MultiFab*, ICNS::ndim>> rho_face(
-        m_repo.num_active_levels());
     amrex::Vector<amrex::Array<amrex::MultiFab*, ICNS::ndim>> mac_vec(
         m_repo.num_active_levels());
-
-    // fixme todo clean this up, this was done to replace
-    // GetVecOfArrOfConstPtrs() below
-    amrex::Vector<amrex::Array<amrex::MultiFab const*, ICNS::ndim>>
-        rho_face_const;
-    rho_face_const.reserve(m_repo.num_active_levels());
 
     amrex::Real factor = m_has_overset ? 0.5 * dt : 1.0;
 
@@ -152,9 +143,20 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
     // masking is implemented in cell based AMReX poisson solvers
 
     // TODO: should box loops below be over grown tile box ?
+    if (m_variable_density || m_has_overset || m_mesh_mapping) {
+        const auto& mesh_fac_xf = m_repo.get_field("mesh_scaling_factor_xf");
+        const auto& mesh_fac_yf = m_repo.get_field("mesh_scaling_factor_yf");
+        const auto& mesh_fac_zf = m_repo.get_field("mesh_scaling_factor_zf");
 
-    //    if (m_variable_density || m_has_overset) {
-    {
+        amrex::Vector<amrex::Array<amrex::MultiFab const*, ICNS::ndim>>
+            rho_face_fac;
+        rho_face_fac.reserve(m_repo.num_active_levels());
+
+        // This will hold density on faces
+        std::unique_ptr<ScratchField> rho_xf, rho_yf, rho_zf;
+        amrex::Vector<amrex::Array<amrex::MultiFab*, ICNS::ndim>> rho_face(
+            m_repo.num_active_levels());
+
         rho_xf = m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::XFACE);
         rho_yf = m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::YFACE);
         rho_zf = m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::ZFACE);
@@ -166,9 +168,6 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
 
             amrex::average_cellcenter_to_face(
                 rho_face[lev], density(lev), geom[lev]);
-            //            for (int idim = 0; idim < ICNS::ndim; ++idim) {
-            //                rho_face[lev][idim]->invert(factor, 0);
-            //            }
 
             // scale U^mac to accommodate for mesh mapping -> U^bar = J/fac *
             // U^mac beta accounted for mesh mapping = J/fac^2 * 1/rho construct
@@ -230,22 +229,20 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
                     });
             }
             // assemble scaled beta for all faces
-            rho_face_const.push_back(GetArrOfConstPtrs(rho_face[lev]));
+            rho_face_fac.push_back(GetArrOfConstPtrs(rho_face[lev]));
         }
 
         if (m_need_init) {
-            init_projector(rho_face_const);
+            init_projector(rho_face_fac);
         } else {
-            m_mac_proj->updateBeta(rho_face_const);
+            m_mac_proj->updateBeta(rho_face_fac);
         }
+    } else {
+        if (m_need_init)
+            init_projector(factor / m_rho_0);
+        else
+            m_mac_proj->updateBeta(factor / m_rho_0);
     }
-    //    } else {
-    //
-    //        if (m_need_init)
-    //            init_projector(factor / m_rho_0);
-    //        else
-    //            m_mac_proj->updateBeta(factor / m_rho_0);
-    //    }
 
     for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
 
