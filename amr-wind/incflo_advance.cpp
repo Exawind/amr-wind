@@ -448,15 +448,18 @@ void incflo::ApplyCorrector()
     const auto& density_old = density_new.state(amr_wind::FieldState::Old);
     auto& density_nph = density_new.state(amr_wind::FieldState::NPH);
 
+    // Extrapolate and apply MAC projection for advection velocities
+    icns().pre_advection_actions(amr_wind::FieldState::New);
+
     // *************************************************************************************
     // Compute the explicit "new" advective terms R_u^(n+1,*), R_r^(n+1,*) and
     // R_t^(n+1,*) We only reach the corrector if !m_use_godunov which means we
     // don't use the forces in constructing the advection term
     // *************************************************************************************
-    icns().compute_advection_term(amr_wind::FieldState::New);
     for (auto& seqn : scalar_eqns()) {
         seqn->compute_advection_term(amr_wind::FieldState::New);
     }
+    icns().compute_advection_term(amr_wind::FieldState::New);
 
     // *************************************************************************************
     // Compute viscosity / diffusive coefficients
