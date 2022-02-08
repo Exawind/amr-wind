@@ -226,6 +226,12 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
         // MAC projection
         m_macproj_op(fstate, dt);
+
+        for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+            u_mac(lev).FillBoundary(geom[lev].periodicity());
+            v_mac(lev).FillBoundary(geom[lev].periodicity());
+            w_mac(lev).FillBoundary(geom[lev].periodicity());
+        }
     }
 
     void operator()(const FieldState fstate, const amrex::Real dt)
@@ -249,9 +255,6 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         // Advect momentum eqns
         //
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-            u_mac(lev).FillBoundary(geom[lev].periodicity());
-            v_mac(lev).FillBoundary(geom[lev].periodicity());
-            w_mac(lev).FillBoundary(geom[lev].periodicity());
 
             amrex::MFItInfo mfi_info;
             if (amrex::Gpu::notInLaunchRegion())
