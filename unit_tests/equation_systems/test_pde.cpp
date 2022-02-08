@@ -21,7 +21,7 @@ TEST_F(PDETest, test_pde_create_godunov)
 
     EXPECT_EQ(pde_mgr.scalar_eqns().size(), 1);
 
-    EXPECT_EQ(mesh().field_repo().num_fields(), 28);
+    EXPECT_EQ(mesh().field_repo().num_fields(), 33);
 }
 
 TEST_F(PDETest, test_pde_create_mol)
@@ -39,7 +39,7 @@ TEST_F(PDETest, test_pde_create_mol)
 
     EXPECT_EQ(pde_mgr.scalar_eqns().size(), 1);
 
-    EXPECT_EQ(mesh().field_repo().num_fields(), 32);
+    EXPECT_EQ(mesh().field_repo().num_fields(), 37);
 }
 
 } // namespace amr_wind_tests

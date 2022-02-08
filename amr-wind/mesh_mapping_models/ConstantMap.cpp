@@ -33,21 +33,31 @@ void ConstantMap::create_cell_node_map(int lev)
         const auto& bx = mfi.growntilebox();
         amrex::Array4<amrex::Real> const& scale_fac_cc =
             (*m_mesh_scale_fac_cc)(lev).array(mfi);
+        amrex::Array4<amrex::Real> const& scale_detJ_cc =
+            (*m_mesh_scale_detJ_cc)(lev).array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 scale_fac_cc(i, j, k, 0) = fac_x;
                 scale_fac_cc(i, j, k, 1) = fac_y;
                 scale_fac_cc(i, j, k, 2) = fac_z;
+                scale_detJ_cc(i, j, k) = scale_fac_cc(i, j, k, 0) *
+                                         scale_fac_cc(i, j, k, 1) *
+                                         scale_fac_cc(i, j, k, 2);
             });
 
         const auto& nbx = mfi.grownnodaltilebox();
         amrex::Array4<amrex::Real> const& scale_fac_nd =
             (*m_mesh_scale_fac_nd)(lev).array(mfi);
+        amrex::Array4<amrex::Real> const& scale_detJ_nd =
+            (*m_mesh_scale_detJ_nd)(lev).array(mfi);
         amrex::ParallelFor(
             nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 scale_fac_nd(i, j, k, 0) = fac_x;
                 scale_fac_nd(i, j, k, 1) = fac_y;
                 scale_fac_nd(i, j, k, 2) = fac_z;
+                scale_detJ_nd(i, j, k) = scale_fac_nd(i, j, k, 0) *
+                                         scale_fac_nd(i, j, k, 1) *
+                                         scale_fac_nd(i, j, k, 2);
             });
     }
 }
@@ -64,11 +74,16 @@ void ConstantMap::create_face_map(int lev)
         const auto& bx = mfi.growntilebox();
         amrex::Array4<amrex::Real> const& scale_fac_xf =
             (*m_mesh_scale_fac_xf)(lev).array(mfi);
+        amrex::Array4<amrex::Real> const& scale_detJ_xf =
+            (*m_mesh_scale_detJ_xf)(lev).array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 scale_fac_xf(i, j, k, 0) = fac_x;
                 scale_fac_xf(i, j, k, 1) = fac_y;
                 scale_fac_xf(i, j, k, 2) = fac_z;
+                scale_detJ_xf(i, j, k) = scale_fac_xf(i, j, k, 0) *
+                                         scale_fac_xf(i, j, k, 1) *
+                                         scale_fac_xf(i, j, k, 2);
             });
     }
 
@@ -76,11 +91,16 @@ void ConstantMap::create_face_map(int lev)
         const auto& bx = mfi.growntilebox();
         amrex::Array4<amrex::Real> const& scale_fac_yf =
             (*m_mesh_scale_fac_yf)(lev).array(mfi);
+        amrex::Array4<amrex::Real> const& scale_detJ_yf =
+            (*m_mesh_scale_detJ_yf)(lev).array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 scale_fac_yf(i, j, k, 0) = fac_x;
                 scale_fac_yf(i, j, k, 1) = fac_y;
                 scale_fac_yf(i, j, k, 2) = fac_z;
+                scale_detJ_yf(i, j, k) = scale_fac_yf(i, j, k, 0) *
+                                         scale_fac_yf(i, j, k, 1) *
+                                         scale_fac_yf(i, j, k, 2);
             });
     }
 
@@ -88,11 +108,16 @@ void ConstantMap::create_face_map(int lev)
         const auto& bx = mfi.growntilebox();
         amrex::Array4<amrex::Real> const& scale_fac_zf =
             (*m_mesh_scale_fac_zf)(lev).array(mfi);
+        amrex::Array4<amrex::Real> const& scale_detJ_zf =
+            (*m_mesh_scale_detJ_zf)(lev).array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 scale_fac_zf(i, j, k, 0) = fac_x;
                 scale_fac_zf(i, j, k, 1) = fac_y;
                 scale_fac_zf(i, j, k, 2) = fac_z;
+                scale_detJ_zf(i, j, k) = scale_fac_zf(i, j, k, 0) *
+                                         scale_fac_zf(i, j, k, 1) *
+                                         scale_fac_zf(i, j, k, 2);
             });
     }
 }

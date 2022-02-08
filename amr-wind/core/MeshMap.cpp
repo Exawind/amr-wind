@@ -18,6 +18,18 @@ void MeshMap::declare_mapping_fields(const CFDSim& sim, int nghost)
     m_mesh_scale_fac_zf = &(sim.repo().declare_zf_field(
         "mesh_scaling_factor_zf", AMREX_SPACEDIM, nghost, 1));
 
+    // declare nodal, cell-centered, and face-centered mesh mapping detJ array
+    m_mesh_scale_detJ_cc =
+        &(sim.repo().declare_cc_field("mesh_scaling_detJ_cc", 1, nghost, 1));
+    m_mesh_scale_detJ_nd =
+        &(sim.repo().declare_nd_field("mesh_scaling_detJ_nd", 1, nghost, 1));
+    m_mesh_scale_detJ_xf =
+        &(sim.repo().declare_xf_field("mesh_scaling_detJ_xf", 1, nghost, 1));
+    m_mesh_scale_detJ_yf =
+        &(sim.repo().declare_yf_field("mesh_scaling_detJ_yf", 1, nghost, 1));
+    m_mesh_scale_detJ_zf =
+        &(sim.repo().declare_zf_field("mesh_scaling_detJ_zf", 1, nghost, 1));
+
     // declare nodal and cell-centered non-uniform mesh
     m_non_uniform_coord_cc = &(sim.repo().declare_cc_field(
         "non_uniform_coord_cc", AMREX_SPACEDIM, nghost, 1));

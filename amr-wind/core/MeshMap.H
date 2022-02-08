@@ -46,6 +46,13 @@ protected:
     Field* m_mesh_scale_fac_xf{nullptr};
     Field* m_mesh_scale_fac_yf{nullptr};
     Field* m_mesh_scale_fac_zf{nullptr};
+
+    Field* m_mesh_scale_detJ_cc{nullptr};
+    Field* m_mesh_scale_detJ_nd{nullptr};
+    Field* m_mesh_scale_detJ_xf{nullptr};
+    Field* m_mesh_scale_detJ_yf{nullptr};
+    Field* m_mesh_scale_detJ_zf{nullptr};
+
     Field* m_non_uniform_coord_cc{nullptr};
     Field* m_non_uniform_coord_nd{nullptr};
 };

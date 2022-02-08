@@ -132,6 +132,7 @@ void incflo::ApplyProjection(
     auto& velocity = icns().fields().field;
     auto& velocity_old = icns().fields().field.state(amr_wind::FieldState::Old);
     auto& mesh_fac = m_repo.get_mesh_mapping_field(amr_wind::FieldLoc::CELL);
+    auto& mesh_detJ = m_repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::CELL);
 
     // TODO: Mesh mapping doesn't work with immersed boundaries
     // Do the pre pressure correction work -- this applies to IB only
@@ -243,15 +244,15 @@ void incflo::ApplyProjection(
                 Array4<Real> const& sig = sigma[lev].array(mfi);
                 Array4<Real const> const& rho = density[lev]->const_array(mfi);
                 Array4<Real const> const& fac = mesh_fac(lev).const_array(mfi);
+                Array4<Real const> const& detJ =
+                    mesh_detJ(lev).const_array(mfi);
 
                 amrex::ParallelFor(
                     bx, AMREX_SPACEDIM,
                     [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                        Real det_j =
-                            fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
-
                         sig(i, j, k, n) = std::pow(fac(i, j, k, n), -2.) *
-                                          det_j * scaling_factor / rho(i, j, k);
+                                          detJ(i, j, k) * scaling_factor /
+                                          rho(i, j, k);
                     });
             }
         }

@@ -76,6 +76,8 @@ void ChannelFlowMap::create_cell_node_map(int lev, const amrex::Geometry& geom)
         const auto& bx = mfi.growntilebox();
         amrex::Array4<amrex::Real> const& scale_fac_cc =
             (*m_mesh_scale_fac_cc)(lev).array(mfi);
+        amrex::Array4<amrex::Real> const& scale_detJ_cc =
+            (*m_mesh_scale_detJ_cc)(lev).array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
@@ -93,11 +95,17 @@ void ChannelFlowMap::create_cell_node_map(int lev, const amrex::Geometry& geom)
                 scale_fac_cc(i, j, k, 0) = in_domain ? fac_x : 1.0;
                 scale_fac_cc(i, j, k, 1) = in_domain ? fac_y : 1.0;
                 scale_fac_cc(i, j, k, 2) = in_domain ? fac_z : 1.0;
+
+                scale_detJ_cc(i, j, k) = scale_fac_cc(i, j, k, 0) *
+                                         scale_fac_cc(i, j, k, 1) *
+                                         scale_fac_cc(i, j, k, 2);
             });
 
         const auto& nbx = mfi.grownnodaltilebox();
         amrex::Array4<amrex::Real> const& scale_fac_nd =
             (*m_mesh_scale_fac_nd)(lev).array(mfi);
+        amrex::Array4<amrex::Real> const& scale_detJ_nd =
+            (*m_mesh_scale_detJ_nd)(lev).array(mfi);
         amrex::ParallelFor(
             nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real x = prob_lo[0] + i * dx[0];
@@ -116,6 +124,10 @@ void ChannelFlowMap::create_cell_node_map(int lev, const amrex::Geometry& geom)
                 scale_fac_nd(i, j, k, 0) = in_domain ? fac_x : 1.0;
                 scale_fac_nd(i, j, k, 1) = in_domain ? fac_y : 1.0;
                 scale_fac_nd(i, j, k, 2) = in_domain ? fac_z : 1.0;
+
+                scale_detJ_nd(i, j, k) = scale_fac_nd(i, j, k, 0) *
+                                         scale_fac_nd(i, j, k, 1) *
+                                         scale_fac_nd(i, j, k, 2);
             });
     }
 
@@ -143,6 +155,8 @@ void ChannelFlowMap::create_face_map(int lev, const amrex::Geometry& geom)
         const auto& bx = mfi.growntilebox();
         amrex::Array4<amrex::Real> const& scale_fac_xf =
             (*m_mesh_scale_fac_xf)(lev).array(mfi);
+        amrex::Array4<amrex::Real> const& scale_detJ_xf =
+            (*m_mesh_scale_detJ_xf)(lev).array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real x = prob_lo[0] + i * dx[0];
@@ -161,6 +175,10 @@ void ChannelFlowMap::create_face_map(int lev, const amrex::Geometry& geom)
                 scale_fac_xf(i, j, k, 0) = in_domain ? fac_x : 1.0;
                 scale_fac_xf(i, j, k, 1) = in_domain ? fac_y : 1.0;
                 scale_fac_xf(i, j, k, 2) = in_domain ? fac_z : 1.0;
+
+                scale_detJ_xf(i, j, k) = scale_fac_xf(i, j, k, 0) *
+                                         scale_fac_xf(i, j, k, 1) *
+                                         scale_fac_xf(i, j, k, 2);
             });
     }
 
@@ -169,6 +187,8 @@ void ChannelFlowMap::create_face_map(int lev, const amrex::Geometry& geom)
         const auto& bx = mfi.growntilebox();
         amrex::Array4<amrex::Real> const& scale_fac_yf =
             (*m_mesh_scale_fac_yf)(lev).array(mfi);
+        amrex::Array4<amrex::Real> const& scale_detJ_yf =
+            (*m_mesh_scale_detJ_yf)(lev).array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
@@ -187,6 +207,10 @@ void ChannelFlowMap::create_face_map(int lev, const amrex::Geometry& geom)
                 scale_fac_yf(i, j, k, 0) = in_domain ? fac_x : 1.0;
                 scale_fac_yf(i, j, k, 1) = in_domain ? fac_y : 1.0;
                 scale_fac_yf(i, j, k, 2) = in_domain ? fac_z : 1.0;
+
+                scale_detJ_yf(i, j, k) = scale_fac_yf(i, j, k, 0) *
+                                         scale_fac_yf(i, j, k, 1) *
+                                         scale_fac_yf(i, j, k, 2);
             });
     }
 
@@ -195,6 +219,8 @@ void ChannelFlowMap::create_face_map(int lev, const amrex::Geometry& geom)
         const auto& bx = mfi.growntilebox();
         amrex::Array4<amrex::Real> const& scale_fac_zf =
             (*m_mesh_scale_fac_zf)(lev).array(mfi);
+        amrex::Array4<amrex::Real> const& scale_detJ_zf =
+            (*m_mesh_scale_detJ_zf)(lev).array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
@@ -213,6 +239,10 @@ void ChannelFlowMap::create_face_map(int lev, const amrex::Geometry& geom)
                 scale_fac_zf(i, j, k, 0) = in_domain ? fac_x : 1.0;
                 scale_fac_zf(i, j, k, 1) = in_domain ? fac_y : 1.0;
                 scale_fac_zf(i, j, k, 2) = in_domain ? fac_z : 1.0;
+
+                scale_detJ_zf(i, j, k) = scale_fac_zf(i, j, k, 0) *
+                                         scale_fac_zf(i, j, k, 1) *
+                                         scale_fac_zf(i, j, k, 2);
             });
     }
 

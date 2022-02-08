@@ -359,6 +359,7 @@ void Field::to_uniform_space() noexcept
     }
 
     const auto& mesh_fac = m_repo.get_mesh_mapping_field(m_info->m_floc);
+    const auto& mesh_detJ = m_repo.get_mesh_mapping_detJ(m_info->m_floc);
 
     // scale velocity to accommodate for mesh mapping -> U^bar = U * J/fac
     for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
@@ -368,13 +369,13 @@ void Field::to_uniform_space() noexcept
                 mfi);
             amrex::Array4<amrex::Real const> const& fac =
                 mesh_fac(lev).const_array(mfi);
+            amrex::Array4<amrex::Real const> const& detJ =
+                mesh_detJ(lev).const_array(mfi);
 
             amrex::ParallelFor(
                 mfi.growntilebox(), AMREX_SPACEDIM,
                 [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                    amrex::Real det_j =
-                        fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
-                    field(i, j, k, n) *= det_j / fac(i, j, k, n);
+                    field(i, j, k, n) *= detJ(i, j, k) / fac(i, j, k, n);
                 });
         }
     }
@@ -393,6 +394,7 @@ void Field::to_stretched_space() noexcept
     }
 
     const auto& mesh_fac = m_repo.get_mesh_mapping_field(m_info->m_floc);
+    const auto& mesh_detJ = m_repo.get_mesh_mapping_detJ(m_info->m_floc);
 
     // scale field back to stretched mesh -> U = U^bar * fac/J
     for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
@@ -401,13 +403,13 @@ void Field::to_stretched_space() noexcept
                 mfi);
             amrex::Array4<amrex::Real const> const& fac =
                 mesh_fac(lev).const_array(mfi);
+            amrex::Array4<amrex::Real const> const& detJ =
+                mesh_detJ(lev).const_array(mfi);
 
             amrex::ParallelFor(
                 mfi.growntilebox(), AMREX_SPACEDIM,
                 [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                    amrex::Real det_j =
-                        fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
-                    field(i, j, k, n) *= fac(i, j, k, n) / det_j;
+                    field(i, j, k, n) *= fac(i, j, k, n) / detJ(i, j, k);
                 });
         }
     }

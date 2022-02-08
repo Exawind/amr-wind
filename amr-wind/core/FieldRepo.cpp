@@ -177,6 +177,24 @@ Field& FieldRepo::get_mesh_mapping_field(FieldLoc floc) const
     }
 }
 
+Field& FieldRepo::get_mesh_mapping_detJ(FieldLoc floc) const
+{
+    switch (floc) {
+    case FieldLoc::CELL:
+        return get_field("mesh_scaling_detJ_cc");
+    case FieldLoc::NODE:
+        return get_field("mesh_scaling_detJ_nd");
+    case FieldLoc::XFACE:
+        return get_field("mesh_scaling_detJ_xf");
+    case FieldLoc::YFACE:
+        return get_field("mesh_scaling_detJ_yf");
+    case FieldLoc::ZFACE:
+        return get_field("mesh_scaling_detJ_zf");
+    default:
+        amrex::Abort("Invalid field location");
+    }
+}
+
 bool FieldRepo::field_exists(
     const std::string& name, const FieldState fstate) const
 {

@@ -150,6 +150,12 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
             m_repo.get_mesh_mapping_field(FieldLoc::YFACE);
         const auto& mesh_fac_zf =
             m_repo.get_mesh_mapping_field(FieldLoc::ZFACE);
+        const auto& mesh_detJ_xf =
+            m_repo.get_mesh_mapping_detJ(FieldLoc::XFACE);
+        const auto& mesh_detJ_yf =
+            m_repo.get_mesh_mapping_detJ(FieldLoc::YFACE);
+        const auto& mesh_detJ_zf =
+            m_repo.get_mesh_mapping_detJ(FieldLoc::ZFACE);
 
         amrex::Vector<amrex::Array<amrex::MultiFab const*, ICNS::ndim>>
             rho_face_fac;
@@ -157,12 +163,11 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
 
         // This will hold density on faces
         std::unique_ptr<ScratchField> rho_xf, rho_yf, rho_zf;
-        amrex::Vector<amrex::Array<amrex::MultiFab*, ICNS::ndim>> rho_face(
-            m_repo.num_active_levels());
-
         rho_xf = m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::XFACE);
         rho_yf = m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::YFACE);
         rho_zf = m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::ZFACE);
+        amrex::Vector<amrex::Array<amrex::MultiFab*, ICNS::ndim>> rho_face(
+            m_repo.num_active_levels());
 
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
             rho_face[lev][0] = &(*rho_xf)(lev);
@@ -181,14 +186,14 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
                     rho_face[lev][0]->array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
                     mesh_fac_xf(lev).array(mfi);
+                amrex::Array4<amrex::Real const> const& detJ =
+                    mesh_detJ_xf(lev).const_array(mfi);
 
                 amrex::ParallelFor(
                     mfi.tilebox(),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        amrex::Real det_j =
-                            fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
-                        u(i, j, k) *= det_j / fac(i, j, k, 0);
-                        rho(i, j, k) = factor * det_j /
+                        u(i, j, k) *= detJ(i, j, k) / fac(i, j, k, 0);
+                        rho(i, j, k) = factor * detJ(i, j, k) /
                                        std::pow(fac(i, j, k, 0), 2) /
                                        rho(i, j, k);
                     });
@@ -200,14 +205,14 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
                     rho_face[lev][1]->array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
                     mesh_fac_yf(lev).array(mfi);
+                amrex::Array4<amrex::Real const> const& detJ =
+                    mesh_detJ_yf(lev).const_array(mfi);
 
                 amrex::ParallelFor(
                     mfi.tilebox(),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        amrex::Real det_j =
-                            fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
-                        v(i, j, k) *= det_j / fac(i, j, k, 1);
-                        rho(i, j, k) = factor * det_j /
+                        v(i, j, k) *= detJ(i, j, k) / fac(i, j, k, 1);
+                        rho(i, j, k) = factor * detJ(i, j, k) /
                                        std::pow(fac(i, j, k, 1), 2) /
                                        rho(i, j, k);
                     });
@@ -219,14 +224,14 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
                     rho_face[lev][2]->array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
                     mesh_fac_zf(lev).array(mfi);
+                amrex::Array4<amrex::Real const> const& detJ =
+                    mesh_detJ_zf(lev).const_array(mfi);
 
                 amrex::ParallelFor(
                     mfi.tilebox(),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        amrex::Real det_j =
-                            fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
-                        w(i, j, k) *= det_j / fac(i, j, k, 2);
-                        rho(i, j, k) = factor * det_j /
+                        w(i, j, k) *= detJ(i, j, k) / fac(i, j, k, 2);
+                        rho(i, j, k) = factor * detJ(i, j, k) /
                                        std::pow(fac(i, j, k, 2), 2) /
                                        rho(i, j, k);
                     });

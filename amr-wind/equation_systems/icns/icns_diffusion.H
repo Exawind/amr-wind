@@ -136,10 +136,13 @@ public:
         auto& divtau = m_pdefields.diff_term.state(tau_state);
         const auto& density = m_density.state(fstate);
         const auto& viscosity = m_pdefields.mueff;
-        const auto& mesh_fac_cc = repo.get_mesh_mapping_field(FieldLoc::CELL);
         const auto& mesh_fac_xf = repo.get_mesh_mapping_field(FieldLoc::XFACE);
         const auto& mesh_fac_yf = repo.get_mesh_mapping_field(FieldLoc::YFACE);
         const auto& mesh_fac_zf = repo.get_mesh_mapping_field(FieldLoc::ZFACE);
+        const auto& mesh_detJ_cc = repo.get_mesh_mapping_detJ(FieldLoc::CELL);
+        const auto& mesh_detJ_xf = repo.get_mesh_mapping_detJ(FieldLoc::XFACE);
+        const auto& mesh_detJ_yf = repo.get_mesh_mapping_detJ(FieldLoc::YFACE);
+        const auto& mesh_detJ_zf = repo.get_mesh_mapping_detJ(FieldLoc::ZFACE);
 
         const amrex::Real alpha = 0.0;
         const amrex::Real beta = -1.0;
@@ -150,35 +153,19 @@ public:
         }
 
         // A coeffs
-        // TODO: Create a permanent field for det_j updated only upon regrid
-        //  scratch field for determinant
-        auto rho_times_det_j = repo.create_scratch_field(
+        // create scratch field to store rho * detJ
+        auto rho_times_detJ = repo.create_scratch_field(
             1, m_density.num_grow()[0], FieldLoc::CELL);
         for (int lev = 0; lev < nlevels; ++lev) {
-            (*rho_times_det_j)(lev).setVal(0.0);
-        }
-
-        // multiply density with detJ
-        for (int lev = 0; lev < nlevels; ++lev) {
-            for (amrex::MFIter mfi(density(lev)); mfi.isValid(); ++mfi) {
-
-                const auto& rho = density(lev).array(mfi);
-                const auto& fac = mesh_fac_cc(lev).array(mfi);
-                const auto& prod = (*rho_times_det_j)(lev).array(mfi);
-
-                const auto& bx = mfi.growntilebox();
-                amrex::ParallelFor(
-                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        amrex::Real det_j =
-                            fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
-                        prod(i, j, k, 0) = rho(i, j, k, 0) * det_j;
-                    });
-            }
+            (*rho_times_detJ)(lev).setVal(0.0);
+            amrex::MultiFab::AddProduct(
+                (*rho_times_detJ)(lev), density(lev), 0, mesh_detJ_cc(lev), 0,
+                0, 1, m_density.num_grow()[0]);
         }
 
         // set A coeffs
         for (int lev = 0; lev < nlevels; ++lev) {
-            m_applier_scalar->setACoeffs(lev, (*rho_times_det_j)(lev));
+            m_applier_scalar->setACoeffs(lev, (*rho_times_detJ)(lev));
         }
 
         // B coeffs
@@ -192,15 +179,15 @@ public:
                 amrex::Array4<amrex::Real> const& mu = b[0].array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
                     mesh_fac_xf(lev).array(mfi);
+                amrex::Array4<amrex::Real const> const& detJ =
+                    mesh_detJ_xf(lev).array(mfi);
 
                 amrex::ParallelFor(
                     mfi.tilebox(),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        amrex::Real det_j =
-                            fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
                         // TODO: Store scaling factor fields on cell faces ?
-                        mu(i, j, k) =
-                            mu(i, j, k) * det_j / std::pow(fac(i, j, k, 0), 2);
+                        mu(i, j, k) = mu(i, j, k) * detJ(i, j, k) /
+                                      std::pow(fac(i, j, k, 0), 2);
                     });
             }
             // beta accounted for mesh mapping (y-face) = J/fac^2 * mu
@@ -208,15 +195,15 @@ public:
                 amrex::Array4<amrex::Real> const& mu = b[1].array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
                     mesh_fac_yf(lev).array(mfi);
+                amrex::Array4<amrex::Real const> const& detJ =
+                    mesh_detJ_yf(lev).array(mfi);
 
                 amrex::ParallelFor(
                     mfi.tilebox(),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        amrex::Real det_j =
-                            fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
                         // TODO: Store scaling factor fields on cell faces ?
-                        mu(i, j, k) =
-                            mu(i, j, k) * det_j / std::pow(fac(i, j, k, 1), 2);
+                        mu(i, j, k) = mu(i, j, k) * detJ(i, j, k) /
+                                      std::pow(fac(i, j, k, 1), 2);
                     });
             }
             // beta accounted for mesh mapping (z-face) = J/fac^2 * mu
@@ -224,15 +211,15 @@ public:
                 amrex::Array4<amrex::Real> const& mu = b[2].array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
                     mesh_fac_zf(lev).array(mfi);
+                amrex::Array4<amrex::Real const> const& detJ =
+                    mesh_detJ_zf(lev).array(mfi);
 
                 amrex::ParallelFor(
                     mfi.tilebox(),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        amrex::Real det_j =
-                            fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
                         // TODO: Store scaling factor fields on cell faces ?
-                        mu(i, j, k) =
-                            mu(i, j, k) * det_j / std::pow(fac(i, j, k, 2), 2);
+                        mu(i, j, k) = mu(i, j, k) * detJ(i, j, k) /
+                                      std::pow(fac(i, j, k, 2), 2);
                     });
             }
 
@@ -274,10 +261,13 @@ public:
         const int ndim = field.num_comp();
         auto rhs_ptr = repo.create_scratch_field("rhs", field.num_comp(), 0);
         const auto& viscosity = m_pdefields.mueff;
-        const auto& mesh_fac_cc = repo.get_mesh_mapping_field(FieldLoc::CELL);
         const auto& mesh_fac_xf = repo.get_mesh_mapping_field(FieldLoc::XFACE);
         const auto& mesh_fac_yf = repo.get_mesh_mapping_field(FieldLoc::YFACE);
         const auto& mesh_fac_zf = repo.get_mesh_mapping_field(FieldLoc::ZFACE);
+        const auto& mesh_detJ_cc = repo.get_mesh_mapping_detJ(FieldLoc::CELL);
+        const auto& mesh_detJ_xf = repo.get_mesh_mapping_detJ(FieldLoc::XFACE);
+        const auto& mesh_detJ_yf = repo.get_mesh_mapping_detJ(FieldLoc::YFACE);
+        const auto& mesh_detJ_zf = repo.get_mesh_mapping_detJ(FieldLoc::ZFACE);
 
         const amrex::Real alpha = 1.0;
         const amrex::Real beta = dt;
@@ -288,35 +278,19 @@ public:
         }
 
         // A coeffs
-        // TODO: Create a permanent field for det_j updated only upon regrid
-        //  scratch field for determinant
-        auto rho_times_det_j = repo.create_scratch_field(
+        // create scratch field to store rho * detJ
+        auto rho_times_detJ = repo.create_scratch_field(
             1, m_density.num_grow()[0], FieldLoc::CELL);
         for (int lev = 0; lev < nlevels; ++lev) {
-            (*rho_times_det_j)(lev).setVal(0.0);
-        }
-
-        // multiply density with detJ
-        for (int lev = 0; lev < nlevels; ++lev) {
-            for (amrex::MFIter mfi(density(lev)); mfi.isValid(); ++mfi) {
-
-                const auto& rho = density(lev).array(mfi);
-                const auto& fac = mesh_fac_cc(lev).array(mfi);
-                const auto& prod = (*rho_times_det_j)(lev).array(mfi);
-
-                const auto& bx = mfi.growntilebox();
-                amrex::ParallelFor(
-                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        amrex::Real det_j =
-                            fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
-                        prod(i, j, k, 0) = rho(i, j, k, 0) * det_j;
-                    });
-            }
+            (*rho_times_detJ)(lev).setVal(0.0);
+            amrex::MultiFab::AddProduct(
+                (*rho_times_detJ)(lev), density(lev), 0, mesh_detJ_cc(lev), 0,
+                0, 1, m_density.num_grow()[0]);
         }
 
         // set A coeffs
         for (int lev = 0; lev < nlevels; ++lev) {
-            m_solver_scalar->setACoeffs(lev, (*rho_times_det_j)(lev));
+            m_solver_scalar->setACoeffs(lev, (*rho_times_detJ)(lev));
         }
 
         // B coeffs
@@ -330,15 +304,15 @@ public:
                 amrex::Array4<amrex::Real> const& mu = b[0].array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
                     mesh_fac_xf(lev).array(mfi);
+                amrex::Array4<amrex::Real const> const& detJ =
+                    mesh_detJ_xf(lev).array(mfi);
 
                 amrex::ParallelFor(
                     mfi.tilebox(),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        amrex::Real det_j =
-                            fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
                         // TODO: Store scaling factor fields on cell faces ?
-                        mu(i, j, k) =
-                            mu(i, j, k) * det_j / std::pow(fac(i, j, k, 0), 2);
+                        mu(i, j, k) = mu(i, j, k) * detJ(i, j, k) /
+                                      std::pow(fac(i, j, k, 0), 2);
                     });
             }
             // beta accounted for mesh mapping (y-face) = J/fac^2 * mu
@@ -346,15 +320,15 @@ public:
                 amrex::Array4<amrex::Real> const& mu = b[1].array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
                     mesh_fac_yf(lev).array(mfi);
+                amrex::Array4<amrex::Real const> const& detJ =
+                    mesh_detJ_yf(lev).array(mfi);
 
                 amrex::ParallelFor(
                     mfi.tilebox(),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        amrex::Real det_j =
-                            fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
                         // TODO: Store scaling factor fields on cell faces ?
-                        mu(i, j, k) =
-                            mu(i, j, k) * det_j / std::pow(fac(i, j, k, 1), 2);
+                        mu(i, j, k) = mu(i, j, k) * detJ(i, j, k) /
+                                      std::pow(fac(i, j, k, 1), 2);
                     });
             }
             // beta accounted for mesh mapping (z-face) = J/fac^2 * mu
@@ -362,15 +336,15 @@ public:
                 amrex::Array4<amrex::Real> const& mu = b[2].array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
                     mesh_fac_zf(lev).array(mfi);
+                amrex::Array4<amrex::Real const> const& detJ =
+                    mesh_detJ_zf(lev).array(mfi);
 
                 amrex::ParallelFor(
                     mfi.tilebox(),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        amrex::Real det_j =
-                            fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
                         // TODO: Store scaling factor fields on cell faces ?
-                        mu(i, j, k) =
-                            mu(i, j, k) * det_j / std::pow(fac(i, j, k, 2), 2);
+                        mu(i, j, k) = mu(i, j, k) * detJ(i, j, k) /
+                                      std::pow(fac(i, j, k, 2), 2);
                     });
             }
 

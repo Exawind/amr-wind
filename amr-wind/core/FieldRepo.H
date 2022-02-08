@@ -252,6 +252,10 @@ public:
      */
     Field& get_mesh_mapping_field(FieldLoc floc) const;
 
+    /** Return a previously created mesh mapping detJ using field location
+     */
+    Field& get_mesh_mapping_detJ(FieldLoc floc) const;
+
     //! Query if field uniquely identified by name and time state exists in
     //! repository
     bool field_exists(
