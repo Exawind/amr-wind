@@ -54,14 +54,14 @@ struct ComputeRHSOp
 
         const int nlevels = fields.repo.num_active_levels();
 
-        // for RHS evaluation velocity field should be in unmapped space
+        // for RHS evaluation velocity field should be in stretched space
         auto& field = fields.field;
-        if (field.is_mesh_mapped()) {
-            field.to_unmapped_mesh();
+        if (field.in_uniform_space()) {
+            field.to_stretched_space();
         }
         auto& field_old = field.state(FieldState::Old);
-        if (field_old.is_mesh_mapped()) {
-            field_old.to_unmapped_mesh();
+        if (field_old.in_uniform_space()) {
+            field_old.to_stretched_space();
         }
 
         auto& den_new = density.state(FieldState::New);
@@ -70,7 +70,8 @@ struct ComputeRHSOp
         auto& diff_term = fields.diff_term.state(fstate);
         auto& conv_term = fields.conv_term.state(fstate);
         auto& mask_cell = fields.repo.get_int_field("mask_cell");
-        auto& mesh_fac = fields.repo.get_field("mesh_scaling_factor_cc");
+        const auto& mesh_fac =
+            fields.repo.get_mesh_mapping_field(FieldLoc::CELL);
 
         for (int lev = 0; lev < nlevels; ++lev) {
 #ifdef _OPENMP
@@ -168,14 +169,14 @@ struct ComputeRHSOp
 
         const int nlevels = fields.repo.num_active_levels();
 
-        // for RHS evaluation velocity field should be in unmapped space
+        // for RHS evaluation velocity field should be in stretched space
         auto& field = fields.field;
-        if (field.is_mesh_mapped()) {
-            field.to_unmapped_mesh();
+        if (field.in_uniform_space()) {
+            field.to_stretched_space();
         }
         auto& field_old = field.state(FieldState::Old);
-        if (field_old.is_mesh_mapped()) {
-            field_old.to_unmapped_mesh();
+        if (field_old.in_uniform_space()) {
+            field_old.to_stretched_space();
         }
 
         auto& den_new = density.state(FieldState::New);
@@ -186,7 +187,8 @@ struct ComputeRHSOp
         auto& diff_term_old = fields.diff_term.state(FieldState::Old);
         auto& conv_term_old = fields.conv_term.state(FieldState::Old);
         auto& mask_cell = fields.repo.get_int_field("mask_cell");
-        auto& mesh_fac = fields.repo.get_field("mesh_scaling_factor_cc");
+        const auto& mesh_fac =
+            fields.repo.get_mesh_mapping_field(FieldLoc::CELL);
 
         for (int lev = 0; lev < nlevels; ++lev) {
 #ifdef _OPENMP

@@ -144,9 +144,12 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
 
     // TODO: should box loops below be over grown tile box ?
     if (m_variable_density || m_has_overset || m_mesh_mapping) {
-        const auto& mesh_fac_xf = m_repo.get_field("mesh_scaling_factor_xf");
-        const auto& mesh_fac_yf = m_repo.get_field("mesh_scaling_factor_yf");
-        const auto& mesh_fac_zf = m_repo.get_field("mesh_scaling_factor_zf");
+        const auto& mesh_fac_xf =
+            m_repo.get_mesh_mapping_field(FieldLoc::XFACE);
+        const auto& mesh_fac_yf =
+            m_repo.get_mesh_mapping_field(FieldLoc::YFACE);
+        const auto& mesh_fac_zf =
+            m_repo.get_mesh_mapping_field(FieldLoc::ZFACE);
 
         amrex::Vector<amrex::Array<amrex::MultiFab const*, ICNS::ndim>>
             rho_face_fac;

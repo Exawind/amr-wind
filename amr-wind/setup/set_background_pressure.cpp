@@ -7,7 +7,7 @@ using namespace amrex;
 void incflo::set_background_pressure()
 {
     const auto problo = geom[0].ProbLoArray();
-    // determine probhi based on if mesh is mapped
+    // determine probhi based on if mesh is stretched
     amrex::Vector<amrex::Real> probhi_physical{{0.0, 0.0, 0.0}};
     {
         amrex::ParmParse pp("geometry");

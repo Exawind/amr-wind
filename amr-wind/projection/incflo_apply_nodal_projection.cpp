@@ -131,7 +131,7 @@ void incflo::ApplyProjection(
     auto& pressure = m_repo.get_field("p");
     auto& velocity = icns().fields().field;
     auto& velocity_old = icns().fields().field.state(amr_wind::FieldState::Old);
-    auto& mesh_fac = m_repo.get_field("mesh_scaling_factor_cc");
+    auto& mesh_fac = m_repo.get_mesh_mapping_field(amr_wind::FieldLoc::CELL);
 
     // TODO: Mesh mapping doesn't work with immersed boundaries
     // Do the pre pressure correction work -- this applies to IB only
@@ -139,9 +139,9 @@ void incflo::ApplyProjection(
         pp->pre_pressure_correction_work();
     }
 
-    // ensure velocity is in unmapped mesh space
-    if (velocity.is_mesh_mapped()) {
-        velocity.to_unmapped_mesh();
+    // ensure velocity is in stretched mesh space
+    if (velocity.in_uniform_space()) {
+        velocity.to_stretched_space();
     }
 
     // Add the ( grad p /ro ) back to u* (note the +dt)
@@ -210,9 +210,9 @@ void incflo::ApplyProjection(
         }
     }
 
-    // ensure velocity is in unmapped mesh space
-    if (velocity_old.is_mesh_mapped()) {
-        velocity_old.to_unmapped_mesh();
+    // ensure velocity is in stretched mesh space
+    if (velocity_old.in_uniform_space()) {
+        velocity_old.to_stretched_space();
     }
 
     // Define "vel" to be U^* - U^n rather than U^*
@@ -224,7 +224,7 @@ void incflo::ApplyProjection(
     }
 
     // scale U^* to accommodate for mesh mapping -> U^bar = J/fac * U
-    velocity.to_mapped_mesh();
+    velocity.to_uniform_space();
 
     // Create sigma while accounting for mesh mapping
     // sigma = 1/(fac^2)*J * dt/rho
@@ -336,7 +336,7 @@ void incflo::ApplyProjection(
         "Nodal_projection", nodal_projector->getMLMG());
 
     // scale U^* back to -> U = fac/J * U^bar
-    velocity.to_unmapped_mesh();
+    velocity.to_stretched_space();
 
     // Define "vel" to be U^{n+1} rather than (U^{n+1}-U^n)
     if (proj_for_small_dt || incremental) {

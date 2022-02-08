@@ -347,27 +347,18 @@ void Field::set_default_fillpatch_bc(
     }
 }
 
-void Field::to_mapped_mesh() noexcept
+void Field::to_uniform_space() noexcept
 {
     if (m_info->m_ncomp < AMREX_SPACEDIM) {
         amrex::Abort("Trying to transform a non-vector field:" + m_name);
-        return;
     }
     if (m_mesh_mapped) {
-        amrex::Print() << "WARNING: Field already in mapped mesh space: "
+        amrex::Print() << "WARNING: Field already in uniform mesh space: "
                        << m_name << std::endl;
         return;
     }
 
-    std::string mesh_fac_name;
-    if (m_info->m_floc == FieldLoc::CELL) {
-        mesh_fac_name = "mesh_scaling_factor_cc";
-    } else if (m_info->m_floc == FieldLoc::NODE) {
-        mesh_fac_name = "mesh_scaling_factor_nd";
-    } else {
-        amrex::Abort("Field location must be CELL or NODE");
-    }
-    const auto& mesh_fac = m_repo.get_field(mesh_fac_name);
+    const auto& mesh_fac = m_repo.get_mesh_mapping_field(m_info->m_floc);
 
     // scale velocity to accommodate for mesh mapping -> U^bar = U * J/fac
     for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
@@ -390,29 +381,20 @@ void Field::to_mapped_mesh() noexcept
     m_mesh_mapped = true;
 }
 
-void Field::to_unmapped_mesh() noexcept
+void Field::to_stretched_space() noexcept
 {
     if (m_info->m_ncomp < AMREX_SPACEDIM) {
         amrex::Abort("Trying to transform a non-vector field:" + m_name);
-        return;
     }
     if (!m_mesh_mapped) {
-        amrex::Print() << "WARNING: Field already in unmapped mesh space: "
+        amrex::Print() << "WARNING: Field already in stretched mesh space: "
                        << m_name << std::endl;
         return;
     }
 
-    std::string mesh_fac_name;
-    if (m_info->m_floc == FieldLoc::CELL) {
-        mesh_fac_name = "mesh_scaling_factor_cc";
-    } else if (m_info->m_floc == FieldLoc::NODE) {
-        mesh_fac_name = "mesh_scaling_factor_nd";
-    } else {
-        amrex::Abort("Field location must be CELL or NODE");
-    }
-    const auto& mesh_fac = m_repo.get_field(mesh_fac_name);
+    const auto& mesh_fac = m_repo.get_mesh_mapping_field(m_info->m_floc);
 
-    // scale field back to unmapped mesh -> U = U^bar * fac/J
+    // scale field back to stretched mesh -> U = U^bar * fac/J
     for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
         for (amrex::MFIter mfi(mesh_fac(lev)); mfi.isValid(); ++mfi) {
             amrex::Array4<amrex::Real> const& field = operator()(lev).array(

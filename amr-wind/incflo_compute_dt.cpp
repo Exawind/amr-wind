@@ -40,7 +40,8 @@ void incflo::ComputeDt(bool explicit_diffusion)
     Real force_cfl = 0.0;
 
     const auto& den = density();
-    const auto& mesh_fac = m_repo.get_field("mesh_scaling_factor_cc");
+    const auto& mesh_fac =
+        m_repo.get_mesh_mapping_field(amr_wind::FieldLoc::CELL);
 
     for (int lev = 0; lev <= finest_level; ++lev) {
         auto const dxinv = geom[lev].InvCellSizeArray();

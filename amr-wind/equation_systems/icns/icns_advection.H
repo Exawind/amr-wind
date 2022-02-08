@@ -362,9 +362,9 @@ struct AdvectionOp<ICNS, fvm::MOL>
         auto& dof_field = fields.field.state(fstate);
 
         // computation of velocity on faces requires
-        // dof field to be in mapped mesh space
-        if (dof_field.is_mesh_mapped()) {
-            dof_field.to_unmapped_mesh();
+        // dof field to be in uniform mesh space
+        if (dof_field.in_uniform_space()) {
+            dof_field.to_stretched_space();
         }
 
         //

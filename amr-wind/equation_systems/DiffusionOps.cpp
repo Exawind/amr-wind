@@ -72,8 +72,8 @@ void DiffSolverIface<LinOp>::set_acoeffs(LinOp& linop, const FieldState fstate)
     BL_PROFILE("amr-wind::set_acoeffs");
     auto& repo = m_pdefields.repo;
     const int nlevels = repo.num_active_levels();
-    auto& density = m_density.state(fstate);
-    const auto& mesh_fac = repo.get_field("mesh_scaling_factor_cc");
+    const auto& density = m_density.state(fstate);
+    const auto& mesh_fac = repo.get_mesh_mapping_field(FieldLoc::CELL);
 
     // TODO: Create a permanent field for det_j updated only upon regrid
     //  scratch field for determinant
@@ -120,9 +120,10 @@ void DiffSolverIface<LinOp>::linsys_solve_impl()
     FieldState fstate = FieldState::New;
     auto& repo = this->m_pdefields.repo;
     auto& field = this->m_pdefields.field;
-    if (field.is_mesh_mapped()) {
+    if (field.in_uniform_space()) {
         amrex::Abort(
-            "For diffusion solve, velocity should not be mesh mapped.");
+            "For diffusion solve, velocity should not be in uniform mesh "
+            "space.");
     }
     const auto& density = m_density.state(fstate);
     const int nlevels = repo.num_active_levels();

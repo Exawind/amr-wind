@@ -248,6 +248,10 @@ public:
         return *m_field_vec.at(field_id);
     }
 
+    /** Return a previously created mesh mapping field using field location
+     */
+    Field& get_mesh_mapping_field(FieldLoc floc) const;
+
     //! Query if field uniquely identified by name and time state exists in
     //! repository
     bool field_exists(

@@ -159,6 +159,30 @@ FieldRepo::get_field(const std::string& name, const FieldState fstate) const
     return *m_field_vec[found->second];
 }
 
+Field& FieldRepo::get_mesh_mapping_field(FieldLoc floc) const
+{
+    switch (floc) {
+    case FieldLoc::CELL:
+        return get_field("mesh_scaling_factor_cc");
+        break;
+    case FieldLoc::NODE:
+        return get_field("mesh_scaling_factor_nd");
+        break;
+    case FieldLoc::XFACE:
+        return get_field("mesh_scaling_factor_xf");
+        break;
+    case FieldLoc::YFACE:
+        return get_field("mesh_scaling_factor_yf");
+        break;
+    case FieldLoc::ZFACE:
+        return get_field("mesh_scaling_factor_zf");
+        break;
+    default:
+        amrex::Abort("Invalid field location");
+        break;
+    }
+}
+
 bool FieldRepo::field_exists(
     const std::string& name, const FieldState fstate) const
 {

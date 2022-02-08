@@ -57,11 +57,11 @@ public:
         const auto& viscosity = m_pdefields.mueff;
         const auto& geom = m_pdefields.repo.mesh().Geom();
         const auto& mesh_fac_xf =
-            m_pdefields.repo.get_field("mesh_scaling_factor_xf");
+            m_pdefields.repo.get_mesh_mapping_field(FieldLoc::XFACE);
         const auto& mesh_fac_yf =
-            m_pdefields.repo.get_field("mesh_scaling_factor_yf");
+            m_pdefields.repo.get_mesh_mapping_field(FieldLoc::YFACE);
         const auto& mesh_fac_zf =
-            m_pdefields.repo.get_field("mesh_scaling_factor_zf");
+            m_pdefields.repo.get_mesh_mapping_field(FieldLoc::ZFACE);
 
         // TODO: should box loops below be over grown tile box ?
         for (int lev = 0; lev < nlevels; ++lev) {
@@ -131,11 +131,11 @@ public:
         const auto& viscosity = m_pdefields.mueff;
         const auto& geom = m_pdefields.repo.mesh().Geom();
         const auto& mesh_fac_xf =
-            m_pdefields.repo.get_field("mesh_scaling_factor_xf");
+            m_pdefields.repo.get_mesh_mapping_field(FieldLoc::XFACE);
         const auto& mesh_fac_yf =
-            m_pdefields.repo.get_field("mesh_scaling_factor_yf");
+            m_pdefields.repo.get_mesh_mapping_field(FieldLoc::YFACE);
         const auto& mesh_fac_zf =
-            m_pdefields.repo.get_field("mesh_scaling_factor_zf");
+            m_pdefields.repo.get_mesh_mapping_field(FieldLoc::ZFACE);
 
         // TODO: should box loops below be over grown tile box ?
         for (int lev = 0; lev < nlevels; ++lev) {

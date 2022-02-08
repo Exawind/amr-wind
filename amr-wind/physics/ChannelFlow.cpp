@@ -159,7 +159,7 @@ amrex::Real ChannelFlow::compute_error()
     }
 
     const auto& velocity = m_repo.get_field("velocity");
-    const auto& mesh_fac_cc = m_repo.get_field("mesh_scaling_factor_cc");
+    const auto& mesh_fac_cc = m_repo.get_mesh_mapping_field(FieldLoc::CELL);
     const auto& nu_coord_cc = m_repo.get_field("non_uniform_coord_cc");
 
     const int nlevels = m_repo.num_active_levels();

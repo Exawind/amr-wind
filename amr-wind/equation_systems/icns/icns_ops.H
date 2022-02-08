@@ -79,7 +79,7 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
     explicit SrcTermOp(PDEFields& fields_in)
         : SrcTermOpBase<ICNS>(fields_in)
         , grad_p(fields_in.repo.get_field("gp"))
-        , mesh_fac(fields_in.repo.get_field("mesh_scaling_factor_cc"))
+        , mesh_fac(fields_in.repo.get_mesh_mapping_field(FieldLoc::CELL))
     {}
 
     void operator()(const FieldState fstate)

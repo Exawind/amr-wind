@@ -136,10 +136,10 @@ public:
         auto& divtau = m_pdefields.diff_term.state(tau_state);
         const auto& density = m_density.state(fstate);
         const auto& viscosity = m_pdefields.mueff;
-        const auto& mesh_fac_cc = repo.get_field("mesh_scaling_factor_cc");
-        const auto& mesh_fac_xf = repo.get_field("mesh_scaling_factor_xf");
-        const auto& mesh_fac_yf = repo.get_field("mesh_scaling_factor_yf");
-        const auto& mesh_fac_zf = repo.get_field("mesh_scaling_factor_zf");
+        const auto& mesh_fac_cc = repo.get_mesh_mapping_field(FieldLoc::CELL);
+        const auto& mesh_fac_xf = repo.get_mesh_mapping_field(FieldLoc::XFACE);
+        const auto& mesh_fac_yf = repo.get_mesh_mapping_field(FieldLoc::YFACE);
+        const auto& mesh_fac_zf = repo.get_mesh_mapping_field(FieldLoc::ZFACE);
 
         const amrex::Real alpha = 0.0;
         const amrex::Real beta = -1.0;
@@ -274,10 +274,10 @@ public:
         const int ndim = field.num_comp();
         auto rhs_ptr = repo.create_scratch_field("rhs", field.num_comp(), 0);
         const auto& viscosity = m_pdefields.mueff;
-        const auto& mesh_fac = repo.get_field("mesh_scaling_factor_cc");
-        const auto& mesh_fac_xf = repo.get_field("mesh_scaling_factor_xf");
-        const auto& mesh_fac_yf = repo.get_field("mesh_scaling_factor_yf");
-        const auto& mesh_fac_zf = repo.get_field("mesh_scaling_factor_zf");
+        const auto& mesh_fac_cc = repo.get_mesh_mapping_field(FieldLoc::CELL);
+        const auto& mesh_fac_xf = repo.get_mesh_mapping_field(FieldLoc::XFACE);
+        const auto& mesh_fac_yf = repo.get_mesh_mapping_field(FieldLoc::YFACE);
+        const auto& mesh_fac_zf = repo.get_mesh_mapping_field(FieldLoc::ZFACE);
 
         const amrex::Real alpha = 1.0;
         const amrex::Real beta = dt;
@@ -301,7 +301,7 @@ public:
             for (amrex::MFIter mfi(density(lev)); mfi.isValid(); ++mfi) {
 
                 const auto& rho = density(lev).array(mfi);
-                const auto& fac = mesh_fac(lev).array(mfi);
+                const auto& fac = mesh_fac_cc(lev).array(mfi);
                 const auto& prod = (*rho_times_det_j)(lev).array(mfi);
 
                 const auto& bx = mfi.growntilebox();

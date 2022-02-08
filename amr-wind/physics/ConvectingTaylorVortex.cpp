@@ -95,7 +95,7 @@ ConvectingTaylorVortex::ConvectingTaylorVortex(const CFDSim& sim)
     , m_velocity(sim.repo().get_field("velocity"))
     , m_gradp(sim.repo().get_field("gp"))
     , m_density(sim.repo().get_field("density"))
-    , m_mesh_fac_cc(sim.repo().get_field("mesh_scaling_factor_cc"))
+    , m_mesh_fac_cc(sim.repo().get_mesh_mapping_field(FieldLoc::CELL))
     , m_nu_coord_cc(sim.repo().get_field("non_uniform_coord_cc"))
     , m_nu_coord_nd(sim.repo().get_field("non_uniform_coord_nd"))
 {
