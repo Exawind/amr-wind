@@ -241,10 +241,11 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
             m_mac_proj->updateBeta(rho_face_fac);
         }
     } else {
-        if (m_need_init)
+        if (m_need_init) {
             init_projector(factor / m_rho_0);
-        else
+        } else {
             m_mac_proj->updateBeta(factor / m_rho_0);
+        }
     }
 
     for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {

@@ -21,8 +21,7 @@ class CFDSim;
  * class.
  */
 
-/** Abstract representation of different physics
- *  \ingroup physics
+/** Abstract representation of different mesh mapping models
  *
  *  This class defines an abstract API that represents the notion of some
  *  mesh mapping that will be used to scale the mesh. The most common use-case
@@ -40,15 +39,6 @@ public:
 
     //! Construct mesh scaling field
     virtual void create_map(int, const amrex::Geometry&) = 0;
-
-    //! Construct mesh scaling field on cell centers and nodes
-    virtual void create_cell_node_map(int, const amrex::Geometry&) = 0;
-
-    //! Construct mesh scaling field on cell faces
-    virtual void create_face_map(int, const amrex::Geometry&) = 0;
-
-    //! Construct the non-uniform mesh field
-    virtual void create_non_uniform_mesh(int, const amrex::Geometry&) = 0;
 
 protected:
     Field* m_mesh_scale_fac_cc{nullptr};

@@ -135,7 +135,7 @@ private:
 
     std::unique_ptr<ExtSolverMgr> m_ext_solver_mgr;
 
-    bool m_mesh_mapping;
+    bool m_mesh_mapping{false};
 };
 
 } // namespace amr_wind

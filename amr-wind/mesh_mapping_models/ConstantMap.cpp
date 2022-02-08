@@ -15,14 +15,14 @@ ConstantMap::ConstantMap()
  */
 void ConstantMap::create_map(int lev, const amrex::Geometry& geom)
 {
-    create_cell_node_map(lev, geom);
-    create_face_map(lev, geom);
+    create_cell_node_map(lev);
+    create_face_map(lev);
     create_non_uniform_mesh(lev, geom);
 }
 
 /** Construct the mesh mapping field on cell centers and nodes
  */
-void ConstantMap::create_cell_node_map(int lev, const amrex::Geometry&)
+void ConstantMap::create_cell_node_map(int lev)
 {
     amrex::Real fac_x = m_fac[0];
     amrex::Real fac_y = m_fac[1];
@@ -54,7 +54,7 @@ void ConstantMap::create_cell_node_map(int lev, const amrex::Geometry&)
 
 /** Construct the mesh mapping field on cell faces
  */
-void ConstantMap::create_face_map(int lev, const amrex::Geometry&)
+void ConstantMap::create_face_map(int lev)
 {
     amrex::Real fac_x = m_fac[0];
     amrex::Real fac_y = m_fac[1];
