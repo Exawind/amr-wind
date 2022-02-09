@@ -12,9 +12,9 @@ namespace channel_flow {
 ChannelFlow::ChannelFlow(CFDSim& sim)
     : m_time(sim.time()), m_repo(sim.repo()), m_mesh(sim.mesh())
 {
-
     {
         amrex::ParmParse pp("ChannelFlow");
+        pp.query("flow_direction", m_mean_vel_dir);
         pp.query("normal_direction", m_norm_dir);
         pp.query("Laminar", m_laminar);
         pp.query("Turbulent_DNS", m_dns);
@@ -55,6 +55,9 @@ void ChannelFlow::initialize_fields(int level, const amrex::Geometry& geom)
 {
 
     switch (m_norm_dir) {
+    case 0:
+        initialize_fields(level, geom, XDir(), 0);
+        break;
     case 1:
         initialize_fields(level, geom, YDir(), 1);
         break;
@@ -78,7 +81,8 @@ void ChannelFlow::initialize_fields(
     const amrex::Real kappa = m_kappa;
     const amrex::Real y_tau = m_ytau;
     const amrex::Real utau = m_utau;
-    auto& velocity = m_repo.get_field("velocity")(level);
+    auto& velocity_field = m_repo.get_field("velocity");
+    auto& velocity = velocity_field(level);
     auto& density = m_repo.get_field("density")(level);
     density.setVal(m_rho);
 
@@ -115,32 +119,25 @@ void ChannelFlow::initialize_fields(
                 });
         }
     } else if (m_laminar) {
-        // assumes flow in x-direction
-        const amrex::Real meanVel = m_mean_vel;
-        for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
-            const auto& vbx = mfi.validbox();
-
-            auto vel = velocity.array(mfi);
-            amrex::ParallelFor(
-                vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    vel(i, j, k, 0) = meanVel;
-                    vel(i, j, k, 1) = 0.0;
-                    vel(i, j, k, 2) = 0.0;
-                });
-        }
+        velocity.setVal(0.0);
+        velocity.setVal(
+            m_mean_vel, m_mean_vel_dir, 1,
+            velocity_field.num_grow()[m_mean_vel_dir]);
     }
 }
 
 amrex::Real ChannelFlow::compute_error()
 {
     amrex::Real error = 0.0;
+    const auto flow_dir = m_mean_vel_dir;
+    const auto norm_dir = m_norm_dir;
     const auto mu = m_mu;
     amrex::Real dpdx = 0;
     {
         amrex::Vector<amrex::Real> body_force{{0.0, 0.0, 0.0}};
         amrex::ParmParse pp("BodyForce");
         pp.queryarr("magnitude", body_force, 0, AMREX_SPACEDIM);
-        dpdx = body_force[0];
+        dpdx = body_force[flow_dir];
     }
 
     const auto& problo = m_mesh.Geom(0).ProbLoArray();
@@ -155,7 +152,7 @@ amrex::Real ChannelFlow::compute_error()
                 probhi_physical[d] = m_mesh.Geom(0).ProbHiArray()[d];
             }
         }
-        ht = probhi_physical[1] - problo[1];
+        ht = probhi_physical[norm_dir] - problo[norm_dir];
     }
 
     const auto& velocity = m_repo.get_field("velocity");
@@ -197,9 +194,9 @@ amrex::Real ChannelFlow::compute_error()
                 auto const& vel_bx = vel_arr[box_no];
                 auto const& mask_bx = mask_arr[box_no];
 
-                amrex::Real y = nu_cc_bx(i, j, k, 1);
+                amrex::Real y = nu_cc_bx(i, j, k, norm_dir);
 
-                const amrex::Real u = vel_bx(i, j, k, 0);
+                const amrex::Real u = vel_bx(i, j, k, flow_dir);
 
                 const amrex::Real u_exact =
                     1 / (2 * mu) * -dpdx * (y * y - y * ht);

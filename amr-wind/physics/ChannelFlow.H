@@ -81,6 +81,9 @@ private:
 
     amrex::Real m_mean_vel;
 
+    //! direction of mean velocity
+    int m_mean_vel_dir{0};
+
     //! output precision
     const int m_w{18};
 
