@@ -174,7 +174,7 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
 
             // Conditional - use different method when using VOF
             // Since VOF is default capturing method, have to check this way
-            if (check_vof) {
+            if (false) { //check_vof) {
                 amr_wind::multiphase::set_density_face_via_vof(
                     rho_face[lev], m_repo.get_field("vof")(lev),
                     (*vof_half)(lev), m_rho1, m_rho2);
