@@ -55,11 +55,12 @@ void KsgsM84Src::operator()(
     const auto& bctype = (this->m_tke).bc_type();
     for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
         amrex::Orientation olo(dir, amrex::Orientation::low);
-        if (bctype[olo] == BC::wall_model) {
-            amrex::Box blo = amrex::adjCellLo(bx, dir, 0) & bx;
+        if (bctype[olo] == BC::wall_model &&
+            bx.smallEnd(dir) == geom.Domain().smallEnd(dir)) {
+            amrex::Box blo = amrex::bdryLo(bx, dir, 1);
             if (blo.ok()) {
                 amrex::ParallelFor(
-                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    blo, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         amrex::Real ceps_local =
                             (Ceps / 0.93) *
                             (0.19 + (0.74 * tlscale_arr(i, j, k) / ds));
@@ -68,12 +69,17 @@ void KsgsM84Src::operator()(
                                              tke_arr(i, j, k) /
                                              tlscale_arr(i, j, k);
                     });
+            } else {
+                amrex::Abort("Bad box extracted in KsgsM84Src");
             }
         }
 
         amrex::Orientation ohi(dir, amrex::Orientation::high);
-        if (bctype[ohi] == BC::wall_model) {
-            amrex::Box bhi = amrex::adjCellHi(bx, dir, 0) & bx;
+        if (bctype[ohi] == BC::wall_model &&
+            bx.bigEnd(dir) == geom.Domain().bigEnd(dir)) {
+            amrex::Box bhi = amrex::bdryHi(bx, dir, 1);
+            amrex::Abort(
+                "fix me later: need an upper version of lower_boundary_faces");
             if (bhi.ok()) {
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
