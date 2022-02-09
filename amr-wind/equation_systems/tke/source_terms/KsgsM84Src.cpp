@@ -79,7 +79,7 @@ void KsgsM84Src::operator()(
             bx.bigEnd(dir) == geom.Domain().bigEnd(dir)) {
             amrex::Box bhi = amrex::bdryHi(bx, dir, 1);
             amrex::Abort(
-                "Fix me later: need an upper version of lower_boundary_faces");
+                "fix me later: need an upper version of lower_boundary_faces");
             if (bhi.ok()) {
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
