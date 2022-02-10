@@ -201,9 +201,10 @@ void FastIface::fast_init_turbine(FastTurbine& fi)
     char inp_file[fast_strlen()];
     copy_filename(fi.input_file, inp_file);
 
-    fast_func(
+    fast_func( 
         FAST_OpFM_Init, &fi.tid_local, &fi.stop_time, inp_file, &fi.tid_global,
-        &m_num_sc_inputs, &m_num_sc_outputs, &fi.num_pts_blade,
+        &m_num_sc_inputs_glob, &m_num_sc_inputs, &m_num_sc_outputs, 
+        &m_init_sc_inputs_glob, &m_init_sc_inputs_turbine, &fi.num_pts_blade,
         &fi.num_pts_tower, fi.base_pos, &abort_lev, &fi.dt_fast, &fi.num_blades,
         &fi.num_blade_elem, &fi.to_cfd, &fi.from_cfd, &fi.to_sc, &fi.from_sc);
 

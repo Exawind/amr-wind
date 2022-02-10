@@ -23,9 +23,9 @@ struct OpFM_InputType
 {};
 struct OpFM_OutputType
 {};
-struct SC_InputType
+struct SC_DX_InputType
 {};
-struct SC_OutputType
+struct SC_DX_OutputType
 {};
 
 inline constexpr int fast_strlen() { return 1025; }
@@ -39,14 +39,15 @@ inline void FAST_OpFM_Step(int*, int*, char*) {}
 
 // clang-format off
 inline void FAST_OpFM_Init(
-    int*, double*, const char*, int*, int*, int*, int*, int*, float*,
-    int*, double*, int*, int*, OpFM_InputType*, OpFM_OutputType*,
-    SC_InputType*, SC_OutputType*, int*, char*) {}
+    int*, double*, const char*, int*, int*, int*, int*, float*, 
+    float*, int*, int*, float*, int*, double*, int*, int*, 
+    OpFM_InputType*, OpFM_OutputType*, SC_DX_InputType*, 
+    SC_DX_OutputType*, int*, char*) {}
 
 inline void FAST_OpFM_Restart(
     int*, char*, int*, double*, int*, int*, int*,
     OpFM_InputType*, OpFM_OutputType*,
-    SC_InputType*, SC_OutputType*, int*, char*) {}
+    SC_DX_InputType*, SC_DX_OutputType*, int*, char*) {}
 // clang-format on
 #endif
 } // namespace exw_fast
