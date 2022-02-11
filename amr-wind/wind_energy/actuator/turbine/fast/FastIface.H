@@ -75,7 +75,7 @@ protected:
 
 #ifdef AMR_WIND_FAST_USE_SCDX
     int m_num_sc_inputs_glob{0};
-    float m_init_sc_inputs_glob{0.0}; 
+    float m_init_sc_inputs_glob{0.0};
     float m_init_sc_inputs_turbine{0.0};
 #endif
 
