@@ -84,7 +84,6 @@ struct FastTurbine
     exw_fast::SC_InputType to_sc;
     exw_fast::SC_OutputType from_sc;
 #endif
-
 };
 
 } // namespace exw_fast
