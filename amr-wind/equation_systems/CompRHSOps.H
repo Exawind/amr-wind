@@ -26,7 +26,8 @@ struct ComputeRHSOp
      *  \param difftype Indicating whether time-integration is explicit/implicit
      *  \param dt time step size
      */
-    void predictor_rhs(const DiffusionType difftype, const amrex::Real dt)
+    void predictor_rhs(
+        const DiffusionType difftype, const amrex::Real dt, bool mesh_mapping)
     {
         amrex::Real factor = 0.0;
         switch (difftype) {
@@ -56,11 +57,11 @@ struct ComputeRHSOp
 
         // for RHS evaluation velocity field should be in stretched space
         auto& field = fields.field;
-        if (field.in_uniform_space()) {
+        if (field.in_uniform_space() && mesh_mapping) {
             field.to_stretched_space();
         }
         auto& field_old = field.state(FieldState::Old);
-        if (field_old.in_uniform_space()) {
+        if (field_old.in_uniform_space() && mesh_mapping) {
             field_old.to_stretched_space();
         }
 
@@ -136,7 +137,8 @@ struct ComputeRHSOp
      *  \param difftype Indicating whether time-integration is explicit/implicit
      *  \param dt time step size
      */
-    void corrector_rhs(const DiffusionType difftype, const amrex::Real dt)
+    void corrector_rhs(
+        const DiffusionType difftype, const amrex::Real dt, bool mesh_mapping)
     {
         amrex::Real ofac = 0.0;
         amrex::Real nfac = 0.0;
@@ -164,11 +166,11 @@ struct ComputeRHSOp
 
         // for RHS evaluation velocity field should be in stretched space
         auto& field = fields.field;
-        if (field.in_uniform_space()) {
+        if (field.in_uniform_space() && mesh_mapping) {
             field.to_stretched_space();
         }
         auto& field_old = field.state(FieldState::Old);
-        if (field_old.in_uniform_space()) {
+        if (field_old.in_uniform_space() && mesh_mapping) {
             field_old.to_stretched_space();
         }
 

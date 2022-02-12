@@ -33,6 +33,7 @@ public:
     DiffSolverIface(
         PDEFields& fields,
         const bool has_overset,
+        const bool mesh_mapping,
         const std::string& prefix = "diffusion");
 
     virtual ~DiffSolverIface() = default;
@@ -56,70 +57,13 @@ public:
         const int nlevels = m_pdefields.repo.num_active_levels();
         const auto& viscosity = m_pdefields.mueff;
         const auto& geom = m_pdefields.repo.mesh().Geom();
-        const auto& mesh_fac_xf =
-            m_pdefields.repo.get_mesh_mapping_field(FieldLoc::XFACE);
-        const auto& mesh_fac_yf =
-            m_pdefields.repo.get_mesh_mapping_field(FieldLoc::YFACE);
-        const auto& mesh_fac_zf =
-            m_pdefields.repo.get_mesh_mapping_field(FieldLoc::ZFACE);
-        const auto& mesh_detJ_xf =
-            m_pdefields.repo.get_mesh_mapping_detJ(FieldLoc::XFACE);
-        const auto& mesh_detJ_yf =
-            m_pdefields.repo.get_mesh_mapping_detJ(FieldLoc::YFACE);
-        const auto& mesh_detJ_zf =
-            m_pdefields.repo.get_mesh_mapping_detJ(FieldLoc::ZFACE);
 
-        // TODO: should box loops below be over grown tile box ?
         for (int lev = 0; lev < nlevels; ++lev) {
             auto b = diffusion::average_velocity_eta_to_faces(
                 geom[lev], viscosity(lev));
-
-            // beta accounted for mesh mapping (x-face) = J/fac^2 * mu
-            for (amrex::MFIter mfi(b[0]); mfi.isValid(); ++mfi) {
-                amrex::Array4<amrex::Real> const& mu = b[0].array(mfi);
-                amrex::Array4<amrex::Real const> const& fac =
-                    mesh_fac_xf(lev).array(mfi);
-                amrex::Array4<amrex::Real const> const& detJ =
-                    mesh_detJ_xf(lev).const_array(mfi);
-
-                amrex::ParallelFor(
-                    mfi.tilebox(),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        mu(i, j, k) = mu(i, j, k) * detJ(i, j, k) /
-                                      std::pow(fac(i, j, k, 0), 2);
-                    });
+            if (m_mesh_mapping) {
+                diffusion::viscosity_to_uniform_space(b, m_pdefields.repo, lev);
             }
-            // beta accounted for mesh mapping (y-face) = J/fac^2 * mu
-            for (amrex::MFIter mfi(b[1]); mfi.isValid(); ++mfi) {
-                amrex::Array4<amrex::Real> const& mu = b[1].array(mfi);
-                amrex::Array4<amrex::Real const> const& fac =
-                    mesh_fac_yf(lev).array(mfi);
-                amrex::Array4<amrex::Real const> const& detJ =
-                    mesh_detJ_yf(lev).const_array(mfi);
-
-                amrex::ParallelFor(
-                    mfi.tilebox(),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        mu(i, j, k) = mu(i, j, k) * detJ(i, j, k) /
-                                      std::pow(fac(i, j, k, 1), 2);
-                    });
-            }
-            // beta accounted for mesh mapping (z-face) = J/fac^2 * mu
-            for (amrex::MFIter mfi(b[2]); mfi.isValid(); ++mfi) {
-                amrex::Array4<amrex::Real> const& mu = b[2].array(mfi);
-                amrex::Array4<amrex::Real const> const& fac =
-                    mesh_fac_zf(lev).array(mfi);
-                amrex::Array4<amrex::Real const> const& detJ =
-                    mesh_detJ_zf(lev).const_array(mfi);
-
-                amrex::ParallelFor(
-                    mfi.tilebox(),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        mu(i, j, k) = mu(i, j, k) * detJ(i, j, k) /
-                                      std::pow(fac(i, j, k, 2), 2);
-                    });
-            }
-
             linop.setShearViscosity(lev, amrex::GetArrOfConstPtrs(b));
         }
     }
@@ -133,70 +77,13 @@ public:
         const int nlevels = m_pdefields.repo.num_active_levels();
         const auto& viscosity = m_pdefields.mueff;
         const auto& geom = m_pdefields.repo.mesh().Geom();
-        const auto& mesh_fac_xf =
-            m_pdefields.repo.get_mesh_mapping_field(FieldLoc::XFACE);
-        const auto& mesh_fac_yf =
-            m_pdefields.repo.get_mesh_mapping_field(FieldLoc::YFACE);
-        const auto& mesh_fac_zf =
-            m_pdefields.repo.get_mesh_mapping_field(FieldLoc::ZFACE);
-        const auto& mesh_detJ_xf =
-            m_pdefields.repo.get_mesh_mapping_detJ(FieldLoc::XFACE);
-        const auto& mesh_detJ_yf =
-            m_pdefields.repo.get_mesh_mapping_detJ(FieldLoc::YFACE);
-        const auto& mesh_detJ_zf =
-            m_pdefields.repo.get_mesh_mapping_detJ(FieldLoc::ZFACE);
 
-        // TODO: should box loops below be over grown tile box ?
         for (int lev = 0; lev < nlevels; ++lev) {
             auto b = diffusion::average_velocity_eta_to_faces(
                 geom[lev], viscosity(lev));
-
-            // beta accounted for mesh mapping (x-face) = J/fac^2 * mu
-            for (amrex::MFIter mfi(b[0]); mfi.isValid(); ++mfi) {
-                amrex::Array4<amrex::Real> const& mu = b[0].array(mfi);
-                amrex::Array4<amrex::Real const> const& fac =
-                    mesh_fac_xf(lev).array(mfi);
-                amrex::Array4<amrex::Real const> const& detJ =
-                    mesh_detJ_xf(lev).const_array(mfi);
-
-                amrex::ParallelFor(
-                    mfi.tilebox(),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        mu(i, j, k) = mu(i, j, k) * detJ(i, j, k) /
-                                      std::pow(fac(i, j, k, 0), 2);
-                    });
+            if (m_mesh_mapping) {
+                diffusion::viscosity_to_uniform_space(b, m_pdefields.repo, lev);
             }
-            // beta accounted for mesh mapping (y-face) = J/fac^2 * mu
-            for (amrex::MFIter mfi(b[1]); mfi.isValid(); ++mfi) {
-                amrex::Array4<amrex::Real> const& mu = b[1].array(mfi);
-                amrex::Array4<amrex::Real const> const& fac =
-                    mesh_fac_yf(lev).array(mfi);
-                amrex::Array4<amrex::Real const> const& detJ =
-                    mesh_detJ_yf(lev).const_array(mfi);
-
-                amrex::ParallelFor(
-                    mfi.tilebox(),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        mu(i, j, k) = mu(i, j, k) * detJ(i, j, k) /
-                                      std::pow(fac(i, j, k, 1), 2);
-                    });
-            }
-            // beta accounted for mesh mapping (z-face) = J/fac^2 * mu
-            for (amrex::MFIter mfi(b[2]); mfi.isValid(); ++mfi) {
-                amrex::Array4<amrex::Real> const& mu = b[2].array(mfi);
-                amrex::Array4<amrex::Real const> const& fac =
-                    mesh_fac_zf(lev).array(mfi);
-                amrex::Array4<amrex::Real const> const& detJ =
-                    mesh_detJ_zf(lev).const_array(mfi);
-
-                amrex::ParallelFor(
-                    mfi.tilebox(),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        mu(i, j, k) = mu(i, j, k) * detJ(i, j, k) /
-                                      std::pow(fac(i, j, k, 2), 2);
-                    });
-            }
-
             linop.setBCoeffs(lev, amrex::GetArrOfConstPtrs(b));
         }
     }
@@ -215,6 +102,8 @@ protected:
     Field& m_density;
 
     MLMGOptions m_options;
+
+    bool m_mesh_mapping{false};
 
     std::unique_ptr<LinOp> m_solver;
     std::unique_ptr<LinOp> m_applier;
@@ -236,8 +125,10 @@ struct DiffusionOp<
         std::is_same<typename PDE::MLDiffOp, amrex::MLABecLaplacian>::value,
         "Invalid linear operator for scalar diffusion operator");
 
-    DiffusionOp(PDEFields& fields, const bool has_overset)
-        : DiffSolverIface<typename PDE::MLDiffOp>(fields, has_overset)
+    DiffusionOp(
+        PDEFields& fields, const bool has_overset, const bool mesh_mapping)
+        : DiffSolverIface<typename PDE::MLDiffOp>(
+              fields, has_overset, mesh_mapping)
     {
         this->m_solver->setDomainBC(
             diffusion::get_diffuse_scalar_bc(

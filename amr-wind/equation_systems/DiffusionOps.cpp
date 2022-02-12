@@ -8,10 +8,14 @@ namespace pde {
 
 template <typename LinOp>
 DiffSolverIface<LinOp>::DiffSolverIface(
-    PDEFields& fields, const bool has_overset, const std::string& prefix)
+    PDEFields& fields,
+    const bool has_overset,
+    const bool mesh_mapping,
+    const std::string& prefix)
     : m_pdefields(fields)
     , m_density(fields.repo.get_field("density"))
     , m_options(prefix, m_pdefields.field.name() + "_" + prefix)
+    , m_mesh_mapping(mesh_mapping)
 {
     amrex::LPInfo isolve = m_options.lpinfo();
     amrex::LPInfo iapply;
@@ -74,19 +78,19 @@ void DiffSolverIface<LinOp>::set_acoeffs(LinOp& linop, const FieldState fstate)
     const int nlevels = repo.num_active_levels();
     const auto& density = m_density.state(fstate);
     const auto& mesh_detJ_cc = repo.get_mesh_mapping_detJ(FieldLoc::CELL);
-
-    //  scratch field for determinant
     auto rho_times_detJ =
         repo.create_scratch_field(1, m_density.num_grow()[0], FieldLoc::CELL);
-    for (int lev = 0; lev < nlevels; ++lev) {
-        (*rho_times_detJ)(lev).setVal(0.0);
-        amrex::MultiFab::AddProduct(
-            (*rho_times_detJ)(lev), density(lev), 0, mesh_detJ_cc(lev), 0, 0, 1,
-            m_density.num_grow()[0]);
-    }
 
     for (int lev = 0; lev < nlevels; ++lev) {
-        linop.setACoeffs(lev, (*rho_times_detJ)(lev));
+        if (m_mesh_mapping) {
+            (*rho_times_detJ)(lev).setVal(0.0);
+            amrex::MultiFab::AddProduct(
+                (*rho_times_detJ)(lev), density(lev), 0, mesh_detJ_cc(lev), 0,
+                0, 1, m_density.num_grow()[0]);
+            linop.setACoeffs(lev, (*rho_times_detJ)(lev));
+        } else {
+            linop.setACoeffs(lev, density(lev));
+        }
     }
 }
 

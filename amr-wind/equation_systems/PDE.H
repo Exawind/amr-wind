@@ -59,8 +59,8 @@ public:
     {
         if (PDE::has_diffusion) {
             BL_PROFILE("amr-wind::" + this->identifier() + "::initialize");
-            m_diff_op.reset(
-                new DiffusionOp<PDE, Scheme>(m_fields, m_sim.has_overset()));
+            m_diff_op.reset(new DiffusionOp<PDE, Scheme>(
+                m_fields, m_sim.has_overset(), m_sim.has_mesh_mapping()));
             m_turb_op.reset(
                 new TurbulenceOp<PDE>(m_sim.turbulence_model(), m_fields));
         }
@@ -81,8 +81,8 @@ public:
         if (PDE::has_diffusion) {
             BL_PROFILE(
                 "amr-wind::" + this->identifier() + "::post_regrid_actions");
-            m_diff_op.reset(
-                new DiffusionOp<PDE, Scheme>(m_fields, m_sim.has_overset()));
+            m_diff_op.reset(new DiffusionOp<PDE, Scheme>(
+                m_fields, m_sim.has_overset(), m_sim.has_mesh_mapping()));
         }
 
         bool variable_density =
@@ -140,14 +140,16 @@ public:
     {
         BL_PROFILE(
             "amr-wind::" + this->identifier() + "::compute_predictor_rhs");
-        m_rhs_op.predictor_rhs(difftype, m_time.deltaT());
+        m_rhs_op.predictor_rhs(
+            difftype, m_time.deltaT(), m_sim.has_mesh_mapping());
     }
 
     virtual void compute_corrector_rhs(const DiffusionType difftype) override
     {
         BL_PROFILE(
             "amr-wind::" + this->identifier() + "::compute_corrector_rhs");
-        m_rhs_op.corrector_rhs(difftype, m_time.deltaT());
+        m_rhs_op.corrector_rhs(
+            difftype, m_time.deltaT(), m_sim.has_mesh_mapping());
     }
 
     void solve(const amrex::Real dt) override

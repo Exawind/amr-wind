@@ -351,7 +351,9 @@ struct AdvectionOp<ICNS, fvm::MOL>
         , u_mac(fields_in.repo.get_field("u_mac"))
         , v_mac(fields_in.repo.get_field("v_mac"))
         , w_mac(fields_in.repo.get_field("w_mac"))
-        , m_macproj_op(fields.repo, has_overset, variable_density, mesh_mapping)
+        , m_mesh_mapping(mesh_mapping)
+        , m_macproj_op(
+              fields.repo, has_overset, variable_density, m_mesh_mapping)
     {}
 
     void preadvect(const FieldState fstate, const amrex::Real dt)
@@ -363,7 +365,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
 
         // computation of velocity on faces requires
         // dof field to be in uniform mesh space
-        if (dof_field.in_uniform_space()) {
+        if (dof_field.in_uniform_space() && m_mesh_mapping) {
             dof_field.to_stretched_space();
         }
 
@@ -453,6 +455,8 @@ struct AdvectionOp<ICNS, fvm::MOL>
     Field& u_mac;
     Field& v_mac;
     Field& w_mac;
+
+    bool m_mesh_mapping;
 
     MacProjOp m_macproj_op;
 };

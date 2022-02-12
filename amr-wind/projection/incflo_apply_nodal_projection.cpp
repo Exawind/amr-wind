@@ -141,7 +141,7 @@ void incflo::ApplyProjection(
     }
 
     // ensure velocity is in stretched mesh space
-    if (velocity.in_uniform_space()) {
+    if (velocity.in_uniform_space() && mesh_mapping) {
         velocity.to_stretched_space();
     }
 
@@ -212,7 +212,7 @@ void incflo::ApplyProjection(
     }
 
     // ensure velocity is in stretched mesh space
-    if (velocity_old.in_uniform_space()) {
+    if (velocity_old.in_uniform_space() && mesh_mapping) {
         velocity_old.to_stretched_space();
     }
 
@@ -225,7 +225,9 @@ void incflo::ApplyProjection(
     }
 
     // scale U^* to accommodate for mesh mapping -> U^bar = J/fac * U
-    velocity.to_uniform_space();
+    if (mesh_mapping) {
+        velocity.to_uniform_space();
+    }
 
     // Create sigma while accounting for mesh mapping
     // sigma = 1/(fac^2)*J * dt/rho
@@ -337,7 +339,9 @@ void incflo::ApplyProjection(
         "Nodal_projection", nodal_projector->getMLMG());
 
     // scale U^* back to -> U = fac/J * U^bar
-    velocity.to_stretched_space();
+    if (mesh_mapping) {
+        velocity.to_stretched_space();
+    }
 
     // Define "vel" to be U^{n+1} rather than (U^{n+1}-U^n)
     if (proj_for_small_dt || incremental) {
