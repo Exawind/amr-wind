@@ -21,6 +21,7 @@ MultiPhase::MultiPhase(CFDSim& sim)
     pp_multiphase.query("density_fluid2", m_rho2);
     pp_multiphase.query("verbose", m_verbose);
     pp_multiphase.query("interface_smoothing", m_interface_smoothing);
+    pp_multiphase.query("interface_smoothing_frequency", m_smooth_freq);
 
     // Register either the VOF or levelset equation
     if (amrex::toLower(m_interface_model) == "vof") {
@@ -60,13 +61,33 @@ InterfaceCapturingMethod MultiPhase::interface_capturing_method()
 
 void MultiPhase::post_init_actions()
 {
+
+    auto& io_mgr = m_sim.io_manager();
+    if (!io_mgr.is_restart()) {
+        switch (m_interface_capturing_method) {
+        case InterfaceCapturingMethod::VOF:
+            levelset2vof();
+            set_density_via_vof();
+            break;
+        case InterfaceCapturingMethod::LS:
+            set_density_via_levelset();
+            break;
+        };
+    }
+}
+
+void MultiPhase::pre_advance_work()
+{
     switch (m_interface_capturing_method) {
     case InterfaceCapturingMethod::VOF:
-        levelset2vof();
-        set_density_via_vof();
+        if (m_interface_smoothing &&
+            m_sim.time().time_index() % m_smooth_freq == 0) {
+            amrex::Print() << "Smoothing the air-sea interface : "
+                           << m_sim.time().current_time() << std::endl;
+            favre_filtering();
+        }
         break;
     case InterfaceCapturingMethod::LS:
-        set_density_via_levelset();
         break;
     };
 }
@@ -75,10 +96,6 @@ void MultiPhase::post_advance_work()
 {
     switch (m_interface_capturing_method) {
     case InterfaceCapturingMethod::VOF:
-        set_density_via_vof();
-        if (m_interface_smoothing) {
-            favre_filtering();
-        }
         // Compute the print the total volume fraction
         if (m_verbose > 0) {
             m_total_volfrac = volume_fraction_sum();
@@ -205,7 +222,7 @@ void MultiPhase::set_density_via_vof()
                 });
         }
     }
-    m_density.fillpatch(m_sim.time().current_time());
+    // m_density.fillpatch(m_sim.time().current_time());
 }
 
 void MultiPhase::favre_filtering()
@@ -263,11 +280,11 @@ void MultiPhase::favre_filtering()
     }
 }
 
-// Reconstructing the volume fraction with the levelset
+// Reconstructing the volume fraction from a levelset function
 void MultiPhase::levelset2vof()
 {
     const int nlevels = m_sim.repo().num_active_levels();
-    (*m_levelset).fillpatch(m_sim.time().new_time());
+    m_density.fillpatch(m_sim.time().current_time());
     const auto& geom = m_sim.mesh().Geom();
 
     for (int lev = 0; lev < nlevels; ++lev) {

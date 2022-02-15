@@ -34,7 +34,7 @@ public:
 
     void post_regrid_actions() override {}
 
-    void pre_advance_work() override {}
+    void pre_advance_work() override;
 
     void post_advance_work() override;
 
@@ -73,6 +73,8 @@ private:
     amrex::Real m_rho2{1.0};
 
     bool m_interface_smoothing{false};
+
+    int m_smooth_freq{10};
 
     // Multiphase model enum
     std::string m_interface_model{"vof"};

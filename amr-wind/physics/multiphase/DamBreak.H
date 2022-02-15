@@ -33,8 +33,11 @@ public:
     void post_advance_work() override {}
 
 private:
+    const CFDSim& m_sim;
+
     Field& m_velocity;
     Field& m_levelset;
+    Field& m_density;
 
     //! Initial DamBreak location
     amrex::Vector<amrex::Real> m_loc{{0.0, 0.0, 0.0}};
