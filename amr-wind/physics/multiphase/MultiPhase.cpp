@@ -284,7 +284,7 @@ void MultiPhase::favre_filtering()
 void MultiPhase::levelset2vof()
 {
     const int nlevels = m_sim.repo().num_active_levels();
-    m_density.fillpatch(m_sim.time().current_time());
+    (*m_levelset).fillpatch(m_sim.time().current_time());
     const auto& geom = m_sim.mesh().Geom();
 
     for (int lev = 0; lev < nlevels; ++lev) {
