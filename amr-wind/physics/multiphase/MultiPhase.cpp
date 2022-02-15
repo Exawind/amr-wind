@@ -62,7 +62,7 @@ InterfaceCapturingMethod MultiPhase::interface_capturing_method()
 void MultiPhase::post_init_actions()
 {
 
-    auto& io_mgr = m_sim.io_manager();
+    const auto& io_mgr = m_sim.io_manager();
     if (!io_mgr.is_restart()) {
         switch (m_interface_capturing_method) {
         case InterfaceCapturingMethod::VOF:
