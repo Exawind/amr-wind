@@ -35,6 +35,8 @@ struct AdvectionOp<
         , w_mac(fields_in.repo.get_field("w_mac"))
     {}
 
+    void preadvect(const FieldState, const amrex::Real) {}
+
     void operator()(const FieldState fstate, const amrex::Real)
     {
         static_assert(

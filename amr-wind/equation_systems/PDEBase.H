@@ -71,6 +71,9 @@ public:
     //! Compute the diffusion term used in the RHS of the PDE system
     virtual void compute_diffusion_term(const FieldState fstate) = 0;
 
+    //! Perform necessary steps to prepare for advection calculations
+    virtual void pre_advection_actions(const FieldState fstate) = 0;
+
     //! Compute the time derivative and advective term for the PDE system
     virtual void compute_advection_term(const FieldState fstate) = 0;
 

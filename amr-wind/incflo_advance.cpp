@@ -255,13 +255,16 @@ void incflo::ApplyPredictor(bool incremental_projection)
         }
     }
 
+    // Extrapolate and apply MAC projection for advection velocities
+    icns().pre_advection_actions(amr_wind::FieldState::Old);
+
+    // For scalars only first
     // *************************************************************************************
     // if ( m_use_godunov) Compute the explicit advective terms
     //                     R_u^(n+1/2), R_s^(n+1/2) and R_t^(n+1/2)
     // if (!m_use_godunov) Compute the explicit advective terms
     //                     R_u^n      , R_s^n       and R_t^n
     // *************************************************************************************
-    icns().compute_advection_term(amr_wind::FieldState::Old);
     for (auto& seqn : scalar_eqns()) {
         seqn->compute_advection_term(amr_wind::FieldState::Old);
     }
@@ -301,6 +304,9 @@ void incflo::ApplyPredictor(bool incremental_projection)
             field.state(amr_wind::FieldState::Old), 0, 0.5, field, 0, 0,
             field.num_comp(), 1);
     }
+
+    // With scalars computed, compute advection of momentum
+    icns().compute_advection_term(amr_wind::FieldState::Old);
 
     // *************************************************************************************
     // Define (or if use_godunov, re-define) the forcing terms, without the
@@ -442,15 +448,18 @@ void incflo::ApplyCorrector()
     const auto& density_old = density_new.state(amr_wind::FieldState::Old);
     auto& density_nph = density_new.state(amr_wind::FieldState::NPH);
 
+    // Extrapolate and apply MAC projection for advection velocities
+    icns().pre_advection_actions(amr_wind::FieldState::New);
+
     // *************************************************************************************
     // Compute the explicit "new" advective terms R_u^(n+1,*), R_r^(n+1,*) and
     // R_t^(n+1,*) We only reach the corrector if !m_use_godunov which means we
     // don't use the forces in constructing the advection term
     // *************************************************************************************
-    icns().compute_advection_term(amr_wind::FieldState::New);
     for (auto& seqn : scalar_eqns()) {
         seqn->compute_advection_term(amr_wind::FieldState::New);
     }
+    icns().compute_advection_term(amr_wind::FieldState::New);
 
     // *************************************************************************************
     // Compute viscosity / diffusive coefficients

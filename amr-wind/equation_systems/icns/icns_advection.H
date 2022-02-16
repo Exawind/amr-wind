@@ -79,23 +79,14 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         iconserv.resize(ICNS::ndim, 0);
     }
 
-    void operator()(const FieldState fstate, const amrex::Real dt)
+    void preadvect(const FieldState fstate, const amrex::Real dt)
     {
+
         auto& repo = fields.repo;
-        auto& geom = repo.mesh().Geom();
+        const auto& geom = repo.mesh().Geom();
 
         const auto& src_term = fields.src_term;
-        // cppcheck-suppress constVariable
-        auto& conv_term = fields.conv_term;
         auto& dof_field = fields.field.state(fstate);
-
-        auto flux_x =
-            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::XFACE);
-        auto flux_y =
-            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::YFACE);
-        auto flux_z =
-            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::ZFACE);
-
         auto bcrec_device = dof_field.bcrec_device();
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
@@ -236,13 +227,34 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         // MAC projection
         m_macproj_op(fstate, dt);
 
-        //
-        // Advect momentum eqns
-        //
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             u_mac(lev).FillBoundary(geom[lev].periodicity());
             v_mac(lev).FillBoundary(geom[lev].periodicity());
             w_mac(lev).FillBoundary(geom[lev].periodicity());
+        }
+    }
+
+    void operator()(const FieldState fstate, const amrex::Real dt)
+    {
+        auto& repo = fields.repo;
+        const auto& geom = repo.mesh().Geom();
+
+        const auto& src_term = fields.src_term;
+        // cppcheck-suppress constVariable
+        auto& conv_term = fields.conv_term;
+        auto& dof_field = fields.field.state(fstate);
+
+        auto flux_x =
+            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::XFACE);
+        auto flux_y =
+            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::YFACE);
+        auto flux_z =
+            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::ZFACE);
+
+        //
+        // Advect momentum eqns
+        //
+        for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
 
             amrex::MFItInfo mfi_info;
             if (amrex::Gpu::notInLaunchRegion())
@@ -333,13 +345,11 @@ struct AdvectionOp<ICNS, fvm::MOL>
         , m_macproj_op(fields.repo, has_overset, variable_density)
     {}
 
-    void operator()(const FieldState fstate, const amrex::Real dt)
+    void preadvect(const FieldState fstate, const amrex::Real dt)
     {
 
         auto& repo = fields.repo;
-        auto& geom = repo.mesh().Geom();
-        // cppcheck-suppress constVariable
-        auto& conv_term = fields.conv_term.state(fstate);
+        const auto& geom = repo.mesh().Geom();
         auto& dof_field = fields.field.state(fstate);
 
         //
@@ -364,12 +374,22 @@ struct AdvectionOp<ICNS, fvm::MOL>
 
                     mol::predict_vels_on_faces(
                         lev, ubx, vbx, wbx, u, v, w, vcc, dof_field.bcrec(),
-                        dof_field.bcrec_device().data(), repo.mesh().Geom());
+                        dof_field.bcrec_device().data(), geom);
                 }
             }
         }
 
         m_macproj_op(fstate, dt);
+    }
+
+    void operator()(const FieldState fstate, const amrex::Real)
+    {
+
+        auto& repo = fields.repo;
+        const auto& geom = repo.mesh().Geom();
+        // cppcheck-suppress constVariable
+        auto& conv_term = fields.conv_term.state(fstate);
+        auto& dof_field = fields.field.state(fstate);
 
         //
         // Advect velocity
