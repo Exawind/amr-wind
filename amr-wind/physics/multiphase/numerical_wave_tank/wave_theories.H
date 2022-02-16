@@ -35,35 +35,6 @@ linear_monochromatic_waves(
     return out;
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Vector<amrex::Real>
-stokes_waves(
-    amrex::Real wavelength,
-    amrex::Real waterdepth,
-    amrex::Real amplitude,
-    amrex::Real x,
-    amrex::Real y,
-    amrex::Real z,
-    amrex::Real time,
-    int order)
-{
-    const amrex::Real k_ = 2.0 * M_PI / wavelength;
-    const amrex::Real omega =
-        std::pow(k_ * 9.81 * std::tanh(k_ * waterdepth), 0.5);
-    const amrex::Real phase = k_ * x + 0. * y - omega * time;
-
-    const amrex::Real eta = 0.0;
-    const amrex::Real u_w = 0.0;
-    const amrex::Real v_w = 0.0;
-    const amrex::Real w_w = 0.0;
-}
-
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void
-stokes_coefficients(amrex::Real k, amrex::Real waterdepth, int StokesOrder)
-{
-    amrex::Real kd = k * waterdepth;
-    if (kd > 50 * M_PI) kd = 50. * M_PI; // Limited value
-}
-
 } // namespace nwt
 } // namespace amr_wind
 

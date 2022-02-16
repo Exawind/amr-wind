@@ -53,6 +53,7 @@ private:
 
     Field& m_velocity;
     Field& m_levelset;
+    Field& m_density;
     Field& m_vof;
 
     // bool m_has_ramp;
