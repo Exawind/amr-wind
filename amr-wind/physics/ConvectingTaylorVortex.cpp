@@ -128,7 +128,7 @@ ConvectingTaylorVortex::ConvectingTaylorVortex(const CFDSim& sim)
  *  simulation.
  */
 void ConvectingTaylorVortex::initialize_fields(
-    int level, const amrex::Geometry& geom)
+    int level, const amrex::Geometry& /* geom */)
 {
     using namespace utils;
 

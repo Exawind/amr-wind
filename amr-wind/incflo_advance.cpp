@@ -273,7 +273,6 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // *************************************************************************************
     // TODO: Advection computation for scalar equations have not been adjusted
     // for mesh mapping
-    //- adjust in corrector too
     for (auto& seqn : scalar_eqns()) {
         seqn->compute_advection_term(amr_wind::FieldState::Old);
     }
