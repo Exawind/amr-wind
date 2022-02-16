@@ -233,10 +233,10 @@ void incflo::ApplyProjection(
     // sigma = 1/(fac^2)*J * dt/rho
     Vector<amrex::MultiFab> sigma(finest_level + 1);
     if (variable_density || mesh_mapping) {
+        int ncomp = mesh_mapping ? AMREX_SPACEDIM : 1;
         for (int lev = 0; lev <= finest_level; ++lev) {
             sigma[lev].define(
-                grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo(),
-                Factory(lev));
+                grids[lev], dmap[lev], ncomp, 0, MFInfo(), Factory(lev));
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
@@ -250,7 +250,7 @@ void incflo::ApplyProjection(
                     mesh_detJ(lev).const_array(mfi);
 
                 amrex::ParallelFor(
-                    bx, AMREX_SPACEDIM,
+                    bx, ncomp,
                     [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
                         sig(i, j, k, n) = std::pow(fac(i, j, k, n), -2.) *
                                           detJ(i, j, k) * scaling_factor /
