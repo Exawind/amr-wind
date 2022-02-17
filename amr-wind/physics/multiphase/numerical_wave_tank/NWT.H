@@ -42,9 +42,9 @@ public:
 
     void post_regrid_actions() override {}
 
-    void pre_advance_work() override {}
+    void post_advance_work() override {}
 
-    void post_advance_work() override;
+    void pre_advance_work() override;
 
     void apply_relaxation_method();
 
@@ -56,7 +56,7 @@ private:
     Field& m_density;
     Field& m_vof;
 
-    // bool m_has_ramp;
+    bool m_has_ramp{false};
 
     // Enumerator for wave generation theory
     enum class wave_generator {
@@ -79,7 +79,7 @@ private:
     amrex::Real m_waterdepth{1.0};
 
     //! Wavemaker ramp function time-period
-    amrex::Real m_ramp_period{10.0};
+    amrex::Real m_ramp_period{2.0};
 
     //! Generation length
     amrex::Real m_gen_length{1.0};

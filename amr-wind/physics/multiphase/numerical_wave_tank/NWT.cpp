@@ -80,13 +80,19 @@ void NWT::initialize_fields(int level, const amrex::Geometry& geom)
     }
 }
 
-void NWT::post_advance_work() { apply_relaxation_method(); }
+void NWT::pre_advance_work() { apply_relaxation_method(); }
 
 void NWT::apply_relaxation_method()
 {
     const auto& time = m_sim.time().current_time();
     const int nlevels = m_sim.repo().num_active_levels();
     const auto& geom = m_sim.mesh().Geom();
+
+    amrex::Real ramp = (m_has_ramp) ? nwt::ramp(time, m_ramp_period) : 1.0;
+
+    const auto& mphase = m_sim.physics_manager().get<MultiPhase>();
+    const amrex::Real rho1 = mphase.rho1();
+    const amrex::Real rho2 = mphase.rho2();
 
     // Interpolate within the relazation zones
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -95,17 +101,18 @@ void NWT::apply_relaxation_method()
             const auto& dx = geom[lev].CellSizeArray();
             const auto& problo = geom[lev].ProbLoArray();
             auto vel = m_velocity(lev).array(mfi);
+            auto rho = m_density(lev).array(mfi);
             auto volfrac = m_vof(lev).array(mfi);
             const amrex::Real wavelength = m_wavelength;
             const amrex::Real waterdepth = m_waterdepth;
             const amrex::Real amplitude = m_amplitude;
 
             const amrex::Real gen_length = m_gen_length;
-            const amrex::Real ramp_period = m_ramp_period;
             const amrex::Real x_start_beach = m_x_start_beach;
             const amrex::Real beach_length = m_beach_length;
             const amrex::Real absorb_length_factor = m_absorb_length_factor;
             const amrex::Real zsl = m_zsl;
+
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
@@ -116,28 +123,31 @@ void NWT::apply_relaxation_method()
                     wave_out = nwt::linear_monochromatic_waves(
                         wavelength, waterdepth, amplitude, x, y, z, time);
 
-                    if (x < gen_length) {
+                    if (x <= gen_length) {
                         const amrex::Real Gamma =
                             nwt::Gamma_generate(x, gen_length);
-                        volfrac(i, j, k) = (1.0 - Gamma) *
-                                               nwt::free_surface_to_vof(
-                                                   wave_out[0], z, dx[2]) *
-                                               nwt::ramp(time, ramp_period) +
-                                           Gamma * volfrac(i, j, k);
-                        vel(i, j, k, 0) = (1.0 - Gamma) * wave_out[1] *
-                                              volfrac(i, j, k) *
-                                              nwt::ramp(time, ramp_period) +
-                                          Gamma * vel(i, j, k, 0);
-                        vel(i, j, k, 1) = (1.0 - Gamma) * wave_out[2] *
-                                              volfrac(i, j, k) *
-                                              nwt::ramp(time, ramp_period) +
-                                          Gamma * vel(i, j, k, 1);
-                        vel(i, j, k, 2) = (1.0 - Gamma) * wave_out[3] *
-                                              volfrac(i, j, k) *
-                                              nwt::ramp(time, ramp_period) +
-                                          Gamma * vel(i, j, k, 2);
+                        const amrex::Real vf = Gamma *
+                                                   nwt::free_surface_to_vof(
+                                                       wave_out[0], z, dx[2]) *
+                                                   ramp +
+                                               (1. - Gamma) * volfrac(i, j, k);
+                        // Doing clipping on the spot
+                        volfrac(i, j, k) = (vf > 1. - 1.e-6) ? 1.0 : vf;
+                        vel(i, j, k, 0) =
+                            Gamma * wave_out[1] * volfrac(i, j, k) * ramp +
+                            (1. - Gamma) * vel(i, j, k, 0) * volfrac(i, j, k) +
+                            (1. - volfrac(i, j, k)) * vel(i, j, k, 0);
+                        vel(i, j, k, 1) =
+                            Gamma * wave_out[2] * volfrac(i, j, k) * ramp +
+                            (1. - Gamma) * vel(i, j, k, 1) * volfrac(i, j, k) +
+                            (1. - volfrac(i, j, k)) * vel(i, j, k, 1);
+                        vel(i, j, k, 2) =
+                            Gamma * wave_out[3] * volfrac(i, j, k) * ramp +
+                            (1. - Gamma) * vel(i, j, k, 2) * volfrac(i, j, k) +
+                            (1. - volfrac(i, j, k)) * vel(i, j, k, 2);
                     }
-                    if (x > x_start_beach) {
+
+                    if (x >= x_start_beach) {
                         const amrex::Real Gamma = nwt::Gamma_absorb(
                             x - x_start_beach, beach_length,
                             absorb_length_factor);
@@ -152,6 +162,10 @@ void NWT::apply_relaxation_method()
                         vel(i, j, k, 2) =
                             Gamma * vel(i, j, k, 2) * volfrac(i, j, k);
                     }
+                    // Make sure that density is updated before entering the
+                    // solution
+                    rho(i, j, k) = rho1 * volfrac(i, j, k) +
+                                   rho2 * (1. - volfrac(i, j, k));
                 });
         }
     }
