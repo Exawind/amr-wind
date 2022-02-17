@@ -126,24 +126,27 @@ void NWT::apply_relaxation_method()
                     if (x <= gen_length) {
                         const amrex::Real Gamma =
                             nwt::Gamma_generate(x, gen_length);
-                        const amrex::Real vf = Gamma *
+                        const amrex::Real vf = (1 - Gamma) *
                                                    nwt::free_surface_to_vof(
                                                        wave_out[0], z, dx[2]) *
                                                    ramp +
-                                               (1. - Gamma) * volfrac(i, j, k);
+                                               Gamma * volfrac(i, j, k);
                         // Doing clipping on the spot
                         volfrac(i, j, k) = (vf > 1. - 1.e-6) ? 1.0 : vf;
                         vel(i, j, k, 0) =
-                            Gamma * wave_out[1] * volfrac(i, j, k) * ramp +
-                            (1. - Gamma) * vel(i, j, k, 0) * volfrac(i, j, k) +
+                            (1 - Gamma) * wave_out[1] * volfrac(i, j, k) *
+                                ramp +
+                            Gamma * vel(i, j, k, 0) * volfrac(i, j, k) +
                             (1. - volfrac(i, j, k)) * vel(i, j, k, 0);
                         vel(i, j, k, 1) =
-                            Gamma * wave_out[2] * volfrac(i, j, k) * ramp +
-                            (1. - Gamma) * vel(i, j, k, 1) * volfrac(i, j, k) +
+                            (1 - Gamma) * wave_out[2] * volfrac(i, j, k) *
+                                ramp +
+                            Gamma * vel(i, j, k, 1) * volfrac(i, j, k) +
                             (1. - volfrac(i, j, k)) * vel(i, j, k, 1);
                         vel(i, j, k, 2) =
-                            Gamma * wave_out[3] * volfrac(i, j, k) * ramp +
-                            (1. - Gamma) * vel(i, j, k, 2) * volfrac(i, j, k) +
+                            (1 - Gamma) * wave_out[3] * volfrac(i, j, k) *
+                                ramp +
+                            Gamma * vel(i, j, k, 2) * volfrac(i, j, k) +
                             (1. - volfrac(i, j, k)) * vel(i, j, k, 2);
                     }
 
