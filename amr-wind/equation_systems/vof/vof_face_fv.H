@@ -8,7 +8,7 @@ namespace amr_wind {
 namespace multiphase {
 
 void set_density_face_via_vof(
-    const amrex::Array<amrex::MultiFab*,AMREX_SPACEDIM>& fc,
+    const amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& fc,
     amrex::MultiFab& vof,
     amrex::MultiFab& VH,
     const amrex::Real rho1,
@@ -19,7 +19,7 @@ void set_density_face_via_vof(
     for (amrex::MFIter mfi(vof); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
         const auto& bx = mfi.growntilebox(1);
-        const auto& F = vof.array(mfi); //amrex::Array4<amrex::Real> const&
+        const auto& F = vof.array(mfi);
         const auto& vof_half = VH.array(mfi);
         const auto& rho_xf = fc[0]->array(mfi);
         const auto& rho_yf = fc[1]->array(mfi);
@@ -99,7 +99,7 @@ void set_density_face_via_vof(
             });
     }
 }
-}
-}
+} // namespace multiphase
+} // namespace amr_wind
 
 #endif
