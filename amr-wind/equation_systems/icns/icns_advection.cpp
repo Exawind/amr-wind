@@ -144,22 +144,9 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
 
     // TODO: should box loops below be over grown tile box ?
     if (m_variable_density || m_has_overset || m_mesh_mapping) {
-        const auto& mesh_fac_xf =
-            m_repo.get_mesh_mapping_field(FieldLoc::XFACE);
-        const auto& mesh_fac_yf =
-            m_repo.get_mesh_mapping_field(FieldLoc::YFACE);
-        const auto& mesh_fac_zf =
-            m_repo.get_mesh_mapping_field(FieldLoc::ZFACE);
-        const auto& mesh_detJ_xf =
-            m_repo.get_mesh_mapping_detJ(FieldLoc::XFACE);
-        const auto& mesh_detJ_yf =
-            m_repo.get_mesh_mapping_detJ(FieldLoc::YFACE);
-        const auto& mesh_detJ_zf =
-            m_repo.get_mesh_mapping_detJ(FieldLoc::ZFACE);
-
         amrex::Vector<amrex::Array<amrex::MultiFab const*, ICNS::ndim>>
-            rho_face_fac;
-        rho_face_fac.reserve(m_repo.num_active_levels());
+            rho_face_const;
+        rho_face_const.reserve(m_repo.num_active_levels());
 
         // This will hold density on faces
         std::unique_ptr<ScratchField> rho_xf, rho_yf, rho_zf;
@@ -177,73 +164,22 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
             amrex::average_cellcenter_to_face(
                 rho_face[lev], density(lev), geom[lev]);
 
-            // scale U^mac to accommodate for mesh mapping -> U^bar = J/fac *
-            // U^mac beta accounted for mesh mapping = J/fac^2 * 1/rho construct
-            // rho and mesh map u_mac on x-face
-            for (amrex::MFIter mfi(*(rho_face[lev][0])); mfi.isValid(); ++mfi) {
-                amrex::Array4<amrex::Real> const& u = u_mac(lev).array(mfi);
-                amrex::Array4<amrex::Real> const& rho =
-                    rho_face[lev][0]->array(mfi);
-                amrex::Array4<amrex::Real const> const& fac =
-                    mesh_fac_xf(lev).array(mfi);
-                amrex::Array4<amrex::Real const> const& detJ =
-                    mesh_detJ_xf(lev).const_array(mfi);
-
-                amrex::ParallelFor(
-                    mfi.tilebox(),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        u(i, j, k) *= detJ(i, j, k) / fac(i, j, k, 0);
-                        rho(i, j, k) = factor * detJ(i, j, k) /
-                                       std::pow(fac(i, j, k, 0), 2) /
-                                       rho(i, j, k);
-                    });
+            if (m_mesh_mapping) {
+                mac_proj_to_uniform_space(
+                    m_repo, u_mac, v_mac, w_mac, rho_face[lev], factor, lev);
+            } else {
+                for (int idim = 0; idim < ICNS::ndim; ++idim) {
+                    rho_face[lev][idim]->invert(factor, 0);
+                }
             }
-            // construct rho on y-face
-            for (amrex::MFIter mfi(*(rho_face[lev][1])); mfi.isValid(); ++mfi) {
-                amrex::Array4<amrex::Real> const& v = v_mac(lev).array(mfi);
-                amrex::Array4<amrex::Real> const& rho =
-                    rho_face[lev][1]->array(mfi);
-                amrex::Array4<amrex::Real const> const& fac =
-                    mesh_fac_yf(lev).array(mfi);
-                amrex::Array4<amrex::Real const> const& detJ =
-                    mesh_detJ_yf(lev).const_array(mfi);
 
-                amrex::ParallelFor(
-                    mfi.tilebox(),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        v(i, j, k) *= detJ(i, j, k) / fac(i, j, k, 1);
-                        rho(i, j, k) = factor * detJ(i, j, k) /
-                                       std::pow(fac(i, j, k, 1), 2) /
-                                       rho(i, j, k);
-                    });
-            }
-            // construct rho on z-face
-            for (amrex::MFIter mfi(*(rho_face[lev][2])); mfi.isValid(); ++mfi) {
-                amrex::Array4<amrex::Real> const& w = w_mac(lev).array(mfi);
-                amrex::Array4<amrex::Real> const& rho =
-                    rho_face[lev][2]->array(mfi);
-                amrex::Array4<amrex::Real const> const& fac =
-                    mesh_fac_zf(lev).array(mfi);
-                amrex::Array4<amrex::Real const> const& detJ =
-                    mesh_detJ_zf(lev).const_array(mfi);
-
-                amrex::ParallelFor(
-                    mfi.tilebox(),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        w(i, j, k) *= detJ(i, j, k) / fac(i, j, k, 2);
-                        rho(i, j, k) = factor * detJ(i, j, k) /
-                                       std::pow(fac(i, j, k, 2), 2) /
-                                       rho(i, j, k);
-                    });
-            }
-            // assemble scaled beta for all faces
-            rho_face_fac.push_back(GetArrOfConstPtrs(rho_face[lev]));
+            rho_face_const.push_back(GetArrOfConstPtrs(rho_face[lev]));
         }
 
         if (m_need_init) {
-            init_projector(rho_face_fac);
+            init_projector(rho_face_const);
         } else {
-            m_mac_proj->updateBeta(rho_face_fac);
+            m_mac_proj->updateBeta(rho_face_const);
         }
     } else {
         if (m_need_init) {
@@ -277,6 +213,81 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
     }
 
     io::print_mlmg_info("MAC_projection", m_mac_proj->getMLMG());
+}
+
+void MacProjOp::mac_proj_to_uniform_space(
+    const amr_wind::FieldRepo& repo,
+    amr_wind::Field& u_mac,
+    amr_wind::Field& v_mac,
+    amr_wind::Field& w_mac,
+    amrex::Array<amrex::MultiFab*, ICNS::ndim>& rho_face,
+    amrex::Real ovst_fac,
+    int lev) noexcept
+{
+    const auto& mesh_fac_xf =
+        repo.get_mesh_mapping_field(amr_wind::FieldLoc::XFACE);
+    const auto& mesh_fac_yf =
+        repo.get_mesh_mapping_field(amr_wind::FieldLoc::YFACE);
+    const auto& mesh_fac_zf =
+        repo.get_mesh_mapping_field(amr_wind::FieldLoc::ZFACE);
+    const auto& mesh_detJ_xf =
+        repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::XFACE);
+    const auto& mesh_detJ_yf =
+        repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::YFACE);
+    const auto& mesh_detJ_zf =
+        repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::ZFACE);
+
+    // TODO: should box loops below be over grown tile box ?
+    // scale U^mac to accommodate for mesh mapping -> U^bar = J/fac *
+    // U^mac beta accounted for mesh mapping = J/fac^2 * 1/rho construct
+    // rho and mesh map u_mac on x-face
+    for (amrex::MFIter mfi(*(rho_face[0])); mfi.isValid(); ++mfi) {
+        amrex::Array4<amrex::Real> const& u = u_mac(lev).array(mfi);
+        amrex::Array4<amrex::Real> const& rho = rho_face[0]->array(mfi);
+        amrex::Array4<amrex::Real const> const& fac =
+            mesh_fac_xf(lev).array(mfi);
+        amrex::Array4<amrex::Real const> const& detJ =
+            mesh_detJ_xf(lev).const_array(mfi);
+
+        amrex::ParallelFor(
+            mfi.tilebox(), [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                u(i, j, k) *= detJ(i, j, k) / fac(i, j, k, 0);
+                rho(i, j, k) = ovst_fac * detJ(i, j, k) /
+                               std::pow(fac(i, j, k, 0), 2) / rho(i, j, k);
+            });
+    }
+    // construct rho on y-face
+    for (amrex::MFIter mfi(*(rho_face[1])); mfi.isValid(); ++mfi) {
+        amrex::Array4<amrex::Real> const& v = v_mac(lev).array(mfi);
+        amrex::Array4<amrex::Real> const& rho = rho_face[1]->array(mfi);
+        amrex::Array4<amrex::Real const> const& fac =
+            mesh_fac_yf(lev).array(mfi);
+        amrex::Array4<amrex::Real const> const& detJ =
+            mesh_detJ_yf(lev).const_array(mfi);
+
+        amrex::ParallelFor(
+            mfi.tilebox(), [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                v(i, j, k) *= detJ(i, j, k) / fac(i, j, k, 1);
+                rho(i, j, k) = ovst_fac * detJ(i, j, k) /
+                               std::pow(fac(i, j, k, 1), 2) / rho(i, j, k);
+            });
+    }
+    // construct rho on z-face
+    for (amrex::MFIter mfi(*(rho_face[2])); mfi.isValid(); ++mfi) {
+        amrex::Array4<amrex::Real> const& w = w_mac(lev).array(mfi);
+        amrex::Array4<amrex::Real> const& rho = rho_face[2]->array(mfi);
+        amrex::Array4<amrex::Real const> const& fac =
+            mesh_fac_zf(lev).array(mfi);
+        amrex::Array4<amrex::Real const> const& detJ =
+            mesh_detJ_zf(lev).const_array(mfi);
+
+        amrex::ParallelFor(
+            mfi.tilebox(), [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                w(i, j, k) *= detJ(i, j, k) / fac(i, j, k, 2);
+                rho(i, j, k) = ovst_fac * detJ(i, j, k) /
+                               std::pow(fac(i, j, k, 2), 2) / rho(i, j, k);
+            });
+    }
 }
 
 } // namespace pde

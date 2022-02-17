@@ -31,7 +31,8 @@ public:
         const IndexSelector& idxOp,
         const int n_idx);
 
-    amrex::Real compute_error();
+    template <typename IndexSelector>
+    amrex::Real compute_error(const IndexSelector& idxOp);
 
     void output_error();
 
@@ -78,6 +79,8 @@ private:
     bool m_laminar{false};
 
     bool m_dns{false};
+
+    bool m_mesh_mapping{false};
 
     amrex::Real m_mean_vel;
 

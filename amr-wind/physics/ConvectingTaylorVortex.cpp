@@ -95,9 +95,7 @@ ConvectingTaylorVortex::ConvectingTaylorVortex(const CFDSim& sim)
     , m_velocity(sim.repo().get_field("velocity"))
     , m_gradp(sim.repo().get_field("gp"))
     , m_density(sim.repo().get_field("density"))
-    , m_mesh_fac_cc(sim.repo().get_mesh_mapping_field(FieldLoc::CELL))
-    , m_nu_coord_cc(sim.repo().get_field("non_uniform_coord_cc"))
-    , m_nu_coord_nd(sim.repo().get_field("non_uniform_coord_nd"))
+    , m_mesh_mapping(sim.has_mesh_mapping())
 {
     {
         amrex::ParmParse pp("CTV");
@@ -128,21 +126,27 @@ ConvectingTaylorVortex::ConvectingTaylorVortex(const CFDSim& sim)
  *  simulation.
  */
 void ConvectingTaylorVortex::initialize_fields(
-    int level, const amrex::Geometry& /* geom */)
+    int level, const amrex::Geometry& geom)
 {
     using namespace utils;
+
+    const auto& dx = geom.CellSizeArray();
+    const auto& prob_lo = geom.ProbLoArray();
 
     const auto u0 = m_u0;
     const auto v0 = m_v0;
     const auto omega = m_omega;
     const bool activate_pressure = m_activate_pressure;
+    const auto mesh_mapping = m_mesh_mapping;
 
     auto& velocity = m_velocity(level);
     auto& density = m_density(level);
     auto& pressure = m_repo.get_field("p")(level);
     auto& gradp = m_repo.get_field("gp")(level);
-    auto& nu_coord_cc = m_nu_coord_cc(level);
-    auto& nu_coord_nd = m_nu_coord_nd(level);
+    Field const* nu_coord_cc =
+        mesh_mapping ? &(m_repo.get_field("non_uniform_coord_cc")) : nullptr;
+    Field const* nu_coord_nd =
+        mesh_mapping ? &(m_repo.get_field("non_uniform_coord_nd")) : nullptr;
 
     density.setVal(m_rho);
 
@@ -158,12 +162,16 @@ void ConvectingTaylorVortex::initialize_fields(
 
         auto vel = velocity.array(mfi);
         auto gp = gradp.array(mfi);
-        auto nu_cc = nu_coord_cc.array(mfi);
+        amrex::Array4<amrex::Real const> nu_cc =
+            mesh_mapping ? ((*nu_coord_cc)(level).const_array(mfi))
+                         : amrex::Array4<amrex::Real const>();
 
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                amrex::Real x = nu_cc(i, j, k, 0);
-                amrex::Real y = nu_cc(i, j, k, 1);
+                amrex::Real x = mesh_mapping ? (nu_cc(i, j, k, 0))
+                                             : (prob_lo[0] + (i + 0.5) * dx[0]);
+                amrex::Real y = mesh_mapping ? (nu_cc(i, j, k, 1))
+                                             : (prob_lo[1] + (j + 0.5) * dx[1]);
 
                 vel(i, j, k, 0) = u_exact(u0, v0, omega, x, y, 0.0);
                 vel(i, j, k, 1) = v_exact(u0, v0, omega, x, y, 0.0);
@@ -179,12 +187,16 @@ void ConvectingTaylorVortex::initialize_fields(
         if (activate_pressure) {
             const auto& nbx = mfi.nodaltilebox();
             auto pres = pressure.array(mfi);
-            auto nu_nd = nu_coord_nd.array(mfi);
+            amrex::Array4<amrex::Real const> nu_nd =
+                mesh_mapping ? ((*nu_coord_nd)(level).const_array(mfi))
+                             : amrex::Array4<amrex::Real const>();
 
             amrex::ParallelFor(
                 nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real x = nu_nd(i, j, k, 0);
-                    amrex::Real y = nu_nd(i, j, k, 1);
+                    amrex::Real x = mesh_mapping ? (nu_nd(i, j, k, 0))
+                                                 : (prob_lo[0] + i * dx[0]);
+                    amrex::Real y = mesh_mapping ? (nu_nd(i, j, k, 1))
+                                                 : (prob_lo[1] + j * dx[1]);
 
                     pres(i, j, k, 0) =
                         -0.25 * (std::cos(2.0 * utils::pi() * x) +
@@ -197,7 +209,6 @@ void ConvectingTaylorVortex::initialize_fields(
 template <typename T>
 amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
 {
-
     amrex::Real error = 0.0;
     const amrex::Real time = m_time.new_time();
     const auto u0 = m_u0;
@@ -205,6 +216,14 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
     const auto omega = m_omega;
     T f_exact;
     const auto comp = f_exact.m_comp;
+    const auto mesh_mapping = m_mesh_mapping;
+
+    Field const* nu_coord_cc =
+        mesh_mapping ? &(m_repo.get_field("non_uniform_coord_cc")) : nullptr;
+    Field const* mesh_fac_cc =
+        mesh_mapping
+            ? &(m_repo.get_mesh_mapping_field(amr_wind::FieldLoc::CELL))
+            : nullptr;
 
     const int nlevels = m_repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -238,14 +257,17 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
         }
 
         const auto& dx = m_mesh.Geom(lev).CellSizeArray();
-        auto& mesh_fac_cc = m_mesh_fac_cc(lev);
-        auto& nu_coord_cc = m_nu_coord_cc(lev);
-        const auto& fld = field(lev);
+        const auto& prob_lo = m_mesh.Geom(lev).ProbLoArray();
 
+        const auto& fld = field(lev);
         auto const& fld_arr = fld.const_arrays();
-        auto const& fac_cc = mesh_fac_cc.const_arrays();
-        auto const& nu_cc = nu_coord_cc.const_arrays();
         auto const& mask_arr = level_mask.const_arrays();
+        amrex::MultiArray4<amrex::Real const> fac_arr =
+            mesh_mapping ? ((*mesh_fac_cc)(lev).const_arrays())
+                         : amrex::MultiArray4<amrex::Real const>();
+        amrex::MultiArray4<amrex::Real const> nu_cc =
+            mesh_mapping ? ((*nu_coord_cc)(lev).const_arrays())
+                         : amrex::MultiArray4<amrex::Real const>();
 
         error += amrex::ParReduce(
             amrex::TypeList<amrex::ReduceOpSum>{},
@@ -253,19 +275,23 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
             [=] AMREX_GPU_HOST_DEVICE(int box_no, int i, int j, int k)
                 -> amrex::GpuTuple<amrex::Real> {
                 auto const& fld_bx = fld_arr[box_no];
-                auto const& fac_bx = fac_cc[box_no];
-                auto const& nu_cc_bx = nu_cc[box_no];
                 auto const& mask_bx = mask_arr[box_no];
 
+                amrex::Real x = mesh_mapping ? (nu_cc[box_no](i, j, k, 0))
+                                             : (prob_lo[0] + (i + 0.5) * dx[0]);
+                amrex::Real y = mesh_mapping ? (nu_cc[box_no](i, j, k, 1))
+                                             : (prob_lo[1] + (j + 0.5) * dx[1]);
+                amrex::Real fac_x =
+                    mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0;
+                amrex::Real fac_y =
+                    mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0;
+                amrex::Real fac_z =
+                    mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
+
                 const amrex::Real u = fld_bx(i, j, k, comp);
-
-                const amrex::Real u_exact = f_exact(
-                    u0, v0, omega, nu_cc_bx(i, j, k, 0), nu_cc_bx(i, j, k, 1),
-                    time);
-
-                const amrex::Real cell_vol = dx[0] * fac_bx(i, j, k, 0) *
-                                             dx[1] * fac_bx(i, j, k, 1) *
-                                             dx[2] * fac_bx(i, j, k, 2);
+                const amrex::Real u_exact = f_exact(u0, v0, omega, x, y, time);
+                const amrex::Real cell_vol =
+                    dx[0] * fac_x * dx[1] * fac_y * dx[2] * fac_z;
 
                 return cell_vol * mask_bx(i, j, k) * (u - u_exact) *
                        (u - u_exact);

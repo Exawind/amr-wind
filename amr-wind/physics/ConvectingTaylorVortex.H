@@ -123,9 +123,6 @@ private:
     Field& m_velocity;
     Field& m_gradp;
     Field& m_density;
-    Field& m_mesh_fac_cc;
-    Field& m_nu_coord_cc;
-    Field& m_nu_coord_nd;
 
     void output_error();
 
@@ -148,6 +145,7 @@ private:
     std::string m_output_fname{"ctv.log"};
 
     bool m_activate_pressure{false};
+    bool m_mesh_mapping{false};
 };
 } // namespace ctv
 } // namespace amr_wind

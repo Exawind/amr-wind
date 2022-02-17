@@ -21,6 +21,15 @@ public:
 
     void operator()(const FieldState fstate, const amrex::Real dt);
 
+    void mac_proj_to_uniform_space(
+        const amr_wind::FieldRepo&,
+        amr_wind::Field&,
+        amr_wind::Field&,
+        amr_wind::Field&,
+        amrex::Array<amrex::MultiFab*, ICNS::ndim>&,
+        amrex::Real,
+        int) noexcept;
+
 private:
     void init_projector(const FaceFabPtrVec&) noexcept;
     void init_projector(const amrex::Real) noexcept;

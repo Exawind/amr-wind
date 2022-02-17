@@ -77,15 +77,17 @@ template <>
 struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
 {
     explicit SrcTermOp(PDEFields& fields_in)
-        : SrcTermOpBase<ICNS>(fields_in)
-        , grad_p(fields_in.repo.get_field("gp"))
-        , mesh_fac(fields_in.repo.get_mesh_mapping_field(FieldLoc::CELL))
+        : SrcTermOpBase<ICNS>(fields_in), grad_p(fields_in.repo.get_field("gp"))
     {}
 
-    void operator()(const FieldState fstate)
+    void operator()(const FieldState fstate, const bool mesh_mapping)
     {
         const auto rhostate = field_impl::phi_state(fstate);
         const auto& density = m_density.state(rhostate);
+        Field const* mesh_fac =
+            mesh_mapping
+                ? &(this->fields.repo.get_mesh_mapping_field(FieldLoc::CELL))
+                : nullptr;
 
         const int nlevels = this->fields.repo.num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {
@@ -99,18 +101,26 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
                 const auto& vf = src_term.array(mfi);
                 const auto& rho = density(lev).const_array(mfi);
                 const auto& gp = grad_p(lev).const_array(mfi);
-                const auto& fac = mesh_fac(lev).const_array(mfi);
+                amrex::Array4<amrex::Real const> fac =
+                    mesh_mapping ? ((*mesh_fac)(lev).const_array(mfi))
+                                 : amrex::Array4<amrex::Real const>();
 
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                         amrex::Real rhoinv = 1.0 / rho(i, j, k);
+                        amrex::Real fac_x =
+                            mesh_mapping ? (fac(i, j, k, 0)) : 1.0;
+                        amrex::Real fac_y =
+                            mesh_mapping ? (fac(i, j, k, 1)) : 1.0;
+                        amrex::Real fac_z =
+                            mesh_mapping ? (fac(i, j, k, 2)) : 1.0;
 
                         vf(i, j, k, 0) =
-                            -(1.0 / fac(i, j, k, 0) * gp(i, j, k, 0)) * rhoinv;
+                            -(1.0 / fac_x * gp(i, j, k, 0)) * rhoinv;
                         vf(i, j, k, 1) =
-                            -(1.0 / fac(i, j, k, 1) * gp(i, j, k, 1)) * rhoinv;
+                            -(1.0 / fac_y * gp(i, j, k, 1)) * rhoinv;
                         vf(i, j, k, 2) =
-                            -(1.0 / fac(i, j, k, 2) * gp(i, j, k, 2)) * rhoinv;
+                            -(1.0 / fac_z * gp(i, j, k, 2)) * rhoinv;
                     });
 
                 for (auto& src : this->sources) {
@@ -121,7 +131,6 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
     }
 
     Field& grad_p;
-    Field& mesh_fac;
 };
 
 /** Effective turbulent viscosity computation for ICNS

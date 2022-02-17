@@ -131,8 +131,13 @@ void incflo::ApplyProjection(
     auto& pressure = m_repo.get_field("p");
     auto& velocity = icns().fields().field;
     auto& velocity_old = icns().fields().field.state(amr_wind::FieldState::Old);
-    auto& mesh_fac = m_repo.get_mesh_mapping_field(amr_wind::FieldLoc::CELL);
-    auto& mesh_detJ = m_repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::CELL);
+    amr_wind::Field const* mesh_fac =
+        mesh_mapping
+            ? &(m_repo.get_mesh_mapping_field(amr_wind::FieldLoc::CELL))
+            : nullptr;
+    amr_wind::Field const* mesh_detJ =
+        mesh_mapping ? &(m_repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::CELL))
+                     : nullptr;
 
     // TODO: Mesh mapping doesn't work with immersed boundaries
     // Do the pre pressure correction work -- this applies to IB only
@@ -160,18 +165,23 @@ void incflo::ApplyProjection(
                 Array4<Real> const& u = velocity(lev).array(mfi);
                 Array4<Real const> const& rho = density[lev]->const_array(mfi);
                 Array4<Real const> const& gp = grad_p(lev).const_array(mfi);
-                Array4<Real const> const& fac = mesh_fac(lev).const_array(mfi);
+                amrex::Array4<amrex::Real const> fac =
+                    mesh_mapping ? ((*mesh_fac)(lev).const_array(mfi))
+                                 : amrex::Array4<amrex::Real const>();
 
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         Real soverrho = scaling_factor / rho(i, j, k);
+                        amrex::Real fac_x =
+                            mesh_mapping ? (fac(i, j, k, 0)) : 1.0;
+                        amrex::Real fac_y =
+                            mesh_mapping ? (fac(i, j, k, 1)) : 1.0;
+                        amrex::Real fac_z =
+                            mesh_mapping ? (fac(i, j, k, 2)) : 1.0;
 
-                        u(i, j, k, 0) +=
-                            1 / fac(i, j, k, 0) * gp(i, j, k, 0) * soverrho;
-                        u(i, j, k, 1) +=
-                            1 / fac(i, j, k, 1) * gp(i, j, k, 1) * soverrho;
-                        u(i, j, k, 2) +=
-                            1 / fac(i, j, k, 2) * gp(i, j, k, 2) * soverrho;
+                        u(i, j, k, 0) += 1 / fac_x * gp(i, j, k, 0) * soverrho;
+                        u(i, j, k, 1) += 1 / fac_y * gp(i, j, k, 1) * soverrho;
+                        u(i, j, k, 2) += 1 / fac_z * gp(i, j, k, 2) * soverrho;
                     });
             }
         }
@@ -245,16 +255,22 @@ void incflo::ApplyProjection(
                 Box const& bx = mfi.tilebox();
                 Array4<Real> const& sig = sigma[lev].array(mfi);
                 Array4<Real const> const& rho = density[lev]->const_array(mfi);
-                Array4<Real const> const& fac = mesh_fac(lev).const_array(mfi);
-                Array4<Real const> const& detJ =
-                    mesh_detJ(lev).const_array(mfi);
+                amrex::Array4<amrex::Real const> fac =
+                    mesh_mapping ? ((*mesh_fac)(lev).const_array(mfi))
+                                 : amrex::Array4<amrex::Real const>();
+                amrex::Array4<amrex::Real const> detJ =
+                    mesh_mapping ? ((*mesh_detJ)(lev).const_array(mfi))
+                                 : amrex::Array4<amrex::Real const>();
 
                 amrex::ParallelFor(
                     bx, ncomp,
                     [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                        sig(i, j, k, n) = std::pow(fac(i, j, k, n), -2.) *
-                                          detJ(i, j, k) * scaling_factor /
-                                          rho(i, j, k);
+                        amrex::Real fac_cc =
+                            mesh_mapping ? (fac(i, j, k, n)) : 1.0;
+                        amrex::Real det_j =
+                            mesh_mapping ? (detJ(i, j, k)) : 1.0;
+                        sig(i, j, k, n) = std::pow(fac_cc, -2.) * det_j *
+                                          scaling_factor / rho(i, j, k);
                     });
             }
         }

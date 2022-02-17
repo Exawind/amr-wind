@@ -183,12 +183,16 @@ bool incflo::regrid_and_update()
 
         // update mesh map
         {
-            // TODO: Is this the only change required in presence of regrid ?
-            amrex::Print() << "Creating mesh mapping after regrid ... ";
-            for (int lev = 0; lev <= finest_level; lev++) {
-                m_sim.mesh_mapping()->create_map(lev, Geom(lev));
+            if (m_sim.has_mesh_mapping()) {
+                // TODO: Is this the only change required in presence of regrid
+                // ?
+                amrex::Print() << "Creating mesh mapping after regrid ... ";
+
+                for (int lev = 0; lev <= finest_level; lev++) {
+                    m_sim.mesh_mapping()->create_map(lev, Geom(lev));
+                }
+                amrex::Print() << "done" << std::endl;
             }
-            amrex::Print() << "done" << std::endl;
         }
 
         if (m_sim.has_overset()) {
@@ -326,7 +330,9 @@ void incflo::MakeNewLevelFromScratch(
     m_repo.make_new_level_from_scratch(lev, time, new_grids, new_dmap);
 
     // initialize the mesh map before initializing physics
-    m_sim.mesh_mapping()->create_map(lev, Geom(lev));
+    if (m_sim.has_mesh_mapping()) {
+        m_sim.mesh_mapping()->create_map(lev, Geom(lev));
+    }
 
     for (auto& pp : m_sim.physics()) {
         pp->initialize_fields(lev, Geom(lev));
@@ -335,7 +341,7 @@ void incflo::MakeNewLevelFromScratch(
 
 void incflo::init_physics_and_pde()
 {
-    // Always register mesh mapping
+    // Check for mesh mapping
     m_sim.activate_mesh_map();
 
     {

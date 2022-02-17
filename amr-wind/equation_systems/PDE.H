@@ -101,7 +101,7 @@ public:
     void compute_source_term(const FieldState fstate) override
     {
         BL_PROFILE("amr-wind::" + this->identifier() + "::compute_source_term");
-        m_src_op(fstate);
+        m_src_op(fstate, m_sim.has_mesh_mapping());
     }
 
     void compute_mueff(const FieldState) override

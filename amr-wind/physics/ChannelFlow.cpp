@@ -10,7 +10,10 @@ namespace amr_wind {
 namespace channel_flow {
 
 ChannelFlow::ChannelFlow(CFDSim& sim)
-    : m_time(sim.time()), m_repo(sim.repo()), m_mesh(sim.mesh())
+    : m_time(sim.time())
+    , m_repo(sim.repo())
+    , m_mesh(sim.mesh())
+    , m_mesh_mapping(sim.has_mesh_mapping())
 {
     {
         amrex::ParmParse pp("ChannelFlow");
@@ -53,7 +56,6 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
  */
 void ChannelFlow::initialize_fields(int level, const amrex::Geometry& geom)
 {
-
     switch (m_norm_dir) {
     case 0:
         initialize_fields(level, geom, XDir(), 0);
@@ -77,7 +79,6 @@ void ChannelFlow::initialize_fields(
     const IndexSelector& idxOp,
     const int n_idx)
 {
-
     const amrex::Real kappa = m_kappa;
     const amrex::Real y_tau = m_ytau;
     const amrex::Real utau = m_utau;
@@ -126,12 +127,15 @@ void ChannelFlow::initialize_fields(
     }
 }
 
-amrex::Real ChannelFlow::compute_error()
+template <typename IndexSelector>
+amrex::Real ChannelFlow::compute_error(const IndexSelector& idxOp)
 {
     amrex::Real error = 0.0;
     const auto flow_dir = m_mean_vel_dir;
     const auto norm_dir = m_norm_dir;
     const auto mu = m_mu;
+    const auto mesh_mapping = m_mesh_mapping;
+
     amrex::Real dpdx = 0;
     {
         amrex::Vector<amrex::Real> body_force{{0.0, 0.0, 0.0}};
@@ -156,8 +160,12 @@ amrex::Real ChannelFlow::compute_error()
     }
 
     const auto& velocity = m_repo.get_field("velocity");
-    const auto& mesh_fac_cc = m_repo.get_mesh_mapping_field(FieldLoc::CELL);
-    const auto& nu_coord_cc = m_repo.get_field("non_uniform_coord_cc");
+    Field const* nu_coord_cc =
+        mesh_mapping ? &(m_repo.get_field("non_uniform_coord_cc")) : nullptr;
+    Field const* mesh_fac_cc =
+        mesh_mapping
+            ? &(m_repo.get_mesh_mapping_field(amr_wind::FieldLoc::CELL))
+            : nullptr;
 
     const int nlevels = m_repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -175,35 +183,43 @@ amrex::Real ChannelFlow::compute_error()
         }
 
         const auto& dx = m_mesh.Geom(lev).CellSizeArray();
-        const auto& mesh_fac = mesh_fac_cc(lev);
-        const auto& nu_coord = nu_coord_cc(lev);
-        const auto& vel = velocity(lev);
+        const auto& prob_lo = m_mesh.Geom(lev).ProbLoArray();
 
-        auto const& fac_cc = mesh_fac.const_arrays();
-        auto const& nu_cc = nu_coord.const_arrays();
+        const auto& vel = velocity(lev);
         auto const& vel_arr = vel.const_arrays();
         auto const& mask_arr = level_mask.const_arrays();
+        amrex::MultiArray4<amrex::Real const> fac_arr =
+            mesh_mapping ? ((*mesh_fac_cc)(lev).const_arrays())
+                         : amrex::MultiArray4<amrex::Real const>();
+        amrex::MultiArray4<amrex::Real const> nu_cc =
+            mesh_mapping ? ((*nu_coord_cc)(lev).const_arrays())
+                         : amrex::MultiArray4<amrex::Real const>();
 
         error += amrex::ParReduce(
             amrex::TypeList<amrex::ReduceOpSum>{},
             amrex::TypeList<amrex::Real>{}, vel, amrex::IntVect(0),
             [=] AMREX_GPU_HOST_DEVICE(int box_no, int i, int j, int k)
                 -> amrex::GpuTuple<amrex::Real> {
-                auto const& fac_bx = fac_cc[box_no];
-                auto const& nu_cc_bx = nu_cc[box_no];
                 auto const& vel_bx = vel_arr[box_no];
                 auto const& mask_bx = mask_arr[box_no];
 
-                amrex::Real y = nu_cc_bx(i, j, k, norm_dir);
+                amrex::Real y = mesh_mapping
+                                    ? (nu_cc[box_no](i, j, k, norm_dir))
+                                    : (prob_lo[norm_dir] +
+                                       (idxOp(i, j, k) + 0.5) * dx[norm_dir]);
+                amrex::Real fac_x =
+                    mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0;
+                amrex::Real fac_y =
+                    mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0;
+                amrex::Real fac_z =
+                    mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
 
                 const amrex::Real u = vel_bx(i, j, k, flow_dir);
-
                 const amrex::Real u_exact =
                     1 / (2 * mu) * -dpdx * (y * y - y * ht);
 
-                const amrex::Real cell_vol = dx[0] * fac_bx(i, j, k, 0) *
-                                             dx[1] * fac_bx(i, j, k, 1) *
-                                             dx[2] * fac_bx(i, j, k, 2);
+                const amrex::Real cell_vol =
+                    dx[0] * fac_x * dx[1] * fac_y * dx[2] * fac_z;
 
                 return cell_vol * mask_bx(i, j, k) * (u - u_exact) *
                        (u - u_exact);
@@ -219,7 +235,21 @@ amrex::Real ChannelFlow::compute_error()
 void ChannelFlow::output_error()
 {
     // analytical solution exists only for flow in streamwise direction
-    const amrex::Real u_err = compute_error();
+    amrex::Real u_err = 0.0;
+    switch (m_norm_dir) {
+    case 0:
+        u_err = compute_error(XDir());
+        break;
+    case 1:
+        u_err = compute_error(YDir());
+        break;
+    case 2:
+        u_err = compute_error(ZDir());
+        break;
+    default:
+        amrex::Abort("axis must be equal to 1 or 2");
+        break;
+    }
 
     if (amrex::ParallelDescriptor::IOProcessor()) {
         std::ofstream f;

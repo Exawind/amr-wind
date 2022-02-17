@@ -111,6 +111,7 @@ public:
     void activate_mesh_map();
 
     bool has_mesh_mapping() { return m_mesh_mapping; }
+    bool has_mesh_mapping() const { return m_mesh_mapping; }
 
 private:
     amrex::AmrCore& m_mesh;

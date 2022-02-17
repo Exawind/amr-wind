@@ -77,15 +77,19 @@ void DiffSolverIface<LinOp>::set_acoeffs(LinOp& linop, const FieldState fstate)
     auto& repo = m_pdefields.repo;
     const int nlevels = repo.num_active_levels();
     const auto& density = m_density.state(fstate);
-    const auto& mesh_detJ_cc = repo.get_mesh_mapping_detJ(FieldLoc::CELL);
-    auto rho_times_detJ =
-        repo.create_scratch_field(1, m_density.num_grow()[0], FieldLoc::CELL);
+    Field const* mesh_detJ = m_mesh_mapping
+                                 ? &(repo.get_mesh_mapping_detJ(FieldLoc::CELL))
+                                 : nullptr;
+    std::unique_ptr<ScratchField> rho_times_detJ =
+        m_mesh_mapping ? repo.create_scratch_field(
+                             1, m_density.num_grow()[0], FieldLoc::CELL)
+                       : nullptr;
 
     for (int lev = 0; lev < nlevels; ++lev) {
         if (m_mesh_mapping) {
             (*rho_times_detJ)(lev).setVal(0.0);
             amrex::MultiFab::AddProduct(
-                (*rho_times_detJ)(lev), density(lev), 0, mesh_detJ_cc(lev), 0,
+                (*rho_times_detJ)(lev), density(lev), 0, (*mesh_detJ)(lev), 0,
                 0, 1, m_density.num_grow()[0]);
             linop.setACoeffs(lev, (*rho_times_detJ)(lev));
         } else {

@@ -139,9 +139,13 @@ public:
         auto& divtau = m_pdefields.diff_term.state(tau_state);
         const auto& density = m_density.state(fstate);
         const auto& viscosity = m_pdefields.mueff;
-        const auto& mesh_detJ_cc = repo.get_mesh_mapping_detJ(FieldLoc::CELL);
-        auto rho_times_detJ = repo.create_scratch_field(
-            1, m_density.num_grow()[0], FieldLoc::CELL);
+        Field const* mesh_detJ =
+            m_mesh_mapping ? &(repo.get_mesh_mapping_detJ(FieldLoc::CELL))
+                           : nullptr;
+        std::unique_ptr<ScratchField> rho_times_detJ =
+            m_mesh_mapping ? repo.create_scratch_field(
+                                 1, m_density.num_grow()[0], FieldLoc::CELL)
+                           : nullptr;
 
         const amrex::Real alpha = 0.0;
         const amrex::Real beta = -1.0;
@@ -154,7 +158,7 @@ public:
             if (m_mesh_mapping) {
                 (*rho_times_detJ)(lev).setVal(0.0);
                 amrex::MultiFab::AddProduct(
-                    (*rho_times_detJ)(lev), density(lev), 0, mesh_detJ_cc(lev),
+                    (*rho_times_detJ)(lev), density(lev), 0, (*mesh_detJ)(lev),
                     0, 0, 1, m_density.num_grow()[0]);
                 m_applier_scalar->setACoeffs(lev, (*rho_times_detJ)(lev));
             } else {
@@ -205,9 +209,13 @@ public:
         const int ndim = field.num_comp();
         auto rhs_ptr = repo.create_scratch_field("rhs", field.num_comp(), 0);
         const auto& viscosity = m_pdefields.mueff;
-        const auto& mesh_detJ_cc = repo.get_mesh_mapping_detJ(FieldLoc::CELL);
-        auto rho_times_detJ = repo.create_scratch_field(
-            1, m_density.num_grow()[0], FieldLoc::CELL);
+        Field const* mesh_detJ =
+            m_mesh_mapping ? &(repo.get_mesh_mapping_detJ(FieldLoc::CELL))
+                           : nullptr;
+        std::unique_ptr<ScratchField> rho_times_detJ =
+            m_mesh_mapping ? repo.create_scratch_field(
+                                 1, m_density.num_grow()[0], FieldLoc::CELL)
+                           : nullptr;
 
         const amrex::Real alpha = 1.0;
         const amrex::Real beta = dt;
@@ -220,7 +228,7 @@ public:
             if (m_mesh_mapping) {
                 (*rho_times_detJ)(lev).setVal(0.0);
                 amrex::MultiFab::AddProduct(
-                    (*rho_times_detJ)(lev), density(lev), 0, mesh_detJ_cc(lev),
+                    (*rho_times_detJ)(lev), density(lev), 0, (*mesh_detJ)(lev),
                     0, 0, 1, m_density.num_grow()[0]);
                 m_solver_scalar->setACoeffs(lev, (*rho_times_detJ)(lev));
             } else {

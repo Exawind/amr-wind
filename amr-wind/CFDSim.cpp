@@ -62,10 +62,12 @@ bool CFDSim::has_overset() const { return (static_cast<bool>(m_overset_mgr)); }
 void CFDSim::activate_mesh_map()
 {
     amrex::ParmParse pp("geometry");
-    std::string mesh_map_name("ConstantMap"); // default
+    std::string mesh_map_name; // default
     m_mesh_mapping = static_cast<bool>(pp.query("mesh_mapping", mesh_map_name));
-    m_mesh_map = MeshMap::create(mesh_map_name);
-    m_mesh_map->declare_mapping_fields(*this, m_pde_mgr.num_ghost_state());
+    if (m_mesh_mapping) {
+        m_mesh_map = MeshMap::create(mesh_map_name);
+        m_mesh_map->declare_mapping_fields(*this, m_pde_mgr.num_ghost_state());
+    }
 }
 
 } // namespace amr_wind
