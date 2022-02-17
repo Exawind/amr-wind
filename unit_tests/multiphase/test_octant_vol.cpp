@@ -5,7 +5,8 @@
 
 namespace amr_wind_tests {
 
-class VOFInterpTest : public AmrexTest {};
+class VOFInterpTest : public AmrexTest
+{};
 
 TEST_F(VOFInterpTest, Octants1D)
 {
@@ -19,7 +20,7 @@ TEST_F(VOFInterpTest, Octants1D)
     amrex::Real m3 = 0.0;
     amrex::Real alpha = 0.5;
 
-    auto vol_oct = amr_wind::multiphase::cut_volume_oct(m1,m2,m3,alpha);
+    auto vol_oct = amr_wind::multiphase::cut_volume_oct(m1, m2, m3, alpha);
 
     // Left, bottom, back
     EXPECT_NEAR(vol_oct[0], 1.0, tol);
@@ -37,7 +38,6 @@ TEST_F(VOFInterpTest, Octants1D)
     EXPECT_NEAR(vol_oct[6], 1.0, tol);
     // Right, top, front
     EXPECT_NEAR(vol_oct[7], 0.0, tol);
-
 }
 
 TEST_F(VOFInterpTest, Octants2D)
@@ -52,7 +52,7 @@ TEST_F(VOFInterpTest, Octants2D)
     amrex::Real m3 = 0.0;
     amrex::Real alpha = 0.5;
 
-    auto vol_oct = amr_wind::multiphase::cut_volume_oct(m1,m2,m3,alpha);
+    auto vol_oct = amr_wind::multiphase::cut_volume_oct(m1, m2, m3, alpha);
 
     // Left, bottom, back
     EXPECT_NEAR(vol_oct[0], 1.0, tol);
@@ -70,7 +70,6 @@ TEST_F(VOFInterpTest, Octants2D)
     EXPECT_NEAR(vol_oct[6], 0.5, tol);
     // Right, top, front
     EXPECT_NEAR(vol_oct[7], 0.0, tol);
-
 }
 
 TEST_F(VOFInterpTest, Octants3D)
@@ -85,25 +84,24 @@ TEST_F(VOFInterpTest, Octants3D)
     amrex::Real m3 = 1.0 / 4.0;
     amrex::Real alpha = 0.5;
 
-    auto vol_oct = amr_wind::multiphase::cut_volume_oct(m1,m2,m3,alpha);
+    auto vol_oct = amr_wind::multiphase::cut_volume_oct(m1, m2, m3, alpha);
 
     // Left, bottom, back
     EXPECT_NEAR(vol_oct[0], 1.0, tol);
     // Right, bottom, back
-    //EXPECT_NEAR(vol_oct[1], 0.5, tol);
+    EXPECT_NEAR(vol_oct[1], 1.0 - 1.0 / 12.0, tol);
     // Left, top, back
     EXPECT_NEAR(vol_oct[2], 0.5, tol);
     // Right, top, back
-    //EXPECT_NEAR(vol_oct[3], 0.0, tol);
+    EXPECT_NEAR(vol_oct[3], 1.0 / 12.0, tol);
     // Left, bottom, front
-    //EXPECT_NEAR(vol_oct[4], 1.0, tol);
+    EXPECT_NEAR(vol_oct[4], 1.0 - 1.0 / 12.0, tol);
     // Right, bottom, front
     EXPECT_NEAR(vol_oct[5], 0.5, tol);
     // Left, top, front
-    //EXPECT_NEAR(vol_oct[6], 0.5, tol);
+    EXPECT_NEAR(vol_oct[6], 1.0 / 12.0, tol);
     // Right, top, front
     EXPECT_NEAR(vol_oct[7], 0.0, tol);
-
 }
 
 } // namespace amr_wind_tests

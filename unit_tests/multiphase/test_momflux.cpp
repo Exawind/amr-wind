@@ -20,7 +20,6 @@ void init_field3(
             const auto& farr = fld(lev).array(mfi);
 
             amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-
                 farr(i, j, k, 0) = in0;
                 farr(i, j, k, 1) = in1;
                 farr(i, j, k, 2) = in2;
@@ -82,27 +81,28 @@ protected:
         amrex::Array4<amrex::Real>& vof_arr)
     {
 
-        // grow the box by 1 so that x,y,z go out of bounds and min(max()) corrects
-        // it and it fills the ghosts with wall values
-        amrex::ParallelFor(grow(bx, 1), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-            int icheck;
-            switch (dir) {
-            case 0:
-                icheck = i;
-                break;
-            case 1:
-                icheck = j;
-                break;
-            case 2:
-                icheck = k;
-                break;
-            }
-            if (icheck > 0) {
-                vof_arr(i, j, k) = 0.0;
-            } else {
-                vof_arr(i, j, k) = 1.0;
-            }
-        });
+        // grow the box by 1 so that x,y,z go out of bounds and min(max())
+        // corrects it and it fills the ghosts with wall values
+        amrex::ParallelFor(
+            grow(bx, 1), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                int icheck;
+                switch (dir) {
+                case 0:
+                    icheck = i;
+                    break;
+                case 1:
+                    icheck = j;
+                    break;
+                case 2:
+                    icheck = k;
+                    break;
+                }
+                if (icheck > 0) {
+                    vof_arr(i, j, k) = 0.0;
+                } else {
+                    vof_arr(i, j, k) = 1.0;
+                }
+            });
         // Left half is liquid, right half is gas
     }
 
@@ -136,7 +136,9 @@ protected:
             mom_eqn.fields().field.state(amr_wind::FieldState::Old);
         init_field3(velocity, varr[0], varr[1], varr[2]);
         amrex::Real uvel, vvel, wvel;
-        uvel = varr[0]; vvel = varr[1]; wvel = varr[2];
+        uvel = varr[0];
+        vvel = varr[1];
+        wvel = varr[2];
 
         // Initialize volume fraction field
         auto& vof = repo.get_field("vof");
@@ -292,17 +294,8 @@ protected:
     const amrex::Real dt = 0.1 * 0.5 / m_vel;
 };
 
-TEST_F(MassMomFluxOpTest, fluxfaceX)
-{
-    testing_coorddir(0);
-}
-TEST_F(MassMomFluxOpTest, fluxfaceY)
-{
-    testing_coorddir(1);
-}
-TEST_F(MassMomFluxOpTest, fluxfaceZ)
-{
-    testing_coorddir(2);
-}
+TEST_F(MassMomFluxOpTest, fluxfaceX) { testing_coorddir(0); }
+TEST_F(MassMomFluxOpTest, fluxfaceY) { testing_coorddir(1); }
+TEST_F(MassMomFluxOpTest, fluxfaceZ) { testing_coorddir(2); }
 
 } // namespace amr_wind_tests
