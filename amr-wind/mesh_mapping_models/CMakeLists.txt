@@ -1,6 +1,8 @@
 target_sources(${amr_wind_lib_name}
   PRIVATE
 
-  ChannelFlowMap.cpp
-  ConstantMap.cpp
+  ABLScaling.cpp
+  ABL2ConstantScaling.cpp
+  ChannelFlowScaling.cpp
+  ConstantScaling.cpp
   )
