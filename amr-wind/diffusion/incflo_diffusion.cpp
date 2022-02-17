@@ -216,8 +216,6 @@ void viscosity_to_uniform_space(
     const auto& mesh_detJ_zf =
         repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::ZFACE);
 
-    // TODO: should box loops below be over grown tile box ?
-
     // beta accounted for mesh mapping (x-face) = J/fac^2 * mu
     for (amrex::MFIter mfi(b[0]); mfi.isValid(); ++mfi) {
         amrex::Array4<amrex::Real> const& mu = b[0].array(mfi);

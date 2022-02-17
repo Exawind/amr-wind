@@ -21,7 +21,7 @@ public:
 
     void operator()(const FieldState fstate, const amrex::Real dt);
 
-    void mac_proj_to_uniform_space(
+    static void mac_proj_to_uniform_space(
         const amr_wind::FieldRepo&,
         amr_wind::Field&,
         amr_wind::Field&,

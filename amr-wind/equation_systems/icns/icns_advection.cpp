@@ -141,8 +141,6 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
     // For now assume variable viscosity for overset
     // this can be removed once the nsolve overset
     // masking is implemented in cell based AMReX poisson solvers
-
-    // TODO: should box loops below be over grown tile box ?
     if (m_variable_density || m_has_overset || m_mesh_mapping) {
         amrex::Vector<amrex::Array<amrex::MultiFab const*, ICNS::ndim>>
             rho_face_const;
@@ -237,7 +235,6 @@ void MacProjOp::mac_proj_to_uniform_space(
     const auto& mesh_detJ_zf =
         repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::ZFACE);
 
-    // TODO: should box loops below be over grown tile box ?
     // scale U^mac to accommodate for mesh mapping -> U^bar = J/fac *
     // U^mac beta accounted for mesh mapping = J/fac^2 * 1/rho construct
     // rho and mesh map u_mac on x-face

@@ -161,38 +161,52 @@ FieldRepo::get_field(const std::string& name, const FieldState fstate) const
 
 Field& FieldRepo::get_mesh_mapping_field(FieldLoc floc) const
 {
+    Field* fac = nullptr;
     switch (floc) {
     case FieldLoc::CELL:
-        return get_field("mesh_scaling_factor_cc");
+        fac = &(get_field("mesh_scaling_factor_cc"));
+        break;
     case FieldLoc::NODE:
-        return get_field("mesh_scaling_factor_nd");
+        fac = &(get_field("mesh_scaling_factor_nd"));
+        break;
     case FieldLoc::XFACE:
-        return get_field("mesh_scaling_factor_xf");
+        fac = &(get_field("mesh_scaling_factor_xf"));
+        break;
     case FieldLoc::YFACE:
-        return get_field("mesh_scaling_factor_yf");
+        fac = &(get_field("mesh_scaling_factor_yf"));
+        break;
     case FieldLoc::ZFACE:
-        return get_field("mesh_scaling_factor_zf");
+        fac = &(get_field("mesh_scaling_factor_zf"));
+        break;
     default:
         amrex::Abort("Invalid field location");
     }
+    return *fac;
 }
 
 Field& FieldRepo::get_mesh_mapping_detJ(FieldLoc floc) const
 {
+    Field* detJ = nullptr;
     switch (floc) {
     case FieldLoc::CELL:
-        return get_field("mesh_scaling_detJ_cc");
+        detJ = &(get_field("mesh_scaling_detJ_cc"));
+        break;
     case FieldLoc::NODE:
-        return get_field("mesh_scaling_detJ_nd");
+        detJ = &(get_field("mesh_scaling_detJ_nd"));
+        break;
     case FieldLoc::XFACE:
-        return get_field("mesh_scaling_detJ_xf");
+        detJ = &(get_field("mesh_scaling_detJ_xf"));
+        break;
     case FieldLoc::YFACE:
-        return get_field("mesh_scaling_detJ_yf");
+        detJ = &(get_field("mesh_scaling_detJ_yf"));
+        break;
     case FieldLoc::ZFACE:
-        return get_field("mesh_scaling_detJ_zf");
+        detJ = &(get_field("mesh_scaling_detJ_zf"));
+        break;
     default:
         amrex::Abort("Invalid field location");
     }
+    return *detJ;
 }
 
 bool FieldRepo::field_exists(
