@@ -4,9 +4,12 @@
 #include "amr-wind/utilities/tagging/RefinementCriteria.H"
 #include "amr-wind/equation_systems/PDEBase.H"
 #include "amr-wind/turbulence/TurbulenceModel.H"
+#include "amr-wind/equation_systems/SchemeTraits.H"
 #include "amr-wind/utilities/IOManager.H"
 #include "amr-wind/utilities/PostProcessing.H"
 #include "amr-wind/overset/OversetManager.H"
+
+#include "AMReX_ParmParse.H"
 
 using namespace amrex;
 
@@ -178,6 +181,20 @@ bool incflo::regrid_and_update()
             printGridSummary(amrex::OutStream(), 0, finest_level);
         }
 
+        // update mesh map
+        {
+            if (m_sim.has_mesh_mapping()) {
+                // TODO: Is this the only change required in presence of regrid
+                // ?
+                amrex::Print() << "Creating mesh mapping after regrid ... ";
+
+                for (int lev = 0; lev <= finest_level; lev++) {
+                    m_sim.mesh_mapping()->create_map(lev, Geom(lev));
+                }
+                amrex::Print() << "done" << std::endl;
+            }
+        }
+
         if (m_sim.has_overset()) {
             m_sim.overset_manager()->post_regrid_actions();
         } else {
@@ -250,6 +267,7 @@ void incflo::Evolve()
         amrex::Real time0 = amrex::ParallelDescriptor::second();
 
         regrid_and_update();
+
         pre_advance_stage1();
         pre_advance_stage2();
 
@@ -282,7 +300,6 @@ void incflo::Evolve()
     if (m_time.write_last_plot_file()) {
         m_sim.io_manager().write_plot_file();
     }
-
     if (m_time.write_last_checkpoint()) {
         m_sim.io_manager().write_checkpoint_file();
     }
@@ -312,6 +329,11 @@ void incflo::MakeNewLevelFromScratch(
 
     m_repo.make_new_level_from_scratch(lev, time, new_grids, new_dmap);
 
+    // initialize the mesh map before initializing physics
+    if (m_sim.has_mesh_mapping()) {
+        m_sim.mesh_mapping()->create_map(lev, Geom(lev));
+    }
+
     for (auto& pp : m_sim.physics()) {
         pp->initialize_fields(lev, Geom(lev));
     }
@@ -319,6 +341,9 @@ void incflo::MakeNewLevelFromScratch(
 
 void incflo::init_physics_and_pde()
 {
+    // Check for mesh mapping
+    m_sim.activate_mesh_map();
+
     {
         // Query and activate overset before initializing PDEs and physics
         amrex::ParmParse pp("incflo");

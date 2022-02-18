@@ -113,8 +113,10 @@ struct DiffusionOp<TKE, Scheme> : public DiffSolverIface<typename TKE::MLDiffOp>
         std::is_same<typename TKE::MLDiffOp, amrex::MLABecLaplacian>::value,
         "Invalid linear operator for scalar diffusion operator");
 
-    DiffusionOp(PDEFields& fields, const bool has_overset)
-        : DiffSolverIface<typename TKE::MLDiffOp>(fields, has_overset)
+    DiffusionOp(
+        PDEFields& fields, const bool has_overset, const bool mesh_mapping)
+        : DiffSolverIface<typename TKE::MLDiffOp>(
+              fields, has_overset, mesh_mapping)
         , m_lhs_src_term(
               fields.repo.get_field(TKE::var_name() + "_lhs_src_term"))
     {

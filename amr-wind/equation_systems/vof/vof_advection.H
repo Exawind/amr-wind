@@ -14,7 +14,7 @@ namespace pde {
 template <>
 struct AdvectionOp<VOF, fvm::Godunov>
 {
-    AdvectionOp(PDEFields& fields_in, bool, bool)
+    AdvectionOp(PDEFields& fields_in, bool, bool, bool)
         : fields(fields_in)
         , u_mac(fields_in.repo.get_field("u_mac"))
         , v_mac(fields_in.repo.get_field("v_mac"))

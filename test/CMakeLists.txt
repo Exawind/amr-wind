@@ -201,6 +201,8 @@ add_test_re(abl_bndry_output_native)
 
 if (NOT AMR_WIND_ENABLE_CUDA)
   add_test_re(ctv_godunov_plm)
+  add_test_re(ctv_mol_mesh_map)
+  add_test_re(ctv_mol_mesh_map_explicit)
 endif()
 
 if (AMR_WIND_ENABLE_NETCDF)
@@ -218,6 +220,9 @@ endif()
 if (AMR_WIND_ENABLE_HYPRE)
   add_test_re(abl_godunov_hypre)
   add_test_re(channel_kwsst_hypre)
+  add_test_re(channel_mol_mesh_map_x)
+  add_test_re(channel_mol_mesh_map_y)
+  add_test_re(channel_mol_mesh_map_z)
 endif()
 
 #=============================================================================

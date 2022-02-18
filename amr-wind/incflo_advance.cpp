@@ -192,6 +192,8 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // *************************************************************************************
     // Compute viscosity / diffusive coefficients
     // *************************************************************************************
+    // TODO: This sub-section has not been adjusted for mesh mapping - adjust in
+    // corrector too
     m_sim.turbulence_model().update_turbulent_viscosity(
         amr_wind::FieldState::Old);
     icns().compute_mueff(amr_wind::FieldState::Old);
@@ -202,6 +204,8 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // *************************************************************************************
     // Define the forcing terms to use in the Godunov prediction
     // *************************************************************************************
+    // TODO: Godunov has not been adjusted for mesh mapping - adjust in
+    // corrector too
     if (m_use_godunov) {
         icns().compute_source_term(amr_wind::FieldState::Old);
         for (auto& seqn : scalar_eqns()) {
@@ -209,6 +213,8 @@ void incflo::ApplyPredictor(bool incremental_projection)
         }
     }
 
+    // TODO: This sub-section has not been adjusted for mesh mapping - adjust in
+    // corrector too
     if (need_divtau()) {
         // *************************************************************************************
         // Compute explicit viscous term
@@ -265,6 +271,8 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // if (!m_use_godunov) Compute the explicit advective terms
     //                     R_u^n      , R_s^n       and R_t^n
     // *************************************************************************************
+    // TODO: Advection computation for scalar equations have not been adjusted
+    // for mesh mapping
     for (auto& seqn : scalar_eqns()) {
         seqn->compute_advection_term(amr_wind::FieldState::Old);
     }
@@ -275,9 +283,12 @@ void incflo::ApplyPredictor(bool incremental_projection)
     if (m_constant_density) {
         amr_wind::field_ops::copy(density_nph, density_old, 0, 0, 1, 1);
     }
-    // Perform scalar update one at a time. This is to allow an updated
-    // density at `n+1/2` to be computed before other scalars use it when
-    // computing their source terms.
+
+    // TODO: This sub-section has not been adjusted for mesh mapping - adjust in
+    // corrector too.
+    // Perform scalar update one at a time. This is to allow an
+    // updated density at `n+1/2` to be computed before other scalars use it
+    // when computing their source terms.
     for (auto& eqn : scalar_eqns()) {
         // Compute (recompute for Godunov) the scalar forcing terms
         eqn->compute_source_term(amr_wind::FieldState::NPH);
@@ -316,7 +327,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
     icns().compute_source_term(amr_wind::FieldState::New);
 
     // *************************************************************************************
-    // Update the velocity
+    // Evaluate right hand side and store in velocity
     // *************************************************************************************
     icns().compute_predictor_rhs(m_diff_type);
 
@@ -489,9 +500,10 @@ void incflo::ApplyCorrector()
         amr_wind::field_ops::copy(density_nph, density_old, 0, 0, 1, 1);
     }
 
-    // Perform scalar update one at a time. This is to allow an updated density
-    // at `n+1/2` to be computed before other scalars use it when computing
-    // their source terms.
+    // TODO: This sub-section has not been adjusted for mesh mapping - adjust in
+    // corrector too Perform scalar update one at a time. This is to allow an
+    // updated density at `n+1/2` to be computed before other scalars use it
+    // when computing their source terms.
     for (auto& eqn : scalar_eqns()) {
         // Compute (recompute for Godunov) the scalar forcing terms
         // Note this is (rho * scalar) and not just scalar
@@ -527,7 +539,7 @@ void incflo::ApplyCorrector()
     icns().compute_source_term(amr_wind::FieldState::New);
 
     // *************************************************************************************
-    // Update velocity
+    // Evaluate right hand side and store in velocity
     // *************************************************************************************
     icns().compute_corrector_rhs(m_diff_type);
 

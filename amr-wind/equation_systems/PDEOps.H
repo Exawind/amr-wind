@@ -119,7 +119,7 @@ struct SrcTermOpBase
     }
 
     //! Update source terms during time-integration procedure
-    void operator()(const FieldState fstate)
+    void operator()(const FieldState fstate, const bool /* mesh_mapping */)
     {
         // Zero out source term
         this->fields.src_term.setVal(0.0);

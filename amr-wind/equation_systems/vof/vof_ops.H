@@ -45,9 +45,9 @@ struct ComputeRHSOp<VOF, Scheme>
 {
     explicit ComputeRHSOp(PDEFields& fields_in) : fields(fields_in) {}
 
-    void predictor_rhs(const DiffusionType, const amrex::Real) {}
+    void predictor_rhs(const DiffusionType, const amrex::Real, bool) {}
 
-    void corrector_rhs(const DiffusionType, const amrex::Real) {}
+    void corrector_rhs(const DiffusionType, const amrex::Real, bool) {}
 
     // data members
     PDEFields& fields;

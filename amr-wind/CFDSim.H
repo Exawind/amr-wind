@@ -6,6 +6,7 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/PDEBase.H"
 #include "amr-wind/core/Physics.H"
+#include "amr-wind/core/MeshMap.H"
 
 /** AMR-Wind
  *
@@ -89,6 +90,9 @@ public:
         return m_overset_mgr.get();
     }
 
+    MeshMap* mesh_mapping() { return m_mesh_map.get(); }
+    const MeshMap* mesh_mapping() const { return m_mesh_map.get(); }
+
     ExtSolverMgr& ext_solver_manager() { return *m_ext_solver_mgr; }
     const ExtSolverMgr& ext_solver_manager() const { return *m_ext_solver_mgr; }
 
@@ -102,6 +106,12 @@ public:
 
     //! Activate overset connectivity
     void activate_overset();
+
+    //! Activate mesh mapping
+    void activate_mesh_map();
+
+    bool has_mesh_mapping() { return m_mesh_mapping; }
+    bool has_mesh_mapping() const { return m_mesh_mapping; }
 
 private:
     amrex::AmrCore& m_mesh;
@@ -122,7 +132,11 @@ private:
 
     std::unique_ptr<OversetManager> m_overset_mgr;
 
+    std::unique_ptr<MeshMap> m_mesh_map;
+
     std::unique_ptr<ExtSolverMgr> m_ext_solver_mgr;
+
+    bool m_mesh_mapping{false};
 };
 
 } // namespace amr_wind

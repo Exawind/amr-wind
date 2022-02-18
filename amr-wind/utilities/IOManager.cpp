@@ -1,5 +1,8 @@
+#include <AMReX_MultiFab.H>
+#include <AMReX_REAL.H>
 #include <chrono>
 #include <ctime>
+#include <fstream>
 
 #include "amr-wind/utilities/IOManager.H"
 #include "amr-wind/CFDSim.H"
@@ -7,6 +10,7 @@
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/utilities/DerivedQuantity.H"
 #include "amr-wind/utilities/DerivedQtyDefs.H"
+#include "amr-wind/utilities/ncutils/nc_interface.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_PlotFileUtil.H"

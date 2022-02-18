@@ -12,6 +12,7 @@
 #include "AMReX_MLTensorOp.H"
 #include "AMReX_MLMG.H"
 #include "AMReX_AmrCore.H"
+#include "AMReX_MultiFabUtil.H"
 
 namespace amr_wind {
 namespace pde {
@@ -32,6 +33,7 @@ public:
     DiffSolverIface(
         PDEFields& fields,
         const bool has_overset,
+        const bool mesh_mapping,
         const std::string& prefix = "diffusion");
 
     virtual ~DiffSolverIface() = default;
@@ -44,16 +46,6 @@ public:
 
     virtual void linsys_solve_impl();
 
-protected:
-    //! Sets up the linear operator (e.g., setup BCs, etc.)
-    virtual void setup_operator(
-        LinOp& linop,
-        const amrex::Real alpha,
-        const amrex::Real beta,
-        const FieldState fstate);
-
-    virtual void setup_solver(amrex::MLMG& mlmg);
-
     virtual void set_acoeffs(LinOp& linop, const FieldState fstate);
 
     template <typename L>
@@ -65,9 +57,13 @@ protected:
         const int nlevels = m_pdefields.repo.num_active_levels();
         const auto& viscosity = m_pdefields.mueff;
         const auto& geom = m_pdefields.repo.mesh().Geom();
+
         for (int lev = 0; lev < nlevels; ++lev) {
             auto b = diffusion::average_velocity_eta_to_faces(
                 geom[lev], viscosity(lev));
+            if (m_mesh_mapping) {
+                diffusion::viscosity_to_uniform_space(b, m_pdefields.repo, lev);
+            }
             linop.setShearViscosity(lev, amrex::GetArrOfConstPtrs(b));
         }
     }
@@ -81,17 +77,33 @@ protected:
         const int nlevels = m_pdefields.repo.num_active_levels();
         const auto& viscosity = m_pdefields.mueff;
         const auto& geom = m_pdefields.repo.mesh().Geom();
+
         for (int lev = 0; lev < nlevels; ++lev) {
             auto b = diffusion::average_velocity_eta_to_faces(
                 geom[lev], viscosity(lev));
+            if (m_mesh_mapping) {
+                diffusion::viscosity_to_uniform_space(b, m_pdefields.repo, lev);
+            }
             linop.setBCoeffs(lev, amrex::GetArrOfConstPtrs(b));
         }
     }
+
+protected:
+    //! Sets up the linear operator (e.g., setup BCs, etc.)
+    virtual void setup_operator(
+        LinOp& linop,
+        const amrex::Real alpha,
+        const amrex::Real beta,
+        const FieldState fstate);
+
+    virtual void setup_solver(amrex::MLMG& mlmg);
 
     PDEFields& m_pdefields;
     Field& m_density;
 
     MLMGOptions m_options;
+
+    bool m_mesh_mapping{false};
 
     std::unique_ptr<LinOp> m_solver;
     std::unique_ptr<LinOp> m_applier;
@@ -113,8 +125,10 @@ struct DiffusionOp<
         std::is_same<typename PDE::MLDiffOp, amrex::MLABecLaplacian>::value,
         "Invalid linear operator for scalar diffusion operator");
 
-    DiffusionOp(PDEFields& fields, const bool has_overset)
-        : DiffSolverIface<typename PDE::MLDiffOp>(fields, has_overset)
+    DiffusionOp(
+        PDEFields& fields, const bool has_overset, const bool mesh_mapping)
+        : DiffSolverIface<typename PDE::MLDiffOp>(
+              fields, has_overset, mesh_mapping)
     {
         this->m_solver->setDomainBC(
             diffusion::get_diffuse_scalar_bc(
