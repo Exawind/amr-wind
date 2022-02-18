@@ -32,6 +32,9 @@ void LidarSampler::initialize(const std::string& key)
     // Elevation angle [degrees]
     pp.getarr("elevation_table", m_elevation_table);
 
+    // Establish if the time table is periodic (repeats in time) or not
+    pp.query("periodic", m_periodic);
+
     // Number of elements in the table
     int np = m_time_table.size();
 
@@ -45,6 +48,13 @@ void LidarSampler::initialize(const std::string& key)
             "elevation_table must have same number of entries as time_table ");
     }
 
+    // Initialize the star and end variables
+    m_start = m_origin;
+    m_end = {0., 0., 0.};
+
+    // The period to know if the table repeats in time
+    m_period = m_time_table[np - 1] - m_time_table[0];
+
     LidarSampler::update_sampling_locations();
 
     check_bounds();
@@ -55,32 +65,23 @@ void LidarSampler::update_sampling_locations()
 
     amrex::Real time = m_sim.time().current_time();
 
+    // If the time table is periodic, make sure to get the correct time
+    if (m_periodic) time = std::fmod(time, m_period);
+
     // The current azimuth angle
-    const amrex::Real current_azimuth =
-        ::amr_wind::interp::linear(m_time_table, m_azimuth_table, time);
+    const amrex::Real current_azimuth = utils::radians(
+        ::amr_wind::interp::linear(m_time_table, m_azimuth_table, time));
 
-    const amrex::Real current_elevation =
-        ::amr_wind::interp::linear(m_time_table, m_elevation_table, time);
+    const amrex::Real current_elevation = utils::radians(
+        90. -
+        ::amr_wind::interp::linear(m_time_table, m_elevation_table, time));
 
-    // Need to assign start point as the origin
-    m_start = m_origin;
-    // Initialize the end point
-    m_end = m_origin;
-
-    // End point of the beam
-    vs::Vector beam_vector = {m_length, 0., 0.};
-
-    // The rotation matrix (takes in angles in degrees)
-    vs::Tensor r1 = vs::yrot(current_elevation) & vs::zrot(current_azimuth);
-
-    // Perform the vector rotation
-    beam_vector = r1 & beam_vector;
-
-    // Add the origin location to the beam vector
-    for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-        beam_vector[d] += m_origin[d];
-        m_end[d] = beam_vector[d];
-    }
+    // Coordinate transform spherical to cartesian
+    m_end[0] = m_start[0] + m_length * std::cos(current_azimuth) *
+                                std::sin(current_elevation);
+    m_end[1] = m_start[1] + m_length * std::sin(current_azimuth) *
+                                std::sin(current_elevation);
+    m_end[2] = m_start[2] + m_length * std::cos(current_elevation);
 }
 
 #ifdef AMR_WIND_USE_NETCDF
