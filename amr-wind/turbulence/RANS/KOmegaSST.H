@@ -61,6 +61,9 @@ public:
     //! Return turbulence model coefficients
     TurbulenceModel::CoeffsDictType model_coeffs() const override;
 
+    // map shear production to uniform space
+    void shear_prod_to_uniform_space(Field&, const Field&);
+
 protected:
     Field& m_vel;
 
