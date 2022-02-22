@@ -222,7 +222,7 @@ void MultiPhase::set_density_via_vof()
                 });
         }
     }
-    // m_density.fillpatch(m_sim.time().current_time());
+    m_density.fillpatch(m_sim.time().current_time());
 }
 
 void MultiPhase::favre_filtering()
