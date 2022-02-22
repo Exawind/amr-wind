@@ -10,24 +10,64 @@ namespace abl_map {
 
 namespace {
 
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real x_geom(
+    const amrex::Real x,
+    const amrex::Real sratio,
+    const amrex::Real delta0)
+{
+    return delta0/sratio/(1.0-sratio)*(1.0-std::pow(sratio, x+1.0))-delta0/sratio;
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real x_const(
+    const amrex::Real x,
+    const amrex::Real slope,
+    const amrex::Real xinv,
+    const amrex::Real lmatch)
+{
+    return slope*(x - xinv) + lmatch;
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real x_inv(
+    const amrex::Real trans_loc,
+    const amrex::Real sratio,
+    const amrex::Real delta0)
+{
+    return std::round(std::log(1.0-(trans_loc-delta0/sratio)*sratio*(1.0-sratio)/delta0)/std::log(sratio));
+}
+
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_fac(
     const amrex::Real x,
+    const amrex::Real trans_width,
+    const amrex::Real trans_loc,
     const amrex::Real sratio,
     const amrex::Real delta0,
     const amrex::Real len)
 {
     // This is the derivative of eval_coord() below
-    return delta0/sratio/(1.0-sratio)*(x+1.0)*std::pow(sratio, x);
+    const amrex::Real xinv = x_inv(trans_loc, sratio, delta0);
+    const amrex::Real h = 0.5*(1.0+std::tanh((x-xinv)/trans_width));
+    const amrex::Real hprime = 0.5*std::pow(std::acosh((x-xinv)/trans_width),2.0)/trans_width;
+    const amrex::Real lmatch = x_geom(xinv, sratio, delta0);
+    const amrex::Real slope = lmatch-x_geom(xinv-1.0, sratio, delta0);
+    const amrex::Real xprime_geom = delta0/sratio/(sratio-1.0)*std::pow(sratio, x-1.0)*std::log(sratio);
+
+    return (1.0-h)*xprime_geom - hprime*x_geom(x,sratio,delta0) + h*slope + hprime*x_const(x,slope,xinv,lmatch);
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_coord(
     const amrex::Real x,
+    const amrex::Real trans_loc,
+    const amrex::Real trans_width,
     const amrex::Real sratio,
     const amrex::Real delta0,
     const amrex::Real len)
 {
-    // TODO: switch to constant cell spacing after some height?
-    return delta0/sratio/(1.0-sratio)*(1.0-std::pow(sratio, x+1.0))-delta0/sratio;
+    const amrex::Real xinv = x_inv(trans_loc, sratio, delta0);
+    const amrex::Real h = 0.5*(1.0+std::tanh((x-xinv)/trans_width));
+    const amrex::Real lmatch = x_geom(xinv, sratio, delta0);
+    const amrex::Real slope = lmatch-x_geom(xinv-1.0, sratio, delta0);
+
+    return x_geom(x,sratio,delta0)*(1.0-h) + h*x_const(x,slope,xinv,lmatch);
 }
 
 } // namespace
@@ -44,6 +84,8 @@ ABL2ConstantScaling::ABL2ConstantScaling(const CFDSim& sim)
     amrex::ParmParse pp("ABL2ConstantScaling");
     pp.queryarr("sratio", m_sratio, 0, AMREX_SPACEDIM);
     pp.queryarr("delta0", m_delta0, 0, AMREX_SPACEDIM);
+    pp.queryarr("transwidth", m_transwid, 0, AMREX_SPACEDIM);
+    pp.queryarr("translocation", m_transloc, 0, AMREX_SPACEDIM);
     pp.queryarr("do_map", m_map, 0, AMREX_SPACEDIM);
 }
 
@@ -65,6 +107,10 @@ void ABL2ConstantScaling::create_cell_node_map(
         {m_sratio[0], m_sratio[1], m_sratio[2]}};
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> delta0{
         {m_delta0[0], m_delta0[1], m_delta0[2]}};
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> transwid{
+        {m_transwid[0], m_transwid[1], m_transwid[2]}};
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> transloc{
+        {m_transloc[0], m_transloc[1], m_transloc[2]}};
     amrex::GpuArray<int, AMREX_SPACEDIM> do_map{{m_map[0], m_map[1], m_map[2]}};
     const auto eps = m_eps;
 
@@ -75,6 +121,12 @@ void ABL2ConstantScaling::create_cell_node_map(
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> len{
         {prob_hi[0] - prob_lo[0], prob_hi[1] - prob_lo[1],
          prob_hi[2] - prob_lo[2]}};
+
+    amrex::Print() << "Transition Width:    " << transwid[0] << transwid[1] << transwid[2]
+                       << std::endl;
+
+    amrex::Print() << "Transition Location:    " << transloc[0] << transloc[1] << transloc[2]
+                       << std::endl;
 
     for (amrex::MFIter mfi(m_mesh_scale_fac_cc(lev)); mfi.isValid(); ++mfi) {
 
@@ -87,9 +139,12 @@ void ABL2ConstantScaling::create_cell_node_map(
                 amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
                 amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
 
-                amrex::Real fac_x = eval_fac(x, sratio[0], delta0[0], len[0]);
-                amrex::Real fac_y = eval_fac(y, sratio[1], delta0[1], len[1]);
-                amrex::Real fac_z = eval_fac(z, sratio[2], delta0[2], len[2]);
+                amrex::Real fac_x = 
+                    eval_fac(x, transloc[0], transwid[0], sratio[0], delta0[0], len[0]);
+                amrex::Real fac_y = 
+                    eval_fac(y, transloc[1], transwid[1], sratio[1], delta0[1], len[1]);
+                amrex::Real fac_z = 
+                    eval_fac(z, transloc[2], transwid[2], sratio[2], delta0[2], len[2]);
 
                 bool in_domain =
                     ((x > prob_lo[0]) && (x < prob_hi[0]) && (y > prob_lo[1]) &&
@@ -112,9 +167,12 @@ void ABL2ConstantScaling::create_cell_node_map(
                 amrex::Real y = prob_lo[1] + j * dx[1];
                 amrex::Real z = prob_lo[2] + k * dx[2];
 
-                amrex::Real fac_x = eval_fac(x, sratio[0], delta0[0], len[0]);
-                amrex::Real fac_y = eval_fac(y, sratio[1], delta0[1], len[1]);
-                amrex::Real fac_z = eval_fac(z, sratio[2], delta0[2], len[2]);
+                amrex::Real fac_x = 
+                    eval_fac(x, transloc[0], transwid[0], sratio[0], delta0[0], len[0]);
+                amrex::Real fac_y = 
+                    eval_fac(y, transloc[1], transwid[1], sratio[1], delta0[1], len[1]);
+                amrex::Real fac_z = 
+                    eval_fac(z, transloc[2], transwid[2], sratio[2], delta0[2], len[2]);
 
                 bool in_domain =
                     ((x >= prob_lo[0] - eps) && (x <= prob_hi[0] + eps) &&
@@ -141,6 +199,10 @@ void ABL2ConstantScaling::create_face_map(int lev, const amrex::Geometry& geom)
         {m_sratio[0], m_sratio[1], m_sratio[2]}};
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> delta0{
         {m_delta0[0], m_delta0[1], m_delta0[2]}};
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> transwid{
+        {m_transwid[0], m_transwid[1], m_transwid[2]}};
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> transloc{
+        {m_transloc[0], m_transloc[1], m_transloc[2]}};
     amrex::GpuArray<int, AMREX_SPACEDIM> do_map{{m_map[0], m_map[1], m_map[2]}};
     const auto eps = m_eps;
 
@@ -163,9 +225,12 @@ void ABL2ConstantScaling::create_face_map(int lev, const amrex::Geometry& geom)
                 amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
                 amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
 
-                amrex::Real fac_x = eval_fac(x, sratio[0], delta0[0], len[0]);
-                amrex::Real fac_y = eval_fac(y, sratio[1], delta0[1], len[1]);
-                amrex::Real fac_z = eval_fac(z, sratio[2], delta0[2], len[2]);
+                amrex::Real fac_x = 
+                    eval_fac(x, transloc[0], transwid[0], sratio[0], delta0[0], len[0]);
+                amrex::Real fac_y = 
+                    eval_fac(y, transloc[1], transwid[1], sratio[1], delta0[1], len[1]);
+                amrex::Real fac_z = 
+                    eval_fac(z, transloc[2], transwid[2], sratio[2], delta0[2], len[2]);
 
                 bool in_domain =
                     ((x >= prob_lo[0] - eps) && (x <= prob_hi[0] + eps) &&
@@ -192,9 +257,12 @@ void ABL2ConstantScaling::create_face_map(int lev, const amrex::Geometry& geom)
                 amrex::Real y = prob_lo[1] + j * dx[1];
                 amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
 
-                amrex::Real fac_x = eval_fac(x, sratio[0], delta0[0], len[0]);
-                amrex::Real fac_y = eval_fac(y, sratio[1], delta0[1], len[1]);
-                amrex::Real fac_z = eval_fac(z, sratio[2], delta0[2], len[2]);
+                amrex::Real fac_x = 
+                    eval_fac(x, transloc[0], transwid[0], sratio[0], delta0[0], len[0]);
+                amrex::Real fac_y = 
+                    eval_fac(y, transloc[1], transwid[1], sratio[1], delta0[1], len[1]);
+                amrex::Real fac_z = 
+                    eval_fac(z, transloc[2], transwid[2], sratio[2], delta0[2], len[2]);
 
                 bool in_domain =
                     ((x > prob_lo[0]) && (x < prob_hi[0]) &&
@@ -221,9 +289,12 @@ void ABL2ConstantScaling::create_face_map(int lev, const amrex::Geometry& geom)
                 amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
                 amrex::Real z = prob_lo[2] + k * dx[2];
 
-                amrex::Real fac_x = eval_fac(x, sratio[0], delta0[0], len[0]);
-                amrex::Real fac_y = eval_fac(y, sratio[1], delta0[1], len[1]);
-                amrex::Real fac_z = eval_fac(z, sratio[2], delta0[2], len[2]);
+                amrex::Real fac_x = 
+                    eval_fac(x, transloc[0], transwid[0], sratio[0], delta0[0], len[0]);
+                amrex::Real fac_y = 
+                    eval_fac(y, transloc[1], transwid[1], sratio[1], delta0[1], len[1]);
+                amrex::Real fac_z = 
+                    eval_fac(z, transloc[2], transwid[2], sratio[2], delta0[2], len[2]);
 
                 bool in_domain =
                     ((x > prob_lo[0]) && (x < prob_hi[0]) && (y > prob_lo[1]) &&
@@ -263,6 +334,10 @@ void ABL2ConstantScaling::create_non_uniform_mesh(
         {m_sratio[0], m_sratio[1], m_sratio[2]}};
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> delta0{
         {m_delta0[0], m_delta0[1], m_delta0[2]}};
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> transwid{
+        {m_transwid[0], m_transwid[1], m_transwid[2]}};
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> transloc{
+        {m_transloc[0], m_transloc[1], m_transloc[2]}};
     amrex::GpuArray<int, AMREX_SPACEDIM> do_map{{m_map[0], m_map[1], m_map[2]}};
     const auto eps = m_eps;
 
@@ -286,11 +361,11 @@ void ABL2ConstantScaling::create_non_uniform_mesh(
                 amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
 
                 amrex::Real x_non_uni =
-                    eval_coord(x, sratio[0], delta0[0], len[0]);
+                    eval_coord(x, transloc[0], transwid[0], sratio[0], delta0[0], len[0]);
                 amrex::Real y_non_uni =
-                    eval_coord(y, sratio[1], delta0[1], len[1]);
+                    eval_coord(y, transloc[1], transwid[1], sratio[1], delta0[1], len[1]);
                 amrex::Real z_non_uni =
-                    eval_coord(z, sratio[2], delta0[2], len[2]);
+                    eval_coord(z, transloc[2], transwid[2], sratio[2], delta0[2], len[2]);
 
                 bool in_domain =
                     ((x > prob_lo[0]) && (x < prob_hi[0]) && (y > prob_lo[1]) &&
@@ -314,11 +389,11 @@ void ABL2ConstantScaling::create_non_uniform_mesh(
                 amrex::Real z = prob_lo[2] + k * dx[2];
 
                 amrex::Real x_non_uni =
-                    eval_coord(x, sratio[0], delta0[0], len[0]);
+                    eval_coord(x, transloc[0], transwid[0], sratio[0], delta0[0], len[0]);
                 amrex::Real y_non_uni =
-                    eval_coord(y, sratio[1], delta0[1], len[1]);
+                    eval_coord(y, transloc[1], transwid[1], sratio[1], delta0[1], len[1]);
                 amrex::Real z_non_uni =
-                    eval_coord(z, sratio[2], delta0[2], len[2]);
+                    eval_coord(z, transloc[2], transwid[2], sratio[2], delta0[2], len[2]);
 
                 bool in_domain =
                     ((x >= prob_lo[0] - eps) && (x <= prob_hi[0] + eps) &&

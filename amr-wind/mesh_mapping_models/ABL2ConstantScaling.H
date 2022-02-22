@@ -43,6 +43,8 @@ private:
     //! User input parameters
     amrex::Vector<amrex::Real> m_sratio{{1.0, 1.0, 1.05}};
     amrex::Vector<amrex::Real> m_delta0{{1.0, 1.0, 1.0}};
+    amrex::Vector<amrex::Real> m_transwid{{0.1, 0.1, 0.1}};
+    amrex::Vector<amrex::Real> m_transloc{{0.0, 0.0, 10.0}};
     amrex::Vector<int> m_map{{0, 0, 1}};
 
     amrex::Real m_eps{1e-11};
