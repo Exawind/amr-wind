@@ -419,7 +419,7 @@ ABLTKEWallFunc::ABLTKEWallFunc(
 
 template <typename ShearStress>
 void ABLTKEWallFunc::wall_model(
-    Field& tke, const FieldState rho_state, const ShearStress& tau)
+    Field& tke, const FieldState /*unused*/, const ShearStress& tau)
 {
     constexpr int idim = 2;
     auto& repo = tke.repo();
@@ -491,7 +491,7 @@ ABLSDRWallFunc::ABLSDRWallFunc(
 
 template <typename ShearStress>
 void ABLSDRWallFunc::wall_model(
-    Field& sdr, const FieldState rho_state, const ShearStress& tau)
+    Field& sdr, const FieldState /*unused*/, const ShearStress& tau)
 {
     constexpr int idim = 2;
     auto& repo = sdr.repo();
@@ -548,6 +548,79 @@ void ABLSDRWallFunc::operator()(Field& sdr, const FieldState rho_state)
         wall_model(sdr, rho_state, tau);
     }
 }
+
+ABLEpsWallFunc::ABLEpsWallFunc(
+    Field& /*unused*/, const ABLWallFunction& wall_fuc)
+    : m_wall_func(wall_fuc)
+{
+    amrex::ParmParse pp("ABL");
+    pp.query("wall_shear_stress_type", m_wall_shear_stress_type);
+    m_wall_shear_stress_type = amrex::toLower(m_wall_shear_stress_type);
+    amrex::Print() << "Eps model: " << m_wall_shear_stress_type
+                   << std::endl;
+}
+
+template <typename ShearStress>
+void ABLEpsWallFunc::wall_model(
+    Field& eps, const FieldState /*unused*/, const ShearStress& tau)
+{
+    constexpr int idim = 2;
+    auto& repo = eps.repo();
+
+    // Return early if the user hasn't requested a wall model BC for tke
+    amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
+    amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
+
+    if (!(eps.bc_type()[zlo] == BC::wall_model ||
+          eps.bc_type()[zhi] == BC::wall_model)) {
+        return;
+    }
+    BL_PROFILE("amr-wind::ABLEpsWallFunc");
+    const int nlevels = repo.num_active_levels();
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& geom   = repo.mesh().Geom(lev);
+        const auto& domain = geom.Domain();
+        amrex::MFItInfo mfi_info{};
+        auto& epsilon      = eps(lev);
+
+        if (amrex::Gpu::notInLaunchRegion()) {
+            mfi_info.SetDynamic(true);
+        }
+#ifdef _OPENMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+	for (amrex::MFIter mfi(epsilon, mfi_info); mfi.isValid(); ++mfi) {
+            const auto& bx  = mfi.validbox();
+            auto epsarr   = epsilon.array(mfi);
+	    
+            if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
+                eps.bc_type()[zlo] == BC::wall_model) {
+                amrex::ParallelFor(
+                    amrex::bdryLo(bx, idim),
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+
+		      epsarr(i, j, k - 1) = tau.calc_eps();
+                    });
+            }
+	    // TODO: FILL IN SDR ZHI HERE
+	}
+
+    }
+
+}
+
+void ABLEpsWallFunc::operator()(Field& eps, const FieldState rho_state)
+{
+    const auto& mo = m_wall_func.mo();
+    amrex::Real Cmu = m_wall_func.Cmu();
+
+    if (m_wall_shear_stress_type == "alinot") {
+        auto tau = ShearStressAlinot(mo, Cmu);
+        wall_model(eps, rho_state, tau);
+    }
+}
+
 
 
 } // namespace amr_wind

@@ -137,6 +137,22 @@ private:
     std::string m_wall_shear_stress_type{"alinot"};
 };
 
+class ABLEpsWallFunc : public FieldBCIface
+{
+public:
+    ABLEpsWallFunc(Field& eps, const ABLWallFunction& wall_fuc);
+
+    void operator()(Field& eps, const FieldState rho_state) override;
+
+    template <typename ShearStress>
+    void wall_model(
+        Field& eps, const FieldState rho_state, const ShearStress& tau);
+
+private:
+    const ABLWallFunction& m_wall_func;
+    std::string m_wall_shear_stress_type{"alinot"};
+};
+
 } // namespace amr_wind
 
 #endif /* ABLWALLFUNCTION_H */
