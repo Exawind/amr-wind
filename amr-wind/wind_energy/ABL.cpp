@@ -82,6 +82,12 @@ void ABL::initialize_fields(int level, const amrex::Geometry& geom)
         m_field_init->init_sdr(level, geom, sdr);
     }
 
+    if (m_sim.repo().field_exists("eps")) {
+        m_eps = &(m_sim.repo().get_field("eps"));
+        auto& eps = (*m_eps)(level);
+        m_field_init->init_eps(level, geom, eps);
+    }
+
 }
 
 void ABL::post_init_actions()

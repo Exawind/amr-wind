@@ -95,6 +95,7 @@ private:
     Field* m_temperature{nullptr};
     Field* m_tke{nullptr};
     Field* m_sdr{nullptr};
+    Field* m_eps{nullptr};
 
     ABLWallFunction m_abl_wall_func;
 
