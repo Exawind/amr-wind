@@ -103,8 +103,12 @@ void ABL::post_init_actions()
     (*m_temperature).register_custom_bc<ABLTempWallFunc>(m_abl_wall_func);
 
     // Register wall functions for TKE and SDR
-    (*m_tke).register_custom_bc<ABLTKEWallFunc>(m_abl_wall_func);
-    (*m_sdr).register_custom_bc<ABLSDRWallFunc>(m_abl_wall_func);
+    if (m_sim.repo().field_exists("tke")) {
+      (*m_tke).register_custom_bc<ABLTKEWallFunc>(m_abl_wall_func);
+    }
+    if (m_sim.repo().field_exists("sdr")) {
+      (*m_sdr).register_custom_bc<ABLSDRWallFunc>(m_abl_wall_func);
+    }
 
     m_bndry_plane->post_init_actions();
 }

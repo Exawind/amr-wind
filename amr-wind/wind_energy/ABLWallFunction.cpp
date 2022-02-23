@@ -412,6 +412,8 @@ ABLTKEWallFunc::ABLTKEWallFunc(
     amrex::ParmParse pp("ABL");
     pp.query("wall_shear_stress_type", m_wall_shear_stress_type);
     m_wall_shear_stress_type = amrex::toLower(m_wall_shear_stress_type);
+    amrex::Print() << "TKE model: " << m_wall_shear_stress_type
+                   << std::endl;
 }
 
 
@@ -432,8 +434,50 @@ void ABLTKEWallFunc::wall_model(
     }
 
     BL_PROFILE("amr-wind::ABLTKEWallFunc");
+    auto& velocity = repo.get_field("velocity");
+    const auto& density = repo.get_field("density", rho_state);
+    const int nlevels = repo.num_active_levels();
 
-    // TODO: FILL IN HERE
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& geom = repo.mesh().Geom(lev);
+        const auto& domain = geom.Domain();
+        amrex::MFItInfo mfi_info{};
+	const auto& rho_lev = density(lev);
+        auto& vold_lev = velocity.state(FieldState::Old)(lev);
+	auto& kold_lev = tke.state(FieldState::Old)(lev);
+        auto& k_tke    = tke(lev);
+
+        if (amrex::Gpu::notInLaunchRegion()) {
+            mfi_info.SetDynamic(true);
+        }
+#ifdef _OPENMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+	for (amrex::MFIter mfi(k_tke, mfi_info); mfi.isValid(); ++mfi) {
+            const auto& bx = mfi.validbox();
+            auto vold_arr = vold_lev.array(mfi);
+            auto kold_arr = kold_lev.array(mfi);
+            auto karr     = k_tke.array(mfi);
+            auto den      = rho_lev.array(mfi);
+
+            if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
+                tke.bc_type()[zlo] == BC::wall_model) {
+                amrex::ParallelFor(
+                    amrex::bdryLo(bx, idim),
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        const amrex::Real uu = vold_arr(i, j, k, 0);
+                        const amrex::Real vv = vold_arr(i, j, k, 1);
+                        const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
+                        const amrex::Real k2 = kold_arr(i, j, k);
+
+			// TODO: FILL IN TKE ENTRY HERE
+                        karr(i, j, k - 1) = 0.0;
+                    });
+            }
+	    // TODO: FILL IN ZHI TKE
+
+	}
+    }
 }
 
 void ABLTKEWallFunc::operator()(Field& tke, const FieldState rho_state)
@@ -469,6 +513,8 @@ ABLSDRWallFunc::ABLSDRWallFunc(
     amrex::ParmParse pp("ABL");
     pp.query("wall_shear_stress_type", m_wall_shear_stress_type);
     m_wall_shear_stress_type = amrex::toLower(m_wall_shear_stress_type);
+    amrex::Print() << "SDR model: " << m_wall_shear_stress_type
+                   << std::endl;
 }
 
 template <typename ShearStress>
@@ -488,8 +534,49 @@ void ABLSDRWallFunc::wall_model(
     }
 
     BL_PROFILE("amr-wind::ABLSDRWallFunc");
+    auto& velocity = repo.get_field("velocity");
+    const auto& density = repo.get_field("density", rho_state);
+    const int nlevels = repo.num_active_levels();
 
-    // TODO: FILL IN HERE
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& geom = repo.mesh().Geom(lev);
+        const auto& domain = geom.Domain();
+        amrex::MFItInfo mfi_info{};
+	const auto& rho_lev = density(lev);
+        auto& vold_lev = velocity.state(FieldState::Old)(lev);
+	auto& sdrold_lev = sdr.state(FieldState::Old)(lev);
+        auto& omega    = sdr(lev);
+
+        if (amrex::Gpu::notInLaunchRegion()) {
+            mfi_info.SetDynamic(true);
+        }
+#ifdef _OPENMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+	for (amrex::MFIter mfi(omega, mfi_info); mfi.isValid(); ++mfi) {
+            const auto& bx  = mfi.validbox();
+            auto vold_arr   = vold_lev.array(mfi);
+            auto sdrold_arr = sdrold_lev.array(mfi);
+            auto omegaarr   = omega.array(mfi);
+            auto den        = rho_lev.array(mfi);
+	    
+            if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
+                sdr.bc_type()[zlo] == BC::wall_model) {
+                amrex::ParallelFor(
+                    amrex::bdryLo(bx, idim),
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        const amrex::Real uu   = vold_arr(i, j, k, 0);
+                        const amrex::Real vv   = vold_arr(i, j, k, 1);
+                        const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
+                        const amrex::Real sdr2 = sdrold_arr(i, j, k);
+
+			// TODO: FILL IN OMEGA ENTRY HERE
+                        omegaarr(i, j, k - 1) = 0.0;
+                    });
+            }
+	    // TODO: FILL IN SDR ZHI HERE
+	}
+    }
 }
 
 void ABLSDRWallFunc::operator()(Field& sdr, const FieldState rho_state)
