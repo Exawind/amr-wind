@@ -123,9 +123,24 @@ struct DiffusionOp<SDR, Scheme> : public DiffSolverIface<typename SDR::MLDiffOp>
         auto lhs_total = repo.create_scratch_field(1, 1);
         field_ops::lincomb(
             *lhs_total, 1.0, m_lhs_src_term, 0, 1.0, density, 0, 0, 1, 1);
+        Field const* mesh_detJ =
+            m_mesh_mapping ? &(repo.get_mesh_mapping_detJ(FieldLoc::CELL))
+                           : nullptr;
+        std::unique_ptr<ScratchField> lhs_times_detJ =
+            m_mesh_mapping ? repo.create_scratch_field(
+                                 1, m_density.num_grow()[0], FieldLoc::CELL)
+                           : nullptr;
 
         for (int lev = 0; lev < nlevels; ++lev) {
-            linop.setACoeffs(lev, (*lhs_total)(lev));
+            if (m_mesh_mapping) {
+                (*lhs_times_detJ)(lev).setVal(0.0);
+                amrex::MultiFab::AddProduct(
+                    (*lhs_times_detJ)(lev), (*lhs_total)(lev), 0,
+                    (*mesh_detJ)(lev), 0, 0, 1, m_density.num_grow()[0]);
+                linop.setACoeffs(lev, (*lhs_times_detJ)(lev));
+            } else {
+                linop.setACoeffs(lev, (*lhs_total)(lev));
+            }
         }
     }
 
