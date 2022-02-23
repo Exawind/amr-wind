@@ -110,7 +110,7 @@ public:
 
 private:
     const ABLWallFunction& m_wall_func;
-    std::string m_wall_shear_stress_type{"moeng"};
+    std::string m_wall_shear_stress_type{"alinot"};
 };
 
 class ABLSDRWallFunc : public FieldBCIface
@@ -126,7 +126,7 @@ public:
 
 private:
     const ABLWallFunction& m_wall_func;
-    std::string m_wall_shear_stress_type{"moeng"};
+    std::string m_wall_shear_stress_type{"alinot"};
 };
 
 } // namespace amr_wind

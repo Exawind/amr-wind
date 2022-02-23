@@ -69,6 +69,32 @@ struct MOData
     amrex::Real calc_psi_m(amrex::Real zeta) const;
     amrex::Real calc_psi_h(amrex::Real zeta) const;
     void update_fluxes(int max_iters = 25);
+
+    // The following are used for the RANS ABL k-omega/k-epsilon model
+    amrex::Real calc_phi_m_alinot(amrex::Real zeta) const;
+    amrex::Real calc_phi_eps_alinot(amrex::Real zeta) const;
+
+    amrex::Real phi_m_alinot() const
+    {
+        return calc_phi_m_alinot(zref / obukhov_len);
+    }
+
+    amrex::Real phi_m_alinot(amrex::Real z) const
+    {
+        return calc_phi_m_alinot(z / obukhov_len);
+    }
+
+    amrex::Real phi_eps_alinot() const
+    {
+        return calc_phi_eps_alinot(zref / obukhov_len);
+    }
+
+    amrex::Real phi_eps_alinot(amrex::Real z) const
+    {
+        return calc_phi_eps_alinot(z / obukhov_len);
+    }
+
+
 };
 
 } // namespace amr_wind
