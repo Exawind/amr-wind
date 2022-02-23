@@ -43,6 +43,12 @@ public:
     //! Initialize TKE field
     void init_tke(const amrex::Geometry& geom, amrex::MultiFab& tke) const;
 
+    //! Initialize SDR field
+    void init_sdr(const amrex::Geometry& geom, amrex::MultiFab& sdr) const;
+
+    //! Initialize epsilon field
+    void init_eps(const amrex::Geometry& geom, amrex::MultiFab& sdr) const;
+
 private:
     //! Initial velocity components
     amrex::Vector<amrex::Real> m_vel;
@@ -90,6 +96,13 @@ private:
 
     //! Initial value for tke field
     amrex::Real m_tke_init{0.1};
+
+    //! Initial value for eps field
+    amrex::Real m_eps_init{0.1};
+
+    //! Initial value for sdr field
+    //! Default value set based on https://turbmodels.larc.nasa.gov/sst.html
+    amrex::Real m_sdr_init{25.0};
 
     //! Perturb initial velocity field with sinusoidal fluctuations
     bool m_perturb_vel{true};

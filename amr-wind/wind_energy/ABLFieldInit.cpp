@@ -32,6 +32,10 @@ ABLFieldInit::ABLFieldInit()
 
     pp_abl.query("init_tke", m_tke_init);
 
+    pp_abl.query("initial_sdr_value", m_sdr_init);
+
+    pp_abl.query("init_eps", m_eps_init);
+
     // TODO: Modify this to accept velocity as a function of height
     // Extract velocity field from incflo
     amrex::ParmParse pp_incflo("incflo");
@@ -158,6 +162,22 @@ void ABLFieldInit::init_tke(
     const amrex::Geometry& /* geom */, amrex::MultiFab& tke) const
 {
     tke.setVal(m_tke_init, 1);
+}
+
+//! Initialize SDR field at the beginning of the simulation
+//! (applicable to K-Omega SST model)
+void ABLFieldInit::init_sdr(
+    const amrex::Geometry& /* geom */, amrex::MultiFab& sdr) const
+{
+    sdr.setVal(m_sdr_init, 1);
+}
+
+//! Initialize epsilon field at the beginning of the simulation
+//! (applicable to K-Epsilon model)
+void ABLFieldInit::init_eps(
+    const amrex::Geometry& /* geom */, amrex::MultiFab& eps) const
+{
+    eps.setVal(m_eps_init, 1);
 }
 
 } // namespace amr_wind
