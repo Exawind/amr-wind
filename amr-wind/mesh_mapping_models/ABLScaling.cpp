@@ -17,7 +17,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_fac(
     const amrex::Real len)
 {
     // This is the derivative of eval_coord() below
-    return delta0*std::pow(sratio, x)*std::log(sratio);
+    return delta0/sratio/(1.0-sratio)*(x+1.0)*std::pow(sratio, x);
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_coord(
@@ -27,7 +27,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_coord(
     const amrex::Real len)
 {
     // TODO: switch to constant cell spacing after some height?
-    return delta0*std::pow(sratio, x) - delta0;
+    return delta0/sratio/(1.0-sratio)*(1.0-std::pow(sratio, x+1.0))-delta0/sratio;
 }
 
 } // namespace
