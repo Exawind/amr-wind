@@ -32,14 +32,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_coord(
 
 } // namespace
 
-ABLScaling::ABLScaling(const CFDSim& sim)
-    : m_mesh_scale_fac_cc(sim.repo().get_field("mesh_scaling_factor_cc"))
-    , m_mesh_scale_fac_nd(sim.repo().get_field("mesh_scaling_factor_nd"))
-    , m_mesh_scale_fac_xf(sim.repo().get_field("mesh_scaling_factor_xf"))
-    , m_mesh_scale_fac_yf(sim.repo().get_field("mesh_scaling_factor_yf"))
-    , m_mesh_scale_fac_zf(sim.repo().get_field("mesh_scaling_factor_zf"))
-    , m_non_uniform_coord_cc(sim.repo().get_field("non_uniform_coord_cc"))
-    , m_non_uniform_coord_nd(sim.repo().get_field("non_uniform_coord_nd"))
+ABLScaling::ABLScaling()
 {
     amrex::ParmParse pp("ABLScaling");
     pp.queryarr("sratio", m_sratio, 0, AMREX_SPACEDIM);
@@ -76,11 +69,13 @@ void ABLScaling::create_cell_node_map(
         {prob_hi[0] - prob_lo[0], prob_hi[1] - prob_lo[1],
          prob_hi[2] - prob_lo[2]}};
 
-    for (amrex::MFIter mfi(m_mesh_scale_fac_cc(lev)); mfi.isValid(); ++mfi) {
+    for (amrex::MFIter mfi((*m_mesh_scale_fac_cc)(lev)); mfi.isValid(); ++mfi) {
 
         const auto& bx = mfi.growntilebox();
         amrex::Array4<amrex::Real> const& scale_fac_cc =
-            m_mesh_scale_fac_cc(lev).array(mfi);
+            (*m_mesh_scale_fac_cc)(lev).array(mfi);
+        amrex::Array4<amrex::Real> const& scale_detJ_cc =
+            (*m_mesh_scale_detJ_cc)(lev).array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
@@ -95,17 +90,20 @@ void ABLScaling::create_cell_node_map(
                     ((x > prob_lo[0]) && (x < prob_hi[0]) && (y > prob_lo[1]) &&
                      (y < prob_hi[1]) && (z > prob_lo[2]) && (z < prob_hi[2]));
 
-                scale_fac_cc(i, j, k, 0) =
-                    (do_map[0] && in_domain) ? fac_x : 1.0;
-                scale_fac_cc(i, j, k, 1) =
-                    (do_map[1] && in_domain) ? fac_y : 1.0;
-                scale_fac_cc(i, j, k, 2) =
-                    (do_map[2] && in_domain) ? fac_z : 1.0;
+                scale_fac_cc(i, j, k, 0) = in_domain ? fac_x : 1.0;
+                scale_fac_cc(i, j, k, 1) = in_domain ? fac_y : 1.0;
+                scale_fac_cc(i, j, k, 2) = in_domain ? fac_z : 1.0;
+
+                scale_detJ_cc(i, j, k) = scale_fac_cc(i, j, k, 0) *
+                                         scale_fac_cc(i, j, k, 1) *
+                                         scale_fac_cc(i, j, k, 2);
             });
 
         const auto& nbx = mfi.grownnodaltilebox();
         amrex::Array4<amrex::Real> const& scale_fac_nd =
-            m_mesh_scale_fac_nd(lev).array(mfi);
+            (*m_mesh_scale_fac_nd)(lev).array(mfi);
+        amrex::Array4<amrex::Real> const& scale_detJ_nd =
+            (*m_mesh_scale_detJ_nd)(lev).array(mfi);
         amrex::ParallelFor(
             nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real x = prob_lo[0] + i * dx[0];
@@ -121,12 +119,13 @@ void ABLScaling::create_cell_node_map(
                      (y >= prob_lo[1] - eps) && (y <= prob_hi[1] + eps) &&
                      (z >= prob_lo[2] - eps) && (z <= prob_hi[2] + eps));
 
-                scale_fac_nd(i, j, k, 0) =
-                    (do_map[0] && in_domain) ? fac_x : 1.0;
-                scale_fac_nd(i, j, k, 1) =
-                    (do_map[1] && in_domain) ? fac_y : 1.0;
-                scale_fac_nd(i, j, k, 2) =
-                    (do_map[2] && in_domain) ? fac_z : 1.0;
+                scale_fac_nd(i, j, k, 0) = in_domain ? fac_x : 1.0;
+                scale_fac_nd(i, j, k, 1) = in_domain ? fac_y : 1.0;
+                scale_fac_nd(i, j, k, 2) = in_domain ? fac_z : 1.0;
+
+                scale_detJ_nd(i, j, k) = scale_fac_nd(i, j, k, 0) *
+                                         scale_fac_nd(i, j, k, 1) *
+                                         scale_fac_nd(i, j, k, 2);
             });
     }
 
@@ -152,11 +151,13 @@ void ABLScaling::create_face_map(int lev, const amrex::Geometry& geom)
         {prob_hi[0] - prob_lo[0], prob_hi[1] - prob_lo[1],
          prob_hi[2] - prob_lo[2]}};
 
-    for (amrex::MFIter mfi(m_mesh_scale_fac_xf(lev)); mfi.isValid(); ++mfi) {
+    for (amrex::MFIter mfi((*m_mesh_scale_fac_xf)(lev)); mfi.isValid(); ++mfi) {
 
         const auto& bx = mfi.growntilebox();
         amrex::Array4<amrex::Real> const& scale_fac_xf =
-            m_mesh_scale_fac_xf(lev).array(mfi);
+            (*m_mesh_scale_fac_xf)(lev).array(mfi);
+        amrex::Array4<amrex::Real> const& scale_detJ_xf =
+            (*m_mesh_scale_detJ_xf)(lev).array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real x = prob_lo[0] + i * dx[0];
@@ -172,20 +173,23 @@ void ABLScaling::create_face_map(int lev, const amrex::Geometry& geom)
                      (y > prob_lo[1]) && (y < prob_hi[1]) && (z > prob_lo[2]) &&
                      (z < prob_hi[2]));
 
-                scale_fac_xf(i, j, k, 0) =
-                    (do_map[0] && in_domain) ? fac_x : 1.0;
-                scale_fac_xf(i, j, k, 1) =
-                    (do_map[1] && in_domain) ? fac_y : 1.0;
-                scale_fac_xf(i, j, k, 2) =
-                    (do_map[2] && in_domain) ? fac_z : 1.0;
+                scale_fac_xf(i, j, k, 0) = in_domain ? fac_x : 1.0;
+                scale_fac_xf(i, j, k, 1) = in_domain ? fac_y : 1.0;
+                scale_fac_xf(i, j, k, 2) = in_domain ? fac_z : 1.0;
+
+                scale_detJ_xf(i, j, k) = scale_fac_xf(i, j, k, 0) *
+                                         scale_fac_xf(i, j, k, 1) *
+                                         scale_fac_xf(i, j, k, 2);
             });
     }
 
-    for (amrex::MFIter mfi(m_mesh_scale_fac_yf(lev)); mfi.isValid(); ++mfi) {
+    for (amrex::MFIter mfi((*m_mesh_scale_fac_yf)(lev)); mfi.isValid(); ++mfi) {
 
         const auto& bx = mfi.growntilebox();
         amrex::Array4<amrex::Real> const& scale_fac_yf =
-            m_mesh_scale_fac_yf(lev).array(mfi);
+            (*m_mesh_scale_fac_yf)(lev).array(mfi);
+        amrex::Array4<amrex::Real> const& scale_detJ_yf =
+            (*m_mesh_scale_detJ_yf)(lev).array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
@@ -201,20 +205,23 @@ void ABLScaling::create_face_map(int lev, const amrex::Geometry& geom)
                      (y >= prob_lo[1] - eps) && (y <= prob_hi[1] + eps) &&
                      (z > prob_lo[2]) && (z < prob_hi[2]));
 
-                scale_fac_yf(i, j, k, 0) =
-                    (do_map[0] && in_domain) ? fac_x : 1.0;
-                scale_fac_yf(i, j, k, 1) =
-                    (do_map[1] && in_domain) ? fac_y : 1.0;
-                scale_fac_yf(i, j, k, 2) =
-                    (do_map[2] && in_domain) ? fac_z : 1.0;
+                scale_fac_yf(i, j, k, 0) = in_domain ? fac_x : 1.0;
+                scale_fac_yf(i, j, k, 1) = in_domain ? fac_y : 1.0;
+                scale_fac_yf(i, j, k, 2) = in_domain ? fac_z : 1.0;
+
+                scale_detJ_yf(i, j, k) = scale_fac_yf(i, j, k, 0) *
+                                         scale_fac_yf(i, j, k, 1) *
+                                         scale_fac_yf(i, j, k, 2);
             });
     }
 
-    for (amrex::MFIter mfi(m_mesh_scale_fac_zf(lev)); mfi.isValid(); ++mfi) {
+    for (amrex::MFIter mfi((*m_mesh_scale_fac_zf)(lev)); mfi.isValid(); ++mfi) {
 
         const auto& bx = mfi.growntilebox();
         amrex::Array4<amrex::Real> const& scale_fac_zf =
-            m_mesh_scale_fac_zf(lev).array(mfi);
+            (*m_mesh_scale_fac_zf)(lev).array(mfi);
+        amrex::Array4<amrex::Real> const& scale_detJ_zf =
+            (*m_mesh_scale_detJ_zf)(lev).array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
@@ -230,12 +237,13 @@ void ABLScaling::create_face_map(int lev, const amrex::Geometry& geom)
                      (y < prob_hi[1]) && (z >= prob_lo[2] - eps) &&
                      (z <= prob_hi[2] + eps));
 
-                scale_fac_zf(i, j, k, 0) =
-                    (do_map[0] && in_domain) ? fac_x : 1.0;
-                scale_fac_zf(i, j, k, 1) =
-                    (do_map[1] && in_domain) ? fac_y : 1.0;
-                scale_fac_zf(i, j, k, 2) =
-                    (do_map[2] && in_domain) ? fac_z : 1.0;
+                scale_fac_zf(i, j, k, 0) = in_domain ? fac_x : 1.0;
+                scale_fac_zf(i, j, k, 1) = in_domain ? fac_y : 1.0;
+                scale_fac_zf(i, j, k, 2) = in_domain ? fac_z : 1.0;
+
+                scale_detJ_zf(i, j, k) = scale_fac_zf(i, j, k, 0) *
+                                         scale_fac_zf(i, j, k, 1) *
+                                         scale_fac_zf(i, j, k, 2);
             });
     }
 
@@ -274,11 +282,12 @@ void ABLScaling::create_non_uniform_mesh(
         {probhi_physical[0] - prob_lo[0], probhi_physical[1] - prob_lo[1],
          probhi_physical[2] - prob_lo[2]}};
 
-    for (amrex::MFIter mfi(m_non_uniform_coord_cc(lev)); mfi.isValid(); ++mfi) {
+    for (amrex::MFIter mfi((*m_non_uniform_coord_cc)(lev)); mfi.isValid();
+         ++mfi) {
 
         const auto& bx = mfi.growntilebox();
         amrex::Array4<amrex::Real> const& nu_coord_cc =
-            m_non_uniform_coord_cc(lev).array(mfi);
+            (*m_non_uniform_coord_cc)(lev).array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
@@ -296,17 +305,14 @@ void ABLScaling::create_non_uniform_mesh(
                     ((x > prob_lo[0]) && (x < prob_hi[0]) && (y > prob_lo[1]) &&
                      (y < prob_hi[1]) && (z > prob_lo[2]) && (z < prob_hi[2]));
 
-                nu_coord_cc(i, j, k, 0) =
-                    (do_map[0] && in_domain) ? x_non_uni : x;
-                nu_coord_cc(i, j, k, 1) =
-                    (do_map[1] && in_domain) ? y_non_uni : y;
-                nu_coord_cc(i, j, k, 2) =
-                    (do_map[2] && in_domain) ? z_non_uni : z;
+                nu_coord_cc(i, j, k, 0) = in_domain ? x_non_uni : x;
+                nu_coord_cc(i, j, k, 1) = in_domain ? y_non_uni : y;
+                nu_coord_cc(i, j, k, 2) = in_domain ? z_non_uni : z;
             });
 
         const auto& nbx = mfi.grownnodaltilebox();
         amrex::Array4<amrex::Real> const& nu_coord_nd =
-            m_non_uniform_coord_nd(lev).array(mfi);
+            (*m_non_uniform_coord_nd)(lev).array(mfi);
         amrex::ParallelFor(
             nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real x = prob_lo[0] + i * dx[0];
@@ -325,12 +331,9 @@ void ABLScaling::create_non_uniform_mesh(
                      (y >= prob_lo[1] - eps) && (y <= prob_hi[1] + eps) &&
                      (z >= prob_lo[2] - eps) && (z <= prob_hi[2] + eps));
 
-                nu_coord_nd(i, j, k, 0) =
-                    (do_map[0] && in_domain) ? x_non_uni : x;
-                nu_coord_nd(i, j, k, 1) =
-                    (do_map[1] && in_domain) ? y_non_uni : y;
-                nu_coord_nd(i, j, k, 2) =
-                    (do_map[2] && in_domain) ? z_non_uni : z;
+                nu_coord_nd(i, j, k, 0) = in_domain ? x_non_uni : x;
+                nu_coord_nd(i, j, k, 1) = in_domain ? y_non_uni : y;
+                nu_coord_nd(i, j, k, 2) = in_domain ? z_non_uni : z;
             });
     }
 }

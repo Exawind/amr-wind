@@ -15,7 +15,7 @@ class ABLScaling : public MeshMap::Register<ABLScaling>
 public:
     static const std::string identifier() { return "ABLScaling"; }
 
-    explicit ABLScaling(const CFDSim& sim);
+    explicit ABLScaling();
 
     virtual ~ABLScaling() = default;
 
@@ -23,23 +23,15 @@ public:
     void create_map(int, const amrex::Geometry&) override;
 
     //! Construct mesh scaling field on cell centers and nodes
-    void create_cell_node_map(int, const amrex::Geometry&) override;
+    void create_cell_node_map(int, const amrex::Geometry&);
 
     //! Construct mesh scaling field on cell faces
-    void create_face_map(int, const amrex::Geometry&) override;
+    void create_face_map(int, const amrex::Geometry&);
 
     //! Construct the non-uniform mesh field
-    void create_non_uniform_mesh(int, const amrex::Geometry&) override;
+    void create_non_uniform_mesh(int, const amrex::Geometry&);
 
 private:
-    Field& m_mesh_scale_fac_cc;
-    Field& m_mesh_scale_fac_nd;
-    Field& m_mesh_scale_fac_xf;
-    Field& m_mesh_scale_fac_yf;
-    Field& m_mesh_scale_fac_zf;
-    Field& m_non_uniform_coord_cc;
-    Field& m_non_uniform_coord_nd;
-
     //! User input parameters
     amrex::Vector<amrex::Real> m_sratio{{1.0, 1.0, 1.05}};
     amrex::Vector<amrex::Real> m_delta0{{1.0, 1.0, 1.0}};
