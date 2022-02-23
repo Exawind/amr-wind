@@ -87,7 +87,7 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
 
     m_mo.alg_type =
         m_tempflux ? MOData::HEAT_FLUX : MOData::SURFACE_TEMPERATURE;
-    m_mo.gravity = utils::vec_mag(m_gravity.data());
+    m_mo.gravity = utils::vec_mag(m_gravity.data());    
 }
 
 void ABLWallFunction::init_log_law_height()
@@ -470,9 +470,10 @@ void ABLTKEWallFunc::wall_model(
 void ABLTKEWallFunc::operator()(Field& tke, const FieldState rho_state)
 {
     const auto& mo = m_wall_func.mo();
+    amrex::Real Cmu = m_wall_func.Cmu();
 
     if (m_wall_shear_stress_type == "alinot") {
-        auto tau = ShearStressAlinot(mo);
+        auto tau = ShearStressAlinot(mo, Cmu);
         wall_model(tke, rho_state, tau);
     }
 }
@@ -540,9 +541,10 @@ void ABLSDRWallFunc::wall_model(
 void ABLSDRWallFunc::operator()(Field& sdr, const FieldState rho_state)
 {
     const auto& mo = m_wall_func.mo();
+    amrex::Real Cmu = m_wall_func.Cmu();
 
     if (m_wall_shear_stress_type == "alinot") {
-        auto tau = ShearStressAlinot(mo);
+        auto tau = ShearStressAlinot(mo, Cmu);
         wall_model(sdr, rho_state, tau);
     }
 }

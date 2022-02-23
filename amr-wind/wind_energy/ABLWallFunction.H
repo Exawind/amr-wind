@@ -5,6 +5,7 @@
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
 #include "amr-wind/core/FieldBCOps.H"
 #include "amr-wind/wind_energy/MOData.H"
+#include "amr-wind/turbulence/TurbulenceModel.H"
 
 namespace amr_wind {
 
@@ -35,6 +36,13 @@ public:
     //! Update the mean velocity at a given timestep
     void
     update_umean(const VelPlaneAveraging& vpa, const FieldPlaneAveraging& tpa);
+
+    //! Returns Cmu constant used in RANS ABL wall functions
+    amrex::Real Cmu() const { 
+      AMREX_ALWAYS_ASSERT(m_sim.turbulence_model().model_name() == "KOmegaSSTABL");
+      auto coeffs = m_sim.turbulence_model().model_coeffs();
+      return coeffs["beta_star"]; 
+    }
 
 private:
     const CFDSim& m_sim;

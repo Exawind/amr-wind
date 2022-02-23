@@ -163,12 +163,14 @@ struct ShearStressMoeng
 
 struct ShearStressAlinot
 {
-    explicit ShearStressAlinot(const amr_wind::MOData& mo)
+    explicit ShearStressAlinot(const amr_wind::MOData& mo, 
+			       const amrex::Real Cmu)
       : zref(mo.zref),
 	kappa(mo.kappa),
 	utau(mo.utau),
 	phi_m(mo.phi_m_alinot()),
-	phi_e(mo.phi_eps_alinot())
+	phi_e(mo.phi_eps_alinot()),
+	m_Cmu(Cmu)
     {}
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
@@ -180,13 +182,13 @@ struct ShearStressAlinot
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
     calc_tke() const
     {
-        return std::sqrt((kappa*utau*zref*calc_eps())/(Cmu*phi_m));
+        return std::sqrt((kappa*utau*zref*calc_eps())/(m_Cmu*phi_m));
     };
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
     calc_omega() const
     {
-        return calc_eps()/Cmu/calc_tke();
+        return calc_eps()/m_Cmu/calc_tke();
     };
 
     amrex::Real zref;
@@ -194,7 +196,7 @@ struct ShearStressAlinot
     amrex::Real utau;
     amrex::Real phi_m;
     amrex::Real phi_e;
-    amrex::Real Cmu = 1.0/5.48/5.48;
+    amrex::Real m_Cmu = 1.0/5.48/5.48;
 
 };
 #endif /* ShearStress_H */
