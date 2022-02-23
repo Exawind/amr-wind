@@ -6,7 +6,8 @@
 
 namespace amr_wind {
 
-ABLFieldInit::ABLFieldInit()
+ABLFieldInit::ABLFieldInit(CFDSim& sim)
+: m_nu_coord_cc(sim.repo().get_field("non_uniform_coord_cc"))
 {
     amrex::ParmParse pp_abl("ABL");
 
@@ -54,6 +55,8 @@ ABLFieldInit::ABLFieldInit()
 }
 
 void ABLFieldInit::operator()(
+    const int level,
+    const amrex::MFIter& mfi,
     const amrex::Box& vbx,
     const amrex::Geometry& geom,
     const amrex::Array4<amrex::Real>& velocity,
@@ -79,11 +82,13 @@ void ABLFieldInit::operator()(
     const int ntvals = m_theta_heights.size();
     const amrex::Real* th = m_thht_d.data();
     const amrex::Real* tv = m_thvv_d.data();
+    auto& nu_coord_cc     = m_nu_coord_cc(level);
+    const auto& nu_cc     = nu_coord_cc.array(mfi);
 
     amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-        const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+	const amrex::Real x = nu_cc(i, j, k, 0);
+	const amrex::Real y = nu_cc(i, j, k, 1);
+	const amrex::Real z = nu_cc(i, j, k, 2);
 
         density(i, j, k) = rho_init;
         // Mean velocity field
@@ -142,12 +147,14 @@ void ABLFieldInit::perturb_temperature(
          ++mfi) {
         const auto& bx = mfi.tilebox();
         const auto& theta = theta_fab.array(mfi);
+	const auto& nu_cc = m_nu_coord_cc(lev).array(mfi);
 
         amrex::ParallelForRNG(
             bx, [=] AMREX_GPU_DEVICE(
                     int i, int j, int k,
                     const amrex::RandomEngine& engine) noexcept {
-                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+		const amrex::Real z = nu_cc(i, j, k, 2);
+
                 if (z < theta_cutoff_height) {
                     theta(i, j, k) =
                         deltaT * amrex::RandomNormal(
@@ -159,6 +166,7 @@ void ABLFieldInit::perturb_temperature(
 
 //! Initialize sfs tke field at the beginning of the simulation
 void ABLFieldInit::init_tke(
+    const int level,
     const amrex::Geometry& /* geom */, amrex::MultiFab& tke) const
 {
     tke.setVal(m_tke_init, 1);
@@ -167,7 +175,9 @@ void ABLFieldInit::init_tke(
 //! Initialize SDR field at the beginning of the simulation
 //! (applicable to K-Omega SST model)
 void ABLFieldInit::init_sdr(
-    const amrex::Geometry& /* geom */, amrex::MultiFab& sdr) const
+    const int level,
+    const amrex::Geometry& /* geom */, 
+    amrex::MultiFab& sdr) const
 {
     sdr.setVal(m_sdr_init, 1);
 }
@@ -175,7 +185,9 @@ void ABLFieldInit::init_sdr(
 //! Initialize epsilon field at the beginning of the simulation
 //! (applicable to K-Epsilon model)
 void ABLFieldInit::init_eps(
-    const amrex::Geometry& /* geom */, amrex::MultiFab& eps) const
+    const int level,
+    const amrex::Geometry& /* geom */, 
+    amrex::MultiFab& eps) const
 {
     eps.setVal(m_eps_init, 1);
 }

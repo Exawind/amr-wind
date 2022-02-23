@@ -2,6 +2,7 @@
 #define ABLFIELDINIT_H
 
 #include "amr-wind/core/Field.H"
+#include "amr-wind/CFDSim.H"
 
 #include "AMReX_Array.H"
 #include "AMReX_Array4.H"
@@ -20,9 +21,11 @@ class ABLFieldInit
     static_assert(AMREX_SPACEDIM == 3, "ABL requires 3 dimensional mesh");
 
 public:
-    ABLFieldInit();
+    ABLFieldInit(CFDSim&);
 
     void operator()(
+	const int level,
+	const amrex::MFIter& mfi,
         const amrex::Box& vbx,
         const amrex::Geometry& geom,
         const amrex::Array4<amrex::Real>& velocity,
@@ -41,13 +44,19 @@ public:
     bool add_temperature_perturbations() const { return m_perturb_theta; }
 
     //! Initialize TKE field
-    void init_tke(const amrex::Geometry& geom, amrex::MultiFab& tke) const;
+    void init_tke(const int level,
+		  const amrex::Geometry& geom, 
+		  amrex::MultiFab& tke) const;
 
     //! Initialize SDR field
-    void init_sdr(const amrex::Geometry& geom, amrex::MultiFab& sdr) const;
+    void init_sdr(const int level,
+		  const amrex::Geometry& geom, 
+		  amrex::MultiFab& sdr) const;
 
     //! Initialize epsilon field
-    void init_eps(const amrex::Geometry& geom, amrex::MultiFab& sdr) const;
+    void init_eps(const int level,
+		  const amrex::Geometry& geom, 
+		  amrex::MultiFab& sdr) const;
 
 private:
     //! Initial velocity components
@@ -63,6 +72,9 @@ private:
     // Device copies of the above arrays
     amrex::Gpu::DeviceVector<amrex::Real> m_thht_d;
     amrex::Gpu::DeviceVector<amrex::Real> m_thvv_d;
+
+    //! Non-uniform mesh coordinates (cell-center)
+    Field& m_nu_coord_cc;
 
     //! Initial density field
     amrex::Real m_rho;

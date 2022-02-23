@@ -19,6 +19,11 @@ TEST_F(ABLMeshTest, abl_initialization)
     }
 
     initialize_mesh();
+    sim().activate_mesh_map();
+    for (int ilev = 0; ilev<mesh().num_levels(); ilev++) { 
+        // TODO: switch to run_algorithm()
+        sim().mesh_mapping()->create_map(ilev, mesh().Geom(ilev));
+    }
     auto& frepo = mesh().field_repo();
     auto& velocityf = frepo.declare_field("velocity", 3, 0);
     auto& densityf = frepo.declare_field("density");
@@ -28,7 +33,7 @@ TEST_F(ABLMeshTest, abl_initialization)
     auto density = densityf.vec_ptrs();
     auto temperature = temperaturef.vec_ptrs();
 
-    amr_wind::ABLFieldInit ablinit;
+    amr_wind::ABLFieldInit ablinit(sim());
     run_algorithm(
         mesh().num_levels(), density,
         [&](const int lev, const amrex::MFIter& mfi) {
@@ -37,7 +42,7 @@ TEST_F(ABLMeshTest, abl_initialization)
             auto theta = temperature[lev]->array(mfi);
 
             const auto& bx = mfi.validbox();
-            ablinit(bx, mesh().Geom(lev), vel, rho, theta);
+            ablinit(lev, mfi, bx, mesh().Geom(lev), vel, rho, theta);
         });
 
     const int nlevels = mesh().num_levels();

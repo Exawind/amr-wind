@@ -37,7 +37,7 @@ ABL::ABL(CFDSim& sim)
     }
 
     // Instantiate the ABL field initializer
-    m_field_init = std::make_unique<ABLFieldInit>();
+    m_field_init = std::make_unique<ABLFieldInit>(sim);
 
     // Instantiate the ABL boundary plane IO
     m_bndry_plane = std::make_unique<ABLBoundaryPlane>(sim);
@@ -66,15 +66,22 @@ void ABL::initialize_fields(int level, const amrex::Geometry& geom)
         const auto& vbx = mfi.validbox();
 
         (*m_field_init)(
-            vbx, geom, velocity.array(mfi), density.array(mfi),
+	    level, mfi, vbx, geom, velocity.array(mfi), density.array(mfi),
             temp.array(mfi));
     }
 
     if (m_sim.repo().field_exists("tke")) {
         m_tke = &(m_sim.repo().get_field("tke"));
         auto& tke = (*m_tke)(level);
-        m_field_init->init_tke(geom, tke);
+        m_field_init->init_tke(level, geom, tke);
     }
+
+    if (m_sim.repo().field_exists("sdr")) {
+        m_sdr = &(m_sim.repo().get_field("sdr"));
+        auto& sdr = (*m_sdr)(level);
+        m_field_init->init_sdr(level, geom, sdr);
+    }
+
 }
 
 void ABL::post_init_actions()
