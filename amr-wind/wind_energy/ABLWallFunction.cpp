@@ -405,12 +405,33 @@ void ABLTempWallFunc::operator()(Field& temperature, const FieldState rho_state)
     }
 }
 
+ABLTKEWallFunc::ABLTKEWallFunc(
+    Field& /*unused*/, const ABLWallFunction& wall_fuc)
+    : m_wall_func(wall_fuc)
+{
+    amrex::ParmParse pp("ABL");
+    pp.query("wall_shear_stress_type", m_wall_shear_stress_type);
+    m_wall_shear_stress_type = amrex::toLower(m_wall_shear_stress_type);
+}
+
+
 template <typename ShearStress>
 void ABLTKEWallFunc::wall_model(
     Field& tke, const FieldState rho_state, const ShearStress& tau)
 {
     constexpr int idim = 2;
     auto& repo = tke.repo();
+
+    // Return early if the user hasn't requested a wall model BC for tke
+    amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
+    amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
+
+    if (!(tke.bc_type()[zlo] == BC::wall_model ||
+          tke.bc_type()[zhi] == BC::wall_model)) {
+        return;
+    }
+
+    BL_PROFILE("amr-wind::ABLTKEWallFunc");
 
     // TODO: FILL IN HERE
 }
@@ -441,12 +462,32 @@ void ABLTKEWallFunc::operator()(Field& tke, const FieldState rho_state)
     }
 }
 
+ABLSDRWallFunc::ABLSDRWallFunc(
+    Field& /*unused*/, const ABLWallFunction& wall_fuc)
+    : m_wall_func(wall_fuc)
+{
+    amrex::ParmParse pp("ABL");
+    pp.query("wall_shear_stress_type", m_wall_shear_stress_type);
+    m_wall_shear_stress_type = amrex::toLower(m_wall_shear_stress_type);
+}
+
 template <typename ShearStress>
 void ABLSDRWallFunc::wall_model(
     Field& sdr, const FieldState rho_state, const ShearStress& tau)
 {
     constexpr int idim = 2;
     auto& repo = sdr.repo();
+
+    // Return early if the user hasn't requested a wall model BC for tke
+    amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
+    amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
+
+    if (!(sdr.bc_type()[zlo] == BC::wall_model ||
+          sdr.bc_type()[zhi] == BC::wall_model)) {
+        return;
+    }
+
+    BL_PROFILE("amr-wind::ABLSDRWallFunc");
 
     // TODO: FILL IN HERE
 }
