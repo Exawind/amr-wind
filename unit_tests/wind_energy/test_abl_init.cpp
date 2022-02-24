@@ -19,11 +19,6 @@ TEST_F(ABLMeshTest, abl_initialization)
     }
 
     initialize_mesh();
-    sim().activate_mesh_map();
-    for (int ilev = 0; ilev<mesh().num_levels(); ilev++) { 
-        // TODO: switch to run_algorithm()
-        sim().mesh_mapping()->create_map(ilev, mesh().Geom(ilev));
-    }
     auto& frepo = mesh().field_repo();
     auto& velocityf = frepo.declare_field("velocity", 3, 0);
     auto& densityf = frepo.declare_field("density");
