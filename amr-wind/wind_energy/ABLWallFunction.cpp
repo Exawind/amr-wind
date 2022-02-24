@@ -14,7 +14,8 @@
 namespace amr_wind {
 
 ABLWallFunction::ABLWallFunction(const CFDSim& sim)
-    : m_sim(sim), m_mesh(sim.mesh())
+  : m_sim(sim), m_mesh(sim.mesh())
+  , m_repo(sim.repo()), m_mesh_mapping(sim.has_mesh_mapping())
 {
     amrex::ParmParse pp("ABL");
 
@@ -93,35 +94,40 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
 void ABLWallFunction::init_log_law_height()
 {
     if (m_use_fch) {
-        const auto& nu_coord_cc = m_sim.repo().get_field("non_uniform_coord_cc");
-        const auto& velocity_f  = m_sim.repo().get_field("velocity");
-	const int level         = 0;
-	auto& nu_coord_cc_lev   = nu_coord_cc(level);
-	auto& velocity          = velocity_f(level);
+        if (m_mesh_mapping) {
+	    // Average over all of the first cell center heights at level 0
+	    const auto& velocity_f  = m_sim.repo().get_field("velocity");
+	    const int level         = 0;
+	    auto& velocity          = velocity_f(level);
 
-	int npt=0;
-	amrex::Real avg_cc_height=0.0;
-	// Loop through and sum over all points on the lower surface
-	for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {	
-	  const auto& vbx   = mfi.validbox();
-	  const auto& nu_cc = nu_coord_cc_lev.array(mfi);
-	  amrex::Loop(vbx, [=, &npt, &avg_cc_height](int i, int j, int k) noexcept {
-	      if (((m_direction==2) && (k==0)) ||
-		  ((m_direction==1) && (j==0)) ||
-		  ((m_direction==0) && (i==0))) {
-			avg_cc_height += nu_cc(i, j, k, m_direction);
+	    Field const* nu_coord_cc =
+	        &(m_repo.get_field("non_uniform_coord_cc"));
+
+	    int npt=0;
+	    amrex::Real avg_cc_height=0.0;
+	    // Loop through and sum over all points on the lower surface
+	    for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {	
+	        const auto& vbx   = mfi.validbox();
+		amrex::Array4<amrex::Real const> nu_cc =
+		  ((*nu_coord_cc)(level).array(mfi));
+		amrex::Loop(vbx, [=, &npt, &avg_cc_height](int i, int j, int k) noexcept {
+		    if (((m_direction==2) && (k==0)) ||
+			((m_direction==1) && (j==0)) ||
+			((m_direction==0) && (i==0))) {
+		        avg_cc_height += nu_cc(i, j, k, m_direction);
 			npt++;
-	      }
-	    });
+		    }
+		  });
 	  
+	    }
+	    avg_cc_height = avg_cc_height/(amrex::Real)npt;
+	    m_mo.zref = avg_cc_height;
+	} else {
+	    // Use the first cell center height for zref
+	    const auto& geom = m_mesh.Geom(0);
+	    m_mo.zref =
+                (geom.ProbLo(m_direction) + 0.5 * geom.CellSize(m_direction));
 	}
-	avg_cc_height = avg_cc_height/(amrex::Real)npt;
-	m_mo.zref = avg_cc_height;
-
-	// -- DELETE THIS AFTER VERIFICATION --
-        // const auto& geom = m_mesh.Geom(0);
-        // m_mo.zref =
-        //     (geom.ProbLo(m_direction) + 0.5 * geom.CellSize(m_direction));
     }
 }
 

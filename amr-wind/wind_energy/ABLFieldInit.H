@@ -59,6 +59,8 @@ public:
 		  amrex::MultiFab& sdr) const;
 
 private:
+    const FieldRepo& m_repo;
+
     //! Initial velocity components
     amrex::Vector<amrex::Real> m_vel;
 
@@ -73,8 +75,8 @@ private:
     amrex::Gpu::DeviceVector<amrex::Real> m_thht_d;
     amrex::Gpu::DeviceVector<amrex::Real> m_thvv_d;
 
-    //! Non-uniform mesh coordinates (cell-center)
-    Field& m_nu_coord_cc;
+    //! Using mesh mapping field or not
+    bool m_mesh_mapping{false};
 
     //! Initial density field
     amrex::Real m_rho;

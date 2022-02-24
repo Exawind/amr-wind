@@ -48,6 +48,9 @@ private:
     const CFDSim& m_sim;
 
     const amrex::AmrCore& m_mesh;
+    const FieldRepo& m_repo;
+
+    bool m_mesh_mapping{false};
 
     //! Monin-Obukhov instance
     MOData m_mo;
