@@ -1,5 +1,5 @@
-#ifndef ABL2CONSTANTSCALING_H
-#define ABL2CONSTANTSCALING_H
+#ifndef GEOM2CONSTANTSCALING_H
+#define GEOM2CONSTANTSCALING_H
 
 #include "amr-wind/core/MeshMap.H"
 #include "amr-wind/core/Field.H"
@@ -10,14 +10,14 @@ namespace abl_map {
 /** Channel flow scaling mesh map
  *  \ingroup mesh_map
  */
-class ABL2ConstantScaling : public MeshMap::Register<ABL2ConstantScaling>
+class Geom2ConstantScaling : public MeshMap::Register<Geom2ConstantScaling>
 {
 public:
-    static const std::string identifier() { return "ABL2ConstantScaling"; }
+    static const std::string identifier() { return "Geom2ConstantScaling"; }
 
-    explicit ABL2ConstantScaling();
+    explicit Geom2ConstantScaling();
 
-    virtual ~ABL2ConstantScaling() = default;
+    virtual ~Geom2ConstantScaling() = default;
 
     //! Construct the mesh scaling field
     void create_map(int, const amrex::Geometry&) override;
@@ -32,14 +32,6 @@ public:
     void create_non_uniform_mesh(int, const amrex::Geometry&);
 
 private:
-    Field& m_mesh_scale_fac_cc;
-    Field& m_mesh_scale_fac_nd;
-    Field& m_mesh_scale_fac_xf;
-    Field& m_mesh_scale_fac_yf;
-    Field& m_mesh_scale_fac_zf;
-    Field& m_non_uniform_coord_cc;
-    Field& m_non_uniform_coord_nd;
-
     //! User input parameters
     amrex::Vector<amrex::Real> m_sratio{{1.0, 1.0, 1.05}};
     amrex::Vector<amrex::Real> m_delta0{{1.0, 1.0, 1.0}};
@@ -53,4 +45,4 @@ private:
 } // namespace abl_map
 } // namespace amr_wind
 
-#endif /* ABL2ConstantScaling_H */
+#endif /* Geom2ConstantScaling_H */
