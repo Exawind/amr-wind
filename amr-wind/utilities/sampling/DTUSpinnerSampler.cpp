@@ -29,7 +29,56 @@ void DTUSpinnerSampler::initialize(const std::string& key)
 
     // The number of points
     pp.get("num_points", m_npts);
+    
+    // Inner prism initial theta
+    pp.get("inner_prism_theta0", m_inner_prism_theta0);
+    
+    // Inner prism rotation rate
+    pp.get("inner_prism_rotrate", m_inner_prism_rotrate);
 
+    // Inner prism azimuth angle
+    pp.get("inner_prism_azimuth", m_inner_prism_azimuth);
+    
+    // Outer prism initial theta
+    pp.get("outer_prism_theta0", m_outer_prism_theta0);
+    
+    // Outer prism rotation rate
+    pp.get("outer_prism_rotrate", m_outer_prism_rotrate);
+
+    // Outer prism azimuth angle
+    pp.get("outer_prism_azimuth", m_outer_prism_azimuth);
+    
+    // This is the center of the lidar scan (x, y, z) [m]
+    pp.getarr("lidar_center", m_lidar_center);
+    AMREX_ALWAYS_ASSERT(static_cast<int>(m_lidar_center.size()) == AMREX_SPACEDIM);
+    
+    // Scan time 
+    pp.get("scan_time", m_scan_time);
+   
+    // Number of samples per scan
+    pp.get("num_samples", m_num_samples);
+    
+    // Beam length
+    pp.get("beam_length", m_beam_length);
+    
+    // Beam points 
+    pp.get("beam_points", m_beam_points);
+    
+    // Turbine yaw angle
+    pp.get("turbine_yaw_angle", m_turbine_yaw_angle);
+    
+    // Hub yaw logical flag
+    pp.query("hub_yaw", m_hub_yaw);
+    
+    // Hub roll logical flag
+    pp.query("hub_roll", m_hub_roll);
+    
+    // Hub tilt logical flag
+    pp.query("hub_tilt", m_hub_tilt);
+    
+    // Hub translation logical flag
+    pp.query("hub_translation", m_hub_translation);
+    
     // The time step of the sampling
     pp.query("dt_s", m_dt_s);
 
@@ -60,6 +109,86 @@ void DTUSpinnerSampler::initialize(const std::string& key)
 
     check_bounds();
 }
+
+// functions
+auto reflect(vs::Vector line, vs::Vector vec)
+{
+
+    vs::Tensor ref(
+        1 - 2 * line.x() * line.x(), -2 * line.x() * line.y(),
+        -2 * line.x() * line.z(), -2 * line.y() * line.x(),
+        1 - 2 * line.y() * line.y(), -2 * line.y() * line.z(),
+        -2 * line.z() * line.x(), -2 * line.z() * line.y(),
+        1 - 2 * line.z() * line.z());
+
+    return vec & ref;
+}
+
+auto rotate_euler_vec(vs::Vector axis, double angle, vs::Vector vec)
+{
+
+    axis.normalize();
+
+    const auto RotMat = vs::quaternion(axis, angle);
+
+    return vec & RotMat;
+}
+
+vs::Vector rotation(const vs::Vector& angles, const vs::Vector& data)
+{
+    const vs::Tensor rotMatrix =
+        vs::xrot(angles.x()) & vs::yrot(angles.y()) & vs::zrot(angles.z());
+    return data & rotMatrix;
+}
+
+
+
+vs::Vector adjust_lidar_pattern(
+    vs::Vector beamPt,
+    double yaw,
+    double pitch,
+    double roll,
+    vs::Vector translation)
+{
+
+    const vs::Vector angles(pitch, yaw, roll);
+
+    auto beamPt_transform = rotation(angles, beamPt) + translation;
+
+    return beamPt_transform;
+}
+
+vs::Vector generate_lidar_pattern(double time)
+{
+    vs::Vector axis(1, 0, 0);
+
+    const double innerPrism_theta0 = 90;
+    const double outerPrism_theta0 = 90;
+    const double innerPrism_rot = 3.5;
+    const double outerPrism_rot = 6.5;
+    const double innerPrism_azimuth = 15.2;
+    const double outerPrism_azimuth = 15.2;
+    const vs::Vector ground(0, 0, 1);
+
+    const double innerTheta =
+        innerPrism_theta0 + innerPrism_rot * time * 360;
+    const double outerTheta =
+        outerPrism_theta0 + outerPrism_rot * time * 360;
+
+    const auto reflection_1 = rotate_euler_vec(
+        axis, innerTheta,
+        rotate_euler_vec(ground, -(innerPrism_azimuth / 2 + 90), axis));
+
+    const auto reflection_2 = rotate_euler_vec(
+        axis, outerTheta,
+        rotate_euler_vec(ground, outerPrism_azimuth / 2, axis));
+
+    return reflect(reflection_2, reflect(reflection_1, axis));
+}
+
+
+
+//
 
 void DTUSpinnerSampler::sampling_locations(SampleLocType& locs) const
 {
@@ -135,7 +264,7 @@ void DTUSpinnerSampler::update_sampling_locations()
         int offset = k * AMREX_SPACEDIM;
 
         m_time_sampling += m_dt_s;
-
+// CHANGE BELOW
         // The current azimuth angle
         const amrex::Real current_azimuth = ::amr_wind::interp::linear(
             m_time_table, m_azimuth_table, m_time_sampling);
@@ -158,7 +287,7 @@ void DTUSpinnerSampler::update_sampling_locations()
 
         // Perform the vector rotation
         beam_vector = r1 & beam_vector;
-
+// CHANGE ABOVE
         // Add the origin location to the beam vector
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
 
