@@ -51,8 +51,6 @@ struct AdvectionOp<VOF, fvm::Godunov>
             isweep = 1;
         }
 
-        dof_field.fillpatch(0.0);
-
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             amrex::MFItInfo mfi_info;
             if (amrex::Gpu::notInLaunchRegion()) {
@@ -65,7 +63,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
             for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
                  ++mfi) {
                 const auto& bx = mfi.tilebox();
-                amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 3 * VOF::ndim + 2);
+                amrex::FArrayBox tmpfab(amrex::grow(bx, 4), 3 * VOF::ndim + 2);
                 tmpfab.setVal<amrex::RunOn::Device>(0.0);
                 multiphase::split_advection(
                     lev, bx, isweep, dof_field(lev).array(mfi),
