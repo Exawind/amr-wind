@@ -64,6 +64,8 @@ private:
 
     void compute_forces();
 
+    void compute_source_term();
+
     CFDSim& m_sim;
 
     std::vector<std::unique_ptr<ImmersedBoundaryModel>> m_ibs;
@@ -73,6 +75,9 @@ private:
 
     //! Immersed boundary normal vector defined on cell-centers
     Field& m_ib_normal;
+
+    //! Immersed boundary force term for wall modeled terrain
+    Field& m_ib_source;
 };
 
 } // namespace ib

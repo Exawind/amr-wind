@@ -13,6 +13,7 @@ IB::IB(CFDSim& sim)
     : m_sim(sim)
     , m_ib_levelset(sim.repo().declare_field("ib_levelset", 1, 1, 1))
     , m_ib_normal(sim.repo().declare_field("ib_normal", AMREX_SPACEDIM, 1, 1))
+    , m_ib_source(sim.repo().declare_field("ib_src_term", AMREX_SPACEDIM))
 {
     m_ib_levelset.set_default_fillpatch_bc(sim.time());
     m_ib_normal.set_default_fillpatch_bc(sim.time());
@@ -110,6 +111,31 @@ void IB::compute_forces()
     BL_PROFILE("amr-wind::ib::IB::compute_forces");
     for (auto& ib : m_ibs) {
         ib->compute_forces();
+    }
+}
+
+void IB::compute_source_term()
+{
+    BL_PROFILE("amr-wind::immersed_boundary::IB::compute_source_term");
+    m_ib_source.setVal(0.0);
+    const int nlevels = m_sim.repo().num_active_levels();
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        auto& sfab = m_ib_source(lev);
+        const auto& geom = m_sim.mesh().Geom(lev);
+
+#ifdef _OPENMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+        for (amrex::MFIter mfi(sfab); mfi.isValid(); ++mfi) {
+            for (auto& ib : m_ibs) {
+                // TODO(psakiev) performance optimization to only operate on
+                // processors the boxes intersect
+                // if (ib->info().actuator_in_proc) {
+                ib->compute_source_term(lev, mfi, geom);
+                //}
+            }
+        }
     }
 }
 
