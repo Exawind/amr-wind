@@ -5,6 +5,7 @@ target_sources(${amr_wind_unit_test_exe_name} PRIVATE
   # test cases
   test_abl_init.cpp
   test_abl_src.cpp
+  test_abl_meshmap.cpp
   )
 
 add_subdirectory(actuator)
