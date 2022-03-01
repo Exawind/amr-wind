@@ -93,8 +93,6 @@ struct MOData
     {
         return calc_phi_eps_alinot(z / obukhov_len);
     }
-
-
 };
 
 } // namespace amr_wind

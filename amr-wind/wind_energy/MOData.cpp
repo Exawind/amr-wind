@@ -89,8 +89,8 @@ void MOData::update_fluxes(int max_iters)
 
 
 /*
- * See the reference at 
- * 
+ * See the reference at
+ *
  * Alinot, C., & Masson, C. (2005). k-Epsilon Model for the
  * Atmospheric Boundary Layer Under Various Thermal
  * Stratifications. Journal of Solar Energy Engineering, 127(4),
@@ -102,14 +102,14 @@ amrex::Real MOData::calc_phi_m_alinot(amrex::Real zeta) const
         return 1.0 + gamma_m * zeta;
     }
     amrex::Real x = std::sqrt(std::sqrt(1 - beta_m * zeta));
-    return 1.0/x;
+    return 1.0 / x;
 }
 
 amrex::Real MOData::calc_phi_eps_alinot(amrex::Real zeta) const
 {
     if (zeta > 0) {
-      return calc_phi_m_alinot(zeta) - zeta;
-    }  
+        return calc_phi_m_alinot(zeta) - zeta;
+    }
     return 1.0 - zeta;
 }
 
