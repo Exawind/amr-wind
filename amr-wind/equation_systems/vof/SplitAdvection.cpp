@@ -153,8 +153,8 @@ void multiphase::sweep(
                 amrex::Real velL = vel_mac(i, j, k) * dtdx;
                 amrex::Real velR = vel_mac(i + ii, j + jj, k + kk) * dtdx;
                 multiphase::balance_eulerian_fluxes(
-                    i, j, k, dir, bxg1, velL, velR, volfrac, fluxL, fluxC, fluxR,
-                    vofL, vofR, advalpha_f, pbc, dimLow, dimHigh);
+                    i, j, k, dir, bxg1, velL, velR, volfrac, fluxL, fluxC,
+                    fluxR, vofL, vofR, advalpha_f, pbc, dimLow, dimHigh);
             });
     }
 }

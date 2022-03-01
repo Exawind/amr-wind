@@ -74,6 +74,11 @@ void MultiPhase::post_init_actions()
             break;
         };
     }
+
+    q0 = momentum_sum(0);
+    q1 = momentum_sum(1);
+    q2 = momentum_sum(2);
+    sumvof0 = volume_fraction_sum();
 }
 
 void MultiPhase::pre_advance_work()
@@ -99,13 +104,20 @@ void MultiPhase::post_advance_work()
         // Compute the print the total volume fraction
         if (m_verbose > 0) {
             m_total_volfrac = volume_fraction_sum();
+            amrex::Real mom_x = momentum_sum(0) - q0;
+            amrex::Real mom_y = momentum_sum(1) - q1;
+            amrex::Real mom_z = momentum_sum(2) - q2;
             const auto& geom = m_sim.mesh().Geom();
             const amrex::Real total_vol = geom[0].ProbDomain().volume();
             amrex::Print() << "Volume of Fluid diagnostics:" << std::endl;
-            amrex::Print() << "   Water Volume Fractions Sum : "
-                           << m_total_volfrac << std::endl;
+            amrex::Print() << "   Water Volume Fractions Sum, Difference : "
+                           << m_total_volfrac << " "
+                           << m_total_volfrac - sumvof0 << std::endl;
             amrex::Print() << "   Air Volume Fractions Sum : "
                            << total_vol - m_total_volfrac << std::endl;
+            amrex::Print() << "   Total Momentum Difference (x, y, z) : "
+                           << mom_x << " " << mom_y << " " << mom_z
+                           << std::endl;
             amrex::Print() << " " << std::endl;
         }
         break;
@@ -160,6 +172,56 @@ amrex::Real MultiPhase::volume_fraction_sum()
     amrex::ParallelDescriptor::ReduceRealSum(total_volume_frac);
 
     return total_volume_frac;
+}
+
+amrex::Real MultiPhase::momentum_sum(int n)
+{
+    using namespace amrex;
+    BL_PROFILE("amr-wind::multiphase::ComputeVolumeFractionSum");
+    const int nlevels = m_sim.repo().num_active_levels();
+    const auto& geom = m_sim.mesh().Geom();
+    const auto& mesh = m_sim.mesh();
+
+    amrex::Real total_momentum = 0.0;
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+
+        amrex::iMultiFab level_mask;
+        if (lev < nlevels - 1) {
+            level_mask = makeFineMask(
+                mesh.boxArray(lev), mesh.DistributionMap(lev),
+                mesh.boxArray(lev + 1), amrex::IntVect(2), 1, 0);
+        } else {
+            level_mask.define(
+                mesh.boxArray(lev), mesh.DistributionMap(lev), 1, 0,
+                amrex::MFInfo());
+            level_mask.setVal(1);
+        }
+
+        auto& velocity = m_sim.repo().get_field("velocity")(lev);
+        auto& density = m_sim.repo().get_field("density")(lev);
+        const amrex::Real cell_vol = geom[lev].CellSize()[0] *
+                                     geom[lev].CellSize()[1] *
+                                     geom[lev].CellSize()[2];
+
+        total_momentum += amrex::ReduceSum(
+            velocity, density, level_mask, 0,
+            [=] AMREX_GPU_HOST_DEVICE(
+                amrex::Box const& bx,
+                amrex::Array4<amrex::Real const> const& vel,
+                amrex::Array4<amrex::Real const> const& dens,
+                amrex::Array4<int const> const& mask_arr) -> amrex::Real {
+                amrex::Real vol_fab = 0.0;
+                amrex::Loop(bx, [=, &vol_fab](int i, int j, int k) noexcept {
+                    vol_fab += vel(i, j, k, n) * dens(i, j, k) *
+                               mask_arr(i, j, k) * cell_vol;
+                });
+                return vol_fab;
+            });
+    }
+    amrex::ParallelDescriptor::ReduceRealSum(total_momentum);
+
+    return total_momentum;
 }
 
 void MultiPhase::set_density_via_levelset()
