@@ -14,8 +14,10 @@
 namespace amr_wind {
 
 ABLWallFunction::ABLWallFunction(const CFDSim& sim)
-  : m_sim(sim), m_mesh(sim.mesh())
-  , m_repo(sim.repo()), m_mesh_mapping(sim.has_mesh_mapping())
+    : m_sim(sim)
+    , m_mesh(sim.mesh())
+    , m_repo(sim.repo())
+    , m_mesh_mapping(sim.has_mesh_mapping())
 {
     amrex::ParmParse pp("ABL");
 
@@ -88,46 +90,47 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
 
     m_mo.alg_type =
         m_tempflux ? MOData::HEAT_FLUX : MOData::SURFACE_TEMPERATURE;
-    m_mo.gravity = utils::vec_mag(m_gravity.data());    
+    m_mo.gravity = utils::vec_mag(m_gravity.data());
 }
 
 void ABLWallFunction::init_log_law_height()
 {
     if (m_use_fch) {
         if (m_mesh_mapping) {
-	    // Average over all of the first cell center heights at level 0
-	    const auto& velocity_f  = m_sim.repo().get_field("velocity");
-	    const int level         = 0;
-	    auto& velocity          = velocity_f(level);
+            // Average over all of the first cell center heights at level 0
+            const auto& velocity_f  = m_sim.repo().get_field("velocity");
+            const int level         = 0;
+            auto& velocity          = velocity_f(level);
 
-	    Field const* nu_coord_cc =
-	        &(m_repo.get_field("non_uniform_coord_cc"));
+            Field const* nu_coord_cc =
+                &(m_repo.get_field("non_uniform_coord_cc"));
 
-	    int npt=0;
-	    amrex::Real avg_cc_height=0.0;
-	    // Loop through and sum over all points on the lower surface
-	    for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {	
-	        const auto& vbx   = mfi.validbox();
-		amrex::Array4<amrex::Real const> nu_cc =
-		  ((*nu_coord_cc)(level).array(mfi));
-		amrex::Loop(vbx, [=, &npt, &avg_cc_height](int i, int j, int k) noexcept {
-		    if (((m_direction==2) && (k==0)) ||
-			((m_direction==1) && (j==0)) ||
-			((m_direction==0) && (i==0))) {
-		        avg_cc_height += nu_cc(i, j, k, m_direction);
-			npt++;
-		    }
-		  });
-	  
+            int npt=0;
+            amrex::Real avg_cc_height=0.0;
+            // Loop through and sum over all points on the lower surface
+            for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {	
+                const auto& vbx   = mfi.validbox();
+                amrex::Array4<amrex::Real const> nu_cc =
+                    ((*nu_coord_cc)(level).array(mfi));
+                amrex::Loop(
+                    vbx, 
+                    [=, &npt, &avg_cc_height](int i, int j, int k) noexcept {
+                        if (((m_direction==2) && (k==0)) ||
+                            ((m_direction==1) && (j==0)) ||
+                            ((m_direction==0) && (i==0))) {
+                            avg_cc_height += nu_cc(i, j, k, m_direction);
+                            npt++;
+                        }
+                    });
 	    }
-	    avg_cc_height = avg_cc_height/(amrex::Real)npt;
-	    m_mo.zref = avg_cc_height;
+            avg_cc_height = avg_cc_height / (amrex::Real)npt;
+            m_mo.zref = avg_cc_height;
 	} else {
-	    // Use the first cell center height for zref
-	    const auto& geom = m_mesh.Geom(0);
-	    m_mo.zref =
+            // Use the first cell center height for zref
+            const auto& geom = m_mesh.Geom(0);
+            m_mo.zref =
                 (geom.ProbLo(m_direction) + 0.5 * geom.CellSize(m_direction));
-	}
+        }
     }
 }
 
@@ -418,8 +421,7 @@ ABLTKEWallFunc::ABLTKEWallFunc(
     amrex::ParmParse pp("ABL");
     pp.query("wall_shear_stress_type", m_wall_shear_stress_type);
     m_wall_shear_stress_type = amrex::toLower(m_wall_shear_stress_type);
-    amrex::Print() << "TKE model: " << m_wall_shear_stress_type
-                   << std::endl;
+    amrex::Print() << "TKE model: " << m_wall_shear_stress_type << std::endl;
 }
 
 
@@ -446,7 +448,7 @@ void ABLTKEWallFunc::wall_model(
         const auto& geom = repo.mesh().Geom(lev);
         const auto& domain = geom.Domain();
         amrex::MFItInfo mfi_info{};
-        auto& k_tke    = tke(lev);
+        auto& k_tke = tke(lev);
 
         if (amrex::Gpu::notInLaunchRegion()) {
             mfi_info.SetDynamic(true);
@@ -454,21 +456,19 @@ void ABLTKEWallFunc::wall_model(
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-	for (amrex::MFIter mfi(k_tke, mfi_info); mfi.isValid(); ++mfi) {
+        for (amrex::MFIter mfi(k_tke, mfi_info); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.validbox();
-            auto karr     = k_tke.array(mfi);
+            auto karr = k_tke.array(mfi);
 
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                 tke.bc_type()[zlo] == BC::wall_model) {
                 amrex::ParallelFor(
                     amrex::bdryLo(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-
                         karr(i, j, k - 1) = tau.calc_tke();
                     });
             }
-	    // TODO: FILL IN ZHI TKE
-
+            // TODO: FILL IN ZHI TKE
 	}
     }
 }
@@ -491,8 +491,7 @@ ABLSDRWallFunc::ABLSDRWallFunc(
     amrex::ParmParse pp("ABL");
     pp.query("wall_shear_stress_type", m_wall_shear_stress_type);
     m_wall_shear_stress_type = amrex::toLower(m_wall_shear_stress_type);
-    amrex::Print() << "SDR model: " << m_wall_shear_stress_type
-                   << std::endl;
+    amrex::Print() << "SDR model: " << m_wall_shear_stress_type << std::endl;
 }
 
 template <typename ShearStress>
@@ -518,7 +517,7 @@ void ABLSDRWallFunc::wall_model(
         const auto& geom = repo.mesh().Geom(lev);
         const auto& domain = geom.Domain();
         amrex::MFItInfo mfi_info{};
-        auto& omega    = sdr(lev);
+        auto& omega = sdr(lev);
 
         if (amrex::Gpu::notInLaunchRegion()) {
             mfi_info.SetDynamic(true);
@@ -526,21 +525,20 @@ void ABLSDRWallFunc::wall_model(
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-	for (amrex::MFIter mfi(omega, mfi_info); mfi.isValid(); ++mfi) {
-            const auto& bx  = mfi.validbox();
-            auto omegaarr   = omega.array(mfi);
-	    
+        for (amrex::MFIter mfi(omega, mfi_info); mfi.isValid(); ++mfi) {
+            const auto& bx = mfi.validbox();
+            auto omegaarr = omega.array(mfi);
+
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                 sdr.bc_type()[zlo] == BC::wall_model) {
                 amrex::ParallelFor(
                     amrex::bdryLo(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-
-		      omegaarr(i, j, k - 1) = tau.calc_omega();
-                    });
+                        omegaarr(i, j, k - 1) = tau.calc_omega();
+                });
             }
-	    // TODO: FILL IN SDR ZHI HERE
-	}
+            // TODO: FILL IN SDR ZHI HERE
+        }
     }
 }
 
@@ -562,8 +560,7 @@ ABLEpsWallFunc::ABLEpsWallFunc(
     amrex::ParmParse pp("ABL");
     pp.query("wall_shear_stress_type", m_wall_shear_stress_type);
     m_wall_shear_stress_type = amrex::toLower(m_wall_shear_stress_type);
-    amrex::Print() << "Eps model: " << m_wall_shear_stress_type
-                   << std::endl;
+    amrex::Print() << "Eps model: " << m_wall_shear_stress_type << std::endl;
 }
 
 template <typename ShearStress>
@@ -585,10 +582,10 @@ void ABLEpsWallFunc::wall_model(
     const int nlevels = repo.num_active_levels();
 
     for (int lev = 0; lev < nlevels; ++lev) {
-        const auto& geom   = repo.mesh().Geom(lev);
+        const auto& geom = repo.mesh().Geom(lev);
         const auto& domain = geom.Domain();
         amrex::MFItInfo mfi_info{};
-        auto& epsilon      = eps(lev);
+        auto& epsilon = eps(lev);
 
         if (amrex::Gpu::notInLaunchRegion()) {
             mfi_info.SetDynamic(true);
@@ -596,24 +593,21 @@ void ABLEpsWallFunc::wall_model(
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-	for (amrex::MFIter mfi(epsilon, mfi_info); mfi.isValid(); ++mfi) {
-            const auto& bx  = mfi.validbox();
-            auto epsarr   = epsilon.array(mfi);
-	    
+        for (amrex::MFIter mfi(epsilon, mfi_info); mfi.isValid(); ++mfi) {
+            const auto& bx = mfi.validbox();
+            auto epsarr = epsilon.array(mfi);
+
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                 eps.bc_type()[zlo] == BC::wall_model) {
                 amrex::ParallelFor(
                     amrex::bdryLo(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-
-		      epsarr(i, j, k - 1) = tau.calc_eps();
+                        epsarr(i, j, k - 1) = tau.calc_eps();
                     });
             }
 	    // TODO: FILL IN SDR ZHI HERE
-	}
-
+        }
     }
-
 }
 
 void ABLEpsWallFunc::operator()(Field& eps, const FieldState rho_state)
@@ -626,7 +620,5 @@ void ABLEpsWallFunc::operator()(Field& eps, const FieldState rho_state)
         wall_model(eps, rho_state, tau);
     }
 }
-
-
 
 } // namespace amr_wind

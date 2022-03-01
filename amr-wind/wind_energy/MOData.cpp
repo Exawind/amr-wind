@@ -87,7 +87,6 @@ void MOData::update_fluxes(int max_iters)
     }
 }
 
-
 /*
  * See the reference at
  *

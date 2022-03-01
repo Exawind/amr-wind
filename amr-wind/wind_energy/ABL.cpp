@@ -66,7 +66,7 @@ void ABL::initialize_fields(int level, const amrex::Geometry& geom)
         const auto& vbx = mfi.validbox();
 
         (*m_field_init)(
-	    level, mfi, vbx, geom, velocity.array(mfi), density.array(mfi),
+            level, mfi, vbx, geom, velocity.array(mfi), density.array(mfi),
             temp.array(mfi));
     }
 
@@ -87,7 +87,6 @@ void ABL::initialize_fields(int level, const amrex::Geometry& geom)
         auto& eps = (*m_eps)(level);
         m_field_init->init_eps(level, geom, eps);
     }
-
 }
 
 void ABL::post_init_actions()
@@ -110,13 +109,13 @@ void ABL::post_init_actions()
 
     // Register wall functions for TKE, EPS, and SDR variables
     if (m_sim.repo().field_exists("tke")) {
-      (*m_tke).register_custom_bc<ABLTKEWallFunc>(m_abl_wall_func);
+        (*m_tke).register_custom_bc<ABLTKEWallFunc>(m_abl_wall_func);
     }
     if (m_sim.repo().field_exists("sdr")) {
-      (*m_sdr).register_custom_bc<ABLSDRWallFunc>(m_abl_wall_func);
+        (*m_sdr).register_custom_bc<ABLSDRWallFunc>(m_abl_wall_func);
     }
     if (m_sim.repo().field_exists("eps")) {
-      (*m_eps).register_custom_bc<ABLEpsWallFunc>(m_abl_wall_func);
+        (*m_eps).register_custom_bc<ABLEpsWallFunc>(m_abl_wall_func);
     }
 
     m_bndry_plane->post_init_actions();
