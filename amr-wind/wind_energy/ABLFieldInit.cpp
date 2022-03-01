@@ -7,9 +7,7 @@
 namespace amr_wind {
 
 ABLFieldInit::ABLFieldInit(CFDSim& sim)
-: m_repo(sim.repo())
-, m_mesh_mapping(sim.has_mesh_mapping())
-  //m_nu_coord_cc(sim.repo().get_field("non_uniform_coord_cc"))
+    : m_repo(sim.repo()), m_mesh_mapping(sim.has_mesh_mapping())
 {
     amrex::ParmParse pp_abl("ABL");
 
@@ -93,12 +91,12 @@ void ABLFieldInit::operator()(
                        : amrex::Array4<amrex::Real const>();
 
     amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-	const amrex::Real x = m_mesh_mapping ? nu_cc(i, j, k, 0)
-	                                     : problo[0] + (i + 0.5) * dx[0];
-	const amrex::Real y = m_mesh_mapping ? nu_cc(i, j, k, 1)
-	                                     : problo[1] + (j + 0.5) * dx[1];
-	const amrex::Real z = m_mesh_mapping ? nu_cc(i, j, k, 2)
-	                                     : problo[2] + (k + 0.5) * dx[2];
+	const amrex::Real x = 
+            m_mesh_mapping ? nu_cc(i, j, k, 0) : problo[0] + (i + 0.5) * dx[0];
+	const amrex::Real y = 
+            m_mesh_mapping ? nu_cc(i, j, k, 1) : problo[1] + (j + 0.5) * dx[1];
+	const amrex::Real z = 
+            m_mesh_mapping ? nu_cc(i, j, k, 2) : problo[2] + (k + 0.5) * dx[2];
 
         density(i, j, k) = rho_init;
         // Mean velocity field
@@ -150,8 +148,7 @@ void ABLFieldInit::perturb_temperature(
     const auto theta_gauss_var = m_theta_gauss_var;
     const auto deltaT = m_deltaT;
     Field const* nu_coord_cc =
-      m_mesh_mapping ? &(m_repo.get_field("non_uniform_coord_cc")) 
-                     : nullptr;
+        m_mesh_mapping ? &(m_repo.get_field("non_uniform_coord_cc")) : nullptr;
 
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
@@ -160,15 +157,16 @@ void ABLFieldInit::perturb_temperature(
          ++mfi) {
         const auto& bx = mfi.tilebox();
         const auto& theta = theta_fab.array(mfi);
-	amrex::Array4<amrex::Real const> nu_cc =
-	  m_mesh_mapping ? ((*nu_coord_cc)(lev).array(mfi))
-                         : amrex::Array4<amrex::Real const>();
+        amrex::Array4<amrex::Real const> nu_cc =
+            m_mesh_mapping ? ((*nu_coord_cc)(lev).array(mfi))
+                           : amrex::Array4<amrex::Real const>();
         amrex::ParallelForRNG(
             bx, [=] AMREX_GPU_DEVICE(
                     int i, int j, int k,
                     const amrex::RandomEngine& engine) noexcept {
-        	const amrex::Real z = m_mesh_mapping ? nu_cc(i, j, k, 2)
-	                              : problo[2] + (k + 0.5) * dx[2];
+                const amrex::Real z = m_mesh_mapping 
+                                          ? nu_cc(i, j, k, 2)
+                                          : problo[2] + (k + 0.5) * dx[2];
 
                 if (z < theta_cutoff_height) {
                     theta(i, j, k) =
@@ -182,7 +180,8 @@ void ABLFieldInit::perturb_temperature(
 //! Initialize sfs tke field at the beginning of the simulation
 void ABLFieldInit::init_tke(
     const int /* level */,
-    const amrex::Geometry& /* geom */, amrex::MultiFab& tke) const
+    const amrex::Geometry& /* geom */,
+    amrex::MultiFab& tke) const
 {
     tke.setVal(m_tke_init, 1);
 }
@@ -191,7 +190,7 @@ void ABLFieldInit::init_tke(
 //! (applicable to K-Omega SST model)
 void ABLFieldInit::init_sdr(
     const int /* level */,
-    const amrex::Geometry& /* geom */, 
+    const amrex::Geometry& /* geom */,
     amrex::MultiFab& sdr) const
 {
     sdr.setVal(m_sdr_init, 1);
@@ -201,7 +200,7 @@ void ABLFieldInit::init_sdr(
 //! (applicable to K-Epsilon model)
 void ABLFieldInit::init_eps(
     const int /* level */,
-    const amrex::Geometry& /* geom */, 
+    const amrex::Geometry& /* geom */,
     amrex::MultiFab& eps) const
 {
     eps.setVal(m_eps_init, 1);

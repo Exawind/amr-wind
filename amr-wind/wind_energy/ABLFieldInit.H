@@ -24,8 +24,8 @@ public:
     ABLFieldInit(CFDSim&);
 
     void operator()(
-	const int level,
-	const amrex::MFIter& mfi,
+        const int level,
+        const amrex::MFIter& mfi,
         const amrex::Box& vbx,
         const amrex::Geometry& geom,
         const amrex::Array4<amrex::Real>& velocity,
@@ -44,19 +44,22 @@ public:
     bool add_temperature_perturbations() const { return m_perturb_theta; }
 
     //! Initialize TKE field
-    void init_tke(const int level,
-		  const amrex::Geometry& geom, 
-		  amrex::MultiFab& tke) const;
+    void init_tke(
+        const int level,
+        const amrex::Geometry& geom, 
+	amrex::MultiFab& tke) const;
 
     //! Initialize SDR field
-    void init_sdr(const int level,
-		  const amrex::Geometry& geom, 
-		  amrex::MultiFab& sdr) const;
+    void init_sdr(
+        const int level,
+        const amrex::Geometry& geom, 
+        amrex::MultiFab& sdr) const;
 
     //! Initialize epsilon field
-    void init_eps(const int level,
-		  const amrex::Geometry& geom, 
-		  amrex::MultiFab& sdr) const;
+    void init_eps(
+        const int level,
+        const amrex::Geometry& geom, 
+        amrex::MultiFab& sdr) const;
 
 private:
     const FieldRepo& m_repo;
