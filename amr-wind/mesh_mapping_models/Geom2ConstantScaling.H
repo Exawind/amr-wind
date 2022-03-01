@@ -5,7 +5,7 @@
 #include "amr-wind/core/Field.H"
 
 namespace amr_wind {
-namespace abl_map {
+namespace geom2constant_map {
 
 /** Channel flow scaling mesh map
  *  \ingroup mesh_map
@@ -31,6 +31,25 @@ public:
     //! Construct the non-uniform mesh field
     void create_non_uniform_mesh(int, const amrex::Geometry&);
 
+    //! Used for debugging eval_coord function
+    amrex::Real dump_coord(
+			   const amrex::Real ,
+			   const amrex::Real ,
+			   const amrex::Real ,
+			   const amrex::Real ,
+			   const amrex::Real ,
+			   const amrex::Real ,
+			   const int);
+    //! Used for debugging eval_fac function
+    amrex::Real dump_fac(
+			 const amrex::Real ,
+			 const amrex::Real ,
+			 const amrex::Real ,
+			 const amrex::Real ,
+			 const amrex::Real ,
+			 const amrex::Real ,
+			 const int);
+
 private:
     //! User input parameters
     amrex::Vector<amrex::Real> m_sratio{{1.0, 1.0, 1.05}};
@@ -43,6 +62,6 @@ private:
 };
 
 } // namespace abl_map
-} // namespace amr_wind
+} // namespace geom2constant_map
 
 #endif /* Geom2ConstantScaling_H */
