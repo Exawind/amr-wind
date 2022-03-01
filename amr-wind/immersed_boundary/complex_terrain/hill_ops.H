@@ -67,7 +67,6 @@ struct InitDataOp<Hill>
                         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
                         const amrex::Real phi_glob = phi(i, j, k);
-                        const amrex::Real height = z - z0;
                         amrex::Real r = std::sqrt(
                             (x - x0) * (x - x0) + (y - y0) * (y - y0));
                         amrex::Real hillnear;
