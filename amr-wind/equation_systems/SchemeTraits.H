@@ -17,7 +17,7 @@ struct Godunov
     //! Number of states in the field variable
     static constexpr int num_states = 2;
     //! Number of ghost in the state variable
-    static constexpr int nghost_state = 3;
+    static constexpr int nghost_state = 5;
     //! Number of ghost cells in the source term variable
     static constexpr int nghost_src = 1;
     //! Number of ghost cells in the MAC face variables
