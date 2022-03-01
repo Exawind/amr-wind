@@ -23,8 +23,6 @@ struct VOF : ScalarTransport
     static constexpr bool has_diffusion = false;
     static constexpr bool need_nph_state = true;
 
-    static constexpr int nghost_state = 5;
-
     static constexpr amrex::Real default_bc_value = 0.0;
 };
 
