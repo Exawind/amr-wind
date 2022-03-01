@@ -31,8 +31,7 @@ linear_monochromatic_waves(
     const amrex::Real w_w = omega * amplitude *
                             std::sinh(k_ * (z + waterdepth)) /
                             std::sinh(k_ * waterdepth) * std::sin(phase);
-    const amrex::Vector<amrex::Real> out = {{eta, u_w, v_w, w_w}};
-    return out;
+    return {{eta, u_w, v_w, w_w}};
 }
 
 } // namespace nwt
