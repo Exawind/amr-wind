@@ -88,7 +88,7 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
             mesh_mapping
                 ? &(this->fields.repo.get_mesh_mapping_field(FieldLoc::CELL))
                 : nullptr;
-        bool src_for_RHS (fstate == amr_wind::FieldState::New);
+        bool src_for_RHS(fstate == amr_wind::FieldState::New);
 
         const int nlevels = this->fields.repo.num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {

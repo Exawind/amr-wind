@@ -52,6 +52,8 @@ public:
 
     amrex::Real volume_fraction_sum();
 
+    amrex::Real momentum_sum(int);
+
     InterfaceCapturingMethod interface_capturing_method();
 
     amrex::Real rho1() const { return m_rho1; }
@@ -90,6 +92,8 @@ private:
 
     // sum of volume fractions (for vof only)
     amrex::Real m_total_volfrac{0.0};
+
+    amrex::Real q0, q1, q2, sumvof0;
 };
 
 } // namespace amr_wind
