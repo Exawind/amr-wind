@@ -118,7 +118,7 @@ void NWT::apply_relaxation_method()
                     const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                     const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                    amrex::Vector<amrex::Real> wave_out(4);
+                    amrex::Gpu::DeviceVector<amrex::Real> wave_out(4);
 
                     wave_out = nwt::linear_monochromatic_waves(
                         wavelength, waterdepth, amplitude, x, y, z, time);

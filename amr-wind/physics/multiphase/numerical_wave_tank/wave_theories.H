@@ -7,7 +7,7 @@
 namespace amr_wind {
 namespace nwt {
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Vector<amrex::Real>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Gpu::DeviceVector<amrex::Real>
 linear_monochromatic_waves(
     amrex::Real wavelength,
     amrex::Real waterdepth,
