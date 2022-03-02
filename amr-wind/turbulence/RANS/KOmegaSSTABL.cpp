@@ -64,6 +64,12 @@ void KOmegaSSTABL<Transport>::update_turbulent_viscosity(
     const auto& sdr = (*this->m_sdr).state(fstate);
     auto& repo = mu_turb.repo();
 
+    const bool mesh_mapping = this->m_sim.has_mesh_mapping();
+    amr_wind::Field const* mesh_fac =
+        mesh_mapping ? &((this->m_sim.repo())
+                             .get_mesh_mapping_field(amr_wind::FieldLoc::CELL))
+                     : nullptr;
+
     const int nlevels = repo.num_active_levels();
 
     auto gradK = (this->m_sim.repo()).create_scratch_field(3, 0);
@@ -72,9 +78,18 @@ void KOmegaSSTABL<Transport>::update_turbulent_viscosity(
     auto gradOmega = (this->m_sim.repo()).create_scratch_field(3, 0);
     fvm::gradient(*gradOmega, sdr);
 
-    const auto& vel = this->m_vel.state(fstate);
+    auto& vel = this->m_vel.state(fstate);
+    // ensure velocity is in stretched mesh space
+    if (vel.in_uniform_space() && mesh_mapping) {
+        vel.to_stretched_space();
+    }
+
     // Compute strain rate into shear production term
-    fvm::strainrate(this->m_shear_prod, vel);
+    if (mesh_mapping) {
+        shear_prod_to_uniform_space(this->m_shear_prod, vel);
+    } else {
+        fvm::strainrate(this->m_shear_prod, vel);
+    }
 
     auto& tke_lhs = (this->m_sim).repo().get_field("tke_lhs_src_term");
     tke_lhs.setVal(0.0);
@@ -101,13 +116,23 @@ void KOmegaSSTABL<Transport>::update_turbulent_viscosity(
             const auto& f1_arr = (this->m_f1)(lev).array(mfi);
             const auto& tke_lhs_arr = tke_lhs(lev).array(mfi);
             const auto& sdr_lhs_arr = sdr_lhs(lev).array(mfi);
+            amrex::Array4<amrex::Real const> fac =
+                mesh_mapping ? ((*mesh_fac)(lev).const_array(mfi))
+                             : amrex::Array4<amrex::Real const>();
 
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    amrex::Real fac_x = mesh_mapping ? (fac(i, j, k, 0)) : 1.0;
+                    amrex::Real fac_y = mesh_mapping ? (fac(i, j, k, 1)) : 1.0;
+                    amrex::Real fac_z = mesh_mapping ? (fac(i, j, k, 2)) : 1.0;
+
                     amrex::Real gko =
-                        (gradK_arr(i, j, k, 0) * gradOmega_arr(i, j, k, 0) +
-                         gradK_arr(i, j, k, 1) * gradOmega_arr(i, j, k, 1) +
-                         gradK_arr(i, j, k, 2) * gradOmega_arr(i, j, k, 2));
+                        (gradK_arr(i, j, k, 0) / fac_x *
+                             gradOmega_arr(i, j, k, 0) / fac_x +
+                         gradK_arr(i, j, k, 1) / fac_y *
+                             gradOmega_arr(i, j, k, 1) / fac_y +
+                         gradK_arr(i, j, k, 2) / fac_z *
+                             gradOmega_arr(i, j, k, 2) / fac_z);
 
                     amrex::Real cdkomega = amrex::max(
                         1e-10, 2.0 * rho_arr(i, j, k) * sigma_omega2 * gko /
@@ -227,6 +252,51 @@ void KOmegaSSTABL<Transport>::update_scalar_diff(
         amrex::Abort(
             "KOmegaSSTABL:update_scalar_diff not implemented for field " + 
             name);
+    }
+}
+
+template <typename Transport>
+void KOmegaSSTABL<Transport>::shear_prod_to_uniform_space(
+    Field& shear_prod, const Field& vel)
+{
+    // Modify shear production while accounting for mesh mapping
+    auto grad_vel =
+        (this->m_sim).repo().create_scratch_field(9, 0, FieldLoc::CELL);
+    fvm::gradient(*grad_vel, vel);
+
+    auto const& mesh_fac =
+        (this->m_sim).repo().get_mesh_mapping_field(amr_wind::FieldLoc::CELL);
+
+    for (int lev = 0; lev < (this->m_sim).repo().num_active_levels(); ++lev) {
+        for (amrex::MFIter mfi(shear_prod(lev)); mfi.isValid(); ++mfi) {
+            const auto& bx = mfi.tilebox();
+            const auto& grad_v = (*grad_vel)(lev).array(mfi);
+            const auto& fac = (mesh_fac)(lev).array(mfi);
+            const auto& str_rt = (shear_prod)(lev).array(mfi);
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    amrex::Real ux = grad_v(i, j, k, 0);
+                    amrex::Real vx = grad_v(i, j, k, 1);
+                    amrex::Real wx = grad_v(i, j, k, 2);
+                    amrex::Real uy = grad_v(i, j, k, 3);
+                    amrex::Real vy = grad_v(i, j, k, 4);
+                    amrex::Real wy = grad_v(i, j, k, 5);
+                    amrex::Real uz = grad_v(i, j, k, 6);
+                    amrex::Real vz = grad_v(i, j, k, 7);
+                    amrex::Real wz = grad_v(i, j, k, 8);
+
+                    str_rt(i, j, k) = std::sqrt(
+                        2.0 * std::pow(ux / fac(i, j, k, 0), 2) +
+                        2.0 * std::pow(vy / fac(i, j, k, 1), 2) +
+                        2.0 * std::pow(wz / fac(i, j, k, 2), 2) +
+                        std::pow(
+                            uy / fac(i, j, k, 1) + vx / fac(i, j, k, 0), 2) +
+                        std::pow(
+                            vz / fac(i, j, k, 2) + wy / fac(i, j, k, 1), 2) +
+                        std::pow(
+                            wx / fac(i, j, k, 0) + uz / fac(i, j, k, 2), 2));
+                });
+        }
     }
 }
 
