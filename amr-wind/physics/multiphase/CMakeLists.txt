@@ -8,6 +8,3 @@ target_sources(${amr_wind_lib_name}
   BreakingWaves.cpp
   RainDrop.cpp
   )
-
-add_subdirectory(numerical_wave_tank)
-

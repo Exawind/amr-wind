@@ -1,7 +1,7 @@
 #include "amr-wind/physics/multiphase/MultiPhase.H"
-#include "amr-wind/physics/multiphase/numerical_wave_tank/NWT.H"
-#include "amr-wind/physics/multiphase/numerical_wave_tank/wave_utils.H"
-#include "amr-wind/physics/multiphase/numerical_wave_tank/wave_theories.H"
+#include "amr-wind/wave_generation/NWT.H"
+#include "amr-wind/wave_generation/wave_utils.H"
+#include "amr-wind/wave_generation/wave_theories.H"
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
@@ -125,7 +125,7 @@ void NWT::apply_relaxation_method()
                         wavelength, waterdepth, amplitude, x, y, z, time, eta,
                         u_w, v_w, w_w);
 
-                    if (x <= gen_length && x >= 0.) {
+                    if (x <= gen_length) {
                         const amrex::Real Gamma =
                             nwt::Gamma_generate(x, gen_length);
                         const amrex::Real vf =
