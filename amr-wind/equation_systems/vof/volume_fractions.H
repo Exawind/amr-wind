@@ -528,6 +528,29 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fit_plane(
         alpha + amrex::min(0.0, mx) + amrex::min(0.0, my) + amrex::min(0.0, mz);
 }
 
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool interface_band(
+    int i,
+    int j,
+    int k,
+    amrex::Array4<amrex::Real const> const& volfrac) noexcept
+{
+    // Check if near interface
+    amrex::Real VOF_max = 0.0;
+    amrex::Real VOF_min = 1.0;
+    bool VOF_mid = false;
+    for (int ii = -1; ii < 2; ++ii) {
+        for (int jj = -1; jj < 2; ++jj) {
+            for (int kk = -1; kk < 2; ++kk) {
+                amrex::Real VOF = volfrac(i + ii, j + jj, k + kk);
+                VOF_max = amrex::max(VOF_max, VOF);
+                VOF_min = amrex::min(VOF_min, VOF);
+                if (VOF < 1.0 && VOF > 0.0) VOF_mid = true;
+            }
+        }
+    }
+    return (VOF_max != VOF_min || VOF_mid);
+}
+
 } // namespace multiphase
 } // namespace amr_wind
 
