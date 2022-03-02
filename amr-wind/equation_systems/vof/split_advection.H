@@ -108,7 +108,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void eulerian_implicit(
         fluxR(i, j, k) = amrex::max(aR, 0.0);
         if (aL < 0.0) vofL(i, j, k) = 1.0;
         if (aR > 0.0) vofR(i, j, k) = 1.0;
-    } else if (volfrac(i, j, k) > 0.0) {
+    } else if (volfrac(i, j, k) > tiny) {
         fit_plane(i, j, k, volfrac, mx, my, mz, alpha);
         // Eulerian advection
         x0 = 0.0;
