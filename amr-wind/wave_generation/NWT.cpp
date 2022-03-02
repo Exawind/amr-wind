@@ -100,6 +100,7 @@ void NWT::apply_relaxation_method()
             const auto& gbx = mfi.growntilebox();
             const auto& dx = geom[lev].CellSizeArray();
             const auto& problo = geom[lev].ProbLoArray();
+            const auto& probhi = geom[lev].ProbHiArray();
             auto vel = m_velocity(lev).array(mfi);
             auto rho = m_density(lev).array(mfi);
             auto volfrac = m_vof(lev).array(mfi);
@@ -115,17 +116,22 @@ void NWT::apply_relaxation_method()
 
             amrex::ParallelFor(
                 gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-
+                    const amrex::Real x = amrex::min(
+                        amrex::max(problo[0] + (i + 0.5) * dx[0], problo[0]),
+                        probhi[0]);
+                    const amrex::Real y = amrex::min(
+                        amrex::max(problo[1] + (j + 0.5) * dx[1], problo[1]),
+                        probhi[1]);
+                    const amrex::Real z = amrex::min(
+                        amrex::max(problo[2] + (k + 0.5) * dx[2], problo[2]),
+                        probhi[2]);
                     amrex::Real eta, u_w, v_w, w_w;
 
                     nwt::linear_monochromatic_waves(
                         wavelength, waterdepth, amplitude, x, y, z, time, eta,
                         u_w, v_w, w_w);
 
-                    if (x <= gen_length && x>0.) {
+                    if (x <= gen_length) {
                         const amrex::Real Gamma =
                             nwt::Gamma_generate(x, gen_length);
                         const amrex::Real vf =
