@@ -23,6 +23,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
     {
         amrex::ParmParse pp_multiphase("VOF");
         pp_multiphase.query("use_lagrangian", m_use_lagrangian);
+        pp_multiphase.query("remove_debris", m_rm_debris);
     }
 
     void preadvect(const FieldState /*unused*/, const amrex::Real /*unused*/) {}
@@ -117,8 +118,9 @@ struct AdvectionOp<VOF, fvm::Godunov>
                     aa_z(lev).array(mfi), dof_field.bcrec_device().data(),
                     tmpfab.dataPtr(), geom, dt, m_use_lagrangian);
 
-                multiphase::debris_loop(bx, dof_field(lev).array(mfi));
-
+                if (m_rm_debris) {
+                    multiphase::debris_loop(bx, dof_field(lev).array(mfi));
+                }
                 amrex::Gpu::streamSynchronize();
             }
         }
@@ -130,6 +132,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
     Field& w_mac;
     int isweep = 0;
     bool m_use_lagrangian{false};
+    bool m_rm_debris{true};
 };
 
 } // namespace pde
