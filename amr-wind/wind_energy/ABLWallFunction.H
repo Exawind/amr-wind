@@ -38,7 +38,7 @@ public:
     update_umean(const VelPlaneAveraging& vpa, const FieldPlaneAveraging& tpa);
 
     //! Returns Cmu constant used in RANS ABL wall functions
-    amrex::Real Cmu() const 
+    amrex::Real Cmu() const
     {
         AMREX_ALWAYS_ASSERT(
             m_sim.turbulence_model().model_name() == "KOmegaSSTABL");
@@ -118,7 +118,7 @@ public:
     void operator()(Field& tke, const FieldState rho_state) override;
 
     template <typename ShearStress>
-    void 
+    void
     wall_model(Field& tke, const FieldState rho_state, const ShearStress& tau);
 
 private:
@@ -134,7 +134,7 @@ public:
     void operator()(Field& sdr, const FieldState rho_state) override;
 
     template <typename ShearStress>
-    void 
+    void
     wall_model(Field& sdr, const FieldState rho_state, const ShearStress& tau);
 
 private:
@@ -150,7 +150,7 @@ public:
     void operator()(Field& eps, const FieldState rho_state) override;
 
     template <typename ShearStress>
-    void 
+    void
     wall_model(Field& eps, const FieldState rho_state, const ShearStress& tau);
 
 private:

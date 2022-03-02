@@ -17,8 +17,7 @@ template <typename Transport>
 KOmegaSSTABL<Transport>::~KOmegaSSTABL() = default;
 
 template <typename Transport>
-KOmegaSSTABL<Transport>::KOmegaSSTABL(CFDSim& sim)
-    : KOmegaSST<Transport>(sim)
+KOmegaSSTABL<Transport>::KOmegaSSTABL(CFDSim& sim): KOmegaSST<Transport>(sim)
 {
 
     {
@@ -26,7 +25,6 @@ KOmegaSSTABL<Transport>::KOmegaSSTABL(CFDSim& sim)
         amrex::ParmParse pp(coeffs_dict);
     }
 }
-
 
 template <typename Transport>
 TurbulenceModel::CoeffsDictType KOmegaSSTABL<Transport>::model_coeffs() const
@@ -46,7 +44,7 @@ TurbulenceModel::CoeffsDictType KOmegaSSTABL<Transport>::model_coeffs() const
 
 template <typename Transport>
 void KOmegaSSTABL<Transport>::update_turbulent_viscosity(
-			      const FieldState fstate)
+    const FieldState fstate)
 {
     BL_PROFILE(
         "amr-wind::" + this->identifier() + "::update_turbulent_viscosity");
@@ -227,7 +225,8 @@ void KOmegaSSTABL<Transport>::update_scalar_diff(
         }
     } else {
         amrex::Abort(
-            "KOmegaSSTABL:update_scalar_diff not implemented for field "+name);
+            "KOmegaSSTABL:update_scalar_diff not implemented for field " + 
+            name);
     }
 }
 

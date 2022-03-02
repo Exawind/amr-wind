@@ -163,8 +163,8 @@ struct ShearStressMoeng
 
 struct ShearStressAlinot
 {
-    explicit ShearStressAlinot(const amr_wind::MOData& mo,
-        const amrex::Real Cmu)
+    explicit ShearStressAlinot(
+        const amr_wind::MOData& mo, const amrex::Real Cmu)
         : zref(mo.zref)
         , kappa(mo.kappa)
         , utau(mo.utau)
@@ -194,6 +194,5 @@ struct ShearStressAlinot
     amrex::Real phi_m;
     amrex::Real phi_e;
     amrex::Real m_Cmu = 1.0 / 5.48 / 5.48;
-
 };
 #endif /* ShearStress_H */
