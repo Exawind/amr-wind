@@ -125,7 +125,7 @@ void NWT::apply_relaxation_method()
                         wavelength, waterdepth, amplitude, x, y, z, time, eta,
                         u_w, v_w, w_w);
 
-                    if (x <= gen_length) {
+                    if (x <= gen_length && x>0.) {
                         const amrex::Real Gamma =
                             nwt::Gamma_generate(x, gen_length);
                         const amrex::Real vf =
