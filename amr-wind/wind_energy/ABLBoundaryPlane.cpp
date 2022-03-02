@@ -806,7 +806,7 @@ void ABLBoundaryPlane::read_file()
 
         const int index = closest_index(m_in_times, time);
         const int t_step1 = m_in_timesteps[index];
-        const int t_step2 = t_step1 + 1;
+        const int t_step2 = m_in_timesteps[index + 1];
 
         AMREX_ALWAYS_ASSERT(
             (m_in_times[index] <= time) && (time <= m_in_times[index + 1]));
