@@ -66,7 +66,9 @@ void LidarSampler::update_sampling_locations()
     amrex::Real time = m_sim.time().current_time();
 
     // If the time table is periodic, make sure to get the correct time
-    if (m_periodic) time = std::fmod(time, m_period);
+    if (m_periodic) {
+        time = std::fmod(time, m_period);
+    }
 
     // The current azimuth angle
     const amrex::Real current_azimuth = utils::radians(

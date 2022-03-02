@@ -47,7 +47,7 @@ protected:
     amrex::Vector<amrex::Real> m_elevation_table;
     amrex::Real m_length{0};
     bool m_periodic{true};
-    amrex::Real m_period{99999999};
+    amrex::Real m_period{std::numeric_limits<double>::max()};
 };
 
 } // namespace sampling
