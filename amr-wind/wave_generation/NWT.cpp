@@ -80,11 +80,15 @@ void NWT::initialize_fields(int level, const amrex::Geometry& geom)
     }
 }
 
-void NWT::pre_advance_work() { apply_relaxation_method(); }
-
-void NWT::apply_relaxation_method()
+void NWT::pre_advance_work()
 {
     const auto& time = m_sim.time().current_time();
+
+    apply_relaxation_method(time);
+}
+
+void NWT::apply_relaxation_method(amrex::Real time)
+{
     const int nlevels = m_sim.repo().num_active_levels();
     const auto& geom = m_sim.mesh().Geom();
 
@@ -139,7 +143,7 @@ void NWT::apply_relaxation_method()
                                 nwt::free_surface_to_vof(eta, z, dx[2]) * ramp +
                             Gamma * volfrac(i, j, k);
                         // Doing clipping on the spot
-                        volfrac(i, j, k) = (vf > 1. - 1.e-6) ? 1.0 : vf;
+                        volfrac(i, j, k) = (vf > 1. - 1.e-10) ? 1.0 : vf;
                         vel(i, j, k, 0) =
                             (1 - Gamma) * u_w * volfrac(i, j, k) * ramp +
                             Gamma * vel(i, j, k, 0) * volfrac(i, j, k) +
@@ -169,6 +173,7 @@ void NWT::apply_relaxation_method()
                         vel(i, j, k, 2) =
                             Gamma * vel(i, j, k, 2) * volfrac(i, j, k);
                     }
+
                     // Make sure that density is updated before entering the
                     // solution
                     rho(i, j, k) = rho1 * volfrac(i, j, k) +

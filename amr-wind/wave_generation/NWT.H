@@ -46,7 +46,7 @@ public:
 
     void pre_advance_work() override;
 
-    void apply_relaxation_method();
+    void apply_relaxation_method(amrex::Real time);
 
 private:
     const CFDSim& m_sim;
