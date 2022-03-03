@@ -463,9 +463,29 @@ void FreeSurface::write_ascii()
             amrex::FileOpenFailed(fname);
         }
 
+        std::string str1 = "x";
+        std::string str2 = "y";
+        switch (m_coorddir) {
+        case 0: {
+            str1 = "y";
+            str2 = "z";
+            break;
+        }
+        case 1: {
+            str1 = "x";
+            str2 = "z";
+            break;
+        }
+        default: {
+            // Do nothing, initial settings are good
+            break;
+        }
+        }
+
         // Metadata
         File << m_npts << '\n';
-        File << m_npts_dir[0] << ' ' << m_npts_dir[1] << '\n';
+        File << str1 << ' ' << m_npts_dir[0] << ' ' << str2 << ' '
+             << m_npts_dir[1] << '\n';
 
         // Points in grid (x, y, z0, z1, ...)
         for (int n = 0; n < m_npts; ++n) {
