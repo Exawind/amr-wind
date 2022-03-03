@@ -262,7 +262,9 @@ void incflo::ApplyPredictor(bool incremental_projection)
     }
 
     // Extrapolate and apply MAC projection for advection velocities
-    icns().pre_advection_actions(amr_wind::FieldState::Old);
+    if (!m_prescribe_vel) {
+        icns().pre_advection_actions(amr_wind::FieldState::Old);
+    }
 
     // For scalars only first
     // *************************************************************************************
@@ -348,9 +350,11 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // Project velocity field, update pressure
     //
     // ************************************************************************************
-    ApplyProjection(
-        (density_new).vec_const_ptrs(), new_time, m_time.deltaT(),
-        incremental_projection);
+    if (!m_prescribe_vel) {
+        ApplyProjection(
+            (density_new).vec_const_ptrs(), new_time, m_time.deltaT(),
+            incremental_projection);
+    }
 }
 
 //
