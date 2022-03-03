@@ -213,46 +213,64 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_eulerian_fluxes(
     int bchi = bc->hi(dir);
 
     if (dir == 0) {
-        if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
-            if (i == domlo) {
+
+        if (i == domlo) {
+            if (bclo == amrex::BCType::ext_dir) {
                 fluxR(domlo - 1, j, k) = volfrac(domlo - 1, j, k);
+            } else if (bclo == amrex::BCType::hoextrap) {
+                fluxR(domlo - 1, j, k) = 0.0;
             }
         }
-        if (bchi == amrex::BCType::ext_dir || bchi == amrex::BCType::hoextrap) {
-            if (i == domhi) {
+        if (i == domhi) {
+            if (bchi == amrex::BCType::ext_dir) {
                 fluxL(domhi + 1, j, k) = volfrac(domhi + 1, j, k);
+            } else if (bchi == amrex::BCType::hoextrap) {
+                fluxL(domhi + 1, j, k) = 0.0;
             }
         }
+
         volfrac(i, j, k) = volfrac(i, j, k) -
                            (fluxR(i, j, k) - fluxL(i + 1, j, k)) +
                            (fluxR(i - 1, j, k) - fluxL(i, j, k)) +
                            fluxC(i, j, k) * (velR - velL);
+
     } else if (dir == 1) {
-        if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
-            if (j == domlo) {
+
+        if (j == domlo) {
+            if (bclo == amrex::BCType::ext_dir) {
                 fluxR(i, domlo - 1, k) = volfrac(i, domlo - 1, k);
+            } else if (bclo == amrex::BCType::hoextrap) {
+                fluxR(i, domlo - 1, k) = 0.0;
             }
         }
-        if (bchi == amrex::BCType::ext_dir || bchi == amrex::BCType::hoextrap) {
-            if (j == domhi) {
+        if (j == domhi) {
+            if (bchi == amrex::BCType::ext_dir) {
                 fluxL(i, domhi + 1, k) = volfrac(i, domhi + 1, k);
+            } else if (bchi == amrex::BCType::hoextrap) {
+                fluxL(i, domhi + 1, k) = 0.0;
             }
         }
+
         volfrac(i, j, k) = volfrac(i, j, k) -
                            (fluxR(i, j, k) - fluxL(i, j + 1, k)) +
                            (fluxR(i, j - 1, k) - fluxL(i, j, k)) +
                            fluxC(i, j, k) * (velR - velL);
     } else if (dir == 2) {
-        if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
-            if (k == domlo) {
+        if (k == domlo) {
+            if (bclo == amrex::BCType::ext_dir) {
                 fluxR(i, j, domlo - 1) = volfrac(i, j, domlo - 1);
+            } else if (bclo == amrex::BCType::hoextrap) {
+                fluxR(i, j, domlo - 1) = 0.0;
             }
         }
-        if (bchi == amrex::BCType::ext_dir || bchi == amrex::BCType::hoextrap) {
-            if (k == domhi) {
+        if (k == domhi) {
+            if (bchi == amrex::BCType::ext_dir) {
                 fluxL(i, j, domhi + 1) = volfrac(i, j, domhi + 1);
+            } else if (bchi == amrex::BCType::hoextrap) {
+                fluxL(i, j, domhi + 1) = 0.0;
             }
         }
+
         volfrac(i, j, k) = volfrac(i, j, k) -
                            (fluxR(i, j, k) - fluxL(i, j, k + 1)) +
                            (fluxR(i, j, k - 1) - fluxL(i, j, k)) +
