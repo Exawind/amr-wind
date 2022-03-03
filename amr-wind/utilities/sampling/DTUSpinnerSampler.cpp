@@ -29,58 +29,85 @@ void DTUSpinnerSampler::initialize(const std::string& key)
 
     // The number of points
     pp.get("num_points", m_npts);
-    
+
     // Inner prism initial theta
     pp.get("inner_prism_theta0", m_InnerPrism.theta0);
-    
+
     // Inner prism rotation rate
     pp.get("inner_prism_rotrate", m_InnerPrism.rot);
 
     // Inner prism azimuth angle
     pp.get("inner_prism_azimuth", m_InnerPrism.azimuth);
-    
+
     // Outer prism initial theta
     pp.get("outer_prism_theta0", m_OuterPrism.theta0);
-    
+
     // Outer prism rotation rate
     pp.get("outer_prism_rotrate", m_OuterPrism.rot);
 
     // Outer prism azimuth angle
     pp.get("outer_prism_azimuth", m_OuterPrism.azimuth);
-    
+
     // This is the center of the lidar scan (x, y, z) [m]
     pp.getarr("lidar_center", m_lidar_center);
-    AMREX_ALWAYS_ASSERT(static_cast<int>(m_lidar_center.size()) == AMREX_SPACEDIM);
-    
-    // Scan time 
+    AMREX_ALWAYS_ASSERT(
+        static_cast<int>(m_lidar_center.size()) == AMREX_SPACEDIM);
+
+    // Scan time
     pp.get("scan_time", m_scan_time);
-   
+
     // Number of samples per scan
     pp.get("num_samples", m_num_samples);
-    
+
     // Beam length
     pp.get("beam_length", m_beam_length);
-    
-    // Beam points 
-    pp.get("beam_points", m_beam_points);
-    
+
+    // Beam points
+    pp.query("beam_points", m_beam_points);
+
     // Turbine yaw angle
     pp.get("turbine_yaw_angle", m_turbine_yaw_angle);
-    
+
     // Hub yaw logical flag
     pp.query("hub_yaw", m_hub_yaw);
-    
+
     // Hub roll logical flag
     pp.query("hub_roll", m_hub_roll);
-    
+
     // Hub tilt logical flag
     pp.query("hub_tilt", m_hub_tilt);
-    
+
     // Hub translation logical flag
     amrex::Vector<amrex::Real> hub_translation;
     pp.getarr("hub_translation", hub_translation);
-    m_hub_translation= vs::Vector (hub_translation[0],hub_translation[1],hub_translation[2]);
-   
+    m_hub_translation =
+        vs::Vector(hub_translation[0], hub_translation[1], hub_translation[2]);
+
+    // The time step of the sampling
+    pp.query("dt_s", m_dt_s);
+
+    // The length of the beam [m]
+    pp.get("length", m_length);
+
+    // The time table [s]
+    pp.getarr("time_table", m_time_table);
+    // Azimuth angle (this is in the N, E, S, W direction) [degrees]
+    pp.getarr("azimuth_table", m_azimuth_table);
+    // Elevation angle [degrees]
+    pp.getarr("elevation_table", m_elevation_table);
+
+    // Number of elements in the table
+    int np = m_time_table.size();
+
+    // Ensure that the tables have the same size
+    if (m_azimuth_table.size() != np) {
+        amrex::Abort(
+            "azimuth_table must have same number of entries as time_table ");
+    }
+    if (m_elevation_table.size() != np) {
+        amrex::Abort(
+            "elevation_table must have same number of entries as time_table ");
+    }
 
     update_sampling_locations();
 
@@ -118,8 +145,6 @@ vs::Vector rotation(const vs::Vector& angles, const vs::Vector& data)
     return data & rotMatrix;
 }
 
-
-
 vs::Vector adjust_lidar_pattern(
     vs::Vector beamPt,
     double yaw,
@@ -135,18 +160,15 @@ vs::Vector adjust_lidar_pattern(
     return beamPt_transform;
 }
 
-vs::Vector generate_lidar_pattern(PrismParameters InnerPrism, PrismParameters OuterPrism, double time)
+vs::Vector generate_lidar_pattern(
+    PrismParameters InnerPrism, PrismParameters OuterPrism, double time)
 {
     vs::Vector axis(1, 0, 0);
 
-   
-    
     const vs::Vector ground(0, 0, 1);
 
-    const double innerTheta =
-        InnerPrism.theta0 + InnerPrism.rot * time * 360;
-    const double outerTheta =
-        OuterPrism.theta0 + OuterPrism.rot * time * 360;
+    const double innerTheta = InnerPrism.theta0 + InnerPrism.rot * time * 360;
+    const double outerTheta = OuterPrism.theta0 + OuterPrism.rot * time * 360;
 
     const auto reflection_1 = rotate_euler_vec(
         axis, innerTheta,
@@ -159,15 +181,14 @@ vs::Vector generate_lidar_pattern(PrismParameters InnerPrism, PrismParameters Ou
     return reflect(reflection_2, reflect(reflection_1, axis));
 }
 
-
-
 //
 
 void DTUSpinnerSampler::sampling_locations(SampleLocType& locs) const
 {
 
     // The total number of points at this time step
-    int n_samples = m_beam_points * m_ns;
+    //int n_samples = m_beam_points * m_ns;
+    int n_samples = m_npts * m_ns;
 
     // Resize to number of points in line times number of sampling times
     if (locs.size() < n_samples) {
@@ -216,6 +237,17 @@ void DTUSpinnerSampler::update_sampling_locations()
     const amrex::Real dt_s = m_scan_time / m_num_samples;
 
     m_ns = int(dt_sim / dt_s);
+    
+    //amrex::Real time_tmp = m_time_sampling;
+    //bool cond = true;
+    //constexpr double eps = 1.0e-12;
+    //amrex::Real time_new = time + dt_sim;
+    // Loop to see how many times we will subsample
+    //while (cond) {
+    //    m_ns += 1;
+    //    time_tmp += m_dt_s;
+    //    cond = ((time_tmp + eps) < time_new);
+    //}
 
     int n_size = AMREX_SPACEDIM * m_ns;
     // Resize these variables so they can store all the locations
@@ -232,12 +264,22 @@ void DTUSpinnerSampler::update_sampling_locations()
         int offset = k * AMREX_SPACEDIM;
 
         m_time_sampling += dt_s;
-// CHANGE BELOW
-        auto beam_vector = generate_lidar_pattern(m_InnerPrism, m_OuterPrism, m_time_sampling);
-          beam_vector =
-              adjust_lidar_pattern(beam_vector, m_hub_tilt, m_hub_roll, m_hub_yaw, m_hub_translation);
+        //m_time_sampling += m_dt_s;
+        // CHANGE BELOW
+        auto beam_vector =
+            generate_lidar_pattern(m_InnerPrism, m_OuterPrism, m_time_sampling);
+        beam_vector = adjust_lidar_pattern(
+            beam_vector, m_hub_tilt, m_hub_roll, m_hub_yaw, m_hub_translation);
         
-// CHANGE ABOVE
+
+        for (int d = 0; d < AMREX_SPACEDIM; ++d) {
+            // Need to assign start point as the origin
+            m_start[d + offset] = m_origin[d];
+            // Initialize the end point
+            m_end[d + offset] = m_origin[d];
+        }
+
+        // CHANGE ABOVE
         // Add the origin location to the beam vector
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
 
@@ -261,6 +303,9 @@ void DTUSpinnerSampler::define_netcdf_metadata(
     grp.put_attr("sampling_type", identifier());
     grp.put_attr("start", m_start);
     grp.put_attr("end", m_end);
+    grp.put_attr("time_table", m_time_table);
+    grp.put_attr("azimuth_table", m_azimuth_table);
+    grp.put_attr("elevation_table", m_elevation_table);
     grp.def_var("points", NC_DOUBLE, {"num_time_steps", "num_points", "ndim"});
 }
 

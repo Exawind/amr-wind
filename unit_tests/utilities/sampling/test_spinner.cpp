@@ -21,7 +21,6 @@ namespace amr_wind {
 
 TEST(SpinnerTest, test_spinner)
 {
-    double time = 0;
     double yaw = 180;
     double pitch = 0;
     double roll = 0;
@@ -32,8 +31,8 @@ TEST(SpinnerTest, test_spinner)
     PrismParameters InnerPrism;
     PrismParameters OuterPrism; OuterPrism.rot = 6.5;
 
-    for (int j = 0; j < 100; ++j) {
-      auto beam_vector = generate_lidar_pattern(InnerPrism, OuterPrism, 2. / 100 * j);
+    for (int j = 0; j < 983; ++j) {
+      auto beam_vector = generate_lidar_pattern(InnerPrism, OuterPrism, 2. / 984 * j);
         beam_vector =
             adjust_lidar_pattern(beam_vector, pitch, roll, yaw, translation);
         outputFile << beam_vector[0] << "," << beam_vector[1] << ","

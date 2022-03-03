@@ -7,9 +7,20 @@
 namespace amr_wind {
 namespace sampling {
 
-struct PrismParameters{amrex::Real theta0{90}; amrex::Real rot{3.5}; amrex::Real azimuth{15.2};};
-vs::Vector generate_lidar_pattern(PrismParameters InnerPrism, PrismParameters OuterPrism, double time);
-vs::Vector adjust_lidar_pattern(vs::Vector beamPt, double yaw, double pitch, double roll, vs::Vector translation);
+struct PrismParameters
+{
+    amrex::Real theta0{90};
+    amrex::Real rot{3.5};
+    amrex::Real azimuth{15.2};
+};
+vs::Vector generate_lidar_pattern(
+    PrismParameters InnerPrism, PrismParameters OuterPrism, double time);
+vs::Vector adjust_lidar_pattern(
+    vs::Vector beamPt,
+    double yaw,
+    double pitch,
+    double roll,
+    vs::Vector translation);
 
 /** Sample data along a line that moves in time
  *  \ingroup sampling
@@ -57,18 +68,19 @@ public:
 private:
     int m_ns{1};
     amrex::Real m_time_sampling{0};
+    amrex::Real m_dt_s{0.01};
     PrismParameters m_InnerPrism;
-	PrismParameters m_OuterPrism;
-    amrex::Vector<amrex::Real> m_lidar_center{250.0,250.0,250.0};
+    PrismParameters m_OuterPrism;
+    amrex::Vector<amrex::Real> m_lidar_center{250.0, 250.0, 250.0};
     amrex::Real m_scan_time{2};
     amrex::Real m_num_samples{984};
     amrex::Real m_beam_length{270};
-    amrex::Real m_beam_points{432};
+    int m_beam_points{432};
     amrex::Real m_turbine_yaw_angle{180};
     int m_hub_yaw{0};
     int m_hub_roll{0};
     int m_hub_tilt{0};
-    vs::Vector m_hub_translation{0,0,0};
+    vs::Vector m_hub_translation{0, 0, 0};
 };
 
 } // namespace sampling
