@@ -29,12 +29,37 @@ void FreeSurface::initialize()
         pp.query("output_format", m_out_fmt);
         // Load parameters of freesurface sampling
         pp.query("num_instances", m_ninst);
+        pp.query("search_direction", m_coorddir);
         pp.getarr("num_points", m_npts_dir);
         pp.getarr("start", m_start);
         pp.getarr("end", m_end);
         AMREX_ALWAYS_ASSERT(static_cast<int>(m_start.size()) == AMREX_SPACEDIM);
         AMREX_ALWAYS_ASSERT(static_cast<int>(m_end.size()) == AMREX_SPACEDIM);
         AMREX_ALWAYS_ASSERT(static_cast<int>(m_npts_dir.size()) == 2);
+
+        switch (m_coorddir) {
+        case 0: {
+            gc1 = 1;
+            gc2 = 2;
+            break;
+        }
+        case 1: {
+            gc1 = 0;
+            gc2 = 2;
+            break;
+        }
+        case 2: {
+            gc1 = 0;
+            gc2 = 1;
+            break;
+        }
+        default: {
+            amrex::Abort(
+                "FreeSurface: Invalid coordinate search direction "
+                "encountered");
+            break;
+        }
+        }
     }
 
     // Calculate total number of points
@@ -44,12 +69,10 @@ void FreeSurface::initialize()
     m_locs.resize(m_npts);
     m_out.resize(m_npts * m_ninst);
 
-    // Get size of spacing
+    // Get size of sample grid spacing
     amrex::Vector<amrex::Real> dx = {0.0, 0.0};
-    for (int nd = 0; nd < 2; ++nd) {
-        int d = m_griddim[nd];
-        dx[nd] = (m_end[d] - m_start[d]) / amrex::max(m_npts_dir[nd] - 1, 1);
-    }
+    dx[0] = (m_end[gc1] - m_start[gc1]) / amrex::max(m_npts_dir[0] - 1, 1);
+    dx[1] = (m_end[gc2] - m_start[gc2]) / amrex::max(m_npts_dir[1] - 1, 1);
 
     // Store locations
     int idx = 0;
@@ -57,13 +80,13 @@ void FreeSurface::initialize()
         for (int i = 0; i < m_npts_dir[0]; ++i) {
             // Initialize output values to 0.0
             for (int ni = 0; ni < m_ninst; ++ni) {
-                m_out[idx * m_ninst + ni] = m_start[m_orient];
+                m_out[idx * m_ninst + ni] = m_start[m_coorddir];
             }
-            for (int nd = 0; nd < 2; ++nd) {
-                int d = m_griddim[nd];
-                m_locs[idx][nd] =
-                    m_start[d] + dx[nd] * (i * (1 - nd) + j * (nd));
-            }
+            // Grid direction 1
+            m_locs[idx][0] = m_start[gc1] + dx[0] * i;
+            // Grid direction 2
+            m_locs[idx][1] = m_start[gc2] + dx[1] * j;
+
             ++idx;
         }
     }
@@ -146,13 +169,22 @@ void FreeSurface::post_advance_work()
                                 bx,
                                 [=, &height_fab](int i, int j, int k) noexcept {
                                     // Initialize height measurement
-                                    amrex::Real ht = plo[2];
+                                    amrex::Real ht = plo[m_coorddir];
                                     // Cell location
                                     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>
                                         xm;
                                     xm[0] = plo[0] + (i + 0.5) * dx[0];
                                     xm[1] = plo[1] + (j + 0.5) * dx[1];
                                     xm[2] = plo[2] + (k + 0.5) * dx[2];
+                                    int ip = (m_coorddir == 0 ? 1 : 0);
+                                    int im = i - ip;
+                                    ip = i + ip;
+                                    int jp = (m_coorddir == 1 ? 1 : 0);
+                                    int jm = j - jp;
+                                    jp = j + jp;
+                                    int kp = (m_coorddir == 2 ? 1 : 0);
+                                    int km = k - kp;
+                                    kp = k + kp;
                                     // (1) Check that cell height is below
                                     // previous instance. (2) Check if cell
                                     // contains 2D grid point: complicated
@@ -161,81 +193,179 @@ void FreeSurface::post_advance_work()
                                     // (3) Check if cell is obviously
                                     // multiphase, then check if cell might have
                                     // interface at top or bottom
-                                    if ((dout_ptr[n] > xm[2] + 0.5 * dx[2]) &&
-                                        (((plo[0] == loc[0] &&
-                                           xm[0] - loc[0] == 0.5 * dx[0]) ||
-                                          (xm[0] - loc[0] < 0.5 * dx[0] &&
-                                           loc[0] - xm[0] <= 0.5 * dx[0])) &&
-                                         ((plo[1] == loc[1] &&
-                                           xm[1] - loc[1] == 0.5 * dx[1]) ||
-                                          (xm[1] - loc[1] < 0.5 * dx[1] &&
-                                           loc[1] - xm[1] <= 0.5 * dx[1]))) &&
+                                    if ((dout_ptr[n] >
+                                         xm[m_coorddir] +
+                                             0.5 * dx[m_coorddir]) &&
+                                        (((plo[gc1] == loc[0] &&
+                                           xm[gc1] - loc[0] == 0.5 * dx[gc1]) ||
+                                          (xm[gc1] - loc[0] < 0.5 * dx[gc1] &&
+                                           loc[0] - xm[gc1] <=
+                                               0.5 * dx[gc1])) &&
+                                         ((plo[gc2] == loc[1] &&
+                                           xm[gc2] - loc[1] == 0.5 * dx[gc2]) ||
+                                          (xm[gc2] - loc[1] < 0.5 * dx[gc2] &&
+                                           loc[1] - xm[gc2] <=
+                                               0.5 * dx[gc2]))) &&
                                         ((vof_arr(i, j, k) < (1.0 - 1e-12) &&
                                           vof_arr(i, j, k) > 1e-12) ||
                                          (vof_arr(i, j, k) < 1e-12 &&
-                                          (vof_arr(i, j, k + 1) >
+                                          (vof_arr(ip, jp, kp) >
                                                (1.0 - 1e-12) ||
-                                           vof_arr(i, j, k - 1) >
+                                           vof_arr(im, jm, km) >
                                                (1.0 - 1e-12))))) {
                                         // Interpolate in x and y for the
                                         // current cell and the ones above and
                                         // below
-                                        amrex::Real wx_hi;
-                                        amrex::Real wy_hi;
-                                        int iup, idn, jup, jdn;
+                                        amrex::Real wx_hi = 0.0;
+                                        amrex::Real wy_hi = 0.0;
+                                        amrex::Real wz_hi = 0.0;
+                                        int iup, idn, jup, jdn, kup, kdn;
 
-                                        // Determine which cells to use for x, y
-                                        if (loc[0] < xm[0]) {
-                                            iup = i;
-                                            idn = i - 1;
-                                            wx_hi = (loc[0] - (xm[0] - dx[0])) *
-                                                    dxi[0];
-                                        } else {
-                                            iup = i + 1;
-                                            idn = i;
-                                            wx_hi = (loc[0] - xm[0]) * dxi[0];
+                                        // Determine which cells to use for grid
+                                        if (m_coorddir != 0) {
+                                            // If x is a grid coord, it is
+                                            // always first (e.g., xy or xz)
+                                            int li = 0;
+                                            if (loc[li] < xm[0]) {
+                                                iup = i;
+                                                idn = i - 1;
+                                                wx_hi = (loc[li] -
+                                                         (xm[0] - dx[0])) *
+                                                        dxi[0];
+                                            } else {
+                                                iup = i + 1;
+                                                idn = i;
+                                                wx_hi =
+                                                    (loc[li] - xm[0]) * dxi[0];
+                                            }
                                         }
-                                        if (loc[1] < xm[1]) {
-                                            jup = j;
-                                            jdn = j - 1;
-                                            wy_hi = (loc[1] - (xm[1] - dx[1])) *
-                                                    dxi[1];
-                                        } else {
-                                            jup = j + 1;
-                                            jdn = j;
-                                            wy_hi = (loc[1] - xm[1]) * dxi[1];
+                                        if (m_coorddir != 1) {
+                                            // y can be first or second (xy, yz)
+                                            int li = (gc1 == 1 ? 0 : 1);
+                                            if (loc[li] < xm[1]) {
+                                                jup = j;
+                                                jdn = j - 1;
+                                                wy_hi = (loc[li] -
+                                                         (xm[1] - dx[1])) *
+                                                        dxi[1];
+                                            } else {
+                                                jup = j + 1;
+                                                jdn = j;
+                                                wy_hi =
+                                                    (loc[li] - xm[1]) * dxi[1];
+                                            }
+                                        }
+                                        if (m_coorddir != 2) {
+                                            // If z is a grid coord, it is
+                                            // always second (e.g., yz or xz)
+                                            int li = 1;
+                                            if (loc[li] < xm[2]) {
+                                                kup = k;
+                                                kdn = k - 1;
+                                                wz_hi = (loc[li] -
+                                                         (xm[2] - dx[2])) *
+                                                        dxi[2];
+                                            } else {
+                                                kup = k + 1;
+                                                kdn = k;
+                                                wz_hi =
+                                                    (loc[li] - xm[2]) * dxi[2];
+                                            }
                                         }
                                         amrex::Real wx_lo = 1.0 - wx_hi;
                                         amrex::Real wy_lo = 1.0 - wy_hi;
+                                        amrex::Real wz_lo = 1.0 - wz_hi;
 
-                                        amrex::Real vof_above =
-                                            wx_lo * wy_lo *
-                                                vof_arr(idn, jdn, k + 1) +
-                                            wx_lo * wy_hi *
-                                                vof_arr(idn, jup, k + 1) +
-                                            wx_hi * wy_lo *
-                                                vof_arr(iup, jdn, k + 1) +
-                                            wx_hi * wy_hi *
-                                                vof_arr(iup, jup, k + 1);
-                                        amrex::Real vof_here =
-                                            wx_lo * wy_lo *
-                                                vof_arr(idn, jdn, k) +
-                                            wx_lo * wy_hi *
-                                                vof_arr(idn, jup, k) +
-                                            wx_hi * wy_lo *
-                                                vof_arr(iup, jdn, k) +
-                                            wx_hi * wy_hi *
-                                                vof_arr(iup, jup, k);
-                                        amrex::Real vof_below =
-                                            wx_lo * wy_lo *
-                                                vof_arr(idn, jdn, k - 1) +
-                                            wx_lo * wy_hi *
-                                                vof_arr(idn, jup, k - 1) +
-                                            wx_hi * wy_lo *
-                                                vof_arr(iup, jdn, k - 1) +
-                                            wx_hi * wy_hi *
-                                                vof_arr(iup, jup, k - 1);
+                                        amrex::Real vof_above, vof_below;
+                                        amrex::Real vof_here;
 
+                                        if (m_coorddir == 0) {
+                                            vof_above =
+                                                wz_lo * wy_lo *
+                                                    vof_arr(i + 1, jdn, kdn) +
+                                                wz_lo * wy_hi *
+                                                    vof_arr(i + 1, jup, kdn) +
+                                                wz_hi * wy_lo *
+                                                    vof_arr(i + 1, jdn, kup) +
+                                                wz_hi * wy_hi *
+                                                    vof_arr(i + 1, jup, kup);
+                                            vof_here =
+                                                wz_lo * wy_lo *
+                                                    vof_arr(i, jdn, kdn) +
+                                                wz_lo * wy_hi *
+                                                    vof_arr(i, jup, kdn) +
+                                                wz_hi * wy_lo *
+                                                    vof_arr(i, jdn, kup) +
+                                                wz_hi * wy_hi *
+                                                    vof_arr(i, jup, kup);
+                                            vof_below =
+                                                wz_lo * wy_lo *
+                                                    vof_arr(i - 1, jdn, kdn) +
+                                                wz_lo * wy_hi *
+                                                    vof_arr(i - 1, jup, kdn) +
+                                                wz_hi * wy_lo *
+                                                    vof_arr(i - 1, jdn, kup) +
+                                                wz_hi * wy_hi *
+                                                    vof_arr(i - 1, jup, kup);
+                                        }
+                                        if (m_coorddir == 1) {
+                                            vof_above =
+                                                wx_lo * wz_lo *
+                                                    vof_arr(idn, j + 1, kdn) +
+                                                wx_lo * wz_hi *
+                                                    vof_arr(idn, j + 1, kup) +
+                                                wx_hi * wz_lo *
+                                                    vof_arr(iup, j + 1, kdn) +
+                                                wx_hi * wz_hi *
+                                                    vof_arr(iup, j + 1, kup);
+                                            vof_here =
+                                                wx_lo * wz_lo *
+                                                    vof_arr(idn, j, kdn) +
+                                                wx_lo * wz_hi *
+                                                    vof_arr(idn, j, kup) +
+                                                wx_hi * wz_lo *
+                                                    vof_arr(iup, j, kdn) +
+                                                wx_hi * wz_hi *
+                                                    vof_arr(iup, j, kup);
+                                            vof_below =
+                                                wx_lo * wz_lo *
+                                                    vof_arr(idn, j - 1, kdn) +
+                                                wx_lo * wz_hi *
+                                                    vof_arr(idn, j - 1, kup) +
+                                                wx_hi * wz_lo *
+                                                    vof_arr(iup, j - 1, kdn) +
+                                                wx_hi * wz_hi *
+                                                    vof_arr(iup, j - 1, kup);
+                                        }
+                                        if (m_coorddir == 2) {
+                                            vof_above =
+                                                wx_lo * wy_lo *
+                                                    vof_arr(idn, jdn, k + 1) +
+                                                wx_lo * wy_hi *
+                                                    vof_arr(idn, jup, k + 1) +
+                                                wx_hi * wy_lo *
+                                                    vof_arr(iup, jdn, k + 1) +
+                                                wx_hi * wy_hi *
+                                                    vof_arr(iup, jup, k + 1);
+                                            vof_here =
+                                                wx_lo * wy_lo *
+                                                    vof_arr(idn, jdn, k) +
+                                                wx_lo * wy_hi *
+                                                    vof_arr(idn, jup, k) +
+                                                wx_hi * wy_lo *
+                                                    vof_arr(iup, jdn, k) +
+                                                wx_hi * wy_hi *
+                                                    vof_arr(iup, jup, k);
+                                            vof_below =
+                                                wx_lo * wy_lo *
+                                                    vof_arr(idn, jdn, k - 1) +
+                                                wx_lo * wy_hi *
+                                                    vof_arr(idn, jup, k - 1) +
+                                                wx_hi * wy_lo *
+                                                    vof_arr(iup, jdn, k - 1) +
+                                                wx_hi * wy_hi *
+                                                    vof_arr(iup, jup, k - 1);
+                                        }
                                         // Determine which cell to
                                         // interpolate with
                                         bool above = (vof_above - 0.5) *
@@ -247,8 +377,8 @@ void FreeSurface::post_advance_work()
                                         if (above) {
                                             // Interpolate positive
                                             // direction
-                                            ht = xm[2] +
-                                                 (dx[2]) /
+                                            ht = xm[m_coorddir] +
+                                                 (dx[m_coorddir]) /
                                                      (vof_above - vof_here) *
                                                      (0.5 - vof_here);
                                         } else {
@@ -256,8 +386,8 @@ void FreeSurface::post_advance_work()
                                                 // Interpolate negative
                                                 // direction
                                                 ht =
-                                                    xm[2] -
-                                                    (dx[2]) /
+                                                    xm[m_coorddir] -
+                                                    (dx[m_coorddir]) /
                                                         (vof_below - vof_here) *
                                                         (0.5 - vof_here);
                                             }
@@ -269,8 +399,8 @@ void FreeSurface::post_advance_work()
                                     // Offset by removing lo and contribute to
                                     // whole
                                     height_fab = amrex::max(
-                                        height_fab,
-                                        mask_arr(i, j, k) * (ht - plo[2]));
+                                        height_fab, mask_arr(i, j, k) *
+                                                        (ht - plo[m_coorddir]));
                                 });
                             return height_fab;
                         }));
@@ -283,7 +413,7 @@ void FreeSurface::post_advance_work()
         }
         // Add problo back to heights, making them absolute, not relative
         for (int n = 0; n < m_npts; n++) {
-            m_out[ni * m_npts + n] += plo0[2];
+            m_out[ni * m_npts + n] += plo0[m_coorddir];
         }
         // Copy last m_out to device vector
         amrex::Gpu::copy(
