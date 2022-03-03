@@ -46,6 +46,8 @@ protected:
     amrex::Vector<amrex::Real> m_azimuth_table;
     amrex::Vector<amrex::Real> m_elevation_table;
     amrex::Real m_length{0};
+    bool m_periodic{true};
+    amrex::Real m_period{std::numeric_limits<double>::max()};
 };
 
 } // namespace sampling
