@@ -56,7 +56,7 @@ public:
      */
     void update_sampling_locations() override;
 
-    int num_points() const override { return (m_npts * m_ns); }
+    int num_points() const override { return (m_beam_points * m_ns); }
 
     bool output_netcdf_field(double*, ncutils::NCVar&) override;
 
@@ -76,9 +76,9 @@ private:
     amrex::Real m_beam_length{270};
     int m_beam_points{432};
     amrex::Real m_turbine_yaw_angle{180};
-    int m_hub_yaw{0};
-    int m_hub_roll{0};
-    int m_hub_tilt{0};
+    amrex::Real m_hub_yaw{0};
+    amrex::Real m_hub_roll{0};
+    amrex::Real m_hub_tilt{0};
     vs::Vector m_hub_translation{0, 0, 0};
 };
 

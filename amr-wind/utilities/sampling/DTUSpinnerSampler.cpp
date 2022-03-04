@@ -56,7 +56,7 @@ void DTUSpinnerSampler::initialize(const std::string& key)
     pp.get("beam_length", m_beam_length);
 
     // Beam points
-    pp.query("beam_points", m_npts);
+    pp.query("beam_points", m_beam_points);
 
     // Turbine yaw angle
     pp.get("turbine_yaw_angle", m_turbine_yaw_angle);
@@ -154,14 +154,14 @@ void DTUSpinnerSampler::sampling_locations(SampleLocType& locs) const
 {
 
     // The total number of points at this time step
-    int n_samples = m_npts * m_ns;
+    int n_samples = m_beam_points * m_ns;
 
     // Resize to number of points in line times number of sampling times
     if (locs.size() < n_samples) {
         locs.resize(n_samples);
     }
 
-    const amrex::Real ndiv = amrex::max(m_npts - 1, 1);
+    const amrex::Real ndiv = amrex::max(m_beam_points - 1, 1);
     amrex::Array<amrex::Real, AMREX_SPACEDIM> dx;
 
     // Loop per subsampling
@@ -174,9 +174,10 @@ void DTUSpinnerSampler::sampling_locations(SampleLocType& locs) const
             dx[d] = (m_end[d + offset] - m_start[d + offset]) / ndiv;
         }
 
-        for (int i = 0; i < m_npts; ++i) {
+        for (int i = 0; i < m_beam_points; ++i) {
             for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-                locs[i + k * m_npts][d] = m_start[d + offset] + i * dx[d];
+                locs[i + k * m_beam_points][d] =
+                    m_start[d + offset] + i * dx[d];
             }
         }
     }
@@ -219,12 +220,12 @@ void DTUSpinnerSampler::update_sampling_locations()
         int offset = k * AMREX_SPACEDIM;
 
         m_time_sampling += dt_s;
-        // CHANGE BELOW
+
         auto beam_vector =
             generate_lidar_pattern(m_InnerPrism, m_OuterPrism, m_time_sampling);
+
         beam_vector = adjust_lidar_pattern(
             beam_vector, m_hub_tilt, m_hub_roll, m_hub_yaw, m_hub_translation);
-        
 
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
             // Need to assign start point as the origin
@@ -233,12 +234,11 @@ void DTUSpinnerSampler::update_sampling_locations()
             m_end[d + offset] = m_lidar_center[d];
         }
 
-        // CHANGE ABOVE
         // Add the origin location to the beam vector
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
 
-            beam_vector[d] += m_lidar_center[d];
-            m_end[d + offset] = beam_vector[d] * m_beam_length;
+            m_end[d + offset] =
+                m_lidar_center[d] + beam_vector[d] * m_beam_length;
         }
     }
 }
