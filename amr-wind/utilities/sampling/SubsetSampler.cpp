@@ -13,6 +13,8 @@ namespace sampling {
 SubsetSampler::SubsetSampler(const CFDSim& sim)
   : m_sim(sim)
   , m_mesh(sim.mesh())
+  , m_repo(sim.repo())
+  , m_mesh_mapping(sim.has_mesh_mapping())
   , m_velocity(sim.repo().get_field("velocity"))
   , m_mesh_fac_cc(sim.repo().get_field("mesh_scaling_factor_cc"))
   , m_nu_coord_cc(sim.repo().get_field("non_uniform_coord_cc"))
@@ -39,11 +41,16 @@ void SubsetSampler::initialize(const std::string& key)
     AMREX_ALWAYS_ASSERT(m_ylim[1] >= m_ylim[0]);
     AMREX_ALWAYS_ASSERT(m_zlim[1] >= m_zlim[0]);
 
-    const int level   = m_level;
+    const int level = m_level;
+    const auto& geom = m_mesh.Geom(level);
+    const auto& problo = geom.ProbLoArray();
+    const auto& dx = geom.CellSizeArray();
 
-    auto& velocity    = m_velocity(level);
-    auto& nu_coord_cc = m_nu_coord_cc(level);
-
+    auto& velocity = m_velocity(level);
+    //auto& nu_coord_cc = m_nu_coord_cc(level);
+    // Handle mesh mapping coordinates
+    Field const* nu_coord_cc =
+      m_mesh_mapping ? &(m_repo.get_field("non_uniform_coord_cc")) : nullptr;
     const int Nproc   = amrex::ParallelDescriptor::NProcs();
     const int iproc   = amrex::ParallelDescriptor::MyProc();
 
@@ -53,16 +60,23 @@ void SubsetSampler::initialize(const std::string& key)
     // Loop through and count total number of points inside box
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
-	const auto& nu_cc = nu_coord_cc.array(mfi);
+        amrex::Array4<amrex::Real const> nu_cc =
+            m_mesh_mapping ? ((*nu_coord_cc)(level).array(mfi))
+                           : amrex::Array4<amrex::Real const>();
+
 	amrex::Loop(vbx, [=, &npt](int i, int j, int k) noexcept {
-	                amrex::Real x = nu_cc(i, j, k, 0);
-			amrex::Real y = nu_cc(i, j, k, 1);
-			amrex::Real z = nu_cc(i, j, k, 2);
-			if (   (m_xlim[0] <= x) && (x <= m_xlim[1]) 
-			    && (m_ylim[0] <= y) && (y <= m_ylim[1])
-			    && (m_zlim[0] <= z) && (z <= m_zlim[1])) {
-			  npt++;
-			}
+            amrex::Real x =
+                m_mesh_mapping ? nu_cc(i, j, k, 0) : problo[0] + (i + 0.5) * dx[0];
+            amrex::Real y =
+                m_mesh_mapping ? nu_cc(i, j, k, 1) : problo[1] + (j + 0.5) * dx[1];
+            amrex::Real z =
+                m_mesh_mapping ? nu_cc(i, j, k, 2) : problo[2] + (k + 0.5) * dx[2];
+
+	    if ((m_xlim[0] <= x) && (x <= m_xlim[1])
+                && (m_ylim[0] <= y) && (y <= m_ylim[1])
+                && (m_zlim[0] <= z) && (z <= m_zlim[1])) {
+                npt++;
+		}
 	  });
     }
 
@@ -82,8 +96,8 @@ void SubsetSampler::initialize(const std::string& key)
       m_proc_offsets[i] = m_proc_offsets[i-1] + proc_cc_count[i-1];
 
     // Go through and get the coordinates of the points inside the box
-    const auto& dx      = m_mesh.Geom(level).CellSizeArray();
-    const auto* prob_lo = m_sim.mesh().Geom(level).ProbLo();
+    //const auto& dx      = m_mesh.Geom(level).CellSizeArray();
+    //const auto* prob_lo = m_sim.mesh().Geom(level).ProbLo();
 
     m_pos_nu_vec.resize(m_npts, vs::Vector::zero());
     m_pos_comp_vec.resize(m_npts, vs::Vector::zero());
@@ -94,29 +108,34 @@ void SubsetSampler::initialize(const std::string& key)
     int idx = 0;
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
-	const auto& nu_cc = nu_coord_cc.array(mfi);
+        amrex::Array4<amrex::Real const> nu_cc =
+            m_mesh_mapping ? ((*nu_coord_cc)(level).array(mfi))
+            : amrex::Array4<amrex::Real const>();
 	const int offset  = m_proc_offsets[iproc];
 	amrex::Loop(vbx, [=, &idx] (int i, int j, int k) 
-		    noexcept {
-	                amrex::Real x = nu_cc(i, j, k, 0);
-			amrex::Real y = nu_cc(i, j, k, 1);
-			amrex::Real z = nu_cc(i, j, k, 2);
-			if (   (m_xlim[0] <= x) && (x <= m_xlim[1]) 
-			    && (m_ylim[0] <= y) && (y <= m_ylim[1])
-			    && (m_zlim[0] <= z) && (z <= m_zlim[1])) {
-			  // Add points to local array
-			  auto &pos_nu   = pos_nu_arr[idx+offset];
-			  auto &pos_comp = pos_comp_arr[idx+offset];
-			  for (int n=0; n<AMREX_SPACEDIM; n++){
-			    pos_nu[n] = nu_cc(i, j, k, n);
-			  }
-			  pos_comp[0] = prob_lo[0] + (i + 0.5)*dx[0];
-			  pos_comp[1] = prob_lo[1] + (j + 0.5)*dx[1];
-			  pos_comp[2] = prob_lo[2] + (k + 0.5)*dx[2];
+            noexcept {
+                amrex::Real x =
+                    m_mesh_mapping ? nu_cc(i, j, k, 0) : problo[0] + (i + 0.5) * dx[0];
+                amrex::Real y =
+                    m_mesh_mapping ? nu_cc(i, j, k, 1) : problo[1] + (j + 0.5) * dx[1];
+                amrex::Real z =
+                    m_mesh_mapping ? nu_cc(i, j, k, 2) : problo[2] + (k + 0.5) * dx[2];
 
-			  // advance to next point
-			  idx++;
-			}
+                if ((m_xlim[0] <= x) && (x <= m_xlim[1])
+                    && (m_ylim[0] <= y) && (y <= m_ylim[1])
+                    && (m_zlim[0] <= z) && (z <= m_zlim[1])) {
+                    // Add points to local array
+                    auto &pos_nu   = pos_nu_arr[idx+offset];
+                    auto &pos_comp = pos_comp_arr[idx+offset];
+                    for (int n=0; n<AMREX_SPACEDIM; n++){
+                        pos_nu[n] = nu_cc(i, j, k, n);
+                    }
+                    pos_comp[0] = problo[0] + (i + 0.5)*dx[0];
+                    pos_comp[1] = problo[1] + (j + 0.5)*dx[1];
+                    pos_comp[2] = problo[2] + (k + 0.5)*dx[2];
+                    // advance to next point
+                    idx++;
+                }
 	  });
     }
 
