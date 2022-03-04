@@ -68,7 +68,6 @@ public:
 private:
     int m_ns{1};
     amrex::Real m_time_sampling{0};
-    amrex::Real m_dt_s{0.01};
     PrismParameters m_InnerPrism;
     PrismParameters m_OuterPrism;
     amrex::Vector<amrex::Real> m_lidar_center{250.0, 250.0, 250.0};
