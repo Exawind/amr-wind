@@ -81,10 +81,8 @@ protected:
         amrex::Array4<amrex::Real>& vof_arr)
     {
 
-        // grow the box by 1 so that x,y,z go out of bounds and min(max())
-        // corrects it and it fills the ghosts with wall values
         amrex::ParallelFor(
-            grow(bx, 1), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                 int icheck;
                 switch (dir) {
                 case 0:
@@ -148,6 +146,8 @@ protected:
             const auto& bx = mfi.validbox();
             initialize_volume_fractions(dir, geom[lev], bx, vof_arr);
         });
+        // Populate boundary cells
+        vof.fillpatch(0.0);
         // Sync density field with vof
         auto& mphase = sim().physics_manager().get<amr_wind::MultiPhase>();
         mphase.set_density_via_vof();
