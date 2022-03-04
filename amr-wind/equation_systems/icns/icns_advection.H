@@ -51,8 +51,8 @@ private:
     amrex::Real m_rho_0{1.0};
 
     std::string m_icm{"none"};
-    amrex::Real m_rho1{0.0};
-    amrex::Real m_rho2{0.0};
+    amrex::Real m_rho1{10.0};
+    amrex::Real m_rho2{1.0};
 };
 
 /** Godunov scheme for ICNS
