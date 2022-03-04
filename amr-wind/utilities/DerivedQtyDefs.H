@@ -144,6 +144,32 @@ private:
     int m_ncomp{0};
 };
 
+struct Multiply : public DerivedQty::Register<Multiply>
+{
+    static std::string identifier() { return "multiply"; }
+
+    Multiply(
+        const FieldRepo& repo, const std::vector<std::string>& args);
+
+    std::string name() const override
+    {
+        return (m_fld1->name() + "T" + m_fld2->name());
+    }
+
+    int num_comp() const override { return m_ncomp1 * m_ncomp2; }
+
+    void var_names(amrex::Vector<std::string>& plt_var_names) override;
+
+    void operator()(ScratchField& fld, const int scomp = 0) override;
+
+private:
+    const Field* m_fld1;
+    const Field* m_fld2;
+    amrex::Vector<int> m_comp;
+    int m_ncomp1{0};
+    int m_ncomp2{0};
+};
+
 } // namespace derived
 } // namespace amr_wind
 

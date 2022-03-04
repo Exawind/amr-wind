@@ -2,6 +2,7 @@
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/fvm/fvm.H"
 #include "amr-wind/utilities/io_utils.H"
+#include "AMReX_MFIter.H"
 
 namespace amr_wind {
 namespace derived {
@@ -139,6 +140,73 @@ void FieldComponents::operator()(ScratchField& fld, const int scomp)
         field_ops::copy(fld, *m_fld, icomp, dst_comp, 1, 0);
         ++dst_comp;
     }
+}
+
+Multiply::Multiply(
+    const FieldRepo& repo, const std::vector<std::string>& args)
+{
+    const size_t nargs = args.size();
+    AMREX_ALWAYS_ASSERT(nargs > 1U);
+    AMREX_ALWAYS_ASSERT(nargs == 2);
+    m_fld1 = &repo.get_field(args[0]);
+    m_fld2 = &repo.get_field(args[1]);
+
+    m_ncomp1 = m_fld1->num_comp();
+    m_ncomp2 = m_fld2->num_comp();
+    int ncomp = m_ncomp1 * m_ncomp2;
+    m_comp.resize(ncomp);
+    for (int i = 0; i < ncomp; ++i) {
+        m_comp[i] = i;
+    }
+}
+
+void Multiply::var_names(amrex::Vector<std::string>& plt_var_names)
+{
+    amrex::Vector<std::string> names1;
+    amrex::Vector<std::string> names2;
+    ioutils::add_var_names(names1, m_fld1->name(), m_fld1->num_comp());
+    ioutils::add_var_names(names2, m_fld2->name(), m_fld2->num_comp());
+    for (int i = 0; i < m_ncomp1; ++i) {
+        for (int j = 0; j < m_ncomp2; ++j) {
+            plt_var_names.push_back(names1[i] + "T" + names2[j]);
+        }
+    }
+}
+
+void Multiply::operator()(ScratchField& fld, const int scomp)
+{
+    AMREX_ASSERT(fld.num_comp() >= (scomp + num_comp()));
+    // Initialize destination component index
+    int dst_comp = scomp;
+    // Step through components of first field
+    for (int nn = 0; nn < m_ncomp1; ++nn) {
+
+              const int nlevels = fld.repo().num_active_levels();
+              for (int lev = 0; lev < nlevels; ++lev) {
+      #ifdef _OPENMP
+      #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+      #endif
+                  for (amrex::MFIter mfi(fld(lev), amrex::TilingIfNotGPU());
+                       mfi.isValid(); ++mfi) {
+                      const auto& bx = mfi.tilebox();
+                      const auto& f1 = (*m_fld1)(lev).array(mfi);
+                      const auto& f2 = (*m_fld2)(lev).array(mfi);
+                      const auto& dst_f = fld(lev).array(mfi);
+
+                      // Step through components of second field
+                      amrex::ParallelFor(
+                          bx, m_ncomp2,
+                          [=] AMREX_GPU_DEVICE(
+                              int i, int j, int k, int n) noexcept {
+                              dst_f(i, j, k, dst_comp + n) =
+                                  f1(i, j, k, nn) * f2(i, j, k, n);
+                          });
+                  }
+              }
+              // Increment by number of second field components
+              dst_comp += m_ncomp2;
+        }
+
 }
 
 } // namespace derived
