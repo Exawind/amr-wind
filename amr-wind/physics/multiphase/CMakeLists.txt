@@ -2,6 +2,7 @@ target_sources(${amr_wind_lib_name}
   PRIVATE
   MultiPhase.cpp
   VortexPatch.cpp
+  VortexPatchScalarVel.cpp
   ZalesakDisk.cpp
   DamBreak.cpp
   SloshingTank.cpp
