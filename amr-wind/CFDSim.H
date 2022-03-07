@@ -91,7 +91,7 @@ public:
     }
 
     MeshMap* mesh_mapping() { return m_mesh_map.get(); }
-    const MeshMap* mesh_mapping() const { return m_mesh_map.get(); }
+    MeshMap* mesh_mapping() const { return m_mesh_map.get(); }
 
     ExtSolverMgr& ext_solver_manager() { return *m_ext_solver_mgr; }
     const ExtSolverMgr& ext_solver_manager() const { return *m_ext_solver_mgr; }

@@ -40,6 +40,12 @@ public:
     //! Construct mesh scaling field
     virtual void create_map(int, const amrex::Geometry&) = 0;
 
+    //! set up interpolation arrays
+    void setup_interp_arrays(int, const amrex::Geometry&);
+
+    //! set up interpolation arrays
+    amrex::Real interp_nonunif_to_unif(amrex::Real, int);
+
 protected:
     Field* m_mesh_scale_fac_cc{nullptr};
     Field* m_mesh_scale_fac_nd{nullptr};
@@ -55,6 +61,15 @@ protected:
 
     Field* m_non_uniform_coord_cc{nullptr};
     Field* m_non_uniform_coord_nd{nullptr};
+
+    //! Interpolation vectors 
+    amrex::Vector<amrex::Real> m_x_uni;
+    amrex::Vector<amrex::Real> m_y_uni;
+    amrex::Vector<amrex::Real> m_z_uni;
+    amrex::Vector<amrex::Real> m_x_nu;
+    amrex::Vector<amrex::Real> m_y_nu;
+    amrex::Vector<amrex::Real> m_z_nu;
+
 };
 
 } // namespace amr_wind
