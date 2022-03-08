@@ -2,6 +2,7 @@
 #include "amr-wind/core/MultiParser.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/io_utils.H"
+#include "amr-wind/immersed_boundary/bluff_body/ghost_cell.H"
 
 #include "amr-wind/fvm/gradient.H"
 #include "amr-wind/core/field_ops.H"
