@@ -156,13 +156,15 @@ void Geom2ConstantScaling::create_cell_node_map(
                 amrex::Real fac_z = 
                     eval_fac(z, transloc[2], transwid[2], sratio[2], delta0[2], dxscale[2], do_map[2]);
 
-                bool in_domain =
-                    ((x > prob_lo[0]) && (x < prob_hi[0]) && (y > prob_lo[1]) &&
-                     (y < prob_hi[1]) && (z > prob_lo[2]) && (z < prob_hi[2]));
-
-                scale_fac_cc(i, j, k, 0) = in_domain ? fac_x : 1.0;
-                scale_fac_cc(i, j, k, 1) = in_domain ? fac_y : 1.0;
-                scale_fac_cc(i, j, k, 2) = in_domain ? fac_z : 1.0;
+		bool x_below = x < prob_lo[0];
+		bool y_below = y < prob_lo[1];
+		bool z_below = z < prob_lo[2];
+		const amrex::Real fac_x_below = do_map[0] ? delta0[0]*dxscale[0] : 1.0;
+		const amrex::Real fac_y_below = do_map[1] ? delta0[1]*dxscale[1] : 1.0;
+		const amrex::Real fac_z_below = do_map[2] ? delta0[2]*dxscale[2] : 1.0;
+                scale_fac_cc(i, j, k, 0) = x_below ? fac_x_below : fac_x;
+                scale_fac_cc(i, j, k, 1) = y_below ? fac_y_below : fac_y;
+                scale_fac_cc(i, j, k, 2) = z_below ? fac_z_below : fac_z;
 
                 scale_detJ_cc(i, j, k) = scale_fac_cc(i, j, k, 0) *
                                          scale_fac_cc(i, j, k, 1) *
@@ -187,14 +189,15 @@ void Geom2ConstantScaling::create_cell_node_map(
                 amrex::Real fac_z = 
                     eval_fac(z, transloc[2], transwid[2], sratio[2], delta0[2], dxscale[2], do_map[2]);
 
-                bool in_domain =
-                    ((x >= prob_lo[0] - eps) && (x <= prob_hi[0] + eps) &&
-                     (y >= prob_lo[1] - eps) && (y <= prob_hi[1] + eps) &&
-                     (z >= prob_lo[2] - eps) && (z <= prob_hi[2] + eps));
-
-                scale_fac_nd(i, j, k, 0) = in_domain ? fac_x : 1.0;
-                scale_fac_nd(i, j, k, 1) = in_domain ? fac_y : 1.0;
-                scale_fac_nd(i, j, k, 2) = in_domain ? fac_z : 1.0;
+		bool x_below = x < prob_lo[0];
+		bool y_below = y < prob_lo[1];
+		bool z_below = z < prob_lo[2];
+		const amrex::Real fac_x_below = do_map[0] ? delta0[0]*dxscale[0] : 1.0;
+		const amrex::Real fac_y_below = do_map[1] ? delta0[1]*dxscale[1] : 1.0;
+		const amrex::Real fac_z_below = do_map[2] ? delta0[2]*dxscale[2] : 1.0;
+                scale_fac_nd(i, j, k, 0) = x_below ? fac_x_below : fac_x;
+                scale_fac_nd(i, j, k, 1) = y_below ? fac_y_below : fac_y;
+                scale_fac_nd(i, j, k, 2) = z_below ? fac_z_below : fac_z;
 
                 scale_detJ_nd(i, j, k) = scale_fac_nd(i, j, k, 0) *
                                          scale_fac_nd(i, j, k, 1) *
@@ -255,14 +258,15 @@ void Geom2ConstantScaling::create_face_map(int lev, const amrex::Geometry& geom)
                 amrex::Real fac_z = 
                     eval_fac(z, transloc[2], transwid[2], sratio[2], delta0[2], dxscale[2], do_map[2]);
 
-                bool in_domain =
-                    ((x >= prob_lo[0] - eps) && (x <= prob_hi[0] + eps) &&
-                     (y > prob_lo[1]) && (y < prob_hi[1]) && (z > prob_lo[2]) &&
-                     (z < prob_hi[2]));
-
-                scale_fac_xf(i, j, k, 0) = in_domain ? fac_x : 1.0;
-                scale_fac_xf(i, j, k, 1) = in_domain ? fac_y : 1.0;
-                scale_fac_xf(i, j, k, 2) = in_domain ? fac_z : 1.0;
+		bool x_below = x < prob_lo[0];
+		bool y_below = y < prob_lo[1];
+		bool z_below = z < prob_lo[2];
+		const amrex::Real fac_x_below = do_map[0] ? delta0[0]*dxscale[0] : 1.0;
+		const amrex::Real fac_y_below = do_map[1] ? delta0[1]*dxscale[1] : 1.0;
+		const amrex::Real fac_z_below = do_map[2] ? delta0[2]*dxscale[2] : 1.0;
+                scale_fac_xf(i, j, k, 0) = x_below ? fac_x_below : fac_x;
+                scale_fac_xf(i, j, k, 1) = y_below ? fac_y_below : fac_y;
+                scale_fac_xf(i, j, k, 2) = z_below ? fac_z_below : fac_z;
 
                 scale_detJ_xf(i, j, k) = scale_fac_xf(i, j, k, 0) *
                                          scale_fac_xf(i, j, k, 1) *
@@ -290,14 +294,15 @@ void Geom2ConstantScaling::create_face_map(int lev, const amrex::Geometry& geom)
                 amrex::Real fac_z = 
                     eval_fac(z, transloc[2], transwid[2], sratio[2], delta0[2], dxscale[2], do_map[2]);
 
-                bool in_domain =
-                    ((x > prob_lo[0]) && (x < prob_hi[0]) &&
-                     (y >= prob_lo[1] - eps) && (y <= prob_hi[1] + eps) &&
-                     (z > prob_lo[2]) && (z < prob_hi[2]));
-
-                scale_fac_yf(i, j, k, 0) = in_domain ? fac_x : 1.0;
-                scale_fac_yf(i, j, k, 1) = in_domain ? fac_y : 1.0;
-                scale_fac_yf(i, j, k, 2) = in_domain ? fac_z : 1.0;
+		bool x_below = x < prob_lo[0];
+		bool y_below = y < prob_lo[1];
+		bool z_below = z < prob_lo[2];
+		const amrex::Real fac_x_below = do_map[0] ? delta0[0]*dxscale[0] : 1.0;
+		const amrex::Real fac_y_below = do_map[1] ? delta0[1]*dxscale[1] : 1.0;
+		const amrex::Real fac_z_below = do_map[2] ? delta0[2]*dxscale[2] : 1.0;
+                scale_fac_yf(i, j, k, 0) = x_below ? fac_x_below : fac_x;
+                scale_fac_yf(i, j, k, 1) = y_below ? fac_y_below : fac_y;
+                scale_fac_yf(i, j, k, 2) = z_below ? fac_z_below : fac_z;
 
                 scale_detJ_yf(i, j, k) = scale_fac_yf(i, j, k, 0) *
                                          scale_fac_yf(i, j, k, 1) *
@@ -325,14 +330,15 @@ void Geom2ConstantScaling::create_face_map(int lev, const amrex::Geometry& geom)
                 amrex::Real fac_z = 
                     eval_fac(z, transloc[2], transwid[2], sratio[2], delta0[2], dxscale[2], do_map[2]);
 
-                bool in_domain =
-                    ((x > prob_lo[0]) && (x < prob_hi[0]) && (y > prob_lo[1]) &&
-                     (y < prob_hi[1]) && (z >= prob_lo[2] - eps) &&
-                     (z <= prob_hi[2] + eps));
-
-                scale_fac_zf(i, j, k, 0) = in_domain ? fac_x : 1.0;
-                scale_fac_zf(i, j, k, 1) = in_domain ? fac_y : 1.0;
-                scale_fac_zf(i, j, k, 2) = in_domain ? fac_z : 1.0;
+		bool x_below = x < prob_lo[0];
+		bool y_below = y < prob_lo[1];
+		bool z_below = z < prob_lo[2];
+		const amrex::Real fac_x_below = do_map[0] ? delta0[0]*dxscale[0] : 1.0;
+		const amrex::Real fac_y_below = do_map[1] ? delta0[1]*dxscale[1] : 1.0;
+		const amrex::Real fac_z_below = do_map[2] ? delta0[2]*dxscale[2] : 1.0;
+                scale_fac_zf(i, j, k, 0) = x_below ? fac_x_below : fac_x;
+                scale_fac_zf(i, j, k, 1) = y_below ? fac_y_below : fac_y;
+                scale_fac_zf(i, j, k, 2) = z_below ? fac_z_below : fac_z;
 
                 scale_detJ_zf(i, j, k) = scale_fac_zf(i, j, k, 0) *
                                          scale_fac_zf(i, j, k, 1) *
@@ -405,13 +411,16 @@ void Geom2ConstantScaling::create_non_uniform_mesh(
                 amrex::Real z_non_uni =
                     eval_coord(z, transloc[2], transwid[2], sratio[2], delta0[2], dxscale[2], do_map[2]);
 
-                bool in_domain =
-                    ((x > prob_lo[0]) && (x < prob_hi[0]) && (y > prob_lo[1]) &&
-                     (y < prob_hi[1]) && (z > prob_lo[2]) && (z < prob_hi[2]));
+		bool x_below = x < prob_lo[0];
+		bool y_below = y < prob_lo[1];
+		bool z_below = z < prob_lo[2];
+		const amrex::Real cc_x_below = do_map[0] ? prob_lo[0] + (i + 0.5) * delta0[0] : x;
+		const amrex::Real cc_y_below = do_map[1] ? prob_lo[1] + (j + 0.5) * delta0[1] : y;
+		const amrex::Real cc_z_below = do_map[2] ? prob_lo[2] + (k + 0.5) * delta0[2] : z;
+                nu_coord_cc(i, j, k, 0) = x_below ? cc_x_below : x_non_uni;
+                nu_coord_cc(i, j, k, 1) = y_below ? cc_y_below : y_non_uni;
+                nu_coord_cc(i, j, k, 2) = z_below ? cc_z_below : z_non_uni;
 
-                nu_coord_cc(i, j, k, 0) = in_domain ? x_non_uni : x;
-                nu_coord_cc(i, j, k, 1) = in_domain ? y_non_uni : y;
-                nu_coord_cc(i, j, k, 2) = in_domain ? z_non_uni : z;
             });
 
         const auto& nbx = mfi.grownnodaltilebox();
@@ -430,14 +439,16 @@ void Geom2ConstantScaling::create_non_uniform_mesh(
                 amrex::Real z_non_uni =
                     eval_coord(z, transloc[2], transwid[2], sratio[2], delta0[2], dxscale[2], do_map[2]);
 
-                bool in_domain =
-                    ((x >= prob_lo[0] - eps) && (x <= prob_hi[0] + eps) &&
-                     (y >= prob_lo[1] - eps) && (y <= prob_hi[1] + eps) &&
-                     (z >= prob_lo[2] - eps) && (z <= prob_hi[2] + eps));
+		bool x_below = x < prob_lo[0];
+		bool y_below = y < prob_lo[1];
+		bool z_below = z < prob_lo[2];
+		const amrex::Real nd_x_below = do_map[0] ? prob_lo[0] + i * delta0[0] : x;
+		const amrex::Real nd_y_below = do_map[1] ? prob_lo[1] + j * delta0[1] : y;
+		const amrex::Real nd_z_below = do_map[2] ? prob_lo[2] + k * delta0[2] : z;
 
-                nu_coord_nd(i, j, k, 0) = in_domain ? x_non_uni : x;
-                nu_coord_nd(i, j, k, 1) = in_domain ? y_non_uni : y;
-                nu_coord_nd(i, j, k, 2) = in_domain ? z_non_uni : z;
+                nu_coord_nd(i, j, k, 0) = x_below ? nd_x_below : x_non_uni;
+                nu_coord_nd(i, j, k, 1) = y_below ? nd_y_below : y_non_uni;
+                nu_coord_nd(i, j, k, 2) = z_below ? nd_z_below : z_non_uni;
             });
     }
 }
