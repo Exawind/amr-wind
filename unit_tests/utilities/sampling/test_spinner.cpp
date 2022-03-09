@@ -15,9 +15,7 @@
 #include "amr-wind/utilities/trig_ops.H"
 
 namespace amr_wind {
-  namespace sampling {
-
-
+namespace sampling {
 
 TEST(SpinnerTest, test_spinner)
 {
@@ -29,15 +27,17 @@ TEST(SpinnerTest, test_spinner)
     outputFile << "x,y,z" << std::endl;
 
     PrismParameters InnerPrism;
-    PrismParameters OuterPrism; OuterPrism.rot = 6.5;
+    PrismParameters OuterPrism;
+    OuterPrism.rot = 6.5;
 
     for (int j = 0; j < 983; ++j) {
-      auto beam_vector = generate_lidar_pattern(InnerPrism, OuterPrism, 2. / 984 * j);
+        auto beam_vector =
+            generate_lidar_pattern(InnerPrism, OuterPrism, 2. / 984 * j);
         beam_vector =
             adjust_lidar_pattern(beam_vector, pitch, roll, yaw, translation);
         outputFile << beam_vector[0] << "," << beam_vector[1] << ","
                    << beam_vector[2] << std::endl;
     }
 }
-  }
+} // namespace sampling
 } // namespace amr_wind
