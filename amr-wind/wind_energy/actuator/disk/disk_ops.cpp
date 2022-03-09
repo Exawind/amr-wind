@@ -1,4 +1,4 @@
-#include "amr-wind/wind_energy/actuator/disk/uniform_ct_ops.H"
+#include "amr-wind/wind_energy/actuator/disk/disk_ops.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/io_utils.H"
 namespace amr_wind {
@@ -6,7 +6,7 @@ namespace actuator {
 namespace disk {
 void prepare_netcdf_file(
     const std::string& ncfile,
-    const UniformCtData& meta,
+    const DiskBaseData& meta,
     const ActInfo& info,
     const ActGrid& grid)
 {
@@ -20,7 +20,7 @@ void prepare_netcdf_file(
     const std::string nv_name = "num_velocity_points";
 
     ncf.enter_def_mode();
-    ncf.put_attr("title", "AMR-Wind UniformCtDisk actuator output");
+    ncf.put_attr("title", "AMR-Wind ActuatorDisk actuator output");
     ncf.put_attr("version", ioutils::amr_wind_version());
     ncf.put_attr("created_on", ioutils::timestamp());
     ncf.def_dim(nt_name, NC_UNLIMITED);
@@ -68,7 +68,7 @@ void prepare_netcdf_file(
 
 void write_netcdf(
     const std::string& ncfile,
-    const UniformCtData& meta,
+    const DiskBaseData& meta,
     const ActInfo& info,
     const ActGrid& /*unused*/,
     const amrex::Real time)
@@ -126,7 +126,7 @@ void collect_parse_conflicts(
     std::ostringstream& ss)
 {
     if (pp.contains(p1) && pp.contains(p2)) {
-        ss << "UniformCt Conflict: " << p1 << " and " << p2 << std::endl;
+        ss << "ActuatorDisk Conflict: " << p1 << " and " << p2 << std::endl;
     }
 }
 void collect_parse_dependencies(
@@ -136,16 +136,16 @@ void collect_parse_dependencies(
     std::ostringstream& ss)
 {
     if (pp.contains(p1) && !pp.contains(p2)) {
-        ss << "UniformCt Dependency Missing: " << p2 << " required with " << p1
-           << std::endl;
+        ss << "ActuatorDisk Dependency Missing: " << p2 << " required with "
+           << p1 << std::endl;
     }
     if (!pp.contains(p1) && pp.contains(p2)) {
-        ss << "UniformCt Dependency Missing: " << p1 << " required with " << p2
-           << std::endl;
+        ss << "ActuatorDisk Dependency Missing: " << p1 << " required with "
+           << p2 << std::endl;
     }
 }
 
-void required_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp)
+void required_parameters(DiskBaseData& meta, const utils::ActParser& pp)
 {
     pp.get("num_force_points", meta.num_force_pts);
     pp.get("epsilon", meta.epsilon);
@@ -153,7 +153,7 @@ void required_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp)
     pp.getarr("thrust_coeff", meta.thrust_coeff);
 }
 
-void optional_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp)
+void optional_parameters(DiskBaseData& meta, const utils::ActParser& pp)
 {
     // no logic is required to check for conflicts in this function. all
     // conflicts should be specified in the check_for_parse_conflicts function
@@ -263,10 +263,10 @@ void check_for_parse_conflicts(const utils::ActParser& pp)
     pp.getarr("thrust_coeff", ct);
     if (ct.size() > 1) {
         if (!pp.contains("wind_speed")) {
-            error_collector
-                << "UniformCt Dependency Missing: wind_speed is required when "
-                   "there is more than 1 entry for thrust_coeff"
-                << std::endl;
+            error_collector << "ActuatorDisk Dependency Missing: wind_speed is "
+                               "required when "
+                               "there is more than 1 entry for thrust_coeff"
+                            << std::endl;
         }
     }
 
@@ -274,7 +274,7 @@ void check_for_parse_conflicts(const utils::ActParser& pp)
         RealList vel;
         pp.getarr("wind_speed", vel);
         if (vel.size() != ct.size()) {
-            error_collector << "UniformCt Conflict: wind_speed and "
+            error_collector << "ActuatorDisk Conflict: wind_speed and "
                                "thrust_coeff must have the same number of "
                                "values"
                             << std::endl;
@@ -283,12 +283,12 @@ void check_for_parse_conflicts(const utils::ActParser& pp)
 
     if (!error_collector.str().empty()) {
         amrex::Abort(
-            "Errors found while parsing in Actuator.UniformCt:\n" +
+            "Errors found while parsing ActuatorDisk Inputs:\n" +
             error_collector.str());
     }
 }
 
-void compute_and_normalize_coplanar_vector(UniformCt::MetaType& meta)
+void compute_and_normalize_coplanar_vector(DiskBaseData& meta)
 {
     const amrex::Real radius = meta.diameter * 0.5;
     meta.dr = radius / meta.num_force_pts;
@@ -310,14 +310,14 @@ void compute_and_normalize_coplanar_vector(UniformCt::MetaType& meta)
     meta.sample_vec.normalize();
 }
 
-void final_checks(const UniformCt::MetaType& meta)
+void final_checks(const DiskBaseData& meta)
 {
     AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
         meta.num_vel_pts > 0,
         "num_vel_points_r and num_vel_points_t must both be >=1");
 }
 
-amrex::RealBox compute_bounding_box(const UniformCt::MetaType& meta)
+amrex::RealBox compute_bounding_box(const DiskBaseData& meta)
 {
     const auto& norm = meta.normal_vec;
     const auto& cVec = meta.coplanar_vec;
@@ -334,17 +334,8 @@ amrex::RealBox compute_bounding_box(const UniformCt::MetaType& meta)
             amrex::max(p1.y(), p2.y()), amrex::max(p1.z(), p2.z())};
 }
 
-void do_parse_based_computations(UniformCt::DataType& data)
-{
-    auto& meta = data.meta();
-    auto& info = data.info();
-
-    compute_and_normalize_coplanar_vector(meta);
-    info.bound_box = compute_bounding_box(meta);
-}
-
 void compute_disk_points(
-    UniformCt::MetaType& meta,
+    DiskBaseData& meta,
     VecList& points,
     const vs::Vector& cylAxis,
     const int offset,

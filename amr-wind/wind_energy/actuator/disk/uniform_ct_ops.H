@@ -1,63 +1,12 @@
 #ifndef UNIFORM_CT_OPS_H_
 #define UNIFORM_CT_OPS_H_
 
+#include "amr-wind/wind_energy/actuator/disk/disk_ops.H"
 #include "amr-wind/wind_energy/actuator/disk/UniformCt.H"
-#include "amr-wind/wind_energy/actuator/actuator_ops.H"
-#include "amr-wind/utilities/tensor_ops.H"
 #include "amr-wind/utilities/linear_interpolation.H"
-
 namespace amr_wind {
 namespace actuator {
-namespace disk {
-// refactor these when we add more disk types later
-void prepare_netcdf_file(
-    const std::string& /*ncfile*/,
-    const UniformCtData& /*meta*/,
-    const ActInfo& /*info*/,
-    const ActGrid& /*grid*/);
-
-void write_netcdf(
-    const std::string& /*ncfile*/,
-    const UniformCtData& /*meta*/,
-    const ActInfo& /*info*/,
-    const ActGrid& /*unused*/,
-    const amrex::Real /*time*/);
-} // namespace disk
-
 namespace ops {
-
-void collect_parse_conflicts(
-    const utils::ActParser& pp,
-    const std::string& p1,
-    const std::string& p2,
-    std::ostringstream& ss);
-void collect_parse_dependencies(
-    const utils::ActParser& pp,
-    const std::string& p1,
-    const std::string& p2,
-    std::ostringstream& ss);
-
-void required_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp);
-
-void optional_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp);
-
-void check_for_parse_conflicts(const utils::ActParser& pp);
-
-void compute_and_normalize_coplanar_vector(UniformCt::MetaType& meta);
-
-void final_checks(const UniformCt::MetaType& meta);
-
-amrex::RealBox compute_bounding_box(const UniformCt::MetaType& meta);
-
-void do_parse_based_computations(UniformCt::DataType& data);
-
-void compute_disk_points(
-    UniformCt::MetaType& meta,
-    VecList& points,
-    const vs::Vector& cylAxis,
-    const int offset,
-    const double dOffset);
-
 template <>
 struct ReadInputsOp<UniformCt, ActSrcDisk>
 {
@@ -69,7 +18,7 @@ struct ReadInputsOp<UniformCt, ActSrcDisk>
         required_parameters(meta, pp);
         optional_parameters(meta, pp);
         final_checks(meta);
-        do_parse_based_computations(data);
+        do_parse_based_computations<UniformCt>(data);
     }
 };
 
@@ -101,27 +50,6 @@ struct InitDataOp<UniformCt, ActSrcDisk>
         compute_disk_points(
             meta, grid.vel_pos, sVec, 0, meta.diameters_to_sample);
         compute_disk_points(meta, grid.vel_pos, nVec, meta.num_vel_pts / 2, 0);
-    }
-};
-
-template <>
-struct UpdateVelOp<UniformCt, ActSrcDisk>
-{
-    void operator()(UniformCt::DataType& data)
-    {
-        auto& meta = data.meta();
-        const auto& grid = data.grid();
-        meta.reference_velocity = {0.0, 0.0, 0.0};
-        meta.disk_velocity = {0.0, 0.0, 0.0};
-        auto& refVel = meta.reference_velocity;
-        auto& diskVel = meta.disk_velocity;
-        const int np = meta.num_vel_pts / 2;
-        for (int i = 0; i < np; i++) {
-            refVel = refVel + grid.vel[i];
-            diskVel = diskVel + grid.vel[i + np];
-        }
-        refVel /= np;
-        diskVel /= np;
     }
 };
 
