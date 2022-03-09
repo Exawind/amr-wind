@@ -85,7 +85,7 @@ private:
     amrex::Real m_beach_length{2.0};
 
     //! Numerical beach absorption length factor
-    amrex::Real m_absorb_length_factor{1.0};
+    amrex::Real m_absorb_length_factor{2.0};
 
     //! Numerical beach start location
     amrex::Real m_x_start_beach{10};
