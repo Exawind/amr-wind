@@ -26,7 +26,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void linear_monochromatic_waves(
         std::pow(k_ * 9.81 * std::tanh(k_ * waterdepth), 0.5);
     const amrex::Real phase = k_ * x + 0. * y - omega * time;
 
-    eta = amplitude * std::sin(phase);
+    eta = amplitude * std::cos(phase);
     u_w = omega * amplitude * std::cosh(k_ * (z + waterdepth)) /
           std::sinh(k_ * waterdepth) * std::cos(phase);
     v_w = 0.0;
