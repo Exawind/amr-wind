@@ -25,6 +25,27 @@ NWT::NWT(CFDSim& sim)
     pp.query("relax_zone_gen_length", m_gen_length);
     pp.query("numerical_beach_length", m_beach_length);
     pp.query("numerical_beach_start", m_x_start_beach);
+
+    std::string wave_type;
+    pp.query("wave_type", wave_type);
+
+    if (amrex::toLower(wave_type) == "linearwaves") {
+        m_generator_type = wave_generator::LinearWaves;
+    } else if (amrex::toLower(wave_type) == "stokeswaves") {
+        m_generator_type = wave_generator::StokesWaves;
+    } else if (amrex::toLower(wave_type) == "bichromatic") {
+        m_generator_type = wave_generator::BiChromatic;
+    } else if (amrex::toLower(wave_type) == "spectrum") {
+        // amrex::toLower(godunov_type) == "weno" ||
+        // amrex::toLower(godunov_type) == "weno_js") {
+        m_generator_type = wave_generator::Spectrum;
+    } else {
+        amrex::Print()
+            << "For wave_type select between LinearWaves, StokesWaves, "
+               "BiChromatic and Spectrum: it defaults to LinearWaves"
+            << std::endl;
+        m_generator_type = wave_generator::LinearWaves;
+    }
 }
 
 NWT::~NWT() = default;
@@ -118,6 +139,8 @@ void NWT::apply_relaxation_method(amrex::Real time)
             const amrex::Real absorb_length_factor = m_absorb_length_factor;
             const amrex::Real zsl = m_zsl;
 
+            wave_generator wave_type = m_generator_type;
+
             amrex::ParallelFor(
                 gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real x = amrex::min(
@@ -131,9 +154,23 @@ void NWT::apply_relaxation_method(amrex::Real time)
                         probhi[2]);
                     amrex::Real eta, u_w, v_w, w_w;
 
-                    nwt::linear_monochromatic_waves(
-                        wavelength, waterdepth, amplitude, x, y, z, time, eta,
-                        u_w, v_w, w_w);
+                    switch (wave_type) {
+                    case wave_generator::LinearWaves: {
+                        nwt::linear_monochromatic_waves(
+                            wavelength, waterdepth, amplitude, x, y, z, time,
+                            eta, u_w, v_w, w_w);
+                        break;
+                    }
+                    case wave_generator::StokesWaves: {
+                        break;
+                    }
+                    case wave_generator::BiChromatic: {
+                        break;
+                    }
+                    case wave_generator::Spectrum: {
+                        break;
+                    }
+                    }
 
                     if (x <= gen_length) {
                         const amrex::Real Gamma =

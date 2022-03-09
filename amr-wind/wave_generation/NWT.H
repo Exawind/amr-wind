@@ -23,6 +23,9 @@
 
 namespace amr_wind {
 
+// Enumerator for wave generation theory
+enum class wave_generator { LinearWaves, StokesWaves, BiChromatic, Spectrum };
+
 /** Numerical Wave Tank physics
  *  \ingroup we_nwt
  *
@@ -58,14 +61,6 @@ private:
 
     bool m_has_ramp{false};
 
-    // Enumerator for wave generation theory
-    enum class wave_generator {
-        LinearWaves,
-        StokesWaves,
-        BiChromatic,
-        Spectrum
-    };
-
     //! Initial free surface amplitude magnitude
     amrex::Real m_amplitude{0.1};
 
@@ -74,6 +69,8 @@ private:
 
     //! Initial zero-sea-level
     amrex::Real m_zsl{0.0};
+
+    wave_generator m_generator_type = wave_generator::LinearWaves;
 
     //! Water depth
     amrex::Real m_waterdepth{1.0};
