@@ -67,37 +67,30 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void vandermonde_matrix(
  * Here, A is the coefficient matrix, and x is the unknown.
  *
  */
-
+template <class T, int Nm1>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void gauss_siedel_method(
-    amrex::Array2D<amrex::Real, 0, 7, 0, 7>& A,
+    const amrex::Array2D<T, 0, Nm1, 0, Nm1>& A,
     const amrex::Vector<amrex::Real>& b,
     amrex::Vector<amrex::Real>& x)
 {
-    const int Np = 7;
-    const int Niter = 100;
-    int n = 0;
+    int N = Nm1 + 1; // Number of entries
+    amrex::Real sum_c1, sum_c2;
 
-    amrex::Real sum_c1;
-    amrex::Real sum_c2;
+    for (int row = 0; row < N; row++) {
+        sum_c1 = 0.0;
+        sum_c2 = 0.0;
 
-    while (n < Niter) {
-        for (int row = 0; row < Np; row++) {
-            sum_c1 = 0.0;
-            sum_c2 = 0.0;
+        amrex::Real inv_Vrr = 1.0 / A(row, row);
 
-            amrex::Real inv_Vrr = 1.0 / A(row, row);
-
-            for (int col = 0; col <= (row - 1); col++) {
-                sum_c1 = sum_c1 + A(row, col) * x[col];
-            }
-
-            for (int col = row + 1; col <= (Np - 1); col++) {
-                sum_c2 = sum_c2 + A(row, col) * x[col];
-            }
-
-            x[row] = inv_Vrr * (b[row] - sum_c1 - sum_c2);
+        for (int col = 0; col <= (row - 1); col++) {
+            sum_c1 = sum_c1 + A(row, col) * x[col];
         }
-        n++;
+
+        for (int col = row + 1; col <= (N - 1); col++) {
+            sum_c2 = sum_c2 + A(row, col) * x[col];
+        }
+
+        x[row] = inv_Vrr * (b[row] - sum_c1 - sum_c2);
     }
 }
 
