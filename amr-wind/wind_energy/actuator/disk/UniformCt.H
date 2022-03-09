@@ -7,9 +7,7 @@ namespace amr_wind {
 namespace actuator {
 
 struct UniformCtData : public DiskBaseData
-{
-    
-};
+{};
 
 struct UniformCt : public DiskType
 {
