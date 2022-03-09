@@ -62,7 +62,7 @@ private:
     bool m_has_ramp{false};
 
     //! Initial free surface amplitude magnitude
-    amrex::Real m_amplitude{0.1};
+    amrex::Real m_waveheight{0.1};
 
     //! Initial free surface wavelength
     amrex::Real m_wavelength{1.0};

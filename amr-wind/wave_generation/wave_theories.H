@@ -10,7 +10,7 @@ namespace nwt {
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void linear_monochromatic_waves(
     amrex::Real wavelength,
     amrex::Real waterdepth,
-    amrex::Real amplitude,
+    amrex::Real waveheight,
     amrex::Real x,
     amrex::Real y,
     amrex::Real z,
@@ -26,11 +26,11 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void linear_monochromatic_waves(
         std::pow(k_ * 9.81 * std::tanh(k_ * waterdepth), 0.5);
     const amrex::Real phase = k_ * x + 0. * y - omega * time;
 
-    eta = amplitude * std::cos(phase);
-    u_w = omega * amplitude * std::cosh(k_ * (z + waterdepth)) /
+    eta = waveheight / 2.0 * std::cos(phase);
+    u_w = omega * waveheight / 2.0 * std::cosh(k_ * (z + waterdepth)) /
           std::sinh(k_ * waterdepth) * std::cos(phase);
     v_w = 0.0;
-    w_w = omega * amplitude * std::sinh(k_ * (z + waterdepth)) /
+    w_w = omega * waveheight / 2.0 * std::sinh(k_ * (z + waterdepth)) /
           std::sinh(k_ * waterdepth) * std::sin(phase);
 }
 

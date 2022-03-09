@@ -16,8 +16,8 @@ NWT::NWT(CFDSim& sim)
     , m_vof(sim.repo().get_field("vof"))
 {
     amrex::ParmParse pp(identifier());
-    pp.query("amplitude", m_amplitude);
-    pp.query("wavelength", m_wavelength);
+    pp.query("wave_height", m_waveheight);
+    pp.query("wave_length", m_wavelength);
     pp.query("zero_sea_level", m_zsl);
     pp.query("water_depth", m_waterdepth);
 
@@ -131,7 +131,7 @@ void NWT::apply_relaxation_method(amrex::Real time)
             auto volfrac = m_vof(lev).array(mfi);
             const amrex::Real wavelength = m_wavelength;
             const amrex::Real waterdepth = m_waterdepth;
-            const amrex::Real amplitude = m_amplitude;
+            const amrex::Real waveheight = m_waveheight;
 
             const amrex::Real gen_length = m_gen_length;
             const amrex::Real x_start_beach = m_x_start_beach;
@@ -157,7 +157,7 @@ void NWT::apply_relaxation_method(amrex::Real time)
                     switch (wave_type) {
                     case wave_generator::LinearWaves: {
                         nwt::linear_monochromatic_waves(
-                            wavelength, waterdepth, amplitude, x, y, z, time,
+                            wavelength, waterdepth, waveheight, x, y, z, time,
                             eta, u_w, v_w, w_w);
                         break;
                     }
