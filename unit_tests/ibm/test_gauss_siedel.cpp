@@ -72,7 +72,7 @@ TEST_F(GaussSiedelMethodTest, matrix_inverse)
 
         x_norm = L2_Norm(x);
 
-        if (abs(x_norm - exact_norm) < tol) break;
+        if (amrex::Math::abs(x_norm - exact_norm) < tol) break;
     }
 
     // Verify if the matrix inversion is correct
