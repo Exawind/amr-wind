@@ -11,12 +11,16 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
 free_surface_to_vof(amrex::Real eta, amrex::Real z, amrex::Real dz)
 {
     amrex::Real volfrac = 0.0;
-    if (eta >= z + dz / 2.) {
+    if (eta - z >= dz / 2.) {
         volfrac = 1.;
-    } else if (eta <= z - dz / 2.) {
+    } else if (eta - z <= -dz / 2.) {
         volfrac = 0.;
-    } else {
-        volfrac = (eta - z + dz / 2.) / dz;
+    } else if (std::abs(eta - z) < dz / 2.) {
+        if (eta < z) {
+            volfrac = 1. - (z - eta + dz / 2.) / dz;
+        } else {
+            volfrac = (eta - z + dz / 2.) / dz;
+        }
     }
 
     return volfrac;
