@@ -52,19 +52,19 @@ void MeshMap::setup_interp_arrays(int lev, const amrex::Geometry& geom)
     const int Ny = dhi.y - dlo.y + 1;
     const int Nz = dhi.z - dlo.z + 1;
 
-    amrex::Vector<amrex::Real> x_uni;
-    amrex::Vector<amrex::Real> y_uni;
-    amrex::Vector<amrex::Real> z_uni;
-    x_uni.resize(Nx, 0.0);
-    y_uni.resize(Ny, 0.0);
-    z_uni.resize(Nz, 0.0);
+    amrex::Vector<amrex::Real> x_uni(Nx, 0.0);
+    amrex::Vector<amrex::Real> y_uni(Ny, 0.0);
+    amrex::Vector<amrex::Real> z_uni(Nz, 0.0);
 
-    amrex::Vector<amrex::Real> x_nu;
-    amrex::Vector<amrex::Real> y_nu;
-    amrex::Vector<amrex::Real> z_nu;
-    x_nu.resize(Nx, 0.0);
-    y_nu.resize(Ny, 0.0);
-    z_nu.resize(Nz, 0.0);
+    amrex::Vector<amrex::Real> x_nu(Nx, 0.0);
+    amrex::Vector<amrex::Real> y_nu(Ny, 0.0);
+    amrex::Vector<amrex::Real> z_nu(Nz, 0.0);
+    amrex::Vector<int> x_nu_count(Nx, 0);
+    amrex::Vector<int> y_nu_count(Ny, 0);
+    amrex::Vector<int> z_nu_count(Nz, 0);
+    m_x_nu.resize(Nx, 0.0);
+    m_y_nu.resize(Ny, 0.0);
+    m_z_nu.resize(Nz, 0.0);
 
     amr_wind::Field const* nu_coord_cc = m_non_uniform_coord_cc;
 
@@ -82,17 +82,55 @@ void MeshMap::setup_interp_arrays(int lev, const amrex::Geometry& geom)
 	for (int k = 0; k<Nz; k++) {
 	  z_uni[k] = prob_lo[2] + (k + 0.5) * dx[2];
 	}
-	amrex::Loop(bx, [=, &x_nu, &y_nu, &z_nu](int i, int j, int k) noexcept {
+	amrex::Loop(bx, [=, &x_nu, &y_nu, &z_nu, &x_nu_count, &y_nu_count, &z_nu_count](int i, int j, int k) noexcept {
 	    if ((j == 0) && (k == 0) && (i >= 0) && (i < Nx)){
 	      x_nu[i] = nu_cc(i,j,k,0);
+	      x_nu_count[i] += 1;
 	    }
 	    if ((i == 0) && (k == 0) && (j >= 0) && (j < Ny)){
 	      y_nu[j] = nu_cc(i,j,k,1);
+	      y_nu_count[j] += 1;
 	    }
 	    if ((i == 0) && (j == 0) && (k >= 0) && (k < Nz)){
 	      z_nu[k] = nu_cc(i,j,k,2);
+	      z_nu_count[k] += 1;
 	    }
 	  });
+    }
+    // Gather and sum the vectors from all processors
+#ifdef AMREX_USE_MPI
+    MPI_Allreduce(
+        MPI_IN_PLACE, &(x_nu_count[0]), Nx,
+        MPI_INT, MPI_SUM, amrex::ParallelDescriptor::Communicator());
+    MPI_Allreduce(
+        MPI_IN_PLACE, &(x_nu[0]), Nx,
+        MPI_DOUBLE, MPI_SUM, amrex::ParallelDescriptor::Communicator());
+    MPI_Allreduce(
+        MPI_IN_PLACE, &(y_nu_count[0]), Ny,
+        MPI_INT, MPI_SUM, amrex::ParallelDescriptor::Communicator());
+    MPI_Allreduce(
+        MPI_IN_PLACE, &(y_nu[0]), Ny,
+        MPI_DOUBLE, MPI_SUM, amrex::ParallelDescriptor::Communicator());
+    MPI_Allreduce(
+        MPI_IN_PLACE, &(z_nu_count[0]), Nz,
+        MPI_INT, MPI_SUM, amrex::ParallelDescriptor::Communicator());
+    MPI_Allreduce(
+        MPI_IN_PLACE, &(z_nu[0]), Nz,
+        MPI_DOUBLE, MPI_SUM, amrex::ParallelDescriptor::Communicator());
+#endif
+
+    // Divide the sum by the counts
+    for (int i=0; i<Nx; i++) {
+      AMREX_ALWAYS_ASSERT(x_nu_count[i]>0);
+      m_x_nu[i] = x_nu[i]/(float)x_nu_count[i];
+    }
+    for (int j=0; j<Ny; j++) {
+      AMREX_ALWAYS_ASSERT(y_nu_count[j]>0);
+      m_y_nu[j] = y_nu[j]/(float)y_nu_count[j];
+    }
+    for (int k=0; k<Nz; k++) {
+      AMREX_ALWAYS_ASSERT(z_nu_count[k]>0);
+      m_z_nu[k] = z_nu[k]/(float)z_nu_count[k];
     }
 
     // Copy over to storage vectors
@@ -100,9 +138,6 @@ void MeshMap::setup_interp_arrays(int lev, const amrex::Geometry& geom)
     m_y_uni = y_uni;
     m_z_uni = z_uni;
 
-    m_x_nu = x_nu;
-    m_y_nu = y_nu;
-    m_z_nu = z_nu;
 }
 
 amrex::Real MeshMap::interp_nonunif_to_unif(amrex::Real x_nonunif, int dir)
