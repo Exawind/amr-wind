@@ -176,21 +176,21 @@ void NWT::apply_relaxation_method(amrex::Real time)
                         const amrex::Real Gamma =
                             nwt::Gamma_generate(x, gen_length);
                         const amrex::Real vf =
-                            (1 - Gamma) *
+                            (1. - Gamma) *
                                 nwt::free_surface_to_vof(eta, z, dx[2]) * ramp +
                             Gamma * volfrac(i, j, k);
                         // Doing clipping on the spot
                         volfrac(i, j, k) = (vf > 1. - 1.e-10) ? 1.0 : vf;
                         vel(i, j, k, 0) =
-                            (1 - Gamma) * u_w * volfrac(i, j, k) * ramp +
+                            (1. - Gamma) * u_w * volfrac(i, j, k) * ramp +
                             Gamma * vel(i, j, k, 0) * volfrac(i, j, k) +
                             (1. - volfrac(i, j, k)) * vel(i, j, k, 0);
                         vel(i, j, k, 1) =
-                            (1 - Gamma) * v_w * volfrac(i, j, k) * ramp +
+                            (1. - Gamma) * v_w * volfrac(i, j, k) * ramp +
                             Gamma * vel(i, j, k, 1) * volfrac(i, j, k) +
                             (1. - volfrac(i, j, k)) * vel(i, j, k, 1);
                         vel(i, j, k, 2) =
-                            (1 - Gamma) * w_w * volfrac(i, j, k) * ramp +
+                            (1. - Gamma) * w_w * volfrac(i, j, k) * ramp +
                             Gamma * vel(i, j, k, 2) * volfrac(i, j, k) +
                             (1. - volfrac(i, j, k)) * vel(i, j, k, 2);
                     }

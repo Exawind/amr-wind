@@ -16,7 +16,7 @@ free_surface_to_vof(amrex::Real eta, amrex::Real z, amrex::Real dz)
     } else if (eta - z <= -dz / 2.) {
         volfrac = 0.;
     } else if (std::abs(eta - z) < dz / 2.) {
-        if (eta < z) {
+        if (eta <= z) {
             volfrac = 1. - (z - eta + dz / 2.) / dz;
         } else {
             volfrac = (eta - z + dz / 2.) / dz;
