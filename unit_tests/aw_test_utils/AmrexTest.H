@@ -22,13 +22,16 @@ public:
         amrex::ParmParse pp("utest");
         pp.query("keep_parameters", m_keep_parameters);
 
-        if (!m_keep_parameters)
+        if (!m_keep_parameters) {
             amrex::ParmParse::Initialize(0, nullptr, nullptr);
+        }
     }
 
     virtual void TearDown() override
     {
-        if (!m_keep_parameters) amrex::ParmParse::Finalize();
+        if (!m_keep_parameters) {
+            amrex::ParmParse::Finalize();
+        }
     }
 
 protected:

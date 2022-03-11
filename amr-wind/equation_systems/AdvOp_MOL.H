@@ -55,9 +55,10 @@ struct AdvectionOp<
             amrex::MFItInfo mfi_info;
             // if (amrex::Gpu::notInLaunchRegion())
             // mfi_info.EnableTiling(amrex::IntVect(1024,16,16)).SetDynamic(true);
-            if (amrex::Gpu::notInLaunchRegion())
+            if (amrex::Gpu::notInLaunchRegion()) {
                 mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
                     .SetDynamic(true);
+            }
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif

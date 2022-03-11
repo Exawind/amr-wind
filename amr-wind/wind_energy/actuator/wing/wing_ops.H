@@ -163,7 +163,9 @@ public:
     {
         const auto& time = m_data.sim().time();
         const int tidx = time.time_index();
-        if (tidx % m_out_freq != 0) return;
+        if (tidx % m_out_freq != 0) {
+            return;
+        }
 
         wing::write_netcdf(
             m_nc_filename, m_data.meta(), m_data.info(), m_data.grid(),

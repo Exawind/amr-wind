@@ -53,7 +53,9 @@ public:
             bool keep_parameters = false;
             pp.query("keep_parameters", keep_parameters);
 
-            if (!keep_parameters) amrex::ParmParse::Finalize();
+            if (!keep_parameters) {
+                amrex::ParmParse::Finalize();
+            }
         }
     }
 
