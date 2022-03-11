@@ -160,13 +160,17 @@ struct DirichletOp
 
                 // Check if this boundary is a dirichlet type
                 const auto bctyp = (ori.isLow() ? bc.lo(idir) : bc.hi(idir));
-                if (bctyp != amrex::BCType::ext_dir) continue;
+                if (bctyp != amrex::BCType::ext_dir) {
+                    continue;
+                }
 
                 // Check if the point in question is on the boundary
                 const bool is_bndry =
                     (ori.isLow() ? (iv[idir] < domain_box.smallEnd(idir))
                                  : (iv[idir] > domain_box.bigEnd(idir)));
-                if (!is_bndry) continue;
+                if (!is_bndry) {
+                    continue;
+                }
 
                 if (m_bc_type[ori] == BC::mass_inflow) {
                     m_inflow_op(iv, field, geom, time, ori, n);

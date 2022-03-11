@@ -73,7 +73,9 @@ gaussian1d(const amrex::Real& dist, const amrex::Real& eps)
 {
     // fac = 1.0/sqrt(pi)
     const amrex::Real fac = 0.5641895835477563;
-    if (std::abs(dist / eps) >= 16.0) return 0.0;
+    if (std::abs(dist / eps) >= 16.0) {
+        return 0.0;
+    }
     return fac / eps * std::exp(-(dist * dist) / (eps * eps));
 }
 

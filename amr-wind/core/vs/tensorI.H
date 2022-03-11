@@ -15,10 +15,11 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE TensorT<T>::TensorT(
     const VectorT<T>& z,
     const bool transpose)
 {
-    if (transpose)
+    if (transpose) {
         this->cols(x, y, z);
-    else
+    } else {
         this->rows(x, y, z);
+    }
 }
 
 template <typename T>

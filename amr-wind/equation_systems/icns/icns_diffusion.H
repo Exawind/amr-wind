@@ -326,10 +326,11 @@ struct DiffusionOp<ICNS, Scheme>
 
     void linsys_solve(const amrex::Real dt)
     {
-        if (m_tensor_op)
+        if (m_tensor_op) {
             m_tensor_op->linsys_solve(dt);
-        else
+        } else {
             m_scalar_op->linsys_solve(dt);
+        }
     }
 };
 

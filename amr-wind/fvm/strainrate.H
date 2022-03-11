@@ -28,7 +28,9 @@ struct StrainRate
 
         const auto& bx_in = mfi.tilebox();
         const auto& bx = Stencil::box(bx_in, geom);
-        if (bx.isEmpty()) return;
+        if (bx.isEmpty()) {
+            return;
+        }
 
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {

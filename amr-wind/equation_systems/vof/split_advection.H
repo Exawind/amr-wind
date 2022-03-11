@@ -45,26 +45,32 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void lagrangian_explicit(
         if (dir == 0) {
             mx = mx / (1.0 - aL + aR);
             alpha = alpha + mx * aL;
-            if (aL < 0.0)
+            if (aL < 0.0) {
                 fluxL(i, j, k) = cut_volume(mx, my, mz, alpha, aL, -aL);
-            if (aR > 0.0)
+            }
+            if (aR > 0.0) {
                 fluxR(i, j, k) = cut_volume(mx, my, mz, alpha, 1.0, aR);
+            }
             fluxC(i, j, k) = cut_volume(mx, my, mz, alpha, mmL, mmR);
         } else if (dir == 1) {
             my = my / (1.0 - aL + aR);
             alpha = alpha + my * aL;
-            if (aL < 0.0)
+            if (aL < 0.0) {
                 fluxL(i, j, k) = cut_volume(my, mz, mx, alpha, aL, -aL);
-            if (aR > 0.0)
+            }
+            if (aR > 0.0) {
                 fluxR(i, j, k) = cut_volume(my, mz, mx, alpha, 1.0, aR);
+            }
             fluxC(i, j, k) = cut_volume(my, mz, mx, alpha, mmL, mmR);
         } else if (dir == 2) {
             mz = mz / (1.0 - aL + aR);
             alpha = alpha + mz * aL;
-            if (aL < 0.0)
+            if (aL < 0.0) {
                 fluxL(i, j, k) = cut_volume(mz, mx, my, alpha, aL, -aL);
-            if (aR > 0.0)
+            }
+            if (aR > 0.0) {
                 fluxR(i, j, k) = cut_volume(mz, mx, my, alpha, 1.0, aR);
+            }
             fluxC(i, j, k) = cut_volume(mz, mx, my, alpha, mmL, mmR);
         }
     }

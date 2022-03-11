@@ -315,7 +315,9 @@ public:
 
         for (amrex::OrientationIter oit; oit; ++oit) {
             auto ori = oit();
-            if (bctype[ori] != BC::mass_inflow) continue;
+            if (bctype[ori] != BC::mass_inflow) {
+                continue;
+            }
 
             const int idir = ori.coordDir();
             const auto& dbx =
@@ -325,15 +327,18 @@ public:
             for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
                 const auto& gbx = amrex::grow(mfi.validbox(), nghost);
                 const auto& bx = gbx & dbx;
-                if (!bx.ok()) continue;
+                if (!bx.ok()) {
+                    continue;
+                }
 
                 const auto& marr = mfab[mfi].array();
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(
                             const int i, const int j, const int k) noexcept {
-                        for (int n = 0; n < ncomp; ++n)
+                        for (int n = 0; n < ncomp; ++n) {
                             bcfunc.set_inflow(
                                 {i, j, k}, marr, gdata, time, ori, n);
+                        }
                     });
             }
         }

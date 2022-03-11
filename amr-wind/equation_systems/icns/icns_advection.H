@@ -64,10 +64,11 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
         amrex::ParmParse pp("incflo");
         pp.query("godunov_type", godunov_type);
-        if (pp.contains("use_ppm") || pp.contains("use_limiter"))
+        if (pp.contains("use_ppm") || pp.contains("use_limiter")) {
             amrex::Abort(
                 "Godunov: use_ppm and use_limiter are deprecated. Please "
                 "update input file");
+        }
 
         if (amrex::toLower(godunov_type) == "plm") {
             godunov_scheme = godunov::scheme::PLM;
@@ -271,9 +272,10 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
 
             amrex::MFItInfo mfi_info;
-            if (amrex::Gpu::notInLaunchRegion())
+            if (amrex::Gpu::notInLaunchRegion()) {
                 mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
                     .SetDynamic(true);
+            }
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
@@ -426,9 +428,10 @@ struct AdvectionOp<ICNS, fvm::MOL>
             amrex::MFItInfo mfi_info;
             // if (amrex::Gpu::notInLaunchRegion())
             // mfi_info.EnableTiling(amrex::IntVect(1024,16,16)).SetDynamic(true);
-            if (amrex::Gpu::notInLaunchRegion())
+            if (amrex::Gpu::notInLaunchRegion()) {
                 mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
                     .SetDynamic(true);
+            }
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif

@@ -420,17 +420,19 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_x(
     amrex::Real sigmap = amrex::Math::abs(vel_edge(i + 1, j, k)) * dt / dx;
     amrex::Real sigmam = amrex::Math::abs(vel_edge(i, j, k)) * dt / dx;
 
-    if (vel_edge(i + 1, j, k) > small_vel)
+    if (vel_edge(i + 1, j, k) > small_vel) {
         Ip = sp -
              (0.5 * sigmap) * ((sp - sm) - (1.e0 - 2.e0 / 3.e0 * sigmap) * s6);
-    else
+    } else {
         Ip = S(i, j, k, n);
+    }
 
-    if (vel_edge(i, j, k) < -small_vel)
+    if (vel_edge(i, j, k) < -small_vel) {
         Im = sm +
              (0.5 * sigmam) * ((sp - sm) + (1.e0 - 2.e0 / 3.e0 * sigmam) * s6);
-    else
+    } else {
         Im = S(i, j, k, n);
+    }
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_y(
@@ -477,17 +479,19 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_y(
     amrex::Real sigmap = amrex::Math::abs(vel_edge(i, j + 1, k)) * dt / dx;
     amrex::Real sigmam = amrex::Math::abs(vel_edge(i, j, k)) * dt / dx;
 
-    if (vel_edge(i, j + 1, k) > small_vel)
+    if (vel_edge(i, j + 1, k) > small_vel) {
         Ip = sp -
              (0.5 * sigmap) * ((sp - sm) - (1.e0 - 2.e0 / 3.e0 * sigmap) * s6);
-    else
+    } else {
         Ip = S(i, j, k, n);
+    }
 
-    if (vel_edge(i, j, k) < -small_vel)
+    if (vel_edge(i, j, k) < -small_vel) {
         Im = sm +
              (0.5 * sigmam) * ((sp - sm) + (1.e0 - 2.e0 / 3.e0 * sigmam) * s6);
-    else
+    } else {
         Im = S(i, j, k, n);
+    }
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_z(
@@ -534,17 +538,19 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_z(
     amrex::Real sigmap = amrex::Math::abs(vel_edge(i, j, k + 1)) * dt / dx;
     amrex::Real sigmam = amrex::Math::abs(vel_edge(i, j, k)) * dt / dx;
 
-    if (vel_edge(i, j, k + 1) > small_vel)
+    if (vel_edge(i, j, k + 1) > small_vel) {
         Ip = sp -
              (0.5 * sigmap) * ((sp - sm) - (1.e0 - 2.e0 / 3.e0 * sigmap) * s6);
-    else
+    } else {
         Ip = S(i, j, k, n);
+    }
 
-    if (vel_edge(i, j, k) < -small_vel)
+    if (vel_edge(i, j, k) < -small_vel) {
         Im = sm +
              (0.5 * sigmam) * ((sp - sm) + (1.e0 - 2.e0 / 3.e0 * sigmam) * s6);
-    else
+    } else {
         Im = S(i, j, k, n);
+    }
 }
 
 } // namespace

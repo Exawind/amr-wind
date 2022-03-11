@@ -75,7 +75,9 @@ inline bool is_valid_field_name(const std::string& name)
 {
     // Else make sure that our guard is not in the last 8 characters
     auto found = name.rfind("__FS_");
-    if (found != std::string::npos) return false;
+    if (found != std::string::npos) {
+        return false;
+    }
 
     return true;
 }

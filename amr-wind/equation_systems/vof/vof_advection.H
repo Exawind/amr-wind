@@ -42,15 +42,18 @@ struct AdvectionOp<VOF, fvm::Godunov>
 
         // Define the sweep time
         isweep += 1;
-        if (isweep > 3) isweep = 1;
+        if (isweep > 3) {
+            isweep = 1;
+        }
 
         dof_field.fillpatch(0.0);
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             amrex::MFItInfo mfi_info;
-            if (amrex::Gpu::notInLaunchRegion())
+            if (amrex::Gpu::notInLaunchRegion()) {
                 mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
                     .SetDynamic(true);
+            }
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif

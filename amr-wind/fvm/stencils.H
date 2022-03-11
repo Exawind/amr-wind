@@ -62,8 +62,12 @@ namespace impl {
 inline amrex::Box
 box_lo(const amrex::Box& bx, const amrex::Geometry& geom, const int idir)
 {
-    if (geom.isPeriodic(idir)) return amrex::Box();
-    if (bx.smallEnd(idir) != geom.Domain().smallEnd(idir)) return amrex::Box();
+    if (geom.isPeriodic(idir)) {
+        return amrex::Box();
+    }
+    if (bx.smallEnd(idir) != geom.Domain().smallEnd(idir)) {
+        return amrex::Box();
+    }
 
     amrex::IntVect low(bx.smallEnd());
     amrex::IntVect hi(bx.bigEnd());
@@ -89,8 +93,12 @@ box_lo(const amrex::Box& bx, const amrex::Geometry& geom, const int idir)
 inline amrex::Box
 box_hi(const amrex::Box& bx, const amrex::Geometry& geom, const int idir)
 {
-    if (geom.isPeriodic(idir)) return amrex::Box();
-    if (bx.bigEnd(idir) != geom.Domain().bigEnd(idir)) return amrex::Box();
+    if (geom.isPeriodic(idir)) {
+        return amrex::Box();
+    }
+    if (bx.bigEnd(idir) != geom.Domain().bigEnd(idir)) {
+        return amrex::Box();
+    }
 
     amrex::IntVect low(bx.smallEnd());
     amrex::IntVect hi(bx.bigEnd());
