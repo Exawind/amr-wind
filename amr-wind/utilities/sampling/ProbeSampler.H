@@ -19,7 +19,7 @@ public:
 
     explicit ProbeSampler(const CFDSim&);
 
-    virtual ~ProbeSampler();
+    ~ProbeSampler() override;
 
     void initialize(const std::string& key) override;
 

@@ -50,7 +50,7 @@ namespace pde {
 class PDEBase : public Factory<PDEBase, CFDSim&, const int>
 {
 public:
-    virtual ~PDEBase() = default;
+    ~PDEBase() override = default;
 
     //! Return the object that holds references to fields for this PDE system
     virtual PDEFields& fields() = 0;

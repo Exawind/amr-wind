@@ -21,7 +21,7 @@ public:
 
     explicit VortexPatch(CFDSim& sim);
 
-    virtual ~VortexPatch() = default;
+    ~VortexPatch() override = default;
 
     //! Initialize the levelset and velocity fields for Vortex Patch simulations
 

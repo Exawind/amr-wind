@@ -18,7 +18,7 @@ class DensitySource : public Factory<DensitySource, const CFDSim&>
 public:
     static const std::string base_identifier() { return "DensitySource"; }
 
-    virtual ~DensitySource() = default;
+    ~DensitySource() override = default;
 
     virtual void operator()(
         const int lev,

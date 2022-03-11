@@ -17,7 +17,7 @@ public:
 
     explicit EkmanSpiral(const CFDSim& sim);
 
-    virtual ~EkmanSpiral() = default;
+    ~EkmanSpiral() override = default;
 
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 

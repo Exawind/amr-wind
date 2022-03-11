@@ -19,7 +19,7 @@ public:
 
     explicit BoussinesqBubble(CFDSim& sim);
 
-    virtual ~BoussinesqBubble() = default;
+    ~BoussinesqBubble() override = default;
 
     //! Initialize the temperature and velocity fields for BoussinesqBubble
     //! simulations

@@ -20,9 +20,9 @@ public:
 
     explicit ABLForcing(const CFDSim& sim);
 
-    virtual ~ABLForcing();
+    ~ABLForcing() override;
 
-    virtual void operator()(
+    void operator()(
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,

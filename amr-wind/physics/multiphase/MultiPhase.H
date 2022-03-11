@@ -26,7 +26,7 @@ public:
 
     explicit MultiPhase(CFDSim& sim);
 
-    virtual ~MultiPhase() = default;
+    ~MultiPhase() override = default;
 
     void initialize_fields(int, const amrex::Geometry&) override {}
 

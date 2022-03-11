@@ -32,9 +32,9 @@ public:
 
     explicit IB(CFDSim&);
 
-    virtual ~IB();
+    ~IB() override;
 
-    virtual void initialize_fields(int, const amrex::Geometry&) override {}
+    void initialize_fields(int, const amrex::Geometry&) override {}
 
     void pre_init_actions() override;
 

@@ -32,7 +32,7 @@ class ImmersedBoundaryModel
 public:
     static std::string base_identifier() { return "ImmersedBoundaryModel"; }
 
-    virtual ~ImmersedBoundaryModel() = default;
+    ~ImmersedBoundaryModel() override = default;
 
     virtual const std::string& label() const = 0;
 

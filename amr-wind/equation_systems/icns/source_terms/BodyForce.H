@@ -21,9 +21,9 @@ public:
 
     explicit BodyForce(const CFDSim&);
 
-    virtual ~BodyForce();
+    ~BodyForce() override;
 
-    virtual void operator()(
+    void operator()(
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,

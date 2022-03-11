@@ -49,7 +49,7 @@ class incflo : public amrex::AmrCore
 {
 public:
     incflo();
-    virtual ~incflo();
+    ~incflo() override;
 
     // Initialize multilevel AMR data
     void InitData();
@@ -58,13 +58,13 @@ public:
     void Evolve();
 
     // Tag cells for refinement
-    virtual void
+    void
     ErrorEst(int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow)
         override;
 
     // Make a new level from scratch using provided BoxArray and
     // DistributionMapping Only used during initialization
-    virtual void MakeNewLevelFromScratch(
+    void MakeNewLevelFromScratch(
         int lev,
         amrex::Real time,
         const amrex::BoxArray& new_grids,
@@ -72,7 +72,7 @@ public:
 
     // Make a new level using provided BoxArray and DistributionMapping,
     // and fill with interpolated coarse level data
-    virtual void MakeNewLevelFromCoarse(
+    void MakeNewLevelFromCoarse(
         int lev,
         amrex::Real time,
         const amrex::BoxArray& ba,
@@ -80,14 +80,14 @@ public:
 
     // Remake an existing level using provided BoxArray and DistributionMapping,
     // and fill with existing fine and coarse data
-    virtual void RemakeLevel(
+    void RemakeLevel(
         int lev,
         amrex::Real time,
         const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm) override;
 
     // Delete level data
-    virtual void ClearLevel(int lev) override;
+    void ClearLevel(int lev) override;
 
     void init_mesh();
     void init_amr_wind_modules();

@@ -34,7 +34,7 @@ public:
 
     FreeSurface(CFDSim&, std::string);
 
-    ~FreeSurface();
+    ~FreeSurface() override;
 
     //! Perform actions before mesh is created
     void pre_init_actions() override {}

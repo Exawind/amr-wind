@@ -19,7 +19,7 @@ public:
 
     explicit ChannelFlow(CFDSim& sim);
 
-    virtual ~ChannelFlow() = default;
+    ~ChannelFlow() override = default;
 
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 

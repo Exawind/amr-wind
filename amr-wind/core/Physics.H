@@ -61,7 +61,7 @@ class Physics : public Factory<Physics, CFDSim&>
 public:
     static const std::string base_identifier() { return "Physics"; }
 
-    virtual ~Physics() = default;
+    ~Physics() override = default;
 
     //! Initialize the fields for a given level during init/regrid
     virtual void initialize_fields(int level, const amrex::Geometry& geom) = 0;

@@ -34,7 +34,7 @@ public:
 
     ABLStats(CFDSim&, const ABLWallFunction&, const int dir);
 
-    virtual ~ABLStats();
+    ~ABLStats() override;
 
     ABLStatsMode abl_mode() const override { return ABLStatsMode::computed; }
 

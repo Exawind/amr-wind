@@ -32,7 +32,7 @@ class MeshMap : public Factory<MeshMap>
 public:
     static const std::string base_identifier() { return "MeshMap"; }
 
-    virtual ~MeshMap() = default;
+    ~MeshMap() override = default;
 
     //! declare mesh mapping fields
     void declare_mapping_fields(const CFDSim&, int);

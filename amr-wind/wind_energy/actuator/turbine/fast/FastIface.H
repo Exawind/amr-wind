@@ -24,7 +24,7 @@ public:
 
     explicit FastIface(const ::amr_wind::CFDSim& sim);
 
-    virtual ~FastIface();
+    ~FastIface() override;
 
     void parse_inputs(const amr_wind::CFDSim&, const std::string&);
 

@@ -20,7 +20,7 @@ public:
 
     explicit LineSampler(const CFDSim&);
 
-    virtual ~LineSampler();
+    ~LineSampler() override;
 
     /** Read user inputs and initialize the sampling object
      *

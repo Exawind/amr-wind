@@ -57,7 +57,7 @@ public:
 
     explicit ABL(CFDSim& sim);
 
-    virtual ~ABL();
+    ~ABL() override;
 
     const ABLWallFunction& abl_wall_function() const { return m_abl_wall_func; }
 

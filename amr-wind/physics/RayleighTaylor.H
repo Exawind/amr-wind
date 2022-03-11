@@ -21,7 +21,7 @@ public:
 
     explicit RayleighTaylor(const CFDSim& sim);
 
-    virtual ~RayleighTaylor() = default;
+    ~RayleighTaylor() override = default;
 
     //! Initialize the density and velocity fields for RayleighTaylor
     //! simulations

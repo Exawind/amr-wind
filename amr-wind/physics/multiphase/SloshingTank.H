@@ -18,7 +18,7 @@ public:
 
     explicit SloshingTank(CFDSim& sim);
 
-    virtual ~SloshingTank() = default;
+    ~SloshingTank() override = default;
 
     //! Initialize the levelset and velocity fields for Sloshing Tank
     //! simulations

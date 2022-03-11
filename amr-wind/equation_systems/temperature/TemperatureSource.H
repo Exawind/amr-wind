@@ -23,7 +23,7 @@ class TemperatureSource : public Factory<TemperatureSource, const CFDSim&>
 public:
     static const std::string base_identifier() { return "TemperatureSource"; }
 
-    virtual ~TemperatureSource() = default;
+    ~TemperatureSource() override = default;
 
     virtual void operator()(
         const int lev,

@@ -16,7 +16,7 @@ public:
 
     explicit VortexRing(const CFDSim& sim);
 
-    virtual ~VortexRing() = default;
+    ~VortexRing() override = default;
 
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 

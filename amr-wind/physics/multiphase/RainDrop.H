@@ -20,7 +20,7 @@ public:
 
     explicit RainDrop(CFDSim& sim);
 
-    virtual ~RainDrop() = default;
+    ~RainDrop() override = default;
 
     //! Initialize the levelset and velocity fields for Rain Drop simulations
 

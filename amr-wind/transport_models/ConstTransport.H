@@ -25,7 +25,7 @@ public:
         pp.query("turbulent_prandtl", m_Prt);
     }
 
-    virtual ~ConstTransport() = default;
+    ~ConstTransport() override = default;
 
     inline amrex::Real viscosity() const { return m_mu; }
 

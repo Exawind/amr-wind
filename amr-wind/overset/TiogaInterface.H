@@ -56,11 +56,11 @@ public:
      *  This method is called after the initial mesh and solution fields have
      *  been created.
      */
-    virtual void post_init_actions() override;
+    void post_init_actions() override;
 
     /** Perform necessary updates after a regrid.
      */
-    virtual void post_regrid_actions() override;
+    void post_regrid_actions() override;
 
     /** Perform actions before initializing connectivity through overset
      * library.
@@ -69,27 +69,27 @@ public:
      *  should update all necessary mesh data and metadata that will be used for
      *  overset connectivity.
      */
-    virtual void pre_overset_conn_work() override;
+    void pre_overset_conn_work() override;
 
     /** Updates necessary after overset connectivity has been updated.
      *
      *  Update dependent fields or data structures as a result of changes in
      *  overset connectivity.
      */
-    virtual void post_overset_conn_work() override;
+    void post_overset_conn_work() override;
 
     /** Perform actions necessary to register fields for overset exchange.
      *
      *  This method will be called at least once every timestep and, perhaps,
      *  multiple times within a timestep.
      */
-    virtual void register_solution(
+    void register_solution(
         const std::vector<std::string>& cell_vars,
         const std::vector<std::string>& node_vars) override;
 
     /** Additional work after solution fields have been exchanged.
      */
-    virtual void update_solution() override;
+    void update_solution() override;
 
     AMROversetInfo& amr_overset_info() { return *m_amr_data; }
 

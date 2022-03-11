@@ -17,7 +17,7 @@ class DerivedQty
 public:
     static const std::string base_identifier() { return "DerivedQty"; }
 
-    virtual ~DerivedQty() = default;
+    ~DerivedQty() override = default;
 
     virtual std::string name() const = 0;
 

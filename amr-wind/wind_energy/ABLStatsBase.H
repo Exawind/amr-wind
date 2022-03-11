@@ -25,7 +25,7 @@ public:
 
     ABLStatsBase() = default;
 
-    virtual ~ABLStatsBase() = default;
+    ~ABLStatsBase() override = default;
 
     //! Flag indicating ABL simulation mode
     virtual ABLStatsMode abl_mode() const = 0;

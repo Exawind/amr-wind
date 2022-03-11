@@ -34,7 +34,7 @@ public:
 
     explicit NWB(CFDSim& sim);
 
-    virtual ~NWB();
+    ~NWB() override;
 
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 

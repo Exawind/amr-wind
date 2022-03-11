@@ -18,9 +18,9 @@ public:
 
     explicit GeostrophicForcing(const CFDSim&);
 
-    virtual ~GeostrophicForcing();
+    ~GeostrophicForcing() override;
 
-    virtual void operator()(
+    void operator()(
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,

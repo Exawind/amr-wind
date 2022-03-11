@@ -22,7 +22,7 @@ public:
 
     CylinderRefiner(const CFDSim&, const std::string& key);
 
-    virtual ~CylinderRefiner() = default;
+    ~CylinderRefiner() override = default;
 
     void operator()(
         const amrex::Box&,

@@ -148,7 +148,8 @@ struct DiffusionOp<TKE, Scheme> : public DiffSolverIface<typename TKE::MLDiffOp>
             this->m_pdefields.field.vec_ptrs());
     }
 
-    void set_acoeffs(typename TKE::MLDiffOp& linop, const FieldState fstate)
+    void
+    set_acoeffs(typename TKE::MLDiffOp& linop, const FieldState fstate) override
     {
         BL_PROFILE("amr-wind::pde::set_acoeffs");
         auto& repo = m_pdefields.repo;
