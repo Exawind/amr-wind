@@ -93,7 +93,7 @@ public:
 
     explicit ConvectingTaylorVortex(const CFDSim& sim);
 
-    virtual ~ConvectingTaylorVortex() = default;
+    ~ConvectingTaylorVortex() override = default;
 
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 

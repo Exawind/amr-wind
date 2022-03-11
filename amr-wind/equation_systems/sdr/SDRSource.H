@@ -23,7 +23,7 @@ class SDRSource : public Factory<SDRSource, const CFDSim&>
 public:
     static const std::string base_identifier() { return "SDRSource"; }
 
-    virtual ~SDRSource() = default;
+    ~SDRSource() override = default;
 
     virtual void operator()(
         const int lev,

@@ -31,7 +31,7 @@ class PostProcessBase
 public:
     static const std::string base_identifier() { return "PostProcessBase"; }
 
-    virtual ~PostProcessBase() = default;
+    ~PostProcessBase() override = default;
 
     virtual void pre_init_actions() = 0;
 

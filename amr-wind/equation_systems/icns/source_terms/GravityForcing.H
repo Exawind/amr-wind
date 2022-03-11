@@ -18,9 +18,9 @@ public:
 
     explicit GravityForcing(const CFDSim& sim);
 
-    virtual ~GravityForcing();
+    ~GravityForcing() override;
 
-    virtual void operator()(
+    void operator()(
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,

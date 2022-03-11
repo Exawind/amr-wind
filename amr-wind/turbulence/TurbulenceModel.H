@@ -35,7 +35,7 @@ public:
 
     static std::string base_identifier() { return "TurbulenceModel"; }
 
-    virtual ~TurbulenceModel() = default;
+    ~TurbulenceModel() override = default;
 
     /** Update the turbulent viscosity field
      *

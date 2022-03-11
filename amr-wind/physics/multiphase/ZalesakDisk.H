@@ -22,7 +22,7 @@ public:
 
     explicit ZalesakDisk(CFDSim& sim);
 
-    virtual ~ZalesakDisk() = default;
+    ~ZalesakDisk() override = default;
 
     //! Initialize the levelset and velocity fields for Vortex Patch simulations
 

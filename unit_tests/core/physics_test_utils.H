@@ -14,7 +14,7 @@ public:
 
     explicit PhysicsEx(amr_wind::CFDSim&);
 
-    virtual ~PhysicsEx() = default;
+    ~PhysicsEx() override = default;
 
     void post_init_actions() override;
     void post_regrid_actions() override;

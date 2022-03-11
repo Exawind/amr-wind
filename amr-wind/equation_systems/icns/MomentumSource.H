@@ -23,7 +23,7 @@ class MomentumSource : public Factory<MomentumSource, const CFDSim&>
 public:
     static const std::string base_identifier() { return "MomentumSource"; }
 
-    virtual ~MomentumSource() = default;
+    ~MomentumSource() override = default;
 
     virtual void operator()(
         const int lev,

@@ -44,7 +44,7 @@ public:
 
     Sampling(CFDSim&, std::string);
 
-    virtual ~Sampling();
+    ~Sampling() override;
 
     //! Perform actions before mesh is created
     void pre_init_actions() override {}

@@ -16,7 +16,7 @@ public:
 
     explicit ConstantMap();
 
-    virtual ~ConstantMap() = default;
+    ~ConstantMap() override = default;
 
     //! Construct the mesh scaling field
     void create_map(int, const amrex::Geometry&) override;

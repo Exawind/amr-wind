@@ -21,7 +21,7 @@ public:
 
     Enstrophy(CFDSim&, std::string);
 
-    ~Enstrophy();
+    ~Enstrophy() override;
 
     //! Perform actions before mesh is created
     void pre_init_actions() override {}

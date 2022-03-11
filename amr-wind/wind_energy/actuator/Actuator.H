@@ -33,9 +33,9 @@ public:
 
     explicit Actuator(CFDSim&);
 
-    virtual ~Actuator();
+    ~Actuator() override;
 
-    virtual void initialize_fields(int, const amrex::Geometry&) override {}
+    void initialize_fields(int, const amrex::Geometry&) override {}
 
     void pre_init_actions() override;
 

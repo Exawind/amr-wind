@@ -13,7 +13,7 @@ class ExtSolver : public Factory<ExtSolver, CFDSim&>
 public:
     static std::string base_identifier() { return "ExtSolver"; }
 
-    virtual ~ExtSolver() = default;
+    ~ExtSolver() override = default;
 };
 
 class ExtSolverMgr : public CollMgr<ExtSolverMgr, ExtSolver>

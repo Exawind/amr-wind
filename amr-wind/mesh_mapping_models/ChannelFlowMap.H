@@ -16,7 +16,7 @@ public:
 
     explicit ChannelFlowMap();
 
-    virtual ~ChannelFlowMap() = default;
+    ~ChannelFlowMap() override = default;
 
     //! Construct the mesh scaling field
     void create_map(int, const amrex::Geometry&) override;

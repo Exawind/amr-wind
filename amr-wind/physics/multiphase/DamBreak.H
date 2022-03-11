@@ -18,7 +18,7 @@ public:
 
     explicit DamBreak(CFDSim& sim);
 
-    virtual ~DamBreak() = default;
+    ~DamBreak() override = default;
 
     //! Initialize the levelset and velocity fields for Dam Break simulations
 

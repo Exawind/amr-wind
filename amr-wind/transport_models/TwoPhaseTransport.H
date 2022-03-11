@@ -34,7 +34,7 @@ public:
         pp.query("turbulent_prandtl", m_Prt);
     }
 
-    virtual ~TwoPhaseTransport() = default;
+    ~TwoPhaseTransport() override = default;
 
     inline amrex::Real laminar_prandtl() const { return m_Pr; }
 

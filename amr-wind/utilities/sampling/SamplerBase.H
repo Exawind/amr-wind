@@ -25,7 +25,7 @@ public:
 
     static const std::string base_identifier() { return "SamplerBase"; }
 
-    virtual ~SamplerBase() = default;
+    ~SamplerBase() override = default;
 
     //! Name used to refer to this sampler (e.g., file I/O)
     virtual std::string label() const = 0;

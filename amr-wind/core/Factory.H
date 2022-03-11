@@ -108,7 +108,7 @@ struct Factory
             return true;
         }
 
-        virtual ~Register()
+        ~Register() override
         {
             if (registered) {
                 auto& tbl = Factory::table();

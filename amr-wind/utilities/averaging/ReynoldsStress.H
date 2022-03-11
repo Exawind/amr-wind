@@ -26,10 +26,10 @@ public:
      *
      *  \param elapsed_time Time elapsed since averaging was initiated
      */
-    virtual void
+    void
     operator()(const SimTime&, const amrex::Real, const amrex::Real) override;
 
-    virtual const std::string& average_field_name() override;
+    const std::string& average_field_name() override;
 
 private:
     //! Fluctuating field

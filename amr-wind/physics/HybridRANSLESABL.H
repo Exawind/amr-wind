@@ -18,7 +18,7 @@ public:
 
     explicit HybridRANSLESABL(const CFDSim& sim);
 
-    virtual ~HybridRANSLESABL() = default;
+    ~HybridRANSLESABL() override = default;
 
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 

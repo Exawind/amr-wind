@@ -17,9 +17,9 @@ public:
 
     explicit SynthTurbForcing(const CFDSim&);
 
-    virtual ~SynthTurbForcing();
+    ~SynthTurbForcing() override;
 
-    virtual void operator()(
+    void operator()(
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,

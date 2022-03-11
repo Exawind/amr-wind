@@ -23,7 +23,7 @@ public:
 
     explicit FreeStream(const CFDSim& sim);
 
-    virtual ~FreeStream() = default;
+    ~FreeStream() override = default;
 
     //! Initialize the fields
     void initialize_fields(int level, const amrex::Geometry& geom) override;

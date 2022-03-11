@@ -21,7 +21,7 @@ public:
 
     KineticEnergy(CFDSim&, std::string);
 
-    ~KineticEnergy();
+    ~KineticEnergy() override;
 
     //! Perform actions before mesh is created
     void pre_init_actions() override {}

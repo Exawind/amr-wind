@@ -24,7 +24,7 @@ public:
 
     BoxRefiner(const CFDSim&, const std::string& key);
 
-    virtual ~BoxRefiner() = default;
+    ~BoxRefiner() override = default;
 
     void operator()(
         const amrex::Box&,

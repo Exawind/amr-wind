@@ -29,7 +29,7 @@ class FieldTimeAverage
 public:
     static std::string base_identifier() { return "FieldTimeAverage"; }
 
-    virtual ~FieldTimeAverage() = default;
+    ~FieldTimeAverage() override = default;
 
     /** Update field averaging at a given timestep
      *
@@ -53,7 +53,7 @@ public:
 
     TimeAveraging(CFDSim&, std::string);
 
-    virtual ~TimeAveraging();
+    ~TimeAveraging() override;
 
     //! Perform actions before mesh is created
     void pre_init_actions() override;

@@ -25,9 +25,9 @@ public:
 
     explicit DensityBuoyancy(const CFDSim& sim);
 
-    virtual ~DensityBuoyancy();
+    ~DensityBuoyancy() override;
 
-    virtual void operator()(
+    void operator()(
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,

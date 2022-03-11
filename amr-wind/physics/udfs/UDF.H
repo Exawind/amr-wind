@@ -24,7 +24,7 @@ public:
 
     explicit ConstValue(Field&);
 
-    virtual void operator()(int level, const amrex::Geometry& geom) override;
+    void operator()(int level, const amrex::Geometry& geom) override;
 
 private:
     Field& m_field;
@@ -39,7 +39,7 @@ public:
 
     explicit UDFImpl(Field&);
 
-    virtual void operator()(int level, const amrex::Geometry& geom) override;
+    void operator()(int level, const amrex::Geometry& geom) override;
 
 private:
     Field& m_field;

@@ -31,7 +31,7 @@ class ActuatorModel
 public:
     static std::string base_identifier() { return "ActuatorModel"; }
 
-    virtual ~ActuatorModel() = default;
+    ~ActuatorModel() override = default;
 
     virtual const std::string& label() const = 0;
 

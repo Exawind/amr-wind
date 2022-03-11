@@ -31,7 +31,7 @@ public:
 
     explicit PlaneSampler(const CFDSim&);
 
-    virtual ~PlaneSampler();
+    ~PlaneSampler() override;
 
     /** Read user inputs and initialize the sampling object
      *

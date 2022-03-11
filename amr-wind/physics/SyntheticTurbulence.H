@@ -155,7 +155,7 @@ public:
     SyntheticTurbulence(const SyntheticTurbulence&) = delete;
     SyntheticTurbulence& operator=(const SyntheticTurbulence&) = delete;
 
-    virtual ~SyntheticTurbulence() = default;
+    ~SyntheticTurbulence() override = default;
 
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 
