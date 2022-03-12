@@ -16,7 +16,7 @@ namespace icns {
 class ABLForcing : public MomentumSource::Register<ABLForcing>
 {
 public:
-    static const std::string identifier() { return "ABLForcing"; }
+    static std::string identifier() { return "ABLForcing"; }
 
     explicit ABLForcing(const CFDSim& sim);
 

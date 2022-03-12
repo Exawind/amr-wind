@@ -17,7 +17,7 @@ namespace icns {
 class BodyForce : public MomentumSource::Register<BodyForce>
 {
 public:
-    static const std::string identifier() { return "BodyForce"; }
+    static std::string identifier() { return "BodyForce"; }
 
     explicit BodyForce(const CFDSim&);
 

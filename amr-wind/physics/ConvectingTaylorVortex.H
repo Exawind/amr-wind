@@ -89,7 +89,7 @@ struct GpzExact
 class ConvectingTaylorVortex : public Physics::Register<ConvectingTaylorVortex>
 {
 public:
-    static const std::string identifier() { return "ConvectingTaylorVortex"; }
+    static std::string identifier() { return "ConvectingTaylorVortex"; }
 
     explicit ConvectingTaylorVortex(const CFDSim& sim);
 

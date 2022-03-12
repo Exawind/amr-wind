@@ -27,7 +27,7 @@ namespace sampling {
 class PlaneSampler : public SamplerBase::Register<PlaneSampler>
 {
 public:
-    static const std::string identifier() { return "PlaneSampler"; }
+    static std::string identifier() { return "PlaneSampler"; }
 
     explicit PlaneSampler(const CFDSim&);
 

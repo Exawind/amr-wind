@@ -29,7 +29,7 @@ class PostProcessBase
     : public Factory<PostProcessBase, CFDSim&, const std::string&>
 {
 public:
-    static const std::string base_identifier() { return "PostProcessBase"; }
+    static std::string base_identifier() { return "PostProcessBase"; }
 
     ~PostProcessBase() override = default;
 

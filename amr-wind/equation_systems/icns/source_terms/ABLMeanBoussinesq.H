@@ -19,7 +19,7 @@ namespace icns {
 class ABLMeanBoussinesq : public MomentumSource::Register<ABLMeanBoussinesq>
 {
 public:
-    static const std::string identifier() { return "ABLMeanBoussinesq"; }
+    static std::string identifier() { return "ABLMeanBoussinesq"; }
 
     explicit ABLMeanBoussinesq(const CFDSim& sim);
 

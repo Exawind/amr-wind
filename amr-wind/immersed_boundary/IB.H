@@ -28,7 +28,7 @@ class ImmersedBoundaryModel;
 class IB : public Physics::Register<IB>
 {
 public:
-    static const std::string identifier() { return "IB"; }
+    static std::string identifier() { return "IB"; }
 
     explicit IB(CFDSim&);
 

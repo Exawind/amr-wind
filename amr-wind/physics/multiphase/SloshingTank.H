@@ -14,7 +14,7 @@ namespace amr_wind {
 class SloshingTank : public Physics::Register<SloshingTank>
 {
 public:
-    static const std::string identifier() { return "SloshingTank"; }
+    static std::string identifier() { return "SloshingTank"; }
 
     explicit SloshingTank(CFDSim& sim);
 

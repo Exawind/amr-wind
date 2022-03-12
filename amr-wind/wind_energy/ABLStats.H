@@ -30,7 +30,7 @@ class ABLForcing;
 class ABLStats : public ABLStatsBase::Register<ABLStats>
 {
 public:
-    static const std::string identifier() { return "precursor"; }
+    static std::string identifier() { return "precursor"; }
 
     ABLStats(CFDSim&, const ABLWallFunction&, const int dir);
 

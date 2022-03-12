@@ -40,7 +40,7 @@ namespace sampling {
 class Sampling : public PostProcessBase::Register<Sampling>
 {
 public:
-    static const std::string identifier() { return "Sampling"; }
+    static std::string identifier() { return "Sampling"; }
 
     Sampling(CFDSim&, std::string);
 

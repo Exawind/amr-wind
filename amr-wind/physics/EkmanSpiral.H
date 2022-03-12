@@ -13,7 +13,7 @@ namespace amr_wind {
 class EkmanSpiral : public Physics::Register<EkmanSpiral>
 {
 public:
-    static const std::string identifier() { return "EkmanSpiral"; }
+    static std::string identifier() { return "EkmanSpiral"; }
 
     explicit EkmanSpiral(const CFDSim& sim);
 

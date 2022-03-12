@@ -21,7 +21,7 @@ namespace pde {
 class SDRSource : public Factory<SDRSource, const CFDSim&>
 {
 public:
-    static const std::string base_identifier() { return "SDRSource"; }
+    static std::string base_identifier() { return "SDRSource"; }
 
     ~SDRSource() override = default;
 

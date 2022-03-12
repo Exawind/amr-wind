@@ -16,7 +16,7 @@ namespace pde {
 class DensitySource : public Factory<DensitySource, const CFDSim&>
 {
 public:
-    static const std::string base_identifier() { return "DensitySource"; }
+    static std::string base_identifier() { return "DensitySource"; }
 
     ~DensitySource() override = default;
 

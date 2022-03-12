@@ -53,7 +53,7 @@ class ABLMeanBoussinesq;
 class ABL : public Physics::Register<ABL>
 {
 public:
-    static const std::string identifier() { return "ABL"; }
+    static std::string identifier() { return "ABL"; }
 
     explicit ABL(CFDSim& sim);
 

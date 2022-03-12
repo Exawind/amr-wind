@@ -12,7 +12,7 @@ namespace amr_wind {
 class VortexRing : public Physics::Register<VortexRing>
 {
 public:
-    static const std::string identifier() { return "VortexRing"; }
+    static std::string identifier() { return "VortexRing"; }
 
     explicit VortexRing(const CFDSim& sim);
 

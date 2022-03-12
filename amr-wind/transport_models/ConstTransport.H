@@ -15,7 +15,7 @@ class ConstTransport : public TransportModel
 public:
     static constexpr bool constant_properties = true;
 
-    static const std::string identifier() { return "ConstTransport"; }
+    static std::string identifier() { return "ConstTransport"; }
 
     explicit ConstTransport(CFDSim& sim) : m_repo(sim.repo())
     {

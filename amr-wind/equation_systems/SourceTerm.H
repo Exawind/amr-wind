@@ -18,7 +18,7 @@ namespace pde {
 class SourceTerm : public Factory<SourceTerm, const CFDSim&>
 {
 public:
-    static const std::string base_identifier() { return "SourceTerm"; }
+    static std::string base_identifier() { return "SourceTerm"; }
 
     ~SourceTerm() override = default;
 

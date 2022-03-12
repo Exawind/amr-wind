@@ -17,7 +17,7 @@ namespace enstrophy {
 class Enstrophy : public PostProcessBase::Register<Enstrophy>
 {
 public:
-    static const std::string identifier() { return "Enstrophy"; }
+    static std::string identifier() { return "Enstrophy"; }
 
     Enstrophy(CFDSim&, std::string);
 

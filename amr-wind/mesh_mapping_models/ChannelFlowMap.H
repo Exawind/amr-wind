@@ -12,7 +12,7 @@ namespace channel_map {
 class ChannelFlowMap : public MeshMap::Register<ChannelFlowMap>
 {
 public:
-    static const std::string identifier() { return "ChannelFlowMap"; }
+    static std::string identifier() { return "ChannelFlowMap"; }
 
     explicit ChannelFlowMap();
 

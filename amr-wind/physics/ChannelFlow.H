@@ -15,7 +15,7 @@ namespace channel_flow {
 class ChannelFlow : public Physics::Register<ChannelFlow>
 {
 public:
-    static const std::string identifier() { return "ChannelFlow"; }
+    static std::string identifier() { return "ChannelFlow"; }
 
     explicit ChannelFlow(CFDSim& sim);
 

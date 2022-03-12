@@ -30,7 +30,7 @@ namespace amr_wind {
 class NWB : public Physics::Register<NWB>
 {
 public:
-    static const std::string identifier() { return "NWB"; }
+    static std::string identifier() { return "NWB"; }
 
     explicit NWB(CFDSim& sim);
 

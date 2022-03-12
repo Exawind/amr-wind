@@ -15,7 +15,7 @@ namespace sampling {
 class ProbeSampler : public SamplerBase::Register<ProbeSampler>
 {
 public:
-    static const std::string identifier() { return "ProbeSampler"; }
+    static std::string identifier() { return "ProbeSampler"; }
 
     explicit ProbeSampler(const CFDSim&);
 

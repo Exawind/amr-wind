@@ -15,7 +15,7 @@ class DerivedQty
     : public Factory<DerivedQty, const FieldRepo&, std::vector<std::string>&>
 {
 public:
-    static const std::string base_identifier() { return "DerivedQty"; }
+    static std::string base_identifier() { return "DerivedQty"; }
 
     ~DerivedQty() override = default;
 

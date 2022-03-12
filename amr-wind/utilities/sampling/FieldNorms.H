@@ -17,7 +17,7 @@ namespace field_norms {
 class FieldNorms : public PostProcessBase::Register<FieldNorms>
 {
 public:
-    static const std::string identifier() { return "FieldNorms"; }
+    static std::string identifier() { return "FieldNorms"; }
 
     FieldNorms(CFDSim&, std::string);
 

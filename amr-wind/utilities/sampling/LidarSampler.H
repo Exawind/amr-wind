@@ -19,7 +19,7 @@ namespace sampling {
 class LidarSampler : public LineSampler
 {
 public:
-    static const std::string identifier() { return "LidarSampler"; }
+    static std::string identifier() { return "LidarSampler"; }
 
     explicit LidarSampler(const CFDSim&);
 
