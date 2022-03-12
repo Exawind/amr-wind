@@ -21,7 +21,6 @@ public:
         FieldPlaneAveraging& pa3);
 
     ~ThirdMomentAveraging() = default;
-    ;
 
     void operator()();
 

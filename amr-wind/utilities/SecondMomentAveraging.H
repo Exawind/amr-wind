@@ -28,7 +28,6 @@ public:
     SecondMomentAveraging(FieldPlaneAveraging& pa1, FieldPlaneAveraging& pa2);
 
     ~SecondMomentAveraging() = default;
-    ;
 
     void operator()();
 
