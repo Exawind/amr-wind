@@ -108,11 +108,11 @@ public:
 
     void post_advance_work() override;
 
-    amrex::Real get_u0() { return m_u0; }
+    amrex::Real get_u0() const { return m_u0; }
 
-    amrex::Real get_v0() { return m_v0; }
+    amrex::Real get_v0() const { return m_v0; }
 
-    amrex::Real get_omega() { return m_omega; }
+    amrex::Real get_omega() const { return m_omega; }
 
 private:
     const amr_wind::SimTime& m_time;

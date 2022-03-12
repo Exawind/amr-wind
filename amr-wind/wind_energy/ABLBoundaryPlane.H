@@ -29,7 +29,7 @@ class InletData
     using PlaneVector = amrex::Vector<amrex::FArrayBox>;
 
 public:
-    InletData() {}
+    InletData() = default;
 
     void resize(const int);
 

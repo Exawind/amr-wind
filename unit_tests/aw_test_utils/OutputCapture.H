@@ -28,8 +28,8 @@ public:
         }
     }
 
-    inline bool capture_stdout() { return m_stdout; }
-    inline bool capture_stderr() { return m_stderr; }
+    inline bool capture_stdout() const { return m_stdout; }
+    inline bool capture_stderr() const { return m_stderr; }
 
     inline std::stringstream& stdout() { return m_cout; }
     inline std::stringstream& stderr() { return m_cerr; }
