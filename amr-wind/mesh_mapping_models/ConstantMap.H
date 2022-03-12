@@ -12,7 +12,7 @@ namespace const_map {
 class ConstantMap : public MeshMap::Register<ConstantMap>
 {
 public:
-    static const std::string identifier() { return "ConstantMap"; }
+    static std::string identifier() { return "ConstantMap"; }
 
     explicit ConstantMap();
 

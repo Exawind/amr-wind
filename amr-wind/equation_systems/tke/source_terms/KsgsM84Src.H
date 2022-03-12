@@ -13,7 +13,7 @@ namespace tke {
 class KsgsM84Src : public TKESource::Register<KsgsM84Src>
 {
 public:
-    static const std::string identifier() { return "KsgsM84Src"; }
+    static std::string identifier() { return "KsgsM84Src"; }
 
     explicit KsgsM84Src(const CFDSim&);
 

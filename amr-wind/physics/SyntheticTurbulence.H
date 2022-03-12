@@ -147,7 +147,7 @@ struct InterpWeights
 class SyntheticTurbulence : public Physics::Register<SyntheticTurbulence>
 {
 public:
-    static const std::string identifier() { return "SyntheticTurbulence"; }
+    static std::string identifier() { return "SyntheticTurbulence"; }
 
     explicit SyntheticTurbulence(const CFDSim& sim);
 

@@ -18,7 +18,7 @@ struct Sphere : public BluffBodyType
     using MetaType = SphereData;
     using DataType = IBDataHolder<Sphere>;
 
-    static const std::string identifier() { return "Sphere"; }
+    static std::string identifier() { return "Sphere"; }
 };
 
 } // namespace ib

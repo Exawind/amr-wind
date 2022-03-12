@@ -14,7 +14,7 @@ namespace icns {
 class GravityForcing : public MomentumSource::Register<GravityForcing>
 {
 public:
-    static const std::string identifier() { return "GravityForcing"; }
+    static std::string identifier() { return "GravityForcing"; }
 
     explicit GravityForcing(const CFDSim& sim);
 

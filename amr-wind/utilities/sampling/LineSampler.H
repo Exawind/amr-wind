@@ -16,7 +16,7 @@ namespace sampling {
 class LineSampler : public SamplerBase::Register<LineSampler>
 {
 public:
-    static const std::string identifier() { return "LineSampler"; }
+    static std::string identifier() { return "LineSampler"; }
 
     explicit LineSampler(const CFDSim&);
 

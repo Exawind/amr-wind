@@ -19,7 +19,7 @@ namespace sampling {
 class DTUSpinnerSampler : public LidarSampler
 {
 public:
-    static const std::string identifier() { return "DTUSpinnerSampler"; }
+    static std::string identifier() { return "DTUSpinnerSampler"; }
 
     explicit DTUSpinnerSampler(const CFDSim&);
 

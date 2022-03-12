@@ -15,7 +15,7 @@ namespace tke {
 class KwSSTSrc : public TKESource::Register<KwSSTSrc>
 {
 public:
-    static const std::string identifier() { return "KwSSTSrc"; }
+    static std::string identifier() { return "KwSSTSrc"; }
 
     explicit KwSSTSrc(const CFDSim&);
 

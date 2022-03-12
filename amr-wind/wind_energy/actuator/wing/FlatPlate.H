@@ -22,7 +22,7 @@ struct FlatPlate : public WingType
     using MetaType = FlatPlateData;
     using DataType = ActDataHolder<FlatPlate>;
 
-    static const std::string identifier() { return "FlatPlate"; }
+    static std::string identifier() { return "FlatPlate"; }
 };
 
 } // namespace actuator

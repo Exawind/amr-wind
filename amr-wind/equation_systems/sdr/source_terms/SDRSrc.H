@@ -15,7 +15,7 @@ namespace tke {
 class SDRSrc : public SDRSource::Register<SDRSrc>
 {
 public:
-    static const std::string identifier() { return "SDRSrc"; }
+    static std::string identifier() { return "SDRSrc"; }
 
     explicit SDRSrc(const CFDSim&);
 

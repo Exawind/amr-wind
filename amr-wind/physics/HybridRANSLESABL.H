@@ -14,7 +14,7 @@ namespace hybrid_rans_les_abl {
 class HybridRANSLESABL : public Physics::Register<HybridRANSLESABL>
 {
 public:
-    static const std::string identifier() { return "HybridRANSLESABL"; }
+    static std::string identifier() { return "HybridRANSLESABL"; }
 
     explicit HybridRANSLESABL(const CFDSim& sim);
 

@@ -16,7 +16,7 @@ class TwoPhaseTransport : public TransportModel
 public:
     static constexpr bool constant_properties = false;
 
-    static const std::string identifier() { return "TwoPhaseTransport"; }
+    static std::string identifier() { return "TwoPhaseTransport"; }
 
     explicit TwoPhaseTransport(CFDSim& sim) : m_sim(sim), m_repo(sim.repo())
     {

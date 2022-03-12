@@ -14,7 +14,7 @@ namespace icns {
 class GeostrophicForcing : public MomentumSource::Register<GeostrophicForcing>
 {
 public:
-    static const std::string identifier() { return "GeostrophicForcing"; }
+    static std::string identifier() { return "GeostrophicForcing"; }
 
     explicit GeostrophicForcing(const CFDSim&);
 

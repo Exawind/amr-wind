@@ -30,7 +30,7 @@ class CFDSim;
 class MeshMap : public Factory<MeshMap>
 {
 public:
-    static const std::string base_identifier() { return "MeshMap"; }
+    static std::string base_identifier() { return "MeshMap"; }
 
     ~MeshMap() override = default;
 

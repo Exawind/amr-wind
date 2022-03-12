@@ -23,7 +23,7 @@ public:
     using SampleLocType =
         amrex::Vector<amrex::Array<amrex::Real, AMREX_SPACEDIM>>;
 
-    static const std::string base_identifier() { return "SamplerBase"; }
+    static std::string base_identifier() { return "SamplerBase"; }
 
     ~SamplerBase() override = default;
 

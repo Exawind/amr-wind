@@ -17,7 +17,7 @@ namespace kinetic_energy {
 class KineticEnergy : public PostProcessBase::Register<KineticEnergy>
 {
 public:
-    static const std::string identifier() { return "KineticEnergy"; }
+    static std::string identifier() { return "KineticEnergy"; }
 
     KineticEnergy(CFDSim&, std::string);
 

@@ -29,7 +29,7 @@ class ActuatorContainer;
 class Actuator : public Physics::Register<Actuator>
 {
 public:
-    static const std::string identifier() { return "Actuator"; }
+    static std::string identifier() { return "Actuator"; }
 
     explicit Actuator(CFDSim&);
 

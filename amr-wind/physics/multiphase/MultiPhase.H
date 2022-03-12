@@ -22,7 +22,7 @@ enum class InterfaceCapturingMethod {
 class MultiPhase : public Physics::Register<MultiPhase>
 {
 public:
-    static const std::string identifier() { return "MultiPhase"; }
+    static std::string identifier() { return "MultiPhase"; }
 
     explicit MultiPhase(CFDSim& sim);
 

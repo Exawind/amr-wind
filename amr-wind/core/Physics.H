@@ -59,7 +59,7 @@ public:
 class Physics : public Factory<Physics, CFDSim&>
 {
 public:
-    static const std::string base_identifier() { return "Physics"; }
+    static std::string base_identifier() { return "Physics"; }
 
     ~Physics() override = default;
 

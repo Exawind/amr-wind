@@ -10,7 +10,7 @@ namespace amr_wind_tests {
 class PhysicsEx : public amr_wind::Physics::Register<PhysicsEx>
 {
 public:
-    static const std::string identifier() { return "PhysicsEx"; }
+    static std::string identifier() { return "PhysicsEx"; }
 
     explicit PhysicsEx(amr_wind::CFDSim&);
 

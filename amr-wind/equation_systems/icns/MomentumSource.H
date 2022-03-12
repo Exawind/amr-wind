@@ -21,7 +21,7 @@ namespace pde {
 class MomentumSource : public Factory<MomentumSource, const CFDSim&>
 {
 public:
-    static const std::string base_identifier() { return "MomentumSource"; }
+    static std::string base_identifier() { return "MomentumSource"; }
 
     ~MomentumSource() override = default;
 
