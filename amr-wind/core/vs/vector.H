@@ -12,7 +12,7 @@ namespace vs {
 template <typename T>
 struct VectorT
 {
-    T vv[3];
+    T vv[3]{Traits::zero(), Traits::zero(), Traits::zero()};
 
     //! Number of components
     static constexpr int ncomp = 3;
@@ -25,9 +25,7 @@ struct VectorT
     using VType = VectorT<T>;
 
     //! Construct a default vector, all components set to zero
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT()
-        : vv{Traits::zero(), Traits::zero(), Traits::zero()}
-    {}
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT() {}
 
     /** New vector given the three components
      */

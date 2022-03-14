@@ -126,7 +126,7 @@ public:
     amr_wind::Field& pressure() const { return m_repo.get_field("p"); }
     amr_wind::Field& grad_p() const { return m_repo.get_field("gp"); }
 
-public: // for cuda
+    // for cuda
     void ComputeDt(bool explicit_diffusion);
 
     void set_inflow_velocity(
