@@ -44,7 +44,7 @@ struct FieldBCNoOp
     using FunctorType = FieldBCNoOp;
 
     AMREX_GPU_HOST
-    constexpr FieldBCNoOp() {}
+    constexpr FieldBCNoOp() = default;
 
     AMREX_GPU_HOST
     constexpr explicit FieldBCNoOp(const Field&) {}
