@@ -26,7 +26,8 @@ check_bounds(const It begin, const It end, const T& x)
 
     if ((sz < 2) || (x < *begin)) {
         return Index{0, Limits::LOWLIM};
-    } else if (x > *(begin + (sz - 1))) {
+    }
+    if (x > *(begin + (sz - 1))) {
         return Index{sz - 1, Limits::UPLIM};
     }
 

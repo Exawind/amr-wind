@@ -25,7 +25,7 @@ struct VectorT
     using VType = VectorT<T>;
 
     //! Construct a default vector, all components set to zero
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT() {}
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT() = default;
 
     /** New vector given the three components
      */
