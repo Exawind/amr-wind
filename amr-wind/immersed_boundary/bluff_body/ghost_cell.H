@@ -38,9 +38,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void vandermonde_matrix(
             for (int k = -1; k <= 1; k++) {
                 if (i == 0 || j == 0 || k == 0) continue;
 
-                amrex::Real x1 = xIP + (i * dx) / 2.;
-                amrex::Real x2 = yIP + (j * dy) / 2.;
-                amrex::Real x3 = zIP + (k * dz) / 2.;
+                amrex::Real x1 = xIP + 0.5 * i * dx;
+                amrex::Real x2 = yIP + 0.5 * j * dy;
+                amrex::Real x3 = zIP + 0.5 * k * dz;
 
                 Vmatrix(row, 0) = x1 * x2 * x3;
                 Vmatrix(row, 1) = x1 * x2;
