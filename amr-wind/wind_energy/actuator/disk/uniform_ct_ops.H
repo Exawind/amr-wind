@@ -21,7 +21,7 @@ void write_netcdf(
     const UniformCtData& /*meta*/,
     const ActInfo& /*info*/,
     const ActGrid& /*unused*/,
-    const amrex::Real /*time*/);
+    amrex::Real /*time*/);
 } // namespace disk
 
 namespace ops {
@@ -55,8 +55,8 @@ void compute_disk_points(
     UniformCt::MetaType& meta,
     VecList& points,
     const vs::Vector& cylAxis,
-    const int offset,
-    const double dOffset);
+    int offset,
+    double dOffset);
 
 template <>
 struct ReadInputsOp<UniformCt, ActSrcDisk>

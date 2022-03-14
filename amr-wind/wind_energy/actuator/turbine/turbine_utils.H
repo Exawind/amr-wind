@@ -21,7 +21,7 @@ void write_netcdf(
     const TurbineBaseData& /*meta*/,
     const TurbineInfo& /*info*/,
     const ActGrid& /*grid*/,
-    const amrex::Real /*time*/);
+    amrex::Real /*time*/);
 
 } // namespace utils
 } // namespace actuator

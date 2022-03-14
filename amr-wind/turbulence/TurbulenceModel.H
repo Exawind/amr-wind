@@ -47,7 +47,7 @@ public:
      *  \param fstate State used for updates to differentiate logic in predictor
      *  and corrector steps.
      */
-    virtual void update_turbulent_viscosity(const FieldState fstate) = 0;
+    virtual void update_turbulent_viscosity(FieldState fstate) = 0;
 
     //! Do any post advance actions for the turbulence model
     virtual void post_advance_work() = 0;

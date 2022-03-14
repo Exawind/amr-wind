@@ -137,10 +137,10 @@ public:
      */
     Field& declare_field(
         const std::string& name,
-        const int ncomp = 1,
-        const int ngrow = 0,
-        const int nstates = 1,
-        const FieldLoc floc = FieldLoc::CELL);
+        int ncomp = 1,
+        int ngrow = 0,
+        int nstates = 1,
+        FieldLoc floc = FieldLoc::CELL);
 
     /** Declare a cell-centered field
      *
@@ -238,8 +238,7 @@ public:
     /** Return a previously created field identified by name and time state
      */
     Field& get_field(
-        const std::string& name,
-        const FieldState fstate = FieldState::New) const;
+        const std::string& name, FieldState fstate = FieldState::New) const;
 
     /** Return a previously created field using a unique identifier
      */
@@ -259,8 +258,7 @@ public:
     //! Query if field uniquely identified by name and time state exists in
     //! repository
     bool field_exists(
-        const std::string& name,
-        const FieldState fstate = FieldState::New) const;
+        const std::string& name, FieldState fstate = FieldState::New) const;
 
     /** Declare an integer field
      *
@@ -270,15 +268,14 @@ public:
      */
     IntField& declare_int_field(
         const std::string& name,
-        const int ncomp = 1,
-        const int ngrow = 0,
-        const int nstates = 1,
-        const FieldLoc floc = FieldLoc::CELL);
+        int ncomp = 1,
+        int ngrow = 0,
+        int nstates = 1,
+        FieldLoc floc = FieldLoc::CELL);
 
     //! Return a reference to an integer field
     IntField& get_int_field(
-        const std::string& name,
-        const FieldState fstate = FieldState::New) const;
+        const std::string& name, FieldState fstate = FieldState::New) const;
 
     /** Return a reference to a previously created integer field using unique
      * identifier
@@ -290,8 +287,7 @@ public:
 
     //! Query if an integer field exists
     bool int_field_exists(
-        const std::string& name,
-        const FieldState fstate = FieldState::New) const;
+        const std::string& name, FieldState fstate = FieldState::New) const;
 
     /** Create a scratch field
      *
@@ -305,9 +301,9 @@ public:
      */
     std::unique_ptr<ScratchField> create_scratch_field(
         const std::string& name,
-        const int ncomp = 1,
-        const int nghost = 0,
-        const FieldLoc floc = FieldLoc::CELL) const;
+        int ncomp = 1,
+        int nghost = 0,
+        FieldLoc floc = FieldLoc::CELL) const;
 
     /** Create a scratch field
      *
@@ -320,9 +316,7 @@ public:
      *  the ScratchField object across timesteps.
      */
     std::unique_ptr<ScratchField> create_scratch_field(
-        const int ncomp = 1,
-        const int nghost = 0,
-        const FieldLoc floc = FieldLoc::CELL) const;
+        int ncomp = 1, int nghost = 0, FieldLoc floc = FieldLoc::CELL) const;
 
     //! Advance all fields with more than one timestate to the new timestep
     void advance_states() noexcept;
@@ -375,7 +369,7 @@ protected:
     }
 
     //! Create a new state for a field
-    Field& create_state(Field& field, const FieldState fstate);
+    Field& create_state(Field& field, FieldState fstate);
 
     //! Allocate field data for a single level outside of regrid
     void allocate_field_data(
