@@ -25,7 +25,7 @@ struct TensorT
     using const_iterator = const T*;
     using Traits = DTraits<T>;
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE constexpr TensorT() {}
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE constexpr TensorT() = default;
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE constexpr TensorT(
         const T& xx,
