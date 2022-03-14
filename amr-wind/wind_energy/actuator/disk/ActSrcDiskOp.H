@@ -47,8 +47,8 @@ public:
 
     void setup_op() { copy_to_device(); }
 
-    void operator()(
-        const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom);
+    void
+    operator()(int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom);
 };
 
 template <typename ActTrait>

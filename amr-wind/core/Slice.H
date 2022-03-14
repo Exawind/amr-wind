@@ -63,8 +63,7 @@ struct Slice
 };
 
 template <typename T>
-inline Slice<T>
-slice(std::vector<T>& vec, const size_t start, const size_t count)
+inline Slice<T> slice(std::vector<T>& vec, size_t start, size_t count)
 {
     AMREX_ASSERT((start + count) <= vec.size());
     return Slice<T>{&vec[start], count};

@@ -31,14 +31,12 @@ class InletData
 public:
     InletData() = default;
 
-    void resize(const int /*size*/);
+    void resize(int /*size*/);
 
-    void define_plane(const amrex::Orientation /*ori*/);
+    void define_plane(amrex::Orientation /*ori*/);
 
     void define_level_data(
-        const amrex::Orientation /*ori*/,
-        const amrex::Box& /*bx*/,
-        const size_t /*nc*/);
+        amrex::Orientation /*ori*/, const amrex::Box& /*bx*/, size_t /*nc*/);
 
 #ifdef AMR_WIND_USE_NETCDF
     void read_data(
@@ -51,15 +49,15 @@ public:
 #endif
 
     void read_data_native(
-        const amrex::OrientationIter oit,
+        amrex::OrientationIter oit,
         amrex::BndryRegister& bndry_n,
         amrex::BndryRegister& bndry_np1,
-        const int lev,
+        int lev,
         const Field* /*fld*/,
-        const amrex::Real time,
+        amrex::Real time,
         const amrex::Vector<amrex::Real>& /*times*/);
 
-    void interpolate(const amrex::Real /*time*/);
+    void interpolate(amrex::Real /*time*/);
     bool is_populated(amrex::Orientation /*ori*/) const;
     const amrex::FArrayBox&
     interpolate_data(const amrex::Orientation ori, const int lev) const
@@ -131,8 +129,8 @@ public:
     void read_file();
 
     void populate_data(
-        const int /*lev*/,
-        const amrex::Real /*time*/,
+        int /*lev*/,
+        amrex::Real /*time*/,
         Field& /*fld*/,
         amrex::MultiFab& /*mfab*/) const;
 
@@ -151,8 +149,8 @@ public:
 
     bool box_intersects_boundary(
         const amrex::Box& /*bx*/,
-        const int /*lev*/,
-        const amrex::Orientation /*ori*/) const;
+        int /*lev*/,
+        amrex::Orientation /*ori*/) const;
 
 private:
     const amr_wind::SimTime& m_time;

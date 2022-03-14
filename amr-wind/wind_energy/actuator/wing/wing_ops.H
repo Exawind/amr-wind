@@ -31,7 +31,7 @@ void write_netcdf(
     const WingBaseData& /*meta*/,
     const ActInfo& /*info*/,
     const ActGrid& /*grid*/,
-    const amrex::Real /*time*/);
+    amrex::Real /*time*/);
 
 } // namespace wing
 

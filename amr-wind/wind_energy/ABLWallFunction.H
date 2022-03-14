@@ -70,11 +70,11 @@ class ABLVelWallFunc : public FieldBCIface
 public:
     ABLVelWallFunc(Field& velocity, const ABLWallFunction& wall_func);
 
-    void operator()(Field& velocity, const FieldState rho_state) override;
+    void operator()(Field& velocity, FieldState rho_state) override;
 
     template <typename ShearStress>
-    void wall_model(
-        Field& velocity, const FieldState rho_state, const ShearStress& tau);
+    void
+    wall_model(Field& velocity, FieldState rho_state, const ShearStress& tau);
 
 private:
     const ABLWallFunction& m_wall_func;
@@ -86,11 +86,11 @@ class ABLTempWallFunc : public FieldBCIface
 public:
     ABLTempWallFunc(Field& temperature, const ABLWallFunction& wall_fuc);
 
-    void operator()(Field& temperature, const FieldState rho_state) override;
+    void operator()(Field& temperature, FieldState rho_state) override;
 
     template <typename HeatFlux>
-    void wall_model(
-        Field& temperature, const FieldState rho_state, const HeatFlux& tau);
+    void
+    wall_model(Field& temperature, FieldState rho_state, const HeatFlux& tau);
 
 private:
     const ABLWallFunction& m_wall_func;

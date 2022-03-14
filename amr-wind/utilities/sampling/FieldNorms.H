@@ -38,7 +38,7 @@ public:
     void impl_write_native();
 
     //! calculate the L2 norm of a given field and component
-    static amrex::Real L2_norm(amr_wind::Field& field, const int comp);
+    static amrex::Real L2_norm(amr_wind::Field& field, int comp);
 
     const amrex::Vector<std::string>& var_names() const { return m_var_names; }
 

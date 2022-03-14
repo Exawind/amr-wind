@@ -48,7 +48,7 @@ public:
         amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost,
-        const FieldState fstate = FieldState::New) = 0;
+        FieldState fstate = FieldState::New) = 0;
 
     //! Implementation that handles filling patches from a coarse to fine level
     virtual void fillpatch_from_coarse(
@@ -56,7 +56,7 @@ public:
         amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost,
-        const FieldState fstate = FieldState::New) = 0;
+        FieldState fstate = FieldState::New) = 0;
 
     //! Implementation that handles filling physical boundary conditions
     virtual void fillphysbc(
@@ -64,14 +64,14 @@ public:
         amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost,
-        const FieldState fstate = FieldState::New) = 0;
+        FieldState fstate = FieldState::New) = 0;
 
     virtual void set_inflow(
         int lev,
         amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost,
-        const FieldState fstate = FieldState::New) = 0;
+        FieldState fstate = FieldState::New) = 0;
 };
 
 /** Implementation that just fills a constant value on newly created grids

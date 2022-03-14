@@ -61,10 +61,10 @@ protected:
     IntField(
         FieldRepo& repo,
         std::string name,
-        const unsigned fid,
-        const int ncomp = 1,
-        const int ngrow = 1,
-        const FieldLoc floc = FieldLoc::CELL);
+        unsigned fid,
+        int ncomp = 1,
+        int ngrow = 1,
+        FieldLoc floc = FieldLoc::CELL);
 
     FieldRepo& m_repo;
 

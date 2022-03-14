@@ -38,8 +38,7 @@ public:
      *
      *  \param elapsed_time Time elapsed since averaging was initiated
      */
-    virtual void
-    operator()(const SimTime&, const amrex::Real, const amrex::Real) = 0;
+    virtual void operator()(const SimTime&, amrex::Real, amrex::Real) = 0;
 
     virtual const std::string& average_field_name() = 0;
 };

@@ -43,7 +43,7 @@ void write_netcdf(
     const std::string& /*ncfile*/,
     const BluffBodyBaseData& /*meta*/,
     const IBInfo& /*info*/,
-    const amrex::Real /*time*/);
+    amrex::Real /*time*/);
 
 } // namespace bluff_body
 

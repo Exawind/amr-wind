@@ -33,9 +33,7 @@ public:
     static std::string identifier() { return "precursor"; }
 
     ABLStats(
-        CFDSim& /*sim*/,
-        const ABLWallFunction& /*abl_wall_func*/,
-        const int dir);
+        CFDSim& /*sim*/, const ABLWallFunction& /*abl_wall_func*/, int dir);
 
     ~ABLStats() override;
 
