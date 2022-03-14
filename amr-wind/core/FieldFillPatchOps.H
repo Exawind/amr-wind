@@ -313,7 +313,7 @@ public:
         const auto& bcfunc = bc_functor();
         const auto& ncomp = m_field.num_comp();
 
-        for (amrex::OrientationIter oit; oit; ++oit) {
+        for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
             auto ori = oit();
             if (bctype[ori] != BC::mass_inflow) {
                 continue;

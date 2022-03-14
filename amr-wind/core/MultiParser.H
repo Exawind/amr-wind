@@ -58,7 +58,7 @@ public:
     {
         amrex::Vector<vs::Vector::value_type> val;
         queryarr(name, val);
-        if (val.size() > 0) {
+        if (!val.empty()) {
             AMREX_ALWAYS_ASSERT(val.size() == AMREX_SPACEDIM);
             value.x() = val[0];
             value.y() = val[1];

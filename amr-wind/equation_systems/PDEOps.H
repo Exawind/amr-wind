@@ -125,7 +125,7 @@ struct SrcTermOpBase
         this->fields.src_term.setVal(0.0);
 
         // Return early if there are no source terms to process
-        if (this->sources.size() == 0) {
+        if (this->sources.empty()) {
             return;
         }
 
