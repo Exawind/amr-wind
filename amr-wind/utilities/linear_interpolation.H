@@ -24,15 +24,13 @@ check_bounds(const It begin, const It end, const T& x)
 {
     const int sz = static_cast<int>(end - begin);
 
-    if (sz < 2) {
-        return Index{0, Limits::LOWLIM};
-    } else if (x < *begin) {
+    if ((sz < 2) || (x < *begin)) {
         return Index{0, Limits::LOWLIM};
     } else if (x > *(begin + (sz - 1))) {
         return Index{sz - 1, Limits::UPLIM};
-    } else {
-        return Index{0, Limits::VALID};
     }
+
+    return Index{0, Limits::VALID};
 }
 
 template <typename It, typename T>

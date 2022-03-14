@@ -55,9 +55,9 @@ gaussian3d(const vs::Vector& dist, const vs::Vector& eps)
         const amrex::Real eps_fac = eps.x() * eps.y() * eps.z();
         return (fac / eps_fac) *
                std::exp(-rr.x() * rr.x() - rr.y() * rr.y() - rr.z() * rr.z());
-    } else {
-        return 0.0;
     }
+
+    return 0.0;
 }
 /** Return the Gaussian smearing factor in 1D
  *
