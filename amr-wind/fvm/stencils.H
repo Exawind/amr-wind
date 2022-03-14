@@ -63,10 +63,10 @@ inline amrex::Box
 box_lo(const amrex::Box& bx, const amrex::Geometry& geom, const int idir)
 {
     if (geom.isPeriodic(idir)) {
-        return amrex::Box();
+        return {};
     }
     if (bx.smallEnd(idir) != geom.Domain().smallEnd(idir)) {
-        return amrex::Box();
+        return {};
     }
 
     amrex::IntVect low(bx.smallEnd());
@@ -74,7 +74,7 @@ box_lo(const amrex::Box& bx, const amrex::Geometry& geom, const int idir)
     int sm = low[idir];
     low.setVal(idir, sm);
     hi.setVal(idir, sm);
-    return amrex::Box(low, hi);
+    return {low, hi};
 }
 
 /** Return a layer of cells adjacent to a non-periodic upper boundary
@@ -94,10 +94,10 @@ inline amrex::Box
 box_hi(const amrex::Box& bx, const amrex::Geometry& geom, const int idir)
 {
     if (geom.isPeriodic(idir)) {
-        return amrex::Box();
+        return {};
     }
     if (bx.bigEnd(idir) != geom.Domain().bigEnd(idir)) {
-        return amrex::Box();
+        return {};
     }
 
     amrex::IntVect low(bx.smallEnd());
@@ -105,7 +105,7 @@ box_hi(const amrex::Box& bx, const amrex::Geometry& geom, const int idir)
     int sm = hi[idir];
     low.setVal(idir, sm);
     hi.setVal(idir, sm);
-    return amrex::Box(low, hi);
+    return {low, hi};
 }
 } // namespace impl
 

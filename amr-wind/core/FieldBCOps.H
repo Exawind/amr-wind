@@ -154,7 +154,7 @@ struct DirichletOp
         for (int n = 0; n < m_ncomp; ++n) {
             const amrex::BCRec& bc = bcr[bcomp + n];
 
-            for (amrex::OrientationIter oit; oit; ++oit) {
+            for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
                 auto ori = oit();
                 const int idir = ori.coordDir();
 
