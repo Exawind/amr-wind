@@ -17,15 +17,16 @@ class ProbeSampler : public SamplerBase::Register<ProbeSampler>
 public:
     static std::string identifier() { return "ProbeSampler"; }
 
-    explicit ProbeSampler(const CFDSim&);
+    explicit ProbeSampler(const CFDSim& /*unused*/);
 
     ~ProbeSampler() override;
 
     void initialize(const std::string& key) override;
 
-    void sampling_locations(SampleLocType&) const override;
+    void sampling_locations(SampleLocType& /*locs*/) const override;
 
-    void define_netcdf_metadata(const ncutils::NCGroup&) const override;
+    void
+    define_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
 
     std::string label() const override { return m_label; }
     std::string& label() override { return m_label; }

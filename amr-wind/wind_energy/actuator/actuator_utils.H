@@ -29,7 +29,8 @@ namespace utils {
 std::set<int> determine_influenced_procs(
     const amrex::AmrCore& mesh, const amrex::RealBox& rbx);
 
-void determine_root_proc(ActInfo&, amrex::Vector<int>&);
+void determine_root_proc(
+    ActInfo& /*info*/, amrex::Vector<int>& /*act_proc_count*/);
 
 /** Return the Gaussian smearing factor in 3D
  *

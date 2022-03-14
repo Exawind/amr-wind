@@ -17,22 +17,26 @@ public:
     using FaceFabPtrVec =
         amrex::Vector<amrex::Array<const amrex::MultiFab*, ICNS::ndim>>;
 
-    MacProjOp(FieldRepo&, bool, bool, bool);
+    MacProjOp(
+        FieldRepo& /*repo*/,
+        bool /*has_overset*/,
+        bool /*variable_density*/,
+        bool /*mesh_mapping*/);
 
     void operator()(const FieldState fstate, const amrex::Real dt);
 
     static void mac_proj_to_uniform_space(
-        const amr_wind::FieldRepo&,
-        amr_wind::Field&,
-        amr_wind::Field&,
-        amr_wind::Field&,
-        amrex::Array<amrex::MultiFab*, ICNS::ndim>&,
-        amrex::Real,
-        int) noexcept;
+        const amr_wind::FieldRepo& /*repo*/,
+        amr_wind::Field& /*u_mac*/,
+        amr_wind::Field& /*v_mac*/,
+        amr_wind::Field& /*w_mac*/,
+        amrex::Array<amrex::MultiFab*, ICNS::ndim>& /*rho_face*/,
+        amrex::Real /*ovst_fac*/,
+        int /*lev*/) noexcept;
 
 private:
-    void init_projector(const FaceFabPtrVec&) noexcept;
-    void init_projector(const amrex::Real) noexcept;
+    void init_projector(const FaceFabPtrVec& /*beta*/) noexcept;
+    void init_projector(const amrex::Real /*beta*/) noexcept;
 
     FieldRepo& m_repo;
     std::unique_ptr<Hydro::MacProjector> m_mac_proj;
@@ -410,7 +414,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
         m_macproj_op(fstate, dt);
     }
 
-    void operator()(const FieldState fstate, const amrex::Real)
+    void operator()(const FieldState fstate, const amrex::Real /*unused*/)
     {
 
         auto& repo = fields.repo;

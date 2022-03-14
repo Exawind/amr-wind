@@ -35,7 +35,7 @@ public:
     ~MeshMap() override = default;
 
     //! declare mesh mapping fields
-    void declare_mapping_fields(const CFDSim&, int);
+    void declare_mapping_fields(const CFDSim& /*sim*/, int /*nghost*/);
 
     //! Construct mesh scaling field
     virtual void create_map(int, const amrex::Geometry&) = 0;

@@ -25,7 +25,7 @@ public:
 
     virtual void operator()(ScratchField& fld, const int scomp = 0) = 0;
 
-    virtual void var_names(amrex::Vector<std::string>&);
+    virtual void var_names(amrex::Vector<std::string>& /*plt_var_names*/);
 };
 
 class DerivedQtyMgr
@@ -50,7 +50,8 @@ public:
     bool contains(const std::string& key) const noexcept;
 
     //! Populate a vector of variable names (for output)
-    void var_names(amrex::Vector<std::string>&) const noexcept;
+    void
+    var_names(amrex::Vector<std::string>& /*plt_var_names*/) const noexcept;
 
 private:
     const FieldRepo& m_repo;

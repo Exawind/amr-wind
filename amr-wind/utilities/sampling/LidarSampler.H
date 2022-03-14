@@ -21,7 +21,7 @@ class LidarSampler : public LineSampler
 public:
     static std::string identifier() { return "LidarSampler"; }
 
-    explicit LidarSampler(const CFDSim&);
+    explicit LidarSampler(const CFDSim& /*sim*/);
 
     /** Read user inputs and initialize the sampling object
      *
@@ -35,10 +35,13 @@ public:
      */
     void update_sampling_locations() override;
 
-    void define_netcdf_metadata(const ncutils::NCGroup&) const override;
-    void populate_netcdf_metadata(const ncutils::NCGroup&) const override;
     void
-    output_netcdf_data(const ncutils::NCGroup&, const size_t) const override;
+    define_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
+    void
+    populate_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
+    void output_netcdf_data(
+        const ncutils::NCGroup& /*unused*/,
+        const size_t /*unused*/) const override;
 
 protected:
     amrex::Vector<amrex::Real> m_origin;

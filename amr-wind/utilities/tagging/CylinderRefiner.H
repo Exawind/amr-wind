@@ -20,12 +20,12 @@ class CylinderRefiner : public GeometryType::Register<CylinderRefiner>
 public:
     static std::string identifier() { return "cylinder"; }
 
-    CylinderRefiner(const CFDSim&, const std::string& key);
+    CylinderRefiner(const CFDSim& /*unused*/, const std::string& key);
 
     ~CylinderRefiner() override = default;
 
     void operator()(
-        const amrex::Box&,
+        const amrex::Box& /*bx*/,
         const amrex::Geometry& geom,
         const amrex::Array4<amrex::TagBox::TagType>& tags) const override;
 

@@ -67,7 +67,7 @@ struct AdvectionOp<
         iconserv.resize(PDE::ndim, 1);
     }
 
-    void preadvect(const FieldState, const amrex::Real) {}
+    void preadvect(const FieldState /*unused*/, const amrex::Real /*unused*/) {}
 
     void operator()(const FieldState fstate, const amrex::Real dt)
     {

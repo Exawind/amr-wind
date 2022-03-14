@@ -17,7 +17,7 @@ class SDRSrc : public SDRSource::Register<SDRSrc>
 public:
     static std::string identifier() { return "SDRSrc"; }
 
-    explicit SDRSrc(const CFDSim&);
+    explicit SDRSrc(const CFDSim& /*sim*/);
 
     ~SDRSrc() override;
 

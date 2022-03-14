@@ -146,7 +146,8 @@ struct StencilInterior
     static constexpr amrex::Real f21 = f01;
     static constexpr amrex::Real f22 = f02;
 
-    static amrex::Box box(const amrex::Box& bx, const amrex::Geometry&)
+    static amrex::Box
+    box(const amrex::Box& bx, const amrex::Geometry& /*unused*/)
     {
         return bx;
     }

@@ -18,7 +18,7 @@ class LineSampler : public SamplerBase::Register<LineSampler>
 public:
     static std::string identifier() { return "LineSampler"; }
 
-    explicit LineSampler(const CFDSim&);
+    explicit LineSampler(const CFDSim& /*sim*/);
 
     ~LineSampler() override;
 
@@ -31,10 +31,12 @@ public:
     void check_bounds();
 
     //! Populate and return a vector of probe locations to be sampled
-    void sampling_locations(SampleLocType&) const override;
+    void sampling_locations(SampleLocType& /*locs*/) const override;
 
-    void define_netcdf_metadata(const ncutils::NCGroup&) const override;
-    void populate_netcdf_metadata(const ncutils::NCGroup&) const override;
+    void
+    define_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
+    void
+    populate_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
 
     //! Name of this sampling object
     std::string label() const override { return m_label; }

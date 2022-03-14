@@ -15,7 +15,7 @@ class KsgsM84Src : public TKESource::Register<KsgsM84Src>
 public:
     static std::string identifier() { return "KsgsM84Src"; }
 
-    explicit KsgsM84Src(const CFDSim&);
+    explicit KsgsM84Src(const CFDSim& /*sim*/);
 
     ~KsgsM84Src() override;
 

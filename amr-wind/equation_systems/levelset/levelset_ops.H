@@ -52,7 +52,9 @@ struct ComputeRHSOp<Levelset, Scheme>
     explicit ComputeRHSOp(PDEFields& fields_in) : fields(fields_in) {}
 
     void predictor_rhs(
-        const DiffusionType, const amrex::Real dt, bool /*mesh_mapping*/)
+        const DiffusionType /*unused*/,
+        const amrex::Real dt,
+        bool /*mesh_mapping*/)
     {
         // Field states for diffusion and advection terms. In Godunov scheme
         // these terms only have one state.
@@ -87,7 +89,9 @@ struct ComputeRHSOp<Levelset, Scheme>
     }
 
     void corrector_rhs(
-        const DiffusionType, const amrex::Real dt, bool /*mesh_mapping*/)
+        const DiffusionType /*unused*/,
+        const amrex::Real dt,
+        bool /*mesh_mapping*/)
     {
         const int nlevels = fields.repo.num_active_levels();
         auto& field = fields.field;
@@ -132,7 +136,7 @@ struct PostSolveOp<Levelset>
     PostSolveOp(CFDSim& sim, PDEFields& fields) : m_sim(sim), m_fields(fields)
     {}
 
-    void operator()(const amrex::Real)
+    void operator()(const amrex::Real /*unused*/)
     {
         m_fields.field.fillpatch(m_sim.time().current_time());
         auto& multiphase = m_sim.physics_manager().get<MultiPhase>();

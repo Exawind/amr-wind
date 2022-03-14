@@ -30,11 +30,13 @@ class IB : public Physics::Register<IB>
 public:
     static std::string identifier() { return "IB"; }
 
-    explicit IB(CFDSim&);
+    explicit IB(CFDSim& /*sim*/);
 
     ~IB() override;
 
-    void initialize_fields(int, const amrex::Geometry&) override {}
+    void
+    initialize_fields(int /*level*/, const amrex::Geometry& /*geom*/) override
+    {}
 
     void pre_init_actions() override;
 

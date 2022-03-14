@@ -19,7 +19,7 @@ class BodyForce : public MomentumSource::Register<BodyForce>
 public:
     static std::string identifier() { return "BodyForce"; }
 
-    explicit BodyForce(const CFDSim&);
+    explicit BodyForce(const CFDSim& /*sim*/);
 
     ~BodyForce() override;
 

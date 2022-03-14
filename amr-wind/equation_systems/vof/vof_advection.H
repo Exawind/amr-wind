@@ -14,7 +14,8 @@ namespace pde {
 template <>
 struct AdvectionOp<VOF, fvm::Godunov>
 {
-    AdvectionOp(PDEFields& fields_in, bool, bool, bool)
+    AdvectionOp(
+        PDEFields& fields_in, bool /*unused*/, bool /*unused*/, bool /*unused*/)
         : fields(fields_in)
         , u_mac(fields_in.repo.get_field("u_mac"))
         , v_mac(fields_in.repo.get_field("v_mac"))
@@ -24,9 +25,9 @@ struct AdvectionOp<VOF, fvm::Godunov>
         pp_multiphase.query("use_lagrangian", m_use_lagrangian);
     }
 
-    void preadvect(const FieldState, const amrex::Real) {}
+    void preadvect(const FieldState /*unused*/, const amrex::Real /*unused*/) {}
 
-    void operator()(const FieldState, const amrex::Real dt)
+    void operator()(const FieldState /*unused*/, const amrex::Real dt)
     {
         static_assert(
             VOF::ndim == 1, "Invalid number of components for scalar");

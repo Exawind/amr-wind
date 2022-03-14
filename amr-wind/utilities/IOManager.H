@@ -31,7 +31,7 @@ class DerivedQtyMgr;
 class IOManager
 {
 public:
-    explicit IOManager(CFDSim&);
+    explicit IOManager(CFDSim& /*sim*/);
 
     ~IOManager();
 
@@ -86,9 +86,9 @@ public:
     const amrex::Vector<Field*>& plot_fields() const { return m_plt_fields; }
 
 private:
-    void write_header(const std::string&, const int start_level);
+    void write_header(const std::string& /*chkname*/, const int start_level);
 
-    void write_info_file(const std::string&);
+    void write_info_file(const std::string& /*path*/);
 
     CFDSim& m_sim;
 

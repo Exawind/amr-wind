@@ -26,7 +26,8 @@ public:
 
     ~FastIface() override;
 
-    void parse_inputs(const amr_wind::CFDSim&, const std::string&);
+    void parse_inputs(
+        const amr_wind::CFDSim& /*sim*/, const std::string& /*inp_name*/);
 
     int register_turbine(FastTurbine& data);
 
@@ -43,18 +44,20 @@ public:
 protected:
     void allocate_fast_turbines();
 
-    void fast_init_turbine(FastTurbine&);
+    void fast_init_turbine(FastTurbine& /*fi*/);
 
-    void fast_restart_turbine(FastTurbine&);
+    void fast_restart_turbine(FastTurbine& /*unused*/);
 
-    void fast_replay_turbine(FastTurbine&);
+    void fast_replay_turbine(FastTurbine& /*fi*/);
 
-    void prepare_netcdf_file(FastTurbine&);
+    void prepare_netcdf_file(FastTurbine& /*unused*/);
 
-    void write_velocity_data(const FastTurbine&);
+    void write_velocity_data(const FastTurbine& /*unused*/);
 
-    void
-    read_velocity_data(FastTurbine&, const ncutils::NCFile&, const size_t tid);
+    void read_velocity_data(
+        FastTurbine& /*unused*/,
+        const ncutils::NCFile& /*unused*/,
+        const size_t tid);
 
     //! Global to local index lookup map
     std::map<int, int> m_turbine_map;

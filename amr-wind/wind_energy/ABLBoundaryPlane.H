@@ -31,12 +31,14 @@ class InletData
 public:
     InletData() = default;
 
-    void resize(const int);
+    void resize(const int /*size*/);
 
-    void define_plane(const amrex::Orientation);
+    void define_plane(const amrex::Orientation /*ori*/);
 
     void define_level_data(
-        const amrex::Orientation, const amrex::Box&, const size_t);
+        const amrex::Orientation /*ori*/,
+        const amrex::Box& /*bx*/,
+        const size_t /*nc*/);
 
 #ifdef AMR_WIND_USE_NETCDF
     void read_data(
@@ -53,12 +55,12 @@ public:
         amrex::BndryRegister& bndry_n,
         amrex::BndryRegister& bndry_np1,
         const int lev,
-        const Field*,
+        const Field* /*fld*/,
         const amrex::Real time,
-        const amrex::Vector<amrex::Real>&);
+        const amrex::Vector<amrex::Real>& /*times*/);
 
-    void interpolate(const amrex::Real);
-    bool is_populated(amrex::Orientation) const;
+    void interpolate(const amrex::Real /*time*/);
+    bool is_populated(amrex::Orientation /*ori*/) const;
     const amrex::FArrayBox&
     interpolate_data(const amrex::Orientation ori, const int lev) const
     {
@@ -109,7 +111,7 @@ class ABLBoundaryPlane
     static_assert(AMREX_SPACEDIM == 3, "ABL requires 3 dimensional mesh");
 
 public:
-    explicit ABLBoundaryPlane(CFDSim&);
+    explicit ABLBoundaryPlane(CFDSim& /*sim*/);
 
     //! Execute initialization actions after mesh has been fully generated
     void post_init_actions();
@@ -128,8 +130,11 @@ public:
 
     void read_file();
 
-    void
-    populate_data(const int, const amrex::Real, Field&, amrex::MultiFab&) const;
+    void populate_data(
+        const int /*lev*/,
+        const amrex::Real /*time*/,
+        Field& /*fld*/,
+        amrex::MultiFab& /*mfab*/) const;
 
 #ifdef AMR_WIND_USE_NETCDF
     void impl_buffer_field(
@@ -145,7 +150,9 @@ public:
     bool is_initialized() const { return m_is_initialized; }
 
     bool box_intersects_boundary(
-        const amrex::Box&, const int, const amrex::Orientation) const;
+        const amrex::Box& /*bx*/,
+        const int /*lev*/,
+        const amrex::Orientation /*ori*/) const;
 
 private:
     const amr_wind::SimTime& m_time;

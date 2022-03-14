@@ -81,44 +81,46 @@ public:
 class FieldFillConstScalar : public FieldFillPatchOpsBase
 {
 public:
-    FieldFillConstScalar(Field&, amrex::Real fill_val) : m_fill_val(fill_val) {}
+    FieldFillConstScalar(Field& /*unused*/, amrex::Real fill_val)
+        : m_fill_val(fill_val)
+    {}
 
     void fillpatch(
-        int,
-        amrex::Real,
+        int /*lev*/,
+        amrex::Real /*time*/,
         amrex::MultiFab& mfab,
-        const amrex::IntVect&,
-        const FieldState) override
+        const amrex::IntVect& /*nghost*/,
+        const FieldState /*fstate*/) override
     {
         mfab.setVal(m_fill_val);
     }
 
     void fillpatch_from_coarse(
-        int,
-        amrex::Real,
+        int /*lev*/,
+        amrex::Real /*time*/,
         amrex::MultiFab& mfab,
-        const amrex::IntVect&,
-        const FieldState) override
+        const amrex::IntVect& /*nghost*/,
+        const FieldState /*fstate*/) override
     {
         mfab.setVal(m_fill_val);
     }
 
     void fillphysbc(
-        int,
-        amrex::Real,
+        int /*lev*/,
+        amrex::Real /*time*/,
         amrex::MultiFab& mfab,
-        const amrex::IntVect&,
-        const FieldState) override
+        const amrex::IntVect& /*nghost*/,
+        const FieldState /*fstate*/) override
     {
         mfab.setVal(m_fill_val);
     }
 
     void set_inflow(
-        int,
-        amrex::Real,
-        amrex::MultiFab&,
-        const amrex::IntVect&,
-        const FieldState) override
+        int /*lev*/,
+        amrex::Real /*time*/,
+        amrex::MultiFab& /*mfab*/,
+        const amrex::IntVect& /*nghost*/,
+        const FieldState /*fstate*/) override
     {
         amrex::Abort("FieldFillConstScalar::set_inflow is not implemented");
     }
@@ -291,7 +293,7 @@ public:
         amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost,
-        const FieldState) override
+        const FieldState /*fstate*/) override
     {
         amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> physbc(
             m_mesh.Geom(lev), m_field.bcrec(), bc_functor());
@@ -303,7 +305,7 @@ public:
         amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost,
-        const FieldState) override
+        const FieldState /*fstate*/) override
     {
         const int ng = nghost[0];
         const auto& bctype = m_field.bc_type();
