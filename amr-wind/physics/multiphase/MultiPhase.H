@@ -28,7 +28,9 @@ public:
 
     ~MultiPhase() override = default;
 
-    void initialize_fields(int, const amrex::Geometry&) override {}
+    void
+    initialize_fields(int /*level*/, const amrex::Geometry& /*geom*/) override
+    {}
 
     void post_init_actions() override;
 

@@ -31,11 +31,13 @@ class Actuator : public Physics::Register<Actuator>
 public:
     static std::string identifier() { return "Actuator"; }
 
-    explicit Actuator(CFDSim&);
+    explicit Actuator(CFDSim& /*sim*/);
 
     ~Actuator() override;
 
-    void initialize_fields(int, const amrex::Geometry&) override {}
+    void
+    initialize_fields(int /*level*/, const amrex::Geometry& /*geom*/) override
+    {}
 
     void pre_init_actions() override;
 

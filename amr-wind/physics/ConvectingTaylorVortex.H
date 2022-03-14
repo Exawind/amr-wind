@@ -12,72 +12,72 @@ namespace {
 struct UExact
 {
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real) const;
+        const amrex::Real /*u0*/,
+        const amrex::Real /*v0*/,
+        const amrex::Real /*omega*/,
+        const amrex::Real /*x*/,
+        const amrex::Real /*y*/,
+        const amrex::Real /*t*/) const;
     const int m_comp{0};
 };
 
 struct VExact
 {
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real) const;
+        const amrex::Real /*u0*/,
+        const amrex::Real /*v0*/,
+        const amrex::Real /*omega*/,
+        const amrex::Real /*x*/,
+        const amrex::Real /*y*/,
+        const amrex::Real /*t*/) const;
     const int m_comp{1};
 };
 
 struct WExact
 {
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real) const;
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/) const;
     const int m_comp{2};
 };
 
 struct GpxExact
 {
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real) const;
+        const amrex::Real /*u0*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*omega*/,
+        const amrex::Real /*x*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*t*/) const;
     const int m_comp{0};
 };
 
 struct GpyExact
 {
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real) const;
+        const amrex::Real /*unused*/,
+        const amrex::Real /*v0*/,
+        const amrex::Real /*omega*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*y*/,
+        const amrex::Real /*t*/) const;
     const int m_comp{1};
 };
 
 struct GpzExact
 {
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real) const;
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/) const;
     const int m_comp{2};
 };
 
@@ -98,7 +98,7 @@ public:
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 
     template <typename T>
-    amrex::Real compute_error(const Field&);
+    amrex::Real compute_error(const Field& /*field*/);
 
     void post_init_actions() override;
 

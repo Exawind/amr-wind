@@ -19,16 +19,16 @@ public:
     ~ChannelFlowMap() override = default;
 
     //! Construct the mesh scaling field
-    void create_map(int, const amrex::Geometry&) override;
+    void create_map(int /*lev*/, const amrex::Geometry& /*geom*/) override;
 
     //! Construct mesh scaling field on cell centers and nodes
-    void create_cell_node_map(int, const amrex::Geometry&);
+    void create_cell_node_map(int /*lev*/, const amrex::Geometry& /*geom*/);
 
     //! Construct mesh scaling field on cell faces
-    void create_face_map(int, const amrex::Geometry&);
+    void create_face_map(int /*lev*/, const amrex::Geometry& /*geom*/);
 
     //! Construct the non-uniform mesh field
-    void create_non_uniform_mesh(int, const amrex::Geometry&);
+    void create_non_uniform_mesh(int /*lev*/, const amrex::Geometry& /*geom*/);
 
 private:
     //! User input parameters

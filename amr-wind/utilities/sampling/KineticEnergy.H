@@ -19,7 +19,7 @@ class KineticEnergy : public PostProcessBase::Register<KineticEnergy>
 public:
     static std::string identifier() { return "KineticEnergy"; }
 
-    KineticEnergy(CFDSim&, std::string);
+    KineticEnergy(CFDSim& /*sim*/, std::string /*label*/);
 
     ~KineticEnergy() override;
 

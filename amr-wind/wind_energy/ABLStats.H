@@ -32,7 +32,10 @@ class ABLStats : public ABLStatsBase::Register<ABLStats>
 public:
     static std::string identifier() { return "precursor"; }
 
-    ABLStats(CFDSim&, const ABLWallFunction&, const int dir);
+    ABLStats(
+        CFDSim& /*sim*/,
+        const ABLWallFunction& /*abl_wall_func*/,
+        const int dir);
 
     ~ABLStats() override;
 

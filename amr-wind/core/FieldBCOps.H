@@ -47,7 +47,7 @@ struct FieldBCNoOp
     constexpr FieldBCNoOp() = default;
 
     AMREX_GPU_HOST
-    constexpr explicit FieldBCNoOp(const Field&) {}
+    constexpr explicit FieldBCNoOp(const Field& /*unused*/) {}
 
     FunctorType operator()() const { return *this; }
 
@@ -66,12 +66,12 @@ struct FieldBCNoOp
 
     AMREX_GPU_DEVICE
     inline void set_inflow(
-        const amrex::IntVect&,
-        amrex::Array4<amrex::Real> const&,
-        amrex::GeometryData const&,
-        const amrex::Real,
-        amrex::Orientation,
-        const int) const
+        const amrex::IntVect& /*unused*/,
+        amrex::Array4<amrex::Real> const& /*unused*/,
+        amrex::GeometryData const& /*unused*/,
+        const amrex::Real /*unused*/,
+        amrex::Orientation /*unused*/,
+        const int /*unused*/) const
     {}
 };
 
@@ -94,8 +94,8 @@ struct ConstDirichlet
     inline void operator()(
         const amrex::IntVect& iv,
         amrex::Array4<amrex::Real> const& field,
-        amrex::GeometryData const&,
-        const amrex::Real,
+        amrex::GeometryData const& /*unused*/,
+        const amrex::Real /*unused*/,
         amrex::Orientation ori,
         const int comp) const
     {

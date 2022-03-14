@@ -22,7 +22,7 @@ public:
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 
     template <typename T>
-    amrex::Real compute_error(const Field&);
+    amrex::Real compute_error(const Field& /*field*/);
 
     void post_init_actions() override;
 

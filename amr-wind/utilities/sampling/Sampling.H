@@ -42,7 +42,7 @@ class Sampling : public PostProcessBase::Register<Sampling>
 public:
     static std::string identifier() { return "Sampling"; }
 
-    Sampling(CFDSim&, std::string);
+    Sampling(CFDSim& /*sim*/, std::string /*label*/);
 
     ~Sampling() override;
 

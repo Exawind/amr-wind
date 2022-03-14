@@ -17,7 +17,7 @@ class ReynoldsStress : public FieldTimeAverage::Register<ReynoldsStress>
 public:
     static std::string identifier() { return "ReynoldsStress"; }
 
-    ReynoldsStress(CFDSim&, const std::string& fname);
+    ReynoldsStress(CFDSim& /*sim*/, const std::string& fname);
 
     /** Update field averaging at a given timestep
      *
@@ -26,8 +26,10 @@ public:
      *
      *  \param elapsed_time Time elapsed since averaging was initiated
      */
-    void
-    operator()(const SimTime&, const amrex::Real, const amrex::Real) override;
+    void operator()(
+        const SimTime& /*time*/,
+        const amrex::Real /*filter_width*/,
+        const amrex::Real /*elapsed_time*/) override;
 
     const std::string& average_field_name() override;
 

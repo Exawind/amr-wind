@@ -104,7 +104,7 @@ public:
         m_src_op(fstate, m_sim.has_mesh_mapping());
     }
 
-    void compute_mueff(const FieldState) override
+    void compute_mueff(const FieldState /*unused*/) override
     {
         if (PDE::has_diffusion) {
             BL_PROFILE("amr-wind::" + this->identifier() + "::compute_mueff");

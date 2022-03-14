@@ -17,7 +17,7 @@ class KwSSTSrc : public TKESource::Register<KwSSTSrc>
 public:
     static std::string identifier() { return "KwSSTSrc"; }
 
-    explicit KwSSTSrc(const CFDSim&);
+    explicit KwSSTSrc(const CFDSim& /*sim*/);
 
     ~KwSSTSrc() override;
 

@@ -49,12 +49,21 @@ public:
     virtual void update_sampling_locations() {}
 
     //! Run specific output for the sampler
-    virtual bool output_netcdf_field(double*, ncutils::NCVar&) { return true; }
+    virtual bool
+    output_netcdf_field(double* /*unused*/, ncutils::NCVar& /*unused*/)
+    {
+        return true;
+    }
 
     //! Populate metadata in the NetCDF file
-    virtual void define_netcdf_metadata(const ncutils::NCGroup&) const {}
-    virtual void populate_netcdf_metadata(const ncutils::NCGroup&) const {}
-    virtual void output_netcdf_data(const ncutils::NCGroup&, const size_t) const
+    virtual void
+    define_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const
+    {}
+    virtual void
+    populate_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const
+    {}
+    virtual void output_netcdf_data(
+        const ncutils::NCGroup& /*unused*/, const size_t /*unused*/) const
     {}
 };
 

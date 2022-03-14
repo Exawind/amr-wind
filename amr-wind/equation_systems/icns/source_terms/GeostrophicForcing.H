@@ -16,7 +16,7 @@ class GeostrophicForcing : public MomentumSource::Register<GeostrophicForcing>
 public:
     static std::string identifier() { return "GeostrophicForcing"; }
 
-    explicit GeostrophicForcing(const CFDSim&);
+    explicit GeostrophicForcing(const CFDSim& /*unused*/);
 
     ~GeostrophicForcing() override;
 

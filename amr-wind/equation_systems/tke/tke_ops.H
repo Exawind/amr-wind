@@ -33,7 +33,7 @@ struct TurbulenceOp<TKE>
 template <>
 struct PostSolveOp<TKE>
 {
-    PostSolveOp(CFDSim&, PDEFields& fields) : m_fields(fields) {}
+    PostSolveOp(CFDSim& /*unused*/, PDEFields& fields) : m_fields(fields) {}
 
     void operator()(const amrex::Real time)
     {

@@ -11,14 +11,17 @@ namespace actuator {
 namespace disk {
 // refactor these when we add more disk types later
 void prepare_netcdf_file(
-    const std::string&, const UniformCtData&, const ActInfo&, const ActGrid&);
+    const std::string& /*ncfile*/,
+    const UniformCtData& /*meta*/,
+    const ActInfo& /*info*/,
+    const ActGrid& /*grid*/);
 
 void write_netcdf(
-    const std::string&,
-    const UniformCtData&,
-    const ActInfo&,
-    const ActGrid&,
-    const amrex::Real);
+    const std::string& /*ncfile*/,
+    const UniformCtData& /*meta*/,
+    const ActInfo& /*info*/,
+    const ActGrid& /*unused*/,
+    const amrex::Real /*time*/);
 } // namespace disk
 
 namespace ops {
@@ -162,7 +165,7 @@ struct ComputeForceOp<UniformCt, ActSrcDisk>
 template <>
 struct UpdatePosOp<UniformCt, ActSrcDisk>
 {
-    void operator()(UniformCt::DataType&) {}
+    void operator()(UniformCt::DataType& /*unused*/) {}
 };
 
 template <>
@@ -184,7 +187,7 @@ public:
     explicit ProcessOutputsOp<UniformCt, ActSrcDisk>(UniformCt::DataType& data)
         : m_data(data)
     {}
-    void operator()(UniformCt::DataType&) {}
+    void operator()(UniformCt::DataType& /*unused*/) {}
     void read_io_options(const utils::ActParser& pp)
     {
         pp.query("output_frequency", m_out_freq);
