@@ -94,6 +94,7 @@ void write_netcdf(
 }
 } // namespace disk
 namespace ops {
+namespace base {
 
 vs::Vector get_east_orientation()
 {
@@ -375,6 +376,7 @@ void compute_disk_points(
         }
     }
 }
+} // namespace base
 } // namespace ops
 } // namespace actuator
 } // namespace amr_wind

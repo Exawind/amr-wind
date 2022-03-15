@@ -13,43 +13,10 @@ struct ReadInputsOp<UniformCt, ActSrcDisk>
     void operator()(UniformCt::DataType& data, const utils::ActParser& pp)
     {
         // TODO get density at probe location
-        check_for_parse_conflicts(pp);
         auto& meta = data.meta();
-        required_parameters(meta, pp);
-        optional_parameters(meta, pp);
-        final_checks(meta);
-        do_parse_based_computations<UniformCt>(data);
-    }
-};
-
-template <>
-struct InitDataOp<UniformCt, ActSrcDisk>
-{
-    void operator()(UniformCt::DataType& data)
-    {
-        auto& grid = data.grid();
-        auto& meta = data.meta();
-
-        // only resize the members we are going to use
-        grid.pos.resize(meta.num_force_pts);
-        grid.force.resize(meta.num_force_pts);
-        grid.vel.resize(meta.num_vel_pts);
-        grid.vel_pos.resize(meta.num_vel_pts);
-
-        const auto& cVec = meta.coplanar_vec;
-        const auto& sVec = meta.sample_vec;
-        const auto& nVec = meta.normal_vec;
-
-        const auto& cc = meta.center;
-        {
-            const auto& dr = meta.dr;
-            for (int i = 0; i < meta.num_force_pts; ++i) {
-                grid.pos[i] = cc + (i + 0.5) * dr * cVec;
-            }
-        }
-        compute_disk_points(
-            meta, grid.vel_pos, sVec, 0, meta.diameters_to_sample);
-        compute_disk_points(meta, grid.vel_pos, nVec, meta.num_vel_pts / 2, 0);
+        base::parse_and_gather_params<UniformCt::MetaType>(pp, meta);
+        base::final_checks(meta);
+        base::do_parse_based_computations<UniformCt>(data);
     }
 };
 
@@ -88,12 +55,6 @@ struct ComputeForceOp<UniformCt, ActSrcDisk>
             grid.force[ip] = (aeroPressure * a) * normal;
         }
     }
-};
-
-template <>
-struct UpdatePosOp<UniformCt, ActSrcDisk>
-{
-    void operator()(UniformCt::DataType& /*unused*/) {}
 };
 
 template <>
@@ -139,7 +100,6 @@ public:
             time.new_time());
     }
 };
-
 } // namespace ops
 } // namespace actuator
 } // namespace amr_wind

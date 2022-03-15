@@ -12,35 +12,20 @@ namespace ops {
 template <>
 struct ReadInputsOp<Joukowski, ActSrcDisk>
 {
-    void
-    operator()(Joukowski::DataType& /*data*/, const utils::ActParser& /*pp*/)
+    void operator()(Joukowski::DataType& data, const utils::ActParser& pp)
     {
+        auto& meta = data.meta();
+        base::parse_and_gather_params<Joukowski::MetaType>(pp, meta);
+        base::final_checks(meta);
+        base::do_parse_based_computations<Joukowski>(data);
         amrex::Abort("JoukoskiDisk is under development and not functional.");
     }
-};
-
-template <>
-struct InitDataOp<Joukowski, ActSrcDisk>
-{
-    void operator()(Joukowski::DataType& /*data*/) {}
-};
-
-template <>
-struct UpdateVelOp<Joukowski, ActSrcDisk>
-{
-    void operator()(Joukowski::DataType& /*data*/) {}
 };
 
 template <>
 struct ComputeForceOp<Joukowski, ActSrcDisk>
 {
     void operator()(Joukowski::DataType& /*data*/) {}
-};
-
-template <>
-struct UpdatePosOp<Joukowski, ActSrcDisk>
-{
-    void operator()(Joukowski::DataType&) {}
 };
 
 template <>
