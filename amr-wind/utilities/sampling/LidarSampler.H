@@ -40,7 +40,8 @@ public:
     void
     populate_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
     void output_netcdf_data(
-        const ncutils::NCGroup& /*unused*/, size_t /*unused*/) const override;
+        const ncutils::NCGroup& /*unused*/,
+        const size_t /*unused*/) const override;
 
 protected:
     amrex::Vector<amrex::Real> m_origin;

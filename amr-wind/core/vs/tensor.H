@@ -44,7 +44,7 @@ struct TensorT
         const VectorT<T>& x,
         const VectorT<T>& y,
         const VectorT<T>& z,
-        bool transpose = false);
+        const bool transpose = false);
 
     ~TensorT() = default;
     TensorT(const TensorT&) = default;

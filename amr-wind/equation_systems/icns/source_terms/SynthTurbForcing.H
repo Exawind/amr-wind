@@ -20,10 +20,10 @@ public:
     ~SynthTurbForcing() override;
 
     void operator()(
-        int lev,
+        const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,
-        FieldState fstate,
+        const FieldState fstate,
         const amrex::Array4<amrex::Real>& src_term) const override;
 
 private:

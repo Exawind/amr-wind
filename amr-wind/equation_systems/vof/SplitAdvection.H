@@ -21,7 +21,7 @@ void split_advection(
     bool is_lagrangian);
 
 void sweep(
-    int dir,
+    const int dir,
     amrex::Box const& bx,
     amrex::Real dtdx,
     amrex::Array4<amrex::Real const> const& vel_mac,
@@ -30,8 +30,8 @@ void sweep(
     amrex::Array4<amrex::Real> const& fluxC,
     amrex::Array4<amrex::Real> const& fluxR,
     amrex::BCRec const* pbc,
-    int dimLow,
-    int dimHigh,
+    const int dimLow,
+    const int dimHigh,
     bool is_lagrangian);
 
 } // namespace multiphase

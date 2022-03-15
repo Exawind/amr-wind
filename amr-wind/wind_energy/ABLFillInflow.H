@@ -31,7 +31,7 @@ public:
         amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost,
-        FieldState fstate = FieldState::New) override;
+        const FieldState fstate = FieldState::New) override;
 
     //! Implementation that handles filling patches from a coarse to fine level
     void fillpatch_from_coarse(
@@ -39,7 +39,7 @@ public:
         amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost,
-        FieldState fstate = FieldState::New) override;
+        const FieldState fstate = FieldState::New) override;
 
     //! Implementation that handles filling physical boundary conditions
     void fillphysbc(
@@ -47,7 +47,7 @@ public:
         amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost,
-        FieldState fstate = FieldState::New) override;
+        const FieldState fstate = FieldState::New) override;
 
 protected:
     const ABLBoundaryPlane& m_bndry_plane;

@@ -53,7 +53,9 @@ public:
      *
      */
     void set_current_cfl(
-        amrex::Real conv_cfl, amrex::Real diff_cfl, amrex::Real src_cfl);
+        const amrex::Real conv_cfl,
+        const amrex::Real diff_cfl,
+        const amrex::Real src_cfl);
 
     /** Set start time and index based on checkpoint/restart file
      *

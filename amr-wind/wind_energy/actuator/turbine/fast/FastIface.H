@@ -31,13 +31,13 @@ public:
 
     int register_turbine(FastTurbine& data);
 
-    void init_turbine(int local_id);
+    void init_turbine(const int local_id);
 
-    void init_solution(int local_id);
+    void init_solution(const int local_id);
 
-    void advance_turbine(int local_id);
+    void advance_turbine(const int local_id);
 
-    void save_restart(int local_id);
+    void save_restart(const int local_id);
 
     int num_local_turbines() const { return m_turbine_data.size(); }
 
@@ -55,7 +55,9 @@ protected:
     void write_velocity_data(const FastTurbine& /*unused*/);
 
     void read_velocity_data(
-        FastTurbine& /*unused*/, const ncutils::NCFile& /*unused*/, size_t tid);
+        FastTurbine& /*unused*/,
+        const ncutils::NCFile& /*unused*/,
+        const size_t tid);
 
     //! Global to local index lookup map
     std::map<int, int> m_turbine_map;
