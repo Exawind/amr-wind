@@ -43,7 +43,7 @@ public:
         amrex::MLMG mlmg(*this->m_applier);
         mlmg.apply(divtau.vec_ptrs(), this->m_pdefields.field.vec_ptrs());
 
-        /*const auto& repo = this->m_pdefields.repo;
+        const auto& repo = this->m_pdefields.repo;
         const int nlevels = repo.num_active_levels();
         const auto& density = m_density.state(fstate);
 
@@ -65,7 +65,7 @@ public:
                         divtau_arr(i, j, k, 2) *= rhoinv;
                     });
             }
-        }*/
+        }
     }
 };
 
