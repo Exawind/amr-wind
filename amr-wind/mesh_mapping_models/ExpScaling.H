@@ -5,7 +5,7 @@
 #include "amr-wind/core/Field.H"
 
 namespace amr_wind {
-namespace abl_map {
+namespace exp_map {
 
 /** Channel flow scaling mesh map
  *  \ingroup mesh_map
@@ -30,6 +30,25 @@ public:
 
     //! Construct the non-uniform mesh field
     void create_non_uniform_mesh(int, const amrex::Geometry&);
+
+        //! Used for debugging eval_coord function
+    amrex::Real dump_coord(
+			   const int ,
+			   const amrex::Real ,
+			   const amrex::Real ,
+			   const amrex::Real ,
+			   const amrex::Real ,
+			   const amrex::Real ,
+			   const int);
+    //! Used for debugging eval_fac function
+    amrex::Real dump_fac(
+			 const int ,
+			 const amrex::Real ,
+			 const amrex::Real ,
+			 const amrex::Real ,
+			 const amrex::Real ,
+			 const amrex::Real ,
+			 const int);
 
 private:
     //! User input parameters
