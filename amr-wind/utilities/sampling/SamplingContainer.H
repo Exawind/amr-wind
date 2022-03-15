@@ -74,7 +74,8 @@ public:
 
     /** Define the container and allocate memory for runtime components
      */
-    void setup_container(int num_real_components, int num_int_components = 0);
+    void setup_container(
+        const int num_real_components, const int num_int_components = 0);
 
     /** Create particle information for all the sampling locations
      */
@@ -82,7 +83,7 @@ public:
         const amrex::Vector<std::unique_ptr<SamplerBase>>& /*samplers*/);
 
     //! Perform field interpolation to sampling locations
-    void interpolate_fields(amrex::Vector<Field*> fields);
+    void interpolate_fields(const amrex::Vector<Field*> fields);
 
     //! Populate the buffer with data for all the particles
     void populate_buffer(std::vector<double>& buf);

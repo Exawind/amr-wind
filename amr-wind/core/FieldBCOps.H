@@ -33,7 +33,7 @@ class FieldBCIface
 public:
     virtual ~FieldBCIface() = default;
 
-    virtual void operator()(Field& field, FieldState rho_state) = 0;
+    virtual void operator()(Field& field, const FieldState rho_state) = 0;
 };
 
 /** A no-op BC

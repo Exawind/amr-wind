@@ -29,7 +29,7 @@ public:
         int level,
         const amrex::Geometry& geom,
         const IndexSelector& idxOp,
-        int n_idx);
+        const int n_idx);
 
     template <typename IndexSelector>
     amrex::Real compute_error(const IndexSelector& idxOp);

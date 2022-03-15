@@ -56,7 +56,9 @@ public:
     virtual void compute_forces() = 0;
 
     virtual void compute_source_term(
-        int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom) = 0;
+        const int lev,
+        const amrex::MFIter& mfi,
+        const amrex::Geometry& geom) = 0;
 
     virtual void prepare_outputs(const std::string&) = 0;
 

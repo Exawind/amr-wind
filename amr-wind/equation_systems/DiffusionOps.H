@@ -32,8 +32,8 @@ class DiffSolverIface
 public:
     DiffSolverIface(
         PDEFields& fields,
-        bool has_overset,
-        bool mesh_mapping,
+        const bool has_overset,
+        const bool mesh_mapping,
         const std::string& prefix = "diffusion");
 
     virtual ~DiffSolverIface() = default;
@@ -42,11 +42,11 @@ public:
      *
      *  \param dt timestep size
      */
-    virtual void linsys_solve(amrex::Real dt);
+    virtual void linsys_solve(const amrex::Real dt);
 
     virtual void linsys_solve_impl();
 
-    virtual void set_acoeffs(LinOp& linop, FieldState fstate);
+    virtual void set_acoeffs(LinOp& linop, const FieldState fstate);
 
     template <typename L>
     void set_bcoeffs(
@@ -93,7 +93,10 @@ public:
 protected:
     //! Sets up the linear operator (e.g., setup BCs, etc.)
     virtual void setup_operator(
-        LinOp& linop, amrex::Real alpha, amrex::Real beta, FieldState fstate);
+        LinOp& linop,
+        const amrex::Real alpha,
+        const amrex::Real beta,
+        const FieldState fstate);
 
     virtual void setup_solver(amrex::MLMG& mlmg);
 

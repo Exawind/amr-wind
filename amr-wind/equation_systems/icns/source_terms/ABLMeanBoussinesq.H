@@ -26,10 +26,10 @@ public:
     ~ABLMeanBoussinesq() override;
 
     void operator()(
-        int lev,
+        const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,
-        FieldState fstate,
+        const FieldState fstate,
         const amrex::Array4<amrex::Real>& src_term) const override;
 
     void mean_temperature_init(const FieldPlaneAveraging& /*tavg*/);
