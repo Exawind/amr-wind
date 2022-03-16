@@ -65,60 +65,147 @@ void incflo::ComputeDt(bool explicit_diffusion)
         Real diff_lev = 0.0;
         Real force_lev = 0.0;
 
-        conv_lev += amrex::ParReduce(
-            TypeList<ReduceOpMax>{}, TypeList<Real>{}, vel, IntVect(0),
-            [=] AMREX_GPU_HOST_DEVICE(
-                int box_no, int i, int j, int k) -> GpuTuple<Real> {
-                auto const& v_bx = vel_arr[box_no];
+        if (!m_prescribe_vel) {
 
-                amrex::Real fac_x =
-                    mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0;
-                amrex::Real fac_y =
-                    mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0;
-                amrex::Real fac_z =
-                    mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
-
-                return amrex::max(
-                    amrex::Math::abs(v_bx(i, j, k, 0)) * dxinv[0] / fac_x,
-                    amrex::Math::abs(v_bx(i, j, k, 1)) * dxinv[1] / fac_y,
-                    amrex::Math::abs(v_bx(i, j, k, 2)) * dxinv[2] / fac_z,
-                    -1.0);
-            });
-
-        if (yes_vof) {
-            MultiFab const& vof = m_repo.get_field("vof")(lev);
-            auto const& vof_arr = vof.const_arrays();
-            mphase_conv_lev += amrex::ParReduce(
+            conv_lev += amrex::ParReduce(
                 TypeList<ReduceOpMax>{}, TypeList<Real>{}, vel, IntVect(0),
                 [=] AMREX_GPU_HOST_DEVICE(
                     int box_no, int i, int j, int k) -> GpuTuple<Real> {
                     auto const& v_bx = vel_arr[box_no];
-                    auto const& vof_bx = vof_arr[box_no];
 
-                    // Check for interface
-                    auto is_near =
-                        amr_wind::multiphase::interface_band(i, j, k, vof_bx);
+                    amrex::Real fac_x =
+                        mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0;
+                    amrex::Real fac_y =
+                        mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0;
+                    amrex::Real fac_z =
+                        mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
 
-                    // CFL calculation is not needed away from interface
-                    amrex::Real result = 0.0;
-                    if (is_near) {
-                        // Near interface, evaluate CFL by sum of velocities
-                        amrex::Real fac_x =
-                            mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0;
-                        amrex::Real fac_y =
-                            mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0;
-                        amrex::Real fac_z =
-                            mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
-
-                        result = amrex::Math::abs(v_bx(i, j, k, 0)) * dxinv[0] /
-                                     fac_x +
-                                 amrex::Math::abs(v_bx(i, j, k, 1)) * dxinv[1] /
-                                     fac_y +
-                                 amrex::Math::abs(v_bx(i, j, k, 2)) * dxinv[2] /
-                                     fac_z;
-                    }
-                    return result;
+                    return amrex::max(
+                        amrex::Math::abs(v_bx(i, j, k, 0)) * dxinv[0] / fac_x,
+                        amrex::Math::abs(v_bx(i, j, k, 1)) * dxinv[1] / fac_y,
+                        amrex::Math::abs(v_bx(i, j, k, 2)) * dxinv[2] / fac_z,
+                        -1.0);
                 });
+
+            if (yes_vof) {
+                MultiFab const& vof = m_repo.get_field("vof")(lev);
+                auto const& vof_arr = vof.const_arrays();
+                mphase_conv_lev += amrex::ParReduce(
+                    TypeList<ReduceOpMax>{}, TypeList<Real>{}, vel, IntVect(0),
+                    [=] AMREX_GPU_HOST_DEVICE(
+                        int box_no, int i, int j, int k) -> GpuTuple<Real> {
+                        auto const& v_bx = vel_arr[box_no];
+                        auto const& vof_bx = vof_arr[box_no];
+
+                        // Check for interface
+                        auto is_near = amr_wind::multiphase::interface_band(
+                            i, j, k, vof_bx);
+
+                        // CFL calculation is not needed away from interface
+                        amrex::Real result = 0.0;
+                        if (is_near) {
+                            // Near interface, evaluate CFL by sum of velocities
+                            amrex::Real fac_x =
+                                mesh_mapping ? (fac_arr[box_no](i, j, k, 0))
+                                             : 1.0;
+                            amrex::Real fac_y =
+                                mesh_mapping ? (fac_arr[box_no](i, j, k, 1))
+                                             : 1.0;
+                            amrex::Real fac_z =
+                                mesh_mapping ? (fac_arr[box_no](i, j, k, 2))
+                                             : 1.0;
+
+                            result = amrex::Math::abs(v_bx(i, j, k, 0)) *
+                                         dxinv[0] / fac_x +
+                                     amrex::Math::abs(v_bx(i, j, k, 1)) *
+                                         dxinv[1] / fac_y +
+                                     amrex::Math::abs(v_bx(i, j, k, 2)) *
+                                         dxinv[2] / fac_z;
+                        }
+                        return result;
+                    });
+            }
+        } else {
+            auto const& uf_arr = m_repo.get_field("u_mac")(lev).const_arrays();
+            auto const& vf_arr = m_repo.get_field("v_mac")(lev).const_arrays();
+            auto const& wf_arr = m_repo.get_field("w_mac")(lev).const_arrays();
+            conv_lev += amrex::ParReduce(
+                TypeList<ReduceOpMax>{}, TypeList<Real>{}, vel, IntVect(0),
+                [=] AMREX_GPU_HOST_DEVICE(
+                    int box_no, int i, int j, int k) -> GpuTuple<Real> {
+                    auto const& umac = uf_arr[box_no];
+                    auto const& vmac = vf_arr[box_no];
+                    auto const& wmac = wf_arr[box_no];
+
+                    amrex::Real fac_x =
+                        mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0;
+                    amrex::Real fac_y =
+                        mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0;
+                    amrex::Real fac_z =
+                        mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
+
+                    return amrex::max(
+                        amrex::max(
+                            amrex::Math::abs(umac(i, j, k)),
+                            amrex::Math::abs(umac(i + 1, j, k))) *
+                            dxinv[0] / fac_x,
+                        amrex::max(
+                            amrex::Math::abs(vmac(i, j, k)),
+                            amrex::Math::abs(vmac(i, j + 1, k))) *
+                            dxinv[1] / fac_y,
+                        amrex::max(
+                            amrex::Math::abs(wmac(i, j, k)),
+                            amrex::Math::abs(wmac(i, j, k + 1))) *
+                            dxinv[2] / fac_z,
+                        -1.0);
+                });
+
+            if (yes_vof) {
+                MultiFab const& vof = m_repo.get_field("vof")(lev);
+                auto const& vof_arr = vof.const_arrays();
+                mphase_conv_lev += amrex::ParReduce(
+                    TypeList<ReduceOpMax>{}, TypeList<Real>{}, vel, IntVect(0),
+                    [=] AMREX_GPU_HOST_DEVICE(
+                        int box_no, int i, int j, int k) -> GpuTuple<Real> {
+                        auto const& vof_bx = vof_arr[box_no];
+                        auto const& umac = uf_arr[box_no];
+                        auto const& vmac = vf_arr[box_no];
+                        auto const& wmac = wf_arr[box_no];
+
+                        // Check for interface
+                        auto is_near = amr_wind::multiphase::interface_band(
+                            i, j, k, vof_bx);
+
+                        // CFL calculation is not needed away from interface
+                        amrex::Real result = 0.0;
+                        if (is_near) {
+                            // Near interface, evaluate CFL by sum of velocities
+                            amrex::Real fac_x =
+                                mesh_mapping ? (fac_arr[box_no](i, j, k, 0))
+                                             : 1.0;
+                            amrex::Real fac_y =
+                                mesh_mapping ? (fac_arr[box_no](i, j, k, 1))
+                                             : 1.0;
+                            amrex::Real fac_z =
+                                mesh_mapping ? (fac_arr[box_no](i, j, k, 2))
+                                             : 1.0;
+
+                            result = amrex::max(
+                                         amrex::Math::abs(umac(i, j, k)),
+                                         amrex::Math::abs(umac(i + 1, j, k))) *
+                                         dxinv[0] / fac_x +
+                                     amrex::max(
+                                         amrex::Math::abs(vmac(i, j, k)),
+                                         amrex::Math::abs(vmac(i, j + 1, k))) *
+                                         dxinv[1] / fac_y +
+                                     amrex::max(
+                                         amrex::Math::abs(wmac(i, j, k)),
+                                         amrex::Math::abs(wmac(i, j, k + 1))) *
+                                         dxinv[2] / fac_z;
+                        }
+                        return result;
+                    });
+            }
         }
         conv_lev = amrex::max(conv_lev,mphase_conv_lev);
 
