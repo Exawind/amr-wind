@@ -33,7 +33,7 @@ public:
 
         //! Used for debugging eval_coord function
     amrex::Real dump_coord(
-			   const int ,
+			   const amrex::Real ,
 			   const amrex::Real ,
 			   const amrex::Real ,
 			   const amrex::Real ,
@@ -42,7 +42,7 @@ public:
 			   const int);
     //! Used for debugging eval_fac function
     amrex::Real dump_fac(
-			 const int ,
+			 const amrex::Real ,
 			 const amrex::Real ,
 			 const amrex::Real ,
 			 const amrex::Real ,

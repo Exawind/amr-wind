@@ -10,6 +10,7 @@ namespace exp_map {
 
 namespace {
 
+
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real R(
     const amrex::Real dom_n,
     const amrex::Real delta0,
@@ -19,7 +20,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real R(
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_fac(
-    const int i,
+    const amrex::Real ix,
     const amrex::Real x,
     const amrex::Real prob_lo,
     const amrex::Real dom_n,
@@ -30,11 +31,11 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_fac(
     // This is the derivative of eval_coord() below
     return (domap == 0)
                 ? 1.0
-                : delta0*(i*R(dom_n,delta0,len)+1.0)*std::exp(R(dom_n,delta0,len)*(i-1)); 
+                : (delta0*(ix*R(dom_n,delta0,len)+1.0)*std::exp(R(dom_n,delta0,len)*(ix-1.0))); 
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_coord(
-    const int i,
+    const amrex::Real ix,
     const amrex::Real x,
     const amrex::Real prob_lo,
     const amrex::Real dom_n,
@@ -44,8 +45,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_coord(
 {
     return (domap == 0)
                 ? x
-                : (prob_lo + 
-                   delta0*i*std::exp(R(dom_n,delta0,len)*(i-1)));
+                : (prob_lo + delta0*ix*std::exp(R(dom_n,delta0,len)*(ix-1.0)));
     
     
 }
@@ -91,12 +91,15 @@ void ExpScaling::create_cell_node_map(
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> delta0{
         {m_delta0[0], m_delta0[1], m_delta0[2]}};
 
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> x0{
+        {prob_lo[0], prob_lo[1], prob_lo[2]}};
+
     amrex::GpuArray<int, AMREX_SPACEDIM> do_map{
         {m_map[0], m_map[1], m_map[2]}};
 
     const auto eps = m_eps;
 
-    amrex::Print() << "Domain: " << domain_n[0] <<" "<< domain_n[1] <<" "<< domain_n[2]
+    amrex::Print() << "Map: " << (do_map[0]==1) <<" "<< (do_map[1]==1) <<" "<< (do_map[2]==1)
                        << std::endl;
 
     for (amrex::MFIter mfi((*m_mesh_scale_fac_cc)(lev)); mfi.isValid(); ++mfi) {
@@ -112,13 +115,21 @@ void ExpScaling::create_cell_node_map(
                 amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
                 amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
 
-                amrex::Real fac_x = eval_fac(i, x, prob_lo[0], domain_n[0], delta0[0], len[0], do_map[0]);
-                amrex::Real fac_y = eval_fac(j, y, prob_lo[1], domain_n[1], delta0[1], len[1], do_map[1]);
-                amrex::Real fac_z = eval_fac(k, z, prob_lo[2] ,domain_n[2], delta0[2], len[2], do_map[2]);
+                amrex::Real ix = (x-prob_lo[0])/dx[0];
+                amrex::Real iy = (y-prob_lo[1])/dx[1];
+                amrex::Real iz = (z-prob_lo[2])/dx[2];
 
-                scale_fac_cc(i, j, k, 0) = (do_map[0]==1) ? fac_x : 1.0;
-                scale_fac_cc(i, j, k, 1) = (do_map[1]==1) ? fac_y : 1.0;
-                scale_fac_cc(i, j, k, 2) = (do_map[2]==1) ? fac_z : 1.0;
+                amrex::Real fac_x = eval_fac(ix, x, x0[0], domain_n[0], delta0[0], len[0], do_map[0]);
+                amrex::Real fac_y = eval_fac(iy, y, x0[1], domain_n[1], delta0[1], len[1], do_map[1]);
+                amrex::Real fac_z = eval_fac(iz, z, x0[2] ,domain_n[2], delta0[2], len[2], do_map[2]);
+
+                bool dox = (do_map[0]>0);
+                bool doy = (do_map[1]>0);
+                bool doz = (do_map[2]>0);
+
+                scale_fac_cc(i, j, k, 0) = dox ? fac_x : 1.0;
+                scale_fac_cc(i, j, k, 1) = doy ? fac_y : 1.0;
+                scale_fac_cc(i, j, k, 2) = doz ? fac_z : 1.0;
 
                 scale_detJ_cc(i, j, k) = scale_fac_cc(i, j, k, 0) *
                                          scale_fac_cc(i, j, k, 1) *
@@ -136,13 +147,21 @@ void ExpScaling::create_cell_node_map(
                 amrex::Real y = prob_lo[1] + j * dx[1];
                 amrex::Real z = prob_lo[2] + k * dx[2];
 
-                amrex::Real fac_x = eval_fac(i, x, prob_lo[0], domain_n[0], delta0[0], len[0], do_map[0]);
-                amrex::Real fac_y = eval_fac(j, y, prob_lo[1], domain_n[1], delta0[1], len[1], do_map[1]);
-                amrex::Real fac_z = eval_fac(k, z, prob_lo[2] ,domain_n[2], delta0[2], len[2], do_map[2]);
+                amrex::Real ix = (x-prob_lo[0])/dx[0];
+                amrex::Real iy = (y-prob_lo[1])/dx[1];
+                amrex::Real iz = (z-prob_lo[2])/dx[2];
 
-                scale_fac_nd(i, j, k, 0) = (do_map[0]==1) ? fac_x : 1.0;
-                scale_fac_nd(i, j, k, 1) = (do_map[1]==1) ? fac_y : 1.0;
-                scale_fac_nd(i, j, k, 2) = (do_map[2]==1) ? fac_z : 1.0;
+                amrex::Real fac_x = eval_fac(ix, x, x0[0], domain_n[0], delta0[0], len[0], do_map[0]);
+                amrex::Real fac_y = eval_fac(iy, y, x0[1], domain_n[1], delta0[1], len[1], do_map[1]);
+                amrex::Real fac_z = eval_fac(iz, z, x0[2] ,domain_n[2], delta0[2], len[2], do_map[2]);
+
+                bool dox = (do_map[0]>0);
+                bool doy = (do_map[1]>0);
+                bool doz = (do_map[2]>0);
+
+                scale_fac_nd(i, j, k, 0) = dox ? fac_x : 1.0;
+                scale_fac_nd(i, j, k, 1) = doy ? fac_y : 1.0;
+                scale_fac_nd(i, j, k, 2) = doz ? fac_z : 1.0;
 
                 scale_detJ_nd(i, j, k) = scale_fac_nd(i, j, k, 0) *
                                          scale_fac_nd(i, j, k, 1) *
@@ -170,6 +189,9 @@ void ExpScaling::create_face_map(int lev, const amrex::Geometry& geom)
 
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> delta0{
         {m_delta0[0], m_delta0[1], m_delta0[2]}};
+
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> x0{
+        {prob_lo[0], prob_lo[1], prob_lo[2]}};
     
     amrex::GpuArray<int, AMREX_SPACEDIM> do_map{
         {m_map[0], m_map[1], m_map[2]}};
@@ -192,13 +214,21 @@ void ExpScaling::create_face_map(int lev, const amrex::Geometry& geom)
                 amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
                 amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
 
-                amrex::Real fac_x = eval_fac(i, x, prob_lo[0], domain_n[0], delta0[0], len[0], do_map[0]);
-                amrex::Real fac_y = eval_fac(j, y, prob_lo[1], domain_n[1], delta0[1], len[1], do_map[1]);
-                amrex::Real fac_z = eval_fac(k, z, prob_lo[2] ,domain_n[2], delta0[2], len[2], do_map[2]);
+                amrex::Real ix = (x-prob_lo[0])/dx[0];
+                amrex::Real iy = (y-prob_lo[1])/dx[1];
+                amrex::Real iz = (z-prob_lo[2])/dx[2];
 
-                scale_fac_xf(i, j, k, 0) = (do_map[0]==1) ? fac_x : 1.0;
-                scale_fac_xf(i, j, k, 1) = (do_map[1]==1) ? fac_y : 1.0;
-                scale_fac_xf(i, j, k, 2) = (do_map[2]==1) ? fac_z : 1.0;
+                amrex::Real fac_x = eval_fac(ix, x, x0[0], domain_n[0], delta0[0], len[0], do_map[0]);
+                amrex::Real fac_y = eval_fac(iy, y, x0[1], domain_n[1], delta0[1], len[1], do_map[1]);
+                amrex::Real fac_z = eval_fac(iz, z, x0[2] ,domain_n[2], delta0[2], len[2], do_map[2]);
+
+                bool dox = (do_map[0]>0);
+                bool doy = (do_map[1]>0);
+                bool doz = (do_map[2]>0);
+
+                scale_fac_xf(i, j, k, 0) = dox ? fac_x : 1.0;
+                scale_fac_xf(i, j, k, 1) = doy ? fac_y : 1.0;
+                scale_fac_xf(i, j, k, 2) = doz ? fac_z : 1.0;
 
                 scale_detJ_xf(i, j, k) = scale_fac_xf(i, j, k, 0) *
                                          scale_fac_xf(i, j, k, 1) *
@@ -219,14 +249,21 @@ void ExpScaling::create_face_map(int lev, const amrex::Geometry& geom)
                 amrex::Real y = prob_lo[1] + j * dx[1];
                 amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
 
-                amrex::Real fac_x = eval_fac(i, x, prob_lo[0], domain_n[0], delta0[0], len[0], do_map[0]);
-                amrex::Real fac_y = eval_fac(j, y, prob_lo[1], domain_n[1], delta0[1], len[1], do_map[1]);
-                amrex::Real fac_z = eval_fac(k, z, prob_lo[2] ,domain_n[2], delta0[2], len[2], do_map[2]);
+                amrex::Real ix = (x-prob_lo[0])/dx[0];
+                amrex::Real iy = (y-prob_lo[1])/dx[1];
+                amrex::Real iz = (z-prob_lo[2])/dx[2];
 
+                amrex::Real fac_x = eval_fac(ix, x, x0[0], domain_n[0], delta0[0], len[0], do_map[0]);
+                amrex::Real fac_y = eval_fac(iy, y, x0[1], domain_n[1], delta0[1], len[1], do_map[1]);
+                amrex::Real fac_z = eval_fac(iz, z, x0[2] ,domain_n[2], delta0[2], len[2], do_map[2]);
 
-                scale_fac_yf(i, j, k, 0) = (do_map[0]==1) ? fac_x : 1.0;
-                scale_fac_yf(i, j, k, 1) = (do_map[1]==1) ? fac_y : 1.0;
-                scale_fac_yf(i, j, k, 2) = (do_map[2]==1) ? fac_z : 1.0;
+                bool dox = (do_map[0]>0);
+                bool doy = (do_map[1]>0);
+                bool doz = (do_map[2]>0);
+
+                scale_fac_yf(i, j, k, 0) = dox ? fac_x : 1.0;
+                scale_fac_yf(i, j, k, 1) = doy ? fac_y : 1.0;
+                scale_fac_yf(i, j, k, 2) = doz ? fac_z : 1.0;
 
                 scale_detJ_yf(i, j, k) = scale_fac_yf(i, j, k, 0) *
                                          scale_fac_yf(i, j, k, 1) *
@@ -247,13 +284,21 @@ void ExpScaling::create_face_map(int lev, const amrex::Geometry& geom)
                 amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
                 amrex::Real z = prob_lo[2] + k * dx[2];
 
-                amrex::Real fac_x = eval_fac(i, x, prob_lo[0], domain_n[0], delta0[0], len[0], do_map[0]);
-                amrex::Real fac_y = eval_fac(j, y, prob_lo[1], domain_n[1], delta0[1], len[1], do_map[1]);
-                amrex::Real fac_z = eval_fac(k, z, prob_lo[2] ,domain_n[2], delta0[2], len[2], do_map[2]);
+                amrex::Real ix = (x-prob_lo[0])/dx[0];
+                amrex::Real iy = (y-prob_lo[1])/dx[1];
+                amrex::Real iz = (z-prob_lo[2])/dx[2];
 
-                scale_fac_zf(i, j, k, 0) = (do_map[0]==1) ? fac_x : 1.0;
-                scale_fac_zf(i, j, k, 1) = (do_map[1]==1) ? fac_y : 1.0;
-                scale_fac_zf(i, j, k, 2) = (do_map[2]==1) ? fac_z : 1.0;
+                amrex::Real fac_x = eval_fac(ix, x, x0[0], domain_n[0], delta0[0], len[0], do_map[0]);
+                amrex::Real fac_y = eval_fac(iy, y, x0[1], domain_n[1], delta0[1], len[1], do_map[1]);
+                amrex::Real fac_z = eval_fac(iz, z, x0[2] ,domain_n[2], delta0[2], len[2], do_map[2]);
+
+                bool dox = (do_map[0]>0);
+                bool doy = (do_map[1]>0);
+                bool doz = (do_map[2]>0);
+
+                scale_fac_zf(i, j, k, 0) = dox ? fac_x : 1.0;
+                scale_fac_zf(i, j, k, 1) = doy ? fac_y : 1.0;
+                scale_fac_zf(i, j, k, 2) = doz ? fac_z : 1.0;
 
                 scale_detJ_zf(i, j, k) = scale_fac_zf(i, j, k, 0) *
                                          scale_fac_zf(i, j, k, 1) *
@@ -295,6 +340,9 @@ void ExpScaling::create_non_uniform_mesh(
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> delta0{
         {m_delta0[0], m_delta0[1], m_delta0[2]}};
 
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> x0{
+        {prob_lo[0], prob_lo[1], prob_lo[2]}};
+
     amrex::GpuArray<int, AMREX_SPACEDIM> do_map{
         {m_map[0], m_map[1], m_map[2]}};
 
@@ -315,16 +363,24 @@ void ExpScaling::create_non_uniform_mesh(
                 amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
                 amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
 
-                amrex::Real x_non_uni =
-                    eval_coord(i, x, prob_lo[0], domain_n[0], delta0[0], len[0], do_map[0]);
-                amrex::Real y_non_uni =
-                    eval_coord(j, y, prob_lo[1], domain_n[1], delta0[1], len[1], do_map[1]);
-                amrex::Real z_non_uni =
-                    eval_coord(k, z, prob_lo[2], domain_n[2], delta0[2], len[2], do_map[2]);
+                amrex::Real ix = (x-prob_lo[0])/dx[0];
+                amrex::Real iy = (y-prob_lo[1])/dx[1];
+                amrex::Real iz = (z-prob_lo[2])/dx[2];
 
-                nu_coord_cc(i, j, k, 0) = (do_map[0]==1) ? x_non_uni : x;
-                nu_coord_cc(i, j, k, 1) = (do_map[1]==1) ? y_non_uni : y;
-                nu_coord_cc(i, j, k, 2) = (do_map[2]==1) ? z_non_uni : z;
+                amrex::Real x_non_uni =
+                    eval_coord(ix, x, x0[0], domain_n[0], delta0[0], len[0], do_map[0]);
+                amrex::Real y_non_uni =
+                    eval_coord(iy, y, x0[1], domain_n[1], delta0[1], len[1], do_map[1]);
+                amrex::Real z_non_uni =
+                    eval_coord(iz, z, x0[2], domain_n[2], delta0[2], len[2], do_map[2]);
+
+                bool dox = (do_map[0]>0);
+                bool doy = (do_map[1]>0);
+                bool doz = (do_map[2]>0);
+
+                nu_coord_cc(i, j, k, 0) = dox ? x_non_uni : x;
+                nu_coord_cc(i, j, k, 1) = doy ? y_non_uni : y;
+                nu_coord_cc(i, j, k, 2) = doz ? z_non_uni : z;
             });
 
         const auto& nbx = mfi.grownnodaltilebox();
@@ -336,23 +392,31 @@ void ExpScaling::create_non_uniform_mesh(
                 amrex::Real y = prob_lo[1] + j * dx[1];
                 amrex::Real z = prob_lo[2] + k * dx[2];
 
-                amrex::Real x_non_uni =
-                    eval_coord(i, x, prob_lo[0], domain_n[0], delta0[0], len[0], do_map[0]);
-                amrex::Real y_non_uni =
-                    eval_coord(j, y, prob_lo[1], domain_n[1], delta0[1], len[1], do_map[1]);
-                amrex::Real z_non_uni =
-                    eval_coord(k, z, prob_lo[2], domain_n[2], delta0[2], len[2], do_map[2]);
+                amrex::Real ix = (x-prob_lo[0])/dx[0];
+                amrex::Real iy = (y-prob_lo[1])/dx[1];
+                amrex::Real iz = (z-prob_lo[2])/dx[2];
 
-                nu_coord_cc(i, j, k, 0) = (do_map[0]==1) ? x_non_uni : x;
-                nu_coord_cc(i, j, k, 1) = (do_map[1]==1) ? y_non_uni : y;
-                nu_coord_cc(i, j, k, 2) = (do_map[2]==1) ? z_non_uni : z;
+                amrex::Real x_non_uni =
+                    eval_coord(ix, x, x0[0], domain_n[0], delta0[0], len[0], do_map[0]);
+                amrex::Real y_non_uni =
+                    eval_coord(iy, y, x0[1], domain_n[1], delta0[1], len[1], do_map[1]);
+                amrex::Real z_non_uni =
+                    eval_coord(iz, z, x0[2], domain_n[2], delta0[2], len[2], do_map[2]);
+
+                bool dox = (do_map[0]>0);
+                bool doy = (do_map[1]>0);
+                bool doz = (do_map[2]>0);
+
+                nu_coord_nd(i, j, k, 0) = dox ? x_non_uni : x;
+                nu_coord_nd(i, j, k, 1) = doy ? y_non_uni : y;
+                nu_coord_nd(i, j, k, 2) = doz ? z_non_uni : z;
             });
     }
 }
 
   // Used for debugging eval_coord function
   amrex::Real ExpScaling::dump_coord(
-                        const int i,
+                        const amrex::Real ix,
                         const amrex::Real x,
                         const amrex::Real prob_lo,
                         const amrex::Real dom_n,
@@ -360,12 +424,12 @@ void ExpScaling::create_non_uniform_mesh(
                         const amrex::Real len,
                         const int domap)
   {
-    return eval_coord(i, x, prob_lo, dom_n, delta0, len, domap);
+    return eval_coord(ix, x, prob_lo, dom_n, delta0, len, domap);
   }
 
   // Used for debugging eval_fac function
   amrex::Real ExpScaling::dump_fac(
-                        const int i,
+                        const amrex::Real ix,
                         const amrex::Real x,
                         const amrex::Real prob_lo,
                         const amrex::Real dom_n,
@@ -373,7 +437,7 @@ void ExpScaling::create_non_uniform_mesh(
                         const amrex::Real len,
                         const int domap)
   {
-    return eval_fac(i, x, prob_lo, dom_n, delta0, len, domap);
+    return eval_fac(ix, x, prob_lo, dom_n, delta0, len, domap);
   }
 
 } // namespace exp_map
