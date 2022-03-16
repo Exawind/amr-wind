@@ -349,6 +349,7 @@ void MultiPhase::favre_filtering()
                 });
         }
     }
+    m_velocity.fillpatch(0.0);
 }
 
 // Reconstructing the volume fraction from a levelset function
