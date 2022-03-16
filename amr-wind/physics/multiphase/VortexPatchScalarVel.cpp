@@ -41,8 +41,15 @@ void VortexPatchScalarVel::initialize_fields(int level, const amrex::Geometry& g
     const amrex::Real rho1 = mphase.rho1();
     const amrex::Real rho2 = mphase.rho2();
 
+    auto& u_mac = m_sim.repo().get_field("u_mac")(level);
+    auto& v_mac = m_sim.repo().get_field("v_mac")(level);
+    auto& w_mac = m_sim.repo().get_field("w_mac")(level);
+
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
+        auto uf = u_mac.array(mfi);
+        auto vf = v_mac.array(mfi);
+        auto wf = w_mac.array(mfi);
         auto vel = velocity.array(mfi);
         auto phi = levelset.array(mfi);
         auto rho = density.array(mfi);
@@ -54,7 +61,18 @@ void VortexPatchScalarVel::initialize_fields(int level, const amrex::Geometry& g
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                 const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                 const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-
+                const amrex::Real xf = problo[0] + i * dx[0];
+                const amrex::Real yf = problo[1] + j * dx[1];
+                const amrex::Real zf = problo[2] + k * dx[2];
+                uf(i, j, k) =
+                    2.0 * std::sin(M_PI * xf) * std::sin(M_PI * xf) *
+                    std::sin(2.0 * M_PI * y) * std::sin(2.0 * M_PI * z);
+                vf(i, j, k) = -std::sin(M_PI * yf) * std::sin(M_PI * yf) *
+                                  std::sin(2.0 * M_PI * x) *
+                                  std::sin(2.0 * M_PI * z);
+                wf(i, j, k) = -std::sin(M_PI * zf) * std::sin(M_PI * zf) *
+                                  std::sin(2.0 * M_PI * x) *
+                                  std::sin(2.0 * M_PI * y);
                 // Only the x component is nonzero
                 vel(i, j, k, 1) = 0.0;
                 vel(i, j, k, 2) = 0.0;

@@ -38,6 +38,10 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
     const amrex::Real rho1 = mphase.rho1();
     const amrex::Real rho2 = mphase.rho2();
 
+    auto& u_mac = m_sim.repo().get_field("u_mac")(level);
+    auto& v_mac = m_sim.repo().get_field("v_mac")(level);
+    auto& w_mac = m_sim.repo().get_field("w_mac")(level);
+
     const amrex::Real xc = m_loc[0];
     const amrex::Real yc = m_loc[1];
     const amrex::Real zc = m_loc[2];
@@ -48,6 +52,9 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
 
     for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.growntilebox();
+        auto uf = u_mac.array(mfi);
+        auto vf = v_mac.array(mfi);
+        auto wf = w_mac.array(mfi);
         auto vel = velocity.array(mfi);
         auto phi = levelset.array(mfi);
         auto rho = density.array(mfi);
@@ -56,6 +63,10 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                 const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                 const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+
+                uf(i, j, k) = 2.0 * M_PI / TT * (0.5 - y);
+                vf(i, j, k) = 2.0 * M_PI / TT * (x - 0.5);
+                wf(i, j, k) = 0.0;
 
                 vel(i, j, k, 0) = 2.0 * M_PI / TT * (0.5 - y);
                 vel(i, j, k, 1) = 2.0 * M_PI / TT * (x - 0.5);
