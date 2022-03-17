@@ -54,6 +54,9 @@ private:
     //! vortex patch radius value
     amrex::Real m_radius{0.15};
 
+    //! smoothing factor
+    amrex::Real m_sfactor{1.0};
+
     //! prescribed velocity period
     amrex::Real m_TT{3.0};
 };
