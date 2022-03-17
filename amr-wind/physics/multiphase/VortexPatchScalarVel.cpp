@@ -14,6 +14,7 @@ VortexPatchScalarVel::VortexPatchScalarVel(CFDSim& sim)
     amrex::ParmParse pp(identifier());
     pp.queryarr("location", m_loc, 0, AMREX_SPACEDIM);
     pp.query("radius", m_radius);
+    pp.query("smooth_factor", m_sfactor);
     pp.query("period", m_TT);
     amrex::ParmParse pinc("incflo");
     pinc.add("prescribe_velocity",true);
@@ -54,7 +55,7 @@ void VortexPatchScalarVel::initialize_fields(int level, const amrex::Geometry& g
         auto phi = levelset.array(mfi);
         auto rho = density.array(mfi);
         const amrex::Real eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
-        const amrex::Real eps_vel = radius;
+        const amrex::Real eps_vel = radius * m_sfactor;
 
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
