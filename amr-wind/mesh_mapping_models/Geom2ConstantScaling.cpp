@@ -50,10 +50,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_fac(
     const amrex::Real hprime = 0.5*std::pow(std::cosh((x*dxscale-xinv)/trans_width),-2.0)/trans_width;
     const amrex::Real lmatch = x_geom(xinv, sratio, delta0);
     const amrex::Real slope = lmatch-x_geom(xinv-1.0, sratio, delta0);
-    const amrex::Real xprime_geom = delta0/sratio/(sratio-1.0)*std::pow(sratio, x-1.0)*std::log(sratio);
+    const amrex::Real xprime_geom = delta0/sratio/(sratio-1.0)*std::pow(sratio, x*dxscale-1.0)*std::log(sratio);
 
     if (domap==0) return 1.0;
-    return ((1.0-h)*xprime_geom - hprime*x_geom(x,sratio,delta0) + h*slope + hprime*x_const(x,slope,xinv,lmatch))*dxscale;
+    return ((1.0-h)*xprime_geom - hprime*x_geom(x*dxscale,sratio,delta0) + h*slope + hprime*x_const(x*dxscale,slope,xinv,lmatch))*dxscale;
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_coord(
