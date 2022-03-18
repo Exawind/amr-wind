@@ -111,15 +111,36 @@ private:
     //! Cutoff height for temperature fluctuations
     amrex::Real m_theta_cutoff_height{1.0e16};
 
-    //! Initial value for tke field
+    //! ABL initialization type
+    std::string m_init_type{"const"};
+
+    //! Initial constant value for kappa
+    amrex::Real m_kappa{0.41};
+
+    //! Initial constant value for kappa
+    amrex::Real m_rough_z0{0.005};
+
+    //! Initial forcing height
+    amrex::Real m_force_height{32.1};
+
+    //! Initial constant value for tke field
     amrex::Real m_tke_init{0.1};
 
-    //! Initial value for eps field
+    //! Initial constant value for eps field
     amrex::Real m_eps_init{0.1};
 
-    //! Initial value for sdr field
+    //! Initial constant value for sdr field
     //! Default value set based on https://turbmodels.larc.nasa.gov/sst.html
     amrex::Real m_sdr_init{25.0};
+
+    //! Initial value for ustar (used with geostrophic forcing only)
+    amrex::Real m_init_prof_ustar{0.41};
+
+    //! Initial value for C1 (see Parente2011)
+    amrex::Real m_init_prof_c1{-0.04};
+
+    //! Initial value for C1 (see Parente2011)
+    amrex::Real m_init_prof_c2{0.52};
 
     //! Perturb initial velocity field with sinusoidal fluctuations
     bool m_perturb_vel{true};

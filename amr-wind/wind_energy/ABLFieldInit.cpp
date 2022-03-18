@@ -10,6 +10,7 @@ ABLFieldInit::ABLFieldInit(CFDSim& sim)
     : m_repo(sim.repo()), m_mesh_mapping(sim.has_mesh_mapping())
 {
     amrex::ParmParse pp_abl("ABL");
+    amrex::ParmParse pp_ablf("ABLForcing");
 
     // Temperature variation as a function of height
     pp_abl.getarr("temperature_heights", m_theta_heights);
@@ -31,11 +32,20 @@ ABLFieldInit::ABLFieldInit(CFDSim& sim)
     pp_abl.query("cutoff_height", m_theta_cutoff_height);
     pp_abl.query("theta_amplitude", m_deltaT);
 
-    pp_abl.query("init_tke", m_tke_init);
+    // Initial profile type: const, simple
+    // TODO: Add M-O and geostrophic forcing-consistent profiles 
+    pp_abl.query("init_type", m_init_type);
+    pp_abl.query("kappa", m_kappa);
+    pp_abl.query("surface_roughness_z0", m_rough_z0);
+    pp_ablf.query("abl_forcing_height", m_force_height);
+    pp_abl.query("init_tke_const", m_tke_init);
+    pp_abl.query("init_sdr_const", m_sdr_init);
+    pp_abl.query("init_eps_const", m_eps_init);
+    pp_abl.query("init_profile_ustar", m_init_prof_ustar);
+    pp_abl.query("init_profile_c1", m_init_prof_c1);
+    pp_abl.query("init_profile_c2", m_init_prof_c2);
 
-    pp_abl.query("initial_sdr_value", m_sdr_init);
-
-    pp_abl.query("init_eps", m_eps_init);
+    
 
     // TODO: Modify this to accept velocity as a function of height
     // Extract velocity field from incflo
@@ -83,6 +93,20 @@ void ABLFieldInit::operator()(
     const amrex::Real* th = m_thht_d.data();
     const amrex::Real* tv = m_thvv_d.data();
 
+    const amrex::Real kappa = m_kappa;
+    const amrex::Real z_fh = m_force_height;
+    const amrex::Real z_0 = m_rough_z0;
+
+    // Longitudinal velocity angle (positive from X-dir)
+    const amrex::Real vel_angle = std::atan(vmean/umean);
+
+    // Longitudinal Velocity Magnitude
+    const amrex::Real vel_long = std::sqrt(std::pow(umean,2.0) + std::pow(vmean, 2.0));
+
+    // Calc ustar
+    const amrex::Real ustar = vel_long*kappa/std::log((z_fh + z_0)/z_0);
+    amrex::Print() << "Calculated u*: " << ustar << std::endl;
+
     // Handle mesh mapping coordinates
     Field const* nu_coord_cc =
         m_mesh_mapping ? &(m_repo.get_field("non_uniform_coord_cc")) : nullptr;
@@ -91,18 +115,25 @@ void ABLFieldInit::operator()(
                        : amrex::Array4<amrex::Real const>();
 
     amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-	const amrex::Real x = 
+	    const amrex::Real x = 
             m_mesh_mapping ? nu_cc(i, j, k, 0) : problo[0] + (i + 0.5) * dx[0];
-	const amrex::Real y = 
+	    const amrex::Real y = 
             m_mesh_mapping ? nu_cc(i, j, k, 1) : problo[1] + (j + 0.5) * dx[1];
-	const amrex::Real z = 
+	    const amrex::Real z = 
             m_mesh_mapping ? nu_cc(i, j, k, 2) : problo[2] + (k + 0.5) * dx[2];
 
         density(i, j, k) = rho_init;
+
         // Mean velocity field
-        velocity(i, j, k, 0) = umean;
-        velocity(i, j, k, 1) = vmean;
-        velocity(i, j, k, 2) = wmean;
+        if(m_init_type == "const"){
+            velocity(i, j, k, 0) = umean;
+            velocity(i, j, k, 1) = vmean;
+            velocity(i, j, k, 2) = wmean;
+        }else{
+            velocity(i, j, k, 0) = ustar/kappa*std::log((z+z_0)/z_0)*std::cos(vel_angle);
+            velocity(i, j, k, 1) = ustar/kappa*std::log((z+z_0)/z_0)*std::sin(vel_angle);
+            velocity(i, j, k, 2) = wmean;
+        }
 
         amrex::Real theta = tv[0];
         for (int iz = 0; iz < ntvals - 1; ++iz) {
@@ -205,5 +236,6 @@ void ABLFieldInit::init_eps(
 {
     eps.setVal(m_eps_init, 1);
 }
+
 
 } // namespace amr_wind
