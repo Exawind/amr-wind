@@ -43,8 +43,9 @@ public:
     //! set up interpolation arrays
     void setup_interp_arrays(int, const amrex::Geometry&);
 
-    //! set up interpolation arrays
+    //! interpolation routines
     amrex::Real interp_nonunif_to_unif(amrex::Real, int);
+    amrex::Real interp_unif_to_nonunif(amrex::Real, int);
 
 protected:
     Field* m_mesh_scale_fac_cc{nullptr};

@@ -119,6 +119,14 @@ private:
 #endif
     std::string m_ascii_file_name;
 
+    // Field averaging for RANS variables
+    FieldPlaneAveraging* m_pa_tke{nullptr};
+    FieldPlaneAveraging* m_pa_sdr{nullptr};
+    FieldPlaneAveraging* m_pa_eps{nullptr};
+    bool m_has_tke{false};
+    bool m_has_sdr{false};
+    bool m_has_eps{false};
+
     //! Frequency of data sampling and output
     int m_out_freq{100};
 

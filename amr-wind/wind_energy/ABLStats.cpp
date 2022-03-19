@@ -80,6 +80,21 @@ void ABLStats::initialize()
     }
     m_dn = geom.CellSize()[m_normal_dir];
 
+    // Initialize any RANS field variables for averaging
+    if (m_sim.repo().field_exists("tke")) {
+        m_has_tke = true;
+        amrex::Print()<<"ABLStats: Adding TKE"<<std::endl;
+	m_pa_tke = new FieldPlaneAveraging(m_sim.repo().get_field("tke"), m_sim.time(), m_normal_dir);
+    }
+    if (m_sim.repo().field_exists("sdr")) {
+        m_has_sdr = true;
+	m_pa_sdr = new FieldPlaneAveraging(m_sim.repo().get_field("sdr"), m_sim.time(), m_normal_dir);
+    }
+    if (m_sim.repo().field_exists("eps")) {
+        m_has_eps = true;
+	m_pa_eps = new FieldPlaneAveraging(m_sim.repo().get_field("eps"), m_sim.time(), m_normal_dir);
+    }
+
     if (m_out_fmt == "netcdf") {
         prepare_netcdf_file();
     } else {
@@ -91,6 +106,15 @@ void ABLStats::calc_averages()
 {
     m_pa_vel();
     m_pa_temp();
+    if (m_has_tke) {
+        (*m_pa_tke)();
+    }
+    if (m_has_sdr) {
+        (*m_pa_sdr)();
+    }
+    if (m_has_eps) {
+        (*m_pa_eps)();
+    }
 }
 
 //! Calculate sfs stress averages
@@ -271,6 +295,22 @@ void ABLStats::write_ascii()
         stat_dir + "/third_moment_velocity_velocity_velocity.txt",
         time.time_index(), time.current_time());
 
+    if (m_has_tke) {
+        (*m_pa_tke).output_line_average_ascii(
+            stat_dir + "/plane_average_k_rans.txt", time.time_index(),
+            time.current_time());
+    }
+    if (m_has_sdr) {
+        (*m_pa_sdr).output_line_average_ascii(
+            stat_dir + "/plane_average_sdr.txt", time.time_index(),
+            time.current_time());
+    }
+    if (m_has_eps) {
+        (*m_pa_eps).output_line_average_ascii(
+            stat_dir + "/plane_average_eps.txt", time.time_index(),
+            time.current_time());
+    }
+
     // Only I/O processor handles this file I/O
     if (!amrex::ParallelDescriptor::IOProcessor()) {
         return;
@@ -374,6 +414,7 @@ void ABLStats::prepare_netcdf_file()
     grp.def_dim("nlevels", n_levels);
     const std::vector<std::string> two_dim{nt_name, nlevels_name};
     grp.def_var("h", NC_DOUBLE, {nlevels_name});
+    grp.def_var("hmapped", NC_DOUBLE, {nlevels_name});
     grp.def_var("u", NC_DOUBLE, two_dim);
     grp.def_var("v", NC_DOUBLE, two_dim);
     grp.def_var("w", NC_DOUBLE, two_dim);
@@ -399,12 +440,41 @@ void ABLStats::prepare_netcdf_file()
     grp.def_var("u'w'_sfs", NC_DOUBLE, two_dim);
     grp.def_var("v'w'_sfs", NC_DOUBLE, two_dim);
 
+    if (m_has_tke) {
+        grp.def_var("k_rans", NC_DOUBLE, two_dim);
+    }
+    if (m_has_sdr) {
+        grp.def_var("sdr", NC_DOUBLE, two_dim);
+    }
+    if (m_has_eps) {
+        grp.def_var("eps", NC_DOUBLE, two_dim);
+    }
+
     ncf.exit_def_mode();
 
     {
         const std::vector<size_t> start{0};
         std::vector<size_t> count{n_levels};
         auto h = grp.var("h");
+        h.put(m_pa_vel.line_centroids().data(), start, count);
+    }
+
+    if (m_sim.has_mesh_mapping()) {
+        const std::vector<size_t> start{0};
+        std::vector<size_t> count{n_levels};
+        auto h = grp.var("hmapped");
+
+        std::vector<amrex::Real> hmapped(n_levels);
+        const auto zunif = m_pa_vel.line_centroids();
+	for (unsigned i=0; i<n_levels; i++) {
+            hmapped[i] = m_sim.mesh_mapping()->interp_unif_to_nonunif(zunif[i], 2);
+        }
+        h.put(&hmapped[0], start, count);
+
+    } else {
+        const std::vector<size_t> start{0};
+        std::vector<size_t> count{n_levels};
+        auto h = grp.var("hmapped");
         h.put(m_pa_vel.line_centroids().data(), start, count);
     }
 
@@ -538,6 +608,20 @@ void ABLStats::write_netcdf()
                 var.put(l_vec.data(), start, count);
             }
         }
+
+        if (m_has_tke) {
+            auto var = grp.var("k_rans");
+            var.put((*m_pa_tke).line_average().data(), start, count);
+        }
+        if (m_has_sdr) {
+            auto var = grp.var("sdr");
+            var.put((*m_pa_sdr).line_average().data(), start, count);
+        }
+        if (m_has_eps) {
+            auto var = grp.var("eps");
+            var.put((*m_pa_eps).line_average().data(), start, count);
+        }
+
     }
     ncf.close();
 #endif

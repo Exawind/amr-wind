@@ -157,5 +157,23 @@ amrex::Real MeshMap::interp_nonunif_to_unif(amrex::Real x_nonunif, int dir)
     }
     return ans;
 }
+
+amrex::Real MeshMap::interp_unif_to_nonunif(amrex::Real x_unif, int dir)
+{
+    namespace interp = ::amr_wind::interp;
+    amrex::Real ans(0.0);
+    switch(dir) {
+    case 0:
+        ans = interp::linear(m_x_uni, m_x_nu, x_unif);
+        break;
+    case 1:
+        ans = interp::linear(m_y_uni, m_y_nu, x_unif);
+        break;
+    case 2:
+        ans = interp::linear(m_z_uni, m_z_nu, x_unif);
+        break;
+    }
+    return ans;
+}
   
 } // namespace amr_wind
