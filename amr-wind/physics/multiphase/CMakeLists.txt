@@ -4,10 +4,10 @@ target_sources(${amr_wind_lib_name}
   VortexPatch.cpp
   VortexPatchScalarVel.cpp
   ZalesakDisk.cpp
+  ZalesakDiskScalarVel.cpp
   DamBreak.cpp
   SloshingTank.cpp
   RainDrop.cpp
   )
 
 add_subdirectory(wave_basin)
-
