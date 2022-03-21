@@ -47,6 +47,7 @@ ZalesakDiskScalarVel::ZalesakDiskScalarVel(CFDSim& sim)
     pp.queryarr("location", m_loc, 0, AMREX_SPACEDIM);
     pp.query("radius", m_radius);
     pp.query("period", m_TT);
+    pp.query("error_log_file", m_output_fname);
     amrex::ParmParse pinc("incflo");
     pinc.add("prescribe_velocity",true);
 }
