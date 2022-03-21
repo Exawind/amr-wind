@@ -45,7 +45,12 @@ ABLFieldInit::ABLFieldInit(CFDSim& sim)
     pp_abl.query("init_profile_c1", m_init_prof_c1);
     pp_abl.query("init_profile_c2", m_init_prof_c2);
 
-    
+    // Get beta-star for use in initial conditions
+    amrex::ParmParse pp_turb("turbulence");
+    pp_turb.query("model", m_turb_model_name);
+    const std::string turb_coeffs_dict = m_turb_model_name + "_coeffs";
+    amrex::ParmParse pp_turb_coeffs(turb_coeffs_dict);
+    pp_turb.query("beta_star", m_beta_star);
 
     // TODO: Modify this to accept velocity as a function of height
     // Extract velocity field from incflo
@@ -210,31 +215,131 @@ void ABLFieldInit::perturb_temperature(
 
 //! Initialize sfs tke field at the beginning of the simulation
 void ABLFieldInit::init_tke(
-    const int /* level */,
-    const amrex::Geometry& /* geom */,
-    amrex::MultiFab& tke) const
+    const int level,
+    const amrex::MFIter& mfi,
+    const amrex::Box& vbx,
+    const amrex::Geometry& geom,
+    const amrex::Array4<amrex::Real>& tke) const
 {
-    tke.setVal(m_tke_init, 1);
+    const auto& dx = geom.CellSizeArray();
+    const auto& problo = geom.ProbLoArray();
+    const auto& probhi = geom.ProbHiArray();
+
+    // Handle mesh mapping coordinates
+    Field const* nu_coord_cc =
+        m_mesh_mapping ? &(m_repo.get_field("non_uniform_coord_cc")) : nullptr;
+    amrex::Array4<amrex::Real const> nu_cc =
+        m_mesh_mapping ? ((*nu_coord_cc)(level).array(mfi))
+                    : amrex::Array4<amrex::Real const>();
+
+    amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+        const amrex::Real x = 
+            m_mesh_mapping ? nu_cc(i, j, k, 0) : problo[0] + (i + 0.5) * dx[0];
+        const amrex::Real y = 
+            m_mesh_mapping ? nu_cc(i, j, k, 1) : problo[1] + (j + 0.5) * dx[1];
+        const amrex::Real z = 
+            m_mesh_mapping ? nu_cc(i, j, k, 2) : problo[2] + (k + 0.5) * dx[2];
+
+        if(m_init_type == "const"){
+            tke(i, j, k, 0) = m_tke_init;
+        }else{
+            tke(i, j, k, 0) = m_init_prof_c1*std::log(z + m_rough_z0) + m_init_prof_c2;
+        }
+
+    });
 }
 
 //! Initialize SDR field at the beginning of the simulation
 //! (applicable to K-Omega SST model)
 void ABLFieldInit::init_sdr(
-    const int /* level */,
-    const amrex::Geometry& /* geom */,
-    amrex::MultiFab& sdr) const
+    const int level,
+    const amrex::MFIter& mfi,
+    const amrex::Box& vbx,
+    const amrex::Geometry& geom,
+    const amrex::Array4<amrex::Real>& sdr) const
 {
-    sdr.setVal(m_sdr_init, 1);
+    const auto& dx = geom.CellSizeArray();
+    const auto& problo = geom.ProbLoArray();
+    const auto& probhi = geom.ProbHiArray();
+
+    // Longitudinal velocity angle (positive from X-dir)
+    const amrex::Real vel_angle = std::atan(m_vel[1]/m_vel[0]);
+
+    // Longitudinal Velocity Magnitude
+    const amrex::Real vel_long = std::sqrt(std::pow(m_vel[0],2.0) + std::pow(m_vel[1], 2.0));
+
+    // Calc ustar
+    const amrex::Real ustar = vel_long*m_kappa/std::log((m_force_height + m_rough_z0)/m_rough_z0);
+
+    // Handle mesh mapping coordinates
+    Field const* nu_coord_cc =
+        m_mesh_mapping ? &(m_repo.get_field("non_uniform_coord_cc")) : nullptr;
+    amrex::Array4<amrex::Real const> nu_cc =
+        m_mesh_mapping ? ((*nu_coord_cc)(level).array(mfi))
+                    : amrex::Array4<amrex::Real const>();
+
+    amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+        const amrex::Real x = 
+            m_mesh_mapping ? nu_cc(i, j, k, 0) : problo[0] + (i + 0.5) * dx[0];
+        const amrex::Real y = 
+            m_mesh_mapping ? nu_cc(i, j, k, 1) : problo[1] + (j + 0.5) * dx[1];
+        const amrex::Real z = 
+            m_mesh_mapping ? nu_cc(i, j, k, 2) : problo[2] + (k + 0.5) * dx[2];
+
+        if(m_init_type == "const"){
+            sdr(i, j, k, 0) = m_sdr_init;
+        }else{
+            const amrex::Real initk = m_init_prof_c1*std::log(z + m_rough_z0) + m_init_prof_c2;
+            sdr(i, j, k, 0) = std::pow(ustar, 3.0)/(m_beta_star*initk*m_kappa*(z + m_rough_z0));
+        }
+
+    });
 }
 
 //! Initialize epsilon field at the beginning of the simulation
 //! (applicable to K-Epsilon model)
 void ABLFieldInit::init_eps(
-    const int /* level */,
-    const amrex::Geometry& /* geom */,
-    amrex::MultiFab& eps) const
+    const int level,
+    const amrex::MFIter& mfi,
+    const amrex::Box& vbx,
+    const amrex::Geometry& geom,
+    const amrex::Array4<amrex::Real>& eps) const
 {
-    eps.setVal(m_eps_init, 1);
+    const auto& dx = geom.CellSizeArray();
+    const auto& problo = geom.ProbLoArray();
+    const auto& probhi = geom.ProbHiArray();
+
+    // Longitudinal velocity angle (positive from X-dir)
+    const amrex::Real vel_angle = std::atan(m_vel[1]/m_vel[0]);
+
+    // Longitudinal Velocity Magnitude
+    const amrex::Real vel_long = std::sqrt(std::pow(m_vel[0],2.0) + std::pow(m_vel[1], 2.0));
+
+    // Calc ustar
+    const amrex::Real ustar = vel_long*m_kappa/std::log((m_force_height + m_rough_z0)/m_rough_z0);
+
+    // Handle mesh mapping coordinates
+    Field const* nu_coord_cc =
+        m_mesh_mapping ? &(m_repo.get_field("non_uniform_coord_cc")) : nullptr;
+    amrex::Array4<amrex::Real const> nu_cc =
+        m_mesh_mapping ? ((*nu_coord_cc)(level).array(mfi))
+                    : amrex::Array4<amrex::Real const>();
+
+    amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+        const amrex::Real x = 
+            m_mesh_mapping ? nu_cc(i, j, k, 0) : problo[0] + (i + 0.5) * dx[0];
+        const amrex::Real y = 
+            m_mesh_mapping ? nu_cc(i, j, k, 1) : problo[1] + (j + 0.5) * dx[1];
+        const amrex::Real z = 
+            m_mesh_mapping ? nu_cc(i, j, k, 2) : problo[2] + (k + 0.5) * dx[2];
+
+        if(m_init_type == "const"){
+            eps(i, j, k, 0) = m_sdr_init;
+        }else{
+            eps(i, j, k, 0) = std::pow(ustar, 3.0)/(m_kappa*(z + m_rough_z0));
+        }
+
+    });
 }
 
 

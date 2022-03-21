@@ -46,20 +46,26 @@ public:
     //! Initialize TKE field
     void init_tke(
         const int level,
-        const amrex::Geometry& geom, 
-	amrex::MultiFab& tke) const;
+        const amrex::MFIter& mfi,
+        const amrex::Box& vbx,
+        const amrex::Geometry& geom,
+        const amrex::Array4<amrex::Real>& tke) const;
 
     //! Initialize SDR field
     void init_sdr(
         const int level,
-        const amrex::Geometry& geom, 
-        amrex::MultiFab& sdr) const;
+        const amrex::MFIter& mfi,
+        const amrex::Box& vbx,
+        const amrex::Geometry& geom,
+        const amrex::Array4<amrex::Real>& sdr) const;
 
     //! Initialize epsilon field
     void init_eps(
         const int level,
-        const amrex::Geometry& geom, 
-        amrex::MultiFab& sdr) const;
+        const amrex::MFIter& mfi,
+        const amrex::Box& vbx,
+        const amrex::Geometry& geom,
+        const amrex::Array4<amrex::Real>& eps) const;
 
 private:
     const FieldRepo& m_repo;
@@ -140,7 +146,13 @@ private:
     amrex::Real m_init_prof_c1{-0.04};
 
     //! Initial value for C1 (see Parente2011)
-    amrex::Real m_init_prof_c2{0.52};
+    amrex::Real m_init_prof_c2{0.42};
+
+    //! Turbulence Model Name
+    std::string m_turb_model_name{"kOmegaSST"};
+
+    //! Beta star (assumes constant)
+    amrex::Real m_beta_star{0.09};
 
     //! Perturb initial velocity field with sinusoidal fluctuations
     bool m_perturb_vel{true};

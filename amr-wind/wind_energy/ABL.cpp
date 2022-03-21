@@ -73,19 +73,31 @@ void ABL::initialize_fields(int level, const amrex::Geometry& geom)
     if (m_sim.repo().field_exists("tke")) {
         m_tke = &(m_sim.repo().get_field("tke"));
         auto& tke = (*m_tke)(level);
-        m_field_init->init_tke(level, geom, tke);
+
+        for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
+            const auto& vbx = mfi.validbox();
+            m_field_init->init_tke(level, mfi, vbx, geom, tke.array(mfi));
+        }
     }
 
     if (m_sim.repo().field_exists("sdr")) {
         m_sdr = &(m_sim.repo().get_field("sdr"));
         auto& sdr = (*m_sdr)(level);
-        m_field_init->init_sdr(level, geom, sdr);
+
+        for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
+            const auto& vbx = mfi.validbox();
+            m_field_init->init_sdr(level, mfi, vbx, geom, sdr.array(mfi));
+        }
     }
 
     if (m_sim.repo().field_exists("eps")) {
         m_eps = &(m_sim.repo().get_field("eps"));
         auto& eps = (*m_eps)(level);
-        m_field_init->init_eps(level, geom, eps);
+
+        for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
+            const auto& vbx = mfi.validbox();
+            m_field_init->init_eps(level, mfi, vbx, geom, eps.array(mfi));
+        }
     }
 }
 
