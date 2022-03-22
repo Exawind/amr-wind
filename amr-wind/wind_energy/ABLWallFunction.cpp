@@ -123,6 +123,14 @@ void ABLWallFunction::init_log_law_height()
                         }
                     });
             }
+#ifdef AMREX_USE_MPI
+	    MPI_Allreduce(
+			  MPI_IN_PLACE, &(npt), 1,
+			  MPI_INT, MPI_SUM, amrex::ParallelDescriptor::Communicator());
+	    MPI_Allreduce(
+			  MPI_IN_PLACE, &(avg_cc_height), 1,
+			  MPI_DOUBLE, MPI_SUM, amrex::ParallelDescriptor::Communicator());
+#endif
             avg_cc_height = avg_cc_height / (amrex::Real)npt;
             m_mo.zref = avg_cc_height;
         } else {
@@ -435,8 +443,8 @@ void ABLTKEWallFunc::wall_model(
     amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
     amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
 
-    if (!(tke.bc_type()[zlo] == BC::wall_model ||
-          tke.bc_type()[zhi] == BC::wall_model)) {
+    if (!(tke.bc_type()[zlo] == BC::rans_wall_model ||
+          tke.bc_type()[zhi] == BC::rans_wall_model)) {
         return;
     }
 
@@ -460,7 +468,7 @@ void ABLTKEWallFunc::wall_model(
             auto karr = k_tke.array(mfi);
 
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
-                tke.bc_type()[zlo] == BC::wall_model) {
+                tke.bc_type()[zlo] == BC::rans_wall_model) {
                 amrex::ParallelFor(
                     amrex::bdryLo(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -504,8 +512,8 @@ void ABLSDRWallFunc::wall_model(
     amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
     amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
 
-    if (!(sdr.bc_type()[zlo] == BC::wall_model ||
-          sdr.bc_type()[zhi] == BC::wall_model)) {
+    if (!(sdr.bc_type()[zlo] == BC::rans_wall_model ||
+          sdr.bc_type()[zhi] == BC::rans_wall_model)) {
         return;
     }
 
@@ -529,7 +537,7 @@ void ABLSDRWallFunc::wall_model(
             auto omegaarr = omega.array(mfi);
 
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
-                sdr.bc_type()[zlo] == BC::wall_model) {
+                sdr.bc_type()[zlo] == BC::rans_wall_model) {
                 amrex::ParallelFor(
                     amrex::bdryLo(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -573,8 +581,8 @@ void ABLEpsWallFunc::wall_model(
     amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
     amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
 
-    if (!(eps.bc_type()[zlo] == BC::wall_model ||
-          eps.bc_type()[zhi] == BC::wall_model)) {
+    if (!(eps.bc_type()[zlo] == BC::rans_wall_model ||
+          eps.bc_type()[zhi] == BC::rans_wall_model)) {
         return;
     }
     BL_PROFILE("amr-wind::ABLEpsWallFunc");
@@ -597,7 +605,7 @@ void ABLEpsWallFunc::wall_model(
             auto epsarr = epsilon.array(mfi);
 
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
-                eps.bc_type()[zlo] == BC::wall_model) {
+                eps.bc_type()[zlo] == BC::rans_wall_model) {
                 amrex::ParallelFor(
                     amrex::bdryLo(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
