@@ -91,6 +91,8 @@ void BCIface::read_bctype()
             ibctype[ori] = BC::slip_wall;
         } else if ((bcstr == "wall_model") || (bcstr == "wm")) {
             ibctype[ori] = BC::wall_model;
+        } else if ((bcstr == "rans_wall_model") || (bcstr == "rwm")) {
+            ibctype[ori] = BC::rans_wall_model;
         } else if ((bcstr == "zero_gradient") || (bcstr == "zg")) {
             ibctype[ori] = BC::zero_gradient;
         } else if ((bcstr == "fixed_gradient") || (bcstr == "fg")) {
@@ -223,6 +225,7 @@ void BCVelocity::set_bcrec()
             break;
 
         case BC::slip_wall:
+        case BC::rans_wall_model:
         case BC::wall_model:
             if (side == amrex::Orientation::low) {
                 // Tangential directions use higher-order extrapolation
@@ -302,6 +305,7 @@ void BCScalar::set_bcrec()
             break;
 
         case BC::mass_inflow:
+        case BC::rans_wall_model:
         case BC::no_slip_wall:
             if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, amrex::BCType::ext_dir);

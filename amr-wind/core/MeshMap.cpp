@@ -84,15 +84,15 @@ void MeshMap::setup_interp_arrays(int lev, const amrex::Geometry& geom)
 	}
 	amrex::Loop(bx, [=, &x_nu, &y_nu, &z_nu, &x_nu_count, &y_nu_count, &z_nu_count](int i, int j, int k) noexcept {
 	    if ((j == 0) && (k == 0) && (i >= 0) && (i < Nx)){
-	      x_nu[i] = nu_cc(i,j,k,0);
+	      x_nu[i] += nu_cc(i,j,k,0);
 	      x_nu_count[i] += 1;
 	    }
 	    if ((i == 0) && (k == 0) && (j >= 0) && (j < Ny)){
-	      y_nu[j] = nu_cc(i,j,k,1);
+	      y_nu[j] += nu_cc(i,j,k,1);
 	      y_nu_count[j] += 1;
 	    }
 	    if ((i == 0) && (j == 0) && (k >= 0) && (k < Nz)){
-	      z_nu[k] = nu_cc(i,j,k,2);
+	      z_nu[k] += nu_cc(i,j,k,2);
 	      z_nu_count[k] += 1;
 	    }
 	  });
