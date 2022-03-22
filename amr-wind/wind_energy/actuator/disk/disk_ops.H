@@ -4,6 +4,7 @@
 #include "amr-wind/wind_energy/actuator/disk/ActuatorDisk.H"
 #include "amr-wind/wind_energy/actuator/actuator_ops.H"
 #include "amr-wind/utilities/tensor_ops.H"
+#include "amr-wind/utilities/linear_interpolation.H"
 
 namespace amr_wind {
 namespace actuator {
@@ -70,6 +71,25 @@ void parse_and_gather_params(const utils::ActParser& pp, T& metaData)
     required_parameters(metaData, pp);
     optional_parameters(metaData, pp);
 }
+
+inline amrex::Real compute_reference_velocity_sqr(DiskBaseData& data)
+{
+    const auto& normal = data.normal_vec;
+    // only use velocity components normal to disk
+    // make sure uInfSqr is always positive by squaring the projection of
+    // reference_velocity onto the normal
+    return (data.reference_velocity & normal) *
+           (data.reference_velocity & normal);
+}
+
+inline void
+set_thrust_coefficient(DiskBaseData& data, const amrex::Real& uInfSqr)
+{
+    const amrex::Real uInfMag = std::sqrt(uInfSqr);
+    data.current_ct = ::amr_wind::interp::linear(
+        data.table_velocity, data.thrust_coeff, uInfMag);
+}
+
 } // namespace base
 
 template <typename ActTrait>

@@ -31,18 +31,11 @@ struct ComputeForceOp<UniformCt, ActSrcDisk>
         auto& grid = data.grid();
         auto& ddata = data.meta();
         const auto& normal = ddata.normal_vec;
-        const amrex::Real rho = ddata.density;
-        // only use velocity components normal to disk
-        // make sure uInfSqr is always positive by squaring the projection of
-        // reference_velocity onto the normal
-        const amrex::Real uInfSqr = (ddata.reference_velocity & normal) *
-                                    (ddata.reference_velocity & normal);
-
-        ddata.current_ct = ::amr_wind::interp::linear(
-            ddata.table_velocity, ddata.thrust_coeff,
-            std::sqrt(std::abs(uInfSqr)));
+        const amrex::Real uInfSqr = base::compute_reference_velocity_sqr(ddata);
+        base::set_thrust_coefficient(ddata, uInfSqr);
 
         const int npts = ddata.num_force_pts;
+        const amrex::Real rho = ddata.density;
         const amrex::Real aeroPressure = 0.5 * uInfSqr * rho * ddata.current_ct;
         const amrex::Real dr = ddata.dr;
 

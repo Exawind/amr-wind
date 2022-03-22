@@ -8,14 +8,22 @@
 namespace amr_wind {
 namespace actuator {
 
-struct JouwkoskiData : public DiskBaseData
-{};
+struct JoukowskiData : public DiskBaseData
+{
+    amrex::Real power_coeff;
+    amrex::Real power;
+    amrex::Real moment;
+    amrex::Real omega;
+    amrex::Real tip_speed_ratio;
+    RealList tip_correction;
+    RealList root_correction;
+};
 
 struct Joukowski : public DiskType
 {
     using InfoType = ActInfo;
     using GridType = ActGrid;
-    using MetaType = JouwkoskiData;
+    using MetaType = JoukowskiData;
     using DataType = ActDataHolder<Joukowski>;
 
     static const std::string identifier() { return "Joukowski"; }
