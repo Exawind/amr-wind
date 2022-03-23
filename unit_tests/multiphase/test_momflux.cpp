@@ -81,32 +81,31 @@ protected:
         amrex::Array4<amrex::Real>& vof_arr)
     {
 
-        amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-                int icheck;
-                switch (dir) {
-                case 0:
-                    icheck = i;
-                    break;
-                case 1:
-                    icheck = j;
-                    break;
-                case 2:
-                    icheck = k;
-                    break;
-                }
-                if (icheck > 0) {
-                    vof_arr(i, j, k) = 0.0;
-                } else {
-                    vof_arr(i, j, k) = 1.0;
-                }
-            });
+        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+            int icheck;
+            switch (dir) {
+            case 0:
+                icheck = i;
+                break;
+            case 1:
+                icheck = j;
+                break;
+            case 2:
+                icheck = k;
+                break;
+            }
+            if (icheck > 0) {
+                vof_arr(i, j, k) = 0.0;
+            } else {
+                vof_arr(i, j, k) = 1.0;
+            }
+        });
         // Left half is liquid, right half is gas
     }
 
     void testing_coorddir(const int dir)
     {
-        constexpr double tol = 1.0e-16;
+        constexpr double tol = 1.0e-15;
 
         populate_parameters();
         {
@@ -130,8 +129,7 @@ protected:
         // Initialize constant velocity field
         amrex::Array<amrex::Real, 3> varr = {0};
         varr[dir] = m_vel;
-        auto& velocity =
-            mom_eqn.fields().field.state(amr_wind::FieldState::Old);
+        auto& velocity = mom_eqn.fields().field;
         init_field3(velocity, varr[0], varr[1], varr[2]);
         amrex::Real uvel, vvel, wvel;
         uvel = varr[0];
@@ -151,6 +149,9 @@ protected:
         // Sync density field with vof
         auto& mphase = sim().physics_manager().get<amr_wind::MultiPhase>();
         mphase.set_density_via_vof();
+
+        // Advance states (new -> old)
+        sim().pde_manager().advance_states();
 
         // Perform pre-advection step to get MAC velocity field (should be
         // uniform)
@@ -211,9 +212,6 @@ protected:
         auto& conv_term =
             mom_eqn.fields().conv_term.state(amr_wind::FieldState::New);
 
-        // Get velocity solution
-        auto& vel_new = mom_eqn.fields().field.state(amr_wind::FieldState::Old);
-
         // Base level
         int lev = 0;
         const auto& dx = geom[lev].CellSizeArray();
@@ -225,7 +223,7 @@ protected:
             const auto& vm = vmac(lev).array(mfi);
             const auto& wm = wmac(lev).array(mfi);
             const auto& af = advalpha_f(lev).array(mfi);
-            const auto& vel = vel_new(lev).array(mfi);
+            const auto& vel = velocity(lev).array(mfi);
             const auto& dqdt = conv_term(lev).array(mfi);
 
             amrex::ParallelFor(
@@ -291,7 +289,7 @@ protected:
     const amrex::Real m_rho1 = 1000.0;
     const amrex::Real m_rho2 = 1.0;
     const amrex::Real m_vel = 5.0;
-    const amrex::Real dt = 0.1 * 0.5 / m_vel;
+    const amrex::Real dt = 0.45 * 0.5 / m_vel; // first number is CFL
 };
 
 TEST_F(MassMomFluxOpTest, fluxfaceX) { testing_coorddir(0); }
