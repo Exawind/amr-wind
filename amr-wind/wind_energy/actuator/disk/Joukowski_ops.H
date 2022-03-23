@@ -43,6 +43,9 @@ struct ComputeForceOp<Joukowski, ActSrcDisk>
         auto& ddata = data.meta();
         // step 1: compute Ct, a1 and a2 coefficients (eq 16)
         const amrex::Real uInfSqr = base::compute_reference_velocity_sqr(ddata);
+        const amrex::Real U_ref = std::sqrt(uInfSqr);
+        const amrex::Real u_disk =
+            vs::mag(ddata.disk_velocity & ddata.normal_vec);
         base::set_thrust_coefficient(ddata, uInfSqr);
         const amrex::Real Ct = ddata.current_ct;
 
@@ -69,11 +72,20 @@ struct ComputeForceOp<Joukowski, ActSrcDisk>
         // 13)
         for (int ip = 0; ip < npts; ip++) {
             const amrex::Real x = (ip + 0.5) * dx;
+            const amrex::Real lambda = ddata.tip_speed_ratio;
             const amrex::Real& F = ddata.tip_correction[ip];
             const amrex::Real& g = ddata.root_correction[ip];
-            // loop over azimuthal points TODO(psakiev) make sure
-            // num_force_pts_theta can be greater than 1 for LinearBasis
-            // spreading
+            const amrex::Real fz =
+                q0 * g * F / x * (lambda * x + 0.5 * q0 * g * F / x);
+            const amrex::Real f_theta = u_disk / U_ref * q0 * g * F / x;
+
+            // TODO need sign
+            amrex::Real angle = 90.0;
+            // This probably wont work. going to have to discretize in theta to
+            // capture the changing angle
+            vs::Vector thetaVec =
+                ddata.coplanar_vec & vs::quaternion(ddata.normal_vec, angle);
+            grid.force[ip] = fz * ddata.normal_vec + f_theta * thetaVec;
         }
 
         // step 5: compute moment and power (eqs 18 and 19)
