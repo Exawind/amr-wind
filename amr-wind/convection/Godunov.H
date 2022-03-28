@@ -10,7 +10,7 @@
 
 namespace godunov {
 
-enum class scheme { PLM, PPM, PPM_NOLIM, WENOJS, WENOZ };
+enum class scheme { PLM, PPM, PPM_NOLIM, WENOJS, WENOZ, MINMOD };
 
 void compute_fluxes(
     int lev,
@@ -30,6 +30,26 @@ void compute_fluxes(
     amrex::Vector<amrex::Geometry> geom,
     amrex::Real dt,
     godunov::scheme godunov_scheme);
+
+void compute_fluxes(
+    int lev,
+    amrex::Box const& bx,
+    int ncomp,
+    amrex::Array4<amrex::Real> const& fx,
+    amrex::Array4<amrex::Real> const& fy,
+    amrex::Array4<amrex::Real> const& fz,
+    amrex::Array4<amrex::Real const> const& q,
+    amrex::Array4<amrex::Real const> const& umac,
+    amrex::Array4<amrex::Real const> const& vmac,
+    amrex::Array4<amrex::Real const> const& wmac,
+    amrex::Array4<amrex::Real const> const& fq,
+    amrex::BCRec const* pbc,
+    int const* iconserv,
+    amrex::Real* p,
+    amrex::Vector<amrex::Geometry> geom,
+    amrex::Real dt,
+    godunov::scheme godunov_scheme,
+    amrex::Array4<int const> const& flag);
 
 void compute_advection(
     int lev,

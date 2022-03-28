@@ -2,6 +2,7 @@
 #include "amr-wind/convection/incflo_godunov_ppm.H"
 #include "amr-wind/convection/incflo_godunov_ppm_nolim.H"
 #include "amr-wind/convection/incflo_godunov_weno.H"
+#include "amr-wind/convection/incflo_godunov_minmod.H"
 #include "amr-wind/convection/Godunov.H"
 #include <AMReX_Geometry.H>
 
@@ -24,7 +25,8 @@ void godunov::compute_fluxes(
     Real* p,
     Vector<amrex::Geometry> geom,
     Real dt,
-    godunov::scheme godunov_scheme)
+    godunov::scheme godunov_scheme,
+    Array4<int const> const& flag)
 {
 
     BL_PROFILE("amr-wind::godunov::compute_fluxes");
@@ -165,6 +167,22 @@ void godunov::compute_fluxes(
                 Godunov_plm_fpu_z(
                     i, j, k, n, l_dt, dz, Imz(i, j, k, n), Ipz(i, j, k - 1, n),
                     q, wmac(i, j, k), pbc[n], dlo.z, dhi.z);
+            });
+        break;
+    }
+    case godunov::scheme::MINMOD: {
+        amrex::ParallelFor(
+            bxg1, ncomp,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                Godunov_minmod_fpu_x(
+                    i, j, k, n, l_dt, dx, Imx(i, j, k, n), Ipx(i, j, k, n), q,
+                    umac, pbc[n], dlo.x, dhi.x);
+                Godunov_minmod_fpu_y(
+                    i, j, k, n, l_dt, dy, Imy(i, j, k, n), Ipy(i, j, k, n), q,
+                    vmac, pbc[n], dlo.y, dhi.y);
+                Godunov_minmod_fpu_z(
+                    i, j, k, n, l_dt, dz, Imz(i, j, k, n), Ipz(i, j, k, n), q,
+                    wmac, pbc[n], dlo.z, dhi.z);
             });
         break;
     }
@@ -360,10 +378,23 @@ void godunov::compute_fluxes(
                      ? 0.5 * (stl + sth)
                      : qx;
 
-            if (iconserv[n] != 0) {
-                fx(i, j, k, n) = umac(i, j, k) * qx;
-            } else {
-                fx(i, j, k, n) = qx;
+            bool save_flux = false;
+            if (flag(i, j, k) == 1 || flag(i - 1, j, k) == 1) {
+                save_flux = true;
+            }
+
+            if (save_flux) {
+                if (iconserv[n] == 1) {
+                    fx(i, j, k, n) = umac(i, j, k) * qx;
+                } else {
+                    if (iconserv[n] < 0) {
+                        fx(i, j, k, 0) /= qx;
+                        fx(i, j, k, 1) /= qx;
+                        fx(i, j, k, 2) /= qx;
+                    } else {
+                        fx(i, j, k, n) = qx;
+                    }
+                }
             }
         });
 
@@ -467,10 +498,23 @@ void godunov::compute_fluxes(
                      ? 0.5 * (stl + sth)
                      : qy;
 
-            if (iconserv[n] != 0) {
-                fy(i, j, k, n) = vmac(i, j, k) * qy;
-            } else {
-                fy(i, j, k, n) = qy;
+            bool save_flux = false;
+            if (flag(i, j, k) == 1 || flag(i, j - 1, k) == 1) {
+                save_flux = true;
+            }
+
+            if (save_flux) {
+                if (iconserv[n] == 1) {
+                    fy(i, j, k, n) = vmac(i, j, k) * qy;
+                } else {
+                    if (iconserv[n] < 0) {
+                        fy(i, j, k, 0) /= qy;
+                        fy(i, j, k, 1) /= qy;
+                        fy(i, j, k, 2) /= qy;
+                    } else {
+                        fy(i, j, k, n) = qy;
+                    }
+                }
             }
         });
 
@@ -573,12 +617,56 @@ void godunov::compute_fluxes(
                      ? 0.5 * (stl + sth)
                      : qz;
 
-            if (iconserv[n] != 0) {
-                fz(i, j, k, n) = wmac(i, j, k) * qz;
-            } else {
-                fz(i, j, k, n) = qz;
+            bool save_flux = false;
+            if (flag(i, j, k) == 1 || flag(i, j, k - 1) == 1) {
+                save_flux = true;
+            }
+
+            if (save_flux) {
+                if (iconserv[n] == 1) {
+                    fz(i, j, k, n) = wmac(i, j, k) * qz;
+                } else {
+                    if (iconserv[n] < 0) {
+                        fz(i, j, k, 0) /= qz;
+                        fz(i, j, k, 1) /= qz;
+                        fz(i, j, k, 2) /= qz;
+                    } else {
+                        fz(i, j, k, n) = qz;
+                    }
+                }
             }
         });
+}
+
+void godunov::compute_fluxes(
+    int lev,
+    Box const& bx,
+    int ncomp,
+    Array4<Real> const& fx,
+    Array4<Real> const& fy,
+    Array4<Real> const& fz,
+    Array4<Real const> const& q,
+    Array4<Real const> const& umac,
+    Array4<Real const> const& vmac,
+    Array4<Real const> const& wmac,
+    Array4<Real const> const& fq,
+    BCRec const* pbc,
+    int const* iconserv,
+    Real* p,
+    Vector<amrex::Geometry> geom,
+    Real dt,
+    godunov::scheme godunov_scheme)
+{
+    amrex::IArrayBox tmpfab(grow(bx, 2), 1);
+    Array4<int> flag_all = makeArray4(tmpfab.dataPtr(), grow(bx, 2), 1);
+    amrex::ParallelFor(
+        grow(bx, 2), [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            flag_all(i, j, k) = 1;
+        });
+
+    godunov::compute_fluxes(
+        lev, bx, ncomp, fx, fy, fz, q, umac, vmac, wmac, fq, pbc, iconserv, p,
+        geom, dt, godunov_scheme, flag_all);
 }
 
 void godunov::compute_advection(
