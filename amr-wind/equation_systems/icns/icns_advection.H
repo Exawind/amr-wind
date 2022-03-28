@@ -383,7 +383,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                     (*flux_y)(lev).array(mfi), (*flux_z)(lev).array(mfi),
                     rho_o(lev).const_array(mfi), u_mac(lev).const_array(mfi),
                     v_mac(lev).const_array(mfi), w_mac(lev).const_array(mfi),
-                    frho.const_array(mfi), dof_field.bcrec_device().data(),
+                    frho.const_array(mfi), rho_o.bcrec_device().data(),
                     idnsty.data(), tmpfab.dataPtr(), geom, dt, mflux_scheme,
                     flag);
 

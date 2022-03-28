@@ -10,66 +10,38 @@
 
 namespace {
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_minmod_xbc(
-    const int i,
-    const int j,
-    const int k,
-    const int n,
-    amrex::Real& sm,
-    amrex::Real& sp,
-    const amrex::Real& sedge1,
-    const amrex::Real& sedge2,
-    const amrex::Array4<const amrex::Real>& s,
-    const int bclo,
-    const int bchi,
-    const int domlo,
-    const int domhi)
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void minmod(
+    const amrex::Real sm1,
+    const amrex::Real s0,
+    const amrex::Real sp1,
+    amrex::Real dsm,
+    amrex::Real dsp)
 {
-    using namespace amrex;
+    // Calculate gradients on both sides
+    dsp = sp1 - s0;
+    dsm = s0 - sm1;
 
-    if (bclo == BCType::ext_dir || bclo == BCType::hoextrap) {
-        if (i == domlo) {
-            sp = -0.2 * s(domlo - 1, j, k, n) + 0.75 * s(domlo, j, k, n) +
-                 0.5 * s(domlo + 1, j, k, n) - 0.05 * s(domlo + 2, j, k, n);
-
-            sm = s(domlo - 1, j, k, n);
-
-        } else if (i == domlo + 1) {
-
-            sm = -0.2 * s(domlo - 1, j, k, n) + 0.75 * s(domlo, j, k, n) +
-                 0.5 * s(domlo + 1, j, k, n) - 0.05 * s(domlo + 2, j, k, n);
-
-            sp = sedge2;
+    if (!(dsp * dsm < 0.0)) {
+        // Select the smaller slope if same sign
+        if (amrex::Math::abs(dsp) < amrex::Math::abs(dsm)) {
+            dsm = dsp;
+        } else {
+            dsp = dsm;
         }
-    }
-
-    if (bchi == BCType::ext_dir || bchi == BCType::hoextrap) {
-        if (i == domhi) {
-            sm = -0.2 * s(domhi + 1, j, k, n) + 0.75 * s(domhi, j, k, n) +
-                 0.5 * s(domhi - 1, j, k, n) - 0.05 * s(domhi - 2, j, k, n);
-
-            sp = s(domhi + 1, j, k, n);
-
-        } else if (i == domhi - 1) {
-
-            sm = -0.2 * s(domhi + 1, j, k, n) + 0.75 * s(domhi, j, k, n) +
-                 0.5 * s(domhi - 1, j, k, n) - 0.05 * s(domhi - 2, j, k, n);
-
-            sp = sedge1;
-        }
+    } else {
+        // Set to zero if opposite sign
+        dsp = 0.0;
+        dsm = 0.0;
     }
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_minmod_ybc(
-    const int i,
-    const int j,
-    const int k,
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_minmod_bc(
     const int n,
-    amrex::Real& sm,
-    amrex::Real& sp,
-    const amrex::Real& sedge1,
-    const amrex::Real& sedge2,
-    const amrex::Array4<const amrex::Real>& s,
+    const amrex::Real sm1,
+    const amrex::Real s0,
+    const amrex::Real sp1,
+    amrex::Real& dsm,
+    amrex::Real& dsp,
     const int bclo,
     const int bchi,
     const int domlo,
@@ -78,85 +50,16 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_minmod_ybc(
     using namespace amrex;
 
     if (bclo == BCType::ext_dir || bclo == BCType::hoextrap) {
-        if (j == domlo) {
-            sp = -0.2 * s(i, domlo - 1, k, n) + 0.75 * s(i, domlo, k, n) +
-                 0.5 * s(i, domlo + 1, k, n) - 0.05 * s(i, domlo + 2, k, n);
-
-            sm = s(i, domlo - 1, k, n);
-
-        } else if (j == domlo + 1) {
-
-            sm = -0.2 * s(i, domlo - 1, k, n) + 0.75 * s(i, domlo, k, n) +
-                 0.5 * s(i, domlo + 1, k, n) - 0.05 * s(i, domlo + 2, k, n);
-
-            sp = sedge2;
+        if (n == domlo) {
+            // Ensure that left-side slope is used unchanged
+            dsm = s0 - sm1;
         }
     }
 
     if (bchi == BCType::ext_dir || bchi == BCType::hoextrap) {
-        if (j == domhi) {
-            sm = -0.2 * s(i, domhi + 1, k, n) + 0.75 * s(i, domhi, k, n) +
-                 0.5 * s(i, domhi - 1, k, n) - 0.05 * s(i, domhi - 2, k, n);
-
-            sp = s(i, domhi + 1, k, n);
-
-        } else if (j == domhi - 1) {
-
-            sp = -0.2 * s(i, domhi + 1, k, n) + 0.75 * s(i, domhi, k, n) +
-                 0.5 * s(i, domhi - 1, k, n) - 0.05 * s(i, domhi - 2, k, n);
-
-            sm = sedge1;
-        }
-    }
-}
-
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_minmod_zbc(
-    const int i,
-    const int j,
-    const int k,
-    const int n,
-    amrex::Real& sm,
-    amrex::Real& sp,
-    const amrex::Real& sedge1,
-    const amrex::Real& sedge2,
-    const amrex::Array4<const amrex::Real>& s,
-    const int bclo,
-    const int bchi,
-    const int domlo,
-    const int domhi)
-{
-    using namespace amrex;
-
-    if (bclo == BCType::ext_dir || bclo == BCType::hoextrap) {
-
-        if (k == domlo) {
-            sp = -0.2 * s(i, j, domlo - 1, n) + 0.75 * s(i, j, domlo, n) +
-                 0.5 * s(i, j, domlo + 1, n) - 0.05 * s(i, j, domlo + 2, n);
-
-            sm = s(i, j, domlo - 1, n);
-
-        } else if (k == domlo + 1) {
-
-            sm = -0.2 * s(i, j, domlo - 1, n) + 0.75 * s(i, j, domlo, n) +
-                 0.5 * s(i, j, domlo + 1, n) - 0.05 * s(i, j, domlo + 2, n);
-
-            sp = sedge2;
-        }
-    }
-
-    if (bchi == BCType::ext_dir || bchi == BCType::hoextrap) {
-        if (k == domhi) {
-            sm = -0.2 * s(i, j, domhi + 1, n) + 0.75 * s(i, j, domhi, n) +
-                 0.5 * s(i, j, domhi - 1, n) - 0.05 * s(i, j, domhi - 2, n);
-
-            sp = s(i, j, domhi + 1, n);
-
-        } else if (k == domhi - 1) {
-
-            sp = -0.2 * s(i, j, domhi + 1, n) + 0.75 * s(i, j, domhi, n) +
-                 0.5 * s(i, j, domhi - 1, n) - 0.05 * s(i, j, domhi - 2, n);
-
-            sm = sedge1;
+        if (n == domhi) {
+            // Ensure that the right-side slope is used unchanged
+            dsp = sp1 - s0;
         }
     }
 }
@@ -187,30 +90,23 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_minmod_fpu_x(
     amrex::Real sm1 = S(i - 1, j, k, n);
     amrex::Real s0 = S(i, j, k, n);
     amrex::Real sp1 = S(i + 1, j, k, n);
-
-    amrex::Real dsp = sp1 - s0;
-    amrex::Real dsm = s0 - sm1;
-
-    amrex::Real ds = 0.0;
-    if (!(dsp*dsm < 0.0)) {
-        if (amrex::Math::abs(dsp) < amrex::Math::abs(dsm)) {
-            ds = dsp;
-        } else {
-            ds = dsm;
-        }
-    }
+    amrex::Real dsp = 0.0;
+    amrex::Real dsm = 0.0;
+    minmod(sm1, s0, sp1, dsm, dsp);
+    Godunov_minmod_bc(
+        i, sm1, s0, sp1, dsm, dsp, bc.lo(0), bc.hi(0), domlo, domhi);
 
     amrex::Real sigmap = amrex::Math::abs(vel_edge(i + 1, j, k)) * dt / dx;
     amrex::Real sigmam = amrex::Math::abs(vel_edge(i, j, k)) * dt / dx;
 
     if (vel_edge(i + 1, j, k) > small_vel) {
-        Ip = s0 + 0.5 * (1.0 - sigmap) * ds;
+        Ip = s0 + 0.5 * (1.0 - sigmap) * dsp;
     } else {
         Ip = S(i, j, k, n);
     }
 
     if (vel_edge(i, j, k) < -small_vel) {
-        Im = s0 - 0.5 * (1.0 - sigmam) * ds;
+        Im = s0 - 0.5 * (1.0 - sigmam) * dsm;
     } else {
         Im = S(i, j, k, n);
     }
@@ -239,30 +135,23 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_minmod_fpu_y(
     amrex::Real sm1 = S(i, j - 1, k, n);
     amrex::Real s0 = S(i, j, k, n);
     amrex::Real sp1 = S(i, j + 1, k, n);
-
-    amrex::Real dsp = sp1 - s0;
-    amrex::Real dsm = s0 - sm1;
-
-    amrex::Real ds = 0.0;
-    if (!(dsp*dsm < 0.0)) {
-        if (amrex::Math::abs(dsp) < amrex::Math::abs(dsm)) {
-            ds = dsp;
-        } else {
-            ds = dsm;
-        }
-    }
+    amrex::Real dsp = 0.0;
+    amrex::Real dsm = 0.0;
+    minmod(sm1, s0, sp1, dsm, dsp);
+    Godunov_minmod_bc(
+        j, sm1, s0, sp1, dsm, dsp, bc.lo(1), bc.hi(1), domlo, domhi);
 
     amrex::Real sigmap = amrex::Math::abs(vel_edge(i, j + 1, k)) * dt / dx;
     amrex::Real sigmam = amrex::Math::abs(vel_edge(i, j, k)) * dt / dx;
 
     if (vel_edge(i, j + 1, k) > small_vel) {
-        Ip = s0 + 0.5 * (1.0 - sigmap) * ds;
+        Ip = s0 + 0.5 * (1.0 - sigmap) * dsp;
     } else {
         Ip = S(i, j, k, n);
     }
 
     if (vel_edge(i, j, k) < -small_vel) {
-        Im = s0 - 0.5 * (1.0 - sigmam) * ds;
+        Im = s0 - 0.5 * (1.0 - sigmam) * dsm;
     } else {
         Im = S(i, j, k, n);
     }
@@ -291,30 +180,23 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_minmod_fpu_z(
     amrex::Real sm1 = S(i, j, k - 1, n);
     amrex::Real s0 = S(i, j, k, n);
     amrex::Real sp1 = S(i, j, k + 1, n);
-
-    amrex::Real dsp = sp1 - s0;
-    amrex::Real dsm = s0 - sm1;
-
-    amrex::Real ds = 0.0;
-    if (!(dsp*dsm < 0.0)) {
-        if (amrex::Math::abs(dsp) < amrex::Math::abs(dsm)) {
-            ds = dsp;
-        } else {
-            ds = dsm;
-        }
-    }
+    amrex::Real dsp = 0.0;
+    amrex::Real dsm = 0.0;
+    minmod(sm1, s0, sp1, dsm, dsp);
+    Godunov_minmod_bc(
+        k, sm1, s0, sp1, dsm, dsp, bc.lo(2), bc.hi(2), domlo, domhi);
 
     amrex::Real sigmap = amrex::Math::abs(vel_edge(i, j, k + 1)) * dt / dx;
     amrex::Real sigmam = amrex::Math::abs(vel_edge(i, j, k)) * dt / dx;
 
     if (vel_edge(i, j, k + 1) > small_vel) {
-        Ip = s0 + 0.5 * (1.0 - sigmap) * ds;
+        Ip = s0 + 0.5 * (1.0 - sigmap) * dsp;
     } else {
         Ip = S(i, j, k, n);
     }
 
     if (vel_edge(i, j, k) < -small_vel) {
-        Im = s0 - 0.5 * (1.0 - sigmam) * ds;
+        Im = s0 - 0.5 * (1.0 - sigmam) * dsm;
     } else {
         Im = S(i, j, k, n);
     }
