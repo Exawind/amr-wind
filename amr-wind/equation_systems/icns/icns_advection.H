@@ -4,6 +4,7 @@
 #include "amr-wind/equation_systems/AdvOp_Godunov.H"
 #include "amr-wind/equation_systems/AdvOp_MOL.H"
 #include "amr-wind/equation_systems/icns/icns.H"
+#include "amr-wind/equation_systems/vof/volume_fractions.H"
 
 #include "AMReX_MultiFabUtil.H"
 #include "hydro_MacProjector.H"
@@ -99,6 +100,16 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                    "ppm_nolim, weno_js, and weno_z: it defaults to ppm"
                 << std::endl;
             godunov_scheme = godunov::scheme::PPM;
+        }
+
+        pp.query("mflux_type", mflux_type);
+        if (amrex::toLower(godunov_type) == "minmod") {
+            mflux_scheme = godunov::scheme::MINMOD;
+        } else {
+            amrex::Print()
+                << "For mflux_type, default is minmod"
+                << std::endl;
+            mflux_scheme = godunov::scheme::MINMOD;
         }
 
         // TODO: Need iconserv flag to be adjusted???
@@ -286,6 +297,16 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         auto& aa_y = repo.get_field("advalpha_y");
         auto& aa_z = repo.get_field("advalpha_z");
 
+        auto& rho_o =
+            repo.get_field("density").state(amr_wind::FieldState::Old);
+        auto& rho_nph =
+            repo.get_field("density").state(amr_wind::FieldState::NPH);
+        auto& VOF_o =
+            repo.get_field("vof").state(amr_wind::FieldState::Old);
+
+        amrex::Gpu::DeviceVector<int> idnsty;
+        idnsty.resize(ICNS::ndim, -1);
+
         //
         // Advect momentum eqns
         //
@@ -294,6 +315,30 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             aa_x(lev).FillBoundary(geom[lev].periodicity());
             aa_y(lev).FillBoundary(geom[lev].periodicity());
             aa_z(lev).FillBoundary(geom[lev].periodicity());
+
+            // form momentum multifab
+            amrex::MultiFab momentum(
+                dof_field(lev).boxArray(), dof_field(lev).DistributionMap(), 3,
+                3);
+            amrex::MultiFab::Copy(momentum,dof_field(lev),0,0,3,3);
+            amrex::MultiFab::Multiply(momentum,rho_o(lev),0,0,1,3);
+            amrex::MultiFab::Multiply(momentum,rho_o(lev),0,1,1,3);
+            amrex::MultiFab::Multiply(momentum,rho_o(lev),0,2,1,3);
+
+            // form source terms for momentum, density
+            amrex::MultiFab frhoq(
+                src_term(lev).boxArray(), src_term(lev).DistributionMap(), 3,
+                3);
+            amrex::MultiFab::Copy(frhoq,src_term(lev),0,0,3,3);
+            amrex::MultiFab::Multiply(frhoq,rho_nph(lev),0,0,1,3);
+            amrex::MultiFab::Multiply(frhoq,rho_nph(lev),0,1,1,3);
+            amrex::MultiFab::Multiply(frhoq,rho_nph(lev),0,2,1,3);
+            amrex::MultiFab frho(
+                src_term(lev).boxArray(), src_term(lev).DistributionMap(), 1,
+                3);
+            frho.setVal(0.0);
+
+            // multifab for flagging multiphase fluxes
 
             amrex::MFItInfo mfi_info;
             if (amrex::Gpu::notInLaunchRegion()) {
@@ -316,6 +361,31 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                     w_mac(lev).const_array(mfi), src_term(lev).const_array(mfi),
                     dof_field.bcrec_device().data(), iconserv.data(),
                     tmpfab.dataPtr(), geom, dt, godunov_scheme);
+
+                // Get rhou/rho fluxes near interface
+                amrex::IArrayBox tmpifab(amrex::grow(bx, 2), 1);
+                amrex::Array4<int> flag =
+                    amrex::makeArray4(tmpifab.dataPtr(), amrex::grow(bx, 2), 1);
+                flag_multiphase(VOF_o(lev).const_array(mfi), flag);
+
+                // rhou
+                godunov::compute_fluxes(
+                    lev, bx, ICNS::ndim, (*flux_x)(lev).array(mfi),
+                    (*flux_y)(lev).array(mfi), (*flux_z)(lev).array(mfi),
+                    momentum.const_array(mfi), u_mac(lev).const_array(mfi),
+                    v_mac(lev).const_array(mfi), w_mac(lev).const_array(mfi),
+                    frhoq.const_array(mfi), dof_field.bcrec_device().data(),
+                    iconserv.data(), tmpfab.dataPtr(), geom, dt, mflux_scheme,
+                    flag);
+                // /rho
+                godunov::compute_fluxes(
+                    lev, bx, 1, (*flux_x)(lev).array(mfi),
+                    (*flux_y)(lev).array(mfi), (*flux_z)(lev).array(mfi),
+                    rho_o(lev).const_array(mfi), u_mac(lev).const_array(mfi),
+                    v_mac(lev).const_array(mfi), w_mac(lev).const_array(mfi),
+                    frho.const_array(mfi), dof_field.bcrec_device().data(),
+                    idnsty.data(), tmpfab.dataPtr(), geom, dt, mflux_scheme,
+                    flag);
 
                 // Multiply fluxes by density contribution
                 multiply_fluxes(
@@ -364,6 +434,22 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                     iconserv.data(), geom);
             }
         }
+    }
+
+    // Multiply fluxes by density contribution
+    void flag_multiphase(
+        amrex::Array4<amrex::Real const> const& VOF,
+        amrex::Array4<int> const& flag)
+    {
+        amrex::ParallelFor(
+            amrex::Box(flag),
+            [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                flag(i, j, k) = 0;
+                // Check current cell for interface
+                if (multiphase::interface_band(i, j, k, VOF)) {
+                    flag(i, j, k) = 1;
+                }
+            });
     }
 
     // Multiply fluxes by density contribution
@@ -419,7 +505,9 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     amrex::Gpu::DeviceVector<int> iconserv;
 
     godunov::scheme godunov_scheme = godunov::scheme::PPM;
+    godunov::scheme mflux_scheme = godunov::scheme::MINMOD;
     std::string godunov_type;
+    std::string mflux_type;
     bool godunov_use_forces_in_trans{false};
 };
 
