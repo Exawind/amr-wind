@@ -376,7 +376,6 @@ struct AdvectionOp<ICNS, fvm::MOL>
     {
 
         auto& repo = fields.repo;
-        const auto& geom = repo.mesh().Geom();
         auto& dof_field = fields.field.state(fstate);
 
         // computation of velocity on faces requires
