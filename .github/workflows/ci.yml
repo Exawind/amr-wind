@@ -17,7 +17,7 @@ jobs:
         exclude: '.'
         extensions: 'H,h,cpp'
         clangFormatVersion: 11
-  Build:
+  CPU:
     needs: Formatting
     runs-on: ${{matrix.os}}
     strategy:
@@ -80,7 +80,119 @@ jobs:
       working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}
       run: |
         ctest ${{matrix.ctest_args}} --output-on-failure
-  cppcheck:
+  GPU-Nvidia:
+    name: CUDA v${{matrix.cuda_ver}}
+    needs: Formatting
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        #cuda_pkg: [11-2, 10-2]
+        cuda_pkg: [11-2]
+        include:
+          - cuda_ver: "11.2"
+            cuda_pkg: 11-2
+            cuda_extra: libcurand-dev-11-2 cuda-cupti-dev-11-2
+          #- cuda_ver: "10.2"
+          #  cuda_pkg: 10-2
+          #  cuda_extra: cuda-curand-dev-10-2 cuda-cupti-dev-10-2
+    steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{github.token}}
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Prepare CUDA environment
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          wget -q -O - https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub | sudo apt-key add -
+          echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64 /" | sudo tee /etc/apt/sources.list.d/cuda.list
+          echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64 /" | sudo tee /etc/apt/sources.list.d/nvidia-ml.list
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ninja-build \
+              cuda-command-line-tools-${{matrix.cuda_pkg}} cuda-compiler-${{matrix.cuda_pkg}} cuda-minimal-build-${{matrix.cuda_pkg}} cuda-nvml-dev-${{matrix.cuda_pkg}} cuda-nvtx-${{matrix.cuda_pkg}} ${{matrix.cuda_extra}}
+      - name: Configure and build
+        run: |
+          export PATH=/usr/local/nvidia/bin:/usr/local/cuda-${{matrix.cuda_ver}}/bin:${PATH}
+          export LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda-${{matrix.cuda_ver}}/lib:${LD_LIBRARY_PATH}
+          cmake -G Ninja -B build-${{matrix.cuda_pkg}} \
+            -DCMAKE_BUILD_TYPE:STRING=Release \
+            -DAMR_WIND_ENABLE_MPI=OFF \
+            -DAMR_WIND_ENABLE_CUDA=ON \
+            -DAMReX_CUDA_ERROR_CAPTURE_THIS:BOOL=ON \
+            -DAMReX_CUDA_ARCH=Volta .
+          cmake --build build-${{matrix.cuda_pkg}} -- -j $(nproc)
+  GPU-AMD:
+    name: HIP
+    needs: Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{github.token}}
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Prepare HIP environment
+        run: |
+          wget -q -O - http://repo.radeon.com/rocm/rocm.gpg.key | sudo apt-key add -
+          echo 'deb [arch=amd64] http://repo.radeon.com/rocm/apt/debian/ ubuntu main' | sudo tee /etc/apt/sources.list.d/rocm.list
+          echo 'export PATH=/opt/rocm/llvm/bin:/opt/rocm/bin:/opt/rocm/profiler/bin:/opt/rocm/opencl/bin:$PATH' | sudo tee -a /etc/profile.d/rocm.sh
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ninja-build \
+              build-essential rocm-dev roctracer-dev rocprofiler-dev rocrand-dev rocprim-dev rocm-libs
+      - name: Configure and build
+        run: |
+          source /etc/profile.d/rocm.sh
+          which clang
+          which clang++
+          cmake -G Ninja -B build \
+            -DCMAKE_BUILD_TYPE:STRING=Release \
+            -DAMR_WIND_ENABLE_MPI=OFF \
+            -DAMR_WIND_ENABLE_ROCM=ON \
+            -DCMAKE_CXX_COMPILER=$(which clang++) \
+            -DCMAKE_C_COMPILER=$(which clang) \
+            -DCMAKE_VERBOSE_MAKEFILE=ON \
+            -DAMReX_AMD_ARCH=gfx908 \
+            -DCMAKE_HIP_ARCHITECTURES=gfx908 \
+            -DAMDGPU_TARGETS=gfx908 \
+            -DGPU_TARGETS=gfx908 .
+          cmake --build build -- -j $(nproc)
+  GPU-Intel:
+    name: DPCPP
+    needs: Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{github.token}}
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Prepare DPC++ environment
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          sudo wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ninja-build intel-oneapi-dpcpp-cpp-compiler
+      - name: Configure and build
+        run: |
+          set +e
+          source /opt/intel/oneapi/setvars.sh
+          set -e
+          cmake -G Ninja -B build-DPCPP \
+            -DCMAKE_BUILD_TYPE:STRING=Release \
+            -DCMAKE_CXX_COMPILER=$(which dpcpp) \
+            -DCMAKE_C_COMPILER=$(which clang) \
+            -DAMR_WIND_ENABLE_MPI=OFF \
+            -DAMR_WIND_ENABLE_DPCPP=ON .
+          cmake --build build-DPCPP -- -j $(nproc)
+  Lint-cppcheck:
     needs: Formatting
     runs-on: macos-latest
     steps:
@@ -116,7 +228,7 @@ jobs:
           echo "::add-matcher::.github/problem-matchers/cppcheck.json"
           cat cppcheck-ci-report.txt
           exit $(tail -n 1 cppcheck-ci-report.txt | awk '{print $2}')
-  clang-tidy:
+  Lint-clang-tidy:
     needs: Formatting
     runs-on: ubuntu-latest
     steps:
@@ -161,131 +273,7 @@ jobs:
           echo "::add-matcher::.github/problem-matchers/gcc.json"
           cat clang-tidy-ci-report.txt
           exit $(tail -n 1 clang-tidy-ci-report.txt | awk '{print $2}')
-  CUDA:
-    needs: Formatting
-    runs-on: ubuntu-18.04
-    name: CUDA v${{matrix.cuda_ver}}
-    strategy:
-      matrix:
-        cuda_pkg: [11-2, 10-2]
-        include:
-          - cuda_ver: "11.2"
-            cuda_pkg: 11-2
-            cuda_extra: libcurand-dev-11-2 cuda-cupti-dev-11-2
-          - cuda_ver: "10.2"
-            cuda_pkg: 10-2
-            cuda_extra: cuda-curand-dev-10-2 cuda-cupti-dev-10-2
-    steps:
-      - name: Cancel previous runs
-        uses: styfle/cancel-workflow-action@0.6.0
-        with:
-          access_token: ${{github.token}}
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
-      - name: Dependencies
-        run: |
-          export DEBIAN_FRONTEND=noninteractive
-          wget -q -O - https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub | sudo apt-key add -
-          echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64 /" | sudo tee /etc/apt/sources.list.d/cuda.list
-          echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64 /" | sudo tee /etc/apt/sources.list.d/nvidia-ml.list
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends ninja-build \
-              cuda-command-line-tools-${{matrix.cuda_pkg}} cuda-compiler-${{matrix.cuda_pkg}} cuda-minimal-build-${{matrix.cuda_pkg}} cuda-nvml-dev-${{matrix.cuda_pkg}} cuda-nvtx-${{matrix.cuda_pkg}} ${{matrix.cuda_extra}}
-      - name: Configure and build
-        run: |
-          export PATH=/usr/local/nvidia/bin:/usr/local/cuda-${{matrix.cuda_ver}}/bin:${PATH}
-          export LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda-${{matrix.cuda_ver}}/lib:${LD_LIBRARY_PATH}
-          cmake -G Ninja -B build-${{matrix.cuda_pkg}} \
-            -DCMAKE_BUILD_TYPE:STRING=Release \
-            -DAMR_WIND_ENABLE_MPI=OFF \
-            -DAMR_WIND_ENABLE_CUDA=ON \
-            -DAMReX_CUDA_ERROR_CAPTURE_THIS:BOOL=ON \
-            -DAMReX_CUDA_ARCH=Volta .
-          cmake --build build-${{matrix.cuda_pkg}} -- -j $(nproc)
-  HIP:
-    needs: Formatting
-    runs-on: ubuntu-latest
-    name: HIP
-    steps:
-      - name: Cancel previous runs
-        uses: styfle/cancel-workflow-action@0.6.0
-        with:
-          access_token: ${{github.token}}
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
-      - name: Prepare HIP environment
-        run: |
-          wget -q -O - http://repo.radeon.com/rocm/rocm.gpg.key | sudo apt-key add -
-          echo 'deb [arch=amd64] http://repo.radeon.com/rocm/apt/debian/ ubuntu main' | sudo tee /etc/apt/sources.list.d/rocm.list
-          echo 'export PATH=/opt/rocm/llvm/bin:/opt/rocm/bin:/opt/rocm/profiler/bin:/opt/rocm/opencl/bin:$PATH' | sudo tee -a /etc/profile.d/rocm.sh
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends ninja-build \
-              build-essential rocm-dev roctracer-dev rocprofiler-dev rocrand-dev rocprim-dev rocm-libs
-      - name: Configure and build
-        run: |
-          source /etc/profile.d/rocm.sh
-          which clang
-          which clang++
-          cmake -G Ninja -B build \
-            -DCMAKE_BUILD_TYPE:STRING=Release \
-            -DAMR_WIND_ENABLE_MPI=OFF \
-            -DAMR_WIND_ENABLE_ROCM=ON \
-            -DCMAKE_CXX_COMPILER=$(which clang++) \
-            -DCMAKE_C_COMPILER=$(which clang) \
-            -DCMAKE_VERBOSE_MAKEFILE=ON \
-            -DAMReX_AMD_ARCH=gfx908 \
-            -DCMAKE_HIP_ARCHITECTURES=gfx908 \
-            -DAMDGPU_TARGETS=gfx908 \
-            -DGPU_TARGETS=gfx908 .
-          cmake --build build -- -j $(nproc)
-  DPCPP:
-    needs: Formatting
-    runs-on: ubuntu-latest
-    name: Intel OneAPI ${{matrix.intel_type}}
-    strategy:
-      matrix:
-        intel_type: [DPCPP]
-        include:
-          # - intel_type: ICC
-          #   oneapi_packages: intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic
-          #   cexe: icc
-          #   cppexe: icpc
-          #   enable_dpcpp: OFF
-          - intel_type: DPCPP
-            oneapi_packages: intel-oneapi-dpcpp-cpp-compiler intel-oneapi-mkl-devel
-            cexe: clang
-            cppexe: dpcpp
-            enable_dpcpp: ON
-    steps:
-      - name: Cancel previous runs
-        uses: styfle/cancel-workflow-action@0.6.0
-        with:
-          access_token: ${{github.token}}
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
-      - name: Prepare DPC++ environment
-        run: |
-          export DEBIAN_FRONTEND=noninteractive
-          sudo wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-          sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-          echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends ninja-build ${{matrix.oneapi_packages}}
-      - name: Configure and build
-        run: |
-          set +e
-          source /opt/intel/oneapi/setvars.sh
-          set -e
-          cmake -G Ninja -B build-${{matrix.intel_type}} \
-            -DCMAKE_BUILD_TYPE:STRING=Release \
-            -DCMAKE_CXX_COMPILER=$(which ${{matrix.cppexe}}) \
-            -DCMAKE_C_COMPILER=$(which ${{matrix.cexe}}) \
-            -DAMR_WIND_ENABLE_MPI=OFF \
-            -DAMR_WIND_ENABLE_DPCPP=${{matrix.enable_dpcpp}} .
-          cmake --build build-${{matrix.intel_type}} -- -j $(nproc)
+
 #  Docker:
 #    needs: Formatting
 #    name: Docker
