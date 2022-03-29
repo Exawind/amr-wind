@@ -81,7 +81,7 @@ jobs:
       run: |
         ctest ${{matrix.ctest_args}} --output-on-failure
   GPU-Nvidia:
-    name: CUDA v${{matrix.cuda_ver}}
+    name: GPU-CUDA v${{matrix.cuda_ver}}
     needs: Formatting
     runs-on: ubuntu-latest
     strategy:
@@ -124,7 +124,7 @@ jobs:
             -DAMReX_CUDA_ARCH=Volta .
           cmake --build build-${{matrix.cuda_pkg}} -- -j $(nproc)
   GPU-AMD:
-    name: HIP
+    name: GPU-HIP
     needs: Formatting
     runs-on: ubuntu-latest
     steps:
@@ -161,7 +161,7 @@ jobs:
             -DGPU_TARGETS=gfx908 .
           cmake --build build -- -j $(nproc)
   GPU-Intel:
-    name: DPCPP
+    name: GPU-DPCPP
     needs: Formatting
     runs-on: ubuntu-latest
     steps:
