@@ -14,6 +14,7 @@ enum struct BC {
     fixed_gradient,
     periodic,
     undefined
-};;
+};
+;
 
 #endif /* INCFLO_ENUMS_H */
