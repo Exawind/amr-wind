@@ -130,13 +130,14 @@ jobs:
           submodules: true
       - name: Dependencies
         run: |
-          sudo apt-get install -y clang-tidy-10
+          sudo apt-get install -y clang-tidy-10 ninja-build
           sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-10 100
       - name: Configure
         run: |
           echo "NPROCS=$(nproc)" >> $GITHUB_ENV
-          cmake \
+          cmake -G Ninja \
           -B ${{runner.workspace}}/build-clang-tidy \
+          -DCMAKE_BUILD_TYPE:STRING=Debug \
           -DCMAKE_CXX_COMPILER:STRING=clang++ \
           -DCMAKE_C_COMPILER:STRING=clang \
           -DAMR_WIND_ENABLE_MPI:BOOL=OFF \
@@ -149,7 +150,7 @@ jobs:
       - name: Check
         working-directory: ${{runner.workspace}}/build-clang-tidy
         run: |
-          cmake --build . --parallel ${{env.NPROCS}} 2> clang-tidy-full-report.txt
+          cmake --build . --parallel ${{env.NPROCS}} 2>&1 | tee -a clang-tidy-full-report.txt
           cat clang-tidy-full-report.txt | grep "warning:" | grep -v "submods" | sort | uniq | \
             awk 'BEGIN{i=0}{print $0}{i++}END{print "Warnings: "i}' > clang-tidy-ci-report.txt
       - name: Full report
@@ -190,13 +191,14 @@ jobs:
           echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64 /" | sudo tee /etc/apt/sources.list.d/cuda.list
           echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64 /" | sudo tee /etc/apt/sources.list.d/nvidia-ml.list
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
+          sudo apt-get install -y --no-install-recommends ninja-build \
               libopenmpi-dev cuda-command-line-tools-${{matrix.cuda_pkg}} cuda-compiler-${{matrix.cuda_pkg}} cuda-minimal-build-${{matrix.cuda_pkg}} cuda-nvml-dev-${{matrix.cuda_pkg}} cuda-nvtx-${{matrix.cuda_pkg}} ${{matrix.cuda_extra}}
       - name: Configure and build
         run: |
           export PATH=/usr/local/nvidia/bin:/usr/local/cuda-${{matrix.cuda_ver}}/bin:${PATH}
           export LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda-${{matrix.cuda_ver}}/lib:${LD_LIBRARY_PATH}
-          cmake -B build-${{matrix.cuda_pkg}} \
+          cmake -G Ninja -B build-${{matrix.cuda_pkg}} \
+            -DCMAKE_BUILD_TYPE:STRING=Release \
             -DAMR_WIND_ENABLE_MPI=OFF \
             -DAMR_WIND_ENABLE_CUDA=ON \
             -DAMReX_CUDA_ERROR_CAPTURE_THIS:BOOL=ON \
@@ -220,13 +222,15 @@ jobs:
           echo 'deb [arch=amd64] http://repo.radeon.com/rocm/apt/debian/ ubuntu main' | sudo tee /etc/apt/sources.list.d/rocm.list
           echo 'export PATH=/opt/rocm/llvm/bin:/opt/rocm/bin:/opt/rocm/profiler/bin:/opt/rocm/opencl/bin:$PATH' | sudo tee -a /etc/profile.d/rocm.sh
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends build-essential rocm-dev roctracer-dev rocprofiler-dev rocrand-dev rocprim-dev rocm-libs
+          sudo apt-get install -y --no-install-recommends ninja-build \
+              build-essential rocm-dev roctracer-dev rocprofiler-dev rocrand-dev rocprim-dev rocm-libs
       - name: Configure and build
         run: |
           source /etc/profile.d/rocm.sh
           which clang
           which clang++
-          cmake -B build \
+          cmake -G Ninja -B build \
+            -DCMAKE_BUILD_TYPE:STRING=Release \
             -DAMR_WIND_ENABLE_MPI=OFF \
             -DAMR_WIND_ENABLE_ROCM=ON \
             -DCMAKE_CXX_COMPILER=$(which clang++) \
@@ -270,14 +274,15 @@ jobs:
           sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
           echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
+          sudo apt-get install -y --no-install-recommends ninja-build \
             libopenmpi-dev ${{matrix.oneapi_packages}}
       - name: Configure and build
         run: |
           set +e
           source /opt/intel/oneapi/setvars.sh
           set -e
-          cmake -B build-${{matrix.intel_type}} \
+          cmake -G Ninja -B build-${{matrix.intel_type}} \
+            -DCMAKE_BUILD_TYPE:STRING=Release \
             -DCMAKE_CXX_COMPILER=$(which ${{matrix.cppexe}}) \
             -DCMAKE_C_COMPILER=$(which ${{matrix.cexe}}) \
             -DAMR_WIND_ENABLE_MPI=OFF \
