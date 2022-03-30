@@ -9,20 +9,20 @@
  *
  */
 
- namespace zds {
- struct SCexact
- {
-     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
-         amrex::Real /*xc*/,
-         amrex::Real /*yc*/,
-         amrex::Real /*zc*/,
-         amrex::Real /*x*/,
-         amrex::Real /*y*/,
-         amrex::Real /*z*/,
-         amrex::Real /*radius*/,
-         amrex::Real /*alpha*/) const;
-     const int m_comp{0};
- };
+namespace zds {
+struct SCexact
+{
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+        amrex::Real /*xc*/,
+        amrex::Real /*yc*/,
+        amrex::Real /*zc*/,
+        amrex::Real /*x*/,
+        amrex::Real /*y*/,
+        amrex::Real /*z*/,
+        amrex::Real /*radius*/,
+        amrex::Real /*alpha*/) const;
+    const int m_comp{0};
+};
 } // namespace zds
 
 namespace amr_wind {
@@ -31,7 +31,8 @@ class ZalesakDiskScalarVel : public Physics::Register<ZalesakDiskScalarVel>
 {
 
     static_assert(
-        AMREX_SPACEDIM == 3, "ZalesakDiskScalarVel requires 3 dimensional mesh");
+        AMREX_SPACEDIM == 3,
+        "ZalesakDiskScalarVel requires 3 dimensional mesh");
 
 public:
     static std::string identifier() { return "ZalesakDiskScalarVel"; }

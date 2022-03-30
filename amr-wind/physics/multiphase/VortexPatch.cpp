@@ -16,7 +16,7 @@ VortexPatch::VortexPatch(CFDSim& sim)
     pp.query("radius", m_radius);
     pp.query("period", m_TT);
     amrex::ParmParse pinc("incflo");
-    pinc.add("prescribe_velocity",true);
+    pinc.add("prescribe_velocity", true);
 }
 
 /** Initialize the velocity and levelset fields at the beginning of the
@@ -63,15 +63,15 @@ void VortexPatch::initialize_fields(int level, const amrex::Geometry& geom)
                 const amrex::Real xf = problo[0] + i * dx[0];
                 const amrex::Real yf = problo[1] + j * dx[1];
                 const amrex::Real zf = problo[2] + k * dx[2];
-                uf(i, j, k) =
-                    2.0 * std::sin(M_PI * xf) * std::sin(M_PI * xf) *
-                    std::sin(2.0 * M_PI * y) * std::sin(2.0 * M_PI * z);
+                uf(i, j, k) = 2.0 * std::sin(M_PI * xf) * std::sin(M_PI * xf) *
+                              std::sin(2.0 * M_PI * y) *
+                              std::sin(2.0 * M_PI * z);
                 vf(i, j, k) = -std::sin(M_PI * yf) * std::sin(M_PI * yf) *
-                                  std::sin(2.0 * M_PI * x) *
-                                  std::sin(2.0 * M_PI * z);
+                              std::sin(2.0 * M_PI * x) *
+                              std::sin(2.0 * M_PI * z);
                 wf(i, j, k) = -std::sin(M_PI * zf) * std::sin(M_PI * zf) *
-                                  std::sin(2.0 * M_PI * x) *
-                                  std::sin(2.0 * M_PI * y);
+                              std::sin(2.0 * M_PI * x) *
+                              std::sin(2.0 * M_PI * y);
 
                 vel(i, j, k, 0) =
                     2.0 * std::sin(M_PI * x) * std::sin(M_PI * x) *
@@ -104,7 +104,8 @@ void VortexPatch::initialize_fields(int level, const amrex::Geometry& geom)
     }
 }
 
-void VortexPatch::pre_advance_work() {
+void VortexPatch::pre_advance_work()
+{
     const auto& time =
         m_sim.time().current_time() + 0.5 * m_sim.time().deltaT();
 
@@ -137,13 +138,13 @@ void VortexPatch::pre_advance_work() {
                         std::sin(2.0 * M_PI * y) * std::sin(2.0 * M_PI * z) *
                         std::cos(M_PI * time / TT);
                     vf(i, j, k) = -std::sin(M_PI * yf) * std::sin(M_PI * yf) *
-                                      std::sin(2.0 * M_PI * x) *
-                                      std::sin(2.0 * M_PI * z) *
-                                      std::cos(M_PI * time / TT);
+                                  std::sin(2.0 * M_PI * x) *
+                                  std::sin(2.0 * M_PI * z) *
+                                  std::cos(M_PI * time / TT);
                     wf(i, j, k) = -std::sin(M_PI * zf) * std::sin(M_PI * zf) *
-                                      std::sin(2.0 * M_PI * x) *
-                                      std::sin(2.0 * M_PI * y) *
-                                      std::cos(M_PI * time / TT);
+                                  std::sin(2.0 * M_PI * x) *
+                                  std::sin(2.0 * M_PI * y) *
+                                  std::cos(M_PI * time / TT);
                 });
         }
         u_mac(lev).FillBoundary(geom[lev].periodicity());

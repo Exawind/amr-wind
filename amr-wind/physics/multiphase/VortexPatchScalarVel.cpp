@@ -17,7 +17,7 @@ VortexPatchScalarVel::VortexPatchScalarVel(CFDSim& sim)
     pp.query("smooth_factor", m_sfactor);
     pp.query("period", m_TT);
     amrex::ParmParse pinc("incflo");
-    pinc.add("prescribe_velocity",true);
+    pinc.add("prescribe_velocity", true);
 }
 
 /** Initialize the velocity and levelset fields at the beginning of the
@@ -25,7 +25,8 @@ VortexPatchScalarVel::VortexPatchScalarVel(CFDSim& sim)
  *
  *  \sa amr_wind::VortexPatchScalarVelFieldInit
  */
-void VortexPatchScalarVel::initialize_fields(int level, const amrex::Geometry& geom)
+void VortexPatchScalarVel::initialize_fields(
+    int level, const amrex::Geometry& geom)
 {
     auto& velocity = m_velocity(level);
     auto& levelset = m_levelset(level);
@@ -65,15 +66,15 @@ void VortexPatchScalarVel::initialize_fields(int level, const amrex::Geometry& g
                 const amrex::Real xf = problo[0] + i * dx[0];
                 const amrex::Real yf = problo[1] + j * dx[1];
                 const amrex::Real zf = problo[2] + k * dx[2];
-                uf(i, j, k) =
-                    2.0 * std::sin(M_PI * xf) * std::sin(M_PI * xf) *
-                    std::sin(2.0 * M_PI * y) * std::sin(2.0 * M_PI * z);
+                uf(i, j, k) = 2.0 * std::sin(M_PI * xf) * std::sin(M_PI * xf) *
+                              std::sin(2.0 * M_PI * y) *
+                              std::sin(2.0 * M_PI * z);
                 vf(i, j, k) = -std::sin(M_PI * yf) * std::sin(M_PI * yf) *
-                                  std::sin(2.0 * M_PI * x) *
-                                  std::sin(2.0 * M_PI * z);
+                              std::sin(2.0 * M_PI * x) *
+                              std::sin(2.0 * M_PI * z);
                 wf(i, j, k) = -std::sin(M_PI * zf) * std::sin(M_PI * zf) *
-                                  std::sin(2.0 * M_PI * x) *
-                                  std::sin(2.0 * M_PI * y);
+                              std::sin(2.0 * M_PI * x) *
+                              std::sin(2.0 * M_PI * y);
                 // Only the x component is nonzero
                 vel(i, j, k, 1) = 0.0;
                 vel(i, j, k, 2) = 0.0;
@@ -114,7 +115,8 @@ void VortexPatchScalarVel::initialize_fields(int level, const amrex::Geometry& g
     m_velocity.fillpatch(0.0);
 }
 
-void VortexPatchScalarVel::pre_advance_work() {
+void VortexPatchScalarVel::pre_advance_work()
+{
     const auto& time =
         m_sim.time().current_time() + 0.5 * m_sim.time().deltaT();
 
@@ -147,13 +149,13 @@ void VortexPatchScalarVel::pre_advance_work() {
                         std::sin(2.0 * M_PI * y) * std::sin(2.0 * M_PI * z) *
                         std::cos(M_PI * time / TT);
                     vf(i, j, k) = -std::sin(M_PI * yf) * std::sin(M_PI * yf) *
-                                      std::sin(2.0 * M_PI * x) *
-                                      std::sin(2.0 * M_PI * z) *
-                                      std::cos(M_PI * time / TT);
+                                  std::sin(2.0 * M_PI * x) *
+                                  std::sin(2.0 * M_PI * z) *
+                                  std::cos(M_PI * time / TT);
                     wf(i, j, k) = -std::sin(M_PI * zf) * std::sin(M_PI * zf) *
-                                      std::sin(2.0 * M_PI * x) *
-                                      std::sin(2.0 * M_PI * y) *
-                                      std::cos(M_PI * time / TT);
+                                  std::sin(2.0 * M_PI * x) *
+                                  std::sin(2.0 * M_PI * y) *
+                                  std::cos(M_PI * time / TT);
                 });
         }
         u_mac(lev).FillBoundary(geom[lev].periodicity());

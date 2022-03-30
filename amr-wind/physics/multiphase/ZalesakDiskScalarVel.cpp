@@ -27,9 +27,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real SCexact::operator()(
     amrex::Real zc = zc0;
 
     // Normalized distance from current center
-    amrex::Real dnorm = std::sqrt(
-        (x - xc) * (x - xc) + (y - yc) * (y - yc) +
-        (z - zc) * (z - zc)) / radius;
+    amrex::Real dnorm =
+        std::sqrt(
+            (x - xc) * (x - xc) + (y - yc) * (y - yc) + (z - zc) * (z - zc)) /
+        radius;
     // Scalar distribution
     return amrex::min(1.0, amrex::max(0.0, 1.5 - dnorm));
 }
@@ -49,7 +50,7 @@ ZalesakDiskScalarVel::ZalesakDiskScalarVel(CFDSim& sim)
     pp.query("period", m_TT);
     pp.query("error_log_file", m_output_fname);
     amrex::ParmParse pinc("incflo");
-    pinc.add("prescribe_velocity",true);
+    pinc.add("prescribe_velocity", true);
 }
 
 /** Initialize the velocity and levelset fields at the beginning of the
@@ -57,7 +58,8 @@ ZalesakDiskScalarVel::ZalesakDiskScalarVel(CFDSim& sim)
  *
  *  \sa amr_wind::ZalesakDiskScalarVelFieldInit
  */
-void ZalesakDiskScalarVel::initialize_fields(int level, const amrex::Geometry& geom)
+void ZalesakDiskScalarVel::initialize_fields(
+    int level, const amrex::Geometry& geom)
 {
     auto& velocity = m_velocity(level);
     auto& levelset = m_levelset(level);
@@ -98,7 +100,6 @@ void ZalesakDiskScalarVel::initialize_fields(int level, const amrex::Geometry& g
                 uf(i, j, k) = 2.0 * M_PI / TT * (0.5 - y);
                 vf(i, j, k) = 2.0 * M_PI / TT * (x - 0.5);
                 wf(i, j, k) = 0.0;
-
 
                 vel(i, j, k, 1) = 0.0;
                 vel(i, j, k, 2) = 0.0;
@@ -143,9 +144,11 @@ void ZalesakDiskScalarVel::initialize_fields(int level, const amrex::Geometry& g
                     rho1 * smooth_heaviside + rho2 * (1.0 - smooth_heaviside);
 
                 // Set up scalar field with velocity in x
-                amrex::Real dnorm = std::sqrt(
-                    (x - xc) * (x - xc) + (y - yc) * (y - yc) +
-                    (z - zc) * (z - zc))/m_radius;
+                amrex::Real dnorm =
+                    std::sqrt(
+                        (x - xc) * (x - xc) + (y - yc) * (y - yc) +
+                        (z - zc) * (z - zc)) /
+                    m_radius;
                 // Set up scalar field with u velocity
                 vel(i, j, k, 0) = amrex::min(1.0, amrex::max(0.0, 1.5 - dnorm));
             });
@@ -154,41 +157,39 @@ void ZalesakDiskScalarVel::initialize_fields(int level, const amrex::Geometry& g
     output_error();
 }
 
-void ZalesakDiskScalarVel::pre_advance_work() {
+void ZalesakDiskScalarVel::pre_advance_work()
+{
 
-      const int nlevels = m_sim.repo().num_active_levels();
-      const auto& geom = m_sim.mesh().Geom();
-      auto& u_mac = m_sim.repo().get_field("u_mac");
-      auto& v_mac = m_sim.repo().get_field("v_mac");
-      auto& w_mac = m_sim.repo().get_field("w_mac");
+    const int nlevels = m_sim.repo().num_active_levels();
+    const auto& geom = m_sim.mesh().Geom();
+    auto& u_mac = m_sim.repo().get_field("u_mac");
+    auto& v_mac = m_sim.repo().get_field("v_mac");
+    auto& w_mac = m_sim.repo().get_field("w_mac");
 
-      // Overriding the velocity field
-      for (int lev = 0; lev < nlevels; ++lev) {
-          for (amrex::MFIter mfi(m_velocity(lev)); mfi.isValid(); ++mfi) {
-              const auto& vbx = mfi.growntilebox(1);
-              const auto& dx = geom[lev].CellSizeArray();
-              const auto& problo = geom[lev].ProbLoArray();
-              const amrex::Real TT = m_TT;
-              auto uf = u_mac(lev).array(mfi);
-              auto vf = v_mac(lev).array(mfi);
-              auto wf = w_mac(lev).array(mfi);
-              amrex::ParallelFor(
-                  vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                      const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                      const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+    // Overriding the velocity field
+    for (int lev = 0; lev < nlevels; ++lev) {
+        for (amrex::MFIter mfi(m_velocity(lev)); mfi.isValid(); ++mfi) {
+            const auto& vbx = mfi.growntilebox(1);
+            const auto& dx = geom[lev].CellSizeArray();
+            const auto& problo = geom[lev].ProbLoArray();
+            const amrex::Real TT = m_TT;
+            auto uf = u_mac(lev).array(mfi);
+            auto vf = v_mac(lev).array(mfi);
+            auto wf = w_mac(lev).array(mfi);
+            amrex::ParallelFor(
+                vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
 
-                      uf(i, j, k) = 2.0 * M_PI / TT * (0.5 - y);
-                      vf(i, j, k) = 2.0 * M_PI / TT * (x - 0.5);
-                      wf(i, j, k) = 0.0;
-
-                  });
-          }
-          u_mac(lev).FillBoundary(geom[lev].periodicity());
-          v_mac(lev).FillBoundary(geom[lev].periodicity());
-          w_mac(lev).FillBoundary(geom[lev].periodicity());
-      }
-
-
+                    uf(i, j, k) = 2.0 * M_PI / TT * (0.5 - y);
+                    vf(i, j, k) = 2.0 * M_PI / TT * (x - 0.5);
+                    wf(i, j, k) = 0.0;
+                });
+        }
+        u_mac(lev).FillBoundary(geom[lev].periodicity());
+        v_mac(lev).FillBoundary(geom[lev].periodicity());
+        w_mac(lev).FillBoundary(geom[lev].periodicity());
+    }
 }
 
 void ZalesakDiskScalarVel::post_advance_work() { output_error(); }
@@ -203,7 +204,8 @@ amrex::Real ZalesakDiskScalarVel::compute_error(const Field& field)
     const auto mesh_mapping = m_sim.has_mesh_mapping();
 
     Field const* nu_coord_cc =
-        mesh_mapping ? &(m_sim.repo().get_field("non_uniform_coord_cc")) : nullptr;
+        mesh_mapping ? &(m_sim.repo().get_field("non_uniform_coord_cc"))
+                     : nullptr;
     Field const* mesh_fac_cc =
         mesh_mapping
             ? &(m_sim.repo().get_mesh_mapping_field(amr_wind::FieldLoc::CELL))
@@ -219,8 +221,8 @@ amrex::Real ZalesakDiskScalarVel::compute_error(const Field& field)
                 m_sim.mesh().boxArray(lev + 1), amrex::IntVect(2), 1, 0);
         } else {
             level_mask.define(
-                m_sim.mesh().boxArray(lev), m_sim.mesh().DistributionMap(lev), 1, 0,
-                amrex::MFInfo());
+                m_sim.mesh().boxArray(lev), m_sim.mesh().DistributionMap(lev),
+                1, 0, amrex::MFInfo());
             level_mask.setVal(1);
         }
 

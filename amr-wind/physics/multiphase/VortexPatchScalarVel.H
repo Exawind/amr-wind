@@ -20,7 +20,8 @@ namespace amr_wind {
 class VortexPatchScalarVel : public Physics::Register<VortexPatchScalarVel>
 {
     static_assert(
-        AMREX_SPACEDIM == 3, "VortexPatchScalarVel requires 3 dimensional mesh");
+        AMREX_SPACEDIM == 3,
+        "VortexPatchScalarVel requires 3 dimensional mesh");
 
 public:
     static const std::string identifier() { return "VortexPatchScalarVel"; }
