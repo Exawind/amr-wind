@@ -262,7 +262,9 @@ void incflo::ApplyPredictor(bool incremental_projection)
     }
 
     // Extrapolate and apply MAC projection for advection velocities
-    icns().pre_advection_actions(amr_wind::FieldState::Old);
+    if (!m_prescribe_vel) {
+        icns().pre_advection_actions(amr_wind::FieldState::Old);
+    }
 
     // For scalars only first
     // *************************************************************************************
@@ -348,9 +350,11 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // Project velocity field, update pressure
     //
     // ************************************************************************************
-    ApplyProjection(
-        (density_nph).vec_const_ptrs(), new_time, m_time.deltaT(),
-        incremental_projection);
+    if (!m_prescribe_vel) {
+        ApplyProjection(
+            (density_nph).vec_const_ptrs(), new_time, m_time.deltaT(),
+            incremental_projection);
+    }
 }
 
 //
@@ -460,7 +464,9 @@ void incflo::ApplyCorrector()
     auto& density_nph = density_new.state(amr_wind::FieldState::NPH);
 
     // Extrapolate and apply MAC projection for advection velocities
-    icns().pre_advection_actions(amr_wind::FieldState::New);
+    if (!m_prescribe_vel) {
+        icns().pre_advection_actions(amr_wind::FieldState::New);
+    }
 
     // *************************************************************************************
     // Compute the explicit "new" advective terms R_u^(n+1,*), R_r^(n+1,*) and
@@ -562,7 +568,10 @@ void incflo::ApplyCorrector()
     // *************************************************************************************
     // Project velocity field, update pressure
     // *************************************************************************************
-    bool incremental = false;
-    ApplyProjection(
-        (density_nph).vec_const_ptrs(), new_time, m_time.deltaT(), incremental);
+    if (!m_prescribe_vel) {
+        bool incremental = false;
+        ApplyProjection(
+            (density_nph).vec_const_ptrs(), new_time, m_time.deltaT(),
+            incremental);
+    }
 }
