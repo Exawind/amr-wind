@@ -50,8 +50,6 @@ struct AdvectionOp<VOF, fvm::Godunov>
             isweep = 1;
         }
 
-        dof_field.fillpatch(0.0);
-
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             amrex::MFItInfo mfi_info;
             if (amrex::Gpu::notInLaunchRegion()) {
