@@ -120,7 +120,7 @@ void incflo::ComputeDt(bool explicit_diffusion)
                     return result;
                 });
         }
-        conv_lev = amrex::max(conv_lev,mphase_conv_lev);
+        conv_lev = amrex::max(conv_lev, mphase_conv_lev);
 
         if (explicit_diffusion) {
             auto const& mu_arr = mu.const_arrays();
