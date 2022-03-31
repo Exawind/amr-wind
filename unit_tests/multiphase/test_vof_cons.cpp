@@ -122,7 +122,6 @@ protected:
         // Set up icns PDE, access to VOF PDE
         auto& pde_mgr = sim().pde_manager();
         auto& mom_eqn = pde_mgr.register_icns();
-        mom_eqn.initialize();
 
         // Initialize physics for the sake of MultiPhase routines
         sim().init_physics();
@@ -154,13 +153,13 @@ protected:
         auto& umac = repo.get_field("u_mac");
         auto& vmac = repo.get_field("v_mac");
         auto& wmac = repo.get_field("w_mac");
-        run_algorithm(umac, [&](const int lev, const amrex::MFIter& mfi) {
+        run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
             auto um = umac(lev).array(mfi);
             auto vm = vmac(lev).array(mfi);
             auto wm = wmac(lev).array(mfi);
-            const auto& bx = mfi.growntilebox(1);
+            const auto& gbx = mfi.growntilebox(1);
             amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     um(i, j, k) = varr[0];
                     vm(i, j, k) = varr[1];
                     wm(i, j, k) = varr[2];
