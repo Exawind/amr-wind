@@ -189,7 +189,7 @@ protected:
 
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    if (dir > 0) {
+                    if (dir >= 0) {
 
                         int icheck;
                         switch (dir) {
