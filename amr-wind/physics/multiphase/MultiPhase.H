@@ -50,7 +50,7 @@ public:
 
     amrex::Real volume_fraction_sum();
 
-    amrex::Real momentum_sum(int);
+    amrex::Real momentum_sum(int n);
 
     InterfaceCapturingMethod interface_capturing_method();
 

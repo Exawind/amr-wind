@@ -50,9 +50,8 @@ protected:
 
     void initialize_volume_fractions(
         const int dir,
-        const amrex::Geometry&,
         const amrex::Box& bx,
-        amrex::Array4<amrex::Real>& vof_arr)
+        amrex::Array4<amrex::Real>& vof_arr) const
     {
 
         amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
@@ -119,20 +118,20 @@ protected:
 
         auto& repo = sim().repo();
 
-        // Set up icns PDE, access to VOF PDE
+        // PDE manager, for access to VOF PDE later
         auto& pde_mgr = sim().pde_manager();
-        auto& mom_eqn = pde_mgr.register_icns();
+        // Setup of icns provides MAC velocities
+        pde_mgr.register_icns();
 
         // Initialize physics for the sake of MultiPhase routines
         sim().init_physics();
 
         // Initialize volume fraction field
         auto& vof = repo.get_field("vof");
-        auto& geom = repo.mesh().Geom();
         run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
             auto vof_arr = vof(lev).array(mfi);
             const auto& bx = mfi.validbox();
-            initialize_volume_fractions(dir, geom[lev], bx, vof_arr);
+            initialize_volume_fractions(dir, bx, vof_arr);
         });
         // Populate boundary cells
         vof.fillpatch(0.0);
