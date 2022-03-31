@@ -181,39 +181,44 @@ protected:
             }
         }
 
-        run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
-            const auto& vof_arr = vof(lev).const_array(mfi);
-            const auto& bx = mfi.validbox();
+        if (dir >= 0) {
+            run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
+                const auto& vof_arr = vof(lev).const_array(mfi);
+                const auto& bx = mfi.validbox();
 
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    if (dir >= 0) {
+                // Loop manually through cells to check values
+                for (int i = 0; i < 3; ++i) {
+                    for (int j = 0; j < 3; ++j) {
+                        for (int k = 0; k < 3; ++k) {
 
-                        int icheck;
-                        switch (dir) {
-                        case 0:
-                            icheck = i;
-                            break;
-                        case 1:
-                            icheck = j;
-                            break;
-                        case 2:
-                            icheck = k;
-                            break;
-                        }
-                        // Check if current solution matches initial solution
-                        if (2 * icheck + 1 == nx) {
-                            EXPECT_NEAR(vof_arr(i, j, k), 0.5, tol);
-                        } else {
-                            if (2 * icheck + 1 < nx) {
-                                EXPECT_NEAR(vof_arr(i, j, k), 1.0, tol);
+                            int icheck;
+                            switch (dir) {
+                            case 0:
+                                icheck = i;
+                                break;
+                            case 1:
+                                icheck = j;
+                                break;
+                            case 2:
+                                icheck = k;
+                                break;
+                            }
+                            // Check if current solution matches initial
+                            // solution
+                            if (2 * icheck + 1 == nx) {
+                                EXPECT_NEAR(vof_arr(i, j, k), 0.5, tol);
                             } else {
-                                EXPECT_NEAR(vof_arr(i, j, k), 0.0, tol);
+                                if (2 * icheck + 1 < nx) {
+                                    EXPECT_NEAR(vof_arr(i, j, k), 1.0, tol);
+                                } else {
+                                    EXPECT_NEAR(vof_arr(i, j, k), 0.0, tol);
+                                }
                             }
                         }
                     }
-                });
-        });
+                }
+            });
+        }
     }
     const amrex::Real m_rho1 = 1000.0;
     const amrex::Real m_rho2 = 1.0;
