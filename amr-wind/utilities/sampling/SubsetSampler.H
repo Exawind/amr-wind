@@ -58,10 +58,9 @@ private:
     const FieldRepo& m_repo;
 
     bool m_mesh_mapping{false};
+    bool m_include_ghost{false};
 
     Field& m_velocity;
-    Field& m_mesh_fac_cc;
-    Field& m_nu_coord_cc;
 
     amrex::Vector<vs::Vector> m_pos_nu_vec;
     amrex::Vector<vs::Vector> m_pos_comp_vec;

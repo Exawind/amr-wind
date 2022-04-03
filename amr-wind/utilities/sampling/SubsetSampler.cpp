@@ -16,8 +16,6 @@ SubsetSampler::SubsetSampler(const CFDSim& sim)
   , m_repo(sim.repo())
   , m_mesh_mapping(sim.has_mesh_mapping())
   , m_velocity(sim.repo().get_field("velocity"))
-  , m_mesh_fac_cc(sim.repo().get_field("mesh_scaling_factor_cc"))
-  , m_nu_coord_cc(sim.repo().get_field("non_uniform_coord_cc"))
 {}
 
 SubsetSampler::~SubsetSampler() = default;
@@ -31,6 +29,7 @@ void SubsetSampler::initialize(const std::string& key)
     pp.getarr("ylim", m_ylim);
     pp.getarr("zlim", m_zlim);
     pp.query("level", m_level);
+    pp.query("include_ghost", m_include_ghost);
 
     // Check the inputs
     AMREX_ALWAYS_ASSERT(static_cast<int>(m_xlim.size()) == 2);
@@ -47,7 +46,7 @@ void SubsetSampler::initialize(const std::string& key)
     const auto& dx = geom.CellSizeArray();
 
     auto& velocity = m_velocity(level);
-    //auto& nu_coord_cc = m_nu_coord_cc(level);
+
     // Handle mesh mapping coordinates
     Field const* nu_coord_cc =
       m_mesh_mapping ? &(m_repo.get_field("non_uniform_coord_cc")) : nullptr;
@@ -59,7 +58,7 @@ void SubsetSampler::initialize(const std::string& key)
     int npt=0;
     // Loop through and count total number of points inside box
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.validbox();
+        const auto& vbx = m_include_ghost ? mfi.growntilebox() : mfi.validbox();
         amrex::Array4<amrex::Real const> nu_cc =
             m_mesh_mapping ? ((*nu_coord_cc)(level).array(mfi))
                            : amrex::Array4<amrex::Real const>();
@@ -96,9 +95,6 @@ void SubsetSampler::initialize(const std::string& key)
       m_proc_offsets[i] = m_proc_offsets[i-1] + proc_cc_count[i-1];
 
     // Go through and get the coordinates of the points inside the box
-    //const auto& dx      = m_mesh.Geom(level).CellSizeArray();
-    //const auto* prob_lo = m_sim.mesh().Geom(level).ProbLo();
-
     m_pos_nu_vec.resize(m_npts, vs::Vector::zero());
     m_pos_comp_vec.resize(m_npts, vs::Vector::zero());
 							 
@@ -107,7 +103,8 @@ void SubsetSampler::initialize(const std::string& key)
 
     int idx = 0;
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.validbox();
+      //const auto& vbx = mfi.validbox();
+        const auto& vbx = m_include_ghost ? mfi.growntilebox() : mfi.validbox();
         amrex::Array4<amrex::Real const> nu_cc =
             m_mesh_mapping ? ((*nu_coord_cc)(level).array(mfi))
             : amrex::Array4<amrex::Real const>();
@@ -127,12 +124,12 @@ void SubsetSampler::initialize(const std::string& key)
                     // Add points to local array
                     auto &pos_nu   = pos_nu_arr[idx+offset];
                     auto &pos_comp = pos_comp_arr[idx+offset];
-                    for (int n=0; n<AMREX_SPACEDIM; n++){
-                        pos_nu[n] = nu_cc(i, j, k, n);
-                    }
                     pos_comp[0] = problo[0] + (i + 0.5)*dx[0];
                     pos_comp[1] = problo[1] + (j + 0.5)*dx[1];
                     pos_comp[2] = problo[2] + (k + 0.5)*dx[2];
+                    for (int n=0; n<AMREX_SPACEDIM; n++){
+		        pos_nu[n] = m_mesh_mapping ? nu_cc(i, j, k, n) : pos_comp[n];
+                    }
                     // advance to next point
                     idx++;
                 }
