@@ -81,20 +81,16 @@ jobs:
       run: |
         ctest ${{matrix.ctest_args}} --output-on-failure
   GPU-Nvidia:
-    name: GPU-CUDA v${{matrix.cuda_ver}}
+    name: GPU-CUDA
     needs: Formatting
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        #cuda_pkg: [11-2, 10-2]
-        cuda_pkg: [11-2]
+        cuda_ver: [11.2]
         include:
           - cuda_ver: "11.2"
             cuda_pkg: 11-2
             cuda_extra: libcurand-dev-11-2 cuda-cupti-dev-11-2
-          #- cuda_ver: "10.2"
-          #  cuda_pkg: 10-2
-          #  cuda_extra: cuda-curand-dev-10-2 cuda-cupti-dev-10-2
     steps:
       - name: Cancel previous runs
         uses: styfle/cancel-workflow-action@0.6.0
@@ -121,7 +117,7 @@ jobs:
             -DAMR_WIND_ENABLE_MPI=OFF \
             -DAMR_WIND_ENABLE_CUDA=ON \
             -DAMReX_CUDA_ERROR_CAPTURE_THIS:BOOL=ON \
-            -DAMReX_CUDA_ARCH=Volta .
+            -DAMReX_CUDA_ARCH=70 .
           cmake --build build-${{matrix.cuda_pkg}} -- -j $(nproc)
   GPU-AMD:
     name: GPU-HIP
