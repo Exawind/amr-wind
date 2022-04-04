@@ -117,7 +117,7 @@ jobs:
             -DAMR_WIND_ENABLE_MPI=OFF \
             -DAMR_WIND_ENABLE_CUDA=ON \
             -DAMReX_CUDA_ERROR_CAPTURE_THIS:BOOL=ON \
-            -DAMReX_CUDA_ARCH=70 .
+            -DCMAKE_CUDA_ARCHITECTURES=70 .
           cmake --build build-${{matrix.cuda_pkg}} -- -j $(nproc)
   GPU-AMD:
     name: GPU-HIP
