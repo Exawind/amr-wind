@@ -16,6 +16,10 @@
 #include "AMReX_PlotFileUtil.H"
 #include "AMReX_MultiFabUtil.H"
 
+#ifdef AMR_WIND_USE_HDF5
+#include "AMReX_PlotFileUtilHDF5.H"
+#endif
+
 namespace amr_wind {
 
 IOManager::IOManager(CFDSim& sim)
@@ -150,11 +154,17 @@ void IOManager::write_plot_file()
     const auto& mesh = m_sim.mesh();
     amrex::Print() << "Writing plot file       " << plt_filename << " at time "
                    << m_sim.time().new_time() << std::endl;
+#ifdef AMR_WIND_USE_HDF5
+    amrex::WriteMultiLevelPlotfileHDF5(
+        plt_filename, nlevels, outfield->vec_const_ptrs(), m_plt_var_names,
+        mesh.Geom(), m_sim.time().new_time(), istep,
+        mesh.refRatio() /*, const std::string &compression*/);
+#else
     amrex::WriteMultiLevelPlotfile(
         plt_filename, nlevels, outfield->vec_const_ptrs(), m_plt_var_names,
         mesh.Geom(), m_sim.time().new_time(), istep, mesh.refRatio());
-
     write_info_file(plt_filename);
+#endif
 }
 
 void IOManager::write_checkpoint_file(const int start_level)
