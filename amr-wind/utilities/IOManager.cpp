@@ -44,6 +44,12 @@ void IOManager::initialize_io()
     pp.query("check_file", m_chk_prefix);
     pp.query("restart_file", m_restart_file);
     pp.query("allow_missing_restart_fields", m_allow_missing_restart_fields);
+#ifdef AMR_WIND_USE_HDF5
+    pp.query("output_hdf5_plotfile", m_output_hdf5_plotfile);
+#ifdef AMR_WIND_USE_H5Z_ZFP
+    pp.query("hdf5_compression", m_hdf5_compression);
+#endif
+#endif
 
     // ParmParse requires us to read in a vector
     pp.queryarr("outputs", out_vars);
@@ -155,15 +161,23 @@ void IOManager::write_plot_file()
     amrex::Print() << "Writing plot file       " << plt_filename << " at time "
                    << m_sim.time().new_time() << std::endl;
 #ifdef AMR_WIND_USE_HDF5
-    amrex::WriteMultiLevelPlotfileHDF5(
-        plt_filename, nlevels, outfield->vec_const_ptrs(), m_plt_var_names,
-        mesh.Geom(), m_sim.time().new_time(), istep,
-        mesh.refRatio() /*, const std::string &compression*/);
-#else
-    amrex::WriteMultiLevelPlotfile(
-        plt_filename, nlevels, outfield->vec_const_ptrs(), m_plt_var_names,
-        mesh.Geom(), m_sim.time().new_time(), istep, mesh.refRatio());
-    write_info_file(plt_filename);
+    if (m_output_hdf5_plotfile) {
+        amrex::WriteMultiLevelPlotfileHDF5(
+            plt_filename, nlevels, outfield->vec_const_ptrs(), m_plt_var_names,
+            mesh.Geom(), m_sim.time().new_time(), istep, mesh.refRatio()
+#ifdef AMR_WIND_USE_H5Z_ZFP
+                                                             ,
+            m_hdf5_compression
+#endif
+        );
+    } else {
+#endif
+        amrex::WriteMultiLevelPlotfile(
+            plt_filename, nlevels, outfield->vec_const_ptrs(), m_plt_var_names,
+            mesh.Geom(), m_sim.time().new_time(), istep, mesh.refRatio());
+        write_info_file(plt_filename);
+#ifdef AMR_WIND_USE_HDF5
+    }
 #endif
 }
 

@@ -199,13 +199,13 @@ add_test_re(vortex_ring_collision)
 add_test_re(fat_cored_vortex_ring)
 add_test_re(abl_bndry_output_native)
 
-if (NOT AMR_WIND_ENABLE_CUDA)
+if(NOT AMR_WIND_ENABLE_CUDA)
   add_test_re(ctv_godunov_plm)
   add_test_re(ctv_mol_mesh_map)
   add_test_re(ctv_mol_mesh_map_explicit)
 endif()
 
-if (AMR_WIND_ENABLE_NETCDF)
+if(AMR_WIND_ENABLE_NETCDF)
   add_test_re(abl_bndry_output)
   add_test_re(abl_virtual_lidar)
 endif()
@@ -217,12 +217,16 @@ if(AMR_WIND_ENABLE_MASA)
 endif()
 
 # TODO: Enable hypre capability on GPUs
-if (AMR_WIND_ENABLE_HYPRE)
+if(AMR_WIND_ENABLE_HYPRE)
   add_test_re(abl_godunov_hypre)
   add_test_re(channel_kwsst_hypre)
   add_test_re(channel_mol_mesh_map_x)
   add_test_re(channel_mol_mesh_map_y)
   add_test_re(channel_mol_mesh_map_z)
+endif()
+
+if(AMR_WIND_ENABLE_HDF5)
+  add_test_re(abl_stable_hdf5)
 endif()
 
 #=============================================================================
@@ -232,7 +236,7 @@ add_test_red(abl_bndry_input_native abl_bndry_output_native)
 add_test_red(abl_godunov_restart abl_godunov)
 add_test_red(abl_bndry_input_amr_native abl_bndry_output_native)
 
-if (AMR_WIND_ENABLE_NETCDF)
+if(AMR_WIND_ENABLE_NETCDF)
   add_test_red(abl_bndry_input abl_bndry_output)
   add_test_red(abl_bndry_input_amr abl_bndry_output)
 endif()
