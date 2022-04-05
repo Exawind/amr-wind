@@ -57,7 +57,7 @@ protected:
     {
 
         amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-            int icheck;
+            int icheck = 0;
             if (dir < 0) {
                 // Bottom left half is liquid, top right half is gas
                 if (i + j + k == 3) {
