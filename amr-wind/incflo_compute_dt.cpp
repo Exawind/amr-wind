@@ -40,7 +40,6 @@ void incflo::ComputeDt(bool explicit_diffusion)
     Real diff_cfl = 0.0;
     Real force_cfl = 0.0;
     const bool mesh_mapping = m_sim.has_mesh_mapping();
-    const bool yes_vof = m_repo.field_exists("vof");
 
     const auto& den = density();
     amr_wind::Field const* mesh_fac =
@@ -85,7 +84,7 @@ void incflo::ComputeDt(bool explicit_diffusion)
                     -1.0);
             });
 
-        if (yes_vof) {
+        if (m_sim.pde_manager().has_pde("VOF")) {
             MultiFab const& vof = m_repo.get_field("vof")(lev);
             auto const& vof_arr = vof.const_arrays();
             mphase_conv_lev += amrex::ParReduce(
