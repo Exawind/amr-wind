@@ -7,6 +7,116 @@
 
 namespace amr_wind_tests {
 
+static void
+initialize_volume_fractions(const int dir, const int nx, amr_wind::Field& vof)
+{
+
+    run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
+        auto vof_arr = vof(lev).array(mfi);
+        const auto& bx = mfi.validbox();
+        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+            int icheck = 0;
+            if (dir < 0) {
+                // Bottom left half is liquid, top right half is gas
+                if (i + j + k == 3) {
+                    vof_arr(i, j, k) = 0.5;
+                } else {
+                    if (i + j + k < 3) {
+                        vof_arr(i, j, k) = 1.0;
+                    } else {
+                        vof_arr(i, j, k) = 0.0;
+                    }
+                }
+            } else {
+                // Left half is liquid, right half is gas
+                switch (dir) {
+                case 0:
+                    icheck = i;
+                    break;
+                case 1:
+                    icheck = j;
+                    break;
+                case 2:
+                    icheck = k;
+                    break;
+                }
+                if (2 * icheck + 1 == nx) {
+                    vof_arr(i, j, k) = 0.5;
+                } else {
+                    if (2 * icheck + 1 < nx) {
+                        vof_arr(i, j, k) = 1.0;
+                    } else {
+                        vof_arr(i, j, k) = 0.0;
+                    }
+                }
+            }
+        });
+    });
+    // Populate boundary cells
+    vof.fillpatch(0.0);
+}
+
+static void initialize_adv_velocities(
+    amr_wind::Field& vof,
+    amr_wind::Field& umac,
+    amr_wind::Field& vmac,
+    amr_wind::Field& wmac,
+    amrex::GpuArray<amrex::Real, 3> varr)
+{
+    run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
+        auto um = umac(lev).array(mfi);
+        auto vm = vmac(lev).array(mfi);
+        auto wm = wmac(lev).array(mfi);
+        const auto& gbx = mfi.growntilebox(1);
+        amrex::ParallelFor(
+            gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                um(i, j, k) = varr[0];
+                vm(i, j, k) = varr[1];
+                wm(i, j, k) = varr[2];
+            });
+    });
+}
+
+static void
+check_accuracy(int dir, int nx, amrex::Real tol, amr_wind::Field& vof)
+{
+    run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
+        const auto& vof_arr = vof(lev).const_array(mfi);
+
+        // Loop manually through cells to check values
+        for (int i = 0; i < nx; ++i) {
+            for (int j = 0; j < nx; ++j) {
+                for (int k = 0; k < nx; ++k) {
+
+                    int icheck = 0;
+                    switch (dir) {
+                    case 0:
+                        icheck = i;
+                        break;
+                    case 1:
+                        icheck = j;
+                        break;
+                    case 2:
+                        icheck = k;
+                        break;
+                    }
+                    // Check if current solution matches initial
+                    // solution
+                    if (2 * icheck + 1 == nx) {
+                        EXPECT_NEAR(vof_arr(i, j, k), 0.5, tol);
+                    } else {
+                        if (2 * icheck + 1 < nx) {
+                            EXPECT_NEAR(vof_arr(i, j, k), 1.0, tol);
+                        } else {
+                            EXPECT_NEAR(vof_arr(i, j, k), 0.0, tol);
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
 class VOFConsTest : public MeshTest
 {
 protected:
@@ -50,62 +160,15 @@ protected:
         }
     }
 
-    void initialize_volume_fractions(
-        const int dir,
-        const int nx,
-        const amrex::Box& bx,
-        amrex::Array4<amrex::Real>& vof_arr) const
-    {
-
-        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-            int icheck = 0;
-            if (dir < 0) {
-                // Bottom left half is liquid, top right half is gas
-                if (i + j + k == 3) {
-                    vof_arr(i, j, k) = 0.5;
-                } else {
-                    if (i + j + k < 3) {
-                        vof_arr(i, j, k) = 1.0;
-                    } else {
-                        vof_arr(i, j, k) = 0.0;
-                    }
-                }
-            } else {
-                // Left half is liquid, right half is gas
-                switch (dir) {
-                case 0:
-                    icheck = i;
-                    break;
-                case 1:
-                    icheck = j;
-                    break;
-                case 2:
-                    icheck = k;
-                    break;
-                }
-                if (2 * icheck + 1 == nx) {
-                    vof_arr(i, j, k) = 0.5;
-                } else {
-                    if (2 * icheck + 1 < nx) {
-                        vof_arr(i, j, k) = 1.0;
-                    } else {
-                        vof_arr(i, j, k) = 0.0;
-                    }
-                }
-            }
-        });
-    }
-
     void testing_coorddir(const int dir, amrex::Real CFL)
     {
         constexpr double tol = 1.0e-15;
-        const int nx = m_nx;
 
         // Flow-through time
         const amrex::Real ft_time = 1.0 / m_vel;
 
         // Set timestep according to input
-        dt = ft_time / ((amrex::Real)nx) * CFL;
+        dt = ft_time / ((amrex::Real)m_nx) * CFL;
         // Round to nearest integer timesteps
         int niter = (int)round(ft_time / dt);
         // Modify dt to fit niter
@@ -132,13 +195,7 @@ protected:
 
         // Initialize volume fraction field
         auto& vof = repo.get_field("vof");
-        run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
-            auto vof_arr = vof(lev).array(mfi);
-            const auto& bx = mfi.validbox();
-            initialize_volume_fractions(dir, nx, bx, vof_arr);
-        });
-        // Populate boundary cells
-        vof.fillpatch(0.0);
+        initialize_volume_fractions(dir, m_nx, vof);
         // Get multiphase object
         auto& mphase = sim().physics_manager().get<amr_wind::MultiPhase>();
 
@@ -156,18 +213,7 @@ protected:
         auto& umac = repo.get_field("u_mac");
         auto& vmac = repo.get_field("v_mac");
         auto& wmac = repo.get_field("w_mac");
-        run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
-            auto um = umac(lev).array(mfi);
-            auto vm = vmac(lev).array(mfi);
-            auto wm = wmac(lev).array(mfi);
-            const auto& gbx = mfi.growntilebox(1);
-            amrex::ParallelFor(
-                gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    um(i, j, k) = varr[0];
-                    vm(i, j, k) = varr[1];
-                    wm(i, j, k) = varr[2];
-                });
-        });
+        initialize_adv_velocities(vof, umac, vmac, wmac, varr);
 
         // Get initial VOF sum
         amrex::Real sum_vof0 = mphase.volume_fraction_sum();
@@ -186,41 +232,7 @@ protected:
         }
 
         if (dir >= 0) {
-            run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
-                const auto& vof_arr = vof(lev).const_array(mfi);
-
-                // Loop manually through cells to check values
-                for (int i = 0; i < 3; ++i) {
-                    for (int j = 0; j < 3; ++j) {
-                        for (int k = 0; k < 3; ++k) {
-
-                            int icheck = 0;
-                            switch (dir) {
-                            case 0:
-                                icheck = i;
-                                break;
-                            case 1:
-                                icheck = j;
-                                break;
-                            case 2:
-                                icheck = k;
-                                break;
-                            }
-                            // Check if current solution matches initial
-                            // solution
-                            if (2 * icheck + 1 == nx) {
-                                EXPECT_NEAR(vof_arr(i, j, k), 0.5, tol);
-                            } else {
-                                if (2 * icheck + 1 < nx) {
-                                    EXPECT_NEAR(vof_arr(i, j, k), 1.0, tol);
-                                } else {
-                                    EXPECT_NEAR(vof_arr(i, j, k), 0.0, tol);
-                                }
-                            }
-                        }
-                    }
-                }
-            });
+            check_accuracy(dir, m_nx, tol, vof);
         }
     }
     const amrex::Real m_rho1 = 1000.0;
