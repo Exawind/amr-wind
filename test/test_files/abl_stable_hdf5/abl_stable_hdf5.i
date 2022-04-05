@@ -75,4 +75,3 @@ zlo.tke_type = "zero_gradient"
 incflo.verbose          =   0
 
 io.output_hdf5_plotfile = true
-io.hdf5_compression = "NONE#0"

@@ -137,11 +137,6 @@ private:
     //! Flag indicating whether or not to output HDF5 plot files when HDF5 is
     //! enabled
     bool m_output_hdf5_plotfile{false};
-
-#ifdef AMR_WIND_USE_H5Z_ZFP
-    //! String which holds the HDF5 ZFP compression preference
-    bool m_hdf5_compression{"NONE#0"};
-#endif
 #endif
 };
 
