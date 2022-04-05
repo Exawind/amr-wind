@@ -16,9 +16,9 @@ protected:
 
         {
             amrex::ParmParse pp("amr");
-            amrex::Vector<int> ncell{{3, 3, 3}};
+            amrex::Vector<int> ncell{{m_nx, m_nx, m_nx}};
             pp.add("max_level", 0);
-            pp.add("max_grid_size", 3);
+            pp.add("max_grid_size", m_nx);
             pp.addarr("n_cell", ncell);
         }
         {
@@ -52,6 +52,7 @@ protected:
 
     void initialize_volume_fractions(
         const int dir,
+        const int nx,
         const amrex::Box& bx,
         amrex::Array4<amrex::Real>& vof_arr) const
     {
@@ -98,6 +99,7 @@ protected:
     void testing_coorddir(const int dir, amrex::Real CFL)
     {
         constexpr double tol = 1.0e-15;
+        const int nx = m_nx;
 
         // Flow-through time
         const amrex::Real ft_time = 1.0 / m_vel;
@@ -133,7 +135,7 @@ protected:
         run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
             auto vof_arr = vof(lev).array(mfi);
             const auto& bx = mfi.validbox();
-            initialize_volume_fractions(dir, bx, vof_arr);
+            initialize_volume_fractions(dir, nx, bx, vof_arr);
         });
         // Populate boundary cells
         vof.fillpatch(0.0);
@@ -224,7 +226,7 @@ protected:
     const amrex::Real m_rho1 = 1000.0;
     const amrex::Real m_rho2 = 1.0;
     const amrex::Real m_vel = 5.0;
-    const int nx = 3;
+    const int m_nx = 3;
     amrex::Real dt = 0.0; // will be set according to CFL
 };
 
