@@ -2,6 +2,8 @@
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
 #include "amr-wind/physics/multiphase/MultiPhase.H"
+#include "amr-wind/equation_systems/vof/vof.H"
+#include "amr-wind/equation_systems/SchemeTraits.H"
 
 namespace amr_wind_tests {
 
@@ -165,20 +167,20 @@ protected:
                 });
         });
 
-        // Get initial volume fraction
+        // Get initial VOF sum
         amrex::Real sum_vof0 = mphase.volume_fraction_sum();
+        // Get equation handle and perform init
+        auto& seqn = pde_mgr(
+            amr_wind::pde::VOF::pde_name() + "-" +
+            amr_wind::fvm::Godunov::scheme_name());
+        seqn.initialize();
 
         for (int n = 0; n < niter; ++n) {
             // Perform VOF solve
-            for (auto& seqn : pde_mgr.scalar_eqns()) {
-                if (seqn->fields().field.base_name() == "vof") {
-                    seqn->initialize();
-                    seqn->compute_advection_term(amr_wind::FieldState::Old);
-                    seqn->post_solve_actions();
-                }
-                // Check conservation
-                EXPECT_NEAR(mphase.volume_fraction_sum(), sum_vof0, tol);
-            }
+            seqn.compute_advection_term(amr_wind::FieldState::Old);
+            seqn.post_solve_actions();
+            // Check conservation
+            EXPECT_NEAR(mphase.volume_fraction_sum(), sum_vof0, tol);
         }
 
         if (dir >= 0) {
