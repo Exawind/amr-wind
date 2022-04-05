@@ -219,7 +219,12 @@ void FreeSurface::post_advance_work()
                                         amrex::Real wx_hi = 0.0;
                                         amrex::Real wy_hi = 0.0;
                                         amrex::Real wz_hi = 0.0;
-                                        int iup, idn, jup, jdn, kup, kdn;
+                                        int iup = i;
+                                        int idn = i;
+                                        int jup = j;
+                                        int jdn = j;
+                                        int kup = k;
+                                        int kdn = k;
 
                                         // Determine which cells to use for grid
                                         if (m_coorddir != 0) {
@@ -276,8 +281,9 @@ void FreeSurface::post_advance_work()
                                         amrex::Real wy_lo = 1.0 - wy_hi;
                                         amrex::Real wz_lo = 1.0 - wz_hi;
 
-                                        amrex::Real vof_above, vof_below;
-                                        amrex::Real vof_here;
+                                        amrex::Real vof_above = 0.0;
+                                        amrex::Real vof_below = 0.0;
+                                        amrex::Real vof_here = 0.0;
 
                                         if (m_coorddir == 0) {
                                             vof_above =
