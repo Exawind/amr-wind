@@ -139,7 +139,7 @@ protected:
         auto& mphase = sim().physics_manager().get<amr_wind::MultiPhase>();
 
         // Initialize constant velocity field in single direction
-        amrex::Array<amrex::Real, 3> varr = {0};
+        amrex::GpuArray<amrex::Real, 3> varr = {0};
         if (dir < 0) {
             varr[0] = m_vel;
             varr[1] = m_vel;
