@@ -184,14 +184,13 @@ protected:
         if (dir >= 0) {
             run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
                 const auto& vof_arr = vof(lev).const_array(mfi);
-                const auto& bx = mfi.validbox();
 
                 // Loop manually through cells to check values
                 for (int i = 0; i < 3; ++i) {
                     for (int j = 0; j < 3; ++j) {
                         for (int k = 0; k < 3; ++k) {
 
-                            int icheck;
+                            int icheck = 0;
                             switch (dir) {
                             case 0:
                                 icheck = i;
