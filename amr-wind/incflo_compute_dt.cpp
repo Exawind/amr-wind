@@ -1,4 +1,5 @@
 #include "amr-wind/incflo.H"
+#include "amr-wind/equation_systems/vof/volume_fractions.H"
 
 #include <cmath>
 #include <limits>
@@ -59,6 +60,7 @@ void incflo::ComputeDt(bool explicit_diffusion)
                          : MultiArray4<Real const>();
 
         Real conv_lev = 0.0;
+        Real mphase_conv_lev = 0.0;
         Real diff_lev = 0.0;
         Real force_lev = 0.0;
 
@@ -81,6 +83,43 @@ void incflo::ComputeDt(bool explicit_diffusion)
                     amrex::Math::abs(v_bx(i, j, k, 2)) * dxinv[2] / fac_z,
                     -1.0);
             });
+
+        if (m_sim.pde_manager().has_pde("VOF")) {
+            MultiFab const& vof = m_repo.get_field("vof")(lev);
+            auto const& vof_arr = vof.const_arrays();
+            mphase_conv_lev += amrex::ParReduce(
+                TypeList<ReduceOpMax>{}, TypeList<Real>{}, vel, IntVect(0),
+                [=] AMREX_GPU_HOST_DEVICE(
+                    int box_no, int i, int j, int k) -> GpuTuple<Real> {
+                    auto const& v_bx = vel_arr[box_no];
+                    auto const& vof_bx = vof_arr[box_no];
+
+                    // Check for interface
+                    auto is_near =
+                        amr_wind::multiphase::interface_band(i, j, k, vof_bx);
+
+                    // CFL calculation is not needed away from interface
+                    amrex::Real result = 0.0;
+                    if (is_near) {
+                        // Near interface, evaluate CFL by sum of velocities
+                        amrex::Real fac_x =
+                            mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0;
+                        amrex::Real fac_y =
+                            mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0;
+                        amrex::Real fac_z =
+                            mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
+
+                        result = amrex::Math::abs(v_bx(i, j, k, 0)) * dxinv[0] /
+                                     fac_x +
+                                 amrex::Math::abs(v_bx(i, j, k, 1)) * dxinv[1] /
+                                     fac_y +
+                                 amrex::Math::abs(v_bx(i, j, k, 2)) * dxinv[2] /
+                                     fac_z;
+                    }
+                    return result;
+                });
+        }
+        conv_lev = amrex::max(conv_lev, mphase_conv_lev);
 
         if (explicit_diffusion) {
             auto const& mu_arr = mu.const_arrays();
