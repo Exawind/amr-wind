@@ -134,8 +134,7 @@ private:
     bool m_allow_missing_restart_fields{true};
 
 #ifdef AMR_WIND_USE_HDF5
-    //! Flag indicating whether or not to output HDF5 plot files when HDF5 is
-    //! enabled
+    //! Flag indicating whether or not to output HDF5 plot files
     bool m_output_hdf5_plotfile{false};
 #endif
 };
