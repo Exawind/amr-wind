@@ -153,8 +153,8 @@ public: // public for GPU
     template <typename IndexSelector>
     void compute_hvelmag_averages(
         const IndexSelector& idx_op,
-        int h1_idx,
-        int h2_idx,
+        const int h1_idx,
+        const int h2_idx,
         const amrex::MultiFab& mfab);
 
     /** return vector containing horizontal velocity magnitude average */

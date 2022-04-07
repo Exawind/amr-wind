@@ -56,7 +56,7 @@ public:
     std::string model_name() const override { return "OneEqKsgsM84"; }
 
     //! Update the turbulent viscosity field
-    void update_turbulent_viscosity(FieldState fstate) override;
+    void update_turbulent_viscosity(const FieldState fstate) override;
 
     //! Do any post advance work
     void post_advance_work() override;
@@ -110,7 +110,7 @@ public:
     std::string model_name() const override { return "OneEqKsgsS94"; }
 
     //! Update the turbulent viscosity field
-    void update_turbulent_viscosity(FieldState fstate) override;
+    void update_turbulent_viscosity(const FieldState fstate) override;
 
     //! No post advance work for this model
     void post_advance_work() override {}

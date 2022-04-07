@@ -34,7 +34,7 @@ void debris_loop(
     amrex::Box const& bx, amrex::Array4<amrex::Real> const& volfrac);
 
 void sweep(
-    int dir,
+    const int dir,
     amrex::Box const& bx,
     amrex::Real dtdx,
     amrex::Array4<amrex::Real const> const& vel_mac,
@@ -46,8 +46,8 @@ void sweep(
     amrex::Array4<amrex::Real> const& vofR,
     amrex::Array4<amrex::Real> const& advalpha_f,
     amrex::BCRec const* pbc,
-    int dimLow,
-    int dimHigh,
+    const int dimLow,
+    const int dimHigh,
     bool is_lagrangian);
 
 } // namespace multiphase

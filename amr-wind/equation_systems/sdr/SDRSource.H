@@ -26,10 +26,10 @@ public:
     ~SDRSource() override = default;
 
     virtual void operator()(
-        int lev,
+        const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,
-        FieldState fstate,
+        const FieldState fstate,
         const amrex::Array4<amrex::Real>& src_term) const = 0;
 };
 

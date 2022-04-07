@@ -31,7 +31,11 @@ struct FieldInfo
     static constexpr int max_field_states = 5;
 
     FieldInfo(
-        std::string basename, int ncomp, int ngrow, int nstates, FieldLoc floc);
+        std::string basename,
+        const int ncomp,
+        const int ngrow,
+        const int nstates,
+        const FieldLoc floc);
 
     ~FieldInfo();
 
@@ -218,7 +222,7 @@ public:
      */
     void set_default_fillpatch_bc(
         const SimTime& time,
-        amrex::BCType::mathematicalBndryTypes bctype =
+        const amrex::BCType::mathematicalBndryTypes bctype =
             amrex::BCType::hoextrap) noexcept;
 
     /** Map field to the uniform mesh
@@ -240,8 +244,8 @@ public:
     void to_stretched_space() noexcept;
 
     //! Return field at a different time state
-    Field& state(FieldState fstate);
-    const Field& state(FieldState fstate) const;
+    Field& state(const FieldState fstate);
+    const Field& state(const FieldState fstate) const;
 
     //! Return MultiFab instance for a given level
     amrex::MultiFab& operator()(int lev) noexcept;
@@ -260,7 +264,7 @@ public:
     void copy_state(FieldState to_state, FieldState from_state) noexcept;
 
     //! Create a new time state after the field has been created
-    Field& create_state(FieldState fstate) noexcept;
+    Field& create_state(const FieldState fstate) noexcept;
 
     // NOTE: We break naming rules for methods here to provide 1-1 mapping with
     // the underlying MultiFab method names.
@@ -318,7 +322,7 @@ public:
     void fillphysbc(amrex::Real time) noexcept;
     void fillphysbc(amrex::Real time, amrex::IntVect ng) noexcept;
 
-    void apply_bc_funcs(FieldState rho_state) noexcept;
+    void apply_bc_funcs(const FieldState rho_state) noexcept;
 
     void fillpatch(
         int lev,
@@ -379,7 +383,7 @@ protected:
         FieldRepo& repo,
         std::string name,
         std::shared_ptr<FieldInfo> finfo,
-        unsigned fid,
+        const unsigned fid,
         FieldState state);
 
     //! Reference to the FieldRepository instance

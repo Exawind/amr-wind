@@ -16,7 +16,7 @@ This document is intended for developers who want to understand the C++ code
 structure and modify the codebase and, therefore, assumes that the reader is
 familiar with the installation, compilation, and execution steps. If you are new to
 AMR-Wind and haven't installed/used AMR-Wind previously, we recommend starting
-with the [user manual](https://amr-wind.readthedocs.io) that provides a detailed
+with the [user manual](https://exawind.github.io/amr-wind/) that provides a detailed
 overview of the installation process as well as general usage.
 
 ## How to use this API guide?
@@ -90,7 +90,7 @@ open build/html/index.html
 
 AMR-Wind is an open-source code and we welcome contributions from the community.
 Please consult the [developer
-documentation](https://amr-wind.readthedocs.io/en/latest/dev/index.html) section
+documentation](https://exawind.github.io/amr-wind/developer/index.html) section
 of the user manual to learn about the process of submitting code enhancements,
 bug-fixes, documentation updates, etc.
 
