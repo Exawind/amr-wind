@@ -133,13 +133,28 @@ void ABLWallFunction::init_log_law_height()
 #endif
             avg_cc_height = avg_cc_height / (amrex::Real)npt;
             m_mo.zref = avg_cc_height;
+
+            // Use the first cell center height for zref
+            const auto& geom = m_mesh.Geom(0);
+            m_mo.zref_uni =
+                (geom.ProbLo(m_direction) + 0.5 * geom.CellSize(m_direction));
         } else {
             // Use the first cell center height for zref
             const auto& geom = m_mesh.Geom(0);
             m_mo.zref =
                 (geom.ProbLo(m_direction) + 0.5 * geom.CellSize(m_direction));
+            m_mo.zref_uni = m_mo.zref;
         }
+    } else {
+        // zref is already given
+        if (m_mesh_mapping) {
+	    m_mo.zref_uni = m_sim.mesh_mapping()->interp_nonunif_to_unif(m_mo.zref, 2);
+	} else {
+	    m_mo.zref_uni = m_mo.zref;
+	}
     }
+    amrex::Print()
+      << "ABLWallFunction: zref = "<<m_mo.zref<<" zref_uni = "<<m_mo.zref_uni<<std::endl;
 }
 
 void ABLWallFunction::update_umean(
@@ -161,10 +176,12 @@ void ABLWallFunction::update_umean(
         m_mo.vmag_mean = m_wf_vmag;
         m_mo.theta_mean = m_wf_theta;
     } else {
-        m_mo.vel_mean[0] = vpa.line_average_interpolated(m_mo.zref, 0);
-        m_mo.vel_mean[1] = vpa.line_average_interpolated(m_mo.zref, 1);
-        m_mo.vmag_mean = vpa.line_hvelmag_average_interpolated(m_mo.zref);
-        m_mo.theta_mean = tpa.line_average_interpolated(m_mo.zref, 0);
+        m_mo.vel_mean[0] = vpa.line_average_interpolated(m_mo.zref_uni, 0);
+        m_mo.vel_mean[1] = vpa.line_average_interpolated(m_mo.zref_uni, 1);
+        m_mo.vmag_mean = vpa.line_hvelmag_average_interpolated(m_mo.zref_uni);
+        m_mo.theta_mean = tpa.line_average_interpolated(m_mo.zref_uni, 0);
+	amrex::Print()
+	  << "ABLWallFunction: vmag_mean = "<<m_mo.vmag_mean<<std::endl;
     }
 
     m_mo.update_fluxes();

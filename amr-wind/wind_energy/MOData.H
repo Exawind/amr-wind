@@ -25,6 +25,7 @@ struct MOData
     };
 
     amrex::Real zref{0.0};           ///< Reference height (m)
+    amrex::Real zref_uni{0.0};       ///< Reference height in uniform computational grid
     amrex::Real z0{0.1};             ///< Roughness height (m)
     amrex::Real utau;                ///< Friction velocity (m/s)
     amrex::Real kappa{0.41};         ///< von Karman constant
