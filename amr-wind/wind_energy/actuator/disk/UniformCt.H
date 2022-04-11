@@ -38,7 +38,7 @@ struct UniformCt : public DiskType
     using MetaType = UniformCtData;
     using DataType = ActDataHolder<UniformCt>;
 
-    static const std::string identifier() { return "UniformCt"; }
+    static std::string identifier() { return "UniformCt"; }
 };
 
 } // namespace actuator

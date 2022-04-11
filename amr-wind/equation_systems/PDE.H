@@ -59,8 +59,8 @@ public:
     {
         if (PDE::has_diffusion) {
             BL_PROFILE("amr-wind::" + this->identifier() + "::initialize");
-            m_diff_op.reset(
-                new DiffusionOp<PDE, Scheme>(m_fields, m_sim.has_overset()));
+            m_diff_op.reset(new DiffusionOp<PDE, Scheme>(
+                m_fields, m_sim.has_overset(), m_sim.has_mesh_mapping()));
             m_turb_op.reset(
                 new TurbulenceOp<PDE>(m_sim.turbulence_model(), m_fields));
         }
@@ -70,7 +70,8 @@ public:
              m_sim.physics_manager().contains("MultiPhase"));
 
         m_adv_op.reset(new AdvectionOp<PDE, Scheme>(
-            m_fields, m_sim.has_overset(), variable_density));
+            m_fields, m_sim.has_overset(), variable_density,
+            m_sim.has_mesh_mapping()));
         m_src_op.init_source_terms(m_sim);
     }
 
@@ -80,8 +81,8 @@ public:
         if (PDE::has_diffusion) {
             BL_PROFILE(
                 "amr-wind::" + this->identifier() + "::post_regrid_actions");
-            m_diff_op.reset(
-                new DiffusionOp<PDE, Scheme>(m_fields, m_sim.has_overset()));
+            m_diff_op.reset(new DiffusionOp<PDE, Scheme>(
+                m_fields, m_sim.has_overset(), m_sim.has_mesh_mapping()));
         }
 
         bool variable_density =
@@ -89,7 +90,8 @@ public:
              m_sim.physics_manager().contains("MultiPhase"));
 
         m_adv_op.reset(new AdvectionOp<PDE, Scheme>(
-            m_fields, m_sim.has_overset(), variable_density));
+            m_fields, m_sim.has_overset(), variable_density,
+            m_sim.has_mesh_mapping()));
     }
 
     //! Return the object holding the fields necessary for solving this PDE
@@ -99,10 +101,10 @@ public:
     void compute_source_term(const FieldState fstate) override
     {
         BL_PROFILE("amr-wind::" + this->identifier() + "::compute_source_term");
-        m_src_op(fstate);
+        m_src_op(fstate, m_sim.has_mesh_mapping());
     }
 
-    void compute_mueff(const FieldState) override
+    void compute_mueff(const FieldState /*unused*/) override
     {
         if (PDE::has_diffusion) {
             BL_PROFILE("amr-wind::" + this->identifier() + "::compute_mueff");
@@ -127,18 +129,27 @@ public:
         (*m_adv_op)(fstate, m_time.deltaT());
     }
 
-    virtual void compute_predictor_rhs(const DiffusionType difftype) override
+    void pre_advection_actions(const FieldState fstate) override
+    {
+        BL_PROFILE(
+            "amr-wind::" + this->identifier() + "::pre_advection_actions");
+        m_adv_op->preadvect(fstate, m_time.deltaT());
+    }
+
+    void compute_predictor_rhs(const DiffusionType difftype) override
     {
         BL_PROFILE(
             "amr-wind::" + this->identifier() + "::compute_predictor_rhs");
-        m_rhs_op.predictor_rhs(difftype, m_time.deltaT());
+        m_rhs_op.predictor_rhs(
+            difftype, m_time.deltaT(), m_sim.has_mesh_mapping());
     }
 
-    virtual void compute_corrector_rhs(const DiffusionType difftype) override
+    void compute_corrector_rhs(const DiffusionType difftype) override
     {
         BL_PROFILE(
             "amr-wind::" + this->identifier() + "::compute_corrector_rhs");
-        m_rhs_op.corrector_rhs(difftype, m_time.deltaT());
+        m_rhs_op.corrector_rhs(
+            difftype, m_time.deltaT(), m_sim.has_mesh_mapping());
     }
 
     void solve(const amrex::Real dt) override

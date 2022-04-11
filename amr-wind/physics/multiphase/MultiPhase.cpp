@@ -21,6 +21,7 @@ MultiPhase::MultiPhase(CFDSim& sim)
     pp_multiphase.query("density_fluid2", m_rho2);
     pp_multiphase.query("verbose", m_verbose);
     pp_multiphase.query("interface_smoothing", m_interface_smoothing);
+    pp_multiphase.query("interface_smoothing_frequency", m_smooth_freq);
 
     // Register either the VOF or levelset equation
     if (amrex::toLower(m_interface_model) == "vof") {
@@ -60,13 +61,38 @@ InterfaceCapturingMethod MultiPhase::interface_capturing_method()
 
 void MultiPhase::post_init_actions()
 {
+
+    const auto& io_mgr = m_sim.io_manager();
+    if (!io_mgr.is_restart()) {
+        switch (m_interface_capturing_method) {
+        case InterfaceCapturingMethod::VOF:
+            levelset2vof();
+            set_density_via_vof();
+            break;
+        case InterfaceCapturingMethod::LS:
+            set_density_via_levelset();
+            break;
+        };
+    }
+
+    q0 = momentum_sum(0);
+    q1 = momentum_sum(1);
+    q2 = momentum_sum(2);
+    sumvof0 = volume_fraction_sum();
+}
+
+void MultiPhase::pre_advance_work()
+{
     switch (m_interface_capturing_method) {
     case InterfaceCapturingMethod::VOF:
-        levelset2vof();
-        set_density_via_vof();
+        if (m_interface_smoothing &&
+            m_sim.time().time_index() % m_smooth_freq == 0) {
+            amrex::Print() << "Smoothing the air-sea interface : "
+                           << m_sim.time().current_time() << std::endl;
+            favre_filtering();
+        }
         break;
     case InterfaceCapturingMethod::LS:
-        set_density_via_levelset();
         break;
     };
 }
@@ -75,20 +101,23 @@ void MultiPhase::post_advance_work()
 {
     switch (m_interface_capturing_method) {
     case InterfaceCapturingMethod::VOF:
-        set_density_via_vof();
-        if (m_interface_smoothing) {
-            favre_filtering();
-        }
-        // Compute the print the total volume fraction
+        // Compute and print the total volume fraction, momenta, and differences
         if (m_verbose > 0) {
             m_total_volfrac = volume_fraction_sum();
+            amrex::Real mom_x = momentum_sum(0) - q0;
+            amrex::Real mom_y = momentum_sum(1) - q1;
+            amrex::Real mom_z = momentum_sum(2) - q2;
             const auto& geom = m_sim.mesh().Geom();
             const amrex::Real total_vol = geom[0].ProbDomain().volume();
             amrex::Print() << "Volume of Fluid diagnostics:" << std::endl;
-            amrex::Print() << "   Water Volume Fractions Sum : "
-                           << m_total_volfrac << std::endl;
+            amrex::Print() << "   Water Volume Fractions Sum, Difference : "
+                           << m_total_volfrac << " "
+                           << m_total_volfrac - sumvof0 << std::endl;
             amrex::Print() << "   Air Volume Fractions Sum : "
                            << total_vol - m_total_volfrac << std::endl;
+            amrex::Print() << "   Total Momentum Difference (x, y, z) : "
+                           << mom_x << " " << mom_y << " " << mom_z
+                           << std::endl;
             amrex::Print() << " " << std::endl;
         }
         break;
@@ -143,6 +172,56 @@ amrex::Real MultiPhase::volume_fraction_sum()
     amrex::ParallelDescriptor::ReduceRealSum(total_volume_frac);
 
     return total_volume_frac;
+}
+
+amrex::Real MultiPhase::momentum_sum(int n)
+{
+    using namespace amrex;
+    BL_PROFILE("amr-wind::multiphase::ComputeVolumeFractionSum");
+    const int nlevels = m_sim.repo().num_active_levels();
+    const auto& geom = m_sim.mesh().Geom();
+    const auto& mesh = m_sim.mesh();
+
+    amrex::Real total_momentum = 0.0;
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+
+        amrex::iMultiFab level_mask;
+        if (lev < nlevels - 1) {
+            level_mask = makeFineMask(
+                mesh.boxArray(lev), mesh.DistributionMap(lev),
+                mesh.boxArray(lev + 1), amrex::IntVect(2), 1, 0);
+        } else {
+            level_mask.define(
+                mesh.boxArray(lev), mesh.DistributionMap(lev), 1, 0,
+                amrex::MFInfo());
+            level_mask.setVal(1);
+        }
+
+        auto& velocity = m_sim.repo().get_field("velocity")(lev);
+        auto& density = m_sim.repo().get_field("density")(lev);
+        const amrex::Real cell_vol = geom[lev].CellSize()[0] *
+                                     geom[lev].CellSize()[1] *
+                                     geom[lev].CellSize()[2];
+
+        total_momentum += amrex::ReduceSum(
+            velocity, density, level_mask, 0,
+            [=] AMREX_GPU_HOST_DEVICE(
+                amrex::Box const& bx,
+                amrex::Array4<amrex::Real const> const& vel,
+                amrex::Array4<amrex::Real const> const& dens,
+                amrex::Array4<int const> const& mask_arr) -> amrex::Real {
+                amrex::Real vol_fab = 0.0;
+                amrex::Loop(bx, [=, &vol_fab](int i, int j, int k) noexcept {
+                    vol_fab += vel(i, j, k, n) * dens(i, j, k) *
+                               mask_arr(i, j, k) * cell_vol;
+                });
+                return vol_fab;
+            });
+    }
+    amrex::ParallelDescriptor::ReduceRealSum(total_momentum);
+
+    return total_momentum;
 }
 
 void MultiPhase::set_density_via_levelset()
@@ -261,13 +340,14 @@ void MultiPhase::favre_filtering()
                 });
         }
     }
+    m_velocity.fillpatch(0.0);
 }
 
-// Reconstructing the volume fraction with the levelset
+// Reconstructing the volume fraction from a levelset function
 void MultiPhase::levelset2vof()
 {
     const int nlevels = m_sim.repo().num_active_levels();
-    (*m_levelset).fillpatch(m_sim.time().new_time());
+    (*m_levelset).fillpatch(m_sim.time().current_time());
     const auto& geom = m_sim.mesh().Geom();
 
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -311,6 +391,8 @@ void MultiPhase::levelset2vof()
                 });
         }
     }
+    // Fill ghost and boundary cells before simulation begins
+    (*m_vof).fillpatch(0.0);
 }
 
 } // namespace amr_wind

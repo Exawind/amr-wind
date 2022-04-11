@@ -29,7 +29,8 @@ namespace utils {
 std::set<int> determine_influenced_procs(
     const amrex::AmrCore& mesh, const amrex::RealBox& rbx);
 
-void determine_root_proc(ActInfo&, amrex::Vector<int>&);
+void determine_root_proc(
+    ActInfo& /*info*/, amrex::Vector<int>& /*act_proc_count*/);
 
 /** Return the Gaussian smearing factor in 3D
  *
@@ -55,9 +56,9 @@ gaussian3d(const vs::Vector& dist, const vs::Vector& eps)
         const amrex::Real eps_fac = eps.x() * eps.y() * eps.z();
         return (fac / eps_fac) *
                std::exp(-rr.x() * rr.x() - rr.y() * rr.y() - rr.z() * rr.z());
-    } else {
-        return 0.0;
     }
+
+    return 0.0;
 }
 /** Return the Gaussian smearing factor in 1D
  *
@@ -73,7 +74,9 @@ gaussian1d(const amrex::Real& dist, const amrex::Real& eps)
 {
     // fac = 1.0/sqrt(pi)
     const amrex::Real fac = 0.5641895835477563;
-    if (std::abs(dist / eps) >= 16.0) return 0.0;
+    if (std::abs(dist / eps) >= 16.0) {
+        return 0.0;
+    }
     return fac / eps * std::exp(-(dist * dist) / (eps * eps));
 }
 

@@ -25,8 +25,8 @@ struct LinearProfile
             const amrex::IntVect& iv,
             amrex::Array4<amrex::Real> const& field,
             amrex::GeometryData const& geom,
-            const amrex::Real,
-            amrex::Orientation,
+            const amrex::Real /*unused*/,
+            amrex::Orientation /*unused*/,
             const int comp) const
         {
             const auto* problo = geom.ProbLo();

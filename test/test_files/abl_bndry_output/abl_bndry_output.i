@@ -51,6 +51,7 @@ ABL.bndry_io_mode = 0
 ABL.bndry_planes = ylo xlo
 ABL.bndry_output_start_time = 2.0
 ABL.bndry_var_names = velocity temperature
+ABL.bndry_output_format = netcdf
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#

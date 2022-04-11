@@ -279,7 +279,6 @@ void Field::advance_states() noexcept
 void Field::copy_state(FieldState to_state, FieldState from_state) noexcept
 {
     BL_PROFILE("amr-wind::Field::copy_state");
-    // cppcheck-suppress constVariable
     auto& to_field = state(to_state);
     const auto& from_field = state(from_state);
 
@@ -346,6 +345,75 @@ void Field::set_default_fillpatch_bc(
         register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
             repo().mesh(), time, probtype);
     }
+}
+
+void Field::to_uniform_space() noexcept
+{
+    if (m_info->m_ncomp < AMREX_SPACEDIM) {
+        amrex::Abort("Trying to transform a non-vector field:" + m_name);
+    }
+    if (m_mesh_mapped) {
+        amrex::Print() << "WARNING: Field already in uniform mesh space: "
+                       << m_name << std::endl;
+        return;
+    }
+
+    const auto& mesh_fac = m_repo.get_mesh_mapping_field(m_info->m_floc);
+    const auto& mesh_detJ = m_repo.get_mesh_mapping_detJ(m_info->m_floc);
+
+    // scale velocity to accommodate for mesh mapping -> U^bar = U * J/fac
+    for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
+        for (amrex::MFIter mfi(mesh_fac(lev)); mfi.isValid(); ++mfi) {
+
+            amrex::Array4<amrex::Real> const& field = operator()(lev).array(
+                mfi);
+            amrex::Array4<amrex::Real const> const& fac =
+                mesh_fac(lev).const_array(mfi);
+            amrex::Array4<amrex::Real const> const& detJ =
+                mesh_detJ(lev).const_array(mfi);
+
+            amrex::ParallelFor(
+                mfi.growntilebox(), AMREX_SPACEDIM,
+                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                    field(i, j, k, n) *= detJ(i, j, k) / fac(i, j, k, n);
+                });
+        }
+    }
+    m_mesh_mapped = true;
+}
+
+void Field::to_stretched_space() noexcept
+{
+    if (m_info->m_ncomp < AMREX_SPACEDIM) {
+        amrex::Abort("Trying to transform a non-vector field:" + m_name);
+    }
+    if (!m_mesh_mapped) {
+        amrex::Print() << "WARNING: Field already in stretched mesh space: "
+                       << m_name << std::endl;
+        return;
+    }
+
+    const auto& mesh_fac = m_repo.get_mesh_mapping_field(m_info->m_floc);
+    const auto& mesh_detJ = m_repo.get_mesh_mapping_detJ(m_info->m_floc);
+
+    // scale field back to stretched mesh -> U = U^bar * fac/J
+    for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
+        for (amrex::MFIter mfi(mesh_fac(lev)); mfi.isValid(); ++mfi) {
+            amrex::Array4<amrex::Real> const& field = operator()(lev).array(
+                mfi);
+            amrex::Array4<amrex::Real const> const& fac =
+                mesh_fac(lev).const_array(mfi);
+            amrex::Array4<amrex::Real const> const& detJ =
+                mesh_detJ(lev).const_array(mfi);
+
+            amrex::ParallelFor(
+                mfi.growntilebox(), AMREX_SPACEDIM,
+                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                    field(i, j, k, n) *= fac(i, j, k, n) / detJ(i, j, k);
+                });
+        }
+    }
+    m_mesh_mapped = false;
 }
 
 } // namespace amr_wind

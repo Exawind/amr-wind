@@ -34,9 +34,9 @@ vs::Vector adjust_lidar_pattern(
 class DTUSpinnerSampler : public LidarSampler
 {
 public:
-    static const std::string identifier() { return "DTUSpinnerSampler"; }
+    static std::string identifier() { return "DTUSpinnerSampler"; }
 
-    explicit DTUSpinnerSampler(const CFDSim&);
+    explicit DTUSpinnerSampler(const CFDSim& /*sim*/);
 
     /** Read user inputs and initialize the sampling object
      *
@@ -49,7 +49,7 @@ public:
      *
      */
     //~ void update_sampling_locations() override;
-    void sampling_locations(SampleLocType&) const override;
+    void sampling_locations(SampleLocType& /*locs*/) const override;
 
     /** Determine how the subsampling will be done
      *
@@ -58,12 +58,16 @@ public:
 
     int num_points() const override { return (m_beam_points * m_ns); }
 
-    bool output_netcdf_field(double*, ncutils::NCVar&) override;
+    bool output_netcdf_field(
+        double* /*unused*/, ncutils::NCVar& /*unused*/) override;
 
-    void define_netcdf_metadata(const ncutils::NCGroup&) const override;
-    void populate_netcdf_metadata(const ncutils::NCGroup&) const override;
     void
-    output_netcdf_data(const ncutils::NCGroup&, const size_t) const override;
+    define_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
+    void
+    populate_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
+    void output_netcdf_data(
+        const ncutils::NCGroup& /*unused*/,
+        const size_t /*unused*/) const override;
 
 private:
     int m_ns{1};

@@ -13,21 +13,25 @@ namespace wing {
 
 /** Parse common data for modeling fixed wings as actuators
  */
-void read_inputs(WingBaseData&, ActInfo&, const utils::ActParser&);
+void read_inputs(
+    WingBaseData& /*wdata*/, ActInfo& /*info*/, const utils::ActParser& /*pp*/);
 
 /** Initialize core data structures when modeling fixed wings
  */
-void init_data_structures(WingBaseData&, ActGrid&);
+void init_data_structures(WingBaseData& /*wdata*/, ActGrid& /*grid*/);
 
 void prepare_netcdf_file(
-    const std::string&, const WingBaseData&, const ActInfo&, const ActGrid&);
+    const std::string& /*ncfile*/,
+    const WingBaseData& /*meta*/,
+    const ActInfo& /*info*/,
+    const ActGrid& /*grid*/);
 
 void write_netcdf(
-    const std::string&,
-    const WingBaseData&,
-    const ActInfo&,
-    const ActGrid&,
-    const amrex::Real);
+    const std::string& /*ncfile*/,
+    const WingBaseData& /*meta*/,
+    const ActInfo& /*info*/,
+    const ActGrid& /*grid*/,
+    const amrex::Real /*time*/);
 
 } // namespace wing
 
@@ -54,7 +58,7 @@ struct UpdatePosOp<
         std::is_base_of<WingType, ActTrait>::value &&
         UseDefaultOp<ActTrait, ActSrcLine>::update_pos>::type>
 {
-    void operator()(typename ActTrait::DataType&) {}
+    void operator()(typename ActTrait::DataType& /*unused*/) {}
 };
 
 template <typename ActTrait>
@@ -65,7 +69,7 @@ struct UpdateVelOp<
         std::is_base_of<WingType, ActTrait>::value &&
         UseDefaultOp<ActTrait, ActSrcLine>::update_vel>::type>
 {
-    void operator()(typename ActTrait::DataType&) {}
+    void operator()(typename ActTrait::DataType& /*unused*/) {}
 };
 
 template <typename ActTrait>
@@ -163,7 +167,9 @@ public:
     {
         const auto& time = m_data.sim().time();
         const int tidx = time.time_index();
-        if (tidx % m_out_freq != 0) return;
+        if (tidx % m_out_freq != 0) {
+            return;
+        }
 
         wing::write_netcdf(
             m_nc_filename, m_data.meta(), m_data.info(), m_data.grid(),

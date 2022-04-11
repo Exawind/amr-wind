@@ -26,7 +26,8 @@ struct ComputeRHSOp
      *  \param difftype Indicating whether time-integration is explicit/implicit
      *  \param dt time step size
      */
-    void predictor_rhs(const DiffusionType difftype, const amrex::Real dt)
+    void predictor_rhs(
+        const DiffusionType difftype, const amrex::Real dt, bool mesh_mapping)
     {
         amrex::Real factor = 0.0;
         switch (difftype) {
@@ -53,14 +54,26 @@ struct ComputeRHSOp
                           : FieldState::Old;
 
         const int nlevels = fields.repo.num_active_levels();
+
+        // for RHS evaluation velocity field should be in stretched space
         auto& field = fields.field;
+        if (field.in_uniform_space() && mesh_mapping) {
+            field.to_stretched_space();
+        }
         auto& field_old = field.state(FieldState::Old);
+        if (field_old.in_uniform_space() && mesh_mapping) {
+            field_old.to_stretched_space();
+        }
+
         auto& den_new = density.state(FieldState::New);
         auto& den_old = density.state(FieldState::Old);
         auto& src_term = fields.src_term;
         auto& diff_term = fields.diff_term.state(fstate);
         auto& conv_term = fields.conv_term.state(fstate);
         auto& mask_cell = fields.repo.get_int_field("mask_cell");
+        Field const* mesh_detJ =
+            mesh_mapping ? &(fields.repo.get_mesh_mapping_detJ(FieldLoc::CELL))
+                         : nullptr;
 
         for (int lev = 0; lev < nlevels; ++lev) {
 #ifdef _OPENMP
@@ -76,6 +89,9 @@ struct ComputeRHSOp
                 const auto diff = diff_term(lev).const_array(mfi);
                 const auto ddt_o = conv_term(lev).const_array(mfi);
                 const auto imask = mask_cell(lev).const_array(mfi);
+                amrex::Array4<amrex::Real const> detJ =
+                    mesh_mapping ? ((*mesh_detJ)(lev).const_array(mfi))
+                                 : amrex::Array4<amrex::Real const>();
 
                 if (PDE::multiply_rho) {
                     // Remove multiplication by density as it will be added back
@@ -84,24 +100,40 @@ struct ComputeRHSOp
                         bx, PDE::ndim,
                         [=] AMREX_GPU_DEVICE(
                             int i, int j, int k, int n) noexcept {
+                            amrex::Real det_j =
+                                mesh_mapping ? (detJ(i, j, k)) : 1.0;
+
                             fld(i, j, k, n) =
-                                rho_o(i, j, k) * fld_o(i, j, k, n) +
+                                rho_o(i, j, k) * det_j * fld_o(i, j, k, n) +
                                 static_cast<amrex::Real>(imask(i, j, k)) * dt *
-                                    (ddt_o(i, j, k, n) + src(i, j, k, n) +
+                                    (ddt_o(i, j, k, n) +
+                                     det_j * src(i, j, k, n) +
                                      factor * diff(i, j, k, n));
 
                             fld(i, j, k, n) /= rho(i, j, k);
+
+                            if (difftype == DiffusionType::Explicit) {
+                                fld(i, j, k, n) /= det_j;
+                            }
                         });
                 } else {
                     amrex::ParallelFor(
                         bx, PDE::ndim,
                         [=] AMREX_GPU_DEVICE(
                             int i, int j, int k, int n) noexcept {
+                            amrex::Real det_j =
+                                mesh_mapping ? (detJ(i, j, k)) : 1.0;
+
                             fld(i, j, k, n) =
-                                fld_o(i, j, k, n) +
+                                det_j * fld_o(i, j, k, n) +
                                 static_cast<amrex::Real>(imask(i, j, k)) * dt *
-                                    (ddt_o(i, j, k, n) + src(i, j, k, n) +
+                                    (ddt_o(i, j, k, n) +
+                                     det_j * src(i, j, k, n) +
                                      factor * diff(i, j, k, n));
+
+                            if (difftype == DiffusionType::Explicit) {
+                                fld(i, j, k, n) /= det_j;
+                            }
                         });
                 }
             }
@@ -113,7 +145,8 @@ struct ComputeRHSOp
      *  \param difftype Indicating whether time-integration is explicit/implicit
      *  \param dt time step size
      */
-    void corrector_rhs(const DiffusionType difftype, const amrex::Real dt)
+    void corrector_rhs(
+        const DiffusionType difftype, const amrex::Real dt, bool mesh_mapping)
     {
         amrex::Real ofac = 0.0;
         amrex::Real nfac = 0.0;
@@ -138,8 +171,17 @@ struct ComputeRHSOp
         }
 
         const int nlevels = fields.repo.num_active_levels();
+
+        // for RHS evaluation velocity field should be in stretched space
         auto& field = fields.field;
+        if (field.in_uniform_space() && mesh_mapping) {
+            field.to_stretched_space();
+        }
         auto& field_old = field.state(FieldState::Old);
+        if (field_old.in_uniform_space() && mesh_mapping) {
+            field_old.to_stretched_space();
+        }
+
         auto& den_new = density.state(FieldState::New);
         auto& den_old = density.state(FieldState::Old);
         auto& src_term = fields.src_term;
@@ -148,6 +190,9 @@ struct ComputeRHSOp
         auto& diff_term_old = fields.diff_term.state(FieldState::Old);
         auto& conv_term_old = fields.conv_term.state(FieldState::Old);
         auto& mask_cell = fields.repo.get_int_field("mask_cell");
+        Field const* mesh_detJ =
+            mesh_mapping ? &(fields.repo.get_mesh_mapping_detJ(FieldLoc::CELL))
+                         : nullptr;
 
         for (int lev = 0; lev < nlevels; ++lev) {
 #ifdef _OPENMP
@@ -165,6 +210,9 @@ struct ComputeRHSOp
                 const auto diff_o = diff_term_old(lev).const_array(mfi);
                 const auto ddt_o = conv_term_old(lev).const_array(mfi);
                 const auto imask = mask_cell(lev).const_array(mfi);
+                amrex::Array4<amrex::Real const> detJ =
+                    mesh_mapping ? ((*mesh_detJ)(lev).const_array(mfi))
+                                 : amrex::Array4<amrex::Real const>();
 
                 if (PDE::multiply_rho) {
                     // Remove multiplication by density as it will be added back
@@ -173,28 +221,44 @@ struct ComputeRHSOp
                         bx, PDE::ndim,
                         [=] AMREX_GPU_DEVICE(
                             int i, int j, int k, int n) noexcept {
+                            amrex::Real det_j =
+                                mesh_mapping ? (detJ(i, j, k)) : 1.0;
+
                             fld(i, j, k, n) =
-                                rho_o(i, j, k) * fld_o(i, j, k, n) +
+                                rho_o(i, j, k) * det_j * fld_o(i, j, k, n) +
                                 static_cast<amrex::Real>(imask(i, j, k)) * dt *
                                     (0.5 *
                                          (ddt_o(i, j, k, n) + ddt(i, j, k, n)) +
                                      ofac * diff_o(i, j, k, n) +
-                                     nfac * diff(i, j, k, n) + src(i, j, k, n));
+                                     nfac * diff(i, j, k, n) +
+                                     det_j * src(i, j, k, n));
 
                             fld(i, j, k, n) /= rho(i, j, k);
+
+                            if (difftype == DiffusionType::Explicit) {
+                                fld(i, j, k, n) /= det_j;
+                            }
                         });
                 } else {
                     amrex::ParallelFor(
                         bx, PDE::ndim,
                         [=] AMREX_GPU_DEVICE(
                             int i, int j, int k, int n) noexcept {
+                            amrex::Real det_j =
+                                mesh_mapping ? (detJ(i, j, k)) : 1.0;
+
                             fld(i, j, k, n) =
-                                fld_o(i, j, k, n) +
+                                det_j * fld_o(i, j, k, n) +
                                 static_cast<amrex::Real>(imask(i, j, k)) * dt *
                                     (0.5 *
                                          (ddt_o(i, j, k, n) + ddt(i, j, k, n)) +
                                      ofac * diff_o(i, j, k, n) +
-                                     nfac * diff(i, j, k, n) + src(i, j, k, n));
+                                     nfac * diff(i, j, k, n) +
+                                     det_j * src(i, j, k, n));
+
+                            if (difftype == DiffusionType::Explicit) {
+                                fld(i, j, k, n) /= det_j;
+                            }
                         });
                 }
             }

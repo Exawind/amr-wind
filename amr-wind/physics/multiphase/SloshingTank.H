@@ -14,11 +14,11 @@ namespace amr_wind {
 class SloshingTank : public Physics::Register<SloshingTank>
 {
 public:
-    static const std::string identifier() { return "SloshingTank"; }
+    static std::string identifier() { return "SloshingTank"; }
 
     explicit SloshingTank(CFDSim& sim);
 
-    virtual ~SloshingTank() = default;
+    ~SloshingTank() override = default;
 
     //! Initialize the levelset and velocity fields for Sloshing Tank
     //! simulations

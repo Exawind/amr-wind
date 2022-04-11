@@ -7,11 +7,12 @@ using namespace amrex;
 
 namespace amr_wind {
 
-void multiphase::split_advection(
+void multiphase::split_advection_step(
     int lev,
     amrex::Box const& bx,
     int isweep,
     amrex::Array4<amrex::Real> const& volfrac,
+    amrex::Array4<amrex::Real> const& fluxC,
     amrex::Array4<amrex::Real const> const& umac,
     amrex::Array4<amrex::Real const> const& vmac,
     amrex::Array4<amrex::Real const> const& wmac,
@@ -37,49 +38,40 @@ void multiphase::split_advection(
 
     Array4<Real> fluxL = makeArray4(p, bxg1, 1);
     p += fluxL.size();
-    Array4<Real> fluxC = makeArray4(p, bxg1, 1);
-    p += fluxC.size();
     Array4<Real> fluxR = makeArray4(p, bxg1, 1);
 
+    if (isweep % 3 == 0) {
+        sweep(
+            2, bx, dtdz, wmac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.z,
+            domhi.z, is_lagrangian);
+    } else if (isweep % 3 == 1) {
+        sweep(
+            1, bx, dtdy, vmac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.y,
+            domhi.y, is_lagrangian);
+    } else {
+        sweep(
+            0, bx, dtdx, umac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.x,
+            domhi.x, is_lagrangian);
+    }
+}
+
+void multiphase::cmask_loop(
+    amrex::Box const& bx,
+    amrex::Array4<amrex::Real> const& volfrac,
+    amrex::Array4<amrex::Real> const& fluxC,
+    bool is_lagrangian)
+{
     if (!is_lagrangian) {
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 multiphase::c_mask(i, j, k, volfrac, fluxC);
             });
     }
+}
 
-    if (isweep % 3 == 0) {
-        sweep(
-            2, bx, dtdz, wmac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.z,
-            domhi.z, is_lagrangian);
-        sweep(
-            0, bx, dtdx, umac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.x,
-            domhi.x, is_lagrangian);
-        sweep(
-            1, bx, dtdy, vmac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.y,
-            domhi.y, is_lagrangian);
-    } else if (isweep % 3 == 1) {
-        sweep(
-            1, bx, dtdy, vmac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.y,
-            domhi.y, is_lagrangian);
-        sweep(
-            2, bx, dtdz, wmac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.z,
-            domhi.z, is_lagrangian);
-        sweep(
-            0, bx, dtdx, umac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.x,
-            domhi.x, is_lagrangian);
-    } else {
-        sweep(
-            0, bx, dtdx, umac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.x,
-            domhi.x, is_lagrangian);
-        sweep(
-            1, bx, dtdy, vmac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.y,
-            domhi.y, is_lagrangian);
-        sweep(
-            2, bx, dtdz, wmac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.z,
-            domhi.z, is_lagrangian);
-    }
-
+void multiphase::debris_loop(
+    amrex::Box const& bx, amrex::Array4<amrex::Real> const& volfrac)
+{
     // Remove VOF debris
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         multiphase::remove_vof_debris(i, j, k, volfrac);

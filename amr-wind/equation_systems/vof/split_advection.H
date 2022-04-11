@@ -38,33 +38,39 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void lagrangian_explicit(
         fluxL(i, j, k) = amrex::max(-aL, 0.0);
         fluxC(i, j, k) = 1.0 - amrex::max(aL, 0.0) + amrex::min(aR, 0.0);
         fluxR(i, j, k) = amrex::max(aR, 0.0);
-    } else if (volfrac(i, j, k) > 0.0) {
+    } else if (volfrac(i, j, k) > tiny) {
         fit_plane(i, j, k, volfrac, mx, my, mz, alpha);
         mmL = amrex::max(aL, 0.0);
         mmR = 1.0 - mmL + amrex::min(0.0, aR);
         if (dir == 0) {
             mx = mx / (1.0 - aL + aR);
             alpha = alpha + mx * aL;
-            if (aL < 0.0)
+            if (aL < 0.0) {
                 fluxL(i, j, k) = cut_volume(mx, my, mz, alpha, aL, -aL);
-            if (aR > 0.0)
+            }
+            if (aR > 0.0) {
                 fluxR(i, j, k) = cut_volume(mx, my, mz, alpha, 1.0, aR);
+            }
             fluxC(i, j, k) = cut_volume(mx, my, mz, alpha, mmL, mmR);
         } else if (dir == 1) {
             my = my / (1.0 - aL + aR);
             alpha = alpha + my * aL;
-            if (aL < 0.0)
+            if (aL < 0.0) {
                 fluxL(i, j, k) = cut_volume(my, mz, mx, alpha, aL, -aL);
-            if (aR > 0.0)
+            }
+            if (aR > 0.0) {
                 fluxR(i, j, k) = cut_volume(my, mz, mx, alpha, 1.0, aR);
+            }
             fluxC(i, j, k) = cut_volume(my, mz, mx, alpha, mmL, mmR);
         } else if (dir == 2) {
             mz = mz / (1.0 - aL + aR);
             alpha = alpha + mz * aL;
-            if (aL < 0.0)
+            if (aL < 0.0) {
                 fluxL(i, j, k) = cut_volume(mz, mx, my, alpha, aL, -aL);
-            if (aR > 0.0)
+            }
+            if (aR > 0.0) {
                 fluxR(i, j, k) = cut_volume(mz, mx, my, alpha, 1.0, aR);
+            }
             fluxC(i, j, k) = cut_volume(mz, mx, my, alpha, mmL, mmR);
         }
     }
@@ -96,7 +102,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void eulerian_implicit(
     if (std::abs(volfrac(i, j, k) - 1.0) <= tiny) {
         fluxL(i, j, k) = amrex::max(-aL, 0.0);
         fluxR(i, j, k) = amrex::max(aR, 0.0);
-    } else if (volfrac(i, j, k) > 0.0) {
+    } else if (volfrac(i, j, k) > tiny) {
         fit_plane(i, j, k, volfrac, mx, my, mz, alpha);
         // Eulerian advection
         x0 = 0.0;

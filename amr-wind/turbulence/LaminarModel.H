@@ -22,42 +22,41 @@ public:
 
     explicit Laminar(CFDSim& sim) : TurbModel<Transport>(sim) {}
 
-    virtual ~Laminar() = default;
+    ~Laminar() override = default;
 
     //! String representation of this model for I/O
-    virtual std::string model_name() const override { return "laminar"; }
+    std::string model_name() const override { return "laminar"; }
 
     //! Update the effective/turbulent viscosity field
-    virtual void update_turbulent_viscosity(const FieldState fstate) override;
+    void update_turbulent_viscosity(const FieldState fstate) override;
 
     //! No post advance work for this model
-    virtual void post_advance_work() override {}
+    void post_advance_work() override {}
 
     //! No model specific coefficient for this model
-    virtual void parse_model_coeffs() override {}
+    void parse_model_coeffs() override {}
 
     //! Return the turbulent viscosity field (just the same as the effective
     //! field)
-    virtual Field& mu_turb() override { return this->mueff(); }
+    Field& mu_turb() override { return this->mueff(); }
 
     //! Return the thermal diffusivity field (just the same as effective field)
-    virtual Field& alpha_turb() override { return this->alphaeff(); }
+    Field& alpha_turb() override { return this->alphaeff(); }
 
     //! Indicate that this model is not a turbulent model type
-    virtual bool is_turbulent() const override { return false; }
+    bool is_turbulent() const override { return false; }
 
     //! Interface to update effective viscosity (mu_eff = mu + mu_t)
-    virtual void update_mueff(Field& mueff) override;
+    void update_mueff(Field& mueff) override;
 
     //! Interface to update effective thermal diffusivity
-    virtual void update_alphaeff(Field& alphaeff) override;
+    void update_alphaeff(Field& alphaeff) override;
 
     //! Interface to update scalar diffusivity based on Schmidt number
-    virtual void
-    update_scalar_diff(Field& deff, const std::string& name) override;
+    void update_scalar_diff(Field& deff, const std::string& name) override;
 
     //! Return model coefficients dictionary
-    virtual TurbulenceModel::CoeffsDictType model_coeffs() const override;
+    TurbulenceModel::CoeffsDictType model_coeffs() const override;
 };
 
 } // namespace turbulence

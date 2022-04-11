@@ -31,7 +31,7 @@ class DerivedQtyMgr;
 class IOManager
 {
 public:
-    explicit IOManager(CFDSim&);
+    explicit IOManager(CFDSim& /*sim*/);
 
     ~IOManager();
 
@@ -86,9 +86,9 @@ public:
     const amrex::Vector<Field*>& plot_fields() const { return m_plt_fields; }
 
 private:
-    void write_header(const std::string&, const int start_level);
+    void write_header(const std::string& /*chkname*/, const int start_level);
 
-    void write_info_file(const std::string&);
+    void write_info_file(const std::string& /*path*/);
 
     CFDSim& m_sim;
 
@@ -132,6 +132,11 @@ private:
 
     //! Flag indicating whether we should allow missing restart fields
     bool m_allow_missing_restart_fields{true};
+
+#ifdef AMR_WIND_USE_HDF5
+    //! Flag indicating whether or not to output HDF5 plot files
+    bool m_output_hdf5_plotfile{false};
+#endif
 };
 
 } // namespace amr_wind

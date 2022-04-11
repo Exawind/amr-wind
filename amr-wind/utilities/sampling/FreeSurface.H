@@ -30,11 +30,11 @@ namespace free_surface {
 class FreeSurface : public PostProcessBase::Register<FreeSurface>
 {
 public:
-    static const std::string identifier() { return "FreeSurface"; }
+    static std::string identifier() { return "FreeSurface"; }
 
-    FreeSurface(CFDSim&, std::string);
+    FreeSurface(CFDSim& /*sim*/, std::string /*label*/);
 
-    ~FreeSurface();
+    ~FreeSurface() override;
 
     //! Perform actions before mesh is created
     void pre_init_actions() override {}

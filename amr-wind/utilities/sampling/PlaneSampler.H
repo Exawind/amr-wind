@@ -27,11 +27,11 @@ namespace sampling {
 class PlaneSampler : public SamplerBase::Register<PlaneSampler>
 {
 public:
-    static const std::string identifier() { return "PlaneSampler"; }
+    static std::string identifier() { return "PlaneSampler"; }
 
-    explicit PlaneSampler(const CFDSim&);
+    explicit PlaneSampler(const CFDSim& /*unused*/);
 
-    virtual ~PlaneSampler();
+    ~PlaneSampler() override;
 
     /** Read user inputs and initialize the sampling object
      *
@@ -40,10 +40,12 @@ public:
     void initialize(const std::string& key) override;
 
     //! Populate and return a vector of probe locations to be sampled
-    void sampling_locations(SampleLocType&) const override;
+    void sampling_locations(SampleLocType& /*locs*/) const override;
 
-    void define_netcdf_metadata(const ncutils::NCGroup&) const override;
-    void populate_netcdf_metadata(const ncutils::NCGroup&) const override;
+    void
+    define_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
+    void
+    populate_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
 
     //! Name of this sampling object
     std::string label() const override { return m_label; }

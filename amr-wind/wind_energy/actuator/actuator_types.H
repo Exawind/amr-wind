@@ -8,6 +8,7 @@
 #include "AMReX_RealBox.H"
 
 #include <set>
+#include <utility>
 
 namespace amr_wind {
 
@@ -143,8 +144,8 @@ struct ActInfo
     //! actuator point
     bool sample_vel_in_proc{false};
 
-    ActInfo(const std::string& label_in, const int id_in)
-        : label(label_in), id(id_in)
+    ActInfo(std::string label_in, const int id_in)
+        : label(std::move(label_in)), id(id_in)
     {}
 };
 

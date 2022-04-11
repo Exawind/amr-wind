@@ -119,13 +119,15 @@ struct SrcTermOpBase
     }
 
     //! Update source terms during time-integration procedure
-    void operator()(const FieldState fstate)
+    void operator()(const FieldState fstate, const bool /* mesh_mapping */)
     {
         // Zero out source term
         this->fields.src_term.setVal(0.0);
 
         // Return early if there are no source terms to process
-        if (this->sources.size() == 0) return;
+        if (this->sources.empty()) {
+            return;
+        }
 
         const int nlevels = this->fields.repo.num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {
@@ -144,7 +146,9 @@ struct SrcTermOpBase
             }
         }
 
-        if (PDE::multiply_rho) this->multiply_rho(fstate);
+        if (PDE::multiply_rho) {
+            this->multiply_rho(fstate);
+        }
     }
 
     PDEFields& fields;

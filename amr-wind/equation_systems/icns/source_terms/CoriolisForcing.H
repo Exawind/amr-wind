@@ -15,13 +15,13 @@ namespace icns {
 class CoriolisForcing : public MomentumSource::Register<CoriolisForcing>
 {
 public:
-    static const std::string identifier() { return "CoriolisForcing"; }
+    static std::string identifier() { return "CoriolisForcing"; }
 
-    explicit CoriolisForcing(const CFDSim&);
+    explicit CoriolisForcing(const CFDSim& /*sim*/);
 
-    virtual ~CoriolisForcing();
+    ~CoriolisForcing() override;
 
-    virtual void operator()(
+    void operator()(
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,

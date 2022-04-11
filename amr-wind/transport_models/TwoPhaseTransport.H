@@ -16,13 +16,14 @@ class TwoPhaseTransport : public TransportModel
 public:
     static constexpr bool constant_properties = false;
 
-    static const std::string identifier() { return "TwoPhaseTransport"; }
+    static std::string identifier() { return "TwoPhaseTransport"; }
 
     explicit TwoPhaseTransport(CFDSim& sim) : m_sim(sim), m_repo(sim.repo())
     {
         auto& physics_mgr = m_sim.physics_manager();
-        if (!physics_mgr.contains("MultiPhase"))
+        if (!physics_mgr.contains("MultiPhase")) {
             amrex::Abort("TwoPhaseTransport requires MultiPhase physics");
+        }
         auto& multiphase = physics_mgr.get<MultiPhase>();
         m_ifacetype = multiphase.interface_capturing_method();
 
@@ -33,13 +34,13 @@ public:
         pp.query("turbulent_prandtl", m_Prt);
     }
 
-    virtual ~TwoPhaseTransport() = default;
+    ~TwoPhaseTransport() override = default;
 
     inline amrex::Real laminar_prandtl() const { return m_Pr; }
 
     inline amrex::Real turbulent_prandtl() const { return m_Prt; }
 
-    inline amrex::Real laminar_schmidt(const std::string& scalar_name) const
+    static inline amrex::Real laminar_schmidt(const std::string& scalar_name)
     {
         amrex::ParmParse pp("transport");
         const std::string key = scalar_name + "_laminar_schmidt";
@@ -48,7 +49,7 @@ public:
         return lam_schmidt;
     }
 
-    inline amrex::Real turbulent_schmidt(const std::string& scalar_name) const
+    static inline amrex::Real turbulent_schmidt(const std::string& scalar_name)
     {
         amrex::ParmParse pp("transport");
         const std::string key = scalar_name + "_turbulent_schmidt";
@@ -88,7 +89,7 @@ public:
         } else if (m_ifacetype == InterfaceCapturingMethod::LS) {
 
             auto& levelset = m_repo.get_field("levelset");
-            auto& geom = m_repo.mesh().Geom();
+            const auto& geom = m_repo.mesh().Geom();
 
             for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
                 for (amrex::MFIter mfi((*mu)(lev)); mfi.isValid(); ++mfi) {

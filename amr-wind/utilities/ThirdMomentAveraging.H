@@ -20,7 +20,7 @@ public:
         FieldPlaneAveraging& pa2,
         FieldPlaneAveraging& pa3);
 
-    ~ThirdMomentAveraging(){};
+    ~ThirdMomentAveraging() = default;
 
     void operator()();
 

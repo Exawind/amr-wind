@@ -11,14 +11,18 @@ namespace pp_utils {
 template <typename T>
 void set_default(amrex::ParmParse& pp, const std::string& key, const T& val)
 {
-    if (!pp.contains(key.data())) pp.add(key.data(), val);
+    if (!pp.contains(key.data())) {
+        pp.add(key.data(), val);
+    }
 }
 
 template <typename T>
 void set_default(
     amrex::ParmParse& pp, const std::string& key, const amrex::Vector<T>& val)
 {
-    if (!pp.contains(key.data())) pp.addarr(key.data(), val);
+    if (!pp.contains(key.data())) {
+        pp.addarr(key.data(), val);
+    }
 }
 
 //! Default inputs for amr_wind::SimTime

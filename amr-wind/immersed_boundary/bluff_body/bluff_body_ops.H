@@ -17,7 +17,9 @@ namespace bluff_body {
  * bounary
  */
 void read_inputs(
-    BluffBodyBaseData&, IBInfo&, const ::amr_wind::utils::MultiParser&);
+    BluffBodyBaseData& /*wdata*/,
+    IBInfo& /*unused*/,
+    const ::amr_wind::utils::MultiParser& /*pp*/);
 
 /** Initialize core data structures when modeling the IB geometry
  */
@@ -25,20 +27,23 @@ void init_data_structures(CFDSim&);
 
 /** Set the velocity inside the IB based on a manufactured solution
  */
-void apply_mms_vel(CFDSim&);
+void apply_mms_vel(CFDSim& /*sim*/);
 
 /** Set the velocity inside the IB based on a dirichlet BC
  */
-void apply_dirichlet_vel(CFDSim&, const amrex::Vector<amrex::Real>& vel_bc);
+void apply_dirichlet_vel(
+    CFDSim& /*sim*/, const amrex::Vector<amrex::Real>& vel_bc);
 
 void prepare_netcdf_file(
-    const std::string&, const BluffBodyBaseData&, const IBInfo&);
+    const std::string& /*ncfile*/,
+    const BluffBodyBaseData& /*meta*/,
+    const IBInfo& /*info*/);
 
 void write_netcdf(
-    const std::string&,
-    const BluffBodyBaseData&,
-    const IBInfo&,
-    const amrex::Real);
+    const std::string& /*ncfile*/,
+    const BluffBodyBaseData& /*meta*/,
+    const IBInfo& /*info*/,
+    const amrex::Real /*time*/);
 
 } // namespace bluff_body
 
@@ -59,7 +64,7 @@ struct UpdatePosOp<
     typename std::enable_if<
         std::is_base_of<BluffBodyType, GeomTrait>::value>::type>
 {
-    void operator()(typename GeomTrait::DataType&) {}
+    void operator()(typename GeomTrait::DataType& /*unused*/) {}
 };
 
 template <typename GeomTrait>
@@ -89,7 +94,7 @@ struct ComputeForceOp<
     typename std::enable_if<
         std::is_base_of<BluffBodyType, GeomTrait>::value>::type>
 {
-    void operator()(typename GeomTrait::DataType&) {}
+    void operator()(typename GeomTrait::DataType& /*unused*/) {}
 };
 
 template <typename GeomTrait>
@@ -125,7 +130,9 @@ public:
     {
         const auto& time = m_data.sim().time();
         const int tidx = time.time_index();
-        if (tidx % m_out_freq != 0) return;
+        if (tidx % m_out_freq != 0) {
+            return;
+        }
 
         bluff_body::write_netcdf(
             m_nc_filename, m_data.meta(), m_data.info(), time.new_time());

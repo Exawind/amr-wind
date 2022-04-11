@@ -13,13 +13,13 @@ namespace tke {
 class KsgsM84Src : public TKESource::Register<KsgsM84Src>
 {
 public:
-    static const std::string identifier() { return "KsgsM84Src"; }
+    static std::string identifier() { return "KsgsM84Src"; }
 
-    explicit KsgsM84Src(const CFDSim&);
+    explicit KsgsM84Src(const CFDSim& /*sim*/);
 
-    virtual ~KsgsM84Src();
+    ~KsgsM84Src() override;
 
-    virtual void operator()(
+    void operator()(
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,

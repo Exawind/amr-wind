@@ -14,8 +14,9 @@ namespace pde {
 class ICNSDiffTensorOp : public DiffSolverIface<amrex::MLTensorOp>
 {
 public:
-    ICNSDiffTensorOp(PDEFields& fields, const bool has_overset)
-        : DiffSolverIface<amrex::MLTensorOp>(fields, has_overset)
+    ICNSDiffTensorOp(
+        PDEFields& fields, const bool has_overset, const bool mesh_mapping)
+        : DiffSolverIface<amrex::MLTensorOp>(fields, has_overset, mesh_mapping)
     {
         this->m_solver->setDomainBC(
             diffusion::get_diffuse_tensor_bc(
@@ -74,10 +75,12 @@ public:
     ICNSDiffScalarOp(
         PDEFields& fields,
         const bool has_overset,
+        const bool mesh_mapping,
         const std::string& prefix = "diffusion")
         : m_pdefields(fields)
         , m_density(fields.repo.get_field("density"))
         , m_options(prefix, m_pdefields.field.name() + "_" + prefix)
+        , m_mesh_mapping(mesh_mapping)
     {
         amrex::LPInfo isolve = m_options.lpinfo();
         amrex::LPInfo iapply;
@@ -136,15 +139,38 @@ public:
         auto& divtau = m_pdefields.diff_term.state(tau_state);
         const auto& density = m_density.state(fstate);
         const auto& viscosity = m_pdefields.mueff;
+        Field const* mesh_detJ =
+            m_mesh_mapping ? &(repo.get_mesh_mapping_detJ(FieldLoc::CELL))
+                           : nullptr;
+        std::unique_ptr<ScratchField> rho_times_detJ =
+            m_mesh_mapping ? repo.create_scratch_field(
+                                 1, m_density.num_grow()[0], FieldLoc::CELL)
+                           : nullptr;
+
         const amrex::Real alpha = 0.0;
         const amrex::Real beta = -1.0;
-
         m_applier_scalar->setScalars(alpha, beta);
+
         for (int lev = 0; lev < nlevels; ++lev) {
             m_applier_scalar->setLevelBC(lev, &m_pdefields.field(lev));
-            m_applier_scalar->setACoeffs(lev, density(lev));
+
+            // A coeffs
+            if (m_mesh_mapping) {
+                (*rho_times_detJ)(lev).setVal(0.0);
+                amrex::MultiFab::AddProduct(
+                    (*rho_times_detJ)(lev), density(lev), 0, (*mesh_detJ)(lev),
+                    0, 0, 1, m_density.num_grow()[0]);
+                m_applier_scalar->setACoeffs(lev, (*rho_times_detJ)(lev));
+            } else {
+                m_applier_scalar->setACoeffs(lev, density(lev));
+            }
+
+            // B coeffs
             auto b = diffusion::average_velocity_eta_to_faces(
                 geom[lev], viscosity(lev));
+            if (m_mesh_mapping) {
+                diffusion::viscosity_to_uniform_space(b, repo, lev);
+            }
             m_applier_scalar->setBCoeffs(lev, amrex::GetArrOfConstPtrs(b));
         }
 
@@ -176,22 +202,45 @@ public:
     {
         const FieldState fstate = FieldState::New;
         auto& repo = m_pdefields.repo;
+        const auto& geom = repo.mesh().Geom();
         auto& field = m_pdefields.field;
         const auto& density = m_density.state(fstate);
         const int nlevels = repo.num_active_levels();
         const int ndim = field.num_comp();
         auto rhs_ptr = repo.create_scratch_field("rhs", field.num_comp(), 0);
         const auto& viscosity = m_pdefields.mueff;
-        const auto& geom = repo.mesh().Geom();
+        Field const* mesh_detJ =
+            m_mesh_mapping ? &(repo.get_mesh_mapping_detJ(FieldLoc::CELL))
+                           : nullptr;
+        std::unique_ptr<ScratchField> rho_times_detJ =
+            m_mesh_mapping ? repo.create_scratch_field(
+                                 1, m_density.num_grow()[0], FieldLoc::CELL)
+                           : nullptr;
+
         const amrex::Real alpha = 1.0;
         const amrex::Real beta = dt;
-
         m_solver_scalar->setScalars(alpha, beta);
+
         for (int lev = 0; lev < nlevels; ++lev) {
             m_solver_scalar->setLevelBC(lev, &m_pdefields.field(lev));
-            m_solver_scalar->setACoeffs(lev, density(lev));
+
+            // A coeffs
+            if (m_mesh_mapping) {
+                (*rho_times_detJ)(lev).setVal(0.0);
+                amrex::MultiFab::AddProduct(
+                    (*rho_times_detJ)(lev), density(lev), 0, (*mesh_detJ)(lev),
+                    0, 0, 1, m_density.num_grow()[0]);
+                m_solver_scalar->setACoeffs(lev, (*rho_times_detJ)(lev));
+            } else {
+                m_solver_scalar->setACoeffs(lev, density(lev));
+            }
+
+            // B coeffs
             auto b = diffusion::average_velocity_eta_to_faces(
                 geom[lev], viscosity(lev));
+            if (m_mesh_mapping) {
+                diffusion::viscosity_to_uniform_space(b, repo, lev);
+            }
             m_solver_scalar->setBCoeffs(lev, amrex::GetArrOfConstPtrs(b));
         }
 
@@ -230,6 +279,7 @@ protected:
     PDEFields& m_pdefields;
     Field& m_density;
     MLMGOptions m_options;
+    bool m_mesh_mapping{false};
 
     std::unique_ptr<amrex::MLABecLaplacian> m_solver_scalar;
     std::unique_ptr<amrex::MLABecLaplacian> m_applier_scalar;
@@ -248,7 +298,8 @@ struct DiffusionOp<ICNS, Scheme>
         ICNS::ndim == AMREX_SPACEDIM,
         "DiffusionOp invoked for scalar PDE type");
 
-    DiffusionOp(PDEFields& fields, const bool has_overset)
+    DiffusionOp(
+        PDEFields& fields, const bool has_overset, const bool mesh_mapping)
     {
 
         bool use_tensor_op = true;
@@ -256,11 +307,11 @@ struct DiffusionOp<ICNS, Scheme>
         pp.query("use_tensor_operator", use_tensor_op);
 
         if (use_tensor_op) {
-            m_tensor_op =
-                std::make_unique<ICNSDiffTensorOp>(fields, has_overset);
+            m_tensor_op = std::make_unique<ICNSDiffTensorOp>(
+                fields, has_overset, mesh_mapping);
         } else {
-            m_scalar_op =
-                std::make_unique<ICNSDiffScalarOp>(fields, has_overset);
+            m_scalar_op = std::make_unique<ICNSDiffScalarOp>(
+                fields, has_overset, mesh_mapping);
         }
     }
 
@@ -275,10 +326,11 @@ struct DiffusionOp<ICNS, Scheme>
 
     void linsys_solve(const amrex::Real dt)
     {
-        if (m_tensor_op)
+        if (m_tensor_op) {
             m_tensor_op->linsys_solve(dt);
-        else
+        } else {
             m_scalar_op->linsys_solve(dt);
+        }
     }
 };
 

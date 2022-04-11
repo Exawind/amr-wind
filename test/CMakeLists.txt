@@ -70,7 +70,7 @@ macro(setup_test)
       file(MAKE_DIRECTORY ${SAVED_GOLDS_DIRECTORY}/${TEST_NAME})
       set(SAVE_GOLDS_COMMAND "&& cp -R ${PLOT_TEST} ${SAVED_GOLDS_DIRECTORY}/${TEST_NAME}/")
     endif()
-    if(AMR_WIND_TEST_WITH_FCOMPARE)
+    if(AMR_WIND_TEST_WITH_FCOMPARE AND (NOT "${TEST_NAME}" MATCHES "hdf5$"))
       set(FCOMPARE_COMMAND "&& ${MPI_COMMANDS} ${FCOMPARE_EXE} ${FCOMPARE_TOLERANCE} ${PLOT_GOLD} ${PLOT_TEST}")
     endif()
 endmacro(setup_test)
@@ -197,13 +197,15 @@ add_test_re(ib_cylinder_Re_300)
 add_test_re(ib_sphere_Re_100)
 add_test_re(vortex_ring_collision)
 add_test_re(fat_cored_vortex_ring)
+add_test_re(abl_bndry_output_native)
 
-
-if (NOT AMR_WIND_ENABLE_CUDA)
+if(NOT AMR_WIND_ENABLE_CUDA)
   add_test_re(ctv_godunov_plm)
+  add_test_re(ctv_mol_mesh_map)
+  add_test_re(ctv_mol_mesh_map_explicit)
 endif()
 
-if (AMR_WIND_ENABLE_NETCDF)
+if(AMR_WIND_ENABLE_NETCDF)
   add_test_re(abl_bndry_output)
   add_test_re(abl_virtual_lidar)
 endif()
@@ -215,16 +217,26 @@ if(AMR_WIND_ENABLE_MASA)
 endif()
 
 # TODO: Enable hypre capability on GPUs
-if (AMR_WIND_ENABLE_HYPRE)
+if(AMR_WIND_ENABLE_HYPRE)
   add_test_re(abl_godunov_hypre)
   add_test_re(channel_kwsst_hypre)
+  add_test_re(channel_mol_mesh_map_x)
+  add_test_re(channel_mol_mesh_map_y)
+  add_test_re(channel_mol_mesh_map_z)
+endif()
+
+if(AMR_WIND_ENABLE_HDF5)
+  add_test_re(abl_stable_hdf5)
 endif()
 
 #=============================================================================
 # Regression tests excluded from CI with a test dependency
 #=============================================================================
+add_test_red(abl_bndry_input_native abl_bndry_output_native)
 add_test_red(abl_godunov_restart abl_godunov)
-if (AMR_WIND_ENABLE_NETCDF)
+add_test_red(abl_bndry_input_amr_native abl_bndry_output_native)
+
+if(AMR_WIND_ENABLE_NETCDF)
   add_test_red(abl_bndry_input abl_bndry_output)
   add_test_red(abl_bndry_input_amr abl_bndry_output)
 endif()

@@ -31,7 +31,7 @@ public:
     ViewField(ViewField&&) = default;
     ViewField& operator=(ViewField&&) = default;
 
-    inline const std::string name() const { return m_src.name() + "view"; }
+    inline std::string name() const { return m_src.name() + "view"; }
 
     //! Number of components in this subview
     inline int num_comp() const { return m_ncomp; }

@@ -50,6 +50,7 @@ ABL.surface_roughness_z0 = 0.01
 ABL.bndry_file = "../abl_bndry_output/bndry_file.nc"
 ABL.bndry_io_mode = 1
 ABL.bndry_var_names = velocity temperature
+ABL.bndry_output_format = netcdf
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#

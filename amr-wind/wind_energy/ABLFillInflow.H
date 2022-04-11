@@ -24,9 +24,9 @@ public:
         const SimTime& time,
         const ABLBoundaryPlane& bndry_plane);
 
-    virtual ~ABLFillInflow();
+    ~ABLFillInflow() override;
 
-    virtual void fillpatch(
+    void fillpatch(
         int lev,
         amrex::Real time,
         amrex::MultiFab& mfab,
@@ -34,7 +34,7 @@ public:
         const FieldState fstate = FieldState::New) override;
 
     //! Implementation that handles filling patches from a coarse to fine level
-    virtual void fillpatch_from_coarse(
+    void fillpatch_from_coarse(
         int lev,
         amrex::Real time,
         amrex::MultiFab& mfab,
@@ -42,7 +42,7 @@ public:
         const FieldState fstate = FieldState::New) override;
 
     //! Implementation that handles filling physical boundary conditions
-    virtual void fillphysbc(
+    void fillphysbc(
         int lev,
         amrex::Real time,
         amrex::MultiFab& mfab,

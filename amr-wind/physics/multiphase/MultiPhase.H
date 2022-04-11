@@ -22,19 +22,21 @@ enum class InterfaceCapturingMethod {
 class MultiPhase : public Physics::Register<MultiPhase>
 {
 public:
-    static const std::string identifier() { return "MultiPhase"; }
+    static std::string identifier() { return "MultiPhase"; }
 
     explicit MultiPhase(CFDSim& sim);
 
-    virtual ~MultiPhase() = default;
+    ~MultiPhase() override = default;
 
-    void initialize_fields(int, const amrex::Geometry&) override {}
+    void
+    initialize_fields(int /*level*/, const amrex::Geometry& /*geom*/) override
+    {}
 
     void post_init_actions() override;
 
     void post_regrid_actions() override {}
 
-    void pre_advance_work() override {}
+    void pre_advance_work() override;
 
     void post_advance_work() override;
 
@@ -47,6 +49,8 @@ public:
     void favre_filtering();
 
     amrex::Real volume_fraction_sum();
+
+    amrex::Real momentum_sum(int n);
 
     InterfaceCapturingMethod interface_capturing_method();
 
@@ -74,6 +78,8 @@ private:
 
     bool m_interface_smoothing{false};
 
+    int m_smooth_freq{10};
+
     // Multiphase model enum
     std::string m_interface_model{"vof"};
     InterfaceCapturingMethod m_interface_capturing_method =
@@ -84,6 +90,8 @@ private:
 
     // sum of volume fractions (for vof only)
     amrex::Real m_total_volfrac{0.0};
+
+    amrex::Real q0, q1, q2, sumvof0;
 };
 
 } // namespace amr_wind

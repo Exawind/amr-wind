@@ -33,7 +33,7 @@ struct TurbulenceOp<SDR>
 template <>
 struct PostSolveOp<SDR>
 {
-    PostSolveOp(CFDSim&, PDEFields& fields) : m_fields(fields) {}
+    PostSolveOp(CFDSim& /*unused*/, PDEFields& fields) : m_fields(fields) {}
 
     void operator()(const amrex::Real time)
     {
@@ -78,8 +78,10 @@ struct DiffusionOp<SDR, Scheme> : public DiffSolverIface<typename SDR::MLDiffOp>
         std::is_same<typename SDR::MLDiffOp, amrex::MLABecLaplacian>::value,
         "Invalid linear operator for scalar diffusion operator");
 
-    DiffusionOp(PDEFields& fields, const bool has_overset)
-        : DiffSolverIface<typename SDR::MLDiffOp>(fields, has_overset)
+    DiffusionOp(
+        PDEFields& fields, const bool has_overset, const bool mesh_mapping)
+        : DiffSolverIface<typename SDR::MLDiffOp>(
+              fields, has_overset, mesh_mapping)
         , m_lhs_src_term(
               fields.repo.get_field(SDR::var_name() + "_lhs_src_term"))
     {
@@ -111,7 +113,8 @@ struct DiffusionOp<SDR, Scheme> : public DiffSolverIface<typename SDR::MLDiffOp>
             this->m_pdefields.field.vec_ptrs());
     }
 
-    void set_acoeffs(typename SDR::MLDiffOp& linop, const FieldState fstate)
+    void
+    set_acoeffs(typename SDR::MLDiffOp& linop, const FieldState fstate) override
     {
         BL_PROFILE("amr-wind::pde::set_acoeffs");
         auto& repo = m_pdefields.repo;

@@ -7,6 +7,7 @@
 
 #include "AMReX_MultiFabUtil.H"
 #include "hydro_MacProjector.H"
+#include "hydro_mol.H"
 
 namespace amr_wind {
 namespace pde {
@@ -17,13 +18,26 @@ public:
     using FaceFabPtrVec =
         amrex::Vector<amrex::Array<const amrex::MultiFab*, ICNS::ndim>>;
 
-    MacProjOp(FieldRepo&, bool, bool);
+    MacProjOp(
+        FieldRepo& /*repo*/,
+        bool /*has_overset*/,
+        bool /*variable_density*/,
+        bool /*mesh_mapping*/);
 
     void operator()(const FieldState fstate, const amrex::Real dt);
 
+    static void mac_proj_to_uniform_space(
+        const amr_wind::FieldRepo& /*repo*/,
+        amr_wind::Field& /*u_mac*/,
+        amr_wind::Field& /*v_mac*/,
+        amr_wind::Field& /*w_mac*/,
+        amrex::Array<amrex::MultiFab*, ICNS::ndim>& /*rho_face*/,
+        amrex::Real /*ovst_fac*/,
+        int /*lev*/) noexcept;
+
 private:
-    void init_projector(const FaceFabPtrVec&) noexcept;
-    void init_projector(const amrex::Real) noexcept;
+    void init_projector(const FaceFabPtrVec& /*beta*/) noexcept;
+    void init_projector(const amrex::Real /*beta*/) noexcept;
 
     FieldRepo& m_repo;
     std::unique_ptr<Hydro::MacProjector> m_mac_proj;
@@ -31,6 +45,7 @@ private:
     bool m_has_overset{false};
     bool m_need_init{true};
     bool m_variable_density{false};
+    bool m_mesh_mapping{false};
     amrex::Real m_rho_0{1.0};
 };
 
@@ -40,20 +55,25 @@ private:
 template <>
 struct AdvectionOp<ICNS, fvm::Godunov>
 {
-    AdvectionOp(PDEFields& fields_in, bool has_overset, bool variable_density)
+    AdvectionOp(
+        PDEFields& fields_in,
+        bool has_overset,
+        bool variable_density,
+        bool mesh_mapping)
         : fields(fields_in)
         , u_mac(fields_in.repo.get_field("u_mac"))
         , v_mac(fields_in.repo.get_field("v_mac"))
         , w_mac(fields_in.repo.get_field("w_mac"))
-        , m_macproj_op(fields.repo, has_overset, variable_density)
+        , m_macproj_op(fields.repo, has_overset, variable_density, mesh_mapping)
     {
 
         amrex::ParmParse pp("incflo");
         pp.query("godunov_type", godunov_type);
-        if (pp.contains("use_ppm") || pp.contains("use_limiter"))
+        if (pp.contains("use_ppm") || pp.contains("use_limiter")) {
             amrex::Abort(
                 "Godunov: use_ppm and use_limiter are deprecated. Please "
                 "update input file");
+        }
 
         if (amrex::toLower(godunov_type) == "plm") {
             godunov_scheme = godunov::scheme::PLM;
@@ -79,23 +99,14 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         iconserv.resize(ICNS::ndim, 0);
     }
 
-    void operator()(const FieldState fstate, const amrex::Real dt)
+    void preadvect(const FieldState fstate, const amrex::Real dt)
     {
+
         auto& repo = fields.repo;
-        auto& geom = repo.mesh().Geom();
+        const auto& geom = repo.mesh().Geom();
 
         const auto& src_term = fields.src_term;
-        // cppcheck-suppress constVariable
-        auto& conv_term = fields.conv_term;
         auto& dof_field = fields.field.state(fstate);
-
-        auto flux_x =
-            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::XFACE);
-        auto flux_y =
-            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::YFACE);
-        auto flux_z =
-            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::ZFACE);
-
         auto bcrec_device = dof_field.bcrec_device();
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
@@ -236,18 +247,40 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         // MAC projection
         m_macproj_op(fstate, dt);
 
-        //
-        // Advect momentum eqns
-        //
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             u_mac(lev).FillBoundary(geom[lev].periodicity());
             v_mac(lev).FillBoundary(geom[lev].periodicity());
             w_mac(lev).FillBoundary(geom[lev].periodicity());
+        }
+    }
+
+    void operator()(const FieldState fstate, const amrex::Real dt)
+    {
+        auto& repo = fields.repo;
+        const auto& geom = repo.mesh().Geom();
+
+        const auto& src_term = fields.src_term;
+        // cppcheck-suppress constVariable
+        auto& conv_term = fields.conv_term;
+        auto& dof_field = fields.field.state(fstate);
+
+        auto flux_x =
+            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::XFACE);
+        auto flux_y =
+            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::YFACE);
+        auto flux_z =
+            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::ZFACE);
+
+        //
+        // Advect momentum eqns
+        //
+        for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
 
             amrex::MFItInfo mfi_info;
-            if (amrex::Gpu::notInLaunchRegion())
+            if (amrex::Gpu::notInLaunchRegion()) {
                 mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
                     .SetDynamic(true);
+            }
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
@@ -325,22 +358,31 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 template <>
 struct AdvectionOp<ICNS, fvm::MOL>
 {
-    AdvectionOp(PDEFields& fields_in, bool has_overset, bool variable_density)
+    AdvectionOp(
+        PDEFields& fields_in,
+        bool has_overset,
+        bool variable_density,
+        bool mesh_mapping)
         : fields(fields_in)
         , u_mac(fields_in.repo.get_field("u_mac"))
         , v_mac(fields_in.repo.get_field("v_mac"))
         , w_mac(fields_in.repo.get_field("w_mac"))
-        , m_macproj_op(fields.repo, has_overset, variable_density)
+        , m_mesh_mapping(mesh_mapping)
+        , m_macproj_op(
+              fields.repo, has_overset, variable_density, m_mesh_mapping)
     {}
 
-    void operator()(const FieldState fstate, const amrex::Real dt)
+    void preadvect(const FieldState fstate, const amrex::Real dt)
     {
 
         auto& repo = fields.repo;
-        auto& geom = repo.mesh().Geom();
-        // cppcheck-suppress constVariable
-        auto& conv_term = fields.conv_term.state(fstate);
         auto& dof_field = fields.field.state(fstate);
+
+        // computation of velocity on faces requires
+        // dof field to be in uniform mesh space
+        if (dof_field.in_uniform_space() && m_mesh_mapping) {
+            dof_field.to_stretched_space();
+        }
 
         //
         // Predict velocities
@@ -351,25 +393,24 @@ struct AdvectionOp<ICNS, fvm::MOL>
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             {
-                for (amrex::MFIter mfi(dof_field(lev), amrex::TilingIfNotGPU());
-                     mfi.isValid(); ++mfi) {
-                    amrex::Box const& ubx = mfi.nodaltilebox(0);
-                    amrex::Box const& vbx = mfi.nodaltilebox(1);
-                    amrex::Box const& wbx = mfi.nodaltilebox(2);
-                    amrex::Array4<amrex::Real> const& u = u_mac(lev).array(mfi);
-                    amrex::Array4<amrex::Real> const& v = v_mac(lev).array(mfi);
-                    amrex::Array4<amrex::Real> const& w = w_mac(lev).array(mfi);
-                    amrex::Array4<amrex::Real const> const& vcc =
-                        dof_field(lev).const_array(mfi);
-
-                    mol::predict_vels_on_faces(
-                        lev, ubx, vbx, wbx, u, v, w, vcc, dof_field.bcrec(),
-                        dof_field.bcrec_device().data(), repo.mesh().Geom());
-                }
+                MOL::ExtrapVelToFaces(
+                    dof_field(lev), u_mac(lev), v_mac(lev), w_mac(lev),
+                    repo.mesh().Geom(lev), dof_field.bcrec(),
+                    dof_field.bcrec_device().data());
             }
         }
 
         m_macproj_op(fstate, dt);
+    }
+
+    void operator()(const FieldState fstate, const amrex::Real /*unused*/)
+    {
+
+        auto& repo = fields.repo;
+        const auto& geom = repo.mesh().Geom();
+        // cppcheck-suppress constVariable
+        auto& conv_term = fields.conv_term.state(fstate);
+        auto& dof_field = fields.field.state(fstate);
 
         //
         // Advect velocity
@@ -380,9 +421,10 @@ struct AdvectionOp<ICNS, fvm::MOL>
             amrex::MFItInfo mfi_info;
             // if (amrex::Gpu::notInLaunchRegion())
             // mfi_info.EnableTiling(amrex::IntVect(1024,16,16)).SetDynamic(true);
-            if (amrex::Gpu::notInLaunchRegion())
+            if (amrex::Gpu::notInLaunchRegion()) {
                 mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
                     .SetDynamic(true);
+            }
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
@@ -418,6 +460,8 @@ struct AdvectionOp<ICNS, fvm::MOL>
     Field& u_mac;
     Field& v_mac;
     Field& w_mac;
+
+    bool m_mesh_mapping;
 
     MacProjOp m_macproj_op;
 };

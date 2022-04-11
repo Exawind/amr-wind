@@ -110,6 +110,10 @@ void incflo::InitialIterations()
 
         {
             auto& vel = icns().fields().field;
+            // ensure velocity is in stretched mesh space
+            if (vel.in_uniform_space() && m_sim.has_mesh_mapping()) {
+                vel.to_stretched_space();
+            }
             vel.copy_state(
                 amr_wind::FieldState::New, amr_wind::FieldState::Old);
 

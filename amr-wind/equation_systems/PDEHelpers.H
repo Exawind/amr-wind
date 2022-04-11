@@ -74,7 +74,9 @@ PDEFields create_fields_instance(
 
     fields.field.fillpatch_on_regrid() = true;
 
-    if (PDE::need_nph_state) fields.field.create_state(FieldState::NPH);
+    if (PDE::need_nph_state) {
+        fields.field.create_state(FieldState::NPH);
+    }
 
     return fields;
 }
