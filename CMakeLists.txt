@@ -142,7 +142,7 @@ endif()
 
 if(AMR_WIND_ENABLE_OPENFAST)
   set(CMAKE_PREFIX_PATH ${OPENFAST_DIR} ${CMAKE_PREFIX_PATH})
-  find_package(OpenFAST 2.6.0 REQUIRED)
+  find_package(OpenFAST REQUIRED)
   include(CheckIncludeFileCXX)
   set(CMAKE_REQUIRED_INCLUDES "${OpenFAST_INCLUDE_DIRS}")
   check_include_file_cxx("SCDataEx_Types.h" USE_SCDX)
