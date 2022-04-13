@@ -10,6 +10,13 @@
 #include "AMReX_ParmParse.H"
 #include "AMReX_MultiFab.H"
 
+#include "amr-wind/core/Field.H"
+#include "amr-wind/core/FieldFillPatchOps.H"
+#include "amr-wind/equation_systems/BCOps.H"
+//#include "amr-wind/boundary_conditions/velocity_bcs.H"
+#include "amr-wind/wind_energy/ShearStress.H"
+
+
 namespace amr_wind {
 
 ABL::ABL(CFDSim& sim)
@@ -119,17 +126,6 @@ void ABL::post_init_actions()
     m_velocity.register_custom_bc<ABLVelWallFunc>(m_abl_wall_func);
     (*m_temperature).register_custom_bc<ABLTempWallFunc>(m_abl_wall_func);
 
-    // Register wall functions for TKE, EPS, and SDR variables
-    if (m_sim.repo().field_exists("tke")) {
-        (*m_tke).register_custom_bc<ABLTKEWallFunc>(m_abl_wall_func);
-    }
-    if (m_sim.repo().field_exists("sdr")) {
-        (*m_sdr).register_custom_bc<ABLSDRWallFunc>(m_abl_wall_func);
-    }
-    if (m_sim.repo().field_exists("eps")) {
-        (*m_eps).register_custom_bc<ABLEpsWallFunc>(m_abl_wall_func);
-    }
-
     m_bndry_plane->post_init_actions();
 }
 
@@ -148,6 +144,42 @@ void ABL::pre_advance_work()
     const auto& vel_pa = m_stats->vel_profile();
     m_abl_wall_func.update_umean(
         m_stats->vel_profile(), m_stats->theta_profile());
+
+    // Update the values for TKE, Omega, and Epsilon
+    // if using the RANS wall model
+    amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
+    amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
+
+    if (m_sim.repo().field_exists("tke")) {
+        auto& tke = m_sim.repo().get_field("tke");
+	if (tke.bc_type()[zlo] == BC::rans_wall_model ||
+	    tke.bc_type()[zhi] == BC::rans_wall_model) {
+
+	    const auto& mo = m_abl_wall_func.mo();
+	    amrex::Real Cmu = m_abl_wall_func.Cmu();
+	    auto tau = ShearStressAlinot(mo, Cmu);
+	  
+	    const amrex::Real tke_default = tau.calc_tke(); 
+	    BCScalar bc_tke(tke);
+	    bc_tke.update_bcvalue(tke_default);
+	}
+    }
+
+    if (m_sim.repo().field_exists("sdr")) {
+        auto& sdr = m_sim.repo().get_field("sdr");
+	if (sdr.bc_type()[zlo] == BC::rans_wall_model ||
+	    sdr.bc_type()[zhi] == BC::rans_wall_model) {
+
+	    const auto& mo = m_abl_wall_func.mo();
+	    amrex::Real Cmu = m_abl_wall_func.Cmu();
+	    auto tau = ShearStressAlinot(mo, Cmu);
+
+	    const amrex::Real sdr_default = tau.calc_omega(); 
+	    BCScalar bc_sdr(sdr);
+	    bc_sdr.update_bcvalue(sdr_default);
+	}
+    }
+
 
     if (m_abl_forcing != nullptr) {
         const amrex::Real zh = m_abl_forcing->forcing_height();

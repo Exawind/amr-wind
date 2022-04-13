@@ -96,6 +96,7 @@ class BCScalar : public BCIface
 {
 public:
     explicit BCScalar(Field& field) : BCIface(field) {}
+    virtual void update_bcvalue(const amrex::Real value);
 
 protected:
     virtual void set_bcrec() override;

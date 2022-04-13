@@ -276,6 +276,12 @@ void BCVelocity::read_values()
     }
 }
 
+void BCScalar::update_bcvalue(const amrex::Real value)
+{
+    set_default_value(value);
+    m_field.copy_bc_to_device();
+}
+
 void BCScalar::set_bcrec()
 {
     const auto& ibctype = m_field.bc_type();
