@@ -49,6 +49,10 @@ public:
 
     void post_advance_work() override;
 
+    ActuatorModel& get_act(int index) const {return *m_actuators.at(index);}
+
+    int retone(int index) const {return 1;}
+
 protected:
     //! Total number of actuator components (e.g., turbines) in the flowfield
     int num_actuators() const { return m_actuators.size(); }

@@ -14,4 +14,5 @@ if (AMR_WIND_ENABLE_NETCDF)
     test_ncutils.cpp
     )
 endif()
+
 add_subdirectory(sampling)

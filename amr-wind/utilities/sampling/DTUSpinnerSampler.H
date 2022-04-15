@@ -3,6 +3,7 @@
 
 #include "amr-wind/utilities/sampling/LidarSampler.H"
 #include "amr-wind/core/vs/vector_space.H"
+#include "amr-wind/wind_energy/actuator/turbine/fast/FastIface.H"
 
 namespace amr_wind {
 namespace sampling {
@@ -83,6 +84,8 @@ private:
     amrex::Real m_hub_yaw{0};
     amrex::Real m_hub_roll{0};
     amrex::Real m_hub_tilt{0};
+    std::string m_spinner_mode{"fixed"};
+    std::string m_turbine_label;
     vs::Vector m_hub_translation{0, 0, 0};
 };
 

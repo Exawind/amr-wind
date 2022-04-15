@@ -116,6 +116,9 @@ public:
     //! Return the core info object for this actuator instance
     const ActInfo& info() const override { return m_data.info(); }
 
+    //! Return the meta info object for this actuator instance
+    const auto& meta() const { return m_data.meta(); }
+
     void read_inputs(const utils::ActParser& pp) override
     {
         ops::ReadInputsOp<ActTrait, SrcTrait>()(m_data, pp);

@@ -62,6 +62,9 @@ inline void FAST_OpFM_Restart(
     int*, char*, int*, double*, int*, int*, int*,
     OpFM_InputType*, OpFM_OutputType*,
     SC_DX_InputType*, SC_DX_OutputType*, int*, char*) {}
+
+inline void FAST_HubPosition(
+    int*, float*, float*, double*, int*, char*) {}
 #else
 inline void FAST_OpFM_Init(
     int* /*unused*/, double* /*unused*/, const char* /*unused*/, int* /*unused*/, int* /*unused*/, int* /*unused*/, int* /*unused*/, int* /*unused*/, float* /*unused*/,

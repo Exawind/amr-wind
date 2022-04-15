@@ -2,6 +2,8 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/tensor_ops.H"
 #include "amr-wind/utilities/linear_interpolation.H"
+#include "amr-wind/wind_energy/actuator/Actuator.H"
+#include "amr-wind/wind_energy/actuator/ActuatorModel.H"
 
 #include "AMReX_ParmParse.H"
 
@@ -14,6 +16,18 @@ void DTUSpinnerSampler::initialize(const std::string& key)
 {
     // Initialize the sampling time to be the same as simulation time
     m_time_sampling = m_sim.time().current_time();
+
+    const auto& act2 = m_sim.physics_manager().get<actuator::Actuator>();
+
+    // Get actuator at index
+    // TODO: Find a way to look up index  
+    const auto& act3 = act2.get_act(0);
+    std::string actlabel = act3.label();
+    amrex::Print()<<"Spinner Lidar Attached to actuator: "<<actlabel<<std::endl;
+
+    // TODO: Find a way to pull fast data from actuator instance
+    //const auto& actdata = act3.meta().fast_data;
+
 
     /*
      * Use this as a guide to implement the reading of the input
@@ -69,6 +83,12 @@ void DTUSpinnerSampler::initialize(const std::string& key)
 
     // Hub tilt logical flag
     pp.query("hub_tilt", m_hub_tilt);
+
+    // Spinner mode, hub-mounted or fixed
+    pp.query("mode", m_spinner_mode);
+
+    // For hub-mounted, this is turbine label
+    pp.query("turbine", m_turbine_label);
 
     // Hub translation logical flag
     amrex::Vector<amrex::Real> hub_translation;
@@ -185,6 +205,7 @@ void DTUSpinnerSampler::sampling_locations(SampleLocType& locs) const
 
 void DTUSpinnerSampler::update_sampling_locations()
 {
+    
 
     BL_PROFILE(
         "amr-wind::Sampling::DTUSpinnerSampler::update_sampling_locations");
