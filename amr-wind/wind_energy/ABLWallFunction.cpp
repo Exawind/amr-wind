@@ -208,7 +208,9 @@ ABLVelWallFunc::ABLVelWallFunc(
 
 template <typename ShearStress>
 void ABLVelWallFunc::wall_model(
-    Field& velocity, const FieldState rho_state, const ShearStress& tau)
+    Field& velocity, const FieldState rho_state, const ShearStress& tau,
+    const bool mesh_mapping
+)
 {
     BL_PROFILE("amr-wind::ABLVelWallFunc");
 
@@ -217,6 +219,10 @@ void ABLVelWallFunc::wall_model(
     const auto& density = repo.get_field("density", rho_state);
     const auto& viscosity = repo.get_field("velocity_mueff");
     const int nlevels = repo.num_active_levels();
+
+    amr_wind::Field const* mesh_fac =
+        mesh_mapping ? &(repo.get_mesh_mapping_field(amr_wind::FieldLoc::CELL))
+                     : nullptr;
 
     amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
     amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
@@ -247,25 +253,31 @@ void ABLVelWallFunc::wall_model(
             auto vold_arr = vold_lev.array(mfi);
             auto den = rho_lev.array(mfi);
             auto eta = eta_lev.array(mfi);
+            amrex::Array4<amrex::Real const> fac =
+                mesh_mapping ? ((*mesh_fac)(lev).const_array(mfi))
+                             : amrex::Array4<amrex::Real const>();
 
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                 velocity.bc_type()[zlo] == BC::wall_model) {
                 amrex::ParallelFor(
                     amrex::bdryLo(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::Real mu = eta(i, j, k);
+		        const amrex::Real mu = eta(i, j, k);
                         const amrex::Real uu = vold_arr(i, j, k, 0);
                         const amrex::Real vv = vold_arr(i, j, k, 1);
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
+			amrex::Real fac_z = mesh_mapping ? (fac(i, j, k, 2)) 
+			                                 : 1.0;
 
                         // Dirichlet BC
                         varr(i, j, k - 1, 2) = 0.0;
 
                         // Shear stress BC
                         varr(i, j, k - 1, 0) =
-                            tau.calc_vel_x(uu, wspd) * den(i, j, k) / mu;
+			    tau.calc_vel_x(uu, wspd) * den(i, j, k) / mu * fac_z;
                         varr(i, j, k - 1, 1) =
-                            tau.calc_vel_y(vv, wspd) * den(i, j, k) / mu;
+			    tau.calc_vel_y(vv, wspd) * den(i, j, k) / mu * fac_z;
+
                     });
             }
 
@@ -296,26 +308,27 @@ void ABLVelWallFunc::wall_model(
 void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
 {
     const auto& mo = m_wall_func.mo();
+    const bool mesh_mapping = m_wall_func.has_mesh_mapping();
 
     if (m_wall_shear_stress_type == "moeng") {
 
         auto tau = ShearStressMoeng(mo);
-        wall_model(velocity, rho_state, tau);
+        wall_model(velocity, rho_state, tau, mesh_mapping);
 
     } else if (m_wall_shear_stress_type == "constant") {
 
         auto tau = ShearStressConstant(mo);
-        wall_model(velocity, rho_state, tau);
+        wall_model(velocity, rho_state, tau, mesh_mapping);
 
     } else if (m_wall_shear_stress_type == "local") {
 
         auto tau = ShearStressLocal(mo);
-        wall_model(velocity, rho_state, tau);
+        wall_model(velocity, rho_state, tau, mesh_mapping);
 
     } else if (m_wall_shear_stress_type == "schumann") {
 
         auto tau = ShearStressSchumann(mo);
-        wall_model(velocity, rho_state, tau);
+        wall_model(velocity, rho_state, tau, mesh_mapping);
     }
 }
 
