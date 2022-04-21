@@ -229,12 +229,6 @@ void optional_parameters(DiskBaseData& meta, const utils::ActParser& pp)
         meta.sample_vec = meta.normal_vec;
     }
 
-    // params for the sampling disk
-    pp.query("num_vel_points_r", meta.num_vel_pts_r);
-    pp.query("num_vel_points_t", meta.num_vel_pts_t);
-    // 2x 1 for sampling up stream and one for sampling at the disk
-    meta.num_vel_pts = meta.num_vel_pts_r * meta.num_vel_pts_t * 2;
-
     // ensure any computed vectors are normalized
     meta.normal_vec.normalize();
     meta.sample_vec.normalize();
@@ -246,7 +240,7 @@ void optional_parameters(DiskBaseData& meta, const utils::ActParser& pp)
     }
 }
 
-void check_for_parse_conflicts(const utils::ActParser& pp)
+std::ostringstream check_for_parse_conflicts(const utils::ActParser& pp)
 {
     std::ostringstream error_collector;
 
@@ -258,7 +252,6 @@ void check_for_parse_conflicts(const utils::ActParser& pp)
     collect_parse_conflicts(pp, "disk_center", "base_position", error_collector);
     collect_parse_conflicts(pp, "disk_center", "hub_height", error_collector);
     collect_parse_dependencies(pp, "base_position", "hub_height", error_collector);
-    collect_parse_dependencies(pp, "num_theta_force_points", "spreading", error_collector);
     // clang-format on
     RealList ct;
     pp.getarr("thrust_coeff", ct);
@@ -287,6 +280,7 @@ void check_for_parse_conflicts(const utils::ActParser& pp)
             "Errors found while parsing ActuatorDisk Inputs:\n" +
             error_collector.str());
     }
+    return error_collector;
 }
 
 void compute_and_normalize_coplanar_vector(DiskBaseData& meta)

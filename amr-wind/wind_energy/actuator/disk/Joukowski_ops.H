@@ -9,7 +9,9 @@ namespace amr_wind {
 namespace actuator {
 namespace ops {
 
-namespace joukowsi {}
+namespace joukowski {
+void parse_and_gather_params(const utils::ActParser&, JoukowskiData&);
+}
 
 template <>
 struct ReadInputsOp<Joukowski, ActSrcDisk>
@@ -17,10 +19,37 @@ struct ReadInputsOp<Joukowski, ActSrcDisk>
     void operator()(Joukowski::DataType& data, const utils::ActParser& pp)
     {
         auto& meta = data.meta();
-        base::parse_and_gather_params<Joukowski::MetaType>(pp, meta);
-        base::final_checks(meta);
+        joukowski::parse_and_gather_params(pp, meta);
         base::do_parse_based_computations<Joukowski>(data);
         amrex::Abort("JoukoskiDisk is under development and not functional.");
+    }
+};
+
+template <>
+struct InitDataOp<Joukowski, ActSrcDisk>
+{
+    void operator()(typename Joukowski::DataType& data)
+    {
+        auto& grid = data.grid();
+        auto& meta = data.meta();
+
+        // only resize the members we are going to use
+        grid.pos.resize(meta.num_force_pts);
+        grid.force.resize(meta.num_force_pts);
+        grid.vel.resize(meta.num_vel_pts);
+        grid.vel_pos.resize(meta.num_vel_pts);
+
+        const auto& sVec = meta.sample_vec;
+        const auto& nVec = meta.normal_vec;
+
+        // force points
+        base::compute_disk_points(meta, grid.pos, nVec, 0, 0);
+        // velocity points upstream
+        base::compute_disk_points(
+            meta, grid.vel_pos, sVec, 0, meta.diameters_to_sample);
+        // velocity points at the disk
+        base::compute_disk_points(
+            meta, grid.vel_pos, nVec, meta.num_vel_pts / 2, 0);
     }
 };
 
@@ -44,8 +73,7 @@ struct ComputeForceOp<Joukowski, ActSrcDisk>
         // step 1: compute Ct, a1 and a2 coefficients (eq 16)
         const amrex::Real uInfSqr = base::compute_reference_velocity_sqr(ddata);
         const amrex::Real U_ref = std::sqrt(uInfSqr);
-        const amrex::Real u_disk =
-            vs::mag(ddata.disk_velocity & ddata.normal_vec);
+        const amrex::Real u_disk = ddata.disk_velocity & ddata.normal_vec;
         base::set_thrust_coefficient(ddata, uInfSqr);
         const amrex::Real Ct = ddata.current_ct;
 

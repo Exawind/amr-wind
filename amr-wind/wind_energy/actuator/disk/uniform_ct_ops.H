@@ -7,6 +7,11 @@
 namespace amr_wind {
 namespace actuator {
 namespace ops {
+namespace uniformct {
+
+void parse_and_gather_params(const utils::ActParser&, UniformCtData&);
+
+} // namespace uniformct
 template <>
 struct ReadInputsOp<UniformCt, ActSrcDisk>
 {
@@ -14,8 +19,7 @@ struct ReadInputsOp<UniformCt, ActSrcDisk>
     {
         // TODO get density at probe location
         auto& meta = data.meta();
-        base::parse_and_gather_params<UniformCt::MetaType>(pp, meta);
-        base::final_checks(meta);
+        uniformct::parse_and_gather_params(pp, meta);
         base::do_parse_based_computations<UniformCt>(data);
     }
 };
@@ -50,6 +54,37 @@ struct ComputeForceOp<UniformCt, ActSrcDisk>
     }
 };
 
+template <>
+struct InitDataOp<UniformCt, ActSrcDisk>
+{
+    void operator()(typename UniformCt::DataType& data)
+    {
+        auto& grid = data.grid();
+        auto& meta = data.meta();
+
+        // only resize the members we are going to use
+        grid.pos.resize(meta.num_force_pts);
+        grid.force.resize(meta.num_force_pts);
+        grid.vel.resize(meta.num_vel_pts);
+        grid.vel_pos.resize(meta.num_vel_pts);
+
+        const auto& cVec = meta.coplanar_vec;
+        const auto& sVec = meta.sample_vec;
+        const auto& nVec = meta.normal_vec;
+
+        const auto& cc = meta.center;
+        {
+            const auto& dr = meta.dr;
+            for (int i = 0; i < meta.num_force_pts; ++i) {
+                grid.pos[i] = cc + (i + 0.5) * dr * cVec;
+            }
+        }
+        base::compute_disk_points(
+            meta, grid.vel_pos, sVec, 0, meta.diameters_to_sample);
+        base::compute_disk_points(
+            meta, grid.vel_pos, nVec, meta.num_vel_pts / 2, 0);
+    }
+};
 template <>
 struct ProcessOutputsOp<UniformCt, ActSrcDisk>
 {

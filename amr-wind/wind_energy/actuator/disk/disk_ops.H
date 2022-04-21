@@ -39,7 +39,7 @@ void required_parameters(DiskBaseData& meta, const utils::ActParser& pp);
 
 void optional_parameters(DiskBaseData& meta, const utils::ActParser& pp);
 
-void check_for_parse_conflicts(const utils::ActParser& pp);
+std::ostringstream check_for_parse_conflicts(const utils::ActParser& pp);
 
 void compute_and_normalize_coplanar_vector(DiskBaseData& meta);
 
@@ -113,41 +113,6 @@ struct UpdateVelOp<
         }
         refVel /= np;
         diskVel /= np;
-    }
-};
-
-template <typename ActTrait>
-struct InitDataOp<
-    ActTrait,
-    ActSrcDisk,
-    std::enable_if_t<std::is_base_of<DiskType, ActTrait>::value>>
-{
-    void operator()(typename ActTrait::DataType& data)
-    {
-        auto& grid = data.grid();
-        auto& meta = data.meta();
-
-        // only resize the members we are going to use
-        grid.pos.resize(meta.num_force_pts);
-        grid.force.resize(meta.num_force_pts);
-        grid.vel.resize(meta.num_vel_pts);
-        grid.vel_pos.resize(meta.num_vel_pts);
-
-        const auto& cVec = meta.coplanar_vec;
-        const auto& sVec = meta.sample_vec;
-        const auto& nVec = meta.normal_vec;
-
-        const auto& cc = meta.center;
-        {
-            const auto& dr = meta.dr;
-            for (int i = 0; i < meta.num_force_pts; ++i) {
-                grid.pos[i] = cc + (i + 0.5) * dr * cVec;
-            }
-        }
-        base::compute_disk_points(
-            meta, grid.vel_pos, sVec, 0, meta.diameters_to_sample);
-        base::compute_disk_points(
-            meta, grid.vel_pos, nVec, meta.num_vel_pts / 2, 0);
     }
 };
 
