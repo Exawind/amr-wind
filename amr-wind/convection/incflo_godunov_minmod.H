@@ -14,8 +14,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void minmod(
     const amrex::Real sm1,
     const amrex::Real s0,
     const amrex::Real sp1,
-    amrex::Real dsm,
-    amrex::Real dsp)
+    amrex::Real& dsm,
+    amrex::Real& dsp)
 {
     // Calculate gradients on both sides
     dsp = sp1 - s0;
