@@ -3,6 +3,7 @@
 #include "amr-wind/convection/incflo_godunov_ppm_nolim.H"
 #include "amr-wind/convection/incflo_godunov_weno.H"
 #include "amr-wind/convection/incflo_godunov_minmod.H"
+#include "amr-wind/convection/incflo_godunov_upwind.H"
 #include "amr-wind/convection/Godunov.H"
 #include <AMReX_Geometry.H>
 
@@ -183,6 +184,19 @@ void godunov::compute_fluxes(
                 Godunov_minmod_fpu_z(
                     i, j, k, n, l_dt, dz, Imz(i, j, k, n), Ipz(i, j, k, n), q,
                     wmac, pbc[n], dlo.z, dhi.z);
+            });
+        break;
+    }
+    case godunov::scheme::UPWIND: {
+        amrex::ParallelFor(
+            bxg1, ncomp,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                Godunov_upwind_fpu(
+                    i, j, k, n, Imx(i, j, k, n), Ipx(i, j, k, n), q);
+                Godunov_upwind_fpu(
+                    i, j, k, n, Imy(i, j, k, n), Ipy(i, j, k, n), q);
+                Godunov_upwind_fpu(
+                    i, j, k, n, Imz(i, j, k, n), Ipz(i, j, k, n), q);
             });
         break;
     }

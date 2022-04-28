@@ -105,11 +105,13 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         pp.query("mflux_type", mflux_type);
         if (amrex::toLower(godunov_type) == "minmod") {
             mflux_scheme = godunov::scheme::MINMOD;
+        } else if (amrex::toLower(godunov_type) == "upwind") {
+            mflux_scheme = godunov::scheme::UPWIND;
         } else {
             amrex::Print()
-                << "For mflux_type, default is minmod"
+                << "For mflux_type, default is upwind"
                 << std::endl;
-            mflux_scheme = godunov::scheme::MINMOD;
+            mflux_scheme = godunov::scheme::UPWIND;
         }
 
         // TODO: Need iconserv flag to be adjusted???
@@ -505,7 +507,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     amrex::Gpu::DeviceVector<int> iconserv;
 
     godunov::scheme godunov_scheme = godunov::scheme::PPM;
-    godunov::scheme mflux_scheme = godunov::scheme::MINMOD;
+    godunov::scheme mflux_scheme = godunov::scheme::UPWIND;
     std::string godunov_type;
     std::string mflux_type;
     bool godunov_use_forces_in_trans{false};

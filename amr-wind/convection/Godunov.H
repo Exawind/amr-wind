@@ -10,7 +10,7 @@
 
 namespace godunov {
 
-enum class scheme { PLM, PPM, PPM_NOLIM, WENOJS, WENOZ, MINMOD };
+enum class scheme { PLM, PPM, PPM_NOLIM, WENOJS, WENOZ, MINMOD, UPWIND };
 
 void compute_fluxes(
     int lev,
