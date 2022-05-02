@@ -103,9 +103,9 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         }
 
         pp.query("mflux_type", mflux_type);
-        if (amrex::toLower(godunov_type) == "minmod") {
+        if (amrex::toLower(mflux_type) == "minmod") {
             mflux_scheme = godunov::scheme::MINMOD;
-        } else if (amrex::toLower(godunov_type) == "upwind") {
+        } else if (amrex::toLower(mflux_type) == "upwind") {
             mflux_scheme = godunov::scheme::UPWIND;
         } else {
             amrex::Print()
