@@ -209,5 +209,5 @@ void WaveEnergy::write_ascii()
     }
 }
 
-} // namespace kinetic_energy
+} // namespace wave_energy
 } // namespace amr_wind

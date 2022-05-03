@@ -7,8 +7,7 @@ namespace amr_wind_tests {
 
 namespace {
 
-void init_velocity(
-    amr_wind::Field& fld)
+void init_velocity(amr_wind::Field& fld)
 {
     const int nlevels = fld.repo().num_active_levels();
 
@@ -27,8 +26,7 @@ void init_velocity(
     }
 }
 
-void init_vof(
-    amr_wind::Field& fld)
+void init_vof(amr_wind::Field& fld)
 {
     const int nlevels = fld.repo().num_active_levels();
 
@@ -126,7 +124,6 @@ TEST_F(WaveEnergyTest, checkoutput)
     // Initialize physics for MultiPhase, icns must be registered too
     auto& pde_mgr = sim().pde_manager();
     pde_mgr.register_icns();
-    //mom_eqn.initialize();
     sim().init_physics();
 
     // Get fields and initialize them
