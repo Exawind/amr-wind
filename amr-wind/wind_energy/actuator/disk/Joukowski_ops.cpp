@@ -15,6 +15,9 @@ void optional_parameters(JoukowskiData& meta, const utils::ActParser& pp)
 void required_parameters(JoukowskiData& meta, const utils::ActParser& pp)
 {
     ops::base::required_parameters(meta, pp);
+    pp.get("num_points_t", meta.num_vel_pts_t);
+    pp.get("num_points_r", meta.num_vel_pts_r);
+    meta.num_force_pts = meta.num_vel_pts_r * meta.num_vel_pts_t;
 }
 void parse_and_gather_params(const utils::ActParser& pp, JoukowskiData& meta)
 {

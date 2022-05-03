@@ -11,6 +11,13 @@ namespace ops {
 
 namespace joukowski {
 void parse_and_gather_params(const utils::ActParser&, JoukowskiData&);
+inline void
+set_current_angular_velocity(JoukowskiData& data, const amrex::Real uInfSqr)
+{
+    const amrex::Real uInfMag = std::sqrt(uInfSqr);
+    data.current_angular_velocity = ::amr_wind::interp::linear(
+        data.table_velocity, data.angular_velocity, uInfMag);
+}
 }
 
 template <>
@@ -75,45 +82,53 @@ struct ComputeForceOp<Joukowski, ActSrcDisk>
         const amrex::Real U_ref = std::sqrt(uInfSqr);
         const amrex::Real u_disk = ddata.disk_velocity & ddata.normal_vec;
         base::set_thrust_coefficient(ddata, uInfSqr);
+        joukowski::set_current_angular_velocity(ddata, uInfSqr);
+
         const amrex::Real Ct = ddata.current_ct;
 
         amrex::Real a1 = 0.0;
         amrex::Real a2 = 0.0;
 
-        const int npts = ddata.num_force_pts;
-        const amrex::Real dx = 2.0 * ddata.dr / ddata.diameter;
-        for (int ip = 0; ip < npts; ip++) {
-            const amrex::Real x = (ip + 0.5) * dx;
+        const amrex::Real dr = 2.0 * ddata.dr / ddata.diameter;
+        for (int ip = 0; ip < ddata.num_vel_pts_r; ip++) {
+            const amrex::Real r = (ip + 0.5) * dr;
+
             a1 += std::pow(ddata.tip_correction[ip], 2.0) *
-                  std::pow(ddata.root_correction[ip], 2.0) / x * dx;
-            a2 += ddata.tip_correction[ip] * ddata.root_correction[ip] * x * dx;
+                  std::pow(ddata.root_correction[ip], 2.0) / r * dr;
+
+            a2 += ddata.tip_correction[ip] * ddata.root_correction[ip] * r * dr;
         }
 
         // step 2: determine the circulation (q0) from a1, a2 and Ct (eq 17)
-        const amrex::Real lambda = ddata.tip_speed_ratio;
+        const amrex::Real machine_eps = vs::DTraits<amrex::Real>::eps();
+
+        const amrex::Real lambda =
+            0.5 * ddata.diameter * ddata.current_angular_velocity / machine_eps;
+
         const amrex::Real q0 =
             (std::sqrt(16.0 * lambda * lambda * a2 * a2 + 8.0 * a1 * Ct) -
              4.0 * lambda * a2) /
-            std::max(4.0 * a1, 1e-12);
+            std::max(4.0 * a1, machine_eps);
 
         // step 3: compute normal force (fz) and azimuthal force (f_theta) (eq
         // 13)
-        for (int ip = 0; ip < npts; ip++) {
-            const amrex::Real x = (ip + 0.5) * dx;
-            const amrex::Real lambda = ddata.tip_speed_ratio;
+        for (int ip = 0; ip < ddata.num_vel_pts_r; ip++) {
+            const amrex::Real x = (ip + 0.5) * dr / (0.5 * ddata.diameter);
             const amrex::Real& F = ddata.tip_correction[ip];
             const amrex::Real& g = ddata.root_correction[ip];
             const amrex::Real fz =
                 q0 * g * F / x * (lambda * x + 0.5 * q0 * g * F / x);
-            const amrex::Real f_theta = u_disk / U_ref * q0 * g * F / x;
+            for (int jp = 0; jp < ddata.num_vel_pts_t; jp++) {
+                const amrex::Real f_theta = u_disk / U_ref * q0 * g * F / x;
 
-            // TODO need sign
-            amrex::Real angle = 90.0;
-            // This probably wont work. going to have to discretize in theta to
-            // capture the changing angle
-            vs::Vector thetaVec =
-                ddata.coplanar_vec & vs::quaternion(ddata.normal_vec, angle);
-            grid.force[ip] = fz * ddata.normal_vec + f_theta * thetaVec;
+                // TODO need sign
+                amrex::Real angle = 90.0;
+                // This probably wont work. going to have to discretize in theta
+                // to capture the changing angle
+                vs::Vector thetaVec = ddata.coplanar_vec &
+                                      vs::quaternion(ddata.normal_vec, angle);
+                grid.force[ip] = fz * ddata.normal_vec + f_theta * thetaVec;
+            }
         }
 
         // step 5: compute moment and power (eqs 18 and 19)

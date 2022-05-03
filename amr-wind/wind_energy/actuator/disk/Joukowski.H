@@ -10,13 +10,10 @@ namespace actuator {
 
 struct JoukowskiData : public DiskBaseData
 {
-    amrex::Real power_coeff;
-    amrex::Real power;
-    amrex::Real moment;
-    amrex::Real omega;
-    amrex::Real tip_speed_ratio;
+    RealList angular_velocity;
     RealList tip_correction;
     RealList root_correction;
+    amrex::Real current_angular_velocity{0.0};
 };
 
 struct Joukowski : public DiskType

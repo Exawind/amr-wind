@@ -148,7 +148,6 @@ void collect_parse_dependencies(
 
 void required_parameters(DiskBaseData& meta, const utils::ActParser& pp)
 {
-    pp.get("num_force_points", meta.num_force_pts);
     pp.get("epsilon", meta.epsilon);
     pp.get("rotor_diameter", meta.diameter);
     pp.getarr("thrust_coeff", meta.thrust_coeff);

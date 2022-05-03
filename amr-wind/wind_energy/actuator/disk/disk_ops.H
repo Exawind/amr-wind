@@ -82,6 +82,8 @@ inline amrex::Real compute_reference_velocity_sqr(DiskBaseData& data)
            (data.reference_velocity & normal);
 }
 
+// we use a setter function since we want to cache this variable for netcdf
+// output
 inline void
 set_thrust_coefficient(DiskBaseData& data, const amrex::Real& uInfSqr)
 {
