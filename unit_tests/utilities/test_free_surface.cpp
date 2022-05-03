@@ -541,7 +541,7 @@ TEST_F(FreeSurfaceTest, sloped)
 
     // Calculate expected output values
     amrex::Vector<amrex::Real> out_vec;
-    out_vec.resize(npts * npts);
+    out_vec.resize(npts * npts, 0.0);
     // Step in x, then y
     // Most calcuations done by hand, not shown
     out_vec[0] = water_level2 + 2.0 * (0.5 - 0.375) / (0.375 - 1.0);

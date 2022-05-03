@@ -7,6 +7,7 @@
 
 #include "AMReX_MultiFabUtil.H"
 #include "hydro_MacProjector.H"
+#include "hydro_mol.H"
 
 namespace amr_wind {
 namespace pde {
@@ -375,7 +376,6 @@ struct AdvectionOp<ICNS, fvm::MOL>
     {
 
         auto& repo = fields.repo;
-        const auto& geom = repo.mesh().Geom();
         auto& dof_field = fields.field.state(fstate);
 
         // computation of velocity on faces requires
@@ -393,21 +393,10 @@ struct AdvectionOp<ICNS, fvm::MOL>
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             {
-                for (amrex::MFIter mfi(dof_field(lev), amrex::TilingIfNotGPU());
-                     mfi.isValid(); ++mfi) {
-                    amrex::Box const& ubx = mfi.nodaltilebox(0);
-                    amrex::Box const& vbx = mfi.nodaltilebox(1);
-                    amrex::Box const& wbx = mfi.nodaltilebox(2);
-                    amrex::Array4<amrex::Real> const& u = u_mac(lev).array(mfi);
-                    amrex::Array4<amrex::Real> const& v = v_mac(lev).array(mfi);
-                    amrex::Array4<amrex::Real> const& w = w_mac(lev).array(mfi);
-                    amrex::Array4<amrex::Real const> const& vcc =
-                        dof_field(lev).const_array(mfi);
-
-                    mol::predict_vels_on_faces(
-                        lev, ubx, vbx, wbx, u, v, w, vcc, dof_field.bcrec(),
-                        dof_field.bcrec_device().data(), geom);
-                }
+                MOL::ExtrapVelToFaces(
+                    dof_field(lev), u_mac(lev), v_mac(lev), w_mac(lev),
+                    repo.mesh().Geom(lev), dof_field.bcrec(),
+                    dof_field.bcrec_device().data());
             }
         }
 

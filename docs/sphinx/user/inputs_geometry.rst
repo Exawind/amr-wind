@@ -20,8 +20,7 @@ This section deals with inputs related to the problem domain.
   **type:** List of 3 real numbers, optional, default = ``geometry.prob_hi``
 
   The coordinates of the *upper corner* of the computational domain bounding box for a
-  `Stretched Mesh
-  <https://amr-wind.readthedocs.io/en/latest/theory/mapping.html>`_.
+  Stretched Mesh.
 
 .. input_param:: geometry.is_periodic
 

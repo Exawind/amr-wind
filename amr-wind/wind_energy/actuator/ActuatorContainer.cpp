@@ -96,7 +96,7 @@ void ActuatorContainer::initialize_particles(const int total_pts)
         for (auto mfi = MakeMFIter(lev); (mfi.isValid() && !assigned); ++mfi) {
             auto& ptile = GetParticles(
                 lev)[std::make_pair(mfi.index(), mfi.LocalTileIndex())];
-            AMREX_ASSERT(ptile.size() == 0);
+            AMREX_ASSERT(ptile.empty());
             ptile.resize(total_pts);
             auto* pstruct = ptile.GetArrayOfStructs()().data();
 

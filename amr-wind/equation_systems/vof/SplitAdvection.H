@@ -6,11 +6,12 @@
 namespace amr_wind {
 namespace multiphase {
 
-void split_advection(
+void split_advection_step(
     int lev,
     amrex::Box const& bx,
     int isweep,
     amrex::Array4<amrex::Real> const& volfrac,
+    amrex::Array4<amrex::Real> const& fluxC,
     amrex::Array4<amrex::Real const> const& umac,
     amrex::Array4<amrex::Real const> const& vmac,
     amrex::Array4<amrex::Real const> const& wmac,
@@ -19,6 +20,15 @@ void split_advection(
     amrex::Vector<amrex::Geometry> geom,
     amrex::Real dt,
     bool is_lagrangian);
+
+void cmask_loop(
+    amrex::Box const& bx,
+    amrex::Array4<amrex::Real> const& volfrac,
+    amrex::Array4<amrex::Real> const& fluxC,
+    bool is_lagrangian);
+
+void debris_loop(
+    amrex::Box const& bx, amrex::Array4<amrex::Real> const& volfrac);
 
 void sweep(
     const int dir,

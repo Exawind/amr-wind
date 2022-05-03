@@ -83,7 +83,8 @@ with ``num_points`` equidistant nodes.
 Location of the line is given by the time histories 
 ``azimuth_table`` and ``elevation_table``.
 Angles are given in degrees with 0 azimuth and 0 elevation being the 
-x direction.
+x direction. Lidar measurements may also be collected at a constant location
+by specifying only one entry to the tables.
 
 Example::
 
