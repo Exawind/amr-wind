@@ -18,7 +18,7 @@ set_current_angular_velocity(JoukowskiData& data, const amrex::Real uInfSqr)
     data.current_angular_velocity = ::amr_wind::interp::linear(
         data.table_velocity, data.angular_velocity, uInfMag);
 }
-}
+} // namespace joukowski
 
 template <>
 struct ReadInputsOp<Joukowski, ActSrcDisk>
@@ -114,20 +114,20 @@ struct ComputeForceOp<Joukowski, ActSrcDisk>
 
         VecSlice disk_velocity = ::amr_wind::utils::slice(
             grid.vel, ddata.num_vel_pts / 2, ddata.num_vel_pts);
-        for (int ip = 0; ip < ddata.num_vel_pts_r; ip++) {
-            const amrex::Real& F = ddata.tip_correction[ip];
-            const amrex::Real& g = ddata.root_correction[ip];
+        int ip = 0;
+        for (int i = 0; i < ddata.num_vel_pts_r; i++) {
+            const amrex::Real& F = ddata.tip_correction[i];
+            const amrex::Real& g = ddata.root_correction[i];
 
-            const amrex::Real x = (ip + 0.5) * dr / (0.5 * ddata.diameter);
+            const amrex::Real x = (i + 0.5) * dr / (0.5 * ddata.diameter);
 
             const amrex::Real f_z =
                 q0 * g * F / x * (lambda * x + 0.5 * q0 * g * F / x);
 
-            const auto point_on_coplanar_vector = grid.pos[ip];
+            const auto point_on_coplanar_vector = grid.pos[i];
 
-            for (int jp = 0; jp < ddata.num_vel_pts_t; jp++) {
-                const auto point_current =
-                    grid.pos[ip + jp * ddata.num_vel_pts_r];
+            for (int j = 0; j < ddata.num_vel_pts_t; j++, ip++) {
+                const auto point_current = grid.pos[ip];
 
                 // compute angle between points on the coplanar vector and the
                 // current points
@@ -142,13 +142,11 @@ struct ComputeForceOp<Joukowski, ActSrcDisk>
                                        vs::quaternion(ddata.normal_vec, angle);
 
                 const amrex::Real u_disk_ij =
-                    ddata.normal_vec &
-                    disk_velocity[ip + jp * ddata.num_vel_pts_r];
+                    ddata.normal_vec & disk_velocity[ip];
 
                 const amrex::Real f_theta = u_disk_ij / U_ref * q0 * g * F / x;
 
-                grid.force[ip + jp * ddata.num_vel_pts_r] =
-                    f_z * ddata.normal_vec + f_theta * theta_vec;
+                grid.force[ip] = f_z * ddata.normal_vec + f_theta * theta_vec;
             }
         }
 
