@@ -472,6 +472,7 @@ void ABLBoundaryPlane::write_header()
 
     if (amrex::ParallelDescriptor::IOProcessor() && m_out_fmt == "native") {
         // generate time file
+        amrex::UtilCreateCleanDirectory(m_filename, false);
         std::ofstream oftime(m_time_file, std::ios::out);
         oftime.close();
     }
