@@ -105,9 +105,9 @@ struct UpdateVelOp<
         auto& meta = data.meta();
         const auto& grid = data.grid();
         meta.reference_velocity = {0.0, 0.0, 0.0};
-        meta.disk_velocity = {0.0, 0.0, 0.0};
+        meta.mean_disk_velocity = {0.0, 0.0, 0.0};
         auto& refVel = meta.reference_velocity;
-        auto& diskVel = meta.disk_velocity;
+        auto& diskVel = meta.mean_disk_velocity;
         const int np = meta.num_vel_pts / 2;
         for (int i = 0; i < np; i++) {
             refVel = refVel + grid.vel[i];

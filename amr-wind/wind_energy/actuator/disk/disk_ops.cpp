@@ -85,7 +85,7 @@ void write_netcdf(
     grp.var("vref").put(
         &(meta.reference_velocity[0]), {nt, 0}, {1, AMREX_SPACEDIM});
     grp.var("vdisk").put(
-        &(meta.disk_velocity[0]), {nt, 0}, {1, AMREX_SPACEDIM});
+        &(meta.mean_disk_velocity[0]), {nt, 0}, {1, AMREX_SPACEDIM});
     grp.var("ct").put(&meta.current_ct, {nt}, {1});
     grp.var("density").put(&meta.density, {nt}, {1});
 #else

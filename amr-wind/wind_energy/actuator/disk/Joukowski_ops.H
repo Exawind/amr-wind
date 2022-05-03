@@ -80,7 +80,6 @@ struct ComputeForceOp<Joukowski, ActSrcDisk>
         // step 1: compute Ct, a1 and a2 coefficients (eq 16)
         const amrex::Real uInfSqr = base::compute_reference_velocity_sqr(ddata);
         const amrex::Real U_ref = std::sqrt(uInfSqr);
-        const amrex::Real u_disk = ddata.disk_velocity & ddata.normal_vec;
         base::set_thrust_coefficient(ddata, uInfSqr);
         joukowski::set_current_angular_velocity(ddata, uInfSqr);
 
@@ -112,22 +111,44 @@ struct ComputeForceOp<Joukowski, ActSrcDisk>
 
         // step 3: compute normal force (fz) and azimuthal force (f_theta) (eq
         // 13)
+
+        VecSlice disk_velocity = ::amr_wind::utils::slice(
+            grid.vel, ddata.num_vel_pts / 2, ddata.num_vel_pts);
         for (int ip = 0; ip < ddata.num_vel_pts_r; ip++) {
-            const amrex::Real x = (ip + 0.5) * dr / (0.5 * ddata.diameter);
             const amrex::Real& F = ddata.tip_correction[ip];
             const amrex::Real& g = ddata.root_correction[ip];
-            const amrex::Real fz =
-                q0 * g * F / x * (lambda * x + 0.5 * q0 * g * F / x);
-            for (int jp = 0; jp < ddata.num_vel_pts_t; jp++) {
-                const amrex::Real f_theta = u_disk / U_ref * q0 * g * F / x;
 
-                // TODO need sign
-                amrex::Real angle = 90.0;
-                // This probably wont work. going to have to discretize in theta
-                // to capture the changing angle
-                vs::Vector thetaVec = ddata.coplanar_vec &
-                                      vs::quaternion(ddata.normal_vec, angle);
-                grid.force[ip] = fz * ddata.normal_vec + f_theta * thetaVec;
+            const amrex::Real x = (ip + 0.5) * dr / (0.5 * ddata.diameter);
+
+            const amrex::Real f_z =
+                q0 * g * F / x * (lambda * x + 0.5 * q0 * g * F / x);
+
+            const auto point_on_coplanar_vector = grid.pos[ip];
+
+            for (int jp = 0; jp < ddata.num_vel_pts_t; jp++) {
+                const auto point_current =
+                    grid.pos[ip + jp * ddata.num_vel_pts_r];
+
+                // compute angle between points on the coplanar vector and the
+                // current points
+                const auto distance = utils::delta_pnts_cyl(
+                    ddata.center, ddata.normal_vec, point_on_coplanar_vector,
+                    point_current);
+
+                // TODO add sign convention for rotation (+/- RPM)
+                const auto angle = ::amr_wind::utils::degrees(distance[1]);
+
+                const auto theta_vec = ddata.coplanar_vec &
+                                       vs::quaternion(ddata.normal_vec, angle);
+
+                const amrex::Real u_disk_ij =
+                    ddata.normal_vec &
+                    disk_velocity[ip + jp * ddata.num_vel_pts_r];
+
+                const amrex::Real f_theta = u_disk_ij / U_ref * q0 * g * F / x;
+
+                grid.force[ip + jp * ddata.num_vel_pts_r] =
+                    f_z * ddata.normal_vec + f_theta * theta_vec;
             }
         }
 
