@@ -46,7 +46,7 @@ public:
     amrex::Real calculate_potential_energy();
 
     //! Output private variables that store energy measurements
-    void wave_energy(amrex::Real& ke, amrex::Real& pe)
+    void wave_energy(amrex::Real& ke, amrex::Real& pe) const
     {
         ke = m_wave_kinetic_energy;
         pe = m_wave_potential_energy;
