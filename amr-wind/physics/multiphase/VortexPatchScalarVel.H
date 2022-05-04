@@ -24,11 +24,11 @@ class VortexPatchScalarVel : public Physics::Register<VortexPatchScalarVel>
         "VortexPatchScalarVel requires 3 dimensional mesh");
 
 public:
-    static const std::string identifier() { return "VortexPatchScalarVel"; }
+    static std::string identifier() { return "VortexPatchScalarVel"; }
 
     explicit VortexPatchScalarVel(CFDSim& sim);
 
-    virtual ~VortexPatchScalarVel() = default;
+    ~VortexPatchScalarVel() override = default;
 
     //! Initialize the levelset and velocity fields for Vortex Patch simulations
 

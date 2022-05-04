@@ -8,8 +8,10 @@
  *  \ingroup mulitphase_physics
  *
  */
-
+namespace amr_wind {
 namespace zds {
+
+namespace {
 struct SCexact
 {
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
@@ -23,9 +25,7 @@ struct SCexact
         amrex::Real /*alpha*/) const;
     const int m_comp{0};
 };
-} // namespace zds
-
-namespace amr_wind {
+} // namespace
 
 class ZalesakDiskScalarVel : public Physics::Register<ZalesakDiskScalarVel>
 {
@@ -87,6 +87,7 @@ private:
     std::string m_output_fname{"zds.log"};
 };
 
+} // namespace zds
 } // namespace amr_wind
 
 #endif /* ZalesakDiskScalarVel_H */
