@@ -7,7 +7,7 @@ namespace amr_wind_tests {
 
 namespace {
 
-static void init_velocity(amr_wind::Field& fld)
+void init_velocity(amr_wind::Field& fld)
 {
     const int nlevels = fld.repo().num_active_levels();
 
@@ -26,7 +26,7 @@ static void init_velocity(amr_wind::Field& fld)
     }
 }
 
-static void init_vof(amr_wind::Field& fld)
+void init_vof(amr_wind::Field& fld)
 {
     const int nlevels = fld.repo().num_active_levels();
 
