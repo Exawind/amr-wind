@@ -18,6 +18,7 @@ void optional_parameters(DiskBaseData& meta, const utils::ActParser& pp)
     pp.query("num_vel_points_t", meta.num_vel_pts_t);
     // 2x 1 for sampling up stream and one for sampling at the disk
     meta.num_vel_pts = meta.num_vel_pts_r * meta.num_vel_pts_t * 2;
+    pp.query("spreading_type", meta.spreading_type);
 }
 void required_parameters(DiskBaseData& meta, const utils::ActParser& pp)
 {

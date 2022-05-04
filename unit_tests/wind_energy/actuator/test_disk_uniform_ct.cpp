@@ -156,7 +156,7 @@ TEST_F(UniformCtTest, required_parameters_dont_throw)
     amrex::ParmParse pp("Actuator.UniformCtDisk");
     act::utils::ActParser ap("Actuator.UniformCtDisk", "Actuator");
     ASSERT_TRUE(ap.contains("rotor_diameter"));
-    ASSERT_NO_THROW(ops::base::required_parameters(meta, ap));
+    ASSERT_NO_THROW(ops::uniformct::parse_and_gather_params(ap, meta));
     EXPECT_DOUBLE_EQ(meta.diameter, 1.0);
     EXPECT_DOUBLE_EQ(meta.epsilon, 1.0);
     EXPECT_DOUBLE_EQ(meta.thrust_coeff[0], 1.0);

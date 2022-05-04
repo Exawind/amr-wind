@@ -176,7 +176,6 @@ void optional_parameters(DiskBaseData& meta, const utils::ActParser& pp)
     pp.query("density", meta.density);
     pp.query("diameters_to_sample", meta.diameters_to_sample);
     pp.query("num_theta_force_points", meta.num_force_theta_pts);
-    pp.query("spreading_type", meta.spreading_type);
 
     // make sure we compute normal vec contribution from tilt before yaw
     // since we won't know a reference axis to rotate for tilt after
