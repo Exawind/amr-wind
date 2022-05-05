@@ -1,7 +1,7 @@
-#ifndef JOUKOWSKI_OPS_H_
-#define JOUKOWSKI_OPS_H_
+#ifndef Joukowsky_OPS_H_
+#define Joukowsky_OPS_H_
 
-#include "amr-wind/wind_energy/actuator/disk/Joukowski.H"
+#include "amr-wind/wind_energy/actuator/disk/Joukowsky.H"
 #include "amr-wind/wind_energy/actuator/disk/disk_ops.H"
 #include "amr-wind/utilities/linear_interpolation.H"
 
@@ -9,33 +9,32 @@ namespace amr_wind {
 namespace actuator {
 namespace ops {
 
-namespace joukowski {
-void parse_and_gather_params(const utils::ActParser&, JoukowskiData&);
+namespace joukowsky {
+void parse_and_gather_params(const utils::ActParser&, JoukowskyData&);
 inline void
-set_current_angular_velocity(JoukowskiData& data, const amrex::Real uInfSqr)
+set_current_angular_velocity(JoukowskyData& data, const amrex::Real uInfSqr)
 {
     const amrex::Real uInfMag = std::sqrt(uInfSqr);
     data.current_angular_velocity = ::amr_wind::interp::linear(
         data.table_velocity, data.angular_velocity, uInfMag);
 }
-} // namespace joukowski
+} // namespace joukowsky
 
 template <>
-struct ReadInputsOp<Joukowski, ActSrcDisk>
+struct ReadInputsOp<Joukowsky, ActSrcDisk>
 {
-    void operator()(Joukowski::DataType& data, const utils::ActParser& pp)
+    void operator()(Joukowsky::DataType& data, const utils::ActParser& pp)
     {
         auto& meta = data.meta();
-        joukowski::parse_and_gather_params(pp, meta);
-        base::do_parse_based_computations<Joukowski>(data);
-        amrex::Abort("JoukoskiDisk is under development and not functional.");
+        joukowsky::parse_and_gather_params(pp, meta);
+        base::do_parse_based_computations<Joukowsky>(data);
     }
 };
 
 template <>
-struct InitDataOp<Joukowski, ActSrcDisk>
+struct InitDataOp<Joukowsky, ActSrcDisk>
 {
-    void operator()(typename Joukowski::DataType& data)
+    void operator()(typename Joukowsky::DataType& data)
     {
         auto& grid = data.grid();
         auto& meta = data.meta();
@@ -45,6 +44,8 @@ struct InitDataOp<Joukowski, ActSrcDisk>
         grid.force.resize(meta.num_force_pts);
         grid.vel.resize(meta.num_vel_pts);
         grid.vel_pos.resize(meta.num_vel_pts);
+        meta.tip_correction.resize(meta.num_vel_pts_r);
+        meta.root_correction.resize(meta.num_vel_pts_r);
 
         const auto& sVec = meta.sample_vec;
         const auto& nVec = meta.normal_vec;
@@ -64,15 +65,15 @@ struct InitDataOp<Joukowski, ActSrcDisk>
   @brief Compute Forces following procedures of Sorenson 2020
 
   Follow the procedure for computing body forces and applying tip/root
-  corrections using a Joukowski disk as outlined in:
+  corrections using a Joukowsky disk as outlined in:
 
   Sørensen, Jens Nørkær, et al. "Analytical body forces in numerical actuator
   disc model of wind turbines." Renewable Energy 147 (2020): 2259-2271.
  */
 template <>
-struct ComputeForceOp<Joukowski, ActSrcDisk>
+struct ComputeForceOp<Joukowsky, ActSrcDisk>
 {
-    void operator()(Joukowski::DataType& data)
+    void operator()(Joukowsky::DataType& data)
     {
         // Equation comments refer to Sorenson 2020 (full reference above)
         auto& grid = data.grid();
@@ -81,21 +82,21 @@ struct ComputeForceOp<Joukowski, ActSrcDisk>
         const amrex::Real uInfSqr = base::compute_reference_velocity_sqr(ddata);
         const amrex::Real U_ref = std::sqrt(uInfSqr);
         base::set_thrust_coefficient(ddata, uInfSqr);
-        joukowski::set_current_angular_velocity(ddata, uInfSqr);
+        joukowsky::set_current_angular_velocity(ddata, uInfSqr);
 
         const amrex::Real Ct = ddata.current_ct;
 
         amrex::Real a1 = 0.0;
         amrex::Real a2 = 0.0;
 
-        const amrex::Real dr = 2.0 * ddata.dr / ddata.diameter;
         for (int ip = 0; ip < ddata.num_vel_pts_r; ip++) {
-            const amrex::Real r = (ip + 0.5) * dr;
+            const amrex::Real r = (ip + 0.5) * ddata.dr;
 
             a1 += std::pow(ddata.tip_correction[ip], 2.0) *
-                  std::pow(ddata.root_correction[ip], 2.0) / r * dr;
+                  std::pow(ddata.root_correction[ip], 2.0) / r * ddata.dr;
 
-            a2 += ddata.tip_correction[ip] * ddata.root_correction[ip] * r * dr;
+            a2 += ddata.tip_correction[ip] * ddata.root_correction[ip] * r *
+                  ddata.dr;
         }
 
         // step 2: determine the circulation (q0) from a1, a2 and Ct (eq 17)
@@ -113,13 +114,13 @@ struct ComputeForceOp<Joukowski, ActSrcDisk>
         // 13)
 
         VecSlice disk_velocity = ::amr_wind::utils::slice(
-            grid.vel, ddata.num_vel_pts / 2, ddata.num_vel_pts);
+            grid.vel, ddata.num_force_pts, ddata.num_force_pts);
         int ip = 0;
         for (int i = 0; i < ddata.num_vel_pts_r; i++) {
             const amrex::Real& F = ddata.tip_correction[i];
             const amrex::Real& g = ddata.root_correction[i];
 
-            const amrex::Real x = (i + 0.5) * dr / (0.5 * ddata.diameter);
+            const amrex::Real x = (i + 0.5) * ddata.dr / (0.5 * ddata.diameter);
 
             const amrex::Real f_z =
                 q0 * g * F / x * (lambda * x + 0.5 * q0 * g * F / x);
@@ -138,8 +139,8 @@ struct ComputeForceOp<Joukowski, ActSrcDisk>
                 // TODO add sign convention for rotation (+/- RPM)
                 const auto angle = ::amr_wind::utils::degrees(distance[1]);
 
-                const auto theta_vec = ddata.coplanar_vec &
-                                       vs::quaternion(ddata.normal_vec, angle);
+                const auto theta_vec = vs::quaternion(ddata.normal_vec, angle) &
+                                       ddata.coplanar_vec;
 
                 const amrex::Real u_disk_ij =
                     ddata.normal_vec & disk_velocity[ip];
@@ -147,6 +148,9 @@ struct ComputeForceOp<Joukowski, ActSrcDisk>
                 const amrex::Real f_theta = u_disk_ij / U_ref * q0 * g * F / x;
 
                 grid.force[ip] = f_z * ddata.normal_vec + f_theta * theta_vec;
+                if (std::isnan(grid.force[ip].x())) {
+                    assert(false);
+                }
             }
         }
 
@@ -156,10 +160,10 @@ struct ComputeForceOp<Joukowski, ActSrcDisk>
 };
 
 template <>
-struct ProcessOutputsOp<Joukowski, ActSrcDisk>
+struct ProcessOutputsOp<Joukowsky, ActSrcDisk>
 {
 private:
-    Joukowski::DataType& m_data;
+    Joukowsky::DataType& m_data;
     //! Path to the output directory (specified by Actuator physics class)
     std::string m_out_dir{""};
 
@@ -171,10 +175,10 @@ private:
 
 public:
     // cppcheck-suppress constParameter
-    explicit ProcessOutputsOp<Joukowski, ActSrcDisk>(Joukowski::DataType& data)
+    explicit ProcessOutputsOp<Joukowsky, ActSrcDisk>(Joukowsky::DataType& data)
         : m_data(data)
     {}
-    void operator()(Joukowski::DataType&) {}
+    void operator()(Joukowsky::DataType&) {}
     void read_io_options(const utils::ActParser& pp)
     {
         pp.query("output_frequency", m_out_freq);
@@ -201,4 +205,4 @@ public:
 } // namespace actuator
 } // namespace amr_wind
 
-#endif /* JOUKOWSKI_OPS_H_ */
+#endif /* Joukowsky_OPS_H_ */

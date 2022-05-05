@@ -284,6 +284,7 @@ std::ostringstream check_for_parse_conflicts(const utils::ActParser& pp)
 void compute_and_normalize_coplanar_vector(DiskBaseData& meta)
 {
     const amrex::Real radius = meta.diameter * 0.5;
+    // BUG BUG BUG, SQUASH THAT BUG!!!!!
     meta.dr = radius / meta.num_force_pts;
 
     // ensure normal is normalized
@@ -359,7 +360,7 @@ void compute_disk_points(
 
     int ip = offset;
     for (int i = 0; i < nvp.x(); i++) {
-        const amrex::Real r = dr * i;
+        const amrex::Real r = dr * (i + 0.5);
         for (int j = 0; j < nvp.y(); j++, ip++) {
             const amrex::Real theta = j * dt;
             vs::Vector refPoint = {

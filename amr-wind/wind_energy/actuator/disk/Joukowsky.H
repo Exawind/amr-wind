@@ -1,5 +1,5 @@
-#ifndef JOUKOWSKI_H_
-#define JOUKOWSKI_H_
+#ifndef Joukowsky_H_
+#define Joukowsky_H_
 
 #include "amr-wind/wind_energy/actuator/disk/disk_types.H"
 #include "amr-wind/wind_energy/actuator/disk/ActuatorDisk.H"
@@ -8,7 +8,7 @@
 namespace amr_wind {
 namespace actuator {
 
-struct JoukowskiData : public DiskBaseData
+struct JoukowskyData : public DiskBaseData
 {
     RealList angular_velocity;
     RealList tip_correction;
@@ -16,17 +16,17 @@ struct JoukowskiData : public DiskBaseData
     amrex::Real current_angular_velocity{0.0};
 };
 
-struct Joukowski : public DiskType
+struct Joukowsky : public DiskType
 {
     using InfoType = ActInfo;
     using GridType = ActGrid;
-    using MetaType = JoukowskiData;
-    using DataType = ActDataHolder<Joukowski>;
+    using MetaType = JoukowskyData;
+    using DataType = ActDataHolder<Joukowsky>;
 
-    static const std::string identifier() { return "Joukowski"; }
+    static std::string identifier() { return "Joukowsky"; }
 };
 
 } // namespace actuator
 } // namespace amr_wind
 
-#endif /* JOUKOWSKI_H_ */
+#endif /* Joukowsky_H_ */
