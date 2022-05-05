@@ -105,16 +105,19 @@ private:
     //! case of a breaking wave)
     int m_ninst{1};
 
+    //! Coordinate direction to search along, default is z
+    //! (this also determines the meaning of start and end points)
+    int m_coorddir{2};
+    //! Grid coordinates, determined as a function of m_coorddir
+    int gc1 = 0;
+    int gc2 = 1;
+
     //! Parameters to set up plane
     amrex::Vector<amrex::Real> m_start, m_end;
     //! Locations of points in 2D grid
     amrex::Vector<amrex::Array<amrex::Real, 2>> m_locs;
     //! Output coordinate
     amrex::Vector<amrex::Real> m_out;
-
-    //! Orientation of interface search (always in z)
-    const int m_orient = 2;
-    const amrex::Vector<int> m_griddim = {0, 1};
 
     //! Frequency of data sampling and output
     int m_out_freq{100};
