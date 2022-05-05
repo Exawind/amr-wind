@@ -152,11 +152,18 @@ TEST_F(WaveEnergyTest, checkoutput)
                 3.0 * (1.0 + 4.0 + 9.0 + 16.0)) +
          (4.0 * 10.0 + 5.0 * (1.0 + 9.0) + 2.0 * (1.0 + 4.0 + 9.0 + 16.0)));
     EXPECT_NEAR(ke, ke_ref, tol);
+    /* // How the routine is expected to find the potential energy
     amrex::Real pe_ref = rho1 * cell_vol * (-g) *
                              (25.0 * (0.5 * dx + 1.5 * dx) +
                               0.5 * 15.0 * (2.25 * dx) + 10.0 * (2.5 * dx)) +
                          pe_off;
-    EXPECT_NEAR(pe, pe_ref, tol);
+                         */
+    // Formula has been integrated in z, and uses exact interface locations
+    amrex::Real pe_exact =
+        rho1 * dx * dx * (-g) * 0.5 *
+            (15.0 * std::pow(2.5 * dx, 2) + 10.0 * std::pow(3.0 * dx, 2)) +
+        pe_off;
+    EXPECT_NEAR(pe, pe_exact, tol);
 }
 
 } // namespace amr_wind_tests

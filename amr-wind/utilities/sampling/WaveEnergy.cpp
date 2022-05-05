@@ -142,11 +142,15 @@ amrex::Real WaveEnergy::calculate_potential_energy()
                 amrex::Loop(
                     bx, [=, &Wave_Energy_Fab](int i, int j, int k) noexcept {
                         // Crude model of liquid height in multiphase cells
-                        const amrex::Real z =
-                            probloz +
-                            ((amrex::Real)k + 0.5 * vof_arr(i, j, k)) * dz;
+                        amrex::Real kk =
+                            (vof_arr(i, j, k + 1) > vof_arr(i, j, k)) ? k + 1
+                                                                      : k;
+                        amrex::Real dir =
+                            (vof_arr(i, j, k + 1) > vof_arr(i, j, k)) ? -1 : 1;
+                        const amrex::Real zl =
+                            probloz + (kk + dir * 0.5 * vof_arr(i, j, k)) * dz;
                         Wave_Energy_Fab += cell_vol * mask_arr(i, j, k) *
-                                           rho_liq * vof_arr(i, j, k) * g * z;
+                                           rho_liq * vof_arr(i, j, k) * g * zl;
                     });
                 return Wave_Energy_Fab;
             });

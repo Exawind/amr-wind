@@ -17,7 +17,7 @@ namespace wave_energy {
  *  to give the result PE = 0 for an undisturbed interface.
  *
  *  KE = 0.5 * (Integral over liquid phase) \rho * u^2 dV
- *  PE = (Integral over liquid phase) \rho * g * z dV + PE_0
+ *  PE = (Integral over liquid phase) \rho * g * z_liq dV + PE_0
  *
  *  Note: the output quantities are not normalized.
  */
