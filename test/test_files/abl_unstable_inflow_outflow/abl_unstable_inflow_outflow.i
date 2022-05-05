@@ -49,6 +49,7 @@ ABL.deltaV = 1.0
 ABL.kappa = .41
 ABL.surface_roughness_z0 = 0.01
 ABL.surface_temp_flux = 0.005
+ABL.stats_output_frequency = 1
 ABL.bndry_file = "bndry_files"
 ABL.bndry_io_mode = 1
 ABL.bndry_planes = xlo
