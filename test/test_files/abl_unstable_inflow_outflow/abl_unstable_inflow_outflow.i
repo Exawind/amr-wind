@@ -35,7 +35,7 @@ ABL.wf_mag = 10.016339397424394
 ABL.wf_theta = 290.0178442735406
 BodyForce.magnitude = 0.0008901711909450327 0.0014550668111182673 0.0
 BoussinesqBuoyancy.read_temperature_profile = true
-BoussinesqBuoyancy.tprofile_filename = avg_theta.dat
+BoussinesqBuoyancy.tprofile_filename = "../abl_unstable_precursor/avg_theta.dat"
 #-----------------------------------------------------#
 TKE.source_terms = KsgsM84Src
 # TKE.interpolation="PiecewiseConstant"  # Use if amr.max_level > 1
