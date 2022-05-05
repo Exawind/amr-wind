@@ -30,10 +30,10 @@ ICNS.source_terms = BoussinesqBuoyancy CoriolisForcing ABLForcing BodyForce ABLM
 #--------- Additions by calc_inflow_stats.py ---------#
 ABL.wall_shear_stress_type = "local"
 ABL.inflow_outflow_mode = true
-ABL.wf_velocity = 9.99332647977329 -0.0007241216041737486
-ABL.wf_mag = 10.016878246385195
-ABL.wf_theta = 290.00421417156707
-BodyForce.magnitude = 0.0008911896035367509 0.0014544764985176682 0.0
+ABL.wf_velocity = 9.992795138134136 -0.0007138743053467138
+ABL.wf_mag = 10.016339397424394
+ABL.wf_theta = 290.0178442735406
+BodyForce.magnitude = 0.0008901711909450327 0.0014550668111182673 0.0
 BoussinesqBuoyancy.read_temperature_profile = true
 BoussinesqBuoyancy.tprofile_filename = avg_theta.dat
 #-----------------------------------------------------#
