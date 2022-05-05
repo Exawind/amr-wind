@@ -27,6 +27,16 @@ transport.turbulent_prandtl = 0.3333
 turbulence.model = OneEqKsgsM84
 incflo.physics = ABL
 ICNS.source_terms = BoussinesqBuoyancy CoriolisForcing ABLForcing BodyForce ABLMeanBoussinesq
+#--------- Additions by calc_inflow_stats.py ---------#
+ABL.wall_shear_stress_type = "local"
+ABL.inflow_outflow_mode = true
+ABL.wf_velocity = 9.99332647977329 -0.0007241216041737486
+ABL.wf_mag = 10.016878246385195
+ABL.wf_theta = 290.00421417156707
+BodyForce.magnitude = 0.0008911896035367509 0.0014544764985176682 0.0
+BoussinesqBuoyancy.read_temperature_profile = true
+BoussinesqBuoyancy.tprofile_filename = avg_theta.dat
+#-----------------------------------------------------#
 TKE.source_terms = KsgsM84Src
 # TKE.interpolation="PiecewiseConstant"  # Use if amr.max_level > 1
 BoussinesqBuoyancy.reference_temperature = 290.0
