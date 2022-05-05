@@ -227,6 +227,9 @@ endif()
 
 if(AMR_WIND_ENABLE_HDF5)
   add_test_re(abl_stable_hdf5)
+  if(AMR_WIND_ENABLE_HDF5_ZFP)
+    add_test_re(abl_stable_hdf5_zfp)
+  endif()
 endif()
 
 #=============================================================================
