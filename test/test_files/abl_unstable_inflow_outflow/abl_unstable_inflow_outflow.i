@@ -2,7 +2,7 @@
 #            SIMULATION STOP            #
 #.......................................#
 time.stop_time               =  82800.0     # Max (simulated) time to evolve
-time.max_step                =  10          # Max number of time steps
+time.max_step                =  9          # Max number of time steps
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
