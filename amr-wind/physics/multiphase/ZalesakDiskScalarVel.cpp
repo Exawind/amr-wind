@@ -199,9 +199,11 @@ template <typename T>
 amrex::Real ZalesakDiskScalarVel::compute_error(const Field& field)
 {
     amrex::Real error = 0.0;
-    amrex::Real xc = m_loc[0];
-    amrex::Real yc = m_loc[1];
-    amrex::Real zc = m_loc[2];
+    const amrex::Real xc = m_loc[0];
+    const amrex::Real yc = m_loc[1];
+    const amrex::Real zc = m_loc[2];
+    const amrex::Real radius = m_radius;
+    const amrex::Real TT = m_TT;
     const amrex::Real time = m_sim.time().new_time();
     T f_exact;
     const auto comp = f_exact.m_comp;
@@ -282,7 +284,7 @@ amrex::Real ZalesakDiskScalarVel::compute_error(const Field& field)
 
                 const amrex::Real u = fld_bx(i, j, k, comp);
                 const amrex::Real u_exact = f_exact(
-                    xc, yc, zc, x, y, z, m_radius, time * 2.0 * M_PI / m_TT);
+                    xc, yc, zc, x, y, z, radius, time * 2.0 * M_PI / TT);
                 const amrex::Real cell_vol =
                     dx[0] * fac_x * dx[1] * fac_y * dx[2] * fac_z;
 
