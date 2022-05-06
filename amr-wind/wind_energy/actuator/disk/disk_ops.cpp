@@ -358,9 +358,14 @@ void compute_disk_points(
     const amrex::Real dt = ::amr_wind::utils::two_pi() / nvp.y();
     const amrex::Real du = dOffset * meta.diameter;
 
+    //  if there is only 1 velocity point in r then we want to sample along the
+    //  normal axis, else we want to sample at cell centers like the force
+    //  points
+    const amrex::Real index_shift = nvp.x() == 1 ? 0.0 : 0.5;
+
     int ip = offset;
     for (int i = 0; i < nvp.x(); i++) {
-        const amrex::Real r = dr * (i + 0.5);
+        const amrex::Real r = dr * (i + index_shift);
         for (int j = 0; j < nvp.y(); j++, ip++) {
             const amrex::Real theta = j * dt;
             vs::Vector refPoint = {
