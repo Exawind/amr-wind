@@ -11,14 +11,17 @@ namespace actuator {
 namespace disk {
 // refactor these when we add more disk types later
 void prepare_netcdf_file(
-    const std::string&, const DiskBaseData&, const ActInfo&, const ActGrid&);
+    const std::string& name,
+    const DiskBaseData& data,
+    const ActInfo& info,
+    const ActGrid& grid);
 
 void write_netcdf(
-    const std::string&,
-    const DiskBaseData&,
-    const ActInfo&,
-    const ActGrid&,
-    const amrex::Real);
+    const std::string& name,
+    const DiskBaseData& data,
+    const ActInfo& info,
+    const ActGrid& /*unused*/,
+    const amrex::Real time);
 } // namespace disk
 
 namespace ops {

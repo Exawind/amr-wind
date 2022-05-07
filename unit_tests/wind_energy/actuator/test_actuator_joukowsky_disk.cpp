@@ -100,7 +100,7 @@ public:
     {}
 
 protected:
-    void prepare_outputs() override final {}
+    void prepare_outputs() final {}
 };
 
 TEST_F(ActJoukowskyTest, act_model_init)

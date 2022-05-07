@@ -10,7 +10,7 @@ namespace actuator {
 namespace ops {
 
 namespace joukowsky {
-void parse_and_gather_params(const utils::ActParser&, JoukowskyData&);
+void parse_and_gather_params(const utils::ActParser& pp, JoukowskyData& data);
 inline void
 set_current_angular_velocity(JoukowskyData& data, const amrex::Real uInfSqr)
 {
@@ -178,7 +178,7 @@ public:
     explicit ProcessOutputsOp<Joukowsky, ActSrcDisk>(Joukowsky::DataType& data)
         : m_data(data)
     {}
-    void operator()(Joukowsky::DataType&) {}
+    void operator()(Joukowsky::DataType& /*data*/) {}
     void read_io_options(const utils::ActParser& pp)
     {
         pp.query("output_frequency", m_out_freq);
@@ -193,7 +193,9 @@ public:
     {
         const auto& time = m_data.sim().time();
         const int tidx = time.time_index();
-        if (tidx % m_out_freq != 0) return;
+        if (tidx % m_out_freq != 0) {
+            return;
+        }
 
         disk::write_netcdf(
             m_nc_filename, m_data.meta(), m_data.info(), m_data.grid(),
