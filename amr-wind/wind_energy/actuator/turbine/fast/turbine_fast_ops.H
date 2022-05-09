@@ -5,6 +5,7 @@
 #include "amr-wind/wind_energy/actuator/turbine/turbine_utils.H"
 #include "amr-wind/wind_energy/actuator/actuator_ops.H"
 #include "amr-wind/wind_energy/actuator/actuator_utils.H"
+#include "amr-wind/wind_energy/actuator/FLLCOpBase.H"
 
 namespace amr_wind {
 namespace actuator {
@@ -318,7 +319,7 @@ struct UpdatePosOp<TurbineFast, SrcTrait>
         if (!data.info().is_root_proc) return;
         BL_PROFILE("amr-wind::actuator::UpdatePosOp<TurbineFast>");
 
-        const auto& tdata = data.meta();
+       const auto& tdata = data.meta();
         const auto& bp = data.info().base_pos;
         const auto& pxvel = tdata.fast_data.to_cfd.pxVel;
         const auto& pyvel = tdata.fast_data.to_cfd.pyVel;
@@ -330,6 +331,14 @@ struct UpdatePosOp<TurbineFast, SrcTrait>
             vel_pos[i].y() = static_cast<amrex::Real>(pyvel[i]) + bp.y();
             vel_pos[i].z() = static_cast<amrex::Real>(pzvel[i]) + bp.z();
         }
+
+        auto& meta = data.meta();
+        if (!meta.fllc_use || !meta.fllc_is_init) return;
+
+        // Implement the FLLC
+        FLLCOpTurbineBase<TurbineFast, SrcTrait> op(data);
+        op(data);
+
     }
 };
 

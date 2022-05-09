@@ -6,6 +6,7 @@
 #include "amr-wind/wind_energy/actuator/actuator_ops.H"
 #include "amr-wind/wind_energy/actuator/aero/AirfoilTable.H"
 #include "amr-wind/wind_energy/actuator/ActParser.H"
+#include "amr-wind/wind_energy/actuator/FLLCOpBase.H"
 
 namespace amr_wind {
 namespace actuator {
@@ -69,7 +70,17 @@ struct UpdateVelOp<
         std::is_base_of<WingType, ActTrait>::value &&
         UseDefaultOp<ActTrait, ActSrcLine>::update_vel>::type>
 {
-    void operator()(typename ActTrait::DataType& /*unused*/) {}
+
+    void operator()(typename ActTrait::DataType& data)
+    {
+
+        // Check if FLLC is active
+        auto& meta = data.meta();
+        if (!meta.fllc_use || !meta.fllc_is_init) return;
+        // Implement the FLLC
+        FLLCOpBase<ActTrait, ActSrcLine> op(data);
+        op(data);
+    }
 };
 
 template <typename ActTrait>
