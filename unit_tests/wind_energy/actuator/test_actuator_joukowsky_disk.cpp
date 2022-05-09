@@ -9,6 +9,14 @@
 
 namespace amr_wind_tests {
 namespace {
+namespace act = amr_wind::actuator;
+namespace vs = amr_wind::vs;
+
+struct Joukowsky : public act::Joukowsky
+{
+    static std::string identifier() { return "TestJoukowsky"; }
+};
+
 class ActJoukowskyTest : public MeshTest
 {
 protected:
@@ -32,14 +40,32 @@ protected:
             pp.addarr("prob_hi", probhi);
         }
     }
-};
 
-namespace act = amr_wind::actuator;
-namespace vs = amr_wind::vs;
+    void intialize_domain()
+    {
+        initialize_mesh();
+        sim().repo().declare_field("actuator_src_term", 3, 0);
+        sim().repo().declare_field("velocity", 3, 3);
+        amr_wind::actuator::ActuatorContainer::ParticleType::NextID(1U);
+    }
 
-struct Joukowsky : public act::Joukowsky
-{
-    static std::string identifier() { return "TestJoukowsky"; }
+    void add_actuators(std::string type, amrex::Vector<std::string> labels)
+    {
+        amrex::ParmParse pp("Actuator");
+        pp.add("type", type);
+        pp.addarr("labels", labels);
+    }
+
+    static void basic_disk_setup()
+    {
+        amrex::ParmParse pp("Actuator.TestJoukowskyDisk");
+        pp.add("num_points_t", 3);
+        pp.add("num_points_r", 2);
+        pp.add("epsilon", 1.0);
+        pp.add("rotor_diameter", 1.0);
+        pp.addarr("thrust_coeff", amrex::Vector<amrex::Real>{1});
+        pp.addarr("angular_velocity", amrex::Vector<amrex::Real>{1});
+    }
 };
 
 } // namespace
@@ -57,20 +83,56 @@ struct ReadInputsOp<::amr_wind_tests::Joukowsky, ActSrcDisk>
         ::amr_wind_tests::Joukowsky::DataType& data, const utils::ActParser& pp)
     {
         ReadInputsOp<::amr_wind::actuator::Joukowsky, ActSrcDisk> actual_op;
-        actual_op(data, pp);
+        EXPECT_NO_FATAL_FAILURE(actual_op(data, pp));
+
+        const auto& meta = data.meta();
+
+        // check all the necessary arrays are populated
+        EXPECT_FALSE(meta.angular_velocity.empty());
+        EXPECT_EQ(meta.num_vel_pts / 2, meta.num_force_pts);
     }
 };
 
 template <>
 struct InitDataOp<::amr_wind_tests::Joukowsky, ActSrcDisk>
 {
-    void operator()(::amr_wind_tests::Joukowsky::DataType& /*data*/) {}
+    void operator()(::amr_wind_tests::Joukowsky::DataType& data)
+    {
+        InitDataOp<::amr_wind::actuator::Joukowsky, ActSrcDisk> actual_op;
+        EXPECT_NO_FATAL_FAILURE(actual_op(data));
+        const auto& meta = data.meta();
+        const auto& grid = data.grid();
+
+        // check all the necessary arrays are sized correctly
+        EXPECT_EQ(meta.root_correction.size(), meta.num_vel_pts_r);
+        EXPECT_EQ(meta.tip_correction.size(), meta.num_vel_pts_r);
+        EXPECT_EQ(grid.vel.size() / 2, grid.force.size());
+
+        for (int i = 0; i < meta.num_force_pts; ++i) {
+            for (int j = 0; j < 3; j++) {
+                EXPECT_DOUBLE_EQ(
+                    grid.pos[i][j], grid.vel_pos[i + meta.num_force_pts][j]);
+            }
+        }
+    }
 };
 
 template <>
 struct ComputeForceOp<::amr_wind_tests::Joukowsky, ActSrcDisk>
 {
-    void operator()(::amr_wind_tests::Joukowsky::DataType& /*data*/) {}
+    void operator()(::amr_wind_tests::Joukowsky::DataType& data)
+    {
+        ComputeForceOp<::amr_wind::actuator::Joukowsky, ActSrcDisk> actual_op;
+        EXPECT_NO_FATAL_FAILURE(actual_op(data));
+        const auto& meta = data.meta();
+        const auto& grid = data.grid();
+        for (int i = 0; i < meta.num_force_pts; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                EXPECT_FALSE(std::isnan(grid.force[i][j]))
+                    << "i,j: " << i << ", " << j;
+            }
+        }
+    }
 };
 
 template <>
@@ -103,24 +165,21 @@ protected:
     void prepare_outputs() final {}
 };
 
-TEST_F(ActJoukowskyTest, act_model_init)
+TEST_F(ActJoukowskyTest, parsing_operations)
 {
-    initialize_mesh();
-    sim().repo().declare_field("actuator_src_term", 3, 0);
-    amr_wind::actuator::ActuatorContainer::ParticleType::NextID(1U);
-    {
-        amrex::ParmParse pp("Actuator.TestJoukowskyDisk");
-        pp.add("num_points_t", 3);
-        pp.add("num_points_r", 2);
-    }
-    {
-        amrex::ParmParse pp("Actuator");
-        pp.add("type", std::string("TestJoukowskyDisk"));
-        pp.addarr("labels", {"D1"});
-    }
-    ::amr_wind::actuator::ActModel<Joukowsky, amr_wind::actuator::ActSrcDisk>
-        model(sim(), "D1", 0);
+    intialize_domain();
+    basic_disk_setup();
+    add_actuators("TestJoukowskyDisk", {"D1"});
     ActPhysicsTest act(sim());
     act.pre_init_actions();
+}
+TEST_F(ActJoukowskyTest, execution)
+{
+    intialize_domain();
+    basic_disk_setup();
+    add_actuators("TestJoukowskyDisk", {"D1"});
+    ActPhysicsTest act(sim());
+    act.pre_init_actions();
+    act.post_init_actions();
 }
 } // namespace amr_wind_tests

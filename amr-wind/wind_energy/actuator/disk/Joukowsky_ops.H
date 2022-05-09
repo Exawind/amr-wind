@@ -148,9 +148,6 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                 const amrex::Real f_theta = u_disk_ij / U_ref * q0 * g * F / x;
 
                 grid.force[ip] = f_z * ddata.normal_vec + f_theta * theta_vec;
-                if (std::isnan(grid.force[ip].x())) {
-                    assert(false);
-                }
             }
         }
 
