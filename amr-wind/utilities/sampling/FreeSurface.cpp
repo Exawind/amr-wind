@@ -39,18 +39,18 @@ void FreeSurface::initialize()
 
         switch (m_coorddir) {
         case 0: {
-            gc1 = 1;
-            gc2 = 2;
+            m_gc1 = 1;
+            m_gc2 = 2;
             break;
         }
         case 1: {
-            gc1 = 0;
-            gc2 = 2;
+            m_gc1 = 0;
+            m_gc2 = 2;
             break;
         }
         case 2: {
-            gc1 = 0;
-            gc2 = 1;
+            m_gc1 = 0;
+            m_gc2 = 1;
             break;
         }
         default: {
@@ -71,8 +71,8 @@ void FreeSurface::initialize()
 
     // Get size of sample grid spacing
     amrex::Vector<amrex::Real> dx = {0.0, 0.0};
-    dx[0] = (m_end[gc1] - m_start[gc1]) / amrex::max(m_npts_dir[0] - 1, 1);
-    dx[1] = (m_end[gc2] - m_start[gc2]) / amrex::max(m_npts_dir[1] - 1, 1);
+    dx[0] = (m_end[m_gc1] - m_start[m_gc1]) / amrex::max(m_npts_dir[0] - 1, 1);
+    dx[1] = (m_end[m_gc2] - m_start[m_gc2]) / amrex::max(m_npts_dir[1] - 1, 1);
 
     // Store locations
     int idx = 0;
@@ -83,9 +83,9 @@ void FreeSurface::initialize()
                 m_out[idx * m_ninst + ni] = m_start[m_coorddir];
             }
             // Grid direction 1
-            m_locs[idx][0] = m_start[gc1] + dx[0] * i;
+            m_locs[idx][0] = m_start[m_gc1] + dx[0] * i;
             // Grid direction 2
-            m_locs[idx][1] = m_start[gc2] + dx[1] * j;
+            m_locs[idx][1] = m_start[m_gc2] + dx[1] * j;
 
             ++idx;
         }
@@ -148,6 +148,8 @@ void FreeSurface::post_advance_work()
                 geom.ProbLoArray();
 
             const int captured_m_coorddir = m_coorddir;
+            const int captured_gc1 = m_gc1;
+            const int captured_gc2 = m_gc2;
 
             // Loop points in 2D grid
             for (int n = 0; n < m_npts; ++n) {
@@ -201,16 +203,20 @@ void FreeSurface::post_advance_work()
                                     if ((dout_ptr[n] >
                                          xm[captured_m_coorddir] +
                                              0.5 * dx[captured_m_coorddir]) &&
-                                        (((plo[gc1] == loc[0] &&
-                                           xm[gc1] - loc[0] == 0.5 * dx[gc1]) ||
-                                          (xm[gc1] - loc[0] < 0.5 * dx[gc1] &&
-                                           loc[0] - xm[gc1] <=
-                                               0.5 * dx[gc1])) &&
-                                         ((plo[gc2] == loc[1] &&
-                                           xm[gc2] - loc[1] == 0.5 * dx[gc2]) ||
-                                          (xm[gc2] - loc[1] < 0.5 * dx[gc2] &&
-                                           loc[1] - xm[gc2] <=
-                                               0.5 * dx[gc2]))) &&
+                                        (((plo[captured_gc1] == loc[0] &&
+                                           xm[captured_gc1] - loc[0] ==
+                                               0.5 * dx[captured_gc1]) ||
+                                          (xm[captured_gc1] - loc[0] <
+                                               0.5 * dx[captured_gc1] &&
+                                           loc[0] - xm[captured_gc1] <=
+                                               0.5 * dx[captured_gc1])) &&
+                                         ((plo[captured_gc2] == loc[1] &&
+                                           xm[captured_gc2] - loc[1] ==
+                                               0.5 * dx[captured_gc2]) ||
+                                          (xm[captured_gc2] - loc[1] <
+                                               0.5 * dx[captured_gc2] &&
+                                           loc[1] - xm[captured_gc2] <=
+                                               0.5 * dx[captured_gc2]))) &&
                                         ((vof_arr(i, j, k) < (1.0 - 1e-12) &&
                                           vof_arr(i, j, k) > 1e-12) ||
                                          (vof_arr(i, j, k) < 1e-12 &&
@@ -251,7 +257,8 @@ void FreeSurface::post_advance_work()
                                         }
                                         if (captured_m_coorddir != 1) {
                                             // y can be first or second (xy, yz)
-                                            int li = (gc1 == 1 ? 0 : 1);
+                                            int li =
+                                                (captured_gc1 == 1 ? 0 : 1);
                                             if (loc[li] < xm[1]) {
                                                 jup = j;
                                                 jdn = j - 1;
