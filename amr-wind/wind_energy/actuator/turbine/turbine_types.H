@@ -78,6 +78,10 @@ struct TurbineBaseData
     //! Wetted surface area for nacelle
     amrex::Real nacelle_area{0.0};
 
+    //! Flag to determine to use the filtered lifting line correction
+    bool fllc_use;
+    bool fllc_is_init{false};
+
     std::vector<ComponentView> blades;
     ComponentView tower;
     ComponentView hub;
