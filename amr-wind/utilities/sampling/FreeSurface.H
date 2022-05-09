@@ -109,8 +109,8 @@ private:
     //! (this also determines the meaning of start and end points)
     int m_coorddir{2};
     //! Grid coordinates, determined as a function of m_coorddir
-    int gc1 = 0;
-    int gc2 = 1;
+    int m_gc1 = 0;
+    int m_gc2 = 1;
 
     //! Parameters to set up plane
     amrex::Vector<amrex::Real> m_start, m_end;
