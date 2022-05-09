@@ -114,7 +114,7 @@ void FreeSurface::post_advance_work()
     // Set up device vector of outputs, initialize to above phi0
     const auto& plo0 = m_sim.mesh().Geom(0).ProbLoArray();
     const auto& phi0 = m_sim.mesh().Geom(0).ProbHiArray();
-    amrex::Gpu::DeviceVector<double> dout(m_npts, phi0[2] + 1.0);
+    amrex::Gpu::DeviceVector<amrex::Real> dout(m_npts, phi0[2] + 1.0);
     auto* dout_ptr = dout.data();
 
     // Sum of interface locations at each point (assumes one interface only)
@@ -147,6 +147,8 @@ void FreeSurface::post_advance_work()
             const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> plo =
                 geom.ProbLoArray();
 
+            const int captured_m_coorddir = m_coorddir;
+
             // Loop points in 2D grid
             for (int n = 0; n < m_npts; ++n) {
                 amrex::GpuArray<amrex::Real, 2> loc;
@@ -169,21 +171,24 @@ void FreeSurface::post_advance_work()
                                 bx,
                                 [=, &height_fab](int i, int j, int k) noexcept {
                                     // Initialize height measurement
-                                    amrex::Real ht = plo[m_coorddir];
+                                    amrex::Real ht = plo[captured_m_coorddir];
                                     // Cell location
                                     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>
                                         xm;
                                     xm[0] = plo[0] + (i + 0.5) * dx[0];
                                     xm[1] = plo[1] + (j + 0.5) * dx[1];
                                     xm[2] = plo[2] + (k + 0.5) * dx[2];
-                                    int ip = (m_coorddir == 0 ? 1 : 0);
-                                    int im = i - ip;
+                                    int ip = static_cast<int>(
+                                        captured_m_coorddir == 0);
+                                    const int im = i - ip;
                                     ip = i + ip;
-                                    int jp = (m_coorddir == 1 ? 1 : 0);
-                                    int jm = j - jp;
+                                    int jp = static_cast<int>(
+                                        captured_m_coorddir == 1);
+                                    const int jm = j - jp;
                                     jp = j + jp;
-                                    int kp = (m_coorddir == 2 ? 1 : 0);
-                                    int km = k - kp;
+                                    int kp = static_cast<int>(
+                                        captured_m_coorddir == 2);
+                                    const int km = k - kp;
                                     kp = k + kp;
                                     // (1) Check that cell height is below
                                     // previous instance. (2) Check if cell
@@ -194,8 +199,8 @@ void FreeSurface::post_advance_work()
                                     // multiphase, then check if cell might have
                                     // interface at top or bottom
                                     if ((dout_ptr[n] >
-                                         xm[m_coorddir] +
-                                             0.5 * dx[m_coorddir]) &&
+                                         xm[captured_m_coorddir] +
+                                             0.5 * dx[captured_m_coorddir]) &&
                                         (((plo[gc1] == loc[0] &&
                                            xm[gc1] - loc[0] == 0.5 * dx[gc1]) ||
                                           (xm[gc1] - loc[0] < 0.5 * dx[gc1] &&
@@ -227,7 +232,7 @@ void FreeSurface::post_advance_work()
                                         int kdn = k;
 
                                         // Determine which cells to use for grid
-                                        if (m_coorddir != 0) {
+                                        if (captured_m_coorddir != 0) {
                                             // If x is a grid coord, it is
                                             // always first (e.g., xy or xz)
                                             int li = 0;
@@ -244,7 +249,7 @@ void FreeSurface::post_advance_work()
                                                     (loc[li] - xm[0]) * dxi[0];
                                             }
                                         }
-                                        if (m_coorddir != 1) {
+                                        if (captured_m_coorddir != 1) {
                                             // y can be first or second (xy, yz)
                                             int li = (gc1 == 1 ? 0 : 1);
                                             if (loc[li] < xm[1]) {
@@ -260,7 +265,7 @@ void FreeSurface::post_advance_work()
                                                     (loc[li] - xm[1]) * dxi[1];
                                             }
                                         }
-                                        if (m_coorddir != 2) {
+                                        if (captured_m_coorddir != 2) {
                                             // If z is a grid coord, it is
                                             // always second (e.g., yz or xz)
                                             int li = 1;
@@ -277,15 +282,15 @@ void FreeSurface::post_advance_work()
                                                     (loc[li] - xm[2]) * dxi[2];
                                             }
                                         }
-                                        amrex::Real wx_lo = 1.0 - wx_hi;
-                                        amrex::Real wy_lo = 1.0 - wy_hi;
-                                        amrex::Real wz_lo = 1.0 - wz_hi;
+                                        const amrex::Real wx_lo = 1.0 - wx_hi;
+                                        const amrex::Real wy_lo = 1.0 - wy_hi;
+                                        const amrex::Real wz_lo = 1.0 - wz_hi;
 
                                         amrex::Real vof_above = 0.0;
                                         amrex::Real vof_below = 0.0;
                                         amrex::Real vof_here = 0.0;
 
-                                        if (m_coorddir == 0) {
+                                        if (captured_m_coorddir == 0) {
                                             vof_above =
                                                 wz_lo * wy_lo *
                                                     vof_arr(i + 1, jdn, kdn) +
@@ -314,7 +319,7 @@ void FreeSurface::post_advance_work()
                                                 wz_hi * wy_hi *
                                                     vof_arr(i - 1, jup, kup);
                                         }
-                                        if (m_coorddir == 1) {
+                                        if (captured_m_coorddir == 1) {
                                             vof_above =
                                                 wx_lo * wz_lo *
                                                     vof_arr(idn, j + 1, kdn) +
@@ -343,7 +348,7 @@ void FreeSurface::post_advance_work()
                                                 wx_hi * wz_hi *
                                                     vof_arr(iup, j - 1, kup);
                                         }
-                                        if (m_coorddir == 2) {
+                                        if (captured_m_coorddir == 2) {
                                             vof_above =
                                                 wx_lo * wy_lo *
                                                     vof_arr(idn, jdn, k + 1) +
@@ -374,17 +379,19 @@ void FreeSurface::post_advance_work()
                                         }
                                         // Determine which cell to
                                         // interpolate with
-                                        bool above = (vof_above - 0.5) *
-                                                         (vof_here - 0.5) <=
-                                                     0.0;
-                                        bool below = (vof_below - 0.5) *
-                                                         (vof_here - 0.5) <=
-                                                     0.0;
+                                        const bool above =
+                                            (vof_above - 0.5) *
+                                                (vof_here - 0.5) <=
+                                            0.0;
+                                        const bool below =
+                                            (vof_below - 0.5) *
+                                                (vof_here - 0.5) <=
+                                            0.0;
                                         if (above) {
                                             // Interpolate positive
                                             // direction
-                                            ht = xm[m_coorddir] +
-                                                 (dx[m_coorddir]) /
+                                            ht = xm[captured_m_coorddir] +
+                                                 (dx[captured_m_coorddir]) /
                                                      (vof_above - vof_here) *
                                                      (0.5 - vof_here);
                                         } else {
@@ -392,8 +399,8 @@ void FreeSurface::post_advance_work()
                                                 // Interpolate negative
                                                 // direction
                                                 ht =
-                                                    xm[m_coorddir] -
-                                                    (dx[m_coorddir]) /
+                                                    xm[captured_m_coorddir] -
+                                                    (dx[captured_m_coorddir]) /
                                                         (vof_below - vof_here) *
                                                         (0.5 - vof_here);
                                             }
@@ -405,8 +412,9 @@ void FreeSurface::post_advance_work()
                                     // Offset by removing lo and contribute to
                                     // whole
                                     height_fab = amrex::max(
-                                        height_fab, mask_arr(i, j, k) *
-                                                        (ht - plo[m_coorddir]));
+                                        height_fab,
+                                        mask_arr(i, j, k) *
+                                            (ht - plo[captured_m_coorddir]));
                                 });
                             return height_fab;
                         }));
