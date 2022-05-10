@@ -281,12 +281,13 @@ std::ostringstream check_for_parse_conflicts(const utils::ActParser& pp)
     return error_collector;
 }
 
+vs::Vector compute_coplanar_vector(const vs::Vector& normal)
+{
+    return (vs::Vector::khat() ^ normal).normalize();
+}
+
 void compute_and_normalize_coplanar_vector(DiskBaseData& meta)
 {
-    const amrex::Real radius = meta.diameter * 0.5;
-    // BUG BUG BUG, SQUASH THAT BUG!!!!!
-    meta.dr = radius / meta.num_force_pts;
-
     // ensure normal is normalized
     meta.normal_vec.normalize();
     const vs::Vector& norm = meta.normal_vec;
@@ -299,8 +300,7 @@ void compute_and_normalize_coplanar_vector(DiskBaseData& meta)
     // compute a coplanar vector that resides in the same plane as the disk
     // we will use this vector for the bounding box and the force point
     // locations
-    meta.coplanar_vec = norm ^ vs::Vector::khat();
-    meta.coplanar_vec.normalize();
+    meta.coplanar_vec = compute_coplanar_vector(norm);
     meta.sample_vec.normalize();
 }
 
@@ -342,8 +342,7 @@ void compute_disk_points(
     // first get an angle orthogonal to centerline of the cylinder and the z
     // direction (standard centerline for a cylinder). this will be the vector
     // we will rotate about
-    auto rotVec = vs::Vector::khat() ^ cylAxis;
-    rotVec.normalize();
+    auto rotVec = compute_coplanar_vector(cylAxis);
 
     // next compute the angle between the center vec and z axis
     const amrex::Real angle =

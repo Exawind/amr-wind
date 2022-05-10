@@ -23,6 +23,7 @@ void required_parameters(JoukowskyData& meta, const utils::ActParser& pp)
     pp.getarr("angular_velocity", meta.angular_velocity);
     meta.num_force_pts = meta.num_vel_pts_r * meta.num_vel_pts_t;
     meta.num_vel_pts = meta.num_force_pts * 2;
+    meta.dr = 0.5 * meta.diameter / meta.num_vel_pts_r;
 }
 void parse_and_gather_params(const utils::ActParser& pp, JoukowskyData& meta)
 {

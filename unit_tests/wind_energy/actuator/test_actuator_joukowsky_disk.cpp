@@ -121,7 +121,7 @@ struct InitDataOp<::amr_wind_tests::Joukowsky, ActSrcDisk>
             ASSERT_FALSE(std::isnan(meta.coplanar_vec[i]));
         }
         ASSERT_DOUBLE_EQ(meta.coplanar_vec[0], 0.0);
-        ASSERT_DOUBLE_EQ(meta.coplanar_vec[1], -1.0);
+        ASSERT_DOUBLE_EQ(meta.coplanar_vec[1], 1.0);
     }
 };
 

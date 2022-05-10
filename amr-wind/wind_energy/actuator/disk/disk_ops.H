@@ -26,6 +26,7 @@ void write_netcdf(
 
 namespace ops {
 namespace base {
+vs::Vector compute_coplanar_vector(const vs::Vector& normal);
 
 void collect_parse_conflicts(
     const utils::ActParser& pp,

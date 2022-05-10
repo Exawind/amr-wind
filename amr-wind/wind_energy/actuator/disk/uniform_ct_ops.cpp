@@ -24,6 +24,7 @@ void required_parameters(DiskBaseData& meta, const utils::ActParser& pp)
 {
     ops::base::required_parameters(meta, pp);
     pp.get("num_force_points", meta.num_force_pts);
+    meta.dr = 0.5 * meta.diameter / meta.num_force_pts;
 }
 void parse_and_gather_params(const utils::ActParser& pp, UniformCtData& meta)
 {
