@@ -45,7 +45,8 @@ protected:
     {
         initialize_mesh();
         sim().repo().declare_field("actuator_src_term", 3, 0);
-        sim().repo().declare_field("velocity", 3, 3);
+        auto& vel = sim().repo().declare_field("velocity", 3, 3);
+        vel.setVal(10.0, 0, 1, 3);
         amr_wind::actuator::ActuatorContainer::ParticleType::NextID(1U);
     }
 
@@ -62,6 +63,7 @@ protected:
         pp.add("num_points_t", 3);
         pp.add("num_points_r", 3);
         pp.add("epsilon", 1.0);
+        pp.add("density", 1.0);
         pp.add("rotor_diameter", 10.0);
         pp.addarr("disk_center", amrex::Vector<amrex::Real>{16.0, 16.0, 16.0});
         pp.addarr("disk_normal", amrex::Vector<amrex::Real>{1.0, 0.0, 0.0});
@@ -138,6 +140,7 @@ struct ComputeForceOp<::amr_wind_tests::Joukowsky, ActSrcDisk>
             for (int j = 0; j < 3; ++j) {
                 EXPECT_FALSE(std::isnan(grid.force[i][j]))
                     << "i,j: " << i << ", " << j;
+                EXPECT_GE(0.0, grid.force[i][j]) << "i,j: " << i << ", " << j;
             }
         }
     }

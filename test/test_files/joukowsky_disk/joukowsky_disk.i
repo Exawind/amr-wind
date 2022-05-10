@@ -34,10 +34,10 @@ Actuator.JoukowskyDisk.sample_yaw = 270.0 # set velocity sampling to be in the n
 Actuator.JoukowskyDisk.thrust_coeff = 0.0 0.7 1.2
 Actuator.JoukowskyDisk.wind_speed = 0.0 10.0 12.0
 Actuator.JoukowskyDisk.angular_velocity = 0.0 1.0 1.5
-Actuator.JoukowskyDisk.epsilon = 10.0
+Actuator.JoukowskyDisk.epsilon = 1.0
 Actuator.JoukowskyDisk.density = 1.225
 Actuator.JoukowskyDisk.diameters_to_sample = 1.0
-Actuator.JoukowskyDisk.num_points_r = 3
+Actuator.JoukowskyDisk.num_points_r = 10
 Actuator.JoukowskyDisk.num_points_t = 3
 
 ICNS.source_terms = ActuatorForcing

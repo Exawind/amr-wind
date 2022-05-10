@@ -46,6 +46,9 @@ struct InitDataOp<Joukowsky, ActSrcDisk>
         grid.vel_pos.resize(meta.num_vel_pts);
         meta.tip_correction.resize(meta.num_vel_pts_r);
         meta.root_correction.resize(meta.num_vel_pts_r);
+        std::fill(meta.tip_correction.begin(), meta.tip_correction.end(), 1.0);
+        std::fill(
+            meta.root_correction.begin(), meta.root_correction.end(), 1.0);
 
         const auto& sVec = meta.sample_vec;
         const auto& nVec = meta.normal_vec;
@@ -103,7 +106,7 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
         // step 2: determine the circulation (q0) from a1, a2 and Ct (eq 17)
 
         const amrex::Real lambda =
-            0.5 * ddata.diameter * ddata.current_angular_velocity / machine_eps;
+            0.5 * ddata.diameter * ddata.current_angular_velocity / U_ref;
 
         const amrex::Real q0 =
             (std::sqrt(16.0 * lambda * lambda * a2 * a2 + 8.0 * a1 * Ct) -
@@ -138,7 +141,7 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                     point_current);
 
                 // TODO add sign convention for rotation (+/- RPM)
-                const auto angle = ::amr_wind::utils::degrees(distance[1]);
+                const auto angle = ::amr_wind::utils::degrees(-distance[1]);
 
                 const auto theta_vec = vs::quaternion(ddata.normal_vec, angle) &
                                        ddata.coplanar_vec;
@@ -148,7 +151,9 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
 
                 const amrex::Real f_theta = u_disk_ij / U_ref * q0 * g * F / x;
 
-                grid.force[ip] = f_z * ddata.normal_vec + f_theta * theta_vec;
+                grid.force[ip] =
+                    (f_z * ddata.normal_vec + f_theta * theta_vec) *
+                    ddata.density * uInfSqr;
             }
         }
 
