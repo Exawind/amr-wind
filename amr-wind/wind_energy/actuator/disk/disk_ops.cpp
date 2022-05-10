@@ -339,17 +339,9 @@ void compute_disk_points(
     // we define points as if the disk faces the standard cyindrical coordinates
     // and then rotate it into position
 
-    // first get an angle orthogonal to centerline of the cylinder and the z
-    // direction (standard centerline for a cylinder). this will be the vector
-    // we will rotate about
-    auto rotVec = compute_coplanar_vector(cylAxis);
-
-    // next compute the angle between the center vec and z axis
-    const amrex::Real angle =
-        ::amr_wind::utils::degrees(std::acos((cylAxis & vs::Vector::khat())));
-
-    // finally get the rotation matrix given that angle and rotation vector
-    const auto rotMatrix = vs::quaternion(rotVec, angle);
+    // first define the coplanar vector which will serve as the reference vector
+    // that will be rotated about the cylinder axis
+    auto refVec = compute_coplanar_vector(cylAxis);
 
     const vs::VectorT<int> nvp = {meta.num_vel_pts_r, meta.num_vel_pts_t, 1};
 
@@ -366,9 +358,10 @@ void compute_disk_points(
     for (int i = 0; i < nvp.x(); i++) {
         const amrex::Real r = dr * (i + index_shift);
         for (int j = 0; j < nvp.y(); j++, ip++) {
-            const amrex::Real theta = j * dt;
-            vs::Vector refPoint = {
-                r * std::cos(theta), r * std::sin(theta), du};
+            const auto refPoint = cc + r * refVec + du * cylAxis;
+            const amrex::Real angle = ::amr_wind::utils::degrees(dt * j);
+            const auto rotMatrix = vs::quaternion(cylAxis, angle);
+
             points[ip] = (refPoint & rotMatrix) + cc;
         }
     }
