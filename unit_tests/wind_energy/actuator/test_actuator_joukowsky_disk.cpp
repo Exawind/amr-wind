@@ -60,9 +60,11 @@ protected:
     {
         amrex::ParmParse pp("Actuator.TestJoukowskyDisk");
         pp.add("num_points_t", 3);
-        pp.add("num_points_r", 2);
+        pp.add("num_points_r", 3);
         pp.add("epsilon", 1.0);
-        pp.add("rotor_diameter", 1.0);
+        pp.add("rotor_diameter", 10.0);
+        pp.addarr("disk_center", amrex::Vector<amrex::Real>{16.0, 16.0, 16.0});
+        pp.addarr("disk_normal", amrex::Vector<amrex::Real>{1.0, 0.0, 0.0});
         pp.addarr("thrust_coeff", amrex::Vector<amrex::Real>{1});
         pp.addarr("angular_velocity", amrex::Vector<amrex::Real>{1});
     }
@@ -114,6 +116,12 @@ struct InitDataOp<::amr_wind_tests::Joukowsky, ActSrcDisk>
                     grid.pos[i][j], grid.vel_pos[i + meta.num_force_pts][j]);
             }
         }
+
+        for (int i = 0; i < 3; ++i) {
+            ASSERT_FALSE(std::isnan(meta.coplanar_vec[i]));
+        }
+        ASSERT_DOUBLE_EQ(meta.coplanar_vec[0], 0.0);
+        ASSERT_DOUBLE_EQ(meta.coplanar_vec[1], -1.0);
     }
 };
 

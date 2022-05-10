@@ -78,9 +78,10 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
         // Equation comments refer to Sorenson 2020 (full reference above)
         auto& grid = data.grid();
         auto& ddata = data.meta();
+        const amrex::Real machine_eps = vs::DTraits<amrex::Real>::eps();
         // step 1: compute Ct, a1 and a2 coefficients (eq 16)
         const amrex::Real uInfSqr = base::compute_reference_velocity_sqr(ddata);
-        const amrex::Real U_ref = std::sqrt(uInfSqr);
+        const amrex::Real U_ref = std::max(std::sqrt(uInfSqr), machine_eps);
         base::set_thrust_coefficient(ddata, uInfSqr);
         joukowsky::set_current_angular_velocity(ddata, uInfSqr);
 
@@ -100,7 +101,6 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
         }
 
         // step 2: determine the circulation (q0) from a1, a2 and Ct (eq 17)
-        const amrex::Real machine_eps = vs::DTraits<amrex::Real>::eps();
 
         const amrex::Real lambda =
             0.5 * ddata.diameter * ddata.current_angular_velocity / machine_eps;
@@ -120,7 +120,8 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
             const amrex::Real& F = ddata.tip_correction[i];
             const amrex::Real& g = ddata.root_correction[i];
 
-            const amrex::Real x = (i + 0.5) * ddata.dr / (0.5 * ddata.diameter);
+            const amrex::Real x = std::max(
+                (i + 0.5) * ddata.dr / (0.5 * ddata.diameter), machine_eps);
 
             const amrex::Real f_z =
                 q0 * g * F / x * (lambda * x + 0.5 * q0 * g * F / x);

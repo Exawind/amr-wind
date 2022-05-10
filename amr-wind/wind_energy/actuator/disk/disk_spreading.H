@@ -208,7 +208,6 @@ public:
                     src_force[0] += projection_weight * pforce.x();
                     src_force[1] += projection_weight * pforce.y();
                     src_force[2] += projection_weight * pforce.z();
-                    assert(!std::isnan(src_force[0]));
                 }
 
                 sarr(i, j, k, 0) += src_force[0];
