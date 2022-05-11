@@ -46,6 +46,9 @@ void IOManager::initialize_io()
     pp.query("allow_missing_restart_fields", m_allow_missing_restart_fields);
 #ifdef AMR_WIND_USE_HDF5
     pp.query("output_hdf5_plotfile", m_output_hdf5_plotfile);
+#ifdef AMR_WIND_USE_HDF5_ZFP
+    pp.query("hdf5_compression", m_hdf5_compression);
+#endif
 #endif
 
     // ParmParse requires us to read in a vector
@@ -159,9 +162,14 @@ void IOManager::write_plot_file()
                    << m_sim.time().new_time() << std::endl;
 #ifdef AMR_WIND_USE_HDF5
     if (m_output_hdf5_plotfile) {
-        amrex::WriteMultiLevelPlotfileHDF5(
+        amrex::WriteMultiLevelPlotfileHDF5SingleDset(
             plt_filename, nlevels, outfield->vec_const_ptrs(), m_plt_var_names,
-            mesh.Geom(), m_sim.time().new_time(), istep, mesh.refRatio());
+            mesh.Geom(), m_sim.time().new_time(), istep, mesh.refRatio()
+#ifdef AMR_WIND_USE_HDF5_ZFP
+                                                             ,
+            m_hdf5_compression
+#endif
+        );
     } else {
 #endif
         amrex::WriteMultiLevelPlotfile(
