@@ -66,7 +66,7 @@ protected:
         pp.add("density", 1.0);
         pp.add("rotor_diameter", 10.0);
         pp.addarr("disk_center", amrex::Vector<amrex::Real>{16.0, 16.0, 16.0});
-        pp.addarr("disk_normal", amrex::Vector<amrex::Real>{1.0, 0.0, 0.0});
+        pp.addarr("disk_normal", amrex::Vector<amrex::Real>{-1.0, 0.0, 0.0});
         pp.addarr("thrust_coeff", amrex::Vector<amrex::Real>{1});
         pp.addarr("angular_velocity", amrex::Vector<amrex::Real>{1});
     }

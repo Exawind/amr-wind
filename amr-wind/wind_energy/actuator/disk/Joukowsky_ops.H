@@ -141,7 +141,7 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                     point_current);
 
                 // TODO add sign convention for rotation (+/- RPM)
-                const auto angle = ::amr_wind::utils::degrees(-distance[1]);
+                const auto angle = ::amr_wind::utils::degrees(distance[1]);
 
                 const auto theta_vec = vs::quaternion(ddata.normal_vec, angle) &
                                        ddata.coplanar_vec;

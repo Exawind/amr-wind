@@ -345,7 +345,7 @@ void compute_disk_points(
 
     const vs::VectorT<int> nvp = {meta.num_vel_pts_r, meta.num_vel_pts_t, 1};
 
-    const amrex::Real dr = meta.diameter / nvp.x();
+    const amrex::Real dr = meta.diameter * 0.5 / nvp.x();
     const amrex::Real dt = ::amr_wind::utils::two_pi() / nvp.y();
     const amrex::Real du = dOffset * meta.diameter;
 
