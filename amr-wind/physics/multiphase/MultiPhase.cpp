@@ -400,6 +400,12 @@ void MultiPhase::levelset2vof()
                 });
         }
     }
+    // Make vof on all levels consistent with the highest level
+    for (int lev = nlevels - 1; lev > 0; --lev) {
+        amrex::average_down(
+            (*m_vof)(lev), (*m_vof)(lev - 1), 0, 1,
+            m_sim.mesh().refRatio(lev - 1));
+    }
     // Fill ghost and boundary cells before simulation begins
     (*m_vof).fillpatch(0.0);
 }

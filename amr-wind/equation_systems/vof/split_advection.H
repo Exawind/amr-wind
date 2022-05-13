@@ -299,6 +299,33 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_eulerian_fluxes(
     volfrac(i, j, k) = amrex::max(0.0, amrex::min(1.0, volfrac(i, j, k)));
 }
 
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void save_fluxes(
+    const int i,
+    const int j,
+    const int k,
+    const int dir,
+    const amrex::Real dx,
+    amrex::Box const& bx,
+    amrex::Array4<amrex::Real> const& fluxL,
+    amrex::Array4<amrex::Real> const& fluxR,
+    amrex::Array4<amrex::Real> const& f_f)
+{
+
+    if (dir == 0) {
+        f_f(i, j, k) = (fluxR(i - 1, j, k) - fluxL(i, j, k)) * dx;
+        if (!bx.contains(i + 1, j, k))
+            f_f(i + 1, j, k) = (fluxR(i, j, k) - fluxL(i + 1, j, k)) * dx;
+    } else if (dir == 1) {
+        f_f(i, j, k) = (fluxR(i, j - 1, k) - fluxL(i, j, k)) * dx;
+        if (!bx.contains(i, j + 1, k))
+            f_f(i, j + 1, k) = (fluxR(i, j, k) - fluxL(i, j + 1, k)) * dx;
+    } else if (dir == 2) {
+        f_f(i, j, k) = (fluxR(i, j, k - 1) - fluxL(i, j, k)) * dx;
+        if (!bx.contains(i, j, k + 1))
+            f_f(i, j, k + 1) = (fluxR(i, j, k) - fluxL(i, j, k + 1)) * dx;
+    }
+}
+
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void c_mask(
     const int i,
     const int j,

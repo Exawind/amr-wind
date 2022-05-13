@@ -19,6 +19,9 @@ void multiphase::split_advection_step(
     amrex::Array4<amrex::Real> const& aax,
     amrex::Array4<amrex::Real> const& aay,
     amrex::Array4<amrex::Real> const& aaz,
+    amrex::Array4<amrex::Real> const& fx,
+    amrex::Array4<amrex::Real> const& fy,
+    amrex::Array4<amrex::Real> const& fz,
     amrex::BCRec const* pbc,
     amrex::Real* p,
     amrex::Vector<amrex::Geometry> geom,
@@ -52,14 +55,26 @@ void multiphase::split_advection_step(
         sweep(
             2, bx, dtdz, wmac, volfrac, fluxL, fluxC, fluxR, vofL, vofR, aaz,
             pbc, domlo.z, domhi.z, is_lagrangian);
+        amrex::ParallelFor(
+            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                save_fluxes(i, j, k, 2, dz, bx, fluxL, fluxR, fz);
+            });
     } else if (isweep % 3 == 1) {
         sweep(
             1, bx, dtdy, vmac, volfrac, fluxL, fluxC, fluxR, vofL, vofR, aay,
             pbc, domlo.y, domhi.y, is_lagrangian);
+        amrex::ParallelFor(
+            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                save_fluxes(i, j, k, 1, dy, bx, fluxL, fluxR, fy);
+            });
     } else {
         sweep(
             0, bx, dtdx, umac, volfrac, fluxL, fluxC, fluxR, vofL, vofR, aax,
             pbc, domlo.x, domhi.x, is_lagrangian);
+        amrex::ParallelFor(
+            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                save_fluxes(i, j, k, 0, dx, bx, fluxL, fluxR, fx);
+            });
     }
 }
 
