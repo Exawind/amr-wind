@@ -320,21 +320,29 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
             // form momentum multifab
             amrex::MultiFab momentum(
-                dof_field(lev).boxArray(), dof_field(lev).DistributionMap(), 3,
-                3);
-            amrex::MultiFab::Copy(momentum,dof_field(lev),0,0,3,3);
-            amrex::MultiFab::Multiply(momentum,rho_o(lev),0,0,1,3);
-            amrex::MultiFab::Multiply(momentum,rho_o(lev),0,1,1,3);
-            amrex::MultiFab::Multiply(momentum,rho_o(lev),0,2,1,3);
+                dof_field(lev).boxArray(), dof_field(lev).DistributionMap(),
+                ICNS::ndim, fvm::Godunov::nghost_state);
+            amrex::MultiFab::Copy(
+                momentum, dof_field(lev), 0, 0, 3, fvm::Godunov::nghost_state);
+            amrex::MultiFab::Multiply(
+                momentum, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_state);
+            amrex::MultiFab::Multiply(
+                momentum, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_state);
+            amrex::MultiFab::Multiply(
+                momentum, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_state);
 
             // form source terms for momentum, density
             amrex::MultiFab frhoq(
-                src_term(lev).boxArray(), src_term(lev).DistributionMap(), 3,
-                3);
-            amrex::MultiFab::Copy(frhoq,src_term(lev),0,0,3,3);
-            amrex::MultiFab::Multiply(frhoq,rho_nph(lev),0,0,1,3);
-            amrex::MultiFab::Multiply(frhoq,rho_nph(lev),0,1,1,3);
-            amrex::MultiFab::Multiply(frhoq,rho_nph(lev),0,2,1,3);
+                src_term(lev).boxArray(), src_term(lev).DistributionMap(),
+                ICNS::ndim, fvm::Godunov::nghost_src);
+            amrex::MultiFab::Copy(
+                frhoq, src_term(lev), 0, 0, 3, fvm::Godunov::nghost_src);
+            amrex::MultiFab::Multiply(
+                frhoq, rho_nph(lev), 0, 0, 1, fvm::Godunov::nghost_src);
+            amrex::MultiFab::Multiply(
+                frhoq, rho_nph(lev), 0, 1, 1, fvm::Godunov::nghost_src);
+            amrex::MultiFab::Multiply(
+                frhoq, rho_nph(lev), 0, 2, 1, fvm::Godunov::nghost_src);
             amrex::MultiFab frho(
                 src_term(lev).boxArray(), src_term(lev).DistributionMap(), 1,
                 3);
