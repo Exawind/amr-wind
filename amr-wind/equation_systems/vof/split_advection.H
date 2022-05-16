@@ -17,7 +17,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void lagrangian_explicit(
     const amrex::Real dtdx,
     const amrex::Real velL,
     const amrex::Real velR,
-    amrex::Array4<amrex::Real> const& volfrac,
+    amrex::Array4<amrex::Real const> const& volfrac,
     amrex::Array4<amrex::Real> const& fluxL,
     amrex::Array4<amrex::Real> const& fluxC,
     amrex::Array4<amrex::Real> const& fluxR)
@@ -84,7 +84,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void eulerian_implicit(
     const amrex::Real dtdx,
     const amrex::Real velL,
     const amrex::Real velR,
-    amrex::Array4<amrex::Real> const& volfrac,
+    amrex::Array4<amrex::Real const> const& volfrac,
     amrex::Array4<amrex::Real> const& fluxL,
     amrex::Array4<amrex::Real> const& fluxR,
     amrex::Array4<amrex::Real> const& vofL,
@@ -152,78 +152,70 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void eulerian_implicit(
     }
 }
 
+/*
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_lagrangian_fluxes(
     const int i,
     const int j,
     const int k,
     const int dir,
+    const amrex::Real dxi,
     amrex::Array4<amrex::Real> const& volfrac,
-    amrex::Array4<amrex::Real> const& fluxL,
-    amrex::Array4<amrex::Real> const& fluxC,
-    amrex::Array4<amrex::Real> const& fluxR,
-    amrex::BCRec const* bc,
-    const int domlo,
-    const int domhi)
+    amrex::Array4<amrex::Real const> const& fluxF,
+    amrex::Array4<amrex::Real const> const& fluxC)
 {
-    int bclo = bc->lo(dir);
-    int bchi = bc->hi(dir);
-
     if (dir == 0) {
-        if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
-            if (i == domlo) {
-                fluxR(domlo - 1, j, k) = 0.0;
-            }
-        }
-        if (bchi == amrex::BCType::ext_dir || bchi == amrex::BCType::hoextrap) {
-            if (i == domhi) {
-                fluxL(domhi + 1, j, k) = 0.0;
-            }
-        }
         volfrac(i, j, k) =
             fluxR(i - 1, j, k) + fluxC(i, j, k) + fluxL(i + 1, j, k);
     } else if (dir == 1) {
-        if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
-            if (j == domlo) {
-                fluxR(i, domlo - 1, k) = 0.0;
-            }
-        }
-        if (bchi == amrex::BCType::ext_dir || bchi == amrex::BCType::hoextrap) {
-            if (j == domhi) {
-                fluxL(i, domhi + 1, k) = 0.0;
-            }
-        }
         volfrac(i, j, k) =
             fluxR(i, j - 1, k) + fluxC(i, j, k) + fluxL(i, j + 1, k);
     } else if (dir == 2) {
-        if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
-            if (k == domlo) {
-                fluxR(i, j, domlo - 1) = 0.0;
-            }
-        }
-        if (bchi == amrex::BCType::ext_dir || bchi == amrex::BCType::hoextrap) {
-            if (k == domhi) {
-                fluxL(i, j, domhi + 1) = 0.0;
-            }
-        }
         volfrac(i, j, k) =
             fluxR(i, j, k - 1) + fluxC(i, j, k) + fluxL(i, j, k + 1);
     }
     // Do clipping
     volfrac(i, j, k) = amrex::max(0.0, amrex::min(1.0, volfrac(i, j, k)));
 }
+*/
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_eulerian_fluxes(
     const int i,
     const int j,
     const int k,
     const int dir,
-    amrex::Box const& bx,
+    const amrex::Real dxi,
     const amrex::Real velL,
     const amrex::Real velR,
     amrex::Array4<amrex::Real> const& volfrac,
+    amrex::Array4<amrex::Real const> const& fluxF,
+    amrex::Array4<amrex::Real const> const& fluxC)
+{
+
+    if (dir == 0) {
+        volfrac(i, j, k) += (fluxF(i, j, k) - fluxF(i + 1, j, k)) * dxi +
+                            fluxC(i, j, k) * (velR - velL);
+    } else if (dir == 1) {
+        volfrac(i, j, k) += (fluxF(i, j, k) - fluxF(i, j + 1, k)) * dxi +
+                            fluxC(i, j, k) * (velR - velL);
+    } else if (dir == 2) {
+        volfrac(i, j, k) += (fluxF(i, j, k) - fluxF(i, j, k + 1)) * dxi +
+                            fluxC(i, j, k) * (velR - velL);
+    }
+    // Do clipping
+    volfrac(i, j, k) = amrex::max(0.0, amrex::min(1.0, volfrac(i, j, k)));
+
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fluxes_bc_save(
+    const int i,
+    const int j,
+    const int k,
+    const int dir,
+    const amrex::Real dx,
+    amrex::Box const& bx,
     amrex::Array4<amrex::Real> const& fluxL,
-    amrex::Array4<amrex::Real> const& fluxC,
     amrex::Array4<amrex::Real> const& fluxR,
+    amrex::Array4<amrex::Real> const& f_f,
     amrex::Array4<amrex::Real> const& vofL,
     amrex::Array4<amrex::Real> const& vofR,
     amrex::Array4<amrex::Real> const& advalpha_f,
@@ -247,13 +239,12 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_eulerian_fluxes(
                 vofL(domhi + 1, j, k) = 0.0;
             }
         }
-        volfrac(i, j, k) = volfrac(i, j, k) -
-                           (fluxR(i, j, k) - fluxL(i + 1, j, k)) +
-                           (fluxR(i - 1, j, k) - fluxL(i, j, k)) +
-                           fluxC(i, j, k) * (velR - velL);
-        advalpha_f(i, j, k) = vofL(i, j, k) + vofR(i - 1, j, k);
-        if (!bx.contains(i + 1, j, k))
-            advalpha_f(i + 1, j, k) = vofL(i + 1, j, k) + vofR(i, j, k);
+        f_f(i, j, k) = (fluxR(i - 1, j, k) - fluxL(i, j, k)) * dx;
+        advalpha_f(i, j, k) = vofR(i - 1, j, k) + vofL(i, j, k);
+        if (!bx.contains(i + 1, j, k)) {
+            f_f(i + 1, j, k) = (fluxR(i, j, k) - fluxL(i + 1, j, k)) * dx;
+            advalpha_f(i + 1, j, k) = vofR(i, j, k) + vofL(i + 1, j, k);
+        }
     } else if (dir == 1) {
         if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
             if (j == domlo) {
@@ -267,13 +258,12 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_eulerian_fluxes(
                 vofL(i, domhi + 1, k) = 0.0;
             }
         }
-        volfrac(i, j, k) = volfrac(i, j, k) -
-                           (fluxR(i, j, k) - fluxL(i, j + 1, k)) +
-                           (fluxR(i, j - 1, k) - fluxL(i, j, k)) +
-                           fluxC(i, j, k) * (velR - velL);
-        advalpha_f(i, j, k) = vofL(i, j, k) + vofR(i, j - 1, k);
-        if (!bx.contains(i, j + 1, k))
-            advalpha_f(i, j + 1, k) = vofL(i, j + 1, k) + vofR(i, j, k);
+        f_f(i, j, k) = (fluxR(i, j - 1, k) - fluxL(i, j, k)) * dx;
+        advalpha_f(i, j, k) = vofR(i, j - 1, k) + vofL(i, j, k);
+        if (!bx.contains(i, j + 1, k)) {
+            f_f(i, j + 1, k) = (fluxR(i, j, k) - fluxL(i, j + 1, k)) * dx;
+            advalpha_f(i, j + 1, k) = vofR(i, j, k) + vofL(i, j + 1, k);
+        }
     } else if (dir == 2) {
         if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
             if (k == domlo) {
@@ -287,42 +277,12 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_eulerian_fluxes(
                 vofL(i, j, domhi + 1) = 0.0;
             }
         }
-        volfrac(i, j, k) = volfrac(i, j, k) -
-                           (fluxR(i, j, k) - fluxL(i, j, k + 1)) +
-                           (fluxR(i, j, k - 1) - fluxL(i, j, k)) +
-                           fluxC(i, j, k) * (velR - velL);
-        advalpha_f(i, j, k) = vofL(i, j, k) + vofR(i, j, k - 1);
-        if (!bx.contains(i, j, k + 1))
-            advalpha_f(i, j, k + 1) = vofL(i, j, k + 1) + vofR(i, j, k);
-    }
-    // Do clipping
-    volfrac(i, j, k) = amrex::max(0.0, amrex::min(1.0, volfrac(i, j, k)));
-}
-
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void save_fluxes(
-    const int i,
-    const int j,
-    const int k,
-    const int dir,
-    const amrex::Real dx,
-    amrex::Box const& bx,
-    amrex::Array4<amrex::Real> const& fluxL,
-    amrex::Array4<amrex::Real> const& fluxR,
-    amrex::Array4<amrex::Real> const& f_f)
-{
-
-    if (dir == 0) {
-        f_f(i, j, k) = (fluxR(i - 1, j, k) - fluxL(i, j, k)) * dx;
-        if (!bx.contains(i + 1, j, k))
-            f_f(i + 1, j, k) = (fluxR(i, j, k) - fluxL(i + 1, j, k)) * dx;
-    } else if (dir == 1) {
-        f_f(i, j, k) = (fluxR(i, j - 1, k) - fluxL(i, j, k)) * dx;
-        if (!bx.contains(i, j + 1, k))
-            f_f(i, j + 1, k) = (fluxR(i, j, k) - fluxL(i, j + 1, k)) * dx;
-    } else if (dir == 2) {
         f_f(i, j, k) = (fluxR(i, j, k - 1) - fluxL(i, j, k)) * dx;
-        if (!bx.contains(i, j, k + 1))
+        advalpha_f(i, j, k) = vofR(i, j, k - 1) + vofL(i, j, k);
+        if (!bx.contains(i, j, k + 1)) {
             f_f(i, j, k + 1) = (fluxR(i, j, k) - fluxL(i, j, k + 1)) * dx;
+            advalpha_f(i, j, k + 1) = vofR(i, j, k) + vofL(i, j, k + 1);
+        }
     }
 }
 

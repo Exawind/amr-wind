@@ -487,7 +487,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fit_plane(
     const int i,
     const int j,
     const int k,
-    amrex::Array4<amrex::Real> const& volfrac,
+    amrex::Array4<amrex::Real const> const& volfrac,
     amrex::Real& mx,
     amrex::Real& my,
     amrex::Real& mz,
