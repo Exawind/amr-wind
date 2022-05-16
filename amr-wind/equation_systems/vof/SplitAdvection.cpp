@@ -25,46 +25,46 @@ void multiphase::split_advection_step(
     bool use_lagrangian,
     bool rm_debris)
 {
-  BL_PROFILE("amr-wind::multiphase::split_compute_fluxes");
+    BL_PROFILE("amr-wind::multiphase::split_compute_fluxes");
 
-  for (int lev = 0; lev < nlevels; ++lev) {
-      amrex::MFItInfo mfi_info;
-      if (amrex::Gpu::notInLaunchRegion()) {
-          mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
-              .SetDynamic(true);
-      }
+    for (int lev = 0; lev < nlevels; ++lev) {
+        amrex::MFItInfo mfi_info;
+        if (amrex::Gpu::notInLaunchRegion()) {
+            mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
+                .SetDynamic(true);
+        }
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-      for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
-           ++mfi) {
-          const auto& bx = mfi.tilebox();
-          amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 4);
-          tmpfab.setVal<amrex::RunOn::Device>(0.0);
+        for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
+             ++mfi) {
+            const auto& bx = mfi.tilebox();
+            amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 4);
+            tmpfab.setVal<amrex::RunOn::Device>(0.0);
 
-          // Compression term coefficient
-          if (iorder == 0) {
-              multiphase::cmask_loop(
-                  bx, dof_field(lev).array(mfi), fluxC(lev).array(mfi),
-                  use_lagrangian);
-          }
+            // Compression term coefficient
+            if (iorder == 0) {
+                multiphase::cmask_loop(
+                    bx, dof_field(lev).array(mfi), fluxC(lev).array(mfi),
+                    use_lagrangian);
+            }
 
-          // Calculate fluxes involved in this stage of split advection
-          multiphase::split_compute_fluxes(
-              lev, bx, isweep + iorder, dof_field(lev).const_array(mfi),
-              fluxC(lev).array(mfi), u_mac(lev).const_array(mfi),
-              v_mac(lev).const_array(mfi), w_mac(lev).const_array(mfi),
-              (*advas[lev][0]).array(mfi), (*advas[lev][1]).array(mfi),
-              (*advas[lev][2]).array(mfi), (*fluxes[lev][0]).array(mfi),
-              (*fluxes[lev][1]).array(mfi), (*fluxes[lev][2]).array(mfi), pbc,
-              tmpfab.dataPtr(), geom, dt, use_lagrangian);
+            // Calculate fluxes involved in this stage of split advection
+            multiphase::split_compute_fluxes(
+                lev, bx, isweep + iorder, dof_field(lev).const_array(mfi),
+                fluxC(lev).array(mfi), u_mac(lev).const_array(mfi),
+                v_mac(lev).const_array(mfi), w_mac(lev).const_array(mfi),
+                (*advas[lev][0]).array(mfi), (*advas[lev][1]).array(mfi),
+                (*advas[lev][2]).array(mfi), (*fluxes[lev][0]).array(mfi),
+                (*fluxes[lev][1]).array(mfi), (*fluxes[lev][2]).array(mfi), pbc,
+                tmpfab.dataPtr(), geom, dt, use_lagrangian);
 
-          amrex::Gpu::streamSynchronize();
-      }
+            amrex::Gpu::streamSynchronize();
+        }
     }
 
     // Average down fluxes for current component
-    const int dir  = 2 - (isweep + iorder) % 3;
+    const int dir = 2 - (isweep + iorder) % 3;
     for (int lev = nlevels - 1; lev > 0; --lev) {
         amrex::IntVect rr =
             geom[lev].Domain().size() / geom[lev - 1].Domain().size();

@@ -203,7 +203,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_eulerian_fluxes(
     }
     // Do clipping
     volfrac(i, j, k) = amrex::max(0.0, amrex::min(1.0, volfrac(i, j, k)));
-
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fluxes_bc_save(

@@ -62,7 +62,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
             isweep = 1;
         }
 
-        auto nlevels = repo.num_active_levels();
+        const int nlevels = repo.num_active_levels();
 
         amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> fluxes(
             nlevels);
@@ -79,20 +79,19 @@ struct AdvectionOp<VOF, fvm::Godunov>
 
         // Split advection step 1, with cmask calculation
         multiphase::split_advection_step(
-            isweep, 0, nlevels, dof_field, fluxes, (*fluxC), advas, u_mac, v_mac,
-            w_mac, dof_field.bcrec_device().data(), geom, dt, m_use_lagrangian,
-            m_rm_debris);
+            isweep, 0, nlevels, dof_field, fluxes, (*fluxC), advas, u_mac,
+            v_mac, w_mac, dof_field.bcrec_device().data(), geom, dt,
+            m_use_lagrangian, m_rm_debris);
         // Split advection step 2
         multiphase::split_advection_step(
-            isweep, 1, nlevels, dof_field, fluxes, (*fluxC), advas, u_mac, v_mac,
-            w_mac, dof_field.bcrec_device().data(), geom, dt, m_use_lagrangian,
-            m_rm_debris);
+            isweep, 1, nlevels, dof_field, fluxes, (*fluxC), advas, u_mac,
+            v_mac, w_mac, dof_field.bcrec_device().data(), geom, dt,
+            m_use_lagrangian, m_rm_debris);
         // Split advection step 3
         multiphase::split_advection_step(
-            isweep, 2, nlevels, dof_field, fluxes, (*fluxC), advas, u_mac, v_mac,
-            w_mac, dof_field.bcrec_device().data(), geom, dt, m_use_lagrangian,
-            m_rm_debris);
-
+            isweep, 2, nlevels, dof_field, fluxes, (*fluxC), advas, u_mac,
+            v_mac, w_mac, dof_field.bcrec_device().data(), geom, dt,
+            m_use_lagrangian, m_rm_debris);
     }
 
     PDEFields& fields;
