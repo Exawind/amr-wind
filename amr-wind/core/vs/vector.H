@@ -42,6 +42,12 @@ struct VectorT
     VectorT& operator=(VectorT&&) & = default;
     VectorT& operator=(VectorT&&) && = delete;
 
+    std::ostream& operator<<(std::ostream& os)
+    {
+        os << vv.x() << ", " << vv.y() << ", " << vv.z();
+        return os;
+    }
+
     //! Zero vector
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE static constexpr VectorT<T> zero()
     {

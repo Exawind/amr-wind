@@ -82,6 +82,7 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
         auto& grid = data.grid();
         auto& ddata = data.meta();
         const amrex::Real machine_eps = vs::DTraits<amrex::Real>::eps();
+        ddata.disk_force.zero();
         // step 1: compute Ct, a1 and a2 coefficients (eq 16)
         const amrex::Real uInfSqr = base::compute_reference_velocity_sqr(ddata);
         const amrex::Real U_ref = std::max(std::sqrt(uInfSqr), machine_eps);
@@ -89,18 +90,22 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
         joukowsky::set_current_angular_velocity(ddata, uInfSqr);
 
         const amrex::Real Ct = ddata.current_ct;
+        const amrex::Real dx = ddata.dr * 2.0 / ddata.diameter;
+        const amrex::Real dTheta =
+            amr_wind::utils::two_pi() / ddata.num_vel_pts_t;
+
+        const amrex::Real geometry_factor = ddata.dr * ddata.dr * dTheta * 0.5;
 
         amrex::Real a1 = 0.0;
         amrex::Real a2 = 0.0;
 
         for (int ip = 0; ip < ddata.num_vel_pts_r; ip++) {
-            const amrex::Real r = (ip + 0.5) * ddata.dr;
+            const amrex::Real x = std::max((ip + 0.5) * dx, machine_eps);
 
             a1 += std::pow(ddata.tip_correction[ip], 2.0) *
-                  std::pow(ddata.root_correction[ip], 2.0) / r * ddata.dr;
+                  std::pow(ddata.root_correction[ip], 2.0) / x * dx;
 
-            a2 += ddata.tip_correction[ip] * ddata.root_correction[ip] * r *
-                  ddata.dr;
+            a2 += ddata.tip_correction[ip] * ddata.root_correction[ip] * x * dx;
         }
 
         // step 2: determine the circulation (q0) from a1, a2 and Ct (eq 17)
@@ -108,10 +113,18 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
         const amrex::Real lambda =
             0.5 * ddata.diameter * ddata.current_angular_velocity / U_ref;
 
-        const amrex::Real q0 =
-            (std::sqrt(16.0 * lambda * lambda * a2 * a2 + 8.0 * a1 * Ct) -
-             4.0 * lambda * a2) /
-            std::max(4.0 * a1, machine_eps);
+        const amrex::Real lambda_2 = lambda * lambda;
+        const amrex::Real a2_2 = a2 * a2;
+
+        const amrex::Real term1 = 16.0 * lambda_2 * a2_2;
+        const amrex::Real term2 = 8.0 * Ct * a1;
+        const amrex::Real term3 = 4.0 * lambda * a2;
+
+        const amrex::Real numerator = std::sqrt(term1 + term2) - term3;
+
+        const amrex::Real denominator = std::max(4.0 * a1, machine_eps);
+
+        const amrex::Real q0 = numerator / denominator;
 
         // step 3: compute normal force (fz) and azimuthal force (f_theta) (eq
         // 13)
@@ -123,8 +136,8 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
             const amrex::Real& F = ddata.tip_correction[i];
             const amrex::Real& g = ddata.root_correction[i];
 
-            const amrex::Real x = std::max(
-                (i + 0.5) * ddata.dr / (0.5 * ddata.diameter), machine_eps);
+            const amrex::Real x = std::max((i + 0.5) * dx, machine_eps);
+            //            const amrex::Real& g = x;
 
             const amrex::Real f_z =
                 q0 * g * F / x * (lambda * x + 0.5 * q0 * g * F / x);
@@ -141,24 +154,34 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                     point_current);
 
                 // TODO add sign convention for rotation (+/- RPM)
-                const auto angle = ::amr_wind::utils::degrees(distance[1]);
+                const auto angle = ::amr_wind::utils::degrees(
+                    distance[1] - amr_wind::utils::half_pi());
 
-                const auto theta_vec = vs::quaternion(ddata.normal_vec, angle) &
-                                       ddata.coplanar_vec;
+                const vs::Vector theta_vec =
+                    vs::quaternion(ddata.normal_vec, angle) &
+                    ddata.coplanar_vec;
 
+                // normal vec by definition is opposite of the wind direction
+                // so we need to flip the sign to give the actual disk velocity
                 const amrex::Real u_disk_ij =
-                    ddata.normal_vec & disk_velocity[ip];
+                    -ddata.normal_vec & disk_velocity[ip];
 
                 const amrex::Real f_theta = u_disk_ij / U_ref * q0 * g * F / x;
 
+                const amrex::Real dArea =
+                    geometry_factor * (std::pow(i + 1.0, 2) - std::pow(i, 2));
+
                 grid.force[ip] =
                     (f_z * ddata.normal_vec + f_theta * theta_vec) *
-                    ddata.density * uInfSqr;
+                    ddata.density * uInfSqr * dArea / ddata.num_vel_pts_t;
+                ddata.disk_force = ddata.disk_force + grid.force[ip];
+                // assert(vs::mag(grid.force[ip]) > machine_eps);
             }
         }
 
         // step 5: compute moment and power (eqs 18 and 19)
         // step 6: compute cp
+        amrex::Print() << "Total Disk Force: " << ddata.disk_force << std::endl;
     }
 };
 

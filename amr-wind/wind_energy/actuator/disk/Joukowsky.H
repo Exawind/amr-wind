@@ -14,6 +14,7 @@ struct JoukowskyData : public DiskBaseData
     RealList tip_correction;
     RealList root_correction;
     amrex::Real current_angular_velocity{0.0};
+    vs::Vector disk_force{0.0, 0.0, 0.0};
 };
 
 struct Joukowsky : public DiskType

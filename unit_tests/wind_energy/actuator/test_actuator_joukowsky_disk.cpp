@@ -68,7 +68,7 @@ protected:
         pp.addarr("disk_center", amrex::Vector<amrex::Real>{16.0, 16.0, 16.0});
         pp.addarr("disk_normal", amrex::Vector<amrex::Real>{-1.0, 0.0, 0.0});
         pp.addarr("thrust_coeff", amrex::Vector<amrex::Real>{1});
-        pp.addarr("angular_velocity", amrex::Vector<amrex::Real>{1});
+        pp.addarr("angular_velocity", amrex::Vector<amrex::Real>{0.0});
     }
 };
 
@@ -123,7 +123,7 @@ struct InitDataOp<::amr_wind_tests::Joukowsky, ActSrcDisk>
             ASSERT_FALSE(std::isnan(meta.coplanar_vec[i]));
         }
         ASSERT_DOUBLE_EQ(meta.coplanar_vec[0], 0.0);
-        ASSERT_DOUBLE_EQ(meta.coplanar_vec[1], 1.0);
+        ASSERT_DOUBLE_EQ(meta.coplanar_vec[1], -1.0);
     }
 };
 

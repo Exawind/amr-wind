@@ -187,13 +187,15 @@ public:
 
                 amrex::Real src_force[AMREX_SPACEDIM]{0.0, 0.0, 0.0};
                 for (int ip = 0; ip < npts; ++ip) {
-                    const auto R = utils::delta_pnts_cyl(
-                                       m_origin, m_normal, m_origin, pos[ip])
-                                       .x();
-                    const auto dArc = R * dTheta;
+                    const auto radius =
+                        utils::delta_pnts_cyl(
+                            m_origin, m_normal, m_origin, pos[ip])
+                            .x();
+                    const auto dArc = radius * dTheta;
                     const auto dist_on_disk =
                         utils::delta_pnts_cyl(m_origin, m_normal, cc, pos[ip]);
-                    const amrex::Real arclength = dist_on_disk.y() * R;
+                    const auto dist_cartesian = cc - pos[ip];
+                    const amrex::Real arclength = dist_on_disk.y() * radius;
                     const auto& pforce = force[ip];
 
                     const amrex::Real weight_R =
