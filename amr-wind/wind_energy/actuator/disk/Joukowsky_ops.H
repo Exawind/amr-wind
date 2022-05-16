@@ -142,24 +142,12 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
             const amrex::Real f_z =
                 q0 * g * F / x * (lambda * x + 0.5 * q0 * g * F / x);
 
-            const auto point_on_coplanar_vector = grid.pos[i];
-
             for (int j = 0; j < ddata.num_vel_pts_t; j++, ip++) {
                 const auto point_current = grid.pos[ip];
 
-                // compute angle between points on the coplanar vector and the
-                // current points
-                const auto distance = utils::delta_pnts_cyl(
-                    ddata.center, ddata.normal_vec, point_on_coplanar_vector,
-                    point_current);
-
                 // TODO add sign convention for rotation (+/- RPM)
-                const auto angle = ::amr_wind::utils::degrees(
-                    distance[1] - amr_wind::utils::half_pi());
-
-                const vs::Vector theta_vec =
-                    vs::quaternion(ddata.normal_vec, angle) &
-                    ddata.coplanar_vec;
+                const auto theta_vec = utils::compute_tangential_vector(
+                    ddata.center, ddata.normal_vec, point_current);
 
                 // normal vec by definition is opposite of the wind direction
                 // so we need to flip the sign to give the actual disk velocity

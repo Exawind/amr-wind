@@ -38,8 +38,8 @@ Actuator.JoukowskyDisk.angular_velocity = 0.0 1.0 1.5
 Actuator.JoukowskyDisk.epsilon = 20.0
 Actuator.JoukowskyDisk.density = 1.225
 Actuator.JoukowskyDisk.diameters_to_sample = 1.0
-Actuator.JoukowskyDisk.num_points_r = 5
-Actuator.JoukowskyDisk.num_points_t = 3
+Actuator.JoukowskyDisk.num_points_r = 2
+Actuator.JoukowskyDisk.num_points_t = 4
 
 ICNS.source_terms = ActuatorForcing
 
