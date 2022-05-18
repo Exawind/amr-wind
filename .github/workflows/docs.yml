@@ -1,4 +1,4 @@
-name: AMR-Wind Docs
+name: AMR-Wind-Docs
 
 on:
   push:
@@ -14,7 +14,8 @@ jobs:
         uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{github.token}}
-      - uses: actions/checkout@v2
+      - name: Clone
+        uses: actions/checkout@v3
       - name: Python
         uses: actions/setup-python@v2
         with:
@@ -31,7 +32,7 @@ jobs:
         # execute from top-level amr-wind directory
         run: |
           echo "::add-matcher::.github/problem-matchers/sphinx.json"
-          sphinx-build -M html ./docs/sphinx ./build_docs/manual 2>&1 | tee -a build-output.txt
+          sphinx-build -M html ./docs/sphinx ./build_docs/manual -W --keep-going -n 2>&1 | tee -a build-output.txt
           # Doxygen output gets parsed wrong by the sphinx problem matcher so unregister it
           echo "::remove-matcher owner=sphinx-problem-matcher-loose-no-severity::"
           echo "::remove-matcher owner=sphinx-problem-matcher-loose::"
