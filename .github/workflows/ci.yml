@@ -1,4 +1,4 @@
-name: AMR-Wind CI
+name: AMR-Wind-CI
 
 on:
   push:
@@ -10,8 +10,10 @@ jobs:
   Formatting:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: DoozyX/clang-format-lint-action@v0.11
+    - name: Clone
+      uses: actions/checkout@v3
+    - name: Check formatting
+      uses: DoozyX/clang-format-lint-action@v0.11
       with:
         source: './amr-wind ./unit_tests ./tools/utilities'
         exclude: '.'
@@ -45,7 +47,8 @@ jobs:
       uses: styfle/cancel-workflow-action@0.6.0
       with:
         access_token: ${{github.token}}
-    - uses: actions/checkout@v2
+    - name: Clone
+      uses: actions/checkout@v3
       with: 
         submodules: true
     - name: Dependencies
@@ -96,7 +99,8 @@ jobs:
         uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{github.token}}
-      - uses: actions/checkout@v2
+      - name: Clone
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Prepare CUDA environment
@@ -128,7 +132,8 @@ jobs:
         uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{github.token}}
-      - uses: actions/checkout@v2
+      - name: Clone
+      - uses: actions/checkout@v3
         with:
           submodules: true
       - name: Prepare HIP environment
@@ -166,7 +171,8 @@ jobs:
         uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{github.token}}
-      - uses: actions/checkout@v2
+      - name: Clone
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Prepare DPC++ environment
@@ -198,7 +204,8 @@ jobs:
         uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{github.token}}
-      - uses: actions/checkout@v2
+      - name: Clone
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Dependencies
@@ -234,7 +241,8 @@ jobs:
         uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{github.token}}
-      - uses: actions/checkout@v2
+      - name: Clone
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Dependencies
@@ -281,7 +289,8 @@ jobs:
 #        uses: styfle/cancel-workflow-action@0.6.0
 #        with:
 #          access_token: ${{github.token}}
-#      - uses: actions/checkout@v2
+#      - name: Clone
+#        uses: actions/checkout@v3
 #        with:
 #          submodules: true
 #      - name: Build and test
