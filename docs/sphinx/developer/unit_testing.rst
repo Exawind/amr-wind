@@ -327,7 +327,7 @@ through the test fixture :class:`MeshTest` described next.
 :class:`MeshTest` is the base test fixture for any test that requires a mesh and
 associated field data that will be used by the test. In addition to performing
 setup/teardown actions described in :class:`AmrexTest`, it also resets the
-default :class:`amrex::Geometry` static data so that different tests can run on
+default `amrex::Geometry` static data so that different tests can run on
 different problem domains perscribed by the test fixture.
 
 Almost all unit tests within AMR-Wind use :class:`MeshTest` as their base test
