@@ -157,7 +157,7 @@ void multiphase::split_compute_fluxes(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 fluxes_bc_save(
                     i, j, k, 2, dz, bx, fluxL, fluxR, fz, vofL, vofR, aaz, pbc,
-                    domlo.z, domlo.z);
+                    domlo.z, domhi.z);
             });
     } else if (isweep % 3 == 1) {
         sweep_fluxes(
