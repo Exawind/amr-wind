@@ -14,7 +14,14 @@ struct JoukowskyData : public DiskBaseData
     RealList tip_correction;
     RealList root_correction;
     amrex::Real current_angular_velocity{0.0};
+    amrex::Real vortex_core_size;
+    // --- Sorenson 2020 equation 10 constants ----
+    amrex::Real root_correction_coefficient{1.256};
+    amrex::Real root_correction_exponent{2.0};
+    // --------------------------------------------
     vs::Vector disk_force{0.0, 0.0, 0.0};
+    bool use_tip_correction{true};
+    bool use_root_correction{true};
 };
 
 struct Joukowsky : public DiskType

@@ -140,8 +140,10 @@ struct ComputeForceOp<::amr_wind_tests::Joukowsky, ActSrcDisk>
             for (int j = 0; j < 3; ++j) {
                 EXPECT_FALSE(std::isnan(grid.force[i][j]))
                     << "i,j: " << i << ", " << j;
-                EXPECT_GE(0.0, grid.force[i][j]) << "i,j: " << i << ", " << j;
             }
+            // only x direction is guaranteed to be negative
+            // y and z forces will vary based on azimuthal angle
+            EXPECT_GE(0.0, grid.force[i][0]) << "i: " << i;
         }
     }
 };

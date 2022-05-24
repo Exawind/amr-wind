@@ -46,9 +46,17 @@ struct InitDataOp<Joukowsky, ActSrcDisk>
         grid.vel_pos.resize(meta.num_vel_pts);
         meta.tip_correction.resize(meta.num_vel_pts_r);
         meta.root_correction.resize(meta.num_vel_pts_r);
-        std::fill(meta.tip_correction.begin(), meta.tip_correction.end(), 1.0);
-        std::fill(
-            meta.root_correction.begin(), meta.root_correction.end(), 1.0);
+        if (meta.use_tip_correction) {
+
+        } else {
+            std::fill(
+                meta.tip_correction.begin(), meta.tip_correction.end(), 1.0);
+        }
+        if (meta.use_root_correction) {
+        } else {
+            std::fill(
+                meta.root_correction.begin(), meta.root_correction.end(), 1.0);
+        }
 
         const auto& sVec = meta.sample_vec;
         const auto& nVec = meta.normal_vec;
@@ -163,13 +171,11 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                     (f_z * ddata.normal_vec + f_theta * theta_vec) *
                     ddata.density * uInfSqr * dArea / ddata.num_vel_pts_t;
                 ddata.disk_force = ddata.disk_force + grid.force[ip];
-                // assert(vs::mag(grid.force[ip]) > machine_eps);
             }
         }
 
         // step 5: compute moment and power (eqs 18 and 19)
         // step 6: compute cp
-        amrex::Print() << "Total Disk Force: " << ddata.disk_force << std::endl;
     }
 };
 

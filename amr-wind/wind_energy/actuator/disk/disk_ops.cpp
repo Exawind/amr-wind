@@ -358,7 +358,7 @@ void compute_disk_points(
     for (int i = 0; i < nvp.x(); i++) {
         const amrex::Real r = dr * (i + index_shift);
         for (int j = 0; j < nvp.y(); j++, ip++) {
-            const auto refPoint = cc + r * refVec + du * cylAxis;
+            const auto refPoint = r * refVec + du * cylAxis;
             const amrex::Real angle = ::amr_wind::utils::degrees(dt * j);
             const auto rotMatrix = vs::quaternion(cylAxis, angle);
 

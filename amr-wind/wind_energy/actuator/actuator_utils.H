@@ -133,11 +133,9 @@ linear_basis_1d(const amrex::Real distance, const amrex::Real dX)
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE vs::Vector compute_tangential_vector(
-    const vs::Vector& center,
-    const vs::Vector& normal,
-    const vs::Vector& force_point)
+    const vs::Vector& center, const vs::Vector& normal, const vs::Vector& point)
 {
-    const auto blade_axis = (force_point - center).normalize();
+    const auto blade_axis = (point - center).normalize();
     return vs::quaternion(normal, 90.0) & blade_axis;
 }
 
