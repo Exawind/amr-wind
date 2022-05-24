@@ -46,13 +46,25 @@ struct InitDataOp<Joukowsky, ActSrcDisk>
         grid.vel_pos.resize(meta.num_vel_pts);
         meta.tip_correction.resize(meta.num_vel_pts_r);
         meta.root_correction.resize(meta.num_vel_pts_r);
-        if (meta.use_tip_correction) {
 
-        } else {
-            std::fill(
-                meta.tip_correction.begin(), meta.tip_correction.end(), 1.0);
-        }
+        std::fill(meta.tip_correction.begin(), meta.tip_correction.end(), 1.0);
+
         if (meta.use_root_correction) {
+            const amrex::Real dx = 1.0 / meta.num_vel_pts_r;
+
+            const auto a = meta.root_correction_coefficient;
+            const auto b = meta.root_correction_exponent;
+
+            const auto delta = std::max(
+                meta.vortex_core_size * 2.0 / meta.diameter,
+                vs::DTraits<amrex::Real>::eps());
+
+            const auto factor = dx / delta;
+
+            for (int i = 0; i < meta.root_correction.size(); ++i) {
+                meta.root_correction[i] =
+                    1.0 - std::exp(-a * std::pow((i + 0.5) * factor, b));
+            }
         } else {
             std::fill(
                 meta.root_correction.begin(), meta.root_correction.end(), 1.0);
