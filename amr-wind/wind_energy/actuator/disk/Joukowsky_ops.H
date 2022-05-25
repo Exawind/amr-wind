@@ -18,6 +18,18 @@ set_current_angular_velocity(JoukowskyData& data, const amrex::Real uInfSqr)
     data.current_angular_velocity = ::amr_wind::interp::linear(
         data.table_velocity, data.angular_velocity, uInfMag);
 }
+void prepare_netcdf_file(
+    const std::string& name,
+    const JoukowskyData& data,
+    const ActInfo& info,
+    const ActGrid& grid);
+
+void write_netcdf(
+    const std::string& name,
+    const JoukowskyData& data,
+    const ActInfo& info,
+    const ActGrid& /*unused*/,
+    const amrex::Real time);
 } // namespace joukowsky
 
 template <>
@@ -231,7 +243,7 @@ public:
     void prepare_outputs(const std::string& out_dir)
     {
         m_nc_filename = out_dir + "/" + m_data.info().label + ".nc";
-        disk::prepare_netcdf_file(
+        joukowsky::prepare_netcdf_file(
             m_nc_filename, m_data.meta(), m_data.info(), m_data.grid());
     }
     void write_outputs()
@@ -242,7 +254,7 @@ public:
             return;
         }
 
-        disk::write_netcdf(
+        joukowsky::write_netcdf(
             m_nc_filename, m_data.meta(), m_data.info(), m_data.grid(),
             time.new_time());
     }
