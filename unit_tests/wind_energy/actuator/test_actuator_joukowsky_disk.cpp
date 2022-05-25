@@ -50,7 +50,8 @@ protected:
         amr_wind::actuator::ActuatorContainer::ParticleType::NextID(1U);
     }
 
-    void add_actuators(std::string type, amrex::Vector<std::string> labels)
+    static void
+    add_actuators(std::string type, amrex::Vector<std::string> labels)
     {
         amrex::ParmParse pp("Actuator");
         pp.add("type", type);
@@ -60,6 +61,7 @@ protected:
     static void basic_disk_setup()
     {
         amrex::ParmParse pp("Actuator.TestJoukowskyDisk");
+        pp.add("num_blades", 3);
         pp.add("num_points_t", 3);
         pp.add("num_points_r", 3);
         pp.add("epsilon", 1.0);
@@ -186,6 +188,7 @@ TEST_F(ActJoukowskyTest, parsing_operations)
     ActPhysicsTest act(sim());
     act.pre_init_actions();
 }
+
 TEST_F(ActJoukowskyTest, execution)
 {
     intialize_domain();

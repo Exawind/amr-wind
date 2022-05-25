@@ -128,7 +128,7 @@ struct UpdatePosOp<
     ActSrcDisk,
     std::enable_if_t<std::is_base_of<DiskType, ActTrait>::value>>
 {
-    void operator()(typename ActTrait::DataType&) {}
+    void operator()(typename ActTrait::DataType& /*data*/) {}
 };
 } // namespace ops
 } // namespace actuator

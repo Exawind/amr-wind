@@ -26,12 +26,12 @@ void required_parameters(DiskBaseData& meta, const utils::ActParser& pp)
     pp.get("num_force_points", meta.num_force_pts);
     meta.dr = 0.5 * meta.diameter / meta.num_force_pts;
 }
-void parse_and_gather_params(const utils::ActParser& pp, UniformCtData& meta)
+void parse_and_gather_params(const utils::ActParser& pp, UniformCtData& data)
 {
     check_for_parse_conflicts(pp);
-    optional_parameters(meta, pp);
-    required_parameters(meta, pp);
-    ops::base::final_checks(meta);
+    optional_parameters(data, pp);
+    required_parameters(data, pp);
+    ops::base::final_checks(data);
 }
 } // namespace uniformct
 } // namespace ops

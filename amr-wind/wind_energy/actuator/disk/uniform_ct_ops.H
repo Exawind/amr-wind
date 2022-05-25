@@ -9,7 +9,7 @@ namespace actuator {
 namespace ops {
 namespace uniformct {
 
-void parse_and_gather_params(const utils::ActParser&, UniformCtData&);
+void parse_and_gather_params(const utils::ActParser& pp, UniformCtData& data);
 
 } // namespace uniformct
 template <>

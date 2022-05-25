@@ -194,7 +194,6 @@ public:
                     const auto dArc = radius * dTheta;
                     const auto dist_on_disk =
                         utils::delta_pnts_cyl(m_origin, m_normal, cc, pos[ip]);
-                    const auto dist_cartesian = cc - pos[ip];
                     const amrex::Real arclength = dist_on_disk.y() * radius;
                     const auto& pforce = force[ip];
 

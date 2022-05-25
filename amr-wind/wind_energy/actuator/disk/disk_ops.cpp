@@ -5,8 +5,8 @@ namespace amr_wind {
 namespace actuator {
 namespace disk {
 void prepare_netcdf_file(
-    const std::string& ncfile,
-    const DiskBaseData& meta,
+    const std::string& name,
+    const DiskBaseData& data,
     const ActInfo& info,
     const ActGrid& grid)
 {
@@ -14,7 +14,7 @@ void prepare_netcdf_file(
     using dvec = std::vector<double>;
     // Only root process handles I/O
     if (info.root_proc != amrex::ParallelDescriptor::MyProc()) return;
-    auto ncf = ncutils::NCFile::create(ncfile, NC_CLOBBER | NC_NETCDF4);
+    auto ncf = ncutils::NCFile::create(name, NC_CLOBBER | NC_NETCDF4);
     const std::string nt_name = "num_time_steps";
     const std::string np_name = "num_actuator_points";
     const std::string nv_name = "num_velocity_points";
@@ -29,15 +29,15 @@ void prepare_netcdf_file(
     auto grp = ncf.def_group(info.label);
     // clang-format off
     grp.put_attr("normal",
-        dvec{meta.normal_vec.x(), meta.normal_vec.y(), meta.normal_vec.z()});
+        dvec{data.normal_vec.x(), data.normal_vec.y(), data.normal_vec.z()});
     grp.put_attr("sample_normal",
-        dvec{meta.sample_vec.x(), meta.sample_vec.y(), meta.sample_vec.z()});
+        dvec{data.sample_vec.x(), data.sample_vec.y(), data.sample_vec.z()});
     // clang-format on
-    grp.put_attr("diameter", dvec{meta.diameter});
-    grp.put_attr("epsilon", dvec{meta.epsilon});
-    grp.put_attr("sample_diameters", dvec{meta.diameters_to_sample});
-    grp.def_dim(np_name, meta.num_force_pts);
-    grp.def_dim(nv_name, meta.num_vel_pts);
+    grp.put_attr("diameter", dvec{data.diameter});
+    grp.put_attr("epsilon", dvec{data.epsilon});
+    grp.put_attr("sample_diameters", dvec{data.diameters_to_sample});
+    grp.def_dim(np_name, data.num_force_pts);
+    grp.def_dim(nv_name, data.num_vel_pts);
     grp.def_var("time", NC_DOUBLE, {nt_name});
     grp.def_var("xyz", NC_DOUBLE, {np_name, "ndim"});
     grp.def_var("xyz_v", NC_DOUBLE, {nv_name, "ndim"});
@@ -49,26 +49,26 @@ void prepare_netcdf_file(
 
     {
         {
-            const size_t npts = static_cast<size_t>(meta.num_force_pts);
+            const size_t npts = static_cast<size_t>(data.num_force_pts);
             const std::vector<size_t> start{0, 0};
             const std::vector<size_t> count{npts, AMREX_SPACEDIM};
             grp.var("xyz").put(&(grid.pos[0][0]), start, count);
         }
         {
-            const size_t npts = static_cast<size_t>(meta.num_vel_pts);
+            const size_t npts = static_cast<size_t>(data.num_vel_pts);
             const std::vector<size_t> start{0, 0};
             const std::vector<size_t> count{npts, AMREX_SPACEDIM};
             grp.var("xyz_v").put(&(grid.vel_pos[0][0]), start, count);
         }
     }
 #else
-    amrex::ignore_unused(ncfile, meta, info, grid);
+    amrex::ignore_unused(name, data, info, grid);
 #endif
 }
 
 void write_netcdf(
-    const std::string& ncfile,
-    const DiskBaseData& meta,
+    const std::string& name,
+    const DiskBaseData& data,
     const ActInfo& info,
     const ActGrid& /*unused*/,
     const amrex::Real time)
@@ -76,20 +76,20 @@ void write_netcdf(
 #ifdef AMR_WIND_USE_NETCDF
     // Only root process handles I/O
     if (info.root_proc != amrex::ParallelDescriptor::MyProc()) return;
-    auto ncf = ncutils::NCFile::open(ncfile, NC_WRITE);
+    auto ncf = ncutils::NCFile::open(name, NC_WRITE);
     const std::string nt_name = "num_time_steps";
     // Index of next timestep
     const size_t nt = ncf.dim(nt_name).len();
     auto grp = ncf.group(info.label);
     grp.var("time").put(&time, {nt}, {1});
     grp.var("vref").put(
-        &(meta.reference_velocity[0]), {nt, 0}, {1, AMREX_SPACEDIM});
+        &(data.reference_velocity[0]), {nt, 0}, {1, AMREX_SPACEDIM});
     grp.var("vdisk").put(
-        &(meta.mean_disk_velocity[0]), {nt, 0}, {1, AMREX_SPACEDIM});
-    grp.var("ct").put(&meta.current_ct, {nt}, {1});
-    grp.var("density").put(&meta.density, {nt}, {1});
+        &(data.mean_disk_velocity[0]), {nt, 0}, {1, AMREX_SPACEDIM});
+    grp.var("ct").put(&data.current_ct, {nt}, {1});
+    grp.var("density").put(&data.density, {nt}, {1});
 #else
-    amrex::ignore_unused(ncfile, meta, info, time);
+    amrex::ignore_unused(name, data, info, time);
 #endif
 }
 } // namespace disk

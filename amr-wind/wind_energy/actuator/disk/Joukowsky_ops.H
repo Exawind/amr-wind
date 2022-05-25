@@ -102,8 +102,8 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
         auto& grid = data.grid();
         auto& ddata = data.meta();
         const amrex::Real machine_eps = vs::DTraits<amrex::Real>::eps();
-        ddata.disk_force.zero();
-        // step 1: compute Ct, a1 and a2 coefficients (eq 16)
+        ddata.disk_force *= 0.0;
+
         const amrex::Real uInfSqr = base::compute_reference_velocity_sqr(ddata);
         const amrex::Real U_ref = std::max(std::sqrt(uInfSqr), machine_eps);
         base::set_thrust_coefficient(ddata, uInfSqr);
@@ -116,6 +116,23 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
 
         const amrex::Real geometry_factor = ddata.dr * ddata.dr * dTheta * 0.5;
 
+        const amrex::Real lambda =
+            0.5 * ddata.diameter * ddata.current_angular_velocity / U_ref;
+        const amrex::Real lambda_2 = lambda * lambda;
+
+        // step 0: compute tip correction based on current wind speed (eq 9)
+        if (ddata.use_tip_correction) {
+            auto& f = ddata.tip_correction;
+            for (int i = 0; i < f.size(); ++i) {
+                const auto x = (i + 0.5) * dx;
+                f[i] = 2.0 / M_PI *
+                       std::acos(std::exp(
+                           -0.5 * ddata.num_blades * std::sqrt(1.0 + lambda_2) *
+                           (1.0 - x)));
+            }
+        }
+
+        // step 1: compute Ct, a1 and a2 coefficients (eq 16)
         amrex::Real a1 = 0.0;
         amrex::Real a2 = 0.0;
 
@@ -130,10 +147,6 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
 
         // step 2: determine the circulation (q0) from a1, a2 and Ct (eq 17)
 
-        const amrex::Real lambda =
-            0.5 * ddata.diameter * ddata.current_angular_velocity / U_ref;
-
-        const amrex::Real lambda_2 = lambda * lambda;
         const amrex::Real a2_2 = a2 * a2;
 
         const amrex::Real term1 = 16.0 * lambda_2 * a2_2;
