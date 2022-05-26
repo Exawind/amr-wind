@@ -1,6 +1,9 @@
 #ifndef FLLC_H
 #define FLLC_H
 
+#include "amr-wind/wind_energy/actuator/actuator_types.H"
+#include "amr-wind/wind_energy/actuator/FLLC.H"
+
 namespace amr_wind {
 namespace actuator {
 
@@ -10,35 +13,21 @@ namespace actuator {
  *
  */
 
-template <typename ActTrait, typename SrcTrait>
-struct FLLCOpBase //<ActTrait, SrcTrait>
+template <typename ActSrcType>
+struct FLLCOp
 {
-
-    //! The velocity correction from filtered lifting line theory
-    VecList u_les_fllc;
-    VecList u_opt_fllc;
-    VecList G_fllc;
-    VecList dG_fllc;
-
-    FLLCOpBase(typename ActTrait::DataType& data)
-    {
-
-        auto& wdata = data.meta();
-        const int npts = wdata.num_pts;
-
-        G_fllc.assign(npts, vs::Vector::zero());
-        dG_fllc.assign(npts, vs::Vector::zero());
-        u_les_fllc.assign(npts, vs::Vector::zero());
-        u_opt_fllc.assign(npts, vs::Vector::zero());
-    }
-
-    void operator()(typename ActTrait::DataType& data)
+    void operator()(typename ActSrcType::DataType& data, FLLCData& fllc)
     {
 
         auto& grid = data.grid();
         auto& wdata = data.meta();
         const int npts = wdata.num_pts;
         auto& du_fllc = wdata.du_fllc;
+
+        auto& u_les_fllc = fllc.les_velocity;
+        auto& u_opt_fllc = fllc.optimal_velocity;
+        auto& G_fllc = fllc.lift;
+        auto& dG_fllc = fllc.grad_lift;
 
         /**
          * Step 1

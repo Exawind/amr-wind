@@ -9,6 +9,8 @@
 namespace amr_wind {
 namespace actuator {
 
+struct FLLCData;
+
 /** Base data representation of a fixed-wing.
  *
  *  \ingroup actuator
@@ -36,9 +38,8 @@ struct WingBaseData
     //! Relative velocity at the actuator node
     VecList vel_rel;
 
-    //! Flag to determine to use the filtered lifting line correction
-    bool fllc_use;
-    bool fllc_is_init{false};
+    //! Filtered Lifting Line Correction data
+    std::unique_ptr<FLLCData> fllc;
 
     //! The velocity correction from filtered lifting line theory
     VecList du_fllc;
