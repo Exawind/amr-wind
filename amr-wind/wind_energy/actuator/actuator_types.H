@@ -196,6 +196,7 @@ public:
     const typename ActTrait::MetaType& meta() const { return m_meta; }
 };
 
+
 } // namespace actuator
 } // namespace amr_wind
 
