@@ -31,10 +31,10 @@ ICNS.source_terms = BoussinesqBuoyancy CoriolisForcing ABLForcing  # Uncomment f
 #--------- Additions by calc_inflow_stats.py ---------#
 ABL.wall_shear_stress_type = "local"
 ABL.inflow_outflow_mode = true
-ABL.wf_velocity = 9.992795138134136 -0.0007138743053467138
-ABL.wf_vmag = 10.016339397424394
-ABL.wf_theta = 290.0178442735406
-# BodyForce.magnitude = 0.0008901711909450327 0.0014550668111182673 0.0  # Uncomment for simulations with turbines
+ABL.wf_velocity = 9.993313518610156 -0.0007153092436937755
+ABL.wf_vmag = 10.016864130137261
+ABL.wf_theta = 290.01796206857
+# BodyForce.magnitude = 0.0008901381429069488 0.0014550790578004666 0.0  # Uncomment for simulations with turbines
 # BoussinesqBuoyancy.read_temperature_profile = true  # Uncomment for simulations with turbines
 # BoussinesqBuoyancy.tprofile_filename = "../abl_unstable_precursor/avg_theta.dat"  # Uncomment for simulations with turbines
 #-----------------------------------------------------#
