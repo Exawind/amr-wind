@@ -41,6 +41,9 @@ struct WingBaseData
     //! Filtered Lifting Line Correction data
     std::unique_ptr<FLLCData> fllc;
 
+    //! Data structure required for passing data to the FLLC
+    ComponentView component_view;
+
     //! The velocity correction from filtered lifting line theory
     VecList du_fllc;
 
