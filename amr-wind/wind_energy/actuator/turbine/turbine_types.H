@@ -22,19 +22,6 @@ struct TurbineInfo : public ActInfo
     {}
 };
 
-struct ComponentView
-{
-    VecSlice pos;
-    VecSlice force;
-    VecSlice epsilon;
-    TensorSlice orientation;
-
-    VecSlice vel_pos;
-    VecSlice vel;
-
-    RealSlice chord;
-};
-
 using DeviceVecComponent = amrex::Gpu::DeviceVector<ComponentView>;
 struct TurbineBaseData
 {
