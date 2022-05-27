@@ -13,16 +13,13 @@ namespace actuator {
  *
  */
 
-template <typename ActSrcType>
 struct FLLCOp
 {
-    void operator()(typename ActSrcType::DataType& data, FLLCData& fllc)
+    void operator()(ComponentView& data, FLLCData& fllc)
     {
 
-        auto& grid = data.grid();
-        auto& wdata = data.meta();
-        const int npts = wdata.num_pts;
-        auto& du_fllc = wdata.du_fllc;
+        const int npts = fllc.correction_velocity.size();
+        auto& du_fllc = fllc.correction_velocity;;
 
         auto& u_les_fllc = fllc.les_velocity;
         auto& u_opt_fllc = fllc.optimal_velocity;
@@ -36,10 +33,10 @@ struct FLLCOp
          */
         for (int ip = 0; ip < npts; ++ip) {
 
-            const auto& tmat = grid.orientation[ip];
-            auto force = grid.force[ip];
-            auto vel = wdata.vel_rel[ip] & tmat;
-            auto dx = wdata.dx[ip];
+            const auto& tmat = data.orientation[ip];
+            const auto force = data.force[ip];
+            const auto vel = data.relative_velocity[ip] & tmat;
+            const auto dx = data.dx[ip];
             const auto vmag = vs::mag(vel);
             const auto vmag2 = vmag * vmag;
 
@@ -72,7 +69,7 @@ struct FLLCOp
 
                 if (ip == jp) continue;
 
-                const auto dr = vs::mag(grid.vel_pos[ip] - grid.vel_pos[jp]);
+                const auto dr = vs::mag(data.vel_pos[ip] - data.vel_pos[jp]);
                 const auto& vel = wdata.vel_rel[jp];
                 const auto vmag = vs::mag(vel);
 
@@ -105,7 +102,7 @@ struct FLLCOp
          * Compute equation 5.8 from Martinez-Tossas and Meneveau 2019
          */
         for (int ip = 0; ip < npts; ++ip)
-            grid.vel[ip] = grid.vel[ip] + du_fllc[ip];
+            data.vel[ip] = data.vel[ip] + du_fllc[ip];
     }
 };
 

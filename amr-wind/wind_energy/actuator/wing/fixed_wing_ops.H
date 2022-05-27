@@ -30,7 +30,7 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
         bool has_fllc = false;
         pp.query("fllc", has_fllc);
         if(has_fllc){
-            wdata.fllc = std::make_unique<FLLCData>(wdata.num_pts);
+            wdata.fllc = std::make_unique<FLLCData>();
         }
 
         if (!pp.contains("epsilon") && !pp.contains("epsilon_chord")) {
