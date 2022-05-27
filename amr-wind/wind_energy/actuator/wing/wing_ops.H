@@ -75,7 +75,7 @@ struct UpdateVelOp<
     {
         auto& meta = data.meta();
         if (meta.fllc){
-            FLLCOp<ActTrait>()(data, *(meta.fllc));
+            FLLCOp()(meta.component_view, *(meta.fllc));
         }
     }
 };

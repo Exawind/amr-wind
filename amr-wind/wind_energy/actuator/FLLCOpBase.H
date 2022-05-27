@@ -35,8 +35,8 @@ struct FLLCOp
 
             const auto& tmat = data.orientation[ip];
             const auto force = data.force[ip];
-            const auto vel = data.relative_velocity[ip] & tmat;
-            const auto dx = data.dx[ip];
+            const auto vel = fllc.relative_velocity[ip] & tmat;
+            const auto dx = fllc.dx[ip];
             const auto vmag = vs::mag(vel);
             const auto vmag2 = vmag * vmag;
 
@@ -62,15 +62,15 @@ struct FLLCOp
          */
         for (int ip = 0; ip < npts; ++ip) {
 
-            const auto eps_les = wdata.eps_inp[0];
-            const auto eps_opt = wdata.epsilon_chord[0] * wdata.chord[ip];
+            const auto eps_les = fllc.epsilon;
+            const auto eps_opt = fllc.epsilon_chord*fllc.chord[ip];
 
             for (int jp = 0; jp < npts; ++jp) {
 
                 if (ip == jp) continue;
 
                 const auto dr = vs::mag(data.vel_pos[ip] - data.vel_pos[jp]);
-                const auto& vel = wdata.vel_rel[jp];
+                const auto& vel = fllc.relative_velocity[jp];
                 const auto vmag = vs::mag(vel);
 
                 auto coefficient =
