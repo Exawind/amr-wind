@@ -124,7 +124,7 @@ class ABLInflowOutflowPrep:
         wall_shear_line = 'ABL.wall_shear_stress_type = "local"\n'
         wall_io_line = "ABL.inflow_outflow_mode = true\n"
         wf_vel_line = f"ABL.wf_velocity = {self.u_mean} {self.v_mean}\n"
-        wf_velmag_line = f"ABL.wf_mag = {self.hvelmag}\n"
+        wf_velmag_line = f"ABL.wf_vmag = {self.hvelmag}\n"
         wf_theta_line = f"ABL.wf_theta = {self.theta_mean}\n"
         bodyforce_mag_line = f"BodyForce.magnitude = {self.abl_force_x} {self.abl_force_y} 0.0\n"
         bouss_read_line = "BoussinesqBuoyancy.read_temperature_profile = true\n"
