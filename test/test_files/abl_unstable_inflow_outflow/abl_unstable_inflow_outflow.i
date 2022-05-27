@@ -1,8 +1,8 @@
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            SIMULATION STOP            #
 #.......................................#
-time.stop_time               =  82800.0     # Max (simulated) time to evolve
-time.max_step                =  9          # Max number of time steps
+time.stop_time               =  4.0     # Max (simulated) time to evolve
+time.max_step                =  8          # Max number of time steps
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
@@ -26,16 +26,17 @@ transport.laminar_prandtl = 0.7
 transport.turbulent_prandtl = 0.3333
 turbulence.model = OneEqKsgsM84
 incflo.physics = ABL
-ICNS.source_terms = BoussinesqBuoyancy CoriolisForcing ABLForcing BodyForce ABLMeanBoussinesq
+ICNS.source_terms = BoussinesqBuoyancy CoriolisForcing ABLForcing  # Uncomment for simulations without turbines
+# ICNS.source_terms = BoussinesqBuoyancy CoriolisForcing ActuatorForcing BodyForce ABLMeanBoussinesq  # Uncomment for simulations with turbines
 #--------- Additions by calc_inflow_stats.py ---------#
 ABL.wall_shear_stress_type = "local"
 ABL.inflow_outflow_mode = true
 ABL.wf_velocity = 9.992795138134136 -0.0007138743053467138
 ABL.wf_vmag = 10.016339397424394
 ABL.wf_theta = 290.0178442735406
-BodyForce.magnitude = 0.0008901711909450327 0.0014550668111182673 0.0
-BoussinesqBuoyancy.read_temperature_profile = true
-BoussinesqBuoyancy.tprofile_filename = "../abl_unstable_precursor/avg_theta.dat"
+# BodyForce.magnitude = 0.0008901711909450327 0.0014550668111182673 0.0  # Uncomment for simulations with turbines
+# BoussinesqBuoyancy.read_temperature_profile = true  # Uncomment for simulations with turbines
+# BoussinesqBuoyancy.tprofile_filename = "../abl_unstable_precursor/avg_theta.dat"  # Uncomment for simulations with turbines
 #-----------------------------------------------------#
 TKE.source_terms = KsgsM84Src
 # TKE.interpolation="PiecewiseConstant"  # Use if amr.max_level > 1
