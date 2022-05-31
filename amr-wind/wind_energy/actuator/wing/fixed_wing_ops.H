@@ -45,7 +45,7 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
         bool use_fllc = false;
         pp.query("fllc", use_fllc);
         if (use_fllc) {
-            wdata.fllc = std::make_unique<FLLCData>();
+            wdata.fllc = std::make_unique<FLLCData>(wdata.vel_rel);
             FLLCParse(pp, *(wdata.fllc.get()));
         }
 
