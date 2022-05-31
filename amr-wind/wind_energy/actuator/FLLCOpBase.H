@@ -63,7 +63,7 @@ struct FLLCOp
         for (int ip = 0; ip < npts; ++ip) {
 
             const auto eps_les = fllc.epsilon;
-            const auto eps_opt = fllc.epsilon_chord*fllc.chord[ip];
+            const auto eps_opt = fllc.optimal_epsilon[ip];
 
             for (int jp = 0; jp < npts; ++jp) {
 
