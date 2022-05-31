@@ -18,7 +18,7 @@ jobs:
         source: './amr-wind ./unit_tests ./tools/utilities'
         exclude: '.'
         extensions: 'H,h,cpp'
-        clangFormatVersion: 11
+        clangFormatVersion: 14
   CPU:
     needs: Formatting
     runs-on: ${{matrix.os}}

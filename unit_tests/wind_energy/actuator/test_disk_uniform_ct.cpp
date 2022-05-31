@@ -14,16 +14,12 @@ protected:
     {
         AmrexTest::SetUp();
         {
-            amrex::ParmParse pp("Actuator");
             amrex::ParmParse pu("Actuator.UniformCtDisk");
             pu.add("num_force_points", 3);
             pu.add("epsilon", 1);
             pu.add("rotor_diameter", 1);
             std::vector<double> ct{1};
             pu.addarr("thrust_coeff", ct);
-        }
-        {
-            amrex::ParmParse pp("Coriolis");
         }
     }
 };
