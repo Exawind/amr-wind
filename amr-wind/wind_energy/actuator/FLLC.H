@@ -8,7 +8,15 @@ namespace amr_wind {
 namespace actuator {
 struct FLLCData
 {
+    FLLCData(VecList& ref_vel): relative_velocity(ref_vel){}
+
     void init_data(const ComponentView& view, const amrex::Real eps_chord);
+
+    // reference fields
+    // assuming this is only going to run on host
+    // if we ever run on device we should just move this to a straight
+    // copy
+    VecList& relative_velocity;
 
     // constants
     amrex::Real epsilon;
@@ -17,7 +25,6 @@ struct FLLCData
     RealList optimal_epsilon;
 
     // computed values
-    VecList relative_velocity;
     VecList les_velocity;
     VecList optimal_velocity;
     VecList correction_velocity;

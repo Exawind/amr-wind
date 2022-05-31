@@ -8,7 +8,6 @@ void FLLCData::init_data(const ComponentView& view, const amrex::Real eps_chord)
     const int npts = view.pos.size();
     dx.resize(npts);
     optimal_epsilon.resize(npts);
-    relative_velocity.assign(npts, vs::Vector::zero());
     les_velocity.assign(npts, vs::Vector::zero());
     optimal_velocity.assign(npts, vs::Vector::zero());
     correction_velocity.assign(npts, vs::Vector::zero());

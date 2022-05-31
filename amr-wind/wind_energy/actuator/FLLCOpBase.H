@@ -19,7 +19,7 @@ struct FLLCOp
     {
 
         const int npts = fllc.correction_velocity.size();
-        auto& du_fllc = fllc.correction_velocity;;
+        auto& du_fllc = fllc.correction_velocity;
 
         auto& u_les_fllc = fllc.les_velocity;
         auto& u_opt_fllc = fllc.optimal_velocity;

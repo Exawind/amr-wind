@@ -9,11 +9,11 @@ TEST(TestFLLCData, data_sized_by_single_function)
 {
     const int num_points = 10;
 
-    FLLCData data;
-
     VecList dummy_vec(num_points);
     RealList dummy_real(num_points);
     TensorList dummy_tensor(num_points);
+
+    FLLCData data(dummy_vec);
 
     ComponentView view;
     view.pos = ::amr_wind::utils::slice(dummy_vec, 0, num_points);
