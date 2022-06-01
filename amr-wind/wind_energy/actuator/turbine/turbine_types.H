@@ -6,6 +6,8 @@
 namespace amr_wind {
 namespace actuator {
 
+struct FLLCData;
+
 struct TurbineInfo : public ActInfo
 {
     //! Base location of this turbine
@@ -35,6 +37,7 @@ struct TurbineBaseData
     int num_pts_tower;
 
     RealList chord;
+    VecList vel_rel;
 
     //! Center of rotation for the rotor
     vs::Vector rot_center;
@@ -65,11 +68,8 @@ struct TurbineBaseData
     //! Wetted surface area for nacelle
     amrex::Real nacelle_area{0.0};
 
-    //! Flag to determine to use the filtered lifting line correction
-    bool fllc_use;
-    bool fllc_is_init{false};
-
     std::vector<ComponentView> blades;
+    std::vector<FLLCData> fllc;
     ComponentView tower;
     ComponentView hub;
 };

@@ -21,6 +21,7 @@ ComponentView make_component_view(FixedWing::DataType& data)
     view.orientation =
         ::amr_wind::utils::slice(grid.orientation, 0, meta.num_pts);
     view.chord = ::amr_wind::utils::slice(meta.chord, 0, meta.num_pts);
+    view.vel_rel = ::amr_wind::utils::slice(meta.vel_rel, 0, meta.num_pts);
 
     return view;
 }
@@ -45,7 +46,7 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
         bool use_fllc = false;
         pp.query("fllc", use_fllc);
         if (use_fllc) {
-            wdata.fllc = std::make_unique<FLLCData>(wdata.vel_rel);
+            wdata.fllc = std::make_unique<FLLCData>();
             FLLCParse(pp, *(wdata.fllc.get()));
         }
 
@@ -118,6 +119,7 @@ struct InitDataOp<FixedWing, ActSrcLine>
 
         if (meta.fllc) {
             meta.component_view = make_component_view(data);
+            FLLCInit(*(meta.fllc.get()), meta.component_view, meta.epsilon_chord[0]);
         }
     }
 };

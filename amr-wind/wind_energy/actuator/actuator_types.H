@@ -124,6 +124,7 @@ struct ComponentView
 
     VecSlice vel_pos;
     VecSlice vel;
+    VecSlice vel_rel;
 
     RealSlice chord;
 };

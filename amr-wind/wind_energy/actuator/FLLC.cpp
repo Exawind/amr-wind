@@ -3,23 +3,23 @@
 namespace amr_wind {
 namespace actuator {
 
-void FLLCData::init_data(const ComponentView& view, const amrex::Real eps_chord)
+void FLLCInit(FLLCData& data, const ComponentView& view, const amrex::Real eps_chord)
 {
     const int npts = view.pos.size();
-    dx.resize(npts);
-    optimal_epsilon.resize(npts);
-    les_velocity.assign(npts, vs::Vector::zero());
-    optimal_velocity.assign(npts, vs::Vector::zero());
-    correction_velocity.assign(npts, vs::Vector::zero());
-    lift.assign(npts, vs::Vector::zero());
-    grad_lift.assign(npts, vs::Vector::zero());
+    data.dx.resize(npts);
+    data.optimal_epsilon.resize(npts);
+    data.les_velocity.assign(npts, vs::Vector::zero());
+    data.optimal_velocity.assign(npts, vs::Vector::zero());
+    data.correction_velocity.assign(npts, vs::Vector::zero());
+    data.lift.assign(npts, vs::Vector::zero());
+    data.grad_lift.assign(npts, vs::Vector::zero());
 
     for (int i = 0; i < npts - 1; ++i) {
-        dx[i] = vs::mag(view.pos[i + 1] - view.pos[i]);
-        optimal_epsilon[i] = view.chord[i] * eps_chord;
+        data.dx[i] = vs::mag(view.pos[i + 1] - view.pos[i]);
+        data.optimal_epsilon[i] = view.chord[i] * eps_chord;
     }
-    dx[npts - 1] = vs::mag(view.pos[npts - 1] - view.pos[npts - 2]);
-    optimal_epsilon[npts - 1] = view.chord[npts - 1] * eps_chord;
+    data.dx[npts - 1] = vs::mag(view.pos[npts - 1] - view.pos[npts - 2]);
+    data.optimal_epsilon[npts - 1] = view.chord[npts - 1] * eps_chord;
 }
 
 void FLLCParse(const utils::ActParser& pp, FLLCData& data)
