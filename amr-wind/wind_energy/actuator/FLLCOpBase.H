@@ -37,7 +37,8 @@ struct FLLCOp
             const auto force = data.force[ip];
             const auto vel = data.vel_rel[ip] & tmat;
             const auto dx = fllc.dx[ip];
-            const auto vmag = vs::mag(vel);
+            const auto vmag =
+                std::max(vs::mag(vel), vs::DTraits<amrex::Real>::eps());
             const auto vmag2 = vmag * vmag;
 
             const auto fv = force & vel;
@@ -69,9 +70,10 @@ struct FLLCOp
 
                 if (ip == jp) continue;
 
-                const auto dr = fllc.dx[ip];
+                const auto dr = vs::mag(data.vel_pos[ip] - data.vel_pos[jp]);
                 const auto& vel = data.vel_rel[jp];
-                const auto vmag = vs::mag(vel);
+                const auto vmag =
+                    std::max(vs::mag(vel), vs::DTraits<amrex::Real>::eps());
 
                 auto coefficient =
                     1.0 / (-4.0 * amr_wind::utils::pi() * dr * vmag);
