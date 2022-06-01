@@ -16,6 +16,7 @@ ComponentView make_component_view(FixedWing::DataType& data)
     auto& meta = data.meta();
     ComponentView view;
     view.pos = ::amr_wind::utils::slice(grid.pos, 0, meta.num_pts);
+    view.vel_pos = ::amr_wind::utils::slice(grid.vel_pos, 0, meta.num_pts);
     view.force = ::amr_wind::utils::slice(grid.force, 0, meta.num_pts);
     view.epsilon = ::amr_wind::utils::slice(grid.epsilon, 0, meta.num_pts);
     view.orientation =
