@@ -22,6 +22,7 @@ ComponentView make_component_view(FixedWing::DataType& data)
         ::amr_wind::utils::slice(grid.orientation, 0, meta.num_pts);
     view.chord = ::amr_wind::utils::slice(meta.chord, 0, meta.num_pts);
     view.vel_rel = ::amr_wind::utils::slice(meta.vel_rel, 0, meta.num_pts);
+    view.vel = ::amr_wind::utils::slice(grid.vel, 0, meta.num_pts);
 
     return view;
 }

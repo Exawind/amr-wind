@@ -69,7 +69,7 @@ struct FLLCOp
 
                 if (ip == jp) continue;
 
-                const auto dr = vs::mag(data.vel_pos[ip] - data.vel_pos[jp]);
+                const auto dr = fllc.dx[ip];
                 const auto& vel = data.vel_rel[jp];
                 const auto vmag = vs::mag(vel);
 
