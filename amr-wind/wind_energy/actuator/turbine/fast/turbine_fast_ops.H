@@ -370,6 +370,19 @@ struct UpdateVelOp<TurbineFast, SrcTrait>
         }
 
         if (!tdata.fllc.empty()) {
+            // Compute the relative velocity needed for the FLLC
+            for (int i = 0; i < nvpts; ++i) {
+                tdata.vel_rel[i][0] =
+                    uvel[i] - static_cast<amrex::Real>(
+                                  tdata.fast_data.to_cfd.xdotForce[i]);
+                tdata.vel_rel[i][1] =
+                    vvel[i] - static_cast<amrex::Real>(
+                                  tdata.fast_data.to_cfd.ydotForce[i]);
+                tdata.vel_rel[i][2] =
+                    wvel[i] - static_cast<amrex::Real>(
+                                  tdata.fast_data.to_cfd.zdotForce[i]);
+            }
+            // Loop through each blade and apply the FLLC
             for (int i = 0; i < tdata.num_blades; ++i) {
                 FLLCOp()(tdata.blades[i], tdata.fllc[i]);
             }
