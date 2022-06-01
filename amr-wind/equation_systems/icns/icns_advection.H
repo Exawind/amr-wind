@@ -95,8 +95,10 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             godunov_scheme = godunov::scheme::PPM;
         }
 
-        // TODO: Need iconserv flag to be adjusted???
-        iconserv.resize(ICNS::ndim, 1);
+        // Formulation of discrete ICNS equation
+        // 1 = conservative (default), 0 = nonconservative
+        pp.query("icns_conserv", m_cons);
+        iconserv.resize(ICNS::ndim, m_cons);
     }
 
     void preadvect(const FieldState fstate, const amrex::Real dt)
@@ -350,6 +352,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     godunov::scheme godunov_scheme = godunov::scheme::PPM;
     std::string godunov_type;
     bool godunov_use_forces_in_trans{false};
+    int m_cons{1};
 };
 
 /** MOL scheme for ICNS
