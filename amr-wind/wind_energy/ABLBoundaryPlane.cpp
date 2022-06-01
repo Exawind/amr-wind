@@ -236,8 +236,8 @@ void InletData::interpolate(const amrex::Real time)
             continue;
         }
 
-        const int nlevels = m_data_n[ori]->size();
-        for (int lev = 0; lev < nlevels; ++lev) {
+        const int lnlevels = m_data_n[ori]->size();
+        for (int lev = 0; lev < lnlevels; ++lev) {
 
             const auto& datn = (*m_data_n[ori])[lev];
             const auto& datnp1 = (*m_data_np1[ori])[lev];
