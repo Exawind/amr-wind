@@ -74,7 +74,7 @@ struct UpdateVelOp<
     void operator()(typename ActTrait::DataType& data)
     {
         auto& meta = data.meta();
-        if (meta.fllc){
+        if (meta.fllc) {
             FLLCOp()(meta.component_view, *(meta.fllc));
         }
     }

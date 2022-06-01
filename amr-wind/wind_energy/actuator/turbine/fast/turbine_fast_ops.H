@@ -354,8 +354,9 @@ struct UpdateVelOp<TurbineFast, SrcTrait>
         // safeguard
         if (!data.info().is_root_proc) return;
         BL_PROFILE("amr-wind::actuator::UpdateVelOp<TurbineFast>");
+        auto& tdata = data.meta();
 
-        auto& from_cfd = data.meta().fast_data.from_cfd;
+        auto& from_cfd = tdata.fast_data.from_cfd;
         auto& uvel = from_cfd.u;
         auto& vvel = from_cfd.v;
         auto& wvel = from_cfd.w;
@@ -366,6 +367,12 @@ struct UpdateVelOp<TurbineFast, SrcTrait>
             uvel[i] = static_cast<float>(vel[i].x());
             vvel[i] = static_cast<float>(vel[i].y());
             wvel[i] = static_cast<float>(vel[i].z());
+        }
+
+        if (!tdata.fllc.empty()) {
+            for (int i = 0; i < tdata.num_blades; ++i) {
+                FLLCOp()(tdata.blades[i], tdata.fllc[i]);
+            }
         }
     }
 };
