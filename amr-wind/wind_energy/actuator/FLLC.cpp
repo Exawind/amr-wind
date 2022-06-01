@@ -3,7 +3,8 @@
 namespace amr_wind {
 namespace actuator {
 
-void FLLCInit(FLLCData& data, const ComponentView& view, const amrex::Real eps_chord)
+void FLLCInit(
+    FLLCData& data, const ComponentView& view, const amrex::Real eps_chord)
 {
     const int npts = view.pos.size();
     data.dx.resize(npts);

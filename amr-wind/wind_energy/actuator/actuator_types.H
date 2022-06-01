@@ -112,9 +112,9 @@ struct ActGrid
 };
 
 /** Slice of actutator data for components (tower, blade, etc)
-*
-*  \ingroup actuator
-*/
+ *
+ *  \ingroup actuator
+ */
 struct ComponentView
 {
     VecSlice pos;
@@ -128,7 +128,6 @@ struct ComponentView
 
     RealSlice chord;
 };
-
 
 /** Basic information that is common to all actuator types.
  *
@@ -214,7 +213,6 @@ public:
     typename ActTrait::MetaType& meta() { return m_meta; }
     const typename ActTrait::MetaType& meta() const { return m_meta; }
 };
-
 
 } // namespace actuator
 } // namespace amr_wind
