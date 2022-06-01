@@ -96,7 +96,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         }
 
         // TODO: Need iconserv flag to be adjusted???
-        iconserv.resize(ICNS::ndim, 0);
+        iconserv.resize(ICNS::ndim, 1);
     }
 
     void preadvect(const FieldState fstate, const amrex::Real dt)
