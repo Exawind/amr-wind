@@ -33,7 +33,7 @@ void apply_mms_vel(CFDSim& sim)
     const int nlevels = sim.repo().num_active_levels();
 
     const auto& levelset = sim.repo().get_field("ib_levelset");
-    const auto& velocity = sim.repo().get_field("velocity");
+    auto& velocity = sim.repo().get_field("velocity");
     auto& m_conv_taylor_green =
         sim.physics_manager().get<ctv::ConvectingTaylorVortex>();
 
@@ -78,7 +78,7 @@ void apply_dirichlet_vel(CFDSim& sim, const amrex::Vector<amrex::Real>& vel_bc)
 {
     const int nlevels = sim.repo().num_active_levels();
     auto& geom = sim.mesh().Geom();
-    const auto& velocity = sim.repo().get_field("velocity");
+    auto& velocity = sim.repo().get_field("velocity");
     auto& levelset = sim.repo().get_field("ib_levelset");
     levelset.fillpatch(sim.time().current_time());
     auto& normal = sim.repo().get_field("ib_normal");
