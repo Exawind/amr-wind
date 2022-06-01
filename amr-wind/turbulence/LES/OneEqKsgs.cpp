@@ -231,6 +231,7 @@ void OneEqKsgsM84<Transport>::post_advance_work()
     // Update sdr field based on sfs ke
 
     auto& tke = *(this->m_tke);
+    // cppcheck-suppress constVariable
     auto& sdr = *(this->m_sdr);
     const amrex::Real Ce = this->m_Ce;
 

@@ -260,6 +260,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         const auto& geom = repo.mesh().Geom();
 
         const auto& src_term = fields.src_term;
+        // cppcheck-suppress constVariable
         auto& conv_term = fields.conv_term;
         const auto& dof_field = fields.field.state(fstate);
 
@@ -374,6 +375,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
     void preadvect(const FieldState fstate, const amrex::Real dt)
     {
 
+        // cppcheck-suppress constVariable
         auto& repo = fields.repo;
         auto& dof_field = fields.field.state(fstate);
 
