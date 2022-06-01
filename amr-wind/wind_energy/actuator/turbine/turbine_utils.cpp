@@ -32,8 +32,8 @@ void read_inputs(
     pp.get("hub_height", tinfo.hub_height);
     bool use_fllc;
     pp.query("fllc", use_fllc);
-    if(use_fllc){
-        for(int i=0; i<tdata.num_blades; ++i){
+    if (use_fllc) {
+        for (int i = 0; i < tdata.num_blades; ++i) {
             tdata.fllc.emplace_back(FLLCData());
             FLLCParse(pp, tdata.fllc.back());
         }

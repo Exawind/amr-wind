@@ -119,7 +119,8 @@ struct InitDataOp<FixedWing, ActSrcLine>
 
         if (meta.fllc) {
             meta.component_view = make_component_view(data);
-            FLLCInit(*(meta.fllc.get()), meta.component_view, meta.epsilon_chord[0]);
+            FLLCInit(
+                *(meta.fllc.get()), meta.component_view, meta.epsilon_chord[0]);
         }
     }
 };

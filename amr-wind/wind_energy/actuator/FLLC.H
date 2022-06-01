@@ -23,7 +23,8 @@ struct FLLCData
 };
 
 void FLLCParse(const utils::ActParser& pp, FLLCData& data);
-void FLLCInit(FLLCData& data, const ComponentView& view, const amrex::Real eps_chord);
+void FLLCInit(
+    FLLCData& data, const ComponentView& view, const amrex::Real eps_chord);
 
 } // namespace actuator
 } // namespace amr_wind
