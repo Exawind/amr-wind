@@ -35,7 +35,7 @@ struct FLLCOp
 
             const auto& tmat = data.orientation[ip];
             const auto force = data.force[ip];
-            const auto vel = fllc.relative_velocity[ip] & tmat;
+            const auto vel = data.vel_rel[ip] & tmat;
             const auto dx = fllc.dx[ip];
             const auto vmag = vs::mag(vel);
             const auto vmag2 = vmag * vmag;
@@ -70,7 +70,7 @@ struct FLLCOp
                 if (ip == jp) continue;
 
                 const auto dr = vs::mag(data.vel_pos[ip] - data.vel_pos[jp]);
-                const auto& vel = fllc.relative_velocity[jp];
+                const auto& vel = data.vel_rel[jp];
                 const auto vmag = vs::mag(vel);
 
                 auto coefficient =
@@ -103,26 +103,6 @@ struct FLLCOp
          */
         for (int ip = 0; ip < npts; ++ip)
             data.vel[ip] = data.vel[ip] + du_fllc[ip];
-    }
-};
-
-template <typename ActTrait, typename SrcTrait>
-struct FLLCOpTurbineBase
-{
-
-    FLLCOpTurbineBase(typename ActTrait::DataType& data) {}
-
-    void operator()(typename ActTrait::DataType& data)
-    {
-
-        // The cfd grid data
-        auto& grid = data.grid();
-        // The turbine data
-        auto& tdata = data.meta();
-
-        // Introduce FLLC logic
-        for (int i = 0; i < tdata.num_blades; ++i) {
-        }
     }
 };
 

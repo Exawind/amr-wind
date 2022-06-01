@@ -5,7 +5,7 @@
 namespace amr_wind {
 namespace actuator {
 
-TEST(TestFLLCData, data_sized_by_single_function)
+TEST(TestFLLCData, data_initializes_with_cviews)
 {
     const int num_points = 10;
 
@@ -13,7 +13,7 @@ TEST(TestFLLCData, data_sized_by_single_function)
     RealList dummy_real(num_points);
     TensorList dummy_tensor(num_points);
 
-    FLLCData data(dummy_vec);
+    FLLCData data;
 
     ComponentView view;
     view.pos = ::amr_wind::utils::slice(dummy_vec, 0, num_points);
@@ -21,8 +21,9 @@ TEST(TestFLLCData, data_sized_by_single_function)
     view.epsilon = ::amr_wind::utils::slice(dummy_vec, 0, num_points);
     view.orientation = ::amr_wind::utils::slice(dummy_tensor, 0, num_points);
     view.chord = ::amr_wind::utils::slice(dummy_real, 0, num_points);
+    view.vel_rel = ::amr_wind::utils::slice(dummy_vec, 0, num_points);
 
-    data.init_data(view, 1.0);
+    FLLCInit(data, view, 1.0);
 
     ASSERT_EQ(num_points, data.les_velocity.size());
     ASSERT_EQ(num_points, data.optimal_velocity.size());

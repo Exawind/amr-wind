@@ -160,6 +160,8 @@ struct InitDataOp<TurbineFast, SrcTrait>
             tdata.num_pts_tower = sz_info[3];
         }
 
+        tdata.vel_rel.assign(sz_info[1], vs::Vector::zero());
+
         if (info.is_root_proc) {
             // copy chord data
             int npts = sz_info[1];
@@ -175,6 +177,11 @@ struct InitDataOp<TurbineFast, SrcTrait>
 
         make_component_views(data);
         init_epsilon(data);
+        if(!tdata.fllc.empty()){
+            for(int i=0; i<tdata.num_blades; ++i){
+                FLLCInit(tdata.fllc[i], tdata.blades[i], tdata.eps_chord[0]);
+            }
+        }
     }
 
     void make_component_views(typename TurbineFast::DataType& data)
@@ -199,6 +206,8 @@ struct InitDataOp<TurbineFast, SrcTrait>
                 grid.orientation, start, num_pts_blade);
             cv.chord = ::amr_wind::utils::slice(
                 tdata.chord, start, num_pts_blade);
+            cv.vel_rel = ::amr_wind::utils::slice(
+                tdata.vel_rel, start, num_pts_blade);
             // clang-format on
 
             tdata.blades.emplace_back(std::move(cv));
@@ -332,12 +341,6 @@ struct UpdatePosOp<TurbineFast, SrcTrait>
             vel_pos[i].z() = static_cast<amrex::Real>(pzvel[i]) + bp.z();
         }
 
-        auto& meta = data.meta();
-        if (!meta.fllc_use || !meta.fllc_is_init) return;
-
-        // Implement the FLLC
-        FLLCOpTurbineBase<TurbineFast, SrcTrait> op(data);
-        op(data);
 
     }
 };
