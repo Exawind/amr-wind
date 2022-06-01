@@ -102,7 +102,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     void preadvect(const FieldState fstate, const amrex::Real dt)
     {
 
-        auto& repo = fields.repo;
+        const auto& repo = fields.repo;
         const auto& geom = repo.mesh().Geom();
 
         const auto& src_term = fields.src_term;
@@ -260,9 +260,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         const auto& geom = repo.mesh().Geom();
 
         const auto& src_term = fields.src_term;
-        // cppcheck-suppress constVariable
         auto& conv_term = fields.conv_term;
-        auto& dof_field = fields.field.state(fstate);
+        const auto& dof_field = fields.field.state(fstate);
 
         auto flux_x =
             repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::XFACE);
@@ -406,7 +405,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
     void operator()(const FieldState fstate, const amrex::Real /*unused*/)
     {
 
-        auto& repo = fields.repo;
+        const auto& repo = fields.repo;
         const auto& geom = repo.mesh().Geom();
         // cppcheck-suppress constVariable
         auto& conv_term = fields.conv_term.state(fstate);

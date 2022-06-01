@@ -11,15 +11,15 @@ using namespace amrex;
 void incflo::set_inflow_velocity(
     int lev, amrex::Real time, MultiFab& vel, int nghost)
 {
-    auto& velocity = icns().fields().field;
-    velocity.set_inflow(lev, time, vel, nghost);
+    auto& lvelocity = icns().fields().field;
+    lvelocity.set_inflow(lev, time, vel, nghost);
 
     // TODO fix hack for ABL
     auto& phy_mgr = m_sim.physics_manager();
     if (phy_mgr.contains("ABL")) {
         auto& abl = phy_mgr.get<amr_wind::ABL>();
         const auto& bndry_plane = abl.bndry_plane();
-        bndry_plane.populate_data(lev, time, velocity, vel);
+        bndry_plane.populate_data(lev, time, lvelocity, vel);
     }
 }
 
