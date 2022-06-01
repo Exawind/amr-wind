@@ -91,7 +91,10 @@ private:
     // sum of volume fractions (for vof only)
     amrex::Real m_total_volfrac{0.0};
 
-    amrex::Real q0, q1, q2, sumvof0;
+    amrex::Real q0{0.0};
+    amrex::Real q1{0.0};
+    amrex::Real q2{0.0};
+    amrex::Real sumvof0{0.0};
 };
 
 } // namespace amr_wind

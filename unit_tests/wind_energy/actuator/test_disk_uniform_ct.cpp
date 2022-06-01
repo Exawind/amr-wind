@@ -95,9 +95,6 @@ TEST_F(UniformCtTest, compute_vecs_with_different_north)
         pp.addarr("north_vector", north);
         pp.addarr("east_vector", east);
     }
-    {
-        amrex::ParmParse pp("Actuator.UniformCtDisk");
-    }
     act::utils::ActParser ap("Actuator.UniformCtDisk", "Actuator");
     act::utils::ActParser cp("Coriolis.Forcing", "Coriolis");
     ASSERT_TRUE(cp.contains("north_vector"));

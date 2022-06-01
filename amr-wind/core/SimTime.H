@@ -126,7 +126,7 @@ public:
 
 private:
     //! Timestep sizes
-    amrex::Real m_dt[max_time_states];
+    amrex::Real m_dt[max_time_states]{0.0};
 
     //! Current simulation time
     amrex::Real m_cur_time{0.0};
