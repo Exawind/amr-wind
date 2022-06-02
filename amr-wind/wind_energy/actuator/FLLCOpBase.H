@@ -93,7 +93,7 @@ struct FLLCOp
             }
 
             // Relaxation to compute the induced velocity
-            const double f = 0.1;
+            const double f = fllc.relaxation_factor;
             du_fllc[ip] =
                 (1. - f) * du_fllc[ip] + f * (u_opt_fllc[ip] - u_les_fllc[ip]);
         }
