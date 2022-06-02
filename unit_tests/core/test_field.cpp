@@ -317,7 +317,9 @@ TEST_F(FieldRepoTest, int_fields)
     initialize_mesh();
 
     auto& frepo = mesh().field_repo();
+    // cppcheck-suppress constVariable
     auto& ibcell = frepo.declare_int_field("iblank_cell", 1, 0, 1);
+    // cppcheck-suppress constVariable
     auto& ibnode = frepo.declare_int_field(
         "iblank_node", 1, 0, 1, amr_wind::FieldLoc::NODE);
 
