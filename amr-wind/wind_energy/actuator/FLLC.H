@@ -20,6 +20,7 @@ struct FLLCData
     VecList correction_velocity;
     VecList lift;
     VecList grad_lift;
+    bool past_initialization{false};
 };
 
 void FLLCParse(const utils::ActParser& pp, FLLCData& data);

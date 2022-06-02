@@ -17,7 +17,9 @@ struct FLLCOp
 {
     void operator()(ComponentView& data, FLLCData& fllc)
     {
-
+        if (!fllc.past_initialization) {
+            return;
+        }
         const int npts = fllc.correction_velocity.size();
         auto& du_fllc = fllc.correction_velocity;
 
@@ -101,7 +103,7 @@ struct FLLCOp
             }
 
             // Relaxation to compute the induced velocity
-            const double f = fllc.relaxation_factor;
+            const auto f = fllc.relaxation_factor;
             du_fllc[ip] =
                 (1. - f) * du_fllc[ip] + f * (u_opt_fllc[ip] - u_les_fllc[ip]);
         }
