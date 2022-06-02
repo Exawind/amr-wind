@@ -19,6 +19,7 @@ struct FLLCOp
     {
 
         const int npts = fllc.correction_velocity.size();
+        amrex::Print() << "FLLC Size: " << npts << std::endl;
         auto& du_fllc = fllc.correction_velocity;
 
         auto& u_les_fllc = fllc.les_velocity;
@@ -32,7 +33,10 @@ struct FLLCOp
          * Compute equation 5.3 from Martinez-Tossas and Meneveau 2019
          */
         for (int ip = 0; ip < npts; ++ip) {
-
+            u_les_fllc[ip].zero();
+            u_opt_fllc[ip].zero();
+            G_fllc[ip].zero();
+            dG_fllc[ip].zero();
             const auto& tmat = data.orientation[ip];
             const auto force = data.force[ip];
             const auto vel = data.vel_rel[ip] & tmat;
