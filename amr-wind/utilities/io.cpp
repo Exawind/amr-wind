@@ -25,8 +25,8 @@ void incflo::ReadCheckpointFile()
     amrex::Print() << "Restarting from checkpoint " << restart_file
                    << std::endl;
 
-    Real prob_lo[AMREX_SPACEDIM];
-    Real prob_hi[AMREX_SPACEDIM];
+    Real prob_lo[AMREX_SPACEDIM] = {0.0};
+    Real prob_hi[AMREX_SPACEDIM] = {0.0};
 
     /***************************************************************************
      * Load header: set up problem domain (including BoxArray)                 *

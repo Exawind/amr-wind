@@ -58,8 +58,8 @@ public:
      */
     amrex::Real line_derivative_of_average_cell(int ind, int comp) const;
 
-    void
-    output_line_average_ascii(std::string filename, int step, amrex::Real time);
+    void output_line_average_ascii(
+        const std::string& filename, int step, amrex::Real time);
     void output_line_average_ascii(int step, amrex::Real time);
 
     /** change precision of text file output */
@@ -179,8 +179,8 @@ public: // public for GPU
        velocity magnitude */
     amrex::Real line_hvelmag_derivative_of_average_cell(int ind) const;
 
-    void
-    output_line_average_ascii(std::string filename, int step, amrex::Real time);
+    void output_line_average_ascii(
+        const std::string& filename, int step, amrex::Real time);
     void output_line_average_ascii(int step, amrex::Real time);
 };
 

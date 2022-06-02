@@ -15,7 +15,6 @@ initialize_volume_fractions(const int dir, const int nx, amr_wind::Field& vof)
         auto vof_arr = vof(lev).array(mfi);
         const auto& bx = mfi.validbox();
         amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-            int icheck = 0;
             if (dir < 0) {
                 // Bottom left half is liquid, top right half is gas
                 if (i + j + k == 3) {
@@ -28,6 +27,7 @@ initialize_volume_fractions(const int dir, const int nx, amr_wind::Field& vof)
                     }
                 }
             } else {
+                int icheck = 0;
                 // Left half is liquid, right half is gas
                 switch (dir) {
                 case 0:

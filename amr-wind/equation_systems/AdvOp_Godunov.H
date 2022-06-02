@@ -79,7 +79,7 @@ struct AdvectionOp<
         const auto& src_term = fields.src_term;
         // cppcheck-suppress constVariable
         auto& conv_term = fields.conv_term;
-        auto& dof_field = fields.field.state(fstate);
+        const auto& dof_field = fields.field.state(fstate);
 
         auto flux_x =
             repo.create_scratch_field(PDE::ndim, 0, amr_wind::FieldLoc::XFACE);

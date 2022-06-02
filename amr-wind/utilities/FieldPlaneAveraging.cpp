@@ -52,7 +52,7 @@ FPlaneAveraging<FType>::FPlaneAveraging(
 
 template <typename FType>
 void FPlaneAveraging<FType>::output_line_average_ascii(
-    std::string filename, int step, amrex::Real time)
+    const std::string& filename, int step, amrex::Real time)
 {
     BL_PROFILE("amr-wind::FPlaneAveraging::output_line_average_ascii");
 
@@ -97,7 +97,7 @@ template <typename FType>
 void FPlaneAveraging<FType>::output_line_average_ascii(
     int step, amrex::Real time)
 {
-    std::string filename = "plane_average_" + m_field.name() + ".txt";
+    const std::string filename = "plane_average_" + m_field.name() + ".txt";
     output_line_average_ascii(filename, step, time);
 }
 
@@ -265,7 +265,7 @@ void FPlaneAveraging<FType>::compute_averages(
         m_line_average.data(), m_line_average.size());
 
     amrex::Real* line_avg = lavg.data();
-    const int ncomp = m_ncomp;
+    const int captured_ncomp = m_ncomp;
 
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
@@ -296,9 +296,9 @@ void FPlaneAveraging<FType>::compute_averages(
 
                             const int ind = idxOp(i, j, k);
 
-                            for (int n = 0; n < ncomp; ++n) {
+                            for (int n = 0; n < captured_ncomp; ++n) {
                                 amrex::Gpu::deviceReduceSum(
-                                    &line_avg[ncomp * ind + n],
+                                    &line_avg[captured_ncomp * ind + n],
                                     fab_arr(i, j, k, n) * denom, handler);
                             }
                         }
@@ -491,7 +491,7 @@ amrex::Real VelPlaneAveraging::line_hvelmag_average_cell(int ind) const
 }
 
 void VelPlaneAveraging::output_line_average_ascii(
-    std::string filename, int step, amrex::Real time)
+    const std::string& filename, int step, amrex::Real time)
 {
     BL_PROFILE("amr-wind::VelPlaneAveraging::output_line_average_ascii");
 
@@ -536,7 +536,7 @@ void VelPlaneAveraging::output_line_average_ascii(
 
 void VelPlaneAveraging::output_line_average_ascii(int step, amrex::Real time)
 {
-    std::string filename = "plane_average_" + m_field.name() + ".txt";
+    const std::string filename = "plane_average_" + m_field.name() + ".txt";
     output_line_average_ascii(filename, step, time);
 }
 

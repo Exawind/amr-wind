@@ -24,7 +24,7 @@ void Smagorinsky<Transport>::update_turbulent_viscosity(const FieldState fstate)
         "amr-wind::" + this->identifier() + "::update_turbulent_viscosity");
 
     auto& mu_turb = this->mu_turb();
-    auto& repo = mu_turb.repo();
+    const auto& repo = mu_turb.repo();
     const auto& vel = m_vel.state(fstate);
     const auto& den = m_rho.state(fstate);
     const auto& geom_vec = repo.mesh().Geom();
