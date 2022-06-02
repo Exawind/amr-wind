@@ -19,7 +19,6 @@ struct FLLCOp
     {
 
         const int npts = fllc.correction_velocity.size();
-        amrex::Print() << "FLLC Size: " << npts << std::endl;
         auto& du_fllc = fllc.correction_velocity;
 
         auto& u_les_fllc = fllc.les_velocity;
@@ -57,8 +56,9 @@ struct FLLCOp
          */
         dG_fllc[0] = G_fllc[0];
         dG_fllc[npts - 1] = -1 * G_fllc[npts - 1];
-        for (int ip = 1; ip < npts - 1; ++ip)
+        for (int ip = 1; ip < npts - 1; ++ip) {
             dG_fllc[ip] = 0.5 * (G_fllc[ip + 1] - G_fllc[ip - 1]);
+        }
 
         /**
          * Step 3
@@ -72,7 +72,9 @@ struct FLLCOp
 
             for (int jp = 0; jp < npts; ++jp) {
 
-                if (ip == jp) continue;
+                if (ip == jp) {
+                    continue;
+                }
 
                 const auto dr = vs::mag(data.vel_pos[ip] - data.vel_pos[jp]);
                 const auto& vel = data.vel_rel[jp];
@@ -88,7 +90,9 @@ struct FLLCOp
 
                 // The sign of the induced velocity depends on which side of the
                 // blade we are on
-                if (ip < jp) coefficient *= -1;
+                if (ip < jp) {
+                    coefficient *= -1;
+                }
 
                 u_les_fllc[ip] =
                     u_les_fllc[ip] - dG_fllc[jp] * coefficient * cLes;
@@ -107,8 +111,9 @@ struct FLLCOp
          * Compute the induced velocity difference
          * Compute equation 5.8 from Martinez-Tossas and Meneveau 2019
          */
-        for (int ip = 0; ip < npts; ++ip)
+        for (int ip = 0; ip < npts; ++ip) {
             data.vel[ip] = data.vel[ip] + du_fllc[ip];
+        }
     }
 };
 
