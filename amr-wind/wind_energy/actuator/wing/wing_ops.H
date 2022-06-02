@@ -137,6 +137,10 @@ struct ComputeForceOp<
 
         wdata.lift = total_lift;
         wdata.drag = total_drag;
+
+        if (wdata.fllc) {
+            wdata.fllc->past_initialization = true;
+        }
     }
 };
 
