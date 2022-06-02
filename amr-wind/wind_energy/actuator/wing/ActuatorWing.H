@@ -44,9 +44,6 @@ struct WingBaseData
     //! Data structure required for passing data to the FLLC
     ComponentView component_view;
 
-    //! The velocity correction from filtered lifting line theory
-    VecList du_fllc;
-
     //! Width of actuator sections
     RealList dx;
 
