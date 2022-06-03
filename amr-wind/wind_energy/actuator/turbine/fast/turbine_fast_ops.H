@@ -401,6 +401,9 @@ struct ComputeForceOp<TurbineFast, SrcTrait>
         // Broadcast data to all the processes that contain patches influenced
         // by this turbine
         scatter_data(data);
+        for (auto&& fllc : data.meta().fllc) {
+            fllc.past_initialization = true;
+        }
     }
 
     void fast_step(typename TurbineFast::DataType& data)
