@@ -155,8 +155,8 @@ struct ProcessOutputsOp<
 private:
     typename ActTrait::DataType& m_data;
 
-    std::string m_out_dir{""};
-    std::string m_nc_filename{""};
+    std::string m_out_dir;
+    std::string m_nc_filename;
     int m_out_freq{10};
 
 public:

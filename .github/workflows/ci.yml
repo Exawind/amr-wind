@@ -1,4 +1,4 @@
-name: AMR-Wind CI
+name: AMR-Wind-CI
 
 on:
   push:
@@ -10,13 +10,15 @@ jobs:
   Formatting:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: DoozyX/clang-format-lint-action@v0.11
+    - name: Clone
+      uses: actions/checkout@v3
+    - name: Check formatting
+      uses: DoozyX/clang-format-lint-action@v0.13
       with:
         source: './amr-wind ./unit_tests ./tools/utilities'
         exclude: '.'
         extensions: 'H,h,cpp'
-        clangFormatVersion: 11
+        clangFormatVersion: 13
   CPU:
     needs: Formatting
     runs-on: ${{matrix.os}}
@@ -45,7 +47,8 @@ jobs:
       uses: styfle/cancel-workflow-action@0.6.0
       with:
         access_token: ${{github.token}}
-    - uses: actions/checkout@v2
+    - name: Clone
+      uses: actions/checkout@v3
       with: 
         submodules: true
     - name: Dependencies
@@ -96,7 +99,8 @@ jobs:
         uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{github.token}}
-      - uses: actions/checkout@v2
+      - name: Clone
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Prepare CUDA environment
@@ -128,13 +132,14 @@ jobs:
         uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{github.token}}
-      - uses: actions/checkout@v2
+      - name: Clone
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Prepare HIP environment
         run: |
-          wget -q -O - http://repo.radeon.com/rocm/rocm.gpg.key | sudo apt-key add -
-          echo 'deb [arch=amd64] http://repo.radeon.com/rocm/apt/debian/ ubuntu main' | sudo tee /etc/apt/sources.list.d/rocm.list
+          wget -q -O - https://repo.radeon.com/rocm/rocm.gpg.key | sudo apt-key add -
+          echo 'deb [arch=amd64] https://repo.radeon.com/rocm/apt/debian/ ubuntu main' | sudo tee /etc/apt/sources.list.d/rocm.list
           echo 'export PATH=/opt/rocm/llvm/bin:/opt/rocm/bin:/opt/rocm/profiler/bin:/opt/rocm/opencl/bin:$PATH' | sudo tee -a /etc/profile.d/rocm.sh
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends ninja-build \
@@ -166,7 +171,8 @@ jobs:
         uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{github.token}}
-      - uses: actions/checkout@v2
+      - name: Clone
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Prepare DPC++ environment
@@ -198,7 +204,8 @@ jobs:
         uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{github.token}}
-      - uses: actions/checkout@v2
+      - name: Clone
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Dependencies
@@ -234,7 +241,8 @@ jobs:
         uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{github.token}}
-      - uses: actions/checkout@v2
+      - name: Clone
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Dependencies
@@ -281,7 +289,8 @@ jobs:
 #        uses: styfle/cancel-workflow-action@0.6.0
 #        with:
 #          access_token: ${{github.token}}
-#      - uses: actions/checkout@v2
+#      - name: Clone
+#        uses: actions/checkout@v3
 #        with:
 #          submodules: true
 #      - name: Build and test

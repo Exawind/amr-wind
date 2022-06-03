@@ -14,16 +14,12 @@ protected:
     {
         AmrexTest::SetUp();
         {
-            amrex::ParmParse pp("Actuator");
             amrex::ParmParse pu("Actuator.UniformCtDisk");
             pu.add("num_force_points", 3);
             pu.add("epsilon", 1);
             pu.add("rotor_diameter", 1);
             std::vector<double> ct{1};
             pu.addarr("thrust_coeff", ct);
-        }
-        {
-            amrex::ParmParse pp("Coriolis");
         }
     }
 };
@@ -98,9 +94,6 @@ TEST_F(UniformCtTest, compute_vecs_with_different_north)
         amrex::ParmParse pp("Coriolis.Forcing");
         pp.addarr("north_vector", north);
         pp.addarr("east_vector", east);
-    }
-    {
-        amrex::ParmParse pp("Actuator.UniformCtDisk");
     }
     act::utils::ActParser ap("Actuator.UniformCtDisk", "Actuator");
     act::utils::ActParser cp("Coriolis.Forcing", "Coriolis");

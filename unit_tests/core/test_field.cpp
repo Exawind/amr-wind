@@ -108,8 +108,8 @@ TEST_F(FieldRepoTest, field_get)
 
     const auto& frepo = mesh().field_repo();
     auto& velf = frepo.get_field("vel");
-    auto& presf = frepo.get_field("pressure");
-    auto& vel_old = frepo.get_field("vel", amr_wind::FieldState::Old);
+    const auto& presf = frepo.get_field("pressure");
+    const auto& vel_old = frepo.get_field("vel", amr_wind::FieldState::Old);
 
     EXPECT_EQ(velf.field_location(), amr_wind::FieldLoc::CELL);
     EXPECT_EQ(presf.field_location(), amr_wind::FieldLoc::NODE);
@@ -175,15 +175,15 @@ TEST_F(FieldRepoTest, field_location)
     initialize_mesh();
 
     auto& field_repo = mesh().field_repo();
-    auto& velocity = field_repo.declare_field("vel", 3, 0, 2);
-    auto& pressure =
+    const auto& velocity = field_repo.declare_field("vel", 3, 0, 2);
+    const auto& pressure =
         field_repo.declare_field("p", 1, 0, 1, amr_wind::FieldLoc::NODE);
 
-    auto& umac =
+    const auto& umac =
         field_repo.declare_field("umac", 1, 0, 1, amr_wind::FieldLoc::XFACE);
-    auto& vmac =
+    const auto& vmac =
         field_repo.declare_field("vmac", 1, 0, 1, amr_wind::FieldLoc::YFACE);
-    auto& wmac =
+    const auto& wmac =
         field_repo.declare_field("wmac", 1, 0, 1, amr_wind::FieldLoc::ZFACE);
 
     EXPECT_EQ(velocity.field_location(), amr_wind::FieldLoc::CELL);

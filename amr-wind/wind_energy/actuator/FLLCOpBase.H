@@ -21,7 +21,6 @@ struct FLLCOp
             return;
         }
         const int npts = fllc.correction_velocity.size();
-        amrex::Print() << "FLLC Size: " << npts << std::endl;
         auto& du = fllc.correction_velocity;
 
         auto& u_les = fllc.les_velocity;
