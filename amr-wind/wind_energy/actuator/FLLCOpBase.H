@@ -21,12 +21,13 @@ struct FLLCOp
             return;
         }
         const int npts = fllc.correction_velocity.size();
-        auto& du_fllc = fllc.correction_velocity;
+        amrex::Print() << "FLLC Size: " << npts << std::endl;
+        auto& du = fllc.correction_velocity;
 
-        auto& u_les_fllc = fllc.les_velocity;
-        auto& u_opt_fllc = fllc.optimal_velocity;
-        auto& G_fllc = fllc.lift;
-        auto& dG_fllc = fllc.grad_lift;
+        auto& u_les = fllc.les_velocity;
+        auto& u_opt = fllc.optimal_velocity;
+        auto& G = fllc.lift;
+        auto& dG = fllc.grad_lift;
 
         /**
          * Step 1
@@ -34,10 +35,6 @@ struct FLLCOp
          * Compute equation 5.3 from Martinez-Tossas and Meneveau 2019
          */
         for (int ip = 0; ip < npts; ++ip) {
-            u_les_fllc[ip].zero();
-            u_opt_fllc[ip].zero();
-            G_fllc[ip].zero();
-            dG_fllc[ip].zero();
             const auto& tmat = data.orientation[ip];
             const auto force = data.force[ip];
             const auto vel = data.vel_rel[ip] & tmat;
@@ -48,7 +45,7 @@ struct FLLCOp
 
             const auto fv = force & vel;
 
-            G_fllc[ip] = (force - vel * fv / vmag2) / dx;
+            G[ip] = (force - vel * fv / vmag2) / dx;
         }
 
         /**
@@ -56,10 +53,10 @@ struct FLLCOp
          * Compute gradient of the lift force distribution (\Delta G)
          * Compute equations 5.4 and 5.5 from Martinez-Tossas and Meneveau 2019
          */
-        dG_fllc[0] = G_fllc[0];
-        dG_fllc[npts - 1] = -1 * G_fllc[npts - 1];
+        dG[0] = G[0];
+        dG[npts - 1] = -1 * G[npts - 1];
         for (int ip = 1; ip < npts - 1; ++ip) {
-            dG_fllc[ip] = 0.5 * (G_fllc[ip + 1] - G_fllc[ip - 1]);
+            dG[ip] = 0.5 * (G[ip + 1] - G[ip - 1]);
         }
 
         /**
@@ -96,16 +93,13 @@ struct FLLCOp
                     coefficient *= -1;
                 }
 
-                u_les_fllc[ip] =
-                    u_les_fllc[ip] - dG_fllc[jp] * coefficient * cLes;
-                u_opt_fllc[ip] =
-                    u_opt_fllc[ip] - dG_fllc[jp] * coefficient * cOpt;
+                u_les[ip] = u_les[ip] - dG[jp] * coefficient * cLes;
+                u_opt[ip] = u_opt[ip] - dG[jp] * coefficient * cOpt;
             }
 
             // Relaxation to compute the induced velocity
             const auto f = fllc.relaxation_factor;
-            du_fllc[ip] =
-                (1. - f) * du_fllc[ip] + f * (u_opt_fllc[ip] - u_les_fllc[ip]);
+            du[ip] = (1. - f) * du[ip] + f * (u_opt[ip] - u_les[ip]);
         }
 
         /**
@@ -114,7 +108,9 @@ struct FLLCOp
          * Compute equation 5.8 from Martinez-Tossas and Meneveau 2019
          */
         for (int ip = 0; ip < npts; ++ip) {
-            data.vel[ip] = data.vel[ip] + du_fllc[ip];
+            data.vel[ip] = data.vel[ip] + du[ip];
+            u_les[ip] *= 0.0;
+            u_opt[ip] *= 0.0;
         }
     }
 };
