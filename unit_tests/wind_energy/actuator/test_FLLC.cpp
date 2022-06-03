@@ -1,6 +1,6 @@
 #include "aw_test_utils/AmrexTest.H"
 #include "amr-wind/wind_energy/actuator/FLLC.H"
-#include "amr-wind/wind_energy/actuator/FLLCOpBase.H"
+#include "amr-wind/wind_energy/actuator/FLLCOp.H"
 
 namespace amr_wind {
 namespace actuator {

@@ -1,5 +1,5 @@
-#ifndef FLLC_H
-#define FLLC_H
+#ifndef FLLCOP_H
+#define FLLCOP_H
 
 #include "amr-wind/wind_energy/actuator/actuator_types.H"
 #include "amr-wind/wind_energy/actuator/FLLC.H"
@@ -117,4 +117,4 @@ struct FLLCOp
 } // namespace actuator
 } // namespace amr_wind
 
-#endif /* FLLC_H */
+#endif /* FLLCOP_H */

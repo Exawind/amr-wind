@@ -6,7 +6,7 @@
 #include "amr-wind/wind_energy/actuator/actuator_ops.H"
 #include "amr-wind/wind_energy/actuator/aero/AirfoilTable.H"
 #include "amr-wind/wind_energy/actuator/ActParser.H"
-#include "amr-wind/wind_energy/actuator/FLLCOpBase.H"
+#include "amr-wind/wind_energy/actuator/FLLCOp.H"
 
 namespace amr_wind {
 namespace actuator {
