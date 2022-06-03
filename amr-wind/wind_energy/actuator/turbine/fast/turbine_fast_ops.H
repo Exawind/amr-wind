@@ -208,6 +208,10 @@ struct InitDataOp<TurbineFast, SrcTrait>
                 tdata.chord, start, num_pts_blade);
             cv.vel_rel = ::amr_wind::utils::slice(
                 tdata.vel_rel, start, num_pts_blade);
+            cv.vel= ::amr_wind::utils::slice(
+                grid.vel, start, num_pts_blade);
+            cv.vel_pos= ::amr_wind::utils::slice(
+                grid.vel_pos, start, num_pts_blade);
             // clang-format on
 
             tdata.blades.emplace_back(std::move(cv));
@@ -401,6 +405,7 @@ struct ComputeForceOp<TurbineFast, SrcTrait>
         // Broadcast data to all the processes that contain patches influenced
         // by this turbine
         scatter_data(data);
+
         for (auto&& fllc : data.meta().fllc) {
             fllc.past_initialization = true;
         }
