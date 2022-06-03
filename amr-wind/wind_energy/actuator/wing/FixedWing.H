@@ -14,8 +14,6 @@ struct FixedWingData : public WingBaseData
     std::string airfoil_file;
     std::string airfoil_type{"openfast"};
 
-    vs::Vector epsilon_chord;
-
     std::unique_ptr<AirfoilTable> aflookup;
 };
 
