@@ -177,11 +177,6 @@ struct InitDataOp<TurbineFast, SrcTrait>
 
         make_component_views(data);
         init_epsilon(data);
-        if (!tdata.fllc.empty()) {
-            for (int i = 0; i < tdata.num_blades; ++i) {
-                FLLCInit(tdata.fllc[i], tdata.blades[i], tdata.eps_chord[0]);
-            }
-        }
     }
 
     void make_component_views(typename TurbineFast::DataType& data)
@@ -406,7 +401,14 @@ struct ComputeForceOp<TurbineFast, SrcTrait>
         // by this turbine
         scatter_data(data);
 
-        for (auto&& fllc : data.meta().fllc) {
+        auto& tdata = data.meta();
+        if (!tdata.fllc.empty()) {
+            for (int i = 0; i < tdata.num_blades; ++i) {
+                FLLCInit(tdata.fllc[i], tdata.blades[i], tdata.eps_chord[0]);
+            }
+        }
+
+        for (auto&& fllc : tdata.fllc) {
             fllc.past_initialization = true;
         }
     }
