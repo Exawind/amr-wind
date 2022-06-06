@@ -34,6 +34,25 @@ void write_netcdf(
     const ActGrid& /*grid*/,
     const amrex::Real /*time*/);
 
+template <typename T>
+ComponentView make_component_view(typename T::DataType& data)
+{
+    auto& grid = data.grid();
+    auto& meta = data.meta();
+    ComponentView view;
+    view.pos = ::amr_wind::utils::slice(grid.pos, 0, meta.num_pts);
+    view.vel_pos = ::amr_wind::utils::slice(grid.vel_pos, 0, meta.num_pts);
+    view.force = ::amr_wind::utils::slice(grid.force, 0, meta.num_pts);
+    view.epsilon = ::amr_wind::utils::slice(grid.epsilon, 0, meta.num_pts);
+    view.orientation =
+        ::amr_wind::utils::slice(grid.orientation, 0, meta.num_pts);
+    view.chord = ::amr_wind::utils::slice(meta.chord, 0, meta.num_pts);
+    view.vel_rel = ::amr_wind::utils::slice(meta.vel_rel, 0, meta.num_pts);
+    view.vel = ::amr_wind::utils::slice(grid.vel, 0, meta.num_pts);
+
+    return view;
+}
+
 } // namespace wing
 
 namespace ops {
@@ -139,7 +158,14 @@ struct ComputeForceOp<
         wdata.drag = total_drag;
 
         if (wdata.fllc) {
-            wdata.fllc->past_initialization = true;
+            if (!(wdata.fllc->initialized)) {
+                wdata.component_view =
+                    amr_wind::actuator::wing::make_component_view<ActTrait>(
+                        data);
+                FLLCInit(
+                    *(wdata.fllc.get()), wdata.component_view,
+                    wdata.epsilon_chord[0]);
+            }
         }
     }
 };

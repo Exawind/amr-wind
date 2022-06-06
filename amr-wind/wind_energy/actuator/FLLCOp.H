@@ -17,7 +17,7 @@ struct FLLCOp
 {
     void operator()(ComponentView& data, FLLCData& fllc)
     {
-        if (!fllc.past_initialization) {
+        if (!fllc.initialized) {
             return;
         }
         const int npts = fllc.correction_velocity.size();

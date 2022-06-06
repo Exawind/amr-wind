@@ -118,12 +118,6 @@ struct InitDataOp<FixedWing, ActSrcLine>
 
         meta.aflookup =
             AirfoilLoader::load_airfoil(meta.airfoil_file, meta.airfoil_type);
-
-        if (meta.fllc) {
-            meta.component_view = make_component_view(data);
-            FLLCInit(
-                *(meta.fllc.get()), meta.component_view, meta.epsilon_chord[0]);
-        }
     }
 };
 

@@ -21,6 +21,7 @@ void FLLCInit(
     }
     data.dx[npts - 1] = vs::mag(view.pos[npts - 1] - view.pos[npts - 2]);
     data.optimal_epsilon[npts - 1] = view.chord[npts - 1] * eps_chord;
+    data.initialized = true;
 }
 
 void FLLCParse(const utils::ActParser& pp, FLLCData& data)

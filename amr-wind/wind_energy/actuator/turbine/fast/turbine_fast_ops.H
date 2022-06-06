@@ -404,12 +404,11 @@ struct ComputeForceOp<TurbineFast, SrcTrait>
         auto& tdata = data.meta();
         if (!tdata.fllc.empty()) {
             for (int i = 0; i < tdata.num_blades; ++i) {
-                FLLCInit(tdata.fllc[i], tdata.blades[i], tdata.eps_chord[0]);
+                if (!(tdata.fllc[i].initialized)) {
+                    FLLCInit(
+                        tdata.fllc[i], tdata.blades[i], tdata.eps_chord[0]);
+                }
             }
-        }
-
-        for (auto&& fllc : tdata.fllc) {
-            fllc.past_initialization = true;
         }
     }
 
