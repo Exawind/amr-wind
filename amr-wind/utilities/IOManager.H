@@ -122,7 +122,7 @@ private:
     std::string m_chk_prefix{"chk"};
 
     //! Restart file name
-    std::string m_restart_file{""};
+    std::string m_restart_file;
 
     //! Total number of variables (including components) output to plot file
     int m_plt_num_comp{0};
