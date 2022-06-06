@@ -279,19 +279,32 @@ jobs:
           echo "::add-matcher::.github/problem-matchers/gcc.json"
           cat clang-tidy-ci-report.txt
           exit $(tail -n 1 clang-tidy-ci-report.txt | awk '{print $2}')
-
-#  Docker:
-#    needs: Formatting
-#    name: Docker
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Cancel previous runs
-#        uses: styfle/cancel-workflow-action@0.6.0
-#        with:
-#          access_token: ${{github.token}}
-#      - name: Clone
-#        uses: actions/checkout@v3
-#        with:
-#          submodules: true
-#      - name: Build and test
-#        run: docker build -t amr-wind -f docker/Dockerfile .
+  Docker:
+    needs: Formatting
+    runs-on: ubuntu-latest
+    container:
+      image: ecpe4s/exawind-snapshot
+      env:
+          SPACK_MANAGER: /spack-manager
+          E4S_MACHINE: true
+    steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{github.token}}
+      - name: Clone
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Test
+        working-directory: /spack-manager/environments/exawind
+        run: |
+          /bin/bash -c " \
+            source ${SPACK_MANAGER}/start.sh && \
+            ln -s ${GITHUB_WORKSPACE} amr-wind && \
+            source ${SPACK_MANAGER}/start.sh && \
+            quick-develop -s amr-wind+hypre+netcdf+masa@main && \
+            spack install && \
+            spack cd -b amr-wind && \
+            spack build-env amr-wind ctest -j $(nproc) -L unit --output-on-failure \
+          "
