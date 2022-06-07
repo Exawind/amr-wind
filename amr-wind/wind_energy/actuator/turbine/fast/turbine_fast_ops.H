@@ -362,12 +362,6 @@ struct UpdateVelOp<TurbineFast, SrcTrait>
         const auto& vel = data.grid().vel;
         const int nvpts = vel.size();
 
-        for (int i = 0; i < nvpts; ++i) {
-            uvel[i] = static_cast<float>(vel[i].x());
-            vvel[i] = static_cast<float>(vel[i].y());
-            wvel[i] = static_cast<float>(vel[i].z());
-        }
-
         if (!tdata.fllc.empty()) {
             // Compute the relative velocity needed for the FLLC
             for (int i = 0; i < nvpts; ++i) {
@@ -385,6 +379,12 @@ struct UpdateVelOp<TurbineFast, SrcTrait>
             for (int i = 0; i < tdata.num_blades; ++i) {
                 FLLCOp()(tdata.blades[i], tdata.fllc[i]);
             }
+        }
+
+        for (int i = 0; i < nvpts; ++i) {
+            uvel[i] = static_cast<float>(vel[i].x());
+            vvel[i] = static_cast<float>(vel[i].y());
+            wvel[i] = static_cast<float>(vel[i].z());
         }
     }
 };
