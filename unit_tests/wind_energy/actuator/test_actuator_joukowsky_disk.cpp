@@ -51,7 +51,7 @@ protected:
     }
 
     static void
-    add_actuators(std::string type, amrex::Vector<std::string> labels)
+    add_actuators(const std::string& type, amrex::Vector<std::string> labels)
     {
         amrex::ParmParse pp("Actuator");
         pp.add("type", type);
@@ -153,6 +153,7 @@ struct ComputeForceOp<::amr_wind_tests::Joukowsky, ActSrcDisk>
 template <>
 struct ProcessOutputsOp<::amr_wind_tests::Joukowsky, ActSrcDisk>
 {
+    // cppcheck-suppress missingReturn
     ProcessOutputsOp<::amr_wind_tests::Joukowsky, ActSrcDisk>(
         ::amr_wind_tests::Joukowsky::DataType& /**/)
     {}

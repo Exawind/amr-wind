@@ -329,7 +329,7 @@ amrex::RealBox compute_bounding_box(const DiskBaseData& meta)
 }
 
 void compute_disk_points(
-    DiskBaseData& meta,
+    const DiskBaseData& meta,
     VecList& points,
     const vs::Vector& cylAxis,
     const int offset,

@@ -220,12 +220,13 @@ template <>
 struct ProcessOutputsOp<Joukowsky, ActSrcDisk>
 {
 private:
+    // cppcheck-suppress uninitMemberVarPrivate
     Joukowsky::DataType& m_data;
     //! Path to the output directory (specified by Actuator physics class)
-    std::string m_out_dir{""};
+    std::string m_out_dir;
 
     //! NetCDF output filename for this turbine
-    std::string m_nc_filename{""};
+    std::string m_nc_filename;
 
     //! Output frequency (specified in input file)
     int m_out_freq{10};
