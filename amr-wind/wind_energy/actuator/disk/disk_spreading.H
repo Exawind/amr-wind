@@ -154,7 +154,7 @@ public:
                 sarr(i, j, k, 2) += src_force[2];
             });
     }
-    void test(
+    void linear_basis_in_theta(
         const T& actObj,
         const int lev,
         const amrex::MFIter& mfi,
@@ -230,7 +230,7 @@ public:
                 amrex::Abort("Invalide spreading type");
             }
         } else {
-            m_function = &SpreadingFunction::test;
+            m_function = &SpreadingFunction::linear_basis_in_theta;
         }
     }
 };
