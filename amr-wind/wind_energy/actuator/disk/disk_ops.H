@@ -62,7 +62,7 @@ void do_parse_based_computations(ActDataHolder<T>& data)
 }
 
 void compute_disk_points(
-    DiskBaseData& meta,
+    const DiskBaseData& meta,
     VecList& points,
     const vs::Vector& cylAxis,
     const int offset,
