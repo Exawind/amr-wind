@@ -95,7 +95,7 @@ public:
     bool regrid_and_update();
     void pre_advance_stage1();
     void pre_advance_stage2();
-    void advance();
+    void advance(bool advance_state = true);
     void post_advance_work();
 
     amr_wind::CFDSim& sim() { return m_sim; }

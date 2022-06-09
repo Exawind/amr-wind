@@ -46,11 +46,13 @@ void incflo::pre_advance_stage2()
  *
  * \callgraph
  */
-void incflo::advance()
+void incflo::advance(bool advance_state)
 {
     BL_PROFILE("amr-wind::incflo::Advance");
 
-    m_sim.pde_manager().advance_states();
+    if(advance_state) {
+        m_sim.pde_manager().advance_states();
+    }
 
     ApplyPredictor();
 
