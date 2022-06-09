@@ -2,6 +2,8 @@
 #define DISK_SPREADING_H_
 
 #include "amr-wind/wind_energy/actuator/actuator_utils.H"
+#include "amr-wind/wind_energy/actuator/disk/spreading_kernels.h"
+#include "amr-wind/wind_energy/actuator/disk/UniformCt.H"
 #include "amr-wind/core/FieldRepo.H"
 
 namespace amr_wind {
@@ -20,6 +22,8 @@ template <typename T>
 class SpreadingFunction
 {
 public:
+    using OwnerType = T;
+
     void operator()(
         const T& actObj,
         const int lev,
@@ -150,17 +154,83 @@ public:
                 sarr(i, j, k, 2) += src_force[2];
             });
     }
+    void linear_basis_in_theta(
+        const T& actObj,
+        const int lev,
+        const amrex::MFIter& mfi,
+        const amrex::Geometry& geom)
+    {
+        const auto& bx = mfi.tilebox();
+        const auto& sarr = actObj.m_act_src(lev).array(mfi);
+        const auto& problo = geom.ProbLoArray();
+        const auto& dx = geom.CellSizeArray();
+
+        const auto& data = actObj.m_data.meta();
+
+        const amrex::Real dR = data.dr;
+        const amrex::Real dTheta =
+            ::amr_wind::utils::two_pi() / data.num_vel_pts_t;
+        const amrex::Real epsilon = data.epsilon;
+        const vs::Vector m_normal(data.normal_vec);
+        const vs::Vector m_origin(data.center);
+        const auto* pos = actObj.m_pos.data();
+        const auto* force = actObj.m_force.data();
+        const int npts = data.num_force_pts;
+
+        amrex::ParallelFor(
+            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                const vs::Vector cc{
+                    problo[0] + (i + 0.5) * dx[0],
+                    problo[1] + (j + 0.5) * dx[1],
+                    problo[2] + (k + 0.5) * dx[2],
+                };
+
+                amrex::Real src_force[AMREX_SPACEDIM]{0.0, 0.0, 0.0};
+                for (int ip = 0; ip < npts; ++ip) {
+                    const auto radius =
+                        utils::delta_pnts_cyl(
+                            m_origin, m_normal, m_origin, pos[ip])
+                            .x();
+                    const auto dArc = radius * dTheta;
+                    const auto dist_on_disk =
+                        utils::delta_pnts_cyl(m_origin, m_normal, cc, pos[ip]);
+                    const amrex::Real arclength = dist_on_disk.y() * radius;
+                    const auto& pforce = force[ip];
+
+                    const amrex::Real weight_R =
+                        utils::linear_basis_1d(dist_on_disk.x(), dR);
+                    const amrex::Real weight_T =
+                        utils::linear_basis_1d(arclength, dArc);
+                    const amrex::Real weight_N =
+                        utils::gaussian1d(dist_on_disk.z(), epsilon);
+                    const auto projection_weight =
+                        weight_R * weight_T * weight_N;
+
+                    src_force[0] += projection_weight * pforce.x();
+                    src_force[1] += projection_weight * pforce.y();
+                    src_force[2] += projection_weight * pforce.z();
+                }
+
+                sarr(i, j, k, 0) += src_force[0];
+                sarr(i, j, k, 1) += src_force[1];
+                sarr(i, j, k, 2) += src_force[2];
+            });
+    }
 
     SpreadingFunction() : m_function(&SpreadingFunction::linear_basis_spreading)
     {}
     void initialize(const std::string& key)
     {
-        if (key == "UniformGaussian") {
-            m_function = &SpreadingFunction::uniform_gaussian_spreading;
-        } else if (key == "LinearBasis") {
-            m_function = &SpreadingFunction::linear_basis_spreading;
+        if (std::is_same<UniformCt, typename OwnerType::TraitType>::value) {
+            if (key == "UniformGaussian") {
+                m_function = &SpreadingFunction::uniform_gaussian_spreading;
+            } else if (key == "LinearBasis") {
+                m_function = &SpreadingFunction::linear_basis_spreading;
+            } else {
+                amrex::Abort("Invalide spreading type");
+            }
         } else {
-            amrex::Abort("Invalide spreading type");
+            m_function = &SpreadingFunction::linear_basis_in_theta;
         }
     }
 };

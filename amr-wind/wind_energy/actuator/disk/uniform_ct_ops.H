@@ -1,82 +1,63 @@
 #ifndef UNIFORM_CT_OPS_H_
 #define UNIFORM_CT_OPS_H_
 
+#include "amr-wind/wind_energy/actuator/disk/disk_ops.H"
 #include "amr-wind/wind_energy/actuator/disk/UniformCt.H"
-#include "amr-wind/wind_energy/actuator/actuator_ops.H"
-#include "amr-wind/utilities/tensor_ops.H"
 #include "amr-wind/utilities/linear_interpolation.H"
-
 namespace amr_wind {
 namespace actuator {
-namespace disk {
-// refactor these when we add more disk types later
-void prepare_netcdf_file(
-    const std::string& /*ncfile*/,
-    const UniformCtData& /*meta*/,
-    const ActInfo& /*info*/,
-    const ActGrid& /*grid*/);
-
-void write_netcdf(
-    const std::string& /*ncfile*/,
-    const UniformCtData& /*meta*/,
-    const ActInfo& /*info*/,
-    const ActGrid& /*unused*/,
-    const amrex::Real /*time*/);
-} // namespace disk
-
 namespace ops {
+namespace uniformct {
 
-void collect_parse_conflicts(
-    const utils::ActParser& pp,
-    const std::string& p1,
-    const std::string& p2,
-    std::ostringstream& ss);
-void collect_parse_dependencies(
-    const utils::ActParser& pp,
-    const std::string& p1,
-    const std::string& p2,
-    std::ostringstream& ss);
+void parse_and_gather_params(const utils::ActParser& pp, UniformCtData& data);
 
-void required_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp);
-
-void optional_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp);
-
-void check_for_parse_conflicts(const utils::ActParser& pp);
-
-void compute_and_normalize_coplanar_vector(UniformCt::MetaType& meta);
-
-void final_checks(const UniformCt::MetaType& meta);
-
-amrex::RealBox compute_bounding_box(const UniformCt::MetaType& meta);
-
-void do_parse_based_computations(UniformCt::DataType& data);
-
-void compute_disk_points(
-    UniformCt::MetaType& meta,
-    VecList& points,
-    const vs::Vector& cylAxis,
-    const int offset,
-    const double dOffset);
-
+} // namespace uniformct
 template <>
 struct ReadInputsOp<UniformCt, ActSrcDisk>
 {
     void operator()(UniformCt::DataType& data, const utils::ActParser& pp)
     {
         // TODO get density at probe location
-        check_for_parse_conflicts(pp);
         auto& meta = data.meta();
-        required_parameters(meta, pp);
-        optional_parameters(meta, pp);
-        final_checks(meta);
-        do_parse_based_computations(data);
+        uniformct::parse_and_gather_params(pp, meta);
+        base::do_parse_based_computations<UniformCt>(data);
+    }
+};
+
+// compute the total force over a given radial section
+// this will then be spread uniformly over that area in the
+// projection step
+template <>
+struct ComputeForceOp<UniformCt, ActSrcDisk>
+{
+    void operator()(UniformCt::DataType& data)
+    {
+        auto& grid = data.grid();
+        auto& ddata = data.meta();
+        const auto& normal = ddata.normal_vec;
+        const amrex::Real uInfSqr = base::compute_reference_velocity_sqr(ddata);
+        base::set_thrust_coefficient(ddata, uInfSqr);
+
+        const int npts = ddata.num_force_pts;
+        const amrex::Real rho = ddata.density;
+        const amrex::Real aeroPressure = 0.5 * uInfSqr * rho * ddata.current_ct;
+        const amrex::Real dr = ddata.dr;
+
+        for (int ip = 0; ip < npts; ++ip) {
+            const amrex::Real r = (ip + 0.5) * dr;
+            const amrex::Real rp = r + dr * 0.5;
+            const amrex::Real rm = r - dr * 0.5;
+            const amrex::Real a = ::amr_wind::utils::pi() * (rp * rp - rm * rm);
+            // disk force should always point in direction of the normal
+            grid.force[ip] = (aeroPressure * a) * normal;
+        }
     }
 };
 
 template <>
 struct InitDataOp<UniformCt, ActSrcDisk>
 {
-    void operator()(UniformCt::DataType& data)
+    void operator()(typename UniformCt::DataType& data)
     {
         auto& grid = data.grid();
         auto& meta = data.meta();
@@ -98,76 +79,12 @@ struct InitDataOp<UniformCt, ActSrcDisk>
                 grid.pos[i] = cc + (i + 0.5) * dr * cVec;
             }
         }
-        compute_disk_points(
+        base::compute_disk_points(
             meta, grid.vel_pos, sVec, 0, meta.diameters_to_sample);
-        compute_disk_points(meta, grid.vel_pos, nVec, meta.num_vel_pts / 2, 0);
+        base::compute_disk_points(
+            meta, grid.vel_pos, nVec, meta.num_vel_pts / 2, 0);
     }
 };
-
-template <>
-struct UpdateVelOp<UniformCt, ActSrcDisk>
-{
-    void operator()(UniformCt::DataType& data)
-    {
-        auto& meta = data.meta();
-        const auto& grid = data.grid();
-        meta.reference_velocity = {0.0, 0.0, 0.0};
-        meta.disk_velocity = {0.0, 0.0, 0.0};
-        auto& refVel = meta.reference_velocity;
-        auto& diskVel = meta.disk_velocity;
-        const int np = meta.num_vel_pts / 2;
-        for (int i = 0; i < np; i++) {
-            refVel = refVel + grid.vel[i];
-            diskVel = diskVel + grid.vel[i + np];
-        }
-        refVel /= np;
-        diskVel /= np;
-    }
-};
-
-// compute the total force over a given radial section
-// this will then be spread uniformly over that area in the
-// projection step
-template <>
-struct ComputeForceOp<UniformCt, ActSrcDisk>
-{
-    void operator()(UniformCt::DataType& data)
-    {
-        auto& grid = data.grid();
-        auto& ddata = data.meta();
-        const auto& normal = ddata.normal_vec;
-        const amrex::Real rho = ddata.density;
-        // only use velocity components normal to disk
-        // make sure uInfSqr is always positive by squaring the projection of
-        // reference_velocity onto the normal
-        const amrex::Real uInfSqr = (ddata.reference_velocity & normal) *
-                                    (ddata.reference_velocity & normal);
-
-        ddata.current_ct = ::amr_wind::interp::linear(
-            ddata.table_velocity, ddata.thrust_coeff,
-            std::sqrt(std::abs(uInfSqr)));
-
-        const int npts = ddata.num_force_pts;
-        const amrex::Real aeroPressure = 0.5 * uInfSqr * rho * ddata.current_ct;
-        const amrex::Real dr = ddata.dr;
-
-        for (int ip = 0; ip < npts; ++ip) {
-            const amrex::Real r = (ip + 0.5) * dr;
-            const amrex::Real rp = r + dr * 0.5;
-            const amrex::Real rm = r - dr * 0.5;
-            const amrex::Real a = ::amr_wind::utils::pi() * (rp * rp - rm * rm);
-            // disk force should always point in direction of the normal
-            grid.force[ip] = (aeroPressure * a) * normal;
-        }
-    }
-};
-
-template <>
-struct UpdatePosOp<UniformCt, ActSrcDisk>
-{
-    void operator()(UniformCt::DataType& /*unused*/) {}
-};
-
 template <>
 struct ProcessOutputsOp<UniformCt, ActSrcDisk>
 {
@@ -212,7 +129,6 @@ public:
             time.new_time());
     }
 };
-
 } // namespace ops
 } // namespace actuator
 } // namespace amr_wind
