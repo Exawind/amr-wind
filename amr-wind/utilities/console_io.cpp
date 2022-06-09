@@ -18,8 +18,6 @@
 #endif
 #ifdef AMR_WIND_USE_ASCENT
 #include "ascent_config.h"
-#endif
-#ifdef AMREX_USE_OMP
 #include <omp.h>
 #endif
 
