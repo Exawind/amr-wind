@@ -122,7 +122,7 @@ private:
     std::string m_chk_prefix{"chk"};
 
     //! Restart file name
-    std::string m_restart_file{""};
+    std::string m_restart_file;
 
     //! Total number of variables (including components) output to plot file
     int m_plt_num_comp{0};
@@ -136,6 +136,10 @@ private:
 #ifdef AMR_WIND_USE_HDF5
     //! Flag indicating whether or not to output HDF5 plot files
     bool m_output_hdf5_plotfile{false};
+#ifdef AMR_WIND_USE_HDF5_ZFP
+    //! String for requesting a particular ZFP compression in HDF5 plot files
+    std::string m_hdf5_compression{"None@0"};
+#endif
 #endif
 };
 

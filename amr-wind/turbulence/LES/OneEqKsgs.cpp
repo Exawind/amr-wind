@@ -104,7 +104,7 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
     auto& mu_turb = this->mu_turb();
     const amrex::Real Ce = this->m_Ce;
     const auto& den = this->m_rho.state(fstate);
-    auto& repo = mu_turb.repo();
+    const auto& repo = mu_turb.repo();
     const auto& geom_vec = repo.mesh().Geom();
 
     const int nlevels = repo.num_active_levels();
@@ -231,6 +231,7 @@ void OneEqKsgsM84<Transport>::post_advance_work()
     // Update sdr field based on sfs ke
 
     auto& tke = *(this->m_tke);
+    // cppcheck-suppress constVariable
     auto& sdr = *(this->m_sdr);
     const amrex::Real Ce = this->m_Ce;
 

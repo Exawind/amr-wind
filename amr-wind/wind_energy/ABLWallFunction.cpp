@@ -153,7 +153,7 @@ void ABLVelWallFunc::wall_model(
     BL_PROFILE("amr-wind::ABLVelWallFunc");
 
     constexpr int idim = 2;
-    auto& repo = velocity.repo();
+    const auto& repo = velocity.repo();
     const auto& density = repo.get_field("density", rho_state);
     const auto& viscosity = repo.get_field("velocity_mueff");
     const int nlevels = repo.num_active_levels();

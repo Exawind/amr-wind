@@ -16,6 +16,8 @@ class ActSrcOp<
     ActSrcDisk,
     std::enable_if_t<std::is_base_of<DiskType, ActTrait>::value>>
 {
+    using TraitType = ActTrait;
+
     template <typename T>
     using MyType = ActSrcOp<
         T,

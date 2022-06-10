@@ -3,7 +3,7 @@
 namespace amr_wind {
 
 void ThirdMomentAveraging::output_line_average_ascii(
-    std::string filename, int step, amrex::Real time)
+    const std::string& filename, int step, amrex::Real time)
 {
     BL_PROFILE("amr-wind::ThirdMomentAveraging::output_line_average_ascii");
 

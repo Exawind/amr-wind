@@ -188,10 +188,10 @@ private:
 #endif
 
     //! File name for IO
-    std::string m_filename{""};
+    std::string m_filename;
 
     //! File name for Native time file
-    std::string m_time_file{""};
+    std::string m_time_file;
 
     //! Variables for IO
     amrex::Vector<std::string> m_var_names;

@@ -43,7 +43,7 @@ struct AdvectionOp<
         static_assert(
             PDE::ndim == 1, "Invalid number of components for scalar");
 
-        auto& repo = fields.repo;
+        const auto& repo = fields.repo;
         const auto& geom = repo.mesh().Geom();
 
         // cppcheck-suppress constVariable

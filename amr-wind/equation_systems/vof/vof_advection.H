@@ -36,6 +36,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
         auto& repo = fields.repo;
         const auto& geom = repo.mesh().Geom();
 
+        // cppcheck-suppress constVariable
         auto& dof_field = fields.field;
         //
         // Advect volume using either the Explicit Lagrangian onto-cell or

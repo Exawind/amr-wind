@@ -363,15 +363,13 @@ void ActuatorContainer::compute_local_coordinates()
             }
 
             const auto& geom = m_mesh.Geom(lev);
-            const auto& dx = geom.CellSize();
-            const auto& problo = geom.ProbLo();
             const auto& bx = ba[i];
             const int* lo = bx.loVect();
 
             auto& pvec = m_proc_pos[iproc];
-            pvec.x() = problo[0] + (lo[0] + 0.5) * dx[0];
-            pvec.y() = problo[1] + (lo[1] + 0.5) * dx[1];
-            pvec.z() = problo[2] + (lo[2] + 0.5) * dx[2];
+            pvec.x() = geom.ProbLo()[0] + (lo[0] + 0.5) * geom.CellSize()[0];
+            pvec.y() = geom.ProbLo()[1] + (lo[1] + 0.5) * geom.CellSize()[1];
+            pvec.z() = geom.ProbLo()[2] + (lo[2] + 0.5) * geom.CellSize()[2];
 
             // Indicate that we have found a point and it is safe to exit the
             // loop
