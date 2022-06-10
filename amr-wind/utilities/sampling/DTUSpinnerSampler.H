@@ -18,11 +18,8 @@ struct PrismParameters
 vs::Vector generate_lidar_pattern(
     PrismParameters InnerPrism, PrismParameters OuterPrism, double time);
 
-vs::Vector adjust_lidar_pattern(
-    vs::Vector beamPt,
-    double yaw,
-    double pitch,
-    double roll);
+vs::Vector 
+adjust_lidar_pattern(vs::Vector beamPt, double yaw, double pitch, double roll);
 
 /** Sample data along a line that moves in time
  *  \ingroup sampling

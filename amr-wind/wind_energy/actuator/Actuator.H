@@ -50,14 +50,12 @@ public:
 
     void post_advance_work() override;
 
-    ActuatorModel& get_act(int index) const {return *m_actuators.at(index);}
+    ActuatorModel& get_act(int index) const { return *m_actuators.at(index); }
 
     ActuatorModel& get_act_bylabel(std::string actlabel) const;
 
-    template<typename T>
+    template <typename T>
     T* get_actuator(std::string key) const;
-
-    int retone(int index) const {return 1;}
 
 protected:
     //! Total number of actuator components (e.g., turbines) in the flowfield
