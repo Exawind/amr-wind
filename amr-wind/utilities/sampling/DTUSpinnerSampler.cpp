@@ -199,7 +199,7 @@ void DTUSpinnerSampler::bcast_turbine(
         if (i < 3) {
             turbine_pack[i + 9] = actdata.hub_abs_pos[i];
             turbine_pack[i + 12] = actdata.hub_rot_vel[i];
-            turbine_pack[i + 15] = actdata.base_pos[i]; 
+            turbine_pack[i + 15] = actdata.base_pos[i];
         }
     }
 
@@ -211,7 +211,7 @@ void DTUSpinnerSampler::bcast_turbine(
         if (i < 3) {
             current_hub_abs_pos[i] = turbine_pack[i + 9];
             current_hub_rot_vel[i] = turbine_pack[i + 12];
-            turbine_base_pos[i] = turbine_pack[i + 15]; 
+            turbine_base_pos[i] = turbine_pack[i + 15];
         }
     }
 }
@@ -272,9 +272,9 @@ void DTUSpinnerSampler::update_sampling_locations()
 
     if (m_spinner_mode == "hub") {
         m_hub_location = vs::Vector(
-            current_hub_abs_pos[0]+turbine_base_pos[0],
-            current_hub_abs_pos[1]+turbine_base_pos[1],
-            current_hub_abs_pos[2]+turbine_base_pos[2]);
+            current_hub_abs_pos[0] + turbine_base_pos[0],
+            current_hub_abs_pos[1] + turbine_base_pos[1],
+            current_hub_abs_pos[2] + turbine_base_pos[2]);
 
         // TODO: Do we need an offset from the hub location
         // to lidar start along shaft axis? Same for static angle misalignment?
@@ -284,15 +284,15 @@ void DTUSpinnerSampler::update_sampling_locations()
         m_lidar_center[2] = m_hub_location[2];
 
         m_hub_tilt = -std::atan2(
-                        -current_hub_orient[6],
-                        std::sqrt(
-                            std::pow(current_hub_orient[7],2.0) +
-                            std::pow(current_hub_orient[8],2.0))) *
+                         -current_hub_orient[6],
+                         std::sqrt(
+                             std::pow(current_hub_orient[7],2.0) +
+                             std::pow(current_hub_orient[8],2.0))) *
                      180.0 / M_PI;
         m_hub_roll = std::atan2(current_hub_orient[7], current_hub_orient[8]) *
                      180.0 / M_PI;
         m_hub_yaw = std::atan2(current_hub_orient[3], current_hub_orient[0]) *
-                     180.0 / M_PI;
+                    180.0 / M_PI;
     }
 
     amrex::Real time = m_sim.time().current_time();
