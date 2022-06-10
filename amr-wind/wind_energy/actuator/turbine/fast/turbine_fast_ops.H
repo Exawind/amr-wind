@@ -382,7 +382,7 @@ struct ComputeForceOp<TurbineFast, SrcTrait>
         if (tf.is_solution0) {
             meta.fast->init_solution(tf.tid_local);
         } else {
-            meta.fast->advance_turbine(tf.tid_local);          
+            meta.fast->advance_turbine(tf.tid_local);
         }
 
         meta.fast->get_hub_stats(tf.tid_local);

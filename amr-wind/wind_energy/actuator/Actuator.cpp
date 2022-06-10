@@ -236,11 +236,11 @@ ActuatorModel& Actuator::get_act_bylabel(std::string actlabel) const
             thisid = act->id();
         }
     }
-    
+
     return *m_actuators.at(thisid);
 }
 
-template<typename T>
+template <typename T>
 T* Actuator::get_actuator(std::string key) const
 {
     int thisid = 0; // Default to first actuator
