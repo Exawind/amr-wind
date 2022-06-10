@@ -64,6 +64,9 @@ sampling.lidar.azimuth_table= 0 90.0
 sampling.lidar.elevation_table= 0 45.0
 
 sampling.spinner.type       = DTUSpinnerSampler
+sampling.spinner.mode = fixed # hub or fixed
+sampling.spinner.turbine = WTG01 # turbine label from above
+sampling.spinner.hub_debug = false
 sampling.spinner.inner_prism_theta0 = 90
 sampling.spinner.inner_prism_rotrate = 3.5
 sampling.spinner.inner_prism_azimuth = 15.2
