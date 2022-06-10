@@ -14,14 +14,15 @@ struct PrismParameters
     amrex::Real rot{3.5};
     amrex::Real azimuth{15.2};
 };
+
 vs::Vector generate_lidar_pattern(
     PrismParameters InnerPrism, PrismParameters OuterPrism, double time);
+
 vs::Vector adjust_lidar_pattern(
     vs::Vector beamPt,
     double yaw,
     double pitch,
-    double roll,
-    vs::Vector translation);
+    double roll);
 
 /** Sample data along a line that moves in time
  *  \ingroup sampling
@@ -52,6 +53,10 @@ public:
     //~ void update_sampling_locations() override;
     void sampling_locations(SampleLocType& /*locs*/) const override;
 
+    void bcast_turbine(const exw_fast::FastTurbine&, int);
+
+    void get_turbine_data(std::string turbine_label);
+
     /** Determine how the subsampling will be done
      *
      */
@@ -75,7 +80,7 @@ private:
     amrex::Real m_time_sampling{0};
     PrismParameters m_InnerPrism;
     PrismParameters m_OuterPrism;
-    amrex::Vector<amrex::Real> m_lidar_center{250.0, 250.0, 250.0};
+    amrex::Vector<amrex::Real> m_lidar_center{0.0, 0.0, 0.0};
     amrex::Real m_scan_time{2};
     amrex::Real m_num_samples{984};
     amrex::Real m_beam_length{270};
@@ -86,7 +91,20 @@ private:
     amrex::Real m_hub_tilt{0};
     std::string m_spinner_mode{"fixed"};
     std::string m_turbine_label;
-    vs::Vector m_hub_translation{0, 0, 0};
+    bool m_hub_debug{false};
+    vs::Vector m_hub_location{0, 0, 0};
+    vs::Vector m_hub_location_init{0, 0, 0};
+
+    float turbine_base_pos[3]{0, 0, 0};
+    float current_hub_abs_pos[3]{0, 0, 0};
+    float current_hub_rot_vel[3]{0, 0, 0};
+    double current_hub_orient[9]{0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+    amrex::Real m_last_hub_yaw{0};
+    amrex::Real m_last_hub_roll{0};
+    amrex::Real m_last_hub_tilt{0};
+    amrex::Vector<amrex::Real> m_last_lidar_center{0.0, 0.0, 0.0};
+    amrex::Vector<amrex::Real> step_lidar_center{0.0, 0.0, 0.0};
 };
 
 } // namespace sampling

@@ -4,6 +4,7 @@
 #include "amr-wind/utilities/linear_interpolation.H"
 #include "amr-wind/wind_energy/actuator/Actuator.H"
 #include "amr-wind/wind_energy/actuator/ActuatorModel.H"
+#include "amr-wind/wind_energy/actuator/turbine/fast/TurbineFast.cpp"
 
 #include "AMReX_ParmParse.H"
 
@@ -16,18 +17,6 @@ void DTUSpinnerSampler::initialize(const std::string& key)
 {
     // Initialize the sampling time to be the same as simulation time
     m_time_sampling = m_sim.time().current_time();
-
-    const auto& act2 = m_sim.physics_manager().get<actuator::Actuator>();
-
-    // Get actuator at index
-    // TODO: Find a way to look up index  
-    const auto& act3 = act2.get_act(0);
-    std::string actlabel = act3.label();
-    amrex::Print()<<"Spinner Lidar Attached to actuator: "<<actlabel<<std::endl;
-
-    // TODO: Find a way to pull fast data from actuator instance
-    //const auto& actdata = act3.meta().fast_data;
-
 
     /*
      * Use this as a guide to implement the reading of the input
@@ -84,17 +73,14 @@ void DTUSpinnerSampler::initialize(const std::string& key)
     // Hub tilt logical flag
     pp.query("hub_tilt", m_hub_tilt);
 
-    // Spinner mode, hub-mounted or fixed
+    // Spinner mode, hub or fixed
     pp.query("mode", m_spinner_mode);
 
     // For hub-mounted, this is turbine label
     pp.query("turbine", m_turbine_label);
 
-    // Hub translation logical flag
-    amrex::Vector<amrex::Real> hub_translation;
-    pp.getarr("hub_translation", hub_translation);
-    m_hub_translation =
-        vs::Vector(hub_translation[0], hub_translation[1], hub_translation[2]);
+    // Print hub fast turbine values to debug
+    pp.query("hub_debug", m_hub_debug);
 
     update_sampling_locations();
 
@@ -136,13 +122,12 @@ vs::Vector adjust_lidar_pattern(
     vs::Vector beamPt,
     double yaw,
     double pitch,
-    double roll,
-    vs::Vector translation)
+    double roll)
 {
 
-    const vs::Vector angles(pitch, yaw, roll);
+    const vs::Vector angles(roll, pitch, yaw);
 
-    auto beamPt_transform = rotation(angles, beamPt) + translation;
+    auto beamPt_transform = rotation(angles, beamPt);
 
     return beamPt_transform;
 }
@@ -203,30 +188,129 @@ void DTUSpinnerSampler::sampling_locations(SampleLocType& locs) const
     }
 }
 
+void DTUSpinnerSampler::bcast_turbine(const exw_fast::FastTurbine& actdata, int root_proc)
+{
+    BL_PROFILE(
+        "amr-wind::Sampling::DTUSpinnerSampler::bcast_turbine");
+
+    // Create buffer object
+    amrex::Real turbine_pack[18]={};
+
+    // Pack, broadcast, then unpack
+    for(int i = 0; i < 9; i++) {
+        turbine_pack[i] = actdata.hub_orient[i];
+        if(i<3){
+           turbine_pack[i+9] = actdata.hub_abs_pos[i];
+           turbine_pack[i+12] = actdata.hub_rot_vel[i];
+           turbine_pack[i+15] = actdata.base_pos[i]; 
+        }
+    }
+
+    amrex::ParallelDescriptor::Bcast(
+        turbine_pack, 18, root_proc,
+        amrex::ParallelDescriptor::Communicator());
+
+    for(int i = 0; i < 9; i++) {
+        current_hub_orient[i] = turbine_pack[i];
+        if(i<3){
+           current_hub_abs_pos[i] = turbine_pack[i+9];
+           current_hub_rot_vel[i] = turbine_pack[i+12];
+           turbine_base_pos[i] = turbine_pack[i+15]; 
+        }
+    }
+}
+
+void DTUSpinnerSampler::get_turbine_data(std::string turbine_label)
+{
+
+    BL_PROFILE(
+        "amr-wind::Sampling::DTUSpinnerSampler::get_turbine_data");
+
+    // Use Physics Manager to get actuators
+    const auto& all_actuators = m_sim.physics_manager().get<actuator::Actuator>();
+    actuator::ActuatorModel& lidar_act = all_actuators.get_act_bylabel(turbine_label);
+
+    if(m_sim.time().current_time() == m_sim.time().start_time()){
+        std::string actlabel = lidar_act.label();
+        amrex::Print()<<"Spinner Lidar Attached to actuator: "<<actlabel<<std::endl;
+    }
+
+    // Test cast to Line or Disk
+    actuator::ActModel<actuator::TurbineFast, actuator::ActSrcLine>* actline = nullptr;
+    actline = 
+        dynamic_cast<actuator::ActModel<actuator::TurbineFast, actuator::ActSrcLine>*>(&lidar_act);
+
+    actuator::ActModel<actuator::TurbineFast, actuator::ActSrcDisk>* actdisk = nullptr;
+    actdisk = 
+        dynamic_cast<actuator::ActModel<actuator::TurbineFast, actuator::ActSrcDisk>*>(&lidar_act);
+
+    bool testline{(actline != nullptr)};
+    bool testdisk{(actdisk != nullptr)};
+
+    // Read and broadcast data
+    if(testline){
+        auto& actdata = actline->meta().fast_data;
+        const auto& info = actline->info();
+        bcast_turbine(actdata,info.root_proc);
+    }else if(testdisk){
+        auto& actdata = actdisk->meta().fast_data;
+        const auto& info = actdisk->info();
+        bcast_turbine(actdata,info.root_proc);
+    }else{
+        amrex::Abort("DTUSpinnerSampler: Problem finding actuator");
+    }
+
+}
+
 void DTUSpinnerSampler::update_sampling_locations()
 {
-    
 
     BL_PROFILE(
         "amr-wind::Sampling::DTUSpinnerSampler::update_sampling_locations");
 
+
+    get_turbine_data(m_turbine_label);
+
+ 
+    if(m_spinner_mode == "hub"){
+        m_hub_location =
+            vs::Vector(current_hub_abs_pos[0]+turbine_base_pos[0], 
+                       current_hub_abs_pos[1]+turbine_base_pos[1], 
+                       current_hub_abs_pos[2]+turbine_base_pos[2]);
+
+        // TODO: Do we need an offset from the hub location 
+        // to lidar start along shaft axis? Same for static angle misalignment?
+
+        m_lidar_center[0] = m_hub_location[0];
+        m_lidar_center[1] = m_hub_location[1];
+        m_lidar_center[2] = m_hub_location[2];
+
+        m_hub_tilt = -std::atan2(-current_hub_orient[6],
+            std::sqrt(std::pow(current_hub_orient[7],2.0) + 
+            std::pow(current_hub_orient[8],2.0)))*180.0/M_PI;
+        m_hub_roll = std::atan2(current_hub_orient[7],
+            current_hub_orient[8])*180.0/M_PI;
+        m_hub_yaw = std::atan2(current_hub_orient[3],
+            current_hub_orient[0])*180.0/M_PI;
+    } 
+        
     amrex::Real time = m_sim.time().current_time();
     amrex::Real start_time = m_sim.time().start_time();
     amrex::Real dt_sim = m_sim.time().deltaT();
-    // Determine the number of subsamples
-    m_ns = 0;
 
     // Initialize the sampling time to the first time in the simulation
     if (time == start_time) {
         m_time_sampling = time;
+        m_hub_location_init = m_hub_location;
     }
-    // Loop to see how many times we will subsample
 
+    // Timestep of spinner lidar
     const amrex::Real dt_s = m_scan_time / m_num_samples;
 
+    // Integer number of spinner points per timestep 
     m_ns = int(dt_sim / dt_s);
-
     int n_size = AMREX_SPACEDIM * m_ns;
+
     // Resize these variables so they can store all the locations
     if (m_start.size() < n_size) {
         m_start.resize(n_size);
@@ -235,6 +319,26 @@ void DTUSpinnerSampler::update_sampling_locations()
         m_end.resize(n_size);
     }
 
+
+    if(m_hub_debug == true){
+        amrex::Print()<<"Turbine Hub Pos: "<<current_hub_abs_pos[0]<<" "<<
+            current_hub_abs_pos[1]<<" "<<current_hub_abs_pos[2]<<" "<<std::endl;
+        amrex::Print()<<"Turbine Rot Vel: "<<current_hub_rot_vel[0]<<" "<<
+            current_hub_rot_vel[1]<<" "<<current_hub_rot_vel[2]<<" "<<std::endl;
+        amrex::Print()<<"Turbine Orient: "<<current_hub_orient[0]<<" "<<
+            current_hub_orient[1]<<" "<<current_hub_orient[2]<<" "<<std::endl;
+        amrex::Print()<<"Turbine Orient: "<<current_hub_orient[3]<<" "<<
+            current_hub_orient[4]<<" "<<current_hub_orient[5]<<" "<<std::endl;
+        amrex::Print()<<"Turbine Orient: "<<current_hub_orient[6]<<" "<<
+            current_hub_orient[7]<<" "<<current_hub_orient[8]<<" "<<std::endl;
+        amrex::Print()<<"Yaw:Tilt:Roll: "<<m_hub_yaw<<" "<<
+            m_hub_tilt<<" "<<m_hub_roll<<std::endl;
+        amrex::Print()<<"Last Yaw:Tilt:Roll: "<<m_last_hub_yaw<<" "<<
+            m_last_hub_tilt<<" "<<m_last_hub_roll<<std::endl;
+    }
+
+
+
     // Loop per subsampling
     for (int k = 0; k < m_ns; ++k) {
 
@@ -242,26 +346,40 @@ void DTUSpinnerSampler::update_sampling_locations()
 
         m_time_sampling += dt_s;
 
+        float step = static_cast<float>(k)+1.0;
+
+        // Unit vector in the direction of the beam
         auto beam_vector =
             generate_lidar_pattern(m_InnerPrism, m_OuterPrism, m_time_sampling);
 
-        beam_vector = adjust_lidar_pattern(
-            beam_vector, m_hub_tilt, m_hub_roll, m_hub_yaw, m_hub_translation);
+        // Interpolate angles over sim time
+        amrex::Real step_hub_yaw = (step/m_ns)*(m_hub_yaw-m_last_hub_yaw) + m_last_hub_yaw;
+        amrex::Real step_hub_tilt = (step/m_ns)*(m_hub_tilt-m_last_hub_tilt) + m_last_hub_tilt;
+        amrex::Real step_hub_roll = (step/m_ns)*(m_hub_roll-m_last_hub_roll) + m_last_hub_roll;
 
+        // Rotate beam unit vector
+        beam_vector = adjust_lidar_pattern(
+            beam_vector, step_hub_yaw, step_hub_tilt, step_hub_roll);
+
+        // Interpolate lidar center
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-            // Need to assign start point as the origin
-            m_start[d + offset] = m_lidar_center[d];
-            // Initialize the end point
-            m_end[d + offset] = m_lidar_center[d];
+            step_lidar_center[d] = 
+                (step/m_ns)*(m_lidar_center[d]-m_last_lidar_center[d]) 
+                + m_last_lidar_center[d];
         }
 
-        // Add the origin location to the beam vector
+        // Beam start and end points
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-
+            m_start[d + offset] = step_lidar_center[d];
             m_end[d + offset] =
-                m_lidar_center[d] + beam_vector[d] * m_beam_length;
+                step_lidar_center[d] + beam_vector[d] * m_beam_length;
         }
     }
+
+    m_last_hub_yaw = m_hub_yaw;
+    m_last_hub_tilt = m_hub_tilt;
+    m_last_hub_roll = m_hub_roll;
+    m_last_lidar_center = m_lidar_center;
 }
 
 #ifdef AMR_WIND_USE_NETCDF

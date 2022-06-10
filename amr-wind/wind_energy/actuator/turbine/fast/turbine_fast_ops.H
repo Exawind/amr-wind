@@ -384,9 +384,8 @@ struct ComputeForceOp<TurbineFast, SrcTrait>
         } else {
             meta.fast->advance_turbine(tf.tid_local);          
         }
-        meta.fast->get_hub_stats(0);
-        amrex::Print()<<"Turbine Hub Pos: "<<tf.hub_abs_pos[0]<<" "<<tf.hub_abs_pos[1]<<" "<<tf.hub_abs_pos[2]<<" "<<std::endl;
-        amrex::Print()<<"Turbine Rot Vel: "<<tf.hub_rot_vel[0]<<" "<<tf.hub_rot_vel[1]<<" "<<tf.hub_rot_vel[2]<<" "<<std::endl;
+        meta.fast->get_hub_stats(tf.tid_local);
+
         // Populate nacelle force into the OpenFAST data structure so that it
         // gets broadcasted to all influenced processes in subsequent scattering
         // of data.

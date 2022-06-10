@@ -34,7 +34,7 @@ TEST(SpinnerTest, test_spinner)
         auto beam_vector =
             generate_lidar_pattern(InnerPrism, OuterPrism, 2. / 984 * j);
         beam_vector =
-            adjust_lidar_pattern(beam_vector, pitch, roll, yaw, translation);
+            adjust_lidar_pattern(beam_vector, yaw, pitch, roll);
         outputFile << beam_vector[0] << "," << beam_vector[1] << ","
                    << beam_vector[2] << std::endl;
     }
