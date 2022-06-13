@@ -218,14 +218,12 @@ void DTUSpinnerSampler::get_turbine_data(std::string turbine_label)
     }
 
     // Test cast to Line or Disk
-    actuator::ActModel<actuator::TurbineFast, actuator::ActSrcLine>* actline =
-        nullptr;
+    actuator::ActModel<actuator::TurbineFast, actuator::ActSrcLine>* 
     actline = dynamic_cast<
         actuator::ActModel<actuator::TurbineFast, actuator::ActSrcLine>*>(
         &lidar_act);
 
-    actuator::ActModel<actuator::TurbineFast, actuator::ActSrcDisk>* actdisk =
-        nullptr;
+    actuator::ActModel<actuator::TurbineFast, actuator::ActSrcDisk>* 
     actdisk = dynamic_cast<
         actuator::ActModel<actuator::TurbineFast, actuator::ActSrcDisk>*>(
         &lidar_act);
