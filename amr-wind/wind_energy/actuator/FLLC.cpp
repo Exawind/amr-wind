@@ -7,6 +7,17 @@ void FLLCInit(
     FLLCData& data, const ComponentView& view, const amrex::Real eps_chord)
 {
     const int npts = view.pos.size();
+    data.different_sizes = view.pos.size() != view.vel_pos.size();
+    if (data.different_sizes) {
+        data.span_distance_force.resize(view.pos.size());
+        data.span_distance_vel.resize(view.vel_pos.size());
+        for (int i = 0; i < view.pos.size(); ++i) {
+            data.span_distance_force[i] = vs::mag(view.pos[i]);
+        }
+        for (int i = 0; i < view.vel_pos.size(); ++i) {
+            data.span_distance_vel[i] = vs::mag(view.vel_pos[i]);
+        }
+    }
     data.dx.resize(npts);
     data.optimal_epsilon.resize(npts);
     data.les_velocity.assign(npts, vs::Vector::zero());

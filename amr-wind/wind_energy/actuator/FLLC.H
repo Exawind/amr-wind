@@ -22,6 +22,9 @@ struct FLLCData
     VecList lift;
     VecList grad_lift;
     bool initialized{false};
+    bool different_sizes;
+    RealList span_distance_vel;
+    RealList span_distance_force;
 };
 
 /**

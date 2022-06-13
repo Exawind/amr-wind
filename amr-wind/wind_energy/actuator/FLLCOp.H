@@ -23,9 +23,6 @@ struct FLLCOp
             return;
         }
 
-        const bool different_sizes_vel_force =
-            data.pos.size() != data.vel_pos.size();
-
         const int npts = fllc.correction_velocity.size();
         auto& du = fllc.correction_velocity;
 
@@ -33,16 +30,19 @@ struct FLLCOp
         auto& u_opt = fllc.optimal_velocity;
         auto& G = fllc.lift;
         auto& dG = fllc.grad_lift;
+        VecSlice u_force_pnt_slice =
+            ::amr_wind::utils::slice(fllc.force_point_velocity, npts);
+        vs::Vector* vel_ptr = data.vel.data();
 
         /**
          * Step 0
          * Linear interpolate velocity if force and vel points are mismatched
          */
-        if (different_sizes_vel_force) {
-            fllc.force_point_velocity =
-                interp::linear(data.vel_pos, data.pos, data.vel);
-        } else {
-            fllc.force_point_velocity = data.vel;
+        if (fllc.different_sizes) {
+            interp::linear(
+                fllc.span_distance_vel, data.vel, fllc.span_distance_force,
+                u_force_pnt_slice);
+            vel_ptr = u_force_pnt_slice.data();
         }
 
         /**
@@ -124,8 +124,7 @@ struct FLLCOp
          * Compute equation 5.8 from Martinez-Tossas and Meneveau 2019
          */
         for (int ip = 0; ip < npts; ++ip) {
-            fllc.force_point_velocity[ip] =
-                fllc.force_point_velocity[ip] + du[ip];
+            vel_ptr[ip] = vel_ptr[ip] + du[ip];
             u_les[ip] *= 0.0;
             u_opt[ip] *= 0.0;
         }
@@ -134,11 +133,10 @@ struct FLLCOp
          * Step 5
          * Interpolate back to vel positions if necessary
          */
-        if (different_sizes_vel_force) {
-            data.vel = interp::linear(
-                data.pos, data.vel_pos, fllc.force_point_velocity);
-        } else {
-            data.vel = fllc.force_point_velocity;
+        if (fllc.different_sizes) {
+            interp::linear(
+                fllc.span_distance_force, u_force_pnt_slice,
+                fllc.span_distance_vel, data.vel);
         }
     }
 };
