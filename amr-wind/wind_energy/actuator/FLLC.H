@@ -15,6 +15,7 @@ struct FLLCData
     RealList optimal_epsilon;
 
     // computed values
+    VecList force_point_velocity;
     VecList les_velocity;
     VecList optimal_velocity;
     VecList correction_velocity;

@@ -14,6 +14,7 @@ void FLLCInit(
     data.correction_velocity.assign(npts, vs::Vector::zero());
     data.lift.assign(npts, vs::Vector::zero());
     data.grad_lift.assign(npts, vs::Vector::zero());
+    data.force_point_velocity.assign(npts, vs::Vector::zero());
 
     for (int i = 0; i < npts - 1; ++i) {
         data.dx[i] = vs::mag(view.pos[i + 1] - view.pos[i]);

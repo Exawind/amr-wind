@@ -3,6 +3,7 @@
 
 #include "amr-wind/wind_energy/actuator/actuator_types.H"
 #include "amr-wind/wind_energy/actuator/FLLC.H"
+#include "amr-wind/utilities/linear_interpolation.H"
 
 namespace amr_wind {
 namespace actuator {
@@ -17,9 +18,14 @@ struct FLLCOp
 {
     void operator()(ComponentView& data, FLLCData& fllc)
     {
+        namespace interp = ::amr_wind::interp;
         if (!fllc.initialized) {
             return;
         }
+
+        const bool different_sizes_vel_force =
+            data.pos.size() != data.vel_pos.size();
+
         const int npts = fllc.correction_velocity.size();
         auto& du = fllc.correction_velocity;
 
@@ -27,6 +33,17 @@ struct FLLCOp
         auto& u_opt = fllc.optimal_velocity;
         auto& G = fllc.lift;
         auto& dG = fllc.grad_lift;
+
+        /**
+         * Step 0
+         * Linear interpolate velocity if force and vel points are mismatched
+         */
+        if (different_sizes_vel_force) {
+            fllc.force_point_velocity =
+                interp::linear(data.vel_pos, data.pos, data.vel);
+        } else {
+            fllc.force_point_velocity = data.vel;
+        }
 
         /**
          * Step 1
@@ -107,9 +124,21 @@ struct FLLCOp
          * Compute equation 5.8 from Martinez-Tossas and Meneveau 2019
          */
         for (int ip = 0; ip < npts; ++ip) {
-            data.vel[ip] = data.vel[ip] + du[ip];
+            fllc.force_point_velocity[ip] =
+                fllc.force_point_velocity[ip] + du[ip];
             u_les[ip] *= 0.0;
             u_opt[ip] *= 0.0;
+        }
+
+        /**
+         * Step 5
+         * Interpolate back to vel positions if necessary
+         */
+        if (different_sizes_vel_force) {
+            data.vel = interp::linear(
+                data.pos, data.vel_pos, fllc.force_point_velocity);
+        } else {
+            data.vel = fllc.force_point_velocity;
         }
     }
 };
