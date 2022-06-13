@@ -223,7 +223,7 @@ void DTUSpinnerSampler::get_turbine_data(std::string turbine_label)
             actuator::ActModel<actuator::TurbineFast, actuator::ActSrcLine>*>(
             &lidar_act);
 
-    actuator::ActModel<actuator::TurbineFast, actuator::ActSrcDisk>* actdisk = 
+    actuator::ActModel<actuator::TurbineFast, actuator::ActSrcDisk>* actdisk =
         dynamic_cast<
             actuator::ActModel<actuator::TurbineFast, actuator::ActSrcDisk>*>(
             &lidar_act);
