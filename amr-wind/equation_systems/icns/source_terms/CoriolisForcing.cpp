@@ -25,7 +25,7 @@ namespace icns {
  * - `rotational_time_period` Time period for planetary rotation (default: 86400
  *    seconds)
  * 
- * - 'two_Component_Forcing' turn off two forcing (Default: false = 0) 
+ * - 'two_ComponentForcing' turn off two forcing (Default: false = 0) 
  * 
  */
 CoriolisForcing::CoriolisForcing(const CFDSim& sim)
@@ -53,8 +53,8 @@ CoriolisForcing::CoriolisForcing(const CFDSim& sim)
     utils::cross_prod(m_east.data(), m_north.data(), m_up.data());
 
     // Turn off 2-component forcing (Default: false)
-    int m_S = false;
-    if (!pp.query("two_Component_Forcing", m_S));
+    bool m_S = false;
+    if (!pp.query("two_ComponentForcing", m_S));
 }
 
 CoriolisForcing::~CoriolisForcing() = default;
