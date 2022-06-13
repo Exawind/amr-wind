@@ -58,6 +58,7 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
         -coriolis_factor * m_target_vel[1] * m_sinphi +coriolis_factor * m_target_vel[3] * m_cosphi * m_S, 
         +coriolis_factor * m_target_vel[0] * m_sinphi,
         -coriolis_factor * m_target_vel[0] * m_cosphi * m_S};
+    amrex::Print() << "Geostrophic Forcing = " << m_g_forcing[0] <<", " << m_g_forcing[1] << ", " << m_g_forcing[2] << std::endl;
 }
 
 GeostrophicForcing::~GeostrophicForcing() = default;
