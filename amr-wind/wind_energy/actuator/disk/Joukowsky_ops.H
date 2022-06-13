@@ -172,11 +172,15 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
         const amrex::Real q0 = numerator / denominator;
 
         // step 3: compute normal force (fz) and azimuthal force (f_theta) (eq
-        // 13)
+        // 13) and cp (eq 20)
 
         VecSlice disk_velocity = ::amr_wind::utils::slice(
             grid.vel, ddata.num_force_pts, ddata.num_force_pts);
+
+        amrex::Real moment = 0.0;
+
         int ip = 0;
+
         for (int i = 0; i < ddata.num_vel_pts_r; i++) {
             const amrex::Real& F = ddata.tip_correction[i];
             const amrex::Real& g = ddata.root_correction[i];
@@ -204,15 +208,28 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                 const amrex::Real dArea =
                     geometry_factor * (std::pow(i + 1.0, 2) - std::pow(i, 2));
 
+                // modified eq 18, removing R^3 and integrating for variation in
+                // theta too
+                moment += x * x * f_theta * dArea;
+
                 grid.force[ip] =
                     (f_z * ddata.normal_vec + f_theta * theta_vec) *
                     ddata.density * uInfSqr * dArea;
+
                 ddata.disk_force = ddata.disk_force + grid.force[ip];
             }
         }
+        // add missing R^3 factor for equation 18
+        moment *= std::pow(ddata.diameter * 0.5, 3);
 
-        // step 5: compute moment and power (eqs 18 and 19)
-        // step 6: compute cp
+        // equation 20
+        const amrex::Real eq_20_denominator = std::max(
+            0.5 * M_PI * ddata.density * std::pow(ddata.diameter, 2) *
+                std::pow(U_ref, 3),
+            machine_eps);
+
+        ddata.current_cp =
+            moment * ddata.current_angular_velocity / eq_20_denominator;
     }
 };
 
