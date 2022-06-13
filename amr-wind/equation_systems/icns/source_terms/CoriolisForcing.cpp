@@ -24,6 +24,9 @@ namespace icns {
  *
  * - `rotational_time_period` Time period for planetary rotation (default: 86400
  *    seconds)
+ * 
+ * - 'two_Component_Forcing' turn off two forcing (Default: false = 0) 
+ * 
  */
 CoriolisForcing::CoriolisForcing(const CFDSim& sim)
     : m_velocity(sim.repo().get_field("velocity"))
@@ -48,6 +51,10 @@ CoriolisForcing::CoriolisForcing(const CFDSim& sim)
     utils::vec_normalize(m_east.data());
     utils::vec_normalize(m_north.data());
     utils::cross_prod(m_east.data(), m_north.data(), m_up.data());
+
+    // Turn off 2-component forcing (Default: false)
+    int m_S = false;
+    if (!pp.query("two_Component_Forcing", m_S));
 }
 
 CoriolisForcing::~CoriolisForcing() = default;
@@ -69,6 +76,7 @@ void CoriolisForcing::operator()(
     const auto sinphi = m_sinphi;
     const auto cosphi = m_cosphi;
     const auto corfac = m_coriolis_factor;
+    const auto S = m_S;
     const auto& vel =
         m_velocity.state(field_impl::dof_state(fstate))(lev).const_array(mfi);
 
@@ -83,9 +91,9 @@ void CoriolisForcing::operator()(
                                up[1] * vel(i, j, k, 1) +
                                up[2] * vel(i, j, k, 2);
 
-        const amrex::Real ae = +corfac * (un * sinphi - uu * cosphi);
+        const amrex::Real ae = +(corfac * un * sinphi) -(uu * cosphi * S);
         const amrex::Real an = -corfac * ue * sinphi;
-        const amrex::Real au = +corfac * ue * cosphi;
+        const amrex::Real au = +corfac * ue * cosphi * S;
 
         const amrex::Real ax = ae * east[0] + an * north[0] + au * up[0];
         const amrex::Real ay = ae * east[1] + an * north[1] + au * up[1];
