@@ -222,13 +222,12 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                 grid.force[ip] =
                     (f_z * ddata.normal_vec + f_theta * theta_vec) *
                     ddata.density * uInfSqr * dArea;
-<<<<<<< HEAD
 
-=======
->>>>>>> 2f751a9d (Remove second theta division)
                 ddata.disk_force = ddata.disk_force + grid.force[ip];
             }
         }
+        // add missing R^3 factor for equation 18
+        moment *= std::pow(ddata.diameter * 0.5, 3);
 
         // equation 20
         const amrex::Real eq_20_denominator = std::max(
