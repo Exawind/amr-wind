@@ -4,8 +4,6 @@
 #include "amr-wind/utilities/linear_interpolation.H"
 #include "amr-wind/wind_energy/actuator/Actuator.H"
 #include "amr-wind/wind_energy/actuator/ActuatorModel.H"
-#include "amr-wind/wind_energy/actuator/turbine/fast/TurbineFast.cpp"
-
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind {
