@@ -20,6 +20,8 @@ namespace icns {
  *
  *  - `geostrophic_wind` Geostrophic wind above capping inversion in the
  *    GeostrophicForcing namespace
+ * 
+ *  - 'two_ComponentForcing' turn off two forcing (Default: false = 0)
  *
  */
 GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
@@ -34,11 +36,16 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
         amrex::Print() << "Geostrophic forcing: Coriolis factor = "
                        << coriolis_factor << std::endl;
 
-        amrex::Real latitude = 90.0;
-        pp.query("latitude", latitude);
-        AMREX_ALWAYS_ASSERT(
-            amrex::Math::abs(latitude - 90.0) <
-            static_cast<amrex::Real>(vs::DTraits<float>::eps()));
+        // Latitude is mandatory
+        // Latitude is read in degrees
+        pp.get("latitude", m_latitude);
+        m_latitude = utils::radians(m_latitude);
+        m_sinphi = std::sin(m_latitude);
+        m_cosphi = std::cos(m_latitude);
+
+        // Turn off 2-component forcing (Default: false)
+        bool m_S = false;
+        if (!pp.query("two_ComponentForcing", m_S));
     }
 
     {
@@ -48,8 +55,9 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
     }
 
     m_g_forcing = {
-        -coriolis_factor * m_target_vel[1], coriolis_factor * m_target_vel[0],
-        0.0};
+        -coriolis_factor * m_target_vel[1] * m_sinphi +coriolis_factor * m_target_vel[3] * m_cosphi * m_S, 
+        +coriolis_factor * m_target_vel[0] * m_sinphi,
+        -coriolis_factor * m_target_vel[0] * m_cosphi * m_S};
 }
 
 GeostrophicForcing::~GeostrophicForcing() = default;
@@ -66,7 +74,7 @@ void GeostrophicForcing::operator()(
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         src_term(i, j, k, 0) += forcing[0];
         src_term(i, j, k, 1) += forcing[1];
-        // No forcing in z-direction
+        src_term(i, j, k, 2) += forcing[2];
     });
 }
 
