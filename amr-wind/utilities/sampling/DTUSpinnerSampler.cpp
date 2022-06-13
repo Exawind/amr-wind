@@ -183,8 +183,7 @@ void DTUSpinnerSampler::sampling_locations(SampleLocType& locs) const
     }
 }
 
-void DTUSpinnerSampler::bcast_turbine(
-    double *turbine_pack, int root_proc)
+void DTUSpinnerSampler::bcast_turbine(double *turbine_pack, int root_proc)
 {
     BL_PROFILE("amr-wind::Sampling::DTUSpinnerSampler::bcast_turbine");
 
