@@ -3,7 +3,7 @@
 #include "amr-wind/utilities/tensor_ops.H"
 #include "amr-wind/utilities/linear_interpolation.H"
 #include "amr-wind/wind_energy/actuator/Actuator.H"
-#include "amr-wind/wind_energy/actuator/ActuatorModel.H"
+#include "amr-wind/wind_energy/actuator/turbine/fast/TurbineFast.cpp"
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind {
@@ -184,22 +184,10 @@ void DTUSpinnerSampler::sampling_locations(SampleLocType& locs) const
 }
 
 void DTUSpinnerSampler::bcast_turbine(
-    const exw_fast::FastTurbine& actdata, int root_proc)
+    double *turbine_pack, int root_proc)
 {
     BL_PROFILE("amr-wind::Sampling::DTUSpinnerSampler::bcast_turbine");
 
-    // Create buffer object
-    amrex::Real turbine_pack[18] = {};
-
-    // Pack, broadcast, then unpack
-    for (int i = 0; i < 9; i++) {
-        turbine_pack[i] = actdata.hub_orient[i];
-        if (i < 3) {
-            turbine_pack[i + 9] = actdata.hub_abs_pos[i];
-            turbine_pack[i + 12] = actdata.hub_rot_vel[i];
-            turbine_pack[i + 15] = actdata.base_pos[i];
-        }
-    }
 
     amrex::ParallelDescriptor::Bcast(
         turbine_pack, 18, root_proc, amrex::ParallelDescriptor::Communicator());
@@ -251,11 +239,39 @@ void DTUSpinnerSampler::get_turbine_data(std::string turbine_label)
     if (testline) {
         auto& actdata = actline->meta().fast_data;
         const auto& info = actline->info();
-        bcast_turbine(actdata, info.root_proc);
+
+        // Create buffer object
+        double turbine_pack[18] = {};
+
+        // Pack, broadcast, then unpack
+        for (int i = 0; i < 9; i++) {
+            turbine_pack[i] = actdata.hub_orient[i];
+            if (i < 3) {
+                turbine_pack[i + 9] = actdata.hub_abs_pos[i];
+                turbine_pack[i + 12] = actdata.hub_rot_vel[i];
+                turbine_pack[i + 15] = actdata.base_pos[i];
+            }
+        }
+
+        bcast_turbine(turbine_pack, info.root_proc);
     } else if (testdisk) {
         auto& actdata = actdisk->meta().fast_data;
         const auto& info = actdisk->info();
-        bcast_turbine(actdata, info.root_proc);
+
+        // Create buffer object
+        double turbine_pack[18] = {};
+
+        // Pack, broadcast, then unpack
+        for (int i = 0; i < 9; i++) {
+            turbine_pack[i] = actdata.hub_orient[i];
+            if (i < 3) {
+                turbine_pack[i + 9] = actdata.hub_abs_pos[i];
+                turbine_pack[i + 12] = actdata.hub_rot_vel[i];
+                turbine_pack[i + 15] = actdata.base_pos[i];
+            }
+        }
+
+        bcast_turbine(turbine_pack, info.root_proc);
     } else {
         amrex::Abort("DTUSpinnerSampler: Problem finding actuator");
     }

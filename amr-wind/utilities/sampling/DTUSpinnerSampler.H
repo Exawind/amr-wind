@@ -1,11 +1,8 @@
 #ifndef DTUSPINNERSAMPLER_H
 #define DTUSPINNERSAMPLER_H
 
-#pragma once
 #include "amr-wind/utilities/sampling/LidarSampler.H"
 #include "amr-wind/core/vs/vector_space.H"
-#include "amr-wind/wind_energy/actuator/turbine/fast/FastIface.H"
-#include "amr-wind/wind_energy/actuator/turbine/fast/TurbineFast.cpp"
 
 namespace amr_wind {
 namespace sampling {
@@ -53,7 +50,7 @@ public:
     void sampling_locations(SampleLocType& /*locs*/) const override;
 
     void
-    bcast_turbine(const exw_fast::FastTurbine& /*actadata*/, int /*root_proc*/);
+    bcast_turbine(double * /*turbine_pack*/, int /*root_proc*/);
 
     void get_turbine_data(std::string turbine_label);
 
