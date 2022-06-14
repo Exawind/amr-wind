@@ -21,7 +21,7 @@ namespace icns {
  *  - `geostrophic_wind` Geostrophic wind above capping inversion in the
  *    GeostrophicForcing namespace
  * 
- *  - 'two_ComponentForcing' turn off two forcing (Default: false = 0)
+ *  - 'three_ComponentForcing' (Default: false = 0 - two component forcing) 
  *
  */
 GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
@@ -43,9 +43,9 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
         m_sinphi = std::sin(m_latitude);
         m_cosphi = std::cos(m_latitude);
 
-        // Turn off 2-component forcing (Default: false)
+        // 3-component forcing (Default: false)
         bool m_S = false;
-        if (!pp.query("two_ComponentForcing", m_S));
+        if (!pp.query("three_ComponentForcing", m_S));
     }
 
     {
