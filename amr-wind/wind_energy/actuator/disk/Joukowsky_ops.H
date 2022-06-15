@@ -208,9 +208,8 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                 const amrex::Real dArea =
                     geometry_factor * (std::pow(i + 1.0, 2) - std::pow(i, 2));
 
-                // modified eq 18, removing R^3 and integrating for variation in
-                // theta too
-                moment += x * x * f_theta * dArea;
+                // eq 18
+                moment += x * ddata.dr * f_theta * dArea;
 
                 grid.force[ip] =
                     (f_z * ddata.normal_vec + f_theta * theta_vec) *
@@ -219,8 +218,6 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                 ddata.disk_force = ddata.disk_force + grid.force[ip];
             }
         }
-        // add missing R^3 factor for equation 18
-        moment *= std::pow(ddata.diameter * 0.5, 3);
 
         // equation 20
         const amrex::Real eq_20_denominator = std::max(
