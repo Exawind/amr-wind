@@ -20,7 +20,7 @@ struct JoukowskyData : public DiskBaseData
     amrex::Real root_correction_coefficient{1.256};
     amrex::Real root_correction_exponent{2.0};
     // --------------------------------------------
-    int num_blades;
+    int num_blades{3};
     vs::Vector disk_force{0.0, 0.0, 0.0};
     bool use_tip_correction{true};
     bool use_root_correction{true};

@@ -23,6 +23,7 @@ void optional_parameters(JoukowskyData& meta, const utils::ActParser& pp)
     pp.query("vortex_core_size", meta.vortex_core_size);
     pp.query("root_correction_exponent", meta.root_correction_exponent);
     pp.query("root_correction_coefficient", meta.root_correction_coefficient);
+    pp.query("num_blades", meta.num_blades);
 }
 
 void required_parameters(JoukowskyData& meta, const utils::ActParser& pp)
@@ -31,7 +32,6 @@ void required_parameters(JoukowskyData& meta, const utils::ActParser& pp)
     pp.get("num_points_t", meta.num_vel_pts_t);
     pp.get("num_points_r", meta.num_vel_pts_r);
     pp.getarr("angular_velocity", meta.angular_velocity);
-    pp.get("num_blades", meta.num_blades);
     meta.num_force_pts = meta.num_vel_pts_r * meta.num_vel_pts_t;
     meta.num_vel_pts = meta.num_force_pts * 2;
     meta.dr = 0.5 * meta.diameter / meta.num_vel_pts_r;
