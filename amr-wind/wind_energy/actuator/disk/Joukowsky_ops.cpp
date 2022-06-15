@@ -86,7 +86,7 @@ void prepare_netcdf_file(
     grp.def_var("xyz_v", NC_DOUBLE, {nv_name, "ndim"});
     grp.def_var("vref", NC_DOUBLE, {nt_name, "ndim"});
     grp.def_var("vdisk", NC_DOUBLE, {nt_name, "ndim"});
-    grp.def_var("tsr", NC_DOUBLE, {nt_name, "ndim"});
+    grp.def_var("tsr", NC_DOUBLE, {nt_name});
     grp.def_var("ct", NC_DOUBLE, {nt_name});
     grp.def_var("cp", NC_DOUBLE, {nt_name});
     grp.def_var("density", NC_DOUBLE, {nt_name});
