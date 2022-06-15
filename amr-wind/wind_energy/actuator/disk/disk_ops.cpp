@@ -130,20 +130,27 @@ void collect_parse_conflicts(
         ss << "ActuatorDisk Conflict: " << p1 << " and " << p2 << std::endl;
     }
 }
+
+void collect_parse_dependencies_one_way(
+    const utils::ActParser& pp,
+    const std::string& independent,
+    const std::string& dependent,
+    std::ostringstream& ss)
+{
+    if (pp.contains(dependent) && !pp.contains(independent)) {
+        ss << "ActuatorDisk Dependency Missing: " << independent
+           << " required with " << dependent << std::endl;
+    }
+}
+
 void collect_parse_dependencies(
     const utils::ActParser& pp,
     const std::string& p1,
     const std::string& p2,
     std::ostringstream& ss)
 {
-    if (pp.contains(p1) && !pp.contains(p2)) {
-        ss << "ActuatorDisk Dependency Missing: " << p2 << " required with "
-           << p1 << std::endl;
-    }
-    if (!pp.contains(p1) && pp.contains(p2)) {
-        ss << "ActuatorDisk Dependency Missing: " << p1 << " required with "
-           << p2 << std::endl;
-    }
+    collect_parse_dependencies_one_way(pp, p1, p2, ss);
+    collect_parse_dependencies_one_way(pp, p2, p1, ss);
 }
 
 void required_parameters(DiskBaseData& meta, const utils::ActParser& pp)
@@ -175,7 +182,7 @@ void optional_parameters(DiskBaseData& meta, const utils::ActParser& pp)
     pp.query("disk_normal", meta.normal_vec);
     pp.query("density", meta.density);
     pp.query("diameters_to_sample", meta.diameters_to_sample);
-    pp.query("num_theta_force_points", meta.num_force_theta_pts);
+    pp.query("num_points_t", meta.num_force_theta_pts);
 
     // make sure we compute normal vec contribution from tilt before yaw
     // since we won't know a reference axis to rotate for tilt after
@@ -307,8 +314,7 @@ void compute_and_normalize_coplanar_vector(DiskBaseData& meta)
 void final_checks(const DiskBaseData& meta)
 {
     AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-        meta.num_vel_pts > 0,
-        "num_vel_points_r and num_vel_points_t must both be >=1");
+        meta.num_vel_pts > 0, "num_points_r and num_points_t must both be >=1");
 }
 
 amrex::RealBox compute_bounding_box(const DiskBaseData& meta)
