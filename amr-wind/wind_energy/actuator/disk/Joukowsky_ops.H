@@ -209,7 +209,7 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                     geometry_factor * (std::pow(i + 1.0, 2) - std::pow(i, 2));
 
                 // eq 18
-                moment += x * ddata.dr * f_theta * dArea;
+                moment += x * ddata.diameter * 0.5 * f_theta * dArea;
 
                 grid.force[ip] =
                     (f_z * ddata.normal_vec + f_theta * theta_vec) *
