@@ -226,8 +226,6 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                 ddata.disk_force = ddata.disk_force + grid.force[ip];
             }
         }
-        // add missing R^3 factor for equation 18
-        moment *= std::pow(ddata.diameter * 0.5, 3);
 
         // equation 20
         const amrex::Real eq_20_denominator = std::max(
