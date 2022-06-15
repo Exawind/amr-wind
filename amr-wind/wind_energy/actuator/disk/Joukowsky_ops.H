@@ -58,6 +58,8 @@ struct InitDataOp<Joukowsky, ActSrcDisk>
         grid.vel_pos.resize(meta.num_vel_pts);
         meta.tip_correction.resize(meta.num_vel_pts_r);
         meta.root_correction.resize(meta.num_vel_pts_r);
+        meta.f_normal.resize(meta.num_vel_pts_r);
+        meta.f_theta.resize(meta.num_force_pts);
 
         std::fill(meta.tip_correction.begin(), meta.tip_correction.end(), 1.0);
 
@@ -194,6 +196,8 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
             const amrex::Real f_z =
                 q0 * g * F / x * (lambda * x + 0.5 * q0 * g * F / x);
 
+            ddata.f_normal[i] = f_z;
+
             for (int j = 0; j < ddata.num_vel_pts_t; j++, ip++) {
                 const auto point_current = grid.pos[ip];
 
@@ -207,6 +211,7 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                     -ddata.normal_vec & disk_velocity[ip];
 
                 const amrex::Real f_theta = u_disk_ij / U_ref * q0 * g * F / x;
+                ddata.f_theta[ip] = f_theta;
 
                 const amrex::Real dArea =
                     geometry_factor * (std::pow(i + 1.0, 2) - std::pow(i, 2));

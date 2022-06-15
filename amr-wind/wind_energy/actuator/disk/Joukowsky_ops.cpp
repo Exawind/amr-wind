@@ -59,6 +59,7 @@ void prepare_netcdf_file(
     const std::string nt_name = "num_time_steps";
     const std::string np_name = "num_actuator_points";
     const std::string nv_name = "num_velocity_points";
+    const std::string nr_name = "num_radial_points";
 
     ncf.enter_def_mode();
     ncf.put_attr("title", "AMR-Wind ActuatorDisk actuator output");
@@ -66,6 +67,7 @@ void prepare_netcdf_file(
     ncf.put_attr("created_on", ioutils::timestamp());
     ncf.def_dim(nt_name, NC_UNLIMITED);
     ncf.def_dim("ndim", AMREX_SPACEDIM);
+    ncf.def_dim(nr_name, data.num_vel_pts_r);
 
     auto grp = ncf.def_group(info.label);
     // clang-format off
@@ -90,6 +92,8 @@ void prepare_netcdf_file(
     grp.def_var("density", NC_DOUBLE, {nt_name});
     grp.def_var("total_disk_force", NC_DOUBLE, {nt_name, "ndim"});
     grp.def_var("angular_velocity", NC_DOUBLE, {nt_name});
+    grp.def_var("f_normal", NC_DOUBLE, {nt_name, nr_name});
+    grp.def_var("f_theta", NC_DOUBLE, {nt_name, np_name});
     ncf.exit_def_mode();
 
     {
@@ -125,6 +129,8 @@ void write_netcdf(
     const std::string nt_name = "num_time_steps";
     // Index of next timestep
     const size_t nt = ncf.dim(nt_name).len();
+    const size_t nr = data.num_vel_pts_r;
+    const size_t np = data.num_force_pts;
     auto grp = ncf.group(info.label);
     grp.var("time").put(&time, {nt}, {1});
     grp.var("vref").put(
@@ -138,6 +144,8 @@ void write_netcdf(
     grp.var("total_disk_force")
         .put(&data.disk_force[0], {nt}, {1, AMREX_SPACEDIM});
     grp.var("angular_velocity").put(&data.current_angular_velocity, {nt}, {1});
+    grp.var("f_normal").put(&(data.f_normal[0]), {nt, 0}, {1, nr});
+    grp.var("f_theta").put(&(data.f_theta[0]), {nt, 0}, {1, np});
 #else
     amrex::ignore_unused(name, data, info, time);
 #endif

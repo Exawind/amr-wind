@@ -13,6 +13,8 @@ struct JoukowskyData : public DiskBaseData
     RealList angular_velocity;
     RealList tip_correction;
     RealList root_correction;
+    RealList f_normal;
+    RealList f_theta;
     amrex::Real current_angular_velocity{0.0};
     amrex::Real current_tip_speed_ratio{0.0};
     amrex::Real vortex_core_size;
