@@ -130,6 +130,9 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
 
         const amrex::Real lambda =
             ddata.radius() * ddata.current_angular_velocity / U_ref;
+
+        ddata.current_tip_speed_ratio = lambda;
+
         const amrex::Real lambda_2 = lambda * lambda;
 
         // step 0: compute tip correction based on current wind speed (eq 9)
