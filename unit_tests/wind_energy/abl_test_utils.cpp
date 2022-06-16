@@ -42,8 +42,11 @@ void populate_abl_params()
     // Geostrophic Forcing
     {
         amrex::ParmParse pp("GeostrophicForcing");
-        amrex::Vector<amrex::Real> gwind{{10.0, 6.0, 0.0}};
+        amrex::Vector<amrex::Real> gwind{{10.0, 6.0, 0.1}};
         pp.addarr("geostrophic_wind", gwind);
+
+        amrex::ParmParse pp("CoriolisForcing");
+        pp.add("latitude", 45.0);
     }
 
     // Coriolis term
