@@ -71,7 +71,7 @@ void BodyForce::read_bforce_profile(std::string filename)
 }
 
 void BodyForce::operator()(
-    const int /*lev*/,
+    const int lev,
     const amrex::MFIter& /*mfi*/,
     const amrex::Box& bx,
     const FieldState /*fstate*/,
