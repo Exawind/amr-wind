@@ -29,6 +29,10 @@ struct DiskBaseData
     RealList thrust_coeff;
     RealList table_velocity;
     std::string spreading_type{"LinearBasis"};
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real radius() const
+    {
+        return 0.5 * diameter;
+    }
 };
 
 } // namespace actuator
