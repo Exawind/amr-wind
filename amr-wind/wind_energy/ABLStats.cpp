@@ -82,10 +82,11 @@ void ABLStats::initialize()
     }
     m_dn = geom.CellSize()[m_normal_dir];
 
-    if (m_out_fmt == "netcdf")
+    if (m_out_fmt == "netcdf") {
         prepare_netcdf_file();
-    else
+    } else {
         prepare_ascii_file();
+    }
 }
 
 void ABLStats::calc_averages()
@@ -134,9 +135,10 @@ void ABLStats::calc_sfs_stress_avgs(
                         -mueff_arr(i, j, k) *
                         (gradVel_arr(i, j, k, 5) + gradVel_arr(i, j, k, 7));
 
-                    for (int icomp = 0; icomp < AMREX_SPACEDIM; icomp++)
+                    for (int icomp = 0; icomp < AMREX_SPACEDIM; icomp++) {
                         t_sfs_arr(i, j, k, icomp) =
                             -alphaeff_arr(i, j, k) * gradT_arr(i, j, k, icomp);
+                    }
                 });
         }
     }
@@ -152,7 +154,9 @@ void ABLStats::post_advance_work()
     const auto& time = m_sim.time();
     const int tidx = time.time_index();
     // Skip processing if it is not an output timestep
-    if (!(tidx % m_out_freq == 0)) return;
+    if (!(tidx % m_out_freq == 0)) {
+        return;
+    }
 
     switch (m_normal_dir) {
     case 0:
@@ -188,7 +192,7 @@ void ABLStats::compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel)
     auto* tgrad_ptr = tgrad.data();
     {
         const int normal_dir = m_normal_dir;
-        const size_t ncells_h2 = m_ncells_h2;
+        const size_t ncells_h1 = m_ncells_h1;
         amrex::Real dnval = m_dn;
         for (amrex::MFIter mfi(m_temperature(0)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
@@ -197,11 +201,11 @@ void ABLStats::compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel)
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     int h1 = h1Sel(i, j, k);
                     int h2 = h2Sel(i, j, k);
-                    if (tgrad_ptr[h2 * ncells_h2 + h1].grad_z <
+                    if (tgrad_ptr[h2 * ncells_h1 + h1].grad_z <
                         gradT_arr(i, j, k, normal_dir)) {
-                        tgrad_ptr[h2 * ncells_h2 + h1].grad_z =
+                        tgrad_ptr[h2 * ncells_h1 + h1].grad_z =
                             gradT_arr(i, j, k, normal_dir);
-                        tgrad_ptr[h2 * ncells_h2 + h1].max_grad_loc =
+                        tgrad_ptr[h2 * ncells_h1 + h1].max_grad_loc =
                             (k + 0.5) * dnval;
                     }
                 });
@@ -226,7 +230,9 @@ void ABLStats::compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel)
         for (size_t i = 0; i < m_ncells_h1 * m_ncells_h2; i++) {
             m_zi += gtemp_grad[i].max_grad_loc;
         }
-        m_zi /= (m_ncells_h1 * m_ncells_h2);
+        m_zi /=
+            (static_cast<double>(m_ncells_h1) *
+             static_cast<double>(m_ncells_h2));
     }
 }
 
@@ -268,7 +274,9 @@ void ABLStats::write_ascii()
         time.time_index(), time.current_time());
 
     // Only I/O processor handles this file I/O
-    if (!amrex::ParallelDescriptor::IOProcessor()) return;
+    if (!amrex::ParallelDescriptor::IOProcessor()) {
+        return;
+    }
 
     amrex::RealArray abl_forcing = {{0.0, 0.0, 0.0}};
     if (m_abl_forcing != nullptr) {
@@ -277,7 +285,9 @@ void ABLStats::write_ascii()
 
     double wstar = 0.0;
     auto Q = m_abl_wall_func.mo().surf_temp_flux;
-    if (Q > 1e-10) wstar = std::cbrt(m_gravity * Q * m_zi / m_ref_theta);
+    if (Q > 1e-10) {
+        wstar = std::cbrt(m_gravity * Q * m_zi / m_ref_theta);
+    }
     auto L = m_abl_wall_func.mo().obukhov_len;
 
     std::ofstream outfile;
@@ -305,7 +315,9 @@ void ABLStats::prepare_ascii_file()
                    << std::endl;
 
     // Only I/O processor handles this file I/O
-    if (!amrex::ParallelDescriptor::IOProcessor()) return;
+    if (!amrex::ParallelDescriptor::IOProcessor()) {
+        return;
+    }
 
     const std::string stat_dir = "post_processing";
     const std::string sname =

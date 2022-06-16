@@ -23,13 +23,14 @@ BodyForce::BodyForce(const CFDSim& sim) : m_time(sim.time()), m_mesh(sim.mesh())
     pp.query("type", m_type);
     m_type = amrex::toLower(m_type);
 
-    if (m_type == "oscillatory") pp.get("angular_frequency", m_omega);
-
     if (m_type == "height-varying") {
         pp.get("bodyforce-file", m_bforce_file);
         read_bforce_profile(m_bforce_file);
-    } else{
-          pp.getarr("magnitude", m_body_force);
+    } else {
+        pp.getarr("magnitude", m_body_force);
+        if (m_type == "oscillatory") {
+            pp.get("angular_frequency", m_omega);
+        }
     }
 }
 
@@ -70,10 +71,10 @@ void BodyForce::read_bforce_profile(std::string filename)
 }
 
 void BodyForce::operator()(
-    const int lev,
-    const amrex::MFIter&,
+    const int /*lev*/,
+    const amrex::MFIter& /*mfi*/,
     const amrex::Box& bx,
-    const FieldState,
+    const FieldState /*fstate*/,
     const amrex::Array4<amrex::Real>& src_term) const
 {
     const auto& time = m_time.current_time();

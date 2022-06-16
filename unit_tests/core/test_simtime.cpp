@@ -74,9 +74,15 @@ TEST_F(SimTimeTest, time_loop)
         time.set_current_cfl(1.125, 0.0, 0.0);
         ++counter;
 
-        if (time.write_plot_file()) ++plot_counter;
-        if (time.write_checkpoint()) ++chkpt_counter;
-        if (time.do_regrid()) ++regrid_counter;
+        if (time.write_plot_file()) {
+            ++plot_counter;
+        }
+        if (time.write_checkpoint()) {
+            ++chkpt_counter;
+        }
+        if (time.do_regrid()) {
+            ++regrid_counter;
+        }
     }
     EXPECT_EQ(counter, 5);
     EXPECT_EQ(plot_counter, 5);
@@ -105,9 +111,15 @@ TEST_F(SimTimeTest, fixed_dt_loop)
         time.set_current_cfl(2.0, 0.0, 0.0);
         ++counter;
 
-        if (time.write_plot_file()) ++plot_counter;
-        if (time.write_checkpoint()) ++chkpt_counter;
-        if (time.do_regrid()) ++regrid_counter;
+        if (time.write_plot_file()) {
+            ++plot_counter;
+        }
+        if (time.write_checkpoint()) {
+            ++chkpt_counter;
+        }
+        if (time.do_regrid()) {
+            ++regrid_counter;
+        }
     }
     EXPECT_EQ(counter, 10);
     EXPECT_EQ(plot_counter, 10);

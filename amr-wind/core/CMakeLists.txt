@@ -8,4 +8,5 @@ target_sources(${amr_wind_lib_name}
   ScratchField.cpp
   ViewField.cpp
   MLMGOptions.cpp
+  MeshMap.cpp
   )

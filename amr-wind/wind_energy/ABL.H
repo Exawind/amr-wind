@@ -60,11 +60,11 @@ namespace temperature {
 class ABL : public Physics::Register<ABL>
 {
 public:
-    static const std::string identifier() { return "ABL"; }
+    static std::string identifier() { return "ABL"; }
 
     explicit ABL(CFDSim& sim);
 
-    virtual ~ABL();
+    ~ABL() override;
 
     const ABLWallFunction& abl_wall_function() const { return m_abl_wall_func; }
 
@@ -111,6 +111,7 @@ private:
     Field& m_density;
     Field* m_temperature{nullptr};
     Field* m_tke{nullptr};
+    Field* m_sdr{nullptr};
 
     ABLWallFunction m_abl_wall_func;
 
@@ -129,11 +130,15 @@ private:
     mutable pde::icns::ABLMeanBoussinesq* m_abl_mean_bous{nullptr};
 
     mutable pde::icns::ABLWrfForcingMom* m_abl_wrf_forcing{nullptr};
-
     mutable pde::temperature::ABLWrfForcingTemp* m_abl_wrf_theta_forcing{nullptr};
 
     std::unique_ptr<ABLWRFfile> m_wrf_file;
 
+    //! Default value set based on https://turbmodels.larc.nasa.gov/sst.html
+    amrex::Real m_init_sdr{25.0};
+
+    //! Hybrid RANS-LES with Nalu-wind
+    bool m_hybrid_rl{false};
 };
 
 } // namespace amr_wind

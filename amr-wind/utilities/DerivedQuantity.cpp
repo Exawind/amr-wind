@@ -34,7 +34,9 @@ parse_derived_qty(const std::string& key)
 
     // Collect all arguments required for the derived quantity function
     auto fargs = strip_spaces(key.substr(popen + 1, pclose - popen - 1));
-    if (fargs.back() != ',') fargs += ",";
+    if (fargs.back() != ',') {
+        fargs += ",";
+    }
     std::vector<std::string> args;
     size_t start = 0;
     size_t pos;
@@ -60,7 +62,9 @@ DerivedQty& DerivedQtyMgr::create(const std::string& key)
     auto qty_name = strip_spaces(key);
 
     // If this quantity is already registered return early
-    if (contains(qty_name)) return *m_derived_vec[m_obj_map[qty_name]];
+    if (contains(qty_name)) {
+        return *m_derived_vec[m_obj_map[qty_name]];
+    }
 
     auto tokens = parse_derived_qty(qty_name);
     m_derived_vec.emplace_back(
@@ -72,7 +76,9 @@ DerivedQty& DerivedQtyMgr::create(const std::string& key)
 
 void DerivedQtyMgr::create(const amrex::Vector<std::string>& keys)
 {
-    for (const auto& qty : keys) create(qty);
+    for (const auto& qty : keys) {
+        create(qty);
+    }
 }
 
 void DerivedQtyMgr::operator()(ScratchField& fld, const int scomp)
@@ -104,7 +110,7 @@ bool DerivedQtyMgr::contains(const std::string& key) const noexcept
 void DerivedQtyMgr::var_names(
     amrex::Vector<std::string>& plt_var_names) const noexcept
 {
-    for (auto& qty : m_derived_vec) {
+    for (const auto& qty : m_derived_vec) {
         qty->var_names(plt_var_names);
     }
 }

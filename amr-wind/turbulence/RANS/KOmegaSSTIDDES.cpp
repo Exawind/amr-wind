@@ -20,18 +20,20 @@ KOmegaSSTIDDES<Transport>::~KOmegaSSTIDDES() = default;
 template <typename Transport>
 KOmegaSSTIDDES<Transport>::KOmegaSSTIDDES(CFDSim& sim)
     : KOmegaSST<Transport>(sim)
-{
+{}
 
-    {
-        const std::string coeffs_dict = this->model_name() + "_coeffs";
-        amrex::ParmParse pp(coeffs_dict);
-        pp.query("Cdes1", this->m_Cdes1);
-        pp.query("Cdes2", this->m_Cdes2);
-        pp.query("Cdt1", this->m_Cdt1);
-        pp.query("Cdt2", this->m_Cdt2);
-        pp.query("Cw", this->m_Cw);
-        pp.query("kappa", this->m_kappa);
-    }
+template <typename Transport>
+void KOmegaSSTIDDES<Transport>::parse_model_coeffs()
+{
+    KOmegaSST<Transport>::parse_model_coeffs();
+    const std::string coeffs_dict = this->model_name() + "_coeffs";
+    amrex::ParmParse pp(coeffs_dict);
+    pp.query("Cdes1", this->m_Cdes1);
+    pp.query("Cdes2", this->m_Cdes2);
+    pp.query("Cdt1", this->m_Cdt1);
+    pp.query("Cdt2", this->m_Cdt2);
+    pp.query("Cw", this->m_Cw);
+    pp.query("kappa", this->m_kappa);
 }
 
 template <typename Transport>
@@ -82,10 +84,12 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
     const auto& den = this->m_rho.state(fstate);
     const auto& tke = (*this->m_tke).state(fstate);
     const auto& sdr = (*this->m_sdr).state(fstate);
+    // cppcheck-suppress constVariable
     auto& repo = mu_turb.repo();
-    auto& geom_vec = repo.mesh().Geom();
+    const auto& geom_vec = repo.mesh().Geom();
     auto& tke_lhs = (this->m_sim).repo().get_field("tke_lhs_src_term");
     tke_lhs.setVal(0.0);
+    // cppcheck-suppress constVariable
     auto& sdr_lhs = (this->m_sim).repo().get_field("sdr_lhs_src_term");
 
     auto gradK = (this->m_sim.repo()).create_scratch_field(3, 0);

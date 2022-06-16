@@ -54,9 +54,13 @@ std::set<int> determine_influenced_procs(
         const auto& isects = ba.intersections(bx);
 
         // Extract the processor ranks
-        for (const auto& is : isects) procs.insert(dm[is.first]);
+        for (const auto& is : isects) {
+            procs.insert(dm[is.first]);
+        }
 
-        if (lev < finest_level) bx = bx.refine(mesh.refRatio(lev));
+        if (lev < finest_level) {
+            bx = bx.refine(mesh.refRatio(lev));
+        }
     }
 
     return procs;

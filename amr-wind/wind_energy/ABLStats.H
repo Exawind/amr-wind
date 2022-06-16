@@ -36,11 +36,14 @@ class ABLWrfForcingTemp;
 class ABLStats : public ABLStatsBase::Register<ABLStats>
 {
 public:
-    static const std::string identifier() { return "precursor"; }
+    static std::string identifier() { return "precursor"; }
 
-    ABLStats(CFDSim&, const ABLWallFunction&, const int dir);
+    ABLStats(
+        CFDSim& /*sim*/,
+        const ABLWallFunction& /*abl_wall_func*/,
+        const int dir);
 
-    virtual ~ABLStats();
+    ~ABLStats() override;
 
     ABLStatsMode abl_mode() const override { return ABLStatsMode::computed; }
 

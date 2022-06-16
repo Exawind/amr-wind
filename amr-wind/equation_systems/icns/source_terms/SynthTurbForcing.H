@@ -13,13 +13,13 @@ namespace icns {
 class SynthTurbForcing : public MomentumSource::Register<SynthTurbForcing>
 {
 public:
-    static const std::string identifier() { return "SynthTurbForcing"; }
+    static std::string identifier() { return "SynthTurbForcing"; }
 
-    explicit SynthTurbForcing(const CFDSim&);
+    explicit SynthTurbForcing(const CFDSim& /*sim*/);
 
-    virtual ~SynthTurbForcing();
+    ~SynthTurbForcing() override;
 
-    virtual void operator()(
+    void operator()(
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,

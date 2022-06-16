@@ -23,10 +23,12 @@ struct AdvectionOp<
     fvm::MOL,
     typename std::enable_if<std::is_base_of<ScalarTransport, PDE>::value>::type>
 {
+    // cppcheck-suppress uninitMemberVar
     AdvectionOp(
         PDEFields& fields_in,
         bool /* has_overset */,
-        bool /* variable density */)
+        bool /* variable density */,
+        bool /* mesh mapping */)
         : fields(fields_in)
         , density(fields_in.repo.get_field("density"))
         , u_mac(fields_in.repo.get_field("u_mac"))
@@ -34,14 +36,17 @@ struct AdvectionOp<
         , w_mac(fields_in.repo.get_field("w_mac"))
     {}
 
-    void operator()(const FieldState fstate, const amrex::Real)
+    void preadvect(const FieldState /*unused*/, const amrex::Real /*unused*/) {}
+
+    void operator()(const FieldState fstate, const amrex::Real /*unused*/)
     {
         static_assert(
             PDE::ndim == 1, "Invalid number of components for scalar");
 
-        auto& repo = fields.repo;
-        auto& geom = repo.mesh().Geom();
+        const auto& repo = fields.repo;
+        const auto& geom = repo.mesh().Geom();
 
+        // cppcheck-suppress constVariable
         auto& conv_term = fields.conv_term.state(fstate);
         auto& dof_field = fields.field.state(fstate);
         const auto& den = density.state(fstate);
@@ -50,9 +55,10 @@ struct AdvectionOp<
             amrex::MFItInfo mfi_info;
             // if (amrex::Gpu::notInLaunchRegion())
             // mfi_info.EnableTiling(amrex::IntVect(1024,16,16)).SetDynamic(true);
-            if (amrex::Gpu::notInLaunchRegion())
+            if (amrex::Gpu::notInLaunchRegion()) {
                 mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
                     .SetDynamic(true);
+            }
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif

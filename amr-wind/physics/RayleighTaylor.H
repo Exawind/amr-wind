@@ -17,11 +17,11 @@ namespace amr_wind {
 class RayleighTaylor : public Physics::Register<RayleighTaylor>
 {
 public:
-    static const std::string identifier() { return "RayleighTaylor"; }
+    static std::string identifier() { return "RayleighTaylor"; }
 
     explicit RayleighTaylor(const CFDSim& sim);
 
-    virtual ~RayleighTaylor() = default;
+    ~RayleighTaylor() override = default;
 
     //! Initialize the density and velocity fields for RayleighTaylor
     //! simulations

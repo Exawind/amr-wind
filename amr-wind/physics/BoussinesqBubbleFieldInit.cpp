@@ -50,10 +50,11 @@ void BoussinesqBubbleFieldInit::operator()(
         amrex::Real r = std::sqrt(
             (x - xc) * (x - xc) + (y - yc) * (y - yc) + (z - zc) * (z - zc));
 
-        if (r < radius)
+        if (r < radius) {
             tracer(i, j, k, 0) = ti;
-        else
+        } else {
             tracer(i, j, k, 0) = to;
+        }
     });
 }
 

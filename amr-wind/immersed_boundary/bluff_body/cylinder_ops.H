@@ -46,10 +46,12 @@ struct InitDataOp<Cylinder>
 {
     void operator()(Cylinder::DataType& data)
     {
-        auto& wdata = data.meta();
+        const auto& wdata = data.meta();
 
         auto& sim = data.sim();
+        // cppcheck-suppress constVariable
         auto& mask_node = sim.repo().get_int_field("mask_node");
+        // cppcheck-suppress constVariable
         auto& levelset = sim.repo().get_field("ib_levelset");
 
         auto nlevels = sim.repo().num_active_levels();
@@ -62,9 +64,9 @@ struct InitDataOp<Cylinder>
             for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
                 auto phi = levelset(lev).array(mfi);
 
-                amrex::Real x0 = wdata.center_loc[0];
-                amrex::Real y0 = wdata.center_loc[1];
-                amrex::Real R = wdata.radius;
+                const amrex::Real x0 = wdata.center_loc[0];
+                const amrex::Real y0 = wdata.center_loc[1];
+                const amrex::Real R = wdata.radius;
                 const auto& bx = mfi.growntilebox();
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {

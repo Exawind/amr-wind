@@ -10,7 +10,7 @@ VorticityMag::VorticityMag(
     const FieldRepo& repo, const std::vector<std::string>& args)
     : m_vel(repo.get_field("velocity"))
 {
-    AMREX_ALWAYS_ASSERT(args.size() == 0u);
+    AMREX_ALWAYS_ASSERT(args.empty());
 }
 
 void VorticityMag::operator()(ScratchField& fld, const int scomp)
@@ -24,7 +24,7 @@ QCriterion::QCriterion(
     const FieldRepo& repo, const std::vector<std::string>& args)
     : m_vel(repo.get_field("velocity"))
 {
-    AMREX_ALWAYS_ASSERT(args.size() == 0u);
+    AMREX_ALWAYS_ASSERT(args.empty());
 }
 
 void QCriterion::operator()(ScratchField& fld, const int scomp)
@@ -38,7 +38,7 @@ QCriterionNondim::QCriterionNondim(
     const FieldRepo& repo, const std::vector<std::string>& args)
     : m_vel(repo.get_field("velocity"))
 {
-    AMREX_ALWAYS_ASSERT(args.size() == 0u);
+    AMREX_ALWAYS_ASSERT(args.empty());
 }
 
 void QCriterionNondim::operator()(ScratchField& fld, const int scomp)
@@ -52,7 +52,7 @@ StrainRateMag::StrainRateMag(
     const FieldRepo& repo, const std::vector<std::string>& args)
     : m_vel(repo.get_field("velocity"))
 {
-    AMREX_ALWAYS_ASSERT(args.size() == 0u);
+    AMREX_ALWAYS_ASSERT(args.empty());
 }
 
 void StrainRateMag::operator()(ScratchField& fld, const int scomp)
@@ -64,7 +64,7 @@ void StrainRateMag::operator()(ScratchField& fld, const int scomp)
 
 Gradient::Gradient(const FieldRepo& repo, const std::vector<std::string>& args)
 {
-    AMREX_ALWAYS_ASSERT(args.size() == 1u);
+    AMREX_ALWAYS_ASSERT(args.size() == 1U);
     m_phi = &repo.get_field(args[0]);
 }
 
@@ -78,7 +78,7 @@ void Gradient::operator()(ScratchField& fld, const int scomp)
 Divergence::Divergence(
     const FieldRepo& repo, const std::vector<std::string>& args)
 {
-    AMREX_ALWAYS_ASSERT(args.size() == 1u);
+    AMREX_ALWAYS_ASSERT(args.size() == 1U);
     m_phi = &repo.get_field(args[0]);
     AMREX_ALWAYS_ASSERT(m_phi->num_comp() == AMREX_SPACEDIM);
 }
@@ -93,7 +93,7 @@ void Divergence::operator()(ScratchField& fld, const int scomp)
 Laplacian::Laplacian(
     const FieldRepo& repo, const std::vector<std::string>& args)
 {
-    AMREX_ALWAYS_ASSERT(args.size() == 1u);
+    AMREX_ALWAYS_ASSERT(args.size() == 1U);
     m_phi = &repo.get_field(args[0]);
     AMREX_ALWAYS_ASSERT(m_phi->num_comp() == AMREX_SPACEDIM);
 }
@@ -109,11 +109,11 @@ FieldComponents::FieldComponents(
     const FieldRepo& repo, const std::vector<std::string>& args)
 {
     const size_t nargs = args.size();
-    AMREX_ALWAYS_ASSERT(nargs > 1u);
+    AMREX_ALWAYS_ASSERT(nargs > 1U);
     m_fld = &repo.get_field(args[0]);
     AMREX_ALWAYS_ASSERT(static_cast<int>(nargs - 1) < m_fld->num_comp());
 
-    m_ncomp = nargs - 1;
+    m_ncomp = static_cast<int>(nargs) - 1;
     m_comp.resize(nargs - 1);
     for (size_t i = 1; i < nargs; ++i) {
         m_comp[i - 1] = std::stoi(args[i]);

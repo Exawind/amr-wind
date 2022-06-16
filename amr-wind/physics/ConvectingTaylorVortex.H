@@ -12,72 +12,72 @@ namespace {
 struct UExact
 {
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real) const;
+        const amrex::Real /*u0*/,
+        const amrex::Real /*v0*/,
+        const amrex::Real /*omega*/,
+        const amrex::Real /*x*/,
+        const amrex::Real /*y*/,
+        const amrex::Real /*t*/) const;
     const int m_comp{0};
 };
 
 struct VExact
 {
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real) const;
+        const amrex::Real /*u0*/,
+        const amrex::Real /*v0*/,
+        const amrex::Real /*omega*/,
+        const amrex::Real /*x*/,
+        const amrex::Real /*y*/,
+        const amrex::Real /*t*/) const;
     const int m_comp{1};
 };
 
 struct WExact
 {
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real) const;
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/) const;
     const int m_comp{2};
 };
 
 struct GpxExact
 {
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real) const;
+        const amrex::Real /*u0*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*omega*/,
+        const amrex::Real /*x*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*t*/) const;
     const int m_comp{0};
 };
 
 struct GpyExact
 {
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real) const;
+        const amrex::Real /*unused*/,
+        const amrex::Real /*v0*/,
+        const amrex::Real /*omega*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*y*/,
+        const amrex::Real /*t*/) const;
     const int m_comp{1};
 };
 
 struct GpzExact
 {
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real) const;
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/) const;
     const int m_comp{2};
 };
 
@@ -89,16 +89,16 @@ struct GpzExact
 class ConvectingTaylorVortex : public Physics::Register<ConvectingTaylorVortex>
 {
 public:
-    static const std::string identifier() { return "ConvectingTaylorVortex"; }
+    static std::string identifier() { return "ConvectingTaylorVortex"; }
 
     explicit ConvectingTaylorVortex(const CFDSim& sim);
 
-    virtual ~ConvectingTaylorVortex() = default;
+    ~ConvectingTaylorVortex() override = default;
 
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 
     template <typename T>
-    amrex::Real compute_error(const Field&);
+    amrex::Real compute_error(const Field& /*field*/);
 
     void post_init_actions() override;
 
@@ -108,20 +108,22 @@ public:
 
     void post_advance_work() override;
 
-    amrex::Real get_u0() { return m_u0; }
+    amrex::Real get_u0() const { return m_u0; }
 
-    amrex::Real get_v0() { return m_v0; }
+    amrex::Real get_v0() const { return m_v0; }
 
-    amrex::Real get_omega() { return m_omega; }
+    amrex::Real get_omega() const { return m_omega; }
 
 private:
     const amr_wind::SimTime& m_time;
     const amr_wind::CFDSim& m_sim;
     const FieldRepo& m_repo;
     const amrex::AmrCore& m_mesh;
+
     Field& m_velocity;
     Field& m_gradp;
     Field& m_density;
+
     void output_error();
 
     //! initial density value
@@ -143,6 +145,7 @@ private:
     std::string m_output_fname{"ctv.log"};
 
     bool m_activate_pressure{false};
+    bool m_mesh_mapping{false};
 };
 } // namespace ctv
 } // namespace amr_wind

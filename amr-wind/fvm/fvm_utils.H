@@ -32,7 +32,9 @@ inline void apply(const FvmOp& fvmop, const FType& fld)
             // Check if the box touches any of the physical domain boundaries.
             // If not, short circuit the rest of the code and move on to the
             // next multifab.
-            if (domain.strictly_contains(mfi.tilebox())) continue;
+            if (domain.strictly_contains(mfi.tilebox())) {
+                continue;
+            }
 
             // faces
             fvmop.template apply<stencil::StencilILO>(lev, mfi);

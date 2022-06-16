@@ -36,14 +36,14 @@ Example::
 
 Each section must contain the keyword ``type`` that is one of the refinement types:
 
-======================== ===================================================================
-``CartBoxRefinement``    Nested refinement using Cartesian boxes
-``FieldRefinement``      Refinement based on error metric for field or its gradient
-``OversetRefinement``    Refinement around fringe/field interface
-``GeometryRefinement``   Refinement using geometric shapes
-``QCriterionRefinement`` Refinement using Q-Criterion
-``VorticityMagRefinement``  Refinement using vorticity
-======================== ===================================================================
+========================== ===================================================================
+``CartBoxRefinement``      Nested refinement using Cartesian boxes
+``FieldRefinement``        Refinement based on error metric for field or its gradient
+``OversetRefinement``      Refinement around fringe/field interface
+``GeometryRefinement``     Refinement using geometric shapes
+``QCriterionRefinement``   Refinement using Q-Criterion
+``VorticityMagRefinement`` Refinement using vorticity
+========================== ===================================================================
 
 .. input_param:: tagging.labels
 

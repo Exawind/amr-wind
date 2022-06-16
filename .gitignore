@@ -18,3 +18,7 @@ spack*
 compile_commands.json
 settings.json
 .vscode*
+.cache*
+.ccls
+.ccls-cache/
+build/

@@ -2,14 +2,15 @@
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include <AMReX_MultiFabUtil.H>
+#include <utility>
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/IOManager.H"
 
 namespace amr_wind {
 namespace field_norms {
 
-FieldNorms::FieldNorms(CFDSim& sim, const std::string& label)
-    : m_sim(sim), m_label(label)
+FieldNorms::FieldNorms(CFDSim& sim, std::string label)
+    : m_sim(sim), m_label(std::move(label))
 {}
 
 FieldNorms::~FieldNorms() = default;
@@ -88,7 +89,9 @@ void FieldNorms::post_advance_work()
     const auto& time = m_sim.time();
     const int tidx = time.time_index();
     // Skip processing if it is not an output timestep
-    if (!(tidx % m_out_freq == 0)) return;
+    if (!(tidx % m_out_freq == 0)) {
+        return;
+    }
 
     process_field_norms();
     write_ascii();
@@ -111,7 +114,9 @@ void FieldNorms::prepare_ascii_file()
         std::ofstream f(m_out_fname.c_str());
         f << "time_step "
           << "time";
-        for (int i = 0; i < m_var_names.size(); ++i) f << ' ' << m_var_names[i];
+        for (int i = 0; i < m_var_names.size(); ++i) {
+            f << ' ' << m_var_names[i];
+        }
         f << std::endl;
         f.close();
     }
@@ -126,8 +131,9 @@ void FieldNorms::write_ascii()
         f << m_sim.time().time_index() << std::fixed
           << std::setprecision(m_precision) << std::setw(m_width)
           << m_sim.time().new_time();
-        for (int i = 0; i < m_fnorms.size(); ++i)
+        for (int i = 0; i < m_fnorms.size(); ++i) {
             f << std::setw(m_width) << m_fnorms[i];
+        }
         f << std::endl;
         f.close();
     }

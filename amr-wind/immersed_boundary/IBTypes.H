@@ -1,6 +1,8 @@
 #ifndef IBTYPES_H
 #define IBTYPES_H
 
+#include <utility>
+
 #include "amr-wind/core/Slice.H"
 #include "amr-wind/core/vs/vector_space.H"
 
@@ -45,8 +47,8 @@ struct IBInfo
     //! Unique integer identifier for the immersed boundary
     int id{-1};
 
-    IBInfo(const std::string& label_in, const int id_in)
-        : label(label_in), id(id_in)
+    IBInfo(std::string label_in, const int id_in)
+        : label(std::move(label_in)), id(id_in)
     {}
 };
 

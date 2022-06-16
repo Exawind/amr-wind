@@ -129,7 +129,9 @@ void fixup_eta_on_domain_faces(
 
     const Box& domain = geom.Domain();
     MFItInfo mfi_info{};
-    if (Gpu::notInLaunchRegion()) mfi_info.SetDynamic(true);
+    if (Gpu::notInLaunchRegion()) {
+        mfi_info.SetDynamic(true);
+    }
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
@@ -195,4 +197,67 @@ void fixup_eta_on_domain_faces(
         }
     }
 }
+
+void viscosity_to_uniform_space(
+    amrex::Array<amrex::MultiFab, AMREX_SPACEDIM>& b,
+    const amr_wind::FieldRepo& repo,
+    int lev)
+{
+    const auto& mesh_fac_xf =
+        repo.get_mesh_mapping_field(amr_wind::FieldLoc::XFACE);
+    const auto& mesh_fac_yf =
+        repo.get_mesh_mapping_field(amr_wind::FieldLoc::YFACE);
+    const auto& mesh_fac_zf =
+        repo.get_mesh_mapping_field(amr_wind::FieldLoc::ZFACE);
+    const auto& mesh_detJ_xf =
+        repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::XFACE);
+    const auto& mesh_detJ_yf =
+        repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::YFACE);
+    const auto& mesh_detJ_zf =
+        repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::ZFACE);
+
+    // beta accounted for mesh mapping (x-face) = J/fac^2 * mu
+    for (amrex::MFIter mfi(b[0]); mfi.isValid(); ++mfi) {
+        amrex::Array4<amrex::Real> const& mu = b[0].array(mfi);
+        amrex::Array4<amrex::Real const> const& fac =
+            mesh_fac_xf(lev).array(mfi);
+        amrex::Array4<amrex::Real const> const& detJ =
+            mesh_detJ_xf(lev).const_array(mfi);
+
+        amrex::ParallelFor(
+            mfi.tilebox(), [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                mu(i, j, k) =
+                    mu(i, j, k) * detJ(i, j, k) / std::pow(fac(i, j, k, 0), 2);
+            });
+    }
+    // beta accounted for mesh mapping (y-face) = J/fac^2 * mu
+    for (amrex::MFIter mfi(b[1]); mfi.isValid(); ++mfi) {
+        amrex::Array4<amrex::Real> const& mu = b[1].array(mfi);
+        amrex::Array4<amrex::Real const> const& fac =
+            mesh_fac_yf(lev).array(mfi);
+        amrex::Array4<amrex::Real const> const& detJ =
+            mesh_detJ_yf(lev).const_array(mfi);
+
+        amrex::ParallelFor(
+            mfi.tilebox(), [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                mu(i, j, k) =
+                    mu(i, j, k) * detJ(i, j, k) / std::pow(fac(i, j, k, 1), 2);
+            });
+    }
+    // beta accounted for mesh mapping (z-face) = J/fac^2 * mu
+    for (amrex::MFIter mfi(b[2]); mfi.isValid(); ++mfi) {
+        amrex::Array4<amrex::Real> const& mu = b[2].array(mfi);
+        amrex::Array4<amrex::Real const> const& fac =
+            mesh_fac_zf(lev).array(mfi);
+        amrex::Array4<amrex::Real const> const& detJ =
+            mesh_detJ_zf(lev).const_array(mfi);
+
+        amrex::ParallelFor(
+            mfi.tilebox(), [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                mu(i, j, k) =
+                    mu(i, j, k) * detJ(i, j, k) / std::pow(fac(i, j, k, 2), 2);
+            });
+    }
+}
+
 } // namespace diffusion

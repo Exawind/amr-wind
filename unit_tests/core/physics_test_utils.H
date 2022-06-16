@@ -10,15 +10,16 @@ namespace amr_wind_tests {
 class PhysicsEx : public amr_wind::Physics::Register<PhysicsEx>
 {
 public:
-    static const std::string identifier() { return "PhysicsEx"; }
+    static std::string identifier() { return "PhysicsEx"; }
 
-    explicit PhysicsEx(amr_wind::CFDSim&);
+    explicit PhysicsEx(amr_wind::CFDSim& /*unused*/);
 
-    virtual ~PhysicsEx() = default;
+    ~PhysicsEx() override = default;
 
     void post_init_actions() override;
     void post_regrid_actions() override;
-    void initialize_fields(int, const amrex::Geometry&) override;
+    void
+    initialize_fields(int /*level*/, const amrex::Geometry& /*geom*/) override;
     void pre_advance_work() override;
     void post_advance_work() override;
 };

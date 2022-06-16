@@ -21,13 +21,13 @@ namespace icns {
 class BodyForce : public MomentumSource::Register<BodyForce>
 {
 public:
-    static const std::string identifier() { return "BodyForce"; }
+    static std::string identifier() { return "BodyForce"; }
 
-    explicit BodyForce(const CFDSim&);
+    explicit BodyForce(const CFDSim& /*sim*/);
 
-    virtual ~BodyForce();
+    ~BodyForce() override;
 
-    virtual void operator()(
+    void operator()(
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,

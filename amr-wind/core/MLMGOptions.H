@@ -9,9 +9,12 @@
 
 namespace amrex {
 class MLMG;
+} // namespace amrex
+
+namespace Hydro {
 class NodalProjector;
 class MacProjector;
-} // namespace amrex
+} // namespace Hydro
 
 namespace amr_wind {
 
@@ -40,9 +43,9 @@ struct MLMGOptions
     MLMGOptions(
         const std::string& default_prefix, const std::string& custom_prefix);
 
-    void operator()(amrex::MLMG&);
-    void operator()(amrex::NodalProjector&);
-    void operator()(amrex::MacProjector&);
+    void operator()(amrex::MLMG& /*mlmg*/);
+    void operator()(Hydro::NodalProjector& /*nodal_proj*/);
+    void operator()(Hydro::MacProjector& /*mac_proj*/);
 
     //! Linear operator options during construction
     amrex::LPInfo& lpinfo() { return m_lpinfo; }
@@ -57,7 +60,7 @@ struct MLMGOptions
     amrex::Real abs_tol{1.0e-14};
 
 private:
-    void parse_options(const std::string&);
+    void parse_options(const std::string& /*prefix*/);
 
     //! Linear operator info object
     amrex::LPInfo m_lpinfo;

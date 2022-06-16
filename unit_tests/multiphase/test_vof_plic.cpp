@@ -33,25 +33,31 @@ protected:
 namespace {
 
 void initialize_volume_fractions(
-    const amrex::Geometry&,
+    const amrex::Geometry& /*unused*/,
     const amrex::Box& bx,
-    const int,
-    amrex::Array4<amrex::Real>& vof_arr)
+    const int /*unused*/,
+    const amrex::Array4<amrex::Real>& vof_arr)
 {
 
     // grow the box by 1 so that x,y,z go out of bounds and min(max()) corrects
     // it and it fills the ghosts with wall values
     amrex::ParallelFor(grow(bx, 1), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-        if (i + k > 3) vof_arr(i, j, k) = 0.0;
-        if (i + k == 3) vof_arr(i, j, k) = 0.5;
-        if (i + k < 3) vof_arr(i, j, k) = 1.0;
+        if (i + k > 3) {
+            vof_arr(i, j, k) = 0.0;
+        }
+        if (i + k == 3) {
+            vof_arr(i, j, k) = 0.5;
+        }
+        if (i + k < 3) {
+            vof_arr(i, j, k) = 1.0;
+        }
     });
 }
 
 amrex::Real normal_vector_test_impl(amr_wind::Field& vof, const int pdegree)
 {
 
-    auto& geom = vof.repo().mesh().Geom();
+    const auto& geom = vof.repo().mesh().Geom();
 
     run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
         auto vof_arr = vof(lev).array(mfi);

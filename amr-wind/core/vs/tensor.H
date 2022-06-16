@@ -13,7 +13,9 @@ namespace vs {
 template <typename T>
 struct TensorT
 {
-    T vv[9];
+    T vv[9]{Traits::zero(), Traits::zero(), Traits::zero(),
+            Traits::zero(), Traits::zero(), Traits::zero(),
+            Traits::zero(), Traits::zero(), Traits::zero()};
 
     static constexpr int ncomp = 9;
     using size_type = int;
@@ -23,11 +25,7 @@ struct TensorT
     using const_iterator = const T*;
     using Traits = DTraits<T>;
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE constexpr TensorT()
-        : vv{Traits::zero(), Traits::zero(), Traits::zero(),
-             Traits::zero(), Traits::zero(), Traits::zero(),
-             Traits::zero(), Traits::zero(), Traits::zero()}
-    {}
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE constexpr TensorT() = default;
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE constexpr TensorT(
         const T& xx,

@@ -16,7 +16,7 @@ namespace amr_wind_tests {
 class FieldPlaneAveragingTest : public MeshTest
 {
 public:
-    void test_dir(int);
+    void test_dir(int /*dir*/);
 };
 
 TEST_F(FieldPlaneAveragingTest, test_constant)

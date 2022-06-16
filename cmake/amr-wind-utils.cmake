@@ -22,6 +22,7 @@ function(set_cuda_build_properties target)
     list(FILTER _tgt_src INCLUDE REGEX "\\.cpp")
     set_source_files_properties(${_tgt_src} PROPERTIES LANGUAGE CUDA)
     set_target_properties(${target} PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+    set_target_properties(${target} PROPERTIES CUDA_RESOLVE_DEVICE_SYMBOLS ON)
   endif()
 endfunction(set_cuda_build_properties)
 
@@ -30,7 +31,7 @@ macro(init_amrex)
     set(AMREX_SUBMOD_LOCATION "${CMAKE_SOURCE_DIR}/submods/amrex")
     include(${CMAKE_SOURCE_DIR}/cmake/set_amrex_options.cmake)
     list(APPEND CMAKE_MODULE_PATH "${AMREX_SUBMOD_LOCATION}/Tools/CMake")
-    if (AMR_WIND_ENABLE_CUDA)
+    if (AMR_WIND_ENABLE_CUDA AND (CMAKE_VERSION VERSION_LESS 3.20))
       include(AMReX_SetupCUDA)
     endif()
     add_subdirectory(${AMREX_SUBMOD_LOCATION})
@@ -52,7 +53,7 @@ macro(init_amrex)
     if (AMR_WIND_ENABLE_DPCPP)
       list(APPEND AMREX_COMPONENTS "SYCL")
     endif()
-    if (AMR_WIND_ENABLE_HIP)
+    if (AMR_WIND_ENABLE_ROCM)
       list(APPEND AMREX_COMPONENTS "HIP")
     endif()
     if (AMR_WIND_ENABLE_HYPRE)
@@ -69,6 +70,18 @@ macro(init_amrex)
       CACHE INTERNAL "Path to fcompare executable for regression tests")
   endif()
 endmacro(init_amrex)
+
+macro(init_amrex_hydro)
+  if (${AMR_WIND_USE_INTERNAL_AMREX_HYDRO})
+    set(AMREX_HYDRO_SUBMOD_LOCATION "${CMAKE_SOURCE_DIR}/submods/AMReX-Hydro")
+    include(${CMAKE_SOURCE_DIR}/cmake/set_amrex_hydro_options.cmake)
+    add_subdirectory(${AMREX_HYDRO_SUBMOD_LOCATION})
+  else()
+    set(CMAKE_PREFIX_PATH ${AMReX-Hydro_DIR} ${CMAKE_PREFIX_PATH})
+    find_package(AMReX-Hydro CONFIG REQUIRED)
+    message(STATUS "Found AMReX-Hydro = ${AMReX-Hydro_DIR}")
+  endif()
+endmacro(init_amrex_hydro)
 
 macro(init_code_checks)
   if(AMR_WIND_ENABLE_CLANG_TIDY)
@@ -92,10 +105,10 @@ macro(init_code_checks)
       file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cppcheck)
       add_custom_target(cppcheck
           COMMAND ${CMAKE_COMMAND} -E echo "Running cppcheck on project using ${NP} cores..."
-          COMMAND ${CMAKE_COMMAND} -E make_directory cppcheck/cppcheck-wd
+          COMMAND ${CMAKE_COMMAND} -E make_directory cppcheck
           # cppcheck ignores -isystem directories, so we change them to regular -I include directories (with no spaces either)
           COMMAND sed "s/isystem /I/g" ${CMAKE_BINARY_DIR}/compile_commands.json > cppcheck_compile_commands.json
-          COMMAND ${CPPCHECK_EXE} --template=gcc --inline-suppr --suppress=danglingTemporaryLifetime --suppress=unreadVariable --suppress=internalAstError --suppress=unusedFunction --suppress=unmatchedSuppression --suppress=useStlAlgorithm --std=c++14 --language=c++ --enable=all --project=cppcheck_compile_commands.json --cppcheck-build-dir=cppcheck-wd -i ${CMAKE_SOURCE_DIR}/submods/amrex/Src -i ${CMAKE_SOURCE_DIR}/submods/googletest --output-file=cppcheck-full-report.txt -j ${NP}
+          COMMAND ${CPPCHECK_EXE} --template=gcc --inline-suppr --suppress=unusedFunction --suppress=useStlAlgorithm --std=c++14 --language=c++ --enable=all --project=cppcheck_compile_commands.json -i ${CMAKE_SOURCE_DIR}/submods/amrex/Src -i ${CMAKE_SOURCE_DIR}/submods/AMReX-Hydro -i ${CMAKE_SOURCE_DIR}/submods/googletest --output-file=cppcheck-full-report.txt -j ${NP}
           COMMENT "Run cppcheck on project compile_commands.json"
           BYPRODUCTS cppcheck-full-report.txt
           WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/cppcheck

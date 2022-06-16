@@ -5,6 +5,7 @@
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/utilities/IOManager.H"
 
+#include <memory>
 #include <numeric>
 
 namespace amr_wind {
@@ -112,8 +113,9 @@ void TiogaInterface::post_overset_conn_work()
 
     // Update equation systems after a connectivity update
     m_sim.pde_manager().icns().post_regrid_actions();
-    for (auto& eqn : m_sim.pde_manager().scalar_eqns())
+    for (auto& eqn : m_sim.pde_manager().scalar_eqns()) {
         eqn->post_regrid_actions();
+    }
 }
 
 void TiogaInterface::register_solution(
@@ -233,12 +235,17 @@ void TiogaInterface::amr_to_tioga_mesh()
         ngrids_global += mesh.boxArray(lev).size();
 
         const auto& dmap = mesh.DistributionMap(lev);
-        for (long d = 0; d < dmap.size(); ++d) {
-            if (dmap[d] == iproc) ++ngrids_local;
+        AMREX_ALWAYS_ASSERT(
+            dmap.size() <
+            static_cast<amrex::Long>(std::numeric_limits<int>::max()));
+        for (int d = 0; d < static_cast<int>(dmap.size()); ++d) {
+            if (dmap[d] == iproc) {
+                ++ngrids_local;
+            }
         }
     }
 
-    m_amr_data.reset(new AMROversetInfo(ngrids_global, ngrids_local));
+    m_amr_data = std::make_unique<AMROversetInfo>(ngrids_global, ngrids_local);
     std::vector<int> lgrid_id(nproc, 0);
 
     int igp = 0; // Global index of the grid
@@ -251,7 +258,7 @@ void TiogaInterface::amr_to_tioga_mesh()
         const amrex::Real* dx = mesh.Geom(lev).CellSize();
 
         auto& ad = *m_amr_data;
-        for (long d = 0; d < dm.size(); ++d) {
+        for (int d = 0; d < static_cast<int>(dm.size()); ++d) {
             ad.level.h_view[iix] = lev;      // AMR Level of this patch
             ad.mpi_rank.h_view[iix] = dm[d]; // MPI rank of this patch
             ad.local_id.h_view[iix] =

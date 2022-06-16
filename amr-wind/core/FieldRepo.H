@@ -248,6 +248,14 @@ public:
         return *m_field_vec.at(field_id);
     }
 
+    /** Return a previously created mesh mapping field using field location
+     */
+    Field& get_mesh_mapping_field(FieldLoc floc) const;
+
+    /** Return a previously created mesh mapping detJ using field location
+     */
+    Field& get_mesh_mapping_detJ(FieldLoc floc) const;
+
     //! Query if field uniquely identified by name and time state exists in
     //! repository
     bool field_exists(
@@ -298,7 +306,7 @@ public:
     std::unique_ptr<ScratchField> create_scratch_field(
         const std::string& name,
         const int ncomp = 1,
-        const int ngrow = 0,
+        const int nghost = 0,
         const FieldLoc floc = FieldLoc::CELL) const;
 
     /** Create a scratch field
@@ -313,7 +321,7 @@ public:
      */
     std::unique_ptr<ScratchField> create_scratch_field(
         const int ncomp = 1,
-        const int ngrow = 0,
+        const int nghost = 0,
         const FieldLoc floc = FieldLoc::CELL) const;
 
     //! Advance all fields with more than one timestate to the new timestep
@@ -367,13 +375,13 @@ protected:
     }
 
     //! Create a new state for a field
-    Field& create_state(Field& field, const FieldState fstate) noexcept;
+    Field& create_state(Field& field, const FieldState fstate);
 
     //! Allocate field data for a single level outside of regrid
     void allocate_field_data(
         int lev,
         const Field& field,
-        LevelDataHolder& fdata,
+        LevelDataHolder& level_data,
         const amrex::FabFactory<amrex::FArrayBox>& factory);
 
     //! Allocate field data at all levels
@@ -383,18 +391,18 @@ protected:
     void allocate_field_data(
         const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm,
-        LevelDataHolder& fdata,
+        LevelDataHolder& level_data,
         const amrex::FabFactory<amrex::FArrayBox>& factory);
 
-    void
-    allocate_field_data(int lev, const IntField& field, LevelDataHolder& fdata);
+    void allocate_field_data(
+        int lev, const IntField& field, LevelDataHolder& level_data);
 
     void allocate_field_data(const IntField& field);
 
     void allocate_field_data(
         const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm,
-        LevelDataHolder& fdata,
+        LevelDataHolder& level_data,
         const amrex::FabFactory<amrex::IArrayBox>& factory);
 
     //! Reference to the mesh instance

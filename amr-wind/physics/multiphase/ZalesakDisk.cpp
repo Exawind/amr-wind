@@ -32,7 +32,7 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
     const auto& dx = geom.CellSizeArray();
     const auto& problo = geom.ProbLoArray();
 
-    auto& mphase = m_sim.physics_manager().get<MultiPhase>();
+    const auto& mphase = m_sim.physics_manager().get<MultiPhase>();
     const amrex::Real rho1 = mphase.rho1();
     const amrex::Real rho2 = mphase.rho2();
 

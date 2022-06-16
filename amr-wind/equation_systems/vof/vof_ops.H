@@ -45,9 +45,17 @@ struct ComputeRHSOp<VOF, Scheme>
 {
     explicit ComputeRHSOp(PDEFields& fields_in) : fields(fields_in) {}
 
-    void predictor_rhs(const DiffusionType, const amrex::Real) {}
+    void predictor_rhs(
+        const DiffusionType /*unused*/,
+        const amrex::Real /*unused*/,
+        bool /*unused*/)
+    {}
 
-    void corrector_rhs(const DiffusionType, const amrex::Real) {}
+    void corrector_rhs(
+        const DiffusionType /*unused*/,
+        const amrex::Real /*unused*/,
+        bool /*unused*/)
+    {}
 
     // data members
     PDEFields& fields;
@@ -63,7 +71,7 @@ struct PostSolveOp<VOF>
     PostSolveOp(CFDSim& sim, PDEFields& fields) : m_sim(sim), m_fields(fields)
     {}
 
-    void operator()(const amrex::Real)
+    void operator()(const amrex::Real /*unused*/)
     {
         m_fields.field.fillpatch(m_sim.time().current_time());
         auto& multiphase = m_sim.physics_manager().get<MultiPhase>();

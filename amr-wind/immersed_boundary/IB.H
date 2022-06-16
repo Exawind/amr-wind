@@ -28,13 +28,15 @@ class ImmersedBoundaryModel;
 class IB : public Physics::Register<IB>
 {
 public:
-    static const std::string identifier() { return "IB"; }
+    static std::string identifier() { return "IB"; }
 
-    explicit IB(CFDSim&);
+    explicit IB(CFDSim& /*sim*/);
 
-    virtual ~IB();
+    ~IB() override;
 
-    virtual void initialize_fields(int, const amrex::Geometry&) override {}
+    void
+    initialize_fields(int /*level*/, const amrex::Geometry& /*geom*/) override
+    {}
 
     void pre_init_actions() override;
 
@@ -58,7 +60,7 @@ protected:
     virtual void prepare_outputs();
 
 private:
-    void update_positions();
+    static void update_positions();
 
     void update_velocities();
 

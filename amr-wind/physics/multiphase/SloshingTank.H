@@ -4,7 +4,7 @@
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"
 
-/** Multiphase Sloshing Tank physics
+/** Multiphase Sloshing Tank 3D physics
  *  \ingroup mulitphase_physics
  *
  */
@@ -14,11 +14,11 @@ namespace amr_wind {
 class SloshingTank : public Physics::Register<SloshingTank>
 {
 public:
-    static const std::string identifier() { return "SloshingTank"; }
+    static std::string identifier() { return "SloshingTank"; }
 
     explicit SloshingTank(CFDSim& sim);
 
-    virtual ~SloshingTank() = default;
+    ~SloshingTank() override = default;
 
     //! Initialize the levelset and velocity fields for Sloshing Tank
     //! simulations
@@ -37,10 +37,10 @@ private:
     Field& m_levelset;
 
     //! Initial free surface amplitude magnitude
-    amrex::Real m_amplitude{0.05};
+    amrex::Real m_amplitude{0.1};
 
-    //! Initial free surface wavelength
-    amrex::Real m_wavelength{4.0};
+    //! Peak enhancement factor
+    amrex::Real m_kappa{0.25};
 
     //! Initial zero-level free-surface water depth
     amrex::Real m_waterlevel{0.0};

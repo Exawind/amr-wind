@@ -48,10 +48,12 @@ struct InitDataOp<Box>
 {
     void operator()(Box::DataType& data)
     {
-        auto& wdata = data.meta();
+        const auto& wdata = data.meta();
 
         auto& sim = data.sim();
+        // cppcheck-suppress constVariable
         auto& mask_node = sim.repo().get_int_field("mask_node");
+        // cppcheck-suppress constVariable
         auto& levelset = sim.repo().get_field("ib_levelset");
 
         auto nlevels = sim.repo().num_active_levels();
@@ -65,12 +67,12 @@ struct InitDataOp<Box>
                 auto epsilon_node = mask_node(lev).array(mfi);
                 auto phi = levelset(lev).array(mfi);
 
-                amrex::Real x0 = wdata.center_loc[0];
-                amrex::Real y0 = wdata.center_loc[1];
-                amrex::Real z0 = wdata.center_loc[2];
-                amrex::Real l = wdata.length;
-                amrex::Real w = wdata.width;
-                amrex::Real h = wdata.height;
+                const amrex::Real x0 = wdata.center_loc[0];
+                const amrex::Real y0 = wdata.center_loc[1];
+                const amrex::Real z0 = wdata.center_loc[2];
+                const amrex::Real l = wdata.length;
+                const amrex::Real w = wdata.width;
+                const amrex::Real h = wdata.height;
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real x = problo[0] + (i + 0.5) * dx[0];

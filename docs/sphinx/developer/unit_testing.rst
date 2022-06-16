@@ -175,11 +175,11 @@ a brief overview of the core classes and their purpose.
 ```````````````````````````````````
 
 Classes written in AMR-Wind often require user inputs that are generally read in
-from input files through :class:`amrex::ParmParse` (see `docs
+from input files through `amrex::ParmParse` (see `docs
 <https://amrex-codes.github.io/amrex/docs_html/Basics.html#parmparse>`_).
 ``pp_utils`` are a set of functions that create skeleton input data that are
 used by various classes during initialization. For example, it populates the
-problem domain, mesh sizes, etc. so that :class:`amrex::AmrMesh` can be
+problem domain, mesh sizes, etc. so that `amrex::AmrMesh` can be
 initialized properly.
 
 .. function:: default_mesh_inputs()
@@ -189,8 +189,7 @@ initialized properly.
 
 .. function:: default_time_inputs()
 
-   Populates ParmParse data structure with necessary inputs for
-   :class:`amr_wind::SimTime`.
+   Populates ParmParse data structure with necessary inputs for `amr_wind::SimTime`.
 
 .. class:: AmrexTestEnv
 
@@ -315,10 +314,10 @@ of this test fixture:
 
 .. class:: AmrTestMesh
 
-:class:`AmrTestMesh` is a concrete implementation of :class:`amrex::AmrCore`
+:class:`AmrTestMesh` is a concrete implementation of `amrex::AmrCore`
 that creates an AMR mesh that can be used with unit testing. In addition to
 implementing the basic level data creation methods and refinement routines
-``ErrorEst``, it also creates an :class:`amr_wind::FieldRepo` instance for
+``ErrorEst``, it also creates an `amr_wind::FieldRepo` instance for
 creating and manipulating fields from within unit tests. :class:`AmrTestMesh` is
 never directly created within unit tests, instead it is created on-demand
 through the test fixture :class:`MeshTest` described next.
@@ -328,7 +327,7 @@ through the test fixture :class:`MeshTest` described next.
 :class:`MeshTest` is the base test fixture for any test that requires a mesh and
 associated field data that will be used by the test. In addition to performing
 setup/teardown actions described in :class:`AmrexTest`, it also resets the
-default :class:`amrex::Geometry` static data so that different tests can run on
+default `amrex::Geometry` static data so that different tests can run on
 different problem domains perscribed by the test fixture.
 
 Almost all unit tests within AMR-Wind use :class:`MeshTest` as their base test
@@ -432,7 +431,7 @@ scratch. After a call to this function, the mesh is ready for use.
 .. function:: populate_parameters()
 
    Populate default parameters necessary for creating an AMRMesh and
-   :class:`amr_wind::SimTime` objects.
+   `amr_wind::SimTime` objects.
 
 
 .. function:: create_mesh_instance()
@@ -451,7 +450,7 @@ be used as starting points for users to write new tests:
 `test_simtime.cpp <https://github.com/Exawind/amr-wind/blob/development/unit_tests/core/test_simtime.cpp>`_
 
    Simple unit test example that tests the behavior of
-   :class:`amr_wind::SimTime`. This test only relies on :class:`AmrexTest` and
+   `amr_wind::SimTime`. This test only relies on :class:`AmrexTest` and
    does not require a mesh.
 
 `test_abl_init.cpp <https://github.com/Exawind/amr-wind/blob/development/unit_tests/wind_energy/test_abl_init.cpp>`_

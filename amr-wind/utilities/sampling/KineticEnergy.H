@@ -17,11 +17,11 @@ namespace kinetic_energy {
 class KineticEnergy : public PostProcessBase::Register<KineticEnergy>
 {
 public:
-    static const std::string identifier() { return "KineticEnergy"; }
+    static std::string identifier() { return "KineticEnergy"; }
 
-    KineticEnergy(CFDSim&, const std::string&);
+    KineticEnergy(CFDSim& /*sim*/, std::string /*label*/);
 
-    ~KineticEnergy();
+    ~KineticEnergy() override;
 
     //! Perform actions before mesh is created
     void pre_init_actions() override {}
@@ -45,7 +45,7 @@ private:
     void write_ascii();
 
     //! store the total kinetic energy
-    amrex::Real m_total_kinetic_energy;
+    amrex::Real m_total_kinetic_energy{0.0};
 
     //! Reference to the CFD sim
     CFDSim& m_sim;

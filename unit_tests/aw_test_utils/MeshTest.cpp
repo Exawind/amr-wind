@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "MeshTest.H"
 #include "pp_utils.H"
 
@@ -7,13 +9,15 @@ void MeshTest::create_mesh_instance()
 {
     if (!m_mesh) {
         reset_prob_domain();
-        m_mesh.reset(new AmrTestMesh());
+        m_mesh = std::make_unique<AmrTestMesh>();
     }
 }
 
 void MeshTest::initialize_mesh()
 {
-    if (m_need_params) populate_parameters();
+    if (m_need_params) {
+        populate_parameters();
+    }
     create_mesh_instance();
 
     m_mesh->initialize_mesh(0.0);
@@ -33,8 +37,9 @@ void MeshTest::reset_prob_domain()
     amrex::Geometry* gg = amrex::AMReX::top()->getDefaultGeometry();
 
     if (gg != nullptr) {
-        gg->ResetDefaultProbDomain(rb);
-        gg->ResetDefaultPeriodicity({{periodic[0], periodic[1], periodic[2]}});
+        amrex::Geometry::ResetDefaultProbDomain(rb);
+        amrex::Geometry::ResetDefaultPeriodicity(
+            {{periodic[0], periodic[1], periodic[2]}});
     }
 }
 

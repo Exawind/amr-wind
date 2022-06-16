@@ -19,6 +19,11 @@ void LineSampler::initialize(const std::string& key)
     pp.getarr("start", m_start);
     pp.getarr("end", m_end);
 
+    check_bounds();
+}
+
+void LineSampler::check_bounds()
+{
     const int lev = 0;
     const auto* prob_lo = m_sim.mesh().Geom(lev).ProbLo();
     const auto* prob_hi = m_sim.mesh().Geom(lev).ProbHi();
@@ -56,12 +61,14 @@ void LineSampler::sampling_locations(SampleLocType& locs) const
     const amrex::Real ndiv = amrex::max(m_npts - 1, 1);
     amrex::Array<amrex::Real, AMREX_SPACEDIM> dx;
 
-    for (int d = 0; d < AMREX_SPACEDIM; ++d)
+    for (int d = 0; d < AMREX_SPACEDIM; ++d) {
         dx[d] = (m_end[d] - m_start[d]) / ndiv;
+    }
 
     for (int i = 0; i < m_npts; ++i) {
-        for (int d = 0; d < AMREX_SPACEDIM; ++d)
+        for (int d = 0; d < AMREX_SPACEDIM; ++d) {
             locs[i][d] = m_start[d] + i * dx[d];
+        }
     }
 }
 
@@ -75,8 +82,12 @@ void LineSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
 
 void LineSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
 #else
-void LineSampler::define_netcdf_metadata(const ncutils::NCGroup&) const {}
-void LineSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
+void LineSampler::define_netcdf_metadata(
+    const ncutils::NCGroup& /*unused*/) const
+{}
+void LineSampler::populate_netcdf_metadata(
+    const ncutils::NCGroup& /*unused*/) const
+{}
 #endif
 
 } // namespace sampling

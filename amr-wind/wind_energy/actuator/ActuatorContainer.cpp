@@ -84,9 +84,9 @@ void ActuatorContainer::initialize_particles(const int total_pts)
 
     // query the particle ID from the container. We should always be starting
     // from 1.
-    ParticleType::NextID(1u);
+    ParticleType::NextID(1U);
     const auto id_start = ParticleType::NextID();
-    AMREX_ALWAYS_ASSERT(id_start == 1u);
+    AMREX_ALWAYS_ASSERT(id_start == 1U);
     const int iproc = amrex::ParallelDescriptor::MyProc();
 
     // Flag indicating if a tile was found where all particles were deposited.
@@ -96,7 +96,7 @@ void ActuatorContainer::initialize_particles(const int total_pts)
         for (auto mfi = MakeMFIter(lev); (mfi.isValid() && !assigned); ++mfi) {
             auto& ptile = GetParticles(
                 lev)[std::make_pair(mfi.index(), mfi.LocalTileIndex())];
-            AMREX_ASSERT(ptile.size() == 0);
+            AMREX_ASSERT(ptile.empty());
             ptile.resize(total_pts);
             auto* pstruct = ptile.GetArrayOfStructs()().data();
 
@@ -157,7 +157,7 @@ void ActuatorContainer::update_positions()
     AMREX_ALWAYS_ASSERT(m_container_initialized && !m_is_scattered);
 
     const auto dpos = gpu::device_view(m_data.position);
-    const auto dptr = dpos.data();
+    const auto* const dptr = dpos.data();
     const int nlevels = m_mesh.finestLevel() + 1;
     for (int lev = 0; lev < nlevels; ++lev) {
         for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
@@ -168,7 +168,7 @@ void ActuatorContainer::update_positions()
                 auto& pp = pstruct[ip];
                 const auto idx = pp.idata(0);
 
-                auto& pvec = dptr[idx];
+                const auto& pvec = dptr[idx];
                 for (int n = 0; n < AMREX_SPACEDIM; ++n) {
                     pp.pos(n) = pvec[n];
                 }
@@ -358,18 +358,18 @@ void ActuatorContainer::compute_local_coordinates()
 
         const int nbx = dm.size();
         for (int i = 0; (i < nbx) && !assigned; ++i) {
-            if (dm[i] != iproc) continue;
+            if (dm[i] != iproc) {
+                continue;
+            }
 
             const auto& geom = m_mesh.Geom(lev);
-            const auto& dx = geom.CellSize();
-            const auto& problo = geom.ProbLo();
             const auto& bx = ba[i];
             const int* lo = bx.loVect();
 
             auto& pvec = m_proc_pos[iproc];
-            pvec.x() = problo[0] + (lo[0] + 0.5) * dx[0];
-            pvec.y() = problo[1] + (lo[1] + 0.5) * dx[1];
-            pvec.z() = problo[2] + (lo[2] + 0.5) * dx[2];
+            pvec.x() = geom.ProbLo()[0] + (lo[0] + 0.5) * geom.CellSize()[0];
+            pvec.y() = geom.ProbLo()[1] + (lo[1] + 0.5) * geom.CellSize()[1];
+            pvec.z() = geom.ProbLo()[2] + (lo[2] + 0.5) * geom.CellSize()[2];
 
             // Indicate that we have found a point and it is safe to exit the
             // loop
@@ -379,7 +379,8 @@ void ActuatorContainer::compute_local_coordinates()
 
     // Share position vectors with every process
     amrex::ParallelDescriptor::ReduceRealSum(
-        &(m_proc_pos[0].x()), m_proc_pos.size() * vs::Vector::ncomp);
+        &(m_proc_pos[0].x()),
+        static_cast<int>(m_proc_pos.size()) * vs::Vector::ncomp);
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, m_proc_pos.begin(), m_proc_pos.end(),
         m_pos_device.begin());

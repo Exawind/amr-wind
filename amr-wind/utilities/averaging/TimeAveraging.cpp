@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "amr-wind/utilities/averaging/TimeAveraging.H"
 #include "amr-wind/utilities/averaging/ReAveraging.H"
 #include "amr-wind/CFDSim.H"
@@ -7,8 +9,8 @@
 namespace amr_wind {
 namespace averaging {
 
-TimeAveraging::TimeAveraging(CFDSim& sim, const std::string& label)
-    : m_sim(sim), m_label(label)
+TimeAveraging::TimeAveraging(CFDSim& sim, std::string label)
+    : m_sim(sim), m_label(std::move(label))
 {}
 
 TimeAveraging::~TimeAveraging() = default;
@@ -40,7 +42,9 @@ void TimeAveraging::pre_init_actions()
 
             // Guard against multiple registrations of the field
             const auto found = m_registered.find(key);
-            if (found != m_registered.end()) continue;
+            if (found != m_registered.end()) {
+                continue;
+            }
 
             // Create the averaging entity
             m_averages.emplace_back(
@@ -61,8 +65,9 @@ const std::string& TimeAveraging::add_averaging(
     const auto found = m_registered.find(key);
 
     // If the field was already registered then just return the field
-    if (found != m_registered.end())
+    if (found != m_registered.end()) {
         return m_registered[key]->average_field_name();
+    }
 
     // Create and register new average
     m_averages.emplace_back(
@@ -78,7 +83,9 @@ void TimeAveraging::post_advance_work()
     // Check if we are within the averaging time period requested by the user
     const bool do_avg =
         ((cur_time >= m_start_time) && (cur_time < m_stop_time));
-    if (!do_avg) return;
+    if (!do_avg) {
+        return;
+    }
 
     const amrex::Real elapsed_time = (cur_time - m_start_time);
     for (auto& avg : m_averages) {

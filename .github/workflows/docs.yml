@@ -1,12 +1,10 @@
-name: AMR-Wind Docs
+name: AMR-Wind-Docs
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   Docs:
@@ -16,7 +14,8 @@ jobs:
         uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{github.token}}
-      - uses: actions/checkout@v2
+      - name: Clone
+        uses: actions/checkout@v3
       - name: Python
         uses: actions/setup-python@v2
         with:
@@ -33,7 +32,7 @@ jobs:
         # execute from top-level amr-wind directory
         run: |
           echo "::add-matcher::.github/problem-matchers/sphinx.json"
-          sphinx-build -M html ./docs/sphinx ./build_docs/manual
+          sphinx-build -M html ./docs/sphinx ./build_docs/manual -W --keep-going -n 2>&1 | tee -a build-output.txt
           # Doxygen output gets parsed wrong by the sphinx problem matcher so unregister it
           echo "::remove-matcher owner=sphinx-problem-matcher-loose-no-severity::"
           echo "::remove-matcher owner=sphinx-problem-matcher-loose::"
@@ -42,6 +41,13 @@ jobs:
           mv ./build_docs/manual/html ./documentation
           mv ./build_docs/doxygen/html ./documentation/api_docs
           touch ./documentation/.nojekyll
+      - name: Report
+        run: |
+          echo "::add-matcher::.github/problem-matchers/sphinx.json"
+          egrep "WARNING:" build-output.txt | sort | uniq | \
+            awk 'BEGIN{i=0}{print $0}{i++}END{print "Warnings: "i}' > build-output-warnings.txt
+          cat build-output-warnings.txt
+          exit $(tail -n 1 build-output-warnings.txt | awk '{print $2}')
       - name: Deploy
         if: github.event_name == 'push'
         uses: JamesIves/github-pages-deploy-action@releases/v3

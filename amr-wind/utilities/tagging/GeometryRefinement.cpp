@@ -32,14 +32,18 @@ void GeometryRefinement::initialize(const std::string& key)
 }
 
 void GeometryRefinement::operator()(
-    int level, amrex::TagBoxArray& tags, amrex::Real, int)
+    int level, amrex::TagBoxArray& tags, amrex::Real /*time*/, int /*ngrow*/)
 {
     // If the user has requested a particular level then check for it and exit
     // early
-    if ((m_set_level > -1) && (level != m_set_level)) return;
+    if ((m_set_level > -1) && (level != m_set_level)) {
+        return;
+    }
 
     // If the user has specified a range of levels, check and return early
-    if ((level < m_min_level) || (level > m_max_level)) return;
+    if ((level < m_min_level) || (level > m_max_level)) {
+        return;
+    }
 
     const auto& mesh = m_sim.mesh();
     const auto& geom = mesh.Geom(level);

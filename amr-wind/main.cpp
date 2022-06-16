@@ -9,6 +9,15 @@ int main(int argc, char* argv[])
     MPI_Init(&argc, &argv);
 #endif
 
+    if (argc < 2) {
+        // Print usage and exit with error code if no input file was provided.
+        amr_wind::io::print_usage(MPI_COMM_WORLD, std::cout);
+        amr_wind::io::print_error(
+            MPI_COMM_WORLD, "No input file provided. Exiting!!");
+        return 1;
+    }
+
+    // cppcheck-suppress knownConditionTrueFalse
     if (argc >= 2) {
         // Look for "-h" or "--help" flag and print usage
         for (auto i = 1; i < argc; i++) {
@@ -19,13 +28,8 @@ int main(int argc, char* argv[])
                 return 0;
             }
         }
-    } else if (argc < 2) {
-        // Print usage and exit with error code if no input file was provided.
-        amr_wind::io::print_usage(MPI_COMM_WORLD, std::cout);
-        amr_wind::io::print_error(
-            MPI_COMM_WORLD, "No input file provided. Exiting!!");
-        return 1;
     }
+
     if (!amrex::FileSystem::Exists(std::string(argv[1]))) {
         // Print usage and exit with error code if we cannot find the input file
         amr_wind::io::print_usage(MPI_COMM_WORLD, std::cout);
@@ -41,8 +45,12 @@ int main(int argc, char* argv[])
         // Set the defaults so that we throw an exception instead of attempting
         // to generate backtrace files. However, if the user has explicitly set
         // these options in their input files respect those settings.
-        if (!pp.contains("throw_exception")) pp.add("throw_exception", 1);
-        if (!pp.contains("signal_handling")) pp.add("signal_handling", 0);
+        if (!pp.contains("throw_exception")) {
+            pp.add("throw_exception", 1);
+        }
+        if (!pp.contains("signal_handling")) {
+            pp.add("signal_handling", 0);
+        }
     });
 
     { /* These braces are necessary to ensure amrex::Finalize() can be called

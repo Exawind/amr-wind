@@ -41,19 +41,21 @@ public:
 
     explicit KOmegaSST(CFDSim& sim);
 
-    virtual ~KOmegaSST();
+    ~KOmegaSST() override;
 
-    virtual std::string model_name() const override { return "KOmegaSST"; }
+    std::string model_name() const override { return "KOmegaSST"; }
 
     //! Update the turbulent viscosity field
-    virtual void update_turbulent_viscosity(const FieldState fstate) override;
+    void update_turbulent_viscosity(const FieldState fstate) override;
 
     //! No post advance work for this model
-    virtual void post_advance_work() override {}
+    void post_advance_work() override {}
 
     //! Update the effective scalar diffusivity field
-    virtual void
-    update_scalar_diff(Field& deff, const std::string& name) override;
+    void update_scalar_diff(Field& deff, const std::string& name) override;
+
+    //! Parse turbulence model coefficients
+    void parse_model_coeffs() override;
 
     //! Return turbulence model coefficients
     TurbulenceModel::CoeffsDictType model_coeffs() const override;

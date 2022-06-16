@@ -19,9 +19,11 @@ void OversetRefinement::initialize(const std::string& key)
 }
 
 void OversetRefinement::operator()(
-    int level, amrex::TagBoxArray& tags, amrex::Real, int)
+    int level, amrex::TagBoxArray& tags, amrex::Real /*time*/, int /*ngrow*/)
 {
-    if (level > m_max_lev) return;
+    if (level > m_max_lev) {
+        return;
+    }
 
     const auto& ibcell = m_sim.repo().get_int_field("iblank_cell");
     const auto& ibfab = ibcell(level);
@@ -57,8 +59,9 @@ void OversetRefinement::operator()(
                 const int az = amrex::max(azp, azm);
                 if (amrex::max(ax, ay, az) > 1 ||
                     (tag_fringe && ibarr(i, j, k) == -1) ||
-                    (tag_hole && ibarr(i, j, k) == 0))
+                    (tag_hole && ibarr(i, j, k) == 0)) {
                     tag(i, j, k) = amrex::TagBox::SET;
+                }
             });
     }
 }

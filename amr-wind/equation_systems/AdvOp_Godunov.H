@@ -27,7 +27,8 @@ struct AdvectionOp<
     AdvectionOp(
         PDEFields& fields_in,
         bool /* has_overset */,
-        bool /* variable density */)
+        bool /* variable density */,
+        bool /* mesh mapping */)
         : fields(fields_in)
         , density(fields_in.repo.get_field("density"))
         , u_mac(fields_in.repo.get_field("u_mac"))
@@ -37,10 +38,11 @@ struct AdvectionOp<
         amrex::ParmParse pp("incflo");
         pp.query("godunov_type", godunov_type);
 
-        if (pp.contains("use_ppm") || pp.contains("use_limiter"))
+        if (pp.contains("use_ppm") || pp.contains("use_limiter")) {
             amrex::Abort(
                 "Godunov: use_ppm and use_limiter are deprecated. Please "
                 "update input file");
+        }
 
         if (amrex::toLower(godunov_type) == "plm") {
             godunov_scheme = godunov::scheme::PLM;
@@ -65,6 +67,8 @@ struct AdvectionOp<
         iconserv.resize(PDE::ndim, 1);
     }
 
+    void preadvect(const FieldState /*unused*/, const amrex::Real /*unused*/) {}
+
     void operator()(const FieldState fstate, const amrex::Real dt)
     {
         static_assert(
@@ -73,8 +77,9 @@ struct AdvectionOp<
         const auto& geom = repo.mesh().Geom();
 
         const auto& src_term = fields.src_term;
+        // cppcheck-suppress constVariable
         auto& conv_term = fields.conv_term;
-        auto& dof_field = fields.field.state(fstate);
+        const auto& dof_field = fields.field.state(fstate);
 
         auto flux_x =
             repo.create_scratch_field(PDE::ndim, 0, amr_wind::FieldLoc::XFACE);
@@ -88,9 +93,10 @@ struct AdvectionOp<
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             amrex::MFItInfo mfi_info;
-            if (amrex::Gpu::notInLaunchRegion())
+            if (amrex::Gpu::notInLaunchRegion()) {
                 mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
                     .SetDynamic(true);
+            }
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif

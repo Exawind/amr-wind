@@ -25,7 +25,7 @@ void NWB::initialize_fields(int level, const amrex::Geometry& geom)
     auto& levelset = m_levelset(level);
     auto& density = m_density(level);
 
-    auto& mphase = m_sim.physics_manager().get<MultiPhase>();
+    const auto& mphase = m_sim.physics_manager().get<MultiPhase>();
     const amrex::Real rho1 = mphase.rho1();
     const amrex::Real rho2 = mphase.rho2();
     velocity.setVal(0.0, 0, AMREX_SPACEDIM);

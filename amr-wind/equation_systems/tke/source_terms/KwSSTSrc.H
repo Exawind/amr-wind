@@ -15,13 +15,13 @@ namespace tke {
 class KwSSTSrc : public TKESource::Register<KwSSTSrc>
 {
 public:
-    static const std::string identifier() { return "KwSSTSrc"; }
+    static std::string identifier() { return "KwSSTSrc"; }
 
-    explicit KwSSTSrc(const CFDSim&);
+    explicit KwSSTSrc(const CFDSim& /*sim*/);
 
-    virtual ~KwSSTSrc();
+    ~KwSSTSrc() override;
 
-    virtual void operator()(
+    void operator()(
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,

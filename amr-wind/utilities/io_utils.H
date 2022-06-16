@@ -49,13 +49,15 @@ inline void add_var_names(
         break;
 
     case AMREX_SPACEDIM:
-        for (int i = 0; i < AMREX_SPACEDIM; ++i)
+        for (int i = 0; i < AMREX_SPACEDIM; ++i) {
             vnames.push_back(fname + comp[i]);
+        }
         break;
 
     default:
-        for (int i = 0; i < ncomp; ++i)
+        for (int i = 0; i < ncomp; ++i) {
             vnames.push_back(fname + std::to_string(i));
+        }
     }
 }
 } // namespace ioutils

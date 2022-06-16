@@ -1,0 +1,9 @@
+# Set amrex hydro options
+
+set(HYDRO_SPACEDIM ${AMReX_SPACEDIM})
+set(HYDRO_EB OFF)
+set(HYDRO_MPI ${AMReX_MPI})
+set(HYDRO_OMP ${AMReX_OMP})
+set(HYDRO_GPU_BACKEND ${AMReX_GPU_BACKEND} CACHE STRING "AMReX GPU type" FORCE)
+
+

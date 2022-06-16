@@ -1,10 +1,8 @@
 #ifndef ACUTATOR_UTILS_H
 #define ACUTATOR_UTILS_H
 
-#include "amr-wind/core/vs/vector.H"
-#include "amr-wind/utilities/trig_ops.H"
+#include "amr-wind/core/vs/vector_space.H"
 #include "AMReX_AmrCore.H"
-#include "amr-wind/utilities/tensor_ops.H"
 #include <cmath>
 
 #include <set>
@@ -27,9 +25,10 @@ namespace utils {
  * turbine
  */
 std::set<int> determine_influenced_procs(
-    const amrex::AmrCore& mesh, const amrex::RealBox& rbox);
+    const amrex::AmrCore& mesh, const amrex::RealBox& rbx);
 
-void determine_root_proc(ActInfo&, amrex::Vector<int>&);
+void determine_root_proc(
+    ActInfo& /*info*/, amrex::Vector<int>& /*act_proc_count*/);
 
 /** Return the Gaussian smearing factor in 3D
  *
@@ -55,9 +54,9 @@ gaussian3d(const vs::Vector& dist, const vs::Vector& eps)
         const amrex::Real eps_fac = eps.x() * eps.y() * eps.z();
         return (fac / eps_fac) *
                std::exp(-rr.x() * rr.x() - rr.y() * rr.y() - rr.z() * rr.z());
-    } else {
-        return 0.0;
     }
+
+    return 0.0;
 }
 /** Return the Gaussian smearing factor in 1D
  *
@@ -73,7 +72,9 @@ gaussian1d(const amrex::Real& dist, const amrex::Real& eps)
 {
     // fac = 1.0/sqrt(pi)
     const amrex::Real fac = 0.5641895835477563;
-    if (std::abs(dist / eps) >= 16.0) return 0.0;
+    if (std::abs(dist / eps) >= 16.0) {
+        return 0.0;
+    }
     return fac / eps * std::exp(-(dist * dist) / (eps * eps));
 }
 
@@ -96,7 +97,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE vs::Vector delta_pnts_cyl(
     const auto d1 = point1 - origin;
     const auto d2 = point2 - origin;
 
+    // cppcheck-suppress duplicateExpression
     const amrex::Real norm_dist1 = (d1 & normal) / (normal & normal);
+    // cppcheck-suppress duplicateExpression
     const amrex::Real norm_dist2 = (d2 & normal) / (normal & normal);
 
     const auto proj1 = normal * norm_dist1;
@@ -110,7 +113,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE vs::Vector delta_pnts_cyl(
     const amrex::Real r1 = vs::mag(v1);
     const amrex::Real r2 = vs::mag(v2);
 
-    const amrex::Real theta = std::acos((v1 & v2) / (r1 * r2 + eps));
+    const amrex::Real theta =
+        std::acos(std::min((v1 & v2) / (r1 * r2 + eps), 1.0));
 
     return {std::abs(r1 - r2), theta, norm_dist1 - norm_dist2};
 }
@@ -126,6 +130,13 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
 linear_basis_1d(const amrex::Real distance, const amrex::Real dX)
 {
     return amrex::max(0.0, 1.0 - distance / dX) / dX;
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE vs::Vector compute_tangential_vector(
+    const vs::Vector& center, const vs::Vector& normal, const vs::Vector& point)
+{
+    const auto blade_axis = (point - center).normalize();
+    return vs::quaternion(normal, 90.0) & blade_axis;
 }
 
 } // namespace utils

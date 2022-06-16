@@ -20,7 +20,7 @@ struct Box : public BluffBodyType
     using MetaType = BoxData;
     using DataType = IBDataHolder<Box>;
 
-    static const std::string identifier() { return "Box"; }
+    static std::string identifier() { return "Box"; }
 };
 
 } // namespace ib

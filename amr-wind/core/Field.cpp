@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "amr-wind/core/Field.H"
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/core/FieldFillPatchOps.H"
@@ -8,12 +10,12 @@
 namespace amr_wind {
 
 FieldInfo::FieldInfo(
-    const std::string& basename,
+    std::string basename,
     const int ncomp,
     const int ngrow,
     const int nstates,
     const FieldLoc floc)
-    : m_basename(basename)
+    : m_basename(std::move(basename))
     , m_ncomp(ncomp)
     , m_ngrow(ngrow)
     , m_nstates(nstates)
@@ -24,7 +26,10 @@ FieldInfo::FieldInfo(
     , m_bcrec_d(ncomp)
     , m_states(FieldInfo::max_field_states, nullptr)
 {
-    for (int i = 0; i < AMREX_SPACEDIM * 2; ++i) m_bc_type[i] = BC::undefined;
+    for (int i = 0; i < AMREX_SPACEDIM * 2; ++i) {
+        m_bc_type[i] = BC::undefined;
+        m_bc_values_d[i] = nullptr;
+    }
 }
 
 FieldInfo::~FieldInfo() = default;
@@ -33,13 +38,15 @@ bool FieldInfo::bc_initialized()
 {
     bool has_undefined = false;
     for (int i = 0; i < AMREX_SPACEDIM * 2; ++i) {
-        if (m_bc_type[i] == BC::undefined) has_undefined = true;
+        if (m_bc_type[i] == BC::undefined) {
+            has_undefined = true;
+        }
     }
 
     // Check that BC has been initialized properly
     bool has_bogus = false;
     for (int dir = 0; dir < m_ncomp; ++dir) {
-        auto* bcrec = m_bcrec[dir].vect();
+        const auto* bcrec = m_bcrec[dir].vect();
         for (int i = 0; i < AMREX_SPACEDIM * 2; ++i) {
             if (bcrec[i] == amrex::BCType::bogus) {
                 has_bogus = true;
@@ -52,7 +59,9 @@ bool FieldInfo::bc_initialized()
 
 void FieldInfo::copy_bc_to_device() noexcept
 {
-    if (!bc_initialized()) amrex::Abort("Invalid BC type encountered");
+    if (!bc_initialized()) {
+        amrex::Abort("Invalid BC type encountered");
+    }
 
     amrex::Vector<amrex::Real> h_data(m_ncomp * AMREX_SPACEDIM * 2);
 
@@ -60,7 +69,9 @@ void FieldInfo::copy_bc_to_device() noexcept
     {
         amrex::Real* hp = h_data.data();
         for (const auto& v : m_bc_values) {
-            for (const auto& x : v) *(hp++) = x;
+            for (const auto& x : v) {
+                *(hp++) = x;
+            }
         }
     }
 
@@ -84,11 +95,15 @@ void FieldInfo::copy_bc_to_device() noexcept
 
 Field::Field(
     FieldRepo& repo,
-    const std::string& name,
-    const std::shared_ptr<FieldInfo>& info,
+    std::string name,
+    std::shared_ptr<FieldInfo> info,
     const unsigned fid,
     const FieldState state)
-    : m_repo(repo), m_name(name), m_info(info), m_id(fid), m_state(state)
+    : m_repo(repo)
+    , m_name(std::move(name))
+    , m_info(std::move(info))
+    , m_id(fid)
+    , m_state(state)
 {}
 
 Field::~Field() = default;
@@ -224,7 +239,9 @@ void Field::fillphysbc(amrex::Real time) noexcept
 void Field::apply_bc_funcs(const FieldState rho_state) noexcept
 {
     BL_ASSERT(m_info->bc_initialized() && m_info->m_bc_copied_to_device);
-    for (auto& func : m_info->m_bc_func) (*func)(*this, rho_state);
+    for (auto& func : m_info->m_bc_func) {
+        (*func)(*this, rho_state);
+    }
 }
 
 void Field::set_inflow(
@@ -243,7 +260,9 @@ void Field::set_inflow(
 void Field::advance_states() noexcept
 {
     BL_PROFILE("amr-wind::Field::advance_states");
-    if (num_time_states() < 2) return;
+    if (num_time_states() < 2) {
+        return;
+    }
 
     for (int i = num_time_states() - 1; i > 0; --i) {
         const auto sold = static_cast<FieldState>(i);
@@ -326,6 +345,75 @@ void Field::set_default_fillpatch_bc(
         register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
             repo().mesh(), time, probtype);
     }
+}
+
+void Field::to_uniform_space() noexcept
+{
+    if (m_info->m_ncomp < AMREX_SPACEDIM) {
+        amrex::Abort("Trying to transform a non-vector field:" + m_name);
+    }
+    if (m_mesh_mapped) {
+        amrex::Print() << "WARNING: Field already in uniform mesh space: "
+                       << m_name << std::endl;
+        return;
+    }
+
+    const auto& mesh_fac = m_repo.get_mesh_mapping_field(m_info->m_floc);
+    const auto& mesh_detJ = m_repo.get_mesh_mapping_detJ(m_info->m_floc);
+
+    // scale velocity to accommodate for mesh mapping -> U^bar = U * J/fac
+    for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
+        for (amrex::MFIter mfi(mesh_fac(lev)); mfi.isValid(); ++mfi) {
+
+            amrex::Array4<amrex::Real> const& field = operator()(lev).array(
+                mfi);
+            amrex::Array4<amrex::Real const> const& fac =
+                mesh_fac(lev).const_array(mfi);
+            amrex::Array4<amrex::Real const> const& detJ =
+                mesh_detJ(lev).const_array(mfi);
+
+            amrex::ParallelFor(
+                mfi.growntilebox(), AMREX_SPACEDIM,
+                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                    field(i, j, k, n) *= detJ(i, j, k) / fac(i, j, k, n);
+                });
+        }
+    }
+    m_mesh_mapped = true;
+}
+
+void Field::to_stretched_space() noexcept
+{
+    if (m_info->m_ncomp < AMREX_SPACEDIM) {
+        amrex::Abort("Trying to transform a non-vector field:" + m_name);
+    }
+    if (!m_mesh_mapped) {
+        amrex::Print() << "WARNING: Field already in stretched mesh space: "
+                       << m_name << std::endl;
+        return;
+    }
+
+    const auto& mesh_fac = m_repo.get_mesh_mapping_field(m_info->m_floc);
+    const auto& mesh_detJ = m_repo.get_mesh_mapping_detJ(m_info->m_floc);
+
+    // scale field back to stretched mesh -> U = U^bar * fac/J
+    for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
+        for (amrex::MFIter mfi(mesh_fac(lev)); mfi.isValid(); ++mfi) {
+            amrex::Array4<amrex::Real> const& field = operator()(lev).array(
+                mfi);
+            amrex::Array4<amrex::Real const> const& fac =
+                mesh_fac(lev).const_array(mfi);
+            amrex::Array4<amrex::Real const> const& detJ =
+                mesh_detJ(lev).const_array(mfi);
+
+            amrex::ParallelFor(
+                mfi.growntilebox(), AMREX_SPACEDIM,
+                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                    field(i, j, k, n) *= fac(i, j, k, n) / detJ(i, j, k);
+                });
+        }
+    }
+    m_mesh_mapped = false;
 }
 
 } // namespace amr_wind

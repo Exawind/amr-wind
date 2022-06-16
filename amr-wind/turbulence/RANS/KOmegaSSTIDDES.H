@@ -32,15 +32,18 @@ public:
 
     explicit KOmegaSSTIDDES(CFDSim& sim);
 
-    virtual ~KOmegaSSTIDDES();
+    ~KOmegaSSTIDDES() override;
 
-    virtual std::string model_name() const override { return "KOmegaSSTIDDES"; }
+    std::string model_name() const override { return "KOmegaSSTIDDES"; }
 
     //! Update the turbulent viscosity field
-    virtual void update_turbulent_viscosity(const FieldState fstate) override;
+    void update_turbulent_viscosity(const FieldState fstate) override;
 
     //! No post advance work for this model
-    virtual void post_advance_work() override {}
+    void post_advance_work() override {}
+
+    //! Parse turbulence model coefficients
+    void parse_model_coeffs() override;
 
     //! Return turbulence model coefficients
     TurbulenceModel::CoeffsDictType model_coeffs() const override;

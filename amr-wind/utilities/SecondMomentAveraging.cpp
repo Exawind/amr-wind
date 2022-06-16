@@ -3,7 +3,7 @@
 namespace amr_wind {
 
 void SecondMomentAveraging::output_line_average_ascii(
-    std::string filename, int step, amrex::Real time)
+    const std::string& filename, int step, amrex::Real time)
 {
     BL_PROFILE("amr-wind::SecondMomentAveraging::output_line_average_ascii");
 
@@ -11,7 +11,9 @@ void SecondMomentAveraging::output_line_average_ascii(
         operator()();
     }
 
-    if (!amrex::ParallelDescriptor::IOProcessor()) return;
+    if (!amrex::ParallelDescriptor::IOProcessor()) {
+        return;
+    }
 
     std::ofstream outfile;
     outfile.precision(m_precision);
@@ -48,11 +50,13 @@ void SecondMomentAveraging::output_line_average_ascii(
     for (int i = 0; i < m_plane_average1.ncell_line(); ++i) {
         outfile << step << ", " << std::scientific << time << ", "
                 << m_plane_average1.line_centroids()[i];
-        for (int m = 0; m < ncomp1; ++m)
-            for (int n = 0; n < ncomp2; ++n)
+        for (int m = 0; m < ncomp1; ++m) {
+            for (int n = 0; n < ncomp2; ++n) {
                 outfile << ", " << std::scientific
                         << m_second_moments_line
-                               [m_num_moments * i + ncomp1 * m + n];
+                               [m_num_moments * i + ncomp2 * m + n];
+            }
+        }
 
         outfile << std::endl;
     }
@@ -273,8 +277,9 @@ void SecondMomentAveraging::line_moment(
     AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_num_moments);
 
     const int ncell_line = m_plane_average1.ncell_line();
-    for (int i = 0; i < ncell_line; i++)
+    for (int i = 0; i < ncell_line; i++) {
         l_vec[i] = m_second_moments_line[m_num_moments * i + comp];
+    }
 }
 
 } // namespace amr_wind

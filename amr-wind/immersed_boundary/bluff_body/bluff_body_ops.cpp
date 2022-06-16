@@ -16,7 +16,9 @@ namespace ib {
 namespace bluff_body {
 
 void read_inputs(
-    BluffBodyBaseData& wdata, IBInfo&, const ::amr_wind::utils::MultiParser& pp)
+    BluffBodyBaseData& wdata,
+    IBInfo& /*unused*/,
+    const ::amr_wind::utils::MultiParser& pp)
 {
     pp.query("has_wall_model", wdata.has_wall_model);
     pp.query("is_moving", wdata.is_moving);
@@ -24,13 +26,14 @@ void read_inputs(
     pp.queryarr("vel_bc", wdata.vel_bc);
 }
 
-void init_data_structures(BluffBodyBaseData&) {}
+void init_data_structures(BluffBodyBaseData& /*unused*/) {}
 
 void apply_mms_vel(CFDSim& sim)
 {
     const int nlevels = sim.repo().num_active_levels();
 
-    auto& levelset = sim.repo().get_field("ib_levelset");
+    const auto& levelset = sim.repo().get_field("ib_levelset");
+    // cppcheck-suppress constVariable
     auto& velocity = sim.repo().get_field("velocity");
     auto& m_conv_taylor_green =
         sim.physics_manager().get<ctv::ConvectingTaylorVortex>();
@@ -72,11 +75,11 @@ void apply_mms_vel(CFDSim& sim)
     }
 }
 
-void apply_dirichlet_vel(CFDSim& sim, amrex::Vector<amrex::Real>& vel_bc)
+void apply_dirichlet_vel(CFDSim& sim, const amrex::Vector<amrex::Real>& vel_bc)
 {
     const int nlevels = sim.repo().num_active_levels();
     auto& geom = sim.mesh().Geom();
-
+    // cppcheck-suppress constVariable
     auto& velocity = sim.repo().get_field("velocity");
     auto& levelset = sim.repo().get_field("ib_levelset");
     levelset.fillpatch(sim.time().current_time());

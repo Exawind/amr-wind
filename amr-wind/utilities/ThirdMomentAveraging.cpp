@@ -3,7 +3,7 @@
 namespace amr_wind {
 
 void ThirdMomentAveraging::output_line_average_ascii(
-    std::string filename, int step, amrex::Real time)
+    const std::string& filename, int step, amrex::Real time)
 {
     BL_PROFILE("amr-wind::ThirdMomentAveraging::output_line_average_ascii");
 
@@ -11,7 +11,9 @@ void ThirdMomentAveraging::output_line_average_ascii(
         operator()();
     }
 
-    if (!amrex::ParallelDescriptor::IOProcessor()) return;
+    if (!amrex::ParallelDescriptor::IOProcessor()) {
+        return;
+    }
 
     std::ofstream outfile;
     outfile.precision(m_precision);
@@ -51,13 +53,16 @@ void ThirdMomentAveraging::output_line_average_ascii(
     for (int i = 0; i < m_plane_average1.ncell_line(); ++i) {
         outfile << step << ", " << std::scientific << time << ", "
                 << m_plane_average1.line_centroids()[i];
-        for (int m = 0; m < ncomp1; ++m)
-            for (int n = 0; n < ncomp2; ++n)
-                for (int p = 0; p < ncomp3; ++p)
+        for (int m = 0; m < ncomp1; ++m) {
+            for (int n = 0; n < ncomp2; ++n) {
+                for (int p = 0; p < ncomp3; ++p) {
                     outfile << ", " << std::scientific
                             << m_third_moments_line
-                                   [m_num_moments * i + ncomp1 * ncomp2 * m +
-                                    ncomp2 * n + p];
+                                   [m_num_moments * i + ncomp2 * ncomp3 * m +
+                                    ncomp3 * n + p];
+                }
+            }
+        }
 
         outfile << std::endl;
     }
@@ -308,8 +313,9 @@ void ThirdMomentAveraging::line_moment(
     AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_num_moments);
 
     const int ncell_line = m_plane_average1.ncell_line();
-    for (int i = 0; i < ncell_line; i++)
+    for (int i = 0; i < ncell_line; i++) {
         l_vec[i] = m_third_moments_line[m_num_moments * i + comp];
+    }
 }
 
 } // namespace amr_wind

@@ -15,13 +15,13 @@ namespace tke {
 class SDRSrc : public SDRSource::Register<SDRSrc>
 {
 public:
-    static const std::string identifier() { return "SDRSrc"; }
+    static std::string identifier() { return "SDRSrc"; }
 
-    explicit SDRSrc(const CFDSim&);
+    explicit SDRSrc(const CFDSim& /*sim*/);
 
-    virtual ~SDRSrc();
+    ~SDRSrc() override;
 
-    virtual void operator()(
+    void operator()(
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,

@@ -13,7 +13,7 @@ public:
         frepo.declare_field("vector_field", 3, 1, 2);
     }
 
-    void initialise_default_fields(
+    static void initialise_default_fields(
         amr_wind::Field& field,
         amrex::Vector<amrex::Geometry> geom,
         const int nlevels)

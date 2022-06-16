@@ -102,13 +102,18 @@ void incflo::InitialIterations()
     }
 
     for (int iter = 0; iter < m_initial_iterations; ++iter) {
-        if (m_verbose)
+        if (m_verbose != 0) {
             amrex::Print() << "In initial_iterations: iter = " << iter << "\n";
+        }
 
         ApplyPredictor(true);
 
         {
             auto& vel = icns().fields().field;
+            // ensure velocity is in stretched mesh space
+            if (vel.in_uniform_space() && m_sim.has_mesh_mapping()) {
+                vel.to_stretched_space();
+            }
             vel.copy_state(
                 amr_wind::FieldState::New, amr_wind::FieldState::Old);
 
@@ -141,7 +146,7 @@ void incflo::InitialProjection()
     BL_PROFILE("amr-wind::incflo::InitialProjection()");
 
     amrex::Print() << "Begin initial projection" << std::endl;
-    if (m_verbose) {
+    if (m_verbose != 0) {
         PrintMaxValues("before initial projection");
     }
 
@@ -155,7 +160,7 @@ void incflo::InitialProjection()
     pressure().setVal(0.0);
     grad_p().setVal(0.0);
 
-    if (m_verbose) {
+    if (m_verbose != 0) {
         PrintMaxValues("after initial projection");
     }
     amrex::Print() << "Completed initial projection" << std::endl << std::endl;

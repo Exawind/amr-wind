@@ -57,9 +57,9 @@ ABLMeanBoussinesq::~ABLMeanBoussinesq() = default;
 
 void ABLMeanBoussinesq::operator()(
     const int lev,
-    const amrex::MFIter&,
+    const amrex::MFIter& /*mfi*/,
     const amrex::Box& bx,
-    const FieldState,
+    const FieldState /*fstate*/,
     const amrex::Array4<amrex::Real>& src_term) const
 {
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
@@ -76,7 +76,7 @@ void ABLMeanBoussinesq::operator()(
     // cell-centers for the lo/hi cells.
     //
     const int idir = m_axis;
-    const int nh_max = m_theta_ht.size() - 2;
+    const int nh_max = static_cast<int>(m_theta_ht.size()) - 2;
     const int lp1 = lev + 1;
     const amrex::Real* theights = m_theta_ht.data();
     const amrex::Real* tvals = m_theta_vals.data();
@@ -120,7 +120,9 @@ void ABLMeanBoussinesq::mean_temperature_init(const FieldPlaneAveraging& tavg)
 
 void ABLMeanBoussinesq::mean_temperature_update(const FieldPlaneAveraging& tavg)
 {
-    if (m_const_profile) return;
+    if (m_const_profile) {
+        return;
+    }
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, tavg.line_average().begin(),
         tavg.line_average().end(), m_theta_vals.begin());
@@ -139,7 +141,9 @@ void ABLMeanBoussinesq::read_temperature_profile(std::string profile_file_name)
     theta_vals.resize(n_hts);
     m_theta_ht.resize(n_hts);
     m_theta_vals.resize(n_hts);
-    for (int i = 0; i < n_hts; i++) infile >> theta_ht[i] >> theta_vals[i];
+    for (int i = 0; i < n_hts; i++) {
+        infile >> theta_ht[i] >> theta_vals[i];
+    }
     infile.close();
 
     // Now copy to GPU Device memory

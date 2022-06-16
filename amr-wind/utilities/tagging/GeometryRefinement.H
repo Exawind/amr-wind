@@ -17,7 +17,7 @@ public:
 
     GeometryType() = default;
 
-    virtual ~GeometryType() = default;
+    ~GeometryType() override = default;
 
     virtual void operator()(
         const amrex::Box&,
@@ -36,14 +36,14 @@ class GeometryRefinement
 public:
     static std::string identifier() { return "GeometryRefinement"; }
 
-    explicit GeometryRefinement(const CFDSim&);
+    explicit GeometryRefinement(const CFDSim& /*sim*/);
 
-    virtual ~GeometryRefinement() = default;
+    ~GeometryRefinement() override = default;
 
     //! Read input file and initialize boxarray used to refine each level
-    virtual void initialize(const std::string& key) override;
+    void initialize(const std::string& key) override;
 
-    virtual void
+    void
     operator()(int level, amrex::TagBoxArray& tags, amrex::Real time, int ngrow)
         override;
 

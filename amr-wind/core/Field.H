@@ -31,7 +31,7 @@ struct FieldInfo
     static constexpr int max_field_states = 5;
 
     FieldInfo(
-        const std::string& basename,
+        std::string basename,
         const int ncomp,
         const int ngrow,
         const int nstates,
@@ -225,6 +225,24 @@ public:
         const amrex::BCType::mathematicalBndryTypes bctype =
             amrex::BCType::hoextrap) noexcept;
 
+    /** Map field to the uniform mesh
+     *
+     *  This method transforms the field to the uniform mesh based on
+     *  the fields mesh_scaling_factor_cc or mesh_scaling_factor_nd
+     *  depending on whether the field is cell-centered or node-centered,
+     *  respectively.
+     */
+    void to_uniform_space() noexcept;
+
+    /** Map field to the stretched mesh
+     *
+     *  This method transforms the field to the stretched mesh based on
+     *  the fields mesh_scaling_factor_cc or mesh_scaling_factor_nd
+     *  depending on whether the field is cell-centered or node-centered,
+     *  respectively.
+     */
+    void to_stretched_space() noexcept;
+
     //! Return field at a different time state
     Field& state(const FieldState fstate);
     const Field& state(const FieldState fstate) const;
@@ -357,11 +375,14 @@ public:
         set_inflow(lev, time, mfab, amrex::IntVect(nghost));
     }
 
+    inline bool& in_uniform_space() { return m_mesh_mapped; }
+    inline bool in_uniform_space() const { return m_mesh_mapped; }
+
 protected:
     Field(
         FieldRepo& repo,
-        const std::string& name,
-        const std::shared_ptr<FieldInfo>& finfo,
+        std::string name,
+        std::shared_ptr<FieldInfo> finfo,
         const unsigned fid,
         FieldState state);
 
@@ -383,6 +404,9 @@ protected:
     //! Flag indicating whether fill patch operation must be performed for this
     //! field during regrid
     bool m_fillpatch_on_regrid{false};
+
+    //! Flag to track mesh mapping (to uniform space) of field
+    bool m_mesh_mapped{false};
 };
 
 } // namespace amr_wind

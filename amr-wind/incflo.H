@@ -5,7 +5,7 @@
 #include <AMReX_MultiFabUtil.H>
 #include <AMReX_ParmParse.H>
 #include <AMReX_iMultiFab.H>
-#include <AMReX_NodalProjector.H>
+#include <hydro_NodalProjector.H>
 
 #include "amr-wind/incflo_enums.H"
 #include "amr-wind/CFDSim.H"
@@ -49,7 +49,7 @@ class incflo : public amrex::AmrCore
 {
 public:
     incflo();
-    virtual ~incflo();
+    ~incflo() override;
 
     // Initialize multilevel AMR data
     void InitData();
@@ -58,13 +58,13 @@ public:
     void Evolve();
 
     // Tag cells for refinement
-    virtual void
+    void
     ErrorEst(int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow)
         override;
 
     // Make a new level from scratch using provided BoxArray and
     // DistributionMapping Only used during initialization
-    virtual void MakeNewLevelFromScratch(
+    void MakeNewLevelFromScratch(
         int lev,
         amrex::Real time,
         const amrex::BoxArray& new_grids,
@@ -72,7 +72,7 @@ public:
 
     // Make a new level using provided BoxArray and DistributionMapping,
     // and fill with interpolated coarse level data
-    virtual void MakeNewLevelFromCoarse(
+    void MakeNewLevelFromCoarse(
         int lev,
         amrex::Real time,
         const amrex::BoxArray& ba,
@@ -80,14 +80,14 @@ public:
 
     // Remake an existing level using provided BoxArray and DistributionMapping,
     // and fill with existing fine and coarse data
-    virtual void RemakeLevel(
+    void RemakeLevel(
         int lev,
         amrex::Real time,
         const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm) override;
 
     // Delete level data
-    virtual void ClearLevel(int lev) override;
+    void ClearLevel(int lev) override;
 
     void init_mesh();
     void init_amr_wind_modules();
@@ -126,7 +126,7 @@ public:
     amr_wind::Field& pressure() const { return m_repo.get_field("p"); }
     amr_wind::Field& grad_p() const { return m_repo.get_field("gp"); }
 
-public: // for cuda
+    // for cuda
     void ComputeDt(bool explicit_diffusion);
 
     void set_inflow_velocity(
@@ -211,9 +211,9 @@ private:
     //
     ///////////////////////////////////////////////////////////////////////////
     void PrintMaxValues(const std::string& header);
-    void PrintMaxVel(int lev);
-    void PrintMaxGp(int lev);
-    void CheckForNans(int lev);
+    void PrintMaxVel(int lev) const;
+    void PrintMaxGp(int lev) const;
+    void CheckForNans(int lev) const;
 };
 
 #endif

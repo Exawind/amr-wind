@@ -31,7 +31,7 @@ class ActuatorModel
 public:
     static std::string base_identifier() { return "ActuatorModel"; }
 
-    virtual ~ActuatorModel() = default;
+    ~ActuatorModel() override = default;
 
     virtual const std::string& label() const = 0;
 
@@ -179,20 +179,20 @@ void ActModel<ActTrait, SrcTrait>::determine_root_proc(
     ops::determine_root_proc<ActTrait>(m_data, act_proc_count);
     {
         // Sanity checks
-        const auto& info = m_data.info();
-        const auto& plist = info.procs;
-        AMREX_ALWAYS_ASSERT(info.root_proc > -1);
-        AMREX_ALWAYS_ASSERT(plist.find(info.root_proc) != plist.end());
+        const auto& linfo = m_data.info();
+        const auto& plist = linfo.procs;
+        AMREX_ALWAYS_ASSERT(linfo.root_proc > -1);
+        AMREX_ALWAYS_ASSERT(plist.find(linfo.root_proc) != plist.end());
     }
 }
 
 template <typename ActTrait, typename SrcTrait>
 int ActModel<ActTrait, SrcTrait>::num_velocity_points() const
 {
-    const auto& info = m_data.info();
+    const auto& linfo = m_data.info();
     auto& grid = m_data.grid();
 
-    return (info.sample_vel_in_proc) ? grid.vel.size() : 0;
+    return (linfo.sample_vel_in_proc) ? grid.vel.size() : 0;
 }
 
 } // namespace actuator

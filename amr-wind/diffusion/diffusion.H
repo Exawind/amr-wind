@@ -39,6 +39,11 @@ void fixup_eta_on_domain_faces(
     amrex::Array<amrex::MultiFab, AMREX_SPACEDIM>& fc,
     amrex::MultiFab const& cc);
 
+void viscosity_to_uniform_space(
+    amrex::Array<amrex::MultiFab, AMREX_SPACEDIM>& b,
+    const amr_wind::FieldRepo& repo,
+    int lev);
+
 } // namespace diffusion
 
 #endif /* DIFFUSION_H */
