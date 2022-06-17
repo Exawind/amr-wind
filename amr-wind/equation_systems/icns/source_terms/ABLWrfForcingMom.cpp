@@ -113,6 +113,8 @@ void ABLWrfForcingMom::mean_velocity_init(
 
 void ABLWrfForcingMom::mean_velocity_heights(std::unique_ptr<ABLWRFfile>& wrfFile)
 {
+    if (m_forcing_scheme.empty()) return;
+
     amrex::Real currtime;
     currtime = m_time.current_time();
 
@@ -160,6 +162,7 @@ void ABLWrfForcingMom::mean_velocity_heights(std::unique_ptr<ABLWRFfile>& wrfFil
 void ABLWrfForcingMom::mean_velocity_heights(
     const VelPlaneAveraging& vavg, std::unique_ptr<ABLWRFfile>& wrfFile)
 {
+    if (m_forcing_scheme.empty()) return;
 
     amrex::Real currtime;
     currtime = m_time.current_time();
@@ -336,6 +339,8 @@ void ABLWrfForcingMom::operator()(
     const FieldState,
     const amrex::Array4<amrex::Real>& src_term) const
 {
+    if (m_forcing_scheme.empty()) return;
+
     const auto& dt = m_time.deltaT();
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();

@@ -157,12 +157,14 @@ void ABL::pre_advance_work()
         if (m_wrf_file->is_wrf_tendency_forcing()) {
             interpTflux =
                 m_abl_wrf_theta_forcing->mean_temperature_heights(m_wrf_file);
-            m_abl_wall_func.update_tflux(interpTflux);
         } else {
-            interpTflux = m_abl_wrf_theta_forcing->mean_temperature_heights(
-                m_stats->theta_profile(), m_wrf_file);
-            m_abl_wall_func.update_tflux(interpTflux);
+            interpTflux =
+                m_abl_wrf_theta_forcing->mean_temperature_heights(
+                    m_stats->theta_profile(), m_wrf_file);
         }
+        amrex::Print() << "Current surface temperature flux: "
+            << interpTflux << " K-m/s" << std::endl;
+        m_abl_wall_func.update_tflux(interpTflux);
     }
 
     m_bndry_plane->pre_advance_work();

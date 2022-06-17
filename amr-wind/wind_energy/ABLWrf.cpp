@@ -30,7 +30,7 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
     amrex::Print() << "Constructing " << identifier << " object" << std::endl;
 
     amrex::ParmParse pp(identifier);
-    pp.get("forcing_scheme", m_forcing_scheme);
+    pp.query("forcing_scheme", m_forcing_scheme);
     pp.query("control_gain", m_gain_coeff);
     pp.query("debug", m_debug);
     amrex::Print() << "  forcing_scheme : " << m_forcing_scheme << std::endl;

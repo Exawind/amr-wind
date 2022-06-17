@@ -118,6 +118,8 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(std::unique_ptr<ABLWRFfi
   interpTflux = coeff_interp[0] * wrfFile->wrf_tflux()[m_idx_time] +
       coeff_interp[1] * wrfFile->wrf_tflux()[m_idx_time + 1];
 
+  if (m_forcing_scheme.empty()) return interpTflux;
+
   int num_wrf_ht = wrfFile->nheights();
 
   amrex::Vector<amrex::Real> wrfInterptheta(num_wrf_ht);
@@ -163,6 +165,8 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
 
     interpTflux = coeff_interp[0] * wrfFile->wrf_tflux()[m_idx_time] +
                   coeff_interp[1] * wrfFile->wrf_tflux()[m_idx_time + 1];
+
+    if (m_forcing_scheme.empty()) return interpTflux;
 
     int num_wrf_ht = wrfFile->nheights();
 
@@ -284,6 +288,8 @@ void ABLWrfForcingTemp::operator()(
     const FieldState,
     const amrex::Array4<amrex::Real>& src_term) const
 {
+    if (m_forcing_scheme.empty()) return;
+
     const auto& dt = m_time.deltaT();
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
