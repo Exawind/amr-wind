@@ -85,6 +85,7 @@ void prepare_netcdf_file(
     grp.def_var("vref", NC_DOUBLE, {nt_name, "ndim"});
     grp.def_var("vdisk", NC_DOUBLE, {nt_name, "ndim"});
     grp.def_var("ct", NC_DOUBLE, {nt_name});
+    grp.def_var("cp", NC_DOUBLE, {nt_name});
     grp.def_var("density", NC_DOUBLE, {nt_name});
     grp.def_var("total_disk_force", NC_DOUBLE, {nt_name, "ndim"});
     grp.def_var("angular_velocity", NC_DOUBLE, {nt_name});
@@ -130,6 +131,7 @@ void write_netcdf(
     grp.var("vdisk").put(
         &(data.mean_disk_velocity[0]), {nt, 0}, {1, AMREX_SPACEDIM});
     grp.var("ct").put(&data.current_ct, {nt}, {1});
+    grp.var("cp").put(&data.current_cp, {nt}, {1});
     grp.var("density").put(&data.density, {nt}, {1});
     grp.var("total_disk_force")
         .put(&data.disk_force[0], {nt}, {1, AMREX_SPACEDIM});

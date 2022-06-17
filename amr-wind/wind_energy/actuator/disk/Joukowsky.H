@@ -15,6 +15,7 @@ struct JoukowskyData : public DiskBaseData
     RealList root_correction;
     amrex::Real current_angular_velocity{0.0};
     amrex::Real vortex_core_size;
+    amrex::Real current_cp;
     // --- Sorenson 2020 equation 10 constants ----
     amrex::Real root_correction_coefficient{1.256};
     amrex::Real root_correction_exponent{2.0};
