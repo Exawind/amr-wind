@@ -297,7 +297,7 @@ ABLWRFfile::ABLWRFfile(const std::string filewrf)
         m_wrf_filename, NC_NOWRITE | NC_NETCDF4 | NC_MPIIO,
         amrex::ParallelContext::CommunicatorSub(), MPI_INFO_NULL);
 
-    m_wrf_nheight = ncf.dim("nheight").len();
+    m_wrf_nheight = ncf.has_dim("nheight") ? ncf.dim("nheight").len() : 0;
     m_wrf_ntime = ncf.dim("ntime").len();
     amrex::Print() << "Loading " << m_wrf_filename << " : "
         << m_wrf_ntime << " times, " << m_wrf_nheight << " heights" << std::endl;
@@ -305,7 +305,7 @@ ABLWRFfile::ABLWRFfile(const std::string filewrf)
     m_wrf_height.resize(m_wrf_nheight);
     m_wrf_time.resize(m_wrf_ntime);
 
-    ncf.var("heights").get(m_wrf_height.data());
+    if (m_wrf_nheight > 0) ncf.var("heights").get(m_wrf_height.data());
     ncf.var("times").get(m_wrf_time.data());
 
     m_wrf_u.resize(m_wrf_nheight * m_wrf_ntime);
@@ -313,9 +313,14 @@ ABLWRFfile::ABLWRFfile(const std::string filewrf)
     m_wrf_temp.resize(m_wrf_nheight * m_wrf_ntime);
     m_wrf_tflux.resize(m_wrf_ntime);
 
-    ncf.var("wrf_momentum_u").get(m_wrf_u.data());
-    ncf.var("wrf_momentum_v").get(m_wrf_v.data());
-    ncf.var("wrf_temperature").get(m_wrf_temp.data());
+    if (m_wrf_nheight > 0) {
+        ncf.var("wrf_momentum_u").get(m_wrf_u.data());
+        ncf.var("wrf_momentum_v").get(m_wrf_v.data());
+        ncf.var("wrf_temperature").get(m_wrf_temp.data());
+    } else {
+        amrex::Print() << "No height dimension in netcdf input file; no forcing profiles read."
+            << std::endl;
+    }
     ncf.var("wrf_tflux").get(m_wrf_tflux.data());
 
     // ***FIXME***
