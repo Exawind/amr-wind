@@ -3,7 +3,9 @@
 #include "amr-wind/utilities/tensor_ops.H"
 #include "amr-wind/utilities/linear_interpolation.H"
 #include "amr-wind/wind_energy/actuator/Actuator.H"
-#include "amr-wind/wind_energy/actuator/turbine/fast/TurbineFast.cpp"
+#include "amr-wind/wind_energy/actuator/turbine/fast/TurbineFast.H"
+#include "amr-wind/wind_energy/actuator/turbine/fast/turbine_fast_ops.H"
+#include "amr-wind/wind_energy/actuator/ActuatorModel.H"
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind {
