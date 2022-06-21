@@ -82,7 +82,7 @@ void MMS::fill_src()
         const auto& dx = m_mesh.Geom(lev).CellSizeArray();
         const auto& problo = m_mesh.Geom(lev).ProbLoArray();
         auto& mms_src_term = m_mms_vel_source(lev);
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
         for (amrex::MFIter mfi(mms_src_term, amrex::TilingIfNotGPU());

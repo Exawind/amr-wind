@@ -178,7 +178,7 @@ void ABLVelWallFunc::wall_model(
         if (amrex::Gpu::notInLaunchRegion()) {
             mfi_info.SetDynamic(true);
         }
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
         for (amrex::MFIter mfi(vel_lev, mfi_info); mfi.isValid(); ++mfi) {
@@ -306,7 +306,7 @@ void ABLTempWallFunc::wall_model(
         if (amrex::Gpu::notInLaunchRegion()) {
             mfi_info.SetDynamic(true);
         }
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
         for (amrex::MFIter mfi(theta, mfi_info); mfi.isValid(); ++mfi) {

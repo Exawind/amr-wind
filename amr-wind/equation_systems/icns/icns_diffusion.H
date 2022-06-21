@@ -48,7 +48,7 @@ public:
         const auto& density = m_density.state(fstate);
 
         for (int lev = 0; lev < nlevels; ++lev) {
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (amrex::MFIter mfi(divtau(lev), amrex::TilingIfNotGPU());
@@ -178,7 +178,7 @@ public:
         mlmg.apply(divtau.vec_ptrs(), m_pdefields.field.vec_ptrs());
 
         for (int lev = 0; lev < nlevels; ++lev) {
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (amrex::MFIter mfi(divtau(lev), amrex::TilingIfNotGPU());
@@ -248,7 +248,7 @@ public:
         for (int lev = 0; lev < nlevels; ++lev) {
             auto& rhs = (*rhs_ptr)(lev);
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (amrex::MFIter mfi(rhs, amrex::TilingIfNotGPU()); mfi.isValid();
@@ -406,7 +406,7 @@ public:
         }
 
         for (int lev = 0; lev < nlevels; ++lev) {
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (amrex::MFIter mfi(divtau(lev), amrex::TilingIfNotGPU());
@@ -488,7 +488,7 @@ public:
         for (int lev = 0; lev < nlevels; ++lev) {
             auto& rhs = (*rhs_ptr)(lev);
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (amrex::MFIter mfi(rhs, amrex::TilingIfNotGPU()); mfi.isValid();

@@ -51,7 +51,7 @@ void CurvatureRefinement::operator()(
     const auto& mfab = (*m_field)(level);
     const auto& idx = m_sim.repo().mesh().Geom(level).InvCellSizeArray();
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
     for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid();
