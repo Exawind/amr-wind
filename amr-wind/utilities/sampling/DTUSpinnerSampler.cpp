@@ -82,19 +82,18 @@ void DTUSpinnerSampler::initialize(const std::string& key)
     // Print hub fast turbine values to debug
     pp.query("hub_debug", m_hub_debug);
 
-    #ifdef AMR_WIND_USE_OPENFAST
+#ifdef AMR_WIND_USE_OPENFAST
 
     if(m_spinner_mode == "hub"){
         amrex::Print() << "Spinner Lidar will be attached to OpenFAST actuator"
                        << std::endl;
     }
 
-    #else
+#else
 
-    AMREX_ALWAYS_ASSERT(
-        m_spinner_mode == "fixed");
+    AMREX_ALWAYS_ASSERT(m_spinner_mode == "fixed");
 
-    #endif // AMR_WIND_USE_OPENFAST
+#endif // AMR_WIND_USE_OPENFAST
 
     update_sampling_locations();
     check_bounds();
@@ -295,9 +294,9 @@ void DTUSpinnerSampler::update_sampling_locations()
     BL_PROFILE(
         "amr-wind::Sampling::DTUSpinnerSampler::update_sampling_locations");
 
-    #ifdef AMR_WIND_USE_OPENFAST
+#ifdef AMR_WIND_USE_OPENFAST
     get_turbine_data(m_turbine_label);
-    #endif
+#endif
 
     if (m_spinner_mode == "hub") {
         m_hub_location = vs::Vector(
