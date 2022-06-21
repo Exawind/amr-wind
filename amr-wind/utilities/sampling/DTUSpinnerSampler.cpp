@@ -84,7 +84,7 @@ void DTUSpinnerSampler::initialize(const std::string& key)
 
 #ifdef AMR_WIND_USE_OPENFAST
 
-    if(m_spinner_mode == "hub"){
+    if (m_spinner_mode == "hub"){
         amrex::Print() << "Spinner Lidar will be attached to OpenFAST actuator"
                        << std::endl;
     }

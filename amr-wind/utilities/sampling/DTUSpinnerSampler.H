@@ -49,12 +49,12 @@ public:
     //~ void update_sampling_locations() override;
     void sampling_locations(SampleLocType& /*locs*/) const override;
 
-    #ifdef AMR_WIND_USE_OPENFAST
+#ifdef AMR_WIND_USE_OPENFAST
 
     void bcast_turbine(double* /*turbine_pack*/, int /*root_proc*/);
     void get_turbine_data(std::string turbine_label);
 
-    #endif 
+#endif 
 
     /** Determine how the subsampling will be done
      *
