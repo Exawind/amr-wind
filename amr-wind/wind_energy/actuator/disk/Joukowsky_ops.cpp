@@ -1,6 +1,7 @@
 #include "amr-wind/wind_energy/actuator/disk/Joukowsky_ops.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/io_utils.H"
+#include "amr-wind/wind_energy/actuator/disk/disk_ops.H"
 
 namespace amr_wind {
 namespace actuator {
@@ -13,6 +14,7 @@ void check_for_parse_conflicts(const utils::ActParser& pp)
     base::collect_parse_dependencies(pp, "thrust_coeff", "angular_velocity", error_collector);
     base::collect_parse_dependencies(pp, "use_root_correction", "vortex_core_size", error_collector);
     // clang-format on
+    ops::base::check_error_stream(error_collector);
 }
 
 void optional_parameters(JoukowskyData& meta, const utils::ActParser& pp)
@@ -23,6 +25,7 @@ void optional_parameters(JoukowskyData& meta, const utils::ActParser& pp)
     pp.query("vortex_core_size", meta.vortex_core_size);
     pp.query("root_correction_exponent", meta.root_correction_exponent);
     pp.query("root_correction_coefficient", meta.root_correction_coefficient);
+    pp.query("num_blades", meta.num_blades);
 }
 
 void required_parameters(JoukowskyData& meta, const utils::ActParser& pp)
@@ -31,7 +34,6 @@ void required_parameters(JoukowskyData& meta, const utils::ActParser& pp)
     pp.get("num_points_t", meta.num_vel_pts_t);
     pp.get("num_points_r", meta.num_vel_pts_r);
     pp.getarr("angular_velocity", meta.angular_velocity);
-    pp.get("num_blades", meta.num_blades);
     meta.num_force_pts = meta.num_vel_pts_r * meta.num_vel_pts_t;
     meta.num_vel_pts = meta.num_force_pts * 2;
     meta.dr = 0.5 * meta.diameter / meta.num_vel_pts_r;
@@ -59,6 +61,7 @@ void prepare_netcdf_file(
     const std::string nt_name = "num_time_steps";
     const std::string np_name = "num_actuator_points";
     const std::string nv_name = "num_velocity_points";
+    const std::string nr_name = "num_radial_points";
 
     ncf.enter_def_mode();
     ncf.put_attr("title", "AMR-Wind ActuatorDisk actuator output");
@@ -66,6 +69,7 @@ void prepare_netcdf_file(
     ncf.put_attr("created_on", ioutils::timestamp());
     ncf.def_dim(nt_name, NC_UNLIMITED);
     ncf.def_dim("ndim", AMREX_SPACEDIM);
+    ncf.def_dim(nr_name, data.num_vel_pts_r);
 
     auto grp = ncf.def_group(info.label);
     // clang-format off
@@ -84,11 +88,14 @@ void prepare_netcdf_file(
     grp.def_var("xyz_v", NC_DOUBLE, {nv_name, "ndim"});
     grp.def_var("vref", NC_DOUBLE, {nt_name, "ndim"});
     grp.def_var("vdisk", NC_DOUBLE, {nt_name, "ndim"});
+    grp.def_var("tsr", NC_DOUBLE, {nt_name});
     grp.def_var("ct", NC_DOUBLE, {nt_name});
     grp.def_var("cp", NC_DOUBLE, {nt_name});
     grp.def_var("density", NC_DOUBLE, {nt_name});
     grp.def_var("total_disk_force", NC_DOUBLE, {nt_name, "ndim"});
     grp.def_var("angular_velocity", NC_DOUBLE, {nt_name});
+    grp.def_var("f_normal", NC_DOUBLE, {nt_name, nr_name});
+    grp.def_var("f_theta", NC_DOUBLE, {nt_name, np_name});
     ncf.exit_def_mode();
 
     {
@@ -124,18 +131,23 @@ void write_netcdf(
     const std::string nt_name = "num_time_steps";
     // Index of next timestep
     const size_t nt = ncf.dim(nt_name).len();
+    const size_t nr = data.num_vel_pts_r;
+    const size_t np = data.num_force_pts;
     auto grp = ncf.group(info.label);
     grp.var("time").put(&time, {nt}, {1});
     grp.var("vref").put(
         &(data.reference_velocity[0]), {nt, 0}, {1, AMREX_SPACEDIM});
     grp.var("vdisk").put(
         &(data.mean_disk_velocity[0]), {nt, 0}, {1, AMREX_SPACEDIM});
+    grp.var("tsr").put(&data.current_tip_speed_ratio, {nt}, {1});
     grp.var("ct").put(&data.current_ct, {nt}, {1});
     grp.var("cp").put(&data.current_cp, {nt}, {1});
     grp.var("density").put(&data.density, {nt}, {1});
     grp.var("total_disk_force")
         .put(&data.disk_force[0], {nt}, {1, AMREX_SPACEDIM});
     grp.var("angular_velocity").put(&data.current_angular_velocity, {nt}, {1});
+    grp.var("f_normal").put(&(data.f_normal[0]), {nt, 0}, {1, nr});
+    grp.var("f_theta").put(&(data.f_theta[0]), {nt, 0}, {1, np});
 #else
     amrex::ignore_unused(name, data, info, time);
 #endif
