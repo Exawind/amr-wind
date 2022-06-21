@@ -383,7 +383,7 @@ void DTUSpinnerSampler::update_sampling_locations()
 
         m_time_sampling += dt_s;
 
-        float step = 1.0 * k + 1.0;
+        amrex::Real step = 1.0 * k + 1.0;
 
         // Unit vector in the direction of the beam
         auto beam_vector =

@@ -35,7 +35,9 @@ public:
 
     void init_solution(const int local_id);
 
+#ifdef AMR_WIND_FAST_USE_SCDX
     void get_hub_stats(const int local_id);
+#endif
 
     void advance_turbine(const int local_id);
 

@@ -134,17 +134,18 @@ void FastIface::init_solution(const int local_id)
     fi.is_solution0 = false;
 }
 
+#ifdef AMR_WIND_FAST_USE_SCDX
 void FastIface::get_hub_stats(const int local_id)
 {
     BL_PROFILE("amr-wind::FastIface::get_hub_stats");
-#ifdef AMR_WIND_FAST_USE_SCDX
+
     auto& fi = *m_turbine_data[local_id];
 
     fast_func(
         FAST_HubPosition, &fi.tid_local, fi.hub_abs_pos, fi.hub_rot_vel,
         fi.hub_orient);
-#endif
 }
+#endif
 
 void FastIface::advance_turbine(const int local_id)
 {
