@@ -245,6 +245,7 @@ std::ostringstream check_for_parse_conflicts(const utils::ActParser& pp)
     // clang-format off
     collect_parse_conflicts(pp, "disk_normal", "yaw", error_collector);
     collect_parse_conflicts(pp, "disk_normal", "tilt", error_collector);
+    // cppcheck-suppress constParameter
     collect_parse_conflicts(pp, "sample_normal", "sample_yaw", error_collector);
     collect_parse_conflicts(pp, "sample_normal", "sample_tilt", error_collector);
     collect_parse_conflicts(pp, "disk_center", "base_position", error_collector);
