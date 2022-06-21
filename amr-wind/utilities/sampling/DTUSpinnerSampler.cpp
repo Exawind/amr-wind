@@ -2,11 +2,15 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/tensor_ops.H"
 #include "amr-wind/utilities/linear_interpolation.H"
+#include "AMReX_ParmParse.H"
+
+#ifdef AMR_WIND_USE_OPENFAST
 #include "amr-wind/wind_energy/actuator/Actuator.H"
 #include "amr-wind/wind_energy/actuator/turbine/fast/TurbineFast.H"
 #include "amr-wind/wind_energy/actuator/turbine/fast/turbine_fast_ops.H"
 #include "amr-wind/wind_energy/actuator/ActuatorModel.H"
-#include "AMReX_ParmParse.H"
+#endif
+
 
 namespace amr_wind {
 namespace sampling {
@@ -296,7 +300,6 @@ void DTUSpinnerSampler::update_sampling_locations()
 
 #ifdef AMR_WIND_USE_OPENFAST
     get_turbine_data(m_turbine_label);
-#endif
 
     if (m_spinner_mode == "hub") {
         m_hub_location = vs::Vector(
@@ -322,6 +325,7 @@ void DTUSpinnerSampler::update_sampling_locations()
         m_hub_yaw = std::atan2(current_hub_orient[3], current_hub_orient[0]) *
                     180.0 / M_PI;
     }
+#endif
 
     amrex::Real time = m_sim.time().current_time();
     amrex::Real start_time = m_sim.time().start_time();
@@ -348,6 +352,7 @@ void DTUSpinnerSampler::update_sampling_locations()
         m_end.resize(n_size);
     }
 
+#ifdef AMR_WIND_USE_OPENFAST
     if (m_hub_debug == true) {
         amrex::Print() << "Turbine Hub Pos: " << current_hub_abs_pos[0] << " "
                        << current_hub_abs_pos[1] << " "
@@ -370,6 +375,7 @@ void DTUSpinnerSampler::update_sampling_locations()
                        << m_last_hub_tilt << " " << m_last_hub_roll
                        << std::endl;
     }
+#endif
 
     // Loop per subsampling
     for (int k = 0; k < m_ns; ++k) {
