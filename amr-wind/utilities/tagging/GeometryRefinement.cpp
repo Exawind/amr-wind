@@ -51,7 +51,7 @@ void GeometryRefinement::operator()(
     // We are always guaranteed to have at least one field
     const auto& field_fab = (*m_sim.repo().fields()[0])(level);
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
     for (amrex::MFIter mfi(field_fab); mfi.isValid(); ++mfi) {

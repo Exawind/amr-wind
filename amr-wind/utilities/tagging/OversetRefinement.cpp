@@ -31,7 +31,7 @@ void OversetRefinement::operator()(
     const bool tag_fringe = m_tag_fringe;
     const bool tag_hole = m_tag_hole;
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
     for (amrex::MFIter mfi(ibfab, amrex::TilingIfNotGPU()); mfi.isValid();

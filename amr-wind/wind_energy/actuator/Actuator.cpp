@@ -189,7 +189,7 @@ void Actuator::compute_source_term()
         auto& sfab = m_act_source(lev);
         const auto& geom = m_sim.mesh().Geom(lev);
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
         for (amrex::MFIter mfi(sfab); mfi.isValid(); ++mfi) {

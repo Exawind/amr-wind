@@ -131,7 +131,7 @@ void ABLFieldInit::perturb_temperature(
     const auto theta_gauss_var = m_theta_gauss_var;
     const auto deltaT = m_deltaT;
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
     for (amrex::MFIter mfi(theta_fab, amrex::TilingIfNotGPU()); mfi.isValid();
