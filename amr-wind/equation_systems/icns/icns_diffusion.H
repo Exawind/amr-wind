@@ -430,6 +430,7 @@ public:
     {
         const FieldState fstate = FieldState::New;
         auto& repo = m_pdefields.repo;
+        // cppcheck-suppress constVariable
         auto& field = m_pdefields.field;
         const auto& density = m_density.state(fstate);
         const int nlevels = repo.num_active_levels();
