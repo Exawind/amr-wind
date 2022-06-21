@@ -1,6 +1,7 @@
 #include "amr-wind/wind_energy/actuator/disk/Joukowsky_ops.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/io_utils.H"
+#include "amr-wind/wind_energy/actuator/disk/disk_ops.H"
 
 namespace amr_wind {
 namespace actuator {
@@ -13,6 +14,7 @@ void check_for_parse_conflicts(const utils::ActParser& pp)
     base::collect_parse_dependencies(pp, "thrust_coeff", "angular_velocity", error_collector);
     base::collect_parse_dependencies(pp, "use_root_correction", "vortex_core_size", error_collector);
     // clang-format on
+    ops::base::check_error_stream(error_collector);
 }
 
 void optional_parameters(JoukowskyData& meta, const utils::ActParser& pp)

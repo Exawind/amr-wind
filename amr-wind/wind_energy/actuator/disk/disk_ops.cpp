@@ -245,6 +245,14 @@ void optional_parameters(DiskBaseData& meta, const utils::ActParser& pp)
     }
 }
 
+void check_error_stream(std::ostringstream& error_collector)
+{
+    if (!error_collector.str().empty()) {
+        amrex::Abort(
+            "Errors found while parsing ActuatorDisk Inputs:\n" +
+            error_collector.str());
+    }
+}
 std::ostringstream check_for_parse_conflicts(const utils::ActParser& pp)
 {
     std::ostringstream error_collector;
@@ -280,11 +288,7 @@ std::ostringstream check_for_parse_conflicts(const utils::ActParser& pp)
         }
     }
 
-    if (!error_collector.str().empty()) {
-        amrex::Abort(
-            "Errors found while parsing ActuatorDisk Inputs:\n" +
-            error_collector.str());
-    }
+    check_error_stream(error_collector);
     return error_collector;
 }
 
