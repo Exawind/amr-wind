@@ -3,6 +3,7 @@ target_sources(${amr_wind_lib_name}
 
   BoussinesqBubble.cpp
   BoussinesqBubbleFieldInit.cpp
+  ScalarAdvection.cpp
   ChannelFlow.cpp
   RayleighTaylor.cpp
   RayleighTaylorFieldInit.cpp
@@ -13,6 +14,7 @@ target_sources(${amr_wind_lib_name}
   SyntheticTurbulence.cpp
   HybridRANSLESABL.cpp
   VortexRing.cpp
+  ScalarAdvection.cpp
   )
 
 add_subdirectory(multiphase)
