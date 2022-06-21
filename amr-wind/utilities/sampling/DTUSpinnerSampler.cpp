@@ -11,7 +11,6 @@
 #include "amr-wind/wind_energy/actuator/ActuatorModel.H"
 #endif
 
-
 namespace amr_wind {
 namespace sampling {
 
