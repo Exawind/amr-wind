@@ -303,7 +303,7 @@ jobs:
             source ${SPACK_MANAGER}/start.sh && \
             ln -s ${GITHUB_WORKSPACE} amr-wind && \
             source ${SPACK_MANAGER}/start.sh && \
-            quick-develop -s amr-wind+hdf5+hypre+masa+netcdf~shared@main && \
+            quick-develop -s amr-wind+hdf5+hypre+masa+netcdf+openfast~shared@main && \
             spack install && \
             spack cd -b amr-wind && \
             spack build-env amr-wind ctest -j $(nproc) -L unit --output-on-failure \
