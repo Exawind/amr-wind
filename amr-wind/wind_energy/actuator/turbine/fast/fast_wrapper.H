@@ -50,6 +50,10 @@ FAST_OpFM_Solution0(int* /*unused*/, int* /*unused*/, char* /*unused*/)
 inline void FAST_OpFM_Step(int* /*unused*/, int* /*unused*/, char* /*unused*/)
 {}
 
+inline void FAST_HubPosition(
+    int* /*unused*/, float* /*unused*/, float* /*unused*/, 
+    double* /*unused*/, int* /*unused*/, char* /*unused*/) {}
+
 // clang-format off
 #ifdef AMR_WIND_FAST_USE_SCDX
 inline void FAST_OpFM_Init(
@@ -62,10 +66,6 @@ inline void FAST_OpFM_Restart(
     int*, char*, int*, double*, int*, int*, int*,
     OpFM_InputType*, OpFM_OutputType*,
     SC_DX_InputType*, SC_DX_OutputType*, int*, char*) {}
-
-inline void FAST_HubPosition(
-    int* /*unused*/, float* /*unused*/, float* /*unused*/, 
-    double* /*unused*/, int* /*unused*/, char* /*unused*/) {}
 #else
 inline void FAST_OpFM_Init(
     int* /*unused*/, double* /*unused*/, const char* /*unused*/, int* /*unused*/, int* /*unused*/, int* /*unused*/, int* /*unused*/, int* /*unused*/, float* /*unused*/,

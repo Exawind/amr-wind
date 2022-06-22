@@ -191,7 +191,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Tensor xrot(const amrex::Real angle)
     const amrex::Real cval = std::cos(ang);
     const amrex::Real sval = std::sin(ang);
 
-    return Tensor{1.0, 0.0, 0.0, 0.0, cval, -sval, 0.0, sval, cval};
+    return Tensor{1.0, 0.0, 0.0, 0.0, cval, sval, 0.0, -sval, cval};
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Tensor yrot(const amrex::Real angle)
@@ -200,7 +200,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Tensor yrot(const amrex::Real angle)
     const amrex::Real cval = std::cos(ang);
     const amrex::Real sval = std::sin(ang);
 
-    return Tensor{cval, 0.0, sval, 0.0, 1.0, 0.0, -sval, 0.0, cval};
+    return Tensor{cval, 0.0, -sval, 0.0, 1.0, 0.0, sval, 0.0, cval};
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Tensor zrot(const amrex::Real angle)
@@ -209,7 +209,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Tensor zrot(const amrex::Real angle)
     const amrex::Real cval = std::cos(ang);
     const amrex::Real sval = std::sin(ang);
 
-    return Tensor{cval, -sval, 0.0, sval, cval, 0.0, 0.0, 0.0, 1.0};
+    return Tensor{cval, sval, 0.0, -sval, cval, 0.0, 0.0, 0.0, 1.0};
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Tensor

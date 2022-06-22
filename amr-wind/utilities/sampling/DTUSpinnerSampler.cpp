@@ -313,15 +313,15 @@ void DTUSpinnerSampler::update_sampling_locations()
         m_lidar_center[1] = m_hub_location[1];
         m_lidar_center[2] = m_hub_location[2];
 
-        m_hub_tilt = -std::atan2(
+        m_hub_tilt = std::atan2(
                          -current_hub_orient[6],
                          std::sqrt(
                              std::pow(current_hub_orient[7], 2.0) +
                              std::pow(current_hub_orient[8], 2.0))) *
                      180.0 / M_PI;
-        m_hub_roll = std::atan2(current_hub_orient[7], current_hub_orient[8]) *
+        m_hub_roll = -std::atan2(current_hub_orient[7], current_hub_orient[8]) *
                      180.0 / M_PI;
-        m_hub_yaw = std::atan2(current_hub_orient[3], current_hub_orient[0]) *
+        m_hub_yaw = -std::atan2(current_hub_orient[3], current_hub_orient[0]) *
                     180.0 / M_PI;
     }
 #endif
