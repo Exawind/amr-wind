@@ -1,16 +1,11 @@
 #include "amr-wind/wind_energy/actuator/ActuatorContainer.H"
-#include "amr-wind/core/vs/vector.H"
 #include "amr-wind/wind_energy/actuator/Actuator.H"
 #include "amr-wind/core/gpu_utils.H"
 #include "amr-wind/core/Field.H"
 
 #include "AMReX_Scan.H"
 
-#include <AMReX_Config.H>
-#include <AMReX_Extension.H>
-#include <AMReX_GpuQualifiers.H>
 #include <algorithm>
-#include <cstddef>
 
 namespace amr_wind {
 namespace actuator {
