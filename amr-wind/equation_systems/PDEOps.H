@@ -100,7 +100,7 @@ struct SrcTermOpBase
         const int nlevels = fields.repo.num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {
             auto& src_term = fields.src_term(lev);
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (amrex::MFIter mfi(src_term, amrex::TilingIfNotGPU());
@@ -132,7 +132,7 @@ struct SrcTermOpBase
         const int nlevels = this->fields.repo.num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {
             auto& src_term = this->fields.src_term(lev);
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (amrex::MFIter mfi(src_term, amrex::TilingIfNotGPU());

@@ -33,11 +33,18 @@ void collect_parse_conflicts(
     const std::string& p1,
     const std::string& p2,
     std::ostringstream& ss);
+void collect_parse_dependencies_one_way(
+    const utils::ActParser& pp,
+    const std::string& independent,
+    const std::string& dependent,
+    std::ostringstream& ss);
 void collect_parse_dependencies(
     const utils::ActParser& pp,
     const std::string& p1,
     const std::string& p2,
     std::ostringstream& ss);
+
+void check_error_stream(std::ostringstream& error_collector);
 
 void required_parameters(DiskBaseData& meta, const utils::ActParser& pp);
 
