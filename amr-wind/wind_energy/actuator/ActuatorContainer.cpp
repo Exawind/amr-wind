@@ -5,6 +5,7 @@
 
 #include "AMReX_Scan.H"
 
+#include <AMReX_Print.H>
 #include <algorithm>
 
 namespace amr_wind {
@@ -213,21 +214,25 @@ void ActuatorContainer::sample_fields(const Field& vel, const Field& density)
     m_is_scattered = false;
 }
 
-/** Helper method for ActuatorContainer::sample_velocities
+/** Helper method for ActuatorContainer::sample_fields
  *
  *  Loops over the particle tiles and copies velocity data from particles to the
- *  velocity array.
+ *  velocity and density arrays.
  */
 void ActuatorContainer::populate_field_buffers()
 {
     BL_PROFILE("amr-wind::actuator::ActuatorContainer::populate_vel_buffer");
     const size_t num_buff_entries =
-        m_proc_offsets.back() * (size_t)NumPStructReal;
+        m_proc_offsets.back() * static_cast<size_t>(NumPStructReal);
+
     amrex::Vector<amrex::Real> buff_host(num_buff_entries);
     amrex::Gpu::DeviceVector<amrex::Real> buff_device(num_buff_entries, 0.0);
+
     auto* buffer_pointer = buff_device.data();
     auto* offsets = m_proc_offsets_device.data();
+
     const int nlevels = m_mesh.finestLevel() + 1;
+
     for (int lev = 0; lev < nlevels; ++lev) {
         for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
             const int np = pti.numParticles();
@@ -239,7 +244,7 @@ void ActuatorContainer::populate_field_buffers()
                 const auto idx = offsets[iproc] + pp.idata(0);
 
                 for (int n = 0; n < NumPStructReal; ++n) {
-                    buffer_pointer[idx + n] = pp.rdata(n);
+                    buffer_pointer[idx * NumPStructReal + n] = pp.rdata(n);
                 }
             });
         }
@@ -249,8 +254,9 @@ void ActuatorContainer::populate_field_buffers()
         amrex::Gpu::deviceToHost, buff_device.begin(), buff_device.end(),
         buff_host.begin());
 #ifdef AMREX_USE_MPI
+    const int num_entires = static_cast<int>(buff_host.size());
     MPI_Allreduce(
-        MPI_IN_PLACE, buff_host.data(), buff_host.size(), MPI_DOUBLE, MPI_SUM,
+        MPI_IN_PLACE, buff_host.data(), num_entires, MPI_DOUBLE, MPI_SUM,
         amrex::ParallelDescriptor::Communicator());
 #endif
     {
@@ -260,7 +266,7 @@ void ActuatorContainer::populate_field_buffers()
         const int ioff = m_proc_offsets[amrex::ParallelDescriptor::MyProc()];
         int index = ioff;
         for (int i = 0; i < npts; ++i) {
-            for (int j = 0; j < AMREX_SPACEDIM; ++j, ++index) {
+            for (int j = 0; j < AMREX_SPACEDIM; ++j, index++) {
                 vel_arr[i][j] = buff_host[index];
             }
             den_arr[i] = buff_host[index];
@@ -269,9 +275,9 @@ void ActuatorContainer::populate_field_buffers()
     }
 }
 
-/** Helper method for ActuatorContainer::sample_velocities
+/** Helper method for ActuatorContainer::sample_fields
  *
- *  Performs a trilinear interpolation of the velocity field to particle
+ *  Performs a trilinear interpolation of the velocity/desnity field to particle
  *  locations. It also updates the particle locations such that the next
  *  Redistribute call restores the particles back to their original MPI rank
  *  where they were created.
