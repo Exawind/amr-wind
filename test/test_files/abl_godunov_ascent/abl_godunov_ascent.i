@@ -76,5 +76,5 @@ incflo.verbose          =   0          # incflo_level
 #.......................................#
 incflo.post_processing = ascent
 ascent.type = Ascent
-ascent.fields = p
+ascent.fields = p temperature
 ascent.output_frequency = 5
