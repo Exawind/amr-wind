@@ -2,7 +2,6 @@
 #define DISK_SPREADING_H_
 
 #include "amr-wind/wind_energy/actuator/actuator_utils.H"
-#include "amr-wind/wind_energy/actuator/disk/spreading_kernels.h"
 #include "amr-wind/wind_energy/actuator/disk/UniformCt.H"
 #include "amr-wind/core/FieldRepo.H"
 

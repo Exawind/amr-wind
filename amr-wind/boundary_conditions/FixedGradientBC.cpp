@@ -38,7 +38,7 @@ void FixedGradientBC::operator()(Field& field, const FieldState /*rho_state*/)
         if (amrex::Gpu::notInLaunchRegion()) {
             mfi_info.SetDynamic(true);
         }
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
         for (amrex::MFIter mfi(field(lev), mfi_info); mfi.isValid(); ++mfi) {

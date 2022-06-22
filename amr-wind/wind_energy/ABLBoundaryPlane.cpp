@@ -912,7 +912,7 @@ void ABLBoundaryPlane::populate_data(
 
         const size_t nc = mfab.nComp();
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
         for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid();
@@ -974,7 +974,7 @@ void ABLBoundaryPlane::write_data(
     const int n_buffers = m_mesh.boxArray(lev).size();
     amrex::Vector<BufferData> buffers(n_buffers);
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
     for (amrex::MFIter mfi((*fld)(lev), false); mfi.isValid(); ++mfi) {

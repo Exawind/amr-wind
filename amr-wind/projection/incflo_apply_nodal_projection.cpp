@@ -156,7 +156,7 @@ void incflo::ApplyProjection(
     if (!incremental) {
         for (int lev = 0; lev <= finest_level; lev++) {
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
             for (MFIter mfi(velocity(lev), TilingIfNotGPU()); mfi.isValid();
@@ -191,7 +191,7 @@ void incflo::ApplyProjection(
     if (add_surface_tension && !incremental) {
         // Create the Surface tension forcing term (Cell-centered)
         for (int lev = 0; lev <= finest_level; ++lev) {
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
             {
@@ -247,7 +247,7 @@ void incflo::ApplyProjection(
         for (int lev = 0; lev <= finest_level; ++lev) {
             sigma[lev].define(
                 grids[lev], dmap[lev], ncomp, 0, MFInfo(), Factory(lev));
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
             for (MFIter mfi(sigma[lev], TilingIfNotGPU()); mfi.isValid();
@@ -373,7 +373,7 @@ void incflo::ApplyProjection(
 
     for (int lev = 0; lev <= finest_level; lev++) {
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
         for (MFIter mfi(grad_p(lev), TilingIfNotGPU()); mfi.isValid(); ++mfi) {
