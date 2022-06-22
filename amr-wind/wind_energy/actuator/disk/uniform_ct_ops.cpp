@@ -57,8 +57,8 @@ void required_parameters(DiskBaseData& meta, const utils::ActParser& pp)
 void parse_and_gather_params(const utils::ActParser& pp, UniformCtData& data)
 {
     check_for_parse_conflicts(pp);
-    optional_parameters(data, pp);
     required_parameters(data, pp);
+    optional_parameters(data, pp);
     ops::base::final_checks(data);
 }
 } // namespace uniformct
