@@ -26,6 +26,22 @@ void write_netcdf(
 
 namespace ops {
 namespace base {
+
+class AreaComputer
+{
+public:
+    AreaComputer(
+        const amrex::Real radius, const int num_r, const int num_theta);
+
+    amrex::Real area_section(const int iRadius) const;
+
+    amrex::Real weight(const int iRadius) const;
+
+private:
+    const amrex::Real area;
+    const amrex::Real geometry_factor;
+};
+
 vs::Vector compute_coplanar_vector(const vs::Vector& normal);
 
 void collect_parse_conflicts(
@@ -135,7 +151,7 @@ struct UpdateVelOp<
         auto& diskVel = meta.mean_disk_velocity;
         auto& density = meta.density;
         const int np = meta.num_vel_pts / 2;
-        assert(!grid.density.empty());
+
         for (int i = 0; i < np; i++) {
             density += grid.density[i];
             refVel = refVel + grid.vel[i];

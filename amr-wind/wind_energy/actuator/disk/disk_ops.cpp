@@ -96,6 +96,22 @@ void write_netcdf(
 namespace ops {
 namespace base {
 
+AreaComputer::AreaComputer(
+    const amrex::Real radius, const int num_r, const int num_theta)
+    : area(M_PI * radius * radius)
+    , geometry_factor(radius * radius / num_r / num_r * M_PI / num_theta)
+{}
+
+amrex::Real AreaComputer::area_section(const int iRadius) const
+{
+    return geometry_factor * (std::pow(iRadius + 1, 2) - std::pow(iRadius, 2));
+}
+
+amrex::Real AreaComputer::weight(const int iRadius) const
+{
+    return area_section(iRadius) / area;
+}
+
 vs::Vector get_east_orientation()
 {
     utils::ActParser pp("Coriolis.Forcing", "Coriolis");
