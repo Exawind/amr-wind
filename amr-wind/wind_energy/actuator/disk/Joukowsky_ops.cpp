@@ -34,17 +34,17 @@ void required_parameters(JoukowskyData& meta, const utils::ActParser& pp)
     pp.get("num_points_t", meta.num_vel_pts_t);
     pp.get("num_points_r", meta.num_vel_pts_r);
     pp.getarr("angular_velocity", meta.angular_velocity);
-    meta.num_force_pts = meta.num_vel_pts_r * meta.num_vel_pts_t;
-    meta.num_vel_pts = meta.num_force_pts * 2;
-    meta.dr = 0.5 * meta.diameter / meta.num_vel_pts_r;
 }
 
 void parse_and_gather_params(const utils::ActParser& pp, JoukowskyData& data)
 {
     check_for_parse_conflicts(pp);
-    optional_parameters(data, pp);
     required_parameters(data, pp);
+    optional_parameters(data, pp);
     ops::base::final_checks(data);
+    data.num_force_pts = data.num_vel_pts_r * data.num_vel_pts_t;
+    data.num_vel_pts = data.num_force_pts * 2;
+    data.dr = 0.5 * data.diameter / data.num_vel_pts_r;
 }
 
 void prepare_netcdf_file(

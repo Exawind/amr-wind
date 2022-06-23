@@ -235,6 +235,10 @@ if(AMR_WIND_ENABLE_HDF5)
   endif()
 endif()
 
+if(AMR_WIND_ENABLE_ASCENT)
+  add_test_re(abl_godunov_ascent)
+endif()
+
 #=============================================================================
 # Regression tests excluded from CI with a test dependency
 #=============================================================================
