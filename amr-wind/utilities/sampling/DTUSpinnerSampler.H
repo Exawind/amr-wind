@@ -94,10 +94,14 @@ private:
     vs::Vector m_hub_location{0, 0, 0};
     vs::Vector m_hub_location_init{0, 0, 0};
 
+#ifdef AMR_WIND_USE_OPENFAST
+
     float turbine_base_pos[3]{0, 0, 0};
     float current_hub_abs_pos[3]{0, 0, 0};
     float current_hub_rot_vel[3]{0, 0, 0};
     double current_hub_orient[9]{0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+#endif
 
     amrex::Real m_last_hub_yaw{0};
     amrex::Real m_last_hub_roll{0};
