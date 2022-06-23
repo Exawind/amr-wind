@@ -59,6 +59,19 @@ void final_checks(const DiskBaseData& meta);
 amrex::RealBox compute_bounding_box(const DiskBaseData& meta);
 
 template <typename T>
+void allocate_basic_grid_quantities(typename T::DataType& data)
+{
+    auto& grid = data.grid();
+    auto& meta = data.meta();
+    // only resize the members we are going to use
+    grid.pos.resize(meta.num_force_pts);
+    grid.force.resize(meta.num_force_pts);
+    grid.vel.resize(meta.num_vel_pts);
+    grid.vel_pos.resize(meta.num_vel_pts);
+    grid.density.resize(meta.num_vel_pts);
+}
+
+template <typename T>
 void do_parse_based_computations(ActDataHolder<T>& data)
 {
     auto& meta = data.meta();
@@ -117,15 +130,20 @@ struct UpdateVelOp<
         const auto& grid = data.grid();
         meta.reference_velocity = {0.0, 0.0, 0.0};
         meta.mean_disk_velocity = {0.0, 0.0, 0.0};
+        meta.density = 0.0;
         auto& refVel = meta.reference_velocity;
         auto& diskVel = meta.mean_disk_velocity;
+        auto& density = meta.density;
         const int np = meta.num_vel_pts / 2;
+        assert(!grid.density.empty());
         for (int i = 0; i < np; i++) {
+            density += grid.density[i];
             refVel = refVel + grid.vel[i];
             diskVel = diskVel + grid.vel[i + np];
         }
         refVel /= np;
         diskVel /= np;
+        density /= np;
     }
 };
 

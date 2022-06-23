@@ -161,9 +161,14 @@ void Actuator::update_velocities()
     auto& pinfo = m_container->m_data;
     for (int i = 0, ic = 0; i < pinfo.num_objects; ++i) {
         const auto ig = pinfo.global_id[i];
+
         const auto vel =
             ::amr_wind::utils::slice(pinfo.velocity, ic, pinfo.num_pts[i]);
-        m_actuators[ig]->update_velocities(vel);
+
+        const auto density =
+            ::amr_wind::utils::slice(pinfo.density, ic, pinfo.num_pts[i]);
+
+        m_actuators[ig]->update_fields(vel, density);
         ic += pinfo.num_pts[i];
     }
 }

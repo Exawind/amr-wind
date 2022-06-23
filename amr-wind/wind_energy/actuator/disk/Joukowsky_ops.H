@@ -48,14 +48,11 @@ struct InitDataOp<Joukowsky, ActSrcDisk>
 {
     void operator()(typename Joukowsky::DataType& data)
     {
+        ops::base::allocate_basic_grid_quantities<Joukowsky>(data);
+
         auto& grid = data.grid();
         auto& meta = data.meta();
 
-        // only resize the members we are going to use
-        grid.pos.resize(meta.num_force_pts);
-        grid.force.resize(meta.num_force_pts);
-        grid.vel.resize(meta.num_vel_pts);
-        grid.vel_pos.resize(meta.num_vel_pts);
         meta.tip_correction.resize(meta.num_vel_pts_r);
         meta.root_correction.resize(meta.num_vel_pts_r);
         meta.f_normal.resize(meta.num_vel_pts_r);
