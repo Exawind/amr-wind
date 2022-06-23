@@ -230,9 +230,9 @@ void Actuator::post_advance_work()
 ActuatorModel& Actuator::get_act_bylabel(std::string actlabel) const
 {
     int thisid = 0; // Default to first actuator
-    for (auto& act : m_actuators) {
+    for (const auto& act : m_actuators) {
         std::string thislabel = act->label();
-        if (thislabel.compare(actlabel) == 0) {
+        if (thislabel == actlabel) {
             thisid = act->id();
         }
     }
@@ -244,9 +244,9 @@ template <typename T>
 T* Actuator::get_actuator(std::string key) const
 {
     int thisid = 0; // Default to first actuator
-    for (auto& act : m_actuators) {
+    for (const auto& act : m_actuators) {
         std::string thislabel = act->label();
-        if (thislabel.compare(key) == 0) {
+        if (thislabel == key) {
             thisid = act->id();
             T* converted = dynamic_cast<T*>(*m_actuators.at(thisid));
             return converted;
