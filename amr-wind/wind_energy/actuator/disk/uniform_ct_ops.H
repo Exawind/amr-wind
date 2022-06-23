@@ -17,7 +17,6 @@ struct ReadInputsOp<UniformCt, ActSrcDisk>
 {
     void operator()(UniformCt::DataType& data, const utils::ActParser& pp)
     {
-        // TODO get density at probe location
         auto& meta = data.meta();
         uniformct::parse_and_gather_params(pp, meta);
         base::do_parse_based_computations<UniformCt>(data);

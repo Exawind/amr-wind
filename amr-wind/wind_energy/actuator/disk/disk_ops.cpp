@@ -196,7 +196,6 @@ void optional_parameters(DiskBaseData& meta, const utils::ActParser& pp)
     }
     pp.query("disk_center", meta.center);
     pp.query("disk_normal", meta.normal_vec);
-    pp.query("density", meta.density);
     pp.query("diameters_to_sample", meta.diameters_to_sample);
     pp.query("num_points_t", meta.num_force_theta_pts);
 
