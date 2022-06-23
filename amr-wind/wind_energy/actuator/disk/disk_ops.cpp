@@ -245,7 +245,7 @@ void optional_parameters(DiskBaseData& meta, const utils::ActParser& pp)
     }
 }
 
-void check_error_stream(std::ostringstream& error_collector)
+void check_error_stream(const std::ostringstream& error_collector)
 {
     if (!error_collector.str().empty()) {
         amrex::Abort(
