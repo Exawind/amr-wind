@@ -44,7 +44,7 @@ void collect_parse_dependencies(
     const std::string& p2,
     std::ostringstream& ss);
 
-void check_error_stream(std::ostringstream& error_collector);
+void check_error_stream(const std::ostringstream& error_collector);
 
 void required_parameters(DiskBaseData& meta, const utils::ActParser& pp);
 
