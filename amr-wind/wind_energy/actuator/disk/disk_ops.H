@@ -151,15 +151,19 @@ struct UpdateVelOp<
         auto& diskVel = meta.mean_disk_velocity;
         auto& density = meta.density;
         const int np = meta.num_vel_pts / 2;
+        const int num_r = meta.num_vel_pts_r;
+        const int num_t = meta.num_vel_pts_t;
 
-        for (int i = 0; i < np; i++) {
-            density += grid.density[i];
-            refVel = refVel + grid.vel[i];
-            diskVel = diskVel + grid.vel[i + np];
+        const base::AreaComputer area(meta.radius(), num_r, num_t);
+
+        for (int i = 0; i < num_r; i++) {
+            const auto weight = area.weight(i);
+            for (int j = 0; j < num_t; ++j) {
+                density += grid.density[j + i * num_t] * weight;
+                refVel = refVel + grid.vel[j + i * num_t] * weight;
+                diskVel = diskVel + grid.vel[j + i * num_t + np] * weight;
+            }
         }
-        refVel /= np;
-        diskVel /= np;
-        density /= np;
     }
 };
 

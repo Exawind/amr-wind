@@ -125,7 +125,8 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
         const amrex::Real dTheta =
             amr_wind::utils::two_pi() / ddata.num_vel_pts_t;
 
-        const amrex::Real geometry_factor = ddata.dr * ddata.dr * dTheta * 0.5;
+        const ops::base::AreaComputer area(
+            ddata.radius(), ddata.num_vel_pts_r, ddata.num_vel_pts_t);
 
         const amrex::Real lambda =
             ddata.radius() * ddata.current_angular_velocity / U_ref;
@@ -195,6 +196,8 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
 
             ddata.f_normal[i] = f_z;
 
+            const auto dArea = area.area_section(i);
+
             for (int j = 0; j < ddata.num_vel_pts_t; j++, ip++) {
                 const auto point_current = grid.pos[ip];
 
@@ -209,9 +212,6 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
 
                 const amrex::Real f_theta = u_disk_ij / U_ref * q0 * g * F / x;
                 ddata.f_theta[ip] = f_theta;
-
-                const amrex::Real dArea =
-                    geometry_factor * (std::pow(i + 1.0, 2) - std::pow(i, 2));
 
                 // eq 18
                 moment += x * ddata.radius() * f_theta * dArea;
