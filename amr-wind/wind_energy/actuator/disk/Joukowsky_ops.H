@@ -122,8 +122,6 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
 
         const amrex::Real Ct = ddata.current_ct;
         const amrex::Real dx = ddata.dr / ddata.radius();
-        const amrex::Real dTheta =
-            amr_wind::utils::two_pi() / ddata.num_vel_pts_t;
 
         const ops::base::AreaComputer area(
             ddata.radius(), ddata.num_vel_pts_r, ddata.num_vel_pts_t);
