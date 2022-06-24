@@ -276,13 +276,13 @@ void KOmegaSST<Transport>::shear_prod_to_uniform_space(
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     amrex::Real ux = grad_v(i, j, k, 0);
-                    amrex::Real vx = grad_v(i, j, k, 1);
-                    amrex::Real wx = grad_v(i, j, k, 2);
-                    amrex::Real uy = grad_v(i, j, k, 3);
+                    amrex::Real uy = grad_v(i, j, k, 1);
+                    amrex::Real uz = grad_v(i, j, k, 2);
+                    amrex::Real vx = grad_v(i, j, k, 3);
                     amrex::Real vy = grad_v(i, j, k, 4);
-                    amrex::Real wy = grad_v(i, j, k, 5);
-                    amrex::Real uz = grad_v(i, j, k, 6);
-                    amrex::Real vz = grad_v(i, j, k, 7);
+                    amrex::Real vz = grad_v(i, j, k, 5);
+                    amrex::Real wx = grad_v(i, j, k, 6);
+                    amrex::Real wy = grad_v(i, j, k, 7);
                     amrex::Real wz = grad_v(i, j, k, 8);
 
                     str_rt(i, j, k) = std::sqrt(
