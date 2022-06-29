@@ -136,10 +136,16 @@ struct ComputeForceOp<::amr_wind_tests::Joukowsky, ActSrcDisk>
 {
     void operator()(::amr_wind_tests::Joukowsky::DataType& data)
     {
-        ComputeForceOp<::amr_wind::actuator::Joukowsky, ActSrcDisk> actual_op;
-        EXPECT_NO_FATAL_FAILURE(actual_op(data));
         const auto& meta = data.meta();
         const auto& grid = data.grid();
+        for (int i = 0; i < meta.num_vel_pts; ++i) {
+            EXPECT_DOUBLE_EQ(10.0, grid.vel[i].x());
+            EXPECT_DOUBLE_EQ(0.0, grid.vel[i].y());
+            EXPECT_DOUBLE_EQ(0.0, grid.vel[i].z());
+            EXPECT_DOUBLE_EQ(1.0, grid.density[i]);
+        }
+        ComputeForceOp<::amr_wind::actuator::Joukowsky, ActSrcDisk> actual_op;
+        EXPECT_NO_FATAL_FAILURE(actual_op(data));
         for (int i = 0; i < meta.num_force_pts; ++i) {
             for (int j = 0; j < 3; ++j) {
                 EXPECT_FALSE(std::isnan(grid.force[i][j]))
