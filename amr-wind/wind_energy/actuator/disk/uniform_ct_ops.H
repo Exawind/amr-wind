@@ -17,7 +17,6 @@ struct ReadInputsOp<UniformCt, ActSrcDisk>
 {
     void operator()(UniformCt::DataType& data, const utils::ActParser& pp)
     {
-        // TODO get density at probe location
         auto& meta = data.meta();
         uniformct::parse_and_gather_params(pp, meta);
         base::do_parse_based_computations<UniformCt>(data);
@@ -59,14 +58,11 @@ struct InitDataOp<UniformCt, ActSrcDisk>
 {
     void operator()(typename UniformCt::DataType& data)
     {
+
+        ops::base::allocate_basic_grid_quantities<UniformCt>(data);
+
         auto& grid = data.grid();
         auto& meta = data.meta();
-
-        // only resize the members we are going to use
-        grid.pos.resize(meta.num_force_pts);
-        grid.force.resize(meta.num_force_pts);
-        grid.vel.resize(meta.num_vel_pts);
-        grid.vel_pos.resize(meta.num_vel_pts);
 
         const auto& cVec = meta.coplanar_vec;
         const auto& sVec = meta.sample_vec;

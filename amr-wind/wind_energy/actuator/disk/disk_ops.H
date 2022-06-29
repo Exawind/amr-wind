@@ -26,6 +26,22 @@ void write_netcdf(
 
 namespace ops {
 namespace base {
+
+class AreaComputer
+{
+public:
+    AreaComputer(
+        const amrex::Real radius, const int num_r, const int num_theta);
+
+    amrex::Real area_section(const int iRadius) const;
+
+    amrex::Real weight(const int iRadius) const;
+
+private:
+    const amrex::Real area;
+    const amrex::Real geometry_factor;
+};
+
 vs::Vector compute_coplanar_vector(const vs::Vector& normal);
 
 void collect_parse_conflicts(
@@ -57,6 +73,19 @@ void compute_and_normalize_coplanar_vector(DiskBaseData& meta);
 void final_checks(const DiskBaseData& meta);
 
 amrex::RealBox compute_bounding_box(const DiskBaseData& meta);
+
+template <typename T>
+void allocate_basic_grid_quantities(typename T::DataType& data)
+{
+    auto& grid = data.grid();
+    auto& meta = data.meta();
+    // only resize the members we are going to use
+    grid.pos.resize(meta.num_force_pts);
+    grid.force.resize(meta.num_force_pts);
+    grid.vel.resize(meta.num_vel_pts);
+    grid.vel_pos.resize(meta.num_vel_pts);
+    grid.density.resize(meta.num_vel_pts);
+}
 
 template <typename T>
 void do_parse_based_computations(ActDataHolder<T>& data)
@@ -117,15 +146,24 @@ struct UpdateVelOp<
         const auto& grid = data.grid();
         meta.reference_velocity = {0.0, 0.0, 0.0};
         meta.mean_disk_velocity = {0.0, 0.0, 0.0};
+        meta.density = 0.0;
         auto& refVel = meta.reference_velocity;
         auto& diskVel = meta.mean_disk_velocity;
+        auto& density = meta.density;
         const int np = meta.num_vel_pts / 2;
-        for (int i = 0; i < np; i++) {
-            refVel = refVel + grid.vel[i];
-            diskVel = diskVel + grid.vel[i + np];
+        const int num_r = meta.num_vel_pts_r;
+        const int num_t = meta.num_vel_pts_t;
+
+        const base::AreaComputer area(meta.radius(), num_r, num_t);
+
+        for (int i = 0; i < num_r; i++) {
+            const auto weight = area.weight(i);
+            for (int j = 0; j < num_t; ++j) {
+                density += grid.density[j + i * num_t] * weight;
+                refVel = refVel + grid.vel[j + i * num_t] * weight;
+                diskVel = diskVel + grid.vel[j + i * num_t + np] * weight;
+            }
         }
-        refVel /= np;
-        diskVel /= np;
     }
 };
 

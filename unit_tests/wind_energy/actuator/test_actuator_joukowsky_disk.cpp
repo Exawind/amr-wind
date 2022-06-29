@@ -46,7 +46,9 @@ protected:
         initialize_mesh();
         sim().repo().declare_field("actuator_src_term", 3, 0);
         auto& vel = sim().repo().declare_field("velocity", 3, 3);
+        auto& density = sim().repo().declare_field("density", 1, 3);
         vel.setVal(10.0, 0, 1, 3);
+        density.setVal(1.0);
         amr_wind::actuator::ActuatorContainer::ParticleType::NextID(1U);
     }
 
@@ -146,6 +148,7 @@ struct ComputeForceOp<::amr_wind_tests::Joukowsky, ActSrcDisk>
             // only x direction is guaranteed to be negative
             // y and z forces will vary based on azimuthal angle
             EXPECT_GE(0.0, grid.force[i][0]) << "i: " << i;
+            EXPECT_DOUBLE_EQ(1.0, grid.density[i]);
         }
     }
 };
