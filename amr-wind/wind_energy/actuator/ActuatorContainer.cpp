@@ -264,13 +264,11 @@ void ActuatorContainer::populate_field_buffers()
         auto& den_arr = m_data.density;
         const int npts = vel_arr.size();
         const int ioff = m_proc_offsets[amrex::ParallelDescriptor::MyProc()];
-        int index = ioff;
         for (int i = 0; i < npts; ++i) {
-            for (int j = 0; j < AMREX_SPACEDIM; ++j, index++) {
-                vel_arr[i][j] = buff_host[index];
+            for (int j = 0; j < AMREX_SPACEDIM; ++j) {
+                vel_arr[i][j] = buff_host[ioff + i * NumPStructReal + j];
             }
-            den_arr[i] = buff_host[index];
-            index++;
+            den_arr[i] = buff_host[ioff + i * NumPStructReal + AMREX_SPACEDIM];
         }
     }
 }
