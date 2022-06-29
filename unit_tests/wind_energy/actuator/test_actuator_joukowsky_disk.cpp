@@ -139,10 +139,10 @@ struct ComputeForceOp<::amr_wind_tests::Joukowsky, ActSrcDisk>
         const auto& meta = data.meta();
         const auto& grid = data.grid();
         for (int i = 0; i < meta.num_vel_pts; ++i) {
-            EXPECT_DOUBLE_EQ(10.0, grid.vel[i].x());
-            EXPECT_DOUBLE_EQ(0.0, grid.vel[i].y());
-            EXPECT_DOUBLE_EQ(0.0, grid.vel[i].z());
-            EXPECT_DOUBLE_EQ(1.0, grid.density[i]);
+            EXPECT_DOUBLE_EQ(10.0, grid.vel[i].x()) << ", " << i;
+            EXPECT_DOUBLE_EQ(0.0, grid.vel[i].y()) << ", " << i;
+            EXPECT_DOUBLE_EQ(0.0, grid.vel[i].z()) << ", " << i;
+            EXPECT_DOUBLE_EQ(1.0, grid.density[i]) << ", " << i;
         }
         ComputeForceOp<::amr_wind::actuator::Joukowsky, ActSrcDisk> actual_op;
         EXPECT_NO_FATAL_FAILURE(actual_op(data));

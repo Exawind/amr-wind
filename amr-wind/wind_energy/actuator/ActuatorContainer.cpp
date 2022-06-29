@@ -266,9 +266,10 @@ void ActuatorContainer::populate_field_buffers()
         const int ioff = m_proc_offsets[amrex::ParallelDescriptor::MyProc()];
         for (int i = 0; i < npts; ++i) {
             for (int j = 0; j < AMREX_SPACEDIM; ++j) {
-                vel_arr[i][j] = buff_host[ioff + i * NumPStructReal + j];
+                vel_arr[i][j] = buff_host[(ioff + i) * NumPStructReal + j];
             }
-            den_arr[i] = buff_host[ioff + i * NumPStructReal + AMREX_SPACEDIM];
+            den_arr[i] =
+                buff_host[(ioff + i) * NumPStructReal + AMREX_SPACEDIM];
         }
     }
 }
