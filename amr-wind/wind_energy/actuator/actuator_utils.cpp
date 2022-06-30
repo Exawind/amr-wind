@@ -44,6 +44,8 @@ std::set<int> determine_influenced_procs(
     std::set<int> procs;
     const int finest_level = mesh.finestLevel();
     const int nlevels = mesh.finestLevel() + 1;
+    // TODO bx should be mapped to unstretched coordinates here when using mesh
+    // mapping, could be implemented inside realbox_to_box as well
     auto bx = realbox_to_box(rbx, mesh.Geom(0));
 
     for (int lev = 0; lev < nlevels; ++lev) {
