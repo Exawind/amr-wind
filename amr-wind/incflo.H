@@ -96,6 +96,7 @@ public:
     void pre_advance_stage1();
     void pre_advance_stage2();
     void advance();
+    void prescribe_advance();
     void post_advance_work();
 
     amr_wind::CFDSim& sim() { return m_sim; }
@@ -134,6 +135,7 @@ public:
 
     void ApplyPredictor(bool incremental_projection = false);
     void ApplyCorrector();
+    void ApplyPrescribeStep();
 
     void ApplyProjection(
         amrex::Vector<amrex::MultiFab const*> density,
