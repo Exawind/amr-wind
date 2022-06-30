@@ -64,6 +64,7 @@ public:
 
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                // TODO use mapped cell-centers
                 const vs::Vector cc{
                     problo[0] + (i + 0.5) * dx[0],
                     problo[1] + (j + 0.5) * dx[1],
@@ -119,6 +120,7 @@ public:
 
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                // TODO use mapped cell-centers
                 const vs::Vector cc{
                     problo[0] + (i + 0.5) * dx[0],
                     problo[1] + (j + 0.5) * dx[1],
@@ -178,6 +180,7 @@ public:
 
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                // TODO use mapped cell-centers
                 const vs::Vector cc{
                     problo[0] + (i + 0.5) * dx[0],
                     problo[1] + (j + 0.5) * dx[1],

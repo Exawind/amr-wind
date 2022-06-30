@@ -172,6 +172,8 @@ void ActuatorContainer::update_positions()
 
                 const auto& pvec = dptr[idx];
                 for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+                    // TODO particle positions should be in unstretched
+                    // coordinates going into Redistribute
                     pp.pos(n) = pvec[n];
                 }
             });
@@ -180,6 +182,8 @@ void ActuatorContainer::update_positions()
 
     // Scatter particles to appropriate MPI ranks
     Redistribute();
+    // TODO Map particle positions back to streched coordinates here, or before
+    // interpolate_fields
 
     // Indicate that it is safe to sample velocities
     m_is_scattered = true;
@@ -301,6 +305,7 @@ void ActuatorContainer::interpolate_fields(
 
             amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
                 auto& pp = pstruct[ip];
+                // TODO don't really need most of this if using mapping
                 // Determine offsets within the containing cell
                 const amrex::Real x =
                     (pp.pos(0) - plo[0] - 0.5 * dx[0]) * dxi[0];
@@ -314,6 +319,7 @@ void ActuatorContainer::interpolate_fields(
                 const int j = static_cast<int>(amrex::Math::floor(y));
                 const int k = static_cast<int>(amrex::Math::floor(z));
 
+                // TODO get weights using mapped coordinates
                 // Interpolation weights in each direction (linear basis)
                 const amrex::Real wx_hi = (x - i);
                 const amrex::Real wy_hi = (y - j);
@@ -393,6 +399,8 @@ void ActuatorContainer::compute_local_coordinates()
             const auto& bx = ba[i];
             const int* lo = bx.loVect();
 
+            // TODO not sure if we need to change this to mapped coordinates or
+            // not. I think it is okay to leave it as unmapped.
             auto& pvec = m_proc_pos[iproc];
             pvec.x() = geom.ProbLo()[0] + (lo[0] + 0.5) * geom.CellSize()[0];
             pvec.y() = geom.ProbLo()[1] + (lo[1] + 0.5) * geom.CellSize()[1];
