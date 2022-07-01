@@ -27,9 +27,11 @@ public:
         const T& actObj,
         const int lev,
         const amrex::MFIter& mfi,
-        const amrex::Geometry& geom)
+        const amrex::Geometry& geom,
+        amrex::Array4<amrex::Real const> const& nu_coord,
+        bool has_mesh_mapping)
     {
-        (this->*m_function)(actObj, lev, mfi, geom);
+        (this->*m_function)(actObj, lev, mfi, geom, nu_coord, has_mesh_mapping);
     }
 
     SpreadingFunction(const SpreadingFunction&) = delete;
@@ -39,13 +41,17 @@ public:
         const T& actObj,
         const int,
         const amrex::MFIter&,
-        const amrex::Geometry&);
+        const amrex::Geometry&,
+        amrex::Array4<amrex::Real const> const& nu_coord,
+        bool has_mesh_mapping);
 
     void uniform_gaussian_spreading(
         const T& actObj,
         const int lev,
         const amrex::MFIter& mfi,
-        const amrex::Geometry& geom)
+        const amrex::Geometry& geom,
+        amrex::Array4<amrex::Real const> const& nu_coord,
+        bool has_mesh_mapping)
     {
         const auto& bx = mfi.tilebox();
         const auto& sarr = actObj.m_act_src(lev).array(mfi);
@@ -64,11 +70,16 @@ public:
 
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                // TODO use mapped cell-centers
-                const vs::Vector cc{
-                    problo[0] + (i + 0.5) * dx[0],
-                    problo[1] + (j + 0.5) * dx[1],
-                    problo[2] + (k + 0.5) * dx[2],
+                vs::Vector cc{0.0, 0.0, 0.0};
+                if(has_mesh_mapping) {
+                    cc[0] = nu_coord(i,j,k,0);
+                    cc[1] = nu_coord(i,j,k,1);
+                    cc[2] = nu_coord(i,j,k,2);
+                }
+                else {
+                    cc[0] = problo[0] + (i + 0.5) * dx[0];
+                    cc[1] = problo[1] + (j + 0.5) * dx[1];
+                    cc[2] = problo[2] + (k + 0.5) * dx[2];
                 };
 
                 amrex::Real src_force[AMREX_SPACEDIM]{0.0, 0.0, 0.0};
@@ -101,7 +112,9 @@ public:
         const T& actObj,
         const int lev,
         const amrex::MFIter& mfi,
-        const amrex::Geometry& geom)
+        const amrex::Geometry& geom,
+        amrex::Array4<amrex::Real const> const& nu_coord,
+        bool has_mesh_mapping)
     {
         const auto& bx = mfi.tilebox();
         const auto& sarr = actObj.m_act_src(lev).array(mfi);
@@ -120,11 +133,16 @@ public:
 
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                // TODO use mapped cell-centers
-                const vs::Vector cc{
-                    problo[0] + (i + 0.5) * dx[0],
-                    problo[1] + (j + 0.5) * dx[1],
-                    problo[2] + (k + 0.5) * dx[2],
+                vs::Vector cc{0.0, 0.0, 0.0};
+                if(has_mesh_mapping) {
+                    cc[0] = nu_coord(i,j,k,0);
+                    cc[1] = nu_coord(i,j,k,1);
+                    cc[2] = nu_coord(i,j,k,2);
+                }
+                else {
+                    cc[0] = problo[0] + (i + 0.5) * dx[0];
+                    cc[1] = problo[1] + (j + 0.5) * dx[1];
+                    cc[2] = problo[2] + (k + 0.5) * dx[2];
                 };
 
                 amrex::Real src_force[AMREX_SPACEDIM]{0.0, 0.0, 0.0};
@@ -159,7 +177,9 @@ public:
         const T& actObj,
         const int lev,
         const amrex::MFIter& mfi,
-        const amrex::Geometry& geom)
+        const amrex::Geometry& geom,
+        amrex::Array4<amrex::Real const> const& nu_coord,
+        bool has_mesh_mapping)
     {
         const auto& bx = mfi.tilebox();
         const auto& sarr = actObj.m_act_src(lev).array(mfi);
@@ -180,11 +200,16 @@ public:
 
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                // TODO use mapped cell-centers
-                const vs::Vector cc{
-                    problo[0] + (i + 0.5) * dx[0],
-                    problo[1] + (j + 0.5) * dx[1],
-                    problo[2] + (k + 0.5) * dx[2],
+                vs::Vector cc{0.0, 0.0, 0.0};
+                if(has_mesh_mapping) {
+                    cc[0] = nu_coord(i,j,k,0);
+                    cc[1] = nu_coord(i,j,k,1);
+                    cc[2] = nu_coord(i,j,k,2);
+                }
+                else {
+                    cc[0] = problo[0] + (i + 0.5) * dx[0];
+                    cc[1] = problo[1] + (j + 0.5) * dx[1];
+                    cc[2] = problo[2] + (k + 0.5) * dx[2];
                 };
 
                 amrex::Real src_force[AMREX_SPACEDIM]{0.0, 0.0, 0.0};

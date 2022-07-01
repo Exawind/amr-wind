@@ -63,7 +63,10 @@ operator()(const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
     // cppcheck-suppress unreadVariable
     const std::string fname = ActTrait::identifier() + ActSrcDisk::identifier();
     BL_PROFILE("amr-wind::ActSrcOp<" + fname + ">");
-    m_spreading(*this, lev, mfi, geom);
+
+    const auto& nu_cc = m_data.sim().repo().get_field("non_uniform_coord_cc");
+
+    m_spreading(*this, lev, mfi, geom, nu_cc(lev).array(mfi), m_data.sim().has_mesh_mapping());
 }
 
 template <typename ActTrait>

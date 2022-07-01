@@ -58,6 +58,8 @@ protected:
 private:
     void setup_container();
 
+    void store_stretched_coordinates();
+
     void update_positions();
 
     void update_velocities();
@@ -73,6 +75,10 @@ private:
     std::vector<std::unique_ptr<ActuatorModel>> m_actuators;
 
     std::unique_ptr<ActuatorContainer> m_container;
+
+    amrex::Vector<amrex::Real> nu_cx;
+    amrex::Vector<amrex::Real> nu_cy;
+    amrex::Vector<amrex::Real> nu_cz;
 };
 
 } // namespace actuator

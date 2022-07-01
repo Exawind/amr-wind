@@ -9,6 +9,21 @@
 #include <algorithm>
 
 namespace amr_wind {
+
+namespace {
+    // FIXME: Will not work on GPUs
+    //! Return closest index (from lower) of value in vector
+    AMREX_FORCE_INLINE int
+    closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
+    {
+        auto const it = std::upper_bound(vec.begin(), vec.end(), value);
+        AMREX_ALWAYS_ASSERT(it != vec.end());
+
+        const int idx = std::distance(vec.begin(), it);
+        return std::max(idx - 1, 0);
+    }
+}
+
 namespace actuator {
 
 ActuatorCloud::ActuatorCloud(const int nobjects)
@@ -199,13 +214,20 @@ void ActuatorContainer::update_positions()
  *  After invocation if this method, the particles are back in their original
  *  rank and the position vectors can be updated safely.
  */
-void ActuatorContainer::sample_fields(const Field& vel, const Field& density)
+void ActuatorContainer::sample_fields(const Field& vel, const Field& density,
+    const amrex::Vector<amrex::Real>& nu_cx, const amrex::Vector<amrex::Real>& nu_cy,
+    const amrex::Vector<amrex::Real>& nu_cz, bool has_mesh_mapping)
 {
     BL_PROFILE("amr-wind::actuator::ActuatorContainer::sample_velocities");
     AMREX_ALWAYS_ASSERT(m_container_initialized && m_is_scattered);
 
     // Sample velocity field
-    interpolate_fields(vel, density);
+    if(has_mesh_mapping) {
+        interpolate_fields_mesh_mapping(vel, density, nu_cx, nu_cy, nu_cz);
+    }
+    else {
+        interpolate_fields(vel, density);
+    }
 
     // Recall particles to the MPI ranks that contains their corresponding
     // turbines
@@ -305,7 +327,6 @@ void ActuatorContainer::interpolate_fields(
 
             amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
                 auto& pp = pstruct[ip];
-                // TODO don't really need most of this if using mapping
                 // Determine offsets within the containing cell
                 const amrex::Real x =
                     (pp.pos(0) - plo[0] - 0.5 * dx[0]) * dxi[0];
@@ -319,11 +340,78 @@ void ActuatorContainer::interpolate_fields(
                 const int j = static_cast<int>(amrex::Math::floor(y));
                 const int k = static_cast<int>(amrex::Math::floor(z));
 
-                // TODO get weights using mapped coordinates
                 // Interpolation weights in each direction (linear basis)
                 const amrex::Real wx_hi = (x - i);
                 const amrex::Real wy_hi = (y - j);
                 const amrex::Real wz_hi = (z - k);
+
+                const amrex::Real wx_lo = 1.0 - wx_hi;
+                const amrex::Real wy_lo = 1.0 - wy_hi;
+                const amrex::Real wz_lo = 1.0 - wz_hi;
+
+                const int iproc = pp.cpu();
+
+                // velocity
+                for (int ic = 0; ic < AMREX_SPACEDIM; ++ic) {
+                    pp.rdata(ic) =
+                        wx_lo * wy_lo * wz_lo * varr(i, j, k, ic) +
+                        wx_lo * wy_lo * wz_hi * varr(i, j, k + 1, ic) +
+                        wx_lo * wy_hi * wz_lo * varr(i, j + 1, k, ic) +
+                        wx_lo * wy_hi * wz_hi * varr(i, j + 1, k + 1, ic) +
+                        wx_hi * wy_lo * wz_lo * varr(i + 1, j, k, ic) +
+                        wx_hi * wy_lo * wz_hi * varr(i + 1, j, k + 1, ic) +
+                        wx_hi * wy_hi * wz_lo * varr(i + 1, j + 1, k, ic) +
+                        wx_hi * wy_hi * wz_hi * varr(i + 1, j + 1, k + 1, ic);
+
+                    // Reset position vectors so that the particles return back
+                    // to the MPI ranks with the turbines upon redistribution
+                    pp.pos(ic) = dptr[iproc][ic];
+                }
+
+                // density
+                pp.rdata(AMREX_SPACEDIM) =
+                    wx_lo * wy_lo * wz_lo * darr(i, j, k) +
+                    wx_lo * wy_lo * wz_hi * darr(i, j, k + 1) +
+                    wx_lo * wy_hi * wz_lo * darr(i, j + 1, k) +
+                    wx_lo * wy_hi * wz_hi * darr(i, j + 1, k + 1) +
+                    wx_hi * wy_lo * wz_lo * darr(i + 1, j, k) +
+                    wx_hi * wy_lo * wz_hi * darr(i + 1, j, k + 1) +
+                    wx_hi * wy_hi * wz_lo * darr(i + 1, j + 1, k) +
+                    wx_hi * wy_hi * wz_hi * darr(i + 1, j + 1, k + 1);
+            });
+        }
+    }
+}
+
+void ActuatorContainer::interpolate_fields_mesh_mapping(
+    const Field& vel, const Field& density, const amrex::Vector<amrex::Real>& nu_cx,
+    const amrex::Vector<amrex::Real>& nu_cy, const amrex::Vector<amrex::Real>& nu_cz)
+{
+    BL_PROFILE("amr-wind::actuator::ActuatorContainer::interpolate_velocities");
+    auto* dptr = m_pos_device.data();
+    const int nlevels = m_mesh.finestLevel() + 1;
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& geom = m_mesh.Geom(lev);
+        const auto dx = geom.CellSizeArray();
+        const auto dxi = geom.InvCellSizeArray();
+        const auto plo = geom.ProbLoArray();
+
+        for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
+            const int np = pti.numParticles();
+            auto* pstruct = pti.GetArrayOfStructs()().data();
+            const auto varr = vel(lev).const_array(pti);
+            const auto darr = density(lev).const_array(pti);
+
+            amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
+                auto& pp = pstruct[ip];
+                const int i = closest_index(nu_cx, pp.pos(0));
+                const int j = closest_index(nu_cy, pp.pos(1));
+                const int k = closest_index(nu_cz, pp.pos(2));
+
+                // Interpolation weights in each direction (linear basis)
+                const amrex::Real wx_hi = (nu_cx[i] - pp.pos(0)) / (nu_cx[i+1] - nu_cx[i]);
+                const amrex::Real wy_hi = (nu_cx[j] - pp.pos(1)) / (nu_cx[j+1] - nu_cx[j]);
+                const amrex::Real wz_hi = (nu_cx[k] - pp.pos(2)) / (nu_cx[k+1] - nu_cx[k]);
 
                 const amrex::Real wx_lo = 1.0 - wx_hi;
                 const amrex::Real wy_lo = 1.0 - wy_hi;
