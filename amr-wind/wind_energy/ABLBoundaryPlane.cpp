@@ -236,8 +236,8 @@ void InletData::interpolate(const amrex::Real time)
             continue;
         }
 
-        const int nlevels = m_data_n[ori]->size();
-        for (int lev = 0; lev < nlevels; ++lev) {
+        const int lnlevels = m_data_n[ori]->size();
+        for (int lev = 0; lev < lnlevels; ++lev) {
 
             const auto& datn = (*m_data_n[ori])[lev];
             const auto& datnp1 = (*m_data_np1[ori])[lev];
@@ -472,6 +472,7 @@ void ABLBoundaryPlane::write_header()
 
     if (amrex::ParallelDescriptor::IOProcessor() && m_out_fmt == "native") {
         // generate time file
+        amrex::UtilCreateCleanDirectory(m_filename, false);
         std::ofstream oftime(m_time_file, std::ios::out);
         oftime.close();
     }
@@ -747,14 +748,12 @@ void ABLBoundaryPlane::read_header()
             m_in_data.define_plane(ori);
 
             const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
-            const auto& lo = minBox.loVect();
-            const auto& hi = minBox.hiVect();
 
-            amrex::IntVect plo(lo);
-            amrex::IntVect phi(hi);
+            amrex::IntVect plo(minBox.loVect());
+            amrex::IntVect phi(minBox.hiVect());
             const int normal = ori.coordDir();
-            plo[normal] = ori.isHigh() ? hi[normal] + 1 : -1;
-            phi[normal] = ori.isHigh() ? hi[normal] + 1 : -1;
+            plo[normal] = ori.isHigh() ? minBox.hiVect()[normal] + 1 : -1;
+            phi[normal] = ori.isHigh() ? minBox.hiVect()[normal] + 1 : -1;
             const amrex::Box pbx(plo, phi);
             m_in_data.define_level_data(ori, pbx, nc);
         }
@@ -806,7 +805,7 @@ void ABLBoundaryPlane::read_file()
 
         const int index = closest_index(m_in_times, time);
         const int t_step1 = m_in_timesteps[index];
-        const int t_step2 = t_step1 + 1;
+        const int t_step2 = m_in_timesteps[index + 1];
 
         AMREX_ALWAYS_ASSERT(
             (m_in_times[index] <= time) && (time <= m_in_times[index + 1]));
@@ -913,7 +912,7 @@ void ABLBoundaryPlane::populate_data(
 
         const size_t nc = mfab.nComp();
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
         for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid();
@@ -975,7 +974,7 @@ void ABLBoundaryPlane::write_data(
     const int n_buffers = m_mesh.boxArray(lev).size();
     amrex::Vector<BufferData> buffers(n_buffers);
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
     for (amrex::MFIter mfi((*fld)(lev), false); mfi.isValid(); ++mfi) {
@@ -1065,12 +1064,10 @@ bool ABLBoundaryPlane::box_intersects_boundary(
 {
     const amrex::Box& domBox = m_mesh.Geom(lev).Domain();
     const int normal = ori.coordDir();
-    const auto& lo = domBox.loVect();
-    const auto& hi = domBox.hiVect();
-    amrex::IntVect plo(lo);
-    amrex::IntVect phi(hi);
-    plo[normal] = ori.isHigh() ? lo[normal] : 0;
-    phi[normal] = ori.isHigh() ? hi[normal] : 0;
+    amrex::IntVect plo(domBox.loVect());
+    amrex::IntVect phi(domBox.hiVect());
+    plo[normal] = ori.isHigh() ? domBox.loVect()[normal] : 0;
+    phi[normal] = ori.isHigh() ? domBox.hiVect()[normal] : 0;
     const amrex::Box pbx(plo, phi);
     const auto& intersection = bx & pbx;
     return !intersection.isEmpty();

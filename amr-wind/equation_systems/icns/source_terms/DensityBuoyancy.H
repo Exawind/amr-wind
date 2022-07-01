@@ -21,13 +21,13 @@ namespace icns {
 class DensityBuoyancy : public MomentumSource::Register<DensityBuoyancy>
 {
 public:
-    static const std::string identifier() { return "DensityBuoyancy"; }
+    static std::string identifier() { return "DensityBuoyancy"; }
 
     explicit DensityBuoyancy(const CFDSim& sim);
 
-    virtual ~DensityBuoyancy();
+    ~DensityBuoyancy() override;
 
-    virtual void operator()(
+    void operator()(
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,

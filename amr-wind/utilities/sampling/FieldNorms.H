@@ -17,11 +17,11 @@ namespace field_norms {
 class FieldNorms : public PostProcessBase::Register<FieldNorms>
 {
 public:
-    static const std::string identifier() { return "FieldNorms"; }
+    static std::string identifier() { return "FieldNorms"; }
 
-    FieldNorms(CFDSim&, std::string);
+    FieldNorms(CFDSim& /*sim*/, std::string /*label*/);
 
-    ~FieldNorms();
+    ~FieldNorms() override;
 
     //! Perform actions before mesh is created
     void pre_init_actions() override {}

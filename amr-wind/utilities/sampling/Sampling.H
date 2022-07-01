@@ -40,11 +40,11 @@ namespace sampling {
 class Sampling : public PostProcessBase::Register<Sampling>
 {
 public:
-    static const std::string identifier() { return "Sampling"; }
+    static std::string identifier() { return "Sampling"; }
 
-    Sampling(CFDSim&, std::string);
+    Sampling(CFDSim& /*sim*/, std::string /*label*/);
 
-    virtual ~Sampling();
+    ~Sampling() override;
 
     //! Perform actions before mesh is created
     void pre_init_actions() override {}

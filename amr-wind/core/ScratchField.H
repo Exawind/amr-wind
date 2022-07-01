@@ -2,6 +2,7 @@
 #define SCRATCHFIELD_H
 
 #include <string>
+#include <utility>
 
 #include "amr-wind/core/FieldDescTypes.H"
 #include "amr-wind/core/ViewField.H"
@@ -88,12 +89,12 @@ public:
 protected:
     ScratchField(
         const FieldRepo& repo,
-        const std::string& name,
+        std::string name,
         const int ncomp = 1,
         const int ngrow = 1,
         const FieldLoc floc = FieldLoc::CELL)
         : m_repo(repo)
-        , m_name(name)
+        , m_name(std::move(name))
         , m_ncomp(ncomp)
         , m_ngrow(ngrow)
         , m_floc(floc)

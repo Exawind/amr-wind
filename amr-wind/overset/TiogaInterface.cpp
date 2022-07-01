@@ -29,7 +29,7 @@ void iblank_to_mask(const IntField& iblank, IntField& maskf)
         const auto& ibl = iblank(lev);
         auto& mask = maskf(lev);
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
         for (amrex::MFIter mfi(ibl); mfi.isValid(); ++mfi) {

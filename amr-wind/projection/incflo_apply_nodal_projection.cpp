@@ -11,15 +11,15 @@ using namespace amrex;
 void incflo::set_inflow_velocity(
     int lev, amrex::Real time, MultiFab& vel, int nghost)
 {
-    auto& velocity = icns().fields().field;
-    velocity.set_inflow(lev, time, vel, nghost);
+    auto& lvelocity = icns().fields().field;
+    lvelocity.set_inflow(lev, time, vel, nghost);
 
     // TODO fix hack for ABL
     auto& phy_mgr = m_sim.physics_manager();
     if (phy_mgr.contains("ABL")) {
         auto& abl = phy_mgr.get<amr_wind::ABL>();
         const auto& bndry_plane = abl.bndry_plane();
-        bndry_plane.populate_data(lev, time, velocity, vel);
+        bndry_plane.populate_data(lev, time, lvelocity, vel);
     }
 }
 
@@ -156,7 +156,7 @@ void incflo::ApplyProjection(
     if (!incremental) {
         for (int lev = 0; lev <= finest_level; lev++) {
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
             for (MFIter mfi(velocity(lev), TilingIfNotGPU()); mfi.isValid();
@@ -191,7 +191,7 @@ void incflo::ApplyProjection(
     if (add_surface_tension && !incremental) {
         // Create the Surface tension forcing term (Cell-centered)
         for (int lev = 0; lev <= finest_level; ++lev) {
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
             {
@@ -247,7 +247,7 @@ void incflo::ApplyProjection(
         for (int lev = 0; lev <= finest_level; ++lev) {
             sigma[lev].define(
                 grids[lev], dmap[lev], ncomp, 0, MFInfo(), Factory(lev));
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
             for (MFIter mfi(sigma[lev], TilingIfNotGPU()); mfi.isValid();
@@ -373,7 +373,7 @@ void incflo::ApplyProjection(
 
     for (int lev = 0; lev <= finest_level; lev++) {
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
         for (MFIter mfi(grad_p(lev), TilingIfNotGPU()); mfi.isValid(); ++mfi) {

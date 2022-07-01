@@ -18,13 +18,13 @@ namespace icns {
 class BoussinesqBuoyancy : public MomentumSource::Register<BoussinesqBuoyancy>
 {
 public:
-    static const std::string identifier() { return "BoussinesqBuoyancy"; }
+    static std::string identifier() { return "BoussinesqBuoyancy"; }
 
     explicit BoussinesqBuoyancy(const CFDSim& sim);
 
-    virtual ~BoussinesqBuoyancy();
+    ~BoussinesqBuoyancy() override;
 
-    virtual void operator()(
+    void operator()(
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,

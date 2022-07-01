@@ -26,7 +26,7 @@ struct FixedWing : public WingType
     using MetaType = FixedWingData;
     using DataType = ActDataHolder<FixedWing>;
 
-    static const std::string identifier() { return "FixedWing"; }
+    static std::string identifier() { return "FixedWing"; }
 };
 
 } // namespace actuator

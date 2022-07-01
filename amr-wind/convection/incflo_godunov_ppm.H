@@ -74,12 +74,13 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_xbc(
                 sm = s(domlo + 1, j, k, n);
             } else if (
                 amrex::Math::abs(sp - s(domlo + 1, j, k, n)) >=
-                2. * amrex::Math::abs(sm - s(domlo + 1, j, k, n)))
+                2. * amrex::Math::abs(sm - s(domlo + 1, j, k, n))) {
                 sp = 3. * s(domlo + 1, j, k, n) - 2. * sm;
-            else if (
+            } else if (
                 amrex::Math::abs(sm - s(domlo + 1, j, k, n)) >=
-                2. * amrex::Math::abs(sp - s(domlo + 1, j, k, n)))
+                2. * amrex::Math::abs(sp - s(domlo + 1, j, k, n))) {
                 sm = 3. * s(domlo + 1, j, k, n) - 2. * sp;
+            }
         }
     }
 
@@ -113,12 +114,13 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_xbc(
                 sm = s(domhi - 1, j, k, n);
             } else if (
                 amrex::Math::abs(sp - s(domhi - 1, j, k, n)) >=
-                2. * amrex::Math::abs(sm - s(domhi - 1, j, k, n)))
+                2. * amrex::Math::abs(sm - s(domhi - 1, j, k, n))) {
                 sp = 3. * s(domhi - 1, j, k, n) - 2. * sm;
-            else if (
+            } else if (
                 amrex::Math::abs(sm - s(domhi - 1, j, k, n)) >=
-                2. * amrex::Math::abs(sp - s(domhi - 1, j, k, n)))
+                2. * amrex::Math::abs(sp - s(domhi - 1, j, k, n))) {
                 sm = 3. * s(domhi - 1, j, k, n) - 2. * sp;
+            }
         }
     }
 }
@@ -170,12 +172,13 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_ybc(
                 sm = s(i, domlo + 1, k, n);
             } else if (
                 amrex::Math::abs(sp - s(i, domlo + 1, k, n)) >=
-                2. * amrex::Math::abs(sm - s(i, domlo + 1, k, n)))
+                2. * amrex::Math::abs(sm - s(i, domlo + 1, k, n))) {
                 sp = 3. * s(i, domlo + 1, k, n) - 2. * sm;
-            else if (
+            } else if (
                 amrex::Math::abs(sm - s(i, domlo + 1, k, n)) >=
-                2. * amrex::Math::abs(sp - s(i, domlo + 1, k, n)))
+                2. * amrex::Math::abs(sp - s(i, domlo + 1, k, n))) {
                 sm = 3. * s(i, domlo + 1, k, n) - 2. * sp;
+            }
         }
     }
 
@@ -209,13 +212,14 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_ybc(
                 sm = s(i, domhi - 1, k, n);
             } else if (
                 amrex::Math::abs(sp - s(i, domhi - 1, k, n)) >=
-                2. * amrex::Math::abs(sm - s(i, domhi - 1, k, n)))
+                2. * amrex::Math::abs(sm - s(i, domhi - 1, k, n))) {
                 sp = 3. * s(i, domhi - 1, k, n) - 2. * sm;
 
-            else if (
+            } else if (
                 amrex::Math::abs(sm - s(i, domhi - 1, k, n)) >=
-                2. * amrex::Math::abs(sp - s(i, domhi - 1, k, n)))
+                2. * amrex::Math::abs(sp - s(i, domhi - 1, k, n))) {
                 sm = 3. * s(i, domhi - 1, k, n) - 2. * sp;
+            }
         }
     }
 }
@@ -268,13 +272,14 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_zbc(
                 sm = s(i, j, domlo + 1, n);
             } else if (
                 amrex::Math::abs(sp - s(i, j, domlo + 1, n)) >=
-                2. * amrex::Math::abs(sm - s(i, j, domlo + 1, n)))
+                2. * amrex::Math::abs(sm - s(i, j, domlo + 1, n))) {
                 sp = 3. * s(i, j, domlo + 1, n) - 2. * sm;
 
-            else if (
+            } else if (
                 amrex::Math::abs(sm - s(i, j, domlo + 1, n)) >=
-                2. * amrex::Math::abs(sp - s(i, j, domlo + 1, n)))
+                2. * amrex::Math::abs(sp - s(i, j, domlo + 1, n))) {
                 sm = 3. * s(i, j, domlo + 1, n) - 2. * sp;
+            }
         }
     }
 
@@ -308,13 +313,14 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_zbc(
                 sm = s(i, j, domhi - 1, n);
             } else if (
                 amrex::Math::abs(sp - s(i, j, domhi - 1, n)) >=
-                2. * amrex::Math::abs(sm - s(i, j, domhi - 1, n)))
+                2. * amrex::Math::abs(sm - s(i, j, domhi - 1, n))) {
                 sp = 3. * s(i, j, domhi - 1, n) - 2. * sm;
 
-            else if (
+            } else if (
                 amrex::Math::abs(sm - s(i, j, domhi - 1, n)) >=
-                2. * amrex::Math::abs(sp - s(i, j, domhi - 1, n)))
+                2. * amrex::Math::abs(sp - s(i, j, domhi - 1, n))) {
                 sm = 3. * s(i, j, domhi - 1, n) - 2. * sp;
+            }
         }
     }
 }
@@ -373,13 +379,14 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_pred_x(
 
     } else if (
         amrex::Math::abs(sedge2 - S(i, j, k, n)) >=
-        2.0 * amrex::Math::abs(sedge1 - s0))
+        2.0 * amrex::Math::abs(sedge1 - s0)) {
         sp = 3.0 * s0 - 2.0 * sedge1;
 
-    else if (
+    } else if (
         amrex::Math::abs(sedge1 - S(i, j, k, n)) >=
-        2.0 * amrex::Math::abs(sedge2 - s0))
+        2.0 * amrex::Math::abs(sedge2 - s0)) {
         sm = 3.0 * s0 - 2.0 * sedge2;
+    }
 
     Godunov_ppm_xbc(
         i, j, k, n, sm, sp, sedge1, sedge2, S, bc.lo(0), bc.hi(0), domlo,
@@ -453,13 +460,14 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_pred_y(
 
     } else if (
         amrex::Math::abs(sedge2 - S(i, j, k, n)) >=
-        2.0 * amrex::Math::abs(sedge1 - s0))
+        2.0 * amrex::Math::abs(sedge1 - s0)) {
         sp = 3.0 * s0 - 2.0 * sedge1;
 
-    else if (
+    } else if (
         amrex::Math::abs(sedge1 - S(i, j, k, n)) >=
-        2.0 * amrex::Math::abs(sedge2 - s0))
+        2.0 * amrex::Math::abs(sedge2 - s0)) {
         sm = 3.0 * s0 - 2.0 * sedge2;
+    }
 
     Godunov_ppm_ybc(
         i, j, k, n, sm, sp, sedge1, sedge2, S, bc.lo(1), bc.hi(1), domlo,
@@ -533,13 +541,14 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_pred_z(
 
     } else if (
         amrex::Math::abs(sedge2 - S(i, j, k, n)) >=
-        2.0 * amrex::Math::abs(sedge1 - s0))
+        2.0 * amrex::Math::abs(sedge1 - s0)) {
         sp = 3.0 * s0 - 2.0 * sedge1;
 
-    else if (
+    } else if (
         amrex::Math::abs(sedge1 - S(i, j, k, n)) >=
-        2.0 * amrex::Math::abs(sedge2 - s0))
+        2.0 * amrex::Math::abs(sedge2 - s0)) {
         sm = 3.0 * s0 - 2.0 * sedge2;
+    }
 
     Godunov_ppm_zbc(
         i, j, k, n, sm, sp, sedge1, sedge2, S, bc.lo(2), bc.hi(2), domlo,
@@ -617,13 +626,14 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_fpu_x(
             sm = s0;
         } else if (
             amrex::Math::abs(sedge2 - S(i, j, k, n)) >=
-            2.0 * amrex::Math::abs(sedge1 - s0))
+            2.0 * amrex::Math::abs(sedge1 - s0)) {
             sp = 3.0 * s0 - 2.0 * sedge1;
 
-        else if (
+        } else if (
             amrex::Math::abs(sedge1 - S(i, j, k, n)) >=
-            2.0 * amrex::Math::abs(sedge2 - s0))
+            2.0 * amrex::Math::abs(sedge2 - s0)) {
             sm = 3.0 * s0 - 2.0 * sedge2;
+        }
 
         Godunov_ppm_xbc(
             i, j, k, n, sm, sp, sedge1, sedge2, S, bc.lo(0), bc.hi(0), domlo,
@@ -634,17 +644,19 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_fpu_x(
         Real sigmap = amrex::Math::abs(vel_edge(i + 1, j, k)) * dt / dx;
         Real sigmam = amrex::Math::abs(vel_edge(i, j, k)) * dt / dx;
 
-        if (vel_edge(i + 1, j, k) > small_vel)
+        if (vel_edge(i + 1, j, k) > small_vel) {
             Ip = sp - (0.5 * sigmap) *
                           ((sp - sm) - (1.e0 - 2.e0 / 3.e0 * sigmap) * s6);
-        else
+        } else {
             Ip = S(i, j, k, n);
+        }
 
-        if (vel_edge(i, j, k) < -small_vel)
+        if (vel_edge(i, j, k) < -small_vel) {
             Im = sm + (0.5 * sigmam) *
                           ((sp - sm) + (1.e0 - 2.e0 / 3.e0 * sigmam) * s6);
-        else
+        } else {
             Im = S(i, j, k, n);
+        }
     }
 }
 
@@ -699,13 +711,14 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_fpu_y(
             sm = s0;
         } else if (
             amrex::Math::abs(sedge2 - S(i, j, k, n)) >=
-            2.0 * amrex::Math::abs(sedge1 - s0))
+            2.0 * amrex::Math::abs(sedge1 - s0)) {
             sp = 3.0 * s0 - 2.0 * sedge1;
 
-        else if (
+        } else if (
             amrex::Math::abs(sedge1 - S(i, j, k, n)) >=
-            2.0 * amrex::Math::abs(sedge2 - s0))
+            2.0 * amrex::Math::abs(sedge2 - s0)) {
             sm = 3.0 * s0 - 2.0 * sedge2;
+        }
 
         Godunov_ppm_ybc(
             i, j, k, n, sm, sp, sedge1, sedge2, S, bc.lo(1), bc.hi(1), domlo,
@@ -716,17 +729,19 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_fpu_y(
         Real sigmap = amrex::Math::abs(vel_edge(i, j + 1, k)) * dt / dx;
         Real sigmam = amrex::Math::abs(vel_edge(i, j, k)) * dt / dx;
 
-        if (vel_edge(i, j + 1, k) > small_vel)
+        if (vel_edge(i, j + 1, k) > small_vel) {
             Ip = sp - (0.5 * sigmap) *
                           ((sp - sm) - (1.e0 - 2.e0 / 3.e0 * sigmap) * s6);
-        else
+        } else {
             Ip = S(i, j, k, n);
+        }
 
-        if (vel_edge(i, j, k) < -small_vel)
+        if (vel_edge(i, j, k) < -small_vel) {
             Im = sm + (0.5 * sigmam) *
                           ((sp - sm) + (1.e0 - 2.e0 / 3.e0 * sigmam) * s6);
-        else
+        } else {
             Im = S(i, j, k, n);
+        }
     }
 }
 
@@ -781,13 +796,14 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_fpu_z(
             sm = s0;
         } else if (
             amrex::Math::abs(sedge2 - S(i, j, k, n)) >=
-            2.0 * amrex::Math::abs(sedge1 - s0))
+            2.0 * amrex::Math::abs(sedge1 - s0)) {
             sp = 3.0 * s0 - 2.0 * sedge1;
 
-        else if (
+        } else if (
             amrex::Math::abs(sedge1 - S(i, j, k, n)) >=
-            2.0 * amrex::Math::abs(sedge2 - s0))
+            2.0 * amrex::Math::abs(sedge2 - s0)) {
             sm = 3.0 * s0 - 2.0 * sedge2;
+        }
 
         Godunov_ppm_zbc(
             i, j, k, n, sm, sp, sedge1, sedge2, S, bc.lo(2), bc.hi(2), domlo,
@@ -797,17 +813,19 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_fpu_z(
         Real sigmap = amrex::Math::abs(vel_edge(i, j, k + 1)) * dt / dx;
         Real sigmam = amrex::Math::abs(vel_edge(i, j, k)) * dt / dx;
 
-        if (vel_edge(i, j, k + 1) > small_vel)
+        if (vel_edge(i, j, k + 1) > small_vel) {
             Ip = sp - (0.5 * sigmap) *
                           ((sp - sm) - (1.e0 - 2.e0 / 3.e0 * sigmap) * s6);
-        else
+        } else {
             Ip = S(i, j, k, n);
+        }
 
-        if (vel_edge(i, j, k) < -small_vel)
+        if (vel_edge(i, j, k) < -small_vel) {
             Im = sm + (0.5 * sigmam) *
                           ((sp - sm) + (1.e0 - 2.e0 / 3.e0 * sigmam) * s6);
-        else
+        } else {
             Im = S(i, j, k, n);
+        }
     }
 }
 
@@ -842,10 +860,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_xbc(
 
         else if (
             bclo == BCType::foextrap || bclo == BCType::hoextrap ||
-            bclo == BCType::reflect_even)
+            bclo == BCType::reflect_even) {
             lo = hi;
 
-        else if (bclo == BCType::reflect_odd) {
+        } else if (bclo == BCType::reflect_odd) {
             hi = 0.;
             lo = 0.;
         }
@@ -864,10 +882,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_xbc(
 
         else if (
             bchi == BCType::foextrap || bchi == BCType::hoextrap ||
-            bchi == BCType::reflect_even)
+            bchi == BCType::reflect_even) {
             hi = lo;
 
-        else if (bchi == BCType::reflect_odd) {
+        } else if (bchi == BCType::reflect_odd) {
             hi = 0.;
             lo = 0.;
         }
@@ -905,10 +923,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_ybc(
 
         else if (
             bclo == BCType::foextrap || bclo == BCType::hoextrap ||
-            bclo == BCType::reflect_even)
+            bclo == BCType::reflect_even) {
             lo = hi;
 
-        else if (bclo == BCType::reflect_odd) {
+        } else if (bclo == BCType::reflect_odd) {
             hi = 0.;
             lo = 0.;
         }
@@ -927,10 +945,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_ybc(
 
         else if (
             bchi == BCType::foextrap || bchi == BCType::hoextrap ||
-            bchi == BCType::reflect_even)
+            bchi == BCType::reflect_even) {
             hi = lo;
 
-        else if (bchi == BCType::reflect_odd) {
+        } else if (bchi == BCType::reflect_odd) {
             hi = 0.;
             lo = 0.;
         }
@@ -968,10 +986,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_zbc(
 
         else if (
             bclo == BCType::foextrap || bclo == BCType::hoextrap ||
-            bclo == BCType::reflect_even)
+            bclo == BCType::reflect_even) {
             lo = hi;
 
-        else if (bclo == BCType::reflect_odd) {
+        } else if (bclo == BCType::reflect_odd) {
             hi = 0.;
             lo = 0.;
         }
@@ -988,10 +1006,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_zbc(
             hi = st;
         } else if (
             bchi == BCType::foextrap || bchi == BCType::hoextrap ||
-            bchi == BCType::reflect_even)
+            bchi == BCType::reflect_even) {
             hi = lo;
 
-        else if (bchi == BCType::reflect_odd) {
+        } else if (bchi == BCType::reflect_odd) {
             hi = 0.;
             lo = 0.;
         }
@@ -1019,15 +1037,16 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_xbc_lo(
         } else if (
             bclo == BCType::foextrap || bclo == BCType::hoextrap ||
             bclo == BCType::reflect_even ||
-            (bclo == BCType::ext_dir && uedge(i, j, k) < 0))
+            (bclo == BCType::ext_dir && uedge(i, j, k) < 0)) {
             lo = hi;
 
-        else if (bclo == BCType::reflect_odd) {
+        } else if (bclo == BCType::reflect_odd) {
             hi = 0.;
             lo = hi;
         }
-    } else
+    } else {
         return;
+    }
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_xbc_hi(
@@ -1051,15 +1070,16 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_xbc_hi(
         } else if (
             bchi == BCType::foextrap || bchi == BCType::hoextrap ||
             bchi == BCType::reflect_even ||
-            (bchi == BCType::ext_dir && uedge(i, j, k) > 0))
+            (bchi == BCType::ext_dir && uedge(i, j, k) > 0)) {
             hi = lo;
 
-        else if (bchi == BCType::reflect_odd) {
+        } else if (bchi == BCType::reflect_odd) {
             lo = 0.;
             hi = lo;
         }
-    } else
+    } else {
         return;
+    }
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_ybc_lo(
@@ -1083,15 +1103,16 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_ybc_lo(
         } else if (
             bclo == BCType::foextrap || bclo == BCType::hoextrap ||
             bclo == BCType::reflect_even ||
-            (bclo == BCType::ext_dir && vedge(i, j, k) < 0))
+            (bclo == BCType::ext_dir && vedge(i, j, k) < 0)) {
             lo = hi;
 
-        else if (bclo == BCType::reflect_odd) {
+        } else if (bclo == BCType::reflect_odd) {
             hi = 0.;
             lo = hi;
         }
-    } else
+    } else {
         return;
+    }
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_ybc_hi(
@@ -1115,15 +1136,16 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_ybc_hi(
         } else if (
             bchi == BCType::foextrap || bchi == BCType::hoextrap ||
             bchi == BCType::reflect_even ||
-            (bchi == BCType::ext_dir && vedge(i, j, k) > 0))
+            (bchi == BCType::ext_dir && vedge(i, j, k) > 0)) {
             hi = lo;
 
-        else if (bchi == BCType::reflect_odd) {
+        } else if (bchi == BCType::reflect_odd) {
             lo = 0.;
             hi = lo;
         }
-    } else
+    } else {
         return;
+    }
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_zbc_lo(
@@ -1149,15 +1171,16 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_zbc_lo(
         else if (
             bclo == BCType::foextrap || bclo == BCType::hoextrap ||
             bclo == BCType::reflect_even ||
-            (bclo == BCType::ext_dir && wedge(i, j, k) < 0))
+            (bclo == BCType::ext_dir && wedge(i, j, k) < 0)) {
             lo = hi;
 
-        else if (bclo == BCType::reflect_odd) {
+        } else if (bclo == BCType::reflect_odd) {
             hi = 0.;
             lo = hi;
         }
-    } else
+    } else {
         return;
+    }
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_zbc_hi(
@@ -1181,15 +1204,16 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_zbc_hi(
         } else if (
             bchi == BCType::foextrap || bchi == BCType::hoextrap ||
             bchi == BCType::reflect_even ||
-            (bchi == BCType::ext_dir && wedge(i, j, k) > 0))
+            (bchi == BCType::ext_dir && wedge(i, j, k) > 0)) {
             hi = lo;
 
-        else if (bchi == BCType::reflect_odd) {
+        } else if (bchi == BCType::reflect_odd) {
             lo = 0.;
             hi = lo;
         }
-    } else
+    } else {
         return;
+    }
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_corner_couple_yx(

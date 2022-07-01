@@ -15,7 +15,7 @@ class ConstTransport : public TransportModel
 public:
     static constexpr bool constant_properties = true;
 
-    static const std::string identifier() { return "ConstTransport"; }
+    static std::string identifier() { return "ConstTransport"; }
 
     explicit ConstTransport(CFDSim& sim) : m_repo(sim.repo())
     {
@@ -25,7 +25,7 @@ public:
         pp.query("turbulent_prandtl", m_Prt);
     }
 
-    virtual ~ConstTransport() = default;
+    ~ConstTransport() override = default;
 
     inline amrex::Real viscosity() const { return m_mu; }
 
@@ -35,7 +35,7 @@ public:
 
     inline amrex::Real turbulent_prandtl() const { return m_Prt; }
 
-    inline amrex::Real laminar_schmidt(const std::string& scalar_name) const
+    static inline amrex::Real laminar_schmidt(const std::string& scalar_name)
     {
         amrex::ParmParse pp("transport");
         const std::string key = scalar_name + "_laminar_schmidt";
@@ -44,7 +44,7 @@ public:
         return lam_schmidt;
     }
 
-    inline amrex::Real turbulent_schmidt(const std::string& scalar_name) const
+    static inline amrex::Real turbulent_schmidt(const std::string& scalar_name)
     {
         amrex::ParmParse pp("transport");
         const std::string key = scalar_name + "_turbulent_schmidt";

@@ -33,7 +33,7 @@ struct TurbulenceOp<TKE>
 template <>
 struct PostSolveOp<TKE>
 {
-    PostSolveOp(CFDSim&, PDEFields& fields) : m_fields(fields) {}
+    PostSolveOp(CFDSim& /*unused*/, PDEFields& fields) : m_fields(fields) {}
 
     void operator()(const amrex::Real time)
     {
@@ -148,7 +148,8 @@ struct DiffusionOp<TKE, Scheme> : public DiffSolverIface<typename TKE::MLDiffOp>
             this->m_pdefields.field.vec_ptrs());
     }
 
-    void set_acoeffs(typename TKE::MLDiffOp& linop, const FieldState fstate)
+    void
+    set_acoeffs(typename TKE::MLDiffOp& linop, const FieldState fstate) override
     {
         BL_PROFILE("amr-wind::pde::set_acoeffs");
         auto& repo = m_pdefields.repo;

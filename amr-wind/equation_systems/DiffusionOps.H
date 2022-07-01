@@ -52,7 +52,8 @@ public:
     void set_bcoeffs(
         L& linop,
         typename std::enable_if<
-            std::is_same<L, amrex::MLTensorOp>::value>::type* = 0)
+            std::is_same<L, amrex::MLTensorOp>::value>::type* /*unused*/
+        = nullptr)
     {
         const int nlevels = m_pdefields.repo.num_active_levels();
         const auto& viscosity = m_pdefields.mueff;
@@ -72,7 +73,8 @@ public:
     void set_bcoeffs(
         L& linop,
         typename std::enable_if<
-            std::is_same<L, amrex::MLABecLaplacian>::value>::type* = 0)
+            std::is_same<L, amrex::MLABecLaplacian>::value>::type* /*unused*/
+        = nullptr)
     {
         const int nlevels = m_pdefields.repo.num_active_levels();
         const auto& viscosity = m_pdefields.mueff;

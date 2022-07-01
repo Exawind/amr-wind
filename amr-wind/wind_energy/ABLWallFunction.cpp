@@ -215,7 +215,7 @@ void ABLVelWallFunc::wall_model(
     BL_PROFILE("amr-wind::ABLVelWallFunc");
 
     constexpr int idim = 2;
-    auto& repo = velocity.repo();
+    const auto& repo = velocity.repo();
     const auto& density = repo.get_field("density", rho_state);
     const auto& viscosity = repo.get_field("velocity_mueff");
     const int nlevels = repo.num_active_levels();
@@ -244,7 +244,7 @@ void ABLVelWallFunc::wall_model(
         if (amrex::Gpu::notInLaunchRegion()) {
             mfi_info.SetDynamic(true);
         }
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
         for (amrex::MFIter mfi(vel_lev, mfi_info); mfi.isValid(); ++mfi) {
@@ -379,7 +379,7 @@ void ABLTempWallFunc::wall_model(
         if (amrex::Gpu::notInLaunchRegion()) {
             mfi_info.SetDynamic(true);
         }
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
         for (amrex::MFIter mfi(theta, mfi_info); mfi.isValid(); ++mfi) {

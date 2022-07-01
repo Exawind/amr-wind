@@ -164,7 +164,10 @@ void ABLFieldInit::operator()(
 }
 
 void ABLFieldInit::perturb_temperature(
-    const int lev, const amrex::Geometry& geom, Field& temperature) const
+    const int lev,
+    const amrex::Geometry& geom,
+    // cppcheck-suppress constParameter
+    Field& temperature) const
 {
     /** Perturbations for the temperature field is adapted from the following
      * paper:
@@ -186,7 +189,7 @@ void ABLFieldInit::perturb_temperature(
     Field const* nu_coord_cc =
         m_mesh_mapping ? &(m_repo.get_field("non_uniform_coord_cc")) : nullptr;
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
     for (amrex::MFIter mfi(theta_fab, amrex::TilingIfNotGPU()); mfi.isValid();

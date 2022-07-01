@@ -40,7 +40,7 @@ temperature, to do that use "temperature_diffusion" as your prefix.
 
    **type:** Integer, optional, default = 200
 
-   Sets the max number of multigrid iterations. If :input_param:`do_fixed_iters`
+   Sets the max number of multigrid iterations. If :input_param:`diffusion.do_fixed_iters`
    is set to True, then AMReX will not abort if specified tolerance is not met
    after max iterations, otherwise it will abort.
 

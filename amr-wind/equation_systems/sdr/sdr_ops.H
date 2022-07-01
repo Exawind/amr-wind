@@ -33,7 +33,7 @@ struct TurbulenceOp<SDR>
 template <>
 struct PostSolveOp<SDR>
 {
-    PostSolveOp(CFDSim&, PDEFields& fields) : m_fields(fields) {}
+    PostSolveOp(CFDSim& /*unused*/, PDEFields& fields) : m_fields(fields) {}
 
     void operator()(const amrex::Real time)
     {
@@ -113,7 +113,8 @@ struct DiffusionOp<SDR, Scheme> : public DiffSolverIface<typename SDR::MLDiffOp>
             this->m_pdefields.field.vec_ptrs());
     }
 
-    void set_acoeffs(typename SDR::MLDiffOp& linop, const FieldState fstate)
+    void
+    set_acoeffs(typename SDR::MLDiffOp& linop, const FieldState fstate) override
     {
         BL_PROFILE("amr-wind::pde::set_acoeffs");
         auto& repo = m_pdefields.repo;

@@ -104,7 +104,7 @@ public:
         m_src_op(fstate, m_sim.has_mesh_mapping());
     }
 
-    void compute_mueff(const FieldState) override
+    void compute_mueff(const FieldState /*unused*/) override
     {
         if (PDE::has_diffusion) {
             BL_PROFILE("amr-wind::" + this->identifier() + "::compute_mueff");
@@ -129,14 +129,14 @@ public:
         (*m_adv_op)(fstate, m_time.deltaT());
     }
 
-    virtual void pre_advection_actions(const FieldState fstate) override
+    void pre_advection_actions(const FieldState fstate) override
     {
         BL_PROFILE(
             "amr-wind::" + this->identifier() + "::pre_advection_actions");
         m_adv_op->preadvect(fstate, m_time.deltaT());
     }
 
-    virtual void compute_predictor_rhs(const DiffusionType difftype) override
+    void compute_predictor_rhs(const DiffusionType difftype) override
     {
         BL_PROFILE(
             "amr-wind::" + this->identifier() + "::compute_predictor_rhs");
@@ -144,7 +144,7 @@ public:
             difftype, m_time.deltaT(), m_sim.has_mesh_mapping());
     }
 
-    virtual void compute_corrector_rhs(const DiffusionType difftype) override
+    void compute_corrector_rhs(const DiffusionType difftype) override
     {
         BL_PROFILE(
             "amr-wind::" + this->identifier() + "::compute_corrector_rhs");

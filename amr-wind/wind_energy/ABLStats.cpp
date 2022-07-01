@@ -15,7 +15,9 @@ namespace amr_wind {
 namespace {
 struct TemperatureGradient
 {
+    // cppcheck-suppress unusedStructMember
     double grad_z;
+    // cppcheck-suppress unusedStructMember
     double max_grad_loc;
 };
 } // namespace

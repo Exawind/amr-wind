@@ -28,7 +28,9 @@ struct Curvature
 
         const auto& bx_in = mfi.tilebox();
         const auto& bx = Stencil::box(bx_in, geom);
-        if (bx.isEmpty()) return;
+        if (bx.isEmpty()) {
+            return;
+        }
 
         amrex::ParallelFor(
             bx, m_phi.num_comp(),

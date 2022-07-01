@@ -16,11 +16,11 @@ class RainDrop : public Physics::Register<RainDrop>
     static_assert(AMREX_SPACEDIM == 3, "RainDrop requires 3 dimensional mesh");
 
 public:
-    static const std::string identifier() { return "RainDrop"; }
+    static std::string identifier() { return "RainDrop"; }
 
     explicit RainDrop(CFDSim& sim);
 
-    virtual ~RainDrop() = default;
+    ~RainDrop() override = default;
 
     //! Initialize the levelset and velocity fields for Rain Drop simulations
 

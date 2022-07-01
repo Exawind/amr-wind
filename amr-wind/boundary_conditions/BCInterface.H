@@ -85,8 +85,8 @@ public:
     explicit BCVelocity(Field& field) : BCIface(field) {}
 
 protected:
-    virtual void set_bcrec() override;
-    virtual void read_values() override;
+    void set_bcrec() override;
+    void read_values() override;
 };
 
 /** Boundary condition initialization for scalar transport variables
@@ -99,8 +99,8 @@ public:
     virtual void update_bcvalue(const amrex::Real value);
 
 protected:
-    virtual void set_bcrec() override;
-    virtual void read_values() override;
+    void set_bcrec() override;
+    void read_values() override;
 };
 
 /** Specialization of BC initialization for pressure
@@ -114,7 +114,7 @@ public:
     explicit BCPressure(Field& field) : BCScalar(field) {}
 
 protected:
-    virtual void read_values() override;
+    void read_values() override;
 };
 
 /** Specialization for source terms
@@ -129,8 +129,8 @@ public:
     explicit BCSrcTerm(Field& field) : BCIface(field) {}
 
 protected:
-    virtual void set_bcrec() override;
-    virtual void read_values() override
+    void set_bcrec() override;
+    void read_values() override
     {
         // No values specified for source terms. empty method to satisfy
         // inheritance
@@ -154,8 +154,8 @@ public:
     {}
 
 protected:
-    virtual void set_bcrec() override;
-    virtual void read_values() override
+    void set_bcrec() override;
+    void read_values() override
     {
         // No values specified for source terms. empty method to satisfy
         // inheritance

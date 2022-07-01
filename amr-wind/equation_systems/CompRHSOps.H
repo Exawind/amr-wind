@@ -76,7 +76,7 @@ struct ComputeRHSOp
                          : nullptr;
 
         for (int lev = 0; lev < nlevels; ++lev) {
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
@@ -195,7 +195,7 @@ struct ComputeRHSOp
                          : nullptr;
 
         for (int lev = 0; lev < nlevels; ++lev) {
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {

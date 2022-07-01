@@ -134,7 +134,7 @@ void fixup_eta_on_domain_faces(
     if (Gpu::notInLaunchRegion()) {
         mfi_info.SetDynamic(true);
     }
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
     for (MFIter mfi(cc, mfi_info); mfi.isValid(); ++mfi) {

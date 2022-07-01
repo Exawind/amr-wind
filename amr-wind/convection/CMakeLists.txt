@@ -5,7 +5,6 @@ target_sources(${amr_wind_lib_name}
       incflo_godunov_ppm.cpp
       incflo_godunov_plm.cpp
       incflo_godunov_predict.cpp
-      incflo_mol_predict.cpp
       incflo_godunov_advection.cpp
       incflo_mol_fluxes.cpp
    )

@@ -17,6 +17,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    // cppcheck-suppress knownConditionTrueFalse
     if (argc >= 2) {
         // Look for "-h" or "--help" flag and print usage
         for (auto i = 1; i < argc; i++) {

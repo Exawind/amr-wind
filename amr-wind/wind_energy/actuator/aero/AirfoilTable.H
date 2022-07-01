@@ -66,14 +66,13 @@ public:
     load_text_file(const std::string& af_file);
 
     template <typename IStream>
-    static std::unique_ptr<AirfoilTable> load_text_file(IStream& af_file);
+    static std::unique_ptr<AirfoilTable> load_text_file(IStream& affile);
 
     static std::unique_ptr<AirfoilTable>
     load_openfast_airfoil(const std::string& af_file);
 
     template <typename IStream>
-    static std::unique_ptr<AirfoilTable>
-    load_openfast_airfoil(IStream& af_file);
+    static std::unique_ptr<AirfoilTable> load_openfast_airfoil(IStream& affile);
 };
 
 template <typename T>

@@ -64,6 +64,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
     const auto& den = this->m_rho.state(fstate);
     const auto& tke = (*this->m_tke).state(fstate);
     const auto& sdr = (*this->m_sdr).state(fstate);
+    // cppcheck-suppress constVariable
     auto& repo = mu_turb.repo();
 
     const bool mesh_mapping = this->m_sim.has_mesh_mapping();
@@ -95,6 +96,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
 
     auto& tke_lhs = (this->m_sim).repo().get_field("tke_lhs_src_term");
     tke_lhs.setVal(0.0);
+    // cppcheck-suppress constVariable
     auto& sdr_lhs = (this->m_sim).repo().get_field("sdr_lhs_src_term");
 
     const amrex::Real deltaT = (this->m_sim).time().deltaT();

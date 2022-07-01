@@ -36,7 +36,7 @@ public:
 
     RefinementCriteria() = default;
 
-    virtual ~RefinementCriteria() = default;
+    ~RefinementCriteria() override = default;
 
     //! Perform initialization tasks (e.g., read from file etc.). Called before
     //! mesh is initialized

@@ -24,12 +24,12 @@ public:
 
     explicit GradientMagRefinement(const CFDSim& sim);
 
-    virtual ~GradientMagRefinement() = default;
+    ~GradientMagRefinement() override = default;
 
     //! Read input file and initialize boxarray used to refine each level
-    virtual void initialize(const std::string& key) override;
+    void initialize(const std::string& key) override;
 
-    virtual void
+    void
     operator()(int level, amrex::TagBoxArray& tags, amrex::Real time, int ngrow)
         override;
 

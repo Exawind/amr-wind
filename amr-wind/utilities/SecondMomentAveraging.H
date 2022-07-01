@@ -27,7 +27,7 @@ class SecondMomentAveraging
 public:
     SecondMomentAveraging(FieldPlaneAveraging& pa1, FieldPlaneAveraging& pa2);
 
-    ~SecondMomentAveraging(){};
+    ~SecondMomentAveraging() = default;
 
     void operator()();
 
@@ -47,8 +47,8 @@ public:
     };
     void line_moment(int comp, amrex::Vector<amrex::Real>& l_vec);
 
-    void
-    output_line_average_ascii(std::string filename, int step, amrex::Real time);
+    void output_line_average_ascii(
+        const std::string& filename, int step, amrex::Real time);
     void output_line_average_ascii(int step, amrex::Real time);
 
     /** change precision of text file output */

@@ -17,11 +17,11 @@ namespace enstrophy {
 class Enstrophy : public PostProcessBase::Register<Enstrophy>
 {
 public:
-    static const std::string identifier() { return "Enstrophy"; }
+    static std::string identifier() { return "Enstrophy"; }
 
-    Enstrophy(CFDSim&, std::string);
+    Enstrophy(CFDSim& /*sim*/, std::string /*label*/);
 
-    ~Enstrophy();
+    ~Enstrophy() override;
 
     //! Perform actions before mesh is created
     void pre_init_actions() override {}

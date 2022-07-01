@@ -22,12 +22,12 @@ class BoxRefiner : public GeometryType::Register<BoxRefiner>
 public:
     static std::string identifier() { return "box"; }
 
-    BoxRefiner(const CFDSim&, const std::string& key);
+    BoxRefiner(const CFDSim& /*unused*/, const std::string& key);
 
-    virtual ~BoxRefiner() = default;
+    ~BoxRefiner() override = default;
 
     void operator()(
-        const amrex::Box&,
+        const amrex::Box& /*bx*/,
         const amrex::Geometry& geom,
         const amrex::Array4<amrex::TagBox::TagType>& tags) const override;
 

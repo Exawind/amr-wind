@@ -81,44 +81,46 @@ public:
 class FieldFillConstScalar : public FieldFillPatchOpsBase
 {
 public:
-    FieldFillConstScalar(Field&, amrex::Real fill_val) : m_fill_val(fill_val) {}
+    FieldFillConstScalar(Field& /*unused*/, amrex::Real fill_val)
+        : m_fill_val(fill_val)
+    {}
 
     void fillpatch(
-        int,
-        amrex::Real,
+        int /*lev*/,
+        amrex::Real /*time*/,
         amrex::MultiFab& mfab,
-        const amrex::IntVect&,
-        const FieldState) override
+        const amrex::IntVect& /*nghost*/,
+        const FieldState /*fstate*/) override
     {
         mfab.setVal(m_fill_val);
     }
 
     void fillpatch_from_coarse(
-        int,
-        amrex::Real,
+        int /*lev*/,
+        amrex::Real /*time*/,
         amrex::MultiFab& mfab,
-        const amrex::IntVect&,
-        const FieldState) override
+        const amrex::IntVect& /*nghost*/,
+        const FieldState /*fstate*/) override
     {
         mfab.setVal(m_fill_val);
     }
 
     void fillphysbc(
-        int,
-        amrex::Real,
+        int /*lev*/,
+        amrex::Real /*time*/,
         amrex::MultiFab& mfab,
-        const amrex::IntVect&,
-        const FieldState) override
+        const amrex::IntVect& /*nghost*/,
+        const FieldState /*fstate*/) override
     {
         mfab.setVal(m_fill_val);
     }
 
     void set_inflow(
-        int,
-        amrex::Real,
-        amrex::MultiFab&,
-        const amrex::IntVect&,
-        const FieldState) override
+        int /*lev*/,
+        amrex::Real /*time*/,
+        amrex::MultiFab& /*mfab*/,
+        const amrex::IntVect& /*nghost*/,
+        const FieldState /*fstate*/) override
     {
         amrex::Abort("FieldFillConstScalar::set_inflow is not implemented");
     }
@@ -291,7 +293,7 @@ public:
         amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost,
-        const FieldState) override
+        const FieldState /*fstate*/) override
     {
         amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> physbc(
             m_mesh.Geom(lev), m_field.bcrec(), bc_functor());
@@ -303,7 +305,7 @@ public:
         amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost,
-        const FieldState) override
+        const FieldState /*fstate*/) override
     {
         const int ng = nghost[0];
         const auto& bctype = m_field.bc_type();
@@ -313,9 +315,11 @@ public:
         const auto& bcfunc = bc_functor();
         const auto& ncomp = m_field.num_comp();
 
-        for (amrex::OrientationIter oit; oit; ++oit) {
+        for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
             auto ori = oit();
-            if (bctype[ori] != BC::mass_inflow) continue;
+            if (bctype[ori] != BC::mass_inflow) {
+                continue;
+            }
 
             const int idir = ori.coordDir();
             const auto& dbx =
@@ -325,15 +329,18 @@ public:
             for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
                 const auto& gbx = amrex::grow(mfi.validbox(), nghost);
                 const auto& bx = gbx & dbx;
-                if (!bx.ok()) continue;
+                if (!bx.ok()) {
+                    continue;
+                }
 
                 const auto& marr = mfab[mfi].array();
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(
                             const int i, const int j, const int k) noexcept {
-                        for (int n = 0; n < ncomp; ++n)
+                        for (int n = 0; n < ncomp; ++n) {
                             bcfunc.set_inflow(
                                 {i, j, k}, marr, gdata, time, ori, n);
+                        }
                     });
             }
         }

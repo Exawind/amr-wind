@@ -17,11 +17,11 @@ class VortexPatch : public Physics::Register<VortexPatch>
         AMREX_SPACEDIM == 3, "VortexPatch requires 3 dimensional mesh");
 
 public:
-    static const std::string identifier() { return "VortexPatch"; }
+    static std::string identifier() { return "VortexPatch"; }
 
     explicit VortexPatch(CFDSim& sim);
 
-    virtual ~VortexPatch() = default;
+    ~VortexPatch() override = default;
 
     //! Initialize the levelset and velocity fields for Vortex Patch simulations
 

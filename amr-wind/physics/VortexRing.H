@@ -12,11 +12,11 @@ namespace amr_wind {
 class VortexRing : public Physics::Register<VortexRing>
 {
 public:
-    static const std::string identifier() { return "VortexRing"; }
+    static std::string identifier() { return "VortexRing"; }
 
     explicit VortexRing(const CFDSim& sim);
 
-    virtual ~VortexRing() = default;
+    ~VortexRing() override = default;
 
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 
@@ -56,35 +56,35 @@ private:
 struct FatCore
 {
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const int,
-        const int*,
-        const amrex::Real*,
-        const amrex::Real*) const;
+        const amrex::Real /*r*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*z*/,
+        const amrex::Real /*R*/,
+        const amrex::Real /*Gamma*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/,
+        const int /*unused*/,
+        const int* /*unused*/,
+        const amrex::Real* /*unused*/,
+        const amrex::Real* /*unused*/) const;
 };
 
 struct CollidingRings
 {
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const amrex::Real,
-        const int,
-        const int*,
-        const amrex::Real*,
-        const amrex::Real*) const;
+        const amrex::Real /*r*/,
+        const amrex::Real /*theta*/,
+        const amrex::Real /*z*/,
+        const amrex::Real /*R*/,
+        const amrex::Real /*Gamma*/,
+        const amrex::Real /*delta*/,
+        const amrex::Real /*dz*/,
+        const amrex::Real /*perturbation_amplitude*/,
+        const int /*num_modes*/,
+        const int* /*perturbation_modes*/,
+        const amrex::Real* /*perturbation_phases_1*/,
+        const amrex::Real* /*perturbation_phases_2*/) const;
 };
 
 } // namespace amr_wind

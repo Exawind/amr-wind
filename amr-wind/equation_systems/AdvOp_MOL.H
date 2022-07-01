@@ -36,15 +36,15 @@ struct AdvectionOp<
         , w_mac(fields_in.repo.get_field("w_mac"))
     {}
 
-    void preadvect(const FieldState, const amrex::Real) {}
+    void preadvect(const FieldState /*unused*/, const amrex::Real /*unused*/) {}
 
-    void operator()(const FieldState fstate, const amrex::Real)
+    void operator()(const FieldState fstate, const amrex::Real /*unused*/)
     {
         static_assert(
             PDE::ndim == 1, "Invalid number of components for scalar");
 
-        auto& repo = fields.repo;
-        auto& geom = repo.mesh().Geom();
+        const auto& repo = fields.repo;
+        const auto& geom = repo.mesh().Geom();
 
         // cppcheck-suppress constVariable
         auto& conv_term = fields.conv_term.state(fstate);
@@ -55,10 +55,11 @@ struct AdvectionOp<
             amrex::MFItInfo mfi_info;
             // if (amrex::Gpu::notInLaunchRegion())
             // mfi_info.EnableTiling(amrex::IntVect(1024,16,16)).SetDynamic(true);
-            if (amrex::Gpu::notInLaunchRegion())
+            if (amrex::Gpu::notInLaunchRegion()) {
                 mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
                     .SetDynamic(true);
-#ifdef _OPENMP
+            }
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (amrex::MFIter mfi(density(lev), mfi_info); mfi.isValid();

@@ -100,7 +100,7 @@ struct SrcTermOpBase
         const int nlevels = fields.repo.num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {
             auto& src_term = fields.src_term(lev);
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (amrex::MFIter mfi(src_term, amrex::TilingIfNotGPU());
@@ -125,12 +125,14 @@ struct SrcTermOpBase
         this->fields.src_term.setVal(0.0);
 
         // Return early if there are no source terms to process
-        if (this->sources.size() == 0) return;
+        if (this->sources.empty()) {
+            return;
+        }
 
         const int nlevels = this->fields.repo.num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {
             auto& src_term = this->fields.src_term(lev);
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (amrex::MFIter mfi(src_term, amrex::TilingIfNotGPU());
@@ -144,7 +146,9 @@ struct SrcTermOpBase
             }
         }
 
-        if (PDE::multiply_rho) this->multiply_rho(fstate);
+        if (PDE::multiply_rho) {
+            this->multiply_rho(fstate);
+        }
     }
 
     PDEFields& fields;

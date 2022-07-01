@@ -28,8 +28,6 @@ incflo::incflo()
     ReadParameters();
 
     init_physics_and_pde();
-
-    set_background_pressure();
 }
 
 incflo::~incflo() = default;

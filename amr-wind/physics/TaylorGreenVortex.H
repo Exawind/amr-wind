@@ -12,11 +12,11 @@ namespace amr_wind {
 class TaylorGreenVortex : public Physics::Register<TaylorGreenVortex>
 {
 public:
-    static const std::string identifier() { return "TaylorGreenVortex"; }
+    static std::string identifier() { return "TaylorGreenVortex"; }
 
     explicit TaylorGreenVortex(const CFDSim& sim);
 
-    virtual ~TaylorGreenVortex() = default;
+    ~TaylorGreenVortex() override = default;
     //! Initialize the temperature and velocity fields for BoussinesqBubble
     //! simulations
     void initialize_fields(int level, const amrex::Geometry& geom) override;

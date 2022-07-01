@@ -23,19 +23,19 @@ public:
 
     explicit CartBoxRefinement(CFDSim& sim);
 
-    virtual ~CartBoxRefinement() = default;
+    ~CartBoxRefinement() override = default;
 
     //! Read input file and initialize boxarray used to refine each level
-    virtual void initialize(const std::string& key) override;
+    void initialize(const std::string& key) override;
 
-    virtual void
+    void
     operator()(int level, amrex::TagBoxArray& tags, amrex::Real time, int ngrow)
         override;
 
     //! Helper function to process inputs
     //!
     //! Created separate from initialize to allow unit testing
-    void read_inputs(const amrex::AmrCore&, std::istream&);
+    void read_inputs(const amrex::AmrCore& /*mesh*/, std::istream& /*ifh*/);
 
     //! Vector of boxarrays that define refinement zones at each level
     const amrex::Vector<amrex::BoxArray>& boxarray_vec() const

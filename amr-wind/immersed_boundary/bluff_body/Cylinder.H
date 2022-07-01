@@ -19,7 +19,7 @@ struct Cylinder : public BluffBodyType
     using MetaType = CylinderData;
     using DataType = IBDataHolder<Cylinder>;
 
-    static const std::string identifier() { return "Cylinder"; }
+    static std::string identifier() { return "Cylinder"; }
 };
 
 } // namespace ib

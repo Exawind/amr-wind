@@ -7,6 +7,7 @@
 
 #include "AMReX_MultiFabUtil.H"
 #include "hydro_MacProjector.H"
+#include "hydro_mol.H"
 
 namespace amr_wind {
 namespace pde {
@@ -17,22 +18,26 @@ public:
     using FaceFabPtrVec =
         amrex::Vector<amrex::Array<const amrex::MultiFab*, ICNS::ndim>>;
 
-    MacProjOp(FieldRepo&, bool, bool, bool);
+    MacProjOp(
+        FieldRepo& /*repo*/,
+        bool /*has_overset*/,
+        bool /*variable_density*/,
+        bool /*mesh_mapping*/);
 
     void operator()(const FieldState fstate, const amrex::Real dt);
 
     static void mac_proj_to_uniform_space(
-        const amr_wind::FieldRepo&,
-        amr_wind::Field&,
-        amr_wind::Field&,
-        amr_wind::Field&,
-        amrex::Array<amrex::MultiFab*, ICNS::ndim>&,
-        amrex::Real,
-        int) noexcept;
+        const amr_wind::FieldRepo& /*repo*/,
+        amr_wind::Field& /*u_mac*/,
+        amr_wind::Field& /*v_mac*/,
+        amr_wind::Field& /*w_mac*/,
+        amrex::Array<amrex::MultiFab*, ICNS::ndim>& /*rho_face*/,
+        amrex::Real /*ovst_fac*/,
+        int /*lev*/) noexcept;
 
 private:
-    void init_projector(const FaceFabPtrVec&) noexcept;
-    void init_projector(const amrex::Real) noexcept;
+    void init_projector(const FaceFabPtrVec& /*beta*/) noexcept;
+    void init_projector(const amrex::Real /*beta*/) noexcept;
 
     FieldRepo& m_repo;
     std::unique_ptr<Hydro::MacProjector> m_mac_proj;
@@ -64,10 +69,11 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
         amrex::ParmParse pp("incflo");
         pp.query("godunov_type", godunov_type);
-        if (pp.contains("use_ppm") || pp.contains("use_limiter"))
+        if (pp.contains("use_ppm") || pp.contains("use_limiter")) {
             amrex::Abort(
                 "Godunov: use_ppm and use_limiter are deprecated. Please "
                 "update input file");
+        }
 
         if (amrex::toLower(godunov_type) == "plm") {
             godunov_scheme = godunov::scheme::PLM;
@@ -89,14 +95,16 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             godunov_scheme = godunov::scheme::PPM;
         }
 
-        // TODO: Need iconserv flag to be adjusted???
-        iconserv.resize(ICNS::ndim, 0);
+        // Formulation of discrete ICNS equation
+        // 1 = conservative (default), 0 = nonconservative
+        pp.query("icns_conserv", m_cons);
+        iconserv.resize(ICNS::ndim, m_cons);
     }
 
     void preadvect(const FieldState fstate, const amrex::Real dt)
     {
 
-        auto& repo = fields.repo;
+        const auto& repo = fields.repo;
         const auto& geom = repo.mesh().Geom();
 
         const auto& src_term = fields.src_term;
@@ -113,7 +121,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         // Predict
         //
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             {
@@ -256,7 +264,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         const auto& src_term = fields.src_term;
         // cppcheck-suppress constVariable
         auto& conv_term = fields.conv_term;
-        auto& dof_field = fields.field.state(fstate);
+        const auto& dof_field = fields.field.state(fstate);
 
         auto flux_x =
             repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::XFACE);
@@ -271,10 +279,11 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
 
             amrex::MFItInfo mfi_info;
-            if (amrex::Gpu::notInLaunchRegion())
+            if (amrex::Gpu::notInLaunchRegion()) {
                 mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
                     .SetDynamic(true);
-#ifdef _OPENMP
+            }
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
@@ -315,7 +324,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (amrex::MFIter mfi(dof_field(lev), amrex::TilingIfNotGPU());
@@ -343,6 +352,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     godunov::scheme godunov_scheme = godunov::scheme::PPM;
     std::string godunov_type;
     bool godunov_use_forces_in_trans{false};
+    int m_cons{1};
 };
 
 /** MOL scheme for ICNS
@@ -368,8 +378,8 @@ struct AdvectionOp<ICNS, fvm::MOL>
     void preadvect(const FieldState fstate, const amrex::Real dt)
     {
 
+        // cppcheck-suppress constVariable
         auto& repo = fields.repo;
-        const auto& geom = repo.mesh().Geom();
         auto& dof_field = fields.field.state(fstate);
 
         // computation of velocity on faces requires
@@ -383,35 +393,24 @@ struct AdvectionOp<ICNS, fvm::MOL>
         //
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             {
-                for (amrex::MFIter mfi(dof_field(lev), amrex::TilingIfNotGPU());
-                     mfi.isValid(); ++mfi) {
-                    amrex::Box const& ubx = mfi.nodaltilebox(0);
-                    amrex::Box const& vbx = mfi.nodaltilebox(1);
-                    amrex::Box const& wbx = mfi.nodaltilebox(2);
-                    amrex::Array4<amrex::Real> const& u = u_mac(lev).array(mfi);
-                    amrex::Array4<amrex::Real> const& v = v_mac(lev).array(mfi);
-                    amrex::Array4<amrex::Real> const& w = w_mac(lev).array(mfi);
-                    amrex::Array4<amrex::Real const> const& vcc =
-                        dof_field(lev).const_array(mfi);
-
-                    mol::predict_vels_on_faces(
-                        lev, ubx, vbx, wbx, u, v, w, vcc, dof_field.bcrec(),
-                        dof_field.bcrec_device().data(), geom);
-                }
+                MOL::ExtrapVelToFaces(
+                    dof_field(lev), u_mac(lev), v_mac(lev), w_mac(lev),
+                    repo.mesh().Geom(lev), dof_field.bcrec(),
+                    dof_field.bcrec_device().data());
             }
         }
 
         m_macproj_op(fstate, dt);
     }
 
-    void operator()(const FieldState fstate, const amrex::Real)
+    void operator()(const FieldState fstate, const amrex::Real /*unused*/)
     {
 
-        auto& repo = fields.repo;
+        const auto& repo = fields.repo;
         const auto& geom = repo.mesh().Geom();
         // cppcheck-suppress constVariable
         auto& conv_term = fields.conv_term.state(fstate);
@@ -426,10 +425,11 @@ struct AdvectionOp<ICNS, fvm::MOL>
             amrex::MFItInfo mfi_info;
             // if (amrex::Gpu::notInLaunchRegion())
             // mfi_info.EnableTiling(amrex::IntVect(1024,16,16)).SetDynamic(true);
-            if (amrex::Gpu::notInLaunchRegion())
+            if (amrex::Gpu::notInLaunchRegion()) {
                 mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
                     .SetDynamic(true);
-#ifdef _OPENMP
+            }
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
