@@ -22,9 +22,11 @@ ABLForcing::ABLForcing(const CFDSim& sim) : m_time(sim.time())
     pp_incflo.getarr("velocity", m_target_vel);
 
     if (sim.has_mesh_mapping()) {
-      amrex::Print()<<"Mapping abl_forcing_height from "<<m_forcing_height;
-      m_forcing_height = sim.mesh_mapping()->interp_nonunif_to_unif(m_forcing_height, 2);
-      amrex::Print()<<" to "<<m_forcing_height<<std::endl;
+        amrex::Print() << "Mapping abl_forcing_height from "
+                       << m_forcing_height;
+        m_forcing_height =
+            sim.mesh_mapping()->interp_nonunif_to_unif(m_forcing_height, 2);
+        amrex::Print() << " to " << m_forcing_height << std::endl;
     }
 
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {

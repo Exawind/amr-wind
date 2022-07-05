@@ -16,7 +16,6 @@
 //#include "amr-wind/boundary_conditions/velocity_bcs.H"
 #include "amr-wind/wind_energy/ShearStress.H"
 
-
 namespace amr_wind {
 
 ABL::ABL(CFDSim& sim)
@@ -152,34 +151,33 @@ void ABL::pre_advance_work()
 
     if (m_sim.repo().field_exists("tke")) {
         auto& tke = m_sim.repo().get_field("tke");
-	if (tke.bc_type()[zlo] == BC::rans_wall_model ||
-	    tke.bc_type()[zhi] == BC::rans_wall_model) {
+        if (tke.bc_type()[zlo] == BC::rans_wall_model ||
+            tke.bc_type()[zhi] == BC::rans_wall_model) {
 
-	    const auto& mo = m_abl_wall_func.mo();
-	    amrex::Real Cmu = m_abl_wall_func.Cmu();
-	    auto tau = ShearStressAlinot(mo, Cmu);
-	  
-	    const amrex::Real tke_default = tau.calc_tke(); 
-	    BCScalar bc_tke(tke);
-	    bc_tke.update_bcvalue(tke_default);
-	}
+            const auto& mo = m_abl_wall_func.mo();
+            amrex::Real Cmu = m_abl_wall_func.Cmu();
+            auto tau = ShearStressAlinot(mo, Cmu);
+
+            const amrex::Real tke_default = tau.calc_tke();
+            BCScalar bc_tke(tke);
+            bc_tke.update_bcvalue(tke_default);
+        }
     }
 
     if (m_sim.repo().field_exists("sdr")) {
         auto& sdr = m_sim.repo().get_field("sdr");
-	if (sdr.bc_type()[zlo] == BC::rans_wall_model ||
-	    sdr.bc_type()[zhi] == BC::rans_wall_model) {
+        if (sdr.bc_type()[zlo] == BC::rans_wall_model ||
+            sdr.bc_type()[zhi] == BC::rans_wall_model) {
 
-	    const auto& mo = m_abl_wall_func.mo();
-	    amrex::Real Cmu = m_abl_wall_func.Cmu();
-	    auto tau = ShearStressAlinot(mo, Cmu);
+            const auto& mo = m_abl_wall_func.mo();
+            amrex::Real Cmu = m_abl_wall_func.Cmu();
+            auto tau = ShearStressAlinot(mo, Cmu);
 
-	    const amrex::Real sdr_default = tau.calc_omega(); 
-	    BCScalar bc_sdr(sdr);
-	    bc_sdr.update_bcvalue(sdr_default);
-	}
+            const amrex::Real sdr_default = tau.calc_omega();
+            BCScalar bc_sdr(sdr);
+            bc_sdr.update_bcvalue(sdr_default);
+        }
     }
-
 
     if (m_abl_forcing != nullptr) {
         const amrex::Real zh = m_abl_forcing->forcing_height();
