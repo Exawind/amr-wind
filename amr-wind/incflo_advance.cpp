@@ -599,8 +599,6 @@ void incflo::ApplyPrescribeStep()
     const auto& density_old = density_new.state(amr_wind::FieldState::Old);
     auto& density_nph = density_new.state(amr_wind::FieldState::NPH);
 
-
-
     // *************************************************************************************
     // Compute viscosity / diffusive coefficients
     // *************************************************************************************
