@@ -19,9 +19,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_fac(
 {
     // This is the derivative of eval_coord() below
     return (sratio == 1.0)
-                ? 1.0
-                : -delta0/sratio/(1.0-sratio)*
-                  std::log(sratio)*std::pow(sratio, (x-prob_lo)+1.0); 
+               ? 1.0
+               : -delta0 / sratio / (1.0 - sratio) * std::log(sratio) *
+                     std::pow(sratio, (x - prob_lo) + 1.0);
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_coord(
@@ -33,12 +33,11 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_coord(
 {
     // TODO: switch to constant cell spacing after some height?
     return (sratio == 1.0)
-                ? x
-                : (prob_lo + 
-                   delta0/sratio/(1.0-sratio)*
-                   (1.0-std::pow(sratio, (x-prob_lo)+1.0))-delta0/sratio);
-    
-    
+               ? x
+               : (prob_lo +
+                  delta0 / sratio / (1.0 - sratio) *
+                      (1.0 - std::pow(sratio, (x - prob_lo) + 1.0)) -
+                  delta0 / sratio);
 }
 
 } // namespace
@@ -62,8 +61,7 @@ void ABLScaling::create_map(int lev, const amrex::Geometry& geom)
 
 /** Construct the mesh mapping field on cell centers and nodes
  */
-void ABLScaling::create_cell_node_map(
-    int lev, const amrex::Geometry& geom)
+void ABLScaling::create_cell_node_map(int lev, const amrex::Geometry& geom)
 {
     const auto& dx = geom.CellSizeArray();
     const auto& prob_lo = geom.ProbLoArray();
@@ -73,20 +71,26 @@ void ABLScaling::create_cell_node_map(
         {prob_hi[0] - prob_lo[0], prob_hi[1] - prob_lo[1],
          prob_hi[2] - prob_lo[2]}};
 
-    m_delta0[0] = (m_sratio[0]==1.0) 
-                    ? m_delta0[0] 
-                    : m_sratio[0]*len[0]/((1.0/(1.0-m_sratio[0]))*
-                      (1.0-std::pow(m_sratio[0], len[0]+1.0))-1.0);
+    m_delta0[0] = (m_sratio[0] == 1.0)
+                      ? m_delta0[0]
+                      : m_sratio[0] * len[0] /
+                            ((1.0 / (1.0 - m_sratio[0])) *
+                                 (1.0 - std::pow(m_sratio[0], len[0] + 1.0)) -
+                             1.0);
 
-    m_delta0[1] = (m_sratio[1]==1.0) 
-                    ? m_delta0[1] 
-                    : m_sratio[1]*len[1]/((1.0/(1.0-m_sratio[1]))*
-                      (1.0-std::pow(m_sratio[1], len[1]+1.0))-1.0);
+    m_delta0[1] = (m_sratio[1] == 1.0)
+                      ? m_delta0[1]
+                      : m_sratio[1] * len[1] /
+                            ((1.0 / (1.0 - m_sratio[1])) *
+                                 (1.0 - std::pow(m_sratio[1], len[1] + 1.0)) -
+                             1.0);
 
-    m_delta0[2] = (m_sratio[2]==1.0) 
-                    ? m_delta0[2] 
-                    : m_sratio[2]*len[2]/((1.0/(1.0-m_sratio[2]))*
-                      (1.0-std::pow(m_sratio[2], len[2]+1.0))-1.0);
+    m_delta0[2] = (m_sratio[2] == 1.0)
+                      ? m_delta0[2]
+                      : m_sratio[2] * len[2] /
+                            ((1.0 / (1.0 - m_sratio[2])) *
+                                 (1.0 - std::pow(m_sratio[2], len[2] + 1.0)) -
+                             1.0);
 
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> sratio{
         {m_sratio[0], m_sratio[1], m_sratio[2]}};
@@ -94,7 +98,6 @@ void ABLScaling::create_cell_node_map(
         {m_delta0[0], m_delta0[1], m_delta0[2]}};
     amrex::GpuArray<int, AMREX_SPACEDIM> do_map{{m_map[0], m_map[1], m_map[2]}};
     const auto eps = m_eps;
-
 
     for (amrex::MFIter mfi((*m_mesh_scale_fac_cc)(lev)); mfi.isValid(); ++mfi) {
 
@@ -109,9 +112,12 @@ void ABLScaling::create_cell_node_map(
                 amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
                 amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
 
-                amrex::Real fac_x = eval_fac(x, prob_lo[0], sratio[0], delta0[0], len[0]);
-                amrex::Real fac_y = eval_fac(y, prob_lo[1], sratio[1], delta0[1], len[1]);
-                amrex::Real fac_z = eval_fac(z, prob_lo[2] ,sratio[2], delta0[2], len[2]);
+                amrex::Real fac_x =
+                    eval_fac(x, prob_lo[0], sratio[0], delta0[0], len[0]);
+                amrex::Real fac_y =
+                    eval_fac(y, prob_lo[1], sratio[1], delta0[1], len[1]);
+                amrex::Real fac_z =
+                    eval_fac(z, prob_lo[2], sratio[2], delta0[2], len[2]);
 
                 bool in_domain =
                     ((x > prob_lo[0]) && (x < prob_hi[0]) && (y > prob_lo[1]) &&
@@ -137,9 +143,12 @@ void ABLScaling::create_cell_node_map(
                 amrex::Real y = prob_lo[1] + j * dx[1];
                 amrex::Real z = prob_lo[2] + k * dx[2];
 
-                amrex::Real fac_x = eval_fac(x, prob_lo[0], sratio[0], delta0[0], len[0]);
-                amrex::Real fac_y = eval_fac(y, prob_lo[1], sratio[1], delta0[1], len[1]);
-                amrex::Real fac_z = eval_fac(z, prob_lo[2], sratio[2], delta0[2], len[2]);
+                amrex::Real fac_x =
+                    eval_fac(x, prob_lo[0], sratio[0], delta0[0], len[0]);
+                amrex::Real fac_y =
+                    eval_fac(y, prob_lo[1], sratio[1], delta0[1], len[1]);
+                amrex::Real fac_z =
+                    eval_fac(z, prob_lo[2], sratio[2], delta0[2], len[2]);
 
                 bool in_domain =
                     ((x >= prob_lo[0] - eps) && (x <= prob_hi[0] + eps) &&
@@ -171,20 +180,26 @@ void ABLScaling::create_face_map(int lev, const amrex::Geometry& geom)
         {prob_hi[0] - prob_lo[0], prob_hi[1] - prob_lo[1],
          prob_hi[2] - prob_lo[2]}};
 
-    m_delta0[0] = (m_sratio[0]==1.0) 
-                    ? m_delta0[0] 
-                    : m_sratio[0]*len[0]/((1.0/(1.0-m_sratio[0]))*
-                      (1.0-std::pow(m_sratio[0], len[0]+1.0))-1.0);
+    m_delta0[0] = (m_sratio[0] == 1.0)
+                      ? m_delta0[0]
+                      : m_sratio[0] * len[0] /
+                            ((1.0 / (1.0 - m_sratio[0])) *
+                                 (1.0 - std::pow(m_sratio[0], len[0] + 1.0)) -
+                             1.0);
 
-    m_delta0[1] = (m_sratio[1]==1.0) 
-                    ? m_delta0[1] 
-                    : m_sratio[1]*len[1]/((1.0/(1.0-m_sratio[1]))*
-                      (1.0-std::pow(m_sratio[1], len[1]+1.0))-1.0);
+    m_delta0[1] = (m_sratio[1] == 1.0)
+                      ? m_delta0[1]
+                      : m_sratio[1] * len[1] /
+                            ((1.0 / (1.0 - m_sratio[1])) *
+                                 (1.0 - std::pow(m_sratio[1], len[1] + 1.0)) -
+                             1.0);
 
-    m_delta0[2] = (m_sratio[2]==1.0) 
-                    ? m_delta0[2] 
-                    : m_sratio[2]*len[2]/((1.0/(1.0-m_sratio[2]))*
-                      (1.0-std::pow(m_sratio[2], len[2]+1.0))-1.0);
+    m_delta0[2] = (m_sratio[2] == 1.0)
+                      ? m_delta0[2]
+                      : m_sratio[2] * len[2] /
+                            ((1.0 / (1.0 - m_sratio[2])) *
+                                 (1.0 - std::pow(m_sratio[2], len[2] + 1.0)) -
+                             1.0);
 
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> sratio{
         {m_sratio[0], m_sratio[1], m_sratio[2]}};
@@ -206,9 +221,12 @@ void ABLScaling::create_face_map(int lev, const amrex::Geometry& geom)
                 amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
                 amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
 
-                amrex::Real fac_x = eval_fac(x, prob_lo[0], sratio[0], delta0[0], len[0]);
-                amrex::Real fac_y = eval_fac(y, prob_lo[1], sratio[1], delta0[1], len[1]);
-                amrex::Real fac_z = eval_fac(z, prob_lo[2], sratio[2], delta0[2], len[2]);
+                amrex::Real fac_x =
+                    eval_fac(x, prob_lo[0], sratio[0], delta0[0], len[0]);
+                amrex::Real fac_y =
+                    eval_fac(y, prob_lo[1], sratio[1], delta0[1], len[1]);
+                amrex::Real fac_z =
+                    eval_fac(z, prob_lo[2], sratio[2], delta0[2], len[2]);
 
                 bool in_domain =
                     ((x >= prob_lo[0] - eps) && (x <= prob_hi[0] + eps) &&
@@ -238,9 +256,12 @@ void ABLScaling::create_face_map(int lev, const amrex::Geometry& geom)
                 amrex::Real y = prob_lo[1] + j * dx[1];
                 amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
 
-                amrex::Real fac_x = eval_fac(x, prob_lo[0], sratio[0], delta0[0], len[0]);
-                amrex::Real fac_y = eval_fac(y, prob_lo[1], sratio[1], delta0[1], len[1]);
-                amrex::Real fac_z = eval_fac(z, prob_lo[2], sratio[2], delta0[2], len[2]);
+                amrex::Real fac_x =
+                    eval_fac(x, prob_lo[0], sratio[0], delta0[0], len[0]);
+                amrex::Real fac_y =
+                    eval_fac(y, prob_lo[1], sratio[1], delta0[1], len[1]);
+                amrex::Real fac_z =
+                    eval_fac(z, prob_lo[2], sratio[2], delta0[2], len[2]);
 
                 bool in_domain =
                     ((x > prob_lo[0]) && (x < prob_hi[0]) &&
@@ -270,9 +291,12 @@ void ABLScaling::create_face_map(int lev, const amrex::Geometry& geom)
                 amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
                 amrex::Real z = prob_lo[2] + k * dx[2];
 
-                amrex::Real fac_x = eval_fac(x, prob_lo[0], sratio[0], delta0[0], len[0]);
-                amrex::Real fac_y = eval_fac(y, prob_lo[1], sratio[1], delta0[1], len[1]);
-                amrex::Real fac_z = eval_fac(z, prob_lo[2], sratio[2], delta0[2], len[2]);
+                amrex::Real fac_x =
+                    eval_fac(x, prob_lo[0], sratio[0], delta0[0], len[0]);
+                amrex::Real fac_y =
+                    eval_fac(y, prob_lo[1], sratio[1], delta0[1], len[1]);
+                amrex::Real fac_z =
+                    eval_fac(z, prob_lo[2], sratio[2], delta0[2], len[2]);
 
                 bool in_domain =
                     ((x > prob_lo[0]) && (x < prob_hi[0]) && (y > prob_lo[1]) &&
@@ -294,8 +318,7 @@ void ABLScaling::create_face_map(int lev, const amrex::Geometry& geom)
 
 /** Construct the non-uniform mesh field
  */
-void ABLScaling::create_non_uniform_mesh(
-    int lev, const amrex::Geometry& geom)
+void ABLScaling::create_non_uniform_mesh(int lev, const amrex::Geometry& geom)
 {
     amrex::Vector<amrex::Real> probhi_physical{{0.0, 0.0, 0.0}};
     {
@@ -317,20 +340,26 @@ void ABLScaling::create_non_uniform_mesh(
         {prob_hi[0] - prob_lo[0], prob_hi[1] - prob_lo[1],
          prob_hi[2] - prob_lo[2]}};
 
-    m_delta0[0] = (m_sratio[0]==1.0) 
-                    ? m_delta0[0] 
-                    : m_sratio[0]*len[0]/((1.0/(1.0-m_sratio[0]))*
-                      (1.0-std::pow(m_sratio[0], len[0]+1.0))-1.0);
+    m_delta0[0] = (m_sratio[0] == 1.0)
+                      ? m_delta0[0]
+                      : m_sratio[0] * len[0] /
+                            ((1.0 / (1.0 - m_sratio[0])) *
+                                 (1.0 - std::pow(m_sratio[0], len[0] + 1.0)) -
+                             1.0);
 
-    m_delta0[1] = (m_sratio[1]==1.0) 
-                    ? m_delta0[1] 
-                    : m_sratio[1]*len[1]/((1.0/(1.0-m_sratio[1]))*
-                      (1.0-std::pow(m_sratio[1], len[1]+1.0))-1.0);
+    m_delta0[1] = (m_sratio[1] == 1.0)
+                      ? m_delta0[1]
+                      : m_sratio[1] * len[1] /
+                            ((1.0 / (1.0 - m_sratio[1])) *
+                                 (1.0 - std::pow(m_sratio[1], len[1] + 1.0)) -
+                             1.0);
 
-    m_delta0[2] = (m_sratio[2]==1.0) 
-                    ? m_delta0[2] 
-                    : m_sratio[2]*len[2]/((1.0/(1.0-m_sratio[2]))*
-                      (1.0-std::pow(m_sratio[2], len[2]+1.0))-1.0);
+    m_delta0[2] = (m_sratio[2] == 1.0)
+                      ? m_delta0[2]
+                      : m_sratio[2] * len[2] /
+                            ((1.0 / (1.0 - m_sratio[2])) *
+                                 (1.0 - std::pow(m_sratio[2], len[2] + 1.0)) -
+                             1.0);
 
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> sratio{
         {m_sratio[0], m_sratio[1], m_sratio[2]}};

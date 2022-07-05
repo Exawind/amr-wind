@@ -85,16 +85,19 @@ void ABLStats::initialize()
     // Initialize any RANS field variables for averaging
     if (m_sim.repo().field_exists("tke")) {
         m_has_tke = true;
-        amrex::Print()<<"ABLStats: Adding TKE"<<std::endl;
-	m_pa_tke = new FieldPlaneAveraging(m_sim.repo().get_field("tke"), m_sim.time(), m_normal_dir);
+        amrex::Print() << "ABLStats: Adding TKE" << std::endl;
+        m_pa_tke = new FieldPlaneAveraging(
+            m_sim.repo().get_field("tke"), m_sim.time(), m_normal_dir);
     }
     if (m_sim.repo().field_exists("sdr")) {
         m_has_sdr = true;
-	m_pa_sdr = new FieldPlaneAveraging(m_sim.repo().get_field("sdr"), m_sim.time(), m_normal_dir);
+        m_pa_sdr = new FieldPlaneAveraging(
+            m_sim.repo().get_field("sdr"), m_sim.time(), m_normal_dir);
     }
     if (m_sim.repo().field_exists("eps")) {
         m_has_eps = true;
-	m_pa_eps = new FieldPlaneAveraging(m_sim.repo().get_field("eps"), m_sim.time(), m_normal_dir);
+        m_pa_eps = new FieldPlaneAveraging(
+            m_sim.repo().get_field("eps"), m_sim.time(), m_normal_dir);
     }
 
     if (m_out_fmt == "netcdf") {
@@ -468,8 +471,9 @@ void ABLStats::prepare_netcdf_file()
 
         std::vector<amrex::Real> hmapped(n_levels);
         const auto zunif = m_pa_vel.line_centroids();
-	for (unsigned i=0; i<n_levels; i++) {
-            hmapped[i] = m_sim.mesh_mapping()->interp_unif_to_nonunif(zunif[i], 2);
+        for (unsigned i = 0; i < n_levels; i++) {
+            hmapped[i] =
+                m_sim.mesh_mapping()->interp_unif_to_nonunif(zunif[i], 2);
         }
         h.put(&hmapped[0], start, count);
 
@@ -623,7 +627,6 @@ void ABLStats::write_netcdf()
             auto var = grp.var("eps");
             var.put((*m_pa_eps).line_average().data(), start, count);
         }
-
     }
     ncf.close();
 #endif

@@ -40,7 +40,7 @@ void MeshMap::declare_mapping_fields(const CFDSim& sim, int nghost)
     // TODO: Create BCNoOP fill patch operators for mesh scaling fields ?
 }
 
-void MeshMap::setup_interp_arrays(int lev, const amrex::Geometry& geom) 
+void MeshMap::setup_interp_arrays(int lev, const amrex::Geometry& geom)
 {
     const auto& prob_lo = geom.ProbLoArray();
     const auto& dx = geom.CellSizeArray();
@@ -72,86 +72,87 @@ void MeshMap::setup_interp_arrays(int lev, const amrex::Geometry& geom)
         const auto& bx = mfi.growntilebox();
         amrex::Array4<amrex::Real const> nu_cc =
             ((*nu_coord_cc)(lev).array(mfi));
-	// Create the uniform vector coordinates
-	for (int i = 0; i < Nx; i++) {
-	  x_uni[i] = prob_lo[0] + (i + 0.5) * dx[0];
-	}
-	for (int j = 0; j < Ny; j++) {
-	  y_uni[j] = prob_lo[1] + (j + 0.5) * dx[1];
-	}
-	for (int k = 0; k<Nz; k++) {
-	  z_uni[k] = prob_lo[2] + (k + 0.5) * dx[2];
-	}
-	amrex::Loop(bx, [=, &x_nu, &y_nu, &z_nu, &x_nu_count, &y_nu_count, &z_nu_count](int i, int j, int k) noexcept {
-	    if ((j == 0) && (k == 0) && (i >= 0) && (i < Nx)){
-	      x_nu[i] += nu_cc(i,j,k,0);
-	      x_nu_count[i] += 1;
-	    }
-	    if ((i == 0) && (k == 0) && (j >= 0) && (j < Ny)){
-	      y_nu[j] += nu_cc(i,j,k,1);
-	      y_nu_count[j] += 1;
-	    }
-	    if ((i == 0) && (j == 0) && (k >= 0) && (k < Nz)){
-	      z_nu[k] += nu_cc(i,j,k,2);
-	      z_nu_count[k] += 1;
-	    }
-	  });
+        // Create the uniform vector coordinates
+        for (int i = 0; i < Nx; i++) {
+            x_uni[i] = prob_lo[0] + (i + 0.5) * dx[0];
+        }
+        for (int j = 0; j < Ny; j++) {
+            y_uni[j] = prob_lo[1] + (j + 0.5) * dx[1];
+        }
+        for (int k = 0; k < Nz; k++) {
+            z_uni[k] = prob_lo[2] + (k + 0.5) * dx[2];
+        }
+        amrex::Loop(
+            bx, [=, &x_nu, &y_nu, &z_nu, &x_nu_count, &y_nu_count,
+                 &z_nu_count](int i, int j, int k) noexcept {
+                if ((j == 0) && (k == 0) && (i >= 0) && (i < Nx)) {
+                    x_nu[i] += nu_cc(i, j, k, 0);
+                    x_nu_count[i] += 1;
+                }
+                if ((i == 0) && (k == 0) && (j >= 0) && (j < Ny)) {
+                    y_nu[j] += nu_cc(i, j, k, 1);
+                    y_nu_count[j] += 1;
+                }
+                if ((i == 0) && (j == 0) && (k >= 0) && (k < Nz)) {
+                    z_nu[k] += nu_cc(i, j, k, 2);
+                    z_nu_count[k] += 1;
+                }
+            });
     }
     // Gather and sum the vectors from all processors
 #ifdef AMREX_USE_MPI
     MPI_Allreduce(
-        MPI_IN_PLACE, &(x_nu_count[0]), Nx,
-        MPI_INT, MPI_SUM, amrex::ParallelDescriptor::Communicator());
+        MPI_IN_PLACE, &(x_nu_count[0]), Nx, MPI_INT, MPI_SUM,
+        amrex::ParallelDescriptor::Communicator());
     MPI_Allreduce(
-        MPI_IN_PLACE, &(x_nu[0]), Nx,
-        MPI_DOUBLE, MPI_SUM, amrex::ParallelDescriptor::Communicator());
+        MPI_IN_PLACE, &(x_nu[0]), Nx, MPI_DOUBLE, MPI_SUM,
+        amrex::ParallelDescriptor::Communicator());
     MPI_Allreduce(
-        MPI_IN_PLACE, &(y_nu_count[0]), Ny,
-        MPI_INT, MPI_SUM, amrex::ParallelDescriptor::Communicator());
+        MPI_IN_PLACE, &(y_nu_count[0]), Ny, MPI_INT, MPI_SUM,
+        amrex::ParallelDescriptor::Communicator());
     MPI_Allreduce(
-        MPI_IN_PLACE, &(y_nu[0]), Ny,
-        MPI_DOUBLE, MPI_SUM, amrex::ParallelDescriptor::Communicator());
+        MPI_IN_PLACE, &(y_nu[0]), Ny, MPI_DOUBLE, MPI_SUM,
+        amrex::ParallelDescriptor::Communicator());
     MPI_Allreduce(
-        MPI_IN_PLACE, &(z_nu_count[0]), Nz,
-        MPI_INT, MPI_SUM, amrex::ParallelDescriptor::Communicator());
+        MPI_IN_PLACE, &(z_nu_count[0]), Nz, MPI_INT, MPI_SUM,
+        amrex::ParallelDescriptor::Communicator());
     MPI_Allreduce(
-        MPI_IN_PLACE, &(z_nu[0]), Nz,
-        MPI_DOUBLE, MPI_SUM, amrex::ParallelDescriptor::Communicator());
+        MPI_IN_PLACE, &(z_nu[0]), Nz, MPI_DOUBLE, MPI_SUM,
+        amrex::ParallelDescriptor::Communicator());
 #endif
 
     // Divide the sum by the counts
-    for (int i=0; i<Nx; i++) {
-      AMREX_ALWAYS_ASSERT(x_nu_count[i]>0);
-      m_x_nu[i] = x_nu[i]/(float)x_nu_count[i];
+    for (int i = 0; i < Nx; i++) {
+        AMREX_ALWAYS_ASSERT(x_nu_count[i] > 0);
+        m_x_nu[i] = x_nu[i] / (float)x_nu_count[i];
     }
-    for (int j=0; j<Ny; j++) {
-      AMREX_ALWAYS_ASSERT(y_nu_count[j]>0);
-      m_y_nu[j] = y_nu[j]/(float)y_nu_count[j];
+    for (int j = 0; j < Ny; j++) {
+        AMREX_ALWAYS_ASSERT(y_nu_count[j] > 0);
+        m_y_nu[j] = y_nu[j] / (float)y_nu_count[j];
     }
-    for (int k=0; k<Nz; k++) {
-      AMREX_ALWAYS_ASSERT(z_nu_count[k]>0);
-      m_z_nu[k] = z_nu[k]/(float)z_nu_count[k];
+    for (int k = 0; k < Nz; k++) {
+        AMREX_ALWAYS_ASSERT(z_nu_count[k] > 0);
+        m_z_nu[k] = z_nu[k] / (float)z_nu_count[k];
     }
 
     // Copy over to storage vectors
     m_x_uni = x_uni;
     m_y_uni = y_uni;
     m_z_uni = z_uni;
-
 }
 
 amrex::Real MeshMap::interp_nonunif_to_unif(amrex::Real x_nonunif, int dir)
 {
     namespace interp = ::amr_wind::interp;
     amrex::Real ans(0.0);
-    switch(dir) {
-    case 0: 
+    switch (dir) {
+    case 0:
         ans = interp::linear(m_x_nu, m_x_uni, x_nonunif);
         break;
-    case 1: 
+    case 1:
         ans = interp::linear(m_y_nu, m_y_uni, x_nonunif);
         break;
-    case 2: 
+    case 2:
         ans = interp::linear(m_z_nu, m_z_uni, x_nonunif);
         break;
     }
@@ -162,7 +163,7 @@ amrex::Real MeshMap::interp_unif_to_nonunif(amrex::Real x_unif, int dir)
 {
     namespace interp = ::amr_wind::interp;
     amrex::Real ans(0.0);
-    switch(dir) {
+    switch (dir) {
     case 0:
         ans = interp::linear(m_x_uni, m_x_nu, x_unif);
         break;
@@ -175,5 +176,5 @@ amrex::Real MeshMap::interp_unif_to_nonunif(amrex::Real x_unif, int dir)
     }
     return ans;
 }
-  
+
 } // namespace amr_wind

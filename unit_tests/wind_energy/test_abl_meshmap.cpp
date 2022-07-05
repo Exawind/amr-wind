@@ -20,7 +20,7 @@ TEST_F(ABLMeshTest, abl_map_initialization)
 
     // Test the mapping coord and fac functions
     auto g_mesh_map = amr_wind::geom2constant_map::Geom2ConstantScaling();
-    amrex::Real xcoord  = g_mesh_map.dump_coord(
+    amrex::Real xcoord = g_mesh_map.dump_coord(
         19.0, trans_loc, trans_width, sratio, delta0, len, 1);
     amrex::Real dxcoord = g_mesh_map.dump_fac(
         19.0, trans_loc, trans_width, sratio, delta0, len, 1);
@@ -53,7 +53,7 @@ TEST_F(ABLMeshTest, abl_map_initialization)
     {
         amrex::ParmParse pp("Geom2ConstantScaling");
         amrex::Vector<amrex::Real> pp_sratio{{1.1, 1.1, 1.1}};
-        amrex::Vector<amrex::Real> pp_delta0{{0.1, 0.1, 1000.0 / 48.0}}; 
+        amrex::Vector<amrex::Real> pp_delta0{{0.1, 0.1, 1000.0 / 48.0}};
         amrex::Vector<amrex::Real> pp_transwidth{{0.1, 0.1, 0.1}};
         amrex::Vector<amrex::Real> pp_transloc{{0.2, 0.2, 50.0}};
         amrex::Vector<int> pp_do_map{{0, 0, 1}};
@@ -72,8 +72,8 @@ TEST_F(ABLMeshTest, abl_map_initialization)
     const int nlevels = mesh().num_levels();
 
     if (sim().has_mesh_mapping()) {
-        for (int lev=0; lev<nlevels; lev++) {
-	    sim().mesh_mapping()->create_map(lev, mesh().Geom(lev));
+        for (int lev = 0; lev < nlevels; lev++) {
+            sim().mesh_mapping()->create_map(lev, mesh().Geom(lev));
         }
     }
     auto& frepo = mesh().field_repo();
@@ -113,25 +113,25 @@ TEST_F(ABLMeshTest, abl_map_initialization)
         amr_wind::Field const* nu_coord_cc =
             &(sim().repo().get_field("non_uniform_coord_cc"));
         amr_wind::Field const* mesh_scale_fac_cc =
-	    &(sim().repo().get_field("mesh_scaling_factor_cc"));
+            &(sim().repo().get_field("mesh_scaling_factor_cc"));
 
         // Loop through and sum over all points on the lower surface
-        for (amrex::MFIter mfi(vel); mfi.isValid(); ++mfi) {	
+        for (amrex::MFIter mfi(vel); mfi.isValid(); ++mfi) {
             const auto& vbx = mfi.validbox();
             amrex::Array4<amrex::Real const> nu_cc =
-	        ((*nu_coord_cc)(level).array(mfi));
-	    amrex::Array4<amrex::Real const> fac_cc =
-	        ((*mesh_scale_fac_cc)(level).array(mfi));
-	  
-	    amrex::Loop(vbx, [=, &zpts, &zfac](int i, int j, int k) noexcept {
-                if ((i == 0) && (j == 0)){
+                ((*nu_coord_cc)(level).array(mfi));
+            amrex::Array4<amrex::Real const> fac_cc =
+                ((*mesh_scale_fac_cc)(level).array(mfi));
+
+            amrex::Loop(vbx, [=, &zpts, &zfac](int i, int j, int k) noexcept {
+                if ((i == 0) && (j == 0)) {
                     zpts[k] = nu_cc(i, j, k, m_direction);
                     zfac[k] = fac_cc(i, j, k, m_direction);
-		}
-	    });
+                }
+            });
         }
         EXPECT_NEAR(zpts[46], 968.75, tol);
-        EXPECT_NEAR(zfac[46], 1000.0/48.0, tol);
+        EXPECT_NEAR(zfac[46], 1000.0 / 48.0, tol);
     } // if (sim().has_mesh_mapping())
 }
 

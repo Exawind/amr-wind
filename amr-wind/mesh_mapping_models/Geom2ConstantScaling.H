@@ -33,22 +33,22 @@ public:
 
     //! Used for debugging eval_coord function
     amrex::Real dump_coord(
-			   const amrex::Real ,
-			   const amrex::Real ,
-			   const amrex::Real ,
-			   const amrex::Real ,
-			   const amrex::Real ,
-			   const amrex::Real ,
-			   const int);
+        const amrex::Real,
+        const amrex::Real,
+        const amrex::Real,
+        const amrex::Real,
+        const amrex::Real,
+        const amrex::Real,
+        const int);
     //! Used for debugging eval_fac function
     amrex::Real dump_fac(
-			 const amrex::Real ,
-			 const amrex::Real ,
-			 const amrex::Real ,
-			 const amrex::Real ,
-			 const amrex::Real ,
-			 const amrex::Real ,
-			 const int);
+        const amrex::Real,
+        const amrex::Real,
+        const amrex::Real,
+        const amrex::Real,
+        const amrex::Real,
+        const amrex::Real,
+        const int);
 
 private:
     //! User input parameters
@@ -61,7 +61,7 @@ private:
     amrex::Real m_eps{1e-11};
 };
 
-} // namespace abl_map
 } // namespace geom2constant_map
+} // namespace amr_wind
 
 #endif /* Geom2ConstantScaling_H */

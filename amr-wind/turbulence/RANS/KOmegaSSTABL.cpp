@@ -17,7 +17,7 @@ template <typename Transport>
 KOmegaSSTABL<Transport>::~KOmegaSSTABL() = default;
 
 template <typename Transport>
-KOmegaSSTABL<Transport>::KOmegaSSTABL(CFDSim& sim): KOmegaSST<Transport>(sim)
+KOmegaSSTABL<Transport>::KOmegaSSTABL(CFDSim& sim) : KOmegaSST<Transport>(sim)
 {
 
     {
@@ -250,7 +250,7 @@ void KOmegaSSTABL<Transport>::update_scalar_diff(
         }
     } else {
         amrex::Abort(
-            "KOmegaSSTABL:update_scalar_diff not implemented for field " + 
+            "KOmegaSSTABL:update_scalar_diff not implemented for field " +
             name);
     }
 }
@@ -284,7 +284,6 @@ void KOmegaSSTABL<Transport>::shear_prod_to_uniform_space(
                     amrex::Real wx = grad_v(i, j, k, 6);
                     amrex::Real wy = grad_v(i, j, k, 7);
                     amrex::Real wz = grad_v(i, j, k, 8);
-
 
                     str_rt(i, j, k) = std::sqrt(
                         2.0 * std::pow(ux / fac(i, j, k, 0), 2) +

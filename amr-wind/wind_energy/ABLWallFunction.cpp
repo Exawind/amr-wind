@@ -124,12 +124,12 @@ void ABLWallFunction::init_log_law_height()
                     });
             }
 #ifdef AMREX_USE_MPI
-	    MPI_Allreduce(
-			  MPI_IN_PLACE, &(npt), 1,
-			  MPI_INT, MPI_SUM, amrex::ParallelDescriptor::Communicator());
-	    MPI_Allreduce(
-			  MPI_IN_PLACE, &(avg_cc_height), 1,
-			  MPI_DOUBLE, MPI_SUM, amrex::ParallelDescriptor::Communicator());
+            MPI_Allreduce(
+                MPI_IN_PLACE, &(npt), 1, MPI_INT, MPI_SUM,
+                amrex::ParallelDescriptor::Communicator());
+            MPI_Allreduce(
+                MPI_IN_PLACE, &(avg_cc_height), 1, MPI_DOUBLE, MPI_SUM,
+                amrex::ParallelDescriptor::Communicator());
 #endif
             avg_cc_height = avg_cc_height / (amrex::Real)npt;
             m_mo.zref = avg_cc_height;
@@ -148,13 +148,14 @@ void ABLWallFunction::init_log_law_height()
     } else {
         // zref is already given
         if (m_mesh_mapping) {
-	    m_mo.zref_uni = m_sim.mesh_mapping()->interp_nonunif_to_unif(m_mo.zref, 2);
-	} else {
-	    m_mo.zref_uni = m_mo.zref;
-	}
+            m_mo.zref_uni =
+                m_sim.mesh_mapping()->interp_nonunif_to_unif(m_mo.zref, 2);
+        } else {
+            m_mo.zref_uni = m_mo.zref;
+        }
     }
-    amrex::Print()
-      << "ABLWallFunction: zref = "<<m_mo.zref<<" zref_uni = "<<m_mo.zref_uni<<std::endl;
+    amrex::Print() << "ABLWallFunction: zref = " << m_mo.zref
+                   << " zref_uni = " << m_mo.zref_uni << std::endl;
 }
 
 void ABLWallFunction::update_umean(
@@ -180,8 +181,8 @@ void ABLWallFunction::update_umean(
         m_mo.vel_mean[1] = vpa.line_average_interpolated(m_mo.zref_uni, 1);
         m_mo.vmag_mean = vpa.line_hvelmag_average_interpolated(m_mo.zref_uni);
         m_mo.theta_mean = tpa.line_average_interpolated(m_mo.zref_uni, 0);
-	amrex::Print()
-	  << "ABLWallFunction: vmag_mean = "<<m_mo.vmag_mean<<std::endl;
+        amrex::Print() << "ABLWallFunction: vmag_mean = " << m_mo.vmag_mean
+                       << std::endl;
     }
 
     m_mo.update_fluxes();
@@ -208,9 +209,10 @@ ABLVelWallFunc::ABLVelWallFunc(
 
 template <typename ShearStress>
 void ABLVelWallFunc::wall_model(
-    Field& velocity, const FieldState rho_state, const ShearStress& tau,
-    const bool mesh_mapping
-)
+    Field& velocity,
+    const FieldState rho_state,
+    const ShearStress& tau,
+    const bool mesh_mapping)
 {
     BL_PROFILE("amr-wind::ABLVelWallFunc");
 
@@ -262,22 +264,21 @@ void ABLVelWallFunc::wall_model(
                 amrex::ParallelFor(
                     amrex::bdryLo(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-		        const amrex::Real mu = eta(i, j, k);
+                        const amrex::Real mu = eta(i, j, k);
                         const amrex::Real uu = vold_arr(i, j, k, 0);
                         const amrex::Real vv = vold_arr(i, j, k, 1);
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
-			amrex::Real fac_z = mesh_mapping ? (fac(i, j, k, 2)) 
-			                                 : 1.0;
+                        amrex::Real fac_z =
+                            mesh_mapping ? (fac(i, j, k, 2)) : 1.0;
 
                         // Dirichlet BC
                         varr(i, j, k - 1, 2) = 0.0;
 
                         // Shear stress BC
-                        varr(i, j, k - 1, 0) =
-			    tau.calc_vel_x(uu, wspd) * den(i, j, k) / mu * fac_z;
-                        varr(i, j, k - 1, 1) =
-			    tau.calc_vel_y(vv, wspd) * den(i, j, k) / mu * fac_z;
-
+                        varr(i, j, k - 1, 0) = tau.calc_vel_x(uu, wspd) *
+                                               den(i, j, k) / mu * fac_z;
+                        varr(i, j, k - 1, 1) = tau.calc_vel_y(vv, wspd) *
+                                               den(i, j, k) / mu * fac_z;
                     });
             }
 
@@ -572,9 +573,9 @@ void ABLSDRWallFunc::wall_model(
                     amrex::bdryLo(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         omegaarr(i, j, k - 1) = tau.calc_omega();
-                });
+                    });
             }
-        // TODO: FILL IN SDR ZHI HERE
+            // TODO: FILL IN SDR ZHI HERE
         }
     }
 }
@@ -642,7 +643,7 @@ void ABLEpsWallFunc::wall_model(
                         epsarr(i, j, k - 1) = tau.calc_eps();
                     });
             }
-	    // TODO: FILL IN SDR ZHI HERE
+            // TODO: FILL IN SDR ZHI HERE
         }
     }
 }

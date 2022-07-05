@@ -19,7 +19,7 @@ namespace sampling {
  * `xlim`, in y by `ylim`, and z by `zlim`.  The refinement level of
  * the subdomain is given by `level` (optional, default is 0).
  *
- * # Example of how it can be used: 
+ * # Example of how it can be used:
  * sampling.labels                          = psubset
  * sampling.psubset.type                    = SubsetSampler
  * sampling.psubset.level                   = 0
@@ -44,7 +44,6 @@ public:
     void define_netcdf_metadata(const ncutils::NCGroup&) const override;
 
     void populate_netcdf_metadata(const ncutils::NCGroup&) const override;
-
 
     std::string label() const override { return m_label; }
     std::string& label() override { return m_label; }

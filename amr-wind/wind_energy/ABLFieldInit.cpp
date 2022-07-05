@@ -33,7 +33,7 @@ ABLFieldInit::ABLFieldInit(CFDSim& sim)
     pp_abl.query("theta_amplitude", m_deltaT);
 
     // Initial profile type: const, simple
-    // TODO: Add M-O and geostrophic forcing-consistent profiles 
+    // TODO: Add M-O and geostrophic forcing-consistent profiles
     pp_abl.query("init_type", m_init_type);
     pp_abl.query("kappa", m_kappa);
     pp_abl.query("surface_roughness_z0", m_rough_z0);
@@ -103,13 +103,14 @@ void ABLFieldInit::operator()(
     const amrex::Real z_0 = m_rough_z0;
 
     // Longitudinal velocity angle (positive from X-dir)
-    const amrex::Real vel_angle = std::atan(vmean/umean);
+    const amrex::Real vel_angle = std::atan(vmean / umean);
 
     // Longitudinal Velocity Magnitude
-    const amrex::Real vel_long = std::sqrt(std::pow(umean,2.0) + std::pow(vmean, 2.0));
+    const amrex::Real vel_long =
+        std::sqrt(std::pow(umean, 2.0) + std::pow(vmean, 2.0));
 
     // Calc ustar
-    const amrex::Real ustar = vel_long*kappa/std::log((z_fh + z_0)/z_0);
+    const amrex::Real ustar = vel_long * kappa / std::log((z_fh + z_0) / z_0);
     amrex::Print() << "Calculated u*: " << ustar << std::endl;
 
     // Handle mesh mapping coordinates
@@ -120,23 +121,25 @@ void ABLFieldInit::operator()(
                        : amrex::Array4<amrex::Real const>();
 
     amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-	    const amrex::Real x = 
+        const amrex::Real x =
             m_mesh_mapping ? nu_cc(i, j, k, 0) : problo[0] + (i + 0.5) * dx[0];
-	    const amrex::Real y = 
+        const amrex::Real y =
             m_mesh_mapping ? nu_cc(i, j, k, 1) : problo[1] + (j + 0.5) * dx[1];
-	    const amrex::Real z = 
+        const amrex::Real z =
             m_mesh_mapping ? nu_cc(i, j, k, 2) : problo[2] + (k + 0.5) * dx[2];
 
         density(i, j, k) = rho_init;
 
         // Mean velocity field
-        if(m_init_type == "const"){
+        if (m_init_type == "const") {
             velocity(i, j, k, 0) = umean;
             velocity(i, j, k, 1) = vmean;
             velocity(i, j, k, 2) = wmean;
-        }else{
-            velocity(i, j, k, 0) = ustar/kappa*std::log((z+z_0)/z_0)*std::cos(vel_angle);
-            velocity(i, j, k, 1) = ustar/kappa*std::log((z+z_0)/z_0)*std::sin(vel_angle);
+        } else {
+            velocity(i, j, k, 0) =
+                ustar / kappa * std::log((z + z_0) / z_0) * std::cos(vel_angle);
+            velocity(i, j, k, 1) =
+                ustar / kappa * std::log((z + z_0) / z_0) * std::sin(vel_angle);
             velocity(i, j, k, 2) = wmean;
         }
 
@@ -203,7 +206,7 @@ void ABLFieldInit::perturb_temperature(
             bx, [=] AMREX_GPU_DEVICE(
                     int i, int j, int k,
                     const amrex::RandomEngine& engine) noexcept {
-                const amrex::Real z = m_mesh_mapping 
+                const amrex::Real z = m_mesh_mapping
                                           ? nu_cc(i, j, k, 2)
                                           : problo[2] + (k + 0.5) * dx[2];
 
@@ -233,22 +236,22 @@ void ABLFieldInit::init_tke(
         m_mesh_mapping ? &(m_repo.get_field("non_uniform_coord_cc")) : nullptr;
     amrex::Array4<amrex::Real const> nu_cc =
         m_mesh_mapping ? ((*nu_coord_cc)(level).array(mfi))
-                    : amrex::Array4<amrex::Real const>();
+                       : amrex::Array4<amrex::Real const>();
 
     amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        const amrex::Real x = 
+        const amrex::Real x =
             m_mesh_mapping ? nu_cc(i, j, k, 0) : problo[0] + (i + 0.5) * dx[0];
-        const amrex::Real y = 
+        const amrex::Real y =
             m_mesh_mapping ? nu_cc(i, j, k, 1) : problo[1] + (j + 0.5) * dx[1];
-        const amrex::Real z = 
+        const amrex::Real z =
             m_mesh_mapping ? nu_cc(i, j, k, 2) : problo[2] + (k + 0.5) * dx[2];
 
-        if(m_init_type == "const"){
+        if (m_init_type == "const") {
             tke(i, j, k, 0) = m_tke_init;
-        }else{
-            tke(i, j, k, 0) = m_init_prof_c1*std::log(z + m_rough_z0) + m_init_prof_c2;
+        } else {
+            tke(i, j, k, 0) =
+                m_init_prof_c1 * std::log(z + m_rough_z0) + m_init_prof_c2;
         }
-
     });
 }
 
@@ -266,36 +269,41 @@ void ABLFieldInit::init_sdr(
     const auto& probhi = geom.ProbHiArray();
 
     // Longitudinal velocity angle (positive from X-dir)
-    const amrex::Real vel_angle = std::atan(m_vel[1]/m_vel[0]);
+    const amrex::Real vel_angle = std::atan(m_vel[1] / m_vel[0]);
 
     // Longitudinal Velocity Magnitude
-    const amrex::Real vel_long = std::sqrt(std::pow(m_vel[0],2.0) + std::pow(m_vel[1], 2.0));
+    const amrex::Real vel_long =
+        std::sqrt(std::pow(m_vel[0], 2.0) + std::pow(m_vel[1], 2.0));
 
     // Calc ustar
-    const amrex::Real ustar = vel_long*m_kappa/std::log((m_force_height + m_rough_z0)/m_rough_z0);
+    const amrex::Real ustar =
+        vel_long * m_kappa /
+        std::log((m_force_height + m_rough_z0) / m_rough_z0);
 
     // Handle mesh mapping coordinates
     Field const* nu_coord_cc =
         m_mesh_mapping ? &(m_repo.get_field("non_uniform_coord_cc")) : nullptr;
     amrex::Array4<amrex::Real const> nu_cc =
         m_mesh_mapping ? ((*nu_coord_cc)(level).array(mfi))
-                    : amrex::Array4<amrex::Real const>();
+                       : amrex::Array4<amrex::Real const>();
 
     amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        const amrex::Real x = 
+        const amrex::Real x =
             m_mesh_mapping ? nu_cc(i, j, k, 0) : problo[0] + (i + 0.5) * dx[0];
-        const amrex::Real y = 
+        const amrex::Real y =
             m_mesh_mapping ? nu_cc(i, j, k, 1) : problo[1] + (j + 0.5) * dx[1];
-        const amrex::Real z = 
+        const amrex::Real z =
             m_mesh_mapping ? nu_cc(i, j, k, 2) : problo[2] + (k + 0.5) * dx[2];
 
-        if(m_init_type == "const"){
+        if (m_init_type == "const") {
             sdr(i, j, k, 0) = m_sdr_init;
-        }else{
-            const amrex::Real initk = m_init_prof_c1*std::log(z + m_rough_z0) + m_init_prof_c2;
-            sdr(i, j, k, 0) = std::pow(ustar, 3.0)/(m_beta_star*initk*m_kappa*(z + m_rough_z0));
+        } else {
+            const amrex::Real initk =
+                m_init_prof_c1 * std::log(z + m_rough_z0) + m_init_prof_c2;
+            sdr(i, j, k, 0) =
+                std::pow(ustar, 3.0) /
+                (m_beta_star * initk * m_kappa * (z + m_rough_z0));
         }
-
     });
 }
 
@@ -313,37 +321,39 @@ void ABLFieldInit::init_eps(
     const auto& probhi = geom.ProbHiArray();
 
     // Longitudinal velocity angle (positive from X-dir)
-    const amrex::Real vel_angle = std::atan(m_vel[1]/m_vel[0]);
+    const amrex::Real vel_angle = std::atan(m_vel[1] / m_vel[0]);
 
     // Longitudinal Velocity Magnitude
-    const amrex::Real vel_long = std::sqrt(std::pow(m_vel[0],2.0) + std::pow(m_vel[1], 2.0));
+    const amrex::Real vel_long =
+        std::sqrt(std::pow(m_vel[0], 2.0) + std::pow(m_vel[1], 2.0));
 
     // Calc ustar
-    const amrex::Real ustar = vel_long*m_kappa/std::log((m_force_height + m_rough_z0)/m_rough_z0);
+    const amrex::Real ustar =
+        vel_long * m_kappa /
+        std::log((m_force_height + m_rough_z0) / m_rough_z0);
 
     // Handle mesh mapping coordinates
     Field const* nu_coord_cc =
         m_mesh_mapping ? &(m_repo.get_field("non_uniform_coord_cc")) : nullptr;
     amrex::Array4<amrex::Real const> nu_cc =
         m_mesh_mapping ? ((*nu_coord_cc)(level).array(mfi))
-                    : amrex::Array4<amrex::Real const>();
+                       : amrex::Array4<amrex::Real const>();
 
     amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        const amrex::Real x = 
+        const amrex::Real x =
             m_mesh_mapping ? nu_cc(i, j, k, 0) : problo[0] + (i + 0.5) * dx[0];
-        const amrex::Real y = 
+        const amrex::Real y =
             m_mesh_mapping ? nu_cc(i, j, k, 1) : problo[1] + (j + 0.5) * dx[1];
-        const amrex::Real z = 
+        const amrex::Real z =
             m_mesh_mapping ? nu_cc(i, j, k, 2) : problo[2] + (k + 0.5) * dx[2];
 
-        if(m_init_type == "const"){
+        if (m_init_type == "const") {
             eps(i, j, k, 0) = m_sdr_init;
-        }else{
-            eps(i, j, k, 0) = std::pow(ustar, 3.0)/(m_kappa*(z + m_rough_z0));
+        } else {
+            eps(i, j, k, 0) =
+                std::pow(ustar, 3.0) / (m_kappa * (z + m_rough_z0));
         }
-
     });
 }
-
 
 } // namespace amr_wind

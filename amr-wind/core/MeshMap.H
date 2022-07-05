@@ -63,14 +63,13 @@ protected:
     Field* m_non_uniform_coord_cc{nullptr};
     Field* m_non_uniform_coord_nd{nullptr};
 
-    //! Interpolation vectors 
+    //! Interpolation vectors
     amrex::Vector<amrex::Real> m_x_uni;
     amrex::Vector<amrex::Real> m_y_uni;
     amrex::Vector<amrex::Real> m_z_uni;
     amrex::Vector<amrex::Real> m_x_nu;
     amrex::Vector<amrex::Real> m_y_nu;
     amrex::Vector<amrex::Real> m_z_nu;
-
 };
 
 } // namespace amr_wind

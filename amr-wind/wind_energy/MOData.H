@@ -24,11 +24,12 @@ struct MOData
         SURFACE_TEMPERATURE ///< Surface temperature specified
     };
 
-    amrex::Real zref{0.0};           ///< Reference height (m)
-    amrex::Real zref_uni{0.0};       ///< Reference height in uniform computational grid
-    amrex::Real z0{0.1};             ///< Roughness height (m)
-    amrex::Real utau;                ///< Friction velocity (m/s)
-    amrex::Real kappa{0.41};         ///< von Karman constant
+    amrex::Real zref{0.0}; ///< Reference height (m)
+    amrex::Real zref_uni{
+        0.0};                ///< Reference height in uniform computational grid
+    amrex::Real z0{0.1};     ///< Roughness height (m)
+    amrex::Real utau;        ///< Friction velocity (m/s)
+    amrex::Real kappa{0.41}; ///< von Karman constant
     amrex::Real gravity{9.81};       ///< Acceleration due to gravity (m/s^2)
     amrex::Real obukhov_len{1.0e16}; ///< Non-dimensional Obukhov length
 

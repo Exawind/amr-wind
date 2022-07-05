@@ -46,7 +46,7 @@ public:
         return coeffs["beta_star"];
     }
 
-    bool has_mesh_mapping() const {return m_mesh_mapping; }
+    bool has_mesh_mapping() const { return m_mesh_mapping; }
 
 private:
     const CFDSim& m_sim;
@@ -89,7 +89,9 @@ public:
 
     template <typename ShearStress>
     void wall_model(
-        Field& velocity, const FieldState rho_state, const ShearStress& tau,
+        Field& velocity,
+        const FieldState rho_state,
+        const ShearStress& tau,
         const bool mesh_mapping);
 
 private:
