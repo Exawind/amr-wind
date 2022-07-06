@@ -111,20 +111,20 @@ void VortexPatch::pre_advance_work()
 
     const int nlevels = m_sim.repo().num_active_levels();
     const auto& geom = m_sim.mesh().Geom();
-    auto& u_mac = m_sim.repo().get_field("u_mac");
-    auto& v_mac = m_sim.repo().get_field("v_mac");
-    auto& w_mac = m_sim.repo().get_field("w_mac");
 
     // Overriding the velocity field
     for (int lev = 0; lev < nlevels; ++lev) {
+        auto& u_mac = m_sim.repo().get_field("u_mac")(lev);
+        auto& v_mac = m_sim.repo().get_field("v_mac")(lev);
+        auto& w_mac = m_sim.repo().get_field("w_mac")(lev);
         for (amrex::MFIter mfi(m_velocity(lev)); mfi.isValid(); ++mfi) {
             const auto& vbx = mfi.growntilebox(1);
             const auto& dx = geom[lev].CellSizeArray();
             const auto& problo = geom[lev].ProbLoArray();
             const amrex::Real TT = m_TT;
-            auto uf = u_mac(lev).array(mfi);
-            auto vf = v_mac(lev).array(mfi);
-            auto wf = w_mac(lev).array(mfi);
+            auto uf = u_mac.array(mfi);
+            auto vf = v_mac.array(mfi);
+            auto wf = w_mac.array(mfi);
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
@@ -147,9 +147,9 @@ void VortexPatch::pre_advance_work()
                                   std::cos(M_PI * time / TT);
                 });
         }
-        u_mac(lev).FillBoundary(geom[lev].periodicity());
-        v_mac(lev).FillBoundary(geom[lev].periodicity());
-        w_mac(lev).FillBoundary(geom[lev].periodicity());
+        u_mac.FillBoundary(geom[lev].periodicity());
+        v_mac.FillBoundary(geom[lev].periodicity());
+        w_mac.FillBoundary(geom[lev].periodicity());
     }
 }
 
