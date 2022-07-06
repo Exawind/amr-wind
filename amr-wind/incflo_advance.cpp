@@ -665,7 +665,6 @@ void incflo::ApplyPrescribeStep()
 
             // Solve diffusion eqn. and update of the scalar field
             eqn->solve(dt_diff);
-
         }
         // Post-processing actions after a PDE solve
         eqn->post_solve_actions();
