@@ -589,44 +589,24 @@ void incflo::ApplyPrescribeStep()
         PrintMaxValues("before prescribe step");
     }
 
-    if (m_use_godunov) {
-        amr_wind::io::print_mlmg_header("Godunov:");
-    } else {
-        amr_wind::io::print_mlmg_header("Predictor:");
-    }
-
     auto& density_new = density();
     const auto& density_old = density_new.state(amr_wind::FieldState::Old);
     auto& density_nph = density_new.state(amr_wind::FieldState::NPH);
 
-    // *************************************************************************************
-    // Compute viscosity / diffusive coefficients
-    // *************************************************************************************
-    // TODO: This sub-section has not been adjusted for mesh mapping - adjust in
-    // corrector too
+    // Compute diffusive and source terms for scalars
     m_sim.turbulence_model().update_turbulent_viscosity(
         amr_wind::FieldState::Old);
     for (auto& eqns : scalar_eqns()) {
         eqns->compute_mueff(amr_wind::FieldState::Old);
     }
-
-    // *************************************************************************************
-    // Define the forcing terms to use in the Godunov prediction
-    // *************************************************************************************
-    // TODO: Godunov has not been adjusted for mesh mapping - adjust in
-    // corrector too
     if (m_use_godunov) {
         for (auto& seqn : scalar_eqns()) {
             seqn->compute_source_term(amr_wind::FieldState::Old);
         }
     }
 
-    // TODO: This sub-section has not been adjusted for mesh mapping - adjust in
-    // corrector too
     if (need_divtau()) {
-        // *************************************************************************************
-        // Compute explicit diffusive terms
-        // *************************************************************************************
+        // Compute explicit diffusive terms for scalars
         for (auto& eqn : scalar_eqns()) {
             auto& field = eqn->fields().field;
             // Reuse existing buffer to avoid creating new multifabs
@@ -659,8 +639,6 @@ void incflo::ApplyPrescribeStep()
     // if (!m_use_godunov) Compute the explicit advective terms
     //                     R_u^n      , R_s^n       and R_t^n
     // *************************************************************************************
-    // TODO: Advection computation for scalar equations have not been adjusted
-    // for mesh mapping
     for (auto& seqn : scalar_eqns()) {
         seqn->compute_advection_term(amr_wind::FieldState::Old);
     }
@@ -672,11 +650,6 @@ void incflo::ApplyPrescribeStep()
         amr_wind::field_ops::copy(density_nph, density_old, 0, 0, 1, 1);
     }
 
-    // TODO: This sub-section has not been adjusted for mesh mapping - adjust in
-    // corrector too.
-    // Perform scalar update one at a time. This is to allow an
-    // updated density at `n+1/2` to be computed before other scalars use it
-    // when computing their source terms.
     for (auto& eqn : scalar_eqns()) {
         // Compute (recompute for Godunov) the scalar forcing terms
         eqn->compute_source_term(amr_wind::FieldState::NPH);
@@ -693,8 +666,8 @@ void incflo::ApplyPrescribeStep()
             // Solve diffusion eqn. and update of the scalar field
             eqn->solve(dt_diff);
 
-            // Post-processing actions after a PDE solve
         }
+        // Post-processing actions after a PDE solve
         eqn->post_solve_actions();
 
         // Update scalar at n+1/2
@@ -707,9 +680,8 @@ void incflo::ApplyPrescribeStep()
     // With scalars computed, compute advection of momentum
     icns().compute_advection_term(amr_wind::FieldState::Old);
 
-    // *************************************************************************************
     // Evaluate right hand side and store in velocity
-    // *************************************************************************************
+    // Explicit is used because viscous icns terms are supposed to be ignored
     icns().compute_predictor_rhs(DiffusionType::Explicit);
 
     icns().post_solve_actions();
