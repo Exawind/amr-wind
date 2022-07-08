@@ -379,26 +379,38 @@ void ChannelFlowMap::stretched_to_unstretched(
     amrex::Vector<amrex::Real> f_lo{{prob_lo[0], prob_lo[1], prob_lo[2]}};
 
     for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-        uni_coord[d] = prob_lo[d];
-        amrex::Real x_guess = (prob_lo[d] + prob_hi[d])/2;
-        int iter = 0;
+        if (m_beta[d] == 0.0) {
+            uni_coord[d] = nu_coord[d];
+        } else {
+            amrex::Real x_guess = nu_coord[d];
+            amrex::Real x_old = 1e12;
+            int iter = 0;
 
-        while (iter < max_iter) {
-            amrex::Real f_guess =
-                eval_coord(x_guess, m_beta[d], prob_lo[d], len[d]);
+            while (iter < max_iter) {
+                amrex::Real f_guess =
+                    eval_coord(x_guess, m_beta[d], prob_lo[d], len[d]);
 
-            amrex::Real df = (f_guess - f_lo[d]) / (x_guess - prob_lo[d]);
+                // amrex::Real df = (f_guess - f_lo[d]) / (x_guess -
+                // prob_lo[d]);
+                amrex::Real df =
+                    eval_fac(x_guess, m_beta[d], prob_lo[d], len[d]);
 
-            x_guess = x_guess - (nu_coord[d] - f_guess) / df;
-            amrex::Real nu_estimate =
-                eval_coord(x_guess, m_beta[d], prob_lo[d], len[d]);
+                 x_old = x_guess;
+                 // x_guess = x_guess - f_guess / df;
+                 x_guess = x_guess - (nu_coord[d] - f_guess) / df;
+                f_guess = eval_coord(x_guess, m_beta[d], prob_lo[d], len[d]);
 
-            if ((std::abs(nu_coord[d]-nu_estimate) < eps) ||
-                (std::abs(x_guess-prob_lo[d]) < eps)) {
-                uni_coord[d] = x_guess;
-                break;
+                amrex::Print() << "Iter: " << iter << " Old: " << x_old
+                               << " New: " << x_guess << " f: " << f_guess
+                               << " grad: " << df << std::endl;
+
+                if (std::abs(f_guess - nu_coord[d]) < eps) {
+                    uni_coord[d] = x_guess;
+                    amrex::Print() << "Success:: " << d << std::endl;
+                    break;
+                 }
+                 iter++;
             }
-            iter++;
         }
     }
 }

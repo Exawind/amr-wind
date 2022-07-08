@@ -34,6 +34,20 @@ protected:
 
 using Vector = amrex::Vector<amrex::Real>;
 
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_coord(
+    const amrex::Real x,
+    const amrex::Real beta,
+    const amrex::Real prob_lo,
+    const amrex::Real len)
+{
+    return (beta == 0.0)
+               ? x
+               : (prob_lo +
+                  len / 2 *
+                      (1 - std::tanh(beta * (1 - 2 * (x - prob_lo) / len)) /
+                               std::tanh(beta)));
+}
+
 TEST_F(MeshMapTest, stretched_to_unstretched)
 {
     initialize_mesh();
@@ -46,26 +60,36 @@ TEST_F(MeshMapTest, stretched_to_unstretched)
     }
     // origin unchanged
     {
-        Vector uni_coord{{0.0, 0.0, 0.0}};
-        Vector str_coord(uni_coord);
+        Vector str_coord{{0.0, 0.0, 0.0}};
+        Vector uni_coord({-1., -1., -1.});
 
         sim().mesh_mapping()->stretched_to_unstretched(
             uni_coord, str_coord, m_mesh->Geom(0));
 
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-            EXPECT_NEAR(uni_coord[i], str_coord[i], 1e-12) << i;
+            EXPECT_NEAR(str_coord[i], uni_coord[i], 1e-12) << i;
         }
     }
     // top unchanged
     {
-        Vector uni_coord{{32.0, 32.0, 32.0}};
-        Vector str_coord(uni_coord);
+        Vector str_coord{{32.0, 32.0, 32.0}};
+        Vector uni_coord({-1., -1., -1.});
 
         sim().mesh_mapping()->stretched_to_unstretched(
             uni_coord, str_coord, m_mesh->Geom(0));
 
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-            EXPECT_NEAR(uni_coord[i], str_coord[i], 1e-12) << i;
+            EXPECT_NEAR(str_coord[i], uni_coord[i], 1e-12) << i;
+        }
+    }
+    {
+        Vector str_coord{{3.0, 0.5, 0.5}};
+        Vector uni_coord({-1., -1., -1.});
+        sim().mesh_mapping()->stretched_to_unstretched(
+            uni_coord, str_coord, m_mesh->Geom(0));
+
+        for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+            EXPECT_NEAR(str_coord[i], uni_coord[i], 1e-12) << i;
         }
     }
 }
