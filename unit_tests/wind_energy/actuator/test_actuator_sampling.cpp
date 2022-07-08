@@ -15,8 +15,9 @@ namespace {
 class TestActContainer : public amr_wind::actuator::ActuatorContainer
 {
 public:
-    TestActContainer(amrex::AmrCore& mesh, const int nobj)
-        : amr_wind::actuator::ActuatorContainer(mesh, nobj)
+    TestActContainer(
+        amrex::AmrCore& mesh, const int nobj, const amr_wind::CFDSim& sim)
+        : amr_wind::actuator::ActuatorContainer(mesh, nobj, sim)
     {}
 
     // Accessor for the particle data holder object
@@ -69,7 +70,7 @@ TEST_F(ActuatorTest, act_container)
     // Number of points per turbine
     const int num_nodes = 16;
 
-    TestActContainer ac(mesh(), num_turbines);
+    TestActContainer ac(mesh(), num_turbines, sim());
     auto& data = ac.get_data_obj();
 
     for (int it = 0; it < num_turbines; ++it) {

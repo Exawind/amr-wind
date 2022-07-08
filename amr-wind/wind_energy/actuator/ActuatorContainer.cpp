@@ -16,13 +16,14 @@ ActuatorCloud::ActuatorCloud(const int nobjects)
 {}
 
 ActuatorContainer::ActuatorContainer(
-    amrex::AmrCore& mesh, const int num_objects)
+    amrex::AmrCore& mesh, const int num_objects, const CFDSim& sim)
     : amrex::AmrParticleContainer<
           NumPStructReal,
           NumPStructInt,
           NumPArrayReal,
           NumPArrayInt>(&mesh)
     , m_mesh(mesh)
+    , m_sim(sim)
     , m_data(num_objects)
     , m_proc_pos(amrex::ParallelDescriptor::NProcs(), vs::Vector::zero())
     , m_pos_device(amrex::ParallelDescriptor::NProcs(), vs::Vector::zero())
@@ -135,33 +136,36 @@ unstretched_to_stretched_coordinates(const amrex::RealVect& point)
 
 void ActuatorContainer::mapped_redistribute()
 {
-    // TODO if condition on using mesh mapping
     const int nlevels = m_mesh.finestLevel() + 1;
-    for (int lev = 0; lev < nlevels; ++lev) {
-        for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
-            const int nump = pti.numParticles();
-            auto* pstruct = pti.GetArrayOfStructs()().data();
-            amrex::ParallelFor(
-                nump, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
-                    auto& particle = pstruct[ip];
-                    particle.pos() =
-                        stretched_to_unstretched_coordinates(particle.pos());
-                });
+    if (m_sim.has_mesh_mapping()) {
+        for (int lev = 0; lev < nlevels; ++lev) {
+            for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
+                const int nump = pti.numParticles();
+                auto* pstruct = pti.GetArrayOfStructs()().data();
+                amrex::ParallelFor(
+                    nump, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
+                        auto& particle = pstruct[ip];
+                        particle.pos() = stretched_to_unstretched_coordinates(
+                            particle.pos());
+                    });
+            }
         }
     }
 
     Redistribute();
 
-    for (int lev = 0; lev < nlevels; ++lev) {
-        for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
-            const int nump = pti.numParticles();
-            auto* pstruct = pti.GetArrayOfStructs()().data();
-            amrex::ParallelFor(
-                nump, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
-                    auto& particle = pstruct[ip];
-                    particle.pos() =
-                        unstretched_to_stretched_coordinates(particle.pos());
-                });
+    if (m_sim.has_mesh_mapping()) {
+        for (int lev = 0; lev < nlevels; ++lev) {
+            for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
+                const int nump = pti.numParticles();
+                auto* pstruct = pti.GetArrayOfStructs()().data();
+                amrex::ParallelFor(
+                    nump, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
+                        auto& particle = pstruct[ip];
+                        particle.pos() = unstretched_to_stretched_coordinates(
+                            particle.pos());
+                    });
+            }
         }
     }
 }
