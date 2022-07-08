@@ -1,5 +1,6 @@
 #include "amr-wind/wind_energy/actuator/actuator_utils.H"
 #include "amr-wind/wind_energy/actuator/actuator_types.H"
+#include "amr-wind/core/MeshMap.H"
 
 namespace amr_wind {
 namespace actuator {
@@ -19,19 +20,24 @@ amrex::RealVect stretched_to_unstretched_coordinates(const amrex::Real* point)
  *  \return The Box instance that defines the index space equivalent to bounding
  * boxt
  */
-amrex::Box
-realbox_to_box(const amrex::RealBox& rbx, const amrex::Geometry& geom)
+amrex::Box realbox_to_box(
+    const amrex::RealBox& rbx,
+    const amrex::Geometry& geom,
+    const ::amr_wind::MeshMap* map = nullptr)
 {
     const auto* problo = geom.ProbLo();
     const auto* probhi = geom.ProbHi();
     const auto* dxi = geom.InvCellSize();
-    const amrex::RealVect unstretched_lo =
-        stretched_to_unstretched_coordinates(rbx.lo());
-    const amrex::RealVect unstretched_hi =
-        stretched_to_unstretched_coordinates(rbx.hi());
+    amrex::RealVect real_lo, real_hi;
+    if (map) {
+        real_lo = stretched_to_unstretched_coordinates(rbx.lo());
+        real_hi = stretched_to_unstretched_coordinates(rbx.hi());
+    } else {
+        real_lo = {rbx.lo()[0], rbx.lo()[1], rbx.lo()[2]};
+        real_hi = {rbx.hi()[0], rbx.hi()[1], rbx.hi()[2]};
+    }
 
-    const amrex::RealBox rbx_transformmed(
-        &unstretched_lo[0], &unstretched_hi[0]);
+    const amrex::RealBox rbx_transformmed(&real_lo[0], &real_hi[0]);
 
     amrex::IntVect lo, hi;
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {
