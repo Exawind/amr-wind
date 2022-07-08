@@ -68,6 +68,9 @@ void Actuator::post_init_actions()
     }
 
     setup_container();
+    if(m_sim.has_mesh_mapping()) {
+        store_stretched_coordinates();
+    }
     update_positions();
     update_velocities();
     compute_forces();
@@ -125,6 +128,48 @@ void Actuator::setup_container()
     m_container->initialize_container();
 }
 
+/** Store 1D stretched coordinates in amrex::vectors later used for line search
+ */
+void Actuator::store_stretched_coordinates()
+{
+    // get geometry information
+    const auto& geom = (m_sim.repo()).mesh().Geom()[0];
+    amrex::Box const& domain = geom.Domain();
+    const auto dlo = amrex::lbound(domain);
+    const auto dhi = amrex::ubound(domain);
+    int ncells_x = dhi.x - dlo.x + 1; nu_cx.resize(ncells_x,0.0);
+    int ncells_y = dhi.y - dlo.y + 1; nu_cy.resize(ncells_y,0.0);
+    int ncells_z = dhi.z - dlo.z + 1; nu_cz.resize(ncells_z,0.0);
+
+    const auto& nu_cc = m_sim.repo().get_field("non_uniform_coord_cc");
+
+    // FIXME: Hard-coded only for 1 level of refinement
+    for (amrex::MFIter mfi(nu_cc(0)); mfi.isValid(); ++mfi) {
+        const auto& bx = mfi.tilebox();
+        amrex::Array4<amrex::Real const> const& nu_coord = nu_cc(0).array(mfi);
+
+        amrex::ParallelFor(
+            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            nu_cx[i] = nu_coord(i,j,k,0);
+            nu_cy[j] = nu_coord(i,j,k,1);
+            nu_cz[k] = nu_coord(i,j,k,2);
+        });
+    }
+
+    for (int i = 0; i < ncells_x; ++i) {
+        amrex::ParallelAllReduce::Sum<amrex::Real>(
+            nu_cx[i], amrex::ParallelContext::CommunicatorSub());
+    }
+    for (int j = 0; j < ncells_y; ++j) {
+        amrex::ParallelAllReduce::Sum<amrex::Real>(
+            nu_cy[j], amrex::ParallelContext::CommunicatorSub());
+    }
+    for (int k = 0; k < ncells_z; ++k) {
+        amrex::ParallelAllReduce::Sum<amrex::Real>(
+            nu_cz[k], amrex::ParallelContext::CommunicatorSub());
+    }
+}
+
 /** Update actuator positions and sample velocities at new locations.
  *
  *  This method loops over all the turbines local to this MPI rank and updates
@@ -149,7 +194,7 @@ void Actuator::update_positions()
     // Sample velocities at the new locations
     const auto& vel = m_sim.repo().get_field("velocity");
     const auto& density = m_sim.repo().get_field("density");
-    m_container->sample_fields(vel, density);
+    m_container->sample_fields(vel, density, nu_cx, nu_cy, nu_cz, m_sim.has_mesh_mapping());
 }
 
 /** Provide updated velocities from container to actuator instances
