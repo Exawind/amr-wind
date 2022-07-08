@@ -4,7 +4,7 @@
 #include "amr-wind/core/vs/vector_space.H"
 
 #include "AMReX_AmrParticles.H"
-#include "amr-wind/CFDSim.H"
+#include "amr-wind/core/MeshMap.H"
 
 namespace amr_wind {
 
@@ -68,7 +68,7 @@ public:
     friend class Actuator;
 
     explicit ActuatorContainer(
-        amrex::AmrCore& mesh, const int num_objects, const CFDSim& sim);
+        amrex::AmrCore& mesh, const int num_objects, const MeshMap* = nullptr);
 
     void post_regrid_actions();
 
@@ -101,7 +101,7 @@ protected:
 private:
     amrex::AmrCore& m_mesh;
 
-    const CFDSim& m_sim;
+    const MeshMap* m_map;
 
     // Object that holds the position and velocity information
     ActuatorCloud m_data;
