@@ -3,6 +3,7 @@ target_sources(
   physics_test_utils.cpp
 
   test_simtime.cpp
+  test_mesh_map.cpp
   test_field.cpp
   test_field_ops.cpp
   test_physics.cpp
