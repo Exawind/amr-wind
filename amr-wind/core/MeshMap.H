@@ -40,6 +40,15 @@ public:
     //! Construct mesh scaling field
     virtual void create_map(int, const amrex::Geometry&) = 0;
 
+    //! get unstretched coordinate based on physical coordinate
+    virtual void stretched_to_unstretched(
+        amrex::Vector<amrex::Real>&,
+        const amrex::Vector<amrex::Real>,
+        const amrex::Geometry&) {
+        amrex::Abort("MeshMap: Conversion from stretched to "
+                "unstretched coordinates not implemented for this mapping.");
+    }
+
 protected:
     Field* m_mesh_scale_fac_cc{nullptr};
     Field* m_mesh_scale_fac_nd{nullptr};

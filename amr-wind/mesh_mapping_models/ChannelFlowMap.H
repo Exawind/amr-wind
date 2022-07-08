@@ -30,6 +30,12 @@ public:
     //! Construct the non-uniform mesh field
     void create_non_uniform_mesh(int /*lev*/, const amrex::Geometry& /*geom*/);
 
+    //! get unstretched coordinate based on physical coordinate
+    void stretched_to_unstretched(
+        amrex::Vector<amrex::Real>& /*uni_coord*/,
+        const amrex::Vector<amrex::Real> /*nu_coord*/,
+        const amrex::Geometry&) override;
+
 private:
     //! User input parameters
     amrex::Vector<amrex::Real> m_beta{{0.0, 3.0, 0.0}};

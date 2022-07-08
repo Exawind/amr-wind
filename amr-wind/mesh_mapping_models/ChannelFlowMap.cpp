@@ -332,6 +332,75 @@ void ChannelFlowMap::create_non_uniform_mesh(
                 nu_coord_nd(i, j, k, 2) = in_domain ? z_non_uni : z;
             });
     }
+    ////// testing //////
+    amrex::Vector<amrex::Real> uni_coord{
+        {0.0, 0.0, 0.0}};
+
+//    amrex::Vector<amrex::Real> nu_coord1{
+//        {prob_lo[0], prob_lo[1], prob_lo[2]}};
+//    stretched_to_unstretched(uni_coord, nu_coord1, geom);
+//    amrex::Print() << uni_coord[0] << " " << uni_coord[1] << " " << uni_coord[2] << std::endl;
+
+    amrex::Vector<amrex::Real> nu_coord2{
+        {prob_hi[0], prob_hi[1], prob_hi[2]}};
+    stretched_to_unstretched(uni_coord, nu_coord2, geom);
+    amrex::Print() << uni_coord[0] << " " << uni_coord[1] << " " << uni_coord[2] << std::endl;
+
+    amrex::Vector<amrex::Real> nu_coord3{
+        {3.0, 0.5, 0.5}};
+    stretched_to_unstretched(uni_coord, nu_coord3, geom);
+    amrex::Print() << uni_coord[0] << " " << uni_coord[1] << " " << uni_coord[2] << std::endl;
+
+    amrex::Vector<amrex::Real> nu_coord4{
+        {1.5, 0.25, 0.25}};
+    stretched_to_unstretched(uni_coord, nu_coord4, geom);
+    amrex::Print() << uni_coord[0] << " " << uni_coord[1] << " " << uni_coord[2] << std::endl;
+    /////////////////////
+}
+
+/** Map from stretched coordinates to unstretched
+ */
+void ChannelFlowMap::stretched_to_unstretched(
+    amrex::Vector<amrex::Real>& uni_coord,
+    const amrex::Vector<amrex::Real> nu_coord,
+    const amrex::Geometry& geom)
+{
+    amrex::Print() << nu_coord[0] << " " << nu_coord[1] << " " << nu_coord[2] << std::endl;
+
+    int max_iter = 25;
+    amrex::Real eps = 1e-8;
+
+    const auto& prob_lo = geom.ProbLoArray();
+    const auto& prob_hi = geom.ProbHiArray();
+    amrex::Vector<amrex::Real> len{
+        {prob_hi[0] - prob_lo[0], prob_hi[1] - prob_lo[1],
+         prob_hi[2] - prob_lo[2]}};
+
+    amrex::Vector<amrex::Real> f_lo{{prob_lo[0], prob_lo[1], prob_lo[2]}};
+
+    for (int d = 0; d < AMREX_SPACEDIM; ++d) {
+        uni_coord[d] = prob_lo[d];
+        amrex::Real x_guess = (prob_lo[d] + prob_hi[d])/2;
+        int iter = 0;
+
+        while (iter < max_iter) {
+            amrex::Real f_guess =
+                eval_coord(x_guess, m_beta[d], prob_lo[d], len[d]);
+
+            amrex::Real df = (f_guess - f_lo[d]) / (x_guess - prob_lo[d]);
+
+            x_guess = x_guess - (nu_coord[d] - f_guess) / df;
+            amrex::Real nu_estimate =
+                eval_coord(x_guess, m_beta[d], prob_lo[d], len[d]);
+
+            if ((std::abs(nu_coord[d]-nu_estimate) < eps) ||
+                (std::abs(x_guess-prob_lo[d]) < eps)) {
+                uni_coord[d] = x_guess;
+                break;
+            }
+            iter++;
+        }
+    }
 }
 
 } // namespace channel_map
