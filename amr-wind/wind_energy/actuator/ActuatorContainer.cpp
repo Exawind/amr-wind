@@ -120,6 +120,52 @@ void ActuatorContainer::initialize_particles(const int total_pts)
     m_is_scattered = false;
 }
 
+amrex::RealVect
+stretched_to_unstretched_coordinates(const amrex::RealVect& point)
+{
+
+    return {point[0], point[1], point[2]};
+}
+
+amrex::RealVect
+unstretched_to_stretched_coordinates(const amrex::RealVect& point)
+{
+    return {point[0], point[1], point[2]};
+}
+
+void ActuatorContainer::mapped_redistribute()
+{
+    // TODO if condition on using mesh mapping
+    const int nlevels = m_mesh.finestLevel() + 1;
+    for (int lev = 0; lev < nlevels; ++lev) {
+        for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
+            const int nump = pti.numParticles();
+            auto* pstruct = pti.GetArrayOfStructs()().data();
+            amrex::ParallelFor(
+                nump, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
+                    auto& particle = pstruct[ip];
+                    particle.pos() =
+                        stretched_to_unstretched_coordinates(particle.pos());
+                });
+        }
+    }
+
+    Redistribute();
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
+            const int nump = pti.numParticles();
+            auto* pstruct = pti.GetArrayOfStructs()().data();
+            amrex::ParallelFor(
+                nump, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
+                    auto& particle = pstruct[ip];
+                    particle.pos() =
+                        unstretched_to_stretched_coordinates(particle.pos());
+                });
+        }
+    }
+}
+
 void ActuatorContainer::reset_container()
 {
     const int nlevels = m_mesh.finestLevel() + 1;
@@ -134,7 +180,7 @@ void ActuatorContainer::reset_container()
             });
         }
     }
-    Redistribute();
+    mapped_redistribute();
 
     const int total_pts = m_data.velocity.size();
     initialize_particles(total_pts);
@@ -181,9 +227,7 @@ void ActuatorContainer::update_positions()
     }
 
     // Scatter particles to appropriate MPI ranks
-    Redistribute();
-    // TODO Map particle positions back to streched coordinates here, or before
-    // interpolate_fields
+    mapped_redistribute();
 
     // Indicate that it is safe to sample velocities
     m_is_scattered = true;

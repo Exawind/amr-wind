@@ -6,6 +6,11 @@ namespace actuator {
 namespace utils {
 
 namespace {
+amrex::RealVect stretched_to_unstretched_coordinates(const amrex::Real* point)
+{
+
+    return {point[0], point[1], point[2]};
+}
 
 /** Convert a bounding box into amrex::Box index space at a given level
  *
@@ -20,11 +25,18 @@ realbox_to_box(const amrex::RealBox& rbx, const amrex::Geometry& geom)
     const auto* problo = geom.ProbLo();
     const auto* probhi = geom.ProbHi();
     const auto* dxi = geom.InvCellSize();
+    const amrex::RealVect unstretched_lo =
+        stretched_to_unstretched_coordinates(rbx.lo());
+    const amrex::RealVect unstretched_hi =
+        stretched_to_unstretched_coordinates(rbx.hi());
+
+    const amrex::RealBox rbx_transformmed(
+        &unstretched_lo[0], &unstretched_hi[0]);
 
     amrex::IntVect lo, hi;
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-        amrex::Real bbox_min = amrex::max(rbx.lo()[i], problo[i]);
-        amrex::Real bbox_max = amrex::min(rbx.hi()[i], probhi[i]);
+        amrex::Real bbox_min = amrex::max(rbx_transformmed.lo()[i], problo[i]);
+        amrex::Real bbox_max = amrex::min(rbx_transformmed.hi()[i], probhi[i]);
 
         amrex::Real rlo = amrex::Math::floor((bbox_min - problo[i]) * dxi[i]);
         amrex::Real rhi = amrex::Math::ceil((bbox_max - problo[i]) * dxi[i]);

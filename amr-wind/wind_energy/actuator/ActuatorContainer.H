@@ -88,6 +88,8 @@ public:
 
     void initialize_particles(const int total_pts);
 
+    void mapped_redistribute();
+
 protected:
     void compute_local_coordinates();
 
