@@ -17,7 +17,7 @@ class TestActContainer : public amr_wind::actuator::ActuatorContainer
 public:
     TestActContainer(
         amrex::AmrCore& mesh, const int nobj, const amr_wind::CFDSim& sim)
-        : amr_wind::actuator::ActuatorContainer(mesh, nobj, sim.mesh_mapping())
+        : amr_wind::actuator::ActuatorContainer(mesh, nobj)
     {}
 
     // Accessor for the particle data holder object

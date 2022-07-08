@@ -121,14 +121,14 @@ void ActuatorContainer::initialize_particles(const int total_pts)
     m_is_scattered = false;
 }
 
-amrex::RealVect
+AMREX_FORCE_INLINE AMREX_GPU_HOST_DEVICE amrex::RealVect
 stretched_to_unstretched_coordinates(const amrex::RealVect& point)
 {
 
     return {point[0], point[1], point[2]};
 }
 
-amrex::RealVect
+AMREX_FORCE_INLINE AMREX_GPU_HOST_DEVICE amrex::RealVect
 unstretched_to_stretched_coordinates(const amrex::RealVect& point)
 {
     return {point[0], point[1], point[2]};

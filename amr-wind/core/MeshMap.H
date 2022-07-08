@@ -40,6 +40,11 @@ public:
     //! Construct mesh scaling field
     virtual void create_map(int, const amrex::Geometry&) = 0;
 
+    // virtual amrex::RealVect
+    // mapped_to_unmapped_coordinates(const amrex::Real* point);
+    // virtual amrex::RealVect
+    // unmapped_to_mapped_coordinates(const amrex::Real* point);
+
 protected:
     Field* m_mesh_scale_fac_cc{nullptr};
     Field* m_mesh_scale_fac_nd{nullptr};

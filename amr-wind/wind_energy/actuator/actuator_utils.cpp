@@ -7,7 +7,8 @@ namespace actuator {
 namespace utils {
 
 namespace {
-amrex::RealVect stretched_to_unstretched_coordinates(const amrex::Real* point)
+AMREX_FORCE_INLINE AMREX_GPU_HOST_DEVICE amrex::RealVect
+stretched_to_unstretched_coordinates(const amrex::Real* point)
 {
 
     return {point[0], point[1], point[2]};
