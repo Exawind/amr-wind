@@ -68,7 +68,9 @@ public:
     friend class Actuator;
 
     explicit ActuatorContainer(
-        amrex::AmrCore& mesh, const int num_objects, const MeshMap* = nullptr);
+        amrex::AmrCore& mesh,
+        const int num_objects,
+        const MeshMap* map = nullptr);
 
     void post_regrid_actions();
 

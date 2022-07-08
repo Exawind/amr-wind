@@ -30,7 +30,7 @@ amrex::Box realbox_to_box(
     const auto* probhi = geom.ProbHi();
     const auto* dxi = geom.InvCellSize();
     amrex::RealVect real_lo, real_hi;
-    if (map) {
+    if (map != nullptr) {
         real_lo = stretched_to_unstretched_coordinates(rbx.lo());
         real_hi = stretched_to_unstretched_coordinates(rbx.hi());
     } else {
