@@ -83,13 +83,21 @@ TEST_F(MeshMapTest, stretched_to_unstretched)
         }
     }
     {
-        Vector str_coord{{3.0, 0.5, 0.5}};
-        Vector uni_coord({-1., -1., -1.});
+        Vector uni_coord{{3.0, 0.5, 0.5}};
+        Vector gold(uni_coord);
+
+        amrex::Real x = eval_coord(gold[0], 0.0, 0.0, 32.0);
+        amrex::Real y = eval_coord(gold[1], 3.0, 0.0, 32.0);
+        amrex::Real z = eval_coord(gold[2], 0.0, 0.0, 32.0);
+
+        Vector str_coord{{x, y, z}};
+
         sim().mesh_mapping()->stretched_to_unstretched(
             uni_coord, str_coord, m_mesh->Geom(0));
 
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-            EXPECT_NEAR(str_coord[i], uni_coord[i], 1e-12) << i;
+
+            EXPECT_NEAR(gold[i], uni_coord[i], 1e-12) << i;
         }
     }
 }
