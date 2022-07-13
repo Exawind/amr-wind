@@ -261,9 +261,7 @@ void ActuatorContainer::update_positions()
  *  rank and the position vectors can be updated safely.
  */
 void ActuatorContainer::sample_fields(
-    const Field& vel,
-    const Field& density,
-    const Field& nu_cc)
+    const Field& vel, const Field& density, const Field& nu_cc)
 {
     BL_PROFILE("amr-wind::actuator::ActuatorContainer::sample_velocities");
     AMREX_ALWAYS_ASSERT(m_container_initialized && m_is_scattered);
@@ -281,10 +279,7 @@ void ActuatorContainer::sample_fields(
     // Indicate that the particles have been restored to their original MPI rank
     m_is_scattered = false;
 }
-void ActuatorContainer::sample_fields(
-    const Field& vel,
-    const Field& density
-)
+void ActuatorContainer::sample_fields(const Field& vel, const Field& density)
 {
     BL_PROFILE("amr-wind::actuator::ActuatorContainer::sample_velocities");
     AMREX_ALWAYS_ASSERT(m_container_initialized && m_is_scattered);
@@ -499,7 +494,6 @@ void ActuatorContainer::interpolate_fields(
                 const amrex::Real wx_lo = 1.0 - wx_hi;
                 const amrex::Real wy_lo = 1.0 - wy_hi;
                 const amrex::Real wz_lo = 1.0 - wz_hi;
-
 
                 // velocity
                 for (int ic = 0; ic < AMREX_SPACEDIM; ++ic) {
