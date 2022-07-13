@@ -198,6 +198,7 @@ public:
 
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                assert(has_mesh_mapping);
                 vs::Vector cc{0.0, 0.0, 0.0};
                 if (has_mesh_mapping) {
                     cc[0] = nu_coord(i, j, k, 0);

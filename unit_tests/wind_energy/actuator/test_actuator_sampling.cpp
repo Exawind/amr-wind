@@ -124,8 +124,7 @@ TEST_F(ActuatorTest, act_container)
         }
     }
 
-    amrex::Vector<amrex::Real> nu_cx, nu_cy, nu_cz;
-    ac.sample_fields(vel, density, nu_cx, nu_cy, nu_cz, false);
+    ac.sample_fields(vel, density);
     ac.Redistribute();
 
     // Check to make sure that the velocity sampling gathered the particles back

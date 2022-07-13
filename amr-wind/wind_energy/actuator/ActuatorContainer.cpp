@@ -13,7 +13,7 @@ namespace amr_wind {
 namespace {
 // FIXME: Will not work on GPUs
 //! Return closest index (from lower) of value in vector
-AMREX_FORCE_INLINE int
+/*AMREX_FORCE_INLINE int
 closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
 {
     auto const it = std::upper_bound(vec.begin(), vec.end(), value);
@@ -21,7 +21,7 @@ closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
 
     const int idx = std::distance(vec.begin(), it);
     return std::max(idx - 1, 0);
-}
+}*/
 } // namespace
 
 namespace actuator {
@@ -169,7 +169,7 @@ void ActuatorContainer::mapped_redistribute()
 
     Redistribute();
 
-    if (m_map != nullptr) {
+    /*if (m_map != nullptr) {
         for (int lev = 0; lev < nlevels; ++lev) {
             for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
                 const int nump = pti.numParticles();
@@ -182,7 +182,7 @@ void ActuatorContainer::mapped_redistribute()
                     });
             }
         }
-    }
+    }*/
 }
 
 void ActuatorContainer::reset_container()
@@ -237,8 +237,6 @@ void ActuatorContainer::update_positions()
 
                 const auto& pvec = dptr[idx];
                 for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-                    // TODO particle positions should be in unstretched
-                    // coordinates going into Redistribute
                     pp.pos(n) = pvec[n];
                 }
             });
@@ -265,20 +263,34 @@ void ActuatorContainer::update_positions()
 void ActuatorContainer::sample_fields(
     const Field& vel,
     const Field& density,
-    const amrex::Vector<amrex::Real>& nu_cx,
-    const amrex::Vector<amrex::Real>& nu_cy,
-    const amrex::Vector<amrex::Real>& nu_cz,
-    bool has_mesh_mapping)
+    const Field& nu_cc)
 {
     BL_PROFILE("amr-wind::actuator::ActuatorContainer::sample_velocities");
     AMREX_ALWAYS_ASSERT(m_container_initialized && m_is_scattered);
 
     // Sample velocity field
-    if (has_mesh_mapping) {
-        interpolate_fields_mesh_mapping(vel, density, nu_cx, nu_cy, nu_cz);
-    } else {
-        interpolate_fields(vel, density);
-    }
+    interpolate_fields(vel, density, nu_cc);
+
+    // Recall particles to the MPI ranks that contains their corresponding
+    // turbines
+    // Redistribute();
+
+    // Populate the velocity buffer that all actuator instances can access
+    populate_field_buffers();
+
+    // Indicate that the particles have been restored to their original MPI rank
+    m_is_scattered = false;
+}
+void ActuatorContainer::sample_fields(
+    const Field& vel,
+    const Field& density
+)
+{
+    BL_PROFILE("amr-wind::actuator::ActuatorContainer::sample_velocities");
+    AMREX_ALWAYS_ASSERT(m_container_initialized && m_is_scattered);
+
+    // Sample velocity field
+    interpolate_fields(vel, density);
 
     // Recall particles to the MPI ranks that contains their corresponding
     // turbines
@@ -436,12 +448,8 @@ void ActuatorContainer::interpolate_fields(
     }
 }
 
-void ActuatorContainer::interpolate_fields_mesh_mapping(
-    const Field& vel,
-    const Field& density,
-    const amrex::Vector<amrex::Real>& nu_cx,
-    const amrex::Vector<amrex::Real>& nu_cy,
-    const amrex::Vector<amrex::Real>& nu_cz)
+void ActuatorContainer::interpolate_fields(
+    const Field& vel, const Field& density, const Field& nu_cc)
 {
     BL_PROFILE("amr-wind::actuator::ActuatorContainer::interpolate_velocities");
     auto* dptr = m_pos_device.data();
@@ -457,26 +465,41 @@ void ActuatorContainer::interpolate_fields_mesh_mapping(
             auto* pstruct = pti.GetArrayOfStructs()().data();
             const auto varr = vel(lev).const_array(pti);
             const auto darr = density(lev).const_array(pti);
+            const auto nu_cc_arr = nu_cc(lev).const_array(pti);
 
             amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
                 auto& pp = pstruct[ip];
-                const int i = closest_index(nu_cx, pp.pos(0));
-                const int j = closest_index(nu_cy, pp.pos(1));
-                const int k = closest_index(nu_cz, pp.pos(2));
+                const int iproc = pp.cpu();
+                const auto& p_map = dptr[iproc];
+                const auto& p_uni = pp.pos();
+
+                const amrex::Real x =
+                    (p_uni[0] - plo[0] - 0.5 * dx[0]) * dxi[0];
+                const amrex::Real y =
+                    (p_uni[1] - plo[1] - 0.5 * dx[1]) * dxi[1];
+                const amrex::Real z =
+                    (p_uni[2] - plo[2] - 0.5 * dx[2]) * dxi[2];
+
+                // Index of the low corner
+                const int i = static_cast<int>(amrex::Math::floor(x));
+                const int j = static_cast<int>(amrex::Math::floor(y));
+                const int k = static_cast<int>(amrex::Math::floor(z));
 
                 // Interpolation weights in each direction (linear basis)
                 const amrex::Real wx_hi =
-                    (nu_cx[i] - pp.pos(0)) / (nu_cx[i + 1] - nu_cx[i]);
+                    (nu_cc_arr(i, j, k, 0) - p_map[0]) /
+                    (nu_cc_arr(i + 1, j, k, 0) - nu_cc_arr(i, j, k, 0));
                 const amrex::Real wy_hi =
-                    (nu_cx[j] - pp.pos(1)) / (nu_cx[j + 1] - nu_cx[j]);
+                    (nu_cc_arr(i, j, k, 1) - p_map[1]) /
+                    (nu_cc_arr(i, j + 1, k, 1) - nu_cc_arr(i, j, k, 1));
                 const amrex::Real wz_hi =
-                    (nu_cx[k] - pp.pos(2)) / (nu_cx[k + 1] - nu_cx[k]);
+                    (nu_cc_arr(i, j, k, 2) - p_map[2]) /
+                    (nu_cc_arr(i, j, k + 1, 2) - nu_cc_arr(i, j, k, 2));
 
                 const amrex::Real wx_lo = 1.0 - wx_hi;
                 const amrex::Real wy_lo = 1.0 - wy_hi;
                 const amrex::Real wz_lo = 1.0 - wz_hi;
 
-                const int iproc = pp.cpu();
 
                 // velocity
                 for (int ic = 0; ic < AMREX_SPACEDIM; ++ic) {

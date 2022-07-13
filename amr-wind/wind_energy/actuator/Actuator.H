@@ -58,8 +58,6 @@ protected:
 private:
     void setup_container();
 
-    void store_stretched_coordinates();
-
     void update_positions();
 
     void update_velocities();

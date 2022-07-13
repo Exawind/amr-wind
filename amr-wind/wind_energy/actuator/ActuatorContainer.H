@@ -80,9 +80,10 @@ public:
 
     void update_positions();
 
-    void sample_fields(const Field& vel, const Field& density,
-        const amrex::Vector<amrex::Real>&, const amrex::Vector<amrex::Real>&,
-        const amrex::Vector<amrex::Real>&, bool has_mesh_mapping);
+    void sample_fields(const Field& vel, const Field& density);
+    // overload for mesh mapping
+    void
+    sample_fields(const Field& vel, const Field& density, const Field& nu_cc);
 
     int num_actuator_points() const { return m_data.position.size(); }
 
@@ -90,9 +91,12 @@ public:
 
     void interpolate_fields(const Field& vel, const Field& density);
 
-    void interpolate_fields_mesh_mapping(const Field& vel, const Field& density,
-        const amrex::Vector<amrex::Real>&, const amrex::Vector<amrex::Real>&,
-        const amrex::Vector<amrex::Real>&);
+    // overload for mesh mapping
+    void interpolate_fields(
+        const Field& vel, const Field& density, const Field& nu_cc);
+
+    void interpolate_fields_mesh_mapping(
+        const Field& nu_cc, const Field& vel, const Field& density);
 
     void populate_field_buffers();
 
