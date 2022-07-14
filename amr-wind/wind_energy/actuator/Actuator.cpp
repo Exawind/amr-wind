@@ -150,8 +150,7 @@ void Actuator::update_positions()
     const auto& vel = m_sim.repo().get_field("velocity");
     const auto& density = m_sim.repo().get_field("density");
     if (m_sim.has_mesh_mapping()) {
-        const auto& nu_cc =
-            m_sim.repo().get_mesh_mapping_field(amr_wind::FieldLoc::CELL);
+        const auto& nu_cc = m_sim.repo().get_field("non_uniform_coord_cc");
         m_container->sample_fields(vel, density, nu_cc);
     } else {
         m_container->sample_fields(vel, density);
