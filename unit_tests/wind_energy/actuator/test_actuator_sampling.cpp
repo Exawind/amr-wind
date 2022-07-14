@@ -179,7 +179,7 @@ TEST_F(ActuatorTest, act_container_mesh_mapping)
 
     {
         amrex::ParmParse p_geom("geometry");
-        std::string map_name = "ConstantMap";
+        std::string map_name = "ChannelFlowMap";
         p_geom.add("mesh_mapping", map_name);
     }
     {
@@ -197,8 +197,8 @@ TEST_F(ActuatorTest, act_container_mesh_mapping)
     for (int i = 0; i < n_levels; ++i) {
         sim().mesh_mapping()->create_map(i, m_mesh->Geom(i));
     }
-    auto& vel = sim().repo().declare_field("velocity", 3, 3);
-    auto& density = sim().repo().declare_field("density", 1, 3);
+    auto& vel = sim().repo().declare_field("velocity", 3, 2);
+    auto& density = sim().repo().declare_field("density", 1, 2);
 
     init_field_mapped(vel);
     density.setVal(1.0);
@@ -304,6 +304,9 @@ TEST_F(ActuatorTest, act_container_mesh_mapping)
             const amrex::Real vval = pos.x() + pos.y() + pos.z();
             const vs::Vector vgold{vval, vval, vval};
             rerr += vs::mag_sqr(pvel - vgold);
+            for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+                EXPECT_NEAR(vgold[i], pvel[i], rtol) << i;
+            }
         }
         EXPECT_NEAR(rerr, 0.0, rtol);
     }
