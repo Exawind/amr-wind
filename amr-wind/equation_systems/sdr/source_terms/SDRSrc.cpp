@@ -23,7 +23,7 @@ void SDRSrc::operator()(
     const amrex::Array4<amrex::Real>& src_term) const
 {
     const auto& sdr_src_arr = (this->m_sdr_src)(lev).array(mfi);
-    const auto& sdr_diss_arr = (this->m_sdr_src)(lev).array(mfi);
+    const auto& sdr_diss_arr = (this->m_sdr_diss)(lev).array(mfi);
 
     const amrex::Real factor = (fstate == FieldState::NPH) ? 0.5 : 1.0;
 
