@@ -6,7 +6,7 @@
 namespace amr_wind {
 namespace sampling {
 
-ProbeSampler::ProbeSampler(const CFDSim&) {}
+ProbeSampler::ProbeSampler(const CFDSim& /*unused*/) {}
 
 ProbeSampler::~ProbeSampler() = default;
 
@@ -17,7 +17,9 @@ void ProbeSampler::initialize(const std::string& key)
     pp.query("probe_location_file", pfile);
 
     std::ifstream ifh(pfile, std::ios::in);
-    if (!ifh.good()) amrex::Abort("Cannot find probe location file: " + pfile);
+    if (!ifh.good()) {
+        amrex::Abort("Cannot find probe location file: " + pfile);
+    }
 
     ifh >> m_npts;
     ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -31,8 +33,11 @@ void ProbeSampler::initialize(const std::string& key)
 void ProbeSampler::sampling_locations(SampleLocType& locs) const
 {
     locs.resize(m_npts);
-    for (int i = 0; i < m_npts; ++i)
-        for (int d = 0; d < AMREX_SPACEDIM; ++d) locs[i][d] = m_probes[i][d];
+    for (int i = 0; i < m_npts; ++i) {
+        for (int d = 0; d < AMREX_SPACEDIM; ++d) {
+            locs[i][d] = m_probes[i][d];
+        }
+    }
 }
 
 #ifdef AMR_WIND_USE_NETCDF
@@ -41,7 +46,9 @@ void ProbeSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
     grp.put_attr("sampling_type", identifier());
 }
 #else
-void ProbeSampler::define_netcdf_metadata(const ncutils::NCGroup&) const {}
+void ProbeSampler::define_netcdf_metadata(
+    const ncutils::NCGroup& /*unused*/) const
+{}
 #endif
 
 } // namespace sampling

@@ -16,7 +16,7 @@ class MeshTest : public AmrexTest
 public:
     MeshTest() = default;
 
-    virtual ~MeshTest() = default;
+    ~MeshTest() override = default;
 
     /** Populate the ParmParse instance with all the necessary input variables
      *  for this test fixture

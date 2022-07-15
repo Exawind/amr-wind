@@ -11,7 +11,6 @@ namespace amr_wind {
 
 CFDSim::CFDSim(amrex::AmrCore& mesh)
     : m_mesh(mesh)
-    , m_time()
     , m_repo(m_mesh)
     , m_pde_mgr(*this)
     , m_io_mgr(new IOManager(*this))
@@ -36,6 +35,7 @@ void CFDSim::create_turbulence_model()
 
     const std::string identifier = turbulence_model + "-" + transport_model;
     m_turbulence = turbulence::TurbulenceModel::create(identifier, *this);
+    m_turbulence->parse_model_coeffs();
 }
 
 void CFDSim::init_physics()
@@ -44,7 +44,9 @@ void CFDSim::init_physics()
     amrex::Vector<std::string> phys_names;
     pp.queryarr("physics", phys_names);
 
-    for (auto& phy : phys_names) m_physics_mgr.create(phy, *this);
+    for (auto& phy : phys_names) {
+        m_physics_mgr.create(phy, *this);
+    }
 }
 
 void CFDSim::activate_overset()
@@ -53,6 +55,19 @@ void CFDSim::activate_overset()
     std::string otype = "TIOGA";
 
     m_overset_mgr = OversetManager::create(otype, *this);
+}
+
+bool CFDSim::has_overset() const { return (static_cast<bool>(m_overset_mgr)); }
+
+void CFDSim::activate_mesh_map()
+{
+    amrex::ParmParse pp("geometry");
+    std::string mesh_map_name; // default
+    m_mesh_mapping = static_cast<bool>(pp.query("mesh_mapping", mesh_map_name));
+    if (m_mesh_mapping) {
+        m_mesh_map = MeshMap::create(mesh_map_name);
+        m_mesh_map->declare_mapping_fields(*this, m_pde_mgr.num_ghost_state());
+    }
 }
 
 } // namespace amr_wind

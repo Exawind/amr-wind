@@ -31,7 +31,7 @@ class DerivedQtyMgr;
 class IOManager
 {
 public:
-    explicit IOManager(CFDSim&);
+    explicit IOManager(CFDSim& /*sim*/);
 
     ~IOManager();
 
@@ -51,7 +51,8 @@ public:
     void read_checkpoint_fields(
         const std::string& restart_file,
         const amrex::Vector<amrex::BoxArray>& ba_chk,
-        const amrex::Vector<amrex::DistributionMapping>& dm_chk);
+        const amrex::Vector<amrex::DistributionMapping>& dm_chk,
+        const amrex::IntVect& rep);
 
     //! Register a variable for output
     void register_output_var(const std::string& fname)
@@ -85,9 +86,9 @@ public:
     const amrex::Vector<Field*>& plot_fields() const { return m_plt_fields; }
 
 private:
-    void write_header(const std::string&, const int start_level);
+    void write_header(const std::string& /*chkname*/, const int start_level);
 
-    void write_info_file(const std::string&);
+    void write_info_file(const std::string& /*path*/);
 
     CFDSim& m_sim;
 
@@ -121,7 +122,7 @@ private:
     std::string m_chk_prefix{"chk"};
 
     //! Restart file name
-    std::string m_restart_file{""};
+    std::string m_restart_file;
 
     //! Total number of variables (including components) output to plot file
     int m_plt_num_comp{0};
@@ -131,6 +132,15 @@ private:
 
     //! Flag indicating whether we should allow missing restart fields
     bool m_allow_missing_restart_fields{true};
+
+#ifdef AMR_WIND_USE_HDF5
+    //! Flag indicating whether or not to output HDF5 plot files
+    bool m_output_hdf5_plotfile{false};
+#ifdef AMR_WIND_USE_HDF5_ZFP
+    //! String for requesting a particular ZFP compression in HDF5 plot files
+    std::string m_hdf5_compression{"None@0"};
+#endif
+#endif
 };
 
 } // namespace amr_wind

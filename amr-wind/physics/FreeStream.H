@@ -19,11 +19,11 @@ namespace amr_wind {
 class FreeStream : public Physics::Register<FreeStream>
 {
 public:
-    static const std::string identifier() { return "FreeStream"; }
+    static std::string identifier() { return "FreeStream"; }
 
     explicit FreeStream(const CFDSim& sim);
 
-    virtual ~FreeStream() = default;
+    ~FreeStream() override = default;
 
     //! Initialize the fields
     void initialize_fields(int level, const amrex::Geometry& geom) override;

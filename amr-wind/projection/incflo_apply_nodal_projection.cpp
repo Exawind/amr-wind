@@ -1,4 +1,5 @@
 #include <AMReX_BC_TYPES.H>
+#include <memory>
 #include "amr-wind/incflo.H"
 #include "amr-wind/core/MLMGOptions.H"
 #include "amr-wind/utilities/console_io.H"
@@ -10,15 +11,15 @@ using namespace amrex;
 void incflo::set_inflow_velocity(
     int lev, amrex::Real time, MultiFab& vel, int nghost)
 {
-    auto& velocity = icns().fields().field;
-    velocity.set_inflow(lev, time, vel, nghost);
+    auto& lvelocity = icns().fields().field;
+    lvelocity.set_inflow(lev, time, vel, nghost);
 
     // TODO fix hack for ABL
     auto& phy_mgr = m_sim.physics_manager();
     if (phy_mgr.contains("ABL")) {
         auto& abl = phy_mgr.get<amr_wind::ABL>();
-        auto& bndry_plane = abl.bndry_plane();
-        bndry_plane.populate_data(lev, time, velocity, vel);
+        const auto& bndry_plane = abl.bndry_plane();
+        bndry_plane.populate_data(lev, time, lvelocity, vel);
     }
 }
 
@@ -124,15 +125,38 @@ void incflo::ApplyProjection(
         (!m_sim.pde_manager().constant_density() ||
          m_sim.physics_manager().contains("MultiPhase"));
 
+    bool mesh_mapping = m_sim.has_mesh_mapping();
+
     auto& grad_p = m_repo.get_field("gp");
     auto& pressure = m_repo.get_field("p");
     auto& velocity = icns().fields().field;
+    auto& velocity_old = icns().fields().field.state(amr_wind::FieldState::Old);
+    amr_wind::Field const* mesh_fac =
+        mesh_mapping
+            ? &(m_repo.get_mesh_mapping_field(amr_wind::FieldLoc::CELL))
+            : nullptr;
+    amr_wind::Field const* mesh_detJ =
+        mesh_mapping ? &(m_repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::CELL))
+                     : nullptr;
+
+    // TODO: Mesh mapping doesn't work with immersed boundaries
+    // Do the pre pressure correction work -- this applies to IB only
+    for (auto& pp : m_sim.physics()) {
+        pp->pre_pressure_correction_work();
+    }
+
+    // ensure velocity is in stretched mesh space
+    if (velocity.in_uniform_space() && mesh_mapping) {
+        velocity.to_stretched_space();
+    }
 
     // Add the ( grad p /ro ) back to u* (note the +dt)
+    // Also account for mesh mapping in ( grad p /ro ) ->  1/fac * grad(p) *
+    // dt/rho
     if (!incremental) {
         for (int lev = 0; lev <= finest_level; lev++) {
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
             for (MFIter mfi(velocity(lev), TilingIfNotGPU()); mfi.isValid();
@@ -141,12 +165,23 @@ void incflo::ApplyProjection(
                 Array4<Real> const& u = velocity(lev).array(mfi);
                 Array4<Real const> const& rho = density[lev]->const_array(mfi);
                 Array4<Real const> const& gp = grad_p(lev).const_array(mfi);
+                amrex::Array4<amrex::Real const> fac =
+                    mesh_mapping ? ((*mesh_fac)(lev).const_array(mfi))
+                                 : amrex::Array4<amrex::Real const>();
+
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         Real soverrho = scaling_factor / rho(i, j, k);
-                        u(i, j, k, 0) += gp(i, j, k, 0) * soverrho;
-                        u(i, j, k, 1) += gp(i, j, k, 1) * soverrho;
-                        u(i, j, k, 2) += gp(i, j, k, 2) * soverrho;
+                        amrex::Real fac_x =
+                            mesh_mapping ? (fac(i, j, k, 0)) : 1.0;
+                        amrex::Real fac_y =
+                            mesh_mapping ? (fac(i, j, k, 1)) : 1.0;
+                        amrex::Real fac_z =
+                            mesh_mapping ? (fac(i, j, k, 2)) : 1.0;
+
+                        u(i, j, k, 0) += 1 / fac_x * gp(i, j, k, 0) * soverrho;
+                        u(i, j, k, 1) += 1 / fac_y * gp(i, j, k, 1) * soverrho;
+                        u(i, j, k, 2) += 1 / fac_z * gp(i, j, k, 2) * soverrho;
                     });
             }
         }
@@ -156,49 +191,63 @@ void incflo::ApplyProjection(
     if (add_surface_tension && !incremental) {
         // Create the Surface tension forcing term (Cell-centered)
         for (int lev = 0; lev <= finest_level; ++lev) {
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-            amrex::MultiFab surf_tens_force;
-            surf_tens_force.define(
-                grids[lev], dmap[lev], AMREX_SPACEDIM, 1, MFInfo(),
-                Factory(lev));
-            // At the moment set it to zero
-            surf_tens_force.setVal(0.0);
-            for (MFIter mfi(velocity(lev), TilingIfNotGPU()); mfi.isValid();
-                 ++mfi) {
-                Box const& bx = mfi.tilebox();
-                Array4<Real> const& force_st = surf_tens_force.array(mfi);
-                Array4<Real const> const& rho = density[lev]->const_array(mfi);
-                Array4<Real> const& u = velocity(lev).array(mfi);
+            {
+                amrex::MultiFab surf_tens_force;
+                surf_tens_force.define(
+                    grids[lev], dmap[lev], AMREX_SPACEDIM, 1, MFInfo(),
+                    Factory(lev));
+                // At the moment set it to zero
+                surf_tens_force.setVal(0.0);
+                for (MFIter mfi(velocity(lev), TilingIfNotGPU()); mfi.isValid();
+                     ++mfi) {
+                    Box const& bx = mfi.tilebox();
+                    Array4<Real> const& force_st = surf_tens_force.array(mfi);
+                    Array4<Real const> const& rho =
+                        density[lev]->const_array(mfi);
+                    Array4<Real> const& u = velocity(lev).array(mfi);
 
-                amrex::ParallelFor(
-                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        Real soverrho = scaling_factor / rho(i, j, k);
-                        u(i, j, k, 0) += force_st(i, j, k, 0) * soverrho;
-                        u(i, j, k, 1) += force_st(i, j, k, 1) * soverrho;
-                        u(i, j, k, 2) += force_st(i, j, k, 2) * soverrho;
-                    });
+                    amrex::ParallelFor(
+                        bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            Real soverrho = scaling_factor / rho(i, j, k);
+                            u(i, j, k, 0) += force_st(i, j, k, 0) * soverrho;
+                            u(i, j, k, 1) += force_st(i, j, k, 1) * soverrho;
+                            u(i, j, k, 2) += force_st(i, j, k, 2) * soverrho;
+                        });
+                }
             }
         }
+    }
+
+    // ensure velocity is in stretched mesh space
+    if (velocity_old.in_uniform_space() && mesh_mapping) {
+        velocity_old.to_stretched_space();
     }
 
     // Define "vel" to be U^* - U^n rather than U^*
     if (proj_for_small_dt || incremental) {
         for (int lev = 0; lev <= finest_level; ++lev) {
             MultiFab::Subtract(
-                velocity(lev), velocity.state(amr_wind::FieldState::Old)(lev),
-                0, 0, AMREX_SPACEDIM, 0);
+                velocity(lev), velocity_old(lev), 0, 0, AMREX_SPACEDIM, 0);
         }
     }
 
-    // Create sigma
+    // scale U^* to accommodate for mesh mapping -> U^bar = J/fac * U
+    if (mesh_mapping) {
+        velocity.to_uniform_space();
+    }
+
+    // Create sigma while accounting for mesh mapping
+    // sigma = 1/(fac^2)*J * dt/rho
     Vector<amrex::MultiFab> sigma(finest_level + 1);
-    if (variable_density) {
+    if (variable_density || mesh_mapping) {
+        int ncomp = mesh_mapping ? AMREX_SPACEDIM : 1;
         for (int lev = 0; lev <= finest_level; ++lev) {
             sigma[lev].define(
-                grids[lev], dmap[lev], 1, 0, MFInfo(), Factory(lev));
-#ifdef _OPENMP
+                grids[lev], dmap[lev], ncomp, 0, MFInfo(), Factory(lev));
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
             for (MFIter mfi(sigma[lev], TilingIfNotGPU()); mfi.isValid();
@@ -206,16 +255,29 @@ void incflo::ApplyProjection(
                 Box const& bx = mfi.tilebox();
                 Array4<Real> const& sig = sigma[lev].array(mfi);
                 Array4<Real const> const& rho = density[lev]->const_array(mfi);
+                amrex::Array4<amrex::Real const> fac =
+                    mesh_mapping ? ((*mesh_fac)(lev).const_array(mfi))
+                                 : amrex::Array4<amrex::Real const>();
+                amrex::Array4<amrex::Real const> detJ =
+                    mesh_mapping ? ((*mesh_detJ)(lev).const_array(mfi))
+                                 : amrex::Array4<amrex::Real const>();
+
                 amrex::ParallelFor(
-                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        sig(i, j, k) = scaling_factor / rho(i, j, k);
+                    bx, ncomp,
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                        amrex::Real fac_cc =
+                            mesh_mapping ? (fac(i, j, k, n)) : 1.0;
+                        amrex::Real det_j =
+                            mesh_mapping ? (detJ(i, j, k)) : 1.0;
+                        sig(i, j, k, n) = std::pow(fac_cc, -2.) * det_j *
+                                          scaling_factor / rho(i, j, k);
                     });
             }
         }
     }
 
     // Perform projection
-    std::unique_ptr<NodalProjector> nodal_projector;
+    std::unique_ptr<Hydro::NodalProjector> nodal_projector;
 
     auto bclo = get_projection_bc(Orientation::low);
     auto bchi = get_projection_bc(Orientation::high);
@@ -226,28 +288,44 @@ void incflo::ApplyProjection(
         vel[lev]->setBndry(0.0);
         if (!proj_for_small_dt and !incremental) {
             set_inflow_velocity(lev, time, *vel[lev], 1);
-            //  velocity.fillphysbc(lev, time, *vel[lev], 1);
         }
     }
 
     amr_wind::MLMGOptions options("nodal_proj");
-    if (variable_density) {
-        nodal_projector.reset(new NodalProjector(
+
+    if (variable_density || mesh_mapping) {
+        nodal_projector = std::make_unique<Hydro::NodalProjector>(
             vel, GetVecOfConstPtrs(sigma), Geom(0, finest_level),
-            options.lpinfo()));
+            options.lpinfo());
     } else {
         amrex::Real rho_0 = 1.0;
         amrex::ParmParse pp("incflo");
         pp.query("density", rho_0);
 
-        nodal_projector.reset(new NodalProjector(
+        nodal_projector = std::make_unique<Hydro::NodalProjector>(
             vel, scaling_factor / rho_0, Geom(0, finest_level),
-            options.lpinfo()));
+            options.lpinfo());
     }
 
     // Set MLMG and NodalProjector options
     options(*nodal_projector);
     nodal_projector->setDomainBC(bclo, bchi);
+
+    bool has_ib = m_sim.physics_manager().contains("IB");
+    if (has_ib) {
+        auto div_vel_rhs =
+            sim().repo().create_scratch_field(1, 0, amr_wind::FieldLoc::NODE);
+        nodal_projector->computeRHS(div_vel_rhs->vec_ptrs(), vel, {}, {});
+        // Mask the righ-hand side of the Poisson solve for the nodes inside the
+        // body
+        auto& imask_node = repo().get_int_field("mask_node");
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            amrex::MultiFab::Multiply(
+                *div_vel_rhs->vec_ptrs()[lev],
+                amrex::ToMultiFab(imask_node(lev)), 0, 0, 1, 0);
+        }
+        nodal_projector->setCustomRHS(div_vel_rhs->vec_const_ptrs());
+    }
 
     // Setup masking for overset simulations
     if (sim().has_overset()) {
@@ -276,12 +354,16 @@ void incflo::ApplyProjection(
     amr_wind::io::print_mlmg_info(
         "Nodal_projection", nodal_projector->getMLMG());
 
+    // scale U^* back to -> U = fac/J * U^bar
+    if (mesh_mapping) {
+        velocity.to_stretched_space();
+    }
+
     // Define "vel" to be U^{n+1} rather than (U^{n+1}-U^n)
     if (proj_for_small_dt || incremental) {
         for (int lev = 0; lev <= finest_level; ++lev) {
             MultiFab::Add(
-                velocity(lev), velocity.state(amr_wind::FieldState::Old)(lev),
-                0, 0, AMREX_SPACEDIM, 0);
+                velocity(lev), velocity_old(lev), 0, 0, AMREX_SPACEDIM, 0);
         }
     }
 
@@ -291,7 +373,7 @@ void incflo::ApplyProjection(
 
     for (int lev = 0; lev <= finest_level; lev++) {
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
         for (MFIter mfi(grad_p(lev), TilingIfNotGPU()); mfi.isValid(); ++mfi) {

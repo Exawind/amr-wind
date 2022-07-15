@@ -17,11 +17,11 @@ namespace enstrophy {
 class Enstrophy : public PostProcessBase::Register<Enstrophy>
 {
 public:
-    static const std::string identifier() { return "Enstrophy"; }
+    static std::string identifier() { return "Enstrophy"; }
 
-    Enstrophy(CFDSim&, const std::string&);
+    Enstrophy(CFDSim& /*sim*/, std::string /*label*/);
 
-    ~Enstrophy();
+    ~Enstrophy() override;
 
     //! Perform actions before mesh is created
     void pre_init_actions() override {}
@@ -45,7 +45,7 @@ private:
     void write_ascii();
 
     //! store the total enstrophy
-    amrex::Real m_total_enstrophy;
+    amrex::Real m_total_enstrophy{0.0};
 
     //! Reference to the CFD sim
     CFDSim& m_sim;
@@ -69,7 +69,7 @@ private:
     int m_out_freq{10};
 
     //! width in ASCII output
-    int m_width{18};
+    int m_width{22};
 
     //! precision in ASCII output
     int m_precision{12};

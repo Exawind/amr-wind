@@ -19,9 +19,9 @@ namespace pde {
 class TKESource : public Factory<TKESource, const CFDSim&>
 {
 public:
-    static const std::string base_identifier() { return "TKESource"; }
+    static std::string base_identifier() { return "TKESource"; }
 
-    virtual ~TKESource() = default;
+    ~TKESource() override = default;
 
     virtual void operator()(
         const int lev,

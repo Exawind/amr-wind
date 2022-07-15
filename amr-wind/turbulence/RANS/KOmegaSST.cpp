@@ -14,6 +14,22 @@ namespace amr_wind {
 namespace turbulence {
 
 template <typename Transport>
+void KOmegaSST<Transport>::parse_model_coeffs()
+{
+    const std::string coeffs_dict = this->model_name() + "_coeffs";
+    amrex::ParmParse pp(coeffs_dict);
+    pp.query("beta_star", this->m_beta_star);
+    pp.query("alpha1", this->m_alpha1);
+    pp.query("alpha2", this->m_alpha2);
+    pp.query("beta1", this->m_beta1);
+    pp.query("beta2", this->m_beta2);
+    pp.query("sigma_k1", this->m_sigma_k1);
+    pp.query("sigma_k2", this->m_sigma_k2);
+    pp.query("sigma_omega1", this->m_sigma_omega1);
+    pp.query("sigma_omega2", this->m_sigma_omega2);
+}
+
+template <typename Transport>
 TurbulenceModel::CoeffsDictType KOmegaSST<Transport>::model_coeffs() const
 {
     return TurbulenceModel::CoeffsDictType{
@@ -48,6 +64,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
     const auto& den = this->m_rho.state(fstate);
     const auto& tke = (*this->m_tke).state(fstate);
     const auto& sdr = (*this->m_sdr).state(fstate);
+    // cppcheck-suppress constVariable
     auto& repo = mu_turb.repo();
 
     const int nlevels = repo.num_active_levels();
@@ -64,6 +81,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
 
     auto& tke_lhs = (this->m_sim).repo().get_field("tke_lhs_src_term");
     tke_lhs.setVal(0.0);
+    // cppcheck-suppress constVariable
     auto& sdr_lhs = (this->m_sim).repo().get_field("sdr_lhs_src_term");
 
     const amrex::Real deltaT = (this->m_sim).time().deltaT();

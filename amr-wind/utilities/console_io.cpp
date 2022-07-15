@@ -16,6 +16,9 @@
 #ifdef AMREX_USE_HYPRE
 #include "HYPRE_config.h"
 #endif
+#ifdef AMR_WIND_USE_ASCENT
+#include "ascent_config.h"
+#endif
 
 namespace amrex {
 const char* buildInfoGetBuildDate();
@@ -128,7 +131,7 @@ void print_banner(MPI_Comm comm, std::ostream& out)
         << "OFF" << std::endl
 #endif
         << "  OpenMP           :: "
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
         << "ON    (Num. threads = " << omp_get_max_threads() << ")" << std::endl
 #else
         << "OFF" << std::endl
@@ -184,8 +187,11 @@ void print_tpls(std::ostream& out)
 #ifdef AMR_WIND_USE_MASA
     tpls.push_back(std::string("MASA      ") + MASA_LIB_VERSION);
 #endif
+#ifdef AMR_WIND_USE_ASCENT
+    tpls.push_back(std::string("ASCENT    ") + ASCENT_VERSION);
+#endif
 
-    if (tpls.size() > 0) {
+    if (!tpls.empty()) {
         out << "  Enabled third-party libraries: ";
         for (const auto& val : tpls) {
             out << "\n    " << val;

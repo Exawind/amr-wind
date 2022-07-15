@@ -41,7 +41,7 @@ inline void copy_filename(const std::string& inp, char* out)
 
 } // namespace
 
-FastIface::FastIface(const amr_wind::CFDSim&) {}
+FastIface::FastIface(const amr_wind::CFDSim& /*unused*/) {}
 
 FastIface::~FastIface()
 {
@@ -164,7 +164,9 @@ void FastIface::advance_turbine(const int local_id)
 void FastIface::init_turbine(const int local_id)
 {
     AMREX_ALWAYS_ASSERT(local_id < static_cast<int>(m_turbine_data.size()));
-    if (!m_is_initialized) allocate_fast_turbines();
+    if (!m_is_initialized) {
+        allocate_fast_turbines();
+    }
     auto& fi = *m_turbine_data[local_id];
 
     switch (fi.sim_mode) {
@@ -199,11 +201,20 @@ void FastIface::fast_init_turbine(FastTurbine& fi)
     char inp_file[fast_strlen()];
     copy_filename(fi.input_file, inp_file);
 
+#ifdef AMR_WIND_FAST_USE_SCDX
+    fast_func(
+        FAST_OpFM_Init, &fi.tid_local, &fi.stop_time, inp_file, &fi.tid_global,
+        &m_num_sc_inputs_glob, &m_num_sc_inputs, &m_num_sc_outputs,
+        &m_init_sc_inputs_glob, &m_init_sc_inputs_turbine, &fi.num_pts_blade,
+        &fi.num_pts_tower, fi.base_pos, &abort_lev, &fi.dt_fast, &fi.num_blades,
+        &fi.num_blade_elem, &fi.to_cfd, &fi.from_cfd, &fi.to_sc, &fi.from_sc);
+#else
     fast_func(
         FAST_OpFM_Init, &fi.tid_local, &fi.stop_time, inp_file, &fi.tid_global,
         &m_num_sc_inputs, &m_num_sc_outputs, &fi.num_pts_blade,
         &fi.num_pts_tower, fi.base_pos, &abort_lev, &fi.dt_fast, &fi.num_blades,
         &fi.num_blade_elem, &fi.to_cfd, &fi.from_cfd, &fi.to_sc, &fi.from_sc);
+#endif
 
     {
 #ifdef AMR_WIND_USE_OPENFAST
@@ -236,6 +247,8 @@ void FastIface::fast_init_turbine(FastTurbine& fi)
     }
 }
 
+// cppcheck-suppress constParameter
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 void FastIface::fast_replay_turbine(FastTurbine& fi)
 {
 #ifdef AMR_WIND_USE_NETCDF
@@ -282,7 +295,8 @@ void FastIface::fast_replay_turbine(FastTurbine& fi)
 #endif
 }
 
-void FastIface::fast_restart_turbine(FastTurbine&)
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void FastIface::fast_restart_turbine(FastTurbine& /*unused*/)
 {
     BL_PROFILE("amr-wind::FastIface::restart_turbine");
 }
@@ -377,10 +391,12 @@ void FastIface::read_velocity_data(
 
 #else
 
-void FastIface::prepare_netcdf_file(FastTurbine&) {}
-void FastIface::write_velocity_data(const FastTurbine&) {}
+void FastIface::prepare_netcdf_file(FastTurbine& /*unused*/) {}
+void FastIface::write_velocity_data(const FastTurbine& /*unused*/) {}
 void FastIface::read_velocity_data(
-    FastTurbine&, const ncutils::NCFile&, const size_t)
+    FastTurbine& /*unused*/,
+    const ncutils::NCFile& /*unused*/,
+    const size_t /*unused*/)
 {}
 
 #endif

@@ -60,7 +60,7 @@ public:
 protected:
     IntField(
         FieldRepo& repo,
-        const std::string& name,
+        std::string name,
         const unsigned fid,
         const int ncomp = 1,
         const int ngrow = 1,

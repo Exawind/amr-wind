@@ -2,15 +2,16 @@
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include <AMReX_MultiFabUtil.H>
+#include <utility>
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/IOManager.H"
 
 namespace amr_wind {
 namespace kinetic_energy {
 
-KineticEnergy::KineticEnergy(CFDSim& sim, const std::string& label)
+KineticEnergy::KineticEnergy(CFDSim& sim, std::string label)
     : m_sim(sim)
-    , m_label(label)
+    , m_label(std::move(label))
     , m_velocity(sim.repo().get_field("velocity"))
     , m_density(sim.repo().get_field("density"))
 {}
@@ -91,7 +92,9 @@ void KineticEnergy::post_advance_work()
     const auto& time = m_sim.time();
     const int tidx = time.time_index();
     // Skip processing if it is not an output timestep
-    if (!(tidx % m_out_freq == 0)) return;
+    if (!(tidx % m_out_freq == 0)) {
+        return;
+    }
 
     m_total_kinetic_energy = calculate_kinetic_energy();
 
@@ -124,7 +127,7 @@ void KineticEnergy::write_ascii()
 
     if (amrex::ParallelDescriptor::IOProcessor()) {
         std::ofstream f(m_out_fname.c_str(), std::ios_base::app);
-        f << m_sim.time().time_index() << std::fixed
+        f << m_sim.time().time_index() << std::scientific
           << std::setprecision(m_precision) << std::setw(m_width)
           << m_sim.time().new_time();
         f << std::setw(m_width) << m_total_kinetic_energy;

@@ -27,13 +27,16 @@ void QCriterionRefinement::initialize(const std::string& key)
 
     pp.queryarr("values", qc_value);
 
-    if (qc_value.size() == 0u)
+    if (qc_value.empty()) {
         amrex::Abort(
             "QCriterionRefinement: Must specify at least one of value");
+    }
 
     {
-        size_t fcount = std::min(qc_value.size(), m_qc_value.size());
-        for (size_t i = 0; i < fcount; ++i) m_qc_value[i] = qc_value[i];
+        const int fcount = std::min(qc_value.size(), m_qc_value.size());
+        for (int i = 0; i < fcount; ++i) {
+            m_qc_value[i] = qc_value[i];
+        }
         m_max_lev_field = fcount - 1;
     }
 
@@ -41,11 +44,13 @@ void QCriterionRefinement::initialize(const std::string& key)
 }
 
 void QCriterionRefinement::operator()(
-    int level, amrex::TagBoxArray& tags, amrex::Real time, int)
+    int level, amrex::TagBoxArray& tags, amrex::Real time, int /*ngrow*/)
 {
     const bool tag_field = level <= m_max_lev_field;
 
-    if (!tag_field) return;
+    if (!tag_field) {
+        return;
+    }
 
     m_vel->fillpatch(level, time, (*m_vel)(level), 1);
 
@@ -54,8 +59,8 @@ void QCriterionRefinement::operator()(
 
     const auto nondim = m_nondim;
 
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
     for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid();
          ++mfi) {
@@ -88,21 +93,22 @@ void QCriterionRefinement::operator()(
                 const auto wz =
                     0.5 * (vel(i, j, k + 1, 2) - vel(i, j, k - 1, 2)) * idx[2];
 
-                const auto S2 = 2.0 * ux * ux + 2.0 * vy * vy + 2.0 * wz * wz +
-                                std::pow(uy + vx, 2) + std::pow(vz + wy, 2) +
-                                std::pow(wx + uz, 2);
+                const auto S2 =
+                    ux * ux + vy * vy + wz * wz + 0.5 * std::pow(uy + vx, 2) +
+                    0.5 * std::pow(vz + wy, 2) + 0.5 * std::pow(wx + uz, 2);
 
-                const auto W2 = std::pow(uy - vx, 2) + std::pow(vz - wy, 2) +
-                                std::pow(wx - uz, 2);
+                const auto W2 = 0.5 * std::pow(uy - vx, 2) +
+                                0.5 * std::pow(vz - wy, 2) +
+                                0.5 * std::pow(wx - uz, 2);
 
                 const auto qc = 0.5 * (W2 - S2);
                 const auto qc_nondim =
                     0.5 * (W2 / amrex::max(S2, 1.0e-12) - 1.0);
 
-                if (nondim && qc_nondim > qc_val)
+                if ((nondim && qc_nondim > qc_val) ||
+                    (!nondim && amrex::Math::abs(qc) > qc_val)) {
                     tag(i, j, k) = amrex::TagBox::SET;
-                else if (!nondim && amrex::Math::abs(qc) > qc_val)
-                    tag(i, j, k) = amrex::TagBox::SET;
+                }
             });
     }
 }

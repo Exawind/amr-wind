@@ -59,9 +59,9 @@ public:
 class Physics : public Factory<Physics, CFDSim&>
 {
 public:
-    static const std::string base_identifier() { return "Physics"; }
+    static std::string base_identifier() { return "Physics"; }
 
-    virtual ~Physics() = default;
+    ~Physics() override = default;
 
     //! Initialize the fields for a given level during init/regrid
     virtual void initialize_fields(int level, const amrex::Geometry& geom) = 0;
@@ -81,6 +81,12 @@ public:
 
     //! Perform tasks necessary after advancing timestep
     virtual void post_advance_work() = 0;
+
+    //! Perform tasks necessary before applying the pressure correction
+    virtual void pre_pressure_correction_work() {}
+
+    //! Perform tasks necessary after applying the pressure correction
+    virtual void post_pressure_correction_work() {}
 };
 
 /** A collection of \ref physics instances that are active during a simulation

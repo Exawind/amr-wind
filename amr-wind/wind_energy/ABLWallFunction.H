@@ -97,7 +97,7 @@ private:
 class ABLTempWallFunc : public FieldBCIface
 {
 public:
-    ABLTempWallFunc(Field& temperature, const ABLWallFunction& wall_func);
+    ABLTempWallFunc(Field& temperature, const ABLWallFunction& wall_fuc);
 
     void operator()(Field& temperature, const FieldState rho_state) override;
 

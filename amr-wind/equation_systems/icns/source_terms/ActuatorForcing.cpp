@@ -22,7 +22,7 @@ void ActuatorForcing::operator()(
     const int lev,
     const amrex::MFIter& mfi,
     const amrex::Box& bx,
-    const FieldState,
+    const FieldState /*fstate*/,
     const amrex::Array4<amrex::Real>& src_term) const
 {
     const auto varr = m_act_src(lev).const_array(mfi);

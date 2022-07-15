@@ -27,18 +27,21 @@ void CurvatureRefinement::initialize(const std::string& key)
     amrex::Vector<double> curv_value;
     pp.queryarr("values", curv_value);
 
-    if ((curv_value.size() == 0u))
+    if ((curv_value.empty())) {
         amrex::Abort("CurvatureRefinement: Must specify at least one value");
+    }
 
     {
-        size_t fcount = std::min(curv_value.size(), m_curv_value.size());
-        for (size_t i = 0; i < fcount; ++i) m_curv_value[i] = curv_value[i];
+        const int fcount = std::min(curv_value.size(), m_curv_value.size());
+        for (int i = 0; i < fcount; ++i) {
+            m_curv_value[i] = curv_value[i];
+        }
         m_max_lev_field = fcount - 1;
     }
 }
 
 void CurvatureRefinement::operator()(
-    int level, amrex::TagBoxArray& tags, amrex::Real time, int)
+    int level, amrex::TagBoxArray& tags, amrex::Real time, int /*ngrow*/)
 {
     const bool tag_field = level <= m_max_lev_field;
     if (tag_field) {
@@ -48,8 +51,8 @@ void CurvatureRefinement::operator()(
     const auto& mfab = (*m_field)(level);
     const auto& idx = m_sim.repo().mesh().Geom(level).InvCellSizeArray();
 
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
     for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid();
          ++mfi) {
@@ -112,7 +115,9 @@ void CurvatureRefinement::operator()(
                     std::pow(phix * phix + phiy * phiy + phiz * phiz, 1.5);
                 const auto curv_min =
                     std::min(curv_val, std::cbrt(idx[0] * idx[1] * idx[2]));
-                if (curv_mag > curv_min) tag(i, j, k) = amrex::TagBox::SET;
+                if (curv_mag > curv_min) {
+                    tag(i, j, k) = amrex::TagBox::SET;
+                }
             });
     }
 }

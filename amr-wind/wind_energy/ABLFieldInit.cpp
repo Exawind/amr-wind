@@ -218,7 +218,10 @@ void ABLFieldInit::operator()(
 }
 
 void ABLFieldInit::perturb_temperature(
-    const int lev, const amrex::Geometry& geom, Field& temperature)
+    const int lev,
+    const amrex::Geometry& geom,
+    // cppcheck-suppress constParameter
+    Field& temperature) const
 {
     /** Perturbations for the temperature field is adapted from the following
      * paper:
@@ -238,7 +241,7 @@ void ABLFieldInit::perturb_temperature(
     const auto theta_gauss_var = m_theta_gauss_var;
     const auto deltaT = m_deltaT;
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
     for (amrex::MFIter mfi(theta_fab, amrex::TilingIfNotGPU()); mfi.isValid();
@@ -251,10 +254,11 @@ void ABLFieldInit::perturb_temperature(
                     int i, int j, int k,
                     const amrex::RandomEngine& engine) noexcept {
                 const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                if (z < theta_cutoff_height)
+                if (z < theta_cutoff_height) {
                     theta(i, j, k) =
                         deltaT * amrex::RandomNormal(
                                      theta_gauss_mean, theta_gauss_var, engine);
+                }
             });
     }
 }

@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "amr-wind/physics/SyntheticTurbulence.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
@@ -41,7 +43,7 @@ public:
         , m_op{h_min, h_max, vel_start, vel_stop}
     {}
 
-    virtual ~LinearShearProfile() = default;
+    ~LinearShearProfile() override = default;
 
     LinearShearOp device_instance() const { return m_op; }
 
@@ -83,7 +85,7 @@ public:
         , m_op{ref_vel, ref_height, alpha, h_offset, umin, umax}
     {}
 
-    virtual ~PowerLawProfile() = default;
+    ~PowerLawProfile() override = default;
 
     PowerLawOp device_instance() const { return m_op; }
 
@@ -104,7 +106,7 @@ namespace {
  *. @param turbFile Information regarding NetCDF data identifiers
  *. @param turbGrid Turbulence data
  */
-void process_nc_file(std::string& turb_filename, SynthTurbData& turb_grid)
+void process_nc_file(const std::string& turb_filename, SynthTurbData& turb_grid)
 {
 #ifdef AMR_WIND_USE_NETCDF
     auto ncf = ncutils::NCFile::open(turb_filename, NC_NOWRITE);
@@ -147,7 +149,7 @@ void process_nc_file(std::string& turb_filename, SynthTurbData& turb_grid)
  * two planes
  */
 void load_turb_plane_data(
-    std::string& turb_filename,
+    const std::string& turb_filename,
     SynthTurbData& turb_grid,
     const int il,
     const int ir)
@@ -228,7 +230,9 @@ void get_lr_indices(
 
     il = static_cast<int>(amrex::Math::floor(xbox / turb_grid.dx[dir]));
     ir = il + 1;
-    if (ir >= turb_grid.box_dims[dir]) ir -= turb_grid.box_dims[dir];
+    if (ir >= turb_grid.box_dims[dir]) {
+        ir -= turb_grid.box_dims[dir];
+    }
 }
 
 /** Determine the left/right indices for a given point along a particular
@@ -259,7 +263,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void get_lr_indices(
 
     il = static_cast<int>(amrex::Math::floor(xbox / turb_grid.dx[dir]));
     ir = il + 1;
-    if (ir >= turb_grid.box_dims[dir]) ir -= turb_grid.box_dims[dir];
+    if (ir >= turb_grid.box_dims[dir]) {
+        ir -= turb_grid.box_dims[dir];
+    }
 
     const amrex::Real xfrac = xbox - turb_grid.dx[dir] * il;
     rxl = xfrac / turb_grid.dx[dir];
@@ -320,7 +326,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void interp_perturb_vel(
                wt.yr * wt.zr * t_grid.wvel[qidx[2]] +
                wt.yl * wt.zr * t_grid.wvel[qidx[3]];
 
-    for (int i = 0; i < 4; ++i) qidx[i] += nynz;
+    for (int& i : qidx) {
+        i += nynz;
+    }
 
     // Right quad (t = t+deltaT)
     vel_r[0] = wt.yl * wt.zl * t_grid.uvel[qidx[0]] +
@@ -376,7 +384,8 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
         amrex::Vector<amrex::Real> vel;
         pp_vel.getarr("value", vel);
         amrex::Real wind_speed = vs::mag(vs::Vector{vel[0], vel[1], vel[2]});
-        m_wind_profile.reset(new synth_turb::MeanProfile(wind_speed, 2));
+        m_wind_profile =
+            std::make_unique<synth_turb::MeanProfile>(wind_speed, 2);
     } else if (mean_wind_type == "LinearProfile") {
         amrex::ParmParse pp_vel("LinearProfile.velocity");
 
@@ -391,11 +400,11 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
         int shear_dir = 2;
         pp_vel.query("direction", shear_dir);
 
-        m_wind_profile.reset(new synth_turb::LinearShearProfile(
+        m_wind_profile = std::make_unique<synth_turb::LinearShearProfile>(
             zmin, zmax,
             vs::mag(vs::Vector{start_val[0], start_val[1], start_val[2]}),
             vs::mag(vs::Vector{stop_val[0], stop_val[1], stop_val[2]}),
-            shear_dir));
+            shear_dir);
     } else if (mean_wind_type == "PowerLawProfile") {
         amrex::ParmParse pp_vel("PowerLawProfile.velocity");
 
@@ -417,8 +426,8 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
 
         umin /= wind_speed;
         umax /= wind_speed;
-        m_wind_profile.reset(new synth_turb::PowerLawProfile(
-            wind_speed, zref, alpha, shear_dir, zoffset, umin, umax));
+        m_wind_profile = std::make_unique<synth_turb::PowerLawProfile>(
+            wind_speed, zref, alpha, shear_dir, zoffset, umin, umax);
     } else {
         amrex::Abort(
             "SyntheticTurbulence: invalid mean wind type specified = " +
@@ -467,11 +476,15 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
                    << " deg; type = " << mean_wind_type << std::endl;
 }
 
-void SyntheticTurbulence::initialize_fields(int, const amrex::Geometry&) {}
+void SyntheticTurbulence::initialize_fields(
+    int /*level*/, const amrex::Geometry& /*geom*/)
+{}
 
 void SyntheticTurbulence::pre_advance_work()
 {
-    if (m_is_init) initialize();
+    if (m_is_init) {
+        initialize();
+    }
 
     update();
 }
@@ -505,9 +518,10 @@ void SyntheticTurbulence::update()
         turb_grid, 0, eqiv_len, weights.il, weights.ir, weights.xl, weights.xr);
 
     // Check if we need to refresh the planes
-    if (weights.il != m_turb_grid.ileft)
+    if (weights.il != m_turb_grid.ileft) {
         load_turb_plane_data(
             m_turb_filename, m_turb_grid, weights.il, weights.ir);
+    }
 
     if (m_mean_wind_type == "ConstValue") {
         update_impl(turb_grid, weights, m_wind_profile->device_instance());
@@ -532,7 +546,7 @@ void SyntheticTurbulence::update_impl(
     const InterpWeights& weights,
     const T& velfunc)
 {
-    auto& repo = m_turb_force.repo();
+    const auto& repo = m_turb_force.repo();
     const auto& geom_vec = repo.mesh().Geom();
 
     const int sdir = (*m_wind_profile).shear_dir();

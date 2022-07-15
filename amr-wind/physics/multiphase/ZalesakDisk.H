@@ -18,11 +18,11 @@ class ZalesakDisk : public Physics::Register<ZalesakDisk>
         AMREX_SPACEDIM == 3, "ZalesakDisk requires 3 dimensional mesh");
 
 public:
-    static const std::string identifier() { return "ZalesakDisk"; }
+    static std::string identifier() { return "ZalesakDisk"; }
 
     explicit ZalesakDisk(CFDSim& sim);
 
-    virtual ~ZalesakDisk() = default;
+    ~ZalesakDisk() override = default;
 
     //! Initialize the levelset and velocity fields for Vortex Patch simulations
 

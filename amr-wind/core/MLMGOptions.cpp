@@ -1,8 +1,8 @@
 #include "amr-wind/core/MLMGOptions.H"
 
 #include "AMReX_MLMG.H"
-#include "AMReX_NodalProjector.H"
-#include "AMReX_MacProjector.H"
+#include "hydro_MacProjector.H"
+#include "hydro_NodalProjector.H"
 
 namespace amr_wind {
 
@@ -62,9 +62,11 @@ void MLMGOptions::operator()(amrex::MLMG& mlmg)
     mlmg.setMaxIter(max_iter);
     mlmg.setMaxFmgIter(max_fmg_iters);
 
-    if (do_fixed_iters) mlmg.setFixedIter(max_iter);
+    if (do_fixed_iters) {
+        mlmg.setFixedIter(max_iter);
+    }
 
-    mlmg.setNSolve(do_nsolve);
+    mlmg.setNSolve(static_cast<int>(do_nsolve));
     mlmg.setNSolveGridSize(nsolve_grid_size);
     mlmg.setPreSmooth(num_pre_smooth);
     mlmg.setPostSmooth(num_post_smooth);
@@ -106,12 +108,12 @@ void MLMGOptions::operator()(amrex::MLMG& mlmg)
     }
 }
 
-void MLMGOptions::operator()(amrex::MacProjector& mac_proj)
+void MLMGOptions::operator()(Hydro::MacProjector& mac_proj)
 {
     operator()(mac_proj.getMLMG());
 }
 
-void MLMGOptions::operator()(amrex::NodalProjector& nodal_proj)
+void MLMGOptions::operator()(Hydro::NodalProjector& nodal_proj)
 {
     // Only IJ interface supported for NodalProjector
     hypre_interface = "ij";

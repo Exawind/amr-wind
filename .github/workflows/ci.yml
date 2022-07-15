@@ -1,4 +1,4 @@
-name: AMR-Wind CI
+name: AMR-Wind-CI
 
 on:
   push:
@@ -10,14 +10,16 @@ jobs:
   Formatting:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: DoozyX/clang-format-lint-action@v0.11
+    - name: Clone
+      uses: actions/checkout@v3
+    - name: Check formatting
+      uses: DoozyX/clang-format-lint-action@v0.13
       with:
-        source: './amr-wind ./unit_tests'
+        source: './amr-wind ./unit_tests ./tools/utilities'
         exclude: '.'
         extensions: 'H,h,cpp'
-        clangFormatVersion: 11
-  Build:
+        clangFormatVersion: 13
+  CPU:
     needs: Formatting
     runs-on: ${{matrix.os}}
     strategy:
@@ -26,11 +28,11 @@ jobs:
         build_type: [RelWithDebInfo, Debug]
         include:
           - os: macos-latest
-            install_deps: brew install open-mpi
+            install_deps: brew install mpich ninja
             comp: llvm
             procs: $(sysctl -n hw.ncpu)
           - os: ubuntu-latest
-            install_deps: sudo apt-get install -y --no-install-recommends mpich libmpich-dev
+            install_deps: sudo apt-get install -y --no-install-recommends mpich libmpich-dev ninja-build
             comp: gnu
             procs: $(nproc)
           - build_type: RelWithDebInfo
@@ -45,75 +47,156 @@ jobs:
       uses: styfle/cancel-workflow-action@0.6.0
       with:
         access_token: ${{github.token}}
-    - uses: actions/checkout@v2
+    - name: Clone
+      uses: actions/checkout@v3
       with: 
         submodules: true
     - name: Dependencies
       run: ${{matrix.install_deps}}
     - name: Setup
       run: |
-        echo "::add-matcher::.github/problem-matchers/gcc.json"
         echo "NUM_PROCS=${{matrix.procs}}" >> $GITHUB_ENV
     - name: Configure
       run: |
-        cmake \
-          -B${{runner.workspace}}/build-ci-${{matrix.build_type}} \
+        cmake -G Ninja \
+          -B ${{runner.workspace}}/build-ci-${{matrix.build_type}} \
           -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install-${{matrix.build_type}} \
           -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} \
           -DAMR_WIND_ENABLE_MPI:BOOL=ON \
           -DAMR_WIND_ENABLE_TESTS:BOOL=ON \
           -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
-          ${GITHUB_WORKSPACE}
-    - name: Make
+          ${{github.workspace}}
+    - name: Build
       working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}
-      run: cmake --build . -- -j ${{env.NUM_PROCS}}
+      run: |
+        echo "::add-matcher::.github/problem-matchers/gcc.json"
+        cmake --build . -- -j ${{env.NUM_PROCS}} 2>&1 | tee -a build-output.txt
+    - name: Report
+      working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}
+      run: |
+        echo "::add-matcher::.github/problem-matchers/gcc.json"
+        egrep "warning:|error:" build-output.txt | egrep -v "submods" | sort | uniq | \
+          awk 'BEGIN{i=0}{print $0}{i++}END{print "Warnings: "i}' > build-output-warnings.txt
+        cat build-output-warnings.txt
+        exit $(tail -n 1 build-output-warnings.txt | awk '{print $2}')
     - name: Test
       working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}
       run: |
-        export OMPI_MCA_rmaps_base_oversubscribe=yes
         ctest ${{matrix.ctest_args}} --output-on-failure
-  CUDA:
+  GPU-Nvidia:
+    name: GPU-CUDA
     needs: Formatting
-    runs-on: ubuntu-18.04
-    name: CUDA v${{matrix.cuda_ver}}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        cuda_pkg: [11-2, 10-2]
+        cuda_ver: [11.2]
         include:
           - cuda_ver: "11.2"
             cuda_pkg: 11-2
             cuda_extra: libcurand-dev-11-2 cuda-cupti-dev-11-2
-          - cuda_ver: "10.2"
-            cuda_pkg: 10-2
-            cuda_extra: cuda-curand-dev-10-2 cuda-cupti-dev-10-2
     steps:
       - name: Cancel previous runs
         uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{github.token}}
-      - uses: actions/checkout@v2
+      - name: Clone
+        uses: actions/checkout@v3
         with:
           submodules: true
-      - name: Dependencies
+      - name: Prepare CUDA environment
         run: |
-          export DEBIAN_FRONTEND=noninteractive
-          wget -q -O - https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub | sudo apt-key add -
+          sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
           echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64 /" | sudo tee /etc/apt/sources.list.d/cuda.list
-          echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64 /" | sudo tee /etc/apt/sources.list.d/nvidia-ml.list
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
-              libopenmpi-dev cuda-command-line-tools-${{matrix.cuda_pkg}} cuda-compiler-${{matrix.cuda_pkg}} cuda-minimal-build-${{matrix.cuda_pkg}} cuda-nvml-dev-${{matrix.cuda_pkg}} cuda-nvtx-${{matrix.cuda_pkg}} ${{matrix.cuda_extra}}
+          sudo apt-get install -y --no-install-recommends ninja-build \
+              cuda-command-line-tools-${{matrix.cuda_pkg}} cuda-compiler-${{matrix.cuda_pkg}} cuda-minimal-build-${{matrix.cuda_pkg}} cuda-nvml-dev-${{matrix.cuda_pkg}} cuda-nvtx-${{matrix.cuda_pkg}} ${{matrix.cuda_extra}}
       - name: Configure and build
         run: |
           export PATH=/usr/local/nvidia/bin:/usr/local/cuda-${{matrix.cuda_ver}}/bin:${PATH}
           export LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda-${{matrix.cuda_ver}}/lib:${LD_LIBRARY_PATH}
-          cmake -Bbuild-${{matrix.cuda_pkg}} \
-            -DAMR_WIND_ENABLE_MPI=OFF \
-            -DAMR_WIND_ENABLE_CUDA=ON \
+          cmake -G Ninja -B build-${{matrix.cuda_pkg}} \
+            -DCMAKE_BUILD_TYPE:STRING=Release \
+            -DAMR_WIND_ENABLE_MPI:BOOL=OFF \
+            -DAMR_WIND_ENABLE_CUDA:BOOL=ON \
             -DAMReX_CUDA_ERROR_CAPTURE_THIS:BOOL=ON \
-            -DAMReX_CUDA_ARCH=Volta .
+            -DCMAKE_CUDA_COMPILE_SEPARABLE_COMPILATION:BOOL=ON \
+            -DCMAKE_CUDA_ARCHITECTURES=70 \
+            ${{github.workspace}}
           cmake --build build-${{matrix.cuda_pkg}} -- -j $(nproc)
-  cppcheck:
+  GPU-AMD:
+    name: GPU-HIP
+    needs: Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{github.token}}
+      - name: Clone
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Prepare HIP environment
+        run: |
+          wget -q -O - https://repo.radeon.com/rocm/rocm.gpg.key | sudo apt-key add -
+          echo 'deb [arch=amd64] https://repo.radeon.com/rocm/apt/debian/ ubuntu main' | sudo tee /etc/apt/sources.list.d/rocm.list
+          echo 'export PATH=/opt/rocm/llvm/bin:/opt/rocm/bin:/opt/rocm/profiler/bin:/opt/rocm/opencl/bin:$PATH' | sudo tee -a /etc/profile.d/rocm.sh
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ninja-build \
+              build-essential rocm-dev roctracer-dev rocprofiler-dev rocrand-dev rocprim-dev rocm-libs
+      - name: Configure and build
+        run: |
+          source /etc/profile.d/rocm.sh
+          which clang
+          which clang++
+          cmake -G Ninja -B build \
+            -DCMAKE_BUILD_TYPE:STRING=Release \
+            -DAMR_WIND_ENABLE_MPI:BOOL=OFF \
+            -DAMR_WIND_ENABLE_ROCM:BOOL=ON \
+            -DCMAKE_CXX_COMPILER:STRING=$(which clang++) \
+            -DCMAKE_C_COMPILER:STRING=$(which clang) \
+            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+            -DAMReX_AMD_ARCH:STRING=gfx908 \
+            -DCMAKE_HIP_ARCHITECTURES:STRING=gfx908 \
+            -DAMDGPU_TARGETS:STRING=gfx908 \
+            -DGPU_TARGETS:STRING=gfx908 \
+            ${{github.workspace}}
+          cmake --build build -- -j $(nproc)
+  GPU-Intel:
+    name: GPU-DPCPP
+    needs: Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{github.token}}
+      - name: Clone
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Prepare DPC++ environment
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          sudo wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ninja-build intel-oneapi-dpcpp-cpp-compiler intel-oneapi-mkl-devel
+      - name: Configure and build
+        run: |
+          set +e
+          source /opt/intel/oneapi/setvars.sh
+          set -e
+          cmake -G Ninja -B build-DPCPP \
+            -DCMAKE_BUILD_TYPE:STRING=Release \
+            -DCMAKE_CXX_COMPILER:STRING=$(which dpcpp) \
+            -DCMAKE_C_COMPILER:STRING=$(which clang) \
+            -DAMR_WIND_ENABLE_MPI:BOOL=OFF \
+            -DAMR_WIND_ENABLE_DPCPP:BOOL=ON \
+            ${{github.workspace}}
+          cmake --build build-DPCPP -- -j $(nproc)
+  Lint-cppcheck:
     needs: Formatting
     runs-on: macos-latest
     steps:
@@ -121,7 +204,8 @@ jobs:
         uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{github.token}}
-      - uses: actions/checkout@v2
+      - name: Clone
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Dependencies
@@ -130,7 +214,7 @@ jobs:
         run: |
           echo "NPROCS=$(sysctl -n hw.ncpu)" >> $GITHUB_ENV
           cmake \
-          -Bbuild-cppcheck \
+          -B ${{runner.workspace}}/build-cppcheck \
           -DAMR_WIND_ENABLE_MPI:BOOL=OFF \
           -DAMR_WIND_ENABLE_TESTS:BOOL=ON \
           -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
@@ -138,17 +222,18 @@ jobs:
           -DAMR_WIND_ENABLE_CPPCHECK:BOOL=ON \
           ${{github.workspace}}
       - name: Check
-        working-directory: build-cppcheck
+        working-directory: ${{runner.workspace}}/build-cppcheck
         run: make cppcheck-ci
       - name: Full report
-        working-directory: build-cppcheck
+        working-directory: ${{runner.workspace}}/build-cppcheck
         run: cat cppcheck/cppcheck-full-report.txt
       - name: Short report
-        working-directory: build-cppcheck
+        working-directory: ${{runner.workspace}}/build-cppcheck
         run: |
           echo "::add-matcher::.github/problem-matchers/cppcheck.json"
           cat cppcheck-ci-report.txt
-  clang-tidy:
+          exit $(tail -n 1 cppcheck-ci-report.txt | awk '{print $2}')
+  Lint-clang-tidy:
     needs: Formatting
     runs-on: ubuntu-latest
     steps:
@@ -156,18 +241,20 @@ jobs:
         uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{github.token}}
-      - uses: actions/checkout@v2
+      - name: Clone
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Dependencies
         run: |
-          sudo apt-get install -y clang-tidy-10
+          sudo apt-get install -y clang-tidy-10 ninja-build
           sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-10 100
       - name: Configure
         run: |
           echo "NPROCS=$(nproc)" >> $GITHUB_ENV
-          cmake \
-          -Bbuild-clang-tidy \
+          cmake -G Ninja \
+          -B ${{runner.workspace}}/build-clang-tidy \
+          -DCMAKE_BUILD_TYPE:STRING=Debug \
           -DCMAKE_CXX_COMPILER:STRING=clang++ \
           -DCMAKE_C_COMPILER:STRING=clang \
           -DAMR_WIND_ENABLE_MPI:BOOL=OFF \
@@ -178,113 +265,46 @@ jobs:
           -DAMR_WIND_ENABLE_CLANG_TIDY:BOOL=ON \
           ${{github.workspace}}
       - name: Check
-        working-directory: build-clang-tidy
+        working-directory: ${{runner.workspace}}/build-clang-tidy
         run: |
-          cmake --build . --parallel ${{env.NPROCS}} 2> clang-tidy-full-report.txt
+          cmake --build . --parallel ${{env.NPROCS}} 2>&1 | tee -a clang-tidy-full-report.txt
           cat clang-tidy-full-report.txt | grep "warning:" | grep -v "submods" | sort | uniq | \
             awk 'BEGIN{i=0}{print $0}{i++}END{print "Warnings: "i}' > clang-tidy-ci-report.txt
       - name: Full report
-        working-directory: build-clang-tidy
+        working-directory: ${{runner.workspace}}/build-clang-tidy
         run: cat clang-tidy-full-report.txt
       - name: Short report
-        working-directory: build-clang-tidy
+        working-directory: ${{runner.workspace}}/build-clang-tidy
         run: |
           echo "::add-matcher::.github/problem-matchers/gcc.json"
           cat clang-tidy-ci-report.txt
-          export return=$(tail -n 1 clang-tidy-ci-report.txt | awk '{print $2}')
-          exit 0
-  HIP:
-    needs: Formatting
-    runs-on: ubuntu-latest
-    name: HIP
-    steps:
-      - name: Cancel previous runs
-        uses: styfle/cancel-workflow-action@0.6.0
-        with:
-          access_token: ${{github.token}}
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
-      - name: Prepare HIP/ROCm environment
-        run: |
-          export DEBIAN_FRONTEND=noninteractive
-          wget -q -O - http://repo.radeon.com/rocm/rocm.gpg.key | sudo apt-key add -
-          #Use HIP 4.1.1 until 4.2 is fixed
-          echo 'deb [arch=amd64] http://repo.radeon.com/rocm/apt/4.1.1/ xenial main' | sudo tee /etc/apt/sources.list.d/rocm.list
-          sudo apt-get update
-          sudo apt-get install -y libopenmpi-dev rocm-dev rocm-libs
-      - name: Configure and build
-        run: |
-          echo 'export PATH=$PATH:/opt/rocm/bin:/opt/rocm/profiler/bin:/opt/rocm/opencl/bin' | sudo tee -a /etc/profile.d/rocm.sh
-          source /etc/profile.d/rocm.sh
-          cmake -Bbuild \
-            -DAMR_WIND_ENABLE_MPI=OFF \
-            -DAMR_WIND_ENABLE_HIP=ON \
-            -DCMAKE_CXX_COMPILER=$(which hipcc) \
-            -DCMAKE_C_COMPILER=$(which clang) \
-            -DCMAKE_VERBOSE_MAKEFILE=ON \
-            -DAMReX_AMD_ARCH="gfx906,gfx908" .
-          cmake --build build -- -j $(nproc)
-  DPCPP:
-    needs: Formatting
-    runs-on: ubuntu-latest
-    name: Intel OneAPI ${{matrix.intel_type}}
-    strategy:
-      matrix:
-        intel_type: [DPCPP]
-        include:
-          # - intel_type: ICC
-          #   oneapi_packages: intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic
-          #   cexe: icc
-          #   cppexe: icpc
-          #   enable_dpcpp: OFF
-          - intel_type: DPCPP
-            oneapi_packages: intel-oneapi-dpcpp-cpp-compiler intel-oneapi-mkl-devel
-            cexe: clang
-            cppexe: dpcpp
-            enable_dpcpp: ON
-    steps:
-      - name: Cancel previous runs
-        uses: styfle/cancel-workflow-action@0.6.0
-        with:
-          access_token: ${{github.token}}
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
-      - name: Prepare DPC++ environment
-        run: |
-          export DEBIAN_FRONTEND=noninteractive
-          sudo wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-          sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-          echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
-            libopenmpi-dev ${{matrix.oneapi_packages}}
-      - name: Configure and build
-        run: |
-          set +e
-          source /opt/intel/oneapi/setvars.sh
-          set -e
-          cmake -Bbuild-${{matrix.intel_type}} \
-            -DCMAKE_CXX_COMPILER_ID="Clang" \
-            -DCMAKE_CXX_COMPILER_VERSION=12.0 \
-            -DCMAKE_CXX_STANDARD_COMPUTED_DEFAULT=17 \
-            -DCMAKE_CXX_COMPILER=$(which ${{matrix.cppexe}}) \
-            -DCMAKE_C_COMPILER=$(which ${{matrix.cexe}}) \
-            -DAMR_WIND_ENABLE_MPI=OFF \
-            -DAMR_WIND_ENABLE_DPCPP=${{matrix.enable_dpcpp}} .
-          cmake --build build-${{matrix.intel_type}} -- -j $(nproc)
+          exit $(tail -n 1 clang-tidy-ci-report.txt | awk '{print $2}')
   Docker:
     needs: Formatting
-    name: Docker
     runs-on: ubuntu-latest
+    container:
+      image: ecpe4s/exawind-snapshot
+      env:
+          SPACK_MANAGER: /spack-manager
+          E4S_MACHINE: true
     steps:
       - name: Cancel previous runs
         uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{github.token}}
-      - uses: actions/checkout@v2
+      - name: Clone
+        uses: actions/checkout@v3
         with:
           submodules: true
-      - name: Build and test
-        run: docker build -t amr-wind -f docker/Dockerfile .
+      - name: Test
+        working-directory: /spack-manager/environments/exawind
+        run: |
+          /bin/bash -c " \
+            source ${SPACK_MANAGER}/start.sh && \
+            ln -s ${GITHUB_WORKSPACE} amr-wind && \
+            source ${SPACK_MANAGER}/start.sh && \
+            quick-develop -s amr-wind+ascent+hdf5+hypre+masa+netcdf~shared@main && \
+            spack install && \
+            spack cd -b amr-wind && \
+            spack build-env amr-wind ctest -j $(nproc) -L unit --output-on-failure \
+          "

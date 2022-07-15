@@ -17,11 +17,11 @@ namespace field_norms {
 class FieldNorms : public PostProcessBase::Register<FieldNorms>
 {
 public:
-    static const std::string identifier() { return "FieldNorms"; }
+    static std::string identifier() { return "FieldNorms"; }
 
-    FieldNorms(CFDSim&, const std::string&);
+    FieldNorms(CFDSim& /*sim*/, std::string /*label*/);
 
-    ~FieldNorms();
+    ~FieldNorms() override;
 
     //! Perform actions before mesh is created
     void pre_init_actions() override {}
@@ -38,7 +38,7 @@ public:
     void impl_write_native();
 
     //! calculate the L2 norm of a given field and component
-    amrex::Real L2_norm(amr_wind::Field& field, const int comp);
+    static amrex::Real L2_norm(amr_wind::Field& field, const int comp);
 
     const amrex::Vector<std::string>& var_names() const { return m_var_names; }
 

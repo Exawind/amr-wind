@@ -274,7 +274,7 @@ void godunov::compute_fluxes(
             const auto bc = pbc[n];
             Real l_zylo, l_zyhi;
             Godunov_corner_couple_zy(
-                l_zylo, l_zyhi, i, j, k, n, l_dt, dy, iconserv[n],
+                l_zylo, l_zyhi, i, j, k, n, l_dt, dy, iconserv[n] != 0,
                 zlo(i, j, k, n), zhi(i, j, k, n), q, vmac, yedge);
 
             Real wad = wmac(i, j, k);
@@ -293,7 +293,7 @@ void godunov::compute_fluxes(
             const auto bc = pbc[n];
             Real l_yzlo, l_yzhi;
             Godunov_corner_couple_yz(
-                l_yzlo, l_yzhi, i, j, k, n, l_dt, dz, iconserv[n],
+                l_yzlo, l_yzhi, i, j, k, n, l_dt, dz, iconserv[n] != 0,
                 ylo(i, j, k, n), yhi(i, j, k, n), q, wmac, zedge);
 
             Real vad = vmac(i, j, k);
@@ -313,7 +313,7 @@ void godunov::compute_fluxes(
         xbx, ncomp, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
             Real stl, sth;
             constexpr Real small_vel = 1.e-10;
-            if (iconserv[n]) {
+            if (iconserv[n] != 0) {
                 stl = xlo(i, j, k, n) -
                       (0.5 * dtdy) *
                           (yzlo(i - 1, j + 1, k, n) * vmac(i - 1, j + 1, k) -
@@ -360,10 +360,11 @@ void godunov::compute_fluxes(
                      ? 0.5 * (stl + sth)
                      : qx;
 
-            if (iconserv[n])
+            if (iconserv[n] != 0) {
                 fx(i, j, k, n) = umac(i, j, k) * qx;
-            else
+            } else {
                 fx(i, j, k, n) = qx;
+            }
         });
 
     //
@@ -380,7 +381,7 @@ void godunov::compute_fluxes(
             const auto bc = pbc[n];
             Real l_xzlo, l_xzhi;
             Godunov_corner_couple_xz(
-                l_xzlo, l_xzhi, i, j, k, n, l_dt, dz, iconserv[n],
+                l_xzlo, l_xzhi, i, j, k, n, l_dt, dz, iconserv[n] != 0,
                 xlo(i, j, k, n), xhi(i, j, k, n), q, wmac, zedge);
 
             Real uad = umac(i, j, k);
@@ -399,7 +400,7 @@ void godunov::compute_fluxes(
             const auto bc = pbc[n];
             Real l_zxlo, l_zxhi;
             Godunov_corner_couple_zx(
-                l_zxlo, l_zxhi, i, j, k, n, l_dt, dx, iconserv[n],
+                l_zxlo, l_zxhi, i, j, k, n, l_dt, dx, iconserv[n] != 0,
                 zlo(i, j, k, n), zhi(i, j, k, n), q, umac, xedge);
 
             Real wad = wmac(i, j, k);
@@ -419,7 +420,7 @@ void godunov::compute_fluxes(
             Real stl, sth;
             constexpr Real small_vel = 1.e-10;
 
-            if (iconserv[n]) {
+            if (iconserv[n] != 0) {
                 stl = ylo(i, j, k, n) -
                       (0.5 * dtdx) *
                           (xzlo(i + 1, j - 1, k, n) * umac(i + 1, j - 1, k) -
@@ -466,10 +467,11 @@ void godunov::compute_fluxes(
                      ? 0.5 * (stl + sth)
                      : qy;
 
-            if (iconserv[n])
+            if (iconserv[n] != 0) {
                 fy(i, j, k, n) = vmac(i, j, k) * qy;
-            else
+            } else {
                 fy(i, j, k, n) = qy;
+            }
         });
 
     //
@@ -486,7 +488,7 @@ void godunov::compute_fluxes(
             const auto bc = pbc[n];
             Real l_xylo, l_xyhi;
             Godunov_corner_couple_xy(
-                l_xylo, l_xyhi, i, j, k, n, l_dt, dy, iconserv[n],
+                l_xylo, l_xyhi, i, j, k, n, l_dt, dy, iconserv[n] != 0,
                 xlo(i, j, k, n), xhi(i, j, k, n), q, vmac, yedge);
 
             Real uad = umac(i, j, k);
@@ -505,7 +507,7 @@ void godunov::compute_fluxes(
             const auto bc = pbc[n];
             Real l_yxlo, l_yxhi;
             Godunov_corner_couple_yx(
-                l_yxlo, l_yxhi, i, j, k, n, l_dt, dx, iconserv[n],
+                l_yxlo, l_yxhi, i, j, k, n, l_dt, dx, iconserv[n] != 0,
                 ylo(i, j, k, n), yhi(i, j, k, n), q, umac, xedge);
 
             Real vad = vmac(i, j, k);
@@ -524,7 +526,7 @@ void godunov::compute_fluxes(
         zbx, ncomp, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
             Real stl, sth;
             constexpr Real small_vel = 1.e-10;
-            if (iconserv[n]) {
+            if (iconserv[n] != 0) {
                 stl = zlo(i, j, k, n) -
                       (0.5 * dtdx) *
                           (xylo(i + 1, j, k - 1, n) * umac(i + 1, j, k - 1) -
@@ -571,10 +573,11 @@ void godunov::compute_fluxes(
                      ? 0.5 * (stl + sth)
                      : qz;
 
-            if (iconserv[n])
+            if (iconserv[n] != 0) {
                 fz(i, j, k, n) = wmac(i, j, k) * qz;
-            else
+            } else {
                 fz(i, j, k, n) = qz;
+            }
         });
 }
 
@@ -599,7 +602,7 @@ void godunov::compute_advection(
 
     amrex::ParallelFor(
         bx, ncomp, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-            if (iconserv[n]) {
+            if (iconserv[n] != 0) {
                 dqdt(i, j, k, n) =
                     dxinv[0] * (fx(i, j, k, n) - fx(i + 1, j, k, n)) +
                     dxinv[1] * (fy(i, j, k, n) - fy(i, j + 1, k, n)) +

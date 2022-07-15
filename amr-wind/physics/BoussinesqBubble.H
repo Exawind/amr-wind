@@ -15,11 +15,11 @@ namespace amr_wind {
 class BoussinesqBubble : public Physics::Register<BoussinesqBubble>
 {
 public:
-    static const std::string identifier() { return "BoussinesqBubble"; }
+    static std::string identifier() { return "BoussinesqBubble"; }
 
     explicit BoussinesqBubble(CFDSim& sim);
 
-    virtual ~BoussinesqBubble() = default;
+    ~BoussinesqBubble() override = default;
 
     //! Initialize the temperature and velocity fields for BoussinesqBubble
     //! simulations

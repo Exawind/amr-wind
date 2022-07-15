@@ -108,7 +108,7 @@ struct Factory
             return true;
         }
 
-        virtual ~Register()
+        ~Register() override
         {
             if (registered) {
                 auto& tbl = Factory::table();
@@ -135,7 +135,9 @@ private:
         const auto& tbl = table();
         if (tbl.find(key) == tbl.end()) {
             // Print valid options
-            if (amrex::ParallelDescriptor::IOProcessor()) print(std::cout);
+            if (amrex::ParallelDescriptor::IOProcessor()) {
+                print(std::cout);
+            }
             // Quit with error
             amrex::Abort(
                 "In " + Base::base_identifier() +

@@ -50,7 +50,7 @@ struct FlatPlate : public act::WingType
     using MetaType = act::WingBaseData;
     using DataType = act::ActDataHolder<FlatPlate>;
 
-    static const std::string identifier() { return "TestFlatPlate"; }
+    static std::string identifier() { return "TestFlatPlate"; }
 };
 
 } // namespace
@@ -190,7 +190,7 @@ TEST_F(ActFlatPlateTest, act_model_init)
 {
     initialize_mesh();
     sim().repo().declare_field("actuator_src_term", 3, 0);
-    amr_wind::actuator::ActuatorContainer::ParticleType::NextID(1u);
+    amr_wind::actuator::ActuatorContainer::ParticleType::NextID(1U);
     {
         amrex::ParmParse pp("Actuator.TestFlatPlateLine");
         pp.add("num_points", 11);
@@ -220,8 +220,10 @@ TEST_F(ActFlatPlateTest, actuator_init)
 {
     initialize_mesh();
     auto& vel = sim().repo().declare_field("velocity", 3, 3);
+    auto& density = sim().repo().declare_field("density", 1, 3);
+    density.setVal(1.0);
     init_field(vel);
-    amr_wind::actuator::ActuatorContainer::ParticleType::NextID(1u);
+    amr_wind::actuator::ActuatorContainer::ParticleType::NextID(1U);
 
     amrex::Vector<std::string> actuators{"T1", "T2"};
     {
@@ -253,8 +255,10 @@ TEST_F(ActFlatPlateTest, flat_plate_init)
 {
     initialize_mesh();
     auto& vel = sim().repo().declare_field("velocity", 3, 3);
+    auto& density = sim().repo().declare_field("density", 1, 3);
+    density.setVal(1.0);
     vel.setVal(10.0, 0, 1, 3);
-    amr_wind::actuator::ActuatorContainer::ParticleType::NextID(1u);
+    amr_wind::actuator::ActuatorContainer::ParticleType::NextID(1U);
 
     amrex::Vector<std::string> actuators{"T1", "T2"};
     {

@@ -12,6 +12,7 @@ namespace amr_wind {
 namespace turbulence {
 
 template <typename Transport>
+// cppcheck-suppress uninitMemberVar
 OneEqKsgs<Transport>::OneEqKsgs(CFDSim& sim)
     : TurbModelBase<Transport>(sim)
     , m_vel(sim.repo().get_field("velocity"))
@@ -35,14 +36,8 @@ OneEqKsgsM84<Transport>::OneEqKsgsM84(CFDSim& sim)
 {
 
     auto& phy_mgr = this->m_sim.physics_manager();
-    if (!phy_mgr.contains("ABL"))
+    if (!phy_mgr.contains("ABL")) {
         amrex::Abort("OneEqKsgsM84 model only works with ABL physics");
-
-    {
-        const std::string coeffs_dict = this->model_name() + "_coeffs";
-        amrex::ParmParse pp(coeffs_dict);
-        pp.query("Ceps", this->m_Ceps);
-        pp.query("Ce", this->m_Ce);
     }
 
     {
@@ -51,9 +46,12 @@ OneEqKsgsM84<Transport>::OneEqKsgsM84(CFDSim& sim)
         pp.query("enable_hybrid_rl_mode", m_hybrid_rl);
     }
 
-    if (m_hybrid_rl)
+    if (m_hybrid_rl) {
         m_sdr = &(sim.repo().declare_field(
             "sdr", 1, (*this->m_tke).num_grow()[0], 1));
+
+        m_sdr->set_default_fillpatch_bc(sim.time());
+    }
 
     {
         amrex::ParmParse pp("incflo");
@@ -67,6 +65,15 @@ OneEqKsgsM84<Transport>::OneEqKsgsM84(CFDSim& sim)
 
 template <typename Transport>
 OneEqKsgsM84<Transport>::~OneEqKsgsM84() = default;
+
+template <typename Transport>
+void OneEqKsgsM84<Transport>::parse_model_coeffs()
+{
+    const std::string coeffs_dict = this->model_name() + "_coeffs";
+    amrex::ParmParse pp(coeffs_dict);
+    pp.query("Ceps", this->m_Ceps);
+    pp.query("Ce", this->m_Ce);
+}
 
 template <typename Transport>
 TurbulenceModel::CoeffsDictType OneEqKsgsM84<Transport>::model_coeffs() const
@@ -98,7 +105,7 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
     auto& mu_turb = this->mu_turb();
     const amrex::Real Ce = this->m_Ce;
     const auto& den = this->m_rho.state(fstate);
-    auto& repo = mu_turb.repo();
+    const auto& repo = mu_turb.repo();
     const auto& geom_vec = repo.mesh().Geom();
 
     const int nlevels = repo.num_active_levels();
@@ -127,12 +134,13 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
                           gradT_arr(i, j, k, 1) * gravity[1] +
                           gradT_arr(i, j, k, 2) * gravity[2]) *
                         beta;
-                    if (stratification > 1e-10)
+                    if (stratification > 1e-10) {
                         tlscale_arr(i, j, k) = amrex::min(
                             ds, 0.76 * std::sqrt(
                                            tke_arr(i, j, k) / stratification));
-                    else
+                    } else {
                         tlscale_arr(i, j, k) = ds;
+                    }
 
                     mu_arr(i, j, k) = rho_arr(i, j, k) * Ce *
                                       tlscale_arr(i, j, k) *
@@ -215,18 +223,21 @@ template <typename Transport>
 void OneEqKsgsM84<Transport>::post_advance_work()
 {
 
-    if (!m_hybrid_rl) return;
+    if (!m_hybrid_rl) {
+        return;
+    }
 
     BL_PROFILE("amr-wind::" + this->identifier() + "::post_advance_work");
 
     // Update sdr field based on sfs ke
 
     auto& tke = *(this->m_tke);
+    // cppcheck-suppress constVariable
     auto& sdr = *(this->m_sdr);
     const amrex::Real Ce = this->m_Ce;
 
     auto& repo = tke.repo();
-    auto& geom_vec = repo.mesh().Geom();
+    const auto& geom_vec = repo.mesh().Geom();
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = geom_vec[lev];
@@ -252,10 +263,6 @@ void OneEqKsgsM84<Transport>::post_advance_work()
 template <typename Transport>
 OneEqKsgsS94<Transport>::OneEqKsgsS94(CFDSim& sim) : OneEqKsgs<Transport>(sim)
 {
-    const std::string coeffs_dict = this->model_name() + "_coeffs";
-    amrex::ParmParse pp(coeffs_dict);
-    pp.query("Ceps", this->m_Ceps);
-
     // TKE source term to be added to PDE
     turb_utils::inject_turbulence_src_terms(
         pde::TKE::pde_name(), {"KsgsS94Src"});
@@ -263,6 +270,14 @@ OneEqKsgsS94<Transport>::OneEqKsgsS94(CFDSim& sim) : OneEqKsgs<Transport>(sim)
 
 template <typename Transport>
 OneEqKsgsS94<Transport>::~OneEqKsgsS94() = default;
+
+template <typename Transport>
+void OneEqKsgsS94<Transport>::parse_model_coeffs()
+{
+    const std::string coeffs_dict = this->model_name() + "_coeffs";
+    amrex::ParmParse pp(coeffs_dict);
+    pp.query("Ceps", this->m_Ceps);
+}
 
 template <typename Transport>
 TurbulenceModel::CoeffsDictType OneEqKsgsS94<Transport>::model_coeffs() const
@@ -273,7 +288,7 @@ TurbulenceModel::CoeffsDictType OneEqKsgsS94<Transport>::model_coeffs() const
 template <typename Transport>
 void OneEqKsgsS94<Transport>::update_turbulent_viscosity(
     const FieldState // fstate
-)
+    /*unused*/)
 {
     BL_PROFILE(
         "amr-wind::" + this->identifier() + "::update_turbulent_viscosity");

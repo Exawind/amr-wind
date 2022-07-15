@@ -29,8 +29,6 @@ namespace transport {
 class TransportModel
 {
 public:
-    static constexpr bool constant_properties = false;
-
     virtual ~TransportModel() = default;
 
     //! Dynamic laminar viscosity (kg/m/s)

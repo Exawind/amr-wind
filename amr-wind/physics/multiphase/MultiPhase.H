@@ -22,19 +22,21 @@ enum class InterfaceCapturingMethod {
 class MultiPhase : public Physics::Register<MultiPhase>
 {
 public:
-    static const std::string identifier() { return "MultiPhase"; }
+    static std::string identifier() { return "MultiPhase"; }
 
     explicit MultiPhase(CFDSim& sim);
 
-    virtual ~MultiPhase() = default;
+    ~MultiPhase() override = default;
 
-    void initialize_fields(int, const amrex::Geometry&) override {}
+    void
+    initialize_fields(int /*level*/, const amrex::Geometry& /*geom*/) override
+    {}
 
     void post_init_actions() override;
 
     void post_regrid_actions() override {}
 
-    void pre_advance_work() override {}
+    void pre_advance_work() override;
 
     void post_advance_work() override;
 
@@ -44,7 +46,11 @@ public:
 
     void levelset2vof();
 
+    void favre_filtering();
+
     amrex::Real volume_fraction_sum();
+
+    amrex::Real momentum_sum(int n);
 
     InterfaceCapturingMethod interface_capturing_method();
 
@@ -70,6 +76,10 @@ private:
     // Density value for Fluid 2
     amrex::Real m_rho2{1.0};
 
+    bool m_interface_smoothing{false};
+
+    int m_smooth_freq{10};
+
     // Multiphase model enum
     std::string m_interface_model{"vof"};
     InterfaceCapturingMethod m_interface_capturing_method =
@@ -79,7 +89,12 @@ private:
     int m_verbose{0};
 
     // sum of volume fractions (for vof only)
-    amrex::Real m_total_volfrac;
+    amrex::Real m_total_volfrac{0.0};
+
+    amrex::Real q0{0.0};
+    amrex::Real q1{0.0};
+    amrex::Real q2{0.0};
+    amrex::Real sumvof0{0.0};
 };
 
 } // namespace amr_wind

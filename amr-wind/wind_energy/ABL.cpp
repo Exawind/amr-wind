@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "amr-wind/wind_energy/ABL.H"
 #include "amr-wind/wind_energy/ABLFieldInit.H"
 #include "amr-wind/wind_energy/ABLBoundaryPlane.H"
@@ -33,6 +35,8 @@ ABL::ABL(CFDSim& sim)
         std::string statistics_mode = "precursor";
         int dir = 2;
         amrex::ParmParse pp("ABL");
+        pp.query("enable_hybrid_rl_mode", m_hybrid_rl);
+        pp.query("initial_sdr_value", m_init_sdr);
         pp.query("normal_direction", dir);
         pp.query("statistics_mode", statistics_mode);
         m_stats =
@@ -61,10 +65,10 @@ ABL::ABL(CFDSim& sim)
     }
 
     // Instantiate the ABL field initializer
-    m_field_init.reset(new ABLFieldInit());
+    m_field_init = std::make_unique<ABLFieldInit>();
 
     // Instantiate the ABL boundary plane IO
-    m_bndry_plane.reset(new ABLBoundaryPlane(sim));
+    m_bndry_plane = std::make_unique<ABLBoundaryPlane>(sim);
 }
 
 ABL::~ABL() = default;
@@ -103,6 +107,11 @@ void ABL::initialize_fields(int level, const amrex::Geometry& geom)
 
 void ABL::post_init_actions()
 {
+    if (m_hybrid_rl) {
+        m_sdr = &(m_sim.repo().get_field("sdr"));
+        m_sdr->setVal(m_init_sdr);
+    }
+
     m_stats->post_init_actions();
 
     m_abl_wall_func.init_log_law_height();

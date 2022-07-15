@@ -47,9 +47,10 @@ void HybridRANSLESABL::pre_init_actions()
 
     if (m_sim.repo().field_exists("sdr")) {
         m_sdr = &(m_sim.repo().get_field("sdr"));
-    } else
+    } else {
         m_sdr =
             &(m_sim.repo().declare_field("sdr", 1, m_tke->num_grow()[0], 1));
+    }
 }
 
 void HybridRANSLESABL::post_init_actions()

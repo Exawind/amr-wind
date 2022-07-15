@@ -24,15 +24,14 @@ check_bounds(const It begin, const It end, const T& x)
 {
     const int sz = static_cast<int>(end - begin);
 
-    if (sz < 2) {
-        return Index{0, Limits::VALID};
-    } else if (x < *begin) {
+    if ((sz < 2) || (x < *begin)) {
         return Index{0, Limits::LOWLIM};
-    } else if (x > *(begin + (sz - 1))) {
-        return Index{sz - 1, Limits::UPLIM};
-    } else {
-        return Index{0, Limits::VALID};
     }
+    if (x > *(begin + (sz - 1))) {
+        return Index{sz - 1, Limits::UPLIM};
+    }
+
+    return Index{0, Limits::VALID};
 }
 
 template <typename It, typename T>
@@ -40,7 +39,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Index
 bisection_search(const It begin, const It end, const T& x)
 {
     auto idx = check_bounds(begin, end, x);
-    if ((idx.lim == Limits::LOWLIM) || (idx.lim == Limits::UPLIM)) return idx;
+    if ((idx.lim == Limits::LOWLIM) || (idx.lim == Limits::UPLIM)) {
+        return idx;
+    }
 
     int il = 0;
     int ir = end - begin;
@@ -65,7 +66,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Index
 find_index(const It begin, const It end, const T& x, const int hint = 1)
 {
     auto idx = check_bounds(begin, end, x);
-    if ((idx.lim == Limits::LOWLIM) || (idx.lim == Limits::UPLIM)) return idx;
+    if ((idx.lim == Limits::LOWLIM) || (idx.lim == Limits::UPLIM)) {
+        return idx;
+    }
 
     for (It it = (begin + hint); it < end; ++it) {
         if (x <= *it) {

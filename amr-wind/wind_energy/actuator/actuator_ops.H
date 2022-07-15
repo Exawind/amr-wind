@@ -80,7 +80,7 @@ struct ProcessOutputsOp;
  *  mapped.
  */
 template <typename T>
-void determine_influenced_procs(typename T::DataType&);
+void determine_influenced_procs(typename T::DataType& /*data*/);
 
 /** During initialization determine the influenced processes and elect a root
  *  process to manage I/O and external solver interfaces for this turbine.
@@ -91,7 +91,8 @@ void determine_influenced_procs(typename T::DataType&);
  *  \param act_proc_count A map of the number of turbines managed by each proc
  */
 template <typename T>
-void determine_root_proc(typename T::DataType&, amrex::Vector<int>&);
+void determine_root_proc(
+    typename T::DataType& /*data*/, amrex::Vector<int>& /*act_proc_count*/);
 
 } // namespace ops
 } // namespace actuator

@@ -110,10 +110,10 @@ public:
     }
 
     //! Return the turbulent viscosity field
-    virtual Field& mu_turb() override { return m_mu_turb; }
+    Field& mu_turb() override { return m_mu_turb; }
 
     //! Return the turbulent thermal diffusivity field
-    virtual Field& alpha_turb() override
+    Field& alpha_turb() override
     {
         AMREX_ASSERT(m_alpha_turb != nullptr);
         return *m_alpha_turb;
@@ -127,7 +127,7 @@ public:
      *
      *  \param mueff Effective viscosity field
      */
-    virtual void update_mueff(Field& mueff) override
+    void update_mueff(Field& mueff) override
     {
         turb_base_impl::visc_update(mueff, this->m_mu_turb, this->m_transport);
     }
@@ -138,13 +138,13 @@ public:
      *
      *  \param mueff Effective viscosity field
      */
-    virtual void update_alphaeff(Field& alphaeff) override
+    void update_alphaeff(Field& alphaeff) override
     {
         turb_base_impl::alpha_update(alphaeff, this->m_mu_turb, this->m_transport);
     }
 
     //! Interface to update scalar diffusivity based on Schmidt number
-    virtual void update_scalar_diff(Field& deff, const std::string& name) override
+    void update_scalar_diff(Field& deff, const std::string& name) override
     {
         turb_base_impl::scal_diff_update(deff, this->m_mu_turb, this->m_transport, name);
     }

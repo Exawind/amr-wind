@@ -27,25 +27,25 @@ public:
 
     explicit FieldRefinement(const CFDSim& sim);
 
-    virtual ~FieldRefinement() = default;
+    ~FieldRefinement() override = default;
 
     //! Read input file and initialize boxarray used to refine each level
-    virtual void initialize(const std::string& key) override;
+    void initialize(const std::string& key) override;
 
-    virtual void
+    void
     operator()(int level, amrex::TagBoxArray& tags, amrex::Real time, int ngrow)
         override;
 
 private:
     const CFDSim& m_sim;
 
-    Field* m_field;
+    Field* m_field{nullptr};
 
     amrex::Vector<amrex::Real> m_field_error;
     amrex::Vector<amrex::Real> m_grad_error;
 
-    int m_max_lev_field;
-    int m_max_lev_grad;
+    int m_max_lev_field{-1};
+    int m_max_lev_grad{-1};
 };
 
 } // namespace amr_wind

@@ -26,7 +26,7 @@ void KsgsM84Src::operator()(
     const int lev,
     const amrex::MFIter& mfi,
     const amrex::Box& bx,
-    const FieldState,
+    const FieldState /*fstate*/,
     const amrex::Array4<amrex::Real>& src_term) const
 {
     const auto& tlscale_arr = (this->m_turb_lscale)(lev).array(mfi);
@@ -55,9 +55,31 @@ void KsgsM84Src::operator()(
     const auto& bctype = (this->m_tke).bc_type();
     for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
         amrex::Orientation olo(dir, amrex::Orientation::low);
-        if (bctype[olo] == BC::wall_model) {
-            amrex::Box blo = amrex::adjCellLo(bx, dir, 0) & bx;
+        if (bctype[olo] == BC::wall_model &&
+            bx.smallEnd(dir) == geom.Domain().smallEnd(dir)) {
+            amrex::Box blo = amrex::bdryLo(bx, dir, 1);
             if (blo.ok()) {
+                amrex::ParallelFor(
+                    blo, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        amrex::Real ceps_local =
+                            (Ceps / 0.93) *
+                            (0.19 + (0.74 * tlscale_arr(i, j, k) / ds));
+                        src_term(i, j, k) += (ceps_local - CepsGround) *
+                                             std::sqrt(tke_arr(i, j, k)) *
+                                             tke_arr(i, j, k) /
+                                             tlscale_arr(i, j, k);
+                    });
+            } else {
+                amrex::Abort("Bad box extracted in KsgsM84Src");
+            }
+        }
+
+        amrex::Orientation ohi(dir, amrex::Orientation::high);
+        if (bctype[ohi] == BC::wall_model &&
+            bx.bigEnd(dir) == geom.Domain().bigEnd(dir)) {
+            amrex::Box bhi = amrex::bdryHi(bx, dir, 1);
+            amrex::Abort("tke wall model is not supported on upper boundary");
+            if (bhi.ok()) {
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         amrex::Real ceps_local =

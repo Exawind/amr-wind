@@ -86,7 +86,9 @@ void CartBoxRefinement::initialize(const std::string& key)
     }
 
     std::ifstream ifh(defn_file, std::ios::in);
-    if (!ifh.good()) amrex::Abort("Cannot find input file: " + defn_file);
+    if (!ifh.good()) {
+        amrex::Abort("Cannot find input file: " + defn_file);
+    }
 
     read_inputs(m_mesh, ifh);
 }
@@ -103,16 +105,19 @@ void CartBoxRefinement::read_inputs(
 
     // Issue a warning if the max levels in the input file is less than what's
     // requested in the refinement file.
-    if (max_lev < nlev_in)
+    if (max_lev < nlev_in) {
         amrex::Print() << "WARNING: AmrMesh::finestLevel() is less than the "
                           "requested levels in static refinement file"
                        << std::endl;
+    }
 
     // Set the number of levels to the minimum of what is in the input file and
     // the simulation
     m_nlevels = amrex::min(max_lev, nlev_in);
 
-    if (m_nlevels < 1) return;
+    if (m_nlevels < 1) {
+        return;
+    }
 
     for (int lev = 0; lev < m_nlevels; ++lev) {
         auto rbx_list = read_real_boxes(ifh);
@@ -124,9 +129,11 @@ void CartBoxRefinement::read_inputs(
 }
 
 void CartBoxRefinement::operator()(
-    int level, amrex::TagBoxArray& tags, amrex::Real, int)
+    int level, amrex::TagBoxArray& tags, amrex::Real /*time*/, int /*ngrow*/)
 {
-    if (level < m_nlevels) tags.setVal(m_boxarrays[level], amrex::TagBox::SET);
+    if (level < m_nlevels) {
+        tags.setVal(m_boxarrays[level], amrex::TagBox::SET);
+    }
 }
 
 } // namespace amr_wind

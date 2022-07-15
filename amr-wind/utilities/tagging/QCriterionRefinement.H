@@ -25,23 +25,23 @@ public:
 
     explicit QCriterionRefinement(const CFDSim& sim);
 
-    virtual ~QCriterionRefinement() = default;
+    ~QCriterionRefinement() override = default;
 
     //! Read input file and initialize boxarray used to refine each level
-    virtual void initialize(const std::string& key) override;
+    void initialize(const std::string& key) override;
 
-    virtual void
+    void
     operator()(int level, amrex::TagBoxArray& tags, amrex::Real time, int ngrow)
         override;
 
 private:
     const CFDSim& m_sim;
 
-    Field* m_vel;
+    Field* m_vel{nullptr};
 
     amrex::Vector<amrex::Real> m_qc_value;
 
-    int m_max_lev_field;
+    int m_max_lev_field{-1};
 
     bool m_nondim{true};
 };

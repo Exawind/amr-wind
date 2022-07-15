@@ -11,6 +11,7 @@ add_subdirectory(utilities)
 add_subdirectory(equation_systems)
 add_subdirectory(turbulence)
 add_subdirectory(fvm)
+add_subdirectory(multiphase)
 if(AMR_WIND_ENABLE_MASA)
   add_subdirectory(mms)
 endif()
@@ -26,7 +27,7 @@ target_link_libraries(${amr_wind_unit_test_exe_name} PRIVATE gtest)
 target_include_directories(${amr_wind_unit_test_exe_name} SYSTEM PRIVATE
   ${CMAKE_SOURCE_DIR}/submods/googletest/googletest/include)
 
-target_link_libraries(${amr_wind_unit_test_exe_name} PUBLIC ${amr_wind_lib_name})
+target_link_libraries(${amr_wind_unit_test_exe_name} PUBLIC ${amr_wind_lib_name} AMReX-Hydro::amrex_hydro_api)
 
 #Define what we want to be installed during a make install
 install(TARGETS ${amr_wind_unit_test_exe_name}

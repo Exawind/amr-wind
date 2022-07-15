@@ -12,7 +12,7 @@ void test_vector_create_impl()
     namespace vs = amr_wind::vs;
     amrex::Gpu::DeviceScalar<double> ds(0.0);
     auto* ddata = ds.dataPtr();
-    amrex::ParallelFor(1, [=] AMREX_GPU_DEVICE(int) {
+    amrex::ParallelFor(1, [=] AMREX_GPU_DEVICE(int /*unused*/) {
         auto gv1 = vs::Vector::ihat();
         auto gv2 = vs::Vector::jhat();
         auto gv3 = vs::Vector::khat();
@@ -29,7 +29,7 @@ void test_tensor_create_impl()
     namespace vs = amr_wind::vs;
     amrex::Gpu::DeviceScalar<double> ds(0.0);
     auto* ddata = ds.dataPtr();
-    amrex::ParallelFor(1, [=] AMREX_GPU_DEVICE(int) {
+    amrex::ParallelFor(1, [=] AMREX_GPU_DEVICE(int /*unused*/) {
         auto t1 = vs::yrot(90.0);
         auto t2 = vs::zrot(90.0);
         auto t3 = t2 & t1;
@@ -97,7 +97,7 @@ void test_device_capture_impl()
     amrex::Gpu::DeviceScalar<double> ds(1.0e16);
     auto* dv = ds.dataPtr();
 
-    amrex::ParallelFor(1, [=] AMREX_GPU_DEVICE(int) {
+    amrex::ParallelFor(1, [=] AMREX_GPU_DEVICE(int /*unused*/) {
         auto v2 = vs::Vector::jhat();
         auto vout = v1 ^ v2;
 
@@ -112,7 +112,7 @@ void test_device_lists_impl()
     amrex::Gpu::DeviceVector<vs::Vector> dvectors(3);
     auto* dv = dvectors.data();
 
-    amrex::ParallelFor(1, [=] AMREX_GPU_DEVICE(int) {
+    amrex::ParallelFor(1, [=] AMREX_GPU_DEVICE(int /*unused*/) {
         auto v1 = vs::Vector::ihat();
         auto v2 = vs::Vector::jhat();
         auto v3 = vs::Vector::khat();
@@ -129,8 +129,9 @@ void test_device_lists_impl()
         amrex::Gpu::deviceToHost, dvectors.begin(), dvectors.end(),
         hvectors.begin());
 
-    for (int i = 0; i < 3; ++i)
+    for (int i = 0; i < 3; ++i) {
         EXPECT_NEAR(vs::mag(htrue[i] - hvectors[i]), 0.0, tol);
+    }
 }
 
 } // namespace

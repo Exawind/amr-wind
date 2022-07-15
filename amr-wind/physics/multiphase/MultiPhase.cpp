@@ -2,7 +2,7 @@
 #include "amr-wind/equation_systems/vof/volume_fractions.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
-#include "amr-wind/fvm/gradient.H"
+#include "amr-wind/fvm/filter.H"
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/equation_systems/BCOps.H"
 #include <AMReX_MultiFabUtil.H>
@@ -20,6 +20,8 @@ MultiPhase::MultiPhase(CFDSim& sim)
     pp_multiphase.query("density_fluid1", m_rho1);
     pp_multiphase.query("density_fluid2", m_rho2);
     pp_multiphase.query("verbose", m_verbose);
+    pp_multiphase.query("interface_smoothing", m_interface_smoothing);
+    pp_multiphase.query("interface_smoothing_frequency", m_smooth_freq);
 
     // Register either the VOF or levelset equation
     if (amrex::toLower(m_interface_model) == "vof") {
@@ -59,13 +61,38 @@ InterfaceCapturingMethod MultiPhase::interface_capturing_method()
 
 void MultiPhase::post_init_actions()
 {
+
+    const auto& io_mgr = m_sim.io_manager();
+    if (!io_mgr.is_restart()) {
+        switch (m_interface_capturing_method) {
+        case InterfaceCapturingMethod::VOF:
+            levelset2vof();
+            set_density_via_vof();
+            break;
+        case InterfaceCapturingMethod::LS:
+            set_density_via_levelset();
+            break;
+        };
+    }
+
+    q0 = momentum_sum(0);
+    q1 = momentum_sum(1);
+    q2 = momentum_sum(2);
+    sumvof0 = volume_fraction_sum();
+}
+
+void MultiPhase::pre_advance_work()
+{
     switch (m_interface_capturing_method) {
     case InterfaceCapturingMethod::VOF:
-        levelset2vof();
-        set_density_via_vof();
+        if (m_interface_smoothing &&
+            m_sim.time().time_index() % m_smooth_freq == 0) {
+            amrex::Print() << "Smoothing the air-sea interface : "
+                           << m_sim.time().current_time() << std::endl;
+            favre_filtering();
+        }
         break;
     case InterfaceCapturingMethod::LS:
-        set_density_via_levelset();
         break;
     };
 }
@@ -74,17 +101,23 @@ void MultiPhase::post_advance_work()
 {
     switch (m_interface_capturing_method) {
     case InterfaceCapturingMethod::VOF:
-        set_density_via_vof();
-        // Compute the print the total volume fraction
+        // Compute and print the total volume fraction, momenta, and differences
         if (m_verbose > 0) {
             m_total_volfrac = volume_fraction_sum();
+            amrex::Real mom_x = momentum_sum(0) - q0;
+            amrex::Real mom_y = momentum_sum(1) - q1;
+            amrex::Real mom_z = momentum_sum(2) - q2;
             const auto& geom = m_sim.mesh().Geom();
             const amrex::Real total_vol = geom[0].ProbDomain().volume();
             amrex::Print() << "Volume of Fluid diagnostics:" << std::endl;
-            amrex::Print() << "   Water Volume Fractions Sum : "
-                           << m_total_volfrac << std::endl;
+            amrex::Print() << "   Water Volume Fractions Sum, Difference : "
+                           << m_total_volfrac << " "
+                           << m_total_volfrac - sumvof0 << std::endl;
             amrex::Print() << "   Air Volume Fractions Sum : "
                            << total_vol - m_total_volfrac << std::endl;
+            amrex::Print() << "   Total Momentum Difference (x, y, z) : "
+                           << mom_x << " " << mom_y << " " << mom_z
+                           << std::endl;
             amrex::Print() << " " << std::endl;
         }
         break;
@@ -100,7 +133,7 @@ amrex::Real MultiPhase::volume_fraction_sum()
     BL_PROFILE("amr-wind::multiphase::ComputeVolumeFractionSum");
     const int nlevels = m_sim.repo().num_active_levels();
     const auto& geom = m_sim.mesh().Geom();
-    auto& mesh = m_sim.mesh();
+    const auto& mesh = m_sim.mesh();
 
     amrex::Real total_volume_frac = 0.0;
 
@@ -141,6 +174,56 @@ amrex::Real MultiPhase::volume_fraction_sum()
     return total_volume_frac;
 }
 
+amrex::Real MultiPhase::momentum_sum(int n)
+{
+    using namespace amrex;
+    BL_PROFILE("amr-wind::multiphase::ComputeVolumeFractionSum");
+    const int nlevels = m_sim.repo().num_active_levels();
+    const auto& geom = m_sim.mesh().Geom();
+    const auto& mesh = m_sim.mesh();
+
+    amrex::Real total_momentum = 0.0;
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+
+        amrex::iMultiFab level_mask;
+        if (lev < nlevels - 1) {
+            level_mask = makeFineMask(
+                mesh.boxArray(lev), mesh.DistributionMap(lev),
+                mesh.boxArray(lev + 1), amrex::IntVect(2), 1, 0);
+        } else {
+            level_mask.define(
+                mesh.boxArray(lev), mesh.DistributionMap(lev), 1, 0,
+                amrex::MFInfo());
+            level_mask.setVal(1);
+        }
+
+        auto& velocity = m_sim.repo().get_field("velocity")(lev);
+        auto& density = m_sim.repo().get_field("density")(lev);
+        const amrex::Real cell_vol = geom[lev].CellSize()[0] *
+                                     geom[lev].CellSize()[1] *
+                                     geom[lev].CellSize()[2];
+
+        total_momentum += amrex::ReduceSum(
+            velocity, density, level_mask, 0,
+            [=] AMREX_GPU_HOST_DEVICE(
+                amrex::Box const& bx,
+                amrex::Array4<amrex::Real const> const& vel,
+                amrex::Array4<amrex::Real const> const& dens,
+                amrex::Array4<int const> const& mask_arr) -> amrex::Real {
+                amrex::Real vol_fab = 0.0;
+                amrex::Loop(bx, [=, &vol_fab](int i, int j, int k) noexcept {
+                    vol_fab += vel(i, j, k, n) * dens(i, j, k) *
+                               mask_arr(i, j, k) * cell_vol;
+                });
+                return vol_fab;
+            });
+    }
+    amrex::ParallelDescriptor::ReduceRealSum(total_momentum);
+
+    return total_momentum;
+}
+
 void MultiPhase::set_density_via_levelset()
 {
     const int nlevels = m_sim.repo().num_active_levels();
@@ -157,8 +240,8 @@ void MultiPhase::set_density_via_levelset()
             const amrex::Array4<amrex::Real>& phi = levelset.array(mfi);
             const amrex::Array4<amrex::Real>& rho = density.array(mfi);
             const amrex::Real eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
-            const amrex::Real rho1 = m_rho1;
-            const amrex::Real rho2 = m_rho2;
+            const amrex::Real captured_rho1 = m_rho1;
+            const amrex::Real captured_rho2 = m_rho2;
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     amrex::Real smooth_heaviside;
@@ -172,8 +255,8 @@ void MultiPhase::set_density_via_levelset()
                             (1.0 + phi(i, j, k) / eps +
                              1.0 / M_PI * std::sin(phi(i, j, k) * M_PI / eps));
                     }
-                    rho(i, j, k) = rho1 * smooth_heaviside +
-                                   rho2 * (1.0 - smooth_heaviside);
+                    rho(i, j, k) = captured_rho1 * smooth_heaviside +
+                                   captured_rho2 * (1.0 - smooth_heaviside);
                 });
         }
     }
@@ -192,23 +275,79 @@ void MultiPhase::set_density_via_vof()
             const auto& vbx = mfi.validbox();
             const amrex::Array4<amrex::Real>& F = vof.array(mfi);
             const amrex::Array4<amrex::Real>& rho = density.array(mfi);
-            const amrex::Real rho1 = m_rho1;
-            const amrex::Real rho2 = m_rho2;
+            const amrex::Real captured_rho1 = m_rho1;
+            const amrex::Real captured_rho2 = m_rho2;
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    rho(i, j, k) =
-                        rho1 * F(i, j, k) + rho2 * (1.0 - F(i, j, k));
+                    rho(i, j, k) = captured_rho1 * F(i, j, k) +
+                                   captured_rho2 * (1.0 - F(i, j, k));
                 });
         }
     }
     m_density.fillpatch(m_sim.time().current_time());
 }
 
-// Reconstructing the volume fraction with the levelset
+void MultiPhase::favre_filtering()
+{
+    const int nlevels = m_sim.repo().num_active_levels();
+
+    // create scratch fields
+    auto density_filter =
+        m_sim.repo().create_scratch_field(1, 1, FieldLoc::CELL);
+    auto momentum =
+        m_sim.repo().create_scratch_field(AMREX_SPACEDIM, 1, FieldLoc::CELL);
+    auto momentum_filter =
+        m_sim.repo().create_scratch_field(AMREX_SPACEDIM, 1, FieldLoc::CELL);
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        auto& mom = (*momentum)(lev);
+        auto& velocity = m_velocity(lev);
+        auto& density = m_density(lev);
+
+        for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
+            const auto& bx = mfi.growntilebox(1);
+            const amrex::Array4<amrex::Real>& vel = velocity.array(mfi);
+            const amrex::Array4<amrex::Real>& rho = density.array(mfi);
+            const amrex::Array4<amrex::Real>& rhou = mom.array(mfi);
+            amrex::ParallelFor(
+                bx, AMREX_SPACEDIM,
+                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                    rhou(i, j, k, n) = vel(i, j, k, n) * rho(i, j, k);
+                });
+        }
+    }
+    // Do the filtering
+    fvm::filter((*density_filter), m_density);
+    fvm::filter((*momentum_filter), (*momentum));
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        auto& velocity = m_velocity(lev);
+        auto& vof = (*m_vof)(lev);
+        auto& mom_fil = (*momentum_filter)(lev);
+        auto& rho_fil = (*density_filter)(lev);
+        for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
+            const auto& vbx = mfi.validbox();
+            const amrex::Array4<amrex::Real>& vel = velocity.array(mfi);
+            const amrex::Array4<amrex::Real>& volfrac = vof.array(mfi);
+            const amrex::Array4<amrex::Real>& rho_u_f = mom_fil.array(mfi);
+            const amrex::Array4<amrex::Real>& rho_f = rho_fil.array(mfi);
+            amrex::ParallelFor(
+                vbx, AMREX_SPACEDIM,
+                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                    if (volfrac(i, j, k) <= 0.5) {
+                        vel(i, j, k, n) = rho_u_f(i, j, k, n) / rho_f(i, j, k);
+                    }
+                });
+        }
+    }
+    m_velocity.fillpatch(0.0);
+}
+
+// Reconstructing the volume fraction from a levelset function
 void MultiPhase::levelset2vof()
 {
     const int nlevels = m_sim.repo().num_active_levels();
-    (*m_levelset).fillpatch(m_sim.time().new_time());
+    (*m_levelset).fillpatch(m_sim.time().current_time());
     const auto& geom = m_sim.mesh().Geom();
 
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -252,6 +391,8 @@ void MultiPhase::levelset2vof()
                 });
         }
     }
+    // Fill ghost and boundary cells before simulation begins
+    (*m_vof).fillpatch(0.0);
 }
 
 } // namespace amr_wind

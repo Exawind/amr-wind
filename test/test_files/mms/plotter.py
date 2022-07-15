@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import pandas as pd
 
-plt.rc("text", usetex=True)
+plt.rc("text", usetex=False)
 cmap_med = [
     "#F15A60",
     "#7AC36A",

@@ -51,7 +51,7 @@ TEST(CylindricalTransformation, distances_on_shifted_circle)
     EXPECT_DOUBLE_EQ(1.0, d[2]);
 }
 
-vs::Vector rotation(const vs::Vector angles, const vs::Vector data)
+vs::Vector rotation(const vs::Vector& angles, const vs::Vector& data)
 {
     const vs::Tensor rotMatrix =
         vs::xrot(angles.x()) & vs::yrot(angles.y()) & vs::zrot(angles.z());

@@ -76,8 +76,12 @@ void SamplingContainer::setup_container(
 {
     BL_PROFILE("amr-wind::SamplingContainer::setup");
     const bool communicate_comp = true;
-    for (int i = 0; i < num_real_components; ++i) AddRealComp(communicate_comp);
-    for (int i = 0; i < num_int_components; ++i) AddIntComp(communicate_comp);
+    for (int i = 0; i < num_real_components; ++i) {
+        AddRealComp(communicate_comp);
+    }
+    for (int i = 0; i < num_int_components; ++i) {
+        AddIntComp(communicate_comp);
+    }
 
     const int nlevels = m_mesh.finestLevel() + 1;
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -99,10 +103,14 @@ void SamplingContainer::initialize_particles(
     const int owner = ParticleDistributionMap(lev)[0];
 
     // Let only the MPI rank owning the first box do the work
-    if (owner != iproc) return;
+    if (owner != iproc) {
+        return;
+    }
 
     int num_particles = 0;
-    for (auto& probes : samplers) num_particles += probes->num_points();
+    for (const auto& probes : samplers) {
+        num_particles += probes->num_points();
+    }
     m_total_particles = num_particles;
 
     const int grid_id = 0;
@@ -116,7 +124,7 @@ void SamplingContainer::initialize_particles(
     const int nextid = ParticleType::NextID();
     auto* pstruct = ptile.GetArrayOfStructs()().data();
     SamplerBase::SampleLocType locs;
-    for (auto& probe : samplers) {
+    for (const auto& probe : samplers) {
         probe->sampling_locations(locs);
         const int npts = locs.size();
         const auto probe_id = probe->id();

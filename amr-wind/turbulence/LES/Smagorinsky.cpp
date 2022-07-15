@@ -11,15 +11,12 @@ namespace amr_wind {
 namespace turbulence {
 
 template <typename Transport>
+// cppcheck-suppress uninitMemberVar
 Smagorinsky<Transport>::Smagorinsky(CFDSim& sim)
     : TurbModelBase<Transport>(sim)
     , m_vel(sim.repo().get_field("velocity"))
     , m_rho(sim.repo().get_field("density"))
-{
-    const std::string coeffs_dict = this->model_name() + "_coeffs";
-    amrex::ParmParse pp(coeffs_dict);
-    pp.query("Cs", m_Cs);
-}
+{}
 
 template <typename Transport>
 void Smagorinsky<Transport>::update_turbulent_viscosity(const FieldState fstate)
@@ -28,7 +25,7 @@ void Smagorinsky<Transport>::update_turbulent_viscosity(const FieldState fstate)
         "amr-wind::" + this->identifier() + "::update_turbulent_viscosity");
 
     auto& mu_turb = this->mu_turb();
-    auto& repo = mu_turb.repo();
+    const auto& repo = mu_turb.repo();
     const auto& vel = m_vel.state(fstate);
     const auto& den = m_rho.state(fstate);
     const auto& geom_vec = repo.mesh().Geom();
@@ -63,6 +60,14 @@ void Smagorinsky<Transport>::update_turbulent_viscosity(const FieldState fstate)
     }
 
     mu_turb.fillpatch(this->m_sim.time().current_time());
+}
+
+template <typename Transport>
+void Smagorinsky<Transport>::parse_model_coeffs()
+{
+    const std::string coeffs_dict = this->model_name() + "_coeffs";
+    amrex::ParmParse pp(coeffs_dict);
+    pp.query("Cs", this->m_Cs);
 }
 
 template <typename Transport>

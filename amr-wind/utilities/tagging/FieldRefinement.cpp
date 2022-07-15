@@ -31,25 +31,30 @@ void FieldRefinement::initialize(const std::string& key)
     pp.queryarr("field_error", field_err);
     pp.queryarr("grad_error", grad_err);
 
-    if ((field_err.size() == 0u) && (grad_err.size() == 0u))
+    if ((field_err.empty()) && (grad_err.empty())) {
         amrex::Abort(
             "FieldRefinement: Must specify at least one of field_error or "
             "grad_error");
+    }
 
     {
-        size_t fcount = std::min(field_err.size(), m_field_error.size());
-        for (size_t i = 0; i < fcount; ++i) m_field_error[i] = field_err[i];
+        const int fcount = std::min(field_err.size(), m_field_error.size());
+        for (int i = 0; i < fcount; ++i) {
+            m_field_error[i] = field_err[i];
+        }
         m_max_lev_field = fcount - 1;
     }
     {
-        size_t fcount = std::min(grad_err.size(), m_grad_error.size());
-        for (size_t i = 0; i < fcount; ++i) m_grad_error[i] = grad_err[i];
+        const int fcount = std::min(grad_err.size(), m_grad_error.size());
+        for (int i = 0; i < fcount; ++i) {
+            m_grad_error[i] = grad_err[i];
+        }
         m_max_lev_grad = fcount - 1;
     }
 }
 
 void FieldRefinement::operator()(
-    int level, amrex::TagBoxArray& tags, amrex::Real time, int)
+    int level, amrex::TagBoxArray& tags, amrex::Real time, int /*ngrow*/)
 {
     const bool tag_field = level <= m_max_lev_field;
     const bool tag_grad = level <= m_max_lev_grad;
@@ -58,8 +63,8 @@ void FieldRefinement::operator()(
     }
 
     const auto& mfab = (*m_field)(level);
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
     for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid();
          ++mfi) {
@@ -71,8 +76,9 @@ void FieldRefinement::operator()(
             const auto fld_err = m_field_error[level];
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    if (farr(i, j, k) > fld_err)
+                    if (farr(i, j, k) > fld_err) {
                         tag(i, j, k) = amrex::TagBox::SET;
+                    }
                 });
         }
 
@@ -95,8 +101,9 @@ void FieldRefinement::operator()(
                     const amrex::Real ax = amrex::max(axp, axm);
                     const amrex::Real ay = amrex::max(ayp, aym);
                     const amrex::Real az = amrex::max(azp, azm);
-                    if (amrex::max(ax, ay, az) >= gerr)
+                    if (amrex::max(ax, ay, az) >= gerr) {
                         tag(i, j, k) = amrex::TagBox::SET;
+                    }
                 });
         }
     }

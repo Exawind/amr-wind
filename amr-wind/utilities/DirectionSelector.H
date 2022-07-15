@@ -20,19 +20,31 @@ struct DirectionSelector
 template <>
 struct DirectionSelector<0>
 {
-    AMREX_GPU_HOST_DEVICE int operator()(int i, int, int) const { return i; };
+    AMREX_GPU_HOST_DEVICE int
+    operator()(int i, int /*unused*/, int /*unused*/) const
+    {
+        return i;
+    };
 };
 
 template <>
 struct DirectionSelector<1>
 {
-    AMREX_GPU_HOST_DEVICE int operator()(int, int j, int) const { return j; };
+    AMREX_GPU_HOST_DEVICE int
+    operator()(int /*unused*/, int j, int /*unused*/) const
+    {
+        return j;
+    };
 };
 
 template <>
 struct DirectionSelector<2>
 {
-    AMREX_GPU_HOST_DEVICE int operator()(int, int, int k) const { return k; };
+    AMREX_GPU_HOST_DEVICE int
+    operator()(int /*unused*/, int /*unused*/, int k) const
+    {
+        return k;
+    };
 };
 
 using XDir = DirectionSelector<0>;

@@ -21,7 +21,7 @@ inline void apply(const FvmOp& fvmop, const FType& fld)
         const auto& domain = fld.repo().mesh().Geom(lev).Domain();
         const auto& mfab = fld(lev);
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
         for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid();
@@ -32,7 +32,9 @@ inline void apply(const FvmOp& fvmop, const FType& fld)
             // Check if the box touches any of the physical domain boundaries.
             // If not, short circuit the rest of the code and move on to the
             // next multifab.
-            if (domain.strictly_contains(mfi.tilebox())) continue;
+            if (domain.strictly_contains(mfi.tilebox())) {
+                continue;
+            }
 
             // faces
             fvmop.template apply<stencil::StencilILO>(lev, mfi);

@@ -12,7 +12,7 @@ namespace {
 struct UExact
 {
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-    operator()(const amrex::Real, const amrex::Real, const amrex::Real) const;
+    operator()(amrex::Real /*v0*/, amrex::Real /*a*/, amrex::Real /*z*/) const;
     const int m_comp{0};
 };
 
@@ -25,7 +25,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real UExact::operator()(
 struct VExact
 {
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-    operator()(const amrex::Real, const amrex::Real, const amrex::Real) const;
+    operator()(amrex::Real /*v0*/, amrex::Real /*a*/, amrex::Real /*z*/) const;
     const int m_comp{1};
 };
 

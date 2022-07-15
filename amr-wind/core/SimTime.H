@@ -27,27 +27,27 @@ public:
 
     /** Return true if simulation should continue
      */
-    bool continue_simulation();
+    bool continue_simulation() const;
 
     /** Return true if mesh refinement should be performed at this timestep
      */
-    bool do_regrid();
+    bool do_regrid() const;
 
     /** Return true if plot files should be written at this timestep
      */
-    bool write_plot_file();
+    bool write_plot_file() const;
 
     /** Return true if checkpoint files should be written at this timestep
      */
-    bool write_checkpoint();
+    bool write_checkpoint() const;
 
     /** Return true if plot files should be written at this timestep
      */
-    bool write_last_plot_file();
+    bool write_last_plot_file() const;
 
     /** Return true if checkpoint files should be written at this timestep
      */
-    bool write_last_checkpoint();
+    bool write_last_checkpoint() const;
 
     /** Set current CFL and update timestep based on CFL components
      *
@@ -126,7 +126,7 @@ public:
 
 private:
     //! Timestep sizes
-    amrex::Real m_dt[max_time_states];
+    amrex::Real m_dt[max_time_states]{0.0};
 
     //! Current simulation time
     amrex::Real m_cur_time{0.0};
@@ -160,6 +160,15 @@ private:
 
     //! Initial starting time index
     int m_start_time_index{0};
+
+    //! Initial starting time index for generating checkpoint files
+    int m_chkpt_start_index{0};
+
+    //! Initial starting time index for generating ouput files
+    int m_plt_start_index{0};
+
+    //! Initial starting time index for regriding
+    int m_regrid_start_index{0};
 
     //! Maximum timesteps for simulation
     int m_stop_time_index{-1};

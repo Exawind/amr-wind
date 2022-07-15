@@ -23,13 +23,16 @@ public:
     explicit Smagorinsky(CFDSim& sim);
 
     //! Model name for debugging purposes
-    virtual std::string model_name() const override { return "Smagorinsky"; }
+    std::string model_name() const override { return "Smagorinsky"; }
 
     //! Update the turbulent viscosity field
-    virtual void update_turbulent_viscosity(const FieldState fstate) override;
+    void update_turbulent_viscosity(const FieldState fstate) override;
 
     //! No post advance work for this model
-    virtual void post_advance_work() override {}
+    void post_advance_work() override {}
+
+    //! Parse turbulence model coefficients
+    void parse_model_coeffs() override;
 
     //! Return model coefficients dictionary
     TurbulenceModel::CoeffsDictType model_coeffs() const override;

@@ -32,14 +32,18 @@ void GeometryRefinement::initialize(const std::string& key)
 }
 
 void GeometryRefinement::operator()(
-    int level, amrex::TagBoxArray& tags, amrex::Real, int)
+    int level, amrex::TagBoxArray& tags, amrex::Real /*time*/, int /*ngrow*/)
 {
     // If the user has requested a particular level then check for it and exit
     // early
-    if ((m_set_level > -1) && (level != m_set_level)) return;
+    if ((m_set_level > -1) && (level != m_set_level)) {
+        return;
+    }
 
     // If the user has specified a range of levels, check and return early
-    if ((level < m_min_level) || (level > m_max_level)) return;
+    if ((level < m_min_level) || (level > m_max_level)) {
+        return;
+    }
 
     const auto& mesh = m_sim.mesh();
     const auto& geom = mesh.Geom(level);
@@ -47,8 +51,8 @@ void GeometryRefinement::operator()(
     // We are always guaranteed to have at least one field
     const auto& field_fab = (*m_sim.repo().fields()[0])(level);
 
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
     for (amrex::MFIter mfi(field_fab); mfi.isValid(); ++mfi) {
         const auto& bx = mfi.tilebox();

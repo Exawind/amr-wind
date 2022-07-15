@@ -26,7 +26,7 @@ private:
     amrex::Vector<amrex::BoxArray> m_orig_ba;
 };
 
-} // namespace utility
+} // namespace tools
 } // namespace amr_wind
 
 #endif /* REFINECHECKPT_H */

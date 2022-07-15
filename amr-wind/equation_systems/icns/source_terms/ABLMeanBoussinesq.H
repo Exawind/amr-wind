@@ -22,22 +22,22 @@ namespace icns {
 class ABLMeanBoussinesq : public MomentumSource::Register<ABLMeanBoussinesq>
 {
 public:
-    static const std::string identifier() { return "ABLMeanBoussinesq"; }
+    static std::string identifier() { return "ABLMeanBoussinesq"; }
 
     explicit ABLMeanBoussinesq(const CFDSim& sim);
 
-    virtual ~ABLMeanBoussinesq();
+    ~ABLMeanBoussinesq() override;
 
-    virtual void operator()(
+    void operator()(
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,
         const FieldState fstate,
         const amrex::Array4<amrex::Real>& src_term) const override;
 
-    void mean_temperature_init(const FieldPlaneAveraging&);
+    void mean_temperature_init(const FieldPlaneAveraging& /*tavg*/);
 
-    void mean_temperature_update(const FieldPlaneAveraging&);
+    void mean_temperature_update(const FieldPlaneAveraging& /*tavg*/);
 
     void mean_temperature_update(const amrex::Vector<amrex::Real>&);
 

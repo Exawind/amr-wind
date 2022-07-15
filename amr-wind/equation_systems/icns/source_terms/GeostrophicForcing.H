@@ -14,13 +14,13 @@ namespace icns {
 class GeostrophicForcing : public MomentumSource::Register<GeostrophicForcing>
 {
 public:
-    static const std::string identifier() { return "GeostrophicForcing"; }
+    static std::string identifier() { return "GeostrophicForcing"; }
 
-    explicit GeostrophicForcing(const CFDSim&);
+    explicit GeostrophicForcing(const CFDSim& /*unused*/);
 
-    virtual ~GeostrophicForcing();
+    ~GeostrophicForcing() override;
 
-    virtual void operator()(
+    void operator()(
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,

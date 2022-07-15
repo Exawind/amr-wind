@@ -21,7 +21,7 @@ class AmrTestMesh : public amrex::AmrCore
 public:
     AmrTestMesh();
 
-    virtual ~AmrTestMesh() = default;
+    ~AmrTestMesh() override = default;
 
     //! Create the initial AMR hierarchy
     virtual void initialize_mesh(amrex::Real current_time);
@@ -34,27 +34,27 @@ public:
     amr_wind::FieldRepo& field_repo() { return m_repo; }
 
 protected:
-    virtual void MakeNewLevelFromScratch(
+    void MakeNewLevelFromScratch(
         int lev,
         amrex::Real time,
         const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm) override;
 
-    virtual void MakeNewLevelFromCoarse(
+    void MakeNewLevelFromCoarse(
         int lev,
         amrex::Real time,
         const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm) override;
 
-    virtual void RemakeLevel(
+    void RemakeLevel(
         int lev,
         amrex::Real time,
         const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm) override;
 
-    virtual void ClearLevel(int lev) override;
+    void ClearLevel(int lev) override;
 
-    virtual void
+    void
     ErrorEst(int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow)
         override;
 

@@ -23,7 +23,7 @@ struct AmrDualArray
     AmrDualArray() : d_view(), h_view() {}
 
     //! Construct arrays on host/device with a given length
-    AmrDualArray(const size_t len) : d_view(len), h_view(len) {}
+    explicit AmrDualArray(const size_t len) : d_view(len), h_view(len) {}
 
     //! Resize arrays on host and device
     void resize(const size_t len)

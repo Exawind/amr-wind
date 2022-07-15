@@ -1,3 +1,6 @@
+#include <memory>
+#include <utility>
+
 #include "amr-wind/utilities/sampling/Sampling.H"
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
@@ -7,8 +10,8 @@
 namespace amr_wind {
 namespace sampling {
 
-Sampling::Sampling(CFDSim& sim, const std::string& label)
-    : m_sim(sim), m_label(label)
+Sampling::Sampling(CFDSim& sim, std::string label)
+    : m_sim(sim), m_label(std::move(label))
 {}
 
 Sampling::~Sampling() = default;
@@ -31,7 +34,7 @@ void Sampling::initialize()
     }
 
     // Process field information
-    int ncomp = 0;
+    m_ncomp = 0;
     auto& repo = m_sim.repo();
     for (const auto& fname : field_names) {
         if (!repo.field_exists(fname)) {
@@ -42,7 +45,7 @@ void Sampling::initialize()
         }
 
         auto& fld = repo.get_field(fname);
-        ncomp += fld.num_comp();
+        m_ncomp += fld.num_comp();
         m_fields.emplace_back(&fld);
         ioutils::add_var_names(m_var_names, fld.name(), fld.num_comp());
     }
@@ -65,24 +68,49 @@ void Sampling::initialize()
         m_samplers.emplace_back(std::move(obj));
     }
 
+    update_container();
+
+    if (m_out_fmt == "netcdf") {
+        prepare_netcdf_file();
+    }
+}
+
+void Sampling::update_container()
+{
+    BL_PROFILE("amr-wind::Sampling::update_container");
+
     // Initialize the particle container based on user inputs
-    m_scontainer.reset(new SamplingContainer(m_sim.mesh()));
-    m_scontainer->setup_container(ncomp);
+    m_scontainer = std::make_unique<SamplingContainer>(m_sim.mesh());
+    m_scontainer->setup_container(m_ncomp);
     m_scontainer->initialize_particles(m_samplers);
     // Redistribute particles to appropriate boxes/MPI ranks
     m_scontainer->Redistribute();
     m_scontainer->num_sampling_particles() = m_total_particles;
+}
 
-    if (m_out_fmt == "netcdf") prepare_netcdf_file();
+void Sampling::update_sampling_locations()
+{
+    BL_PROFILE("amr-wind::Sampling::update_sampling_locations");
+
+    for (const auto& obj : m_samplers) {
+        obj->update_sampling_locations();
+    }
+
+    update_container();
 }
 
 void Sampling::post_advance_work()
 {
+
     BL_PROFILE("amr-wind::Sampling::post_advance_work");
     const auto& time = m_sim.time();
     const int tidx = time.time_index();
     // Skip processing if it is not an output timestep
-    if (!(tidx % m_out_freq == 0)) return;
+    if (!(tidx % m_out_freq == 0)) {
+        return;
+    }
+
+    update_sampling_locations();
 
     m_scontainer->interpolate_fields(m_fields);
 
@@ -194,6 +222,7 @@ void Sampling::prepare_netcdf_file()
             xyz.put(&locs[0][0], start, count);
         }
     }
+
 #else
     amrex::Abort(
         "NetCDF support was not enabled during build time. Please recompile or "
@@ -217,6 +246,11 @@ void Sampling::write_netcdf()
         ncf.var("time").put(&time, {nt}, {1});
     }
 
+    for (const auto& obj : m_samplers) {
+        auto grp = ncf.group(obj->label());
+        obj->output_netcdf_data(grp, nt);
+    }
+
     std::vector<size_t> start{nt, 0};
     std::vector<size_t> count{1, 0};
 
@@ -226,11 +260,16 @@ void Sampling::write_netcdf()
         count[1] = 0;
         int offset = iv * m_scontainer->num_sampling_particles();
         for (const auto& obj : m_samplers) {
-            count[1] = obj->num_points();
             auto grp = ncf.group(obj->label());
             auto var = grp.var(m_var_names[iv]);
-            var.put(&buf[offset], start, count);
-            offset += count[1];
+            // Do sampler specific output if needed
+            bool do_output = obj->output_netcdf_field(&buf[offset], var);
+            // Do generic output if specific output returns true
+            if (do_output) {
+                count[1] = obj->num_points();
+                var.put(&buf[offset], start, count);
+                offset += count[1];
+            }
         }
     }
     ncf.close();

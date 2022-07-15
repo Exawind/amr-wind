@@ -8,6 +8,7 @@
 #include "AMReX_RealBox.H"
 
 #include <set>
+#include <utility>
 
 namespace amr_wind {
 
@@ -89,6 +90,9 @@ struct ActGrid
     //! Velocity vector at the sampled locations
     VecList vel;
 
+    //! Density at the smapled locations
+    RealList density;
+
     /** Helper method to resize the data arrays defined on the grid
      *
      *  \params Number of nodes that contain forcing data
@@ -102,6 +106,7 @@ struct ActGrid
         orientation.resize(num_force_pts);
         vel_pos.resize(num_vel_pts);
         vel.resize(num_vel_pts);
+        density.resize(num_vel_pts);
     }
 
     /** Convenience function to resize both force/velocity data to same
@@ -143,8 +148,8 @@ struct ActInfo
     //! actuator point
     bool sample_vel_in_proc{false};
 
-    ActInfo(const std::string& label_in, const int id_in)
-        : label(label_in), id(id_in)
+    ActInfo(std::string label_in, const int id_in)
+        : label(std::move(label_in)), id(id_in)
     {}
 };
 

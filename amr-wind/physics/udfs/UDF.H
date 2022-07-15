@@ -22,9 +22,9 @@ class ConstValue : public UDF::Register<ConstValue>
 public:
     static std::string identifier() { return "ConstValue"; }
 
-    explicit ConstValue(Field&);
+    explicit ConstValue(Field& /*fld*/);
 
-    virtual void operator()(int level, const amrex::Geometry& geom) override;
+    void operator()(int level, const amrex::Geometry& geom) override;
 
 private:
     Field& m_field;
@@ -37,9 +37,9 @@ class UDFImpl : public UDF::Register<UDFImpl<T>>
 public:
     static std::string identifier() { return T::identifier(); }
 
-    explicit UDFImpl(Field&);
+    explicit UDFImpl(Field& /*fld*/);
 
-    virtual void operator()(int level, const amrex::Geometry& geom) override;
+    void operator()(int level, const amrex::Geometry& geom) override;
 
 private:
     Field& m_field;

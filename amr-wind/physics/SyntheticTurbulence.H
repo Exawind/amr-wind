@@ -147,7 +147,7 @@ struct InterpWeights
 class SyntheticTurbulence : public Physics::Register<SyntheticTurbulence>
 {
 public:
-    static const std::string identifier() { return "SyntheticTurbulence"; }
+    static std::string identifier() { return "SyntheticTurbulence"; }
 
     explicit SyntheticTurbulence(const CFDSim& sim);
 
@@ -155,7 +155,7 @@ public:
     SyntheticTurbulence(const SyntheticTurbulence&) = delete;
     SyntheticTurbulence& operator=(const SyntheticTurbulence&) = delete;
 
-    virtual ~SyntheticTurbulence() = default;
+    ~SyntheticTurbulence() override = default;
 
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 
@@ -172,8 +172,10 @@ public:
     void update();
 
     template <typename T>
-    void
-    update_impl(const SynthTurbDeviceData&, const InterpWeights&, const T&);
+    void update_impl(
+        const SynthTurbDeviceData& /*turb_grid*/,
+        const InterpWeights& /*weights*/,
+        const T& /*velfunc*/);
 
 private:
     const amr_wind::SimTime& m_time;

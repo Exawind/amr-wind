@@ -14,11 +14,11 @@ namespace hybrid_rans_les_abl {
 class HybridRANSLESABL : public Physics::Register<HybridRANSLESABL>
 {
 public:
-    static const std::string identifier() { return "HybridRANSLESABL"; }
+    static std::string identifier() { return "HybridRANSLESABL"; }
 
     explicit HybridRANSLESABL(const CFDSim& sim);
 
-    virtual ~HybridRANSLESABL() = default;
+    ~HybridRANSLESABL() override = default;
 
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 
@@ -38,8 +38,8 @@ public:
 private:
     const CFDSim& m_sim;
 
-    Field* m_tke;
-    Field* m_sdr;
+    Field* m_tke{nullptr};
+    Field* m_sdr{nullptr};
 
     //! Turbulence model constant
     amrex::Real m_Ce{0.1};

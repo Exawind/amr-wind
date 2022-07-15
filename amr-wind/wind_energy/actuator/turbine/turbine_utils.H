@@ -11,17 +11,17 @@ void read_inputs(
     TurbineBaseData& tdata, TurbineInfo& info, const utils::ActParser& pp);
 
 void prepare_netcdf_file(
-    const std::string&,
-    const TurbineBaseData&,
-    const TurbineInfo&,
-    const ActGrid&);
+    const std::string& /*ncfile*/,
+    const TurbineBaseData& /*meta*/,
+    const TurbineInfo& /*info*/,
+    const ActGrid& /*grid*/);
 
 void write_netcdf(
-    const std::string&,
-    const TurbineBaseData&,
-    const TurbineInfo&,
-    const ActGrid&,
-    const amrex::Real);
+    const std::string& /*ncfile*/,
+    const TurbineBaseData& /*meta*/,
+    const TurbineInfo& /*info*/,
+    const ActGrid& /*grid*/,
+    const amrex::Real /*time*/);
 
 } // namespace utils
 } // namespace actuator
