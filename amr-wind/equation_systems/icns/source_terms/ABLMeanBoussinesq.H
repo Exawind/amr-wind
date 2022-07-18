@@ -3,7 +3,6 @@
 
 #include <AMReX_REAL.H>
 #include <AMReX_Vector.H>
-#include <optional>
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
