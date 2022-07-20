@@ -9,21 +9,6 @@
 #include <algorithm>
 
 namespace amr_wind {
-
-namespace {
-// FIXME: Will not work on GPUs
-//! Return closest index (from lower) of value in vector
-/*AMREX_FORCE_INLINE int
-closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
-{
-    auto const it = std::upper_bound(vec.begin(), vec.end(), value);
-    AMREX_ALWAYS_ASSERT(it != vec.end());
-
-    const int idx = std::distance(vec.begin(), it);
-    return std::max(idx - 1, 0);
-}*/
-} // namespace
-
 namespace actuator {
 
 ActuatorCloud::ActuatorCloud(const int nobjects)
@@ -149,42 +134,6 @@ unstretched_to_stretched_coordinates(const amrex::RealVect& point)
     return {point[0], point[1], point[2]};
 }
 
-void ActuatorContainer::mapped_redistribute()
-{
-    const int nlevels = m_mesh.finestLevel() + 1;
-    if (m_map != nullptr) {
-        for (int lev = 0; lev < nlevels; ++lev) {
-            for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
-                const int nump = pti.numParticles();
-                auto* pstruct = pti.GetArrayOfStructs()().data();
-                amrex::ParallelFor(
-                    nump, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
-                        auto& particle = pstruct[ip];
-                        particle.pos() = stretched_to_unstretched_coordinates(
-                            particle.pos());
-                    });
-            }
-        }
-    }
-
-    Redistribute();
-
-    /*if (m_map != nullptr) {
-        for (int lev = 0; lev < nlevels; ++lev) {
-            for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
-                const int nump = pti.numParticles();
-                auto* pstruct = pti.GetArrayOfStructs()().data();
-                amrex::ParallelFor(
-                    nump, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
-                        auto& particle = pstruct[ip];
-                        particle.pos() = unstretched_to_stretched_coordinates(
-                            particle.pos());
-                    });
-            }
-        }
-    }*/
-}
-
 void ActuatorContainer::reset_container()
 {
     const int nlevels = m_mesh.finestLevel() + 1;
@@ -199,7 +148,7 @@ void ActuatorContainer::reset_container()
             });
         }
     }
-    mapped_redistribute();
+    Redistribute();
 
     const int total_pts = m_data.velocity.size();
     initialize_particles(total_pts);
@@ -244,7 +193,7 @@ void ActuatorContainer::update_positions()
     }
 
     // Scatter particles to appropriate MPI ranks
-    mapped_redistribute();
+    Redistribute();
 
     // Indicate that it is safe to sample velocities
     m_is_scattered = true;

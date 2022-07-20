@@ -182,11 +182,11 @@ TEST_F(ActuatorTest, act_container_mesh_mapping)
         std::string map_name = "ChannelFlowMap";
         p_geom.add("mesh_mapping", map_name);
     }
-    {
+    /*{
         amrex::ParmParse p_map("ConstantMap");
         amrex::Vector<amrex::Real> fac{{2.0, 1.0, 0.5}};
         p_map.addarr("factor", fac);
-    }
+    }*/
 
     const int iproc = amrex::ParallelDescriptor::MyProc();
     initialize_mesh();
@@ -263,7 +263,7 @@ TEST_F(ActuatorTest, act_container_mesh_mapping)
     }
 
     ac.sample_fields(vel, density);
-    ac.mapped_redistribute();
+    ac.Redistribute();
 
     // Check to make sure that the velocity sampling gathered the particles back
     // to their original MPI ranks
@@ -301,11 +301,11 @@ TEST_F(ActuatorTest, act_container_mesh_mapping)
             const auto& pos = pvec[ip];
             const auto& pvel = vvec[ip];
 
-            const amrex::Real vval = pos.x() + pos.y() + pos.z();
-            const vs::Vector vgold{vval, vval, vval};
-            rerr += vs::mag_sqr(pvel - vgold);
+            const vs::Vector vgold{pos.x(), pos.y(), pos.z()};
+
+            vs::mag_sqr(pvel - vgold);
             for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-                EXPECT_NEAR(vgold[i], pvel[i], rtol) << i;
+                EXPECT_NEAR(vgold[i], pos[i], rtol) << i;
             }
         }
         EXPECT_NEAR(rerr, 0.0, rtol);
