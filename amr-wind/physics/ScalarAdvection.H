@@ -24,6 +24,9 @@ public:
     //! Initialize the temperature and velocity fields for ScalarAdvection
     //! simulations
     void initialize_fields(int level, const amrex::Geometry& geom) override;
+    
+    template <typename Shape>
+    amrex::Vector<amrex::Real> compute_error(const Shape& scalar_function);
 
     void post_init_actions() override;
 
@@ -31,19 +34,25 @@ public:
 
     void pre_advance_work() override {}
 
-    void post_advance_work() override {}
+    void post_advance_work() override;
 
     template <typename Shape>
     void initialize_scalar(const Shape& scalar_function);
 
 private:
     const CFDSim& m_sim;
+    const SimTime& m_time;
     const FieldRepo& m_repo;
     Field& m_velocity;
     Field& m_density;
+    const std::string m_output_fname = "error.log";
+    const int m_w = 18;
 
     //! Scalar field
     Field* m_scalar{nullptr};
+
+    //! Flow velocity in x-direction
+    amrex::Real m_convective_speed{1.0};
 
     //! Initial wave packet location
     amrex::Real m_center{0.1};
