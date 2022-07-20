@@ -4,6 +4,7 @@
 #include "amr-wind/wind_energy/actuator/ActuatorContainer.H"
 #include "amr-wind/core/gpu_utils.H"
 #include "amr-wind/core/vs/vector_space.H"
+#include "amr-wind/core/vs/vectorI.H"
 
 #include <algorithm>
 
@@ -23,7 +24,32 @@ public:
     amr_wind::actuator::ActuatorCloud& get_data_obj() { return point_data(); }
 };
 
-class ActuatorTest : public MeshTest
+class BaseActuatorTest : public MeshTest
+{
+public:
+    void initalize_mesh_and_fields()
+    {
+        initialize_mesh();
+        auto& vel = sim().repo().declare_field("velocity", 3, 3);
+        auto& density = sim().repo().declare_field("density", 1, 3);
+        init_field(vel);
+        density.setVal(1.0);
+    }
+
+    void init_mesh_mapping()
+    {
+        sim().activate_mesh_map();
+
+        if (sim().has_mesh_mapping()) {
+            int n_levels = m_mesh->num_levels();
+            for (int i = 0; i < n_levels; ++i) {
+                sim().mesh_mapping()->create_map(i, m_mesh->Geom(i));
+            }
+        }
+    }
+};
+
+class ActuatorTest : public BaseActuatorTest
 {
 protected:
     void populate_parameters() override
@@ -48,6 +74,41 @@ protected:
     }
 };
 
+class ActuatorConstantMapTest : public BaseActuatorTest
+{
+protected:
+    void populate_parameters() override
+    {
+        MeshTest::populate_parameters();
+        {
+            amrex::ParmParse pp("amr");
+            amrex::Vector<int> n_cell({8, 8, 8});
+            pp.addarr("n_cell", n_cell);
+            pp.add("max_level", 0);
+            pp.add("max_grid_size", 4);
+        }
+        {
+            amrex::ParmParse pp("geometry");
+            amrex::Vector<amrex::Real> problo{{0.0, 0.0, 0.0}};
+            amrex::Vector<amrex::Real> probhi{{1.0, 1.0, 1.0}};
+            amrex::Vector<int> periodic{{0, 0, 0}};
+
+            pp.addarr("prob_lo", problo);
+            pp.addarr("prob_hi", probhi);
+
+            std::string map = "ConstantMap";
+            pp.add("mesh_mapping", map);
+            pp.addarr("is_periodic", periodic);
+        }
+        {
+            amrex::ParmParse pp("ConstantMap");
+            const amrex::Real scale = 2.0;
+            amrex::Vector<amrex::Real> scaling{{scale, scale, scale}};
+            pp.addarr("scaling_factor", scaling);
+        }
+    }
+};
+
 } // namespace
 
 TEST_F(ActuatorTest, act_container)
@@ -58,11 +119,9 @@ TEST_F(ActuatorTest, act_container)
     }
 
     const int iproc = amrex::ParallelDescriptor::MyProc();
-    initialize_mesh();
-    auto& vel = sim().repo().declare_field("velocity", 3, 3);
-    auto& density = sim().repo().declare_field("density", 1, 3);
-    init_field(vel);
-    density.setVal(1.0);
+    initalize_mesh_and_fields();
+    auto& vel = sim().repo().get_field("velocity");
+    auto& density = sim().repo().get_field("density");
 
     // Number of turbines in an MPI rank
     const int num_turbines = 2;
@@ -168,6 +227,40 @@ TEST_F(ActuatorTest, act_container)
         }
         EXPECT_NEAR(rerr, 0.0, rtol);
     }
+}
+
+TEST_F(ActuatorConstantMapTest, act_containter)
+{
+    initalize_mesh_and_fields();
+    init_mesh_mapping();
+    ASSERT_TRUE(sim().has_mesh_mapping());
+
+    const int num_turbines = 1;
+    TestActContainer ac(mesh(), num_turbines);
+    auto& data = ac.get_data_obj();
+    const int num_nodes = 4;
+    const amrex::Real dx = 1.0 / num_nodes;
+    data.num_pts[0] = num_nodes;
+    ac.initialize_container();
+
+    // set position of all the particles outside the integer domain
+    {
+        auto& pvec = data.position;
+        for (int i = 0; i < num_nodes; ++i) {
+            pvec[i].x() = 1.0 + (i + 0.5) * dx;
+            pvec[i].y() = 1.0 + (i + 0.5) * dx;
+            pvec[i].z() = 1.0 + (i + 0.5) * dx;
+            amrex::Print(-1) << "x,y,z: " << pvec[i] << std::endl;
+        }
+    }
+
+    ac.update_positions();
+    // TODO possibly add assert in the code for this
+    ASSERT_EQ(num_nodes, ac.TotalNumberOfParticles());
+
+    const auto& vel = sim().repo().get_field("velocity");
+    const auto& density = sim().repo().get_field("density");
+    ac.sample_fields(vel, density);
 }
 
 } // namespace amr_wind_tests
