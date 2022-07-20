@@ -47,7 +47,7 @@ public:
 
     void update_ustar(const amrex::Real);
 
-    void update_aux_wall(const amrex::Array<amrex::Real, 4>&); 
+    void update_aux_wall(const amrex::Array<amrex::Real, 4>&);
 
 private:
     const CFDSim& m_sim;

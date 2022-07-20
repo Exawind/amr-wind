@@ -47,19 +47,19 @@ ABLReadStats::ABLReadStats(const std::string filestats)
     m_stats_theta.resize(m_stats_nt_steps * m_stats_nlevels);
     m_stats_theta_1D.resize(m_stats_nlevels);
 
-    m_stats_u.resize(m_stats_nt_steps*m_stats_nlevels);
+    m_stats_u.resize(m_stats_nt_steps * m_stats_nlevels);
     m_stats_u_1D.resize(m_stats_nlevels);
-    
-    m_stats_v.resize(m_stats_nt_steps*m_stats_nlevels);
+
+    m_stats_v.resize(m_stats_nt_steps * m_stats_nlevels);
     m_stats_v_1D.resize(m_stats_nlevels);
-    
-    m_stats_vmag.resize(m_stats_nt_steps*m_stats_nlevels);
+
+    m_stats_vmag.resize(m_stats_nt_steps * m_stats_nlevels);
     m_stats_vmag_1D.resize(m_stats_nlevels);
 
     grp.var("theta").get(m_stats_theta.data());
     grp.var("hvelmag").get(m_stats_vmag.data());
     grp.var("u").get(m_stats_u.data());
-    grp.var("v").get(m_stats_v.data()); 
+    grp.var("v").get(m_stats_v.data());
 
     ncf.close();
 }
@@ -80,11 +80,11 @@ const amrex::Vector<amrex::Real>& ABLReadStats::stats_ustar() const
 }
 const amrex::Vector<amrex::Real>& ABLReadStats::stat_u_1D() const
 {
-  return m_stats_u_1D; 
+    return m_stats_u_1D;
 }
 const amrex::Vector<amrex::Real>& ABLReadStats::stat_v_1D() const
 {
-  return m_stats_v_1D;   
+    return m_stats_v_1D;
 }
 
 amrex::Real ABLReadStats::interpUstarTime(const amrex::Real timeSim)
@@ -108,7 +108,8 @@ amrex::Real ABLReadStats::interpUstarTime(const amrex::Real timeSim)
 
     return interpUstar;
 }
-void ABLReadStats::interpThetaTime(const amrex::Real timeSim, amrex::Array<amrex::Real, 4>& wall_func_aux)
+void ABLReadStats::interpThetaTime(
+    const amrex::Real timeSim, amrex::Array<amrex::Real, 4>& wall_func_aux)
 {
 
     // First the index in time
@@ -142,7 +143,6 @@ void ABLReadStats::interpThetaTime(const amrex::Real timeSim, amrex::Array<amrex
     wall_func_aux[1] = m_stats_v_1D[0];
     wall_func_aux[2] = m_stats_vmag_1D[0];
     wall_func_aux[3] = m_stats_theta_1D[0];
-    
 }
 
 } // namespace amr_wind

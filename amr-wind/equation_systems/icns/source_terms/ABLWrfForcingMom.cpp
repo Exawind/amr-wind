@@ -283,7 +283,6 @@ void ABLWrfForcingMom::mean_velocity_heights(
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, error_V.begin(), error_V.end(),
         m_error_wrf_avg_V.begin());
-
 }
 
 void ABLWrfForcingMom::mean_velocity_heights(
@@ -404,7 +403,6 @@ void ABLWrfForcingMom::mean_velocity_heights(
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, error_V.begin(), error_V.end(),
         m_error_wrf_avg_V.begin());
-    
 }
 
 void ABLWrfForcingMom::operator()(

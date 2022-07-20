@@ -21,83 +21,81 @@ namespace icns {
  *  \sa ABL
  */
 
-
-class ABLWrfForcingMom: public MomentumSource::Register<ABLWrfForcingMom>
+class ABLWrfForcingMom : public MomentumSource::Register<ABLWrfForcingMom>
 {
 public:
+    static const std::string identifier() { return "ABLWrfForcingMom"; }
 
-  static const std::string identifier() { return "ABLWrfForcingMom"; }
-  
-  explicit ABLWrfForcingMom(const CFDSim& sim);
-  
-  virtual ~ABLWrfForcingMom();
+    explicit ABLWrfForcingMom(const CFDSim& sim);
 
-  virtual void operator()(
-      const int lev,
-      const amrex::MFIter& mfi,
-      const amrex::Box& bx,
-      const FieldState fstate,
-      const amrex::Array4<amrex::Real>& src_term) const override;
+    virtual ~ABLWrfForcingMom();
 
-  void mean_velocity_heights(const VelPlaneAveraging&, std::unique_ptr<ABLWRFfile>&);
+    virtual void operator()(
+        const int lev,
+        const amrex::MFIter& mfi,
+        const amrex::Box& bx,
+        const FieldState fstate,
+        const amrex::Array4<amrex::Real>& src_term) const override;
 
-  void mean_velocity_heights(
-      const amrex::Vector<amrex::Real>&,
-      const amrex::Vector<amrex::Real>&,
-      std::unique_ptr<ABLWRFfile>&);
+    void mean_velocity_heights(
+        const VelPlaneAveraging&, std::unique_ptr<ABLWRFfile>&);
 
-  void mean_velocity_init(const VelPlaneAveraging&, const ABLWRFfile&);
+    void mean_velocity_heights(
+        const amrex::Vector<amrex::Real>&,
+        const amrex::Vector<amrex::Real>&,
+        std::unique_ptr<ABLWRFfile>&);
 
-  void invertMat(const amrex::Array2D<amrex::Real,0,3,0,3>&, amrex::Array2D<amrex::Real,0,3,0,3>&);
+    void mean_velocity_init(const VelPlaneAveraging&, const ABLWRFfile&);
 
-  void indirectForcingInit();
- 
- private:
-  const SimTime& m_time;
+    void invertMat(
+        const amrex::Array2D<amrex::Real, 0, 3, 0, 3>&,
+        amrex::Array2D<amrex::Real, 0, 3, 0, 3>&);
 
-  const amrex::AmrCore& m_mesh;
-  
-  std::string m_forcing_scheme;
+    void indirectForcingInit();
 
-  amrex::Gpu::DeviceVector<amrex::Real> m_velAvg_ht;
-  amrex::Gpu::DeviceVector<amrex::Real> m_uAvg_vals;
-  amrex::Gpu::DeviceVector<amrex::Real> m_vAvg_vals;
+private:
+    const SimTime& m_time;
 
-  amrex::Gpu::DeviceVector<amrex::Real> m_wrf_u_vals;
-  amrex::Gpu::DeviceVector<amrex::Real> m_wrf_v_vals;
+    const amrex::AmrCore& m_mesh;
 
-  amrex::Gpu::DeviceVector<amrex::Real> m_wrf_ht;
+    std::string m_forcing_scheme;
 
-  amrex::Gpu::DeviceVector<amrex::Real> m_wrf_avg_error;
+    amrex::Gpu::DeviceVector<amrex::Real> m_velAvg_ht;
+    amrex::Gpu::DeviceVector<amrex::Real> m_uAvg_vals;
+    amrex::Gpu::DeviceVector<amrex::Real> m_vAvg_vals;
 
-  amrex::Gpu::DeviceVector<amrex::Real> m_error_wrf_avg_U;
-  amrex::Gpu::DeviceVector<amrex::Real> m_error_wrf_avg_V;
+    amrex::Gpu::DeviceVector<amrex::Real> m_wrf_u_vals;
+    amrex::Gpu::DeviceVector<amrex::Real> m_wrf_v_vals;
 
-  amrex::Vector<amrex::Real> m_zht;
-  
-  int m_idx_time;
+    amrex::Gpu::DeviceVector<amrex::Real> m_wrf_ht;
 
-  int m_axis{2};
+    amrex::Gpu::DeviceVector<amrex::Real> m_wrf_avg_error;
 
-  int m_ind_polyOrder;
+    amrex::Gpu::DeviceVector<amrex::Real> m_error_wrf_avg_U;
+    amrex::Gpu::DeviceVector<amrex::Real> m_error_wrf_avg_V;
 
-  int m_nht;
+    amrex::Vector<amrex::Real> m_zht;
 
-  size_t m_nlevels; 
+    int m_idx_time;
 
-  amrex::Array2D<amrex::Real,0,3,0,3> m_im_zTz;
+    int m_axis{2};
 
-  amrex::Array<amrex::Real, 4> m_poly_coeff_U;
-  amrex::Array<amrex::Real, 4> m_poly_coeff_V;
+    int m_ind_polyOrder;
 
-  amrex::Real m_gain_coeff{0.2};
+    int m_nht;
 
+    size_t m_nlevels;
+
+    amrex::Array2D<amrex::Real, 0, 3, 0, 3> m_im_zTz;
+
+    amrex::Array<amrex::Real, 4> m_poly_coeff_U;
+    amrex::Array<amrex::Real, 4> m_poly_coeff_V;
+
+    amrex::Real m_gain_coeff{0.2};
 };
 
 } // namespace icns
 } // namespace pde
 } // namespace amr_wind
 
-
 #endif // ABLWRFFORCINGMOM_H
-

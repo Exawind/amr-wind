@@ -33,7 +33,7 @@ private:
     size_t m_stats_nt_steps;
     amrex::Vector<amrex::Real> m_stats_time;
     amrex::Vector<amrex::Real> m_stats_ustar;
- 
+
     amrex::Vector<amrex::Real> m_stats_theta;
     amrex::Vector<amrex::Real> m_stats_theta_1D;
 

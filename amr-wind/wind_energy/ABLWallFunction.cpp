@@ -159,23 +159,25 @@ void ABLWallFunction::update_umean(
 
 void ABLWallFunction::update_tflux(const amrex::Real wrftflux)
 {
-  m_mo.surf_temp_flux = wrftflux; 
+    m_mo.surf_temp_flux = wrftflux;
 }
 
-void ABLWallFunction::update_ustar(const amrex::Real statustar){
+void ABLWallFunction::update_ustar(const amrex::Real statustar)
+{
 
-  m_mo.utau = statustar; 
+    m_mo.utau = statustar;
 }
 
-void ABLWallFunction::update_aux_wall(const amrex::Array<amrex::Real, 4>&wall_func_aux){
+void ABLWallFunction::update_aux_wall(
+    const amrex::Array<amrex::Real, 4>& wall_func_aux)
+{
 
-  m_mo.vel_mean[0] = wall_func_aux[0];
-  m_mo.vel_mean[1] = wall_func_aux[1];
-  m_mo.vmag_mean = wall_func_aux[2];
-  m_mo.theta_mean = wall_func_aux[3]; 
+    m_mo.vel_mean[0] = wall_func_aux[0];
+    m_mo.vel_mean[1] = wall_func_aux[1];
+    m_mo.vmag_mean = wall_func_aux[2];
+    m_mo.theta_mean = wall_func_aux[3];
 
-  m_mo.update_aux();
- 
+    m_mo.update_aux();
 }
 
 ABLVelWallFunc::ABLVelWallFunc(

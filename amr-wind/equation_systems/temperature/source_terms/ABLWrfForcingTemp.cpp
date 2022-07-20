@@ -293,8 +293,8 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
         m_wrf_theta_vals.begin());
 
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, tavg.begin(),
-        tavg.end(), m_theta_vals.begin());
+        amrex::Gpu::hostToDevice, tavg.begin(), tavg.end(),
+        m_theta_vals.begin());
 
     amrex::Vector<amrex::Real> error_T(m_nlevels);
 

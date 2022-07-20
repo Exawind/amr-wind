@@ -5,8 +5,7 @@
 
 namespace amr_wind {
 
-ABLWRFfile::ABLWRFfile(const std::string filewrf)
-    : m_wrf_filename(filewrf)
+ABLWRFfile::ABLWRFfile(const std::string filewrf) : m_wrf_filename(filewrf)
 {
 
     auto ncf = ncutils::NCFile::open_par(
@@ -15,7 +14,7 @@ ABLWRFfile::ABLWRFfile(const std::string filewrf)
 
     m_wrf_nheight = ncf.dim("nheight").len();
     m_wrf_ntime = ncf.dim("ntime").len();
-    
+
     m_wrf_height.resize(m_wrf_nheight);
     m_wrf_time.resize(m_wrf_ntime);
 
@@ -33,23 +32,31 @@ ABLWRFfile::ABLWRFfile(const std::string filewrf)
     ncf.var("wrf_tflux").get(m_wrf_tflux.data());
 
     ncf.close();
-
 }
 
 const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_heights() const
 {
-  return m_wrf_height;
+    return m_wrf_height;
 }
 
-const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_times() const { return m_wrf_time; }
+const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_times() const
+{
+    return m_wrf_time;
+}
 
 const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_u() const { return m_wrf_u; }
 
 const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_v() const { return m_wrf_v; }
 
-const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_temp() const { return m_wrf_temp; }
+const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_temp() const
+{
+    return m_wrf_temp;
+}
 
-const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_tflux() const { return m_wrf_tflux; }
+const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_tflux() const
+{
+    return m_wrf_tflux;
+}
 
 int ABLWRFfile::nheights() const { return m_wrf_nheight; }
 int ABLWRFfile::times() const { return m_wrf_ntime; }

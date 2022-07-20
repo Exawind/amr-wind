@@ -37,7 +37,9 @@ public:
 
     void mean_temperature_init(const FieldPlaneAveraging&, const ABLWRFfile&);
 
-    void invertMat(const amrex::Array2D<amrex::Real,0,3,0,3>&, amrex::Array2D<amrex::Real,0,3,0,3>&);
+    void invertMat(
+        const amrex::Array2D<amrex::Real, 0, 3, 0, 3>&,
+        amrex::Array2D<amrex::Real, 0, 3, 0, 3>&);
 
     void indirectForcingInit();
 
@@ -51,7 +53,7 @@ private:
     amrex::Gpu::DeviceVector<amrex::Real> m_wrf_theta_vals;
     amrex::Gpu::DeviceVector<amrex::Real> m_wrf_ht;
 
-    amrex::Gpu::DeviceVector<amrex::Real> m_error_wrf_avg_theta; 
+    amrex::Gpu::DeviceVector<amrex::Real> m_error_wrf_avg_theta;
 
     int m_idx_time;
 
@@ -62,12 +64,11 @@ private:
     int m_nht;
     size_t m_nlevels;
 
-    amrex::Array2D<amrex::Real,0,3,0,3> m_im_zTz;
+    amrex::Array2D<amrex::Real, 0, 3, 0, 3> m_im_zTz;
 
     amrex::Array<amrex::Real, 4> m_poly_coeff_theta;
 
     amrex::Real m_gain_coeff{0.2};
-
 };
 
 } // namespace temperature

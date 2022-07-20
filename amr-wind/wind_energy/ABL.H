@@ -43,7 +43,7 @@ class ABLMeanBoussinesq;
 class ABLWrfForcingMom;
 } // namespace icns
 namespace temperature {
-  class ABLWrfForcingTemp;
+class ABLWrfForcingTemp;
 }
 } // namespace pde
 
@@ -93,7 +93,8 @@ public:
     {
         m_abl_wrf_forcing = forcing;
     }
-    void register_wrf_temp_forcing(pde::temperature::ABLWrfForcingTemp* forcing) const
+    void register_wrf_temp_forcing(
+        pde::temperature::ABLWrfForcingTemp* forcing) const
     {
         m_abl_wrf_theta_forcing = forcing;
     }
@@ -133,7 +134,8 @@ private:
 
     mutable pde::icns::ABLWrfForcingMom* m_abl_wrf_forcing{nullptr};
 
-    mutable pde::temperature::ABLWrfForcingTemp* m_abl_wrf_theta_forcing{nullptr};
+    mutable pde::temperature::ABLWrfForcingTemp* m_abl_wrf_theta_forcing{
+        nullptr};
 
     std::unique_ptr<ABLWRFfile> m_wrf_file;
     std::unique_ptr<ABLReadStats> m_stats_file;

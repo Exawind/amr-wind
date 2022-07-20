@@ -52,11 +52,11 @@ ABLFieldInit::ABLFieldInit()
             m_theta_values.end(), m_thvv_d.begin());
 
         amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, m_u_values.begin(),
-            m_u_values.end(), m_prof_u_d.begin());
+            amrex::Gpu::hostToDevice, m_u_values.begin(), m_u_values.end(),
+            m_prof_u_d.begin());
         amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, m_v_values.begin(),
-            m_v_values.end(), m_prof_v_d.begin());
+            amrex::Gpu::hostToDevice, m_v_values.begin(), m_v_values.end(),
+            m_prof_v_d.begin());
 
 #endif
     } else {
@@ -175,9 +175,9 @@ void ABLFieldInit::operator()(
                 }
             });
     } else {
-      const amrex::Real umean = m_vel[0];
-      const amrex::Real vmean = m_vel[1];
-      const amrex::Real wmean = m_vel[2];
+        const amrex::Real umean = m_vel[0];
+        const amrex::Real vmean = m_vel[1];
+        const amrex::Real wmean = m_vel[2];
 
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
