@@ -45,7 +45,7 @@ private:
     const FieldRepo& m_repo;
     Field& m_velocity;
     Field& m_density;
-    const std::string m_output_fname = "error.log";
+    std::string m_output_fname = "error.log";
     const int m_w = 18;
 
     //! Scalar field
