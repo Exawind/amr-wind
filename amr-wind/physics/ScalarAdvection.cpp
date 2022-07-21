@@ -67,6 +67,7 @@ ScalarAdvection::ScalarAdvection(CFDSim& sim)
     pp_scalar_advection.query("width", m_width);
     pp_scalar_advection.query("eta", m_eta);
     pp_scalar_advection.query("shape", m_shape);
+    pp_scalar_advection.query("output_fname", m_output_fname);
 
     amrex::ParmParse pp_incflo("incflo");
     pp_incflo.query("density", m_rho);
