@@ -396,8 +396,8 @@ void DTUSpinnerSampler::update_sampling_locations()
 
         // Rotate beam unit vector
         beam_vector = adjust_lidar_pattern(
-            beam_vector, m_fixed_yaw + step_hub_yaw, m_fixed_tilt + step_hub_tilt, 
-            m_fixed_roll + step_hub_roll);
+            beam_vector, m_fixed_yaw + step_hub_yaw,
+            m_fixed_tilt + step_hub_tilt, m_fixed_roll + step_hub_roll);
 
         // Interpolate lidar center
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
