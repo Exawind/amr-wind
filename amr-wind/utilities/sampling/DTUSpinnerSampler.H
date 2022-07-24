@@ -84,7 +84,9 @@ private:
     amrex::Real m_num_samples{984};
     amrex::Real m_beam_length{270};
     int m_beam_points{432};
-    amrex::Real m_turbine_yaw_angle{180};
+    amrex::Real m_fixed_yaw{0};
+    amrex::Real m_fixed_roll{0};
+    amrex::Real m_fixed_tilt{0};
     amrex::Real m_hub_yaw{0};
     amrex::Real m_hub_roll{0};
     amrex::Real m_hub_tilt{0};

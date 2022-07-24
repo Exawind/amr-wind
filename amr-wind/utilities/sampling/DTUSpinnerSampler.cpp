@@ -64,17 +64,14 @@ void DTUSpinnerSampler::initialize(const std::string& key)
     // Beam points
     pp.query("beam_points", m_beam_points);
 
-    // Turbine yaw angle
-    pp.get("turbine_yaw_angle", m_turbine_yaw_angle);
-
     // Hub yaw logical flag
-    pp.query("hub_yaw", m_hub_yaw);
+    pp.query("fixed_yaw", m_fixed_yaw);
 
     // Hub roll logical flag
-    pp.query("hub_roll", m_hub_roll);
+    pp.query("fixed_roll", m_fixed_roll);
 
     // Hub tilt logical flag
-    pp.query("hub_tilt", m_hub_tilt);
+    pp.query("fixed_tilt", m_fixed_tilt);
 
     // Spinner mode, hub or fixed
     pp.query("mode", m_spinner_mode);
@@ -321,7 +318,7 @@ void DTUSpinnerSampler::update_sampling_locations()
                      180.0 / M_PI;
         m_hub_roll = std::atan2(current_hub_orient[7], current_hub_orient[8]) *
                      180.0 / M_PI;
-        m_hub_yaw = -std::atan2(current_hub_orient[3], current_hub_orient[0]) *
+        m_hub_yaw = std::atan2(current_hub_orient[3], current_hub_orient[0]) *
                     180.0 / M_PI;
     }
 #endif
@@ -399,7 +396,8 @@ void DTUSpinnerSampler::update_sampling_locations()
 
         // Rotate beam unit vector
         beam_vector = adjust_lidar_pattern(
-            beam_vector, step_hub_yaw, step_hub_tilt, step_hub_roll);
+            beam_vector, m_fixed_yaw + step_hub_yaw, m_fixed_tilt + step_hub_tilt, 
+            m_fixed_roll + step_hub_roll);
 
         // Interpolate lidar center
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
