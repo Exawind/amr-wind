@@ -36,36 +36,39 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
     amrex::Print() << "  forcing_scheme : " << m_forcing_scheme << std::endl;
     amrex::Print() << "  control_gain   : " << m_gain_coeff << std::endl;
 
-    if(!pp.query("forcing_transition", m_forcing_transition)) {
-        amrex::Print() << "  using full profile assimilation by default" << std::endl;
+    if (!pp.query("forcing_transition", m_forcing_transition)) {
+        amrex::Print() << "  using full profile assimilation by default"
+                       << std::endl;
         m_forcing_transition = "none";
     }
 
-    if (amrex::toLower(m_forcing_scheme) == "indirect")
-    {
-        if (amrex::toLower(m_forcing_transition) == "none")
-        {
+    if (amrex::toLower(m_forcing_scheme) == "indirect") {
+        if (amrex::toLower(m_forcing_transition) == "none") {
             if (pp.queryarr("weighting_heights", m_weighting_heights)) {
                 pp.getarr("weighting_values", m_weighting_values);
                 amrex::Print() << "  given weighting profile" << std::endl;
-                for(int i=0; i < m_weighting_heights.size(); ++i) {
-                    amrex::Print() << "  " << m_weighting_heights[i] << " " << m_weighting_values[i] << std::endl;
+                for (int i = 0; i < m_weighting_heights.size(); ++i) {
+                    amrex::Print() << "  " << m_weighting_heights[i] << " "
+                                   << m_weighting_values[i] << std::endl;
                 }
-                AMREX_ALWAYS_ASSERT(m_weighting_heights.size() == m_weighting_values.size());
+                AMREX_ALWAYS_ASSERT(
+                    m_weighting_heights.size() == m_weighting_values.size());
 
             } else {
                 // default is to have uniform weighting throughout
                 amrex::Print() << "  setting default weighting" << std::endl;
                 amrex::Real zmin = m_mesh.Geom(0).ProbLo(m_axis);
                 amrex::Real zmax = m_mesh.Geom(0).ProbHi(m_axis);
-                m_weighting_heights = {zmin,zmax};
-                m_weighting_values = {1.0,1.0};
+                m_weighting_heights = {zmin, zmax};
+                m_weighting_values = {1.0, 1.0};
             }
-        }
-        else // weightings will be automatically set based on forcing transition
+        } else // weightings will be automatically set based on forcing
+               // transition
         {
-            pp.get("transition_thickness", m_transition_thickness); // constant, required
-            if(pp.query("constant_transition_height", m_transition_height)) {
+            pp.get(
+                "transition_thickness",
+                m_transition_thickness); // constant, required
+            if (pp.query("constant_transition_height", m_transition_height)) {
                 // set weighting profile
                 setTransitionWeighting();
             } else {
@@ -74,35 +77,38 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
                 m_update_transition_height = true;
 
                 // ***WORKAROUND***
-                // after commenting out code to read in transition_heights from the WRF file (see FIXME lines)
+                // after commenting out code to read in transition_heights from
+                // the WRF file (see FIXME lines)
                 std::string fname;
-                pp.get("transition_heights_file",fname);
+                pp.get("transition_heights_file", fname);
                 std::ifstream datfile(fname);
                 AMREX_ALWAYS_ASSERT(datfile.is_open());
                 amrex::Real tval, zval;
                 int ntimes = 0;
-                while (datfile >> tval >> zval)
-                {
+                while (datfile >> tval >> zval) {
                     ntimes++;
                 }
                 datfile.clear();
                 datfile.seekg(0);
                 m_transition_height_hist.resize(ntimes);
-                amrex::Print() << "WORKAROUND: Reading transition heights from " << fname << std::endl;
-                for (int itime=0; itime < ntimes; itime++) {
+                amrex::Print() << "WORKAROUND: Reading transition heights from "
+                               << fname << std::endl;
+                for (int itime = 0; itime < ntimes; itime++) {
                     datfile >> tval >> zval;
                     m_transition_height_hist[itime] = zval;
                     amrex::Print() << tval << " " << zval << std::endl;
                 }
-                amrex::Print() << "Note: the times in ABL.WRFforcing must match these " << ntimes << " values" << std::endl;
+                amrex::Print()
+                    << "Note: the times in ABL.WRFforcing must match these "
+                    << ntimes << " values" << std::endl;
             }
         }
 
-        if (pp.query("normalize_by_zmax",m_norm_zmax) && (m_norm_zmax != 0))
-        {
+        if (pp.query("normalize_by_zmax", m_norm_zmax) && (m_norm_zmax != 0)) {
             amrex::Real zmax = m_mesh.Geom(0).ProbHi(m_axis);
             m_scaleFact = 1.0 / zmax;
-            amrex::Print() << "  set scaling factor to " << m_scaleFact << std::endl;
+            amrex::Print() << "  set scaling factor to " << m_scaleFact
+                           << std::endl;
         }
 
     } // if forcing scheme is "indirect"
@@ -113,31 +119,29 @@ void ABLWrfForcing::setTransitionWeighting()
     amrex::Real zmin = m_mesh.Geom(0).ProbLo(m_axis);
     amrex::Real zmax = m_mesh.Geom(0).ProbHi(m_axis);
     m_weighting_heights = {
-        zmin,
-        m_transition_height,
-        m_transition_height+m_transition_thickness,
-        zmax
-    };
+        zmin, m_transition_height, m_transition_height + m_transition_thickness,
+        zmax};
     m_weighting_values = {1.0, 1.0, 0.0, 0.0};
     amrex::Print() << "setting new weighting profile" << std::endl;
-    for(int i=0; i < m_weighting_heights.size(); ++i) {
-        amrex::Print() << "  " << m_weighting_heights[i] << " " << m_weighting_values[i] << std::endl;
+    for (int i = 0; i < m_weighting_heights.size(); ++i) {
+        amrex::Print() << "  " << m_weighting_heights[i] << " "
+                       << m_weighting_values[i] << std::endl;
     }
 }
 
 void ABLWrfForcing::updateWeights()
 {
     amrex::Print() << "Updating weights" << std::endl;
-    for (int i=0; i<m_nht; ++i) {
-        m_W[i] = interp::linear(m_weighting_heights, m_weighting_values, m_zht[i]);
-        //amrex::Print() << "  " << m_zht[i] << " " << m_W[i] << std::endl;
+    for (int i = 0; i < m_nht; ++i) {
+        m_W[i] =
+            interp::linear(m_weighting_heights, m_weighting_values, m_zht[i]);
+        // amrex::Print() << "  " << m_zht[i] << " " << m_W[i] << std::endl;
     }
 }
 
 void ABLWrfForcing::indirectForcingInit()
 {
-    if (m_W.size() == 0)
-    {
+    if (m_W.size() == 0) {
         // Will be here for:
         // - full profile assimilation
         // - partial profile assim w/ constant transition height
@@ -151,7 +155,8 @@ void ABLWrfForcing::indirectForcingInit()
         amrex::Print() << "Reinitializing indirect forcing" << std::endl;
         updateWeights();
     } else {
-        amrex::Print() << "Should not be reinitializing indirect forcing!" << std::endl;
+        amrex::Print() << "Should not be reinitializing indirect forcing!"
+                       << std::endl;
         return;
     }
 
@@ -166,9 +171,11 @@ void ABLWrfForcing::indirectForcingInit()
             for (int iht = 0; iht < m_nht; iht++) {
                 zTz(irow, icol) =
                     zTz(irow, icol) +
-                    m_W[iht] * std::pow(m_zht[iht] * m_scaleFact, (icol + irow));
+                    m_W[iht] *
+                        std::pow(m_zht[iht] * m_scaleFact, (icol + irow));
             }
-            //amrex::Print()<< "Z^T W Z ["<<irow<<","<<icol<<"] : " << zTz(irow,icol) << std::endl;
+            // amrex::Print()<< "Z^T W Z ["<<irow<<","<<icol<<"] : " <<
+            // zTz(irow,icol) << std::endl;
         }
     }
     // Invert the matrix Z^T W Z
@@ -223,9 +230,10 @@ void ABLWrfForcing::invertMat(
     im(3, 3) = det * (m(0, 0) * A1212 - m(0, 1) * A0212 + m(0, 2) * A0112);
 }
 
-void ABLWrfForcing::constantForcingTransition(amrex::Vector<amrex::Real>& error) {
+void ABLWrfForcing::constantForcingTransition(amrex::Vector<amrex::Real>& error)
+{
     // based on SOWFA6/src/ABLForcing/drivingForce/drivingForce.C
-    
+
     // find indices
     int hLevelBlend0 = -1;
     int hLevelBlend1 = -1;
@@ -234,8 +242,7 @@ void ABLWrfForcing::constantForcingTransition(amrex::Vector<amrex::Real>& error)
         if ((hLevelBlend1 < 0) && (m_zht[iht] >= m_transition_height)) {
             hLevelBlend1 = iht;
             hLevelBlend0 = iht - 1;
-        }
-        else if (m_zht[iht] >= m_transition_height + m_transition_thickness) {
+        } else if (m_zht[iht] >= m_transition_height + m_transition_thickness) {
             hLevelBlendMax = iht;
             break;
         }
@@ -243,54 +250,54 @@ void ABLWrfForcing::constantForcingTransition(amrex::Vector<amrex::Real>& error)
 
     // error checking
     if (hLevelBlend1 < 0) {
-        amrex::Print() << "Note: Did not find bottom of transition layer" << std::endl;
+        amrex::Print() << "Note: Did not find bottom of transition layer"
+                       << std::endl;
         hLevelBlend0 = m_nht - 1;
         hLevelBlend1 = m_nht - 1;
         hLevelBlendMax = m_nht - 1;
-    }
-    else if (hLevelBlendMax < 0) {
-        amrex::Print() << "Note: Did not find top of transition layer" << std::endl;
+    } else if (hLevelBlendMax < 0) {
+        amrex::Print() << "Note: Did not find top of transition layer"
+                       << std::endl;
         hLevelBlendMax = m_nht - 1;
     }
 
     amrex::Print() << "Forcing transition to constant"
-        << " from " << m_zht[hLevelBlend1]
-        << " to " << m_zht[hLevelBlendMax] << std::endl;
+                   << " from " << m_zht[hLevelBlend1] << " to "
+                   << m_zht[hLevelBlendMax] << std::endl;
 
     // calculate initial slope
-    amrex::Real slope0 = (error[hLevelBlend1] - error[hLevelBlend0])
-                       / (m_zht[hLevelBlend1] - m_zht[hLevelBlend0]);
-    amrex::Real dslope = -slope0 / (m_zht[hLevelBlendMax] - m_zht[hLevelBlend1]);
+    amrex::Real slope0 = (error[hLevelBlend1] - error[hLevelBlend0]) /
+                         (m_zht[hLevelBlend1] - m_zht[hLevelBlend0]);
+    amrex::Real dslope =
+        -slope0 / (m_zht[hLevelBlendMax] - m_zht[hLevelBlend1]);
 
     // march from hLevelBlend1 (z >= m_transition_height)
     // up to hLevelBlendMax (z >= m_transition_height + m_transition_thickness)
     // as the slope decreases linearly to 0
-    for (int iht=hLevelBlend1; iht <= hLevelBlendMax; iht++)
-    {
-        amrex::Real slope = slope0 + dslope*(m_zht[iht] - m_zht[hLevelBlend1]);
-        error[iht] = error[iht-1] + slope*(m_zht[iht] - m_zht[iht-1]);
+    for (int iht = hLevelBlend1; iht <= hLevelBlendMax; iht++) {
+        amrex::Real slope =
+            slope0 + dslope * (m_zht[iht] - m_zht[hLevelBlend1]);
+        error[iht] = error[iht - 1] + slope * (m_zht[iht] - m_zht[iht - 1]);
     }
 
     // set the remaining levels above hLevelBlendMax to the last value
-    for (int iht=hLevelBlendMax+1; iht < m_nht; iht++)
-    {
+    for (int iht = hLevelBlendMax + 1; iht < m_nht; iht++) {
         error[iht] = error[hLevelBlendMax];
     }
 }
 
-void ABLWrfForcing::blendForcings(const amrex::Vector<amrex::Real> lower, //W=1
-                                  const amrex::Vector<amrex::Real> upper, //W=0
-                                  amrex::Vector<amrex::Real>& error)
+void ABLWrfForcing::blendForcings(
+    const amrex::Vector<amrex::Real> lower, // W=1
+    const amrex::Vector<amrex::Real> upper, // W=0
+    amrex::Vector<amrex::Real>& error)
 {
     amrex::Print() << "Blending forcings" << std::endl;
-    for (int iht = 0; iht < m_nht; iht++)
-    {
-        error[iht] = m_W[iht] * lower[iht] + (1.0-m_W[iht]) * upper[iht];
+    for (int iht = 0; iht < m_nht; iht++) {
+        error[iht] = m_W[iht] * lower[iht] + (1.0 - m_W[iht]) * upper[iht];
     }
 }
 
-ABLWRFfile::ABLWRFfile(const std::string filewrf)
-    : m_wrf_filename(filewrf)
+ABLWRFfile::ABLWRFfile(const std::string filewrf) : m_wrf_filename(filewrf)
 {
 
     auto ncf = ncutils::NCFile::open_par(
@@ -299,9 +306,9 @@ ABLWRFfile::ABLWRFfile(const std::string filewrf)
 
     m_wrf_nheight = ncf.has_dim("nheight") ? ncf.dim("nheight").len() : 0;
     m_wrf_ntime = ncf.dim("ntime").len();
-    amrex::Print() << "Loading " << m_wrf_filename << " : "
-        << m_wrf_ntime << " times, " << m_wrf_nheight << " heights" << std::endl;
-    
+    amrex::Print() << "Loading " << m_wrf_filename << " : " << m_wrf_ntime
+                   << " times, " << m_wrf_nheight << " heights" << std::endl;
+
     m_wrf_height.resize(m_wrf_nheight);
     m_wrf_time.resize(m_wrf_ntime);
 
@@ -318,45 +325,56 @@ ABLWRFfile::ABLWRFfile(const std::string filewrf)
         ncf.var("wrf_momentum_v").get(m_wrf_v.data());
         ncf.var("wrf_temperature").get(m_wrf_temp.data());
     } else {
-        amrex::Print() << "No height dimension in netcdf input file; no forcing profiles read."
-            << std::endl;
+        amrex::Print() << "No height dimension in netcdf input file; no "
+                          "forcing profiles read."
+                       << std::endl;
     }
     ncf.var("wrf_tflux").get(m_wrf_tflux.data());
 
     // ***FIXME***
     // MUST COMMENT THIS LINE OUT (resize cmd) to consistently fix problem:
     //
-    //m_wrf_transition_height.resize(m_wrf_ntime);
+    // m_wrf_transition_height.resize(m_wrf_ntime);
     //
-    //if (ncf.has_var("transition_height")) {
-    //    amrex::Print() << "found transition_height in WRFforcing file" << std::endl;
+    // if (ncf.has_var("transition_height")) {
+    //    amrex::Print() << "found transition_height in WRFforcing file" <<
+    //    std::endl;
     //    ncf.var("transition_height").get(m_wrf_transition_height.data());
     //}
 
     amrex::ParmParse pp("ABL");
     pp.query("WRF_tendency_forcing", m_abl_wrf_tendency);
-
 }
 
 const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_heights() const
 {
-  return m_wrf_height;
+    return m_wrf_height;
 }
 
-const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_times() const { return m_wrf_time; }
+const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_times() const
+{
+    return m_wrf_time;
+}
 
 const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_u() const { return m_wrf_u; }
 
 const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_v() const { return m_wrf_v; }
 
-const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_temp() const { return m_wrf_temp; }
+const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_temp() const
+{
+    return m_wrf_temp;
+}
 
-const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_tflux() const { return m_wrf_tflux; }
+const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_tflux() const
+{
+    return m_wrf_tflux;
+}
 
 // ***FIXME***
-//const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_transition_height() const { return m_wrf_transition_height; }
+// const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_transition_height() const {
+// return m_wrf_transition_height; }
 
- bool ABLWRFfile::is_wrf_tendency_forcing() const {return m_abl_wrf_tendency; }
+bool ABLWRFfile::is_wrf_tendency_forcing() const { return m_abl_wrf_tendency; }
 
 int ABLWRFfile::nheights() const { return m_wrf_nheight; }
 int ABLWRFfile::times() const { return m_wrf_ntime; }

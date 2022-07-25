@@ -129,7 +129,7 @@ void ABLWallFunction::update_umean(
 
 void ABLWallFunction::update_tflux(const amrex::Real wrftflux)
 {
-  m_mo.surf_temp_flux = wrftflux; 
+    m_mo.surf_temp_flux = wrftflux;
 }
 
 ABLVelWallFunc::ABLVelWallFunc(

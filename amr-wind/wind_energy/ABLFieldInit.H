@@ -105,7 +105,6 @@ private:
     bool m_perturb_theta{false};
 
     bool m_profile_height{false};
-
 };
 
 } // namespace amr_wind

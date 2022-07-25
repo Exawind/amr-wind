@@ -20,8 +20,8 @@ namespace icns {
 class ABLForcing;
 class ABLWrfForcingMom;
 } // namespace icns
-namespace temperature{
-class ABLWrfForcingTemp; 
+namespace temperature {
+class ABLWrfForcingTemp;
 }
 } // namespace pde
 
@@ -74,14 +74,17 @@ public:
         m_abl_forcing = forcing;
     }
 
-  void register_wrf_forcing_mom(pde::icns::ABLWrfForcingMom* forcing) const override
-  {
-    m_abl_wrf_mom_forcing = forcing; 
-  }
+    void register_wrf_forcing_mom(
+        pde::icns::ABLWrfForcingMom* forcing) const override
+    {
+        m_abl_wrf_mom_forcing = forcing;
+    }
 
-  void register_wrf_forcing_temp(pde::temperature::ABLWrfForcingTemp* forcing) const override{
-    m_abl_wrf_temp_forcing = forcing; 
-  }
+    void register_wrf_forcing_temp(
+        pde::temperature::ABLWrfForcingTemp* forcing) const override
+    {
+        m_abl_wrf_temp_forcing = forcing;
+    }
 
     //! Calculate sfs stress averages
     void
@@ -129,7 +132,8 @@ private:
     mutable pde::icns::ABLForcing* m_abl_forcing{nullptr};
 
     mutable pde::icns::ABLWrfForcingMom* m_abl_wrf_mom_forcing{nullptr};
-    mutable pde::temperature::ABLWrfForcingTemp* m_abl_wrf_temp_forcing{nullptr};
+    mutable pde::temperature::ABLWrfForcingTemp* m_abl_wrf_temp_forcing{
+        nullptr};
 
     //! Format of the data output (ascii, netcdf, etc.)
 #ifdef AMR_WIND_USE_NETCDF
@@ -164,7 +168,6 @@ private:
     //! Number of cells in the horizontal direction
     size_t m_ncells_h1{0};
     size_t m_ncells_h2{0};
-
 };
 
 } // namespace amr_wind

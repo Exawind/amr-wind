@@ -14,8 +14,9 @@ namespace amr_wind {
 namespace pde {
 namespace temperature {
 
-class ABLWrfForcingTemp : public ABLWrfForcing,
-                          public TemperatureSource::Register<ABLWrfForcingTemp>
+class ABLWrfForcingTemp
+    : public ABLWrfForcing
+    , public TemperatureSource::Register<ABLWrfForcingTemp>
 {
 public:
     static const std::string identifier() { return "ABLWrfForcingTemp"; }
@@ -33,16 +34,14 @@ public:
         const FieldPlaneAveraging&, std::unique_ptr<ABLWRFfile>&);
 
     amrex::Real mean_temperature_heights(std::unique_ptr<ABLWRFfile>&);
-  
+
     void mean_temperature_init(const FieldPlaneAveraging&, const ABLWRFfile&);
 
     void mean_temperature_init(const ABLWRFfile&);
 
-  amrex::Vector<amrex::Real>& theta_wrf_error(){
-    return m_err_Theta;} 
+    amrex::Vector<amrex::Real>& theta_wrf_error() { return m_err_Theta; }
 
 private:
-
     // these are inputs
     amrex::Gpu::DeviceVector<amrex::Real> m_wrf_ht;
     amrex::Gpu::DeviceVector<amrex::Real> m_wrf_theta_vals;
@@ -52,13 +51,12 @@ private:
     amrex::Gpu::DeviceVector<amrex::Real> m_theta_vals;
 
     // this specifies the source term
-    amrex::Gpu::DeviceVector<amrex::Real> m_error_wrf_avg_theta; 
+    amrex::Gpu::DeviceVector<amrex::Real> m_error_wrf_avg_theta;
 
     amrex::Vector<amrex::Real> m_err_Theta;
 
     // this should be m_ind_polyOrder+1 (currently, cubic polynomial is assumed)
     amrex::Array<amrex::Real, 4> m_poly_coeff_theta;
-
 };
 
 } // namespace temperature

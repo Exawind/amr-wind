@@ -29,7 +29,7 @@ closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
 } // namespace
 
 ABLWrfForcingMom::ABLWrfForcingMom(const CFDSim& sim)
-    : ABLWrfForcing(sim,identifier())
+    : ABLWrfForcing(sim, identifier())
 {
 
     const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
@@ -43,7 +43,8 @@ ABLWrfForcingMom::ABLWrfForcingMom(const CFDSim& sim)
         mean_velocity_init(abl.abl_wrf_file());
     }
 
-    if ((amrex::toLower(m_forcing_scheme) == "indirect") && !m_update_transition_height)
+    if ((amrex::toLower(m_forcing_scheme) == "indirect") &&
+        !m_update_transition_height)
         indirectForcingInit(); // do this once
 }
 
@@ -63,7 +64,6 @@ void ABLWrfForcingMom::mean_velocity_init(const ABLWRFfile& wrfFile)
 
     m_err_U.resize(wrfFile.nheights());
     m_err_V.resize(wrfFile.nheights());
-
 }
 
 void ABLWrfForcingMom::mean_velocity_init(
@@ -111,7 +111,8 @@ void ABLWrfForcingMom::mean_velocity_init(
         wrfFile.wrf_heights().end(), m_wrf_ht.begin());
 }
 
-void ABLWrfForcingMom::mean_velocity_heights(std::unique_ptr<ABLWRFfile>& wrfFile)
+void ABLWrfForcingMom::mean_velocity_heights(
+    std::unique_ptr<ABLWRFfile>& wrfFile)
 {
     if (m_forcing_scheme.empty()) return;
 
@@ -231,15 +232,21 @@ void ABLWrfForcingMom::mean_velocity_heights(
     if (amrex::toLower(m_forcing_scheme) == "indirect") {
         if (m_update_transition_height) {
             // ***FIXME***
-            // unexpected behaviors, as described in ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7
+            // unexpected behaviors, as described in
+            // ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7
             //
-            //m_transition_height = coeff_interp[0] * wrfFile->wrf_transition_height()[m_idx_time] +
-            //                      coeff_interp[1] * wrfFile->wrf_transition_height()[m_idx_time + 1];
+            // m_transition_height = coeff_interp[0] *
+            // wrfFile->wrf_transition_height()[m_idx_time] +
+            //                      coeff_interp[1] *
+            //                      wrfFile->wrf_transition_height()[m_idx_time
+            //                      + 1];
 
             // WORKAROUND
-            m_transition_height = coeff_interp[0] * m_transition_height_hist[m_idx_time] +
-                                  coeff_interp[1] * m_transition_height_hist[m_idx_time + 1];
-            amrex::Print() << "current transition height = " << m_transition_height << std::endl;
+            m_transition_height =
+                coeff_interp[0] * m_transition_height_hist[m_idx_time] +
+                coeff_interp[1] * m_transition_height_hist[m_idx_time + 1];
+            amrex::Print() << "current transition height = "
+                           << m_transition_height << std::endl;
 
             setTransitionWeighting();
             indirectForcingInit();
@@ -254,10 +261,10 @@ void ABLWrfForcingMom::mean_velocity_heights(
             ezP_V[i] = 0.0;
 
             for (int ih = 0; ih < m_nht; ih++) {
-                ezP_U[i] =
-                    ezP_U[i] + error_U[ih] * m_W[i] * std::pow(m_zht[ih] * m_scaleFact, i);
-                ezP_V[i] =
-                    ezP_V[i] + error_V[ih] * m_W[i] * std::pow(m_zht[ih] * m_scaleFact, i);
+                ezP_U[i] = ezP_U[i] + error_U[ih] * m_W[i] *
+                                          std::pow(m_zht[ih] * m_scaleFact, i);
+                ezP_V[i] = ezP_V[i] + error_V[ih] * m_W[i] *
+                                          std::pow(m_zht[ih] * m_scaleFact, i);
             }
         }
 
@@ -273,7 +280,8 @@ void ABLWrfForcingMom::mean_velocity_heights(
         }
 
         if (m_debug)
-            amrex::Print() << "direct vs indirect velocity error profile" << std::endl;
+            amrex::Print() << "direct vs indirect velocity error profile"
+                           << std::endl;
         amrex::Vector<amrex::Real> error_U_direct(n_levels);
         amrex::Vector<amrex::Real> error_V_direct(n_levels);
         for (size_t ih = 0; ih < n_levels; ih++) {
@@ -291,8 +299,9 @@ void ABLWrfForcingMom::mean_velocity_heights(
             }
 
             if (m_debug)
-                amrex::Print() << m_zht[ih] << " " << error_U_direct[ih] << " " << error_U[ih]
-                                            << " " << error_V_direct[ih] << " " << error_V[ih] << std::endl;
+                amrex::Print() << m_zht[ih] << " " << error_U_direct[ih] << " "
+                               << error_U[ih] << " " << error_V_direct[ih]
+                               << " " << error_V[ih] << std::endl;
         }
 
         if (amrex::toLower(m_forcing_transition) == "indirecttodirect") {
@@ -300,8 +309,9 @@ void ABLWrfForcingMom::mean_velocity_heights(
             blendForcings(error_V, error_V_direct, error_V);
 
             if (m_debug) {
-                for (size_t ih=0; ih < n_levels; ih++) {
-                    amrex::Print() << m_zht[ih] << " " << error_U[ih] << " " << error_V[ih] << std::endl;
+                for (size_t ih = 0; ih < n_levels; ih++) {
+                    amrex::Print() << m_zht[ih] << " " << error_U[ih] << " "
+                                   << error_V[ih] << std::endl;
                 }
             }
         }
@@ -312,8 +322,9 @@ void ABLWrfForcingMom::mean_velocity_heights(
         constantForcingTransition(error_V);
 
         if (m_debug) {
-            for (size_t ih=0; ih < n_levels; ih++) {
-                amrex::Print() << m_zht[ih] << " " << error_U[ih] << " " << error_V[ih] << std::endl;
+            for (size_t ih = 0; ih < n_levels; ih++) {
+                amrex::Print() << m_zht[ih] << " " << error_U[ih] << " "
+                               << error_V[ih] << std::endl;
             }
         }
     }

@@ -29,35 +29,36 @@ closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
 } // namespace
 
 ABLWrfForcingTemp::ABLWrfForcingTemp(const CFDSim& sim)
-    : ABLWrfForcing(sim,identifier())
+    : ABLWrfForcing(sim, identifier())
 {
     const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
     abl.register_wrf_temp_forcing(this);
     abl.abl_statistics().register_wrf_forcing_temp(this);
 
     if (!abl.abl_wrf_file().is_wrf_tendency_forcing()) {
-      mean_temperature_init(
-          abl.abl_statistics().theta_profile(), abl.abl_wrf_file());
-    } else{
-      mean_temperature_init(abl.abl_wrf_file());
+        mean_temperature_init(
+            abl.abl_statistics().theta_profile(), abl.abl_wrf_file());
+    } else {
+        mean_temperature_init(abl.abl_wrf_file());
     }
 
-    if ((amrex::toLower(m_forcing_scheme) == "indirect") && !m_update_transition_height)
+    if ((amrex::toLower(m_forcing_scheme) == "indirect") &&
+        !m_update_transition_height)
         indirectForcingInit(); // do this once
 }
 
 ABLWrfForcingTemp::~ABLWrfForcingTemp() = default;
-void ABLWrfForcingTemp::mean_temperature_init(const ABLWRFfile& wrfFile){
+void ABLWrfForcingTemp::mean_temperature_init(const ABLWRFfile& wrfFile)
+{
 
-  m_error_wrf_avg_theta.resize(wrfFile.nheights());
-  m_wrf_theta_vals.resize(wrfFile.nheights());
-  m_wrf_ht.resize(wrfFile.nheights());
-  m_err_Theta.resize(wrfFile.nheights());
+    m_error_wrf_avg_theta.resize(wrfFile.nheights());
+    m_wrf_theta_vals.resize(wrfFile.nheights());
+    m_wrf_ht.resize(wrfFile.nheights());
+    m_err_Theta.resize(wrfFile.nheights());
 
-  amrex::Gpu::copy(
-      amrex::Gpu::hostToDevice, wrfFile.wrf_heights().begin(),
-      wrfFile.wrf_heights().end(), m_wrf_ht.begin());
-
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, wrfFile.wrf_heights().begin(),
+        wrfFile.wrf_heights().end(), m_wrf_ht.begin());
 }
 void ABLWrfForcingTemp::mean_temperature_init(
     const FieldPlaneAveraging& tavg, const ABLWRFfile& wrfFile)
@@ -97,50 +98,52 @@ void ABLWrfForcingTemp::mean_temperature_init(
         wrfFile.wrf_heights().end(), m_wrf_ht.begin());
 }
 
-amrex::Real ABLWrfForcingTemp::mean_temperature_heights(std::unique_ptr<ABLWRFfile>& wrfFile){
+amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
+    std::unique_ptr<ABLWRFfile>& wrfFile)
+{
 
-  amrex::Real currtime;
-  currtime = m_time.current_time();
+    amrex::Real currtime;
+    currtime = m_time.current_time();
 
-  // First the index in time
-  m_idx_time = closest_index(wrfFile->wrf_times(), currtime);
+    // First the index in time
+    m_idx_time = closest_index(wrfFile->wrf_times(), currtime);
 
-  amrex::Array<amrex::Real, 2> coeff_interp{{0.0, 0.0}};
+    amrex::Array<amrex::Real, 2> coeff_interp{{0.0, 0.0}};
 
-  amrex::Real denom =
-      wrfFile->wrf_times()[m_idx_time + 1] - wrfFile->wrf_times()[m_idx_time];
+    amrex::Real denom =
+        wrfFile->wrf_times()[m_idx_time + 1] - wrfFile->wrf_times()[m_idx_time];
 
-  coeff_interp[0] = (wrfFile->wrf_times()[m_idx_time + 1] - currtime) / denom;
-  coeff_interp[1] = 1.0 - coeff_interp[0];
+    coeff_interp[0] = (wrfFile->wrf_times()[m_idx_time + 1] - currtime) / denom;
+    coeff_interp[1] = 1.0 - coeff_interp[0];
 
-  amrex::Real interpTflux;
+    amrex::Real interpTflux;
 
-  interpTflux = coeff_interp[0] * wrfFile->wrf_tflux()[m_idx_time] +
-      coeff_interp[1] * wrfFile->wrf_tflux()[m_idx_time + 1];
+    interpTflux = coeff_interp[0] * wrfFile->wrf_tflux()[m_idx_time] +
+                  coeff_interp[1] * wrfFile->wrf_tflux()[m_idx_time + 1];
 
-  if (m_forcing_scheme.empty()) return interpTflux;
+    if (m_forcing_scheme.empty()) return interpTflux;
 
-  int num_wrf_ht = wrfFile->nheights();
+    int num_wrf_ht = wrfFile->nheights();
 
-  amrex::Vector<amrex::Real> wrfInterptheta(num_wrf_ht);
+    amrex::Vector<amrex::Real> wrfInterptheta(num_wrf_ht);
 
-  for (int i = 0; i < num_wrf_ht; i++) {
-    int lt = m_idx_time * num_wrf_ht + i;
-    int rt = (m_idx_time + 1) * num_wrf_ht + i;
+    for (int i = 0; i < num_wrf_ht; i++) {
+        int lt = m_idx_time * num_wrf_ht + i;
+        int rt = (m_idx_time + 1) * num_wrf_ht + i;
 
-    wrfInterptheta[i] = coeff_interp[0] * wrfFile->wrf_temp()[lt] +
+        wrfInterptheta[i] = coeff_interp[0] * wrfFile->wrf_temp()[lt] +
                             coeff_interp[1] * wrfFile->wrf_temp()[rt];
     }
 
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, wrfInterptheta.begin(), wrfInterptheta.end(),m_error_wrf_avg_theta.begin());
+        amrex::Gpu::hostToDevice, wrfInterptheta.begin(), wrfInterptheta.end(),
+        m_error_wrf_avg_theta.begin());
 
     for (int ih = 0; ih < num_wrf_ht; ih++) {
-      m_err_Theta[ih] = wrfInterptheta[ih];
+        m_err_Theta[ih] = wrfInterptheta[ih];
     }
 
     return interpTflux;
-  
 }
 
 amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
@@ -196,18 +199,25 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
     }
 
     if (amrex::toLower(m_forcing_scheme) == "indirect") {
-        amrex::Print() << "mean_temperature_heights() : indirect forcing update" << std::endl;
+        amrex::Print() << "mean_temperature_heights() : indirect forcing update"
+                       << std::endl;
         if (m_update_transition_height) {
             // ***FIXME***
-            // unexpected behaviors, as described in ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7
+            // unexpected behaviors, as described in
+            // ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7
             //
-            //m_transition_height = coeff_interp[0] * wrfFile->wrf_transition_height()[m_idx_time] +
-            //                      coeff_interp[1] * wrfFile->wrf_transition_height()[m_idx_time + 1];
+            // m_transition_height = coeff_interp[0] *
+            // wrfFile->wrf_transition_height()[m_idx_time] +
+            //                      coeff_interp[1] *
+            //                      wrfFile->wrf_transition_height()[m_idx_time
+            //                      + 1];
 
             // WORKAROUND
-            m_transition_height = coeff_interp[0] * m_transition_height_hist[m_idx_time] +
-                                  coeff_interp[1] * m_transition_height_hist[m_idx_time + 1];
-            amrex::Print() << "current transition height = " << m_transition_height << std::endl;
+            m_transition_height =
+                coeff_interp[0] * m_transition_height_hist[m_idx_time] +
+                coeff_interp[1] * m_transition_height_hist[m_idx_time + 1];
+            amrex::Print() << "current transition height = "
+                           << m_transition_height << std::endl;
 
             setTransitionWeighting();
             indirectForcingInit();
@@ -220,8 +230,8 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
             ezP_T[i] = 0.0;
 
             for (int ih = 0; ih < m_nht; ih++) {
-                ezP_T[i] =
-                    ezP_T[i] + error_T[ih] * m_W[ih] * std::pow(m_zht[ih] * m_scaleFact, i);
+                ezP_T[i] = ezP_T[i] + error_T[ih] * m_W[ih] *
+                                          std::pow(m_zht[ih] * m_scaleFact, i);
             }
         }
 
@@ -234,27 +244,30 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
         }
 
         if (m_debug)
-            amrex::Print() << "direct vs indirect temperature error profile" << std::endl;
+            amrex::Print() << "direct vs indirect temperature error profile"
+                           << std::endl;
         amrex::Vector<amrex::Real> error_T_direct(n_levels);
         for (size_t ih = 0; ih < n_levels; ih++) {
             error_T_direct[ih] = error_T[ih];
             error_T[ih] = 0.0;
             for (int j = 0; j < 4; j++) {
                 error_T[ih] =
-                    error_T[ih] +
-                    m_poly_coeff_theta[j] * std::pow(m_zht[ih] * m_scaleFact, j);
+                    error_T[ih] + m_poly_coeff_theta[j] *
+                                      std::pow(m_zht[ih] * m_scaleFact, j);
             }
 
             if (m_debug)
-                amrex::Print() << m_zht[ih] << " " << error_T_direct[ih] << " " << error_T[ih] << std::endl;
+                amrex::Print() << m_zht[ih] << " " << error_T_direct[ih] << " "
+                               << error_T[ih] << std::endl;
         }
 
         if (amrex::toLower(m_forcing_transition) == "indirecttodirect") {
             blendForcings(error_T, error_T_direct, error_T);
 
             if (m_debug) {
-                for (size_t ih=0; ih < n_levels; ih++) {
-                    amrex::Print() << m_zht[ih] << " " << error_T[ih] << std::endl;
+                for (size_t ih = 0; ih < n_levels; ih++) {
+                    amrex::Print()
+                        << m_zht[ih] << " " << error_T[ih] << std::endl;
                 }
             }
         }
@@ -264,7 +277,7 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
         constantForcingTransition(error_T);
 
         if (m_debug) {
-            for (size_t ih=0; ih < n_levels; ih++) {
+            for (size_t ih = 0; ih < n_levels; ih++) {
                 amrex::Print() << m_zht[ih] << " " << error_T[ih] << std::endl;
             }
         }
@@ -275,7 +288,7 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
         m_error_wrf_avg_theta.begin());
 
     for (size_t ih = 0; ih < n_levels; ih++) {
-      m_err_Theta[ih] = error_T[ih]*m_gain_coeff;
+        m_err_Theta[ih] = error_T[ih] * m_gain_coeff;
     }
 
     return interpTflux;
@@ -295,9 +308,9 @@ void ABLWrfForcingTemp::operator()(
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
 
     const int idir = m_axis;
-    const int nh_max =  m_wrf_ht.size() - 2; 
+    const int nh_max = m_wrf_ht.size() - 2;
     const int lp1 = lev + 1;
-    const amrex::Real* theights =  m_wrf_ht.data();
+    const amrex::Real* theights = m_wrf_ht.data();
     const amrex::Real* theta_error_val = m_error_wrf_avg_theta.data();
     const amrex::Real kcoeff = m_gain_coeff;
 

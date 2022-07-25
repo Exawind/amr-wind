@@ -16,8 +16,8 @@ public:
 
     void indirectForcingInit();
     void invertMat(
-        const amrex::Array2D<amrex::Real,0,3,0,3>&,
-        amrex::Array2D<amrex::Real,0,3,0,3>&);
+        const amrex::Array2D<amrex::Real, 0, 3, 0, 3>&,
+        amrex::Array2D<amrex::Real, 0, 3, 0, 3>&);
 
 protected:
     const SimTime& m_time;
@@ -29,7 +29,7 @@ protected:
     // inputs
     std::string m_forcing_scheme;
     amrex::Real m_gain_coeff{0.2}; // relaxation factor for all forcing schemes
-    int m_debug = 0; // print out profiles for debugging
+    int m_debug = 0;               // print out profiles for debugging
 
     // planar averaging heights
     amrex::Vector<amrex::Real> m_zht;
@@ -38,13 +38,15 @@ protected:
     //
     // regression vars for indirect forcing
     //
-  //int m_ind_polyOrder;
+    // int m_ind_polyOrder;
     int m_norm_zmax = 0;
-    amrex::Real m_scaleFact = 1e-3; // to improve conditioning of regression matrix
+    amrex::Real m_scaleFact =
+        1e-3; // to improve conditioning of regression matrix
 
-    amrex::Array2D<amrex::Real,0,3,0,3> m_im_zTz;
+    amrex::Array2D<amrex::Real, 0, 3, 0, 3> m_im_zTz;
 
-    // - input (or current value of, if forcing_transition is specified) regression weighting profile
+    // - input (or current value of, if forcing_transition is specified)
+    // regression weighting profile
     std::string m_forcing_transition;
     amrex::Real m_transition_height; // constant or variable
     bool m_update_transition_height = false;
@@ -54,7 +56,7 @@ protected:
     amrex::Vector<amrex::Real> m_transition_height_hist;
 
     amrex::Vector<amrex::Real> m_weighting_heights; // constant or variable
-    amrex::Vector<amrex::Real> m_weighting_values; // constant or variable
+    amrex::Vector<amrex::Real> m_weighting_values;  // constant or variable
 
     // - W(z) at planar averaging heights
     amrex::Vector<amrex::Real> m_W;
@@ -63,31 +65,37 @@ protected:
     // weighting profile manipulation
     //
     void setTransitionWeighting(); // will override weighting profile
-    void updateWeights(); // interpolate current profile to planar averaging heights
+    void
+    updateWeights(); // interpolate current profile to planar averaging heights
 
     //
     // forcing profile manipulation
     //
-    bool forcingToConstant() {
+    bool forcingToConstant()
+    {
         // - check if m_forcing_transition ends with "Constant"
         if (m_forcing_transition.length() >= 8) {
-            return (0 == m_forcing_transition.compare(m_forcing_transition.length()-8, 8, "Constant"));
+            return (
+                0 == m_forcing_transition.compare(
+                         m_forcing_transition.length() - 8, 8, "Constant"));
         } else {
             return false;
         }
     }
 
-    // - slope varies linearly from the actual gradient of the forcing profile at m_transition_height
+    // - slope varies linearly from the actual gradient of the forcing profile
+    // at m_transition_height
     //   to 0 at (m_transition_height + m_transition_thicnkess)
     void constantForcingTransition(amrex::Vector<amrex::Real>&);
 
-    // - blend between a lower and upper forcing profile; the blending fraction is assumed to be
-    //   equal to W(z), but this is not a requirement; W=1 and W=0 correspond to the lower and upper
-    //   profiles, respectively
-    void blendForcings(const amrex::Vector<amrex::Real>,
-                       const amrex::Vector<amrex::Real>,
-                       amrex::Vector<amrex::Real>&);
-
+    // - blend between a lower and upper forcing profile; the blending fraction
+    // is assumed to be
+    //   equal to W(z), but this is not a requirement; W=1 and W=0 correspond to
+    //   the lower and upper profiles, respectively
+    void blendForcings(
+        const amrex::Vector<amrex::Real>,
+        const amrex::Vector<amrex::Real>,
+        amrex::Vector<amrex::Real>&);
 };
 
 class ABLWRFfile
@@ -111,7 +119,7 @@ public:
     const amrex::Vector<amrex::Real>& wrf_tflux() const;
 
     // ***FIXME***
-    //const amrex::Vector<amrex::Real>& wrf_transition_height() const;
+    // const amrex::Vector<amrex::Real>& wrf_transition_height() const;
 
     bool is_wrf_tendency_forcing() const;
 
@@ -131,10 +139,11 @@ private:
 
     // optional input for partial profile assimilation
     // ***FIXME***
-    // unexpected behaviors, as described in ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7
-    // MUST COMMENT THIS LINE OUT (variable def) to consistently fix problem:
+    // unexpected behaviors, as described in
+    // ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7 MUST COMMENT THIS LINE OUT
+    // (variable def) to consistently fix problem:
     //
-    //amrex::Vector<amrex::Real> m_wrf_transition_height;
+    // amrex::Vector<amrex::Real> m_wrf_transition_height;
 
     int m_wrf_nheight;
     int m_wrf_ntime;

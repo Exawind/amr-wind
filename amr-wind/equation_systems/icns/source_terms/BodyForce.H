@@ -34,13 +34,13 @@ public:
         const FieldState fstate,
         const amrex::Array4<amrex::Real>& src_term) const override;
 
-  void read_bforce_profile(std::string filename);
+    void read_bforce_profile(std::string filename);
 
 private:
     //! Time
     const SimTime& m_time;
 
-  const amrex::AmrCore& m_mesh;
+    const amrex::AmrCore& m_mesh;
 
     //! Forcing source term (pressure gradient)
     amrex::Vector<amrex::Real> m_body_force{{0.0, 0.0, 0.0}};
@@ -53,11 +53,9 @@ private:
     std::string m_bforce_file;
     size_t m_bforce_profile_nhts;
 
-  amrex::Gpu::DeviceVector<amrex::Real> m_prof_x;
-  amrex::Gpu::DeviceVector<amrex::Real> m_prof_y;
-  amrex::Gpu::DeviceVector<amrex::Real> m_ht;
-  
-
+    amrex::Gpu::DeviceVector<amrex::Real> m_prof_x;
+    amrex::Gpu::DeviceVector<amrex::Real> m_prof_y;
+    amrex::Gpu::DeviceVector<amrex::Real> m_ht;
 };
 
 } // namespace icns
