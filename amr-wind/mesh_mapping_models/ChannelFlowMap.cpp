@@ -351,11 +351,10 @@ void ChannelFlowMap::create_non_uniform_mesh(
 
 /** Map from stretched coordinates to unstretched
  */
-void ChannelFlowMap::stretched_to_unstretched(
-    amrex::Vector<amrex::Real>& uni_coord,
-    const amrex::Vector<amrex::Real> nu_coord,
-    const amrex::Geometry& geom)
+amrex::Vector<amrex::Real> ChannelFlowMap::stretched_to_unstretched(
+    const amrex::Vector<amrex::Real>& nu_coord, const amrex::Geometry& geom)
 {
+    amrex::Vector<amrex::Real> uni_coord(3, 0.0);
     const auto& prob_lo = geom.ProbLoArray();
     const auto& prob_hi = geom.ProbHiArray();
 
@@ -367,6 +366,7 @@ void ChannelFlowMap::stretched_to_unstretched(
         uni_coord[i] =
             eval_inverse_coord(nu_coord[i], m_beta[i], prob_lo[i], len[i]);
     }
+    return uni_coord;
 }
 
 } // namespace channel_map

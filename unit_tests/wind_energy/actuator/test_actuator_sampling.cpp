@@ -30,8 +30,8 @@ public:
     void initalize_mesh_and_fields()
     {
         initialize_mesh();
-        auto& vel = sim().repo().declare_field("velocity", 3, 3);
-        auto& density = sim().repo().declare_field("density", 1, 3);
+        auto& vel = sim().repo().declare_field("velocity", 3, 2);
+        auto& density = sim().repo().declare_field("density", 1, 2);
         init_field(vel);
         density.setVal(1.0);
     }
@@ -384,10 +384,6 @@ TEST_F(ActuatorMapTest, containter_constant_map)
     ac.update_positions();
     // TODO possibly add assert in the code for this
     ASSERT_EQ(num_nodes, ac.TotalNumberOfParticles());
-
-    const auto& vel = sim().repo().get_field("velocity");
-    const auto& density = sim().repo().get_field("density");
-    ac.sample_fields(vel, density);
 }
 
 TEST_F(ActuatorMapTest, containter_channel_flow_map)
@@ -430,10 +426,6 @@ TEST_F(ActuatorMapTest, containter_channel_flow_map)
     ac.update_positions();
     // TODO possibly add assert in the code for this
     ASSERT_EQ(num_nodes, ac.TotalNumberOfParticles());
-
-    const auto& vel = sim().repo().get_field("velocity");
-    const auto& density = sim().repo().get_field("density");
-    ac.sample_fields(vel, density);
 }
 
 } // namespace amr_wind_tests

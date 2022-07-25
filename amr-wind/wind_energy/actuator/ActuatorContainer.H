@@ -95,9 +95,6 @@ public:
     void interpolate_fields(
         const Field& vel, const Field& density, const Field& nu_cc);
 
-    void interpolate_fields_mesh_mapping(
-        const Field& nu_cc, const Field& vel, const Field& density);
-
     void populate_field_buffers();
 
     void initialize_particles(const int total_pts);
