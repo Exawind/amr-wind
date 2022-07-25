@@ -45,6 +45,8 @@ public:
             for (int i = 0; i < n_levels; ++i) {
                 sim().mesh_mapping()->create_map(i, m_mesh->Geom(i));
             }
+            auto& vel = sim().repo().declare_field("velocity", 3, 3);
+            init_field_mapped(vel);
         }
     }
 };
@@ -74,7 +76,7 @@ protected:
     }
 };
 
-class ActuatorConstantMapTest : public BaseActuatorTest
+class ActuatorMapTest : public BaseActuatorTest
 {
 protected:
     void populate_parameters() override
@@ -93,18 +95,9 @@ protected:
             amrex::Vector<amrex::Real> probhi{{1.0, 1.0, 1.0}};
             amrex::Vector<int> periodic{{0, 0, 0}};
 
+            pp.addarr("is_periodic", periodic);
             pp.addarr("prob_lo", problo);
             pp.addarr("prob_hi", probhi);
-
-            std::string map = "ConstantMap";
-            pp.add("mesh_mapping", map);
-            pp.addarr("is_periodic", periodic);
-        }
-        {
-            amrex::ParmParse pp("ConstantMap");
-            const amrex::Real scale = 2.0;
-            amrex::Vector<amrex::Real> scaling{{scale, scale, scale}};
-            pp.addarr("scaling_factor", scaling);
         }
     }
 };
@@ -229,38 +222,18 @@ TEST_F(ActuatorTest, act_container)
     }
 }
 
-TEST_F(ActuatorTest, act_container_mesh_mapping)
+TEST_F(ActuatorMapTest, act_container_mesh_mapping)
 {
     const int nprocs = amrex::ParallelDescriptor::NProcs();
+    const int iproc = amrex::ParallelDescriptor::MyProc();
     if (nprocs > 2) {
         GTEST_SKIP();
     }
 
-    {
-        amrex::ParmParse p_geom("geometry");
-        std::string map_name = "ChannelFlowMap";
-        p_geom.add("mesh_mapping", map_name);
-    }
-    /*{
-        amrex::ParmParse p_map("ConstantMap");
-        amrex::Vector<amrex::Real> fac{{2.0, 1.0, 0.5}};
-        p_map.addarr("factor", fac);
-    }*/
-
-    const int iproc = amrex::ParallelDescriptor::MyProc();
-    initialize_mesh();
-    sim().activate_mesh_map();
-
-    ASSERT_TRUE(sim().has_mesh_mapping());
-    int n_levels = m_mesh->num_levels();
-    for (int i = 0; i < n_levels; ++i) {
-        sim().mesh_mapping()->create_map(i, m_mesh->Geom(i));
-    }
-    auto& vel = sim().repo().declare_field("velocity", 3, 2);
-    auto& density = sim().repo().declare_field("density", 1, 2);
-
-    init_field_mapped(vel);
-    density.setVal(1.0);
+    initalize_mesh_and_fields();
+    init_mesh_mapping();
+    auto& vel = sim().repo().get_field("velocity");
+    auto& density = sim().repo().get_field("density");
 
     // Number of turbines in an MPI rank
     const int num_turbines = 1;
@@ -371,8 +344,66 @@ TEST_F(ActuatorTest, act_container_mesh_mapping)
     }
 }
 
-TEST_F(ActuatorConstantMapTest, act_containter)
+TEST_F(ActuatorMapTest, containter_constant_map)
 {
+    {
+        amrex::ParmParse pp("geometry");
+        std::string map = "ConstantMap";
+        pp.add("mesh_mapping", map);
+    }
+    {
+        amrex::ParmParse pp("ConstantMap");
+        const amrex::Real scale = 2.0;
+        amrex::Vector<amrex::Real> scaling{{scale, scale, scale}};
+        pp.addarr("scaling_factor", scaling);
+    }
+
+    initalize_mesh_and_fields();
+    init_mesh_mapping();
+    ASSERT_TRUE(sim().has_mesh_mapping());
+
+    const int num_turbines = 1;
+    TestActContainer ac(mesh(), num_turbines);
+    auto& data = ac.get_data_obj();
+    const int num_nodes = 4;
+    const amrex::Real dx = 1.0 / num_nodes;
+    data.num_pts[0] = num_nodes;
+    ac.initialize_container();
+
+    // set position of all the particles outside the integer domain
+    {
+        auto& pvec = data.position;
+        for (int i = 0; i < num_nodes; ++i) {
+            pvec[i].x() = 1.0 + (i + 0.5) * dx;
+            pvec[i].y() = 1.0 + (i + 0.5) * dx;
+            pvec[i].z() = 1.0 + (i + 0.5) * dx;
+            amrex::Print(-1) << "x,y,z: " << pvec[i] << std::endl;
+        }
+    }
+
+    ac.update_positions();
+    // TODO possibly add assert in the code for this
+    ASSERT_EQ(num_nodes, ac.TotalNumberOfParticles());
+
+    const auto& vel = sim().repo().get_field("velocity");
+    const auto& density = sim().repo().get_field("density");
+    ac.sample_fields(vel, density);
+}
+
+TEST_F(ActuatorMapTest, containter_channel_flow_map)
+{
+    {
+        amrex::ParmParse pp("geometry");
+        std::string map = "ChannelFlowMap";
+        pp.add("mesh_mapping", map);
+    }
+    {
+        amrex::ParmParse pp("ChannelFlowMap");
+        const amrex::Real factor = 2.0;
+        amrex::Vector<amrex::Real> scaling{{factor, factor, factor}};
+        pp.addarr("beta", scaling);
+    }
+
     initalize_mesh_and_fields();
     init_mesh_mapping();
     ASSERT_TRUE(sim().has_mesh_mapping());
