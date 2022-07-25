@@ -147,12 +147,11 @@ template <typename Shape>
 amrex::Vector<amrex::Real> ScalarAdvection::compute_error(const Shape& scalar_function)
 {
     const amrex::Real t = m_time.current_time();
-    const amrex::Real convective_speed = m_convective_speed;
+    const amrex::Real convected_distance = m_convective_speed * t;
     const amrex::Real center = m_center;
     const amrex::Real amplitude = m_amplitude;
     const amrex::Real width = m_width;
     const amrex::Real eta = m_eta;
-    const amrex::Real convected_center = center + convective_speed * t;
     const int nlevels = m_repo.num_active_levels();
     const amrex::Real total_vol = m_repo.mesh().Geom(0).ProbDomain().volume();
 
@@ -186,7 +185,7 @@ amrex::Vector<amrex::Real> ScalarAdvection::compute_error(const Shape& scalar_fu
             amrex::LoopOnCpu(vbx, [=, &err_fab](int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                 const amrex::Real s = scalar_arr(i, j, k, 0);
-                const amrex::Real s_exact = scalar_function(x, convected_center, amplitude, width, eta);
+                const amrex::Real s_exact = scalar_function(x - convected_distance, center, amplitude, width, eta);
                 err_fab += cell_vol * mask_arr(i, j, k) * (s - s_exact) *
                            (s - s_exact);
             });
