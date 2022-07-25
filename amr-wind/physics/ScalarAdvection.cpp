@@ -146,7 +146,7 @@ void ScalarAdvection::initialize_scalar(const Shape& scalar_function)
 template <typename Shape>
 amrex::Vector<amrex::Real> ScalarAdvection::compute_error(const Shape& scalar_function)
 {
-    const amrex::Real t = m_time.current_time();
+    const amrex::Real t = m_time.new_time();
     const amrex::Real convected_distance = m_convective_speed * t;
     const amrex::Real center = m_center;
     const amrex::Real amplitude = m_amplitude;
