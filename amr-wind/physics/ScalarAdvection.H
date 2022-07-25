@@ -46,7 +46,7 @@ private:
     Field& m_velocity;
     Field& m_density;
     std::string m_output_fname = "error.log";
-    const int m_w = 18;
+    const int m_w = 20;
 
     //! Scalar field
     Field* m_scalar{nullptr};
