@@ -45,7 +45,7 @@ struct ActuatorCloud
 };
 
 //! Number or real entries in Array of Structs (AOS)
-static constexpr int NumPStructReal = AMREX_SPACEDIM + 1;
+static constexpr int NumPStructReal = AMREX_SPACEDIM * 2 + 1;
 //! Number of integer entries in Array of Structs (AOS)
 static constexpr int NumPStructInt = 1;
 //! Number of real entries in Struct of Arrays (SOA)
@@ -79,6 +79,8 @@ public:
     void reset_container();
 
     void update_positions();
+
+    void update_positions(const MeshMap* map);
 
     void sample_fields(const Field& vel, const Field& density);
     // overload for mesh mapping

@@ -199,6 +199,45 @@ void ActuatorContainer::update_positions()
     m_is_scattered = true;
 }
 
+void ActuatorContainer::update_positions(const MeshMap* map)
+{
+    BL_PROFILE("amr-wind::actuator::ActuatorContainer::update_positions");
+    AMREX_ALWAYS_ASSERT(m_container_initialized && !m_is_scattered);
+
+    const auto dpos = gpu::device_view(m_data.position);
+    const auto* const dptr = dpos.data();
+    const int nlevels = m_mesh.finestLevel() + 1;
+    for (int lev = 0; lev < nlevels; ++lev) {
+        for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
+            const int np = pti.numParticles();
+            auto* pstruct = pti.GetArrayOfStructs()().data();
+
+            amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
+                auto& pp = pstruct[ip];
+                const auto idx = pp.idata(0);
+
+                const auto& pvec = dptr[idx];
+                const auto p_unmapped =
+                    map->stretched_to_unstretched(pvec.data(), m_mesh.Geom(0));
+                amrex::Print(-1)
+                    << "pvec: " << pvec << " unmapped: " << p_unmapped[0]
+                    << ", " << p_unmapped[1] << ", " << p_unmapped[2]
+                    << std::endl;
+                for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+                    pp.pos(n) = p_unmapped[n];
+                    pp.rdata(4 + n) = pvec[n];
+                }
+            });
+        }
+    }
+
+    // Scatter particles to appropriate MPI ranks
+    Redistribute();
+
+    // Indicate that it is safe to sample velocities
+    m_is_scattered = true;
+}
+
 /** Interpolate the velocity field using a trilinear interpolation
  *
  *  This method performs three tasks:
@@ -414,7 +453,8 @@ void ActuatorContainer::interpolate_fields(
             amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
                 auto& pp = pstruct[ip];
                 const int iproc = pp.cpu();
-                const auto& p_map = dptr[iproc];
+                const vs::Vector p_map = {
+                    pp.rdata(4), pp.rdata(5), pp.rdata(6)};
                 const auto& p_uni = pp.pos();
 
                 const amrex::Real x =
@@ -462,6 +502,11 @@ void ActuatorContainer::interpolate_fields(
                 }
 
                 // density
+                // clang-format off
+                amrex::Print(-1) << "w_lo: "<<wx_lo<<", "<<wy_lo<<", "<<wz_lo<<std::endl;
+                amrex::Print(-1) << "w_hi: "<<wx_hi<<", "<<wy_hi<<", "<<wz_hi<<std::endl;
+                // clang-format on
+
                 pp.rdata(AMREX_SPACEDIM) =
                     wx_lo * wy_lo * wz_lo * darr(i, j, k) +
                     wx_lo * wy_lo * wz_hi * darr(i, j, k + 1) +

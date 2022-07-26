@@ -30,6 +30,10 @@ public:
     //! Construct the non-uniform mesh field
     void create_non_uniform_mesh(int /*lev*/, const amrex::Geometry& /*geom*/);
 
+    amrex::Vector<amrex::Real> stretched_to_unstretched(
+        const amrex::Real* stretched,
+        const amrex::Geometry& /*geom*/) const override;
+
 private:
     //! Factor to scale the mesh by
     amrex::Vector<amrex::Real> m_fac{{1.0, 1.0, 1.0}};

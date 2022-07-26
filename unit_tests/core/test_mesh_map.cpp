@@ -63,7 +63,7 @@ TEST_F(MeshMapTest, stretched_to_unstretched)
         Vector str_coord{{0.0, 0.0, 0.0}};
 
         auto uni_coord = sim().mesh_mapping()->stretched_to_unstretched(
-            str_coord, m_mesh->Geom(0));
+            str_coord.data(), m_mesh->Geom(0));
 
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
             EXPECT_NEAR(str_coord[i], uni_coord[i], 1e-12) << i;
@@ -74,7 +74,7 @@ TEST_F(MeshMapTest, stretched_to_unstretched)
         Vector str_coord{{32.0, 32.0, 32.0}};
 
         auto uni_coord = sim().mesh_mapping()->stretched_to_unstretched(
-            str_coord, m_mesh->Geom(0));
+            str_coord.data(), m_mesh->Geom(0));
 
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
             EXPECT_NEAR(str_coord[i], uni_coord[i], 1e-12) << i;
@@ -90,7 +90,7 @@ TEST_F(MeshMapTest, stretched_to_unstretched)
         Vector str_coord{{x, y, z}};
 
         auto uni_coord = sim().mesh_mapping()->stretched_to_unstretched(
-            str_coord, m_mesh->Geom(0));
+            str_coord.data(), m_mesh->Geom(0));
 
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
 

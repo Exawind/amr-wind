@@ -165,5 +165,12 @@ void ConstantMap::create_non_uniform_mesh(int lev, const amrex::Geometry& geom)
     }
 }
 
+amrex::Vector<amrex::Real> ConstantMap::stretched_to_unstretched(
+    const amrex::Real* stretched, const amrex::Geometry& /*geom*/) const
+{
+    return {
+        {stretched[0] / m_fac[0], stretched[1] / m_fac[1],
+         stretched[2] / m_fac[2]}};
+}
 } // namespace const_map
 } // namespace amr_wind

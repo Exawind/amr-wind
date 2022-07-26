@@ -32,8 +32,7 @@ public:
 
     //! get unstretched coordinate based on physical coordinate
     amrex::Vector<amrex::Real> stretched_to_unstretched(
-        const amrex::Vector<amrex::Real>& /*nu_coord*/,
-        const amrex::Geometry&) override;
+        const amrex::Real* /*nu_coord*/, const amrex::Geometry&) const override;
 
 private:
     //! User input parameters

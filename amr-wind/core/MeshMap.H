@@ -41,8 +41,8 @@ public:
     virtual void create_map(int, const amrex::Geometry&) = 0;
 
     //! get unstretched coordinate based on physical coordinate
-    virtual amrex::Vector<amrex::Real> stretched_to_unstretched(
-        const amrex::Vector<amrex::Real>&, const amrex::Geometry&)
+    virtual amrex::Vector<amrex::Real>
+    stretched_to_unstretched(const amrex::Real*, const amrex::Geometry&) const
     {
         amrex::Abort(
             "MeshMap: Conversion from stretched to "

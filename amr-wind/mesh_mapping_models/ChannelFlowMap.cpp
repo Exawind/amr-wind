@@ -352,7 +352,7 @@ void ChannelFlowMap::create_non_uniform_mesh(
 /** Map from stretched coordinates to unstretched
  */
 amrex::Vector<amrex::Real> ChannelFlowMap::stretched_to_unstretched(
-    const amrex::Vector<amrex::Real>& nu_coord, const amrex::Geometry& geom)
+    const amrex::Real* nu_coord, const amrex::Geometry& geom) const
 {
     amrex::Vector<amrex::Real> uni_coord(3, 0.0);
     const auto& prob_lo = geom.ProbLoArray();

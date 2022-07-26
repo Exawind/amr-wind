@@ -144,7 +144,11 @@ void Actuator::update_positions()
         m_actuators[ig]->update_positions(vpos);
         ic += pinfo.num_pts[i];
     }
-    m_container->update_positions();
+    if (m_sim.has_mesh_mapping()) {
+        m_container->update_positions(m_sim.mesh_mapping());
+    } else {
+        m_container->update_positions();
+    }
 
     // Sample velocities at the new locations
     const auto& vel = m_sim.repo().get_field("velocity");
