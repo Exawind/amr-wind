@@ -1,6 +1,7 @@
 #include "amr-wind/wind_energy/actuator/actuator_utils.H"
 #include "amr-wind/wind_energy/actuator/actuator_types.H"
 #include "amr-wind/core/MeshMap.H"
+#include "amr-wind/CFDSim.H"
 
 namespace amr_wind {
 namespace actuator {
@@ -29,10 +30,10 @@ amrex::Box realbox_to_box(
     const auto* problo = geom.ProbLo();
     const auto* probhi = geom.ProbHi();
     const auto* dxi = geom.InvCellSize();
-    amrex::RealVect real_lo, real_hi;
+    amrex::Vector<amrex::Real> real_lo, real_hi;
     if (map != nullptr) {
-        real_lo = stretched_to_unstretched_coordinates(rbx.lo());
-        real_hi = stretched_to_unstretched_coordinates(rbx.hi());
+        real_lo = map->stretched_to_unstretched(rbx.lo(), geom);
+        real_hi = map->stretched_to_unstretched(rbx.hi(), geom);
     } else {
         real_lo = {rbx.lo()[0], rbx.lo()[1], rbx.lo()[2]};
         real_hi = {rbx.hi()[0], rbx.hi()[1], rbx.hi()[2]};
@@ -57,15 +58,16 @@ amrex::Box realbox_to_box(
 
 } // namespace
 
-std::set<int> determine_influenced_procs(
-    const amrex::AmrCore& mesh, const amrex::RealBox& rbx)
+std::set<int>
+determine_influenced_procs(const CFDSim& sim, const amrex::RealBox& rbx)
 {
     std::set<int> procs;
+    const auto& mesh = sim.mesh();
     const int finest_level = mesh.finestLevel();
     const int nlevels = mesh.finestLevel() + 1;
     // TODO bx should be mapped to unstretched coordinates here when using mesh
     // mapping, could be implemented inside realbox_to_box as well
-    auto bx = realbox_to_box(rbx, mesh.Geom(0));
+    auto bx = realbox_to_box(rbx, mesh.Geom(0), sim.mesh_mapping());
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& ba = mesh.boxArray(lev);

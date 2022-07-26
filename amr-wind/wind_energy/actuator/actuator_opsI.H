@@ -14,8 +14,7 @@ template <typename T>
 void determine_influenced_procs(typename T::DataType& data)
 {
     auto& info = data.info();
-    info.procs =
-        utils::determine_influenced_procs(data.sim().mesh(), info.bound_box);
+    info.procs = utils::determine_influenced_procs(data.sim(), info.bound_box);
 
     if (info.root_proc > -1) {
         // During regrid, the influenced processes might have changed and might
@@ -36,8 +35,7 @@ void determine_root_proc(
 {
     auto& info = data.info();
 
-    info.procs =
-        utils::determine_influenced_procs(data.sim().mesh(), info.bound_box);
+    info.procs = utils::determine_influenced_procs(data.sim(), info.bound_box);
 
     utils::determine_root_proc(data.info(), act_proc_count);
 }

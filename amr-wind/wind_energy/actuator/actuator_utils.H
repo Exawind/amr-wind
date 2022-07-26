@@ -8,6 +8,7 @@
 #include <set>
 
 namespace amr_wind {
+class CFDSim;
 namespace actuator {
 
 struct ActInfo;
@@ -24,8 +25,8 @@ namespace utils {
  *  \param rbox The bounding box that defines the region of influence of a
  * turbine
  */
-std::set<int> determine_influenced_procs(
-    const amrex::AmrCore& mesh, const amrex::RealBox& rbx);
+std::set<int>
+determine_influenced_procs(const CFDSim& sim, const amrex::RealBox& rbx);
 
 void determine_root_proc(
     ActInfo& /*info*/, amrex::Vector<int>& /*act_proc_count*/);

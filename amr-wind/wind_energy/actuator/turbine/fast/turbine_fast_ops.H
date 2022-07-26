@@ -75,8 +75,7 @@ inline void
 determine_influenced_procs<TurbineFast>(typename TurbineFast::DataType& data)
 {
     auto& info = data.info();
-    info.procs =
-        utils::determine_influenced_procs(data.sim().mesh(), info.bound_box);
+    info.procs = utils::determine_influenced_procs(data.sim(), info.bound_box);
 
     AMREX_ALWAYS_ASSERT(info.root_proc > -1);
     // During regrid, the influenced processes might have changed and might
@@ -96,8 +95,7 @@ inline void determine_root_proc<TurbineFast>(
 {
     namespace utils = ::amr_wind::actuator::utils;
     auto& info = data.info();
-    info.procs =
-        utils::determine_influenced_procs(data.sim().mesh(), info.bound_box);
+    info.procs = utils::determine_influenced_procs(data.sim(), info.bound_box);
 
     utils::determine_root_proc(info, act_proc_count);
 
