@@ -223,128 +223,6 @@ TEST_F(ActuatorTest, act_container)
     }
 }
 
-TEST_F(ActuatorMapTest, DISABLED_act_container_mesh_mapping)
-{
-    const int nprocs = amrex::ParallelDescriptor::NProcs();
-    const int iproc = amrex::ParallelDescriptor::MyProc();
-    if (nprocs > 2) {
-        GTEST_SKIP();
-    }
-
-    initalize_mesh_and_fields();
-    init_mesh_mapping();
-    auto& vel = sim().repo().get_field("velocity");
-    auto& density = sim().repo().get_field("density");
-
-    // Number of turbines in an MPI rank
-    const int num_turbines = 1;
-    // Number of points per turbine
-    const int num_nodes = 16;
-
-    TestActContainer ac(mesh(), num_turbines);
-    auto& data = ac.get_data_obj();
-
-    for (int it = 0; it < num_turbines; ++it) {
-        data.num_pts[it] = num_nodes;
-    }
-
-    ac.initialize_container();
-
-    {
-        const int lev = 0;
-        int idx = 0;
-        const amrex::Real dz = mesh().Geom(lev).CellSize(2);
-        const amrex::Real ypos = 32.0 * (iproc + 1);
-        auto& pvec = data.position;
-        for (int it = 0; it < num_turbines; ++it) {
-            const amrex::Real xpos = 32.0 * (it + 1);
-            for (int ni = 0; ni < num_nodes; ++ni) {
-                const amrex::Real zpos = (ni + 0.5) * dz;
-
-                pvec[idx].x() = xpos;
-                pvec[idx].y() = ypos;
-                pvec[idx].z() = zpos;
-                ++idx;
-            }
-        }
-        ASSERT_EQ(idx, ac.num_actuator_points());
-    }
-
-    ac.update_positions();
-
-    // Check that the update positions scattered the particles to the MPI rank
-    // that contains the cell enclosing the particle location
-#ifndef AMREX_USE_GPU
-    ASSERT_EQ(
-        ac.num_actuator_points() * nprocs, ac.NumberOfParticlesAtLevel(0));
-#endif
-    {
-        using ParIter = amr_wind::actuator::ActuatorContainer::ParIterType;
-        int counter = 0;
-        int total_particles = 0;
-        const int lev = 0;
-        for (ParIter pti(ac, lev); pti.isValid(); ++pti) {
-            ++counter;
-            total_particles += pti.numParticles();
-        }
-
-        if (iproc == 0) {
-            ASSERT_EQ(num_turbines * num_nodes * nprocs, total_particles);
-        } else {
-            ASSERT_EQ(total_particles, 0);
-        }
-    }
-
-    ac.sample_fields(vel, density);
-    ac.Redistribute();
-
-    // Check to make sure that the velocity sampling gathered the particles back
-    // to their original MPI ranks
-#ifndef AMREX_USE_GPU
-    ASSERT_EQ(
-        ac.num_actuator_points() * nprocs, ac.NumberOfParticlesAtLevel(0));
-#endif
-    {
-        using ParIter = amr_wind::actuator::ActuatorContainer::ParIterType;
-        int counter = 0;
-        int total_particles = 0;
-        const int lev = 0;
-        for (ParIter pti(ac, lev); pti.isValid(); ++pti) {
-            ++counter;
-            total_particles += pti.numParticles();
-        }
-
-        // All particles should have been recalled back to the same patch within
-        // each MPI rank
-        ASSERT_EQ(counter, 1);
-        // Total number of particles should be the same as what this MPI rank
-        // created
-        ASSERT_EQ(num_turbines * num_nodes, total_particles);
-    }
-
-    // Check the interpolated velocity field
-    {
-        namespace vs = amr_wind::vs;
-        constexpr amrex::Real rtol = 1.0e-12;
-        amrex::Real rerr = 0.0;
-        const int npts = ac.num_actuator_points();
-        const auto& pvec = data.position;
-        const auto& vvec = data.velocity;
-        for (int ip = 0; ip < npts; ++ip) {
-            const auto& pos = pvec[ip];
-            const auto& pvel = vvec[ip];
-
-            const vs::Vector vgold{pos.x(), pos.y(), pos.z()};
-
-            vs::mag_sqr(pvel - vgold);
-            for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-                EXPECT_NEAR(vgold[i], pos[i], rtol) << i;
-            }
-        }
-        EXPECT_NEAR(rerr, 0.0, rtol);
-    }
-}
-
 TEST_F(ActuatorMapTest, containter_constant_map)
 {
     const amrex::Real scale = 2.0;
@@ -404,8 +282,9 @@ TEST_F(ActuatorMapTest, containter_constant_map)
     ASSERT_EQ(num_nodes * nprocs, ac.TotalNumberOfParticles());
 }
 
-TEST_F(ActuatorMapTest, DISABLED_containter_channel_flow_map)
+TEST_F(ActuatorMapTest, containter_channel_flow_map)
 {
+    const int nprocs = amrex::ParallelDescriptor::NProcs();
     {
         amrex::ParmParse pp("geometry");
         std::string map = "ChannelFlowMap";
@@ -429,20 +308,40 @@ TEST_F(ActuatorMapTest, DISABLED_containter_channel_flow_map)
     const amrex::Real dx = 1.0 / num_nodes;
     data.num_pts[0] = num_nodes;
     ac.initialize_container();
+    amr_wind::actuator::RealList golds;
 
     // set position of all the particles as cell centers of the mapped mesh
     {
+        const amrex::Real ypos = dx;
         auto& pvec = data.position;
-        for (int i = 0; i < num_nodes; ++i) {
-            pvec[i].x() = 1.0 + (i + 0.5) * dx;
-            pvec[i].y() = 1.0 + (i + 0.5) * dx;
-            pvec[i].z() = 1.0 + (i + 0.5) * dx;
+        const amrex::Real xpos = dx;
+        for (int ni = 0; ni < num_nodes; ++ni) {
+            const amrex::Real zpos = (ni + 0.5) * dx;
+
+            pvec[ni].x() = xpos;
+            pvec[ni].y() = ypos;
+            pvec[ni].z() = zpos;
+            golds.push_back(pvec[ni].x() + pvec[ni].y() + pvec[ni].z());
         }
     }
 
-    ac.update_positions();
+    ac.update_positions(sim().mesh_mapping());
     // TODO possibly add assert in the code for this
     ASSERT_EQ(num_nodes, ac.TotalNumberOfParticles());
+    auto& vel = sim().repo().get_field("velocity");
+    auto& density = sim().repo().get_field("density");
+    auto& nucc = sim().repo().get_field("non_uniform_coord_cc");
+
+    ac.sample_fields(vel, density, nucc);
+    // check interpolation
+    {
+        auto& dvec = data.density;
+        for (int i = 0; i < num_nodes; ++i) {
+            EXPECT_NEAR(golds[i], dvec[i], 1.e-12) << i;
+        }
+    }
+    ac.Redistribute();
+    ASSERT_EQ(num_nodes * nprocs, ac.TotalNumberOfParticles());
 }
 
 } // namespace amr_wind_tests
