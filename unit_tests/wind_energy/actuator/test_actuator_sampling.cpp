@@ -348,6 +348,7 @@ TEST_F(ActuatorMapTest, DISABLED_act_container_mesh_mapping)
 TEST_F(ActuatorMapTest, containter_constant_map)
 {
     const amrex::Real scale = 2.0;
+    const int nprocs = amrex::ParallelDescriptor::NProcs();
     {
         amrex::ParmParse pp("geometry");
         std::string map = "ConstantMap";
@@ -380,19 +381,18 @@ TEST_F(ActuatorMapTest, containter_constant_map)
             pvec[i].y() = 1.0 + (i + 0.5) * dx;
             pvec[i].z() = 1.0 + (i + 0.5) * dx;
             golds.push_back(pvec[i].x() + pvec[i].y() + pvec[i].z());
-            amrex::Print(-1) << "x,y,z: " << pvec[i] << std::endl;
         }
     }
 
     ac.update_positions(sim().mesh_mapping());
     // TODO possibly add assert in the code for this
-    ASSERT_EQ(num_nodes, ac.TotalNumberOfParticles());
+    ASSERT_EQ(num_nodes * nprocs, ac.TotalNumberOfParticles());
 
     auto& vel = sim().repo().get_field("velocity");
     auto& density = sim().repo().get_field("density");
-    auto& cc = sim().repo().get_field("non_uniform_coord_cc");
+    auto& nucc = sim().repo().get_field("non_uniform_coord_cc");
 
-    ac.sample_fields(vel, density, cc);
+    ac.sample_fields(vel, density, nucc);
     // check interpolation
     {
         auto& dvec = data.density;
@@ -401,7 +401,7 @@ TEST_F(ActuatorMapTest, containter_constant_map)
         }
     }
     ac.Redistribute();
-    ASSERT_EQ(num_nodes, ac.TotalNumberOfParticles());
+    ASSERT_EQ(num_nodes * nprocs, ac.TotalNumberOfParticles());
 }
 
 TEST_F(ActuatorMapTest, DISABLED_containter_channel_flow_map)
@@ -437,7 +437,6 @@ TEST_F(ActuatorMapTest, DISABLED_containter_channel_flow_map)
             pvec[i].x() = 1.0 + (i + 0.5) * dx;
             pvec[i].y() = 1.0 + (i + 0.5) * dx;
             pvec[i].z() = 1.0 + (i + 0.5) * dx;
-            amrex::Print(-1) << "x,y,z: " << pvec[i] << std::endl;
         }
     }
 

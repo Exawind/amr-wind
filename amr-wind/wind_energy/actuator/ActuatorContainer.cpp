@@ -219,12 +219,9 @@ void ActuatorContainer::update_positions(const MeshMap* map)
                 const auto& pvec = dptr[idx];
                 const auto p_unmapped =
                     map->stretched_to_unstretched(pvec.data(), m_mesh.Geom(0));
-                amrex::Print(-1)
-                    << "pvec: " << pvec << " unmapped: " << p_unmapped[0]
-                    << ", " << p_unmapped[1] << ", " << p_unmapped[2]
-                    << std::endl;
                 for (int n = 0; n < AMREX_SPACEDIM; ++n) {
                     pp.pos(n) = p_unmapped[n];
+                    // stash stretched coordinates for now. hacky but will work
                     pp.rdata(4 + n) = pvec[n];
                 }
             });
@@ -502,11 +499,6 @@ void ActuatorContainer::interpolate_fields(
                 }
 
                 // density
-                // clang-format off
-                amrex::Print(-1) << "w_lo: "<<wx_lo<<", "<<wy_lo<<", "<<wz_lo<<std::endl;
-                amrex::Print(-1) << "w_hi: "<<wx_hi<<", "<<wy_hi<<", "<<wz_hi<<std::endl;
-                // clang-format on
-
                 pp.rdata(AMREX_SPACEDIM) =
                     wx_lo * wy_lo * wz_lo * darr(i, j, k) +
                     wx_lo * wy_lo * wz_hi * darr(i, j, k + 1) +

@@ -8,17 +8,11 @@ namespace actuator {
 namespace utils {
 
 namespace {
-AMREX_FORCE_INLINE AMREX_GPU_HOST_DEVICE amrex::RealVect
-stretched_to_unstretched_coordinates(const amrex::Real* point)
-{
-
-    return {point[0], point[1], point[2]};
-}
-
 /** Convert a bounding box into amrex::Box index space at a given level
  *
  *  \param rbx Bounding box as defined in global domain coordinates
  *  \param geom AMReX geometry information for a given level
+ *  \param map Pointer to mesh mapping to enable transformation if it is used
  *  \return The Box instance that defines the index space equivalent to bounding
  * boxt
  */
