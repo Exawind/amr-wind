@@ -264,12 +264,13 @@ void ABLVelWallFunc::wall_model(
                 amrex::ParallelFor(
                     amrex::bdryLo(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+
                         const amrex::Real mu = eta(i, j, k);
                         const amrex::Real uu = vold_arr(i, j, k, 0);
                         const amrex::Real vv = vold_arr(i, j, k, 1);
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
                         amrex::Real fac_z =
-                            mesh_mapping ? (fac(i, j, k, 2)) : 1.0;
+                            mesh_mapping ? (fac(i, j, k, 2)/geom.CellSize()[2]) : 1.0;
 
                         // Dirichlet BC
                         varr(i, j, k - 1, 2) = 0.0;

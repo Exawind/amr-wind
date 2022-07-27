@@ -180,7 +180,9 @@ struct ShearStressAlinot
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real calc_tke() const
     {
+        amrex::Print()<<"Calc TKE in ShearStress.H"<<std::endl;
         return std::sqrt((kappa * utau * zref * calc_eps()) / (m_Cmu * phi_m));
+        //return (utau * utau) / std::sqrt( m_Cmu );
     };
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real calc_omega() const

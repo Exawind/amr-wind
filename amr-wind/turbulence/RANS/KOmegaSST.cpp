@@ -137,9 +137,10 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
                          gradK_arr(i, j, k, 2) / fac_z *
                              gradOmega_arr(i, j, k, 2) / fac_z);
 
-                    amrex::Real cdkomega = amrex::max(
-                        1e-10, 2.0 * rho_arr(i, j, k) * sigma_omega2 * gko /
-                                   (sdr_arr(i, j, k) + 1e-15));
+                    amrex::Real cross = 2.0 * rho_arr(i, j, k) * sigma_omega2 * gko /
+                                   (sdr_arr(i, j, k) + 1e-15);
+
+                    amrex::Real cdkomega = amrex::max(cross, 1e-10);
 
                     amrex::Real tmp1 =
                         4.0 * rho_arr(i, j, k) * sigma_omega2 *
@@ -186,7 +187,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
                     sdr_src_arr(i, j, k) =
                         rho_arr(i, j, k) * alpha * shear_prod_arr(i, j, k) /
                             amrex::max(mu_arr(i, j, k), 1.0e-16) +
-                        (1.0 - tmp_f1) * cdkomega;
+                        (1.0 - tmp_f1) * cross;
                     sdr_diss_arr(i, j, k) = -rho_arr(i, j, k) * beta *
                                             sdr_arr(i, j, k) * sdr_arr(i, j, k);
                 });
@@ -264,6 +265,7 @@ void KOmegaSST<Transport>::shear_prod_to_uniform_space(
     // Modify shear production while accounting for mesh mapping
     auto grad_vel =
         (this->m_sim).repo().create_scratch_field(9, 0, FieldLoc::CELL);
+
     fvm::gradient(*grad_vel, vel);
 
     auto const& mesh_fac =

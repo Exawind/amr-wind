@@ -48,7 +48,8 @@ public:
         const amrex::Real,
         const amrex::Real,
         const amrex::Real,
-        const int);
+        const int,
+        const amrex::Real);
 
 private:
     //! User input parameters
