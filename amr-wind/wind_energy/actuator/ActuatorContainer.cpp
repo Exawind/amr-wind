@@ -122,7 +122,7 @@ void ActuatorContainer::initialize_particles(const int total_pts)
 }
 
 AMREX_FORCE_INLINE AMREX_GPU_HOST_DEVICE amrex::RealVect
-stretched_to_unstretched_coordinates(const amrex::RealVect& point)
+unmap_coordinates(const amrex::RealVect& point)
 {
 
     return {point[0], point[1], point[2]};
@@ -204,6 +204,11 @@ void ActuatorContainer::update_positions(const MeshMap* map)
     BL_PROFILE("amr-wind::actuator::ActuatorContainer::update_positions");
     AMREX_ALWAYS_ASSERT(m_container_initialized && !m_is_scattered);
 
+    if (map == nullptr) {
+        // call the standard update if mapping is null
+        update_positions();
+    }
+
     const auto dpos = gpu::device_view(m_data.position);
     const auto* const dptr = dpos.data();
     const int nlevels = m_mesh.finestLevel() + 1;
@@ -217,8 +222,7 @@ void ActuatorContainer::update_positions(const MeshMap* map)
                 const auto idx = pp.idata(0);
 
                 const auto& pvec = dptr[idx];
-                const auto p_unmapped =
-                    map->stretched_to_unstretched(pvec.data(), m_mesh.Geom(0));
+                const auto p_unmapped = map->unmap(pvec.data(), m_mesh.Geom(0));
                 for (int n = 0; n < AMREX_SPACEDIM; ++n) {
                     pp.pos(n) = p_unmapped[n];
                     // stash stretched coordinates for now. hacky but will work
@@ -454,18 +458,22 @@ void ActuatorContainer::interpolate_fields(
                     pp.rdata(4), pp.rdata(5), pp.rdata(6)};
                 const auto& p_uni = pp.pos();
 
-                const amrex::Real x =
-                    (p_uni[0] - plo[0] - 0.5 * dx[0]) * dxi[0];
-                const amrex::Real y =
-                    (p_uni[1] - plo[1] - 0.5 * dx[1]) * dxi[1];
-                const amrex::Real z =
-                    (p_uni[2] - plo[2] - 0.5 * dx[2]) * dxi[2];
+                const amrex::Real x = (p_uni[0] - plo[0]) * dxi[0];
+                const amrex::Real y = (p_uni[1] - plo[1]) * dxi[1];
+                const amrex::Real z = (p_uni[2] - plo[2]) * dxi[2];
 
                 // Index of the low corner
                 const int i = static_cast<int>(amrex::Math::floor(x));
                 const int j = static_cast<int>(amrex::Math::floor(y));
                 const int k = static_cast<int>(amrex::Math::floor(z));
 
+                vs::VectorT<int> ijk = {i, j, k};
+                amrex::Print(-1) << "i,j,k " << ijk << std::endl;
+                for (int ii = 0; ii < 3; ++ii) {
+                    amrex::Print(-1) << nu_cc_arr(i, j, k, ii) << ", "
+                                     << p_map[ii] << std::endl;
+                    AMREX_ASSERT(nu_cc_arr(i, j, k, ii) >= p_map[ii]);
+                }
                 // Interpolation weights in each direction (linear basis)
                 const amrex::Real wx_hi =
                     (nu_cc_arr(i, j, k, 0) - p_map[0]) /
@@ -497,6 +505,15 @@ void ActuatorContainer::interpolate_fields(
                     // to the MPI ranks with the turbines upon redistribution
                     pp.pos(ic) = dptr[iproc][ic];
                 }
+
+                // clang-format off
+                vs::Vector w_lo = {wx_lo, wy_lo, wz_lo};
+                vs::Vector w_hi = {wx_hi, wy_hi, wz_hi};
+                amrex::Print(-1) << "w_lo: "<<w_lo<<std::endl;
+                amrex::Print(-1) << "w_hi: "<<w_hi<<std::endl;
+                amrex::Print(-1) << "ijk: "<<darr(i,j,k)<<std::endl;
+                amrex::Print(-1) << "i1jk: "<<darr(i+1,j,k)<<std::endl;
+                // clang-format on
 
                 // density
                 pp.rdata(AMREX_SPACEDIM) =

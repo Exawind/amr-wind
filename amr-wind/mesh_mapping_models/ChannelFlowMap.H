@@ -31,8 +31,12 @@ public:
     void create_non_uniform_mesh(int /*lev*/, const amrex::Geometry& /*geom*/);
 
     //! get unstretched coordinate based on physical coordinate
-    amrex::Vector<amrex::Real> stretched_to_unstretched(
+    amrex::Vector<amrex::Real> unmap(
         const amrex::Real* /*nu_coord*/, const amrex::Geometry&) const override;
+
+    //! get stretched coordinate based on physical coordinate
+    amrex::Vector<amrex::Real>
+    map(const amrex::Real* /*nu_coord*/, const amrex::Geometry&) const override;
 
 private:
     //! User input parameters

@@ -30,8 +30,12 @@ public:
     //! Construct the non-uniform mesh field
     void create_non_uniform_mesh(int /*lev*/, const amrex::Geometry& /*geom*/);
 
-    amrex::Vector<amrex::Real> stretched_to_unstretched(
+    amrex::Vector<amrex::Real> unmap(
         const amrex::Real* stretched,
+        const amrex::Geometry& /*geom*/) const override;
+
+    amrex::Vector<amrex::Real>
+    map(const amrex::Real* stretched,
         const amrex::Geometry& /*geom*/) const override;
 
 private:

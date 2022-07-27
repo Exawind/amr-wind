@@ -26,8 +26,8 @@ amrex::Box realbox_to_box(
     const auto* dxi = geom.InvCellSize();
     amrex::Vector<amrex::Real> real_lo, real_hi;
     if (map != nullptr) {
-        real_lo = map->stretched_to_unstretched(rbx.lo(), geom);
-        real_hi = map->stretched_to_unstretched(rbx.hi(), geom);
+        real_lo = map->unmap(rbx.lo(), geom);
+        real_hi = map->unmap(rbx.hi(), geom);
     } else {
         real_lo = {rbx.lo()[0], rbx.lo()[1], rbx.lo()[2]};
         real_hi = {rbx.hi()[0], rbx.hi()[1], rbx.hi()[2]};

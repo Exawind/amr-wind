@@ -293,7 +293,7 @@ TEST_F(ActuatorMapTest, containter_channel_flow_map)
     {
         amrex::ParmParse pp("ChannelFlowMap");
         const amrex::Real factor = 2.0;
-        amrex::Vector<amrex::Real> scaling{{factor, factor, factor}};
+        amrex::Vector<amrex::Real> scaling{{factor, 0.0, 0.0}};
         pp.addarr("beta", scaling);
     }
 
@@ -304,14 +304,14 @@ TEST_F(ActuatorMapTest, containter_channel_flow_map)
     const int num_turbines = 1;
     TestActContainer ac(mesh(), num_turbines);
     auto& data = ac.get_data_obj();
-    const int num_nodes = 4;
+    const int num_nodes = 1;
     const amrex::Real dx = 1.0 / num_nodes;
     data.num_pts[0] = num_nodes;
     ac.initialize_container();
     amr_wind::actuator::RealList golds;
 
     // set position of all the particles as cell centers of the mapped mesh
-    {
+    /*{
         const amrex::Real ypos = dx;
         auto& pvec = data.position;
         const amrex::Real xpos = dx;
@@ -322,6 +322,22 @@ TEST_F(ActuatorMapTest, containter_channel_flow_map)
             pvec[ni].y() = ypos;
             pvec[ni].z() = zpos;
             golds.push_back(pvec[ni].x() + pvec[ni].y() + pvec[ni].z());
+        }
+    }*/
+    {
+        amr_wind::vs::Vector uniform_coords{0.1, 0.5, 0.5};
+        auto& pvec = data.position;
+        auto stretched =
+            sim().mesh_mapping()->map(uniform_coords.data(), mesh().Geom(0));
+        pvec[0].x() = stretched[0];
+        pvec[0].y() = stretched[1];
+        pvec[0].z() = stretched[2];
+        golds.push_back(pvec[0].x() + pvec[0].y() + pvec[0].z());
+
+        auto unstretch =
+            sim().mesh_mapping()->unmap(stretched.data(), mesh().Geom(0));
+        for (int i = 0; i < 3; ++i) {
+            ASSERT_NEAR(uniform_coords[i], unstretch[i], 1e-12);
         }
     }
 
@@ -334,14 +350,11 @@ TEST_F(ActuatorMapTest, containter_channel_flow_map)
 
     ac.sample_fields(vel, density, nucc);
     // check interpolation
-    {
-        auto& dvec = data.density;
-        for (int i = 0; i < num_nodes; ++i) {
-            EXPECT_NEAR(golds[i], dvec[i], 1.e-12) << i;
-        }
+    auto& dvec = data.density;
+    for (int i = 0; i < num_nodes; ++i) {
+        EXPECT_NEAR(golds[i], dvec[i], 1.e-12)
+            << i << " at " << data.position[i];
     }
-    ac.Redistribute();
-    ASSERT_EQ(num_nodes * nprocs, ac.TotalNumberOfParticles());
 }
 
 } // namespace amr_wind_tests

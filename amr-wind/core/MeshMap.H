@@ -42,13 +42,10 @@ public:
 
     //! get unstretched coordinate based on physical coordinate
     virtual amrex::Vector<amrex::Real>
-    stretched_to_unstretched(const amrex::Real*, const amrex::Geometry&) const
-    {
-        amrex::Abort(
-            "MeshMap: Conversion from stretched to "
-            "unstretched coordinates not implemented for this mapping.");
-        return {{}};
-    }
+    unmap(const amrex::Real*, const amrex::Geometry&) const = 0;
+
+    virtual amrex::Vector<amrex::Real>
+    map(const amrex::Real*, const amrex::Geometry&) const = 0;
 
 protected:
     Field* m_mesh_scale_fac_cc{nullptr};

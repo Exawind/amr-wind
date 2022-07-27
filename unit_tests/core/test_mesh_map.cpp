@@ -20,7 +20,7 @@ protected:
         {
             amrex::ParmParse geo_pp("geometry");
             amrex::Vector<amrex::Real> problo{{0.0, 0.0, 0.0}};
-            amrex::Vector<amrex::Real> probhi{{32.0, 32.0, 32.0}};
+            amrex::Vector<amrex::Real> probhi{{1.0, 1.0, 1.0}};
 
             geo_pp.addarr("prob_lo", problo);
             geo_pp.addarr("prob_hi", probhi);
@@ -30,73 +30,77 @@ protected:
             geo_pp.addarr("is_periodic", periodic);
         }
     }
+    void initialize_mesh() override
+    {
+        MeshTest::initialize_mesh();
+        sim().activate_mesh_map();
+
+        ASSERT_TRUE(sim().has_mesh_mapping());
+        int n_levels = m_mesh->num_levels();
+        for (int i = 0; i < n_levels; ++i) {
+            sim().mesh_mapping()->create_map(i, m_mesh->Geom(i));
+        }
+    }
+
+    void SetUp() override { initialize_mesh(); }
 };
 
 using Vector = amrex::Vector<amrex::Real>;
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_coord(
-    const amrex::Real x,
-    const amrex::Real beta,
-    const amrex::Real prob_lo,
-    const amrex::Real len)
+TEST_F(MeshMapTest, channel_origin_unchanged)
 {
-    return (beta == 0.0)
-               ? x
-               : (prob_lo +
-                  len / 2 *
-                      (1 - std::tanh(beta * (1 - 2 * (x - prob_lo) / len)) /
-                               std::tanh(beta)));
-}
-
-TEST_F(MeshMapTest, stretched_to_unstretched)
-{
-    initialize_mesh();
-    sim().activate_mesh_map();
-
-    ASSERT_TRUE(sim().has_mesh_mapping());
-    int n_levels = m_mesh->num_levels();
-    for (int i = 0; i < n_levels; ++i) {
-        sim().mesh_mapping()->create_map(i, m_mesh->Geom(i));
-    }
     // origin unchanged
-    {
-        Vector str_coord{{0.0, 0.0, 0.0}};
+    Vector str_coord{{0.0, 0.0, 0.0}};
 
-        auto uni_coord = sim().mesh_mapping()->stretched_to_unstretched(
-            str_coord.data(), m_mesh->Geom(0));
+    auto uni_coord =
+        sim().mesh_mapping()->unmap(str_coord.data(), m_mesh->Geom(0));
 
-        for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-            EXPECT_NEAR(str_coord[i], uni_coord[i], 1e-12) << i;
-        }
+    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+        EXPECT_NEAR(str_coord[i], uni_coord[i], 1e-12) << i;
     }
-    // top unchanged
-    {
-        Vector str_coord{{32.0, 32.0, 32.0}};
+}
+TEST_F(MeshMapTest, channel_top_unchanged)
+// top unchanged
+{
+    Vector str_coord{{1.0, 1.0, 1.0}};
 
-        auto uni_coord = sim().mesh_mapping()->stretched_to_unstretched(
-            str_coord.data(), m_mesh->Geom(0));
+    auto uni_coord =
+        sim().mesh_mapping()->unmap(str_coord.data(), m_mesh->Geom(0));
 
-        for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-            EXPECT_NEAR(str_coord[i], uni_coord[i], 1e-12) << i;
-        }
-    }
-    {
-        Vector gold{{3.0, 0.5, 0.5}};
-
-        amrex::Real x = eval_coord(gold[0], 0.0, 0.0, 32.0);
-        amrex::Real y = eval_coord(gold[1], 3.0, 0.0, 32.0);
-        amrex::Real z = eval_coord(gold[2], 0.0, 0.0, 32.0);
-
-        Vector str_coord{{x, y, z}};
-
-        auto uni_coord = sim().mesh_mapping()->stretched_to_unstretched(
-            str_coord.data(), m_mesh->Geom(0));
-
-        for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-
-            EXPECT_NEAR(gold[i], uni_coord[i], 1e-12) << i;
-        }
+    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+        EXPECT_NEAR(str_coord[i], uni_coord[i], 1e-12) << i;
     }
 }
 
+TEST_F(MeshMapTest, channel_lower_half)
+{
+    const Vector gold = {0.1, 0.1, 0.1};
+
+    const auto str_coord =
+        sim().mesh_mapping()->map(gold.data(), mesh().Geom(0));
+
+    auto uni_coord =
+        sim().mesh_mapping()->unmap(str_coord.data(), mesh().Geom(0));
+
+    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+
+        EXPECT_NEAR(gold[i], uni_coord[i], 1e-12) << i;
+    }
+}
+
+TEST_F(MeshMapTest, channel_upper_half)
+{
+    const Vector gold = {0.9, 0.9, 0.9};
+
+    const auto str_coord =
+        sim().mesh_mapping()->map(gold.data(), mesh().Geom(0));
+
+    auto uni_coord =
+        sim().mesh_mapping()->unmap(str_coord.data(), mesh().Geom(0));
+
+    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+
+        EXPECT_NEAR(gold[i], uni_coord[i], 1e-12) << i;
+    }
+}
 } // namespace amr_wind_tests
