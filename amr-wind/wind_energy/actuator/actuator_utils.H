@@ -155,9 +155,10 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE vs::Vector lagrange_weights_1d(
     // clang-format on
 }
 
-// TODO should be AMREX_GPU_DEVICE but MeshMap::map/unmap needs to become GPU
-// compliant first
-AMREX_FORCE_INLINE amrex::Vector<amrex::Real> lagrange_interpolant(
+// TODO should just be AMREX_GPU_DEVICE but MeshMap::map/unmap needs to become
+// GPU compliant first
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Vector<amrex::Real>
+lagrange_interpolant(
     const amrex::Array4<const amrex::Real>& coordinate,
     const amrex::Array4<const amrex::Real>& field,
     const int ncomp,

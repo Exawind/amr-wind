@@ -526,8 +526,6 @@ void ActuatorContainer::compute_local_coordinates()
             const auto& bx = ba[i];
             const int* lo = bx.loVect();
 
-            // TODO not sure if we need to change this to mapped coordinates or
-            // not. I think it is okay to leave it as unmapped.
             auto& pvec = m_proc_pos[iproc];
             pvec.x() = geom.ProbLo()[0] + (lo[0] + 0.5) * geom.CellSize()[0];
             pvec.y() = geom.ProbLo()[1] + (lo[1] + 0.5) * geom.CellSize()[1];
