@@ -162,3 +162,13 @@ This section is for setting atmospheric boundary layer parameters.
    Wall shear stress model: options include 
    "constant", "local", "Schumann", and "Moeng"
 
+.. input_param:: ABL.three_ComponentForcing
+
+    **type:** Boolean, optional, default = false
+
+    If this flag is true then all three components
+    of the coriolis forcing and geostrophic wind
+    forcing are included in the ICNS source terms.
+    (Default = two horizontal components in the
+    coriolis and geostrophic forcing).
+
