@@ -110,8 +110,7 @@ void Actuator::setup_container()
             return obj->info().sample_vel_in_proc;
         });
 
-    m_container = std::make_unique<ActuatorContainer>(
-        m_sim.mesh(), nlocal, m_sim.mesh_mapping());
+    m_container = std::make_unique<ActuatorContainer>(m_sim.mesh(), nlocal);
 
     auto& pinfo = m_container->m_data;
     for (int i = 0, il = 0; i < ntotal; ++i) {

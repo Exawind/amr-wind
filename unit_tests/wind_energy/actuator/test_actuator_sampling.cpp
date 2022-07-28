@@ -352,8 +352,7 @@ TEST_F(ActuatorMapTest, containter_channel_flow_map)
     // check interpolation
     auto& dvec = data.density;
     for (int i = 0; i < num_nodes; ++i) {
-        EXPECT_NEAR(golds[i], dvec[i], 1.e-12)
-            << i << " at " << data.position[i];
+        EXPECT_NEAR(golds[i], dvec[i], 1.e-12) << i;
     }
 }
 

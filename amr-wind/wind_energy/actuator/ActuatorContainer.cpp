@@ -17,14 +17,13 @@ ActuatorCloud::ActuatorCloud(const int nobjects)
 {}
 
 ActuatorContainer::ActuatorContainer(
-    amrex::AmrCore& mesh, const int num_objects, const MeshMap* map)
+    amrex::AmrCore& mesh, const int num_objects)
     : amrex::AmrParticleContainer<
           NumPStructReal,
           NumPStructInt,
           NumPArrayReal,
           NumPArrayInt>(&mesh)
     , m_mesh(mesh)
-    , m_map(map)
     , m_data(num_objects)
     , m_proc_pos(amrex::ParallelDescriptor::NProcs(), vs::Vector::zero())
     , m_pos_device(amrex::ParallelDescriptor::NProcs(), vs::Vector::zero())

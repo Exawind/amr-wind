@@ -67,10 +67,7 @@ class ActuatorContainer
 public:
     friend class Actuator;
 
-    explicit ActuatorContainer(
-        amrex::AmrCore& mesh,
-        const int num_objects,
-        const MeshMap* map = nullptr);
+    explicit ActuatorContainer(amrex::AmrCore& mesh, const int num_objects);
 
     void post_regrid_actions();
 
@@ -109,8 +106,6 @@ protected:
 
 private:
     amrex::AmrCore& m_mesh;
-
-    const MeshMap* m_map;
 
     // Object that holds the position and velocity information
     ActuatorCloud m_data;
