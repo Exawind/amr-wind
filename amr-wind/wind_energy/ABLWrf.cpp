@@ -299,7 +299,7 @@ void ABLWrfForcing::blendForcings(
 
 ABLWRFfile::ABLWRFfile(const std::string filewrf) : m_wrf_filename(filewrf)
 {
-
+#ifdef AMR_WIND_USE_NETCDF
     auto ncf = ncutils::NCFile::open_par(
         m_wrf_filename, NC_NOWRITE | NC_NETCDF4 | NC_MPIIO,
         amrex::ParallelContext::CommunicatorSub(), MPI_INFO_NULL);
@@ -341,6 +341,11 @@ ABLWRFfile::ABLWRFfile(const std::string filewrf) : m_wrf_filename(filewrf)
     //    std::endl;
     //    ncf.var("transition_height").get(m_wrf_transition_height.data());
     //}
+
+#else
+    amrex::Abort(
+        "NetCDF support was not enabled during build time. Please recompile");
+#endif
 
     amrex::ParmParse pp("ABL");
     pp.query("WRF_tendency_forcing", m_abl_wrf_tendency);
