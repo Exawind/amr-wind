@@ -225,8 +225,11 @@ TEST_F(ActuatorTest, act_container)
 
 TEST_F(ActuatorMapTest, containter_constant_map)
 {
-    const amrex::Real scale = 2.0;
     const int nprocs = amrex::ParallelDescriptor::NProcs();
+    if (nprocs > 2) {
+        GTEST_SKIP();
+    }
+    const amrex::Real scale = 2.0;
     {
         amrex::ParmParse pp("geometry");
         std::string map = "ConstantMap";
@@ -285,6 +288,10 @@ TEST_F(ActuatorMapTest, containter_constant_map)
 TEST_F(ActuatorMapTest, containter_channel_flow_map)
 {
     const int nprocs = amrex::ParallelDescriptor::NProcs();
+    if (nprocs > 2) {
+        GTEST_SKIP();
+    }
+
     {
         amrex::ParmParse pp("geometry");
         std::string map = "ChannelFlowMap";
@@ -292,9 +299,9 @@ TEST_F(ActuatorMapTest, containter_channel_flow_map)
     }
     {
         amrex::ParmParse pp("ChannelFlowMap");
-        const amrex::Real factor = 2.0;
-        amrex::Vector<amrex::Real> scaling{{factor, 0.0, 0.0}};
-        pp.addarr("beta", scaling);
+        const amrex::Real beta = 3.0;
+        amrex::Vector<amrex::Real> factor{{beta, 0.0, 0.0}};
+        pp.addarr("beta", factor);
     }
 
     initalize_mesh_and_fields();
@@ -304,42 +311,39 @@ TEST_F(ActuatorMapTest, containter_channel_flow_map)
     const int num_turbines = 1;
     TestActContainer ac(mesh(), num_turbines);
     auto& data = ac.get_data_obj();
-    const int num_nodes = 1;
+    const int num_nodes = 8;
     const amrex::Real dx = 1.0 / num_nodes;
     data.num_pts[0] = num_nodes;
     ac.initialize_container();
     amr_wind::actuator::RealList golds;
 
     // set position of all the particles as cell centers of the mapped mesh
-    /*{
+    {
         const amrex::Real ypos = dx;
         auto& pvec = data.position;
-        const amrex::Real xpos = dx;
+        const amrex::Real zpos = dx;
         for (int ni = 0; ni < num_nodes; ++ni) {
-            const amrex::Real zpos = (ni + 0.5) * dx;
+            const amrex::Real xpos = (ni + 0.5) * dx;
 
-            pvec[ni].x() = xpos;
-            pvec[ni].y() = ypos;
-            pvec[ni].z() = zpos;
+            amr_wind::vs::Vector uniform_coords{xpos, ypos, zpos};
+
+            const auto stretched = sim().mesh_mapping()->map(
+                uniform_coords.data(), mesh().Geom(0));
+
+            pvec[ni].x() = stretched[0];
+            pvec[ni].y() = stretched[1];
+            pvec[ni].z() = stretched[2];
+
             golds.push_back(pvec[ni].x() + pvec[ni].y() + pvec[ni].z());
-        }
-    }*/
-    {
-        amr_wind::vs::Vector uniform_coords{0.1, 0.5, 0.5};
-        auto& pvec = data.position;
-        auto stretched =
-            sim().mesh_mapping()->map(uniform_coords.data(), mesh().Geom(0));
-        pvec[0].x() = stretched[0];
-        pvec[0].y() = stretched[1];
-        pvec[0].z() = stretched[2];
-        golds.push_back(pvec[0].x() + pvec[0].y() + pvec[0].z());
 
-        auto unstretch =
-            sim().mesh_mapping()->unmap(stretched.data(), mesh().Geom(0));
-        for (int i = 0; i < 3; ++i) {
-            ASSERT_NEAR(uniform_coords[i], unstretch[i], 1e-12);
+            auto unstretch =
+                sim().mesh_mapping()->unmap(stretched.data(), mesh().Geom(0));
+            for (int i = 0; i < 3; ++i) {
+                ASSERT_NEAR(uniform_coords[i], unstretch[i], 1e-12);
+            }
         }
     }
+    {}
 
     ac.update_positions(sim().mesh_mapping());
     // TODO possibly add assert in the code for this

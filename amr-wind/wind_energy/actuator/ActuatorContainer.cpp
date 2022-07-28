@@ -440,7 +440,6 @@ void ActuatorContainer::interpolate_fields(
     const int nlevels = m_mesh.finestLevel() + 1;
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = m_mesh.Geom(lev);
-        const auto dx = geom.CellSizeArray();
         const auto dxi = geom.InvCellSizeArray();
         const auto plo = geom.ProbLoArray();
 
@@ -458,12 +457,9 @@ void ActuatorContainer::interpolate_fields(
                     pp.rdata(4), pp.rdata(5), pp.rdata(6)};
                 const auto& p_uni = pp.pos();
 
-                const amrex::Real x =
-                    (p_uni[0] - plo[0] - 0.5 * dx[0]) * dxi[0];
-                const amrex::Real y =
-                    (p_uni[1] - plo[1] - 0.5 * dx[1]) * dxi[1];
-                const amrex::Real z =
-                    (p_uni[2] - plo[2] - 0.5 * dx[2]) * dxi[2];
+                const amrex::Real x = (p_uni[0] - plo[0]) * dxi[0];
+                const amrex::Real y = (p_uni[1] - plo[1]) * dxi[1];
+                const amrex::Real z = (p_uni[2] - plo[2]) * dxi[2];
 
                 // Index of the low corner
                 const int i = static_cast<int>(amrex::Math::floor(x));
