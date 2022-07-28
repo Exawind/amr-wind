@@ -68,7 +68,7 @@ struct InitDataOp<Joukowsky, ActSrcDisk>
             const auto b = meta.root_correction_exponent;
 
             const auto delta = std::max(
-                meta.vortex_core_size * 2.0 / meta.diameter,
+                meta.vortex_core_size * meta.radius(),
                 vs::DTraits<amrex::Real>::eps());
 
             const auto factor = dx / delta;
@@ -122,14 +122,14 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
         joukowsky::set_current_angular_velocity(ddata, uInfSqr);
 
         const amrex::Real Ct = ddata.current_ct;
-        const amrex::Real dx = ddata.dr * 2.0 / ddata.diameter;
+        const amrex::Real dx = ddata.dr / ddata.radius();
         const amrex::Real dTheta =
             amr_wind::utils::two_pi() / ddata.num_vel_pts_t;
 
         const amrex::Real geometry_factor = ddata.dr * ddata.dr * dTheta * 0.5;
 
         const amrex::Real lambda =
-            0.5 * ddata.diameter * ddata.current_angular_velocity / U_ref;
+            ddata.radius() * ddata.current_angular_velocity / U_ref;
         const amrex::Real lambda_2 = lambda * lambda;
 
         // step 0: compute tip correction based on current wind speed (eq 9)
@@ -172,11 +172,15 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
         const amrex::Real q0 = numerator / denominator;
 
         // step 3: compute normal force (fz) and azimuthal force (f_theta) (eq
-        // 13)
+        // 13) and cp (eq 20)
 
         VecSlice disk_velocity = ::amr_wind::utils::slice(
             grid.vel, ddata.num_force_pts, ddata.num_force_pts);
+
+        amrex::Real moment = 0.0;
+
         int ip = 0;
+
         for (int i = 0; i < ddata.num_vel_pts_r; i++) {
             const amrex::Real& F = ddata.tip_correction[i];
             const amrex::Real& g = ddata.root_correction[i];
@@ -204,15 +208,25 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                 const amrex::Real dArea =
                     geometry_factor * (std::pow(i + 1.0, 2) - std::pow(i, 2));
 
+                // eq 18
+                moment += x * ddata.radius() * f_theta * dArea;
+
                 grid.force[ip] =
                     (f_z * ddata.normal_vec + f_theta * theta_vec) *
-                    ddata.density * uInfSqr * dArea / ddata.num_vel_pts_t;
+                    ddata.density * uInfSqr * dArea;
+
                 ddata.disk_force = ddata.disk_force + grid.force[ip];
             }
         }
 
-        // step 5: compute moment and power (eqs 18 and 19)
-        // step 6: compute cp
+        // equation 20
+        const amrex::Real eq_20_denominator = std::max(
+            0.5 * M_PI * ddata.density * std::pow(ddata.radius(), 2) *
+                std::pow(U_ref, 3),
+            machine_eps);
+
+        ddata.current_cp = ddata.density * uInfSqr * moment *
+                           ddata.current_angular_velocity / eq_20_denominator;
     }
 };
 
