@@ -1,5 +1,4 @@
 #include "amr-wind/wind_energy/actuator/actuator_utils.H"
-#include "amr-wind/wind_energy/actuator/actuator_types.H"
 #include "amr-wind/core/MeshMap.H"
 #include "amr-wind/CFDSim.H"
 

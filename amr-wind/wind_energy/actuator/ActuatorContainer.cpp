@@ -471,67 +471,20 @@ void ActuatorContainer::interpolate_fields(
                 const int j = static_cast<int>(amrex::Math::floor(y));
                 const int k = static_cast<int>(amrex::Math::floor(z));
 
-                actuator::utils::lagrange_interpolant(
-                    nu_cc_arr, darr, p_map, {i, j, k});
-
-                vs::VectorT<int> ijk = {i, j, k};
-                amrex::Print(-1) << "i,j,k " << ijk << std::endl;
-                for (int ii = 0; ii < 3; ++ii) {
-                    amrex::Print(-1) << nu_cc_arr(i, j, k, ii) << ", "
-                                     << p_map[ii] << std::endl;
-                    // AMREX_ASSERT(nu_cc_arr(i, j, k, ii) >= p_map[ii]);
-                }
-                // Interpolation weights in each direction (linear basis)
-                const amrex::Real wx_hi =
-                    (nu_cc_arr(i, j, k, 0) - p_map[0]) /
-                    (nu_cc_arr(i + 1, j, k, 0) - nu_cc_arr(i, j, k, 0));
-                const amrex::Real wy_hi =
-                    (nu_cc_arr(i, j, k, 1) - p_map[1]) /
-                    (nu_cc_arr(i, j + 1, k, 1) - nu_cc_arr(i, j, k, 1));
-                const amrex::Real wz_hi =
-                    (nu_cc_arr(i, j, k, 2) - p_map[2]) /
-                    (nu_cc_arr(i, j, k + 1, 2) - nu_cc_arr(i, j, k, 2));
-
-                const amrex::Real wx_lo = 1.0 - wx_hi;
-                const amrex::Real wy_lo = 1.0 - wy_hi;
-                const amrex::Real wz_lo = 1.0 - wz_hi;
-
                 // velocity
+                const auto v_values = utils::lagrange_interpolant(
+                    nu_cc_arr, varr, 3, p_map, {i, j, k});
                 for (int ic = 0; ic < AMREX_SPACEDIM; ++ic) {
-                    pp.rdata(ic) =
-                        wx_lo * wy_lo * wz_lo * varr(i, j, k, ic) +
-                        wx_lo * wy_lo * wz_hi * varr(i, j, k + 1, ic) +
-                        wx_lo * wy_hi * wz_lo * varr(i, j + 1, k, ic) +
-                        wx_lo * wy_hi * wz_hi * varr(i, j + 1, k + 1, ic) +
-                        wx_hi * wy_lo * wz_lo * varr(i + 1, j, k, ic) +
-                        wx_hi * wy_lo * wz_hi * varr(i + 1, j, k + 1, ic) +
-                        wx_hi * wy_hi * wz_lo * varr(i + 1, j + 1, k, ic) +
-                        wx_hi * wy_hi * wz_hi * varr(i + 1, j + 1, k + 1, ic);
+                    pp.rdata(ic) = v_values[ic];
 
                     // Reset position vectors so that the particles return back
                     // to the MPI ranks with the turbines upon redistribution
                     pp.pos(ic) = dptr[iproc][ic];
                 }
 
-                // clang-format off
-                vs::Vector w_lo = {wx_lo, wy_lo, wz_lo};
-                vs::Vector w_hi = {wx_hi, wy_hi, wz_hi};
-                amrex::Print(-1) << "w_lo: "<<w_lo<<std::endl;
-                amrex::Print(-1) << "w_hi: "<<w_hi<<std::endl;
-                amrex::Print(-1) << "ijk: "<<darr(i,j,k)<<std::endl;
-                amrex::Print(-1) << "i1jk: "<<darr(i+1,j,k)<<std::endl;
-                // clang-format on
-
                 // density
-                pp.rdata(AMREX_SPACEDIM) =
-                    wx_lo * wy_lo * wz_lo * darr(i, j, k) +
-                    wx_lo * wy_lo * wz_hi * darr(i, j, k + 1) +
-                    wx_lo * wy_hi * wz_lo * darr(i, j + 1, k) +
-                    wx_lo * wy_hi * wz_hi * darr(i, j + 1, k + 1) +
-                    wx_hi * wy_lo * wz_lo * darr(i + 1, j, k) +
-                    wx_hi * wy_lo * wz_hi * darr(i + 1, j, k + 1) +
-                    wx_hi * wy_hi * wz_lo * darr(i + 1, j + 1, k) +
-                    wx_hi * wy_hi * wz_hi * darr(i + 1, j + 1, k + 1);
+                pp.rdata(AMREX_SPACEDIM) = utils::lagrange_interpolant(
+                    nu_cc_arr, darr, 1, p_map, {i, j, k})[0];
             });
         }
     }

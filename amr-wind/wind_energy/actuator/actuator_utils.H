@@ -149,46 +149,70 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE vs::Vector lagrange_weights_1d(
 {
     // clang-format off
     return {
-        (x - x0) / ((x1 - x0) * (x2 - x0)),
-        (x - x1) / ((x0 - x1) * (x2 - x1)),
-        (x - x2) / ((x0 - x2) * (x1 - x2))};
+        (x - x1) * (x-x2) / ((x0 - x1) * (x0 - x2)),
+        (x - x0) * (x-x2) / ((x1 - x0) * (x1 - x2)),
+        (x - x0) * (x-x1) / ((x2 - x0) * (x2 - x1))};
     // clang-format on
 }
 
-template <typename PTYPE, typename FTYPE>
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real lagrange_interpolant(
-    const PTYPE& coordinate,
-    const FTYPE& field,
-    vs::Vector particle,
-    vs::VectorT<int> indicis)
+// TODO should be AMREX_GPU_DEVICE but MeshMap::map/unmap needs to become GPU
+// compliant first
+AMREX_FORCE_INLINE amrex::Vector<amrex::Real> lagrange_interpolant(
+    const amrex::Array4<const amrex::Real>& coordinate,
+    const amrex::Array4<const amrex::Real>& field,
+    const int ncomp,
+    vs::Vector p_location,
+    vs::VectorT<int> indices)
 {
-    amrex::Real value = 0.0;
 
-    const int i = indicis.x();
-    const int j = indicis.y();
-    const int k = indicis.z();
+    const int i = indices.x();
+    const int j = indices.y();
+    const int k = indices.z();
 
     const auto w_x = lagrange_weights_1d(
-        particle.x(), coordinate(i - 1, j, k, 0), coordinate(i, j, k, 0),
+        p_location.x(), coordinate(i - 1, j, k, 0), coordinate(i, j, k, 0),
         coordinate(i + 1, j, k, 0));
     const auto w_y = lagrange_weights_1d(
-        particle.y(), coordinate(i, j - 1, k, 1), coordinate(i, j, k, 1),
+        p_location.y(), coordinate(i, j - 1, k, 1), coordinate(i, j, k, 1),
         coordinate(i, j + 1, k, 1));
     const auto w_z = lagrange_weights_1d(
-        particle.z(), coordinate(i, j, k - 1, 2), coordinate(i, j, k, 2),
+        p_location.z(), coordinate(i, j, k - 1, 2), coordinate(i, j, k, 2),
         coordinate(i, j, k + 1, 2));
 
-    // clang-format off
-    return 
-      // j-1,k-1
-      field(i-1,j-1,k-1)*w_x[0]*w_y[0]*w_z[0]+
-      field(i,j-1,k-1)*w_x[1]*w_y[0]*w_z[0]+ 
-      field(i+1,j-1,k-1)*w_x[2]*w_y[0]*w_z[0]+ 
-      // j,k-1
-      field(i-1,j,k-1)*w_x[0]*w_y[1]*w_z[0]+
-      field(i,j,k-1)*w_x[1]*w_y[1]*w_z[0]+ 
-      field(i+1,j,k-1)*w_x[2]*w_y[1]*w_z[0]+ 
-    // clang-format off
+    amrex::Vector<amrex::Real> values(ncomp, 0.0);
+    for (int in = 0; in < ncomp; ++in) {
+        // clang-format off
+        values[in] =  
+          field(i-1, j-1, k-1, in) * w_x[0] * w_y[0] * w_z[0] +
+          field(i,   j-1, k-1, in) * w_x[1] * w_y[0] * w_z[0] + 
+          field(i+1, j-1, k-1, in) * w_x[2] * w_y[0] * w_z[0] + 
+          field(i-1, j,   k-1, in) * w_x[0] * w_y[1] * w_z[0] +
+          field(i,   j,   k-1, in) * w_x[1] * w_y[1] * w_z[0] + 
+          field(i+1, j,   k-1, in) * w_x[2] * w_y[1] * w_z[0] + 
+          field(i-1, j+1, k-1, in) * w_x[0] * w_y[2] * w_z[0] +
+          field(i,   j+1, k-1, in) * w_x[1] * w_y[2] * w_z[0] + 
+          field(i+1, j+1, k-1, in) * w_x[2] * w_y[2] * w_z[0] + 
+          field(i-1, j-1, k  , in) * w_x[0] * w_y[0] * w_z[1] +
+          field(i,   j-1, k  , in) * w_x[1] * w_y[0] * w_z[1] + 
+          field(i+1, j-1, k  , in) * w_x[2] * w_y[0] * w_z[1] + 
+          field(i-1, j,   k  , in) * w_x[0] * w_y[1] * w_z[1] +
+          field(i,   j,   k  , in) * w_x[1] * w_y[1] * w_z[1] + 
+          field(i+1, j,   k  , in) * w_x[2] * w_y[1] * w_z[1] + 
+          field(i-1, j+1, k  , in) * w_x[0] * w_y[2] * w_z[1] +
+          field(i,   j+1, k  , in) * w_x[1] * w_y[2] * w_z[1] + 
+          field(i+1, j+1, k  , in) * w_x[2] * w_y[2] * w_z[1] + 
+          field(i-1, j-1, k+1, in) * w_x[0] * w_y[0] * w_z[2] +
+          field(i,   j-1, k+1, in) * w_x[1] * w_y[0] * w_z[2] + 
+          field(i+1, j-1, k+1, in) * w_x[2] * w_y[0] * w_z[2] + 
+          field(i-1, j,   k+1, in) * w_x[0] * w_y[1] * w_z[2] +
+          field(i,   j,   k+1, in) * w_x[1] * w_y[1] * w_z[2] + 
+          field(i+1, j,   k+1, in) * w_x[2] * w_y[1] * w_z[2] + 
+          field(i-1, j+1, k+1, in) * w_x[0] * w_y[2] * w_z[2] +
+          field(i,   j+1, k+1, in) * w_x[1] * w_y[2] * w_z[2] + 
+          field(i+1, j+1, k+1, in) * w_x[2] * w_y[2] * w_z[2] ;
+        // clang-format on
+    }
+    return values;
 }
 
 } // namespace utils

@@ -101,6 +101,28 @@ TEST(CylindricalTransformation, distances_on_rotated_shifted_circle)
     EXPECT_DOUBLE_EQ(1.0, d[2]);
 }
 
+TEST(Actuator, lagrange_interpolation)
+{
+    auto f_x2 = [=](amrex::Real x) { return x * x; };
+    const amrex::Real xim1 = -1.0;
+    const amrex::Real xi = 0.0;
+    const amrex::Real xip1 = 1.0;
+
+    const amrex::Real x_test = 0.5;
+
+    const auto weights = ::amr_wind::actuator::utils::lagrange_weights_1d(
+        x_test, xim1, xi, xip1);
+
+    const amrex::Real yim1 = f_x2(xim1);
+    const amrex::Real yi = f_x2(xi);
+    const amrex::Real yip1 = f_x2(xip1);
+    const amrex::Real y_gold = f_x2(x_test);
+    const amrex::Real y_interp =
+        weights[0] * yim1 + weights[1] * yi + weights[2] * yip1;
+
+    EXPECT_NEAR(y_gold, y_interp, 1.e-12);
+}
+
 } // namespace
 } // namespace amr_wind
 } // namespace amr_wind_tests
