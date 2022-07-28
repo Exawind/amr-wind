@@ -2,6 +2,7 @@
 #define ACUTATOR_UTILS_H
 
 #include "amr-wind/core/vs/vector_space.H"
+#include "amr-wind/wind_energy/actuator/actuator_types.H"
 #include "AMReX_AmrCore.H"
 #include <cmath>
 
@@ -138,6 +139,56 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE vs::Vector compute_tangential_vector(
 {
     const auto blade_axis = (point - center).normalize();
     return vs::quaternion(normal, 90.0) & blade_axis;
+}
+
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE vs::Vector lagrange_weights_1d(
+    const amrex::Real& x,
+    const amrex::Real& x0,
+    const amrex::Real& x1,
+    const amrex::Real& x2)
+{
+    // clang-format off
+    return {
+        (x - x0) / ((x1 - x0) * (x2 - x0)),
+        (x - x1) / ((x0 - x1) * (x2 - x1)),
+        (x - x2) / ((x0 - x2) * (x1 - x2))};
+    // clang-format on
+}
+
+template <typename PTYPE, typename FTYPE>
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real lagrange_interpolant(
+    const PTYPE& coordinate,
+    const FTYPE& field,
+    vs::Vector particle,
+    vs::VectorT<int> indicis)
+{
+    amrex::Real value = 0.0;
+
+    const int i = indicis.x();
+    const int j = indicis.y();
+    const int k = indicis.z();
+
+    const auto w_x = lagrange_weights_1d(
+        particle.x(), coordinate(i - 1, j, k, 0), coordinate(i, j, k, 0),
+        coordinate(i + 1, j, k, 0));
+    const auto w_y = lagrange_weights_1d(
+        particle.y(), coordinate(i, j - 1, k, 1), coordinate(i, j, k, 1),
+        coordinate(i, j + 1, k, 1));
+    const auto w_z = lagrange_weights_1d(
+        particle.z(), coordinate(i, j, k - 1, 2), coordinate(i, j, k, 2),
+        coordinate(i, j, k + 1, 2));
+
+    // clang-format off
+    return 
+      // j-1,k-1
+      field(i-1,j-1,k-1)*w_x[0]*w_y[0]*w_z[0]+
+      field(i,j-1,k-1)*w_x[1]*w_y[0]*w_z[0]+ 
+      field(i+1,j-1,k-1)*w_x[2]*w_y[0]*w_z[0]+ 
+      // j,k-1
+      field(i-1,j,k-1)*w_x[0]*w_y[1]*w_z[0]+
+      field(i,j,k-1)*w_x[1]*w_y[1]*w_z[0]+ 
+      field(i+1,j,k-1)*w_x[2]*w_y[1]*w_z[0]+ 
+    // clang-format off
 }
 
 } // namespace utils

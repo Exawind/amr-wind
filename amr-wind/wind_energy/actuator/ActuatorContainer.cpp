@@ -1,5 +1,6 @@
 #include "amr-wind/wind_energy/actuator/ActuatorContainer.H"
 #include "amr-wind/wind_energy/actuator/Actuator.H"
+#include "amr-wind/wind_energy/actuator/actuator_utils.H"
 #include "amr-wind/core/gpu_utils.H"
 #include "amr-wind/core/Field.H"
 
@@ -458,21 +459,27 @@ void ActuatorContainer::interpolate_fields(
                     pp.rdata(4), pp.rdata(5), pp.rdata(6)};
                 const auto& p_uni = pp.pos();
 
-                const amrex::Real x = (p_uni[0] - plo[0]) * dxi[0];
-                const amrex::Real y = (p_uni[1] - plo[1]) * dxi[1];
-                const amrex::Real z = (p_uni[2] - plo[2]) * dxi[2];
+                const amrex::Real x =
+                    (p_uni[0] - plo[0] - 0.5 * dx[0]) * dxi[0];
+                const amrex::Real y =
+                    (p_uni[1] - plo[1] - 0.5 * dx[1]) * dxi[1];
+                const amrex::Real z =
+                    (p_uni[2] - plo[2] - 0.5 * dx[2]) * dxi[2];
 
                 // Index of the low corner
                 const int i = static_cast<int>(amrex::Math::floor(x));
                 const int j = static_cast<int>(amrex::Math::floor(y));
                 const int k = static_cast<int>(amrex::Math::floor(z));
 
+                actuator::utils::lagrange_interpolant(
+                    nu_cc_arr, darr, p_map, {i, j, k});
+
                 vs::VectorT<int> ijk = {i, j, k};
                 amrex::Print(-1) << "i,j,k " << ijk << std::endl;
                 for (int ii = 0; ii < 3; ++ii) {
                     amrex::Print(-1) << nu_cc_arr(i, j, k, ii) << ", "
                                      << p_map[ii] << std::endl;
-                    AMREX_ASSERT(nu_cc_arr(i, j, k, ii) >= p_map[ii]);
+                    // AMREX_ASSERT(nu_cc_arr(i, j, k, ii) >= p_map[ii]);
                 }
                 // Interpolation weights in each direction (linear basis)
                 const amrex::Real wx_hi =
