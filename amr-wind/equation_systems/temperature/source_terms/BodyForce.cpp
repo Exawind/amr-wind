@@ -62,14 +62,12 @@ void BodyForce::read_bforce_profile(std::string filename)
 
 void BodyForce::operator()(
     const int lev,
-    const amrex::MFIter& mfi,
-    const amrex::Box& box,
-    const FieldState fstate,
+    const amrex::MFIter& /*mfi*/,
+    const amrex::Box& bx,
+    const FieldState /*fstate*/,
     const amrex::Array4<amrex::Real>& src_term) const
 {
 
-    const auto& time = m_time.current_time();
-    const auto& dt = m_time.deltaT();
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
     const int lp1 = lev + 1;
@@ -81,7 +79,7 @@ void BodyForce::operator()(
     if (m_type == "height-varying") {
 
         amrex::ParallelFor(
-            box, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::IntVect iv(i, j, k);
                 const amrex::Real ht = problo[2] + (iv[2] + 0.5) * dx[2];
                 const int il = amrex::min(k / lp1, nh_max);

@@ -78,7 +78,6 @@ void BodyForce::operator()(
     const amrex::Array4<amrex::Real>& src_term) const
 {
     const auto& time = m_time.current_time();
-    const auto& dt = m_time.deltaT();
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
     const int lp1 = lev + 1;
