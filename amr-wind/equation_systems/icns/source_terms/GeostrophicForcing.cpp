@@ -38,10 +38,10 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
 
         // Latitude is mandatory
         // Latitude is read in degrees
-        pp.get("latitude", m_latitude);
-        m_latitude = utils::radians(m_latitude);
-        m_sinphi = std::sin(m_latitude);
-        m_cosphi = std::cos(m_latitude);
+        pp.get("latitude", latitude);
+        latitude = utils::radians(latitude);
+        sinphi = std::sin(latitude);
+        cosphi = std::cos(latitude);
 
         // 3-component forcing (Default: false)
         bool m_S = false;
@@ -55,9 +55,9 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
     }
 
     m_g_forcing = {
-        -coriolis_factor * m_target_vel[1] * m_sinphi +coriolis_factor * m_target_vel[3] * m_cosphi * m_S, 
-        +coriolis_factor * m_target_vel[0] * m_sinphi,
-        -coriolis_factor * m_target_vel[0] * m_cosphi * m_S};
+        -coriolis_factor * m_target_vel[1] * sinphi +coriolis_factor * m_target_vel[3] * cosphi * m_S, 
+        +coriolis_factor * m_target_vel[0] * sinphi,
+        -coriolis_factor * m_target_vel[0] * cosphi * m_S};
     amrex::Print() << "Geostrophic Forcing = " << m_g_forcing[0] <<", " << m_g_forcing[1] << ", " << m_g_forcing[2] << std::endl;
 }
 
