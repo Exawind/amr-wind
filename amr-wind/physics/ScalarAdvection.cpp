@@ -5,6 +5,21 @@
 
 namespace amr_wind {
 
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GaussianFV::operator()(
+    const amrex::Real x,
+    const amrex::Real dx,
+    const amrex::Real center,
+    const amrex::Real amplitude,
+    const amrex::Real width,
+    const amrex::Real eta) const
+{
+    if (std::abs(x - center) < 6 * width) {
+        return sqrt(utils::pi() / 2) * amplitude * width * (std::erf((x - center + dx / 2) / (sqrt(2) * width)) - std::erf((x - center - dx / 2) / (sqrt(2) * width))) / dx;
+    } else {
+        return 0.0;
+    }
+}
+
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real Gaussian::operator()(
     const amrex::Real x,
     const amrex::Real center,
@@ -12,25 +27,47 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real Gaussian::operator()(
     const amrex::Real width,
     const amrex::Real eta) const
 {
-    if (std::abs(x - center) < 12 * width/2) {
+    if (std::abs(x - center) < 6 * width) {
         return amplitude * std::exp( - std::pow(x - center, 2) / (2 * std::pow(width, 2)));
     } else {
         return 0.0;
     }
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real TopHat::operator()(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real TopHatFV::operator()(
     const amrex::Real x,
+    const amrex::Real dx,
     const amrex::Real center,
     const amrex::Real amplitude,
     const amrex::Real width,
     const amrex::Real eta) const
 {
-    if (std::abs(x - center) < width/2) {
+    if (std::abs(std::abs(x - center) - width / 2) < dx / 2) {
+        return amplitude * (width / 2 - std::abs(x - center) - dx / 2) / dx;
+    } else if (std::abs(x - center) < width / 2) {
         return amplitude;
     } else {
         return 0.0;
     }
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real Yalla2021FV::operator()(
+    const amrex::Real x,
+    const amrex::Real dx,
+    const amrex::Real center,
+    const amrex::Real amplitude,
+    const amrex::Real width,
+    const amrex::Real eta) const
+{
+    const Yalla2021 pointwise_function;
+    // Gauss-Legendre quadrature
+    const amrex::Vector<amrex::Real> dx_i = {- 0.7745966692, 0, 0.7745966692};
+    const amrex::Vector<amrex::Real> w_i = {0.5555555556, 0.8888888889, 0.5555555556};
+    amrex::Real cell_integral = 0.0;
+    for (int i = 0; i != dx_i.size(); ++i){
+        cell_integral = cell_integral + w_i[i] * pointwise_function(x + dx_i[i] * 0.5 * dx, center, amplitude, width, eta);
+    }
+    return cell_integral / 2;
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real Yalla2021::operator()(
@@ -40,7 +77,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real Yalla2021::operator()(
     const amrex::Real width,
     const amrex::Real eta) const
 {
-    if (std::abs(x - center) < 12 * width/2) {
+    if (std::abs(x - center) < 6 * width) {
         return std::cos(eta * x) * amplitude * std::exp( - std::pow(x - center, 2) / (2 * std::pow(width, 2)));
     } else {
         return 0.0;
@@ -102,11 +139,11 @@ void ScalarAdvection::post_init_actions()
     }
     
     if (m_shape == "gaussian") {
-        initialize_scalar(Gaussian());
+        initialize_scalar(GaussianFV());
     } else if (m_shape == "tophat") {
-        initialize_scalar(TopHat());
+        initialize_scalar(TopHatFV());
     } else if (m_shape == "yalla2021") {
-        initialize_scalar(Yalla2021());
+        initialize_scalar(Yalla2021FV());
     }
 
     if (amrex::ParallelDescriptor::IOProcessor()) {
@@ -136,7 +173,7 @@ void ScalarAdvection::initialize_scalar(const Shape& scalar_function)
 
             amrex::ParallelFor(nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                scalar_arr(i, j, k, 0) = scalar_function(x, center, amplitude, width, eta);
+                scalar_arr(i, j, k, 0) = scalar_function(x, dx[0], center, amplitude, width, eta);
             });
         }
     }
@@ -185,7 +222,7 @@ amrex::Vector<amrex::Real> ScalarAdvection::compute_error(const Shape& scalar_fu
             amrex::LoopOnCpu(vbx, [=, &err_fab](int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                 const amrex::Real s = scalar_arr(i, j, k, 0);
-                const amrex::Real s_exact = scalar_function(x - convected_distance, center, amplitude, width, eta);
+                const amrex::Real s_exact = scalar_function(x - convected_distance, dx[0], center, amplitude, width, eta);
                 err_fab += cell_vol * mask_arr(i, j, k) * (s - s_exact) *
                            (s - s_exact);
             });
@@ -204,17 +241,17 @@ void ScalarAdvection::post_advance_work()
     amrex::Vector<amrex::Real> err(nlevels,0.0);
 
     if (m_shape == "gaussian") {
-        err = compute_error(Gaussian());
+        err = compute_error(GaussianFV());
     } else if (m_shape == "tophat") {
-        err = compute_error(TopHat());
+        err = compute_error(TopHatFV());
     } else if (m_shape == "yalla2021") {
-        err = compute_error(Yalla2021());
+        err = compute_error(Yalla2021FV());
     }
 
     if (amrex::ParallelDescriptor::IOProcessor()) {
         std::ofstream f;
         f.open(m_output_fname.c_str(), std::ios_base::app);
-        f << std::setprecision(12) << std::setw(m_w) << m_time.current_time()
+        f << std::setprecision(12) << std::setw(m_w) << m_time.new_time()
         << std::setw(m_w);
         for(auto i: err){
             f << i << std::setw(m_w);
