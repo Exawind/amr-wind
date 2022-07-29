@@ -83,20 +83,43 @@ struct Gaussian
       const amrex::Real /*unused*/) const;
 };
 
-struct TopHat
+struct Yalla2021
 {
   AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
       const amrex::Real /*x*/,
       const amrex::Real /*center*/,
       const amrex::Real /*amplitude*/,
       const amrex::Real /*width*/,
-      const amrex::Real /*unused*/) const;
+      const amrex::Real /*eta*/) const;
 };
 
-struct Yalla2021
+struct GaussianFV
 {
   AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
       const amrex::Real /*x*/,
+      const amrex::Real /*dx*/,
+      const amrex::Real /*center*/,
+      const amrex::Real /*amplitude*/,
+      const amrex::Real /*width*/,
+      const amrex::Real /*unused*/) const;
+};
+
+struct TopHatFV
+{
+  AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+      const amrex::Real /*x*/,
+      const amrex::Real /*dx*/,
+      const amrex::Real /*center*/,
+      const amrex::Real /*amplitude*/,
+      const amrex::Real /*width*/,
+      const amrex::Real /*unused*/) const;
+};
+
+struct Yalla2021FV
+{
+  AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+      const amrex::Real /*x*/,
+      const amrex::Real /*dx*/,
       const amrex::Real /*center*/,
       const amrex::Real /*amplitude*/,
       const amrex::Real /*width*/,
