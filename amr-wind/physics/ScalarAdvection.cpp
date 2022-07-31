@@ -43,7 +43,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real TopHatFV::operator()(
     const amrex::Real eta) const
 {
     if (std::abs(std::abs(x - center) - width / 2) < dx / 2) {
-        return amplitude * (width / 2 - std::abs(x - center) - dx / 2) / dx;
+        return amplitude * (width / 2 - std::abs(x - center) + dx / 2) / dx;
     } else if (std::abs(x - center) < width / 2) {
         return amplitude;
     } else {
