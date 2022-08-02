@@ -44,8 +44,9 @@ ABLWrfForcingMom::ABLWrfForcingMom(const CFDSim& sim)
     }
 
     if ((amrex::toLower(m_forcing_scheme) == "indirect") &&
-        !m_update_transition_height)
+        !m_update_transition_height) {
         indirectForcingInit(); // do this once
+    }
 }
 
 ABLWrfForcingMom::~ABLWrfForcingMom() = default;
@@ -114,7 +115,9 @@ void ABLWrfForcingMom::mean_velocity_init(
 void ABLWrfForcingMom::mean_velocity_heights(
     std::unique_ptr<ABLWRFfile>& wrfFile)
 {
-    if (m_forcing_scheme.empty()) return;
+    if (m_forcing_scheme.empty()) {
+        return;
+    }
 
     amrex::Real currtime;
     currtime = m_time.current_time();
@@ -163,7 +166,9 @@ void ABLWrfForcingMom::mean_velocity_heights(
 void ABLWrfForcingMom::mean_velocity_heights(
     const VelPlaneAveraging& vavg, std::unique_ptr<ABLWRFfile>& wrfFile)
 {
-    if (m_forcing_scheme.empty()) return;
+    if (m_forcing_scheme.empty()) {
+        return;
+    }
 
     amrex::Real currtime;
     currtime = m_time.current_time();
@@ -279,9 +284,10 @@ void ABLWrfForcingMom::mean_velocity_heights(
             }
         }
 
-        if (m_debug)
+        if (m_debug) {
             amrex::Print() << "direct vs indirect velocity error profile"
                            << std::endl;
+        }
         amrex::Vector<amrex::Real> error_U_direct(n_levels);
         amrex::Vector<amrex::Real> error_V_direct(n_levels);
         for (size_t ih = 0; ih < n_levels; ih++) {
@@ -298,10 +304,11 @@ void ABLWrfForcingMom::mean_velocity_heights(
                     m_poly_coeff_V[j] * std::pow(m_zht[ih] * m_scaleFact, j);
             }
 
-            if (m_debug)
+            if (m_debug) {
                 amrex::Print() << m_zht[ih] << " " << error_U_direct[ih] << " "
                                << error_U[ih] << " " << error_V_direct[ih]
                                << " " << error_V[ih] << std::endl;
+            }
         }
 
         if (amrex::toLower(m_forcing_transition) == "indirecttodirect") {
@@ -345,18 +352,19 @@ void ABLWrfForcingMom::mean_velocity_heights(
 
 void ABLWrfForcingMom::operator()(
     const int lev,
-    const amrex::MFIter&,
+    const amrex::MFIter& /*mfi*/,
     const amrex::Box& bx,
-    const FieldState,
+    const FieldState /*fstate*/,
     const amrex::Array4<amrex::Real>& src_term) const
 {
-    if (m_forcing_scheme.empty()) return;
+    if (m_forcing_scheme.empty()) {
+        return;
+    }
 
     const auto& dt = m_time.deltaT();
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
 
-    const int idir = m_axis;
     const int nh_max = m_velAvg_ht.size() - 2;
     const int lp1 = lev + 1;
     const amrex::Real* vheights = m_wrf_ht.data();
@@ -366,7 +374,7 @@ void ABLWrfForcingMom::operator()(
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::IntVect iv(i, j, k);
-        const amrex::Real ht = problo[idir] + (iv[idir] + 0.5) * dx[idir];
+        const amrex::Real ht = problo[m_axis] + (iv[m_axis] + 0.5) * dx[m_axis];
         const int il = amrex::min(k / lp1, nh_max);
         const int ir = il + 1;
         amrex::Real Utemp;

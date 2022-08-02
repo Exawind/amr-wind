@@ -81,7 +81,7 @@ void BodyForce::operator()(
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
     const int lp1 = lev + 1;
-    const int nh_max = m_prof_x.size() - 2;
+    const int nh_max = (int)m_prof_x.size() - 2;
 
     const amrex::Real* force_ht = m_ht.data();
     const amrex::Real* force_x = m_prof_x.data();

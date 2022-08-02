@@ -26,27 +26,28 @@ class ABLWrfForcingMom
     , public MomentumSource::Register<ABLWrfForcingMom>
 {
 public:
-    static const std::string identifier() { return "ABLWrfForcingMom"; }
+    static std::string identifier() { return "ABLWrfForcingMom"; }
 
     explicit ABLWrfForcingMom(const CFDSim& sim);
 
-    virtual ~ABLWrfForcingMom();
+    ~ABLWrfForcingMom() override;
 
-    virtual void operator()(
+    void operator()(
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,
         const FieldState fstate,
         const amrex::Array4<amrex::Real>& src_term) const override;
 
+    void mean_velocity_init(const ABLWRFfile& wrfFile);
+
+    void mean_velocity_init(
+        const VelPlaneAveraging& vavg, const ABLWRFfile& wrfFile);
+
+    void mean_velocity_heights(std::unique_ptr<ABLWRFfile>& wrfFile);
+
     void mean_velocity_heights(
-        const VelPlaneAveraging&, std::unique_ptr<ABLWRFfile>&);
-
-    void mean_velocity_init(const VelPlaneAveraging&, const ABLWRFfile&);
-
-    void mean_velocity_heights(std::unique_ptr<ABLWRFfile>&);
-
-    void mean_velocity_init(const ABLWRFfile&);
+        const VelPlaneAveraging& vavg, std::unique_ptr<ABLWRFfile>& wrfFile);
 
     amrex::Vector<amrex::Real>& mom_u_wrf_error() { return m_err_U; }
     amrex::Vector<amrex::Real>& mom_v_wrf_error() { return m_err_V; }

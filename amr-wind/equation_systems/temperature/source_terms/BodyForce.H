@@ -16,15 +16,17 @@ class BodyForce : public TemperatureSource::Register<BodyForce>
 {
 
 public:
-    static const std::string identifier() { return "BodyForce"; }
-    explicit BodyForce(const CFDSim&);
-    virtual ~BodyForce();
+    static std::string identifier() { return "BodyForce"; }
 
-    virtual void operator()(
+    explicit BodyForce(const CFDSim& /*sim*/);
+
+    ~BodyForce() override;
+
+    void operator()(
         const int lev,
-        const amrex::MFIter& mfi,
+        const amrex::MFIter& /*mfi*/,
         const amrex::Box& box,
-        const FieldState fstate,
+        const FieldState /*fstate*/,
         const amrex::Array4<amrex::Real>& src_term) const override;
 
     void read_bforce_profile(std::string filename);

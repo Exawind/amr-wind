@@ -15,9 +15,10 @@ public:
     ABLWrfForcing(const CFDSim& sim, const std::string identifier);
 
     void indirectForcingInit();
-    void invertMat(
-        const amrex::Array2D<amrex::Real, 0, 3, 0, 3>&,
-        amrex::Array2D<amrex::Real, 0, 3, 0, 3>&);
+
+    static void invertMat(
+        const amrex::Array2D<amrex::Real, 0, 3, 0, 3>& m,
+        amrex::Array2D<amrex::Real, 0, 3, 0, 3>& im);
 
 protected:
     const SimTime& m_time;
@@ -29,7 +30,7 @@ protected:
     // inputs
     std::string m_forcing_scheme;
     amrex::Real m_gain_coeff{0.2}; // relaxation factor for all forcing schemes
-    int m_debug = 0;               // print out profiles for debugging
+    bool m_debug{false};           // print out profiles for debugging
 
     // planar averaging heights
     amrex::Vector<amrex::Real> m_zht;
@@ -74,35 +75,34 @@ protected:
     bool forcingToConstant()
     {
         // - check if m_forcing_transition ends with "Constant"
-        if (m_forcing_transition.length() >= 8) {
-            return (
-                0 == m_forcing_transition.compare(
-                         m_forcing_transition.length() - 8, 8, "Constant"));
-        } else {
+        if (m_forcing_transition.length() < 8) {
             return false;
         }
+        return (
+            0 == m_forcing_transition.compare(
+                 m_forcing_transition.length() - 8, 8, "Constant"));
     }
 
     // - slope varies linearly from the actual gradient of the forcing profile
     // at m_transition_height
     //   to 0 at (m_transition_height + m_transition_thicnkess)
-    void constantForcingTransition(amrex::Vector<amrex::Real>&);
+    void constantForcingTransition(amrex::Vector<amrex::Real>& error);
 
     // - blend between a lower and upper forcing profile; the blending fraction
     // is assumed to be
     //   equal to W(z), but this is not a requirement; W=1 and W=0 correspond to
     //   the lower and upper profiles, respectively
     void blendForcings(
-        const amrex::Vector<amrex::Real>,
-        const amrex::Vector<amrex::Real>,
-        amrex::Vector<amrex::Real>&);
+        const amrex::Vector<amrex::Real> lower,
+        const amrex::Vector<amrex::Real> upper,
+        amrex::Vector<amrex::Real>& error);
 };
 
 class ABLWRFfile
 {
 
 public:
-    ABLWRFfile(const std::string);
+    ABLWRFfile(const std::string wrfFile);
 
     // ~ABLWRFfile() = default;
 

@@ -19,25 +19,28 @@ class ABLWrfForcingTemp
     , public TemperatureSource::Register<ABLWrfForcingTemp>
 {
 public:
-    static const std::string identifier() { return "ABLWrfForcingTemp"; }
+    static std::string identifier() { return "ABLWrfForcingTemp"; }
 
     explicit ABLWrfForcingTemp(const CFDSim& sim);
-    virtual ~ABLWrfForcingTemp();
-    virtual void operator()(
+
+    virtual ~ABLWrfForcingTemp() override;
+
+    void operator()(
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,
         const FieldState fstate,
         const amrex::Array4<amrex::Real>& src_term) const override;
 
+    void mean_temperature_init(const ABLWRFfile& wrfFile);
+
+    void mean_temperature_init(
+        const FieldPlaneAveraging& tavg, const ABLWRFfile& wrfFile);
+
+    amrex::Real mean_temperature_heights(std::unique_ptr<ABLWRFfile>& wrfFile);
+
     amrex::Real mean_temperature_heights(
-        const FieldPlaneAveraging&, std::unique_ptr<ABLWRFfile>&);
-
-    amrex::Real mean_temperature_heights(std::unique_ptr<ABLWRFfile>&);
-
-    void mean_temperature_init(const FieldPlaneAveraging&, const ABLWRFfile&);
-
-    void mean_temperature_init(const ABLWRFfile&);
+        const FieldPlaneAveraging& tavg, std::unique_ptr<ABLWRFfile>& wrfFile);
 
     amrex::Vector<amrex::Real>& theta_wrf_error() { return m_err_Theta; }
 

@@ -43,8 +43,9 @@ ABLWrfForcingTemp::ABLWrfForcingTemp(const CFDSim& sim)
     }
 
     if ((amrex::toLower(m_forcing_scheme) == "indirect") &&
-        !m_update_transition_height)
+        !m_update_transition_height) {
         indirectForcingInit(); // do this once
+    }
 }
 
 ABLWrfForcingTemp::~ABLWrfForcingTemp() = default;
@@ -121,7 +122,10 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
     interpTflux = coeff_interp[0] * wrfFile->wrf_tflux()[m_idx_time] +
                   coeff_interp[1] * wrfFile->wrf_tflux()[m_idx_time + 1];
 
-    if (m_forcing_scheme.empty()) return interpTflux;
+    if (m_forcing_scheme.empty()) {
+        // no temperature profile assimilation
+        return interpTflux;
+    }
 
     int num_wrf_ht = wrfFile->nheights();
 
@@ -169,7 +173,10 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
     interpTflux = coeff_interp[0] * wrfFile->wrf_tflux()[m_idx_time] +
                   coeff_interp[1] * wrfFile->wrf_tflux()[m_idx_time + 1];
 
-    if (m_forcing_scheme.empty()) return interpTflux;
+    if (m_forcing_scheme.empty()) {
+        // no temperature profile assimilation
+        return interpTflux;
+    }
 
     int num_wrf_ht = wrfFile->nheights();
 
@@ -243,9 +250,10 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
             }
         }
 
-        if (m_debug)
+        if (m_debug) {
             amrex::Print() << "direct vs indirect temperature error profile"
                            << std::endl;
+        }
         amrex::Vector<amrex::Real> error_T_direct(n_levels);
         for (size_t ih = 0; ih < n_levels; ih++) {
             error_T_direct[ih] = error_T[ih];
@@ -256,9 +264,10 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
                                       std::pow(m_zht[ih] * m_scaleFact, j);
             }
 
-            if (m_debug)
+            if (m_debug) {
                 amrex::Print() << m_zht[ih] << " " << error_T_direct[ih] << " "
                                << error_T[ih] << std::endl;
+            }
         }
 
         if (amrex::toLower(m_forcing_transition) == "indirecttodirect") {
@@ -296,18 +305,19 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
 
 void ABLWrfForcingTemp::operator()(
     const int lev,
-    const amrex::MFIter&,
+    const amrex::MFIter& /*mfi*/,
     const amrex::Box& bx,
-    const FieldState,
+    const FieldState /*fstate*/,
     const amrex::Array4<amrex::Real>& src_term) const
 {
-    if (m_forcing_scheme.empty()) return;
+    if (m_forcing_scheme.empty()) {
+        return;
+    }
 
     const auto& dt = m_time.deltaT();
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
 
-    const int idir = m_axis;
     const int nh_max = m_wrf_ht.size() - 2;
     const int lp1 = lev + 1;
     const amrex::Real* theights = m_wrf_ht.data();
@@ -316,7 +326,7 @@ void ABLWrfForcingTemp::operator()(
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::IntVect iv(i, j, k);
-        const amrex::Real ht = problo[idir] + (iv[idir] + 0.5) * dx[idir];
+        const amrex::Real ht = problo[m_axis] + (iv[m_axis] + 0.5) * dx[m_axis];
         const int il = amrex::min(k / lp1, nh_max);
         const int ir = il + 1;
         amrex::Real temp;

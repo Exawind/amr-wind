@@ -22,7 +22,7 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
     amrex::Print() << "  forcing_scheme : " << m_forcing_scheme << std::endl;
     amrex::Print() << "  control_gain   : " << m_gain_coeff << std::endl;
 
-    if (!pp.query("forcing_transition", m_forcing_transition)) {
+    if (pp.query("forcing_transition", m_forcing_transition) == 0) {
         amrex::Print() << "  using full profile assimilation by default"
                        << std::endl;
         m_forcing_transition = "none";
@@ -30,7 +30,7 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
 
     if (amrex::toLower(m_forcing_scheme) == "indirect") {
         if (amrex::toLower(m_forcing_transition) == "none") {
-            if (pp.queryarr("weighting_heights", m_weighting_heights)) {
+            if (pp.queryarr("weighting_heights", m_weighting_heights) == 1) {
                 pp.getarr("weighting_values", m_weighting_values);
                 amrex::Print() << "  given weighting profile" << std::endl;
                 for (int i = 0; i < m_weighting_heights.size(); ++i) {
@@ -54,7 +54,8 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
             pp.get(
                 "transition_thickness",
                 m_transition_thickness); // constant, required
-            if (pp.query("constant_transition_height", m_transition_height)) {
+            if (pp.query(
+                "constant_transition_height", m_transition_height) == 1) {
                 // set weighting profile
                 setTransitionWeighting();
             } else {
@@ -90,7 +91,8 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
             }
         }
 
-        if (pp.query("normalize_by_zmax", m_norm_zmax) && (m_norm_zmax != 0)) {
+        if ((pp.query("normalize_by_zmax", m_norm_zmax) == 1)
+            && (m_norm_zmax != 0)) {
             amrex::Real zmax = m_mesh.Geom(0).ProbHi(m_axis);
             m_scaleFact = 1.0 / zmax;
             amrex::Print() << "  set scaling factor to " << m_scaleFact
@@ -127,7 +129,7 @@ void ABLWrfForcing::updateWeights()
 
 void ABLWrfForcing::indirectForcingInit()
 {
-    if (m_W.size() == 0) {
+    if (m_W.empty()) {
         // Will be here for:
         // - full profile assimilation
         // - partial profile assim w/ constant transition height
@@ -283,7 +285,7 @@ void ABLWrfForcing::blendForcings(
     }
 }
 
-ABLWRFfile::ABLWRFfile(const std::string filewrf) : m_wrf_filename(filewrf)
+ABLWRFfile::ABLWRFfile(const std::string wrfFile) : m_wrf_filename(wrfFile)
 {
 #ifdef AMR_WIND_USE_NETCDF
     auto ncf = ncutils::NCFile::open_par(
