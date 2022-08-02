@@ -26,7 +26,7 @@ namespace icns {
  */
 GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
 {
-    amrex::Real coriolis_factor
+    amrex::Real coriolis_factor;
     {
         // Read the rotational time period (in seconds)
         amrex::ParmParse pp("CoriolisForcing");
