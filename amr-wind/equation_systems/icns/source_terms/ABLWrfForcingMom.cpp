@@ -371,10 +371,11 @@ void ABLWrfForcingMom::operator()(
     const amrex::Real* u_error_val = m_error_wrf_avg_U.data();
     const amrex::Real* v_error_val = m_error_wrf_avg_V.data();
     const amrex::Real kcoeff = m_gain_coeff;
+    const int idir = (int)m_axis;
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::IntVect iv(i, j, k);
-        const amrex::Real ht = problo[m_axis] + (iv[m_axis] + 0.5) * dx[m_axis];
+        const amrex::Real ht = problo[idir] + (iv[idir] + 0.5) * dx[idir];
         const int il = amrex::min(k / lp1, nh_max);
         const int ir = il + 1;
         amrex::Real Utemp;
