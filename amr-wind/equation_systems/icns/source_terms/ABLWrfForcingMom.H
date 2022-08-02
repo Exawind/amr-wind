@@ -9,7 +9,7 @@
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
-#include "amr-wind/wind_energy/ABLWrf.H"
+#include "amr-wind/wind_energy/ABLMesoscaleForcing.H"
 
 namespace amr_wind {
 namespace pde {

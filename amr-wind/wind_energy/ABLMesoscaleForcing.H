@@ -8,11 +8,11 @@
 
 namespace amr_wind {
 
-class ABLWrfForcing
+class ABLMesoscaleForcing
 {
 
 public:
-    ABLWrfForcing(const CFDSim& sim, const std::string identifier);
+    ABLMesoscaleForcing(const CFDSim& sim, const std::string identifier);
 
     void indirectForcingInit();
 
