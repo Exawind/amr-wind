@@ -54,8 +54,8 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
             pp.get(
                 "transition_thickness",
                 m_transition_thickness); // constant, required
-            if (pp.query(
-                "constant_transition_height", m_transition_height) == 1) {
+            if (pp.query("constant_transition_height", m_transition_height) ==
+                1) {
                 // set weighting profile
                 setTransitionWeighting();
             } else {
@@ -91,8 +91,8 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
             }
         }
 
-        if ((pp.query("normalize_by_zmax", m_norm_zmax) == 1)
-            && (m_norm_zmax != 0)) {
+        if ((pp.query("normalize_by_zmax", m_norm_zmax) == 1) &&
+            (m_norm_zmax != 0)) {
             amrex::Real zmax = m_mesh.Geom(0).ProbHi(m_axis);
             m_scaleFact = 1.0 / zmax;
             amrex::Print() << "  set scaling factor to " << m_scaleFact
