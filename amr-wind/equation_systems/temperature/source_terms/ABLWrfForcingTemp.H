@@ -23,7 +23,7 @@ public:
 
     explicit ABLWrfForcingTemp(const CFDSim& sim);
 
-    virtual ~ABLWrfForcingTemp() override;
+    ~ABLWrfForcingTemp() override;
 
     void operator()(
         const int lev,

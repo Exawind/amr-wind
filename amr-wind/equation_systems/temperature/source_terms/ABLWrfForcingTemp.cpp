@@ -318,7 +318,7 @@ void ABLWrfForcingTemp::operator()(
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
 
-    const int nh_max = m_wrf_ht.size() - 2;
+    const int nh_max = (int)m_wrf_ht.size() - 2;
     const int lp1 = lev + 1;
     const amrex::Real* theights = m_wrf_ht.data();
     const amrex::Real* theta_error_val = m_error_wrf_avg_theta.data();
