@@ -22,7 +22,7 @@ namespace icns {
  */
 
 class ABLWrfForcingMom
-    : public ABLWrfForcing
+    : public ABLMesoscaleForcing
     , public MomentumSource::Register<ABLWrfForcingMom>
 {
 public:

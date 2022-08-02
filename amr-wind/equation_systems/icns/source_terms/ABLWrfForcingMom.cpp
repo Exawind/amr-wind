@@ -29,7 +29,7 @@ closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
 } // namespace
 
 ABLWrfForcingMom::ABLWrfForcingMom(const CFDSim& sim)
-    : ABLWrfForcing(sim, identifier())
+    : ABLMesoscaleForcing(sim, identifier())
 {
 
     const auto& abl = sim.physics_manager().get<amr_wind::ABL>();

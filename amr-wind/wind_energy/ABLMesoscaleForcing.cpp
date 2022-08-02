@@ -10,7 +10,8 @@
 
 namespace amr_wind {
 
-ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
+ABLMesoscaleForcing::ABLMesoscaleForcing(
+    const CFDSim& sim, const std::string identifier)
     : m_time(sim.time()), m_mesh(sim.mesh())
 {
     amrex::Print() << "Constructing " << identifier << " object" << std::endl;
@@ -102,7 +103,7 @@ ABLWrfForcing::ABLWrfForcing(const CFDSim& sim, const std::string identifier)
     } // if forcing scheme is "indirect"
 }
 
-void ABLWrfForcing::setTransitionWeighting()
+void ABLMesoscaleForcing::setTransitionWeighting()
 {
     amrex::Real zmin = m_mesh.Geom(0).ProbLo(m_axis);
     amrex::Real zmax = m_mesh.Geom(0).ProbHi(m_axis);
@@ -117,7 +118,7 @@ void ABLWrfForcing::setTransitionWeighting()
     }
 }
 
-void ABLWrfForcing::updateWeights()
+void ABLMesoscaleForcing::updateWeights()
 {
     amrex::Print() << "Updating weights" << std::endl;
     for (int i = 0; i < m_nht; ++i) {
@@ -127,7 +128,7 @@ void ABLWrfForcing::updateWeights()
     }
 }
 
-void ABLWrfForcing::indirectForcingInit()
+void ABLMesoscaleForcing::indirectForcingInit()
 {
     if (m_W.empty()) {
         // Will be here for:
@@ -170,7 +171,7 @@ void ABLWrfForcing::indirectForcingInit()
     invertMat(zTz, m_im_zTz);
 }
 
-void ABLWrfForcing::invertMat(
+void ABLMesoscaleForcing::invertMat(
     const amrex::Array2D<amrex::Real, 0, 3, 0, 3>& m,
     amrex::Array2D<amrex::Real, 0, 3, 0, 3>& im)
 {
@@ -218,7 +219,8 @@ void ABLWrfForcing::invertMat(
     im(3, 3) = det * (m(0, 0) * A1212 - m(0, 1) * A0212 + m(0, 2) * A0112);
 }
 
-void ABLWrfForcing::constantForcingTransition(amrex::Vector<amrex::Real>& error)
+void ABLMesoscaleForcing::constantForcingTransition(
+    amrex::Vector<amrex::Real>& error)
 {
     // based on SOWFA6/src/ABLForcing/drivingForce/drivingForce.C
 
@@ -274,7 +276,7 @@ void ABLWrfForcing::constantForcingTransition(amrex::Vector<amrex::Real>& error)
     }
 }
 
-void ABLWrfForcing::blendForcings(
+void ABLMesoscaleForcing::blendForcings(
     const amrex::Vector<amrex::Real> lower, // W=1
     const amrex::Vector<amrex::Real> upper, // W=0
     amrex::Vector<amrex::Real>& error)
