@@ -64,7 +64,7 @@ ABLMesoscaleForcing::ABLMesoscaleForcing(
 
                 // ***WORKAROUND***
                 // after commenting out code to read in transition_heights from
-                // the WRF file (see FIXME lines)
+                // the mesoscale input file (see FIXME lines)
                 std::string fname;
                 pp.get("transition_heights_file", fname);
                 std::ifstream datfile(fname);
@@ -85,8 +85,9 @@ ABLMesoscaleForcing::ABLMesoscaleForcing(
                     amrex::Print() << tval << " " << zval << std::endl;
                 }
                 amrex::Print()
-                    << "Note: the times in ABL.WRFforcing must match these "
-                    << ntimes << " values" << std::endl;
+                    << "Note: the times in the mesoscale input file"
+                    << " must match these " << ntimes << " values"
+                    << std::endl;
             }
         }
 

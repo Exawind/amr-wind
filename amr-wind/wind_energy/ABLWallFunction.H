@@ -36,7 +36,7 @@ public:
     void
     update_umean(const VelPlaneAveraging& vpa, const FieldPlaneAveraging& tpa);
 
-    void update_tflux(const amrex::Real wrftflux);
+    void update_tflux(const amrex::Real tflux);
 
 private:
     const CFDSim& m_sim;
