@@ -87,14 +87,14 @@ public:
     {
         m_abl_mean_bous = term;
     }
-    void register_meso_wind_forcing(pde::icns::ABLWrfForcingMom* forcing) const
+    void register_meso_mom_forcing(pde::icns::ABLWrfForcingMom* forcing) const
     {
-        m_abl_meso_uv_forcing = forcing;
+        m_abl_meso_mom_forcing = forcing;
     }
     void register_meso_temp_forcing(
         pde::temperature::ABLWrfForcingTemp* forcing) const
     {
-        m_abl_meso_theta_forcing = forcing;
+        m_abl_meso_temp_forcing = forcing;
     }
 
     const ABLBoundaryPlane& bndry_plane() const { return *m_bndry_plane; }
@@ -130,8 +130,8 @@ private:
 
     mutable pde::icns::ABLMeanBoussinesq* m_abl_mean_bous{nullptr};
 
-    mutable pde::icns::ABLWrfForcingMom* m_abl_meso_uv_forcing{nullptr};
-    mutable pde::temperature::ABLWrfForcingTemp* m_abl_meso_theta_forcing{
+    mutable pde::icns::ABLWrfForcingMom* m_abl_meso_mom_forcing{nullptr};
+    mutable pde::temperature::ABLWrfForcingTemp* m_abl_meso_temp_forcing{
         nullptr};
 
     std::unique_ptr<ABLMesoscaleInput> m_meso_file;

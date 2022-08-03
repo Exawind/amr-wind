@@ -74,13 +74,13 @@ public:
         m_abl_forcing = forcing;
     }
 
-    void register_meso_forcing_mom(
+    void register_meso_mom_forcing(
         pde::icns::ABLWrfForcingMom* forcing) const override
     {
         m_abl_meso_mom_forcing = forcing;
     }
 
-    void register_meso_forcing_temp(
+    void register_meso_temp_forcing(
         pde::temperature::ABLWrfForcingTemp* forcing) const override
     {
         m_abl_meso_temp_forcing = forcing;

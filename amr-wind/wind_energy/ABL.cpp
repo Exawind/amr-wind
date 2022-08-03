@@ -143,23 +143,23 @@ void ABL::pre_advance_work()
         m_abl_mean_bous->mean_temperature_update(m_stats->theta_profile());
     }
 
-    if (m_abl_meso_uv_forcing != nullptr) {
+    if (m_abl_meso_mom_forcing != nullptr) {
 
         if (m_meso_file->is_tendency_forcing()) {
-            m_abl_meso_uv_forcing->mean_velocity_heights(m_meso_file);
+            m_abl_meso_mom_forcing->mean_velocity_heights(m_meso_file);
         } else {
-            m_abl_meso_uv_forcing->mean_velocity_heights(
+            m_abl_meso_mom_forcing->mean_velocity_heights(
                 m_stats->vel_profile(), m_meso_file);
         }
     }
 
-    if (m_abl_meso_theta_forcing != nullptr) {
+    if (m_abl_meso_temp_forcing != nullptr) {
         amrex::Real interpTflux;
         if (m_meso_file->is_tendency_forcing()) {
             interpTflux =
-                m_abl_meso_theta_forcing->mean_temperature_heights(m_meso_file);
+                m_abl_meso_temp_forcing->mean_temperature_heights(m_meso_file);
         } else {
-            interpTflux = m_abl_meso_theta_forcing->mean_temperature_heights(
+            interpTflux = m_abl_meso_temp_forcing->mean_temperature_heights(
                 m_stats->theta_profile(), m_meso_file);
         }
         amrex::Print() << "Current surface temperature flux: " << interpTflux

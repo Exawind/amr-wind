@@ -53,9 +53,9 @@ public:
     register_forcing_term(pde::icns::ABLForcing* forcing) const = 0;
 
     virtual void
-    register_meso_forcing_mom(pde::icns::ABLWrfForcingMom* forcing) const = 0;
+    register_meso_mom_forcing(pde::icns::ABLWrfForcingMom* forcing) const = 0;
 
-    virtual void register_meso_forcing_temp(
+    virtual void register_meso_temp_forcing(
         pde::temperature::ABLWrfForcingTemp* forcing) const = 0;
 };
 
