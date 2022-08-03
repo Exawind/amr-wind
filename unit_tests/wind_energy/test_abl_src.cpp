@@ -160,7 +160,7 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
         const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{
         {-corfac * 6.0 * latfac, corfac * 10.0 * latfac, 0.0}};
         src_term.setVal(0.0);
-        bool S = {false};
+        m_S.setVal(0.0);
 
         run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
             const auto& bx = mfi.tilebox();
@@ -184,7 +184,7 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
         corfac * 10.0 * latfac, 
         -corfac * 10.0 * latfac}};
         src_term.setVal(0.0);
-        bool S = {true};
+        m_S.setVal(1.0);
 
         run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
             const auto& bx = mfi.tilebox();
@@ -272,7 +272,7 @@ TEST_F(ABLMeshTest, coriolis_const_vel)
     {
         amrex::Real golds[AMREX_SPACEDIM] = {
             0.0, -corfac * latfac * vel_comp, corfac * latfac * vel_comp};
-        bool S = {true};
+        m_S.setVal(1.0);
         vel.setVal(0.0);
         src_term.setVal(0.0);
         vel.setVal(vel_comp, 0);
@@ -297,7 +297,7 @@ TEST_F(ABLMeshTest, coriolis_const_vel)
     {
         amrex::Real golds[AMREX_SPACEDIM] = {
             0.0, corfac * latfac * vel_comp, 0.0};
-        bool S = {true};
+        m_S.setVal(1.0);
         vel.setVal(0.0);
         src_term.setVal(0.0);
         vel.setVal(vel_comp, 2);
