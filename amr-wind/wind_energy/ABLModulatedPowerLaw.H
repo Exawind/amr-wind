@@ -31,13 +31,13 @@ public:
     void set_velocity(
         const int lev,
         const amrex::Real time,
-        Field& fld,
+        const Field& fld,
         amrex::MultiFab& mfab) const;
 
     void set_temperature(
         const int lev,
         const amrex::Real time,
-        Field& fld,
+        const Field& fld,
         amrex::MultiFab& mfab) const;
 
 private:
