@@ -183,7 +183,7 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
         corfac * 10.0 * latfac, 
         -corfac * 10.0 * latfac}};
         src_term.setVal(0.0);
-        m_S.setVal(true);
+        S.setVal(true);
 
         run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
             const auto& bx = mfi.tilebox();
