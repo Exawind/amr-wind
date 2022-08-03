@@ -50,24 +50,24 @@ ABLWrfForcingMom::ABLWrfForcingMom(const CFDSim& sim)
 
 ABLWrfForcingMom::~ABLWrfForcingMom() = default;
 
-void ABLWrfForcingMom::mean_velocity_init(const ABLWRFfile& wrfFile)
+void ABLWrfForcingMom::mean_velocity_init(const ABLMesoscaleInput& ncfile)
 {
 
-    m_wrf_ht.resize(wrfFile.nheights());
+    m_wrf_ht.resize(ncfile.nheights());
 
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, wrfFile.wrf_heights().begin(),
-        wrfFile.wrf_heights().end(), m_wrf_ht.begin());
+        amrex::Gpu::hostToDevice, ncfile.wrf_heights().begin(),
+        ncfile.wrf_heights().end(), m_wrf_ht.begin());
 
-    m_error_wrf_avg_U.resize(wrfFile.nheights());
-    m_error_wrf_avg_V.resize(wrfFile.nheights());
+    m_error_wrf_avg_U.resize(ncfile.nheights());
+    m_error_wrf_avg_V.resize(ncfile.nheights());
 
-    m_err_U.resize(wrfFile.nheights());
-    m_err_V.resize(wrfFile.nheights());
+    m_err_U.resize(ncfile.nheights());
+    m_err_V.resize(ncfile.nheights());
 }
 
 void ABLWrfForcingMom::mean_velocity_init(
-    const VelPlaneAveraging& vavg, const ABLWRFfile& wrfFile)
+    const VelPlaneAveraging& vavg, const ABLMesoscaleInput& ncfile)
 {
 
     m_axis = vavg.axis();
@@ -102,17 +102,17 @@ void ABLWrfForcingMom::mean_velocity_init(
         vavg.line_centroids().begin(), vavg.line_centroids().end(),
         m_zht.begin());
 
-    m_wrf_u_vals.resize(wrfFile.nheights());
-    m_wrf_v_vals.resize(wrfFile.nheights());
-    m_wrf_ht.resize(wrfFile.nheights());
+    m_wrf_u_vals.resize(ncfile.nheights());
+    m_wrf_v_vals.resize(ncfile.nheights());
+    m_wrf_ht.resize(ncfile.nheights());
 
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, wrfFile.wrf_heights().begin(),
-        wrfFile.wrf_heights().end(), m_wrf_ht.begin());
+        amrex::Gpu::hostToDevice, ncfile.wrf_heights().begin(),
+        ncfile.wrf_heights().end(), m_wrf_ht.begin());
 }
 
 void ABLWrfForcingMom::mean_velocity_heights(
-    std::unique_ptr<ABLWRFfile>& wrfFile)
+    std::unique_ptr<ABLMesoscaleInput>& ncfile)
 {
     if (m_forcing_scheme.empty()) {
         return;
@@ -122,17 +122,17 @@ void ABLWrfForcingMom::mean_velocity_heights(
     currtime = m_time.current_time();
 
     // First the index in time
-    m_idx_time = closest_index(wrfFile->wrf_times(), currtime);
+    m_idx_time = closest_index(ncfile->wrf_times(), currtime);
 
     amrex::Array<amrex::Real, 2> coeff_interp{{0.0, 0.0}};
 
     amrex::Real denom =
-        wrfFile->wrf_times()[m_idx_time + 1] - wrfFile->wrf_times()[m_idx_time];
+        ncfile->wrf_times()[m_idx_time + 1] - ncfile->wrf_times()[m_idx_time];
 
-    coeff_interp[0] = (wrfFile->wrf_times()[m_idx_time + 1] - currtime) / denom;
+    coeff_interp[0] = (ncfile->wrf_times()[m_idx_time + 1] - currtime) / denom;
     coeff_interp[1] = 1.0 - coeff_interp[0];
 
-    int num_wrf_ht = wrfFile->nheights();
+    int num_wrf_ht = ncfile->nheights();
 
     amrex::Vector<amrex::Real> wrfInterpU(num_wrf_ht);
     amrex::Vector<amrex::Real> wrfInterpV(num_wrf_ht);
@@ -141,11 +141,11 @@ void ABLWrfForcingMom::mean_velocity_heights(
         int lt = m_idx_time * num_wrf_ht + i;
         int rt = (m_idx_time + 1) * num_wrf_ht + i;
 
-        wrfInterpU[i] = coeff_interp[0] * wrfFile->wrf_u()[lt] +
-                        coeff_interp[1] * wrfFile->wrf_u()[rt];
+        wrfInterpU[i] = coeff_interp[0] * ncfile->wrf_u()[lt] +
+                        coeff_interp[1] * ncfile->wrf_u()[rt];
 
-        wrfInterpV[i] = coeff_interp[0] * wrfFile->wrf_v()[lt] +
-                        coeff_interp[1] * wrfFile->wrf_v()[rt];
+        wrfInterpV[i] = coeff_interp[0] * ncfile->wrf_v()[lt] +
+                        coeff_interp[1] * ncfile->wrf_v()[rt];
     }
 
     amrex::Gpu::copy(
@@ -163,7 +163,7 @@ void ABLWrfForcingMom::mean_velocity_heights(
 }
 
 void ABLWrfForcingMom::mean_velocity_heights(
-    const VelPlaneAveraging& vavg, std::unique_ptr<ABLWRFfile>& wrfFile)
+    const VelPlaneAveraging& vavg, std::unique_ptr<ABLMesoscaleInput>& ncfile)
 {
     if (m_forcing_scheme.empty()) {
         return;
@@ -173,17 +173,17 @@ void ABLWrfForcingMom::mean_velocity_heights(
     currtime = m_time.current_time();
 
     // First the index in time
-    m_idx_time = closest_index(wrfFile->wrf_times(), currtime);
+    m_idx_time = closest_index(ncfile->wrf_times(), currtime);
 
     amrex::Array<amrex::Real, 2> coeff_interp{{0.0, 0.0}};
 
     amrex::Real denom =
-        wrfFile->wrf_times()[m_idx_time + 1] - wrfFile->wrf_times()[m_idx_time];
+        ncfile->wrf_times()[m_idx_time + 1] - ncfile->wrf_times()[m_idx_time];
 
-    coeff_interp[0] = (wrfFile->wrf_times()[m_idx_time + 1] - currtime) / denom;
+    coeff_interp[0] = (ncfile->wrf_times()[m_idx_time + 1] - currtime) / denom;
     coeff_interp[1] = 1.0 - coeff_interp[0];
 
-    int num_wrf_ht = wrfFile->nheights();
+    int num_wrf_ht = ncfile->nheights();
 
     amrex::Vector<amrex::Real> wrfInterpU(num_wrf_ht);
     amrex::Vector<amrex::Real> wrfInterpV(num_wrf_ht);
@@ -192,11 +192,11 @@ void ABLWrfForcingMom::mean_velocity_heights(
         int lt = m_idx_time * num_wrf_ht + i;
         int rt = (m_idx_time + 1) * num_wrf_ht + i;
 
-        wrfInterpU[i] = coeff_interp[0] * wrfFile->wrf_u()[lt] +
-                        coeff_interp[1] * wrfFile->wrf_u()[rt];
+        wrfInterpU[i] = coeff_interp[0] * ncfile->wrf_u()[lt] +
+                        coeff_interp[1] * ncfile->wrf_u()[rt];
 
-        wrfInterpV[i] = coeff_interp[0] * wrfFile->wrf_v()[lt] +
-                        coeff_interp[1] * wrfFile->wrf_v()[rt];
+        wrfInterpV[i] = coeff_interp[0] * ncfile->wrf_v()[lt] +
+                        coeff_interp[1] * ncfile->wrf_v()[rt];
     }
 
     amrex::Gpu::copy(
@@ -240,9 +240,9 @@ void ABLWrfForcingMom::mean_velocity_heights(
             // ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7
             //
             // m_transition_height = coeff_interp[0] *
-            // wrfFile->wrf_transition_height()[m_idx_time] +
+            // ncfile->wrf_transition_height()[m_idx_time] +
             //                      coeff_interp[1] *
-            //                      wrfFile->wrf_transition_height()[m_idx_time
+            //                      ncfile->wrf_transition_height()[m_idx_time
             //                      + 1];
 
             // WORKAROUND

@@ -33,15 +33,15 @@ public:
         const FieldState fstate,
         const amrex::Array4<amrex::Real>& src_term) const override;
 
-    void mean_temperature_init(const ABLWRFfile& wrfFile);
+    void mean_temperature_init(const ABLMesoscaleInput& ncfile);
 
     void mean_temperature_init(
-        const FieldPlaneAveraging& tavg, const ABLWRFfile& wrfFile);
+        const FieldPlaneAveraging& tavg, const ABLMesoscaleInput& ncfile);
 
-    amrex::Real mean_temperature_heights(std::unique_ptr<ABLWRFfile>& wrfFile);
+    amrex::Real mean_temperature_heights(std::unique_ptr<ABLMesoscaleInput>& ncfile);
 
     amrex::Real mean_temperature_heights(
-        const FieldPlaneAveraging& tavg, std::unique_ptr<ABLWRFfile>& wrfFile);
+        const FieldPlaneAveraging& tavg, std::unique_ptr<ABLMesoscaleInput>& ncfile);
 
     amrex::Vector<amrex::Real>& theta_wrf_error() { return m_err_Theta; }
 

@@ -6,7 +6,8 @@
 
 namespace amr_wind {
 
-ABLWRFfile::ABLWRFfile(const std::string wrfFile) : m_wrf_filename(wrfFile)
+ABLMesoscaleInput::ABLMesoscaleInput(const std::string ncfile)
+: m_wrf_filename(ncfile)
 {
 #ifdef AMR_WIND_USE_NETCDF
     auto ncf = ncutils::NCFile::open_par(
@@ -60,37 +61,32 @@ ABLWRFfile::ABLWRFfile(const std::string wrfFile) : m_wrf_filename(wrfFile)
     pp.query("WRF_tendency_forcing", m_abl_wrf_tendency);
 }
 
-const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_heights() const
+const amrex::Vector<amrex::Real>& ABLMesoscaleInput::wrf_heights() const
 {
     return m_wrf_height;
 }
 
-const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_times() const
+const amrex::Vector<amrex::Real>& ABLMesoscaleInput::wrf_times() const
 {
     return m_wrf_time;
 }
 
-const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_u() const { return m_wrf_u; }
+const amrex::Vector<amrex::Real>& ABLMesoscaleInput::wrf_u() const { return m_wrf_u; }
 
-const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_v() const { return m_wrf_v; }
+const amrex::Vector<amrex::Real>& ABLMesoscaleInput::wrf_v() const { return m_wrf_v; }
 
-const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_temp() const
+const amrex::Vector<amrex::Real>& ABLMesoscaleInput::wrf_temp() const
 {
     return m_wrf_temp;
 }
 
-const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_tflux() const
+const amrex::Vector<amrex::Real>& ABLMesoscaleInput::wrf_tflux() const
 {
     return m_wrf_tflux;
 }
 
 // ***FIXME***
-// const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_transition_height() const {
+// const amrex::Vector<amrex::Real>& ABLMesoscaleInput::wrf_transition_height() const {
 // return m_wrf_transition_height; }
-
-bool ABLWRFfile::is_wrf_tendency_forcing() const { return m_abl_wrf_tendency; }
-
-int ABLWRFfile::nheights() const { return m_wrf_nheight; }
-int ABLWRFfile::times() const { return m_wrf_ntime; }
 
 } // namespace amr_wind

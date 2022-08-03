@@ -7,13 +7,13 @@
 
 namespace amr_wind {
 
-class ABLWRFfile
+class ABLMesoscaleInput
 {
 
 public:
-    ABLWRFfile(const std::string wrfFile);
+    ABLMesoscaleInput(const std::string ncfile);
 
-    // ~ABLWRFfile() = default;
+    // ~ABLMesoscaleInput() = default;
 
     const amrex::Vector<amrex::Real>& wrf_heights() const;
 
@@ -30,10 +30,10 @@ public:
     // ***FIXME***
     // const amrex::Vector<amrex::Real>& wrf_transition_height() const;
 
-    bool is_wrf_tendency_forcing() const;
+    bool is_wrf_tendency_forcing() const { return m_abl_wrf_tendency; }
 
-    int nheights() const;
-    int times() const;
+    int nheights() const { return m_wrf_nheight; }
+    int times() const { return m_wrf_ntime; }
 
 private:
     std::string m_wrf_filename;

@@ -48,7 +48,7 @@ ABL::ABL(CFDSim& sim)
 #else
         std::string file_wrf;
         pp.query("WRFforcing", file_wrf);
-        m_wrf_file.reset(new ABLWRFfile(file_wrf));
+        m_wrf_file.reset(new ABLMesoscaleInput(file_wrf));
 #endif
     }
 

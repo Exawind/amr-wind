@@ -32,7 +32,7 @@ class incflo;
 
 namespace amr_wind {
 
-class ABLWRFfile;
+class ABLMesoscaleInput;
 
 namespace pde {
 namespace icns {
@@ -102,7 +102,7 @@ public:
     //! Return the ABL statistics calculator
     const ABLStatsBase& abl_statistics() const { return *m_stats; }
 
-    const ABLWRFfile& abl_wrf_file() const { return *m_wrf_file; }
+    const ABLMesoscaleInput& abl_wrf_file() const { return *m_wrf_file; }
 
 private:
     const CFDSim& m_sim;
@@ -134,7 +134,7 @@ private:
     mutable pde::temperature::ABLWrfForcingTemp* m_abl_wrf_theta_forcing{
         nullptr};
 
-    std::unique_ptr<ABLWRFfile> m_wrf_file;
+    std::unique_ptr<ABLMesoscaleInput> m_wrf_file;
 
     //! Default value set based on https://turbmodels.larc.nasa.gov/sst.html
     amrex::Real m_init_sdr{25.0};

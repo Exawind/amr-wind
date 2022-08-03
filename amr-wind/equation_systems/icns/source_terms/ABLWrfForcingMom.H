@@ -40,15 +40,15 @@ public:
         const FieldState fstate,
         const amrex::Array4<amrex::Real>& src_term) const override;
 
-    void mean_velocity_init(const ABLWRFfile& wrfFile);
+    void mean_velocity_init(const ABLMesoscaleInput& ncfile);
 
     void mean_velocity_init(
-        const VelPlaneAveraging& vavg, const ABLWRFfile& wrfFile);
+        const VelPlaneAveraging& vavg, const ABLMesoscaleInput& ncfile);
 
-    void mean_velocity_heights(std::unique_ptr<ABLWRFfile>& wrfFile);
+    void mean_velocity_heights(std::unique_ptr<ABLMesoscaleInput>& ncfile);
 
     void mean_velocity_heights(
-        const VelPlaneAveraging& vavg, std::unique_ptr<ABLWRFfile>& wrfFile);
+        const VelPlaneAveraging& vavg, std::unique_ptr<ABLMesoscaleInput>& ncfile);
 
     amrex::Vector<amrex::Real>& mom_u_wrf_error() { return m_err_U; }
     amrex::Vector<amrex::Real>& mom_v_wrf_error() { return m_err_V; }
