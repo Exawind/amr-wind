@@ -71,15 +71,17 @@ void ABLModulatedPowerLaw::post_init_actions()
 void ABLModulatedPowerLaw::pre_advance_work()
 {
 
+    amrex::Real wind_speed = m_wind_speed;
+
     if (m_time.current_time() > m_start_time &&
         m_time.current_time() < m_stop_time) {
         m_wind_direction += m_degrees_per_sec * m_time.deltaT();
-//        m_wind_speed += sin(0.02*m_time.current_time());
+//        wind_speed += sin(0.02*m_time.current_time());
     }
 
     const amrex::Real wind_direction_radian = utils::radians(m_wind_direction);
-    m_uvec[0] = m_wind_speed * std::cos(wind_direction_radian);
-    m_uvec[1] = m_wind_speed * std::sin(wind_direction_radian);
+    m_uvec[0] = wind_speed * std::cos(wind_direction_radian);
+    m_uvec[1] = wind_speed * std::sin(wind_direction_radian);
     m_uvec[2] = 0.0;
 }
 
