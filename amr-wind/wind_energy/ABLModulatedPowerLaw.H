@@ -60,6 +60,10 @@ private:
     amrex::Real m_wind_direction{45.0};
     amrex::Vector<amrex::Real> m_uvec{{10.0, 0.0, 0.0}};
 
+    amrex::Real m_start_time{0.0};
+    amrex::Real m_stop_time{std::numeric_limits<amrex::Real>::max()};
+    amrex::Real m_degrees_per_sec{0.02};
+
     ///@{
     //! Lookup table containing temperature variation w.r.t. height above
     //! terrain

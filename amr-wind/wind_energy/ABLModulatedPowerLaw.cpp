@@ -34,6 +34,10 @@ ABLModulatedPowerLaw::ABLModulatedPowerLaw(CFDSim& sim)
     pp.query("wind_speed", m_wind_speed);
     pp.query("wind_direction", m_wind_direction);
 
+    pp.query("start_time", m_start_time);
+    pp.query("stop_time",m_stop_time);
+    pp.query("degrees_per_second",m_degrees_per_sec);
+
     pp.query("deltaT", m_deltaT);
     pp.query("theta_cutoff_height", m_theta_cutoff_height);
     pp.query("theta_gauss_mean", m_theta_gauss_mean);
@@ -66,17 +70,11 @@ void ABLModulatedPowerLaw::post_init_actions()
 
 void ABLModulatedPowerLaw::pre_advance_work()
 {
-    // could add inputs to control this
-    const amrex::Real start_time = 0.0;
-    const amrex::Real stop_time = 10000.0;
 
-    if (m_time.current_time() > start_time &&
-        m_time.current_time() < stop_time) {
-        const amrex::Real rate = 0.01;
-        //        m_wind_direction +=
-        //        sin(rate*(m_time.current_time()-start_time));
-        m_wind_direction += rate * (m_time.current_time() - start_time);
-        //        m_wind_speed += sin(0.02*m_time.current_time());
+    if (m_time.current_time() > m_start_time &&
+        m_time.current_time() < m_stop_time) {
+        m_wind_direction += m_degrees_per_sec * m_time.deltaT();
+//        m_wind_speed += sin(0.02*m_time.current_time());
     }
 
     const amrex::Real wind_direction_radian = utils::radians(m_wind_direction);
