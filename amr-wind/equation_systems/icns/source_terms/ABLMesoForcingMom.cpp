@@ -1,4 +1,4 @@
-#include "amr-wind/equation_systems/icns/source_terms/ABLWrfForcingMom.H"
+#include "amr-wind/equation_systems/icns/source_terms/ABLMesoForcingMom.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/wind_energy/ABL.H"
 #include "amr-wind/core/FieldUtils.H"
@@ -27,7 +27,7 @@ closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
 }
 } // namespace
 
-ABLWrfForcingMom::ABLWrfForcingMom(const CFDSim& sim)
+ABLMesoForcingMom::ABLMesoForcingMom(const CFDSim& sim)
     : ABLMesoscaleForcing(sim, identifier())
 {
 
@@ -48,9 +48,9 @@ ABLWrfForcingMom::ABLWrfForcingMom(const CFDSim& sim)
     }
 }
 
-ABLWrfForcingMom::~ABLWrfForcingMom() = default;
+ABLMesoForcingMom::~ABLMesoForcingMom() = default;
 
-void ABLWrfForcingMom::mean_velocity_init(const ABLMesoscaleInput& ncfile)
+void ABLMesoForcingMom::mean_velocity_init(const ABLMesoscaleInput& ncfile)
 {
 
     m_meso_ht.resize(ncfile.nheights());
@@ -66,7 +66,7 @@ void ABLWrfForcingMom::mean_velocity_init(const ABLMesoscaleInput& ncfile)
     m_err_V.resize(ncfile.nheights());
 }
 
-void ABLWrfForcingMom::mean_velocity_init(
+void ABLMesoForcingMom::mean_velocity_init(
     const VelPlaneAveraging& vavg, const ABLMesoscaleInput& ncfile)
 {
 
@@ -111,7 +111,7 @@ void ABLWrfForcingMom::mean_velocity_init(
         ncfile.meso_heights().end(), m_meso_ht.begin());
 }
 
-void ABLWrfForcingMom::mean_velocity_heights(
+void ABLMesoForcingMom::mean_velocity_heights(
     std::unique_ptr<ABLMesoscaleInput>& ncfile)
 {
     if (m_forcing_scheme.empty()) {
@@ -162,7 +162,7 @@ void ABLWrfForcingMom::mean_velocity_heights(
     }
 }
 
-void ABLWrfForcingMom::mean_velocity_heights(
+void ABLMesoForcingMom::mean_velocity_heights(
     const VelPlaneAveraging& vavg, std::unique_ptr<ABLMesoscaleInput>& ncfile)
 {
     if (m_forcing_scheme.empty()) {
@@ -349,7 +349,7 @@ void ABLWrfForcingMom::mean_velocity_heights(
     }
 }
 
-void ABLWrfForcingMom::operator()(
+void ABLMesoForcingMom::operator()(
     const int lev,
     const amrex::MFIter& /*mfi*/,
     const amrex::Box& bx,

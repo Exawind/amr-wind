@@ -1,4 +1,4 @@
-#include "amr-wind/equation_systems/temperature/source_terms/ABLWrfForcingTemp.H"
+#include "amr-wind/equation_systems/temperature/source_terms/ABLMesoForcingTemp.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/wind_energy/ABL.H"
 #include "amr-wind/core/FieldUtils.H"
@@ -27,7 +27,7 @@ closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
 }
 } // namespace
 
-ABLWrfForcingTemp::ABLWrfForcingTemp(const CFDSim& sim)
+ABLMesoForcingTemp::ABLMesoForcingTemp(const CFDSim& sim)
     : ABLMesoscaleForcing(sim, identifier())
 {
     const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
@@ -47,8 +47,9 @@ ABLWrfForcingTemp::ABLWrfForcingTemp(const CFDSim& sim)
     }
 }
 
-ABLWrfForcingTemp::~ABLWrfForcingTemp() = default;
-void ABLWrfForcingTemp::mean_temperature_init(const ABLMesoscaleInput& ncfile)
+ABLMesoForcingTemp::~ABLMesoForcingTemp() = default;
+
+void ABLMesoForcingTemp::mean_temperature_init(const ABLMesoscaleInput& ncfile)
 {
 
     m_error_meso_avg_theta.resize(ncfile.nheights());
@@ -60,7 +61,7 @@ void ABLWrfForcingTemp::mean_temperature_init(const ABLMesoscaleInput& ncfile)
         amrex::Gpu::hostToDevice, ncfile.meso_heights().begin(),
         ncfile.meso_heights().end(), m_meso_ht.begin());
 }
-void ABLWrfForcingTemp::mean_temperature_init(
+void ABLMesoForcingTemp::mean_temperature_init(
     const FieldPlaneAveraging& tavg, const ABLMesoscaleInput& ncfile)
 {
     m_axis = tavg.axis();
@@ -98,7 +99,7 @@ void ABLWrfForcingTemp::mean_temperature_init(
         ncfile.meso_heights().end(), m_meso_ht.begin());
 }
 
-amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
+amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
     std::unique_ptr<ABLMesoscaleInput>& ncfile)
 {
 
@@ -149,7 +150,7 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
     return interpTflux;
 }
 
-amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
+amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
     const FieldPlaneAveraging& tavg, std::unique_ptr<ABLMesoscaleInput>& ncfile)
 {
 
@@ -302,7 +303,7 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
     return interpTflux;
 }
 
-void ABLWrfForcingTemp::operator()(
+void ABLMesoForcingTemp::operator()(
     const int lev,
     const amrex::MFIter& /*mfi*/,
     const amrex::Box& bx,

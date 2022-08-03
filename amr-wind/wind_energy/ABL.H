@@ -38,10 +38,10 @@ namespace pde {
 namespace icns {
 class ABLForcing;
 class ABLMeanBoussinesq;
-class ABLWrfForcingMom;
+class ABLMesoForcingMom;
 } // namespace icns
 namespace temperature {
-class ABLWrfForcingTemp;
+class ABLMesoForcingTemp;
 }
 } // namespace pde
 
@@ -87,12 +87,12 @@ public:
     {
         m_abl_mean_bous = term;
     }
-    void register_meso_mom_forcing(pde::icns::ABLWrfForcingMom* forcing) const
+    void register_meso_mom_forcing(pde::icns::ABLMesoForcingMom* forcing) const
     {
         m_abl_meso_mom_forcing = forcing;
     }
     void register_meso_temp_forcing(
-        pde::temperature::ABLWrfForcingTemp* forcing) const
+        pde::temperature::ABLMesoForcingTemp* forcing) const
     {
         m_abl_meso_temp_forcing = forcing;
     }
@@ -130,8 +130,8 @@ private:
 
     mutable pde::icns::ABLMeanBoussinesq* m_abl_mean_bous{nullptr};
 
-    mutable pde::icns::ABLWrfForcingMom* m_abl_meso_mom_forcing{nullptr};
-    mutable pde::temperature::ABLWrfForcingTemp* m_abl_meso_temp_forcing{
+    mutable pde::icns::ABLMesoForcingMom* m_abl_meso_mom_forcing{nullptr};
+    mutable pde::temperature::ABLMesoForcingTemp* m_abl_meso_temp_forcing{
         nullptr};
 
     std::unique_ptr<ABLMesoscaleInput> m_meso_file;

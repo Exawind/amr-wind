@@ -5,6 +5,8 @@
 #include "amr-wind/utilities/DirectionSelector.H"
 #include "amr-wind/utilities/tensor_ops.H"
 #include "amr-wind/equation_systems/icns/source_terms/ABLForcing.H"
+#include "amr-wind/equation_systems/icns/source_terms/ABLMesoForcingMom.H"
+#include "amr-wind/equation_systems/temperature/source_terms/ABLMesoForcingTemp.H"
 #include "amr-wind/equation_systems/PDEHelpers.H"
 
 #include "AMReX_ParmParse.H"

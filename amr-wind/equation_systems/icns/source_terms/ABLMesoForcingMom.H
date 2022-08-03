@@ -1,5 +1,5 @@
-#ifndef ABLWRFFORCINGMOM
-#define ABLWRFFORCINGMOM
+#ifndef ABLMESOFORCINGMOM
+#define ABLMESOFORCINGMOM
 
 #include <AMReX_REAL.H>
 #include <AMReX_Vector.H>
@@ -22,16 +22,16 @@ namespace icns {
  *  \sa ABL
  */
 
-class ABLWrfForcingMom
+class ABLMesoForcingMom
     : public ABLMesoscaleForcing
-    , public MomentumSource::Register<ABLWrfForcingMom>
+    , public MomentumSource::Register<ABLMesoForcingMom>
 {
 public:
-    static std::string identifier() { return "ABLWrfForcingMom"; }
+    static std::string identifier() { return "ABLMesoForcingMom"; }
 
-    explicit ABLWrfForcingMom(const CFDSim& sim);
+    explicit ABLMesoForcingMom(const CFDSim& sim);
 
-    ~ABLWrfForcingMom() override;
+    ~ABLMesoForcingMom() override;
 
     void operator()(
         const int lev,
@@ -84,4 +84,4 @@ private:
 } // namespace pde
 } // namespace amr_wind
 
-#endif // ABLWRFFORCINGMOM_H
+#endif // ABLMESOFORCINGMOM_H

@@ -9,10 +9,10 @@ namespace amr_wind {
 namespace pde {
 namespace icns {
 class ABLForcing;
-class ABLWrfForcingMom;
+class ABLMesoForcingMom;
 } // namespace icns
 namespace temperature {
-class ABLWrfForcingTemp;
+class ABLMesoForcingTemp;
 }
 } // namespace pde
 
@@ -53,10 +53,10 @@ public:
     register_forcing_term(pde::icns::ABLForcing* forcing) const = 0;
 
     virtual void
-    register_meso_mom_forcing(pde::icns::ABLWrfForcingMom* forcing) const = 0;
+    register_meso_mom_forcing(pde::icns::ABLMesoForcingMom* forcing) const = 0;
 
     virtual void register_meso_temp_forcing(
-        pde::temperature::ABLWrfForcingTemp* forcing) const = 0;
+        pde::temperature::ABLMesoForcingTemp* forcing) const = 0;
 };
 
 } // namespace amr_wind

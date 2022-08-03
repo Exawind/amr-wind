@@ -1,5 +1,5 @@
-#ifndef ABLWRFFORCINGTEMP_H
-#define ABLWRFFORCINGTEMP_H
+#ifndef ABLMESOFORCINGTEMP_H
+#define ABLMESOFORCINGTEMP_H
 
 #include <AMReX_REAL.H>
 #include <memory>
@@ -15,16 +15,16 @@ namespace amr_wind {
 namespace pde {
 namespace temperature {
 
-class ABLWrfForcingTemp
+class ABLMesoForcingTemp
     : public ABLMesoscaleForcing
-    , public TemperatureSource::Register<ABLWrfForcingTemp>
+    , public TemperatureSource::Register<ABLMesoForcingTemp>
 {
 public:
-    static std::string identifier() { return "ABLWrfForcingTemp"; }
+    static std::string identifier() { return "ABLMesoForcingTemp"; }
 
-    explicit ABLWrfForcingTemp(const CFDSim& sim);
+    explicit ABLMesoForcingTemp(const CFDSim& sim);
 
-    ~ABLWrfForcingTemp() override;
+    ~ABLMesoForcingTemp() override;
 
     void operator()(
         const int lev,
