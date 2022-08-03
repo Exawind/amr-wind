@@ -4,24 +4,19 @@
 #include "amr-wind/core/Field.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_Gpu.H"
-#include "amr-wind/utilities/ncutils/nc_interface.H"
-#include <AMReX_BndryRegister.H>
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/core/vs/vector_space.H"
 
 namespace amr_wind {
 
-/** Interface for ABL boundary plane I/O
+/** Interface for ABL modulated power law
  *  \ingroup we_abl
  *
- *  This class performs the necessary file operations to read and
- *  write boundary planes.
+ *  This class sets velocity and temperature at mass inflow bc's
  *
- *  \sa ABLFillInflow
  */
 class ABLModulatedPowerLaw
 {
-    static_assert(AMREX_SPACEDIM == 3, "ABL requires 3 dimensional mesh");
 
 public:
     explicit ABLModulatedPowerLaw(CFDSim& /*sim*/);
@@ -34,16 +29,16 @@ public:
     void post_advance_work();
 
     void set_velocity(
-        const int /*lev*/,
-        const amrex::Real /*time*/,
+        const int lev,
+        const amrex::Real time,
         Field& fld,
-        amrex::MultiFab& /*mfab*/) const;
+        amrex::MultiFab& mfab) const;
 
     void set_temperature(
-        const int /*lev*/,
-        const amrex::Real /*time*/,
+        const int lev,
+        const amrex::Real time,
         Field& fld,
-        amrex::MultiFab& /*mfab*/) const;
+        amrex::MultiFab& mfab) const;
 
 private:
     const CFDSim& m_sim;
