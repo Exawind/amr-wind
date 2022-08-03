@@ -45,7 +45,7 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
 
         // 3-component forcing (Default: false)
         //bool m_S = false;
-        //if (!pp.query("three_ComponentForcing", m_S)){};
+        if (!pp.query("three_ComponentForcing", m_S)){};
     }
 
     {
