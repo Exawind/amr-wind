@@ -140,8 +140,8 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
     }
 
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, mesoInterptheta.begin(), mesoInterptheta.end(),
-        m_error_meso_avg_theta.begin());
+        amrex::Gpu::hostToDevice, mesoInterptheta.begin(),
+        mesoInterptheta.end(), m_error_meso_avg_theta.begin());
 
     for (int ih = 0; ih < num_meso_ht; ih++) {
         m_err_Theta[ih] = mesoInterptheta[ih];
@@ -191,8 +191,8 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
     }
 
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, mesoInterptheta.begin(), mesoInterptheta.end(),
-        m_meso_theta_vals.begin());
+        amrex::Gpu::hostToDevice, mesoInterptheta.begin(),
+        mesoInterptheta.end(), m_meso_theta_vals.begin());
 
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, tavg.line_average().begin(),

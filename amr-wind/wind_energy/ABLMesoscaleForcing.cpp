@@ -85,9 +85,8 @@ ABLMesoscaleForcing::ABLMesoscaleForcing(
                     amrex::Print() << tval << " " << zval << std::endl;
                 }
                 amrex::Print()
-                    << "Note: the times in the mesoscale input file"
-                    << " must match these " << ntimes << " values"
-                    << std::endl;
+                    << "Note: the times in the mesoscale input file "
+                    << "must match these " << ntimes << " values" << std::endl;
             }
         }
 

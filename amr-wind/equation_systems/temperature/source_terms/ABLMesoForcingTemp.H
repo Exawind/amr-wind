@@ -38,10 +38,12 @@ public:
     void mean_temperature_init(
         const FieldPlaneAveraging& tavg, const ABLMesoscaleInput& ncfile);
 
-    amrex::Real mean_temperature_heights(std::unique_ptr<ABLMesoscaleInput>& ncfile);
+    amrex::Real
+    mean_temperature_heights(std::unique_ptr<ABLMesoscaleInput>& ncfile);
 
     amrex::Real mean_temperature_heights(
-        const FieldPlaneAveraging& tavg, std::unique_ptr<ABLMesoscaleInput>& ncfile);
+        const FieldPlaneAveraging& tavg,
+        std::unique_ptr<ABLMesoscaleInput>& ncfile);
 
     amrex::Vector<amrex::Real>& theta_error() { return m_err_Theta; }
 

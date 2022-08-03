@@ -48,7 +48,8 @@ public:
     void mean_velocity_heights(std::unique_ptr<ABLMesoscaleInput>& ncfile);
 
     void mean_velocity_heights(
-        const VelPlaneAveraging& vavg, std::unique_ptr<ABLMesoscaleInput>& ncfile);
+        const VelPlaneAveraging& vavg,
+        std::unique_ptr<ABLMesoscaleInput>& ncfile);
 
     amrex::Vector<amrex::Real>& mom_u_error() { return m_err_U; }
     amrex::Vector<amrex::Real>& mom_v_error() { return m_err_V; }

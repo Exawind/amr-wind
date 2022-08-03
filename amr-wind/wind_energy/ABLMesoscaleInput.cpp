@@ -7,10 +7,8 @@
 namespace amr_wind {
 
 ABLMesoscaleInput::ABLMesoscaleInput(
-    const std::string ncfile,
-    const std::string var_prefix)
-    : m_filename(ncfile)
-    , m_var_prefix(var_prefix)
+    const std::string ncfile, const std::string var_prefix)
+    : m_filename(ncfile) , m_var_prefix(var_prefix)
 {
 #ifdef AMR_WIND_USE_NETCDF
     auto ncf = ncutils::NCFile::open_par(
@@ -19,8 +17,8 @@ ABLMesoscaleInput::ABLMesoscaleInput(
 
     m_nheight = ncf.has_dim("nheight") ? ncf.dim("nheight").len() : 0;
     m_ntime = ncf.dim("ntime").len();
-    amrex::Print() << "Loading " << m_filename << " : " << m_ntime
-                   << " times, " << m_nheight << " heights" << std::endl;
+    amrex::Print() << "Loading " << m_filename << " : " << m_ntime << " times, "
+                   << m_nheight << " heights" << std::endl;
 
     m_height.resize(m_nheight);
     m_time.resize(m_ntime);
@@ -34,15 +32,15 @@ ABLMesoscaleInput::ABLMesoscaleInput(
     m_tflux.resize(m_ntime);
 
     if (m_nheight > 0) {
-        ncf.var(m_var_prefix+"momentum_u").get(m_u.data());
-        ncf.var(m_var_prefix+"momentum_v").get(m_v.data());
-        ncf.var(m_var_prefix+"temperature").get(m_temp.data());
+        ncf.var(m_var_prefix + "momentum_u").get(m_u.data());
+        ncf.var(m_var_prefix + "momentum_v").get(m_v.data());
+        ncf.var(m_var_prefix + "temperature").get(m_temp.data());
     } else {
         amrex::Print() << "No height dimension in netcdf input file; no "
                           "forcing profiles read."
                        << std::endl;
     }
-    ncf.var(m_var_prefix+"tflux").get(m_tflux.data());
+    ncf.var(m_var_prefix + "tflux").get(m_tflux.data());
 
     // ***FIXME***
     // MUST COMMENT THIS LINE OUT (resize cmd) to consistently fix problem:
@@ -50,8 +48,8 @@ ABLMesoscaleInput::ABLMesoscaleInput(
     // m_transition_height.resize(m_ntime);
     //
     // if (ncf.has_var("transition_height")) {
-    //    amrex::Print() << "found transition_height in ABLMesoscaleInput file" <<
-    //    std::endl;
+    //    amrex::Print() << "found transition_height in ABLMesoscaleInput file"
+    //                   << std::endl;
     //    ncf.var("transition_height").get(m_transition_height.data());
     //}
 

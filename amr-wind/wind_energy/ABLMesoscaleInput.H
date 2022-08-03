@@ -12,34 +12,21 @@ class ABLMesoscaleInput
 
 public:
     ABLMesoscaleInput(
-        const std::string ncfile,
-        const std::string var_prefix="");
+        const std::string ncfile, const std::string var_prefix="");
 
     // ~ABLMesoscaleInput() = default;
 
-    const amrex::Vector<amrex::Real>& meso_heights() const {
-        return m_height;
-    }
+    const amrex::Vector<amrex::Real>& meso_heights() const { return m_height; }
 
-    const amrex::Vector<amrex::Real>& meso_times() const {
-        return m_time;
-    }
+    const amrex::Vector<amrex::Real>& meso_times() const { return m_time; }
 
-    const amrex::Vector<amrex::Real>& meso_u() const {
-        return m_u;
-    }
+    const amrex::Vector<amrex::Real>& meso_u() const { return m_u; }
 
-    const amrex::Vector<amrex::Real>& meso_v() const {
-        return m_v;
-    }
+    const amrex::Vector<amrex::Real>& meso_v() const { return m_v; }
 
-    const amrex::Vector<amrex::Real>& meso_temp() const {
-        return m_temp;
-    }
+    const amrex::Vector<amrex::Real>& meso_temp() const { return m_temp; }
 
-    const amrex::Vector<amrex::Real>& meso_tflux() const {
-        return m_tflux;
-    }
+    const amrex::Vector<amrex::Real>& meso_tflux() const { return m_tflux; }
 
     // ***FIXME***
     // const amrex::Vector<amrex::Real>& meso_transition_height() const {
