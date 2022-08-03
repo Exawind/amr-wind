@@ -2,7 +2,6 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/wind_energy/ABL.H"
 #include "amr-wind/core/FieldUtils.H"
-#include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
 #include "AMReX_Print.H"

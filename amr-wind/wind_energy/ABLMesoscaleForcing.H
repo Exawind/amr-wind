@@ -1,9 +1,10 @@
-#ifndef ABLWRF_H
-#define ABLWRF_H
+#ifndef ABLMESOSCALEFORCING_H
+#define ABLMESOSCALEFORCING_H
 
 #include <string>
 #include "AMReX_REAL.H"
 #include "AMReX_Array.H"
+#include "AMReX_Vector.H"
 #include "amr-wind/CFDSim.H"
 
 namespace amr_wind {
@@ -96,58 +97,6 @@ protected:
         const amrex::Vector<amrex::Real> lower,
         const amrex::Vector<amrex::Real> upper,
         amrex::Vector<amrex::Real>& error);
-};
-
-class ABLWRFfile
-{
-
-public:
-    ABLWRFfile(const std::string wrfFile);
-
-    // ~ABLWRFfile() = default;
-
-    const amrex::Vector<amrex::Real>& wrf_heights() const;
-
-    const amrex::Vector<amrex::Real>& wrf_times() const;
-
-    const amrex::Vector<amrex::Real>& wrf_u() const;
-
-    const amrex::Vector<amrex::Real>& wrf_v() const;
-
-    const amrex::Vector<amrex::Real>& wrf_temp() const;
-
-    const amrex::Vector<amrex::Real>& wrf_tflux() const;
-
-    // ***FIXME***
-    // const amrex::Vector<amrex::Real>& wrf_transition_height() const;
-
-    bool is_wrf_tendency_forcing() const;
-
-    int nheights() const;
-    int times() const;
-
-private:
-    std::string m_wrf_filename;
-
-    amrex::Vector<amrex::Real> m_wrf_height;
-    amrex::Vector<amrex::Real> m_wrf_time;
-
-    amrex::Vector<amrex::Real> m_wrf_u;
-    amrex::Vector<amrex::Real> m_wrf_v;
-    amrex::Vector<amrex::Real> m_wrf_temp;
-    amrex::Vector<amrex::Real> m_wrf_tflux;
-
-    // optional input for partial profile assimilation
-    // ***FIXME***
-    // unexpected behaviors, as described in
-    // ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7 MUST COMMENT THIS LINE OUT
-    // (variable def) to consistently fix problem:
-    //
-    // amrex::Vector<amrex::Real> m_wrf_transition_height;
-
-    int m_wrf_nheight;
-    int m_wrf_ntime;
-    bool m_abl_wrf_tendency;
 };
 
 } // namespace amr_wind

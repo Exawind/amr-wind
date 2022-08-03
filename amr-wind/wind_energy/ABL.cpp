@@ -9,6 +9,7 @@
 #include "amr-wind/equation_systems/temperature/source_terms/ABLWrfForcingTemp.H"
 #include "amr-wind/incflo.H"
 #include "amr-wind/wind_energy/ABLMesoscaleForcing.H"
+#include "amr-wind/wind_energy/ABLMesoscaleInput.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_MultiFab.H"

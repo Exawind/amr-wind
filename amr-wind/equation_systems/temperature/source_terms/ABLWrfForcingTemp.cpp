@@ -6,7 +6,6 @@
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
 #include "AMReX_Print.H"
-#include "amr-wind/wind_energy/ABLMesoscaleForcing.H"
 #include <AMReX_REAL.H>
 #include <memory>
 
