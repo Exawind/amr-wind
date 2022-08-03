@@ -1,4 +1,5 @@
 #include "amr-wind/equation_systems/icns/source_terms/GeostrophicForcing.H"
+#include "amr-wind/equation_systems/icns/source_terms/CoriolisForcing.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/core/vs/vstraits.H"
@@ -58,7 +59,7 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
     const auto cosphi = m_cosphi;
     const auto corfac = m_coriolis_factor;
     const auto S = m_S;
-    
+
     m_g_forcing = {
         -coriolis_factor * m_target_vel[1] * sinphi +coriolis_factor * m_target_vel[3] * cosphi * m_S, 
         +coriolis_factor * m_target_vel[0] * sinphi,
