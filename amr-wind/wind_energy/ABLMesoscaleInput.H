@@ -15,36 +15,50 @@ public:
 
     // ~ABLMesoscaleInput() = default;
 
-    const amrex::Vector<amrex::Real>& wrf_heights() const;
+    const amrex::Vector<amrex::Real>& meso_heights() const {
+        return m_height;
+    }
 
-    const amrex::Vector<amrex::Real>& wrf_times() const;
+    const amrex::Vector<amrex::Real>& meso_times() const {
+        return m_time;
+    }
 
-    const amrex::Vector<amrex::Real>& wrf_u() const;
+    const amrex::Vector<amrex::Real>& meso_u() const {
+        return m_u;
+    }
 
-    const amrex::Vector<amrex::Real>& wrf_v() const;
+    const amrex::Vector<amrex::Real>& meso_v() const {
+        return m_v;
+    }
 
-    const amrex::Vector<amrex::Real>& wrf_temp() const;
+    const amrex::Vector<amrex::Real>& meso_temp() const {
+        return m_temp;
+    }
 
-    const amrex::Vector<amrex::Real>& wrf_tflux() const;
+    const amrex::Vector<amrex::Real>& meso_tflux() const {
+        return m_tflux;
+    }
 
     // ***FIXME***
-    // const amrex::Vector<amrex::Real>& wrf_transition_height() const;
+    // const amrex::Vector<amrex::Real>& meso_transition_height() const {
+    //     return m_transition_height;
+    // }
 
-    bool is_wrf_tendency_forcing() const { return m_abl_wrf_tendency; }
+    bool is_tendency_forcing() const { return m_abl_tendency; }
 
-    int nheights() const { return m_wrf_nheight; }
-    int times() const { return m_wrf_ntime; }
+    int nheights() const { return m_nheight; }
+    int times() const { return m_ntime; }
 
 private:
-    std::string m_wrf_filename;
+    std::string m_filename;
 
-    amrex::Vector<amrex::Real> m_wrf_height;
-    amrex::Vector<amrex::Real> m_wrf_time;
+    amrex::Vector<amrex::Real> m_height;
+    amrex::Vector<amrex::Real> m_time;
 
-    amrex::Vector<amrex::Real> m_wrf_u;
-    amrex::Vector<amrex::Real> m_wrf_v;
-    amrex::Vector<amrex::Real> m_wrf_temp;
-    amrex::Vector<amrex::Real> m_wrf_tflux;
+    amrex::Vector<amrex::Real> m_u;
+    amrex::Vector<amrex::Real> m_v;
+    amrex::Vector<amrex::Real> m_temp;
+    amrex::Vector<amrex::Real> m_tflux;
 
     // optional input for partial profile assimilation
     // ***FIXME***
@@ -52,11 +66,11 @@ private:
     // ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7 MUST COMMENT THIS LINE OUT
     // (variable def) to consistently fix problem:
     //
-    // amrex::Vector<amrex::Real> m_wrf_transition_height;
+    // amrex::Vector<amrex::Real> m_transition_height;
 
-    int m_wrf_nheight;
-    int m_wrf_ntime;
-    bool m_abl_wrf_tendency;
+    int m_nheight;
+    int m_ntime;
+    bool m_abl_tendency;
 };
 
 } // namespace amr_wind

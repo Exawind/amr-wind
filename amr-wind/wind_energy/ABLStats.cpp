@@ -383,9 +383,9 @@ void ABLStats::prepare_netcdf_file()
     grp.def_var("theta", NC_DOUBLE, two_dim);
     amrex::ParmParse pp("ABL");
     if (pp.contains("WRFforcing")) {
-        grp.def_var("abl_wrf_forcing_mom_x", NC_DOUBLE, two_dim);
-        grp.def_var("abl_wrf_forcing_mom_y", NC_DOUBLE, two_dim);
-        grp.def_var("abl_wrf_forcing_theta", NC_DOUBLE, two_dim);
+        grp.def_var("abl_meso_forcing_mom_x", NC_DOUBLE, two_dim);
+        grp.def_var("abl_meso_forcing_mom_y", NC_DOUBLE, two_dim);
+        grp.def_var("abl_meso_forcing_theta", NC_DOUBLE, two_dim);
     }
     grp.def_var("mueff", NC_DOUBLE, two_dim);
     grp.def_var("u'theta'_r", NC_DOUBLE, two_dim);
@@ -497,24 +497,24 @@ void ABLStats::write_netcdf()
         }
 
         {
-            if (m_abl_wrf_mom_forcing != nullptr) {
-                amrex::Vector<amrex::Real> wrf_forcing_mom_u(n_levels);
-                amrex::Vector<amrex::Real> wrf_forcing_mom_v(n_levels);
+            if (m_abl_meso_mom_forcing != nullptr) {
+                amrex::Vector<amrex::Real> meso_forcing_mom_u(n_levels);
+                amrex::Vector<amrex::Real> meso_forcing_mom_v(n_levels);
 
-                wrf_forcing_mom_u = m_abl_wrf_mom_forcing->mom_u_wrf_error();
-                auto var_x = grp.var("abl_wrf_forcing_mom_x");
-                var_x.put(wrf_forcing_mom_u.data(), start, count);
+                meso_forcing_mom_u = m_abl_meso_mom_forcing->mom_u_error();
+                auto var_x = grp.var("abl_meso_forcing_mom_x");
+                var_x.put(meso_forcing_mom_u.data(), start, count);
 
-                wrf_forcing_mom_v = m_abl_wrf_mom_forcing->mom_v_wrf_error();
-                auto var_y = grp.var("abl_wrf_forcing_mom_y");
-                var_y.put(wrf_forcing_mom_v.data(), start, count);
+                meso_forcing_mom_v = m_abl_meso_mom_forcing->mom_v_error();
+                auto var_y = grp.var("abl_meso_forcing_mom_y");
+                var_y.put(meso_forcing_mom_v.data(), start, count);
             }
-            if (m_abl_wrf_temp_forcing != nullptr) {
-                amrex::Vector<amrex::Real> wrf_forcing_theta(n_levels);
+            if (m_abl_meso_temp_forcing != nullptr) {
+                amrex::Vector<amrex::Real> meso_forcing_theta(n_levels);
 
-                wrf_forcing_theta = m_abl_wrf_temp_forcing->theta_wrf_error();
-                auto var_theta = grp.var("abl_wrf_forcing_theta");
-                var_theta.put(wrf_forcing_theta.data(), start, count);
+                meso_forcing_theta = m_abl_meso_temp_forcing->theta_error();
+                auto var_theta = grp.var("abl_meso_forcing_theta");
+                var_theta.put(meso_forcing_theta.data(), start, count);
             }
         }
 

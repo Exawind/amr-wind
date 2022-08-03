@@ -48,7 +48,7 @@ ABL::ABL(CFDSim& sim)
 #else
         std::string file_wrf;
         pp.query("WRFforcing", file_wrf);
-        m_wrf_file.reset(new ABLMesoscaleInput(file_wrf));
+        m_meso_file.reset(new ABLMesoscaleInput(file_wrf));
 #endif
     }
 
@@ -143,24 +143,24 @@ void ABL::pre_advance_work()
         m_abl_mean_bous->mean_temperature_update(m_stats->theta_profile());
     }
 
-    if (m_abl_wrf_forcing != nullptr) {
+    if (m_abl_meso_uv_forcing != nullptr) {
 
-        if (m_wrf_file->is_wrf_tendency_forcing()) {
-            m_abl_wrf_forcing->mean_velocity_heights(m_wrf_file);
+        if (m_meso_file->is_tendency_forcing()) {
+            m_abl_meso_uv_forcing->mean_velocity_heights(m_meso_file);
         } else {
-            m_abl_wrf_forcing->mean_velocity_heights(
-                m_stats->vel_profile(), m_wrf_file);
+            m_abl_meso_uv_forcing->mean_velocity_heights(
+                m_stats->vel_profile(), m_meso_file);
         }
     }
 
-    if (m_abl_wrf_theta_forcing != nullptr) {
+    if (m_abl_meso_theta_forcing != nullptr) {
         amrex::Real interpTflux;
-        if (m_wrf_file->is_wrf_tendency_forcing()) {
+        if (m_meso_file->is_tendency_forcing()) {
             interpTflux =
-                m_abl_wrf_theta_forcing->mean_temperature_heights(m_wrf_file);
+                m_abl_meso_theta_forcing->mean_temperature_heights(m_meso_file);
         } else {
-            interpTflux = m_abl_wrf_theta_forcing->mean_temperature_heights(
-                m_stats->theta_profile(), m_wrf_file);
+            interpTflux = m_abl_meso_theta_forcing->mean_temperature_heights(
+                m_stats->theta_profile(), m_meso_file);
         }
         amrex::Print() << "Current surface temperature flux: " << interpTflux
                        << " K-m/s" << std::endl;

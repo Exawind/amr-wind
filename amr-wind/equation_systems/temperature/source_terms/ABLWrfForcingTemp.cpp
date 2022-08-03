@@ -31,14 +31,14 @@ ABLWrfForcingTemp::ABLWrfForcingTemp(const CFDSim& sim)
     : ABLMesoscaleForcing(sim, identifier())
 {
     const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
-    abl.register_wrf_temp_forcing(this);
-    abl.abl_statistics().register_wrf_forcing_temp(this);
+    abl.register_meso_temp_forcing(this);
+    abl.abl_statistics().register_meso_forcing_temp(this);
 
-    if (!abl.abl_wrf_file().is_wrf_tendency_forcing()) {
+    if (!abl.abl_meso_file().is_tendency_forcing()) {
         mean_temperature_init(
-            abl.abl_statistics().theta_profile(), abl.abl_wrf_file());
+            abl.abl_statistics().theta_profile(), abl.abl_meso_file());
     } else {
-        mean_temperature_init(abl.abl_wrf_file());
+        mean_temperature_init(abl.abl_meso_file());
     }
 
     if ((amrex::toLower(m_forcing_scheme) == "indirect") &&
@@ -51,14 +51,14 @@ ABLWrfForcingTemp::~ABLWrfForcingTemp() = default;
 void ABLWrfForcingTemp::mean_temperature_init(const ABLMesoscaleInput& ncfile)
 {
 
-    m_error_wrf_avg_theta.resize(ncfile.nheights());
-    m_wrf_theta_vals.resize(ncfile.nheights());
-    m_wrf_ht.resize(ncfile.nheights());
+    m_error_meso_avg_theta.resize(ncfile.nheights());
+    m_meso_theta_vals.resize(ncfile.nheights());
+    m_meso_ht.resize(ncfile.nheights());
     m_err_Theta.resize(ncfile.nheights());
 
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, ncfile.wrf_heights().begin(),
-        ncfile.wrf_heights().end(), m_wrf_ht.begin());
+        amrex::Gpu::hostToDevice, ncfile.meso_heights().begin(),
+        ncfile.meso_heights().end(), m_meso_ht.begin());
 }
 void ABLWrfForcingTemp::mean_temperature_init(
     const FieldPlaneAveraging& tavg, const ABLMesoscaleInput& ncfile)
@@ -80,7 +80,7 @@ void ABLWrfForcingTemp::mean_temperature_init(
 
     m_err_Theta.resize(tavg.ncell_line());
 
-    m_error_wrf_avg_theta.resize(tavg.ncell_line());
+    m_error_meso_avg_theta.resize(tavg.ncell_line());
 
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, tavg.line_centroids().begin(),
@@ -90,12 +90,12 @@ void ABLWrfForcingTemp::mean_temperature_init(
         tavg.line_centroids().begin(), tavg.line_centroids().end(),
         m_zht.begin());
 
-    m_wrf_theta_vals.resize(ncfile.nheights());
-    m_wrf_ht.resize(ncfile.nheights());
+    m_meso_theta_vals.resize(ncfile.nheights());
+    m_meso_ht.resize(ncfile.nheights());
 
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, ncfile.wrf_heights().begin(),
-        ncfile.wrf_heights().end(), m_wrf_ht.begin());
+        amrex::Gpu::hostToDevice, ncfile.meso_heights().begin(),
+        ncfile.meso_heights().end(), m_meso_ht.begin());
 }
 
 amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
@@ -106,44 +106,44 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
     currtime = m_time.current_time();
 
     // First the index in time
-    m_idx_time = closest_index(ncfile->wrf_times(), currtime);
+    m_idx_time = closest_index(ncfile->meso_times(), currtime);
 
     amrex::Array<amrex::Real, 2> coeff_interp{{0.0, 0.0}};
 
     amrex::Real denom =
-        ncfile->wrf_times()[m_idx_time + 1] - ncfile->wrf_times()[m_idx_time];
+        ncfile->meso_times()[m_idx_time + 1] - ncfile->meso_times()[m_idx_time];
 
-    coeff_interp[0] = (ncfile->wrf_times()[m_idx_time + 1] - currtime) / denom;
+    coeff_interp[0] = (ncfile->meso_times()[m_idx_time + 1] - currtime) / denom;
     coeff_interp[1] = 1.0 - coeff_interp[0];
 
     amrex::Real interpTflux;
 
-    interpTflux = coeff_interp[0] * ncfile->wrf_tflux()[m_idx_time] +
-                  coeff_interp[1] * ncfile->wrf_tflux()[m_idx_time + 1];
+    interpTflux = coeff_interp[0] * ncfile->meso_tflux()[m_idx_time] +
+                  coeff_interp[1] * ncfile->meso_tflux()[m_idx_time + 1];
 
     if (m_forcing_scheme.empty()) {
         // no temperature profile assimilation
         return interpTflux;
     }
 
-    int num_wrf_ht = ncfile->nheights();
+    int num_meso_ht = ncfile->nheights();
 
-    amrex::Vector<amrex::Real> wrfInterptheta(num_wrf_ht);
+    amrex::Vector<amrex::Real> mesoInterptheta(num_meso_ht);
 
-    for (int i = 0; i < num_wrf_ht; i++) {
-        int lt = m_idx_time * num_wrf_ht + i;
-        int rt = (m_idx_time + 1) * num_wrf_ht + i;
+    for (int i = 0; i < num_meso_ht; i++) {
+        int lt = m_idx_time * num_meso_ht + i;
+        int rt = (m_idx_time + 1) * num_meso_ht + i;
 
-        wrfInterptheta[i] = coeff_interp[0] * ncfile->wrf_temp()[lt] +
-                            coeff_interp[1] * ncfile->wrf_temp()[rt];
+        mesoInterptheta[i] = coeff_interp[0] * ncfile->meso_temp()[lt] +
+                             coeff_interp[1] * ncfile->meso_temp()[rt];
     }
 
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, wrfInterptheta.begin(), wrfInterptheta.end(),
-        m_error_wrf_avg_theta.begin());
+        amrex::Gpu::hostToDevice, mesoInterptheta.begin(), mesoInterptheta.end(),
+        m_error_meso_avg_theta.begin());
 
-    for (int ih = 0; ih < num_wrf_ht; ih++) {
-        m_err_Theta[ih] = wrfInterptheta[ih];
+    for (int ih = 0; ih < num_meso_ht; ih++) {
+        m_err_Theta[ih] = mesoInterptheta[ih];
     }
 
     return interpTflux;
@@ -157,41 +157,41 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
     currtime = m_time.current_time();
 
     // First the index in time
-    m_idx_time = closest_index(ncfile->wrf_times(), currtime);
+    m_idx_time = closest_index(ncfile->meso_times(), currtime);
 
     amrex::Array<amrex::Real, 2> coeff_interp{{0.0, 0.0}};
 
     amrex::Real denom =
-        ncfile->wrf_times()[m_idx_time + 1] - ncfile->wrf_times()[m_idx_time];
+        ncfile->meso_times()[m_idx_time + 1] - ncfile->meso_times()[m_idx_time];
 
-    coeff_interp[0] = (ncfile->wrf_times()[m_idx_time + 1] - currtime) / denom;
+    coeff_interp[0] = (ncfile->meso_times()[m_idx_time + 1] - currtime) / denom;
     coeff_interp[1] = 1.0 - coeff_interp[0];
 
     amrex::Real interpTflux;
 
-    interpTflux = coeff_interp[0] * ncfile->wrf_tflux()[m_idx_time] +
-                  coeff_interp[1] * ncfile->wrf_tflux()[m_idx_time + 1];
+    interpTflux = coeff_interp[0] * ncfile->meso_tflux()[m_idx_time] +
+                  coeff_interp[1] * ncfile->meso_tflux()[m_idx_time + 1];
 
     if (m_forcing_scheme.empty()) {
         // no temperature profile assimilation
         return interpTflux;
     }
 
-    int num_wrf_ht = ncfile->nheights();
+    int num_meso_ht = ncfile->nheights();
 
-    amrex::Vector<amrex::Real> wrfInterptheta(num_wrf_ht);
+    amrex::Vector<amrex::Real> mesoInterptheta(num_meso_ht);
 
-    for (int i = 0; i < num_wrf_ht; i++) {
-        int lt = m_idx_time * num_wrf_ht + i;
-        int rt = (m_idx_time + 1) * num_wrf_ht + i;
+    for (int i = 0; i < num_meso_ht; i++) {
+        int lt = m_idx_time * num_meso_ht + i;
+        int rt = (m_idx_time + 1) * num_meso_ht + i;
 
-        wrfInterptheta[i] = coeff_interp[0] * ncfile->wrf_temp()[lt] +
-                            coeff_interp[1] * ncfile->wrf_temp()[rt];
+        mesoInterptheta[i] = coeff_interp[0] * ncfile->meso_temp()[lt] +
+                             coeff_interp[1] * ncfile->meso_temp()[rt];
     }
 
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, wrfInterptheta.begin(), wrfInterptheta.end(),
-        m_wrf_theta_vals.begin());
+        amrex::Gpu::hostToDevice, mesoInterptheta.begin(), mesoInterptheta.end(),
+        m_meso_theta_vals.begin());
 
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, tavg.line_average().begin(),
@@ -201,7 +201,7 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
     amrex::Vector<amrex::Real> error_T(n_levels);
 
     for (size_t i = 0; i < n_levels; i++) {
-        error_T[i] = wrfInterptheta[i] - tavg.line_average()[i];
+        error_T[i] = mesoInterptheta[i] - tavg.line_average()[i];
     }
 
     if (amrex::toLower(m_forcing_scheme) == "indirect") {
@@ -213,9 +213,9 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
             // ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7
             //
             // m_transition_height = coeff_interp[0] *
-            // ncfile->wrf_transition_height()[m_idx_time] +
+            // ncfile->meso_transition_height()[m_idx_time] +
             //                      coeff_interp[1] *
-            //                      ncfile->wrf_transition_height()[m_idx_time
+            //                      ncfile->meso_transition_height()[m_idx_time
             //                      + 1];
 
             // WORKAROUND
@@ -293,7 +293,7 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
 
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, error_T.begin(), error_T.end(),
-        m_error_wrf_avg_theta.begin());
+        m_error_meso_avg_theta.begin());
 
     for (size_t ih = 0; ih < n_levels; ih++) {
         m_err_Theta[ih] = error_T[ih] * m_gain_coeff;
@@ -317,10 +317,10 @@ void ABLWrfForcingTemp::operator()(
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
 
-    const int nh_max = (int)m_wrf_ht.size() - 2;
+    const int nh_max = (int)m_meso_ht.size() - 2;
     const int lp1 = lev + 1;
-    const amrex::Real* theights = m_wrf_ht.data();
-    const amrex::Real* theta_error_val = m_error_wrf_avg_theta.data();
+    const amrex::Real* theights = m_meso_ht.data();
+    const amrex::Real* theta_error_val = m_error_meso_avg_theta.data();
     const amrex::Real kcoeff = m_gain_coeff;
     const int idir = (int)m_axis;
 

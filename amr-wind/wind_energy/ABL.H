@@ -87,14 +87,14 @@ public:
     {
         m_abl_mean_bous = term;
     }
-    void register_mean_wrf_forcing(pde::icns::ABLWrfForcingMom* forcing) const
+    void register_meso_wind_forcing(pde::icns::ABLWrfForcingMom* forcing) const
     {
-        m_abl_wrf_forcing = forcing;
+        m_abl_meso_uv_forcing = forcing;
     }
-    void register_wrf_temp_forcing(
+    void register_meso_temp_forcing(
         pde::temperature::ABLWrfForcingTemp* forcing) const
     {
-        m_abl_wrf_theta_forcing = forcing;
+        m_abl_meso_theta_forcing = forcing;
     }
 
     const ABLBoundaryPlane& bndry_plane() const { return *m_bndry_plane; }
@@ -102,7 +102,7 @@ public:
     //! Return the ABL statistics calculator
     const ABLStatsBase& abl_statistics() const { return *m_stats; }
 
-    const ABLMesoscaleInput& abl_wrf_file() const { return *m_wrf_file; }
+    const ABLMesoscaleInput& abl_meso_file() const { return *m_meso_file; }
 
 private:
     const CFDSim& m_sim;
@@ -130,11 +130,11 @@ private:
 
     mutable pde::icns::ABLMeanBoussinesq* m_abl_mean_bous{nullptr};
 
-    mutable pde::icns::ABLWrfForcingMom* m_abl_wrf_forcing{nullptr};
-    mutable pde::temperature::ABLWrfForcingTemp* m_abl_wrf_theta_forcing{
+    mutable pde::icns::ABLWrfForcingMom* m_abl_meso_uv_forcing{nullptr};
+    mutable pde::temperature::ABLWrfForcingTemp* m_abl_meso_theta_forcing{
         nullptr};
 
-    std::unique_ptr<ABLMesoscaleInput> m_wrf_file;
+    std::unique_ptr<ABLMesoscaleInput> m_meso_file;
 
     //! Default value set based on https://turbmodels.larc.nasa.gov/sst.html
     amrex::Real m_init_sdr{25.0};

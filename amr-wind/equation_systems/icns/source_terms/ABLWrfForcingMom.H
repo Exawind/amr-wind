@@ -50,17 +50,17 @@ public:
     void mean_velocity_heights(
         const VelPlaneAveraging& vavg, std::unique_ptr<ABLMesoscaleInput>& ncfile);
 
-    amrex::Vector<amrex::Real>& mom_u_wrf_error() { return m_err_U; }
-    amrex::Vector<amrex::Real>& mom_v_wrf_error() { return m_err_V; }
+    amrex::Vector<amrex::Real>& mom_u_error() { return m_err_U; }
+    amrex::Vector<amrex::Real>& mom_v_error() { return m_err_V; }
 
 private:
     // std::string m_forcing_tendency;
 
     // these are inputs
-    amrex::Gpu::DeviceVector<amrex::Real> m_wrf_ht;
-    amrex::Gpu::DeviceVector<amrex::Real> m_wrf_u_vals;
-    amrex::Gpu::DeviceVector<amrex::Real> m_wrf_v_vals;
-    amrex::Gpu::DeviceVector<amrex::Real> m_wrf_avg_error;
+    amrex::Gpu::DeviceVector<amrex::Real> m_meso_ht;
+    amrex::Gpu::DeviceVector<amrex::Real> m_meso_u_vals;
+    amrex::Gpu::DeviceVector<amrex::Real> m_meso_v_vals;
+    amrex::Gpu::DeviceVector<amrex::Real> m_meso_avg_error;
 
     // these are the instantaneous planar averages
     amrex::Gpu::DeviceVector<amrex::Real> m_velAvg_ht;
@@ -68,8 +68,8 @@ private:
     amrex::Gpu::DeviceVector<amrex::Real> m_vAvg_vals;
 
     // these specify the source term
-    amrex::Gpu::DeviceVector<amrex::Real> m_error_wrf_avg_U;
-    amrex::Gpu::DeviceVector<amrex::Real> m_error_wrf_avg_V;
+    amrex::Gpu::DeviceVector<amrex::Real> m_error_meso_avg_U;
+    amrex::Gpu::DeviceVector<amrex::Real> m_error_meso_avg_V;
 
     amrex::Vector<amrex::Real> m_err_U;
     amrex::Vector<amrex::Real> m_err_V;

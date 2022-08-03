@@ -43,19 +43,19 @@ public:
     amrex::Real mean_temperature_heights(
         const FieldPlaneAveraging& tavg, std::unique_ptr<ABLMesoscaleInput>& ncfile);
 
-    amrex::Vector<amrex::Real>& theta_wrf_error() { return m_err_Theta; }
+    amrex::Vector<amrex::Real>& theta_error() { return m_err_Theta; }
 
 private:
     // these are inputs
-    amrex::Gpu::DeviceVector<amrex::Real> m_wrf_ht;
-    amrex::Gpu::DeviceVector<amrex::Real> m_wrf_theta_vals;
+    amrex::Gpu::DeviceVector<amrex::Real> m_meso_ht;
+    amrex::Gpu::DeviceVector<amrex::Real> m_meso_theta_vals;
 
     // this is the instantaneous planar average (at AMR-Wind levels)
     amrex::Gpu::DeviceVector<amrex::Real> m_theta_ht;
     amrex::Gpu::DeviceVector<amrex::Real> m_theta_vals;
 
     // this specifies the source term
-    amrex::Gpu::DeviceVector<amrex::Real> m_error_wrf_avg_theta;
+    amrex::Gpu::DeviceVector<amrex::Real> m_error_meso_avg_theta;
 
     amrex::Vector<amrex::Real> m_err_Theta;
 

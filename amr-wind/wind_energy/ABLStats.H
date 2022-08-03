@@ -74,16 +74,16 @@ public:
         m_abl_forcing = forcing;
     }
 
-    void register_wrf_forcing_mom(
+    void register_meso_forcing_mom(
         pde::icns::ABLWrfForcingMom* forcing) const override
     {
-        m_abl_wrf_mom_forcing = forcing;
+        m_abl_meso_mom_forcing = forcing;
     }
 
-    void register_wrf_forcing_temp(
+    void register_meso_forcing_temp(
         pde::temperature::ABLWrfForcingTemp* forcing) const override
     {
-        m_abl_wrf_temp_forcing = forcing;
+        m_abl_meso_temp_forcing = forcing;
     }
 
     //! Calculate sfs stress averages
@@ -131,8 +131,8 @@ private:
     //! Reference to ABL forcing term if present
     mutable pde::icns::ABLForcing* m_abl_forcing{nullptr};
 
-    mutable pde::icns::ABLWrfForcingMom* m_abl_wrf_mom_forcing{nullptr};
-    mutable pde::temperature::ABLWrfForcingTemp* m_abl_wrf_temp_forcing{
+    mutable pde::icns::ABLWrfForcingMom* m_abl_meso_mom_forcing{nullptr};
+    mutable pde::temperature::ABLWrfForcingTemp* m_abl_meso_temp_forcing{
         nullptr};
 
     //! Format of the data output (ascii, netcdf, etc.)

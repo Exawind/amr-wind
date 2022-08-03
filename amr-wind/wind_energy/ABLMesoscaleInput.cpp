@@ -7,49 +7,49 @@
 namespace amr_wind {
 
 ABLMesoscaleInput::ABLMesoscaleInput(const std::string ncfile)
-: m_wrf_filename(ncfile)
+: m_filename(ncfile)
 {
 #ifdef AMR_WIND_USE_NETCDF
     auto ncf = ncutils::NCFile::open_par(
-        m_wrf_filename, NC_NOWRITE | NC_NETCDF4 | NC_MPIIO,
+        m_filename, NC_NOWRITE | NC_NETCDF4 | NC_MPIIO,
         amrex::ParallelContext::CommunicatorSub(), MPI_INFO_NULL);
 
-    m_wrf_nheight = ncf.has_dim("nheight") ? ncf.dim("nheight").len() : 0;
-    m_wrf_ntime = ncf.dim("ntime").len();
-    amrex::Print() << "Loading " << m_wrf_filename << " : " << m_wrf_ntime
-                   << " times, " << m_wrf_nheight << " heights" << std::endl;
+    m_nheight = ncf.has_dim("nheight") ? ncf.dim("nheight").len() : 0;
+    m_ntime = ncf.dim("ntime").len();
+    amrex::Print() << "Loading " << m_filename << " : " << m_ntime
+                   << " times, " << m_nheight << " heights" << std::endl;
 
-    m_wrf_height.resize(m_wrf_nheight);
-    m_wrf_time.resize(m_wrf_ntime);
+    m_height.resize(m_nheight);
+    m_time.resize(m_ntime);
 
-    if (m_wrf_nheight > 0) ncf.var("heights").get(m_wrf_height.data());
-    ncf.var("times").get(m_wrf_time.data());
+    if (m_nheight > 0) ncf.var("heights").get(m_height.data());
+    ncf.var("times").get(m_time.data());
 
-    m_wrf_u.resize(m_wrf_nheight * m_wrf_ntime);
-    m_wrf_v.resize(m_wrf_nheight * m_wrf_ntime);
-    m_wrf_temp.resize(m_wrf_nheight * m_wrf_ntime);
-    m_wrf_tflux.resize(m_wrf_ntime);
+    m_u.resize(m_nheight * m_ntime);
+    m_v.resize(m_nheight * m_ntime);
+    m_temp.resize(m_nheight * m_ntime);
+    m_tflux.resize(m_ntime);
 
-    if (m_wrf_nheight > 0) {
-        ncf.var("wrf_momentum_u").get(m_wrf_u.data());
-        ncf.var("wrf_momentum_v").get(m_wrf_v.data());
-        ncf.var("wrf_temperature").get(m_wrf_temp.data());
+    if (m_nheight > 0) {
+        ncf.var("wrf_momentum_u").get(m_u.data());
+        ncf.var("wrf_momentum_v").get(m_v.data());
+        ncf.var("wrf_temperature").get(m_temp.data());
     } else {
         amrex::Print() << "No height dimension in netcdf input file; no "
                           "forcing profiles read."
                        << std::endl;
     }
-    ncf.var("wrf_tflux").get(m_wrf_tflux.data());
+    ncf.var("wrf_tflux").get(m_tflux.data());
 
     // ***FIXME***
     // MUST COMMENT THIS LINE OUT (resize cmd) to consistently fix problem:
     //
-    // m_wrf_transition_height.resize(m_wrf_ntime);
+    // m_transition_height.resize(m_ntime);
     //
     // if (ncf.has_var("transition_height")) {
-    //    amrex::Print() << "found transition_height in WRFforcing file" <<
+    //    amrex::Print() << "found transition_height in ABLMesoscaleInput file" <<
     //    std::endl;
-    //    ncf.var("transition_height").get(m_wrf_transition_height.data());
+    //    ncf.var("transition_height").get(m_transition_height.data());
     //}
 
 #else
@@ -58,35 +58,7 @@ ABLMesoscaleInput::ABLMesoscaleInput(const std::string ncfile)
 #endif
 
     amrex::ParmParse pp("ABL");
-    pp.query("WRF_tendency_forcing", m_abl_wrf_tendency);
+    pp.query("WRF_tendency_forcing", m_abl_tendency);
 }
-
-const amrex::Vector<amrex::Real>& ABLMesoscaleInput::wrf_heights() const
-{
-    return m_wrf_height;
-}
-
-const amrex::Vector<amrex::Real>& ABLMesoscaleInput::wrf_times() const
-{
-    return m_wrf_time;
-}
-
-const amrex::Vector<amrex::Real>& ABLMesoscaleInput::wrf_u() const { return m_wrf_u; }
-
-const amrex::Vector<amrex::Real>& ABLMesoscaleInput::wrf_v() const { return m_wrf_v; }
-
-const amrex::Vector<amrex::Real>& ABLMesoscaleInput::wrf_temp() const
-{
-    return m_wrf_temp;
-}
-
-const amrex::Vector<amrex::Real>& ABLMesoscaleInput::wrf_tflux() const
-{
-    return m_wrf_tflux;
-}
-
-// ***FIXME***
-// const amrex::Vector<amrex::Real>& ABLMesoscaleInput::wrf_transition_height() const {
-// return m_wrf_transition_height; }
 
 } // namespace amr_wind
