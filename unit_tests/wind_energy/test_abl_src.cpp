@@ -141,6 +141,7 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
     constexpr amrex::Real corfac = 2.0 * amr_wind::utils::two_pi() / 86400.0;
     // Latitude is set to 45 degrees in the input file so sinphi = cosphi
     const amrex::Real latfac = std::sin(amr_wind::utils::radians(45.0));
+    bool S = {false}
 
     utils::populate_abl_params();
     initialize_mesh();
