@@ -39,13 +39,13 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
         // Latitude is mandatory
         // Latitude is read in degrees
         pp.get("latitude", latitude);
-        latitude = utils::radians(latitude);
-        sinphi = std::sin(latitude);
-        cosphi = std::cos(latitude);
+        m_latitude = utils::radians(latitude);
+        m_sinphi = std::sin(latitude);
+        m_cosphi = std::cos(latitude);
 
         // 3-component forcing (Default: false)
         bool m_S = false;
-        if (!pp.query("three_ComponentForcing", m_S));
+        if (!pp.query("three_ComponentForcing", m_S)){};
     }
 
     {
@@ -70,6 +70,12 @@ void GeostrophicForcing::operator()(
     const FieldState /*fstate*/,
     const amrex::Array4<amrex::Real>& src_term) const
 {
+
+    const auto sinphi = m_sinphi;
+    const auto cosphi = m_cosphi;
+    const auto corfac = m_coriolis_factor;
+    const auto S = m_S;
+    
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> forcing{
         {m_g_forcing[0], m_g_forcing[1], m_g_forcing[2]}};
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
