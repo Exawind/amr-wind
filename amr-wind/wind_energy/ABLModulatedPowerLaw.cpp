@@ -67,12 +67,12 @@ void ABLModulatedPowerLaw::post_init_actions()
 void ABLModulatedPowerLaw::pre_advance_work()
 {
     // could add inputs to control this
-    amrex::Real start_time = 0.0;
-    amrex::Real stop_time = 10000.0;
-    amrex::Real rate = 0.01;
+    const amrex::Real start_time = 0.0;
+    const amrex::Real stop_time = 10000.0;
 
     if (m_time.current_time() > start_time &&
         m_time.current_time() < stop_time) {
+        const amrex::Real rate = 0.01;
         //        m_wind_direction +=
         //        sin(rate*(m_time.current_time()-start_time));
         m_wind_direction += rate * (m_time.current_time() - start_time);
@@ -90,7 +90,7 @@ void ABLModulatedPowerLaw::post_advance_work() {}
 void ABLModulatedPowerLaw::set_velocity(
     const int lev,
     const amrex::Real /*time*/,
-    Field& fld,
+    const Field& fld,
     amrex::MultiFab& mfab) const
 {
 
@@ -185,7 +185,7 @@ void ABLModulatedPowerLaw::set_velocity(
 void ABLModulatedPowerLaw::set_temperature(
     const int lev,
     const amrex::Real /*time*/,
-    Field& fld,
+    const Field& fld,
     amrex::MultiFab& mfab) const
 {
 
