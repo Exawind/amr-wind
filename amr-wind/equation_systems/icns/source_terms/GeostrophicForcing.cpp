@@ -35,7 +35,6 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
         amrex::Print() << "Geostrophic forcing: Coriolis factor = "
                        << coriolis_factor << std::endl;
 
-        pp.query("latitude", latitude);
         // Latitude is mandatory, everything else is optional
         // Latitude is read in degrees
         pp.get("latitude", latitude);
