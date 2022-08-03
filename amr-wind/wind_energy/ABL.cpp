@@ -44,7 +44,6 @@ ABL::ABL(CFDSim& sim)
 
     // Instantiate the ABL Modulated Power Law
     m_abl_mpl = std::make_unique<ABLModulatedPowerLaw>(sim);
-
 }
 
 ABL::~ABL() = default;
