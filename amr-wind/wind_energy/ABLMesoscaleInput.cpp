@@ -8,7 +8,7 @@ namespace amr_wind {
 
 ABLMesoscaleInput::ABLMesoscaleInput(
     const std::string ncfile, const std::string var_prefix)
-    : m_filename(ncfile) , m_var_prefix(var_prefix)
+    : m_filename(ncfile), m_var_prefix(var_prefix)
 {
 #ifdef AMR_WIND_USE_NETCDF
     auto ncf = ncutils::NCFile::open_par(
