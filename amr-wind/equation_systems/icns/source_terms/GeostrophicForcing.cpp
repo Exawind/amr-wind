@@ -52,7 +52,7 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
         pp.getarr("geostrophic_wind", m_target_vel);
     }
 
-    const auto coriolis_factor = corfac;
+    const auto corfac = coriolis_factor;
     const auto S = m_S;
 
     m_g_forcing = {
@@ -75,7 +75,7 @@ void GeostrophicForcing::operator()(
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         src_term(i, j, k, 0) += forcing[0];
         src_term(i, j, k, 1) += forcing[1];
-        scr_term(i, j, k, 2) += forcing[2];
+        src_term(i, j, k, 2) += forcing[2];
     });
 }
 
