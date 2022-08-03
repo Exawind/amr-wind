@@ -18,7 +18,6 @@
 #endif
 #ifdef AMR_WIND_USE_ASCENT
 #include "ascent_config.h"
-#include <omp.h>
 #endif
 
 namespace amrex {
@@ -132,7 +131,7 @@ void print_banner(MPI_Comm comm, std::ostream& out)
         << "OFF" << std::endl
 #endif
         << "  OpenMP           :: "
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
         << "ON    (Num. threads = " << omp_get_max_threads() << ")" << std::endl
 #else
         << "OFF" << std::endl

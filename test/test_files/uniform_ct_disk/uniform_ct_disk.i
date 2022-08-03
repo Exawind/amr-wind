@@ -31,14 +31,13 @@ Actuator.UniformCtDisk.base_position = 0.0 0.0 0.0
 Actuator.UniformCtDisk.hub_height = 0.0
 Actuator.UniformCtDisk.yaw = 315.0 # degrees (yaw is relative to north which defaults to {0,1,0})
 Actuator.UniformCtDisk.sample_yaw = 270.0 # set velocity sampling to be in the normal flow direction
-Actuator.UniformCtDisk.num_force_points = 5
 Actuator.UniformCtDisk.thrust_coeff = 0.0 0.7 1.2
 Actuator.UniformCtDisk.wind_speed = 0.0 10.0 12.0
 Actuator.UniformCtDisk.epsilon = 10.0
 Actuator.UniformCtDisk.density = 1.225
 Actuator.UniformCtDisk.diameters_to_sample = 1.0
-Actuator.UniformCtDisk.num_vel_points_r = 3
-Actuator.UniformCtDisk.num_vel_points_t = 3
+Actuator.UniformCtDisk.num_points_r = 5
+Actuator.UniformCtDisk.num_points_t = 3
 
 ICNS.source_terms = ActuatorForcing
 

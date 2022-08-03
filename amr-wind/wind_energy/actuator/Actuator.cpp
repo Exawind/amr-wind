@@ -147,7 +147,8 @@ void Actuator::update_positions()
 
     // Sample velocities at the new locations
     const auto& vel = m_sim.repo().get_field("velocity");
-    m_container->sample_velocities(vel);
+    const auto& density = m_sim.repo().get_field("density");
+    m_container->sample_fields(vel, density);
 }
 
 /** Provide updated velocities from container to actuator instances
@@ -160,9 +161,14 @@ void Actuator::update_velocities()
     auto& pinfo = m_container->m_data;
     for (int i = 0, ic = 0; i < pinfo.num_objects; ++i) {
         const auto ig = pinfo.global_id[i];
+
         const auto vel =
             ::amr_wind::utils::slice(pinfo.velocity, ic, pinfo.num_pts[i]);
-        m_actuators[ig]->update_velocities(vel);
+
+        const auto density =
+            ::amr_wind::utils::slice(pinfo.density, ic, pinfo.num_pts[i]);
+
+        m_actuators[ig]->update_fields(vel, density);
         ic += pinfo.num_pts[i];
     }
 }
@@ -189,7 +195,7 @@ void Actuator::compute_source_term()
         auto& sfab = m_act_source(lev);
         const auto& geom = m_sim.mesh().Geom(lev);
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
         for (amrex::MFIter mfi(sfab); mfi.isValid(); ++mfi) {

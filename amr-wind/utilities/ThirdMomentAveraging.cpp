@@ -169,7 +169,7 @@ void ThirdMomentAveraging::compute_average(
     const int ncomp3 = m_plane_average3.ncomp();
     const int nmoments = m_num_moments;
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
     for (amrex::MFIter mfi(mfab1, amrex::TilingIfNotGPU()); mfi.isValid();

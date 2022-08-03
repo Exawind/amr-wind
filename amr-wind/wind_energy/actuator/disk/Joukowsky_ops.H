@@ -48,16 +48,15 @@ struct InitDataOp<Joukowsky, ActSrcDisk>
 {
     void operator()(typename Joukowsky::DataType& data)
     {
+        ops::base::allocate_basic_grid_quantities<Joukowsky>(data);
+
         auto& grid = data.grid();
         auto& meta = data.meta();
 
-        // only resize the members we are going to use
-        grid.pos.resize(meta.num_force_pts);
-        grid.force.resize(meta.num_force_pts);
-        grid.vel.resize(meta.num_vel_pts);
-        grid.vel_pos.resize(meta.num_vel_pts);
         meta.tip_correction.resize(meta.num_vel_pts_r);
         meta.root_correction.resize(meta.num_vel_pts_r);
+        meta.f_normal.resize(meta.num_vel_pts_r);
+        meta.f_theta.resize(meta.num_force_pts);
 
         std::fill(meta.tip_correction.begin(), meta.tip_correction.end(), 1.0);
 
@@ -123,13 +122,15 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
 
         const amrex::Real Ct = ddata.current_ct;
         const amrex::Real dx = ddata.dr / ddata.radius();
-        const amrex::Real dTheta =
-            amr_wind::utils::two_pi() / ddata.num_vel_pts_t;
 
-        const amrex::Real geometry_factor = ddata.dr * ddata.dr * dTheta * 0.5;
+        const ops::base::AreaComputer area(
+            ddata.radius(), ddata.num_vel_pts_r, ddata.num_vel_pts_t);
 
         const amrex::Real lambda =
             ddata.radius() * ddata.current_angular_velocity / U_ref;
+
+        ddata.current_tip_speed_ratio = lambda;
+
         const amrex::Real lambda_2 = lambda * lambda;
 
         // step 0: compute tip correction based on current wind speed (eq 9)
@@ -191,6 +192,10 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
             const amrex::Real f_z =
                 q0 * g * F / x * (lambda * x + 0.5 * q0 * g * F / x);
 
+            ddata.f_normal[i] = f_z;
+
+            const auto dArea = area.area_section(i);
+
             for (int j = 0; j < ddata.num_vel_pts_t; j++, ip++) {
                 const auto point_current = grid.pos[ip];
 
@@ -204,9 +209,7 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                     -ddata.normal_vec & disk_velocity[ip];
 
                 const amrex::Real f_theta = u_disk_ij / U_ref * q0 * g * F / x;
-
-                const amrex::Real dArea =
-                    geometry_factor * (std::pow(i + 1.0, 2) - std::pow(i, 2));
+                ddata.f_theta[ip] = f_theta;
 
                 // eq 18
                 moment += x * ddata.radius() * f_theta * dArea;

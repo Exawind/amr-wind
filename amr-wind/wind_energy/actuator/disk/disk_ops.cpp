@@ -96,6 +96,22 @@ void write_netcdf(
 namespace ops {
 namespace base {
 
+AreaComputer::AreaComputer(
+    const amrex::Real radius, const int num_r, const int num_theta)
+    : area(M_PI * radius * radius)
+    , geometry_factor(radius * radius / num_r / num_r * M_PI / num_theta)
+{}
+
+amrex::Real AreaComputer::area_section(const int iRadius) const
+{
+    return geometry_factor * (std::pow(iRadius + 1, 2) - std::pow(iRadius, 2));
+}
+
+amrex::Real AreaComputer::weight(const int iRadius) const
+{
+    return area_section(iRadius) / area;
+}
+
 vs::Vector get_east_orientation()
 {
     utils::ActParser pp("Coriolis.Forcing", "Coriolis");
@@ -130,20 +146,27 @@ void collect_parse_conflicts(
         ss << "ActuatorDisk Conflict: " << p1 << " and " << p2 << std::endl;
     }
 }
+
+void collect_parse_dependencies_one_way(
+    const utils::ActParser& pp,
+    const std::string& independent,
+    const std::string& dependent,
+    std::ostringstream& ss)
+{
+    if (pp.contains(dependent) && !pp.contains(independent)) {
+        ss << "ActuatorDisk Dependency Missing: " << independent
+           << " required with " << dependent << std::endl;
+    }
+}
+
 void collect_parse_dependencies(
     const utils::ActParser& pp,
     const std::string& p1,
     const std::string& p2,
     std::ostringstream& ss)
 {
-    if (pp.contains(p1) && !pp.contains(p2)) {
-        ss << "ActuatorDisk Dependency Missing: " << p2 << " required with "
-           << p1 << std::endl;
-    }
-    if (!pp.contains(p1) && pp.contains(p2)) {
-        ss << "ActuatorDisk Dependency Missing: " << p1 << " required with "
-           << p2 << std::endl;
-    }
+    collect_parse_dependencies_one_way(pp, p1, p2, ss);
+    collect_parse_dependencies_one_way(pp, p2, p1, ss);
 }
 
 void required_parameters(DiskBaseData& meta, const utils::ActParser& pp)
@@ -173,9 +196,8 @@ void optional_parameters(DiskBaseData& meta, const utils::ActParser& pp)
     }
     pp.query("disk_center", meta.center);
     pp.query("disk_normal", meta.normal_vec);
-    pp.query("density", meta.density);
     pp.query("diameters_to_sample", meta.diameters_to_sample);
-    pp.query("num_theta_force_points", meta.num_force_theta_pts);
+    pp.query("num_points_t", meta.num_force_theta_pts);
 
     // make sure we compute normal vec contribution from tilt before yaw
     // since we won't know a reference axis to rotate for tilt after
@@ -238,19 +260,29 @@ void optional_parameters(DiskBaseData& meta, const utils::ActParser& pp)
     }
 }
 
+void check_error_stream(const std::ostringstream& error_collector)
+{
+    if (!error_collector.str().empty()) {
+        amrex::Abort(
+            "Errors found while parsing ActuatorDisk Inputs:\n" +
+            error_collector.str());
+    }
+}
 std::ostringstream check_for_parse_conflicts(const utils::ActParser& pp)
 {
     std::ostringstream error_collector;
 
-    // clang-format off
     collect_parse_conflicts(pp, "disk_normal", "yaw", error_collector);
     collect_parse_conflicts(pp, "disk_normal", "tilt", error_collector);
     collect_parse_conflicts(pp, "sample_normal", "sample_yaw", error_collector);
-    collect_parse_conflicts(pp, "sample_normal", "sample_tilt", error_collector);
-    collect_parse_conflicts(pp, "disk_center", "base_position", error_collector);
+    collect_parse_conflicts(
+        pp, "sample_normal", "sample_tilt", error_collector);
+    collect_parse_conflicts(
+        pp, "disk_center", "base_position", error_collector);
     collect_parse_conflicts(pp, "disk_center", "hub_height", error_collector);
-    collect_parse_dependencies(pp, "base_position", "hub_height", error_collector);
-    // clang-format on
+    collect_parse_dependencies(
+        pp, "base_position", "hub_height", error_collector);
+
     RealList ct;
     pp.getarr("thrust_coeff", ct);
     if (ct.size() > 1) {
@@ -273,11 +305,7 @@ std::ostringstream check_for_parse_conflicts(const utils::ActParser& pp)
         }
     }
 
-    if (!error_collector.str().empty()) {
-        amrex::Abort(
-            "Errors found while parsing ActuatorDisk Inputs:\n" +
-            error_collector.str());
-    }
+    check_error_stream(error_collector);
     return error_collector;
 }
 
@@ -307,8 +335,7 @@ void compute_and_normalize_coplanar_vector(DiskBaseData& meta)
 void final_checks(const DiskBaseData& meta)
 {
     AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-        meta.num_vel_pts > 0,
-        "num_vel_points_r and num_vel_points_t must both be >=1");
+        meta.num_vel_pts > 0, "num_points_r and num_points_t must both be >=1");
 }
 
 amrex::RealBox compute_bounding_box(const DiskBaseData& meta)

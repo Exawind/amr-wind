@@ -28,12 +28,11 @@ Actuator.type = JoukowskyDisk
 
 Actuator.JoukowskyDisk.rotor_diameter = 126.0
 Actuator.JoukowskyDisk.disk_center = 0.0 0.0 0.0
-Actuator.JoukowskyDisk.num_blades = 3
 Actuator.JoukowskyDisk.yaw = 270.0 # degrees (yaw is relative to north which defaults to {0,1,0})
 Actuator.JoukowskyDisk.sample_yaw = 270.0 # set velocity sampling to be in the normal flow direction
 Actuator.JoukowskyDisk.thrust_coeff = 0.0 0.7 1.2
 Actuator.JoukowskyDisk.wind_speed = 0.0 10.0 12.0
-Actuator.JoukowskyDisk.angular_velocity = 0.0 1.0 1.5
+Actuator.JoukowskyDisk.rpm = 0.0 9.549296585513720146133 14.3239448782705802192
 Actuator.JoukowskyDisk.epsilon = 20.0
 Actuator.JoukowskyDisk.density = 1.225
 Actuator.JoukowskyDisk.diameters_to_sample = 1.0

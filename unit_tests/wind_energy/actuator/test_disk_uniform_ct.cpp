@@ -15,7 +15,7 @@ protected:
         AmrexTest::SetUp();
         {
             amrex::ParmParse pu("Actuator.UniformCtDisk");
-            pu.add("num_force_points", 3);
+            pu.add("num_points_r", 3);
             pu.add("epsilon", 1);
             pu.add("rotor_diameter", 1);
             std::vector<double> ct{1};
