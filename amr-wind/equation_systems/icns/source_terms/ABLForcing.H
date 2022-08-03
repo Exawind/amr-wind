@@ -51,6 +51,9 @@ private:
     amrex::RealArray m_abl_forcing{{0.0, 0.0, 0.0}};
 
     //! Target velocity
+    amrex::Real m_speed;
+    amrex::Real m_dir;
+    amrex::Real m_dir_rad;
     amrex::Vector<amrex::Real> m_target_vel{{0.0, 0.0, 0.0}};
 
     //! Current mean vel

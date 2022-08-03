@@ -36,7 +36,26 @@ ABLFieldInit::ABLFieldInit()
     // Extract velocity field from incflo
     amrex::ParmParse pp_incflo("incflo");
     pp_incflo.get("density", m_rho);
-    pp_incflo.getarr("velocity", m_vel);
+
+    // MICHAEL: If timetable found don't look for velocity (how to create flag?)
+    if (pp_abl.contains("velocity_timetable")) {
+        pp_abl.get("velocity_timetable", m_vel_timetable);
+    } else {
+        pp_incflo.getarr("velocity", m_vel);
+    }
+
+    // MICHAEL: Add read table operation here
+    std::ifstream ifh(m_vel_timetable, std::ios::in);
+    if (!ifh.good()) {
+        amrex::Abort("Cannot find input file: " + m_vel_timetable);
+    }
+    ifh >> num_vel_pts;
+    m_vel_time.resize(m_vpts);
+    m_vel_speed.resize(m_vpts);
+    m_vel_dir.resize(m_vpts);
+    for (int i = 0; i < m_vpts; ++i) {
+        ifh >> m_vel_time[i] >> m_vel_speed[i] >> m_vel_dir[i];
+    }
 
     m_thht_d.resize(num_theta_values);
     m_thvv_d.resize(num_theta_values);
@@ -63,9 +82,25 @@ void ABLFieldInit::operator()(
 
     const bool perturb_vel = m_perturb_vel;
     const amrex::Real rho_init = m_rho;
-    const amrex::Real umean = m_vel[0];
-    const amrex::Real vmean = m_vel[1];
-    const amrex::Real wmean = m_vel[2];
+    // MICHAEL: initialize to first value of table
+    if (pp_abl.contains("velocity_timetable")) {
+        const amrex::Real slope_spd =
+            (m_vel_speed[1] - m_vel_speed[0]) / (m_vel_time[1] - m_vel_time[0]);
+        const amrex::Real slope_dir =
+            (m_vel_dir[1] - m_vel_dir[0]) / (m_vel_time[1] - m_vel_time[0]);
+
+        const amrex::Real m_speed = m_vel_speed[0] + (0 - m_vel_time[0]) * slope_spd;
+        const amrex::Real m_dir = m_vel_dir[0] + (0 - m_vel_time[0]) * slope_dir;
+        const amrex::Real m_dir_rad = utils::radians(m_dir);
+
+        const amrex::Real umean = m_speed * std::cos(m_dir_rad);
+        const amrex::Real vmean = m_speed * std::sin(m_dir_rad);
+        const amrex::Real wmean = 0.0;
+    } else {
+        const amrex::Real umean = m_vel[0];
+        const amrex::Real vmean = m_vel[1];
+        const amrex::Real wmean = m_vel[2];
+    }
     const amrex::Real aval = m_Uperiods * 2.0 * pi / (probhi[1] - problo[1]);
     const amrex::Real bval = m_Vperiods * 2.0 * pi / (probhi[0] - problo[0]);
     const amrex::Real ufac = m_deltaU * std::exp(0.5) / m_ref_height;

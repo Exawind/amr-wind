@@ -47,6 +47,14 @@ private:
     //! Initial velocity components
     amrex::Vector<amrex::Real> m_vel;
 
+    //! File name for velocity components time table
+    std::string m_vel_timetable{""};
+    // MICHAEL: added variables here (how to access these in ABLForcing.cpp?)
+    int num_vel_pts{0};
+    amrex::Vector<amrex::Real> m_vel_time;
+    amrex::Vector<amrex::Real> m_vel_speed;
+    amrex::Vector<amrex::Real> m_vel_dir;
+
     ///@{
     //! Lookup table containing temperature variation w.r.t. height above
     //! terrain

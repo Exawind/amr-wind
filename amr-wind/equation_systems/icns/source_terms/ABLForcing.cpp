@@ -1,6 +1,7 @@
 #include "amr-wind/equation_systems/icns/source_terms/ABLForcing.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/wind_energy/ABL.H"
+#include "amr-wind/utilities/trig_ops.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
@@ -19,7 +20,30 @@ ABLForcing::ABLForcing(const CFDSim& sim) : m_time(sim.time())
     // TODO: Allow forcing at multiple heights
     pp_abl.get("abl_forcing_height", m_forcing_height);
     amrex::ParmParse pp_incflo("incflo");
-    pp_incflo.getarr("velocity", m_target_vel);
+
+    if (pp_abl.contains("velocity_timetable")) {
+        // MICHAEL: interpolate target velocity
+        m_speed = m_vel_speed[0];
+        m_dir = m_vel_dir[0];
+        for (int it = 0; it < num_vel_pts - 1; ++it) {
+            if ((m_time > m_vel_time[it]) && (m_time <= m_vel_time[it + 1])) {
+                const amrex::Real slope_spd =
+                    (m_vel_speed[it + 1] - m_vel_speed[it]) / (m_vel_time[it + 1] - m_vel_time[it]);
+                const amrex::Real slope_dir =
+                    (m_vel_dir[it + 1] - m_vel_dir[it]) / (m_vel_time[it + 1] - m_vel_time[it]);
+                m_speed = m_vel_speed[it] + (m_time - m_vel_time[it]) * slope_spd;
+                m_dir = m_vel_dir[it] + (m_time - m_vel_time[it]) * slope_dir;
+            }
+        }
+
+        // Convert to Cartesian coordinates
+        m_dir_rad = utils::radians(m_dir);
+        m_target_vel[0] = m_speed * std::cos(m_dir_rad);
+        m_target_vel[1] = m_speed * std::sin(m_dir_rad);
+
+    } else {
+        pp_incflo.getarr("velocity", m_target_vel);
+    }
 
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {
         m_mean_vel[i] = m_target_vel[i];
