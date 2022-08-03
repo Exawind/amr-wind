@@ -42,13 +42,26 @@ ABL::ABL(CFDSim& sim)
     }
 
     amrex::ParmParse pp("ABL");
-    if (pp.contains("WRFforcing")) {
+
+    if (pp.contains("mesoscale_forcing")) {
+#ifndef AMR_WIND_USE_NETCDF
+        amrex::Abort("Mesoscale forcing capability requires NetCDF");
+#else
+        std::string ncfile;
+        pp.query("mesoscale_forcing", ncfile);
+        m_meso_file.reset(new ABLMesoscaleInput(ncfile));
+#endif
+
+    } else if (pp.contains("WRFforcing")) {
 #ifndef AMR_WIND_USE_NETCDF
         amrex::Abort("WRF forcing capability requires NetCDF");
 #else
+        amrex::Print() << "Note: ABL.WRFforcing is deprecated -- "
+                       << "use ABL.mesoscale_forcing instead"
+                       << std::endl;
         std::string file_wrf;
         pp.query("WRFforcing", file_wrf);
-        m_meso_file.reset(new ABLMesoscaleInput(file_wrf));
+        m_meso_file.reset(new ABLMesoscaleInput(file_wrf,"wrf_"));
 #endif
     }
 

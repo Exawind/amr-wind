@@ -11,7 +11,9 @@ class ABLMesoscaleInput
 {
 
 public:
-    ABLMesoscaleInput(const std::string ncfile);
+    ABLMesoscaleInput(
+        const std::string ncfile,
+        const std::string var_prefix="");
 
     // ~ABLMesoscaleInput() = default;
 
@@ -51,6 +53,8 @@ public:
 
 private:
     std::string m_filename;
+
+    std::string m_var_prefix;
 
     amrex::Vector<amrex::Real> m_height;
     amrex::Vector<amrex::Real> m_time;

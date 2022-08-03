@@ -382,7 +382,7 @@ void ABLStats::prepare_netcdf_file()
     grp.def_var("hvelmag", NC_DOUBLE, two_dim);
     grp.def_var("theta", NC_DOUBLE, two_dim);
     amrex::ParmParse pp("ABL");
-    if (pp.contains("WRFforcing")) {
+    if (pp.contains("mesoscale_forcing") || pp.contains("WRFforcing")) {
         grp.def_var("abl_meso_forcing_mom_x", NC_DOUBLE, two_dim);
         grp.def_var("abl_meso_forcing_mom_y", NC_DOUBLE, two_dim);
         grp.def_var("abl_meso_forcing_theta", NC_DOUBLE, two_dim);
