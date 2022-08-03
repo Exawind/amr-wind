@@ -44,8 +44,8 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
         m_cosphi = std::cos(latitude);
 
         // 3-component forcing (Default: false)
-        bool m_S = false;
-        if (!pp.query("three_ComponentForcing", m_S)){};
+        //bool m_S = false;
+        //if (!pp.query("three_ComponentForcing", m_S)){};
     }
 
     {
@@ -75,7 +75,7 @@ void GeostrophicForcing::operator()(
     const auto cosphi = m_cosphi;
     const auto corfac = m_coriolis_factor;
     const auto S = m_S;
-    
+
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> forcing{
         {m_g_forcing[0], m_g_forcing[1], m_g_forcing[2]}};
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
