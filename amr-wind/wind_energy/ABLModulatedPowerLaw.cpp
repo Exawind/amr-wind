@@ -76,7 +76,7 @@ void ABLModulatedPowerLaw::pre_advance_work()
     if (m_time.current_time() > m_start_time &&
         m_time.current_time() < m_stop_time) {
         m_wind_direction += m_degrees_per_sec * m_time.deltaT();
-//        wind_speed += sin(0.02*m_time.current_time());
+        // wind_speed += sin(0.02*m_time.current_time());
     }
 
     const amrex::Real wind_direction_radian = utils::radians(m_wind_direction);
