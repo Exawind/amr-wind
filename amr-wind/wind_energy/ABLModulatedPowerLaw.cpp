@@ -161,7 +161,6 @@ void ABLModulatedPowerLaw::set_velocity(
 
             const auto& arr = mfab[mfi].array();
 
-            // velocity
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
@@ -231,16 +230,11 @@ void ABLModulatedPowerLaw::set_temperature(
 
             const auto& arr = mfab[mfi].array();
 
-            // temperature
             amrex::ParallelForRNG(
                 bx, [=] AMREX_GPU_DEVICE(
                         int i, int j, int k,
                         const amrex::RandomEngine& engine) noexcept {
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                    arr(i, j, k) = 300.0;
-                    if (z > 1000.0) {
-                        arr(i, j, k) += (z - 1000.0) / 1000.0 * 3.0;
-                    }
 
                     amrex::Real theta = tv[0];
                     for (int iz = 0; iz < ntvals - 1; ++iz) {
