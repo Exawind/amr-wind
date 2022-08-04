@@ -35,8 +35,8 @@ ABLModulatedPowerLaw::ABLModulatedPowerLaw(CFDSim& sim)
     pp.query("wind_direction", m_wind_direction);
 
     pp.query("start_time", m_start_time);
-    pp.query("stop_time",m_stop_time);
-    pp.query("degrees_per_second",m_degrees_per_sec);
+    pp.query("stop_time", m_stop_time);
+    pp.query("degrees_per_second", m_degrees_per_sec);
 
     pp.query("deltaT", m_deltaT);
     pp.query("theta_cutoff_height", m_theta_cutoff_height);
