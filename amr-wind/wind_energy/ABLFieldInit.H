@@ -48,7 +48,7 @@ private:
     amrex::Vector<amrex::Real> m_vel;
 
     // MICHAEL: File name for velocity components time table
-    std::string m_vel_timetable{""};
+    std::string m_vel_timetable;
 
     // MICHAEL: Initial wind speed
     amrex::Real m_vel_speed;

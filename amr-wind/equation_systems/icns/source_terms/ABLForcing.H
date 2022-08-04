@@ -65,7 +65,7 @@ private:
     amrex::RealArray m_abl_forcing{{0.0, 0.0, 0.0}};
 
     // MICHAEL: File name for velocity components time table
-    std::string m_vel_timetable{""};
+    std::string m_vel_timetable;
 
     // MICHAEL: Velocity time table
     amrex::Vector<amrex::Real> m_time_table;

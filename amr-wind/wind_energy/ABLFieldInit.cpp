@@ -38,7 +38,8 @@ ABLFieldInit::ABLFieldInit()
     pp_incflo.get("density", m_rho);
 
     // MICHAEL: read velocity time table
-    pp_abl.query("velocity_timetable", m_vel_timetable);
+    amrex::ParmParse pp_forcing("ABLForcing");
+    pp_forcing.query("velocity_timetable", m_vel_timetable);
     if (!m_vel_timetable.empty()) {
         std::ifstream ifh(m_vel_timetable, std::ios::in);
         if (!ifh.good()) {
