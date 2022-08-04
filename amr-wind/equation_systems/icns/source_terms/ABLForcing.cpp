@@ -21,25 +21,24 @@ ABLForcing::ABLForcing(const CFDSim& sim) : m_time(sim.time())
     pp_abl.get("abl_forcing_height", m_forcing_height);
     amrex::ParmParse pp_incflo("incflo");
 
-    if (pp_abl.contains("velocity_timetable")) {
-        // MICHAEL: interpolate target velocity
-        m_speed = m_vel_speed[0];
-        m_dir = m_vel_dir[0];
-        for (int it = 0; it < num_vel_pts - 1; ++it) {
-            if ((m_time > m_vel_time[it]) && (m_time <= m_vel_time[it + 1])) {
-                const amrex::Real slope_spd =
-                    (m_vel_speed[it + 1] - m_vel_speed[it]) / (m_vel_time[it + 1] - m_vel_time[it]);
-                const amrex::Real slope_dir =
-                    (m_vel_dir[it + 1] - m_vel_dir[it]) / (m_vel_time[it + 1] - m_vel_time[it]);
-                m_speed = m_vel_speed[it] + (m_time - m_vel_time[it]) * slope_spd;
-                m_dir = m_vel_dir[it] + (m_time - m_vel_time[it]) * slope_dir;
-            }
+    // MICHAEL: read time table
+    pp_abl.query("velocity_timetable", m_vel_timetable);
+    if (!m_vel_timetable.empty()) {
+        std::ifstream ifh(m_vel_timetable, std::ios::in);
+        if (!ifh.good()) {
+            amrex::Abort("Cannot find input file: " + m_vel_timetable);
         }
-
-        // Convert to Cartesian coordinates
-        m_dir_rad = utils::radians(m_dir);
-        m_target_vel[0] = m_speed * std::cos(m_dir_rad);
-        m_target_vel[1] = m_speed * std::sin(m_dir_rad);
+        amrex::Real data_time;
+        amrex::Real data_speed;
+        amrex::Real data_dir;
+        amrex::Real data_rad;
+        while (ifh >> data_time) {
+            ifh >> data_speed >> data_dir;
+            data_rad = utils::radians(data_dir);
+            m_time_table.push_back(data_time);
+            m_speed_table.push_back(data_speed);
+            m_direction_table.push_back(data_rad);
+        }
 
     } else {
         pp_incflo.getarr("velocity", m_target_vel);
