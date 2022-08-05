@@ -39,7 +39,6 @@ public:
         const auto& current_time = m_time.current_time();
         const auto& dt = m_time.deltaT();
 
-        // MICHAEL: interpolate target velocity here
         if (!m_vel_timetable.empty()) {
             const amrex::Real current_spd = ::amr_wind::interp::linear(
                 m_time_table, m_speed_table, current_time);
@@ -64,16 +63,16 @@ private:
     //!  ABL forcing terms
     amrex::RealArray m_abl_forcing{{0.0, 0.0, 0.0}};
 
-    // MICHAEL: File name for velocity components time table
+    //! File name for velocity forcing time table
     std::string m_vel_timetable;
 
-    // MICHAEL: Velocity time table
+    //! Velocity forcing time table
     amrex::Vector<amrex::Real> m_time_table;
 
-    // MICHAEL: Velocity speed table
+    //! Velocity forcing speed table
     amrex::Vector<amrex::Real> m_speed_table;
 
-    // MICHAEL: Velocity direction table (rad)
+    //! Velocity forcing direction table
     amrex::Vector<amrex::Real> m_direction_table;
     
     //! Target velocity

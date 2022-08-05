@@ -37,7 +37,6 @@ ABLFieldInit::ABLFieldInit()
     amrex::ParmParse pp_incflo("incflo");
     pp_incflo.get("density", m_rho);
 
-    // MICHAEL: read velocity time table
     amrex::ParmParse pp_forcing("ABLForcing");
     pp_forcing.query("velocity_timetable", m_vel_timetable);
     if (!m_vel_timetable.empty()) {
@@ -46,8 +45,9 @@ ABLFieldInit::ABLFieldInit()
             amrex::Abort("Cannot find input file: " + m_vel_timetable);
         }
         amrex::Real m_vel_time;
-        ifh >> m_vel_time >> m_vel_speed >> m_vel_dir;
-        m_vel_rad = utils::radians(m_vel_dir);
+        amrex::Real m_vel_ang;
+        ifh >> m_vel_time >> m_vel_speed >> m_vel_ang;
+        m_vel_dir = utils::radians(m_vel_ang);
     } else {
         pp_incflo.getarr("velocity", m_vel);
     }
@@ -77,19 +77,20 @@ void ABLFieldInit::operator()(
 
     const bool perturb_vel = m_perturb_vel;
     const amrex::Real rho_init = m_rho;
-    // MICHAEL: initialize to first value of table
+
     amrex::Real umean;
     amrex::Real vmean;
     amrex::Real wmean;
     if (!m_vel_timetable.empty()) {
-        umean = m_vel_speed * std::cos(m_vel_rad);
-        vmean = m_vel_speed * std::sin(m_vel_rad);
+        umean = m_vel_speed * std::cos(m_vel_dir);
+        vmean = m_vel_speed * std::sin(m_vel_dir);
         wmean = 0.0;
     } else {
         umean = m_vel[0];
         vmean = m_vel[1];
         wmean = m_vel[2];
     }
+    
     const amrex::Real aval = m_Uperiods * 2.0 * pi / (probhi[1] - problo[1]);
     const amrex::Real bval = m_Vperiods * 2.0 * pi / (probhi[0] - problo[0]);
     const amrex::Real ufac = m_deltaU * std::exp(0.5) / m_ref_height;

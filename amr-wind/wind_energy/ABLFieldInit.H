@@ -47,17 +47,14 @@ private:
     //! Initial velocity components
     amrex::Vector<amrex::Real> m_vel;
 
-    // MICHAEL: File name for velocity components time table
+    //! File name for velocity forcing time table
     std::string m_vel_timetable;
 
-    // MICHAEL: Initial wind speed
+    //! Initial wind speed
     amrex::Real m_vel_speed;
 
-    // MICHAEL: Initial wind direction (deg)
+    //! Initial wind direction (rad)
     amrex::Real m_vel_dir;
-
-    // MICHAEL: Initial wind direction (rad)
-    amrex::Real m_vel_rad;
 
     ///@{
     //! Lookup table containing temperature variation w.r.t. height above

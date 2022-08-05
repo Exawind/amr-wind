@@ -21,7 +21,6 @@ ABLForcing::ABLForcing(const CFDSim& sim) : m_time(sim.time())
     pp_abl.get("abl_forcing_height", m_forcing_height);
     amrex::ParmParse pp_incflo("incflo");
 
-    // MICHAEL: read time table
     pp_abl.query("velocity_timetable", m_vel_timetable);
     if (!m_vel_timetable.empty()) {
         std::ifstream ifh(m_vel_timetable, std::ios::in);
@@ -30,16 +29,15 @@ ABLForcing::ABLForcing(const CFDSim& sim) : m_time(sim.time())
         }
         amrex::Real data_time;
         amrex::Real data_speed;
-        amrex::Real data_dir;
+        amrex::Real data_deg;
         amrex::Real data_rad;
         while (ifh >> data_time) {
-            ifh >> data_speed >> data_dir;
-            data_rad = utils::radians(data_dir);
+            ifh >> data_speed >> data_deg;
+            data_rad = utils::radians(data_deg);
             m_time_table.push_back(data_time);
             m_speed_table.push_back(data_speed);
             m_direction_table.push_back(data_rad);
         }
-
     } else {
         pp_incflo.getarr("velocity", m_target_vel);
     }
