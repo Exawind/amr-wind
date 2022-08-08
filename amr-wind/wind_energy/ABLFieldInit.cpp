@@ -90,7 +90,7 @@ void ABLFieldInit::operator()(
         vmean = m_vel[1];
         wmean = m_vel[2];
     }
-    
+
     const amrex::Real aval = m_Uperiods * 2.0 * pi / (probhi[1] - problo[1]);
     const amrex::Real bval = m_Vperiods * 2.0 * pi / (probhi[0] - problo[0]);
     const amrex::Real ufac = m_deltaU * std::exp(0.5) / m_ref_height;

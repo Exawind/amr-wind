@@ -74,7 +74,7 @@ private:
 
     //! Velocity forcing direction table
     amrex::Vector<amrex::Real> m_direction_table;
-    
+
     //! Target velocity
     amrex::Vector<amrex::Real> m_target_vel{{0.0, 0.0, 0.0}};
 
