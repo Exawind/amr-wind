@@ -20,6 +20,7 @@ void incflo::set_inflow_velocity(
         auto& abl = phy_mgr.get<amr_wind::ABL>();
         const auto& bndry_plane = abl.bndry_plane();
         bndry_plane.populate_data(lev, time, lvelocity, vel);
+        abl.abl_mpl().set_velocity(lev, time, lvelocity, vel);
     }
 }
 

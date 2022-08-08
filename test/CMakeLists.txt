@@ -161,6 +161,7 @@ add_test_r(tgv_godunov)
 #=============================================================================
 # Regression tests excluded from CI
 #=============================================================================
+add_test_re(abl_godunov_mpl)
 add_test_re(abl_godunov_cn)
 add_test_re(abl_godunov_explicit)
 add_test_re(abl_godunov_nolim)
