@@ -46,15 +46,35 @@ TEST_F(FieldPlaneAveragingTest, test_constant)
         amr_wind::FieldPlaneAveraging pa(velocityf, sim().time(), dir);
         pa();
 
+        amr_wind::VelPlaneAveraging vpa(sim(), dir);
+        vpa();
+
         amrex::Real z = 0.5 * (problo[dir] + probhi[dir]);
 
         amrex::Real u = pa.line_average_interpolated(z, 0);
         amrex::Real v = pa.line_average_interpolated(z, 1);
         amrex::Real w = pa.line_average_interpolated(z, 2);
+        amrex::Real umag = vpa.line_hvelmag_average_interpolated(z);
+        amrex::Real Su = vpa.line_Su_average_interpolated(z);
+        amrex::Real Sv = vpa.line_Sv_average_interpolated(z);
 
         EXPECT_NEAR(u0, u, tol);
         EXPECT_NEAR(v0, v, tol);
         EXPECT_NEAR(w0, w, tol);
+
+        if (dir == 0) {
+            EXPECT_NEAR(std::sqrt(v0 * v0 + w0 * w0), umag, tol);
+            EXPECT_NEAR(std::sqrt(v0 * v0 + w0 * w0) * v0, Su, tol);
+            EXPECT_NEAR(std::sqrt(v0 * v0 + w0 * w0) * w0, Sv, tol);
+        } else if (dir == 1) {
+            EXPECT_NEAR(std::sqrt(u0 * u0 + w0 * w0), umag, tol);
+            EXPECT_NEAR(std::sqrt(u0 * u0 + w0 * w0) * u0, Su, tol);
+            EXPECT_NEAR(std::sqrt(u0 * u0 + w0 * w0) * w0, Sv, tol);
+        } else if (dir == 2) {
+            EXPECT_NEAR(std::sqrt(u0 * u0 + v0 * v0), umag, tol);
+            EXPECT_NEAR(std::sqrt(u0 * u0 + v0 * v0) * u0, Su, tol);
+            EXPECT_NEAR(std::sqrt(u0 * u0 + v0 * v0) * v0, Sv, tol);
+        }
 
         for (int i = 0; i < 8; ++i) {
             EXPECT_NEAR(0.0, pa.line_derivative_of_average_cell(i, 0), tol);

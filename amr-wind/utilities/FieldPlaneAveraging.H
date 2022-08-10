@@ -46,6 +46,8 @@ public:
 
     void operator()();
 
+    void convert_x_to_ind(amrex::Real x, int& ind, amrex::Real& c) const;
+
     /** evaluate line average at specific location for any average component */
     amrex::Real line_average_interpolated(amrex::Real x, int comp) const;
     /** evaluate line average at specific cell for any average component */
@@ -145,6 +147,13 @@ private:
     amrex::Vector<amrex::Real>
         m_line_hvelmag_average; /** line storage for the average horizontal
                                    velocity magnitude */
+    amrex::Vector<amrex::Real>
+        m_line_Su_average; /** line storage for the average horizontal
+                                   velocity magnitude times x-velocity */
+    amrex::Vector<amrex::Real>
+        m_line_Sv_average; /** line storage for the average horizontal
+                                   velocity magnitude times y-velocity */
+
     //! line storage for the derivative of average horizontal velocity magnitude
     amrex::Vector<amrex::Real> m_line_hvelmag_deriv;
 
@@ -163,9 +172,18 @@ public: // public for GPU
         return m_line_hvelmag_average;
     };
 
-    /** evaluate line haverage at specific location for horizontal velocity
+    /** evaluate line average at specific location for horizontal velocity
      * magnitude */
     amrex::Real line_hvelmag_average_interpolated(amrex::Real x) const;
+
+    /** evaluate line average at specific location for horizontal velocity
+     * magnitude multiplied by x-velocity */
+    amrex::Real line_Su_average_interpolated(amrex::Real x) const;
+
+    /** evaluate line haverage at specific location for horizontal velocity
+     * magnitude multiplied by y-velocity */
+    amrex::Real line_Sv_average_interpolated(amrex::Real x) const;
+
     /** evaluate line average at specific cell for horizontal velocity magnitude
      */
     amrex::Real line_hvelmag_average_cell(int ind) const;

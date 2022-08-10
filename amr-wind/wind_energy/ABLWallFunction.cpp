@@ -121,6 +121,9 @@ void ABLWallFunction::update_umean(
         m_mo.vel_mean[0] = vpa.line_average_interpolated(m_mo.zref, 0);
         m_mo.vel_mean[1] = vpa.line_average_interpolated(m_mo.zref, 1);
         m_mo.vmag_mean = vpa.line_hvelmag_average_interpolated(m_mo.zref);
+        const amrex::Real Su = vpa.line_Su_average_interpolated(m_mo.zref);
+        const amrex::Real Sv = vpa.line_Sv_average_interpolated(m_mo.zref);
+        m_mo.Sumag_mean = sqrt(Su * Su + Sv * Sv);
         m_mo.theta_mean = tpa.line_average_interpolated(m_mo.zref, 0);
     }
 

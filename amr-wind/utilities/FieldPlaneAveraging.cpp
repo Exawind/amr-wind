@@ -102,16 +102,11 @@ void FPlaneAveraging<FType>::output_line_average_ascii(
 }
 
 template <typename FType>
-amrex::Real
-FPlaneAveraging<FType>::line_average_interpolated(amrex::Real x, int comp) const
+void FPlaneAveraging<FType>::convert_x_to_ind(
+    amrex::Real x, int& ind, amrex::Real& c) const
 {
-
-    BL_PROFILE("amr-wind::PlaneAveraging::line_average_interpolated");
-
-    AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_ncomp);
-
-    amrex::Real c = 0.0;
-    int ind = 0;
+    c = 0.0;
+    ind = 0;
 
     if (x > m_xlo + 0.5 * m_dx) {
         ind = static_cast<int>(floor((x - m_xlo) / m_dx - 0.5));
@@ -125,6 +120,20 @@ FPlaneAveraging<FType>::line_average_interpolated(amrex::Real x, int comp) const
     }
 
     AMREX_ALWAYS_ASSERT(ind >= 0 && ind + 1 < m_ncell_line);
+}
+
+template <typename FType>
+amrex::Real
+FPlaneAveraging<FType>::line_average_interpolated(amrex::Real x, int comp) const
+{
+
+    BL_PROFILE("amr-wind::PlaneAveraging::line_average_interpolated");
+
+    AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_ncomp);
+
+    int ind;
+    amrex::Real c;
+    convert_x_to_ind(x, ind, c);
 
     return m_line_average[m_ncomp * ind + comp] * (1.0 - c) +
            m_line_average[m_ncomp * (ind + 1) + comp] * c;
@@ -203,21 +212,9 @@ amrex::Real FPlaneAveraging<FType>::line_derivative_interpolated(
 
     AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_ncomp);
 
-    amrex::Real c = 0.0;
-    int ind = 0;
-
-    if (x > m_xlo + 0.5 * m_dx) {
-        ind = static_cast<int>(floor((x - m_xlo) / m_dx - 0.5));
-        const amrex::Real x1 = m_xlo + (ind + 0.5) * m_dx;
-        c = (x - x1) / m_dx;
-    }
-
-    if (ind + 1 >= m_ncell_line) {
-        ind = m_ncell_line - 2;
-        c = 1.0;
-    }
-
-    AMREX_ALWAYS_ASSERT(ind >= 0 && ind + 1 < m_ncell_line);
+    int ind;
+    amrex::Real c;
+    convert_x_to_ind(x, ind, c);
 
     return m_line_deriv[m_ncomp * ind + comp] * (1.0 - c) +
            m_line_deriv[m_ncomp * (ind + 1) + comp] * c;
@@ -324,6 +321,8 @@ VelPlaneAveraging::VelPlaneAveraging(CFDSim& sim, int axis_in)
           sim.repo().get_field("velocity"), sim.time(), axis_in, true)
 {
     m_line_hvelmag_average.resize(m_ncell_line, 0.0);
+    m_line_Su_average.resize(m_ncell_line, 0.0);
+    m_line_Sv_average.resize(m_ncell_line, 0.0);
     if (m_comp_deriv) {
         m_line_hvelmag_deriv.resize(m_ncell_line, 0.0);
     }
@@ -338,6 +337,8 @@ void VelPlaneAveraging::operator()()
 
     std::fill(
         m_line_hvelmag_average.begin(), m_line_hvelmag_average.end(), 0.0);
+    std::fill(m_line_Su_average.begin(), m_line_Su_average.end(), 0.0);
+    std::fill(m_line_Sv_average.begin(), m_line_Sv_average.end(), 0.0);
 
     switch (m_axis) {
     case 0:
@@ -374,6 +375,14 @@ void VelPlaneAveraging::compute_hvelmag_averages(
         m_line_hvelmag_average.data(), m_line_hvelmag_average.size());
     amrex::Real* line_avg = lavg.data();
 
+    amrex::AsyncArray<amrex::Real> lavg_Su(
+        m_line_Su_average.data(), m_line_Su_average.size());
+    amrex::Real* line_avg_Su = lavg_Su.data();
+
+    amrex::AsyncArray<amrex::Real> lavg_Sv(
+        m_line_Sv_average.data(), m_line_Sv_average.size());
+    amrex::Real* line_avg_Sv = lavg_Sv.data();
+
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
@@ -407,8 +416,16 @@ void VelPlaneAveraging::compute_hvelmag_averages(
                                     fab_arr(i, j, k, h1_idx) +
                                 fab_arr(i, j, k, h2_idx) *
                                     fab_arr(i, j, k, h2_idx));
+                            const amrex::Real Su =
+                                hvelmag * fab_arr(i, j, k, h1_idx);
+                            const amrex::Real Sv =
+                                hvelmag * fab_arr(i, j, k, h2_idx);
                             amrex::Gpu::deviceReduceSum(
                                 &line_avg[ind], hvelmag * denom, handler);
+                            amrex::Gpu::deviceReduceSum(
+                                &line_avg_Su[ind], Su * denom, handler);
+                            amrex::Gpu::deviceReduceSum(
+                                &line_avg_Sv[ind], Sv * denom, handler);
                         }
                     }
                 }
@@ -419,6 +436,14 @@ void VelPlaneAveraging::compute_hvelmag_averages(
         m_line_hvelmag_average.data(), m_line_hvelmag_average.size());
     amrex::ParallelDescriptor::ReduceRealSum(
         m_line_hvelmag_average.data(), m_line_hvelmag_average.size());
+
+    lavg_Su.copyToHost(m_line_Su_average.data(), m_line_Su_average.size());
+    amrex::ParallelDescriptor::ReduceRealSum(
+        m_line_Su_average.data(), m_line_Su_average.size());
+
+    lavg_Sv.copyToHost(m_line_Sv_average.data(), m_line_Sv_average.size());
+    amrex::ParallelDescriptor::ReduceRealSum(
+        m_line_Sv_average.data(), m_line_Sv_average.size());
 }
 
 void VelPlaneAveraging::compute_line_hvelmag_derivatives()
@@ -461,24 +486,36 @@ VelPlaneAveraging::line_hvelmag_average_interpolated(amrex::Real x) const
 
     BL_PROFILE("amr-wind::PlaneAveraging::line_average_interpolated");
 
-    amrex::Real c = 0.0;
-    int ind = 0;
-
-    if (x > m_xlo + 0.5 * m_dx) {
-        ind = static_cast<int>(floor((x - m_xlo) / m_dx - 0.5));
-        const amrex::Real x1 = m_xlo + (ind + 0.5) * m_dx;
-        c = (x - x1) / m_dx;
-    }
-
-    if (ind + 1 >= m_ncell_line) {
-        ind = m_ncell_line - 2;
-        c = 1.0;
-    }
-
-    AMREX_ALWAYS_ASSERT(ind >= 0 && ind + 1 < m_ncell_line);
+    int ind;
+    amrex::Real c;
+    convert_x_to_ind(x, ind, c);
 
     return m_line_hvelmag_average[ind] * (1.0 - c) +
            m_line_hvelmag_average[ind + 1] * c;
+}
+
+amrex::Real VelPlaneAveraging::line_Su_average_interpolated(amrex::Real x) const
+{
+
+    BL_PROFILE("amr-wind::PlaneAveraging::line_average_interpolated Su");
+
+    int ind;
+    amrex::Real c;
+    convert_x_to_ind(x, ind, c);
+
+    return m_line_Su_average[ind] * (1.0 - c) + m_line_Su_average[ind + 1] * c;
+}
+
+amrex::Real VelPlaneAveraging::line_Sv_average_interpolated(amrex::Real x) const
+{
+
+    BL_PROFILE("amr-wind::PlaneAveraging::line_average_interpolated Sv");
+
+    int ind;
+    amrex::Real c;
+    convert_x_to_ind(x, ind, c);
+
+    return m_line_Sv_average[ind] * (1.0 - c) + m_line_Sv_average[ind + 1] * c;
 }
 
 amrex::Real VelPlaneAveraging::line_hvelmag_average_cell(int ind) const
