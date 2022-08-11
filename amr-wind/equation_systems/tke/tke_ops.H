@@ -83,11 +83,11 @@ struct FieldRegOp<TKE, Scheme>
         }
     }
 
-    PDEFields operator()(const SimTime& time, const int probtype)
+    PDEFields operator()(const SimTime& time)
     {
         auto& repo = sim.repo();
         auto fields =
-            create_fields_instance<TKE, Scheme>(time, repo, probtype, m_itype);
+            create_fields_instance<TKE, Scheme>(time, repo, m_itype);
 
         repo.declare_cc_field(
             TKE::var_name() + "_lhs_src_term", TKE::ndim, 1, 1);
