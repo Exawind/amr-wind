@@ -141,8 +141,15 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
     constexpr amrex::Real corfac = 2.0 * amr_wind::utils::two_pi() / 86400.0;
     // Latitude is set to 45 degrees in the input file so sinphi = cosphi
     const amrex::Real latfac = std::sin(amr_wind::utils::radians(45.0));
+    // Initialize a random value for the velocity component
+    const amrex::Vector<amrex::Real> vel_comp{{10.0, 6.0, 0.1}};
+
 
     utils::populate_abl_params();
+
+    amrex::ParmParse pp("CoriolisForcing");
+    pp.add("latitude", 45.0);
+
     initialize_mesh();
 
     auto& pde_mgr = sim().pde_manager();
@@ -151,53 +158,64 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
 
     auto& src_term = pde_mgr.icns().fields().src_term;
     auto& density = sim().repo().get_field("density");
-    density.setVal(1.0);
-    auto& m_S;
+    auto& vel = sim().repo().get_field("velocity");
 
     amr_wind::pde::icns::GeostrophicForcing geostrophic_forcing(sim());
 
-    // Test two component geostrophic forcing
+    // Two component forcing
     {
         const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{
-        {-corfac * 6.0 * latfac, corfac * 10.0 * latfac, 0.0}};
+            {-corfac * vel_comp[1] * latfac, corfac * vel_comp[0] * latfac, 0.0}};
+
+        density.setVal(1.0);
+        vel.setVal(0.0);
         src_term.setVal(0.0);
-        m_S.setVal(0.0);
+        vel.setVal(vel_comp[0], 0);
+        vel.setVal(vel_comp[1], 1);
 
         run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& src_arr = src_term(lev).array(mfi);
+        const auto& bx = mfi.tilebox();
+        const auto& src_arr = src_term(lev).array(mfi);
 
-            geostrophic_forcing(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
+        geostrophic_forcing(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
         });
-    
+
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
             const auto min_val = utils::field_min(src_term, i);
             const auto max_val = utils::field_max(src_term, i);
             EXPECT_NEAR(min_val, golds[i], tol);
+            // Ensure that the source term is constant throughout the domain
             EXPECT_NEAR(min_val, max_val, tol);
         }
     }
 
-    // Test three component geostrophic forcing
+    // Three component forcing
     {
         const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{
-        {-corfac * 6.0 * latfac + corfac * 0.1 * latfac, 
-        corfac * 10.0 * latfac, 
-        -corfac * 10.0 * latfac}};
+        {-corfac * vel_comp[1] * latfac +corfac * vel_comp[3] * latfac, 
+        +corfac * vel_comp[0] * latfac,
+        -corfac * vel_comp[0] * latfac}};
+
+        density.setVal(1.0);
+        vel.setVal(0.0);
         src_term.setVal(0.0);
-        m_S.setVal(1.0);
+        vel.setVal(vel_comp[0], 0);
+        vel.setVal(vel_comp[1], 1);
+        vel.setVal(vel_comp[1], 2);
+        const amrex::Real S = 1.0;
 
         run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& src_arr = src_term(lev).array(mfi);
+        const auto& bx = mfi.tilebox();
+        const auto& src_arr = src_term(lev).array(mfi);
 
-            geostrophic_forcing(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
+        geostrophic_forcing(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
         });
-    
+
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
             const auto min_val = utils::field_min(src_term, i);
             const auto max_val = utils::field_max(src_term, i);
             EXPECT_NEAR(min_val, golds[i], tol);
+            // Ensure that the source term is constant throughout the domain
             EXPECT_NEAR(min_val, max_val, tol);
         }
     }
