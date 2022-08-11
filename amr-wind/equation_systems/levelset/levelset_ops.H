@@ -18,8 +18,7 @@ struct FieldRegOp<Levelset, Scheme>
     PDEFields operator()(const SimTime& time)
     {
         auto& repo = sim.repo();
-        auto fields =
-            create_fields_instance<Levelset, Scheme>(time, repo);
+        auto fields = create_fields_instance<Levelset, Scheme>(time, repo);
 
         auto& normal =
             repo.declare_cc_field("interface_normal", AMREX_SPACEDIM, 1, 1);

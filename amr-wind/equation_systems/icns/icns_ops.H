@@ -32,8 +32,7 @@ struct FieldRegOp<ICNS, Scheme>
     PDEFields operator()(const SimTime& time)
     {
         auto& repo = sim.repo();
-        auto fields =
-            create_fields_instance<ICNS, Scheme>(time, repo);
+        auto fields = create_fields_instance<ICNS, Scheme>(time, repo);
 
         auto& rho = repo.declare_cc_field(
             "density", 1, Scheme::nghost_state, Scheme::num_states);
