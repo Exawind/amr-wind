@@ -45,7 +45,6 @@ void populate_abl_params()
         amrex::Vector<amrex::Real> gwind{{10.0, 6.0, 0.1}};
         pp.addarr("geostrophic_wind", gwind);
         pp.add("latitude", 45.0);
-        pp.add("three_ComponentForcing", m_S);
     }
 
     // Coriolis term
