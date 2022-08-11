@@ -31,8 +31,6 @@ ICNS.source_terms = BodyForce
 BodyForce.magnitude = 6e-2 0 0
 incflo.physics = ChannelFlow
 ChannelFlow.density = 1.0
-ChannelFlow.Laminar = true
-ChannelFlow.Turbulent_DNS = false
 ChannelFlow.Mean_Velocity = 1.0
 
 io.output_default_variables = 1
@@ -56,7 +54,7 @@ ChannelFlowMap.beta = 0 3 0
 velocity_diffusion.use_tensor_operator = false
 velocity_diffusion.use_segregated_operator = true
 incflo.diffusion_type   = 2
-    
+
 # Boundary conditions
 ylo.type =   "no_slip_wall"
 yhi.type =   "no_slip_wall"
