@@ -19,7 +19,7 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
         std::string turbulence_model;
         amrex::ParmParse pp("turbulence");
         pp.query("model", turbulence_model);
-        if(turbulence_model == "Laminar") {
+        if (turbulence_model == "Laminar") {
             m_laminar = true;
         }
     }
