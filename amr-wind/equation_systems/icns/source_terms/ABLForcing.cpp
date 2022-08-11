@@ -30,6 +30,7 @@ ABLForcing::ABLForcing(const CFDSim& sim) : m_time(sim.time())
         amrex::Real data_time;
         amrex::Real data_speed;
         amrex::Real data_deg;
+        ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         while (ifh >> data_time) {
             ifh >> data_speed >> data_deg;
             amrex::Real data_rad = utils::radians(data_deg);

@@ -78,18 +78,9 @@ void ABLFieldInit::operator()(
     const bool perturb_vel = m_perturb_vel;
     const amrex::Real rho_init = m_rho;
 
-    amrex::Real umean;
-    amrex::Real vmean;
-    amrex::Real wmean;
-    if (!m_vel_timetable.empty()) {
-        umean = m_vel_speed * std::cos(m_vel_dir);
-        vmean = m_vel_speed * std::sin(m_vel_dir);
-        wmean = 0.0;
-    } else {
-        umean = m_vel[0];
-        vmean = m_vel[1];
-        wmean = m_vel[2];
-    }
+    const amrex::Real umean = !m_vel_timetable.empty() ? m_vel_speed * std::cos(m_vel_dir) : m_vel[0];
+    const amrex::Real vmean = !m_vel_timetable.empty() ? m_vel_speed * std::sin(m_vel_dir) : m_vel[1];
+    const amrex::Real wmean = !m_vel_timetable.empty() ? 0.0 : m_vel[2];
 
     const amrex::Real aval = m_Uperiods * 2.0 * pi / (probhi[1] - problo[1]);
     const amrex::Real bval = m_Vperiods * 2.0 * pi / (probhi[0] - problo[0]);
