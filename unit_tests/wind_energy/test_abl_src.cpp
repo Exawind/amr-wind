@@ -141,9 +141,6 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
     constexpr amrex::Real corfac = 2.0 * amr_wind::utils::two_pi() / 86400.0;
     // Latitude is set to 45 degrees in the input file so sinphi = cosphi
     const amrex::Real latfac = std::sin(amr_wind::utils::radians(45.0));
-    // Initialize a random value for the velocity component
-    const amrex::Vector<amrex::Real> vel_comp{{10.0, 6.0, 0.1}};
-
 
     utils::populate_abl_params();
 
@@ -165,13 +162,10 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
     // Two component forcing
     {
         const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{
-            {-corfac * vel_comp[1] * latfac, corfac * vel_comp[0] * latfac, 0.0}};
+            {-corfac * 6.0 * latfac, corfac * 10.0 * latfac, 0.0}};
 
         density.setVal(1.0);
-        vel.setVal(0.0);
         src_term.setVal(0.0);
-        vel.setVal(vel_comp[0], 0);
-        vel.setVal(vel_comp[1], 1);
 
         run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
         const auto& bx = mfi.tilebox();
@@ -192,17 +186,13 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
     // Three component forcing
     {
         const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{
-        {-corfac * vel_comp[1] * latfac +corfac * vel_comp[3] * latfac, 
-        +corfac * vel_comp[0] * latfac,
-        -corfac * vel_comp[0] * latfac}};
+        {-corfac * 6.0 * latfac +corfac * 0.1 * latfac, 
+        +corfac * 10.0 * latfac,
+        -corfac * 10.0 * latfac}};
 
         density.setVal(1.0);
-        vel.setVal(0.0);
         src_term.setVal(0.0);
-        vel.setVal(vel_comp[0], 0);
-        vel.setVal(vel_comp[1], 1);
-        vel.setVal(vel_comp[1], 2);
-        const amrex::Real S = 1.0;
+        pp.add("three_ComponentForcing", 1.0);
 
         run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
         const auto& bx = mfi.tilebox();
@@ -316,7 +306,7 @@ TEST_F(ABLMeshTest, coriolis_const_vel)
     {
         amrex::Real golds[AMREX_SPACEDIM] = {
             0.0, corfac * latfac * vel_comp, 0.0};
-        m_S.setVal(1.0);
+        pp.add("three_ComponentForcing", 1.0);
         vel.setVal(0.0);
         src_term.setVal(0.0);
         vel.setVal(vel_comp, 2);
