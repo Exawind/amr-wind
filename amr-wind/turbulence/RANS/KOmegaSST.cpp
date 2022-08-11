@@ -27,6 +27,7 @@ void KOmegaSST<Transport>::parse_model_coeffs()
     pp.query("sigma_k2", this->m_sigma_k2);
     pp.query("sigma_omega1", this->m_sigma_omega1);
     pp.query("sigma_omega2", this->m_sigma_omega2);
+    pp.query("walldist_type", this->m_walldist_type);
 }
 
 template <typename Transport>
@@ -59,13 +60,17 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
     const amrex::Real beta2 = this->m_beta2;
     const amrex::Real sigma_omega2 = this->m_sigma_omega2;
     const amrex::Real a1 = this->m_a1;
+    const std::string walldist_type = this->m_walldist_type;
 
     auto lam_mu = (this->m_transport).mu();
     const auto& den = this->m_rho.state(fstate);
-    const auto& tke = (*this->m_tke).state(fstate);
-    const auto& sdr = (*this->m_sdr).state(fstate);
+    auto& tke = (*this->m_tke).state(fstate);
+    auto& sdr = (*this->m_sdr).state(fstate);
     // cppcheck-suppress constVariable
     auto& repo = mu_turb.repo();
+
+    const auto& geom_vec = repo.mesh().Geom();
+    //const auto& dx = geom_vec.CellSizeArray();
 
     const bool mesh_mapping = this->m_sim.has_mesh_mapping();
     amr_wind::Field const* mesh_fac =
@@ -75,13 +80,22 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
 
     const int nlevels = repo.num_active_levels();
 
+    if (tke.in_uniform_space() && mesh_mapping) {
+        tke.to_stretched_space();
+    }
+
     auto gradK = (this->m_sim.repo()).create_scratch_field(3, 0);
     fvm::gradient(*gradK, tke);
+
+    if (sdr.in_uniform_space() && mesh_mapping) {
+        sdr.to_stretched_space();
+    }
 
     auto gradOmega = (this->m_sim.repo()).create_scratch_field(3, 0);
     fvm::gradient(*gradOmega, sdr);
 
     auto& vel = this->m_vel.state(fstate);
+    
     // ensure velocity is in stretched mesh space
     if (vel.in_uniform_space() && mesh_mapping) {
         vel.to_stretched_space();
@@ -111,6 +125,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
             const auto& gradOmega_arr = (*gradOmega)(lev).array(mfi);
             const auto& tke_arr = tke(lev).array(mfi);
             const auto& sdr_arr = sdr(lev).array(mfi);
+            const auto& vel_arr = vel(lev).array(mfi);
             const auto& wd_arr = (this->m_walldist)(lev).array(mfi);
             const auto& shear_prod_arr = (this->m_shear_prod)(lev).array(mfi);
             const auto& diss_arr = (this->m_diss)(lev).array(mfi);
@@ -125,9 +140,24 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
 
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real fac_x = mesh_mapping ? (fac(i, j, k, 0)) : 1.0;
-                    amrex::Real fac_y = mesh_mapping ? (fac(i, j, k, 1)) : 1.0;
-                    amrex::Real fac_z = mesh_mapping ? (fac(i, j, k, 2)) : 1.0;
+                    const auto& geom = geom_vec[lev];
+
+                    amrex::Real fac_x = mesh_mapping ? fac(i, j, k, 0) : 1.0;
+                    amrex::Real fac_y = mesh_mapping ? fac(i, j, k, 1) : 1.0;
+                    amrex::Real fac_z = mesh_mapping ? fac(i, j, k, 2) : 1.0;
+
+                    // TODO: Make this general...right now it's z-height only 
+                    // assuming that prob-lo is at 0.0
+                    amrex::Real zcoord = (k+0.5)*geom.CellSize()[2];
+                    amrex::Real zcoord_mapped = this->m_sim.mesh_mapping()->interp_unif_to_nonunif(zcoord, 2);
+                    
+                    if(walldist_type == "abl"){
+                        wd_arr(i, j, k) = mesh_mapping ? zcoord_mapped : zcoord;
+                    }
+
+                    if(walldist_type == "channel"){
+                        wd_arr(i, j, k) = mesh_mapping ? (zcoord_mapped > 1.0 ? 2.0-zcoord_mapped : zcoord_mapped ) : zcoord;
+                    }
 
                     amrex::Real gko =
                         (gradK_arr(i, j, k, 0) / fac_x *
@@ -174,6 +204,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
 
                     diss_arr(i, j, k) = -beta_star * rho_arr(i, j, k) *
                                         tke_arr(i, j, k) * sdr_arr(i, j, k);
+
                     tke_lhs_arr(i, j, k) = 0.5 * beta_star * rho_arr(i, j, k) *
                                            sdr_arr(i, j, k) * deltaT;
 
@@ -184,12 +215,18 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
 
                     sdr_lhs_arr(i, j, k) = 0.5 * rho_arr(i, j, k) * beta *
                                            sdr_arr(i, j, k) * deltaT;
+
                     sdr_src_arr(i, j, k) =
                         rho_arr(i, j, k) * alpha * shear_prod_arr(i, j, k) /
                             amrex::max(mu_arr(i, j, k), 1.0e-16) +
                         (1.0 - tmp_f1) * cross;
+
                     sdr_diss_arr(i, j, k) = -rho_arr(i, j, k) * beta *
                                             sdr_arr(i, j, k) * sdr_arr(i, j, k);
+                    
+                    if(i==16 and j==16 and k<4){
+                       amrex::Print()<<shear_prod_arr(i, j, k)<<"\t"<<tmp4<<"\t"<<mu_arr(i,j,k)<<"\t"<<wd_arr(i,j,k)<<"\t"<<vel_arr(i,j,k)<<"\t"<<gko<<std::endl;
+                    }
                 });
         }
     }

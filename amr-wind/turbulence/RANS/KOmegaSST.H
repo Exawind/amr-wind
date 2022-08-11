@@ -88,6 +88,7 @@ protected:
     amrex::Real m_sigma_omega1{0.5};
     amrex::Real m_sigma_omega2{0.856};
     amrex::Real m_a1{0.31};
+    std::string m_walldist_type{"abl"};
 };
 
 } // namespace turbulence

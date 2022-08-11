@@ -172,7 +172,7 @@ struct DiffusionOp<TKE, Scheme> : public DiffSolverIface<typename TKE::MLDiffOp>
                 (*lhs_times_detJ)(lev).setVal(0.0);
                 amrex::MultiFab::AddProduct(
                     (*lhs_times_detJ)(lev), (*lhs_total)(lev), 0,
-                    (*mesh_detJ)(lev), 0, 0, 1, m_density.num_grow()[0]);
+                    (*mesh_detJ)(lev), 0, 0, 1, 1);
                 linop.setACoeffs(lev, (*lhs_times_detJ)(lev));
             } else {
                 linop.setACoeffs(lev, (*lhs_total)(lev));
