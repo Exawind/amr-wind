@@ -47,7 +47,7 @@ namespace pde {
  *  fields.
  *
  */
-class PDEBase : public Factory<PDEBase, CFDSim&, const int>
+class PDEBase : public Factory<PDEBase, CFDSim&>
 {
 public:
     ~PDEBase() override = default;
@@ -160,9 +160,6 @@ private:
 
     //! Unique identifier for the numerical scheme
     std::string m_scheme;
-
-    //! Unique integer for the problem type (to be deprecated)
-    int m_probtype;
 
     //! Flag indicating whether Godunov scheme is active
     bool m_use_godunov{false};

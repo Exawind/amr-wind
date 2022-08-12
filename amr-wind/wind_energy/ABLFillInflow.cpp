@@ -8,7 +8,7 @@ ABLFillInflow::ABLFillInflow(
     const SimTime& time,
     const ABLBoundaryPlane& bndry_plane)
     : FieldFillPatchOps<FieldBCNoOp>(
-          field, mesh, time, 0, FieldInterpolator::CellConsLinear)
+          field, mesh, time, FieldInterpolator::CellConsLinear)
     , m_bndry_plane(bndry_plane)
 {}
 
