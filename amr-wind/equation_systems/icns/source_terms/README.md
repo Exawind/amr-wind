@@ -29,6 +29,6 @@ After taking the cross product of the coriolis parameter with either, the veloci
 vector or the geostrophic wind vector, there can be three resulting components.
 To align with what is typically done in the atmospheric community only the 
 vertical component of the coriolis parameter required. So, a Boolean parameter
-$S$ is introduced. [ABL Inputs](https://exawind.github.io/amr-wind/user/inputs_ABL)
-By default $S =$False to remove the vertical contributions to the forcings. However,
-if $S =$True all three components are included in the forcings.
+S is introduced. [ABL Inputs](https://exawind.github.io/amr-wind/user/inputs_ABL)
+By default S = False to remove the vertical contributions to the forcings. However,
+if S = True all three components are included in the forcings.
