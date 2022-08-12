@@ -8,7 +8,7 @@ ABLFillMPL::ABLFillMPL(
     const SimTime& time,
     const ABLModulatedPowerLaw& abl_mpl)
     : FieldFillPatchOps<FieldBCNoOp>(
-          field, mesh, time, 0, FieldInterpolator::CellConsLinear)
+          field, mesh, time, FieldInterpolator::CellConsLinear)
     , m_abl_mpl(abl_mpl)
 {}
 

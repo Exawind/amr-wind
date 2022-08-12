@@ -15,10 +15,10 @@ struct FieldRegOp<VOF, Scheme>
 {
     explicit FieldRegOp(CFDSim& sim_in) : sim(sim_in) {}
 
-    PDEFields operator()(const SimTime& time, const int probtype)
+    PDEFields operator()(const SimTime& time)
     {
         auto& repo = sim.repo();
-        auto fields = create_fields_instance<VOF, Scheme>(time, repo, probtype);
+        auto fields = create_fields_instance<VOF, Scheme>(time, repo);
 
         auto& levelset = repo.declare_cc_field("levelset", 1, 1, 1);
         auto& curvature = repo.declare_cc_field("interface_curvature", 1, 1, 1);

@@ -42,10 +42,9 @@ struct FieldRegOp
      *
      *  \return The collection of fields for this PDE
      */
-    PDEFields operator()(const SimTime& time, const int probtype)
+    PDEFields operator()(const SimTime& time)
     {
-        auto fields =
-            create_fields_instance<PDE, Scheme>(time, sim.repo(), probtype);
+        auto fields = create_fields_instance<PDE, Scheme>(time, sim.repo());
 
         // Register solution variable for this PDE as output/restart variable
         sim.io_manager().register_io_var(fields.field.name());
