@@ -22,7 +22,7 @@ $$ - \nabla P = -\rho \textbf{f} \times \mathbf{U_g} $$
 Where the coriolis parameter is the earths angular velocity
 $\Omega$ projected onto any latitude $\theta$.
 
-$$ \textbf{f} \equiv [0, \, 2\Omega\cos \theta, \, 2\Omega\sin \theta] $$
+$$ \textbf{f} \equiv [0, 2\Omega\cos \theta, 2\Omega\sin \theta] $$
 
 
 After taking the cross product of the coriolis parameter with either, the velocity
