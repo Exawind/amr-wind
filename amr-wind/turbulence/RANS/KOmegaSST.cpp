@@ -149,14 +149,14 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
                     // TODO: Make this general...right now it's z-height only 
                     // assuming that prob-lo is at 0.0
                     amrex::Real zcoord = (k+0.5)*geom.CellSize()[2];
-                    amrex::Real zcoord_mapped = this->m_sim.mesh_mapping()->interp_unif_to_nonunif(zcoord, 2);
+                    amrex::Real zcoord_mapped = mesh_mapping ? this->m_sim.mesh_mapping()->interp_unif_to_nonunif(zcoord, 2) : zcoord;
                     
                     if(walldist_type == "abl"){
                         wd_arr(i, j, k) = mesh_mapping ? zcoord_mapped : zcoord;
                     }
 
                     if(walldist_type == "channel"){
-                        wd_arr(i, j, k) = mesh_mapping ? (zcoord_mapped > 1.0 ? 2.0-zcoord_mapped : zcoord_mapped ) : zcoord;
+                        wd_arr(i, j, k) = mesh_mapping ? (zcoord_mapped > 1.0 ? 2.0-zcoord_mapped : zcoord_mapped ) : (zcoord > 1.0 ? 2.0-zcoord : zcoord);
                     }
 
                     amrex::Real gko =
