@@ -5,80 +5,141 @@
 
 namespace amr_wind {
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GaussianFV::operator()(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GaussianPulseFV::operator()(
     const amrex::Real x,
+    const amrex::Real y,
     const amrex::Real dx,
-    const amrex::Real center,
+    const amrex::Real dy,
+    const amrex::Real x0,
+    const amrex::Real y0,
     const amrex::Real amplitude,
-    const amrex::Real width,
-    const amrex::Real eta) const
+    const amrex::Real x_width,
+    const amrex::Real y_width,
+    const amrex::Real x_wavenumber,
+    const amrex::Real y_wavenumber) const
 {
-    if (std::abs(x - center) < 6 * width) {
-        return sqrt(utils::pi() / 2) * amplitude * width * (std::erf((x - center + dx / 2) / (sqrt(2) * width)) - std::erf((x - center - dx / 2) / (sqrt(2) * width))) / dx;
+    if (std::abs(x - x0) < 6 * x_width) {
+        return sqrt(utils::pi() / 2) * amplitude * x_width * (std::erf((x - x0 + dx / 2) / (sqrt(2) * x_width)) - std::erf((x - x0 - dx / 2) / (sqrt(2) * x_width))) / dx;
     } else {
         return 0.0;
     }
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real Gaussian::operator()(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GaussianPulse::operator()(
     const amrex::Real x,
-    const amrex::Real center,
+    const amrex::Real y,
+    const amrex::Real x0,
+    const amrex::Real y0,
     const amrex::Real amplitude,
-    const amrex::Real width,
-    const amrex::Real eta) const
+    const amrex::Real x_width,
+    const amrex::Real y_width,
+    const amrex::Real x_wavenumber,
+    const amrex::Real y_wavenumber) const
 {
-    if (std::abs(x - center) < 6 * width) {
-        return amplitude * std::exp( - std::pow(x - center, 2) / (2 * std::pow(width, 2)));
+    if (std::abs(x - x0) < 6 * x_width) {
+        return amplitude * std::exp( - std::pow(x - x0, 2) / (2 * std::pow(x_width, 2)));
     } else {
         return 0.0;
     }
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real TopHatFV::operator()(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real BiGaussianPulseFV::operator()(
     const amrex::Real x,
+    const amrex::Real y,
     const amrex::Real dx,
-    const amrex::Real center,
+    const amrex::Real dy,
+    const amrex::Real x0,
+    const amrex::Real y0,
     const amrex::Real amplitude,
-    const amrex::Real width,
-    const amrex::Real eta) const
+    const amrex::Real x_width,
+    const amrex::Real y_width,
+    const amrex::Real x_wavenumber,
+    const amrex::Real y_wavenumber) const
 {
-    if (std::abs(std::abs(x - center) - width / 2) < dx / 2) {
-        return amplitude * (width / 2 - std::abs(x - center) + dx / 2) / dx;
-    } else if (std::abs(x - center) < width / 2) {
+    if (std::abs(x - x0) < 6 * x_width && std::abs(y - y0) < 6 * y_width)  {
+        return utils::pi() / 2 * amplitude * x_width * y_width * (std::erf((x - x0 + dx / 2) / (sqrt(2) * x_width)) - std::erf((x - x0 - dx / 2) / (sqrt(2) * x_width))) * (std::erf((y - y0 + dy / 2) / (sqrt(2) * y_width)) - std::erf((y - y0 - dy / 2) / (sqrt(2) * y_width)))/ dx / dy;
+    } else {
+        return 0.0;
+    }
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real BiGaussianPulse::operator()(
+    const amrex::Real x,
+    const amrex::Real y,
+    const amrex::Real x0,
+    const amrex::Real y0,
+    const amrex::Real amplitude,
+    const amrex::Real x_width,
+    const amrex::Real y_width,
+    const amrex::Real x_wavenumber,
+    const amrex::Real y_wavenumber) const
+{
+    if (std::abs(x - x0) < 6 * x_width && std::abs(y - y0) < 6)  {
+        return amplitude * std::exp( - std::pow(x - x0, 2) / (2 * std::pow(x_width, 2))) * std::exp( - std::pow(y - y0, 2) / (2 * std::pow(y_width, 2)));
+    } else {
+        return 0.0;
+    }
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real SquarePulseFV::operator()(
+    const amrex::Real x,
+    const amrex::Real y,
+    const amrex::Real dx,
+    const amrex::Real dy,
+    const amrex::Real x0,
+    const amrex::Real y0,
+    const amrex::Real amplitude,
+    const amrex::Real x_width,
+    const amrex::Real y_width,
+    const amrex::Real x_wavenumber,
+    const amrex::Real y_wavenumber) const
+{
+    if (std::abs(std::abs(x - x0) - x_width / 2) < dx / 2) {
+        return amplitude * (x_width / 2 - std::abs(x - x0) + dx / 2) / dx;
+    } else if (std::abs(x - x0) < x_width / 2) {
         return amplitude;
     } else {
         return 0.0;
     }
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real Yalla2021FV::operator()(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GaussianWavePacketFV::operator()(
     const amrex::Real x,
+    const amrex::Real y,
     const amrex::Real dx,
-    const amrex::Real center,
+    const amrex::Real dy,
+    const amrex::Real x0,
+    const amrex::Real y0,
     const amrex::Real amplitude,
-    const amrex::Real width,
-    const amrex::Real eta) const
+    const amrex::Real x_width,
+    const amrex::Real y_width,
+    const amrex::Real x_wavenumber,
+    const amrex::Real y_wavenumber) const
 {
-    const Yalla2021 pointwise_function;
+    const GaussianWavePacket pointwise_function;
     // Gauss-Legendre quadrature
     const amrex::Vector<amrex::Real> dx_i = {- 0.7745966692, 0, 0.7745966692};
     const amrex::Vector<amrex::Real> w_i = {0.5555555556, 0.8888888889, 0.5555555556};
     amrex::Real cell_integral = 0.0;
     for (int i = 0; i != dx_i.size(); ++i){
-        cell_integral = cell_integral + w_i[i] * pointwise_function(x + dx_i[i] * 0.5 * dx, center, amplitude, width, eta);
+        cell_integral = cell_integral + w_i[i] * pointwise_function(x + dx_i[i] * 0.5 * dx, y, x0, y0, amplitude, x_width, y_width, x_wavenumber, y_wavenumber);
     }
     return cell_integral / 2;
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real Yalla2021::operator()(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GaussianWavePacket::operator()(
     const amrex::Real x,
-    const amrex::Real center,
+    const amrex::Real y,
+    const amrex::Real x0,
+    const amrex::Real y0,
     const amrex::Real amplitude,
-    const amrex::Real width,
-    const amrex::Real eta) const
+    const amrex::Real x_width,
+    const amrex::Real y_width,
+    const amrex::Real x_wavenumber,
+    const amrex::Real y_wavenumber) const
 {
-    if (std::abs(x - center) < 6 * width) {
-        return std::cos(eta * x) * amplitude * std::exp( - std::pow(x - center, 2) / (2 * std::pow(width, 2)));
+    if (std::abs(x - x0) < 6 * x_width) {
+        return amplitude * std::cos(x_wavenumber * x) * std::exp( - std::pow(x - x0, 2) / (2 * std::pow(x_width, 2)));
     } else {
         return 0.0;
     }
@@ -98,11 +159,15 @@ ScalarAdvection::ScalarAdvection(CFDSim& sim)
     m_scalar = &(teqn.fields().field);
 
     amrex::ParmParse pp_scalar_advection("scalaradvection");
-    pp_scalar_advection.query("convective_speed", m_convective_speed);
-    pp_scalar_advection.query("center", m_center);
+    pp_scalar_advection.query("u", m_u);
+    pp_scalar_advection.query("v", m_v);
+    pp_scalar_advection.query("x0", m_x0);
+    pp_scalar_advection.query("y0", m_y0);
     pp_scalar_advection.query("amplitude", m_amplitude);
-    pp_scalar_advection.query("width", m_width);
-    pp_scalar_advection.query("eta", m_eta);
+    pp_scalar_advection.query("x_width", m_x_width);
+    pp_scalar_advection.query("y_width", m_y_width);
+    pp_scalar_advection.query("x_wavenumber", m_x_wavenumber);
+    pp_scalar_advection.query("y_wavenumber", m_y_wavenumber);
     pp_scalar_advection.query("shape", m_shape);
     pp_scalar_advection.query("output_fname", m_output_fname);
 
@@ -115,7 +180,8 @@ ScalarAdvection::ScalarAdvection(CFDSim& sim)
  */
 void ScalarAdvection::initialize_fields(int level, const amrex::Geometry& geom)
 {
-    const amrex::Real convective_speed = m_convective_speed;
+    const amrex::Real u = m_u;
+    const amrex::Real v = m_v;
     auto& velocity = m_velocity(level);
     auto& density = m_density(level);
     density.setVal(m_rho);
@@ -125,8 +191,8 @@ void ScalarAdvection::initialize_fields(int level, const amrex::Geometry& geom)
         auto vel = velocity.array(mfi);
 
         amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-            vel(i, j, k, 0) = convective_speed;
-            vel(i, j, k, 1) = 0.0;
+            vel(i, j, k, 0) = u;
+            vel(i, j, k, 1) = v;
             vel(i, j, k, 2) = 0.0;
         });
     }
@@ -137,13 +203,17 @@ void ScalarAdvection::post_init_actions()
     if (m_time.time_index() > 0) {
         return;
     }
+
+    std::cout << "shape is " << m_shape << std::endl;
     
-    if (m_shape == "gaussian") {
-        initialize_scalar(GaussianFV());
-    } else if (m_shape == "tophat") {
-        initialize_scalar(TopHatFV());
-    } else if (m_shape == "yalla2021") {
-        initialize_scalar(Yalla2021FV());
+    if (m_shape == "gaussianpulse") {
+        initialize_scalar(GaussianPulseFV());
+    } else if (m_shape == "squarepulse") {
+        initialize_scalar(SquarePulseFV());
+    } else if (m_shape == "gaussianwavepacket") {
+        initialize_scalar(GaussianWavePacketFV());
+    } else if (m_shape == "bigaussianpulse") {
+        initialize_scalar(BiGaussianPulseFV());
     }
 
     if (amrex::ParallelDescriptor::IOProcessor()) {
@@ -156,10 +226,13 @@ void ScalarAdvection::post_init_actions()
 template <typename Shape>
 void ScalarAdvection::initialize_scalar(const Shape& scalar_function)
 {
-    const amrex::Real center = m_center;
+    const amrex::Real x0 = m_x0;
+    const amrex::Real y0 = m_y0;
     const amrex::Real amplitude = m_amplitude;
-    const amrex::Real width = m_width;
-    const amrex::Real eta = m_eta;
+    const amrex::Real x_width = m_x_width;
+    const amrex::Real y_width = m_y_width;
+    const amrex::Real x_wavenumber = m_x_wavenumber;
+    const amrex::Real y_wavenumber = m_y_wavenumber;
 
     for (int level = 0; level <= m_repo.mesh().finestLevel(); ++level) {
 
@@ -173,7 +246,8 @@ void ScalarAdvection::initialize_scalar(const Shape& scalar_function)
 
             amrex::ParallelFor(nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                scalar_arr(i, j, k, 0) = scalar_function(x, dx[0], center, amplitude, width, eta);
+                const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                scalar_arr(i, j, k, 0) = scalar_function(x, y, dx[0], dx[1], x0, y0, amplitude, x_width, y_width, x_wavenumber, y_wavenumber);
             });
         }
     }
@@ -184,11 +258,15 @@ template <typename Shape>
 amrex::Vector<amrex::Real> ScalarAdvection::compute_error(const Shape& scalar_function)
 {
     const amrex::Real t = m_time.new_time();
-    const amrex::Real convected_distance = m_convective_speed * t;
-    const amrex::Real center = m_center;
+    const amrex::Real x_conv_dist = m_u * t;
+    const amrex::Real y_conv_dist = m_v * t;
+    const amrex::Real x0 = m_x0;
+    const amrex::Real y0 = m_y0;
     const amrex::Real amplitude = m_amplitude;
-    const amrex::Real width = m_width;
-    const amrex::Real eta = m_eta;
+    const amrex::Real x_width = m_x_width;
+    const amrex::Real y_width = m_y_width;
+    const amrex::Real x_wavenumber = m_x_wavenumber;
+    const amrex::Real y_wavenumber = m_y_wavenumber;
     const int nlevels = m_repo.num_active_levels();
     const amrex::Real total_vol = m_repo.mesh().Geom(0).ProbDomain().volume();
 
@@ -221,8 +299,9 @@ amrex::Vector<amrex::Real> ScalarAdvection::compute_error(const Shape& scalar_fu
             amrex::Real err_fab = 0.0;
             amrex::LoopOnCpu(vbx, [=, &err_fab](int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                 const amrex::Real s = scalar_arr(i, j, k, 0);
-                const amrex::Real s_exact = scalar_function(x - convected_distance, dx[0], center, amplitude, width, eta);
+                const amrex::Real s_exact = scalar_function(x - x_conv_dist, y - y_conv_dist, dx[0], dx[1], x0, y0, amplitude, x_width, y_width, x_wavenumber, y_wavenumber);
                 err_fab += cell_vol * mask_arr(i, j, k) * (s - s_exact) *
                            (s - s_exact);
             });
@@ -240,12 +319,12 @@ void ScalarAdvection::post_advance_work()
     const int nlevels = m_repo.num_active_levels();
     amrex::Vector<amrex::Real> err(nlevels,0.0);
 
-    if (m_shape == "gaussian") {
-        err = compute_error(GaussianFV());
-    } else if (m_shape == "tophat") {
-        err = compute_error(TopHatFV());
-    } else if (m_shape == "yalla2021") {
-        err = compute_error(Yalla2021FV());
+    if (m_shape == "gaussianpulse") {
+        err = compute_error(GaussianPulseFV());
+    } else if (m_shape == "squarepulse") {
+        err = compute_error(SquarePulseFV());
+    } else if (m_shape == "gaussianwavepacket") {
+        err = compute_error(GaussianWavePacketFV());
     }
 
     if (amrex::ParallelDescriptor::IOProcessor()) {
