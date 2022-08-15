@@ -144,8 +144,9 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
 
     utils::populate_abl_params();
 
-    amrex::ParmParse pp("CoriolisForcing");
-    pp.add("latitude", 45.0);
+    //amrex::ParmParse pp("CoriolisForcing");
+    amrex::ParmParse pp("GeostrophicForcing");
+    //pp.add("latitude", 45.0);
 
     initialize_mesh();
 
@@ -191,7 +192,7 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
 
         density.setVal(1.0);
         src_term.setVal(0.0);
-        amrex::ParmParse pp("GeostrophicForcing");
+        //amrex::ParmParse pp("GeostrophicForcing");
         pp.add("three_ComponentForcing", true);
 
         run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
@@ -281,37 +282,11 @@ TEST_F(ABLMeshTest, coriolis_const_vel)
     {
         amrex::Real golds[AMREX_SPACEDIM] = {
             0.0, -corfac * latfac * vel_comp, corfac * latfac * vel_comp};
-        amrex::ParmParse pp("CoriolisForcing");
+        //amrex::ParmParse pp("CoriolisForcing");
         pp.add("three_ComponentForcing",true);
         vel.setVal(0.0);
         src_term.setVal(0.0);
         vel.setVal(vel_comp, 0);
-
-        run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& src_arr = src_term(lev).array(mfi);
-
-            coriolis(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
-        });
-
-        for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-            const auto min_val = utils::field_min(src_term, i);
-            const auto max_val = utils::field_max(src_term, i);
-            EXPECT_NEAR(min_val, golds[i], tol);
-            // Ensure that the source term is constant throughout the domain
-            EXPECT_NEAR(min_val, max_val, tol);
-        }
-    }
-
-        // Velocity in z-direction test three component forcing
-    {
-        amrex::Real golds[AMREX_SPACEDIM] = {
-            -corfac * vel_comp * latfac, 0.0, 0.0};
-        amrex::ParmParse pp("CoriolisForcing");
-        pp.add("three_ComponentForcing",true);
-        vel.setVal(0.0);
-        src_term.setVal(0.0);
-        vel.setVal(vel_comp, 2);
 
         run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
             const auto& bx = mfi.tilebox();
