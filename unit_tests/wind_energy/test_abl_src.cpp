@@ -282,7 +282,7 @@ TEST_F(ABLMeshTest, coriolis_const_vel)
     {
         amrex::Real golds[AMREX_SPACEDIM] = {
             0.0, -corfac * latfac * vel_comp, corfac * latfac * vel_comp};
-        //amrex::ParmParse pp("CoriolisForcing");
+        amrex::ParmParse pp("CoriolisForcing");
         pp.add("three_ComponentForcing",true);
         vel.setVal(0.0);
         src_term.setVal(0.0);
