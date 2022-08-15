@@ -34,7 +34,9 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
         coriolis_factor = 2.0 * utils::two_pi() / rot_time_period;
         amrex::Print() << "Geostrophic forcing: Coriolis factor = "
                        << coriolis_factor << std::endl;
+    }
 
+    {
         // Latitude is mandatory, everything else is optional
         // Latitude is read in degrees
         // Read the geostrophic wind speed vector (in m/s)
@@ -46,7 +48,6 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
         cosphi = std::cos(latitude);
 
         if (!pp.query("three_ComponentForcing", m_S)){};
-
     }
 
     const auto corfac = coriolis_factor;
