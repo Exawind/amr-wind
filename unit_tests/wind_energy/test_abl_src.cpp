@@ -182,33 +182,33 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
         }
     }
 
-    // // Three component forcing
-    // {
-    //     const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{
-    //     {-corfac * 6.0 * latfac, 
-    //     +corfac * 10.0 * latfac,
-    //     -corfac * 10.0 * latfac}};
+    // Three component forcing
+    {
+        const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{
+        {-corfac * 6.0 * latfac, 
+        +corfac * 10.0 * latfac,
+        -corfac * 10.0 * latfac}};
 
-    //     density.setVal(1.0);
-    //     src_term.setVal(0.0);
-    //     //amrex::ParmParse pp("GeostrophicForcing");
-    //     pp.add("m_S", true);
+        density.setVal(1.0);
+        src_term.setVal(0.0);
+        //amrex::ParmParse pp("GeostrophicForcing");
+        pp.add("m_S", true);
 
-    //     run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
-    //     const auto& bx = mfi.tilebox();
-    //     const auto& src_arr = src_term(lev).array(mfi);
+        run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
+        const auto& bx = mfi.tilebox();
+        const auto& src_arr = src_term(lev).array(mfi);
 
-    //     geostrophic_forcing(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
-    //     });
+        geostrophic_forcing(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
+        });
 
-    //     for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-    //         const auto min_val = utils::field_min(src_term, i);
-    //         const auto max_val = utils::field_max(src_term, i);
-    //         EXPECT_NEAR(min_val, golds[i], tol);
-    //         // Ensure that the source term is constant throughout the domain
-    //         EXPECT_NEAR(min_val, max_val, tol);
-    //     }
-    // }
+        for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+            const auto min_val = utils::field_min(src_term, i);
+            const auto max_val = utils::field_max(src_term, i);
+            EXPECT_NEAR(min_val, golds[i], tol);
+            // Ensure that the source term is constant throughout the domain
+            EXPECT_NEAR(min_val, max_val, tol);
+        }
+    }
 }
 
 TEST_F(ABLMeshTest, coriolis_const_vel)
