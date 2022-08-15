@@ -42,7 +42,7 @@ void populate_abl_params()
     // Geostrophic Forcing
     {
         amrex::ParmParse pp("GeostrophicForcing");
-        amrex::Vector<amrex::Real> gwind{{10.0, 6.0, 0.1}};
+        amrex::Vector<amrex::Real> gwind{{10.0, 6.0, 0.0}};
         pp.addarr("geostrophic_wind", gwind);
         pp.add("latitude", 45.0);
     }

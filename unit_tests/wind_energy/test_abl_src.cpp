@@ -144,9 +144,8 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
 
     utils::populate_abl_params();
 
-    //amrex::ParmParse pp("CoriolisForcing");
     amrex::ParmParse pp("GeostrophicForcing");
-    //pp.add("latitude", 45.0);
+    pp.add("latitude", 45.0);
 
     initialize_mesh();
 
@@ -186,7 +185,7 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
     // Three component forcing
     {
         const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{
-        {-corfac * 6.0 * latfac +corfac * 0.1 * latfac, 
+        {-corfac * 6.0 * latfac, 
         +corfac * 10.0 * latfac,
         -corfac * 10.0 * latfac}};
 
