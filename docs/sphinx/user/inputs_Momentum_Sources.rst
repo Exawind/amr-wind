@@ -72,5 +72,7 @@ Section: Momentum Sources
 
    **type:** String, optional
    
-   Input file name for table that lists time, wind speed, and wind direction
-   of ABL forcing velocity.
+   Input file name for table that lists time in seconds, wind speed 
+   in meters per second, and wind direction in degrees of the ABL 
+   forcing velocity. Each line in the file should be a sequence of 
+   three floats specifying the inputs in that order (e.g., 0.0 8.0 -5.0).
