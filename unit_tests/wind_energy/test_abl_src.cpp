@@ -192,7 +192,7 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
         density.setVal(1.0);
         src_term.setVal(0.0);
         //amrex::ParmParse pp("GeostrophicForcing");
-        pp.add("m_S", true);
+        pp.add("three_ComponentForcing", true);
 
         run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
         const auto& bx = mfi.tilebox();
