@@ -91,7 +91,7 @@ struct GaussianPulse
       const amrex::Real /*unused*/) const;
 };
 
-struct BiGaussianPulse
+struct TwoDimGaussianPulse
 {
   AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
       const amrex::Real /*x*/,
@@ -135,7 +135,7 @@ struct GaussianPulseFV
       const amrex::Real /*unused*/) const;
 };
 
-struct BiGaussianPulseFV
+struct TwoDimGaussianPulseFV
 {
   AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
       const amrex::Real /*x*/,

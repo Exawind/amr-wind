@@ -14,9 +14,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GaussianPulseFV::operator()
     const amrex::Real y0,
     const amrex::Real amplitude,
     const amrex::Real x_width,
-    const amrex::Real y_width,
-    const amrex::Real x_wavenumber,
-    const amrex::Real y_wavenumber) const
+    const amrex::Real alpha,
+    const amrex::Real beta) const
 {
     if (std::abs(x - x0) < 6 * x_width) {
         return sqrt(utils::pi() / 2) * amplitude * x_width * (std::erf((x - x0 + dx / 2) / (sqrt(2) * x_width)) - std::erf((x - x0 - dx / 2) / (sqrt(2) * x_width))) / dx;
@@ -32,9 +31,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GaussianPulse::operator()(
     const amrex::Real y0,
     const amrex::Real amplitude,
     const amrex::Real x_width,
-    const amrex::Real y_width,
-    const amrex::Real x_wavenumber,
-    const amrex::Real y_wavenumber) const
+    const amrex::Real alpha,
+    const amrex::Real beta) const
 {
     if (std::abs(x - x0) < 6 * x_width) {
         return amplitude * std::exp( - std::pow(x - x0, 2) / (2 * std::pow(x_width, 2)));
@@ -43,39 +41,18 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GaussianPulse::operator()(
     }
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real TwoDimGaussianPulseFV::operator()(
-    const amrex::Real x,
-    const amrex::Real y,
-    const amrex::Real dx,
-    const amrex::Real dy,
-    const amrex::Real x0,
-    const amrex::Real y0,
-    const amrex::Real amplitude,
-    const amrex::Real x_width,
-    const amrex::Real y_width,
-    const amrex::Real x_wavenumber,
-    const amrex::Real y_wavenumber) const
-{
-    if (std::abs(x - x0) < 6 * x_width && std::abs(y - y0) < 6 * y_width)  {
-        return utils::pi() / 2 * amplitude * x_width * y_width * (std::erf((x - x0 + dx / 2) / (sqrt(2) * x_width)) - std::erf((x - x0 - dx / 2) / (sqrt(2) * x_width))) * (std::erf((y - y0 + dy / 2) / (sqrt(2) * y_width)) - std::erf((y - y0 - dy / 2) / (sqrt(2) * y_width)))/ dx / dy;
-    } else {
-        return 0.0;
-    }
-}
-
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real TwoDimGaussianPulse::operator()(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real BiGaussianPulse::operator()(
     const amrex::Real x,
     const amrex::Real y,
     const amrex::Real x0,
     const amrex::Real y0,
     const amrex::Real amplitude,
     const amrex::Real x_width,
-    const amrex::Real y_width,
-    const amrex::Real x_wavenumber,
-    const amrex::Real y_wavenumber) const
+    const amrex::Real alpha,
+    const amrex::Real beta) const
 {
     if (std::abs(x - x0) < 6 * x_width && std::abs(y - y0) < 6)  {
-        return amplitude * std::exp( - std::pow(x - x0, 2) / (2 * std::pow(x_width, 2))) * std::exp( - std::pow(y - y0, 2) / (2 * std::pow(y_width, 2)));
+        return amplitude * std::exp( - std::pow(x - x0, 2) / (2 * std::pow(x_x_width, 2))) * std::exp( - std::pow(y - y0, 2) / (2 * std::pow(y_x_width, 2)));
     } else {
         return 0.0;
     }
@@ -90,9 +67,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real SquarePulseFV::operator()(
     const amrex::Real y0,
     const amrex::Real amplitude,
     const amrex::Real x_width,
-    const amrex::Real y_width,
-    const amrex::Real x_wavenumber,
-    const amrex::Real y_wavenumber) const
+    const amrex::Real alpha,
+    const amrex::Real beta) const
 {
     if (std::abs(std::abs(x - x0) - x_width / 2) < dx / 2) {
         return amplitude * (x_width / 2 - std::abs(x - x0) + dx / 2) / dx;
@@ -112,9 +88,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GaussianWavePacketFV::opera
     const amrex::Real y0,
     const amrex::Real amplitude,
     const amrex::Real x_width,
-    const amrex::Real y_width,
-    const amrex::Real x_wavenumber,
-    const amrex::Real y_wavenumber) const
+    const amrex::Real alpha,
+    const amrex::Real beta) const
 {
     const GaussianWavePacket pointwise_function;
     // Gauss-Legendre quadrature
@@ -122,7 +97,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GaussianWavePacketFV::opera
     const amrex::Vector<amrex::Real> w_i = {0.5555555556, 0.8888888889, 0.5555555556};
     amrex::Real cell_integral = 0.0;
     for (int i = 0; i != dx_i.size(); ++i){
-        cell_integral = cell_integral + w_i[i] * pointwise_function(x + dx_i[i] * 0.5 * dx, y, x0, y0, amplitude, x_width, y_width, x_wavenumber, y_wavenumber);
+        cell_integral = cell_integral + w_i[i] * pointwise_function(x + dx_i[i] * 0.5 * dx, x0, amplitude, x_width, alpha);
     }
     return cell_integral / 2;
 }
@@ -134,12 +109,11 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GaussianWavePacket::operato
     const amrex::Real y0,
     const amrex::Real amplitude,
     const amrex::Real x_width,
-    const amrex::Real y_width,
-    const amrex::Real x_wavenumber,
-    const amrex::Real y_wavenumber) const
+    const amrex::Real alpha,
+    const amrex::Real beta) const
 {
     if (std::abs(x - x0) < 6 * x_width) {
-        return amplitude * std::cos(x_wavenumber * x) * std::exp( - std::pow(x - x0, 2) / (2 * std::pow(x_width, 2)));
+        return std::cos(alpha * x) * amplitude * std::exp( - std::pow(x - x0, 2) / (2 * std::pow(x_width, 2)));
     } else {
         return 0.0;
     }
@@ -165,9 +139,8 @@ ScalarAdvection::ScalarAdvection(CFDSim& sim)
     pp_scalar_advection.query("y0", m_y0);
     pp_scalar_advection.query("amplitude", m_amplitude);
     pp_scalar_advection.query("x_width", m_x_width);
-    pp_scalar_advection.query("y_width", m_y_width);
-    pp_scalar_advection.query("x_wavenumber", m_x_wavenumber);
-    pp_scalar_advection.query("y_wavenumber", m_y_wavenumber);
+    pp_scalar_advection.query("alpha", m_alpha);
+    pp_scalar_advection.query("beta", m_beta);
     pp_scalar_advection.query("shape", m_shape);
     pp_scalar_advection.query("output_fname", m_output_fname);
 
@@ -180,8 +153,7 @@ ScalarAdvection::ScalarAdvection(CFDSim& sim)
  */
 void ScalarAdvection::initialize_fields(int level, const amrex::Geometry& geom)
 {
-    const amrex::Real u = m_u;
-    const amrex::Real v = m_v;
+    const amrex::Real convective_speed = m_convective_speed;
     auto& velocity = m_velocity(level);
     auto& density = m_density(level);
     density.setVal(m_rho);
@@ -191,8 +163,8 @@ void ScalarAdvection::initialize_fields(int level, const amrex::Geometry& geom)
         auto vel = velocity.array(mfi);
 
         amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-            vel(i, j, k, 0) = u;
-            vel(i, j, k, 1) = v;
+            vel(i, j, k, 0) = convective_speed;
+            vel(i, j, k, 1) = 0.0;
             vel(i, j, k, 2) = 0.0;
         });
     }
@@ -203,8 +175,6 @@ void ScalarAdvection::post_init_actions()
     if (m_time.time_index() > 0) {
         return;
     }
-
-    std::cout << "shape is " << m_shape << std::endl;
     
     if (m_shape == "gaussianpulse") {
         initialize_scalar(GaussianPulseFV());
@@ -212,8 +182,6 @@ void ScalarAdvection::post_init_actions()
         initialize_scalar(SquarePulseFV());
     } else if (m_shape == "gaussianwavepacket") {
         initialize_scalar(GaussianWavePacketFV());
-    } else if (m_shape == "twodimgaussianpulse") {
-        initialize_scalar(TwoDimGaussianPulseFV());
     }
 
     if (amrex::ParallelDescriptor::IOProcessor()) {
@@ -231,8 +199,8 @@ void ScalarAdvection::initialize_scalar(const Shape& scalar_function)
     const amrex::Real amplitude = m_amplitude;
     const amrex::Real x_width = m_x_width;
     const amrex::Real y_width = m_y_width;
-    const amrex::Real x_wavenumber = m_x_wavenumber;
-    const amrex::Real y_wavenumber = m_y_wavenumber;
+    const amrex::Real alpha = m_alpha;
+    const amrex::Real beta = m_beta;
 
     for (int level = 0; level <= m_repo.mesh().finestLevel(); ++level) {
 
@@ -247,7 +215,7 @@ void ScalarAdvection::initialize_scalar(const Shape& scalar_function)
             amrex::ParallelFor(nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                 const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                scalar_arr(i, j, k, 0) = scalar_function(x, y, dx[0], dx[1], x0, y0, amplitude, x_width, y_width, x_wavenumber, y_wavenumber);
+                scalar_arr(i, j, k, 0) = scalar_function(x, y, dx[0], dx[1], x0, y0, amplitude, x_width, alpha, beta);
             });
         }
     }
@@ -265,8 +233,8 @@ amrex::Vector<amrex::Real> ScalarAdvection::compute_error(const Shape& scalar_fu
     const amrex::Real amplitude = m_amplitude;
     const amrex::Real x_width = m_x_width;
     const amrex::Real y_width = m_y_width;
-    const amrex::Real x_wavenumber = m_x_wavenumber;
-    const amrex::Real y_wavenumber = m_y_wavenumber;
+    const amrex::Real alpha = m_alpha;
+    const amrex::Real beta = m_beta;
     const int nlevels = m_repo.num_active_levels();
     const amrex::Real total_vol = m_repo.mesh().Geom(0).ProbDomain().volume();
 
@@ -301,7 +269,7 @@ amrex::Vector<amrex::Real> ScalarAdvection::compute_error(const Shape& scalar_fu
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                 const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                 const amrex::Real s = scalar_arr(i, j, k, 0);
-                const amrex::Real s_exact = scalar_function(x - x_conv_dist, y - y_conv_dist, dx[0], dx[1], x0, y0, amplitude, x_width, y_width, x_wavenumber, y_wavenumber);
+                const amrex::Real s_exact = scalar_function(x - x_conv_dist, y - y_conv_dist, dx[0], dx[1], x0, y0, amplitude, x_width, y_width, alpha, beta);
                 err_fab += cell_vol * mask_arr(i, j, k) * (s - s_exact) *
                            (s - s_exact);
             });
