@@ -52,78 +52,135 @@ private:
     Field* m_scalar{nullptr};
 
     //! Flow velocity in x-direction
-    amrex::Real m_convective_speed{1.0};
+    amrex::Real m_u{1.0};
+    amrex::Real m_v{0.0};
 
-    //! Initial wave packet location
-    amrex::Real m_center{0.1};
+    //! Initial wave/pulse packet location
+    amrex::Real m_x0{0.1};
+    amrex::Real m_y0{0.1};
 
-    //! Initial wave amplitude
+    //! Initial wave/pulse amplitude
     amrex::Real m_amplitude{1.0};
 
-    //! Initial wave width (standard deviation for Gaussian and Yalla2021)
-    amrex::Real m_width{0.01};
+    //! Initial wave/pulse width (standard deviation for GaussianPulse and GaussianWavePacket)
+    amrex::Real m_x_width{0.01};
+    amrex::Real m_y_width{0.01};
 
-    //! Eta parameter for Yalla2021
-    amrex::Real m_eta{16 * utils::pi()};
+    //! Wave numbers
+    amrex::Real m_x_wavenumber{16 * utils::pi()};
+    amrex::Real m_y_wavenumber{16 * utils::pi()};
     
-    //! Initial wave packet shape
+    //! Initial wave/pulse shape
     std::string m_shape{"gaussian"};
 
     //! Density
     amrex::Real m_rho{1.0};
 };
 
-struct Gaussian
+struct GaussianPulse
 {
   AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
       const amrex::Real /*x*/,
-      const amrex::Real /*center*/,
+      const amrex::Real /*y*/,
+      const amrex::Real /*x0*/,
+      const amrex::Real /*y0*/,
       const amrex::Real /*amplitude*/,
-      const amrex::Real /*width*/,
+      const amrex::Real /*x_width*/,
+      const amrex::Real /*y_width*/,
+      const amrex::Real /*unused*/,
       const amrex::Real /*unused*/) const;
 };
 
-struct Yalla2021
+struct BiGaussianPulse
 {
   AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
       const amrex::Real /*x*/,
-      const amrex::Real /*center*/,
+      const amrex::Real /*y*/,
+      const amrex::Real /*x0*/,
+      const amrex::Real /*y0*/,
       const amrex::Real /*amplitude*/,
-      const amrex::Real /*width*/,
-      const amrex::Real /*eta*/) const;
-};
-
-struct GaussianFV
-{
-  AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
-      const amrex::Real /*x*/,
-      const amrex::Real /*dx*/,
-      const amrex::Real /*center*/,
-      const amrex::Real /*amplitude*/,
-      const amrex::Real /*width*/,
+      const amrex::Real /*x_width*/,
+      const amrex::Real /*y_width*/,
+      const amrex::Real /*unused*/,
       const amrex::Real /*unused*/) const;
 };
 
-struct TopHatFV
+struct GaussianWavePacket
 {
   AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
       const amrex::Real /*x*/,
-      const amrex::Real /*dx*/,
-      const amrex::Real /*center*/,
+      const amrex::Real /*y*/,
+      const amrex::Real /*x0*/,
+      const amrex::Real /*y0*/,
       const amrex::Real /*amplitude*/,
-      const amrex::Real /*width*/,
+      const amrex::Real /*x_width*/,
+      const amrex::Real /*y_width*/,
+      const amrex::Real /*unused*/,
       const amrex::Real /*unused*/) const;
 };
 
-struct Yalla2021FV
+struct GaussianPulseFV
 {
   AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
       const amrex::Real /*x*/,
+      const amrex::Real /*y*/,
       const amrex::Real /*dx*/,
-      const amrex::Real /*center*/,
+      const amrex::Real /*dy*/,
+      const amrex::Real /*x0*/,
+      const amrex::Real /*y0*/,
       const amrex::Real /*amplitude*/,
-      const amrex::Real /*width*/,
-      const amrex::Real /*eta*/) const;
+      const amrex::Real /*x_width*/,
+      const amrex::Real /*y_width*/,
+      const amrex::Real /*unused*/,
+      const amrex::Real /*unused*/) const;
+};
+
+struct BiGaussianPulseFV
+{
+  AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+      const amrex::Real /*x*/,
+      const amrex::Real /*y*/,
+      const amrex::Real /*dx*/,
+      const amrex::Real /*dy*/,
+      const amrex::Real /*x0*/,
+      const amrex::Real /*y0*/,
+      const amrex::Real /*amplitude*/,
+      const amrex::Real /*x_width*/,
+      const amrex::Real /*y_width*/,
+      const amrex::Real /*unused*/,
+      const amrex::Real /*unused*/) const;
+};
+
+struct SquarePulseFV
+{
+  AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+      const amrex::Real /*x*/,
+      const amrex::Real /*y*/,
+      const amrex::Real /*dx*/,
+      const amrex::Real /*dy*/,
+      const amrex::Real /*x0*/,
+      const amrex::Real /*y0*/,
+      const amrex::Real /*amplitude*/,
+      const amrex::Real /*x_width*/,
+      const amrex::Real /*y_width*/,
+      const amrex::Real /*unused*/,
+      const amrex::Real /*unused*/) const;
+};
+
+struct GaussianWavePacketFV
+{
+  AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+      const amrex::Real /*x*/,
+      const amrex::Real /*y*/,
+      const amrex::Real /*dx*/,
+      const amrex::Real /*dy*/,
+      const amrex::Real /*x0*/,
+      const amrex::Real /*y0*/,
+      const amrex::Real /*amplitude*/,
+      const amrex::Real /*x_width*/,
+      const amrex::Real /*y_width*/,
+      const amrex::Real /*unused*/,
+      const amrex::Real /*unused*/) const;
 };
 
 } // namespace amr_wind
