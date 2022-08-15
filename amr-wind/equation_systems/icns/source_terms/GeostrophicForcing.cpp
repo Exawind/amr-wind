@@ -37,6 +37,9 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
 
         // Latitude is mandatory, everything else is optional
         // Latitude is read in degrees
+        // Read the geostrophic wind speed vector (in m/s)
+        amrex::ParmParse pp("GeostrophicForcing");
+        pp.getarr("geostrophic_wind", m_target_vel);
         pp.get("latitude", latitude);
         latitude = utils::radians(latitude);
         sinphi = std::sin(latitude);
@@ -44,12 +47,6 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
 
         if (!pp.query("three_ComponentForcing", m_S)){};
 
-    }
-
-    {
-        // Read the geostrophic wind speed vector (in m/s)
-        amrex::ParmParse pp("GeostrophicForcing");
-        pp.getarr("geostrophic_wind", m_target_vel);
     }
 
     const auto corfac = coriolis_factor;
