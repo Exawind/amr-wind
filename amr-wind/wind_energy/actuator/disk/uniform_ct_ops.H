@@ -62,6 +62,7 @@ struct InitDataOp<UniformCt, ActSrcDisk>
         ops::base::allocate_basic_grid_quantities<UniformCt>(data);
 
         auto& grid = data.grid();
+        // cppcheck-suppress constVariable
         auto& meta = data.meta();
 
         const auto& cVec = meta.coplanar_vec;
