@@ -241,8 +241,8 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
 
     // might be able to skip z-dir since vorticity is 0.0
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-        auto vectorpot = (*vectorpotential).subview(i, 1);
-        auto minusvort = (*minusvorticity).subview(i, 1);
+        auto vectorpot((*vectorpotential).subview(i, 1));
+        auto minusvort((*minusvorticity).subview(i, 1));
         mlmg.solve(
             vectorpot.vec_ptrs(), minusvort.vec_const_ptrs(), rel_tol, abs_tol);
     }

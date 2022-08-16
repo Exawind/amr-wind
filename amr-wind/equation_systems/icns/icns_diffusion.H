@@ -397,8 +397,8 @@ public:
                 m_applier_scalar[i]->setBCoeffs(
                     lev, amrex::GetArrOfConstPtrs(b));
 
-                auto divtau_comp = divtau.subview(i);
-                auto vel_comp = m_pdefields.field.subview(i);
+                auto divtau_comp(divtau.subview(i));
+                auto vel_comp(m_pdefields.field.subview(i));
 
                 amrex::MLMG mlmg(*m_applier_scalar[i]);
                 mlmg.apply(divtau_comp.vec_ptrs(), vel_comp.vec_ptrs());
@@ -507,8 +507,8 @@ public:
         }
 
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-            auto vel_comp = m_pdefields.field.subview(i);
-            auto rhs_ptr_comp = rhs_ptr->subview(i);
+            auto vel_comp(m_pdefields.field.subview(i));
+            auto rhs_ptr_comp(rhs_ptr->subview(i));
 
             amrex::MLMG mlmg(*m_solver_scalar[i]);
             m_options(mlmg);

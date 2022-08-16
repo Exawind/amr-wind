@@ -28,7 +28,7 @@ public:
     explicit ViewField(const ViewField&) = delete;
     ViewField& operator=(const ViewField&) = delete;
 
-    ViewField(ViewField&&) = default;
+    explicit ViewField(ViewField&&) = default;
     ViewField& operator=(ViewField&&) = default;
 
     inline std::string name() const { return m_src.name() + "view"; }

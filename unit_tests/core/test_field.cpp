@@ -364,7 +364,7 @@ TEST_F(FieldRepoTest, field_subviews)
     velocity.setVal(20.0, 1, 1);
     velocity.setVal(30.0, 2, 1);
     {
-        auto wvel = velocity.subview(2);
+        auto wvel(velocity.subview(2));
         EXPECT_TRUE(wvel.num_comp() == 1);
 
         int nlevels = repo.num_active_levels();
@@ -375,7 +375,7 @@ TEST_F(FieldRepoTest, field_subviews)
     }
 
     {
-        auto vel2d = velocity.subview(0, 2);
+        auto vel2d(velocity.subview(0, 2));
         EXPECT_TRUE(vel2d.num_comp() == 2);
         int nlevels = repo.num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {
