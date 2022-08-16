@@ -117,7 +117,7 @@ class Field
 public:
     friend class FieldRepo;
 
-    Field(const Field&) = delete;
+    explicit Field(const Field&) = delete;
     Field& operator=(const Field&) = delete;
     ~Field();
 

@@ -31,7 +31,7 @@ class ScratchField
 public:
     friend class FieldRepo;
 
-    ScratchField(const ScratchField&) = delete;
+    explicit ScratchField(const ScratchField&) = delete;
     ScratchField& operator=(const ScratchField&) = delete;
 
     //! Name if available for this scratch field
