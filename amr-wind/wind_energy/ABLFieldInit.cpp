@@ -78,8 +78,10 @@ void ABLFieldInit::operator()(
     const bool perturb_vel = m_perturb_vel;
     const amrex::Real rho_init = m_rho;
 
-    const amrex::Real umean = !m_vel_timetable.empty() ? m_vel_speed * std::cos(m_vel_dir) : m_vel[0];
-    const amrex::Real vmean = !m_vel_timetable.empty() ? m_vel_speed * std::sin(m_vel_dir) : m_vel[1];
+    const amrex::Real umean =
+        !m_vel_timetable.empty() ? m_vel_speed * std::cos(m_vel_dir) : m_vel[0];
+    const amrex::Real vmean =
+        !m_vel_timetable.empty() ? m_vel_speed * std::sin(m_vel_dir) : m_vel[1];
     const amrex::Real wmean = !m_vel_timetable.empty() ? 0.0 : m_vel[2];
 
     const amrex::Real aval = m_Uperiods * 2.0 * pi / (probhi[1] - problo[1]);
