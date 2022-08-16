@@ -41,6 +41,7 @@ protected:
     amrex::Real area;
 };
 
+// cppcheck-suppress uninitDerivedMemberVar
 TEST_P(TestAreaComputer, area_matches)
 {
     const auto params = GetParam();
@@ -54,6 +55,7 @@ TEST_P(TestAreaComputer, area_matches)
     EXPECT_NEAR(area, area_computed, 1.e-12 * area);
 }
 
+// cppcheck-suppress uninitDerivedMemberVar
 TEST_P(TestAreaComputer, weight_sums_to_one)
 {
     const auto params = GetParam();
