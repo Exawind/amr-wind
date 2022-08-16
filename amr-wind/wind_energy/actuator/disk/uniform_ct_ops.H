@@ -31,17 +31,7 @@ struct UpdatePosOp<UniformCt, ActSrcDisk>
     {
         return;
 
-        // TODO: add yaw here:
-        //        auto& meta = data.meta();
-        //        auto time = data.sim().time().current_time();
-        //        if(time >= 1.0 && time < 1.2) {
-        //            meta.normal_vec[0] = 1.0;
-        //            meta.normal_vec[1] = 0.0;
-        //            meta.sample_vec[0] = meta.normal_vec[0];
-        //            meta.sample_vec[1] = meta.normal_vec[1];
-        //        }
-        //        amrex::Print() << "uniform norm vec: " << meta.normal_vec[0]
-        //        << std::endl;
+        // TODO: add yaw controller here and remove return
         uniformct::update_disk_points(data);
     }
 };

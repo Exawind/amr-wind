@@ -51,6 +51,8 @@ struct UpdatePosOp<Joukowsky, ActSrcDisk>
 {
     void operator()(typename Joukowsky::DataType& data)
     {
+        return;
+        // TODO: add yaw controller here and remove return
         joukowsky::update_disk_points(data);
     }
 };
