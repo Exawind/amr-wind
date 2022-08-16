@@ -25,7 +25,7 @@ class ViewField
 public:
     friend T;
 
-    ViewField(const ViewField&) = delete;
+    explicit ViewField(const ViewField&) = delete;
     ViewField& operator=(const ViewField&) = delete;
 
     ViewField(ViewField&&) = default;
