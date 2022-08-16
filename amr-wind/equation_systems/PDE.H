@@ -40,7 +40,7 @@ public:
     /**
      *  \param sim A CFDSim instance
      */
-    PDESystem(CFDSim& sim)
+    explicit PDESystem(CFDSim& sim)
         : m_sim(sim)
         , m_time(sim.time())
         , m_repo(sim.repo())
