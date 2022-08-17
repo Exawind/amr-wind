@@ -32,34 +32,36 @@ CoriolisForcing::CoriolisForcing(const CFDSim& sim)
     : m_velocity(sim.repo().get_field("velocity"))
 {
     static_assert(AMREX_SPACEDIM == 3, "ABL implementation requires 3D domain");
-    amrex::ParmParse pp("CoriolisForcing");
+    {
+        amrex::ParmParse pp("CoriolisForcing");
 
-    // Latitude is mandatory, everything else is optional
-    // Latitude is read in degrees
-    pp.get("latitude", m_latitude);
-    m_latitude = utils::radians(m_latitude);
-    m_sinphi = std::sin(m_latitude);
-    m_cosphi = std::cos(m_latitude);
+        // Latitude is mandatory, everything else is optional
+        // Latitude is read in degrees
+        pp.get("latitude", m_latitude);
+        m_latitude = utils::radians(m_latitude);
+        m_sinphi = std::sin(m_latitude);
+        m_cosphi = std::cos(m_latitude);
 
-    // Read the rotational time period (in seconds)
-    amrex::Real rot_time_period = 86400.0;
-    pp.query("rotational_time_period", rot_time_period);
-    m_coriolis_factor = 2.0 * utils::two_pi() / rot_time_period;
+        // Read the rotational time period (in seconds)
+        amrex::Real rot_time_period = 86400.0;
+        pp.query("rotational_time_period", rot_time_period);
+        m_coriolis_factor = 2.0 * utils::two_pi() / rot_time_period;
 
-    pp.queryarr("east_vector", m_east, 0, AMREX_SPACEDIM);
-    pp.queryarr("north_vector", m_north, 0, AMREX_SPACEDIM);
-    utils::vec_normalize(m_east.data());
-    utils::vec_normalize(m_north.data());
-    utils::cross_prod(m_east.data(), m_north.data(), m_up.data());
+        pp.queryarr("east_vector", m_east, 0, AMREX_SPACEDIM);
+        pp.queryarr("north_vector", m_north, 0, AMREX_SPACEDIM);
+        utils::vec_normalize(m_east.data());
+        utils::vec_normalize(m_north.data());
+        utils::cross_prod(m_east.data(), m_north.data(), m_up.data());
 
-    // // 3-component forcing (Default: false)
-    // if (!pp.query("three_ComponentForcing", m_S)){};
-}
+        // // 3-component forcing (Default: false)
+        // if (!pp.query("three_ComponentForcing", m_S)){};
+    }
 
-{
-    amrex::ParmParse pp("ABL");
-    // 3-component forcing (Default: false)
-    if (!pp.query("three_ComponentForcing", m_S)){};
+    {
+        amrex::ParmParse pp("ABL");
+        // 3-component forcing (Default: false)
+        if (!pp.query("three_ComponentForcing", m_S)){};
+    }
 }
 
 CoriolisForcing::~CoriolisForcing() = default;
