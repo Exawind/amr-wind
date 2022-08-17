@@ -309,6 +309,7 @@ TEST_F(ABLMeshTest, coriolis_three_component_const_vel)
     const amrex::Real latfac = std::sin(amr_wind::utils::radians(45.0));
     // Initialize a random value for the velocity component
     const amrex::Real vel_comp = 10.0 + 5.0 * (amrex::Random() - 0.5);
+<<<<<<< HEAD
     pp.add("three_ComponentForcing", true);
 
     // Initialize parameters
@@ -337,6 +338,36 @@ TEST_F(ABLMeshTest, coriolis_three_component_const_vel)
             coriolis(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
         });
 
+=======
+    amrex::ParmParse pp("CoriolisForcing");
+    pp.add("three_ComponentForcing", true);
+
+
+    // Initialize parameters
+    utils::populate_abl_params();
+    initialize_mesh();
+
+    auto fields = ICNSFields(sim())(sim().time());
+    auto& vel = fields.field;
+    auto& src_term = fields.src_term;
+    amr_wind::pde::icns::CoriolisForcing coriolis(sim());
+
+        // Velocity in x-direction test three component forcing
+    {
+        amrex::Real golds[AMREX_SPACEDIM] = {
+            0.0, -corfac * latfac * vel_comp, corfac * latfac * vel_comp};
+        vel.setVal(0.0);
+        src_term.setVal(0.0);
+        vel.setVal(vel_comp, 0);
+
+        run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
+            const auto& bx = mfi.tilebox();
+            const auto& src_arr = src_term(lev).array(mfi);
+
+            coriolis(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
+        });
+
+>>>>>>> 94a9ee4859920ccae3aada0ca64ccc6797924010
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
             const auto min_val = utils::field_min(src_term, i);
             const auto max_val = utils::field_max(src_term, i);

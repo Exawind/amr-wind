@@ -67,3 +67,12 @@ Section: Momentum Sources
    
    Height in meters at which the flow is forced to maintain the freestream
    inflow velocities specified through :input_param:`incflo.velocity`.
+
+.. input_param:: ABLForcing.velocity_timetable
+
+   **type:** String, optional
+   
+   Input file name for table that lists time in seconds, wind speed 
+   in meters per second, and wind direction in degrees of the ABL 
+   forcing velocity. Each line in the file should be a sequence of 
+   three floats specifying the inputs in that order (e.g., 0.0 8.0 -5.0).

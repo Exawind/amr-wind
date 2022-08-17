@@ -63,7 +63,8 @@ private:
     amrex::Real m_sinphi{0.0};
     amrex::Real m_cosphi{0.0};
 
-    bool m_S = false;
+    //! Default three component forcing
+    bool m_S{false};
 
     //! `2.0 * \Omega`
     amrex::Real m_coriolis_factor{0.0};
