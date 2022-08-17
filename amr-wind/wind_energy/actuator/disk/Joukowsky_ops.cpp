@@ -55,6 +55,27 @@ void parse_and_gather_params(const utils::ActParser& pp, JoukowskyData& data)
     data.dr = 0.5 * data.diameter / data.num_vel_pts_r;
 }
 
+void update_disk_points(Joukowsky::DataType& data)
+{
+    auto& grid = data.grid();
+    auto& meta = data.meta();
+
+    base::compute_and_normalize_coplanar_vector(meta);
+    data.info().bound_box = base::compute_bounding_box(meta);
+
+    const auto& sVec = meta.sample_vec;
+    const auto& nVec = meta.normal_vec;
+
+    // force points
+    base::compute_disk_points(meta, grid.pos, nVec, 0, 0);
+    // velocity points upstream
+    base::compute_disk_points(
+        meta, grid.vel_pos, sVec, 0, meta.diameters_to_sample);
+    // velocity points at the disk
+    base::compute_disk_points(
+        meta, grid.vel_pos, nVec, meta.num_vel_pts / 2, 0);
+}
+
 void prepare_netcdf_file(
     const std::string& name,
     const JoukowskyData& data,

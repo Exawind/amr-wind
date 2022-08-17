@@ -30,6 +30,9 @@ void write_netcdf(
     const ActInfo& info,
     const ActGrid& /*unused*/,
     const amrex::Real time);
+
+void update_disk_points(Joukowsky::DataType& data);
+
 } // namespace joukowsky
 
 template <>
@@ -44,15 +47,24 @@ struct ReadInputsOp<Joukowsky, ActSrcDisk>
 };
 
 template <>
+struct UpdatePosOp<Joukowsky, ActSrcDisk>
+{
+    void operator()(typename Joukowsky::DataType& data)
+    {
+        return;
+        // TODO: add yaw controller here and remove return
+        joukowsky::update_disk_points(data);
+    }
+};
+
+template <>
 struct InitDataOp<Joukowsky, ActSrcDisk>
 {
     void operator()(typename Joukowsky::DataType& data)
     {
         ops::base::allocate_basic_grid_quantities<Joukowsky>(data);
 
-        auto& grid = data.grid();
         auto& meta = data.meta();
-
         meta.tip_correction.resize(meta.num_vel_pts_r);
         meta.root_correction.resize(meta.num_vel_pts_r);
         meta.f_normal.resize(meta.num_vel_pts_r);
@@ -81,17 +93,7 @@ struct InitDataOp<Joukowsky, ActSrcDisk>
                 meta.root_correction.begin(), meta.root_correction.end(), 1.0);
         }
 
-        const auto& sVec = meta.sample_vec;
-        const auto& nVec = meta.normal_vec;
-
-        // force points
-        base::compute_disk_points(meta, grid.pos, nVec, 0, 0);
-        // velocity points upstream
-        base::compute_disk_points(
-            meta, grid.vel_pos, sVec, 0, meta.diameters_to_sample);
-        // velocity points at the disk
-        base::compute_disk_points(
-            meta, grid.vel_pos, nVec, meta.num_vel_pts / 2, 0);
+        joukowsky::update_disk_points(data);
     }
 };
 
