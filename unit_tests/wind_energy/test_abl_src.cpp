@@ -316,8 +316,16 @@ TEST_F(ABLMeshTest, coriolis_three_component_const_vel)
     const amrex::Real latfac = std::sin(amr_wind::utils::radians(45.0));
     // Initialize a random value for the velocity component
     const amrex::Real vel_comp = 10.0 + 5.0 * (amrex::Random() - 0.5);
-    amrex::ParmParse pp("CoriolisForcing");
-    pp.add("three_ComponentForcing", true);
+    
+    {
+        amrex::ParmParse pp("ABL");
+        pp.add("three_ComponentForcing", true);
+    }
+
+    {
+        amrex::ParmParse pp("CoriolisForcing");
+        pp.add("latitude", 45.0);
+    }
 
 
     // Initialize parameters
