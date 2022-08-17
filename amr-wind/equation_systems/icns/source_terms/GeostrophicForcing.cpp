@@ -1,4 +1,5 @@
 #include "amr-wind/equation_systems/icns/source_terms/GeostrophicForcing.H"
+#include "amr-wind/equation_systems/icns/source_terms/CoriolisForcing.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/core/vs/vstraits.H"
@@ -23,37 +24,67 @@ namespace icns {
  *  - 'three_ComponentForcing' (Default: false = 0 - two component forcing) 
  *
  */
-GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
+CoriolisForcing::CoriolisForcing(const CFDSim& sim)
+    : m_velocity(sim.repo().get_field("velocity"))
 {
-    amrex::Real coriolis_factor;
-    {
-        // Read the rotational time period (in seconds)
-        amrex::ParmParse pp("CoriolisForcing");
-        amrex::Real rot_time_period = 86400.0;
-        pp.query("rotational_time_period", rot_time_period);
-        coriolis_factor = 2.0 * utils::two_pi() / rot_time_period;
-        amrex::Print() << "Geostrophic forcing: Coriolis factor = "
-                       << coriolis_factor << std::endl;
-    }
+    //static_assert(AMREX_SPACEDIM == 3, "ABL implementation requires 3D domain");
+    amrex::ParmParse pp("CoriolisForcing");
 
-    {
-        // Latitude is mandatory, everything else is optional
-        // Latitude is read in degrees
-        // Read the geostrophic wind speed vector (in m/s)
-        amrex::ParmParse pp("GeostrophicForcing");
-        pp.getarr("geostrophic_wind", m_target_vel);
-        pp.get("latitude", latitude);
-        latitude = utils::radians(latitude);
-        sinphi = std::sin(latitude);
-        cosphi = std::cos(latitude);
-        
-        if (!pp.query("three_ComponentForcing", m_S)){
-            amrex::Print() << "cannot find three_componentForcing, "
+    // Latitude is mandatory, everything else is optional
+    // Latitude is read in degrees
+    pp.get("latitude", m_latitude);
+    m_latitude = utils::radians(m_latitude);
+    m_sinphi = std::sin(m_latitude);
+    m_cosphi = std::cos(m_latitude);
+
+    // Read the rotational time period (in seconds)
+    amrex::Real rot_time_period = 86400.0;
+    pp.query("rotational_time_period", rot_time_period);
+    m_coriolis_factor = 2.0 * utils::two_pi() / rot_time_period;
+
+    // 3-component forcing (Default: false)
+    if (!pp.query("three_ComponentForcing", m_S)){
+        amrex::Print() << "cannot find three_componentForcing, "
                             << "so the default will be used\n";
         };
-    }
+    };
+}
 
-    const auto corfac = coriolis_factor;
+
+GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
+{
+    // amrex::Real coriolis_factor;
+    // {
+    //     // Read the rotational time period (in seconds)
+    //     amrex::ParmParse pp("CoriolisForcing");
+    //     amrex::Real rot_time_period = 86400.0;
+    //     pp.query("rotational_time_period", rot_time_period);
+    //     coriolis_factor = 2.0 * utils::two_pi() / rot_time_period;
+    //     amrex::Print() << "Geostrophic forcing: Coriolis factor = "
+    //                    << coriolis_factor << std::endl;
+    // }
+
+    // {
+    //     // Latitude is mandatory, everything else is optional
+    //     // Latitude is read in degrees
+    //     // Read the geostrophic wind speed vector (in m/s)
+    //     amrex::ParmParse pp("GeostrophicForcing");
+    //     pp.getarr("geostrophic_wind", m_target_vel);
+    //     pp.get("latitude", latitude);
+    //     latitude = utils::radians(latitude);
+    //     sinphi = std::sin(latitude);
+    //     cosphi = std::cos(latitude);
+        
+    //     if (!pp.query("three_ComponentForcing", m_S)){
+    //         amrex::Print() << "cannot find three_componentForcing, "
+    //                         << "so the default will be used\n";
+    //     };
+    // }
+
+    const auto sinphi = m_sinphi;
+    const auto cosphi = m_cosphi;
+    const auto corfac = m_coriolis_factor;
+    //const auto corfac = coriolis_factor;
     const auto S = m_S;
 
     m_g_forcing = {

@@ -144,7 +144,8 @@ TEST_F(ABLMeshTest, geostrophic_two_component_forcing)
 
     utils::populate_abl_params();
 
-    amrex::ParmParse pp("GeostrophicForcing");
+    //amrex::ParmParse pp("GeostrophicForcing");
+    amrex::ParmParse pp("CoriolisForcing");
     pp.add("latitude", 45.0);
 
     initialize_mesh();
@@ -192,7 +193,8 @@ TEST_F(ABLMeshTest, geostrophic_three_component_forcing)
 
     utils::populate_abl_params();
 
-    amrex::ParmParse pp("GeostrophicForcing");
+    //amrex::ParmParse pp("GeostrophicForcing");
+    amrex::ParmParse pp("CoriolisForcing");
     pp.add("latitude", 45.0);
     pp.add("three_ComponentForcing", true);
 
