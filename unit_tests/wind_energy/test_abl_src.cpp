@@ -144,7 +144,6 @@ TEST_F(ABLMeshTest, geostrophic_two_component_forcing)
 
     utils::populate_abl_params();
 
-    //amrex::ParmParse pp("GeostrophicForcing");
     amrex::ParmParse pp("CoriolisForcing");
     pp.add("latitude", 45.0);
 
@@ -249,6 +248,8 @@ TEST_F(ABLMeshTest, coriolis_two_component_const_vel)
     const amrex::Real latfac = std::sin(amr_wind::utils::radians(45.0));
     // Initialize a random value for the velocity component
     const amrex::Real vel_comp = 10.0 + 5.0 * (amrex::Random() - 0.5);
+    amrex::ParmParse pp("CoriolisForcing");
+    pp.add("latitude", 45.0);
 
     // Initialize parameters
     utils::populate_abl_params();
@@ -316,7 +317,7 @@ TEST_F(ABLMeshTest, coriolis_three_component_const_vel)
     const amrex::Real latfac = std::sin(amr_wind::utils::radians(45.0));
     // Initialize a random value for the velocity component
     const amrex::Real vel_comp = 10.0 + 5.0 * (amrex::Random() - 0.5);
-    
+
     {
         amrex::ParmParse pp("ABL");
         pp.add("three_ComponentForcing", true);

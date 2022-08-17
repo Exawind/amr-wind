@@ -52,9 +52,6 @@ CoriolisForcing::CoriolisForcing(const CFDSim& sim)
         utils::vec_normalize(m_east.data());
         utils::vec_normalize(m_north.data());
         utils::cross_prod(m_east.data(), m_north.data(), m_up.data());
-
-        // // 3-component forcing (Default: false)
-        // if (!pp.query("three_ComponentForcing", m_S)){};
     }
 
     {
