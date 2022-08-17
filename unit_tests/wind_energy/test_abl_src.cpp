@@ -194,7 +194,7 @@ TEST_F(ABLMeshTest, geostrophic_three_component_forcing)
     utils::populate_abl_params();
 
     {
-        amrex::ParmParse pp("ABL")
+        amrex::ParmParse pp("ABL");
         pp.add("three_ComponentForcing", true);
     }
 
