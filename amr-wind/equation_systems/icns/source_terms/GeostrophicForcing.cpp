@@ -47,9 +47,17 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
         sinphi = std::sin(latitude);
         cosphi = std::cos(latitude);
         
+        // if (!pp.query("three_ComponentForcing", m_S)){
+        //     amrex::Print() << "cannot find three_componentForcing, "
+        //                     << "so the default will be used\n";
+        // };
+    }
+
+    {
+        amrex::ParmParse pp("ABL");
         if (!pp.query("three_ComponentForcing", m_S)){
             amrex::Print() << "cannot find three_componentForcing, "
-                            << "so the default will be used\n";
+                    << "so the default will be used\n";
         };
     }
 

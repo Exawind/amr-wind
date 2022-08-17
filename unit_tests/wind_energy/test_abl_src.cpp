@@ -193,10 +193,15 @@ TEST_F(ABLMeshTest, geostrophic_three_component_forcing)
 
     utils::populate_abl_params();
 
-    pp.add("three_ComponentForcing", true);
-    
-    amrex::ParmParse pp("CoriolisForcing");
-    pp.add("latitude", 45.0);
+    {
+        amrex::ParmParse pp("ABL")
+        pp.add("three_ComponentForcing", true);
+    }
+
+    {
+        amrex::ParmParse pp("CoriolisForcing");
+        pp.add("latitude", 45.0);
+    }
 
     initialize_mesh();
 
