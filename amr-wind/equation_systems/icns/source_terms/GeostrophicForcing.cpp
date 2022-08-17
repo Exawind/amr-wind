@@ -46,8 +46,11 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
         latitude = utils::radians(latitude);
         sinphi = std::sin(latitude);
         cosphi = std::cos(latitude);
-        bool m_S{false}; //Default two component forcing
-        if (!pp.query("three_ComponentForcing", m_S)){};
+        
+        if (!pp.query("three_ComponentForcing", m_S)){
+            amrex::Print() << "cannot find three_componentForcing, "
+                            << "so the default will be used\n";
+        };
     }
 
     const auto corfac = coriolis_factor;

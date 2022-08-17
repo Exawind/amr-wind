@@ -135,7 +135,7 @@ TEST_F(ABLMeshTest, body_force)
     }
 }
 
-TEST_F(ABLMeshTest, geostrophic_forcing)
+TEST_F(ABLMeshTest, geostrophic_two_component_forcing)
 {
     constexpr amrex::Real tol = 1.0e-12;
     constexpr amrex::Real corfac = 2.0 * amr_wind::utils::two_pi() / 86400.0;
@@ -181,6 +181,31 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
             EXPECT_NEAR(min_val, max_val, tol);
         }
     }
+}
+
+TEST_F(ABLMeshTest, geostrophic_three_component_forcing)
+{
+    constexpr amrex::Real tol = 1.0e-12;
+    constexpr amrex::Real corfac = 2.0 * amr_wind::utils::two_pi() / 86400.0;
+    // Latitude is set to 45 degrees in the input file so sinphi = cosphi
+    const amrex::Real latfac = std::sin(amr_wind::utils::radians(45.0));
+
+    utils::populate_abl_params();
+
+    amrex::ParmParse pp("GeostrophicForcing");
+    pp.add("latitude", 45.0);
+    pp.add("three_ComponentForcing", true);
+
+    initialize_mesh();
+
+    auto& pde_mgr = sim().pde_manager();
+    pde_mgr.register_icns();
+    sim().init_physics();
+
+    auto& src_term = pde_mgr.icns().fields().src_term;
+    auto& density = sim().repo().get_field("density");
+
+    amr_wind::pde::icns::GeostrophicForcing geostrophic_forcing(sim());
 
     // Three component forcing
     {
@@ -191,8 +216,6 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
 
         density.setVal(1.0);
         src_term.setVal(0.0);
-        //amrex::ParmParse pp("GeostrophicForcing");
-        pp.add("three_ComponentForcing", true);
 
         run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
         const auto& bx = mfi.tilebox();
