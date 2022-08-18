@@ -203,8 +203,6 @@ void ScalarAdvection::post_init_actions()
     if (m_time.time_index() > 0) {
         return;
     }
-
-    std::cout << "shape is " << m_shape << std::endl;
     
     if (m_shape == "gaussianpulse") {
         initialize_scalar(GaussianPulseFV());
