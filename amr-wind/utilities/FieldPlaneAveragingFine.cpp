@@ -280,12 +280,10 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
                                             0),
                                         num_cells - 1);
 
-                                    AMREX_ALWAYS_ASSERT(line_ind_lo >= 0);
-                                    AMREX_ALWAYS_ASSERT(line_ind_hi >= 0);
-                                    AMREX_ALWAYS_ASSERT(
-                                        line_ind_lo < num_cells);
-                                    AMREX_ALWAYS_ASSERT(
-                                        line_ind_hi < num_cells);
+                                    AMREX_ASSERT(line_ind_lo >= 0);
+                                    AMREX_ASSERT(line_ind_hi >= 0);
+                                    AMREX_ASSERT(line_ind_lo < num_cells);
+                                    AMREX_ASSERT(line_ind_hi < num_cells);
 
                                     for (int ind = line_ind_lo;
                                          ind <= line_ind_hi; ++ind) {
