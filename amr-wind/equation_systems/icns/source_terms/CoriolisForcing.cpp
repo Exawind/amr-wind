@@ -21,11 +21,10 @@ namespace icns {
  *
  *    (Optional) Vectors specifying the east and north directions with respect
  *    to computational domain
- *
  * - `rotational_time_period` Time period for planetary rotation (default: 86400
  *    seconds)
  * 
- * - 'three_ComponentForcing' (Default: false = 0 - two component forcing) 
+ * - 'three_ComponentForcing' (Default: false = 0 - two component forcing)
  * 
  */
 CoriolisForcing::CoriolisForcing(const CFDSim& sim)
@@ -57,7 +56,8 @@ CoriolisForcing::CoriolisForcing(const CFDSim& sim)
     {
         amrex::ParmParse pp("ABL");
         // 3-component forcing (Default: false)
-        if (!pp.query("three_ComponentForcing", m_S)){};
+        if (!pp.query("three_ComponentForcing", m_S)) {
+        };
     }
 }
 
@@ -95,7 +95,8 @@ void CoriolisForcing::operator()(
                                up[1] * vel(i, j, k, 1) +
                                up[2] * vel(i, j, k, 2);
 
-        const amrex::Real ae = +(corfac * un * sinphi) -(corfac * uu * cosphi * S);
+        const amrex::Real ae = 
+            +(corfac * un * sinphi) -(corfac * uu * cosphi * S);
         const amrex::Real an = -corfac * ue * sinphi;
         const amrex::Real au = +corfac * ue * cosphi * S;
 

@@ -167,10 +167,11 @@ TEST_F(ABLMeshTest, geostrophic_two_component_forcing)
         src_term.setVal(0.0);
 
         run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
-        const auto& bx = mfi.tilebox();
-        const auto& src_arr = src_term(lev).array(mfi);
+            const auto& bx = mfi.tilebox();
+            const auto& src_arr = src_term(lev).array(mfi);
 
-        geostrophic_forcing(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
+            geostrophic_forcing(
+                lev, mfi, bx, amr_wind::FieldState::New, src_arr);
         });
 
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
@@ -216,18 +217,18 @@ TEST_F(ABLMeshTest, geostrophic_three_component_forcing)
     // Three component forcing
     {
         const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{
-        {-corfac * 6.0 * latfac, 
-        +corfac * 10.0 * latfac,
-        -corfac * 10.0 * latfac}};
+            {-corfac * 6.0 * latfac, +corfac * 10.0 * latfac,
+            -corfac * 10.0 * latfac}};
 
         density.setVal(1.0);
         src_term.setVal(0.0);
 
         run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
-        const auto& bx = mfi.tilebox();
-        const auto& src_arr = src_term(lev).array(mfi);
+            const auto& bx = mfi.tilebox();
+            const auto& src_arr = src_term(lev).array(mfi);
 
-        geostrophic_forcing(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
+            geostrophic_forcing(
+                lev, mfi, bx, amr_wind::FieldState::New, src_arr);
         });
 
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
@@ -328,7 +329,6 @@ TEST_F(ABLMeshTest, coriolis_three_component_const_vel)
         pp.add("latitude", 45.0);
     }
 
-
     // Initialize parameters
     utils::populate_abl_params();
     initialize_mesh();
@@ -338,7 +338,7 @@ TEST_F(ABLMeshTest, coriolis_three_component_const_vel)
     auto& src_term = fields.src_term;
     amr_wind::pde::icns::CoriolisForcing coriolis(sim());
 
-        // Velocity in x-direction test three component forcing
+    // Velocity in x-direction test three component forcing
     {
         amrex::Real golds[AMREX_SPACEDIM] = {
             0.0, -corfac * latfac * vel_comp, corfac * latfac * vel_comp};

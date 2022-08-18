@@ -20,7 +20,7 @@ namespace icns {
  *
  *  - `geostrophic_wind` Geostrophic wind above capping inversion in the
  *    GeostrophicForcing namespace
- *  - 'three_ComponentForcing' (Default: false = 0 - two component forcing) 
+ *  - 'three_ComponentForcing' (Default: false = 0 - two component forcing)
  *
  */
 GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
@@ -50,9 +50,9 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
 
     {
         amrex::ParmParse pp("ABL");
-        if (!pp.query("three_ComponentForcing", m_S)){
-            amrex::Print() << "cannot find three_componentForcing, "
-                    << "so the default will be used\n";
+        if (!pp.query("three_ComponentForcing", m_S)) {
+             amrex::Print() << "cannot find three_componentForcing, "
+                            << "so the default will be used\n";
         };
     }
 
@@ -60,7 +60,8 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
     const auto S = m_S;
 
     m_g_forcing = {
-        -corfac * m_target_vel[1] * sinphi +corfac * m_target_vel[3] * cosphi * S, 
+        -corfac * m_target_vel[1] * sinphi +
+            corfac * m_target_vel[3] * cosphi * S, 
         +corfac * m_target_vel[0] * sinphi,
         -corfac * m_target_vel[0] * cosphi * S};
 }
