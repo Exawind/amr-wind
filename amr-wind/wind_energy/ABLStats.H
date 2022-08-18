@@ -62,7 +62,7 @@ public:
     };
 
     //! Return instance that handles temperature statistics
-    const FieldPlaneAveragingFine& theta_profile() const override
+    const FieldPlaneAveraging& theta_profile() const override
     {
         return m_pa_temp;
     }

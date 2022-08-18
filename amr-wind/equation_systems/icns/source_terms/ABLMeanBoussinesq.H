@@ -3,7 +3,7 @@
 
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
-#include "amr-wind/utilities/FieldPlaneAveragingFine.H"
+#include "amr-wind/utilities/FieldPlaneAveraging.H"
 
 namespace amr_wind {
 namespace pde {

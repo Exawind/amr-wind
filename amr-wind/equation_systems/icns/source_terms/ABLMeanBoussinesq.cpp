@@ -99,8 +99,7 @@ void ABLMeanBoussinesq::operator()(
     });
 }
 
-void ABLMeanBoussinesq::mean_temperature_init(
-    const FieldPlaneAveraging& tavg)
+void ABLMeanBoussinesq::mean_temperature_init(const FieldPlaneAveraging& tavg)
 {
     m_axis = tavg.axis();
 
@@ -119,8 +118,7 @@ void ABLMeanBoussinesq::mean_temperature_init(
     mean_temperature_update(tavg);
 }
 
-void ABLMeanBoussinesq::mean_temperature_update(
-    const FieldPlaneAveraging& tavg)
+void ABLMeanBoussinesq::mean_temperature_update(const FieldPlaneAveraging& tavg)
 {
     if (m_const_profile) {
         return;
