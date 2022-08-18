@@ -32,9 +32,9 @@ public:
         const FieldState fstate,
         const amrex::Array4<amrex::Real>& src_term) const override;
 
-    void mean_temperature_init(const FieldPlaneAveragingFine& /*tavg*/);
+    void mean_temperature_init(const FieldPlaneAveraging& /*tavg*/);
 
-    void mean_temperature_update(const FieldPlaneAveragingFine& /*tavg*/);
+    void mean_temperature_update(const FieldPlaneAveraging& /*tavg*/);
 
 private:
     const amrex::AmrCore& m_mesh;

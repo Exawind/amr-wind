@@ -34,7 +34,8 @@ public:
     virtual const VelPlaneAveragingFine& vel_profile() const = 0;
 
     //! Interpolating object for vertical temperature profile
-    virtual const FieldPlaneAveragingFine& theta_profile() const = 0;
+    virtual const FieldPlaneAveraging& theta_profile() const = 0;
+    virtual const FieldPlaneAveragingFine& theta_profile_fine() const = 0;
 
     //! Perform initialization actions after the mesh has been created
     virtual void post_init_actions() = 0;
