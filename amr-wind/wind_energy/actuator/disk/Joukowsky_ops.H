@@ -231,7 +231,7 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
             machine_eps);
 
         ddata.current_power = ddata.density * uInfSqr * moment *
-                              ddata.current_angular_velocity;
+            ddata.current_angular_velocity;
 
         ddata.current_cp = ddata.density * uInfSqr * moment *
                            ddata.current_angular_velocity / eq_20_denominator;
