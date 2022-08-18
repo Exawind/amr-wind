@@ -30,6 +30,8 @@ ABLStats::ABLStats(
     , m_mueff(sim.pde_manager().icns().fields().mueff)
     , m_pa_vel(sim, dir)
     , m_pa_temp(m_temperature, sim.time(), dir)
+    , m_pa_vel_fine(sim, dir)
+    , m_pa_temp_fine(m_temperature, sim.time(), dir)
     , m_pa_mueff(m_mueff, sim.time(), dir)
     , m_pa_tu(m_pa_vel, m_pa_temp)
     , m_pa_uu(m_pa_vel, m_pa_vel)
@@ -93,6 +95,8 @@ void ABLStats::calc_averages()
 {
     m_pa_vel();
     m_pa_temp();
+    m_pa_vel_fine();
+    m_pa_temp_fine();
 }
 
 //! Calculate sfs stress averages
@@ -259,6 +263,12 @@ void ABLStats::write_ascii()
         time.current_time());
     m_pa_temp.output_line_average_ascii(
         stat_dir + "/plane_average_temperature.txt", time.time_index(),
+        time.current_time());
+    m_pa_vel_fine.output_line_average_ascii(
+        stat_dir + "/plane_average_velocity_fine.txt", time.time_index(),
+        time.current_time());
+    m_pa_temp_fine.output_line_average_ascii(
+        stat_dir + "/plane_average_temperature_fine.txt", time.time_index(),
         time.current_time());
     m_pa_mueff.output_line_average_ascii(
         stat_dir + "/plane_average_velocity_mueff.txt", time.time_index(),
@@ -490,8 +500,8 @@ void ABLStats::write_netcdf()
         }
 
         {
-            amrex::Vector<std::string> var_names{
-                "u'theta'_r", "v'theta'_r", "w'theta'_r"};
+            amrex::Vector<std::string> var_names{"u'theta'_r", "v'theta'_r",
+                                                 "w'theta'_r"};
             for (int i = 0; i < AMREX_SPACEDIM; i++) {
                 m_pa_tu.line_moment(i, l_vec);
                 auto var = grp.var(var_names[i]);
@@ -511,8 +521,8 @@ void ABLStats::write_netcdf()
         }
 
         {
-            amrex::Vector<std::string> var_names{
-                "u'u'u'_r", "v'v'v'_r", "w'w'w'_r"};
+            amrex::Vector<std::string> var_names{"u'u'u'_r", "v'v'v'_r",
+                                                 "w'w'w'_r"};
             amrex::Vector<int> var_comp{0, 13, 26};
             for (int i = 0; i < var_comp.size(); i++) {
                 m_pa_uuu.line_moment(var_comp[i], l_vec);
@@ -522,8 +532,8 @@ void ABLStats::write_netcdf()
         }
 
         {
-            amrex::Vector<std::string> var_names{
-                "u'v'_sfs", "u'w'_sfs", "v'w'_sfs"};
+            amrex::Vector<std::string> var_names{"u'v'_sfs", "u'w'_sfs",
+                                                 "v'w'_sfs"};
             for (int i = 0; i < AMREX_SPACEDIM; i++) {
                 pa_sfs.line_average(i, l_vec);
                 auto var = grp.var(var_names[i]);
@@ -532,8 +542,8 @@ void ABLStats::write_netcdf()
         }
 
         {
-            amrex::Vector<std::string> var_names{
-                "u'theta'_sfs", "v'theta'_sfs", "w'theta'_sfs"};
+            amrex::Vector<std::string> var_names{"u'theta'_sfs", "v'theta'_sfs",
+                                                 "w'theta'_sfs"};
             for (int i = 0; i < AMREX_SPACEDIM; i++) {
                 pa_tsfs.line_average(i, l_vec);
                 auto var = grp.var(var_names[i]);

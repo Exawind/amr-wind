@@ -99,7 +99,8 @@ void ABLMeanBoussinesq::operator()(
     });
 }
 
-void ABLMeanBoussinesq::mean_temperature_init(const FieldPlaneAveraging& tavg)
+void ABLMeanBoussinesq::mean_temperature_init(
+    const FieldPlaneAveragingFine& tavg)
 {
     m_axis = tavg.axis();
 
@@ -118,7 +119,8 @@ void ABLMeanBoussinesq::mean_temperature_init(const FieldPlaneAveraging& tavg)
     mean_temperature_update(tavg);
 }
 
-void ABLMeanBoussinesq::mean_temperature_update(const FieldPlaneAveraging& tavg)
+void ABLMeanBoussinesq::mean_temperature_update(
+    const FieldPlaneAveragingFine& tavg)
 {
     if (m_const_profile) {
         return;
@@ -131,7 +133,6 @@ void ABLMeanBoussinesq::mean_temperature_update(const FieldPlaneAveraging& tavg)
 void ABLMeanBoussinesq::read_temperature_profile(std::string profile_file_name)
 {
 
-    m_axis = 2; // Fix to be z-direction for now
     amrex::Vector<amrex::Real> theta_ht, theta_vals;
     std::ifstream infile;
     int n_hts;

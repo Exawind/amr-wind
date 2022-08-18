@@ -3,7 +3,7 @@
 
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
-#include "amr-wind/utilities/FieldPlaneAveraging.H"
+#include "amr-wind/utilities/FieldPlaneAveragingFine.H"
 
 namespace amr_wind {
 namespace pde {
@@ -32,9 +32,9 @@ public:
         const FieldState fstate,
         const amrex::Array4<amrex::Real>& src_term) const override;
 
-    void mean_temperature_init(const FieldPlaneAveraging& /*tavg*/);
+    void mean_temperature_init(const FieldPlaneAveragingFine& /*tavg*/);
 
-    void mean_temperature_update(const FieldPlaneAveraging& /*tavg*/);
+    void mean_temperature_update(const FieldPlaneAveragingFine& /*tavg*/);
 
 private:
     const amrex::AmrCore& m_mesh;

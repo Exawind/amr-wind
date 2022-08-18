@@ -4,6 +4,7 @@
 #include "amr-wind/wind_energy/ABLStatsBase.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
+#include "amr-wind/utilities/FieldPlaneAveragingFine.H"
 #include "amr-wind/utilities/SecondMomentAveraging.H"
 #include "amr-wind/utilities/ThirdMomentAveraging.H"
 #include "amr-wind/utilities/PostProcessing.H"
@@ -55,12 +56,15 @@ public:
     void compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel);
 
     //! Return vel plane averaging instance
-    const VelPlaneAveraging& vel_profile() const override { return m_pa_vel; };
+    const VelPlaneAveragingFine& vel_profile() const override
+    {
+        return m_pa_vel_fine;
+    };
 
     //! Return instance that handles temperature statistics
-    const FieldPlaneAveraging& theta_profile() const override
+    const FieldPlaneAveragingFine& theta_profile() const override
     {
-        return m_pa_temp;
+        return m_pa_temp_fine;
     }
 
     void register_forcing_term(pde::icns::ABLForcing* forcing) const override
@@ -105,6 +109,8 @@ private:
 
     VelPlaneAveraging m_pa_vel;
     FieldPlaneAveraging m_pa_temp;
+    VelPlaneAveragingFine m_pa_vel_fine;
+    FieldPlaneAveragingFine m_pa_temp_fine;
     FieldPlaneAveraging m_pa_mueff;
     SecondMomentAveraging m_pa_tu;
     SecondMomentAveraging m_pa_uu;
