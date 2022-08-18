@@ -386,7 +386,6 @@ void VelPlaneAveragingFine::compute_hvelmag_averages(const IndexSelector& idxOp)
     amrex::Real* line_avg_Su = lavg_Su.data();
     amrex::Real* line_avg_Sv = lavg_Sv.data();
 
-    const int num_comps = m_ncomp;
     const int num_cells = m_ncell_line;
     const int axis = m_axis;
     const amrex::Real line_dx = m_dx;
