@@ -58,9 +58,6 @@ public:
     /** change precision of text file output */
     void set_precision(int p) { m_precision = p; };
 
-    amrex::Real dx() const { return m_dx; };
-    amrex::Real xlo() const { return m_xlo; };
-
     int axis() const { return m_axis; };
     int ncomp() const { return m_ncomp; };
     int ncell_line() const { return m_ncell_line; };

@@ -24,7 +24,9 @@ FPlaneAveragingFine<FType>::FPlaneAveragingFine(
 
     AMREX_ALWAYS_ASSERT(dom_lo == 0);
     int dom_hi2 = geom[0].Domain().bigEnd()[m_axis] + 1;
-    for (int i = 0; i < finestLevel; ++i) dom_hi2 *= 2;
+    for (int i = 0; i < finestLevel; ++i) {
+        dom_hi2 *= 2;
+    }
     AMREX_ALWAYS_ASSERT(dom_hi + 1 == dom_hi2);
 
     // FIXME: make an input maybe?
@@ -193,7 +195,6 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
     amrex::Real* line_avg = lavg.data();
     const int num_comps = m_ncomp;
     const int num_cells = m_ncell_line;
-    const int axis = m_axis;
     const amrex::Real line_dx = m_dx;
     const amrex::Real xlo = m_xlo;
 
@@ -209,7 +210,7 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
     for (int lev = 0; lev <= finestLevel; ++lev) {
 
         const auto& geom = m_field.repo().mesh().Geom(lev);
-        const amrex::Real dx = geom.CellSize()[axis];
+        const amrex::Real dx = geom.CellSize()[m_axis];
         const amrex::Real dy = geom.CellSize()[idxOp.odir1];
         const amrex::Real dz = geom.CellSize()[idxOp.odir2];
 
@@ -293,13 +294,13 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
 
                                         amrex::Real deltax;
 
-                                        if (line_xlo <= cell_xlo)
+                                        if (line_xlo <= cell_xlo) {
                                             deltax = line_xhi - cell_xlo;
-                                        else if (line_xhi >= cell_xhi)
+                                        } else if (line_xhi >= cell_xhi) {
                                             deltax = cell_xhi - line_xlo;
-                                        else
+                                        } else {
                                             deltax = line_dx;
-
+                                        }
                                         deltax = amrex::min(deltax, dx);
                                         const amrex::Real vol =
                                             deltax * dy * dz;
@@ -384,7 +385,6 @@ void VelPlaneAveragingFine::compute_hvelmag_averages(const IndexSelector& idxOp)
     amrex::Real* line_avg_Sv = lavg_Sv.data();
 
     const int num_cells = m_ncell_line;
-    const int axis = m_axis;
     const amrex::Real line_dx = m_dx;
     const amrex::Real xlo = m_xlo;
 
@@ -400,7 +400,7 @@ void VelPlaneAveragingFine::compute_hvelmag_averages(const IndexSelector& idxOp)
     for (int lev = 0; lev <= finestLevel; ++lev) {
 
         const auto& geom = m_field.repo().mesh().Geom(lev);
-        const amrex::Real dx = geom.CellSize()[axis];
+        const amrex::Real dx = geom.CellSize()[m_axis];
         const amrex::Real dy = geom.CellSize()[idxOp.odir1];
         const amrex::Real dz = geom.CellSize()[idxOp.odir2];
 
@@ -484,12 +484,13 @@ void VelPlaneAveragingFine::compute_hvelmag_averages(const IndexSelector& idxOp)
 
                                         amrex::Real deltax;
 
-                                        if (line_xlo <= cell_xlo)
+                                        if (line_xlo <= cell_xlo) {
                                             deltax = line_xhi - cell_xlo;
-                                        else if (line_xhi >= cell_xhi)
+                                        } else if (line_xhi >= cell_xhi) {
                                             deltax = cell_xhi - line_xlo;
-                                        else
+                                        } else {
                                             deltax = line_dx;
+                                        }
 
                                         deltax = amrex::min(deltax, dx);
                                         const amrex::Real vol =
