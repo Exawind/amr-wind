@@ -209,6 +209,9 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
     for (int lev = 0; lev <= finestLevel; ++lev) {
 
         const auto& geom = m_field.repo().mesh().Geom(lev);
+        const amrex::Real dx = geom.CellSize()[axis];
+        const amrex::Real dy = geom.CellSize()[idxOp.odir1];
+        const amrex::Real dz = geom.CellSize()[idxOp.odir2];
 
         amrex::iMultiFab level_mask;
         if (lev < finestLevel) {
@@ -257,14 +260,8 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
                                 if (mask_arr(i, j, k)) {
                                     // cell coordinates
                                     const amrex::Real cell_xlo =
-                                        xlo +
-                                        idxOp(i, j, k) * geom.CellSize()[axis];
-                                    const amrex::Real cell_xhi =
-                                        cell_xlo + geom.CellSize()[axis];
-                                    const amrex::Real dy =
-                                        geom.CellSize()[idxOp.odir1];
-                                    const amrex::Real dz =
-                                        geom.CellSize()[idxOp.odir2];
+                                        xlo + idxOp(i, j, k) * dx;
+                                    const amrex::Real cell_xhi = cell_xlo + dx;
 
                                     // line indices
                                     const int line_ind_lo = amrex::min(
@@ -294,18 +291,18 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
                                         const amrex::Real line_xhi =
                                             line_xlo + line_dx;
 
-                                        amrex::Real dx;
+                                        amrex::Real deltax;
 
                                         if (line_xlo <= cell_xlo)
-                                            dx = line_xhi - cell_xlo;
+                                            deltax = line_xhi - cell_xlo;
                                         else if (line_xhi >= cell_xhi)
-                                            dx = cell_xhi - line_xlo;
+                                            deltax = cell_xhi - line_xlo;
                                         else
-                                            dx = line_dx;
+                                            deltax = line_dx;
 
-                                        dx = amrex::min(
-                                            dx, geom.CellSize()[axis]);
-                                        const amrex::Real vol = dx * dy * dz;
+                                        deltax = amrex::min(deltax, dx);
+                                        const amrex::Real vol =
+                                            deltax * dy * dz;
 
                                         for (int n = 0; n < num_comps; ++n) {
                                             amrex::Gpu::deviceReduceSum(
@@ -403,6 +400,9 @@ void VelPlaneAveragingFine::compute_hvelmag_averages(const IndexSelector& idxOp)
     for (int lev = 0; lev <= finestLevel; ++lev) {
 
         const auto& geom = m_field.repo().mesh().Geom(lev);
+        const amrex::Real dx = geom.CellSize()[axis];
+        const amrex::Real dy = geom.CellSize()[idxOp.odir1];
+        const amrex::Real dz = geom.CellSize()[idxOp.odir2];
 
         amrex::iMultiFab level_mask;
         if (lev < finestLevel) {
@@ -451,14 +451,8 @@ void VelPlaneAveragingFine::compute_hvelmag_averages(const IndexSelector& idxOp)
                                 if (mask_arr(i, j, k)) {
                                     // cell coordinates
                                     const amrex::Real cell_xlo =
-                                        xlo +
-                                        idxOp(i, j, k) * geom.CellSize()[axis];
-                                    const amrex::Real cell_xhi =
-                                        cell_xlo + geom.CellSize()[axis];
-                                    const amrex::Real dy =
-                                        geom.CellSize()[idxOp.odir1];
-                                    const amrex::Real dz =
-                                        geom.CellSize()[idxOp.odir2];
+                                        xlo + idxOp(i, j, k) * dx;
+                                    const amrex::Real cell_xhi = cell_xlo + dx;
 
                                     // line indices
                                     const int line_ind_lo = amrex::min(
@@ -488,18 +482,18 @@ void VelPlaneAveragingFine::compute_hvelmag_averages(const IndexSelector& idxOp)
                                         const amrex::Real line_xhi =
                                             line_xlo + line_dx;
 
-                                        amrex::Real dx;
+                                        amrex::Real deltax;
 
                                         if (line_xlo <= cell_xlo)
-                                            dx = line_xhi - cell_xlo;
+                                            deltax = line_xhi - cell_xlo;
                                         else if (line_xhi >= cell_xhi)
-                                            dx = cell_xhi - line_xlo;
+                                            deltax = cell_xhi - line_xlo;
                                         else
-                                            dx = line_dx;
+                                            deltax = line_dx;
 
-                                        dx = amrex::min(
-                                            dx, geom.CellSize()[axis]);
-                                        const amrex::Real vol = dx * dy * dz;
+                                        deltax = amrex::min(deltax, dx);
+                                        const amrex::Real vol =
+                                            deltax * dy * dz;
 
                                         const amrex::Real hvelmag = std::sqrt(
                                             fab_arr(i, j, k, idxOp.odir1) *
