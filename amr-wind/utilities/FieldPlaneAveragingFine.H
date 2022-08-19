@@ -135,7 +135,7 @@ private:
 public: // public for GPU
     /** fill line storage with horizontal velocity magnitude averages */
     template <typename IndexSelector>
-    void compute_hvelmag_averages(const IndexSelector& idx_op);
+    void compute_hvelmag_averages(const IndexSelector& idxOp);
 
     /** evaluate line haverage at specific location for horizontal velocity
      * magnitude */
