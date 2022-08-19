@@ -51,8 +51,8 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
     {
         amrex::ParmParse pp("ABL");
         if (!pp.query("three_ComponentForcing", m_S)) {
-             amrex::Print() << "cannot find three_componentForcing, "
-                            << "so the default will be used\n";
+            amrex::Print() << "cannot find three_componentForcing, "
+                           << "so the default will be used\n";
         };
     }
 
@@ -61,7 +61,7 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
 
     m_g_forcing = {
         -corfac * m_target_vel[1] * sinphi +
-            corfac * m_target_vel[3] * cosphi * S, 
+            corfac * m_target_vel[3] * cosphi * S,
         +corfac * m_target_vel[0] * sinphi,
         -corfac * m_target_vel[0] * cosphi * S};
 }

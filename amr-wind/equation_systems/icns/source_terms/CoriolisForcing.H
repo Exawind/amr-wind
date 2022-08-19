@@ -9,8 +9,8 @@ namespace pde {
 namespace icns {
 
 /** Account for Coriolis forcing due to earth's rotation
- * 
- * 
+ *
+ *
  * Coriolis forcing source term is the negative of the cross
  * product of the Coriolis factor with the velocity field vector
  * Rotating the coriolis factor into the local frame of reference
@@ -19,17 +19,17 @@ namespace icns {
  * Taking the cross product of coriolis factor(cosphi, sinphi) with
  * the velocity field vector u(x,y,z) results in three source term components
  * src(x,y,z).
- * The vertical component of the Coriolis source term is typically neglected as 
- * it is unphysical and is also, negligble compared to the other vertical 
+ * The vertical component of the Coriolis source term is typically neglected as
+ * it is unphysical and is also, negligble compared to the other vertical
  * component source terms.
- * 
- * There is an option to include the vertical Coriolis 
+ *
+ * There is an option to include the vertical Coriolis
  * source term by turning on three_ComponentForcing = true.
  * three_ComponentForcing is by default set to false.
  * This removes the contributions of the Coriolis factor(cosphi) component
  * from the Coriolis source term components.
- * 
- * 
+ *
+ *
  *  \ingroup icns_src we_abl
  *
  */

@@ -8,22 +8,23 @@ namespace amr_wind {
 namespace pde {
 namespace icns {
 
-/** Apply source term equivalent to drive the flow to match given geostrophic wind.
- * 
- * Geostrophic wind forcing source term is the cross product of the Coriolis 
- * factor with the Geostrophic wind velocity field vector. Rotating the Coriolis 
- * factor into the local frame of reference from the earths frame of reference 
- * results in two components Coriolis_factor(cosphi, sinphi) in the y and z 
+/** Apply source term equivalent to drive the flow to match given geostrophic
+ * wind.
+ *
+ * Geostrophic wind forcing source term is the cross product of the Coriolis
+ * factor with the Geostrophic wind velocity field vector. Rotating the Coriolis
+ * factor into the local frame of reference from the earths frame of reference
+ * results in two components Coriolis_factor(cosphi, sinphi) in the y and z
  * directions respectively. Taking the cross product of Coriolis_factor(cosphi,
- * sinphi) with the Geostrophic wind velocity field vector U_g(x,y,z) results in 
- * three source term components src(x,y,z). The vertical component of the 
- * Geostrophic wind source term is typically neglected as it is unphysical and 
+ * sinphi) with the Geostrophic wind velocity field vector U_g(x,y,z) results in
+ * three source term components src(x,y,z). The vertical component of the
+ * Geostrophic wind source term is typically neglected as it is unphysical and
  * is also, negligble compared to the other vertical component source terms.
- * There is an option to include the vertical Geostrophic source term by turning 
- * on three_ComponentForcing = true. three_ComponentForcing is by default set to 
- * false. This removes the contributions of the Coriolis_factor(cosphi) 
+ * There is an option to include the vertical Geostrophic source term by turning
+ * on three_ComponentForcing = true. three_ComponentForcing is by default set to
+ * false. This removes the contributions of the Coriolis_factor(cosphi)
  * component from the Geostrophic wind source term components.
- * 
+ *
  * \ingroup icns_src we_abl
  */
 class GeostrophicForcing : public MomentumSource::Register<GeostrophicForcing>
@@ -43,7 +44,6 @@ public:
         const amrex::Array4<amrex::Real>& src_term) const override;
 
 private:
-
     //! Latitude
     amrex::Real latitude = {0.0};
     amrex::Real sinphi{0.0};
