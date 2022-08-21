@@ -268,7 +268,7 @@ amrex::Vector<amrex::Real> ScalarAdvection::compute_error(const Shape& scalar_fu
     const int nlevels = m_repo.num_active_levels();
     const amrex::Real total_vol = m_repo.mesh().Geom(0).ProbDomain().volume();
 
-    amrex::Vector<amrex::Real> err(nlevels,0.0);
+    amrex::Vector<amrex::Real> err(nlevels + 1, 0.0);
 
     for (int level = 0; level < nlevels; ++level) {
         amrex::Real err_lev = 0.0;
@@ -306,7 +306,12 @@ amrex::Vector<amrex::Real> ScalarAdvection::compute_error(const Shape& scalar_fu
             err_lev += err_fab;
         }
         amrex::ParallelDescriptor::ReduceRealSum(err_lev);
-        err[level] = std::sqrt(err_lev / total_vol);
+        err[level] = err_lev;
+        err[nlevels] += err_lev;
+    }
+
+    for (int level = 0; level < nlevels + 1; ++level) {
+        err[level] = std::sqrt(err[level] / total_vol);
     }
 
     return err;
@@ -315,7 +320,7 @@ amrex::Vector<amrex::Real> ScalarAdvection::compute_error(const Shape& scalar_fu
 void ScalarAdvection::post_advance_work()
 {
     const int nlevels = m_repo.num_active_levels();
-    amrex::Vector<amrex::Real> err(nlevels,0.0);
+    amrex::Vector<amrex::Real> err(nlevels + 1, 0.0);
 
     if (m_shape == "gaussianpulse") {
         err = compute_error(GaussianPulseFV());
@@ -323,6 +328,8 @@ void ScalarAdvection::post_advance_work()
         err = compute_error(SquarePulseFV());
     } else if (m_shape == "gaussianwavepacket") {
         err = compute_error(GaussianWavePacketFV());
+    } else if (m_shape == "twodimgaussianpulse") {
+        err = compute_error(TwoDimGaussianPulseFV());
     }
 
     if (amrex::ParallelDescriptor::IOProcessor()) {
