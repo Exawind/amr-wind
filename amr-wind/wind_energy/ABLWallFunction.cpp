@@ -93,7 +93,7 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
 void ABLWallFunction::init_log_law_height()
 {
     if (m_use_fch) {
-        const auto& geom = m_mesh.Geom(0);
+        const auto& geom = m_mesh.Geom(m_mesh.finestLevel());
         m_mo.zref =
             (geom.ProbLo(m_direction) + 0.5 * geom.CellSize(m_direction));
     }
