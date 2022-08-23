@@ -360,7 +360,7 @@ struct UpdateVelOp<TurbineFast, SrcTrait>
         auto& vvel = from_cfd.v;
         auto& wvel = from_cfd.w;
         const auto& vel = data.grid().vel;
-        const int nvpts = vel.size();
+        const int nvpts = tdata.vel_rel.size();
 
         if (!tdata.fllc.empty()) {
             // Compute the relative velocity needed for the FLLC

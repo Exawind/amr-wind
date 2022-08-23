@@ -31,7 +31,7 @@ struct FLLCOp
         auto& G = fllc.lift;
         auto& dG = fllc.grad_lift;
         VecSlice u_force_pnt_slice =
-            ::amr_wind::utils::slice(fllc.force_point_velocity, npts);
+            ::amr_wind::utils::slice(fllc.force_point_velocity, 0);
         vs::Vector* vel_ptr = data.vel.data();
 
         /**
