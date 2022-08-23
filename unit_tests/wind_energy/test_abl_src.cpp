@@ -218,7 +218,7 @@ TEST_F(ABLMeshTest, geostrophic_three_component_forcing)
     {
         const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{
             {-corfac * 6.0 * latfac, +corfac * 10.0 * latfac,
-            -corfac * 10.0 * latfac}};
+             -corfac * 10.0 * latfac}};
 
         density.setVal(1.0);
         src_term.setVal(0.0);
