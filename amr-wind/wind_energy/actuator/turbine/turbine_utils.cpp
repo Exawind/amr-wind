@@ -12,6 +12,7 @@ void read_inputs(
 {
     pp.query("num_blades", tdata.num_blades);
     pp.get("num_points_blade", tdata.num_pts_blade);
+    tdata.num_vel_pts_blade = tdata.num_pts_blade;
     pp.get("num_points_tower", tdata.num_pts_tower);
     pp.query("nacelle_area", tdata.nacelle_area);
     pp.query("nacelle_drag_coeff", tdata.nacelle_cd);

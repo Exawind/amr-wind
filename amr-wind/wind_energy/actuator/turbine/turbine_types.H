@@ -33,6 +33,9 @@ struct TurbineBaseData
     //! Number of actuator nodes per blade
     int num_pts_blade;
 
+    //! Number of velocity nodes per blade
+    int num_vel_pts_blade;
+
     //! Number of actuator nodes for tower
     int num_pts_tower;
 

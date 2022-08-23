@@ -155,6 +155,9 @@ struct InitDataOp<TurbineFast, SrcTrait>
 
         {
             tdata.num_blades = sz_info[0];
+            // back calculate what the value per blade for number of points in
+            // the openfast data structure
+            tdata.num_vel_pts_blade = sz_info[2] / tdata.num_blades - 1;
             data.grid().resize(sz_info[1], sz_info[2]);
             tdata.chord.resize(sz_info[1]);
             tdata.num_pts_tower = sz_info[3];
@@ -185,11 +188,13 @@ struct InitDataOp<TurbineFast, SrcTrait>
         auto& tdata = data.meta();
         const int num_blades = tdata.num_blades;
         const int num_pts_blade = tdata.num_pts_blade;
+        const int num_vel_pts_blade = tdata.num_vel_pts_blade;
 
         for (int ib = 0; ib < num_blades; ++ib) {
             ComponentView cv;
 
             const auto start = ib * num_pts_blade + 1;
+            const auto start_vel = ib * num_vel_pts_blade;
             // clang-format off
             cv.pos = ::amr_wind::utils::slice(
                 grid.pos, start, num_pts_blade);
@@ -204,9 +209,9 @@ struct InitDataOp<TurbineFast, SrcTrait>
             cv.vel_rel = ::amr_wind::utils::slice(
                 tdata.vel_rel, start, num_pts_blade);
             cv.vel= ::amr_wind::utils::slice(
-                grid.vel, start, num_pts_blade);
+                grid.vel, start_vel, num_vel_pts_blade);
             cv.vel_pos= ::amr_wind::utils::slice(
-                grid.vel_pos, start, num_pts_blade);
+                grid.vel_pos, start_vel, num_vel_pts_blade);
             // clang-format on
 
             tdata.blades.emplace_back(std::move(cv));
@@ -381,7 +386,7 @@ struct UpdateVelOp<TurbineFast, SrcTrait>
             }
         }
 
-        for (int i = 0; i < nvpts; ++i) {
+        for (int i = 0; i < from_cfd.u_Len; ++i) {
             uvel[i] = static_cast<float>(vel[i].x());
             vvel[i] = static_cast<float>(vel[i].y());
             wvel[i] = static_cast<float>(vel[i].z());
