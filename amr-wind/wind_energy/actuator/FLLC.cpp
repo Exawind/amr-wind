@@ -11,10 +11,10 @@ void FLLCInit(
     if (data.different_sizes) {
         data.span_distance_force.resize(view.pos.size());
         data.span_distance_vel.resize(view.vel_pos.size());
-        for (int i = 0; i < view.pos.size(); ++i) {
+        for (size_t i = 0; i < view.pos.size(); ++i) {
             data.span_distance_force[i] = vs::mag(view.pos[i]);
         }
-        for (int i = 0; i < view.vel_pos.size(); ++i) {
+        for (size_t i = 0; i < view.vel_pos.size(); ++i) {
             data.span_distance_vel[i] = vs::mag(view.vel_pos[i]);
         }
     }
