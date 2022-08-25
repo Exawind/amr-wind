@@ -150,7 +150,7 @@ struct AdvectionOp<
                         tmpfab.dataPtr(), geom, dt, godunov_scheme);
                 } else {
                     amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 1);
-                    tmpfab.setVal(0.0);
+                    tmpfab.setVal<amrex::RunOn::Device>(0.0);
                     const auto& divu = tmpfab.array();
                     const bool is_velocity = false;
                     const bool known_edge_state = false;
