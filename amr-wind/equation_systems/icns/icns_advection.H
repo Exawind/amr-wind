@@ -115,7 +115,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         const auto& geom = repo.mesh().Geom();
 
         const auto& src_term = fields.src_term;
-        auto& dof_field = fields.field.state(fstate);
+        const auto& dof_field = fields.field.state(fstate);
         auto bcrec_device = dof_field.bcrec_device();
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
@@ -471,7 +471,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
         const auto& geom = repo.mesh().Geom();
         // cppcheck-suppress constVariable
         auto& conv_term = fields.conv_term.state(fstate);
-        auto& dof_field = fields.field.state(fstate);
+        const auto& dof_field = fields.field.state(fstate);
 
         //
         // Advect velocity
