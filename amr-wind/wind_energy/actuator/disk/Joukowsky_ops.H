@@ -79,7 +79,7 @@ struct InitDataOp<Joukowsky, ActSrcDisk>
             const auto b = meta.root_correction_exponent;
 
             const auto delta = std::max(
-                meta.vortex_core_size * meta.radius(),
+                meta.vortex_core_size / meta.radius(),
                 vs::DTraits<amrex::Real>::eps());
 
             const auto factor = dx / delta;
