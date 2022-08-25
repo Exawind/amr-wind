@@ -115,6 +115,24 @@ struct ActGrid
     inline void resize(int num_pts) { resize(num_pts, num_pts); }
 };
 
+/** Slice of actutator data for components (tower, blade, etc)
+ *
+ *  \ingroup actuator
+ */
+struct ComponentView
+{
+    VecSlice pos;
+    VecSlice force;
+    VecSlice epsilon;
+    TensorSlice orientation;
+
+    VecSlice vel_pos;
+    VecSlice vel;
+    VecSlice vel_rel;
+
+    RealSlice chord;
+};
+
 /** Basic information that is common to all actuator types.
  *
  *  \ingroup actuator

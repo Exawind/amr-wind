@@ -1,6 +1,7 @@
 #include "amr-wind/wind_energy/actuator/turbine/turbine_utils.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/io_utils.H"
+#include "amr-wind/wind_energy/actuator/FLLC.H"
 
 namespace amr_wind {
 namespace actuator {
@@ -11,6 +12,7 @@ void read_inputs(
 {
     pp.query("num_blades", tdata.num_blades);
     pp.get("num_points_blade", tdata.num_pts_blade);
+    tdata.num_vel_pts_blade = tdata.num_pts_blade;
     pp.get("num_points_tower", tdata.num_pts_tower);
     pp.query("nacelle_area", tdata.nacelle_area);
     pp.query("nacelle_drag_coeff", tdata.nacelle_cd);
@@ -29,6 +31,14 @@ void read_inputs(
     pp.get("base_position", tinfo.base_pos);
     pp.get("rotor_diameter", tinfo.rotor_diameter);
     pp.get("hub_height", tinfo.hub_height);
+    bool use_fllc;
+    pp.query("fllc", use_fllc);
+    if (use_fllc) {
+        for (int i = 0; i < tdata.num_blades; ++i) {
+            tdata.fllc.emplace_back(FLLCData());
+            FLLCParse(pp, tdata.fllc.back());
+        }
+    }
 
     // clang-format off
     const auto& bp = tinfo.base_pos;
