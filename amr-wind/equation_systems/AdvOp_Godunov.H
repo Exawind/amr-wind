@@ -148,7 +148,10 @@ struct AdvectionOp<
                         src_term(lev).const_array(mfi),
                         dof_field.bcrec_device().data(), iconserv.data(),
                         tmpfab.dataPtr(), geom, dt, godunov_scheme);
-                } else {
+                } else if (
+                    (godunov_scheme == godunov::scheme::PPM) ||
+                    (godunov_scheme == godunov::scheme::PLM) ||
+                    (godunov_scheme == godunov::scheme::BDS)) {
                     amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 1);
                     tmpfab.setVal<amrex::RunOn::Device>(0.0);
                     const auto& divu = tmpfab.array();
@@ -178,6 +181,8 @@ struct AdvectionOp<
                         iconserv.data(), godunov_use_ppm,
                         godunov_use_forces_in_trans, is_velocity,
                         fluxes_are_area_weighted, advection_type);
+                } else {
+                    amrex::Abort("Invalid godunov scheme");
                 }
                 amrex::Gpu::streamSynchronize();
             }

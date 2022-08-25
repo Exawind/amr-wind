@@ -251,7 +251,10 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                                                          // memory
                     }
                 }
-            } else {
+            } else if (
+                (godunov_scheme == godunov::scheme::PPM) ||
+                (godunov_scheme == godunov::scheme::PLM) ||
+                (godunov_scheme == godunov::scheme::BDS)) {
                 const bool godunov_use_ppm =
                     godunov_scheme == godunov::scheme::PPM;
                 HydroUtils::ExtrapVelToFaces(
@@ -260,6 +263,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                     dof_field.bcrec_device().data(), repo.mesh().Geom(lev), dt,
                     godunov_use_ppm, godunov_use_forces_in_trans,
                     premac_advection_type);
+            } else {
+                amrex::Abort("Invalid godunov scheme");
             }
         }
 
@@ -329,7 +334,10 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                         src_term(lev).const_array(mfi),
                         dof_field.bcrec_device().data(), iconserv.data(),
                         tmpfab.dataPtr(), geom, dt, godunov_scheme);
-                } else {
+                } else if (
+                    (godunov_scheme == godunov::scheme::PPM) ||
+                    (godunov_scheme == godunov::scheme::PLM) ||
+                    (godunov_scheme == godunov::scheme::BDS)) {
                     amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 1);
                     tmpfab.setVal<amrex::RunOn::Device>(0.0);
                     const auto& divu = tmpfab.array();
@@ -358,6 +366,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                         iconserv.data(), godunov_use_ppm,
                         godunov_use_forces_in_trans, is_velocity,
                         fluxes_are_area_weighted, postmac_advection_type);
+                } else {
+                    amrex::Abort("Invalid godunov scheme");
                 }
 
                 amrex::Gpu::streamSynchronize();
