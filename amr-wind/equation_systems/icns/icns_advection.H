@@ -227,6 +227,11 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                                 false);
                             break;
                         }
+                        default: {
+                            amrex::Abort(
+                                "Only PPM_NOLIM, WENOZ, and WENOJS use this "
+                                "code path");
+                        }
                         }
 
                         godunov::make_trans_velocities(
