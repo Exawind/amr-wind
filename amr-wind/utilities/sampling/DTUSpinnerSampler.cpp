@@ -183,7 +183,7 @@ void DTUSpinnerSampler::sampling_locations(SampleLocType& locs) const
 
         int offset = k * AMREX_SPACEDIM;
 
-        // Loop per spacial dimension
+        // Loop per spatial dimension
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
             dx[d] = (m_end[d + offset] - m_start[d + offset]) / ndiv;
         }
@@ -294,10 +294,11 @@ void DTUSpinnerSampler::update_sampling_locations()
     BL_PROFILE(
         "amr-wind::Sampling::DTUSpinnerSampler::update_sampling_locations");
 
-#ifdef AMR_WIND_USE_OPENFAST
-    get_turbine_data(m_turbine_label);
 
+#ifdef AMR_WIND_USE_OPENFAST
     if (m_spinner_mode == "hub") {
+        get_turbine_data(m_turbine_label);
+
         m_hub_location = vs::Vector(
             current_hub_abs_pos[0] + turbine_base_pos[0],
             current_hub_abs_pos[1] + turbine_base_pos[1],
@@ -314,31 +315,37 @@ void DTUSpinnerSampler::update_sampling_locations()
                          -current_hub_orient[6],
                          std::sqrt(
                              std::pow(current_hub_orient[7], 2.0) +
-                             std::pow(current_hub_orient[8], 2.0))) *
-                     180.0 / M_PI;
-        m_hub_roll = std::atan2(current_hub_orient[7], current_hub_orient[8]) *
-                     180.0 / M_PI;
-        m_hub_yaw = std::atan2(current_hub_orient[3], current_hub_orient[0]) *
-                    180.0 / M_PI;
+                             std::pow(current_hub_orient[8], 2.0)));
+        m_hub_roll = std::atan2(current_hub_orient[7], current_hub_orient[8]);
+        m_hub_yaw = std::atan2(current_hub_orient[3], current_hub_orient[0]);
     }
 #endif
 
-    amrex::Real time = m_sim.time().current_time();
+    // amrex::Real time = m_sim.time().current_time();
+    // Sampling called in post_advance so time should be new_time
+    amrex::Real time = m_sim.time().new_time();
     amrex::Real start_time = m_sim.time().start_time();
     amrex::Real dt_sim = m_sim.time().deltaT();
+    amrex::Real ts_diff = time - m_time_sampling;
+    const amrex::Real dt_s = m_scan_time / m_num_samples;
+
+    //amrex::Print() << "Running update sampling locations at time: " << time << std::endl;
+
+    // Correction for time mismatch
+    int time_corr = (ts_diff > dt_s) ? int(ts_diff / dt_s) : 0;
 
     // Initialize the sampling time to the first time in the simulation
-    if (time == start_time) {
+    if (time == start_time && m_update_count == 0) {
         m_time_sampling = time;
         m_hub_location_init = m_hub_location;
     }
+    
+    m_ns = int(dt_sim / dt_s) + time_corr;
+    int n_size = AMREX_SPACEDIM * (m_ns);
 
-    // Timestep of spinner lidar
-    const amrex::Real dt_s = m_scan_time / m_num_samples;
-
-    // Integer number of spinner points per timestep
-    m_ns = int(dt_sim / dt_s);
-    int n_size = AMREX_SPACEDIM * m_ns;
+    //amrex::Print() << "ts_diff: " << ts_diff << "\t" << "m_ns: " 
+    //<< m_ns << "\t" << "Spin Time: " << m_time_sampling << "\t" 
+    //<< "AMR Time: " << time << "\t" << "n_size: " << n_size << std::endl;
 
     // Resize these variables so they can store all the locations
     if (m_start.size() < n_size) {
@@ -373,44 +380,48 @@ void DTUSpinnerSampler::update_sampling_locations()
     }
 #endif
 
-    // Loop per subsampling
-    for (int k = 0; k < m_ns; ++k) {
+    if (m_update_count > 0) {
+        // Loop per subsampling
+        for (int k = 0; k < m_ns; k++) {
 
-        int offset = k * AMREX_SPACEDIM;
+            int offset = k * AMREX_SPACEDIM;
 
-        m_time_sampling += dt_s;
+            amrex::Real step = (time != start_time) ? 1.0 * k : 0.0;
+            amrex::Real srat = (time != start_time) ? step / m_ns : 0.0;
 
-        amrex::Real step = 1.0 * k + 1.0;
+            // Unit vector in the direction of the beam
+            auto beam_vector =
+                generate_lidar_pattern(m_InnerPrism, m_OuterPrism, m_time_sampling);
 
-        // Unit vector in the direction of the beam
-        auto beam_vector =
-            generate_lidar_pattern(m_InnerPrism, m_OuterPrism, m_time_sampling);
+            // Use fancy trick to fix interp at 180 to -180 transition of atan2
+            amrex::Real step_hub_yaw =
+                m_last_hub_yaw + (std::fmod(std::fmod(m_hub_yaw - m_last_hub_yaw,twopi) + threepi, twopi) - pi)*srat;
+            amrex::Real step_hub_tilt =
+                m_last_hub_tilt + (std::fmod(std::fmod(m_hub_tilt - m_last_hub_tilt,twopi) + threepi, twopi) - pi)*srat;
+            amrex::Real step_hub_roll =
+                m_last_hub_roll + (std::fmod(std::fmod(m_hub_roll - m_last_hub_roll,twopi) + threepi, twopi) - pi)*srat;
 
-        // Interpolate angles over sim time
-        amrex::Real step_hub_yaw =
-            (step / m_ns) * (m_hub_yaw - m_last_hub_yaw) + m_last_hub_yaw;
-        amrex::Real step_hub_tilt =
-            (step / m_ns) * (m_hub_tilt - m_last_hub_tilt) + m_last_hub_tilt;
-        amrex::Real step_hub_roll =
-            (step / m_ns) * (m_hub_roll - m_last_hub_roll) + m_last_hub_roll;
+            // Rotate beam unit vector
+            beam_vector = adjust_lidar_pattern(
+                beam_vector, m_fixed_yaw + step_hub_yaw*radtodeg,
+                m_fixed_tilt + step_hub_tilt*radtodeg, m_fixed_roll +
+                step_hub_roll*radtodeg);
 
-        // Rotate beam unit vector
-        beam_vector = adjust_lidar_pattern(
-            beam_vector, m_fixed_yaw + step_hub_yaw,
-            m_fixed_tilt + step_hub_tilt, m_fixed_roll + step_hub_roll);
+            // Interpolate lidar center
+            for (int d = 0; d < AMREX_SPACEDIM; ++d) {
+                step_lidar_center[d] =
+                    (step / m_ns) * (m_lidar_center[d] - m_last_lidar_center[d]) +
+                    m_last_lidar_center[d];
+            }
 
-        // Interpolate lidar center
-        for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-            step_lidar_center[d] =
-                (step / m_ns) * (m_lidar_center[d] - m_last_lidar_center[d]) +
-                m_last_lidar_center[d];
-        }
+            // Beam start and end points
+            for (int d = 0; d < AMREX_SPACEDIM; ++d) {
+                m_start[d + offset] = step_lidar_center[d];
+                m_end[d + offset] =
+                    step_lidar_center[d] + beam_vector[d] * m_beam_length;
+            }
 
-        // Beam start and end points
-        for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-            m_start[d + offset] = step_lidar_center[d];
-            m_end[d + offset] =
-                step_lidar_center[d] + beam_vector[d] * m_beam_length;
+            m_time_sampling += dt_s;
         }
     }
 
@@ -418,6 +429,8 @@ void DTUSpinnerSampler::update_sampling_locations()
     m_last_hub_tilt = m_hub_tilt;
     m_last_hub_roll = m_hub_roll;
     m_last_lidar_center = m_lidar_center;
+
+    m_update_count = m_update_count + 1;
 }
 
 #ifdef AMR_WIND_USE_NETCDF
@@ -425,7 +438,7 @@ void DTUSpinnerSampler::update_sampling_locations()
 bool DTUSpinnerSampler::output_netcdf_field(
     double* /*unused*/, ncutils::NCVar& /*unused*/)
 {
-    return true;
+    return true; 
 }
 
 void DTUSpinnerSampler::define_netcdf_metadata(
@@ -437,7 +450,46 @@ void DTUSpinnerSampler::define_netcdf_metadata(
     grp.put_attr("time_table", m_time_table);
     grp.put_attr("azimuth_table", m_azimuth_table);
     grp.put_attr("elevation_table", m_elevation_table);
+
+    std::vector<double> scan_time{m_scan_time};
+    std::vector<double> num_samples{m_num_samples};
+    std::vector<double> beam_length{m_beam_length};
+    std::vector<int> beam_points{m_beam_points};
+    grp.put_attr("scan_time", scan_time);
+    grp.put_attr("num_samples", num_samples);
+    grp.put_attr("beam_length", beam_length);
+    grp.put_attr("beam_points", beam_points);
+
+    std::vector<double> fixed_tilt{m_fixed_tilt};
+    std::vector<double> fixed_yaw{m_fixed_yaw};
+    std::vector<double> fixed_roll{m_fixed_roll};
+    grp.put_attr("fixed_tilt", fixed_tilt);
+    grp.put_attr("fixed_yaw", fixed_yaw);
+    grp.put_attr("fixed_roll", fixed_roll);
+
+    std::vector<double> innerprism_theta0{m_InnerPrism.theta0};
+    std::vector<double> innerprism_rot{m_InnerPrism.rot};
+    std::vector<double> innerprism_azimuth{m_InnerPrism.azimuth};
+    std::vector<double> outerprism_theta0{m_OuterPrism.theta0};
+    std::vector<double> outerprism_rot{m_OuterPrism.rot};
+    std::vector<double> outerprism_azimuth{m_OuterPrism.azimuth};
+    grp.put_attr("innerprism_theta0", innerprism_theta0);
+    grp.put_attr("innerprism_rot", innerprism_rot);
+    grp.put_attr("innerprism_azimuth", innerprism_azimuth);
+    grp.put_attr("outerprism_theta0", outerprism_theta0);
+    grp.put_attr("outerprism_rot", outerprism_rot);
+    grp.put_attr("outerprism_azimuth", outerprism_azimuth);
+
+    grp.put_attr("spinner_mode", m_spinner_mode);
+    grp.put_attr("turbine", m_turbine_label);
+
+    grp.def_dim("ndim", AMREX_SPACEDIM);
     grp.def_var("points", NC_DOUBLE, {"num_time_steps", "num_points", "ndim"});
+
+    grp.def_dim("nang", 3);
+    grp.def_var("rotor_angles_rad", NC_DOUBLE, {"num_time_steps", "nang"});
+
+    grp.def_var("rotor_hub_pos", NC_DOUBLE, {"num_time_steps", "ndim"});
 }
 
 void DTUSpinnerSampler::populate_netcdf_metadata(
@@ -447,14 +499,36 @@ void DTUSpinnerSampler::populate_netcdf_metadata(
 void DTUSpinnerSampler::output_netcdf_data(
     const ncutils::NCGroup& grp, const size_t nt) const
 {
+    //amrex::Print() << "&!&!&!&!&! update count: " << m_update_count << std::endl;
+    //amrex::Print() << "***** nt: " << nt << std::endl;
     // Write the coordinates every time
     std::vector<size_t> start{nt, 0, 0};
     std::vector<size_t> count{1, 0, AMREX_SPACEDIM};
     SamplerBase::SampleLocType locs;
     sampling_locations(locs);
+
     auto xyz = grp.var("points");
     count[1] = num_points();
+
+    //amrex::Print() << "***** Start: " << start[0] << " " << start[1] << " " 
+    //<< start[2] << " Count: " << count[0] << " " << count[1] << " " << count[2] 
+    //<< std::endl;   
+    //amrex::Print() << "***** locs: " << &locs[0][0].size() << std::endl;
+
     xyz.put(&locs[0][0], start, count);
+
+    auto angs = grp.var("rotor_angles_rad");
+    //std::vector<size_t> astart{nt, 0};
+    std::vector<size_t> acount{1, 3};
+    double rangs[3] = {m_hub_tilt, m_hub_roll, m_hub_yaw};
+    angs.put(rangs,start,acount);
+
+    auto hpos = grp.var("rotor_hub_pos");
+    //std::vector<size_t> pstart{nt, 0};
+    std::vector<size_t> pcount{1, AMREX_SPACEDIM};
+    double rhpos[3] = {m_lidar_center[0], m_lidar_center[1], m_lidar_center[2]};
+    hpos.put(rhpos,start,pcount);
+
 }
 
 #else

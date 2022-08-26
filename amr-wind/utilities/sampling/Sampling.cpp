@@ -201,7 +201,9 @@ void Sampling::prepare_netcdf_file()
     for (const auto& obj : m_samplers) {
         auto grp = ncf.def_group(obj->label());
 
-        grp.def_dim(npart_name, obj->num_points());
+        //grp.def_dim(npart_name, obj->num_points());
+        //Make nc_unlimited to accomodate changing array size due to time sample diff
+        grp.def_dim(npart_name, NC_UNLIMITED);
         obj->define_netcdf_metadata(grp);
         grp.def_var("coordinates", NC_DOUBLE, {npart_name, "ndim"});
         for (const auto& vname : m_var_names)

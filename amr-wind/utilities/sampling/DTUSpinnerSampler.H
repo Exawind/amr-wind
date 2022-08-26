@@ -76,6 +76,11 @@ public:
 
 private:
     int m_ns{1};
+    int m_update_count{0};
+    amrex::Real radtodeg{180.0 / M_PI};
+    amrex::Real pi{M_PI};
+    amrex::Real twopi{2.0*M_PI};
+    amrex::Real threepi{3.0*M_PI};
     amrex::Real m_time_sampling{0};
     PrismParameters m_InnerPrism;
     PrismParameters m_OuterPrism;
