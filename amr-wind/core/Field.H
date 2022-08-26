@@ -185,7 +185,7 @@ public:
     }
 
     //! Return reference to host view of BCRec array
-    amrex::Vector<amrex::BCRec>& bcrec() { return m_info->m_bcrec; }
+    amrex::Vector<amrex::BCRec>& bcrec() const { return m_info->m_bcrec; }
 
     const amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2>&
     bc_values_device() const
