@@ -3,6 +3,7 @@
 
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
+#include "amr-wind/utilities/FieldPlaneAveragingFine.H"
 #include "amr-wind/core/FieldBCOps.H"
 #include "amr-wind/wind_energy/MOData.H"
 
@@ -33,8 +34,8 @@ public:
     void init_log_law_height();
 
     //! Update the mean velocity at a given timestep
-    void
-    update_umean(const VelPlaneAveraging& vpa, const FieldPlaneAveraging& tpa);
+    void update_umean(
+        const VelPlaneAveragingFine& vpa, const FieldPlaneAveragingFine& tpa);
 
 private:
     const CFDSim& m_sim;

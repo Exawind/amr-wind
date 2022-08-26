@@ -78,8 +78,6 @@ private:
 
     bool m_laminar{false};
 
-    bool m_dns{false};
-
     bool m_mesh_mapping{false};
 
     amrex::Real m_mean_vel;

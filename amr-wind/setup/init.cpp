@@ -57,10 +57,6 @@ void incflo::ReadParameters()
                 "advection scheme");
         }
 
-        // probtype only kept around for probtype=31 otherwise default=0 works
-        // for all other physics
-        pp.query("probtype", m_probtype);
-
     } // end prefix incflo
 }
 

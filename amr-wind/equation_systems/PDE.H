@@ -39,13 +39,12 @@ public:
 
     /**
      *  \param sim A CFDSim instance
-     *  \param probtype Unique identifier for a problem type
      */
-    PDESystem(CFDSim& sim, const int probtype)
+    explicit PDESystem(CFDSim& sim)
         : m_sim(sim)
         , m_time(sim.time())
         , m_repo(sim.repo())
-        , m_fields(FieldRegOp<PDE, Scheme>(m_sim)(m_time, probtype))
+        , m_fields(FieldRegOp<PDE, Scheme>(m_sim)(m_time))
         , m_src_op(m_fields)
         , m_rhs_op(m_fields)
         , m_bc_op(m_fields, m_time)

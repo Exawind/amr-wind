@@ -41,6 +41,9 @@ ABL::ABL(CFDSim& sim)
 
     // Instantiate the ABL boundary plane IO
     m_bndry_plane = std::make_unique<ABLBoundaryPlane>(sim);
+
+    // Instantiate the ABL Modulated Power Law
+    m_abl_mpl = std::make_unique<ABLModulatedPowerLaw>(sim);
 }
 
 ABL::~ABL() = default;
@@ -89,13 +92,14 @@ void ABL::post_init_actions()
     m_abl_wall_func.init_log_law_height();
 
     m_abl_wall_func.update_umean(
-        m_stats->vel_profile(), m_stats->theta_profile());
+        m_stats->vel_profile(), m_stats->theta_profile_fine());
 
     // Register ABL wall function for velocity
     m_velocity.register_custom_bc<ABLVelWallFunc>(m_abl_wall_func);
     (*m_temperature).register_custom_bc<ABLTempWallFunc>(m_abl_wall_func);
 
     m_bndry_plane->post_init_actions();
+    m_abl_mpl->post_init_actions();
 }
 
 /** Perform tasks at the beginning of a new timestep
@@ -112,7 +116,7 @@ void ABL::pre_advance_work()
 {
     const auto& vel_pa = m_stats->vel_profile();
     m_abl_wall_func.update_umean(
-        m_stats->vel_profile(), m_stats->theta_profile());
+        m_stats->vel_profile(), m_stats->theta_profile_fine());
 
     if (m_abl_forcing != nullptr) {
         const amrex::Real zh = m_abl_forcing->forcing_height();
@@ -128,6 +132,7 @@ void ABL::pre_advance_work()
     }
 
     m_bndry_plane->pre_advance_work();
+    m_abl_mpl->pre_advance_work();
 }
 
 /** Perform tasks at the end of a new timestep
@@ -139,6 +144,7 @@ void ABL::post_advance_work()
 {
     m_stats->post_advance_work();
     m_bndry_plane->post_advance_work();
+    m_abl_mpl->post_advance_work();
 }
 
 } // namespace amr_wind

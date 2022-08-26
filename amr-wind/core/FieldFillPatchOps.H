@@ -143,19 +143,16 @@ public:
      *  @param field Field whose patches are filled by this instance
      *  @param mesh  The mesh instance to determine amrex::Geometry at a level
      *  @param time  Time instance
-     *  @param probtype Unique identifier indicating problem (For BC operator)
      *  @param itype Interpolation type (default: conservative cell linear)
      */
     FieldFillPatchOps(
         Field& field,
         const amrex::AmrCore& mesh,
         const SimTime& time,
-        int probtype,
         FieldInterpolator itype = FieldInterpolator::CellConsLinear)
         : m_time(time)
         , m_mesh(mesh)
         , m_field(field)
-        , m_probtype(probtype)
         , m_op(field)
         , m_mapper(field_impl::get_interpolation_operator(itype))
     {}
@@ -169,7 +166,6 @@ public:
         : m_time(time)
         , m_mesh(mesh)
         , m_field(field)
-        , m_probtype(0)
         , m_op(bc_op)
         , m_mapper(field_impl::get_interpolation_operator(itype))
     {}
@@ -352,7 +348,6 @@ protected:
     const SimTime& m_time;
     const amrex::AmrCore& m_mesh;
     Field& m_field;
-    int m_probtype;
 
     const BCOpCreator m_op;
 

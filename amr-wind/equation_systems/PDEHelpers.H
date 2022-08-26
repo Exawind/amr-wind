@@ -49,7 +49,6 @@ template <typename PDE, typename Scheme>
 PDEFields create_fields_instance(
     const SimTime& time,
     FieldRepo& repo,
-    const int probtype,
     const FieldInterpolator itype = FieldInterpolator::CellConsLinear)
 {
     repo.declare_field(
@@ -67,9 +66,9 @@ PDEFields create_fields_instance(
 
     PDEFields fields(repo, PDE::var_name());
     fields.field.register_fill_patch_op<FieldFillPatchOps<FieldBCDirichlet>>(
-        repo.mesh(), time, probtype, itype);
+        repo.mesh(), time, itype);
     fields.src_term.register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
-        repo.mesh(), time, probtype, FieldInterpolator::PiecewiseConstant);
+        repo.mesh(), time, FieldInterpolator::PiecewiseConstant);
     fields.mueff.set_default_fillpatch_bc(time);
 
     fields.field.fillpatch_on_regrid() = true;
