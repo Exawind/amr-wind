@@ -31,7 +31,7 @@ void read_inputs(
     pp.get("base_position", tinfo.base_pos);
     pp.get("rotor_diameter", tinfo.rotor_diameter);
     pp.get("hub_height", tinfo.hub_height);
-    bool use_fllc;
+    bool use_fllc = false;
     pp.query("fllc", use_fllc);
     if (use_fllc) {
         for (int i = 0; i < tdata.num_blades; ++i) {
