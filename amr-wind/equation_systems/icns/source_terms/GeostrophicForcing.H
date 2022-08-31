@@ -50,7 +50,7 @@ private:
     amrex::Real cosphi{0.0};
 
     //! Default three component forcing
-    bool m_S{false};
+    bool m_three_dimensional_forcing{false};
 
     //! Target velocity
     amrex::Vector<amrex::Real> m_target_vel{{0.0, 0.0, 0.0}};

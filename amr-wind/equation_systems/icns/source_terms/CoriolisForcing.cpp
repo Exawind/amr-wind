@@ -56,7 +56,7 @@ CoriolisForcing::CoriolisForcing(const CFDSim& sim)
     {
         amrex::ParmParse pp("ABL");
         // 3-component forcing (Default: false)
-        if (!pp.query("three_ComponentForcing", m_S)) {
+        if (!pp.query("three_ComponentForcing", m_three_dimension_forcing)) {
         };
     }
 }
@@ -81,12 +81,7 @@ void CoriolisForcing::operator()(
     const auto cosphi = m_cosphi;
     const auto corfac = m_coriolis_factor;
 
-    amrex::Real S;
-    if (m_S == true) {
-        S = 1.0
-    } else {
-        S = 0.0
-    }
+    amrex::Real S = (m_three_dimensional_forcing == true) ? 1.0 : 0.0;
 
     const auto& vel =
         m_velocity.state(field_impl::dof_state(fstate))(lev).const_array(mfi);
