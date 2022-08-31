@@ -56,8 +56,7 @@ CoriolisForcing::CoriolisForcing(const CFDSim& sim)
     {
         amrex::ParmParse pp("ABL");
         // 3-component forcing (Default: false)
-        if (!pp.query("three_ComponentForcing", m_three_dimension_forcing)) {
-        };
+        pp.query("three_ComponentForcing", m_three_dimensional_forcing){};
     }
 }
 

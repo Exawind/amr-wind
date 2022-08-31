@@ -50,7 +50,8 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
 
     {
         amrex::ParmParse pp("ABL");
-        if (!pp.query("three_ComponentForcing", m_three_dimensional_forcing)) {
+        pp.query("three_ComponentForcing", m_three_dimensional_forcing)
+        {
             amrex::Print() << "cannot find three_componentForcing, "
                            << "so the default will be used\n";
         };
