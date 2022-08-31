@@ -80,7 +80,14 @@ void CoriolisForcing::operator()(
     const auto sinphi = m_sinphi;
     const auto cosphi = m_cosphi;
     const auto corfac = m_coriolis_factor;
-    const auto S = m_S;
+
+    amrex::Real S;
+    if (m_S == true) {
+        S = 1.0
+    } else {
+        S = 0.0
+    }
+
     const auto& vel =
         m_velocity.state(field_impl::dof_state(fstate))(lev).const_array(mfi);
 

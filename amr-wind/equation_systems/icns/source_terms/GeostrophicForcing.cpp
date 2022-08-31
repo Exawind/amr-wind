@@ -57,7 +57,13 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
     }
 
     const auto corfac = coriolis_factor;
-    const auto S = m_S;
+
+    amrex::Real S;
+    if (m_S == true) {
+        S = 1.0
+    } else {
+        S = 0.0
+    }
 
     m_g_forcing = {
         -corfac * m_target_vel[1] * sinphi +
