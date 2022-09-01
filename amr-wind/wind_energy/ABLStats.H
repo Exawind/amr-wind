@@ -118,6 +118,7 @@ private:
     VelPlaneAveragingFine m_pa_vel_fine;
     FieldPlaneAveragingFine m_pa_temp_fine;
     FieldPlaneAveraging m_pa_mueff;
+    SecondMomentAveraging m_pa_tt;
     SecondMomentAveraging m_pa_tu;
     SecondMomentAveraging m_pa_uu;
     ThirdMomentAveraging m_pa_uuu;
