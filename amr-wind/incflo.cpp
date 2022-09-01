@@ -11,7 +11,52 @@
 
 #include "AMReX_ParmParse.H"
 
+#include "helics/cpp98/CombinationFederate.hpp"
+#include "helics/cpp98/helics.hpp"
+#include "helics/cpp98/Federate.hpp"
+
+
+#include <sstream>
+#include <iostream>
+#include <string>
+
+using namespace std; 
+
+
 using namespace amrex;
+// /*********************** HELICS **********************/
+
+// /*
+HelicsTime currenttime = 0.0;
+std::string fedinitstring = "--federates=1";
+double deltat = 0.01;
+helicscpp::Input sub;
+helicscpp::Publication pub;
+helicscpp::FederateInfo fi("zmq");
+// Create value federate 
+helicscpp::CombinationFederate vfed("Test receiver Federate",fi);
+
+
+void  incflo::helics(){
+
+amrex::Print() << "INSIDE HELICS () IN INFO.cPP" << std::endl;
+//std::cout <<"PI RECEIVER: Value federate created";
+vfed.setProperty(HELICS_PROPERTY_TIME_DELTA, 1.0);
+//  Subscribe to PI SENDER's publication 
+sub = vfed.registerSubscription("control", "string");
+//std::cout <<"PI RECEIVER: Subscription registered";
+//  Register the publication 
+pub = vfed.registerGlobalPublication("status", "string");
+//std::cout <<"AMRWIND RECEIVER: Publication registered\n";
+//  Enter initialization state 
+vfed.enterInitializingMode(); // can throw helicscpp::InvalidStateTransition exception
+vfed.enterExecutingMode(); 
+currenttime = vfed.getCurrentTime();
+}
+
+// */
+// /*********************** HELICS **********************/
+
 
 incflo::incflo()
     : m_sim(*this)
@@ -77,6 +122,7 @@ void incflo::init_mesh()
         }
     }
 }
+
 
 /** Initialize AMR-Wind data structures after mesh has been created.
  *
@@ -154,11 +200,17 @@ void incflo::prepare_for_time_integration()
 void incflo::InitData()
 {
     BL_PROFILE("amr-wind::incflo::InitData()");
+// /*********************** HELICS **********************/
+    helics();
+// /*********************** HELICS **********************/
 
     init_mesh();
     init_amr_wind_modules();
     prepare_for_time_integration();
+
+
 }
+
 
 /** Perform regrid actions at a given timestep.
  *
@@ -298,6 +350,32 @@ void incflo::Evolve()
                               (time2 - time1) /
                               static_cast<amrex::Real>(m_cell_count)
                        << std::endl;
+
+        // /*********************** HELICS **********************/
+        // /*
+
+            std::stringstream ssToControlCenter; // stringStream used to construct strToSSC
+            ssToControlCenter << "Testvalue";
+
+            std::stringstream charFromControlCenter;
+            charFromControlCenter << sub.getString().c_str();
+
+            std::stringstream ss(charFromControlCenter.str());
+            std::cout << "Received data from control center " << charFromControlCenter.str() << std::endl;
+
+            
+            currenttime = vfed.requestNextStep();
+
+            // std::stringstream ssToControlCenter; 
+            ssToControlCenter << "[all random values form amrwind!!]";
+            std::string strToControlCenter; 
+            strToControlCenter = ssToControlCenter.str();
+            pub.publish(strToControlCenter.c_str());
+        // */
+
+        // /*********************** HELICS **********************/
+
+
     }
     amrex::Print() << "\n======================================================"
                       "========================\n"
