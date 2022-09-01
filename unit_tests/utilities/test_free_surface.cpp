@@ -545,13 +545,13 @@ TEST_F(FreeSurfaceTest, sloped)
     out_vec.resize(npts * npts, 0.0);
     // Step in x, then y
     out_vec[0] = water_level2 + slope * (-1.0 - 1.0);
-    out_vec[1] = water_level2 + slope * ( 0.0 - 1.0);
+    out_vec[1] = water_level2 + slope * (+0.0 - 1.0);
     out_vec[2] = water_level2 + slope * (+1.0 - 1.0);
     out_vec[3] = water_level2 + slope * (-1.0 + 0.0);
-    out_vec[4] = water_level2 + slope * ( 0.0 + 0.0);
+    out_vec[4] = water_level2 + slope * (+0.0 + 0.0);
     out_vec[5] = water_level2 + slope * (+1.0 + 0.0);
     out_vec[6] = water_level2 + slope * (-1.0 + 1.0);
-    out_vec[7] = water_level2 + slope * ( 0.0 + 1.0);
+    out_vec[7] = water_level2 + slope * (+0.0 + 1.0);
     out_vec[8] = water_level2 + slope * (+1.0 + 1.0);
     // Check output value
     int nout = tool.check_output_vec("~", out_vec);
