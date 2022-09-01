@@ -148,9 +148,10 @@ void FreeSurface::post_advance_work()
             const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> plo =
                 geom.ProbLoArray();
 
-            const int captured_m_coorddir = m_coorddir;
-            const int captured_m_gc1 = m_gc1;
-            const int captured_m_gc2 = m_gc2;
+            // c = captured
+            const int dir = m_coorddir;
+            const int gc1 = m_gc1;
+            const int gc2 = m_gc2;
 
             // Loop points in 2D grid
             for (int n = 0; n < m_npts; ++n) {
@@ -170,171 +171,158 @@ void FreeSurface::post_advance_work()
                             -> amrex::Real {
                             amrex::Real height_fab = 0.0;
 
-                            amrex::Loop(bx, [=, &height_fab](int i, int j, int k) noexcept {
-                                // Initialize height measurement
-                                amrex::Real ht = plo[captured_m_coorddir];
-                                // Cell location
-                                amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> xm;
-                                xm[0] = plo[0] + (i + 0.5) * dx[0];
-                                xm[1] = plo[1] + (j + 0.5) * dx[1];
-                                xm[2] = plo[2] + (k + 0.5) * dx[2];
-                                // (1) Check that cell height is below
-                                // previous instance. (2) Check if cell
-                                // contains 2D grid point: complicated
-                                // conditional is to avoid double-counting
-                                // and includes exception for lo boundary.
-                                // (3) Check if cell is obviously
-                                // multiphase, then check if cell might have
-                                // interface at top or bottom
-                                if ((dout_ptr[n] >
-                                     xm[captured_m_coorddir] +
-                                         0.5 * dx[captured_m_coorddir]) &&
-                                    (((plo[captured_m_gc1] == loc[0] &&
-                                       xm[captured_m_gc1] - loc[0] ==
-                                           0.5 * dx[captured_m_gc1]) ||
-                                      (xm[captured_m_gc1] - loc[0] <
-                                           0.5 * dx[captured_m_gc1] &&
-                                       loc[0] - xm[captured_m_gc1] <=
-                                           0.5 * dx[captured_m_gc1])) &&
-                                     ((plo[captured_m_gc2] == loc[1] &&
-                                       xm[captured_m_gc2] - loc[1] ==
-                                           0.5 * dx[captured_m_gc2]) ||
-                                      (xm[captured_m_gc2] - loc[1] <
-                                           0.5 * dx[captured_m_gc2] &&
-                                       loc[1] - xm[captured_m_gc2] <=
-                                           0.5 * dx[captured_m_gc2])))) {
+                            amrex::Loop(
+                                bx,
+                                [=, &height_fab](int i, int j, int k) noexcept {
+                                    // Initialize height measurement
+                                    amrex::Real ht = plo[dir];
+                                    // Cell location
+                                    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>
+                                        xm;
+                                    xm[0] = plo[0] + (i + 0.5) * dx[0];
+                                    xm[1] = plo[1] + (j + 0.5) * dx[1];
+                                    xm[2] = plo[2] + (k + 0.5) * dx[2];
+                                    // (1) Check that cell height is below
+                                    // previous instance. (2) Check if cell
+                                    // contains 2D grid point: complicated
+                                    // conditional is to avoid double-counting
+                                    // and includes exception for lo boundary.
+                                    // (3) Check if cell is obviously
+                                    // multiphase, then check if cell might have
+                                    // interface at top or bottom
+                                    if ((dout_ptr[n] >
+                                         xm[dir] + 0.5 * dx[dir]) &&
+                                        (((plo[gc1] == loc[0] &&
+                                           xm[gc1] - loc[0] == 0.5 * dx[gc1]) ||
+                                          (xm[gc1] - loc[0] < 0.5 * dx[gc1] &&
+                                           loc[0] - xm[gc1] <=
+                                               0.5 * dx[gc1])) &&
+                                         ((plo[gc2] == loc[1] &&
+                                           xm[gc2] - loc[1] == 0.5 * dx[gc2]) ||
+                                          (xm[gc2] - loc[1] < 0.5 * dx[gc2] &&
+                                           loc[1] - xm[gc2] <=
+                                               0.5 * dx[gc2])))) {
 
-                                    int ip = i;
-                                    int jp = j;
-                                    int kp = k;
-                                    int im = i;
-                                    int jm = j;
-                                    int km = k;
-                                    amrex::Real mx = 0.0;
-                                    amrex::Real my = 0.0;
-                                    amrex::Real mz = 0.0;
-                                    amrex::Real alpha = 1.0;
-                                    // Get modified indices for checking up
-                                    // and down and orient normal in search
-                                    // direction
-                                    switch (captured_m_coorddir) {
-                                    case 0:
-                                        ip += 1;
-                                        im -= 1;
-                                        mx = 1.0;
-                                        break;
-                                    case 1:
-                                        jp += 1;
-                                        jm -= 1;
-                                        my = 1.0;
-                                        break;
-                                    case 2:
-                                        kp += 1;
-                                        km -= 1;
-                                        mz = 1.0;
-                                        break;
-                                    }
-                                    // If cell is full of single phase
-                                    // (accounts for when interface is at
-                                    // intersection of cells but lower one
-                                    // is not single-phase)
-                                    bool calc_flag = false;
-                                    if ((ni % 2 == 0 &&
-                                         vof_arr(i, j, k) >= 1.0 - 1e-12) ||
-                                        (ni % 2 == 1 &&
-                                         vof_arr(i, j, k) <= 1e-12)) {
-                                        // put bdy at top
-                                        alpha = 1.0;
-                                        if (ni % 2 == 1) {
-                                            mx *= -1.0;
-                                            my *= -1.0;
-                                            mz *= -1.0;
-                                            alpha *= -1.0;
-                                        }
-                                        calc_flag = true;
-                                    }
-                                    // Multiphase cell case
-                                    if ((vof_arr(i, j, k) < (1.0 - 1e-12) &&
-                                         vof_arr(i, j, k) > 1e-12)) {
-                                        // Get interface reconstruction
-                                        multiphase::fit_plane(
-                                            i, j, k, vof_arr, mx, my, mz,
-                                            alpha);
-                                        calc_flag = true;
-                                    }
-
-                                    if (calc_flag) {
-                                        // Reassign slope coefficients
-                                        amrex::Real msc = 0.0;
-                                        amrex::Real mg1 = 0.0;
-                                        amrex::Real mg2 = 0.0;
-                                        switch (captured_m_coorddir) {
+                                        int ip = i;
+                                        int jp = j;
+                                        int kp = k;
+                                        int im = i;
+                                        int jm = j;
+                                        int km = k;
+                                        amrex::Real mx = 0.0;
+                                        amrex::Real my = 0.0;
+                                        amrex::Real mz = 0.0;
+                                        amrex::Real alpha = 1.0;
+                                        // Get modified indices for checking up
+                                        // and down and orient normal in search
+                                        // direction
+                                        switch (dir) {
                                         case 0:
-                                            msc = mx;
-                                            mg1 = my;
-                                            mg2 = mz;
+                                            ip += 1;
+                                            im -= 1;
+                                            mx = 1.0;
                                             break;
                                         case 1:
-                                            msc = my;
-                                            mg1 = mx;
-                                            mg2 = mz;
+                                            jp += 1;
+                                            jm -= 1;
+                                            my = 1.0;
                                             break;
                                         case 2:
-                                            msc = mz;
-                                            mg1 = mx;
-                                            mg2 = my;
+                                            kp += 1;
+                                            km -= 1;
+                                            mz = 1.0;
                                             break;
                                         }
-                                        // Get height of interface
-                                        if (msc == 0) {
-                                            // If slope is undefined in z,
-                                            // use middle of cell
-                                            ht = xm[captured_m_coorddir];
-                                        } else {
-                                            // Intersect 2D point with plane
-                                            ht =
-                                                (xm[captured_m_coorddir] -
-                                                 0.5 *
-                                                     dx[captured_m_coorddir]) +
-                                                (alpha -
-                                                 mg1 * dxi[captured_m_gc1] *
-                                                     (loc[0] -
-                                                      (xm[captured_m_gc1] -
-                                                       0.5 *
-                                                           dx[captured_m_gc1])) -
-                                                 mg2 * dxi[captured_m_gc2] *
-                                                     (loc[1] -
-                                                      (xm[captured_m_gc2] -
-                                                       0.5 *
-                                                           dx[captured_m_gc2]))) /
-                                                    (msc *
-                                                     dxi[captured_m_coorddir]);
+                                        // If cell is full of single phase
+                                        // (accounts for when interface is at
+                                        // intersection of cells but lower one
+                                        // is not single-phase)
+                                        bool calc_flag = false;
+                                        if ((ni % 2 == 0 &&
+                                             vof_arr(i, j, k) >= 1.0 - 1e-12) ||
+                                            (ni % 2 == 1 &&
+                                             vof_arr(i, j, k) <= 1e-12)) {
+                                            // put bdy at top
+                                            alpha = 1.0;
+                                            if (ni % 2 == 1) {
+                                                mx *= -1.0;
+                                                my *= -1.0;
+                                                mz *= -1.0;
+                                                alpha *= -1.0;
+                                            }
+                                            calc_flag = true;
                                         }
-                                        // If interface is below lower
-                                        // bound, continue to look
-                                        if (ht <
-                                            xm[captured_m_coorddir] -
-                                                0.5 * dx[captured_m_coorddir]) {
-                                            ht = plo[captured_m_coorddir];
+                                        // Multiphase cell case
+                                        if ((vof_arr(i, j, k) < (1.0 - 1e-12) &&
+                                             vof_arr(i, j, k) > 1e-12)) {
+                                            // Get interface reconstruction
+                                            multiphase::fit_plane(
+                                                i, j, k, vof_arr, mx, my, mz,
+                                                alpha);
+                                            calc_flag = true;
                                         }
-                                        // If interface is above upper
-                                        // bound, limit it
-                                        if (ht >
-                                            xm[captured_m_coorddir] +
-                                                0.5 * dx[captured_m_coorddir] *
-                                                    (1.0 + 1e-8)) {
-                                            ht = xm[captured_m_coorddir] +
-                                                 0.5 * dx[captured_m_coorddir];
+
+                                        if (calc_flag) {
+                                            // Reassign slope coefficients
+                                            amrex::Real mdr = 0.0;
+                                            amrex::Real mg1 = 0.0;
+                                            amrex::Real mg2 = 0.0;
+                                            switch (dir) {
+                                            case 0:
+                                                mdr = mx;
+                                                mg1 = my;
+                                                mg2 = mz;
+                                                break;
+                                            case 1:
+                                                mdr = my;
+                                                mg1 = mx;
+                                                mg2 = mz;
+                                                break;
+                                            case 2:
+                                                mdr = mz;
+                                                mg1 = mx;
+                                                mg2 = my;
+                                                break;
+                                            }
+                                            // Get height of interface
+                                            if (mdr == 0) {
+                                                // If slope is undefined in z,
+                                                // use middle of cell
+                                                ht = xm[dir];
+                                            } else {
+                                                // Intersect 2D point with plane
+                                                ht = (xm[dir] - 0.5 * dx[dir]) +
+                                                     (alpha -
+                                                      mg1 * dxi[gc1] *
+                                                          (loc[0] -
+                                                           (xm[gc1] -
+                                                            0.5 * dx[gc1])) -
+                                                      mg2 * dxi[gc2] *
+                                                          (loc[1] -
+                                                           (xm[gc2] -
+                                                            0.5 * dx[gc2]))) /
+                                                         (mdr * dxi[dir]);
+                                            }
+                                            // If interface is below lower
+                                            // bound, continue to look
+                                            if (ht < xm[dir] - 0.5 * dx[dir]) {
+                                                ht = plo[dir];
+                                            }
+                                            // If interface is above upper
+                                            // bound, limit it
+                                            if (ht >
+                                                xm[dir] + 0.5 * dx[dir] *
+                                                              (1.0 + 1e-8)) {
+                                                ht = xm[dir] + 0.5 * dx[dir];
+                                            }
                                         }
                                     }
-                                }
-                                // Offset by removing lo and contribute to
-                                // whole
-                                height_fab = amrex::max(
-                                    height_fab,
-                                    mask_arr(i, j, k) *
-                                        (ht - plo[captured_m_coorddir]));
-                            });
+                                    // Offset by removing lo and contribute to
+                                    // whole
+                                    height_fab = amrex::max(
+                                        height_fab,
+                                        mask_arr(i, j, k) * (ht - plo[dir]));
+                                });
                             return height_fab;
                         }));
             }
