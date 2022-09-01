@@ -456,6 +456,41 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool interface_band(
     return (VOF_max != VOF_min || VOF_mid);
 }
 
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void levelset_to_vof(
+    int i,
+    int j,
+    int k,
+    amrex::Real eps,
+    amrex::Array4<amrex::Real> const& phi,
+    amrex::Array4<amrex::Real> const& volfrac) noexcept
+{
+    amrex::Real mx, my, mz;
+    youngs_fd_normal(i, j, k, phi, mx, my, mz);
+    mx = std::abs(mx / 32.);
+    my = std::abs(my / 32.);
+    mz = std::abs(mz / 32.);
+    amrex::Real normL1 = (mx + my + mz);
+    mx = mx / normL1;
+    my = my / normL1;
+    mz = mz / normL1;
+    // Make sure that alpha is negative far away from the
+    // interface
+    amrex::Real alpha;
+    if (phi(i, j, k) < -eps) {
+        alpha = -1.0;
+    } else {
+        alpha = phi(i, j, k) / normL1;
+        alpha = alpha + 0.5;
+    }
+    if (alpha >= 1.0) {
+        volfrac(i, j, k) = 1.0;
+    } else if (alpha <= 0.0) {
+        volfrac(i, j, k) = 0.0;
+    } else {
+        volfrac(i, j, k) = cut_volume(mx, my, mz, alpha, 0.0, 1.0);
+    }
+}
+
 } // namespace multiphase
 } // namespace amr_wind
 
