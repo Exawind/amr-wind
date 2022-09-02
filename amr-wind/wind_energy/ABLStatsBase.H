@@ -31,10 +31,11 @@ public:
     virtual ABLStatsMode abl_mode() const = 0;
 
     //! Interpolating object for vertical velocity profile
-    virtual const VelPlaneAveraging& vel_profile() const = 0;
+    virtual const VelPlaneAveragingFine& vel_profile() const = 0;
 
     //! Interpolating object for vertical temperature profile
     virtual const FieldPlaneAveraging& theta_profile() const = 0;
+    virtual const FieldPlaneAveragingFine& theta_profile_fine() const = 0;
 
     //! Perform initialization actions after the mesh has been created
     virtual void post_init_actions() = 0;

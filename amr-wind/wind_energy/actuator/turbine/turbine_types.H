@@ -6,6 +6,8 @@
 namespace amr_wind {
 namespace actuator {
 
+struct FLLCData;
+
 struct TurbineInfo : public ActInfo
 {
     //! Base location of this turbine
@@ -22,19 +24,6 @@ struct TurbineInfo : public ActInfo
     {}
 };
 
-struct ComponentView
-{
-    VecSlice pos;
-    VecSlice force;
-    VecSlice epsilon;
-    TensorSlice orientation;
-
-    VecSlice vel_pos;
-    VecSlice vel;
-
-    RealSlice chord;
-};
-
 using DeviceVecComponent = amrex::Gpu::DeviceVector<ComponentView>;
 struct TurbineBaseData
 {
@@ -44,10 +33,14 @@ struct TurbineBaseData
     //! Number of actuator nodes per blade
     int num_pts_blade;
 
+    //! Number of velocity nodes per blade
+    int num_vel_pts_blade;
+
     //! Number of actuator nodes for tower
     int num_pts_tower;
 
     RealList chord;
+    VecList vel_rel;
 
     //! Center of rotation for the rotor
     vs::Vector rot_center;
@@ -79,6 +72,7 @@ struct TurbineBaseData
     amrex::Real nacelle_area{0.0};
 
     std::vector<ComponentView> blades;
+    std::vector<FLLCData> fllc;
     ComponentView tower;
     ComponentView hub;
 };

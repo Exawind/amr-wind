@@ -92,7 +92,7 @@ void ABL::post_init_actions()
     m_abl_wall_func.init_log_law_height();
 
     m_abl_wall_func.update_umean(
-        m_stats->vel_profile(), m_stats->theta_profile());
+        m_stats->vel_profile(), m_stats->theta_profile_fine());
 
     // Register ABL wall function for velocity
     m_velocity.register_custom_bc<ABLVelWallFunc>(m_abl_wall_func);
@@ -116,7 +116,7 @@ void ABL::pre_advance_work()
 {
     const auto& vel_pa = m_stats->vel_profile();
     m_abl_wall_func.update_umean(
-        m_stats->vel_profile(), m_stats->theta_profile());
+        m_stats->vel_profile(), m_stats->theta_profile_fine());
 
     if (m_abl_forcing != nullptr) {
         const amrex::Real zh = m_abl_forcing->forcing_height();

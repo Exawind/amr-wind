@@ -79,7 +79,7 @@ struct InitDataOp<Joukowsky, ActSrcDisk>
             const auto b = meta.root_correction_exponent;
 
             const auto delta = std::max(
-                meta.vortex_core_size * meta.radius(),
+                meta.vortex_core_size / meta.radius(),
                 vs::DTraits<amrex::Real>::eps());
 
             const auto factor = dx / delta;
@@ -229,6 +229,9 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
             0.5 * M_PI * ddata.density * std::pow(ddata.radius(), 2) *
                 std::pow(U_ref, 3),
             machine_eps);
+
+        ddata.current_power =
+            ddata.density * uInfSqr * moment * ddata.current_angular_velocity;
 
         ddata.current_cp = ddata.density * uInfSqr * moment *
                            ddata.current_angular_velocity / eq_20_denominator;
