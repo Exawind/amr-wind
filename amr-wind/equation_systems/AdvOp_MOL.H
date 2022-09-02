@@ -48,7 +48,7 @@ struct AdvectionOp<
 
         // cppcheck-suppress constVariable
         auto& conv_term = fields.conv_term.state(fstate);
-        auto& dof_field = fields.field.state(fstate);
+        const auto& dof_field = fields.field.state(fstate);
         const auto& den = density.state(fstate);
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
@@ -59,7 +59,7 @@ struct AdvectionOp<
                 mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
                     .SetDynamic(true);
             }
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (amrex::MFIter mfi(density(lev), mfi_info); mfi.isValid();

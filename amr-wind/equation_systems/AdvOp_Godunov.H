@@ -11,6 +11,7 @@
 #include "AMReX_Gpu.H"
 #include "AMReX_ParmParse.H"
 #include "AMReX_MultiFabUtil.H"
+#include "hydro_utils.H"
 
 namespace amr_wind {
 namespace pde {
@@ -37,7 +38,7 @@ struct AdvectionOp<
     {
         amrex::ParmParse pp("incflo");
         pp.query("godunov_type", godunov_type);
-
+        pp.query("godunov_use_forces_in_trans", godunov_use_forces_in_trans);
         if (pp.contains("use_ppm") || pp.contains("use_limiter")) {
             amrex::Abort(
                 "Godunov: use_ppm and use_limiter are deprecated. Please "
@@ -50,6 +51,9 @@ struct AdvectionOp<
             godunov_scheme = godunov::scheme::PPM;
         } else if (amrex::toLower(godunov_type) == "ppm_nolim") {
             godunov_scheme = godunov::scheme::PPM_NOLIM;
+        } else if (amrex::toLower(godunov_type) == "bds") {
+            godunov_scheme = godunov::scheme::BDS;
+            advection_type = "BDS";
         } else if (
             amrex::toLower(godunov_type) == "weno" ||
             amrex::toLower(godunov_type) == "weno_js") {
@@ -59,7 +63,7 @@ struct AdvectionOp<
         } else {
             amrex::Print()
                 << "For godunov_type select between plm, ppm, "
-                   "ppm_nolim, weno_js, and weno_z: it defaults to ppm"
+                   "ppm_nolim, bds, weno_js, and weno_z: it defaults to ppm"
                 << std::endl;
             godunov_scheme = godunov::scheme::PPM;
         }
@@ -87,6 +91,12 @@ struct AdvectionOp<
             repo.create_scratch_field(PDE::ndim, 0, amr_wind::FieldLoc::YFACE);
         auto flux_z =
             repo.create_scratch_field(PDE::ndim, 0, amr_wind::FieldLoc::ZFACE);
+        auto face_x =
+            repo.create_scratch_field(PDE::ndim, 0, amr_wind::FieldLoc::XFACE);
+        auto face_y =
+            repo.create_scratch_field(PDE::ndim, 0, amr_wind::FieldLoc::YFACE);
+        auto face_z =
+            repo.create_scratch_field(PDE::ndim, 0, amr_wind::FieldLoc::ZFACE);
 
         // only needed if multiplying by rho below
         const auto& den = density.state(fstate);
@@ -97,7 +107,7 @@ struct AdvectionOp<
                 mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
                     .SetDynamic(true);
             }
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
@@ -123,17 +133,57 @@ struct AdvectionOp<
                         });
                 }
 
-                amrex::FArrayBox tmpfab(amrex::grow(bx, 1), PDE::ndim * 14);
+                if ((godunov_scheme == godunov::scheme::PPM_NOLIM) ||
+                    (godunov_scheme == godunov::scheme::WENOJS) ||
+                    (godunov_scheme == godunov::scheme::WENOZ)) {
+                    amrex::FArrayBox tmpfab(amrex::grow(bx, 1), PDE::ndim * 14);
 
-                godunov::compute_fluxes(
-                    lev, bx, PDE::ndim, (*flux_x)(lev).array(mfi),
-                    (*flux_y)(lev).array(mfi), (*flux_z)(lev).array(mfi),
-                    (PDE::multiply_rho ? rhotrac : tra_arr),
-                    u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
-                    w_mac(lev).const_array(mfi), src_term(lev).const_array(mfi),
-                    dof_field.bcrec_device().data(), iconserv.data(),
-                    tmpfab.dataPtr(), geom, dt, godunov_scheme);
-
+                    godunov::compute_fluxes(
+                        lev, bx, PDE::ndim, (*flux_x)(lev).array(mfi),
+                        (*flux_y)(lev).array(mfi), (*flux_z)(lev).array(mfi),
+                        (PDE::multiply_rho ? rhotrac : tra_arr),
+                        u_mac(lev).const_array(mfi),
+                        v_mac(lev).const_array(mfi),
+                        w_mac(lev).const_array(mfi),
+                        src_term(lev).const_array(mfi),
+                        dof_field.bcrec_device().data(), iconserv.data(),
+                        tmpfab.dataPtr(), geom, dt, godunov_scheme);
+                } else if (
+                    (godunov_scheme == godunov::scheme::PPM) ||
+                    (godunov_scheme == godunov::scheme::PLM) ||
+                    (godunov_scheme == godunov::scheme::BDS)) {
+                    amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 1);
+                    tmpfab.setVal<amrex::RunOn::Device>(0.0);
+                    const auto& divu = tmpfab.array();
+                    const bool is_velocity = false;
+                    const bool known_edge_state = false;
+                    const bool godunov_use_ppm =
+                        godunov_scheme == godunov::scheme::PPM;
+                    const bool fluxes_are_area_weighted = false;
+                    HydroUtils::ComputeFluxesOnBoxFromState(
+                        bx, PDE::ndim, mfi,
+                        (PDE::multiply_rho ? rhotrac : tra_arr),
+                        AMREX_D_DECL(
+                            (*flux_x)(lev).array(mfi),
+                            (*flux_y)(lev).array(mfi),
+                            (*flux_z)(lev).array(mfi)),
+                        AMREX_D_DECL(
+                            (*face_x)(lev).array(mfi),
+                            (*face_y)(lev).array(mfi),
+                            (*face_z)(lev).array(mfi)),
+                        known_edge_state,
+                        AMREX_D_DECL(
+                            u_mac(lev).const_array(mfi),
+                            v_mac(lev).const_array(mfi),
+                            w_mac(lev).const_array(mfi)),
+                        divu, src_term(lev).const_array(mfi), geom[lev], dt,
+                        dof_field.bcrec(), dof_field.bcrec_device().data(),
+                        iconserv.data(), godunov_use_ppm,
+                        godunov_use_forces_in_trans, is_velocity,
+                        fluxes_are_area_weighted, advection_type);
+                } else {
+                    amrex::Abort("Invalid godunov scheme");
+                }
                 amrex::Gpu::streamSynchronize();
             }
         }
@@ -157,7 +207,7 @@ struct AdvectionOp<
         }
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (amrex::MFIter mfi(dof_field(lev), amrex::TilingIfNotGPU());
@@ -183,6 +233,8 @@ struct AdvectionOp<
 
     godunov::scheme godunov_scheme = godunov::scheme::PPM;
     std::string godunov_type;
+    bool godunov_use_forces_in_trans{false};
+    std::string advection_type{"Godunov"};
 };
 
 } // namespace pde

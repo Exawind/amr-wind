@@ -10,6 +10,8 @@ target_sources(${amr_wind_lib_name}
   MOData.cpp
   ABLMesoscaleForcing.cpp
   ABLMesoscaleInput.cpp
+  ABLFillMPL.cpp
+  ABLModulatedPowerLaw.cpp
   )
 
 add_subdirectory(actuator)

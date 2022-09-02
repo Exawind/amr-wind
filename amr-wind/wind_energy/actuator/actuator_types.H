@@ -90,6 +90,9 @@ struct ActGrid
     //! Velocity vector at the sampled locations
     VecList vel;
 
+    //! Density at the smapled locations
+    RealList density;
+
     /** Helper method to resize the data arrays defined on the grid
      *
      *  \params Number of nodes that contain forcing data
@@ -103,12 +106,31 @@ struct ActGrid
         orientation.resize(num_force_pts);
         vel_pos.resize(num_vel_pts);
         vel.resize(num_vel_pts);
+        density.resize(num_vel_pts);
     }
 
     /** Convenience function to resize both force/velocity data to same
      * locations
      */
     inline void resize(int num_pts) { resize(num_pts, num_pts); }
+};
+
+/** Slice of actutator data for components (tower, blade, etc)
+ *
+ *  \ingroup actuator
+ */
+struct ComponentView
+{
+    VecSlice pos;
+    VecSlice force;
+    VecSlice epsilon;
+    TensorSlice orientation;
+
+    VecSlice vel_pos;
+    VecSlice vel;
+    VecSlice vel_rel;
+
+    RealSlice chord;
 };
 
 /** Basic information that is common to all actuator types.

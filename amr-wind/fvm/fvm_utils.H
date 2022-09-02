@@ -21,7 +21,7 @@ inline void apply(const FvmOp& fvmop, const FType& fld)
         const auto& domain = fld.repo().mesh().Geom(lev).Domain();
         const auto& mfab = fld(lev);
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
         for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid();

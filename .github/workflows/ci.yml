@@ -261,7 +261,7 @@ jobs:
           -DAMR_WIND_ENABLE_TESTS:BOOL=ON \
           -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
           -DAMR_WIND_ENABLE_MASA:BOOL=OFF \
-          -DAMR_WIND_ENABLE_ALL_WARNINGS:BOOL=OFF \
+          -DAMR_WIND_ENABLE_ALL_WARNINGS:BOOL=ON \
           -DAMR_WIND_ENABLE_CLANG_TIDY:BOOL=ON \
           ${{github.workspace}}
       - name: Check
@@ -303,7 +303,7 @@ jobs:
             source ${SPACK_MANAGER}/start.sh && \
             ln -s ${GITHUB_WORKSPACE} amr-wind && \
             source ${SPACK_MANAGER}/start.sh && \
-            quick-develop -s amr-wind+hdf5+hypre+masa+netcdf~shared@main && \
+            quick-develop -s amr-wind+ascent+hdf5+hypre+masa+netcdf~shared@main && \
             spack install && \
             spack cd -b amr-wind && \
             spack build-env amr-wind ctest -j $(nproc) -L unit --output-on-failure \

@@ -341,9 +341,8 @@ void Field::set_default_fillpatch_bc(
     }
 
     if (!m_info->m_fillpatch_op) {
-        const int probtype = 0;
         register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
-            repo().mesh(), time, probtype);
+            repo().mesh(), time);
     }
 }
 

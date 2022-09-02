@@ -126,7 +126,7 @@ void DiffSolverIface<LinOp>::linsys_solve_impl()
     for (int lev = 0; lev < nlevels; ++lev) {
         auto& rhs = (*rhs_ptr)(lev);
 
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
         for (amrex::MFIter mfi(rhs, amrex::TilingIfNotGPU()); mfi.isValid();

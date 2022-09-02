@@ -42,10 +42,9 @@ struct FieldRegOp
      *
      *  \return The collection of fields for this PDE
      */
-    PDEFields operator()(const SimTime& time, const int probtype)
+    PDEFields operator()(const SimTime& time)
     {
-        auto fields =
-            create_fields_instance<PDE, Scheme>(time, sim.repo(), probtype);
+        auto fields = create_fields_instance<PDE, Scheme>(time, sim.repo());
 
         // Register solution variable for this PDE as output/restart variable
         sim.io_manager().register_io_var(fields.field.name());
@@ -100,7 +99,7 @@ struct SrcTermOpBase
         const int nlevels = fields.repo.num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {
             auto& src_term = fields.src_term(lev);
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (amrex::MFIter mfi(src_term, amrex::TilingIfNotGPU());
@@ -132,7 +131,7 @@ struct SrcTermOpBase
         const int nlevels = this->fields.repo.num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {
             auto& src_term = this->fields.src_term(lev);
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (amrex::MFIter mfi(src_term, amrex::TilingIfNotGPU());
