@@ -62,7 +62,7 @@ void ABLMesoForcingTemp::mean_temperature_init(const ABLMesoscaleInput& ncfile)
         ncfile.meso_heights().end(), m_meso_ht.begin());
 }
 void ABLMesoForcingTemp::mean_temperature_init(
-    const FieldPlaneAveraging& tavg, const ABLMesoscaleInput& ncfile)
+    const FieldPlaneAveragingFine& tavg, const ABLMesoscaleInput& ncfile)
 {
     m_axis = tavg.axis();
     // The implementation depends the assumption that the ABL statistics class
@@ -151,7 +151,7 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
 }
 
 amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
-    const FieldPlaneAveraging& tavg, std::unique_ptr<ABLMesoscaleInput>& ncfile)
+    const FieldPlaneAveragingFine& tavg, std::unique_ptr<ABLMesoscaleInput>& ncfile)
 {
 
     amrex::Real currtime;
