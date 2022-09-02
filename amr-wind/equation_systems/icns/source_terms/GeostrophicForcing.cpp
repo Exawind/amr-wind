@@ -50,21 +50,16 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
 
     {
         amrex::ParmParse pp("ABL");
-        pp.query("three_ComponentForcing", m_three_dimensional_forcing)
-        {
-            amrex::Print() << "cannot find three_componentForcing, "
-                           << "so the default will be used\n";
-        };
+        pp.query("three_ComponentForcing", m_three_dimensional_forcing){};
     }
 
-    const auto corfac = coriolis_factor;
     amrex::Real S = (m_three_dimensional_forcing == true) ? 1.0 : 0.0;
 
     m_g_forcing = {
-        -corfac * m_target_vel[1] * sinphi +
-            corfac * m_target_vel[3] * cosphi * S,
-        +corfac * m_target_vel[0] * sinphi,
-        -corfac * m_target_vel[0] * cosphi * S};
+        -coriolis_factor * m_target_vel[1] * sinphi +
+            coriolis_factor * m_target_vel[3] * cosphi * S,
+        +coriolis_factor * m_target_vel[0] * sinphi,
+        -coriolis_factor * m_target_vel[0] * cosphi * S};
 }
 
 GeostrophicForcing::~GeostrophicForcing() = default;
