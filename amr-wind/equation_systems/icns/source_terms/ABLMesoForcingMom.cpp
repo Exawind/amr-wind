@@ -30,7 +30,6 @@ closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
 ABLMesoForcingMom::ABLMesoForcingMom(const CFDSim& sim)
     : ABLMesoscaleForcing(sim, identifier())
 {
-
     const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
     abl.register_meso_mom_forcing(this);
     abl.abl_statistics().register_meso_mom_forcing(this);
@@ -53,23 +52,22 @@ ABLMesoForcingMom::~ABLMesoForcingMom() = default;
 void ABLMesoForcingMom::mean_velocity_init(const ABLMesoscaleInput& ncfile)
 {
 
+    m_error_meso_avg_U.resize(ncfile.nheights());
+    m_error_meso_avg_V.resize(ncfile.nheights());
+    m_meso_u_vals.resize(ncfile.nheights());
+    m_meso_v_vals.resize(ncfile.nheights());
     m_meso_ht.resize(ncfile.nheights());
+    m_err_U.resize(ncfile.nheights());
+    m_err_V.resize(ncfile.nheights());
 
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, ncfile.meso_heights().begin(),
         ncfile.meso_heights().end(), m_meso_ht.begin());
-
-    m_error_meso_avg_U.resize(ncfile.nheights());
-    m_error_meso_avg_V.resize(ncfile.nheights());
-
-    m_err_U.resize(ncfile.nheights());
-    m_err_V.resize(ncfile.nheights());
 }
 
 void ABLMesoForcingMom::mean_velocity_init(
     const VelPlaneAveragingFine& vavg, const ABLMesoscaleInput& ncfile)
 {
-
     m_axis = vavg.axis();
     // The implementation depends the assumption that the ABL statistics class
     // computes statistics at the cell-centeres only on level 0. If this

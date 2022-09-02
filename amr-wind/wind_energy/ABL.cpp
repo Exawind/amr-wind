@@ -176,7 +176,7 @@ void ABL::pre_advance_work()
                 m_abl_meso_temp_forcing->mean_temperature_heights(m_meso_file);
         } else {
             interpTflux = m_abl_meso_temp_forcing->mean_temperature_heights(
-                m_stats->theta_profile(), m_meso_file);
+                m_stats->theta_profile_fine(), m_meso_file);
         }
         amrex::Print() << "Current surface temperature flux: " << interpTflux
                        << " K-m/s" << std::endl;

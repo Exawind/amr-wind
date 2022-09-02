@@ -113,7 +113,8 @@ private:
     //! Perturb temperature field with random fluctuations
     bool m_perturb_theta{false};
 
-    bool m_profile_height{false};
+    //! Profiles of u, v, and theta are read in from a NetCDF File
+    bool m_init_uvtheta_profile{false};
 };
 
 } // namespace amr_wind
