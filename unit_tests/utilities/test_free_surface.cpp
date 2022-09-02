@@ -453,7 +453,7 @@ TEST_F(FreeSurfaceTest, point)
     auto& vof = repo.declare_field("vof", 1, 2);
     setup_grid0D(1);
 
-    amrex::Real liwl = init_vof(vof, water_level0);
+    init_vof(vof, water_level0);
     auto& m_sim = sim();
     FreeSurfaceImpl tool(m_sim, "freesurface");
     tool.initialize();
@@ -468,7 +468,7 @@ TEST_F(FreeSurfaceTest, point)
     npos = tool.check_pos(1, "=", pt_coord[1]);
     ASSERT_EQ(npos, 1);
     // Check output value
-    int nout = tool.check_output("~", liwl);
+    int nout = tool.check_output("~", water_level0);
     ASSERT_EQ(nout, 1);
 }
 
@@ -479,7 +479,7 @@ TEST_F(FreeSurfaceTest, plane)
     auto& vof = repo.declare_field("vof", 1, 2);
     setup_grid2D(1);
 
-    amrex::Real liwl = init_vof(vof, water_level1);
+    init_vof(vof, water_level1);
     auto& m_sim = sim();
     FreeSurfaceImpl tool(m_sim, "freesurface");
     tool.initialize();
@@ -489,7 +489,7 @@ TEST_F(FreeSurfaceTest, plane)
     auto ngp = tool.num_gridpoints();
     EXPECT_EQ(ngp, npts * npts);
     // Check output value
-    int nout = tool.check_output("~", liwl);
+    int nout = tool.check_output("~", water_level1);
     ASSERT_EQ(nout, npts * npts);
 }
 
@@ -506,6 +506,7 @@ TEST_F(FreeSurfaceTest, multivalued)
     amrex::Real wl2 = probhi[2] / 5;
 
     init_vof_multival(vof, wl0, wl1, wl2);
+    std::cout << wl0 << " " << wl1 << " " << wl2 << " " << std::endl;
     auto& m_sim = sim();
     FreeSurfaceImpl tool(m_sim, "freesurface");
     tool.initialize();
@@ -516,11 +517,11 @@ TEST_F(FreeSurfaceTest, multivalued)
     EXPECT_EQ(heights.size(), 3 * npts * npts);
 
     // Check output values
-    int nout = tool.check_output(0, "~", wl0);
+    int nout = tool.check_output(0, "~", probhi[2] * 2 / 3);
     ASSERT_EQ(nout, npts * npts);
-    nout = tool.check_output(1, "~", wl1);
+    nout = tool.check_output(1, "~", probhi[2] / 2);
     ASSERT_EQ(nout, npts * npts);
-    nout = tool.check_output(2, "~", wl2);
+    nout = tool.check_output(2, "~", probhi[2] / 5);
     ASSERT_EQ(nout, npts * npts);
 }
 
@@ -543,16 +544,15 @@ TEST_F(FreeSurfaceTest, sloped)
     amrex::Vector<amrex::Real> out_vec;
     out_vec.resize(npts * npts, 0.0);
     // Step in x, then y
-    // Most calcuations done by hand, not shown
-    out_vec[0] = water_level2 + 2.0 * (0.5 - 0.375) / (0.375 - 1.0);
-    out_vec[1] = water_level2 + 2.0 * (0.5 - 0.4375) / (0.4375 - 1.0);
-    out_vec[2] = water_level2;
-    out_vec[3] = water_level2 + 2.0 * (0.5 - 0.4375) / (0.4375 - 1.0);
-    out_vec[4] = water_level2;
-    out_vec[5] = water_level2 + 2.0 * (0.5 - 0.5625) / (0.0 - 0.5625);
-    out_vec[6] = water_level2;
-    out_vec[7] = water_level2 + 2.0 * (0.5 - 0.5625) / (0.0 - 0.5625);
-    out_vec[8] = water_level2 + 2.0 * (0.5 - 0.625) / (0.0 - 0.625);
+    out_vec[0] = water_level2 + slope * (-1.0 - 1.0);
+    out_vec[1] = water_level2 + slope * (+0.0 - 1.0);
+    out_vec[2] = water_level2 + slope * (+1.0 - 1.0);
+    out_vec[3] = water_level2 + slope * (-1.0 + 0.0);
+    out_vec[4] = water_level2 + slope * (+0.0 + 0.0);
+    out_vec[5] = water_level2 + slope * (+1.0 + 0.0);
+    out_vec[6] = water_level2 + slope * (-1.0 + 1.0);
+    out_vec[7] = water_level2 + slope * (+0.0 + 1.0);
+    out_vec[8] = water_level2 + slope * (+1.0 + 1.0);
     // Check output value
     int nout = tool.check_output_vec("~", out_vec);
     ASSERT_EQ(nout, npts * npts);

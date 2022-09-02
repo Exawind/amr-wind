@@ -5,6 +5,7 @@
 #include "amr-wind/wind_energy/actuator/turbine/turbine_utils.H"
 #include "amr-wind/wind_energy/actuator/actuator_ops.H"
 #include "amr-wind/wind_energy/actuator/actuator_utils.H"
+#include "amr-wind/wind_energy/actuator/FLLCOp.H"
 
 namespace amr_wind {
 namespace actuator {
@@ -154,10 +155,15 @@ struct InitDataOp<TurbineFast, SrcTrait>
 
         {
             tdata.num_blades = sz_info[0];
+            // back calculate what the value per blade for number of points in
+            // the openfast data structure
+            tdata.num_vel_pts_blade = sz_info[2] / tdata.num_blades - 1;
             data.grid().resize(sz_info[1], sz_info[2]);
             tdata.chord.resize(sz_info[1]);
             tdata.num_pts_tower = sz_info[3];
         }
+
+        tdata.vel_rel.assign(sz_info[1], vs::Vector::zero());
 
         if (info.is_root_proc) {
             // copy chord data
@@ -182,11 +188,13 @@ struct InitDataOp<TurbineFast, SrcTrait>
         auto& tdata = data.meta();
         const int num_blades = tdata.num_blades;
         const int num_pts_blade = tdata.num_pts_blade;
+        const int num_vel_pts_blade = tdata.num_vel_pts_blade;
 
         for (int ib = 0; ib < num_blades; ++ib) {
             ComponentView cv;
 
             const auto start = ib * num_pts_blade + 1;
+            const auto start_vel = ib * num_vel_pts_blade;
             // clang-format off
             cv.pos = ::amr_wind::utils::slice(
                 grid.pos, start, num_pts_blade);
@@ -198,6 +206,12 @@ struct InitDataOp<TurbineFast, SrcTrait>
                 grid.orientation, start, num_pts_blade);
             cv.chord = ::amr_wind::utils::slice(
                 tdata.chord, start, num_pts_blade);
+            cv.vel_rel = ::amr_wind::utils::slice(
+                tdata.vel_rel, start, num_pts_blade);
+            cv.vel= ::amr_wind::utils::slice(
+                grid.vel, start_vel, num_vel_pts_blade);
+            cv.vel_pos= ::amr_wind::utils::slice(
+                grid.vel_pos, start_vel, num_vel_pts_blade);
             // clang-format on
 
             tdata.blades.emplace_back(std::move(cv));
@@ -344,15 +358,35 @@ struct UpdateVelOp<TurbineFast, SrcTrait>
         // safeguard
         if (!data.info().is_root_proc) return;
         BL_PROFILE("amr-wind::actuator::UpdateVelOp<TurbineFast>");
+        auto& tdata = data.meta();
 
-        auto& from_cfd = data.meta().fast_data.from_cfd;
+        auto& from_cfd = tdata.fast_data.from_cfd;
         auto& uvel = from_cfd.u;
         auto& vvel = from_cfd.v;
         auto& wvel = from_cfd.w;
         const auto& vel = data.grid().vel;
-        const int nvpts = vel.size();
+        const int nvpts = tdata.vel_rel.size();
 
-        for (int i = 0; i < nvpts; ++i) {
+        if (!tdata.fllc.empty()) {
+            // Compute the relative velocity needed for the FLLC
+            for (int i = 0; i < nvpts; ++i) {
+                tdata.vel_rel[i][0] =
+                    uvel[i] - static_cast<amrex::Real>(
+                                  tdata.fast_data.to_cfd.xdotForce[i]);
+                tdata.vel_rel[i][1] =
+                    vvel[i] - static_cast<amrex::Real>(
+                                  tdata.fast_data.to_cfd.ydotForce[i]);
+                tdata.vel_rel[i][2] =
+                    wvel[i] - static_cast<amrex::Real>(
+                                  tdata.fast_data.to_cfd.zdotForce[i]);
+            }
+            // Loop through each blade and apply the FLLC
+            for (int i = 0; i < tdata.num_blades; ++i) {
+                FLLCOp()(tdata.blades[i], tdata.fllc[i]);
+            }
+        }
+
+        for (int i = 0; i < from_cfd.u_Len; ++i) {
             uvel[i] = static_cast<float>(vel[i].x());
             vvel[i] = static_cast<float>(vel[i].y());
             wvel[i] = static_cast<float>(vel[i].z());
@@ -371,6 +405,16 @@ struct ComputeForceOp<TurbineFast, SrcTrait>
         // Broadcast data to all the processes that contain patches influenced
         // by this turbine
         scatter_data(data);
+
+        auto& tdata = data.meta();
+        if (!tdata.fllc.empty()) {
+            for (int i = 0; i < tdata.num_blades; ++i) {
+                if (!(tdata.fllc[i].initialized)) {
+                    FLLCInit(
+                        tdata.fllc[i], tdata.blades[i], tdata.eps_chord[0]);
+                }
+            }
+        }
     }
 
     void fast_step(typename TurbineFast::DataType& data)

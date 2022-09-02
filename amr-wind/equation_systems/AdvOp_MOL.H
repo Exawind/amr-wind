@@ -48,7 +48,7 @@ struct AdvectionOp<
 
         // cppcheck-suppress constVariable
         auto& conv_term = fields.conv_term.state(fstate);
-        auto& dof_field = fields.field.state(fstate);
+        const auto& dof_field = fields.field.state(fstate);
         const auto& den = density.state(fstate);
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {

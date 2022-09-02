@@ -3,6 +3,7 @@
 #include <AMReX_MultiFabUtil.H>
 #include <utility>
 #include "amr-wind/utilities/ncutils/nc_interface.H"
+#include "amr-wind/equation_systems/vof/volume_fractions.H"
 
 #include "AMReX_ParmParse.H"
 
@@ -147,9 +148,10 @@ void FreeSurface::post_advance_work()
             const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> plo =
                 geom.ProbLoArray();
 
-            const int captured_m_coorddir = m_coorddir;
-            const int captured_m_gc1 = m_gc1;
-            const int captured_m_gc2 = m_gc2;
+            // c = captured
+            const int dir = m_coorddir;
+            const int gc1 = m_gc1;
+            const int gc2 = m_gc2;
 
             // Loop points in 2D grid
             for (int n = 0; n < m_npts; ++n) {
@@ -173,25 +175,13 @@ void FreeSurface::post_advance_work()
                                 bx,
                                 [=, &height_fab](int i, int j, int k) noexcept {
                                     // Initialize height measurement
-                                    amrex::Real ht = plo[captured_m_coorddir];
+                                    amrex::Real ht = plo[dir];
                                     // Cell location
                                     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>
                                         xm;
                                     xm[0] = plo[0] + (i + 0.5) * dx[0];
                                     xm[1] = plo[1] + (j + 0.5) * dx[1];
                                     xm[2] = plo[2] + (k + 0.5) * dx[2];
-                                    int ip = static_cast<int>(
-                                        captured_m_coorddir == 0);
-                                    const int im = i - ip;
-                                    ip = i + ip;
-                                    int jp = static_cast<int>(
-                                        captured_m_coorddir == 1);
-                                    const int jm = j - jp;
-                                    jp = j + jp;
-                                    int kp = static_cast<int>(
-                                        captured_m_coorddir == 2);
-                                    const int km = k - kp;
-                                    kp = k + kp;
                                     // (1) Check that cell height is below
                                     // previous instance. (2) Check if cell
                                     // contains 2D grid point: complicated
@@ -201,227 +191,137 @@ void FreeSurface::post_advance_work()
                                     // multiphase, then check if cell might have
                                     // interface at top or bottom
                                     if ((dout_ptr[n] >
-                                         xm[captured_m_coorddir] +
-                                             0.5 * dx[captured_m_coorddir]) &&
-                                        (((plo[captured_m_gc1] == loc[0] &&
-                                           xm[captured_m_gc1] - loc[0] ==
-                                               0.5 * dx[captured_m_gc1]) ||
-                                          (xm[captured_m_gc1] - loc[0] <
-                                               0.5 * dx[captured_m_gc1] &&
-                                           loc[0] - xm[captured_m_gc1] <=
-                                               0.5 * dx[captured_m_gc1])) &&
-                                         ((plo[captured_m_gc2] == loc[1] &&
-                                           xm[captured_m_gc2] - loc[1] ==
-                                               0.5 * dx[captured_m_gc2]) ||
-                                          (xm[captured_m_gc2] - loc[1] <
-                                               0.5 * dx[captured_m_gc2] &&
-                                           loc[1] - xm[captured_m_gc2] <=
-                                               0.5 * dx[captured_m_gc2]))) &&
-                                        ((vof_arr(i, j, k) < (1.0 - 1e-12) &&
-                                          vof_arr(i, j, k) > 1e-12) ||
-                                         (vof_arr(i, j, k) < 1e-12 &&
-                                          (vof_arr(ip, jp, kp) >
-                                               (1.0 - 1e-12) ||
-                                           vof_arr(im, jm, km) >
-                                               (1.0 - 1e-12))))) {
-                                        // Interpolate in x and y for the
-                                        // current cell and the ones above and
-                                        // below
-                                        amrex::Real wx_hi = 0.0;
-                                        amrex::Real wy_hi = 0.0;
-                                        amrex::Real wz_hi = 0.0;
-                                        int iup = i;
-                                        int idn = i;
-                                        int jup = j;
-                                        int jdn = j;
-                                        int kup = k;
-                                        int kdn = k;
+                                         xm[dir] + 0.5 * dx[dir]) &&
+                                        (((plo[gc1] == loc[0] &&
+                                           xm[gc1] - loc[0] == 0.5 * dx[gc1]) ||
+                                          (xm[gc1] - loc[0] < 0.5 * dx[gc1] &&
+                                           loc[0] - xm[gc1] <=
+                                               0.5 * dx[gc1])) &&
+                                         ((plo[gc2] == loc[1] &&
+                                           xm[gc2] - loc[1] == 0.5 * dx[gc2]) ||
+                                          (xm[gc2] - loc[1] < 0.5 * dx[gc2] &&
+                                           loc[1] - xm[gc2] <=
+                                               0.5 * dx[gc2])))) {
 
-                                        // Determine which cells to use for grid
-                                        if (captured_m_coorddir != 0) {
-                                            // If x is a grid coord, it is
-                                            // always first (e.g., xy or xz)
-                                            int li = 0;
-                                            if (loc[li] < xm[0]) {
-                                                iup = i;
-                                                idn = i - 1;
-                                                wx_hi = (loc[li] -
-                                                         (xm[0] - dx[0])) *
-                                                        dxi[0];
-                                            } else {
-                                                iup = i + 1;
-                                                idn = i;
-                                                wx_hi =
-                                                    (loc[li] - xm[0]) * dxi[0];
-                                            }
+                                        int ip = i;
+                                        int jp = j;
+                                        int kp = k;
+                                        int im = i;
+                                        int jm = j;
+                                        int km = k;
+                                        amrex::Real mx = 0.0;
+                                        amrex::Real my = 0.0;
+                                        amrex::Real mz = 0.0;
+                                        amrex::Real alpha = 1.0;
+                                        // Get modified indices for checking up
+                                        // and down and orient normal in search
+                                        // direction
+                                        switch (dir) {
+                                        case 0:
+                                            ip += 1;
+                                            im -= 1;
+                                            mx = 1.0;
+                                            break;
+                                        case 1:
+                                            jp += 1;
+                                            jm -= 1;
+                                            my = 1.0;
+                                            break;
+                                        case 2:
+                                            kp += 1;
+                                            km -= 1;
+                                            mz = 1.0;
+                                            break;
                                         }
-                                        if (captured_m_coorddir != 1) {
-                                            // y can be first or second (xy, yz)
-                                            int li =
-                                                (captured_m_gc1 == 1 ? 0 : 1);
-                                            if (loc[li] < xm[1]) {
-                                                jup = j;
-                                                jdn = j - 1;
-                                                wy_hi = (loc[li] -
-                                                         (xm[1] - dx[1])) *
-                                                        dxi[1];
-                                            } else {
-                                                jup = j + 1;
-                                                jdn = j;
-                                                wy_hi =
-                                                    (loc[li] - xm[1]) * dxi[1];
+                                        // If cell is full of single phase
+                                        // (accounts for when interface is at
+                                        // intersection of cells but lower one
+                                        // is not single-phase)
+                                        bool calc_flag = false;
+                                        if ((ni % 2 == 0 &&
+                                             vof_arr(i, j, k) >= 1.0 - 1e-12) ||
+                                            (ni % 2 == 1 &&
+                                             vof_arr(i, j, k) <= 1e-12)) {
+                                            // put bdy at top
+                                            alpha = 1.0;
+                                            if (ni % 2 == 1) {
+                                                mx *= -1.0;
+                                                my *= -1.0;
+                                                mz *= -1.0;
+                                                alpha *= -1.0;
                                             }
+                                            calc_flag = true;
                                         }
-                                        if (captured_m_coorddir != 2) {
-                                            // If z is a grid coord, it is
-                                            // always second (e.g., yz or xz)
-                                            int li = 1;
-                                            if (loc[li] < xm[2]) {
-                                                kup = k;
-                                                kdn = k - 1;
-                                                wz_hi = (loc[li] -
-                                                         (xm[2] - dx[2])) *
-                                                        dxi[2];
-                                            } else {
-                                                kup = k + 1;
-                                                kdn = k;
-                                                wz_hi =
-                                                    (loc[li] - xm[2]) * dxi[2];
-                                            }
+                                        // Multiphase cell case
+                                        if ((vof_arr(i, j, k) < (1.0 - 1e-12) &&
+                                             vof_arr(i, j, k) > 1e-12)) {
+                                            // Get interface reconstruction
+                                            multiphase::fit_plane(
+                                                i, j, k, vof_arr, mx, my, mz,
+                                                alpha);
+                                            calc_flag = true;
                                         }
-                                        const amrex::Real wx_lo = 1.0 - wx_hi;
-                                        const amrex::Real wy_lo = 1.0 - wy_hi;
-                                        const amrex::Real wz_lo = 1.0 - wz_hi;
 
-                                        amrex::Real vof_above = 0.0;
-                                        amrex::Real vof_below = 0.0;
-                                        amrex::Real vof_here = 0.0;
-
-                                        if (captured_m_coorddir == 0) {
-                                            vof_above =
-                                                wz_lo * wy_lo *
-                                                    vof_arr(i + 1, jdn, kdn) +
-                                                wz_lo * wy_hi *
-                                                    vof_arr(i + 1, jup, kdn) +
-                                                wz_hi * wy_lo *
-                                                    vof_arr(i + 1, jdn, kup) +
-                                                wz_hi * wy_hi *
-                                                    vof_arr(i + 1, jup, kup);
-                                            vof_here =
-                                                wz_lo * wy_lo *
-                                                    vof_arr(i, jdn, kdn) +
-                                                wz_lo * wy_hi *
-                                                    vof_arr(i, jup, kdn) +
-                                                wz_hi * wy_lo *
-                                                    vof_arr(i, jdn, kup) +
-                                                wz_hi * wy_hi *
-                                                    vof_arr(i, jup, kup);
-                                            vof_below =
-                                                wz_lo * wy_lo *
-                                                    vof_arr(i - 1, jdn, kdn) +
-                                                wz_lo * wy_hi *
-                                                    vof_arr(i - 1, jup, kdn) +
-                                                wz_hi * wy_lo *
-                                                    vof_arr(i - 1, jdn, kup) +
-                                                wz_hi * wy_hi *
-                                                    vof_arr(i - 1, jup, kup);
-                                        }
-                                        if (captured_m_coorddir == 1) {
-                                            vof_above =
-                                                wx_lo * wz_lo *
-                                                    vof_arr(idn, j + 1, kdn) +
-                                                wx_lo * wz_hi *
-                                                    vof_arr(idn, j + 1, kup) +
-                                                wx_hi * wz_lo *
-                                                    vof_arr(iup, j + 1, kdn) +
-                                                wx_hi * wz_hi *
-                                                    vof_arr(iup, j + 1, kup);
-                                            vof_here =
-                                                wx_lo * wz_lo *
-                                                    vof_arr(idn, j, kdn) +
-                                                wx_lo * wz_hi *
-                                                    vof_arr(idn, j, kup) +
-                                                wx_hi * wz_lo *
-                                                    vof_arr(iup, j, kdn) +
-                                                wx_hi * wz_hi *
-                                                    vof_arr(iup, j, kup);
-                                            vof_below =
-                                                wx_lo * wz_lo *
-                                                    vof_arr(idn, j - 1, kdn) +
-                                                wx_lo * wz_hi *
-                                                    vof_arr(idn, j - 1, kup) +
-                                                wx_hi * wz_lo *
-                                                    vof_arr(iup, j - 1, kdn) +
-                                                wx_hi * wz_hi *
-                                                    vof_arr(iup, j - 1, kup);
-                                        }
-                                        if (captured_m_coorddir == 2) {
-                                            vof_above =
-                                                wx_lo * wy_lo *
-                                                    vof_arr(idn, jdn, k + 1) +
-                                                wx_lo * wy_hi *
-                                                    vof_arr(idn, jup, k + 1) +
-                                                wx_hi * wy_lo *
-                                                    vof_arr(iup, jdn, k + 1) +
-                                                wx_hi * wy_hi *
-                                                    vof_arr(iup, jup, k + 1);
-                                            vof_here =
-                                                wx_lo * wy_lo *
-                                                    vof_arr(idn, jdn, k) +
-                                                wx_lo * wy_hi *
-                                                    vof_arr(idn, jup, k) +
-                                                wx_hi * wy_lo *
-                                                    vof_arr(iup, jdn, k) +
-                                                wx_hi * wy_hi *
-                                                    vof_arr(iup, jup, k);
-                                            vof_below =
-                                                wx_lo * wy_lo *
-                                                    vof_arr(idn, jdn, k - 1) +
-                                                wx_lo * wy_hi *
-                                                    vof_arr(idn, jup, k - 1) +
-                                                wx_hi * wy_lo *
-                                                    vof_arr(iup, jdn, k - 1) +
-                                                wx_hi * wy_hi *
-                                                    vof_arr(iup, jup, k - 1);
-                                        }
-                                        // Determine which cell to
-                                        // interpolate with
-                                        const bool above =
-                                            (vof_above - 0.5) *
-                                                (vof_here - 0.5) <=
-                                            0.0;
-                                        const bool below =
-                                            (vof_below - 0.5) *
-                                                (vof_here - 0.5) <=
-                                            0.0;
-                                        if (above) {
-                                            // Interpolate positive
-                                            // direction
-                                            ht = xm[captured_m_coorddir] +
-                                                 (dx[captured_m_coorddir]) /
-                                                     (vof_above - vof_here) *
-                                                     (0.5 - vof_here);
-                                        } else {
-                                            if (below) {
-                                                // Interpolate negative
-                                                // direction
-                                                ht =
-                                                    xm[captured_m_coorddir] -
-                                                    (dx[captured_m_coorddir]) /
-                                                        (vof_below - vof_here) *
-                                                        (0.5 - vof_here);
+                                        if (calc_flag) {
+                                            // Reassign slope coefficients
+                                            amrex::Real mdr = 0.0;
+                                            amrex::Real mg1 = 0.0;
+                                            amrex::Real mg2 = 0.0;
+                                            switch (dir) {
+                                            case 0:
+                                                mdr = mx;
+                                                mg1 = my;
+                                                mg2 = mz;
+                                                break;
+                                            case 1:
+                                                mdr = my;
+                                                mg1 = mx;
+                                                mg2 = mz;
+                                                break;
+                                            case 2:
+                                                mdr = mz;
+                                                mg1 = mx;
+                                                mg2 = my;
+                                                break;
                                             }
-                                            // If none satisfy requirement, then
-                                            // the isosurface vof = 0.5 cannot
-                                            // be detected in the z-direction
+                                            // Get height of interface
+                                            if (mdr == 0) {
+                                                // If slope is undefined in z,
+                                                // use middle of cell
+                                                ht = xm[dir];
+                                            } else {
+                                                // Intersect 2D point with plane
+                                                ht = (xm[dir] - 0.5 * dx[dir]) +
+                                                     (alpha -
+                                                      mg1 * dxi[gc1] *
+                                                          (loc[0] -
+                                                           (xm[gc1] -
+                                                            0.5 * dx[gc1])) -
+                                                      mg2 * dxi[gc2] *
+                                                          (loc[1] -
+                                                           (xm[gc2] -
+                                                            0.5 * dx[gc2]))) /
+                                                         (mdr * dxi[dir]);
+                                            }
+                                            // If interface is below lower
+                                            // bound, continue to look
+                                            if (ht < xm[dir] - 0.5 * dx[dir]) {
+                                                ht = plo[dir];
+                                            }
+                                            // If interface is above upper
+                                            // bound, limit it
+                                            if (ht >
+                                                xm[dir] + 0.5 * dx[dir] *
+                                                              (1.0 + 1e-8)) {
+                                                ht = xm[dir] + 0.5 * dx[dir];
+                                            }
                                         }
                                     }
                                     // Offset by removing lo and contribute to
                                     // whole
                                     height_fab = amrex::max(
                                         height_fab,
-                                        mask_arr(i, j, k) *
-                                            (ht - plo[captured_m_coorddir]));
+                                        mask_arr(i, j, k) * (ht - plo[dir]));
                                 });
                             return height_fab;
                         }));
