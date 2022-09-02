@@ -79,7 +79,6 @@ void ABLMesoForcingTemp::mean_temperature_init(
     m_theta_ht.resize(tavg.line_centroids().size());
     m_theta_vals.resize(tavg.ncell_line());
 
-
     m_err_Theta.resize(tavg.ncell_line());
 
     m_error_meso_avg_theta.resize(tavg.ncell_line());
@@ -152,7 +151,8 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
 }
 
 amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
-    const FieldPlaneAveragingFine& tavg, std::unique_ptr<ABLMesoscaleInput>& ncfile)
+    const FieldPlaneAveragingFine& tavg,
+    std::unique_ptr<ABLMesoscaleInput>& ncfile)
 {
 
     amrex::Real currtime;

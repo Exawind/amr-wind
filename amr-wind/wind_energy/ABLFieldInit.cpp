@@ -229,10 +229,8 @@ void ABLFieldInit::operator()(
                 const amrex::Real zl = z / ref_height;
                 const amrex::Real damp = std::exp(-0.5 * zl * zl);
 
-                velocity(i, j, k, 0) +=
-                    ufac * damp * z * std::cos(aval * yl);
-                velocity(i, j, k, 1) +=
-                    vfac * damp * z * std::cos(bval * xl);
+                velocity(i, j, k, 0) += ufac * damp * z * std::cos(aval * yl);
+                velocity(i, j, k, 1) += vfac * damp * z * std::cos(bval * xl);
             });
     }
 }

@@ -161,7 +161,8 @@ void ABLMesoForcingMom::mean_velocity_heights(
 }
 
 void ABLMesoForcingMom::mean_velocity_heights(
-    const VelPlaneAveragingFine& vavg, std::unique_ptr<ABLMesoscaleInput>& ncfile)
+    const VelPlaneAveragingFine& vavg,
+    std::unique_ptr<ABLMesoscaleInput>& ncfile)
 {
     if (m_forcing_scheme.empty()) {
         return;
