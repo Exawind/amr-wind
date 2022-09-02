@@ -121,6 +121,9 @@ private:
 
     //! Frequency of data sampling and output
     int m_out_freq{100};
+
+    //! Max number of sample points found in a single cell
+    int m_ncomp{1};
 };
 
 } // namespace free_surface
