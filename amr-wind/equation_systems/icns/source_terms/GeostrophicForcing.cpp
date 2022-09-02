@@ -50,7 +50,7 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
 
     {
         amrex::ParmParse pp("ABL");
-        pp.query("three_ComponentForcing", m_three_dimensional_forcing){};
+        pp.query("three_ComponentForcing", m_three_dimensional_forcing);
     }
 
     amrex::Real S = (m_three_dimensional_forcing == true) ? 1.0 : 0.0;
