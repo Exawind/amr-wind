@@ -593,9 +593,7 @@ void FreeSurface::write_ascii()
         if (!File.good()) {
             amrex::FileOpenFailed(fname);
         }
-
-        // WRITE TIME
-
+        
         std::string str1 = "x";
         std::string str2 = "y";
         switch (m_coorddir) {
@@ -616,6 +614,7 @@ void FreeSurface::write_ascii()
         }
 
         // Metadata
+        File << m_sim.time().new_time() << '\n';
         File << m_npts << '\n';
         File << str1 << ' ' << m_npts_dir[0] << ' ' << str2 << ' '
              << m_npts_dir[1] << '\n';
