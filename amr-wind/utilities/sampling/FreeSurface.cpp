@@ -40,18 +40,18 @@ void FreeSurface::initialize()
 
         switch (m_coorddir) {
         case 0: {
-            m_gc1 = 1;
-            m_gc2 = 2;
+            m_gc0 = 1;
+            m_gc1 = 2;
             break;
         }
         case 1: {
-            m_gc1 = 0;
-            m_gc2 = 2;
+            m_gc0 = 0;
+            m_gc1 = 2;
             break;
         }
         case 2: {
-            m_gc1 = 0;
-            m_gc2 = 1;
+            m_gc0 = 0;
+            m_gc1 = 1;
             break;
         }
         default: {
@@ -71,8 +71,8 @@ void FreeSurface::initialize()
     m_out.resize(m_npts * m_ninst);
 
     // Get size of sample grid spacing
-    amrex::Real dxs1 = (m_end[m_gc1] - m_start[m_gc1]) / amrex::max(m_npts_dir[0] - 1, 1);
-    amrex::Real dxs2 = (m_end[m_gc2] - m_start[m_gc2]) / amrex::max(m_npts_dir[1] - 1, 1);
+    amrex::Real dxs0 = (m_end[m_gc0] - m_start[m_gc0]) / amrex::max(m_npts_dir[0] - 1, 1);
+    amrex::Real dxs1 = (m_end[m_gc1] - m_start[m_gc1]) / amrex::max(m_npts_dir[1] - 1, 1);
 
     // Store locations
     int idx = 0;
@@ -83,9 +83,9 @@ void FreeSurface::initialize()
                 m_out[idx * m_ninst + ni] = m_start[m_coorddir];
             }
             // Grid direction 1
-            m_locs[idx][0] = m_start[m_gc1] + dxs1 * i;
+            m_locs[idx][0] = m_start[m_gc0] + dxs0 * i;
             // Grid direction 2
-            m_locs[idx][1] = m_start[m_gc2] + dxs2 * j;
+            m_locs[idx][1] = m_start[m_gc1] + dxs1 * j;
 
             ++idx;
         }
@@ -99,20 +99,14 @@ void FreeSurface::initialize()
             locs[2 * n + d] = m_locs[n][d];
         }
     }
-    // Copy locations to device
-    amrex::Gpu::DeviceVector<amrex::Real> dloc(2 * m_npts);
-    auto* dloc_ptr = dloc.data();
-    amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, &locs[0], &locs[2 * m_npts - 1] + 1,
-        dloc.begin());
 
     // Capture variables for device
+    const amrex::Real s_gc0 = m_start[m_gc0];
     const amrex::Real s_gc1 = m_start[m_gc1];
-    const amrex::Real s_gc2 = m_start[m_gc2];
-    const int npts1 = m_npts_dir[0];
-    const int npts2 = m_npts_dir[1];
+    const int ntps0 = m_npts_dir[0];
+    const int ntps1 = m_npts_dir[1];
+    const int gc0 = m_gc0;
     const int gc1 = m_gc1;
-    const int gc2 = m_gc2;
 
     // Determine number of components necessary for working fields
     int ncomp = 0;
@@ -154,53 +148,53 @@ void FreeSurface::initialize()
                         xm[2] = plo[2] + (k + 0.5) * dx[2];
                         int n0_f = 0; int n0_a = 0;
                         int n1_f = 0; int n1_a = 0;
+                        // Get first and after sample indices for gc0
+                        if (ntps0 == 1) {
+                            n0_a = ((phi[gc0] == s_gc0) ||
+                                    (xm[gc0] - s_gc0 <= 0.5 * dx[gc0] &&
+                                     s_gc0 - xm[gc0] < 0.5 * dx[gc0]))
+                                       ? 1
+                                       : 0;
+                        } else {
+                            n0_f = (int)amrex::Math::ceil(
+                                (xm[gc0] - 0.5 * dx[gc0] - s_gc0) / dxs0);
+                            n0_a = (int)amrex::Math::ceil(
+                                (xm[gc0] + 0.5 * dx[gc0] - s_gc0) / dxs0);
+                            // Edge case of phi
+                            if (xm[gc0] + 0.5 * dx[gc0] == phi[gc0] &&
+                                s_gc0 + n0_a * dxs0 == phi[gc0]) {
+                                ++n0_a;
+                            }
+                            // Bounds
+                            n0_a = amrex::min(ntps0, n0_a);
+                            n0_f = amrex::max(amrex::min(0, n0_a), n0_f);
+                            // Out of bounds indicates no sample point
+                            if (n0_f >= ntps0 || n0_f < 0) {
+                                n0_a = n0_f;
+                            }
+                        }
                         // Get first and after sample indices for gc1
-                        if (npts1 == 1) {
-                            n0_a = ((phi[gc1] == s_gc1) ||
+                        if (ntps1 == 1) {
+                            n1_a = ((phi[gc1] == s_gc1 ) ||
                                     (xm[gc1] - s_gc1 <= 0.5 * dx[gc1] &&
                                      s_gc1 - xm[gc1] < 0.5 * dx[gc1]))
                                        ? 1
                                        : 0;
                         } else {
-                            n0_f = (int)amrex::Math::ceil(
+                            n1_f = (int)amrex::Math::ceil(
                                 (xm[gc1] - 0.5 * dx[gc1] - s_gc1) / dxs1);
-                            n0_a = (int)amrex::Math::ceil(
+                            n1_a = (int)amrex::Math::ceil(
                                 (xm[gc1] + 0.5 * dx[gc1] - s_gc1) / dxs1);
                             // Edge case of phi
                             if (xm[gc1] + 0.5 * dx[gc1] == phi[gc1] &&
-                                s_gc1 + n0_a * dxs1 == phi[gc1]) {
-                                ++n0_a;
-                            }
-                            // Bounds
-                            n0_a = amrex::min(npts1, n0_a);
-                            n0_f = amrex::max(amrex::min(0, n0_a), n0_f);
-                            // Out of bounds indicates no sample point
-                            if (n0_f >= npts1 || n0_f < 0) {
-                                n0_a = n0_f;
-                            }
-                        }
-                        // Get first and after sample indices for gc2
-                        if (npts2 == 1) {
-                            n1_a = ((phi[gc2] == s_gc2 ) ||
-                                    (xm[gc2] - s_gc2 <= 0.5 * dx[gc2] &&
-                                     s_gc2 - xm[gc2] < 0.5 * dx[gc2]))
-                                       ? 1
-                                       : 0;
-                        } else {
-                            n1_f = (int)amrex::Math::ceil(
-                                (xm[gc2] - 0.5 * dx[gc2] - s_gc2) / dxs2);
-                            n1_a = (int)amrex::Math::ceil(
-                                (xm[gc2] + 0.5 * dx[gc2] - s_gc2) / dxs2);
-                            // Edge case of phi
-                            if (xm[gc2] + 0.5 * dx[gc2] == phi[gc2] &&
-                                s_gc2 + n1_a * dxs2 == phi[gc2]) {
+                                s_gc1 + n1_a * dxs1 == phi[gc1]) {
                                 ++n1_a;
                             }
                             // Bounds
-                            n1_a = amrex::min(npts2, n1_a);
+                            n1_a = amrex::min(ntps1, n1_a);
                             n1_f = amrex::max(amrex::min(0, n1_a), n1_f);
                             // Out of bounds indicates no sample point
-                            if (n1_f >= npts2 || n1_f < 0) {
+                            if (n1_f >= ntps1 || n1_f < 0) {
                                 n1_a = n1_f;
                             }
                         }
@@ -219,7 +213,6 @@ void FreeSurface::initialize()
     auto& floc = m_sim.repo().declare_field("sample_loc", 2 * ncomp, 0, 1);
     auto& fidx = m_sim.repo().declare_field("sample_idx", ncomp, 0, 1);
 
-    const int npts = m_npts;
     // Store locations and indices in fields
     for (int lev = 0; lev <= finest_level; lev++) {
         // Use level_mask to only count finest level present
@@ -256,53 +249,53 @@ void FreeSurface::initialize()
                     xm[2] = plo[2] + (k + 0.5) * dx[2];
                     int n0_f = 0; int n0_a = 0;
                     int n1_f = 0; int n1_a = 0;
+                    // Get first and after sample indices for gc0
+                    if (ntps0 == 1) {
+                        n0_a = ((phi[gc0] == s_gc0) ||
+                                (xm[gc0] - s_gc0 <= 0.5 * dx[gc0] &&
+                                 s_gc0 - xm[gc0] < 0.5 * dx[gc0]))
+                                   ? 1
+                                   : 0;
+                    } else {
+                        n0_f = (int)amrex::Math::ceil(
+                            (xm[gc0] - 0.5 * dx[gc0] - s_gc0) / dxs0);
+                        n0_a = (int)amrex::Math::ceil(
+                            (xm[gc0] + 0.5 * dx[gc0] - s_gc0) / dxs0);
+                        // Edge case of phi
+                        if (xm[gc0] + 0.5 * dx[gc0] == phi[gc0] &&
+                            s_gc0 + n0_a * dxs0 == phi[gc0]) {
+                            ++n0_a;
+                        }
+                        // Bounds
+                        n0_a = amrex::min(ntps0, n0_a);
+                        n0_f = amrex::max(amrex::min(0, n0_a), n0_f);
+                        // Out of bounds indicates no sample point
+                        if (n0_f >= ntps0 || n0_f < 0) {
+                            n0_a = n0_f;
+                        }
+                    }
                     // Get first and after sample indices for gc1
-                    if (npts1 == 1) {
-                        n0_a = ((phi[gc1] == s_gc1) ||
+                    if (ntps1 == 1) {
+                        n1_a = ((phi[gc1] == s_gc1 ) ||
                                 (xm[gc1] - s_gc1 <= 0.5 * dx[gc1] &&
                                  s_gc1 - xm[gc1] < 0.5 * dx[gc1]))
                                    ? 1
                                    : 0;
                     } else {
-                        n0_f = (int)amrex::Math::ceil(
+                        n1_f = (int)amrex::Math::ceil(
                             (xm[gc1] - 0.5 * dx[gc1] - s_gc1) / dxs1);
-                        n0_a = (int)amrex::Math::ceil(
+                        n1_a = (int)amrex::Math::ceil(
                             (xm[gc1] + 0.5 * dx[gc1] - s_gc1) / dxs1);
                         // Edge case of phi
                         if (xm[gc1] + 0.5 * dx[gc1] == phi[gc1] &&
-                            s_gc1 + n0_a * dxs1 == phi[gc1]) {
-                            ++n0_a;
-                        }
-                        // Bounds
-                        n0_a = amrex::min(npts1, n0_a);
-                        n0_f = amrex::max(amrex::min(0, n0_a), n0_f);
-                        // Out of bounds indicates no sample point
-                        if (n0_f >= npts1 || n0_f < 0) {
-                            n0_a = n0_f;
-                        }
-                    }
-                    // Get first and after sample indices for gc2
-                    if (npts2 == 1) {
-                        n1_a = ((phi[gc2] == s_gc2 ) ||
-                                (xm[gc2] - s_gc2 <= 0.5 * dx[gc2] &&
-                                 s_gc2 - xm[gc2] < 0.5 * dx[gc2]))
-                                   ? 1
-                                   : 0;
-                    } else {
-                        n1_f = (int)amrex::Math::ceil(
-                            (xm[gc2] - 0.5 * dx[gc2] - s_gc2) / dxs2);
-                        n1_a = (int)amrex::Math::ceil(
-                            (xm[gc2] + 0.5 * dx[gc2] - s_gc2) / dxs2);
-                        // Edge case of phi
-                        if (xm[gc2] + 0.5 * dx[gc2] == phi[gc2] &&
-                            s_gc2 + n1_a * dxs2 == phi[gc2]) {
+                            s_gc1 + n1_a * dxs1 == phi[gc1]) {
                             ++n1_a;
                         }
                         // Bounds
-                        n1_a = amrex::min(npts2, n1_a);
+                        n1_a = amrex::min(ntps1, n1_a);
                         n1_f = amrex::max(amrex::min(0, n1_a), n1_f);
                         // Out of bounds indicates no sample point
-                        if (n1_f >= npts2 || n1_f < 0) {
+                        if (n1_f >= ntps1 || n1_f < 0) {
                             n1_a = n1_f;
                         }
                     }
@@ -311,9 +304,9 @@ void FreeSurface::initialize()
                     for (int n0 = n0_f; n0 < n0_a; ++n0) {
                         for (int n1 = n1_f; n1 < n1_a; ++n1) {
                             // Save index and location
-                            idx_arr(i, j, k, ns) = (amrex::Real)n1 * npts1 + n0;
-                            loc_arr(i, j, k, 2 * ns) = s_gc1 + n0 * dxs1;
-                            loc_arr(i, j, k, 2 * ns + 1) = s_gc2 + n1 * dxs2;
+                            idx_arr(i, j, k, ns) = (amrex::Real)n1 * ntps0 + n0;
+                            loc_arr(i, j, k, 2 * ns) = s_gc0 + n0 * dxs0;
+                            loc_arr(i, j, k, 2 * ns + 1) = s_gc1 + n1 * dxs1;
                             // Advance to next point
                             ++ns;
                         }
@@ -366,8 +359,8 @@ void FreeSurface::post_advance_work()
 
     // Capture integers for device
     const int dir = m_coorddir;
+    const int gc0 = m_gc0;
     const int gc1 = m_gc1;
-    const int gc2 = m_gc2;
     const int ncomp = m_ncomp;
 
     // Loop instances
@@ -500,12 +493,12 @@ void FreeSurface::post_advance_work()
                                         // Intersect 2D point with plane
                                         ht = (xm[dir] - 0.5 * dx[dir]) +
                                              (alpha -
-                                              mg1 * dxi[gc1] *
+                                              mg1 * dxi[gc0] *
                                                   (loc0 -
-                                                   (xm[gc1] - 0.5 * dx[gc1])) -
-                                              mg2 * dxi[gc2] *
+                                                   (xm[gc0] - 0.5 * dx[gc0])) -
+                                              mg2 * dxi[gc1] *
                                                   (loc1 -
-                                                   (xm[gc2] - 0.5 * dx[gc2]))) /
+                                                   (xm[gc1] - 0.5 * dx[gc1]))) /
                                                  (mdr * dxi[dir]);
                                     }
                                     // If interface is below lower
