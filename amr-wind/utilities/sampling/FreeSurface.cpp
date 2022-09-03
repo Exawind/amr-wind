@@ -593,7 +593,7 @@ void FreeSurface::write_ascii()
         if (!File.good()) {
             amrex::FileOpenFailed(fname);
         }
-        
+
         std::string str1 = "x";
         std::string str2 = "y";
         switch (m_coorddir) {
