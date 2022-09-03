@@ -71,8 +71,10 @@ void FreeSurface::initialize()
     m_out.resize(m_npts * m_ninst);
 
     // Get size of sample grid spacing
-    amrex::Real dxs0 = (m_end[m_gc0] - m_start[m_gc0]) / amrex::max(m_npts_dir[0] - 1, 1);
-    amrex::Real dxs1 = (m_end[m_gc1] - m_start[m_gc1]) / amrex::max(m_npts_dir[1] - 1, 1);
+    amrex::Real dxs0 =
+        (m_end[m_gc0] - m_start[m_gc0]) / amrex::max(m_npts_dir[0] - 1, 1);
+    amrex::Real dxs1 =
+        (m_end[m_gc1] - m_start[m_gc1]) / amrex::max(m_npts_dir[1] - 1, 1);
 
     // Store locations
     int idx = 0;
@@ -146,8 +148,10 @@ void FreeSurface::initialize()
                         xm[0] = plo[0] + (i + 0.5) * dx[0];
                         xm[1] = plo[1] + (j + 0.5) * dx[1];
                         xm[2] = plo[2] + (k + 0.5) * dx[2];
-                        int n0_f = 0; int n0_a = 0;
-                        int n1_f = 0; int n1_a = 0;
+                        int n0_f = 0;
+                        int n0_a = 0;
+                        int n1_f = 0;
+                        int n1_a = 0;
                         // Get first and after sample indices for gc0
                         if (ntps0 == 1) {
                             n0_a = ((phi[gc0] == s_gc0) ||
@@ -175,7 +179,7 @@ void FreeSurface::initialize()
                         }
                         // Get first and after sample indices for gc1
                         if (ntps1 == 1) {
-                            n1_a = ((phi[gc1] == s_gc1 ) ||
+                            n1_a = ((phi[gc1] == s_gc1) ||
                                     (xm[gc1] - s_gc1 <= 0.5 * dx[gc1] &&
                                      s_gc1 - xm[gc1] < 0.5 * dx[gc1]))
                                        ? 1
@@ -247,8 +251,10 @@ void FreeSurface::initialize()
                     xm[0] = plo[0] + (i + 0.5) * dx[0];
                     xm[1] = plo[1] + (j + 0.5) * dx[1];
                     xm[2] = plo[2] + (k + 0.5) * dx[2];
-                    int n0_f = 0; int n0_a = 0;
-                    int n1_f = 0; int n1_a = 0;
+                    int n0_f = 0;
+                    int n0_a = 0;
+                    int n1_f = 0;
+                    int n1_a = 0;
                     // Get first and after sample indices for gc0
                     if (ntps0 == 1) {
                         n0_a = ((phi[gc0] == s_gc0) ||
@@ -276,7 +282,7 @@ void FreeSurface::initialize()
                     }
                     // Get first and after sample indices for gc1
                     if (ntps1 == 1) {
-                        n1_a = ((phi[gc1] == s_gc1 ) ||
+                        n1_a = ((phi[gc1] == s_gc1) ||
                                 (xm[gc1] - s_gc1 <= 0.5 * dx[gc1] &&
                                  s_gc1 - xm[gc1] < 0.5 * dx[gc1]))
                                    ? 1
