@@ -27,6 +27,7 @@ Vector<Array<LinOpBCType, AMREX_SPACEDIM>> get_diffuse_tensor_bc(
                 r[2][dir] = LinOpBCType::Neumann;
                 break;
             }
+            case BC::wave_generation:
             case BC::mass_inflow:
             case BC::no_slip_wall: {
                 // All three components are Dirichlet
