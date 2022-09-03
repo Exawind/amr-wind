@@ -124,6 +124,8 @@ private:
 
     //! Max number of sample points found in a single cell
     int m_ncomp{1};
+    //! Max number of sample points allowed in a single cell
+    int m_ncmax{8};
 };
 
 } // namespace free_surface

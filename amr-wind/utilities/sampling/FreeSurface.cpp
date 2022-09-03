@@ -34,6 +34,7 @@ void FreeSurface::initialize()
         pp.getarr("num_points", m_npts_dir);
         pp.getarr("start", m_start);
         pp.getarr("end", m_end);
+        pp.query("max_sample_points_per_cell", m_ncmax);
         AMREX_ALWAYS_ASSERT(static_cast<int>(m_start.size()) == AMREX_SPACEDIM);
         AMREX_ALWAYS_ASSERT(static_cast<int>(m_end.size()) == AMREX_SPACEDIM);
         AMREX_ALWAYS_ASSERT(static_cast<int>(m_npts_dir.size()) == 2);
@@ -210,6 +211,8 @@ void FreeSurface::initialize()
                 }));
     }
     amrex::ParallelDescriptor::ReduceIntMax(ncomp);
+    // Limit number of components
+    ncomp = amrex::min(ncomp, m_ncmax);
     // Save number of components
     m_ncomp = ncomp;
 
@@ -315,7 +318,10 @@ void FreeSurface::initialize()
                             loc_arr(i, j, k, 2 * ns + 1) = s_gc1 + n1 * dxs1;
                             // Advance to next point
                             ++ns;
+                            // if ns gets to max components, break
+                            if (ns == ncomp) break;
                         }
+                        if (ns == ncomp) break;
                     }
                     // Set remaining values to -1 to indicate no point
                     // or set all values to -1 if not in fine mesh
