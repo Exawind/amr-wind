@@ -442,6 +442,9 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
     // Time offsets if any...
     pp.query("time_offset", m_time_offset);
 
+    // Duration
+    pp.query("duration", m_duration);
+
     // Done reading user inputs, process derived data
 
     // Center of the grid
@@ -504,11 +507,17 @@ void SyntheticTurbulence::initialize()
 void SyntheticTurbulence::update()
 {
     BL_PROFILE("amr-wind::SyntheticTurbulence::update");
+
     // Convert current time to an equivalent length based on the reference
     // velocity to determine the position within the turbulence grid
     const amrex::Real cur_time = m_time.new_time() - m_time_offset;
     const amrex::Real eqiv_len =
         m_wind_profile->reference_velocity() * cur_time;
+
+    // Stop update if the current time is past the duration of the synthetic
+    // turbulence and if the duration is positive
+    if (m_duration > 0.0 && cur_time > m_duration)
+        return;
 
     InterpWeights weights;
     SynthTurbDeviceData turb_grid(m_turb_grid);
