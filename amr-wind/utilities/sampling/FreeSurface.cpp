@@ -94,15 +94,6 @@ void FreeSurface::initialize()
         }
     }
 
-    // Create 1D vector of locations
-    amrex::Vector<amrex::Real> locs;
-    locs.resize(2 * m_npts);
-    for (int n = 0; n < m_npts; ++n) {
-        for (int d = 0; d < 2; ++d) {
-            locs[2 * n + d] = m_locs[n][d];
-        }
-    }
-
     // Capture variables for device
     const amrex::Real s_gc0 = m_start[m_gc0];
     const amrex::Real s_gc1 = m_start[m_gc1];
@@ -319,9 +310,13 @@ void FreeSurface::initialize()
                             // Advance to next point
                             ++ns;
                             // if ns gets to max components, break
-                            if (ns == ncomp) break;
+                            if (ns == ncomp) {
+                                break;
+                            }
                         }
-                        if (ns == ncomp) break;
+                        if (ns == ncomp) {
+                            break;
+                        }
                     }
                     // Set remaining values to -1 to indicate no point
                     // or set all values to -1 if not in fine mesh
