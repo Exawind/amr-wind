@@ -517,7 +517,8 @@ void SyntheticTurbulence::update()
     // Stop update if the current time is past the duration of the synthetic
     // turbulence and if the duration is positive
     if (m_duration > 0.0 && cur_time > m_duration) {
-        m_turb_force.setVal(0.0);
+        const amrex::Vector<amrex::Real> zeros{0.0,0.0,0.0};
+        m_turb_force.setVal(zeros,m_turb_force.num_grow()[0]);
         return;
     }
 
