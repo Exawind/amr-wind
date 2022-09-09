@@ -12,6 +12,8 @@ add_subdirectory(equation_systems)
 add_subdirectory(turbulence)
 add_subdirectory(fvm)
 add_subdirectory(multiphase)
+add_subdirectory(ocean_waves)
+
 if(AMR_WIND_ENABLE_MASA)
   add_subdirectory(mms)
 endif()
