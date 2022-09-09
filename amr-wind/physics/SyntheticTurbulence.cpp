@@ -268,8 +268,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void get_lr_indices(
     }
 
     const amrex::Real xfrac = xbox - turb_grid.dx[dir] * il;
-    rxl = xfrac / turb_grid.dx[dir];
-    rxr = (1.0 - rxl);
+    rxr = xfrac / turb_grid.dx[dir];
+    rxl = (1.0 - rxr);
 }
 
 /** Determine if a given point (in local frame) is within the turbulence box
