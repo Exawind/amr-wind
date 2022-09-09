@@ -31,6 +31,7 @@ public:
 private:
     Field& m_shear_prod;
     Field& m_diss;
+    Field& m_buoy_term;
 };
 
 } // namespace tke
