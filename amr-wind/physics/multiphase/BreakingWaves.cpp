@@ -29,9 +29,9 @@ BreakingWaves::BreakingWaves(CFDSim& sim)
         pp.query("water_surface_level", m_waterlevel);
 
         if (m_laminar) {
-            pp.query("vel_air_mag", m_mean_vel);
+            pp.query("air_vel_shear_rate", m_air_vel_shear_rate);
         } else {
-            pp.query("vel_air_mag", m_mean_vel);
+            pp.query("air_vel_shear_rate", m_air_vel_shear_rate);
             pp.query("tke0", m_tke0);
             pp.query("sdr0", m_sdr0);
         }
@@ -60,11 +60,11 @@ void BreakingWaves::initialize_fields(int level, const amrex::Geometry& geom)
     const amrex::Real alpha = m_amplitude;
     const amrex::Real lambda = m_wavelength;
     const amrex::Real water_level = m_waterlevel;
-    const amrex::Real vel_air_mag = m_airflow_velocity;
+    const amrex::Real vel_shear_rate = m_air_vel_shear_rate;
 
     if (!m_laminar) {
-        auto& tke = m_repo.get_field("tke")(level);
-        auto& sdr = m_repo.get_field("sdr")(level);
+        auto& tke = m_sim.repo().get_field("tke")(level);
+        auto& sdr = m_sim.repo().get_field("sdr")(level);
         tke.setVal(m_tke0);
         sdr.setVal(m_sdr0);
     }
@@ -100,7 +100,7 @@ void BreakingWaves::initialize_fields(int level, const amrex::Geometry& geom)
                     vel(i, j, k, 2) = Omega * alpha * std::exp(kappa * z) *
                                       std::sin(kappa * x);
                 } else {
-                    vel(i, j, k, 0) = vel_air_mag * (z - eta);
+                    vel(i, j, k, 0) = vel_shear_rate * (z - eta);
                 }
                 // compute density
                 amrex::Real smooth_heaviside;

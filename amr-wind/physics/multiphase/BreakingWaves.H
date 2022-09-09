@@ -54,7 +54,7 @@ private:
     Field& m_density;
 
     //! initial tke value
-    amrex::Real m_tke0{0.1};
+    amrex::Real m_tke0{0.001};
 
     //! initial sdr value
     amrex::Real m_sdr0{1000.0};
@@ -62,14 +62,13 @@ private:
     //! Initial free surface amplitude magnitude
     amrex::Real m_amplitude{0.1};
 
+    amrex::Real m_air_vel_shear_rate{0.1};
+
     //! Initial free surface wavelength
     amrex::Real m_wavelength{2.0};
 
     //! Initial zero-level free-surface water depth
     amrex::Real m_waterlevel{0.0};
-
-    //! Airflow velocity magnitude
-    amrex::Real m_airflow_velocity{1.0};
 
     bool m_laminar{false};
 };

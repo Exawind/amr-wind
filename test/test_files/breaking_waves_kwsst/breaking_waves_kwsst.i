@@ -2,7 +2,7 @@
 #            SIMULATION STOP            #
 #.......................................#
 time.stop_time               =   3     # Max (simulated) time to evolve
-time.max_step                =   10          # Max number of time steps
+time.max_step                =   100          # Max number of time steps
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
@@ -21,29 +21,33 @@ time.checkpoint_interval      =  100       # Steps between checkpoint files
 incflo.use_godunov = 1
 incflo.godunov_type="weno_z"
 transport.model = TwoPhaseTransport
-transport.viscosity_fluid1=0.03132
-transport.viscosity_fluid2=0.000018
-transport.laminar_prandtl = 0.7
-transport.turbulent_prandtl = 0.3333
-turbulence.model = Laminar 
+transport.viscosity_fluid1=0.0
+transport.viscosity_fluid2=0.0
+turbulence.model = KOmegaSST
+KOmegaSST.is_buoyancy_modified=true
+TKE.source_terms = KwSSTSrc
+SDR.source_terms = SDRSrc
 
-incflo.physics = MultiPhase NWB 
-NWB.amplitude=0.112
+incflo.physics = MultiPhase BreakingWaves 
+BreakingWaves.amplitude=0.112
 MultiPhase.density_fluid1=998.
 MultiPhase.density_fluid2=1.2
 ICNS.source_terms = GravityForcing 
 MultiPhase.verbose=1
+
+io.outputs = density velocity_mueff sdr tke mu_turb 
+io.derived_outputs = "components(velocity,0)"
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
-amr.n_cell              = 64 64 32    # Grid cells at coarsest AMRlevel
+amr.n_cell              = 64 16 48    # Grid cells at coarsest AMRlevel
 amr.max_level = 0 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
 #.......................................#
-geometry.prob_lo        =     0.0   0.0  -1.0   # Lo corner coordinates
-geometry.prob_hi        =     4.0   4.0   2.0  # Hi corner coordinates
+geometry.prob_lo        =     0.0   0.0  -0.5   # Lo corner coordinates
+geometry.prob_hi        =     2.0   0.5   1.0  # Hi corner coordinates
 geometry.is_periodic    =     1     1     0   # Periodicity x y z (0/1)
 
 zlo.type =   "slip_wall"
