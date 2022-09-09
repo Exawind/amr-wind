@@ -6,7 +6,5 @@ target_sources(${amr_wind_lib_name}
   DamBreak.cpp
   SloshingTank.cpp
   RainDrop.cpp
+  BreakingWaves.cpp
   )
-
-add_subdirectory(wave_basin)
-

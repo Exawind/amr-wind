@@ -16,6 +16,12 @@ namespace turbulence {
 template <typename Transport>
 void KOmegaSST<Transport>::parse_model_coeffs()
 {
+
+    {
+        amrex::ParmParse pp(this->model_name());
+        pp.query("is_buoyancy_modified", this->m_is_buoyancy_modified);
+    }
+
     {
         const std::string coeffs_dict = this->model_name() + "_coeffs";
         amrex::ParmParse pp(coeffs_dict);
@@ -29,7 +35,6 @@ void KOmegaSST<Transport>::parse_model_coeffs()
         pp.query("sigma_omega1", this->m_sigma_omega1);
         pp.query("sigma_omega2", this->m_sigma_omega2);
         pp.query("sigma_t", this->m_sigma_t);
-        pp.query("buoyancy_modified", this->m_is_buoyancy_modified);
     }
 
     {
