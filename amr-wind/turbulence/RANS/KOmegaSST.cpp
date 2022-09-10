@@ -42,8 +42,7 @@ void KOmegaSST<Transport>::parse_model_coeffs()
         pp.queryarr("gravity", m_gravity);
     }
 
-    this->m_buoyancy_factor =
-        (this->m_is_buoyancy_modified == true) ? 1.0 : 0.0;
+    this->m_buoyancy_factor = (this->m_is_buoyancy_modified) ? 1.0 : 0.0;
 }
 
 template <typename Transport>
