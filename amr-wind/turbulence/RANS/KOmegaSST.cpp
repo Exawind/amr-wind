@@ -109,6 +109,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
         {m_gravity[0], m_gravity[1], m_gravity[2]}};
     const amrex::Real Bfac = this->m_buoyancy_factor;
+    const amrex::Real sigmat = this->m_sigma_t;
 
     for (int lev = 0; lev < nlevels; ++lev) {
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
@@ -178,7 +179,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
 
                     buoy_arr(i, j, k) = Bfac * tmpB *
                                         (mu_arr(i, j, k) / rho_arr(i, j, k)) /
-                                        m_sigma_t;
+                                        sigmat;
 
                     f1_arr(i, j, k) = tmp_f1;
 
