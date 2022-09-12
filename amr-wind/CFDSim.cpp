@@ -7,6 +7,18 @@
 
 #include "AMReX_ParmParse.H"
 
+
+#include "helics/cpp98/CombinationFederate.hpp"
+#include "helics/cpp98/helics.hpp"
+#include "helics/cpp98/Federate.hpp"
+
+
+#include <sstream>
+#include <iostream>
+#include <string>
+
+using namespace helicscpp;
+
 namespace amr_wind {
 
 CFDSim::CFDSim(amrex::AmrCore& mesh)
@@ -16,7 +28,51 @@ CFDSim::CFDSim(amrex::AmrCore& mesh)
     , m_io_mgr(new IOManager(*this))
     , m_post_mgr(new PostProcessManager(*this))
     , m_ext_solver_mgr(new ExtSolverMgr)
-{}
+    , m_fi(new helicscpp::FederateInfo("zmq"))
+    , m_vfed(new helicscpp::CombinationFederate("Test receiver Federate",*m_fi))
+    // , m_sub (new helicscpp::Input)
+    // , m_pub (new helicscpp::Input)
+    // , m_sub (new m_vfed->registerSubscription("control", "string"))
+    // , m_pub (new *m_vfed->registerGlobalPublication("status", "string"))
+{
+
+    // helicscpp::FederateInfo m_fi("zmq");
+    // vfed("Test receiver Federate",fi);
+    // vfed = new helicscpp::CombinationFederate("Test receiver Federate",fi);
+
+    std::cout <<"PI RECEIVER: Value federate created";
+    m_vfed->setProperty(HELICS_PROPERTY_TIME_DELTA, 1.0);
+    //  Subscribe to PI SENDER's publication 
+    // auto& in1 = vFed1->registerInput<double>("");
+    std::cout <<"PI RECEIVER: Value federate created";
+    // auto& subid = cFed->registerSubscription(vtarget + "/pub", "double");
+    auto m_sub_2 = m_vfed->registerSubscription("control", "string");
+    // m_sub = m_vfed->registerSubscription("control", "string");
+    //std::cout <<"PI RECEIVER: Subscription registered";
+    std::cout <<"PI RECEIVER: Value federate created";
+    //  Register the publication 
+    auto m_pub_2 = m_vfed->registerGlobalPublication("status", "string");
+//    m_pub = m_vfed->registerGlobalPublication("status", "string");
+
+
+    // m_sub = new helicscpp::Input;
+    // m_sub = &m_sub_2;
+
+
+    // m_pub = m_vfed->registerGlobalPublication("status", "string");
+    //std::cout <<"AMRWIND RECEIVER: Publication registered\n";
+    std::cout <<"PI RECEIVER: Value federate created";
+    //  Enter initialization state 
+    m_vfed->enterInitializingMode(); // can throw helicscpp::InvalidStateTransition exception
+    std::cout <<"PI RECEIVER: Value federate created";
+    m_vfed->enterExecutingMode(); 
+    std::cout <<"PI RECEIVER: Value federate created";
+    // currenttime = m_vfed->getCurrentTime();
+    std::cout <<"Creation complete!! ";
+    // std::cout <<"\n" << m_sub.getString();
+
+
+}
 
 CFDSim::~CFDSim() = default;
 

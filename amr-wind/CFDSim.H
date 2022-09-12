@@ -8,6 +8,11 @@
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/MeshMap.H"
 
+#include "helics/cpp98/CombinationFederate.hpp"
+#include "helics/cpp98/helics.hpp"
+#include "helics/cpp98/Federate.hpp"
+
+
 /** AMR-Wind
  *
  *  All C++ code in AMR-Wind is organized within the amr_wind namespace.
@@ -41,10 +46,25 @@ class TurbulenceModel;
  *  computational logic itself. The computational heavy-lifting is performed by
  *  the class instances within a time integration loop.
  */
+
+
+
+
 class CFDSim
 {
 public:
     explicit CFDSim(amrex::AmrCore& mesh);
+
+
+    //  HELICS related
+    HelicsTime currenttime = 0.0;
+    std::string fedinitstring = "--federates=1";
+    double deltat = 0.01;
+
+    std::unique_ptr<helicscpp::FederateInfo> m_fi;
+    std::unique_ptr<helicscpp::CombinationFederate> m_vfed;
+
+    //  HELICS related
 
     ~CFDSim();
 
@@ -117,6 +137,8 @@ private:
 
     SimTime m_time;
 
+
+
     mutable FieldRepo m_repo;
 
     pde::PDEMgr m_pde_mgr;
@@ -134,6 +156,16 @@ private:
     std::unique_ptr<MeshMap> m_mesh_map;
 
     std::unique_ptr<ExtSolverMgr> m_ext_solver_mgr;
+
+//    std::unique_ptr<helicscpp::FederateInfo> m_fi;
+    
+//    std::unique_ptr<helicscpp::CombinationFederate> m_vfed;
+    
+//    std::unique_ptr<helicscpp::Input> m_sub;
+
+//    std::unique_ptr<helicscpp::Publication> m_pub;
+    //      sub;
+    //  pub;
 
     bool m_mesh_mapping{false};
 };

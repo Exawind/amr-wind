@@ -6,6 +6,16 @@
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include <AMReX_PlotFileUtil.H>
 
+#include <sstream>
+#include <iostream>
+#include <string>
+
+
+#include "helics/cpp98/CombinationFederate.hpp"
+#include "helics/cpp98/helics.hpp"
+#include "helics/cpp98/Federate.hpp"
+
+using namespace helicscpp;
 namespace amr_wind {
 
 ABLModulatedPowerLaw::ABLModulatedPowerLaw(CFDSim& sim)
@@ -77,6 +87,38 @@ void ABLModulatedPowerLaw::pre_advance_work()
         m_time.current_time() < m_stop_time) {
         m_wind_direction += m_degrees_per_sec * m_time.deltaT();
         // wind_speed += sin(0.02*m_time.current_time());
+    }
+
+    if (amrex::ParallelDescriptor::IOProcessor())
+    {
+        std::stringstream charFromControlCenter;
+        HelicsTime currenttime = m_sim.m_vfed->requestNextStep();
+        std::cout << "\n error at 94";
+        int subCount = m_sim.m_vfed->getInputCount();
+        std::cout << "\n error at 102   "<<subCount;
+        helicscpp::Input sub;
+
+        for(int i = 0; i < subCount; i++) {
+            int yy = i;
+            sub = m_sim.m_vfed->getSubscription(yy);
+            std::cout << "\n advancing time "<< sub.getString().c_str();
+        }
+
+        std::stringstream ssToControlCenter; 
+
+        helicscpp::Publication pub; 
+
+        int pubCount = m_sim.m_vfed->getPublicationCount();
+
+        for(int i = 0; i < pubCount; i++) {
+            int yy = i;
+            pub = m_sim.m_vfed->getPublication(yy);
+            ssToControlCenter << "[all random values form amrwind!! "<<currenttime<<"]";
+            std::string strToControlCenter; 
+            strToControlCenter = ssToControlCenter.str();
+            pub.publish(strToControlCenter.c_str());
+        }
+
     }
 
     const amrex::Real wind_direction_radian = utils::radians(m_wind_direction);

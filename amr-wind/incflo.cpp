@@ -24,19 +24,19 @@ using namespace std;
 
 
 using namespace amrex;
-// /*********************** HELICS **********************/
+// // /*********************** HELICS **********************/
 
-// /*
-HelicsTime currenttime = 0.0;
-std::string fedinitstring = "--federates=1";
-double deltat = 0.01;
-helicscpp::Input sub;
-helicscpp::Publication pub;
-helicscpp::FederateInfo fi("zmq");
-// Create value federate 
-helicscpp::CombinationFederate vfed("Test receiver Federate",fi);
+// // /*
+// HelicsTime currenttime = 0.0;
+// std::string fedinitstring = "--federates=1";
+// double deltat = 0.01;
+// helicscpp::Input sub;
+// helicscpp::Publication pub;
+// helicscpp::FederateInfo fi("zmq");
+// // Create value federate 
+// helicscpp::CombinationFederate vfed("Test receiver Federate",fi);
 
-
+/*
 void  incflo::helics(){
 
 amrex::Print() << "INSIDE HELICS () IN INFO.cPP" << std::endl;
@@ -54,8 +54,8 @@ vfed.enterExecutingMode();
 currenttime = vfed.getCurrentTime();
 }
 
-// */
-// /*********************** HELICS **********************/
+*/
+// // /*********************** HELICS **********************/
 
 
 incflo::incflo()
@@ -201,7 +201,7 @@ void incflo::InitData()
 {
     BL_PROFILE("amr-wind::incflo::InitData()");
 // /*********************** HELICS **********************/
-    helics();
+    // helics();
 // /*********************** HELICS **********************/
 
     init_mesh();
@@ -352,7 +352,7 @@ void incflo::Evolve()
                        << std::endl;
 
         // /*********************** HELICS **********************/
-        // /*
+        /*
 
             std::stringstream ssToControlCenter; // stringStream used to construct strToSSC
             ssToControlCenter << "Testvalue";
@@ -371,7 +371,7 @@ void incflo::Evolve()
             std::string strToControlCenter; 
             strToControlCenter = ssToControlCenter.str();
             pub.publish(strToControlCenter.c_str());
-        // */
+        */
 
         // /*********************** HELICS **********************/
 
