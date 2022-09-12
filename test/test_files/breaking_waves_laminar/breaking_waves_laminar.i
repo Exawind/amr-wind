@@ -28,7 +28,7 @@ transport.turbulent_prandtl = 0.3333
 turbulence.model = Laminar 
 
 incflo.physics = MultiPhase BreakingWaves 
-BreawkingWaves.amplitude=0.112
+BreakingWaves.amplitude=0.112
 MultiPhase.density_fluid1=998.
 MultiPhase.density_fluid2=1.2
 ICNS.source_terms = GravityForcing 

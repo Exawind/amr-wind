@@ -24,7 +24,7 @@ transport.model = TwoPhaseTransport
 transport.viscosity_fluid1=0.0
 transport.viscosity_fluid2=0.0
 turbulence.model = KOmegaSST
-KOmegaSST.is_buoyancy_modified=true
+KOmegaSST.include_buoyancy=true
 TKE.source_terms = KwSSTSrc
 SDR.source_terms = SDRSrc
 

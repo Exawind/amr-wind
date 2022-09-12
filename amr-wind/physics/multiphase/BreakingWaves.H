@@ -54,10 +54,10 @@ private:
     Field& m_density;
 
     //! initial tke value
-    amrex::Real m_tke0{0.001};
+    amrex::Real m_tke0{0.000001};
 
     //! initial sdr value
-    amrex::Real m_sdr0{1000.0};
+    amrex::Real m_sdr0{1.0};
 
     //! Initial free surface amplitude magnitude
     amrex::Real m_amplitude{0.1};
