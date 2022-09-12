@@ -88,7 +88,7 @@ protected:
     amrex::Real m_a1{0.31};
 
     //! Buoyancy modified constants
-    bool m_is_buoyancy_modified{false};
+    bool m_include_buoyancy{false};
     amrex::Real m_buoyancy_factor = 0.0;
     amrex::Real m_sigma_t{0.85};
     amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};

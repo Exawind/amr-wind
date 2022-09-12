@@ -19,7 +19,7 @@ void KOmegaSST<Transport>::parse_model_coeffs()
 
     {
         amrex::ParmParse pp(this->model_name());
-        pp.query("is_buoyancy_modified", this->m_is_buoyancy_modified);
+        pp.query("include_buoyancy", this->m_include_buoyancy);
     }
 
     {
@@ -42,7 +42,7 @@ void KOmegaSST<Transport>::parse_model_coeffs()
         pp.queryarr("gravity", m_gravity);
     }
 
-    this->m_buoyancy_factor = (this->m_is_buoyancy_modified) ? 1.0 : 0.0;
+    this->m_buoyancy_factor = (this->m_include_buoyancy) ? 1.0 : 0.0;
 }
 
 template <typename Transport>
