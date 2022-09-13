@@ -17,10 +17,11 @@ template <typename Transport>
 void KOmegaSST<Transport>::parse_model_coeffs()
 {
 
-    {
-        amrex::ParmParse pp(this->model_name());
-        pp.query("include_buoyancy", this->m_include_buoyancy);
+    if ((!this->m_sim.pde_manager().constant_density() ||
+         this->m_sim.physics_manager().contains("MultiPhase"))) {
+        this->m_include_buoyancy = true;
     }
+    this->m_buoyancy_factor = (this->m_include_buoyancy) ? 1.0 : 0.0;
 
     {
         const std::string coeffs_dict = this->model_name() + "_coeffs";
@@ -41,8 +42,6 @@ void KOmegaSST<Transport>::parse_model_coeffs()
         amrex::ParmParse pp("incflo");
         pp.queryarr("gravity", m_gravity);
     }
-
-    this->m_buoyancy_factor = (this->m_include_buoyancy) ? 1.0 : 0.0;
 }
 
 template <typename Transport>
