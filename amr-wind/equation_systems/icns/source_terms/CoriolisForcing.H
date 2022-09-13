@@ -36,7 +36,7 @@ private:
      */
     amrex::Vector<amrex::Real> m_east{{1.0, 0.0, 0.0}};
     amrex::Vector<amrex::Real> m_north{{0.0, 1.0, 0.0}};
-    amrex::Vector<amrex::Real> m_up{{1.0, 0.0, 1.0}};
+    amrex::Vector<amrex::Real> m_up{{0.0, 0.0, 1.0}};
     ///@}
 
     //! Latitude where the Coriolis forcing is computed (+ve northern
