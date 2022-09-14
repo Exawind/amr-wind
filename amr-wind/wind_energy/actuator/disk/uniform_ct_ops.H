@@ -28,9 +28,20 @@ struct UpdatePosOp<UniformCt, ActSrcDisk>
 {
     void operator()(typename UniformCt::DataType& data)
     {
-        return;
 
-        // TODO: add yaw controller here and remove return
+        auto& meta = data.meta();
+
+		const amrex::Real wind_direction = data.sim().helics().m_turbine_yaw_to_amrwind[data.info().id];              	
+    	const amrex::Real wind_direction_radian = amr_wind::utils::radians(wind_direction);
+    
+        meta.normal_vec[0] = std::cos(wind_direction_radian);
+        meta.normal_vec[1] = std::sin(wind_direction_radian);
+        meta.normal_vec[2] = 0.0;
+
+        meta.sample_vec[0] = meta.normal_vec[0];
+        meta.sample_vec[1] = meta.normal_vec[1];
+        meta.sample_vec[2] = meta.normal_vec[2];
+        
         uniformct::update_disk_points(data);
     }
 };

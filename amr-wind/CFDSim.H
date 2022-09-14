@@ -71,6 +71,7 @@ public:
     
     std::vector<double> m_turbine_power_to_controller;
     std::vector<double> m_turbine_yaw_to_controller;    
+    std::vector<double> m_turbine_yaw_to_amrwind;    
     
     
 };

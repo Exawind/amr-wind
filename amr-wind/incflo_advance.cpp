@@ -39,14 +39,16 @@ void incflo::pre_advance_stage2()
     amrex::ParallelDescriptor::ReduceRealSum(m_sim.helics().m_turbine_yaw_to_controller.data(), m_sim.helics().m_turbine_yaw_to_controller.size(), amrex::ParallelDescriptor::IOProcessor());
         
 
-    // send time, speed, and turbine powers to controller
+    // send time, speed (1 + 1)
+    // send turbine powers to controller (num_trubines)
     if (amrex::ParallelDescriptor::IOProcessor())
     {
     
     }
     
-    // receive wind direction and speed from controller
-    if (amrex::ParallelDescriptor::IOProcessor())
+    // receive wind direction and speed from controller (1 + 1)
+	// receive turbine yaw directions (num_turbines)
+	if (amrex::ParallelDescriptor::IOProcessor())
     {
         std::stringstream charFromControlCenter;
         HelicsTime currenttime = m_sim.helics().m_vfed->requestNextStep();
@@ -78,8 +80,13 @@ void incflo::pre_advance_stage2()
     }
     
     
- 
-    
+	// broadcast wind turbine yaw angles to all procs
+	// FIXME: some day only need to send/recv to specific turbines
+    amrex::ParallelDescriptor::Bcast(
+            m_sim.helics().m_turbine_yaw_to_amrwind.data(), m_sim.helics().m_turbine_yaw_to_amrwind.size(),
+            amrex::ParallelDescriptor::IOProcessorNumber(),
+            amrex::ParallelDescriptor::Communicator());
+        
     // broadcast wind speed and direction to all procs
     amrex::ParallelDescriptor::Bcast(
             &m_sim.helics().m_inflow_wind_speed_to_amrwind, 1,

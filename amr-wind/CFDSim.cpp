@@ -55,6 +55,7 @@ helics_storage::helics_storage()
     m_inflow_wind_direction_to_amrwind = 0.0;    
     m_turbine_power_to_controller.resize(m_num_turbines, 0.0);
     m_turbine_yaw_to_controller.resize(m_num_turbines, 0.0);  
+    m_turbine_yaw_to_amrwind.resize(m_num_turbines, 0.0);  
         
 }
 
