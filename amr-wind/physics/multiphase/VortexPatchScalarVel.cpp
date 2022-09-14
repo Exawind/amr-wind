@@ -1,11 +1,11 @@
 #include "amr-wind/physics/multiphase/MultiPhase.H"
-#include "amr-wind/physics/multiphase/VortexPatch.H"
+#include "amr-wind/physics/multiphase/VortexPatchScalarVel.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind {
 
-VortexPatch::VortexPatch(CFDSim& sim)
+VortexPatchScalarVel::VortexPatchScalarVel(CFDSim& sim)
     : m_sim(sim)
     , m_velocity(sim.repo().get_field("velocity"))
     , m_levelset(sim.repo().get_field("levelset"))
@@ -14,6 +14,7 @@ VortexPatch::VortexPatch(CFDSim& sim)
     amrex::ParmParse pp(identifier());
     pp.queryarr("location", m_loc, 0, AMREX_SPACEDIM);
     pp.query("radius", m_radius);
+    pp.query("smooth_factor", m_sfactor);
     pp.query("period", m_TT);
     amrex::ParmParse pinc("incflo");
     pinc.add("prescribe_velocity", true);
@@ -22,9 +23,10 @@ VortexPatch::VortexPatch(CFDSim& sim)
 /** Initialize the velocity and levelset fields at the beginning of the
  *  simulation.
  *
- *  \sa amr_wind::VortexPatchFieldInit
+ *  \sa amr_wind::VortexPatchScalarVelFieldInit
  */
-void VortexPatch::initialize_fields(int level, const amrex::Geometry& geom)
+void VortexPatchScalarVel::initialize_fields(
+    int level, const amrex::Geometry& geom)
 {
     auto& velocity = m_velocity(level);
     auto& levelset = m_levelset(level);
@@ -54,6 +56,7 @@ void VortexPatch::initialize_fields(int level, const amrex::Geometry& geom)
         auto phi = levelset.array(mfi);
         auto rho = density.array(mfi);
         const amrex::Real eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
+        const amrex::Real eps_vel = radius * m_sfactor;
 
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -72,16 +75,9 @@ void VortexPatch::initialize_fields(int level, const amrex::Geometry& geom)
                 wf(i, j, k) = -std::sin(M_PI * zf) * std::sin(M_PI * zf) *
                               std::sin(2.0 * M_PI * x) *
                               std::sin(2.0 * M_PI * y);
-
-                vel(i, j, k, 0) =
-                    2.0 * std::sin(M_PI * x) * std::sin(M_PI * x) *
-                    std::sin(2.0 * M_PI * y) * std::sin(2.0 * M_PI * z);
-                vel(i, j, k, 1) = -std::sin(M_PI * y) * std::sin(M_PI * y) *
-                                  std::sin(2.0 * M_PI * x) *
-                                  std::sin(2.0 * M_PI * z);
-                vel(i, j, k, 2) = -std::sin(M_PI * z) * std::sin(M_PI * z) *
-                                  std::sin(2.0 * M_PI * x) *
-                                  std::sin(2.0 * M_PI * y);
+                // Only the x component is nonzero
+                vel(i, j, k, 1) = 0.0;
+                vel(i, j, k, 2) = 0.0;
 
                 phi(i, j, k) =
                     radius - std::sqrt(
@@ -100,11 +96,26 @@ void VortexPatch::initialize_fields(int level, const amrex::Geometry& geom)
                 }
                 rho(i, j, k) =
                     rho1 * smooth_heaviside + rho2 * (1.0 - smooth_heaviside);
+
+                // Smoothed step function for u velocity, which is treated as a
+                // scalar, much more smoothed than levelset and not based on the
+                // mesh size
+                if (phi(i, j, k) > eps_vel) {
+                    vel(i, j, k, 0) = 1.0;
+                } else if (phi(i, j, k) < -eps_vel) {
+                    vel(i, j, k, 0) = 0.;
+                } else {
+                    vel(i, j, k, 0) =
+                        0.5 *
+                        (1.0 + phi(i, j, k) / eps_vel +
+                         1.0 / M_PI * std::sin(phi(i, j, k) * M_PI / eps_vel));
+                }
             });
     }
+    m_velocity.fillpatch(0.0);
 }
 
-void VortexPatch::pre_advance_work()
+void VortexPatchScalarVel::pre_advance_work()
 {
     const auto& time =
         m_sim.time().current_time() + 0.5 * m_sim.time().deltaT();
@@ -153,43 +164,9 @@ void VortexPatch::pre_advance_work()
     }
 }
 
-void VortexPatch::post_advance_work()
-{
-    const auto& time = m_sim.time().current_time();
-
-    const int nlevels = m_sim.repo().num_active_levels();
-    const auto& geom = m_sim.mesh().Geom();
-
-    // Overriding the velocity field
-    for (int lev = 0; lev < nlevels; ++lev) {
-        for (amrex::MFIter mfi(m_velocity(lev)); mfi.isValid(); ++mfi) {
-            const auto& vbx = mfi.growntilebox();
-            const auto& dx = geom[lev].CellSizeArray();
-            const auto& problo = geom[lev].ProbLoArray();
-            const amrex::Real TT = m_TT;
-            auto vel = m_velocity(lev).array(mfi);
-            amrex::ParallelFor(
-                vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                    vel(i, j, k, 0) =
-                        2.0 * std::sin(M_PI * x) * std::sin(M_PI * x) *
-                        std::sin(2.0 * M_PI * y) * std::sin(2.0 * M_PI * z) *
-                        std::cos(M_PI * time / TT);
-                    vel(i, j, k, 1) = -std::sin(M_PI * y) * std::sin(M_PI * y) *
-                                      std::sin(2.0 * M_PI * x) *
-                                      std::sin(2.0 * M_PI * z) *
-                                      std::cos(M_PI * time / TT);
-                    vel(i, j, k, 2) = -std::sin(M_PI * z) * std::sin(M_PI * z) *
-                                      std::sin(2.0 * M_PI * x) *
-                                      std::sin(2.0 * M_PI * y) *
-                                      std::cos(M_PI * time / TT);
-                });
-        }
-    }
-
-    m_velocity.fillpatch(time);
-}
+// Nothing to do afterward. Cell-centered velocity should be untouched for the
+// sake of the test, even though this means the reported CFL will be
+// meaningless.
+void VortexPatchScalarVel::post_advance_work() {}
 
 } // namespace amr_wind

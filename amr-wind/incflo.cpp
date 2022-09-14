@@ -271,7 +271,11 @@ void incflo::Evolve()
 
         amrex::Real time1 = amrex::ParallelDescriptor::second();
         // Advance to time t + dt
-        advance();
+        if (m_prescribe_vel) {
+            prescribe_advance();
+        } else {
+            advance();
+        }
         amrex::Print() << std::endl;
         amrex::Real time2 = amrex::ParallelDescriptor::second();
         post_advance_work();
@@ -370,6 +374,11 @@ void incflo::init_physics_and_pde()
     }
 
     m_sim.init_physics();
+    {
+        // Check for if velocity is prescribed
+        amrex::ParmParse pp("incflo");
+        pp.query("prescribe_velocity", m_prescribe_vel);
+    }
     m_sim.create_turbulence_model();
 
     // Initialize the refinement criteria
