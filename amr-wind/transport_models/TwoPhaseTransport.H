@@ -66,7 +66,7 @@ public:
 
         if (m_ifacetype == InterfaceCapturingMethod::VOF) {
 
-            auto& vof = m_repo.get_field("vof");
+            const auto& vof = m_repo.get_field("vof");
 
             for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
                 for (amrex::MFIter mfi((*mu)(lev)); mfi.isValid(); ++mfi) {
@@ -88,7 +88,7 @@ public:
 
         } else if (m_ifacetype == InterfaceCapturingMethod::LS) {
 
-            auto& levelset = m_repo.get_field("levelset");
+            const auto& levelset = m_repo.get_field("levelset");
             const auto& geom = m_repo.mesh().Geom();
 
             for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {

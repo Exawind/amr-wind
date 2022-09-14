@@ -84,19 +84,19 @@ TEST_F(FieldRepoTest, field_post_declare)
 
     // Check that the IDs are consistent
     {
-        auto& f1 = frepo.get_field("vel");
-        auto& f2 = frepo.get_field(0);
+        const auto& f1 = frepo.get_field("vel");
+        const auto& f2 = frepo.get_field(0);
         EXPECT_EQ(f1.id(), f2.id());
     }
     // Velocity has two states...
     {
-        auto& f1 = frepo.get_field("density");
-        auto& f2 = frepo.get_field(2);
+        const auto& f1 = frepo.get_field("density");
+        const auto& f2 = frepo.get_field(2);
         EXPECT_EQ(f1.id(), f2.id());
     }
     {
-        auto& f1 = frepo.get_field("pressure");
-        auto& f2 = frepo.get_field(3);
+        const auto& f1 = frepo.get_field("pressure");
+        const auto& f2 = frepo.get_field(3);
         EXPECT_EQ(f1.id(), f2.id());
     }
 }

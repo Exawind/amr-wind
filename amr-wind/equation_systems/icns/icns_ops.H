@@ -122,7 +122,7 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
                             -(1.0 / fac_z * gp(i, j, k, 2)) * rhoinv;
                     });
 
-                for (auto& src : this->sources) {
+                for (const auto& src : this->sources) {
                     (*src)(lev, mfi, bx, fstate, vf);
                 }
             }

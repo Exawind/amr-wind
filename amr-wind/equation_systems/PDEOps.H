@@ -139,7 +139,7 @@ struct SrcTermOpBase
                 const auto& bx = mfi.tilebox();
                 const auto& vf = src_term.array(mfi);
 
-                for (auto& src : this->sources) {
+                for (const auto& src : this->sources) {
                     (*src)(lev, mfi, bx, fstate, vf);
                 }
             }
