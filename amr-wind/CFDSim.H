@@ -48,24 +48,38 @@ class TurbulenceModel;
  */
 
 
+class helics_storage
+{
+public: 
+	
+	explicit helics_storage();
+	~helics_storage();
+	
+public:
 
+    HelicsTime currenttime = 0.0;
+    std::string fedinitstring = "--federates=1";
+    double deltat = 0.01; // what is this for? should we use m_time.deltaT() instead?
+
+    std::unique_ptr<helicscpp::FederateInfo> m_fi;
+    std::unique_ptr<helicscpp::CombinationFederate> m_vfed;
+    
+    const int m_num_turbines = 100;
+    
+    double m_inflow_wind_speed_to_amrwind;
+    double m_inflow_wind_direction_to_amrwind;
+    
+    std::vector<double> m_turbine_power_to_controller;
+    std::vector<double> m_turbine_yaw_to_controller;    
+    
+    
+};
 
 class CFDSim
 {
 public:
     explicit CFDSim(amrex::AmrCore& mesh);
-
-
-    //  HELICS related
-    HelicsTime currenttime = 0.0;
-    std::string fedinitstring = "--federates=1";
-    double deltat = 0.01;
-
-    std::unique_ptr<helicscpp::FederateInfo> m_fi;
-    std::unique_ptr<helicscpp::CombinationFederate> m_vfed;
-
-    //  HELICS related
-
+    
     ~CFDSim();
 
     //! Return the AMR mesh hierarchy
@@ -116,6 +130,9 @@ public:
     ExtSolverMgr& ext_solver_manager() { return *m_ext_solver_mgr; }
     const ExtSolverMgr& ext_solver_manager() const { return *m_ext_solver_mgr; }
 
+	helics_storage& helics() { return *m_helics; }
+    const helics_storage& helics() const { return *m_helics; }
+    
     bool has_overset() const;
 
     //! Instantiate the turbulence model based on user inputs
@@ -157,15 +174,7 @@ private:
 
     std::unique_ptr<ExtSolverMgr> m_ext_solver_mgr;
 
-//    std::unique_ptr<helicscpp::FederateInfo> m_fi;
-    
-//    std::unique_ptr<helicscpp::CombinationFederate> m_vfed;
-    
-//    std::unique_ptr<helicscpp::Input> m_sub;
-
-//    std::unique_ptr<helicscpp::Publication> m_pub;
-    //      sub;
-    //  pub;
+	std::unique_ptr<helics_storage> m_helics;
 
     bool m_mesh_mapping{false};
 };

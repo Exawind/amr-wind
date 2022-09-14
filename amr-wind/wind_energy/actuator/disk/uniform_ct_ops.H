@@ -4,6 +4,7 @@
 #include "amr-wind/wind_energy/actuator/disk/disk_ops.H"
 #include "amr-wind/wind_energy/actuator/disk/UniformCt.H"
 #include "amr-wind/utilities/linear_interpolation.H"
+#include "amr-wind/utilities/trig_ops.H"
 namespace amr_wind::actuator::ops {
 namespace uniformct {
 
@@ -60,6 +61,19 @@ struct ComputeForceOp<UniformCt, ActSrcDisk>
             // disk force should always point in direction of the normal
             grid.force[ip] = (aeroPressure * a) * normal;
         }
+        
+        if(data.info().is_root_proc) {
+        
+            const amrex::Real ct = ddata.current_ct;
+            const amrex::Real cp = 0.5*(ct + ct*std::sqrt(1.0-ct));
+            const amrex::Real area = amr_wind::utils::pi()*0.25*ddata.diameter*ddata.diameter;
+            const amrex::Real power = cp * 0.5 * rho * std::pow(uInfSqr, 1.5) * area;
+            
+        	data.sim().helics().m_turbine_power_to_controller[data.info().id] = power;    
+        	const amrex::Real turbine_angle = std::atan2(ddata.reference_velocity[1],ddata.reference_velocity[0]);
+        	data.sim().helics().m_turbine_yaw_to_controller[data.info().id] = amr_wind::utils::degrees(turbine_angle);           	
+        }
+        
     }
 };
 

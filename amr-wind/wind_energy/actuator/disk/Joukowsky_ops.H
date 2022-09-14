@@ -4,6 +4,7 @@
 #include "amr-wind/wind_energy/actuator/disk/Joukowsky.H"
 #include "amr-wind/wind_energy/actuator/disk/disk_ops.H"
 #include "amr-wind/utilities/linear_interpolation.H"
+#include "amr-wind/utilities/trig_ops.H"
 
 namespace amr_wind::actuator::ops {
 
@@ -236,6 +237,12 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
 
         ddata.current_cp = ddata.density * uInfSqr * moment *
                            ddata.current_angular_velocity / eq_20_denominator;
+           
+        if(data.info().is_root_proc) {
+        	data.sim().helics().m_turbine_power_to_controller[data.info().id] = ddata.current_power;        
+        	const amrex::Real turbine_angle = std::atan2(ddata.reference_velocity[1],ddata.reference_velocity[0]);
+        	data.sim().helics().m_turbine_yaw_to_controller[data.info().id] = amr_wind::utils::degrees(turbine_angle);               	
+        }
     }
 };
 

@@ -81,47 +81,10 @@ void ABLModulatedPowerLaw::post_init_actions()
 void ABLModulatedPowerLaw::pre_advance_work()
 {
 
-    amrex::Real wind_speed = m_wind_speed;
-
-    if (m_time.current_time() > m_start_time &&
-        m_time.current_time() < m_stop_time) {
-        m_wind_direction += m_degrees_per_sec * m_time.deltaT();
-        // wind_speed += sin(0.02*m_time.current_time());
-    }
-
-    if (amrex::ParallelDescriptor::IOProcessor())
-    {
-        std::stringstream charFromControlCenter;
-        HelicsTime currenttime = m_sim.m_vfed->requestNextStep();
-        std::cout << "\n error at 94";
-        int subCount = m_sim.m_vfed->getInputCount();
-        std::cout << "\n error at 102   "<<subCount;
-        helicscpp::Input sub;
-
-        for(int i = 0; i < subCount; i++) {
-            int yy = i;
-            sub = m_sim.m_vfed->getSubscription(yy);
-            std::cout << "\n advancing time "<< sub.getString().c_str();
-        }
-
-        std::stringstream ssToControlCenter; 
-
-        helicscpp::Publication pub; 
-
-        int pubCount = m_sim.m_vfed->getPublicationCount();
-
-        for(int i = 0; i < pubCount; i++) {
-            int yy = i;
-            pub = m_sim.m_vfed->getPublication(yy);
-            ssToControlCenter << "[all random values form amrwind!! "<<currenttime<<"]";
-            std::string strToControlCenter; 
-            strToControlCenter = ssToControlCenter.str();
-            pub.publish(strToControlCenter.c_str());
-        }
-
-    }
-
-    const amrex::Real wind_direction_radian = utils::radians(m_wind_direction);
+    const amrex::Real wind_speed =  m_sim.helics().m_inflow_wind_speed_to_amrwind;
+    const amrex::Real wind_direction =  m_sim.helics().m_inflow_wind_direction_to_amrwind;
+    const amrex::Real wind_direction_radian = amr_wind::utils::radians(wind_direction);
+    
     m_uvec[0] = wind_speed * std::cos(wind_direction_radian);
     m_uvec[1] = wind_speed * std::sin(wind_direction_radian);
     m_uvec[2] = 0.0;

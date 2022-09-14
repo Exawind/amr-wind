@@ -180,7 +180,7 @@ void Actuator::compute_forces()
     for (auto& ac : m_actuators) {
         if (ac->info().actuator_in_proc) {
             ac->compute_forces();
-        }
+        }        
     }
 }
 

@@ -21,24 +21,10 @@ using namespace helicscpp;
 
 namespace amr_wind {
 
-CFDSim::CFDSim(amrex::AmrCore& mesh)
-    : m_mesh(mesh)
-    , m_repo(m_mesh)
-    , m_pde_mgr(*this)
-    , m_io_mgr(new IOManager(*this))
-    , m_post_mgr(new PostProcessManager(*this))
-    , m_ext_solver_mgr(new ExtSolverMgr)
-    , m_fi(new helicscpp::FederateInfo("zmq"))
+helics_storage::helics_storage()
+	: m_fi(new helicscpp::FederateInfo("zmq"))
     , m_vfed(new helicscpp::CombinationFederate("Test receiver Federate",*m_fi))
-    // , m_sub (new helicscpp::Input)
-    // , m_pub (new helicscpp::Input)
-    // , m_sub (new m_vfed->registerSubscription("control", "string"))
-    // , m_pub (new *m_vfed->registerGlobalPublication("status", "string"))
 {
-
-    // helicscpp::FederateInfo m_fi("zmq");
-    // vfed("Test receiver Federate",fi);
-    // vfed = new helicscpp::CombinationFederate("Test receiver Federate",fi);
 
     std::cout <<"PI RECEIVER: Value federate created";
     m_vfed->setProperty(HELICS_PROPERTY_TIME_DELTA, 1.0);
@@ -52,14 +38,8 @@ CFDSim::CFDSim(amrex::AmrCore& mesh)
     std::cout <<"PI RECEIVER: Value federate created";
     //  Register the publication 
     auto m_pub_2 = m_vfed->registerGlobalPublication("status", "string");
-//    m_pub = m_vfed->registerGlobalPublication("status", "string");
 
 
-    // m_sub = new helicscpp::Input;
-    // m_sub = &m_sub_2;
-
-
-    // m_pub = m_vfed->registerGlobalPublication("status", "string");
     //std::cout <<"AMRWIND RECEIVER: Publication registered\n";
     std::cout <<"PI RECEIVER: Value federate created";
     //  Enter initialization state 
@@ -70,9 +50,24 @@ CFDSim::CFDSim(amrex::AmrCore& mesh)
     // currenttime = m_vfed->getCurrentTime();
     std::cout <<"Creation complete!! ";
     // std::cout <<"\n" << m_sub.getString();
-
-
+    
+    m_inflow_wind_speed_to_amrwind = 0.0;
+    m_inflow_wind_direction_to_amrwind = 0.0;    
+    m_turbine_power_to_controller.resize(m_num_turbines, 0.0);
+    m_turbine_yaw_to_controller.resize(m_num_turbines, 0.0);  
+        
 }
+
+helics_storage::~helics_storage() = default;
+
+CFDSim::CFDSim(amrex::AmrCore& mesh)
+    : m_mesh(mesh)
+    , m_repo(m_mesh)
+    , m_pde_mgr(*this)
+    , m_io_mgr(new IOManager(*this))
+    , m_post_mgr(new PostProcessManager(*this))
+    , m_ext_solver_mgr(new ExtSolverMgr)
+    , m_helics(new helics_storage) {}
 
 CFDSim::~CFDSim() = default;
 
