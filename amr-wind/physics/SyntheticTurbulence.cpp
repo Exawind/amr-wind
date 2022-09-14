@@ -514,8 +514,8 @@ void SyntheticTurbulence::update()
     const amrex::Real eqiv_len =
         m_wind_profile->reference_velocity() * cur_time;
 
-    // Stop update if the current time is past the duration of the synthetic
-    // turbulence and if the duration is positive
+    // Stop update if the current time is past the requested duration of the
+    // injection of the synthetic turbulence and if this duration is positive
     if (m_duration > 0.0 && cur_time > m_duration) {
         const amrex::Vector<amrex::Real> zeros{0.0, 0.0, 0.0};
         m_turb_force.setVal(zeros, m_turb_force.num_grow()[0]);
