@@ -184,7 +184,7 @@ void KOmegaSST<Transport>::update_scalar_diff(
     if (name == pde::TKE::var_name()) {
         const amrex::Real sigma_k1 = this->m_sigma_k1;
         const amrex::Real sigma_k2 = this->m_sigma_k2;
-        auto& repo = deff.repo();
+        const auto& repo = deff.repo();
         const int nlevels = repo.num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {
             for (amrex::MFIter mfi(deff(lev)); mfi.isValid(); ++mfi) {
@@ -207,7 +207,7 @@ void KOmegaSST<Transport>::update_scalar_diff(
     } else if (name == pde::SDR::var_name()) {
         const amrex::Real sigma_omega1 = this->m_sigma_omega1;
         const amrex::Real sigma_omega2 = this->m_sigma_omega2;
-        auto& repo = deff.repo();
+        const auto& repo = deff.repo();
         const int nlevels = repo.num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {
             for (amrex::MFIter mfi(deff(lev)); mfi.isValid(); ++mfi) {
