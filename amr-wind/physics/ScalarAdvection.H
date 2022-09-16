@@ -24,7 +24,7 @@ public:
     //! Initialize the temperature and velocity fields for ScalarAdvection
     //! simulations
     void initialize_fields(int level, const amrex::Geometry& geom) override;
-    
+
     template <typename Shape>
     amrex::Vector<amrex::Real> compute_error(const Shape& scalar_function);
 
@@ -62,14 +62,15 @@ private:
     //! Initial wave/pulse amplitude
     amrex::Real m_amplitude{1.0};
 
-    //! Initial wave/pulse width (standard deviation for GaussianPulse and GaussianWavePacket)
+    //! Initial wave/pulse width (standard deviation for GaussianPulse and
+    //! GaussianWavePacket)
     amrex::Real m_x_width{0.01};
     amrex::Real m_y_width{0.01};
 
     //! Wave numbers
     amrex::Real m_x_wavenumber{16 * utils::pi()};
     amrex::Real m_y_wavenumber{16 * utils::pi()};
-    
+
     //! Initial wave/pulse shape
     std::string m_shape{"gaussian"};
 
@@ -79,76 +80,76 @@ private:
 
 struct GaussianWavePacket
 {
-  AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
-      const amrex::Real /*x*/,
-      const amrex::Real /*x0*/,
-      const amrex::Real /*amplitude*/,
-      const amrex::Real /*x_width*/,
-      const amrex::Real /*x_wavenumber*/) const;
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+        const amrex::Real /*x*/,
+        const amrex::Real /*x0*/,
+        const amrex::Real /*amplitude*/,
+        const amrex::Real /*x_width*/,
+        const amrex::Real /*x_wavenumber*/) const;
 };
 
 struct GaussianPulseFV
 {
-  AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
-      const amrex::Real /*x*/,
-      const amrex::Real /*unused*/,
-      const amrex::Real /*dx*/,
-      const amrex::Real /*unused*/,
-      const amrex::Real /*x0*/,
-      const amrex::Real /*unused*/,
-      const amrex::Real /*amplitude*/,
-      const amrex::Real /*x_width*/,
-      const amrex::Real /*unused*/,
-      const amrex::Real /*unused*/,
-      const amrex::Real /*unused*/) const;
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+        const amrex::Real /*x*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*dx*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*x0*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*amplitude*/,
+        const amrex::Real /*x_width*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/) const;
 };
 
 struct TwoDimGaussianPulseFV
 {
-  AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
-      const amrex::Real /*x*/,
-      const amrex::Real /*y*/,
-      const amrex::Real /*dx*/,
-      const amrex::Real /*dy*/,
-      const amrex::Real /*x0*/,
-      const amrex::Real /*y0*/,
-      const amrex::Real /*amplitude*/,
-      const amrex::Real /*x_width*/,
-      const amrex::Real /*y_width*/,
-      const amrex::Real /*unused*/,
-      const amrex::Real /*unused*/) const;
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+        const amrex::Real /*x*/,
+        const amrex::Real /*y*/,
+        const amrex::Real /*dx*/,
+        const amrex::Real /*dy*/,
+        const amrex::Real /*x0*/,
+        const amrex::Real /*y0*/,
+        const amrex::Real /*amplitude*/,
+        const amrex::Real /*x_width*/,
+        const amrex::Real /*y_width*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/) const;
 };
 
 struct SquarePulseFV
 {
-  AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
-      const amrex::Real /*x*/,
-      const amrex::Real /*unused*/,
-      const amrex::Real /*dx*/,
-      const amrex::Real /*unused*/,
-      const amrex::Real /*x0*/,
-      const amrex::Real /*unused*/,
-      const amrex::Real /*amplitude*/,
-      const amrex::Real /*x_width*/,
-      const amrex::Real /*unused*/,
-      const amrex::Real /*unused*/,
-      const amrex::Real /*unused*/) const;
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+        const amrex::Real /*x*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*dx*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*x0*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*amplitude*/,
+        const amrex::Real /*x_width*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/) const;
 };
 
 struct GaussianWavePacketFV
 {
-  AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
-      const amrex::Real /*x*/,
-      const amrex::Real /*unused*/,
-      const amrex::Real /*dx*/,
-      const amrex::Real /*unused*/,
-      const amrex::Real /*x0*/,
-      const amrex::Real /*unused*/,
-      const amrex::Real /*amplitude*/,
-      const amrex::Real /*x_width*/,
-      const amrex::Real /*unused*/,
-      const amrex::Real /*x_wavenumber*/,
-      const amrex::Real /*unused*/) const;
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+        const amrex::Real /*x*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*dx*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*x0*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*amplitude*/,
+        const amrex::Real /*x_width*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*x_wavenumber*/,
+        const amrex::Real /*unused*/) const;
 };
 
 } // namespace amr_wind
