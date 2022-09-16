@@ -82,12 +82,16 @@ void ABLModulatedPowerLaw::pre_advance_work()
 {
 
     const amrex::Real wind_speed =  m_sim.helics().m_inflow_wind_speed_to_amrwind;
-    const amrex::Real wind_direction =  m_sim.helics().m_inflow_wind_direction_to_amrwind;
+    const amrex::Real wind_direction =  m_sim.helics().m_inflow_wind_direction_to_amrwind - 180.0 ;
+    // const amrex::Real wind_speed =  10.0;
+    // const amrex::Real wind_direction =  270.0;
     const amrex::Real wind_direction_radian = amr_wind::utils::radians(wind_direction);
     
     m_uvec[0] = wind_speed * std::cos(wind_direction_radian);
     m_uvec[1] = wind_speed * std::sin(wind_direction_radian);
     m_uvec[2] = 0.0;
+
+    std::cout<<" X and y veloctities "<<m_uvec[0]<<","<<m_uvec[1]<<","<<m_uvec[2]<<std::endl;
 }
 
 void ABLModulatedPowerLaw::post_advance_work() {}

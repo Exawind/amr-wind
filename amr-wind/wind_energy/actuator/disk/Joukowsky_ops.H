@@ -51,6 +51,7 @@ struct UpdatePosOp<Joukowsky, ActSrcDisk>
     void operator()(typename Joukowsky::DataType& data)
     {
     
+        return; 
         auto& meta = data.meta();
 
 		const amrex::Real wind_direction = data.sim().helics().m_turbine_yaw_to_amrwind[data.info().id];              	
@@ -251,6 +252,9 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                            ddata.current_angular_velocity / eq_20_denominator;
            
         if(data.info().is_root_proc) {
+            double area = amr_wind::utils::pi()*0.25*ddata.diameter*ddata.diameter; 
+            double power = ddata.current_cp * 0.5 * ddata.density * std::pow(uInfSqr, 1.5) * area;
+            std::cout << "\n area inside rootproc on joukosky "<<area<<"  Power: "<<power<<" current power:"<<ddata.current_power<<std::endl;
         	data.sim().helics().m_turbine_power_to_controller[data.info().id] = ddata.current_power;        
         	const amrex::Real turbine_angle = std::atan2(ddata.reference_velocity[1],ddata.reference_velocity[0]);
         	data.sim().helics().m_turbine_yaw_to_controller[data.info().id] = amr_wind::utils::degrees(turbine_angle);               	
