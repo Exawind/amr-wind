@@ -7,10 +7,7 @@
 #include "amr-wind/equation_systems/PDEBase.H"
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/MeshMap.H"
-
-#include "helics/cpp98/CombinationFederate.hpp"
-#include "helics/cpp98/helics.hpp"
-#include "helics/cpp98/Federate.hpp"
+#include "amr-wind/helics.H"
 
 
 /** AMR-Wind
@@ -22,6 +19,7 @@ class IOManager;
 class PostProcessManager;
 class OversetManager;
 class ExtSolverMgr;
+class helics_storage;
 
 namespace turbulence {
 class TurbulenceModel;
@@ -46,35 +44,6 @@ class TurbulenceModel;
  *  computational logic itself. The computational heavy-lifting is performed by
  *  the class instances within a time integration loop.
  */
-
-
-class helics_storage
-{
-public: 
-	
-	explicit helics_storage();
-	~helics_storage();
-	
-public:
-
-    HelicsTime currenttime = 0.0;
-    std::string fedinitstring = "--federates=1";
-    double deltat = 0.01; // what is this for? should we use m_time.deltaT() instead?
-
-    std::unique_ptr<helicscpp::FederateInfo> m_fi;
-    std::unique_ptr<helicscpp::CombinationFederate> m_vfed;
-    
-    const int m_num_turbines = 100;
-    
-    double m_inflow_wind_speed_to_amrwind;
-    double m_inflow_wind_direction_to_amrwind;
-    
-    std::vector<double> m_turbine_power_to_controller;
-    std::vector<double> m_turbine_yaw_to_controller;    
-    std::vector<double> m_turbine_yaw_to_amrwind;    
-    
-    
-};
 
 class CFDSim
 {

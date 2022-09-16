@@ -26,77 +26,20 @@ void incflo::pre_advance_stage2()
     BL_PROFILE("amr-wind::incflo::pre_advance_stage2");
     
     
-    
-    std::fill(m_sim.helics().m_turbine_power_to_controller.begin(),m_sim.helics().m_turbine_power_to_controller.end(), 0.0);
-    std::fill(m_sim.helics().m_turbine_yaw_to_controller.begin(),m_sim.helics().m_turbine_yaw_to_controller.end(), 0.0);
-    
+    // I switched to send/recvs in the actuator code delete later
+//     std::fill(m_sim.helics().m_turbine_power_to_controller.begin(),m_sim.helics().m_turbine_power_to_controller.end(), 0.0);
+// 	std::fill(m_sim.helics().m_turbine_yaw_to_controller.begin(),m_sim.helics().m_turbine_yaw_to_controller.end(), 0.0);
+   
     for (auto& pp : m_sim.physics()) {
         pp->pre_advance_work();
     }
-    
+     
     // FIXME: later change this to send/recv but for now fill with 0.0 and reduce sum to IO proc
-    amrex::ParallelDescriptor::ReduceRealSum(m_sim.helics().m_turbine_power_to_controller.data(), m_sim.helics().m_turbine_power_to_controller.size(), amrex::ParallelDescriptor::IOProcessor());
-    amrex::ParallelDescriptor::ReduceRealSum(m_sim.helics().m_turbine_yaw_to_controller.data(), m_sim.helics().m_turbine_yaw_to_controller.size(), amrex::ParallelDescriptor::IOProcessor());
-        
-
-    // send time, speed (1 + 1)
-    // send turbine powers to controller (num_trubines)
-    if (amrex::ParallelDescriptor::IOProcessor())
-    {
-    
-    }
-    
-    // receive wind direction and speed from controller (1 + 1)
-	// receive turbine yaw directions (num_turbines)
-	if (amrex::ParallelDescriptor::IOProcessor())
-    {
-        std::stringstream charFromControlCenter;
-        HelicsTime currenttime = m_sim.helics().m_vfed->requestNextStep();
-        std::cout << "\n error at 94";
-        int subCount = m_sim.helics().m_vfed->getInputCount();
-        std::cout << "\n error at 102   "<<subCount;
-        helicscpp::Input sub;
-
-        for(int i = 0; i < subCount; i++) {
-            int yy = i;
-            sub = m_sim.helics().m_vfed->getSubscription(yy);
-            std::cout << "\n advancing time "<< sub.getString().c_str();
-        }
-
-        std::stringstream ssToControlCenter; 
-
-        helicscpp::Publication pub; 
-
-        int pubCount = m_sim.helics().m_vfed->getPublicationCount();
-
-        for(int i = 0; i < pubCount; i++) {
-            int yy = i;
-            pub = m_sim.helics().m_vfed->getPublication(yy);
-            ssToControlCenter << "[all random values form amrwind!! "<<currenttime<<"]";
-            std::string strToControlCenter; 
-            strToControlCenter = ssToControlCenter.str();
-            pub.publish(strToControlCenter.c_str());
-        }
-    }
-    
-    
-	// broadcast wind turbine yaw angles to all procs
-	// FIXME: some day only need to send/recv to specific turbines
-    amrex::ParallelDescriptor::Bcast(
-            m_sim.helics().m_turbine_yaw_to_amrwind.data(), m_sim.helics().m_turbine_yaw_to_amrwind.size(),
-            amrex::ParallelDescriptor::IOProcessorNumber(),
-            amrex::ParallelDescriptor::Communicator());
-        
-    // broadcast wind speed and direction to all procs
-    amrex::ParallelDescriptor::Bcast(
-            &m_sim.helics().m_inflow_wind_speed_to_amrwind, 1,
-            amrex::ParallelDescriptor::IOProcessorNumber(),
-            amrex::ParallelDescriptor::Communicator());
-            
-        amrex::ParallelDescriptor::Bcast(
-            &m_sim.helics().m_inflow_wind_direction_to_amrwind, 1,
-            amrex::ParallelDescriptor::IOProcessorNumber(),
-            amrex::ParallelDescriptor::Communicator());
+//     amrex::ParallelDescriptor::ReduceRealSum(m_sim.helics().m_turbine_power_to_controller.data(), m_sim.helics().m_turbine_power_to_controller.size(), amrex::ParallelDescriptor::IOProcessor()
+//     åamrex::ParallelDescriptor::ReduceRealSum(m_sim.helics().m_turbine_yaw_to_controller.data(), m_sim.helics().m_turbine_yaw_to_controller.size(), amrex::ParallelDescriptor::IOProcessor());
+      
+    m_sim.helics().send_messages_to_controller();
+    m_sim.helics().recv_messages_from_controller();
     
 }
 
