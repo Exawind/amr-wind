@@ -31,10 +31,10 @@ public:
     std::unique_ptr<helicscpp::FederateInfo> m_fi;
     std::unique_ptr<helicscpp::CombinationFederate> m_vfed;
     
-    const int m_num_turbines = 100;
+    int m_num_turbines{1};
     
-    double m_inflow_wind_speed_to_amrwind;
-    double m_inflow_wind_direction_to_amrwind;
+    double m_inflow_wind_speed_to_amrwind{0.0};
+    double m_inflow_wind_direction_to_amrwind{0.0};
     
     std::vector<double> m_turbine_power_to_controller;
     std::vector<double> m_turbine_yaw_to_controller;    

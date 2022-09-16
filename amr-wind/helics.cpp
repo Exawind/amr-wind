@@ -1,5 +1,7 @@
 #include "amr-wind/helics.H"
 
+#include "AMReX_ParmParse.H"
+
 #include <sstream>
 #include <iostream>
 #include <string>
@@ -41,6 +43,16 @@ helics_storage::helics_storage(CFDSim& sim)
     
     m_inflow_wind_speed_to_amrwind = 0.0;
     m_inflow_wind_direction_to_amrwind = 0.0;    
+    
+    // parse input file and count how many actuators exist
+    amrex::Vector<std::string> actuators;
+    amrex::ParmParse pp("Actuator");
+    pp.queryarr("labels", actuators);
+    
+    if(actuators.size() > 0) {
+    	m_num_turbines = actuators.size();
+    }
+    
     m_turbine_power_to_controller.resize(m_num_turbines, 0.0);
     m_turbine_yaw_to_controller.resize(m_num_turbines, 0.0);  
     m_turbine_yaw_to_amrwind.resize(m_num_turbines, 0.0);  
