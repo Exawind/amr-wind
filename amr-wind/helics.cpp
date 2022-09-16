@@ -40,9 +40,7 @@ helics_storage::helics_storage(CFDSim& sim)
     // currenttime = m_vfed->getCurrentTime();
     std::cout <<"Creation complete!! ";
     // std::cout <<"\n" << m_sub.getString();
-    
-    m_inflow_wind_speed_to_amrwind = 0.0;
-    m_inflow_wind_direction_to_amrwind = 0.0;    
+     
     
     // parse input file and count how many actuators exist
     amrex::Vector<std::string> actuators;
