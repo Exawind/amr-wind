@@ -7,37 +7,19 @@ namespace amr_wind {
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GaussianPulseFV::operator()(
     const amrex::Real x,
-    const amrex::Real y,
+    const amrex::Real /*unused*/,
     const amrex::Real dx,
-    const amrex::Real dy,
+    const amrex::Real /*unused*/,
     const amrex::Real x0,
-    const amrex::Real y0,
+    const amrex::Real /*unused*/,
     const amrex::Real amplitude,
     const amrex::Real x_width,
-    const amrex::Real y_width,
-    const amrex::Real x_wavenumber,
-    const amrex::Real y_wavenumber) const
+    const amrex::Real /*unused*/,
+    const amrex::Real /*unused*/,
+    const amrex::Real /*unused*/) const
 {
     if (std::abs(x - x0) < 6 * x_width) {
         return sqrt(utils::pi() / 2) * amplitude * x_width * (std::erf((x - x0 + dx / 2) / (sqrt(2) * x_width)) - std::erf((x - x0 - dx / 2) / (sqrt(2) * x_width))) / dx;
-    } else {
-        return 0.0;
-    }
-}
-
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GaussianPulse::operator()(
-    const amrex::Real x,
-    const amrex::Real y,
-    const amrex::Real x0,
-    const amrex::Real y0,
-    const amrex::Real amplitude,
-    const amrex::Real x_width,
-    const amrex::Real y_width,
-    const amrex::Real x_wavenumber,
-    const amrex::Real y_wavenumber) const
-{
-    if (std::abs(x - x0) < 6 * x_width) {
-        return amplitude * std::exp( - std::pow(x - x0, 2) / (2 * std::pow(x_width, 2)));
     } else {
         return 0.0;
     }
@@ -53,8 +35,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real TwoDimGaussianPulseFV::oper
     const amrex::Real amplitude,
     const amrex::Real x_width,
     const amrex::Real y_width,
-    const amrex::Real x_wavenumber,
-    const amrex::Real y_wavenumber) const
+    const amrex::Real /*unused*/,
+    const amrex::Real /*unused*/) const
 {
     if (std::abs(x - x0) < 6 * x_width && std::abs(y - y0) < 6 * y_width)  {
         return utils::pi() / 2 * amplitude * x_width * y_width * (std::erf((x - x0 + dx / 2) / (sqrt(2) * x_width)) - std::erf((x - x0 - dx / 2) / (sqrt(2) * x_width))) * (std::erf((y - y0 + dy / 2) / (sqrt(2) * y_width)) - std::erf((y - y0 - dy / 2) / (sqrt(2) * y_width)))/ dx / dy;
@@ -63,36 +45,18 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real TwoDimGaussianPulseFV::oper
     }
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real TwoDimGaussianPulse::operator()(
-    const amrex::Real x,
-    const amrex::Real y,
-    const amrex::Real x0,
-    const amrex::Real y0,
-    const amrex::Real amplitude,
-    const amrex::Real x_width,
-    const amrex::Real y_width,
-    const amrex::Real x_wavenumber,
-    const amrex::Real y_wavenumber) const
-{
-    if (std::abs(x - x0) < 6 * x_width && std::abs(y - y0) < 6)  {
-        return amplitude * std::exp( - std::pow(x - x0, 2) / (2 * std::pow(x_width, 2))) * std::exp( - std::pow(y - y0, 2) / (2 * std::pow(y_width, 2)));
-    } else {
-        return 0.0;
-    }
-}
-
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real SquarePulseFV::operator()(
     const amrex::Real x,
-    const amrex::Real y,
+    const amrex::Real /*unused*/,
     const amrex::Real dx,
-    const amrex::Real dy,
+    const amrex::Real /*unused*/,
     const amrex::Real x0,
-    const amrex::Real y0,
+    const amrex::Real /*unused*/,
     const amrex::Real amplitude,
     const amrex::Real x_width,
-    const amrex::Real y_width,
-    const amrex::Real x_wavenumber,
-    const amrex::Real y_wavenumber) const
+    const amrex::Real /*unused*/,
+    const amrex::Real /*unused*/,
+    const amrex::Real /*unused*/) const
 {
     if (std::abs(std::abs(x - x0) - x_width / 2) < dx / 2) {
         return amplitude * (x_width / 2 - std::abs(x - x0) + dx / 2) / dx;
@@ -105,16 +69,16 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real SquarePulseFV::operator()(
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GaussianWavePacketFV::operator()(
     const amrex::Real x,
-    const amrex::Real y,
+    const amrex::Real /*unused*/,
     const amrex::Real dx,
-    const amrex::Real dy,
+    const amrex::Real /*unused*/,
     const amrex::Real x0,
-    const amrex::Real y0,
+    const amrex::Real /*unused*/,
     const amrex::Real amplitude,
     const amrex::Real x_width,
-    const amrex::Real y_width,
+    const amrex::Real /*unused*/,
     const amrex::Real x_wavenumber,
-    const amrex::Real y_wavenumber) const
+    const amrex::Real /*unused*/) const
 {
     const GaussianWavePacket pointwise_function;
     // Gauss-Legendre quadrature
@@ -122,21 +86,17 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GaussianWavePacketFV::opera
     const amrex::Vector<amrex::Real> w_i = {0.5555555556, 0.8888888889, 0.5555555556};
     amrex::Real cell_integral = 0.0;
     for (int i = 0; i != dx_i.size(); ++i){
-        cell_integral = cell_integral + w_i[i] * pointwise_function(x + dx_i[i] * 0.5 * dx, y, x0, y0, amplitude, x_width, y_width, x_wavenumber, y_wavenumber);
+        cell_integral = cell_integral + w_i[i] * pointwise_function(x + dx_i[i] * 0.5 * dx, x0, amplitude, x_width, x_wavenumber);
     }
     return cell_integral / 2;
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GaussianWavePacket::operator()(
     const amrex::Real x,
-    const amrex::Real y,
     const amrex::Real x0,
-    const amrex::Real y0,
     const amrex::Real amplitude,
     const amrex::Real x_width,
-    const amrex::Real y_width,
-    const amrex::Real x_wavenumber,
-    const amrex::Real y_wavenumber) const
+    const amrex::Real x_wavenumber) const
 {
     if (std::abs(x - x0) < 6 * x_width) {
         return amplitude * std::cos(x_wavenumber * x) * std::exp( - std::pow(x - x0, 2) / (2 * std::pow(x_width, 2)));
@@ -178,7 +138,7 @@ ScalarAdvection::ScalarAdvection(CFDSim& sim)
 /** Initialize the velocity and temperature fields at the beginning of the
  *  simulation.
  */
-void ScalarAdvection::initialize_fields(int level, const amrex::Geometry& geom)
+void ScalarAdvection::initialize_fields(int level, const amrex::Geometry& /*geom*/)
 {
     const amrex::Real u = m_u;
     const amrex::Real v = m_v;
@@ -249,7 +209,6 @@ void ScalarAdvection::initialize_scalar(const Shape& scalar_function)
             });
         }
     }
-
 }
 
 template <typename Shape>
