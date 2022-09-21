@@ -28,9 +28,7 @@ public:
     std::string fedinitstring = "--federates=1";
     double deltat = 0.01; // what is this for? should we use m_time.deltaT() instead?
 
-    std::unique_ptr<helicscpp::FederateInfo> m_fi;
-    std::unique_ptr<helicscpp::CombinationFederate> m_vfed;
-    
+
     int m_num_turbines{1};
     
     double m_inflow_wind_speed_to_amrwind{10.0};
@@ -43,6 +41,8 @@ public:
 private:
 
     CFDSim& m_sim;
+    std::unique_ptr<helicscpp::FederateInfo> m_fi;
+    std::unique_ptr<helicscpp::CombinationFederate> m_vfed;
     
 };
 
