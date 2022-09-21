@@ -13,11 +13,11 @@ void inject_turbulence_src_terms(
 {
     amrex::ParmParse pp(key);
     amrex::Vector<std::string> srcin;
-    pp.queryarr("sources", srcin);
+    pp.queryarr("source_terms", srcin);
 
     // If there are no sources (usually the case) then add sources and return
     if (srcin.empty()) {
-        pp.addarr("sources", terms);
+        pp.addarr("source_terms", terms);
         return;
     }
 
@@ -38,7 +38,7 @@ void inject_turbulence_src_terms(
     for (const auto& sname : sterm_set) {
         srcin.emplace_back(sname);
     }
-    pp.addarr("sources", srcin);
+    pp.addarr("source_terms", srcin);
 }
 
 } // namespace turb_utils
