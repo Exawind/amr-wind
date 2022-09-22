@@ -1,4 +1,6 @@
 #include "amr-wind/helics.H"
+#include "amr-wind/wind_energy/ABL.H"
+#include "amr-wind/utilities/trig_ops.H"
 
 #include "AMReX_ParmParse.H"
 
@@ -112,10 +114,10 @@ void helics_storage::recv_messages_from_controller()
 			return_list.pop_front();
 			m_inflow_wind_speed_to_amrwind = return_list.front();
 			return_list.pop_front();
-			float time= return_list.front();
+			float time = return_list.front();
 			return_list.pop_front();
 
-			std::cout << "\n speed: "<<m_inflow_wind_speed_to_amrwind <<"  direction: "<<m_inflow_wind_direction_to_amrwind<<" Time "<<time << std::endl;
+			std::cout << "\n speed: "<< m_inflow_wind_speed_to_amrwind << "  direction: "<< m_inflow_wind_direction_to_amrwind << " Time "<< time << std::endl;
 
         }
 
@@ -125,18 +127,34 @@ void helics_storage::recv_messages_from_controller()
 
         int pubCount = m_vfed->getPublicationCount();
 
+		amrex::Real wind_speed = 123.0;
+		amrex::Real wind_direction = 456.0;
+		
+    	auto& phy_mgr = m_sim.physics_manager();
+    	if (phy_mgr.contains("ABL")) {
+    		auto& abl = phy_mgr.get<amr_wind::ABL>();
+			const amrex::Real height = 120.0;
+    		wind_speed = abl.abl_statistics().vel_profile().line_hvelmag_average_interpolated(height);
+    		amrex::Real velx = abl.abl_statistics().vel_profile().line_average_interpolated(height,0);
+    		amrex::Real vely = abl.abl_statistics().vel_profile().line_average_interpolated(height,1);
+        	const amrex::Real turbine_angle = std::atan2(vely,velx);
+        	wind_direction = amr_wind::utils::degrees(turbine_angle) - 180.0;  
+    	}
+        
+        std::cout << "pub count: " << pubCount << std::endl;
+        
         for (int i = 0; i < pubCount; i++) {
             pub = m_vfed->getPublication(i);
 
-            ssToControlCenter << "[" ;
+            ssToControlCenter << "[" << m_sim.time().current_time() << ", " << wind_speed << " , " << wind_direction;
 
             for (int yy=0;yy<m_turbine_power_to_controller.size(); yy++)
             {    
-            	ssToControlCenter <<m_turbine_power_to_controller[yy];
             	ssToControlCenter << ",";
+            	ssToControlCenter << m_turbine_power_to_controller[yy];
             }
             
-            ssToControlCenter << m_sim.time().current_time() << "]";
+            ssToControlCenter << "]";
 
             std::string strToControlCenter;
             strToControlCenter = ssToControlCenter.str();
