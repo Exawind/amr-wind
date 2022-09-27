@@ -66,6 +66,7 @@ public:
 
 protected:
     // No file output during test
+    void prepare_ascii_file() override {}
     void write_ascii() override {}
 };
 
