@@ -170,6 +170,7 @@ if(AMR_WIND_ENABLE_HELICS)
   find_package(HELICS 3 REQUIRED)
   include_directories(AFTER ${HELICS_INSTALL_DIR}/include)
   target_link_libraries(${amr_wind_lib_name} PUBLIC HELICS::helicsCpp98)
+  target_compile_definitions(${amr_wind_lib_name} PRIVATE AMR_WIND_USE_HELICS)
 endif()
 
 if(AMR_WIND_ENABLE_NETCDF)

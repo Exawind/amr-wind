@@ -28,7 +28,7 @@ struct UpdatePosOp<UniformCt, ActSrcDisk>
 {
     void operator()(typename UniformCt::DataType& data)
     {
-
+return;
         auto& meta = data.meta();
 
 		const amrex::Real wind_direction = data.sim().helics().m_turbine_yaw_to_amrwind[data.info().id];              	

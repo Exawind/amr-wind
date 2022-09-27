@@ -133,12 +133,12 @@ void helics_storage::recv_messages_from_controller()
     	auto& phy_mgr = m_sim.physics_manager();
     	if (phy_mgr.contains("ABL")) {
     		auto& abl = phy_mgr.get<amr_wind::ABL>();
-			const amrex::Real height = 120.0;
+			const amrex::Real height = 90.0;
     		wind_speed = abl.abl_statistics().vel_profile().line_hvelmag_average_interpolated(height);
     		amrex::Real velx = abl.abl_statistics().vel_profile().line_average_interpolated(height,0);
     		amrex::Real vely = abl.abl_statistics().vel_profile().line_average_interpolated(height,1);
         	const amrex::Real turbine_angle = std::atan2(vely,velx);
-        	wind_direction = amr_wind::utils::degrees(turbine_angle) - 180.0;  
+        	wind_direction = -amr_wind::utils::degrees(turbine_angle) + 270.0;  
     	}
         
         std::cout << "pub count: " << pubCount << std::endl;
