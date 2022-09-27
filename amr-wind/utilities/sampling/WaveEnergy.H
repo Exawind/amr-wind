@@ -54,7 +54,7 @@ public:
 
 private:
     //! prepare ASCII file and directory
-    void prepare_ascii_file();
+    virtual void prepare_ascii_file();
 
     //! Output sampled data in ASCII format
     virtual void write_ascii();
