@@ -12,11 +12,7 @@ namespace free_surface {
 
 FreeSurface::FreeSurface(CFDSim& sim, std::string label)
     : m_sim(sim), m_label(std::move(label)), m_vof(sim.repo().get_field("vof"))
-{
-#ifdef AMREX_USE_GPU
-    amrex::Print() << "WARNING: FreeSurface: Running on GPUs..." << std::endl;
-#endif
-}
+{}
 
 FreeSurface::~FreeSurface() = default;
 
@@ -519,9 +515,8 @@ void FreeSurface::post_advance_work()
                                                  0.5 * dx[dir] * (1.0 + 1e-8)) {
                                         ht = xm[dir] + 0.5 * dx[dir];
                                     }
-                                    // Save interface location
-                                    dout_ptr[idx] =
-                                        amrex::max(dout_ptr[idx], ht);
+                                    // Save interface location by atomic max
+                                    amrex::Gpu::Atomic::Max(&dout_ptr[idx], ht);
                                 }
                             }
                         }
