@@ -69,8 +69,8 @@ helics_storage::helics_storage(CFDSim& sim)
     }
 
     m_turbine_power_to_controller.resize(m_num_turbines, 0.0);
-    m_turbine_yaw_to_controller.resize(m_num_turbines, 0.0);
-    m_turbine_yaw_to_amrwind.resize(m_num_turbines, 0.0);
+    m_turbine_wind_direction_to_controller.resize(m_num_turbines, 0.0);
+    m_turbine_yaw_to_amrwind.resize(m_num_turbines, 270.0);
 }
 
 void helics_storage::send_messages_to_controller()
@@ -110,15 +110,25 @@ void helics_storage::recv_messages_from_controller()
 			std::list<double> return_list;
 			tokenize(charFromControlCenter.str(), ",", return_list);
 
+			for(int i=m_turbine_yaw_to_amrwind.size()-1; i >= 0; --i) {
+				m_turbine_yaw_to_amrwind[i] = return_list.front();
+				return_list.pop_front();			
+			}
+			
 			m_inflow_wind_direction_to_amrwind = return_list.front();
 			return_list.pop_front();
 			m_inflow_wind_speed_to_amrwind = return_list.front();
 			return_list.pop_front();
 			float time = return_list.front();
 			return_list.pop_front();
+			
 
 			std::cout << "\n speed: "<< m_inflow_wind_speed_to_amrwind << "  direction: "<< m_inflow_wind_direction_to_amrwind << " Time "<< time << std::endl;
-
+			for(int i=0; i < m_turbine_yaw_to_amrwind.size(); ++i) {
+				std::cout << "T" << i << " yaw: "  << m_turbine_yaw_to_amrwind[i] << ' ';
+			}
+			std::cout << std::endl;
+			
         }
 
         std::stringstream ssToControlCenter;
@@ -138,7 +148,7 @@ void helics_storage::recv_messages_from_controller()
     		amrex::Real velx = abl.abl_statistics().vel_profile().line_average_interpolated(height,0);
     		amrex::Real vely = abl.abl_statistics().vel_profile().line_average_interpolated(height,1);
         	const amrex::Real turbine_angle = std::atan2(vely,velx);
-        	wind_direction = -amr_wind::utils::degrees(turbine_angle) + 270.0;  
+        	wind_direction = - amr_wind::utils::degrees(turbine_angle) + 270.0;  
     	}
         
         std::cout << "pub count: " << pubCount << std::endl;
@@ -152,6 +162,12 @@ void helics_storage::recv_messages_from_controller()
             {    
             	ssToControlCenter << ",";
             	ssToControlCenter << m_turbine_power_to_controller[yy];
+            }
+            
+            for (int yy=0;yy<m_turbine_wind_direction_to_controller.size(); yy++)
+            {    
+            	ssToControlCenter << ",";
+            	ssToControlCenter << m_turbine_wind_direction_to_controller[yy];
             }
             
             ssToControlCenter << "]";

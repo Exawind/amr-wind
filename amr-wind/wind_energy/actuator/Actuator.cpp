@@ -101,11 +101,11 @@ void Actuator::pre_advance_work()
     for (auto& ac : m_actuators) {    
         if(ac->info().is_root_proc) {
             amrex::ParallelDescriptor::Send(&m_sim.helics().m_turbine_power_to_controller[ac->info().id], size, amrex::ParallelDescriptor::IOProcessorNumber(), ptag);
-            amrex::ParallelDescriptor::Send(&m_sim.helics().m_turbine_yaw_to_controller[ac->info().id], size, amrex::ParallelDescriptor::IOProcessorNumber(), ytag);
+            amrex::ParallelDescriptor::Send(&m_sim.helics().m_turbine_wind_direction_to_controller[ac->info().id], size, amrex::ParallelDescriptor::IOProcessorNumber(), ytag);
         }
         if(amrex::ParallelDescriptor::IOProcessor()){
             amrex::ParallelDescriptor::Recv(&m_sim.helics().m_turbine_power_to_controller[ac->info().id], size, ac->info().root_proc, ptag);
-            amrex::ParallelDescriptor::Recv(&m_sim.helics().m_turbine_yaw_to_controller[ac->info().id], size, ac->info().root_proc, ytag);
+            amrex::ParallelDescriptor::Recv(&m_sim.helics().m_turbine_wind_direction_to_controller[ac->info().id], size, ac->info().root_proc, ytag);
         }
     }
     

@@ -31,11 +31,11 @@ public:
 
     int m_num_turbines{1};
     
-    double m_inflow_wind_speed_to_amrwind{10.0};
-    double m_inflow_wind_direction_to_amrwind{250.0};
+    double m_inflow_wind_speed_to_amrwind{8.0};
+    double m_inflow_wind_direction_to_amrwind{270.0};
     
     std::vector<double> m_turbine_power_to_controller;
-    std::vector<double> m_turbine_yaw_to_controller;    
+    std::vector<double> m_turbine_wind_direction_to_controller;    
     std::vector<double> m_turbine_yaw_to_amrwind;    
     
 private:

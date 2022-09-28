@@ -51,10 +51,9 @@ struct UpdatePosOp<Joukowsky, ActSrcDisk>
     void operator()(typename Joukowsky::DataType& data)
     {
     
-        return; 
         auto& meta = data.meta();
 
-		const amrex::Real turbine_direction = data.sim().helics().m_turbine_yaw_to_amrwind[data.info().id] - 270.0;              	
+		const amrex::Real turbine_direction = - data.sim().helics().m_turbine_yaw_to_amrwind[data.info().id] + 90.0;              	
     	const amrex::Real turbine_direction_radian = amr_wind::utils::radians(turbine_direction);
     
         meta.normal_vec[0] = std::cos(turbine_direction_radian);
@@ -259,7 +258,8 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
 
         	data.sim().helics().m_turbine_power_to_controller[data.info().id] = ddata.current_power;        
         	const amrex::Real turbine_angle = std::atan2(ddata.reference_velocity[1],ddata.reference_velocity[0]);
-        	data.sim().helics().m_turbine_yaw_to_controller[data.info().id] = amr_wind::utils::degrees(turbine_angle);               	
+        	data.sim().helics().m_turbine_wind_direction_to_controller[data.info().id] = 270.0 - amr_wind::utils::degrees(turbine_angle);   
+                  	
         }
     }
 };
