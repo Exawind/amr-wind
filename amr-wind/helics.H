@@ -5,9 +5,11 @@
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/CFDSim.H"
 
+#ifdef AMR_WIND_USE_HELICS
 #include "helics/cpp98/CombinationFederate.hpp"
 #include "helics/cpp98/helics.hpp"
 #include "helics/cpp98/Federate.hpp"
+#endif
 
 namespace amr_wind {
 
@@ -21,8 +23,10 @@ public:
     void send_messages_to_controller();
     void recv_messages_from_controller();
 
+#ifdef AMR_WIND_USE_HELICS
     HelicsTime currenttime = 0.0;
     std::string fedinitstring = "--federates=1";
+#endif
     double deltat =
         0.01; // what is this for? should we use m_time.deltaT() instead?
 
@@ -37,8 +41,10 @@ public:
 
 private:
     CFDSim& m_sim;
+#ifdef AMR_WIND_USE_HELICS
     std::unique_ptr<helicscpp::FederateInfo> m_fi;
     std::unique_ptr<helicscpp::CombinationFederate> m_vfed;
+#endif
 };
 
 } // namespace amr_wind

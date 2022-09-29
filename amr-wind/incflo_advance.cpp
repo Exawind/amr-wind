@@ -28,8 +28,10 @@ void incflo::pre_advance_stage2()
         pp->pre_advance_work();
     }
 
+#ifdef AMR_WIND_USE_HELICS
     m_sim.helics().send_messages_to_controller();
     m_sim.helics().recv_messages_from_controller();
+#endif
 }
 
 /** Advance simulation state by one timestep

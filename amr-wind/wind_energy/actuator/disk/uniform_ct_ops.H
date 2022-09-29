@@ -28,6 +28,7 @@ struct UpdatePosOp<UniformCt, ActSrcDisk>
 {
     void operator()(typename UniformCt::DataType& data)
     {
+#ifdef AMR_WIND_USE_HELICS
 
         auto& meta = data.meta();
 
@@ -50,6 +51,7 @@ struct UpdatePosOp<UniformCt, ActSrcDisk>
                       << meta.normal_vec[1] << std::endl;
         }
         uniformct::update_disk_points(data);
+#endif
     }
 };
 // compute the total force over a given radial section
@@ -79,6 +81,7 @@ struct ComputeForceOp<UniformCt, ActSrcDisk>
             // disk force should always point in direction of the normal
             grid.force[ip] = (aeroPressure * a) * normal;
         }
+#ifdef AMR_WIND_USE_HELICS
 
         if (data.info().is_root_proc) {
 
@@ -100,6 +103,7 @@ struct ComputeForceOp<UniformCt, ActSrcDisk>
                 .m_turbine_wind_direction_to_controller[data.info().id] =
                 -amr_wind::utils::degrees(turbine_angle) + 270.0;
         }
+#endif
     }
 };
 

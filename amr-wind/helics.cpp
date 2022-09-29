@@ -11,7 +11,9 @@
 
 #include <list>
 
+#ifdef AMR_WIND_USE_HELICS
 using namespace helicscpp;
+#endif
 
 void tokenize(std::string s, std::string del, std::list<double>& return_list)
 {
@@ -34,6 +36,8 @@ namespace amr_wind {
 
 helics_storage::helics_storage(CFDSim& sim) : m_sim(sim)
 {
+
+#ifdef AMR_WIND_USE_HELICS
 
     if (amrex::ParallelDescriptor::IOProcessor()) {
 
@@ -67,20 +71,26 @@ helics_storage::helics_storage(CFDSim& sim) : m_sim(sim)
     m_turbine_power_to_controller.resize(m_num_turbines, 0.0);
     m_turbine_wind_direction_to_controller.resize(m_num_turbines, 0.0);
     m_turbine_yaw_to_amrwind.resize(m_num_turbines, 270.0);
+
+#endif
 }
 
 void helics_storage::send_messages_to_controller()
 {
 
+#ifdef AMR_WIND_USE_HELICS
     // send time, speed (1 + 1)
     // send turbine powers to controller (num_trubines)
     if (amrex::ParallelDescriptor::IOProcessor()) {
         // put helics send stuff here
     }
+#endif
 }
 
 void helics_storage::recv_messages_from_controller()
 {
+
+#ifdef AMR_WIND_USE_HELICS
 
     // receive wind direction and speed from controller (1 + 1)
     // receive turbine yaw directions (num_turbines)
@@ -200,6 +210,7 @@ void helics_storage::recv_messages_from_controller()
         &m_inflow_wind_direction_to_amrwind, 1,
         amrex::ParallelDescriptor::IOProcessorNumber(),
         amrex::ParallelDescriptor::Communicator());
+#endif
 }
 
 helics_storage::~helics_storage() = default;

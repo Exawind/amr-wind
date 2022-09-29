@@ -93,6 +93,7 @@ void Actuator::pre_advance_work()
     compute_forces();
     compute_source_term();
 
+#ifdef AMR_WIND_USE_HELICS
     // send power and yaw from root actuator proc to io proc
     const int ptag = 0;
     const int ytag = 1;
@@ -117,6 +118,7 @@ void Actuator::pre_advance_work()
                 size, ac->info().root_proc, ytag);
         }
     }
+#endif
 }
 
 /** Set up the container for sampling velocities

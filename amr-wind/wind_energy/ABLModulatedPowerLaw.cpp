@@ -10,11 +10,6 @@
 #include <iostream>
 #include <string>
 
-#include "helics/cpp98/CombinationFederate.hpp"
-#include "helics/cpp98/helics.hpp"
-#include "helics/cpp98/Federate.hpp"
-
-using namespace helicscpp;
 namespace amr_wind {
 
 ABLModulatedPowerLaw::ABLModulatedPowerLaw(CFDSim& sim)
@@ -89,6 +84,7 @@ void ABLModulatedPowerLaw::post_init_actions()
 void ABLModulatedPowerLaw::pre_advance_work()
 {
 
+#ifdef AMR_WIND_USE_HELICS
     const amrex::Real wind_speed =
         m_sim.helics().m_inflow_wind_speed_to_amrwind;
     const amrex::Real wind_direction =
@@ -99,9 +95,7 @@ void ABLModulatedPowerLaw::pre_advance_work()
     m_uvec[0] = wind_speed * std::cos(wind_direction_radian);
     m_uvec[1] = wind_speed * std::sin(wind_direction_radian);
     m_uvec[2] = 0.0;
-
-    //     std::cout<<" X and y veloctities
-    //     "<<m_uvec[0]<<","<<m_uvec[1]<<","<<m_uvec[2]<<std::endl;
+#endif
 }
 
 void ABLModulatedPowerLaw::post_advance_work() {}
