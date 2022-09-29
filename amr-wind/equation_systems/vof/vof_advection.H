@@ -22,7 +22,6 @@ struct AdvectionOp<VOF, fvm::Godunov>
         , w_mac(fields_in.repo.get_field("w_mac"))
     {
         amrex::ParmParse pp_multiphase("VOF");
-        pp_multiphase.query("use_lagrangian", m_use_lagrangian);
         pp_multiphase.query("remove_debris", m_rm_debris);
 
         // Setup density factor arrays for multiplying velocity flux
@@ -87,17 +86,17 @@ struct AdvectionOp<VOF, fvm::Godunov>
         multiphase::split_advection_step(
             isweep, 0, nlevels, dof_field, fluxes, (*fluxC), advas, u_mac,
             v_mac, w_mac, dof_field.bcrec_device().data(), geom, dt,
-            m_use_lagrangian, m_rm_debris);
+            m_rm_debris);
         // Split advection step 2
         multiphase::split_advection_step(
             isweep, 1, nlevels, dof_field, fluxes, (*fluxC), advas, u_mac,
             v_mac, w_mac, dof_field.bcrec_device().data(), geom, dt,
-            m_use_lagrangian, m_rm_debris);
+            m_rm_debris);
         // Split advection step 3
         multiphase::split_advection_step(
             isweep, 2, nlevels, dof_field, fluxes, (*fluxC), advas, u_mac,
             v_mac, w_mac, dof_field.bcrec_device().data(), geom, dt,
-            m_use_lagrangian, m_rm_debris);
+            m_rm_debris);
     }
 
     PDEFields& fields;
@@ -105,8 +104,8 @@ struct AdvectionOp<VOF, fvm::Godunov>
     Field& v_mac;
     Field& w_mac;
     int isweep = 0;
-    bool m_use_lagrangian{false};
     bool m_rm_debris{true};
+    // Lagrangian transport is deprecated, only Eulerian is supported
 };
 
 } // namespace pde

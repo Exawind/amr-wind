@@ -22,10 +22,9 @@ void multiphase::split_advection_step(
     amrex::BCRec const* pbc,
     amrex::Vector<amrex::Geometry> geom,
     amrex::Real dt,
-    bool use_lagrangian,
     bool rm_debris)
 {
-    BL_PROFILE("amr-wind::multiphase::split_compute_fluxes");
+    BL_PROFILE("amr-wind::multiphase::split_advection_step");
 
     for (int lev = 0; lev < nlevels; ++lev) {
         amrex::MFItInfo mfi_info;
@@ -45,19 +44,17 @@ void multiphase::split_advection_step(
             // Compression term coefficient
             if (iorder == 0) {
                 multiphase::cmask_loop(
-                    bx, dof_field(lev).array(mfi), fluxC(lev).array(mfi),
-                    use_lagrangian);
+                    bx, dof_field(lev).array(mfi), fluxC(lev).array(mfi));
             }
 
             // Calculate fluxes involved in this stage of split advection
             multiphase::split_compute_fluxes(
                 lev, bx, isweep + iorder, dof_field(lev).const_array(mfi),
-                fluxC(lev).array(mfi), u_mac(lev).const_array(mfi),
-                v_mac(lev).const_array(mfi), w_mac(lev).const_array(mfi),
-                (*advas[lev][0]).array(mfi), (*advas[lev][1]).array(mfi),
-                (*advas[lev][2]).array(mfi), (*fluxes[lev][0]).array(mfi),
-                (*fluxes[lev][1]).array(mfi), (*fluxes[lev][2]).array(mfi), pbc,
-                tmpfab.dataPtr(), geom, dt, use_lagrangian);
+                u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
+                w_mac(lev).const_array(mfi), (*advas[lev][0]).array(mfi),
+                (*advas[lev][1]).array(mfi), (*advas[lev][2]).array(mfi),
+                (*fluxes[lev][0]).array(mfi), (*fluxes[lev][1]).array(mfi),
+                (*fluxes[lev][2]).array(mfi), pbc, tmpfab.dataPtr(), geom, dt);
 
             amrex::Gpu::streamSynchronize();
         }
@@ -92,7 +89,7 @@ void multiphase::split_advection_step(
                 v_mac(lev).const_array(mfi), w_mac(lev).const_array(mfi),
                 (*fluxes[lev][0]).const_array(mfi),
                 (*fluxes[lev][1]).const_array(mfi),
-                (*fluxes[lev][2]).const_array(mfi), geom, dt, use_lagrangian);
+                (*fluxes[lev][2]).const_array(mfi), geom, dt);
 
             // Remove debris if desired after last step
             if (rm_debris && iorder == 2) {
@@ -110,7 +107,6 @@ void multiphase::split_compute_fluxes(
     amrex::Box const& bx,
     const int isweep,
     amrex::Array4<amrex::Real const> const& volfrac,
-    amrex::Array4<amrex::Real> const& fluxC,
     amrex::Array4<amrex::Real const> const& umac,
     amrex::Array4<amrex::Real const> const& vmac,
     amrex::Array4<amrex::Real const> const& wmac,
@@ -123,8 +119,7 @@ void multiphase::split_compute_fluxes(
     amrex::BCRec const* pbc,
     amrex::Real* p,
     amrex::Vector<amrex::Geometry> geom,
-    const amrex::Real dt,
-    const bool is_lagrangian)
+    const amrex::Real dt)
 {
     BL_PROFILE("amr-wind::multiphase::split_compute_fluxes");
     Box const& bxg1 = amrex::grow(bx, 1);
@@ -150,9 +145,7 @@ void multiphase::split_compute_fluxes(
     p += vofR.size();
 
     if (isweep % 3 == 0) {
-        sweep_fluxes(
-            2, bx, dtdz, wmac, volfrac, fluxL, fluxC, fluxR, vofL, vofR,
-            is_lagrangian);
+        sweep_fluxes(2, bx, dtdz, wmac, volfrac, fluxL, fluxR, vofL, vofR);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 fluxes_bc_save(
@@ -160,9 +153,7 @@ void multiphase::split_compute_fluxes(
                     domlo.z, domhi.z);
             });
     } else if (isweep % 3 == 1) {
-        sweep_fluxes(
-            1, bx, dtdy, vmac, volfrac, fluxL, fluxC, fluxR, vofL, vofR,
-            is_lagrangian);
+        sweep_fluxes(1, bx, dtdy, vmac, volfrac, fluxL, fluxR, vofL, vofR);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 fluxes_bc_save(
@@ -170,9 +161,7 @@ void multiphase::split_compute_fluxes(
                     domlo.y, domhi.y);
             });
     } else {
-        sweep_fluxes(
-            0, bx, dtdx, umac, volfrac, fluxL, fluxC, fluxR, vofL, vofR,
-            is_lagrangian);
+        sweep_fluxes(0, bx, dtdx, umac, volfrac, fluxL, fluxR, vofL, vofR);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 fluxes_bc_save(
@@ -195,37 +184,29 @@ void multiphase::split_compute_sum(
     amrex::Array4<amrex::Real const> const& fy,
     amrex::Array4<amrex::Real const> const& fz,
     amrex::Vector<amrex::Geometry> geom,
-    const amrex::Real dt,
-    const bool is_lagrangian)
+    const amrex::Real dt)
 {
     BL_PROFILE("amr-wind::multiphase::split_compute_sum");
 
     const auto dxinv = geom[lev].InvCellSizeArray();
 
     if (isweep % 3 == 0) {
-        sweep_balance(
-            2, dt, dxinv[2], bx, wmac, volfrac, fz, fluxC, is_lagrangian);
+        sweep_balance(2, dt, dxinv[2], bx, wmac, volfrac, fz, fluxC);
     } else if (isweep % 3 == 1) {
-        sweep_balance(
-            1, dt, dxinv[1], bx, vmac, volfrac, fy, fluxC, is_lagrangian);
+        sweep_balance(1, dt, dxinv[1], bx, vmac, volfrac, fy, fluxC);
     } else {
-        sweep_balance(
-            0, dt, dxinv[0], bx, umac, volfrac, fx, fluxC, is_lagrangian);
+        sweep_balance(0, dt, dxinv[0], bx, umac, volfrac, fx, fluxC);
     }
 }
 
 void multiphase::cmask_loop(
     amrex::Box const& bx,
     amrex::Array4<amrex::Real> const& volfrac,
-    amrex::Array4<amrex::Real> const& fluxC,
-    bool is_lagrangian)
+    amrex::Array4<amrex::Real> const& fluxC)
 {
-    if (!is_lagrangian) {
-        amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                multiphase::c_mask(i, j, k, volfrac, fluxC);
-            });
-    }
+    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+        multiphase::c_mask(i, j, k, volfrac, fluxC);
+    });
 }
 
 void multiphase::debris_loop(
@@ -244,11 +225,9 @@ void multiphase::sweep_fluxes(
     amrex::Array4<amrex::Real const> const& vel_mac,
     amrex::Array4<amrex::Real const> const& volfrac,
     amrex::Array4<amrex::Real> const& fluxL,
-    amrex::Array4<amrex::Real> const& fluxC,
     amrex::Array4<amrex::Real> const& fluxR,
     amrex::Array4<amrex::Real> const& vofL,
-    amrex::Array4<amrex::Real> const& vofR,
-    const bool is_lagrangian)
+    amrex::Array4<amrex::Real> const& vofR)
 {
 
     BL_PROFILE("amr-wind::multiphase::sweep_fluxes");
@@ -259,25 +238,14 @@ void multiphase::sweep_fluxes(
     int jj = (dir == 1) ? 1 : 0;
     int kk = (dir == 2) ? 1 : 0;
 
-    if (is_lagrangian) {
-        amrex::ParallelFor(
-            bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                amrex::Real velL = vel_mac(i, j, k);
-                amrex::Real velR = vel_mac(i + ii, j + jj, k + kk);
-                multiphase::lagrangian_explicit(
-                    i, j, k, dir, dtdx, velL, velR, volfrac, fluxL, fluxC,
-                    fluxR);
-            });
-    } else {
-        amrex::ParallelFor(
-            bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                amrex::Real velL = vel_mac(i, j, k);
-                amrex::Real velR = vel_mac(i + ii, j + jj, k + kk);
-                multiphase::eulerian_implicit(
-                    i, j, k, dir, dtdx, velL, velR, volfrac, fluxL, fluxR, vofL,
-                    vofR);
-            });
-    }
+    amrex::ParallelFor(
+        bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            amrex::Real velL = vel_mac(i, j, k);
+            amrex::Real velR = vel_mac(i + ii, j + jj, k + kk);
+            multiphase::eulerian_implicit(
+                i, j, k, dir, dtdx, velL, velR, volfrac, fluxL, fluxR, vofL,
+                vofR);
+        });
 }
 
 void multiphase::sweep_balance(
@@ -288,8 +256,7 @@ void multiphase::sweep_balance(
     amrex::Array4<amrex::Real const> const& vel_mac,
     amrex::Array4<amrex::Real> const& volfrac,
     amrex::Array4<amrex::Real const> const& fluxF,
-    amrex::Array4<amrex::Real const> const& fluxC,
-    const bool is_lagrangian)
+    amrex::Array4<amrex::Real const> const& fluxC)
 {
 
     BL_PROFILE("amr-wind::multiphase::sweep_balance");
@@ -298,21 +265,12 @@ void multiphase::sweep_balance(
     int jj = (dir == 1) ? 1 : 0;
     int kk = (dir == 2) ? 1 : 0;
 
-    if (is_lagrangian) {
-        /*amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                multiphase::balance_lagrangian_fluxes(
-                    i, j, k, dir, dxi, volfrac, fluxF, fluxC);
-            });*/
-    } else {
-        amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                amrex::Real velL = vel_mac(i, j, k) * dt * dxi;
-                amrex::Real velR = vel_mac(i + ii, j + jj, k + kk) * dt * dxi;
-                multiphase::balance_eulerian_fluxes(
-                    i, j, k, dir, dxi, velL, velR, volfrac, fluxF, fluxC);
-            });
-    }
+    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+        amrex::Real velL = vel_mac(i, j, k) * dt * dxi;
+        amrex::Real velR = vel_mac(i + ii, j + jj, k + kk) * dt * dxi;
+        multiphase::balance_eulerian_fluxes(
+            i, j, k, dir, dxi, velL, velR, volfrac, fluxF, fluxC);
+    });
 }
 
 } // namespace amr_wind

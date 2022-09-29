@@ -21,7 +21,6 @@ void split_advection_step(
     amrex::BCRec const* pbc,
     amrex::Vector<amrex::Geometry> geom,
     amrex::Real dt,
-    bool use_lagrangian,
     bool rm_debris);
 
 void split_compute_fluxes(
@@ -29,7 +28,6 @@ void split_compute_fluxes(
     amrex::Box const& bx,
     const int isweep,
     amrex::Array4<amrex::Real const> const& volfrac,
-    amrex::Array4<amrex::Real> const& fluxC,
     amrex::Array4<amrex::Real const> const& umac,
     amrex::Array4<amrex::Real const> const& vmac,
     amrex::Array4<amrex::Real const> const& wmac,
@@ -42,8 +40,7 @@ void split_compute_fluxes(
     amrex::BCRec const* pbc,
     amrex::Real* p,
     amrex::Vector<amrex::Geometry> geom,
-    const amrex::Real dt,
-    const bool is_lagrangian);
+    const amrex::Real dt);
 
 void split_compute_sum(
     int lev,
@@ -58,14 +55,12 @@ void split_compute_sum(
     amrex::Array4<amrex::Real const> const& fy,
     amrex::Array4<amrex::Real const> const& fz,
     amrex::Vector<amrex::Geometry> geom,
-    amrex::Real dt,
-    bool is_lagrangian);
+    amrex::Real dt);
 
 void cmask_loop(
     amrex::Box const& bx,
     amrex::Array4<amrex::Real> const& volfrac,
-    amrex::Array4<amrex::Real> const& fluxC,
-    bool is_lagrangian);
+    amrex::Array4<amrex::Real> const& fluxC);
 
 void debris_loop(
     amrex::Box const& bx, amrex::Array4<amrex::Real> const& volfrac);
@@ -77,11 +72,9 @@ void sweep_fluxes(
     amrex::Array4<amrex::Real const> const& vel_mac,
     amrex::Array4<amrex::Real const> const& volfrac,
     amrex::Array4<amrex::Real> const& fluxL,
-    amrex::Array4<amrex::Real> const& fluxC,
     amrex::Array4<amrex::Real> const& fluxR,
     amrex::Array4<amrex::Real> const& vofL,
-    amrex::Array4<amrex::Real> const& vofR,
-    const bool is_lagrangian);
+    amrex::Array4<amrex::Real> const& vofR);
 
 void sweep_balance(
     const int dir,
@@ -91,8 +84,7 @@ void sweep_balance(
     amrex::Array4<amrex::Real const> const& vel_mac,
     amrex::Array4<amrex::Real> const& volfrac,
     amrex::Array4<amrex::Real const> const& fluxF,
-    amrex::Array4<amrex::Real const> const& fluxC,
-    const bool is_lagrangian);
+    amrex::Array4<amrex::Real const> const& fluxC);
 
 } // namespace multiphase
 } // namespace amr_wind
