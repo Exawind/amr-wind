@@ -68,6 +68,8 @@ void get_output_upwind(
     amrex::Real& Im,
     amrex::Real& Ip)
 {
+    amrex::Gpu::DeviceVector<amrex::Real> dout(2, 0.0);
+    auto* dout_ptr = dout.data();
     const int nlevels = fld.repo().num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
 
@@ -75,17 +77,19 @@ void get_output_upwind(
             auto bx = mfi.validbox();
             const auto& farr = fld(lev).const_array(mfi);
 
-            amrex::ParallelFor(
-                bx, [=, &Im, &Ip] AMREX_GPU_DEVICE(int i, int j, int k) {
-                    amrex::Real im_tmp, ip_tmp;
-                    Godunov_upwind_fpu(i, j, k, 0, im_tmp, ip_tmp, farr);
-                    if (i == ii && j == jj && k == kk) {
-                        Im = im_tmp;
-                        Ip = ip_tmp;
-                    }
-                });
+            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                amrex::Real im_tmp, ip_tmp;
+                Godunov_upwind_fpu(i, j, k, 0, im_tmp, ip_tmp, farr);
+                if (i == ii && j == jj && k == kk) {
+                    dout_ptr[0] = im_tmp;
+                    dout_ptr[1] = ip_tmp;
+                }
+            });
         }
     }
+    amrex::Gpu::copy(
+        amrex::Gpu::deviceToHost, dout.begin(), dout.begin() + 1, &Im);
+    amrex::Gpu::copy(amrex::Gpu::deviceToHost, dout.end() - 1, dout.end(), &Ip);
 }
 
 void get_output_minmod(
@@ -100,6 +104,8 @@ void get_output_minmod(
     amrex::Real& Ip)
 {
     const int nlevels = fld.repo().num_active_levels();
+    amrex::Gpu::DeviceVector<amrex::Real> dout(2, 0.0);
+    auto* dout_ptr = dout.data();
     auto pbc = fld.bcrec_device().data();
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = fld.repo().mesh().Geom(lev).CellSizeArray();
@@ -112,36 +118,38 @@ void get_output_minmod(
             const auto& farr = fld(lev).const_array(mfi);
             const auto& vel_mac = mac_fld(lev).const_array(mfi);
 
-            amrex::ParallelFor(
-                bx, [=, &Im, &Ip] AMREX_GPU_DEVICE(int i, int j, int k) {
-                    amrex::Real im_tmp, ip_tmp;
-                    switch (dir) {
-                    case 0: {
-                        Godunov_minmod_fpu_x(
-                            i, j, k, 0, dt, dx[0], im_tmp, ip_tmp, farr,
-                            vel_mac, pbc[0], dlo.x, dhi.x);
-                        break;
-                    }
-                    case 1: {
-                        Godunov_minmod_fpu_y(
-                            i, j, k, 0, dt, dx[1], im_tmp, ip_tmp, farr,
-                            vel_mac, pbc[0], dlo.y, dhi.y);
-                        break;
-                    }
-                    case 2: {
-                        Godunov_minmod_fpu_z(
-                            i, j, k, 0, dt, dx[2], im_tmp, ip_tmp, farr,
-                            vel_mac, pbc[0], dlo.z, dhi.z);
-                        break;
-                    }
-                    }
-                    if (i == ii && j == jj && k == kk) {
-                        Im = im_tmp;
-                        Ip = ip_tmp;
-                    }
-                });
+            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                amrex::Real im_tmp, ip_tmp;
+                switch (dir) {
+                case 0: {
+                    Godunov_minmod_fpu_x(
+                        i, j, k, 0, dt, dx[0], im_tmp, ip_tmp, farr, vel_mac,
+                        pbc[0], dlo.x, dhi.x);
+                    break;
+                }
+                case 1: {
+                    Godunov_minmod_fpu_y(
+                        i, j, k, 0, dt, dx[1], im_tmp, ip_tmp, farr, vel_mac,
+                        pbc[0], dlo.y, dhi.y);
+                    break;
+                }
+                case 2: {
+                    Godunov_minmod_fpu_z(
+                        i, j, k, 0, dt, dx[2], im_tmp, ip_tmp, farr, vel_mac,
+                        pbc[0], dlo.z, dhi.z);
+                    break;
+                }
+                }
+                if (i == ii && j == jj && k == kk) {
+                    dout_ptr[0] = im_tmp;
+                    dout_ptr[1] = ip_tmp;
+                }
+            });
         }
     }
+    amrex::Gpu::copy(
+        amrex::Gpu::deviceToHost, dout.begin(), dout.begin() + 1, &Im);
+    amrex::Gpu::copy(amrex::Gpu::deviceToHost, dout.end() - 1, dout.end(), &Ip);
 }
 
 } // namespace
