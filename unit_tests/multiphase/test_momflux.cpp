@@ -170,7 +170,7 @@ protected:
         // Zero unused momentum terms: src (pressure)
         auto& grad_p = repo.get_field("gp");
         grad_p.setVal(0.0);
-        
+
         // Setup mask_cell array to avoid errors in solve
         auto& mask_cell = repo.declare_int_field("mask_cell", 1, 1);
         mask_cell.setVal(1);

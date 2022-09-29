@@ -200,9 +200,9 @@ protected:
         if (dir == -2) {
             {
                 amrex::ParmParse pp("amr");
-                amrex::Vector<int> ncell{{m_nx+1, m_nx+1, m_nx+1}};
+                amrex::Vector<int> ncell{{m_nx + 1, m_nx + 1, m_nx + 1}};
                 pp.add("max_level", 1);
-                pp.add("max_grid_size", m_nx+1);
+                pp.add("max_grid_size", m_nx + 1);
                 pp.add("blocking_factor", 2);
                 pp.addarr("n_cell", ncell);
             }
