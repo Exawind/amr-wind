@@ -405,12 +405,6 @@ void FreeSurface::post_advance_work()
                                 amrex::Real loc1 = loc_arr(i, j, k, 2 * n + 1);
 
                                 // Indices and slope variables
-                                int ip = i;
-                                int jp = j;
-                                int kp = k;
-                                int im = i;
-                                int jm = j;
-                                int km = k;
                                 amrex::Real mx = 0.0;
                                 amrex::Real my = 0.0;
                                 amrex::Real mz = 0.0;
@@ -420,18 +414,12 @@ void FreeSurface::post_advance_work()
                                 // direction
                                 switch (dir) {
                                 case 0:
-                                    ip += 1;
-                                    im -= 1;
                                     mx = 1.0;
                                     break;
                                 case 1:
-                                    jp += 1;
-                                    jm -= 1;
                                     my = 1.0;
                                     break;
                                 case 2:
-                                    kp += 1;
-                                    km -= 1;
                                     mz = 1.0;
                                     break;
                                 }
