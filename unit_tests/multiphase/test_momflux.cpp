@@ -183,10 +183,10 @@ protected:
         mask_cell.setVal(1);
 
         // Perform momentum solve
-        /*mom_eqn.compute_advection_term(amr_wind::FieldState::Old);
+        mom_eqn.compute_advection_term(amr_wind::FieldState::Old);
         mom_eqn.compute_diffusion_term(amr_wind::FieldState::New);
         mom_eqn.compute_source_term(amr_wind::FieldState::New);
-        mom_eqn.compute_predictor_rhs(DiffusionType::Explicit);*/
+        mom_eqn.compute_predictor_rhs(DiffusionType::Explicit);
 
         // Get MAC velocities for use in testing
         auto& umac = repo.get_field("u_mac");
@@ -209,8 +209,8 @@ protected:
         auto& advalpha_f = repo.get_field("advalpha_" + sdir);
 
         // Get convective term
-        auto& conv_term =
-            mom_eqn.fields().conv_term.state(amr_wind::FieldState::New);
+        /* auto& conv_term =
+            mom_eqn.fields().conv_term.state(amr_wind::FieldState::New); */
 
         // Base level
         int lev = 0;
