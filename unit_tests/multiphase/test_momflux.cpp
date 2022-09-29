@@ -1,6 +1,7 @@
 #include "aw_test_utils/MeshTest.H"
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
+#include "amr-wind/equation_systems/vof/vof.H"
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 
 namespace amr_wind_tests {
@@ -158,13 +159,13 @@ protected:
         mom_eqn.pre_advection_actions(amr_wind::FieldState::Old);
 
         // Perform VOF solve
-        for (auto& seqn : pde_mgr.scalar_eqns()) {
-            if (seqn->fields().field.base_name() == "vof") {
-                seqn->initialize();
-                seqn->compute_advection_term(amr_wind::FieldState::Old);
-                seqn->post_solve_actions();
-            }
-        }
+        // Get equation handle and perform init
+        auto& seqn = pde_mgr(
+            amr_wind::pde::VOF::pde_name() + "-" +
+            amr_wind::fvm::Godunov::scheme_name());
+        seqn.initialize();
+        seqn.compute_advection_term(amr_wind::FieldState::Old);
+        seqn.post_solve_actions();
 
         // Zero unused momentum terms: src (pressure)
         auto& grad_p = repo.get_field("gp");
