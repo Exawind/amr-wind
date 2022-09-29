@@ -28,12 +28,15 @@ struct UpdatePosOp<UniformCt, ActSrcDisk>
 {
     void operator()(typename UniformCt::DataType& data)
     {
-        
-		auto& meta = data.meta();
 
-		const amrex::Real wind_direction = -data.sim().helics().m_turbine_yaw_to_amrwind[data.info().id] + 90.0;             	
-    	const amrex::Real wind_direction_radian = amr_wind::utils::radians(wind_direction);
-    
+        auto& meta = data.meta();
+
+        const amrex::Real wind_direction =
+            -data.sim().helics().m_turbine_yaw_to_amrwind[data.info().id] +
+            90.0;
+        const amrex::Real wind_direction_radian =
+            amr_wind::utils::radians(wind_direction);
+
         meta.normal_vec[0] = std::cos(wind_direction_radian);
         meta.normal_vec[1] = std::sin(wind_direction_radian);
         meta.normal_vec[2] = 0.0;
@@ -41,9 +44,11 @@ struct UpdatePosOp<UniformCt, ActSrcDisk>
         meta.sample_vec[0] = meta.normal_vec[0];
         meta.sample_vec[1] = meta.normal_vec[1];
         meta.sample_vec[2] = meta.normal_vec[2];
-         if(data.info().is_root_proc) {
-         	std::cout << "turbine " << data.info().id << " normal: " <<  meta.normal_vec[0] <<  ' ' << meta.normal_vec[1] << std::endl;
-         }
+        if (data.info().is_root_proc) {
+            std::cout << "turbine " << data.info().id
+                      << " normal: " << meta.normal_vec[0] << ' '
+                      << meta.normal_vec[1] << std::endl;
+        }
         uniformct::update_disk_points(data);
     }
 };
@@ -74,20 +79,27 @@ struct ComputeForceOp<UniformCt, ActSrcDisk>
             // disk force should always point in direction of the normal
             grid.force[ip] = (aeroPressure * a) * normal;
         }
-        
-        if(data.info().is_root_proc) {
-        
+
+        if (data.info().is_root_proc) {
+
             const amrex::Real ct = ddata.current_ct;
-            std::cout << "turbine" << data.info().id << " thrust: " << ct << std::endl;
-            const amrex::Real cp = 0.5*(ct + ct*std::sqrt(1.0-ct));
-            const amrex::Real area = amr_wind::utils::pi()*0.25*ddata.diameter*ddata.diameter;
-            const amrex::Real power = cp * 0.5 * rho * std::pow(uInfSqr, 1.5) * area;
-            
-        	data.sim().helics().m_turbine_power_to_controller[data.info().id] = power;    
-        	const amrex::Real turbine_angle = std::atan2(ddata.reference_velocity[1], ddata.reference_velocity[0]);
-        	data.sim().helics().m_turbine_wind_direction_to_controller[data.info().id] = -amr_wind::utils::degrees(turbine_angle) + 270.0;           	
+            std::cout << "turbine" << data.info().id << " thrust: " << ct
+                      << std::endl;
+            const amrex::Real cp = 0.5 * (ct + ct * std::sqrt(1.0 - ct));
+            const amrex::Real area =
+                amr_wind::utils::pi() * 0.25 * ddata.diameter * ddata.diameter;
+            const amrex::Real power =
+                cp * 0.5 * rho * std::pow(uInfSqr, 1.5) * area;
+
+            data.sim().helics().m_turbine_power_to_controller[data.info().id] =
+                power;
+            const amrex::Real turbine_angle = std::atan2(
+                ddata.reference_velocity[1], ddata.reference_velocity[0]);
+            data.sim()
+                .helics()
+                .m_turbine_wind_direction_to_controller[data.info().id] =
+                -amr_wind::utils::degrees(turbine_angle) + 270.0;
         }
-        
     }
 };
 

@@ -10,7 +10,6 @@
 #include <iostream>
 #include <string>
 
-
 #include "helics/cpp98/CombinationFederate.hpp"
 #include "helics/cpp98/helics.hpp"
 #include "helics/cpp98/Federate.hpp"
@@ -44,14 +43,15 @@ ABLModulatedPowerLaw::ABLModulatedPowerLaw(CFDSim& sim)
     pp.query("wind_speed", m_wind_speed);
     pp.query("wind_direction", m_wind_direction);
 
-    const amrex::Real wind_speed =  m_wind_speed;
-    const amrex::Real wind_direction =  - m_wind_direction + 270.0 ;
-    const amrex::Real wind_direction_radian = amr_wind::utils::radians(wind_direction);
-    
+    const amrex::Real wind_speed = m_wind_speed;
+    const amrex::Real wind_direction = -m_wind_direction + 270.0;
+    const amrex::Real wind_direction_radian =
+        amr_wind::utils::radians(wind_direction);
+
     m_uvec[0] = wind_speed * std::cos(wind_direction_radian);
     m_uvec[1] = wind_speed * std::sin(wind_direction_radian);
     m_uvec[2] = 0.0;
-    
+
     pp.query("start_time", m_start_time);
     pp.query("stop_time", m_stop_time);
     pp.query("degrees_per_second", m_degrees_per_sec);
@@ -84,21 +84,24 @@ void ABLModulatedPowerLaw::post_init_actions()
         m_velocity.register_fill_patch_op<ABLFillMPL>(m_mesh, m_time, *this);
         m_temperature.register_fill_patch_op<ABLFillMPL>(m_mesh, m_time, *this);
     }
-    
 }
 
 void ABLModulatedPowerLaw::pre_advance_work()
 {
 
-   const amrex::Real wind_speed =  m_sim.helics().m_inflow_wind_speed_to_amrwind;
-    const amrex::Real wind_direction =  - m_sim.helics().m_inflow_wind_direction_to_amrwind + 270.0 ;
-    const amrex::Real wind_direction_radian = amr_wind::utils::radians(wind_direction);
-    
+    const amrex::Real wind_speed =
+        m_sim.helics().m_inflow_wind_speed_to_amrwind;
+    const amrex::Real wind_direction =
+        -m_sim.helics().m_inflow_wind_direction_to_amrwind + 270.0;
+    const amrex::Real wind_direction_radian =
+        amr_wind::utils::radians(wind_direction);
+
     m_uvec[0] = wind_speed * std::cos(wind_direction_radian);
     m_uvec[1] = wind_speed * std::sin(wind_direction_radian);
     m_uvec[2] = 0.0;
 
-//     std::cout<<" X and y veloctities "<<m_uvec[0]<<","<<m_uvec[1]<<","<<m_uvec[2]<<std::endl;
+    //     std::cout<<" X and y veloctities
+    //     "<<m_uvec[0]<<","<<m_uvec[1]<<","<<m_uvec[2]<<std::endl;
 }
 
 void ABLModulatedPowerLaw::post_advance_work() {}

@@ -90,7 +90,6 @@ public:
     void ClearLevel(int lev) override;
 
     void init_mesh();
-    void helics();
     void init_amr_wind_modules();
     void prepare_for_time_integration();
     bool regrid_and_update();
@@ -158,7 +157,6 @@ private:
     amr_wind::CFDSim m_sim;
     amr_wind::SimTime& m_time;
     amr_wind::FieldRepo& m_repo;
-
 
     std::unique_ptr<amr_wind::RefineCriteriaManager> m_mesh_refiner;
 

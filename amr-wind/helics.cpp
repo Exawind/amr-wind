@@ -13,38 +13,34 @@
 
 using namespace helicscpp;
 
-void tokenize(std::string s, std::string del, std::list<double> &return_list)
+void tokenize(std::string s, std::string del, std::list<double>& return_list)
 {
 
-  int start = 0;
-  int end = s.find(del);
+    int start = 0;
+    int end = s.find(del);
 
-  return_list.push_front(atof(s.substr(start + 1, end - start).c_str()));
-  while (end > 0)
-  {
+    return_list.push_front(atof(s.substr(start + 1, end - start).c_str()));
+    while (end > 0) {
 
-    start = end + del.size();
-    end = s.find(del, start);
+        start = end + del.size();
+        end = s.find(del, start);
 
-    if (end == -1)
-      end = -2;
-    return_list.push_front(atof(s.substr(start, end - start).c_str()));
-  }
+        if (end == -1) end = -2;
+        return_list.push_front(atof(s.substr(start, end - start).c_str()));
+    }
 }
-
-
 
 namespace amr_wind {
 
-helics_storage::helics_storage(CFDSim& sim)
-    : m_sim(sim)
+helics_storage::helics_storage(CFDSim& sim) : m_sim(sim)
 {
 
     if (amrex::ParallelDescriptor::IOProcessor()) {
-	
-		m_fi = std::make_unique<helicscpp::FederateInfo>("zmq");
-		m_vfed = std::make_unique<helicscpp::CombinationFederate>("Test receiver Federate",*m_fi);    
-	
+
+        m_fi = std::make_unique<helicscpp::FederateInfo>("zmq");
+        m_vfed = std::make_unique<helicscpp::CombinationFederate>(
+            "Test receiver Federate", *m_fi);
+
         m_vfed->setProperty(HELICS_PROPERTY_TIME_DELTA, 1.0);
         //  Subscribe to PI SENDER's publication
         m_vfed->registerSubscription("control", "string");
@@ -58,7 +54,7 @@ helics_storage::helics_storage(CFDSim& sim)
         std::cout << "PI RECEIVER: Value federate created";
         std::cout << "Creation complete!! ";
     }
-    
+
     // parse input file and count how many actuators exist
     amrex::Vector<std::string> actuators;
     amrex::ParmParse pp("Actuator");
@@ -101,34 +97,34 @@ void helics_storage::recv_messages_from_controller()
             std::cout << "\n advancing time " << charFromControlCenter.str();
         }
 
+        if (currenttime > 1) {
+            // Igonre timestep 0 since message pipe has junk.
+            // // Unpack the values from the control center using a string
+            // stream
 
-        if (currenttime > 1)
-        {
-            // Igonre timestep 0 since message pipe has junk. 
-            // // Unpack the values from the control center using a string stream
+            std::list<double> return_list;
+            tokenize(charFromControlCenter.str(), ",", return_list);
 
-			std::list<double> return_list;
-			tokenize(charFromControlCenter.str(), ",", return_list);
+            for (int i = m_turbine_yaw_to_amrwind.size() - 1; i >= 0; --i) {
+                m_turbine_yaw_to_amrwind[i] = return_list.front();
+                return_list.pop_front();
+            }
 
-			for(int i=m_turbine_yaw_to_amrwind.size()-1; i >= 0; --i) {
-				m_turbine_yaw_to_amrwind[i] = return_list.front();
-				return_list.pop_front();			
-			}
-			
-			m_inflow_wind_direction_to_amrwind = return_list.front();
-			return_list.pop_front();
-			m_inflow_wind_speed_to_amrwind = return_list.front();
-			return_list.pop_front();
-			float time = return_list.front();
-			return_list.pop_front();
-			
+            m_inflow_wind_direction_to_amrwind = return_list.front();
+            return_list.pop_front();
+            m_inflow_wind_speed_to_amrwind = return_list.front();
+            return_list.pop_front();
+            float time = return_list.front();
+            return_list.pop_front();
 
-			std::cout << "\n speed: "<< m_inflow_wind_speed_to_amrwind << "  direction: "<< m_inflow_wind_direction_to_amrwind << " Time "<< time << std::endl;
-			for(int i=0; i < m_turbine_yaw_to_amrwind.size(); ++i) {
-				std::cout << "T" << i << " yaw: "  << m_turbine_yaw_to_amrwind[i] << ' ';
-			}
-			std::cout << std::endl;
-			
+            std::cout << "\n speed: " << m_inflow_wind_speed_to_amrwind
+                      << "  direction: " << m_inflow_wind_direction_to_amrwind
+                      << " Time " << time << std::endl;
+            for (int i = 0; i < m_turbine_yaw_to_amrwind.size(); ++i) {
+                std::cout << "T" << i << " yaw: " << m_turbine_yaw_to_amrwind[i]
+                          << ' ';
+            }
+            std::cout << std::endl;
         }
 
         std::stringstream ssToControlCenter;
@@ -137,48 +133,53 @@ void helics_storage::recv_messages_from_controller()
 
         int pubCount = m_vfed->getPublicationCount();
 
-		amrex::Real wind_speed = 123.0;
-		amrex::Real wind_direction = 456.0;
-		
-    	auto& phy_mgr = m_sim.physics_manager();
-    	if (phy_mgr.contains("ABL")) {
-    		auto& abl = phy_mgr.get<amr_wind::ABL>();
-			const amrex::Real height = 90.0;
-    		wind_speed = abl.abl_statistics().vel_profile().line_hvelmag_average_interpolated(height);
-    		amrex::Real velx = abl.abl_statistics().vel_profile().line_average_interpolated(height,0);
-    		amrex::Real vely = abl.abl_statistics().vel_profile().line_average_interpolated(height,1);
-        	const amrex::Real turbine_angle = std::atan2(vely,velx);
-        	wind_direction = - amr_wind::utils::degrees(turbine_angle) + 270.0;  
-    	}
-        
+        amrex::Real wind_speed = 123.0;
+        amrex::Real wind_direction = 456.0;
+
+        auto& phy_mgr = m_sim.physics_manager();
+        if (phy_mgr.contains("ABL")) {
+            auto& abl = phy_mgr.get<amr_wind::ABL>();
+            const amrex::Real height = 90.0;
+            wind_speed = abl.abl_statistics()
+                             .vel_profile()
+                             .line_hvelmag_average_interpolated(height);
+            amrex::Real velx =
+                abl.abl_statistics().vel_profile().line_average_interpolated(
+                    height, 0);
+            amrex::Real vely =
+                abl.abl_statistics().vel_profile().line_average_interpolated(
+                    height, 1);
+            const amrex::Real turbine_angle = std::atan2(vely, velx);
+            wind_direction = -amr_wind::utils::degrees(turbine_angle) + 270.0;
+        }
+
         std::cout << "pub count: " << pubCount << std::endl;
-        
+
         for (int i = 0; i < pubCount; i++) {
             pub = m_vfed->getPublication(i);
 
-            ssToControlCenter << "[" << m_sim.time().current_time() << ", " << wind_speed << " , " << wind_direction;
+            ssToControlCenter << "[" << m_sim.time().current_time() << ", "
+                              << wind_speed << " , " << wind_direction;
 
-            for (int yy=0;yy<m_turbine_power_to_controller.size(); yy++)
-            {    
-            	ssToControlCenter << ",";
-            	ssToControlCenter << m_turbine_power_to_controller[yy];
+            for (int yy = 0; yy < m_turbine_power_to_controller.size(); yy++) {
+                ssToControlCenter << ",";
+                ssToControlCenter << m_turbine_power_to_controller[yy];
             }
-            
-            for (int yy=0;yy<m_turbine_wind_direction_to_controller.size(); yy++)
-            {    
-            	ssToControlCenter << ",";
-            	ssToControlCenter << m_turbine_wind_direction_to_controller[yy];
+
+            for (int yy = 0; yy < m_turbine_wind_direction_to_controller.size();
+                 yy++) {
+                ssToControlCenter << ",";
+                ssToControlCenter << m_turbine_wind_direction_to_controller[yy];
             }
-            
+
             ssToControlCenter << "]";
 
             std::string strToControlCenter;
             strToControlCenter = ssToControlCenter.str();
             pub.publish(strToControlCenter.c_str());
-            
-            std::cout<<"\n should send m_turbine_power_to_controller "<<strToControlCenter.c_str()<<std::endl;
 
-
+            std::cout << "\n should send m_turbine_power_to_controller "
+                      << strToControlCenter.c_str() << std::endl;
         }
     }
 
@@ -201,9 +202,6 @@ void helics_storage::recv_messages_from_controller()
         amrex::ParallelDescriptor::Communicator());
 }
 
-
-
 helics_storage::~helics_storage() = default;
-
 
 } // namespace amr_wind

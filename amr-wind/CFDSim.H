@@ -9,7 +9,6 @@
 #include "amr-wind/core/MeshMap.H"
 #include "amr-wind/helics.H"
 
-
 /** AMR-Wind
  *
  *  All C++ code in AMR-Wind is organized within the amr_wind namespace.
@@ -49,7 +48,7 @@ class CFDSim
 {
 public:
     explicit CFDSim(amrex::AmrCore& mesh);
-    
+
     ~CFDSim();
 
     //! Return the AMR mesh hierarchy
@@ -100,9 +99,9 @@ public:
     ExtSolverMgr& ext_solver_manager() { return *m_ext_solver_mgr; }
     const ExtSolverMgr& ext_solver_manager() const { return *m_ext_solver_mgr; }
 
-	helics_storage& helics() { return *m_helics; }
+    helics_storage& helics() { return *m_helics; }
     const helics_storage& helics() const { return *m_helics; }
-    
+
     bool has_overset() const;
 
     //! Instantiate the turbulence model based on user inputs
@@ -124,8 +123,6 @@ private:
 
     SimTime m_time;
 
-
-
     mutable FieldRepo m_repo;
 
     pde::PDEMgr m_pde_mgr;
@@ -144,7 +141,7 @@ private:
 
     std::unique_ptr<ExtSolverMgr> m_ext_solver_mgr;
 
-	std::unique_ptr<helics_storage> m_helics;
+    std::unique_ptr<helics_storage> m_helics;
 
     bool m_mesh_mapping{false};
 };

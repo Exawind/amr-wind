@@ -92,23 +92,31 @@ void Actuator::pre_advance_work()
     update_velocities();
     compute_forces();
     compute_source_term();
-    
-        
-	// send power and yaw from root actuator proc to io proc
+
+    // send power and yaw from root actuator proc to io proc
     const int ptag = 0;
     const int ytag = 1;
     const size_t size = 1;
-    for (auto& ac : m_actuators) {    
-        if(ac->info().is_root_proc) {
-            amrex::ParallelDescriptor::Send(&m_sim.helics().m_turbine_power_to_controller[ac->info().id], size, amrex::ParallelDescriptor::IOProcessorNumber(), ptag);
-            amrex::ParallelDescriptor::Send(&m_sim.helics().m_turbine_wind_direction_to_controller[ac->info().id], size, amrex::ParallelDescriptor::IOProcessorNumber(), ytag);
+    for (auto& ac : m_actuators) {
+        if (ac->info().is_root_proc) {
+            amrex::ParallelDescriptor::Send(
+                &m_sim.helics().m_turbine_power_to_controller[ac->info().id],
+                size, amrex::ParallelDescriptor::IOProcessorNumber(), ptag);
+            amrex::ParallelDescriptor::Send(
+                &m_sim.helics()
+                     .m_turbine_wind_direction_to_controller[ac->info().id],
+                size, amrex::ParallelDescriptor::IOProcessorNumber(), ytag);
         }
-        if(amrex::ParallelDescriptor::IOProcessor()){
-            amrex::ParallelDescriptor::Recv(&m_sim.helics().m_turbine_power_to_controller[ac->info().id], size, ac->info().root_proc, ptag);
-            amrex::ParallelDescriptor::Recv(&m_sim.helics().m_turbine_wind_direction_to_controller[ac->info().id], size, ac->info().root_proc, ytag);
+        if (amrex::ParallelDescriptor::IOProcessor()) {
+            amrex::ParallelDescriptor::Recv(
+                &m_sim.helics().m_turbine_power_to_controller[ac->info().id],
+                size, ac->info().root_proc, ptag);
+            amrex::ParallelDescriptor::Recv(
+                &m_sim.helics()
+                     .m_turbine_wind_direction_to_controller[ac->info().id],
+                size, ac->info().root_proc, ytag);
         }
     }
-    
 }
 
 /** Set up the container for sampling velocities
@@ -197,9 +205,8 @@ void Actuator::compute_forces()
     for (auto& ac : m_actuators) {
         if (ac->info().actuator_in_proc) {
             ac->compute_forces();
-        }        
+        }
     }
-
 }
 
 void Actuator::compute_source_term()

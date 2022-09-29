@@ -40,7 +40,6 @@ option(AMR_WIND_ENABLE_HDF5_ZFP "Enable ZFP compression in HDF5 library" OFF)
 option(AMR_WIND_ENABLE_NETCDF "Enable NetCDF library" OFF)
 option(AMR_WIND_ENABLE_MASA "Enable MASA library" OFF)
 option(AMR_WIND_ENABLE_HELICS "Enable HELICS library" ON)
-# option(AMR_WIND_ENABLE_HELICS "Enable HELICS library" OFF)
 option(AMR_WIND_ENABLE_HYPRE "Enable HYPRE integration" OFF)
 option(AMR_WIND_ENABLE_OPENFAST "Enable OpenFAST integration" OFF)
 option(AMR_WIND_ENABLE_ASCENT "Enable Ascent visualization library" OFF)
@@ -117,7 +116,12 @@ endif()
 
 include(set_compile_flags)
 
-
+if(AMR_WIND_ENABLE_NETCDF)
+  set(CMAKE_PREFIX_PATH ${NETCDF_DIR} ${CMAKE_PREFIX_PATH})
+  find_package(NetCDF REQUIRED)
+  target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_NETCDF)
+  target_link_libraries_system(${amr_wind_lib_name} PUBLIC NetCDF::NetCDF)
+endif()
 
 if(AMR_WIND_ENABLE_HDF5)
   set(CMAKE_PREFIX_PATH ${HDF5_DIR} ${CMAKE_PREFIX_PATH})
@@ -172,14 +176,6 @@ if(AMR_WIND_ENABLE_HELICS)
   target_link_libraries(${amr_wind_lib_name} PUBLIC HELICS::helicsCpp98)
   target_compile_definitions(${amr_wind_lib_name} PRIVATE AMR_WIND_USE_HELICS)
 endif()
-
-if(AMR_WIND_ENABLE_NETCDF)
-  set(CMAKE_PREFIX_PATH ${NETCDF_DIR} ${CMAKE_PREFIX_PATH})
-  find_package(NetCDF REQUIRED)
-  target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_NETCDF)
-  target_link_libraries_system(${amr_wind_lib_name} PUBLIC NetCDF::NetCDF)
-endif()
-
 
 #Build amr-wind and link to amrex library
 generate_version_info()
@@ -255,5 +251,4 @@ install(FILES
 install(FILES
   ${PROJECT_SOURCE_DIR}/cmake/FindMASA.cmake
   ${PROJECT_SOURCE_DIR}/cmake/FindNetCDF.cmake
-  # ${PROJECT_SOURCE_DIR}/cmake/FindHELICS.cmake
   DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/Modules)

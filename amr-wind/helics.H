@@ -9,43 +9,37 @@
 #include "helics/cpp98/helics.hpp"
 #include "helics/cpp98/Federate.hpp"
 
-
 namespace amr_wind {
 
 class helics_storage
 {
-public: 
-	
-	explicit helics_storage(CFDSim& sim);
-	~helics_storage();
-	
 public:
+    explicit helics_storage(CFDSim& sim);
+    ~helics_storage();
 
-	void send_messages_to_controller();
-	void recv_messages_from_controller();
-	
+public:
+    void send_messages_to_controller();
+    void recv_messages_from_controller();
+
     HelicsTime currenttime = 0.0;
     std::string fedinitstring = "--federates=1";
-    double deltat = 0.01; // what is this for? should we use m_time.deltaT() instead?
-
+    double deltat =
+        0.01; // what is this for? should we use m_time.deltaT() instead?
 
     int m_num_turbines{1};
-    
+
     double m_inflow_wind_speed_to_amrwind{8.0};
     double m_inflow_wind_direction_to_amrwind{270.0};
-    
-    std::vector<double> m_turbine_power_to_controller;
-    std::vector<double> m_turbine_wind_direction_to_controller;    
-    std::vector<double> m_turbine_yaw_to_amrwind;    
-    
-private:
 
+    std::vector<double> m_turbine_power_to_controller;
+    std::vector<double> m_turbine_wind_direction_to_controller;
+    std::vector<double> m_turbine_yaw_to_amrwind;
+
+private:
     CFDSim& m_sim;
     std::unique_ptr<helicscpp::FederateInfo> m_fi;
     std::unique_ptr<helicscpp::CombinationFederate> m_vfed;
-    
 };
-
 
 } // namespace amr_wind
 

@@ -24,39 +24,12 @@ void incflo::pre_advance_stage1()
 void incflo::pre_advance_stage2()
 {
     BL_PROFILE("amr-wind::incflo::pre_advance_stage2");
-    
-    
-    // I switched to send/recvs in the actuator code delete later
-//     std::fill(m_sim.helics().m_turbine_power_to_controller.begin(),m_sim.helics().m_turbine_power_to_controller.end(), 0.0);
-// 	std::fill(m_sim.helics().m_turbine_yaw_to_controller.begin(),m_sim.helics().m_turbine_yaw_to_controller.end(), 0.0);
-   
-   	amrex::ParallelDescriptor::Barrier();
-    amrex::Real time1 = amrex::ParallelDescriptor::second();
-   	amrex::ParallelDescriptor::Barrier();
-
     for (auto& pp : m_sim.physics()) {
         pp->pre_advance_work();
     }
-    
-       	amrex::ParallelDescriptor::Barrier();
-    amrex::Real time2 = amrex::ParallelDescriptor::second();
-   	amrex::ParallelDescriptor::Barrier();
-     
-    // FIXME: later change this to send/recv but for now fill with 0.0 and reduce sum to IO proc
-//     amrex::ParallelDescriptor::ReduceRealSum(m_sim.helics().m_turbine_power_to_controller.data(), m_sim.helics().m_turbine_power_to_controller.size(), amrex::ParallelDescriptor::IOProcessor()
-//     åamrex::ParallelDescriptor::ReduceRealSum(m_sim.helics().m_turbine_yaw_to_controller.data(), m_sim.helics().m_turbine_yaw_to_controller.size(), amrex::ParallelDescriptor::IOProcessor());
-      
-         	amrex::ParallelDescriptor::Barrier();
-    amrex::Real time3 = amrex::ParallelDescriptor::second();
-   	amrex::ParallelDescriptor::Barrier();
+
     m_sim.helics().send_messages_to_controller();
     m_sim.helics().recv_messages_from_controller();
-       	amrex::ParallelDescriptor::Barrier();
-    amrex::Real time4 = amrex::ParallelDescriptor::second();
-   	amrex::ParallelDescriptor::Barrier();
-   	
-   	amrex::Print() << "time for pre advance physics: " << time2-time1 << " time for helics comm: " << time4-time3 << std::endl;
-    
 }
 
 /** Advance simulation state by one timestep
