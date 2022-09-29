@@ -154,6 +154,7 @@ void incflo::prepare_for_time_integration()
 void incflo::InitData()
 {
     BL_PROFILE("amr-wind::incflo::InitData()");
+
     init_mesh();
     init_amr_wind_modules();
     prepare_for_time_integration();

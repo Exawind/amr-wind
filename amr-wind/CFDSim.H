@@ -43,7 +43,6 @@ class TurbulenceModel;
  *  computational logic itself. The computational heavy-lifting is performed by
  *  the class instances within a time integration loop.
  */
-
 class CFDSim
 {
 public:
