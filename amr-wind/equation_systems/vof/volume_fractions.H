@@ -377,9 +377,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real cut_volume(
     tmp = v;
     amrex::Real FL3D;
     if (al <= 0.5) {
-        FL3D = tmp * dr0;
+        FL3D = tmp;
     } else {
-        FL3D = (1.0 - tmp) * dr0;
+        FL3D = (1.0 - tmp);
     }
 
     return FL3D;
