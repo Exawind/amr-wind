@@ -106,7 +106,7 @@ void get_output_minmod(
     const int nlevels = fld.repo().num_active_levels();
     amrex::Gpu::DeviceVector<amrex::Real> dout(2, 0.0);
     auto* dout_ptr = dout.data();
-    auto pbc = fld.bcrec_device().data();
+    const auto* pbc = fld.bcrec_device().data();
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = fld.repo().mesh().Geom(lev).CellSizeArray();
         amrex::Box const& domain = fld.repo().mesh().Geom(lev).Domain();
@@ -269,7 +269,7 @@ TEST_F(MFluxSchemeTest, minmod)
 
     /* -- Increasing in slope: x, y, z -- */
     // Values for checking
-    amrex::Real ir = (amrex::Real)i;
+    auto ir = (amrex::Real)i;
     amrex::Real dx = sc.repo().mesh().Geom(0).CellSizeArray()[0];
     amrex::Real slp = (std::pow(ir, 2) - std::pow(ir - 1.0, 2)) / dx;
     amrex::Real val_p = std::pow(ir, 2) - slp * 0.5 * (dt * adv_vel - dx);
@@ -340,7 +340,7 @@ TEST_F(MFluxSchemeTest, minmodbdy)
         int j = nx / 2;
         int k = nx / 2;
         // Values for checking
-        amrex::Real ir = (amrex::Real)i;
+        auto ir = (amrex::Real)i;
         amrex::Real dx = sc.repo().mesh().Geom(0).CellSizeArray()[0];
         amrex::Real slp = (std::pow(ir, 2) - std::pow(ir - 1.0, 2)) / dx;
         amrex::Real val_n = std::pow(ir, 2) + slp * 0.5 * (dt * adv_vel - dx);
@@ -357,7 +357,7 @@ TEST_F(MFluxSchemeTest, minmodbdy)
         int j = nx - 1;
         int k = nx / 2;
         // Values for checking
-        amrex::Real ir = (amrex::Real)j;
+        auto ir = (amrex::Real)j;
         amrex::Real dx = sc.repo().mesh().Geom(0).CellSizeArray()[0];
         amrex::Real slp = (std::pow(ir + 1.0, 2) - std::pow(ir, 2)) / dx;
         amrex::Real val_p = std::pow(ir, 2) - slp * 0.5 * (dt * adv_vel - dx);
