@@ -287,6 +287,15 @@ void MultiPhase::set_density_via_vof()
     m_density.fillpatch(m_sim.time().current_time());
 }
 
+void MultiPhase::set_nph_density()
+{
+
+    amr_wind::field_ops::lincomb(
+        m_density.state(amr_wind::FieldState::NPH), 0.5,
+        m_density.state(amr_wind::FieldState::Old), 0, 0.5, m_density, 0, 0,
+        m_density.num_comp(), 1);
+}
+
 void MultiPhase::favre_filtering()
 {
     const int nlevels = m_sim.repo().num_active_levels();
