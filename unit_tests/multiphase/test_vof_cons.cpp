@@ -200,19 +200,17 @@ protected:
         if (dir == -2) {
             {
                 amrex::ParmParse pp("amr");
+                amrex::Vector<int> ncell{{m_nx+1, m_nx+1, m_nx+1}};
                 pp.add("max_level", 1);
-                pp.add("blocking_factor", 1);
-            }
-            {
-                amrex::ParmParse pp("tagging");
-                pp.add("labels", 1);
+                pp.add("max_grid_size", m_nx+1);
                 pp.add("blocking_factor", 2);
+                pp.addarr("n_cell", ncell);
             }
             // Create the "input file"
             std::stringstream ss;
             ss << "1 // Number of levels" << std::endl;
             ss << "1 // Number of boxes at this level" << std::endl;
-            ss << "0.66666 0.0 0.0 1.0 1.0 1.0" << std::endl;
+            ss << "0.8 0.5 0.5 0.9 0.5 0.5" << std::endl;
 
             create_mesh_instance<NestRefineMesh>();
             std::unique_ptr<amr_wind::CartBoxRefinement> box_refine(

@@ -29,6 +29,35 @@ void init_field3(
     }
 }
 
+void initialize_volume_fractions(
+    const int dir,
+    const amrex::Geometry&,
+    const amrex::Box& bx,
+    amrex::Array4<amrex::Real>& vof_arr)
+{
+
+    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        int icheck;
+        switch (dir) {
+        case 0:
+            icheck = i;
+            break;
+        case 1:
+            icheck = j;
+            break;
+        case 2:
+            icheck = k;
+            break;
+        }
+        if (icheck > 0) {
+            vof_arr(i, j, k) = 0.0;
+        } else {
+            vof_arr(i, j, k) = 1.0;
+        }
+    });
+    // Left half is liquid, right half is gas
+}
+
 class MassMomFluxOpTest : public MeshTest
 {
 protected:
@@ -73,35 +102,6 @@ protected:
             pp.add("viscosity_fluid1", (amrex::Real)0.0);
             pp.add("viscosity_fluid2", (amrex::Real)0.0);
         }
-    }
-
-    void initialize_volume_fractions(
-        const int dir,
-        const amrex::Geometry&,
-        const amrex::Box& bx,
-        amrex::Array4<amrex::Real>& vof_arr)
-    {
-
-        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-            int icheck;
-            switch (dir) {
-            case 0:
-                icheck = i;
-                break;
-            case 1:
-                icheck = j;
-                break;
-            case 2:
-                icheck = k;
-                break;
-            }
-            if (icheck > 0) {
-                vof_arr(i, j, k) = 0.0;
-            } else {
-                vof_arr(i, j, k) = 1.0;
-            }
-        });
-        // Left half is liquid, right half is gas
     }
 
     void testing_coorddir(const int dir)
@@ -169,16 +169,8 @@ protected:
 
         // Zero unused momentum terms: src (pressure)
         auto& grad_p = repo.get_field("gp");
-        run_algorithm(grad_p, [&](const int lev, const amrex::MFIter& mfi) {
-            auto gp = grad_p(lev).array(mfi);
-            const auto& bx = mfi.validbox();
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    gp(i, j, k, 0) = 0.0;
-                    gp(i, j, k, 1) = 0.0;
-                    gp(i, j, k, 2) = 0.0;
-                });
-        });
+        grad_p.setVal(0.0);
+        
         // Setup mask_cell array to avoid errors in solve
         auto& mask_cell = repo.declare_int_field("mask_cell", 1, 1);
         mask_cell.setVal(1);
