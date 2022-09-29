@@ -53,6 +53,9 @@ void ChannelFlowMap::create_map(int lev, const amrex::Geometry& geom)
     create_cell_node_map(lev, geom);
     create_face_map(lev, geom);
     create_non_uniform_mesh(lev, geom);
+    if (lev == 0) {
+        setup_interp_arrays(lev, geom);
+    }
 }
 
 /** Construct the mesh mapping field on cell centers and nodes
