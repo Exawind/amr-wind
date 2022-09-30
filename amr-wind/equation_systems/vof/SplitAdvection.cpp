@@ -138,11 +138,11 @@ void multiphase::split_compute_fluxes(
     Array4<Real> fluxL = makeArray4(p, bxg1, 1);
     p += fluxL.size();
     Array4<Real> fluxR = makeArray4(p, bxg1, 1);
-    p += fluxR.size(); // NOLINT: Value not read warning
+    p += fluxR.size();
     Array4<Real> vofL = makeArray4(p, bxg1, 1);
     p += vofL.size();
     Array4<Real> vofR = makeArray4(p, bxg1, 1);
-    p += vofR.size();
+    p += vofR.size(); // NOLINT: Value not read warning
 
     if (isweep % 3 == 0) {
         sweep_fluxes(2, bx, dtdz, wmac, volfrac, fluxL, fluxR, vofL, vofR);
