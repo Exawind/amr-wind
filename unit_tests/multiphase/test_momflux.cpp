@@ -31,13 +31,12 @@ void init_field3(
 
 void initialize_volume_fractions(
     const int dir,
-    const amrex::Geometry&,
     const amrex::Box& bx,
-    amrex::Array4<amrex::Real>& vof_arr)
+    const amrex::Array4<amrex::Real>& vof_arr)
 {
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-        int icheck;
+        int icheck = 0;
         switch (dir) {
         case 0:
             icheck = i;
@@ -139,11 +138,10 @@ protected:
 
         // Initialize volume fraction field
         auto& vof = repo.get_field("vof");
-        auto& geom = repo.mesh().Geom();
         run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
             auto vof_arr = vof(lev).array(mfi);
             const auto& bx = mfi.validbox();
-            initialize_volume_fractions(dir, geom[lev], bx, vof_arr);
+            initialize_volume_fractions(dir, bx, vof_arr);
         });
         // Populate boundary cells
         vof.fillpatch(0.0);
@@ -182,9 +180,9 @@ protected:
         mom_eqn.compute_predictor_rhs(DiffusionType::Explicit);
 
         // Get MAC velocities for use in testing
-        auto& umac = repo.get_field("u_mac");
-        auto& vmac = repo.get_field("v_mac");
-        auto& wmac = repo.get_field("w_mac");
+        const auto& umac = repo.get_field("u_mac");
+        const auto& vmac = repo.get_field("v_mac");
+        const auto& wmac = repo.get_field("w_mac");
 
         // Get advected alpha
         std::string sdir = "d";
@@ -199,13 +197,14 @@ protected:
             sdir = "z";
             break;
         }
-        auto& advalpha_f = repo.get_field("advalpha_" + sdir);
+        const auto& advalpha_f = repo.get_field("advalpha_" + sdir);
 
         // Get convective term
         /* auto& conv_term =
             mom_eqn.fields().conv_term.state(amr_wind::FieldState::New); */
 
         // Base level
+        const auto& geom = repo.mesh().Geom();
         int lev = 0;
         const auto& dx = geom[lev].CellSizeArray();
         const auto& problo = geom[lev].ProbLoArray();
@@ -221,7 +220,7 @@ protected:
 
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    int icheck;
+                    int icheck = 0;
                     switch (dir) {
                     case 0:
                         icheck = i;
