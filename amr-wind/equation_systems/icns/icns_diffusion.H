@@ -38,6 +38,7 @@ public:
                              ? FieldState::New
                              : fstate;
         auto& divtau = this->m_pdefields.diff_term.state(tau_state);
+        bool diff_for_RHS(fstate == amr_wind::FieldState::New);
 
         amrex::MLMG mlmg(*this->m_applier);
         mlmg.apply(divtau.vec_ptrs(), this->m_pdefields.field.vec_ptrs());
@@ -63,6 +64,16 @@ public:
                         divtau_arr(i, j, k, 1) *= rhoinv;
                         divtau_arr(i, j, k, 2) *= rhoinv;
                     });
+
+                // Multiply diff terms by rho if being used for icns RHS
+                if (diff_for_RHS) {
+                    amrex::ParallelFor(
+                        bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                            divtau_arr(i, j, k, 0) *= rho_arr(i, j, k);
+                            divtau_arr(i, j, k, 1) *= rho_arr(i, j, k);
+                            divtau_arr(i, j, k, 2) *= rho_arr(i, j, k);
+                        });
+                }
             }
         }
     }
