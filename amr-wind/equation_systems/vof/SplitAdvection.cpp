@@ -32,7 +32,7 @@ void multiphase::split_advection_step(
             mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
                 .SetDynamic(true);
         }
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
         for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
@@ -76,7 +76,7 @@ void multiphase::split_advection_step(
             mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
                 .SetDynamic(true);
         }
-#ifdef _OPENMP
+#ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
         for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
