@@ -218,60 +218,66 @@ protected:
             const auto& vel = velocity(lev).array(mfi);
             // const auto& dqdt = conv_term(lev).array(mfi);
 
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    int icheck = 0;
-                    switch (dir) {
-                    case 0:
-                        icheck = i;
-                        break;
-                    case 1:
-                        icheck = j;
-                        break;
-                    case 2:
-                        icheck = k;
-                        break;
-                    }
-                    // x is face location
-                    const amrex::Real x = problo[dir] + icheck * dx[dir];
-
-                    // Check that MAC velocity is as expected, unchanged
-                    EXPECT_NEAR(um(i, j, k), uvel, tol);
-                    EXPECT_NEAR(vm(i, j, k), vvel, tol);
-                    EXPECT_NEAR(wm(i, j, k), wvel, tol);
-                    // Check that velocity is unchanged after advection
-                    EXPECT_NEAR(vel(i, j, k, 0), uvel, tol);
-                    EXPECT_NEAR(vel(i, j, k, 1), vvel, tol);
-                    EXPECT_NEAR(vel(i, j, k, 2), wvel, tol);
-
-                    // Test volume fractions at faces
-                    if (x == 0.5) {
-                        // Center face (coming from left cell)
-                        EXPECT_NEAR(af(i, j, k), 1.0, tol);
-                    } else {
-                        if (x == 0.0) {
-                            // Left face (coming from right cell, periodic BC)
-                            EXPECT_NEAR(af(i, j, k), 0.0, tol);
+            // Small mesh, looop in serial for check
+            for (int i = 0; i < 2; ++i) {
+                for (int j = 0; j < 2; ++j) {
+                    for (int k = 0; k < 2; ++k) {
+                        int icheck = 0;
+                        switch (dir) {
+                        case 0:
+                            icheck = i;
+                            break;
+                        case 1:
+                            icheck = j;
+                            break;
+                        case 2:
+                            icheck = k;
+                            break;
                         }
-                    }
+                        // x is face location
+                        const amrex::Real x = problo[dir] + icheck * dx[dir];
 
-                    /*
-                    // Test momentum fluxes by checking convective term
-                    if (icheck == 0) {
-                        // Left cell (gas entering, liquid leaving)
-                        EXPECT_NEAR(
-                            dqdt(i, j, k, dir),
-                            m_vel * m_vel * (m_rho2 - m_rho1) / 0.5, tol);
-                    } else {
-                        if (icheck == 1) {
-                            // Right cell (liquid entering, gas leaving)
+                        // Check that MAC velocity is as expected, unchanged
+                        EXPECT_NEAR(um(i, j, k), uvel, tol);
+                        EXPECT_NEAR(vm(i, j, k), vvel, tol);
+                        EXPECT_NEAR(wm(i, j, k), wvel, tol);
+                        // Check that velocity is unchanged after advection
+                        EXPECT_NEAR(vel(i, j, k, 0), uvel, tol);
+                        EXPECT_NEAR(vel(i, j, k, 1), vvel, tol);
+                        EXPECT_NEAR(vel(i, j, k, 2), wvel, tol);
+
+                        // Test volume fractions at faces
+                        if (x == 0.5) {
+                            // Center face (coming from left cell)
+                            EXPECT_NEAR(af(i, j, k), 1.0, tol);
+                        } else {
+                            if (x == 0.0) {
+                                // Left face (coming from right cell, periodic
+                                // BC)
+                                EXPECT_NEAR(af(i, j, k), 0.0, tol);
+                            }
+                        }
+
+                        /*
+                        // Test momentum fluxes by checking convective term
+                        if (icheck == 0) {
+                            // Left cell (gas entering, liquid leaving)
                             EXPECT_NEAR(
                                 dqdt(i, j, k, dir),
-                                m_vel * m_vel * (m_rho1 - m_rho2) / 0.5, tol);
+                                m_vel * m_vel * (m_rho2 - m_rho1) / 0.5, tol);
+                        } else {
+                            if (icheck == 1) {
+                                // Right cell (liquid entering, gas leaving)
+                                EXPECT_NEAR(
+                                    dqdt(i, j, k, dir),
+                                    m_vel * m_vel * (m_rho1 - m_rho2) / 0.5,
+                        tol);
+                            }
                         }
+                        */
                     }
-                    */
-                });
+                }
+            }
         }
     }
     const amrex::Real m_rho1 = 1000.0;
