@@ -209,7 +209,6 @@ protected:
         const auto& dx = geom[lev].CellSizeArray();
         const auto& problo = geom[lev].ProbLoArray();
         for (amrex::MFIter mfi(vof(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.validbox();
 
             const auto& um = umac(lev).array(mfi);
             const auto& vm = vmac(lev).array(mfi);
