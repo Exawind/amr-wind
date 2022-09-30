@@ -13,8 +13,7 @@ void split_advection_step(
     Field& dof_field,
     amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> const& fluxes,
     ScratchField& fluxC,
-    amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> const&
-        advalphas,
+    amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> const& advas,
     Field const& u_mac,
     Field const& v_mac,
     Field const& w_mac,
