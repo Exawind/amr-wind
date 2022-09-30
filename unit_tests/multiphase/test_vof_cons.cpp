@@ -1,4 +1,3 @@
-#include "aw_test_utils/AmrexTest.H"
 #include "aw_test_utils/MeshTest.H"
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
