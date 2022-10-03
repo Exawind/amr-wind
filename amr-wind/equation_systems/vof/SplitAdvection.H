@@ -70,8 +70,6 @@ void sweep_fluxes(
     const amrex::Real dtdx,
     amrex::Array4<amrex::Real const> const& vel_mac,
     amrex::Array4<amrex::Real const> const& volfrac,
-    amrex::Array4<amrex::Real> const& fluxL,
-    amrex::Array4<amrex::Real> const& fluxR,
     amrex::Array4<amrex::Real> const& vofL,
     amrex::Array4<amrex::Real> const& vofR);
 

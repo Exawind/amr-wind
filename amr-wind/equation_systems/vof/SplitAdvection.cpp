@@ -38,7 +38,7 @@ void multiphase::split_advection_step(
         for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
              ++mfi) {
             const auto& bx = mfi.tilebox();
-            amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 4);
+            amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 2);
             tmpfab.setVal<amrex::RunOn::Device>(0.0);
 
             // Compression term coefficient
@@ -135,36 +135,35 @@ void multiphase::split_compute_fluxes(
     const auto domlo = amrex::lbound(domain);
     const auto domhi = amrex::ubound(domain);
 
-    Array4<Real> fluxL = makeArray4(p, bxg1, 1);
-    p += fluxL.size();
-    Array4<Real> fluxR = makeArray4(p, bxg1, 1);
-    p += fluxR.size();
     Array4<Real> vofL = makeArray4(p, bxg1, 1);
     p += vofL.size(); // NOLINT: Value not read warning
     Array4<Real> vofR = makeArray4(p, bxg1, 1);
 
     if (isweep % 3 == 0) {
-        sweep_fluxes(2, bx, dtdz, wmac, volfrac, fluxL, fluxR, vofL, vofR);
+        sweep_fluxes(2, bx, dtdz, wmac, volfrac, vofL, vofR);
+        Box const& zbx = amrex::surroundingNodes(bx, 2);
         amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            zbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 fluxes_bc_save(
-                    i, j, k, 2, dz, bx, fluxL, fluxR, fz, vofL, vofR, aaz, pbc,
+                    i, j, k, 2, dt * wmac(i, j, k), fz, vofL, vofR, aaz, pbc,
                     domlo.z, domhi.z);
             });
     } else if (isweep % 3 == 1) {
-        sweep_fluxes(1, bx, dtdy, vmac, volfrac, fluxL, fluxR, vofL, vofR);
+        sweep_fluxes(1, bx, dtdy, vmac, volfrac, vofL, vofR);
+        Box const& ybx = amrex::surroundingNodes(bx, 1);
         amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            ybx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 fluxes_bc_save(
-                    i, j, k, 1, dy, bx, fluxL, fluxR, fy, vofL, vofR, aay, pbc,
+                    i, j, k, 1, dt * vmac(i, j, k), fy, vofL, vofR, aay, pbc,
                     domlo.y, domhi.y);
             });
     } else {
-        sweep_fluxes(0, bx, dtdx, umac, volfrac, fluxL, fluxR, vofL, vofR);
+        sweep_fluxes(0, bx, dtdx, umac, volfrac, vofL, vofR);
+        Box const& xbx = amrex::surroundingNodes(bx, 0);
         amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            xbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 fluxes_bc_save(
-                    i, j, k, 0, dx, bx, fluxL, fluxR, fx, vofL, vofR, aax, pbc,
+                    i, j, k, 0, dt * umac(i, j, k), fx, vofL, vofR, aax, pbc,
                     domlo.x, domhi.x);
             });
     }
@@ -223,8 +222,6 @@ void multiphase::sweep_fluxes(
     const amrex::Real dtdx,
     amrex::Array4<amrex::Real const> const& vel_mac,
     amrex::Array4<amrex::Real const> const& volfrac,
-    amrex::Array4<amrex::Real> const& fluxL,
-    amrex::Array4<amrex::Real> const& fluxR,
     amrex::Array4<amrex::Real> const& vofL,
     amrex::Array4<amrex::Real> const& vofR)
 {
@@ -242,8 +239,7 @@ void multiphase::sweep_fluxes(
             amrex::Real velL = vel_mac(i, j, k);
             amrex::Real velR = vel_mac(i + ii, j + jj, k + kk);
             multiphase::eulerian_implicit(
-                i, j, k, dir, dtdx, velL, velR, volfrac, fluxL, fluxR, vofL,
-                vofR);
+                i, j, k, dir, dtdx, velL, velR, volfrac, vofL, vofR);
         });
 }
 
