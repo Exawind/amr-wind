@@ -35,6 +35,9 @@ public:
         amrex::Real /*ovst_fac*/,
         int /*lev*/) noexcept;
 
+    amrex::Real density0() { return m_rho_0; }
+    bool vardens() { return m_variable_density; }
+
 private:
     void init_projector(const FaceFabPtrVec& /*beta*/) noexcept;
     void init_projector(const amrex::Real /*beta*/) noexcept;
@@ -310,11 +313,40 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::YFACE);
         auto face_z =
             repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::ZFACE);
+        auto dens_x =
+            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::XFACE);
+        auto dens_y =
+            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::YFACE);
+        auto dens_z =
+            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::ZFACE);
+
+        auto& rho_nph =
+            repo.get_field("density").state(amr_wind::FieldState::NPH);
 
         //
         // Advect momentum eqns
         //
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+
+            // Get density at faces according to current scheme
+            if (!m_macproj_op.vardens()) {
+                // Constant density - multiply by a constant
+                (*dens_x)(lev).setVal(m_macproj_op.density0());
+                (*dens_y)(lev).setVal(m_macproj_op.density0());
+                (*dens_z)(lev).setVal(m_macproj_op.density0());
+            } else if (false) {
+                // Multiphase - multiply and add with flux volumes
+
+            } else {
+                // Variable density - get nph density at faces
+                amrex::Vector<amrex::Array<amrex::MultiFab*, ICNS::ndim>>
+                    rho_face(1);
+                rho_face[0][0] = &(*dens_x)(lev);
+                rho_face[0][1] = &(*dens_y)(lev);
+                rho_face[0][2] = &(*dens_z)(lev);
+                amrex::average_cellcenter_to_face(
+                    rho_face[0], rho_nph(lev), geom[lev]);
+            }
 
             amrex::MFItInfo mfi_info;
             if (amrex::Gpu::notInLaunchRegion()) {
@@ -382,6 +414,14 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
                 amrex::Gpu::streamSynchronize();
             }
+
+            // Multiply fluxes by density contribution
+            amrex::MultiFab::Multiply(
+                (*flux_x)(lev), (*dens_x)(lev), 0, 0, 1, 0);
+            amrex::MultiFab::Multiply(
+                (*flux_y)(lev), (*dens_y)(lev), 0, 0, 1, 0);
+            amrex::MultiFab::Multiply(
+                (*flux_z)(lev), (*dens_z)(lev), 0, 0, 1, 0);
         }
 
         amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> fluxes(
