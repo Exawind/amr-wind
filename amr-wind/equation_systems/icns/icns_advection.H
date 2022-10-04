@@ -35,8 +35,8 @@ public:
         amrex::Real /*ovst_fac*/,
         int /*lev*/) noexcept;
 
-    amrex::Real density0() { return m_rho_0; }
-    bool vardens() { return m_variable_density; }
+    amrex::Real density0() const { return m_rho_0; }
+    bool vardens() const { return m_variable_density; }
 
 private:
     void init_projector(const FaceFabPtrVec& /*beta*/) noexcept;
@@ -320,9 +320,9 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         auto dens_z =
             repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::ZFACE);
 
-        auto& rho_nph =
+        const auto& rho_nph =
             repo.get_field("density").state(amr_wind::FieldState::NPH);
-        auto& rho_o =
+        const auto& rho_o =
             repo.get_field("density").state(amr_wind::FieldState::Old);
 
         //
@@ -349,9 +349,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                 (*dens_x)(lev).setVal(m_macproj_op.density0());
                 (*dens_y)(lev).setVal(m_macproj_op.density0());
                 (*dens_z)(lev).setVal(m_macproj_op.density0());
-            } else if (false) {
-                // Multiphase - multiply and add with flux volumes
-
+                /*} else if (condition) {
+                    // Multiphase - multiply and add with flux volumes */
             } else {
                 // Variable density - set density multiplier to 1, multiply
                 // dof_field by density to transport momentum
