@@ -59,7 +59,7 @@ void initialize_volume_fractions(
     // Left half is liquid, right half is gas
 }
 
-}
+} // namespace
 
 class MassMomFluxOpTest : public MeshTest
 {
