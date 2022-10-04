@@ -6,6 +6,8 @@
 
 namespace amr_wind_tests {
 
+namespace {
+
 void init_field3(
     amr_wind::Field& fld,
     const amrex::Real in0,
@@ -55,6 +57,8 @@ void initialize_volume_fractions(
         }
     });
     // Left half is liquid, right half is gas
+}
+
 }
 
 class MassMomFluxOpTest : public MeshTest
@@ -217,7 +221,7 @@ protected:
             const auto& vel = velocity(lev).array(mfi);
             // const auto& dqdt = conv_term(lev).array(mfi);
 
-            // Small mesh, looop in serial for check
+            // Small mesh, loop in serial for check
             for (int i = 0; i < 2; ++i) {
                 for (int j = 0; j < 2; ++j) {
                     for (int k = 0; k < 2; ++k) {
