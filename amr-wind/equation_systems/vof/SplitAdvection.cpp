@@ -19,7 +19,7 @@ void multiphase::split_advection_step(
     Field const& u_mac,
     Field const& v_mac,
     Field const& w_mac,
-    amrex::BCRec const* pbc,
+    amrex::GpuArray<BC, AMREX_SPACEDIM * 2> BCs,
     amrex::Vector<amrex::Geometry> geom,
     amrex::Real dt,
     bool rm_debris)
@@ -54,7 +54,7 @@ void multiphase::split_advection_step(
                 w_mac(lev).const_array(mfi), (*advas[lev][0]).array(mfi),
                 (*advas[lev][1]).array(mfi), (*advas[lev][2]).array(mfi),
                 (*fluxes[lev][0]).array(mfi), (*fluxes[lev][1]).array(mfi),
-                (*fluxes[lev][2]).array(mfi), pbc, tmpfab.dataPtr(), geom, dt);
+                (*fluxes[lev][2]).array(mfi), BCs, tmpfab.dataPtr(), geom, dt);
 
             amrex::Gpu::streamSynchronize();
         }
@@ -116,7 +116,7 @@ void multiphase::split_compute_fluxes(
     amrex::Array4<amrex::Real> const& fx,
     amrex::Array4<amrex::Real> const& fy,
     amrex::Array4<amrex::Real> const& fz,
-    amrex::BCRec const* pbc,
+    amrex::GpuArray<BC, AMREX_SPACEDIM * 2> BCs,
     amrex::Real* p,
     amrex::Vector<amrex::Geometry> geom,
     const amrex::Real dt)
@@ -145,7 +145,7 @@ void multiphase::split_compute_fluxes(
         amrex::ParallelFor(
             zbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 fluxes_bc_save(
-                    i, j, k, 2, dt * wmac(i, j, k), fz, vofL, vofR, aaz, pbc,
+                    i, j, k, 2, dt * wmac(i, j, k), fz, vofL, vofR, aaz, BCs,
                     domlo.z, domhi.z);
             });
     } else if (isweep % 3 == 1) {
@@ -154,7 +154,7 @@ void multiphase::split_compute_fluxes(
         amrex::ParallelFor(
             ybx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 fluxes_bc_save(
-                    i, j, k, 1, dt * vmac(i, j, k), fy, vofL, vofR, aay, pbc,
+                    i, j, k, 1, dt * vmac(i, j, k), fy, vofL, vofR, aay, BCs,
                     domlo.y, domhi.y);
             });
     } else {
@@ -163,7 +163,7 @@ void multiphase::split_compute_fluxes(
         amrex::ParallelFor(
             xbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 fluxes_bc_save(
-                    i, j, k, 0, dt * umac(i, j, k), fx, vofL, vofR, aax, pbc,
+                    i, j, k, 0, dt * umac(i, j, k), fx, vofL, vofR, aax, BCs,
                     domlo.x, domhi.x);
             });
     }

@@ -114,22 +114,27 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fluxes_bc_save(
     amrex::Array4<amrex::Real> const& vofL,
     amrex::Array4<amrex::Real> const& vofR,
     amrex::Array4<amrex::Real> const& advalpha_f,
-    amrex::BCRec const* bc,
+    amrex::GpuArray<BC, AMREX_SPACEDIM * 2> BCs,
     const int domlo,
     const int domhi)
 {
-    int bclo = bc->lo(dir);
-    int bchi = bc->hi(dir);
+    auto bclo = BCs[amrex::Orientation(dir, amrex::Orientation::low)];
+    auto bchi = BCs[amrex::Orientation(dir, amrex::Orientation::high)];
 
     if (dir == 0) {
-        if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
+        // For wall BCs, do not allow flow into or out of domain
+        if (bclo == BC::no_slip_wall || bclo == BC::slip_wall ||
+            bclo == BC::wall_model) {
             if (i == domlo) {
                 vofR(domlo - 1, j, k) = 0.0;
+                vofL(domlo, j, k) = 0.0;
             }
         }
-        if (bchi == amrex::BCType::ext_dir || bchi == amrex::BCType::hoextrap) {
+        if (bchi == BC::no_slip_wall || bchi == BC::slip_wall ||
+            bchi == BC::wall_model) {
             if (i == domhi) {
                 vofL(domhi + 1, j, k) = 0.0;
+                vofR(domhi, j, k) = 0.0;
             }
         }
         // Store volume fraction of each flux and multiply by integral
@@ -139,27 +144,35 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fluxes_bc_save(
         // Note: only one of vofR or vofL can be nonzero, due to the nature of
         // eulerian_implicit(), so this sum is not for the sake of accumulation
     } else if (dir == 1) {
-        if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
+        if (bclo == BC::no_slip_wall || bclo == BC::slip_wall ||
+            bclo == BC::wall_model) {
             if (j == domlo) {
                 vofR(i, domlo - 1, k) = 0.0;
+                vofL(i, domlo, k) = 0.0;
             }
         }
-        if (bchi == amrex::BCType::ext_dir || bchi == amrex::BCType::hoextrap) {
+        if (bchi == BC::no_slip_wall || bchi == BC::slip_wall ||
+            bchi == BC::wall_model) {
             if (j == domhi) {
                 vofL(i, domhi + 1, k) = 0.0;
+                vofR(i, domhi, k) = 0.0;
             }
         }
         advalpha_f(i, j, k) = vofR(i, j - 1, k) + vofL(i, j, k);
         f_f(i, j, k) = advalpha_f(i, j, k) * disp;
     } else if (dir == 2) {
-        if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
+        if (bclo == BC::no_slip_wall || bclo == BC::slip_wall ||
+            bclo == BC::wall_model) {
             if (k == domlo) {
                 vofR(i, j, domlo - 1) = 0.0;
+                vofL(i, j, domlo) = 0.0;
             }
         }
-        if (bchi == amrex::BCType::ext_dir || bchi == amrex::BCType::hoextrap) {
+        if (bchi == BC::no_slip_wall || bchi == BC::slip_wall ||
+            bchi == BC::wall_model) {
             if (k == domhi) {
                 vofL(i, j, domhi + 1) = 0.0;
+                vofR(i, j, domhi) = 0.0;
             }
         }
         advalpha_f(i, j, k) = vofR(i, j, k - 1) + vofL(i, j, k);

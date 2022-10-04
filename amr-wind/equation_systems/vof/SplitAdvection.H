@@ -17,7 +17,7 @@ void split_advection_step(
     Field const& u_mac,
     Field const& v_mac,
     Field const& w_mac,
-    amrex::BCRec const* pbc,
+    amrex::GpuArray<BC, AMREX_SPACEDIM * 2> BCs,
     amrex::Vector<amrex::Geometry> geom,
     amrex::Real dt,
     bool rm_debris);
@@ -36,7 +36,7 @@ void split_compute_fluxes(
     amrex::Array4<amrex::Real> const& fx,
     amrex::Array4<amrex::Real> const& fy,
     amrex::Array4<amrex::Real> const& fz,
-    amrex::BCRec const* pbc,
+    amrex::GpuArray<BC, AMREX_SPACEDIM * 2> BCs,
     amrex::Real* p,
     amrex::Vector<amrex::Geometry> geom,
     const amrex::Real dt);
