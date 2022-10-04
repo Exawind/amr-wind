@@ -8,9 +8,7 @@ namespace amr_wind_tests {
 
 namespace {
 void initialize_volume_fractions(
-    const int dir,
-    const amrex::Box& bx,
-    const amrex::Array4<amrex::Real>& vof_arr)
+    const amrex::Box& bx, const amrex::Array4<amrex::Real>& vof_arr)
 {
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
         vof_arr(i, j, k) = 1.0 - 0.1 * (i + j + k);
@@ -156,7 +154,7 @@ protected:
         run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
             auto vof_arr = vof(lev).array(mfi);
             const auto& bx = mfi.validbox();
-            initialize_volume_fractions(dir, bx, vof_arr);
+            initialize_volume_fractions(bx, vof_arr);
         });
         // Populate boundary cells
         vof.fillpatch(0.0);
@@ -165,8 +163,6 @@ protected:
         // Base level
         const auto& geom = repo.mesh().Geom();
         int lev = 0;
-        const auto& dx = geom[lev].CellSizeArray();
-        const auto& problo = geom[lev].ProbLoArray();
         int i = 0;
         int j = 0;
         int k = 0;

@@ -19,7 +19,6 @@ protected:
     void set_bcrec() override
     {
         const auto& ibctype = m_field.bc_type();
-        auto& bcrec = m_field.bcrec();
 
         for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
             auto ori = oit();
