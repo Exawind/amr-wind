@@ -103,7 +103,98 @@ amrex::Real normal_vector_test_impl(amr_wind::Field& vof, const int dir)
     return error_total;
 }
 
+amrex::Real fit_plane_test_impl(amr_wind::Field& vof, const int dir)
+{
+    amrex::Real error_total = 0.0;
+    const int d = dir;
+
+    for (int lev = 0; lev < vof.repo().num_active_levels(); ++lev) {
+
+        error_total += amrex::ReduceSum(
+            vof(lev), 0,
+            [=] AMREX_GPU_HOST_DEVICE(
+                amrex::Box const& bx,
+                amrex::Array4<amrex::Real const> const& vof_arr)
+                -> amrex::Real {
+                amrex::Real error = 0.0;
+
+                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                    amrex::Real mx, my, mz, alpha;
+
+                    int ii = (d != 0 ? i : 0);
+                    int jj = (d != 1 ? j : 0);
+                    int kk = (d != 2 ? k : 0);
+                    // Check multiphase cells
+                    if (ii + jj + kk == 3) {
+                        amr_wind::multiphase::fit_plane(
+                            i, j, k, vof_arr, mx, my, mz, alpha);
+
+                        // Check slope
+                        error += amrex::Math::abs(mx - (d != 0 ? 0.5 : 0.0));
+                        error += amrex::Math::abs(my - (d != 1 ? 0.5 : 0.0));
+                        error += amrex::Math::abs(mz - (d != 2 ? 0.5 : 0.0));
+                        // Check intercept
+                        error += amrex::Math::abs(alpha - 0.5);
+                    }
+                });
+
+                return error;
+            });
+    }
+    return error_total;
+}
+
 } // namespace
+
+TEST_F(VOFOpTest, volume_intercept)
+{
+    // Initialize random number generator
+    amrex::InitRandom(0);
+    for (int n = 0; n < 100; ++n) {
+        amrex::Real mx = amrex::Random();
+        amrex::Real my = amrex::Random();
+        amrex::Real mz = amrex::Random();
+        amrex::Real vof = amrex::Random();
+        // Scale slope values, like in fit_plane
+        amrex::Real mm2 = mx + my + mz;
+        mx = mx / mm2;
+        my = my / mm2;
+        mz = mz / mm2;
+        // Limit vof values to multiphase range
+        vof = std::max(1e-12, std::min(1.0 - 1e-12, vof));
+        // Get intercept value and check for nan
+        amrex::Real alpha =
+            amr_wind::multiphase::volume_intercept(mx, my, mz, vof);
+        EXPECT_EQ(alpha, alpha);
+
+        // Set one of the slope components to 0, then try again
+        auto idx = (int)std::floor(amrex::Random() * 3.0);
+        switch (idx) {
+        case 0:
+            mx = 0.0;
+            break;
+        case 1:
+            my = 0.0;
+            break;
+        default:
+            mz = 0.0;
+            break;
+        }
+        // Scale slope values, like in fit_plane
+        mm2 = mx + my + mz;
+        mx = mx / mm2;
+        my = my / mm2;
+        mz = mz / mm2;
+        // Get intercept value and check for nan
+        alpha = amr_wind::multiphase::volume_intercept(mx, my, mz, vof);
+        EXPECT_EQ(alpha, alpha);
+    }
+
+    // Check specific problem case
+    amrex::Real alpha =
+        amr_wind::multiphase::volume_intercept(0.5, 0.5, 0.0, 0.5);
+    EXPECT_EQ(alpha, alpha);
+}
 
 TEST_F(VOFOpTest, interface_normal)
 {
@@ -138,6 +229,43 @@ TEST_F(VOFOpTest, interface_normal)
     // constant in z
     init_vof(vof, 2);
     error_total = normal_vector_test_impl(vof, 2);
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
+    EXPECT_NEAR(error_total, 0.0, tol);
+}
+
+TEST_F(VOFOpTest, interface_plane)
+{
+
+    constexpr double tol = 1.0e-11;
+
+    populate_parameters();
+    {
+        amrex::ParmParse pp("geometry");
+        amrex::Vector<int> periodic{{0, 0, 0}};
+        pp.addarr("is_periodic", periodic);
+    }
+
+    initialize_mesh();
+
+    auto& repo = sim().repo();
+    const int ncomp = 1;
+    const int nghost = 3;
+    auto& vof = repo.declare_field("vof", ncomp, nghost);
+
+    amrex::Real error_total = 0.0;
+    // constant in x
+    init_vof(vof, 0);
+    error_total = fit_plane_test_impl(vof, 0);
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
+    EXPECT_NEAR(error_total, 0.0, tol);
+    // constant in y
+    init_vof(vof, 1);
+    error_total = fit_plane_test_impl(vof, 1);
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
+    EXPECT_NEAR(error_total, 0.0, tol);
+    // constant in z
+    init_vof(vof, 2);
+    error_total = fit_plane_test_impl(vof, 2);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
     EXPECT_NEAR(error_total, 0.0, tol);
 }
