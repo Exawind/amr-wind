@@ -313,12 +313,6 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::YFACE);
         auto face_z =
             repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::ZFACE);
-        auto dens_x =
-            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::XFACE);
-        auto dens_y =
-            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::YFACE);
-        auto dens_z =
-            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::ZFACE);
 
         const auto& rho_nph =
             repo.get_field("density").state(amr_wind::FieldState::NPH);
@@ -343,20 +337,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             amrex::MultiFab::Copy(
                 fq, src_term(lev), 0, 0, ICNS::ndim, fvm::Godunov::nghost_src);
 
-            // Get density at faces according to current scheme
-            if (!m_macproj_op.vardens()) {
-                // Constant density - multiply by a constant
-                (*dens_x)(lev).setVal(m_macproj_op.density0());
-                (*dens_y)(lev).setVal(m_macproj_op.density0());
-                (*dens_z)(lev).setVal(m_macproj_op.density0());
-                /*} else if (condition) {
-                    // Multiphase - multiply and add with flux volumes */
-            } else {
-                // Variable density - set density multiplier to 1, multiply
-                // dof_field by density to transport momentum
-                (*dens_x)(lev).setVal(1.0);
-                (*dens_y)(lev).setVal(1.0);
-                (*dens_z)(lev).setVal(1.0);
+            // For variable density, calculate fluxes using momentum directly
+            if (m_macproj_op.vardens()) { // and not multiphase
                 amrex::MultiFab::Multiply(
                     q, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_state);
                 amrex::MultiFab::Multiply(
@@ -436,13 +418,16 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                 amrex::Gpu::streamSynchronize();
             }
 
-            // Multiply fluxes by density contribution
-            amrex::MultiFab::Multiply(
-                (*flux_x)(lev), (*dens_x)(lev), 0, 0, 1, 0);
-            amrex::MultiFab::Multiply(
-                (*flux_y)(lev), (*dens_y)(lev), 0, 0, 1, 0);
-            amrex::MultiFab::Multiply(
-                (*flux_z)(lev), (*dens_z)(lev), 0, 0, 1, 0);
+            // Get density at faces according to current scheme and multiply
+            if (!m_macproj_op.vardens()) {
+                // Constant density - multiply by a constant
+                (*flux_x)(lev).mult(m_macproj_op.density0());
+                (*flux_y)(lev).mult(m_macproj_op.density0());
+                (*flux_z)(lev).mult(m_macproj_op.density0());
+                /*} else if (condition) {
+                    // Multiphase - multiply and add with flux volumes */
+                // Variable density single-phase - fluxes already have density
+            }
         }
 
         amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> fluxes(
