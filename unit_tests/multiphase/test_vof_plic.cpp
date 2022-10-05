@@ -33,49 +33,73 @@ protected:
 namespace {
 
 void initialize_volume_fractions(
-    const amrex::Geometry& /*unused*/,
+    const int dir,
     const amrex::Box& bx,
-    const int /*unused*/,
     const amrex::Array4<amrex::Real>& vof_arr)
 {
-
     // grow the box by 1 so that x,y,z go out of bounds and min(max()) corrects
     // it and it fills the ghosts with wall values
+    const int d = dir;
     amrex::ParallelFor(grow(bx, 1), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-        if (i + k > 3) {
+        int ii = (d != 0 ? i : 0);
+        int jj = (d != 1 ? j : 0);
+        int kk = (d != 2 ? k : 0);
+        if (ii + jj + kk > 3) {
             vof_arr(i, j, k) = 0.0;
         }
-        if (i + k == 3) {
+        if (ii + jj + kk == 3) {
             vof_arr(i, j, k) = 0.5;
         }
-        if (i + k < 3) {
+        if (ii + jj + kk < 3) {
             vof_arr(i, j, k) = 1.0;
         }
     });
 }
 
-amrex::Real normal_vector_test_impl(amr_wind::Field& vof, const int pdegree)
+void init_vof(amr_wind::Field& vof, const int dir)
 {
-
-    const auto& geom = vof.repo().mesh().Geom();
-
     run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
         auto vof_arr = vof(lev).array(mfi);
         const auto& bx = mfi.validbox();
-        initialize_volume_fractions(geom[lev], bx, pdegree, vof_arr);
+        initialize_volume_fractions(dir, bx, vof_arr);
     });
+}
 
+amrex::Real normal_vector_test_impl(amr_wind::Field& vof, const int dir)
+{
     amrex::Real error_total = 0.0;
+    const int d = dir;
 
-    run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
-        auto vof_arr = vof(lev).array(mfi);
-        const auto& bx = mfi.validbox();
-        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-            amrex::Real mx, my, mz;
-            amr_wind::multiphase::mixed_youngs_central_normal(
-                i, j, k, vof_arr, mx, my, mz);
-        });
-    });
+    for (int lev = 0; lev < vof.repo().num_active_levels(); ++lev) {
+
+        error_total += amrex::ReduceSum(
+            vof(lev), 0,
+            [=] AMREX_GPU_HOST_DEVICE(
+                amrex::Box const& bx,
+                amrex::Array4<amrex::Real const> const& vof_arr)
+                -> amrex::Real {
+                amrex::Real error = 0.0;
+
+                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                    amrex::Real mx, my, mz;
+                    amr_wind::multiphase::mixed_youngs_central_normal(
+                        i, j, k, vof_arr, mx, my, mz);
+
+                    int ii = (d != 0 ? i : 0);
+                    int jj = (d != 1 ? j : 0);
+                    int kk = (d != 2 ? k : 0);
+
+                    // Use L1 norm, check cells where slope is known
+                    if (ii + jj + kk == 3) {
+                        error += amrex::Math::abs(mx - (d != 0 ? 0.5 : 0.0));
+                        error += amrex::Math::abs(my - (d != 1 ? 0.5 : 0.0));
+                        error += amrex::Math::abs(mz - (d != 2 ? 0.5 : 0.0));
+                    }
+                });
+
+                return error;
+            });
+    }
     return error_total;
 }
 
@@ -96,15 +120,25 @@ TEST_F(VOFOpTest, interface_normal)
     initialize_mesh();
 
     auto& repo = sim().repo();
-    const int ncomp = 3;
-    const int nghost = 1;
+    const int ncomp = 1;
+    const int nghost = 3;
     auto& vof = repo.declare_field("vof", ncomp, nghost);
 
-    const int pdegree = 2;
-    auto error_total = normal_vector_test_impl(vof, pdegree);
-
+    amrex::Real error_total = 0.0;
+    // constant in x
+    init_vof(vof, 0);
+    error_total = normal_vector_test_impl(vof, 0);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-
+    EXPECT_NEAR(error_total, 0.0, tol);
+    // constant in y
+    init_vof(vof, 1);
+    error_total = normal_vector_test_impl(vof, 1);
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
+    EXPECT_NEAR(error_total, 0.0, tol);
+    // constant in z
+    init_vof(vof, 2);
+    error_total = normal_vector_test_impl(vof, 2);
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
     EXPECT_NEAR(error_total, 0.0, tol);
 }
 
