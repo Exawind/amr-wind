@@ -161,7 +161,6 @@ protected:
 
         /* -- Check VOF boundary values from fillpatch -- */
         // Base level
-        const auto& geom = repo.mesh().Geom();
         int lev = 0;
         int i = 0;
         int j = 0;
