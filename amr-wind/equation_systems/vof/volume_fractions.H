@@ -456,13 +456,12 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool interface_band(
     return (VOF_max != VOF_min || VOF_mid);
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void levelset_to_vof(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real levelset_to_vof(
     int i,
     int j,
     int k,
     amrex::Real eps,
-    amrex::Array4<amrex::Real> const& phi,
-    amrex::Array4<amrex::Real> const& volfrac) noexcept
+    amrex::Array4<amrex::Real const> const& phi) noexcept
 {
     amrex::Real mx, my, mz;
     youngs_fd_normal(i, j, k, phi, mx, my, mz);
@@ -482,13 +481,16 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void levelset_to_vof(
         alpha = phi(i, j, k) / normL1;
         alpha = alpha + 0.5;
     }
+    amrex::Real result;
     if (alpha >= 1.0) {
-        volfrac(i, j, k) = 1.0;
+        result = 1.0;
     } else if (alpha <= 0.0) {
-        volfrac(i, j, k) = 0.0;
+        result = 0.0;
     } else {
-        volfrac(i, j, k) = cut_volume(mx, my, mz, alpha, 0.0, 1.0);
+        result = cut_volume(mx, my, mz, alpha, 0.0, 1.0);
     }
+
+    return result;
 }
 
 } // namespace multiphase

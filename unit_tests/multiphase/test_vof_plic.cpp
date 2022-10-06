@@ -177,7 +177,8 @@ amrex::Real fit_plane_test_impl(amr_wind::Field& vof, const int dir)
     return error_total;
 }
 
-amrex::Real fit_plane_test_impl_h(amr_wind::Field& vof, const amrex::Real vof_val, const int dir)
+amrex::Real fit_plane_test_impl_h(
+    amr_wind::Field& vof, const amrex::Real vof_val, const int dir)
 {
     amrex::Real error_total = 0.0;
     const int d = dir;
