@@ -67,29 +67,24 @@ void initialize_levelset(
     });
 }
 
-/*void initialize_volume_fractions(
-    const int dir,
-    const amrex::Box& bx,
-    const amrex::Array4<amrex::Real>& vof_arr)
+void initialize_volume_fractions(
+    const amrex::Box& bx, const amrex::Array4<amrex::Real>& vof_arr)
 {
     // grow the box by 1 so that x,y,z go out of bounds and min(max()) corrects
     // it and it fills the ghosts with wall values
-    const int d = dir;
     amrex::ParallelFor(grow(bx, 1), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-        int ii = (d != 0 ? i : 0);
-        int jj = (d != 1 ? j : 0);
-        int kk = (d != 2 ? k : 0);
-        if (ii + jj + kk > 3) {
-            vof_arr(i, j, k) = 0.0;
+        // Default is gas phase
+        vof_arr(i, j, k) = 0.0;
+        // Set up some multiphase cells
+        if (i + j + k > 5) {
+            vof_arr(i, j, k) = 0.3;
         }
-        if (ii + jj + kk == 3) {
-            vof_arr(i, j, k) = 0.5;
-        }
-        if (ii + jj + kk < 3) {
+        // Set up a liquid cell
+        if (i == 0 && j == 0 && k == 0) {
             vof_arr(i, j, k) = 1.0;
         }
     });
-}*/
+}
 
 void init_lvs(
     const int dir, const amrex::Real deltax, amr_wind::Field& levelset)
@@ -101,14 +96,14 @@ void init_lvs(
     });
 }
 
-/*void init_vof(amr_wind::Field& vof, const int dir)
+void init_vof(amr_wind::Field& vof)
 {
     run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
         auto vof_arr = vof(lev).array(mfi);
         const auto& bx = mfi.validbox();
-        initialize_volume_fractions(dir, bx, vof_arr);
+        initialize_volume_fractions(bx, vof_arr);
     });
-}*/
+}
 
 amrex::Real
 levelset_to_vof_test_impl(const amrex::Real deltax, amr_wind::Field& levelset)
@@ -138,8 +133,6 @@ levelset_to_vof_test_impl(const amrex::Real deltax, amr_wind::Field& levelset)
                             amrex::max(
                                 0.0, (levelset_arr(i, j, k) + 0.5 * dx) / dx));
                         error += amrex::Math::abs(approx_vof - vof);
-                        // std::cout << j << " " << k << " " << approx_vof << "
-                        // " << vof << " " << levelset_arr(i,j,k) << std::endl;
                     }
 
                     // Perform checks in single-phase cells
@@ -162,11 +155,10 @@ levelset_to_vof_test_impl(const amrex::Real deltax, amr_wind::Field& levelset)
     }
     return error_total;
 }
-/*
-amrex::Real interface_band_test_impl(amr_wind::Field& vof, const int dir)
+
+amrex::Real interface_band_test_impl(amr_wind::Field& vof)
 {
-    amrex::Real error_total = 0.0;
-    const int d = dir;
+    amrex::Real error_total = 0;
 
     for (int lev = 0; lev < vof.repo().num_active_levels(); ++lev) {
 
@@ -176,25 +168,30 @@ amrex::Real interface_band_test_impl(amr_wind::Field& vof, const int dir)
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& vof_arr)
                 -> amrex::Real {
-                amrex::Real error = 0.0;
+                amrex::Real error = 0;
 
                 amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
                     amrex::Real mx, my, mz, alpha;
 
-                    int ii = (d != 0 ? i : 0);
-                    int jj = (d != 1 ? j : 0);
-                    int kk = (d != 2 ? k : 0);
-                    // Check multiphase cells
-                    if (ii + jj + kk == 3) {
-                        amr_wind::multiphase::fit_plane(
-                            i, j, k, vof_arr, mx, my, mz, alpha);
+                    bool intf =
+                        amr_wind::multiphase::interface_band(i, j, k, vof_arr);
 
-                        // Check slope
-                        error += amrex::Math::abs(mx - (d != 0 ? 0.5 : 0.0));
-                        error += amrex::Math::abs(my - (d != 1 ? 0.5 : 0.0));
-                        error += amrex::Math::abs(mz - (d != 2 ? 0.5 : 0.0));
-                        // Check intercept
-                        error += amrex::Math::abs(alpha - 0.5);
+                    bool nocheck = true;
+                    // Check within a cell of multiphase cells
+                    if (i + 1 + j + 1 + k + 1 > 5) {
+                        error += (intf ? 0 : 1);
+                        nocheck = false;
+                    }
+
+                    // Check within a cell of liquid cell
+                    if (i < 2 && j < 2 && k < 2) {
+                        error += (intf ? 0 : 1);
+                        nocheck = false;
+                    }
+
+                    // Confirm no flag in other locations
+                    if (nocheck) {
+                        error += (intf ? 1 : 0);
                     }
                 });
 
@@ -202,64 +199,35 @@ amrex::Real interface_band_test_impl(amr_wind::Field& vof, const int dir)
             });
     }
     return error_total;
-}*/
+}
 
 } // namespace
-/*
+
 TEST_F(VOFToolTest, interface_band)
 {
-    // Initialize random number generator
-    amrex::InitRandom(0);
-    for (int n = 0; n < 100; ++n) {
-        amrex::Real mx = amrex::Random();
-        amrex::Real my = amrex::Random();
-        amrex::Real mz = amrex::Random();
-        amrex::Real vof = amrex::Random();
-        // Scale slope values, like in fit_plane
-        amrex::Real mm2 = mx + my + mz;
-        mx = mx / mm2;
-        my = my / mm2;
-        mz = mz / mm2;
-        // Limit vof values to multiphase range
-        vof = std::max(1e-12, std::min(1.0 - 1e-12, vof));
-        // Get intercept value and check for nan
-        amrex::Real alpha =
-            amr_wind::multiphase::volume_intercept(mx, my, mz, vof);
-        EXPECT_EQ(alpha, alpha);
 
-        // Set one of the slope components to 0, then try again
-        auto idx = (int)std::floor(amrex::Random() * 3.0);
-        switch (idx) {
-        case 0:
-            mx = 0.0;
-            break;
-        case 1:
-            my = 0.0;
-            break;
-        default:
-            mz = 0.0;
-            break;
-        }
-        // Scale slope values, like in fit_plane
-        mm2 = mx + my + mz;
-        mx = mx / mm2;
-        my = my / mm2;
-        mz = mz / mm2;
-        // Get intercept value and check for nan
-        alpha = amr_wind::multiphase::volume_intercept(mx, my, mz, vof);
-        EXPECT_EQ(alpha, alpha);
+    populate_parameters();
+    {
+        amrex::ParmParse pp("geometry");
+        amrex::Vector<int> periodic{{0, 0, 0}};
+        pp.addarr("is_periodic", periodic);
     }
 
-    // Check specific problem case
-    amrex::Real alpha =
-        amr_wind::multiphase::volume_intercept(0.5, 0.5, 0.0, 0.5);
-    EXPECT_EQ(alpha, alpha);
+    initialize_mesh();
+
+    auto& repo = sim().repo();
+    const int ncomp = 1;
+    const int nghost = 3;
+    auto& vof = repo.declare_field("vof", ncomp, nghost);
+
+    init_vof(vof);
+    amrex::Real error_total = interface_band_test_impl(vof);
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
+    EXPECT_EQ(error_total, 0.0);
 }
-*/
+
 TEST_F(VOFToolTest, levelset_to_vof)
 {
-
-    constexpr double tol = 1.0e-3;
 
     populate_parameters();
     {
