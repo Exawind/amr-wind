@@ -241,14 +241,16 @@ jobs:
         uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{github.token}}
+      - name: Install LLVM
+        uses: KyleMayes/install-llvm-action@v1
+        with:
+            version: "14.0"
       - name: Clone
         uses: actions/checkout@v3
         with:
           submodules: true
       - name: Dependencies
         run: |
-          #sudo apt-get install -y clang-tidy-13 ninja-build
-          #sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-13 100
           sudo apt-get install -y ninja-build
       - name: Configure
         run: |
@@ -256,8 +258,8 @@ jobs:
           cmake -G Ninja \
           -B ${{runner.workspace}}/build-clang-tidy \
           -DCMAKE_BUILD_TYPE:STRING=Debug \
-          -DCMAKE_CXX_COMPILER:STRING=clang++-14 \
-          -DCMAKE_C_COMPILER:STRING=clang-14 \
+          -DCMAKE_CXX_COMPILER:STRING=clang++ \
+          -DCMAKE_C_COMPILER:STRING=clang \
           -DAMR_WIND_ENABLE_MPI:BOOL=OFF \
           -DAMR_WIND_ENABLE_TESTS:BOOL=ON \
           -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
