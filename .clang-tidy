@@ -1,5 +1,6 @@
 ---
 Checks: 'bugprone-*,
+         -bugprone-easily-swappable-parameters,
          clang-diagnostic-*,
          clang-analyzer-*,
          corecppguidelines-*,
@@ -7,11 +8,13 @@ Checks: 'bugprone-*,
          -modernize-avoid-c-arrays,
          -modernize-use-trailing-return-type,
          -modernize-make-unique,
+         -modernize-use-nodiscard,
          readability-*,
          -readability-magic-numbers,
          -readability-identifier-naming,
          -readability-isolate-declaration,
-         -readability-avoid-const-params-in-decls'
+         -readability-avoid-const-params-in-decls,
+         -readability-identifier-length'
 WarningsAsErrors: ''
 HeaderFilterRegex: '.*'
 AnalyzeTemporaryDtors: false
