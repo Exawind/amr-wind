@@ -51,7 +51,7 @@ struct PowerLawProfile
 
     explicit PowerLawProfile(const Field& fld);
 
-    [[nodiscard]] DeviceType device_instance() const { return m_op; }
+    DeviceType device_instance() const { return m_op; }
 
     DeviceOp m_op;
 };
