@@ -47,10 +47,9 @@ public:
     void convert_x_to_ind(amrex::Real x, int& ind, amrex::Real& c) const;
 
     /** evaluate line average at specific location for any average component */
-    [[nodiscard]] amrex::Real
-    line_average_interpolated(amrex::Real x, int comp) const;
+    amrex::Real line_average_interpolated(amrex::Real x, int comp) const;
     /** evaluate line average at specific cell for any average component */
-    [[nodiscard]] amrex::Real line_average_cell(int ind, int comp) const;
+    amrex::Real line_average_cell(int ind, int comp) const;
 
     void output_line_average_ascii(
         const std::string& filename, int step, amrex::Real time);
@@ -59,25 +58,22 @@ public:
     /** change precision of text file output */
     void set_precision(int p) { m_precision = p; };
 
-    [[nodiscard]] int axis() const { return m_axis; };
-    [[nodiscard]] int ncomp() const { return m_ncomp; };
-    [[nodiscard]] int ncell_line() const { return m_ncell_line; };
-    [[nodiscard]] int last_updated_index() const
-    {
-        return m_last_updated_index;
-    };
+    int axis() const { return m_axis; };
+    int ncomp() const { return m_ncomp; };
+    int ncell_line() const { return m_ncell_line; };
+    int last_updated_index() const { return m_last_updated_index; };
 
-    [[nodiscard]] const amrex::Vector<amrex::Real>& line_average() const
+    const amrex::Vector<amrex::Real>& line_average() const
     {
         return m_line_average;
     };
     void line_average(int comp, amrex::Vector<amrex::Real>& l_vec);
-    [[nodiscard]] const amrex::Vector<amrex::Real>& line_centroids() const
+    const amrex::Vector<amrex::Real>& line_centroids() const
     {
         return m_line_xcentroid;
     };
 
-    [[nodiscard]] const FType& field() const { return m_field; };
+    const FType& field() const { return m_field; };
 
 protected:
     int m_ncomp; /** number of average components */
@@ -143,14 +139,13 @@ public: // public for GPU
 
     /** evaluate line haverage at specific location for horizontal velocity
      * magnitude */
-    [[nodiscard]] amrex::Real
-    line_hvelmag_average_interpolated(amrex::Real x) const;
+    amrex::Real line_hvelmag_average_interpolated(amrex::Real x) const;
     /** evaluate line haverage at specific location for horizontal velocity
      * magnitude times x-velocity */
-    [[nodiscard]] amrex::Real line_Su_average_interpolated(amrex::Real x) const;
+    amrex::Real line_Su_average_interpolated(amrex::Real x) const;
     /** evaluate line haverage at specific location for horizontal velocity
      * magnitude times y-velocity */
-    [[nodiscard]] amrex::Real line_Sv_average_interpolated(amrex::Real x) const;
+    amrex::Real line_Sv_average_interpolated(amrex::Real x) const;
 };
 
 } // namespace amr_wind

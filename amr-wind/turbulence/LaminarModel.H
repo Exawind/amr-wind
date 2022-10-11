@@ -24,7 +24,7 @@ public:
     ~Laminar() override = default;
 
     //! String representation of this model for I/O
-    [[nodiscard]] std::string model_name() const override { return "laminar"; }
+    std::string model_name() const override { return "laminar"; }
 
     //! Update the effective/turbulent viscosity field
     void update_turbulent_viscosity(const FieldState fstate) override;
@@ -43,7 +43,7 @@ public:
     Field& alpha_turb() override { return this->alphaeff(); }
 
     //! Indicate that this model is not a turbulent model type
-    [[nodiscard]] bool is_turbulent() const override { return false; }
+    bool is_turbulent() const override { return false; }
 
     //! Interface to update effective viscosity (mu_eff = mu + mu_t)
     void update_mueff(Field& mueff) override;
@@ -55,7 +55,7 @@ public:
     void update_scalar_diff(Field& deff, const std::string& name) override;
 
     //! Return model coefficients dictionary
-    [[nodiscard]] TurbulenceModel::CoeffsDictType model_coeffs() const override;
+    TurbulenceModel::CoeffsDictType model_coeffs() const override;
 };
 
 } // namespace amr_wind::turbulence

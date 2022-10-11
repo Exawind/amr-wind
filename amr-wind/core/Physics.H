@@ -15,7 +15,7 @@ class PhysicsOld
 public:
     virtual ~PhysicsOld() = default;
 
-    [[nodiscard]] virtual std::string physics_name() const = 0;
+    virtual std::string physics_name() const = 0;
 
     //! Initialize the fields for the physics/problem
     virtual void
@@ -106,7 +106,7 @@ public:
 
     //! Return a concrete physics instance
     template <typename T>
-    [[nodiscard]] const T& get() const
+    const T& get() const
     {
         AMREX_ASSERT(contains(T::identifier()));
         return dynamic_cast<const T&>(operator()(T::identifier()));

@@ -39,10 +39,7 @@ public:
     //! calculate the L2 norm of a given field and component
     static amrex::Real L2_norm(amr_wind::Field& field, const int comp);
 
-    [[nodiscard]] const amrex::Vector<std::string>& var_names() const
-    {
-        return m_var_names;
-    }
+    const amrex::Vector<std::string>& var_names() const { return m_var_names; }
 
 private:
     //! prepare ASCII file and directory

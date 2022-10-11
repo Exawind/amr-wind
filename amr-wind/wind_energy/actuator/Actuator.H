@@ -51,7 +51,7 @@ public:
 
 protected:
     //! Total number of actuator components (e.g., turbines) in the flowfield
-    [[nodiscard]] int num_actuators() const { return m_actuators.size(); }
+    int num_actuators() const { return m_actuators.size(); }
 
     virtual void prepare_outputs();
 

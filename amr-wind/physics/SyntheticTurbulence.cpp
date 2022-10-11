@@ -45,7 +45,7 @@ public:
 
     ~LinearShearProfile() override = default;
 
-    [[nodiscard]] LinearShearOp device_instance() const { return m_op; }
+    LinearShearOp device_instance() const { return m_op; }
 
 private:
     LinearShearOp m_op;
@@ -87,7 +87,7 @@ public:
 
     ~PowerLawProfile() override = default;
 
-    [[nodiscard]] PowerLawOp device_instance() const { return m_op; }
+    PowerLawOp device_instance() const { return m_op; }
 
 private:
     PowerLawOp m_op;

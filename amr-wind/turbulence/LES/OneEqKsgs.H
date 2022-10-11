@@ -52,10 +52,7 @@ public:
 
     ~OneEqKsgsM84() override;
 
-    [[nodiscard]] std::string model_name() const override
-    {
-        return "OneEqKsgsM84";
-    }
+    std::string model_name() const override { return "OneEqKsgsM84"; }
 
     //! Update the turbulent viscosity field
     void update_turbulent_viscosity(const FieldState fstate) override;
@@ -73,7 +70,7 @@ public:
     void parse_model_coeffs() override;
 
     //! Return turbulence model coefficients
-    [[nodiscard]] TurbulenceModel::CoeffsDictType model_coeffs() const override;
+    TurbulenceModel::CoeffsDictType model_coeffs() const override;
 
 private:
     Field& m_temperature;
@@ -109,10 +106,7 @@ public:
 
     ~OneEqKsgsS94() override;
 
-    [[nodiscard]] std::string model_name() const override
-    {
-        return "OneEqKsgsS94";
-    }
+    std::string model_name() const override { return "OneEqKsgsS94"; }
 
     //! Update the turbulent viscosity field
     void update_turbulent_viscosity(const FieldState fstate) override;
@@ -127,7 +121,7 @@ public:
     void parse_model_coeffs() override;
 
     //! Return turbulence model coefficients
-    [[nodiscard]] TurbulenceModel::CoeffsDictType model_coeffs() const override;
+    TurbulenceModel::CoeffsDictType model_coeffs() const override;
 };
 
 } // namespace amr_wind::turbulence

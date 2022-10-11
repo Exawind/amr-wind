@@ -28,16 +28,16 @@ public:
     ~SamplerBase() override = default;
 
     //! Name used to refer to this sampler (e.g., file I/O)
-    [[nodiscard]] virtual std::string label() const = 0;
+    virtual std::string label() const = 0;
     virtual std::string& label() = 0;
 
     //! Unique numeric identifier used to track particles belonging to this
     //! instance
-    [[nodiscard]] virtual int id() const = 0;
+    virtual int id() const = 0;
     virtual int& id() = 0;
 
     //! Total number of probes that belong to this sampling instance
-    [[nodiscard]] virtual int num_points() const = 0;
+    virtual int num_points() const = 0;
 
     //! Read inputs and perform initialization actions
     virtual void initialize(const std::string& key) = 0;

@@ -51,12 +51,9 @@ public:
         m_abl_forcing[1] = (m_target_vel[1] - m_mean_vel[1]) / dt;
     }
 
-    [[nodiscard]] amrex::RealArray abl_forcing() const { return m_abl_forcing; }
+    amrex::RealArray abl_forcing() const { return m_abl_forcing; }
 
-    [[nodiscard]] amrex::Real forcing_height() const
-    {
-        return m_forcing_height;
-    }
+    amrex::Real forcing_height() const { return m_forcing_height; }
 
 private:
     const SimTime& m_time;

@@ -178,9 +178,9 @@ struct TensorT
 
     iterator begin() noexcept { return vv; }
     iterator end() noexcept { return vv + ncomp; }
-    [[nodiscard]] const_iterator cbegin() const noexcept { return vv; }
-    [[nodiscard]] const_iterator cend() const noexcept { return vv + ncomp; }
-    [[nodiscard]] size_type size() const noexcept { return ncomp; }
+    const_iterator cbegin() const noexcept { return vv; }
+    const_iterator cend() const noexcept { return vv + ncomp; }
+    size_type size() const noexcept { return ncomp; }
 };
 
 using Tensor = TensorT<amrex::Real>;

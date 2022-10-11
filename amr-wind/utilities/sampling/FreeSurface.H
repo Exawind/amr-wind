@@ -48,16 +48,16 @@ public:
 
     //! Output functions for private variables
     //! Number of points
-    [[nodiscard]] int num_gridpoints() const { return m_npts; }
+    int num_gridpoints() const { return m_npts; }
     //! Number of instances
-    [[nodiscard]] int num_instances() const { return m_ninst; }
+    int num_instances() const { return m_ninst; }
     //! Locations
-    [[nodiscard]] amrex::Vector<amrex::Array<amrex::Real, 2>> locations() const
+    amrex::Vector<amrex::Array<amrex::Real, 2>> locations() const
     {
         return m_locs;
     }
     //! Outputs (heights)
-    [[nodiscard]] amrex::Vector<amrex::Real> heights() const { return m_out; }
+    amrex::Vector<amrex::Real> heights() const { return m_out; }
 
 protected:
     //! Output data based on user-defined format

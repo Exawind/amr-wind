@@ -33,11 +33,11 @@ public:
 
     ~ActuatorModel() override = default;
 
-    [[nodiscard]] virtual const std::string& label() const = 0;
+    virtual const std::string& label() const = 0;
 
-    [[nodiscard]] virtual int id() const = 0;
+    virtual int id() const = 0;
 
-    [[nodiscard]] virtual const ActInfo& info() const = 0;
+    virtual const ActInfo& info() const = 0;
 
     virtual void read_inputs(const utils::ActParser&) = 0;
 
@@ -47,7 +47,7 @@ public:
 
     virtual void init_actuator_source() = 0;
 
-    [[nodiscard]] virtual int num_velocity_points() const = 0;
+    virtual int num_velocity_points() const = 0;
 
     virtual void update_positions(VecSlice&) = 0;
 
@@ -108,16 +108,13 @@ public:
     {}
 
     //! Return the unique identifier (name) for this instance
-    [[nodiscard]] const std::string& label() const override
-    {
-        return m_data.info().label;
-    }
+    const std::string& label() const override { return m_data.info().label; }
 
     //! Return the unique tag (integer ID) for this instance
-    [[nodiscard]] int id() const override { return m_data.info().id; }
+    int id() const override { return m_data.info().id; }
 
     //! Return the core info object for this actuator instance
-    [[nodiscard]] const ActInfo& info() const override { return m_data.info(); }
+    const ActInfo& info() const override { return m_data.info(); }
 
     void read_inputs(const utils::ActParser& pp) override
     {
@@ -132,7 +129,7 @@ public:
 
     void determine_root_proc(amrex::Vector<int>& act_proc_count) override;
 
-    [[nodiscard]] int num_velocity_points() const override;
+    int num_velocity_points() const override;
 
     void update_positions(VecSlice& pos) override
     {

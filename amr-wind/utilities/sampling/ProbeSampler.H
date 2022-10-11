@@ -27,11 +27,11 @@ public:
     void
     define_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
 
-    [[nodiscard]] std::string label() const override { return m_label; }
+    std::string label() const override { return m_label; }
     std::string& label() override { return m_label; }
-    [[nodiscard]] int id() const override { return m_id; }
+    int id() const override { return m_id; }
     int& id() override { return m_id; }
-    [[nodiscard]] int num_points() const override { return m_npts; }
+    int num_points() const override { return m_npts; }
 
 private:
     SampleLocType m_probes;

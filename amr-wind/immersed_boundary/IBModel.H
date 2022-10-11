@@ -34,9 +34,9 @@ public:
 
     ~ImmersedBoundaryModel() override = default;
 
-    [[nodiscard]] virtual const std::string& label() const = 0;
+    virtual const std::string& label() const = 0;
 
-    [[nodiscard]] virtual int id() const = 0;
+    virtual int id() const = 0;
 
     virtual void read_inputs(const ::amr_wind::utils::MultiParser&) = 0;
 
@@ -87,13 +87,10 @@ public:
     {}
 
     //! Return the unique identifier (name) for this instance
-    [[nodiscard]] const std::string& label() const override
-    {
-        return m_data.info().label;
-    }
+    const std::string& label() const override { return m_data.info().label; }
 
     //! Return the unique tag (integer ID) for this instance
-    [[nodiscard]] int id() const override { return m_data.info().id; }
+    int id() const override { return m_data.info().id; }
 
     void read_inputs(const ::amr_wind::utils::MultiParser& pp) override
     {

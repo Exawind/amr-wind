@@ -26,15 +26,14 @@ public:
     ~ABLStatsBase() override = default;
 
     //! Flag indicating ABL simulation mode
-    [[nodiscard]] virtual ABLStatsMode abl_mode() const = 0;
+    virtual ABLStatsMode abl_mode() const = 0;
 
     //! Interpolating object for vertical velocity profile
-    [[nodiscard]] virtual const VelPlaneAveragingFine& vel_profile() const = 0;
+    virtual const VelPlaneAveragingFine& vel_profile() const = 0;
 
     //! Interpolating object for vertical temperature profile
-    [[nodiscard]] virtual const FieldPlaneAveraging& theta_profile() const = 0;
-    [[nodiscard]] virtual const FieldPlaneAveragingFine&
-    theta_profile_fine() const = 0;
+    virtual const FieldPlaneAveraging& theta_profile() const = 0;
+    virtual const FieldPlaneAveragingFine& theta_profile_fine() const = 0;
 
     //! Perform initialization actions after the mesh has been created
     virtual void post_init_actions() = 0;

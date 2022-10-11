@@ -25,25 +25,22 @@ public:
     IntField& operator=(const IntField&) = delete;
 
     //! Name of the field
-    [[nodiscard]] inline const std::string& name() const { return m_name; }
+    inline const std::string& name() const { return m_name; }
 
     //! Unique integer ID for this field
-    [[nodiscard]] inline unsigned id() const { return m_id; }
+    inline unsigned id() const { return m_id; }
 
     //! Number of components for this field
-    [[nodiscard]] inline int num_comp() const { return m_ncomp; }
+    inline int num_comp() const { return m_ncomp; }
 
     //! Number of ghost cells
-    [[nodiscard]] inline const amrex::IntVect& num_grow() const
-    {
-        return m_ngrow;
-    }
+    inline const amrex::IntVect& num_grow() const { return m_ngrow; }
 
     //! Location of the field
-    [[nodiscard]] inline FieldLoc field_location() const { return m_floc; }
+    inline FieldLoc field_location() const { return m_floc; }
 
     //! Reference to the FieldRepo that holds the fabs
-    [[nodiscard]] const FieldRepo& repo() const { return m_repo; }
+    const FieldRepo& repo() const { return m_repo; }
 
     //! Access the FAB at a given level
     amrex::iMultiFab& operator()(int lev) noexcept;
@@ -51,8 +48,7 @@ public:
 
     amrex::Vector<amrex::iMultiFab*> vec_ptrs() noexcept;
 
-    [[nodiscard]] amrex::Vector<const amrex::iMultiFab*>
-    vec_const_ptrs() const noexcept;
+    amrex::Vector<const amrex::iMultiFab*> vec_const_ptrs() const noexcept;
 
     void setVal(int value) noexcept;
 

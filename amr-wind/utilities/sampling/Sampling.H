@@ -62,12 +62,9 @@ public:
     //! Write sampled data in binary format
     virtual void impl_write_native();
 
-    [[nodiscard]] int num_total_particles() const { return m_total_particles; }
+    int num_total_particles() const { return m_total_particles; }
 
-    [[nodiscard]] const amrex::Vector<std::string>& var_names() const
-    {
-        return m_var_names;
-    }
+    const amrex::Vector<std::string>& var_names() const { return m_var_names; }
 
 protected:
     //! Update the container by re-initializing the particles
