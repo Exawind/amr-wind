@@ -17,8 +17,7 @@
  *  \ingroup utilities
  */
 
-namespace amr_wind {
-namespace free_surface {
+namespace amr_wind::free_surface {
 
 /** Collection of data sampling objects
  *  \ingroup findinterface
@@ -128,7 +127,6 @@ private:
     int m_ncmax{8};
 };
 
-} // namespace free_surface
-} // namespace amr_wind
+} // namespace amr_wind::free_surface
 
 #endif /* FREESURFACE_H */

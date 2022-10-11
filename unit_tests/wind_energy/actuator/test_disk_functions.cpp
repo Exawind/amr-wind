@@ -1,9 +1,7 @@
 #include "gtest/gtest.h"
 #include "amr-wind/wind_energy/actuator/disk/disk_ops.H"
 
-namespace amr_wind {
-namespace actuator {
-namespace disk {
+namespace amr_wind::actuator::disk {
 
 struct AreaComputerData
 {
@@ -120,6 +118,4 @@ INSTANTIATE_TEST_SUITE_P(
         AreaComputerData{127.0, 10, 3},
         AreaComputerData{30.0, 5, 30}),
     TestAreaComputer::PrintParamNamesToString());
-} // namespace disk
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator::disk

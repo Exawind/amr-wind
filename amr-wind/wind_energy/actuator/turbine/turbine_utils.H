@@ -4,9 +4,7 @@
 #include "amr-wind/wind_energy/actuator/turbine/turbine_types.H"
 #include "amr-wind/wind_energy/actuator/ActParser.H"
 
-namespace amr_wind {
-namespace actuator {
-namespace utils {
+namespace amr_wind::actuator::utils {
 void read_inputs(
     TurbineBaseData& tdata, TurbineInfo& info, const utils::ActParser& pp);
 
@@ -23,8 +21,6 @@ void write_netcdf(
     const ActGrid& /*grid*/,
     const amrex::Real /*time*/);
 
-} // namespace utils
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator::utils
 
 #endif /* TURBINE_UTILS_H */

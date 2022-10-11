@@ -3,8 +3,7 @@
 
 #include "amr-wind/wind_energy/actuator/actuator_types.H"
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 struct FLLCData;
 
@@ -80,7 +79,6 @@ struct TurbineBaseData
 struct TurbineType : public ActuatorType
 {};
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator
 
 #endif /* TURBINE_TYPES_H */

@@ -11,8 +11,7 @@ namespace amrex {
 const char* buildInfoGetGitHash(int i);
 }
 
-namespace amr_wind {
-namespace ioutils {
+namespace amr_wind::ioutils {
 
 inline std::string amr_wind_version()
 {
@@ -60,7 +59,6 @@ inline void add_var_names(
         }
     }
 }
-} // namespace ioutils
-} // namespace amr_wind
+} // namespace amr_wind::ioutils
 
 #endif /* IO_UTILS_H */

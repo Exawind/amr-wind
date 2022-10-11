@@ -3,8 +3,7 @@
 
 #include "amr-wind/fvm/fvm_utils.H"
 
-namespace amr_wind {
-namespace fvm {
+namespace amr_wind::fvm {
 
 /** Qcriterion operator
  *  \ingroup fvm
@@ -128,7 +127,6 @@ inline std::unique_ptr<ScratchField> q_criterion(const FType& phi)
     return qcritphi;
 }
 
-} // namespace fvm
-} // namespace amr_wind
+} // namespace amr_wind::fvm
 
 #endif /* QCRITERION_H */

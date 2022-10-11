@@ -5,8 +5,7 @@
 #include "AMReX_Vector.H"
 #include "AMReX_Gpu.H"
 
-namespace amr_wind {
-namespace utils {
+namespace amr_wind::utils {
 
 template <typename T>
 struct Slice
@@ -107,7 +106,6 @@ inline Slice<T> slice(amrex::Gpu::DeviceVector<T>& vec, const size_t start)
     return slice(vec, start, vec.size() - start);
 }
 
-} // namespace utils
-} // namespace amr_wind
+} // namespace amr_wind::utils
 
 #endif /* SLICE_H */

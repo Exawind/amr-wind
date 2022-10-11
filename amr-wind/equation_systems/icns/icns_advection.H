@@ -10,8 +10,7 @@
 #include "hydro_mol.H"
 #include "hydro_utils.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 class MacProjOp
 {
@@ -550,7 +549,6 @@ struct AdvectionOp<ICNS, fvm::MOL>
     MacProjOp m_macproj_op;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* ICNS_ADVECTION_H */

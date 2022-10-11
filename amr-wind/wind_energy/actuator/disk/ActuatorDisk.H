@@ -4,8 +4,7 @@
 #include "amr-wind/wind_energy/actuator/disk/disk_types.H"
 #include "amr-wind/core/vs/vector_space.H"
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 struct DiskBaseData
 {
@@ -35,7 +34,6 @@ struct DiskBaseData
     }
 };
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator
 
 #endif /* ACTUATORDISK_H_ */

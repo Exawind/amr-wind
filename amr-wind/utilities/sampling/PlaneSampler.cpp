@@ -4,8 +4,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace sampling {
+namespace amr_wind::sampling {
 
 PlaneSampler::PlaneSampler(const CFDSim& /*unused*/) {}
 
@@ -95,5 +94,4 @@ void PlaneSampler::populate_netcdf_metadata(
 {}
 #endif
 
-} // namespace sampling
-} // namespace amr_wind
+} // namespace amr_wind::sampling

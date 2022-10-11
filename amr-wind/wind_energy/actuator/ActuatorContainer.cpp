@@ -8,8 +8,7 @@
 #include <AMReX_Print.H>
 #include <algorithm>
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 ActuatorCloud::ActuatorCloud(const int nobjects)
     : num_pts(nobjects, 0), global_id(nobjects, -1), num_objects(nobjects)
@@ -413,5 +412,4 @@ void ActuatorContainer::compute_local_coordinates()
         m_pos_device.begin());
 }
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator

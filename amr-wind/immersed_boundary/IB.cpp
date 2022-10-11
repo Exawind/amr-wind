@@ -6,8 +6,7 @@
 
 #include <algorithm>
 
-namespace amr_wind {
-namespace ib {
+namespace amr_wind::ib {
 
 IB::IB(CFDSim& sim)
     : m_sim(sim)
@@ -136,5 +135,4 @@ void IB::post_advance_work()
     }
 }
 
-} // namespace ib
-} // namespace amr_wind
+} // namespace amr_wind::ib

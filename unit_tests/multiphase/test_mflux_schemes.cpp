@@ -119,7 +119,8 @@ void get_output_minmod(
             const auto& vel_mac = mac_fld(lev).const_array(mfi);
 
             amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-                amrex::Real im_tmp, ip_tmp;
+                amrex::Real im_tmp = 0.0;
+                amrex::Real ip_tmp = 0.0;
                 switch (dir) {
                 case 0: {
                     Godunov_minmod_fpu_x(

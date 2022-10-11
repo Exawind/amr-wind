@@ -4,8 +4,7 @@
 #include <iostream>
 #include "AMReX_MLMG.H"
 
-namespace amr_wind {
-namespace io {
+namespace amr_wind::io {
 
 void print_banner(MPI_Comm /*comm*/, std::ostream& /*out*/);
 
@@ -21,7 +20,6 @@ void print_mlmg_info(const std::string& solve_name, const amrex::MLMG& mlmg);
 
 void print_tpls(std::ostream& /*out*/);
 
-} // namespace io
-} // namespace amr_wind
+} // namespace amr_wind::io
 
 #endif /* CONSOLE_IO_H */

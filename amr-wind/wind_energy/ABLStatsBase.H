@@ -6,11 +6,9 @@
 #include "amr-wind/wind_energy/ABLWallFunction.H"
 
 namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace pde::icns {
 class ABLForcing;
-} // namespace icns
-} // namespace pde
+} // namespace pde::icns
 
 enum class ABLStatsMode : int {
     computed = 0, ///! Computed using planar averages

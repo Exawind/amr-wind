@@ -4,8 +4,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace udf {
+namespace amr_wind::udf {
 
 LinearProfile::LinearProfile(const Field& fld)
 {
@@ -34,5 +33,4 @@ LinearProfile::LinearProfile(const Field& fld)
     }
 }
 
-} // namespace udf
-} // namespace amr_wind
+} // namespace amr_wind::udf

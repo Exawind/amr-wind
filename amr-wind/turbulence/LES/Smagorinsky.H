@@ -5,8 +5,7 @@
 #include "amr-wind/turbulence/TurbModelBase.H"
 #include "amr-wind/core/FieldRepo.H"
 
-namespace amr_wind {
-namespace turbulence {
+namespace amr_wind::turbulence {
 
 /** Smagorinsky LES Model
  *  \ingroup turb_model
@@ -45,7 +44,6 @@ private:
     const Field& m_rho;
 };
 
-} // namespace turbulence
-} // namespace amr_wind
+} // namespace amr_wind::turbulence
 
 #endif /* SMAGORINSKY_H */

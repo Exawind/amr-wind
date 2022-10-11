@@ -6,8 +6,7 @@
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/IOManager.H"
 
-namespace amr_wind {
-namespace kinetic_energy {
+namespace amr_wind::kinetic_energy {
 
 KineticEnergy::KineticEnergy(CFDSim& sim, std::string label)
     : m_sim(sim)
@@ -136,5 +135,4 @@ void KineticEnergy::write_ascii()
     }
 }
 
-} // namespace kinetic_energy
-} // namespace amr_wind
+} // namespace amr_wind::kinetic_energy

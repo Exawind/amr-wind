@@ -10,8 +10,7 @@
 #include "amr-wind/equation_systems/icns/icns.H"
 #include "AMReX_MultiFabUtil.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /** Specialization of field registration for ICNS
  *  \ingroup icns
@@ -148,7 +147,6 @@ struct TurbulenceOp<ICNS>
     PDEFields& m_fields;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* ICNS_OPS_H */

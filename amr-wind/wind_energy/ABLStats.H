@@ -14,11 +14,9 @@
 
 namespace amr_wind {
 
-namespace pde {
-namespace icns {
+namespace pde::icns {
 class ABLForcing;
-} // namespace icns
-} // namespace pde
+} // namespace pde::icns
 
 /**
  *  \defgroup abl_istats ABL Statistics

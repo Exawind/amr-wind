@@ -4,8 +4,7 @@
 #include "amr-wind/core/Factory.H"
 #include "amr-wind/core/FieldRepo.H"
 
-namespace amr_wind {
-namespace transport {
+namespace amr_wind::transport {
 
 /**
  *  \defgroup transport Transport models
@@ -41,7 +40,6 @@ public:
     virtual std::unique_ptr<ScratchField>
     scalar_diffusivity(const std::string& scalar_name) = 0;
 };
-} // namespace transport
-} // namespace amr_wind
+} // namespace amr_wind::transport
 
 #endif /* TRANSPORTMODEL_H */

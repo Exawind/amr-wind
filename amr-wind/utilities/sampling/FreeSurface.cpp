@@ -7,8 +7,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace free_surface {
+namespace amr_wind::free_surface {
 
 FreeSurface::FreeSurface(CFDSim& sim, std::string label)
     : m_sim(sim), m_label(std::move(label)), m_vof(sim.repo().get_field("vof"))
@@ -703,5 +702,4 @@ void FreeSurface::write_netcdf()
 #endif
 }
 
-} // namespace free_surface
-} // namespace amr_wind
+} // namespace amr_wind::free_surface

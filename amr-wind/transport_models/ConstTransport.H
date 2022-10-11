@@ -4,8 +4,7 @@
 #include "amr-wind/transport_models/TransportModel.H"
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace transport {
+namespace amr_wind::transport {
 
 /** Fluid transport model with constant properties
  *  \ingroup transport
@@ -102,7 +101,6 @@ private:
     amrex::Real m_Prt{1.0};
 };
 
-} // namespace transport
-} // namespace amr_wind
+} // namespace amr_wind::transport
 
 #endif /* CONSTTRANSPORT_H */

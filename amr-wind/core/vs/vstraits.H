@@ -4,8 +4,7 @@
 #include <limits>
 #include "AMReX_REAL.H"
 
-namespace amr_wind {
-namespace vs {
+namespace amr_wind::vs {
 
 template <typename T>
 struct DTraits
@@ -58,7 +57,6 @@ struct DTraits<float>
     static constexpr float eps() noexcept { return 1.0e-7F; }
 };
 
-} // namespace vs
-} // namespace amr_wind
+} // namespace amr_wind::vs
 
 #endif /* VSTRAITS_H */

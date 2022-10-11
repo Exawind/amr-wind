@@ -7,8 +7,7 @@
 #include "AMReX_MultiFabUtil.H"
 #include "hydro_MacProjector.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 namespace {
 
@@ -287,5 +286,4 @@ void MacProjOp::mac_proj_to_uniform_space(
     }
 }
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde

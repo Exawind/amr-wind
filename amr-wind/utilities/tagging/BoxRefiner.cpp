@@ -3,8 +3,7 @@
 
 // Adapted from OpenFOAM/src/meshTools/sets/cellSources/rotatedBoxToCell
 
-namespace amr_wind {
-namespace tagging {
+namespace amr_wind::tagging {
 
 namespace {
 
@@ -145,5 +144,4 @@ void BoxRefiner::operator()(
     });
 }
 
-} // namespace tagging
-} // namespace amr_wind
+} // namespace amr_wind::tagging

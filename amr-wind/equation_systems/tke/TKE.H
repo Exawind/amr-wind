@@ -8,8 +8,7 @@
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/equation_systems/tke/TKESource.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /**
  *  \defgroup tke_eqn Turbulent Kinetic Energy (TKE) transport equation
@@ -46,7 +45,6 @@ struct TKE : ScalarTransport
     static constexpr bool need_nph_state = true;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* TKE_H */

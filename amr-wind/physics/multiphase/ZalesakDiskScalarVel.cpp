@@ -6,8 +6,7 @@
 #include "amr-wind/fvm/gradient.H"
 #include "amr-wind/core/field_ops.H"
 
-namespace amr_wind {
-namespace zds {
+namespace amr_wind::zds {
 
 namespace {
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real SCexact::operator()(
@@ -312,5 +311,4 @@ void ZalesakDiskScalarVel::output_error()
         f.close();
     }
 }
-} // namespace zds
-} // namespace amr_wind
+} // namespace amr_wind::zds

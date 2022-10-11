@@ -4,8 +4,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/PostProcessing.H"
 
-namespace amr_wind {
-namespace wave_energy {
+namespace amr_wind::wave_energy {
 
 /** wave energy object
  *  \ingroup Wave Energy
@@ -105,7 +104,6 @@ private:
     int m_precision{12};
 };
 
-} // namespace wave_energy
-} // namespace amr_wind
+} // namespace amr_wind::wave_energy
 
 #endif /* WAVEENERGY_H */

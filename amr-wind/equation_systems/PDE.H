@@ -8,8 +8,7 @@
 #include "amr-wind/equation_systems/CompRHSOps.H"
 #include "amr-wind/equation_systems/DiffusionOps.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /** Implementation of the PDE interface for transport equations
  *  \ingroup eqsys
@@ -194,7 +193,6 @@ protected:
     PostSolveOp<PDE> m_post_solve_op;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* PDE_H */

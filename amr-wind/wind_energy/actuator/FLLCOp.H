@@ -5,8 +5,7 @@
 #include "amr-wind/wind_energy/actuator/FLLC.H"
 #include "amr-wind/utilities/linear_interpolation.H"
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 /** @brief This struct will operate on a blade/wing.
  *  The velocity from the simulation is corrected using the
@@ -141,7 +140,6 @@ struct FLLCOp
     }
 };
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator
 
 #endif /* FLLCOP_H */

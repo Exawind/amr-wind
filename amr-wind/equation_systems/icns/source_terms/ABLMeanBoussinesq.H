@@ -5,9 +5,7 @@
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 /** Boussinesq bouyancy source term
  *  \ingroup icns_src we_abl
@@ -57,9 +55,6 @@ private:
     //! Read a temperature profile from a text file
     void read_temperature_profile(std::string profile_file_name);
 };
-} // namespace icns
-
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns
 
 #endif /* ABLMEANBOUSSINESQ_H */

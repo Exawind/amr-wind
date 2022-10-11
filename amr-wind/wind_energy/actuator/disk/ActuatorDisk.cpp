@@ -5,10 +5,8 @@
 #include "amr-wind/wind_energy/actuator/ActuatorModel.H"
 #include "amr-wind/wind_energy/actuator/disk/disk_spreading.H"
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 template class ActModel<UniformCt, ActSrcDisk>;
 template class ActModel<Joukowsky, ActSrcDisk>;
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator

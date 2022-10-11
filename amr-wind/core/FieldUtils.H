@@ -5,8 +5,7 @@
 #include "AMReX_MultiFab.H"
 #include "AMReX_Interpolater.H"
 
-namespace amr_wind {
-namespace field_impl {
+namespace amr_wind::field_impl {
 
 /** Convert amr_wind::FieldLoc to index type for use with AMReX objects.
  *  \ingroup field_ops
@@ -109,7 +108,6 @@ inline FieldState phi_state(const FieldState fstate)
     return (fstate == FieldState::Old) ? FieldState::Old : FieldState::NPH;
 }
 
-} // namespace field_impl
-} // namespace amr_wind
+} // namespace amr_wind::field_impl
 
 #endif /* FIELDUTILS_H */

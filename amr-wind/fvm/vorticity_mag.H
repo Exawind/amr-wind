@@ -3,8 +3,7 @@
 
 #include "amr-wind/fvm/fvm_utils.H"
 
-namespace amr_wind {
-namespace fvm {
+namespace amr_wind::fvm {
 
 /** VorticityMag operator
  *  \ingroup fvm
@@ -106,7 +105,6 @@ inline std::unique_ptr<ScratchField> vorticity_mag(const FType& phi)
     return vortmagphi;
 }
 
-} // namespace fvm
-} // namespace amr_wind
+} // namespace amr_wind::fvm
 
 #endif /* VORTICITYMAG_H */

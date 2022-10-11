@@ -6,9 +6,7 @@
 
 #include "AMReX_MFIter.H"
 
-namespace amr_wind {
-namespace fvm {
-namespace impl {
+namespace amr_wind::fvm::impl {
 
 /** Apply a finite volume operator for a given field
  */
@@ -76,8 +74,6 @@ inline void apply(const FvmOp& fvmop, const FType& fld)
     }
 }
 
-} // namespace impl
-} // namespace fvm
-} // namespace amr_wind
+} // namespace amr_wind::fvm::impl
 
 #endif /* FVM_UTILS_H */

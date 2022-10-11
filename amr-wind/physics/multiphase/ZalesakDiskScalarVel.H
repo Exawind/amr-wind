@@ -8,8 +8,7 @@
  *  \ingroup mulitphase_physics
  *
  */
-namespace amr_wind {
-namespace zds {
+namespace amr_wind::zds {
 
 namespace {
 struct SCexact
@@ -87,7 +86,6 @@ private:
     std::string m_output_fname{"zds.log"};
 };
 
-} // namespace zds
-} // namespace amr_wind
+} // namespace amr_wind::zds
 
 #endif /* ZalesakDiskScalarVel_H */

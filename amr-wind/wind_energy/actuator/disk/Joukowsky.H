@@ -5,8 +5,7 @@
 #include "amr-wind/wind_energy/actuator/disk/ActuatorDisk.H"
 #include "amr-wind/core/vs/vector_space.H"
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 struct JoukowskyData : public DiskBaseData
 {
@@ -40,7 +39,6 @@ struct Joukowsky : public DiskType
     static std::string identifier() { return "Joukowsky"; }
 };
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator
 
 #endif /* Joukowsky_H_ */

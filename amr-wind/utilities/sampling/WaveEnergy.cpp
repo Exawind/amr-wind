@@ -7,8 +7,7 @@
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/IOManager.H"
 
-namespace amr_wind {
-namespace wave_energy {
+namespace amr_wind::wave_energy {
 
 WaveEnergy::WaveEnergy(CFDSim& sim, std::string label)
     : m_sim(sim)
@@ -215,5 +214,4 @@ void WaveEnergy::write_ascii()
     }
 }
 
-} // namespace wave_energy
-} // namespace amr_wind
+} // namespace amr_wind::wave_energy
