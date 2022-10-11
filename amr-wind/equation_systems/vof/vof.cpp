@@ -4,6 +4,7 @@
 #include "amr-wind/equation_systems/AdvOp_MOL.H"
 #include "amr-wind/equation_systems/BCOps.H"
 #include "amr-wind/equation_systems/vof/vof_ops.H"
+#include "amr-wind/equation_systems/vof/vof_bcop.H"
 
 namespace amr_wind {
 namespace pde {

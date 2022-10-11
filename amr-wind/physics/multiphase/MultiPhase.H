@@ -44,6 +44,8 @@ public:
 
     void set_density_via_vof();
 
+    void set_nph_density();
+
     void levelset2vof();
 
     void favre_filtering();
