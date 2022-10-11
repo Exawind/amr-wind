@@ -171,8 +171,6 @@ amrex::Real interface_band_test_impl(amr_wind::Field& vof)
                 amrex::Real error = 0;
 
                 amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
-                    amrex::Real mx, my, mz, alpha;
-
                     bool intf =
                         amr_wind::multiphase::interface_band(i, j, k, vof_arr);
 
@@ -242,7 +240,6 @@ TEST_F(VOFToolTest, levelset_to_vof)
     const int ncomp = 1;
     const int nghost = 3;
     auto& levelset = repo.declare_field("levelset", ncomp, nghost);
-    auto& vof = repo.declare_field("vof", ncomp, nghost);
 
     amrex::Real error_total = 0.0;
     // profile 0: horizontal

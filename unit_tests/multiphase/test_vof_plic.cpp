@@ -152,13 +152,12 @@ amrex::Real fit_plane_test_impl(amr_wind::Field& vof, const int dir)
                 amrex::Real error = 0.0;
 
                 amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
-                    amrex::Real mx, my, mz, alpha;
-
                     int ii = (d != 0 ? i : 0);
                     int jj = (d != 1 ? j : 0);
                     int kk = (d != 2 ? k : 0);
                     // Check multiphase cells
                     if (ii + jj + kk == 3) {
+                        amrex::Real mx, my, mz, alpha;
                         amr_wind::multiphase::fit_plane(
                             i, j, k, vof_arr, mx, my, mz, alpha);
 
@@ -195,11 +194,10 @@ amrex::Real fit_plane_test_impl_h(
                 amrex::Real error = 0.0;
 
                 amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
-                    amrex::Real mx, my, mz, alpha;
-
                     int ii = (d == 0 ? i : (d == 1 ? j : k));
                     // Check multiphase cells
                     if (ii == 1) {
+                        amrex::Real mx, my, mz, alpha;
                         amr_wind::multiphase::fit_plane(
                             i, j, k, vof_arr, mx, my, mz, alpha);
 
