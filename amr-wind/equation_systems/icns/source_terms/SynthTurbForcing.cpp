@@ -3,9 +3,7 @@
 
 #include "AMReX_Gpu.H"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 /** Synthetic Turbulence forcing term
  *
@@ -38,6 +36,4 @@ void SynthTurbForcing::operator()(
     });
 }
 
-} // namespace icns
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns

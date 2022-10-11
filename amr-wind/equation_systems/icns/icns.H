@@ -9,8 +9,7 @@
 
 #include "AMReX_MLTensorOp.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /**
  *  \defgroup icns Incompressible Navier-Stokes
@@ -47,7 +46,6 @@ struct ICNS : VectorTransport
     static constexpr bool need_nph_state = false;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* ICNS_H */

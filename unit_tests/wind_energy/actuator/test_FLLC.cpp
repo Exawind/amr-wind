@@ -2,8 +2,7 @@
 #include "amr-wind/wind_energy/actuator/FLLC.H"
 #include "amr-wind/wind_energy/actuator/FLLCOp.H"
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 TEST(TestFLLCData, data_initializes_with_cviews)
 {
@@ -31,5 +30,4 @@ TEST(TestFLLCData, data_initializes_with_cviews)
     ASSERT_EQ(num_points, data.grad_lift.size());
 }
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator

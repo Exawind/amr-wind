@@ -5,9 +5,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace actuator {
-namespace wing {
+namespace amr_wind::actuator::wing {
 
 void read_inputs(WingBaseData& wdata, ActInfo& info, const utils::ActParser& pp)
 {
@@ -170,6 +168,4 @@ void write_netcdf(
 #endif
 }
 
-} // namespace wing
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator::wing

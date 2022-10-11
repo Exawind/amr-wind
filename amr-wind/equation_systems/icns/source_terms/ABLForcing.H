@@ -6,9 +6,7 @@
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/utilities/linear_interpolation.H"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 /** Forcing term to drive the ABL profile to a desired state
  *  \ingroup icns_src we_abl
@@ -85,8 +83,6 @@ private:
     amrex::Real m_forcing_height;
 };
 
-} // namespace icns
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns
 
 #endif /* ABLFORCING_H */

@@ -4,9 +4,7 @@
 #include "amr-wind/wind_energy/actuator/disk/disk_ops.H"
 #include "amr-wind/wind_energy/actuator/disk/UniformCt.H"
 #include "amr-wind/utilities/linear_interpolation.H"
-namespace amr_wind {
-namespace actuator {
-namespace ops {
+namespace amr_wind::actuator::ops {
 namespace uniformct {
 
 void parse_and_gather_params(const utils::ActParser& pp, UniformCtData& data);
@@ -118,8 +116,6 @@ public:
             time.new_time());
     }
 };
-} // namespace ops
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator::ops
 
 #endif /* UNIFORM_CT_OPS_H_ */

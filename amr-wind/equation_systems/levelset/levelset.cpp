@@ -4,11 +4,9 @@
 #include "amr-wind/equation_systems/BCOps.H"
 #include "amr-wind/equation_systems/levelset/levelset_ops.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 template class PDESystem<Levelset, fvm::Godunov>;
 template class PDESystem<Levelset, fvm::MOL>;
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde

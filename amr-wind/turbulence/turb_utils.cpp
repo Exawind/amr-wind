@@ -4,9 +4,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace turbulence {
-namespace turb_utils {
+namespace amr_wind::turbulence::turb_utils {
 
 void inject_turbulence_src_terms(
     const std::string& key, const amrex::Vector<std::string>& terms)
@@ -41,6 +39,4 @@ void inject_turbulence_src_terms(
     pp.addarr("source_terms", srcin);
 }
 
-} // namespace turb_utils
-} // namespace turbulence
-} // namespace amr_wind
+} // namespace amr_wind::turbulence::turb_utils

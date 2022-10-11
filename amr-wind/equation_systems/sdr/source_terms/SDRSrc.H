@@ -3,9 +3,7 @@
 
 #include "amr-wind/equation_systems/sdr/SDRSource.H"
 
-namespace amr_wind {
-namespace pde {
-namespace tke {
+namespace amr_wind::pde::tke {
 
 /** Source terms for SDR equation
  *   \ingroup turb_model
@@ -33,8 +31,6 @@ private:
     Field& m_sdr_diss;
 };
 
-} // namespace tke
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::tke
 
 #endif /* SDRSRC_H */

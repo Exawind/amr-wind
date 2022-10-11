@@ -3,9 +3,7 @@
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/wind_energy/actuator/FLLC.H"
 
-namespace amr_wind {
-namespace actuator {
-namespace utils {
+namespace amr_wind::actuator::utils {
 
 void read_inputs(
     TurbineBaseData& tdata, TurbineInfo& tinfo, const utils::ActParser& pp)
@@ -151,6 +149,4 @@ void write_netcdf(
 #endif
 }
 
-} // namespace utils
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator::utils

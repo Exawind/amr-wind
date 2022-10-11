@@ -4,9 +4,7 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 /** Boussinesq bouyancy source term
  *  \ingroup icns_src we_abl
@@ -42,9 +40,6 @@ private:
     //! Thermal expansion coefficient
     amrex::Real m_beta{0.0};
 };
-} // namespace icns
-
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns
 
 #endif /* BOUSSINESQBUOYANCY_H */

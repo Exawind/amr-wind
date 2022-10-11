@@ -5,9 +5,7 @@
 #include "amr-wind/wind_energy/actuator/disk/disk_ops.H"
 #include "amr-wind/utilities/linear_interpolation.H"
 
-namespace amr_wind {
-namespace actuator {
-namespace ops {
+namespace amr_wind::actuator::ops {
 
 namespace joukowsky {
 void parse_and_gather_params(const utils::ActParser& pp, JoukowskyData& data);
@@ -283,8 +281,6 @@ public:
     }
 };
 
-} // namespace ops
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator::ops
 
 #endif /* Joukowsky_OPS_H_ */

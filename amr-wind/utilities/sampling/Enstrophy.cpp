@@ -7,8 +7,7 @@
 #include "amr-wind/utilities/IOManager.H"
 #include "amr-wind/fvm/vorticity_mag.H"
 
-namespace amr_wind {
-namespace enstrophy {
+namespace amr_wind::enstrophy {
 
 Enstrophy::Enstrophy(CFDSim& sim, std::string label)
     : m_sim(sim)
@@ -137,5 +136,4 @@ void Enstrophy::write_ascii()
     }
 }
 
-} // namespace enstrophy
-} // namespace amr_wind
+} // namespace amr_wind::enstrophy

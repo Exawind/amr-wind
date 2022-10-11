@@ -5,8 +5,7 @@
 #include "amr-wind/utilities/IOManager.H"
 #include "amr-wind/core/field_ops.H"
 
-namespace amr_wind {
-namespace turbulence {
+namespace amr_wind::turbulence {
 
 namespace turb_base_impl {
 
@@ -159,7 +158,6 @@ protected:
     Field* m_alpha_turb{nullptr};
 };
 
-} // namespace turbulence
-} // namespace amr_wind
+} // namespace amr_wind::turbulence
 
 #endif /* TURBMODELBASE_H */

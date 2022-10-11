@@ -4,8 +4,7 @@
 #include <AMReX_FArrayBox.H>
 #include <cmath>
 
-namespace amr_wind {
-namespace multiphase {
+namespace amr_wind::multiphase {
 
 /** Young's finite-difference gradient scheme.
  *
@@ -491,7 +490,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void levelset_to_vof(
     }
 }
 
-} // namespace multiphase
-} // namespace amr_wind
+} // namespace amr_wind::multiphase
 
 #endif // VOLUME_FRACTIONS.H

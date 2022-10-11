@@ -3,8 +3,7 @@
 
 #include "amr-wind/turbulence/TurbModel.H"
 
-namespace amr_wind {
-namespace turbulence {
+namespace amr_wind::turbulence {
 
 /** Laminar model
  *  \ingroup turb_model
@@ -59,7 +58,6 @@ public:
     TurbulenceModel::CoeffsDictType model_coeffs() const override;
 };
 
-} // namespace turbulence
-} // namespace amr_wind
+} // namespace amr_wind::turbulence
 
 #endif /* LAMINARMODEL_H */

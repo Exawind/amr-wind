@@ -3,8 +3,7 @@
 
 #include "AMReX_Gpu.H"
 
-namespace amr_wind {
-namespace interp {
+namespace amr_wind::interp {
 
 enum class Limits : int {
     LOWLIM = -2,
@@ -165,7 +164,6 @@ inline void linear(const C1& xinp, const C2& yinp, const C1& xout, C2& yout)
     }
 }
 
-} // namespace interp
-} // namespace amr_wind
+} // namespace amr_wind::interp
 
 #endif /* LINEAR_INTERPOLATION_H */

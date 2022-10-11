@@ -7,8 +7,7 @@
 #include "amr-wind/equation_systems/PDE.H"
 #include "amr-wind/equation_systems/SourceTerm.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 struct VOF : ScalarTransport
 {
@@ -26,7 +25,6 @@ struct VOF : ScalarTransport
     static constexpr amrex::Real default_bc_value = 0.0;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* VOF_H */

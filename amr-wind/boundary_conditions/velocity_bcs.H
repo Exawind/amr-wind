@@ -8,8 +8,7 @@
 #include "amr-wind/physics/udfs/LinearProfile.H"
 #include "amr-wind/physics/udfs/PowerLawProfile.H"
 
-namespace amr_wind {
-namespace vel_bc {
+namespace amr_wind::vel_bc {
 
 template <typename WallOp>
 void register_inflow_vel_dirichlet(
@@ -53,7 +52,6 @@ void register_velocity_dirichlet(
         field, inflow_udf, mesh, time);
 }
 
-} // namespace vel_bc
-} // namespace amr_wind
+} // namespace amr_wind::vel_bc
 
 #endif /* VELOCITY_BCS_H */

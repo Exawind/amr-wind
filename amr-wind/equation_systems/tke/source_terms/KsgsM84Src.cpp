@@ -4,9 +4,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/turbulence/TurbulenceModel.H"
 
-namespace amr_wind {
-namespace pde {
-namespace tke {
+namespace amr_wind::pde::tke {
 
 KsgsM84Src::KsgsM84Src(const CFDSim& sim)
     : m_turb_lscale(sim.repo().get_field("turb_lscale"))
@@ -95,6 +93,4 @@ void KsgsM84Src::operator()(
     }
 }
 
-} // namespace tke
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::tke

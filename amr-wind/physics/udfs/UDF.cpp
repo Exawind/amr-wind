@@ -6,8 +6,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace udf {
+namespace amr_wind::udf {
 
 ConstValue::ConstValue(Field& fld) : m_field(fld)
 {
@@ -57,5 +56,4 @@ void UDFImpl<T>::operator()(int level, const amrex::Geometry& geom)
 template class UDFImpl<LinearProfile>;
 template class UDFImpl<PowerLawProfile>;
 
-} // namespace udf
-} // namespace amr_wind
+} // namespace amr_wind::udf

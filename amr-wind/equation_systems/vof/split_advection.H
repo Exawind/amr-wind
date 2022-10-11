@@ -6,8 +6,7 @@
 #include <AMReX_BCRec.H>
 #include <cmath>
 
-namespace amr_wind {
-namespace multiphase {
+namespace amr_wind::multiphase {
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void eulerian_implicit(
     const int i,
@@ -215,6 +214,5 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void remove_vof_debris(
     }
 }
 
-} // namespace multiphase
-} // namespace amr_wind
+} // namespace amr_wind::multiphase
 #endif // LAGRANGIAN_ADVECTION.H

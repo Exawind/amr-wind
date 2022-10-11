@@ -4,8 +4,7 @@
 #include "amr-wind/equation_systems/sdr/SDR.H"
 #include "amr-wind/core/field_ops.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /** Implementation of Turbulence operator for SDR equation
  *  \ingroup sdr_eqn
@@ -133,7 +132,6 @@ struct DiffusionOp<SDR, Scheme> : public DiffSolverIface<typename SDR::MLDiffOp>
     Field& m_lhs_src_term;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* SDR_OPS_H */

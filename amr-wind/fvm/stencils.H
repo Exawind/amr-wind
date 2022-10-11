@@ -40,9 +40,7 @@
 #include "AMReX_Orientation.H"
 #include "AMReX_Geometry.H"
 
-namespace amr_wind {
-namespace fvm {
-namespace stencil {
+namespace amr_wind::fvm::stencil {
 
 namespace impl {
 
@@ -1207,8 +1205,6 @@ struct StencilIHI_JHI_KHI
     }
 };
 
-} // namespace stencil
-} // namespace fvm
-} // namespace amr_wind
+} // namespace amr_wind::fvm::stencil
 
 #endif /* STENCILS_H */

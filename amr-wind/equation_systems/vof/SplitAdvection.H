@@ -3,8 +3,7 @@
 
 #include "amr-wind/core/FieldRepo.H"
 
-namespace amr_wind {
-namespace multiphase {
+namespace amr_wind::multiphase {
 
 void split_advection_step(
     int isweep,
@@ -83,6 +82,5 @@ void sweep_balance(
     amrex::Array4<amrex::Real const> const& fluxF,
     amrex::Array4<amrex::Real const> const& fluxC);
 
-} // namespace multiphase
-} // namespace amr_wind
+} // namespace amr_wind::multiphase
 #endif /* SplitAdvection_H */

@@ -5,8 +5,7 @@
 #include "amr-wind/equation_systems/vof/vof.H"
 #include "amr-wind/equation_systems/vof/SplitAdvection.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /** Godunov scheme for VOF
  *  \ingroup vof
@@ -105,6 +104,5 @@ struct AdvectionOp<VOF, fvm::Godunov>
     // Lagrangian transport is deprecated, only Eulerian is supported
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 #endif

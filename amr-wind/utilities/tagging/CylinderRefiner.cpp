@@ -3,8 +3,7 @@
 
 // Adapted from OpenFOAM/src/meshTools/sets/cellSources/cylinderAnnulusToCell
 
-namespace amr_wind {
-namespace tagging {
+namespace amr_wind::tagging {
 
 CylinderRefiner::CylinderRefiner(
     const CFDSim& /*unused*/, const std::string& key)
@@ -70,5 +69,4 @@ void CylinderRefiner::operator()(
     });
 }
 
-} // namespace tagging
-} // namespace amr_wind
+} // namespace amr_wind::tagging

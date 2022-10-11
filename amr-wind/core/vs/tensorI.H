@@ -5,8 +5,7 @@
 #include "amr-wind/core/vs/tensor.H"
 #include "amr-wind/utilities/trig_ops.H"
 
-namespace amr_wind {
-namespace vs {
+namespace amr_wind::vs {
 
 template <typename T>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE TensorT<T>::TensorT(
@@ -240,7 +239,6 @@ quaternion(const Vector& axis, const amrex::Real angle)
     return t;
 }
 
-} // namespace vs
-} // namespace amr_wind
+} // namespace amr_wind::vs
 
 #endif /* VS_TENSORI_H */

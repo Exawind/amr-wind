@@ -9,8 +9,7 @@
 
 #include "AMReX_MultiFabUtil.H"
 
-namespace amr_wind {
-namespace ib {
+namespace amr_wind::ib {
 namespace bluff_body {
 
 /** Parse common data for modeling non-blade bluff bodies via an immersed
@@ -141,7 +140,6 @@ public:
 
 } // namespace ops
 
-} // namespace ib
-} // namespace amr_wind
+} // namespace amr_wind::ib
 
 #endif /* BLUFF_BODY_OPS_H */

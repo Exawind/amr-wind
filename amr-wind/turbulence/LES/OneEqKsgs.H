@@ -4,8 +4,7 @@
 #include <string>
 #include "amr-wind/turbulence/TurbModelBase.H"
 
-namespace amr_wind {
-namespace turbulence {
+namespace amr_wind::turbulence {
 
 /** Base class for 1-Equation subgrid scale TKE turbulence model
  *  \ingroup turb_model
@@ -125,7 +124,6 @@ public:
     TurbulenceModel::CoeffsDictType model_coeffs() const override;
 };
 
-} // namespace turbulence
-} // namespace amr_wind
+} // namespace amr_wind::turbulence
 
 #endif /* ONEEQKSGS_H */

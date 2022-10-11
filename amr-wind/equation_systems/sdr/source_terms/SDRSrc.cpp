@@ -4,9 +4,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/turbulence/TurbulenceModel.H"
 
-namespace amr_wind {
-namespace pde {
-namespace tke {
+namespace amr_wind::pde::tke {
 
 SDRSrc::SDRSrc(const CFDSim& sim)
     : m_sdr_src(sim.repo().get_field("omega_src"))
@@ -33,6 +31,4 @@ void SDRSrc::operator()(
     });
 }
 
-} // namespace tke
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::tke

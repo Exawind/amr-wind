@@ -6,9 +6,7 @@
 
 #include <algorithm>
 
-namespace amr_wind {
-namespace actuator {
-namespace ops {
+namespace amr_wind::actuator::ops {
 
 template <typename T>
 void determine_influenced_procs(typename T::DataType& data)
@@ -42,8 +40,6 @@ void determine_root_proc(
     utils::determine_root_proc(data.info(), act_proc_count);
 }
 
-} // namespace ops
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator::ops
 
 #endif /* ACTUATOR_OPSI_H */

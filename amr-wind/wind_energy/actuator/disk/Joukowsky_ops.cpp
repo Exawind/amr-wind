@@ -3,10 +3,7 @@
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/wind_energy/actuator/disk/disk_ops.H"
 
-namespace amr_wind {
-namespace actuator {
-namespace ops {
-namespace joukowsky {
+namespace amr_wind::actuator::ops::joukowsky {
 void check_for_parse_conflicts(const utils::ActParser& pp)
 {
     auto error_collector = ops::base::check_for_parse_conflicts(pp);
@@ -184,7 +181,4 @@ void write_netcdf(
 #endif
 }
 
-} // namespace joukowsky
-} // namespace ops
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator::ops::joukowsky

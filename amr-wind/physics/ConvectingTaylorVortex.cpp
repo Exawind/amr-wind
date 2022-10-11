@@ -6,8 +6,7 @@
 #include "AMReX_ParReduce.H"
 #include "amr-wind/utilities/trig_ops.H"
 
-namespace amr_wind {
-namespace ctv {
+namespace amr_wind::ctv {
 
 namespace {
 
@@ -330,5 +329,4 @@ void ConvectingTaylorVortex::post_init_actions() { output_error(); }
 
 void ConvectingTaylorVortex::post_advance_work() { output_error(); }
 
-} // namespace ctv
-} // namespace amr_wind
+} // namespace amr_wind::ctv

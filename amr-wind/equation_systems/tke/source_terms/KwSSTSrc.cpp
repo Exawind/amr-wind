@@ -4,9 +4,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/turbulence/TurbulenceModel.H"
 
-namespace amr_wind {
-namespace pde {
-namespace tke {
+namespace amr_wind::pde::tke {
 
 KwSSTSrc::KwSSTSrc(const CFDSim& sim)
     : m_shear_prod(sim.repo().get_field("shear_prod"))
@@ -34,6 +32,4 @@ void KwSSTSrc::operator()(
     });
 }
 
-} // namespace tke
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::tke

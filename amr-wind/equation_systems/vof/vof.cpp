@@ -6,11 +6,9 @@
 #include "amr-wind/equation_systems/vof/vof_ops.H"
 #include "amr-wind/equation_systems/vof/vof_bcop.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 template class PDESystem<VOF, fvm::Godunov>;
 template class PDESystem<VOF, fvm::MOL>;
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde

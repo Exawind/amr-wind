@@ -4,9 +4,7 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 /** Account for Coriolis forcing due to earth's rotation
  *  \ingroup icns_src we_abl
@@ -50,8 +48,6 @@ private:
     amrex::Real m_coriolis_factor{0.0};
 };
 
-} // namespace icns
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns
 
 #endif /* CORIOLISFORCING_H */

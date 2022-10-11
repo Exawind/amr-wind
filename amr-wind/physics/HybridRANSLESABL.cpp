@@ -4,8 +4,7 @@
 #include "AMReX_iMultiFab.H"
 #include "AMReX_MultiFabUtil.H"
 
-namespace amr_wind {
-namespace hybrid_rans_les_abl {
+namespace amr_wind::hybrid_rans_les_abl {
 
 HybridRANSLESABL::HybridRANSLESABL(const CFDSim& sim) : m_sim(sim) {}
 
@@ -102,5 +101,4 @@ void HybridRANSLESABL::compute_sdr_impl()
     }
 }
 
-} // namespace hybrid_rans_les_abl
-} // namespace amr_wind
+} // namespace amr_wind::hybrid_rans_les_abl

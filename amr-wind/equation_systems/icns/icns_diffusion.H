@@ -8,8 +8,7 @@
 #include "amr-wind/equation_systems/icns/icns.H"
 #include "amr-wind/utilities/console_io.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 class ICNSDiffTensorOp : public DiffSolverIface<amrex::MLTensorOp>
 {
@@ -607,7 +606,6 @@ struct DiffusionOp<ICNS, Scheme>
     }
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* ICNS_DIFFUSION_H */

@@ -4,11 +4,9 @@
 #include "amr-wind/equation_systems/BCOps.H"
 #include "amr-wind/equation_systems/density/density_ops.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 template class PDESystem<Density, fvm::Godunov>;
 template class PDESystem<Density, fvm::MOL>;
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde

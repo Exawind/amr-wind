@@ -3,8 +3,7 @@
 #include "amr-wind/fvm/fvm.H"
 #include "amr-wind/utilities/io_utils.H"
 
-namespace amr_wind {
-namespace derived {
+namespace amr_wind::derived {
 
 VorticityMag::VorticityMag(
     const FieldRepo& repo, const std::vector<std::string>& args)
@@ -141,5 +140,4 @@ void FieldComponents::operator()(ScratchField& fld, const int scomp)
     }
 }
 
-} // namespace derived
-} // namespace amr_wind
+} // namespace amr_wind::derived

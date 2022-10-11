@@ -3,8 +3,7 @@
 
 #include "amr-wind/fvm/fvm_utils.H"
 
-namespace amr_wind {
-namespace fvm {
+namespace amr_wind::fvm {
 
 /** Laplacian operator
  *  \ingroup fvm
@@ -94,7 +93,6 @@ inline std::unique_ptr<ScratchField> laplacian(const FType& phi)
     return lapphi;
 }
 
-} // namespace fvm
-} // namespace amr_wind
+} // namespace amr_wind::fvm
 
 #endif /* LAPLACIAN_H */

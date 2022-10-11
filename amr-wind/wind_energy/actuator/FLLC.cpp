@@ -1,7 +1,6 @@
 #include "amr-wind/wind_energy/actuator/FLLC.H"
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 void FLLCInit(
     FLLCData& data, const ComponentView& view, const amrex::Real eps_chord)
@@ -48,5 +47,4 @@ void FLLCParse(const utils::ActParser& pp, FLLCData& data)
     }
 }
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator

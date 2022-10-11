@@ -4,8 +4,7 @@
 #include <string>
 #include "amr-wind/turbulence/TurbModelBase.H"
 
-namespace amr_wind {
-namespace turbulence {
+namespace amr_wind::turbulence {
 
 /** K-Omega-SST RANS turbulence model
  *
@@ -94,7 +93,6 @@ protected:
     amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
 };
 
-} // namespace turbulence
-} // namespace amr_wind
+} // namespace amr_wind::turbulence
 
 #endif /* KOMEGASST_H */

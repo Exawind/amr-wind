@@ -3,8 +3,7 @@
 
 #include "AMReX_Gpu.H"
 
-namespace amr_wind {
-namespace utils {
+namespace amr_wind::utils {
 
 /** Compute the norm of a 3-D vector
  */
@@ -91,7 +90,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void inv_transform_vec(
     y[2] = tmat[0][2] * x[0] + tmat[1][2] * x[1] + tmat[2][2] * x[2];
 }
 
-} // namespace utils
-} // namespace amr_wind
+} // namespace amr_wind::utils
 
 #endif /* TENSOR_OPS_H */

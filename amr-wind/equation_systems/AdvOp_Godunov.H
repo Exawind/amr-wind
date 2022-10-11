@@ -13,8 +13,7 @@
 #include "AMReX_MultiFabUtil.H"
 #include "hydro_utils.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /** Godunov advection operator for scalar transport equations
  *  \ingroup pdeop
@@ -237,7 +236,6 @@ struct AdvectionOp<
     std::string advection_type{"Godunov"};
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* ADVOP_GODUNOV_H */

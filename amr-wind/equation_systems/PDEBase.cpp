@@ -7,8 +7,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 PDEFields::PDEFields(FieldRepo& repo_in, const std::string& var_name)
     : repo(repo_in)
@@ -86,5 +85,4 @@ void PDEMgr::fillpatch_state_fields(
     }
 }
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde

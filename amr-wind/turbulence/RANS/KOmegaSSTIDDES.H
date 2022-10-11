@@ -4,8 +4,7 @@
 #include <string>
 #include "amr-wind/turbulence/RANS/KOmegaSST.H"
 
-namespace amr_wind {
-namespace turbulence {
+namespace amr_wind::turbulence {
 
 /** K-Omega-SST-IDDES Hybrid RANS/LES turbulence model
  *
@@ -58,7 +57,6 @@ protected:
     amrex::Real m_kappa{0.41};
 };
 
-} // namespace turbulence
-} // namespace amr_wind
+} // namespace amr_wind::turbulence
 
 #endif /* KOMEGASSTIDDES_H */
