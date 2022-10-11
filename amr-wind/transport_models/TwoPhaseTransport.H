@@ -35,9 +35,9 @@ public:
 
     ~TwoPhaseTransport() override = default;
 
-    inline amrex::Real laminar_prandtl() const { return m_Pr; }
+    [[nodiscard]] inline amrex::Real laminar_prandtl() const { return m_Pr; }
 
-    inline amrex::Real turbulent_prandtl() const { return m_Prt; }
+    [[nodiscard]] inline amrex::Real turbulent_prandtl() const { return m_Prt; }
 
     static inline amrex::Real laminar_schmidt(const std::string& scalar_name)
     {

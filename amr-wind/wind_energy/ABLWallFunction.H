@@ -24,11 +24,11 @@ public:
     ~ABLWallFunction() = default;
 
     MOData& mo() { return m_mo; }
-    const MOData& mo() const { return m_mo; }
+    [[nodiscard]] const MOData& mo() const { return m_mo; }
 
     //! Return the plane-averaged computed friction velocity at any given
     //! instance
-    amrex::Real utau() const { return m_mo.utau; }
+    [[nodiscard]] amrex::Real utau() const { return m_mo.utau; }
 
     //! Initialize the log-law height based on user inputs
     void init_log_law_height();

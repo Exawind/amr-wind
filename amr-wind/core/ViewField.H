@@ -31,14 +31,23 @@ public:
     ViewField(ViewField&&) = default;
     ViewField& operator=(ViewField&&) = default;
 
-    inline std::string name() const { return m_src.name() + "view"; }
+    [[nodiscard]] inline std::string name() const
+    {
+        return m_src.name() + "view";
+    }
 
     //! Number of components in this subview
-    inline int num_comp() const { return m_ncomp; }
+    [[nodiscard]] inline int num_comp() const { return m_ncomp; }
 
-    inline const amrex::IntVect& num_grow() const { return m_src.num_grow(); }
+    [[nodiscard]] inline const amrex::IntVect& num_grow() const
+    {
+        return m_src.num_grow();
+    }
 
-    inline FieldLoc field_location() const { return m_src.field_location(); }
+    [[nodiscard]] inline FieldLoc field_location() const
+    {
+        return m_src.field_location();
+    }
 
     //! Return the field data for a given level
     amrex::MultiFab& operator()(int lev) { return m_data[lev]; }
@@ -49,17 +58,18 @@ public:
         return amrex::GetVecOfPtrs(m_data);
     }
 
-    amrex::Vector<const amrex::MultiFab*> vec_const_ptrs() const noexcept
+    [[nodiscard]] amrex::Vector<const amrex::MultiFab*>
+    vec_const_ptrs() const noexcept
     {
         return amrex::GetVecOfConstPtrs(m_data);
     }
 
     //! Return a reference to the field repository that created this field
-    const FieldRepo& repo() const { return m_src.repo(); }
+    [[nodiscard]] const FieldRepo& repo() const { return m_src.repo(); }
 
     //! Return a reference to the source field from which this view is derived
     T& source_field() { return m_src; }
-    const T& source_field() const { return m_src; }
+    [[nodiscard]] const T& source_field() const { return m_src; }
 
 private:
     // cppcheck-suppress noExplicitConstructor

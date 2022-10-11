@@ -88,7 +88,7 @@ struct ConstDirichlet
     {}
 
     AMREX_GPU_HOST
-    DeviceType device_instance() const { return *this; }
+    [[nodiscard]] DeviceType device_instance() const { return *this; }
 
     AMREX_GPU_DEVICE
     inline void operator()(

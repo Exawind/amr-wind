@@ -22,13 +22,16 @@ public:
     {}
 
     //! Return the ParmParse instance for the default namespace
-    const amrex::ParmParse& default_params() const { return pp_default; }
+    [[nodiscard]] const amrex::ParmParse& default_params() const
+    {
+        return pp_default;
+    }
 
     //! Return the ParmParse instance for the specialized namespace
-    const amrex::ParmParse& params() const { return pp; }
+    [[nodiscard]] const amrex::ParmParse& params() const { return pp; }
 
     //! Check if the keyword is present in either namespace
-    bool contains(const std::string& name) const
+    [[nodiscard]] bool contains(const std::string& name) const
     {
         return pp.contains(name.c_str()) || pp_default.contains(name.c_str());
     }

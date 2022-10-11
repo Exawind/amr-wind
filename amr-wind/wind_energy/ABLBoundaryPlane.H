@@ -60,8 +60,8 @@ public:
         const amrex::Vector<amrex::Real>& /*times*/);
 
     void interpolate(const amrex::Real /*time*/);
-    bool is_populated(amrex::Orientation /*ori*/) const;
-    const amrex::FArrayBox&
+    [[nodiscard]] bool is_populated(amrex::Orientation /*ori*/) const;
+    [[nodiscard]] const amrex::FArrayBox&
     interpolate_data(const amrex::Orientation ori, const int lev) const
     {
         return (*m_data_interp[ori])[lev];
@@ -69,16 +69,19 @@ public:
 
     int& component(const int id) { return m_components[id]; }
 
-    int component(const int id) const { return m_components.at(id); }
+    [[nodiscard]] int component(const int id) const
+    {
+        return m_components.at(id);
+    }
 
-    int nlevels(const amrex::Orientation ori) const
+    [[nodiscard]] int nlevels(const amrex::Orientation ori) const
     {
         return (*m_data_interp[ori]).size();
     }
 
-    amrex::Real tn() const { return m_tn; }
-    amrex::Real tnp1() const { return m_tnp1; }
-    amrex::Real tinterp() const { return m_tinterp; }
+    [[nodiscard]] amrex::Real tn() const { return m_tn; }
+    [[nodiscard]] amrex::Real tnp1() const { return m_tnp1; }
+    [[nodiscard]] amrex::Real tinterp() const { return m_tinterp; }
 
 private:
     amrex::Vector<std::unique_ptr<PlaneVector>> m_data_n;
@@ -147,9 +150,9 @@ public:
         amrex::Gpu::ManagedVector<amrex::Real>&);
 #endif
 
-    bool is_initialized() const { return m_is_initialized; }
+    [[nodiscard]] bool is_initialized() const { return m_is_initialized; }
 
-    bool box_intersects_boundary(
+    [[nodiscard]] bool box_intersects_boundary(
         const amrex::Box& /*bx*/,
         const int /*lev*/,
         const amrex::Orientation /*ori*/) const;

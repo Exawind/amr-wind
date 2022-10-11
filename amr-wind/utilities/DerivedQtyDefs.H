@@ -11,9 +11,9 @@ struct VorticityMag : public DerivedQty::Register<VorticityMag>
 
     VorticityMag(const FieldRepo& repo, const std::vector<std::string>& args);
 
-    std::string name() const override { return identifier(); }
+    [[nodiscard]] std::string name() const override { return identifier(); }
 
-    int num_comp() const override { return ncomp; }
+    [[nodiscard]] int num_comp() const override { return ncomp; }
 
     void operator()(ScratchField& fld, const int scomp = 0) override;
 
@@ -28,9 +28,9 @@ struct QCriterion : public DerivedQty::Register<QCriterion>
 
     QCriterion(const FieldRepo& repo, const std::vector<std::string>& args);
 
-    std::string name() const override { return identifier(); }
+    [[nodiscard]] std::string name() const override { return identifier(); }
 
-    int num_comp() const override { return ncomp; }
+    [[nodiscard]] int num_comp() const override { return ncomp; }
 
     void operator()(ScratchField& fld, const int scomp = 0) override;
 
@@ -46,9 +46,9 @@ struct QCriterionNondim : public DerivedQty::Register<QCriterionNondim>
     QCriterionNondim(
         const FieldRepo& repo, const std::vector<std::string>& args);
 
-    std::string name() const override { return identifier(); }
+    [[nodiscard]] std::string name() const override { return identifier(); }
 
-    int num_comp() const override { return ncomp; }
+    [[nodiscard]] int num_comp() const override { return ncomp; }
 
     void operator()(ScratchField& fld, const int scomp = 0) override;
 
@@ -63,9 +63,9 @@ struct StrainRateMag : public DerivedQty::Register<StrainRateMag>
 
     StrainRateMag(const FieldRepo& repo, const std::vector<std::string>& args);
 
-    std::string name() const override { return identifier(); }
+    [[nodiscard]] std::string name() const override { return identifier(); }
 
-    int num_comp() const override { return ncomp; }
+    [[nodiscard]] int num_comp() const override { return ncomp; }
 
     void operator()(ScratchField& fld, const int scomp = 0) override;
 
@@ -79,9 +79,15 @@ struct Gradient : public DerivedQty::Register<Gradient>
 
     Gradient(const FieldRepo& repo, const std::vector<std::string>& args);
 
-    std::string name() const override { return "grad_" + m_phi->name(); }
+    [[nodiscard]] std::string name() const override
+    {
+        return "grad_" + m_phi->name();
+    }
 
-    int num_comp() const override { return AMREX_SPACEDIM * m_phi->num_comp(); }
+    [[nodiscard]] int num_comp() const override
+    {
+        return AMREX_SPACEDIM * m_phi->num_comp();
+    }
 
     void operator()(ScratchField& fld, const int scomp = 0) override;
 
@@ -95,9 +101,12 @@ struct Divergence : public DerivedQty::Register<Divergence>
 
     Divergence(const FieldRepo& repo, const std::vector<std::string>& args);
 
-    std::string name() const override { return "div_" + m_phi->name(); }
+    [[nodiscard]] std::string name() const override
+    {
+        return "div_" + m_phi->name();
+    }
 
-    int num_comp() const override { return 1; }
+    [[nodiscard]] int num_comp() const override { return 1; }
 
     void operator()(ScratchField& fld, const int scomp = 0) override;
 
@@ -112,9 +121,12 @@ struct Laplacian : public DerivedQty::Register<Laplacian>
 
     Laplacian(const FieldRepo& repo, const std::vector<std::string>& args);
 
-    std::string name() const override { return "laplacian_" + m_phi->name(); }
+    [[nodiscard]] std::string name() const override
+    {
+        return "laplacian_" + m_phi->name();
+    }
 
-    int num_comp() const override { return ncomp; }
+    [[nodiscard]] int num_comp() const override { return ncomp; }
 
     void operator()(ScratchField& fld, const int scomp = 0) override;
 
@@ -129,9 +141,9 @@ struct FieldComponents : public DerivedQty::Register<FieldComponents>
     FieldComponents(
         const FieldRepo& repo, const std::vector<std::string>& args);
 
-    std::string name() const override { return m_fld->name(); }
+    [[nodiscard]] std::string name() const override { return m_fld->name(); }
 
-    int num_comp() const override { return m_ncomp; }
+    [[nodiscard]] int num_comp() const override { return m_ncomp; }
 
     void var_names(amrex::Vector<std::string>& plt_var_names) override;
 

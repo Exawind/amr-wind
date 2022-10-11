@@ -81,9 +81,12 @@ public:
     //! Name of the checkpoint file to be read during a restart
     const std::string& restart_file() { return m_restart_file; }
 
-    bool is_restart() const { return !m_restart_file.empty(); }
+    [[nodiscard]] bool is_restart() const { return !m_restart_file.empty(); }
 
-    const amrex::Vector<Field*>& plot_fields() const { return m_plt_fields; }
+    [[nodiscard]] const amrex::Vector<Field*>& plot_fields() const
+    {
+        return m_plt_fields;
+    }
 
 private:
     void write_header(const std::string& /*chkname*/, const int start_level);

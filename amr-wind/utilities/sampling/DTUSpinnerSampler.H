@@ -40,7 +40,7 @@ public:
      */
     void update_sampling_locations() override;
 
-    int num_points() const override { return (m_npts * m_ns); }
+    [[nodiscard]] int num_points() const override { return (m_npts * m_ns); }
 
     bool output_netcdf_field(
         double* /*unused*/, ncutils::NCVar& /*unused*/) override;

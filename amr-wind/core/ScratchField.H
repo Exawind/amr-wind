@@ -35,16 +35,19 @@ public:
     ScratchField& operator=(const ScratchField&) = delete;
 
     //! Name if available for this scratch field
-    inline const std::string& name() const { return m_name; }
+    [[nodiscard]] inline const std::string& name() const { return m_name; }
 
     //! Number of components for this field
-    inline int num_comp() const { return m_ncomp; }
+    [[nodiscard]] inline int num_comp() const { return m_ncomp; }
 
     //! Ghost cells
-    inline const amrex::IntVect& num_grow() const { return m_ngrow; }
+    [[nodiscard]] inline const amrex::IntVect& num_grow() const
+    {
+        return m_ngrow;
+    }
 
     //! Cell, node, face where the field is stored
-    inline FieldLoc field_location() const { return m_floc; }
+    [[nodiscard]] inline FieldLoc field_location() const { return m_floc; }
 
     //! Return the field data for a given level
     amrex::MultiFab& operator()(int lev) { return m_data[lev]; }
@@ -55,13 +58,14 @@ public:
         return amrex::GetVecOfPtrs(m_data);
     }
 
-    amrex::Vector<const amrex::MultiFab*> vec_const_ptrs() const noexcept
+    [[nodiscard]] amrex::Vector<const amrex::MultiFab*>
+    vec_const_ptrs() const noexcept
     {
         return amrex::GetVecOfConstPtrs(m_data);
     }
 
     //! Return a reference to the field repository that created this field
-    const FieldRepo& repo() const { return m_repo; }
+    [[nodiscard]] const FieldRepo& repo() const { return m_repo; }
 
     /** Return a sub-view of the ScratchField instance
      */

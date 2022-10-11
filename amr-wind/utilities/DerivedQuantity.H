@@ -19,9 +19,9 @@ public:
 
     ~DerivedQty() override = default;
 
-    virtual std::string name() const = 0;
+    [[nodiscard]] virtual std::string name() const = 0;
 
-    virtual int num_comp() const = 0;
+    [[nodiscard]] virtual int num_comp() const = 0;
 
     virtual void operator()(ScratchField& fld, const int scomp = 0) = 0;
 
@@ -45,9 +45,9 @@ public:
     DerivedQty& create(const std::string& key);
 
     //! Return the total number of components across all derived quantities
-    int num_comp() const noexcept;
+    [[nodiscard]] int num_comp() const noexcept;
 
-    bool contains(const std::string& key) const noexcept;
+    [[nodiscard]] bool contains(const std::string& key) const noexcept;
 
     //! Populate a vector of variable names (for output)
     void

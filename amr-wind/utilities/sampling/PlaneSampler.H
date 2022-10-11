@@ -47,15 +47,15 @@ public:
     populate_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
 
     //! Name of this sampling object
-    std::string label() const override { return m_label; }
+    [[nodiscard]] std::string label() const override { return m_label; }
     std::string& label() override { return m_label; }
 
     //! Unique identifier for this set of probe locations
-    int id() const override { return m_id; }
+    [[nodiscard]] int id() const override { return m_id; }
     int& id() override { return m_id; }
 
     //! Number of probe locations along the line
-    int num_points() const override { return m_npts; }
+    [[nodiscard]] int num_points() const override { return m_npts; }
 
 private:
     amrex::Vector<amrex::Real> m_axis1;

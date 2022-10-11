@@ -206,16 +206,25 @@ public:
     {}
 
     CFDSim& sim() { return m_sim; }
-    const CFDSim& sim() const { return m_sim; }
+    [[nodiscard]] const CFDSim& sim() const { return m_sim; }
 
     typename ActTrait::InfoType& info() { return m_info; }
-    const typename ActTrait::InfoType& info() const { return m_info; }
+    [[nodiscard]] const typename ActTrait::InfoType& info() const
+    {
+        return m_info;
+    }
 
     typename ActTrait::GridType& grid() { return m_grid; }
-    const typename ActTrait::GridType& grid() const { return m_grid; }
+    [[nodiscard]] const typename ActTrait::GridType& grid() const
+    {
+        return m_grid;
+    }
 
     typename ActTrait::MetaType& meta() { return m_meta; }
-    const typename ActTrait::MetaType& meta() const { return m_meta; }
+    [[nodiscard]] const typename ActTrait::MetaType& meta() const
+    {
+        return m_meta;
+    }
 };
 
 } // namespace actuator

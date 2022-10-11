@@ -32,9 +32,9 @@ public:
     AreaComputer(
         const amrex::Real radius, const int num_r, const int num_theta);
 
-    amrex::Real area_section(const int iRadius) const;
+    [[nodiscard]] amrex::Real area_section(const int iRadius) const;
 
-    amrex::Real weight(const int iRadius) const;
+    [[nodiscard]] amrex::Real weight(const int iRadius) const;
 
 private:
     const amrex::Real area;

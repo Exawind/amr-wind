@@ -26,13 +26,16 @@ public:
 
     ~ConstTransport() override = default;
 
-    inline amrex::Real viscosity() const { return m_mu; }
+    [[nodiscard]] inline amrex::Real viscosity() const { return m_mu; }
 
-    inline amrex::Real thermal_diffusivity() const { return m_mu / m_Pr; }
+    [[nodiscard]] inline amrex::Real thermal_diffusivity() const
+    {
+        return m_mu / m_Pr;
+    }
 
-    inline amrex::Real laminar_prandtl() const { return m_Pr; }
+    [[nodiscard]] inline amrex::Real laminar_prandtl() const { return m_Pr; }
 
-    inline amrex::Real turbulent_prandtl() const { return m_Prt; }
+    [[nodiscard]] inline amrex::Real turbulent_prandtl() const { return m_Prt; }
 
     static inline amrex::Real laminar_schmidt(const std::string& scalar_name)
     {

@@ -25,11 +25,11 @@ public:
         amrex::Real& cd,
         amrex::Real& cm) const;
 
-    int num_entries() const { return m_aoa.size(); }
+    [[nodiscard]] int num_entries() const { return m_aoa.size(); }
 
-    const RealList& aoa() const { return m_aoa; }
+    [[nodiscard]] const RealList& aoa() const { return m_aoa; }
 
-    const VecList& polars() const { return m_polar; }
+    [[nodiscard]] const VecList& polars() const { return m_polar; }
 
 protected:
     explicit AirfoilTable(const int num_entries);
