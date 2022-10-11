@@ -270,7 +270,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
         p = 2.0 * m1 * m2;
         q = 1.5 * m1 * m2 * (m12 - 2.0 * m3 * ch);
         p12 = std::sqrt(p);
-        teta = std::acos(q / (p * p12)) / 3.0;
+        teta = std::acos(q / (p * p12 + const_tiny)) / 3.0;
         cs = std::cos(teta);
         alpha = p12 * (std::sqrt(3.0 * (1.0 - cs * cs)) - cs) + m12;
     } else if (m12 < m3) {
@@ -279,7 +279,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
         p = m1 * (m2 + m3) + m2 * m3 - 0.25;
         q = 1.5 * m1 * m2 * m3 * (0.5 - ch);
         p12 = std::sqrt(p);
-        teta = std::acos(q / (p * p12)) / 3.0;
+        teta = std::acos(q / (p * p12 + const_tiny)) / 3.0;
         cs = std::cos(teta);
         alpha = p12 * (std::sqrt(3.0 * (1.0 - cs * cs)) - cs) + 0.5;
     }
@@ -456,13 +456,12 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool interface_band(
     return (VOF_max != VOF_min || VOF_mid);
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void levelset_to_vof(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real levelset_to_vof(
     int i,
     int j,
     int k,
     amrex::Real eps,
-    amrex::Array4<amrex::Real> const& phi,
-    amrex::Array4<amrex::Real> const& volfrac) noexcept
+    amrex::Array4<amrex::Real const> const& phi) noexcept
 {
     amrex::Real mx, my, mz;
     youngs_fd_normal(i, j, k, phi, mx, my, mz);
@@ -482,13 +481,16 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void levelset_to_vof(
         alpha = phi(i, j, k) / normL1;
         alpha = alpha + 0.5;
     }
+    amrex::Real result;
     if (alpha >= 1.0) {
-        volfrac(i, j, k) = 1.0;
+        result = 1.0;
     } else if (alpha <= 0.0) {
-        volfrac(i, j, k) = 0.0;
+        result = 0.0;
     } else {
-        volfrac(i, j, k) = cut_volume(mx, my, mz, alpha, 0.0, 1.0);
+        result = cut_volume(mx, my, mz, alpha, 0.0, 1.0);
     }
+
+    return result;
 }
 
 } // namespace multiphase
