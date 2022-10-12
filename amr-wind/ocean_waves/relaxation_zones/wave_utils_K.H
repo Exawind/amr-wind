@@ -59,7 +59,7 @@ ramp(amrex::Real time, amrex::Real ramp_period)
     return f;
 }
 
-} // namespace regular_waves
+} // namespace relaxation_zones
 } // namespace ocean_waves
 } // namespace amr_wind
 
