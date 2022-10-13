@@ -117,7 +117,10 @@ void TiogaInterface::post_overset_conn_work()
         eqn->post_regrid_actions();
     }
 }
-
+	// IXT comment
+	// This is called right before dataUpdate_AMR is called inside exawind
+	// through the tioga instance m_tg
+	// This is likely where the relevant exchange occurs
 void TiogaInterface::register_solution(
     const std::vector<std::string>& cell_vars,
     const std::vector<std::string>& node_vars)
@@ -135,10 +138,14 @@ void TiogaInterface::register_solution(
     m_qcell = repo.create_scratch_field(ncell_vars, num_ghost, FieldLoc::CELL);
     m_qnode = repo.create_scratch_field(nnode_vars, num_ghost, FieldLoc::NODE);
 
+	// IXT comments
+	// These are strings
     // Store field variable names for use in update_solution step
     m_cell_vars = cell_vars;
     m_node_vars = node_vars;
 
+	// IXT comments
+	// Print out the string cvar here
     // Move cell variables into scratch field
     {
         int icomp = 0;
@@ -152,8 +159,14 @@ void TiogaInterface::register_solution(
         AMREX_ASSERT(ncell_vars == icomp);
     }
 
+	// IXT comments
+	// Print out cvar here to check what is being copied
     // Move node variables into scratch field
     {
+	// IXT comments
+	// get_field is defined inside /amr-wind/amr-wind/core/FieldRepo.cpp
+	// It uses AMRex functions
+	// It returns a Field
         int icomp = 0;
         for (const auto& cvar : m_node_vars) {
             auto& fld = repo.get_field(cvar);
@@ -165,15 +178,28 @@ void TiogaInterface::register_solution(
         AMREX_ASSERT(nnode_vars == icomp);
     }
 
+	// IXT comments
     // Update data pointers for TIOGA exchange
     {
         int ilp = 0;
         const int nlevels = m_sim.repo().num_active_levels();
         auto& ad = *m_amr_data;
         for (int lev = 0; lev < nlevels; ++lev) {
+		// IXT comments
+		// Look up how this definition with lev is done here
+		// qcfab is a Fab defined for cells?
+		// qnfab is a Fab defined for cells?
+		// Figure out what Fab is in AMRex
+		// It stores floating point data on a rectangular domain?
             auto& qcfab = (*m_qcell)(lev);
             auto& qnfab = (*m_qnode)(lev);
 
+	// IXT comments
+	// ad is AMR data,
+	// Is h_view for the host to view, and d_view for the device to view?	
+	//  Should the h_view data be explicitly sent to CPU memory from GPU memory?
+	// Make sure you understand what the ad and qcfab objects are
+	// Understand what MFIter does
             for (amrex::MFIter mfi(qcfab); mfi.isValid(); ++mfi) {
                 ad.qcell.h_view[ilp] = qcfab[mfi].dataPtr();
                 ad.qcell.d_view[ilp] = qcfab[mfi].dataPtr();
@@ -190,7 +216,8 @@ void TiogaInterface::update_solution()
 {
     auto& repo = m_sim.repo();
     const int num_ghost = m_sim.pde_manager().num_ghost_state();
-
+	// IXT
+	// print cvar and ncomp here
     // Update cell variables
     {
         int icomp = 0;
@@ -203,6 +230,8 @@ void TiogaInterface::update_solution()
         }
     }
 
+	// IXT
+	// print cvar and ncomp here
     // Update nodal variables
     {
         int icomp = 0;
