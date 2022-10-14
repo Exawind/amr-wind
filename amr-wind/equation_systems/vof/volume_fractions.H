@@ -203,7 +203,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void mixed_youngs_central_normal(
         t0 = t2;
     }
 
-    if (amrex::Math::abs(m[cn][cn]) > t0) {
+    if (amrex::Math::abs(m[cn][cn]) > t0 && t0 > 0.0) {
+        // second t0 condition is to ensure nonzero normal magnitude
         cn = 3;
     }
 
@@ -346,7 +347,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real cut_volume(
     // amrex::Real bm = amrex::min(b12, b3);
     // amrex::Real pr = amrex::max(6.0 * m1 * m2 * m3, const_tiny);
 
-    // Compute volume fraction using Aoki Kawano (Computer & Fluids 2016) method
+    // Compute volume fraction using PLIC from Scardovelli & Zaleski (JCP 2000),
+    // adapted from code in paper by Akio Kawano (Computer & Fluids 2016)
     amrex::Real vm1 = b1;
     amrex::Real vm3 = b3;
     amrex::Real vm2 = b2;
