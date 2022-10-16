@@ -62,15 +62,23 @@ protected:
 
         // Get string version of direction
         std::string sdir = "d";
+        std::string odir0 = "d";
+        std::string odir1 = "d";
         switch (dir) {
         case 0:
             sdir = "x";
+            odir0 = "y";
+            odir1 = "z";
             break;
         case 1:
             sdir = "y";
+            odir0 = "x";
+            odir1 = "z";
             break;
         case 2:
             sdir = "z";
+            odir0 = "x";
+            odir1 = "y";
             break;
         }
 
@@ -108,8 +116,7 @@ protected:
         populate_parameters();
         {
             amrex::ParmParse pp("geometry");
-            amrex::Vector<int> periodic{
-                {dir == 0 ? 0 : 1, dir == 1 ? 0 : 1, dir == 2 ? 0 : 1}};
+            amrex::Vector<int> periodic{{0, 0, 0}};
             pp.addarr("is_periodic", periodic);
         }
         {
@@ -135,6 +142,22 @@ protected:
                 pp.addarr(
                     "velocity", amrex::Vector<amrex::Real>{0.0, 0.0, 0.0});
             }
+        }
+        {
+            amrex::ParmParse pp(odir0 + "lo");
+            pp.add("type", (std::string) "slip_wall");
+        }
+        {
+            amrex::ParmParse pp(odir0 + "hi");
+            pp.add("type", (std::string) "slip_wall");
+        }
+        {
+            amrex::ParmParse pp(odir1 + "lo");
+            pp.add("type", (std::string) "slip_wall");
+        }
+        {
+            amrex::ParmParse pp(odir1 + "hi");
+            pp.add("type", (std::string) "slip_wall");
         }
 
         initialize_mesh();
