@@ -11,7 +11,6 @@
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/equation_systems/BCOps.H"
 
-
 namespace amr_wind {
 namespace ocean_waves {
 
@@ -75,8 +74,10 @@ void ReadHOSFileLev(
     HOS_zmax = std::stof(tmp);
 
     // Modify Lx, Ly to account for node - cell difference
-    /*HOS_Lx *= (((amrex::Real)HOS_nx) / (amrex::Real)(HOS_nx - std::pow(2,lev)));
-    HOS_Ly *= (((amrex::Real)HOS_ny) / (amrex::Real)(HOS_ny - std::pow(2,lev)));*/
+    /*HOS_Lx *= (((amrex::Real)HOS_nx) / (amrex::Real)(HOS_nx -
+    std::pow(2,lev)));
+    HOS_Ly *= (((amrex::Real)HOS_ny) / (amrex::Real)(HOS_ny -
+    std::pow(2,lev)));*/
 
     // Allocate arrays for storage
     eta.resize(HOS_nx * HOS_ny);
@@ -212,9 +213,9 @@ struct InitDataOp<HOSWaves>
                         amrex::Real z = problo[2] + (k + 0.5) * dx[2];
                         // Adjust x,y for periodicity of HOS domain
                         if (x > HOS_Lx) x -= HOS_Lx;
-                        if (x < 0.0   ) x += HOS_Lx;
+                        if (x < 0.0) x += HOS_Lx;
                         if (y > HOS_Ly) y -= HOS_Ly;
-                        if (y < 0.0   ) y += HOS_Ly;
+                        if (y < 0.0) y += HOS_Ly;
                         // Determine lateral indices for interpolation
                         // It's best to have the grids line up directly
                         int ii1 = 0;
@@ -240,13 +241,13 @@ struct InitDataOp<HOSWaves>
                         // Modify indices to avoid going out of bounds,
                         // according to periodicity (assumed about HOS data)
 
-                        if (ii  < 0) ii  += HOS_nx;
+                        if (ii < 0) ii += HOS_nx;
                         if (ii1 < 0) ii1 += HOS_nx;
-                        if (jj  < 0) jj  += HOS_ny;
+                        if (jj < 0) jj += HOS_ny;
                         if (jj1 < 0) jj1 += HOS_ny;
-                        if (ii  >= HOS_nx) ii  -= HOS_nx;
+                        if (ii >= HOS_nx) ii -= HOS_nx;
                         if (ii1 >= HOS_nx) ii1 -= HOS_nx;
-                        if (jj  >= HOS_ny) jj  -= HOS_ny;
+                        if (jj >= HOS_ny) jj -= HOS_ny;
                         if (jj1 >= HOS_ny) jj1 -= HOS_ny;
 
                         // Interpolation factors
@@ -256,18 +257,13 @@ struct InitDataOp<HOSWaves>
                         amrex::Real wy_lo = 1.0 - wy_hi;
 
                         // Get data
-                        const amrex::Real eta_00 =
-                            eta[jj + ii * HOS_ny];
-                        const amrex::Real eta_01 =
-                            eta[jj1 + jj * HOS_ny];
-                        const amrex::Real eta_10 =
-                            eta[jj + ii1 * HOS_ny];
-                        const amrex::Real eta_11 =
-                            eta[jj1 + ii1 * HOS_ny];
-                        const amrex::Real eta_ = wx_lo * wy_lo * eta_00 +
-                                                 wx_lo * wy_hi * eta_01 +
-                                                 wx_hi * wy_lo * eta_10 +
-                                                 wx_hi * wy_hi * eta_11;
+                        const amrex::Real eta_00 = eta[jj + ii * HOS_ny];
+                        const amrex::Real eta_01 = eta[jj1 + jj * HOS_ny];
+                        const amrex::Real eta_10 = eta[jj + ii1 * HOS_ny];
+                        const amrex::Real eta_11 = eta[jj1 + ii1 * HOS_ny];
+                        const amrex::Real eta_ =
+                            wx_lo * wy_lo * eta_00 + wx_lo * wy_hi * eta_01 +
+                            wx_hi * wy_lo * eta_10 + wx_hi * wy_hi * eta_11;
 
                         phi(i, j, k) = eta_ + zsl - z;
 
@@ -289,8 +285,7 @@ struct InitDataOp<HOSWaves>
                         } else {
                             // Determine vertical indices
                             int kk = 0;
-                            amrex::Real HOS_z =
-                                HOS_zmin + HOS_dz * (kk + 0.5);
+                            amrex::Real HOS_z = HOS_zmin + HOS_dz * (kk + 0.5);
                             while (HOS_z < z) {
                                 ++kk;
                                 HOS_z = HOS_zmin + HOS_dz * (kk + 0.5);
@@ -298,7 +293,7 @@ struct InitDataOp<HOSWaves>
                             // Shift indices left
                             kk = kk - 1;
                             // Modify indices to avoid going out of bounds
-                            kk = amrex::max(0,amrex::min(HOS_nz-2,kk));
+                            kk = amrex::max(0, amrex::min(HOS_nz - 2, kk));
                             // Reset location
                             HOS_z = HOS_zmin + HOS_dz * (kk + 0.5);
                             // Interpolation factors
@@ -309,45 +304,39 @@ struct InitDataOp<HOSWaves>
                             const int i000 = (jj + ii * HOS_ny) * HOS_nz + kk;
                             const int i001 =
                                 (jj + ii * HOS_ny) * HOS_nz + kk + 1;
-                            const int i010 =
-                                (jj1 + ii * HOS_ny) * HOS_nz + kk;
-                            const int i100 =
-                                (jj + ii1 * HOS_ny) * HOS_nz + kk;
+                            const int i010 = (jj1 + ii * HOS_ny) * HOS_nz + kk;
+                            const int i100 = (jj + ii1 * HOS_ny) * HOS_nz + kk;
                             const int i011 =
                                 (jj1 + ii * HOS_ny) * HOS_nz + kk + 1;
                             const int i101 =
                                 (jj + ii1 * HOS_ny) * HOS_nz + kk + 1;
-                            const int i110 =
-                                (jj1 + ii1 * HOS_ny) * HOS_nz + kk;
+                            const int i110 = (jj1 + ii1 * HOS_ny) * HOS_nz + kk;
                             const int i111 =
                                 (jj1 + ii1 * HOS_ny) * HOS_nz + kk + 1;
-                            vel(i, j, k, 0) =
-                                wx_lo * wy_lo * wz_lo * u[i000] +
-                                wx_lo * wy_lo * wz_hi * u[i001] +
-                                wx_lo * wy_hi * wz_lo * u[i010] +
-                                wx_lo * wy_hi * wz_hi * u[i011] +
-                                wx_hi * wy_lo * wz_lo * u[i100] +
-                                wx_hi * wy_lo * wz_hi * u[i101] +
-                                wx_hi * wy_hi * wz_lo * u[i110] +
-                                wx_hi * wy_hi * wz_hi * u[i111];
-                            vel(i, j, k, 1) =
-                                wx_lo * wy_lo * wz_lo * v[i000] +
-                                wx_lo * wy_lo * wz_hi * v[i001] +
-                                wx_lo * wy_hi * wz_lo * v[i010] +
-                                wx_lo * wy_hi * wz_hi * v[i011] +
-                                wx_hi * wy_lo * wz_lo * v[i100] +
-                                wx_hi * wy_lo * wz_hi * v[i101] +
-                                wx_hi * wy_hi * wz_lo * v[i110] +
-                                wx_hi * wy_hi * wz_hi * v[i111];
-                            vel(i, j, k, 2) =
-                                wx_lo * wy_lo * wz_lo * w[i000] +
-                                wx_lo * wy_lo * wz_hi * w[i001] +
-                                wx_lo * wy_hi * wz_lo * w[i010] +
-                                wx_lo * wy_hi * wz_hi * w[i011] +
-                                wx_hi * wy_lo * wz_lo * w[i100] +
-                                wx_hi * wy_lo * wz_hi * w[i101] +
-                                wx_hi * wy_hi * wz_lo * w[i110] +
-                                wx_hi * wy_hi * wz_hi * w[i111];
+                            vel(i, j, k, 0) = wx_lo * wy_lo * wz_lo * u[i000] +
+                                              wx_lo * wy_lo * wz_hi * u[i001] +
+                                              wx_lo * wy_hi * wz_lo * u[i010] +
+                                              wx_lo * wy_hi * wz_hi * u[i011] +
+                                              wx_hi * wy_lo * wz_lo * u[i100] +
+                                              wx_hi * wy_lo * wz_hi * u[i101] +
+                                              wx_hi * wy_hi * wz_lo * u[i110] +
+                                              wx_hi * wy_hi * wz_hi * u[i111];
+                            vel(i, j, k, 1) = wx_lo * wy_lo * wz_lo * v[i000] +
+                                              wx_lo * wy_lo * wz_hi * v[i001] +
+                                              wx_lo * wy_hi * wz_lo * v[i010] +
+                                              wx_lo * wy_hi * wz_hi * v[i011] +
+                                              wx_hi * wy_lo * wz_lo * v[i100] +
+                                              wx_hi * wy_lo * wz_hi * v[i101] +
+                                              wx_hi * wy_hi * wz_lo * v[i110] +
+                                              wx_hi * wy_hi * wz_hi * v[i111];
+                            vel(i, j, k, 2) = wx_lo * wy_lo * wz_lo * w[i000] +
+                                              wx_lo * wy_lo * wz_hi * w[i001] +
+                                              wx_lo * wy_hi * wz_lo * w[i010] +
+                                              wx_lo * wy_hi * wz_hi * w[i011] +
+                                              wx_hi * wy_lo * wz_lo * w[i100] +
+                                              wx_hi * wy_lo * wz_hi * w[i101] +
+                                              wx_hi * wy_hi * wz_lo * w[i110] +
+                                              wx_hi * wy_hi * wz_hi * w[i111];
 
                             // Set velocity to zero if no liquid present
                             if (phi(i, j, k) + 0.5 * dx[2] < 0.0) {
@@ -365,7 +354,8 @@ struct InitDataOp<HOSWaves>
                 const amrex::Real eps = 2. * std::cbrt(dx[0] * dx[1] * dx[2]);
                 amrex::ParallelFor(
                     gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        multiphase::levelset_to_vof(i, j, k, eps, phi, volfrac);
+                        volfrac(i, j, k) =
+                            multiphase::levelset_to_vof(i, j, k, eps, phi);
                         rho(i, j, k) = rho1 * volfrac(i, j, k) +
                                        rho2 * (1.0 - volfrac(i, j, k));
                     });
@@ -467,9 +457,9 @@ struct UpdateRelaxZonesOp<HOSWaves>
                             amrex::Real z = problo[2] + (k + 0.5) * dx[2];
                             // Adjust x,y for periodicity of HOS domain
                             if (x > HOS_Lx) x -= HOS_Lx;
-                            if (x < 0.0   ) x += HOS_Lx;
+                            if (x < 0.0) x += HOS_Lx;
                             if (y > HOS_Ly) y -= HOS_Ly;
-                            if (y < 0.0   ) y += HOS_Ly;
+                            if (y < 0.0) y += HOS_Ly;
                             // Determine lateral indices for interpolation
                             // It's best to have the grids line up directly
                             int ii1 = 0;
@@ -613,7 +603,8 @@ struct UpdateRelaxZonesOp<HOSWaves>
                         });
                 }
             }
-            // Average down to get fine information on coarse grid where possible
+            // Average down to get fine information on coarse grid where
+            // possible
             for (int lev = nlevels - 1; lev > 0; --lev) {
                 amrex::average_down(
                     hos_velocity(lev), hos_velocity(lev - 1), 0, AMREX_SPACEDIM,

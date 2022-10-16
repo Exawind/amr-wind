@@ -62,9 +62,9 @@ struct InitDataOp<StokesWaves>
                 auto rho = density(lev).array(mfi);
 
                 const amrex::Real zsl = wdata.zsl;
-                const auto& vbx = mfi.validbox();
+                const auto& gbx3 = mfi.growntilebox(3);
                 amrex::ParallelFor(
-                    vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    gbx3, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
                         phi(i, j, k) = zsl - z;
                         vel(i, j, k, 0) = 0.0;
@@ -73,9 +73,11 @@ struct InitDataOp<StokesWaves>
                     });
                 // Translate levelset to vof
                 const amrex::Real eps = 2. * std::cbrt(dx[0] * dx[1] * dx[2]);
+                const auto& gbx2 = mfi.growntilebox(2);
                 amrex::ParallelFor(
-                    vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        multiphase::levelset_to_vof(i, j, k, eps, phi, volfrac);
+                    gbx2, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        volfrac(i, j, k) =
+                            multiphase::levelset_to_vof(i, j, k, eps, phi);
                         // Make sure that density is updated before entering the
                         // solution
                         rho(i, j, k) = rho1 * volfrac(i, j, k) +
