@@ -56,13 +56,14 @@ void apply_relaxation_zones(CFDSim& sim, RelaxZonesBaseData& wdata)
         const auto& dx = geom[lev].CellSizeArray();
 
         for (amrex::MFIter mfi(ls); mfi.isValid(); ++mfi) {
-            const auto& gbx = mfi.growntilebox(1);
+            const auto& gbx = mfi.growntilebox(2);
             const amrex::Array4<amrex::Real>& phi = ls.array(mfi);
             const amrex::Array4<amrex::Real>& volfrac = target_vof.array(mfi);
             const amrex::Real eps = 2. * std::cbrt(dx[0] * dx[1] * dx[2]);
             amrex::ParallelFor(
                 gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    multiphase::levelset_to_vof(i, j, k, eps, phi, volfrac);
+                    volfrac(i, j, k) =
+                        multiphase::levelset_to_vof(i, j, k, eps, phi);
                 });
         }
     }
@@ -79,7 +80,7 @@ void apply_relaxation_zones(CFDSim& sim, RelaxZonesBaseData& wdata)
 
     for (int lev = 0; lev < nlevels; ++lev) {
         for (amrex::MFIter mfi(vof(lev)); mfi.isValid(); ++mfi) {
-            const auto& gbx = mfi.growntilebox(1);
+            const auto& gbx = mfi.growntilebox(2);
             const auto& dx = geom[lev].CellSizeArray();
             const auto& problo = geom[lev].ProbLoArray();
             const auto& probhi = geom[lev].ProbHiArray();

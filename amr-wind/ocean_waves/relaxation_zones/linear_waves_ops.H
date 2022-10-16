@@ -60,10 +60,10 @@ struct InitDataOp<LinearWaves>
                 auto rho = density(lev).array(mfi);
 
                 const amrex::Real zsl = wdata.zsl;
-                const auto& gbx = mfi.growntilebox(1);
+                const auto& gbx3 = mfi.growntilebox(3);
 
                 amrex::ParallelFor(
-                    gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    gbx3, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
                         phi(i, j, k) = zsl - z;
                         vel(i, j, k, 0) = 0.0;
@@ -73,10 +73,11 @@ struct InitDataOp<LinearWaves>
 
                 // Translate levelset to vof
                 const amrex::Real eps = 2. * std::cbrt(dx[0] * dx[1] * dx[2]);
-                const auto& vbx = mfi.validbox();
+                const auto& gbx2 = mfi.growntilebox(2);
                 amrex::ParallelFor(
-                    vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        multiphase::levelset_to_vof(i, j, k, eps, phi, volfrac);
+                    gbx2, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        volfrac(i, j, k) =
+                            multiphase::levelset_to_vof(i, j, k, eps, phi);
                         // Make sure that density is updated before entering the
                         // solution
                         rho(i, j, k) = rho1 * volfrac(i, j, k) +
@@ -118,41 +119,43 @@ struct UpdateRelaxZonesOp<LinearWaves>
                 const amrex::Real wavelength = wdata.wave_length;
                 const amrex::Real waterdepth = wdata.water_depth;
 
-                const auto& gbx = mfi.growntilebox(1);
+                const auto& gbx = mfi.growntilebox(3);
                 amrex::ParallelFor(
                     gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::Real x = amrex::min(
-                            amrex::max(
-                                problo[0] + (i + 0.5) * dx[0], problo[0]),
-                            probhi[0]);
-                        const amrex::Real z = amrex::min(
-                            amrex::max(
-                                problo[2] + (k + 0.5) * dx[2], problo[2]),
-                            probhi[2]);
+                        const amrex::Real xc = problo[0] + (i + 0.5) * dx[0];
+                        const amrex::Real x =
+                            amrex::min(amrex::max(xc, problo[0]), probhi[0]);
+
+                        const amrex::Real zc = problo[2] + (k + 0.5) * dx[2];
+                        const amrex::Real z =
+                            amrex::min(amrex::max(z, problo[2]), probhi[2]);
 
                         const amrex::Real wavenumber = 2. * M_PI / wavelength;
                         const amrex::Real omega = std::pow(
                             wavenumber * 9.81 *
                                 std::tanh(wavenumber * waterdepth),
                             0.5);
-                        const amrex::Real phase = wavenumber * x - omega * time;
+                        const amrex::Real phase =
+                            wavenumber * xc - omega * time;
+                        const amrex::Real phase_vel =
+                            wavenumber * x - omega * time;
                         const amrex::Real eta =
                             waveheight / 2.0 * std::cos(phase);
 
-                        phi(i, j, k) = eta - z;
+                        phi(i, j, k) = eta - zc;
 
                         if (phi(i, j, k) >= 0) {
                             vel(i, j, k, 0) =
                                 omega * waveheight / 2.0 *
-                                std::cosh(wavenumber * (z + waterdepth)) /
+                                std::cosh(wavenumber * (zvel + waterdepth)) /
                                 std::sinh(wavenumber * waterdepth) *
-                                std::cos(phase);
+                                std::cos(phase_vel);
                             vel(i, j, k, 1) = 0.0;
                             vel(i, j, k, 2) =
                                 omega * waveheight / 2.0 *
-                                std::sinh(wavenumber * (z + waterdepth)) /
+                                std::sinh(wavenumber * (zvel + waterdepth)) /
                                 std::sinh(wavenumber * waterdepth) *
-                                std::sin(phase);
+                                std::sin(phase_vel);
                         }
                     });
             }
