@@ -150,12 +150,14 @@ void incflo::ComputeDt(bool explicit_diffusion)
 
         if (m_time.use_force_cfl()) {
             auto const& vf_arr = vel_force.const_arrays();
+            auto const& rho_arr = rho.const_arrays();
             force_lev += amrex::ParReduce(
                 TypeList<ReduceOpMax>{}, TypeList<Real>{}, vel_force,
                 IntVect(0),
                 [=] AMREX_GPU_HOST_DEVICE(
                     int box_no, int i, int j, int k) -> GpuTuple<Real> {
                     auto const& vf_bx = vf_arr[box_no];
+                    auto const& rho_bx = rho_arr[box_no];
 
                     amrex::Real fac_x =
                         mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0;
@@ -165,9 +167,12 @@ void incflo::ComputeDt(bool explicit_diffusion)
                         mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
 
                     return amrex::max(
-                        amrex::Math::abs(vf_bx(i, j, k, 0)) * dxinv[0] / fac_x,
-                        amrex::Math::abs(vf_bx(i, j, k, 1)) * dxinv[1] / fac_y,
-                        amrex::Math::abs(vf_bx(i, j, k, 2)) * dxinv[2] / fac_z,
+                        amrex::Math::abs(vf_bx(i, j, k, 0)) * dxinv[0] / fac_x /
+                            rho_bx(i, j, k),
+                        amrex::Math::abs(vf_bx(i, j, k, 1)) * dxinv[1] / fac_y /
+                            rho_bx(i, j, k),
+                        amrex::Math::abs(vf_bx(i, j, k, 2)) * dxinv[2] / fac_z /
+                            rho_bx(i, j, k),
                         -1.0);
                 });
         }

@@ -325,6 +325,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
     //    and using the half-time density
     // *************************************************************************************
     icns().compute_source_term(amr_wind::FieldState::New);
+    icns().compute_diffusion_term(amr_wind::FieldState::New);
 
     // *************************************************************************************
     // Evaluate right hand side and store in velocity
@@ -349,7 +350,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
     //
     // ************************************************************************************
     ApplyProjection(
-        (density_nph).vec_const_ptrs(), new_time, m_time.deltaT(),
+        (density_new).vec_const_ptrs(), new_time, m_time.deltaT(),
         incremental_projection);
 }
 
