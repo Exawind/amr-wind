@@ -538,8 +538,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
                 dof_field(lev).boxArray(), dof_field(lev).DistributionMap(),
                 ICNS::ndim, fvm::MOL::nghost_state);
             amrex::MultiFab::Copy(
-                q, dof_field(lev), 0, 0, ICNS::ndim,
-                fvm::MOL::nghost_state);
+                q, dof_field(lev), 0, 0, ICNS::ndim, fvm::MOL::nghost_state);
             // Calculate fluxes using momentum directly
             amrex::MultiFab::Multiply(
                 q, rho(lev), 0, 0, 1, fvm::MOL::nghost_state);
