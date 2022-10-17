@@ -525,6 +525,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
         // cppcheck-suppress constVariable
         auto& conv_term = fields.conv_term.state(fstate);
         const auto& dof_field = fields.field.state(fstate);
+        const auto& rho = repo.get_field("density").state(fstate);
 
         //
         // Advect velocity
@@ -532,6 +533,21 @@ struct AdvectionOp<ICNS, fvm::MOL>
 
         int nmaxcomp = AMREX_SPACEDIM;
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+            // form multifab for transport variable and source term
+            amrex::MultiFab q(
+                dof_field(lev).boxArray(), dof_field(lev).DistributionMap(),
+                ICNS::ndim, fvm::MOL::nghost_state);
+            amrex::MultiFab::Copy(
+                q, dof_field(lev), 0, 0, ICNS::ndim,
+                fvm::MOL::nghost_state);
+            // Calculate fluxes using momentum directly
+            amrex::MultiFab::Multiply(
+                q, rho(lev), 0, 0, 1, fvm::MOL::nghost_state);
+            amrex::MultiFab::Multiply(
+                q, rho(lev), 0, 1, 1, fvm::MOL::nghost_state);
+            amrex::MultiFab::Multiply(
+                q, rho(lev), 0, 2, 1, fvm::MOL::nghost_state);
+
             amrex::MFItInfo mfi_info;
             // if (amrex::Gpu::notInLaunchRegion())
             // mfi_info.EnableTiling(amrex::IntVect(1024,16,16)).SetDynamic(true);
@@ -557,8 +573,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
                 amrex::Array4<amrex::Real> fz = tmpfab.array(nmaxcomp * 2);
 
                 mol::compute_convective_fluxes(
-                    lev, bx, AMREX_SPACEDIM, fx, fy, fz,
-                    dof_field(lev).const_array(mfi),
+                    lev, bx, AMREX_SPACEDIM, fx, fy, fz, q.const_array(mfi),
                     u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
                     w_mac(lev).const_array(mfi), dof_field.bcrec().data(),
                     dof_field.bcrec_device().data(), geom);

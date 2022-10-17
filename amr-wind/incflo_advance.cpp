@@ -565,7 +565,7 @@ void incflo::ApplyCorrector()
     // *************************************************************************************
     bool incremental = false;
     ApplyProjection(
-        (density_nph).vec_const_ptrs(), new_time, m_time.deltaT(), incremental);
+        (density_new).vec_const_ptrs(), new_time, m_time.deltaT(), incremental);
 }
 
 void incflo::prescribe_advance()
