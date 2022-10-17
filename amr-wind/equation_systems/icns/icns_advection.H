@@ -35,9 +35,6 @@ public:
         amrex::Real /*ovst_fac*/,
         int /*lev*/) noexcept;
 
-    amrex::Real density0() const { return m_rho_0; }
-    bool vardens() const { return m_variable_density; }
-
 private:
     void init_projector(const FaceFabPtrVec& /*beta*/) noexcept;
     void init_projector(const amrex::Real /*beta*/) noexcept;
@@ -338,20 +335,19 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                 fq, src_term(lev), 0, 0, ICNS::ndim, fvm::Godunov::nghost_src);
 
             // For variable density, calculate fluxes using momentum directly
-            if (m_macproj_op.vardens()) { // and not multiphase
-                amrex::MultiFab::Multiply(
-                    q, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_state);
-                amrex::MultiFab::Multiply(
-                    q, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_state);
-                amrex::MultiFab::Multiply(
-                    q, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_state);
-                amrex::MultiFab::Multiply(
-                    fq, rho_nph(lev), 0, 0, 1, fvm::Godunov::nghost_src);
-                amrex::MultiFab::Multiply(
-                    fq, rho_nph(lev), 0, 1, 1, fvm::Godunov::nghost_src);
-                amrex::MultiFab::Multiply(
-                    fq, rho_nph(lev), 0, 2, 1, fvm::Godunov::nghost_src);
-            }
+            // * will not be performed with multiphase in future PR *
+            amrex::MultiFab::Multiply(
+                q, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_state);
+            amrex::MultiFab::Multiply(
+                q, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_state);
+            amrex::MultiFab::Multiply(
+                q, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_state);
+            amrex::MultiFab::Multiply(
+                fq, rho_nph(lev), 0, 0, 1, fvm::Godunov::nghost_src);
+            amrex::MultiFab::Multiply(
+                fq, rho_nph(lev), 0, 1, 1, fvm::Godunov::nghost_src);
+            amrex::MultiFab::Multiply(
+                fq, rho_nph(lev), 0, 2, 1, fvm::Godunov::nghost_src);
 
             amrex::MFItInfo mfi_info;
             if (amrex::Gpu::notInLaunchRegion()) {
@@ -416,17 +412,6 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                 }
 
                 amrex::Gpu::streamSynchronize();
-            }
-
-            // Get density at faces according to current scheme and multiply
-            if (!m_macproj_op.vardens()) {
-                // Constant density - multiply by a constant
-                (*flux_x)(lev).mult(m_macproj_op.density0());
-                (*flux_y)(lev).mult(m_macproj_op.density0());
-                (*flux_z)(lev).mult(m_macproj_op.density0());
-                /*} else if (condition) {
-                    // Multiphase - multiply and add with flux volumes */
-                // Variable density single-phase - fluxes already have density
             }
         }
 
