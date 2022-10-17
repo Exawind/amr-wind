@@ -49,7 +49,7 @@ MacProjOp::MacProjOp(
     , m_mesh_mapping(mesh_mapping)
 {
     amrex::ParmParse pp("incflo");
-    pp.query("rho_0", m_rho_0);
+    pp.query("density", m_rho_0);
 }
 
 void MacProjOp::init_projector(const MacProjOp::FaceFabPtrVec& beta) noexcept
