@@ -131,7 +131,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fluxes_bc_save(
         }
         if (bchi == BC::no_slip_wall || bchi == BC::slip_wall ||
             bchi == BC::wall_model) {
-            if (i == domhi) {
+            if (i == domhi + 1) {
                 vofL(domhi + 1, j, k) = 0.0;
                 vofR(domhi, j, k) = 0.0;
             }
@@ -152,7 +152,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fluxes_bc_save(
         }
         if (bchi == BC::no_slip_wall || bchi == BC::slip_wall ||
             bchi == BC::wall_model) {
-            if (j == domhi) {
+            if (j == domhi + 1) {
                 vofL(i, domhi + 1, k) = 0.0;
                 vofR(i, domhi, k) = 0.0;
             }
@@ -169,7 +169,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fluxes_bc_save(
         }
         if (bchi == BC::no_slip_wall || bchi == BC::slip_wall ||
             bchi == BC::wall_model) {
-            if (k == domhi) {
+            if (k == domhi + 1) {
                 vofL(i, j, domhi + 1) = 0.0;
                 vofR(i, j, domhi) = 0.0;
             }
