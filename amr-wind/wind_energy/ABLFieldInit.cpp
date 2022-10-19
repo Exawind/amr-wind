@@ -4,6 +4,7 @@
 #include "amr-wind/utilities/trig_ops.H"
 #include "AMReX_Gpu.H"
 #include "AMReX_ParmParse.H"
+#include "amr-wind/utilities/ncutils/nc_interface.H"
 
 namespace amr_wind {
 
@@ -32,6 +33,9 @@ ABLFieldInit::ABLFieldInit()
     pp_abl.query("theta_amplitude", m_deltaT);
 
     pp_abl.query("init_tke", m_tke_init);
+
+    // Use input from netcdf file
+    pp_abl.query("initial_condition_input_file", m_ic_input);
 
     // TODO: Modify this to accept velocity as a function of height
     amrex::ParmParse pp_incflo("incflo");
@@ -126,6 +130,82 @@ void ABLFieldInit::operator()(
             velocity(i, j, k, 1) += vfac * damp * z * std::cos(bval * xl);
         }
     });
+
+#ifdef AMR_WIND_USE_NETCDF
+    // Load the netcdf file with data if specified in the inputs
+    if (!m_ic_input.empty()) {
+        auto ncf = ncutils::NCFile::open(m_ic_input, NC_NOWRITE);
+
+        // The dimensions in x, y and z
+        //        auto nx = ncf.dim("x").len();
+        //        auto ny = ncf.dim("y").len();
+        //        auto nz = ncf.dim("z").len();
+        // auto nx = ncf.var("nx")(0);
+        // auto ny = ncf.var("ny")(0);
+        // auto nz = ncf.var("nz")(0);
+
+        // Ensure that the input dimensions match the coarsest grid size
+        const auto& domain = geom.Domain();
+
+        // std::cout << nx << std::endl;
+        // std::cout << ny << std::endl;
+        // std::cout << nz << std::endl;
+        std::cout << domain.bigEnd(0) - domain.smallEnd(0) << std::endl;
+        // The indices that determine the start and end points of the i, j, k
+        // arrays
+        auto i0 = domain.smallEnd(0);
+        auto i1 = domain.bigEnd(0);
+        auto j0 = domain.smallEnd(1);
+        auto j1 = domain.bigEnd(1);
+        auto k0 = domain.smallEnd(2);
+        auto k1 = domain.bigEnd(2);
+
+        //        AMREX_ALWAYS_ASSERT(nx == domain.bigEnd(0) -
+        //        domain.smallEnd(0)); AMREX_ALWAYS_ASSERT(ny ==
+        //        domain.bigEnd(1) - domain.smallEnd(1)); AMREX_ALWAYS_ASSERT(nz
+        //        == domain.bigEnd(2) - domain.smallEnd(2));
+
+        // The grid spacing in x, y and z
+        // Expected to be a float
+        //   auto dx = ncf.var("dx");
+        //   auto dy = ncf.var("dy");
+        //   auto dz = ncf.var("dz");
+
+        // The x, y and z velocity components (u, v, w)
+        auto uvel = ncf.var("uvel");
+        auto vvel = ncf.var("vvel");
+        // auto wvel = ncf.var("wvel");
+
+        // Loop through all points in the domain and set velocities to values
+        // from
+        //   the input file
+        //        amrex::ParallelFor(
+        //            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+        // velocity(i, j, k, 0)= 1;
+
+        std::cout << "Error NOT Here 0" << std::endl;
+        std::vector<size_t> start{
+            {static_cast<size_t>(i0), static_cast<size_t>(j0),
+             static_cast<size_t>(k0)}};
+        std::cout << "Error NOT Here 1" << std::endl;
+        std::vector<size_t> count{
+            {static_cast<size_t>(i1 - i0), static_cast<size_t>(j1 - j0),
+             static_cast<size_t>(k1 - k0)}};
+        std::cout << "Error NOT Here 2" << std::endl;
+        // Read the spanwise components u and v
+        uvel.get(&velocity(i0, j0, k0, 0), start, count);
+        std::cout << "Error NOT Here 3" << std::endl;
+        vvel.get(&velocity(i0, j0, k0, 1), start, count);
+        std::cout << "Error NOT Here 4" << std::endl;
+        // Set the wall normal component to zero
+        // velocity(i, j, k, 2) = 0;
+        std::cout << "Error NOT Here 5" << std::endl;
+        ncf.close();
+        std::cout << "Error NOT Here 6" << std::endl;
+        //            });
+    }
+// Make sure to call fill patch *******
+#endif
 }
 
 void ABLFieldInit::perturb_temperature(
