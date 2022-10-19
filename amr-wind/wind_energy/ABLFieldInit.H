@@ -105,6 +105,9 @@ private:
 
     //! Perturb temperature field with random fluctuations
     bool m_perturb_theta{false};
+
+    //! Input file with initial condition from Machine Learning
+    std::string m_ic_input{""};
 };
 
 } // namespace amr_wind
