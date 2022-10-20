@@ -27,14 +27,12 @@ static void hybrid_fluxes(
     // Get geometry
     const auto& geom = repo.mesh().Geom();
     // Get advected alpha fields
-    const auto& advalpha_x = repo.get_field("advalpha_x");
-    const auto& advalpha_y = repo.get_field("advalpha_y");
-    const auto& advalpha_z = repo.get_field("advalpha_z");
+    // At this point in the solve, they have been converted to advected density
+    const auto& advrho_x = repo.get_field("advalpha_x");
+    const auto& advrho_y = repo.get_field("advalpha_y");
+    const auto& advrho_z = repo.get_field("advalpha_z");
     // Get VOF
     const auto& vof = repo.get_field("vof");
-    // Get phase densities (how?)
-    amrex::Real rho1 = 1000.0;
-    amrex::Real rho2 = 1.0;
 
     // Create scratch arrays for local flux storage
     auto ftmp_x =
@@ -103,9 +101,10 @@ static void hybrid_fluxes(
             auto Fw_x = (*ftmp_x)(lev).array(mfi);
             auto Fw_y = (*ftmp_y)(lev).array(mfi);
             auto Fw_z = (*ftmp_z)(lev).array(mfi);
-            auto aa_x = advalpha_x(lev).const_array(mfi);
-            auto aa_y = advalpha_y(lev).const_array(mfi);
-            auto aa_z = advalpha_z(lev).const_array(mfi);
+            // At this point in the solve, these are advected
+            auto ar_x = advrho_x(lev).const_array(mfi);
+            auto ar_y = advrho_y(lev).const_array(mfi);
+            auto ar_z = advrho_z(lev).const_array(mfi);
             // Compute momentum flux quantities (multiplied by face velocity)
             godunov::compute_fluxes(
                 lev, bx, ncomp, Fw_x, Fw_y, Fw_z, q.const_array(mfi),
@@ -167,10 +166,9 @@ static void hybrid_fluxes(
                         bool vf_nb =
                             multiphase::interface_band(i - 1, j, k, volfrac);
                         if (vf_i || vf_nb) {
-                            amrex::Real rhof = rho1 * aa_x(i, j, k) +
-                                               rho2 * (1.0 - aa_x(i, j, k));
                             for (int n = 0; n < ncomp; ++n) {
-                                F_x(i, j, k, n) *= rhof / Fw_x(i, j, k, 0);
+                                F_x(i, j, k, n) *=
+                                    ar_x(i, j, k) / Fw_x(i, j, k, 0);
                             }
                         }
                     }
@@ -178,10 +176,9 @@ static void hybrid_fluxes(
                         bool vf_nb =
                             multiphase::interface_band(i, j - 1, k, volfrac);
                         if (vf_i || vf_nb) {
-                            amrex::Real rhof = rho1 * aa_y(i, j, k) +
-                                               rho2 * (1.0 - aa_y(i, j, k));
                             for (int n = 0; n < ncomp; ++n) {
-                                F_y(i, j, k, n) *= rhof / Fw_y(i, j, k, 0);
+                                F_y(i, j, k, n) *=
+                                    ar_y(i, j, k) / Fw_y(i, j, k, 0);
                             }
                         }
                     }
@@ -189,10 +186,9 @@ static void hybrid_fluxes(
                         bool vf_nb =
                             multiphase::interface_band(i, j, k - 1, volfrac);
                         if (vf_i || vf_nb) {
-                            amrex::Real rhof = rho1 * aa_z(i, j, k) +
-                                               rho2 * (1.0 - aa_z(i, j, k));
                             for (int n = 0; n < ncomp; ++n) {
-                                F_z(i, j, k, n) *= rhof / Fw_z(i, j, k, 0);
+                                F_z(i, j, k, n) *=
+                                    ar_z(i, j, k) / Fw_z(i, j, k, 0);
                             }
                         }
                     }
