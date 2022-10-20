@@ -4,6 +4,7 @@
 #include "amr-wind/equation_systems/AdvOp_Godunov.H"
 #include "amr-wind/equation_systems/AdvOp_MOL.H"
 #include "amr-wind/equation_systems/icns/icns.H"
+#include "amr-wind/equation_systems/vof/vof_momentum_flux.H"
 
 #include "AMReX_MultiFabUtil.H"
 #include "hydro_MacProjector.H"
@@ -334,8 +335,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             amrex::MultiFab::Copy(
                 fq, src_term(lev), 0, 0, ICNS::ndim, fvm::Godunov::nghost_src);
 
-            // For variable density, calculate fluxes using momentum directly
-            // * will not be performed with multiphase in future PR *
+            // Calculate fluxes using momentum directly
             amrex::MultiFab::Multiply(
                 q, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_state);
             amrex::MultiFab::Multiply(
@@ -415,6 +415,16 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
                 amrex::Gpu::streamSynchronize();
             }
+        }
+
+        // Multiphase flux operations
+        if (repo.field_exists("vof")) {
+            // Loop levels
+            multiphase::hybrid_fluxes(
+                repo, ICNS::ndim, iconserv, (*flux_x), (*flux_y), (*flux_z),
+                dof_field, src_term, rho_o, rho_nph, u_mac, v_mac, w_mac,
+                dof_field.bcrec_device().data(), rho_o.bcrec_device().data(),
+                dt, mflux_scheme);
         }
 
         amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> fluxes(
