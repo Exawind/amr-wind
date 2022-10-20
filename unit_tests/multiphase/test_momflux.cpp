@@ -201,7 +201,7 @@ protected:
             sdir = "z";
             break;
         }
-        const auto& advalpha_f = repo.get_field("advalpha_" + sdir);
+        const auto& advrho_f = repo.get_field("advalpha_" + sdir);
 
         // Get convective term
         /* auto& conv_term =
@@ -217,7 +217,7 @@ protected:
             const auto& um = umac(lev).array(mfi);
             const auto& vm = vmac(lev).array(mfi);
             const auto& wm = wmac(lev).array(mfi);
-            const auto& af = advalpha_f(lev).array(mfi);
+            const auto& rf = advrho_f(lev).array(mfi);
             // const auto& vel = velocity(lev).array(mfi);
             // const auto& dqdt = conv_term(lev).array(mfi);
 
@@ -252,12 +252,18 @@ protected:
                         // Test volume fractions at faces
                         if (x == 0.5) {
                             // Center face (coming from left cell)
-                            EXPECT_NEAR(af(i, j, k), 1.0, tol);
+                            amrex::Real advvof = 1.0;
+                            amrex::Real advrho =
+                                m_rho1 * advvof + m_rho2 * (1.0 - advvof);
+                            EXPECT_NEAR(rf(i, j, k), advrho, tol);
                         } else {
                             if (x == 0.0) {
                                 // Left face (coming from right cell, periodic
                                 // BC)
-                                EXPECT_NEAR(af(i, j, k), 0.0, tol);
+                                amrex::Real advvof = 0.0;
+                                amrex::Real advrho =
+                                    m_rho1 * advvof + m_rho2 * (1.0 - advvof);
+                                EXPECT_NEAR(rf(i, j, k), advrho, tol);
                             }
                         }
 

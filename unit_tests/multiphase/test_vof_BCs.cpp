@@ -290,10 +290,13 @@ protected:
                                 break;
                             }
                             // Check whether flux is nonzero
+                            amrex::Real advvof = 0.0;
+                            amrex::Real advrho =
+                                m_rho1 * advvof + m_rho2 * (1.0 - advvof);
                             if (nonzero_flux) {
-                                EXPECT_GT(af(i, j, k), 0.0);
+                                EXPECT_GT(af(i, j, k), advrho);
                             } else {
-                                EXPECT_EQ(af(i, j, k), 0.0);
+                                EXPECT_EQ(af(i, j, k), advrho);
                             }
                         }
                     }
