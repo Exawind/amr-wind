@@ -134,75 +134,65 @@ void ABLFieldInit::operator()(
 #ifdef AMR_WIND_USE_NETCDF
     // Load the netcdf file with data if specified in the inputs
     if (!m_ic_input.empty()) {
-        auto ncf = ncutils::NCFile::open(m_ic_input, NC_NOWRITE);
 
-        // The dimensions in x, y and z
-        //        auto nx = ncf.dim("x").len();
-        //        auto ny = ncf.dim("y").len();
-        //        auto nz = ncf.dim("z").len();
-        // auto nx = ncf.var("nx")(0);
-        // auto ny = ncf.var("ny")(0);
-        // auto nz = ncf.var("nz")(0);
+        // Open the netcdf input file
+        // This file should have the same dimensions as the simulation
+        auto ncf = ncutils::NCFile::open(m_ic_input, NC_NOWRITE);
 
         // Ensure that the input dimensions match the coarsest grid size
         const auto& domain = geom.Domain();
 
-        // std::cout << nx << std::endl;
-        // std::cout << ny << std::endl;
-        // std::cout << nz << std::endl;
-        std::cout << domain.bigEnd(0) - domain.smallEnd(0) << std::endl;
         // The indices that determine the start and end points of the i, j, k
-        // arrays
-        auto i0 = domain.smallEnd(0);
-        auto i1 = domain.bigEnd(0);
-        auto j0 = domain.smallEnd(1);
-        auto j1 = domain.bigEnd(1);
-        auto k0 = domain.smallEnd(2);
-        auto k1 = domain.bigEnd(2);
+        // arrays. The max and min are there to ensure that the points form
+        // ghost cells are not used
+        auto i0 = std::max(vbx.smallEnd(0), domain.smallEnd(0));
+        auto i1 = std::min(vbx.bigEnd(0), domain.bigEnd(0));
 
-        //        AMREX_ALWAYS_ASSERT(nx == domain.bigEnd(0) -
-        //        domain.smallEnd(0)); AMREX_ALWAYS_ASSERT(ny ==
-        //        domain.bigEnd(1) - domain.smallEnd(1)); AMREX_ALWAYS_ASSERT(nz
-        //        == domain.bigEnd(2) - domain.smallEnd(2));
+        auto j0 = std::max(vbx.smallEnd(1), domain.smallEnd(1));
+        auto j1 = std::min(vbx.bigEnd(1), domain.bigEnd(1));
 
-        // The grid spacing in x, y and z
-        // Expected to be a float
-        //   auto dx = ncf.var("dx");
-        //   auto dy = ncf.var("dy");
-        //   auto dz = ncf.var("dz");
-
+        auto k0 = std::max(vbx.smallEnd(2), domain.smallEnd(2));
+        auto k1 = std::min(vbx.bigEnd(2), domain.bigEnd(2));
+        // std::cout << "k vals" <<  k0 << " " << k1 << std::endl;
         // The x, y and z velocity components (u, v, w)
         auto uvel = ncf.var("uvel");
         auto vvel = ncf.var("vvel");
-        // auto wvel = ncf.var("wvel");
 
         // Loop through all points in the domain and set velocities to values
-        // from
-        //   the input file
-        //        amrex::ParallelFor(
-        //            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        // velocity(i, j, k, 0)= 1;
-
-        std::cout << "Error NOT Here 0" << std::endl;
+        // from the input file
+        // start is the first index from where to read data
         std::vector<size_t> start{
             {static_cast<size_t>(i0), static_cast<size_t>(j0),
              static_cast<size_t>(k0)}};
-        std::cout << "Error NOT Here 1" << std::endl;
+        // count is the total number of elements to read in each direction
         std::vector<size_t> count{
-            {static_cast<size_t>(i1 - i0), static_cast<size_t>(j1 - j0),
-             static_cast<size_t>(k1 - k0)}};
-        std::cout << "Error NOT Here 2" << std::endl;
-        // Read the spanwise components u and v
-        uvel.get(&velocity(i0, j0, k0, 0), start, count);
-        std::cout << "Error NOT Here 3" << std::endl;
-        vvel.get(&velocity(i0, j0, k0, 1), start, count);
-        std::cout << "Error NOT Here 4" << std::endl;
-        // Set the wall normal component to zero
-        // velocity(i, j, k, 2) = 0;
-        std::cout << "Error NOT Here 5" << std::endl;
+            {static_cast<size_t>(i1 - i0 + 1), static_cast<size_t>(j1 - j0 + 1),
+             static_cast<size_t>(k1 - k0 + 1)}};
+
+        // Vector to store the 3d data into a single array
+        amrex::Vector<double> uvel2;
+        amrex::Vector<double> vvel2;
+
+        // Set the size of the arrays to the total number of points in this
+        // processor
+        uvel2.resize(count[0] * count[1] * count[2]);
+        vvel2.resize(count[0] * count[1] * count[2]);
+
+        // Read the velocity components u and v
+        uvel.get(uvel2.data(), start, count);
+        vvel.get(vvel2.data(), start, count);
+
+        // Amrex parallel for to assign the velocity at each point
+        amrex::ParallelFor(
+            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                // The counter to go from 3d to 1d vector
+                auto idx = i + j * count[1] + k * count[2] * count[1];
+                // auto idx = i * count[0] * count[1] +  j * count[1]  + k;
+                velocity(i, j, k, 0) = uvel2.data()[idx];
+                velocity(i, j, k, 1) = vvel2.data()[idx];
+            });
+        // Close the netcdf file
         ncf.close();
-        std::cout << "Error NOT Here 6" << std::endl;
-        //            });
     }
 // Make sure to call fill patch *******
 #endif
