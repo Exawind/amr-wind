@@ -186,8 +186,14 @@ void ABLFieldInit::operator()(
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 // The counter to go from 3d to 1d vector
-                auto idx = i + j * count[1] + k * count[2] * count[1];
+                // auto idx = i + j * count[1] + k * count[2] * count[1];
+                // auto idx = (i - i0) + (j - j0) * count[1] + (k - k0) *
+                // count[2] * count[1];
                 // auto idx = i * count[0] * count[1] +  j * count[1]  + k;
+                auto idx = (i - i0) * count[2] * count[1] +
+                           (j - j0) * count[2] + (k - k0);
+                // auto idx = (i-i0) +  (j-j0) * count[0]  + (k-k0) * count[0] *
+                // count[1];
                 velocity(i, j, k, 0) = uvel2.data()[idx];
                 velocity(i, j, k, 1) = vvel2.data()[idx];
             });
