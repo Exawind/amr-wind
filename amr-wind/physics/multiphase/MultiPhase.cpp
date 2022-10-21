@@ -300,12 +300,15 @@ void MultiPhase::set_nph_density()
 void MultiPhase::calculate_advected_facedensity()
 {
     const int nlevels = m_sim.repo().num_active_levels();
-    amrex::Real rho1 = m_rho1;
-    amrex::Real rho2 = m_rho2;
+    amrex::Real c_r1 = m_rho1;
+    amrex::Real c_r2 = m_rho2;
 
     // Get advected vof terms at each face
+    // cppcheck-suppress constVariable
     auto& advalpha_x = m_sim.repo().get_field("advalpha_x");
+    // cppcheck-suppress constVariable
     auto& advalpha_y = m_sim.repo().get_field("advalpha_y");
+    // cppcheck-suppress constVariable
     auto& advalpha_z = m_sim.repo().get_field("advalpha_z");
 
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -326,15 +329,15 @@ void MultiPhase::calculate_advected_facedensity()
                     // Volume terms at each face become density terms
                     if (xbx.contains(i, j, k)) {
                         aa_x(i, j, k) =
-                            rho1 * aa_x(i, j, k) + rho2 * (1.0 - aa_x(i, j, k));
+                            c_r1 * aa_x(i, j, k) + c_r2 * (1.0 - aa_x(i, j, k));
                     }
                     if (ybx.contains(i, j, k)) {
                         aa_y(i, j, k) =
-                            rho1 * aa_y(i, j, k) + rho2 * (1.0 - aa_y(i, j, k));
+                            c_r1 * aa_y(i, j, k) + c_r2 * (1.0 - aa_y(i, j, k));
                     }
                     if (zbx.contains(i, j, k)) {
                         aa_z(i, j, k) =
-                            rho1 * aa_z(i, j, k) + rho2 * (1.0 - aa_z(i, j, k));
+                            c_r1 * aa_z(i, j, k) + c_r2 * (1.0 - aa_z(i, j, k));
                     }
                 });
         }
