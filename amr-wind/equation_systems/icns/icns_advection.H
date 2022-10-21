@@ -35,6 +35,8 @@ public:
         amrex::Real /*ovst_fac*/,
         int /*lev*/) noexcept;
 
+    amrex::Real rho0() const { return m_rho_0; }
+
 private:
     void init_projector(const FaceFabPtrVec& /*beta*/) noexcept;
     void init_projector(const amrex::Real /*beta*/) noexcept;
