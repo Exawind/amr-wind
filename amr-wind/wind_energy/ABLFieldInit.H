@@ -107,7 +107,7 @@ private:
     bool m_perturb_theta{false};
 
     //! Input file with initial condition from Machine Learning
-    std::string m_ic_input{""};
+    std::string m_ic_input;
 };
 
 } // namespace amr_wind
