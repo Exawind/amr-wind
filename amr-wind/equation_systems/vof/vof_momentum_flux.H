@@ -15,7 +15,6 @@ static void hybrid_fluxes(
     const Field& dof_field,
     const Field& src_term,
     const Field& rho_o,
-    const Field& rho_nph,
     const Field& u_mac,
     const Field& v_mac,
     const Field& w_mac,
@@ -70,11 +69,11 @@ static void hybrid_fluxes(
         amrex::MultiFab::Multiply(
             q, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_state);
         amrex::MultiFab::Multiply(
-            fq, rho_nph(lev), 0, 0, 1, fvm::Godunov::nghost_src);
+            fq, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_src);
         amrex::MultiFab::Multiply(
-            fq, rho_nph(lev), 0, 1, 1, fvm::Godunov::nghost_src);
+            fq, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_src);
         amrex::MultiFab::Multiply(
-            fq, rho_nph(lev), 0, 2, 1, fvm::Godunov::nghost_src);
+            fq, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_src);
         frho.setVal(0.0);
 
         amrex::MFItInfo mfi_info;
@@ -155,9 +154,9 @@ static void hybrid_fluxes(
                 w_mac(lev).const_array(mfi), frho.const_array(mfi), rhobc,
                 idnsty.data(), tmpfab.dataPtr(), geom, dt, mflux_scheme);
 
-            // When interface is present, multiply by consistent density and
-            // divide by interpolated density to replace flux value with
-            // mass-consistent, Favre-averaged flux
+            // When interface is present, divide by interpolated density to get
+            // Favre-averaged flux value. Multiply all fluxes with advected
+            // face density to create mass-consistent fluxes
             amrex::ParallelFor(
                 bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     bool vf_i = multiphase::interface_band(i, j, k, volfrac);
@@ -165,36 +164,36 @@ static void hybrid_fluxes(
                     if (xbx.contains(i, j, k)) {
                         bool vf_nb =
                             multiphase::interface_band(i - 1, j, k, volfrac);
-                        if (vf_i || vf_nb) {
-                            for (int n = 0; n < ncomp; ++n) {
-                                F_x(i, j, k, n) *=
-                                    ar_x(i, j, k) / Fw_x(i, j, k, 0);
+                        for (int n = 0; n < ncomp; ++n) {
+                            if (vf_i || vf_nb) {
+                                F_x(i, j, k, n) /= Fw_x(i, j, k, 0);
                             }
+                            F_x(i, j, k, n) *= ar_x(i, j, k);
                         }
                     }
                     if (ybx.contains(i, j, k)) {
                         bool vf_nb =
                             multiphase::interface_band(i, j - 1, k, volfrac);
-                        if (vf_i || vf_nb) {
-                            for (int n = 0; n < ncomp; ++n) {
-                                F_y(i, j, k, n) *=
-                                    ar_y(i, j, k) / Fw_y(i, j, k, 0);
+                        for (int n = 0; n < ncomp; ++n) {
+                            if (vf_i || vf_nb) {
+                                F_y(i, j, k, n) /= Fw_y(i, j, k, 0);
                             }
+                            F_y(i, j, k, n) *= ar_y(i, j, k);
                         }
                     }
                     if (zbx.contains(i, j, k)) {
                         bool vf_nb =
                             multiphase::interface_band(i, j, k - 1, volfrac);
-                        if (vf_i || vf_nb) {
-                            for (int n = 0; n < ncomp; ++n) {
-                                F_z(i, j, k, n) *=
-                                    ar_z(i, j, k) / Fw_z(i, j, k, 0);
+                        for (int n = 0; n < ncomp; ++n) {
+                            if (vf_i || vf_nb) {
+                                F_z(i, j, k, n) /= Fw_z(i, j, k, 0);
                             }
+                            F_z(i, j, k, n) *= ar_z(i, j, k);
                         }
                     }
                 });
 
-                amrex::Gpu::streamSynchronize();
+            amrex::Gpu::streamSynchronize();
         }
     }
 }

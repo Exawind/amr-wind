@@ -317,6 +317,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         const auto& rho_o =
             repo.get_field("density").state(amr_wind::FieldState::Old);
 
+        const bool mphase_vof = repo.field_exists("vof");
+
         //
         // Advect momentum eqns
         //
@@ -336,20 +338,20 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                 fq, src_term(lev), 0, 0, ICNS::ndim, fvm::Godunov::nghost_src);
 
             // Calculate fluxes using momentum directly
-            amrex::MultiFab::Multiply(
-                q, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_state);
-            amrex::MultiFab::Multiply(
-                q, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_state);
-            amrex::MultiFab::Multiply(
-                q, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_state);
-            // Source terms are at old state during calculation of advection
-            // terms
-            amrex::MultiFab::Multiply(
-                fq, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_src);
-            amrex::MultiFab::Multiply(
-                fq, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_src);
-            amrex::MultiFab::Multiply(
-                fq, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_src);
+            if (!mphase_vof) {
+                amrex::MultiFab::Multiply(
+                    q, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_state);
+                amrex::MultiFab::Multiply(
+                    q, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_state);
+                amrex::MultiFab::Multiply(
+                    q, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_state);
+                amrex::MultiFab::Multiply(
+                    fq, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_src);
+                amrex::MultiFab::Multiply(
+                    fq, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_src);
+                amrex::MultiFab::Multiply(
+                    fq, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_src);
+            }
 
             amrex::MFItInfo mfi_info;
             if (amrex::Gpu::notInLaunchRegion()) {
@@ -418,11 +420,11 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         }
 
         // Multiphase flux operations
-        if (repo.field_exists("vof")) {
+        if (mphase_vof) {
             // Loop levels
             multiphase::hybrid_fluxes(
                 repo, ICNS::ndim, iconserv, (*flux_x), (*flux_y), (*flux_z),
-                dof_field, src_term, rho_o, rho_nph, u_mac, v_mac, w_mac,
+                dof_field, src_term, rho_o, u_mac, v_mac, w_mac,
                 dof_field.bcrec_device().data(), rho_o.bcrec_device().data(),
                 dt, mflux_scheme);
         }
