@@ -32,7 +32,7 @@ static void hybrid_fluxes(
     const auto& advrho_y = repo.get_field("advalpha_y");
     const auto& advrho_z = repo.get_field("advalpha_z");
     // Get VOF
-    const auto& vof = repo.get_field("vof");
+    const auto& vof = repo.get_field("vof").state(amr_wind::FieldState::Old);
 
     // Create scratch arrays for local flux storage
     auto ftmp_x =
@@ -44,7 +44,7 @@ static void hybrid_fluxes(
 
     // Create iconserv = 0 array for density, avoid multiplication by face vel
     amrex::Gpu::DeviceVector<int> idnsty;
-    idnsty.resize(1, 0);
+    idnsty.resize(1, -1);
 
     for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
         // Set up temporary arrays for fluxes that will replace other quantities
@@ -193,6 +193,8 @@ static void hybrid_fluxes(
                         }
                     }
                 });
+
+                amrex::Gpu::streamSynchronize();
         }
     }
 }

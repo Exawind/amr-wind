@@ -270,7 +270,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
         p = 2.0 * m1 * m2;
         q = 1.5 * m1 * m2 * (m12 - 2.0 * m3 * ch);
         p12 = std::sqrt(p);
-        teta = std::acos(q / (p * p12 + const_tiny)) / 3.0;
+        teta = std::acos(q / (p * p12 + 1e-20)) / 3.0;
         cs = std::cos(teta);
         alpha = p12 * (std::sqrt(3.0 * (1.0 - cs * cs)) - cs) + m12;
     } else if (m12 < m3) {
@@ -279,7 +279,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
         p = m1 * (m2 + m3) + m2 * m3 - 0.25;
         q = 1.5 * m1 * m2 * m3 * (0.5 - ch);
         p12 = std::sqrt(p);
-        teta = std::acos(q / (p * p12 + const_tiny)) / 3.0;
+        teta = std::acos(q / (p * p12 + 1e-20)) / 3.0;
         cs = std::cos(teta);
         alpha = p12 * (std::sqrt(3.0 * (1.0 - cs * cs)) - cs) + 0.5;
     }
@@ -442,9 +442,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool interface_band(
     amrex::Real VOF_max = 0.0;
     amrex::Real VOF_min = 1.0;
     bool VOF_mid = false;
-    for (int ii = -1; ii < 2; ++ii) {
-        for (int jj = -1; jj < 2; ++jj) {
-            for (int kk = -1; kk < 2; ++kk) {
+    constexpr int n_band = 1; // must be 1, 2, or 3
+    for (int ii = -n_band; ii <= n_band; ++ii) {
+        for (int jj = -n_band; jj <= n_band; ++jj) {
+            for (int kk = -n_band; kk <= n_band; ++kk) {
                 amrex::Real VOF = volfrac(i + ii, j + jj, k + kk);
                 VOF_max = amrex::max(VOF_max, VOF);
                 VOF_min = amrex::min(VOF_min, VOF);
