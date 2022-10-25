@@ -204,6 +204,10 @@ add_test_re(ib_sphere_Re_100)
 add_test_re(vortex_ring_collision)
 add_test_re(fat_cored_vortex_ring)
 add_test_re(abl_bndry_output_native)
+add_test_re(vortex_patch_scalar_vel)
+add_test_re(zalesak_disk_scalar_vel)
+add_test_re(rain_drop)
+add_test_re(inertial_drop)
 
 if(NOT AMR_WIND_ENABLE_CUDA)
   add_test_re(ctv_godunov_plm)
@@ -268,4 +272,3 @@ endif()
 #=============================================================================
 # Performance tests
 #=============================================================================
-
