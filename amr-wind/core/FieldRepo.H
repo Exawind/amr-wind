@@ -324,6 +324,19 @@ public:
         const int nghost = 0,
         const FieldLoc floc = FieldLoc::CELL) const;
 
+	// IXT, added function definitions
+    std::unique_ptr<ScratchField> create_scratch_field_on_host(
+        const std::string& name,
+        const int ncomp = 1,
+        const int nghost = 0,
+        const FieldLoc floc = FieldLoc::CELL) const;
+
+
+    std::unique_ptr<ScratchField> create_scratch_field_on_host(
+        const int ncomp = 1,
+        const int nghost = 0,
+        const FieldLoc floc = FieldLoc::CELL) const;
+
     //! Advance all fields with more than one timestate to the new timestep
     void advance_states() noexcept;
 
