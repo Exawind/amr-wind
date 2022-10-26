@@ -184,7 +184,7 @@ void ABLFieldInit::operator()(
         // Read the velocity components u and v
         uvel.get(uvel2.data(), start, count);
         vvel.get(vvel2.data(), start, count);
-        wvel.get(vvel2.data(), start, count);
+        wvel.get(wvel2.data(), start, count);
 
         // Amrex parallel for to assign the velocity at each point
         amrex::ParallelFor(
