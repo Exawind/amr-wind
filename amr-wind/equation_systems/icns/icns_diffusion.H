@@ -360,6 +360,7 @@ public:
         const auto& geom = repo.mesh().Geom();
 
         auto& divtau = m_pdefields.diff_term.state(tau_state);
+        bool diff_for_RHS(fstate == amr_wind::FieldState::New);
         const auto& density = m_density.state(fstate);
         const auto& viscosity = m_pdefields.mueff;
         Field const* mesh_detJ =
@@ -412,23 +413,25 @@ public:
             }
         }
 
-        for (int lev = 0; lev < nlevels; ++lev) {
+        if (!diff_for_RHS) {
+            for (int lev = 0; lev < nlevels; ++lev) {
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-            for (amrex::MFIter mfi(divtau(lev), amrex::TilingIfNotGPU());
-                 mfi.isValid(); ++mfi) {
-                const auto& bx = mfi.tilebox();
-                const auto& divtau_arr = divtau(lev).array(mfi);
-                const auto& rho_arr = density(lev).const_array(mfi);
+                for (amrex::MFIter mfi(divtau(lev), amrex::TilingIfNotGPU());
+                     mfi.isValid(); ++mfi) {
+                    const auto& bx = mfi.tilebox();
+                    const auto& divtau_arr = divtau(lev).array(mfi);
+                    const auto& rho_arr = density(lev).const_array(mfi);
 
-                amrex::ParallelFor(
-                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        amrex::Real rhoinv = 1.0 / rho_arr(i, j, k);
-                        divtau_arr(i, j, k, 0) *= rhoinv;
-                        divtau_arr(i, j, k, 1) *= rhoinv;
-                        divtau_arr(i, j, k, 2) *= rhoinv;
-                    });
+                    amrex::ParallelFor(
+                        bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            amrex::Real rhoinv = 1.0 / rho_arr(i, j, k);
+                            divtau_arr(i, j, k, 0) *= rhoinv;
+                            divtau_arr(i, j, k, 1) *= rhoinv;
+                            divtau_arr(i, j, k, 2) *= rhoinv;
+                        });
+                }
             }
         }
     }
