@@ -326,6 +326,34 @@ std::unique_ptr<ScratchField> FieldRepo::create_scratch_field(
     return field;
 }
 
+// IXT function
+std::unique_ptr<ScratchField> FieldRepo::create_scratch_field_on_host(
+    const std::string& name,
+    const int ncomp,
+    const int nghost,
+    const FieldLoc floc) const
+{
+    BL_PROFILE("amr-wind::FieldRepo::create_scratch_field_on_host");
+    if (!m_is_initialized) {
+        amrex::Abort(
+            "Scratch field creation is not permitted before mesh is "
+            "initialized");
+    }
+
+    std::unique_ptr<ScratchField> field(
+        new ScratchField(*this, name, ncomp, nghost, floc));
+
+    for (int lev = 0; lev <= m_mesh.finestLevel(); ++lev) {
+        const auto ba =
+            amrex::convert(m_mesh.boxArray(lev), field_impl::index_type(floc));
+
+        field->m_data.emplace_back(
+            ba, m_mesh.DistributionMap(lev), ncomp, nghost, 
+	amrex::MFInfo().SetArena(amrex::The_Pinned_Arena()),
+            *(m_leveldata[lev]->m_factory));
+    }
+    return field;
+}
 std::unique_ptr<ScratchField> FieldRepo::create_scratch_field(
     const int ncomp, const int nghost, const FieldLoc floc) const
 {
