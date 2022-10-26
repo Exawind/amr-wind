@@ -157,6 +157,7 @@ void ABLFieldInit::operator()(
         // The x, y and z velocity components (u, v, w)
         auto uvel = ncf.var("uvel");
         auto vvel = ncf.var("vvel");
+        auto wvel = ncf.var("wvel");
 
         // Loop through all points in the domain and set velocities to values
         // from the input file
@@ -172,15 +173,18 @@ void ABLFieldInit::operator()(
         // Vector to store the 3d data into a single array
         amrex::Vector<double> uvel2;
         amrex::Vector<double> vvel2;
+        amrex::Vector<double> wvel2;
 
         // Set the size of the arrays to the total number of points in this
         // processor
         uvel2.resize(count[0] * count[1] * count[2]);
         vvel2.resize(count[0] * count[1] * count[2]);
+        wvel2.resize(count[0] * count[1] * count[2]);
 
         // Read the velocity components u and v
         uvel.get(uvel2.data(), start, count);
         vvel.get(vvel2.data(), start, count);
+        wvel.get(vvel2.data(), start, count);
 
         // Amrex parallel for to assign the velocity at each point
         amrex::ParallelFor(
@@ -191,6 +195,7 @@ void ABLFieldInit::operator()(
                 // Pass values from temporary array to the velocity field
                 velocity(i, j, k, 0) = uvel2.data()[idx];
                 velocity(i, j, k, 1) = vvel2.data()[idx];
+                velocity(i, j, k, 3) = wvel2.data()[idx];
             });
         // Close the netcdf file
         ncf.close();
