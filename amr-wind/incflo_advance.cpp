@@ -217,7 +217,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // corrector too
     if (need_divtau()) {
         // *************************************************************************************
-        // Compute explicit viscous term
+        // Compute explicit viscous term using old density (1/rho)
         // *************************************************************************************
         // Reuse existing buffer to avoid creating new multifabs
         amr_wind::field_ops::copy(
@@ -320,9 +320,8 @@ void incflo::ApplyPredictor(bool incremental_projection)
     icns().compute_advection_term(amr_wind::FieldState::Old);
 
     // *************************************************************************************
-    // Define (or if use_godunov, re-define) the forcing terms, without the
-    // viscous terms
-    //    and using the half-time density
+    // Define (or if use_godunov, re-define) the forcing terms and viscous terms 
+    // independently for the right hand side, without 1/rho term
     // *************************************************************************************
     icns().compute_source_term(amr_wind::FieldState::New);
     icns().compute_diffusion_term(amr_wind::FieldState::New);
