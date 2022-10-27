@@ -320,7 +320,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
     icns().compute_advection_term(amr_wind::FieldState::Old);
 
     // *************************************************************************************
-    // Define (or if use_godunov, re-define) the forcing terms and viscous terms 
+    // Define (or if use_godunov, re-define) the forcing terms and viscous terms
     // independently for the right hand side, without 1/rho term
     // *************************************************************************************
     icns().compute_source_term(amr_wind::FieldState::New);
