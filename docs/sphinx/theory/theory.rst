@@ -115,12 +115,12 @@ Time Step -- Godunov
 
 Therefore, the equation that applies the new pressure gradient becomes
 
-.. math:: \boldsymbol{U}^{n+1} = \boldsymbol{U}^{\ast} + \frac{1}{\rho^{n+1/2}}\left(\Delta t \nabla p^{n-1/2} - \Delta t \nabla p^{n+1/2}\right)
+.. math:: \boldsymbol{U}^{n+1} = \boldsymbol{U}^{\ast} + \frac{1}{\rho^{n+1}}\left(\Delta t \nabla p^{n-1/2} - \Delta t \nabla p^{n+1/2}\right)
 
 - The pressure gradient at :math:`n+1/2` is found by solving the projection
 
-.. math:: \nabla \cdot \frac{1}{\rho^{n+1/2}} \nabla p^{n+1/2} = \nabla \cdot \left( \frac{1}{\Delta t}
-          \boldsymbol{U}^{\ast}+ \frac{1}{\rho} \nabla {p}^{n-1/2} \right)
+.. math:: \nabla \cdot \frac{1}{\rho^{n+1}} \nabla p^{n+1/2} = \nabla \cdot \left( \frac{1}{\Delta t}
+          \boldsymbol{U}^{\ast}+ \frac{1}{\rho^{n+1}} \nabla {p}^{n-1/2} \right)
 
 Solving physics on a stretched AMReX mesh
 ------------------------------------------
