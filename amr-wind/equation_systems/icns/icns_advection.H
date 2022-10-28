@@ -313,10 +313,43 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         auto face_z =
             repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::ZFACE);
 
+        const auto& rho_o =
+            repo.get_field("density").state(amr_wind::FieldState::Old);
+
         //
         // Advect momentum eqns
         //
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+
+            // form multifab for transport variable and source term
+            amrex::MultiFab q(
+                dof_field(lev).boxArray(), dof_field(lev).DistributionMap(),
+                ICNS::ndim, fvm::Godunov::nghost_state);
+            amrex::MultiFab::Copy(
+                q, dof_field(lev), 0, 0, ICNS::ndim,
+                fvm::Godunov::nghost_state);
+            amrex::MultiFab fq(
+                src_term(lev).boxArray(), src_term(lev).DistributionMap(),
+                ICNS::ndim, fvm::Godunov::nghost_src);
+            amrex::MultiFab::Copy(
+                fq, src_term(lev), 0, 0, ICNS::ndim, fvm::Godunov::nghost_src);
+
+            // For variable density, calculate fluxes using momentum directly
+            // * will not be performed with multiphase in future PR *
+            amrex::MultiFab::Multiply(
+                q, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_state);
+            amrex::MultiFab::Multiply(
+                q, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_state);
+            amrex::MultiFab::Multiply(
+                q, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_state);
+            // Source terms are at old state during calculation of advection
+            // terms
+            amrex::MultiFab::Multiply(
+                fq, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_src);
+            amrex::MultiFab::Multiply(
+                fq, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_src);
+            amrex::MultiFab::Multiply(
+                fq, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_src);
 
             amrex::MFItInfo mfi_info;
             if (amrex::Gpu::notInLaunchRegion()) {
@@ -339,11 +372,9 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                     godunov::compute_fluxes(
                         lev, bx, ICNS::ndim, (*flux_x)(lev).array(mfi),
                         (*flux_y)(lev).array(mfi), (*flux_z)(lev).array(mfi),
-                        dof_field(lev).const_array(mfi),
-                        u_mac(lev).const_array(mfi),
+                        q.const_array(mfi), u_mac(lev).const_array(mfi),
                         v_mac(lev).const_array(mfi),
-                        w_mac(lev).const_array(mfi),
-                        src_term(lev).const_array(mfi),
+                        w_mac(lev).const_array(mfi), fq.const_array(mfi),
                         dof_field.bcrec_device().data(), iconserv.data(),
                         tmpfab.dataPtr(), geom, dt, godunov_scheme);
                 } else if (
@@ -359,7 +390,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                         godunov_scheme == godunov::scheme::PPM;
                     const bool fluxes_are_area_weighted = false;
                     HydroUtils::ComputeFluxesOnBoxFromState(
-                        bx, ICNS::ndim, mfi, dof_field(lev).const_array(mfi),
+                        bx, ICNS::ndim, mfi, q.const_array(mfi),
                         AMREX_D_DECL(
                             (*flux_x)(lev).array(mfi),
                             (*flux_y)(lev).array(mfi),
@@ -373,7 +404,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                             u_mac(lev).const_array(mfi),
                             v_mac(lev).const_array(mfi),
                             w_mac(lev).const_array(mfi)),
-                        divu, src_term(lev).const_array(mfi), geom[lev], dt,
+                        divu, fq.const_array(mfi), geom[lev], dt,
                         dof_field.bcrec(), dof_field.bcrec_device().data(),
                         iconserv.data(), godunov_use_ppm,
                         godunov_use_forces_in_trans, is_velocity,
@@ -496,6 +527,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
         // cppcheck-suppress constVariable
         auto& conv_term = fields.conv_term.state(fstate);
         const auto& dof_field = fields.field.state(fstate);
+        const auto& rho = repo.get_field("density").state(fstate);
 
         //
         // Advect velocity
@@ -503,6 +535,20 @@ struct AdvectionOp<ICNS, fvm::MOL>
 
         int nmaxcomp = AMREX_SPACEDIM;
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+            // form multifab for transport variable and source term
+            amrex::MultiFab q(
+                dof_field(lev).boxArray(), dof_field(lev).DistributionMap(),
+                ICNS::ndim, fvm::MOL::nghost_state);
+            amrex::MultiFab::Copy(
+                q, dof_field(lev), 0, 0, ICNS::ndim, fvm::MOL::nghost_state);
+            // Calculate fluxes using momentum directly
+            amrex::MultiFab::Multiply(
+                q, rho(lev), 0, 0, 1, fvm::MOL::nghost_state);
+            amrex::MultiFab::Multiply(
+                q, rho(lev), 0, 1, 1, fvm::MOL::nghost_state);
+            amrex::MultiFab::Multiply(
+                q, rho(lev), 0, 2, 1, fvm::MOL::nghost_state);
+
             amrex::MFItInfo mfi_info;
             // if (amrex::Gpu::notInLaunchRegion())
             // mfi_info.EnableTiling(amrex::IntVect(1024,16,16)).SetDynamic(true);
@@ -528,8 +574,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
                 amrex::Array4<amrex::Real> fz = tmpfab.array(nmaxcomp * 2);
 
                 mol::compute_convective_fluxes(
-                    lev, bx, AMREX_SPACEDIM, fx, fy, fz,
-                    dof_field(lev).const_array(mfi),
+                    lev, bx, AMREX_SPACEDIM, fx, fy, fz, q.const_array(mfi),
                     u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
                     w_mac(lev).const_array(mfi), dof_field.bcrec().data(),
                     dof_field.bcrec_device().data(), geom);
