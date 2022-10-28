@@ -93,8 +93,11 @@ public:
 
     AMROversetInfo& amr_overset_info() { return *m_amr_data; }
 
+	// These two are functions that can access the private
+	// m_qcell and m_qnode variables
     ScratchField& qvars_cell() { return *m_qcell; }
     ScratchField& qvars_node() { return *m_qnode; }
+	
 
 private:
     void amr_to_tioga_mesh();
@@ -116,6 +119,10 @@ private:
 
     std::unique_ptr<ScratchField> m_qcell;
     std::unique_ptr<ScratchField> m_qnode;
+
+	// IXT
+    std::unique_ptr<ScratchField> m_qcell_host;
+    std::unique_ptr<ScratchField> m_qnode_host;
 
     std::vector<std::string> m_cell_vars;
     std::vector<std::string> m_node_vars;

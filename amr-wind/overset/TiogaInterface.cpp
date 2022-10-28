@@ -108,7 +108,7 @@ void TiogaInterface::pre_overset_conn_work()
         //const auto& mbl = m_iblank_cell;
 
 	//std::cout<<"Inside pre_overset_conn_work"<<"\n";
-	amrex::Print() << "Inside pre_overset_conn_work"<<std::endl;
+	//amrex::Print() << "Inside pre_overset_conn_work"<<std::endl;
 
 	// IXT comments
 /*
@@ -142,7 +142,7 @@ void TiogaInterface::pre_overset_conn_work()
 void TiogaInterface::post_overset_conn_work()
 {
 
-	std::cout<<"Inside post_overset_conn_work"<<"\n";
+	//std::cout<<"Inside post_overset_conn_work"<<"\n";
     iblank_to_mask(m_iblank_cell, m_mask_cell);
     iblank_to_mask(m_iblank_node, m_mask_node);
 	// IXT comments
@@ -199,12 +199,13 @@ void TiogaInterface::register_solution(
 
 	// IXT
 	// call create_scratch_field_on_host here
-    //m_qcell_host = repo.create_scratch_field_on_host(ncell_vars, num_ghost, FieldLoc::CELL);
-    //m_qnode_host = repo.create_scratch_field_on_host(nnode_vars, num_ghost, FieldLoc::NODE);
+	//amrex::Print()<<"ncell_vars "<<ncell_vars<<"num_ghost "<<num_ghost<<std::endl;
+    m_qcell_host = repo.create_scratch_field_on_host(ncell_vars, num_ghost, FieldLoc::CELL);
+    m_qnode_host = repo.create_scratch_field_on_host(nnode_vars, num_ghost, FieldLoc::NODE);
     // Store field variable names for use in update_solution step
+    // These are both vectors holding strings
     m_cell_vars = cell_vars;
     m_node_vars = node_vars;
-
 
 
 	// IXT comments
@@ -212,17 +213,17 @@ void TiogaInterface::register_solution(
     {
         int icomp = 0;
         for (const auto& cvar : m_cell_vars) {
+		//amrex::Print()<<"cvar"<<cvar<<std::endl;
             auto& fld = repo.get_field(cvar);
             const int ncomp = fld.num_comp();
             fld.fillpatch(m_sim.time().new_time());
             field_ops::copy(*m_qcell, fld, 0, icomp, ncomp, num_ghost);
+	// Consider calling an explicit copy to the CPU field here for testing
             icomp += ncomp;
         }
         AMREX_ASSERT(ncell_vars == icomp);
     }
 
-	// IXT comments
-	// Print out cvar here to check what is being copied
     // Move node variables into scratch field
     {
         int icomp = 0;
@@ -253,31 +254,20 @@ void TiogaInterface::register_solution(
         AMREX_ASSERT(nnode_vars == icomp);
 
 
-	// IXT print out the scratch field
     }
+	// Copy from device to host
+	// Print host data
+	// Call amrex::Arena::PrintUsage();
 
-	// IXT comments
     // Update data pointers for TIOGA exchange
     {
         int ilp = 0;
         const int nlevels = m_sim.repo().num_active_levels();
         auto& ad = *m_amr_data;
         for (int lev = 0; lev < nlevels; ++lev) {
-		// IXT comments
-		// Look up how this definition with lev is done here
-		// qcfab is a Fab defined for cells?
-		// qnfab is a Fab defined for cells?
-		// Figure out what Fab is in AMRex
-		// It stores floating point data on a rectangular domain?
             auto& qcfab = (*m_qcell)(lev);
             auto& qnfab = (*m_qnode)(lev);
 
-	// IXT comments
-	// ad is AMR data,
-	// Is h_view for the host to view, and d_view for the device to view?	
-	//  Should the h_view data be explicitly sent to CPU memory from GPU memory?
-	// Make sure you understand what the ad and qcfab objects are
-	// Understand what MFIter does
             for (amrex::MFIter mfi(qcfab); mfi.isValid(); ++mfi) {
 		std::cout<<"Is this being called?\n";
 		// IXT comments
@@ -420,7 +410,7 @@ void TiogaInterface::amr_to_tioga_mesh()
         auto& ad = *m_amr_data;
         auto& ibfab = ibcell(lev);
         auto& ibnodefab = ibnode(lev);
-
+	// h_view might need an explicit copy from device to host
         for (amrex::MFIter mfi(ibfab); mfi.isValid(); ++mfi) {
             auto& ib = ibfab[mfi];
             auto& ibn = ibnodefab[mfi];
