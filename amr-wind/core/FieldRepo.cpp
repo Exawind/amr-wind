@@ -322,6 +322,14 @@ std::unique_ptr<ScratchField> FieldRepo::create_scratch_field(
     return field;
 }
 
+
+std::unique_ptr<ScratchField> FieldRepo::create_scratch_field(
+    const int ncomp, const int nghost, const FieldLoc floc) const
+{
+    return create_scratch_field("scratch_field", ncomp, nghost, floc);
+}
+
+
 // IXT function
 std::unique_ptr<ScratchField> FieldRepo::create_scratch_field_on_host(
     const std::string& name,
@@ -350,10 +358,11 @@ std::unique_ptr<ScratchField> FieldRepo::create_scratch_field_on_host(
     }
     return field;
 }
-std::unique_ptr<ScratchField> FieldRepo::create_scratch_field(
+
+std::unique_ptr<ScratchField> FieldRepo::create_scratch_field_on_host(
     const int ncomp, const int nghost, const FieldLoc floc) const
 {
-    return create_scratch_field("scratch_field", ncomp, nghost, floc);
+    return create_scratch_field_on_host("scratch_field_host", ncomp, nghost, floc);
 }
 
 void FieldRepo::advance_states() noexcept
