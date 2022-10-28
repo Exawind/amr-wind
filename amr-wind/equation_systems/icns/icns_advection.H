@@ -301,8 +301,6 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
         auto& rho_o =
             repo.get_field("density").state(amr_wind::FieldState::Old);
-        auto& rho_nph =
-            repo.get_field("density").state(amr_wind::FieldState::NPH);
         auto& VOF_o =
             repo.get_field("vof").state(amr_wind::FieldState::Old);
 
@@ -338,11 +336,11 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             amrex::MultiFab::Copy(
                 frhoq, src_term(lev), 0, 0, 3, fvm::Godunov::nghost_src);
             amrex::MultiFab::Multiply(
-                frhoq, rho_nph(lev), 0, 0, 1, fvm::Godunov::nghost_src);
+                frhoq, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_src);
             amrex::MultiFab::Multiply(
-                frhoq, rho_nph(lev), 0, 1, 1, fvm::Godunov::nghost_src);
+                frhoq, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_src);
             amrex::MultiFab::Multiply(
-                frhoq, rho_nph(lev), 0, 2, 1, fvm::Godunov::nghost_src);
+                frhoq, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_src);
             amrex::MultiFab frho(
                 src_term(lev).boxArray(), src_term(lev).DistributionMap(), 1,
                 3);
