@@ -311,8 +311,6 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         auto face_z =
             repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::ZFACE);
 
-        const auto& rho_nph =
-            repo.get_field("density").state(amr_wind::FieldState::NPH);
         const auto& rho_o =
             repo.get_field("density").state(amr_wind::FieldState::Old);
 
@@ -342,12 +340,14 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                 q, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_state);
             amrex::MultiFab::Multiply(
                 q, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_state);
+            // Source terms are at old state during calculation of advection
+            // terms
             amrex::MultiFab::Multiply(
-                fq, rho_nph(lev), 0, 0, 1, fvm::Godunov::nghost_src);
+                fq, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_src);
             amrex::MultiFab::Multiply(
-                fq, rho_nph(lev), 0, 1, 1, fvm::Godunov::nghost_src);
+                fq, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_src);
             amrex::MultiFab::Multiply(
-                fq, rho_nph(lev), 0, 2, 1, fvm::Godunov::nghost_src);
+                fq, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_src);
 
             amrex::MFItInfo mfi_info;
             if (amrex::Gpu::notInLaunchRegion()) {
