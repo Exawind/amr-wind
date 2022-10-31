@@ -13,7 +13,7 @@ namespace amr_wind {
 namespace ocean_waves {
 namespace relaxation_zones {
 
-/** Parse common data for modeling relaxation zones 
+/** Parse common data for modeling relaxation zones
  */
 void read_inputs(
     RelaxZonesBaseData& /*wdata*/,
