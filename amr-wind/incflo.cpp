@@ -266,8 +266,13 @@ void incflo::Evolve()
 
         regrid_and_update();
 
-        pre_advance_stage1();
-        pre_advance_stage2();
+        if (m_prescribe_vel) {
+            pre_advance_stage2();
+            ComputePrescribeDt();
+        } else {
+            pre_advance_stage1();
+            pre_advance_stage2();
+        }
 
         amrex::Real time1 = amrex::ParallelDescriptor::second();
         // Advance to time t + dt

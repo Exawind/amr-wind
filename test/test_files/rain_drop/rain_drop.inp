@@ -1,0 +1,58 @@
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            SIMULATION STOP            #
+#.......................................#
+time.stop_time               =   1     # Max (simulated) time to evolve
+time.max_step                =   20
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#         TIME STEP COMPUTATION         #
+#.......................................#
+time.fixed_dt         =   0.004        # Use this constant dt if > 0
+time.cfl              =   0.45         # CFL factor
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            INPUT AND OUTPUT           #
+#.......................................#
+time.plot_interval            =  20       # Steps between plot files
+time.checkpoint_interval      =  -100       # Steps between checkpoint files
+time.use_force_cfl            = false
+io.output_default_fields = 0
+io.outputs = density velocity vof gp p
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#               PHYSICS                 #
+#.......................................#
+incflo.use_godunov = 1
+incflo.godunov_type = "weno"
+incflo.mflux_type = "minmod"
+transport.model = TwoPhaseTransport
+transport.viscosity_fluid1=1e-3
+transport.viscosity_fluid2=2e-5
+transport.laminar_prandtl = 0.7
+transport.turbulent_prandtl = 0.3333
+turbulence.model = Laminar
+
+incflo.physics = MultiPhase RainDrop
+RainDrop.radius = 0.1
+MultiPhase.density_fluid1 = 1e3
+MultiPhase.density_fluid2 = 1
+ICNS.source_terms = GravityForcing
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#        ADAPTIVE MESH REFINEMENT       #
+#.......................................#
+amr.n_cell              = 64 64 64    # Grid cells at coarsest AMRlevel
+amr.max_level           = 0           # Max AMR level in hierarchy 
+amr.blocking_factor     = 8
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#              GEOMETRY                 #
+#.......................................#
+geometry.prob_lo        =   -0.5 -0.5 -0.5    # Lo corner coordinates
+geometry.prob_hi        =   0.5 0.5 0.5  # Hi corner coordinates
+geometry.is_periodic    =   1   1   1     # Periodicity x y z (0/1)
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#              VERBOSITY                #
+#.......................................#
+incflo.verbose          =   0          # incflo_level

@@ -129,6 +129,7 @@ public:
 
     // for cuda
     void ComputeDt(bool explicit_diffusion);
+    void ComputePrescribeDt();
 
     void set_inflow_velocity(
         int lev, amrex::Real time, amrex::MultiFab& vel, int nghost);
