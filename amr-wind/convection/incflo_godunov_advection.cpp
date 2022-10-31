@@ -28,6 +28,15 @@ void godunov::compute_fluxes(
     godunov::scheme godunov_scheme)
 {
 
+    /* iconserv functionality: (would be better served by two flags)
+     * ------------------------------------------------------------------------
+     * == 0 : non-conservative formulation of interpolation, fluxes not
+     *        multiplied by MAC velocity
+     * == 1 : conservative formulation of interpolation, fluxes include factor
+     *        of MAC velocity
+     * (!= 1 && != 0) : conservative formulation of interpolation, fluxes not
+     *        multiplied by MAC velocity */
+
     BL_PROFILE("amr-wind::godunov::compute_fluxes");
     Box const& xbx = amrex::surroundingNodes(bx, 0);
     Box const& ybx = amrex::surroundingNodes(bx, 1);
