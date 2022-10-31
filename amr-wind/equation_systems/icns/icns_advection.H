@@ -4,6 +4,7 @@
 #include "amr-wind/equation_systems/AdvOp_Godunov.H"
 #include "amr-wind/equation_systems/AdvOp_MOL.H"
 #include "amr-wind/equation_systems/icns/icns.H"
+#include "amr-wind/equation_systems/vof/vof_momentum_flux.H"
 
 #include "AMReX_MultiFabUtil.H"
 #include "hydro_MacProjector.H"
@@ -316,6 +317,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         const auto& rho_o =
             repo.get_field("density").state(amr_wind::FieldState::Old);
 
+        const bool mphase_vof = repo.field_exists("vof");
+
         //
         // Advect momentum eqns
         //
@@ -334,22 +337,23 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             amrex::MultiFab::Copy(
                 fq, src_term(lev), 0, 0, ICNS::ndim, fvm::Godunov::nghost_src);
 
-            // For variable density, calculate fluxes using momentum directly
-            // * will not be performed with multiphase in future PR *
-            amrex::MultiFab::Multiply(
-                q, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_state);
-            amrex::MultiFab::Multiply(
-                q, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_state);
-            amrex::MultiFab::Multiply(
-                q, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_state);
-            // Source terms are at old state during calculation of advection
-            // terms
-            amrex::MultiFab::Multiply(
-                fq, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_src);
-            amrex::MultiFab::Multiply(
-                fq, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_src);
-            amrex::MultiFab::Multiply(
-                fq, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_src);
+            // Calculate fluxes using momentum directly
+            if (!mphase_vof) {
+                amrex::MultiFab::Multiply(
+                    q, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_state);
+                amrex::MultiFab::Multiply(
+                    q, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_state);
+                amrex::MultiFab::Multiply(
+                    q, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_state);
+                // Source terms are at old state during calculation of advection
+                // terms
+                amrex::MultiFab::Multiply(
+                    fq, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_src);
+                amrex::MultiFab::Multiply(
+                    fq, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_src);
+                amrex::MultiFab::Multiply(
+                    fq, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_src);
+            }
 
             amrex::MFItInfo mfi_info;
             if (amrex::Gpu::notInLaunchRegion()) {
@@ -415,6 +419,16 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
                 amrex::Gpu::streamSynchronize();
             }
+        }
+
+        // Multiphase flux operations
+        if (mphase_vof) {
+            // Loop levels
+            multiphase::hybrid_fluxes(
+                repo, ICNS::ndim, iconserv, (*flux_x), (*flux_y), (*flux_z),
+                dof_field, src_term, rho_o, u_mac, v_mac, w_mac,
+                dof_field.bcrec_device().data(), rho_o.bcrec_device().data(),
+                dt, mflux_scheme);
         }
 
         amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> fluxes(

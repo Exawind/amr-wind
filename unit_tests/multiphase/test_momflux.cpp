@@ -201,11 +201,11 @@ protected:
             sdir = "z";
             break;
         }
-        const auto& advalpha_f = repo.get_field("advalpha_" + sdir);
+        const auto& advrho_f = repo.get_field("advalpha_" + sdir);
 
         // Get convective term
-        /* auto& conv_term =
-            mom_eqn.fields().conv_term.state(amr_wind::FieldState::New); */
+        auto& conv_term =
+            mom_eqn.fields().conv_term.state(amr_wind::FieldState::New);
 
         // Base level
         const auto& geom = repo.mesh().Geom();
@@ -217,9 +217,9 @@ protected:
             const auto& um = umac(lev).array(mfi);
             const auto& vm = vmac(lev).array(mfi);
             const auto& wm = wmac(lev).array(mfi);
-            const auto& af = advalpha_f(lev).array(mfi);
-            // const auto& vel = velocity(lev).array(mfi);
-            // const auto& dqdt = conv_term(lev).array(mfi);
+            const auto& rf = advrho_f(lev).array(mfi);
+            const auto& vel = velocity(lev).array(mfi);
+            const auto& dqdt = conv_term(lev).array(mfi);
 
             // Small mesh, loop in serial for check
             for (int i = 0; i < 2; ++i) {
@@ -245,23 +245,28 @@ protected:
                         EXPECT_NEAR(vm(i, j, k), vvel, tol);
                         EXPECT_NEAR(wm(i, j, k), wvel, tol);
                         // Check that velocity is unchanged after advection
-                        /* EXPECT_NEAR(vel(i, j, k, 0), uvel, tol);
+                        EXPECT_NEAR(vel(i, j, k, 0), uvel, tol);
                         EXPECT_NEAR(vel(i, j, k, 1), vvel, tol);
-                        EXPECT_NEAR(vel(i, j, k, 2), wvel, tol); */
+                        EXPECT_NEAR(vel(i, j, k, 2), wvel, tol);
 
                         // Test volume fractions at faces
                         if (x == 0.5) {
                             // Center face (coming from left cell)
-                            EXPECT_NEAR(af(i, j, k), 1.0, tol);
+                            amrex::Real advvof = 1.0;
+                            amrex::Real advrho =
+                                m_rho1 * advvof + m_rho2 * (1.0 - advvof);
+                            EXPECT_NEAR(rf(i, j, k), advrho, tol);
                         } else {
                             if (x == 0.0) {
                                 // Left face (coming from right cell, periodic
                                 // BC)
-                                EXPECT_NEAR(af(i, j, k), 0.0, tol);
+                                amrex::Real advvof = 0.0;
+                                amrex::Real advrho =
+                                    m_rho1 * advvof + m_rho2 * (1.0 - advvof);
+                                EXPECT_NEAR(rf(i, j, k), advrho, tol);
                             }
                         }
 
-                        /*
                         // Test momentum fluxes by checking convective term
                         if (icheck == 0) {
                             // Left cell (gas entering, liquid leaving)
@@ -274,10 +279,9 @@ protected:
                                 EXPECT_NEAR(
                                     dqdt(i, j, k, dir),
                                     m_vel * m_vel * (m_rho1 - m_rho2) / 0.5,
-                        tol);
+                                    tol);
                             }
                         }
-                        */
                     }
                 }
             }

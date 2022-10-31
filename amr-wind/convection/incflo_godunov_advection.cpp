@@ -28,6 +28,15 @@ void godunov::compute_fluxes(
     godunov::scheme godunov_scheme)
 {
 
+    /* iconserv functionality: (would be better served by two flags)
+     * ------------------------------------------------------------------------
+     * == 0 : non-conservative formulation of interpolation, fluxes not
+     *        multiplied by MAC velocity
+     * == 1 : conservative formulation of interpolation, fluxes include factor
+     *        of MAC velocity
+     * (!= 1 && != 0) : conservative formulation of interpolation, fluxes not
+     *        multiplied by MAC velocity */
+
     BL_PROFILE("amr-wind::godunov::compute_fluxes");
     Box const& xbx = amrex::surroundingNodes(bx, 0);
     Box const& ybx = amrex::surroundingNodes(bx, 1);
@@ -353,7 +362,7 @@ void godunov::compute_fluxes(
                      ? 0.5 * (stl + sth)
                      : qx;
 
-            if (iconserv[n] != 0) {
+            if (iconserv[n] == 1) {
                 fx(i, j, k, n) = umac(i, j, k) * qx;
             } else {
                 fx(i, j, k, n) = qx;
@@ -460,7 +469,7 @@ void godunov::compute_fluxes(
                      ? 0.5 * (stl + sth)
                      : qy;
 
-            if (iconserv[n] != 0) {
+            if (iconserv[n] == 1) {
                 fy(i, j, k, n) = vmac(i, j, k) * qy;
             } else {
                 fy(i, j, k, n) = qy;
@@ -566,7 +575,7 @@ void godunov::compute_fluxes(
                      ? 0.5 * (stl + sth)
                      : qz;
 
-            if (iconserv[n] != 0) {
+            if (iconserv[n] == 1) {
                 fz(i, j, k, n) = wmac(i, j, k) * qz;
             } else {
                 fz(i, j, k, n) = qz;

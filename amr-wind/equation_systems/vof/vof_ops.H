@@ -78,6 +78,8 @@ struct PostSolveOp<VOF>
 
         // Calculate n+1/2 density
         multiphase.set_nph_density();
+        // Convert advalpha to advrho
+        multiphase.calculate_advected_facedensity();
     }
 
     CFDSim& m_sim;

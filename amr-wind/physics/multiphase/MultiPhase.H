@@ -46,6 +46,8 @@ public:
 
     void set_nph_density();
 
+    void calculate_advected_facedensity();
+
     void levelset2vof();
 
     void favre_filtering();
