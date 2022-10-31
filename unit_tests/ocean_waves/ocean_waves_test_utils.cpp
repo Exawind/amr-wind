@@ -19,7 +19,8 @@ void populate_ocean_waves_params()
         pp.addarr("gravity", grav);
     }
 
-    // Adjust computational domain to be more like the ocean waves mesh in the z direction
+    // Adjust computational domain to be more like the ocean waves mesh in the z
+    // direction
     {
         amrex::ParmParse pp("amr");
         amrex::Vector<int> ncell{{64, 8, 32}};
