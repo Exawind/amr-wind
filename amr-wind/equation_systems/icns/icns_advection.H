@@ -345,6 +345,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                     q, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_state);
                 amrex::MultiFab::Multiply(
                     q, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_state);
+                // Source terms are at old state during calculation of advection
+                // terms
                 amrex::MultiFab::Multiply(
                     fq, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_src);
                 amrex::MultiFab::Multiply(
