@@ -371,7 +371,7 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
     process_nc_file(m_turb_filename, m_turb_grid);
 
     // Load position and orientation of the grid
-    amrex::Real wind_direction;
+    amrex::Real wind_direction{270.};
     pp.query("wind_direction", wind_direction);
     amrex::Vector<amrex::Real> location{{0.0, 0.0, 0.0}};
     pp.queryarr("grid_location", location);
