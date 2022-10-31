@@ -301,7 +301,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_waves(
           (ss11 + ss22 + ss31 + ss33 + ss42 + ss44 + ss51 + ss53 + ss55);
 }
 
-} // namespace regular_waves
+} // namespace relaxation_zones
 } // namespace ocean_waves
 } // namespace amr_wind
 #endif
