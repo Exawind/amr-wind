@@ -26,13 +26,14 @@ This section is for setting turbulence injection parameters.
    **type:** String, required 
   
    The type of profile to use. Options are ConstValue, LinearProfile, and PowerLawProfile.
+   
    The following inputs are used only for PowerLawProfile.
 
   .. input_param:: SynthTurb.zref
 
      **type:** Real, required
   
-     The default reference height at the center of the turbulence grid
+     The default reference height at the center of the turbulence grid.
 
   .. input_param:: SynthTurb.shear_exponent
   
@@ -44,25 +45,25 @@ This section is for setting turbulence injection parameters.
 
      **type:** Real list, required
   
-     The reference value of the velocity vector
+     The reference value of the velocity vector.
 
   .. input_param:: SynthTurb.zoffset
  
      **type:** Real, optional, default = 
   
-     The offset in the z direction between the turbulence box and the simulation
+     The offset in the z direction between the turbulence box and the simulation.
 
   .. input_param:: SynthTurb.umin
 
      **type:** Real, required
   
-     The minimum velocity allowed in the turbulence box.
+     The minimum velocity cutoff in the mean power law profile.
 
   .. input_param:: SynthTurb.umax
 
      **type:** Real, required
   
-     The maximum velocity allowed in the turbulence box
+     The maximum velocity cutoff in the mean power law profile.
 
 .. input_param:: SynthTurb.gauss_smearing_factor 
 
@@ -75,6 +76,6 @@ This section is for setting turbulence injection parameters.
 
    **type:** Real, optional, default = 0.0
   
-   The time offset betweent he data and the simulation.
+   The time offset between the data and the simulation.
 
    
