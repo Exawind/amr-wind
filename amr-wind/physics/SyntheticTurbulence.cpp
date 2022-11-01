@@ -436,9 +436,7 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
 
     m_mean_wind_type = mean_wind_type;
     // Smearing factors
-    pp.query("grid_spacing", m_grid_spacing);
-    m_epsilon = 2.0 * m_grid_spacing;
-    pp.query("gauss_smearing_factor", m_epsilon);
+    pp.get("gauss_smearing_factor", m_epsilon);
     m_gauss_scaling = 1.0 / (m_epsilon * std::sqrt(pi));
 
     // Time offsets if any...
