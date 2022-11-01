@@ -14,7 +14,7 @@ OceanWaves::OceanWaves(CFDSim& sim)
     , m_ow_levelset(sim.repo().declare_field("ow_levelset", 1, 3, 1))
     , m_ow_vof(sim.repo().declare_field("ow_vof", 1, 2, 1))
     , m_ow_velocity(
-          sim.repo().declare_field("ow_velocity", AMREX_SPACEDIM, 2, 1))
+          sim.repo().declare_field("ow_velocity", AMREX_SPACEDIM, 3, 1))
     , m_ow_pressure(sim.repo().declare_field("ow_pressure", 1, 1, 1))
 {
     if (!sim.physics_manager().contains("MultiPhase")) {
