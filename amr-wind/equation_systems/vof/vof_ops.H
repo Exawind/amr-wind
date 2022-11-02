@@ -4,8 +4,7 @@
 #include "amr-wind/equation_systems/vof/vof.H"
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /** Field registration operator for VOF equation system
  *  \ingroup vof
@@ -76,13 +75,17 @@ struct PostSolveOp<VOF>
         m_fields.field.fillpatch(m_sim.time().current_time());
         auto& multiphase = m_sim.physics_manager().get<MultiPhase>();
         multiphase.set_density_via_vof();
+
+        // Calculate n+1/2 density
+        multiphase.set_nph_density();
+        // Convert advalpha to advrho
+        multiphase.calculate_advected_facedensity();
     }
 
     CFDSim& m_sim;
     PDEFields& m_fields;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* VOF_OPS_H */

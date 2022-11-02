@@ -1,7 +1,6 @@
 #include "abl_test_utils.H"
 
-namespace amr_wind_tests {
-namespace utils {
+namespace amr_wind_tests::utils {
 
 void populate_abl_params()
 {
@@ -80,5 +79,4 @@ void populate_abl_params()
     }
 }
 
-} // namespace utils
-} // namespace amr_wind_tests
+} // namespace amr_wind_tests::utils

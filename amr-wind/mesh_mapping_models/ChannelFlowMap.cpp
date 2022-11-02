@@ -4,8 +4,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace channel_map {
+namespace amr_wind::channel_map {
 
 namespace {
 
@@ -334,5 +333,4 @@ void ChannelFlowMap::create_non_uniform_mesh(
     }
 }
 
-} // namespace channel_map
-} // namespace amr_wind
+} // namespace amr_wind::channel_map

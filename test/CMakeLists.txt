@@ -78,7 +78,7 @@ endmacro(setup_test)
 # Standard regression test
 function(add_test_r TEST_NAME)
     setup_test()
-    add_test(${TEST_NAME} sh -c "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.i ${RUNTIME_OPTIONS} > ${TEST_NAME}.log ${SAVE_GOLDS_COMMAND} ${FCOMPARE_COMMAND}")
+    add_test(${TEST_NAME} sh -c "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.inp ${RUNTIME_OPTIONS} > ${TEST_NAME}.log ${SAVE_GOLDS_COMMAND} ${FCOMPARE_COMMAND}")
     # Set properties for test
     set_tests_properties(${TEST_NAME} PROPERTIES
                          TIMEOUT 5400
@@ -112,7 +112,7 @@ function(add_test_v TEST_NAME LIST_OF_GRID_SIZES)
       file(GLOB TEST_FILES "${CURRENT_TEST_SOURCE_DIR}/*")
       file(COPY ${TEST_FILES} DESTINATION "${CURRENT_TEST_BINARY_DIR}/${GRID_SIZE}/")
       set(NCELLS "${GRID_SIZE} ${GRID_SIZE} ${GRID_SIZE}")
-      set(RUN_COMMAND_${GRID_SIZE} "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${GRID_SIZE}/${TEST_NAME}.i")
+      set(RUN_COMMAND_${GRID_SIZE} "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${GRID_SIZE}/${TEST_NAME}.inp")
       set(RUNTIME_OPTIONS_${GRID_SIZE} "amrex.throw_exception=1 amrex.signal_handling=0 amr.n_cell=${NCELLS}")
       string(APPEND MASTER_RUN_COMMAND "cd ${CURRENT_TEST_BINARY_DIR}/${GRID_SIZE}")
       string(APPEND MASTER_RUN_COMMAND " && ")
@@ -205,6 +205,10 @@ add_test_re(ib_sphere_Re_100)
 add_test_re(vortex_ring_collision)
 add_test_re(fat_cored_vortex_ring)
 add_test_re(abl_bndry_output_native)
+add_test_re(vortex_patch_scalar_vel)
+add_test_re(zalesak_disk_scalar_vel)
+add_test_re(rain_drop)
+add_test_re(inertial_drop)
 
 if(NOT AMR_WIND_ENABLE_CUDA)
   add_test_re(ctv_godunov_plm)
@@ -269,4 +273,3 @@ endif()
 #=============================================================================
 # Performance tests
 #=============================================================================
-

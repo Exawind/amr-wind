@@ -6,8 +6,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace udf {
+namespace amr_wind::udf {
 
 PowerLawProfile::PowerLawProfile(const Field& fld)
 {
@@ -33,5 +32,4 @@ PowerLawProfile::PowerLawProfile(const Field& fld)
     }
 }
 
-} // namespace udf
-} // namespace amr_wind
+} // namespace amr_wind::udf

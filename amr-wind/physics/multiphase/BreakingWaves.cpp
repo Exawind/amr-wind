@@ -1,24 +1,49 @@
 #include "amr-wind/physics/multiphase/MultiPhase.H"
-#include "amr-wind/physics/multiphase/wave_basin/NWB.H"
+#include "amr-wind/physics/multiphase/BreakingWaves.H"
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind {
 
-NWB::NWB(CFDSim& sim)
+BreakingWaves::BreakingWaves(CFDSim& sim)
     : m_sim(sim)
     , m_velocity(sim.repo().get_field("velocity"))
     , m_levelset(sim.repo().get_field("levelset"))
     , m_density(sim.repo().get_field("density"))
-{}
+{
 
-NWB::~NWB() = default;
+    {
+        std::string turbulence_model;
+        amrex::ParmParse pp("turbulence");
+        pp.query("model", turbulence_model);
+        if (turbulence_model == "Laminar") {
+            m_laminar = true;
+        }
+    }
+
+    {
+        amrex::ParmParse pp("BreakingWaves");
+        pp.query("amplitude", m_amplitude);
+        pp.query("wavelength", m_wavelength);
+        pp.query("water_surface_level", m_waterlevel);
+
+        if (m_laminar) {
+            pp.query("air_vel_shear_rate", m_air_vel_shear_rate);
+        } else {
+            pp.query("air_vel_shear_rate", m_air_vel_shear_rate);
+            pp.query("tke0", m_tke0);
+            pp.query("sdr0", m_sdr0);
+        }
+    }
+}
+
+BreakingWaves::~BreakingWaves() = default;
 
 /** Initialize the velocity and vof fields at the beginning of the
  *  simulation.
  */
-void NWB::initialize_fields(int level, const amrex::Geometry& geom)
+void BreakingWaves::initialize_fields(int level, const amrex::Geometry& geom)
 {
 
     auto& velocity = m_velocity(level);
@@ -35,7 +60,14 @@ void NWB::initialize_fields(int level, const amrex::Geometry& geom)
     const amrex::Real alpha = m_amplitude;
     const amrex::Real lambda = m_wavelength;
     const amrex::Real water_level = m_waterlevel;
-    const amrex::Real vel_air_mag = m_airflow_velocity;
+    const amrex::Real vel_shear_rate = m_air_vel_shear_rate;
+
+    if (!m_laminar) {
+        auto& tke = m_sim.repo().get_field("tke")(level);
+        auto& sdr = m_sim.repo().get_field("sdr")(level);
+        tke.setVal(m_tke0);
+        sdr.setVal(m_sdr0);
+    }
 
     for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.growntilebox();
@@ -68,7 +100,7 @@ void NWB::initialize_fields(int level, const amrex::Geometry& geom)
                     vel(i, j, k, 2) = Omega * alpha * std::exp(kappa * z) *
                                       std::sin(kappa * x);
                 } else {
-                    vel(i, j, k, 0) = vel_air_mag * (z - eta);
+                    vel(i, j, k, 0) = vel_shear_rate * (z - eta);
                 }
                 // compute density
                 amrex::Real smooth_heaviside;

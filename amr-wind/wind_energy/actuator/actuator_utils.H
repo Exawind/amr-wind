@@ -7,8 +7,7 @@
 
 #include <set>
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 struct ActInfo;
 
@@ -140,7 +139,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE vs::Vector compute_tangential_vector(
 }
 
 } // namespace utils
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator
 
 #endif /* ACUTATOR_UTILS_H */

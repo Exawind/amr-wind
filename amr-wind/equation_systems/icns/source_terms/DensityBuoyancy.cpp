@@ -9,9 +9,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 /** Density based buoyancy source term
  *
@@ -67,6 +65,4 @@ void DensityBuoyancy::operator()(
     });
 }
 
-} // namespace icns
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns

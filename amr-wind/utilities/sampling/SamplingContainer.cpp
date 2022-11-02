@@ -3,8 +3,7 @@
 #include "amr-wind/utilities/sampling/SamplerBase.H"
 #include "amr-wind/core/Field.H"
 
-namespace amr_wind {
-namespace sampling {
+namespace amr_wind::sampling {
 
 namespace {
 
@@ -254,5 +253,4 @@ void SamplingContainer::populate_buffer(std::vector<double>& buf)
         buf.data(), buf.size(), amrex::ParallelDescriptor::IOProcessorNumber());
 }
 
-} // namespace sampling
-} // namespace amr_wind
+} // namespace amr_wind::sampling

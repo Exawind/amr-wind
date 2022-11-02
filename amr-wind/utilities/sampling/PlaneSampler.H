@@ -3,8 +3,7 @@
 
 #include "amr-wind/utilities/sampling/SamplerBase.H"
 
-namespace amr_wind {
-namespace sampling {
+namespace amr_wind::sampling {
 
 /** Sample data on uniform grids
  *  \ingroup sampling
@@ -72,7 +71,6 @@ private:
     int m_npts{0};
 };
 
-} // namespace sampling
-} // namespace amr_wind
+} // namespace amr_wind::sampling
 
 #endif /* PLANESAMPLER_H */

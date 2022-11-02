@@ -5,8 +5,8 @@
 #include "amr-wind/core/SimTime.H"
 
 /**
- *  \defgroup Water Waves modeling
- *  Water Waves modeling
+ *  \defgroup Breaking Waves modeling
+ *  Breaking Waves modeling
  *
  *  This group documents all the wave mechanics related physics models available
  * in AMR-Wind
@@ -27,14 +27,14 @@ namespace amr_wind {
  *  \ingroup we_abl
  *
  */
-class NWB : public Physics::Register<NWB>
+class BreakingWaves : public Physics::Register<BreakingWaves>
 {
 public:
-    static std::string identifier() { return "NWB"; }
+    static std::string identifier() { return "BreakingWaves"; }
 
-    explicit NWB(CFDSim& sim);
+    explicit BreakingWaves(CFDSim& sim);
 
-    ~NWB() override;
+    ~BreakingWaves() override;
 
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 
@@ -53,8 +53,16 @@ private:
     Field& m_levelset;
     Field& m_density;
 
+    //! initial tke value
+    amrex::Real m_tke0{0.000001};
+
+    //! initial sdr value
+    amrex::Real m_sdr0{1.0};
+
     //! Initial free surface amplitude magnitude
     amrex::Real m_amplitude{0.1};
+
+    amrex::Real m_air_vel_shear_rate{0.1};
 
     //! Initial free surface wavelength
     amrex::Real m_wavelength{2.0};
@@ -62,8 +70,7 @@ private:
     //! Initial zero-level free-surface water depth
     amrex::Real m_waterlevel{0.0};
 
-    //! Airflow velocity magnitude
-    amrex::Real m_airflow_velocity{1.0};
+    bool m_laminar{false};
 };
 
 } // namespace amr_wind

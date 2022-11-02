@@ -4,9 +4,7 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 /** Account for Coriolis forcing due to earth's rotation
  *
@@ -57,7 +55,7 @@ private:
      */
     amrex::Vector<amrex::Real> m_east{{1.0, 0.0, 0.0}};
     amrex::Vector<amrex::Real> m_north{{0.0, 1.0, 0.0}};
-    amrex::Vector<amrex::Real> m_up{{1.0, 0.0, 1.0}};
+    amrex::Vector<amrex::Real> m_up{{0.0, 0.0, 1.0}};
     ///@}
 
     //! Latitude where the Coriolis forcing is computed (+ve northern
@@ -74,8 +72,6 @@ private:
     amrex::Real m_coriolis_factor{0.0};
 };
 
-} // namespace icns
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns
 
 #endif /* CORIOLISFORCING_H */

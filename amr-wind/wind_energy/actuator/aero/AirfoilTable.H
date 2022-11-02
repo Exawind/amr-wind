@@ -5,8 +5,7 @@
 #include <iosfwd>
 #include <memory>
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 class AirfoilLoader;
 
@@ -81,8 +80,7 @@ struct AirfoilTraits
     using AirfoilLookup = AirfoilTable;
 };
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator
 
 #include "amr-wind/wind_energy/actuator/aero/AirfoilTableI.H"
 

@@ -6,8 +6,7 @@
 
 #include <string>
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 struct FLLCData;
 
@@ -69,7 +68,6 @@ struct WingBaseData
 struct WingType : public ActuatorType
 {};
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator
 
 #endif /* ACTUATORWING_H */

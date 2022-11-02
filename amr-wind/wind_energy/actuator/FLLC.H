@@ -4,8 +4,7 @@
 #include "amr-wind/wind_energy/actuator/actuator_types.H"
 #include "amr-wind/wind_energy/actuator/ActParser.H"
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 struct FLLCData
 {
     // constants
@@ -47,7 +46,6 @@ void FLLCParse(const utils::ActParser& pp, FLLCData& data);
 void FLLCInit(
     FLLCData& data, const ComponentView& view, const amrex::Real eps_chord);
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator
 
 #endif /* FLLC */

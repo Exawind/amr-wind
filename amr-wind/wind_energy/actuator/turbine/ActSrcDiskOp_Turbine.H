@@ -6,9 +6,7 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/wind_energy/actuator/turbine/turbine_types.H"
 
-namespace amr_wind {
-namespace actuator {
-namespace ops {
+namespace amr_wind::actuator::ops {
 
 template <typename ActTrait>
 class ActSrcOp<
@@ -183,8 +181,6 @@ operator()(const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
         sarr(i, j, k, 2) += src_force[2];
     });
 }
-} // namespace ops
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator::ops
 
 #endif /* ACTSRCDISKOP_TURBINE_H_ */

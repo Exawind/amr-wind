@@ -5,8 +5,7 @@
 #include "amr-wind/core/Field.H"
 #include "amr-wind/CFDSim.H"
 
-namespace amr_wind {
-namespace hybrid_rans_les_abl {
+namespace amr_wind::hybrid_rans_les_abl {
 
 /** Hybrid RANS/LES with ABL
  *  \ingroup physics
@@ -44,7 +43,6 @@ private:
     //! Turbulence model constant
     amrex::Real m_Ce{0.1};
 };
-} // namespace hybrid_rans_les_abl
-} // namespace amr_wind
+} // namespace amr_wind::hybrid_rans_les_abl
 
 #endif /* HybridRANSLESABL_H */

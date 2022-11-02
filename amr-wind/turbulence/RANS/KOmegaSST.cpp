@@ -16,17 +16,32 @@ namespace turbulence {
 template <typename Transport>
 void KOmegaSST<Transport>::parse_model_coeffs()
 {
-    const std::string coeffs_dict = this->model_name() + "_coeffs";
-    amrex::ParmParse pp(coeffs_dict);
-    pp.query("beta_star", this->m_beta_star);
-    pp.query("alpha1", this->m_alpha1);
-    pp.query("alpha2", this->m_alpha2);
-    pp.query("beta1", this->m_beta1);
-    pp.query("beta2", this->m_beta2);
-    pp.query("sigma_k1", this->m_sigma_k1);
-    pp.query("sigma_k2", this->m_sigma_k2);
-    pp.query("sigma_omega1", this->m_sigma_omega1);
-    pp.query("sigma_omega2", this->m_sigma_omega2);
+
+    if ((!this->m_sim.pde_manager().constant_density() ||
+         this->m_sim.physics_manager().contains("MultiPhase"))) {
+        this->m_include_buoyancy = true;
+    }
+    this->m_buoyancy_factor = (this->m_include_buoyancy) ? 1.0 : 0.0;
+
+    {
+        const std::string coeffs_dict = this->model_name() + "_coeffs";
+        amrex::ParmParse pp(coeffs_dict);
+        pp.query("beta_star", this->m_beta_star);
+        pp.query("alpha1", this->m_alpha1);
+        pp.query("alpha2", this->m_alpha2);
+        pp.query("beta1", this->m_beta1);
+        pp.query("beta2", this->m_beta2);
+        pp.query("sigma_k1", this->m_sigma_k1);
+        pp.query("sigma_k2", this->m_sigma_k2);
+        pp.query("sigma_omega1", this->m_sigma_omega1);
+        pp.query("sigma_omega2", this->m_sigma_omega2);
+        pp.query("sigma_t", this->m_sigma_t);
+    }
+
+    {
+        amrex::ParmParse pp("incflo");
+        pp.queryarr("gravity", m_gravity);
+    }
 }
 
 template <typename Transport>
@@ -75,6 +90,10 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
     auto gradOmega = (this->m_sim.repo()).create_scratch_field(3, 0);
     fvm::gradient(*gradOmega, sdr);
 
+    // This is used for the buoyancy-modified version of the model
+    auto gradden = (this->m_sim.repo()).create_scratch_field(3, 0);
+    fvm::gradient(*gradden, den);
+
     const auto& vel = this->m_vel.state(fstate);
     // Compute strain rate into shear production term
     fvm::strainrate(this->m_shear_prod, vel);
@@ -85,12 +104,17 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
     auto& sdr_lhs = (this->m_sim).repo().get_field("sdr_lhs_src_term");
 
     const amrex::Real deltaT = (this->m_sim).time().deltaT();
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
+        {m_gravity[0], m_gravity[1], m_gravity[2]}};
+    const amrex::Real Bfac = this->m_buoyancy_factor;
+    const amrex::Real sigmat = this->m_sigma_t;
 
     for (int lev = 0; lev < nlevels; ++lev) {
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
             const auto& lam_mu_arr = (*lam_mu)(lev).array(mfi);
             const auto& mu_arr = mu_turb(lev).array(mfi);
+            const auto& gradrho_arr = (*gradden)(lev).array(mfi);
             const auto& rho_arr = den(lev).const_array(mfi);
             const auto& gradK_arr = (*gradK)(lev).array(mfi);
             const auto& gradOmega_arr = (*gradOmega)(lev).array(mfi);
@@ -104,6 +128,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
             const auto& f1_arr = (this->m_f1)(lev).array(mfi);
             const auto& tke_lhs_arr = tke_lhs(lev).array(mfi);
             const auto& sdr_lhs_arr = sdr_lhs(lev).array(mfi);
+            const auto& buoy_arr = (this->m_buoy_term(lev)).array(mfi);
 
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -143,6 +168,16 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
                     mu_arr(i, j, k) =
                         rho_arr(i, j, k) * a1 * tke_arr(i, j, k) /
                         amrex::max(a1 * sdr_arr(i, j, k), tmp4 * f2);
+
+                    // Buoyancy term
+                    amrex::Real tmpB =
+                        -(gravity[0] * gradrho_arr(i, j, k, 0) +
+                          gravity[1] * gradrho_arr(i, j, k, 1) +
+                          gravity[2] * gradrho_arr(i, j, k, 2));
+
+                    buoy_arr(i, j, k) = Bfac * tmpB *
+                                        (mu_arr(i, j, k) / rho_arr(i, j, k)) /
+                                        sigmat;
 
                     f1_arr(i, j, k) = tmp_f1;
 
@@ -184,7 +219,7 @@ void KOmegaSST<Transport>::update_scalar_diff(
     if (name == pde::TKE::var_name()) {
         const amrex::Real sigma_k1 = this->m_sigma_k1;
         const amrex::Real sigma_k2 = this->m_sigma_k2;
-        auto& repo = deff.repo();
+        const auto& repo = deff.repo();
         const int nlevels = repo.num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {
             for (amrex::MFIter mfi(deff(lev)); mfi.isValid(); ++mfi) {
@@ -207,7 +242,7 @@ void KOmegaSST<Transport>::update_scalar_diff(
     } else if (name == pde::SDR::var_name()) {
         const amrex::Real sigma_omega1 = this->m_sigma_omega1;
         const amrex::Real sigma_omega2 = this->m_sigma_omega2;
-        auto& repo = deff.repo();
+        const auto& repo = deff.repo();
         const int nlevels = repo.num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {
             for (amrex::MFIter mfi(deff(lev)); mfi.isValid(); ++mfi) {

@@ -52,10 +52,11 @@ build documentation locally.
 AMR-Wind is built upon the [AMReX library](https://amrex-codes.github.io/amrex).
 A snapshot of the AMReX library is distributed along with the AMR-Wind source
 code as a `git-submodule`. In addition to the AMReX library, you will require a
-modern C++ compiler that supports the C++14 standard. Users wishing to execute
+modern C++ compiler that supports the C++17 standard. Users wishing to execute
 the code on high-performance computing (HPC) systems will also need MPI
-libraries installed on their system. The code can also be compiled using NVIDIA
-CUDA to target NVIDIA GPUs.
+libraries installed on their system. The code can also be compiled using MPI+X, 
+where X can be OpenMP for CPU shared memory parallelism,
+CUDA to target NVIDIA GPUs, HIP for AMD GPUs, or DPC++ for Intel GPUs.
 
 ### Contributing, reporting bugs, and requesting help
 

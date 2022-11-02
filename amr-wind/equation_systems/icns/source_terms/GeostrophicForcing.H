@@ -4,9 +4,7 @@
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 #include "amr-wind/core/SimTime.H"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 /** Apply source term equivalent to drive the flow to match given geostrophic
  * wind.
@@ -59,8 +57,6 @@ private:
     amrex::Vector<amrex::Real> m_g_forcing{{0.0, 0.0, 0.0}};
 };
 
-} // namespace icns
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns
 
 #endif /* GEOSTROPHICFORCING_H */

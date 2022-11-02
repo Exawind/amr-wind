@@ -5,9 +5,7 @@
 #include "amr-wind/wind_energy/actuator/ActParser.H"
 #include "AMReX_Vector.H"
 
-namespace amr_wind {
-namespace actuator {
-namespace ops {
+namespace amr_wind::actuator::ops {
 
 /** Read user inputs from an input file for a given actuator object.
  *
@@ -94,9 +92,7 @@ template <typename T>
 void determine_root_proc(
     typename T::DataType& /*data*/, amrex::Vector<int>& /*act_proc_count*/);
 
-} // namespace ops
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator::ops
 
 #include "amr-wind/wind_energy/actuator/actuator_opsI.H"
 

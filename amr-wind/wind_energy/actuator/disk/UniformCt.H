@@ -3,8 +3,7 @@
 
 #include "amr-wind/wind_energy/actuator/disk/ActuatorDisk.H"
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 struct UniformCtData : public DiskBaseData
 {};
@@ -19,7 +18,6 @@ struct UniformCt : public DiskType
     static std::string identifier() { return "UniformCt"; }
 };
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator
 
 #endif /* UNIFORMCT_H_ */

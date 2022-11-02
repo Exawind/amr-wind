@@ -7,8 +7,7 @@
 #include "AMReX_MultiFabUtil.H"
 #include "hydro_MacProjector.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 namespace {
 
@@ -50,7 +49,7 @@ MacProjOp::MacProjOp(
     , m_mesh_mapping(mesh_mapping)
 {
     amrex::ParmParse pp("incflo");
-    pp.query("rho_0", m_rho_0);
+    pp.query("density", m_rho_0);
 }
 
 void MacProjOp::init_projector(const MacProjOp::FaceFabPtrVec& beta) noexcept
@@ -287,5 +286,4 @@ void MacProjOp::mac_proj_to_uniform_space(
     }
 }
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde

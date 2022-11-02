@@ -5,8 +5,7 @@
 #include "amr-wind/core/Field.H"
 #include "amr-wind/CFDSim.H"
 
-namespace amr_wind {
-namespace ctv {
+namespace amr_wind::ctv {
 
 namespace {
 struct UExact
@@ -147,7 +146,6 @@ private:
     bool m_activate_pressure{false};
     bool m_mesh_mapping{false};
 };
-} // namespace ctv
-} // namespace amr_wind
+} // namespace amr_wind::ctv
 
 #endif /* ConvectingTaylorVortex_H */

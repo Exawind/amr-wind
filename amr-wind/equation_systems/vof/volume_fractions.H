@@ -4,8 +4,7 @@
 #include <AMReX_FArrayBox.H>
 #include <cmath>
 
-namespace amr_wind {
-namespace multiphase {
+namespace amr_wind::multiphase {
 
 /** Young's finite-difference gradient scheme.
  *
@@ -204,7 +203,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void mixed_youngs_central_normal(
         t0 = t2;
     }
 
-    if (amrex::Math::abs(m[cn][cn]) > t0) {
+    if (amrex::Math::abs(m[cn][cn]) > t0 && t0 > 0.0) {
+        // second t0 condition is to ensure nonzero normal magnitude
         cn = 3;
     }
 
@@ -270,7 +270,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
         p = 2.0 * m1 * m2;
         q = 1.5 * m1 * m2 * (m12 - 2.0 * m3 * ch);
         p12 = std::sqrt(p);
-        teta = std::acos(q / (p * p12)) / 3.0;
+        teta = std::acos(q / (p * p12 + 1e-20)) / 3.0;
         cs = std::cos(teta);
         alpha = p12 * (std::sqrt(3.0 * (1.0 - cs * cs)) - cs) + m12;
     } else if (m12 < m3) {
@@ -279,7 +279,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
         p = m1 * (m2 + m3) + m2 * m3 - 0.25;
         q = 1.5 * m1 * m2 * m3 * (0.5 - ch);
         p12 = std::sqrt(p);
-        teta = std::acos(q / (p * p12)) / 3.0;
+        teta = std::acos(q / (p * p12 + 1e-20)) / 3.0;
         cs = std::cos(teta);
         alpha = p12 * (std::sqrt(3.0 * (1.0 - cs * cs)) - cs) + 0.5;
     }
@@ -347,7 +347,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real cut_volume(
     // amrex::Real bm = amrex::min(b12, b3);
     // amrex::Real pr = amrex::max(6.0 * m1 * m2 * m3, const_tiny);
 
-    // Compute volume fraction using Aoki Kawano (Computer & Fluids 2016) method
+    // Compute volume fraction using PLIC from Scardovelli & Zaleski (JCP 2000),
+    // adapted from code in paper by Akio Kawano (Computer & Fluids 2016)
     amrex::Real vm1 = b1;
     amrex::Real vm3 = b3;
     amrex::Real vm2 = b2;
@@ -377,9 +378,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real cut_volume(
     tmp = v;
     amrex::Real FL3D;
     if (al <= 0.5) {
-        FL3D = tmp * dr0;
+        FL3D = tmp;
     } else {
-        FL3D = (1.0 - tmp) * dr0;
+        FL3D = (1.0 - tmp);
     }
 
     return FL3D;
@@ -441,9 +442,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool interface_band(
     amrex::Real VOF_max = 0.0;
     amrex::Real VOF_min = 1.0;
     bool VOF_mid = false;
-    for (int ii = -1; ii < 2; ++ii) {
-        for (int jj = -1; jj < 2; ++jj) {
-            for (int kk = -1; kk < 2; ++kk) {
+    constexpr int n_band = 1; // must be 1, 2, or 3
+    for (int ii = -n_band; ii <= n_band; ++ii) {
+        for (int jj = -n_band; jj <= n_band; ++jj) {
+            for (int kk = -n_band; kk <= n_band; ++kk) {
                 amrex::Real VOF = volfrac(i + ii, j + jj, k + kk);
                 VOF_max = amrex::max(VOF_max, VOF);
                 VOF_min = amrex::min(VOF_min, VOF);
@@ -456,13 +458,12 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool interface_band(
     return (VOF_max != VOF_min || VOF_mid);
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void levelset_to_vof(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real levelset_to_vof(
     int i,
     int j,
     int k,
     amrex::Real eps,
-    amrex::Array4<amrex::Real> const& phi,
-    amrex::Array4<amrex::Real> const& volfrac) noexcept
+    amrex::Array4<amrex::Real const> const& phi) noexcept
 {
     amrex::Real mx, my, mz;
     youngs_fd_normal(i, j, k, phi, mx, my, mz);
@@ -482,16 +483,18 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void levelset_to_vof(
         alpha = phi(i, j, k) / normL1;
         alpha = alpha + 0.5;
     }
+    amrex::Real result;
     if (alpha >= 1.0) {
-        volfrac(i, j, k) = 1.0;
+        result = 1.0;
     } else if (alpha <= 0.0) {
-        volfrac(i, j, k) = 0.0;
+        result = 0.0;
     } else {
-        volfrac(i, j, k) = cut_volume(mx, my, mz, alpha, 0.0, 1.0);
+        result = cut_volume(mx, my, mz, alpha, 0.0, 1.0);
     }
+
+    return result;
 }
 
-} // namespace multiphase
-} // namespace amr_wind
+} // namespace amr_wind::multiphase
 
 #endif // VOLUME_FRACTIONS.H

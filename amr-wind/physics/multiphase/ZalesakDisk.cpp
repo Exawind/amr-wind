@@ -17,6 +17,8 @@ ZalesakDisk::ZalesakDisk(CFDSim& sim)
     pp.queryarr("location", m_loc, 0, AMREX_SPACEDIM);
     pp.query("radius", m_radius);
     pp.query("period", m_TT);
+    amrex::ParmParse pinc("incflo");
+    pinc.add("prescribe_velocity", true);
 }
 
 /** Initialize the velocity and levelset fields at the beginning of the
@@ -36,6 +38,10 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
     const amrex::Real rho1 = mphase.rho1();
     const amrex::Real rho2 = mphase.rho2();
 
+    auto& u_mac = m_sim.repo().get_field("u_mac")(level);
+    auto& v_mac = m_sim.repo().get_field("v_mac")(level);
+    auto& w_mac = m_sim.repo().get_field("w_mac")(level);
+
     const amrex::Real xc = m_loc[0];
     const amrex::Real yc = m_loc[1];
     const amrex::Real zc = m_loc[2];
@@ -46,6 +52,9 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
 
     for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.growntilebox();
+        auto uf = u_mac.array(mfi);
+        auto vf = v_mac.array(mfi);
+        auto wf = w_mac.array(mfi);
         auto vel = velocity.array(mfi);
         auto phi = levelset.array(mfi);
         auto rho = density.array(mfi);
@@ -54,6 +63,10 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                 const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                 const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+
+                uf(i, j, k) = 2.0 * M_PI / TT * (0.5 - y);
+                vf(i, j, k) = 2.0 * M_PI / TT * (x - 0.5);
+                wf(i, j, k) = 0.0;
 
                 vel(i, j, k, 0) = 2.0 * M_PI / TT * (0.5 - y);
                 vel(i, j, k, 1) = 2.0 * M_PI / TT * (x - 0.5);
@@ -101,7 +114,40 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
     }
 }
 
-void ZalesakDisk::pre_advance_work() {}
+void ZalesakDisk::pre_advance_work()
+{
+
+    const int nlevels = m_sim.repo().num_active_levels();
+    const auto& geom = m_sim.mesh().Geom();
+
+    // Overriding the velocity field
+    for (int lev = 0; lev < nlevels; ++lev) {
+        auto& u_mac = m_sim.repo().get_field("u_mac")(lev);
+        auto& v_mac = m_sim.repo().get_field("v_mac")(lev);
+        auto& w_mac = m_sim.repo().get_field("w_mac")(lev);
+        for (amrex::MFIter mfi(m_velocity(lev)); mfi.isValid(); ++mfi) {
+            const auto& vbx = mfi.growntilebox(1);
+            const auto& dx = geom[lev].CellSizeArray();
+            const auto& problo = geom[lev].ProbLoArray();
+            const amrex::Real TT = m_TT;
+            auto uf = u_mac.array(mfi);
+            auto vf = v_mac.array(mfi);
+            auto wf = w_mac.array(mfi);
+            amrex::ParallelFor(
+                vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+
+                    uf(i, j, k) = 2.0 * M_PI / TT * (0.5 - y);
+                    vf(i, j, k) = 2.0 * M_PI / TT * (x - 0.5);
+                    wf(i, j, k) = 0.0;
+                });
+        }
+        u_mac.FillBoundary(geom[lev].periodicity());
+        v_mac.FillBoundary(geom[lev].periodicity());
+        w_mac.FillBoundary(geom[lev].periodicity());
+    }
+}
 
 void ZalesakDisk::post_advance_work()
 {

@@ -5,9 +5,7 @@
 #include "amr-wind/wind_energy/actuator/disk/UniformCt.H"
 #include "amr-wind/core/FieldRepo.H"
 
-namespace amr_wind {
-namespace actuator {
-namespace ops {
+namespace amr_wind::actuator::ops {
 
 /**
  * @brief  A collection of spreading functions
@@ -233,7 +231,5 @@ public:
         }
     }
 };
-} // namespace ops
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator::ops
 #endif /* DISK_SPREADING_H_ */

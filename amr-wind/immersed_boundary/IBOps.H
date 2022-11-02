@@ -5,9 +5,7 @@
 #include "AMReX_Vector.H"
 #include "amr-wind/CFDSim.H"
 
-namespace amr_wind {
-namespace ib {
-namespace ops {
+namespace amr_wind::ib::ops {
 
 /** Read user inputs from an input file for a given immersed boundary object.
  *
@@ -66,8 +64,6 @@ struct ComputeForceOp;
 template <typename GeomTrait, typename = void>
 struct ProcessOutputsOp;
 
-} // namespace ops
-} // namespace ib
-} // namespace amr_wind
+} // namespace amr_wind::ib::ops
 
 #endif /* IBOPS_H */

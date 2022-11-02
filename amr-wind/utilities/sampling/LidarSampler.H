@@ -4,8 +4,7 @@
 #include "amr-wind/utilities/sampling/LineSampler.H"
 #include "amr-wind/core/vs/vector_space.H"
 
-namespace amr_wind {
-namespace sampling {
+namespace amr_wind::sampling {
 
 /** Sample data along a line that moves in time
  *  \ingroup sampling
@@ -53,7 +52,6 @@ protected:
     amrex::Real m_period{std::numeric_limits<double>::max()};
 };
 
-} // namespace sampling
-} // namespace amr_wind
+} // namespace amr_wind::sampling
 
 #endif /* LIDARSAMPLER_H */

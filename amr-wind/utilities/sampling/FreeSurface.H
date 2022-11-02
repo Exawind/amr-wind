@@ -17,8 +17,7 @@
  *  \ingroup utilities
  */
 
-namespace amr_wind {
-namespace free_surface {
+namespace amr_wind::free_surface {
 
 /** Collection of data sampling objects
  *  \ingroup findinterface
@@ -109,8 +108,8 @@ private:
     //! (this also determines the meaning of start and end points)
     int m_coorddir{2};
     //! Grid coordinates, determined as a function of m_coorddir
-    int m_gc1 = 0;
-    int m_gc2 = 1;
+    int m_gc0 = 0;
+    int m_gc1 = 1;
 
     //! Parameters to set up plane
     amrex::Vector<amrex::Real> m_start, m_end;
@@ -121,9 +120,13 @@ private:
 
     //! Frequency of data sampling and output
     int m_out_freq{100};
+
+    //! Max number of sample points found in a single cell
+    int m_ncomp{1};
+    //! Max number of sample points allowed in a single cell
+    int m_ncmax{8};
 };
 
-} // namespace free_surface
-} // namespace amr_wind
+} // namespace amr_wind::free_surface
 
 #endif /* FREESURFACE_H */

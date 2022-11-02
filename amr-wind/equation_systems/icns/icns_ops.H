@@ -10,8 +10,7 @@
 #include "amr-wind/equation_systems/icns/icns.H"
 #include "AMReX_MultiFabUtil.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /** Specialization of field registration for ICNS
  *  \ingroup icns
@@ -83,6 +82,7 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
     {
         const auto rhostate = field_impl::phi_state(fstate);
         const auto& density = m_density.state(rhostate);
+        bool src_for_RHS(fstate == amr_wind::FieldState::New);
         Field const* mesh_fac =
             mesh_mapping
                 ? &(this->fields.repo.get_mesh_mapping_field(FieldLoc::CELL))
@@ -122,8 +122,18 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
                             -(1.0 / fac_z * gp(i, j, k, 2)) * rhoinv;
                     });
 
-                for (auto& src : this->sources) {
+                for (const auto& src : this->sources) {
                     (*src)(lev, mfi, bx, fstate, vf);
+                }
+
+                // Multiply src terms by rho if being used for icns RHS
+                if (src_for_RHS) {
+                    amrex::ParallelFor(
+                        bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                            vf(i, j, k, 0) *= rho(i, j, k);
+                            vf(i, j, k, 1) *= rho(i, j, k);
+                            vf(i, j, k, 2) *= rho(i, j, k);
+                        });
                 }
             }
         }
@@ -148,7 +158,6 @@ struct TurbulenceOp<ICNS>
     PDEFields& m_fields;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* ICNS_OPS_H */

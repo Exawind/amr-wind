@@ -6,10 +6,7 @@
 #include "amr-wind/immersed_boundary/IB.H"
 #include "amr-wind/immersed_boundary/bluff_body/bluff_body_ops.H"
 
-namespace amr_wind {
-namespace ib {
-
-namespace ops {
+namespace amr_wind::ib::ops {
 
 template <>
 struct ReadInputsOp<Cylinder>
@@ -100,8 +97,6 @@ struct InitDataOp<Cylinder>
     }
 };
 
-} // namespace ops
-} // namespace ib
-} // namespace amr_wind
+} // namespace amr_wind::ib::ops
 
 #endif /* CYLINDER_OPS_H */

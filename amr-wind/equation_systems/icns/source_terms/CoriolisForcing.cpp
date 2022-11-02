@@ -5,9 +5,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 /** Coriolis term for planetary rotation
  *
@@ -111,6 +109,4 @@ void CoriolisForcing::operator()(
     });
 }
 
-} // namespace icns
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns

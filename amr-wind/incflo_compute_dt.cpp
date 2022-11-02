@@ -150,12 +150,14 @@ void incflo::ComputeDt(bool explicit_diffusion)
 
         if (m_time.use_force_cfl()) {
             auto const& vf_arr = vel_force.const_arrays();
+            auto const& rho_arr = rho.const_arrays();
             force_lev += amrex::ParReduce(
                 TypeList<ReduceOpMax>{}, TypeList<Real>{}, vel_force,
                 IntVect(0),
                 [=] AMREX_GPU_HOST_DEVICE(
                     int box_no, int i, int j, int k) -> GpuTuple<Real> {
                     auto const& vf_bx = vf_arr[box_no];
+                    auto const& rho_bx = rho_arr[box_no];
 
                     amrex::Real fac_x =
                         mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0;
@@ -165,9 +167,12 @@ void incflo::ComputeDt(bool explicit_diffusion)
                         mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
 
                     return amrex::max(
-                        amrex::Math::abs(vf_bx(i, j, k, 0)) * dxinv[0] / fac_x,
-                        amrex::Math::abs(vf_bx(i, j, k, 1)) * dxinv[1] / fac_y,
-                        amrex::Math::abs(vf_bx(i, j, k, 2)) * dxinv[2] / fac_z,
+                        amrex::Math::abs(vf_bx(i, j, k, 0)) * dxinv[0] / fac_x /
+                            rho_bx(i, j, k),
+                        amrex::Math::abs(vf_bx(i, j, k, 1)) * dxinv[1] / fac_y /
+                            rho_bx(i, j, k),
+                        amrex::Math::abs(vf_bx(i, j, k, 2)) * dxinv[2] / fac_z /
+                            rho_bx(i, j, k),
                         -1.0);
                 });
         }
@@ -188,4 +193,115 @@ void incflo::ComputeDt(bool explicit_diffusion)
     }
 
     m_time.set_current_cfl(conv_cfl, diff_cfl, force_cfl);
+}
+
+void incflo::ComputePrescribeDt()
+{
+    BL_PROFILE("amr-wind::incflo::ComputePrescribeDt");
+
+    Real conv_cfl = 0.0;
+    const bool mesh_mapping = m_sim.has_mesh_mapping();
+
+    amr_wind::Field const* mesh_fac =
+        mesh_mapping
+            ? &(m_repo.get_mesh_mapping_field(amr_wind::FieldLoc::CELL))
+            : nullptr;
+
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        auto const dxinv = geom[lev].InvCellSizeArray();
+        auto const& uf_arr = m_repo.get_field("u_mac")(lev).const_arrays();
+        auto const& vf_arr = m_repo.get_field("v_mac")(lev).const_arrays();
+        auto const& wf_arr = m_repo.get_field("w_mac")(lev).const_arrays();
+
+        MultiArray4<Real const> fac_arr =
+            mesh_mapping ? ((*mesh_fac)(lev).const_arrays())
+                         : MultiArray4<Real const>();
+
+        Real conv_lev = 0.0;
+        Real mphase_conv_lev = 0.0;
+
+        conv_lev += amrex::ParReduce(
+            TypeList<ReduceOpMax>{}, TypeList<Real>{},
+            icns().fields().field(lev), IntVect(0),
+            [=] AMREX_GPU_HOST_DEVICE(
+                int box_no, int i, int j, int k) -> GpuTuple<Real> {
+                auto const& umac = uf_arr[box_no];
+                auto const& vmac = vf_arr[box_no];
+                auto const& wmac = wf_arr[box_no];
+
+                amrex::Real fac_x =
+                    mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0;
+                amrex::Real fac_y =
+                    mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0;
+                amrex::Real fac_z =
+                    mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
+
+                return amrex::max(
+                    amrex::max(
+                        amrex::Math::abs(umac(i, j, k)),
+                        amrex::Math::abs(umac(i + 1, j, k))) *
+                        dxinv[0] / fac_x,
+                    amrex::max(
+                        amrex::Math::abs(vmac(i, j, k)),
+                        amrex::Math::abs(vmac(i, j + 1, k))) *
+                        dxinv[1] / fac_y,
+                    amrex::max(
+                        amrex::Math::abs(wmac(i, j, k)),
+                        amrex::Math::abs(wmac(i, j, k + 1))) *
+                        dxinv[2] / fac_z,
+                    -1.0);
+            });
+
+        if (m_sim.pde_manager().has_pde("VOF")) {
+            MultiFab const& vof = m_repo.get_field("vof")(lev);
+            auto const& vof_arr = vof.const_arrays();
+            mphase_conv_lev += amrex::ParReduce(
+                TypeList<ReduceOpMax>{}, TypeList<Real>{},
+                icns().fields().field(lev), IntVect(0),
+                [=] AMREX_GPU_HOST_DEVICE(
+                    int box_no, int i, int j, int k) -> GpuTuple<Real> {
+                    auto const& vof_bx = vof_arr[box_no];
+                    auto const& umac = uf_arr[box_no];
+                    auto const& vmac = vf_arr[box_no];
+                    auto const& wmac = wf_arr[box_no];
+
+                    // Check for interface
+                    auto is_near =
+                        amr_wind::multiphase::interface_band(i, j, k, vof_bx);
+
+                    // CFL calculation is not needed away from interface
+                    amrex::Real result = 0.0;
+                    if (is_near) {
+                        // Near interface, evaluate CFL by sum of velocities
+                        amrex::Real fac_x =
+                            mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0;
+                        amrex::Real fac_y =
+                            mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0;
+                        amrex::Real fac_z =
+                            mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
+
+                        result = amrex::max(
+                                     amrex::Math::abs(umac(i, j, k)),
+                                     amrex::Math::abs(umac(i + 1, j, k))) *
+                                     dxinv[0] / fac_x +
+                                 amrex::max(
+                                     amrex::Math::abs(vmac(i, j, k)),
+                                     amrex::Math::abs(vmac(i, j + 1, k))) *
+                                     dxinv[1] / fac_y +
+                                 amrex::max(
+                                     amrex::Math::abs(wmac(i, j, k)),
+                                     amrex::Math::abs(wmac(i, j, k + 1))) *
+                                     dxinv[2] / fac_z;
+                    }
+                    return result;
+                });
+        }
+        conv_lev = amrex::max(conv_lev, mphase_conv_lev);
+
+        conv_cfl = amrex::max(conv_cfl, conv_lev);
+    }
+
+    ParallelAllReduce::Max<Real>(conv_cfl, ParallelContext::CommunicatorSub());
+
+    m_time.set_current_cfl(conv_cfl, 0.0, 0.0);
 }

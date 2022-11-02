@@ -4,29 +4,8 @@
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind {
-namespace {
-amrex::Vector<std::string> bcnames = {"xlo", "ylo", "zlo", "xhi", "yhi", "zhi"};
-}
 
 BCIface::BCIface(Field& field) : m_field(field) {}
-
-inline void
-BCIface::set_bcrec_lo(int dir, amrex::BCType::mathematicalBndryTypes bcrec)
-{
-    auto& fbcrec = m_field.bcrec();
-    for (int i = 0; i < m_field.num_comp(); ++i) {
-        fbcrec[i].setLo(dir, bcrec);
-    }
-}
-
-inline void
-BCIface::set_bcrec_hi(int dir, amrex::BCType::mathematicalBndryTypes bcrec)
-{
-    auto& fbcrec = m_field.bcrec();
-    for (int i = 0; i < m_field.num_comp(); ++i) {
-        fbcrec[i].setHi(dir, bcrec);
-    }
-}
 
 void BCIface::operator()(const amrex::Real value)
 {

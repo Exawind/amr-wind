@@ -4,8 +4,7 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/utilities/IOManager.H"
 
-namespace amr_wind {
-namespace averaging {
+namespace amr_wind::averaging {
 namespace {
 
 const Field& get_field_or_error(const FieldRepo& repo, const std::string& fname)
@@ -83,5 +82,4 @@ void ReAveraging::operator()(
     m_average.fillpatch(time.new_time());
 }
 
-} // namespace averaging
-} // namespace amr_wind
+} // namespace amr_wind::averaging

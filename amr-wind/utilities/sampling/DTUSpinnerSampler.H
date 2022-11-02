@@ -4,8 +4,7 @@
 #include "amr-wind/utilities/sampling/LidarSampler.H"
 #include "amr-wind/core/vs/vector_space.H"
 
-namespace amr_wind {
-namespace sampling {
+namespace amr_wind::sampling {
 
 /** Sample data along a line that moves in time
  *  \ingroup sampling
@@ -60,7 +59,6 @@ private:
     amrex::Real m_time_sampling{0};
 };
 
-} // namespace sampling
-} // namespace amr_wind
+} // namespace amr_wind::sampling
 
 #endif /* DTUSPINNERSAMPLER_H */

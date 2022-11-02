@@ -3,8 +3,7 @@
 
 #include "amr-wind/immersed_boundary/bluff_body/BluffBody.H"
 
-namespace amr_wind {
-namespace ib {
+namespace amr_wind::ib {
 
 struct CylinderData : public BluffBodyBaseData
 {
@@ -22,7 +21,6 @@ struct Cylinder : public BluffBodyType
     static std::string identifier() { return "Cylinder"; }
 };
 
-} // namespace ib
-} // namespace amr_wind
+} // namespace amr_wind::ib
 
 #endif /* CYLINDER_H */

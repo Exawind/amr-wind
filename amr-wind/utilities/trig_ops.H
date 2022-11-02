@@ -10,8 +10,7 @@
 #include "AMReX_REAL.H"
 #include "AMReX_Gpu.H"
 
-namespace amr_wind {
-namespace utils {
+namespace amr_wind::utils {
 
 //! Return \f$\pi\f$ as an amrex::Real
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE constexpr amrex::Real pi()
@@ -45,7 +44,6 @@ degrees(const amrex::Real rad_val)
     return 180.0 * rad_val / pi();
 }
 
-} // namespace utils
-} // namespace amr_wind
+} // namespace amr_wind::utils
 
 #endif /* TRIG_OPS_H */

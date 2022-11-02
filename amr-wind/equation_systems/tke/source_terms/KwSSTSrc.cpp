@@ -4,13 +4,12 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/turbulence/TurbulenceModel.H"
 
-namespace amr_wind {
-namespace pde {
-namespace tke {
+namespace amr_wind::pde::tke {
 
 KwSSTSrc::KwSSTSrc(const CFDSim& sim)
     : m_shear_prod(sim.repo().get_field("shear_prod"))
     , m_diss(sim.repo().get_field("dissipation"))
+    , m_buoy_term(sim.repo().get_field("buoyancy_term"))
 {}
 
 KwSSTSrc::~KwSSTSrc() = default;
@@ -24,14 +23,13 @@ void KwSSTSrc::operator()(
 {
     const auto& shear_prod_arr = (this->m_shear_prod)(lev).array(mfi);
     const auto& diss_arr = (this->m_diss)(lev).array(mfi);
+    const auto& buoy_arr = (this->m_buoy_term)(lev).array(mfi);
 
     const amrex::Real factor = (fstate == FieldState::NPH) ? 0.5 : 1.0;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        src_term(i, j, k) +=
-            shear_prod_arr(i, j, k) + factor * diss_arr(i, j, k);
+        src_term(i, j, k) += shear_prod_arr(i, j, k) +
+                             factor * diss_arr(i, j, k) + buoy_arr(i, j, k);
     });
 }
 
-} // namespace tke
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::tke

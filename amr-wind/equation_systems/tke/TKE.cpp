@@ -4,11 +4,9 @@
 #include "amr-wind/equation_systems/BCOps.H"
 #include "amr-wind/equation_systems/tke/tke_ops.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 template class PDESystem<TKE, fvm::Godunov>;
 template class PDESystem<TKE, fvm::MOL>;
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde

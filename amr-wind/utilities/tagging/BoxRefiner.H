@@ -4,8 +4,7 @@
 #include "amr-wind/utilities/tagging/GeometryRefinement.H"
 #include "amr-wind/core/vs/vector_space.H"
 
-namespace amr_wind {
-namespace tagging {
+namespace amr_wind::tagging {
 
 /** AMR inside an arbitrarily oriented hexahedral box
  *  \ingroup amr_utils
@@ -37,7 +36,6 @@ protected:
     amrex::Gpu::DeviceVector<int> m_face_origin;
 };
 
-} // namespace tagging
-} // namespace amr_wind
+} // namespace amr_wind::tagging
 
 #endif /* BOXREFINER_H */

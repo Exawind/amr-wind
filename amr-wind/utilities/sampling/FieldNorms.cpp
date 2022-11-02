@@ -6,8 +6,7 @@
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/IOManager.H"
 
-namespace amr_wind {
-namespace field_norms {
+namespace amr_wind::field_norms {
 
 FieldNorms::FieldNorms(CFDSim& sim, std::string label)
     : m_sim(sim), m_label(std::move(label))
@@ -139,5 +138,4 @@ void FieldNorms::write_ascii()
     }
 }
 
-} // namespace field_norms
-} // namespace amr_wind
+} // namespace amr_wind::field_norms

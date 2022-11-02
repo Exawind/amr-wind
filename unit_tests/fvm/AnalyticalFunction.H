@@ -1,9 +1,7 @@
 #include "aw_test_utils/AmrexTest.H"
 #include "aw_test_utils/MeshTest.H"
 
-namespace amr_wind_tests {
-
-namespace analytical_function {
+namespace amr_wind_tests::analytical_function {
 
 AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real phi_eval(
     int degree,
@@ -387,6 +385,4 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real q_criterion(
     return 0.25 * (W2 - S2);
 }
 
-} // namespace analytical_function
-
-} // namespace amr_wind_tests
+} // namespace amr_wind_tests::analytical_function

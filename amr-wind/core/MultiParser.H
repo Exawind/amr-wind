@@ -4,8 +4,7 @@
 #include "amr-wind/core/vs/vector_space.H"
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace utils {
+namespace amr_wind::utils {
 
 /** Utility to parse inputs from multiple namespaces.
  *
@@ -110,7 +109,6 @@ private:
     amrex::ParmParse pp;
 };
 
-} // namespace utils
-} // namespace amr_wind
+} // namespace amr_wind::utils
 
 #endif /* MULTIPARSER_H */

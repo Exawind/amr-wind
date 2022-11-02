@@ -96,6 +96,7 @@ public:
     void pre_advance_stage1();
     void pre_advance_stage2();
     void advance();
+    void prescribe_advance();
     void post_advance_work();
 
     amr_wind::CFDSim& sim() { return m_sim; }
@@ -128,12 +129,14 @@ public:
 
     // for cuda
     void ComputeDt(bool explicit_diffusion);
+    void ComputePrescribeDt();
 
     void set_inflow_velocity(
         int lev, amrex::Real time, amrex::MultiFab& vel, int nghost);
 
     void ApplyPredictor(bool incremental_projection = false);
     void ApplyCorrector();
+    void ApplyPrescribeStep();
 
     void ApplyProjection(
         amrex::Vector<amrex::MultiFab const*> density,
@@ -168,6 +171,9 @@ private:
 
     // Default to MOL (not Godunov)
     bool m_use_godunov = false;
+
+    // Prescribe advection velocity
+    bool m_prescribe_vel = false;
 
     //! number of cells on all levels including covered cells
     amrex::Long m_cell_count{-1};

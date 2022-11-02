@@ -6,8 +6,7 @@
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/utilities/DirectionSelector.H"
 
-namespace amr_wind {
-namespace channel_flow {
+namespace amr_wind::channel_flow {
 
 ChannelFlow::ChannelFlow(CFDSim& sim)
     : m_time(sim.time())
@@ -277,5 +276,4 @@ void ChannelFlow::post_advance_work()
     }
 }
 
-} // namespace channel_flow
-} // namespace amr_wind
+} // namespace amr_wind::channel_flow

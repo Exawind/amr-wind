@@ -8,8 +8,7 @@
 #include <algorithm>
 #include <memory>
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 Actuator::Actuator(CFDSim& sim)
     : m_sim(sim), m_act_source(sim.repo().declare_field("actuator_src_term", 3))
@@ -234,5 +233,4 @@ void Actuator::post_advance_work()
     }
 }
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator

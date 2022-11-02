@@ -6,9 +6,7 @@
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 /** Geostrophic forcing term for ABL
  *
@@ -80,6 +78,10 @@ void GeostrophicForcing::operator()(
     });
 }
 
+<<<<<<< HEAD
 } // namespace icns
 } // namespace pde
 } // namespace amr_wind
+=======
+} // namespace amr_wind::pde::icns
+>>>>>>> 64ad5cc3c55f9e9c1bbf4645fc67802e911d5bfb

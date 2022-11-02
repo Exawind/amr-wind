@@ -6,9 +6,7 @@
 #include "amr-wind/wind_energy/actuator/wing/wing_ops.H"
 #include "amr-wind/utilities/linear_interpolation.H"
 
-namespace amr_wind {
-namespace actuator {
-namespace ops {
+namespace amr_wind::actuator::ops {
 
 ComponentView make_component_view(FixedWing::DataType& data)
 {
@@ -127,8 +125,6 @@ inline const AirfoilTable& airfoil_lookup<FixedWing>(FixedWing::DataType& data)
     return *data.meta().aflookup;
 }
 
-} // namespace ops
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator::ops
 
 #endif /* FIXED_WING_OPS_H */

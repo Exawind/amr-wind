@@ -25,6 +25,9 @@
  */
 
 namespace amr_wind {
+namespace {
+amrex::Vector<std::string> bcnames = {"xlo", "ylo", "zlo", "xhi", "yhi", "zhi"};
+}
 
 /** Abstract class that defines the interface for processing BCs
  *  \ingroup field_bc
@@ -66,11 +69,23 @@ protected:
 
     //! Set AMReX mathematical boundary types for the lower boundaries
     inline void
-    set_bcrec_lo(int dir, amrex::BCType::mathematicalBndryTypes bcrec);
+    set_bcrec_lo(int dir, amrex::BCType::mathematicalBndryTypes bcrec)
+    {
+        auto& fbcrec = m_field.bcrec();
+        for (int i = 0; i < m_field.num_comp(); ++i) {
+            fbcrec[i].setLo(dir, bcrec);
+        }
+    }
 
     //! Set AMReX mathematical boundary types for the upper boundaries
     inline void
-    set_bcrec_hi(int dir, amrex::BCType::mathematicalBndryTypes bcrec);
+    set_bcrec_hi(int dir, amrex::BCType::mathematicalBndryTypes bcrec)
+    {
+        auto& fbcrec = m_field.bcrec();
+        for (int i = 0; i < m_field.num_comp(); ++i) {
+            fbcrec[i].setHi(dir, bcrec);
+        }
+    }
 
     //! Field instance where BC is being set
     Field& m_field;

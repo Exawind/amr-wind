@@ -5,8 +5,7 @@
 #include "amr-wind/wind_energy/actuator/actuator_ops.H"
 #include "amr-wind/wind_energy/actuator/wing/wing_ops.H"
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 template <>
 struct AirfoilTraits<FlatPlate>
@@ -72,7 +71,6 @@ inline const ThinAirfoil& airfoil_lookup<FlatPlate>(FlatPlate::DataType& data)
 }
 
 } // namespace ops
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator
 
 #endif /* FLAT_PLATE_OPS_H */

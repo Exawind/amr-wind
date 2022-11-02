@@ -4,8 +4,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/PostProcessing.H"
 
-namespace amr_wind {
-namespace enstrophy {
+namespace amr_wind::enstrophy {
 
 /** enstrophy object
  *  \ingroup Enstrophy
@@ -75,7 +74,6 @@ private:
     int m_precision{12};
 };
 
-} // namespace enstrophy
-} // namespace amr_wind
+} // namespace amr_wind::enstrophy
 
 #endif /* ENSTROPHY_H */

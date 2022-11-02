@@ -43,7 +43,7 @@ option(AMR_WIND_ENABLE_OPENFAST "Enable OpenFAST integration" OFF)
 option(AMR_WIND_ENABLE_ASCENT "Enable Ascent visualization library" OFF)
 
 #Options for C++
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -62,8 +62,8 @@ endif()
 if(AMR_WIND_ENABLE_ROCM)
   find_package(HIP REQUIRED)
   if(NOT DEFINED AMD_ARCH)
-    # Set default AMD architectures (based on Spock)
-    set(AMD_ARCH "gfx908")
+    # Set default AMD architectures (based on Frontier)
+    set(AMD_ARCH "gfx90a")
   endif()
 endif()
 

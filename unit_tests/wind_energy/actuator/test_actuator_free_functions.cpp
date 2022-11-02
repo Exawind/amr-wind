@@ -8,8 +8,7 @@ namespace act = ::amr_wind::actuator::utils;
 namespace vs = ::amr_wind::vs;
 namespace utils = ::amr_wind::utils;
 
-namespace amr_wind_tests {
-namespace amr_wind {
+namespace amr_wind_tests::amr_wind {
 namespace {
 
 TEST(CylindricalTransformation, distances_on_z_aligned_circle)
@@ -102,5 +101,4 @@ TEST(CylindricalTransformation, distances_on_rotated_shifted_circle)
 }
 
 } // namespace
-} // namespace amr_wind
-} // namespace amr_wind_tests
+} // namespace amr_wind_tests::amr_wind
