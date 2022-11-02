@@ -260,15 +260,16 @@ protected:
             pp.addarr("is_periodic", amrex::Vector<int>{{1, 1, 0}});
         }
     }
-    void setup_grid0D(int ninst)
+    void setup_grid0D(int ninst, std::string fsname)
     {
-        amrex::ParmParse pp("freesurface");
+        amrex::ParmParse pp(fsname);
         pp.add("output_frequency", 1);
         pp.add("num_instances", ninst);
         pp.addarr("num_points", amrex::Vector<int>{1, 1});
         pp.addarr("start", pt_coord);
         pp.addarr("end", pt_coord);
     }
+    void setup_grid0D(int ninst) { setup_grid0D(ninst, "freesurface"); }
     void setup_grid2D(int ninst)
     {
         amrex::ParmParse pp("freesurface");
@@ -410,6 +411,31 @@ TEST_F(FreeSurfaceTest, sloped)
     // Check output value
     int nout = tool.check_output_vec("~", out_vec);
     ASSERT_EQ(nout, npts * npts);
+}
+
+TEST_F(FreeSurfaceTest, multisampler)
+{
+    initialize_mesh();
+    auto& repo = sim().repo();
+    auto& vof = repo.declare_field("vof", 1, 2);
+
+    // Set up parameters for one sampler
+    setup_grid0D(1, "freesurface0");
+
+    // Set up parameters for another sampler
+    setup_grid2D_narrow();
+
+    // Initialize VOF distribution and access sim
+    init_vof(vof, water_level1);
+    auto& m_sim = sim();
+
+    // Initialize first sampler
+    FreeSurfaceImpl tool1(m_sim, "freesurface0");
+    tool1.initialize();
+
+    // Initialize second sampler
+    FreeSurfaceImpl tool2(m_sim, "freesurface");
+    tool2.initialize();
 }
 
 } // namespace amr_wind_tests

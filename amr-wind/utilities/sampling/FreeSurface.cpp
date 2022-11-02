@@ -203,8 +203,10 @@ void FreeSurface::initialize()
     m_ncomp = ncomp;
 
     // Declare fields for search
-    auto& floc = m_sim.repo().declare_field("sample_loc", 2 * ncomp, 0, 1);
-    auto& fidx = m_sim.repo().declare_field("sample_idx", ncomp, 0, 1);
+    auto& floc =
+        m_sim.repo().declare_field("sample_loc_" + m_label, 2 * ncomp, 0, 1);
+    auto& fidx =
+        m_sim.repo().declare_field("sample_idx_" + m_label, ncomp, 0, 1);
 
     // Store locations and indices in fields
     for (int lev = 0; lev <= finest_level; lev++) {
@@ -354,8 +356,8 @@ void FreeSurface::post_advance_work()
     auto* dlst_ptr = dout_last.data();
 
     // Get working fields
-    auto& fidx = m_sim.repo().get_field("sample_idx");
-    auto& floc = m_sim.repo().get_field("sample_loc");
+    auto& fidx = m_sim.repo().get_field("sample_idx_" + m_label);
+    auto& floc = m_sim.repo().get_field("sample_loc_" + m_label);
 
     const int finest_level = m_vof.repo().num_active_levels() - 1;
 
