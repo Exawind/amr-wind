@@ -78,10 +78,4 @@ void GeostrophicForcing::operator()(
     });
 }
 
-<<<<<<< HEAD
-} // namespace icns
-} // namespace pde
-} // namespace amr_wind
-=======
 } // namespace amr_wind::pde::icns
->>>>>>> 64ad5cc3c55f9e9c1bbf4645fc67802e911d5bfb
