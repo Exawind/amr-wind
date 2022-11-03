@@ -15,7 +15,6 @@ OceanWaves::OceanWaves(CFDSim& sim)
     , m_ow_vof(sim.repo().declare_field("ow_vof", 1, 2, 1))
     , m_ow_velocity(
           sim.repo().declare_field("ow_velocity", AMREX_SPACEDIM, 3, 1))
-    , m_ow_pressure(sim.repo().declare_field("ow_pressure", 1, 1, 1))
 {
     if (!sim.physics_manager().contains("MultiPhase")) {
         amrex::Abort("OceanWaves requires Multiphase physics to be active");
@@ -23,7 +22,6 @@ OceanWaves::OceanWaves(CFDSim& sim)
     m_ow_levelset.set_default_fillpatch_bc(sim.time());
     m_ow_vof.set_default_fillpatch_bc(sim.time());
     m_ow_velocity.set_default_fillpatch_bc(sim.time());
-    m_ow_pressure.set_default_fillpatch_bc(sim.time());
 }
 
 OceanWaves::~OceanWaves() = default;
