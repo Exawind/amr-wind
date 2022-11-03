@@ -66,8 +66,6 @@ struct InitDataOp<LinearWaves>
                     const amrex::Real waveheight = wdata.wave_height;
                     const amrex::Real wavelength = wdata.wave_length;
                     const amrex::Real waterdepth = wdata.water_depth;
-                    const auto& problo = geom[lev].ProbLoArray();
-                    const auto& dx = geom[lev].CellSizeArray();
                     amrex::ParallelFor(
                         gbx3,
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
