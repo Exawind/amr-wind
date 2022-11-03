@@ -19,7 +19,7 @@ This section is for setting turbulence injection parameters.
 
    **type:** List of Reals, required
   
-   Location of the turbulent grid.
+   Location of the middle of the turbulence box in meters.
 
 .. input_param:: SynthTurb.mean_wind_type
 
@@ -45,7 +45,7 @@ This section is for setting turbulence injection parameters.
 
      **type:** Real list, required
   
-     The reference value of the velocity vector.
+     The reference value of the velocity vector used to propagate the plane.
 
   .. input_param:: SynthTurb.zoffset
  
