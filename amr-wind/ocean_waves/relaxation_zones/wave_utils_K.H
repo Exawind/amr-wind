@@ -56,6 +56,7 @@ ramp(amrex::Real time, amrex::Real ramp_period)
         f = time / ramp_period -
             (1.0 / M_PI) * std::sin(M_PI * (time / ramp_period));
     }
+    amrex::Print() << f << std::endl;
     return f;
 }
 

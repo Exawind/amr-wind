@@ -24,6 +24,8 @@ struct RelaxZonesBaseData
 
     amrex::Real beach_length{8.0};
 
+    bool init_wave_field{false};
+
     bool has_ramp{false};
 
     bool has_beach{true};
