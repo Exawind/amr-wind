@@ -360,9 +360,8 @@ protected:
         pp.add("labels", (std::string) "t1");
         amrex::ParmParse ppt1("tagging.t1");
         ppt1.add("type", (std::string) "FieldRefinement");
-        ppt1.add("field_name", (std::string) "flag");
-        ppt1.addarr(
-            "field_error", amrex::Vector<amrex::Real>{0.5, 0.5, 0.5, 0.5});
+        ppt1.add("field_name", fname);
+        ppt1.addarr("field_error", amrex::Vector<amrex::Real>{fref_val});
     }
     // Parameters to reuse
     const amrex::Real water_level0 = 64.0;
@@ -376,6 +375,8 @@ protected:
     const amrex::Vector<amrex::Real> plnarrow_s{{63.0, 63.0, 0.0}};
     const amrex::Vector<amrex::Real> plnarrow_e{{65.0, 65.0, 0.0}};
     const int npts = 3;
+    const amrex::Real fref_val = 0.5;
+    const std::string fname = "flag";
     int m_nlev = 0;
 };
 
@@ -533,10 +534,10 @@ TEST_F(FreeSurfaceTest, regrid)
     // Repo and fields
     auto& repo = rmesh.field_repo();
     auto& vof = repo.declare_field("vof", 1, 2);
-    auto& flag = repo.declare_field("flag", 1, 2);
+    auto& flag = repo.declare_field(fname, 1, 2);
 
     // Set up scalar for determining refinement - all fine level
-    flag.setVal(1.0);
+    flag.setVal(2.0 * fref_val);
 
     // Initialize mesh refiner and remesh
     rmesh.init_refiner();
