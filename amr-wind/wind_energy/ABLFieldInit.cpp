@@ -73,13 +73,17 @@ ABLFieldInit::ABLFieldInit()
         m_thvv_d.begin());
 }
 
-void ABLFieldInit::operator()(
+bool ABLFieldInit::operator()(
     const amrex::Box& vbx,
     const amrex::Geometry& geom,
     const amrex::Array4<amrex::Real>& velocity,
     const amrex::Array4<amrex::Real>& density,
-    const amrex::Array4<amrex::Real>& temperature) const
+    const amrex::Array4<amrex::Real>& temperature,
+    const int lev) const
 {
+    // cppcheck-suppress constVariable
+    bool interp_fine_levels = false;
+
     const amrex::Real pi = M_PI;
     const auto& dx = geom.CellSizeArray();
     const auto& problo = geom.ProbLoArray();
@@ -138,8 +142,12 @@ void ABLFieldInit::operator()(
     });
 
 #ifdef AMR_WIND_USE_NETCDF
+    // Skip fine levels and interpolate data from already loaded coarse levels
+    if (!m_ic_input.empty() && lev > 0) {
+        interp_fine_levels = true;
+    }
     // Load the netcdf file with data if specified in the inputs
-    if (!m_ic_input.empty()) {
+    if (!m_ic_input.empty() && lev == 0) {
 
         // Open the netcdf input file
         // This file should have the same dimensions as the simulation
@@ -207,6 +215,7 @@ void ABLFieldInit::operator()(
         ncf.close();
     }
 #endif
+    return interp_fine_levels;
 }
 
 void ABLFieldInit::perturb_temperature(
