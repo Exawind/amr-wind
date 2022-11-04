@@ -82,8 +82,8 @@ bool ABLFieldInit::operator()(
     const int lev) const
 {
     // Initialized using lev to prevent compiler warnings when netcdf is not
-    // used cppcheck-suppress constVariable
-    bool interp_fine_levels = (lev >= 0) ? false : true;
+    // used. Will always initialize to false. cppcheck-suppress constVariable
+    bool interp_fine_levels = (lev < 0);
 
     const amrex::Real pi = M_PI;
     const auto& dx = geom.CellSizeArray();
