@@ -44,7 +44,8 @@ public:
     //! Interpolate fields at a given timestep and output to disk
     void post_advance_work() override;
 
-    void post_regrid_actions() override {}
+    //! Redo some of the initialization work when the grid changes
+    void post_regrid_actions() override;
 
     //! Output functions for private variables
     //! Number of points
