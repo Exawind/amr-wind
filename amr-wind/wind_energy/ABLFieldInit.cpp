@@ -36,6 +36,12 @@ ABLFieldInit::ABLFieldInit()
 
     // Use input from netcdf file
     pp_abl.query("initial_condition_input_file", m_ic_input);
+#ifndef AMR_WIND_USE_NETCDF
+    // Ensure that if netcdf is not used, the initial condition
+    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+        m_ic_input.empty(),
+        "NETCDF is needed for initial_condition_input_file");
+#endif
 
     // TODO: Modify this to accept velocity as a function of height
     amrex::ParmParse pp_incflo("incflo");
