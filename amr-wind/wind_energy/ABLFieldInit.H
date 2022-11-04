@@ -22,12 +22,13 @@ class ABLFieldInit
 public:
     ABLFieldInit();
 
-    void operator()(
+    bool operator()(
         const amrex::Box& vbx,
         const amrex::Geometry& geom,
         const amrex::Array4<amrex::Real>& velocity,
         const amrex::Array4<amrex::Real>& density,
-        const amrex::Array4<amrex::Real>& temperature) const;
+        const amrex::Array4<amrex::Real>& temperature,
+        const int lev = 0) const;
 
     /** Add temperature perturbations
      *
