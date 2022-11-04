@@ -81,8 +81,9 @@ bool ABLFieldInit::operator()(
     const amrex::Array4<amrex::Real>& temperature,
     const int lev) const
 {
-    // cppcheck-suppress constVariable
-    bool interp_fine_levels = false;
+    // Initialized using lev to prevent compiler warnings when netcdf is not
+    // used cppcheck-suppress constVariable
+    bool interp_fine_levels = (lev >= 0) ? false : true;
 
     const amrex::Real pi = M_PI;
     const auto& dx = geom.CellSizeArray();
