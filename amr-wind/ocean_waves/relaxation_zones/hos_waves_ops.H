@@ -188,6 +188,22 @@ struct InitDataOp<HOSWaves>
                 eta, u, v, w, HOS_nx, HOS_Lx, HOS_ny, HOS_Ly, HOS_nz, HOS_zmin,
                 HOS_zmax);
 
+            amrex::Gpu::DeviceVector<amrex::Real> dev_eta, dev_u, dev_v, dev_w;
+            dev_eta.resize(HOS_nx * HOS_ny);
+            dev_u.resize(HOS_nx * HOS_ny);
+            dev_v.resize(HOS_nx * HOS_ny);
+            dev_w.resize(HOS_nx * HOS_ny);
+
+            amrex::Gpu::copy(
+                amrex::Gpu::hostToDevice, eta.begin(), eta.end(),
+                dev_eta.begin());
+            amrex::Gpu::copy(
+                amrex::Gpu::hostToDevice, u.begin(), u.end(), dev_u.begin());
+            amrex::Gpu::copy(
+                amrex::Gpu::hostToDevice, v.begin(), v.end(), dev_v.begin());
+            amrex::Gpu::copy(
+                amrex::Gpu::hostToDevice, w.begin(), w.end(), dev_w.begin());
+
             // Check if current dimensions are compatible
             if (problo[0] < -1e-6 || probhi[0] > HOS_Lx * (1.0 + 1e-6) ||
                 problo[1] < -1e-6 || probhi[1] > HOS_Ly * (1.0 + 1e-6)) {
@@ -257,10 +273,10 @@ struct InitDataOp<HOSWaves>
                         amrex::Real wy_lo = 1.0 - wy_hi;
 
                         // Get data
-                        const amrex::Real eta_00 = eta[jj + ii * HOS_ny];
-                        const amrex::Real eta_01 = eta[jj1 + jj * HOS_ny];
-                        const amrex::Real eta_10 = eta[jj + ii1 * HOS_ny];
-                        const amrex::Real eta_11 = eta[jj1 + ii1 * HOS_ny];
+                        const amrex::Real eta_00 = dev_eta[jj + ii * HOS_ny];
+                        const amrex::Real eta_01 = dev_eta[jj1 + jj * HOS_ny];
+                        const amrex::Real eta_10 = dev_eta[jj + ii1 * HOS_ny];
+                        const amrex::Real eta_11 = dev_eta[jj1 + ii1 * HOS_ny];
                         const amrex::Real eta_ =
                             wx_lo * wy_lo * eta_00 + wx_lo * wy_hi * eta_01 +
                             wx_hi * wy_lo * eta_10 + wx_hi * wy_hi * eta_11;
@@ -313,30 +329,33 @@ struct InitDataOp<HOSWaves>
                             const int i110 = (jj1 + ii1 * HOS_ny) * HOS_nz + kk;
                             const int i111 =
                                 (jj1 + ii1 * HOS_ny) * HOS_nz + kk + 1;
-                            vel(i, j, k, 0) = wx_lo * wy_lo * wz_lo * u[i000] +
-                                              wx_lo * wy_lo * wz_hi * u[i001] +
-                                              wx_lo * wy_hi * wz_lo * u[i010] +
-                                              wx_lo * wy_hi * wz_hi * u[i011] +
-                                              wx_hi * wy_lo * wz_lo * u[i100] +
-                                              wx_hi * wy_lo * wz_hi * u[i101] +
-                                              wx_hi * wy_hi * wz_lo * u[i110] +
-                                              wx_hi * wy_hi * wz_hi * u[i111];
-                            vel(i, j, k, 1) = wx_lo * wy_lo * wz_lo * v[i000] +
-                                              wx_lo * wy_lo * wz_hi * v[i001] +
-                                              wx_lo * wy_hi * wz_lo * v[i010] +
-                                              wx_lo * wy_hi * wz_hi * v[i011] +
-                                              wx_hi * wy_lo * wz_lo * v[i100] +
-                                              wx_hi * wy_lo * wz_hi * v[i101] +
-                                              wx_hi * wy_hi * wz_lo * v[i110] +
-                                              wx_hi * wy_hi * wz_hi * v[i111];
-                            vel(i, j, k, 2) = wx_lo * wy_lo * wz_lo * w[i000] +
-                                              wx_lo * wy_lo * wz_hi * w[i001] +
-                                              wx_lo * wy_hi * wz_lo * w[i010] +
-                                              wx_lo * wy_hi * wz_hi * w[i011] +
-                                              wx_hi * wy_lo * wz_lo * w[i100] +
-                                              wx_hi * wy_lo * wz_hi * w[i101] +
-                                              wx_hi * wy_hi * wz_lo * w[i110] +
-                                              wx_hi * wy_hi * wz_hi * w[i111];
+                            vel(i, j, k, 0) =
+                                wx_lo * wy_lo * wz_lo * dev_u[i000] +
+                                wx_lo * wy_lo * wz_hi * dev_u[i001] +
+                                wx_lo * wy_hi * wz_lo * dev_u[i010] +
+                                wx_lo * wy_hi * wz_hi * dev_u[i011] +
+                                wx_hi * wy_lo * wz_lo * dev_u[i100] +
+                                wx_hi * wy_lo * wz_hi * dev_u[i101] +
+                                wx_hi * wy_hi * wz_lo * dev_u[i110] +
+                                wx_hi * wy_hi * wz_hi * dev_u[i111];
+                            vel(i, j, k, 1) =
+                                wx_lo * wy_lo * wz_lo * dev_v[i000] +
+                                wx_lo * wy_lo * wz_hi * dev_v[i001] +
+                                wx_lo * wy_hi * wz_lo * dev_v[i010] +
+                                wx_lo * wy_hi * wz_hi * dev_v[i011] +
+                                wx_hi * wy_lo * wz_lo * dev_v[i100] +
+                                wx_hi * wy_lo * wz_hi * dev_v[i101] +
+                                wx_hi * wy_hi * wz_lo * dev_v[i110] +
+                                wx_hi * wy_hi * wz_hi * dev_v[i111];
+                            vel(i, j, k, 2) =
+                                wx_lo * wy_lo * wz_lo * dev_w[i000] +
+                                wx_lo * wy_lo * wz_hi * dev_w[i001] +
+                                wx_lo * wy_hi * wz_lo * dev_w[i010] +
+                                wx_lo * wy_hi * wz_hi * dev_w[i011] +
+                                wx_hi * wy_lo * wz_lo * dev_w[i100] +
+                                wx_hi * wy_lo * wz_hi * dev_w[i101] +
+                                wx_hi * wy_hi * wz_lo * dev_w[i110] +
+                                wx_hi * wy_hi * wz_hi * dev_w[i111];
 
                             // Set velocity to zero if no liquid present
                             if (phi(i, j, k) + 0.5 * dx[2] < 0.0) {
@@ -436,7 +455,25 @@ struct UpdateRelaxZonesOp<HOSWaves>
                 ReadHOSFileLev(
                     lev, wdata.HOS_prefix, wdata.HOS_n, eta, u, v, w, HOS_nx,
                     HOS_Lx, HOS_ny, HOS_Ly, HOS_nz, HOS_zmin, HOS_zmax);
+                amrex::Gpu::DeviceVector<amrex::Real> dev_eta, dev_u, dev_v,
+                    dev_w;
+                dev_eta.resize(HOS_nx * HOS_ny);
+                dev_u.resize(HOS_nx * HOS_ny);
+                dev_v.resize(HOS_nx * HOS_ny);
+                dev_w.resize(HOS_nx * HOS_ny);
 
+                amrex::Gpu::copy(
+                    amrex::Gpu::hostToDevice, eta.begin(), eta.end(),
+                    dev_eta.begin());
+                amrex::Gpu::copy(
+                    amrex::Gpu::hostToDevice, u.begin(), u.end(),
+                    dev_u.begin());
+                amrex::Gpu::copy(
+                    amrex::Gpu::hostToDevice, v.begin(), v.end(),
+                    dev_v.begin());
+                amrex::Gpu::copy(
+                    amrex::Gpu::hostToDevice, w.begin(), w.end(),
+                    dev_w.begin());
                 // Loop through multifab to interpolate and store in HOS fields
                 for (amrex::MFIter mfi(m_ow_levelset(lev)); mfi.isValid();
                      ++mfi) {
@@ -500,10 +537,14 @@ struct UpdateRelaxZonesOp<HOSWaves>
                             amrex::Real wy_lo = 1.0 - wy_hi;
 
                             // Get data
-                            const amrex::Real eta_00 = eta[jj + ii * HOS_ny];
-                            const amrex::Real eta_01 = eta[jj1 + ii * HOS_ny];
-                            const amrex::Real eta_10 = eta[jj + ii1 * HOS_ny];
-                            const amrex::Real eta_11 = eta[jj1 + ii1 * HOS_ny];
+                            const amrex::Real eta_00 =
+                                dev_eta[jj + ii * HOS_ny];
+                            const amrex::Real eta_01 =
+                                dev_eta[jj1 + ii * HOS_ny];
+                            const amrex::Real eta_10 =
+                                dev_eta[jj + ii1 * HOS_ny];
+                            const amrex::Real eta_11 =
+                                dev_eta[jj1 + ii1 * HOS_ny];
                             const amrex::Real eta_ = wx_lo * wy_lo * eta_00 +
                                                      wx_lo * wy_hi * eta_01 +
                                                      wx_hi * wy_lo * eta_10 +
@@ -566,32 +607,32 @@ struct UpdateRelaxZonesOp<HOSWaves>
                                 const int i111 =
                                     (jj1 + ii1 * HOS_ny) * HOS_nz + kk + 1;
                                 HOS_vel(i, j, k, 0) =
-                                    wx_lo * wy_lo * wz_lo * u[i000] +
-                                    wx_lo * wy_lo * wz_hi * u[i001] +
-                                    wx_lo * wy_hi * wz_lo * u[i010] +
-                                    wx_lo * wy_hi * wz_hi * u[i011] +
-                                    wx_hi * wy_lo * wz_lo * u[i100] +
-                                    wx_hi * wy_lo * wz_hi * u[i101] +
-                                    wx_hi * wy_hi * wz_lo * u[i110] +
-                                    wx_hi * wy_hi * wz_hi * u[i111];
+                                    wx_lo * wy_lo * wz_lo * dev_u[i000] +
+                                    wx_lo * wy_lo * wz_hi * dev_u[i001] +
+                                    wx_lo * wy_hi * wz_lo * dev_u[i010] +
+                                    wx_lo * wy_hi * wz_hi * dev_u[i011] +
+                                    wx_hi * wy_lo * wz_lo * dev_u[i100] +
+                                    wx_hi * wy_lo * wz_hi * dev_u[i101] +
+                                    wx_hi * wy_hi * wz_lo * dev_u[i110] +
+                                    wx_hi * wy_hi * wz_hi * dev_u[i111];
                                 HOS_vel(i, j, k, 1) =
-                                    wx_lo * wy_lo * wz_lo * v[i000] +
-                                    wx_lo * wy_lo * wz_hi * v[i001] +
-                                    wx_lo * wy_hi * wz_lo * v[i010] +
-                                    wx_lo * wy_hi * wz_hi * v[i011] +
-                                    wx_hi * wy_lo * wz_lo * v[i100] +
-                                    wx_hi * wy_lo * wz_hi * v[i101] +
-                                    wx_hi * wy_hi * wz_lo * v[i110] +
-                                    wx_hi * wy_hi * wz_hi * v[i111];
+                                    wx_lo * wy_lo * wz_lo * dev_v[i000] +
+                                    wx_lo * wy_lo * wz_hi * dev_v[i001] +
+                                    wx_lo * wy_hi * wz_lo * dev_v[i010] +
+                                    wx_lo * wy_hi * wz_hi * dev_v[i011] +
+                                    wx_hi * wy_lo * wz_lo * dev_v[i100] +
+                                    wx_hi * wy_lo * wz_hi * dev_v[i101] +
+                                    wx_hi * wy_hi * wz_lo * dev_v[i110] +
+                                    wx_hi * wy_hi * wz_hi * dev_v[i111];
                                 HOS_vel(i, j, k, 2) =
-                                    wx_lo * wy_lo * wz_lo * w[i000] +
-                                    wx_lo * wy_lo * wz_hi * w[i001] +
-                                    wx_lo * wy_hi * wz_lo * w[i010] +
-                                    wx_lo * wy_hi * wz_hi * w[i011] +
-                                    wx_hi * wy_lo * wz_lo * w[i100] +
-                                    wx_hi * wy_lo * wz_hi * w[i101] +
-                                    wx_hi * wy_hi * wz_lo * w[i110] +
-                                    wx_hi * wy_hi * wz_hi * w[i111];
+                                    wx_lo * wy_lo * wz_lo * dev_w[i000] +
+                                    wx_lo * wy_lo * wz_hi * dev_w[i001] +
+                                    wx_lo * wy_hi * wz_lo * dev_w[i010] +
+                                    wx_lo * wy_hi * wz_hi * dev_w[i011] +
+                                    wx_hi * wy_lo * wz_lo * dev_w[i100] +
+                                    wx_hi * wy_lo * wz_hi * dev_w[i101] +
+                                    wx_hi * wy_hi * wz_lo * dev_w[i110] +
+                                    wx_hi * wy_hi * wz_hi * dev_w[i111];
 
                                 // Set velocity to zero if no liquid present
                                 if (HOS_phi(i, j, k) + 0.5 * dx[2] < 0.0) {
