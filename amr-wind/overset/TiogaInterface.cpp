@@ -105,68 +105,69 @@ void TiogaInterface::pre_overset_conn_work()
     m_iblank_cell.setVal(1);
     m_iblank_node.setVal(1);
 
-        //const auto& mbl = m_iblank_cell;
-
-	//std::cout<<"Inside pre_overset_conn_work"<<"\n";
-	//amrex::Print() << "Inside pre_overset_conn_work"<<std::endl;
-
-	// IXT comments
-/*
-    const auto& nlevels = m_iblank_cell.repo().mesh().finestLevel() + 1;
-	//amrex::Print << "nlevels is "<< nlevels << "\n";
+    // const auto& mbl = m_iblank_cell;
 
 
-    for (int lev = 0; lev < nlevels; ++lev) {
-        const auto& mbl = m_iblank_cell(lev);
-	//std::cout << "lev is " << lev <<"\n";
-	//amrex::Print() << "lev is " << lev <<"\n";
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-        for (amrex::MFIter mfi(mbl); mfi.isValid(); ++mfi) {
-            const auto& gbx = mfi.growntilebox();
-            const auto& ibarr = mbl.const_array(mfi);
-            amrex::ParallelFor(
-                gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-			//amrex::Print()<<"The quantity is "<<"\n";
-			amrex::Print()<<"pre_ibarr is "<<ibarr(i,j,k)<<"\n";
-			//amrex::Print() << "Printing in AMRex?" <<"\n";
-			//amrex::Print() << "Printing in AMRex?" << amrex::Version()<<"\n";
-                    //marr(i, j, k) = amrex::max(ibarr(i, j, k), 0);
-                });
+    // IXT comments
+    /*
+        const auto& nlevels = m_iblank_cell.repo().mesh().finestLevel() + 1;
+            //amrex::Print << "nlevels is "<< nlevels << "\n";
+
+
+        for (int lev = 0; lev < nlevels; ++lev) {
+            const auto& mbl = m_iblank_cell(lev);
+            //std::cout << "lev is " << lev <<"\n";
+            //amrex::Print() << "lev is " << lev <<"\n";
+    #ifdef AMREX_USE_OMP
+    #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+    #endif
+            for (amrex::MFIter mfi(mbl); mfi.isValid(); ++mfi) {
+                const auto& gbx = mfi.growntilebox();
+                const auto& ibarr = mbl.const_array(mfi);
+                amrex::ParallelFor(
+                    gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            //amrex::Print()<<"The quantity is "<<"\n";
+                            amrex::Print()<<"pre_ibarr is "<<ibarr(i,j,k)<<"\n";
+                            //amrex::Print() << "Printing in AMRex?" <<"\n";
+                            //amrex::Print() << "Printing in AMRex?" <<
+    amrex::Version()<<"\n";
+                        //marr(i, j, k) = amrex::max(ibarr(i, j, k), 0);
+                    });
+            }
         }
-    }
-*/
+    */
 }
 
 void TiogaInterface::post_overset_conn_work()
 {
 
-	//std::cout<<"Inside post_overset_conn_work"<<"\n";
+    // Copy from m_iblank_cell_host to m_mask_cell
+    // Copy from m_iblank_node_host to m_mask_node
     iblank_to_mask(m_iblank_cell, m_mask_cell);
     iblank_to_mask(m_iblank_node, m_mask_node);
-	// IXT comments
-	// Print m_mask_cell
-	// Print m_mask_node here
+    // IXT comments
+    // Print m_mask_cell
+    // Print m_mask_node here
 
-/*
-    const auto& nlevels = m_iblank_cell.repo().mesh().finestLevel() + 1;
-    for (int lev = 0; lev < nlevels; ++lev) {
-        //const auto& mbl = m_mask_cell(lev);
-        const auto& mbl = m_mask_node(lev);
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-        for (amrex::MFIter mfi(mbl); mfi.isValid(); ++mfi) {
-            const auto& gbx = mfi.growntilebox();
-            const auto& ibarr = mbl.const_array(mfi);
-            amrex::ParallelFor(
-                gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-			amrex::Print()<<"post_ibarr is "<<ibarr(i,j,k)<<"\n";
-                });
+    /*
+        const auto& nlevels = m_iblank_cell.repo().mesh().finestLevel() + 1;
+        for (int lev = 0; lev < nlevels; ++lev) {
+            //const auto& mbl = m_mask_cell(lev);
+            const auto& mbl = m_mask_node(lev);
+    #ifdef AMREX_USE_OMP
+    #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+    #endif
+            for (amrex::MFIter mfi(mbl); mfi.isValid(); ++mfi) {
+                const auto& gbx = mfi.growntilebox();
+                const auto& ibarr = mbl.const_array(mfi);
+                amrex::ParallelFor(
+                    gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            amrex::Print()<<"post_ibarr is
+    "<<ibarr(i,j,k)<<"\n";
+                    });
+            }
         }
-    }
-*/
+    */
 
     // Update equation systems after a connectivity update
     m_sim.pde_manager().icns().post_regrid_actions();
@@ -174,10 +175,10 @@ void TiogaInterface::post_overset_conn_work()
         eqn->post_regrid_actions();
     }
 }
-	// IXT comment
-	// This is called right before dataUpdate_AMR is called inside exawind
-	// through the tioga instance m_tg
-	// This is likely where the relevant exchange occurs
+// IXT comment
+// This is called right before dataUpdate_AMR is called inside exawind
+// through the tioga instance m_tg
+// This is likely where the relevant exchange occurs
 void TiogaInterface::register_solution(
     const std::vector<std::string>& cell_vars,
     const std::vector<std::string>& node_vars)
@@ -195,56 +196,133 @@ void TiogaInterface::register_solution(
     m_qcell = repo.create_scratch_field(ncell_vars, num_ghost, FieldLoc::CELL);
     m_qnode = repo.create_scratch_field(nnode_vars, num_ghost, FieldLoc::NODE);
 
-
-
-	// IXT
-	// call create_scratch_field_on_host here
-	//amrex::Print()<<"ncell_vars "<<ncell_vars<<"num_ghost "<<num_ghost<<std::endl;
-    m_qcell_host = repo.create_scratch_field_on_host(ncell_vars, num_ghost, FieldLoc::CELL);
-    m_qnode_host = repo.create_scratch_field_on_host(nnode_vars, num_ghost, FieldLoc::NODE);
+    // IXT
+    // call create_scratch_field_on_host here
+    amrex::Print() << "ncell_vars " << ncell_vars << " nnode_vars "
+                   << nnode_vars << " num_ghost " << num_ghost << std::endl;
+    m_qcell_host = repo.create_scratch_field_on_host(
+        2*ncell_vars, num_ghost, FieldLoc::CELL);
+    m_qnode_host = repo.create_scratch_field_on_host(
+        2*nnode_vars, num_ghost, FieldLoc::NODE);
+    //m_qcell_host = repo.create_scratch_field_on_host(
+    //    ncell_vars, num_ghost, FieldLoc::CELL);
+    //m_qnode_host = repo.create_scratch_field_on_host(
+    //    nnode_vars, num_ghost, FieldLoc::NODE);
     // Store field variable names for use in update_solution step
     // These are both vectors holding strings
     m_cell_vars = cell_vars;
     m_node_vars = node_vars;
 
-
-	// IXT comments
+    // IXT comments
     // Move cell variables into scratch field
     {
         int icomp = 0;
         for (const auto& cvar : m_cell_vars) {
-		//amrex::Print()<<"cvar"<<cvar<<std::endl;
+            // amrex::Print()<<"cvar"<<cvar<<std::endl;
             auto& fld = repo.get_field(cvar);
             const int ncomp = fld.num_comp();
             fld.fillpatch(m_sim.time().new_time());
             field_ops::copy(*m_qcell, fld, 0, icomp, ncomp, num_ghost);
-	// Consider calling an explicit copy to the CPU field here for testing
+            // Consider calling an explicit copy to the CPU field here for
+            // testing
             icomp += ncomp;
         }
         AMREX_ASSERT(ncell_vars == icomp);
     }
 
+    // Move cell variables into host scratch field
+    {
+        int icomp = 0;
+        for (const auto& cvar : m_cell_vars) {
+            // amrex::Print()<<"cvar"<<cvar<<std::endl;
+            auto& fld = repo.get_field(cvar);
+            const int ncomp = fld.num_comp();
+		amrex::Print()<<"NCOMP IS "<<ncomp<<std::endl;
+            fld.fillpatch(m_sim.time().new_time());
+            // Device to host copy happens here
+            const int nlevels = repo.num_active_levels();
+            for (int lev = 0; lev < nlevels; ++lev) {
+		//dtoh_memcpy((*m_qcell_host)(lev), fld(lev),0,icomp,2*ncomp);
+		dtoh_memcpy((*m_qcell_host)(lev), fld(lev),0,icomp,ncomp);
+
+            }
+	//amrex::Print()<<"preicomp "<<icomp<<" ncomp"<<ncomp<<std::endl;
+            icomp += ncomp;
+	//amrex::Print()<<"posticomp "<<icomp<<" ncomp"<<ncomp<<std::endl;
+	/*
+	for (int lev = 0; lev < nlevels; ++lev) {
+	    const auto& mbl = (*m_qcell_host)(lev);
+	    for (amrex::MFIter mfi(mbl); mfi.isValid(); ++mfi) {
+		const auto& gbx = mfi.growntilebox();
+		const auto& ibarr = mbl.const_array(mfi);
+		amrex::ParallelFor(
+		    gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+			    amrex::Print()<<i<<" "<<j<<" "<<k<<" "<<"field is "<<ibarr(i,j,k,2)<<std::endl;
+			    //amrex::Print()<<i<<" "<<j<<" "<<k<<" "<<"lev "<<lev<<"field is "<<ibarr(i,j,k)<<"\n";
+		    });
+	    }
+	}
+	*/
+        }
+        AMREX_ASSERT(ncell_vars == icomp);
+
+	// Copy the device field to the host field again
+        for (const auto& cvar : m_cell_vars) {
+            // amrex::Print()<<"cvar"<<cvar<<std::endl;
+            auto& fld = repo.get_field(cvar);
+            const int ncomp = fld.num_comp();
+            fld.fillpatch(m_sim.time().new_time());
+            // Device to host copy happens here
+            const int nlevels = repo.num_active_levels();
+            for (int lev = 0; lev < nlevels; ++lev) {
+		dtoh_memcpy((*m_qcell_host)(lev), fld(lev),0,icomp,ncomp);
+
+            }
+
+	//amrex::Print()<<"preicomp2 "<<icomp<<" ncomp"<<ncomp<<std::endl;
+            icomp += ncomp;
+	//amrex::Print()<<"posticomp2 "<<icomp<<" ncomp"<<ncomp<<std::endl;
+	
+	/*
+	for (int lev = 0; lev < nlevels; ++lev) {
+	    const auto& mbl = (*m_qcell_host)(lev);
+	    for (amrex::MFIter mfi(mbl); mfi.isValid(); ++mfi) {
+		const auto& gbx = mfi.growntilebox();
+		const auto& ibarr = mbl.const_array(mfi);
+		amrex::ParallelFor(
+		    gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+			    amrex::Print()<<i<<" "<<j<<" "<<k<<" "<<"field is "<<ibarr(i,j,k,0)<<std::endl;
+			    //amrex::Print()<<i<<" "<<j<<" "<<k<<" "<<"lev "<<lev<<"field is "<<ibarr(i,j,k)<<"\n";
+		    });
+	    }
+	}
+	*/
+        }
+    }
+    amrex::Arena::PrintUsage();
     // Move node variables into scratch field
     {
         int icomp = 0;
         for (const auto& cvar : m_node_vars) {
             auto& fld = repo.get_field(cvar);
-//////////////////
-	{
-    const auto& nlevels = fld.repo().mesh().finestLevel() + 1;
-    for (int lev = 0; lev < nlevels; ++lev) {
-        const auto& mbl = fld(lev);
-        for (amrex::MFIter mfi(mbl); mfi.isValid(); ++mfi) {
-            const auto& gbx = mfi.growntilebox();
-            const auto& ibarr = mbl.const_array(mfi);
-            amrex::ParallelFor(
-                gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-			amrex::Print()<<"fld is "<<ibarr(i,j,k)<<"\n";
-                });
+            //////////////////
+            /*
+            {
+        const auto& nlevels = fld.repo().mesh().finestLevel() + 1;
+        for (int lev = 0; lev < nlevels; ++lev) {
+            const auto& mbl = fld(lev);
+            for (amrex::MFIter mfi(mbl); mfi.isValid(); ++mfi) {
+                const auto& gbx = mfi.growntilebox();
+                const auto& ibarr = mbl.const_array(mfi);
+                amrex::ParallelFor(
+                    gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            amrex::Print()<<"fld is "<<ibarr(i,j,k)<<"\n";
+                    });
+            }
         }
-    }
-	}
-////////////////////////
+            }
+            */
+            ////////////////////////
 
             const int ncomp = fld.num_comp();
             fld.fillpatch(m_sim.time().new_time());
@@ -252,12 +330,10 @@ void TiogaInterface::register_solution(
             icomp += ncomp;
         }
         AMREX_ASSERT(nnode_vars == icomp);
-
-
     }
-	// Copy from device to host
-	// Print host data
-	// Call amrex::Arena::PrintUsage();
+    // Copy from device to host
+    // Print host data
+    // Call amrex::Arena::PrintUsage();
 
     // Update data pointers for TIOGA exchange
     {
@@ -269,17 +345,17 @@ void TiogaInterface::register_solution(
             auto& qnfab = (*m_qnode)(lev);
 
             for (amrex::MFIter mfi(qcfab); mfi.isValid(); ++mfi) {
-		std::cout<<"Is this being called?\n";
-		// IXT comments
-		// Copy from device to host
+                std::cout << "Is this being called?\n";
+                // IXT comments
+                // Copy from device to host
                 ad.qcell.h_view[ilp] = qcfab[mfi].dataPtr();
-		// Do nothing for d_view
-		// d_view is an amrex::Gpu::DeviceVector
+                // Do nothing for d_view
+                // d_view is an amrex::Gpu::DeviceVector
                 ad.qcell.d_view[ilp] = qcfab[mfi].dataPtr();
-		// Copy from device to host
+                // Copy from device to host
                 ad.qnode.h_view[ilp] = qnfab[mfi].dataPtr();
-		// Do nothing for d_view
-		// d_view is an amrex::Gpu::DeviceVector
+                // Do nothing for d_view
+                // d_view is an amrex::Gpu::DeviceVector
                 ad.qnode.d_view[ilp] = qnfab[mfi].dataPtr();
 
                 ++ilp;
@@ -295,10 +371,10 @@ void TiogaInterface::update_solution()
 
     int prank;
     MPI_Comm_rank(MPI_COMM_WORLD, &prank);
-	//std::cout<<"Inside update_solution"<<"\n";
-	//std::cout<<"Rank Inside update_solution "<<prank<<"\n";
-	// IXT
-	// print cvar and ncomp here
+    // std::cout<<"Inside update_solution"<<"\n";
+    // std::cout<<"Rank Inside update_solution "<<prank<<"\n";
+    //  IXT
+    //  print cvar and ncomp here
     // Update cell variables
     {
         int icomp = 0;
@@ -311,9 +387,8 @@ void TiogaInterface::update_solution()
         }
     }
 
-
-	// IXT
-	// print cvar and ncomp here
+    // IXT
+    // print cvar and ncomp here
     // Update nodal variables
     {
         int icomp = 0;
@@ -410,7 +485,7 @@ void TiogaInterface::amr_to_tioga_mesh()
         auto& ad = *m_amr_data;
         auto& ibfab = ibcell(lev);
         auto& ibnodefab = ibnode(lev);
-	// h_view might need an explicit copy from device to host
+        // h_view might need an explicit copy from device to host
         for (amrex::MFIter mfi(ibfab); mfi.isValid(); ++mfi) {
             auto& ib = ibfab[mfi];
             auto& ibn = ibnodefab[mfi];
