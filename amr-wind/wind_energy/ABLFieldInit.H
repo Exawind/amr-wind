@@ -22,13 +22,12 @@ class ABLFieldInit
 public:
     ABLFieldInit();
 
-    bool operator()(
+    void operator()(
         const amrex::Box& vbx,
         const amrex::Geometry& geom,
         const amrex::Array4<amrex::Real>& velocity,
         const amrex::Array4<amrex::Real>& density,
-        const amrex::Array4<amrex::Real>& temperature,
-        const int lev = 0) const;
+        const amrex::Array4<amrex::Real>& temperature) const;
 
     /** Add temperature perturbations
      *
@@ -106,9 +105,6 @@ private:
 
     //! Perturb temperature field with random fluctuations
     bool m_perturb_theta{false};
-
-    //! Input file with initial condition from Machine Learning
-    std::string m_ic_input;
 };
 
 } // namespace amr_wind

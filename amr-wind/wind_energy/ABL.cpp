@@ -65,19 +65,12 @@ void ABL::initialize_fields(int level, const amrex::Geometry& geom)
         temp.setVal(0.0);
     }
 
-    bool interp_fine_levels = false;
     for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
 
-        interp_fine_levels = (*m_field_init)(
-            vbx, geom, velocity.array(mfi), density.array(mfi), temp.array(mfi),
-            level);
-    }
-
-    if (interp_fine_levels) {
-        // Fill the finer levels with coarse data
-        m_velocity.fillpatch_from_coarse(level, 0.0, velocity, 0);
-        m_density.fillpatch_from_coarse(level, 0.0, density, 0);
+        (*m_field_init)(
+            vbx, geom, velocity.array(mfi), density.array(mfi),
+            temp.array(mfi));
     }
 
     if (m_sim.repo().field_exists("tke")) {
