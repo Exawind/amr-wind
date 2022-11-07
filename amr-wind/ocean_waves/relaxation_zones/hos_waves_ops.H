@@ -18,7 +18,7 @@ namespace ops {
 
 void ReadHOSFileLev(
     int lev,
-    std::string HOS_prefix,
+    std::string& HOS_prefix,
     int HOS_n,
     amrex::Real& HOS_t,
     amrex::Real& HOS_dt,
@@ -100,7 +100,7 @@ void ReadHOSFileLev(
 
 void ReadHOSFileLev(
     int lev,
-    std::string HOS_prefix,
+    std::string& HOS_prefix,
     int HOS_n,
     RealList& eta,
     RealList& u,

@@ -39,7 +39,7 @@ struct InitDataOp<StokesWaves>
 
         auto& sim = data.sim();
         // cppcheck-suppress constVariable
-        auto& m_ow_levelset = sim.repo().get_field("ow_levelset");
+        auto& m_levelset = sim.repo().get_field("levelset");
         auto& velocity = sim.repo().get_field("velocity");
         auto& vof = sim.repo().get_field("vof");
         auto& density = sim.repo().get_field("density");
@@ -54,9 +54,9 @@ struct InitDataOp<StokesWaves>
         for (int lev = 0; lev < nlevels; ++lev) {
             const auto& problo = geom[lev].ProbLoArray();
             const auto& dx = geom[lev].CellSizeArray();
-            for (amrex::MFIter mfi(m_ow_levelset(lev)); mfi.isValid(); ++mfi) {
+            for (amrex::MFIter mfi(m_levelset(lev)); mfi.isValid(); ++mfi) {
 
-                auto phi = m_ow_levelset(lev).array(mfi);
+                auto phi = m_levelset(lev).array(mfi);
                 auto vel = velocity(lev).array(mfi);
                 auto volfrac = vof(lev).array(mfi);
                 auto rho = density(lev).array(mfi);
