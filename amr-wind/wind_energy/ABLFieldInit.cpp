@@ -4,6 +4,7 @@
 #include "amr-wind/utilities/trig_ops.H"
 #include "AMReX_Gpu.H"
 #include "AMReX_ParmParse.H"
+#include "amr-wind/utilities/ncutils/nc_interface.H"
 
 namespace amr_wind {
 
@@ -32,6 +33,15 @@ ABLFieldInit::ABLFieldInit()
     pp_abl.query("theta_amplitude", m_deltaT);
 
     pp_abl.query("init_tke", m_tke_init);
+
+    // Use input from netcdf file
+    pp_abl.query("initial_condition_input_file", m_ic_input);
+#ifndef AMR_WIND_USE_NETCDF
+    // Ensure that if netcdf is not used, the initial condition
+    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+        m_ic_input.empty(),
+        "NETCDF is needed for initial_condition_input_file");
+#endif
 
     // TODO: Modify this to accept velocity as a function of height
     amrex::ParmParse pp_incflo("incflo");
@@ -63,13 +73,18 @@ ABLFieldInit::ABLFieldInit()
         m_thvv_d.begin());
 }
 
-void ABLFieldInit::operator()(
+bool ABLFieldInit::operator()(
     const amrex::Box& vbx,
     const amrex::Geometry& geom,
     const amrex::Array4<amrex::Real>& velocity,
     const amrex::Array4<amrex::Real>& density,
-    const amrex::Array4<amrex::Real>& temperature) const
+    const amrex::Array4<amrex::Real>& temperature,
+    const int lev) const
 {
+    // Initialized using lev to prevent compiler warnings when netcdf is not
+    // used. Will always initialize to false. cppcheck-suppress constVariable
+    bool interp_fine_levels = (lev < 0);
+
     const amrex::Real pi = M_PI;
     const auto& dx = geom.CellSizeArray();
     const auto& problo = geom.ProbLoArray();
@@ -126,6 +141,82 @@ void ABLFieldInit::operator()(
             velocity(i, j, k, 1) += vfac * damp * z * std::cos(bval * xl);
         }
     });
+
+#ifdef AMR_WIND_USE_NETCDF
+    // Skip fine levels and interpolate data from already loaded coarse levels
+    if (!m_ic_input.empty() && lev > 0) {
+        interp_fine_levels = true;
+    }
+    // Load the netcdf file with data if specified in the inputs
+    if (!m_ic_input.empty() && lev == 0) {
+
+        // Open the netcdf input file
+        // This file should have the same dimensions as the simulation
+        auto ncf = ncutils::NCFile::open(m_ic_input, NC_NOWRITE);
+
+        // Ensure that the input dimensions match the coarsest grid size
+        const auto& domain = geom.Domain();
+
+        // The indices that determine the start and end points of the i, j, k
+        // arrays. The max and min are there to ensure that the points form
+        // ghost cells are not used
+        auto i0 = std::max(vbx.smallEnd(0), domain.smallEnd(0));
+        auto i1 = std::min(vbx.bigEnd(0), domain.bigEnd(0));
+
+        auto j0 = std::max(vbx.smallEnd(1), domain.smallEnd(1));
+        auto j1 = std::min(vbx.bigEnd(1), domain.bigEnd(1));
+
+        auto k0 = std::max(vbx.smallEnd(2), domain.smallEnd(2));
+        auto k1 = std::min(vbx.bigEnd(2), domain.bigEnd(2));
+
+        // The x, y and z velocity components (u, v, w)
+        auto uvel = ncf.var("uvel");
+        auto vvel = ncf.var("vvel");
+        auto wvel = ncf.var("wvel");
+
+        // Loop through all points in the domain and set velocities to values
+        // from the input file
+        // start is the first index from where to read data
+        std::vector<size_t> start{
+            {static_cast<size_t>(i0), static_cast<size_t>(j0),
+             static_cast<size_t>(k0)}};
+        // count is the total number of elements to read in each direction
+        std::vector<size_t> count{
+            {static_cast<size_t>(i1 - i0 + 1), static_cast<size_t>(j1 - j0 + 1),
+             static_cast<size_t>(k1 - k0 + 1)}};
+
+        // Vector to store the 3d data into a single array
+        amrex::Vector<double> uvel2;
+        amrex::Vector<double> vvel2;
+        amrex::Vector<double> wvel2;
+
+        // Set the size of the arrays to the total number of points in this
+        // processor
+        uvel2.resize(count[0] * count[1] * count[2]);
+        vvel2.resize(count[0] * count[1] * count[2]);
+        wvel2.resize(count[0] * count[1] * count[2]);
+
+        // Read the velocity components u and v
+        uvel.get(uvel2.data(), start, count);
+        vvel.get(vvel2.data(), start, count);
+        wvel.get(wvel2.data(), start, count);
+
+        // Amrex parallel for to assign the velocity at each point
+        amrex::ParallelFor(
+            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                // The counter to go from 3d to 1d vector
+                auto idx = (i - i0) * count[2] * count[1] +
+                           (j - j0) * count[2] + (k - k0);
+                // Pass values from temporary array to the velocity field
+                velocity(i, j, k, 0) = uvel2.data()[idx];
+                velocity(i, j, k, 1) = vvel2.data()[idx];
+                velocity(i, j, k, 3) = wvel2.data()[idx];
+            });
+        // Close the netcdf file
+        ncf.close();
+    }
+#endif
+    return interp_fine_levels;
 }
 
 void ABLFieldInit::perturb_temperature(
