@@ -185,32 +185,46 @@ bool ABLFieldInit::operator()(
             {static_cast<size_t>(i1 - i0 + 1), static_cast<size_t>(j1 - j0 + 1),
              static_cast<size_t>(k1 - k0 + 1)}};
 
-        // Vector to store the 3d data into a single array
-        amrex::Vector<double> uvel2;
-        amrex::Vector<double> vvel2;
-        amrex::Vector<double> wvel2;
+        // Working vector to read data onto host
+        std::vector<double> tmp;
+        tmp.resize(count[0] * count[1] * count[2]);
+        // Vector to store the 3d data into a single array and set size
+        amrex::Gpu::DeviceVector<amrex::Real> uvel_d(
+            count[0] * count[1] * count[2], 0.0);
+        amrex::Gpu::DeviceVector<amrex::Real> vvel_d(
+            count[0] * count[1] * count[2], 0.0);
+        amrex::Gpu::DeviceVector<amrex::Real> wvel_d(
+            count[0] * count[1] * count[2], 0.0);
 
-        // Set the size of the arrays to the total number of points in this
-        // processor
-        uvel2.resize(count[0] * count[1] * count[2]);
-        vvel2.resize(count[0] * count[1] * count[2]);
-        wvel2.resize(count[0] * count[1] * count[2]);
+        // Read the velocity components u, v, w and copy to device
+        uvel.get(tmp.data(), start, count);
+        amrex::Gpu::copy(
+            amrex::Gpu::deviceToHost, uvel_d.begin(), uvel_d.end(), &tmp[0]);
+        vvel.get(tmp.data(), start, count);
+        amrex::Gpu::copy(
+            amrex::Gpu::deviceToHost, vvel_d.begin(), vvel_d.end(), &tmp[0]);
+        wvel.get(tmp.data(), start, count);
+        amrex::Gpu::copy(
+            amrex::Gpu::deviceToHost, wvel_d.begin(), wvel_d.end(), &tmp[0]);
 
-        // Read the velocity components u and v
-        uvel.get(uvel2.data(), start, count);
-        vvel.get(vvel2.data(), start, count);
-        wvel.get(wvel2.data(), start, count);
+        // Pointers to velocity objects
+        auto* uvel_dptr = uvel_d.data();
+        auto* vvel_dptr = vvel_d.data();
+        auto* wvel_dptr = wvel_d.data();
+
+        // Get count components for device
+        int ct1 = count[1];
+        int ct2 = count[2];
 
         // Amrex parallel for to assign the velocity at each point
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 // The counter to go from 3d to 1d vector
-                auto idx = (i - i0) * count[2] * count[1] +
-                           (j - j0) * count[2] + (k - k0);
+                auto idx = (i - i0) * ct2 * ct1 + (j - j0) * ct1 + (k - k0);
                 // Pass values from temporary array to the velocity field
-                velocity(i, j, k, 0) = uvel2.data()[idx];
-                velocity(i, j, k, 1) = vvel2.data()[idx];
-                velocity(i, j, k, 3) = wvel2.data()[idx];
+                velocity(i, j, k, 0) = uvel_dptr[idx];
+                velocity(i, j, k, 1) = vvel_dptr[idx];
+                velocity(i, j, k, 3) = wvel_dptr[idx];
             });
         // Close the netcdf file
         ncf.close();
