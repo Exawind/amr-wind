@@ -188,22 +188,6 @@ struct InitDataOp<HOSWaves>
                 eta, u, v, w, HOS_nx, HOS_Lx, HOS_ny, HOS_Ly, HOS_nz, HOS_zmin,
                 HOS_zmax);
 
-            amrex::Gpu::DeviceVector<amrex::Real> dev_eta, dev_u, dev_v, dev_w;
-            dev_eta.resize(HOS_nx * HOS_ny);
-            dev_u.resize(HOS_nx * HOS_ny);
-            dev_v.resize(HOS_nx * HOS_ny);
-            dev_w.resize(HOS_nx * HOS_ny);
-
-            amrex::Gpu::copy(
-                amrex::Gpu::hostToDevice, eta.begin(), eta.end(),
-                dev_eta.begin());
-            amrex::Gpu::copy(
-                amrex::Gpu::hostToDevice, u.begin(), u.end(), dev_u.begin());
-            amrex::Gpu::copy(
-                amrex::Gpu::hostToDevice, v.begin(), v.end(), dev_v.begin());
-            amrex::Gpu::copy(
-                amrex::Gpu::hostToDevice, w.begin(), w.end(), dev_w.begin());
-
             // Check if current dimensions are compatible
             if (problo[0] < -1e-6 || probhi[0] > HOS_Lx * (1.0 + 1e-6) ||
                 problo[1] < -1e-6 || probhi[1] > HOS_Ly * (1.0 + 1e-6)) {
@@ -222,7 +206,28 @@ struct InitDataOp<HOSWaves>
                 const amrex::Real HOS_dy = HOS_Ly / HOS_ny;
                 const amrex::Real HOS_dz = (HOS_zmax - HOS_zmin) / HOS_nz;
                 const auto& gbx = mfi.growntilebox(2);
+
+                amrex::Gpu::DeviceVector<amrex::Real> dev_eta, dev_u, dev_v,
+                    dev_w;
+                dev_eta.resize(HOS_nx * HOS_ny);
+                dev_u.resize(HOS_nx * HOS_ny);
+                dev_v.resize(HOS_nx * HOS_ny);
+                dev_w.resize(HOS_nx * HOS_ny);
+
+                amrex::Gpu::copy(
+                    amrex::Gpu::hostToDevice, eta.begin(), eta.end(),
+                    dev_eta.begin());
+                amrex::Gpu::copy(
+                    amrex::Gpu::hostToDevice, u.begin(), u.end(),
+                    dev_u.begin());
+                amrex::Gpu::copy(
+                    amrex::Gpu::hostToDevice, v.begin(), v.end(),
+                    dev_v.begin());
+                amrex::Gpu::copy(
+                    amrex::Gpu::hostToDevice, w.begin(), w.end(),
+                    dev_w.begin());
                 amrex::ParallelFor(
+
                     gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                         amrex::Real y = problo[1] + (j + 0.5) * dx[1];
@@ -273,11 +278,11 @@ struct InitDataOp<HOSWaves>
                         amrex::Real wy_lo = 1.0 - wy_hi;
 
                         // Get data
-                        const amrex::Real eta_00 = dev_eta[jj + ii * HOS_ny];
-                        const amrex::Real eta_01 = dev_eta[jj1 + jj * HOS_ny];
-                        const amrex::Real eta_10 = dev_eta[jj + ii1 * HOS_ny];
-                        const amrex::Real eta_11 = dev_eta[jj1 + ii1 * HOS_ny];
-                        const amrex::Real eta_ =
+                        amrex::Real eta_00 = dev_eta[jj + ii * HOS_ny];
+                        amrex::Real eta_01 = dev_eta[jj1 + jj * HOS_ny];
+                        amrex::Real eta_10 = dev_eta[jj + ii1 * HOS_ny];
+                        amrex::Real eta_11 = dev_eta[jj1 + ii1 * HOS_ny];
+                        amrex::Real eta_ =
                             wx_lo * wy_lo * eta_00 + wx_lo * wy_hi * eta_01 +
                             wx_hi * wy_lo * eta_10 + wx_hi * wy_hi * eta_11;
 
