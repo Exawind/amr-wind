@@ -151,7 +151,7 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
 
         for (int ip = 0; ip < ddata.num_vel_pts_r; ip++) {
             const amrex::Real x =
-                std::max<amrex::Real>((ip + 0.5) * dx, machine_eps);
+                amrex::max<amrex::Real>((ip + 0.5) * dx, machine_eps);
 
             a1 += std::pow(ddata.tip_correction[ip], 2.0) *
                   std::pow(ddata.root_correction[ip], 2.0) / x * dx;
@@ -170,7 +170,7 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
         const amrex::Real numerator = std::sqrt(term1 + term2) - term3;
 
         const amrex::Real denominator =
-            std::max<amrex::Real>(4.0 * a1, machine_eps);
+            amrex::max<amrex::Real>(4.0 * a1, machine_eps);
 
         const amrex::Real q0 = numerator / denominator;
 
@@ -189,7 +189,7 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
             const amrex::Real& g = ddata.root_correction[i];
 
             const amrex::Real x =
-                std::max<amrex::Real>((i + 0.5) * dx, machine_eps);
+                amrex::max<amrex::Real>((i + 0.5) * dx, machine_eps);
             //            const amrex::Real& g = x;
 
             const amrex::Real f_z =
@@ -226,7 +226,7 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
         }
 
         // equation 20
-        const amrex::Real eq_20_denominator = std::max<amrex::Real>(
+        const amrex::Real eq_20_denominator = amrex::max<amrex::Real>(
             0.5 * M_PI * ddata.density * std::pow(ddata.radius(), 2) *
                 std::pow(U_ref, 3),
             machine_eps);
