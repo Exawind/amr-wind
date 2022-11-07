@@ -8,7 +8,7 @@ namespace amr_wind {
 void SimTime::parse_parameters()
 {
     // Initialize deltaT to negative values
-    for (double& i : m_dt) {
+    for (amrex::Real& i : m_dt) {
         i = -1.0;
     }
 
@@ -112,7 +112,7 @@ void SimTime::set_current_cfl(
 
     // Limit timestep growth to 10% per timestep
     if (m_dt[0] > 0.0) {
-        dt_new = amrex::min(dt_new, 1.1 * m_dt[0]);
+        dt_new = amrex::min<amrex::Real>(dt_new, 1.1 * m_dt[0]);
     }
 
     // Don't overshoot stop time
