@@ -162,7 +162,8 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
                     amrex::Real alpha = tmp_f1 * (alpha1 - alpha2) + alpha2;
                     amrex::Real beta = tmp_f1 * (beta1 - beta2) + beta2;
 
-                    amrex::Real arg2 = amrex::max<amrex::Real>(2.0 * tmp2, tmp3);
+                    amrex::Real arg2 =
+                        amrex::max<amrex::Real>(2.0 * tmp2, tmp3);
                     amrex::Real f2 = std::tanh(arg2 * arg2);
 
                     mu_arr(i, j, k) =

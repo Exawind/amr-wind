@@ -125,7 +125,9 @@ TEST_F(ABLMeshTest, body_force)
         });
 
         const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{
-            {static_cast<amrex::Real>(1.0 * std::cos(0.1)), static_cast<amrex::Real>(2.0 * std::cos(0.1)), static_cast<amrex::Real>(3.0 * std::cos(0.1))}};
+            {static_cast<amrex::Real>(1.0 * std::cos(0.1)),
+             static_cast<amrex::Real>(2.0 * std::cos(0.1)),
+             static_cast<amrex::Real>(3.0 * std::cos(0.1))}};
         const auto valx2 = utils::field_max(src_term, 0);
         const auto valy2 = utils::field_max(src_term, 1);
         const auto valz2 = utils::field_max(src_term, 2);
@@ -193,8 +195,8 @@ TEST_F(ABLMeshTest, coriolis_const_vel)
 
     // Velocity in x-direction test
     {
-        amrex::Real golds[AMREX_SPACEDIM] = {
-            0.0, -corfac * latfac * vel_comp, corfac * latfac * vel_comp};
+        amrex::Real golds[AMREX_SPACEDIM] = {0.0, -corfac * latfac * vel_comp,
+                                             corfac * latfac * vel_comp};
         vel.setVal(0.0);
         src_term.setVal(0.0);
         vel.setVal(vel_comp, 0);
@@ -217,8 +219,8 @@ TEST_F(ABLMeshTest, coriolis_const_vel)
 
     // Velocity in y-direction test
     {
-        amrex::Real golds[AMREX_SPACEDIM] = {
-            corfac * latfac * vel_comp, 0.0, 0.0};
+        amrex::Real golds[AMREX_SPACEDIM] = {corfac * latfac * vel_comp, 0.0,
+                                             0.0};
         vel.setVal(0.0);
         src_term.setVal(0.0);
         vel.setVal(vel_comp, 1);

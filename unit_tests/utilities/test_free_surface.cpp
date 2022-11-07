@@ -66,8 +66,8 @@ void init_vof_multival(
                 // Above wl1
                 if (z - offset * dx[2] > wl1) {
                     local_vof = std::min<amrex::Real>(
-                        1.0,
-                        std::max<amrex::Real>(0.0, (wl2 - (z - offset * dx[2])) / dx[2]));
+                        1.0, std::max<amrex::Real>(
+                                 0.0, (wl2 - (z - offset * dx[2])) / dx[2]));
                 } else {
                     // Above wl0
                     if (z - offset * dx[2] > wl0) {
@@ -123,8 +123,8 @@ void init_vof_slope(
                                        slope * (y - 0.5 * domain_length);
 
                 amrex::Real local_vof = std::min<amrex::Real>(
-                    1.0,
-                    std::max<amrex::Real>(0.0, (local_ht - (z - offset * dx[2])) / dx[2]));
+                    1.0, std::max<amrex::Real>(
+                             0.0, (local_ht - (z - offset * dx[2])) / dx[2]));
                 farr(i, j, k, d) = local_vof;
             });
         }
