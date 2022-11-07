@@ -226,8 +226,13 @@ struct InitDataOp<HOSWaves>
                 amrex::Gpu::copy(
                     amrex::Gpu::hostToDevice, w.begin(), w.end(),
                     dev_w.begin());
-                amrex::ParallelFor(
 
+                const amrex::Real* dev_eta_data = dev_eta.data();
+                const amrex::Real* dev_u_data = dev_u.data();
+                const amrex::Real* dev_v_data = dev_v.data();
+                const amrex::Real* dev_w_data = dev_w.data();
+
+                amrex::ParallelFor(
                     gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                         amrex::Real y = problo[1] + (j + 0.5) * dx[1];
@@ -278,10 +283,10 @@ struct InitDataOp<HOSWaves>
                         amrex::Real wy_lo = 1.0 - wy_hi;
 
                         // Get data
-                        amrex::Real eta_00 = dev_eta[jj + ii * HOS_ny];
-                        amrex::Real eta_01 = dev_eta[jj1 + jj * HOS_ny];
-                        amrex::Real eta_10 = dev_eta[jj + ii1 * HOS_ny];
-                        amrex::Real eta_11 = dev_eta[jj1 + ii1 * HOS_ny];
+                        amrex::Real eta_00 = dev_eta_data[jj + ii * HOS_ny];
+                        amrex::Real eta_01 = dev_eta_data[jj1 + jj * HOS_ny];
+                        amrex::Real eta_10 = dev_eta_data[jj + ii1 * HOS_ny];
+                        amrex::Real eta_11 = dev_eta_data[jj1 + ii1 * HOS_ny];
                         amrex::Real eta_ =
                             wx_lo * wy_lo * eta_00 + wx_lo * wy_hi * eta_01 +
                             wx_hi * wy_lo * eta_10 + wx_hi * wy_hi * eta_11;
@@ -335,32 +340,32 @@ struct InitDataOp<HOSWaves>
                             const int i111 =
                                 (jj1 + ii1 * HOS_ny) * HOS_nz + kk + 1;
                             vel(i, j, k, 0) =
-                                wx_lo * wy_lo * wz_lo * dev_u[i000] +
-                                wx_lo * wy_lo * wz_hi * dev_u[i001] +
-                                wx_lo * wy_hi * wz_lo * dev_u[i010] +
-                                wx_lo * wy_hi * wz_hi * dev_u[i011] +
-                                wx_hi * wy_lo * wz_lo * dev_u[i100] +
-                                wx_hi * wy_lo * wz_hi * dev_u[i101] +
-                                wx_hi * wy_hi * wz_lo * dev_u[i110] +
-                                wx_hi * wy_hi * wz_hi * dev_u[i111];
+                                wx_lo * wy_lo * wz_lo * dev_u_data[i000] +
+                                wx_lo * wy_lo * wz_hi * dev_u_data[i001] +
+                                wx_lo * wy_hi * wz_lo * dev_u_data[i010] +
+                                wx_lo * wy_hi * wz_hi * dev_u_data[i011] +
+                                wx_hi * wy_lo * wz_lo * dev_u_data[i100] +
+                                wx_hi * wy_lo * wz_hi * dev_u_data[i101] +
+                                wx_hi * wy_hi * wz_lo * dev_u_data[i110] +
+                                wx_hi * wy_hi * wz_hi * dev_u_data[i111];
                             vel(i, j, k, 1) =
-                                wx_lo * wy_lo * wz_lo * dev_v[i000] +
-                                wx_lo * wy_lo * wz_hi * dev_v[i001] +
-                                wx_lo * wy_hi * wz_lo * dev_v[i010] +
-                                wx_lo * wy_hi * wz_hi * dev_v[i011] +
-                                wx_hi * wy_lo * wz_lo * dev_v[i100] +
-                                wx_hi * wy_lo * wz_hi * dev_v[i101] +
-                                wx_hi * wy_hi * wz_lo * dev_v[i110] +
-                                wx_hi * wy_hi * wz_hi * dev_v[i111];
+                                wx_lo * wy_lo * wz_lo * dev_v_data[i000] +
+                                wx_lo * wy_lo * wz_hi * dev_v_data[i001] +
+                                wx_lo * wy_hi * wz_lo * dev_v_data[i010] +
+                                wx_lo * wy_hi * wz_hi * dev_v_data[i011] +
+                                wx_hi * wy_lo * wz_lo * dev_v_data[i100] +
+                                wx_hi * wy_lo * wz_hi * dev_v_data[i101] +
+                                wx_hi * wy_hi * wz_lo * dev_v_data[i110] +
+                                wx_hi * wy_hi * wz_hi * dev_v_data[i111];
                             vel(i, j, k, 2) =
-                                wx_lo * wy_lo * wz_lo * dev_w[i000] +
-                                wx_lo * wy_lo * wz_hi * dev_w[i001] +
-                                wx_lo * wy_hi * wz_lo * dev_w[i010] +
-                                wx_lo * wy_hi * wz_hi * dev_w[i011] +
-                                wx_hi * wy_lo * wz_lo * dev_w[i100] +
-                                wx_hi * wy_lo * wz_hi * dev_w[i101] +
-                                wx_hi * wy_hi * wz_lo * dev_w[i110] +
-                                wx_hi * wy_hi * wz_hi * dev_w[i111];
+                                wx_lo * wy_lo * wz_lo * dev_w_data[i000] +
+                                wx_lo * wy_lo * wz_hi * dev_w_data[i001] +
+                                wx_lo * wy_hi * wz_lo * dev_w_data[i010] +
+                                wx_lo * wy_hi * wz_hi * dev_w_data[i011] +
+                                wx_hi * wy_lo * wz_lo * dev_w_data[i100] +
+                                wx_hi * wy_lo * wz_hi * dev_w_data[i101] +
+                                wx_hi * wy_hi * wz_lo * dev_w_data[i110] +
+                                wx_hi * wy_hi * wz_hi * dev_w_data[i111];
 
                             // Set velocity to zero if no liquid present
                             if (phi(i, j, k) + 0.5 * dx[2] < 0.0) {
@@ -490,6 +495,12 @@ struct UpdateRelaxZonesOp<HOSWaves>
                     const amrex::Real HOS_dy = HOS_Ly / HOS_ny;
                     const amrex::Real HOS_dz = (HOS_zmax - HOS_zmin) / HOS_nz;
                     const auto& gbx = mfi.growntilebox(2);
+
+                    const amrex::Real* dev_eta_data = dev_eta.data();
+                    const amrex::Real* dev_u_data = dev_u.data();
+                    const amrex::Real* dev_v_data = dev_v.data();
+                    const amrex::Real* dev_w_data = dev_w.data();
+
                     amrex::ParallelFor(
                         gbx,
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -543,13 +554,13 @@ struct UpdateRelaxZonesOp<HOSWaves>
 
                             // Get data
                             const amrex::Real eta_00 =
-                                dev_eta[jj + ii * HOS_ny];
+                                dev_eta_data[jj + ii * HOS_ny];
                             const amrex::Real eta_01 =
-                                dev_eta[jj1 + ii * HOS_ny];
+                                dev_eta_data[jj1 + ii * HOS_ny];
                             const amrex::Real eta_10 =
-                                dev_eta[jj + ii1 * HOS_ny];
+                                dev_eta_data[jj + ii1 * HOS_ny];
                             const amrex::Real eta_11 =
-                                dev_eta[jj1 + ii1 * HOS_ny];
+                                dev_eta_data[jj1 + ii1 * HOS_ny];
                             const amrex::Real eta_ = wx_lo * wy_lo * eta_00 +
                                                      wx_lo * wy_hi * eta_01 +
                                                      wx_hi * wy_lo * eta_10 +
@@ -612,32 +623,32 @@ struct UpdateRelaxZonesOp<HOSWaves>
                                 const int i111 =
                                     (jj1 + ii1 * HOS_ny) * HOS_nz + kk + 1;
                                 HOS_vel(i, j, k, 0) =
-                                    wx_lo * wy_lo * wz_lo * dev_u[i000] +
-                                    wx_lo * wy_lo * wz_hi * dev_u[i001] +
-                                    wx_lo * wy_hi * wz_lo * dev_u[i010] +
-                                    wx_lo * wy_hi * wz_hi * dev_u[i011] +
-                                    wx_hi * wy_lo * wz_lo * dev_u[i100] +
-                                    wx_hi * wy_lo * wz_hi * dev_u[i101] +
-                                    wx_hi * wy_hi * wz_lo * dev_u[i110] +
-                                    wx_hi * wy_hi * wz_hi * dev_u[i111];
+                                    wx_lo * wy_lo * wz_lo * dev_u_data[i000] +
+                                    wx_lo * wy_lo * wz_hi * dev_u_data[i001] +
+                                    wx_lo * wy_hi * wz_lo * dev_u_data[i010] +
+                                    wx_lo * wy_hi * wz_hi * dev_u_data[i011] +
+                                    wx_hi * wy_lo * wz_lo * dev_u_data[i100] +
+                                    wx_hi * wy_lo * wz_hi * dev_u_data[i101] +
+                                    wx_hi * wy_hi * wz_lo * dev_u_data[i110] +
+                                    wx_hi * wy_hi * wz_hi * dev_u_data[i111];
                                 HOS_vel(i, j, k, 1) =
-                                    wx_lo * wy_lo * wz_lo * dev_v[i000] +
-                                    wx_lo * wy_lo * wz_hi * dev_v[i001] +
-                                    wx_lo * wy_hi * wz_lo * dev_v[i010] +
-                                    wx_lo * wy_hi * wz_hi * dev_v[i011] +
-                                    wx_hi * wy_lo * wz_lo * dev_v[i100] +
-                                    wx_hi * wy_lo * wz_hi * dev_v[i101] +
-                                    wx_hi * wy_hi * wz_lo * dev_v[i110] +
-                                    wx_hi * wy_hi * wz_hi * dev_v[i111];
+                                    wx_lo * wy_lo * wz_lo * dev_v_data[i000] +
+                                    wx_lo * wy_lo * wz_hi * dev_v_data[i001] +
+                                    wx_lo * wy_hi * wz_lo * dev_v_data[i010] +
+                                    wx_lo * wy_hi * wz_hi * dev_v_data[i011] +
+                                    wx_hi * wy_lo * wz_lo * dev_v_data[i100] +
+                                    wx_hi * wy_lo * wz_hi * dev_v_data[i101] +
+                                    wx_hi * wy_hi * wz_lo * dev_v_data[i110] +
+                                    wx_hi * wy_hi * wz_hi * dev_v_data[i111];
                                 HOS_vel(i, j, k, 2) =
-                                    wx_lo * wy_lo * wz_lo * dev_w[i000] +
-                                    wx_lo * wy_lo * wz_hi * dev_w[i001] +
-                                    wx_lo * wy_hi * wz_lo * dev_w[i010] +
-                                    wx_lo * wy_hi * wz_hi * dev_w[i011] +
-                                    wx_hi * wy_lo * wz_lo * dev_w[i100] +
-                                    wx_hi * wy_lo * wz_hi * dev_w[i101] +
-                                    wx_hi * wy_hi * wz_lo * dev_w[i110] +
-                                    wx_hi * wy_hi * wz_hi * dev_w[i111];
+                                    wx_lo * wy_lo * wz_lo * dev_w_data[i000] +
+                                    wx_lo * wy_lo * wz_hi * dev_w_data[i001] +
+                                    wx_lo * wy_hi * wz_lo * dev_w_data[i010] +
+                                    wx_lo * wy_hi * wz_hi * dev_w_data[i011] +
+                                    wx_hi * wy_lo * wz_lo * dev_w_data[i100] +
+                                    wx_hi * wy_lo * wz_hi * dev_w_data[i101] +
+                                    wx_hi * wy_hi * wz_lo * dev_w_data[i110] +
+                                    wx_hi * wy_hi * wz_hi * dev_w_data[i111];
 
                                 // Set velocity to zero if no liquid present
                                 if (HOS_phi(i, j, k) + 0.5 * dx[2] < 0.0) {
