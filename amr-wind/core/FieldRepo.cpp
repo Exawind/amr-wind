@@ -334,7 +334,6 @@ std::unique_ptr<ScratchField> FieldRepo::create_scratch_field(
 }
 
 
-// IXT function
 std::unique_ptr<ScratchField> FieldRepo::create_scratch_field_on_host(
     const std::string& name,
     const int ncomp,
