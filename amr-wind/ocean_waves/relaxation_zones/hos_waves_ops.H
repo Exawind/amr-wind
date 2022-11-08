@@ -18,7 +18,7 @@ namespace ops {
 
 void ReadHOSFileLev(
     int lev,
-    std::string& HOS_prefix,
+    const std::string& HOS_prefix,
     int HOS_n,
     amrex::Real& HOS_t,
     amrex::Real& HOS_dt,
@@ -468,6 +468,7 @@ struct UpdateRelaxZonesOp<HOSWaves>
 
         // Update ow fields every time
         auto& m_ow_levelset = sim.repo().get_field("ow_levelset");
+        // cppcheck-suppress constVariable
         auto& m_ow_velocity = sim.repo().get_field("ow_velocity");
         // Update HOS fields when necessary
         auto& hos_levelset = sim.repo().get_field("hos_levelset");

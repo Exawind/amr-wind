@@ -40,8 +40,10 @@ struct InitDataOp<StokesWaves>
         auto& sim = data.sim();
         // cppcheck-suppress constVariable
         auto& m_levelset = sim.repo().get_field("levelset");
+        // cppcheck-suppress constVariable
         auto& velocity = sim.repo().get_field("velocity");
         auto& vof = sim.repo().get_field("vof");
+        // cppcheck-suppress constVariable
         auto& density = sim.repo().get_field("density");
 
         // use MultiPhase information
@@ -101,6 +103,7 @@ struct UpdateRelaxZonesOp<StokesWaves>
         const auto& time = sim.time().new_time();
         // cppcheck-suppress constVariable
         auto& m_ow_levelset = sim.repo().get_field("ow_levelset");
+        // cppcheck-suppress constVariable
         auto& m_ow_velocity = sim.repo().get_field("ow_velocity");
 
         auto nlevels = sim.repo().num_active_levels();
