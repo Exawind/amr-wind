@@ -54,7 +54,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
     c2 = std::sqrt(Th) * (2 + 7 * std::pow(S, 2)) / (4 * std::pow(1 - S, 2));
     d2 = -std::sqrt(CTh) / 2.;
     e2 = Th * (2 + 2 * S + 5 * std::pow(S, 2)) / (4 * std::pow(1 - S, 2));
-    if (StokesOrder == 2) return;
+    if (StokesOrder == 2) {
+        return;
+    }
 
     // Third order coefficients
     a31 = (-4 - 20 * S + 10 * std::pow(S, 2) - 13 * std::pow(S, 3)) /
@@ -63,7 +65,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
           (8 * Sh * std::pow(1 - S, 3));
     b31 = -3 * (1 + 3 * S + 3 * std::pow(S, 2) + 2 * std::pow(S, 3)) /
           (8 * std::pow(1 - S, 3));
-    if (StokesOrder == 3) return;
+    if (StokesOrder == 3) {
+        return;
+    }
 
     // Fourth order coefficients
     a42 = (12 * S - 14 * std::pow(S, 2) - 264 * std::pow(S, 3) -
@@ -90,7 +94,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
          (8 + 12 * S - 152 * std::pow(S, 2) - 308 * std::pow(S, 3) -
           42 * std::pow(S, 4) + 77 * std::pow(S, 5)) /
          (32 * std::pow(1 - S, 5));
-    if (StokesOrder == 4) return;
+    if (StokesOrder == 4) {
+        return;
+    }
 
     // Fifth order coefficients
     a51 =
@@ -117,7 +123,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
          1188 * std::pow(S, 4) + 675 * std::pow(S, 5) + 1326 * std::pow(S, 6) +
          827 * std::pow(S, 7) + 130 * std::pow(S, 8)) /
         (384 * (3 + 2 * S) * (4 + S) * std::pow(1 - S, 6));
-    if (StokesOrder == 5) return;
+    if (StokesOrder == 5) {
+        return;
+    }
 
     if (StokesOrder > 5 || StokesOrder < 2) {
         amrex::Abort(
