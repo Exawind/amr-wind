@@ -143,15 +143,33 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real my_sinh_sin(
     amrex::Real waterdepth)
 {
     amrex::Real D = 0.0;
-    if (i == 1 && j == 1) D = a11;
-    if (i == 2 && j == 2) D = a22;
-    if (i == 3 && j == 1) D = a31;
-    if (i == 3 && j == 3) D = a33;
-    if (i == 4 && j == 2) D = a42;
-    if (i == 4 && j == 4) D = a44;
-    if (i == 5 && j == 1) D = a51;
-    if (i == 5 && j == 3) D = a53;
-    if (i == 5 && j == 5) D = a55;
+    if (i == 1 && j == 1) {
+        D = a11;
+    }
+    if (i == 2 && j == 2) {
+        D = a22;
+    }
+    if (i == 3 && j == 1) {
+        D = a31;
+    }
+    if (i == 3 && j == 3) {
+        D = a33;
+    }
+    if (i == 4 && j == 2) {
+        D = a42;
+    }
+    if (i == 4 && j == 4) {
+        D = a44;
+    }
+    if (i == 5 && j == 1) {
+        D = a51;
+    }
+    if (i == 5 && j == 3) {
+        D = a53;
+    }
+    if (i == 5 && j == 5) {
+        D = a55;
+    }
 
     return std::pow(eps, i) * D * j * k * std::sinh(j * k * waterdepth) *
            std::sin(j * phase);
@@ -175,15 +193,33 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real my_cosh_cos(
     amrex::Real waterdepth)
 {
     amrex::Real D = 0.0;
-    if (i == 1 && j == 1) D = a11;
-    if (i == 2 && j == 2) D = a22;
-    if (i == 3 && j == 1) D = a31;
-    if (i == 3 && j == 3) D = a33;
-    if (i == 4 && j == 2) D = a42;
-    if (i == 4 && j == 4) D = a44;
-    if (i == 5 && j == 1) D = a51;
-    if (i == 5 && j == 3) D = a53;
-    if (i == 5 && j == 5) D = a55;
+    if (i == 1 && j == 1) {
+        D = a11;
+    }
+    if (i == 2 && j == 2) {
+        D = a22;
+    }
+    if (i == 3 && j == 1) {
+        D = a31;
+    }
+    if (i == 3 && j == 3) {
+        D = a33;
+    }
+    if (i == 4 && j == 2) {
+        D = a42;
+    }
+    if (i == 4 && j == 4) {
+        D = a44;
+    }
+    if (i == 5 && j == 1) {
+        D = a51;
+    }
+    if (i == 5 && j == 3) {
+        D = a53;
+    }
+    if (i == 5 && j == 5) {
+        D = a55;
+    }
 
     return std::pow(eps, i) * D * j * k * std::cosh(j * k * waterdepth) *
            std::cos(j * phase);

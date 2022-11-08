@@ -25,7 +25,7 @@ void init_data_structures(CFDSim&);
 
 /** Set the free_surface height inside the relaxation zones
  */
-void apply_relaxation_zones(CFDSim& sim, RelaxZonesBaseData&);
+void apply_relaxation_zones(CFDSim& sim, RelaxZonesBaseData& wdata);
 
 void prepare_netcdf_file(
     const std::string& /*ncfile*/,
@@ -84,8 +84,8 @@ struct ProcessOutputsOp<
 private:
     typename WaveTheoryTrait::DataType& m_data;
 
-    std::string m_out_dir{""};
-    std::string m_nc_filename{""};
+    std::string m_out_dir;
+    std::string m_nc_filename;
     int m_out_freq{10};
 
 public:

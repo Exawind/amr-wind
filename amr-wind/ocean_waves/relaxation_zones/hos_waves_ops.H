@@ -762,4 +762,4 @@ struct UpdateRelaxZonesOp<HOSWaves>
 } // namespace ocean_waves
 } // namespace amr_wind
 
-#endif /* LINEAR_WAVES_OPS_H */
+#endif /* HOS_WAVES_OPS_H */
