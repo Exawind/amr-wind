@@ -9,8 +9,7 @@
 
 #include "AMReX_MultiFabUtil.H"
 
-namespace amr_wind {
-namespace ocean_waves {
+namespace amr_wind::ocean_waves {
 namespace relaxation_zones {
 
 /** Parse common data for modeling relaxation zones
@@ -121,7 +120,6 @@ public:
 
 } // namespace ops
 
-} // namespace ocean_waves
-} // namespace amr_wind
+} // namespace amr_wind::ocean_waves
 
 #endif /* RELAX_ZONES_OPS_H */

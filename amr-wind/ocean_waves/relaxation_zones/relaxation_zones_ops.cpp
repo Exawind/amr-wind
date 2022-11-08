@@ -12,9 +12,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace ocean_waves {
-namespace relaxation_zones {
+namespace amr_wind::ocean_waves::relaxation_zones {
 
 void read_inputs(
     RelaxZonesBaseData& wdata,
@@ -232,6 +230,4 @@ void write_netcdf(
     amrex::ignore_unused(ncfile, meta, info, time);
 }
 
-} // namespace relaxation_zones
-} // namespace ocean_waves
-} // namespace amr_wind
+} // namespace amr_wind::ocean_waves::relaxation_zones
