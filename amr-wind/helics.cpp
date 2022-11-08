@@ -37,8 +37,10 @@ namespace amr_wind {
 helics_storage::helics_storage(CFDSim& sim) : m_sim(sim)
 {
 
+#ifdef AMR_WIND_USE_HELICS
     amrex::ParmParse phelics("helics");
     phelics.query("activated", helics_activated);
+#endif
 
     if (!helics_activated) {
         return;
