@@ -37,8 +37,14 @@ namespace amr_wind {
 helics_storage::helics_storage(CFDSim& sim) : m_sim(sim)
 {
 
-#ifdef AMR_WIND_USE_HELICS
+    amrex::ParmParse phelics("helics");
+    phelics.query("activated", helics_activated);
 
+    if (!helics_activated) {
+        return;
+    }
+
+#ifdef AMR_WIND_USE_HELICS
     if (amrex::ParallelDescriptor::IOProcessor()) {
 
         m_fi = std::make_unique<helicscpp::FederateInfo>("zmq");
@@ -75,12 +81,21 @@ helics_storage::helics_storage(CFDSim& sim) : m_sim(sim)
 #endif
 }
 
-void helics_storage::send_messages_to_controller()
+void helics_storage::pre_advance_work()
 {
+    if (!helics_activated) {
+        return;
+    }
 
 #ifdef AMR_WIND_USE_HELICS
-    // send time, speed (1 + 1)
-    // send turbine powers to controller (num_trubines)
+    m_sim.helics().send_messages_to_controller();
+    m_sim.helics().recv_messages_from_controller();
+#endif
+}
+
+void helics_storage::send_messages_to_controller()
+{
+#ifdef AMR_WIND_USE_HELICS
     if (amrex::ParallelDescriptor::IOProcessor()) {
         // put helics send stuff here
     }

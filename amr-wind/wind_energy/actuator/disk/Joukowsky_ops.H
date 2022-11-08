@@ -51,6 +51,10 @@ struct UpdatePosOp<Joukowsky, ActSrcDisk>
     void operator()(typename Joukowsky::DataType& data)
     {
 
+        if (!data.sim().helics().is_activated()) {
+            return;
+        }
+
 #ifdef AMR_WIND_USE_HELICS
 
         auto& meta = data.meta();
@@ -256,7 +260,7 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
         ddata.current_cp = ddata.density * uInfSqr * moment *
                            ddata.current_angular_velocity / eq_20_denominator;
 #ifdef AMR_WIND_USE_HELICS
-        if (data.info().is_root_proc) {
+        if (data.info().is_root_proc && data.sim().helics().is_activated()) {
 
             std::cout << "turbine: " << data.info().id
                       << " jouk power: " << ddata.current_power

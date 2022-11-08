@@ -28,9 +28,11 @@ struct UpdatePosOp<UniformCt, ActSrcDisk>
 {
     void operator()(typename UniformCt::DataType& data)
     {
-#ifdef AMR_WIND_USE_HELICS
+        if (!data.sim().helics().is_activated()) {
+            return;
+        }
 
-        auto& meta = data.meta();
+#ifdef AMR_WIND_USE_HELICS
 
         const amrex::Real wind_direction =
             -data.sim().helics().m_turbine_yaw_to_amrwind[data.info().id] +
@@ -45,11 +47,13 @@ struct UpdatePosOp<UniformCt, ActSrcDisk>
         meta.sample_vec[0] = meta.normal_vec[0];
         meta.sample_vec[1] = meta.normal_vec[1];
         meta.sample_vec[2] = meta.normal_vec[2];
+
         if (data.info().is_root_proc) {
             std::cout << "turbine " << data.info().id
                       << " normal: " << meta.normal_vec[0] << ' '
                       << meta.normal_vec[1] << std::endl;
         }
+
         uniformct::update_disk_points(data);
 #endif
     }
@@ -83,7 +87,7 @@ struct ComputeForceOp<UniformCt, ActSrcDisk>
         }
 #ifdef AMR_WIND_USE_HELICS
 
-        if (data.info().is_root_proc) {
+        if (data.info().is_root_proc && data.sim().helics().is_activated()) {
 
             const amrex::Real ct = ddata.current_ct;
             std::cout << "turbine" << data.info().id << " thrust: " << ct

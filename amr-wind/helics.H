@@ -20,8 +20,10 @@ public:
     ~helics_storage();
 
 public:
+    void pre_advance_work();
     void send_messages_to_controller();
     void recv_messages_from_controller();
+    bool is_activated() { return helics_activated; }
 
 #ifdef AMR_WIND_USE_HELICS
     HelicsTime currenttime = 0.0;
@@ -41,9 +43,16 @@ public:
 
 private:
     CFDSim& m_sim;
+
 #ifdef AMR_WIND_USE_HELICS
     std::unique_ptr<helicscpp::FederateInfo> m_fi;
     std::unique_ptr<helicscpp::CombinationFederate> m_vfed;
+#endif
+
+#ifdef AMR_WIND_USE_HELICS
+    bool helics_activated{true};
+#else
+    bool helics_activated{false};
 #endif
 };
 

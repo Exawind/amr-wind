@@ -125,19 +125,21 @@ void ABL::pre_advance_work()
         // Set the mean velocities at the forcing height so that the source
         // terms can be computed during the time integration calls
 
-        //#ifdef AMR_WIND_USE_HELICS
-        //        const amrex::Real wind_speed =
-        //            m_sim.helics().m_inflow_wind_speed_to_amrwind;
-        //        const amrex::Real wind_direction =
-        //            -m_sim.helics().m_inflow_wind_direction_to_amrwind +
-        //            270.0;
-        //        const amrex::Real wind_direction_radian =
-        //            amr_wind::utils::radians(wind_direction);
-        //        const amrex::Real tvx = wind_speed *
-        //        std::cos(wind_direction_radian); const amrex::Real tvy =
-        //        wind_speed * std::sin(wind_direction_radian);
-        //        m_abl_forcing->set_target_velocities(tvx, tvy);
-        //#endif
+#ifdef AMR_WIND_USE_HELICS
+        if (m_sim.helics().is_activated()) {
+            const amrex::Real wind_speed =
+                m_sim.helics().m_inflow_wind_speed_to_amrwind;
+            const amrex::Real wind_direction =
+                -m_sim.helics().m_inflow_wind_direction_to_amrwind + 270.0;
+            const amrex::Real wind_direction_radian =
+                amr_wind::utils::radians(wind_direction);
+            const amrex::Real tvx =
+                wind_speed * std::cos(wind_direction_radian);
+            const amrex::Real tvy =
+                wind_speed * std::sin(wind_direction_radian);
+            m_abl_forcing->set_target_velocities(tvx, tvy);
+        }
+#endif
 
         m_abl_forcing->set_mean_velocities(vx, vy);
     }
