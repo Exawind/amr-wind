@@ -15,7 +15,8 @@
 using namespace helicscpp;
 #endif
 
-void tokenize(std::string s, std::string del, std::list<double>& return_list)
+void tokenize(
+    std::string s, const std::string del, std::list<double>& return_list)
 {
 
     int start = 0;
@@ -24,10 +25,12 @@ void tokenize(std::string s, std::string del, std::list<double>& return_list)
     return_list.push_front(atof(s.substr(start + 1, end - start).c_str()));
     while (end > 0) {
 
-        start = end + del.size();
+        start = end + static_cast<int>(del.size());
         end = s.find(del, start);
 
-        if (end == -1) end = -2;
+        if (end == -1) {
+            end = -2;
+        }
         return_list.push_front(atof(s.substr(start, end - start).c_str()));
     }
 }
@@ -83,15 +86,15 @@ helics_storage::helics_storage(CFDSim& sim) : m_sim(sim)
 #endif
 }
 
-void helics_storage::pre_advance_work()
+void helics_storage::pre_advance_work() const
 {
     if (!helics_activated) {
         return;
     }
 
 #ifdef AMR_WIND_USE_HELICS
-    m_sim.helics().send_messages_to_controller();
-    m_sim.helics().recv_messages_from_controller();
+    send_messages_to_controller();
+    recv_messages_from_controller();
 #endif
 }
 
@@ -107,8 +110,10 @@ void helics_storage::send_messages_to_controller()
 void helics_storage::recv_messages_from_controller()
 {
 
-#ifdef AMR_WIND_USE_HELICS
+    amrex::Print() << "recv message from controller at time: "
+                   << m_sim.time().current_time() << std::endl;
 
+#ifdef AMR_WIND_USE_HELICS
     // receive wind direction and speed from controller (1 + 1)
     // receive turbine yaw directions (num_turbines)
     if (amrex::ParallelDescriptor::IOProcessor()) {

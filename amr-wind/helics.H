@@ -20,7 +20,7 @@ public:
     ~helics_storage();
 
 public:
-    void pre_advance_work();
+    void pre_advance_work() const;
     void send_messages_to_controller();
     void recv_messages_from_controller();
     bool is_activated() { return helics_activated; }
