@@ -187,25 +187,26 @@ bool ABLFieldInit::operator()(
 
         // Working vector to read data onto host
         std::vector<double> tmp;
-        tmp.resize(count[0] * count[1] * count[2]);
+        int dlen = count[0] * count[1] * count[2];
+        tmp.resize(dlen);
         // Vector to store the 3d data into a single array and set size
-        amrex::Gpu::DeviceVector<amrex::Real> uvel_d(
-            count[0] * count[1] * count[2], 0.0);
-        amrex::Gpu::DeviceVector<amrex::Real> vvel_d(
-            count[0] * count[1] * count[2], 0.0);
-        amrex::Gpu::DeviceVector<amrex::Real> wvel_d(
-            count[0] * count[1] * count[2], 0.0);
+        amrex::Gpu::DeviceVector<amrex::Real> uvel_d(dlen, 0.0);
+        amrex::Gpu::DeviceVector<amrex::Real> vvel_d(dlen, 0.0);
+        amrex::Gpu::DeviceVector<amrex::Real> wvel_d(dlen, 0.0);
 
         // Read the velocity components u, v, w and copy to device
         uvel.get(tmp.data(), start, count);
         amrex::Gpu::copy(
-            amrex::Gpu::deviceToHost, uvel_d.begin(), uvel_d.end(), &tmp[0]);
+            amrex::Gpu::hostToDevice, &tmp[0], &tmp[dlen - 1] + 1,
+            uvel_d.begin());
         vvel.get(tmp.data(), start, count);
         amrex::Gpu::copy(
-            amrex::Gpu::deviceToHost, vvel_d.begin(), vvel_d.end(), &tmp[0]);
+            amrex::Gpu::hostToDevice, &tmp[0], &tmp[dlen - 1] + 1,
+            vvel_d.begin());
         wvel.get(tmp.data(), start, count);
         amrex::Gpu::copy(
-            amrex::Gpu::deviceToHost, wvel_d.begin(), wvel_d.end(), &tmp[0]);
+            amrex::Gpu::hostToDevice, &tmp[0], &tmp[dlen - 1] + 1,
+            wvel_d.begin());
 
         // Pointers to velocity objects
         auto* uvel_dptr = uvel_d.data();
