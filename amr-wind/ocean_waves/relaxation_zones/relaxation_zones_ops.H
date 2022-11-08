@@ -25,7 +25,7 @@ void init_data_structures(CFDSim&);
 
 /** Set the free_surface height inside the relaxation zones
  */
-void apply_relaxation_zones(CFDSim& sim, RelaxZonesBaseData& wdata);
+void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata);
 
 void prepare_netcdf_file(
     const std::string& /*ncfile*/,

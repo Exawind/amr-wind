@@ -38,7 +38,7 @@ void read_inputs(
 
 void init_data_structures(RelaxZonesBaseData& /*unused*/) {}
 
-void apply_relaxation_zones(CFDSim& sim, RelaxZonesBaseData& wdata)
+void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
 {
     const int nlevels = sim.repo().num_active_levels();
     auto& m_ow_levelset = sim.repo().get_field("ow_levelset");
