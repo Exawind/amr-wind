@@ -19,11 +19,10 @@ public:
     explicit helics_storage(CFDSim& sim);
     ~helics_storage();
 
-public:
     void pre_advance_work() const;
     void send_messages_to_controller();
     void recv_messages_from_controller();
-    bool is_activated() { return helics_activated; }
+    bool is_activated() const { return helics_activated; }
 
 #ifdef AMR_WIND_USE_HELICS
     HelicsTime currenttime = 0.0;
