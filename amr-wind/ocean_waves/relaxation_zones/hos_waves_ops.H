@@ -238,10 +238,18 @@ struct InitDataOp<HOSWaves>
                         amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                         amrex::Real z = problo[2] + (k + 0.5) * dx[2];
                         // Adjust x,y for periodicity of HOS domain
-                        if (x > HOS_Lx) x -= HOS_Lx;
-                        if (x < 0.0) x += HOS_Lx;
-                        if (y > HOS_Ly) y -= HOS_Ly;
-                        if (y < 0.0) y += HOS_Ly;
+                        if (x > HOS_Lx) {
+                            x -= HOS_Lx;
+                        }
+                        if (x < 0.0) {
+                            x += HOS_Lx;
+                        }
+                        if (y > HOS_Ly) {
+                            y -= HOS_Ly;
+                        }
+                        if (y < 0.0) {
+                            y += HOS_Ly;
+                        }
                         // Determine lateral indices for interpolation
                         // It's best to have the grids line up directly
                         int ii1 = 0;
@@ -267,14 +275,30 @@ struct InitDataOp<HOSWaves>
                         // Modify indices to avoid going out of bounds,
                         // according to periodicity (assumed about HOS data)
 
-                        if (ii < 0) ii += HOS_nx;
-                        if (ii1 < 0) ii1 += HOS_nx;
-                        if (jj < 0) jj += HOS_ny;
-                        if (jj1 < 0) jj1 += HOS_ny;
-                        if (ii >= HOS_nx) ii -= HOS_nx;
-                        if (ii1 >= HOS_nx) ii1 -= HOS_nx;
-                        if (jj >= HOS_ny) jj -= HOS_ny;
-                        if (jj1 >= HOS_ny) jj1 -= HOS_ny;
+                        if (ii < 0) {
+                            ii += HOS_nx;
+                        }
+                        if (ii1 < 0) {
+                            ii1 += HOS_nx;
+                        }
+                        if (jj < 0) {
+                            jj += HOS_ny;
+                        }
+                        if (jj1 < 0) {
+                            jj1 += HOS_ny;
+                        }
+                        if (ii >= HOS_nx) {
+                            ii -= HOS_nx;
+                        }
+                        if (ii1 >= HOS_nx) {
+                            ii1 -= HOS_nx;
+                        }
+                        if (jj >= HOS_ny) {
+                            jj -= HOS_ny;
+                        }
+                        if (jj1 >= HOS_ny) {
+                            jj1 -= HOS_ny;
+                        }
 
                         // Interpolation factors
                         amrex::Real wx_hi = (x - HOS_x) / HOS_dx;
@@ -509,10 +533,18 @@ struct UpdateRelaxZonesOp<HOSWaves>
                             amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                             amrex::Real z = problo[2] + (k + 0.5) * dx[2];
                             // Adjust x,y for periodicity of HOS domain
-                            if (x > HOS_Lx) x -= HOS_Lx;
-                            if (x < 0.0) x += HOS_Lx;
-                            if (y > HOS_Ly) y -= HOS_Ly;
-                            if (y < 0.0) y += HOS_Ly;
+                            if (x > HOS_Lx) {
+                                x -= HOS_Lx;
+                            }
+                            if (x < 0.0) {
+                                x += HOS_Lx;
+                            }
+                            if (y > HOS_Ly) {
+                                y -= HOS_Ly;
+                            }
+                            if (y < 0.0) {
+                                y += HOS_Ly;
+                            }
                             // Determine lateral indices for interpolation
                             // It's best to have the grids line up directly
                             int ii1 = 0;
@@ -538,14 +570,30 @@ struct UpdateRelaxZonesOp<HOSWaves>
                             HOS_y = HOS_dy * (jj + 0.5);
                             // Modify indices to avoid going out of bounds,
                             // according to periodicity (assumed about HOS data)
-                            if (ii < 0) ii += HOS_nx;
-                            if (ii1 < 0) ii1 += HOS_nx;
-                            if (jj < 0) jj += HOS_ny;
-                            if (jj1 < 0) jj1 += HOS_ny;
-                            if (ii >= HOS_nx) ii -= HOS_nx;
-                            if (ii1 >= HOS_nx) ii1 -= HOS_nx;
-                            if (jj >= HOS_ny) jj -= HOS_ny;
-                            if (jj1 >= HOS_ny) jj1 -= HOS_ny;
+                            if (ii < 0) {
+                                ii += HOS_nx;
+                            }
+                            if (ii1 < 0) {
+                                ii1 += HOS_nx;
+                            }
+                            if (jj < 0) {
+                                jj += HOS_ny;
+                            }
+                            if (jj1 < 0) {
+                                jj1 += HOS_ny;
+                            }
+                            if (ii >= HOS_nx) {
+                                ii -= HOS_nx;
+                            }
+                            if (ii1 >= HOS_nx) {
+                                ii1 -= HOS_nx;
+                            }
+                            if (jj >= HOS_ny) {
+                                jj -= HOS_ny;
+                            }
+                            if (jj1 >= HOS_ny) {
+                                jj1 -= HOS_ny;
+                            }
                             // Interpolation factors
                             amrex::Real wx_hi = (x - HOS_x) / HOS_dx;
                             amrex::Real wy_hi = (y - HOS_y) / HOS_dy;
