@@ -324,7 +324,6 @@ public:
         const int nghost = 0,
         const FieldLoc floc = FieldLoc::CELL) const;
 
-	// IXT, added function definitions
     std::unique_ptr<ScratchField> create_scratch_field_on_host(
         const std::string& name,
         const int ncomp = 1,
