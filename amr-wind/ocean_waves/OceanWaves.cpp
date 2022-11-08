@@ -6,8 +6,7 @@
 
 #include <algorithm>
 
-namespace amr_wind {
-namespace ocean_waves {
+namespace amr_wind::ocean_waves {
 
 OceanWaves::OceanWaves(CFDSim& sim)
     : m_sim(sim)
@@ -91,5 +90,4 @@ void OceanWaves::prepare_outputs()
     m_owm->prepare_outputs(sname);
 }
 
-} // namespace ocean_waves
-} // namespace amr_wind
+} // namespace amr_wind::ocean_waves
