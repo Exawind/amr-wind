@@ -120,7 +120,6 @@ private:
     std::unique_ptr<ScratchField> m_qcell;
     std::unique_ptr<ScratchField> m_qnode;
 
-	// IXT
     std::unique_ptr<ScratchField> m_qcell_host;
     std::unique_ptr<ScratchField> m_qnode_host;
 
