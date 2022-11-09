@@ -68,7 +68,7 @@ struct ApplyRelaxZonesOp<
     {
         BL_PROFILE("amr-wind::ocean_waves::OceanWaves::update_velocities");
 
-        auto& wdata = data.meta();
+        const auto& wdata = data.meta();
         auto& sim = data.sim();
 
         relaxation_zones::apply_relaxation_zones(sim, wdata);

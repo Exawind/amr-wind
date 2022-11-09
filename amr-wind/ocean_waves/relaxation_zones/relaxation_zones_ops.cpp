@@ -43,7 +43,7 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
     const int nlevels = sim.repo().num_active_levels();
     auto& m_ow_levelset = sim.repo().get_field("ow_levelset");
     auto& m_ow_vof = sim.repo().get_field("ow_vof");
-    auto& m_ow_vel = sim.repo().get_field("ow_velocity");
+    const auto& m_ow_vel = sim.repo().get_field("ow_velocity");
     const auto& geom = sim.mesh().Geom();
 
     const auto& mphase = sim.physics_manager().get<MultiPhase>();

@@ -100,7 +100,7 @@ void ReadHOSFileLev(
 
 void ReadHOSFileLev(
     int lev,
-    std::string& HOS_prefix,
+    const std::string& HOS_prefix,
     int HOS_n,
     RealList& eta,
     RealList& u,
