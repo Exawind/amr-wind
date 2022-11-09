@@ -7,8 +7,6 @@
 #include <sstream>
 #include <iostream>
 #include <string>
-#include <stdlib.h>
-
 #include <list>
 
 #ifdef AMR_WIND_USE_HELICS
@@ -16,7 +14,7 @@ using namespace helicscpp;
 #endif
 
 void tokenize(
-    std::string s, const std::string del, std::list<double>& return_list)
+    std::string s, const std::string& del, std::list<double>& return_list)
 {
 
     int start = 0;
