@@ -93,8 +93,6 @@ public:
 
     AMROversetInfo& amr_overset_info() { return *m_amr_data; }
 
-	// These two are functions that can access the private
-	// m_qcell and m_qnode variables
     ScratchField& qvars_cell() { return *m_qcell; }
     ScratchField& qvars_node() { return *m_qnode; }
 	
@@ -109,6 +107,12 @@ private:
 
     //! IBLANK for nodal fields
     IntField& m_iblank_node;
+
+    //! IBLANK on cell centered fields on host
+    IntField& m_iblank_cell_host;
+
+    //! IBLANK for nodal fields on host
+    IntField& m_iblank_node_host;
 
     //! AMReX mask for linear system solves
     IntField& m_mask_cell;

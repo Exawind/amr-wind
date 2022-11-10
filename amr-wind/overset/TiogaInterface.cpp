@@ -64,6 +64,23 @@ AMROversetInfo::AMROversetInfo(const int nglobal, const int nlocal)
 {}
 
 // clang-format off
+/*
+TiogaInterface::TiogaInterface(CFDSim& sim)
+    : m_sim(sim)
+    , m_iblank_cell(sim.repo().declare_int_field(
+          "iblank_cell", 1, sim.pde_manager().num_ghost_state()))
+    , m_iblank_node(sim.repo().declare_int_field(
+          "iblank_node", 1, sim.pde_manager().num_ghost_state(), 1,
+          FieldLoc::NODE))
+    , m_mask_cell(sim.repo().declare_int_field(
+          "mask_cell", 1, sim.pde_manager().num_ghost_state()))
+    , m_mask_node(sim.repo().declare_int_field(
+          "mask_node", 1, sim.pde_manager().num_ghost_state(), 1,
+          FieldLoc::NODE))
+{
+    m_sim.io_manager().register_output_int_var(m_iblank_cell.name());
+}
+*/
 
 TiogaInterface::TiogaInterface(CFDSim& sim)
     : m_sim(sim)
@@ -71,6 +88,11 @@ TiogaInterface::TiogaInterface(CFDSim& sim)
           "iblank_cell", 1, sim.pde_manager().num_ghost_state()))
     , m_iblank_node(sim.repo().declare_int_field(
           "iblank_node", 1, sim.pde_manager().num_ghost_state(), 1,
+          FieldLoc::NODE))
+    , m_iblank_cell_host(sim.repo().declare_int_field_on_host(
+          "iblank_cell_host", 1, sim.pde_manager().num_ghost_state()))
+    , m_iblank_node_host(sim.repo().declare_int_field_on_host(
+          "iblank_node_host", 1, sim.pde_manager().num_ghost_state(), 1,
           FieldLoc::NODE))
     , m_mask_cell(sim.repo().declare_int_field(
           "mask_cell", 1, sim.pde_manager().num_ghost_state()))
@@ -104,6 +126,9 @@ void TiogaInterface::pre_overset_conn_work()
 {
     m_iblank_cell.setVal(1);
     m_iblank_node.setVal(1);
+
+	
+dtoh_memcpy(m_iblank_cell_host, m_iblank_cell,0,0,1);
 
 }
 
@@ -150,14 +175,10 @@ void TiogaInterface::register_solution(
     {
         int icomp = 0;
         for (const auto& cvar : m_cell_vars) {
-            // amrex::Print()<<"cvar"<<cvar<<std::endl;
             auto& fld = repo.get_field(cvar);
             const int ncomp = fld.num_comp();
             fld.fillpatch(m_sim.time().new_time());
-		amrex::Print()<<"cell numghost "<<num_ghost<<std::endl;
             field_ops::copy(*m_qcell, fld, 0, icomp, ncomp, num_ghost);
-            // Consider calling an explicit copy to the CPU field here for
-            // testing
             icomp += ncomp;
         }
     }
@@ -166,15 +187,12 @@ void TiogaInterface::register_solution(
     {
         int icomp = 0;
         for (const auto& cvar : m_cell_vars) {
-            // amrex::Print()<<"cvar"<<cvar<<std::endl;
             auto& fld = repo.get_field(cvar);
             const int ncomp = fld.num_comp();
-		amrex::Print()<<"NCOMP IS "<<ncomp<<std::endl;
             fld.fillpatch(m_sim.time().new_time());
             // Device to host copy happens here
             const int nlevels = repo.num_active_levels();
             for (int lev = 0; lev < nlevels; ++lev) {
-		//dtoh_memcpy((*m_qcell_host)(lev), fld(lev),0,icomp,2*ncomp);
 		dtoh_memcpy((*m_qcell_host)(lev), fld(lev),0,icomp,ncomp);
 
             }
@@ -202,10 +220,8 @@ void TiogaInterface::register_solution(
     {
         int icomp = 0;
         for (const auto& cvar : m_node_vars) {
-            // amrex::Print()<<"cvar"<<cvar<<std::endl;
             auto& fld = repo.get_field(cvar);
             const int ncomp = fld.num_comp();
-		amrex::Print()<<"NCOMP IS "<<ncomp<<std::endl;
             fld.fillpatch(m_sim.time().new_time());
             // Device to host copy happens here
             const int nlevels = repo.num_active_levels();
@@ -234,7 +250,6 @@ void TiogaInterface::register_solution(
 
             for (amrex::MFIter mfi(qcfab); mfi.isValid(); ++mfi) {
             //for (amrex::MFIter mfi(qcfab_host); mfi.isValid(); ++mfi) {
-                std::cout << "Is this being called?\n";
                 // Copy from device to host
                 ad.qcell.h_view[ilp] = qcfab_host[mfi].dataPtr();
                 // Do nothing for d_view
@@ -401,7 +416,6 @@ void TiogaInterface::amr_to_tioga_mesh()
         auto& ad = *m_amr_data;
         auto& ibfab = ibcell(lev);
         auto& ibnodefab = ibnode(lev);
-        // h_view might need an explicit copy from device to host
         for (amrex::MFIter mfi(ibfab); mfi.isValid(); ++mfi) {
             auto& ib = ibfab[mfi];
             auto& ibn = ibnodefab[mfi];
