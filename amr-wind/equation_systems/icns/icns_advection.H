@@ -566,10 +566,8 @@ struct AdvectionOp<ICNS, fvm::MOL>
                 amrex::Box gbx = grow(bx, fvm::MOL::nghost_state);
 
                 // Set up momentum array
-                amrex::FArrayBox qfab;
-                qfab.resize(gbx, ICNS::ndim);
-                amrex::Array4<amrex::Real> q;
-                q = qfab.array();
+                amrex::FArrayBox qfab(gbx, ICNS::ndim);
+                const auto& q = qfab.array();
                 // Calculate momentum
                 auto rho_arr = rho(lev).const_array(mfi);
                 auto vel_arr = dof_field(lev).const_array(mfi);
