@@ -549,19 +549,6 @@ struct AdvectionOp<ICNS, fvm::MOL>
 
         int nmaxcomp = AMREX_SPACEDIM;
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-            // form multifab for transport variable and source term
-            amrex::MultiFab q(
-                dof_field(lev).boxArray(), dof_field(lev).DistributionMap(),
-                ICNS::ndim, fvm::MOL::nghost_state);
-            amrex::MultiFab::Copy(
-                q, dof_field(lev), 0, 0, ICNS::ndim, fvm::MOL::nghost_state);
-            // Calculate fluxes using momentum directly
-            amrex::MultiFab::Multiply(
-                q, rho(lev), 0, 0, 1, fvm::MOL::nghost_state);
-            amrex::MultiFab::Multiply(
-                q, rho(lev), 0, 1, 1, fvm::MOL::nghost_state);
-            amrex::MultiFab::Multiply(
-                q, rho(lev), 0, 2, 1, fvm::MOL::nghost_state);
 
             amrex::MFItInfo mfi_info;
             // if (amrex::Gpu::notInLaunchRegion())
@@ -576,6 +563,22 @@ struct AdvectionOp<ICNS, fvm::MOL>
             for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
                  ++mfi) {
                 amrex::Box const& bx = mfi.tilebox();
+                amrex::Box gbx = grow(bx, fvm::MOL::nghost_state);
+
+                // Set up momentum array
+                amrex::FArrayBox qfab(gbx, ICNS::ndim);
+                const auto& q = qfab.array();
+                // Calculate momentum
+                auto rho_arr = rho(lev).const_array(mfi);
+                auto vel_arr = dof_field(lev).const_array(mfi);
+                amrex::ParallelFor(
+                    gbx, ICNS::ndim,
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                        q(i, j, k, n) = rho_arr(i, j, k) * vel_arr(i, j, k, n);
+                    });
+                // Doing this explicitly, instead of through a Multiply command,
+                // helps avoid floating-point errors with intel compilers and
+                // mimics the implementation in equation_systems/AdvOp_MOL.H
 
                 amrex::Box tmpbox = amrex::surroundingNodes(bx);
                 const int tmpcomp = nmaxcomp * AMREX_SPACEDIM;
@@ -588,7 +591,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
                 amrex::Array4<amrex::Real> fz = tmpfab.array(nmaxcomp * 2);
 
                 mol::compute_convective_fluxes(
-                    lev, bx, AMREX_SPACEDIM, fx, fy, fz, q.const_array(mfi),
+                    lev, bx, AMREX_SPACEDIM, fx, fy, fz, q,
                     u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
                     w_mac(lev).const_array(mfi), dof_field.bcrec().data(),
                     dof_field.bcrec_device().data(), geom);
