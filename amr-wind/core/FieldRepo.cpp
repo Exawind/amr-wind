@@ -272,6 +272,75 @@ IntField& FieldRepo::declare_int_field(
     return *m_int_field_vec[m_int_fid_map[name]];
 }
 
+IntField& FieldRepo::declare_int_field_on_host(
+    const std::string& name,
+    const int ncomp,
+    const int ngrow,
+    const int nstates,
+    const FieldLoc floc)
+{
+    BL_PROFILE("amr-wind::FieldRepo::declare_int_field_on_host");
+    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+        nstates == 1, "Multiple states not supported for integer fields");
+
+    // If the field is already registered check and return the fields
+    {
+        auto found = m_int_fid_map.find(name);
+        if (found != m_int_fid_map.end()) {
+            auto& field = *m_int_field_vec[found->second];
+
+            if ((ncomp != field.num_comp()) ||
+                (floc != field.field_location())) {
+                amrex::Abort(
+                    "Attempt to reregister field with inconsistent "
+                    "parameters: " +
+                    name);
+            }
+            return field;
+        }
+    }
+
+    if (!field_impl::is_valid_field_name(name)) {
+        amrex::Abort("Attempt to use reserved field name: " + name);
+    }
+
+    {
+        const FieldState fstate = FieldState::New;
+        const std::string fname =
+            field_impl::field_name_with_state(name, fstate);
+        const int fid = m_int_field_vec.size();
+
+        std::unique_ptr<IntField> field(
+            new IntField(*this, fname, fid, ncomp, ngrow, floc));
+
+        if (m_is_initialized) {
+        // allocate_field_data(*field);
+	//allocate_field_data(lev, field, *m_leveldata[lev]);
+
+	    for (int lev = 0; lev <= m_mesh.finestLevel(); ++lev) {
+		LevelDataHolder& level_data=*m_leveldata[lev];
+		{
+		    auto& fab_vec = level_data.m_int_fabs;
+		    AMREX_ASSERT(fab_vec.size() == (*field).id());
+		    //AMREX_ASSERT(fab_vec.size() == field.id());
+
+		    const auto ba = amrex::convert(
+			m_mesh.boxArray(lev), field_impl::index_type((*field).field_location()));
+
+		    fab_vec.emplace_back(
+			ba, m_mesh.DistributionMap(lev), (*field).num_comp(), (*field).num_grow(),
+			amrex::MFInfo().SetArena(amrex::The_Pinned_Arena()), *level_data.m_int_fact);
+		}
+	    }
+        }
+
+        m_int_field_vec.emplace_back(std::move(field));
+        m_int_fid_map[fname] = fid;
+    }
+
+    return *m_int_field_vec[m_int_fid_map[name]];
+}
+
 IntField&
 FieldRepo::get_int_field(const std::string& name, const FieldState fstate) const
 {
