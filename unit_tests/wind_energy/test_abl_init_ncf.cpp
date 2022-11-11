@@ -19,28 +19,28 @@ TEST_F(ABLMeshTest, abl_init_netcdf)
     }
 
     // Create NetCDF file for test
-    ncutils::NCFile ncf = ncutils::NCFile::create("abl.nc");
-    // Set up dimensions to correspond to ABL test
-    ncf.def_dim("nx", 8);
-    ncf.def_dim("ny", 8);
-    ncf.def_dim("nz", 64);
-    // Define vectors that ABLInit will read
-    const std::vector<std::string> three_dim{"nx", "ny", "nz"};
-    auto uvel = ncf.def_var("uvel", NC_DOUBLE, three_dim);
-    auto vvel = ncf.def_var("vvel", NC_DOUBLE, three_dim);
-    auto wvel = ncf.def_var("wvel", NC_DOUBLE, three_dim);
-    // Populate std vectors
-    const std::vector<size_t> start{0, 0, 0};
-    const std::vector<size_t> count{8, 8, 64};
-    const std::vector<double> fill_u(8 * 8 * 64, 20.0);
-    const std::vector<double> fill_v(8 * 8 * 64, 10.0);
-    const std::vector<double> fill_w(8 * 8 * 64, 0.0);
-    // Populate NetCDF vectors
-    uvel.put(fill_u.data(), start, count);
-    vvel.put(fill_v.data(), start, count);
-    wvel.put(fill_w.data(), start, count);
-    // Close file
-    ncf.close();
+    {
+        ncutils::NCFile ncf = ncutils::NCFile::create("abl.nc");
+        // Set up dimensions to correspond to ABL test
+        ncf.def_dim("nx", 8);
+        ncf.def_dim("ny", 8);
+        ncf.def_dim("nz", 64);
+        // Define vectors that ABLInit will read
+        const std::vector<std::string> three_dim{"nx", "ny", "nz"};
+        auto uvel = ncf.def_var("uvel", NC_DOUBLE, three_dim);
+        auto vvel = ncf.def_var("vvel", NC_DOUBLE, three_dim);
+        auto wvel = ncf.def_var("wvel", NC_DOUBLE, three_dim);
+        // Populate std vectors
+        const std::vector<size_t> start{0, 0, 0};
+        const std::vector<size_t> count{8, 8, 64};
+        const std::vector<double> fill_u(8 * 8 * 64, 20.0);
+        const std::vector<double> fill_v(8 * 8 * 64, 10.0);
+        const std::vector<double> fill_w(8 * 8 * 64, 0.0);
+        // Populate NetCDF vectors
+        uvel.put(fill_u.data(), start, count);
+        vvel.put(fill_v.data(), start, count);
+        wvel.put(fill_w.data(), start, count);
+    }
 
     // Set up mock simulation init, starting with mesh and fields
     initialize_mesh();
