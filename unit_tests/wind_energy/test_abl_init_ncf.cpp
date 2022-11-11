@@ -39,6 +39,8 @@ TEST_F(ABLMeshTest, abl_init_netcdf)
     uvel.put(fill_u.data(), start, count);
     vvel.put(fill_v.data(), start, count);
     wvel.put(fill_w.data(), start, count);
+    // Close file
+    ncf.close();
 
     // Set up mock simulation init, starting with mesh and fields
     initialize_mesh();
