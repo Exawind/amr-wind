@@ -3,7 +3,6 @@
 #include "aw_test_utils/test_utils.H"
 #include "amr-wind/wind_energy/ABLFieldInit.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
-//#include <filesystem>
 
 namespace amr_wind_tests {
 namespace {} // namespace
@@ -20,8 +19,7 @@ TEST_F(ABLMeshTest, abl_init_netcdf)
     }
 
     // Create NetCDF file for test
-    ncutils::NCFile ncf =
-        ncutils::NCFile::create("abl.nc"); //, NC_DISKLESS | NC_NETCDF4);
+    ncutils::NCFile ncf = ncutils::NCFile::create("abl.nc");
     // Set up dimensions to correspond to ABL test
     ncf.def_dim("nx", 8);
     ncf.def_dim("ny", 8);
@@ -84,10 +82,14 @@ TEST_F(ABLMeshTest, abl_init_netcdf)
 // Clean up ABL NetCDF file if needed
 TEST_F(ABLMeshTest, abl_netcdf_cleanup)
 {
-    if (std::__fs::filesystem::exists("abl.nc")) {
+    // If it exists, remove file
+    std::ifstream f((std::string) "abl.nc");
+    if (f.good()) {
         remove("abl.nc");
     }
-    EXPECT_FALSE(std::__fs::filesystem::exists("abl.nc"));
+    // Check that file is removed
+    std::ifstream ff((std::string) "abl.nc");
+    EXPECT_FALSE(ff.good());
 }
 
 } // namespace amr_wind_tests
