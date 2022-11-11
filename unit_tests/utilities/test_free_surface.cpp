@@ -1,7 +1,6 @@
-
 #include "aw_test_utils/MeshTest.H"
-
 #include "amr-wind/utilities/sampling/FreeSurface.H"
+#include "amr-wind/utilities/tagging/FieldRefinement.H"
 
 namespace amr_wind_tests {
 
@@ -132,6 +131,73 @@ void init_vof_slope(
     }
 }
 
+//! Custom mesh class to be able to refine like a simulation would
+//  - combination of AmrTestMesh and incflo classes
+//  - with ability to initialize the refiner and regrid
+class FSRefineMesh : public AmrTestMesh
+{
+public:
+    FSRefineMesh()
+        : m_sim(*this)
+        , m_repo(m_sim.repo())
+        , m_mesh_refiner(new amr_wind::RefineCriteriaManager(m_sim))
+    {}
+    amr_wind::FieldRepo& field_repo() { return m_repo; }
+    amr_wind::CFDSim& sim() { return m_sim; }
+    void init_refiner() { m_mesh_refiner->initialize(); }
+    void remesh() { regrid(0, 0.0); }
+
+protected:
+    void MakeNewLevelFromScratch(
+        int lev,
+        amrex::Real time,
+        const amrex::BoxArray& ba,
+        const amrex::DistributionMapping& dm) override
+    {
+        SetBoxArray(lev, ba);
+        SetDistributionMap(lev, dm);
+
+        m_repo.make_new_level_from_scratch(lev, time, ba, dm);
+    }
+
+    void MakeNewLevelFromCoarse(
+        int lev,
+        amrex::Real time,
+        const amrex::BoxArray& ba,
+        const amrex::DistributionMapping& dm) override
+    {
+        SetBoxArray(lev, ba);
+        SetDistributionMap(lev, dm);
+
+        m_repo.make_new_level_from_coarse(lev, time, ba, dm);
+    }
+
+    void RemakeLevel(
+        int lev,
+        amrex::Real time,
+        const amrex::BoxArray& ba,
+        const amrex::DistributionMapping& dm) override
+    {
+        SetBoxArray(lev, ba);
+        SetDistributionMap(lev, dm);
+
+        m_repo.remake_level(lev, time, ba, dm);
+    }
+
+    void ClearLevel(int lev) override { m_repo.clear_level(lev); }
+
+    void ErrorEst(
+        int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow) override
+    {
+        m_mesh_refiner->tag_cells(lev, tags, time, ngrow);
+    }
+
+private:
+    amr_wind::CFDSim m_sim;
+    amr_wind::FieldRepo& m_repo;
+    std::unique_ptr<amr_wind::RefineCriteriaManager> m_mesh_refiner;
+};
+
 class FreeSurfaceImpl : public amr_wind::free_surface::FreeSurface
 {
 public:
@@ -249,7 +315,7 @@ protected:
         {
             amrex::ParmParse pp("amr");
             amrex::Vector<int> ncell{{32, 32, 64}};
-            pp.add("max_level", 0);
+            pp.add("max_level", m_nlev);
             pp.addarr("n_cell", ncell);
         }
         {
@@ -260,15 +326,16 @@ protected:
             pp.addarr("is_periodic", amrex::Vector<int>{{1, 1, 0}});
         }
     }
-    void setup_grid0D(int ninst)
+    void setup_grid0D(int ninst, std::string fsname)
     {
-        amrex::ParmParse pp("freesurface");
+        amrex::ParmParse pp(fsname);
         pp.add("output_frequency", 1);
         pp.add("num_instances", ninst);
         pp.addarr("num_points", amrex::Vector<int>{1, 1});
         pp.addarr("start", pt_coord);
         pp.addarr("end", pt_coord);
     }
+    void setup_grid0D(int ninst) { setup_grid0D(ninst, "freesurface"); }
     void setup_grid2D(int ninst)
     {
         amrex::ParmParse pp("freesurface");
@@ -287,6 +354,15 @@ protected:
         pp.addarr("start", plnarrow_s);
         pp.addarr("end", plnarrow_e);
     }
+    void setup_fieldrefinement()
+    {
+        amrex::ParmParse pp("tagging");
+        pp.add("labels", (std::string) "t1");
+        amrex::ParmParse ppt1("tagging.t1");
+        ppt1.add("type", (std::string) "FieldRefinement");
+        ppt1.add("field_name", fname);
+        ppt1.addarr("field_error", amrex::Vector<amrex::Real>{fref_val});
+    }
     // Parameters to reuse
     const amrex::Real water_level0 = 64.0;
     const amrex::Real water_level1 = 31.5;
@@ -299,6 +375,9 @@ protected:
     const amrex::Vector<amrex::Real> plnarrow_s{{63.0, 63.0, 0.0}};
     const amrex::Vector<amrex::Real> plnarrow_e{{65.0, 65.0, 0.0}};
     const int npts = 3;
+    const amrex::Real fref_val = 0.5;
+    const std::string fname = "flag";
+    int m_nlev = 0;
 };
 
 TEST_F(FreeSurfaceTest, point)
@@ -410,6 +489,80 @@ TEST_F(FreeSurfaceTest, sloped)
     // Check output value
     int nout = tool.check_output_vec("~", out_vec);
     ASSERT_EQ(nout, npts * npts);
+}
+
+TEST_F(FreeSurfaceTest, multisampler)
+{
+    initialize_mesh();
+    auto& repo = sim().repo();
+    auto& vof = repo.declare_field("vof", 1, 2);
+
+    // Set up parameters for one sampler
+    setup_grid0D(1, "freesurface0");
+
+    // Set up parameters for another sampler
+    setup_grid2D_narrow();
+
+    // Initialize VOF distribution and access sim
+    init_vof(vof, water_level1);
+    auto& m_sim = sim();
+
+    // Initialize first sampler
+    FreeSurfaceImpl tool1(m_sim, "freesurface0");
+    tool1.initialize();
+
+    // Initialize second sampler
+    FreeSurfaceImpl tool2(m_sim, "freesurface");
+    tool2.initialize();
+}
+
+TEST_F(FreeSurfaceTest, regrid)
+{
+    // Allow 2 levels
+    m_nlev = 1;
+    // Set up parameters for domain
+    populate_parameters();
+    // Set up parameters for refinement
+    setup_fieldrefinement();
+    // Set up parameters for sampler
+    setup_grid2D(1);
+    // Create mesh and initialize
+    reset_prob_domain();
+    auto rmesh = FSRefineMesh();
+    rmesh.initialize_mesh(0.0);
+
+    // Repo and fields
+    auto& repo = rmesh.field_repo();
+    auto& vof = repo.declare_field("vof", 1, 2);
+    auto& flag = repo.declare_field(fname, 1, 2);
+
+    // Set up scalar for determining refinement - all fine level
+    flag.setVal(2.0 * fref_val);
+
+    // Initialize mesh refiner and remesh
+    rmesh.init_refiner();
+    rmesh.remesh();
+
+    // Initialize VOF distribution and access sim
+    init_vof(vof, water_level1);
+    auto& rsim = rmesh.sim();
+
+    // Initialize sampler and check result on initial mesh
+    FreeSurfaceImpl tool(rsim, "freesurface");
+    tool.initialize();
+    tool.post_advance_work();
+    tool.check_output("~", water_level1);
+
+    // Change scalar for determining refinement - no fine level
+    flag.setVal(0.0);
+
+    // Regrid, update fields, and do post_regrid_actions for tool
+    rmesh.remesh();
+    tool.post_regrid_actions();
+
+    // Check that result is unchanged on new mesh
+    tool.post_advance_work();
+    tool.check_output("~", water_level1);
 }
 
 } // namespace amr_wind_tests

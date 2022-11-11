@@ -194,7 +194,6 @@ private:
     std::unique_ptr<synth_turb::MeanProfile> m_wind_profile;
 
     std::string m_mean_wind_type{"ConstValue"};
-    amrex::Real m_grid_spacing;
     amrex::Real m_epsilon;
     amrex::Real m_gauss_scaling;
 

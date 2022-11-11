@@ -371,7 +371,7 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
     process_nc_file(m_turb_filename, m_turb_grid);
 
     // Load position and orientation of the grid
-    amrex::Real wind_direction;
+    amrex::Real wind_direction{270.};
     pp.query("wind_direction", wind_direction);
     amrex::Vector<amrex::Real> location{{0.0, 0.0, 0.0}};
     pp.queryarr("grid_location", location);
@@ -436,9 +436,7 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
 
     m_mean_wind_type = mean_wind_type;
     // Smearing factors
-    pp.query("grid_spacing", m_grid_spacing);
-    m_epsilon = 2.0 * m_grid_spacing;
-    pp.query("gauss_smearing_factor", m_epsilon);
+    pp.get("gauss_smearing_factor", m_epsilon);
     m_gauss_scaling = 1.0 / (m_epsilon * std::sqrt(pi));
 
     // Time offsets if any...
