@@ -33,9 +33,9 @@ TEST_F(ABLMeshTest, abl_init_netcdf)
         // Populate std vectors
         const std::vector<size_t> start{0, 0, 0};
         const std::vector<size_t> count{8, 8, 64};
-        const std::vector<double> fill_u(8 * 8 * 64, 20.0);
-        const std::vector<double> fill_v(8 * 8 * 64, 10.0);
-        const std::vector<double> fill_w(8 * 8 * 64, 0.0);
+        const std::vector<double> fill_u(8 * 8 * 64, 0.0);
+        const std::vector<double> fill_v(8 * 8 * 64, 20.0);
+        const std::vector<double> fill_w(8 * 8 * 64, 10.0);
         // Populate NetCDF vectors
         uvel.put(fill_u.data(), start, count);
         vvel.put(fill_v.data(), start, count);
@@ -72,12 +72,12 @@ TEST_F(ABLMeshTest, abl_init_netcdf)
     {
         amrex::Vector<amrex::Real> min_vel(3), max_vel(3);
         utils::field_minmax(nlevels, velocity, min_vel, max_vel);
-        EXPECT_NEAR(min_vel[0], 20.0, tol);
-        EXPECT_NEAR(min_vel[1], 10.0, tol);
-        EXPECT_NEAR(min_vel[2], 0.0, tol);
-        EXPECT_NEAR(max_vel[0], 20.0, tol);
-        EXPECT_NEAR(max_vel[1], 10.0, tol);
-        EXPECT_NEAR(max_vel[2], 0.0, tol);
+        EXPECT_NEAR(min_vel[0], 0.0, tol);
+        EXPECT_NEAR(min_vel[1], 20.0, tol);
+        EXPECT_NEAR(min_vel[2], 10.0, tol);
+        EXPECT_NEAR(max_vel[0], 0.0, tol);
+        EXPECT_NEAR(max_vel[1], 20.0, tol);
+        EXPECT_NEAR(max_vel[2], 10.0, tol);
     }
 }
 
