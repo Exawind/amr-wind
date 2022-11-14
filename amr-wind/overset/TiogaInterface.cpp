@@ -127,8 +127,15 @@ void TiogaInterface::pre_overset_conn_work()
     m_iblank_cell.setVal(1);
     m_iblank_node.setVal(1);
 
+    auto& repo = m_sim.repo();
+    const int nlevels = repo.num_active_levels();
+    for (int lev = 0; lev < nlevels; ++lev) {
+	//dtoh_memcpy((*m_qcell_host)(lev), fld(lev),0,icomp,ncomp);
+	dtoh_memcpy(m_iblank_cell_host(lev), m_iblank_cell(lev),0,0,1);
+	dtoh_memcpy(m_iblank_node_host(lev), m_iblank_node(lev),0,0,1);
+
+    }
 	
-dtoh_memcpy(m_iblank_cell_host, m_iblank_cell,0,0,1);
 
 }
 
@@ -412,15 +419,24 @@ void TiogaInterface::amr_to_tioga_mesh()
     ilp = 0;
     auto& ibcell = m_sim.repo().get_int_field("iblank_cell");
     auto& ibnode = m_sim.repo().get_int_field("iblank_node");
+
+    auto& ibcell_host = m_sim.repo().get_int_field("iblank_cell_host");
+    auto& ibnode_host = m_sim.repo().get_int_field("iblank_node_host");
     for (int lev = 0; lev < nlevels; ++lev) {
         auto& ad = *m_amr_data;
         auto& ibfab = ibcell(lev);
         auto& ibnodefab = ibnode(lev);
+        auto& ibfab_host = ibcell_host(lev);
+        auto& ibnodefab_host = ibnode_host(lev);
         for (amrex::MFIter mfi(ibfab); mfi.isValid(); ++mfi) {
             auto& ib = ibfab[mfi];
             auto& ibn = ibnodefab[mfi];
-            ad.iblank_cell.h_view[ilp] = ib.dataPtr();
-            ad.iblank_node.h_view[ilp] = ibn.dataPtr();
+            auto& ib_host = ibfab_host[mfi];
+            auto& ibn_host = ibnodefab_host[mfi];
+            ad.iblank_cell.h_view[ilp] = ib_host.dataPtr();
+            ad.iblank_node.h_view[ilp] = ibn_host.dataPtr();
+            //ad.iblank_cell.h_view[ilp] = ib.dataPtr();
+            //ad.iblank_node.h_view[ilp] = ibn.dataPtr();
             ad.iblank_cell.d_view[ilp] = ib.dataPtr();
             ad.iblank_node.d_view[ilp] = ibn.dataPtr();
 
