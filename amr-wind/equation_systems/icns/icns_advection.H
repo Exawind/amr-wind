@@ -464,27 +464,27 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                  mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.tilebox();
 
-                HydroUtils::ComputeDivergence( bx, conv_term(lev).array(mfi),
-                                               (*flux_x)(lev).array(mfi),
-                                               (*flux_y)(lev).array(mfi),
-                                               (*flux_z)(lev).array(mfi),
-                                               ICNS::ndim, geom[lev],
-                                               amrex::Real(-1.0), fluxes_are_area_weighted);
+                HydroUtils::ComputeDivergence(
+                    bx, conv_term(lev).array(mfi), (*flux_x)(lev).array(mfi),
+                    (*flux_y)(lev).array(mfi), (*flux_z)(lev).array(mfi),
+                    ICNS::ndim, geom[lev], amrex::Real(-1.0),
+                    fluxes_are_area_weighted);
 
-                if(m_cons == 0){
-                  amrex::FArrayBox div_umac(bx, 1, amrex::The_Async_Arena());
-                  auto const& divum_arr = div_umac.array();
-                  HydroUtils::ComputeDivergence(bx, divum_arr, u_mac(lev).const_array(mfi),
-                                                v_mac(lev).const_array(mfi),
-                                                w_mac(lev).const_array(mfi), 1, geom[lev],
-                                                amrex::Real(1.0), false);
-                  HydroUtils::ComputeConvectiveTerm(bx, ICNS::ndim, mfi,
-                                                    dof_field(lev).const_array(mfi),
-                                                    (*face_x)(lev).const_array(mfi),
-                                                    (*face_y)(lev).const_array(mfi),
-                                                    (*face_z)(lev).const_array(mfi), divum_arr,
-                                                    conv_term(lev).array(mfi), iconserv.data(),
-                                                    postmac_advection_type);
+                if (m_cons == 0) {
+                    amrex::FArrayBox div_umac(bx, 1, amrex::The_Async_Arena());
+                    auto const& divum_arr = div_umac.array();
+                    HydroUtils::ComputeDivergence(
+                        bx, divum_arr, u_mac(lev).const_array(mfi),
+                        v_mac(lev).const_array(mfi),
+                        w_mac(lev).const_array(mfi), 1, geom[lev],
+                        amrex::Real(1.0), false);
+                    HydroUtils::ComputeConvectiveTerm(
+                        bx, ICNS::ndim, mfi, dof_field(lev).const_array(mfi),
+                        (*face_x)(lev).const_array(mfi),
+                        (*face_y)(lev).const_array(mfi),
+                        (*face_z)(lev).const_array(mfi), divum_arr,
+                        conv_term(lev).array(mfi), iconserv.data(),
+                        postmac_advection_type);
                 }
             }
         }

@@ -212,12 +212,11 @@ struct AdvectionOp<
                  mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.tilebox();
 
-                HydroUtils::ComputeDivergence( bx, conv_term(lev).array(mfi),
-                                               (*flux_x)(lev).array(mfi),
-                                               (*flux_y)(lev).array(mfi),
-                                               (*flux_z)(lev).array(mfi),
-                                               PDE::ndim, geom[lev],
-                                               amrex::Real(-1.0), fluxes_are_area_weighted);
+                HydroUtils::ComputeDivergence(
+                    bx, conv_term(lev).array(mfi), (*flux_x)(lev).array(mfi),
+                    (*flux_y)(lev).array(mfi), (*flux_z)(lev).array(mfi),
+                    PDE::ndim, geom[lev], amrex::Real(-1.0),
+                    fluxes_are_area_weighted);
             }
         }
     }
