@@ -225,7 +225,7 @@ bool ABLFieldInit::operator()(
                 // Pass values from temporary array to the velocity field
                 velocity(i, j, k, 0) = uvel_dptr[idx];
                 velocity(i, j, k, 1) = vvel_dptr[idx];
-                velocity(i, j, k, 3) = wvel_dptr[idx];
+                velocity(i, j, k, 2) = wvel_dptr[idx];
             });
         // Close the netcdf file
         ncf.close();
