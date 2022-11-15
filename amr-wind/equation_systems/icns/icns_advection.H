@@ -579,6 +579,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
                 // Doing this explicitly, instead of through a Multiply command,
                 // helps avoid floating-point errors with intel compilers and
                 // mimics the implementation in equation_systems/AdvOp_MOL.H
+                amrex::Gpu::streamSynchronize();
 
                 amrex::Box tmpbox = amrex::surroundingNodes(bx);
                 const int tmpcomp = nmaxcomp * AMREX_SPACEDIM;
