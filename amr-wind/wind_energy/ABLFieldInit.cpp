@@ -160,14 +160,14 @@ bool ABLFieldInit::operator()(
         // The indices that determine the start and end points of the i, j, k
         // arrays. The max and min are there to ensure that the points form
         // ghost cells are not used
-        auto i0 = std::max(vbx.smallEnd(0), domain.smallEnd(0));
-        auto i1 = std::min(vbx.bigEnd(0), domain.bigEnd(0));
+        auto i0 = amrex::max(vbx.smallEnd(0), domain.smallEnd(0));
+        auto i1 = amrex::min(vbx.bigEnd(0), domain.bigEnd(0));
 
-        auto j0 = std::max(vbx.smallEnd(1), domain.smallEnd(1));
-        auto j1 = std::min(vbx.bigEnd(1), domain.bigEnd(1));
+        auto j0 = amrex::max(vbx.smallEnd(1), domain.smallEnd(1));
+        auto j1 = amrex::min(vbx.bigEnd(1), domain.bigEnd(1));
 
-        auto k0 = std::max(vbx.smallEnd(2), domain.smallEnd(2));
-        auto k1 = std::min(vbx.bigEnd(2), domain.bigEnd(2));
+        auto k0 = amrex::max(vbx.smallEnd(2), domain.smallEnd(2));
+        auto k1 = amrex::min(vbx.bigEnd(2), domain.bigEnd(2));
 
         // The x, y and z velocity components (u, v, w)
         auto uvel = ncf.var("uvel");
@@ -177,16 +177,16 @@ bool ABLFieldInit::operator()(
         // Loop through all points in the domain and set velocities to values
         // from the input file
         // start is the first index from where to read data
-        std::vector<size_t> start{
+        amrex::Vector<size_t> start{
             {static_cast<size_t>(i0), static_cast<size_t>(j0),
              static_cast<size_t>(k0)}};
         // count is the total number of elements to read in each direction
-        std::vector<size_t> count{
+        amrex::Vector<size_t> count{
             {static_cast<size_t>(i1 - i0 + 1), static_cast<size_t>(j1 - j0 + 1),
              static_cast<size_t>(k1 - k0 + 1)}};
 
         // Working vector to read data onto host
-        std::vector<double> tmp;
+        amrex::Vector<double> tmp;
         int dlen = count[0] * count[1] * count[2];
         tmp.resize(dlen);
         // Vector to store the 3d data into a single array and set size
@@ -209,9 +209,9 @@ bool ABLFieldInit::operator()(
             wvel_d.begin());
 
         // Pointers to velocity objects
-        auto* uvel_dptr = uvel_d.data();
-        auto* vvel_dptr = vvel_d.data();
-        auto* wvel_dptr = wvel_d.data();
+        const auto* uvel_dptr = uvel_d.data();
+        const auto* vvel_dptr = vvel_d.data();
+        const auto* wvel_dptr = wvel_d.data();
 
         // Get count components for device
         int ct1 = count[1];
