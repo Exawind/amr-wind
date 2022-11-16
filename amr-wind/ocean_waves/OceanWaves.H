@@ -4,9 +4,9 @@
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/FieldRepo.H"
 
-/** \defgroup immersed boundary Immersed boundary module
- *  Immersed boundary class
- *  \ingroup immersed_boundary
+/** \defgroup Ocean Waves module
+ *  Ocean Waves class
+ *  \ingroup ocean_waves
  */
 
 namespace amr_wind {
