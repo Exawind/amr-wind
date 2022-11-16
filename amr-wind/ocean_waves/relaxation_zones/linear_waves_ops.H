@@ -43,7 +43,6 @@ struct InitDataOp<LinearWaves>
         auto& vof = sim.repo().get_field("vof");
         // cppcheck-suppress constVariable
         auto& density = sim.repo().get_field("density");
-
         // use MultiPhase information
         const auto& mphase = sim.physics_manager().get<MultiPhase>();
         const amrex::Real rho1 = mphase.rho1();
@@ -167,12 +166,7 @@ struct UpdateRelaxZonesOp<LinearWaves>
                 amrex::ParallelFor(
                     gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real xc = problo[0] + (i + 0.5) * dx[0];
-                        // const amrex::Real x =
-                        //     amrex::min(amrex::max(xc, problo[0]), probhi[0]);
-
                         const amrex::Real zc = problo[2] + (k + 0.5) * dx[2];
-                        // const amrex::Real z =
-                        //     amrex::min(amrex::max(zc, problo[2]), probhi[2]);
 
                         const amrex::Real wavenumber = 2. * M_PI / wavelength;
                         const amrex::Real omega = std::pow(
@@ -181,8 +175,7 @@ struct UpdateRelaxZonesOp<LinearWaves>
                             0.5);
                         const amrex::Real phase =
                             wavenumber * xc - omega * time;
-                        // const amrex::Real phase_vel =
-                        //     wavenumber * x - omega * time;
+
                         const amrex::Real eta =
                             waveheight / 2.0 * std::cos(phase);
 
