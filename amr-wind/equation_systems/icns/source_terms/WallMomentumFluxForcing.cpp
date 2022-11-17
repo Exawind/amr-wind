@@ -86,6 +86,10 @@ void WallMomentumFluxForcing::operator()(
                 auto tau = ShearStressConstant(m_mo);
                 tau_xz = tau.calc_vel_x(u,S);
                 tau_yz = tau.calc_vel_y(v,S);
+            } else if (m_wall_shear_stress_type == "default") {
+                auto tau = ShearStressDefault(m_mo);
+                tau_xz = tau.calc_vel_x(u,S);
+                tau_yz = tau.calc_vel_y(v,S);
             } else if (m_wall_shear_stress_type == "local") {
                 auto tau = ShearStressLocal(m_mo);
                 tau_xz = tau.calc_vel_x(u,S);
@@ -100,7 +104,7 @@ void WallMomentumFluxForcing::operator()(
                 tau_yz = tau.calc_vel_y(v,S);
             }
 
-
+/*
             std::cout << "tau_xz = " << tau_xz << std::endl;
             std::cout << "tau_yz = " << tau_yz << std::endl;
             std::cout << "utau = " << m_mo.utau << std::endl;
@@ -130,10 +134,11 @@ void WallMomentumFluxForcing::operator()(
             std::cout << field_impl::field_name_with_state(m_velocity.name(),fstate) << std::endl;
             std::cout << m_velocity.num_states() << std::endl;
             std::cout << m_velocity.num_time_states() << std::endl;
+*/
 
             // Adding the source term as surface stress vector times surface area times density.
-            src_term(i, j, k, 0) -= (density(i, j, k) * tau_xz * dx[0] * dx[1])/dV;
-            src_term(i, j, k, 1) -= (density(i, j, k) * tau_yz * dx[1] * dx[1])/dV;
+            src_term(i, j, k, 0) -= (tau_xz * dx[0] * dx[1]) / dV;
+            src_term(i, j, k, 1) -= (tau_yz * dx[1] * dx[1]) / dV;
             src_term(i, j, k, 2) += 0.0;
           //src_term(i, j, k, 0) -= 0.1*velocityField(i, j, k, 0);
           //src_term(i, j, k, 1) += 0.2*velocityField(i, j, k, 1);

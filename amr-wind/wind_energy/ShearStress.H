@@ -85,6 +85,53 @@ struct ShearStressLocal
     amrex::Real small_vel{1.0e-6};
 };
 
+struct ShearStressDefault
+{
+    explicit ShearStressDefault(const amr_wind::MOData& mo)
+        : utau2(mo.utau * mo.utau)
+        , u_mean(mo.vel_mean[0])
+        , v_mean(mo.vel_mean[1])
+        , wspd_mean(mo.vmag_mean)
+        , theta_surface(mo.surf_temp)
+        , theta_mean(mo.theta_mean)
+        , term1(mo.utau * mo.kappa / (mo.vmag_mean * mo.phi_h()))
+        , Su_mean(mo.Su_mean)
+        , Sv_mean(mo.Sv_mean)
+    {}
+
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+    calc_vel_x(amrex::Real u, amrex::Real wspd) const
+    {
+        amrex::Real Su_mean_mag = std::sqrt((Su_mean*Su_mean) + (Sv_mean*Sv_mean));
+        return utau2*((wspd * u)/(Su_mean_mag));
+    };
+
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+    calc_vel_y(amrex::Real v, amrex::Real wspd) const
+    {
+        amrex::Real Su_mean_mag = std::sqrt((Su_mean*Su_mean) + (Sv_mean*Sv_mean));
+        return utau2*((wspd * v)/(Su_mean_mag));
+    };
+
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+    calc_theta(amrex::Real wspd, amrex::Real theta) const
+    {
+        const amrex::Real num1 = (theta - theta_mean) * wspd_mean;
+        const amrex::Real num2 = (theta_mean - theta_surface) * wspd;
+        return term1 * (num1 + num2);
+    };
+
+    amrex::Real utau2;
+    amrex::Real u_mean;
+    amrex::Real v_mean;
+    amrex::Real wspd_mean;
+    amrex::Real theta_surface;
+    amrex::Real theta_mean;
+    amrex::Real term1;
+    amrex::Real Su_mean;
+    amrex::Real Sv_mean;
+};
+
 struct ShearStressSchumann
 {
     explicit ShearStressSchumann(const amr_wind::MOData& mo)

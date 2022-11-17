@@ -73,34 +73,33 @@ void WallTemperatureFluxForcing::operator()(
             // to this wall face.
             const amrex::Real u = velocityField(i, j, k, 0);
             const amrex::Real v = velocityField(i, j, k, 1);
+            const amrex::Real T = temperatureField(i, j, k);
             const amrex::Real S = std::sqrt((u*u) + (v*v));
 
 
             // Get local tau_wall based on the local conditions and
             // mean state based on Monin-Obukhov similarity.
-            amrex::Real tau_xz = 0.0;
-            amrex::Real tau_yz = 0.0;
+            amrex::Real q = 0.0;
 
             if (m_wall_shear_stress_type == "constant") {
                 auto tau = ShearStressConstant(m_mo);
-                tau_xz = tau.calc_vel_x(u,S);
-                tau_yz = tau.calc_vel_y(v,S);
+                q = tau.calc_theta(S,T);
+            } else if (m_wall_shear_stress_type == "default") {
+                auto tau = ShearStressDefault(m_mo);
+                q = tau.calc_theta(S,T);
             } else if (m_wall_shear_stress_type == "local") {
                 auto tau = ShearStressLocal(m_mo);
-                tau_xz = tau.calc_vel_x(u,S);
-                tau_yz = tau.calc_vel_y(v,S);
+                q = tau.calc_theta(S,T);
             } else if (m_wall_shear_stress_type == "schumann") {
                 auto tau = ShearStressSchumann(m_mo);
-                tau_xz = tau.calc_vel_x(u,S);
-                tau_yz = tau.calc_vel_y(v,S);
+                q = tau.calc_theta(S,T);
             } else {
                 auto tau = ShearStressMoeng(m_mo);
                 q = tau.calc_theta(S,T);
             }
 
-
-            std::cout << "tau_xz = " << tau_xz << std::endl;
-            std::cout << "tau_yz = " << tau_yz << std::endl;
+/*
+            std::cout << "q = " << q << std::endl;
             std::cout << "utau = " << m_mo.utau << std::endl;
             std::cout << "z0 = " << m_mo.z0 << std::endl;
             std::cout << "z1 = " << m_mo.zref << std::endl;
@@ -129,9 +128,10 @@ void WallTemperatureFluxForcing::operator()(
             std::cout << field_impl::field_name_with_state(m_temperature.name(),fstate) << std::endl;
             std::cout << m_velocity.num_states() << std::endl;
             std::cout << m_velocity.num_time_states() << std::endl;
+*/
 
             // Adding the source term as surface stress vector times surface area times density.
-            src_term(i, j, k) += 1.0;
+            src_term(i, j, k) += q;
           //src_term(i, j, k) += 0.0;
         });
 }
