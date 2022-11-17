@@ -9,5 +9,5 @@ target_sources(${amr_wind_lib_name} PRIVATE
   ABLMeanBoussinesq.cpp
   ActuatorForcing.cpp
   SynthTurbForcing.cpp
-  WallModelForcing.cpp
+  WallMomentumFluxForcing.cpp
   )

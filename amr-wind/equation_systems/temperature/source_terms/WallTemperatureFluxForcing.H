@@ -1,11 +1,11 @@
-#ifndef WALLMODELFORCING_H
-#define WALLMODELFORCING_H
+#ifndef WALLTEMPERATUREFLUXFORCING_H
+#define WALLTEMPERATUREFLUXFORCING_H
 
 #include "amr-wind/core/FieldRepo.H"
-#include "amr-wind/equation_systems/icns/MomentumSource.H"
+#include "amr-wind/equation_systems/temperature/TemperatureSource.H"
 #include "amr-wind/wind_energy/MOData.H"
 
-namespace amr_wind::pde::icns {
+namespace amr_wind::pde::temperature {
 
 // FIXME: outdated comments
 /** A forcing term that acts on the layer of cells adjacent to the wall
@@ -15,18 +15,18 @@ namespace amr_wind::pde::icns {
  *  \f[
  *    \vec{S} = \vec{tau_{wall}} * dx * dy
  *  \f]
- *
+ 
  *  where tau_wall comes from a model based on Monin-Obukhov similarity
  *  theory and the definition of drag as \vec{D} = C_d * |\vec{V}| * \vec{V}
  */
-class WallModelForcing : public MomentumSource::Register<WallModelForcing>
+class WallTemperatureFluxForcing : public TemperatureSource::Register<WallTemperatureFluxForcing>
 {
 public:
-    static const std::string identifier() { return "WallModelForcing"; }
+    static const std::string identifier() { return "WallTemperatureFluxForcing"; }
 
-    explicit WallModelForcing(const CFDSim& sim);
+    explicit WallTemperatureFluxForcing(const CFDSim& sim);
 
-    ~WallModelForcing() override;
+    ~WallTemperatureFluxForcing() override;
 
     void operator()(
         const int lev,
@@ -38,6 +38,7 @@ public:
 private:
     const amrex::AmrCore& m_mesh;
     const Field& m_velocity;
+    const Field& m_temperature;
     const Field& m_density;
 
     //! Reference to Monin-Obukhov
@@ -49,6 +50,6 @@ private:
     //! Particular shear stress model
     std::string m_wall_shear_stress_type{"moeng"};
 };
-} // namespace amr_wind::pde::icns
+} // namespace amr_wind::pde::temperature
 
-#endif /* WALLMODELFORCING_H */
+#endif /* WALLTEMPERATUREFLUXFORCING_H */

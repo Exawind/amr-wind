@@ -1,4 +1,4 @@
-#include "amr-wind/equation_systems/icns/source_terms/WallModelForcing.H"
+#include "amr-wind/equation_systems/icns/source_terms/WallMomentumFluxForcing.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/core/FieldUtils.H"
 #include "amr-wind/wind_energy/ABL.H"
@@ -19,7 +19,7 @@ namespace amr_wind::pde::icns {
  *  - `read_temperature_profile`
  *  - `tprofile_filename`
  */
-WallModelForcing::WallModelForcing(const CFDSim& sim)
+WallMomentumFluxForcing::WallMomentumFluxForcing(const CFDSim& sim)
     : m_mesh(sim.mesh())
     , m_velocity(sim.repo().get_field("velocity"))
     , m_density(sim.repo().get_field("density"))
@@ -33,9 +33,9 @@ WallModelForcing::WallModelForcing(const CFDSim& sim)
     AMREX_ASSERT((0 <= m_direction) && (m_direction < AMREX_SPACEDIM));
 }
 
-WallModelForcing::~WallModelForcing() = default;
+WallMomentumFluxForcing::~WallMomentumFluxForcing() = default;
 
-void WallModelForcing::operator()(
+void WallMomentumFluxForcing::operator()(
     const int lev,
     const amrex::MFIter& mfi,
     const amrex::Box& bx,
@@ -47,6 +47,10 @@ void WallModelForcing::operator()(
 
     // Mesh cell size information
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
+    amrex::Real dV = 1.0;
+    for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
+        dV *= dx[dir];
+    }
 
     // Domain size information.
     const auto& domain = geom.Domain();
@@ -128,8 +132,8 @@ void WallModelForcing::operator()(
             std::cout << m_velocity.num_time_states() << std::endl;
 
             // Adding the source term as surface stress vector times surface area times density.
-            src_term(i, j, k, 0) -= density(i, j, k) * tau.calc_xz * dx[0] * dx[1] ;
-            src_term(i, j, k, 1) -= density(i, j, k) * tau.calc_yz * dx[1] * dx[1];
+            src_term(i, j, k, 0) -= (density(i, j, k) * tau_xz * dx[0] * dx[1])/dV;
+            src_term(i, j, k, 1) -= (density(i, j, k) * tau_yz * dx[1] * dx[1])/dV;
             src_term(i, j, k, 2) += 0.0;
           //src_term(i, j, k, 0) -= 0.1*velocityField(i, j, k, 0);
           //src_term(i, j, k, 1) += 0.2*velocityField(i, j, k, 1);
