@@ -22,7 +22,7 @@ TEST_F(WaveTheoriesTest, StokesWaves)
         StokesOrder, wavenumber, waterdepth, c0, a11, a22, b22, c2, d2, e2, a31,
         a33, b31, a42, a44, b42, b44, c4, d4, e4, a51, a53, a55, b53, b55);
 
-    // Gold coefficient values taken from table 2 out of
+    // Gold coefficient values taken from table 2 of
     // Fenton, J. Fifth Order Stokes Theory for Steady Waves
     // Journal of Waterway, Port, Coastal and Ocean Engineering, 1985, 111,
     // 216-234
