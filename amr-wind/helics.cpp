@@ -124,7 +124,8 @@ void helics_storage::recv_messages_from_controller()
             int yy = i;
             sub = m_vfed->getSubscription(yy);
             charFromControlCenter << sub.getString().c_str();
-            amrex::Print() << "\n advancing time " << charFromControlCenter.str();
+            amrex::Print() << "\n advancing time "
+                           << charFromControlCenter.str();
         }
 
         if (currenttime > 1) {
@@ -149,11 +150,13 @@ void helics_storage::recv_messages_from_controller()
             return_list.pop_front();
 
             amrex::Print() << "\n speed: " << m_inflow_wind_speed_to_amrwind
-                      << "  direction: " << m_inflow_wind_direction_to_amrwind
-                      << " Time " << time << std::endl;
+                           << "  direction: "
+                           << m_inflow_wind_direction_to_amrwind << " Time "
+                           << time << std::endl;
             for (int i = 0; i < m_turbine_yaw_to_amrwind.size(); ++i) {
-                amrex::Print() << "T" << i << " yaw: " << m_turbine_yaw_to_amrwind[i]
-                          << ' ';
+                amrex::Print()
+                    << "T" << i << " yaw: " << m_turbine_yaw_to_amrwind[i]
+                    << ' ';
             }
             amrex::Print() << std::endl;
         }
@@ -210,7 +213,7 @@ void helics_storage::recv_messages_from_controller()
             pub.publish(strToControlCenter.c_str());
 
             amrex::Print() << "\n should send m_turbine_power_to_controller "
-                      << strToControlCenter.c_str() << std::endl;
+                           << strToControlCenter.c_str() << std::endl;
         }
     }
 
