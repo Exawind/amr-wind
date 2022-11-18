@@ -27,9 +27,9 @@ void init_vof(amr_wind::Field& vof_fld, amrex::Real water_level)
             amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                 const amrex::Real z = problo[2] + (k + offset) * dx[2];
 
-                amrex::Real local_vof = std::min(
+                amrex::Real local_vof = amrex::min<amrex::Real>(
                     1.0,
-                    std::max(
+                    amrex::max<amrex::Real>(
                         0.0, (water_level - (z - offset * dx[2])) / dx[2]));
                 farr(i, j, k, d) = local_vof;
             });
@@ -65,21 +65,21 @@ void init_vof_multival(
                 amrex::Real local_vof;
                 // Above wl1
                 if (z - offset * dx[2] > wl1) {
-                    local_vof = std::min(
-                        1.0,
-                        std::max(0.0, (wl2 - (z - offset * dx[2])) / dx[2]));
+                    local_vof = amrex::min<amrex::Real>(
+                        1.0, amrex::max<amrex::Real>(
+                                 0.0, (wl2 - (z - offset * dx[2])) / dx[2]));
                 } else {
                     // Above wl0
                     if (z - offset * dx[2] > wl0) {
-                        local_vof = std::min(
+                        local_vof = amrex::min<amrex::Real>(
                             1.0,
-                            std::max(
+                            amrex::max<amrex::Real>(
                                 0.0, ((z + offset * dx[2]) - wl1) / dx[2]));
                     } else {
                         // Bottom portion
-                        local_vof = std::min(
+                        local_vof = amrex::min<amrex::Real>(
                             1.0,
-                            std::max(
+                            amrex::max<amrex::Real>(
                                 0.0, (wl0 - (z - offset * dx[2])) / dx[2]));
                     }
                 }
@@ -122,9 +122,9 @@ void init_vof_slope(
                                        slope * (x - 0.5 * domain_length) +
                                        slope * (y - 0.5 * domain_length);
 
-                amrex::Real local_vof = std::min(
-                    1.0,
-                    std::max(0.0, (local_ht - (z - offset * dx[2])) / dx[2]));
+                amrex::Real local_vof = amrex::min<amrex::Real>(
+                    1.0, amrex::max<amrex::Real>(
+                             0.0, (local_ht - (z - offset * dx[2])) / dx[2]));
                 farr(i, j, k, d) = local_vof;
             });
         }

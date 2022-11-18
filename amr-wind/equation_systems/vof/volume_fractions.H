@@ -244,7 +244,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
     }
 
     amrex::Real m12 = m1 + m2;
-    amrex::Real pr = amrex::max(6. * m1 * m2 * m3, const_tiny);
+    amrex::Real pr = amrex::max<amrex::Real>(6. * m1 * m2 * m3, const_tiny);
     amrex::Real V1 = m1 * m1 * m1 / pr;
     amrex::Real V2 = V1 + 0.5 * (m2 - m1) / m3;
 
@@ -259,7 +259,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
         V3 = 0.5 * mm / m3;
     }
 
-    amrex::Real ch = amrex::min(volF, 1.0 - volF);
+    amrex::Real ch = amrex::min<amrex::Real>(volF, 1.0 - volF);
 
     amrex::Real alpha, p, q, p12, teta, cs;
     if (ch < V1) {
@@ -315,8 +315,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real cut_volume(
     al = alpha - m1 * r0;
 
     // reflect the figure when negative coefficients
-    al = al + amrex::max(0.0, -m1 * dr0) + amrex::max(0.0, -m2) +
-         amrex::max(0.0, -m3);
+    al = al + amrex::max<amrex::Real>(0.0, -m1 * dr0) +
+         amrex::max<amrex::Real>(0.0, -m2) + amrex::max<amrex::Real>(0.0, -m3);
 
     // normalized equation: m1*y1 + m2*y2 + m3*y3 = alh, with 0 <= m1 <= m2 <=
     // m3 the problem is then solved again in the unit cube
@@ -324,9 +324,11 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real cut_volume(
     amrex::Real n1 = std::abs(m1) / tmp; // need positive coefficients
     amrex::Real n2 = std::abs(m2) / tmp;
     amrex::Real n3 = std::abs(m3) / tmp;
-    al = amrex::max(
-        0.0, amrex::min(1.0, al / tmp));        // get new al within safe limits
-    amrex::Real al0 = amrex::min(al, 1.0 - al); // limit to: 0 < alh < 1/2
+    al = amrex::max<amrex::Real>(
+        0.0, amrex::min<amrex::Real>(
+                 1.0, al / tmp)); // get new al within safe limits
+    amrex::Real al0 =
+        amrex::min<amrex::Real>(al, 1.0 - al); // limit to: 0 < alh < 1/2
 
     // Order coefficients
     amrex::Real b1 = amrex::min(n1 * dr0, n2); // order coefficients
@@ -427,8 +429,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fit_plane(
     mx = invx * mx;
     my = invy * my;
     mz = invz * mz;
-    alpha =
-        alpha + amrex::min(0.0, mx) + amrex::min(0.0, my) + amrex::min(0.0, mz);
+    alpha = alpha + amrex::min<amrex::Real>(0.0, mx) +
+            amrex::min<amrex::Real>(0.0, my) + amrex::min<amrex::Real>(0.0, mz);
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool interface_band(

@@ -33,8 +33,8 @@ void RayleighTaylorFieldInit::operator()(
         const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
         const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-        const amrex::Real r2d =
-            amrex::min(std::hypot((x - splitx), (y - splity)), 0.5 * L_x);
+        const amrex::Real r2d = amrex::min<amrex::Real>(
+            std::hypot((x - splitx), (y - splity)), 0.5 * L_x);
         const amrex::Real pertheight =
             0.5 - 0.01 * std::cos(2.0 * pi * r2d / L_x);
 

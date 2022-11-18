@@ -22,7 +22,7 @@ struct MeanVelOp
         return m_ref_vel;
     }
 
-    const amrex::Real m_ref_vel;
+    const double m_ref_vel;
 };
 
 class MeanProfile
@@ -101,9 +101,9 @@ struct SynthTurbDeviceData
     // coordinate system
     vs::Tensor tr_mat;
 
-    amrex::Real* uvel;
-    amrex::Real* vvel;
-    amrex::Real* wvel;
+    double* uvel;
+    double* vvel;
+    double* wvel;
 
     // Indices of the two planes stored in the data arrays
     int ileft;

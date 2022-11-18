@@ -233,7 +233,8 @@ TEST_F(VOFOpTest, volume_intercept)
         my = my / mm2;
         mz = mz / mm2;
         // Limit vof values to multiphase range
-        vof = std::max(1e-12, std::min(1.0 - 1e-12, vof));
+        vof = amrex::max<amrex::Real>(
+            1e-12, amrex::min<amrex::Real>(1.0 - 1e-12, vof));
         // Get intercept value and check for nan
         amrex::Real alpha =
             amr_wind::multiphase::volume_intercept(mx, my, mz, vof);
@@ -346,7 +347,8 @@ TEST_F(VOFOpTest, interface_plane)
     amrex::InitRandom(0);
     for (int n = 0; n < 20; ++n) {
         amrex::Real vof_val = amrex::Random();
-        vof_val = std::max(1e-12, std::min(1.0 - 1e-12, vof_val));
+        vof_val = amrex::max<amrex::Real>(
+            1e-12, amrex::min<amrex::Real>(1.0 - 1e-12, vof_val));
         // in x
         init_vof_h(vof, vof_val, 0);
         error_total = fit_plane_test_impl_h(vof, vof_val, 0);

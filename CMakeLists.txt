@@ -30,6 +30,7 @@ option(AMR_WIND_ENABLE_CUDA "Enable CUDA" OFF)
 option(AMR_WIND_ENABLE_ROCM "Enable ROCm/HIP" OFF)
 option(AMR_WIND_ENABLE_DPCPP "Enable Intel OneAPI DPC++" OFF)
 option(AMR_WIND_ENABLE_TINY_PROFILE "Enable AMReX TinyProfile support" OFF)
+set(AMR_WIND_PRECISION "DOUBLE" CACHE STRING "Floating point precision SINGLE or DOUBLE")
 
 # Third party libraries
 option(AMR_WIND_USE_INTERNAL_AMREX "Add AMReX as subproject" ON)
