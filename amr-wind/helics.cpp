@@ -64,8 +64,8 @@ helics_storage::helics_storage(CFDSim& sim) : m_sim(sim)
                                          // helicscpp::InvalidStateTransition
                                          // exception
         m_vfed->enterExecutingMode();
-        std::cout << "PI RECEIVER: Value federate created";
-        std::cout << "Creation complete!! ";
+        amrex::Print() << "PI RECEIVER: Value federate created";
+        amrex::Print() << "Creation complete!! ";
     }
 
     // parse input file and count how many actuators exist
@@ -124,7 +124,7 @@ void helics_storage::recv_messages_from_controller()
             int yy = i;
             sub = m_vfed->getSubscription(yy);
             charFromControlCenter << sub.getString().c_str();
-            std::cout << "\n advancing time " << charFromControlCenter.str();
+            amrex::Print() << "\n advancing time " << charFromControlCenter.str();
         }
 
         if (currenttime > 1) {
@@ -148,14 +148,14 @@ void helics_storage::recv_messages_from_controller()
             float time = return_list.front();
             return_list.pop_front();
 
-            std::cout << "\n speed: " << m_inflow_wind_speed_to_amrwind
+            amrex::Print() << "\n speed: " << m_inflow_wind_speed_to_amrwind
                       << "  direction: " << m_inflow_wind_direction_to_amrwind
                       << " Time " << time << std::endl;
             for (int i = 0; i < m_turbine_yaw_to_amrwind.size(); ++i) {
-                std::cout << "T" << i << " yaw: " << m_turbine_yaw_to_amrwind[i]
+                amrex::Print() << "T" << i << " yaw: " << m_turbine_yaw_to_amrwind[i]
                           << ' ';
             }
-            std::cout << std::endl;
+            amrex::Print() << std::endl;
         }
 
         std::stringstream ssToControlCenter;
@@ -184,7 +184,7 @@ void helics_storage::recv_messages_from_controller()
             wind_direction = -amr_wind::utils::degrees(turbine_angle) + 270.0;
         }
 
-        std::cout << "pub count: " << pubCount << std::endl;
+        amrex::Print() << "pub count: " << pubCount << std::endl;
 
         for (int i = 0; i < pubCount; i++) {
             pub = m_vfed->getPublication(i);
@@ -209,7 +209,7 @@ void helics_storage::recv_messages_from_controller()
             strToControlCenter = ssToControlCenter.str();
             pub.publish(strToControlCenter.c_str());
 
-            std::cout << "\n should send m_turbine_power_to_controller "
+            amrex::Print() << "\n should send m_turbine_power_to_controller "
                       << strToControlCenter.c_str() << std::endl;
         }
     }
