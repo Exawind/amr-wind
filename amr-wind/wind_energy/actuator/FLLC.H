@@ -10,7 +10,7 @@ struct FLLCData
     // constants
     amrex::Real epsilon;
     amrex::Real relaxation_factor{0.1};
-    RealList dx;
+    RealList dr;
     RealList optimal_epsilon;
 
     // computed values
