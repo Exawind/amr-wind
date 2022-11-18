@@ -93,6 +93,15 @@ get_interpolation_operator(const FieldInterpolator itype)
 
     case FieldInterpolator::NodeBilinear:
         return &amrex::node_bilinear_interp;
+
+    case FieldInterpolator::FaceDivFree:
+        return &amrex::face_divfree_interp;
+
+    case FieldInterpolator::FaceLinear:
+        return &amrex::face_linear_interp;
+
+    default:
+        amrex::Abort("Unrecognized FieldInterpolator type");
     }
 
     return &amrex::cell_cons_interp;

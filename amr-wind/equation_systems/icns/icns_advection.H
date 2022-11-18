@@ -319,6 +319,83 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
         const bool mphase_vof = repo.field_exists("vof");
 
+        // Fill umac
+        if (fvm::Godunov::nghost_state > 0) {
+            const amrex::Real fake_time = 0.0;
+            for (int lev = 0; lev <= repo.num_active_levels(); ++lev) {
+                amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> u_fine = {
+                    AMREX_D_DECL(&u_mac(lev), &v_mac(lev), &w_mac(lev))};
+
+                // PhysBCFunct<GpuBndryFuncFab<IncfloVelFill>>
+                //   fine_bndry_func_x(geom[lev],
+                //                     m_bcrec_velocity,
+                //                     IncfloVelFill{m_probtype,
+                //                     m_bc_velocity});
+                // PhysBCFunct<GpuBndryFuncFab<IncfloVelFill>>
+                //   fine_bndry_func_y(geom[lev],
+                //                     m_bcrec_velocity,
+                //                     IncfloVelFill{m_probtype,
+                //                     m_bc_velocity});
+                // PhysBCFunct<GpuBndryFuncFab<IncfloVelFill>>
+                //   fine_bndry_func_z(geom[lev],
+                //                     m_bcrec_velocity,
+                //                     IncfloVelFill{m_probtype,
+                //                     m_bc_velocity});
+                // Array<PhysBCFunct<GpuBndryFuncFab<IncfloVelFill>>,AMREX_SPACEDIM>
+                //   fbndyFuncArr =
+                //   {AMREX_D_DECL(fine_bndry_func_x,fine_bndry_func_y,fine_bndry_func_z)};
+
+                if (lev == 0) {
+
+                    for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
+                        // amrex::FillPatchSingleLevel(*u_fine[idim],
+                        // IntVect(nghost_mac()), fake_time,
+                        //                             {u_fine[idim]},
+                        //                             {fake_time}, 0, 0, 1,
+                        //                             geom[lev],
+                        //                             fbndyFuncArr[idim],
+                        //                             idim);
+                    }
+                } else {
+                    auto rr = geom[lev].Domain().size() /
+                              geom[lev - 1].Domain().size();
+                    amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> u_crse = {
+                        AMREX_D_DECL(
+                            &u_mac(lev - 1), &v_mac(lev - 1), &w_mac(lev - 1))};
+
+                    const FieldInterpolator itype =
+                        FieldInterpolator::FaceDivFree;
+                    amrex::Interpolater* mapper =
+                        field_impl::get_interpolation_operator(itype);
+
+                    const amrex::Array<
+                        amrex::Vector<amrex::BCRec>, AMREX_SPACEDIM>
+                        bcrecArr = {AMREX_D_DECL(
+                            dof_field.bcrec(), dof_field.bcrec(),
+                            dof_field.bcrec())};
+
+                    // PhysBCFunct<GpuBndryFuncFab<IncfloVelFill>>
+                    //     crse_bndry_func(geom[lev-1],
+                    //                     m_bcrec_velocity,
+                    //                     IncfloVelFill{m_probtype,
+                    //                     m_bc_velocity});
+                    // Array<PhysBCFunct<GpuBndryFuncFab<IncfloVelFill>>,AMREX_SPACEDIM>
+                    //     cbndyFuncArr =
+                    //     {AMREX_D_DECL(crse_bndry_func,crse_bndry_func,crse_bndry_func)};
+
+                    // amrex::Array<int, AMREX_SPACEDIM> idx =
+                    // {AMREX_D_DECL(0,1,2)}; FillPatchTwoLevels(u_fine,
+                    // IntVect(fvm::Godunov::nghost_state, fake_time,
+                    //                    {u_crse}, {fake_time},
+                    //                    {u_fine}, {fake_time},
+                    //                    0, 0, 1,
+                    //                    geom[lev-1], geom[lev],
+                    //                    cbndyFuncArr, idx, fbndyFuncArr, idx,
+                    //                    rr, mapper, bcrecArr, idx);
+                }
+            }
+        }
+
         //
         // Advect momentum eqns
         //
