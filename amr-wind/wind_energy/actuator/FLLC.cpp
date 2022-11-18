@@ -26,11 +26,12 @@ void FLLCInit(
     data.grad_lift.assign(npts, vs::Vector::zero());
     data.force_point_velocity.assign(npts, vs::Vector::zero());
 
-    for (int i = 0; i < npts - 1; ++i) {
-        data.dx[i] = vs::mag(view.pos[i + 1] - view.pos[i]);
+    for (int i = 1; i < npts - 1; ++i) {
+        data.dx[i] = vs::mag(view.pos[i + 1] - view.pos[i-1]);
         data.optimal_epsilon[i] = view.chord[i] * eps_chord;
     }
     data.dx[npts - 1] = vs::mag(view.pos[npts - 1] - view.pos[npts - 2]);
+    data.dx[0] = vs::mag(view.pos[1] - view.pos[0]);
     data.optimal_epsilon[npts - 1] = view.chord[npts - 1] * eps_chord;
     data.initialized = true;
 }
