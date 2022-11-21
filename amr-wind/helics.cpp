@@ -84,7 +84,7 @@ helics_storage::helics_storage(CFDSim& sim) : m_sim(sim)
 #endif
 }
 
-void helics_storage::pre_advance_work() const
+void helics_storage::pre_advance_work()
 {
     if (!helics_activated) {
         return;
@@ -146,7 +146,7 @@ void helics_storage::recv_messages_from_controller()
             return_list.pop_front();
             m_inflow_wind_speed_to_amrwind = return_list.front();
             return_list.pop_front();
-            float time = return_list.front();
+            auto time = return_list.front();
             return_list.pop_front();
 
             amrex::Print() << "\n speed: " << m_inflow_wind_speed_to_amrwind

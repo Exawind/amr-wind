@@ -40,6 +40,8 @@ struct UpdatePosOp<UniformCt, ActSrcDisk>
         const amrex::Real wind_direction_radian =
             amr_wind::utils::radians(wind_direction);
 
+        auto &meta = data.meta();
+
         meta.normal_vec[0] = std::cos(wind_direction_radian);
         meta.normal_vec[1] = std::sin(wind_direction_radian);
         meta.normal_vec[2] = 0.0;
