@@ -27,6 +27,8 @@ void incflo::pre_advance_stage2()
     for (auto& pp : m_sim.physics()) {
         pp->pre_advance_work();
     }
+
+    m_sim.helics().pre_advance_work();
 }
 
 /** Advance simulation state by one timestep

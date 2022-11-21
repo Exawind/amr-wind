@@ -4,6 +4,7 @@ target_sources(${amr_wind_lib_name}
   incflo.cpp
   incflo_compute_dt.cpp
   incflo_regrid.cpp
+  helics.cpp
   CFDSim.cpp
   )
 

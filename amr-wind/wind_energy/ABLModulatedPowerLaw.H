@@ -56,9 +56,9 @@ private:
     amrex::Real m_bulk_velocity{15.0};
     amrex::Real m_shearlayer_height{600.0};
     amrex::Real m_shearlayer_smear_thickness{30.0};
-    amrex::Real m_wind_speed{10.0};
-    amrex::Real m_wind_direction{45.0};
-    amrex::Vector<amrex::Real> m_uvec{{10.0, 0.0, 0.0}};
+    amrex::Real m_wind_speed{8.0};
+    amrex::Real m_wind_direction{270.0};
+    amrex::Vector<amrex::Real> m_uvec{{8.0, 0.0, 0.0}};
 
     amrex::Real m_start_time{0.0};
     amrex::Real m_stop_time{std::numeric_limits<amrex::Real>::max()};
