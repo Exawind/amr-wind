@@ -19,9 +19,7 @@ public:
     explicit helics_storage(CFDSim& sim);
     ~helics_storage();
 
-    void pre_advance_work() const;
-    void send_messages_to_controller();
-    void recv_messages_from_controller();
+    void pre_advance_work();
     bool is_activated() const { return helics_activated; }
 
 #ifdef AMR_WIND_USE_HELICS
@@ -42,6 +40,9 @@ public:
 
 private:
     CFDSim& m_sim;
+
+    void send_messages_to_controller();
+    void recv_messages_from_controller();
 
 #ifdef AMR_WIND_USE_HELICS
     std::unique_ptr<helicscpp::FederateInfo> m_fi;
