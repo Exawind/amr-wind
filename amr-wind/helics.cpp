@@ -86,13 +86,11 @@ helics_storage::helics_storage(CFDSim& sim) : m_sim(sim)
 
 void helics_storage::pre_advance_work()
 {
-    if (!helics_activated) {
-        return;
-    }
-
 #ifdef AMR_WIND_USE_HELICS
-    send_messages_to_controller();
-    recv_messages_from_controller();
+    if (helics_activated) {
+        send_messages_to_controller();
+        recv_messages_from_controller();
+    }
 #endif
 }
 
