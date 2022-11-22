@@ -7,7 +7,7 @@ AMR-Wind comes with a suite of regression tests to ensure that the relevant
 parts of the code are working correctly, and any code modifications do not
 introduce errors. These tests are run nightly using an automated system and the
 results are published on a `public dashboard
-<https://my.cdash.org/index.php?project=AMR-Wind>`_. We ensure that the testing
+<https://my.cdash.org/index.php?project=Exawind>`_. We ensure that the testing
 covers multiple operating systems (currently Linux and MacOS), different
 compilers (GCC, Intel, LLVM Clang, and NVIDIA CUDA), as well as two different
 versions of AMReX library -- a stable monthly snapshot, and the
