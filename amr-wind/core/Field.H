@@ -318,6 +318,10 @@ public:
 
     void fillpatch(amrex::Real time) noexcept;
     void fillpatch(amrex::Real time, amrex::IntVect ng) noexcept;
+    void fillpatch(
+        amrex::Real time,
+        amrex::IntVect ng,
+        amrex::Array<Field*, AMREX_SPACEDIM>& fields) const noexcept;
 
     void fillphysbc(amrex::Real time) noexcept;
     void fillphysbc(amrex::Real time, amrex::IntVect ng) noexcept;
