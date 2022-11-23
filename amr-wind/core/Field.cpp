@@ -220,7 +220,7 @@ void Field::fillpatch(
             &((*fields[0])(lev)), &((*fields[1])(lev)), &((*fields[2])(lev)))};
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> cfabs;
         if (lev > 0) {
-            for (int i = 0; i < fields.size(); i++) {
+            for (int i = 0; i < static_cast<int>(fields.size()); i++) {
                 cfabs[i] = &((*fields[i])(lev - 1));
             }
         }

@@ -298,7 +298,7 @@ public:
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& ffabs,
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& cfabs,
         const amrex::IntVect& nghost,
-        const FieldState fstate = FieldState::New,
+        const FieldState /*fstate = FieldState::New*/,
         const FieldInterpolator itype = FieldInterpolator::FaceDivFree) override
     {
 
@@ -306,7 +306,7 @@ public:
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> physbc(
                 m_mesh.Geom(lev), m_field.bcrec(), bc_functor());
 
-            for (int i = 0; i < mfabs.size(); i++) {
+            for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
                 amrex::FillPatchSingleLevel(
                     *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
                     m_mesh.Geom(lev), physbc, i);
