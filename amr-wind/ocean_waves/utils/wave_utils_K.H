@@ -6,7 +6,7 @@
 
 namespace amr_wind {
 namespace ocean_waves {
-namespace utils{
+namespace utils {
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
 free_surface_to_vof(amrex::Real eta, amrex::Real z, amrex::Real dz)
