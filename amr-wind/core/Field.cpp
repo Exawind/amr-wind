@@ -213,6 +213,7 @@ void Field::fillpatch(
     BL_PROFILE("amr-wind::Field::fillpatch array");
     BL_ASSERT(m_info->m_fillpatch_op);
     BL_ASSERT(m_info->bc_initialized() && m_info->m_bc_copied_to_device);
+    BL_ASSERT(m_info->m_ncomp == fields.size());
     auto& fop = *(m_info->m_fillpatch_op);
     const int nlevels = m_repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
