@@ -60,12 +60,12 @@ void OceanWaves::post_regrid_actions() {}
 void OceanWaves::pre_advance_work()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::pre_advance_work");
-    relaxation_zones();
 }
 
 void OceanWaves::post_advance_work()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::post_init_actions");
+    relaxation_zones();
 }
 
 /** Update ocean waves relaxation zones

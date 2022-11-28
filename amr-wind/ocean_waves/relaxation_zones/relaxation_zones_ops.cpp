@@ -8,7 +8,7 @@
 #include "amr-wind/fvm/gradient.H"
 #include "amr-wind/core/field_ops.H"
 
-#include "amr-wind/ocean_waves/relaxation_zones/wave_utils_K.H"
+#include "amr-wind/ocean_waves/utils/wave_utils_K.H"
 
 #include "AMReX_ParmParse.H"
 
@@ -72,8 +72,7 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
     const auto& time = sim.time().new_time();
     amrex::Print() << time << " " << wdata.ramp_period << std::endl;
     const amrex::Real rampf =
-        (wdata.has_ramp) ? relaxation_zones::ramp(time, wdata.ramp_period)
-                         : 1.0;
+        (wdata.has_ramp) ? utils::ramp(time, wdata.ramp_period) : 1.0;
 
     auto& vof = sim.repo().get_field("vof");
     auto& velocity = sim.repo().get_field("velocity");
@@ -109,8 +108,7 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                     // Generation region
                     if (x <= problo[0] + gen_length) {
                         const amrex::Real Gamma =
-                            relaxation_zones::Gamma_generate(
-                                x - problo[0], gen_length);
+                            utils::Gamma_generate(x - problo[0], gen_length);
                         const amrex::Real vf =
                             (1. - Gamma) * target_volfrac(i, j, k) * rampf +
                             Gamma * volfrac(i, j, k);
@@ -146,15 +144,12 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                     }
                     // Numerical beach (sponge layer)
                     if (x + beach_length >= probhi[0]) {
-                        const amrex::Real Gamma =
-                            relaxation_zones::Gamma_absorb(
-                                x - (probhi[0] - beach_length), beach_length,
-                                1.0);
+                        const amrex::Real Gamma = utils::Gamma_absorb(
+                            x - (probhi[0] - beach_length), beach_length, 1.0);
                         if (has_beach) {
                             volfrac(i, j, k) =
                                 (1.0 - Gamma) *
-                                    relaxation_zones::free_surface_to_vof(
-                                        zsl, z, dx[2]) +
+                                    utils::free_surface_to_vof(zsl, z, dx[2]) +
                                 Gamma * volfrac(i, j, k);
                             vel(i, j, k, 0) =
                                 Gamma * vel(i, j, k, 0) * volfrac(i, j, k);

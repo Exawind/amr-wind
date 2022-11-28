@@ -1,7 +1,7 @@
 #include "aw_test_utils/MeshTest.H"
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
-#include "amr-wind/ocean_waves/relaxation_zones/wave_utils_K.H"
+#include "amr-wind/ocean_waves/utils/wave_utils_K.H"
 
 namespace amr_wind_tests {
 
@@ -83,8 +83,8 @@ void apply_relaxation_zone_field(
                         probhi[0]);
                     if (x <= problo[0] + gen_length) {
                         const amrex::Real Gamma =
-                            amr_wind::ocean_waves::relaxation_zones::
-                                Gamma_generate(x - problo[0], gen_length);
+                            amr_wind::ocean_waves::utils::Gamma_generate(
+                                x - problo[0], gen_length);
                         comp_arr(i, j, k) = targ_arr(i, j, k) * (1. - Gamma) +
                                             comp_arr(i, j, k) * Gamma;
                     }
