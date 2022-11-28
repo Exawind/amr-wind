@@ -127,12 +127,15 @@ void TiogaInterface::pre_overset_conn_work()
     m_iblank_cell.setVal(1);
     m_iblank_node.setVal(1);
 
-    auto& repo = m_sim.repo();
-    const int nlevels = repo.num_active_levels();
-    for (int lev = 0; lev < nlevels; ++lev) {
-	dtoh_memcpy(m_iblank_cell_host(lev), m_iblank_cell(lev),0,0,1);
-	dtoh_memcpy(m_iblank_node_host(lev), m_iblank_node(lev),0,0,1);
-    }
+    m_iblank_cell_host.setVal(1);
+    m_iblank_node_host.setVal(1);
+
+    //auto& repo = m_sim.repo();
+    //const int nlevels = repo.num_active_levels();
+    //for (int lev = 0; lev < nlevels; ++lev) {
+	//dtoh_memcpy(m_iblank_cell_host(lev), m_iblank_cell(lev),0,0,1);
+	//dtoh_memcpy(m_iblank_node_host(lev), m_iblank_node(lev),0,0,1);
+    //}
 	
 
 }
