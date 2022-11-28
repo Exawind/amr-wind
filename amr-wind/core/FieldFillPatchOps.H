@@ -5,6 +5,7 @@
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/core/FieldDescTypes.H"
 #include "amr-wind/core/FieldUtils.H"
+#include "amr-wind/core/FieldBCOps.H"
 
 #include "AMReX_AmrCore.H"
 #include "AMReX_MultiFab.H"
@@ -298,13 +299,45 @@ public:
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& ffabs,
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& cfabs,
         const amrex::IntVect& nghost,
-        const FieldState /*fstate = FieldState::New*/,
+        const FieldState fstate = FieldState::New,
         const FieldInterpolator itype = FieldInterpolator::FaceDivFree) override
     {
 
+        const int ng = nghost[0];
+        const auto& geom = m_mesh.Geom(lev);
+        const auto& domain = geom.growPeriodicDomain(ng);
+        auto& sfab = m_field.state(fstate)(lev);
+        for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+            auto ori = oit();
+            const int idir = ori.coordDir();
+            const auto& dbx =
+                ori.isLow() ? amrex::adjCellLo(domain, idir, nghost[idir])
+                            : amrex::adjCellHi(domain, idir, nghost[idir]);
+
+            for (amrex::MFIter mfi(sfab); mfi.isValid(); ++mfi) {
+                const auto& gbx = amrex::grow(mfi.validbox(), nghost);
+                const auto& bx = gbx & dbx;
+
+                if (!bx.ok()) {
+                    continue;
+                }
+
+                for (int n = 0; n < static_cast<int>(mfabs.size()); n++) {
+                    const auto& marr = (*mfabs[n])[mfi].array();
+                    const auto& sarr = sfab[mfi].const_array();
+                    amrex::ParallelFor(
+                        bx,
+                        [=] AMREX_GPU_DEVICE(
+                            const int i, const int j, const int k) noexcept {
+                            marr(i, j, k) = sarr(i, j, k, n);
+                        });
+                }
+            }
+        }
+
         if (lev == 0) {
-            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> physbc(
-                m_mesh.Geom(lev), m_field.bcrec(), bc_functor());
+            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FieldBCNoOp::FunctorType>>
+                physbc(m_mesh.Geom(lev), m_field.bcrec(), FieldBCNoOp());
 
             for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
                 amrex::FillPatchSingleLevel(
@@ -312,19 +345,21 @@ public:
                     m_mesh.Geom(lev), physbc, i);
             }
         } else {
-            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> cphysbc(
-                m_mesh.Geom(lev - 1), m_field.bcrec(), bc_functor());
+            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FieldBCNoOp::FunctorType>>
+                cphysbc(m_mesh.Geom(lev - 1), m_field.bcrec(), FieldBCNoOp());
 
-            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> fphysbc(
-                m_mesh.Geom(lev), m_field.bcrec(), bc_functor());
+            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FieldBCNoOp::FunctorType>>
+                fphysbc(m_mesh.Geom(lev), m_field.bcrec(), FieldBCNoOp());
 
             amrex::Array<
-                amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>>,
+                amrex::PhysBCFunct<
+                    amrex::GpuBndryFuncFab<FieldBCNoOp::FunctorType>>,
                 AMREX_SPACEDIM>
                 cphysbc_arr = {AMREX_D_DECL(cphysbc, cphysbc, cphysbc)};
 
             amrex::Array<
-                amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>>,
+                amrex::PhysBCFunct<
+                    amrex::GpuBndryFuncFab<FieldBCNoOp::FunctorType>>,
                 AMREX_SPACEDIM>
                 fphysbc_arr = {AMREX_D_DECL(fphysbc, fphysbc, fphysbc)};
 
