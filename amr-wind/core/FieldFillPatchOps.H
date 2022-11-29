@@ -53,7 +53,7 @@ public:
 
     //! Implementation that handles filling patches on a single level as well as
     //! across a coarse-fine interface, for an array of different fields
-    virtual void fillpatch(
+    virtual void fillpatch_sibling_fields(
         int lev,
         amrex::Real time,
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& mfabs,
@@ -108,7 +108,7 @@ public:
         mfab.setVal(m_fill_val);
     }
 
-    void fillpatch(
+    void fillpatch_sibling_fields(
         int /*lev*/,
         amrex::Real /*time*/,
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& mfabs,
@@ -292,7 +292,7 @@ public:
     }
 #endif
 
-    void fillpatch(
+    void fillpatch_sibling_fields(
         int lev,
         amrex::Real time,
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& mfabs,

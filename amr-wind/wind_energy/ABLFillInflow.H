@@ -33,7 +33,7 @@ public:
         const amrex::IntVect& nghost,
         const FieldState fstate = FieldState::New) override;
 
-    void fillpatch(
+    void fillpatch_sibling_fields(
         int lev,
         amrex::Real time,
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& mfabs,
@@ -43,7 +43,7 @@ public:
         const FieldState fstate = FieldState::New,
         const FieldInterpolator itype = FieldInterpolator::FaceDivFree) override
     {
-        FieldFillPatchOps<FieldBCNoOp>::fillpatch(
+        FieldFillPatchOps<FieldBCNoOp>::fillpatch_sibling_fields(
             lev, time, mfabs, ffabs, cfabs, nghost, fstate, itype);
     }
 

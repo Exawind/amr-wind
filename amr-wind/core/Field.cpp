@@ -205,7 +205,7 @@ void Field::fillpatch(amrex::Real time) noexcept
     fillpatch(time, num_grow());
 }
 
-void Field::fillpatch(
+void Field::fillpatch_sibling_fields(
     amrex::Real time,
     amrex::IntVect ng,
     amrex::Array<Field*, AMREX_SPACEDIM>& fields) const noexcept
@@ -226,7 +226,8 @@ void Field::fillpatch(
             }
         }
 
-        fop.fillpatch(lev, time, mfabs, mfabs, cfabs, ng, field_state());
+        fop.fillpatch_sibling_fields(
+            lev, time, mfabs, mfabs, cfabs, ng, field_state());
     }
 }
 

@@ -318,7 +318,7 @@ public:
 
     void fillpatch(amrex::Real time) noexcept;
     void fillpatch(amrex::Real time, amrex::IntVect ng) noexcept;
-    void fillpatch(
+    void fillpatch_sibling_fields(
         amrex::Real time,
         amrex::IntVect ng,
         amrex::Array<Field*, AMREX_SPACEDIM>& fields) const noexcept;
