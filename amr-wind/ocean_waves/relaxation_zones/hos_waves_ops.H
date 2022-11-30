@@ -195,6 +195,27 @@ struct InitDataOp<HOSWaves>
                     "HOS OceanWaves: Lateral dimensions incompatible, level " +
                     std::to_string(lev));
             }
+            amrex::Gpu::DeviceVector<amrex::Real> dev_eta, dev_u, dev_v, dev_w;
+            dev_eta.resize(HOS_nx * HOS_ny);
+            dev_u.resize(HOS_nx * HOS_ny * HOS_nz);
+            dev_v.resize(HOS_nx * HOS_ny * HOS_nz);
+            dev_w.resize(HOS_nx * HOS_ny * HOS_nz);
+
+            amrex::Gpu::copy(
+                amrex::Gpu::hostToDevice, eta.begin(), eta.end(),
+                dev_eta.begin());
+            amrex::Gpu::copy(
+                amrex::Gpu::hostToDevice, u.begin(), u.end(), dev_u.begin());
+            amrex::Gpu::copy(
+                amrex::Gpu::hostToDevice, v.begin(), v.end(), dev_v.begin());
+            amrex::Gpu::copy(
+                amrex::Gpu::hostToDevice, w.begin(), w.end(), dev_w.begin());
+
+            const amrex::Real* dev_eta_data = dev_eta.data();
+            const amrex::Real* dev_u_data = dev_u.data();
+            const amrex::Real* dev_v_data = dev_v.data();
+            const amrex::Real* dev_w_data = dev_w.data();
+            // Loop to populate field data
             for (amrex::MFIter mfi(m_ow_levelset(lev)); mfi.isValid(); ++mfi) {
                 auto phi = m_ow_levelset(lev).array(mfi);
                 auto vel = velocity(lev).array(mfi);
@@ -206,31 +227,6 @@ struct InitDataOp<HOSWaves>
                 const amrex::Real HOS_dy = HOS_Ly / HOS_ny;
                 const amrex::Real HOS_dz = (HOS_zmax - HOS_zmin) / HOS_nz;
                 const auto& gbx = mfi.growntilebox(2);
-
-                amrex::Gpu::DeviceVector<amrex::Real> dev_eta, dev_u, dev_v,
-                    dev_w;
-                dev_eta.resize(HOS_nx * HOS_ny);
-                dev_u.resize(HOS_nx * HOS_ny);
-                dev_v.resize(HOS_nx * HOS_ny);
-                dev_w.resize(HOS_nx * HOS_ny);
-
-                amrex::Gpu::copy(
-                    amrex::Gpu::hostToDevice, eta.begin(), eta.end(),
-                    dev_eta.begin());
-                amrex::Gpu::copy(
-                    amrex::Gpu::hostToDevice, u.begin(), u.end(),
-                    dev_u.begin());
-                amrex::Gpu::copy(
-                    amrex::Gpu::hostToDevice, v.begin(), v.end(),
-                    dev_v.begin());
-                amrex::Gpu::copy(
-                    amrex::Gpu::hostToDevice, w.begin(), w.end(),
-                    dev_w.begin());
-
-                const amrex::Real* dev_eta_data = dev_eta.data();
-                const amrex::Real* dev_u_data = dev_u.data();
-                const amrex::Real* dev_v_data = dev_v.data();
-                const amrex::Real* dev_w_data = dev_w.data();
 
                 amrex::ParallelFor(
                     gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -449,8 +445,8 @@ struct UpdateRelaxZonesOp<HOSWaves>
 
         auto& sim = data.sim();
         // cppcheck-suppress constVariable
-        // Nudge the solution toward where it should be at the current time
-        const auto& time = sim.time().current_time();
+        // Nudge the solution toward where it should be
+        const auto& time = sim.time().new_time();
         // Check if HOS time needs to be incremented
         bool read_flag = false;
         while (time > wdata.HOS_t) {
@@ -493,9 +489,9 @@ struct UpdateRelaxZonesOp<HOSWaves>
                 amrex::Gpu::DeviceVector<amrex::Real> dev_eta, dev_u, dev_v,
                     dev_w;
                 dev_eta.resize(HOS_nx * HOS_ny);
-                dev_u.resize(HOS_nx * HOS_ny);
-                dev_v.resize(HOS_nx * HOS_ny);
-                dev_w.resize(HOS_nx * HOS_ny);
+                dev_u.resize(HOS_nx * HOS_ny * HOS_nz);
+                dev_v.resize(HOS_nx * HOS_ny * HOS_nz);
+                dev_w.resize(HOS_nx * HOS_ny * HOS_nz);
 
                 amrex::Gpu::copy(
                     amrex::Gpu::hostToDevice, eta.begin(), eta.end(),

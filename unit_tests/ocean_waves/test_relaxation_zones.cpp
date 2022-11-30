@@ -2,6 +2,8 @@
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
 #include "amr-wind/ocean_waves/utils/wave_utils_K.H"
+#include "amr-wind/ocean_waves/OceanWaves.H"
+#include "amr-wind/physics/multiphase/MultiPhase.H"
 
 namespace amr_wind_tests {
 
@@ -27,10 +29,60 @@ protected:
             pp.addarr("prob_lo", problo);
             pp.addarr("prob_hi", probhi);
         }
+        {
+            // Periodicity
+            amrex::ParmParse pp("geometry");
+            amrex::Vector<int> periodic{{0, 0, 0}};
+            pp.addarr("is_periodic", periodic);
+            // Boundary conditions
+            amrex::ParmParse ppxlo("xlo");
+            ppxlo.add("type", (std::string) "slip_wall");
+            amrex::ParmParse ppylo("ylo");
+            ppylo.add("type", (std::string) "slip_wall");
+            amrex::ParmParse ppzlo("zlo");
+            ppzlo.add("type", (std::string) "slip_wall");
+            amrex::ParmParse ppxhi("xhi");
+            ppxhi.add("type", (std::string) "slip_wall");
+            amrex::ParmParse ppyhi("yhi");
+            ppyhi.add("type", (std::string) "slip_wall");
+            amrex::ParmParse ppzhi("zhi");
+            ppzhi.add("type", (std::string) "slip_wall");
+        }
+        {
+            // Physics
+            amrex::ParmParse pp("incflo");
+            amrex::Vector<std::string> phystr{"MultiPhase", "OceanWaves"};
+            pp.addarr("physics", phystr);
+            pp.add("use_godunov", (int)1);
+        }
     }
 };
 
 namespace {
+
+// Functions for HOS distribution, choose periodic in x and y
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+eta_def(amrex::Real x, amrex::Real y)
+{
+    return (0.75 + 0.25 * std::sin(2.0 * M_PI * x) * std::cos(2.0 * M_PI * y));
+}
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+u_def(amrex::Real x, amrex::Real y, amrex::Real z)
+{
+    return (0.1 * std::sin(2.0 * M_PI * x) + 0.0 * y + 0.5 * z);
+}
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+v_def(amrex::Real x, amrex::Real y, amrex::Real z)
+{
+    return (
+        0.05 * std::sin(2.0 * M_PI * x) + 0.6 * std::cos(2.0 * M_PI * y) +
+        0.0 * z);
+}
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+w_def(amrex::Real x, amrex::Real y, amrex::Real z)
+{
+    return (0.0 * x + 0.3 * std::cos(2.0 * M_PI * y) + 0.1 * z);
+}
 
 void initialize_relaxation_zone_field(
     const amrex::Box& bx,
@@ -93,9 +145,10 @@ void apply_relaxation_zone_field(
     }
 }
 
-amrex::Real relaxation_zone_error(amr_wind::Field& comp, amr_wind::Field& targ)
+amrex::Real field_error(amr_wind::Field& comp, amr_wind::Field& targ, int ncomp)
 {
     amrex::Real error_total = 0.0;
+    int nc = ncomp;
 
     for (int lev = 0; lev < comp.repo().num_active_levels(); ++lev) {
         error_total += amrex::ReduceSum(
@@ -107,15 +160,82 @@ amrex::Real relaxation_zone_error(amr_wind::Field& comp, amr_wind::Field& targ)
                 -> amrex::Real {
                 amrex::Real error = 0.0;
 
-                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
-                    error +=
-                        amrex::Math::abs(comp_arr(i, j, k) - targ_arr(i, j, k));
-                });
+                amrex::Loop(
+                    bx, nc, [=, &error](int i, int j, int k, int n) noexcept {
+                        error += amrex::Math::abs(
+                            comp_arr(i, j, k, n) - targ_arr(i, j, k, n));
+                    });
 
                 return error;
             });
     }
     return error_total;
+}
+
+amrex::Real field_error(amr_wind::Field& comp, amr_wind::Field& targ)
+{
+    return field_error(comp, targ, 1);
+}
+
+void write_HOS_txt(std::string HOS_fname, amrex::Real factor)
+{
+    std::ofstream os(HOS_fname);
+    // Write metadata to file
+    os << "HOS Time = 0.0\n";
+    os << "HOS dt = 0.5\n";
+    os << "nx = 32, Lx = 10.0\n";
+    os << "ny = 4, Ly = 1.0\n";
+    os << "nz = 4, zmin = 0.0, zmax = 1.0\n";
+    os << "key\n";
+    // Loop and write eta, u, v, w
+    for (int i = 0; i < 32; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            // Interface height at current i, j
+            amrex::Real x = (0.5 + i) / 3.2;
+            amrex::Real y = (0.5 + j) / 4.0;
+            os << factor * eta_def(x, y) << std::endl;
+            // Velocity at i,j,k
+            for (int k = 0; k < 4; ++k) {
+                amrex::Real z = (0.5 + k) / 4.0;
+                os << factor * u_def(x, y, z) << " " << factor * v_def(x, y, z)
+                   << " " << factor * w_def(x, y, z) << std::endl;
+            }
+        }
+    }
+}
+
+void init_reference_fields(
+    amr_wind::Field& ref_lvs, amr_wind::Field& ref_vel, amrex::Real mfactor)
+{
+    const auto& geom = ref_lvs.repo().mesh().Geom();
+    amrex::Real fac = mfactor;
+    run_algorithm(ref_lvs, [&](const int lev, const amrex::MFIter& mfi) {
+        auto lvs_arr = ref_lvs(lev).array(mfi);
+        auto vel_arr = ref_vel(lev).array(mfi);
+        const auto& bx = mfi.validbox();
+        const auto& dx = geom[lev].CellSizeArray();
+        const auto& problo = geom[lev].ProbLoArray();
+        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+            const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+            const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+            amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+            const amrex::Real eta = fac * eta_def(x, y);
+            lvs_arr(i, j, k) = eta - z;
+            if (lvs_arr(i, j, k) + 0.5 * dx[2] < 0.0) {
+                vel_arr(i, j, k, 0) = 0.0;
+                vel_arr(i, j, k, 1) = 0.0;
+                vel_arr(i, j, k, 2) = 0.0;
+            } else {
+                // adjust z for partially liquid cell
+                if (amrex::Math::abs(lvs_arr(i, j, k)) - 0.5 * dx[2] < 0) {
+                    z -= 0.5 * lvs_arr(i, j, k);
+                }
+                vel_arr(i, j, k, 0) = fac * u_def(x, y, z);
+                vel_arr(i, j, k, 1) = fac * v_def(x, y, z);
+                vel_arr(i, j, k, 2) = fac * w_def(x, y, z);
+            }
+        });
+    });
 }
 
 } // namespace
@@ -145,9 +265,100 @@ TEST_F(OceanWavesOpTest, relaxation_zone)
     target_field.setVal(1.0);
     init_relaxation_field(theoretical_field, gen_length);
     apply_relaxation_zone_field(comp_field, target_field, gen_length);
-    amrex::Real error_total =
-        relaxation_zone_error(comp_field, theoretical_field);
+    amrex::Real error_total = field_error(comp_field, theoretical_field);
     EXPECT_NEAR(error_total, 0.0, tol);
+}
+
+TEST_F(OceanWavesOpTest, HOS_init)
+{
+    // Write HOS file
+    write_HOS_txt("HOSGridData_lev0_0.txt", 1.0);
+
+    constexpr double tol = 1.0e-3;
+
+    populate_parameters();
+    {
+        // Ocean Waves details
+        amrex::ParmParse pp("OceanWaves");
+        pp.add("label", (std::string) "HOS_ow");
+        amrex::ParmParse ppow("OceanWaves.HOS_ow");
+        ppow.add("type", (std::string) "HOSWaves");
+        ppow.add("HOS_files_prefix", (std::string) "HOSGridData");
+    }
+    {
+        amrex::ParmParse pp("time");
+        pp.add("fixed_dt", 0.1);
+    }
+
+    initialize_mesh();
+
+    // ICNS must be initialized for MultiPhase physics, which is needed for
+    // OceanWaves
+    auto& pde_mgr = sim().pde_manager();
+    pde_mgr.register_icns();
+    // Initialize physics
+    sim().init_physics();
+    auto& oceanwaves =
+        sim().physics_manager().get<amr_wind::ocean_waves::OceanWaves>();
+    // Do initial steps with ocean waves
+    oceanwaves.pre_init_actions();
+    oceanwaves.post_init_actions();
+
+    // Create reference fields
+    auto& repo = sim().repo();
+    const int nghost = 3;
+    auto& ref_levelset = repo.declare_field("ref_levelset", 1, nghost);
+    auto& ref_velocity = repo.declare_field("ref_velocity", 3, nghost);
+    // Initialize reference fields
+    init_reference_fields(ref_levelset, ref_velocity, 1.0);
+
+    // Check OW fields
+    auto& ow_levelset = repo.get_field("ow_levelset");
+    auto& ow_velocity = repo.get_field("ow_velocity");
+    amrex::Real error_total = field_error(ow_levelset, ref_levelset);
+    EXPECT_NEAR(error_total, 0.0, tol);
+    error_total = field_error(ref_velocity, ow_velocity, 3);
+    EXPECT_NEAR(error_total, 0.0, tol);
+
+    // Create file at n = 1 timestep with slightly different values
+    write_HOS_txt("HOSGridData_lev0_1.txt", 0.9);
+    // Modify reference fields
+    init_reference_fields(ref_levelset, ref_velocity, 0.9);
+
+    // Advance time
+    sim().time().new_timestep();
+    // Update relaxation zones to populate HOS fields
+    oceanwaves.post_advance_work();
+
+    // Check HOS fields
+    auto& hos_levelset = repo.get_field("hos_levelset");
+    auto& hos_velocity = repo.get_field("hos_velocity");
+    error_total = field_error(ref_levelset, hos_levelset);
+    EXPECT_NEAR(error_total, 0.0, tol);
+    error_total = field_error(ref_velocity, hos_velocity, 3);
+    EXPECT_NEAR(error_total, 0.0, tol);
+
+    // Clean up txt files
+    {
+        const char* fname = "HOSGridData_lev0_0.txt";
+        std::ifstream f(fname);
+        if (f.good()) {
+            remove(fname);
+        }
+        // Check that file is removed
+        std::ifstream ff(fname);
+        EXPECT_FALSE(ff.good());
+    }
+    {
+        const char* fname = "HOSGridData_lev0_1.txt";
+        std::ifstream f(fname);
+        if (f.good()) {
+            remove(fname);
+        }
+        // Check that file is removed
+        std::ifstream ff(fname);
+        EXPECT_FALSE(ff.good());
+    }
 }
 
 } // namespace amr_wind_tests
