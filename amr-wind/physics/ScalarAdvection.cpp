@@ -98,7 +98,7 @@ GaussianWavePacketFV::operator()(
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> w_i = {
         AMREX_D_DECL(0.5555555556, 0.8888888889, 0.5555555556)};
     amrex::Real cell_integral = 0.0;
-    for (int i = 0; i != dx_i.size(); ++i) {
+    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
         cell_integral =
             cell_integral + w_i[i] * pointwise_function(
                                          x + dx_i[i] * 0.5 * dx, x0, amplitude,
