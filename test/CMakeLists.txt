@@ -208,6 +208,8 @@ add_test_re(vortex_patch_scalar_vel)
 add_test_re(zalesak_disk_scalar_vel)
 add_test_re(rain_drop)
 add_test_re(inertial_drop)
+add_test_re(scalar_advection_uniform)
+add_test_re(scalar_advection_refined)
 
 if(NOT AMR_WIND_ENABLE_CUDA)
   add_test_re(ctv_godunov_plm)
