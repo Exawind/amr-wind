@@ -93,9 +93,10 @@ GaussianWavePacketFV::operator()(
 {
     const GaussianWavePacket pointwise_function;
     // Gauss-Legendre quadrature
-    const amrex::Vector<amrex::Real> dx_i = {-0.7745966692, 0, 0.7745966692};
-    const amrex::Vector<amrex::Real> w_i = {
-        0.5555555556, 0.8888888889, 0.5555555556};
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx_i = {
+        AMREX_D_DECL(-0.7745966692, 0, 0.7745966692)};
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> w_i = {
+        AMREX_D_DECL(0.5555555556, 0.8888888889, 0.5555555556)};
     amrex::Real cell_integral = 0.0;
     for (int i = 0; i != dx_i.size(); ++i) {
         cell_integral =
