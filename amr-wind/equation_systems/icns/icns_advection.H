@@ -284,6 +284,13 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         // MAC projection
         m_macproj_op(fstate, dt);
 
+        // Fill mac velocities using velocity BCs
+        if (fvm::Godunov::nghost_state > 0) {
+            amrex::Array<Field*, AMREX_SPACEDIM> mac_vel = {
+                AMREX_D_DECL(&u_mac, &v_mac, &w_mac)};
+            dof_field.fillpatch_sibling_fields(0.0, u_mac.num_grow(), mac_vel);
+        }
+
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             u_mac(lev).FillBoundary(geom[lev].periodicity());
             v_mac(lev).FillBoundary(geom[lev].periodicity());
