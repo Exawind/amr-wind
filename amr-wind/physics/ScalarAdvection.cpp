@@ -19,14 +19,14 @@ GaussianPulseFV::operator()(
     const amrex::Real /*unused*/,
     const amrex::Real /*unused*/) const
 {
+    amrex::Real val = 0.0;
     if (std::abs(x - x0) < 6 * x_width) {
-        return sqrt(utils::pi() / 2) * amplitude * x_width *
-               (std::erf((x - x0 + dx / 2) / (sqrt(2) * x_width)) -
-                std::erf((x - x0 - dx / 2) / (sqrt(2) * x_width))) /
-               dx;
-    } else {
-        return 0.0;
+        val = sqrt(utils::pi() / 2) * amplitude * x_width *
+              (std::erf((x - x0 + dx / 2) / (sqrt(2) * x_width)) -
+               std::erf((x - x0 - dx / 2) / (sqrt(2) * x_width))) /
+              dx;
     }
+    return val;
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
@@ -43,16 +43,16 @@ TwoDimGaussianPulseFV::operator()(
     const amrex::Real /*unused*/,
     const amrex::Real /*unused*/) const
 {
+    amrex::Real val = 0.0;
     if (std::abs(x - x0) < 6 * x_width && std::abs(y - y0) < 6 * y_width) {
-        return utils::pi() / 2 * amplitude * x_width * y_width *
-               (std::erf((x - x0 + dx / 2) / (sqrt(2) * x_width)) -
-                std::erf((x - x0 - dx / 2) / (sqrt(2) * x_width))) *
-               (std::erf((y - y0 + dy / 2) / (sqrt(2) * y_width)) -
-                std::erf((y - y0 - dy / 2) / (sqrt(2) * y_width))) /
-               dx / dy;
-    } else {
-        return 0.0;
+        val = utils::pi() / 2 * amplitude * x_width * y_width *
+              (std::erf((x - x0 + dx / 2) / (sqrt(2) * x_width)) -
+               std::erf((x - x0 - dx / 2) / (sqrt(2) * x_width))) *
+              (std::erf((y - y0 + dy / 2) / (sqrt(2) * y_width)) -
+               std::erf((y - y0 - dy / 2) / (sqrt(2) * y_width))) /
+              dx / dy;
     }
+    return val;
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real SquarePulseFV::operator()(
@@ -68,13 +68,13 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real SquarePulseFV::operator()(
     const amrex::Real /*unused*/,
     const amrex::Real /*unused*/) const
 {
+    amrex::Real val = 0.0;
     if (std::abs(std::abs(x - x0) - x_width / 2) < dx / 2) {
-        return amplitude * (x_width / 2 - std::abs(x - x0) + dx / 2) / dx;
+        val = amplitude * (x_width / 2 - std::abs(x - x0) + dx / 2) / dx;
     } else if (std::abs(x - x0) < x_width / 2) {
-        return amplitude;
-    } else {
-        return 0.0;
+        val = amplitude;
     }
+    return val;
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
@@ -114,17 +114,16 @@ GaussianWavePacket::operator()(
     const amrex::Real x_width,
     const amrex::Real x_wavenumber) const
 {
+    amrex::Real val = 0.0;
     if (std::abs(x - x0) < 6 * x_width) {
-        return amplitude * std::cos(x_wavenumber * x) *
-               std::exp(-std::pow(x - x0, 2) / (2 * std::pow(x_width, 2)));
-    } else {
-        return 0.0;
+        val = amplitude * std::cos(x_wavenumber * x) *
+              std::exp(-std::pow(x - x0, 2) / (2 * std::pow(x_width, 2)));
     }
+    return val;
 }
 
 ScalarAdvection::ScalarAdvection(CFDSim& sim)
-    : m_sim(sim)
-    , m_time(sim.time())
+    : m_time(sim.time())
     , m_repo(sim.repo())
     , m_velocity(sim.repo().get_field("velocity"))
     , m_density(sim.repo().get_field("density"))

@@ -40,7 +40,6 @@ public:
     void initialize_scalar(const Shape& scalar_function);
 
 private:
-    const CFDSim& m_sim;
     const SimTime& m_time;
     const FieldRepo& m_repo;
     Field& m_velocity;
