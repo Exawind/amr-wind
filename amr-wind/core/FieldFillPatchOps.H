@@ -306,9 +306,13 @@ public:
         const int ng = nghost[0];
         const auto& geom = m_mesh.Geom(lev);
         const auto& domain = geom.growPeriodicDomain(ng);
+        const auto& bctype = m_field.bc_type();
         auto& sfab = m_field.state(fstate)(lev);
         for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
             auto ori = oit();
+            if (bctype[ori] != BC::mass_inflow) {
+                continue;
+            }
             const int idir = ori.coordDir();
             const auto& dbx =
                 ori.isLow() ? amrex::adjCellLo(domain, idir, nghost[idir])
