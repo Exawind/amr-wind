@@ -85,17 +85,30 @@ void ABLModulatedPowerLaw::pre_advance_work()
 {
 
 #ifdef AMR_WIND_USE_HELICS
-    const amrex::Real wind_speed =
-        m_sim.helics().m_inflow_wind_speed_to_amrwind;
-    const amrex::Real wind_direction =
-        -m_sim.helics().m_inflow_wind_direction_to_amrwind + 270.0;
-    const amrex::Real wind_direction_radian =
-        amr_wind::utils::radians(wind_direction);
+    if (m_sim.helics().is_activated()) {
+        const amrex::Real wind_speed =
+            m_sim.helics().m_inflow_wind_speed_to_amrwind;
+        const amrex::Real wind_direction =
+            -m_sim.helics().m_inflow_wind_direction_to_amrwind + 270.0;
+        const amrex::Real wind_direction_radian =
+            amr_wind::utils::radians(wind_direction);
 
-    m_uvec[0] = wind_speed * std::cos(wind_direction_radian);
-    m_uvec[1] = wind_speed * std::sin(wind_direction_radian);
-    m_uvec[2] = 0.0;
+        m_uvec[0] = wind_speed * std::cos(wind_direction_radian);
+        m_uvec[1] = wind_speed * std::sin(wind_direction_radian);
+        m_uvec[2] = 0.0;
+        return;
+    }
 #endif
+
+    if (m_time.current_time() > m_start_time &&
+        m_time.current_time() < m_stop_time) {
+        m_wind_direction -= m_degrees_per_sec * m_time.deltaT();
+    }
+    const amrex::Real wind_direction = -m_wind_direction + 270.0;
+    const amrex::Real wind_direction_radian = utils::radians(wind_direction);
+    m_uvec[0] = m_wind_speed * std::cos(wind_direction_radian);
+    m_uvec[1] = m_wind_speed * std::sin(wind_direction_radian);
+    m_uvec[2] = 0.0;
 }
 
 void ABLModulatedPowerLaw::post_advance_work() {}
