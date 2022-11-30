@@ -179,6 +179,7 @@ protected:
             const auto& bx = mfi.validbox();
             initialize_volume_fractions(bx, vof_arr);
         });
+
         // Populate boundary cells
         vof.fillpatch(0.0);
 

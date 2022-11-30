@@ -57,7 +57,7 @@ protected:
                 }
                 break;
 
-            // insert wave generation BC here in future PR
+            case BC::wave_generation:
             case BC::mass_inflow:
                 if (side == amrex::Orientation::low) {
                     set_bcrec_lo(dir, amrex::BCType::ext_dir);

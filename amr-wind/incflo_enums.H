@@ -13,6 +13,7 @@ enum struct BC {
     wall_model,
     fixed_gradient,
     periodic,
+    wave_generation,
     undefined
 };
 

@@ -74,6 +74,8 @@ void BCIface::read_bctype()
             ibctype[ori] = BC::zero_gradient;
         } else if ((bcstr == "fixed_gradient") || (bcstr == "fg")) {
             ibctype[ori] = BC::fixed_gradient;
+        } else if ((bcstr == "wave_generation") || (bcstr == "wg")) {
+            ibctype[ori] = BC::wave_generation;
         } else {
             ibctype[ori] = BC::undefined;
         }
@@ -192,6 +194,7 @@ void BCVelocity::set_bcrec()
             }
             break;
 
+        case BC::wave_generation:
         case BC::mass_inflow:
         case BC::no_slip_wall:
             if (side == amrex::Orientation::low) {
@@ -280,6 +283,7 @@ void BCScalar::set_bcrec()
             }
             break;
 
+        case BC::wave_generation:
         case BC::mass_inflow:
         case BC::no_slip_wall:
             if (side == amrex::Orientation::low) {
