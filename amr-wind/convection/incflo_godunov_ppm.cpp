@@ -39,14 +39,13 @@ void godunov::predict_ppm(
         bx, AMREX_SPACEDIM,
         [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
             Godunov_ppm_pred_x_nolim(
-                i, j, k, n, l_dtdx, vel(i, j, k, 0), q, Imx, Ipx, pbc[n],
-                dlo.x, dhi.x);
+                i, j, k, n, l_dtdx, vel(i, j, k, 0), q, Imx, Ipx, pbc[n], dlo.x,
+                dhi.x);
             Godunov_ppm_pred_y_nolim(
-                i, j, k, n, l_dtdy, vel(i, j, k, 1), q, Imy, Ipy, pbc[n],
-                dlo.y, dhi.y);
+                i, j, k, n, l_dtdy, vel(i, j, k, 1), q, Imy, Ipy, pbc[n], dlo.y,
+                dhi.y);
             Godunov_ppm_pred_z_nolim(
-                i, j, k, n, l_dtdz, vel(i, j, k, 2), q, Imz, Ipz, pbc[n],
-                dlo.z, dhi.z);
+                i, j, k, n, l_dtdz, vel(i, j, k, 2), q, Imz, Ipz, pbc[n], dlo.z,
+                dhi.z);
         });
-
 }
