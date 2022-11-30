@@ -5,6 +5,7 @@
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/core/FieldDescTypes.H"
 #include "amr-wind/core/FieldUtils.H"
+#include "amr-wind/core/FieldBCOps.H"
 
 #include "AMReX_AmrCore.H"
 #include "AMReX_MultiFab.H"
@@ -50,6 +51,18 @@ public:
         const amrex::IntVect& nghost,
         const FieldState fstate = FieldState::New) = 0;
 
+    //! Implementation that handles filling patches on a single level as well as
+    //! across a coarse-fine interface, for an array of different fields
+    virtual void fillpatch_sibling_fields(
+        int lev,
+        amrex::Real time,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& mfabs,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& ffabs,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& cfabs,
+        const amrex::IntVect& nghost,
+        const FieldState fstate = FieldState::New,
+        const FieldInterpolator itype = FieldInterpolator::FaceDivFree) = 0;
+
     //! Implementation that handles filling patches from a coarse to fine level
     virtual void fillpatch_from_coarse(
         int lev,
@@ -93,6 +106,21 @@ public:
         const FieldState /*fstate*/) override
     {
         mfab.setVal(m_fill_val);
+    }
+
+    void fillpatch_sibling_fields(
+        int /*lev*/,
+        amrex::Real /*time*/,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& mfabs,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& /*ffabs*/,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& /*cfabs*/,
+        const amrex::IntVect& /*nghost*/,
+        const FieldState /*fstate*/,
+        const FieldInterpolator /*itype*/) override
+    {
+        for (const auto& mfab : mfabs) {
+            mfab->setVal(m_fill_val);
+        }
     }
 
     void fillpatch_from_coarse(
@@ -263,6 +291,96 @@ public:
                        << m_time.new_time() << std::endl;
     }
 #endif
+
+    void fillpatch_sibling_fields(
+        int lev,
+        amrex::Real time,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& mfabs,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& ffabs,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& cfabs,
+        const amrex::IntVect& nghost,
+        const FieldState fstate = FieldState::New,
+        const FieldInterpolator itype = FieldInterpolator::FaceDivFree) override
+    {
+
+        const int ng = nghost[0];
+        const auto& geom = m_mesh.Geom(lev);
+        const auto& domain = geom.growPeriodicDomain(ng);
+        const auto& bctype = m_field.bc_type();
+        auto& sfab = m_field.state(fstate)(lev);
+        for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+            auto ori = oit();
+            if (bctype[ori] != BC::mass_inflow) {
+                continue;
+            }
+            const int idir = ori.coordDir();
+            const auto& dbx =
+                ori.isLow() ? amrex::adjCellLo(domain, idir, nghost[idir])
+                            : amrex::adjCellHi(domain, idir, nghost[idir]);
+
+            for (amrex::MFIter mfi(sfab); mfi.isValid(); ++mfi) {
+                const auto& gbx = amrex::grow(mfi.validbox(), nghost);
+                const auto& bx = gbx & dbx;
+
+                if (!bx.ok()) {
+                    continue;
+                }
+
+                for (int n = 0; n < static_cast<int>(mfabs.size()); n++) {
+                    const auto& marr = (*mfabs[n])[mfi].array();
+                    const auto& sarr = sfab[mfi].const_array();
+                    amrex::ParallelFor(
+                        bx,
+                        [=] AMREX_GPU_DEVICE(
+                            const int i, const int j, const int k) noexcept {
+                            marr(i, j, k) = sarr(i, j, k, n);
+                        });
+                }
+            }
+        }
+
+        if (lev == 0) {
+            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FieldBCNoOp::FunctorType>>
+                physbc(m_mesh.Geom(lev), m_field.bcrec(), FieldBCNoOp());
+
+            for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
+                amrex::FillPatchSingleLevel(
+                    *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
+                    m_mesh.Geom(lev), physbc, i);
+            }
+        } else {
+            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FieldBCNoOp::FunctorType>>
+                cphysbc(m_mesh.Geom(lev - 1), m_field.bcrec(), FieldBCNoOp());
+
+            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FieldBCNoOp::FunctorType>>
+                fphysbc(m_mesh.Geom(lev), m_field.bcrec(), FieldBCNoOp());
+
+            amrex::Array<
+                amrex::PhysBCFunct<
+                    amrex::GpuBndryFuncFab<FieldBCNoOp::FunctorType>>,
+                AMREX_SPACEDIM>
+                cphysbc_arr = {AMREX_D_DECL(cphysbc, cphysbc, cphysbc)};
+
+            amrex::Array<
+                amrex::PhysBCFunct<
+                    amrex::GpuBndryFuncFab<FieldBCNoOp::FunctorType>>,
+                AMREX_SPACEDIM>
+                fphysbc_arr = {AMREX_D_DECL(fphysbc, fphysbc, fphysbc)};
+
+            amrex::Array<int, AMREX_SPACEDIM> idx = {AMREX_D_DECL(0, 1, 2)};
+            const amrex::Array<amrex::Vector<amrex::BCRec>, AMREX_SPACEDIM>
+                bcrec_arr = {AMREX_D_DECL(
+                    m_field.bcrec(), m_field.bcrec(), m_field.bcrec())};
+
+            auto* mapper = field_impl::get_interpolation_operator(itype);
+
+            amrex::FillPatchTwoLevels(
+                mfabs, nghost, time, {cfabs}, {time}, {ffabs}, {time}, 0, 0, 1,
+                m_mesh.Geom(lev - 1), m_mesh.Geom(lev), cphysbc_arr, idx,
+                fphysbc_arr, idx, m_mesh.refRatio(lev - 1), mapper, bcrec_arr,
+                idx);
+        }
+    }
 
     void fillpatch_from_coarse(
         int lev,

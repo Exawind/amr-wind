@@ -205,6 +205,32 @@ void Field::fillpatch(amrex::Real time) noexcept
     fillpatch(time, num_grow());
 }
 
+void Field::fillpatch_sibling_fields(
+    amrex::Real time,
+    amrex::IntVect ng,
+    amrex::Array<Field*, AMREX_SPACEDIM>& fields) const noexcept
+{
+    BL_PROFILE("amr-wind::Field::fillpatch array");
+    BL_ASSERT(m_info->m_fillpatch_op);
+    BL_ASSERT(m_info->bc_initialized() && m_info->m_bc_copied_to_device);
+    BL_ASSERT(m_info->m_ncomp == fields.size());
+    auto& fop = *(m_info->m_fillpatch_op);
+    const int nlevels = m_repo.num_active_levels();
+    for (int lev = 0; lev < nlevels; ++lev) {
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs = {AMREX_D_DECL(
+            &((*fields[0])(lev)), &((*fields[1])(lev)), &((*fields[2])(lev)))};
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> cfabs;
+        if (lev > 0) {
+            for (int i = 0; i < static_cast<int>(fields.size()); i++) {
+                cfabs[i] = &((*fields[i])(lev - 1));
+            }
+        }
+
+        fop.fillpatch_sibling_fields(
+            lev, time, mfabs, mfabs, cfabs, ng, field_state());
+    }
+}
+
 void Field::fillphysbc(
     int lev,
     amrex::Real time,

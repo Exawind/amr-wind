@@ -268,8 +268,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void get_lr_indices(
     }
 
     const amrex::Real xfrac = xbox - turb_grid.dx[dir] * il;
-    rxl = xfrac / turb_grid.dx[dir];
-    rxr = (1.0 - rxl);
+    rxr = xfrac / turb_grid.dx[dir];
+    rxl = (1.0 - rxr);
 }
 
 /** Determine if a given point (in local frame) is within the turbulence box
@@ -442,6 +442,9 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
     // Time offsets if any...
     pp.query("time_offset", m_time_offset);
 
+    // Duration
+    pp.query("duration", m_duration);
+
     // Done reading user inputs, process derived data
 
     // Center of the grid
@@ -504,11 +507,20 @@ void SyntheticTurbulence::initialize()
 void SyntheticTurbulence::update()
 {
     BL_PROFILE("amr-wind::SyntheticTurbulence::update");
+
     // Convert current time to an equivalent length based on the reference
     // velocity to determine the position within the turbulence grid
     const amrex::Real cur_time = m_time.new_time() - m_time_offset;
     const amrex::Real eqiv_len =
         m_wind_profile->reference_velocity() * cur_time;
+
+    // Stop update if the current time is past the requested duration of the
+    // injection of the synthetic turbulence and if this duration is positive
+    if (m_duration > 0.0 && cur_time > m_duration) {
+        const amrex::Vector<amrex::Real> zeros{0.0, 0.0, 0.0};
+        m_turb_force.setVal(zeros, m_turb_force.num_grow()[0]);
+        return;
+    }
 
     InterpWeights weights;
     SynthTurbDeviceData turb_grid(m_turb_grid);

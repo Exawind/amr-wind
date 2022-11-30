@@ -198,6 +198,8 @@ private:
     amrex::Real m_gauss_scaling;
 
     amrex::Real m_time_offset{0.0};
+    // Duration of the synthetic turbulence injection. Unused if < 0
+    amrex::Real m_duration{-1};
 
     bool m_is_init{true};
 };
