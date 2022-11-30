@@ -70,7 +70,6 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
 
     // Get time
     const auto& time = sim.time().new_time();
-    amrex::Print() << time << " " << wdata.ramp_period << std::endl;
     const amrex::Real rampf =
         (wdata.has_ramp) ? utils::ramp(time, wdata.ramp_period) : 1.0;
 
