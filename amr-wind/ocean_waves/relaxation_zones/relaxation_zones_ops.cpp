@@ -34,6 +34,11 @@ void read_inputs(
         pp.query("numerical_beach_length", wdata.beach_length);
         wdata.has_beach = true;
     }
+
+    pp.query("timeramp", wdata.has_ramp);
+    if (wdata.has_ramp) {
+        pp.query("timeramp_perior", wdata.ramp_period);
+    }
 }
 
 void init_data_structures(RelaxZonesBaseData& /*unused*/) {}
