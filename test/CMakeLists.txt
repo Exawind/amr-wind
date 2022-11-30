@@ -210,7 +210,6 @@ add_test_re(rain_drop)
 add_test_re(inertial_drop)
 add_test_re(ow_linear)
 add_test_re(ow_stokes)
-add_test_re(ow_hos)
 
 if(NOT AMR_WIND_ENABLE_CUDA)
   add_test_re(ctv_godunov_plm)

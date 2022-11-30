@@ -31,10 +31,11 @@ turbulence.model = Laminar
 
 incflo.physics = MultiPhase OceanWaves 
 OceanWaves.label = Wave1
-OceanWaves.Wave1.type = LinearWaves
-OceanWaves.Wave1.wave_height=0.02
+OceanWaves.Wave1.type = StokesWaves
+OceanWaves.Wave1.order=3
+OceanWaves.Wave1.wave_height=0.04
 OceanWaves.Wave1.wave_length=2.0
-OceanWaves.Wave1.water_depth=1
+OceanWaves.Wave1.water_depth=1.0
 OceanWaves.Wave1.relax_zone_gen_length=4.0
 OceanWaves.Wave1.numerical_beach_length=8.0
 MultiPhase.density_fluid1=1000.
