@@ -339,13 +339,14 @@ public:
             }
         }
 
+        const amrex::IntVect no_ghost(0);
         if (lev == 0) {
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FieldBCNoOp::FunctorType>>
                 physbc(m_mesh.Geom(lev), m_field.bcrec(), FieldBCNoOp());
 
             for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
                 amrex::FillPatchSingleLevel(
-                    *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
+                    *mfabs[i], no_ghost, time, {ffabs[i]}, {time}, 0, 0, 1,
                     m_mesh.Geom(lev), physbc, i);
             }
         } else {
@@ -375,8 +376,8 @@ public:
             auto* mapper = field_impl::get_interpolation_operator(itype);
 
             amrex::FillPatchTwoLevels(
-                mfabs, nghost, time, {cfabs}, {time}, {ffabs}, {time}, 0, 0, 1,
-                m_mesh.Geom(lev - 1), m_mesh.Geom(lev), cphysbc_arr, idx,
+                mfabs, no_ghost, time, {cfabs}, {time}, {ffabs}, {time}, 0, 0,
+                1, m_mesh.Geom(lev - 1), m_mesh.Geom(lev), cphysbc_arr, idx,
                 fphysbc_arr, idx, m_mesh.refRatio(lev - 1), mapper, bcrec_arr,
                 idx);
         }
