@@ -3,6 +3,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/core/MultiParser.H"
+#include "amr-wind/physics/multiphase/MultiPhase.H"
 
 #include <algorithm>
 
@@ -14,6 +15,8 @@ OceanWaves::OceanWaves(CFDSim& sim)
     , m_ow_vof(sim.repo().declare_field("ow_vof", 1, 2, 1))
     , m_ow_velocity(
           sim.repo().declare_field("ow_velocity", AMREX_SPACEDIM, 3, 1))
+    /*, m_levelset(sim.repo().get_field("levelset"))
+    , m_velocity(sim.repo().get_field("velocity"))*/
 {
     if (!sim.physics_manager().contains("MultiPhase")) {
         amrex::Abort("OceanWaves requires Multiphase physics to be active");
@@ -21,7 +24,11 @@ OceanWaves::OceanWaves(CFDSim& sim)
     m_ow_levelset.set_default_fillpatch_bc(sim.time());
     m_ow_vof.set_default_fillpatch_bc(sim.time());
     m_ow_velocity.set_default_fillpatch_bc(sim.time());
-}
+
+    const auto& mphase = sim.physics_manager().get<MultiPhase>();
+    m_rho1 = mphase.rho1();
+    m_rho2 = mphase.rho2();
+}       
 
 OceanWaves::~OceanWaves() = default;
 
@@ -49,10 +56,16 @@ void OceanWaves::pre_init_actions()
     m_owm->read_inputs(inp);
 }
 
+void OceanWaves::initialize_fields(int level, const amrex::Geometry& geom)
+{
+    BL_PROFILE("amr-wind::ocean_waves::OceanWaves::initialize_fields");
+    m_owm->init_waves(level, geom);
+}
+
 void OceanWaves::post_init_actions()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::post_init_actions");
-    m_owm->init_waves();
+    m_owm->update_relax_zones();
 }
 
 void OceanWaves::post_regrid_actions() {}

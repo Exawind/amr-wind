@@ -32,7 +32,7 @@ public:
 
     virtual void read_inputs(const ::amr_wind::utils::MultiParser&) = 0;
 
-    virtual void init_waves() = 0;
+    virtual void init_waves(int, const amrex::Geometry&) = 0;
 
     virtual void update_relax_zones() = 0;
 
@@ -57,8 +57,7 @@ template <typename WaveTheoryTrait>
 class OWModel : public OceanWavesModel::Register<OWModel<WaveTheoryTrait>>
 {
 private:
-    //! Instance that holds all data related to a particular immersed boundary
-    //! type
+    //! Instance that holds all data related to a particular wave type
     typename WaveTheoryTrait::DataType m_data;
 
     //! Outputs processor
@@ -105,7 +104,10 @@ public:
 
     void write_outputs() override { m_out_op.write_outputs(); }
 
-    void init_waves() override { ops::InitDataOp<WaveTheoryTrait>()(m_data); }
+    void init_waves(int level, const amrex::Geometry& geom) override
+    {
+        ops::InitDataOp<WaveTheoryTrait>()(m_data, level, geom);
+    }
 };
 
 } // namespace ocean_waves

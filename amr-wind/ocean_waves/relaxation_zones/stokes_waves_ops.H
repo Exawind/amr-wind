@@ -33,7 +33,7 @@ struct ReadInputsOp<StokesWaves>
 template <>
 struct InitDataOp<StokesWaves>
 {
-    void operator()(StokesWaves::DataType& data)
+    void operator()(StokesWaves::DataType& data, int level, const amrex::Geometry& geom)
     {
         const auto& wdata = data.meta();
 
@@ -42,52 +42,24 @@ struct InitDataOp<StokesWaves>
         auto& m_levelset = sim.repo().get_field("levelset");
         // cppcheck-suppress constVariable
         auto& velocity = sim.repo().get_field("velocity");
-        auto& vof = sim.repo().get_field("vof");
-        // cppcheck-suppress constVariable
-        auto& density = sim.repo().get_field("density");
+        const auto& problo = geom.ProbLoArray();
+        const auto& dx = geom.CellSizeArray();
+        for (amrex::MFIter mfi(m_levelset(level)); mfi.isValid(); ++mfi) {
 
-        // use MultiPhase information
-        const auto& mphase = sim.physics_manager().get<MultiPhase>();
-        const amrex::Real rho1 = mphase.rho1();
-        const amrex::Real rho2 = mphase.rho2();
+            auto phi = m_levelset(level).array(mfi);
+            auto vel = velocity(level).array(mfi);
 
-        auto nlevels = sim.repo().num_active_levels();
-        auto geom = sim.mesh().Geom();
-        for (int lev = 0; lev < nlevels; ++lev) {
-            const auto& problo = geom[lev].ProbLoArray();
-            const auto& dx = geom[lev].CellSizeArray();
-            for (amrex::MFIter mfi(m_levelset(lev)); mfi.isValid(); ++mfi) {
-
-                auto phi = m_levelset(lev).array(mfi);
-                auto vel = velocity(lev).array(mfi);
-                auto volfrac = vof(lev).array(mfi);
-                auto rho = density(lev).array(mfi);
-
-                const amrex::Real zsl = wdata.zsl;
-                const auto& gbx3 = mfi.growntilebox(3);
-                amrex::ParallelFor(
-                    gbx3, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                        phi(i, j, k) = zsl - z;
-                        vel(i, j, k, 0) = 0.0;
-                        vel(i, j, k, 1) = 0.0;
-                        vel(i, j, k, 2) = 0.0;
-                    });
-                // Translate levelset to vof
-                const amrex::Real eps = 2. * std::cbrt(dx[0] * dx[1] * dx[2]);
-                const auto& gbx2 = mfi.growntilebox(2);
-                amrex::ParallelFor(
-                    gbx2, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        volfrac(i, j, k) =
-                            multiphase::levelset_to_vof(i, j, k, eps, phi);
-                        // Make sure that density is updated before entering the
-                        // solution
-                        rho(i, j, k) = rho1 * volfrac(i, j, k) +
-                                       rho2 * (1. - volfrac(i, j, k));
-                    });
-            }
+            const amrex::Real zsl = wdata.zsl;
+            const auto& gbx3 = mfi.growntilebox(3);
+            amrex::ParallelFor(
+                gbx3, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                    phi(i, j, k) = zsl - z;
+                    vel(i, j, k, 0) = 0.0;
+                    vel(i, j, k, 1) = 0.0;
+                    vel(i, j, k, 2) = 0.0;
+                });
         }
-        vof.fillpatch(0.0);
     }
 };
 

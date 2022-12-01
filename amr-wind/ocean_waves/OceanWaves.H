@@ -35,8 +35,7 @@ public:
     ~OceanWaves() override;
 
     void
-    initialize_fields(int /*level*/, const amrex::Geometry& /*geom*/) override
-    {}
+    initialize_fields(int /*level*/, const amrex::Geometry& /*geom*/) override;
 
     void pre_init_actions() override;
 
@@ -67,6 +66,14 @@ private:
 
     //! Ocean waves target velocity
     Field& m_ow_velocity;
+
+    /*//! Fields for initialization
+    Field& m_levelset;
+    Field& m_velocity;*/
+
+    //! Phase densities
+    amrex::Real m_rho1{10.0};
+    amrex::Real m_rho2{1.0};
 
     //! Ocean waves pressure gradient
     // Field& m_ow_pressure;
