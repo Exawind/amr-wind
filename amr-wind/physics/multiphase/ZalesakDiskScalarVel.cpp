@@ -84,7 +84,7 @@ void ZalesakDiskScalarVel::initialize_fields(
     const amrex::Real depth = m_depth;
 
     for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.growntilebox();
+        const auto& vbx = mfi.growntilebox(1);
         auto uf = u_mac.array(mfi);
         auto vf = v_mac.array(mfi);
         auto wf = w_mac.array(mfi);
@@ -153,7 +153,9 @@ void ZalesakDiskScalarVel::initialize_fields(
                 vel(i, j, k, 0) = amrex::min(1.0, amrex::max(0.0, 1.5 - dnorm));
             });
     }
+    m_levelset.fillpatch(0.0);
     m_velocity.fillpatch(0.0);
+    m_density.fillpatch(0.0);
     output_error();
 }
 

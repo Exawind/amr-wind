@@ -51,7 +51,7 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
     const amrex::Real depth = m_depth;
 
     for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.growntilebox();
+        const auto& vbx = mfi.growntilebox(1);
         auto uf = u_mac.array(mfi);
         auto vf = v_mac.array(mfi);
         auto wf = w_mac.array(mfi);
@@ -112,6 +112,9 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
                     rho1 * smooth_heaviside + rho2 * (1.0 - smooth_heaviside);
             });
     }
+    m_levelset.fillpatch(0.0);
+    m_velocity.fillpatch(0.0);
+    m_density.fillpatch(0.0);
 }
 
 void ZalesakDisk::pre_advance_work()
