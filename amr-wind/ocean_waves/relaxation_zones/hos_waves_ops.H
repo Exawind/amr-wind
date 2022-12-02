@@ -414,6 +414,18 @@ struct InitDataOp<HOSWaves>
                     });
             }
         }
+        // Average down from top level for consistency
+        const int nlevels = sim.repo().num_active_levels();
+        if (level == nlevels - 1) {
+            for (int lev = nlevels - 1; lev > 0; --lev) {
+                amrex::average_down(
+                    m_velocity(lev), m_velocity(lev - 1), 0, AMREX_SPACEDIM,
+                    sim.mesh().refRatio(lev - 1));
+                amrex::average_down(
+                    m_levelset(lev), m_levelset(lev - 1), 0, 1,
+                    sim.mesh().refRatio(lev - 1));
+            }
+        }
     }
 }; // namespace ocean_waves
 
@@ -459,7 +471,7 @@ struct UpdateRelaxZonesOp<HOSWaves>
                 --wdata.HOS_n;
                 wdata.HOS_t -= wdata.HOS_dt;
             }
-            
+
             // Use negative value to ensure ow fields are replaced
             t_last = wdata.t_last;
             // Store the correct time for next interpolation
