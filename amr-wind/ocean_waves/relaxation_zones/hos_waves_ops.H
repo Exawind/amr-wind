@@ -158,12 +158,11 @@ struct InitDataOp<HOSWaves>
     operator()(HOSWaves::DataType& data, int level, const amrex::Geometry& geom)
     {
         auto& wdata = data.meta();
+        bool init_waves = wdata.init_wave_field;
 
         auto& sim = data.sim();
         // cppcheck-suppress constVariable
 
-        // Save current time
-        wdata.t_last = sim.time().current_time();
         auto& m_levelset = sim.repo().get_field("levelset");
         auto& m_velocity = sim.repo().get_field("velocity");
         // Set up variables that are re-written at each level
@@ -299,7 +298,10 @@ struct InitDataOp<HOSWaves>
                         wx_lo * wy_lo * eta_00 + wx_lo * wy_hi * eta_01 +
                         wx_hi * wy_lo * eta_10 + wx_hi * wy_hi * eta_11;
 
-                    phi(i, j, k) = eta_ + zsl - z;
+                    phi(i, j, k) = zsl - z;
+                    if (init_waves) {
+                        phi(i, j, k) += eta_;
+                    }
 
                     // Determine z location for interpolation based on phase
                     if (phi(i, j, k) + 0.5 * dx[2] < 0) {
@@ -371,8 +373,9 @@ struct InitDataOp<HOSWaves>
                             wx_hi * wy_hi * wz_lo * dev_w_data[i110] +
                             wx_hi * wy_hi * wz_hi * dev_w_data[i111];
 
-                        // Set velocity to zero if no liquid present
-                        if (phi(i, j, k) + 0.5 * dx[2] < 0.0) {
+                        // Set velocity to zero if no liquid present or if wave
+                        // initialization not desired
+                        if (phi(i, j, k) + 0.5 * dx[2] < 0.0 || !init_waves) {
                             vel(i, j, k, 0) = 0.0;
                             vel(i, j, k, 1) = 0.0;
                             vel(i, j, k, 2) = 0.0;
@@ -393,7 +396,16 @@ struct UpdateRelaxZonesOp<HOSWaves>
         auto& sim = data.sim();
         // cppcheck-suppress constVariable
         // Nudge the solution toward where it should be
-        const auto& time = sim.time().new_time();
+        amrex::Real time = sim.time().new_time();
+
+        // Update ow fields every time
+        auto& m_ow_levelset = sim.repo().get_field("ow_levelset");
+        // cppcheck-suppress constVariable
+        auto& m_ow_velocity = sim.repo().get_field("ow_velocity");
+        // Update HOS fields when necessary
+        auto& hos_levelset = sim.repo().get_field("hos_levelset");
+        auto& hos_velocity = sim.repo().get_field("hos_velocity");
+
         // Check if HOS time needs to be incremented
         bool read_flag = false;
         while (time > wdata.HOS_t) {
@@ -404,18 +416,26 @@ struct UpdateRelaxZonesOp<HOSWaves>
             // Flag to store new data
             read_flag = true;
         }
-        if (wdata.HOS_n == wdata.HOS_n0) {
-            // Flag to store data in ow zones
+        // Signifies initialization from scratch or a restart
+        if (wdata.t_last < 0.0) {
             read_flag = true;
-        }
+            // Need to read in previous or current time for ow state
+            while (time < wdata.HOS_t) {
+                // Go back
+                --wdata.HOS_n;
+                wdata.HOS_t -= wdata.HOS_dt;
+            }
+            
+            // Store the correct time for next interpolation
+            wdata.t_last = wdata.HOS_t;
 
-        // Update ow fields every time
-        auto& m_ow_levelset = sim.repo().get_field("ow_levelset");
-        // cppcheck-suppress constVariable
-        auto& m_ow_velocity = sim.repo().get_field("ow_velocity");
-        // Update HOS fields when necessary
-        auto& hos_levelset = sim.repo().get_field("hos_levelset");
-        auto& hos_velocity = sim.repo().get_field("hos_velocity");
+            // Ensure that this read directly overwrites ow fields
+            time = wdata.t_last;
+
+            // Initialize ow fields to 0 to be safe for time interp
+            m_ow_levelset.setVal(0.0);
+            m_ow_velocity.setVal(0.0);
+        }
 
         auto nlevels = sim.repo().num_active_levels();
         auto geom = sim.mesh().Geom();

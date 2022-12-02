@@ -15,7 +15,7 @@ struct HOSWavesData : public RelaxZonesBaseData
     // Current index
     int HOS_n{0};
     // Time when ow arrays were last changed (last timestep)
-    amrex::Real t_last{0.0};
+    amrex::Real t_last{-1.0};
     // Time of current HOS lists
     amrex::Real HOS_t{0.0};
     // Timestep from HOS data
