@@ -416,4 +416,119 @@ TEST_F(OceanWavesOpTest, HOS_init)
     }
 }
 
+TEST_F(OceanWavesOpTest, HOS_restart)
+{
+    // Write HOS file
+    write_HOS_txt("HOSGridData_lev0_0.txt", 1.0);
+
+    constexpr double tol = 1.0e-3;
+
+    populate_parameters();
+    {
+        // Ocean Waves details
+        amrex::ParmParse pp("OceanWaves");
+        pp.add("label", (std::string) "HOS_ow");
+        amrex::ParmParse ppow("OceanWaves.HOS_ow");
+        ppow.add("type", (std::string) "HOSWaves");
+        ppow.add("HOS_files_prefix", (std::string) "HOSGridData");
+        ppow.add("initialize_wave_field", (bool)true);
+    }
+    {
+        amrex::ParmParse pp("time");
+        pp.add("fixed_dt", 0.1);
+    }
+
+    initialize_mesh();
+
+    // ICNS must be initialized for MultiPhase physics, which is needed for
+    // OceanWaves
+    auto& pde_mgr = sim().pde_manager();
+    pde_mgr.register_icns();
+    // Initialize physics
+    sim().init_physics();
+    auto& oceanwaves =
+        sim().physics_manager().get<amr_wind::ocean_waves::OceanWaves>();
+    // Do initial steps with ocean waves
+    oceanwaves.pre_init_actions();
+    auto& repo = sim().repo();
+    for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+        oceanwaves.initialize_fields(lev, mesh().Geom(lev));
+    }
+
+    // Create reference fields
+    const int nghost = 3;
+    auto& ref_levelset = repo.declare_field("ref_levelset", 1, nghost);
+    auto& ref_velocity = repo.declare_field("ref_velocity", 3, nghost);
+    auto& ref2_levelset = repo.declare_field("ref2_levelset", 1, nghost);
+    auto& ref2_velocity = repo.declare_field("ref2_velocity", 3, nghost);
+    // Initialize reference fields
+    init_reference_fields(ref_levelset, ref_velocity, 1.0);
+
+    // Advance time before post_init, representing a restart not at t=0
+    sim().time().new_timestep();
+    // Do post-init step, which stores initial hos and ow fields
+    oceanwaves.post_init_actions();
+
+    // Check HOS fields, should match file at n = 0
+    auto& hos_levelset = repo.get_field("hos_levelset");
+    auto& hos_velocity = repo.get_field("hos_velocity");
+    amrex::Real error_total = field_error(ref_levelset, hos_levelset);
+    EXPECT_NEAR(error_total, 0.0, tol);
+    error_total = field_error(ref_velocity, hos_velocity, 3);
+    EXPECT_NEAR(error_total, 0.0, tol);
+
+    // Check ow fields, should match file at n = 0
+    auto& ow_levelset = repo.get_field("ow_levelset");
+    auto& ow_velocity = repo.get_field("ow_velocity");
+    error_total = field_error(ref_levelset, ow_levelset);
+    EXPECT_NEAR(error_total, 0.0, tol);
+    error_total = field_error(ref_velocity, ow_velocity, 3);
+    EXPECT_NEAR(error_total, 0.0, tol);
+
+    // Create file at n = 1 timestep with slightly different values
+    write_HOS_txt("HOSGridData_lev0_1.txt", 0.9);
+    // Modify reference fields
+    init_reference_fields(ref2_levelset, ref2_velocity, 0.9);
+
+    // Advance time
+    sim().time().new_timestep();
+    // Update relaxation zones to populate HOS fields
+    oceanwaves.post_advance_work();
+
+    // Check HOS fields, should match file at n = 1
+    error_total = field_error(ref2_levelset, hos_levelset);
+    EXPECT_NEAR(error_total, 0.0, tol);
+    error_total = field_error(ref2_velocity, hos_velocity, 3);
+    EXPECT_NEAR(error_total, 0.0, tol);
+
+    // Check ow fields, should be interpolated in time
+    // 2 * dt_sim / dt_HOS = 0.2 / 0.5 = 0.4
+    interp_reference_fields(ref_levelset, ref_velocity, ref2_levelset, ref2_velocity, 0.4);
+    error_total = field_error(ref_levelset, ow_levelset);
+    EXPECT_NEAR(error_total, 0.0, tol);
+    error_total = field_error(ref_velocity, ow_velocity, 3);
+    EXPECT_NEAR(error_total, 0.0, tol);
+    // Clean up txt files
+    {
+        const char* fname = "HOSGridData_lev0_0.txt";
+        std::ifstream f(fname);
+        if (f.good()) {
+            remove(fname);
+        }
+        // Check that file is removed
+        std::ifstream ff(fname);
+        EXPECT_FALSE(ff.good());
+    }
+    {
+        const char* fname = "HOSGridData_lev0_1.txt";
+        std::ifstream f(fname);
+        if (f.good()) {
+            remove(fname);
+        }
+        // Check that file is removed
+        std::ifstream ff(fname);
+        EXPECT_FALSE(ff.good());
+    }
+}
+
 } // namespace amr_wind_tests

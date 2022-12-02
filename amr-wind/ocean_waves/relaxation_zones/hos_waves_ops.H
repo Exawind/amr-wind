@@ -472,14 +472,17 @@ struct UpdateRelaxZonesOp<HOSWaves>
                 wdata.HOS_t -= wdata.HOS_dt;
             }
 
-            // Use negative value to ensure ow fields are replaced
-            t_last = wdata.t_last;
             // Store the correct time for next interpolation
             wdata.t_last = wdata.HOS_t;
+            // Modify time to get initial ow values correct
+            time = wdata.HOS_t;
 
             // Initialize ow fields to 0 to be safe for time interp
             m_ow_levelset.setVal(0.0);
             m_ow_velocity.setVal(0.0);
+        } else {
+            // Record latest time as 'last' for next timestep
+            wdata.t_last = time;
         }
 
         auto nlevels = sim.repo().num_active_levels();
@@ -578,9 +581,6 @@ struct UpdateRelaxZonesOp<HOSWaves>
                     });
             }
         }
-
-        // Record current time as 'last' for next timestep
-        wdata.t_last = time;
     }
 };
 
