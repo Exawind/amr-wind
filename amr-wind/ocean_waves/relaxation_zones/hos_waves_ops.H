@@ -290,11 +290,11 @@ struct InitDataOp<HOSWaves>
                     amrex::Real wy_lo = 1.0 - wy_hi;
 
                     // Get data
-                    amrex::Real eta_00 = dev_eta_data[jj + ii * HOS_ny];
-                    amrex::Real eta_01 = dev_eta_data[jj1 + jj * HOS_ny];
-                    amrex::Real eta_10 = dev_eta_data[jj + ii1 * HOS_ny];
-                    amrex::Real eta_11 = dev_eta_data[jj1 + ii1 * HOS_ny];
-                    amrex::Real eta_ =
+                    const amrex::Real eta_00 = dev_eta_data[jj + ii * HOS_ny];
+                    const amrex::Real eta_01 = dev_eta_data[jj1 + ii * HOS_ny];
+                    const amrex::Real eta_10 = dev_eta_data[jj + ii1 * HOS_ny];
+                    const amrex::Real eta_11 = dev_eta_data[jj1 + ii1 * HOS_ny];
+                    const amrex::Real eta_ =
                         wx_lo * wy_lo * eta_00 + wx_lo * wy_hi * eta_01 +
                         wx_hi * wy_lo * eta_10 + wx_hi * wy_hi * eta_11;
 
@@ -315,9 +315,9 @@ struct InitDataOp<HOSWaves>
 
                     if (z > HOS_zmax || z < HOS_zmin) {
                         // Assume velocities are zero outside range
-                        vel(i, j, k, 0) = 0;
-                        vel(i, j, k, 1) = 0;
-                        vel(i, j, k, 2) = 0;
+                        vel(i, j, k, 0) = 0.;
+                        vel(i, j, k, 1) = 0.;
+                        vel(i, j, k, 2) = 0.;
                     } else {
                         // Determine vertical indices
                         int kk = 0;
