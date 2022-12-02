@@ -336,9 +336,17 @@ public:
             }
         }
 
+        amrex::Vector<amrex::BCRec> bc_local(m_field.num_comp());
+        for (int dir = 0; dir < m_field.num_comp(); ++dir) {
+            for (int i = 0; i < AMREX_SPACEDIM; i++) {
+                bc_local[dir].setLo(i, amrex::BCType::foextrap);
+                bc_local[dir].setHi(i, amrex::BCType::foextrap);
+            }
+        }
+
         if (lev == 0) {
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FieldBCNoOp::FunctorType>>
-                physbc(m_mesh.Geom(lev), m_field.bcrec(), FieldBCNoOp());
+                physbc(m_mesh.Geom(lev), bc_local, FieldBCNoOp());
 
             for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
                 amrex::FillPatchSingleLevel(
@@ -347,10 +355,10 @@ public:
             }
         } else {
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FieldBCNoOp::FunctorType>>
-                cphysbc(m_mesh.Geom(lev - 1), m_field.bcrec(), FieldBCNoOp());
+                cphysbc(m_mesh.Geom(lev - 1), bc_local, FieldBCNoOp());
 
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FieldBCNoOp::FunctorType>>
-                fphysbc(m_mesh.Geom(lev), m_field.bcrec(), FieldBCNoOp());
+                fphysbc(m_mesh.Geom(lev), bc_local, FieldBCNoOp());
 
             amrex::Array<
                 amrex::PhysBCFunct<
@@ -366,8 +374,7 @@ public:
 
             amrex::Array<int, AMREX_SPACEDIM> idx = {AMREX_D_DECL(0, 1, 2)};
             const amrex::Array<amrex::Vector<amrex::BCRec>, AMREX_SPACEDIM>
-                bcrec_arr = {AMREX_D_DECL(
-                    m_field.bcrec(), m_field.bcrec(), m_field.bcrec())};
+                bcrec_arr = {AMREX_D_DECL(bc_local, bc_local, bc_local)};
 
             auto* mapper = field_impl::get_interpolation_operator(itype);
 
