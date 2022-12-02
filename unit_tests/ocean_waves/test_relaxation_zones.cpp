@@ -388,7 +388,8 @@ TEST_F(OceanWavesOpTest, HOS_init)
 
     // Check ow fields, should be interpolated in time
     // dt_sim / dt_HOS = 0.1 / 0.5 = 0.2
-    interp_reference_fields(ref_levelset, ref_velocity, ref2_levelset, ref2_velocity, 0.2);
+    interp_reference_fields(
+        ref_levelset, ref_velocity, ref2_levelset, ref2_velocity, 0.2);
     error_total = field_error(ref_levelset, ow_levelset);
     EXPECT_NEAR(error_total, 0.0, tol);
     error_total = field_error(ref_velocity, ow_velocity, 3);
@@ -503,7 +504,8 @@ TEST_F(OceanWavesOpTest, HOS_restart)
 
     // Check ow fields, should be interpolated in time
     // 2 * dt_sim / dt_HOS = 0.2 / 0.5 = 0.4
-    interp_reference_fields(ref_levelset, ref_velocity, ref2_levelset, ref2_velocity, 0.4);
+    interp_reference_fields(
+        ref_levelset, ref_velocity, ref2_levelset, ref2_velocity, 0.4);
     error_total = field_error(ref_levelset, ow_levelset);
     EXPECT_NEAR(error_total, 0.0, tol);
     error_total = field_error(ref_velocity, ow_velocity, 3);
