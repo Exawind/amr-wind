@@ -99,14 +99,8 @@ struct UpdateRelaxZonesOp<StokesWaves>
                 const auto& gbx = mfi.growntilebox();
                 amrex::ParallelFor(
                     gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::Real x = amrex::min(
-                            amrex::max(
-                                problo[0] + (i + 0.5) * dx[0], problo[0]),
-                            probhi[0]);
-                        const amrex::Real z = amrex::min(
-                            amrex::max(
-                                problo[2] + (k + 0.5) * dx[2], problo[2]),
-                            probhi[2]);
+                        const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
                         amrex::Real eta{0.0}, u_w{0.0}, v_w{0.0}, w_w{0.0};
 
