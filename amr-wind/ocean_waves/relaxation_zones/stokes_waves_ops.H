@@ -33,7 +33,8 @@ struct ReadInputsOp<StokesWaves>
 template <>
 struct InitDataOp<StokesWaves>
 {
-    void operator()(StokesWaves::DataType& data, int level, const amrex::Geometry& geom)
+    void operator()(
+        StokesWaves::DataType& data, int level, const amrex::Geometry& geom)
     {
         const auto& wdata = data.meta();
 

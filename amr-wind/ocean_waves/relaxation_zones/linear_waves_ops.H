@@ -37,7 +37,7 @@ struct InitDataOp<LinearWaves>
         const auto& wdata = data.meta();
 
         auto& sim = data.sim();
-        
+
         auto& m_levelset = sim.repo().get_field("levelset");
         // cppcheck-suppress constVariable
         auto& m_velocity = sim.repo().get_field("velocity");
