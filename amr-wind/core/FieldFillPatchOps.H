@@ -326,27 +326,23 @@ public:
                     continue;
                 }
 
-                for (int n = 0; n < static_cast<int>(mfabs.size()); n++) {
-                    const auto& marr = (*mfabs[n])[mfi].array();
-                    const auto& sarr = sfab[mfi].const_array();
-                    amrex::ParallelFor(
-                        bx,
-                        [=] AMREX_GPU_DEVICE(
+                const auto& marr = (*mfabs[idir])[mfi].array();
+                const auto& sarr = sfab[mfi].const_array();
+                amrex::ParallelFor(
+                    bx, [=] AMREX_GPU_DEVICE(
                             const int i, const int j, const int k) noexcept {
-                            marr(i, j, k) = sarr(i, j, k, n);
-                        });
-                }
+                        marr(i, j, k) = sarr(i, j, k, idir);
+                    });
             }
         }
 
-        const amrex::IntVect no_ghost(0);
         if (lev == 0) {
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FieldBCNoOp::FunctorType>>
                 physbc(m_mesh.Geom(lev), m_field.bcrec(), FieldBCNoOp());
 
             for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
                 amrex::FillPatchSingleLevel(
-                    *mfabs[i], no_ghost, time, {ffabs[i]}, {time}, 0, 0, 1,
+                    *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
                     m_mesh.Geom(lev), physbc, i);
             }
         } else {
@@ -376,8 +372,8 @@ public:
             auto* mapper = field_impl::get_interpolation_operator(itype);
 
             amrex::FillPatchTwoLevels(
-                mfabs, no_ghost, time, {cfabs}, {time}, {ffabs}, {time}, 0, 0,
-                1, m_mesh.Geom(lev - 1), m_mesh.Geom(lev), cphysbc_arr, idx,
+                mfabs, nghost, time, {cfabs}, {time}, {ffabs}, {time}, 0, 0, 1,
+                m_mesh.Geom(lev - 1), m_mesh.Geom(lev), cphysbc_arr, idx,
                 fphysbc_arr, idx, m_mesh.refRatio(lev - 1), mapper, bcrec_arr,
                 idx);
         }
