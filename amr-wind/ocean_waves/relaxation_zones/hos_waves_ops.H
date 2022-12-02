@@ -406,6 +406,9 @@ struct UpdateRelaxZonesOp<HOSWaves>
         auto& hos_levelset = sim.repo().get_field("hos_levelset");
         auto& hos_velocity = sim.repo().get_field("hos_velocity");
 
+        // Get value for time interpolation
+        amrex::Real t_last = wdata.t_last;
+
         // Check if HOS time needs to be incremented
         bool read_flag = false;
         while (time > wdata.HOS_t) {
@@ -426,11 +429,10 @@ struct UpdateRelaxZonesOp<HOSWaves>
                 wdata.HOS_t -= wdata.HOS_dt;
             }
             
+            // Use negative value to ensure ow fields are replaced
+            t_last = wdata.t_last;
             // Store the correct time for next interpolation
             wdata.t_last = wdata.HOS_t;
-
-            // Ensure that this read directly overwrites ow fields
-            time = wdata.t_last;
 
             // Initialize ow fields to 0 to be safe for time interp
             m_ow_levelset.setVal(0.0);
@@ -696,7 +698,6 @@ struct UpdateRelaxZonesOp<HOSWaves>
                 auto HOS_vel = hos_velocity(lev).array(mfi);
 
                 const amrex::Real HOS_t = wdata.HOS_t;
-                const amrex::Real t_last = wdata.t_last;
                 const auto& gbx = mfi.growntilebox(2);
                 amrex::ParallelFor(
                     gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
