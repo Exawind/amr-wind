@@ -322,9 +322,9 @@ struct ReadInputsOp<HOSWaves>
 
         // Declare fields for HOS
         auto& hos_levelset =
-            data.sim().repo().declare_field("hos_levelset", 1, 2, 1);
+            data.sim().repo().declare_field("hos_levelset", 1, 3, 1);
         auto& hos_velocity = data.sim().repo().declare_field(
-            "hos_velocity", AMREX_SPACEDIM, 2, 1);
+            "hos_velocity", AMREX_SPACEDIM, 3, 1);
 
         // Extrapolation can work well when finer data is available
         hos_levelset.set_default_fillpatch_bc(data.sim().time());
@@ -559,7 +559,7 @@ struct UpdateRelaxZonesOp<HOSWaves>
                 auto HOS_vel = hos_velocity(lev).array(mfi);
 
                 const amrex::Real HOS_t = wdata.HOS_t;
-                const auto& gbx = mfi.growntilebox(2);
+                const auto& gbx = mfi.growntilebox(3);
                 amrex::ParallelFor(
                     gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         // Interpolate temporally every time
