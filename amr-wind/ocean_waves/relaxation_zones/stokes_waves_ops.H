@@ -84,7 +84,6 @@ struct UpdateRelaxZonesOp<StokesWaves>
 
         for (int lev = 0; lev < nlevels; ++lev) {
             const auto& problo = geom[lev].ProbLoArray();
-            const auto& probhi = geom[lev].ProbHiArray();
             const auto& dx = geom[lev].CellSizeArray();
 
             for (amrex::MFIter mfi(m_ow_levelset(lev)); mfi.isValid(); ++mfi) {
@@ -109,7 +108,7 @@ struct UpdateRelaxZonesOp<StokesWaves>
                             eta, u_w, v_w, w_w);
 
                         phi(i, j, k) = eta - z;
-                        if (phi(i, j, k) >= 0) {
+                        if (phi(i, j, k) + 0.5 * dx[2] >= 0) {
                             vel(i, j, k, 0) = u_w;
                             vel(i, j, k, 1) = v_w;
                             vel(i, j, k, 2) = w_w;

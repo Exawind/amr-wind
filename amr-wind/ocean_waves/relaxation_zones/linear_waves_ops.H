@@ -151,7 +151,7 @@ struct UpdateRelaxZonesOp<LinearWaves>
 
                         phi(i, j, k) = eta - zc;
 
-                        if (phi(i, j, k) >= 0) {
+                        if (phi(i, j, k) + 0.5 * dx[2] >= 0) {
                             vel(i, j, k, 0) =
                                 omega * waveheight / 2.0 *
                                 std::cosh(wavenumber * (zc + waterdepth)) /
