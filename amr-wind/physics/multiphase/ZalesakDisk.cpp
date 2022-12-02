@@ -51,7 +51,7 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
     const amrex::Real depth = m_depth;
 
     for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.growntilebox(1);
+        const auto& gbx = mfi.growntilebox(1);
         auto uf = u_mac.array(mfi);
         auto vf = v_mac.array(mfi);
         auto wf = w_mac.array(mfi);
@@ -59,7 +59,7 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
         auto phi = levelset.array(mfi);
         auto rho = density.array(mfi);
         amrex::ParallelFor(
-            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                 const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                 const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
