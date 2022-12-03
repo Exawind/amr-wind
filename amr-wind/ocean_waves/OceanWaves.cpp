@@ -3,6 +3,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/core/MultiParser.H"
+#include "amr-wind/physics/multiphase/MultiPhase.H"
 
 #include <algorithm>
 
@@ -49,10 +50,16 @@ void OceanWaves::pre_init_actions()
     m_owm->read_inputs(inp);
 }
 
+void OceanWaves::initialize_fields(int level, const amrex::Geometry& geom)
+{
+    BL_PROFILE("amr-wind::ocean_waves::OceanWaves::initialize_fields");
+    m_owm->init_waves(level, geom);
+}
+
 void OceanWaves::post_init_actions()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::post_init_actions");
-    m_owm->init_waves();
+    m_owm->update_relax_zones();
 }
 
 void OceanWaves::post_regrid_actions() {}

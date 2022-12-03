@@ -33,6 +33,7 @@ void read_inputs(
     } else {
         pp.query("numerical_beach_length", wdata.beach_length);
         wdata.has_beach = true;
+        pp.query("initialize_wave_field", wdata.init_wave_field);
     }
 
     pp.query("timeramp", wdata.has_ramp);

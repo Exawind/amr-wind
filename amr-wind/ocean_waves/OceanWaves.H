@@ -35,8 +35,7 @@ public:
     ~OceanWaves() override;
 
     void
-    initialize_fields(int /*level*/, const amrex::Geometry& /*geom*/) override
-    {}
+    initialize_fields(int /*level*/, const amrex::Geometry& /*geom*/) override;
 
     void pre_init_actions() override;
 

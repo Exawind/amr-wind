@@ -7,7 +7,6 @@ time.max_step                =   10
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
-time.initial_dt = -0.1
 time.fixed_dt         =   0.25        # Use this constant dt if > 0
 time.cfl              =   0.45         # CFL factor
 time.use_force_cfl= false
@@ -18,8 +17,6 @@ time.plot_interval            =  10       # Steps between plot files
 time.checkpoint_interval      =  -10       # Steps between checkpoint files
 io.output_default_fields = 0
 io.outputs = density velocity p vof ow_levelset ow_velocity
-incflo.initial_iterations = 3
-incflo.do_initial_proj = 1
 OceanWaves.label = "HOS1"
 OceanWaves.HOS1.type = "HOSWaves"
 OceanWaves.HOS1.HOS_files_prefix = "HOSGridData"
