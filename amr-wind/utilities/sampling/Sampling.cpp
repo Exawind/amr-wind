@@ -197,17 +197,24 @@ void Sampling::prepare_netcdf_file()
     ncf.def_dim(nt_name, NC_UNLIMITED);
     ncf.def_dim("ndim", AMREX_SPACEDIM);
     ncf.def_var("time", NC_DOUBLE, {nt_name});
+
+    // FillValue to NaN
+    std::vector<double> fillnan{std::nan("1")};
+
     // Define groups for each sampler
     for (const auto& obj : m_samplers) {
         auto grp = ncf.def_group(obj->label());
 
-        //grp.def_dim(npart_name, obj->num_points());
-        //Make nc_unlimited to accomodate changing array size due to time sample diff
+        // grp.def_dim(npart_name, obj->num_points());
+        // Make nc_unlimited to accomodate changing array size due to time
+        // sample diff
         grp.def_dim(npart_name, NC_UNLIMITED);
         obj->define_netcdf_metadata(grp);
         grp.def_var("coordinates", NC_DOUBLE, {npart_name, "ndim"});
-        for (const auto& vname : m_var_names)
+        for (const auto& vname : m_var_names) {
             grp.def_var(vname, NC_DOUBLE, two_dim);
+            grp.var(vname).put_attr("_FillValue", fillnan);
+        }
     }
     ncf.exit_def_mode();
 
@@ -262,6 +269,11 @@ void Sampling::write_netcdf()
         count[1] = 0;
         int offset = iv * m_scontainer->num_sampling_particles();
         for (const auto& obj : m_samplers) {
+            // int offset = iv * obj->num_points();
+            // amrex::Print() << "Object Label: " << obj->label() << std::endl;
+            // amrex::Print() << "Num points: " << obj->num_points() << "
+            // Num_sampling_particles: " <<
+            // m_scontainer->num_sampling_particles() << std::endl;
             auto grp = ncf.group(obj->label());
             auto var = grp.var(m_var_names[iv]);
             // Do sampler specific output if needed
