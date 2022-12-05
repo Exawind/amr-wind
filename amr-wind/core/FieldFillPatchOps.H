@@ -292,6 +292,83 @@ public:
     }
 #endif
 
+    struct InterpHook
+    {
+        using FAB = typename amrex::MultiFab::FABType::value_type;
+
+        InterpHook(
+            Field& field,
+            const int lev,
+            const FieldState state,
+            const amrex::IntVect& nghost,
+            const amrex::Geometry& geom)
+            : m_field(field)
+            , m_lev(lev)
+            , m_state(state)
+            , m_nghost(nghost)
+            , m_geom(geom)
+        {}
+        ~InterpHook() = default;
+
+        void operator()(
+            const amrex::Array<FAB*, AMREX_SPACEDIM>& mfab,
+            const amrex::Box& sbx,
+            const int scomp,
+            const int ncomp) const
+        {
+            amrex::Array<amrex::Array4<amrex::Real>, AMREX_SPACEDIM> marrs{
+                AMREX_D_DECL(
+                    (mfab[0]->array()), (mfab[1]->array()),
+                    (mfab[2]->array()))};
+
+            auto& sfab = m_field.state(m_state)(m_lev);
+            const auto& bctype = m_field.bc_type();
+            const int ng = m_nghost[0];
+            const auto& domain = m_geom.growPeriodicDomain(ng);
+
+            for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+                auto ori = oit();
+                if (bctype[ori] != BC::mass_inflow) {
+                    continue;
+                }
+                const int idir = ori.coordDir();
+                const auto& dbx =
+                    ori.isLow()
+                        ? amrex::adjCellLo(domain, idir, m_nghost[idir])
+                        : amrex::adjCellHi(domain, idir, m_nghost[idir]);
+
+                const auto& bx = sbx & dbx;
+
+                if (!bx.ok()) {
+                    continue;
+                }
+
+                // const auto& sarr = sfab.const_array();
+                // amrex::ParallelFor(
+                //     bx, [=] AMREX_GPU_DEVICE(
+                //             const int i, const int j, const int k) noexcept {
+                //         marrs[idir](i, j, k) = sarr(i, j, k, idir);
+                //     });
+
+                amrex::ParallelFor(
+                    bx, [=] AMREX_GPU_DEVICE(
+                            const int i, const int j, const int k) noexcept {
+                        if (j < 0) {
+                            marrs[0](i, j, k, 0) = 1.0;
+                            marrs[1](i, j, k, 0) = 1.0;
+                            marrs[2](i, j, k, 0) = 0.0;
+                        }
+                    });
+            }
+        };
+
+        Field& m_field;
+        const int m_lev;
+        const FieldState m_state;
+        const amrex::IntVect m_nghost;
+        const amrex::Geometry m_geom;
+    };
+
     void fillpatch_sibling_fields(
         int lev,
         amrex::Real time,
@@ -378,11 +455,13 @@ public:
 
             auto* mapper = field_impl::get_interpolation_operator(itype);
 
+            InterpHook preinterp(m_field, lev, fstate, nghost, m_mesh.Geom(lev));
             amrex::FillPatchTwoLevels(
                 mfabs, nghost, time, {cfabs}, {time}, {ffabs}, {time}, 0, 0, 1,
                 m_mesh.Geom(lev - 1), m_mesh.Geom(lev), cphysbc_arr, idx,
                 fphysbc_arr, idx, m_mesh.refRatio(lev - 1), mapper, bcrec_arr,
-                idx);
+                idx, preinterp);
+        }
         }
     }
 
