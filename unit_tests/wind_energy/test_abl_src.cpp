@@ -186,7 +186,7 @@ TEST_F(ABLMeshTest, coriolis_const_vel)
     utils::populate_abl_params();
     initialize_mesh();
 
-    auto fields = ICNSFields(sim())(sim().time(), 0);
+    auto fields = ICNSFields(sim())(sim().time());
     auto& vel = fields.field;
     auto& src_term = fields.src_term;
     amr_wind::pde::icns::CoriolisForcing coriolis(sim());
@@ -265,7 +265,7 @@ TEST_F(ABLMeshTest, coriolis_height_variation)
     utils::populate_abl_params();
     initialize_mesh();
 
-    auto fields = ICNSFields(sim())(sim().time(), 0);
+    auto fields = ICNSFields(sim())(sim().time());
     auto& velocity = fields.field;
     auto& vel_src = fields.src_term;
     amr_wind::pde::icns::CoriolisForcing coriolis(sim());

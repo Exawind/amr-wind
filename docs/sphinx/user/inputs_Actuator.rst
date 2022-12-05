@@ -39,6 +39,8 @@ Example for ``FixedWingLine``::
    Actuator.type = FixedWingLine 
    Actuator.FixedWingLine.num_points = 21 
    Actuator.FixedWingLine.epsilon = 3.0 3.0 3.0 
+   Actuator.FixedWingLine.epsilon_chord = 0.25 0.25 0.25 
+   Actuator.FixedWingLine.fllc = 0
    Actuator.FixedWingLine.pitch = 4.0 
    Actuator.FixedWingLine.span_locs = 0.0 1.0 
    Actuator.FixedWingLine.chord = 2.0 2.0 
@@ -68,10 +70,23 @@ Example for ``FixedWingLine``::
    
    This is the value of epsilon/chord. This value will be used to compute 
    epsilon as a function of the chord at every actuator point. A value of 
-   epsilon / chord ~ 0.2 is recommended for an optimal representation of the 
+   epsilon / chord ~ 0.25 is recommended for an optimal representation of the 
    blade aerodynamics. When this variable is specified, the code will choose
    the maximum value between ``epsilon_chord * chord`` and ``epsilon`` for
    every actuator point.
+
+.. input_param:: Actuator.FixedWingLine.fllc
+
+  **type:** Bool, optional
+
+  This option will activate the filtered lifting line correction (fllc).
+  The correction follows the implementation of `Martinez-Tossas and Meneveau (2019)
+  <https://doi.org/10.1017/jfm.2018.994>`_ and `Blaylock et al (2022)
+  <https://doi.org/10.2514/6.2022-1921>`_. The use of the fllc requires ``epsilon``
+  and an optimal ``epsilon_chord`` as an input. The recommended value is 0.25
+  in all directions for ``epsilon_chord`` and a value of ``epsilon`` in all directions
+  that would be greater than at least 2.5 times the grid size ``dx``.
+  The default is `0`.
 
 .. input_param:: Actuator.FixedWingLine.pitch
 
@@ -139,6 +154,8 @@ Example for ``TurbineFastLine``::
    Actuator.TurbineFastLine.num_points_blade = 64
    Actuator.TurbineFastLine.num_points_tower = 12
    Actuator.TurbineFastLine.epsilon = 10.0 10.0 10.0
+   Actuator.TurbineFastLine.epsilon_chord = 0.25 0.25 0.25
+   Actuator.TurbineFastLine.fllc = 0
    Actuator.TurbineFastLine.epsilon_tower = 5.0 5.0 5.0
    Actuator.TurbineFastLine.openfast_start_time = 0.0
    Actuator.TurbineFastLine.openfast_stop_time = 1.0
@@ -173,6 +190,18 @@ Example for ``TurbineFastLine``::
    **type:** int, required
    
    This is the number of actuator points along the tower.
+
+.. input_param:: Actuator.TurbineFastLine.epsilon
+
+   Same as :input_param:`Actuator.FixedWingLine.epsilon`.
+
+.. input_param:: Actuator.TurbineFastLine.epsilon_chord
+
+   Same as :input_param:`Actuator.FixedWingLine.epsilon_chord`.
+
+.. input_param:: Actuator.TurbineFastLine.fllc
+
+   Same as :input_param:`Actuator.FixedWingLine.fllc`.
 
 .. input_param:: Actuator.TurbineFastLine.openfast_start_time
 

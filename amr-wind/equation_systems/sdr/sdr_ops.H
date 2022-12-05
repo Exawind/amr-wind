@@ -50,10 +50,10 @@ struct FieldRegOp<SDR, Scheme>
 {
     explicit FieldRegOp(CFDSim& sim_in) : sim(sim_in) {}
 
-    PDEFields operator()(const SimTime& time, const int probtype)
+    PDEFields operator()(const SimTime& time)
     {
         auto& repo = sim.repo();
-        auto fields = create_fields_instance<SDR, Scheme>(time, repo, probtype);
+        auto fields = create_fields_instance<SDR, Scheme>(time, repo);
 
         repo.declare_cc_field(
             SDR::var_name() + "_lhs_src_term", SDR::ndim, 1, 1);

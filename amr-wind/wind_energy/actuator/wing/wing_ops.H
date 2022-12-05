@@ -6,6 +6,7 @@
 #include "amr-wind/wind_energy/actuator/actuator_ops.H"
 #include "amr-wind/wind_energy/actuator/aero/AirfoilTable.H"
 #include "amr-wind/wind_energy/actuator/ActParser.H"
+#include "amr-wind/wind_energy/actuator/FLLCOp.H"
 
 namespace amr_wind {
 namespace actuator {
@@ -32,6 +33,25 @@ void write_netcdf(
     const ActInfo& /*info*/,
     const ActGrid& /*grid*/,
     const amrex::Real /*time*/);
+
+template <typename T>
+ComponentView make_component_view(typename T::DataType& data)
+{
+    auto& grid = data.grid();
+    auto& meta = data.meta();
+    ComponentView view;
+    view.pos = ::amr_wind::utils::slice(grid.pos, 0, meta.num_pts);
+    view.vel_pos = ::amr_wind::utils::slice(grid.vel_pos, 0, meta.num_pts);
+    view.force = ::amr_wind::utils::slice(grid.force, 0, meta.num_pts);
+    view.epsilon = ::amr_wind::utils::slice(grid.epsilon, 0, meta.num_pts);
+    view.orientation =
+        ::amr_wind::utils::slice(grid.orientation, 0, meta.num_pts);
+    view.chord = ::amr_wind::utils::slice(meta.chord, 0, meta.num_pts);
+    view.vel_rel = ::amr_wind::utils::slice(meta.vel_rel, 0, meta.num_pts);
+    view.vel = ::amr_wind::utils::slice(grid.vel, 0, meta.num_pts);
+
+    return view;
+}
 
 } // namespace wing
 
@@ -69,7 +89,14 @@ struct UpdateVelOp<
         std::is_base_of<WingType, ActTrait>::value &&
         UseDefaultOp<ActTrait, ActSrcLine>::update_vel>::type>
 {
-    void operator()(typename ActTrait::DataType& /*unused*/) {}
+
+    void operator()(typename ActTrait::DataType& data)
+    {
+        auto& meta = data.meta();
+        if (meta.fllc) {
+            FLLCOp()(meta.component_view, *(meta.fllc));
+        }
+    }
 };
 
 template <typename ActTrait>
@@ -129,6 +156,17 @@ struct ComputeForceOp<
 
         wdata.lift = total_lift;
         wdata.drag = total_drag;
+
+        if (wdata.fllc) {
+            if (!(wdata.fllc->initialized)) {
+                wdata.component_view =
+                    amr_wind::actuator::wing::make_component_view<ActTrait>(
+                        data);
+                FLLCInit(
+                    *(wdata.fllc.get()), wdata.component_view,
+                    wdata.epsilon_chord[0]);
+            }
+        }
     }
 };
 

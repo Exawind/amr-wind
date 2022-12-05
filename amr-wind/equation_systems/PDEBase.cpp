@@ -19,10 +19,9 @@ PDEFields::PDEFields(FieldRepo& repo_in, const std::string& var_name)
     , conv_term(repo.get_field(pde_impl::conv_term_name(var_name)))
 {}
 
-PDEMgr::PDEMgr(CFDSim& sim) : m_sim(sim), m_probtype(0)
+PDEMgr::PDEMgr(CFDSim& sim) : m_sim(sim)
 {
     amrex::ParmParse pp("incflo");
-    pp.query("probtype", m_probtype);
     pp.query("use_godunov", m_use_godunov);
     pp.query("constant_density", m_constant_density);
 
@@ -34,7 +33,7 @@ PDEBase& PDEMgr::register_icns()
 {
     const std::string name = "ICNS-" + m_scheme;
 
-    m_icns = amr_wind::pde::PDEBase::create(name, m_sim, m_probtype);
+    m_icns = amr_wind::pde::PDEBase::create(name, m_sim);
     return *m_icns;
 }
 
@@ -48,7 +47,7 @@ PDEBase& PDEMgr::register_transport_pde(const std::string& pde_name)
         return operator()(name);
     }
 
-    return create(name, m_sim, m_probtype);
+    return create(name, m_sim);
 }
 
 bool PDEMgr::has_pde(const std::string& pde_name) const

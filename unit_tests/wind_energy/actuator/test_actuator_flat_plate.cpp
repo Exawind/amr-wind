@@ -220,6 +220,8 @@ TEST_F(ActFlatPlateTest, actuator_init)
 {
     initialize_mesh();
     auto& vel = sim().repo().declare_field("velocity", 3, 3);
+    auto& density = sim().repo().declare_field("density", 1, 3);
+    density.setVal(1.0);
     init_field(vel);
     amr_wind::actuator::ActuatorContainer::ParticleType::NextID(1U);
 
@@ -253,6 +255,8 @@ TEST_F(ActFlatPlateTest, flat_plate_init)
 {
     initialize_mesh();
     auto& vel = sim().repo().declare_field("velocity", 3, 3);
+    auto& density = sim().repo().declare_field("density", 1, 3);
+    density.setVal(1.0);
     vel.setVal(10.0, 0, 1, 3);
     amr_wind::actuator::ActuatorContainer::ParticleType::NextID(1U);
 

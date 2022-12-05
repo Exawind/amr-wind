@@ -62,6 +62,7 @@ public:
     const T& source_field() const { return m_src; }
 
 private:
+    // cppcheck-suppress noExplicitConstructor
     ViewField(T& src, const int scomp = 0, const int ncomp = 1);
 
     //! The base field

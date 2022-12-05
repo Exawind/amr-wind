@@ -131,7 +131,6 @@ void ABLMeanBoussinesq::mean_temperature_update(const FieldPlaneAveraging& tavg)
 void ABLMeanBoussinesq::read_temperature_profile(std::string profile_file_name)
 {
 
-    m_axis = 2; // Fix to be z-direction for now
     amrex::Vector<amrex::Real> theta_ht, theta_vals;
     std::ifstream infile;
     int n_hts;

@@ -160,9 +160,6 @@ private:
     // Be verbose?
     int m_verbose = 0;
 
-    // Member variables for initial conditions
-    int m_probtype = 0;
-
     // Initial projection / iterations
     bool m_do_initial_proj = true;
     int m_initial_iterations = 3;

@@ -30,6 +30,8 @@ ABLStats::ABLStats(
     , m_mueff(sim.pde_manager().icns().fields().mueff)
     , m_pa_vel(sim, dir)
     , m_pa_temp(m_temperature, sim.time(), dir)
+    , m_pa_vel_fine(sim, dir)
+    , m_pa_temp_fine(m_temperature, sim.time(), dir)
     , m_pa_mueff(m_mueff, sim.time(), dir)
     , m_pa_tu(m_pa_vel, m_pa_temp)
     , m_pa_uu(m_pa_vel, m_pa_vel)
@@ -93,6 +95,8 @@ void ABLStats::calc_averages()
 {
     m_pa_vel();
     m_pa_temp();
+    m_pa_vel_fine();
+    m_pa_temp_fine();
 }
 
 //! Calculate sfs stress averages
@@ -259,6 +263,12 @@ void ABLStats::write_ascii()
         time.current_time());
     m_pa_temp.output_line_average_ascii(
         stat_dir + "/plane_average_temperature.txt", time.time_index(),
+        time.current_time());
+    m_pa_vel_fine.output_line_average_ascii(
+        stat_dir + "/plane_average_velocity_fine.txt", time.time_index(),
+        time.current_time());
+    m_pa_temp_fine.output_line_average_ascii(
+        stat_dir + "/plane_average_temperature_fine.txt", time.time_index(),
         time.current_time());
     m_pa_mueff.output_line_average_ascii(
         stat_dir + "/plane_average_velocity_mueff.txt", time.time_index(),

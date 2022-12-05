@@ -10,20 +10,31 @@ namespace ops {
 namespace uniformct {
 
 void parse_and_gather_params(const utils::ActParser& pp, UniformCtData& data);
-
+void update_disk_points(UniformCt::DataType& data);
 } // namespace uniformct
+
 template <>
 struct ReadInputsOp<UniformCt, ActSrcDisk>
 {
     void operator()(UniformCt::DataType& data, const utils::ActParser& pp)
     {
-        // TODO get density at probe location
         auto& meta = data.meta();
         uniformct::parse_and_gather_params(pp, meta);
         base::do_parse_based_computations<UniformCt>(data);
     }
 };
 
+template <>
+struct UpdatePosOp<UniformCt, ActSrcDisk>
+{
+    void operator()(typename UniformCt::DataType& data)
+    {
+        return;
+
+        // TODO: add yaw controller here and remove return
+        uniformct::update_disk_points(data);
+    }
+};
 // compute the total force over a given radial section
 // this will then be spread uniformly over that area in the
 // projection step
@@ -59,30 +70,8 @@ struct InitDataOp<UniformCt, ActSrcDisk>
 {
     void operator()(typename UniformCt::DataType& data)
     {
-        auto& grid = data.grid();
-        auto& meta = data.meta();
-
-        // only resize the members we are going to use
-        grid.pos.resize(meta.num_force_pts);
-        grid.force.resize(meta.num_force_pts);
-        grid.vel.resize(meta.num_vel_pts);
-        grid.vel_pos.resize(meta.num_vel_pts);
-
-        const auto& cVec = meta.coplanar_vec;
-        const auto& sVec = meta.sample_vec;
-        const auto& nVec = meta.normal_vec;
-
-        const auto& cc = meta.center;
-        {
-            const auto& dr = meta.dr;
-            for (int i = 0; i < meta.num_force_pts; ++i) {
-                grid.pos[i] = cc + (i + 0.5) * dr * cVec;
-            }
-        }
-        base::compute_disk_points(
-            meta, grid.vel_pos, sVec, 0, meta.diameters_to_sample);
-        base::compute_disk_points(
-            meta, grid.vel_pos, nVec, meta.num_vel_pts / 2, 0);
+        ops::base::allocate_basic_grid_quantities<UniformCt>(data);
+        uniformct::update_disk_points(data);
     }
 };
 template <>

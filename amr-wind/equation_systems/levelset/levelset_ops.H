@@ -15,21 +15,20 @@ struct FieldRegOp<Levelset, Scheme>
 {
     explicit FieldRegOp(CFDSim& sim_in) : sim(sim_in) {}
 
-    PDEFields operator()(const SimTime& time, const int probtype)
+    PDEFields operator()(const SimTime& time)
     {
         auto& repo = sim.repo();
-        auto fields =
-            create_fields_instance<Levelset, Scheme>(time, repo, probtype);
+        auto fields = create_fields_instance<Levelset, Scheme>(time, repo);
 
         auto& normal =
             repo.declare_cc_field("interface_normal", AMREX_SPACEDIM, 1, 1);
         auto& curvature = repo.declare_cc_field("interface_curvature", 1, 1, 1);
 
         normal.template register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
-            repo.mesh(), time, probtype);
+            repo.mesh(), time);
         curvature
             .template register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
-                repo.mesh(), time, probtype);
+                repo.mesh(), time);
 
         // Register fields for output/restart
         auto& iomgr = sim.io_manager();

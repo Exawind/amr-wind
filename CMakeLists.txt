@@ -158,7 +158,6 @@ endif()
 if(AMR_WIND_ENABLE_ASCENT)
   set(CMAKE_PREFIX_PATH ${ASCENT_DIR} ${CMAKE_PREFIX_PATH})
   find_package(Ascent REQUIRED)
-  find_package(OpenMP REQUIRED)
   if(AMR_WIND_ENABLE_MPI)
     target_link_libraries(${amr_wind_lib_name} PUBLIC ascent::ascent_mpi)
   else()
@@ -208,12 +207,18 @@ endif()
 
 #Define what we want to be installed during a make install
 install(
-  TARGETS ${amr_wind_exe_name} ${amr_wind_unit_test_exe_name}
+  TARGETS ${amr_wind_exe_name}
   ${aw_api_lib} ${amr_wind_lib_name} buildInfo${amr_wind_lib_name}
   EXPORT ${PROJECT_NAME}Targets
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib)
+
+if(AMR_WIND_ENABLE_UNIT_TESTS OR AMR_WIND_ENABLE_TESTS)
+  install(
+    TARGETS ${amr_wind_unit_test_exe_name}
+    RUNTIME DESTINATION bin)
+endif()
 
 install(
   DIRECTORY ${PROJECT_SOURCE_DIR}/amr-wind

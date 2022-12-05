@@ -4,6 +4,7 @@ target_sources(${amr_wind_unit_test_exe_name} PRIVATE
   test_airfoil.cpp
   test_actuator_free_functions.cpp
   test_disk_uniform_ct.cpp
+  test_FLLC.cpp
   test_actuator_joukowsky_disk.cpp
   test_disk_functions.cpp
   )

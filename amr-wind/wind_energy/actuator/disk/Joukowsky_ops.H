@@ -30,6 +30,9 @@ void write_netcdf(
     const ActInfo& info,
     const ActGrid& /*unused*/,
     const amrex::Real time);
+
+void update_disk_points(Joukowsky::DataType& data);
+
 } // namespace joukowsky
 
 template <>
@@ -44,18 +47,24 @@ struct ReadInputsOp<Joukowsky, ActSrcDisk>
 };
 
 template <>
+struct UpdatePosOp<Joukowsky, ActSrcDisk>
+{
+    void operator()(typename Joukowsky::DataType& data)
+    {
+        return;
+        // TODO: add yaw controller here and remove return
+        joukowsky::update_disk_points(data);
+    }
+};
+
+template <>
 struct InitDataOp<Joukowsky, ActSrcDisk>
 {
     void operator()(typename Joukowsky::DataType& data)
     {
-        auto& grid = data.grid();
-        auto& meta = data.meta();
+        ops::base::allocate_basic_grid_quantities<Joukowsky>(data);
 
-        // only resize the members we are going to use
-        grid.pos.resize(meta.num_force_pts);
-        grid.force.resize(meta.num_force_pts);
-        grid.vel.resize(meta.num_vel_pts);
-        grid.vel_pos.resize(meta.num_vel_pts);
+        auto& meta = data.meta();
         meta.tip_correction.resize(meta.num_vel_pts_r);
         meta.root_correction.resize(meta.num_vel_pts_r);
         meta.f_normal.resize(meta.num_vel_pts_r);
@@ -70,7 +79,7 @@ struct InitDataOp<Joukowsky, ActSrcDisk>
             const auto b = meta.root_correction_exponent;
 
             const auto delta = std::max(
-                meta.vortex_core_size * meta.radius(),
+                meta.vortex_core_size / meta.radius(),
                 vs::DTraits<amrex::Real>::eps());
 
             const auto factor = dx / delta;
@@ -84,17 +93,7 @@ struct InitDataOp<Joukowsky, ActSrcDisk>
                 meta.root_correction.begin(), meta.root_correction.end(), 1.0);
         }
 
-        const auto& sVec = meta.sample_vec;
-        const auto& nVec = meta.normal_vec;
-
-        // force points
-        base::compute_disk_points(meta, grid.pos, nVec, 0, 0);
-        // velocity points upstream
-        base::compute_disk_points(
-            meta, grid.vel_pos, sVec, 0, meta.diameters_to_sample);
-        // velocity points at the disk
-        base::compute_disk_points(
-            meta, grid.vel_pos, nVec, meta.num_vel_pts / 2, 0);
+        joukowsky::update_disk_points(data);
     }
 };
 
@@ -125,10 +124,9 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
 
         const amrex::Real Ct = ddata.current_ct;
         const amrex::Real dx = ddata.dr / ddata.radius();
-        const amrex::Real dTheta =
-            amr_wind::utils::two_pi() / ddata.num_vel_pts_t;
 
-        const amrex::Real geometry_factor = ddata.dr * ddata.dr * dTheta * 0.5;
+        const ops::base::AreaComputer area(
+            ddata.radius(), ddata.num_vel_pts_r, ddata.num_vel_pts_t);
 
         const amrex::Real lambda =
             ddata.radius() * ddata.current_angular_velocity / U_ref;
@@ -198,6 +196,8 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
 
             ddata.f_normal[i] = f_z;
 
+            const auto dArea = area.area_section(i);
+
             for (int j = 0; j < ddata.num_vel_pts_t; j++, ip++) {
                 const auto point_current = grid.pos[ip];
 
@@ -212,9 +212,6 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
 
                 const amrex::Real f_theta = u_disk_ij / U_ref * q0 * g * F / x;
                 ddata.f_theta[ip] = f_theta;
-
-                const amrex::Real dArea =
-                    geometry_factor * (std::pow(i + 1.0, 2) - std::pow(i, 2));
 
                 // eq 18
                 moment += x * ddata.radius() * f_theta * dArea;
@@ -232,6 +229,9 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
             0.5 * M_PI * ddata.density * std::pow(ddata.radius(), 2) *
                 std::pow(U_ref, 3),
             machine_eps);
+
+        ddata.current_power =
+            ddata.density * uInfSqr * moment * ddata.current_angular_velocity;
 
         ddata.current_cp = ddata.density * uInfSqr * moment *
                            ddata.current_angular_velocity / eq_20_denominator;
