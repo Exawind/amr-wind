@@ -29,6 +29,83 @@
  */
 
 namespace amr_wind {
+namespace {
+
+struct CopyBCInterpHook
+{
+    using FAB = typename amrex::MultiFab::FABType::value_type;
+
+    CopyBCInterpHook(
+        const int lev,
+        Field& field,
+        const FieldState state,
+        const amrex::IntVect& nghost,
+        const amrex::AmrCore& mesh)
+        : m_lev(lev)
+        , m_field(field)
+        , m_state(state)
+        , m_nghost(nghost)
+        , m_mesh(mesh)
+    {}
+    ~CopyBCInterpHook() = default;
+
+    void operator()(
+        const amrex::Array<FAB*, AMREX_SPACEDIM>& mfab,
+        const amrex::Box& mbx,
+        const int /*scomp*/,
+        const int /*ncomp*/) const
+    {
+        amrex::Array<amrex::Array4<amrex::Real>, AMREX_SPACEDIM> marrs{
+            AMREX_D_DECL(
+                (mfab[0]->array()), (mfab[1]->array()), (mfab[2]->array()))};
+
+        auto& sfab = m_field.state(m_state)(m_lev);
+        const auto& bctype = m_field.bc_type();
+
+        for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+            auto ori = oit();
+
+            if (bctype[ori] != BC::mass_inflow) {
+                continue;
+            }
+
+            const int idir = ori.coordDir();
+
+            amrex::IntVect ng = m_nghost;
+            ng[idir] = 0;
+            const auto& gdomain = m_mesh.Geom(m_lev).growNonPeriodicDomain(ng);
+            const auto& dbx =
+                ori.isLow() ? amrex::adjCellLo(gdomain, idir, m_nghost[idir])
+                            : amrex::adjCellHi(gdomain, idir, m_nghost[idir]);
+
+            const auto& bx = mbx & dbx;
+
+            if (!bx.ok()) {
+                continue;
+            }
+
+            const auto& isects =
+                m_mesh.boxArray(m_lev).intersections(bx, false, m_nghost);
+            for (const auto& is : isects) {
+                const auto& sarr = sfab.const_array(is.first);
+                amrex::ParallelFor(
+                    bx, AMREX_SPACEDIM,
+                    [=] AMREX_GPU_DEVICE(
+                        const int i, const int j, const int k,
+                        const int n) noexcept {
+                        marrs[n](i, j, k) = sarr(i, j, k, n);
+                    });
+            }
+        }
+    };
+
+    const int m_lev;
+    Field& m_field;
+    const FieldState m_state;
+    const amrex::IntVect m_nghost;
+    const amrex::AmrCore& m_mesh;
+};
+} // namespace
 
 /** Abstract interface for classes that handle fill patch and physical boundary
  *  condition operations for multi-level AMR meshes.
@@ -292,83 +369,6 @@ public:
     }
 #endif
 
-    struct InterpHook
-    {
-        using FAB = typename amrex::MultiFab::FABType::value_type;
-
-        InterpHook(
-            Field& field,
-            const int lev,
-            const FieldState state,
-            const amrex::IntVect& nghost,
-            const amrex::Geometry& geom)
-            : m_field(field)
-            , m_lev(lev)
-            , m_state(state)
-            , m_nghost(nghost)
-            , m_geom(geom)
-        {}
-        ~InterpHook() = default;
-
-        void operator()(
-            const amrex::Array<FAB*, AMREX_SPACEDIM>& mfab,
-            const amrex::Box& sbx,
-            const int scomp,
-            const int ncomp) const
-        {
-            amrex::Array<amrex::Array4<amrex::Real>, AMREX_SPACEDIM> marrs{
-                AMREX_D_DECL(
-                    (mfab[0]->array()), (mfab[1]->array()),
-                    (mfab[2]->array()))};
-
-            auto& sfab = m_field.state(m_state)(m_lev);
-            const auto& bctype = m_field.bc_type();
-            const int ng = m_nghost[0];
-            const auto& domain = m_geom.growPeriodicDomain(ng);
-
-            for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
-                auto ori = oit();
-                if (bctype[ori] != BC::mass_inflow) {
-                    continue;
-                }
-                const int idir = ori.coordDir();
-                const auto& dbx =
-                    ori.isLow()
-                        ? amrex::adjCellLo(domain, idir, m_nghost[idir])
-                        : amrex::adjCellHi(domain, idir, m_nghost[idir]);
-
-                const auto& bx = sbx & dbx;
-
-                if (!bx.ok()) {
-                    continue;
-                }
-
-                // const auto& sarr = sfab.const_array();
-                // amrex::ParallelFor(
-                //     bx, [=] AMREX_GPU_DEVICE(
-                //             const int i, const int j, const int k) noexcept {
-                //         marrs[idir](i, j, k) = sarr(i, j, k, idir);
-                //     });
-
-                amrex::ParallelFor(
-                    bx, [=] AMREX_GPU_DEVICE(
-                            const int i, const int j, const int k) noexcept {
-                        if (j < 0) {
-                            marrs[0](i, j, k, 0) = 1.0;
-                            marrs[1](i, j, k, 0) = 1.0;
-                            marrs[2](i, j, k, 0) = 0.0;
-                        }
-                    });
-            }
-        };
-
-        Field& m_field;
-        const int m_lev;
-        const FieldState m_state;
-        const amrex::IntVect m_nghost;
-        const amrex::Geometry m_geom;
-    };
-
     void fillpatch_sibling_fields(
         int lev,
         amrex::Real time,
@@ -380,50 +380,21 @@ public:
         const FieldInterpolator itype = FieldInterpolator::FaceDivFree) override
     {
 
-        const int ng = nghost[0];
-        const auto& geom = m_mesh.Geom(lev);
-        const auto& domain = geom.growPeriodicDomain(ng);
-        const auto& bctype = m_field.bc_type();
-        auto& sfab = m_field.state(fstate)(lev);
-        for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
-            auto ori = oit();
-            if (bctype[ori] != BC::mass_inflow) {
-                continue;
-            }
-            const int idir = ori.coordDir();
-            const auto& dbx =
-                ori.isLow() ? amrex::adjCellLo(domain, idir, nghost[idir])
-                            : amrex::adjCellHi(domain, idir, nghost[idir]);
-
-            for (amrex::MFIter mfi(sfab); mfi.isValid(); ++mfi) {
-                const auto& gbx = amrex::grow(mfi.validbox(), nghost);
-                const auto& bx = gbx & dbx;
-
-                if (!bx.ok()) {
-                    continue;
-                }
-
-                const auto& marr = (*mfabs[idir])[mfi].array();
-                const auto& sarr = sfab[mfi].const_array();
-                amrex::ParallelFor(
-                    bx, [=] AMREX_GPU_DEVICE(
-                            const int i, const int j, const int k) noexcept {
-                        marr(i, j, k) = sarr(i, j, k, idir);
-                    });
-            }
-        }
-
-        amrex::Vector<amrex::BCRec> bc_local(m_field.num_comp());
-        for (int dir = 0; dir < m_field.num_comp(); ++dir) {
-            for (int i = 0; i < AMREX_SPACEDIM; i++) {
-                bc_local[dir].setLo(i, amrex::BCType::foextrap);
-                bc_local[dir].setHi(i, amrex::BCType::foextrap);
-            }
-        }
-
         if (lev == 0) {
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FieldBCNoOp::FunctorType>>
-                physbc(m_mesh.Geom(lev), bc_local, FieldBCNoOp());
+                physbc(m_mesh.Geom(lev), m_field.bcrec(), FieldBCNoOp());
+
+            auto& sfab = m_field.state(fstate)(lev);
+            CopyBCInterpHook copybc(lev, m_field, fstate, nghost, m_mesh);
+            for (amrex::MFIter mfi(sfab); mfi.isValid(); ++mfi) {
+                amrex::Array<amrex::FArrayBox*, AMREX_SPACEDIM> mfab{
+                    AMREX_D_DECL(
+                        &((*mfabs[0])[mfi]), &((*mfabs[1])[mfi]),
+                        &((*mfabs[2])[mfi]))};
+
+                const auto& gbx = amrex::grow(mfi.validbox(), nghost);
+                copybc(mfab, gbx, 0, mfabs[0]->nComp());
+            }
 
             for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
                 amrex::FillPatchSingleLevel(
@@ -432,10 +403,10 @@ public:
             }
         } else {
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FieldBCNoOp::FunctorType>>
-                cphysbc(m_mesh.Geom(lev - 1), bc_local, FieldBCNoOp());
+                cphysbc(m_mesh.Geom(lev - 1), m_field.bcrec(), FieldBCNoOp());
 
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FieldBCNoOp::FunctorType>>
-                fphysbc(m_mesh.Geom(lev), bc_local, FieldBCNoOp());
+                fphysbc(m_mesh.Geom(lev), m_field.bcrec(), FieldBCNoOp());
 
             amrex::Array<
                 amrex::PhysBCFunct<
@@ -451,17 +422,19 @@ public:
 
             amrex::Array<int, AMREX_SPACEDIM> idx = {AMREX_D_DECL(0, 1, 2)};
             const amrex::Array<amrex::Vector<amrex::BCRec>, AMREX_SPACEDIM>
-                bcrec_arr = {AMREX_D_DECL(bc_local, bc_local, bc_local)};
+                bcrec_arr = {AMREX_D_DECL(
+                    m_field.bcrec(), m_field.bcrec(), m_field.bcrec())};
 
             auto* mapper = field_impl::get_interpolation_operator(itype);
 
-            InterpHook preinterp(m_field, lev, fstate, nghost, m_mesh.Geom(lev));
+            CopyBCInterpHook preinterp(
+                lev - 1, m_field, fstate, nghost, m_mesh);
+            CopyBCInterpHook postinterp(lev, m_field, fstate, nghost, m_mesh);
             amrex::FillPatchTwoLevels(
                 mfabs, nghost, time, {cfabs}, {time}, {ffabs}, {time}, 0, 0, 1,
                 m_mesh.Geom(lev - 1), m_mesh.Geom(lev), cphysbc_arr, idx,
                 fphysbc_arr, idx, m_mesh.refRatio(lev - 1), mapper, bcrec_arr,
-                idx, preinterp);
-        }
+                idx, preinterp, postinterp);
         }
     }
 
