@@ -155,8 +155,12 @@ linear_monotonic(const C1& xinp, const C2& yinp, const C1& xout, C2& yout)
 template <typename C1, typename C2>
 inline void linear(const C1& xinp, const C2& yinp, const C1& xout, C2& yout)
 {
-    AMREX_ASSERT(xinp.size() == yinp.size());
-    AMREX_ASSERT(xout.size() == yout.size());
+    AMREX_ASSERT(
+        static_cast<amrex::Long>(xinp.size()) ==
+        static_cast<amrex::Long>(yinp.size()));
+    AMREX_ASSERT(
+        static_cast<amrex::Long>(xout.size()) ==
+        static_cast<amrex::Long>(yout.size()));
 
     int npts = xout.size();
     for (int i = 0; i < npts; ++i) {
