@@ -23,7 +23,7 @@ struct Godunov
     static constexpr int nghost_mac = 1;
 
     //! Number of states for diffusion field
-    static constexpr int num_diff_states = 1;
+    static constexpr int num_diff_states = 2;
     //! Number of states for convective term
     static constexpr int num_conv_states = 1;
 };
