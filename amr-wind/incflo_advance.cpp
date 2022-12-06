@@ -308,7 +308,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
             eqn->solve(dt_diff);
 
             // Post-processing actions after a PDE solve
-        } else {
+        } else if (m_diff_type == DiffusionType::Explicit && m_use_godunov) {
             // explicit RK2
             auto& diff_old =
                 eqn->fields().diff_term.state(amr_wind::FieldState::Old);
@@ -355,7 +355,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
                            ? m_time.deltaT()
                            : 0.5 * m_time.deltaT();
         icns().solve(dt_diff);
-    } else {
+    } else if (m_diff_type == DiffusionType::Explicit && m_use_godunov) {
         // explicit RK2
         auto& diff_old =
             icns().fields().diff_term.state(amr_wind::FieldState::Old);
