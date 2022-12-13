@@ -20,6 +20,6 @@ struct LinearWaves : public RelaxZonesType
     static std::string identifier() { return "LinearWaves"; }
 };
 
-} // namespace amr_wind
+} // namespace amr_wind::ocean_waves
 
 #endif /* LINEARWAVES_H */

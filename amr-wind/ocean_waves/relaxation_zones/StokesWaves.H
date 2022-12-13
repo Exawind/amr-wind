@@ -21,6 +21,6 @@ struct StokesWaves : public RelaxZonesType
     static std::string identifier() { return "StokesWaves"; }
 };
 
-} // namespace amr_wind
+} // namespace amr_wind::ocean_waves
 
 #endif /* STOKESWAVES_H */

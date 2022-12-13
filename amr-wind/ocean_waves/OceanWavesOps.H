@@ -40,6 +40,6 @@ struct ApplyRelaxZonesOp;
 template <typename WaveTheoryTrait, typename = void>
 struct ProcessOutputsOp;
 
-} // namespace amr_wind
+} // namespace amr_wind::ocean_waves::ops
 
 #endif /* OCEAN_WAVES_OPS_H */

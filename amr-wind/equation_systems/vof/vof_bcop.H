@@ -39,6 +39,6 @@ struct BCOp<VOF>
     const SimTime& m_time;
 };
 
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* VOF_BCOP_H */

@@ -30,6 +30,6 @@ struct HOSWaves : public RelaxZonesType
     static std::string identifier() { return "HOSWaves"; }
 };
 
-} // namespace amr_wind
+} // namespace amr_wind::ocean_waves
 
 #endif /* HOSWAVES_H */

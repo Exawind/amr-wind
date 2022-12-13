@@ -36,6 +36,6 @@ struct RelaxZonesBaseData
 struct RelaxZonesType : public OceanWavesType
 {};
 
-} // namespace amr_wind
+} // namespace amr_wind::ocean_waves
 
 #endif // REGULAR_WAVES_H

@@ -55,6 +55,6 @@ ramp(amrex::Real time, amrex::Real ramp_period)
     return f;
 }
 
-} // namespace amr_wind
+} // namespace amr_wind::ocean_waves::utils
 
 #endif

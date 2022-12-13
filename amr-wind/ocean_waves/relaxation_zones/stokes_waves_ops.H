@@ -116,6 +116,6 @@ struct UpdateRelaxZonesOp<StokesWaves>
     }
 };
 
-} // namespace amr_wind
+} // namespace amr_wind::ocean_waves::ops
 
 #endif /* STOKES_WAVES_OPS_H */
