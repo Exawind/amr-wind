@@ -9,10 +9,7 @@
 #include "amr-wind/ocean_waves/relaxation_zones/relaxation_zones_ops.H"
 #include "amr-wind/equation_systems/vof/volume_fractions.H"
 
-namespace amr_wind {
-namespace ocean_waves {
-
-namespace ops {
+namespace amr_wind::ocean_waves::ops {
 
 template <>
 struct ReadInputsOp<StokesWaves>
@@ -119,8 +116,6 @@ struct UpdateRelaxZonesOp<StokesWaves>
     }
 };
 
-} // namespace ops
-} // namespace ocean_waves
 } // namespace amr_wind
 
 #endif /* STOKES_WAVES_OPS_H */

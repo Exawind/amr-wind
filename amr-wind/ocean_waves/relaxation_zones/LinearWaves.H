@@ -3,8 +3,7 @@
 
 #include "amr-wind/ocean_waves/relaxation_zones/RelaxationZones.H"
 
-namespace amr_wind {
-namespace ocean_waves {
+namespace amr_wind::ocean_waves {
 
 struct LinearWavesData : public RelaxZonesBaseData
 {
@@ -21,7 +20,6 @@ struct LinearWaves : public RelaxZonesType
     static std::string identifier() { return "LinearWaves"; }
 };
 
-} // namespace ocean_waves
 } // namespace amr_wind
 
 #endif /* LINEARWAVES_H */

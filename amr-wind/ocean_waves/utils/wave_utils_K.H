@@ -4,9 +4,7 @@
 #include <AMReX_FArrayBox.H>
 #include <cmath>
 
-namespace amr_wind {
-namespace ocean_waves {
-namespace utils {
+namespace amr_wind::ocean_waves::utils {
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
 free_surface_to_vof(amrex::Real eta, amrex::Real z, amrex::Real dz)
@@ -57,8 +55,6 @@ ramp(amrex::Real time, amrex::Real ramp_period)
     return f;
 }
 
-} // namespace utils
-} // namespace ocean_waves
 } // namespace amr_wind
 
 #endif

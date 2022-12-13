@@ -4,9 +4,7 @@
 #include <AMReX_FArrayBox.H>
 #include <cmath>
 
-namespace amr_wind {
-namespace ocean_waves {
-namespace relaxation_zones {
+namespace amr_wind::ocean_waves::relaxation_zones {
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
     int StokesOrder,
@@ -345,7 +343,5 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_waves(
           (ss11 + ss22 + ss31 + ss33 + ss42 + ss44 + ss51 + ss53 + ss55);
 }
 
-} // namespace relaxation_zones
-} // namespace ocean_waves
 } // namespace amr_wind
 #endif

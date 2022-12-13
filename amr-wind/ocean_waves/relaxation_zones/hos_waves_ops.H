@@ -11,10 +11,7 @@
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/equation_systems/BCOps.H"
 
-namespace amr_wind {
-namespace ocean_waves {
-
-namespace ops {
+namespace amr_wind::ocean_waves::ops {
 
 void ReadHOSFileLev(
     int lev,
@@ -584,8 +581,6 @@ struct UpdateRelaxZonesOp<HOSWaves>
     }
 };
 
-} // namespace ops
-} // namespace ocean_waves
 } // namespace amr_wind
 
 #endif /* HOS_WAVES_OPS_H */

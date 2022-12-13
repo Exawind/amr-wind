@@ -6,8 +6,7 @@
 
 #include <string>
 
-namespace amr_wind {
-namespace ocean_waves {
+namespace amr_wind::ocean_waves {
 
 /** Base data representation of a regular waves
  *
@@ -37,7 +36,6 @@ struct RelaxZonesBaseData
 struct RelaxZonesType : public OceanWavesType
 {};
 
-} // namespace ocean_waves
 } // namespace amr_wind
 
 #endif // REGULAR_WAVES_H
