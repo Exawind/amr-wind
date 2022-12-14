@@ -59,7 +59,7 @@ void FreeStream::pre_init_actions()
  */
 void FreeStream::initialize_fields(int level, const amrex::Geometry& geom)
 {
-    for (auto& ff : m_field_funcs) {
+    for (const auto& ff : m_field_funcs) {
         (*ff.second)(level, geom);
     }
 }

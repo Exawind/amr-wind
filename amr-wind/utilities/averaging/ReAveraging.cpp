@@ -4,8 +4,7 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/utilities/IOManager.H"
 
-namespace amr_wind {
-namespace averaging {
+namespace amr_wind::averaging {
 namespace {
 
 const Field& get_field_or_error(const FieldRepo& repo, const std::string& fname)
@@ -51,7 +50,7 @@ void ReAveraging::operator()(
     const amrex::Real dt = time.deltaT();
     const amrex::Real filter =
         amrex::max(amrex::min(filter_width, elapsed_time), dt);
-    const amrex::Real factor = amrex::max(filter - dt, 0.0);
+    const amrex::Real factor = amrex::max<amrex::Real>(filter - dt, 0.0);
 
     const int ncomp = m_field.num_comp();
     const int nlevels = m_field.repo().num_active_levels();
@@ -83,5 +82,4 @@ void ReAveraging::operator()(
     m_average.fillpatch(time.new_time());
 }
 
-} // namespace averaging
-} // namespace amr_wind
+} // namespace amr_wind::averaging

@@ -287,6 +287,63 @@ void MultiPhase::set_density_via_vof()
     m_density.fillpatch(m_sim.time().current_time());
 }
 
+void MultiPhase::set_nph_density()
+{
+
+    amr_wind::field_ops::lincomb(
+        m_density.state(amr_wind::FieldState::NPH), 0.5,
+        m_density.state(amr_wind::FieldState::Old), 0, 0.5, m_density, 0, 0,
+        m_density.num_comp(), 1);
+}
+
+// Using phase densities to convert advected VOF arrays to advected density
+void MultiPhase::calculate_advected_facedensity()
+{
+    const int nlevels = m_sim.repo().num_active_levels();
+    amrex::Real c_r1 = m_rho1;
+    amrex::Real c_r2 = m_rho2;
+
+    // Get advected vof terms at each face
+    // cppcheck-suppress constVariable
+    auto& advalpha_x = m_sim.repo().get_field("advalpha_x");
+    // cppcheck-suppress constVariable
+    auto& advalpha_y = m_sim.repo().get_field("advalpha_y");
+    // cppcheck-suppress constVariable
+    auto& advalpha_z = m_sim.repo().get_field("advalpha_z");
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+
+        for (amrex::MFIter mfi((*m_vof)(lev)); mfi.isValid(); ++mfi) {
+            const auto& bx = mfi.tilebox();
+            const auto& bxg1 = amrex::grow(bx, 1);
+            const auto& xbx = amrex::surroundingNodes(bx, 0);
+            const auto& ybx = amrex::surroundingNodes(bx, 1);
+            const auto& zbx = amrex::surroundingNodes(bx, 2);
+
+            auto aa_x = advalpha_x(lev).array(mfi);
+            auto aa_y = advalpha_y(lev).array(mfi);
+            auto aa_z = advalpha_z(lev).array(mfi);
+
+            amrex::ParallelFor(
+                bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    // Volume terms at each face become density terms
+                    if (xbx.contains(i, j, k)) {
+                        aa_x(i, j, k) =
+                            c_r1 * aa_x(i, j, k) + c_r2 * (1.0 - aa_x(i, j, k));
+                    }
+                    if (ybx.contains(i, j, k)) {
+                        aa_y(i, j, k) =
+                            c_r1 * aa_y(i, j, k) + c_r2 * (1.0 - aa_y(i, j, k));
+                    }
+                    if (zbx.contains(i, j, k)) {
+                        aa_z(i, j, k) =
+                            c_r1 * aa_z(i, j, k) + c_r2 * (1.0 - aa_z(i, j, k));
+                    }
+                });
+        }
+    }
+}
+
 void MultiPhase::favre_filtering()
 {
     const int nlevels = m_sim.repo().num_active_levels();

@@ -33,12 +33,10 @@ class incflo;
 
 namespace amr_wind {
 
-namespace pde {
-namespace icns {
+namespace pde::icns {
 class ABLForcing;
 class ABLMeanBoussinesq;
-} // namespace icns
-} // namespace pde
+} // namespace pde::icns
 
 /** Atmospheric Boundary Layer physics
  *  \ingroup we_abl

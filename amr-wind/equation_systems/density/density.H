@@ -7,8 +7,7 @@
 #include "amr-wind/equation_systems/PDE.H"
 #include "amr-wind/equation_systems/density/DensitySource.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 struct Density : ScalarTransport
 {
@@ -27,7 +26,6 @@ struct Density : ScalarTransport
     static constexpr amrex::Real default_bc_value = 1.0;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* DENSITY_H */

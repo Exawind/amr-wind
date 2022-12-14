@@ -3,8 +3,7 @@
 
 #include "amr-wind/utilities/DerivedQuantity.H"
 
-namespace amr_wind {
-namespace derived {
+namespace amr_wind::derived {
 struct VorticityMag : public DerivedQty::Register<VorticityMag>
 {
     static constexpr int ncomp = 1;
@@ -144,7 +143,6 @@ private:
     int m_ncomp{0};
 };
 
-} // namespace derived
-} // namespace amr_wind
+} // namespace amr_wind::derived
 
 #endif /* DERIVEDQTYDEFS_H */

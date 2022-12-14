@@ -7,8 +7,7 @@
 #include "amr-wind/equation_systems/PDE.H"
 #include "amr-wind/equation_systems/SourceTerm.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /**
  *  \defgroup levelset Levelset transport equation
@@ -42,7 +41,6 @@ struct Levelset : ScalarTransport
     static constexpr amrex::Real default_bc_value = 0.0;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* LEVELSET_H */

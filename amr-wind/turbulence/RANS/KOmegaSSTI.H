@@ -10,8 +10,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace turbulence {
+namespace amr_wind::turbulence {
 
 template <typename Transport>
 // cppcheck-suppress uninitMemberVar
@@ -20,6 +19,7 @@ KOmegaSST<Transport>::KOmegaSST(CFDSim& sim)
     , m_vel(sim.repo().get_field("velocity"))
     , m_f1(sim.repo().declare_field("f1", 1, 1, 1))
     , m_shear_prod(sim.repo().declare_field("shear_prod", 1, 1, 1))
+    , m_buoy_term(sim.repo().declare_field("buoyancy_term", 1, 1, 1))
     , m_diss(sim.repo().declare_field("dissipation", 1, 1, 1))
     , m_sdr_src(sim.repo().declare_field("omega_src", 1, 1, 1))
     , m_sdr_diss(sim.repo().declare_field("sdr_dissipation", 1, 1, 1))
@@ -44,7 +44,6 @@ KOmegaSST<Transport>::KOmegaSST(CFDSim& sim)
 template <typename Transport>
 KOmegaSST<Transport>::~KOmegaSST() = default;
 
-} // namespace turbulence
-} // namespace amr_wind
+} // namespace amr_wind::turbulence
 
 #endif /* KOMEGASSTI_H */

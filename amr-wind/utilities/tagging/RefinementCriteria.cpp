@@ -17,7 +17,7 @@ void RefineCriteriaManager::initialize()
         pp.queryarr("labels", labels);
     }
 
-    for (auto& lbl : labels) {
+    for (const auto& lbl : labels) {
         const std::string key = "tagging." + lbl;
         amrex::ParmParse pp(key);
         std::string stype;
@@ -32,7 +32,7 @@ void RefineCriteriaManager::initialize()
 void RefineCriteriaManager::tag_cells(
     int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow)
 {
-    for (auto& rc : m_refiners) {
+    for (const auto& rc : m_refiners) {
         (*rc)(lev, tags, time, ngrow);
     }
 }

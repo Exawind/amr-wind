@@ -3,8 +3,7 @@
 
 #include "amr-wind/fvm/fvm_utils.H"
 
-namespace amr_wind {
-namespace fvm {
+namespace amr_wind::fvm {
 
 /** Curvature operator
  *  \ingroup fvm
@@ -153,7 +152,6 @@ inline std::unique_ptr<ScratchField> curvature(const FType& phi)
     return curphi;
 }
 
-} // namespace fvm
-} // namespace amr_wind
+} // namespace amr_wind::fvm
 
 #endif /* CURVATURE_H */

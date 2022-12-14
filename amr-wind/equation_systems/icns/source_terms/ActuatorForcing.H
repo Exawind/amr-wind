@@ -4,9 +4,7 @@
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 #include "amr-wind/core/SimTime.H"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 /** Body forces introduced by turbines modeled as actuators in flow field.
  *
@@ -34,8 +32,6 @@ private:
     const Field& m_act_src;
 };
 
-} // namespace icns
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns
 
 #endif /* ACTUATORFORCING_H */

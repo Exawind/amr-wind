@@ -7,8 +7,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace sampling {
+namespace amr_wind::sampling {
 
 Sampling::Sampling(CFDSim& sim, std::string label)
     : m_sim(sim), m_label(std::move(label))
@@ -290,5 +289,4 @@ void Sampling::write_netcdf()
 #endif
 }
 
-} // namespace sampling
-} // namespace amr_wind
+} // namespace amr_wind::sampling

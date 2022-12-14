@@ -5,8 +5,7 @@
 #include "amr-wind/core/vs/vstraits.H"
 #include "amr-wind/core/vs/vector.H"
 
-namespace amr_wind {
-namespace vs {
+namespace amr_wind::vs {
 
 /** Tensor in 3D vector space
  */
@@ -186,8 +185,7 @@ struct TensorT
 
 using Tensor = TensorT<amrex::Real>;
 
-} // namespace vs
-} // namespace amr_wind
+} // namespace amr_wind::vs
 
 #include "amr-wind/core/vs/tensorI.H"
 

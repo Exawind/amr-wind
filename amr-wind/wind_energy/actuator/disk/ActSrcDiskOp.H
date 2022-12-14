@@ -6,9 +6,7 @@
 #include "amr-wind/wind_energy/actuator/disk/disk_types.H"
 #include "amr-wind/wind_energy/actuator/disk/disk_spreading.H"
 
-namespace amr_wind {
-namespace actuator {
-namespace ops {
+namespace amr_wind::actuator::ops {
 
 template <typename ActTrait>
 class ActSrcOp<
@@ -95,8 +93,6 @@ void ActSrcOp<
         m_force.begin());
 }
 
-} // namespace ops
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator::ops
 
 #endif /* ACTSRCDISKOP_H_ */

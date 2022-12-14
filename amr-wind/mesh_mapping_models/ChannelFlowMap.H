@@ -3,8 +3,7 @@
 
 #include "amr-wind/core/MeshMap.H"
 
-namespace amr_wind {
-namespace channel_map {
+namespace amr_wind::channel_map {
 
 /** Channel flow scaling mesh map
  *  \ingroup mesh_map
@@ -37,7 +36,6 @@ private:
     amrex::Real m_eps{1e-11};
 };
 
-} // namespace channel_map
-} // namespace amr_wind
+} // namespace amr_wind::channel_map
 
 #endif /* CHANNELFLOWMAP_H */

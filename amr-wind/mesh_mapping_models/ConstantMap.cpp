@@ -2,8 +2,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace const_map {
+namespace amr_wind::const_map {
 
 ConstantMap::ConstantMap()
 {
@@ -165,5 +164,4 @@ void ConstantMap::create_non_uniform_mesh(int lev, const amrex::Geometry& geom)
     }
 }
 
-} // namespace const_map
-} // namespace amr_wind
+} // namespace amr_wind::const_map

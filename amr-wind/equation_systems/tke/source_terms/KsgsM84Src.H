@@ -3,9 +3,7 @@
 
 #include "amr-wind/equation_systems/tke/TKESource.H"
 
-namespace amr_wind {
-namespace pde {
-namespace tke {
+namespace amr_wind::pde::tke {
 
 /** TKE source term based on Moeng 1984 paper
  *  \ingroup tke_src turb_model we_abl
@@ -36,8 +34,6 @@ private:
     Field& m_tke;
 };
 
-} // namespace tke
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::tke
 
 #endif /* KSGSM84SRC_H */

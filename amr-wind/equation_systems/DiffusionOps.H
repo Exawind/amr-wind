@@ -14,8 +14,7 @@
 #include "AMReX_AmrCore.H"
 #include "AMReX_MultiFabUtil.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /** Base class for all diffusion operators
  *  \ingroup pdeop
@@ -159,7 +158,6 @@ struct DiffusionOp<
     }
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* DIFFUSIONOPS_H */

@@ -5,8 +5,7 @@
 #include "amr-wind/equation_systems/vof/vof.H"
 #include "amr-wind/equation_systems/vof/SplitAdvection.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /** Godunov scheme for VOF
  *  \ingroup vof
@@ -22,8 +21,12 @@ struct AdvectionOp<VOF, fvm::Godunov>
         , w_mac(fields_in.repo.get_field("w_mac"))
     {
         amrex::ParmParse pp_multiphase("VOF");
-        pp_multiphase.query("use_lagrangian", m_use_lagrangian);
         pp_multiphase.query("remove_debris", m_rm_debris);
+
+        // Setup density factor arrays for multiplying velocity flux
+        fields_in.repo.declare_face_normal_field(
+            {"advalpha_x", "advalpha_y", "advalpha_z"}, 1,
+            fvm::Godunov::nghost_mac, 1);
     }
 
     void preadvect(const FieldState /*unused*/, const amrex::Real /*unused*/) {}
@@ -36,12 +39,23 @@ struct AdvectionOp<VOF, fvm::Godunov>
         auto& repo = fields.repo;
         const auto& geom = repo.mesh().Geom();
 
+        auto& aa_x = repo.get_field("advalpha_x");
+        auto& aa_y = repo.get_field("advalpha_y");
+        auto& aa_z = repo.get_field("advalpha_z");
+
         // cppcheck-suppress constVariable
         auto& dof_field = fields.field;
         //
         // Advect volume using either the Explicit Lagrangian onto-cell or
         // Implicit Eulerian Sweeping method with PLIC reconstruction
         //
+
+        auto flux_x =
+            repo.create_scratch_field(1, 0, amr_wind::FieldLoc::XFACE);
+        auto flux_y =
+            repo.create_scratch_field(1, 0, amr_wind::FieldLoc::YFACE);
+        auto flux_z =
+            repo.create_scratch_field(1, 0, amr_wind::FieldLoc::ZFACE);
 
         // Scratch field for fluxC
         auto fluxC = repo.create_scratch_field(1, 0, amr_wind::FieldLoc::CELL);
@@ -52,72 +66,33 @@ struct AdvectionOp<VOF, fvm::Godunov>
             isweep = 1;
         }
 
-        for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-            amrex::MFItInfo mfi_info;
-            if (amrex::Gpu::notInLaunchRegion()) {
-                mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
-                    .SetDynamic(true);
-            }
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-            for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
-                 ++mfi) {
-                const auto& bx = mfi.tilebox();
-                amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 2 * VOF::ndim);
-                tmpfab.setVal<amrex::RunOn::Device>(0.0);
+        const int nlevels = repo.num_active_levels();
 
-                multiphase::cmask_loop(
-                    bx, dof_field(lev).array(mfi), (*fluxC)(lev).array(mfi),
-                    m_use_lagrangian);
-
-                multiphase::split_advection_step(
-                    lev, bx, isweep + 0, dof_field(lev).array(mfi),
-                    (*fluxC)(lev).array(mfi), u_mac(lev).const_array(mfi),
-                    v_mac(lev).const_array(mfi), w_mac(lev).const_array(mfi),
-                    dof_field.bcrec_device().data(), tmpfab.dataPtr(), geom, dt,
-                    m_use_lagrangian);
-
-                amrex::Gpu::streamSynchronize();
-            }
-
-            dof_field(lev).FillBoundary(geom[lev].periodicity());
-
-            for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
-                 ++mfi) {
-                const auto& bx = mfi.tilebox();
-                amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 2 * VOF::ndim);
-                tmpfab.setVal<amrex::RunOn::Device>(0.0);
-                multiphase::split_advection_step(
-                    lev, bx, isweep + 1, dof_field(lev).array(mfi),
-                    (*fluxC)(lev).array(mfi), u_mac(lev).const_array(mfi),
-                    v_mac(lev).const_array(mfi), w_mac(lev).const_array(mfi),
-                    dof_field.bcrec_device().data(), tmpfab.dataPtr(), geom, dt,
-                    m_use_lagrangian);
-
-                amrex::Gpu::streamSynchronize();
-            }
-
-            dof_field(lev).FillBoundary(geom[lev].periodicity());
-
-            for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
-                 ++mfi) {
-                const auto& bx = mfi.tilebox();
-                amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 2 * VOF::ndim);
-                tmpfab.setVal<amrex::RunOn::Device>(0.0);
-                multiphase::split_advection_step(
-                    lev, bx, isweep + 2, dof_field(lev).array(mfi),
-                    (*fluxC)(lev).array(mfi), u_mac(lev).const_array(mfi),
-                    v_mac(lev).const_array(mfi), w_mac(lev).const_array(mfi),
-                    dof_field.bcrec_device().data(), tmpfab.dataPtr(), geom, dt,
-                    m_use_lagrangian);
-
-                if (m_rm_debris) {
-                    multiphase::debris_loop(bx, dof_field(lev).array(mfi));
-                }
-                amrex::Gpu::streamSynchronize();
-            }
+        amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> fluxes(
+            nlevels);
+        amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> advas(
+            nlevels);
+        for (int lev = 0; lev < nlevels; ++lev) {
+            fluxes[lev][0] = &(*flux_x)(lev);
+            fluxes[lev][1] = &(*flux_y)(lev);
+            fluxes[lev][2] = &(*flux_z)(lev);
+            advas[lev][0] = &aa_x(lev);
+            advas[lev][1] = &aa_y(lev);
+            advas[lev][2] = &aa_z(lev);
         }
+
+        // Split advection step 1, with cmask calculation
+        multiphase::split_advection_step(
+            isweep, 0, nlevels, dof_field, fluxes, (*fluxC), advas, u_mac,
+            v_mac, w_mac, dof_field.bc_type(), geom, dt, m_rm_debris);
+        // Split advection step 2
+        multiphase::split_advection_step(
+            isweep, 1, nlevels, dof_field, fluxes, (*fluxC), advas, u_mac,
+            v_mac, w_mac, dof_field.bc_type(), geom, dt, m_rm_debris);
+        // Split advection step 3
+        multiphase::split_advection_step(
+            isweep, 2, nlevels, dof_field, fluxes, (*fluxC), advas, u_mac,
+            v_mac, w_mac, dof_field.bc_type(), geom, dt, m_rm_debris);
     }
 
     PDEFields& fields;
@@ -125,10 +100,9 @@ struct AdvectionOp<VOF, fvm::Godunov>
     Field& v_mac;
     Field& w_mac;
     int isweep = 0;
-    bool m_use_lagrangian{false};
     bool m_rm_debris{true};
+    // Lagrangian transport is deprecated, only Eulerian is supported
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 #endif

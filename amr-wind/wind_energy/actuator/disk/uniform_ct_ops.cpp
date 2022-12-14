@@ -2,10 +2,7 @@
 #include "amr-wind/wind_energy/actuator/ActParser.H"
 #include <ostream>
 
-namespace amr_wind {
-namespace actuator {
-namespace ops {
-namespace uniformct {
+namespace amr_wind::actuator::ops::uniformct {
 
 void check_for_removed_syntax(
     const utils::ActParser& pp, std::ostringstream& stream)
@@ -86,7 +83,4 @@ void update_disk_points(UniformCt::DataType& data)
     base::compute_disk_points(
         meta, grid.vel_pos, nVec, meta.num_vel_pts / 2, 0);
 }
-} // namespace uniformct
-} // namespace ops
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator::ops::uniformct

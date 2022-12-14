@@ -4,29 +4,8 @@
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind {
-namespace {
-amrex::Vector<std::string> bcnames = {"xlo", "ylo", "zlo", "xhi", "yhi", "zhi"};
-}
 
 BCIface::BCIface(Field& field) : m_field(field) {}
-
-inline void
-BCIface::set_bcrec_lo(int dir, amrex::BCType::mathematicalBndryTypes bcrec)
-{
-    auto& fbcrec = m_field.bcrec();
-    for (int i = 0; i < m_field.num_comp(); ++i) {
-        fbcrec[i].setLo(dir, bcrec);
-    }
-}
-
-inline void
-BCIface::set_bcrec_hi(int dir, amrex::BCType::mathematicalBndryTypes bcrec)
-{
-    auto& fbcrec = m_field.bcrec();
-    for (int i = 0; i < m_field.num_comp(); ++i) {
-        fbcrec[i].setHi(dir, bcrec);
-    }
-}
 
 void BCIface::operator()(const amrex::Real value)
 {
@@ -95,6 +74,8 @@ void BCIface::read_bctype()
             ibctype[ori] = BC::zero_gradient;
         } else if ((bcstr == "fixed_gradient") || (bcstr == "fg")) {
             ibctype[ori] = BC::fixed_gradient;
+        } else if ((bcstr == "wave_generation") || (bcstr == "wg")) {
+            ibctype[ori] = BC::wave_generation;
         } else {
             ibctype[ori] = BC::undefined;
         }
@@ -213,6 +194,7 @@ void BCVelocity::set_bcrec()
             }
             break;
 
+        case BC::wave_generation:
         case BC::mass_inflow:
         case BC::no_slip_wall:
             if (side == amrex::Orientation::low) {
@@ -301,6 +283,7 @@ void BCScalar::set_bcrec()
             }
             break;
 
+        case BC::wave_generation:
         case BC::mass_inflow:
         case BC::no_slip_wall:
             if (side == amrex::Orientation::low) {

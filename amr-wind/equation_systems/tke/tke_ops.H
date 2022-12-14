@@ -4,8 +4,7 @@
 #include "amr-wind/equation_systems/tke/TKE.H"
 #include "amr-wind/core/field_ops.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /** Implementation of Turbulence operator for TKE equation
  *  \ingroup tke_eqn
@@ -167,7 +166,6 @@ struct DiffusionOp<TKE, Scheme> : public DiffSolverIface<typename TKE::MLDiffOp>
     Field& m_lhs_src_term;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* TKE_OPS_H */

@@ -7,8 +7,7 @@
 
 #include <set>
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 struct ActInfo;
 
@@ -114,7 +113,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE vs::Vector delta_pnts_cyl(
     const amrex::Real r2 = vs::mag(v2);
 
     const amrex::Real theta =
-        std::acos(std::min((v1 & v2) / (r1 * r2 + eps), 1.0));
+        std::acos(amrex::min<amrex::Real>((v1 & v2) / (r1 * r2 + eps), 1.0));
 
     return {std::abs(r1 - r2), theta, norm_dist1 - norm_dist2};
 }
@@ -140,7 +139,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE vs::Vector compute_tangential_vector(
 }
 
 } // namespace utils
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator
 
 #endif /* ACUTATOR_UTILS_H */

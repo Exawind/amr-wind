@@ -3,8 +3,7 @@
 
 #include "amr-wind/utilities/averaging/TimeAveraging.H"
 
-namespace amr_wind {
-namespace averaging {
+namespace amr_wind::averaging {
 
 /** Reynolds averaging to compute mean field from a given CFD field
  */
@@ -43,7 +42,6 @@ private:
     Field& m_average;
 };
 
-} // namespace averaging
-} // namespace amr_wind
+} // namespace amr_wind::averaging
 
 #endif /* REAVERAGING_H */

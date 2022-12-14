@@ -4,8 +4,7 @@
 #include <AMReX_FArrayBox.H>
 #include <cmath>
 
-namespace amr_wind {
-namespace multiphase {
+namespace amr_wind::multiphase {
 
 /** Young's finite-difference gradient scheme.
  *
@@ -204,7 +203,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void mixed_youngs_central_normal(
         t0 = t2;
     }
 
-    if (amrex::Math::abs(m[cn][cn]) > t0) {
+    if (amrex::Math::abs(m[cn][cn]) > t0 && t0 > 0.0) {
+        // second t0 condition is to ensure nonzero normal magnitude
         cn = 3;
     }
 
@@ -244,7 +244,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
     }
 
     amrex::Real m12 = m1 + m2;
-    amrex::Real pr = amrex::max(6. * m1 * m2 * m3, const_tiny);
+    amrex::Real pr = amrex::max<amrex::Real>(6. * m1 * m2 * m3, const_tiny);
     amrex::Real V1 = m1 * m1 * m1 / pr;
     amrex::Real V2 = V1 + 0.5 * (m2 - m1) / m3;
 
@@ -259,7 +259,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
         V3 = 0.5 * mm / m3;
     }
 
-    amrex::Real ch = amrex::min(volF, 1.0 - volF);
+    amrex::Real ch = amrex::min<amrex::Real>(volF, 1.0 - volF);
 
     amrex::Real alpha, p, q, p12, teta, cs;
     if (ch < V1) {
@@ -270,7 +270,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
         p = 2.0 * m1 * m2;
         q = 1.5 * m1 * m2 * (m12 - 2.0 * m3 * ch);
         p12 = std::sqrt(p);
-        teta = std::acos(q / (p * p12)) / 3.0;
+        teta = std::acos(q / (p * p12 + 1e-20)) / 3.0;
         cs = std::cos(teta);
         alpha = p12 * (std::sqrt(3.0 * (1.0 - cs * cs)) - cs) + m12;
     } else if (m12 < m3) {
@@ -279,7 +279,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
         p = m1 * (m2 + m3) + m2 * m3 - 0.25;
         q = 1.5 * m1 * m2 * m3 * (0.5 - ch);
         p12 = std::sqrt(p);
-        teta = std::acos(q / (p * p12)) / 3.0;
+        teta = std::acos(q / (p * p12 + 1e-20)) / 3.0;
         cs = std::cos(teta);
         alpha = p12 * (std::sqrt(3.0 * (1.0 - cs * cs)) - cs) + 0.5;
     }
@@ -315,8 +315,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real cut_volume(
     al = alpha - m1 * r0;
 
     // reflect the figure when negative coefficients
-    al = al + amrex::max(0.0, -m1 * dr0) + amrex::max(0.0, -m2) +
-         amrex::max(0.0, -m3);
+    al = al + amrex::max<amrex::Real>(0.0, -m1 * dr0) +
+         amrex::max<amrex::Real>(0.0, -m2) + amrex::max<amrex::Real>(0.0, -m3);
 
     // normalized equation: m1*y1 + m2*y2 + m3*y3 = alh, with 0 <= m1 <= m2 <=
     // m3 the problem is then solved again in the unit cube
@@ -324,9 +324,11 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real cut_volume(
     amrex::Real n1 = std::abs(m1) / tmp; // need positive coefficients
     amrex::Real n2 = std::abs(m2) / tmp;
     amrex::Real n3 = std::abs(m3) / tmp;
-    al = amrex::max(
-        0.0, amrex::min(1.0, al / tmp));        // get new al within safe limits
-    amrex::Real al0 = amrex::min(al, 1.0 - al); // limit to: 0 < alh < 1/2
+    al = amrex::max<amrex::Real>(
+        0.0, amrex::min<amrex::Real>(
+                 1.0, al / tmp)); // get new al within safe limits
+    amrex::Real al0 =
+        amrex::min<amrex::Real>(al, 1.0 - al); // limit to: 0 < alh < 1/2
 
     // Order coefficients
     amrex::Real b1 = amrex::min(n1 * dr0, n2); // order coefficients
@@ -347,7 +349,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real cut_volume(
     // amrex::Real bm = amrex::min(b12, b3);
     // amrex::Real pr = amrex::max(6.0 * m1 * m2 * m3, const_tiny);
 
-    // Compute volume fraction using Aoki Kawano (Computer & Fluids 2016) method
+    // Compute volume fraction using PLIC from Scardovelli & Zaleski (JCP 2000),
+    // adapted from code in paper by Akio Kawano (Computer & Fluids 2016)
     amrex::Real vm1 = b1;
     amrex::Real vm3 = b3;
     amrex::Real vm2 = b2;
@@ -377,9 +380,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real cut_volume(
     tmp = v;
     amrex::Real FL3D;
     if (al <= 0.5) {
-        FL3D = tmp * dr0;
+        FL3D = tmp;
     } else {
-        FL3D = (1.0 - tmp) * dr0;
+        FL3D = (1.0 - tmp);
     }
 
     return FL3D;
@@ -389,7 +392,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fit_plane(
     const int i,
     const int j,
     const int k,
-    amrex::Array4<amrex::Real> const& volfrac,
+    amrex::Array4<amrex::Real const> const& volfrac,
     amrex::Real& mx,
     amrex::Real& my,
     amrex::Real& mz,
@@ -426,8 +429,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fit_plane(
     mx = invx * mx;
     my = invy * my;
     mz = invz * mz;
-    alpha =
-        alpha + amrex::min(0.0, mx) + amrex::min(0.0, my) + amrex::min(0.0, mz);
+    alpha = alpha + amrex::min<amrex::Real>(0.0, mx) +
+            amrex::min<amrex::Real>(0.0, my) + amrex::min<amrex::Real>(0.0, mz);
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool interface_band(
@@ -441,9 +444,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool interface_band(
     amrex::Real VOF_max = 0.0;
     amrex::Real VOF_min = 1.0;
     bool VOF_mid = false;
-    for (int ii = -1; ii < 2; ++ii) {
-        for (int jj = -1; jj < 2; ++jj) {
-            for (int kk = -1; kk < 2; ++kk) {
+    constexpr int n_band = 1; // must be 1, 2, or 3
+    for (int ii = -n_band; ii <= n_band; ++ii) {
+        for (int jj = -n_band; jj <= n_band; ++jj) {
+            for (int kk = -n_band; kk <= n_band; ++kk) {
                 amrex::Real VOF = volfrac(i + ii, j + jj, k + kk);
                 VOF_max = amrex::max(VOF_max, VOF);
                 VOF_min = amrex::min(VOF_min, VOF);
@@ -456,7 +460,43 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool interface_band(
     return (VOF_max != VOF_min || VOF_mid);
 }
 
-} // namespace multiphase
-} // namespace amr_wind
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real levelset_to_vof(
+    int i,
+    int j,
+    int k,
+    amrex::Real eps,
+    amrex::Array4<amrex::Real const> const& phi) noexcept
+{
+    amrex::Real mx, my, mz;
+    youngs_fd_normal(i, j, k, phi, mx, my, mz);
+    mx = std::abs(mx / 32.);
+    my = std::abs(my / 32.);
+    mz = std::abs(mz / 32.);
+    amrex::Real normL1 = (mx + my + mz);
+    mx = mx / normL1;
+    my = my / normL1;
+    mz = mz / normL1;
+    // Make sure that alpha is negative far away from the
+    // interface
+    amrex::Real alpha;
+    if (phi(i, j, k) < -eps) {
+        alpha = -1.0;
+    } else {
+        alpha = phi(i, j, k) / normL1;
+        alpha = alpha + 0.5;
+    }
+    amrex::Real result;
+    if (alpha >= 1.0) {
+        result = 1.0;
+    } else if (alpha <= 0.0) {
+        result = 0.0;
+    } else {
+        result = cut_volume(mx, my, mz, alpha, 0.0, 1.0);
+    }
+
+    return result;
+}
+
+} // namespace amr_wind::multiphase
 
 #endif // VOLUME_FRACTIONS.H

@@ -4,8 +4,7 @@
 #include "amr-wind/utilities/sampling/LidarSampler.H"
 #include "amr-wind/core/vs/vector_space.H"
 
-namespace amr_wind {
-namespace sampling {
+namespace amr_wind::sampling {
 
 struct PrismParameters
 {
@@ -118,7 +117,6 @@ private:
     amrex::Vector<amrex::Real> step_lidar_center{0.0, 0.0, 0.0};
 };
 
-} // namespace sampling
-} // namespace amr_wind
+} // namespace amr_wind::sampling
 
 #endif /* DTUSPINNERSAMPLER_H */

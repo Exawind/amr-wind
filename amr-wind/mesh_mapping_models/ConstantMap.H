@@ -3,8 +3,7 @@
 
 #include "amr-wind/core/MeshMap.H"
 
-namespace amr_wind {
-namespace const_map {
+namespace amr_wind::const_map {
 
 /** Coonstant scaling mesh map
  *  \ingroup mesh_map
@@ -35,7 +34,6 @@ private:
     amrex::Vector<amrex::Real> m_fac{{1.0, 1.0, 1.0}};
 };
 
-} // namespace const_map
-} // namespace amr_wind
+} // namespace amr_wind::const_map
 
 #endif /* CONSTANTMAP_H */

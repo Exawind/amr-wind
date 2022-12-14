@@ -108,7 +108,7 @@ macro(init_code_checks)
           COMMAND ${CMAKE_COMMAND} -E make_directory cppcheck
           # cppcheck ignores -isystem directories, so we change them to regular -I include directories (with no spaces either)
           COMMAND sed "s/isystem /I/g" ${CMAKE_BINARY_DIR}/compile_commands.json > cppcheck_compile_commands.json
-          COMMAND ${CPPCHECK_EXE} --template=gcc --inline-suppr --suppress=unusedFunction --suppress=useStlAlgorithm --std=c++14 --language=c++ --enable=all --project=cppcheck_compile_commands.json -i ${CMAKE_SOURCE_DIR}/submods/amrex/Src -i ${CMAKE_SOURCE_DIR}/submods/AMReX-Hydro -i ${CMAKE_SOURCE_DIR}/submods/googletest --output-file=cppcheck-full-report.txt -j ${NP}
+          COMMAND ${CPPCHECK_EXE} --template=gcc --inline-suppr --suppress=unusedFunction --suppress=useStlAlgorithm --std=c++17 --language=c++ --enable=all --project=cppcheck_compile_commands.json -i ${CMAKE_SOURCE_DIR}/submods/amrex/Src -i ${CMAKE_SOURCE_DIR}/submods/AMReX-Hydro -i ${CMAKE_SOURCE_DIR}/submods/googletest --output-file=cppcheck-full-report.txt -j ${NP}
           COMMENT "Run cppcheck on project compile_commands.json"
           BYPRODUCTS cppcheck-full-report.txt
           WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/cppcheck

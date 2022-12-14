@@ -4,9 +4,7 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 /** Gravity Forcing term
  *  \ingroup icns_src
@@ -31,8 +29,6 @@ private:
     amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
 };
 
-} // namespace icns
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns
 
 #endif /* GravityForcing_H */

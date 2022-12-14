@@ -3,8 +3,7 @@
 
 #include "AMReX_Gpu.H"
 
-namespace amr_wind {
-namespace gpu {
+namespace amr_wind::gpu {
 
 template <typename T>
 inline amrex::Gpu::DeviceVector<T> device_view(const amrex::Vector<T>& hview)
@@ -15,7 +14,6 @@ inline amrex::Gpu::DeviceVector<T> device_view(const amrex::Vector<T>& hview)
     return dview;
 }
 
-} // namespace gpu
-} // namespace amr_wind
+} // namespace amr_wind::gpu
 
 #endif /* GPU_UTILS_H */

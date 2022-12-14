@@ -17,8 +17,7 @@
  *  \ingroup utilities
  */
 
-namespace amr_wind {
-namespace free_surface {
+namespace amr_wind::free_surface {
 
 /** Collection of data sampling objects
  *  \ingroup findinterface
@@ -45,7 +44,8 @@ public:
     //! Interpolate fields at a given timestep and output to disk
     void post_advance_work() override;
 
-    void post_regrid_actions() override {}
+    //! Redo some of the initialization work when the grid changes
+    void post_regrid_actions() override;
 
     //! Output functions for private variables
     //! Number of points
@@ -109,8 +109,8 @@ private:
     //! (this also determines the meaning of start and end points)
     int m_coorddir{2};
     //! Grid coordinates, determined as a function of m_coorddir
-    int m_gc1 = 0;
-    int m_gc2 = 1;
+    int m_gc0 = 0;
+    int m_gc1 = 1;
 
     //! Parameters to set up plane
     amrex::Vector<amrex::Real> m_start, m_end;
@@ -121,9 +121,13 @@ private:
 
     //! Frequency of data sampling and output
     int m_out_freq{100};
+
+    //! Max number of sample points found in a single cell
+    int m_ncomp{1};
+    //! Max number of sample points allowed in a single cell
+    int m_ncmax{8};
 };
 
-} // namespace free_surface
-} // namespace amr_wind
+} // namespace amr_wind::free_surface
 
 #endif /* FREESURFACE_H */

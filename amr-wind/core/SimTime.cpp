@@ -8,7 +8,7 @@ namespace amr_wind {
 void SimTime::parse_parameters()
 {
     // Initialize deltaT to negative values
-    for (double& i : m_dt) {
+    for (amrex::Real& i : m_dt) {
         i = -1.0;
     }
 
@@ -95,7 +95,7 @@ void SimTime::set_current_cfl(
     const amrex::Real cd_cfl = conv_cfl + diff_cfl;
     const amrex::Real cfl_unit_time =
         cd_cfl + std::sqrt(cd_cfl * cd_cfl + 4.0 * src_cfl);
-    if ((m_adaptive) &&
+    if ((m_adaptive && !m_is_init) &&
         (cfl_unit_time < std::numeric_limits<amrex::Real>::epsilon())) {
         amrex::Abort(
             "CFL is below machine epsilon and the time step is adaptive. "
@@ -112,7 +112,7 @@ void SimTime::set_current_cfl(
 
     // Limit timestep growth to 10% per timestep
     if (m_dt[0] > 0.0) {
-        dt_new = amrex::min(dt_new, 1.1 * m_dt[0]);
+        dt_new = amrex::min<amrex::Real>(dt_new, 1.1 * m_dt[0]);
     }
 
     // Don't overshoot stop time

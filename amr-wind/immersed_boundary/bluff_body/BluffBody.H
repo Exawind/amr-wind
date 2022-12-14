@@ -6,8 +6,7 @@
 
 #include <string>
 
-namespace amr_wind {
-namespace ib {
+namespace amr_wind::ib {
 
 /** Base data representation of an IB geometry.
  *
@@ -30,7 +29,6 @@ struct BluffBodyBaseData
 struct BluffBodyType : public IBType
 {};
 
-} // namespace ib
-} // namespace amr_wind
+} // namespace amr_wind::ib
 
 #endif /* GEOMETRY_H */

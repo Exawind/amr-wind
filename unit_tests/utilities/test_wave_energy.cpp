@@ -66,6 +66,7 @@ public:
 
 protected:
     // No file output during test
+    void prepare_ascii_file() override {}
     void write_ascii() override {}
 };
 
@@ -93,7 +94,7 @@ protected:
         {
             amrex::ParmParse pp("waveenergy");
             pp.add("output_frequency", 1);
-            pp.add("potential_energy_offset", pe_off);
+            pp.add("water_level", wlev);
         }
         {
             amrex::ParmParse pp("incflo");
@@ -109,9 +110,9 @@ protected:
     }
     // Parameters
     const amrex::Vector<amrex::Real> problo{{0.0, 0.0, 0.0}};
-    const amrex::Vector<amrex::Real> probhi{{1.0, 1.0, 1.0}};
-    const amrex::Real pe_off = 0.25;
+    const amrex::Vector<amrex::Real> probhi{{2.0, 2.0, 1.0}};
     const int nx = 5;
+    const amrex::Real wlev = 0.25;
     const amrex::Real g = -9;
     const amrex::Real rho1 = 888;
     const amrex::Real tol = 1e-12;
@@ -144,26 +145,21 @@ TEST_F(WaveEnergyTest, checkoutput)
     tool.wave_energy(ke, pe);
 
     // Check answers
-    const amrex::Real dx = 1.0 / (amrex::Real)nx;
-    const amrex::Real cell_vol = std::pow(dx, 3);
+    const amrex::Real dx = 2.0 / (amrex::Real)nx;
+    const amrex::Real dz = 1.0 / (amrex::Real)nx;
+    const amrex::Real cell_vol = dx * dx * dz;
     amrex::Real ke_ref =
-        0.5 * rho1 * cell_vol *
+        0.5 * cell_vol / (wlev * 2.0 * 2.0) *
         (4.0 * 5.0 * (1.0 + 4.0 + 9.0 + 16.0) + 25.0 +
          0.5 * (4.0 * 15.0 + 5.0 * (4.0 + 16.0) +
                 3.0 * (1.0 + 4.0 + 9.0 + 16.0)) +
          (4.0 * 10.0 + 5.0 * (1.0 + 9.0) + 2.0 * (1.0 + 4.0 + 9.0 + 16.0)));
     EXPECT_NEAR(ke, ke_ref, tol);
-    /* // How the routine is expected to find the potential energy
-    amrex::Real pe_ref = rho1 * cell_vol * (-g) *
-                             (25.0 * (0.5 * dx + 1.5 * dx) +
-                              0.5 * 15.0 * (2.25 * dx) + 10.0 * (2.5 * dx)) +
-                         pe_off;
-                         */
     // Formula has been integrated in z, and uses exact interface locations
     amrex::Real pe_exact =
-        rho1 * dx * dx * (-g) * 0.5 *
-            (15.0 * std::pow(2.5 * dx, 2) + 10.0 * std::pow(3.0 * dx, 2)) +
-        pe_off;
+        dx * dx * (-g) * 0.5 / (wlev * 2.0 * 2.0) *
+            (15.0 * std::pow(2.5 * dz, 2) + 10.0 * std::pow(3.0 * dz, 2)) +
+        0.5 * (-g) * wlev;
     EXPECT_NEAR(pe, pe_exact, tol);
 }
 

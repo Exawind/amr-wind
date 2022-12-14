@@ -17,8 +17,7 @@
  *  \ingroup fields
  */
 
-namespace amr_wind {
-namespace field_ops {
+namespace amr_wind::field_ops {
 
 /** Add two fields \f$y = x + y\f$
  *  \ingroup field_ops
@@ -403,7 +402,6 @@ inline void normalize(FType& field)
     }
 }
 
-} // namespace field_ops
-} // namespace amr_wind
+} // namespace amr_wind::field_ops
 
 #endif /* FIELD_OPS_H */

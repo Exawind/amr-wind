@@ -6,9 +6,7 @@
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/utilities/linear_interpolation.H"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 /** Forcing term to drive the ABL profile to a desired state
  *  \ingroup icns_src we_abl
@@ -30,6 +28,12 @@ public:
         const amrex::Box& bx,
         const FieldState fstate,
         const amrex::Array4<amrex::Real>& src_term) const override;
+
+    inline void set_target_velocities(amrex::Real ux, amrex::Real uy)
+    {
+        m_target_vel[0] = ux;
+        m_target_vel[1] = uy;
+    }
 
     inline void set_mean_velocities(amrex::Real ux, amrex::Real uy)
     {
@@ -85,8 +89,6 @@ private:
     amrex::Real m_forcing_height;
 };
 
-} // namespace icns
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns
 
 #endif /* ABLFORCING_H */

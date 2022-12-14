@@ -108,7 +108,8 @@ void ABLWallFunction::update_umean(
         m_mo.surf_temp =
             m_surf_temp_init +
             m_surf_temp_rate *
-                amrex::max(time.current_time() - m_surf_temp_rate_tstart, 0.0) /
+                amrex::max<amrex::Real>(
+                    time.current_time() - m_surf_temp_rate_tstart, 0.0) /
                 3600.0;
     }
 

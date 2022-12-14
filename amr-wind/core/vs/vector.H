@@ -4,8 +4,7 @@
 #include "AMReX_Gpu.H"
 #include "amr-wind/core/vs/vstraits.H"
 
-namespace amr_wind {
-namespace vs {
+namespace amr_wind::vs {
 
 /** Vector in 3D space
  */
@@ -139,8 +138,7 @@ struct VectorT
 
 using Vector = VectorT<amrex::Real>;
 
-} // namespace vs
-} // namespace amr_wind
+} // namespace amr_wind::vs
 
 #include "amr-wind/core/vs/vectorI.H"
 

@@ -7,8 +7,7 @@
 #include <algorithm>
 #include <memory>
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 Actuator::Actuator(CFDSim& sim)
     : m_sim(sim), m_act_source(sim.repo().declare_field("actuator_src_term", 3))
@@ -92,6 +91,33 @@ void Actuator::pre_advance_work()
     update_velocities();
     compute_forces();
     compute_source_term();
+
+#ifdef AMR_WIND_USE_HELICS
+    // send power and yaw from root actuator proc to io proc
+    const int ptag = 0;
+    const int ytag = 1;
+    const size_t size = 1;
+    for (auto& ac : m_actuators) {
+        if (ac->info().is_root_proc) {
+            amrex::ParallelDescriptor::Send(
+                &m_sim.helics().m_turbine_power_to_controller[ac->info().id],
+                size, amrex::ParallelDescriptor::IOProcessorNumber(), ptag);
+            amrex::ParallelDescriptor::Send(
+                &m_sim.helics()
+                     .m_turbine_wind_direction_to_controller[ac->info().id],
+                size, amrex::ParallelDescriptor::IOProcessorNumber(), ytag);
+        }
+        if (amrex::ParallelDescriptor::IOProcessor()) {
+            amrex::ParallelDescriptor::Recv(
+                &m_sim.helics().m_turbine_power_to_controller[ac->info().id],
+                size, ac->info().root_proc, ptag);
+            amrex::ParallelDescriptor::Recv(
+                &m_sim.helics()
+                     .m_turbine_wind_direction_to_controller[ac->info().id],
+                size, ac->info().root_proc, ytag);
+        }
+    }
+#endif
 }
 
 /** Set up the container for sampling velocities
@@ -233,6 +259,7 @@ void Actuator::post_advance_work()
     }
 }
 
+
 ActuatorModel& Actuator::get_act_bylabel(std::string actlabel) const
 {
     int thisid = 0; // Default to first actuator
@@ -262,5 +289,4 @@ T* Actuator::get_actuator(std::string key) const
     amrex::Abort("Could not find actuator");
 }
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator

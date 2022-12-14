@@ -4,14 +4,13 @@
 #include "amr-wind/wind_energy/actuator/actuator_types.H"
 #include "amr-wind/wind_energy/actuator/ActParser.H"
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 struct FLLCData
 {
     // constants
     amrex::Real epsilon;
     amrex::Real relaxation_factor{0.1};
-    RealList dx;
+    RealList dr;
     RealList optimal_epsilon;
 
     // computed values
@@ -47,7 +46,6 @@ void FLLCParse(const utils::ActParser& pp, FLLCData& data);
 void FLLCInit(
     FLLCData& data, const ComponentView& view, const amrex::Real eps_chord);
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator
 
 #endif /* FLLC */

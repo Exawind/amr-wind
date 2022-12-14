@@ -3,10 +3,7 @@
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/wind_energy/actuator/disk/disk_ops.H"
 
-namespace amr_wind {
-namespace actuator {
-namespace ops {
-namespace joukowsky {
+namespace amr_wind::actuator::ops::joukowsky {
 void check_for_parse_conflicts(const utils::ActParser& pp)
 {
     auto error_collector = ops::base::check_for_parse_conflicts(pp);
@@ -175,7 +172,7 @@ void write_netcdf(
     grp.var("power").put(&data.current_power, {nt}, {1});
     grp.var("density").put(&data.density, {nt}, {1});
     grp.var("total_disk_force")
-        .put(&data.disk_force[0], {nt}, {1, AMREX_SPACEDIM});
+        .put(&data.disk_force[0], {nt, 0}, {1, AMREX_SPACEDIM});
     grp.var("angular_velocity").put(&data.current_angular_velocity, {nt}, {1});
     grp.var("f_normal").put(&(data.f_normal[0]), {nt, 0}, {1, nr});
     grp.var("f_theta").put(&(data.f_theta[0]), {nt, 0}, {1, np});
@@ -184,7 +181,4 @@ void write_netcdf(
 #endif
 }
 
-} // namespace joukowsky
-} // namespace ops
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator::ops::joukowsky

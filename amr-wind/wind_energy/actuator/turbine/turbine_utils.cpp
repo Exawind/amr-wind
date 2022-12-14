@@ -3,9 +3,7 @@
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/wind_energy/actuator/FLLC.H"
 
-namespace amr_wind {
-namespace actuator {
-namespace utils {
+namespace amr_wind::actuator::utils {
 
 void read_inputs(
     TurbineBaseData& tdata, TurbineInfo& tinfo, const utils::ActParser& pp)
@@ -31,7 +29,7 @@ void read_inputs(
     pp.get("base_position", tinfo.base_pos);
     pp.get("rotor_diameter", tinfo.rotor_diameter);
     pp.get("hub_height", tinfo.hub_height);
-    bool use_fllc;
+    bool use_fllc = false;
     pp.query("fllc", use_fllc);
     if (use_fllc) {
         for (int i = 0; i < tdata.num_blades; ++i) {
@@ -151,6 +149,4 @@ void write_netcdf(
 #endif
 }
 
-} // namespace utils
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator::utils

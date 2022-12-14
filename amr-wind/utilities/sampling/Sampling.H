@@ -21,8 +21,7 @@
  *  \ingroup utilities
  */
 
-namespace amr_wind {
-namespace sampling {
+namespace amr_wind::sampling {
 
 /** Collection of data sampling objects
  *  \ingroup sampling
@@ -129,7 +128,6 @@ private:
     int m_out_freq{100};
 };
 
-} // namespace sampling
-} // namespace amr_wind
+} // namespace amr_wind::sampling
 
 #endif /* SAMPLING_H */

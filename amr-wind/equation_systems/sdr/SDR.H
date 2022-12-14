@@ -8,8 +8,7 @@
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/equation_systems/sdr/SDRSource.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /**
  *  \defgroup sdr_eqn Specific Dissipation Rate (SDR) transport equation
@@ -45,7 +44,6 @@ struct SDR : ScalarTransport
     static constexpr bool need_nph_state = true;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* SDR_H */

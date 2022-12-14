@@ -5,9 +5,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 /** Boussinesq buoyancy source term for ABL simulations
  *
@@ -154,6 +152,4 @@ void ABLMeanBoussinesq::read_temperature_profile(std::string profile_file_name)
         m_theta_vals.begin());
 }
 
-} // namespace icns
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns

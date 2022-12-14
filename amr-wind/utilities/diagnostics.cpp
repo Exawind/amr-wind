@@ -16,14 +16,14 @@ void incflo::PrintMaxValues(const std::string& header)
     for (int lev = 0; lev <= finest_level; lev++) {
         amrex::Print() << "\nLevel " << lev << std::endl;
 
-        auto& vel = icns().fields().field;
+        const auto& vel = icns().fields().field;
         amrex::Print() << "  " << std::setw(16) << std::left << vel.name();
         for (int i = 0; i < vel.num_comp(); ++i) {
             amrex::Print() << std::setw(20) << std::right << vel(lev).norm0(i);
         }
         amrex::Print() << std::endl;
 
-        auto& gradp = grad_p();
+        const auto& gradp = grad_p();
         amrex::Print() << "  " << std::setw(16) << std::left << gradp.name();
         for (int i = 0; i < gradp.num_comp(); ++i) {
             amrex::Print() << std::setw(20) << std::right

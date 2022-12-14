@@ -6,9 +6,7 @@
 #include "amr-wind/wind_energy/actuator/actuator_utils.H"
 #include "amr-wind/core/FieldRepo.H"
 
-namespace amr_wind {
-namespace actuator {
-namespace ops {
+namespace amr_wind::actuator::ops {
 
 template <typename ActTrait>
 class ActSrcOp<ActTrait, ActSrcLine>
@@ -109,8 +107,6 @@ void ActSrcOp<ActTrait, ActSrcLine>::operator()(
         sarr(i, j, k, 2) += src_force[2];
     });
 }
-} // namespace ops
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator::ops
 
 #endif /* ACTSRCLINEOP_H_ */

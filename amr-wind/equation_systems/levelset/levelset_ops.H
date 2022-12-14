@@ -4,8 +4,7 @@
 #include "amr-wind/equation_systems/levelset/levelset.H"
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /** Field registration operator for Levelset equation system
  *  \ingroup levelset
@@ -146,7 +145,6 @@ struct PostSolveOp<Levelset>
     PDEFields& m_fields;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* LEVELSET_OPS_H */
