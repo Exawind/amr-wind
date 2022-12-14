@@ -7,8 +7,7 @@
 #include "amr-wind/equation_systems/PDE.H"
 #include "amr-wind/equation_systems/temperature/TemperatureSource.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /**
  *  \defgroup temp_eqn Temperature transport equation
@@ -60,7 +59,6 @@ struct TurbulenceOp<Temperature>
     PDEFields& m_fields;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* TEMPERATURE_H */

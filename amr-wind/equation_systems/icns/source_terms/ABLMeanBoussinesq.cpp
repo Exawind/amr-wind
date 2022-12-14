@@ -5,9 +5,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 /** Boussinesq buoyancy source term for ABL simulations
  *
@@ -131,7 +129,6 @@ void ABLMeanBoussinesq::mean_temperature_update(const FieldPlaneAveraging& tavg)
 void ABLMeanBoussinesq::read_temperature_profile(std::string profile_file_name)
 {
 
-    m_axis = 2; // Fix to be z-direction for now
     amrex::Vector<amrex::Real> theta_ht, theta_vals;
     std::ifstream infile;
     int n_hts;
@@ -155,6 +152,4 @@ void ABLMeanBoussinesq::read_temperature_profile(std::string profile_file_name)
         m_theta_vals.begin());
 }
 
-} // namespace icns
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns

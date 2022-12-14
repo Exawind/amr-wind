@@ -4,8 +4,7 @@
 #include "amr-wind/equation_systems/sdr/SDR.H"
 #include "amr-wind/core/field_ops.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /** Implementation of Turbulence operator for SDR equation
  *  \ingroup sdr_eqn
@@ -50,10 +49,10 @@ struct FieldRegOp<SDR, Scheme>
 {
     explicit FieldRegOp(CFDSim& sim_in) : sim(sim_in) {}
 
-    PDEFields operator()(const SimTime& time, const int probtype)
+    PDEFields operator()(const SimTime& time)
     {
         auto& repo = sim.repo();
-        auto fields = create_fields_instance<SDR, Scheme>(time, repo, probtype);
+        auto fields = create_fields_instance<SDR, Scheme>(time, repo);
 
         repo.declare_cc_field(
             SDR::var_name() + "_lhs_src_term", SDR::ndim, 1, 1);
@@ -133,7 +132,6 @@ struct DiffusionOp<SDR, Scheme> : public DiffSolverIface<typename SDR::MLDiffOp>
     Field& m_lhs_src_term;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* SDR_OPS_H */

@@ -167,7 +167,8 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
                     amrex::Real alpha = tmp_f1 * (alpha1 - alpha2) + alpha2;
                     amrex::Real beta = tmp_f1 * (beta1 - beta2) + beta2;
 
-                    amrex::Real arg2 = amrex::max(2.0 * tmp2, tmp3);
+                    amrex::Real arg2 =
+                        amrex::max<amrex::Real>(2.0 * tmp2, tmp3);
                     amrex::Real f2 = std::tanh(arg2 * arg2);
 
                     mu_arr(i, j, k) =
@@ -207,7 +208,7 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
                     tke_lhs_arr(i, j, k) =
                         0.5 * std::sqrt(tke_arr(i, j, k)) / l_iddes * deltaT;
 
-                    shear_prod_arr(i, j, k) = amrex::min(
+                    shear_prod_arr(i, j, k) = amrex::min<amrex::Real>(
                         mu_arr(i, j, k) * tmp4 * tmp4,
                         10.0 * beta_star * rho_arr(i, j, k) * tke_arr(i, j, k) *
                             sdr_arr(i, j, k));
@@ -216,7 +217,7 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
                                            sdr_arr(i, j, k) * deltaT;
                     sdr_src_arr(i, j, k) =
                         rho_arr(i, j, k) * alpha * shear_prod_arr(i, j, k) /
-                            amrex::max(mu_arr(i, j, k), 1.0e-16) +
+                            amrex::max<amrex::Real>(mu_arr(i, j, k), 1.0e-16) +
                         (1.0 - tmp_f1) * cdkomega;
                     sdr_diss_arr(i, j, k) = -rho_arr(i, j, k) * beta *
                                             sdr_arr(i, j, k) * sdr_arr(i, j, k);

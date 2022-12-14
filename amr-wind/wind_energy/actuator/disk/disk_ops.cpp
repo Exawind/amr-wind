@@ -1,8 +1,7 @@
 #include "amr-wind/wind_energy/actuator/disk/disk_ops.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/io_utils.H"
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 namespace disk {
 void prepare_netcdf_file(
     const std::string& name,
@@ -93,8 +92,23 @@ void write_netcdf(
 #endif
 }
 } // namespace disk
-namespace ops {
-namespace base {
+namespace ops::base {
+
+AreaComputer::AreaComputer(
+    const amrex::Real radius, const int num_r, const int num_theta)
+    : area(M_PI * radius * radius)
+    , geometry_factor(radius * radius / num_r / num_r * M_PI / num_theta)
+{}
+
+amrex::Real AreaComputer::area_section(const int iRadius) const
+{
+    return geometry_factor * (std::pow(iRadius + 1, 2) - std::pow(iRadius, 2));
+}
+
+amrex::Real AreaComputer::weight(const int iRadius) const
+{
+    return area_section(iRadius) / area;
+}
 
 vs::Vector get_east_orientation()
 {
@@ -180,7 +194,6 @@ void optional_parameters(DiskBaseData& meta, const utils::ActParser& pp)
     }
     pp.query("disk_center", meta.center);
     pp.query("disk_normal", meta.normal_vec);
-    pp.query("density", meta.density);
     pp.query("diameters_to_sample", meta.diameters_to_sample);
     pp.query("num_points_t", meta.num_force_theta_pts);
 
@@ -296,6 +309,7 @@ std::ostringstream check_for_parse_conflicts(const utils::ActParser& pp)
 
 vs::Vector compute_coplanar_vector(const vs::Vector& normal)
 {
+    // FIXME: only works for abl with z pointing up
     return (vs::Vector::khat() ^ normal).normalize();
 }
 
@@ -378,7 +392,5 @@ void compute_disk_points(
         }
     }
 }
-} // namespace base
-} // namespace ops
-} // namespace actuator
-} // namespace amr_wind
+} // namespace ops::base
+} // namespace amr_wind::actuator

@@ -5,9 +5,7 @@
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 /** Body Force
  */
@@ -47,6 +45,4 @@ void BodyForce::operator()(
     });
 }
 
-} // namespace icns
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns

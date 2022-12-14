@@ -5,8 +5,7 @@
 #include "amr-wind/transport_models/TransportModel.H"
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace transport {
+namespace amr_wind::transport {
 
 /** Two-phase fluid transport model with piece-wise constant properties
  *  \ingroup transport
@@ -66,6 +65,7 @@ public:
 
         if (m_ifacetype == InterfaceCapturingMethod::VOF) {
 
+            // cppcheck-suppress constVariable
             auto& vof = m_repo.get_field("vof");
 
             for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
@@ -88,6 +88,7 @@ public:
 
         } else if (m_ifacetype == InterfaceCapturingMethod::LS) {
 
+            // cppcheck-suppress constVariable
             auto& levelset = m_repo.get_field("levelset");
             const auto& geom = m_repo.mesh().Geom();
 
@@ -175,7 +176,6 @@ private:
     amrex::Real m_Prt{1.0};
 };
 
-} // namespace transport
-} // namespace amr_wind
+} // namespace amr_wind::transport
 
 #endif /* TWOPHASETRANSPORT_H */

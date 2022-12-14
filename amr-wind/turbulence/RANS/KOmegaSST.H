@@ -4,8 +4,7 @@
 #include <string>
 #include "amr-wind/turbulence/TurbModelBase.H"
 
-namespace amr_wind {
-namespace turbulence {
+namespace amr_wind::turbulence {
 
 /** K-Omega-SST RANS turbulence model
  *
@@ -65,6 +64,7 @@ protected:
 
     Field& m_f1;
     Field& m_shear_prod;
+    Field& m_buoy_term;
     Field& m_diss;
     Field& m_sdr_src;
     Field& m_sdr_diss;
@@ -85,9 +85,14 @@ protected:
     amrex::Real m_sigma_omega1{0.5};
     amrex::Real m_sigma_omega2{0.856};
     amrex::Real m_a1{0.31};
+
+    //! Buoyancy modified constants
+    bool m_include_buoyancy{false};
+    amrex::Real m_buoyancy_factor = 0.0;
+    amrex::Real m_sigma_t{0.85};
+    amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
 };
 
-} // namespace turbulence
-} // namespace amr_wind
+} // namespace amr_wind::turbulence
 
 #endif /* KOMEGASST_H */

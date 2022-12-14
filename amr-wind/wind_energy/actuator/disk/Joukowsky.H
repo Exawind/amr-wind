@@ -5,8 +5,7 @@
 #include "amr-wind/wind_energy/actuator/disk/ActuatorDisk.H"
 #include "amr-wind/core/vs/vector_space.H"
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 struct JoukowskyData : public DiskBaseData
 {
@@ -19,6 +18,7 @@ struct JoukowskyData : public DiskBaseData
     amrex::Real current_tip_speed_ratio{0.0};
     amrex::Real vortex_core_size;
     amrex::Real current_cp;
+    amrex::Real current_power;
     // --- Sorenson 2020 equation 10 constants ----
     amrex::Real root_correction_coefficient{2.335};
     amrex::Real root_correction_exponent{4.0};
@@ -39,7 +39,6 @@ struct Joukowsky : public DiskType
     static std::string identifier() { return "Joukowsky"; }
 };
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator
 
 #endif /* Joukowsky_H_ */

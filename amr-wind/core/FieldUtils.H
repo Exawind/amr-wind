@@ -5,8 +5,7 @@
 #include "AMReX_MultiFab.H"
 #include "AMReX_Interpolater.H"
 
-namespace amr_wind {
-namespace field_impl {
+namespace amr_wind::field_impl {
 
 /** Convert amr_wind::FieldLoc to index type for use with AMReX objects.
  *  \ingroup field_ops
@@ -94,6 +93,15 @@ get_interpolation_operator(const FieldInterpolator itype)
 
     case FieldInterpolator::NodeBilinear:
         return &amrex::node_bilinear_interp;
+
+    case FieldInterpolator::FaceDivFree:
+        return &amrex::face_divfree_interp;
+
+    case FieldInterpolator::FaceLinear:
+        return &amrex::face_linear_interp;
+
+    default:
+        amrex::Abort("Unrecognized FieldInterpolator type");
     }
 
     return &amrex::cell_cons_interp;
@@ -109,7 +117,6 @@ inline FieldState phi_state(const FieldState fstate)
     return (fstate == FieldState::Old) ? FieldState::Old : FieldState::NPH;
 }
 
-} // namespace field_impl
-} // namespace amr_wind
+} // namespace amr_wind::field_impl
 
 #endif /* FIELDUTILS_H */

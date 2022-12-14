@@ -4,8 +4,7 @@
 #include "amr-wind/utilities/tagging/GeometryRefinement.H"
 #include "amr-wind/core/vs/vector_space.H"
 
-namespace amr_wind {
-namespace tagging {
+namespace amr_wind::tagging {
 
 /** Refine region inside a cylinder
  *  \ingroup amr_utils
@@ -37,7 +36,6 @@ private:
     amrex::Real m_inner_radius{0.0};
 };
 
-} // namespace tagging
-} // namespace amr_wind
+} // namespace amr_wind::tagging
 
 #endif /* CYLINDERREFINER_H */

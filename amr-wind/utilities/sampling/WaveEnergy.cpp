@@ -7,8 +7,7 @@
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/IOManager.H"
 
-namespace amr_wind {
-namespace wave_energy {
+namespace amr_wind::wave_energy {
 
 WaveEnergy::WaveEnergy(CFDSim& sim, std::string label)
     : m_sim(sim)
@@ -22,18 +21,25 @@ WaveEnergy::~WaveEnergy() = default;
 void WaveEnergy::initialize()
 {
     BL_PROFILE("amr-wind::WaveEnergy::initialize");
+    // Default water level is 0
+    amrex::Real w_lev = 0.0;
     {
         amrex::ParmParse pp(m_label);
         pp.query("output_frequency", m_out_freq);
-        pp.query("potential_energy_offset", m_pe_off);
+        pp.query("water_level", w_lev);
     }
     // Get gravity and density
     {
         amrex::ParmParse pp("incflo");
         pp.queryarr("gravity", m_gravity);
     }
-    auto& mphase = m_sim.physics_manager().get<amr_wind::MultiPhase>();
-    m_rho1 = mphase.rho1();
+    // Calculate depth
+    const auto& geom = m_sim.repo().mesh().Geom();
+    amrex::Real depth = w_lev - geom[0].ProbLo()[2];
+    // Calculate volume scaling and PE offset
+    m_escl = (geom[0].ProbHi()[0] - geom[0].ProbLo()[0]) *
+             (geom[0].ProbHi()[1] - geom[0].ProbLo()[1]) * depth;
+    m_pe_off = -0.5 * m_gravity[2] * depth;
 
     prepare_ascii_file();
 }
@@ -44,9 +50,6 @@ amrex::Real WaveEnergy::calculate_kinetic_energy()
 
     // integrated total wave Energy
     amrex::Real wave_ke = 0.0;
-
-    // Liquid density
-    const amrex::Real rho_liq = m_rho1;
 
     const int finest_level = m_velocity.repo().num_active_levels() - 1;
     const auto& geom = m_velocity.repo().mesh().Geom();
@@ -81,7 +84,7 @@ amrex::Real WaveEnergy::calculate_kinetic_energy()
                 amrex::Loop(
                     bx, [=, &Wave_Energy_Fab](int i, int j, int k) noexcept {
                         Wave_Energy_Fab +=
-                            cell_vol * mask_arr(i, j, k) * 0.5 * rho_liq *
+                            cell_vol * mask_arr(i, j, k) * 0.5 *
                             vof_arr(i, j, k) *
                             (vel_arr(i, j, k, 0) * vel_arr(i, j, k, 0) +
                              vel_arr(i, j, k, 1) * vel_arr(i, j, k, 1) +
@@ -102,8 +105,6 @@ amrex::Real WaveEnergy::calculate_potential_energy()
 
     // integrated total wave Energy
     amrex::Real wave_pe = 0.0;
-    // Liquid density
-    const amrex::Real rho_liq = m_rho1;
     // gravity constant
     const amrex::Real g = -m_gravity[2];
 
@@ -150,7 +151,7 @@ amrex::Real WaveEnergy::calculate_potential_energy()
                         const amrex::Real zl =
                             probloz + (kk + dir * 0.5 * vof_arr(i, j, k)) * dz;
                         Wave_Energy_Fab += cell_vol * mask_arr(i, j, k) *
-                                           rho_liq * vof_arr(i, j, k) * g * zl;
+                                           vof_arr(i, j, k) * g * zl;
                     });
                 return Wave_Energy_Fab;
             });
@@ -171,8 +172,8 @@ void WaveEnergy::post_advance_work()
         return;
     }
 
-    m_wave_kinetic_energy = calculate_kinetic_energy();
-    m_wave_potential_energy = calculate_potential_energy() + m_pe_off;
+    m_wave_kinetic_energy = calculate_kinetic_energy() / m_escl;
+    m_wave_potential_energy = calculate_potential_energy() / m_escl + m_pe_off;
 
     write_ascii();
 }
@@ -213,5 +214,4 @@ void WaveEnergy::write_ascii()
     }
 }
 
-} // namespace wave_energy
-} // namespace amr_wind
+} // namespace amr_wind::wave_energy

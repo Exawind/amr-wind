@@ -8,8 +8,7 @@
 #include "amr-wind/equation_systems/CompRHSOps.H"
 #include "amr-wind/equation_systems/DiffusionOps.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /** Implementation of the PDE interface for transport equations
  *  \ingroup eqsys
@@ -39,13 +38,12 @@ public:
 
     /**
      *  \param sim A CFDSim instance
-     *  \param probtype Unique identifier for a problem type
      */
-    PDESystem(CFDSim& sim, const int probtype)
+    explicit PDESystem(CFDSim& sim)
         : m_sim(sim)
         , m_time(sim.time())
         , m_repo(sim.repo())
-        , m_fields(FieldRegOp<PDE, Scheme>(m_sim)(m_time, probtype))
+        , m_fields(FieldRegOp<PDE, Scheme>(m_sim)(m_time))
         , m_src_op(m_fields)
         , m_rhs_op(m_fields)
         , m_bc_op(m_fields, m_time)
@@ -195,7 +193,6 @@ protected:
     PostSolveOp<PDE> m_post_solve_op;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* PDE_H */

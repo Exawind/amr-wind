@@ -1,6 +1,7 @@
 #include <cmath>
 
 #include "amr-wind/wind_energy/ABLFieldInit.H"
+#include "amr-wind/utilities/trig_ops.H"
 #include "AMReX_Gpu.H"
 #include "AMReX_ParmParse.H"
 
@@ -33,10 +34,23 @@ ABLFieldInit::ABLFieldInit()
     pp_abl.query("init_tke", m_tke_init);
 
     // TODO: Modify this to accept velocity as a function of height
-    // Extract velocity field from incflo
     amrex::ParmParse pp_incflo("incflo");
     pp_incflo.get("density", m_rho);
-    pp_incflo.getarr("velocity", m_vel);
+
+    amrex::ParmParse pp_forcing("ABLForcing");
+    pp_forcing.query("velocity_timetable", m_vel_timetable);
+    if (!m_vel_timetable.empty()) {
+        std::ifstream ifh(m_vel_timetable, std::ios::in);
+        if (!ifh.good()) {
+            amrex::Abort("Cannot find input file: " + m_vel_timetable);
+        }
+        amrex::Real m_vel_time;
+        amrex::Real m_vel_ang;
+        ifh >> m_vel_time >> m_vel_speed >> m_vel_ang;
+        m_vel_dir = utils::radians(m_vel_ang);
+    } else {
+        pp_incflo.getarr("velocity", m_vel);
+    }
 
     m_thht_d.resize(num_theta_values);
     m_thvv_d.resize(num_theta_values);
@@ -63,9 +77,13 @@ void ABLFieldInit::operator()(
 
     const bool perturb_vel = m_perturb_vel;
     const amrex::Real rho_init = m_rho;
-    const amrex::Real umean = m_vel[0];
-    const amrex::Real vmean = m_vel[1];
-    const amrex::Real wmean = m_vel[2];
+
+    const amrex::Real umean =
+        !m_vel_timetable.empty() ? m_vel_speed * std::cos(m_vel_dir) : m_vel[0];
+    const amrex::Real vmean =
+        !m_vel_timetable.empty() ? m_vel_speed * std::sin(m_vel_dir) : m_vel[1];
+    const amrex::Real wmean = !m_vel_timetable.empty() ? 0.0 : m_vel[2];
+
     const amrex::Real aval = m_Uperiods * 2.0 * pi / (probhi[1] - problo[1]);
     const amrex::Real bval = m_Vperiods * 2.0 * pi / (probhi[0] - problo[0]);
     const amrex::Real ufac = m_deltaU * std::exp(0.5) / m_ref_height;

@@ -57,8 +57,7 @@ struct FlatPlate : public act::WingType
 
 } // namespace amr_wind_tests
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 namespace ops {
 
@@ -170,8 +169,7 @@ struct ComputeForceOp<::amr_wind_tests::FlatPlate, SrcTrait>
 
 template class ::amr_wind::actuator::
     ActModel<::amr_wind_tests::FlatPlate, ::amr_wind::actuator::ActSrcLine>;
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator
 
 namespace amr_wind_tests {
 
@@ -220,6 +218,8 @@ TEST_F(ActFlatPlateTest, actuator_init)
 {
     initialize_mesh();
     auto& vel = sim().repo().declare_field("velocity", 3, 3);
+    auto& density = sim().repo().declare_field("density", 1, 3);
+    density.setVal(1.0);
     init_field(vel);
     amr_wind::actuator::ActuatorContainer::ParticleType::NextID(1U);
 
@@ -253,6 +253,8 @@ TEST_F(ActFlatPlateTest, flat_plate_init)
 {
     initialize_mesh();
     auto& vel = sim().repo().declare_field("velocity", 3, 3);
+    auto& density = sim().repo().declare_field("density", 1, 3);
+    density.setVal(1.0);
     vel.setVal(10.0, 0, 1, 3);
     amr_wind::actuator::ActuatorContainer::ParticleType::NextID(1U);
 

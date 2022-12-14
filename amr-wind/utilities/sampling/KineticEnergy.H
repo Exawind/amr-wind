@@ -4,8 +4,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/PostProcessing.H"
 
-namespace amr_wind {
-namespace kinetic_energy {
+namespace amr_wind::kinetic_energy {
 
 /** kinetic energy object
  *  \ingroup Kinetic Energy
@@ -75,7 +74,6 @@ private:
     int m_precision{12};
 };
 
-} // namespace kinetic_energy
-} // namespace amr_wind
+} // namespace amr_wind::kinetic_energy
 
 #endif /* KINETICENERGY_H */

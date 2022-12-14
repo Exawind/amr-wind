@@ -22,7 +22,7 @@ struct MeanVelOp
         return m_ref_vel;
     }
 
-    const amrex::Real m_ref_vel;
+    const double m_ref_vel;
 };
 
 class MeanProfile
@@ -101,9 +101,9 @@ struct SynthTurbDeviceData
     // coordinate system
     vs::Tensor tr_mat;
 
-    amrex::Real* uvel;
-    amrex::Real* vvel;
-    amrex::Real* wvel;
+    double* uvel;
+    double* vvel;
+    double* wvel;
 
     // Indices of the two planes stored in the data arrays
     int ileft;
@@ -194,11 +194,12 @@ private:
     std::unique_ptr<synth_turb::MeanProfile> m_wind_profile;
 
     std::string m_mean_wind_type{"ConstValue"};
-    amrex::Real m_grid_spacing;
     amrex::Real m_epsilon;
     amrex::Real m_gauss_scaling;
 
     amrex::Real m_time_offset{0.0};
+    // Duration of the synthetic turbulence injection. Unused if < 0
+    amrex::Real m_duration{-1};
 
     bool m_is_init{true};
 };

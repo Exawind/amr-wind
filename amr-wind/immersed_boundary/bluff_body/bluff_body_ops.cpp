@@ -11,9 +11,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace ib {
-namespace bluff_body {
+namespace amr_wind::ib::bluff_body {
 
 void read_inputs(
     BluffBodyBaseData& wdata,
@@ -154,6 +152,4 @@ void write_netcdf(
     amrex::ignore_unused(ncfile, meta, info, time);
 }
 
-} // namespace bluff_body
-} // namespace ib
-} // namespace amr_wind
+} // namespace amr_wind::ib::bluff_body

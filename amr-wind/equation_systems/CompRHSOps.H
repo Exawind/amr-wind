@@ -5,8 +5,7 @@
 #include "amr-wind/equation_systems/PDEOps.H"
 #include "amr-wind/equation_systems/SchemeTraits.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /** RHS computation operator
  *  \ingroup pdeop
@@ -270,7 +269,6 @@ struct ComputeRHSOp
     Field& density;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* COMPRHSOPS_H */

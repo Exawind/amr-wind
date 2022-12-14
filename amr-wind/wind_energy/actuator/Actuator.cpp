@@ -8,8 +8,7 @@
 #include <algorithm>
 #include <memory>
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 Actuator::Actuator(CFDSim& sim)
     : m_sim(sim), m_act_source(sim.repo().declare_field("actuator_src_term", 3))
@@ -93,6 +92,33 @@ void Actuator::pre_advance_work()
     update_velocities();
     compute_forces();
     compute_source_term();
+
+#ifdef AMR_WIND_USE_HELICS
+    // send power and yaw from root actuator proc to io proc
+    const int ptag = 0;
+    const int ytag = 1;
+    const size_t size = 1;
+    for (auto& ac : m_actuators) {
+        if (ac->info().is_root_proc) {
+            amrex::ParallelDescriptor::Send(
+                &m_sim.helics().m_turbine_power_to_controller[ac->info().id],
+                size, amrex::ParallelDescriptor::IOProcessorNumber(), ptag);
+            amrex::ParallelDescriptor::Send(
+                &m_sim.helics()
+                     .m_turbine_wind_direction_to_controller[ac->info().id],
+                size, amrex::ParallelDescriptor::IOProcessorNumber(), ytag);
+        }
+        if (amrex::ParallelDescriptor::IOProcessor()) {
+            amrex::ParallelDescriptor::Recv(
+                &m_sim.helics().m_turbine_power_to_controller[ac->info().id],
+                size, ac->info().root_proc, ptag);
+            amrex::ParallelDescriptor::Recv(
+                &m_sim.helics()
+                     .m_turbine_wind_direction_to_controller[ac->info().id],
+                size, ac->info().root_proc, ytag);
+        }
+    }
+#endif
 }
 
 /** Set up the container for sampling velocities
@@ -147,7 +173,8 @@ void Actuator::update_positions()
 
     // Sample velocities at the new locations
     const auto& vel = m_sim.repo().get_field("velocity");
-    m_container->sample_velocities(vel);
+    const auto& density = m_sim.repo().get_field("density");
+    m_container->sample_fields(vel, density);
 }
 
 /** Provide updated velocities from container to actuator instances
@@ -160,9 +187,14 @@ void Actuator::update_velocities()
     auto& pinfo = m_container->m_data;
     for (int i = 0, ic = 0; i < pinfo.num_objects; ++i) {
         const auto ig = pinfo.global_id[i];
+
         const auto vel =
             ::amr_wind::utils::slice(pinfo.velocity, ic, pinfo.num_pts[i]);
-        m_actuators[ig]->update_velocities(vel);
+
+        const auto density =
+            ::amr_wind::utils::slice(pinfo.density, ic, pinfo.num_pts[i]);
+
+        m_actuators[ig]->update_fields(vel, density);
         ic += pinfo.num_pts[i];
     }
 }
@@ -228,5 +260,4 @@ void Actuator::post_advance_work()
     }
 }
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator

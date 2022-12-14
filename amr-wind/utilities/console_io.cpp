@@ -18,7 +18,6 @@
 #endif
 #ifdef AMR_WIND_USE_ASCENT
 #include "ascent_config.h"
-#include <omp.h>
 #endif
 
 namespace amrex {
@@ -28,8 +27,7 @@ const char* buildInfoGetGitHash(int i);
 const char* buildInfoGetCompVersion();
 } // namespace amrex
 
-namespace amr_wind {
-namespace io {
+namespace amr_wind::io {
 
 namespace {
 const std::string dbl_line = std::string(78, '=') + "\n";
@@ -204,5 +202,4 @@ void print_tpls(std::ostream& out)
     }
 }
 
-} // namespace io
-} // namespace amr_wind
+} // namespace amr_wind::io

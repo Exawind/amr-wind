@@ -34,6 +34,9 @@ struct ActuatorCloud
     //! Velocity vectors of all actuator nodes belonging to this MPI rank
     amrex::Vector<vs::Vector> velocity;
 
+    //! Density of all actuator nodes belonging to this MPI rank
+    amrex::Vector<amrex::Real> density;
+
     //! Total number of turbines located on this MPI rank
     int num_objects;
 
@@ -41,7 +44,7 @@ struct ActuatorCloud
 };
 
 //! Number or real entries in Array of Structs (AOS)
-static constexpr int NumPStructReal = AMREX_SPACEDIM;
+static constexpr int NumPStructReal = AMREX_SPACEDIM + 1;
 //! Number of integer entries in Array of Structs (AOS)
 static constexpr int NumPStructInt = 1;
 //! Number of real entries in Struct of Arrays (SOA)
@@ -73,15 +76,15 @@ public:
 
     void update_positions();
 
-    void sample_velocities(const Field& vel);
+    void sample_fields(const Field& vel, const Field& density);
 
     int num_actuator_points() const { return m_data.position.size(); }
 
     // public for CUDA, not safe for general access
 
-    void interpolate_velocities(const Field& vel);
+    void interpolate_fields(const Field& vel, const Field& density);
 
-    void populate_vel_buffer();
+    void populate_field_buffers();
 
     void initialize_particles(const int total_pts);
 

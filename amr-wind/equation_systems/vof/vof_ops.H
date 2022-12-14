@@ -4,8 +4,7 @@
 #include "amr-wind/equation_systems/vof/vof.H"
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /** Field registration operator for VOF equation system
  *  \ingroup vof
@@ -15,12 +14,12 @@ struct FieldRegOp<VOF, Scheme>
 {
     explicit FieldRegOp(CFDSim& sim_in) : sim(sim_in) {}
 
-    PDEFields operator()(const SimTime& time, const int probtype)
+    PDEFields operator()(const SimTime& time)
     {
         auto& repo = sim.repo();
-        auto fields = create_fields_instance<VOF, Scheme>(time, repo, probtype);
+        auto fields = create_fields_instance<VOF, Scheme>(time, repo);
 
-        auto& levelset = repo.declare_cc_field("levelset", 1, 1, 1);
+        auto& levelset = repo.declare_cc_field("levelset", 1, 3, 1);
         auto& curvature = repo.declare_cc_field("interface_curvature", 1, 1, 1);
 
         levelset.set_default_fillpatch_bc(sim.time());
@@ -76,13 +75,17 @@ struct PostSolveOp<VOF>
         m_fields.field.fillpatch(m_sim.time().current_time());
         auto& multiphase = m_sim.physics_manager().get<MultiPhase>();
         multiphase.set_density_via_vof();
+
+        // Calculate n+1/2 density
+        multiphase.set_nph_density();
+        // Convert advalpha to advrho
+        multiphase.calculate_advected_facedensity();
     }
 
     CFDSim& m_sim;
     PDEFields& m_fields;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* VOF_OPS_H */

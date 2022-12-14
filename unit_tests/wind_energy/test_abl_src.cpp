@@ -125,7 +125,9 @@ TEST_F(ABLMeshTest, body_force)
         });
 
         const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{
-            {1.0 * std::cos(0.1), 2.0 * std::cos(0.1), 3.0 * std::cos(0.1)}};
+            {static_cast<amrex::Real>(1.0 * std::cos(0.1)),
+             static_cast<amrex::Real>(2.0 * std::cos(0.1)),
+             static_cast<amrex::Real>(3.0 * std::cos(0.1))}};
         const auto valx2 = utils::field_max(src_term, 0);
         const auto valy2 = utils::field_max(src_term, 1);
         const auto valz2 = utils::field_max(src_term, 2);
@@ -186,7 +188,7 @@ TEST_F(ABLMeshTest, coriolis_const_vel)
     utils::populate_abl_params();
     initialize_mesh();
 
-    auto fields = ICNSFields(sim())(sim().time(), 0);
+    auto fields = ICNSFields(sim())(sim().time());
     auto& vel = fields.field;
     auto& src_term = fields.src_term;
     amr_wind::pde::icns::CoriolisForcing coriolis(sim());
@@ -265,7 +267,7 @@ TEST_F(ABLMeshTest, coriolis_height_variation)
     utils::populate_abl_params();
     initialize_mesh();
 
-    auto fields = ICNSFields(sim())(sim().time(), 0);
+    auto fields = ICNSFields(sim())(sim().time());
     auto& velocity = fields.field;
     auto& vel_src = fields.src_term;
     amr_wind::pde::icns::CoriolisForcing coriolis(sim());

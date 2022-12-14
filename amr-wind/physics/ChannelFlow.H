@@ -6,8 +6,7 @@
 #include "amr-wind/CFDSim.H"
 #include <AMReX_REAL.H>
 
-namespace amr_wind {
-namespace channel_flow {
+namespace amr_wind::channel_flow {
 
 /** Channel Flow physics
  *  \ingroup physics
@@ -78,8 +77,6 @@ private:
 
     bool m_laminar{false};
 
-    bool m_dns{false};
-
     bool m_mesh_mapping{false};
 
     amrex::Real m_mean_vel;
@@ -93,7 +90,6 @@ private:
     //! error log file
     std::string m_output_fname{"channel_flow.log"};
 };
-} // namespace channel_flow
-} // namespace amr_wind
+} // namespace amr_wind::channel_flow
 
 #endif /* ChannelFlow_H */

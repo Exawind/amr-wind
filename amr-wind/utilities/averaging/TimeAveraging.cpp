@@ -6,8 +6,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace averaging {
+namespace amr_wind::averaging {
 
 TimeAveraging::TimeAveraging(CFDSim& sim, std::string label)
     : m_sim(sim), m_label(std::move(label))
@@ -93,5 +92,4 @@ void TimeAveraging::post_advance_work()
     }
 }
 
-} // namespace averaging
-} // namespace amr_wind
+} // namespace amr_wind::averaging

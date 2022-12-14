@@ -1,13 +1,12 @@
 #include "amr-wind/equation_systems/icns/source_terms/ABLForcing.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/wind_energy/ABL.H"
+#include "amr-wind/utilities/trig_ops.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 ABLForcing::ABLForcing(const CFDSim& sim) : m_time(sim.time())
 {
@@ -19,7 +18,27 @@ ABLForcing::ABLForcing(const CFDSim& sim) : m_time(sim.time())
     // TODO: Allow forcing at multiple heights
     pp_abl.get("abl_forcing_height", m_forcing_height);
     amrex::ParmParse pp_incflo("incflo");
-    pp_incflo.getarr("velocity", m_target_vel);
+
+    pp_abl.query("velocity_timetable", m_vel_timetable);
+    if (!m_vel_timetable.empty()) {
+        std::ifstream ifh(m_vel_timetable, std::ios::in);
+        if (!ifh.good()) {
+            amrex::Abort("Cannot find input file: " + m_vel_timetable);
+        }
+        amrex::Real data_time;
+        amrex::Real data_speed;
+        amrex::Real data_deg;
+        ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        while (ifh >> data_time) {
+            ifh >> data_speed >> data_deg;
+            amrex::Real data_rad = utils::radians(data_deg);
+            m_time_table.push_back(data_time);
+            m_speed_table.push_back(data_speed);
+            m_direction_table.push_back(data_rad);
+        }
+    } else {
+        pp_incflo.getarr("velocity", m_target_vel);
+    }
 
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {
         m_mean_vel[i] = m_target_vel[i];
@@ -47,6 +66,4 @@ void ABLForcing::operator()(
     });
 }
 
-} // namespace icns
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns

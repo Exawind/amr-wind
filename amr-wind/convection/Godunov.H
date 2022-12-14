@@ -10,7 +10,7 @@
 
 namespace godunov {
 
-enum class scheme { PLM, PPM, PPM_NOLIM, WENOJS, WENOZ };
+enum class scheme { PLM, PPM, PPM_NOLIM, BDS, WENOJS, WENOZ, MINMOD, UPWIND };
 
 void compute_fluxes(
     int lev,
@@ -78,45 +78,6 @@ void predict_ppm(
     amrex::Real dt,
     amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device,
     bool use_limiter);
-
-void predict_plm_x(
-    int lev,
-    amrex::Box const& bx,
-    int ncomp,
-    amrex::Array4<amrex::Real> const& Imx,
-    amrex::Array4<amrex::Real> const& Ipx,
-    amrex::Array4<amrex::Real const> const& q,
-    amrex::Array4<amrex::Real const> const& vcc,
-    amrex::Vector<amrex::Geometry> geom,
-    amrex::Real dt,
-    amrex::Vector<amrex::BCRec> const& h_bcrec,
-    amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device);
-
-void predict_plm_y(
-    int lev,
-    amrex::Box const& bx,
-    int ncomp,
-    amrex::Array4<amrex::Real> const& Imy,
-    amrex::Array4<amrex::Real> const& Ipy,
-    amrex::Array4<amrex::Real const> const& q,
-    amrex::Array4<amrex::Real const> const& vcc,
-    amrex::Vector<amrex::Geometry> geom,
-    amrex::Real dt,
-    amrex::Vector<amrex::BCRec> const& h_bcrec,
-    amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device);
-
-void predict_plm_z(
-    int lev,
-    amrex::Box const& bx,
-    int ncomp,
-    amrex::Array4<amrex::Real> const& Imz,
-    amrex::Array4<amrex::Real> const& Ipz,
-    amrex::Array4<amrex::Real const> const& q,
-    amrex::Array4<amrex::Real const> const& vcc,
-    amrex::Vector<amrex::Geometry> geom,
-    amrex::Real dt,
-    amrex::Vector<amrex::BCRec> const& h_bcrec,
-    amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device);
 
 void make_trans_velocities(
     int lev,

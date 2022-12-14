@@ -5,8 +5,7 @@
 #include "amr-wind/equation_systems/BCOps.H"
 #include "amr-wind/boundary_conditions/velocity_bcs.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /** BC operations for incompressible Navier-Stokes
  *  \ingroup icns
@@ -60,7 +59,6 @@ struct BCOp<ICNS>
     const SimTime& m_time;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* ICNS_BCOP_H */

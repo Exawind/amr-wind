@@ -4,26 +4,62 @@
 #include "amr-wind/wind_energy/actuator/disk/disk_ops.H"
 #include "amr-wind/wind_energy/actuator/disk/UniformCt.H"
 #include "amr-wind/utilities/linear_interpolation.H"
-namespace amr_wind {
-namespace actuator {
-namespace ops {
+#include "amr-wind/utilities/trig_ops.H"
+namespace amr_wind::actuator::ops {
 namespace uniformct {
 
 void parse_and_gather_params(const utils::ActParser& pp, UniformCtData& data);
-
+void update_disk_points(UniformCt::DataType& data);
 } // namespace uniformct
+
 template <>
 struct ReadInputsOp<UniformCt, ActSrcDisk>
 {
     void operator()(UniformCt::DataType& data, const utils::ActParser& pp)
     {
-        // TODO get density at probe location
         auto& meta = data.meta();
         uniformct::parse_and_gather_params(pp, meta);
         base::do_parse_based_computations<UniformCt>(data);
     }
 };
 
+template <>
+struct UpdatePosOp<UniformCt, ActSrcDisk>
+{
+    void operator()(typename UniformCt::DataType& data)
+    {
+        if (!data.sim().helics().is_activated()) {
+            return;
+        }
+
+#ifdef AMR_WIND_USE_HELICS
+
+        const amrex::Real wind_direction =
+            -data.sim().helics().m_turbine_yaw_to_amrwind[data.info().id] +
+            90.0;
+        const amrex::Real wind_direction_radian =
+            amr_wind::utils::radians(wind_direction);
+
+        auto& meta = data.meta();
+
+        meta.normal_vec[0] = std::cos(wind_direction_radian);
+        meta.normal_vec[1] = std::sin(wind_direction_radian);
+        meta.normal_vec[2] = 0.0;
+
+        meta.sample_vec[0] = meta.normal_vec[0];
+        meta.sample_vec[1] = meta.normal_vec[1];
+        meta.sample_vec[2] = meta.normal_vec[2];
+
+        if (data.info().is_root_proc) {
+            std::cout << "turbine " << data.info().id
+                      << " normal: " << meta.normal_vec[0] << ' '
+                      << meta.normal_vec[1] << std::endl;
+        }
+
+        uniformct::update_disk_points(data);
+#endif
+    }
+};
 // compute the total force over a given radial section
 // this will then be spread uniformly over that area in the
 // projection step
@@ -51,6 +87,29 @@ struct ComputeForceOp<UniformCt, ActSrcDisk>
             // disk force should always point in direction of the normal
             grid.force[ip] = (aeroPressure * a) * normal;
         }
+#ifdef AMR_WIND_USE_HELICS
+
+        if (data.info().is_root_proc && data.sim().helics().is_activated()) {
+
+            const amrex::Real ct = ddata.current_ct;
+            std::cout << "turbine" << data.info().id << " thrust: " << ct
+                      << std::endl;
+            const amrex::Real cp = 0.5 * (ct + ct * std::sqrt(1.0 - ct));
+            const amrex::Real area =
+                amr_wind::utils::pi() * 0.25 * ddata.diameter * ddata.diameter;
+            const amrex::Real power =
+                cp * 0.5 * rho * std::pow(uInfSqr, 1.5) * area;
+
+            data.sim().helics().m_turbine_power_to_controller[data.info().id] =
+                power;
+            const amrex::Real turbine_angle = std::atan2(
+                ddata.reference_velocity[1], ddata.reference_velocity[0]);
+            data.sim()
+                .helics()
+                .m_turbine_wind_direction_to_controller[data.info().id] =
+                -amr_wind::utils::degrees(turbine_angle) + 270.0;
+        }
+#endif
     }
 };
 
@@ -59,30 +118,8 @@ struct InitDataOp<UniformCt, ActSrcDisk>
 {
     void operator()(typename UniformCt::DataType& data)
     {
-        auto& grid = data.grid();
-        auto& meta = data.meta();
-
-        // only resize the members we are going to use
-        grid.pos.resize(meta.num_force_pts);
-        grid.force.resize(meta.num_force_pts);
-        grid.vel.resize(meta.num_vel_pts);
-        grid.vel_pos.resize(meta.num_vel_pts);
-
-        const auto& cVec = meta.coplanar_vec;
-        const auto& sVec = meta.sample_vec;
-        const auto& nVec = meta.normal_vec;
-
-        const auto& cc = meta.center;
-        {
-            const auto& dr = meta.dr;
-            for (int i = 0; i < meta.num_force_pts; ++i) {
-                grid.pos[i] = cc + (i + 0.5) * dr * cVec;
-            }
-        }
-        base::compute_disk_points(
-            meta, grid.vel_pos, sVec, 0, meta.diameters_to_sample);
-        base::compute_disk_points(
-            meta, grid.vel_pos, nVec, meta.num_vel_pts / 2, 0);
+        ops::base::allocate_basic_grid_quantities<UniformCt>(data);
+        uniformct::update_disk_points(data);
     }
 };
 template <>
@@ -129,8 +166,6 @@ public:
             time.new_time());
     }
 };
-} // namespace ops
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator::ops
 
 #endif /* UNIFORM_CT_OPS_H_ */

@@ -3,8 +3,7 @@
 
 #include "amr-wind/equation_systems/density/density.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 template <typename Scheme>
 struct ComputeRHSOp<Density, Scheme>
@@ -86,7 +85,6 @@ struct ComputeRHSOp<Density, Scheme>
     // data members
     PDEFields& fields;
 };
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* DENSITY_OPS_H */

@@ -10,8 +10,7 @@
 #include "amr-wind/equation_systems/icns/icns.H"
 #include "AMReX_MultiFabUtil.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /** Specialization of field registration for ICNS
  *  \ingroup icns
@@ -29,11 +28,10 @@ struct FieldRegOp<ICNS, Scheme>
 {
     explicit FieldRegOp(CFDSim& sim_in) : sim(sim_in) {}
 
-    PDEFields operator()(const SimTime& time, const int probtype)
+    PDEFields operator()(const SimTime& time)
     {
         auto& repo = sim.repo();
-        auto fields =
-            create_fields_instance<ICNS, Scheme>(time, repo, probtype);
+        auto fields = create_fields_instance<ICNS, Scheme>(time, repo);
 
         auto& rho = repo.declare_cc_field(
             "density", 1, Scheme::nghost_state, Scheme::num_states);
@@ -43,15 +41,15 @@ struct FieldRegOp<ICNS, Scheme>
             {"u_mac", "v_mac", "w_mac"}, 1, Scheme::nghost_mac, 1);
 
         rho.template register_fill_patch_op<
-            FieldFillPatchOps<FieldBCDirichlet>>(repo.mesh(), time, probtype);
+            FieldFillPatchOps<FieldBCDirichlet>>(repo.mesh(), time);
         grad_p.template register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
-            repo.mesh(), time, probtype);
+            repo.mesh(), time);
         // pressure.template register_fill_patch_op<FieldFillConstScalar>(0.0);
         // fixme this is only necessary since tioga does not fill in ghosts
         // convert back later
         pressure
             .template register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
-                repo.mesh(), time, probtype);
+                repo.mesh(), time);
         rho.fillpatch_on_regrid() = true;
         grad_p.fillpatch_on_regrid() = true;
 
@@ -84,6 +82,7 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
     {
         const auto rhostate = field_impl::phi_state(fstate);
         const auto& density = m_density.state(rhostate);
+        bool src_for_RHS(fstate == amr_wind::FieldState::New);
         Field const* mesh_fac =
             mesh_mapping
                 ? &(this->fields.repo.get_mesh_mapping_field(FieldLoc::CELL))
@@ -123,8 +122,18 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
                             -(1.0 / fac_z * gp(i, j, k, 2)) * rhoinv;
                     });
 
-                for (auto& src : this->sources) {
+                for (const auto& src : this->sources) {
                     (*src)(lev, mfi, bx, fstate, vf);
+                }
+
+                // Multiply src terms by rho if being used for icns RHS
+                if (src_for_RHS) {
+                    amrex::ParallelFor(
+                        bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                            vf(i, j, k, 0) *= rho(i, j, k);
+                            vf(i, j, k, 1) *= rho(i, j, k);
+                            vf(i, j, k, 2) *= rho(i, j, k);
+                        });
                 }
             }
         }
@@ -149,7 +158,6 @@ struct TurbulenceOp<ICNS>
     PDEFields& m_fields;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* ICNS_OPS_H */

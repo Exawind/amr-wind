@@ -46,7 +46,9 @@ protected:
         initialize_mesh();
         sim().repo().declare_field("actuator_src_term", 3, 0);
         auto& vel = sim().repo().declare_field("velocity", 3, 3);
+        auto& density = sim().repo().declare_field("density", 1, 3);
         vel.setVal(10.0, 0, 1, 3);
+        density.setVal(1.0);
         amr_wind::actuator::ActuatorContainer::ParticleType::NextID(1U);
     }
 
@@ -70,7 +72,7 @@ protected:
         pp.addarr("disk_center", amrex::Vector<amrex::Real>{16.0, 16.0, 16.0});
         pp.addarr("disk_normal", amrex::Vector<amrex::Real>{-1.0, 0.0, 0.0});
         pp.addarr("thrust_coeff", amrex::Vector<amrex::Real>{1});
-        pp.addarr("angular_velocity", amrex::Vector<amrex::Real>{0.0});
+        pp.addarr("rpm", amrex::Vector<amrex::Real>{0.0});
     }
 };
 
@@ -78,8 +80,7 @@ protected:
 
 } // namespace amr_wind_tests
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 namespace ops {
 
 template <>
@@ -134,10 +135,16 @@ struct ComputeForceOp<::amr_wind_tests::Joukowsky, ActSrcDisk>
 {
     void operator()(::amr_wind_tests::Joukowsky::DataType& data)
     {
-        ComputeForceOp<::amr_wind::actuator::Joukowsky, ActSrcDisk> actual_op;
-        EXPECT_NO_FATAL_FAILURE(actual_op(data));
         const auto& meta = data.meta();
         const auto& grid = data.grid();
+        for (int i = 0; i < meta.num_vel_pts; ++i) {
+            EXPECT_DOUBLE_EQ(10.0, grid.vel[i].x()) << ", " << i;
+            EXPECT_DOUBLE_EQ(0.0, grid.vel[i].y()) << ", " << i;
+            EXPECT_DOUBLE_EQ(0.0, grid.vel[i].z()) << ", " << i;
+            EXPECT_DOUBLE_EQ(1.0, grid.density[i]) << ", " << i;
+        }
+        ComputeForceOp<::amr_wind::actuator::Joukowsky, ActSrcDisk> actual_op;
+        EXPECT_NO_FATAL_FAILURE(actual_op(data));
         for (int i = 0; i < meta.num_force_pts; ++i) {
             for (int j = 0; j < 3; ++j) {
                 EXPECT_FALSE(std::isnan(grid.force[i][j]))
@@ -146,6 +153,7 @@ struct ComputeForceOp<::amr_wind_tests::Joukowsky, ActSrcDisk>
             // only x direction is guaranteed to be negative
             // y and z forces will vary based on azimuthal angle
             EXPECT_GE(0.0, grid.force[i][0]) << "i: " << i;
+            EXPECT_DOUBLE_EQ(1.0, grid.density[i]);
         }
     }
 };
@@ -165,8 +173,7 @@ struct ProcessOutputsOp<::amr_wind_tests::Joukowsky, ActSrcDisk>
 } // namespace ops
 template class ::amr_wind::actuator::
     ActModel<::amr_wind_tests::Joukowsky, ::amr_wind::actuator::ActSrcDisk>;
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator
 
 namespace amr_wind_tests {
 class ActPhysicsTest : public ::amr_wind::actuator::Actuator

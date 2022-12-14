@@ -9,8 +9,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /**
  *  \defgroup pdeop PDE Operators
@@ -42,10 +41,9 @@ struct FieldRegOp
      *
      *  \return The collection of fields for this PDE
      */
-    PDEFields operator()(const SimTime& time, const int probtype)
+    PDEFields operator()(const SimTime& time)
     {
-        auto fields =
-            create_fields_instance<PDE, Scheme>(time, sim.repo(), probtype);
+        auto fields = create_fields_instance<PDE, Scheme>(time, sim.repo());
 
         // Register solution variable for this PDE as output/restart variable
         sim.io_manager().register_io_var(fields.field.name());
@@ -140,7 +138,7 @@ struct SrcTermOpBase
                 const auto& bx = mfi.tilebox();
                 const auto& vf = src_term.array(mfi);
 
-                for (auto& src : this->sources) {
+                for (const auto& src : this->sources) {
                     (*src)(lev, mfi, bx, fstate, vf);
                 }
             }
@@ -215,7 +213,6 @@ struct PostSolveOp
     PDEFields& m_fields;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* PDEOPS_H */

@@ -4,8 +4,7 @@
 #include "amr-wind/equation_systems/tke/TKE.H"
 #include "amr-wind/core/field_ops.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /** Implementation of Turbulence operator for TKE equation
  *  \ingroup tke_eqn
@@ -83,11 +82,10 @@ struct FieldRegOp<TKE, Scheme>
         }
     }
 
-    PDEFields operator()(const SimTime& time, const int probtype)
+    PDEFields operator()(const SimTime& time)
     {
         auto& repo = sim.repo();
-        auto fields =
-            create_fields_instance<TKE, Scheme>(time, repo, probtype, m_itype);
+        auto fields = create_fields_instance<TKE, Scheme>(time, repo, m_itype);
 
         repo.declare_cc_field(
             TKE::var_name() + "_lhs_src_term", TKE::ndim, 1, 1);
@@ -168,7 +166,6 @@ struct DiffusionOp<TKE, Scheme> : public DiffSolverIface<typename TKE::MLDiffOp>
     Field& m_lhs_src_term;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* TKE_OPS_H */

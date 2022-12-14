@@ -4,6 +4,7 @@ target_sources(${amr_wind_lib_name}
   actuator_utils.cpp
   Actuator.cpp
   ActuatorContainer.cpp
+  FLLC.cpp
   )
 
 add_subdirectory(aero)

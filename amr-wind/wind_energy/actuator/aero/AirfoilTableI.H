@@ -2,8 +2,7 @@
 
 #include <string>
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 template <typename IStream>
 std::unique_ptr<AirfoilTable> AirfoilLoader::load_text_file(IStream& affile)
@@ -54,5 +53,4 @@ AirfoilLoader::load_openfast_airfoil(IStream& affile)
     return aftab;
 }
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator

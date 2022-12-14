@@ -4,8 +4,7 @@
 
 extern amr_wind_tests::AmrexTestEnv* utest_env;
 
-namespace amr_wind_tests {
-namespace pp_utils {
+namespace amr_wind_tests::pp_utils {
 
 bool has_managed_memory()
 {
@@ -51,12 +50,6 @@ void default_mesh_inputs()
         pp.addarr("prob_hi", probhi);
         pp.addarr("is_periodic", periodic);
     }
-
-    {
-        amrex::ParmParse pp("incflo");
-        pp.add("probtype", 0);
-    }
 }
 
-} // namespace pp_utils
-} // namespace amr_wind_tests
+} // namespace amr_wind_tests::pp_utils

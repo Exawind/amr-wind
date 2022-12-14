@@ -5,10 +5,10 @@
 
 #include "AMReX_Scan.H"
 
+#include <AMReX_Print.H>
 #include <algorithm>
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 ActuatorCloud::ActuatorCloud(const int nobjects)
     : num_pts(nobjects, 0), global_id(nobjects, -1), num_objects(nobjects)
@@ -49,6 +49,7 @@ void ActuatorContainer::initialize_container()
         std::accumulate(m_data.num_pts.begin(), m_data.num_pts.end(), 0);
     m_data.position.resize(total_pts);
     m_data.velocity.resize(total_pts);
+    m_data.density.resize(total_pts);
 
     {
         const int nproc = amrex::ParallelDescriptor::NProcs();
@@ -193,39 +194,44 @@ void ActuatorContainer::update_positions()
  *  After invocation if this method, the particles are back in their original
  *  rank and the position vectors can be updated safely.
  */
-void ActuatorContainer::sample_velocities(const Field& vel)
+void ActuatorContainer::sample_fields(const Field& vel, const Field& density)
 {
     BL_PROFILE("amr-wind::actuator::ActuatorContainer::sample_velocities");
     AMREX_ALWAYS_ASSERT(m_container_initialized && m_is_scattered);
 
     // Sample velocity field
-    interpolate_velocities(vel);
+    interpolate_fields(vel, density);
 
     // Recall particles to the MPI ranks that contains their corresponding
     // turbines
     // Redistribute();
 
     // Populate the velocity buffer that all actuator instances can access
-    populate_vel_buffer();
+    populate_field_buffers();
 
     // Indicate that the particles have been restored to their original MPI rank
     m_is_scattered = false;
 }
 
-/** Helper method for ActuatorContainer::sample_velocities
+/** Helper method for ActuatorContainer::sample_fields
  *
  *  Loops over the particle tiles and copies velocity data from particles to the
- *  velocity array.
+ *  velocity and density arrays.
  */
-void ActuatorContainer::populate_vel_buffer()
+void ActuatorContainer::populate_field_buffers()
 {
     BL_PROFILE("amr-wind::actuator::ActuatorContainer::populate_vel_buffer");
-    amrex::Vector<vs::Vector> velh(m_proc_offsets.back());
-    amrex::Gpu::DeviceVector<vs::Vector> vel(
-        m_proc_offsets.back(), vs::Vector::zero());
-    auto* varr = vel.data();
+    const size_t num_buff_entries =
+        m_proc_offsets.back() * static_cast<size_t>(NumPStructReal);
+
+    amrex::Vector<amrex::Real> buff_host(num_buff_entries);
+    amrex::Gpu::DeviceVector<amrex::Real> buff_device(num_buff_entries, 0.0);
+
+    auto* buffer_pointer = buff_device.data();
     auto* offsets = m_proc_offsets_device.data();
+
     const int nlevels = m_mesh.finestLevel() + 1;
+
     for (int lev = 0; lev < nlevels; ++lev) {
         for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
             const int np = pti.numParticles();
@@ -236,39 +242,46 @@ void ActuatorContainer::populate_vel_buffer()
                 const auto iproc = pp.cpu();
                 const auto idx = offsets[iproc] + pp.idata(0);
 
-                auto& vvel = varr[idx];
-                for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-                    vvel[n] = pp.rdata(n);
+                for (int n = 0; n < NumPStructReal; ++n) {
+                    buffer_pointer[idx * NumPStructReal + n] = pp.rdata(n);
                 }
             });
         }
     }
 
     amrex::Gpu::copy(
-        amrex::Gpu::deviceToHost, vel.begin(), vel.end(), velh.begin());
+        amrex::Gpu::deviceToHost, buff_device.begin(), buff_device.end(),
+        buff_host.begin());
 #ifdef AMREX_USE_MPI
+    const int num_entires = static_cast<int>(buff_host.size());
     MPI_Allreduce(
-        MPI_IN_PLACE, &(velh[0][0]), m_proc_offsets.back() * AMREX_SPACEDIM,
-        MPI_DOUBLE, MPI_SUM, amrex::ParallelDescriptor::Communicator());
+        MPI_IN_PLACE, buff_host.data(), num_entires, MPI_DOUBLE, MPI_SUM,
+        amrex::ParallelDescriptor::Communicator());
 #endif
     {
         auto& vel_arr = m_data.velocity;
+        auto& den_arr = m_data.density;
         const int npts = vel_arr.size();
         const int ioff = m_proc_offsets[amrex::ParallelDescriptor::MyProc()];
         for (int i = 0; i < npts; ++i) {
-            vel_arr[i] = velh[ioff + i];
+            for (int j = 0; j < AMREX_SPACEDIM; ++j) {
+                vel_arr[i][j] = buff_host[(ioff + i) * NumPStructReal + j];
+            }
+            den_arr[i] =
+                buff_host[(ioff + i) * NumPStructReal + AMREX_SPACEDIM];
         }
     }
 }
 
-/** Helper method for ActuatorContainer::sample_velocities
+/** Helper method for ActuatorContainer::sample_fields
  *
- *  Performs a trilinear interpolation of the velocity field to particle
+ *  Performs a trilinear interpolation of the velocity/desnity field to particle
  *  locations. It also updates the particle locations such that the next
  *  Redistribute call restores the particles back to their original MPI rank
  *  where they were created.
  */
-void ActuatorContainer::interpolate_velocities(const Field& vel)
+void ActuatorContainer::interpolate_fields(
+    const Field& vel, const Field& density)
 {
     BL_PROFILE("amr-wind::actuator::ActuatorContainer::interpolate_velocities");
     auto* dptr = m_pos_device.data();
@@ -283,6 +296,7 @@ void ActuatorContainer::interpolate_velocities(const Field& vel)
             const int np = pti.numParticles();
             auto* pstruct = pti.GetArrayOfStructs()().data();
             const auto varr = vel(lev).const_array(pti);
+            const auto darr = density(lev).const_array(pti);
 
             amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
                 auto& pp = pstruct[ip];
@@ -310,6 +324,7 @@ void ActuatorContainer::interpolate_velocities(const Field& vel)
 
                 const int iproc = pp.cpu();
 
+                // velocity
                 for (int ic = 0; ic < AMREX_SPACEDIM; ++ic) {
                     pp.rdata(ic) =
                         wx_lo * wy_lo * wz_lo * varr(i, j, k, ic) +
@@ -325,6 +340,17 @@ void ActuatorContainer::interpolate_velocities(const Field& vel)
                     // to the MPI ranks with the turbines upon redistribution
                     pp.pos(ic) = dptr[iproc][ic];
                 }
+
+                // density
+                pp.rdata(AMREX_SPACEDIM) =
+                    wx_lo * wy_lo * wz_lo * darr(i, j, k) +
+                    wx_lo * wy_lo * wz_hi * darr(i, j, k + 1) +
+                    wx_lo * wy_hi * wz_lo * darr(i, j + 1, k) +
+                    wx_lo * wy_hi * wz_hi * darr(i, j + 1, k + 1) +
+                    wx_hi * wy_lo * wz_lo * darr(i + 1, j, k) +
+                    wx_hi * wy_lo * wz_hi * darr(i + 1, j, k + 1) +
+                    wx_hi * wy_hi * wz_lo * darr(i + 1, j + 1, k) +
+                    wx_hi * wy_hi * wz_hi * darr(i + 1, j + 1, k + 1);
             });
         }
     }
@@ -386,7 +412,4 @@ void ActuatorContainer::compute_local_coordinates()
         m_pos_device.begin());
 }
 
-void ActuatorContainer::post_regrid_actions() { compute_local_coordinates(); }
-
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator

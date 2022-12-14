@@ -5,8 +5,7 @@
 #include "AMReX_ParmParse.H"
 #include "AMReX_Vector.H"
 
-namespace amr_wind_tests {
-namespace pp_utils {
+namespace amr_wind_tests::pp_utils {
 
 template <typename T>
 void set_default(amrex::ParmParse& pp, const std::string& key, const T& val)
@@ -34,7 +33,6 @@ void default_mesh_inputs();
 //! Flag indicating whether managed memory is enabled
 bool has_managed_memory();
 
-} // namespace pp_utils
-} // namespace amr_wind_tests
+} // namespace amr_wind_tests::pp_utils
 
 #endif /* PP_UTILS_H */

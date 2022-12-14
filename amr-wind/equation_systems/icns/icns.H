@@ -9,8 +9,7 @@
 
 #include "AMReX_MLTensorOp.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /**
  *  \defgroup icns Incompressible Navier-Stokes
@@ -40,14 +39,13 @@ struct ICNS : VectorTransport
 
     static constexpr int ndim = AMREX_SPACEDIM;
 
-    static constexpr bool multiply_rho = false;
+    static constexpr bool multiply_rho = true;
     static constexpr bool has_diffusion = true;
 
     // No n+1/2 state for velocity for now
     static constexpr bool need_nph_state = false;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* ICNS_H */

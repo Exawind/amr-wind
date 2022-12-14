@@ -1,7 +1,8 @@
-#include "amr-wind/convection/incflo_godunov_plm.H"
 #include "amr-wind/convection/incflo_godunov_ppm.H"
 #include "amr-wind/convection/incflo_godunov_ppm_nolim.H"
 #include "amr-wind/convection/incflo_godunov_weno.H"
+#include "amr-wind/convection/incflo_godunov_minmod.H"
+#include "amr-wind/convection/incflo_godunov_upwind.H"
 #include "amr-wind/convection/Godunov.H"
 #include <AMReX_Geometry.H>
 
@@ -26,6 +27,15 @@ void godunov::compute_fluxes(
     Real dt,
     godunov::scheme godunov_scheme)
 {
+
+    /* iconserv functionality: (would be better served by two flags)
+     * ------------------------------------------------------------------------
+     * == 0 : non-conservative formulation of interpolation, fluxes not
+     *        multiplied by MAC velocity
+     * == 1 : conservative formulation of interpolation, fluxes include factor
+     *        of MAC velocity
+     * (!= 1 && != 0) : conservative formulation of interpolation, fluxes not
+     *        multiplied by MAC velocity */
 
     BL_PROFILE("amr-wind::godunov::compute_fluxes");
     Box const& xbx = amrex::surroundingNodes(bx, 0);
@@ -78,22 +88,6 @@ void godunov::compute_fluxes(
 
     // Use PPM to generate Im and Ip */
     switch (godunov_scheme) {
-    case godunov::scheme::PPM: {
-        amrex::ParallelFor(
-            bxg1, ncomp,
-            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                Godunov_ppm_fpu_x(
-                    i, j, k, n, l_dt, dx, Imx(i, j, k, n), Ipx(i, j, k, n), q,
-                    umac, pbc[n], dlo.x, dhi.x);
-                Godunov_ppm_fpu_y(
-                    i, j, k, n, l_dt, dy, Imy(i, j, k, n), Ipy(i, j, k, n), q,
-                    vmac, pbc[n], dlo.y, dhi.y);
-                Godunov_ppm_fpu_z(
-                    i, j, k, n, l_dt, dz, Imz(i, j, k, n), Ipz(i, j, k, n), q,
-                    wmac, pbc[n], dlo.z, dhi.z);
-            });
-        break;
-    }
     case godunov::scheme::PPM_NOLIM: {
         amrex::ParallelFor(
             bxg1, ncomp,
@@ -142,31 +136,39 @@ void godunov::compute_fluxes(
             });
         break;
     }
-    case godunov::scheme::PLM: {
+    case godunov::scheme::MINMOD: {
         amrex::ParallelFor(
-            xebox, ncomp,
+            bxg1, ncomp,
             [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                Godunov_plm_fpu_x(
-                    i, j, k, n, l_dt, dx, Imx(i, j, k, n), Ipx(i - 1, j, k, n),
-                    q, umac(i, j, k), pbc[n], dlo.x, dhi.x);
-            });
-
-        amrex::ParallelFor(
-            yebox, ncomp,
-            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                Godunov_plm_fpu_y(
-                    i, j, k, n, l_dt, dy, Imy(i, j, k, n), Ipy(i, j - 1, k, n),
-                    q, vmac(i, j, k), pbc[n], dlo.y, dhi.y);
-            });
-
-        amrex::ParallelFor(
-            zebox, ncomp,
-            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                Godunov_plm_fpu_z(
-                    i, j, k, n, l_dt, dz, Imz(i, j, k, n), Ipz(i, j, k - 1, n),
-                    q, wmac(i, j, k), pbc[n], dlo.z, dhi.z);
+                Godunov_minmod_fpu_x(
+                    i, j, k, n, l_dt, dx, Imx(i, j, k, n), Ipx(i, j, k, n), q,
+                    umac, pbc[n], dlo.x, dhi.x);
+                Godunov_minmod_fpu_y(
+                    i, j, k, n, l_dt, dy, Imy(i, j, k, n), Ipy(i, j, k, n), q,
+                    vmac, pbc[n], dlo.y, dhi.y);
+                Godunov_minmod_fpu_z(
+                    i, j, k, n, l_dt, dz, Imz(i, j, k, n), Ipz(i, j, k, n), q,
+                    wmac, pbc[n], dlo.z, dhi.z);
             });
         break;
+    }
+    case godunov::scheme::UPWIND: {
+        amrex::ParallelFor(
+            bxg1, ncomp,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                Godunov_upwind_fpu(
+                    i, j, k, n, Imx(i, j, k, n), Ipx(i, j, k, n), q);
+                Godunov_upwind_fpu(
+                    i, j, k, n, Imy(i, j, k, n), Ipy(i, j, k, n), q);
+                Godunov_upwind_fpu(
+                    i, j, k, n, Imz(i, j, k, n), Ipz(i, j, k, n), q);
+            });
+        break;
+    }
+    default: {
+        amrex::Abort(
+            "Only PPM_NOLIM, WENOZ, and WENOJS use this code path, or in "
+            "multiphase simulations, MINMOD and UPWIND also use it");
     }
     }
 
@@ -360,7 +362,7 @@ void godunov::compute_fluxes(
                      ? 0.5 * (stl + sth)
                      : qx;
 
-            if (iconserv[n] != 0) {
+            if (iconserv[n] == 1) {
                 fx(i, j, k, n) = umac(i, j, k) * qx;
             } else {
                 fx(i, j, k, n) = qx;
@@ -467,7 +469,7 @@ void godunov::compute_fluxes(
                      ? 0.5 * (stl + sth)
                      : qy;
 
-            if (iconserv[n] != 0) {
+            if (iconserv[n] == 1) {
                 fy(i, j, k, n) = vmac(i, j, k) * qy;
             } else {
                 fy(i, j, k, n) = qy;
@@ -573,7 +575,7 @@ void godunov::compute_fluxes(
                      ? 0.5 * (stl + sth)
                      : qz;
 
-            if (iconserv[n] != 0) {
+            if (iconserv[n] == 1) {
                 fz(i, j, k, n) = wmac(i, j, k) * qz;
             } else {
                 fz(i, j, k, n) = qz;

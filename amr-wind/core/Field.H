@@ -185,7 +185,7 @@ public:
     }
 
     //! Return reference to host view of BCRec array
-    amrex::Vector<amrex::BCRec>& bcrec() { return m_info->m_bcrec; }
+    amrex::Vector<amrex::BCRec>& bcrec() const { return m_info->m_bcrec; }
 
     const amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2>&
     bc_values_device() const
@@ -318,6 +318,10 @@ public:
 
     void fillpatch(amrex::Real time) noexcept;
     void fillpatch(amrex::Real time, amrex::IntVect ng) noexcept;
+    void fillpatch_sibling_fields(
+        amrex::Real time,
+        amrex::IntVect ng,
+        amrex::Array<Field*, AMREX_SPACEDIM>& fields) const noexcept;
 
     void fillphysbc(amrex::Real time) noexcept;
     void fillphysbc(amrex::Real time, amrex::IntVect ng) noexcept;

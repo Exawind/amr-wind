@@ -37,7 +37,9 @@ enum class FieldLoc : int {
 enum class FieldInterpolator : int {
     PiecewiseConstant, ///< Constant across cell
     CellConsLinear,    ///< Linear interpolation
-    NodeBilinear       ///< Bilinear nodal interpolation
+    NodeBilinear,      ///< Bilinear nodal interpolation
+    FaceDivFree,       ///< Divergence free face interpolation
+    FaceLinear         ///< Linear face interpolation
 };
 
 } // namespace amr_wind

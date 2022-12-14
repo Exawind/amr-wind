@@ -60,7 +60,9 @@ TEST_F(ActuatorTest, act_container)
     const int iproc = amrex::ParallelDescriptor::MyProc();
     initialize_mesh();
     auto& vel = sim().repo().declare_field("velocity", 3, 3);
+    auto& density = sim().repo().declare_field("density", 1, 3);
     init_field(vel);
+    density.setVal(1.0);
 
     // Number of turbines in an MPI rank
     const int num_turbines = 2;
@@ -121,7 +123,7 @@ TEST_F(ActuatorTest, act_container)
         }
     }
 
-    ac.sample_velocities(vel);
+    ac.sample_fields(vel, density);
     ac.Redistribute();
 
     // Check to make sure that the velocity sampling gathered the particles back

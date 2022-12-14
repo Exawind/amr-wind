@@ -1,7 +1,6 @@
 #include "abl_test_utils.H"
 
-namespace amr_wind_tests {
-namespace utils {
+namespace amr_wind_tests::utils {
 
 void populate_abl_params()
 {
@@ -55,7 +54,6 @@ void populate_abl_params()
     // Needed for initial conditions
     {
         amrex::ParmParse pp("incflo");
-        pp.add("probtype", 0);
         pp.add("use_godunov", 1);
         amrex::Vector<std::string> physics{"ABL"};
         pp.addarr("physics", physics);
@@ -80,5 +78,4 @@ void populate_abl_params()
     }
 }
 
-} // namespace utils
-} // namespace amr_wind_tests
+} // namespace amr_wind_tests::utils

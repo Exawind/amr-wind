@@ -25,6 +25,8 @@ struct DirectionSelector<0>
     {
         return i;
     };
+    int odir1 = 1;
+    int odir2 = 2;
 };
 
 template <>
@@ -35,6 +37,8 @@ struct DirectionSelector<1>
     {
         return j;
     };
+    int odir1 = 0;
+    int odir2 = 2;
 };
 
 template <>
@@ -45,6 +49,8 @@ struct DirectionSelector<2>
     {
         return k;
     };
+    int odir1 = 0;
+    int odir2 = 1;
 };
 
 using XDir = DirectionSelector<0>;

@@ -4,9 +4,7 @@
 #include <string>
 #include "AMReX_Vector.H"
 
-namespace amr_wind {
-namespace turbulence {
-namespace turb_utils {
+namespace amr_wind::turbulence::turb_utils {
 
 /** Utility function to inject extra source terms into relevant equations
  *
@@ -16,8 +14,6 @@ namespace turb_utils {
 void inject_turbulence_src_terms(
     const std::string& key, const amrex::Vector<std::string>& terms);
 
-} // namespace turb_utils
-} // namespace turbulence
-} // namespace amr_wind
+} // namespace amr_wind::turbulence::turb_utils
 
 #endif /* TURB_UTILS_H */

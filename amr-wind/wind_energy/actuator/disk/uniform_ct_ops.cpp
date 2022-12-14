@@ -2,10 +2,7 @@
 #include "amr-wind/wind_energy/actuator/ActParser.H"
 #include <ostream>
 
-namespace amr_wind {
-namespace actuator {
-namespace ops {
-namespace uniformct {
+namespace amr_wind::actuator::ops::uniformct {
 
 void check_for_removed_syntax(
     const utils::ActParser& pp, std::ostringstream& stream)
@@ -61,7 +58,29 @@ void parse_and_gather_params(const utils::ActParser& pp, UniformCtData& data)
     // 2x 1 for sampling up stream and one for sampling at the disk
     data.num_vel_pts = data.num_vel_pts_r * data.num_vel_pts_t * 2;
 }
-} // namespace uniformct
-} // namespace ops
-} // namespace actuator
-} // namespace amr_wind
+
+void update_disk_points(UniformCt::DataType& data)
+{
+    auto& grid = data.grid();
+    auto& meta = data.meta();
+
+    base::compute_and_normalize_coplanar_vector(meta);
+    data.info().bound_box = base::compute_bounding_box(meta);
+
+    const auto& cVec = meta.coplanar_vec;
+    const auto& sVec = meta.sample_vec;
+    const auto& nVec = meta.normal_vec;
+
+    const auto& cc = meta.center;
+    {
+        const auto& dr = meta.dr;
+        for (int i = 0; i < meta.num_force_pts; ++i) {
+            grid.pos[i] = cc + (i + 0.5) * dr * cVec;
+        }
+    }
+    base::compute_disk_points(
+        meta, grid.vel_pos, sVec, 0, meta.diameters_to_sample);
+    base::compute_disk_points(
+        meta, grid.vel_pos, nVec, meta.num_vel_pts / 2, 0);
+}
+} // namespace amr_wind::actuator::ops::uniformct

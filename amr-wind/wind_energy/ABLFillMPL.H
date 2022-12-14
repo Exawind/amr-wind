@@ -1,0 +1,72 @@
+#ifndef ABLFILLMPL_H
+#define ABLFILLMPL_H
+
+#include "amr-wind/core/FieldFillPatchOps.H"
+#include "amr-wind/core/FieldBCOps.H"
+#include "amr-wind/wind_energy/ABLModulatedPowerLaw.H"
+
+namespace amr_wind {
+
+/** Operations to perform inflow of data from boundary planes
+ *  \ingroup we_abl
+ *
+ *  This class contains the operations necessary to interface with
+ *  ABLBoundaryPlane class and populate data at the boundaries
+ *
+ *  \sa ABLBoundaryPlane
+ */
+class ABLFillMPL : public FieldFillPatchOps<FieldBCNoOp>
+{
+public:
+    ABLFillMPL(
+        Field& field,
+        const amrex::AmrCore& mesh,
+        const SimTime& time,
+        const ABLModulatedPowerLaw& abl_mpl);
+
+    ~ABLFillMPL() override;
+
+    void fillpatch(
+        int lev,
+        amrex::Real time,
+        amrex::MultiFab& mfab,
+        const amrex::IntVect& nghost,
+        const FieldState fstate = FieldState::New) override;
+
+    void fillpatch_sibling_fields(
+        int lev,
+        amrex::Real time,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& mfabs,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& ffabs,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& cfabs,
+        const amrex::IntVect& nghost,
+        const FieldState fstate = FieldState::New,
+        const FieldInterpolator itype = FieldInterpolator::FaceDivFree) override
+    {
+        FieldFillPatchOps<FieldBCNoOp>::fillpatch_sibling_fields(
+            lev, time, mfabs, ffabs, cfabs, nghost, fstate, itype);
+    }
+
+    //! Implementation that handles filling patches from a coarse to fine level
+    void fillpatch_from_coarse(
+        int lev,
+        amrex::Real time,
+        amrex::MultiFab& mfab,
+        const amrex::IntVect& nghost,
+        const FieldState fstate = FieldState::New) override;
+
+    //! Implementation that handles filling physical boundary conditions
+    void fillphysbc(
+        int lev,
+        amrex::Real time,
+        amrex::MultiFab& mfab,
+        const amrex::IntVect& nghost,
+        const FieldState fstate = FieldState::New) override;
+
+protected:
+    const ABLModulatedPowerLaw& m_abl_mpl;
+};
+
+} // namespace amr_wind
+
+#endif /* ABLFILLMPL_H */

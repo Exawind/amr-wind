@@ -4,8 +4,7 @@
 #include <fstream>
 #include <algorithm>
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 AirfoilTable::AirfoilTable(const int num_entries)
     : m_aoa(num_entries), m_polar(num_entries)
@@ -88,5 +87,4 @@ AirfoilLoader::load_airfoil(const std::string& af_file, const std::string& type)
     return af;
 }
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator

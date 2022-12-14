@@ -6,9 +6,25 @@
 #include "amr-wind/wind_energy/actuator/wing/wing_ops.H"
 #include "amr-wind/utilities/linear_interpolation.H"
 
-namespace amr_wind {
-namespace actuator {
-namespace ops {
+namespace amr_wind::actuator::ops {
+
+ComponentView make_component_view(FixedWing::DataType& data)
+{
+    auto& grid = data.grid();
+    auto& meta = data.meta();
+    ComponentView view;
+    view.pos = ::amr_wind::utils::slice(grid.pos, 0, meta.num_pts);
+    view.vel_pos = ::amr_wind::utils::slice(grid.vel_pos, 0, meta.num_pts);
+    view.force = ::amr_wind::utils::slice(grid.force, 0, meta.num_pts);
+    view.epsilon = ::amr_wind::utils::slice(grid.epsilon, 0, meta.num_pts);
+    view.orientation =
+        ::amr_wind::utils::slice(grid.orientation, 0, meta.num_pts);
+    view.chord = ::amr_wind::utils::slice(meta.chord, 0, meta.num_pts);
+    view.vel_rel = ::amr_wind::utils::slice(meta.vel_rel, 0, meta.num_pts);
+    view.vel = ::amr_wind::utils::slice(grid.vel, 0, meta.num_pts);
+
+    return view;
+}
 
 template <>
 struct ReadInputsOp<FixedWing, ActSrcLine>
@@ -27,6 +43,12 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
         pp.query("airfoil_type", wdata.airfoil_type);
         pp.queryarr("span_locs", wdata.span_locs);
         pp.queryarr("chord", wdata.chord_inp);
+        bool use_fllc = false;
+        pp.query("fllc", use_fllc);
+        if (use_fllc) {
+            wdata.fllc = std::make_unique<FLLCData>();
+            FLLCParse(pp, *(wdata.fllc.get()));
+        }
 
         if (!pp.contains("epsilon") && !pp.contains("epsilon_chord")) {
             amrex::Abort(
@@ -103,8 +125,6 @@ inline const AirfoilTable& airfoil_lookup<FixedWing>(FixedWing::DataType& data)
     return *data.meta().aflookup;
 }
 
-} // namespace ops
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator::ops
 
 #endif /* FIXED_WING_OPS_H */

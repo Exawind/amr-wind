@@ -30,6 +30,7 @@ option(AMR_WIND_ENABLE_CUDA "Enable CUDA" OFF)
 option(AMR_WIND_ENABLE_ROCM "Enable ROCm/HIP" OFF)
 option(AMR_WIND_ENABLE_DPCPP "Enable Intel OneAPI DPC++" OFF)
 option(AMR_WIND_ENABLE_TINY_PROFILE "Enable AMReX TinyProfile support" OFF)
+set(AMR_WIND_PRECISION "DOUBLE" CACHE STRING "Floating point precision SINGLE or DOUBLE")
 
 # Third party libraries
 option(AMR_WIND_USE_INTERNAL_AMREX "Add AMReX as subproject" ON)
@@ -38,12 +39,13 @@ option(AMR_WIND_ENABLE_HDF5 "Enable HDF5 library" OFF)
 option(AMR_WIND_ENABLE_HDF5_ZFP "Enable ZFP compression in HDF5 library" OFF)
 option(AMR_WIND_ENABLE_NETCDF "Enable NetCDF library" OFF)
 option(AMR_WIND_ENABLE_MASA "Enable MASA library" OFF)
+option(AMR_WIND_ENABLE_HELICS "Enable HELICS library" OFF)
 option(AMR_WIND_ENABLE_HYPRE "Enable HYPRE integration" OFF)
 option(AMR_WIND_ENABLE_OPENFAST "Enable OpenFAST integration" OFF)
 option(AMR_WIND_ENABLE_ASCENT "Enable Ascent visualization library" OFF)
 
 #Options for C++
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -62,8 +64,8 @@ endif()
 if(AMR_WIND_ENABLE_ROCM)
   find_package(HIP REQUIRED)
   if(NOT DEFINED AMD_ARCH)
-    # Set default AMD architectures (based on Spock)
-    set(AMD_ARCH "gfx908")
+    # Set default AMD architectures (based on Frontier)
+    set(AMD_ARCH "gfx90a")
   endif()
 endif()
 
@@ -158,13 +160,21 @@ endif()
 if(AMR_WIND_ENABLE_ASCENT)
   set(CMAKE_PREFIX_PATH ${ASCENT_DIR} ${CMAKE_PREFIX_PATH})
   find_package(Ascent REQUIRED)
-  find_package(OpenMP REQUIRED)
   if(AMR_WIND_ENABLE_MPI)
     target_link_libraries(${amr_wind_lib_name} PUBLIC ascent::ascent_mpi)
   else()
     target_link_libraries(${amr_wind_lib_name} PUBLIC ascent::ascent)
   endif()
   target_compile_definitions(${amr_wind_lib_name} PRIVATE AMR_WIND_USE_ASCENT)
+endif()
+
+# Link with HELICS module 
+if(AMR_WIND_ENABLE_HELICS)
+  set(CMAKE_PREFIX_PATH ${HELICS_DIR} ${CMAKE_PREFIX_PATH})
+  find_package(HELICS 3 REQUIRED)
+  target_include_directories(${amr_wind_lib_name} PUBLIC ${HELICS_INSTALL_DIR}/include)
+  target_link_libraries(${amr_wind_lib_name} PUBLIC HELICS::helicsCpp98)
+  target_compile_definitions(${amr_wind_lib_name} PRIVATE AMR_WIND_USE_HELICS)
 endif()
 
 #Build amr-wind and link to amrex library
@@ -208,12 +218,18 @@ endif()
 
 #Define what we want to be installed during a make install
 install(
-  TARGETS ${amr_wind_exe_name} ${amr_wind_unit_test_exe_name}
+  TARGETS ${amr_wind_exe_name}
   ${aw_api_lib} ${amr_wind_lib_name} buildInfo${amr_wind_lib_name}
   EXPORT ${PROJECT_NAME}Targets
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib)
+
+if(AMR_WIND_ENABLE_UNIT_TESTS OR AMR_WIND_ENABLE_TESTS)
+  install(
+    TARGETS ${amr_wind_unit_test_exe_name}
+    RUNTIME DESTINATION bin)
+endif()
 
 install(
   DIRECTORY ${PROJECT_SOURCE_DIR}/amr-wind

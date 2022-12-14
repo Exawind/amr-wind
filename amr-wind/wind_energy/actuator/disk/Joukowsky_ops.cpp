@@ -3,16 +3,12 @@
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/wind_energy/actuator/disk/disk_ops.H"
 
-namespace amr_wind {
-namespace actuator {
-namespace ops {
-namespace joukowsky {
+namespace amr_wind::actuator::ops::joukowsky {
 void check_for_parse_conflicts(const utils::ActParser& pp)
 {
     auto error_collector = ops::base::check_for_parse_conflicts(pp);
     // clang-format off
-    base::collect_parse_dependencies(pp, "thrust_coeff", "angular_velocity", error_collector);
-    base::collect_parse_dependencies(pp, "use_root_correction", "vortex_core_size", error_collector);
+    base::collect_parse_dependencies(pp, "thrust_coeff", "rpm", error_collector);
     // clang-format on
     ops::base::check_error_stream(error_collector);
 }
@@ -22,7 +18,12 @@ void optional_parameters(JoukowskyData& meta, const utils::ActParser& pp)
     ops::base::optional_parameters(meta, pp);
     pp.query("use_root_correction", meta.use_root_correction);
     pp.query("use_tip_correction", meta.use_tip_correction);
-    pp.query("vortex_core_size", meta.vortex_core_size);
+    if (pp.contains("vortex_core_size")) {
+        pp.get("vortex_core_size", meta.vortex_core_size);
+    } else {
+        // Default to 20% of radius
+        meta.vortex_core_size = 0.1 * meta.diameter;
+    }
     pp.query("root_correction_exponent", meta.root_correction_exponent);
     pp.query("root_correction_coefficient", meta.root_correction_coefficient);
     pp.query("num_blades", meta.num_blades);
@@ -33,7 +34,11 @@ void required_parameters(JoukowskyData& meta, const utils::ActParser& pp)
     ops::base::required_parameters(meta, pp);
     pp.get("num_points_t", meta.num_vel_pts_t);
     pp.get("num_points_r", meta.num_vel_pts_r);
-    pp.getarr("angular_velocity", meta.angular_velocity);
+    pp.getarr("rpm", meta.angular_velocity);
+    // Convert from rpm to rad/s
+    for (int i = 0; i < meta.angular_velocity.size(); ++i) {
+        meta.angular_velocity[i] = meta.angular_velocity[i] * M_PI / 30.0;
+    }
 }
 
 void parse_and_gather_params(const utils::ActParser& pp, JoukowskyData& data)
@@ -45,6 +50,27 @@ void parse_and_gather_params(const utils::ActParser& pp, JoukowskyData& data)
     data.num_force_pts = data.num_vel_pts_r * data.num_vel_pts_t;
     data.num_vel_pts = data.num_force_pts * 2;
     data.dr = 0.5 * data.diameter / data.num_vel_pts_r;
+}
+
+void update_disk_points(Joukowsky::DataType& data)
+{
+    auto& grid = data.grid();
+    auto& meta = data.meta();
+
+    base::compute_and_normalize_coplanar_vector(meta);
+    data.info().bound_box = base::compute_bounding_box(meta);
+
+    const auto& sVec = meta.sample_vec;
+    const auto& nVec = meta.normal_vec;
+
+    // force points
+    base::compute_disk_points(meta, grid.pos, nVec, 0, 0);
+    // velocity points upstream
+    base::compute_disk_points(
+        meta, grid.vel_pos, sVec, 0, meta.diameters_to_sample);
+    // velocity points at the disk
+    base::compute_disk_points(
+        meta, grid.vel_pos, nVec, meta.num_vel_pts / 2, 0);
 }
 
 void prepare_netcdf_file(
@@ -91,6 +117,7 @@ void prepare_netcdf_file(
     grp.def_var("tsr", NC_DOUBLE, {nt_name});
     grp.def_var("ct", NC_DOUBLE, {nt_name});
     grp.def_var("cp", NC_DOUBLE, {nt_name});
+    grp.def_var("power", NC_DOUBLE, {nt_name});
     grp.def_var("density", NC_DOUBLE, {nt_name});
     grp.def_var("total_disk_force", NC_DOUBLE, {nt_name, "ndim"});
     grp.def_var("angular_velocity", NC_DOUBLE, {nt_name});
@@ -142,9 +169,10 @@ void write_netcdf(
     grp.var("tsr").put(&data.current_tip_speed_ratio, {nt}, {1});
     grp.var("ct").put(&data.current_ct, {nt}, {1});
     grp.var("cp").put(&data.current_cp, {nt}, {1});
+    grp.var("power").put(&data.current_power, {nt}, {1});
     grp.var("density").put(&data.density, {nt}, {1});
     grp.var("total_disk_force")
-        .put(&data.disk_force[0], {nt}, {1, AMREX_SPACEDIM});
+        .put(&data.disk_force[0], {nt, 0}, {1, AMREX_SPACEDIM});
     grp.var("angular_velocity").put(&data.current_angular_velocity, {nt}, {1});
     grp.var("f_normal").put(&(data.f_normal[0]), {nt, 0}, {1, nr});
     grp.var("f_theta").put(&(data.f_theta[0]), {nt, 0}, {1, np});
@@ -153,7 +181,4 @@ void write_netcdf(
 #endif
 }
 
-} // namespace joukowsky
-} // namespace ops
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator::ops::joukowsky

@@ -41,6 +41,9 @@ ABL::ABL(CFDSim& sim)
 
     // Instantiate the ABL boundary plane IO
     m_bndry_plane = std::make_unique<ABLBoundaryPlane>(sim);
+
+    // Instantiate the ABL Modulated Power Law
+    m_abl_mpl = std::make_unique<ABLModulatedPowerLaw>(sim);
 }
 
 ABL::~ABL() = default;
@@ -89,13 +92,14 @@ void ABL::post_init_actions()
     m_abl_wall_func.init_log_law_height();
 
     m_abl_wall_func.update_umean(
-        m_stats->vel_profile(), m_stats->theta_profile());
+        m_stats->vel_profile(), m_stats->theta_profile_fine());
 
     // Register ABL wall function for velocity
     m_velocity.register_custom_bc<ABLVelWallFunc>(m_abl_wall_func);
     (*m_temperature).register_custom_bc<ABLTempWallFunc>(m_abl_wall_func);
 
     m_bndry_plane->post_init_actions();
+    m_abl_mpl->post_init_actions();
 }
 
 /** Perform tasks at the beginning of a new timestep
@@ -112,7 +116,7 @@ void ABL::pre_advance_work()
 {
     const auto& vel_pa = m_stats->vel_profile();
     m_abl_wall_func.update_umean(
-        m_stats->vel_profile(), m_stats->theta_profile());
+        m_stats->vel_profile(), m_stats->theta_profile_fine());
 
     if (m_abl_forcing != nullptr) {
         const amrex::Real zh = m_abl_forcing->forcing_height();
@@ -120,6 +124,23 @@ void ABL::pre_advance_work()
         const amrex::Real vy = vel_pa.line_average_interpolated(zh, 1);
         // Set the mean velocities at the forcing height so that the source
         // terms can be computed during the time integration calls
+
+#ifdef AMR_WIND_USE_HELICS
+        if (m_sim.helics().is_activated()) {
+            const amrex::Real wind_speed =
+                m_sim.helics().m_inflow_wind_speed_to_amrwind;
+            const amrex::Real wind_direction =
+                -m_sim.helics().m_inflow_wind_direction_to_amrwind + 270.0;
+            const amrex::Real wind_direction_radian =
+                amr_wind::utils::radians(wind_direction);
+            const amrex::Real tvx =
+                wind_speed * std::cos(wind_direction_radian);
+            const amrex::Real tvy =
+                wind_speed * std::sin(wind_direction_radian);
+            m_abl_forcing->set_target_velocities(tvx, tvy);
+        }
+#endif
+
         m_abl_forcing->set_mean_velocities(vx, vy);
     }
 
@@ -128,6 +149,7 @@ void ABL::pre_advance_work()
     }
 
     m_bndry_plane->pre_advance_work();
+    m_abl_mpl->pre_advance_work();
 }
 
 /** Perform tasks at the end of a new timestep
@@ -139,6 +161,7 @@ void ABL::post_advance_work()
 {
     m_stats->post_advance_work();
     m_bndry_plane->post_advance_work();
+    m_abl_mpl->post_advance_work();
 }
 
 } // namespace amr_wind

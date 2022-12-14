@@ -3,8 +3,7 @@
 
 #include "amr-wind/immersed_boundary/bluff_body/BluffBody.H"
 
-namespace amr_wind {
-namespace ib {
+namespace amr_wind::ib {
 
 struct SphereData : public BluffBodyBaseData
 {
@@ -21,7 +20,6 @@ struct Sphere : public BluffBodyType
     static std::string identifier() { return "Sphere"; }
 };
 
-} // namespace ib
-} // namespace amr_wind
+} // namespace amr_wind::ib
 
 #endif /* Sphere_H */

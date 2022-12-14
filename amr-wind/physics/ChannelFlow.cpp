@@ -6,8 +6,7 @@
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/utilities/DirectionSelector.H"
 
-namespace amr_wind {
-namespace channel_flow {
+namespace amr_wind::channel_flow {
 
 ChannelFlow::ChannelFlow(CFDSim& sim)
     : m_time(sim.time())
@@ -16,11 +15,17 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
     , m_mesh_mapping(sim.has_mesh_mapping())
 {
     {
+        std::string turbulence_model;
+        amrex::ParmParse pp("turbulence");
+        pp.query("model", turbulence_model);
+        if (turbulence_model == "Laminar") {
+            m_laminar = true;
+        }
+    }
+    {
         amrex::ParmParse pp("ChannelFlow");
         pp.query("flow_direction", m_mean_vel_dir);
         pp.query("normal_direction", m_norm_dir);
-        pp.query("Laminar", m_laminar);
-        pp.query("Turbulent_DNS", m_dns);
         pp.query("error_log_file", m_output_fname);
 
         if (m_laminar) {
@@ -29,11 +34,8 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
         } else {
             pp.query("density", m_rho);
             pp.query("re_tau", m_re_tau);
-
-            if (!m_dns) {
-                pp.query("tke0", m_tke0);
-                pp.query("sdr0", m_sdr0);
-            }
+            pp.query("tke0", m_tke0);
+            pp.query("sdr0", m_sdr0);
         }
     }
     {
@@ -87,7 +89,7 @@ void ChannelFlow::initialize_fields(
     auto& density = m_repo.get_field("density")(level);
     density.setVal(m_rho);
 
-    if (!m_laminar && !m_dns) {
+    if (!m_laminar) {
         auto& tke = m_repo.get_field("tke")(level);
         auto& sdr = m_repo.get_field("sdr")(level);
         auto& walldist = m_repo.get_field("wall_dist")(level);
@@ -119,7 +121,7 @@ void ChannelFlow::initialize_fields(
                     vel(i, j, k, 2) = 0.0;
                 });
         }
-    } else if (m_laminar) {
+    } else {
         velocity.setVal(0.0);
         velocity.setVal(
             m_mean_vel, m_mean_vel_dir, 1,
@@ -274,5 +276,4 @@ void ChannelFlow::post_advance_work()
     }
 }
 
-} // namespace channel_flow
-} // namespace amr_wind
+} // namespace amr_wind::channel_flow
