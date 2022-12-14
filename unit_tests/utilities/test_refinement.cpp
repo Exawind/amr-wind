@@ -16,7 +16,7 @@
 namespace amr_wind_tests {
 
 //! Custom mesh class to provide error estimator based on refinement criteria
-class NestRefineMeshTest : public AmrTestMesh
+class NestRefineMesh : public AmrTestMesh
 {
 public:
     amrex::Vector<std::unique_ptr<amr_wind::RefinementCriteria>>&
@@ -79,7 +79,7 @@ TEST_F(NestRefineTest, box_refine)
     ss << "-10.0  25.0 0.0 15.0  35.0 20.0" << std::endl;
     ss << "-10.0  65.0 0.0 15.0  75.0 20.0" << std::endl;
 
-    create_mesh_instance<NestRefineMeshTest>();
+    create_mesh_instance<NestRefineMesh>();
     std::unique_ptr<amr_wind::CartBoxRefinement> box_refine(
         new amr_wind::CartBoxRefinement(sim()));
     box_refine->read_inputs(mesh(), ss);
@@ -87,7 +87,7 @@ TEST_F(NestRefineTest, box_refine)
     // Store the target boxarray for future tests
     auto targets = box_refine->boxarray_vec();
 
-    mesh<NestRefineMeshTest>()->refine_criteria_vec().push_back(
+    mesh<NestRefineMesh>()->refine_criteria_vec().push_back(
         std::move(box_refine));
     initialize_mesh();
 
@@ -120,7 +120,7 @@ TEST_F(NestRefineTest, level_warning)
 
     {
         CaptureOutput io;
-        create_mesh_instance<NestRefineMeshTest>();
+        create_mesh_instance<NestRefineMesh>();
         std::unique_ptr<amr_wind::CartBoxRefinement> box_refine(
             new amr_wind::CartBoxRefinement(sim()));
         box_refine->read_inputs(mesh(), ss);
@@ -145,7 +145,7 @@ TEST_F(NestRefineTest, bbox_limits)
     ss << "1 // Number of boxes at this level" << std::endl;
     ss << "-60.0 -200.0 -10.0 35.0 200.0 60.0" << std::endl;
 
-    create_mesh_instance<NestRefineMeshTest>();
+    create_mesh_instance<NestRefineMesh>();
     std::unique_ptr<amr_wind::CartBoxRefinement> box_refine(
         new amr_wind::CartBoxRefinement(sim()));
     box_refine->read_inputs(mesh(), ss);
