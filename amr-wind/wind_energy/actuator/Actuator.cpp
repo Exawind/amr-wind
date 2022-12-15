@@ -259,7 +259,6 @@ void Actuator::post_advance_work()
     }
 }
 
-
 ActuatorModel& Actuator::get_act_bylabel(std::string actlabel) const
 {
     int thisid = 0; // Default to first actuator
