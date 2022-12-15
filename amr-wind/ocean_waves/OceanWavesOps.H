@@ -5,9 +5,7 @@
 #include "AMReX_Vector.H"
 #include "amr-wind/CFDSim.H"
 
-namespace amr_wind {
-namespace ocean_waves {
-namespace ops {
+namespace amr_wind::ocean_waves::ops {
 
 /** Read user inputs from an input file for a given immersed boundary object.
  *
@@ -42,8 +40,6 @@ struct ApplyRelaxZonesOp;
 template <typename WaveTheoryTrait, typename = void>
 struct ProcessOutputsOp;
 
-} // namespace ops
-} // namespace ocean_waves
-} // namespace amr_wind
+} // namespace amr_wind::ocean_waves::ops
 
 #endif /* OCEAN_WAVES_OPS_H */

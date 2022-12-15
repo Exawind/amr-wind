@@ -5,8 +5,7 @@
 #include "amr-wind/equation_systems/BCOps.H"
 #include "amr-wind/equation_systems/vof/vof_bciface.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /** BC operations for VOF
  *  \ingroup vof
@@ -40,7 +39,6 @@ struct BCOp<VOF>
     const SimTime& m_time;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* VOF_BCOP_H */

@@ -86,7 +86,7 @@ jobs:
   GPU-Nvidia:
     name: GPU-CUDA
     needs: Formatting
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         cuda_ver: [11.4]
@@ -126,7 +126,7 @@ jobs:
   GPU-AMD:
     name: GPU-HIP
     needs: Formatting
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Cancel previous runs
         uses: styfle/cancel-workflow-action@0.6.0
@@ -165,7 +165,7 @@ jobs:
   GPU-Intel:
     name: GPU-DPCPP
     needs: Formatting
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Cancel previous runs
         uses: styfle/cancel-workflow-action@0.6.0
