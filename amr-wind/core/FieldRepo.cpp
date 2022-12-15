@@ -153,12 +153,12 @@ FieldRepo::get_field(const std::string& name, const FieldState fstate) const
     const auto found = m_fid_map.find(fname);
     if (found == m_fid_map.end()) {
         amrex::Abort("Cannot find field: " + name);
-        return nullptr; // To appease the compiler
+        exit(1); // To appease the compiler
     } else if (found->second < static_cast<unsigned>(m_field_vec.size())) {
         return *m_field_vec[found->second];
     } else {
         amrex::Abort("Cannot find field: " + name);
-        return nullptr; // To appease the compiler
+        exit(1); // To appease the compiler
     }
 }
 
@@ -281,12 +281,12 @@ FieldRepo::get_int_field(const std::string& name, const FieldState fstate) const
     const auto found = m_int_fid_map.find(fname);
     if (found == m_int_fid_map.end()) {
         amrex::Abort("Cannot find field: " + name);
-        return nullptr; // To appease the compiler
+        exit(1); // To appease the compiler
     } else if (found->second < static_cast<unsigned>(m_int_field_vec.size())) {
         return *m_int_field_vec[found->second];
     } else {
         amrex::Abort("Cannot find field: " + name);
-        return nullptr; // To appease the compiler
+        exit(1); // To appease the compiler
     }
 }
 
