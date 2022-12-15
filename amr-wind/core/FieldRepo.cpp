@@ -155,7 +155,8 @@ FieldRepo::get_field(const std::string& name, const FieldState fstate) const
         amrex::Abort("Cannot find field: " + name);
     }
 
-    AMREX_ASSERT(found->second < static_cast<unsigned>(m_field_vec.size()));
+    AMREX_ALWAYS_ASSERT(
+        found->second < static_cast<unsigned>(m_field_vec.size()));
     // cppcheck-suppress derefInvalidIteratorRedundantCheck
     return *m_field_vec[found->second];
 }
@@ -281,7 +282,8 @@ FieldRepo::get_int_field(const std::string& name, const FieldState fstate) const
         amrex::Abort("Cannot find field: " + name);
     }
 
-    AMREX_ASSERT(found->second < static_cast<unsigned>(m_int_field_vec.size()));
+    AMREX_ALWAYS_ASSERT(
+        found->second < static_cast<unsigned>(m_int_field_vec.size()));
     // cppcheck-suppress derefInvalidIteratorRedundantCheck
     return *m_int_field_vec[found->second];
 }
