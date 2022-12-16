@@ -120,7 +120,7 @@ void SamplingContainer::initialize_particles(
     ptile.resize(num_particles);
 
     int pidx = 0;
-    const int nextid = static_cast<int>(ParticleType::NextID());
+    const int nextid = ParticleType::NextID();
     auto* pstruct = ptile.GetArrayOfStructs()().data();
     SamplerBase::SampleLocType locs;
     for (const auto& probe : samplers) {
