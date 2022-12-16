@@ -525,11 +525,12 @@ void VelPlaneAveragingFine::compute_hvelmag_averages(const IndexSelector& idxOp)
     lavg_Su.copyToHost(m_line_Su_average.data(), m_line_Su_average.size());
     lavg_Sv.copyToHost(m_line_Sv_average.data(), m_line_Sv_average.size());
     amrex::ParallelDescriptor::ReduceRealSum(
-        m_line_hvelmag_average.data(), m_line_hvelmag_average.size());
+        m_line_hvelmag_average.data(),
+        static_cast<int>(m_line_hvelmag_average.size()));
     amrex::ParallelDescriptor::ReduceRealSum(
-        m_line_Su_average.data(), m_line_Su_average.size());
+        m_line_Su_average.data(), static_cast<int>(m_line_Su_average.size()));
     amrex::ParallelDescriptor::ReduceRealSum(
-        m_line_Sv_average.data(), m_line_Sv_average.size());
+        m_line_Sv_average.data(), static_cast<int>(m_line_Sv_average.size()));
 }
 
 amrex::Real

@@ -230,7 +230,8 @@ void ThirdMomentAveraging::compute_average(
 
     lfluc.copyToHost(m_third_moments_line.data(), m_third_moments_line.size());
     amrex::ParallelDescriptor::ReduceRealSum(
-        m_third_moments_line.data(), m_third_moments_line.size());
+        m_third_moments_line.data(),
+        static_cast<int>(m_third_moments_line.size()));
 }
 
 amrex::Real ThirdMomentAveraging::line_average_interpolated(
