@@ -32,7 +32,7 @@ void sample_field(
     BL_PROFILE("amr-wind::SamplingContainer::sample_impl");
 
     auto* pstruct = pvec.data();
-    auto* parr = &(pavec[0]);
+    auto* parr = pavec.data();
 
     amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(int ip) noexcept {
         auto& p = pstruct[ip];
@@ -235,7 +235,7 @@ void SamplingContainer::populate_buffer(std::vector<double>& buf)
             for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
                 const int np = pti.numParticles();
                 auto* pstruct = pti.GetArrayOfStructs()().data();
-                auto* parr = &pti.GetStructOfArrays().GetRealData(fid)[0];
+                auto* parr = pti.GetStructOfArrays().GetRealData(fid).data();
 
                 amrex::ParallelFor(
                     np, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
