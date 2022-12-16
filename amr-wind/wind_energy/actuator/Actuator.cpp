@@ -130,15 +130,13 @@ void Actuator::pre_advance_work()
 void Actuator::setup_container()
 {
     const int ntotal = num_actuators();
-    const int nlocal =
-        static_cast<int>(std::count_if(
-                             m_actuators.begin(), m_actuators.end(),
-                             [](const std::unique_ptr<ActuatorModel>& obj) {
-                                 return obj->info().sample_vel_in_proc;
-                             });)
+    const int nlocal = static_cast<int>(std::count_if(
+        m_actuators.begin(), m_actuators.end(),
+        [](const std::unique_ptr<ActuatorModel>& obj) {
+            return obj->info().sample_vel_in_proc;
+        }));
 
-            m_container =
-                std::make_unique<ActuatorContainer>(m_sim.mesh(), nlocal);
+    m_container = std::make_unique<ActuatorContainer>(m_sim.mesh(), nlocal);
 
     auto& pinfo = m_container->m_data;
     for (int i = 0, il = 0; i < ntotal; ++i) {
