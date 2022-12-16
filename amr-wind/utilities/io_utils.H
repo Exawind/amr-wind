@@ -15,7 +15,7 @@ namespace amr_wind::ioutils {
 
 inline std::string amr_wind_version()
 {
-    return std::string(amrex::buildInfoGetGitHash(1));
+    return {amrex::buildInfoGetGitHash(1)};
 }
 
 inline std::string timestamp()
