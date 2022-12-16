@@ -256,7 +256,7 @@ IntField& FieldRepo::declare_int_field(
         const FieldState fstate = FieldState::New;
         const std::string fname =
             field_impl::field_name_with_state(name, fstate);
-        const int fid = m_int_field_vec.size();
+        const int fid = static_cast<int>(m_int_field_vec.size());
 
         std::unique_ptr<IntField> field(
             new IntField(*this, fname, fid, ncomp, ngrow, floc));

@@ -25,7 +25,7 @@ public:
         amrex::Real& cd,
         amrex::Real& cm) const;
 
-    int num_entries() const { return m_aoa.size(); }
+    int num_entries() const { return static_cast<int>(m_aoa.size()); }
 
     const RealList& aoa() const { return m_aoa; }
 

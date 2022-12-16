@@ -16,7 +16,7 @@ ABLFieldInit::ABLFieldInit()
     pp_abl.getarr("temperature_values", m_theta_values);
 
     AMREX_ALWAYS_ASSERT(m_theta_heights.size() == m_theta_values.size());
-    int num_theta_values = m_theta_heights.size();
+    int num_theta_values = static_cast<int>(m_theta_heights.size());
 
     pp_abl.query("perturb_velocity", m_perturb_vel);
     pp_abl.query("perturb_ref_height", m_ref_height);
@@ -90,7 +90,7 @@ void ABLFieldInit::operator()(
     const amrex::Real vfac = m_deltaV * std::exp(0.5) / m_ref_height;
     const amrex::Real ref_height = m_ref_height;
 
-    const int ntvals = m_theta_heights.size();
+    const int ntvals = static_cast<int>(m_theta_heights.size());
     const amrex::Real* th = m_thht_d.data();
     const amrex::Real* tv = m_thvv_d.data();
 

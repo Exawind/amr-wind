@@ -232,10 +232,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_pred_x(
     amrex::Real sp1 = S(i + 1, j, k, n);
     amrex::Real sp2 = S(i + 2, j, k, n);
 
-    amrex::Real sedge1 =
-        weno5(sp2, sp1, s0, sm1, sm2, weno_js); // right of i-1/2
-    amrex::Real sedge2 =
-        weno5(sm2, sm1, s0, sp1, sp2, weno_js); // left of i+1/2
+    // right of i-1/2
+    amrex::Real sedge1 = weno5(sp2, sp1, s0, sm1, sm2, weno_js); // NOLINT
+    // left of i+1/2
+    amrex::Real sedge2 = weno5(sm2, sm1, s0, sp1, sp2, weno_js); // NOLINT
 
     amrex::Real sm = sedge1;
     amrex::Real sp = sedge2;
@@ -288,10 +288,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_pred_y(
     amrex::Real sp1 = S(i, j + 1, k, n);
     amrex::Real sp2 = S(i, j + 2, k, n);
 
-    amrex::Real sedge1 =
-        weno5(sp2, sp1, s0, sm1, sm2, weno_js); // right of j-1/2
-    amrex::Real sedge2 =
-        weno5(sm2, sm1, s0, sp1, sp2, weno_js); // left of j+1/2
+    // right of j-1/2
+    amrex::Real sedge1 = weno5(sp2, sp1, s0, sm1, sm2, weno_js); // NOLINT
+    // left of j+1/2
+    amrex::Real sedge2 = weno5(sm2, sm1, s0, sp1, sp2, weno_js); // NOLINT
 
     amrex::Real sm = sedge1;
     amrex::Real sp = sedge2;
@@ -343,10 +343,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_pred_z(
     amrex::Real sp1 = S(i, j, k + 1, n);
     amrex::Real sp2 = S(i, j, k + 2, n);
 
-    amrex::Real sedge1 =
-        weno5(sp2, sp1, s0, sm1, sm2, weno_js); // right of k-1/2
-    amrex::Real sedge2 =
-        weno5(sm2, sm1, s0, sp1, sp2, weno_js); // left of k+1/2
+    // right of k-1/2
+    amrex::Real sedge1 = weno5(sp2, sp1, s0, sm1, sm2, weno_js); // NOLINT
+    // left of k+1/2
+    amrex::Real sedge2 = weno5(sm2, sm1, s0, sp1, sp2, weno_js); // NOLINT
 
     amrex::Real sm = sedge1;
     amrex::Real sp = sedge2;
@@ -403,10 +403,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_x(
     amrex::Real sp1 = S(i + 1, j, k, n);
     amrex::Real sp2 = S(i + 2, j, k, n);
 
-    amrex::Real sedge1 =
-        weno5(sp2, sp1, s0, sm1, sm2, weno_js); // right of i-1/2
-    amrex::Real sedge2 =
-        weno5(sm2, sm1, s0, sp1, sp2, weno_js); // left of i+1/2
+    // right of i-1/2
+    amrex::Real sedge1 = weno5(sp2, sp1, s0, sm1, sm2, weno_js); // NOLINT
+    // left of i+1/2
+    amrex::Real sedge2 = weno5(sm2, sm1, s0, sp1, sp2, weno_js); // NOLINT
 
     amrex::Real sm = sedge1;
     amrex::Real sp = sedge2;
@@ -462,10 +462,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_y(
     amrex::Real sp1 = S(i, j + 1, k, n);
     amrex::Real sp2 = S(i, j + 2, k, n);
 
-    amrex::Real sedge1 =
-        weno5(sp2, sp1, s0, sm1, sm2, weno_js); // right of j-1/2
-    amrex::Real sedge2 =
-        weno5(sm2, sm1, s0, sp1, sp2, weno_js); // left of j+1/2
+    // right of j-1/2
+    amrex::Real sedge1 = weno5(sp2, sp1, s0, sm1, sm2, weno_js); // NOLINT
+    // left of j+1/2
+    amrex::Real sedge2 = weno5(sm2, sm1, s0, sp1, sp2, weno_js); // NOLINT
 
     amrex::Real sm = sedge1;
     amrex::Real sp = sedge2;
@@ -521,10 +521,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_z(
     amrex::Real sp1 = S(i, j, k + 1, n);
     amrex::Real sp2 = S(i, j, k + 2, n);
 
-    amrex::Real sedge1 =
-        weno5(sp2, sp1, s0, sm1, sm2, weno_js); // right of k-1/2
-    amrex::Real sedge2 =
-        weno5(sm2, sm1, s0, sp1, sp2, weno_js); // left of k+1/2
+    // right of k-1/2
+    amrex::Real sedge1 = weno5(sp2, sp1, s0, sm1, sm2, weno_js); // NOLINT
+    // left of k+1/2
+    amrex::Real sedge2 = weno5(sm2, sm1, s0, sp1, sp2, weno_js); // NOLINT
 
     amrex::Real sm = sedge1;
     amrex::Real sp = sedge2;

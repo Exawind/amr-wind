@@ -17,7 +17,7 @@ closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
     auto const it = std::upper_bound(vec.begin(), vec.end(), value);
     AMREX_ALWAYS_ASSERT(it != vec.end());
 
-    const int idx = std::distance(vec.begin(), it);
+    const int idx = static_cast<int>(std::distance(vec.begin(), it));
     return std::max(idx - 1, 0);
 }
 
@@ -159,7 +159,7 @@ void InletData::read_data_native(
     const amrex::Vector<amrex::Real>& times)
 {
     const size_t nc = fld->num_comp();
-    const int nstart = m_components[fld->id()];
+    const int nstart = static_cast<int>(m_components[fld->id()]);
 
     const int idx = closest_index(times, time);
     const int idxp1 = idx + 1;
@@ -236,7 +236,7 @@ void InletData::interpolate(const amrex::Real time)
             continue;
         }
 
-        const int lnlevels = m_data_n[ori]->size();
+        const int lnlevels = static_cast<int>(m_data_n[ori]->size());
         for (int lev = 0; lev < lnlevels; ++lev) {
 
             const auto& datn = (*m_data_n[ori])[lev];

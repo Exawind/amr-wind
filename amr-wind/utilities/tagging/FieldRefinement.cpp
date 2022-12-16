@@ -38,14 +38,18 @@ void FieldRefinement::initialize(const std::string& key)
     }
 
     {
-        const int fcount = std::min(field_err.size(), m_field_error.size());
+        const int fcount = std::min(
+            static_cast<int>(field_err.size()),
+            static_cast<int>(m_field_error.size()));
         for (int i = 0; i < fcount; ++i) {
             m_field_error[i] = field_err[i];
         }
         m_max_lev_field = fcount - 1;
     }
     {
-        const int fcount = std::min(grad_err.size(), m_grad_error.size());
+        const int fcount = std::min(
+            static_cast<int>(grad_err.size()),
+            static_cast<int>(m_grad_error.size()));
         for (int i = 0; i < fcount; ++i) {
             m_grad_error[i] = grad_err[i];
         }

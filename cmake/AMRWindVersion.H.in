@@ -7,8 +7,7 @@
 #ifndef AMRWINDVERSION_H
 #define AMRWINDVERSION_H
 
-namespace amr_wind {
-namespace version {
+namespace amr_wind::version {
 
 #cmakedefine AMR_WIND_HAVE_GIT_INFO
 
@@ -22,7 +21,6 @@ const std::string amr_wind_git_sha = "UNKNOWM";
 const std::string amr_wind_dirty_repo = "UNKNOWN";
 #endif
 
-} // namespace version
-} // namespace amr_wind
+} // namespace amr_wind::version
 
 #endif /* AMRWINDVERSION_H */

@@ -97,7 +97,7 @@ void CartBoxRefinement::read_inputs(
     const amrex::AmrCore& mesh, std::istream& ifh)
 {
     const auto& geom = mesh.Geom();
-    int max_lev = geom.size();
+    int max_lev = static_cast<int>(geom.size());
 
     int nlev_in;
     ifh >> nlev_in;
