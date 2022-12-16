@@ -32,7 +32,9 @@ void CurvatureRefinement::initialize(const std::string& key)
     }
 
     {
-        const int fcount = std::min(curv_value.size(), m_curv_value.size());
+        const int fcount = std::min(
+            static_cast<int>(curv_value.size()),
+            static_cast<int>(m_curv_value.size()));
         for (int i = 0; i < fcount; ++i) {
             m_curv_value[i] = curv_value[i];
         }

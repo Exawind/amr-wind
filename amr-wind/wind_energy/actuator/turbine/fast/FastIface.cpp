@@ -106,7 +106,7 @@ int FastIface::register_turbine(FastTurbine& data)
 {
     BL_PROFILE("amr-wind::FastIface::register_turbine");
     AMREX_ALWAYS_ASSERT(!m_is_initialized);
-    const int local_id = m_turbine_data.size();
+    const int local_id = static_cast<int>(m_turbine_data.size());
     const int gid = data.tid_global;
     m_turbine_map[gid] = local_id;
     data.tid_local = local_id;
@@ -118,7 +118,7 @@ int FastIface::register_turbine(FastTurbine& data)
 void FastIface::allocate_fast_turbines()
 {
     BL_PROFILE("amr-wind::FastIface::allocate_turbines");
-    int nturbines = m_turbine_data.size();
+    int nturbines = static_cast<int>(m_turbine_data.size());
     fast_func(FAST_AllocateTurbines, &nturbines);
     m_is_initialized = true;
 }
