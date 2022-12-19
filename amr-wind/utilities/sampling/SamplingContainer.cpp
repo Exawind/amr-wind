@@ -125,7 +125,7 @@ void SamplingContainer::initialize_particles(
     SamplerBase::SampleLocType locs;
     for (const auto& probe : samplers) {
         probe->sampling_locations(locs);
-        const int npts = locs.size();
+        const int npts = static_cast<int>(locs.size());
         const auto probe_id = probe->id();
         amrex::Gpu::DeviceVector<amrex::Array<amrex::Real, AMREX_SPACEDIM>>
             dlocs(npts);
@@ -251,7 +251,8 @@ void SamplingContainer::populate_buffer(std::vector<double>& buf)
     amrex::Gpu::copy(
         amrex::Gpu::deviceToHost, dbuf.begin(), dbuf.end(), buf.begin());
     amrex::ParallelDescriptor::ReduceRealSum(
-        buf.data(), buf.size(), amrex::ParallelDescriptor::IOProcessorNumber());
+        buf.data(), static_cast<int>(buf.size()),
+        amrex::ParallelDescriptor::IOProcessorNumber());
 }
 
 } // namespace amr_wind::sampling

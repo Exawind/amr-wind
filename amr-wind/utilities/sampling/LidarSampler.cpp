@@ -36,7 +36,7 @@ void LidarSampler::initialize(const std::string& key)
     pp.query("periodic", m_periodic);
 
     // Number of elements in the table
-    int np = m_time_table.size();
+    int np = static_cast<int>(m_time_table.size());
 
     // Ensure that the tables have the same size
     if (m_azimuth_table.size() != np) {

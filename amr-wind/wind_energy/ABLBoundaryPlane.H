@@ -73,7 +73,7 @@ public:
 
     int nlevels(const amrex::Orientation ori) const
     {
-        return (*m_data_interp[ori]).size();
+        return static_cast<int>((*m_data_interp[ori]).size());
     }
 
     amrex::Real tn() const { return m_tn; }

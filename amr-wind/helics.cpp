@@ -18,13 +18,13 @@ void tokenize(
 {
 
     int start = 0;
-    int end = s.find(del);
+    int end = static_cast<int>(s.find(del));
 
     return_list.push_front(atof(s.substr(start + 1, end - start).c_str()));
     while (end > 0) {
 
         start = end + static_cast<int>(del.size());
-        end = s.find(del, start);
+        end = static_cast<int>(s.find(del, start));
 
         if (end == -1) {
             end = -2;

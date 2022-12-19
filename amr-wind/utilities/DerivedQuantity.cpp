@@ -69,7 +69,7 @@ DerivedQty& DerivedQtyMgr::create(const std::string& key)
     auto tokens = parse_derived_qty(qty_name);
     m_derived_vec.emplace_back(
         DerivedQty::create(tokens.first, m_repo, tokens.second));
-    m_obj_map[qty_name] = m_derived_vec.size() - 1;
+    m_obj_map[qty_name] = static_cast<int>(m_derived_vec.size()) - 1;
 
     return *m_derived_vec.back();
 }
