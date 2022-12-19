@@ -303,7 +303,7 @@ void ABLStats::write_ascii()
     if (Q > 1e-10) {
         wstar = std::cbrt(m_gravity * Q * m_zi / m_ref_theta);
     }
-    auto L = m_abl_wall_func.mo().obukhov_len;
+    auto L = m_abl_wall_func.mo().L;
 
     std::ofstream outfile;
     outfile.precision(4);
@@ -464,7 +464,7 @@ void ABLStats::write_netcdf()
         ncf.var("Tsurf").put(&Tsurf, {nt}, {1});
         if (Q > 1e-10) wstar = std::cbrt(m_gravity * Q * m_zi / m_ref_theta);
         ncf.var("wstar").put(&wstar, {nt}, {1});
-        double L = m_abl_wall_func.mo().obukhov_len;
+        double L = m_abl_wall_func.mo().L;
         ncf.var("L").put(&L, {nt}, {1});
         ncf.var("zi").put(&m_zi, {nt}, {1});
 

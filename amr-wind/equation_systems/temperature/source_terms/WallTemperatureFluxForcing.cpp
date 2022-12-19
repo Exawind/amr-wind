@@ -51,6 +51,10 @@ void WallTemperatureFluxForcing::operator()(
 
     // Domain size information.
     const auto& domain = geom.Domain();
+    amrex::Real dV = 1.0;
+    for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
+        dV *= dx[dir];
+    }
 
     //
     const int idir = m_direction;
@@ -103,12 +107,11 @@ void WallTemperatureFluxForcing::operator()(
             std::cout << "utau = " << m_mo.utau << std::endl;
             std::cout << "z0 = " << m_mo.z0 << std::endl;
             std::cout << "z1 = " << m_mo.zref << std::endl;
-            std::cout << "L = " << m_mo.obukhov_len << std::endl;
+            std::cout << "L = " << m_mo.obukhov_L << std::endl;
             std::cout << "VLarge = " << std::numeric_limits<amrex::Real>::max() << std::endl;
             std::cout << "phi_m = " << m_mo.phi_m() << std::endl;
             std::cout << "phi_h = " << m_mo.phi_h() << std::endl;
-            std::cout << "psi_m = " << m_mo.calc_psi_m(m_mo.zref/m_mo.obukhov_len) << std::endl;
-            std::cout << "psi_m = " << m_mo.calc_psi_m(m_mo.zref/m_mo.obukhov_len) << std::endl;
+            std::cout << "psi_m = " << m_mo.psi_m(m_mo.zref/m_mo.obukhov_L) << std::endl;
             std::cout << "vel_mean = " << m_mo.vel_mean[0] << " "
                                        << m_mo.vel_mean[1] << " "
                                        << m_mo.vel_mean[2] << std::endl;
@@ -130,8 +133,9 @@ void WallTemperatureFluxForcing::operator()(
             std::cout << m_velocity.num_time_states() << std::endl;
 */
 
-            // Adding the source term as surface stress vector times surface area times density.
-            src_term(i, j, k) += q;
+            // Adding the source term as surface temperature flux times surface area divided by cell
+            // volume (division by cell volume is to make this a source per unit volume).
+            src_term(i, j, k) += (q * dx[0] * dx[1]) / dV;
           //src_term(i, j, k) += 0.0;
         });
 }

@@ -43,6 +43,15 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
 
     if (pp.contains("surface_temp_flux")) {
         pp.query("surface_temp_flux", m_mo.surf_temp_flux);
+        if (pp.contains("surface_temp_init")) {
+            pp.get("surface_temp_init", m_surf_temp_init);
+        } else {
+            amrex::Print()
+                << "ABLWallFunction: Initial surface temperature not found for "
+                   "ABL. Assuming to be equal to the reference temperature "
+                << m_mo.ref_temp << std::endl;
+            m_surf_temp_init = m_mo.ref_temp;
+        }
     } else if (pp.contains("surface_temp_rate")) {
         m_tempflux = false;
         pp.get("surface_temp_rate", m_surf_temp_rate);
@@ -87,7 +96,11 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
 
     m_mo.alg_type =
         m_tempflux ? MOData::HEAT_FLUX : MOData::SURFACE_TEMPERATURE;
-    m_mo.gravity = utils::vec_mag(m_gravity.data());
+    m_mo.g = utils::vec_mag(m_gravity.data());
+
+    if (m_tempflux) {
+        m_mo.surf_temp = m_surf_temp_init;
+    }
 }
 
 void ABLWallFunction::init_log_law_height()
@@ -118,6 +131,7 @@ void ABLWallFunction::update_umean(
         m_mo.vmag_mean = m_wf_vmag;
         m_mo.Su_mean = 0.0; // FIXME: need to fill this correctly
         m_mo.Sv_mean = 0.0; // FIXME: need to fill this correctly
+        m_mo.Stheta_mean = 0.0; // FIXME: need to fill this correctly
         m_mo.theta_mean = m_wf_theta;
     } else {
         m_mo.vel_mean[0] = vpa.line_average_interpolated(m_mo.zref, 0);
@@ -125,6 +139,7 @@ void ABLWallFunction::update_umean(
         m_mo.vmag_mean = vpa.line_hvelmag_average_interpolated(m_mo.zref);
         m_mo.Su_mean = vpa.line_Su_average_interpolated(m_mo.zref);
         m_mo.Sv_mean = vpa.line_Sv_average_interpolated(m_mo.zref);
+        m_mo.Stheta_mean = vpa.line_Stheta_average_interpolated(m_mo.zref);
         m_mo.theta_mean = tpa.line_average_interpolated(m_mo.zref, 0);
     }
 

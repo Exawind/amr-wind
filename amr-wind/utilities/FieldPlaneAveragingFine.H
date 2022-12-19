@@ -120,6 +120,8 @@ public:
 
     void operator()();
 
+    const Field& temperatureField;
+
 private:
     amrex::Vector<amrex::Real>
         m_line_hvelmag_average; /** line storage for the average horizontal
@@ -131,6 +133,10 @@ private:
     amrex::Vector<amrex::Real>
         m_line_Sv_average; /** line storage for the average horizontal
                                    velocity magnitude time y-velocity */
+
+    amrex::Vector<amrex::Real>
+        m_line_Stheta_average; /** line storage for the average horizontal
+                                 velocity magnitude times temperature */
 
 public: // public for GPU
     /** fill line storage with horizontal velocity magnitude averages */
@@ -146,6 +152,9 @@ public: // public for GPU
     /** evaluate line haverage at specific location for horizontal velocity
      * magnitude times y-velocity */
     amrex::Real line_Sv_average_interpolated(amrex::Real x) const;
+    /** evaluate line average at specific location for horizontal velocity
+     * magnitude times temperature */
+    amrex::Real line_Stheta_average_interpolated(amrex::Real x) const;
 };
 
 } // namespace amr_wind
