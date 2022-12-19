@@ -78,7 +78,10 @@ public:
 
     void sample_fields(const Field& vel, const Field& density);
 
-    int num_actuator_points() const { return m_data.position.size(); }
+    int num_actuator_points() const
+    {
+        return static_cast<int>(m_data.position.size());
+    }
 
     // public for CUDA, not safe for general access
 

@@ -44,7 +44,7 @@ void DTUSpinnerSampler::initialize(const std::string& key)
     pp.getarr("elevation_table", m_elevation_table);
 
     // Number of elements in the table
-    int np = m_time_table.size();
+    int np = static_cast<int>(m_time_table.size());
 
     // Ensure that the tables have the same size
     if (m_azimuth_table.size() != np) {

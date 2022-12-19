@@ -33,7 +33,9 @@ void VorticityMagRefinement::initialize(const std::string& key)
     }
 
     {
-        const int fcount = std::min(vort_value.size(), m_vort_value.size());
+        const int fcount = std::min(
+            static_cast<int>(vort_value.size()),
+            static_cast<int>(m_vort_value.size()));
         for (int i = 0; i < fcount; ++i) {
             m_vort_value[i] = vort_value[i];
         }

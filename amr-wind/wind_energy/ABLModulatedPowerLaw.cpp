@@ -61,7 +61,7 @@ ABLModulatedPowerLaw::ABLModulatedPowerLaw(CFDSim& sim)
     pp_abl.getarr("temperature_values", m_theta_values);
 
     AMREX_ALWAYS_ASSERT(m_theta_heights.size() == m_theta_values.size());
-    int num_theta_values = m_theta_heights.size();
+    int num_theta_values = static_cast<int>(m_theta_heights.size());
     m_thht_d.resize(num_theta_values);
     m_thvv_d.resize(num_theta_values);
 
@@ -233,7 +233,7 @@ void ABLModulatedPowerLaw::set_temperature(
     const int nghost = 1;
     const auto& domain = geom.growPeriodicDomain(nghost);
 
-    const int ntvals = m_theta_heights.size();
+    const int ntvals = static_cast<int>(m_theta_heights.size());
     const amrex::Real* th = m_thht_d.data();
     const amrex::Real* tv = m_thvv_d.data();
 

@@ -135,7 +135,7 @@ void ActuatorContainer::reset_container()
     }
     Redistribute();
 
-    const int total_pts = m_data.velocity.size();
+    const int total_pts = static_cast<int>(m_data.velocity.size());
     initialize_particles(total_pts);
 }
 
@@ -261,7 +261,7 @@ void ActuatorContainer::populate_field_buffers()
     {
         auto& vel_arr = m_data.velocity;
         auto& den_arr = m_data.density;
-        const int npts = vel_arr.size();
+        const int npts = static_cast<int>(vel_arr.size());
         const int ioff = m_proc_offsets[amrex::ParallelDescriptor::MyProc()];
         for (int i = 0; i < npts; ++i) {
             for (int j = 0; j < AMREX_SPACEDIM; ++j) {
@@ -382,7 +382,7 @@ void ActuatorContainer::compute_local_coordinates()
         const auto& ba = m_mesh.boxArray(lev);
         const auto& dm = m_mesh.DistributionMap(lev);
 
-        const int nbx = dm.size();
+        const int nbx = static_cast<int>(dm.size());
         for (int i = 0; (i < nbx) && !assigned; ++i) {
             if (dm[i] != iproc) {
                 continue;

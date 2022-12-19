@@ -5,7 +5,7 @@ namespace amr_wind::actuator {
 void FLLCInit(
     FLLCData& data, const ComponentView& view, const amrex::Real eps_chord)
 {
-    const int npts = view.pos.size();
+    const int npts = static_cast<int>(view.pos.size());
     data.different_sizes = view.pos.size() != view.vel_pos.size();
     if (data.different_sizes) {
         data.span_distance_force.resize(view.pos.size());
