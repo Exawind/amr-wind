@@ -19,7 +19,9 @@ time.checkpoint_interval =   -1  # Steps between checkpoint files
 #               PHYSICS                 #
 #.......................................#
 incflo.density             =   1.          # Reference density 
+incflo.use_godunov = false
 transport.viscosity = 0.00009947183943
+incflo.diffusion_type = 2
 transport.laminar_prandtl = 1.0
 turbulence.model = Laminar
 

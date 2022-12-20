@@ -27,6 +27,7 @@ enst.output_frequency = 1
 #               PHYSICS                 #
 #.......................................#
 incflo.use_godunov = 1
+incflo.diffusion_type = 2
 incflo.godunov_type = "plm"
 transport.viscosity = 0.001
 transport.laminar_prandtl = 1.0

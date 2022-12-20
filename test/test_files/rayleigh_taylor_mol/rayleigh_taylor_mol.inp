@@ -42,7 +42,6 @@ tagging.density.grad_error = 0.1 0.1 0.1 0.1
 incflo.use_godunov      = false
 incflo.constant_density = false
 
-incflo.diffusion_type   = 1             # 0 = Explicit, 1 = Crank-Nicolson, 2 = Implicit
 
 incflo.verbose          =   0           # incflo_level
 
