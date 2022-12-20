@@ -151,7 +151,7 @@ FieldRepo::get_field(const std::string& name, const FieldState fstate) const
     BL_PROFILE("amr-wind::FieldRepo::get_field");
     const auto fname = field_impl::field_name_with_state(name, fstate);
     const auto found = m_fid_map.find(fname);
-    if (found == m_fid_map.end()) {
+    if (found == m_fid_map.end()) { // NOLINT
         amrex::Abort("Cannot find field: " + name);
         exit(1); // To appease the compiler
     } else if (found->second < static_cast<unsigned>(m_field_vec.size())) {
@@ -279,7 +279,7 @@ FieldRepo::get_int_field(const std::string& name, const FieldState fstate) const
     AMREX_ALWAYS_ASSERT(fstate == FieldState::New);
     const auto fname = field_impl::field_name_with_state(name, fstate);
     const auto found = m_int_fid_map.find(fname);
-    if (found == m_int_fid_map.end()) {
+    if (found == m_int_fid_map.end()) { // NOLINT
         amrex::Abort("Cannot find field: " + name);
         exit(1); // To appease the compiler
     } else if (found->second < static_cast<unsigned>(m_int_field_vec.size())) {

@@ -84,7 +84,8 @@ void Sampling::update_container()
     m_scontainer->initialize_particles(m_samplers);
     // Redistribute particles to appropriate boxes/MPI ranks
     m_scontainer->Redistribute();
-    m_scontainer->num_sampling_particles() = m_total_particles;
+    m_scontainer->num_sampling_particles() =
+        static_cast<int>(m_total_particles);
 }
 
 void Sampling::update_sampling_locations()
