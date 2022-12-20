@@ -63,7 +63,9 @@ void FieldInfo::copy_bc_to_device() noexcept
         amrex::Abort("Invalid BC type encountered");
     }
 
-    amrex::Vector<amrex::Real> h_data(m_ncomp * AMREX_SPACEDIM * 2);
+    amrex::Vector<amrex::Real> h_data(
+        static_cast<std::vector<amrex::Real>::size_type>(m_ncomp) *
+        AMREX_SPACEDIM * 2);
 
     // Copy data to a flat array for transfer to device
     {
