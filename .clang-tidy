@@ -1,6 +1,7 @@
 ---
 Checks: 'bugprone-*,
          -bugprone-easily-swappable-parameters,
+         -bugprone-exception-escape,
          clang-diagnostic-*,
          clang-analyzer-*,
          corecppguidelines-*,

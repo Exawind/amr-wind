@@ -24,7 +24,7 @@ void PlaneSampler::initialize(const std::string& key)
     AMREX_ALWAYS_ASSERT(static_cast<int>(m_npts_dir.size()) == 2);
 
     pp.queryarr("offsets", m_poffsets);
-    int noffsets = m_poffsets.size();
+    int noffsets = static_cast<int>(m_poffsets.size());
     if (noffsets > 0) {
         pp.getarr("normal", m_normal);
         AMREX_ALWAYS_ASSERT(
@@ -56,7 +56,7 @@ void PlaneSampler::sampling_locations(SampleLocType& locs) const
     }
 
     int idx = 0;
-    const int nplanes = m_poffsets.size();
+    const int nplanes = static_cast<int>(m_poffsets.size());
     for (int k = 0; k < nplanes; ++k) {
         for (int j = 0; j < m_npts_dir[1]; ++j) {
             for (int i = 0; i < m_npts_dir[0]; ++i) {

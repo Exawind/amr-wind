@@ -87,9 +87,9 @@ void InletData::define_level_data(
     if (!this->is_populated(ori)) {
         return;
     }
-    m_data_n[ori]->push_back(amrex::FArrayBox(bx, nc));
-    m_data_np1[ori]->push_back(amrex::FArrayBox(bx, nc));
-    m_data_interp[ori]->push_back(amrex::FArrayBox(bx, nc));
+    m_data_n[ori]->push_back(amrex::FArrayBox(bx, static_cast<int>(nc)));
+    m_data_np1[ori]->push_back(amrex::FArrayBox(bx, static_cast<int>(nc)));
+    m_data_interp[ori]->push_back(amrex::FArrayBox(bx, static_cast<int>(nc)));
 }
 
 #ifdef AMR_WIND_USE_NETCDF
@@ -202,7 +202,7 @@ void InletData::read_data_native(
             });
     }
 
-    bndry.copyTo((*m_data_n[ori])[lev], 0, nstart, nc);
+    bndry.copyTo((*m_data_n[ori])[lev], 0, nstart, static_cast<int>(nc));
 
     for (amrex::MFIter mfi(bndry); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
@@ -224,7 +224,7 @@ void InletData::read_data_native(
             });
     }
 
-    bndry.copyTo((*m_data_np1[ori])[lev], 0, nstart, nc);
+    bndry.copyTo((*m_data_np1[ori])[lev], 0, nstart, static_cast<int>(nc));
 }
 
 void InletData::interpolate(const amrex::Real time)
