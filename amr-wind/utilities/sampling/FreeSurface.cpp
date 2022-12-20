@@ -64,8 +64,7 @@ void FreeSurface::initialize()
 
     // Turn parameters into 2D grid
     m_locs.resize(m_npts);
-    m_out.resize(
-        static_cast<std::vector<amrex::Real>::size_type>(m_npts) * m_ninst);
+    m_out.resize(m_npts * m_ninst);
 
     // Get size of sample grid spacing
     amrex::Real dxs0 =
@@ -517,18 +516,14 @@ void FreeSurface::post_advance_work()
         // Copy information back from device
         amrex::Gpu::copy(
             amrex::Gpu::deviceToHost, dout.begin(), dout.end(),
-            &m_out
-                [static_cast<std::vector<amrex::Real>::size_type>(ni) *
-                 m_npts]);
+            &m_out[ni * m_npts]);
         // Make consistent across parallelization
         for (int n = 0; n < m_npts; n++) {
             amrex::ParallelDescriptor::ReduceRealMax(m_out[ni * m_npts + n]);
         }
         // Copy last m_out to device vector of results of last instance
         amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice,
-            &m_out
-                [static_cast<std::vector<amrex::Real>::size_type>(ni) * m_npts],
+            amrex::Gpu::hostToDevice, &m_out[ni * m_npts],
             &m_out[(ni + 1) * m_npts - 1] + 1, dout_last.begin());
         // Reset current output device vector
         for (int n = 0; n < m_npts; n++) {
