@@ -7,7 +7,6 @@
 #include "amr-wind/turbulence/TurbulenceModel.H"
 #include "amr-wind/utilities/console_io.H"
 #include "amr-wind/utilities/PostProcessing.H"
-#include "amr-wind/core/field_ops.H"
 #include "AMReX_MultiFabUtil.H"
 
 using namespace amrex;
