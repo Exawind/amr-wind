@@ -165,8 +165,8 @@ void ABLVelWallFunc::wall_model(
 
     amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
     amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
-    if (!(velocity.bc_type()[zlo] == BC::wall_model ||
-          velocity.bc_type()[zhi] == BC::wall_model)) {
+    if ((velocity.bc_type()[zlo] != BC::wall_model) &&
+        (velocity.bc_type()[zhi] != BC::wall_model)) {
         return;
     }
 
@@ -286,8 +286,8 @@ void ABLTempWallFunc::wall_model(
     amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
     amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
 
-    if (!(temperature.bc_type()[zlo] == BC::wall_model ||
-          temperature.bc_type()[zhi] == BC::wall_model)) {
+    if ((temperature.bc_type()[zlo] != BC::wall_model) &&
+        (temperature.bc_type()[zhi] != BC::wall_model)) {
         return;
     }
 

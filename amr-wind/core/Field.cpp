@@ -21,7 +21,7 @@ FieldInfo::FieldInfo(
     , m_nstates(nstates)
     , m_floc(floc)
     , m_bc_values(AMREX_SPACEDIM * 2, amrex::Vector<amrex::Real>(ncomp, 0.0))
-    , m_bc_values_dview(ncomp * AMREX_SPACEDIM * 2)
+    , m_bc_values_dview(static_cast<long>(ncomp) * AMREX_SPACEDIM * 2)
     , m_bcrec(ncomp)
     , m_bcrec_d(ncomp)
     , m_states(FieldInfo::max_field_states, nullptr)
@@ -63,7 +63,8 @@ void FieldInfo::copy_bc_to_device() noexcept
         amrex::Abort("Invalid BC type encountered");
     }
 
-    amrex::Vector<amrex::Real> h_data(m_ncomp * AMREX_SPACEDIM * 2);
+    amrex::Vector<amrex::Real> h_data(
+        static_cast<long>(m_ncomp) * AMREX_SPACEDIM * 2);
 
     // Copy data to a flat array for transfer to device
     {
