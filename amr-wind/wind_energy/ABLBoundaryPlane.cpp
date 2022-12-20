@@ -159,7 +159,8 @@ void InletData::read_data_native(
     const amrex::Vector<amrex::Real>& times)
 {
     const size_t nc = fld->num_comp();
-    const int nstart = static_cast<int>(m_components[fld->id()]);
+    const int nstart =
+        static_cast<int>(m_components[static_cast<int>(fld->id())]);
 
     const int idx = closest_index(times, time);
     const int idxp1 = idx + 1;
