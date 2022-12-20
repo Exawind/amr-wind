@@ -1,4 +1,4 @@
-name: "PeleC CodeQL config"
+name: "AMR-Wind CodeQL config"
 
 query-filters:
   - exclude:
