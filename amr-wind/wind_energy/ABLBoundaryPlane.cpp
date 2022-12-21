@@ -572,12 +572,12 @@ void ABLBoundaryPlane::write_file()
             std::string filename = amrex::MultiFabFileFullPrefix(
                 lev, chkname, level_prefix, field.name());
 
-            // print all boundaries and a header file
-            //            std::string header_file = chkname + "/header";
-            //            std::ofstream ofh(header_file, std::ios::out);
-            //            ofh << "time: " << time << '\n';
-            //            bndry.write(filename, ofh);
-            //            ofh.close();
+            /* print all boundaries and a header file
+                        std::string header_file = chkname + "/header";
+                        std::ofstream ofh(header_file, std::ios::out);
+                        ofh << "time: " << time << '\n';
+                        bndry.write(filename, ofh);
+                        ofh.close();*/
 
             // print individual faces
             for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
@@ -907,9 +907,6 @@ void ABLBoundaryPlane::populate_data(
         if (lev >= m_in_data.nlevels(ori)) {
             amrex::Abort("No inflow data at this level.");
         }
-
-        // const int normal = ori.coordDir();
-        // const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
 
         const size_t nc = mfab.nComp();
 

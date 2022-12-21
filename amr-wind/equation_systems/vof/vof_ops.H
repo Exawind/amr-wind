@@ -28,8 +28,6 @@ struct FieldRegOp<VOF, Scheme>
         // Register fields for output/restart
         auto& iomgr = sim.io_manager();
         iomgr.register_io_var(fields.field.name());
-        // iomgr.register_output_var(levelset.name());
-        // iomgr.register_output_var(curvature.name());
 
         return fields;
     }

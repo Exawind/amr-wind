@@ -118,7 +118,6 @@ struct UpdateRelaxZonesOp<LinearWaves>
 
         for (int lev = 0; lev < nlevels; ++lev) {
             const auto& problo = geom[lev].ProbLoArray();
-            // const auto& probhi = geom[lev].ProbHiArray();
             const auto& dx = geom[lev].CellSizeArray();
 
             for (amrex::MFIter mfi(m_ow_levelset(lev)); mfi.isValid(); ++mfi) {

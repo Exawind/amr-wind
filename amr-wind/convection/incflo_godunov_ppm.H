@@ -26,8 +26,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_xbc(
 {
     using namespace amrex;
 
-    // constexpr amrex::Real small_vel = 1e-10;
-
     // Low X
     if (i <= domlo) {
         if (bclo == BCType::ext_dir) {
@@ -89,8 +87,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_ybc(
 {
     using namespace amrex;
 
-    // constexpr amrex::Real small_vel = 1e-10;
-
     // Low Y
     if (j <= domlo) {
         if (bclo == BCType::ext_dir) {
@@ -151,8 +147,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_zbc(
     const int domhi)
 {
     using namespace amrex;
-
-    // constexpr amrex::Real small_vel = 1e-10;
 
     // Low Z
     if (k <= domlo) {

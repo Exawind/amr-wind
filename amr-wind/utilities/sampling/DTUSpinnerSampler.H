@@ -32,7 +32,6 @@ public:
      *
      *
      */
-    //~ void update_sampling_locations() override;
     void sampling_locations(SampleLocType& /*locs*/) const override;
 
     /** Determine how the subsampling will be done
