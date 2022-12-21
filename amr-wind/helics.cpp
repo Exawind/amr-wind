@@ -216,7 +216,7 @@ void helics_storage::recv_messages_from_controller()
     }
 
     // broadcast wind turbine yaw angles to all procs
-    // FIXME: some day only need to send/recv to specific turbines
+    // TODO: some day only need to send/recv to specific turbines
     amrex::ParallelDescriptor::Bcast(
         m_turbine_yaw_to_amrwind.data(), m_turbine_yaw_to_amrwind.size(),
         amrex::ParallelDescriptor::IOProcessorNumber(),

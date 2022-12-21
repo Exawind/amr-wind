@@ -604,7 +604,7 @@ void ABLBoundaryPlane::read_header()
         return;
     }
 
-    // FIXME: overallocate this for now
+    // TODO: overallocate this for now
     m_in_data.resize(2 * AMREX_SPACEDIM);
 
 #ifdef AMR_WIND_USE_NETCDF
@@ -635,7 +635,7 @@ void ABLBoundaryPlane::read_header()
             m_in_data.define_plane(ori);
 
             const int nlevels = plane_grp.num_groups();
-            // FIXME Do not support multi-level input mode yet.
+            // TODO Do not support multi-level input mode yet.
             // this is due to interpolation issues at the coarse-fine interface
             if (nlevels > 1) {
                 amrex::Abort("Not supporting multi-level input mode yet.");
@@ -738,12 +738,12 @@ void ABLBoundaryPlane::read_header()
             nc += fld->num_comp();
         }
 
-        // FIXME: need to generalize to lev > 0 somehow
+        // TODO: need to generalize to lev > 0 somehow
         const int lev = 0;
         for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
             auto ori = oit();
 
-            // FIXME: would be safer and less storage to not allocate all of
+            // TODO: would be safer and less storage to not allocate all of
             // these but we do not use m_planes for input and need to detect
             // mass inflow from field bcs same for define level data below
             m_in_data.define_plane(ori);
@@ -965,7 +965,7 @@ void ABLBoundaryPlane::write_data(
 
     grp.var(name).par_access(NC_COLLECTIVE);
 
-    // FIXME optimization
+    // TODO optimization
     // - move buffer outside this function, probably best as a member
     // - place in object to access as ori/lev/fld
     // - sizing and start/counts should be done only on init and regrid

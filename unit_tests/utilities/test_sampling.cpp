@@ -214,7 +214,6 @@ TEST_F(SamplingTest, sampling)
         pp.addarr("end", amrex::Vector<amrex::Real>{66.0, 66.0, 127.0});
     }
 
-    // amr_wind::sampling::Sampling probes(sim(), "sampling");
     SamplingImpl probes(sim(), "sampling");
     probes.initialize();
     probes.post_advance_work();
