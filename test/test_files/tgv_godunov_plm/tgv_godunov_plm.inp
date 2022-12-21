@@ -20,6 +20,7 @@ time.checkpoint_interval =   -1  # Steps between checkpoint files
 #.......................................#
 incflo.density             = 1.          # Reference density 
 incflo.use_godunov      = 1
+incflo.diffusion_type = 2
 incflo.godunov_type = "plm"
 transport.viscosity = 0.00009947183943
 transport.laminar_prandtl = 1.0

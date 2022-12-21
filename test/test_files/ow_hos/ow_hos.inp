@@ -28,6 +28,7 @@ OceanWaves.HOS1.relax_zone_out_length=900
 #.......................................#
 incflo.use_godunov = 1
 incflo.godunov_type="weno"
+incflo.diffusion_type = 2
 incflo.mflux_type="minmod"
 transport.model = TwoPhaseTransport
 transport.viscosity_fluid1=0.0 #1.0e-3

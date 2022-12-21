@@ -27,6 +27,7 @@ enst.type = Enstrophy
 #.......................................#
 incflo.use_godunov = 1
 incflo.godunov_type = "plm"
+incflo.diffusion_type = 2
 transport.viscosity = 0.001
 transport.laminar_prandtl = 1.0
 turbulence.model = Laminar

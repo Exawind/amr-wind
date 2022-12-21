@@ -169,8 +169,7 @@ private:
 
     bool m_constant_density = true;
 
-    // Default to MOL (not Godunov)
-    bool m_use_godunov = false;
+    bool m_use_godunov = true;
 
     // Prescribe advection velocity
     bool m_prescribe_vel = false;
