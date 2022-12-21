@@ -100,6 +100,7 @@ inline typename std::iterator_traits<C2>::value_type linear(
         return yout;
     }
     amrex::Abort("idx undefined");
+    exit(1);
 }
 
 template <typename C1, typename C2>
