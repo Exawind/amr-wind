@@ -572,13 +572,6 @@ void ABLBoundaryPlane::write_file()
             std::string filename = amrex::MultiFabFileFullPrefix(
                 lev, chkname, level_prefix, field.name());
 
-            /* print all boundaries and a header file
-                        std::string header_file = chkname + "/header";
-                        std::ofstream ofh(header_file, std::ios::out);
-                        ofh << "time: " << time << '\n';
-                        bndry.write(filename, ofh);
-                        ofh.close();*/
-
             // print individual faces
             for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
                 auto ori = oit();
