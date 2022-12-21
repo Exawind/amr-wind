@@ -14,7 +14,7 @@
 #include "amr-wind/utilities/tagging/CartBoxRefinement.H"
 
 namespace amr_wind_tests {
-
+namespace {
 //! Custom mesh class to provide error estimator based on refinement criteria
 class NestRefineMesh : public AmrTestMesh
 {
@@ -37,6 +37,7 @@ protected:
 private:
     amrex::Vector<std::unique_ptr<amr_wind::RefinementCriteria>> m_refine_crit;
 };
+} // namespace
 
 //! Custom test fixture for Cartesian Box refinement
 class NestRefineTest : public MeshTest
