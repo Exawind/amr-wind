@@ -142,12 +142,12 @@ void Sampling::impl_write_native()
     BL_PROFILE("amr-wind::Sampling::write_native");
 
     const std::string post_dir = "post_processing";
-    const std::string sdir =
+    const std::string name =
         amrex::Concatenate(m_label, m_sim.time().time_index());
     amrex::Vector<std::string> int_var_names{"uid", "set_id", "probe_id"};
 
     m_scontainer->WritePlotFile(
-        post_dir, sdir, m_var_names, int_var_names,
+        post_dir, name, m_var_names, int_var_names,
         [=] AMREX_GPU_HOST_DEVICE(
             const SamplingContainer::SuperParticleType& p) {
             return p.id() > 0;
