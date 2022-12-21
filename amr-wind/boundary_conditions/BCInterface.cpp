@@ -225,14 +225,10 @@ void BCVelocity::read_values()
         const auto bct = bctype[ori];
 
         amrex::ParmParse pp(bcid);
-        if (bct == BC::mass_inflow) {
-            pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
-        } else if (bct == BC::no_slip_wall) {
-            pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
+        pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
+        if (bct == BC::no_slip_wall) {
             // Set normal component to zero
             bcval[ori][ori.coordDir()] = 0.0;
-        } else {
-            pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
         }
     }
 }
