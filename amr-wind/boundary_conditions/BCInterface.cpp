@@ -323,7 +323,7 @@ void BCPressure::read_values()
         const auto bct = bctype[ori];
 
         amrex::ParmParse pp(bcid);
-        if ((bct == BC::pressure_inflow) || (bct == BC::pressure_outflow) {
+        if ((bct == BC::pressure_inflow) || (bct == BC::pressure_outflow)) {
             pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
         }
     }
