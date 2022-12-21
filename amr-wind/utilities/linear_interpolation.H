@@ -90,7 +90,9 @@ inline typename std::iterator_traits<C2>::value_type linear(
 
     if ((idx.lim == Limits::LOWLIM) || (idx.lim == Limits::UPLIM)) {
         return yinp[idx.idx];
-    } else if (idx.lim == Limits::VALID) {
+    }
+
+    if (idx.lim == Limits::VALID) {
         static constexpr DType1 eps = 1.0e-8;
         int j = idx.idx;
         const auto denom = (xbegin[j + 1] - xbegin[j]);
@@ -99,6 +101,7 @@ inline typename std::iterator_traits<C2>::value_type linear(
         const auto yout = facL * yinp[j] + facR * yinp[j + 1];
         return yout;
     }
+
     amrex::Abort("idx undefined");
     exit(1);
 }
