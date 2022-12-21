@@ -86,28 +86,22 @@ inline typename std::iterator_traits<C2>::value_type linear(
     const typename std::iterator_traits<C1>::value_type& xout)
 {
     using DType1 = typename std::iterator_traits<C1>::value_type;
-    static constexpr DType1 eps = 1.0e-8;
-    typename std::iterator_traits<C2>::value_type yout;
     const auto idx = bisection_search(xbegin, xend, xout);
 
-    switch (idx.lim) {
-    case Limits::LOWLIM:
-    case Limits::UPLIM: {
-        yout = yinp[idx.idx];
-        break;
-    }
-
-    case Limits::VALID: {
+    if ((idx.lim == Limits::LOWLIM) || (idx.lim == Limits::UPLIM)) {
+        return yinp[idx.idx];
+    } else if (idx.lim == Limits::VALID) {
+        static constexpr DType1 eps = 1.0e-8;
         int j = idx.idx;
         const auto denom = (xbegin[j + 1] - xbegin[j]);
         const auto facR = (denom > eps) ? ((xout - xbegin[j]) / denom) : 1.0;
         const auto facL = static_cast<DType1>(1.0) - facR;
-        yout = facL * yinp[j] + facR * yinp[j + 1];
-        break;
+        const auto yout = facL * yinp[j] + facR * yinp[j + 1];
+        return yout;
+    } else {
+        amrex::Abort("idx undefined");
+        exit(1);
     }
-    }
-
-    return yout;
 }
 
 template <typename C1, typename C2>
@@ -132,21 +126,14 @@ linear_monotonic(const C1& xinp, const C2& yinp, const C1& xout, C2& yout)
         const auto idx =
             find_index(xinp.data(), (xinp.data() + xinp.size()), x, hint);
 
-        switch (idx.lim) {
-        case Limits::LOWLIM:
-        case Limits::UPLIM: {
+        if ((idx.lim == Limits::LOWLIM) || (idx.lim == Limits::UPLIM)) {
             yout[i] = yinp[idx.idx];
-            break;
-        }
-
-        case Limits::VALID: {
+        } else if (idx.lim == Limits::VALID) {
             int j = idx.idx;
             const auto denom = (xinp[j + 1] - xinp[j]);
             const auto facR = (denom > eps) ? ((x - xinp[j]) / denom) : 1.0;
             const auto facL = static_cast<typename C1::value_type>(1.0) - facR;
             yout[i] = facL * yinp[j] + facR * yinp[j + 1];
-            break;
-        }
         }
         hint = idx.idx + 1;
     }
