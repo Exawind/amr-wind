@@ -5,7 +5,7 @@
 #include "amr-wind/equation_systems/vof/vof.H"
 #include "amr-wind/equation_systems/SchemeTraits.H"
 #include "amr-wind/utilities/tagging/CartBoxRefinement.H"
-/*
+
 namespace amr_wind_tests {
 
 //! Custom mesh class to directly specify refinement criteria
@@ -292,4 +292,3 @@ TEST_F(VOFConsTest, CFL01) { testing_coorddir(-1, 0.1); }
 TEST_F(VOFConsTest, 2level) { testing_coorddir(-2, 0.5 * 0.45); }
 
 } // namespace amr_wind_tests
-*/
