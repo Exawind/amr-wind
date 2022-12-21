@@ -9,13 +9,23 @@
 namespace amr_wind_tests {
 
 //! Custom mesh class to directly specify refinement criteria
-class NestRefineMesh : public AmrTestMesh
+//! Mimics implementation from test_refinement.cpp
+class VOFRefineMesh : public AmrTestMesh
 {
 public:
     amrex::Vector<std::unique_ptr<amr_wind::RefinementCriteria>>&
     refine_criteria_vec()
     {
         return m_refine_crit;
+    }
+
+protected:
+    void ErrorEst(
+        int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow) override
+    {
+        for (const auto& ref : m_refine_crit) {
+            (*ref)(lev, tags, time, ngrow);
+        }
     }
 
 private:
@@ -211,12 +221,12 @@ protected:
             ss << "1 // Number of boxes at this level" << std::endl;
             ss << "0.8 0.5 0.5 0.9 0.5 0.5" << std::endl;
 
-            create_mesh_instance<NestRefineMesh>();
+            create_mesh_instance<VOFRefineMesh>();
             std::unique_ptr<amr_wind::CartBoxRefinement> box_refine(
                 new amr_wind::CartBoxRefinement(sim()));
             box_refine->read_inputs(mesh(), ss);
 
-            mesh<NestRefineMesh>()->refine_criteria_vec().push_back(
+            mesh<VOFRefineMesh>()->refine_criteria_vec().push_back(
                 std::move(box_refine));
         }
 
