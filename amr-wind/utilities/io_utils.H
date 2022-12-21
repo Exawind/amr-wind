@@ -22,9 +22,9 @@ inline std::string timestamp()
 {
     auto etime = std::chrono::system_clock::now();
     auto etimet = std::chrono::system_clock::to_time_t(etime);
-    std::ostringstream buf;
-    buf << std::ctime(&etimet);
-    std::string tstamp = buf.str();
+    char buf[64];
+    ctime_r(&etimet, buf);
+    std::string tstamp(buf);
     return tstamp;
 }
 
