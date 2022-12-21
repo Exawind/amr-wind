@@ -32,8 +32,8 @@ private:
     amrex::Vector<std::unique_ptr<amr_wind::RefinementCriteria>> m_refine_crit;
 };
 
-static void
-initialize_volume_fractions(const int dir, const int nx, amr_wind::Field& vof)
+void initialize_volume_fractions(
+    const int dir, const int nx, amr_wind::Field& vof)
 {
 
     run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
@@ -81,7 +81,7 @@ initialize_volume_fractions(const int dir, const int nx, amr_wind::Field& vof)
     vof.fillpatch(0.0);
 }
 
-static void initialize_adv_velocities(
+void initialize_adv_velocities(
     amr_wind::Field& vof,
     amr_wind::Field& umac,
     amr_wind::Field& vmac,
@@ -102,8 +102,7 @@ static void initialize_adv_velocities(
     });
 }
 
-static void
-check_accuracy(int dir, int nx, amrex::Real tol, amr_wind::Field& vof)
+void check_accuracy(int dir, int nx, amrex::Real tol, amr_wind::Field& vof)
 {
     run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
         const auto& vof_arr = vof(lev).const_array(mfi);
