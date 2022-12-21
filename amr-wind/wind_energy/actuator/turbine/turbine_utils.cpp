@@ -33,7 +33,7 @@ void read_inputs(
     pp.query("fllc", use_fllc);
     if (use_fllc) {
         for (int i = 0; i < tdata.num_blades; ++i) {
-            tdata.fllc.emplace_back(FLLCData());
+            tdata.fllc.emplace_back();
             FLLCParse(pp, tdata.fllc.back());
         }
     }

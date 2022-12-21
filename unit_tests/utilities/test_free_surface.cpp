@@ -38,14 +38,14 @@ void init_vof(amr_wind::Field& vof_fld, amrex::Real water_level)
 }
 
 void init_vof_multival(
-    amr_wind::Field& vof_fld, amrex::Real wl2, amrex::Real wl1, amrex::Real wl0)
+    amr_wind::Field& vof_fld, amrex::Real wl0, amrex::Real wl1, amrex::Real wl2)
 {
     const auto& mesh = vof_fld.repo().mesh();
     const int nlevels = vof_fld.repo().num_active_levels();
 
     // This function initializes a vof field divided by a liquid-gas interface
-    // at wl0, above which is another layer of liquid, introducing interfaces
-    // at wl1 and wl2.
+    // at wl2, above which is another layer of liquid, introducing interfaces
+    // at wl1 and wl0. From top down: wl0, wl1, wl2.
 
     // Since VOF is cell centered
     amrex::Real offset = 0.5;
@@ -67,10 +67,10 @@ void init_vof_multival(
                 if (z - offset * dx[2] > wl1) {
                     local_vof = amrex::min<amrex::Real>(
                         1.0, amrex::max<amrex::Real>(
-                                 0.0, (wl2 - (z - offset * dx[2])) / dx[2]));
+                                 0.0, (wl0 - (z - offset * dx[2])) / dx[2]));
                 } else {
                     // Above wl0
-                    if (z - offset * dx[2] > wl0) {
+                    if (z - offset * dx[2] > wl2) {
                         local_vof = amrex::min<amrex::Real>(
                             1.0,
                             amrex::max<amrex::Real>(
@@ -80,7 +80,7 @@ void init_vof_multival(
                         local_vof = amrex::min<amrex::Real>(
                             1.0,
                             amrex::max<amrex::Real>(
-                                0.0, (wl0 - (z - offset * dx[2])) / dx[2]));
+                                0.0, (wl2 - (z - offset * dx[2])) / dx[2]));
                     }
                 }
                 farr(i, j, k, d) = local_vof;
