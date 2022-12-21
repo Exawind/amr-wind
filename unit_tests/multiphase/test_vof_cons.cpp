@@ -7,7 +7,7 @@
 #include "amr-wind/utilities/tagging/CartBoxRefinement.H"
 
 namespace amr_wind_tests {
-
+namespace {
 //! Custom mesh class to directly specify refinement criteria
 //! Mimics implementation from test_refinement.cpp
 class VOFRefineMesh : public AmrTestMesh
@@ -141,6 +141,7 @@ check_accuracy(int dir, int nx, amrex::Real tol, amr_wind::Field& vof)
         }
     });
 }
+} // namespace
 
 class VOFConsTest : public MeshTest
 {
