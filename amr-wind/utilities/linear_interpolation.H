@@ -98,10 +98,8 @@ inline typename std::iterator_traits<C2>::value_type linear(
         const auto facL = static_cast<DType1>(1.0) - facR;
         const auto yout = facL * yinp[j] + facR * yinp[j + 1];
         return yout;
-    } else {
-        amrex::Abort("idx undefined");
-        exit(1);
     }
+    amrex::Abort("idx undefined");
 }
 
 template <typename C1, typename C2>
