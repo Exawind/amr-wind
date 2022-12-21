@@ -23,18 +23,12 @@ ABLModulatedPowerLaw::ABLModulatedPowerLaw(CFDSim& sim)
     amrex::ParmParse pp("MPL");
 
     pp.query("activate", m_activate_mpl);
-    //    pp.query("zoffset", m_zoffset); // have not accounted for this being
-    //    nonzero yet
     pp.query("zref", m_zref);
     pp.query("shear_exp", m_shear_exp);
-    //    pp.query("umin", m_umin);       // have not accounted for this being
-    //    nonzero yet
     pp.query("umax_factor", m_umax_factor);
     pp.query("bulk_velocity", m_bulk_velocity);
     pp.query("shearlayer_height", m_shearlayer_height);
     pp.query("shearlayer_smear_thickness", m_shearlayer_smear_thickness);
-
-    //    pp.queryarr("uvec", m_uvec);
     pp.query("wind_speed", m_wind_speed);
     pp.query("wind_direction", m_wind_direction);
 
@@ -136,7 +130,7 @@ void ABLModulatedPowerLaw::set_velocity(
     const amrex::Real uref =
         vs::mag(vs::Vector{m_uvec[0], m_uvec[1], m_uvec[2]});
     const amrex::Real bulk_velocity = m_bulk_velocity;
-    const amrex::Real umin = 0.0; // m_umin/uref;
+    const amrex::Real umin = 0.0;
     const amrex::Real umax_factor = m_umax_factor;
     const amrex::Real zc = m_shearlayer_height;
     const amrex::Real smear_coeff = 1.0 / m_shearlayer_smear_thickness;
@@ -161,8 +155,6 @@ void ABLModulatedPowerLaw::set_velocity(
 
     const amrex::Real upper_coeff =
         (bulk_velocity * height - num1 - num2) / denom;
-
-    //    if(z2 > zc) amrex::Print() << "warning z2 > zc" << std::endl;
 
     const auto& bctype = fld.bc_type();
     const int nghost = 1;

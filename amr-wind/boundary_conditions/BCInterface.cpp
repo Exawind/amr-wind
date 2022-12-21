@@ -95,13 +95,8 @@ void BCIface::set_bcfuncs()
         auto ori = oit();
         const auto bct = ibctype[ori];
 
-        switch (bct) {
-        case BC::fixed_gradient:
+        if (bct == BC::fixed_gradient) {
             m_field.register_custom_bc<FixedGradientBC>(ori);
-            break;
-
-        default:
-            break;
         }
     }
 }
@@ -123,8 +118,7 @@ std::pair<const std::string, const std::string> BCIface::get_dirichlet_udfs()
         const auto bct = bctype[ori];
         amrex::ParmParse pp(bcid);
 
-        switch (bct) {
-        case BC::mass_inflow: {
+        if (bct == BC::mass_inflow) {
             if (pp.contains(inflow_key.c_str())) {
                 std::string val;
                 pp.get(inflow_key.c_str(), val);
@@ -137,10 +131,9 @@ std::pair<const std::string, const std::string> BCIface::get_dirichlet_udfs()
                     inflow_udf = val;
                 }
             }
-            break;
         }
 
-        case BC::slip_wall: {
+        if (bct == BC::slip_wall) {
             if (pp.contains(wall_key.c_str())) {
                 std::string val;
                 pp.get(wall_key.c_str(), val);
@@ -153,11 +146,6 @@ std::pair<const std::string, const std::string> BCIface::get_dirichlet_udfs()
                     wall_udf = val;
                 }
             }
-            break;
-        }
-
-        default:
-            break;
         }
     }
 
@@ -237,20 +225,10 @@ void BCVelocity::read_values()
         const auto bct = bctype[ori];
 
         amrex::ParmParse pp(bcid);
-        switch (bct) {
-        case BC::mass_inflow:
-            pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
-            break;
-
-        case BC::no_slip_wall:
-            pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
+        pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
+        if (bct == BC::no_slip_wall) {
             // Set normal component to zero
             bcval[ori][ori.coordDir()] = 0.0;
-            break;
-
-        default:
-            pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
-            break;
         }
     }
 }
@@ -321,14 +299,10 @@ void BCScalar::read_values()
         const auto bct = bctype[ori];
 
         amrex::ParmParse pp(bcid);
-        switch (bct) {
-        case BC::mass_inflow:
+        if (bct == BC::mass_inflow) {
             pp.getarr(fname.c_str(), bcval[ori], 0, ndim);
-            break;
-
-        default:
+        } else {
             pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
-            break;
         }
     }
 }
@@ -345,14 +319,8 @@ void BCPressure::read_values()
         const auto bct = bctype[ori];
 
         amrex::ParmParse pp(bcid);
-        switch (bct) {
-        case BC::pressure_inflow:
-        case BC::pressure_outflow:
+        if ((bct == BC::pressure_inflow) || (bct == BC::pressure_outflow)) {
             pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
-            break;
-
-        default:
-            break;
         }
     }
 }
@@ -366,22 +334,18 @@ void BCSrcTerm::set_bcrec()
         const auto bct = ibctype[ori];
         const int dir = ori.coordDir();
 
-        switch (bct) {
-        case BC::periodic:
+        if (bct == BC::periodic) {
             if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, amrex::BCType::int_dir);
             } else {
                 set_bcrec_hi(dir, amrex::BCType::int_dir);
             }
-            break;
-
-        default:
+        } else {
             if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, amrex::BCType::foextrap);
             } else {
                 set_bcrec_hi(dir, amrex::BCType::foextrap);
             }
-            break;
         }
     }
 }
@@ -395,22 +359,18 @@ void BCFillPatchExtrap::set_bcrec()
         const auto bct = ibctype[ori];
         const int dir = ori.coordDir();
 
-        switch (bct) {
-        case BC::periodic:
+        if (bct == BC::periodic) {
             if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, amrex::BCType::int_dir);
             } else {
                 set_bcrec_hi(dir, amrex::BCType::int_dir);
             }
-            break;
-
-        default:
+        } else {
             if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, m_extrap_type);
             } else {
                 set_bcrec_hi(dir, m_extrap_type);
             }
-            break;
         }
     }
 }

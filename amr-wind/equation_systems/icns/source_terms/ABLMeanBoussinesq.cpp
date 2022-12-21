@@ -32,7 +32,7 @@ ABLMeanBoussinesq::ABLMeanBoussinesq(const CFDSim& sim) : m_mesh(sim.mesh())
         m_beta = 1.0 / m_ref_theta;
     }
 
-    // FIXME: gravity in `incflo` namespace
+    // gravity in `incflo` namespace
     amrex::ParmParse pp_incflo("incflo");
     pp_incflo.queryarr("gravity", m_gravity);
 

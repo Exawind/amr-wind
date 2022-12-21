@@ -117,8 +117,8 @@ void ABLWallFunction::update_umean(
         m_mo.vel_mean[0] = m_wf_vel[0];
         m_mo.vel_mean[1] = m_wf_vel[1];
         m_mo.vmag_mean = m_wf_vmag;
-        m_mo.Su_mean = 0.0; // FIXME: need to fill this correctly
-        m_mo.Sv_mean = 0.0; // FIXME: need to fill this correctly
+        m_mo.Su_mean = 0.0; // TODO: need to fill this correctly
+        m_mo.Sv_mean = 0.0; // TODO: need to fill this correctly
         m_mo.theta_mean = m_wf_theta;
     } else {
         m_mo.vel_mean[0] = vpa.line_average_interpolated(m_mo.zref, 0);

@@ -86,14 +86,10 @@ protected:
             const auto bct = bctype[ori];
 
             amrex::ParmParse pp(bcid);
-            switch (bct) {
-            case BC::mass_inflow:
+            if (bct == BC::mass_inflow) {
                 pp.getarr(fname.c_str(), bcval[ori], 0, ndim);
-                break;
-
-            default:
+            } else {
                 pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
-                break;
             }
         }
     }

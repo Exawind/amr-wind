@@ -213,7 +213,6 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
 
             const amrex::Real x =
                 amrex::max<amrex::Real>((i + 0.5) * dx, machine_eps);
-            //            const amrex::Real& g = x;
 
             const amrex::Real f_z =
                 q0 * g * F / x * (lambda * x + 0.5 * q0 * g * F / x);

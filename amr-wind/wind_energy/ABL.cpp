@@ -20,7 +20,7 @@ ABL::ABL(CFDSim& sim)
     , m_abl_wall_func(sim)
 {
     // Register temperature equation
-    // FIXME: this should be optional?
+    // TODO: this should be optional?
     auto& teqn = sim.pde_manager().register_transport_pde("Temperature");
     m_temperature = &(teqn.fields().field);
 

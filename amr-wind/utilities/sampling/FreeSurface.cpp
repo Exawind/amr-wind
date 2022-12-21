@@ -431,11 +431,11 @@ void FreeSurface::post_advance_work()
                                 bool calc_flag = false;
                                 if ((ni % 2 == 0 &&
                                      vof_arr(i, j, k) >= 1.0 - 1e-12) ||
-                                    (ni % 2 == 1 &&
+                                    (ni % 2 != 0 &&
                                      vof_arr(i, j, k) <= 1e-12)) {
                                     // put bdy at top
                                     alpha = 1.0;
-                                    if (ni % 2 == 1) {
+                                    if (ni % 2 != 0) {
                                         mx *= -1.0;
                                         my *= -1.0;
                                         mz *= -1.0;

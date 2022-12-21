@@ -29,7 +29,7 @@ FPlaneAveragingFine<FType>::FPlaneAveragingFine(
     }
     AMREX_ALWAYS_ASSERT(dom_hi + 1 == dom_hi2);
 
-    // FIXME: make an input maybe?
+    // TODO: make an input maybe?
     m_ncell_line = dom_hi - dom_lo + 1;
 
     m_dx = (m_xhi - m_xlo) / static_cast<amrex::Real>(m_ncell_line);

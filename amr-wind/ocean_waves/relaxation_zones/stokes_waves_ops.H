@@ -1,5 +1,5 @@
-#ifndef LINEAR_WAVES_OPS_H
-#define LINEAR_WAVES_OPS_H
+#ifndef STOKES_WAVES_OPS_H
+#define STOKES_WAVES_OPS_H
 
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/ocean_waves/relaxation_zones/StokesWaves.H"

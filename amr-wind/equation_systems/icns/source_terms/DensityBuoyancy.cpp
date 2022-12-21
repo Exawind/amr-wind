@@ -21,9 +21,7 @@ namespace amr_wind::pde::icns {
 DensityBuoyancy::DensityBuoyancy(const CFDSim& sim)
     : m_density(sim.repo().get_field("density"))
 {
-    //    amrex::ParmParse pp(identifier());
-
-    // FIXME: gravity in `incflo` namespace
+    // gravity in `incflo` namespace
     {
         amrex::ParmParse pp("incflo");
         pp.queryarr("gravity", m_gravity);
