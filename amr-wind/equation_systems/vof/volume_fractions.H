@@ -455,7 +455,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool interface_band(
             }
         }
     }
-    return (VOF_max != VOF_min || VOF_mid);
+    return (amrex::Math::abs(VOF_max - VOF_min) > tiny || VOF_mid);
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real levelset_to_vof(
