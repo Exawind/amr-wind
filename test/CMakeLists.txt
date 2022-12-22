@@ -218,6 +218,8 @@ add_test_re(scalar_advection_refined)
 add_test_re(freestream_bds)
 add_test_re(inflow_godunov_amr)
 add_test_re(inflow_bds_amr)
+add_test_re(linear_godunov_amr)
+add_test_re(linear_bds_amr)
 
 if(NOT AMR_WIND_ENABLE_CUDA)
   add_test_re(ctv_godunov_plm)
