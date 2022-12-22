@@ -299,7 +299,7 @@ public:
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& ffabs,
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& cfabs,
         const amrex::IntVect& nghost,
-        const FieldState fstate = FieldState::New,
+        const FieldState /*fstate = FieldState::New*/,
         const FieldInterpolator itype = FieldInterpolator::FaceDivFree) override
     {
 
