@@ -91,7 +91,6 @@ void ABL::initialize_fields(int level, const amrex::Geometry& geom)
     if (interp_fine_levels) {
         // Fill the finer levels using coarse data
         m_velocity.fillpatch_from_coarse(level, 0.0, velocity, 0);
-        m_density.fillpatch_from_coarse(level, 0.0, density, 0);
     }
 
     if (m_sim.repo().field_exists("tke")) {
