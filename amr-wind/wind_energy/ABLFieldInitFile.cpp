@@ -21,17 +21,14 @@ bool ABLFieldInitFile::operator()(
     const amrex::Array4<amrex::Real>& velocity,
     const int lev) const
 {
-    // Initialized using lev to prevent compiler warnings when netcdf is not
-    // used. Will always initialize to false. cppcheck-suppress constVariable
-    bool interp_fine_levels = (lev < 0);
-
 #ifdef AMR_WIND_USE_NETCDF
     // Skip fine levels and interpolate data from already loaded coarse levels
-    if (!m_ic_input.empty() && lev > 0) {
+    bool interp_fine_levels = false;
+    if (lev > 0) {
         interp_fine_levels = true;
     }
     // Load the netcdf file with data if specified in the inputs
-    if (!m_ic_input.empty() && lev == 0) {
+    if (lev == 0) {
 
         // Open the netcdf input file
         // This file should have the same dimensions as the simulation
@@ -113,8 +110,11 @@ bool ABLFieldInitFile::operator()(
         // Close the netcdf file
         ncf.close();
     }
-#endif
     return interp_fine_levels;
+#else
+    amrex::ignore_unused(vbx, geom, velocity, level);
+    return false;
+#endif
 }
 
 } // namespace amr_wind
