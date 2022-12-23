@@ -50,8 +50,7 @@ ABL::ABL(CFDSim& sim)
 #ifndef AMR_WIND_USE_NETCDF
     // Assert netcdf must be used for initial condition file
     AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-        !m_file_input,
-        "NETCDF is needed for initial_condition_input_file");
+        !m_file_input, "NETCDF is needed for initial_condition_input_file");
 #endif
     // Instantiate the file-based field initializer
     if (m_file_input) {
@@ -84,13 +83,13 @@ void ABL::initialize_fields(int level, const amrex::Geometry& geom)
 
         // Initialize with ABL profiles
         (*m_field_init)(
-            vbx, geom, velocity.array(mfi), density.array(mfi), temp.array(mfi),
-            level);
+            vbx, geom, velocity.array(mfi), density.array(mfi),
+            temp.array(mfi));
 
         // Overwrite velocities from file
         if (m_file_input) {
-            interp_fine_levels = (*m_field_init_file)(
-                vbx, geom, velocity.array(mfi), level);
+            interp_fine_levels =
+                (*m_field_init_file)(vbx, geom, velocity.array(mfi), level);
         }
     }
 
