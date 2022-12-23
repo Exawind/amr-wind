@@ -34,6 +34,8 @@ ABL::ABL(CFDSim& sim)
         pp.query("statistics_mode", statistics_mode);
         m_stats =
             ABLStatsBase::create(statistics_mode, sim, m_abl_wall_func, dir);
+        // Check for file input
+        m_file_input = pp.contains("initial_condition_input_file");
     }
 
     // Instantiate the ABL field initializer
@@ -44,6 +46,17 @@ ABL::ABL(CFDSim& sim)
 
     // Instantiate the ABL Modulated Power Law
     m_abl_mpl = std::make_unique<ABLModulatedPowerLaw>(sim);
+
+#ifndef AMR_WIND_USE_NETCDF
+    // Assert netcdf must be used for initial condition file
+    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+        !m_file_input,
+        "NETCDF is needed for initial_condition_input_file");
+#endif
+    // Instantiate the file-based field initializer
+    if (m_file_input) {
+        m_field_init_file = std::make_unique<ABLFieldInitFile>();
+    }
 }
 
 ABL::~ABL() = default;
@@ -69,13 +82,20 @@ void ABL::initialize_fields(int level, const amrex::Geometry& geom)
     for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
 
-        interp_fine_levels = (*m_field_init)(
+        // Initialize with ABL profiles
+        (*m_field_init)(
             vbx, geom, velocity.array(mfi), density.array(mfi), temp.array(mfi),
             level);
+
+        // Overwrite velocities from file
+        if (m_file_input) {
+            interp_fine_levels = (*m_field_init_file)(
+                vbx, geom, velocity.array(mfi), level);
+        }
     }
 
     if (interp_fine_levels) {
-        // Fill the finer levels with coarse data
+        // Fill the finer levels using coarse data
         m_velocity.fillpatch_from_coarse(level, 0.0, velocity, 0);
         m_density.fillpatch_from_coarse(level, 0.0, density, 0);
     }

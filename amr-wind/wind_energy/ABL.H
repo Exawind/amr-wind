@@ -5,6 +5,7 @@
 
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/wind_energy/ABLFieldInit.H"
+#include "amr-wind/wind_energy/ABLFieldInitFile.H"
 #include "amr-wind/wind_energy/ABLWallFunction.H"
 #include "amr-wind/wind_energy/ABLBoundaryPlane.H"
 #include "amr-wind/core/SimTime.H"
@@ -121,6 +122,11 @@ private:
 
     //! Hybrid RANS-LES with Nalu-wind
     bool m_hybrid_rl{false};
+
+    //! File input flag
+    bool m_file_input{false};
+    //! File input initializer
+    std::unique_ptr<ABLFieldInitFile> m_field_init_file;
 };
 
 } // namespace amr_wind
