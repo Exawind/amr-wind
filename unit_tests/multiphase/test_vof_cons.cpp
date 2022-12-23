@@ -8,29 +8,6 @@
 
 namespace amr_wind_tests {
 namespace {
-//! Custom mesh class to directly specify refinement criteria
-//! Mimics implementation from test_refinement.cpp
-class VOFRefineMesh : public AmrTestMesh
-{
-public:
-    amrex::Vector<std::unique_ptr<amr_wind::RefinementCriteria>>&
-    refine_criteria_vec()
-    {
-        return m_refine_crit;
-    }
-
-protected:
-    void ErrorEst(
-        int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow) override
-    {
-        for (const auto& ref : m_refine_crit) {
-            (*ref)(lev, tags, time, ngrow);
-        }
-    }
-
-private:
-    amrex::Vector<std::unique_ptr<amr_wind::RefinementCriteria>> m_refine_crit;
-};
 
 void initialize_volume_fractions(
     const int dir, const int nx, amr_wind::Field& vof)
@@ -221,12 +198,12 @@ protected:
             ss << "1 // Number of boxes at this level" << std::endl;
             ss << "0.8 0.5 0.5 0.9 0.5 0.5" << std::endl;
 
-            create_mesh_instance<VOFRefineMesh>();
+            create_mesh_instance<RefineMesh>();
             std::unique_ptr<amr_wind::CartBoxRefinement> box_refine(
                 new amr_wind::CartBoxRefinement(sim()));
             box_refine->read_inputs(mesh(), ss);
 
-            mesh<VOFRefineMesh>()->refine_criteria_vec().push_back(
+            mesh<RefineMesh>()->refine_criteria_vec().push_back(
                 std::move(box_refine));
         }
 
