@@ -28,11 +28,6 @@ bool ABLFieldInitFile::operator()(
     const int lev) const
 {
 #ifdef AMR_WIND_USE_NETCDF
-    // Skip fine levels and interpolate data from already loaded coarse levels
-    bool interp_fine_levels = false;
-    if (lev > 0) {
-        interp_fine_levels = true;
-    }
     // Load the netcdf file with data if specified in the inputs
     if (lev == 0) {
 
@@ -115,10 +110,14 @@ bool ABLFieldInitFile::operator()(
             });
         // Close the netcdf file
         ncf.close();
+        // Populated directly, do not fill from another level
+        return false;
+    } else {
+        // Skip level and interpolate data from already loaded coarse levels
+        return true;
     }
-    return interp_fine_levels;
 #else
-    amrex::ignore_unused(vbx, geom, velocity, level);
+    amrex::ignore_unused(vbx, geom, velocity, lev);
     return false;
 #endif
 }
