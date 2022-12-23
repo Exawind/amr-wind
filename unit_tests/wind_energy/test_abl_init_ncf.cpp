@@ -95,7 +95,7 @@ TEST_F(ABLMeshTest, abl_init_netcdf_multilevel)
     // Set up meshing for multiple levels
     {
         amrex::ParmParse pp("amr");
-        pp.add("max_level", 1);
+        pp.add("max_level", 2);
         pp.add("blocking_factor", 2);
 
         // From abl_test_utils.cpp
