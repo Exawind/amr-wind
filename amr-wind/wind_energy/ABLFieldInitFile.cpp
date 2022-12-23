@@ -10,6 +10,12 @@ namespace amr_wind {
 
 ABLFieldInitFile::ABLFieldInitFile()
 {
+#ifndef AMR_WIND_USE_NETCDF
+    // Assert netcdf must be used for initial condition file
+    amrex::Abort(
+        "ABLFieldInitFile: AMR-Wind was not built with NetCDF support; "
+        "initial_condition_input_file cannot be used.");
+#endif
     amrex::ParmParse pp_abl("ABL");
     // Get netcdf input file name
     pp_abl.get("initial_condition_input_file", m_ic_input);

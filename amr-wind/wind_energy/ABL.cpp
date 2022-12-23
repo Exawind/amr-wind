@@ -47,11 +47,6 @@ ABL::ABL(CFDSim& sim)
     // Instantiate the ABL Modulated Power Law
     m_abl_mpl = std::make_unique<ABLModulatedPowerLaw>(sim);
 
-#ifndef AMR_WIND_USE_NETCDF
-    // Assert netcdf must be used for initial condition file
-    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-        !m_file_input, "NETCDF is needed for initial_condition_input_file");
-#endif
     // Instantiate the file-based field initializer
     if (m_file_input) {
         m_field_init_file = std::make_unique<ABLFieldInitFile>();
