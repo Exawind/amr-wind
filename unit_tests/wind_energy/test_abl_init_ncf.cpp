@@ -1,7 +1,7 @@
 #include "abl_test_utils.H"
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
-#include "amr-wind/wind_energy/ABLFieldInit.H"
+#include "amr-wind/wind_energy/ABLFieldInitFile.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 
 namespace amr_wind_tests {
@@ -46,23 +46,16 @@ TEST_F(ABLMeshTest, abl_init_netcdf)
     initialize_mesh();
     auto& frepo = mesh().field_repo();
     auto& velocityf = frepo.declare_field("velocity", 3, 0);
-    auto& densityf = frepo.declare_field("density");
-    auto& temperaturef = frepo.declare_field("temperature");
-
     auto velocity = velocityf.vec_ptrs();
-    auto density = densityf.vec_ptrs();
-    auto temperature = temperaturef.vec_ptrs();
 
-    amr_wind::ABLFieldInit ablinit;
+    amr_wind::ABLFieldInitFile ablinitfile;
     run_algorithm(
-        mesh().num_levels(), density,
+        mesh().num_levels(), velocity,
         [&](const int lev, const amrex::MFIter& mfi) {
             auto vel = velocity[lev]->array(mfi);
-            auto rho = density[lev]->array(mfi);
-            auto theta = temperature[lev]->array(mfi);
 
             const auto& bx = mfi.validbox();
-            ablinit(bx, mesh().Geom(lev), vel, rho, theta);
+            ablinitfile(bx, mesh().Geom(lev), vel, lev);
         });
 
     const int nlevels = mesh().num_levels();
