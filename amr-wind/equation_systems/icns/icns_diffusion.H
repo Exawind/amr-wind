@@ -374,24 +374,20 @@ public:
         const amrex::Real alpha = 0.0;
         const amrex::Real beta = -1.0;
 
-        for (int lev = 0; lev < nlevels; ++lev) {
-            if (m_mesh_mapping) {
-                (*rho_times_detJ)(lev).setVal(0.0);
-                amrex::MultiFab::AddProduct(
-                    (*rho_times_detJ)(lev), density(lev), 0, (*mesh_detJ)(lev),
-                    0, 0, 1, m_density.num_grow()[0]);
-            }
-            auto b = diffusion::average_velocity_eta_to_faces(
-                geom[lev], viscosity(lev));
-            if (m_mesh_mapping) {
-                diffusion::viscosity_to_uniform_space(b, repo, lev);
-            }
+        for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+            m_applier_scalar[i]->setScalars(alpha, beta);
 
-            for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-                m_applier_scalar[i]->setScalars(alpha, beta);
+            for (int lev = 0; lev < nlevels; ++lev) {
 
                 m_applier_scalar[i]->setLevelBC(
                     lev, &m_pdefields.field.subview(i)(lev));
+
+                if (m_mesh_mapping) {
+                    (*rho_times_detJ)(lev).setVal(0.0);
+                    amrex::MultiFab::AddProduct(
+                        (*rho_times_detJ)(lev), density(lev), 0,
+                        (*mesh_detJ)(lev), 0, 0, 1, m_density.num_grow()[0]);
+                }
 
                 // A coeffs
                 if (m_mesh_mapping) {
@@ -402,15 +398,22 @@ public:
                 }
 
                 // B coeffs
+                auto b = diffusion::average_velocity_eta_to_faces(
+                    geom[lev], viscosity(lev));
+
+                if (m_mesh_mapping) {
+                    diffusion::viscosity_to_uniform_space(b, repo, lev);
+                }
+
                 m_applier_scalar[i]->setBCoeffs(
                     lev, amrex::GetArrOfConstPtrs(b));
-
-                auto divtau_comp = divtau.subview(i);
-                auto vel_comp = m_pdefields.field.subview(i);
-
-                amrex::MLMG mlmg(*m_applier_scalar[i]);
-                mlmg.apply(divtau_comp.vec_ptrs(), vel_comp.vec_ptrs());
             }
+
+            auto divtau_comp = divtau.subview(i);
+            auto vel_comp = m_pdefields.field.subview(i);
+
+            amrex::MLMG mlmg(*m_applier_scalar[i]);
+            mlmg.apply(divtau_comp.vec_ptrs(), vel_comp.vec_ptrs());
         }
 
         if (!diff_for_RHS) {
@@ -460,23 +463,17 @@ public:
         const amrex::Real alpha = 1.0;
         const amrex::Real beta = dt;
 
-        for (int lev = 0; lev < nlevels; ++lev) {
+        for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+            m_solver_scalar[i]->setScalars(alpha, beta);
 
-            if (m_mesh_mapping) {
-                (*rho_times_detJ)(lev).setVal(0.0);
-                amrex::MultiFab::AddProduct(
-                    (*rho_times_detJ)(lev), density(lev), 0, (*mesh_detJ)(lev),
-                    0, 0, 1, m_density.num_grow()[0]);
-            }
+            for (int lev = 0; lev < nlevels; ++lev) {
 
-            auto b = diffusion::average_velocity_eta_to_faces(
-                geom[lev], viscosity(lev));
-            if (m_mesh_mapping) {
-                diffusion::viscosity_to_uniform_space(b, repo, lev);
-            }
-
-            for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-                m_solver_scalar[i]->setScalars(alpha, beta);
+                if (m_mesh_mapping) {
+                    (*rho_times_detJ)(lev).setVal(0.0);
+                    amrex::MultiFab::AddProduct(
+                        (*rho_times_detJ)(lev), density(lev), 0,
+                        (*mesh_detJ)(lev), 0, 0, 1, m_density.num_grow()[0]);
+                }
 
                 m_solver_scalar[i]->setLevelBC(
                     lev, &m_pdefields.field.subview(i)(lev));
@@ -489,6 +486,12 @@ public:
                 }
 
                 // B coeffs
+                auto b = diffusion::average_velocity_eta_to_faces(
+                    geom[lev], viscosity(lev));
+                if (m_mesh_mapping) {
+                    diffusion::viscosity_to_uniform_space(b, repo, lev);
+                }
+
                 m_solver_scalar[i]->setBCoeffs(
                     lev, amrex::GetArrOfConstPtrs(b));
             }
