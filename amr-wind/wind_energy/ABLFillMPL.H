@@ -42,11 +42,8 @@ public:
         const amrex::IntVect& nghost,
         const amrex::Vector<amrex::BCRec>& bcrec,
         const FieldState fstate = FieldState::New,
-        const FieldInterpolator itype = FieldInterpolator::FaceDivFree) override
-    {
-        FieldFillPatchOps<FieldBCNoOp>::fillpatch_sibling_fields(
-            lev, time, mfabs, ffabs, cfabs, nghost, bcrec, fstate, itype);
-    }
+        const FieldInterpolator itype =
+            FieldInterpolator::FaceDivFree) override;
 
     //! Implementation that handles filling patches from a coarse to fine level
     void fillpatch_from_coarse(

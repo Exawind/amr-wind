@@ -63,4 +63,19 @@ void ABLFillMPL::fillphysbc(
     }
 }
 
+void ABLFillMPL::fillpatch_sibling_fields(
+    int lev,
+    amrex::Real time,
+    amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& mfabs,
+    amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& ffabs,
+    amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& cfabs,
+    const amrex::IntVect& nghost,
+    const amrex::Vector<amrex::BCRec>& bcrec,
+    const FieldState fstate,
+    const FieldInterpolator itype)
+{
+    FieldFillPatchOps<FieldBCNoOp>::fillpatch_sibling_fields(
+        lev, time, mfabs, ffabs, cfabs, nghost, bcrec, fstate, itype);
+}
+
 } // namespace amr_wind
