@@ -230,6 +230,7 @@ endif()
 
 if(AMR_WIND_ENABLE_NETCDF)
   add_test_re(abl_bndry_output)
+  add_test_re(abl_bndry_output_amr_inflow)
   add_test_re(abl_virtual_lidar)
 endif()
 
@@ -271,6 +272,7 @@ add_test_red(abl_bndry_input_amr_native abl_bndry_output_native)
 if(AMR_WIND_ENABLE_NETCDF)
   add_test_red(abl_bndry_input abl_bndry_output)
   add_test_red(abl_bndry_input_amr abl_bndry_output)
+  add_test_red(abl_bndry_input_amr_inflow abl_bndry_output_amr_inflow)
 endif()
 
 #=============================================================================

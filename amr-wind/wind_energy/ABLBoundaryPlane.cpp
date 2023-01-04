@@ -628,11 +628,6 @@ void ABLBoundaryPlane::read_header()
             m_in_data.define_plane(ori);
 
             const int nlevels = plane_grp.num_groups();
-            // TODO Do not support multi-level input mode yet.
-            // this is due to interpolation issues at the coarse-fine interface
-            if (nlevels > 1) {
-                amrex::Abort("Not supporting multi-level input mode yet.");
-            }
             for (int lev = 0; lev < nlevels; ++lev) {
                 auto lev_grp = plane_grp.group(level_name(lev));
 
@@ -882,18 +877,6 @@ void ABLBoundaryPlane::populate_data(
         if ((!m_in_data.is_populated(ori)) ||
             (fld.bc_type()[ori] != BC::mass_inflow)) {
             continue;
-        }
-
-        // Ensure the fine level does not touch the inflow boundary
-        if (lev > 0) {
-            const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
-            if (box_intersects_boundary(minBox, lev, ori)) {
-                amrex::Abort(
-                    "Fine level intersects inflow boundary, not supported "
-                    "yet.");
-            } else {
-                continue;
-            }
         }
 
         // Ensure inflow data exists at this level

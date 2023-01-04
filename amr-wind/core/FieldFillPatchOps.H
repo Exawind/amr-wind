@@ -60,6 +60,7 @@ public:
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& ffabs,
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& cfabs,
         const amrex::IntVect& nghost,
+        const amrex::Vector<amrex::BCRec>& bcrec,
         const FieldState fstate = FieldState::New,
         const FieldInterpolator itype = FieldInterpolator::FaceDivFree) = 0;
 
@@ -115,6 +116,7 @@ public:
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& /*ffabs*/,
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& /*cfabs*/,
         const amrex::IntVect& /*nghost*/,
+        const amrex::Vector<amrex::BCRec>& /*bcrec*/,
         const FieldState /*fstate*/,
         const FieldInterpolator /*itype*/) override
     {
@@ -299,13 +301,14 @@ public:
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& ffabs,
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& cfabs,
         const amrex::IntVect& nghost,
+        const amrex::Vector<amrex::BCRec>& bcrec,
         const FieldState /*fstate = FieldState::New*/,
         const FieldInterpolator itype = FieldInterpolator::FaceDivFree) override
     {
 
         if (lev == 0) {
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> physbc(
-                m_mesh.Geom(lev), m_field.bcrec(), bc_functor());
+                m_mesh.Geom(lev), bcrec, bc_functor());
             for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
                 amrex::FillPatchSingleLevel(
                     *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
@@ -313,10 +316,10 @@ public:
             }
         } else {
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> cphysbc(
-                m_mesh.Geom(lev - 1), m_field.bcrec(), bc_functor());
+                m_mesh.Geom(lev - 1), bcrec, bc_functor());
 
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> fphysbc(
-                m_mesh.Geom(lev), m_field.bcrec(), bc_functor());
+                m_mesh.Geom(lev), bcrec, bc_functor());
 
             amrex::Array<
                 amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>>,
@@ -330,8 +333,7 @@ public:
 
             amrex::Array<int, AMREX_SPACEDIM> idx = {AMREX_D_DECL(0, 1, 2)};
             const amrex::Array<amrex::Vector<amrex::BCRec>, AMREX_SPACEDIM>
-                bcrec_arr = {AMREX_D_DECL(
-                    m_field.bcrec(), m_field.bcrec(), m_field.bcrec())};
+                bcrec_arr = {AMREX_D_DECL(bcrec, bcrec, bcrec)};
 
             auto* mapper = field_impl::get_interpolation_operator(itype);
 
