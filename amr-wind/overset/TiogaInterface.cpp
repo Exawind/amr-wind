@@ -430,28 +430,54 @@ void TiogaInterface::amr_to_tioga_mesh()
 
     auto& ibcell_host = m_sim.repo().get_int_field("iblank_cell_host");
     auto& ibnode_host = m_sim.repo().get_int_field("iblank_node_host");
+
+	amrex::Print()<<"nlevels is "<<nlevels<<"\n";
+    // Create standard vector of integer pointers here
+    //auto& ad2=*m_amr_data; 
+    auto& ad = *m_amr_data;
+    amrex::Vector<int *> tmpdataPtr(ad.iblank_cell.size());
+    amrex::Vector<int *> tmpdataPtrn(ad.iblank_node.size());
     for (int lev = 0; lev < nlevels; ++lev) {
-        auto& ad = *m_amr_data;
+        //auto& ad = *m_amr_data;
         auto& ibfab = ibcell(lev);
         auto& ibnodefab = ibnode(lev);
         auto& ibfab_host = ibcell_host(lev);
         auto& ibnodefab_host = ibnode_host(lev);
+
+	// Count the number of MultiFab objects over all levels
+	// IntField objects are allocated with emplace_back for each level
+	// so the code does not record the total number of MultiFab objects
+	//amrex::Vector<int*> tmpdataPtr;
+	//amrex::Vector<int*> tmpdataPtrn;
+		amrex::Print()<<"Printing error here?\n";
         for (amrex::MFIter mfi(ibfab); mfi.isValid(); ++mfi) {
             auto& ib = ibfab[mfi];
             auto& ibn = ibnodefab[mfi];
             auto& ib_host = ibfab_host[mfi];
             auto& ibn_host = ibnodefab_host[mfi];
+	    amrex::Print()<<"Size of multifab "<<ad.iblank_cell.size()<<"\n";
+	    amrex::Print()<<"Printing the pointer here?"<<ib.dataPtr()<<"\n";
+	    //amrex::Print()<<"Device pointer"<<ad.iblank_cell.d_view[ilp]<<"\n";
             ad.iblank_cell.h_view[ilp] = ib_host.dataPtr();
             ad.iblank_node.h_view[ilp] = ibn_host.dataPtr();
             //ad.iblank_cell.h_view[ilp] = ib.dataPtr();
             //ad.iblank_node.h_view[ilp] = ibn.dataPtr();
-            ad.iblank_cell.d_view[ilp] = ib.dataPtr();
-            ad.iblank_node.d_view[ilp] = ibn.dataPtr();
+	    tmpdataPtr[ilp] = ib.dataPtr();
+	    tmpdataPtrn[ilp] = ibn.dataPtr();
+            //ad.iblank_cell.d_view[ilp] = ib.dataPtr();
+            //ad.iblank_node.d_view[ilp] = ibn.dataPtr();
 
             ++ilp;
         }
     }
-
+	// Host to device copy from standard vector to 
+	// ad.iblank_cell.d_view
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, tmpdataPtr.begin(), tmpdataPtr.end(),
+            ad.iblank_cell.d_view.begin());
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, tmpdataPtrn.begin(), tmpdataPtrn.end(),
+            ad.iblank_node.d_view.begin());
     // Synchronize data on host/device
     m_amr_data->level.copy_to_device();
     m_amr_data->mpi_rank.copy_to_device();
@@ -463,5 +489,5 @@ void TiogaInterface::amr_to_tioga_mesh()
     m_amr_data->dx.copy_to_device();
     m_amr_data->global_idmap.copy_to_device();
 }
-
 } // namespace amr_wind
+
