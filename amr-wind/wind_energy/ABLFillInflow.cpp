@@ -89,6 +89,10 @@ void ABLFillInflow::fillpatch_sibling_fields(
 
     FieldFillPatchOps<FieldBCNoOp>::fillpatch_sibling_fields(
         lev, time, mfabs, ffabs, cfabs, nghost, lbcrec, fstate, itype);
+
+    for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
+        m_bndry_plane.populate_data(lev, time, m_field, *mfabs[i], 0, i);
+    }
 }
 
 } // namespace amr_wind

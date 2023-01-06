@@ -131,7 +131,7 @@ public:
     {
         BL_PROFILE(
             "amr-wind::" + this->identifier() + "::pre_advection_actions");
-        m_adv_op->preadvect(fstate, m_time.deltaT());
+        m_adv_op->preadvect(fstate, m_time.deltaT(), m_time.new_time());
     }
 
     void compute_predictor_rhs(const DiffusionType difftype) override

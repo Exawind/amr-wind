@@ -859,7 +859,9 @@ void ABLBoundaryPlane::populate_data(
     const int lev,
     const amrex::Real time,
     Field& fld,
-    amrex::MultiFab& mfab) const
+    amrex::MultiFab& mfab,
+    const int dcomp,
+    const int orig_comp) const
 {
 
     BL_PROFILE("amr-wind::ABLBoundaryPlane::populate_data");
@@ -913,7 +915,8 @@ void ABLBoundaryPlane::populate_data(
             amrex::ParallelFor(
                 bx, nc,
                 [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                    dest(i, j, k, n) = src_arr(i, j, k, n + nstart);
+                    dest(i, j, k, n + dcomp) =
+                        src_arr(i, j, k, n + nstart + orig_comp);
                 });
         }
     }

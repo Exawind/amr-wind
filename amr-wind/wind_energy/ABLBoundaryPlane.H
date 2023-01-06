@@ -134,7 +134,9 @@ public:
         const int /*lev*/,
         const amrex::Real /*time*/,
         Field& /*fld*/,
-        amrex::MultiFab& /*mfab*/) const;
+        amrex::MultiFab& /*mfab*/,
+        const int dcomp = 0,
+        const int orig_comp = 0) const;
 
 #ifdef AMR_WIND_USE_NETCDF
     void impl_buffer_field(
