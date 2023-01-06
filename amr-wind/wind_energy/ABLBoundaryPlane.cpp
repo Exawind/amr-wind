@@ -879,6 +879,14 @@ void ABLBoundaryPlane::populate_data(
             continue;
         }
 
+        // Only proceed with data population if fine levels touch the boundary
+        if (lev > 0) {
+            const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
+            if (!box_intersects_boundary(minBox, lev, ori)) {
+                continue;
+            }
+        }
+
         // Ensure inflow data exists at this level
         if (lev >= m_in_data.nlevels(ori)) {
             amrex::Abort("No inflow data at this level.");
