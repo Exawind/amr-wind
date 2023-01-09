@@ -1,0 +1,66 @@
+#
+#            SIMULATION STOP            #
+#.......................................#
+time.stop_time               =   22000.0     # Max (#
+time.max_step = 10
+time.fixed_dt = 0.001
+time.cfl = 0.5
+time.plot_interval = 1
+time.checkpoint_interval = -10
+io.plot_file = plt
+io.check_file = chk
+#               PHYSICS                 #
+#.......................................#
+incflo.gravity          =   0.  0. 0.0  # Gravitational force (3D)
+
+incflo.use_godunov = 1
+incflo.godunov_type = "bds"
+incflo.do_initial_proj = 1
+incflo.initial_iterations = 2
+transport.viscosity = 0.005
+turbulence.model = Laminar
+
+incflo.physics = FreeStream
+incflo.velocity = 1.0 1.0 0.0
+incflo.density = 1.0
+
+geometry.prob_lo        =   -6.0 -6.0 -0.375 # Lo corner coordinates
+geometry.prob_hi        =   6.0 6.0 0.375 # Hi corner coordinates
+geometry.is_periodic    =   0   0   0   # Periodicity x y z (0/1)
+
+# Boundary conditions
+xlo.type = "mass_inflow"
+xlo.velocity = 1.0 1.0 0.0
+xlo.density = 1.0
+xhi.type = "pressure_outflow"
+xhi.pressure = 0.0
+ylo.type = "mass_inflow"
+ylo.velocity = 1.0 1.0 0.0
+ylo.density = 1.0
+yhi.type = "pressure_outflow"
+yhi.pressure = 0.0
+zlo.type = "slip_wall"
+zhi.type = "slip_wall"
+
+incflo.verbose          =   0          # incflo_level
+amrex.fpe_trap_invalid  =   1           # Trap NaNs
+amrex.throw_exception = 1
+amrex.signal_handling = 0
+
+nodal_proj.verbose = 2
+nodal_proj.mg_rtol = 1.0e-6
+nodal_proj.mg_atol = 1.0e-10
+
+# Mesh Refinement
+amr.n_cell            = 64 64 4 # Grid cells at coarsest AMRlevel
+amr.blocking_factor = 4
+amr.n_error_buf = 2
+
+amrex.abort_on_out_of_memory=1
+amrex.the_arena_is_managed=1
+amrex.async_out=0
+
+amr.max_level = 2
+tagging.labels = static
+tagging.static.type = "CartBoxRefinement"
+tagging.static.static_refinement_def = "static_box.txt"

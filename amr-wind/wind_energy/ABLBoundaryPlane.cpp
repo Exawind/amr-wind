@@ -628,11 +628,6 @@ void ABLBoundaryPlane::read_header()
             m_in_data.define_plane(ori);
 
             const int nlevels = plane_grp.num_groups();
-            // TODO Do not support multi-level input mode yet.
-            // this is due to interpolation issues at the coarse-fine interface
-            if (nlevels > 1) {
-                amrex::Abort("Not supporting multi-level input mode yet.");
-            }
             for (int lev = 0; lev < nlevels; ++lev) {
                 auto lev_grp = plane_grp.group(level_name(lev));
 
@@ -864,7 +859,9 @@ void ABLBoundaryPlane::populate_data(
     const int lev,
     const amrex::Real time,
     Field& fld,
-    amrex::MultiFab& mfab) const
+    amrex::MultiFab& mfab,
+    const int dcomp,
+    const int orig_comp) const
 {
 
     BL_PROFILE("amr-wind::ABLBoundaryPlane::populate_data");
@@ -884,14 +881,10 @@ void ABLBoundaryPlane::populate_data(
             continue;
         }
 
-        // Ensure the fine level does not touch the inflow boundary
+        // Only proceed with data population if fine levels touch the boundary
         if (lev > 0) {
             const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
-            if (box_intersects_boundary(minBox, lev, ori)) {
-                amrex::Abort(
-                    "Fine level intersects inflow boundary, not supported "
-                    "yet.");
-            } else {
+            if (!box_intersects_boundary(minBox, lev, ori)) {
                 continue;
             }
         }
@@ -922,7 +915,8 @@ void ABLBoundaryPlane::populate_data(
             amrex::ParallelFor(
                 bx, nc,
                 [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                    dest(i, j, k, n) = src_arr(i, j, k, n + nstart);
+                    dest(i, j, k, n + dcomp) =
+                        src_arr(i, j, k, n + nstart + orig_comp);
                 });
         }
     }

@@ -162,6 +162,7 @@ add_test_r(tgv_godunov)
 # Regression tests excluded from CI
 #=============================================================================
 add_test_re(abl_godunov_mpl)
+add_test_re(abl_godunov_mpl_amr)
 add_test_re(abl_godunov_cn)
 add_test_re(abl_godunov_explicit)
 add_test_re(abl_godunov_nolim)
@@ -215,6 +216,11 @@ add_test_re(ow_stokes)
 add_test_re(ow_hos)
 add_test_re(scalar_advection_uniform)
 add_test_re(scalar_advection_refined)
+add_test_re(freestream_bds)
+add_test_re(inflow_godunov_amr)
+add_test_re(inflow_bds_amr)
+add_test_re(linear_godunov_amr)
+add_test_re(linear_bds_amr)
 
 if(NOT AMR_WIND_ENABLE_CUDA)
   add_test_re(ctv_godunov_plm)
@@ -225,6 +231,7 @@ endif()
 
 if(AMR_WIND_ENABLE_NETCDF)
   add_test_re(abl_bndry_output)
+  add_test_re(abl_bndry_output_amr_inflow)
   add_test_re(abl_virtual_lidar)
 endif()
 
@@ -266,6 +273,7 @@ add_test_red(abl_bndry_input_amr_native abl_bndry_output_native)
 if(AMR_WIND_ENABLE_NETCDF)
   add_test_red(abl_bndry_input abl_bndry_output)
   add_test_red(abl_bndry_input_amr abl_bndry_output)
+  add_test_red(abl_bndry_input_amr_inflow abl_bndry_output_amr_inflow)
 endif()
 
 #=============================================================================
