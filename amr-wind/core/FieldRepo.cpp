@@ -257,10 +257,12 @@ IntField& FieldRepo::declare_int_field(
         const std::string fname =
             field_impl::field_name_with_state(name, fstate);
         const int fid = static_cast<int>(m_int_field_vec.size());
+        const int fid = m_int_field_vec.size();
 
         std::unique_ptr<IntField> field(
             new IntField(*this, fname, fid, ncomp, ngrow, floc));
 
+	amrex::Print()<<"m_is_initialized device "<<m_is_initialized<<std::endl;
         if (m_is_initialized) {
             allocate_field_data(*field);
         }
@@ -309,10 +311,11 @@ IntField& FieldRepo::declare_int_field_on_host(
         const std::string fname =
             field_impl::field_name_with_state(name, fstate);
         const int fid = m_int_field_vec.size();
+	amrex::Print()<<"fid host is "<<fid<<std::endl;
 
         std::unique_ptr<IntField> field(
             new IntField(*this, fname, fid, ncomp, ngrow, floc));
-
+	amrex::Print()<<"Is m initialized? "<<m_is_initialized<<std::endl;
         if (m_is_initialized) {
         // allocate_field_data(*field);
 	//allocate_field_data(lev, field, *m_leveldata[lev]);
@@ -321,6 +324,7 @@ IntField& FieldRepo::declare_int_field_on_host(
 		LevelDataHolder& level_data=*m_leveldata[lev];
 		{
 		    auto& fab_vec = level_data.m_int_fabs;
+		    amrex::Print()<<"fab_vec size "<<fab_vec.size()<<std::endl;
 		    AMREX_ASSERT(fab_vec.size() == (*field).id());
 		    //AMREX_ASSERT(fab_vec.size() == field.id());
 
@@ -435,6 +439,40 @@ std::unique_ptr<ScratchField> FieldRepo::create_scratch_field_on_host(
     const int ncomp, const int nghost, const FieldLoc floc) const
 {
     return create_scratch_field_on_host("scratch_field_host", ncomp, nghost, floc);
+}
+
+std::unique_ptr<IntScratchField> FieldRepo::create_int_scratch_field_on_host(
+    const std::string& name,
+    const int ncomp,
+    const int nghost,
+    const FieldLoc floc) const
+{
+    BL_PROFILE("amr-wind::FieldRepo::create_scratch_field_on_host");
+    if (!m_is_initialized) {
+        amrex::Abort(
+            "Scratch field creation is not permitted before mesh is "
+            "initialized");
+    }
+
+    std::unique_ptr<IntScratchField> field(
+        new IntScratchField(*this, name, ncomp, nghost, floc));
+
+    for (int lev = 0; lev <= m_mesh.finestLevel(); ++lev) {
+        const auto ba =
+            amrex::convert(m_mesh.boxArray(lev), field_impl::index_type(floc));
+
+        field->m_data.emplace_back(
+            ba, m_mesh.DistributionMap(lev), ncomp, nghost, 
+	amrex::MFInfo().SetArena(amrex::The_Pinned_Arena()),
+            *(m_leveldata[lev]->m_factory));
+    }
+    return field;
+}
+
+std::unique_ptr<IntScratchField> FieldRepo::create_int_scratch_field_on_host(
+    const int ncomp, const int nghost, const FieldLoc floc) const
+{
+    return create_int_scratch_field_on_host("int_scratch_field_host", ncomp, nghost, floc);
 }
 
 void FieldRepo::advance_states() noexcept
