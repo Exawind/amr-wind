@@ -195,9 +195,9 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
                     sdr_lhs_arr(i, j, k) = 0.5 * rho_arr(i, j, k) * beta *
                                            sdr_arr(i, j, k) * deltaT;
                     sdr_src_arr(i, j, k) =
-                        rho_arr(i, j, k) * alpha * shear_prod_arr(i, j, k) /
-                            amrex::max<amrex::Real>(mu_arr(i, j, k), 1.0e-16) +
-                        (1.0 - tmp_f1) * cdkomega;
+                        rho_arr(i, j, k) * alpha * tmp4 * tmp4 +
+                        (1.0 - tmp_f1) * 2.0 * rho_arr(i, j, k) * sigma_omega2 *
+                            gko / (sdr_arr(i, j, k) + 1e-15);
                     sdr_diss_arr(i, j, k) = -rho_arr(i, j, k) * beta *
                                             sdr_arr(i, j, k) * sdr_arr(i, j, k);
                 });
