@@ -115,6 +115,53 @@ copy(T1& dst, const T2& src, int srccomp, int dstcomp, int numcomp, int nghost)
     copy(dst, src, srccomp, dstcomp, numcomp, amrex::IntVect(nghost));
 }
 
+/** Copy source field to destination field
+ *  \ingroup field_ops
+ *
+ *  \tparam T1 IntScratchField
+ *  \tparam T2 IntScratchField
+ *  \param [out] dst Field that is updated
+ *  \param [in] src Field to be added
+ *  \param [in] srccomp Starting component index of source field
+ *  \param [in] dstcomp Starting component index of destination field
+ *  \param [in] numcomp Number of components to be updated
+ *  \param [in] nghost Number of ghost cells to be updated
+ */
+template <typename T1, typename T2>
+inline void copy_int(
+    T1& dst,
+    const T2& src,
+    int srccomp,
+    int dstcomp,
+    int numcomp,
+    const amrex::IntVect& nghost)
+{
+    const int nlevels = dst.repo().num_active_levels();
+    for (int lev = 0; lev < nlevels; ++lev) {
+        amrex::iMultiFab::Copy(
+            dst(lev), src(lev), srccomp, dstcomp, numcomp, nghost);
+    }
+}
+
+/** Copy source field to destination field
+ *  \ingroup field_ops
+ *
+ *  \tparam T1 IntScratchField
+ *  \tparam T2 IntScratchField
+ *  \param [out] dst Field that is updated
+ *  \param [in] src Field to be added
+ *  \param [in] srccomp Starting component index of source field
+ *  \param [in] dstcomp Starting component index of destination field
+ *  \param [in] numcomp Number of components to be updated
+ *  \param [in] nghost Number of ghost cells to be updated
+ */
+template <typename T1, typename T2>
+inline void
+copy_int(T1& dst, const T2& src, int srccomp, int dstcomp, int numcomp, int nghost)
+{
+    copy(dst, src, srccomp, dstcomp, numcomp, amrex::IntVect(nghost));
+}
+
 /** Perform operation \f$y = a x + y\f$
  *  \ingroup field_ops
  *

@@ -64,7 +64,6 @@ AMROversetInfo::AMROversetInfo(const int nglobal, const int nlocal)
 {}
 
 // clang-format off
-/*
 TiogaInterface::TiogaInterface(CFDSim& sim)
     : m_sim(sim)
     , m_iblank_cell(sim.repo().declare_int_field(
@@ -80,8 +79,9 @@ TiogaInterface::TiogaInterface(CFDSim& sim)
 {
     m_sim.io_manager().register_output_int_var(m_iblank_cell.name());
 }
-*/
 
+
+/*
 TiogaInterface::TiogaInterface(CFDSim& sim)
     : m_sim(sim)
     , m_iblank_cell(sim.repo().declare_int_field(
@@ -102,6 +102,7 @@ TiogaInterface::TiogaInterface(CFDSim& sim)
 {
     m_sim.io_manager().register_output_int_var(m_iblank_cell.name());
 }
+*/
 // clang-format on
 
 void TiogaInterface::post_init_actions()
@@ -127,9 +128,24 @@ void TiogaInterface::pre_overset_conn_work()
     m_iblank_cell.setVal(1);
     m_iblank_node.setVal(1);
 
+
+    auto& repo = m_sim.repo();
+    const auto comp_counter =
+        [&repo](int total, const std::string& fname) -> int {
+        return total + repo.get_field(fname).num_comp();
+    };
+    const int ncell_vars =
+        std::accumulate(cell_vars.begin(), cell_vars.end(), 0, comp_counter);
+    const int nnode_vars =
+        std::accumulate(node_vars.begin(), node_vars.end(), 0, comp_counter);
+    const int num_ghost = m_sim.pde_manager().num_ghost_state();
+    //m_iblank_cell_host = repo.create_int_scratch_field(ncell_vars, num_ghost, FieldLoc::CELL);
+    //m_iblank_node_host = repo.create_int_scratch_field(nnode_vars, num_ghost, FieldLoc::NODE);
+    m_iblank_cell_host = repo.create_int_scratch_field("iblank_cell_host", num_ghost, FieldLoc::CELL);
+    m_iblank_node_host = repo.create_int_scratch_field("iblank_node_host", num_ghost, FieldLoc::NODE);
     m_iblank_cell_host.setVal(1);
     m_iblank_node_host.setVal(1);
-
+	//amrex::Print()<<"Size of iblank_cell_host "<<m_iblank_cell_host(0).size()<<std::endl;
     //auto& repo = m_sim.repo();
     //const int nlevels = repo.num_active_levels();
     //for (int lev = 0; lev < nlevels; ++lev) {
@@ -268,12 +284,10 @@ void TiogaInterface::register_solution(
                 // Copy from device to host
                 ad.qcell.h_view[ilp] = qcfab_host[mfi].dataPtr();
                 // Do nothing for d_view
-                // d_view is an amrex::Gpu::DeviceVector
                 ad.qcell.d_view[ilp] = qcfab[mfi].dataPtr();
                 // Copy from device to host
                 ad.qnode.h_view[ilp] = qnfab_host[mfi].dataPtr();
                 // Do nothing for d_view
-                // d_view is an amrex::Gpu::DeviceVector
                 ad.qnode.d_view[ilp] = qnfab[mfi].dataPtr();
 
                 ++ilp;
@@ -376,7 +390,7 @@ void TiogaInterface::amr_to_tioga_mesh()
             }
         }
     }
-
+	amrex::Print()<<"ngrids_local "<< ngrids_local<<std::endl;
     m_amr_data = std::make_unique<AMROversetInfo>(ngrids_global, ngrids_local);
     std::vector<int> lgrid_id(nproc, 0);
 
@@ -431,7 +445,6 @@ void TiogaInterface::amr_to_tioga_mesh()
     auto& ibcell_host = m_sim.repo().get_int_field("iblank_cell_host");
     auto& ibnode_host = m_sim.repo().get_int_field("iblank_node_host");
 
-	amrex::Print()<<"nlevels is "<<nlevels<<"\n";
     // Create standard vector of integer pointers here
     //auto& ad2=*m_amr_data; 
     auto& ad = *m_amr_data;
@@ -449,7 +462,6 @@ void TiogaInterface::amr_to_tioga_mesh()
 	// so the code does not record the total number of MultiFab objects
 	//amrex::Vector<int*> tmpdataPtr;
 	//amrex::Vector<int*> tmpdataPtrn;
-		amrex::Print()<<"Printing error here?\n";
         for (amrex::MFIter mfi(ibfab); mfi.isValid(); ++mfi) {
             auto& ib = ibfab[mfi];
             auto& ibn = ibnodefab[mfi];
@@ -460,6 +472,8 @@ void TiogaInterface::amr_to_tioga_mesh()
 	    //amrex::Print()<<"Device pointer"<<ad.iblank_cell.d_view[ilp]<<"\n";
             ad.iblank_cell.h_view[ilp] = ib_host.dataPtr();
             ad.iblank_node.h_view[ilp] = ibn_host.dataPtr();
+	    amrex::Print()<<"ad.iblank_cell.h_view.size "<<ad.iblank_cell.h_view.size()<<std::endl;
+	    amrex::Print()<<"ad.iblank_node.h_view.size "<<ad.iblank_node.h_view.size()<<std::endl;
             //ad.iblank_cell.h_view[ilp] = ib.dataPtr();
             //ad.iblank_node.h_view[ilp] = ibn.dataPtr();
 	    tmpdataPtr[ilp] = ib.dataPtr();

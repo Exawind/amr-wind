@@ -88,7 +88,7 @@ void incflo::init_mesh()
 void incflo::init_amr_wind_modules()
 {
     BL_PROFILE("amr-wind::incflo::init_amr_wind_modules");
-
+	amrex::Print()<<"Inside init_amr_wind_modules"<<std::endl;
     if (m_sim.has_overset()) {
         m_sim.overset_manager()->post_init_actions();
     } else {
