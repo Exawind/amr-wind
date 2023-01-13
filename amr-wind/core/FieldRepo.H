@@ -344,7 +344,6 @@ public:
         const int nghost = 0,
         const FieldLoc floc = FieldLoc::CELL) const;
 
-
     std::unique_ptr<IntScratchField> create_int_scratch_field_on_host(
         const std::string& name,
         const int ncomp = 1,
@@ -356,6 +355,7 @@ public:
         const int ncomp = 1,
         const int nghost = 0,
         const FieldLoc floc = FieldLoc::CELL) const;
+
     //! Advance all fields with more than one timestate to the new timestep
     void advance_states() noexcept;
 

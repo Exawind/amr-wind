@@ -63,6 +63,13 @@ public:
     //! Return a reference to the field repository that created this field
     const FieldRepo& repo() const { return m_repo; }
 
+    void setVal(int value) noexcept;
+
+    void setVal(
+        int value, int start_comp, int num_comp = 1, int nghost = 0) noexcept;
+
+    void setVal(const amrex::Vector<int>& values, int nghost = 0) noexcept;
+
     /** Return a sub-view of the ScratchField instance
      */
     /*
@@ -71,7 +78,7 @@ public:
         return {*this, scomp, ncomp};
     }
     */
-
+	/*
     void fillpatch(amrex::Real time) noexcept;
     void fillpatch(amrex::Real time, const amrex::IntVect& ng) noexcept;
 
@@ -87,6 +94,7 @@ public:
         amrex::iMultiFab& mfab,
         const amrex::IntVect& nghost,
         amrex::Vector<amrex::BCRec>& bcrec) noexcept;
+	*/
 
 protected:
     IntScratchField(
@@ -113,4 +121,4 @@ protected:
 
 } // namespace amr_wind
 
-#endif /* SCRATCHFIELD_H */
+#endif /* INTSCRATCHFIELD_H */

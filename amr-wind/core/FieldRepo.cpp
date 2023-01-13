@@ -24,6 +24,7 @@ void FieldRepo::make_new_level_from_scratch(
         ba, dm, *m_leveldata[lev], *(m_leveldata[lev]->m_int_fact));
 
     m_is_initialized = true;
+    amrex::Print()<<"m_is_initialized in make_new_level_from_scratch "<<m_is_initialized<<std::endl;
 }
 
 void FieldRepo::make_new_level_from_coarse(
@@ -48,6 +49,7 @@ void FieldRepo::make_new_level_from_coarse(
 
     m_leveldata[lev] = std::move(ldata);
     m_is_initialized = true;
+    amrex::Print()<<"m_is_initialized in make_new_level_from_coarse "<<m_is_initialized<<std::endl;
 }
 
 void FieldRepo::remake_level(
@@ -72,6 +74,7 @@ void FieldRepo::remake_level(
 
     m_leveldata[lev] = std::move(ldata);
     m_is_initialized = true;
+    amrex::Print()<<"m_is_initialized in remake_level "<<m_is_initialized<<std::endl;
 }
 
 void FieldRepo::clear_level(int lev)
@@ -440,14 +443,13 @@ std::unique_ptr<ScratchField> FieldRepo::create_scratch_field_on_host(
 {
     return create_scratch_field_on_host("scratch_field_host", ncomp, nghost, floc);
 }
-
 std::unique_ptr<IntScratchField> FieldRepo::create_int_scratch_field_on_host(
     const std::string& name,
     const int ncomp,
     const int nghost,
     const FieldLoc floc) const
 {
-    BL_PROFILE("amr-wind::FieldRepo::create_scratch_field_on_host");
+    BL_PROFILE("amr-wind::FieldRepo::create_int_scratch_field_on_host");
     if (!m_is_initialized) {
         amrex::Abort(
             "Scratch field creation is not permitted before mesh is "
@@ -468,13 +470,11 @@ std::unique_ptr<IntScratchField> FieldRepo::create_int_scratch_field_on_host(
     }
     return field;
 }
-
 std::unique_ptr<IntScratchField> FieldRepo::create_int_scratch_field_on_host(
     const int ncomp, const int nghost, const FieldLoc floc) const
 {
     return create_int_scratch_field_on_host("int_scratch_field_host", ncomp, nghost, floc);
 }
-
 void FieldRepo::advance_states() noexcept
 {
     for (auto& it : m_field_vec) {
