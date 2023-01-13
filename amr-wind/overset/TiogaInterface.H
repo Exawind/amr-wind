@@ -9,6 +9,7 @@ namespace amr_wind {
 
 class IntField;
 class ScratchField;
+class IntScratchField;
 
 /** AMR mesh data in TIOGA format
  */
@@ -109,10 +110,12 @@ private:
     IntField& m_iblank_node;
 
     //! IBLANK on cell centered fields on host
-    IntField& m_iblank_cell_host;
+    //IntField& m_iblank_cell_host;
+    std::unique_ptr<IntScratchField> m_iblank_cell_host;
 
     //! IBLANK for nodal fields on host
-    IntField& m_iblank_node_host;
+    //IntField& m_iblank_node_host;
+    std::unique_ptr<IntScratchField> m_iblank_node_host;
 
     //! AMReX mask for linear system solves
     IntField& m_mask_cell;
