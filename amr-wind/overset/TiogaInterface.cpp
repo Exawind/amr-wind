@@ -134,17 +134,21 @@ void TiogaInterface::pre_overset_conn_work()
         [&repo](int total, const std::string& fname) -> int {
         return total + repo.get_field(fname).num_comp();
     };
-    const int ncell_vars =
-        std::accumulate(cell_vars.begin(), cell_vars.end(), 0, comp_counter);
-    const int nnode_vars =
-        std::accumulate(node_vars.begin(), node_vars.end(), 0, comp_counter);
+    //const int ncell_vars =
+    //    std::accumulate(cell_vars.begin(), cell_vars.end(), 0, comp_counter);
+    //const int nnode_vars =
+    //    std::accumulate(node_vars.begin(), node_vars.end(), 0, comp_counter);
     const int num_ghost = m_sim.pde_manager().num_ghost_state();
     //m_iblank_cell_host = repo.create_int_scratch_field(ncell_vars, num_ghost, FieldLoc::CELL);
     //m_iblank_node_host = repo.create_int_scratch_field(nnode_vars, num_ghost, FieldLoc::NODE);
-    m_iblank_cell_host = repo.create_int_scratch_field("iblank_cell_host", num_ghost, FieldLoc::CELL);
-    m_iblank_node_host = repo.create_int_scratch_field("iblank_node_host", num_ghost, FieldLoc::NODE);
-    m_iblank_cell_host.setVal(1);
-    m_iblank_node_host.setVal(1);
+    //m_iblank_cell_host = repo.create_int_scratch_field_on_host("iblank_cell_host", num_ghost, FieldLoc::CELL);
+    //m_iblank_node_host = repo.create_int_scratch_field_on_host("iblank_node_host", num_ghost, FieldLoc::NODE);
+    //const std::string& namec="iblank_cell_host";
+    //const std::string& namen="iblank_node_host";
+    m_iblank_cell_host = repo.create_int_scratch_field_on_host("iblank_cell_host",1,num_ghost, FieldLoc::CELL);
+    m_iblank_node_host = repo.create_int_scratch_field_on_host("iblank_node_host",1,num_ghost, FieldLoc::NODE);
+    (*m_iblank_cell_host).setVal(1);
+    (*m_iblank_node_host).setVal(1);
 	//amrex::Print()<<"Size of iblank_cell_host "<<m_iblank_cell_host(0).size()<<std::endl;
     //auto& repo = m_sim.repo();
     //const int nlevels = repo.num_active_levels();
@@ -162,8 +166,8 @@ void TiogaInterface::post_overset_conn_work()
     auto& repo = m_sim.repo();
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
-	htod_memcpy(m_iblank_cell(lev),m_iblank_cell_host(lev),0,0,1);
-	htod_memcpy(m_iblank_node(lev),m_iblank_node_host(lev),0,0,1);
+	htod_memcpy(m_iblank_cell(lev),(*m_iblank_cell_host)(lev),0,0,1);
+	htod_memcpy(m_iblank_node(lev),(*m_iblank_node_host)(lev),0,0,1);
     }
 
     iblank_to_mask(m_iblank_cell, m_mask_cell);
@@ -442,21 +446,28 @@ void TiogaInterface::amr_to_tioga_mesh()
     auto& ibcell = m_sim.repo().get_int_field("iblank_cell");
     auto& ibnode = m_sim.repo().get_int_field("iblank_node");
 
-    auto& ibcell_host = m_sim.repo().get_int_field("iblank_cell_host");
-    auto& ibnode_host = m_sim.repo().get_int_field("iblank_node_host");
+   amrex::Print()<<"ibcell ibnode set?"<<std::endl;
+    //auto& ibcell_host = m_sim.repo().get_int_field("iblank_cell_host");
+    //auto& ibnode_host = m_sim.repo().get_int_field("iblank_node_host");
+    //auto& ibcell_host = m_sim.repo().get_int_field("iblank_cell_host");
+    //auto& ibnode_host = m_sim.repo().get_int_field("iblank_node_host");
 
     // Create standard vector of integer pointers here
     //auto& ad2=*m_amr_data; 
     auto& ad = *m_amr_data;
     amrex::Vector<int *> tmpdataPtr(ad.iblank_cell.size());
     amrex::Vector<int *> tmpdataPtrn(ad.iblank_node.size());
+    amrex::Print()<<"tmp vectors set?"<<std::endl;
     for (int lev = 0; lev < nlevels; ++lev) {
         //auto& ad = *m_amr_data;
         auto& ibfab = ibcell(lev);
         auto& ibnodefab = ibnode(lev);
-        auto& ibfab_host = ibcell_host(lev);
-        auto& ibnodefab_host = ibnode_host(lev);
+        //auto& ibfab_host = ibcell_host(lev);
+        //auto& ibnodefab_host = ibnode_host(lev);
+        auto& ibfab_host = (*m_iblank_cell_host)(lev);
+        auto& ibnodefab_host = (*m_iblank_node_host)(lev);
 
+   	amrex::Print()<<"host ibs set?"<<std::endl;
 	// Count the number of MultiFab objects over all levels
 	// IntField objects are allocated with emplace_back for each level
 	// so the code does not record the total number of MultiFab objects
@@ -472,6 +483,7 @@ void TiogaInterface::amr_to_tioga_mesh()
 	    //amrex::Print()<<"Device pointer"<<ad.iblank_cell.d_view[ilp]<<"\n";
             ad.iblank_cell.h_view[ilp] = ib_host.dataPtr();
             ad.iblank_node.h_view[ilp] = ibn_host.dataPtr();
+
 	    amrex::Print()<<"ad.iblank_cell.h_view.size "<<ad.iblank_cell.h_view.size()<<std::endl;
 	    amrex::Print()<<"ad.iblank_node.h_view.size "<<ad.iblank_node.h_view.size()<<std::endl;
             //ad.iblank_cell.h_view[ilp] = ib.dataPtr();
@@ -484,6 +496,8 @@ void TiogaInterface::amr_to_tioga_mesh()
             ++ilp;
         }
     }
+
+
 	// Host to device copy from standard vector to 
 	// ad.iblank_cell.d_view
         amrex::Gpu::copy(

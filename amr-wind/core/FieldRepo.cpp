@@ -466,7 +466,7 @@ std::unique_ptr<IntScratchField> FieldRepo::create_int_scratch_field_on_host(
         field->m_data.emplace_back(
             ba, m_mesh.DistributionMap(lev), ncomp, nghost, 
 	amrex::MFInfo().SetArena(amrex::The_Pinned_Arena()),
-            *(m_leveldata[lev]->m_factory));
+            *(m_leveldata[lev]->m_int_fact));
     }
     return field;
 }
