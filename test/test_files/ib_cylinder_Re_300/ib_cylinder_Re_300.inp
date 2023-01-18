@@ -27,6 +27,7 @@ io.outputs = density p
 io.derived_outputs = "components(velocity,0,1)" "components(gp,0,1)"
 
 incflo.use_godunov = 1
+incflo.diffusion_type = 2
 incflo.godunov_type = "weno_z"
 incflo.do_initial_proj = 1
 incflo.initial_iterations = 3

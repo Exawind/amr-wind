@@ -5,6 +5,7 @@
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/core/FieldDescTypes.H"
 #include "amr-wind/core/FieldUtils.H"
+#include "amr-wind/core/FieldBCOps.H"
 
 #include "AMReX_AmrCore.H"
 #include "AMReX_MultiFab.H"
@@ -50,6 +51,19 @@ public:
         const amrex::IntVect& nghost,
         const FieldState fstate = FieldState::New) = 0;
 
+    //! Implementation that handles filling patches on a single level as well as
+    //! across a coarse-fine interface, for an array of different fields
+    virtual void fillpatch_sibling_fields(
+        int lev,
+        amrex::Real time,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& mfabs,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& ffabs,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& cfabs,
+        const amrex::IntVect& nghost,
+        const amrex::Vector<amrex::BCRec>& bcrec,
+        const FieldState fstate = FieldState::New,
+        const FieldInterpolator itype = FieldInterpolator::FaceDivFree) = 0;
+
     //! Implementation that handles filling patches from a coarse to fine level
     virtual void fillpatch_from_coarse(
         int lev,
@@ -93,6 +107,22 @@ public:
         const FieldState /*fstate*/) override
     {
         mfab.setVal(m_fill_val);
+    }
+
+    void fillpatch_sibling_fields(
+        int /*lev*/,
+        amrex::Real /*time*/,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& mfabs,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& /*ffabs*/,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& /*cfabs*/,
+        const amrex::IntVect& /*nghost*/,
+        const amrex::Vector<amrex::BCRec>& /*bcrec*/,
+        const FieldState /*fstate*/,
+        const FieldInterpolator /*itype*/) override
+    {
+        for (const auto& mfab : mfabs) {
+            mfab->setVal(m_fill_val);
+        }
     }
 
     void fillpatch_from_coarse(
@@ -264,6 +294,57 @@ public:
     }
 #endif
 
+    void fillpatch_sibling_fields(
+        int lev,
+        amrex::Real time,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& mfabs,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& ffabs,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& cfabs,
+        const amrex::IntVect& nghost,
+        const amrex::Vector<amrex::BCRec>& bcrec,
+        const FieldState /*fstate = FieldState::New*/,
+        const FieldInterpolator itype = FieldInterpolator::FaceDivFree) override
+    {
+
+        if (lev == 0) {
+            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> physbc(
+                m_mesh.Geom(lev), bcrec, bc_functor());
+            for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
+                amrex::FillPatchSingleLevel(
+                    *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
+                    m_mesh.Geom(lev), physbc, i);
+            }
+        } else {
+            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> cphysbc(
+                m_mesh.Geom(lev - 1), bcrec, bc_functor());
+
+            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> fphysbc(
+                m_mesh.Geom(lev), bcrec, bc_functor());
+
+            amrex::Array<
+                amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>>,
+                AMREX_SPACEDIM>
+                cphysbc_arr = {AMREX_D_DECL(cphysbc, cphysbc, cphysbc)};
+
+            amrex::Array<
+                amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>>,
+                AMREX_SPACEDIM>
+                fphysbc_arr = {AMREX_D_DECL(fphysbc, fphysbc, fphysbc)};
+
+            amrex::Array<int, AMREX_SPACEDIM> idx = {AMREX_D_DECL(0, 1, 2)};
+            const amrex::Array<amrex::Vector<amrex::BCRec>, AMREX_SPACEDIM>
+                bcrec_arr = {AMREX_D_DECL(bcrec, bcrec, bcrec)};
+
+            auto* mapper = field_impl::get_interpolation_operator(itype);
+
+            amrex::FillPatchTwoLevels(
+                mfabs, nghost, time, {cfabs}, {time}, {ffabs}, {time}, 0, 0, 1,
+                m_mesh.Geom(lev - 1), m_mesh.Geom(lev), cphysbc_arr, idx,
+                fphysbc_arr, idx, m_mesh.refRatio(lev - 1), mapper, bcrec_arr,
+                idx);
+        }
+    }
+
     void fillpatch_from_coarse(
         int lev,
         amrex::Real time,
@@ -335,7 +416,7 @@ public:
                             const int i, const int j, const int k) noexcept {
                         for (int n = 0; n < ncomp; ++n) {
                             bcfunc.set_inflow(
-                                {i, j, k}, marr, gdata, time, ori, n);
+                                {i, j, k}, marr, gdata, time, ori, n, 0, 0);
                         }
                     });
             }

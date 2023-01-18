@@ -142,9 +142,9 @@ public:
     //! Number of states available for this field
     inline int num_states() const
     {
-        int ns = std::count_if(
+        int ns = static_cast<int>(std::count_if(
             m_info->m_states.begin(), m_info->m_states.end(),
-            [](const Field* ff) { return (ff != nullptr); });
+            [](const Field* ff) { return (ff != nullptr); }));
         AMREX_ASSERT(num_time_states() <= ns);
         return ns;
     }
@@ -318,6 +318,10 @@ public:
 
     void fillpatch(amrex::Real time) noexcept;
     void fillpatch(amrex::Real time, amrex::IntVect ng) noexcept;
+    void fillpatch_sibling_fields(
+        amrex::Real time,
+        amrex::IntVect ng,
+        amrex::Array<Field*, AMREX_SPACEDIM>& fields) const noexcept;
 
     void fillphysbc(amrex::Real time) noexcept;
     void fillphysbc(amrex::Real time, amrex::IntVect ng) noexcept;

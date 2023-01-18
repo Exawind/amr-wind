@@ -23,6 +23,7 @@ io.outputs = density velocity vof
 #               PHYSICS                 #
 #.......................................#
 incflo.use_godunov = 1
+incflo.diffusion_type = 2
 incflo.godunov_type = "weno"
 transport.model = TwoPhaseTransport
 transport.viscosity_fluid1=0.0

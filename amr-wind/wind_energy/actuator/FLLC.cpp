@@ -5,7 +5,7 @@ namespace amr_wind::actuator {
 void FLLCInit(
     FLLCData& data, const ComponentView& view, const amrex::Real eps_chord)
 {
-    const int npts = view.pos.size();
+    const int npts = static_cast<int>(view.pos.size());
     data.different_sizes = view.pos.size() != view.vel_pos.size();
     if (data.different_sizes) {
         data.span_distance_force.resize(view.pos.size());
@@ -17,7 +17,7 @@ void FLLCInit(
             data.span_distance_vel[i] = vs::mag(view.vel_pos[i]);
         }
     }
-    data.dx.resize(npts);
+    data.dr.resize(npts);
     data.optimal_epsilon.resize(npts);
     data.les_velocity.assign(npts, vs::Vector::zero());
     data.optimal_velocity.assign(npts, vs::Vector::zero());
@@ -26,12 +26,18 @@ void FLLCInit(
     data.grad_lift.assign(npts, vs::Vector::zero());
     data.force_point_velocity.assign(npts, vs::Vector::zero());
 
-    for (int i = 0; i < npts - 1; ++i) {
-        data.dx[i] = vs::mag(view.pos[i + 1] - view.pos[i]);
+    for (int i = 0; i < npts; ++i) {
+
         data.optimal_epsilon[i] = view.chord[i] * eps_chord;
     }
-    data.dx[npts - 1] = vs::mag(view.pos[npts - 1] - view.pos[npts - 2]);
-    data.optimal_epsilon[npts - 1] = view.chord[npts - 1] * eps_chord;
+
+    // Central difference
+    for (int i = 1; i < npts - 1; ++i) {
+        data.dr[i] = vs::mag(view.pos[i + 1] - view.pos[i - 1]) / 2.;
+    }
+    data.dr[0] = vs::mag(view.pos[1] - view.pos[0]) / 2.;
+    data.dr[npts - 1] = vs::mag(view.pos[npts - 1] - view.pos[npts - 2]) / 2.;
+
     data.initialized = true;
 }
 

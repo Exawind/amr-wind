@@ -19,6 +19,7 @@ time.checkpoint_interval      =  -1         # Steps between checkpoint files
 incflo.gravity        =  0.0  0.0 -9.81  # Gravitational force (3D)
 incflo.density        =  1.3223            # Reference density
 incflo.use_godunov = 1
+incflo.diffusion_type = 2
 incflo.godunov_type = "ppm_nolim"
 transport.viscosity = 0.0
 transport.laminar_prandtl = 0.7

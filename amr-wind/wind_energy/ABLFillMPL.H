@@ -33,6 +33,18 @@ public:
         const amrex::IntVect& nghost,
         const FieldState fstate = FieldState::New) override;
 
+    void fillpatch_sibling_fields(
+        int lev,
+        amrex::Real time,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& mfabs,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& ffabs,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& cfabs,
+        const amrex::IntVect& nghost,
+        const amrex::Vector<amrex::BCRec>& bcrec,
+        const FieldState fstate = FieldState::New,
+        const FieldInterpolator itype =
+            FieldInterpolator::FaceDivFree) override;
+
     //! Implementation that handles filling patches from a coarse to fine level
     void fillpatch_from_coarse(
         int lev,

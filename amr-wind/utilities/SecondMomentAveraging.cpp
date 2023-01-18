@@ -201,7 +201,8 @@ void SecondMomentAveraging::compute_average(
     lfluc.copyToHost(
         m_second_moments_line.data(), m_second_moments_line.size());
     amrex::ParallelDescriptor::ReduceRealSum(
-        m_second_moments_line.data(), m_second_moments_line.size());
+        m_second_moments_line.data(),
+        static_cast<int>(m_second_moments_line.size()));
 }
 
 amrex::Real SecondMomentAveraging::line_average_interpolated(

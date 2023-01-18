@@ -1,4 +1,3 @@
-// #include <AMReX_ParmParse.H>
 #include <AMReX_BC_TYPES.H>
 #include "amr-wind/incflo.H"
 #include <cmath>
@@ -32,7 +31,7 @@ void incflo::ReadParameters()
 
         // The default for diffusion_type is 2, i.e. the default m_diff_type is
         // DiffusionType::Implicit
-        int diffusion_type = 2;
+        int diffusion_type = 1;
         pp.query("diffusion_type", diffusion_type);
         if (diffusion_type == 0) {
             m_diff_type = DiffusionType::Explicit;

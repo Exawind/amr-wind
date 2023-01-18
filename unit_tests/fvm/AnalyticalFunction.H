@@ -1,3 +1,6 @@
+#ifndef ANALYTICAL_FUNCTION_H
+#define ANALYTICAL_FUNCTION_H
+
 #include "aw_test_utils/AmrexTest.H"
 #include "aw_test_utils/MeshTest.H"
 
@@ -386,3 +389,4 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real q_criterion(
 }
 
 } // namespace amr_wind_tests::analytical_function
+#endif

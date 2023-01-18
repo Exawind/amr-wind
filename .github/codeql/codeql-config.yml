@@ -1,0 +1,6 @@
+name: "AMR-Wind CodeQL config"
+
+query-filters:
+  - exclude:
+      id: cpp/poorly-documented-function
+

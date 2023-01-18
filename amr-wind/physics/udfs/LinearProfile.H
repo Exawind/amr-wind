@@ -27,7 +27,9 @@ struct LinearProfile
             amrex::GeometryData const& geom,
             const amrex::Real /*unused*/,
             amrex::Orientation /*unused*/,
-            const int comp) const
+            const int comp,
+            const int dcomp,
+            const int orig_comp) const
         {
             const auto* problo = geom.ProbLo();
             const auto* dx = geom.CellSize();
@@ -35,14 +37,15 @@ struct LinearProfile
 
             amrex::Real val;
             if (zco < zmin) {
-                val = fld_min[comp];
+                val = fld_min[orig_comp + comp];
             } else if (zco > zmax) {
-                val = fld_max[comp];
+                val = fld_max[orig_comp + comp];
             } else {
-                val = fld_min[comp] + (fld_max[comp] - fld_min[comp]) *
-                                          (zco - zmin) / (zmax - zmin);
+                val = fld_min[orig_comp + comp] +
+                      (fld_max[orig_comp + comp] - fld_min[orig_comp + comp]) *
+                          (zco - zmin) / (zmax - zmin);
             }
-            field(iv[0], iv[1], iv[2], comp) = val;
+            field(iv[0], iv[1], iv[2], dcomp + comp) = val;
         }
     };
 

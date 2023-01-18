@@ -121,7 +121,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         iconserv.resize(ICNS::ndim, m_cons);
     }
 
-    void preadvect(const FieldState fstate, const amrex::Real dt)
+    void preadvect(
+        const FieldState fstate, const amrex::Real dt, const amrex::Real time)
     {
 
         const auto& repo = fields.repo;
@@ -284,6 +285,13 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         // MAC projection
         m_macproj_op(fstate, dt);
 
+        // Fill mac velocities using velocity BCs
+        if (fvm::Godunov::nghost_state > 0) {
+            amrex::Array<Field*, AMREX_SPACEDIM> mac_vel = {
+                AMREX_D_DECL(&u_mac, &v_mac, &w_mac)};
+            dof_field.fillpatch_sibling_fields(time, u_mac.num_grow(), mac_vel);
+        }
+
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             u_mac(lev).FillBoundary(geom[lev].periodicity());
             v_mac(lev).FillBoundary(geom[lev].periodicity());
@@ -392,7 +400,6 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                     const bool known_edge_state = false;
                     const bool godunov_use_ppm =
                         godunov_scheme == godunov::scheme::PPM;
-                    const bool fluxes_are_area_weighted = false;
                     HydroUtils::ComputeFluxesOnBoxFromState(
                         bx, ICNS::ndim, mfi, q.const_array(mfi),
                         AMREX_D_DECL(
@@ -458,12 +465,28 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                  mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.tilebox();
 
-                godunov::compute_advection(
-                    lev, bx, ICNS::ndim, conv_term(lev).array(mfi),
-                    (*flux_x)(lev).array(mfi), (*flux_y)(lev).array(mfi),
-                    (*flux_z)(lev).array(mfi), u_mac(lev).const_array(mfi),
-                    v_mac(lev).const_array(mfi), w_mac(lev).const_array(mfi),
-                    iconserv.data(), geom);
+                HydroUtils::ComputeDivergence(
+                    bx, conv_term(lev).array(mfi), (*flux_x)(lev).array(mfi),
+                    (*flux_y)(lev).array(mfi), (*flux_z)(lev).array(mfi),
+                    ICNS::ndim, geom[lev], amrex::Real(-1.0),
+                    fluxes_are_area_weighted);
+
+                if (m_cons == 0) {
+                    amrex::FArrayBox div_umac(bx, 1, amrex::The_Async_Arena());
+                    auto const& divum_arr = div_umac.array();
+                    HydroUtils::ComputeDivergence(
+                        bx, divum_arr, u_mac(lev).const_array(mfi),
+                        v_mac(lev).const_array(mfi),
+                        w_mac(lev).const_array(mfi), 1, geom[lev],
+                        amrex::Real(1.0), false);
+                    HydroUtils::ComputeConvectiveTerm(
+                        bx, ICNS::ndim, mfi, dof_field(lev).const_array(mfi),
+                        (*face_x)(lev).const_array(mfi),
+                        (*face_y)(lev).const_array(mfi),
+                        (*face_z)(lev).const_array(mfi), divum_arr,
+                        conv_term(lev).array(mfi), iconserv.data(),
+                        postmac_advection_type);
+                }
             }
         }
     }
@@ -480,6 +503,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     godunov::scheme mflux_scheme = godunov::scheme::UPWIND;
     std::string godunov_type;
     std::string mflux_type;
+    const bool fluxes_are_area_weighted{false};
     bool godunov_use_forces_in_trans{false};
     int m_cons{1};
     std::string premac_advection_type{"Godunov"};
@@ -506,7 +530,10 @@ struct AdvectionOp<ICNS, fvm::MOL>
               fields.repo, has_overset, variable_density, m_mesh_mapping)
     {}
 
-    void preadvect(const FieldState fstate, const amrex::Real dt)
+    void preadvect(
+        const FieldState fstate,
+        const amrex::Real dt,
+        const amrex::Real /*time*/)
     {
 
         // cppcheck-suppress constVariable
@@ -579,6 +606,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
                 // Doing this explicitly, instead of through a Multiply command,
                 // helps avoid floating-point errors with intel compilers and
                 // mimics the implementation in equation_systems/AdvOp_MOL.H
+                amrex::Gpu::streamSynchronize();
 
                 amrex::Box tmpbox = amrex::surroundingNodes(bx);
                 const int tmpcomp = nmaxcomp * AMREX_SPACEDIM;

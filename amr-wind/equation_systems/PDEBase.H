@@ -162,7 +162,7 @@ private:
     std::string m_scheme;
 
     //! Flag indicating whether Godunov scheme is active
-    bool m_use_godunov{false};
+    bool m_use_godunov{true};
 
     //! Flag indicating whether density is constant for this simulation
     bool m_constant_density{true};

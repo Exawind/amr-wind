@@ -1,5 +1,5 @@
-#ifndef LAGRANGIAN_ADVECTION_H_
-#define LAGRANGIAN_ADVECTION_H_
+#ifndef SPLIT_ADVECTION_H_
+#define SPLIT_ADVECTION_H_
 
 #include "amr-wind/equation_systems/vof/volume_fractions.H"
 #include <AMReX_FArrayBox.H>
@@ -100,7 +100,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_eulerian_fluxes(
                             fluxC(i, j, k) * (velR - velL);
     }
     // Do clipping
-    volfrac(i, j, k) = amrex::max(0.0, amrex::min(1.0, volfrac(i, j, k)));
+    volfrac(i, j, k) = amrex::max<amrex::Real>(
+        0.0, amrex::min<amrex::Real>(1.0, volfrac(i, j, k)));
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fluxes_bc_save(
@@ -129,6 +130,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fluxes_bc_save(
                 vofL(domlo, j, k) = 0.0;
             }
         }
+
         if (bchi == BC::no_slip_wall || bchi == BC::slip_wall ||
             bchi == BC::wall_model) {
             if (i == domhi + 1) {
@@ -215,4 +217,4 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void remove_vof_debris(
 }
 
 } // namespace amr_wind::multiphase
-#endif // LAGRANGIAN_ADVECTION.H
+#endif // SPLIT_ADVECTION.H

@@ -84,7 +84,7 @@ void ZalesakDiskScalarVel::initialize_fields(
     const amrex::Real depth = m_depth;
 
     for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.growntilebox();
+        const auto& gbx = mfi.growntilebox(1);
         auto uf = u_mac.array(mfi);
         auto vf = v_mac.array(mfi);
         auto wf = w_mac.array(mfi);
@@ -92,7 +92,7 @@ void ZalesakDiskScalarVel::initialize_fields(
         auto phi = levelset.array(mfi);
         auto rho = density.array(mfi);
         amrex::ParallelFor(
-            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                 const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                 const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
@@ -153,7 +153,9 @@ void ZalesakDiskScalarVel::initialize_fields(
                 vel(i, j, k, 0) = amrex::min(1.0, amrex::max(0.0, 1.5 - dnorm));
             });
     }
+    m_levelset.fillpatch(0.0);
     m_velocity.fillpatch(0.0);
+    m_density.fillpatch(0.0);
     output_error();
 }
 
@@ -169,7 +171,7 @@ void ZalesakDiskScalarVel::pre_advance_work()
         auto& v_mac = m_sim.repo().get_field("v_mac")(lev);
         auto& w_mac = m_sim.repo().get_field("w_mac")(lev);
         for (amrex::MFIter mfi(m_velocity(lev)); mfi.isValid(); ++mfi) {
-            const auto& vbx = mfi.growntilebox(1);
+            const auto& gbx = mfi.growntilebox(1);
             const auto& dx = geom[lev].CellSizeArray();
             const auto& problo = geom[lev].ProbLoArray();
             const amrex::Real TT = m_TT;
@@ -177,7 +179,7 @@ void ZalesakDiskScalarVel::pre_advance_work()
             auto vf = v_mac.array(mfi);
             auto wf = w_mac.array(mfi);
             amrex::ParallelFor(
-                vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                     const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
 
@@ -240,7 +242,7 @@ amrex::Real ZalesakDiskScalarVel::compute_error(const Field& field)
                 const auto& imask_arr = level_mask.array(mfi);
                 amrex::ParallelFor(
                     vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        if (iblank_arr(i, j, k) < 1) {
+                        if (amrex::Math::abs(iblank_arr(i, j, k)) < 1) {
                             imask_arr(i, j, k) = 0;
                         }
                     });

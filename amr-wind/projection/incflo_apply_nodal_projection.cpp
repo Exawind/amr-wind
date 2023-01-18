@@ -40,6 +40,10 @@ incflo::get_projection_bc(Orientation::Side side) const noexcept
                 r[dir] = LinOpBCType::Dirichlet;
                 break;
             }
+            case BC::mass_inflow: {
+                r[dir] = LinOpBCType::inflow;
+                break;
+            }
             default:
                 r[dir] = LinOpBCType::Neumann;
                 break;

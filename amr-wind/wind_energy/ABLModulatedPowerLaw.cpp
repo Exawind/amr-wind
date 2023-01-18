@@ -6,6 +6,10 @@
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include <AMReX_PlotFileUtil.H>
 
+#include <sstream>
+#include <iostream>
+#include <string>
+
 namespace amr_wind {
 
 ABLModulatedPowerLaw::ABLModulatedPowerLaw(CFDSim& sim)
@@ -19,20 +23,23 @@ ABLModulatedPowerLaw::ABLModulatedPowerLaw(CFDSim& sim)
     amrex::ParmParse pp("MPL");
 
     pp.query("activate", m_activate_mpl);
-    //    pp.query("zoffset", m_zoffset); // have not accounted for this being
-    //    nonzero yet
     pp.query("zref", m_zref);
     pp.query("shear_exp", m_shear_exp);
-    //    pp.query("umin", m_umin);       // have not accounted for this being
-    //    nonzero yet
     pp.query("umax_factor", m_umax_factor);
     pp.query("bulk_velocity", m_bulk_velocity);
     pp.query("shearlayer_height", m_shearlayer_height);
     pp.query("shearlayer_smear_thickness", m_shearlayer_smear_thickness);
-
-    //    pp.queryarr("uvec", m_uvec);
     pp.query("wind_speed", m_wind_speed);
     pp.query("wind_direction", m_wind_direction);
+
+    const amrex::Real wind_speed = m_wind_speed;
+    const amrex::Real wind_direction = -m_wind_direction + 270.0;
+    const amrex::Real wind_direction_radian =
+        amr_wind::utils::radians(wind_direction);
+
+    m_uvec[0] = wind_speed * std::cos(wind_direction_radian);
+    m_uvec[1] = wind_speed * std::sin(wind_direction_radian);
+    m_uvec[2] = 0.0;
 
     pp.query("start_time", m_start_time);
     pp.query("stop_time", m_stop_time);
@@ -48,7 +55,7 @@ ABLModulatedPowerLaw::ABLModulatedPowerLaw(CFDSim& sim)
     pp_abl.getarr("temperature_values", m_theta_values);
 
     AMREX_ALWAYS_ASSERT(m_theta_heights.size() == m_theta_values.size());
-    int num_theta_values = m_theta_heights.size();
+    int num_theta_values = static_cast<int>(m_theta_heights.size());
     m_thht_d.resize(num_theta_values);
     m_thvv_d.resize(num_theta_values);
 
@@ -71,17 +78,30 @@ void ABLModulatedPowerLaw::post_init_actions()
 void ABLModulatedPowerLaw::pre_advance_work()
 {
 
-    amrex::Real wind_speed = m_wind_speed;
+#ifdef AMR_WIND_USE_HELICS
+    if (m_sim.helics().is_activated()) {
+        const amrex::Real wind_speed =
+            m_sim.helics().m_inflow_wind_speed_to_amrwind;
+        const amrex::Real wind_direction =
+            -m_sim.helics().m_inflow_wind_direction_to_amrwind + 270.0;
+        const amrex::Real wind_direction_radian =
+            amr_wind::utils::radians(wind_direction);
+
+        m_uvec[0] = wind_speed * std::cos(wind_direction_radian);
+        m_uvec[1] = wind_speed * std::sin(wind_direction_radian);
+        m_uvec[2] = 0.0;
+        return;
+    }
+#endif
 
     if (m_time.current_time() > m_start_time &&
         m_time.current_time() < m_stop_time) {
-        m_wind_direction += m_degrees_per_sec * m_time.deltaT();
-        // wind_speed += sin(0.02*m_time.current_time());
+        m_wind_direction -= m_degrees_per_sec * m_time.deltaT();
     }
-
-    const amrex::Real wind_direction_radian = utils::radians(m_wind_direction);
-    m_uvec[0] = wind_speed * std::cos(wind_direction_radian);
-    m_uvec[1] = wind_speed * std::sin(wind_direction_radian);
+    const amrex::Real wind_direction = -m_wind_direction + 270.0;
+    const amrex::Real wind_direction_radian = utils::radians(wind_direction);
+    m_uvec[0] = m_wind_speed * std::cos(wind_direction_radian);
+    m_uvec[1] = m_wind_speed * std::sin(wind_direction_radian);
     m_uvec[2] = 0.0;
 }
 
@@ -91,7 +111,9 @@ void ABLModulatedPowerLaw::set_velocity(
     const int lev,
     const amrex::Real /*time*/,
     const Field& fld,
-    amrex::MultiFab& mfab) const
+    amrex::MultiFab& mfab,
+    const int dcomp,
+    const int orig_comp) const
 {
 
     if (!m_activate_mpl) {
@@ -110,7 +132,7 @@ void ABLModulatedPowerLaw::set_velocity(
     const amrex::Real uref =
         vs::mag(vs::Vector{m_uvec[0], m_uvec[1], m_uvec[2]});
     const amrex::Real bulk_velocity = m_bulk_velocity;
-    const amrex::Real umin = 0.0; // m_umin/uref;
+    const amrex::Real umin = 0.0;
     const amrex::Real umax_factor = m_umax_factor;
     const amrex::Real zc = m_shearlayer_height;
     const amrex::Real smear_coeff = 1.0 / m_shearlayer_smear_thickness;
@@ -136,8 +158,6 @@ void ABLModulatedPowerLaw::set_velocity(
     const amrex::Real upper_coeff =
         (bulk_velocity * height - num1 - num2) / denom;
 
-    //    if(z2 > zc) amrex::Print() << "warning z2 > zc" << std::endl;
-
     const auto& bctype = fld.bc_type();
     const int nghost = 1;
     const auto& domain = geom.growPeriodicDomain(nghost);
@@ -160,6 +180,7 @@ void ABLModulatedPowerLaw::set_velocity(
             }
 
             const auto& arr = mfab[mfi].array();
+            const int numcomp = mfab.nComp();
 
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -173,9 +194,13 @@ void ABLModulatedPowerLaw::set_velocity(
                         0.5 * upper_coeff *
                         (tanh(smear_coeff * (zeff - zc)) + 1.0) / uref;
 
-                    arr(i, j, k, 0) = tvx * (pfac + tanhterm);
-                    arr(i, j, k, 1) = tvy * (pfac + tanhterm);
-                    arr(i, j, k, 2) = tvz;
+                    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> vels = {
+                        AMREX_D_DECL(
+                            tvx * (pfac + tanhterm), tvy * (pfac + tanhterm),
+                            tvz)};
+                    for (int n = 0; n < numcomp; n++) {
+                        arr(i, j, k, dcomp + n) = vels[orig_comp + n];
+                    }
                 });
         }
     }
@@ -207,7 +232,7 @@ void ABLModulatedPowerLaw::set_temperature(
     const int nghost = 1;
     const auto& domain = geom.growPeriodicDomain(nghost);
 
-    const int ntvals = m_theta_heights.size();
+    const int ntvals = static_cast<int>(m_theta_heights.size());
     const amrex::Real* th = m_thht_d.data();
     const amrex::Real* tv = m_thvv_d.data();
 

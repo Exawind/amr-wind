@@ -18,6 +18,7 @@ time.checkpoint_interval      =  -100       # Steps between checkpoint files
 #.......................................#
 incflo.density        =  1.0             # Reference density
 incflo.use_godunov = 1
+incflo.diffusion_type = 2
 transport.viscosity = 1.0e-3
 turbulence.model = KOmegaSSTIDDES
 

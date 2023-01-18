@@ -4,6 +4,7 @@ target_sources(${amr_wind_lib_name}
   incflo.cpp
   incflo_compute_dt.cpp
   incflo_regrid.cpp
+  helics.cpp
   CFDSim.cpp
   )
 
@@ -32,6 +33,7 @@ add_subdirectory(physics)
 add_subdirectory(overset)
 add_subdirectory(immersed_boundary)
 add_subdirectory(mesh_mapping_models)
+add_subdirectory(ocean_waves)
 
 include(AMReXBuildInfo)
 generate_buildinfo(${amr_wind_lib_name} ${CMAKE_SOURCE_DIR})

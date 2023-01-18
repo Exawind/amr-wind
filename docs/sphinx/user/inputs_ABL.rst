@@ -157,7 +157,7 @@ This section is for setting atmospheric boundary layer parameters.
    
 .. input_param:: ABL.wall_shear_stress_type
 
-    **type:** String, optional, default = "Moeng"
+   **type:** String, optional, default = "Moeng"
 
    Wall shear stress model: options include 
    "constant", "local", "Schumann", and "Moeng"
@@ -172,3 +172,12 @@ This section is for setting atmospheric boundary layer parameters.
     (Default = two horizontal components in the
     coriolis and geostrophic forcing).
 
+.. input_param:: ABL.initial_condition_input_file
+
+   **type:** String, optional, default= ""
+    
+   File that contains initial conditions for the
+   velocity field in netcdf file format.
+   This file is expected to have the same dimensions as the simulation.
+   Values are passed directly from the file to the velocity field inside the code.
+   Only spanwise velocity components are supported. 

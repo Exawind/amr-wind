@@ -30,7 +30,9 @@ struct PowerLawProfile
             amrex::GeometryData const& geom,
             const amrex::Real /*unused*/,
             amrex::Orientation /*unused*/,
-            const int comp) const
+            const int comp,
+            const int dcomp,
+            const int orig_comp) const
         {
             const auto* problo = geom.ProbLo();
             const auto* dx = geom.CellSize();
@@ -41,7 +43,8 @@ struct PowerLawProfile
                 (zeff > 0.0) ? std::pow((zeff / zref), shear_exp) : 0.0;
             pfac = amrex::min(amrex::max(pfac, umin), umax);
 
-            field(iv[0], iv[1], iv[2], comp) = uvec[comp] * pfac;
+            field(iv[0], iv[1], iv[2], dcomp + comp) =
+                uvec[orig_comp + comp] * pfac;
         }
     };
 

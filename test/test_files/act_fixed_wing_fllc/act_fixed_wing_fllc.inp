@@ -24,6 +24,7 @@ ConstValue.density.value = 1.0
 ConstValue.velocity.value = 10.0 0.0 0.0
 
 incflo.use_godunov = 1
+incflo.diffusion_type = 2
 incflo.do_initial_proj = 1
 incflo.initial_iterations = 3
 transport.viscosity = 1.0e-5

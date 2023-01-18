@@ -334,7 +334,10 @@ public:
     int num_active_levels() const noexcept { return m_mesh.finestLevel() + 1; }
 
     //! Number of fields registered in the database
-    int num_fields() const noexcept { return m_field_vec.size(); }
+    int num_fields() const noexcept
+    {
+        return static_cast<int>(m_field_vec.size());
+    }
 
     //! Return list of fields registered (for unit-test purposes only)
     const amrex::Vector<std::unique_ptr<Field>>& fields() const

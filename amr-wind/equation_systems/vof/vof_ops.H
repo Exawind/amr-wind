@@ -19,7 +19,7 @@ struct FieldRegOp<VOF, Scheme>
         auto& repo = sim.repo();
         auto fields = create_fields_instance<VOF, Scheme>(time, repo);
 
-        auto& levelset = repo.declare_cc_field("levelset", 1, 1, 1);
+        auto& levelset = repo.declare_cc_field("levelset", 1, 3, 1);
         auto& curvature = repo.declare_cc_field("interface_curvature", 1, 1, 1);
 
         levelset.set_default_fillpatch_bc(sim.time());
@@ -28,8 +28,6 @@ struct FieldRegOp<VOF, Scheme>
         // Register fields for output/restart
         auto& iomgr = sim.io_manager();
         iomgr.register_io_var(fields.field.name());
-        // iomgr.register_output_var(levelset.name());
-        // iomgr.register_output_var(curvature.name());
 
         return fields;
     }

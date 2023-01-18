@@ -22,6 +22,7 @@ io.derived_outputs = "components(velocity,0,1)" "components(gp,0,1)"
 #               PHYSICS                 #
 #.......................................#
 incflo.use_godunov      = 1
+incflo.diffusion_type = 2
 incflo.godunov_type = "weno_z"
 transport.viscosity = 0.001
 transport.laminar_prandtl = 1.0

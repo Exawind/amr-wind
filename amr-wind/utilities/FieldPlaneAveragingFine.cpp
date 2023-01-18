@@ -29,7 +29,7 @@ FPlaneAveragingFine<FType>::FPlaneAveragingFine(
     }
     AMREX_ALWAYS_ASSERT(dom_hi + 1 == dom_hi2);
 
-    // FIXME: make an input maybe?
+    // TODO: make an input maybe?
     m_ncell_line = dom_hi - dom_lo + 1;
 
     m_dx = (m_xhi - m_xlo) / static_cast<amrex::Real>(m_ncell_line);
@@ -258,60 +258,58 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
                             for (int i = lbx.smallEnd(0); i <= lbx.bigEnd(0);
                                  ++i) {
 
-                                if (mask_arr(i, j, k)) {
-                                    // cell coordinates
-                                    const amrex::Real cell_xlo =
-                                        xlo + idxOp(i, j, k) * dx;
-                                    const amrex::Real cell_xhi = cell_xlo + dx;
+                                // cell coordinates
+                                const amrex::Real cell_xlo =
+                                    xlo + idxOp(i, j, k) * dx;
+                                const amrex::Real cell_xhi = cell_xlo + dx;
 
-                                    // line indices
-                                    const int line_ind_lo = amrex::min(
-                                        amrex::max(
-                                            static_cast<int>(
-                                                (cell_xlo - xlo) / line_dx),
-                                            0),
-                                        num_cells - 1);
-                                    const int line_ind_hi = amrex::min(
-                                        amrex::max(
-                                            static_cast<int>(
-                                                (cell_xhi - xlo) / line_dx),
-                                            0),
-                                        num_cells - 1);
+                                // line indices
+                                const int line_ind_lo = amrex::min(
+                                    amrex::max(
+                                        static_cast<int>(
+                                            (cell_xlo - xlo) / line_dx),
+                                        0),
+                                    num_cells - 1);
+                                const int line_ind_hi = amrex::min(
+                                    amrex::max(
+                                        static_cast<int>(
+                                            (cell_xhi - xlo) / line_dx),
+                                        0),
+                                    num_cells - 1);
 
-                                    AMREX_ASSERT(line_ind_lo >= 0);
-                                    AMREX_ASSERT(line_ind_hi >= 0);
-                                    AMREX_ASSERT(line_ind_lo < num_cells);
-                                    AMREX_ASSERT(line_ind_hi < num_cells);
+                                AMREX_ASSERT(line_ind_lo >= 0);
+                                AMREX_ASSERT(line_ind_hi >= 0);
+                                AMREX_ASSERT(line_ind_lo < num_cells);
+                                AMREX_ASSERT(line_ind_hi < num_cells);
 
-                                    for (int ind = line_ind_lo;
-                                         ind <= line_ind_hi; ++ind) {
+                                for (int ind = line_ind_lo; ind <= line_ind_hi;
+                                     ++ind) {
 
-                                        // line coordinates
-                                        const amrex::Real line_xlo =
-                                            xlo + ind * line_dx;
-                                        const amrex::Real line_xhi =
-                                            line_xlo + line_dx;
+                                    // line coordinates
+                                    const amrex::Real line_xlo =
+                                        xlo + ind * line_dx;
+                                    const amrex::Real line_xhi =
+                                        line_xlo + line_dx;
 
-                                        amrex::Real deltax;
+                                    amrex::Real deltax;
 
-                                        if (line_xlo <= cell_xlo) {
-                                            deltax = line_xhi - cell_xlo;
-                                        } else if (line_xhi >= cell_xhi) {
-                                            deltax = cell_xhi - line_xlo;
-                                        } else {
-                                            deltax = line_dx;
-                                        }
-                                        deltax = amrex::min(deltax, dx);
-                                        const amrex::Real vol =
-                                            deltax * dy * dz;
+                                    if (line_xlo <= cell_xlo) {
+                                        deltax = line_xhi - cell_xlo;
+                                    } else if (line_xhi >= cell_xhi) {
+                                        deltax = cell_xhi - line_xlo;
+                                    } else {
+                                        deltax = line_dx;
+                                    }
+                                    deltax = amrex::min(deltax, dx);
+                                    const amrex::Real vol = deltax * dy * dz;
 
-                                        for (int n = 0; n < num_comps; ++n) {
-                                            amrex::Gpu::deviceReduceSum(
-                                                &line_avg[num_comps * ind + n],
+                                    for (int n = 0; n < num_comps; ++n) {
+                                        amrex::Gpu::deviceReduceSum(
+                                            &line_avg[num_comps * ind + n],
+                                            mask_arr(i, j, k) *
                                                 fab_arr(i, j, k, n) * vol *
-                                                    denom,
-                                                handler);
-                                        }
+                                                denom,
+                                            handler);
                                     }
                                 }
                             }
@@ -448,76 +446,72 @@ void VelPlaneAveragingFine::compute_hvelmag_averages(const IndexSelector& idxOp)
                             for (int i = lbx.smallEnd(0); i <= lbx.bigEnd(0);
                                  ++i) {
 
-                                if (mask_arr(i, j, k)) {
-                                    // cell coordinates
-                                    const amrex::Real cell_xlo =
-                                        xlo + idxOp(i, j, k) * dx;
-                                    const amrex::Real cell_xhi = cell_xlo + dx;
+                                // cell coordinates
+                                const amrex::Real cell_xlo =
+                                    xlo + idxOp(i, j, k) * dx;
+                                const amrex::Real cell_xhi = cell_xlo + dx;
 
-                                    // line indices
-                                    const int line_ind_lo = amrex::min(
-                                        amrex::max(
-                                            static_cast<int>(
-                                                (cell_xlo - xlo) / line_dx),
-                                            0),
-                                        num_cells - 1);
-                                    const int line_ind_hi = amrex::min(
-                                        amrex::max(
-                                            static_cast<int>(
-                                                (cell_xhi - xlo) / line_dx),
-                                            0),
-                                        num_cells - 1);
+                                // line indices
+                                const int line_ind_lo = amrex::min(
+                                    amrex::max(
+                                        static_cast<int>(
+                                            (cell_xlo - xlo) / line_dx),
+                                        0),
+                                    num_cells - 1);
+                                const int line_ind_hi = amrex::min(
+                                    amrex::max(
+                                        static_cast<int>(
+                                            (cell_xhi - xlo) / line_dx),
+                                        0),
+                                    num_cells - 1);
 
-                                    AMREX_ASSERT(line_ind_lo >= 0);
-                                    AMREX_ASSERT(line_ind_hi >= 0);
-                                    AMREX_ASSERT(line_ind_lo < num_cells);
-                                    AMREX_ASSERT(line_ind_hi < num_cells);
+                                AMREX_ASSERT(line_ind_lo >= 0);
+                                AMREX_ASSERT(line_ind_hi >= 0);
+                                AMREX_ASSERT(line_ind_lo < num_cells);
+                                AMREX_ASSERT(line_ind_hi < num_cells);
 
-                                    for (int ind = line_ind_lo;
-                                         ind <= line_ind_hi; ++ind) {
+                                for (int ind = line_ind_lo; ind <= line_ind_hi;
+                                     ++ind) {
 
-                                        // line coordinates
-                                        const amrex::Real line_xlo =
-                                            xlo + ind * line_dx;
-                                        const amrex::Real line_xhi =
-                                            line_xlo + line_dx;
+                                    // line coordinates
+                                    const amrex::Real line_xlo =
+                                        xlo + ind * line_dx;
+                                    const amrex::Real line_xhi =
+                                        line_xlo + line_dx;
 
-                                        amrex::Real deltax;
+                                    amrex::Real deltax;
 
-                                        if (line_xlo <= cell_xlo) {
-                                            deltax = line_xhi - cell_xlo;
-                                        } else if (line_xhi >= cell_xhi) {
-                                            deltax = cell_xhi - line_xlo;
-                                        } else {
-                                            deltax = line_dx;
-                                        }
-
-                                        deltax = amrex::min(deltax, dx);
-                                        const amrex::Real vol =
-                                            deltax * dy * dz;
-
-                                        const amrex::Real hvelmag = std::sqrt(
-                                            fab_arr(i, j, k, idxOp.odir1) *
-                                                fab_arr(i, j, k, idxOp.odir1) +
-                                            fab_arr(i, j, k, idxOp.odir2) *
-                                                fab_arr(i, j, k, idxOp.odir2));
-                                        const amrex::Real Su =
-                                            hvelmag *
-                                            fab_arr(i, j, k, idxOp.odir1);
-                                        const amrex::Real Sv =
-                                            hvelmag *
-                                            fab_arr(i, j, k, idxOp.odir2);
-
-                                        amrex::Gpu::deviceReduceSum(
-                                            &line_avg_vm[ind],
-                                            hvelmag * vol * denom, handler);
-                                        amrex::Gpu::deviceReduceSum(
-                                            &line_avg_Su[ind], Su * vol * denom,
-                                            handler);
-                                        amrex::Gpu::deviceReduceSum(
-                                            &line_avg_Sv[ind], Sv * vol * denom,
-                                            handler);
+                                    if (line_xlo <= cell_xlo) {
+                                        deltax = line_xhi - cell_xlo;
+                                    } else if (line_xhi >= cell_xhi) {
+                                        deltax = cell_xhi - line_xlo;
+                                    } else {
+                                        deltax = line_dx;
                                     }
+
+                                    deltax = amrex::min(deltax, dx);
+                                    const amrex::Real vol =
+                                        mask_arr(i, j, k) * deltax * dy * dz;
+
+                                    const amrex::Real hvelmag = std::sqrt(
+                                        fab_arr(i, j, k, idxOp.odir1) *
+                                            fab_arr(i, j, k, idxOp.odir1) +
+                                        fab_arr(i, j, k, idxOp.odir2) *
+                                            fab_arr(i, j, k, idxOp.odir2));
+                                    const amrex::Real Su =
+                                        hvelmag * fab_arr(i, j, k, idxOp.odir1);
+                                    const amrex::Real Sv =
+                                        hvelmag * fab_arr(i, j, k, idxOp.odir2);
+
+                                    amrex::Gpu::deviceReduceSum(
+                                        &line_avg_vm[ind],
+                                        hvelmag * vol * denom, handler);
+                                    amrex::Gpu::deviceReduceSum(
+                                        &line_avg_Su[ind], Su * vol * denom,
+                                        handler);
+                                    amrex::Gpu::deviceReduceSum(
+                                        &line_avg_Sv[ind], Sv * vol * denom,
+                                        handler);
                                 }
                             }
                         }
@@ -531,11 +525,12 @@ void VelPlaneAveragingFine::compute_hvelmag_averages(const IndexSelector& idxOp)
     lavg_Su.copyToHost(m_line_Su_average.data(), m_line_Su_average.size());
     lavg_Sv.copyToHost(m_line_Sv_average.data(), m_line_Sv_average.size());
     amrex::ParallelDescriptor::ReduceRealSum(
-        m_line_hvelmag_average.data(), m_line_hvelmag_average.size());
+        m_line_hvelmag_average.data(),
+        static_cast<int>(m_line_hvelmag_average.size()));
     amrex::ParallelDescriptor::ReduceRealSum(
-        m_line_Su_average.data(), m_line_Su_average.size());
+        m_line_Su_average.data(), static_cast<int>(m_line_Su_average.size()));
     amrex::ParallelDescriptor::ReduceRealSum(
-        m_line_Sv_average.data(), m_line_Sv_average.size());
+        m_line_Sv_average.data(), static_cast<int>(m_line_Sv_average.size()));
 }
 
 amrex::Real

@@ -25,6 +25,7 @@ ConstValue.velocity.value = 1.0 0.0 0.0
 io.outputs = ib_levelset ib_normal
 
 incflo.use_godunov = 1
+incflo.diffusion_type = 2
 incflo.godunov_type = "weno_z"
 incflo.do_initial_proj = 1
 incflo.initial_iterations = 3

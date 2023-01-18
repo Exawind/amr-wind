@@ -30,6 +30,7 @@ option(AMR_WIND_ENABLE_CUDA "Enable CUDA" OFF)
 option(AMR_WIND_ENABLE_ROCM "Enable ROCm/HIP" OFF)
 option(AMR_WIND_ENABLE_DPCPP "Enable Intel OneAPI DPC++" OFF)
 option(AMR_WIND_ENABLE_TINY_PROFILE "Enable AMReX TinyProfile support" OFF)
+set(AMR_WIND_PRECISION "DOUBLE" CACHE STRING "Floating point precision SINGLE or DOUBLE")
 
 # Third party libraries
 option(AMR_WIND_USE_INTERNAL_AMREX "Add AMReX as subproject" ON)
@@ -38,6 +39,7 @@ option(AMR_WIND_ENABLE_HDF5 "Enable HDF5 library" OFF)
 option(AMR_WIND_ENABLE_HDF5_ZFP "Enable ZFP compression in HDF5 library" OFF)
 option(AMR_WIND_ENABLE_NETCDF "Enable NetCDF library" OFF)
 option(AMR_WIND_ENABLE_MASA "Enable MASA library" OFF)
+option(AMR_WIND_ENABLE_HELICS "Enable HELICS library" OFF)
 option(AMR_WIND_ENABLE_HYPRE "Enable HYPRE integration" OFF)
 option(AMR_WIND_ENABLE_OPENFAST "Enable OpenFAST integration" OFF)
 option(AMR_WIND_ENABLE_ASCENT "Enable Ascent visualization library" OFF)
@@ -164,6 +166,15 @@ if(AMR_WIND_ENABLE_ASCENT)
     target_link_libraries(${amr_wind_lib_name} PUBLIC ascent::ascent)
   endif()
   target_compile_definitions(${amr_wind_lib_name} PRIVATE AMR_WIND_USE_ASCENT)
+endif()
+
+# Link with HELICS module 
+if(AMR_WIND_ENABLE_HELICS)
+  set(CMAKE_PREFIX_PATH ${HELICS_DIR} ${CMAKE_PREFIX_PATH})
+  find_package(HELICS 3 REQUIRED)
+  target_include_directories(${amr_wind_lib_name} PUBLIC ${HELICS_INSTALL_DIR}/include)
+  target_link_libraries(${amr_wind_lib_name} PUBLIC HELICS::helicsCpp98)
+  target_compile_definitions(${amr_wind_lib_name} PRIVATE AMR_WIND_USE_HELICS)
 endif()
 
 #Build amr-wind and link to amrex library
