@@ -96,6 +96,9 @@ public:
 
     ScratchField& qvars_cell() { return *m_qcell; }
     ScratchField& qvars_node() { return *m_qnode; }
+
+    IntScratchField& ibvar_cell_host() { return *m_iblank_cell_host; }
+    IntScratchField& ibvar_node_host() { return *m_iblank_node_host; }
 	
 
 private:

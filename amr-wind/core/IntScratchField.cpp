@@ -25,6 +25,7 @@ void IntScratchField::setVal(int value) noexcept
     }
 }
 
+/*
 void IntScratchField::setVal(
     int value, int start_comp, int num_comp, int nghost) noexcept
 {
@@ -33,7 +34,8 @@ void IntScratchField::setVal(
         operator()(lev).setVal(value, start_comp, num_comp, nghost);
     }
 }
-
+*/
+/*
 void IntScratchField::setVal(const amrex::Vector<int>& values, int nghost) noexcept
 {
     BL_PROFILE("amr-wind::IntScratchField::setVal 3");
@@ -49,6 +51,7 @@ void IntScratchField::setVal(const amrex::Vector<int>& values, int nghost) noexc
         }
     }
 }
+*/
 
 
 } // namespace amr_wind
