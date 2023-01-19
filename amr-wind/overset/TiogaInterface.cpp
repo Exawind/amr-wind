@@ -107,6 +107,7 @@ TiogaInterface::TiogaInterface(CFDSim& sim)
 
 void TiogaInterface::post_init_actions()
 {
+	amrex::Print()<<"post_init_actions"<<std::endl;
     amr_to_tioga_mesh();
 
     // Initialize masking so that all cells are active in solvers
@@ -116,6 +117,7 @@ void TiogaInterface::post_init_actions()
 
 void TiogaInterface::post_regrid_actions()
 {
+	amrex::Print()<<"post_regrid_actions"<<std::endl;
     amr_to_tioga_mesh();
 
     // Initialize masking so that all cells are active in solvers
@@ -127,7 +129,7 @@ void TiogaInterface::pre_overset_conn_work()
 {
     m_iblank_cell.setVal(1);
     m_iblank_node.setVal(1);
-
+	amrex::Print()<<"pre_overset_conn_work"<<std::endl;
 
     auto& repo = m_sim.repo();
     const auto comp_counter =
@@ -139,17 +141,10 @@ void TiogaInterface::pre_overset_conn_work()
     //const int nnode_vars =
     //    std::accumulate(node_vars.begin(), node_vars.end(), 0, comp_counter);
     const int num_ghost = m_sim.pde_manager().num_ghost_state();
-    //m_iblank_cell_host = repo.create_int_scratch_field(ncell_vars, num_ghost, FieldLoc::CELL);
-    //m_iblank_node_host = repo.create_int_scratch_field(nnode_vars, num_ghost, FieldLoc::NODE);
-    //m_iblank_cell_host = repo.create_int_scratch_field_on_host("iblank_cell_host", num_ghost, FieldLoc::CELL);
-    //m_iblank_node_host = repo.create_int_scratch_field_on_host("iblank_node_host", num_ghost, FieldLoc::NODE);
-    //const std::string& namec="iblank_cell_host";
-    //const std::string& namen="iblank_node_host";
     m_iblank_cell_host = repo.create_int_scratch_field_on_host("iblank_cell_host",1,num_ghost, FieldLoc::CELL);
     m_iblank_node_host = repo.create_int_scratch_field_on_host("iblank_node_host",1,num_ghost, FieldLoc::NODE);
     (*m_iblank_cell_host).setVal(1);
     (*m_iblank_node_host).setVal(1);
-	//amrex::Print()<<"Size of iblank_cell_host "<<m_iblank_cell_host(0).size()<<std::endl;
     //auto& repo = m_sim.repo();
     //const int nlevels = repo.num_active_levels();
     //for (int lev = 0; lev < nlevels; ++lev) {
@@ -198,6 +193,7 @@ void TiogaInterface::register_solution(
     m_qcell = repo.create_scratch_field(ncell_vars, num_ghost, FieldLoc::CELL);
     m_qnode = repo.create_scratch_field(nnode_vars, num_ghost, FieldLoc::NODE);
 
+    	amrex::Print()<<"Register solution?"<<std::endl;
     m_qcell_host = repo.create_scratch_field_on_host(
         ncell_vars, num_ghost, FieldLoc::CELL);
     m_qnode_host = repo.create_scratch_field_on_host(
@@ -445,12 +441,10 @@ void TiogaInterface::amr_to_tioga_mesh()
     ilp = 0;
     auto& ibcell = m_sim.repo().get_int_field("iblank_cell");
     auto& ibnode = m_sim.repo().get_int_field("iblank_node");
+    //auto& ibcell_host=ibvar_cell_host();
+    //auto& ibnode_host=ibvar_node_host();
 
-   amrex::Print()<<"ibcell ibnode set?"<<std::endl;
-    //auto& ibcell_host = m_sim.repo().get_int_field("iblank_cell_host");
-    //auto& ibnode_host = m_sim.repo().get_int_field("iblank_node_host");
-    //auto& ibcell_host = m_sim.repo().get_int_field("iblank_cell_host");
-    //auto& ibnode_host = m_sim.repo().get_int_field("iblank_node_host");
+    amrex::Print()<<"ibcell ibnode set?"<<std::endl;
 
     // Create standard vector of integer pointers here
     //auto& ad2=*m_amr_data; 
@@ -462,36 +456,28 @@ void TiogaInterface::amr_to_tioga_mesh()
         //auto& ad = *m_amr_data;
         auto& ibfab = ibcell(lev);
         auto& ibnodefab = ibnode(lev);
-        //auto& ibfab_host = ibcell_host(lev);
-        //auto& ibnodefab_host = ibnode_host(lev);
         auto& ibfab_host = (*m_iblank_cell_host)(lev);
         auto& ibnodefab_host = (*m_iblank_node_host)(lev);
+        //auto& ibfab_host = ibcell_host(lev);
+        //auto& ibnodefab_host = ibnode_host(lev);
 
-   	amrex::Print()<<"host ibs set?"<<std::endl;
-	// Count the number of MultiFab objects over all levels
-	// IntField objects are allocated with emplace_back for each level
-	// so the code does not record the total number of MultiFab objects
-	//amrex::Vector<int*> tmpdataPtr;
-	//amrex::Vector<int*> tmpdataPtrn;
         for (amrex::MFIter mfi(ibfab); mfi.isValid(); ++mfi) {
             auto& ib = ibfab[mfi];
             auto& ibn = ibnodefab[mfi];
             auto& ib_host = ibfab_host[mfi];
             auto& ibn_host = ibnodefab_host[mfi];
-	    amrex::Print()<<"Size of multifab "<<ad.iblank_cell.size()<<"\n";
 	    amrex::Print()<<"Printing the pointer here?"<<ib.dataPtr()<<"\n";
-	    //amrex::Print()<<"Device pointer"<<ad.iblank_cell.d_view[ilp]<<"\n";
+	    amrex::Print()<<"Device pointer"<<ad.iblank_cell.d_view[ilp]<<"\n";
+
+            //ad.iblank_cell.h_view[ilp] = ib.dataPtr();
+            //ad.iblank_node.h_view[ilp] = ibn.dataPtr();
             ad.iblank_cell.h_view[ilp] = ib_host.dataPtr();
             ad.iblank_node.h_view[ilp] = ibn_host.dataPtr();
 
-	    amrex::Print()<<"ad.iblank_cell.h_view.size "<<ad.iblank_cell.h_view.size()<<std::endl;
-	    amrex::Print()<<"ad.iblank_node.h_view.size "<<ad.iblank_node.h_view.size()<<std::endl;
-            //ad.iblank_cell.h_view[ilp] = ib.dataPtr();
-            //ad.iblank_node.h_view[ilp] = ibn.dataPtr();
-	    tmpdataPtr[ilp] = ib.dataPtr();
-	    tmpdataPtrn[ilp] = ibn.dataPtr();
             //ad.iblank_cell.d_view[ilp] = ib.dataPtr();
             //ad.iblank_node.d_view[ilp] = ibn.dataPtr();
+	    tmpdataPtr[ilp] = ib.dataPtr();
+	    tmpdataPtrn[ilp] = ibn.dataPtr();
 
             ++ilp;
         }
@@ -516,6 +502,9 @@ void TiogaInterface::amr_to_tioga_mesh()
     m_amr_data->xlo.copy_to_device();
     m_amr_data->dx.copy_to_device();
     m_amr_data->global_idmap.copy_to_device();
+
+    //m_iblank_cell_host.reset();
+    //m_iblank_node_host.reset();
 }
 } // namespace amr_wind
 
