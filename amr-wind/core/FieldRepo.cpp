@@ -334,9 +334,13 @@ IntField& FieldRepo::declare_int_field_on_host(
 		    const auto ba = amrex::convert(
 			m_mesh.boxArray(lev), field_impl::index_type((*field).field_location()));
 
+		    //fab_vec.emplace_back(
+			//ba, m_mesh.DistributionMap(lev), (*field).num_comp(), (*field).num_grow(),
+			//amrex::MFInfo().SetArena(amrex::The_Pinned_Arena()), *level_data.m_int_fact);
+
 		    fab_vec.emplace_back(
 			ba, m_mesh.DistributionMap(lev), (*field).num_comp(), (*field).num_grow(),
-			amrex::MFInfo().SetArena(amrex::The_Pinned_Arena()), *level_data.m_int_fact);
+			amrex::MFInfo().SetArena(amrex::The_Cpu_Arena()), *level_data.m_int_fact);
 		}
 	    }
         }
@@ -433,7 +437,9 @@ std::unique_ptr<ScratchField> FieldRepo::create_scratch_field_on_host(
 
         field->m_data.emplace_back(
             ba, m_mesh.DistributionMap(lev), ncomp, nghost, 
-	amrex::MFInfo().SetArena(amrex::The_Pinned_Arena()),
+	//amrex::MFInfo().SetArena(amrex::The_Pinned_Arena()),
+        //    *(m_leveldata[lev]->m_factory));
+	amrex::MFInfo().SetArena(amrex::The_Cpu_Arena()),
             *(m_leveldata[lev]->m_factory));
     }
     return field;
@@ -467,7 +473,9 @@ std::unique_ptr<IntScratchField> FieldRepo::create_int_scratch_field_on_host(
 
         field->m_data.emplace_back(
             ba, m_mesh.DistributionMap(lev), ncomp, nghost, 
-	amrex::MFInfo().SetArena(amrex::The_Pinned_Arena()),
+	//amrex::MFInfo().SetArena(amrex::The_Pinned_Arena()),
+        //    *(m_leveldata[lev]->m_int_fact));
+	amrex::MFInfo().SetArena(amrex::The_Cpu_Arena()),
             *(m_leveldata[lev]->m_int_fact));
     }
     return field;
