@@ -454,10 +454,14 @@ void TiogaInterface::amr_to_tioga_mesh()
     amrex::Print()<<"tmp vectors set?"<<std::endl;
     for (int lev = 0; lev < nlevels; ++lev) {
         //auto& ad = *m_amr_data;
+	    amrex::Print()<<"Level is "<<lev<<"\n"<<std::endl;
         auto& ibfab = ibcell(lev);
         auto& ibnodefab = ibnode(lev);
+	amrex::Print()<<"ibnodefab "<<std::endl;
         auto& ibfab_host = (*m_iblank_cell_host)(lev);
+	amrex::Print()<<"ibfab_host "<<std::endl;
         auto& ibnodefab_host = (*m_iblank_node_host)(lev);
+	amrex::Print()<<"ibnodefab_host "<<std::endl;
         //auto& ibfab_host = ibcell_host(lev);
         //auto& ibnodefab_host = ibnode_host(lev);
 
