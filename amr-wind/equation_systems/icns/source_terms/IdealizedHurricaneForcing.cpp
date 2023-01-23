@@ -45,7 +45,6 @@ void IdealizedHurricaneForcing::operator()(
     const FieldState fstate,
     const amrex::Array4<amrex::Real>& src_term) const
 {
-
     const amrex::Real R = m_R;
     const amrex::Real Ug = m_Ug;
 
