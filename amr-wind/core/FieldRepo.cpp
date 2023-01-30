@@ -387,7 +387,6 @@ std::unique_ptr<ScratchField> FieldRepo::create_scratch_field(
             "Scratch field creation is not permitted before mesh is "
             "initialized");
     }
-	amrex::Print()<<"ncomp in create_scratch_field"<<ncomp<<std::endl;
     std::unique_ptr<ScratchField> field(
         new ScratchField(*this, name, ncomp, nghost, floc));
 
@@ -459,7 +458,6 @@ std::unique_ptr<IntScratchField> FieldRepo::create_int_scratch_field_on_host(
             "initialized");
     }
 
-	amrex::Print()<<"ncomp in create_int_scratch_field"<<ncomp<<std::endl;
     std::unique_ptr<IntScratchField> field(
         new IntScratchField(*this, name, ncomp, nghost, floc));
 

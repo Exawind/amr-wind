@@ -107,7 +107,11 @@ TiogaInterface::TiogaInterface(CFDSim& sim)
 
 void TiogaInterface::post_init_actions()
 {
-	amrex::Print()<<"post_init_actions"<<std::endl;
+amrex::Print()<<"post_init_actions"<<std::endl;
+    auto& repo = m_sim.repo();
+    const int num_ghost = m_sim.pde_manager().num_ghost_state();
+    m_iblank_cell_host = repo.create_int_scratch_field_on_host("iblank_cell_host",1,num_ghost, FieldLoc::CELL);
+    m_iblank_node_host = repo.create_int_scratch_field_on_host("iblank_node_host",1,num_ghost, FieldLoc::NODE);
     amr_to_tioga_mesh();
 
     // Initialize masking so that all cells are active in solvers
@@ -140,9 +144,11 @@ void TiogaInterface::pre_overset_conn_work()
     //    std::accumulate(cell_vars.begin(), cell_vars.end(), 0, comp_counter);
     //const int nnode_vars =
     //    std::accumulate(node_vars.begin(), node_vars.end(), 0, comp_counter);
+	/*
     const int num_ghost = m_sim.pde_manager().num_ghost_state();
     m_iblank_cell_host = repo.create_int_scratch_field_on_host("iblank_cell_host",1,num_ghost, FieldLoc::CELL);
     m_iblank_node_host = repo.create_int_scratch_field_on_host("iblank_node_host",1,num_ghost, FieldLoc::NODE);
+*/
     (*m_iblank_cell_host).setVal(1);
     (*m_iblank_node_host).setVal(1);
     //auto& repo = m_sim.repo();
@@ -390,7 +396,6 @@ void TiogaInterface::amr_to_tioga_mesh()
             }
         }
     }
-	amrex::Print()<<"ngrids_local "<< ngrids_local<<std::endl;
     m_amr_data = std::make_unique<AMROversetInfo>(ngrids_global, ngrids_local);
     std::vector<int> lgrid_id(nproc, 0);
 
