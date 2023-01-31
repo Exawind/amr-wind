@@ -278,27 +278,47 @@ void TiogaInterface::register_solution(
         int ilp = 0;
         const int nlevels = m_sim.repo().num_active_levels();
         auto& ad = *m_amr_data;
+    amrex::Vector<amrex::Real*> qcellPtr(ad.qcell.size());
+    amrex::Vector<amrex::Real*> qnodePtr(ad.qnode.size());
+    amrex::Print()<<"tmp vectors set?"<<std::endl;
         for (int lev = 0; lev < nlevels; ++lev) {
+	amrex::Print()<<"Before qcfab in register_solution"<<std::endl;
             auto& qcfab = (*m_qcell)(lev);
             auto& qnfab = (*m_qnode)(lev);
 
+	amrex::Print()<<"Before qcfab_host in register_solution"<<std::endl;
             auto& qcfab_host = (*m_qcell_host)(lev);
+	amrex::Print()<<"Before qnfab_host in register_solution"<<std::endl;
             auto& qnfab_host = (*m_qnode_host)(lev);
 
             for (amrex::MFIter mfi(qcfab); mfi.isValid(); ++mfi) {
             //for (amrex::MFIter mfi(qcfab_host); mfi.isValid(); ++mfi) {
+	amrex::Print()<<"Before qcell.h_view"<<std::endl;
                 // Copy from device to host
                 ad.qcell.h_view[ilp] = qcfab_host[mfi].dataPtr();
                 // Do nothing for d_view
-                ad.qcell.d_view[ilp] = qcfab[mfi].dataPtr();
+	amrex::Print()<<"Before qcell.d_view"<<std::endl;
+	    	qcellPtr[ilp] = qcfab[mfi].dataPtr();
+                //ad.qcell.d_view[ilp] = qcfab[mfi].dataPtr();
                 // Copy from device to host
+	amrex::Print()<<"Before qnode.h_view"<<std::endl;
                 ad.qnode.h_view[ilp] = qnfab_host[mfi].dataPtr();
                 // Do nothing for d_view
-                ad.qnode.d_view[ilp] = qnfab[mfi].dataPtr();
+	amrex::Print()<<"Before qnode.d_view"<<std::endl;
+	    	qnodePtr[ilp] = qnfab[mfi].dataPtr();
+                //ad.qnode.d_view[ilp] = qnfab[mfi].dataPtr();
 
                 ++ilp;
             }
         }
+	// Host to device copy from standard vector to 
+	// ad.iblank_cell.d_view
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, qcellPtr.begin(), qcellPtr.end(),
+            ad.qcell.d_view.begin());
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, qnodePtr.begin(), qnodePtr.end(),
+            ad.qnode.d_view.begin());
     }
 }
 
@@ -476,7 +496,7 @@ void TiogaInterface::amr_to_tioga_mesh()
             auto& ib_host = ibfab_host[mfi];
             auto& ibn_host = ibnodefab_host[mfi];
 	    amrex::Print()<<"Printing the pointer here?"<<ib.dataPtr()<<"\n";
-	    amrex::Print()<<"Device pointer"<<ad.iblank_cell.d_view[ilp]<<"\n";
+	    //amrex::Print()<<"Device pointer"<<ad.iblank_cell.d_view[ilp]<<"\n";
 
             //ad.iblank_cell.h_view[ilp] = ib.dataPtr();
             //ad.iblank_node.h_view[ilp] = ibn.dataPtr();
