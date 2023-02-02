@@ -418,7 +418,8 @@ void VelPlaneAveraging::compute_hvelmag_averages(
     lavg.copyToHost(
         m_line_hvelmag_average.data(), m_line_hvelmag_average.size());
     amrex::ParallelDescriptor::ReduceRealSum(
-        m_line_hvelmag_average.data(), m_line_hvelmag_average.size());
+        m_line_hvelmag_average.data(),
+        static_cast<int>(m_line_hvelmag_average.size()));
 }
 
 void VelPlaneAveraging::compute_line_hvelmag_derivatives()

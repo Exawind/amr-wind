@@ -22,7 +22,7 @@ struct FLLCOp
             return;
         }
 
-        const int npts = fllc.correction_velocity.size();
+        const int npts = static_cast<int>(fllc.correction_velocity.size());
         auto& du = fllc.correction_velocity;
 
         auto& u_les = fllc.les_velocity;
@@ -53,14 +53,14 @@ struct FLLCOp
             const auto& tmat = data.orientation[ip];
             const auto force = data.force[ip];
             const auto vel = data.vel_rel[ip] & tmat;
-            const auto dx = fllc.dx[ip];
+            const auto dr = fllc.dr[ip];
             const auto vmag =
                 std::max(vs::mag(vel), vs::DTraits<amrex::Real>::eps());
             const auto vmag2 = vmag * vmag;
 
             const auto fv = force & vel;
 
-            G[ip] = (force - vel * fv / vmag2) / dx;
+            G[ip] = (force - vel * fv / vmag2) / dr;
         }
 
         /**
@@ -90,17 +90,17 @@ struct FLLCOp
                     continue;
                 }
 
-                const auto dr = vs::mag(data.vel_pos[ip] - data.vel_pos[jp]);
+                const auto r_dis = vs::mag(data.vel_pos[ip] - data.vel_pos[jp]);
                 const auto& vel = data.vel_rel[jp];
                 const auto vmag =
                     std::max(vs::mag(vel), vs::DTraits<amrex::Real>::eps());
 
                 auto coefficient =
-                    1.0 / (-4.0 * amr_wind::utils::pi() * dr * vmag);
+                    1.0 / (-4.0 * amr_wind::utils::pi() * r_dis * vmag);
                 const auto cLes =
-                    1.0 - std::exp(-dr * dr / (eps_les * eps_les));
+                    1.0 - std::exp(-r_dis * r_dis / (eps_les * eps_les));
                 const auto cOpt =
-                    1.0 - std::exp(-dr * dr / (eps_opt * eps_opt));
+                    1.0 - std::exp(-r_dis * r_dis / (eps_opt * eps_opt));
 
                 // The sign of the induced velocity depends on which side of the
                 // blade we are on

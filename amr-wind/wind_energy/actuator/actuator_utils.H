@@ -41,14 +41,11 @@ void determine_root_proc(
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
 gaussian3d(const vs::Vector& dist, const vs::Vector& eps)
 {
-    // clang-format off
-    const vs::Vector rr{dist.x() / eps.x(), dist.y() / eps.y(),
-                        dist.z() / eps.z()};
-    // clang-format on
+    const vs::Vector rr{
+        dist.x() / eps.x(), dist.y() / eps.y(), dist.z() / eps.z()};
     const amrex::Real rr_sqr = vs::mag_sqr(rr);
 
     if (rr_sqr < 16.0) {
-        // const amrex::Real fac = 1.0 / std::sqrt(pi() * pi() * pi());
         constexpr amrex::Real fac = 0.17958712212516656;
         const amrex::Real eps_fac = eps.x() * eps.y() * eps.z();
         return (fac / eps_fac) *
@@ -69,7 +66,6 @@ gaussian3d(const vs::Vector& dist, const vs::Vector& eps)
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
 gaussian1d(const amrex::Real& dist, const amrex::Real& eps)
 {
-    // fac = 1.0/sqrt(pi)
     const amrex::Real fac = 0.5641895835477563;
     if (std::abs(dist / eps) >= 16.0) {
         return 0.0;
@@ -113,7 +109,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE vs::Vector delta_pnts_cyl(
     const amrex::Real r2 = vs::mag(v2);
 
     const amrex::Real theta =
-        std::acos(std::min((v1 & v2) / (r1 * r2 + eps), 1.0));
+        std::acos(amrex::min<amrex::Real>((v1 & v2) / (r1 * r2 + eps), 1.0));
 
     return {std::abs(r1 - r2), theta, norm_dist1 - norm_dist2};
 }

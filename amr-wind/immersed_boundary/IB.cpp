@@ -27,7 +27,7 @@ void IB::pre_init_actions()
     amrex::Vector<std::string> labels;
     pp.getarr("labels", labels);
 
-    const int n_ibs = labels.size();
+    const int n_ibs = static_cast<int>(labels.size());
 
     for (int i = 0; i < n_ibs; ++i) {
         const std::string& tname = labels[i];

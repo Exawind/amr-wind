@@ -309,7 +309,7 @@ std::ostringstream check_for_parse_conflicts(const utils::ActParser& pp)
 
 vs::Vector compute_coplanar_vector(const vs::Vector& normal)
 {
-    // FIXME: only works for abl with z pointing up
+    // TODO: only works for abl with z pointing up
     return (vs::Vector::khat() ^ normal).normalize();
 }
 

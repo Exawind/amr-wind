@@ -135,7 +135,7 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
                           gradT_arr(i, j, k, 2) * gravity[2]) *
                         beta;
                     if (stratification > 1e-10) {
-                        tlscale_arr(i, j, k) = amrex::min(
+                        tlscale_arr(i, j, k) = amrex::min<amrex::Real>(
                             ds, 0.76 * std::sqrt(
                                            tke_arr(i, j, k) / stratification));
                     } else {
@@ -292,9 +292,6 @@ void OneEqKsgsS94<Transport>::update_turbulent_viscosity(
 {
     BL_PROFILE(
         "amr-wind::" + this->identifier() + "::update_turbulent_viscosity");
-
-    // auto& mu_turb = this->mu_turb();
-    // auto& vel = this->m_vel.state(fstate);
 }
 
 template <typename Transport>

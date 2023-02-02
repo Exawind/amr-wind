@@ -24,7 +24,7 @@ void Actuator::pre_init_actions()
     amrex::Vector<std::string> labels;
     pp.getarr("labels", labels);
 
-    const int nturbines = labels.size();
+    const int nturbines = static_cast<int>(labels.size());
 
     for (int i = 0; i < nturbines; ++i) {
         const std::string& tname = labels[i];
@@ -92,6 +92,33 @@ void Actuator::pre_advance_work()
     update_velocities();
     compute_forces();
     compute_source_term();
+
+#ifdef AMR_WIND_USE_HELICS
+    // send power and yaw from root actuator proc to io proc
+    const int ptag = 0;
+    const int ytag = 1;
+    const size_t size = 1;
+    for (auto& ac : m_actuators) {
+        if (ac->info().is_root_proc) {
+            amrex::ParallelDescriptor::Send(
+                &m_sim.helics().m_turbine_power_to_controller[ac->info().id],
+                size, amrex::ParallelDescriptor::IOProcessorNumber(), ptag);
+            amrex::ParallelDescriptor::Send(
+                &m_sim.helics()
+                     .m_turbine_wind_direction_to_controller[ac->info().id],
+                size, amrex::ParallelDescriptor::IOProcessorNumber(), ytag);
+        }
+        if (amrex::ParallelDescriptor::IOProcessor()) {
+            amrex::ParallelDescriptor::Recv(
+                &m_sim.helics().m_turbine_power_to_controller[ac->info().id],
+                size, ac->info().root_proc, ptag);
+            amrex::ParallelDescriptor::Recv(
+                &m_sim.helics()
+                     .m_turbine_wind_direction_to_controller[ac->info().id],
+                size, ac->info().root_proc, ytag);
+        }
+    }
+#endif
 }
 
 /** Set up the container for sampling velocities
@@ -103,11 +130,11 @@ void Actuator::pre_advance_work()
 void Actuator::setup_container()
 {
     const int ntotal = num_actuators();
-    const int nlocal = std::count_if(
+    const int nlocal = static_cast<int>(std::count_if(
         m_actuators.begin(), m_actuators.end(),
         [](const std::unique_ptr<ActuatorModel>& obj) {
             return obj->info().sample_vel_in_proc;
-        });
+        }));
 
     m_container = std::make_unique<ActuatorContainer>(m_sim.mesh(), nlocal);
 

@@ -24,6 +24,7 @@ io.derived_outputs = "components(velocity,0,1)" "components(gp,0,1)"
 #.......................................#
 incflo.use_godunov  = 0
 incflo.godunov_type = "plm"
+incflo.diffusion_type = 2
 transport.viscosity = 1e-3
 transport.laminar_prandtl = 1.0
 turbulence.model = Laminar

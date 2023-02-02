@@ -90,8 +90,12 @@ void print_banner(MPI_Comm comm, std::ostream& out)
     amrex::ignore_unused(comm);
 #endif
 
-    auto exec_time = std::chrono::system_clock::now();
-    auto exect = std::chrono::system_clock::to_time_t(exec_time);
+    auto etime = std::chrono::system_clock::now();
+    auto etimet = std::chrono::system_clock::to_time_t(etime);
+    char time_buf[64];
+    ctime_r(&etimet, time_buf);
+    const std::string tstamp(time_buf);
+
     const std::string dirty_tag = (version::amr_wind_dirty_repo == "DIRTY")
                                       ? ("-" + version::amr_wind_dirty_repo)
                                       : "";
@@ -105,7 +109,7 @@ void print_banner(MPI_Comm comm, std::ostream& out)
         << "  AMR-Wind version :: " << awind_version << std::endl
         << "  AMR-Wind Git SHA :: " << awind_git_sha << std::endl
         << "  AMReX version    :: " << amrex::Version() << std::endl << std::endl
-        << "  Exec. time       :: " << std::ctime(&exect)
+        << "  Exec. time       :: " << tstamp
         << "  Build time       :: " << amrex::buildInfoGetBuildDate() << std::endl
         << "  C++ compiler     :: " << amrex::buildInfoGetComp()
         << " " << amrex::buildInfoGetCompVersion() << std::endl << std::endl

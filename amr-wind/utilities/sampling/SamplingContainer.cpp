@@ -32,7 +32,7 @@ void sample_field(
     BL_PROFILE("amr-wind::SamplingContainer::sample_impl");
 
     auto* pstruct = pvec.data();
-    auto* parr = &(pavec[0]);
+    auto* parr = pavec.data();
 
     amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(int ip) noexcept {
         auto& p = pstruct[ip];
@@ -120,14 +120,15 @@ void SamplingContainer::initialize_particles(
     ptile.resize(num_particles);
 
     int pidx = 0;
-    const int nextid = ParticleType::NextID();
+    const int nextid = static_cast<int>(ParticleType::NextID());
     auto* pstruct = ptile.GetArrayOfStructs()().data();
     SamplerBase::SampleLocType locs;
     for (const auto& probe : samplers) {
         probe->sampling_locations(locs);
-        const int npts = locs.size();
+        const int npts = static_cast<int>(locs.size());
         const auto probe_id = probe->id();
-        amrex::Gpu::DeviceVector<amrex::Real> dlocs(npts * AMREX_SPACEDIM);
+        amrex::Gpu::DeviceVector<amrex::Array<amrex::Real, AMREX_SPACEDIM>>
+            dlocs(npts);
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, locs.begin(), locs.end(), dlocs.begin());
         const auto* dpos = dlocs.data();
@@ -139,7 +140,7 @@ void SamplingContainer::initialize_particles(
             pp.cpu() = iproc;
 
             for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-                pp.pos(n) = dpos[ip * AMREX_SPACEDIM + n];
+                pp.pos(n) = dpos[ip][n];
             }
             pp.idata(IIx::uid) = uid;
             pp.idata(IIx::sid) = probe_id;
@@ -234,7 +235,7 @@ void SamplingContainer::populate_buffer(std::vector<double>& buf)
             for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
                 const int np = pti.numParticles();
                 auto* pstruct = pti.GetArrayOfStructs()().data();
-                auto* parr = &pti.GetStructOfArrays().GetRealData(fid)[0];
+                auto* parr = pti.GetStructOfArrays().GetRealData(fid).data();
 
                 amrex::ParallelFor(
                     np, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
@@ -250,7 +251,8 @@ void SamplingContainer::populate_buffer(std::vector<double>& buf)
     amrex::Gpu::copy(
         amrex::Gpu::deviceToHost, dbuf.begin(), dbuf.end(), buf.begin());
     amrex::ParallelDescriptor::ReduceRealSum(
-        buf.data(), buf.size(), amrex::ParallelDescriptor::IOProcessorNumber());
+        buf.data(), static_cast<int>(buf.size()),
+        amrex::ParallelDescriptor::IOProcessorNumber());
 }
 
 } // namespace amr_wind::sampling

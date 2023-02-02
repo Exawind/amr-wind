@@ -172,7 +172,7 @@ void write_netcdf(
     grp.var("power").put(&data.current_power, {nt}, {1});
     grp.var("density").put(&data.density, {nt}, {1});
     grp.var("total_disk_force")
-        .put(&data.disk_force[0], {nt}, {1, AMREX_SPACEDIM});
+        .put(&data.disk_force[0], {nt, 0}, {1, AMREX_SPACEDIM});
     grp.var("angular_velocity").put(&data.current_angular_velocity, {nt}, {1});
     grp.var("f_normal").put(&(data.f_normal[0]), {nt, 0}, {1, nr});
     grp.var("f_theta").put(&(data.f_theta[0]), {nt, 0}, {1, np});

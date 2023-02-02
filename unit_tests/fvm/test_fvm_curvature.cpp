@@ -28,11 +28,14 @@ void initialize_scalar(
     // it and it fills the ghosts with wall values
     amrex::ParallelFor(grow(bx, 1), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
         const amrex::Real x = amrex::min(
-            amrex::max(problo[0] + (i + 0.5) * dx[0], problo[0]), probhi[0]);
+            amrex::max<amrex::Real>(problo[0] + (i + 0.5) * dx[0], problo[0]),
+            probhi[0]);
         const amrex::Real y = amrex::min(
-            amrex::max(problo[1] + (j + 0.5) * dx[1], problo[1]), probhi[1]);
+            amrex::max<amrex::Real>(problo[1] + (j + 0.5) * dx[1], problo[1]),
+            probhi[1]);
         const amrex::Real z = amrex::min(
-            amrex::max(problo[2] + (k + 0.5) * dx[2], problo[2]), probhi[2]);
+            amrex::max<amrex::Real>(problo[2] + (k + 0.5) * dx[2], problo[2]),
+            probhi[2]);
 
         scalar_arr(i, j, k) =
             analytical_function::phi_eval(pdegree, c_ptr, x, y, z);

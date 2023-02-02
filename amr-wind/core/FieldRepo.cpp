@@ -151,13 +151,15 @@ FieldRepo::get_field(const std::string& name, const FieldState fstate) const
     BL_PROFILE("amr-wind::FieldRepo::get_field");
     const auto fname = field_impl::field_name_with_state(name, fstate);
     const auto found = m_fid_map.find(fname);
-    if (found == m_fid_map.end()) {
+    if (found == m_fid_map.end()) { // NOLINT
         amrex::Abort("Cannot find field: " + name);
+        exit(1); // To appease the compiler
+    } else if (found->second < static_cast<unsigned>(m_field_vec.size())) {
+        return *m_field_vec[found->second];
+    } else {
+        amrex::Abort("Cannot find field: " + name);
+        exit(1); // To appease the compiler
     }
-
-    AMREX_ASSERT(found->second < static_cast<unsigned>(m_field_vec.size()));
-    // cppcheck-suppress derefInvalidIteratorRedundantCheck
-    return *m_field_vec[found->second];
 }
 
 Field& FieldRepo::get_mesh_mapping_field(FieldLoc floc) const
@@ -254,7 +256,7 @@ IntField& FieldRepo::declare_int_field(
         const FieldState fstate = FieldState::New;
         const std::string fname =
             field_impl::field_name_with_state(name, fstate);
-        const int fid = m_int_field_vec.size();
+        const int fid = static_cast<int>(m_int_field_vec.size());
 
         std::unique_ptr<IntField> field(
             new IntField(*this, fname, fid, ncomp, ngrow, floc));
@@ -277,13 +279,15 @@ FieldRepo::get_int_field(const std::string& name, const FieldState fstate) const
     AMREX_ALWAYS_ASSERT(fstate == FieldState::New);
     const auto fname = field_impl::field_name_with_state(name, fstate);
     const auto found = m_int_fid_map.find(fname);
-    if (found == m_int_fid_map.end()) {
+    if (found == m_int_fid_map.end()) { // NOLINT
         amrex::Abort("Cannot find field: " + name);
+        exit(1); // To appease the compiler
+    } else if (found->second < static_cast<unsigned>(m_int_field_vec.size())) {
+        return *m_int_field_vec[found->second];
+    } else {
+        amrex::Abort("Cannot find field: " + name);
+        exit(1); // To appease the compiler
     }
-
-    AMREX_ASSERT(found->second < static_cast<unsigned>(m_int_field_vec.size()));
-    // cppcheck-suppress derefInvalidIteratorRedundantCheck
-    return *m_int_field_vec[found->second];
 }
 
 bool FieldRepo::int_field_exists(

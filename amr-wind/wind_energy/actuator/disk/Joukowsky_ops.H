@@ -4,6 +4,7 @@
 #include "amr-wind/wind_energy/actuator/disk/Joukowsky.H"
 #include "amr-wind/wind_energy/actuator/disk/disk_ops.H"
 #include "amr-wind/utilities/linear_interpolation.H"
+#include "amr-wind/utilities/trig_ops.H"
 
 namespace amr_wind::actuator::ops {
 
@@ -49,9 +50,31 @@ struct UpdatePosOp<Joukowsky, ActSrcDisk>
 {
     void operator()(typename Joukowsky::DataType& data)
     {
-        return;
-        // TODO: add yaw controller here and remove return
+
+        if (!data.sim().helics().is_activated()) {
+            return;
+        }
+
+#ifdef AMR_WIND_USE_HELICS
+
+        auto& meta = data.meta();
+
+        const amrex::Real turbine_direction =
+            -data.sim().helics().m_turbine_yaw_to_amrwind[data.info().id] +
+            90.0;
+        const amrex::Real turbine_direction_radian =
+            amr_wind::utils::radians(turbine_direction);
+
+        meta.normal_vec[0] = std::cos(turbine_direction_radian);
+        meta.normal_vec[1] = std::sin(turbine_direction_radian);
+        meta.normal_vec[2] = 0.0;
+
+        meta.sample_vec[0] = meta.normal_vec[0];
+        meta.sample_vec[1] = meta.normal_vec[1];
+        meta.sample_vec[2] = meta.normal_vec[2];
+
         joukowsky::update_disk_points(data);
+#endif
     }
 };
 
@@ -150,7 +173,8 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
         amrex::Real a2 = 0.0;
 
         for (int ip = 0; ip < ddata.num_vel_pts_r; ip++) {
-            const amrex::Real x = std::max((ip + 0.5) * dx, machine_eps);
+            const amrex::Real x =
+                amrex::max<amrex::Real>((ip + 0.5) * dx, machine_eps);
 
             a1 += std::pow(ddata.tip_correction[ip], 2.0) *
                   std::pow(ddata.root_correction[ip], 2.0) / x * dx;
@@ -168,7 +192,8 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
 
         const amrex::Real numerator = std::sqrt(term1 + term2) - term3;
 
-        const amrex::Real denominator = std::max(4.0 * a1, machine_eps);
+        const amrex::Real denominator =
+            amrex::max<amrex::Real>(4.0 * a1, machine_eps);
 
         const amrex::Real q0 = numerator / denominator;
 
@@ -186,8 +211,8 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
             const amrex::Real& F = ddata.tip_correction[i];
             const amrex::Real& g = ddata.root_correction[i];
 
-            const amrex::Real x = std::max((i + 0.5) * dx, machine_eps);
-            //            const amrex::Real& g = x;
+            const amrex::Real x =
+                amrex::max<amrex::Real>((i + 0.5) * dx, machine_eps);
 
             const amrex::Real f_z =
                 q0 * g * F / x * (lambda * x + 0.5 * q0 * g * F / x);
@@ -223,7 +248,7 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
         }
 
         // equation 20
-        const amrex::Real eq_20_denominator = std::max(
+        const amrex::Real eq_20_denominator = amrex::max<amrex::Real>(
             0.5 * M_PI * ddata.density * std::pow(ddata.radius(), 2) *
                 std::pow(U_ref, 3),
             machine_eps);
@@ -233,6 +258,26 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
 
         ddata.current_cp = ddata.density * uInfSqr * moment *
                            ddata.current_angular_velocity / eq_20_denominator;
+#ifdef AMR_WIND_USE_HELICS
+        if (data.info().is_root_proc && data.sim().helics().is_activated()) {
+
+            std::cout << "turbine: " << data.info().id
+                      << " jouk power: " << ddata.current_power
+                      << " uinfsqr: " << uInfSqr << " moment: " << moment
+                      << " ang vel: " << ddata.current_angular_velocity
+                      << " normal vec: " << ddata.normal_vec[0] << ' '
+                      << ddata.normal_vec[1] << std::endl;
+
+            data.sim().helics().m_turbine_power_to_controller[data.info().id] =
+                ddata.current_power;
+            const amrex::Real turbine_angle = std::atan2(
+                ddata.reference_velocity[1], ddata.reference_velocity[0]);
+            data.sim()
+                .helics()
+                .m_turbine_wind_direction_to_controller[data.info().id] =
+                270.0 - amr_wind::utils::degrees(turbine_angle);
+        }
+#endif
     }
 };
 

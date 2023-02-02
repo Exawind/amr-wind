@@ -13,6 +13,7 @@ io.derived_outputs = "components(velocity,0,2)" "components(gp,0,2)"
 
 incflo.use_godunov = 1
 incflo.godunov_type = "weno"
+incflo.diffusion_type = 2
 transport.model = TwoPhaseTransport
 transport.viscosity_fluid1=1.e-6
 transport.viscosity_fluid2=1.48e-5

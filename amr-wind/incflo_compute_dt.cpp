@@ -77,11 +77,11 @@ void incflo::ComputeDt(bool explicit_diffusion)
                 amrex::Real fac_z =
                     mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
 
-                return amrex::max(
+                return amrex::max<amrex::Real>(
                     amrex::Math::abs(v_bx(i, j, k, 0)) * dxinv[0] / fac_x,
                     amrex::Math::abs(v_bx(i, j, k, 1)) * dxinv[1] / fac_y,
                     amrex::Math::abs(v_bx(i, j, k, 2)) * dxinv[2] / fac_z,
-                    -1.0);
+                    static_cast<amrex::Real>(-1.0));
             });
 
         if (m_sim.pde_manager().has_pde("VOF")) {
@@ -143,7 +143,7 @@ void incflo::ComputeDt(bool explicit_diffusion)
                                dxinv[1] / fac_y * dxinv[1] / fac_y +
                                dxinv[2] / fac_z * dxinv[2] / fac_z);
 
-                    return amrex::max(
+                    return amrex::max<amrex::Real>(
                         mu_bx(i, j, k) * dxinv2 / rho_bx(i, j, k), -1.0);
                 });
         }
@@ -166,14 +166,14 @@ void incflo::ComputeDt(bool explicit_diffusion)
                     amrex::Real fac_z =
                         mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
 
-                    return amrex::max(
+                    return amrex::max<amrex::Real>(
                         amrex::Math::abs(vf_bx(i, j, k, 0)) * dxinv[0] / fac_x /
                             rho_bx(i, j, k),
                         amrex::Math::abs(vf_bx(i, j, k, 1)) * dxinv[1] / fac_y /
                             rho_bx(i, j, k),
                         amrex::Math::abs(vf_bx(i, j, k, 2)) * dxinv[2] / fac_z /
                             rho_bx(i, j, k),
-                        -1.0);
+                        static_cast<amrex::Real>(-1.0));
                 });
         }
 
@@ -236,20 +236,20 @@ void incflo::ComputePrescribeDt()
                 amrex::Real fac_z =
                     mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
 
-                return amrex::max(
-                    amrex::max(
+                return amrex::max<amrex::Real>(
+                    amrex::max<amrex::Real>(
                         amrex::Math::abs(umac(i, j, k)),
                         amrex::Math::abs(umac(i + 1, j, k))) *
                         dxinv[0] / fac_x,
-                    amrex::max(
+                    amrex::max<amrex::Real>(
                         amrex::Math::abs(vmac(i, j, k)),
                         amrex::Math::abs(vmac(i, j + 1, k))) *
                         dxinv[1] / fac_y,
-                    amrex::max(
+                    amrex::max<amrex::Real>(
                         amrex::Math::abs(wmac(i, j, k)),
                         amrex::Math::abs(wmac(i, j, k + 1))) *
                         dxinv[2] / fac_z,
-                    -1.0);
+                    static_cast<amrex::Real>(-1.0));
             });
 
         if (m_sim.pde_manager().has_pde("VOF")) {

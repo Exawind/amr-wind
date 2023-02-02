@@ -29,6 +29,12 @@ public:
         const FieldState fstate,
         const amrex::Array4<amrex::Real>& src_term) const override;
 
+    inline void set_target_velocities(amrex::Real ux, amrex::Real uy)
+    {
+        m_target_vel[0] = ux;
+        m_target_vel[1] = uy;
+    }
+
     inline void set_mean_velocities(amrex::Real ux, amrex::Real uy)
     {
         m_mean_vel[0] = ux;

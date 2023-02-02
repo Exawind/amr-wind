@@ -232,7 +232,7 @@ void TiogaInterface::amr_to_tioga_mesh()
     int ngrids_global = 0;
     int ngrids_local = 0;
     for (int lev = 0; lev < nlevels; ++lev) {
-        ngrids_global += mesh.boxArray(lev).size();
+        ngrids_global += static_cast<int>(mesh.boxArray(lev).size());
 
         const auto& dmap = mesh.DistributionMap(lev);
         AMREX_ALWAYS_ASSERT(

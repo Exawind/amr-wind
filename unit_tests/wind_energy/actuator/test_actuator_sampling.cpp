@@ -108,11 +108,9 @@ TEST_F(ActuatorTest, act_container)
 #endif
     {
         using ParIter = amr_wind::actuator::ActuatorContainer::ParIterType;
-        int counter = 0;
         int total_particles = 0;
         const int lev = 0;
         for (ParIter pti(ac, lev); pti.isValid(); ++pti) {
-            ++counter;
             total_particles += pti.numParticles();
         }
 

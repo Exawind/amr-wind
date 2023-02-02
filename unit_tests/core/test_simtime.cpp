@@ -44,7 +44,7 @@ TEST_F(SimTimeTest, init)
     EXPECT_NEAR(time.max_cfl(), 0.45, tol);
 
     const double cur_cfl = 0.9;
-    const double dt_new = 1.0; // which comes from 2.0 * 0.45 / cur_cfl;
+    const double dt_new = 1.0; // which comes from "2.0 * 0.45 / cur_cfl"
 
     // Check that the timestep size during initialization respects the shrink
     // value
