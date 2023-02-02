@@ -47,7 +47,7 @@ void UDFImpl<T>::operator()(int level, const amrex::Geometry& geom)
 
         amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
             for (int n = 0; n < ncomp; ++n) {
-                dop({i, j, k}, marr, geomData, time, {}, n);
+                dop({i, j, k}, marr, geomData, time, {}, n, 0, 0);
             }
         });
     }

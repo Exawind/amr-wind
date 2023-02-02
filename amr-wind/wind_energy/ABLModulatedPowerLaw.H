@@ -32,7 +32,9 @@ public:
         const int lev,
         const amrex::Real time,
         const Field& fld,
-        amrex::MultiFab& mfab) const;
+        amrex::MultiFab& mfab,
+        const int dcomp = 0,
+        const int orig_comp = 0) const;
 
     void set_temperature(
         const int lev,

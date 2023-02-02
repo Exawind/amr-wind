@@ -121,7 +121,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         iconserv.resize(ICNS::ndim, m_cons);
     }
 
-    void preadvect(const FieldState fstate, const amrex::Real dt)
+    void preadvect(
+        const FieldState fstate, const amrex::Real dt, const amrex::Real time)
     {
 
         const auto& repo = fields.repo;
@@ -288,7 +289,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         if (fvm::Godunov::nghost_state > 0) {
             amrex::Array<Field*, AMREX_SPACEDIM> mac_vel = {
                 AMREX_D_DECL(&u_mac, &v_mac, &w_mac)};
-            dof_field.fillpatch_sibling_fields(0.0, u_mac.num_grow(), mac_vel);
+            dof_field.fillpatch_sibling_fields(time, u_mac.num_grow(), mac_vel);
         }
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
@@ -529,7 +530,10 @@ struct AdvectionOp<ICNS, fvm::MOL>
               fields.repo, has_overset, variable_density, m_mesh_mapping)
     {}
 
-    void preadvect(const FieldState fstate, const amrex::Real dt)
+    void preadvect(
+        const FieldState fstate,
+        const amrex::Real dt,
+        const amrex::Real /*time*/)
     {
 
         // cppcheck-suppress constVariable

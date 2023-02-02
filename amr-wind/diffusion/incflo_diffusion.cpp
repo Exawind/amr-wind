@@ -86,6 +86,7 @@ get_diffuse_scalar_bc(amr_wind::Field& scalar, Orientation::Side side) noexcept
                 r[dir] = LinOpBCType::inhomogNeumann;
                 break;
             }
+            case BC::wave_generation:
             case BC::mass_inflow:
             case BC::no_slip_wall: {
                 r[dir] = LinOpBCType::Dirichlet;

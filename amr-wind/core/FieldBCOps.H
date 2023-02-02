@@ -71,6 +71,8 @@ struct FieldBCNoOp
         amrex::GeometryData const& /*unused*/,
         const amrex::Real /*unused*/,
         amrex::Orientation /*unused*/,
+        const int /*unused*/,
+        const int /*unused*/,
         const int /*unused*/) const
     {}
 };
@@ -97,9 +99,11 @@ struct ConstDirichlet
         amrex::GeometryData const& /*unused*/,
         const amrex::Real /*unused*/,
         amrex::Orientation ori,
-        const int comp) const
+        const int comp,
+        const int dcomp,
+        const int orig_comp) const
     {
-        field(iv[0], iv[1], iv[2], comp) = m_bcv[ori][comp];
+        field(iv[0], iv[1], iv[2], dcomp + comp) = m_bcv[ori][orig_comp + comp];
     }
 };
 
@@ -140,18 +144,18 @@ struct DirichletOp
     inline void operator()(
         const amrex::IntVect& iv,
         amrex::Array4<amrex::Real> const& field,
-        const int /* dcomp */,
-        const int /* numcomp */,
+        const int dcomp,
+        const int numcomp,
         amrex::GeometryData const& geom,
         const amrex::Real time,
         const amrex::BCRec* bcr,
         const int bcomp,
-        const int /* orig_comp */) const
+        const int orig_comp) const
     {
         // do something for external Dirichlet (amrex::BCType::ext_dir)
         const amrex::Box& domain_box = geom.Domain();
 
-        for (int n = 0; n < m_ncomp; ++n) {
+        for (int n = 0; n < numcomp; ++n) {
             const amrex::BCRec& bc = bcr[bcomp + n];
 
             for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
@@ -173,9 +177,10 @@ struct DirichletOp
                 }
 
                 if (m_bc_type[ori] == BC::mass_inflow) {
-                    m_inflow_op(iv, field, geom, time, ori, n);
+                    m_inflow_op(
+                        iv, field, geom, time, ori, n, dcomp, orig_comp);
                 } else {
-                    m_wall_op(iv, field, geom, time, ori, n);
+                    m_wall_op(iv, field, geom, time, ori, n, dcomp, orig_comp);
                 }
             }
 
@@ -223,9 +228,11 @@ struct DirichletOp
         amrex::GeometryData const& geom,
         const amrex::Real time,
         amrex::Orientation ori,
-        const int comp) const
+        const int comp,
+        const int dcomp,
+        const int orig_comp) const
     {
-        m_inflow_op(iv, field, geom, time, ori, comp);
+        m_inflow_op(iv, field, geom, time, ori, comp, dcomp, orig_comp);
     }
 };
 

@@ -29,7 +29,11 @@ struct AdvectionOp<VOF, fvm::Godunov>
             fvm::Godunov::nghost_mac, 1);
     }
 
-    void preadvect(const FieldState /*unused*/, const amrex::Real /*unused*/) {}
+    void preadvect(
+        const FieldState /*unused*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/)
+    {}
 
     void operator()(const FieldState /*unused*/, const amrex::Real dt)
     {
