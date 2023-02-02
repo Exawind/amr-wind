@@ -149,7 +149,7 @@ void SimTime::set_current_cfl(
     if (m_verbose >= 0) {
         if (!m_is_init) {
             amrex::Print() << "Step: " << m_time_index << " dt: " << m_dt[0]
-                           << " Time: " << std::setprecision(6) << m_cur_time
+                           << " Time: " << m_cur_time
                            << " to " << m_new_time << std::endl;
         } else {
             amrex::Print() << "dt: " << std::setprecision(6) << m_dt[0]
