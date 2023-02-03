@@ -52,7 +52,7 @@ struct FLLCOp
         for (int ip = 0; ip < npts; ++ip) {
             const auto& tmat = data.orientation[ip];
             const auto force = data.force[ip];
-            const auto vel = data.vel_rel[ip] & tmat;
+            const auto vel = (data.vel_rel[ip] & tmat);
             const auto dr = fllc.dr[ip];
             const auto vmag =
                 std::max(vs::mag(vel), vs::DTraits<amrex::Real>::eps());
@@ -81,35 +81,45 @@ struct FLLCOp
          */
         for (int ip = 0; ip < npts; ++ip) {
 
-            const auto eps_les = fllc.epsilon;
-            const auto eps_opt = fllc.optimal_epsilon[ip];
+            const auto coefficient = 1.0 / (2.0 * amr_wind::utils::pi());
 
             for (int jp = 0; jp < npts; ++jp) {
 
-                if (ip == jp) {
-                    continue;
-                }
+                const auto eps_les = fllc.epsilon;
+                const auto eps_opt = fllc.optimal_epsilon[jp];
+                const auto eps_les2 = eps_les * eps_les;
+                const auto eps_opt2 = eps_opt * eps_opt;
 
-                const auto r_dis = vs::mag(data.vel_pos[ip] - data.vel_pos[jp]);
                 const auto& vel = data.vel_rel[jp];
                 const auto vmag =
                     std::max(vs::mag(vel), vs::DTraits<amrex::Real>::eps());
+                auto k_les = 0.;
+                auto k_opt = 0.;
 
-                auto coefficient =
-                    1.0 / (-4.0 * amr_wind::utils::pi() * r_dis * vmag);
-                const auto cLes =
-                    1.0 - std::exp(-r_dis * r_dis / (eps_les * eps_les));
-                const auto cOpt =
-                    1.0 - std::exp(-r_dis * r_dis / (eps_opt * eps_opt));
+                if (ip == jp) {
 
-                // The sign of the induced velocity depends on which side of the
-                // blade we are on
-                if (ip < jp) {
-                    coefficient *= -1;
+                    k_les = .5 / (eps_les2);
+                    k_opt = .5 / (eps_opt2);
+
                 }
 
-                u_les[ip] = u_les[ip] - dG[jp] * coefficient * cLes;
-                u_opt[ip] = u_opt[ip] - dG[jp] * coefficient * cOpt;
+                else {
+
+                    const auto r_dis =
+                        vs::mag(data.vel_pos[ip] - data.vel_pos[jp]);
+                    auto exp_les = std::exp(-r_dis * r_dis / eps_les2);
+                    auto exp_opt = std::exp(-r_dis * r_dis / eps_opt2);
+
+                    k_les = exp_les / eps_les2 +
+                            1. / (2. * r_dis * r_dis) * (exp_les - 1.);
+                    k_opt = exp_opt / eps_opt2 +
+                            1. / (2. * r_dis * r_dis) * (exp_opt - 1.);
+                }
+
+                u_les[ip] = u_les[ip] +
+                            coefficient * G[jp] / vmag * k_les * fllc.dr[jp];
+                u_opt[ip] = u_opt[ip] +
+                            coefficient * G[jp] / vmag * k_opt * fllc.dr[jp];
             }
 
             // Relaxation to compute the induced velocity
