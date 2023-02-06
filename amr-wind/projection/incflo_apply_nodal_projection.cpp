@@ -40,6 +40,7 @@ incflo::get_projection_bc(Orientation::Side side) const noexcept
                 r[dir] = LinOpBCType::Dirichlet;
                 break;
             }
+            case BC::wave_generation:
             case BC::mass_inflow: {
                 r[dir] = LinOpBCType::inflow;
                 break;

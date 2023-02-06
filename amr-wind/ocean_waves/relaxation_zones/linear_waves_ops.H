@@ -8,6 +8,12 @@
 #include "amr-wind/ocean_waves/relaxation_zones/relaxation_zones_ops.H"
 #include "amr-wind/equation_systems/vof/volume_fractions.H"
 
+#include <cmath>
+
+#include "AMReX_ParmParse.H"
+#include "AMReX_Print.H"
+#include "AMReX_ParallelDescriptor.H"
+
 namespace amr_wind::ocean_waves::ops {
 
 template <>
@@ -127,6 +133,7 @@ struct UpdateRelaxZonesOp<LinearWaves>
                 const amrex::Real waveheight = wdata.wave_height;
                 const amrex::Real wavelength = wdata.wave_length;
                 const amrex::Real waterdepth = wdata.water_depth;
+                const amrex::Real grav = wdata.grav;
 
                 const auto& gbx = mfi.growntilebox(3);
                 amrex::ParallelFor(
@@ -136,7 +143,7 @@ struct UpdateRelaxZonesOp<LinearWaves>
 
                         const amrex::Real wavenumber = 2. * M_PI / wavelength;
                         const amrex::Real omega = std::pow(
-                            wavenumber * 9.81 *
+                            wavenumber * grav *
                                 std::tanh(wavenumber * waterdepth),
                             0.5);
                         const amrex::Real phase =
@@ -172,12 +179,79 @@ struct ApplyPressureBCOp<LinearWaves>
     void operator()(LinearWaves::DataType& data)
     {
 
+        constexpr int idim = 0;
+
         const auto& wdata = data.meta();
-
         auto& sim = data.sim();
+        // Getting the time at n+1/2
+        const auto& time =
+            sim.time().current_time() + sim.time().deltaT() / 2.0;
+        auto& pressure = sim.repo().get_field("p");
 
-        const auto& time = sim.time().new_time();
-        auto& m_pressure = sim.repo().get_field("pressure");
+        const int nlevels = sim.repo().num_active_levels();
+
+        amrex::Orientation xlo(amrex::Direction::x, amrex::Orientation::low);
+        amrex::Orientation xhi(amrex::Direction::x, amrex::Orientation::high);
+        if ((pressure.bc_type()[xlo] != BC::wave_generation) &&
+            (pressure.bc_type()[xhi] != BC::wave_generation)) {
+            return;
+        }
+
+        for (int lev = 0; lev < nlevels; ++lev) {
+            const auto& geom = sim.mesh().Geom(lev);
+            const auto& domain = geom.Domain();
+            const auto& problo = geom.ProbLoArray();
+            const auto& dx = geom.CellSizeArray();
+            amrex::MFItInfo mfi_info{};
+
+            auto& pres_lev = pressure(lev);
+
+            if (amrex::Gpu::notInLaunchRegion()) {
+                mfi_info.SetDynamic(true);
+            }
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+            for (amrex::MFIter mfi(pres_lev, mfi_info); mfi.isValid(); ++mfi) {
+                const amrex::Real waveheight = wdata.wave_height;
+                const amrex::Real wavelength = wdata.wave_length;
+                const amrex::Real waterdepth = wdata.water_depth;
+                const amrex::Real grav = wdata.grav;
+                const amrex::Real rho = wdata.water_density;
+
+                const auto& nbx = mfi.nodaltilebox();
+                auto parr = pres_lev.array(mfi);
+
+                if (nbx.smallEnd(idim) == domain.smallEnd(idim) &&
+                    pressure.bc_type()[xlo] == BC::wave_generation) {
+                    amrex::ParallelFor(
+                        amrex::bdryLo(nbx, idim),
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real xn = problo[0];
+                            const amrex::Real zn = problo[2] + k * dx[2];
+
+                            const amrex::Real wavenumber =
+                                2. * M_PI / wavelength;
+                            const amrex::Real omega = std::pow(
+                                wavenumber * grav *
+                                    std::tanh(wavenumber * waterdepth),
+                                0.5);
+                            const amrex::Real phase =
+                                wavenumber * xn - omega * time;
+                            const amrex::Real eta =
+                                waveheight / 2.0 * std::cos(phase);
+
+                            if (eta - zn < 0.) {
+                                parr(i, j, k) =
+                                    waveheight / 2. * grav * rho *
+                                    cosh(wavenumber * (zn + waterdepth)) /
+                                    std::cosh(wavenumber * waterdepth) *
+                                    std::cos(phase);
+                            }
+                        });
+                }
+            }
+        }
     }
 };
 

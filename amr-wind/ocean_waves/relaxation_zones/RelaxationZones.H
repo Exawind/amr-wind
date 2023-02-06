@@ -31,6 +31,10 @@ struct RelaxZonesBaseData
     bool has_outprofile{false};
 
     amrex::Real ramp_period{2.0};
+
+    amrex::Real water_density{1000};
+
+    amrex::Real grav{9.81};
 };
 
 struct RelaxZonesType : public OceanWavesType

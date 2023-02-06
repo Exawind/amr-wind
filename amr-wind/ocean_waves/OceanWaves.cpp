@@ -67,6 +67,7 @@ void OceanWaves::post_regrid_actions() {}
 void OceanWaves::pre_advance_work()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::pre_advance_work");
+    m_owm->apply_pressure_bc();
 }
 
 void OceanWaves::post_advance_work()
