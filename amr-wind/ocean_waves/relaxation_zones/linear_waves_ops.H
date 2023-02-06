@@ -166,6 +166,21 @@ struct UpdateRelaxZonesOp<LinearWaves>
     }
 };
 
+template <>
+struct ApplyPressureBCOp<LinearWaves>
+{
+    void operator()(LinearWaves::DataType& data)
+    {
+
+        const auto& wdata = data.meta();
+
+        auto& sim = data.sim();
+
+        const auto& time = sim.time().new_time();
+        auto& m_pressure = sim.repo().get_field("pressure");
+    }
+};
+
 } // namespace amr_wind::ocean_waves::ops
 
 #endif /* LINEAR_WAVES_OPS_H */

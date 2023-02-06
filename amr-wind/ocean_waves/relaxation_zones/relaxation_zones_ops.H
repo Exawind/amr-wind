@@ -47,6 +47,7 @@ struct UseDefaultOp
 {
     static constexpr bool update_relaxation_zones = true;
     static constexpr bool apply_relaxation_zones = true;
+    static constexpr bool apply_pressure_bc = true;
 };
 
 template <typename WaveTheoryTrait>
@@ -66,13 +67,22 @@ struct ApplyRelaxZonesOp<
 {
     void operator()(typename WaveTheoryTrait::DataType& data)
     {
-        BL_PROFILE("amr-wind::ocean_waves::OceanWaves::update_velocities");
+        BL_PROFILE("amr-wind::ocean_waves::OceanWaves::apply_relax_zones_op");
 
         const auto& wdata = data.meta();
         auto& sim = data.sim();
 
         relaxation_zones::apply_relaxation_zones(sim, wdata);
     }
+};
+
+template <typename WaveTheoryTrait>
+struct ApplyPressureBCOp<
+    WaveTheoryTrait,
+    typename std::enable_if<
+        std::is_base_of<RelaxZonesType, WaveTheoryTrait>::value>::type>
+{
+    void operator()(typename WaveTheoryTrait::DataType& /*data*/) {}
 };
 
 template <typename WaveTheoryTrait>

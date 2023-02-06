@@ -38,6 +38,9 @@ template <typename WaveTheoryTrait, typename = void>
 struct ApplyRelaxZonesOp;
 
 template <typename WaveTheoryTrait, typename = void>
+struct ApplyPressureBCOp;
+
+template <typename WaveTheoryTrait, typename = void>
 struct ProcessOutputsOp;
 
 } // namespace amr_wind::ocean_waves::ops

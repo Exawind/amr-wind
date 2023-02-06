@@ -38,6 +38,8 @@ public:
 
     virtual void apply_relax_zones() = 0;
 
+    virtual void apply_pressure_bc() = 0;
+
     virtual void prepare_outputs(const std::string&) = 0;
 
     virtual void write_outputs() = 0;
@@ -95,6 +97,11 @@ public:
     void apply_relax_zones() override
     {
         ops::ApplyRelaxZonesOp<WaveTheoryTrait>()(m_data);
+    }
+
+    void apply_pressure_bc() override
+    {
+        ops::ApplyPressureBCOp<WaveTheoryTrait>()(m_data);
     }
 
     void prepare_outputs(const std::string& out_dir) override

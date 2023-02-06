@@ -66,9 +66,6 @@ private:
 
     //! Ocean waves target velocity
     Field& m_ow_velocity;
-
-    //! Ocean waves pressure gradient
-    // Field& m_ow_pressure;
 };
 
 } // namespace ocean_waves
