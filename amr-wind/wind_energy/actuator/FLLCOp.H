@@ -52,7 +52,8 @@ struct FLLCOp
         for (int ip = 0; ip < npts; ++ip) {
             const auto& tmat = data.orientation[ip];
             const auto force = data.force[ip];
-            const auto vel = (data.vel_rel[ip] & tmat);
+            //const auto vel = (data.vel_rel[ip] & tmat)-u_les[ip];
+            const auto vel = data.vel_rel[ip];
             const auto dr = fllc.dr[ip];
             const auto vmag =
                 std::max(vs::mag(vel), vs::DTraits<amrex::Real>::eps());
@@ -89,8 +90,9 @@ struct FLLCOp
                 const auto eps_opt = fllc.optimal_epsilon[jp];
                 const auto eps_les2 = eps_les * eps_les;
                 const auto eps_opt2 = eps_opt * eps_opt;
-
+//            const auto& tmat = data.orientation[jp];
                 const auto& vel = data.vel_rel[jp];
+//                const auto& vel = data.vel_rel[jp] & tmat;
                 const auto vmag =
                     std::max(vs::mag(vel), vs::DTraits<amrex::Real>::eps());
                 auto k_les = 0.;
