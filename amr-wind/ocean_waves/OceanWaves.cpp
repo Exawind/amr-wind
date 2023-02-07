@@ -60,6 +60,7 @@ void OceanWaves::post_init_actions()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::post_init_actions");
     relaxation_zones();
+    m_owm->apply_pressure_bc();
 }
 
 void OceanWaves::post_regrid_actions() {}

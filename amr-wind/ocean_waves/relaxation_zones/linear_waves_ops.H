@@ -227,7 +227,7 @@ struct ApplyPressureBCOp<LinearWaves>
                     amrex::ParallelFor(
                         amrex::bdryLo(nbx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const amrex::Real xn = problo[0];
+                            const amrex::Real xn = problo[0] + i * dx[0];
                             const amrex::Real zn = problo[2] + k * dx[2];
 
                             const amrex::Real wavenumber =
@@ -243,10 +243,27 @@ struct ApplyPressureBCOp<LinearWaves>
 
                             if (eta - zn < 0.) {
                                 parr(i, j, k) =
-                                    waveheight / 2. * grav * rho *
-                                    cosh(wavenumber * (zn + waterdepth)) /
-                                    std::cosh(wavenumber * waterdepth) *
-                                    std::cos(phase);
+                                    grav * rho *
+                                    (waterdepth +
+                                     waveheight / 2. *
+                                         std::cosh(
+                                             wavenumber * (zn + waterdepth)) /
+                                         std::cosh(wavenumber * waterdepth) *
+                                         std::cos(phase));
+                            }
+                        });
+                }
+
+                if (nbx.bigEnd(idim) == domain.bigEnd(idim) &&
+                    pressure.bc_type()[xhi] == BC::wave_generation) {
+                    amrex::ParallelFor(
+                        amrex::bdryHi(nbx, idim),
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real zn = problo[2] + k * dx[2];
+
+                            if (waterdepth - zn < 0.) {
+                                parr(i, j, k) =
+                                    waterdepth * grav * rho; // Static pressure
                             }
                         });
                 }
