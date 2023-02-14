@@ -184,8 +184,7 @@ struct ApplyPressureBCOp<LinearWaves>
         const auto& wdata = data.meta();
         auto& sim = data.sim();
         // Getting the time at n+1/2
-        const auto& time =
-            sim.time().current_time() + sim.time().deltaT() / 2.0;
+        const auto& time = sim.time().new_time();
         auto& pressure = sim.repo().get_field("p");
 
         const int nlevels = sim.repo().num_active_levels();
@@ -221,39 +220,38 @@ struct ApplyPressureBCOp<LinearWaves>
 
                 const auto& nbx = mfi.nodaltilebox();
                 auto parr = pres_lev.array(mfi);
+                // if (nbx.smallEnd(idim) == domain.smallEnd(idim) &&
+                //     pressure.bc_type()[xlo] == BC::wave_generation) {
+                amrex::ParallelFor(
+                    nbx,
+                    // amrex::bdryLo(nbx, idim),
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        const amrex::Real xn = problo[0] + i * dx[0];
+                        const amrex::Real zn = problo[2] + k * dx[2];
 
-                if (nbx.smallEnd(idim) == domain.smallEnd(idim) &&
-                    pressure.bc_type()[xlo] == BC::wave_generation) {
-                    amrex::ParallelFor(
-                        amrex::bdryLo(nbx, idim),
-                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const amrex::Real xn = problo[0] + i * dx[0];
-                            const amrex::Real zn = problo[2] + k * dx[2];
-
-                            const amrex::Real wavenumber =
-                                2. * M_PI / wavelength;
-                            const amrex::Real omega = std::pow(
-                                wavenumber * grav *
-                                    std::tanh(wavenumber * waterdepth),
-                                0.5);
-                            const amrex::Real phase =
-                                wavenumber * xn - omega * time;
-                            const amrex::Real eta =
-                                waveheight / 2.0 * std::cos(phase);
-
-                            if (eta - zn < 0.) {
-                                parr(i, j, k) =
-                                    grav * rho *
-                                    (waterdepth +
-                                     waveheight / 2. *
-                                         std::cosh(
-                                             wavenumber * (zn + waterdepth)) /
-                                         std::cosh(wavenumber * waterdepth) *
-                                         std::cos(phase));
-                            }
-                        });
-                }
-
+                        const amrex::Real wavenumber = 2. * M_PI / wavelength;
+                        const amrex::Real omega = std::pow(
+                            wavenumber * grav *
+                                std::tanh(wavenumber * waterdepth),
+                            0.5);
+                        const amrex::Real phase =
+                            wavenumber * xn - omega * time;
+                        const amrex::Real eta =
+                            waveheight / 2.0 * std::cos(phase);
+                        if (eta - zn + 0.5 * dx[2] >= 0) {
+                            parr(i, j, k) =
+                                grav *
+                                (waterdepth +
+                                 waveheight / 2. *
+                                     std::cosh(wavenumber * (zn + waterdepth)) /
+                                     std::cosh(wavenumber * waterdepth) *
+                                     std::cos(phase));
+                        } else {
+                            parr(i, j, k) = 0.;
+                        }
+                    });
+                //}
+                /*
                 if (nbx.bigEnd(idim) == domain.bigEnd(idim) &&
                     pressure.bc_type()[xhi] == BC::wave_generation) {
                     amrex::ParallelFor(
@@ -261,12 +259,12 @@ struct ApplyPressureBCOp<LinearWaves>
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                             const amrex::Real zn = problo[2] + k * dx[2];
 
-                            if (waterdepth - zn < 0.) {
+                            if (zn < problo[2] + waterdepth) {
                                 parr(i, j, k) =
                                     waterdepth * grav * rho; // Static pressure
                             }
                         });
-                }
+                */
             }
         }
     }
