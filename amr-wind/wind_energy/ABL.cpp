@@ -5,7 +5,7 @@
 #include "amr-wind/wind_energy/ABLBoundaryPlane.H"
 #include "amr-wind/equation_systems/icns/source_terms/ABLForcing.H"
 #include "amr-wind/equation_systems/icns/source_terms/ABLMeanBoussinesq.H"
-#include "amr-wind/equation_systems/icns/source_terms/IdealizedHurricaneForcing.H"
+#include "amr-wind/equation_systems/icns/source_terms/HurricaneForcing.H"
 #include "amr-wind/incflo.H"
 
 #include "AMReX_ParmParse.H"

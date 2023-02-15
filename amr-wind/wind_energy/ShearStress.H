@@ -27,19 +27,19 @@ struct ShearStressConstant
     {}
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-    calc_vel_x(amrex::Real /* u */, amrex::Real /* wspd */) const
+        calc_vel_x(amrex::Real /* u */, amrex::Real /* wspd */) const
     {
         return u_mean / wspd_mean * utau2;
     };
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-    calc_vel_y(amrex::Real /* u */, amrex::Real /* wspd */) const
+        calc_vel_y(amrex::Real /* u */, amrex::Real /* wspd */) const
     {
         return v_mean / wspd_mean * utau2;
     };
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-    calc_theta(amrex::Real /* wspd */, amrex::Real /* theta */) const
+        calc_theta(amrex::Real /* wspd */, amrex::Real /* theta */) const
     {
         return term1 * (theta_mean - theta_surface);
     };
@@ -158,6 +158,59 @@ struct ShearStressMoeng
     amrex::Real wspd_mean;
     amrex::Real theta_surface;
     amrex::Real theta_mean;
+    amrex::Real term1;
+};
+
+struct ShearStressDonelan
+{
+    explicit ShearStressDonelan(const amr_wind::MOData& mo)
+        : wspd_mean(mo.vmag_mean)
+        , theta_mean(mo.theta_mean)
+        , theta_surface(mo.surf_temp)
+        , term1(mo.utau * mo.kappa / mo.phi_h())
+    {}
+
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+    calc_vel_x(amrex::Real u, amrex::Real /*wspd*/) const
+    {
+        amrex::Real Cd = 0.001;
+        const amrex::Real c = 7e-5;
+        if (wspd_mean <= 5) {
+            Cd = 0.001;
+        } else if (wspd_mean < 25 && wspd_mean > 5) {
+            Cd = 0.001 + c * (wspd_mean - 5);
+        } else {
+            Cd = 0.0024;
+        }
+
+        return Cd * u * wspd_mean;
+    };
+
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+    calc_vel_y(amrex::Real v, amrex::Real /*wspd*/) const
+    {
+        amrex::Real Cd = 0.001;
+        const amrex::Real c = 7e-5;
+        if (wspd_mean <= 5) {
+            Cd = 0.001;
+        } else if (wspd_mean < 25 && wspd_mean > 5) {
+            Cd = 0.001 + c * (wspd_mean - 5);
+        } else {
+            Cd = 0.0024;
+        }
+
+        return Cd * v * wspd_mean;
+    };
+
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+        calc_theta(amrex::Real /* wspd */, amrex::Real /* theta */) const
+    {
+        return term1 * (theta_mean - theta_surface);
+    };
+
+    amrex::Real wspd_mean;
+    amrex::Real theta_mean;
+    amrex::Real theta_surface;
     amrex::Real term1;
 };
 

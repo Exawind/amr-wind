@@ -1,4 +1,4 @@
-#include "amr-wind/equation_systems/icns/source_terms/IdealizedHurricaneForcing.H"
+#include "amr-wind/equation_systems/icns/source_terms/HurricaneForcing.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/core/vs/vstraits.H"
@@ -10,8 +10,7 @@
 
 namespace amr_wind::pde::icns {
 
-IdealizedHurricaneForcing::IdealizedHurricaneForcing(const CFDSim& sim)
-    : m_mesh(sim.mesh())
+HurricaneForcing::HurricaneForcing(const CFDSim& sim) : m_mesh(sim.mesh())
 {
 
     const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
@@ -34,7 +33,7 @@ IdealizedHurricaneForcing::IdealizedHurricaneForcing(const CFDSim& sim)
 
     {
         // Read the geostrophic wind speed vector (in m/s)
-        amrex::ParmParse pp("IdealizedHurricaneForcing");
+        amrex::ParmParse pp("HurricaneForcing");
         pp.query("gradient_wind", m_Ug);
         pp.query("eyewall_radial_distance", m_R);
     }
@@ -42,9 +41,9 @@ IdealizedHurricaneForcing::IdealizedHurricaneForcing(const CFDSim& sim)
     mean_velocity_init(abl.abl_statistics().vel_profile_coarse());
 }
 
-IdealizedHurricaneForcing::~IdealizedHurricaneForcing() = default;
+HurricaneForcing::~HurricaneForcing() = default;
 
-void IdealizedHurricaneForcing::operator()(
+void HurricaneForcing::operator()(
     const int lev,
     const amrex::MFIter& /*mfi*/,
     const amrex::Box& bx,
@@ -100,8 +99,7 @@ void IdealizedHurricaneForcing::operator()(
     });
 }
 
-void IdealizedHurricaneForcing::mean_velocity_init(
-    const VelPlaneAveraging& vavg)
+void HurricaneForcing::mean_velocity_init(const VelPlaneAveraging& vavg)
 {
     m_axis = vavg.axis();
 
@@ -123,8 +121,7 @@ void IdealizedHurricaneForcing::mean_velocity_init(
     mean_velocity_update(vavg);
 }
 
-void IdealizedHurricaneForcing::mean_velocity_update(
-    const VelPlaneAveraging& vavg)
+void HurricaneForcing::mean_velocity_update(const VelPlaneAveraging& vavg)
 {
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, vavg.line_average().begin(),

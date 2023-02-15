@@ -261,6 +261,11 @@ void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
 
         auto tau = ShearStressSchumann(mo);
         wall_model(velocity, rho_state, tau);
+
+    } else if (m_wall_shear_stress_type == "donelan") {
+
+        auto tau = ShearStressDonelan(mo);
+        wall_model(velocity, rho_state, tau);
     }
 }
 
@@ -380,6 +385,11 @@ void ABLTempWallFunc::operator()(Field& temperature, const FieldState rho_state)
     } else if (m_wall_shear_stress_type == "schumann") {
 
         auto tau = ShearStressSchumann(mo);
+        wall_model(temperature, rho_state, tau);
+
+    } else if (m_wall_shear_stress_type == "donelan") {
+
+        auto tau = ShearStressDonelan(mo);
         wall_model(temperature, rho_state, tau);
     }
 }

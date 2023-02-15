@@ -18,15 +18,14 @@ namespace amr_wind::pde::icns {
  * DOI 10.1007/s10546-016-0207-0
  */
 
-class IdealizedHurricaneForcing
-    : public MomentumSource::Register<IdealizedHurricaneForcing>
+class HurricaneForcing : public MomentumSource::Register<HurricaneForcing>
 {
 public:
-    static std::string identifier() { return "IdealizedHurricaneForcing"; }
+    static std::string identifier() { return "HurricaneForcing"; }
 
-    explicit IdealizedHurricaneForcing(const CFDSim& /*unused*/);
+    explicit HurricaneForcing(const CFDSim& /*unused*/);
 
-    ~IdealizedHurricaneForcing() override;
+    ~HurricaneForcing() override;
 
     void operator()(
         const int lev,
