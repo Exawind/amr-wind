@@ -7,10 +7,11 @@
 
 namespace amr_wind::pde::icns {
 
-/** Apply mesoscale tendency source term to drive the flow
+/** Idealized Hurricane forcing source term
+ *  Apply mesoscale tendency source term to drive the flow
  * and match the hurricane cyclic/rotational forcing at large
  * distances from the eye-wall. This implements the "Simple"
- * method of George Bryant.
+ * method of George Bryan.
  * Details can be found in:
  * "A simple Method for Simulating Wind Profiles in the Boundary Layer
  * of Tropical Cyclones. Bryant et al. Boundary-Layer Meteorol (2017)
@@ -34,15 +35,28 @@ public:
         const FieldState fstate,
         const amrex::Array4<amrex::Real>& src_term) const override;
 
+    void mean_velocity_init(const VelPlaneAveraging& /*vavg*/);
+
+    void mean_velocity_update(const VelPlaneAveraging& /*vavg*/);
+
 private:
-    //! Velocity field
-    const Field& m_velocity;
+    //! Mesh
+    const amrex::AmrCore& m_mesh;
+
+    amrex::Gpu::DeviceVector<amrex::Real> m_vel_ht;
+    amrex::Gpu::DeviceVector<amrex::Real> m_vel_vals;
+
+    //! Axis over which averages are computed
+    int m_axis{2};
 
     //! Gradient velocity
     amrex::Real m_Ug{25.0}; // Ug=25 m/s is the default value
 
     //! Eye-wall radial distance
     amrex::Real m_R{40000.0}; // 40km is taken as the default value
+
+    //! Coriolis factor
+    amrex::Real m_coriolis_factor{0.0005};
 };
 
 } // namespace amr_wind::pde::icns

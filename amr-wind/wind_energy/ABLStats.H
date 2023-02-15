@@ -59,6 +59,12 @@ public:
         return m_pa_vel_fine;
     };
 
+    //! Return vel plane averaging instance
+    const VelPlaneAveraging& vel_profile_coarse() const override
+    {
+        return m_pa_vel;
+    };
+
     //! Return instance that handles temperature statistics
     const FieldPlaneAveraging& theta_profile() const override
     {
