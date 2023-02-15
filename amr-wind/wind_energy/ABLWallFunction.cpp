@@ -143,6 +143,7 @@ ABLVelWallFunc::ABLVelWallFunc(
     if (m_wall_shear_stress_type == "constant" ||
         m_wall_shear_stress_type == "local" ||
         m_wall_shear_stress_type == "schumann" ||
+        m_wall_shear_stress_type == "donelan" ||
         m_wall_shear_stress_type == "moeng") {
         amrex::Print() << "Shear Stress model: " << m_wall_shear_stress_type
                        << std::endl;

@@ -167,7 +167,6 @@ struct ShearStressDonelan
         : wspd_mean(mo.vmag_mean)
         , theta_mean(mo.theta_mean)
         , theta_surface(mo.surf_temp)
-        , term1(mo.utau * mo.kappa / mo.phi_h())
     {}
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
@@ -175,10 +174,10 @@ struct ShearStressDonelan
     {
         amrex::Real Cd = 0.001;
         const amrex::Real c = 7e-5;
-        if (wspd_mean <= 5) {
+        if (wspd_mean <= 5.0) {
             Cd = 0.001;
-        } else if (wspd_mean < 25 && wspd_mean > 5) {
-            Cd = 0.001 + c * (wspd_mean - 5);
+        } else if (wspd_mean < 25.0 && wspd_mean > 5.0) {
+            Cd = 0.001 + c * (wspd_mean - 5.0);
         } else {
             Cd = 0.0024;
         }
@@ -193,7 +192,7 @@ struct ShearStressDonelan
         const amrex::Real c = 7e-5;
         if (wspd_mean <= 5) {
             Cd = 0.001;
-        } else if (wspd_mean < 25 && wspd_mean > 5) {
+        } else if (wspd_mean < 25.0 && wspd_mean > 5.0) {
             Cd = 0.001 + c * (wspd_mean - 5);
         } else {
             Cd = 0.0024;
@@ -205,13 +204,12 @@ struct ShearStressDonelan
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
         calc_theta(amrex::Real /* wspd */, amrex::Real /* theta */) const
     {
-        return term1 * (theta_mean - theta_surface);
+        return -0.0012 * wspd_mean * (theta_mean - theta_surface);
     };
 
     amrex::Real wspd_mean;
     amrex::Real theta_mean;
     amrex::Real theta_surface;
-    amrex::Real term1;
 };
 
 #endif /* ShearStress_H */

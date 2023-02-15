@@ -49,7 +49,7 @@ private:
     int m_axis{2};
 
     //! Gradient velocity
-    amrex::Real m_Ug{25.0}; // Ug=25 m/s is the default value
+    amrex::Real m_Ug{40.0}; // Ug=40 m/s is the default value
 
     //! Eye-wall radial distance
     amrex::Real m_R{40000.0}; // 40km is taken as the default value
