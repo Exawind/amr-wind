@@ -230,6 +230,7 @@ void TiogaInterface::register_solution(
             // Device to host copy happens here
             const int nlevels = repo.num_active_levels();
             for (int lev = 0; lev < nlevels; ++lev) {
+		    amrex::Print()<<"m_qcell_host copy lev "<<lev<<std::endl;
 		dtoh_memcpy((*m_qcell_host)(lev), fld(lev),0,icomp,ncomp);
 
             }
@@ -263,6 +264,7 @@ void TiogaInterface::register_solution(
             // Device to host copy happens here
             const int nlevels = repo.num_active_levels();
             for (int lev = 0; lev < nlevels; ++lev) {
+		    amrex::Print()<<"m_qnode_host copy lev "<<lev<<std::endl;
 		dtoh_memcpy((*m_qnode_host)(lev), fld(lev),0,icomp,ncomp);
 
             }
@@ -282,34 +284,35 @@ void TiogaInterface::register_solution(
     amrex::Vector<amrex::Real*> qnodePtr(ad.qnode.size());
     amrex::Print()<<"tmp vectors set?"<<std::endl;
         for (int lev = 0; lev < nlevels; ++lev) {
-	amrex::Print()<<"Before qcfab in register_solution"<<std::endl;
+	//amrex::Print()<<"Before qcfab in register_solution"<<std::endl;
             auto& qcfab = (*m_qcell)(lev);
             auto& qnfab = (*m_qnode)(lev);
 
-	amrex::Print()<<"Before qcfab_host in register_solution"<<std::endl;
+	//amrex::Print()<<"Before qcfab_host in register_solution"<<std::endl;
             auto& qcfab_host = (*m_qcell_host)(lev);
-	amrex::Print()<<"Before qnfab_host in register_solution"<<std::endl;
+	//amrex::Print()<<"Before qnfab_host in register_solution"<<std::endl;
             auto& qnfab_host = (*m_qnode_host)(lev);
 
             for (amrex::MFIter mfi(qcfab); mfi.isValid(); ++mfi) {
             //for (amrex::MFIter mfi(qcfab_host); mfi.isValid(); ++mfi) {
-	amrex::Print()<<"Before qcell.h_view"<<std::endl;
+	//amrex::Print()<<"Before qcell.h_view"<<std::endl;
                 // Copy from device to host
                 ad.qcell.h_view[ilp] = qcfab_host[mfi].dataPtr();
                 // Do nothing for d_view
-	amrex::Print()<<"Before qcell.d_view"<<std::endl;
+	//amrex::Print()<<"Before qcell.d_view"<<std::endl;
 	    	qcellPtr[ilp] = qcfab[mfi].dataPtr();
                 //ad.qcell.d_view[ilp] = qcfab[mfi].dataPtr();
                 // Copy from device to host
-	amrex::Print()<<"Before qnode.h_view"<<std::endl;
+	//amrex::Print()<<"Before qnode.h_view"<<std::endl;
                 ad.qnode.h_view[ilp] = qnfab_host[mfi].dataPtr();
                 // Do nothing for d_view
-	amrex::Print()<<"Before qnode.d_view"<<std::endl;
+	//amrex::Print()<<"Before qnode.d_view"<<std::endl;
 	    	qnodePtr[ilp] = qnfab[mfi].dataPtr();
                 //ad.qnode.d_view[ilp] = qnfab[mfi].dataPtr();
 
                 ++ilp;
             }
+	amrex::Print()<<"Gpu copy done for level "<<lev<<std::endl;
         }
 	// Host to device copy from standard vector to 
 	// ad.iblank_cell.d_view
@@ -320,6 +323,7 @@ void TiogaInterface::register_solution(
             amrex::Gpu::hostToDevice, qnodePtr.begin(), qnodePtr.end(),
             ad.qnode.d_view.begin());
     }
+	amrex::Print()<<"Gpu copy done for all levels "<<std::endl;
 }
 
 void TiogaInterface::update_solution()
@@ -348,7 +352,9 @@ void TiogaInterface::update_solution()
             // Device to host copy happens here
             const int nlevels = repo.num_active_levels();
             for (int lev = 0; lev < nlevels; ++lev) {
-	    	htod_memcpy(fld(lev),(*m_qcell_host)(lev),0,icomp,ncomp);
+		    amrex::Print()<<"m_qcell_host reg_sol  copy lev "<<lev<<std::endl;
+	    	htod_memcpy(fld(lev),(*m_qcell_host)(lev),icomp,0,ncomp);
+	    	//htod_memcpy(fld(lev),(*m_qcell_host)(lev),0,icomp,ncomp);
             }
             fld.fillpatch(m_sim.time().new_time());
             icomp += ncomp;
@@ -377,7 +383,9 @@ void TiogaInterface::update_solution()
             // Host to device copy happens here
             const int nlevels = repo.num_active_levels();
             for (int lev = 0; lev < nlevels; ++lev) {
-		htod_memcpy(fld(lev),(*m_qnode_host)(lev),0,icomp,ncomp);
+		    amrex::Print()<<"m_qnode_host reg_sol  copy lev "<<lev<<std::endl;
+		htod_memcpy(fld(lev),(*m_qnode_host)(lev),icomp,0,ncomp);
+		//htod_memcpy(fld(lev),(*m_qnode_host)(lev),0,icomp,ncomp);
             }
             fld.fillpatch(m_sim.time().new_time());
             icomp += ncomp;
@@ -476,17 +484,17 @@ void TiogaInterface::amr_to_tioga_mesh()
     auto& ad = *m_amr_data;
     amrex::Vector<int *> tmpdataPtr(ad.iblank_cell.size());
     amrex::Vector<int *> tmpdataPtrn(ad.iblank_node.size());
-    amrex::Print()<<"tmp vectors set?"<<std::endl;
+    //amrex::Print()<<"tmp vectors set?"<<std::endl;
     for (int lev = 0; lev < nlevels; ++lev) {
         //auto& ad = *m_amr_data;
 	    amrex::Print()<<"Level is "<<lev<<"\n"<<std::endl;
         auto& ibfab = ibcell(lev);
         auto& ibnodefab = ibnode(lev);
-	amrex::Print()<<"ibnodefab "<<std::endl;
+	//amrex::Print()<<"ibnodefab "<<std::endl;
         auto& ibfab_host = (*m_iblank_cell_host)(lev);
-	amrex::Print()<<"ibfab_host "<<std::endl;
+	//amrex::Print()<<"ibfab_host "<<std::endl;
         auto& ibnodefab_host = (*m_iblank_node_host)(lev);
-	amrex::Print()<<"ibnodefab_host "<<std::endl;
+	//amrex::Print()<<"ibnodefab_host "<<std::endl;
         //auto& ibfab_host = ibcell_host(lev);
         //auto& ibnodefab_host = ibnode_host(lev);
 
@@ -495,7 +503,7 @@ void TiogaInterface::amr_to_tioga_mesh()
             auto& ibn = ibnodefab[mfi];
             auto& ib_host = ibfab_host[mfi];
             auto& ibn_host = ibnodefab_host[mfi];
-	    amrex::Print()<<"Printing the pointer here?"<<ib.dataPtr()<<"\n";
+	    //amrex::Print()<<"Printing the pointer here?"<<ib.dataPtr()<<"\n";
 	    //amrex::Print()<<"Device pointer"<<ad.iblank_cell.d_view[ilp]<<"\n";
 
             //ad.iblank_cell.h_view[ilp] = ib.dataPtr();
