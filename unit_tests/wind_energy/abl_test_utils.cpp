@@ -45,6 +45,15 @@ void populate_abl_params()
         pp.addarr("geostrophic_wind", gwind);
     }
 
+    // Hurricane Forcing
+    {
+        amrex::ParmParse pp("HurricaneForcing");
+        amrex::Real gradient_wind{40.0};
+        amrex::Real radial_distance{40000.0};
+        pp.add("gradient_wind", gradient_wind);
+        pp.add("eyewall_radial_distance", radial_distance);
+    }
+
     // Coriolis term
     {
         amrex::ParmParse pp("CoriolisForcing");

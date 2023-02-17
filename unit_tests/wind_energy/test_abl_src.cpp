@@ -14,6 +14,7 @@
 #include "amr-wind/equation_systems/icns/source_terms/CoriolisForcing.H"
 #include "amr-wind/equation_systems/icns/source_terms/BoussinesqBuoyancy.H"
 #include "amr-wind/equation_systems/icns/source_terms/DensityBuoyancy.H"
+#include "amr-wind/equation_systems/icns/source_terms/HurricaneForcing.H"
 
 namespace amr_wind_tests {
 
@@ -166,6 +167,46 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
     constexpr amrex::Real corfac = 2.0 * amr_wind::utils::two_pi() / 86400.0;
     const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{
         {-corfac * 6.0, corfac * 10.0, 0.0}};
+    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+        const auto min_val = utils::field_min(src_term, i);
+        const auto max_val = utils::field_max(src_term, i);
+        EXPECT_NEAR(min_val, golds[i], tol);
+        EXPECT_NEAR(min_val, max_val, tol);
+    }
+}
+
+TEST_F(ABLMeshTest, hurricane_forcing)
+{
+    constexpr amrex::Real tol = 1.0e-12;
+    utils::populate_abl_params();
+
+    amrex::ParmParse pp("CoriolisForcing");
+    pp.add("latitude", 90.0);
+
+    initialize_mesh();
+
+    auto& pde_mgr = sim().pde_manager();
+    pde_mgr.register_icns();
+    sim().init_physics();
+
+    auto& src_term = pde_mgr.icns().fields().src_term;
+    auto& velocity = sim().repo().get_field("velocity");
+    velocity.setVal({{5.0, 37.0, 0.0}});
+    auto& density = sim().repo().get_field("density");
+    density.setVal(1.0);
+
+    amr_wind::pde::icns::HurricaneForcing hurricane_forcing(sim());
+    src_term.setVal(0.0);
+    run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
+        const auto& bx = mfi.tilebox();
+        const auto& src_arr = src_term(lev).array(mfi);
+
+        hurricane_forcing(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
+    });
+
+    constexpr amrex::Real corfac = 2.0 * amr_wind::utils::two_pi() / 86400.0;
+    const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{
+        {-corfac * 40.0 - 40.0 * 40.0 / 40000.0, 0.0, 0.0}};
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {
         const auto min_val = utils::field_min(src_term, i);
         const auto max_val = utils::field_max(src_term, i);
