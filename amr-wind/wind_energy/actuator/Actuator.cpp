@@ -24,7 +24,7 @@ void Actuator::pre_init_actions()
     amrex::Vector<std::string> labels;
     pp.getarr("labels", labels);
 
-    const int nturbines = labels.size();
+    const int nturbines = static_cast<int>(labels.size());
 
     for (int i = 0; i < nturbines; ++i) {
         const std::string& tname = labels[i];
@@ -130,11 +130,11 @@ void Actuator::pre_advance_work()
 void Actuator::setup_container()
 {
     const int ntotal = num_actuators();
-    const int nlocal = std::count_if(
+    const int nlocal = static_cast<int>(std::count_if(
         m_actuators.begin(), m_actuators.end(),
         [](const std::unique_ptr<ActuatorModel>& obj) {
             return obj->info().sample_vel_in_proc;
-        });
+        }));
 
     m_container = std::make_unique<ActuatorContainer>(m_sim.mesh(), nlocal);
 

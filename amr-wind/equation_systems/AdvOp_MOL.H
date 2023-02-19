@@ -35,7 +35,11 @@ struct AdvectionOp<
         , w_mac(fields_in.repo.get_field("w_mac"))
     {}
 
-    void preadvect(const FieldState /*unused*/, const amrex::Real /*unused*/) {}
+    void preadvect(
+        const FieldState /*unused*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/)
+    {}
 
     void operator()(const FieldState fstate, const amrex::Real /*unused*/)
     {

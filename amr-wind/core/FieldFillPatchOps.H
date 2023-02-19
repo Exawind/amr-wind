@@ -60,6 +60,7 @@ public:
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& ffabs,
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& cfabs,
         const amrex::IntVect& nghost,
+        const amrex::Vector<amrex::BCRec>& bcrec,
         const FieldState fstate = FieldState::New,
         const FieldInterpolator itype = FieldInterpolator::FaceDivFree) = 0;
 
@@ -115,6 +116,7 @@ public:
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& /*ffabs*/,
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& /*cfabs*/,
         const amrex::IntVect& /*nghost*/,
+        const amrex::Vector<amrex::BCRec>& /*bcrec*/,
         const FieldState /*fstate*/,
         const FieldInterpolator /*itype*/) override
     {
@@ -299,78 +301,39 @@ public:
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& ffabs,
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& cfabs,
         const amrex::IntVect& nghost,
-        const FieldState fstate = FieldState::New,
+        const amrex::Vector<amrex::BCRec>& bcrec,
+        const FieldState /*fstate = FieldState::New*/,
         const FieldInterpolator itype = FieldInterpolator::FaceDivFree) override
     {
 
-        const int ng = nghost[0];
-        const auto& geom = m_mesh.Geom(lev);
-        const auto& domain = geom.growPeriodicDomain(ng);
-        const auto& bctype = m_field.bc_type();
-        auto& sfab = m_field.state(fstate)(lev);
-        for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
-            auto ori = oit();
-            if (bctype[ori] != BC::mass_inflow) {
-                continue;
-            }
-            const int idir = ori.coordDir();
-            const auto& dbx =
-                ori.isLow() ? amrex::adjCellLo(domain, idir, nghost[idir])
-                            : amrex::adjCellHi(domain, idir, nghost[idir]);
-
-            for (amrex::MFIter mfi(sfab); mfi.isValid(); ++mfi) {
-                const auto& gbx = amrex::grow(mfi.validbox(), nghost);
-                const auto& bx = gbx & dbx;
-
-                if (!bx.ok()) {
-                    continue;
-                }
-
-                for (int n = 0; n < static_cast<int>(mfabs.size()); n++) {
-                    const auto& marr = (*mfabs[n])[mfi].array();
-                    const auto& sarr = sfab[mfi].const_array();
-                    amrex::ParallelFor(
-                        bx,
-                        [=] AMREX_GPU_DEVICE(
-                            const int i, const int j, const int k) noexcept {
-                            marr(i, j, k) = sarr(i, j, k, n);
-                        });
-                }
-            }
-        }
-
         if (lev == 0) {
-            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FieldBCNoOp::FunctorType>>
-                physbc(m_mesh.Geom(lev), m_field.bcrec(), FieldBCNoOp());
-
+            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> physbc(
+                m_mesh.Geom(lev), bcrec, bc_functor());
             for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
                 amrex::FillPatchSingleLevel(
                     *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
                     m_mesh.Geom(lev), physbc, i);
             }
         } else {
-            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FieldBCNoOp::FunctorType>>
-                cphysbc(m_mesh.Geom(lev - 1), m_field.bcrec(), FieldBCNoOp());
+            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> cphysbc(
+                m_mesh.Geom(lev - 1), bcrec, bc_functor());
 
-            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FieldBCNoOp::FunctorType>>
-                fphysbc(m_mesh.Geom(lev), m_field.bcrec(), FieldBCNoOp());
+            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> fphysbc(
+                m_mesh.Geom(lev), bcrec, bc_functor());
 
             amrex::Array<
-                amrex::PhysBCFunct<
-                    amrex::GpuBndryFuncFab<FieldBCNoOp::FunctorType>>,
+                amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>>,
                 AMREX_SPACEDIM>
                 cphysbc_arr = {AMREX_D_DECL(cphysbc, cphysbc, cphysbc)};
 
             amrex::Array<
-                amrex::PhysBCFunct<
-                    amrex::GpuBndryFuncFab<FieldBCNoOp::FunctorType>>,
+                amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>>,
                 AMREX_SPACEDIM>
                 fphysbc_arr = {AMREX_D_DECL(fphysbc, fphysbc, fphysbc)};
 
             amrex::Array<int, AMREX_SPACEDIM> idx = {AMREX_D_DECL(0, 1, 2)};
             const amrex::Array<amrex::Vector<amrex::BCRec>, AMREX_SPACEDIM>
-                bcrec_arr = {AMREX_D_DECL(
-                    m_field.bcrec(), m_field.bcrec(), m_field.bcrec())};
+                bcrec_arr = {AMREX_D_DECL(bcrec, bcrec, bcrec)};
 
             auto* mapper = field_impl::get_interpolation_operator(itype);
 
@@ -453,7 +416,7 @@ public:
                             const int i, const int j, const int k) noexcept {
                         for (int n = 0; n < ncomp; ++n) {
                             bcfunc.set_inflow(
-                                {i, j, k}, marr, gdata, time, ori, n);
+                                {i, j, k}, marr, gdata, time, ori, n, 0, 0);
                         }
                     });
             }

@@ -86,7 +86,7 @@ jobs:
   GPU-Nvidia:
     name: GPU-CUDA
     needs: Formatting
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         cuda_ver: [11.4]
@@ -126,7 +126,7 @@ jobs:
   GPU-AMD:
     name: GPU-HIP
     needs: Formatting
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Cancel previous runs
         uses: styfle/cancel-workflow-action@0.6.0
@@ -165,7 +165,7 @@ jobs:
   GPU-Intel:
     name: GPU-DPCPP
     needs: Formatting
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Cancel previous runs
         uses: styfle/cancel-workflow-action@0.6.0
@@ -278,6 +278,63 @@ jobs:
           echo "::add-matcher::.github/problem-matchers/gcc.json"
           cat clang-tidy-ci-report.txt
           exit $(tail -n 1 clang-tidy-ci-report.txt | awk '{print $2}')
+  Lint-codeql:
+    needs: Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{github.token}}
+      - name: Clone
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: cpp
+          queries: +security-and-quality
+          config-file: ./.github/codeql/codeql-config.yml
+      - name: Configure
+        run: |
+          echo "NPROCS=$(nproc)" >> $GITHUB_ENV
+          cmake -G Ninja \
+            -B ${{runner.workspace}}/build-ci-codeql \
+            -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install-codeql \
+            -DCMAKE_BUILD_TYPE:STRING=Debug \
+            -DCMAKE_CXX_COMPILER:STRING=clang++ \
+            -DCMAKE_C_COMPILER:STRING=clang \
+            -DAMR_WIND_ENABLE_MPI:BOOL=OFF \
+            -DAMR_WIND_ENABLE_TESTS:BOOL=ON \
+            -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
+            -DAMR_WIND_ENABLE_MASA:BOOL=OFF \
+            ${{github.workspace}}
+      - name: Build
+        working-directory: ${{runner.workspace}}/build-ci-codeql
+        run: |
+          cmake --build . --parallel ${{env.NPROCS}}
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          category: "/language:cpp"
+          upload: False
+          output: sarif-results
+      - name: Filter CodeQL sarif
+        uses: advanced-security/filter-sarif@v1
+        with:
+          patterns: |
+            -**/submods/**
+          input: sarif-results/cpp.sarif
+          output: sarif-results/cpp.sarif
+      - name: Upload CodeQL sarif
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: sarif-results/cpp.sarif
   Docker:
     needs: Formatting
     runs-on: ubuntu-latest

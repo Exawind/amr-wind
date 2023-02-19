@@ -18,13 +18,13 @@ void tokenize(
 {
 
     int start = 0;
-    int end = s.find(del);
+    int end = static_cast<int>(s.find(del));
 
     return_list.push_front(atof(s.substr(start + 1, end - start).c_str()));
     while (end > 0) {
 
         start = end + static_cast<int>(del.size());
-        end = s.find(del, start);
+        end = static_cast<int>(s.find(del, start));
 
         if (end == -1) {
             end = -2;
@@ -216,7 +216,7 @@ void helics_storage::recv_messages_from_controller()
     }
 
     // broadcast wind turbine yaw angles to all procs
-    // FIXME: some day only need to send/recv to specific turbines
+    // TODO: some day only need to send/recv to specific turbines
     amrex::ParallelDescriptor::Bcast(
         m_turbine_yaw_to_amrwind.data(), m_turbine_yaw_to_amrwind.size(),
         amrex::ParallelDescriptor::IOProcessorNumber(),

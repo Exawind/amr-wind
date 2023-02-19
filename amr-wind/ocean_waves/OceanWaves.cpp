@@ -59,7 +59,7 @@ void OceanWaves::initialize_fields(int level, const amrex::Geometry& geom)
 void OceanWaves::post_init_actions()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::post_init_actions");
-    m_owm->update_relax_zones();
+    relaxation_zones();
 }
 
 void OceanWaves::post_regrid_actions() {}

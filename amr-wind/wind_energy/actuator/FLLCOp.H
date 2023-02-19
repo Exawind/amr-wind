@@ -22,7 +22,7 @@ struct FLLCOp
             return;
         }
 
-        const int npts = fllc.correction_velocity.size();
+        const int npts = static_cast<int>(fllc.correction_velocity.size());
         auto& du = fllc.correction_velocity;
 
         auto& u_les = fllc.les_velocity;

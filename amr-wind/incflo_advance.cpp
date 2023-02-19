@@ -7,7 +7,6 @@
 #include "amr-wind/turbulence/TurbulenceModel.H"
 #include "amr-wind/utilities/console_io.H"
 #include "amr-wind/utilities/PostProcessing.H"
-#include "amr-wind/core/field_ops.H"
 #include "AMReX_MultiFabUtil.H"
 
 using namespace amrex;
@@ -308,6 +307,19 @@ void incflo::ApplyPredictor(bool incremental_projection)
             eqn->solve(dt_diff);
 
             // Post-processing actions after a PDE solve
+        } else if (m_diff_type == DiffusionType::Explicit && m_use_godunov) {
+            // explicit RK2
+            std::unique_ptr<amr_wind::ScratchField> diff_old =
+                m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::CELL);
+            auto& diff_new =
+                eqn->fields().diff_term.state(amr_wind::FieldState::New);
+            amr_wind::field_ops::copy(*diff_old, diff_new, 0, 0, 1, 0);
+            eqn->compute_diffusion_term(amr_wind::FieldState::New);
+            amrex::Real dto2 = 0.5 * m_time.deltaT();
+            amr_wind::field_ops::saxpy(
+                eqn->fields().field, -dto2, *diff_old, 0, 0, 1, 0);
+            amr_wind::field_ops::saxpy(
+                eqn->fields().field, +dto2, diff_new, 0, 0, 1, 0);
         }
         eqn->post_solve_actions();
 
@@ -342,6 +354,21 @@ void incflo::ApplyPredictor(bool incremental_projection)
                            ? m_time.deltaT()
                            : 0.5 * m_time.deltaT();
         icns().solve(dt_diff);
+    } else if (m_diff_type == DiffusionType::Explicit && m_use_godunov) {
+        // explicit RK2
+        std::unique_ptr<amr_wind::ScratchField> diff_old =
+            m_repo.create_scratch_field(
+                AMREX_SPACEDIM, 0, amr_wind::FieldLoc::CELL);
+
+        auto& diff_new =
+            icns().fields().diff_term.state(amr_wind::FieldState::New);
+        amr_wind::field_ops::copy(*diff_old, diff_new, 0, 0, AMREX_SPACEDIM, 0);
+        icns().compute_diffusion_term(amr_wind::FieldState::New);
+        amrex::Real dto2 = 0.5 * m_time.deltaT();
+        amr_wind::field_ops::saxpy(
+            icns().fields().field, -dto2, *diff_old, 0, 0, AMREX_SPACEDIM, 0);
+        amr_wind::field_ops::saxpy(
+            icns().fields().field, +dto2, diff_new, 0, 0, AMREX_SPACEDIM, 0);
     }
     icns().post_solve_actions();
 

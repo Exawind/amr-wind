@@ -11,10 +11,7 @@
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/equation_systems/BCOps.H"
 
-namespace amr_wind {
-namespace ocean_waves {
-
-namespace ops {
+namespace amr_wind::ocean_waves::ops {
 
 void ReadHOSFileLev(
     int lev,
@@ -80,10 +77,10 @@ void ReadHOSFileLev(
     std::pow(2,lev)));*/
 
     // Allocate arrays for storage
-    eta.resize(HOS_nx * HOS_ny);
-    u.resize(HOS_nx * HOS_ny * HOS_nz);
-    v.resize(HOS_nx * HOS_ny * HOS_nz);
-    w.resize(HOS_nx * HOS_ny * HOS_nz);
+    eta.resize(static_cast<long>(HOS_nx) * HOS_ny);
+    u.resize(static_cast<long>(HOS_nx) * HOS_ny * HOS_nz);
+    v.resize(static_cast<long>(HOS_nx) * HOS_ny * HOS_nz);
+    w.resize(static_cast<long>(HOS_nx) * HOS_ny * HOS_nz);
     // Skip key
     std::getline(is, tmp);
     // Read interface heights and velocities
@@ -373,10 +370,10 @@ struct InitDataOp<HOSWaves>
                 std::to_string(level));
         }
         amrex::Gpu::DeviceVector<amrex::Real> dev_eta, dev_u, dev_v, dev_w;
-        dev_eta.resize(HOS_nx * HOS_ny);
-        dev_u.resize(HOS_nx * HOS_ny * HOS_nz);
-        dev_v.resize(HOS_nx * HOS_ny * HOS_nz);
-        dev_w.resize(HOS_nx * HOS_ny * HOS_nz);
+        dev_eta.resize(static_cast<long>(HOS_nx) * HOS_ny);
+        dev_u.resize(static_cast<long>(HOS_nx) * HOS_ny * HOS_nz);
+        dev_v.resize(static_cast<long>(HOS_nx) * HOS_ny * HOS_nz);
+        dev_w.resize(static_cast<long>(HOS_nx) * HOS_ny * HOS_nz);
 
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, eta.begin(), eta.end(), dev_eta.begin());
@@ -503,10 +500,10 @@ struct UpdateRelaxZonesOp<HOSWaves>
                     HOS_Lx, HOS_ny, HOS_Ly, HOS_nz, HOS_zmin, HOS_zmax);
                 amrex::Gpu::DeviceVector<amrex::Real> dev_eta, dev_u, dev_v,
                     dev_w;
-                dev_eta.resize(HOS_nx * HOS_ny);
-                dev_u.resize(HOS_nx * HOS_ny * HOS_nz);
-                dev_v.resize(HOS_nx * HOS_ny * HOS_nz);
-                dev_w.resize(HOS_nx * HOS_ny * HOS_nz);
+                dev_eta.resize(static_cast<long>(HOS_nx) * HOS_ny);
+                dev_u.resize(static_cast<long>(HOS_nx) * HOS_ny * HOS_nz);
+                dev_v.resize(static_cast<long>(HOS_nx) * HOS_ny * HOS_nz);
+                dev_w.resize(static_cast<long>(HOS_nx) * HOS_ny * HOS_nz);
 
                 amrex::Gpu::copy(
                     amrex::Gpu::hostToDevice, eta.begin(), eta.end(),
@@ -584,8 +581,6 @@ struct UpdateRelaxZonesOp<HOSWaves>
     }
 };
 
-} // namespace ops
-} // namespace ocean_waves
-} // namespace amr_wind
+} // namespace amr_wind::ocean_waves::ops
 
 #endif /* HOS_WAVES_OPS_H */

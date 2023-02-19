@@ -98,7 +98,7 @@ void test_scontainer_impl(
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> end{{66.0, 66.0, 127.0}};
 
     auto* pstruct = pvec.data();
-    const int id_start = PType::NextID();
+    const int id_start = static_cast<int>(PType::NextID());
     const int proc_id = amrex::ParallelDescriptor::MyProc();
 
     amrex::ParallelFor(npts, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
@@ -113,7 +113,7 @@ void test_scontainer_impl(
         const amrex::Real z = (ip + 0.5) * dl;
         pp.pos(2) = z;
 
-        pp.idata(IIx::uid) = pp.id();
+        pp.idata(IIx::uid) = static_cast<int>(pp.id());
         pp.idata(IIx::sid) = 0;
         pp.idata(IIx::nid) = ip;
     });
@@ -214,7 +214,6 @@ TEST_F(SamplingTest, sampling)
         pp.addarr("end", amrex::Vector<amrex::Real>{66.0, 66.0, 127.0});
     }
 
-    // amr_wind::sampling::Sampling probes(sim(), "sampling");
     SamplingImpl probes(sim(), "sampling");
     probes.initialize();
     probes.post_advance_work();

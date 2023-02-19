@@ -21,6 +21,7 @@ time.checkpoint_interval      =  -1       # Steps between checkpoint files
 #               PHYSICS                 #
 #.......................................#
 incflo.use_godunov = 1
+incflo.diffusion_type = 2
 incflo.godunov_type="weno_z"
 transport.model = TwoPhaseTransport
 transport.viscosity_fluid1=0.0

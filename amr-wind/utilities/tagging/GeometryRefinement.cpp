@@ -22,11 +22,11 @@ void GeometryRefinement::initialize(const std::string& key)
     }
 
     for (const auto& geom : shapes) {
-        const std::string& gkey = key + "." + geom;
-        amrex::ParmParse pp(gkey);
+        const std::string& args = key + "." + geom;
+        amrex::ParmParse pp(args);
         std::string gtype;
         pp.get("type", gtype);
-        auto obj = tagging::GeometryType::create(gtype, m_sim, gkey);
+        auto obj = tagging::GeometryType::create(gtype, m_sim, args);
         m_geom_refiners.emplace_back(std::move(obj));
     }
 }

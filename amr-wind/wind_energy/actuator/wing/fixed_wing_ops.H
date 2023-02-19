@@ -47,7 +47,7 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
         pp.query("fllc", use_fllc);
         if (use_fllc) {
             wdata.fllc = std::make_unique<FLLCData>();
-            FLLCParse(pp, *(wdata.fllc.get()));
+            FLLCParse(pp, *(wdata.fllc));
         }
 
         if (!pp.contains("epsilon") && !pp.contains("epsilon_chord")) {

@@ -6,6 +6,7 @@
 #include "aw_test_utils/AmrexTest.H"
 #include "aw_test_utils/AmrTestMesh.H"
 #include "amr-wind/core/SimTime.H"
+#include "amr-wind/utilities/tagging/CartBoxRefinement.H"
 
 namespace amr_wind_tests {
 
@@ -57,6 +58,28 @@ protected:
     std::unique_ptr<AmrTestMesh> m_mesh;
 
     bool m_need_params{true};
+};
+
+class RefineMesh : public AmrTestMesh
+{
+public:
+    amrex::Vector<std::unique_ptr<amr_wind::RefinementCriteria>>&
+    refine_criteria_vec()
+    {
+        return m_refine_crit;
+    }
+
+protected:
+    void ErrorEst(
+        int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow) override
+    {
+        for (const auto& ref : m_refine_crit) {
+            (*ref)(lev, tags, time, ngrow);
+        }
+    }
+
+private:
+    amrex::Vector<std::unique_ptr<amr_wind::RefinementCriteria>> m_refine_crit;
 };
 
 } // namespace amr_wind_tests

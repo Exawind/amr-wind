@@ -11,6 +11,7 @@ io.derived_outputs = "components(velocity,0,2)" "components(gp,0,2)"
 
 incflo.use_godunov = 1
 incflo.godunov_type="weno"
+incflo.diffusion_type = 2
 transport.model = TwoPhaseTransport
 transport.laminar_prandtl = 0.7
 transport.turbulent_prandtl = 0.3333

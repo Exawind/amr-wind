@@ -223,10 +223,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
     using namespace amrex;
 
     amrex::Real const_tiny = std::numeric_limits<amrex::Real>::epsilon();
-    // (1) order coefficients: m1<m2<m3;
-    // (2) get ranges: V1<V2<v3;
-    // (3) limit ch (0.d0 < ch < 0.5d0);
-    // (4) calculate alpha
+    // (1) "order coefficients: m1<m2<m3"
+    // (2) "get ranges: V1<V2<v3"
+    // (3) "limit ch (0.d0 < ch < 0.5d0)"
+    // (4) "calculate alpha"
 
     amrex::Real m1 = amrex::min(b1, b2);
     amrex::Real m3 = amrex::max(b1, b2);
@@ -346,8 +346,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real cut_volume(
     }
 
     amrex::Real b12 = b1 + b2;
-    // amrex::Real bm = amrex::min(b12, b3);
-    // amrex::Real pr = amrex::max(6.0 * m1 * m2 * m3, const_tiny);
 
     // Compute volume fraction using PLIC from Scardovelli & Zaleski (JCP 2000),
     // adapted from code in paper by Akio Kawano (Computer & Fluids 2016)
@@ -457,7 +455,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool interface_band(
             }
         }
     }
-    return (VOF_max != VOF_min || VOF_mid);
+    return (amrex::Math::abs(VOF_max - VOF_min) > tiny || VOF_mid);
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real levelset_to_vof(

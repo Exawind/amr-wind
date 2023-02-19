@@ -17,7 +17,7 @@ closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
     auto const it = std::upper_bound(vec.begin(), vec.end(), value);
     AMREX_ALWAYS_ASSERT(it != vec.end());
 
-    const int idx = std::distance(vec.begin(), it);
+    const int idx = static_cast<int>(std::distance(vec.begin(), it));
     return std::max(idx - 1, 0);
 }
 
@@ -87,9 +87,9 @@ void InletData::define_level_data(
     if (!this->is_populated(ori)) {
         return;
     }
-    m_data_n[ori]->push_back(amrex::FArrayBox(bx, nc));
-    m_data_np1[ori]->push_back(amrex::FArrayBox(bx, nc));
-    m_data_interp[ori]->push_back(amrex::FArrayBox(bx, nc));
+    m_data_n[ori]->push_back(amrex::FArrayBox(bx, static_cast<int>(nc)));
+    m_data_np1[ori]->push_back(amrex::FArrayBox(bx, static_cast<int>(nc)));
+    m_data_interp[ori]->push_back(amrex::FArrayBox(bx, static_cast<int>(nc)));
 }
 
 #ifdef AMR_WIND_USE_NETCDF
@@ -159,7 +159,8 @@ void InletData::read_data_native(
     const amrex::Vector<amrex::Real>& times)
 {
     const size_t nc = fld->num_comp();
-    const int nstart = m_components[fld->id()];
+    const int nstart =
+        static_cast<int>(m_components[static_cast<int>(fld->id())]);
 
     const int idx = closest_index(times, time);
     const int idxp1 = idx + 1;
@@ -202,7 +203,7 @@ void InletData::read_data_native(
             });
     }
 
-    bndry.copyTo((*m_data_n[ori])[lev], 0, nstart, nc);
+    bndry.copyTo((*m_data_n[ori])[lev], 0, nstart, static_cast<int>(nc));
 
     for (amrex::MFIter mfi(bndry); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
@@ -224,7 +225,7 @@ void InletData::read_data_native(
             });
     }
 
-    bndry.copyTo((*m_data_np1[ori])[lev], 0, nstart, nc);
+    bndry.copyTo((*m_data_np1[ori])[lev], 0, nstart, static_cast<int>(nc));
 }
 
 void InletData::interpolate(const amrex::Real time)
@@ -236,7 +237,7 @@ void InletData::interpolate(const amrex::Real time)
             continue;
         }
 
-        const int lnlevels = m_data_n[ori]->size();
+        const int lnlevels = static_cast<int>(m_data_n[ori]->size());
         for (int lev = 0; lev < lnlevels; ++lev) {
 
             const auto& datn = (*m_data_n[ori])[lev];
@@ -571,13 +572,6 @@ void ABLBoundaryPlane::write_file()
             std::string filename = amrex::MultiFabFileFullPrefix(
                 lev, chkname, level_prefix, field.name());
 
-            // print all boundaries and a header file
-            //            std::string header_file = chkname + "/header";
-            //            std::ofstream ofh(header_file, std::ios::out);
-            //            ofh << "time: " << time << '\n';
-            //            bndry.write(filename, ofh);
-            //            ofh.close();
-
             // print individual faces
             for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
                 auto ori = oit();
@@ -603,7 +597,7 @@ void ABLBoundaryPlane::read_header()
         return;
     }
 
-    // FIXME: overallocate this for now
+    // TODO: overallocate this for now
     m_in_data.resize(2 * AMREX_SPACEDIM);
 
 #ifdef AMR_WIND_USE_NETCDF
@@ -634,11 +628,6 @@ void ABLBoundaryPlane::read_header()
             m_in_data.define_plane(ori);
 
             const int nlevels = plane_grp.num_groups();
-            // FIXME Do not support multi-level input mode yet.
-            // this is due to interpolation issues at the coarse-fine interface
-            if (nlevels > 1) {
-                amrex::Abort("Not supporting multi-level input mode yet.");
-            }
             for (int lev = 0; lev < nlevels; ++lev) {
                 auto lev_grp = plane_grp.group(level_name(lev));
 
@@ -737,12 +726,12 @@ void ABLBoundaryPlane::read_header()
             nc += fld->num_comp();
         }
 
-        // FIXME: need to generalize to lev > 0 somehow
+        // TODO: need to generalize to lev > 0 somehow
         const int lev = 0;
         for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
             auto ori = oit();
 
-            // FIXME: would be safer and less storage to not allocate all of
+            // TODO: would be safer and less storage to not allocate all of
             // these but we do not use m_planes for input and need to detect
             // mass inflow from field bcs same for define level data below
             m_in_data.define_plane(ori);
@@ -870,7 +859,9 @@ void ABLBoundaryPlane::populate_data(
     const int lev,
     const amrex::Real time,
     Field& fld,
-    amrex::MultiFab& mfab) const
+    amrex::MultiFab& mfab,
+    const int dcomp,
+    const int orig_comp) const
 {
 
     BL_PROFILE("amr-wind::ABLBoundaryPlane::populate_data");
@@ -890,14 +881,10 @@ void ABLBoundaryPlane::populate_data(
             continue;
         }
 
-        // Ensure the fine level does not touch the inflow boundary
+        // Only proceed with data population if fine levels touch the boundary
         if (lev > 0) {
             const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
-            if (box_intersects_boundary(minBox, lev, ori)) {
-                amrex::Abort(
-                    "Fine level intersects inflow boundary, not supported "
-                    "yet.");
-            } else {
+            if (!box_intersects_boundary(minBox, lev, ori)) {
                 continue;
             }
         }
@@ -906,9 +893,6 @@ void ABLBoundaryPlane::populate_data(
         if (lev >= m_in_data.nlevels(ori)) {
             amrex::Abort("No inflow data at this level.");
         }
-
-        // const int normal = ori.coordDir();
-        // const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
 
         const size_t nc = mfab.nComp();
 
@@ -931,7 +915,8 @@ void ABLBoundaryPlane::populate_data(
             amrex::ParallelFor(
                 bx, nc,
                 [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                    dest(i, j, k, n) = src_arr(i, j, k, n + nstart);
+                    dest(i, j, k, n + dcomp) =
+                        src_arr(i, j, k, n + nstart + orig_comp);
                 });
         }
     }
@@ -967,7 +952,7 @@ void ABLBoundaryPlane::write_data(
 
     grp.var(name).par_access(NC_COLLECTIVE);
 
-    // FIXME optimization
+    // TODO optimization
     // - move buffer outside this function, probably best as a member
     // - place in object to access as ori/lev/fld
     // - sizing and start/counts should be done only on init and regrid

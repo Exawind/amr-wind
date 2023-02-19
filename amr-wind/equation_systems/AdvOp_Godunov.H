@@ -70,7 +70,11 @@ struct AdvectionOp<
         iconserv.resize(PDE::ndim, 1);
     }
 
-    void preadvect(const FieldState /*unused*/, const amrex::Real /*unused*/) {}
+    void preadvect(
+        const FieldState /*unused*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/)
+    {}
 
     void operator()(const FieldState fstate, const amrex::Real dt)
     {
@@ -158,7 +162,6 @@ struct AdvectionOp<
                     const bool known_edge_state = false;
                     const bool godunov_use_ppm =
                         godunov_scheme == godunov::scheme::PPM;
-                    const bool fluxes_are_area_weighted = false;
                     HydroUtils::ComputeFluxesOnBoxFromState(
                         bx, PDE::ndim, mfi,
                         (PDE::multiply_rho ? rhotrac : tra_arr),
@@ -213,12 +216,11 @@ struct AdvectionOp<
                  mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.tilebox();
 
-                godunov::compute_advection(
-                    lev, bx, PDE::ndim, conv_term(lev).array(mfi),
-                    (*flux_x)(lev).array(mfi), (*flux_y)(lev).array(mfi),
-                    (*flux_z)(lev).array(mfi), u_mac(lev).const_array(mfi),
-                    v_mac(lev).const_array(mfi), w_mac(lev).const_array(mfi),
-                    iconserv.data(), geom);
+                HydroUtils::ComputeDivergence(
+                    bx, conv_term(lev).array(mfi), (*flux_x)(lev).array(mfi),
+                    (*flux_y)(lev).array(mfi), (*flux_z)(lev).array(mfi),
+                    PDE::ndim, geom[lev], amrex::Real(-1.0),
+                    fluxes_are_area_weighted);
             }
         }
     }
@@ -232,6 +234,7 @@ struct AdvectionOp<
 
     godunov::scheme godunov_scheme = godunov::scheme::PPM;
     std::string godunov_type;
+    const bool fluxes_are_area_weighted{false};
     bool godunov_use_forces_in_trans{false};
     std::string advection_type{"Godunov"};
 };

@@ -43,6 +43,7 @@ option(AMR_WIND_ENABLE_HELICS "Enable HELICS library" OFF)
 option(AMR_WIND_ENABLE_HYPRE "Enable HYPRE integration" OFF)
 option(AMR_WIND_ENABLE_OPENFAST "Enable OpenFAST integration" OFF)
 option(AMR_WIND_ENABLE_ASCENT "Enable Ascent visualization library" OFF)
+option(AMR_WIND_ENABLE_UMPIRE "Enable Umpire GPU memory pools" OFF)
 
 #Options for C++
 set(CMAKE_CXX_STANDARD 17)
@@ -67,6 +68,12 @@ if(AMR_WIND_ENABLE_ROCM)
     # Set default AMD architectures (based on Frontier)
     set(AMD_ARCH "gfx90a")
   endif()
+endif()
+
+if (AMR_WIND_ENABLE_UMPIRE)
+  set(CMAKE_PREFIX_PATH ${UMPIRE_DIR} ${CMAKE_PREFIX_PATH})
+  find_package(Umpire REQUIRED)
+  include_directories(SYSTEM ${UMPIRE_INCLUDE_DIRS})
 endif()
 
 if(AMR_WIND_TEST_WITH_FCOMPARE)
