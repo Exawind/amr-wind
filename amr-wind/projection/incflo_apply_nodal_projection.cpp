@@ -343,22 +343,22 @@ void incflo::ApplyProjection(
         }
     }
 
-    // if (m_sim.has_overset()) {
-    auto phif = m_repo.create_scratch_field(1, 1, amr_wind::FieldLoc::NODE);
-    /*if (incremental) {
-        for (int lev = 0; lev <= finestLevel(); ++lev) {
-            (*phif)(lev).setVal(0.0);
-        }
-    } else {
-        */
-    amr_wind::field_ops::copy(*phif, pressure, 0, 0, 1, 1);
-    //}
+    if (m_sim.has_overset()) {
+        auto phif = m_repo.create_scratch_field(1, 1, amr_wind::FieldLoc::NODE);
+        if (incremental) {
+            for (int lev = 0; lev <= finestLevel(); ++lev) {
+                (*phif)(lev).setVal(0.0);
+            }
+        } else {
 
-    nodal_projector->project(
-        phif->vec_ptrs(), options.rel_tol, options.abs_tol);
-    //} else {
-    // nodal_projector->project(options.rel_tol, options.abs_tol);
-    //}
+            amr_wind::field_ops::copy(*phif, pressure, 0, 0, 1, 1);
+        }
+        nodal_projector->project(
+            phif->vec_ptrs(), options.rel_tol, options.abs_tol);
+    } else {
+        nodal_projector->project(options.rel_tol, options.abs_tol);
+    }
+
     amr_wind::io::print_mlmg_info(
         "Nodal_projection", nodal_projector->getMLMG());
 
