@@ -83,10 +83,9 @@ public:
         m_abl_mean_bous = term;
     }
 
-    void
-    register_hurricane_forcing_term(pde::icns::HurricaneForcing* term) const
+    void register_hurricane_forcing(pde::icns::HurricaneForcing* forcing) const
     {
-        m_abl_hurricane_forcing = term;
+        m_hurricane_forcing = forcing;
     }
 
     const ABLBoundaryPlane& bndry_plane() const { return *m_bndry_plane; }
@@ -124,7 +123,7 @@ private:
 
     mutable pde::icns::ABLMeanBoussinesq* m_abl_mean_bous{nullptr};
 
-    mutable pde::icns::HurricaneForcing* m_abl_hurricane_forcing{nullptr};
+    mutable pde::icns::HurricaneForcing* m_hurricane_forcing{nullptr};
 
     //! Default value set based on https://turbmodels.larc.nasa.gov/sst.html
     amrex::Real m_init_sdr{25.0};

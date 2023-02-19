@@ -14,7 +14,7 @@ HurricaneForcing::HurricaneForcing(const CFDSim& sim) : m_mesh(sim.mesh())
 {
 
     const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
-    abl.register_hurricane_forcing_term(this);
+    abl.register_hurricane_forcing(this);
 
     {
         // Read the rotational time period (in seconds)

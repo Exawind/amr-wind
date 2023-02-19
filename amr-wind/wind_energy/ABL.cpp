@@ -169,8 +169,8 @@ void ABL::pre_advance_work()
         m_abl_mean_bous->mean_temperature_update(m_stats->theta_profile());
     }
 
-    if (m_abl_hurricane_forcing != nullptr) {
-        m_abl_hurricane_forcing->mean_velocity_update(
+    if (m_hurricane_forcing != nullptr) {
+        m_hurricane_forcing->mean_velocity_update(
             m_stats->vel_profile_coarse());
     }
 
