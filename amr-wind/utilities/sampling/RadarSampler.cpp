@@ -1,4 +1,4 @@
-#include "amr-wind/utilities/sampling/LidarSampler.H"
+#include "amr-wind/utilities/sampling/RadarSampler.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/tensor_ops.H"
 #include "amr-wind/utilities/linear_interpolation.H"
@@ -8,9 +8,9 @@
 namespace amr_wind {
 namespace sampling {
 
-LidarSampler::LidarSampler(const CFDSim& sim) : LineSampler(sim) {}
+RadarSampler::RadarSampler(const CFDSim& sim) : ConeSampler(sim) {}
 
-void LidarSampler::initialize(const std::string& key)
+void RadarSampler::initialize(const std::string& key)
 {
     // Read in new inputs specific to this class
     amrex::ParmParse pp(key);
@@ -55,12 +55,12 @@ void LidarSampler::initialize(const std::string& key)
     // The period to know if the table repeats in time
     m_period = m_time_table[np - 1] - m_time_table[0];
 
-    LidarSampler::update_sampling_locations();
+    RadarSampler::update_sampling_locations();
 
     check_bounds();
 }
 
-void LidarSampler::update_sampling_locations()
+void RadarSampler::update_sampling_locations()
 {
 
     amrex::Real time = m_sim.time().current_time();
@@ -87,7 +87,7 @@ void LidarSampler::update_sampling_locations()
 }
 
 #ifdef AMR_WIND_USE_NETCDF
-void LidarSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
+void RadarSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
 {
     grp.put_attr("sampling_type", identifier());
     grp.put_attr("start", m_start);
@@ -98,8 +98,8 @@ void LidarSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
     grp.def_var("points", NC_DOUBLE, {"num_time_steps", "num_points", "ndim"});
 }
 
-void LidarSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
-void LidarSampler::output_netcdf_data(
+void RadarSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
+void RadarSampler::output_netcdf_data(
     const ncutils::NCGroup& grp, const size_t nt) const
 {
     // Write the coordinates every time
@@ -112,13 +112,13 @@ void LidarSampler::output_netcdf_data(
     xyz.put(&locs[0][0], start, count);
 }
 #else
-void LidarSampler::define_netcdf_metadata(
+void RadarSampler::define_netcdf_metadata(
     const ncutils::NCGroup& /*unused*/) const
 {}
-void LidarSampler::populate_netcdf_metadata(
+void RadarSampler::populate_netcdf_metadata(
     const ncutils::NCGroup& /*unused*/) const
 {}
-void LidarSampler::output_netcdf_data(
+void RadarSampler::output_netcdf_data(
     const ncutils::NCGroup& /*unused*/, const size_t /*unused*/) const
 {}
 #endif
@@ -126,6 +126,6 @@ void LidarSampler::output_netcdf_data(
 } // namespace sampling
 
 template struct ::amr_wind::sampling::SamplerBase::Register<
-    ::amr_wind::sampling::LidarSampler>;
+    ::amr_wind::sampling::RadarSampler>;
 
 } // namespace amr_wind
