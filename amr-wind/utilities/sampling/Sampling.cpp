@@ -119,6 +119,8 @@ void Sampling::post_advance_work()
 
     m_scontainer->interpolate_fields(m_fields);
 
+    // TODO: This is where the reduction needs to happen for radar
+
     process_output();
 }
 

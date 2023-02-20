@@ -1,7 +1,7 @@
-#ifndef LIDARSAMPLER_H
-#define LIDARSAMPLER_H
+#ifndef RadarSampler_H
+#define RadarSampler_H
 
-#include "amr-wind/utilities/sampling/LineSampler.H"
+#include "amr-wind/utilities/sampling/ConeSampler.H"
 #include "amr-wind/core/vs/vector_space.H"
 
 namespace amr_wind::sampling {
@@ -15,12 +15,12 @@ namespace amr_wind::sampling {
  * segements as determined by `num_points`. The length of each segment is given
  * by \f[ m_length / (num_points - 1) \f]
  */
-class LidarSampler : public LineSampler
+class RadarSampler : public ConeSampler
 {
 public:
-    static std::string identifier() { return "LidarSampler"; }
+    static std::string identifier() { return "RadarSampler"; }
 
-    explicit LidarSampler(const CFDSim& /*sim*/);
+    explicit RadarSampler(const CFDSim& /*sim*/);
 
     /** Read user inputs and initialize the sampling object
      *
@@ -54,4 +54,4 @@ protected:
 
 } // namespace amr_wind::sampling
 
-#endif /* LIDARSAMPLER_H */
+#endif /* RadarSampler_H */
