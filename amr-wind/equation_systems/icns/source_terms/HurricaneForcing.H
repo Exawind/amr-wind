@@ -23,7 +23,7 @@ class HurricaneForcing : public MomentumSource::Register<HurricaneForcing>
 public:
     static std::string identifier() { return "HurricaneForcing"; }
 
-    explicit HurricaneForcing(const CFDSim& /*unused*/);
+    explicit HurricaneForcing(const CFDSim& sim);
 
     ~HurricaneForcing() override;
 

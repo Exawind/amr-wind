@@ -204,7 +204,7 @@ struct ShearStressDonelan
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
     calc_theta(amrex::Real /* wspd */, amrex::Real /* theta */) const
     {
-        return 0.0012 * wspd_mean * (theta_mean - theta_surface);
+        return 0.0012 * wspd_mean * (theta_surface - theta_mean);
     };
 
     amrex::Real wspd_mean;
