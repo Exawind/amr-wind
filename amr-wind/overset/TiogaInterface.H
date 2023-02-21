@@ -106,6 +106,8 @@ public:
 private:
     void amr_to_tioga_mesh();
 
+    void amr_to_tioga_iblank();
+
     CFDSim& m_sim;
 
     //! IBLANK on cell centered fields

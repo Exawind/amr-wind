@@ -107,10 +107,10 @@ TiogaInterface::TiogaInterface(CFDSim& sim)
 
 void TiogaInterface::post_init_actions()
 {
-    auto& repo = m_sim.repo();
-    const int num_ghost = m_sim.pde_manager().num_ghost_state();
-    m_iblank_cell_host = repo.create_int_scratch_field_on_host("iblank_cell_host",1,num_ghost, FieldLoc::CELL);
-    m_iblank_node_host = repo.create_int_scratch_field_on_host("iblank_node_host",1,num_ghost, FieldLoc::NODE);
+//    auto& repo = m_sim.repo();
+//    const int num_ghost = m_sim.pde_manager().num_ghost_state();
+//    m_iblank_cell_host = repo.create_int_scratch_field_on_host("iblank_cell_host",1,num_ghost, FieldLoc::CELL);
+//    m_iblank_node_host = repo.create_int_scratch_field_on_host("iblank_node_host",1,num_ghost, FieldLoc::NODE);
     amr_to_tioga_mesh();
 
     // Initialize masking so that all cells are active in solvers
@@ -121,6 +121,7 @@ void TiogaInterface::post_init_actions()
 void TiogaInterface::post_regrid_actions()
 {
     amr_to_tioga_mesh();
+    amr_to_tioga_iblank();
 
     // Initialize masking so that all cells are active in solvers
     m_mask_cell.setVal(1);
@@ -133,29 +134,13 @@ void TiogaInterface::pre_overset_conn_work()
     m_iblank_node.setVal(1);
 
     auto& repo = m_sim.repo();
-    const auto comp_counter =
-        [&repo](int total, const std::string& fname) -> int {
-        return total + repo.get_field(fname).num_comp();
-    };
-    //const int ncell_vars =
-    //    std::accumulate(cell_vars.begin(), cell_vars.end(), 0, comp_counter);
-    //const int nnode_vars =
-    //    std::accumulate(node_vars.begin(), node_vars.end(), 0, comp_counter);
-	/*
     const int num_ghost = m_sim.pde_manager().num_ghost_state();
     m_iblank_cell_host = repo.create_int_scratch_field_on_host("iblank_cell_host",1,num_ghost, FieldLoc::CELL);
     m_iblank_node_host = repo.create_int_scratch_field_on_host("iblank_node_host",1,num_ghost, FieldLoc::NODE);
-*/
+
     (*m_iblank_cell_host).setVal(1);
     (*m_iblank_node_host).setVal(1);
-    //auto& repo = m_sim.repo();
-    //const int nlevels = repo.num_active_levels();
-    //for (int lev = 0; lev < nlevels; ++lev) {
-	//dtoh_memcpy(m_iblank_cell_host(lev), m_iblank_cell(lev),0,0,1);
-	//dtoh_memcpy(m_iblank_node_host(lev), m_iblank_node(lev),0,0,1);
-    //}
 	
-
 }
 
 void TiogaInterface::post_overset_conn_work()
@@ -452,16 +437,33 @@ void TiogaInterface::amr_to_tioga_mesh()
         }
     }
 
+
+
+    // Synchronize data on host/device
+    m_amr_data->level.copy_to_device();
+    m_amr_data->mpi_rank.copy_to_device();
+    m_amr_data->local_id.copy_to_device();
+    m_amr_data->ilow.copy_to_device();
+    m_amr_data->ihigh.copy_to_device();
+    m_amr_data->dims.copy_to_device();
+    m_amr_data->xlo.copy_to_device();
+    m_amr_data->dx.copy_to_device();
+    m_amr_data->global_idmap.copy_to_device();
+
+}
+void TiogaInterface::amr_to_tioga_iblank()
+{
+    BL_PROFILE("amr-wind::TiogaInterface::amr_to_tioga_iblank");
+    auto& mesh = m_sim.mesh();
+    const int nlevels = mesh.finestLevel() + 1;
+
     // Reset local patch counter
-    ilp = 0;
+    int ilp = 0;
     auto& ibcell = m_sim.repo().get_int_field("iblank_cell");
     auto& ibnode = m_sim.repo().get_int_field("iblank_node");
-    //auto& ibcell_host=ibvar_cell_host();
-    //auto& ibnode_host=ibvar_node_host();
 
 
     // Create standard vector of integer pointers here
-    //auto& ad2=*m_amr_data; 
     auto& ad = *m_amr_data;
     amrex::Vector<int *> tmpdataPtr(ad.iblank_cell.size());
     amrex::Vector<int *> tmpdataPtrn(ad.iblank_node.size());
@@ -494,7 +496,6 @@ void TiogaInterface::amr_to_tioga_mesh()
         }
     }
 
-
 	// Host to device copy from standard vector to 
 	// ad.iblank_cell.d_view
         amrex::Gpu::copy(
@@ -503,18 +504,8 @@ void TiogaInterface::amr_to_tioga_mesh()
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, tmpdataPtrn.begin(), tmpdataPtrn.end(),
             ad.iblank_node.d_view.begin());
-    // Synchronize data on host/device
-    m_amr_data->level.copy_to_device();
-    m_amr_data->mpi_rank.copy_to_device();
-    m_amr_data->local_id.copy_to_device();
-    m_amr_data->ilow.copy_to_device();
-    m_amr_data->ihigh.copy_to_device();
-    m_amr_data->dims.copy_to_device();
-    m_amr_data->xlo.copy_to_device();
-    m_amr_data->dx.copy_to_device();
-    m_amr_data->global_idmap.copy_to_device();
 
-    //m_iblank_cell_host.reset();
+   // m_iblank_cell_host.reset();
     //m_iblank_node_host.reset();
 }
 } // namespace amr_wind
