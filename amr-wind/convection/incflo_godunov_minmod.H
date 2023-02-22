@@ -23,7 +23,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void minmod(
 
     if (!(dsp * dsm < 0.0)) {
         // Select the smaller slope if same sign
-        if (amrex::Math::abs(dsp) < amrex::Math::abs(dsm)) {
+        if (std::abs(dsp) < std::abs(dsm)) {
             dsm = dsp;
         } else {
             dsp = dsm;
@@ -96,8 +96,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_minmod_fpu_x(
     Godunov_minmod_bc(
         i, sm1, s0, sp1, dsm, dsp, bc.lo(0), bc.hi(0), domlo, domhi);
 
-    amrex::Real sigmap = amrex::Math::abs(vel_edge(i + 1, j, k)) * dt / dx;
-    amrex::Real sigmam = amrex::Math::abs(vel_edge(i, j, k)) * dt / dx;
+    amrex::Real sigmap = std::abs(vel_edge(i + 1, j, k)) * dt / dx;
+    amrex::Real sigmam = std::abs(vel_edge(i, j, k)) * dt / dx;
 
     if (vel_edge(i + 1, j, k) > small_vel) {
         Ip = s0 + 0.5 * (1.0 - sigmap) * dsp;
@@ -141,8 +141,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_minmod_fpu_y(
     Godunov_minmod_bc(
         j, sm1, s0, sp1, dsm, dsp, bc.lo(1), bc.hi(1), domlo, domhi);
 
-    amrex::Real sigmap = amrex::Math::abs(vel_edge(i, j + 1, k)) * dt / dx;
-    amrex::Real sigmam = amrex::Math::abs(vel_edge(i, j, k)) * dt / dx;
+    amrex::Real sigmap = std::abs(vel_edge(i, j + 1, k)) * dt / dx;
+    amrex::Real sigmam = std::abs(vel_edge(i, j, k)) * dt / dx;
 
     if (vel_edge(i, j + 1, k) > small_vel) {
         Ip = s0 + 0.5 * (1.0 - sigmap) * dsp;
@@ -186,8 +186,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_minmod_fpu_z(
     Godunov_minmod_bc(
         k, sm1, s0, sp1, dsm, dsp, bc.lo(2), bc.hi(2), domlo, domhi);
 
-    amrex::Real sigmap = amrex::Math::abs(vel_edge(i, j, k + 1)) * dt / dx;
-    amrex::Real sigmam = amrex::Math::abs(vel_edge(i, j, k)) * dt / dx;
+    amrex::Real sigmap = std::abs(vel_edge(i, j, k + 1)) * dt / dx;
+    amrex::Real sigmam = std::abs(vel_edge(i, j, k)) * dt / dx;
 
     if (vel_edge(i, j, k + 1) > small_vel) {
         Ip = s0 + 0.5 * (1.0 - sigmap) * dsp;

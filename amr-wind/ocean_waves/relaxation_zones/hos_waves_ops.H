@@ -230,7 +230,7 @@ void StoreHOSDataLoop(
         if (phi(i, j, k) + 0.5 * dx[2] < 0) {
             // Fully gas (exceed range so that velocity = 0)
             z = HOS_zmax + 1;
-        } else if (amrex::Math::abs(phi(i, j, k)) - 0.5 * dx[2] < 0) {
+        } else if (std::abs(phi(i, j, k)) - 0.5 * dx[2] < 0) {
             // Mixed phase (assume liquid is on bottom)
             z -= 0.5 * phi(i, j, k);
         } // else: Fully liquid, z is unchanged

@@ -60,8 +60,7 @@ void godunov::make_trans_velocities(
 
             Real st = ((lo + hi) >= 0.) ? lo : hi;
             bool ltm =
-                ((lo <= 0. && hi >= 0.) ||
-                 (amrex::Math::abs(lo + hi) < small_vel));
+                ((lo <= 0. && hi >= 0.) || (std::abs(lo + hi) < small_vel));
             u_ad(i, j, k) = ltm ? 0. : st;
         },
         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -85,8 +84,7 @@ void godunov::make_trans_velocities(
 
             Real st = ((lo + hi) >= 0.) ? lo : hi;
             bool ltm =
-                ((lo <= 0. && hi >= 0.) ||
-                 (amrex::Math::abs(lo + hi) < small_vel));
+                ((lo <= 0. && hi >= 0.) || (std::abs(lo + hi) < small_vel));
             v_ad(i, j, k) = ltm ? 0. : st;
         },
         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -110,8 +108,7 @@ void godunov::make_trans_velocities(
 
             Real st = ((lo + hi) >= 0.) ? lo : hi;
             bool ltm =
-                ((lo <= 0. && hi >= 0.) ||
-                 (amrex::Math::abs(lo + hi) < small_vel));
+                ((lo <= 0. && hi >= 0.) || (std::abs(lo + hi) < small_vel));
             w_ad(i, j, k) = ltm ? 0. : st;
         });
 }
@@ -196,7 +193,7 @@ void godunov::predict_godunov(
             constexpr Real small_vel = 1e-10;
 
             Real st = (uad >= 0.) ? lo : hi;
-            Real fu = (amrex::Math::abs(uad) < small_vel) ? 0.0 : 1.0;
+            Real fu = (std::abs(uad) < small_vel) ? 0.0 : 1.0;
             Imx(i, j, k, n) =
                 fu * st + (1.0 - fu) * 0.5 * (hi + lo); // store xedge
         },
@@ -223,7 +220,7 @@ void godunov::predict_godunov(
             constexpr Real small_vel = 1e-10;
 
             Real st = (vad >= 0.) ? lo : hi;
-            Real fu = (amrex::Math::abs(vad) < small_vel) ? 0.0 : 1.0;
+            Real fu = (std::abs(vad) < small_vel) ? 0.0 : 1.0;
             Imy(i, j, k, n) =
                 fu * st + (1.0 - fu) * 0.5 * (hi + lo); // store yedge
         },
@@ -250,7 +247,7 @@ void godunov::predict_godunov(
             constexpr Real small_vel = 1e-10;
 
             Real st = (wad >= 0.) ? lo : hi;
-            Real fu = (amrex::Math::abs(wad) < small_vel) ? 0.0 : 1.0;
+            Real fu = (std::abs(wad) < small_vel) ? 0.0 : 1.0;
             Imz(i, j, k, n) =
                 fu * st + (1.0 - fu) * 0.5 * (hi + lo); // store zedge
         });
@@ -291,7 +288,7 @@ void godunov::predict_godunov(
             constexpr Real small_vel = 1.e-10;
 
             Real st = (wad >= 0.) ? l_zylo : l_zyhi;
-            Real fu = (amrex::Math::abs(wad) < small_vel) ? 0.0 : 1.0;
+            Real fu = (std::abs(wad) < small_vel) ? 0.0 : 1.0;
             zylo(i, j, k) = fu * st + (1.0 - fu) * 0.5 * (l_zyhi + l_zylo);
         },
         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -310,7 +307,7 @@ void godunov::predict_godunov(
             constexpr Real small_vel = 1.e-10;
 
             Real st = (vad >= 0.) ? l_yzlo : l_yzhi;
-            Real fu = (amrex::Math::abs(vad) < small_vel) ? 0.0 : 1.0;
+            Real fu = (std::abs(vad) < small_vel) ? 0.0 : 1.0;
             yzlo(i, j, k) = fu * st + (1.0 - fu) * 0.5 * (l_yzhi + l_yzlo);
         });
     //
@@ -340,8 +337,7 @@ void godunov::predict_godunov(
 
         Real st = ((stl + sth) >= 0.) ? stl : sth;
         bool ltm =
-            ((stl <= 0. && sth >= 0.) ||
-             (amrex::Math::abs(stl + sth) < small_vel));
+            ((stl <= 0. && sth >= 0.) || (std::abs(stl + sth) < small_vel));
         qx(i, j, k) = ltm ? 0. : st;
     });
 
@@ -376,7 +372,7 @@ void godunov::predict_godunov(
             constexpr Real small_vel = 1.e-10;
 
             Real st = (uad >= 0.) ? l_xzlo : l_xzhi;
-            Real fu = (amrex::Math::abs(uad) < small_vel) ? 0.0 : 1.0;
+            Real fu = (std::abs(uad) < small_vel) ? 0.0 : 1.0;
             xzlo(i, j, k) = fu * st + (1.0 - fu) * 0.5 * (l_xzhi + l_xzlo);
         },
         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -395,7 +391,7 @@ void godunov::predict_godunov(
             constexpr Real small_vel = 1.e-10;
 
             Real st = (wad >= 0.) ? l_zxlo : l_zxhi;
-            Real fu = (amrex::Math::abs(wad) < small_vel) ? 0.0 : 1.0;
+            Real fu = (std::abs(wad) < small_vel) ? 0.0 : 1.0;
             zxlo(i, j, k) = fu * st + (1.0 - fu) * 0.5 * (l_zxhi + l_zxlo);
         });
     //
@@ -425,8 +421,7 @@ void godunov::predict_godunov(
 
         Real st = ((stl + sth) >= 0.) ? stl : sth;
         bool ltm =
-            ((stl <= 0. && sth >= 0.) ||
-             (amrex::Math::abs(stl + sth) < small_vel));
+            ((stl <= 0. && sth >= 0.) || (std::abs(stl + sth) < small_vel));
         qy(i, j, k) = ltm ? 0. : st;
     });
 
@@ -461,7 +456,7 @@ void godunov::predict_godunov(
             constexpr Real small_vel = 1.e-10;
 
             Real st = (uad >= 0.) ? l_xylo : l_xyhi;
-            Real fu = (amrex::Math::abs(uad) < small_vel) ? 0.0 : 1.0;
+            Real fu = (std::abs(uad) < small_vel) ? 0.0 : 1.0;
             xylo(i, j, k) = fu * st + (1.0 - fu) * 0.5 * (l_xyhi + l_xylo);
         },
         //
@@ -484,7 +479,7 @@ void godunov::predict_godunov(
             constexpr Real small_vel = 1.e-10;
 
             Real st = (vad >= 0.) ? l_yxlo : l_yxhi;
-            Real fu = (amrex::Math::abs(vad) < small_vel) ? 0.0 : 1.0;
+            Real fu = (std::abs(vad) < small_vel) ? 0.0 : 1.0;
             yxlo(i, j, k) = fu * st + (1.0 - fu) * 0.5 * (l_yxhi + l_yxlo);
         });
     //
@@ -515,8 +510,7 @@ void godunov::predict_godunov(
 
         Real st = ((stl + sth) >= 0.) ? stl : sth;
         bool ltm =
-            ((stl <= 0. && sth >= 0.) ||
-             (amrex::Math::abs(stl + sth) < small_vel));
+            ((stl <= 0. && sth >= 0.) || (std::abs(stl + sth) < small_vel));
         qz(i, j, k) = ltm ? 0. : st;
     });
 }

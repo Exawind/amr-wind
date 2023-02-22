@@ -225,10 +225,9 @@ void get_lr_indices(
     int& ir)
 {
     const amrex::Real xbox =
-        xin - amrex::Math::floor(xin / turb_grid.box_len[dir]) *
-                  turb_grid.box_len[dir];
+        xin - std::floor(xin / turb_grid.box_len[dir]) * turb_grid.box_len[dir];
 
-    il = static_cast<int>(amrex::Math::floor(xbox / turb_grid.dx[dir]));
+    il = static_cast<int>(std::floor(xbox / turb_grid.dx[dir]));
     ir = il + 1;
     if (ir >= turb_grid.box_dims[dir]) {
         ir -= turb_grid.box_dims[dir];
@@ -258,10 +257,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void get_lr_indices(
     amrex::Real& rxr)
 {
     const amrex::Real xbox =
-        xin - amrex::Math::floor(xin / turb_grid.box_len[dir]) *
-                  turb_grid.box_len[dir];
+        xin - std::floor(xin / turb_grid.box_len[dir]) * turb_grid.box_len[dir];
 
-    il = static_cast<int>(amrex::Math::floor(xbox / turb_grid.dx[dir]));
+    il = static_cast<int>(std::floor(xbox / turb_grid.dx[dir]));
     ir = il + 1;
     if (ir >= turb_grid.box_dims[dir]) {
         ir -= turb_grid.box_dims[dir];

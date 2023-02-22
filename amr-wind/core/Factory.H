@@ -111,7 +111,7 @@ struct Factory
         ~Register() override
         {
             if (registered) {
-                auto& tbl = Factory::table();
+                const auto& tbl = Factory::table();
                 const auto it = tbl.find(T::identifier());
                 registered = (it != tbl.end());
             }
