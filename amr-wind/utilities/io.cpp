@@ -122,7 +122,7 @@ void incflo::ReadCheckpointFile()
         rep[d] = static_cast<int>(domain_ratio);
 
         constexpr amrex::Real domain_eps = 1.0e-6;
-        if (amrex::Math::abs(static_cast<amrex::Real>(rep[d]) - domain_ratio) >
+        if (std::abs(static_cast<amrex::Real>(rep[d]) - domain_ratio) >
             domain_eps) {
             amrex::Abort(
                 "Domain size changed which indicates replication but there is "

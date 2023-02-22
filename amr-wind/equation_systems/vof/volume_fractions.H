@@ -149,28 +149,25 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void mixed_youngs_central_normal(
     // normalize each set (mx,my,mz): |mx|+|my|+|mz| = 1
     amrex::Real t0, t1, t2;
 
-    t0 = amrex::Math::abs(m[0][0]) + amrex::Math::abs(m[0][1]) +
-         amrex::Math::abs(m[0][2]);
+    t0 = std::abs(m[0][0]) + std::abs(m[0][1]) + std::abs(m[0][2]);
     m[0][0] = m[0][0] / t0;
     m[0][1] = m[0][1] / t0;
     m[0][2] = m[0][2] / t0;
 
-    t0 = amrex::Math::abs(m[1][0]) + amrex::Math::abs(m[1][1]) +
-         amrex::Math::abs(m[1][2]);
+    t0 = std::abs(m[1][0]) + std::abs(m[1][1]) + std::abs(m[1][2]);
     m[1][0] = m[1][0] / t0;
     m[1][1] = m[1][1] / t0;
     m[1][2] = m[1][2] / t0;
 
-    t0 = amrex::Math::abs(m[2][0]) + amrex::Math::abs(m[2][1]) +
-         amrex::Math::abs(m[2][2]);
+    t0 = std::abs(m[2][0]) + std::abs(m[2][1]) + std::abs(m[2][2]);
     m[2][0] = m[2][0] / t0;
     m[2][1] = m[2][1] / t0;
     m[2][2] = m[2][2] / t0;
 
     // choose among the three central schemes */
-    t0 = amrex::Math::abs(m[0][0]);
-    t1 = amrex::Math::abs(m[1][1]);
-    t2 = amrex::Math::abs(m[2][2]);
+    t0 = std::abs(m[0][0]);
+    t1 = std::abs(m[1][1]);
+    t2 = std::abs(m[2][2]);
 
     int cn = 0;
     if (t1 > t0) {
@@ -186,16 +183,15 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void mixed_youngs_central_normal(
     youngs_fd_normal(i, j, k, volfrac, m[3][0], m[3][1], m[3][2]);
     // normalize the set (mx,my,mz): |mx|+|my|+|mz| = 1
     constexpr amrex::Real tiny = 1e-20;
-    t0 = amrex::Math::abs(m[3][0]) + amrex::Math::abs(m[3][1]) +
-         amrex::Math::abs(m[3][2]) + tiny;
+    t0 = std::abs(m[3][0]) + std::abs(m[3][1]) + std::abs(m[3][2]) + tiny;
     m[3][0] = m[3][0] / t0;
     m[3][1] = m[3][1] / t0;
     m[3][2] = m[3][2] / t0;
 
     // choose between the previous choice and Youngs-CIAM
-    t0 = amrex::Math::abs(m[3][0]);
-    t1 = amrex::Math::abs(m[3][1]);
-    t2 = amrex::Math::abs(m[3][2]);
+    t0 = std::abs(m[3][0]);
+    t1 = std::abs(m[3][1]);
+    t2 = std::abs(m[3][2]);
     if (t1 > t0) {
         t0 = t1;
     }
@@ -203,7 +199,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void mixed_youngs_central_normal(
         t0 = t2;
     }
 
-    if (amrex::Math::abs(m[cn][cn]) > t0 && t0 > 0.0) {
+    if (std::abs(m[cn][cn]) > t0 && t0 > 0.0) {
         // second t0 condition is to ensure nonzero normal magnitude
         cn = 3;
     }
@@ -455,7 +451,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool interface_band(
             }
         }
     }
-    return (amrex::Math::abs(VOF_max - VOF_min) > tiny || VOF_mid);
+    return (std::abs(VOF_max - VOF_min) > tiny || VOF_mid);
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real levelset_to_vof(

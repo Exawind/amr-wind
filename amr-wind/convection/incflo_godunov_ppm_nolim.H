@@ -223,7 +223,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_pred_x_nolim(
 
     amrex::Real s6 = 6.0 * s0 - 3.0 * (sm + sp);
 
-    amrex::Real sigma = amrex::Math::abs(v_ad) * dtdx;
+    amrex::Real sigma = std::abs(v_ad) * dtdx;
 
     // upwind
     if (v_ad > small_vel) {
@@ -286,7 +286,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_pred_y_nolim(
 
     amrex::Real s6 = 6.0 * s0 - 3.0 * (sm + sp);
 
-    amrex::Real sigma = amrex::Math::abs(v_ad) * dtdy;
+    amrex::Real sigma = std::abs(v_ad) * dtdy;
 
     if (v_ad > small_vel) {
         Ip(i, j, k, n) =
@@ -348,7 +348,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_pred_z_nolim(
 
     amrex::Real s6 = 6.0 * s0 - 3.0 * (sm + sp);
 
-    amrex::Real sigma = amrex::Math::abs(v_ad) * dtdz;
+    amrex::Real sigma = std::abs(v_ad) * dtdz;
 
     if (v_ad > small_vel) {
         Ip(i, j, k, n) =
@@ -416,8 +416,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_fpu_x_nolim(
 
         Real s6 = 6.0 * s0 - 3.0 * (sm + sp);
 
-        Real sigmap = amrex::Math::abs(vel_edge(i + 1, j, k)) * dt / dx;
-        Real sigmam = amrex::Math::abs(vel_edge(i, j, k)) * dt / dx;
+        Real sigmap = std::abs(vel_edge(i + 1, j, k)) * dt / dx;
+        Real sigmam = std::abs(vel_edge(i, j, k)) * dt / dx;
 
         if (vel_edge(i + 1, j, k) > small_vel) {
             Ip = sp - (0.5 * sigmap) *
@@ -483,8 +483,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_fpu_y_nolim(
 
         amrex::Real s6 = 6.0 * s0 - 3.0 * (sm + sp);
 
-        Real sigmap = amrex::Math::abs(vel_edge(i, j + 1, k)) * dt / dx;
-        Real sigmam = amrex::Math::abs(vel_edge(i, j, k)) * dt / dx;
+        Real sigmap = std::abs(vel_edge(i, j + 1, k)) * dt / dx;
+        Real sigmam = std::abs(vel_edge(i, j, k)) * dt / dx;
 
         if (vel_edge(i, j + 1, k) > small_vel) {
             Ip = sp - (0.5 * sigmap) *
@@ -549,8 +549,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_fpu_z_nolim(
             domhi);
 
         Real s6 = 6.0 * s0 - 3.0 * (sm + sp);
-        Real sigmap = amrex::Math::abs(vel_edge(i, j, k + 1)) * dt / dx;
-        Real sigmam = amrex::Math::abs(vel_edge(i, j, k)) * dt / dx;
+        Real sigmap = std::abs(vel_edge(i, j, k + 1)) * dt / dx;
+        Real sigmam = std::abs(vel_edge(i, j, k)) * dt / dx;
 
         if (vel_edge(i, j, k + 1) > small_vel) {
             Ip = sp - (0.5 * sigmap) *
