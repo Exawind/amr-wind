@@ -50,8 +50,13 @@ void populate_abl_params()
         amrex::ParmParse pp("HurricaneForcing");
         amrex::Real gradient_wind{40.0};
         amrex::Real radial_distance{40000.0};
+        amrex::Real gradient_wind_radial_decay{-0.008};
+        amrex::Real gradient_wind_zero_height{18000.};
+
         pp.add("gradient_wind", gradient_wind);
         pp.add("eyewall_radial_distance", radial_distance);
+        pp.query("gradient_wind_radial_decay", gradient_wind_radial_decay);
+        pp.query("gradient_wind_zero_height", gradient_wind_zero_height);
     }
 
     // Coriolis term
@@ -80,6 +85,7 @@ void populate_abl_params()
         amrex::Vector<int> ncell{{8, 8, 64}};
         pp.addarr("n_cell", ncell);
     }
+
     {
         amrex::ParmParse pp("geometry");
         amrex::Vector<amrex::Real> probhi{{120.0, 120.0, 1000.0}};
