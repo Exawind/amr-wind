@@ -191,7 +191,7 @@ TEST_F(ABLMeshTest, hurricane_forcing)
 
     auto& src_term = pde_mgr.icns().fields().src_term;
     auto& velocity = sim().repo().get_field("velocity");
-    velocity.setVal({{5.0, 37.0, 0.0}});
+    velocity.setVal({{0., .0, 0.0}});
     auto& density = sim().repo().get_field("density");
     density.setVal(1.0);
 
@@ -205,13 +205,22 @@ TEST_F(ABLMeshTest, hurricane_forcing)
     });
 
     constexpr amrex::Real corfac = 2.0 * amr_wind::utils::two_pi() / 86400.0;
-    const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{
-        {-corfac * 40.0 - 40.0 * 40.0 / 40000.0, 0.0, 0.0}};
+    const amrex::Real ratio_top = (18000. - 7.5) / 18000.;
+    const amrex::Real ratio_bottom = (18000. - 0.5) / 18000.;
+    const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds_max{
+        {-corfac * 40.0 * ratio_top -
+             40.0 * ratio_top * 40.0 * ratio_top / 40000.0,
+         0.0, 0.0}};
+    const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds_min{
+        {-corfac * 40.0 * ratio_bottom -
+             40.0 * ratio_bottom * 40.0 * ratio_bottom / 40000.0,
+         0.0, 0.0}};
+
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-        const auto min_val = utils::field_min(src_term, i);
         const auto max_val = utils::field_max(src_term, i);
-        EXPECT_NEAR(min_val, golds[i], tol);
-        EXPECT_NEAR(min_val, max_val, tol);
+        const auto min_val = utils::field_min(src_term, i);
+        EXPECT_NEAR(min_val, golds_min[i], tol);
+        EXPECT_NEAR(max_val, golds_max[i], tol);
     }
 }
 
