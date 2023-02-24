@@ -213,6 +213,7 @@ private:
     //
     ///////////////////////////////////////////////////////////////////////////
     void PrintMaxValues(const std::string& header);
+    void PrintMaxVelLocations(const std::string& header);
     void PrintMaxVel(int lev) const;
     void PrintMaxGp(int lev) const;
     void CheckForNans(int lev) const;
