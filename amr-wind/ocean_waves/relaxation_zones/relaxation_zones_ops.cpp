@@ -156,12 +156,19 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                                 (1.0 - Gamma) *
                                     utils::free_surface_to_vof(zsl, z, dx[2]) +
                                 Gamma * volfrac(i, j, k);
-                            vel(i, j, k, 0) =
-                                Gamma * vel(i, j, k, 0) * volfrac(i, j, k);
-                            vel(i, j, k, 1) =
-                                Gamma * vel(i, j, k, 1) * volfrac(i, j, k);
-                            vel(i, j, k, 2) =
-                                Gamma * vel(i, j, k, 2) * volfrac(i, j, k);
+                            // Conserve momentum when density changes
+                            amrex::Real rho_ = rho1 * volfrac(i, j, k) +
+                                               rho2 * (1.0 - volfrac(i, j, k));
+                            // Target solution in liquid is vel = 0
+                            vel(i, j, k, 0) = (rho1 * volfrac(i, j, k) * Gamma +
+                                               rho2 * (1. - volfrac(i, j, k))) *
+                                              vel(i, j, k, 0) / rho_;
+                            vel(i, j, k, 0) = (rho1 * volfrac(i, j, k) * Gamma +
+                                               rho2 * (1. - volfrac(i, j, k))) *
+                                              vel(i, j, k, 0) / rho_;
+                            vel(i, j, k, 0) = (rho1 * volfrac(i, j, k) * Gamma +
+                                               rho2 * (1. - volfrac(i, j, k))) *
+                                              vel(i, j, k, 0) / rho_;
                         }
                         if (has_outprofile) {
                             const amrex::Real vf =
