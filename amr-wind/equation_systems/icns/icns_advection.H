@@ -11,7 +11,7 @@
 #include "hydro_mol.H"
 #include "hydro_utils.H"
 
-#include "diagnostics_MAC.H"
+#include "amr-wind/utilities/diagnostics.H"
 
 namespace amr_wind::pde {
 
@@ -288,7 +288,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         }
 
         if (m_verbose > 2) {
-            PrintMaxMACVelLocations(repo, "before MAC projection");
+            diagnostics::PrintMaxMACVelLocations(repo, "before MAC projection");
         }
 
         // MAC projection
@@ -308,7 +308,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         }
 
         if (m_verbose > 2) {
-            PrintMaxMACVelLocations(repo, "after MAC projection");
+            diagnostics::PrintMaxMACVelLocations(repo, "after MAC projection");
         }
     }
 
