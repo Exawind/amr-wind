@@ -519,7 +519,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     const bool fluxes_are_area_weighted{false};
     bool godunov_use_forces_in_trans{false};
     int m_cons{1};
-    int m_verbose{1};
+    int m_verbose{0};
     std::string premac_advection_type{"Godunov"};
     std::string postmac_advection_type{"Godunov"};
 };
