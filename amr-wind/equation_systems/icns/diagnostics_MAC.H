@@ -5,7 +5,8 @@
 
 namespace amr_wind {
 
-static void PrintMaxMACVelLocations(const amr_wind::FieldRepo& repo, const std::string& header)
+static void PrintMaxMACVelLocations(
+    const amr_wind::FieldRepo& repo, const std::string& header)
 {
     BL_PROFILE("amr-wind::incflo::PrintMaxMACVelLocations");
 
@@ -28,8 +29,8 @@ static void PrintMaxMACVelLocations(const amr_wind::FieldRepo& repo, const std::
                 repo.mesh().boxArray(lev + 1), amrex::IntVect(2), 1, 0);
         } else {
             level_mask.define(
-                repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev),
-                1, 0, amrex::MFInfo());
+                repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev), 1,
+                0, amrex::MFInfo());
             level_mask.setVal(1);
         }
 
@@ -191,8 +192,8 @@ static void PrintMaxMACVelLocations(const amr_wind::FieldRepo& repo, const std::
                 repo.mesh().boxArray(lev + 1), amrex::IntVect(2), 1, 0);
         } else {
             level_mask.define(
-                repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev),
-                1, 0, amrex::MFInfo());
+                repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev), 1,
+                0, amrex::MFInfo());
             level_mask.setVal(1);
         }
 
@@ -393,7 +394,8 @@ static void PrintMaxMACVelLocations(const amr_wind::FieldRepo& repo, const std::
     // Output results
     amrex::Print() << "\nL-inf norm MAC vels: " << header << std::endl
                    << "........................................................"
-                      "......................" << std::endl;
+                      "......................"
+                   << std::endl;
 
     amrex::Print() << "Max u: " << std::setw(20) << std::right << uMAC_max;
     amrex::Print() << " |  Location (x,y,z): ";
@@ -440,6 +442,6 @@ static void PrintMaxMACVelLocations(const amr_wind::FieldRepo& repo, const std::
                    << std::endl;
 }
 
-}
+} // namespace amr_wind
 
 #endif
