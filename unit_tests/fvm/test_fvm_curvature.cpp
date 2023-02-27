@@ -82,7 +82,7 @@ amrex::Real curvature_test_impl(amr_wind::Field& scalar, const int pdegree)
                     const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                    error += amrex::Math::abs(
+                    error += std::abs(
                         curv_arr(i, j, k) - analytical_function::curvature(
                                                 pdegree, coeff_ptr, x, y, z));
                 });

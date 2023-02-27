@@ -132,7 +132,7 @@ levelset_to_vof_test_impl(const amrex::Real deltax, amr_wind::Field& levelset)
                             1.0,
                             amrex::max(
                                 0.0, (levelset_arr(i, j, k) + 0.5 * dx) / dx));
-                        error += amrex::Math::abs(approx_vof - vof);
+                        error += std::abs(approx_vof - vof);
                     }
 
                     // Perform checks in single-phase cells
