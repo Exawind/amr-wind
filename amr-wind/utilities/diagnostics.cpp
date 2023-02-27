@@ -400,7 +400,8 @@ void incflo::PrintMaxVelLocations(const std::string& header)
     // Output results
     amrex::Print() << "\nL-inf norm vels: " << header << std::endl
                    << "........................................................"
-                      "......................" << std::endl;
+                      "......................"
+                   << std::endl;
 
     amrex::Print() << "Max u: " << std::setw(20) << std::right << u_max;
     amrex::Print() << " |  Location (x,y,z): ";
