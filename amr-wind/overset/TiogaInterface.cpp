@@ -23,7 +23,6 @@ namespace {
  */
 void iblank_to_mask(const IntField& iblank, IntField& maskf)
 {
-	amrex::Print()<<"Entered iblank_to_mask"<<std::endl;
     const auto& nlevels = iblank.repo().mesh().finestLevel() + 1;
 
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -43,7 +42,6 @@ void iblank_to_mask(const IntField& iblank, IntField& maskf)
                 });
         }
     }
-	amrex::Print()<<"Left iblank_to_mask"<<std::endl;
 }
 } // namespace
 
@@ -83,60 +81,29 @@ TiogaInterface::TiogaInterface(CFDSim& sim)
 }
 
 
-/*
-TiogaInterface::TiogaInterface(CFDSim& sim)
-    : m_sim(sim)
-    , m_iblank_cell(sim.repo().declare_int_field(
-          "iblank_cell", 1, sim.pde_manager().num_ghost_state()))
-    , m_iblank_node(sim.repo().declare_int_field(
-          "iblank_node", 1, sim.pde_manager().num_ghost_state(), 1,
-          FieldLoc::NODE))
-    , m_iblank_cell_host(sim.repo().declare_int_field_on_host(
-          "iblank_cell_host", 1, sim.pde_manager().num_ghost_state()))
-    , m_iblank_node_host(sim.repo().declare_int_field_on_host(
-          "iblank_node_host", 1, sim.pde_manager().num_ghost_state(), 1,
-          FieldLoc::NODE))
-    , m_mask_cell(sim.repo().declare_int_field(
-          "mask_cell", 1, sim.pde_manager().num_ghost_state()))
-    , m_mask_node(sim.repo().declare_int_field(
-          "mask_node", 1, sim.pde_manager().num_ghost_state(), 1,
-          FieldLoc::NODE))
-{
-    m_sim.io_manager().register_output_int_var(m_iblank_cell.name());
-}
-*/
 // clang-format on
 
 void TiogaInterface::post_init_actions()
 {
-//    auto& repo = m_sim.repo();
-//    const int num_ghost = m_sim.pde_manager().num_ghost_state();
-//    m_iblank_cell_host = repo.create_int_scratch_field_on_host("iblank_cell_host",1,num_ghost, FieldLoc::CELL);
-//    m_iblank_node_host = repo.create_int_scratch_field_on_host("iblank_node_host",1,num_ghost, FieldLoc::NODE);
-	amrex::Print()<<"Entered post_init_actions"<<std::endl;
     amr_to_tioga_mesh();
 
     // Initialize masking so that all cells are active in solvers
     m_mask_cell.setVal(1);
     m_mask_node.setVal(1);
-	amrex::Print()<<"Left post_init_actions"<<std::endl;
 }
 
 void TiogaInterface::post_regrid_actions()
 {
-	amrex::Print()<<"Entered post_regrid_actions"<<std::endl;
     amr_to_tioga_mesh();
     amr_to_tioga_iblank();
 
     // Initialize masking so that all cells are active in solvers
     m_mask_cell.setVal(1);
     m_mask_node.setVal(1);
-	amrex::Print()<<"Left post_regrid_actions"<<std::endl;
 }
 
 void TiogaInterface::pre_overset_conn_work()
 {
-	amrex::Print()<<"Entered pre_overset_conn_work"<<std::endl;
 
     auto& repo = m_sim.repo();
     const int num_ghost = m_sim.pde_manager().num_ghost_state();
@@ -153,13 +120,11 @@ void TiogaInterface::pre_overset_conn_work()
     (*m_iblank_cell_host).setVal(1);
     (*m_iblank_node_host).setVal(1);
 	
-	amrex::Print()<<"Left pre_overset_conn_work"<<std::endl;
 }
 
 void TiogaInterface::post_overset_conn_work()
 {
 
-	amrex::Print()<<"Entered post_overset_conn_work"<<std::endl;
 
     auto& repo = m_sim.repo();
     const int nlevels = repo.num_active_levels();
@@ -177,7 +142,6 @@ void TiogaInterface::post_overset_conn_work()
     for (auto& eqn : m_sim.pde_manager().scalar_eqns()) {
         eqn->post_regrid_actions();
 
-	amrex::Print()<<"Left post_overset_conn_work"<<std::endl;
     }
     m_iblank_cell_host.reset();
     m_iblank_node_host.reset();
@@ -187,7 +151,6 @@ void TiogaInterface::register_solution(
     const std::vector<std::string>& cell_vars,
     const std::vector<std::string>& node_vars)
 {
-	amrex::Print()<<"Entered register_solution"<<std::endl;
     auto& repo = m_sim.repo();
     const auto comp_counter =
         [&repo](int total, const std::string& fname) -> int {
@@ -287,23 +250,19 @@ void TiogaInterface::register_solution(
             auto& qnfab_host = (*m_qnode_host)(lev);
 
             for (amrex::MFIter mfi(qcfab); mfi.isValid(); ++mfi) {
-            //for (amrex::MFIter mfi(qcfab_host); mfi.isValid(); ++mfi) {
                 // Copy from device to host
                 ad.qcell.h_view[ilp] = qcfab_host[mfi].dataPtr();
-                // Do nothing for d_view
+                // Pass pointers to vector prior to d_view copy
 	    	qcellPtr[ilp] = qcfab[mfi].dataPtr();
-                //ad.qcell.d_view[ilp] = qcfab[mfi].dataPtr();
                 // Copy from device to host
                 ad.qnode.h_view[ilp] = qnfab_host[mfi].dataPtr();
-                // Do nothing for d_view
+                // Pass pointers to vector prior to d_view copy
 	    	qnodePtr[ilp] = qnfab[mfi].dataPtr();
-                //ad.qnode.d_view[ilp] = qnfab[mfi].dataPtr();
 
                 ++ilp;
             }
         }
 	// Host to device copy from standard vector to 
-	// ad.iblank_cell.d_view
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, qcellPtr.begin(), qcellPtr.end(),
             ad.qcell.d_view.begin());
@@ -311,26 +270,12 @@ void TiogaInterface::register_solution(
             amrex::Gpu::hostToDevice, qnodePtr.begin(), qnodePtr.end(),
             ad.qnode.d_view.begin());
     }
-	amrex::Print()<<"Left register_solution"<<std::endl;
 }
 
 void TiogaInterface::update_solution()
 {
-	amrex::Print()<<"Entered update solution"<<std::endl;
     auto& repo = m_sim.repo();
     const int num_ghost = m_sim.pde_manager().num_ghost_state();
-
-    // Update cell variables
-    {
-        int icomp = 0;
-        for (const auto& cvar : m_cell_vars) {
-            auto& fld = repo.get_field(cvar);
-            const int ncomp = fld.num_comp();
-            field_ops::copy(fld, *m_qcell, icomp, 0, ncomp, num_ghost);
-            fld.fillpatch(m_sim.time().new_time());
-            icomp += ncomp;
-        }
-    }
 
     // Update cell variables on device
     {
@@ -342,7 +287,6 @@ void TiogaInterface::update_solution()
             const int nlevels = repo.num_active_levels();
             for (int lev = 0; lev < nlevels; ++lev) {
 	    	htod_memcpy(fld(lev),(*m_qcell_host)(lev),icomp,0,ncomp);
-	    	//htod_memcpy(fld(lev),(*m_qcell_host)(lev),0,icomp,ncomp);
             }
             fld.fillpatch(m_sim.time().new_time());
             icomp += ncomp;
@@ -351,17 +295,6 @@ void TiogaInterface::update_solution()
      }
 
 
-    // Update nodal variables
-    {
-        int icomp = 0;
-        for (const auto& cvar : m_node_vars) {
-            auto& fld = repo.get_field(cvar);
-            const int ncomp = fld.num_comp();
-            field_ops::copy(fld, *m_qnode, icomp, 0, ncomp, num_ghost);
-            fld.fillpatch(m_sim.time().new_time());
-            icomp += ncomp;
-        }
-    }
     // Update nodal variables on device
     {
         int icomp = 0;
@@ -372,7 +305,6 @@ void TiogaInterface::update_solution()
             const int nlevels = repo.num_active_levels();
             for (int lev = 0; lev < nlevels; ++lev) {
 		htod_memcpy(fld(lev),(*m_qnode_host)(lev),icomp,0,ncomp);
-		//htod_memcpy(fld(lev),(*m_qnode_host)(lev),0,icomp,ncomp);
             }
             fld.fillpatch(m_sim.time().new_time());
             icomp += ncomp;
@@ -385,12 +317,10 @@ void TiogaInterface::update_solution()
 
     m_qcell_host.reset();
     m_qnode_host.reset();
-	amrex::Print()<<"Left update solution"<<std::endl;
 }
 
 void TiogaInterface::amr_to_tioga_mesh()
 {
-	amrex::Print()<<"Entered amr_to_tioga_mesh"<<std::endl;
     BL_PROFILE("amr-wind::TiogaInterface::amr_to_tioga_mesh");
     auto& mesh = m_sim.mesh();
     const int nlevels = mesh.finestLevel() + 1;
@@ -472,11 +402,9 @@ void TiogaInterface::amr_to_tioga_mesh()
     m_amr_data->dx.copy_to_device();
     m_amr_data->global_idmap.copy_to_device();
 
-	amrex::Print()<<"Left amr_to_tioga_mesh"<<std::endl;
 }
 void TiogaInterface::amr_to_tioga_iblank()
 {
-	amrex::Print()<<"Entered amr_to_tioga_iblank"<<std::endl;
     BL_PROFILE("amr-wind::TiogaInterface::amr_to_tioga_iblank");
     auto& mesh = m_sim.mesh();
     const int nlevels = mesh.finestLevel() + 1;
@@ -497,8 +425,6 @@ void TiogaInterface::amr_to_tioga_iblank()
         auto& ibnodefab = ibnode(lev);
         auto& ibfab_host = (*m_iblank_cell_host)(lev);
         auto& ibnodefab_host = (*m_iblank_node_host)(lev);
-        //auto& ibfab_host = ibcell_host(lev);
-        //auto& ibnodefab_host = ibnode_host(lev);
 
         for (amrex::MFIter mfi(ibfab); mfi.isValid(); ++mfi) {
             auto& ib = ibfab[mfi];
@@ -506,13 +432,9 @@ void TiogaInterface::amr_to_tioga_iblank()
             auto& ib_host = ibfab_host[mfi];
             auto& ibn_host = ibnodefab_host[mfi];
 
-            //ad.iblank_cell.h_view[ilp] = ib.dataPtr();
-            //ad.iblank_node.h_view[ilp] = ibn.dataPtr();
             ad.iblank_cell.h_view[ilp] = ib_host.dataPtr();
             ad.iblank_node.h_view[ilp] = ibn_host.dataPtr();
 
-            //ad.iblank_cell.d_view[ilp] = ib.dataPtr();
-            //ad.iblank_node.d_view[ilp] = ibn.dataPtr();
 	    tmpdataPtr[ilp] = ib.dataPtr();
 	    tmpdataPtrn[ilp] = ibn.dataPtr();
 
@@ -529,7 +451,6 @@ void TiogaInterface::amr_to_tioga_iblank()
             amrex::Gpu::hostToDevice, tmpdataPtrn.begin(), tmpdataPtrn.end(),
             ad.iblank_node.d_view.begin());
 
-	amrex::Print()<<"Left amr_to_tioga_iblank"<<std::endl;
 }
 } // namespace amr_wind
 
