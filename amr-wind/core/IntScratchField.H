@@ -14,17 +14,7 @@ namespace amr_wind {
 
 class FieldRepo;
 
-/** A temporary computational field
- *  \ingroup fields
- *
- *  An IntScratchField is similar to a Field in usage, but is temporary in nature.
- *  It is used as a scratch buffer to compute intermediate quantities. However,
- *  unlike fields these don't have multiple states, and cannot survive across a
- *  regrid. By default, FieldRepo returns a unique pointer to this instance and
- *  it is not safe to hold this pointer across timesteps.
- *
- *  At present, IntScratchField cannot be used for I/O and/or post-processing
- * utilities.
+/** Integer version of ScratchField that works with iMultiFab
  */
 class IntScratchField
 {
@@ -65,36 +55,6 @@ public:
 
     void setVal(int value) noexcept;
 
-    //void setVal(
-    //    int value, int start_comp, int num_comp = 1, int nghost = 0) noexcept;
-
-    //void setVal(const amrex::Vector<int>& values, int nghost = 0) noexcept;
-
-    /** Return a sub-view of the ScratchField instance
-     */
-    /*
-    ViewField<IntScratchField> subview(const int scomp = 0, const int ncomp = 1)
-    {
-        return {*this, scomp, ncomp};
-    }
-    */
-	/*
-    void fillpatch(amrex::Real time) noexcept;
-    void fillpatch(amrex::Real time, const amrex::IntVect& ng) noexcept;
-
-    void fillpatch(
-        int lev,
-        amrex::Real time,
-        amrex::iMultiFab& mfab,
-        const amrex::IntVect& nghost) noexcept;
-
-    void fillpatch(
-        int lev,
-        amrex::Real time,
-        amrex::iMultiFab& mfab,
-        const amrex::IntVect& nghost,
-        amrex::Vector<amrex::BCRec>& bcrec) noexcept;
-	*/
 
 protected:
     IntScratchField(

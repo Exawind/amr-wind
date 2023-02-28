@@ -312,6 +312,49 @@ TEST_F(FieldRepoTest, scratch_fields)
     }
 }
 
+
+TEST_F(FieldRepoTest, int_scratch_fields)
+{
+
+
+    populate_parameters();
+    create_mesh_instance();
+
+    auto& frepo = mesh().field_repo();
+    // Check that scratch field creation is disallowed before mesh is created
+    amrex::Print()<<"Before except throw"<<std::endl;
+    #if !(defined(AMREX_USE_MPI) && defined(__APPLE__))
+    EXPECT_THROW(frepo.create_int_scratch_field_on_host(1, 0), amrex::RuntimeError);
+    #endif
+    amrex::Print()<<"After except throw"<<std::endl;
+    initialize_mesh();
+
+    // cppcheck-suppress constVariable
+    auto ibcell_host = frepo.create_int_scratch_field_on_host(
+	"iblank_cell_host", 1, 0, amr_wind::FieldLoc::CELL);
+    // cppcheck-suppress constVariable
+    auto ibnode_host = frepo.create_int_scratch_field_on_host(
+        "iblank_node_host", 1, 0, amr_wind::FieldLoc::NODE);
+
+    const int nlevels = frepo.num_active_levels();
+    /*
+    for (int lev = 0; lev < nlevels; ++lev) {
+        (*ibcell_host)(lev).setVal(1);
+        (*ibnode_host)(lev).setVal(0);
+    }
+    */
+
+        (*ibcell_host).setVal(1);
+        (*ibnode_host).setVal(0);
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        EXPECT_EQ((*ibcell_host)(lev).max(0), 1);
+        EXPECT_EQ((*ibcell_host)(lev).min(0), 1);
+        EXPECT_EQ((*ibnode_host)(lev).max(0), 0);
+        EXPECT_EQ((*ibnode_host)(lev).min(0), 0);
+    }
+}
+
 TEST_F(FieldRepoTest, int_fields)
 {
     initialize_mesh();
