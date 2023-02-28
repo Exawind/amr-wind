@@ -32,7 +32,10 @@ void init_velocity(amr_wind::Field& velocity)
 }
 
 void init_mac_velocity(
-    amr_wind::Field& cc, amr_wind::Field& umac, amr_wind::Field& vmac, amr_wind::Field& wmac)
+    amr_wind::Field& cc,
+    amr_wind::Field& umac,
+    amr_wind::Field& vmac,
+    amr_wind::Field& wmac)
 {
     const auto& mesh = cc.repo().mesh();
     const int nlevels = cc.repo().num_active_levels();
