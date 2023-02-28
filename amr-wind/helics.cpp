@@ -43,13 +43,13 @@ helics_storage::helics_storage(CFDSim& sim) : m_sim(sim)
     phelics.query("activated", m_helics_activated);
 
     std::string broker_address = "127.0.0.1";
-    std::string broker_port = "23405";
+    int broker_port = 23405;
 
     phelics.query("broker_address", broker_address);
     phelics.query("broker_port", broker_port);
 
     m_fedinitstring.append(" --broker_address=" + broker_address);
-    m_fedinitstring.append(" --brokerport=" + broker_port);
+    m_fedinitstring.append(" --brokerport=" + std::to_string(broker_port));
     amrex::Print() << "helics fedinitstring: " << m_fedinitstring << std::endl;
 
 #endif
