@@ -454,7 +454,7 @@ std::unique_ptr<IntScratchField> FieldRepo::create_int_scratch_field_on_host(
     BL_PROFILE("amr-wind::FieldRepo::create_int_scratch_field_on_host");
     if (!m_is_initialized) {
         amrex::Abort(
-            "Scratch field creation is not permitted before mesh is "
+            "Integer scratch field creation is not permitted before mesh is "
             "initialized");
     }
 
