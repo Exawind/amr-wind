@@ -20,14 +20,12 @@ public:
     ~helics_storage();
 
     void pre_advance_work();
-    bool is_activated() const { return helics_activated; }
+    bool is_activated() const { return m_helics_activated; }
 
 #ifdef AMR_WIND_USE_HELICS
-    HelicsTime currenttime = 0.0;
-    std::string fedinitstring = "--federates=1";
+    HelicsTime m_currenttime = 0.0;
+    std::string m_fedinitstring = "--federates=1";
 #endif
-    double deltat =
-        0.01; // what is this for? should we use m_time.deltaT() instead?
 
     int m_num_turbines{1};
 
@@ -50,9 +48,9 @@ private:
 #endif
 
 #ifdef AMR_WIND_USE_HELICS
-    bool helics_activated{true};
+    bool m_helics_activated{true};
 #else
-    bool helics_activated{false};
+    bool m_helics_activated{false};
 #endif
 };
 

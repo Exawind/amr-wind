@@ -66,6 +66,8 @@ private:
 
     void compute_source_term();
 
+    void communicate_turbine_io();
+
     CFDSim& m_sim;
 
     Field& m_act_source;
