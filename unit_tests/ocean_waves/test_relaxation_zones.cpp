@@ -162,7 +162,7 @@ amrex::Real field_error(amr_wind::Field& comp, amr_wind::Field& targ, int ncomp)
 
                 amrex::Loop(
                     bx, nc, [=, &error](int i, int j, int k, int n) noexcept {
-                        error += amrex::Math::abs(
+                        error += std::abs(
                             comp_arr(i, j, k, n) - targ_arr(i, j, k, n));
                     });
 
@@ -227,7 +227,7 @@ void init_reference_fields(
                 vel_arr(i, j, k, 2) = 0.0;
             } else {
                 // adjust z for partially liquid cell
-                if (amrex::Math::abs(lvs_arr(i, j, k)) - 0.5 * dx[2] < 0) {
+                if (std::abs(lvs_arr(i, j, k)) - 0.5 * dx[2] < 0) {
                     z -= 0.5 * lvs_arr(i, j, k);
                 }
                 vel_arr(i, j, k, 0) = fac * u_def(x, y, z);

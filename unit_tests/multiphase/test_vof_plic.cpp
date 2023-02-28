@@ -124,9 +124,9 @@ amrex::Real normal_vector_test_impl(amr_wind::Field& vof, const int dir)
 
                     // Use L1 norm, check cells where slope is known
                     if (ii + jj + kk == 3) {
-                        error += amrex::Math::abs(mx - (d != 0 ? 0.5 : 0.0));
-                        error += amrex::Math::abs(my - (d != 1 ? 0.5 : 0.0));
-                        error += amrex::Math::abs(mz - (d != 2 ? 0.5 : 0.0));
+                        error += std::abs(mx - (d != 0 ? 0.5 : 0.0));
+                        error += std::abs(my - (d != 1 ? 0.5 : 0.0));
+                        error += std::abs(mz - (d != 2 ? 0.5 : 0.0));
                     }
                 });
 
@@ -162,11 +162,11 @@ amrex::Real fit_plane_test_impl(amr_wind::Field& vof, const int dir)
                             i, j, k, vof_arr, mx, my, mz, alpha);
 
                         // Check slope
-                        error += amrex::Math::abs(mx - (d != 0 ? 0.5 : 0.0));
-                        error += amrex::Math::abs(my - (d != 1 ? 0.5 : 0.0));
-                        error += amrex::Math::abs(mz - (d != 2 ? 0.5 : 0.0));
+                        error += std::abs(mx - (d != 0 ? 0.5 : 0.0));
+                        error += std::abs(my - (d != 1 ? 0.5 : 0.0));
+                        error += std::abs(mz - (d != 2 ? 0.5 : 0.0));
                         // Check intercept
-                        error += amrex::Math::abs(alpha - 0.5);
+                        error += std::abs(alpha - 0.5);
                     }
                 });
 
@@ -202,11 +202,11 @@ amrex::Real fit_plane_test_impl_h(
                             i, j, k, vof_arr, mx, my, mz, alpha);
 
                         // Check slope
-                        error += amrex::Math::abs(mx - (d == 0 ? 1.0 : 0.0));
-                        error += amrex::Math::abs(my - (d == 1 ? 1.0 : 0.0));
-                        error += amrex::Math::abs(mz - (d == 2 ? 1.0 : 0.0));
+                        error += std::abs(mx - (d == 0 ? 1.0 : 0.0));
+                        error += std::abs(my - (d == 1 ? 1.0 : 0.0));
+                        error += std::abs(mz - (d == 2 ? 1.0 : 0.0));
                         // Check intercept
-                        error += amrex::Math::abs(alpha - vv);
+                        error += std::abs(alpha - vv);
                     }
                 });
 
