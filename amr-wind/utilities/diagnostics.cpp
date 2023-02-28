@@ -148,10 +148,189 @@ amrex::Real amr_wind::diagnostics::get_macvel_loc(
         });
 }
 
-void amr_wind::diagnostics::PrintMaxMACVelLocations(
+amrex::Array<amrex::Real, 24> amr_wind::diagnostics::PrintMaxVelLocations(
     const amr_wind::FieldRepo& repo, const std::string& header)
 {
-    BL_PROFILE("amr-wind::incflo::PrintMaxMACVelLocations");
+    BL_PROFILE("amr-wind::diagnostics::PrintMaxVelLocations");
+
+    // Get fields
+    auto& vel = repo.get_field("velocity");
+    const int finest_level = repo.num_active_levels() - 1;
+
+    // Get infinity norm of velocities
+    amrex::Real u_max{-1e8}, v_max{-1e8}, w_max{-1e8};
+    // Minima will be negated later
+    amrex::Real u_min{-1e8}, v_min{-1e8}, w_min{-1e8};
+    for (int lev = 0; lev <= finest_level; lev++) {
+        // Use level_mask to only count finest level present
+        amrex::iMultiFab level_mask;
+        if (lev < finest_level) {
+            level_mask = makeFineMask(
+                repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev),
+                repo.mesh().boxArray(lev + 1), amrex::IntVect(2), 1, 0);
+        } else {
+            level_mask.define(
+                repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev), 1,
+                0, amrex::MFInfo());
+            level_mask.setVal(1);
+        }
+
+        u_max = amrex::max(
+            u_max, amr_wind::diagnostics::get_vel_max(vel(lev), level_mask, 0));
+
+        u_min = amrex::max(
+            u_min, amr_wind::diagnostics::get_vel_min(vel(lev), level_mask, 0));
+
+        v_max = amrex::max(
+            v_max, amr_wind::diagnostics::get_vel_max(vel(lev), level_mask, 1));
+
+        v_min = amrex::max(
+            v_min, amr_wind::diagnostics::get_vel_min(vel(lev), level_mask, 1));
+
+        w_max = amrex::max(
+            w_max, amr_wind::diagnostics::get_vel_max(vel(lev), level_mask, 2));
+
+        w_min = amrex::max(
+            w_min, amr_wind::diagnostics::get_vel_min(vel(lev), level_mask, 2));
+    }
+
+    // Do additional parallelism stuff
+    amrex::ParallelDescriptor::ReduceRealMax(u_max);
+    amrex::ParallelDescriptor::ReduceRealMax(v_max);
+    amrex::ParallelDescriptor::ReduceRealMax(w_max);
+    amrex::ParallelDescriptor::ReduceRealMax(u_min);
+    amrex::ParallelDescriptor::ReduceRealMax(v_min);
+    amrex::ParallelDescriptor::ReduceRealMax(w_min);
+
+    // Negate minima
+    u_min *= -1.0;
+    v_min *= -1.0;
+    w_min *= -1.0;
+
+    // Get locations of these extrema
+    auto problo = (repo.mesh().Geom())[0].ProbLoArray();
+    auto dx = (repo.mesh().Geom())[0].CellSizeArray();
+    amrex::GpuArray<amrex::Real, 3> u_max_loc{problo[0], problo[1], problo[2]};
+    amrex::GpuArray<amrex::Real, 3> v_max_loc{problo[0], problo[1], problo[2]};
+    amrex::GpuArray<amrex::Real, 3> w_max_loc{problo[0], problo[1], problo[2]};
+    amrex::GpuArray<amrex::Real, 3> u_min_loc{problo[0], problo[1], problo[2]};
+    amrex::GpuArray<amrex::Real, 3> v_min_loc{problo[0], problo[1], problo[2]};
+    amrex::GpuArray<amrex::Real, 3> w_min_loc{problo[0], problo[1], problo[2]};
+    for (int lev = 0; lev <= finest_level; lev++) {
+        // Use level_mask to only count finest level present
+        amrex::iMultiFab level_mask;
+        if (lev < finest_level) {
+            level_mask = makeFineMask(
+                repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev),
+                repo.mesh().boxArray(lev + 1), amrex::IntVect(2), 1, 0);
+        } else {
+            level_mask.define(
+                repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev), 1,
+                0, amrex::MFInfo());
+            level_mask.setVal(1);
+        }
+
+        // Loop coordinates directions
+        for (int n = 0; n < 3; n++) {
+            u_max_loc[n] = amrex::max(
+                u_max_loc[n],
+                amr_wind::diagnostics::get_vel_loc(
+                    vel(lev), level_mask, 0, n, u_max, problo, dx));
+
+            u_min_loc[n] = amrex::max(
+                u_min_loc[n],
+                amr_wind::diagnostics::get_vel_loc(
+                    vel(lev), level_mask, 0, n, u_min, problo, dx));
+
+            v_max_loc[n] = amrex::max(
+                v_max_loc[n],
+                amr_wind::diagnostics::get_vel_loc(
+                    vel(lev), level_mask, 1, n, v_max, problo, dx));
+
+            v_min_loc[n] = amrex::max(
+                v_min_loc[n],
+                amr_wind::diagnostics::get_vel_loc(
+                    vel(lev), level_mask, 1, n, v_min, problo, dx));
+
+            w_max_loc[n] = amrex::max(
+                w_max_loc[n],
+                amr_wind::diagnostics::get_vel_loc(
+                    vel(lev), level_mask, 2, n, w_max, problo, dx));
+
+            w_min_loc[n] = amrex::max(
+                w_min_loc[n],
+                amr_wind::diagnostics::get_vel_loc(
+                    vel(lev), level_mask, 2, n, w_min, problo, dx));
+        }
+    }
+
+    // Additional parallelism
+    for (int n = 0; n < 3; ++n) {
+        amrex::ParallelDescriptor::ReduceRealMax(u_max_loc[n]);
+        amrex::ParallelDescriptor::ReduceRealMax(v_max_loc[n]);
+        amrex::ParallelDescriptor::ReduceRealMax(w_max_loc[n]);
+        amrex::ParallelDescriptor::ReduceRealMax(u_min_loc[n]);
+        amrex::ParallelDescriptor::ReduceRealMax(v_min_loc[n]);
+        amrex::ParallelDescriptor::ReduceRealMax(w_min_loc[n]);
+    }
+
+    // Output results
+    amrex::Print() << "\nL-inf norm vels: " << header << std::endl
+                   << "........................................................"
+                      "......................"
+                   << std::endl;
+
+    amrex::Print() << "Max u: " << std::setw(20) << std::right << u_max;
+    amrex::Print() << " |  Location (x,y,z): ";
+    amrex::Print() << std::setw(10) << std::right << u_max_loc[0] << ", ";
+    amrex::Print() << std::setw(10) << std::right << u_max_loc[1] << ", ";
+    amrex::Print() << std::setw(10) << std::right << u_max_loc[2] << std::endl;
+    amrex::Print() << "Min u: " << std::setw(20) << std::right << u_min;
+    amrex::Print() << " |  Location (x,y,z): ";
+    amrex::Print() << std::setw(10) << std::right << u_min_loc[0] << ", ";
+    amrex::Print() << std::setw(10) << std::right << u_min_loc[1] << ", ";
+    amrex::Print() << std::setw(10) << std::right << u_min_loc[2] << std::endl;
+
+    amrex::Print() << "Max v: " << std::setw(20) << std::right << v_max;
+    amrex::Print() << " |  Location (x,y,z): ";
+    amrex::Print() << std::setw(10) << std::right << v_max_loc[0] << ", ";
+    amrex::Print() << std::setw(10) << std::right << v_max_loc[1] << ", ";
+    amrex::Print() << std::setw(10) << std::right << v_max_loc[2] << std::endl;
+    amrex::Print() << "Min v: " << std::setw(20) << std::right << v_min;
+    amrex::Print() << " |  Location (x,y,z): ";
+    amrex::Print() << std::setw(10) << std::right << v_min_loc[0] << ", ";
+    amrex::Print() << std::setw(10) << std::right << v_min_loc[1] << ", ";
+    amrex::Print() << std::setw(10) << std::right << v_min_loc[2] << std::endl;
+
+    amrex::Print() << "Max w: " << std::setw(20) << std::right << w_max;
+    amrex::Print() << " |  Location (x,y,z): ";
+    amrex::Print() << std::setw(10) << std::right << w_max_loc[0] << ", ";
+    amrex::Print() << std::setw(10) << std::right << w_max_loc[1] << ", ";
+    amrex::Print() << std::setw(10) << std::right << w_max_loc[2] << std::endl;
+    amrex::Print() << "Min w: " << std::setw(20) << std::right << w_min;
+    amrex::Print() << " |  Location (x,y,z): ";
+    amrex::Print() << std::setw(10) << std::right << w_min_loc[0] << ", ";
+    amrex::Print() << std::setw(10) << std::right << w_min_loc[1] << ", ";
+    amrex::Print() << std::setw(10) << std::right << w_min_loc[2] << std::endl;
+
+    amrex::Print() << "........................................................"
+                      "......................"
+                   << std::endl
+                   << std::endl;
+
+    // Return array of answers (for testing)
+    return amrex::Array<amrex::Real, 24>{
+        u_max,        u_max_loc[0], u_max_loc[1], u_max_loc[2], u_min,
+        u_min_loc[0], u_min_loc[1], u_min_loc[2], v_max,        v_max_loc[0],
+        v_max_loc[1], v_max_loc[2], v_min,        v_min_loc[0], v_min_loc[1],
+        v_min_loc[2], w_max,        w_max_loc[0], w_max_loc[1], w_max_loc[2],
+        w_min,        w_min_loc[0], w_min_loc[1], w_min_loc[2]};
+}
+
+amrex::Array<amrex::Real, 24> amr_wind::diagnostics::PrintMaxMACVelLocations(
+    const amr_wind::FieldRepo& repo, const std::string& header)
+{
+    BL_PROFILE("amr-wind::diagnostics::PrintMaxMACVelLocations");
 
     // Get fields
     auto& u_mac = repo.get_field("u_mac");
@@ -337,6 +516,15 @@ void amr_wind::diagnostics::PrintMaxMACVelLocations(
                       "......................"
                    << std::endl
                    << std::endl;
+
+    // Return array of answers (for testing)
+    return amrex::Array<amrex::Real, 24>{
+        uMAC_max, uMAC_max_loc[0], uMAC_max_loc[1], uMAC_max_loc[2],
+        uMAC_min, uMAC_min_loc[0], uMAC_min_loc[1], uMAC_min_loc[2],
+        vMAC_max, vMAC_max_loc[0], vMAC_max_loc[1], vMAC_max_loc[2],
+        vMAC_min, vMAC_min_loc[0], vMAC_min_loc[1], vMAC_min_loc[2],
+        wMAC_max, wMAC_max_loc[0], wMAC_max_loc[1], wMAC_max_loc[2],
+        wMAC_min, wMAC_min_loc[0], wMAC_min_loc[1], wMAC_min_loc[2]};
 }
 
 //
@@ -387,171 +575,7 @@ void incflo::PrintMaxValues(const std::string& header)
 
 void incflo::PrintMaxVelLocations(const std::string& header)
 {
-    BL_PROFILE("amr-wind::incflo::PrintMaxVelLocations");
-
-    // Get fields
-    auto& vel = repo().get_field("velocity");
-
-    // Get infinity norm of velocities
-    amrex::Real u_max{-1e8}, v_max{-1e8}, w_max{-1e8};
-    // Minima will be negated later
-    amrex::Real u_min{-1e8}, v_min{-1e8}, w_min{-1e8};
-    for (int lev = 0; lev <= finest_level; lev++) {
-        // Use level_mask to only count finest level present
-        amrex::iMultiFab level_mask;
-        if (lev < finest_level) {
-            level_mask = makeFineMask(
-                m_sim.mesh().boxArray(lev), m_sim.mesh().DistributionMap(lev),
-                m_sim.mesh().boxArray(lev + 1), amrex::IntVect(2), 1, 0);
-        } else {
-            level_mask.define(
-                m_sim.mesh().boxArray(lev), m_sim.mesh().DistributionMap(lev),
-                1, 0, amrex::MFInfo());
-            level_mask.setVal(1);
-        }
-
-        u_max = amrex::max(
-            u_max, amr_wind::diagnostics::get_vel_max(vel(lev), level_mask, 0));
-
-        u_min = amrex::max(
-            u_min, amr_wind::diagnostics::get_vel_min(vel(lev), level_mask, 0));
-
-        v_max = amrex::max(
-            v_max, amr_wind::diagnostics::get_vel_max(vel(lev), level_mask, 1));
-
-        v_min = amrex::max(
-            v_min, amr_wind::diagnostics::get_vel_min(vel(lev), level_mask, 1));
-
-        w_max = amrex::max(
-            w_max, amr_wind::diagnostics::get_vel_max(vel(lev), level_mask, 2));
-
-        w_min = amrex::max(
-            w_min, amr_wind::diagnostics::get_vel_min(vel(lev), level_mask, 2));
-    }
-
-    // Do additional parallelism stuff
-    amrex::ParallelDescriptor::ReduceRealMax(u_max);
-    amrex::ParallelDescriptor::ReduceRealMax(v_max);
-    amrex::ParallelDescriptor::ReduceRealMax(w_max);
-    amrex::ParallelDescriptor::ReduceRealMax(u_min);
-    amrex::ParallelDescriptor::ReduceRealMax(v_min);
-    amrex::ParallelDescriptor::ReduceRealMax(w_min);
-
-    // Negate minima
-    u_min *= -1.0;
-    v_min *= -1.0;
-    w_min *= -1.0;
-
-    // Get locations of these extrema
-    auto problo = (m_sim.mesh().Geom())[0].ProbLoArray();
-    auto dx = (m_sim.mesh().Geom())[0].CellSizeArray();
-    amrex::GpuArray<amrex::Real, 3> u_max_loc{problo[0], problo[1], problo[2]};
-    amrex::GpuArray<amrex::Real, 3> v_max_loc{problo[0], problo[1], problo[2]};
-    amrex::GpuArray<amrex::Real, 3> w_max_loc{problo[0], problo[1], problo[2]};
-    amrex::GpuArray<amrex::Real, 3> u_min_loc{problo[0], problo[1], problo[2]};
-    amrex::GpuArray<amrex::Real, 3> v_min_loc{problo[0], problo[1], problo[2]};
-    amrex::GpuArray<amrex::Real, 3> w_min_loc{problo[0], problo[1], problo[2]};
-    for (int lev = 0; lev <= finest_level; lev++) {
-        // Use level_mask to only count finest level present
-        amrex::iMultiFab level_mask;
-        if (lev < finest_level) {
-            level_mask = makeFineMask(
-                m_sim.mesh().boxArray(lev), m_sim.mesh().DistributionMap(lev),
-                m_sim.mesh().boxArray(lev + 1), amrex::IntVect(2), 1, 0);
-        } else {
-            level_mask.define(
-                m_sim.mesh().boxArray(lev), m_sim.mesh().DistributionMap(lev),
-                1, 0, amrex::MFInfo());
-            level_mask.setVal(1);
-        }
-
-        // Loop coordinates directions
-        for (int n = 0; n < 3; n++) {
-            u_max_loc[n] = amrex::max(
-                u_max_loc[n],
-                amr_wind::diagnostics::get_vel_loc(
-                    vel(lev), level_mask, 0, n, u_max, problo, dx));
-
-            u_min_loc[n] = amrex::max(
-                u_min_loc[n],
-                amr_wind::diagnostics::get_vel_loc(
-                    vel(lev), level_mask, 0, n, u_min, problo, dx));
-
-            v_max_loc[n] = amrex::max(
-                v_max_loc[n],
-                amr_wind::diagnostics::get_vel_loc(
-                    vel(lev), level_mask, 1, n, v_max, problo, dx));
-
-            v_min_loc[n] = amrex::max(
-                v_min_loc[n],
-                amr_wind::diagnostics::get_vel_loc(
-                    vel(lev), level_mask, 1, n, v_min, problo, dx));
-
-            w_max_loc[n] = amrex::max(
-                w_max_loc[n],
-                amr_wind::diagnostics::get_vel_loc(
-                    vel(lev), level_mask, 2, n, w_max, problo, dx));
-
-            w_min_loc[n] = amrex::max(
-                w_min_loc[n],
-                amr_wind::diagnostics::get_vel_loc(
-                    vel(lev), level_mask, 2, n, w_min, problo, dx));
-        }
-    }
-
-    // Additional parallelism
-    for (int n = 0; n < 3; ++n) {
-        amrex::ParallelDescriptor::ReduceRealMax(u_max_loc[n]);
-        amrex::ParallelDescriptor::ReduceRealMax(v_max_loc[n]);
-        amrex::ParallelDescriptor::ReduceRealMax(w_max_loc[n]);
-        amrex::ParallelDescriptor::ReduceRealMax(u_min_loc[n]);
-        amrex::ParallelDescriptor::ReduceRealMax(v_min_loc[n]);
-        amrex::ParallelDescriptor::ReduceRealMax(w_min_loc[n]);
-    }
-
-    // Output results
-    amrex::Print() << "\nL-inf norm vels: " << header << std::endl
-                   << "........................................................"
-                      "......................"
-                   << std::endl;
-
-    amrex::Print() << "Max u: " << std::setw(20) << std::right << u_max;
-    amrex::Print() << " |  Location (x,y,z): ";
-    amrex::Print() << std::setw(10) << std::right << u_max_loc[0] << ", ";
-    amrex::Print() << std::setw(10) << std::right << u_max_loc[1] << ", ";
-    amrex::Print() << std::setw(10) << std::right << u_max_loc[2] << std::endl;
-    amrex::Print() << "Min u: " << std::setw(20) << std::right << u_min;
-    amrex::Print() << " |  Location (x,y,z): ";
-    amrex::Print() << std::setw(10) << std::right << u_min_loc[0] << ", ";
-    amrex::Print() << std::setw(10) << std::right << u_min_loc[1] << ", ";
-    amrex::Print() << std::setw(10) << std::right << u_min_loc[2] << std::endl;
-
-    amrex::Print() << "Max v: " << std::setw(20) << std::right << v_max;
-    amrex::Print() << " |  Location (x,y,z): ";
-    amrex::Print() << std::setw(10) << std::right << v_max_loc[0] << ", ";
-    amrex::Print() << std::setw(10) << std::right << v_max_loc[1] << ", ";
-    amrex::Print() << std::setw(10) << std::right << v_max_loc[2] << std::endl;
-    amrex::Print() << "Min v: " << std::setw(20) << std::right << v_min;
-    amrex::Print() << " |  Location (x,y,z): ";
-    amrex::Print() << std::setw(10) << std::right << v_min_loc[0] << ", ";
-    amrex::Print() << std::setw(10) << std::right << v_min_loc[1] << ", ";
-    amrex::Print() << std::setw(10) << std::right << v_min_loc[2] << std::endl;
-
-    amrex::Print() << "Max w: " << std::setw(20) << std::right << w_max;
-    amrex::Print() << " |  Location (x,y,z): ";
-    amrex::Print() << std::setw(10) << std::right << w_max_loc[0] << ", ";
-    amrex::Print() << std::setw(10) << std::right << w_max_loc[1] << ", ";
-    amrex::Print() << std::setw(10) << std::right << w_max_loc[2] << std::endl;
-    amrex::Print() << "Min w: " << std::setw(20) << std::right << w_min;
-    amrex::Print() << " |  Location (x,y,z): ";
-    amrex::Print() << std::setw(10) << std::right << w_min_loc[0] << ", ";
-    amrex::Print() << std::setw(10) << std::right << w_min_loc[1] << ", ";
-    amrex::Print() << std::setw(10) << std::right << w_min_loc[2] << std::endl;
-
-    amrex::Print() << "........................................................"
-                      "......................"
-                   << std::endl
-                   << std::endl;
+    amr_wind::diagnostics::PrintMaxVelLocations(repo(), header);
 }
 
 //

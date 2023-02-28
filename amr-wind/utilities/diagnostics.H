@@ -55,7 +55,10 @@ amrex::Real get_macvel_loc(
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> problo,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx);
 
-void PrintMaxMACVelLocations(
+amrex::Array<amrex::Real, 24> PrintMaxVelLocations(
+    const amr_wind::FieldRepo& repo, const std::string& header);
+
+amrex::Array<amrex::Real, 24> PrintMaxMACVelLocations(
     const amr_wind::FieldRepo& repo, const std::string& header);
 
 } // namespace amr_wind::diagnostics
