@@ -45,7 +45,8 @@ helics_storage::helics_storage(CFDSim& sim) : m_sim(sim)
     std::string broker_address = "127.0.0.1";
     std::string broker_port = "23405";
 
-    phelics.query("broker_address", broker_address) phelics
+    phelics.query("broker_address", broker_address);
+    phelics
         .query("broker_port", broker_port)
 
             m_fedinitstring.append(" --broker_address=" + broker_address);
