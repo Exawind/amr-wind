@@ -348,11 +348,11 @@ amrex::Array<amrex::Real, 24> amr_wind::diagnostics::PrintMaxMACVelLocations(
         if (lev < finest_level) {
             level_mask = makeFineMask(
                 repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev),
-                repo.mesh().boxArray(lev + 1), amrex::IntVect(2), 1, 0);
+                repo.mesh().boxArray(lev + 1), amrex::IntVect(2), 1, 1);
         } else {
             level_mask.define(
                 repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev), 1,
-                0, amrex::MFInfo());
+                1, amrex::MFInfo());
             level_mask.setVal(1);
         }
 
@@ -415,11 +415,11 @@ amrex::Array<amrex::Real, 24> amr_wind::diagnostics::PrintMaxMACVelLocations(
         if (lev < finest_level) {
             level_mask = makeFineMask(
                 repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev),
-                repo.mesh().boxArray(lev + 1), amrex::IntVect(2), 1, 0);
+                repo.mesh().boxArray(lev + 1), amrex::IntVect(2), 1, 1);
         } else {
             level_mask.define(
                 repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev), 1,
-                0, amrex::MFInfo());
+                1, amrex::MFInfo());
             level_mask.setVal(1);
         }
 

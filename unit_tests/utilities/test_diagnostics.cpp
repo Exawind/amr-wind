@@ -32,16 +32,16 @@ void init_velocity(amr_wind::Field& velocity)
 }
 
 void init_mac_velocity(
-    amr_wind::Field& umac, amr_wind::Field& vmac, amr_wind::Field& wmac)
+    amr_wind::Field& cc, amr_wind::Field& umac, amr_wind::Field& vmac, amr_wind::Field& wmac)
 {
-    const auto& mesh = umac.repo().mesh();
-    const int nlevels = umac.repo().num_active_levels();
+    const auto& mesh = cc.repo().mesh();
+    const int nlevels = cc.repo().num_active_levels();
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
 
-        for (amrex::MFIter mfi(umac(lev)); mfi.isValid(); ++mfi) {
+        for (amrex::MFIter mfi(cc(lev)); mfi.isValid(); ++mfi) {
             auto bx = mfi.growntilebox(1);
             const auto& uarr = umac(lev).array(mfi);
             const auto& varr = vmac(lev).array(mfi);
@@ -125,7 +125,8 @@ TEST_F(DiagnosticsTest, Max_MACvel)
     auto& umac = repo.get_field("u_mac");
     auto& vmac = repo.get_field("v_mac");
     auto& wmac = repo.get_field("w_mac");
-    init_mac_velocity(umac, vmac, wmac);
+    auto& cc = repo.declare_field("cc", 1, 0);
+    init_mac_velocity(cc, umac, vmac, wmac);
 
     auto fc_results =
         amr_wind::diagnostics::PrintMaxMACVelLocations(repo, "face-centered");
