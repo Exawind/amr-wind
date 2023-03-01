@@ -257,7 +257,6 @@ IntField& FieldRepo::declare_int_field(
         const std::string fname =
             field_impl::field_name_with_state(name, fstate);
         const int fid = static_cast<int>(m_int_field_vec.size());
-        const int fid = m_int_field_vec.size();
 
         std::unique_ptr<IntField> field(
             new IntField(*this, fname, fid, ncomp, ngrow, floc));
@@ -359,8 +358,6 @@ std::unique_ptr<ScratchField> FieldRepo::create_scratch_field_on_host(
             ba, m_mesh.DistributionMap(lev), ncomp, nghost, 
 	amrex::MFInfo().SetArena(amrex::The_Pinned_Arena()),
             *(m_leveldata[lev]->m_factory));
-	//amrex::MFInfo().SetArena(amrex::The_Cpu_Arena()),
-        //    *(m_leveldata[lev]->m_factory));
     }
     return field;
 }
@@ -394,8 +391,6 @@ std::unique_ptr<IntScratchField> FieldRepo::create_int_scratch_field_on_host(
             ba, m_mesh.DistributionMap(lev), ncomp, nghost, 
 	amrex::MFInfo().SetArena(amrex::The_Pinned_Arena()),
             *(m_leveldata[lev]->m_int_fact));
-	//amrex::MFInfo().SetArena(amrex::The_Cpu_Arena()),
-        //    *(m_leveldata[lev]->m_int_fact));
     }
     return field;
 }
