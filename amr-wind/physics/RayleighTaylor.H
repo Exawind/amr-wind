@@ -29,7 +29,7 @@ public:
 
     void post_init_actions() override {}
 
-    void post_regrid_actions() override {}
+    void post_regrid_actions() override;
 
     void pre_advance_work() override {}
 
@@ -38,6 +38,11 @@ public:
 private:
     Field& m_velocity;
     Field& m_density;
+
+    // Density for perturbational form
+    Field& m_rho0;
+    // Default reference density
+    amrex::Real m_rho0_const{1.0};
 
     //! RayleighTaylor field initializer instance
     std::unique_ptr<RayleighTaylorFieldInit> m_field_init;
