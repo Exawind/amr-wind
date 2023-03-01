@@ -16,10 +16,14 @@ GravityForcing::GravityForcing(const CFDSim& sim)
 {
     amrex::ParmParse pp("incflo");
     pp.queryarr("gravity", m_gravity);
+    pp.query("density", m_rho0_const);
 
     // Get density fields
     m_rho = &(sim.repo().get_field("density"));
 
+    // Check if perturbational pressure desired
+    amrex::ParmParse pp_icns("ICNS");
+    pp_icns.query("use_perturb_pressure", is_pptb);
     // Determine if rho0 field exists
     is_rho0 = sim.repo().field_exists("rho0");
     if (is_rho0) {
@@ -53,11 +57,14 @@ void GravityForcing::operator()(
     const auto& rho_arr =
         ((*m_rho).state(field_impl::phi_state(fstate)))(lev).const_array(mfi);
     const auto& rho0_arr = (*m_rho0)(lev).const_array(mfi);
-    bool ir0 = is_rho0;
+    const bool ir0 = is_rho0;
+    const bool ipt = is_pptb;
+    const amrex::Real mr0c = m_rho0_const;
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real factor =
-            (ir0 ? 1.0 - rho0_arr(i, j, k) / rho_arr(i, j, k) : 1.0);
+            (!ipt ? 1.0
+                  : 1.0 - (ir0 ? rho0_arr(i, j, k) : mr0c) / rho_arr(i, j, k));
 
         vel_forces(i, j, k, 0) += gravity[0];
         vel_forces(i, j, k, 1) += gravity[1];
