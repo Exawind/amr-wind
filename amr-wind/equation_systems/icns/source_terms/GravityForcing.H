@@ -27,6 +27,12 @@ public:
 
 private:
     amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
+
+    Field* m_rho{nullptr};
+    Field* m_rho0{nullptr};
+
+    // Presence of rho0 for perturbational form
+    bool is_rho0{false};
 };
 
 } // namespace amr_wind::pde::icns

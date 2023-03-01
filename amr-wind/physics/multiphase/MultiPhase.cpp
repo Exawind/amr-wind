@@ -10,6 +10,30 @@
 
 namespace amr_wind {
 
+void initialize_rho0(
+    amr_wind::Field& rho0,
+    const amrex::Real rho1,
+    const amrex::Real rho2,
+    const amrex::Real wlev,
+    const amrex::Vector<amrex::Geometry> geom)
+{
+    for (int lev = 0; lev < rho0.repo().num_active_levels(); ++lev) {
+        const auto& dx = geom[lev].CellSizeArray();
+        const auto& problo = geom[lev].ProbLoArray();
+        for (amrex::MFIter mfi(rho0(lev)); mfi.isValid(); ++mfi) {
+            amrex::Box const& bx = mfi.validbox();
+            auto rho0_arr = rho0(lev).array(mfi);
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    const amrex::Real zbtm = problo[2] + k * dx[2];
+                    const amrex::Real vof =
+                        amrex::max(amrex::min(1.0, (wlev - zbtm) / dx[2]), 0.0);
+                    rho0_arr(i, j, k) = vof * rho1 + (1.0 - vof) * rho2;
+                });
+        }
+    }
+}
+
 MultiPhase::MultiPhase(CFDSim& sim)
     : m_sim(sim)
     , m_velocity(sim.pde_manager().icns().fields().field)
@@ -79,6 +103,17 @@ void MultiPhase::post_init_actions()
     q1 = momentum_sum(1);
     q2 = momentum_sum(2);
     sumvof0 = volume_fraction_sum();
+
+    // Check if water level is specified (from case definition)
+    amrex::ParmParse pp_multiphase("MultiPhase");
+    if (pp_multiphase.contains("water_level")) {
+        amrex::Real water_level0{0.0};
+        pp_multiphase.get("water_level", water_level0);
+        // Initialize rho_0 function for perturbational density, pressure
+        auto& rho0 = m_sim.repo().declare_field("rho0", 1, 0, 1);
+        initialize_rho0(
+            rho0, m_rho1, m_rho2, water_level0, m_sim.mesh().Geom());
+    }
 }
 
 void MultiPhase::pre_advance_work()
