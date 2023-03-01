@@ -34,7 +34,7 @@ public:
 
     void post_init_actions() override;
 
-    void post_regrid_actions() override {}
+    void post_regrid_actions() override;
 
     void pre_advance_work() override;
 
@@ -79,6 +79,10 @@ private:
 
     // Density value for Fluid 2
     amrex::Real m_rho2{1.0};
+
+    // Info to create rho0
+    amrex::Real water_level0{0.0};
+    bool make_rho0{false};
 
     bool m_interface_smoothing{false};
 

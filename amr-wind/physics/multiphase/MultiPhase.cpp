@@ -106,9 +106,20 @@ void MultiPhase::post_init_actions()
 
     // Check if water level is specified (from case definition)
     amrex::ParmParse pp_multiphase("MultiPhase");
-    if (pp_multiphase.contains("water_level")) {
-        amrex::Real water_level0{0.0};
+    make_rho0 = pp_multiphase.contains("water_level");
+    if (make_rho0) {
         pp_multiphase.get("water_level", water_level0);
+        // Initialize rho_0 function for perturbational density, pressure
+        auto& rho0 = m_sim.repo().declare_field("rho0", 1, 0, 1);
+        initialize_rho0(
+            rho0, m_rho1, m_rho2, water_level0, m_sim.mesh().Geom());
+    }
+}
+
+void MultiPhase::post_regrid_actions()
+{
+    // Re-initialize rho0 if present
+    if (make_rho0) {
         // Initialize rho_0 function for perturbational density, pressure
         auto& rho0 = m_sim.repo().declare_field("rho0", 1, 0, 1);
         initialize_rho0(
