@@ -24,7 +24,6 @@ void FieldRepo::make_new_level_from_scratch(
         ba, dm, *m_leveldata[lev], *(m_leveldata[lev]->m_int_fact));
 
     m_is_initialized = true;
-    amrex::Print()<<"m_is_initialized in make_new_level_from_scratch "<<m_is_initialized<<std::endl;
 }
 
 void FieldRepo::make_new_level_from_coarse(
@@ -49,7 +48,6 @@ void FieldRepo::make_new_level_from_coarse(
 
     m_leveldata[lev] = std::move(ldata);
     m_is_initialized = true;
-    amrex::Print()<<"m_is_initialized in make_new_level_from_coarse "<<m_is_initialized<<std::endl;
 }
 
 void FieldRepo::remake_level(
@@ -74,7 +72,6 @@ void FieldRepo::remake_level(
 
     m_leveldata[lev] = std::move(ldata);
     m_is_initialized = true;
-    amrex::Print()<<"m_is_initialized in remake_level "<<m_is_initialized<<std::endl;
 }
 
 void FieldRepo::clear_level(int lev)
@@ -265,7 +262,6 @@ IntField& FieldRepo::declare_int_field(
         std::unique_ptr<IntField> field(
             new IntField(*this, fname, fid, ncomp, ngrow, floc));
 
-	amrex::Print()<<"m_is_initialized device "<<m_is_initialized<<std::endl;
         if (m_is_initialized) {
             allocate_field_data(*field);
         }
@@ -277,80 +273,6 @@ IntField& FieldRepo::declare_int_field(
     return *m_int_field_vec[m_int_fid_map[name]];
 }
 
-IntField& FieldRepo::declare_int_field_on_host(
-    const std::string& name,
-    const int ncomp,
-    const int ngrow,
-    const int nstates,
-    const FieldLoc floc)
-{
-    BL_PROFILE("amr-wind::FieldRepo::declare_int_field_on_host");
-    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-        nstates == 1, "Multiple states not supported for integer fields");
-
-    // If the field is already registered check and return the fields
-    {
-        auto found = m_int_fid_map.find(name);
-        if (found != m_int_fid_map.end()) {
-            auto& field = *m_int_field_vec[found->second];
-
-            if ((ncomp != field.num_comp()) ||
-                (floc != field.field_location())) {
-                amrex::Abort(
-                    "Attempt to reregister field with inconsistent "
-                    "parameters: " +
-                    name);
-            }
-            return field;
-        }
-    }
-
-    if (!field_impl::is_valid_field_name(name)) {
-        amrex::Abort("Attempt to use reserved field name: " + name);
-    }
-
-    {
-        const FieldState fstate = FieldState::New;
-        const std::string fname =
-            field_impl::field_name_with_state(name, fstate);
-        const int fid = m_int_field_vec.size();
-	amrex::Print()<<"fid host is "<<fid<<std::endl;
-
-        std::unique_ptr<IntField> field(
-            new IntField(*this, fname, fid, ncomp, ngrow, floc));
-	amrex::Print()<<"Is m initialized? "<<m_is_initialized<<std::endl;
-        if (m_is_initialized) {
-        // allocate_field_data(*field);
-	//allocate_field_data(lev, field, *m_leveldata[lev]);
-
-	    for (int lev = 0; lev <= m_mesh.finestLevel(); ++lev) {
-		LevelDataHolder& level_data=*m_leveldata[lev];
-		{
-		    auto& fab_vec = level_data.m_int_fabs;
-		    amrex::Print()<<"fab_vec size "<<fab_vec.size()<<std::endl;
-		    AMREX_ASSERT(fab_vec.size() == (*field).id());
-		    //AMREX_ASSERT(fab_vec.size() == field.id());
-
-		    const auto ba = amrex::convert(
-			m_mesh.boxArray(lev), field_impl::index_type((*field).field_location()));
-
-		    fab_vec.emplace_back(
-			ba, m_mesh.DistributionMap(lev), (*field).num_comp(), (*field).num_grow(),
-			amrex::MFInfo().SetArena(amrex::The_Pinned_Arena()), *level_data.m_int_fact);
-
-		    //fab_vec.emplace_back(
-		//	ba, m_mesh.DistributionMap(lev), (*field).num_comp(), (*field).num_grow(),
-		//	amrex::MFInfo().SetArena(amrex::The_Cpu_Arena()), *level_data.m_int_fact);
-		}
-	    }
-        }
-
-        m_int_field_vec.emplace_back(std::move(field));
-        m_int_fid_map[fname] = fid;
-    }
-
-    return *m_int_field_vec[m_int_fid_map[name]];
-}
 
 IntField&
 FieldRepo::get_int_field(const std::string& name, const FieldState fstate) const
@@ -426,7 +348,6 @@ std::unique_ptr<ScratchField> FieldRepo::create_scratch_field_on_host(
             "initialized");
     }
 
-	amrex::Print()<<"ncomp in create_scratch_field_on_host"<<ncomp<<std::endl;
     std::unique_ptr<ScratchField> field(
         new ScratchField(*this, name, ncomp, nghost, floc));
 

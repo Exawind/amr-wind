@@ -276,13 +276,6 @@ public:
         const int nstates = 1,
         const FieldLoc floc = FieldLoc::CELL);
 
-    IntField& declare_int_field_on_host(
-        const std::string& name,
-        const int ncomp = 1,
-        const int ngrow = 0,
-        const int nstates = 1,
-        const FieldLoc floc = FieldLoc::CELL);
-
     //! Return a reference to an integer field
     IntField& get_int_field(
         const std::string& name,
