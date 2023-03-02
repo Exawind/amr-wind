@@ -34,6 +34,50 @@ void initialize_rho0(
     }
 }
 
+void initialize_p0(
+    amr_wind::Field& p0,
+    const amrex::Real rho1,
+    const amrex::Real rho2,
+    const amrex::Real wlev,
+    const amrex::Real grav_z,
+    const amrex::Vector<amrex::Geometry> geom)
+{
+    for (int lev = 0; lev < p0.repo().num_active_levels(); ++lev) {
+        const auto& dx = geom[lev].CellSizeArray();
+        const auto& problo = geom[lev].ProbLoArray();
+        const auto& probhi = geom[lev].ProbHiArray();
+        for (amrex::MFIter mfi(p0(lev)); mfi.isValid(); ++mfi) {
+            amrex::Box const& bx = mfi.grownnodaltilebox();
+            auto p0_arr = p0(lev).array(mfi);
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    // Height of bottom of cell below
+                    const amrex::Real hbtm = (k - 1) * dx[2];
+                    // Height of bottom of cell above, current pressure node
+                    const amrex::Real hmid = k * dx[2];
+                    // Liquid height
+                    const amrex::Real hliq = wlev - problo[2];
+                    // Integrated (top-down in z) phase heights for cell below
+                    amrex::Real ih_g = amrex::max(
+                        0.0, amrex::min(probhi[2] - hliq, probhi[2] - hbtm));
+                    amrex::Real ih_l = amrex::max(
+                        0.0, amrex::min(hliq - hbtm, hliq - problo[2]));
+                    // Integrated rho for cell below
+                    const amrex::Real irho_blw = rho1 * ih_l + rho2 * ih_g;
+                    // Integrated (in z) liquid heights for cell above
+                    ih_g = amrex::max(
+                        0.0, amrex::min(probhi[2] - hliq, probhi[2] - hmid));
+                    ih_l = amrex::max(
+                        0.0, amrex::min(hliq - hmid, hliq - problo[2]));
+                    // Integrated rho for cell above
+                    const amrex::Real irho_abv = rho1 * ih_l + rho2 * ih_g;
+
+                    p0_arr(i, j, k) = -0.5 * (irho_blw + irho_abv) * grav_z;
+                });
+        }
+    }
+}
+
 MultiPhase::MultiPhase(CFDSim& sim)
     : m_sim(sim)
     , m_velocity(sim.pde_manager().icns().fields().field)
@@ -104,26 +148,58 @@ void MultiPhase::post_init_actions()
     q2 = momentum_sum(2);
     sumvof0 = volume_fraction_sum();
 
+    // Query approach to pressure
+    amrex::ParmParse pp_icns("ICNS");
+    pp_icns.query("use_perturb_pressure", is_pptb);
+    pp_icns.query("reconstruct_true_pressure", is_ptrue);
+
     // Check if water level is specified (from case definition)
     amrex::ParmParse pp_multiphase("MultiPhase");
-    make_rho0 = pp_multiphase.contains("water_level");
-    if (make_rho0) {
+    bool is_wlev = pp_multiphase.contains("water_level");
+    // Abort if no water level specified
+    if (is_pptb && !is_wlev) {
+        amrex::Abort(
+            "Perturbational pressure requested, but physics case does not "
+            "specify water level.");
+    }
+    // Make rho0 field if both are specified
+    if (is_pptb && is_wlev) {
         pp_multiphase.get("water_level", water_level0);
-        // Initialize rho_0 function for perturbational density, pressure
+        // Initialize rho0 field for perturbational density, pressure
         auto& rho0 = m_sim.repo().declare_field("rho0", 1, 0, 1);
         initialize_rho0(
             rho0, m_rho1, m_rho2, water_level0, m_sim.mesh().Geom());
+
+        // Make p0 field if requested
+        if (is_ptrue) {
+            // Get number of ghost cells (state variable)
+            auto ng = (*m_vof).num_grow();
+            // Initialize p0 field for reconstructing p
+            amrex::ParmParse pp("incflo");
+            pp.queryarr("gravity", m_gravity);
+            auto& p0 = m_sim.repo().declare_nd_field("p0", 1, ng[0], 1);
+            initialize_p0(
+                p0, m_rho1, m_rho2, water_level0, m_gravity[2],
+                m_sim.mesh().Geom());
+        }
     }
 }
 
 void MultiPhase::post_regrid_actions()
 {
-    // Re-initialize rho0 if present
-    if (make_rho0) {
-        // Initialize rho_0 function for perturbational density, pressure
+    // Reinitialize rho0 if needed
+    if (is_pptb) {
         auto& rho0 = m_sim.repo().declare_field("rho0", 1, 0, 1);
         initialize_rho0(
             rho0, m_rho1, m_rho2, water_level0, m_sim.mesh().Geom());
+        // Reinitialize p0 if needed
+        if (is_ptrue) {
+            auto ng = (*m_vof).num_grow();
+            auto& p0 = m_sim.repo().declare_nd_field("p0", 1, ng[0], 1);
+            initialize_p0(
+                p0, m_rho1, m_rho2, water_level0, m_gravity[2],
+                m_sim.mesh().Geom());
+        }
     }
 }
 

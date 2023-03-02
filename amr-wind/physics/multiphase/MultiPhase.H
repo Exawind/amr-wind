@@ -80,9 +80,16 @@ private:
     // Density value for Fluid 2
     amrex::Real m_rho2{1.0};
 
+    // Bools according to ICNS settings
+    // Turning on perturbational density and pressure
+    bool is_pptb{false};
+    // Reconstructing true pressure field at end of timestep
+    bool is_ptrue{false};
+
     // Info to create rho0
     amrex::Real water_level0{0.0};
-    bool make_rho0{false};
+    // Info to reconstruct true pressure
+    amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
 
     bool m_interface_smoothing{false};
 
