@@ -138,6 +138,7 @@ ABLVelWallFunc::ABLVelWallFunc(
 {
     amrex::ParmParse pp("ABL");
     pp.query("wall_shear_stress_type", m_wall_shear_stress_type);
+    pp.query("elevated_fluctuations", m_elevated_fluctuations);
     m_wall_shear_stress_type = amrex::toLower(m_wall_shear_stress_type);
 
     if (m_wall_shear_stress_type == "constant" ||
@@ -168,6 +169,21 @@ void ABLVelWallFunc::wall_model(
     if ((velocity.bc_type()[zlo] != BC::wall_model) &&
         (velocity.bc_type()[zhi] != BC::wall_model)) {
         return;
+    }
+
+    AMREX_ALWAYS_ASSERT(idim == 2);
+    if (m_elevated_fluctuations) {
+        for (int lev = 0; lev < nlevels; ++lev) {
+            auto& vel_old = velocity.state(FieldState::Old)(lev);
+            auto slice = get_slice_data(
+                idim, m_wall_func.mo().zref, vel_old, repo.mesh().Geom(lev), 0,
+                2, true);
+            amrex::MultiBlockIndexMapping dtos{};
+            dtos.offset[idim] = -slice->boxArray()[0].smallEnd(idim);
+            ParallelCopy(
+                vel_old, vel_old.boxArray().minimalBox(), *slice, 0, 0,
+                slice->nComp(), amrex::IntVect(0), dtos);
+        }
     }
 
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -270,6 +286,7 @@ ABLTempWallFunc::ABLTempWallFunc(
 {
     amrex::ParmParse pp("ABL");
     pp.query("wall_shear_stress_type", m_wall_shear_stress_type);
+    pp.query("elevated_fluctuations", m_elevated_fluctuations);
     m_wall_shear_stress_type = amrex::toLower(m_wall_shear_stress_type);
     amrex::Print() << "Heat Flux model: " << m_wall_shear_stress_type
                    << std::endl;
@@ -296,6 +313,31 @@ void ABLTempWallFunc::wall_model(
     const auto& density = repo.get_field("density", rho_state);
     const auto& alpha = repo.get_field("temperature_mueff");
     const int nlevels = repo.num_active_levels();
+
+    AMREX_ALWAYS_ASSERT(idim == 2);
+    if (m_elevated_fluctuations) {
+        for (int lev = 0; lev < nlevels; ++lev) {
+            auto& vel_old = velocity.state(FieldState::Old)(lev);
+            auto& temp_old = temperature.state(FieldState::Old)(lev);
+
+            auto slice_v = get_slice_data(
+                idim, m_wall_func.mo().zref, vel_old, repo.mesh().Geom(lev), 0,
+                2, true);
+            auto slice_t = get_slice_data(
+                idim, m_wall_func.mo().zref, temp_old, repo.mesh().Geom(lev), 0,
+                1, true);
+
+            amrex::MultiBlockIndexMapping dtos{};
+            dtos.offset[idim] = -slice_v->boxArray()[0].smallEnd(idim);
+
+            ParallelCopy(
+                vel_old, vel_old.boxArray().minimalBox(), *slice_v, 0, 0,
+                slice_v->nComp(), amrex::IntVect(0), dtos);
+            ParallelCopy(
+                temp_old, temp_old.boxArray().minimalBox(), *slice_t, 0, 0,
+                slice_t->nComp(), amrex::IntVect(0), dtos);
+        }
+    }
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
