@@ -100,11 +100,14 @@ private:
     //! Initial value for tke field
     amrex::Real m_tke_init{0.1};
 
-    //! Zero velocity height when using the hurricane forcing
-    amrex::Real m_zero_velocity_height{18000};
+    //! Top velocity
+    amrex::Vector<amrex::Real> m_top_vel{{20.0, 0.0, 0.0}};
 
-    //! Hurricane initial profile boolean
-    bool m_hurricane_vel{false};
+    //! Bottom velocity
+    amrex::Vector<amrex::Real> m_bottom_vel{{4.0, 0.0, 0.0}};
+
+    //! Initial linear velocity profile boolean
+    bool m_linear_profile{false};
 
     //! Perturb initial velocity field with sinusoidal fluctuations
     bool m_perturb_vel{true};
