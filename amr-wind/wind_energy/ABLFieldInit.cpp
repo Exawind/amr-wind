@@ -52,6 +52,13 @@ ABLFieldInit::ABLFieldInit()
         pp_incflo.getarr("velocity", m_vel);
     }
 
+    amrex::ParmParse pp_src("ICNS.source_terms");
+    if (pp_src.contains("HurricaneForcing")) {
+        m_hurricane_vel = true;
+        amrex::ParmParse pp_hf("HurricaneForcing");
+        pp_hf.quert("gradient_wind_zero_height", m_zero_velocity_height);
+    }
+
     m_thht_d.resize(num_theta_values);
     m_thvv_d.resize(num_theta_values);
 
@@ -76,6 +83,7 @@ void ABLFieldInit::operator()(
     const auto& probhi = geom.ProbHiArray();
 
     const bool perturb_vel = m_perturb_vel;
+    const bool hurricane_vel = m_hurricane_vel;
     const amrex::Real rho_init = m_rho;
 
     const amrex::Real umean =
@@ -89,6 +97,7 @@ void ABLFieldInit::operator()(
     const amrex::Real ufac = m_deltaU * std::exp(0.5) / m_ref_height;
     const amrex::Real vfac = m_deltaV * std::exp(0.5) / m_ref_height;
     const amrex::Real ref_height = m_ref_height;
+    const amrex::Real zvh = m_zero_velocity_height;
 
     const int ntvals = static_cast<int>(m_theta_heights.size());
     const amrex::Real* th = m_thht_d.data();
@@ -115,6 +124,12 @@ void ABLFieldInit::operator()(
         }
 
         temperature(i, j, k, 0) += theta;
+
+        if (hurricane_vel) {
+            velocity(i, j, k, 0) *= (zvh - z) / zvh;
+            velocity(i, j, k, 1) *= (zvh - z) / zvh;
+            velocity(i, j, k, 2) *= (zvh - z) / zvh;
+        }
 
         if (perturb_vel) {
             const amrex::Real xl = x - problo[0];

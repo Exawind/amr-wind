@@ -52,7 +52,7 @@ private:
     amrex::Real m_V{40.0}; // V=40 m/s is the default value
 
     //! Gradient wind radial decay
-    amrex::Real m_dVdR{-0.008};
+    amrex::Real m_dVdR{-0.0008};
 
     //! Reference gradient wind zero height in metres
     amrex::Real m_Vzh{18000.};

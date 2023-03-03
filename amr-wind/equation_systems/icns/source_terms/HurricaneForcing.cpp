@@ -90,10 +90,9 @@ void HurricaneForcing::operator()(
                                 (heights[ir] - heights[il])) *
                                    (ht - heights[il]);
 
-        // Velocities varying with the height
+        // Gradient velocities varying with height
         const amrex::Real V_z = V * (Vzh - ht) / Vzh;
         const amrex::Real dVdR_z = dVdR * (Vzh - ht) / Vzh;
-
         // Compute the LES terms as presented in George Bryan's paper
         const amrex::Real M1LES =
             umean * umean / R + vmean * V_z / R - (f * V_z + V_z * V_z / R);
