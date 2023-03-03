@@ -94,8 +94,6 @@ public:
 
     AMROversetInfo& amr_overset_info() { return *m_amr_data; }
 
-    //ScratchField& qvars_cell() { return *m_qcell; }
-    //ScratchField& qvars_node() { return *m_qnode; }
     ScratchField& qvars_cell() { return *m_qcell_host; }
     ScratchField& qvars_node() { return *m_qnode_host; }
 	
