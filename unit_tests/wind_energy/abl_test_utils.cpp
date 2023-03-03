@@ -17,6 +17,18 @@ void populate_abl_params()
         pp.add("surface_roughness_z0", 0.1);
     }
 
+    // Initial conditions (Linear profile)
+    {
+        amrex::ParmParse pp("ABL");
+        bool linear_profile = false;
+        pp.add("linear_profile", static_cast<int>(linear_profile));
+
+        amrex::Vector<amrex::Real> top_velocity{{20., 0.0, 0.0}};
+        amrex::Vector<amrex::Real> bottom_velocity{{4.0, 0.0, 0.0}};
+        pp.addarr("top_velocity", top_velocity);
+        pp.addarr("bottom_velocity", bottom_velocity);
+    }
+
     // Body force
     {
         amrex::ParmParse pp("BodyForce");
