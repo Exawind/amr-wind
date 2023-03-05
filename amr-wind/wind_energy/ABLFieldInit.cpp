@@ -35,8 +35,8 @@ ABLFieldInit::ABLFieldInit()
 
     pp_abl.query("linear_profile", m_linear_profile);
 
-    pp_abl.getarr("top_velocity", m_top_vel);
-    pp_abl.getarr("bottom_velocity", m_bottom_vel);
+    pp_abl.query("top_velocity", m_top_vel);
+    pp_abl.query("bottom_velocity", m_bottom_vel);
 
     // TODO: Modify this to accept velocity as a function of height
     amrex::ParmParse pp_incflo("incflo");

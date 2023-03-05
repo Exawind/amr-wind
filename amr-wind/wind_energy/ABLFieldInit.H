@@ -101,10 +101,10 @@ private:
     amrex::Real m_tke_init{0.1};
 
     //! Top velocity
-    amrex::Vector<amrex::Real> m_top_vel{{20.0, 0.0, 0.0}};
+    amrex::RealArray m_top_vel{{20.0, 0.0, 0.0}};
 
     //! Bottom velocity
-    amrex::Vector<amrex::Real> m_bottom_vel{{4.0, 0.0, 0.0}};
+    amrex::RealArray m_bottom_vel{{4.0, 0.0, 0.0}};
 
     //! Initial linear velocity profile boolean
     bool m_linear_profile{false};
