@@ -62,7 +62,7 @@ void define_p0(
                         0.0, amrex::min(hliq - hnode, hliq - problo[2]));
                     // Integrated rho at pressure node
                     const amrex::Real irho = rho1 * ih_l + rho2 * ih_g;
-                    
+
                     // Add term to reference pressure
                     p0_arr(i, j, k) = -irho * grav_z;
                 });
