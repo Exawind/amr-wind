@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <numeric>
-#include <AMReX_Print.H>
 namespace amr_wind {
 
 namespace {
@@ -417,7 +416,6 @@ void TiogaInterface::amr_to_tioga_iblank()
     amrex::Vector<int *> tmpdataPtr(ad.iblank_cell.size());
     amrex::Vector<int *> tmpdataPtrn(ad.iblank_node.size());
     for (int lev = 0; lev < nlevels; ++lev) {
-        //auto& ad = *m_amr_data;
         auto& ibfab = ibcell(lev);
         auto& ibnodefab = ibnode(lev);
         auto& ibfab_host = (*m_iblank_cell_host)(lev);
