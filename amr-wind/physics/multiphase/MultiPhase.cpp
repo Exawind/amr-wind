@@ -51,28 +51,20 @@ void define_p0(
             auto p0_arr = p0(lev).array(mfi);
             amrex::ParallelFor(
                 nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    // Height of bottom of cell below
-                    const amrex::Real hbtm = (k - 1) * dx[2];
-                    // Height of bottom of cell above, current pressure node
-                    const amrex::Real hmid = k * dx[2];
+                    // Height of pressure node
+                    const amrex::Real hnode = k * dx[2];
                     // Liquid height
                     const amrex::Real hliq = wlev - problo[2];
-                    // Integrated (top-down in z) phase heights for cell below
+                    // Integrated (top-down in z) phase heights to pressure node
                     amrex::Real ih_g = amrex::max(
-                        0.0, amrex::min(probhi[2] - hliq, probhi[2] - hbtm));
+                        0.0, amrex::min(probhi[2] - hliq, probhi[2] - hnode));
                     amrex::Real ih_l = amrex::max(
-                        0.0, amrex::min(hliq - hbtm, hliq - problo[2]));
-                    // Integrated rho for cell below
-                    const amrex::Real irho_blw = rho1 * ih_l + rho2 * ih_g;
-                    // Integrated (in z) liquid heights for cell above
-                    ih_g = amrex::max(
-                        0.0, amrex::min(probhi[2] - hliq, probhi[2] - hmid));
-                    ih_l = amrex::max(
-                        0.0, amrex::min(hliq - hmid, hliq - problo[2]));
-                    // Integrated rho for cell above
-                    const amrex::Real irho_abv = rho1 * ih_l + rho2 * ih_g;
-
-                    p0_arr(i, j, k) = -0.5 * (irho_blw + irho_abv) * grav_z;
+                        0.0, amrex::min(hliq - hnode, hliq - problo[2]));
+                    // Integrated rho at pressure node
+                    const amrex::Real irho = rho1 * ih_l + rho2 * ih_g;
+                    
+                    // Add term to reference pressure
+                    p0_arr(i, j, k) = -irho * grav_z;
                 });
         }
     }
