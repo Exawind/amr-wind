@@ -78,9 +78,9 @@ void incflo::ComputeDt(bool explicit_diffusion)
                     mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
 
                 return amrex::max<amrex::Real>(
-                    amrex::Math::abs(v_bx(i, j, k, 0)) * dxinv[0] / fac_x,
-                    amrex::Math::abs(v_bx(i, j, k, 1)) * dxinv[1] / fac_y,
-                    amrex::Math::abs(v_bx(i, j, k, 2)) * dxinv[2] / fac_z,
+                    std::abs(v_bx(i, j, k, 0)) * dxinv[0] / fac_x,
+                    std::abs(v_bx(i, j, k, 1)) * dxinv[1] / fac_y,
+                    std::abs(v_bx(i, j, k, 2)) * dxinv[2] / fac_z,
                     static_cast<amrex::Real>(-1.0));
             });
 
@@ -109,12 +109,9 @@ void incflo::ComputeDt(bool explicit_diffusion)
                         amrex::Real fac_z =
                             mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
 
-                        result = amrex::Math::abs(v_bx(i, j, k, 0)) * dxinv[0] /
-                                     fac_x +
-                                 amrex::Math::abs(v_bx(i, j, k, 1)) * dxinv[1] /
-                                     fac_y +
-                                 amrex::Math::abs(v_bx(i, j, k, 2)) * dxinv[2] /
-                                     fac_z;
+                        result = std::abs(v_bx(i, j, k, 0)) * dxinv[0] / fac_x +
+                                 std::abs(v_bx(i, j, k, 1)) * dxinv[1] / fac_y +
+                                 std::abs(v_bx(i, j, k, 2)) * dxinv[2] / fac_z;
                     }
                     return result;
                 });
@@ -167,11 +164,11 @@ void incflo::ComputeDt(bool explicit_diffusion)
                         mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
 
                     return amrex::max<amrex::Real>(
-                        amrex::Math::abs(vf_bx(i, j, k, 0)) * dxinv[0] / fac_x /
+                        std::abs(vf_bx(i, j, k, 0)) * dxinv[0] / fac_x /
                             rho_bx(i, j, k),
-                        amrex::Math::abs(vf_bx(i, j, k, 1)) * dxinv[1] / fac_y /
+                        std::abs(vf_bx(i, j, k, 1)) * dxinv[1] / fac_y /
                             rho_bx(i, j, k),
-                        amrex::Math::abs(vf_bx(i, j, k, 2)) * dxinv[2] / fac_z /
+                        std::abs(vf_bx(i, j, k, 2)) * dxinv[2] / fac_z /
                             rho_bx(i, j, k),
                         static_cast<amrex::Real>(-1.0));
                 });
@@ -238,16 +235,13 @@ void incflo::ComputePrescribeDt()
 
                 return amrex::max<amrex::Real>(
                     amrex::max<amrex::Real>(
-                        amrex::Math::abs(umac(i, j, k)),
-                        amrex::Math::abs(umac(i + 1, j, k))) *
+                        std::abs(umac(i, j, k)), std::abs(umac(i + 1, j, k))) *
                         dxinv[0] / fac_x,
                     amrex::max<amrex::Real>(
-                        amrex::Math::abs(vmac(i, j, k)),
-                        amrex::Math::abs(vmac(i, j + 1, k))) *
+                        std::abs(vmac(i, j, k)), std::abs(vmac(i, j + 1, k))) *
                         dxinv[1] / fac_y,
                     amrex::max<amrex::Real>(
-                        amrex::Math::abs(wmac(i, j, k)),
-                        amrex::Math::abs(wmac(i, j, k + 1))) *
+                        std::abs(wmac(i, j, k)), std::abs(wmac(i, j, k + 1))) *
                         dxinv[2] / fac_z,
                     static_cast<amrex::Real>(-1.0));
             });
@@ -281,16 +275,16 @@ void incflo::ComputePrescribeDt()
                             mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
 
                         result = amrex::max(
-                                     amrex::Math::abs(umac(i, j, k)),
-                                     amrex::Math::abs(umac(i + 1, j, k))) *
+                                     std::abs(umac(i, j, k)),
+                                     std::abs(umac(i + 1, j, k))) *
                                      dxinv[0] / fac_x +
                                  amrex::max(
-                                     amrex::Math::abs(vmac(i, j, k)),
-                                     amrex::Math::abs(vmac(i, j + 1, k))) *
+                                     std::abs(vmac(i, j, k)),
+                                     std::abs(vmac(i, j + 1, k))) *
                                      dxinv[1] / fac_y +
                                  amrex::max(
-                                     amrex::Math::abs(wmac(i, j, k)),
-                                     amrex::Math::abs(wmac(i, j, k + 1))) *
+                                     std::abs(wmac(i, j, k)),
+                                     std::abs(wmac(i, j, k + 1))) *
                                      dxinv[2] / fac_z;
                     }
                     return result;

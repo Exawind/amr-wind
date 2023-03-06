@@ -309,9 +309,9 @@ void ActuatorContainer::interpolate_fields(
                     (pp.pos(2) - plo[2] - 0.5 * dx[2]) * dxi[2];
 
                 // Index of the low corner
-                const int i = static_cast<int>(amrex::Math::floor(x));
-                const int j = static_cast<int>(amrex::Math::floor(y));
-                const int k = static_cast<int>(amrex::Math::floor(z));
+                const int i = static_cast<int>(std::floor(x));
+                const int j = static_cast<int>(std::floor(y));
+                const int k = static_cast<int>(std::floor(z));
 
                 // Interpolation weights in each direction (linear basis)
                 const amrex::Real wx_hi = (x - i);

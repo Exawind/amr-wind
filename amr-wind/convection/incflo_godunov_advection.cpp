@@ -178,7 +178,7 @@ void godunov::compute_fluxes(
             constexpr Real small_vel = 1.e-10;
 
             Real uad = umac(i, j, k);
-            Real fux = (amrex::Math::abs(uad) < small_vel) ? 0. : 1.;
+            Real fux = (std::abs(uad) < small_vel) ? 0. : 1.;
             bool uval = uad >= 0.;
             // divu = 0
             // Real cons1 = (iconserv[n]) ? -0.5*l_dt*q(i-1,j,k,n)*divu(i-1,j,k)
@@ -205,7 +205,7 @@ void godunov::compute_fluxes(
             constexpr Real small_vel = 1.e-10;
 
             Real vad = vmac(i, j, k);
-            Real fuy = (amrex::Math::abs(vad) < small_vel) ? 0. : 1.;
+            Real fuy = (std::abs(vad) < small_vel) ? 0. : 1.;
             bool vval = vad >= 0.;
             // divu = 0
             // Real cons1 = (iconserv[n]) ? -0.5*l_dt*q(i,j-1,k,n)*divu(i,j-1,k)
@@ -233,7 +233,7 @@ void godunov::compute_fluxes(
             constexpr Real small_vel = 1.e-10;
 
             Real wad = wmac(i, j, k);
-            Real fuz = (amrex::Math::abs(wad) < small_vel) ? 0. : 1.;
+            Real fuz = (std::abs(wad) < small_vel) ? 0. : 1.;
             bool wval = wad >= 0.;
             auto bc = pbc[n];
             // divu = 0
@@ -287,7 +287,7 @@ void godunov::compute_fluxes(
             constexpr Real small_vel = 1.e-10;
 
             Real st = (wad >= 0.) ? l_zylo : l_zyhi;
-            Real fu = (amrex::Math::abs(wad) < small_vel) ? 0.0 : 1.0;
+            Real fu = (std::abs(wad) < small_vel) ? 0.0 : 1.0;
             zylo(i, j, k, n) = fu * st + (1.0 - fu) * 0.5 * (l_zyhi + l_zylo);
         },
         Box(yzlo), ncomp,
@@ -306,7 +306,7 @@ void godunov::compute_fluxes(
             constexpr Real small_vel = 1.e-10;
 
             Real st = (vad >= 0.) ? l_yzlo : l_yzhi;
-            Real fu = (amrex::Math::abs(vad) < small_vel) ? 0.0 : 1.0;
+            Real fu = (std::abs(vad) < small_vel) ? 0.0 : 1.0;
             yzlo(i, j, k, n) = fu * st + (1.0 - fu) * 0.5 * (l_yzhi + l_yzlo);
         });
     //
@@ -358,9 +358,7 @@ void godunov::compute_fluxes(
             Godunov_cc_xbc_hi(i, j, k, n, q, stl, sth, umac, bc.hi(0), dhi.x);
 
             Real qx = (umac(i, j, k) >= 0.) ? stl : sth;
-            qx = (amrex::Math::abs(umac(i, j, k)) < small_vel)
-                     ? 0.5 * (stl + sth)
-                     : qx;
+            qx = (std::abs(umac(i, j, k)) < small_vel) ? 0.5 * (stl + sth) : qx;
 
             if (iconserv[n] == 1) {
                 fx(i, j, k, n) = umac(i, j, k) * qx;
@@ -394,7 +392,7 @@ void godunov::compute_fluxes(
             constexpr Real small_vel = 1.e-10;
 
             Real st = (uad >= 0.) ? l_xzlo : l_xzhi;
-            Real fu = (amrex::Math::abs(uad) < small_vel) ? 0.0 : 1.0;
+            Real fu = (std::abs(uad) < small_vel) ? 0.0 : 1.0;
             xzlo(i, j, k, n) = fu * st + (1.0 - fu) * 0.5 * (l_xzhi + l_xzlo);
         },
         Box(zxlo), ncomp,
@@ -413,7 +411,7 @@ void godunov::compute_fluxes(
             constexpr Real small_vel = 1.e-10;
 
             Real st = (wad >= 0.) ? l_zxlo : l_zxhi;
-            Real fu = (amrex::Math::abs(wad) < small_vel) ? 0.0 : 1.0;
+            Real fu = (std::abs(wad) < small_vel) ? 0.0 : 1.0;
             zxlo(i, j, k, n) = fu * st + (1.0 - fu) * 0.5 * (l_zxhi + l_zxlo);
         });
 
@@ -465,9 +463,7 @@ void godunov::compute_fluxes(
             Godunov_cc_ybc_hi(i, j, k, n, q, stl, sth, vmac, bc.hi(1), dhi.y);
 
             Real qy = (vmac(i, j, k) >= 0.) ? stl : sth;
-            qy = (amrex::Math::abs(vmac(i, j, k)) < small_vel)
-                     ? 0.5 * (stl + sth)
-                     : qy;
+            qy = (std::abs(vmac(i, j, k)) < small_vel) ? 0.5 * (stl + sth) : qy;
 
             if (iconserv[n] == 1) {
                 fy(i, j, k, n) = vmac(i, j, k) * qy;
@@ -501,7 +497,7 @@ void godunov::compute_fluxes(
             constexpr Real small_vel = 1.e-10;
 
             Real st = (uad >= 0.) ? l_xylo : l_xyhi;
-            Real fu = (amrex::Math::abs(uad) < small_vel) ? 0.0 : 1.0;
+            Real fu = (std::abs(uad) < small_vel) ? 0.0 : 1.0;
             xylo(i, j, k, n) = fu * st + (1.0 - fu) * 0.5 * (l_xyhi + l_xylo);
         },
         Box(yxlo), ncomp,
@@ -520,7 +516,7 @@ void godunov::compute_fluxes(
             constexpr Real small_vel = 1.e-10;
 
             Real st = (vad >= 0.) ? l_yxlo : l_yxhi;
-            Real fu = (amrex::Math::abs(vad) < small_vel) ? 0.0 : 1.0;
+            Real fu = (std::abs(vad) < small_vel) ? 0.0 : 1.0;
             yxlo(i, j, k, n) = fu * st + (1.0 - fu) * 0.5 * (l_yxhi + l_yxlo);
         });
 
@@ -571,9 +567,7 @@ void godunov::compute_fluxes(
             Godunov_cc_zbc_hi(i, j, k, n, q, stl, sth, wmac, bc.hi(2), dhi.z);
 
             Real qz = (wmac(i, j, k) >= 0.) ? stl : sth;
-            qz = (amrex::Math::abs(wmac(i, j, k)) < small_vel)
-                     ? 0.5 * (stl + sth)
-                     : qz;
+            qz = (std::abs(wmac(i, j, k)) < small_vel) ? 0.5 * (stl + sth) : qz;
 
             if (iconserv[n] == 1) {
                 fz(i, j, k, n) = wmac(i, j, k) * qz;

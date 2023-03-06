@@ -42,18 +42,12 @@ void OversetRefinement::operator()(
 
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const int axp =
-                    amrex::Math::abs(ibarr(i + 1, j, k) - ibarr(i, j, k));
-                const int ayp =
-                    amrex::Math::abs(ibarr(i, j + 1, k) - ibarr(i, j, k));
-                const int azp =
-                    amrex::Math::abs(ibarr(i, j, k + 1) - ibarr(i, j, k));
-                const int axm =
-                    amrex::Math::abs(ibarr(i - 1, j, k) - ibarr(i, j, k));
-                const int aym =
-                    amrex::Math::abs(ibarr(i, j - 1, k) - ibarr(i, j, k));
-                const int azm =
-                    amrex::Math::abs(ibarr(i, j, k - 1) - ibarr(i, j, k));
+                const int axp = std::abs(ibarr(i + 1, j, k) - ibarr(i, j, k));
+                const int ayp = std::abs(ibarr(i, j + 1, k) - ibarr(i, j, k));
+                const int azp = std::abs(ibarr(i, j, k + 1) - ibarr(i, j, k));
+                const int axm = std::abs(ibarr(i - 1, j, k) - ibarr(i, j, k));
+                const int aym = std::abs(ibarr(i, j - 1, k) - ibarr(i, j, k));
+                const int azm = std::abs(ibarr(i, j, k - 1) - ibarr(i, j, k));
                 const int ax = amrex::max(axp, axm);
                 const int ay = amrex::max(ayp, aym);
                 const int az = amrex::max(azp, azm);

@@ -101,7 +101,7 @@ amrex::Real strainrate_test_impl(amr_wind::Field& vel, const int pdegree)
                     const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                    error += amrex::Math::abs(
+                    error += std::abs(
                         str_arr(i, j, k) -
                         analytical_function::strainrate(
                             pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));
@@ -158,15 +158,15 @@ amrex::Real vorticity_test_impl(amr_wind::Field& vel, const int pdegree)
                     const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                    error += amrex::Math::abs(
+                    error += std::abs(
                         vort_arr(i, j, k, 0) -
                         analytical_function::vorticity_x(
                             pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));
-                    error += amrex::Math::abs(
+                    error += std::abs(
                         vort_arr(i, j, k, 1) -
                         analytical_function::vorticity_y(
                             pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));
-                    error += amrex::Math::abs(
+                    error += std::abs(
                         vort_arr(i, j, k, 2) -
                         analytical_function::vorticity_z(
                             pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));
@@ -225,7 +225,7 @@ amrex::Real vorticity_mag_test_impl(amr_wind::Field& vel, const int pdegree)
                     const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                    error += amrex::Math::abs(
+                    error += std::abs(
                         vrt_mag_arr(i, j, k) -
                         analytical_function::vorticity_mag(
                             pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));
@@ -235,7 +235,7 @@ amrex::Real vorticity_mag_test_impl(amr_wind::Field& vel, const int pdegree)
                         vrt_arr(i, j, k, 1) * vrt_arr(i, j, k, 1) +
                         vrt_arr(i, j, k, 2) * vrt_arr(i, j, k, 2));
 
-                    error += amrex::Math::abs(vrt_mag_arr(i, j, k) - vortmag);
+                    error += std::abs(vrt_mag_arr(i, j, k) - vortmag);
                 });
 
                 return error;
@@ -288,7 +288,7 @@ amrex::Real q_criterion_test_impl(amr_wind::Field& vel, const int pdegree)
                     const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                    error += amrex::Math::abs(
+                    error += std::abs(
                         qcrit_arr(i, j, k) -
                         analytical_function::q_criterion(
                             pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));

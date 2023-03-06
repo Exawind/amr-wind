@@ -24,8 +24,8 @@ realbox_to_box(const amrex::RealBox& rbx, const amrex::Geometry& geom)
         amrex::Real bbox_min = amrex::max(rbx.lo()[i], problo[i]);
         amrex::Real bbox_max = amrex::min(rbx.hi()[i], probhi[i]);
 
-        amrex::Real rlo = amrex::Math::floor((bbox_min - problo[i]) * dxi[i]);
-        amrex::Real rhi = amrex::Math::ceil((bbox_max - problo[i]) * dxi[i]);
+        amrex::Real rlo = std::floor((bbox_min - problo[i]) * dxi[i]);
+        amrex::Real rhi = std::ceil((bbox_max - problo[i]) * dxi[i]);
 
         lo[i] = static_cast<int>(rlo);
         hi[i] = static_cast<int>(rhi);

@@ -37,7 +37,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real weno5(
         omega2 = 0.6 / (eps + beta2);
         omega3 = 0.3 / (eps + beta3);
     } else {
-        const amrex::Real t5 = amrex::Math::abs(beta3 - beta1);
+        const amrex::Real t5 = std::abs(beta3 - beta1);
         omega1 = 0.1 * (1.0 + t5 / (eps + beta1));
         omega2 = 0.6 * (1.0 + t5 / (eps + beta2));
         omega3 = 0.3 * (1.0 + t5 / (eps + beta3));
@@ -246,7 +246,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_pred_x(
 
     amrex::Real s6 = 6.0 * s0 - 3.0 * (sm + sp);
 
-    amrex::Real sigma = amrex::Math::abs(v_ad) * dtdx;
+    amrex::Real sigma = std::abs(v_ad) * dtdx;
 
     // upwind
     if (v_ad > small_vel) {
@@ -302,7 +302,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_pred_y(
 
     amrex::Real s6 = 6.0 * s0 - 3.0 * (sm + sp);
 
-    amrex::Real sigma = amrex::Math::abs(v_ad) * dtdy;
+    amrex::Real sigma = std::abs(v_ad) * dtdy;
 
     if (v_ad > small_vel) {
         Ip(i, j, k, n) =
@@ -357,7 +357,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_pred_z(
 
     amrex::Real s6 = 6.0 * s0 - 3.0 * (sm + sp);
 
-    amrex::Real sigma = amrex::Math::abs(v_ad) * dtdz;
+    amrex::Real sigma = std::abs(v_ad) * dtdz;
 
     if (v_ad > small_vel) {
         Ip(i, j, k, n) =
@@ -417,8 +417,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_x(
 
     amrex::Real s6 = 6.0 * s0 - 3.0 * (sm + sp);
 
-    amrex::Real sigmap = amrex::Math::abs(vel_edge(i + 1, j, k)) * dt / dx;
-    amrex::Real sigmam = amrex::Math::abs(vel_edge(i, j, k)) * dt / dx;
+    amrex::Real sigmap = std::abs(vel_edge(i + 1, j, k)) * dt / dx;
+    amrex::Real sigmam = std::abs(vel_edge(i, j, k)) * dt / dx;
 
     if (vel_edge(i + 1, j, k) > small_vel) {
         Ip = sp -
@@ -476,8 +476,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_y(
 
     amrex::Real s6 = 6.0 * s0 - 3.0 * (sm + sp);
 
-    amrex::Real sigmap = amrex::Math::abs(vel_edge(i, j + 1, k)) * dt / dx;
-    amrex::Real sigmam = amrex::Math::abs(vel_edge(i, j, k)) * dt / dx;
+    amrex::Real sigmap = std::abs(vel_edge(i, j + 1, k)) * dt / dx;
+    amrex::Real sigmam = std::abs(vel_edge(i, j, k)) * dt / dx;
 
     if (vel_edge(i, j + 1, k) > small_vel) {
         Ip = sp -
@@ -535,8 +535,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_z(
 
     amrex::Real s6 = 6.0 * s0 - 3.0 * (sm + sp);
 
-    amrex::Real sigmap = amrex::Math::abs(vel_edge(i, j, k + 1)) * dt / dx;
-    amrex::Real sigmam = amrex::Math::abs(vel_edge(i, j, k)) * dt / dx;
+    amrex::Real sigmap = std::abs(vel_edge(i, j, k + 1)) * dt / dx;
+    amrex::Real sigmam = std::abs(vel_edge(i, j, k)) * dt / dx;
 
     if (vel_edge(i, j, k + 1) > small_vel) {
         Ip = sp -

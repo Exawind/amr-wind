@@ -95,33 +95,33 @@ amrex::Real grad_test_impl(amr_wind::Field& vel, const int pdegree)
                     const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                    error += amrex::Math::abs(
+                    error += std::abs(
                         gvel(i, j, k, 0) - analytical_function::dphidx_eval(
                                                pdegree, cu_ptr, x, y, z));
-                    error += amrex::Math::abs(
+                    error += std::abs(
                         gvel(i, j, k, 1) - analytical_function::dphidy_eval(
                                                pdegree, cu_ptr, x, y, z));
-                    error += amrex::Math::abs(
+                    error += std::abs(
                         gvel(i, j, k, 2) - analytical_function::dphidz_eval(
                                                pdegree, cu_ptr, x, y, z));
 
-                    error += amrex::Math::abs(
+                    error += std::abs(
                         gvel(i, j, k, 3) - analytical_function::dphidx_eval(
                                                pdegree, cv_ptr, x, y, z));
-                    error += amrex::Math::abs(
+                    error += std::abs(
                         gvel(i, j, k, 4) - analytical_function::dphidy_eval(
                                                pdegree, cv_ptr, x, y, z));
-                    error += amrex::Math::abs(
+                    error += std::abs(
                         gvel(i, j, k, 5) - analytical_function::dphidz_eval(
                                                pdegree, cv_ptr, x, y, z));
 
-                    error += amrex::Math::abs(
+                    error += std::abs(
                         gvel(i, j, k, 6) - analytical_function::dphidx_eval(
                                                pdegree, cw_ptr, x, y, z));
-                    error += amrex::Math::abs(
+                    error += std::abs(
                         gvel(i, j, k, 7) - analytical_function::dphidy_eval(
                                                pdegree, cw_ptr, x, y, z));
-                    error += amrex::Math::abs(
+                    error += std::abs(
                         gvel(i, j, k, 8) - analytical_function::dphidz_eval(
                                                pdegree, cw_ptr, x, y, z));
                 });
@@ -177,7 +177,7 @@ amrex::Real laplacian_test_impl(amr_wind::Field& vel, const int pdegree)
                     const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                    error += amrex::Math::abs(
+                    error += std::abs(
                         lap_arr(i, j, k) -
                         analytical_function::laplacian(
                             pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));
@@ -234,7 +234,7 @@ amrex::Real divergence_test_impl(amr_wind::Field& vel, const int pdegree)
                     const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                    error += amrex::Math::abs(
+                    error += std::abs(
                         div_arr(i, j, k) -
                         analytical_function::divergence(
                             pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));

@@ -81,7 +81,7 @@ amrex::Real filtering_test_impl(amr_wind::Field& scalar, const int pdegree)
                     const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                    error += amrex::Math::abs(
+                    error += std::abs(
                         filter_arr(i, j, k) -
                         analytical_function::filter_eval(
                             pdegree, coeff_ptr, x, y, z, dx[0], dx[1], dx[2]));

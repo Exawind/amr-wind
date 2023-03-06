@@ -43,6 +43,7 @@ option(AMR_WIND_ENABLE_HELICS "Enable HELICS library" OFF)
 option(AMR_WIND_ENABLE_HYPRE "Enable HYPRE integration" OFF)
 option(AMR_WIND_ENABLE_OPENFAST "Enable OpenFAST integration" OFF)
 option(AMR_WIND_ENABLE_ASCENT "Enable Ascent visualization library" OFF)
+option(AMR_WIND_ENABLE_UMPIRE "Enable Umpire GPU memory pools" OFF)
 
 #Options for C++
 set(CMAKE_CXX_STANDARD 17)
@@ -67,6 +68,12 @@ if(AMR_WIND_ENABLE_ROCM)
     # Set default AMD architectures (based on Frontier)
     set(AMD_ARCH "gfx90a")
   endif()
+endif()
+
+if (AMR_WIND_ENABLE_UMPIRE)
+  set(CMAKE_PREFIX_PATH ${UMPIRE_DIR} ${CMAKE_PREFIX_PATH})
+  find_package(Umpire REQUIRED)
+  include_directories(SYSTEM ${UMPIRE_INCLUDE_DIRS})
 endif()
 
 if(AMR_WIND_TEST_WITH_FCOMPARE)
@@ -111,7 +118,7 @@ add_executable(${amr_wind_exe_name})
 init_code_checks()
 if(CLANG_TIDY_EXE)
   set_target_properties(${amr_wind_lib_name} ${aw_api_lib} ${amr_wind_exe_name}
-                        PROPERTIES CXX_CLANG_TIDY ${CLANG_TIDY_EXE})
+                        PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY_EXE};--config-file=${CMAKE_SOURCE_DIR}/.clang-tidy")
 endif()
 
 include(set_compile_flags)
@@ -195,7 +202,7 @@ if(AMR_WIND_ENABLE_UNIT_TESTS OR AMR_WIND_ENABLE_TESTS)
   add_executable(${amr_wind_unit_test_exe_name})
   if(CLANG_TIDY_EXE)
     set_target_properties(${amr_wind_unit_test_exe_name}
-                          PROPERTIES CXX_CLANG_TIDY ${CLANG_TIDY_EXE})
+                          PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY_EXE};--config-file=${CMAKE_SOURCE_DIR}/.clang-tidy")
   endif()
   add_subdirectory("submods/googletest")
   add_subdirectory("unit_tests")
