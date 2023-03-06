@@ -11,12 +11,18 @@ ABLFieldInit::ABLFieldInit()
 {
     amrex::ParmParse pp_abl("ABL");
 
-    // Temperature variation as a function of height
-    pp_abl.getarr("temperature_heights", m_theta_heights);
-    pp_abl.getarr("temperature_values", m_theta_values);
+    std::cout << "In ABLFieldInit() " << std::endl;
 
-    AMREX_ALWAYS_ASSERT(m_theta_heights.size() == m_theta_values.size());
-    int num_theta_values = static_cast<int>(m_theta_heights.size());
+    // Temperature variation as a function of height
+    pp_abl.getarr("initial_profile_heights", m_init_heights);
+    pp_abl.getarr("initial_u_velocity_values", m_init_u_values);
+    pp_abl.getarr("initial_v_velocity_values", m_init_v_values);
+    pp_abl.getarr("initial_temperature_values", m_init_theta_values);
+
+    AMREX_ALWAYS_ASSERT(m_init_heights.size() == m_init_theta_values.size());
+    AMREX_ALWAYS_ASSERT(m_init_heights.size() == m_init_u_values.size());
+    AMREX_ALWAYS_ASSERT(m_init_heights.size() == m_init_v_values.size());
+    int num_init_values = static_cast<int>(m_init_heights.size());
 
     pp_abl.query("perturb_velocity", m_perturb_vel);
     pp_abl.query("perturb_ref_height", m_ref_height);
@@ -52,15 +58,23 @@ ABLFieldInit::ABLFieldInit()
         pp_incflo.getarr("velocity", m_vel);
     }
 
-    m_thht_d.resize(num_theta_values);
-    m_thvv_d.resize(num_theta_values);
+    m_init_heights_d.resize(num_init_values);
+    m_init_u_values_d.resize(num_init_values);
+    m_init_v_values_d.resize(num_init_values);
+    m_init_theta_values_d.resize(num_init_values);
 
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, m_theta_heights.begin(),
-        m_theta_heights.end(), m_thht_d.begin());
+        amrex::Gpu::hostToDevice, m_init_heights.begin(),
+        m_init_heights.end(), m_init_heights_d.begin());
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, m_theta_values.begin(), m_theta_values.end(),
-        m_thvv_d.begin());
+        amrex::Gpu::hostToDevice, m_init_u_values.begin(), m_init_u_values.end(),
+        m_init_u_values_d.begin());
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, m_init_v_values.begin(), m_init_v_values.end(),
+        m_init_v_values_d.begin());
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, m_init_theta_values.begin(), m_init_theta_values.end(),
+        m_init_theta_values_d.begin());
 }
 
 void ABLFieldInit::operator()(
@@ -70,6 +84,7 @@ void ABLFieldInit::operator()(
     const amrex::Array4<amrex::Real>& density,
     const amrex::Array4<amrex::Real>& temperature) const
 {
+    std::cout << "HERE" << std::endl;
     const amrex::Real pi = M_PI;
     const auto& dx = geom.CellSizeArray();
     const auto& problo = geom.ProbLoArray();
@@ -90,9 +105,11 @@ void ABLFieldInit::operator()(
     const amrex::Real vfac = m_deltaV * std::exp(0.5) / m_ref_height;
     const amrex::Real ref_height = m_ref_height;
 
-    const int ntvals = static_cast<int>(m_theta_heights.size());
-    const amrex::Real* th = m_thht_d.data();
-    const amrex::Real* tv = m_thvv_d.data();
+    const int ntvals = static_cast<int>(m_init_heights.size());
+    const amrex::Real* theights = m_init_heights_d.data();
+    const amrex::Real* tu = m_init_u_values_d.data();
+    const amrex::Real* tv = m_init_v_values_d.data();
+    const amrex::Real* ttheta = m_init_theta_values_d.data();
 
     amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
@@ -101,19 +118,26 @@ void ABLFieldInit::operator()(
 
         density(i, j, k) = rho_init;
         // Mean velocity field
-        velocity(i, j, k, 0) = umean;
-        velocity(i, j, k, 1) = vmean;
-        velocity(i, j, k, 2) = wmean;
+        //velocity(i, j, k, 0) = umean;
+        //velocity(i, j, k, 1) = vmean;
+        //velocity(i, j, k, 2) = wmean;
 
-        amrex::Real theta = tv[0];
+        amrex::Real u = tu[0];
+        amrex::Real v = tv[0];
+        amrex::Real theta = ttheta[0];
         for (int iz = 0; iz < ntvals - 1; ++iz) {
-            if ((z > th[iz]) && (z <= th[iz + 1])) {
-                const amrex::Real slope =
-                    (tv[iz + 1] - tv[iz]) / (th[iz + 1] - th[iz]);
-                theta = tv[iz] + (z - th[iz]) * slope;
+            if ((z > theights[iz]) && (z <= theights[iz + 1])) {
+                const amrex::Real slope_u = (tu[iz + 1] - tu[iz]) / (theights[iz + 1] - theights[iz]);
+                const amrex::Real slope_v = (tv[iz + 1] - tv[iz]) / (theights[iz + 1] - theights[iz]);
+                const amrex::Real slope_theta = (ttheta[iz + 1] - ttheta[iz]) / (theights[iz + 1] - theights[iz]);
+                u = tu[iz] + (z - theights[iz]) * slope_u;
+                v = tv[iz] + (z - theights[iz]) * slope_v;
+                theta = ttheta[iz] + (z - theights[iz]) * slope_theta;
             }
         }
 
+        velocity(i, j, k, 0) += u;
+        velocity(i, j, k, 1) += v;
         temperature(i, j, k, 0) += theta;
 
         if (perturb_vel) {

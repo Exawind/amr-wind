@@ -51,8 +51,8 @@ ABLModulatedPowerLaw::ABLModulatedPowerLaw(CFDSim& sim)
     pp.query("theta_gauss_var", m_theta_gauss_var);
 
     amrex::ParmParse pp_abl("ABL");
-    pp_abl.getarr("temperature_heights", m_theta_heights);
-    pp_abl.getarr("temperature_values", m_theta_values);
+    pp_abl.getarr("initial_profile_heights", m_theta_heights);
+    pp_abl.getarr("initial_temperature_values", m_theta_values);
 
     AMREX_ALWAYS_ASSERT(m_theta_heights.size() == m_theta_values.size());
     int num_theta_values = static_cast<int>(m_theta_heights.size());

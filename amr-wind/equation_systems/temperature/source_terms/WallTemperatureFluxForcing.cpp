@@ -63,8 +63,51 @@ void WallTemperatureFluxForcing::operator()(
 
     const auto& temperatureField = m_temperature.state(field_impl::dof_state(fstate))(lev).const_array(mfi);
 
-    FieldState densityState = field_impl::phi_state(fstate);
-    const auto& density = m_density.state(densityState)(lev).const_array(mfi);
+  //FieldState densityState = field_impl::phi_state(fstate);
+  //const auto& density = m_density.state(densityState)(lev).const_array(mfi);
+
+    // Get the desired sampling height.
+    const amrex::Real zref = m_mo.zref;
+
+    // Figure out on what grid level the sampling should occur and the
+    // interpolation weights.
+    const amrex::Real index = (zref/dx[idir]) - 0.5;
+
+    int kLow = int(std::floor(index));
+    int kHigh = int(std::ceil(index));
+    // if kLow and kHigh point to the same grid cell, separate them by one cell.
+    if (kLow == kHigh)
+    {
+        kHigh += 1;
+    }
+    // if kLow lies below the grid box, bump it up to the first grid level.
+    if (kLow < 0)
+    {
+        kLow = 0;
+        kHigh = kLow + 1;
+    }
+    // if kHigh lies outside the grid box, bump it down to the last grid level.
+    else if (kHigh > bx.bigEnd(idir))
+    {
+        kHigh = bx.bigEnd(idir);
+        kLow = kHigh - 1;
+    }
+  //kLow = (kLow < 0) ? 0 : kLow;
+  //kHigh = (kLow == kHigh) ? kHigh + 1 : kHigh;
+  //kHigh = (kHigh > bx.bigEnd(idir)) ? bx.bigEnd(idir) : kHigh;
+  //kLow = (kLow == kHigh) ? kLow - 1 : kLow;
+
+    const amrex::Real weightLow = amrex::Real(kHigh) - index;
+    const amrex::Real weightHigh = index - amrex::Real(kLow);
+
+/*
+    std::cout << "index = " << index << std::endl;
+    std::cout << "kLow = " << kLow << std::endl;
+    std::cout << "kHigh = " << kHigh << std::endl;
+    std::cout << "weightLow = " << weightLow << std::endl;
+    std::cout << "weightHigh = " << weightHigh << std::endl;
+*/
+
 
     if (!(bx.smallEnd(idir) == domain.smallEnd(idir))) return;
     if (idir != 2) return;
@@ -75,10 +118,24 @@ void WallTemperatureFluxForcing::operator()(
 
             // Get the local velocity at the cell center adjacent
             // to this wall face.
-            const amrex::Real u = velocityField(i, j, k, 0);
-            const amrex::Real v = velocityField(i, j, k, 1);
-            const amrex::Real T = temperatureField(i, j, k);
+            const amrex::Real uLow = velocityField(i, j, kLow, 0);
+            const amrex::Real vLow = velocityField(i, j, kLow, 1);
+            const amrex::Real TLow = temperatureField(i, j, kLow);
+
+            const amrex::Real uHigh = velocityField(i, j, kHigh, 0);
+            const amrex::Real vHigh = velocityField(i, j, kHigh, 1);
+            const amrex::Real THigh = temperatureField(i, j, kHigh);
+
+            const amrex::Real u = weightLow*uLow + weightHigh*uHigh;
+            const amrex::Real v = weightLow*vLow + weightHigh*vHigh;
             const amrex::Real S = std::sqrt((u*u) + (v*v));
+            const amrex::Real T = weightLow*TLow + weightHigh*THigh;
+/*
+            std::cout << "u = " << uLow << " " << uHigh << " " << u << std::endl;
+            std::cout << "v = " << vLow << " " << vHigh << " " << v << std::endl;
+            std::cout << "S = " << S << std::endl;
+            std::cout << "T = " << TLow << " " << THigh << " " << T << std::endl;
+*/
 
 
             // Get local tau_wall based on the local conditions and
@@ -102,12 +159,13 @@ void WallTemperatureFluxForcing::operator()(
                 q = tau.calc_theta(S,T);
             }
 
+//          std::cout << "Stheta_mean = " << m_mo.Stheta_mean << std::endl;
 /*
             std::cout << "q = " << q << std::endl;
             std::cout << "utau = " << m_mo.utau << std::endl;
             std::cout << "z0 = " << m_mo.z0 << std::endl;
             std::cout << "z1 = " << m_mo.zref << std::endl;
-            std::cout << "L = " << m_mo.obukhov_L << std::endl;
+            std::cout << "L = " << m_mo.L << std::endl;
             std::cout << "VLarge = " << std::numeric_limits<amrex::Real>::max() << std::endl;
             std::cout << "phi_m = " << m_mo.phi_m() << std::endl;
             std::cout << "phi_h = " << m_mo.phi_h() << std::endl;
@@ -120,12 +178,12 @@ void WallTemperatureFluxForcing::operator()(
                                           << velocityField(i, j, k, 2) << std::endl;
             std::cout << "temp_current = " << temperatureField(i, j, k) << std::endl;
             std::cout << "temp_mean = " << m_mo.theta_mean << std::endl;
-            std::cout << "density = " << density(i,j,k) << std::endl;
             std::cout << "dx = " << dx[0] << " " << dx[1] << " " << dx[2] << std::endl;
             std::cout << "surf_temp_flux = " << m_mo.surf_temp_flux << std::endl;
             std::cout << "vMag_mean = " << m_mo.vmag_mean << std::endl;
             std::cout << "Su_mean = " << m_mo.Su_mean << std::endl;
             std::cout << "Sv_mean = " << m_mo.Sv_mean << std::endl;
+            std::cout << "Stheta_mean = " << m_mo.Stheta_mean << std::endl;
             std::cout << "level = " << lev << std::endl;
             std::cout << m_temperature.name() << std::endl;
             std::cout << field_impl::field_name_with_state(m_temperature.name(),fstate) << std::endl;

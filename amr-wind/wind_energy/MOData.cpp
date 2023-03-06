@@ -172,6 +172,7 @@ void MOData::update_fluxes(int max_iters)
         utau1 = utau;
         iter++;
 
+/*
         std::cout << "    -iter: " << iter << std::endl;
         std::cout << "        utau = " << utau << std::endl;
         std::cout << "        L = " << L << std::endl;
@@ -186,6 +187,7 @@ void MOData::update_fluxes(int max_iters)
         std::cout << "        psi_m = " << psi_m(zref) << std::endl;
         std::cout << "        phi_h = " << phi_h() << std::endl;
         std::cout << "        psi_h = " << psi_h(zref) << std::endl;
+*/
     }
     
 

@@ -60,8 +60,54 @@ void WallMomentumFluxForcing::operator()(
 
     const auto& velocityField = m_velocity.state(field_impl::dof_state(fstate))(lev).const_array(mfi);
 
-    FieldState densityState = field_impl::phi_state(fstate);
-    const auto& density = m_density.state(densityState)(lev).const_array(mfi);
+  //FieldState densityState = field_impl::phi_state(fstate);
+  //const auto& density = m_density.state(densityState)(lev).const_array(mfi);
+    
+    // Get the desired sampling height.
+    const amrex::Real zref = m_mo.zref;
+    
+    // Figure out on what grid level the sampling should occur and the
+    // interpolation weights.
+    const amrex::Real index = (zref/dx[idir]) - 0.5;
+
+    int kLow = int(std::floor(index));
+    int kHigh = int(std::ceil(index));
+    // if kLow and kHigh point to the same grid cell, separate them by one cell.
+    if (kLow == kHigh)
+    {
+        kHigh += 1;
+    }
+    // if kLow lies below the grid box, bump it up to the first grid level.
+    if (kLow < 0)
+    {
+        kLow = 0;
+        kHigh = kLow + 1;
+    }
+    // if kHigh lies outside the grid box, bump it down to the last grid level.
+    else if (kHigh > bx.bigEnd(idir))
+    {
+        kHigh = bx.bigEnd(idir);
+        kLow = kHigh - 1;
+    }
+  //kLow = (kLow < 0) ? 0 : kLow;
+  //kHigh = (kLow == kHigh) ? kHigh + 1 : kHigh;
+  //kHigh = (kHigh > bx.bigEnd(idir)) ? bx.bigEnd(idir) : kHigh;
+  //kLow = (kLow == kHigh) ? kLow - 1 : kLow;
+
+    const amrex::Real weightLow = amrex::Real(kHigh) - index;
+    const amrex::Real weightHigh = index - amrex::Real(kLow);
+
+/*
+    std::cout << "index = " << index << std::endl;
+    std::cout << "kLow = " << kLow << std::endl;
+    std::cout << "kHigh = " << kHigh << std::endl;
+    std::cout << "weightLow = " << weightLow << std::endl;
+    std::cout << "weightHigh = " << weightHigh << std::endl;
+    std::cout << "bx.smallEnd(0) : bx.bigEnd(0) = " << bx.smallEnd(0) << " : " << bx.bigEnd(0) << std::endl;
+    std::cout << "bx.smallEnd(1) : bx.bigEnd(1) = " << bx.smallEnd(1) << " : " << bx.bigEnd(1) << std::endl;
+    std::cout << "bx.smallEnd(2) : bx.bigEnd(2) = " << bx.smallEnd(2) << " : " << bx.bigEnd(2) << std::endl;
+*/
+
 
     if (!(bx.smallEnd(idir) == domain.smallEnd(idir))) return;
     if (idir != 2) return;
@@ -70,12 +116,24 @@ void WallMomentumFluxForcing::operator()(
         amrex::bdryLo(bx, idir),
         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
 
+
+
             // Get the local velocity at the cell center adjacent
             // to this wall face.
-            const amrex::Real u = velocityField(i, j, k, 0);
-            const amrex::Real v = velocityField(i, j, k, 1);
-            const amrex::Real S = std::sqrt((u*u) + (v*v));
+            const amrex::Real uLow = velocityField(i, j, kLow, 0);
+            const amrex::Real vLow = velocityField(i, j, kLow, 1);
 
+            const amrex::Real uHigh = velocityField(i, j, kHigh, 0);
+            const amrex::Real vHigh = velocityField(i, j, kHigh, 1);
+ 
+            const amrex::Real u = weightLow*uLow + weightHigh*uHigh;
+            const amrex::Real v = weightLow*vLow + weightHigh*vHigh;
+            const amrex::Real S = std::sqrt((u*u) + (v*v));
+/*
+            std::cout << "u = " << uLow << " " << uHigh << " " << u << std::endl;
+            std::cout << "v = " << vLow << " " << vHigh << " " << v << std::endl;
+            std::cout << "S = " << S << std::endl;
+*/
 
             // Get local tau_wall based on the local conditions and
             // mean state based on Monin-Obukhov similarity.

@@ -509,6 +509,8 @@ void VelPlaneAveragingFine::compute_hvelmag_averages(const IndexSelector& idxOp)
                                         hvelmag * fab_arr(i, j, k, idxOp.odir1);
                                     const amrex::Real Sv =
                                         hvelmag * fab_arr(i, j, k, idxOp.odir2);
+                                    const amrex::Real Stheta = 
+                                        hvelmag * t_arr(i, j, k);
 
                                     amrex::Gpu::deviceReduceSum(
                                         &line_avg_vm[ind],
@@ -518,6 +520,9 @@ void VelPlaneAveragingFine::compute_hvelmag_averages(const IndexSelector& idxOp)
                                         handler);
                                     amrex::Gpu::deviceReduceSum(
                                         &line_avg_Sv[ind], Sv * vol * denom,
+                                        handler);
+                                    amrex::Gpu::deviceReduceSum(
+                                        &line_avg_Stheta[ind], Stheta * vol * denom,
                                         handler);
                                 }
                             }

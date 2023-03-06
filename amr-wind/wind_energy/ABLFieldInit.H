@@ -57,15 +57,19 @@ private:
     amrex::Real m_vel_dir;
 
     ///@{
-    //! Lookup table containing temperature variation w.r.t. height above
-    //! terrain
-    amrex::Vector<amrex::Real> m_theta_heights;
-    amrex::Vector<amrex::Real> m_theta_values;
+    //! Lookup table containing velocity/temperature variation w.r.t.
+    //! height above terrain
+    amrex::Vector<amrex::Real> m_init_heights;
+    amrex::Vector<amrex::Real> m_init_u_values;
+    amrex::Vector<amrex::Real> m_init_v_values;
+    amrex::Vector<amrex::Real> m_init_theta_values;
     ///@}
 
     // Device copies of the above arrays
-    amrex::Gpu::DeviceVector<amrex::Real> m_thht_d;
-    amrex::Gpu::DeviceVector<amrex::Real> m_thvv_d;
+    amrex::Gpu::DeviceVector<amrex::Real> m_init_heights_d;
+    amrex::Gpu::DeviceVector<amrex::Real> m_init_u_values_d;
+    amrex::Gpu::DeviceVector<amrex::Real> m_init_v_values_d;
+    amrex::Gpu::DeviceVector<amrex::Real> m_init_theta_values_d;
 
     //! Initial density field
     amrex::Real m_rho;
