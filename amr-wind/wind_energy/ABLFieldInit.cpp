@@ -11,8 +11,6 @@ ABLFieldInit::ABLFieldInit()
 {
     amrex::ParmParse pp_abl("ABL");
 
-    std::cout << "In ABLFieldInit() " << std::endl;
-
     // Temperature variation as a function of height
     pp_abl.getarr("initial_profile_heights", m_init_heights);
     pp_abl.getarr("initial_u_velocity_values", m_init_u_values);
@@ -84,7 +82,6 @@ void ABLFieldInit::operator()(
     const amrex::Array4<amrex::Real>& density,
     const amrex::Array4<amrex::Real>& temperature) const
 {
-    std::cout << "HERE" << std::endl;
     const amrex::Real pi = M_PI;
     const auto& dx = geom.CellSizeArray();
     const auto& problo = geom.ProbLoArray();
@@ -118,9 +115,10 @@ void ABLFieldInit::operator()(
 
         density(i, j, k) = rho_init;
         // Mean velocity field
-        //velocity(i, j, k, 0) = umean;
-        //velocity(i, j, k, 1) = vmean;
-        //velocity(i, j, k, 2) = wmean;
+        velocity(i, j, k, 0) = 0.0;
+        velocity(i, j, k, 1) = 0.0;
+        velocity(i, j, k, 2) = 0.0;
+        temperature(i, j, k, 0) = 0.0;
 
         amrex::Real u = tu[0];
         amrex::Real v = tv[0];

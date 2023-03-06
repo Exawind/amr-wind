@@ -45,9 +45,7 @@ ABL::ABL(CFDSim& sim)
     m_bndry_plane = std::make_unique<ABLBoundaryPlane>(sim);
 
     // Instantiate the ABL Modulated Power Law
-    std::cout << "A" << std::endl;
     m_abl_mpl = std::make_unique<ABLModulatedPowerLaw>(sim);
-    std::cout << "B" << std::endl;
 
     // Instantiate the file-based field initializer
     if (m_file_input) {
