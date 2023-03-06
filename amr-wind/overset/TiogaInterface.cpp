@@ -264,7 +264,6 @@ void TiogaInterface::register_solution(
 void TiogaInterface::update_solution()
 {
     auto& repo = m_sim.repo();
-    const int num_ghost = m_sim.pde_manager().num_ghost_state();
 
     // Update cell variables on device
     {
