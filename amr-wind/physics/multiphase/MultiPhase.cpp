@@ -10,7 +10,7 @@
 
 namespace amr_wind {
 
-void initialize_rho0(
+void define_rho0(
     amr_wind::Field& rho0,
     const amrex::Real rho1,
     const amrex::Real rho2,
@@ -34,7 +34,7 @@ void initialize_rho0(
     }
 }
 
-void initialize_p0(
+void define_p0(
     amr_wind::Field& p0,
     const amrex::Real rho1,
     const amrex::Real rho2,
@@ -47,10 +47,10 @@ void initialize_p0(
         const auto& problo = geom[lev].ProbLoArray();
         const auto& probhi = geom[lev].ProbHiArray();
         for (amrex::MFIter mfi(p0(lev)); mfi.isValid(); ++mfi) {
-            amrex::Box const& bx = mfi.grownnodaltilebox();
+            amrex::Box const& nbx = mfi.grownnodaltilebox();
             auto p0_arr = p0(lev).array(mfi);
             amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     // Height of bottom of cell below
                     const amrex::Real hbtm = (k - 1) * dx[2];
                     // Height of bottom of cell above, current pressure node
@@ -166,9 +166,8 @@ void MultiPhase::post_init_actions()
     if (is_pptb && is_wlev) {
         pp_multiphase.get("water_level", water_level0);
         // Initialize rho0 field for perturbational density, pressure
-        auto& rho0 = m_sim.repo().declare_field("rho0", 1, 0, 1);
-        initialize_rho0(
-            rho0, m_rho1, m_rho2, water_level0, m_sim.mesh().Geom());
+        auto& rho0 = m_sim.repo().declare_field("reference_density", 1, 0, 1);
+        define_rho0(rho0, m_rho1, m_rho2, water_level0, m_sim.mesh().Geom());
 
         // Make p0 field if requested
         if (is_ptrue) {
@@ -177,8 +176,9 @@ void MultiPhase::post_init_actions()
             // Initialize p0 field for reconstructing p
             amrex::ParmParse pp("incflo");
             pp.queryarr("gravity", m_gravity);
-            auto& p0 = m_sim.repo().declare_nd_field("p0", 1, ng[0], 1);
-            initialize_p0(
+            auto& p0 = m_sim.repo().declare_nd_field(
+                "reference_pressure", 1, ng[0], 1);
+            define_p0(
                 p0, m_rho1, m_rho2, water_level0, m_gravity[2],
                 m_sim.mesh().Geom());
         }
@@ -189,14 +189,14 @@ void MultiPhase::post_regrid_actions()
 {
     // Reinitialize rho0 if needed
     if (is_pptb) {
-        auto& rho0 = m_sim.repo().declare_field("rho0", 1, 0, 1);
-        initialize_rho0(
-            rho0, m_rho1, m_rho2, water_level0, m_sim.mesh().Geom());
+        auto& rho0 = m_sim.repo().declare_field("reference_density", 1, 0, 1);
+        define_rho0(rho0, m_rho1, m_rho2, water_level0, m_sim.mesh().Geom());
         // Reinitialize p0 if needed
         if (is_ptrue) {
             auto ng = (*m_vof).num_grow();
-            auto& p0 = m_sim.repo().declare_nd_field("p0", 1, ng[0], 1);
-            initialize_p0(
+            auto& p0 = m_sim.repo().declare_nd_field(
+                "reference_pressure", 1, ng[0], 1);
+            define_p0(
                 p0, m_rho1, m_rho2, water_level0, m_gravity[2],
                 m_sim.mesh().Geom());
         }

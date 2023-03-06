@@ -25,9 +25,9 @@ GravityForcing::GravityForcing(const CFDSim& sim)
     amrex::ParmParse pp_icns("ICNS");
     pp_icns.query("use_perturb_pressure", is_pptb);
     // Determine if rho0 field exists
-    is_rho0 = sim.repo().field_exists("rho0");
+    is_rho0 = sim.repo().field_exists("reference_density");
     if (is_rho0) {
-        m_rho0 = &(sim.repo().get_field("rho0"));
+        m_rho0 = &(sim.repo().get_field("reference_density"));
     } else {
         // Point to existing field, won't be used
         m_rho0 = m_rho;
