@@ -38,7 +38,7 @@ void read_inputs(
 
     pp.query("timeramp", wdata.has_ramp);
     if (wdata.has_ramp) {
-        pp.query("timeramp_perior", wdata.ramp_period);
+        pp.query("timeramp_period", wdata.ramp_period);
     }
 }
 
