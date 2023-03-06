@@ -55,7 +55,6 @@ public:
 
     void setVal(int value) noexcept;
 
-
 protected:
     IntScratchField(
         const FieldRepo& repo,

@@ -331,7 +331,6 @@ public:
         const int nghost = 0,
         const FieldLoc floc = FieldLoc::CELL) const;
 
-
     std::unique_ptr<ScratchField> create_scratch_field_on_host(
         const int ncomp = 1,
         const int nghost = 0,
@@ -342,7 +341,6 @@ public:
         const int ncomp = 1,
         const int nghost = 0,
         const FieldLoc floc = FieldLoc::CELL) const;
-
 
     std::unique_ptr<IntScratchField> create_int_scratch_field_on_host(
         const int ncomp = 1,

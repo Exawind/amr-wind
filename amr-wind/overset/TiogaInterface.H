@@ -96,7 +96,6 @@ public:
 
     ScratchField& qvars_cell() { return *m_qcell_host; }
     ScratchField& qvars_node() { return *m_qnode_host; }
-	
 
 private:
     void amr_to_tioga_mesh();

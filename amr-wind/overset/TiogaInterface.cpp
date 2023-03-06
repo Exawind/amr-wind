@@ -79,7 +79,6 @@ TiogaInterface::TiogaInterface(CFDSim& sim)
     m_sim.io_manager().register_output_int_var(m_iblank_cell.name());
 }
 
-
 // clang-format on
 
 void TiogaInterface::post_init_actions()
@@ -106,8 +105,10 @@ void TiogaInterface::pre_overset_conn_work()
 
     auto& repo = m_sim.repo();
     const int num_ghost = m_sim.pde_manager().num_ghost_state();
-    m_iblank_cell_host = repo.create_int_scratch_field_on_host("iblank_cell_host",1,num_ghost, FieldLoc::CELL);
-    m_iblank_node_host = repo.create_int_scratch_field_on_host("iblank_node_host",1,num_ghost, FieldLoc::NODE);
+    m_iblank_cell_host = repo.create_int_scratch_field_on_host(
+        "iblank_cell_host", 1, num_ghost, FieldLoc::CELL);
+    m_iblank_node_host = repo.create_int_scratch_field_on_host(
+        "iblank_node_host", 1, num_ghost, FieldLoc::NODE);
 
     amr_to_tioga_iblank();
 
@@ -116,29 +117,25 @@ void TiogaInterface::pre_overset_conn_work()
 
     (*m_iblank_cell_host).setVal(1);
     (*m_iblank_node_host).setVal(1);
-	
 }
 
 void TiogaInterface::post_overset_conn_work()
 {
 
-
     auto& repo = m_sim.repo();
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
-	htod_memcpy(m_iblank_cell(lev),(*m_iblank_cell_host)(lev),0,0,1);
-	htod_memcpy(m_iblank_node(lev),(*m_iblank_node_host)(lev),0,0,1);
+        htod_memcpy(m_iblank_cell(lev), (*m_iblank_cell_host)(lev), 0, 0, 1);
+        htod_memcpy(m_iblank_node(lev), (*m_iblank_node_host)(lev), 0, 0, 1);
     }
 
     iblank_to_mask(m_iblank_cell, m_mask_cell);
     iblank_to_mask(m_iblank_node, m_mask_node);
 
-
     // Update equation systems after a connectivity update
     m_sim.pde_manager().icns().post_regrid_actions();
     for (auto& eqn : m_sim.pde_manager().scalar_eqns()) {
         eqn->post_regrid_actions();
-
     }
     m_iblank_cell_host.reset();
     m_iblank_node_host.reset();
@@ -191,14 +188,11 @@ void TiogaInterface::register_solution(
             // Device to host copy happens here
             const int nlevels = repo.num_active_levels();
             for (int lev = 0; lev < nlevels; ++lev) {
-		dtoh_memcpy((*m_qcell_host)(lev), fld(lev),0,icomp,ncomp);
-
+                dtoh_memcpy((*m_qcell_host)(lev), fld(lev), 0, icomp, ncomp);
             }
 
             icomp += ncomp;
-
         }
-
     }
     // Move node variables into scratch field
     {
@@ -223,22 +217,20 @@ void TiogaInterface::register_solution(
             // Device to host copy happens here
             const int nlevels = repo.num_active_levels();
             for (int lev = 0; lev < nlevels; ++lev) {
-		dtoh_memcpy((*m_qnode_host)(lev), fld(lev),0,icomp,ncomp);
-
+                dtoh_memcpy((*m_qnode_host)(lev), fld(lev), 0, icomp, ncomp);
             }
             icomp += ncomp;
         }
         AMREX_ASSERT(nnode_vars == icomp);
-     }
-
+    }
 
     // Update data pointers for TIOGA exchange
     {
         int ilp = 0;
         const int nlevels = m_sim.repo().num_active_levels();
         auto& ad = *m_amr_data;
-	amrex::Vector<amrex::Real*> qcellPtr(ad.qcell.size());
-    	amrex::Vector<amrex::Real*> qnodePtr(ad.qnode.size());
+        amrex::Vector<amrex::Real*> qcellPtr(ad.qcell.size());
+        amrex::Vector<amrex::Real*> qnodePtr(ad.qnode.size());
         for (int lev = 0; lev < nlevels; ++lev) {
             auto& qcfab = (*m_qcell)(lev);
             auto& qnfab = (*m_qnode)(lev);
@@ -250,16 +242,16 @@ void TiogaInterface::register_solution(
                 // Copy from device to host
                 ad.qcell.h_view[ilp] = qcfab_host[mfi].dataPtr();
                 // Pass pointers to vector prior to d_view copy
-	    	qcellPtr[ilp] = qcfab[mfi].dataPtr();
+                qcellPtr[ilp] = qcfab[mfi].dataPtr();
                 // Copy from device to host
                 ad.qnode.h_view[ilp] = qnfab_host[mfi].dataPtr();
                 // Pass pointers to vector prior to d_view copy
-	    	qnodePtr[ilp] = qnfab[mfi].dataPtr();
+                qnodePtr[ilp] = qnfab[mfi].dataPtr();
 
                 ++ilp;
             }
         }
-	// Host to device copy from standard vector to d_view 
+        // Host to device copy from standard vector to d_view
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, qcellPtr.begin(), qcellPtr.end(),
             ad.qcell.d_view.begin());
@@ -283,13 +275,12 @@ void TiogaInterface::update_solution()
             // Host to device copy happens here
             const int nlevels = repo.num_active_levels();
             for (int lev = 0; lev < nlevels; ++lev) {
-	    	htod_memcpy(fld(lev),(*m_qcell_host)(lev),icomp,0,ncomp);
+                htod_memcpy(fld(lev), (*m_qcell_host)(lev), icomp, 0, ncomp);
             }
             fld.fillpatch(m_sim.time().new_time());
             icomp += ncomp;
         }
-     }
-
+    }
 
     // Update nodal variables on device
     {
@@ -300,12 +291,12 @@ void TiogaInterface::update_solution()
             // Host to device copy happens here
             const int nlevels = repo.num_active_levels();
             for (int lev = 0; lev < nlevels; ++lev) {
-		htod_memcpy(fld(lev),(*m_qnode_host)(lev),icomp,0,ncomp);
+                htod_memcpy(fld(lev), (*m_qnode_host)(lev), icomp, 0, ncomp);
             }
             fld.fillpatch(m_sim.time().new_time());
             icomp += ncomp;
         }
-     }
+    }
 
     // Release memory to avoid holding onto scratch fields across regrids
     m_qcell.reset();
@@ -385,8 +376,6 @@ void TiogaInterface::amr_to_tioga_mesh()
         }
     }
 
-
-
     // Synchronize data on host/device
     m_amr_data->level.copy_to_device();
     m_amr_data->mpi_rank.copy_to_device();
@@ -397,7 +386,6 @@ void TiogaInterface::amr_to_tioga_mesh()
     m_amr_data->xlo.copy_to_device();
     m_amr_data->dx.copy_to_device();
     m_amr_data->global_idmap.copy_to_device();
-
 }
 void TiogaInterface::amr_to_tioga_iblank()
 {
@@ -410,11 +398,10 @@ void TiogaInterface::amr_to_tioga_iblank()
     auto& ibcell = m_sim.repo().get_int_field("iblank_cell");
     auto& ibnode = m_sim.repo().get_int_field("iblank_node");
 
-
     // Create standard vector of integer pointers here
     auto& ad = *m_amr_data;
-    amrex::Vector<int *> tmpdataPtr(ad.iblank_cell.size());
-    amrex::Vector<int *> tmpdataPtrn(ad.iblank_node.size());
+    amrex::Vector<int*> tmpdataPtr(ad.iblank_cell.size());
+    amrex::Vector<int*> tmpdataPtrn(ad.iblank_node.size());
     for (int lev = 0; lev < nlevels; ++lev) {
         auto& ibfab = ibcell(lev);
         auto& ibnodefab = ibnode(lev);
@@ -430,22 +417,20 @@ void TiogaInterface::amr_to_tioga_iblank()
             ad.iblank_cell.h_view[ilp] = ib_host.dataPtr();
             ad.iblank_node.h_view[ilp] = ibn_host.dataPtr();
 
-	    tmpdataPtr[ilp] = ib.dataPtr();
-	    tmpdataPtrn[ilp] = ibn.dataPtr();
+            tmpdataPtr[ilp] = ib.dataPtr();
+            tmpdataPtrn[ilp] = ibn.dataPtr();
 
             ++ilp;
         }
     }
 
-	// Host to device copy from standard vector to 
-	// ad.iblank_cell.d_view
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, tmpdataPtr.begin(), tmpdataPtr.end(),
-            ad.iblank_cell.d_view.begin());
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, tmpdataPtrn.begin(), tmpdataPtrn.end(),
-            ad.iblank_node.d_view.begin());
-
+    // Host to device copy from standard vector to
+    // ad.iblank_cell.d_view
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, tmpdataPtr.begin(), tmpdataPtr.end(),
+        ad.iblank_cell.d_view.begin());
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, tmpdataPtrn.begin(), tmpdataPtrn.end(),
+        ad.iblank_node.d_view.begin());
 }
 } // namespace amr_wind
-

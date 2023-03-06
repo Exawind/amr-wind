@@ -272,7 +272,6 @@ IntField& FieldRepo::declare_int_field(
     return *m_int_field_vec[m_int_fid_map[name]];
 }
 
-
 IntField&
 FieldRepo::get_int_field(const std::string& name, const FieldState fstate) const
 {
@@ -326,13 +325,11 @@ std::unique_ptr<ScratchField> FieldRepo::create_scratch_field(
     return field;
 }
 
-
 std::unique_ptr<ScratchField> FieldRepo::create_scratch_field(
     const int ncomp, const int nghost, const FieldLoc floc) const
 {
     return create_scratch_field("scratch_field", ncomp, nghost, floc);
 }
-
 
 std::unique_ptr<ScratchField> FieldRepo::create_scratch_field_on_host(
     const std::string& name,
@@ -355,8 +352,8 @@ std::unique_ptr<ScratchField> FieldRepo::create_scratch_field_on_host(
             amrex::convert(m_mesh.boxArray(lev), field_impl::index_type(floc));
 
         field->m_data.emplace_back(
-            ba, m_mesh.DistributionMap(lev), ncomp, nghost, 
-	amrex::MFInfo().SetArena(amrex::The_Pinned_Arena()),
+            ba, m_mesh.DistributionMap(lev), ncomp, nghost,
+            amrex::MFInfo().SetArena(amrex::The_Pinned_Arena()),
             *(m_leveldata[lev]->m_factory));
     }
     return field;
@@ -365,7 +362,8 @@ std::unique_ptr<ScratchField> FieldRepo::create_scratch_field_on_host(
 std::unique_ptr<ScratchField> FieldRepo::create_scratch_field_on_host(
     const int ncomp, const int nghost, const FieldLoc floc) const
 {
-    return create_scratch_field_on_host("scratch_field_host", ncomp, nghost, floc);
+    return create_scratch_field_on_host(
+        "scratch_field_host", ncomp, nghost, floc);
 }
 std::unique_ptr<IntScratchField> FieldRepo::create_int_scratch_field_on_host(
     const std::string& name,
@@ -388,8 +386,8 @@ std::unique_ptr<IntScratchField> FieldRepo::create_int_scratch_field_on_host(
             amrex::convert(m_mesh.boxArray(lev), field_impl::index_type(floc));
 
         field->m_data.emplace_back(
-            ba, m_mesh.DistributionMap(lev), ncomp, nghost, 
-	amrex::MFInfo().SetArena(amrex::The_Pinned_Arena()),
+            ba, m_mesh.DistributionMap(lev), ncomp, nghost,
+            amrex::MFInfo().SetArena(amrex::The_Pinned_Arena()),
             *(m_leveldata[lev]->m_int_fact));
     }
     return field;
@@ -397,7 +395,8 @@ std::unique_ptr<IntScratchField> FieldRepo::create_int_scratch_field_on_host(
 std::unique_ptr<IntScratchField> FieldRepo::create_int_scratch_field_on_host(
     const int ncomp, const int nghost, const FieldLoc floc) const
 {
-    return create_int_scratch_field_on_host("int_scratch_field_host", ncomp, nghost, floc);
+    return create_int_scratch_field_on_host(
+        "int_scratch_field_host", ncomp, nghost, floc);
 }
 void FieldRepo::advance_states() noexcept
 {
