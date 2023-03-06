@@ -170,7 +170,7 @@ struct ShearStressDonelan
     {}
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-    calc_vel_x(amrex::Real u, amrex::Real /*wspd*/) const
+    calc_vel_x(amrex::Real u, amrex::Real wspd) const
     {
         amrex::Real Cd = 0.001;
         const amrex::Real c = 7e-5;
@@ -182,11 +182,11 @@ struct ShearStressDonelan
             Cd = 0.0024;
         }
 
-        return Cd * u * wspd_mean;
-    };
+        return Cd * u * wspd;
+    }
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-    calc_vel_y(amrex::Real v, amrex::Real /*wspd*/) const
+    calc_vel_y(amrex::Real v, amrex::Real wspd) const
     {
         amrex::Real Cd = 0.001;
         const amrex::Real c = 7e-5;
@@ -198,7 +198,7 @@ struct ShearStressDonelan
             Cd = 0.0024;
         }
 
-        return Cd * v * wspd_mean;
+        return Cd * v * wspd;
     };
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
