@@ -112,6 +112,19 @@ MultiPhase::MultiPhase(CFDSim& sim)
         BCScalar bc_ls(*m_levelset);
         bc_ls(levelset_default);
     }
+
+    // Address pressure approach through input values
+    amrex::ParmParse pp_icns("ICNS");
+    pp_icns.query("use_perturb_pressure", is_pptb);
+    pp_icns.query("reconstruct_true_pressure", is_ptrue);
+    // Declare fields
+    if (is_pptb) {
+        m_sim.repo().declare_field("reference_density", 1, 0, 1);
+        if (is_ptrue) {
+            m_sim.repo().declare_nd_field(
+                "reference_pressure", 1, (*m_vof).num_grow()[0], 1);
+        }
+    }
 }
 
 InterfaceCapturingMethod MultiPhase::interface_capturing_method()
@@ -140,11 +153,6 @@ void MultiPhase::post_init_actions()
     q2 = momentum_sum(2);
     sumvof0 = volume_fraction_sum();
 
-    // Query approach to pressure
-    amrex::ParmParse pp_icns("ICNS");
-    pp_icns.query("use_perturb_pressure", is_pptb);
-    pp_icns.query("reconstruct_true_pressure", is_ptrue);
-
     // Check if water level is specified (from case definition)
     amrex::ParmParse pp_multiphase("MultiPhase");
     bool is_wlev = pp_multiphase.contains("water_level");
@@ -158,18 +166,15 @@ void MultiPhase::post_init_actions()
     if (is_pptb && is_wlev) {
         pp_multiphase.get("water_level", water_level0);
         // Initialize rho0 field for perturbational density, pressure
-        auto& rho0 = m_sim.repo().declare_field("reference_density", 1, 0, 1);
+        auto& rho0 = m_sim.repo().get_field("reference_density");
         define_rho0(rho0, m_rho1, m_rho2, water_level0, m_sim.mesh().Geom());
 
         // Make p0 field if requested
         if (is_ptrue) {
-            // Get number of ghost cells (state variable)
-            auto ng = (*m_vof).num_grow();
             // Initialize p0 field for reconstructing p
             amrex::ParmParse pp("incflo");
             pp.queryarr("gravity", m_gravity);
-            auto& p0 = m_sim.repo().declare_nd_field(
-                "reference_pressure", 1, ng[0], 1);
+            auto& p0 = m_sim.repo().get_field("reference_pressure");
             define_p0(
                 p0, m_rho1, m_rho2, water_level0, m_gravity[2],
                 m_sim.mesh().Geom());
