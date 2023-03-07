@@ -177,7 +177,7 @@ void ABLStats::compute_zi()
     const auto& geom = (this->m_sim.repo()).mesh().Geom(lev);
     auto const& domain_box = geom.Domain();
     const auto& gradT_arrs = (*gradT)(lev).const_arrays();
-    auto rr = amrex::ReduceToPlane<
+    auto device_tg_fab = amrex::ReduceToPlane<
         amrex::ReduceOpMax, amrex::KeyValuePair<amrex::Real, int>>(
         dir, domain_box, m_temperature(lev),
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k)
@@ -186,22 +186,31 @@ void ABLStats::compute_zi()
             return {gradT_arrs[nbx](i, j, k, dir), iv[dir]};
         });
 
-    // create a pinned fab, do memcpy, and then reduce.
+#ifdef AMREX_USE_GPU
+    amrex::BaseFab<T> pinned_tg_fab(
+        device_tg_fab.box(), device_tg_fab.nComp(), amrex::The_Pinned_Arena());
+    amrex::Gpu::dtoh_memcpy(
+        pinned_tg_fab.dataPtr(), device_tg_fab.dataPtr(),
+        pinned_tg_fab.nBytes());
+#else
+    auto& pinned_tg_fab = device_tg_fab;
+#endif
 
     amrex::ParallelReduce::Max(
-        rr.dataPtr(), rr.size(), amrex::ParallelDescriptor::IOProcessorNumber(),
+        pinned_tg_fab.dataPtr(), pinned_tg_fab.size(),
+        amrex::ParallelDescriptor::IOProcessorNumber(),
         amrex::ParallelDescriptor::Communicator());
 
     if (amrex::ParallelDescriptor::IOProcessor()) {
         const auto dnval = m_dn;
-        auto p = rr.dataPtr();
+        auto p = pinned_tg_fab.dataPtr();
         m_zi = amrex::Reduce::Sum<amrex::Real>(
-            rr.size(),
+            pinned_tg_fab.size(),
             [=] AMREX_GPU_DEVICE(int i) noexcept -> amrex::Real {
                 return (p[i].second() + 0.5) * dnval;
             },
             0.0);
-        m_zi /= static_cast<amrex::Real>(rr.size());
+        m_zi /= static_cast<amrex::Real>(pinned_tg_fab.size());
         std::cout << "Hello IO proc m_zi = " << m_zi << std::endl;
     }
 }
