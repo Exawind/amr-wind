@@ -11,6 +11,8 @@
 #include "hydro_mol.H"
 #include "hydro_utils.H"
 
+#include "amr-wind/utilities/diagnostics.H"
+
 namespace amr_wind::pde {
 
 class MacProjOp
@@ -119,6 +121,9 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         // 1 = conservative (default), 0 = nonconservative
         pp.query("icns_conserv", m_cons);
         iconserv.resize(ICNS::ndim, m_cons);
+
+        // Get copy of verbose
+        pp.query("verbose", m_verbose);
     }
 
     void preadvect(
@@ -282,6 +287,10 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             }
         }
 
+        if (m_verbose > 2) {
+            diagnostics::PrintMaxMACVelLocations(repo, "before MAC projection");
+        }
+
         // MAC projection
         m_macproj_op(fstate, dt);
 
@@ -296,6 +305,10 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             u_mac(lev).FillBoundary(geom[lev].periodicity());
             v_mac(lev).FillBoundary(geom[lev].periodicity());
             w_mac(lev).FillBoundary(geom[lev].periodicity());
+        }
+
+        if (m_verbose > 2) {
+            diagnostics::PrintMaxMACVelLocations(repo, "after MAC projection");
         }
     }
 
@@ -506,6 +519,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     const bool fluxes_are_area_weighted{false};
     bool godunov_use_forces_in_trans{false};
     int m_cons{1};
+    int m_verbose{0};
     std::string premac_advection_type{"Godunov"};
     std::string postmac_advection_type{"Godunov"};
 };
