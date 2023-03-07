@@ -162,7 +162,7 @@ amrex::Real field_error(amr_wind::Field& comp, amr_wind::Field& targ, int ncomp)
 
                 amrex::Loop(
                     bx, nc, [=, &error](int i, int j, int k, int n) noexcept {
-                        error += amrex::Math::abs(
+                        error += std::abs(
                             comp_arr(i, j, k, n) - targ_arr(i, j, k, n));
                     });
 
@@ -175,6 +175,37 @@ amrex::Real field_error(amr_wind::Field& comp, amr_wind::Field& targ, int ncomp)
 amrex::Real field_error(amr_wind::Field& comp, amr_wind::Field& targ)
 {
     return field_error(comp, targ, 1);
+}
+
+amrex::Real gas_velocity_error(
+    amr_wind::Field& vel, amr_wind::Field& vof, amrex::Real gas_vel)
+{
+    amrex::Real error_total = 0.0;
+    const amrex::Real gvel = gas_vel;
+    const int nc = 3;
+
+    for (int lev = 0; lev < vel.repo().num_active_levels(); ++lev) {
+        error_total += amrex::ReduceSum(
+            vel(lev), vof(lev), 0,
+            [=] AMREX_GPU_HOST_DEVICE(
+                amrex::Box const& bx,
+                amrex::Array4<amrex::Real const> const& vel_arr,
+                amrex::Array4<amrex::Real const> const& vof_arr)
+                -> amrex::Real {
+                amrex::Real error = 0.0;
+
+                amrex::Loop(
+                    bx, nc, [=, &error](int i, int j, int k, int n) noexcept {
+                        error +=
+                            (vof_arr(i, j, k) < 1e-12
+                                 ? std::abs(vel_arr(i, j, k, n) - gvel)
+                                 : 0.0);
+                    });
+
+                return error;
+            });
+    }
+    return error_total;
 }
 
 void write_HOS_txt(std::string HOS_fname, amrex::Real factor)
@@ -227,7 +258,7 @@ void init_reference_fields(
                 vel_arr(i, j, k, 2) = 0.0;
             } else {
                 // adjust z for partially liquid cell
-                if (amrex::Math::abs(lvs_arr(i, j, k)) - 0.5 * dx[2] < 0) {
+                if (std::abs(lvs_arr(i, j, k)) - 0.5 * dx[2] < 0) {
                     z -= 0.5 * lvs_arr(i, j, k);
                 }
                 vel_arr(i, j, k, 0) = fac * u_def(x, y, z);
@@ -292,6 +323,65 @@ TEST_F(OceanWavesOpTest, relaxation_zone)
     init_relaxation_field(theoretical_field, gen_length);
     apply_relaxation_zone_field(comp_field, target_field, gen_length);
     amrex::Real error_total = field_error(comp_field, theoretical_field);
+    EXPECT_NEAR(error_total, 0.0, tol);
+}
+
+TEST_F(OceanWavesOpTest, gas_phase)
+{
+    // Write HOS file
+    write_HOS_txt("HOSGridData_lev0_0.txt", 1.0);
+
+    constexpr double tol = 1.0e-3;
+
+    populate_parameters();
+    {
+        // Ocean Waves details
+        amrex::ParmParse pp("OceanWaves");
+        pp.add("label", (std::string) "lin_ow");
+        amrex::ParmParse ppow("OceanWaves.lin_ow");
+        ppow.add("type", (std::string) "LinearWaves");
+        ppow.add("wave_height", 0.02);
+        ppow.add("wave_length", 1.0);
+        ppow.add("water_depth", 0.5);
+        // Wave generation and numerical beach
+        ppow.add("relax_zone_gen_length", 2.0);
+        ppow.add("numerical_beach_length", 4.0);
+    }
+    {
+        amrex::ParmParse pp("time");
+        pp.add("fixed_dt", 0.1);
+    }
+
+    initialize_mesh();
+
+    // ICNS must be initialized for MultiPhase physics, which is needed for
+    // OceanWaves
+    auto& pde_mgr = sim().pde_manager();
+    pde_mgr.register_icns();
+    // Initialize physics
+    sim().init_physics();
+    auto& oceanwaves =
+        sim().physics_manager().get<amr_wind::ocean_waves::OceanWaves>();
+    // Initialize fields
+    oceanwaves.pre_init_actions();
+    auto& repo = sim().repo();
+    for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+        oceanwaves.initialize_fields(lev, mesh().Geom(lev));
+    }
+
+    // Modify velocity field
+    auto& velocity = repo.get_field("velocity");
+    const amrex::Real gas_vel = 1.0;
+    velocity.setVal(gas_vel);
+
+    // Do post-init step, which modifies velocity and vof fields
+    oceanwaves.post_init_actions();
+
+    // Get vof field
+    auto& vof = repo.get_field("vof");
+
+    // Check velocity field to confirm not modified
+    amrex::Real error_total = gas_velocity_error(velocity, vof, gas_vel);
     EXPECT_NEAR(error_total, 0.0, tol);
 }
 

@@ -92,8 +92,15 @@ void Actuator::pre_advance_work()
     update_velocities();
     compute_forces();
     compute_source_term();
+    communicate_turbine_io();
+}
 
+void Actuator::communicate_turbine_io()
+{
 #ifdef AMR_WIND_USE_HELICS
+    if (!m_sim.helics().is_activated()) {
+        return;
+    }
     // send power and yaw from root actuator proc to io proc
     const int ptag = 0;
     const int ytag = 1;
