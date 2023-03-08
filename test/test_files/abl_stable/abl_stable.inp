@@ -36,8 +36,8 @@ CoriolisForcing.rotational_time_period = 90405.5439881955
 GeostrophicForcing.geostrophic_wind = 8.0 0.0 0.0
 incflo.velocity = 8.0 0.0 0.0
 ABL.reference_temperature = 263.5
-ABL.temperature_heights = 0.0 100 150 400.0
-ABL.temperature_values = 265.0 268.0 265.0 265.0
+ABL.temperature_heights = 0.0 100 400.0
+ABL.temperature_values = 265.0 265.0 268.0
 ABL.perturb_temperature = false
 ABL.cutoff_height = 50.0
 ABL.perturb_velocity = true
@@ -53,7 +53,7 @@ ABL.surface_roughness_z0 = 0.1
 ABL.surface_temp_rate = -0.25
 ABL.surface_temp_init = 265.0
 ABL.normal_direction = 2
-ABL.stats_output_frequency = 1
+ABL.stats_output_frequency = 100
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
