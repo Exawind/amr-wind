@@ -27,19 +27,19 @@ struct ShearStressConstant
     {}
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-        calc_vel_x(amrex::Real /* u */, amrex::Real /* wspd */) const
+    calc_vel_x(amrex::Real /* u */, amrex::Real /* wspd */) const
     {
         return u_mean / wspd_mean * utau2;
     };
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-        calc_vel_y(amrex::Real /* u */, amrex::Real /* wspd */) const
+    calc_vel_y(amrex::Real /* u */, amrex::Real /* wspd */) const
     {
         return v_mean / wspd_mean * utau2;
     };
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-        calc_theta(amrex::Real /* wspd */, amrex::Real /* theta */) const
+    calc_theta(amrex::Real /* wspd */, amrex::Real /* theta */) const
     {
         return term1 * (theta_mean - theta_surface);
     };
