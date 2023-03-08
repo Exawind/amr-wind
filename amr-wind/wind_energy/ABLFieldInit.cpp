@@ -62,17 +62,17 @@ ABLFieldInit::ABLFieldInit()
     m_init_theta_values_d.resize(num_init_values);
 
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, m_init_heights.begin(),
-        m_init_heights.end(), m_init_heights_d.begin());
+        amrex::Gpu::hostToDevice, m_init_heights.begin(), m_init_heights.end(),
+        m_init_heights_d.begin());
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, m_init_u_values.begin(), m_init_u_values.end(),
-        m_init_u_values_d.begin());
+        amrex::Gpu::hostToDevice, m_init_u_values.begin(),
+        m_init_u_values.end(), m_init_u_values_d.begin());
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, m_init_v_values.begin(), m_init_v_values.end(),
-        m_init_v_values_d.begin());
+        amrex::Gpu::hostToDevice, m_init_v_values.begin(),
+        m_init_v_values.end(), m_init_v_values_d.begin());
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, m_init_theta_values.begin(), m_init_theta_values.end(),
-        m_init_theta_values_d.begin());
+        amrex::Gpu::hostToDevice, m_init_theta_values.begin(),
+        m_init_theta_values.end(), m_init_theta_values_d.begin());
 }
 
 void ABLFieldInit::operator()(
@@ -124,9 +124,13 @@ void ABLFieldInit::operator()(
         amrex::Real theta = ttheta[0];
         for (int iz = 0; iz < ntvals - 1; ++iz) {
             if ((z > theights[iz]) && (z <= theights[iz + 1])) {
-                const amrex::Real slope_u = (tu[iz + 1] - tu[iz]) / (theights[iz + 1] - theights[iz]);
-                const amrex::Real slope_v = (tv[iz + 1] - tv[iz]) / (theights[iz + 1] - theights[iz]);
-                const amrex::Real slope_theta = (ttheta[iz + 1] - ttheta[iz]) / (theights[iz + 1] - theights[iz]);
+                const amrex::Real slope_u =
+                    (tu[iz + 1] - tu[iz]) / (theights[iz + 1] - theights[iz]);
+                const amrex::Real slope_v =
+                    (tv[iz + 1] - tv[iz]) / (theights[iz + 1] - theights[iz]);
+                const amrex::Real slope_theta =
+                    (ttheta[iz + 1] - ttheta[iz]) /
+                    (theights[iz + 1] - theights[iz]);
                 u = tu[iz] + (z - theights[iz]) * slope_u;
                 v = tv[iz] + (z - theights[iz]) * slope_v;
                 theta = ttheta[iz] + (z - theights[iz]) * slope_theta;

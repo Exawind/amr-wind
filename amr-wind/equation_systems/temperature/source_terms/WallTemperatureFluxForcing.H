@@ -15,14 +15,18 @@ namespace amr_wind::pde::temperature {
  *  \f[
  *    \vec{S} = \vec{tau_{wall}} * dx * dy
  *  \f]
- 
+
  *  where tau_wall comes from a model based on Monin-Obukhov similarity
  *  theory and the definition of drag as \vec{D} = C_d * |\vec{V}| * \vec{V}
  */
-class WallTemperatureFluxForcing : public TemperatureSource::Register<WallTemperatureFluxForcing>
+class WallTemperatureFluxForcing
+    : public TemperatureSource::Register<WallTemperatureFluxForcing>
 {
 public:
-    static const std::string identifier() { return "WallTemperatureFluxForcing"; }
+    static const std::string identifier()
+    {
+        return "WallTemperatureFluxForcing";
+    }
 
     explicit WallTemperatureFluxForcing(const CFDSim& sim);
 

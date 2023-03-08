@@ -130,8 +130,8 @@ void ABLWallFunction::update_umean(
         m_mo.vel_mean[0] = m_wf_vel[0];
         m_mo.vel_mean[1] = m_wf_vel[1];
         m_mo.vmag_mean = m_wf_vmag;
-        m_mo.Su_mean = 0.0; // FIXME: need to fill this correctly
-        m_mo.Sv_mean = 0.0; // FIXME: need to fill this correctly
+        m_mo.Su_mean = 0.0;     // FIXME: need to fill this correctly
+        m_mo.Sv_mean = 0.0;     // FIXME: need to fill this correctly
         m_mo.Stheta_mean = 0.0; // FIXME: need to fill this correctly
         m_mo.theta_mean = m_wf_theta;
     } else {
@@ -281,7 +281,7 @@ void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
 
         auto tau = ShearStressDefault(mo);
         wall_model(velocity, rho_state, tau);
-    }   
+    }
 }
 
 ABLTempWallFunc::ABLTempWallFunc(

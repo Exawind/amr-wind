@@ -27,19 +27,19 @@ struct ShearStressConstant
     {}
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-    calc_vel_x(amrex::Real /* u */, amrex::Real /* wspd */) const
+        calc_vel_x(amrex::Real /* u */, amrex::Real /* wspd */) const
     {
         return u_mean / wspd_mean * utau2;
     };
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-    calc_vel_y(amrex::Real /* u */, amrex::Real /* wspd */) const
+        calc_vel_y(amrex::Real /* u */, amrex::Real /* wspd */) const
     {
         return v_mean / wspd_mean * utau2;
     };
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-    calc_theta(amrex::Real /* wspd */, amrex::Real /* theta */) const
+        calc_theta(amrex::Real /* wspd */, amrex::Real /* theta */) const
     {
         return term1 * (theta_mean - theta_surface);
     };
@@ -103,21 +103,24 @@ struct ShearStressDefault
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
     calc_vel_x(amrex::Real u, amrex::Real wspd) const
     {
-        amrex::Real Su_mean_mag = std::sqrt((Su_mean*Su_mean) + (Sv_mean*Sv_mean));
-        return utau2*((wspd * u)/(Su_mean_mag));
+        amrex::Real Su_mean_mag =
+            std::sqrt((Su_mean * Su_mean) + (Sv_mean * Sv_mean));
+        return utau2 * ((wspd * u) / (Su_mean_mag));
     };
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
     calc_vel_y(amrex::Real v, amrex::Real wspd) const
     {
-        amrex::Real Su_mean_mag = std::sqrt((Su_mean*Su_mean) + (Sv_mean*Sv_mean));
-        return utau2*((wspd * v)/(Su_mean_mag));
+        amrex::Real Su_mean_mag =
+            std::sqrt((Su_mean * Su_mean) + (Sv_mean * Sv_mean));
+        return utau2 * ((wspd * v) / (Su_mean_mag));
     };
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
     calc_theta(amrex::Real wspd, amrex::Real theta) const
     {
-        return (flux_surface * wspd * (theta - theta_surface))/(Stheta_mean - wspd_mean*theta_surface);
+        return (flux_surface * wspd * (theta - theta_surface)) /
+               (Stheta_mean - wspd_mean * theta_surface);
     };
 
     amrex::Real utau2;

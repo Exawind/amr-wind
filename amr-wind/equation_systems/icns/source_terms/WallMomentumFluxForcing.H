@@ -7,7 +7,7 @@
 
 namespace amr_wind::pde::icns {
 
-//class Field;
+// class Field;
 
 // FIXME: outdated comments
 /** A forcing term that acts on the layer of cells adjacent to the wall
@@ -17,11 +17,12 @@ namespace amr_wind::pde::icns {
  *  \f[
  *    \vec{S} = \vec{tau_{wall}} * dx * dy
  *  \f]
- 
+
  *  where tau_wall comes from a model based on Monin-Obukhov similarity
  *  theory and the definition of drag as \vec{D} = C_d * |\vec{V}| * \vec{V}
  */
-class WallMomentumFluxForcing : public MomentumSource::Register<WallMomentumFluxForcing>
+class WallMomentumFluxForcing
+    : public MomentumSource::Register<WallMomentumFluxForcing>
 {
 public:
     static const std::string identifier() { return "WallMomentumFluxForcing"; }

@@ -24,19 +24,21 @@ struct MOData
         SURFACE_TEMPERATURE ///< Surface temperature specified
     };
 
-    amrex::Real zref{0.0};           ///< Reference height (m)
-    amrex::Real z0{0.1};             ///< Roughness height (m)
-    amrex::Real utau;                ///< Friction velocity (m/s)
-    amrex::Real kappa{0.41};         ///< von Karman constant
-    amrex::Real g{9.81};             ///< Acceleration due to gravity (m/s^2)
-    amrex::Real L{1.0e16};           ///< Obukhov length (m)
-    amrex::Real L_neutral{1.0E6};    ///< if Obukhov length is greater than this, consider this neutral (m)      
+    amrex::Real zref{0.0};        ///< Reference height (m)
+    amrex::Real z0{0.1};          ///< Roughness height (m)
+    amrex::Real utau;             ///< Friction velocity (m/s)
+    amrex::Real kappa{0.41};      ///< von Karman constant
+    amrex::Real g{9.81};          ///< Acceleration due to gravity (m/s^2)
+    amrex::Real L{1.0e16};        ///< Obukhov length (m)
+    amrex::Real L_neutral{1.0E6}; ///< if Obukhov length is greater than this,
+                                  ///< consider this neutral (m)
 
     amrex::Real vel_mean[AMREX_SPACEDIM]; ///< Mean velocity (at zref)
     amrex::Real vmag_mean;                ///< Mean wind speed (at zref)
-    amrex::Real Su_mean;    ///< Mean wind speed times x-velocity (at zref)
-    amrex::Real Sv_mean;    ///< Mean wind speed times y-velocity (at zref)
-    amrex::Real Stheta_mean; ///< Mean wind speed time potential temperature (at zref)
+    amrex::Real Su_mean; ///< Mean wind speed times x-velocity (at zref)
+    amrex::Real Sv_mean; ///< Mean wind speed times y-velocity (at zref)
+    amrex::Real
+        Stheta_mean; ///< Mean wind speed time potential temperature (at zref)
     amrex::Real theta_mean; ///< Mean potential temperature
 
     amrex::Real surf_temp_flux{0.0}; ///< Heat flux
@@ -54,27 +56,31 @@ struct MOData
 
     ThetaCalcType alg_type{HEAT_FLUX};
 
-/*
-    amrex::Real phi_m() const
-    {
-        return std::log(zref / z0) - (calc_psi_m(zref / obukhov_len) - calc_psi_m(z0 / obukhov_len));
-    }
+    /*
+        amrex::Real phi_m() const
+        {
+            return std::log(zref / z0) - (calc_psi_m(zref / obukhov_len) -
+       calc_psi_m(z0 / obukhov_len));
+        }
 
-    amrex::Real phi_m(amrex::Real z) const
-    {
-        return std::log(z / z0) - (calc_psi_m(z / obukhov_len) - calc_psi_m(z0 / obukhov_len));
-    }
+        amrex::Real phi_m(amrex::Real z) const
+        {
+            return std::log(z / z0) - (calc_psi_m(z / obukhov_len) -
+       calc_psi_m(z0 / obukhov_len));
+        }
 
-    amrex::Real phi_h() const
-    {
-        return std::log(zref / z0) - (calc_psi_h(zref / obukhov_len) - calc_psi_h(z0 / obukhov_len));
-    }
+        amrex::Real phi_h() const
+        {
+            return std::log(zref / z0) - (calc_psi_h(zref / obukhov_len) -
+       calc_psi_h(z0 / obukhov_len));
+        }
 
-    amrex::Real phi_h(amrex::Real z) const
-    {
-        return std::log(z / z0) - (calc_psi_h(z / obukhov_len) - calc_psi_h(z0 / obukhov_len));
-    }
-*/
+        amrex::Real phi_h(amrex::Real z) const
+        {
+            return std::log(z / z0) - (calc_psi_h(z / obukhov_len) -
+       calc_psi_h(z0 / obukhov_len));
+        }
+    */
 
     amrex::Real phi_m(amrex::Real z) const;
     amrex::Real phi_m() const;
