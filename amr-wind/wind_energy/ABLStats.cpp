@@ -187,7 +187,7 @@ void ABLStats::compute_zi()
         });
 
 #ifdef AMREX_USE_GPU
-    amrex::BaseFab<T> pinned_tg_fab(
+    amrex::BaseFab<amrex::KeyValuePair<amrex::Real, int>> pinned_tg_fab(
         device_tg_fab.box(), device_tg_fab.nComp(), amrex::The_Pinned_Arena());
     amrex::Gpu::dtoh_memcpy(
         pinned_tg_fab.dataPtr(), device_tg_fab.dataPtr(),
@@ -197,13 +197,13 @@ void ABLStats::compute_zi()
 #endif
 
     amrex::ParallelReduce::Max(
-        pinned_tg_fab.dataPtr(), pinned_tg_fab.size(),
+        pinned_tg_fab.dataPtr(), static_cast<int>(pinned_tg_fab.size()),
         amrex::ParallelDescriptor::IOProcessorNumber(),
         amrex::ParallelDescriptor::Communicator());
 
     if (amrex::ParallelDescriptor::IOProcessor()) {
         const auto dnval = m_dn;
-        auto p = pinned_tg_fab.dataPtr();
+        auto* p = pinned_tg_fab.dataPtr();
         m_zi = amrex::Reduce::Sum<amrex::Real>(
             pinned_tg_fab.size(),
             [=] AMREX_GPU_DEVICE(int i) noexcept -> amrex::Real {
