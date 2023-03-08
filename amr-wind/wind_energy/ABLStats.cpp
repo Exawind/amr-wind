@@ -211,7 +211,6 @@ void ABLStats::compute_zi()
             },
             0.0);
         m_zi /= static_cast<amrex::Real>(pinned_tg_fab.size());
-        std::cout << "Hello IO proc m_zi = " << m_zi << std::endl;
     }
 }
 
