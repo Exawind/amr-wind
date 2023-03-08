@@ -118,7 +118,6 @@ void ABLFieldInit::operator()(
         velocity(i, j, k, 0) = 0.0;
         velocity(i, j, k, 1) = 0.0;
         velocity(i, j, k, 2) = 0.0;
-        temperature(i, j, k, 0) = 0.0;
 
         amrex::Real u = tu[0];
         amrex::Real v = tv[0];
