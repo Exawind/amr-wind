@@ -23,6 +23,8 @@ ABL::ABL(CFDSim& sim)
     // TODO: this should be optional?
     auto& teqn = sim.pde_manager().register_transport_pde("Temperature");
     m_temperature = &(teqn.fields().field);
+    sim.repo().declare_field("wall_shear_stress_src_term", AMREX_SPACEDIM);
+    sim.repo().declare_field("wall_temperature_flux_src_term", 1);
 
     {
         std::string statistics_mode = "precursor";

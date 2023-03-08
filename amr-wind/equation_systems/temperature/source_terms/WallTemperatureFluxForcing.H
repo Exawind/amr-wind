@@ -49,6 +49,8 @@ private:
 
     //! Particular shear stress model
     std::string m_wall_shear_stress_type{"moeng"};
+
+    Field& m_wall_temperature_flux_source;
 };
 } // namespace amr_wind::pde::temperature
 

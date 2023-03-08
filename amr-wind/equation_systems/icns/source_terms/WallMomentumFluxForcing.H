@@ -7,6 +7,8 @@
 
 namespace amr_wind::pde::icns {
 
+//class Field;
+
 // FIXME: outdated comments
 /** A forcing term that acts on the layer of cells adjacent to the wall
  *  to apply a desired wall shear stress.
@@ -48,6 +50,8 @@ private:
 
     //! Particular shear stress model
     std::string m_wall_shear_stress_type{"moeng"};
+
+    Field& m_wall_momentum_flux_source;
 };
 } // namespace amr_wind::pde::icns
 

@@ -24,6 +24,7 @@ WallMomentumFluxForcing::WallMomentumFluxForcing(const CFDSim& sim)
     , m_velocity(sim.repo().get_field("velocity"))
     , m_density(sim.repo().get_field("density"))
     , m_mo(sim.physics_manager().get<amr_wind::ABL>().abl_wall_function().mo())
+    , m_wall_momentum_flux_source(sim.repo().get_field("wall_shear_stress_src_term"))
 {
 
     // some parm parse stuff?
@@ -59,6 +60,8 @@ void WallMomentumFluxForcing::operator()(
     const int idir = m_direction;
 
     const auto& velocityField = m_velocity.state(field_impl::dof_state(fstate))(lev).const_array(mfi);
+
+    auto plotField = m_wall_momentum_flux_source(lev).array(mfi);
 
   //FieldState densityState = field_impl::phi_state(fstate);
   //const auto& density = m_density.state(densityState)(lev).const_array(mfi);
@@ -196,12 +199,13 @@ void WallMomentumFluxForcing::operator()(
 
             // Adding the source term as surface stress vector times surface area divided by cell
             // volume (division by cell volume is to make this a source per unit volume).
+            plotField(i, j, k, 0) = -tau_xz;
+            plotField(i, j, k, 1) = -tau_yz;
+            plotField(i, j, k, 2) = 0.0;
+
             src_term(i, j, k, 0) -= (tau_xz * dx[0] * dx[1]) / dV;
             src_term(i, j, k, 1) -= (tau_yz * dx[1] * dx[1]) / dV;
             src_term(i, j, k, 2) += 0.0;
-          //src_term(i, j, k, 0) -= 0.1*velocityField(i, j, k, 0);
-          //src_term(i, j, k, 1) += 0.2*velocityField(i, j, k, 1);
-          //src_term(i, j, k, 2) += 0.0;
         });
 }
 

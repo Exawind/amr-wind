@@ -25,6 +25,7 @@ WallTemperatureFluxForcing::WallTemperatureFluxForcing(const CFDSim& sim)
     , m_temperature(sim.repo().get_field("temperature"))
     , m_density(sim.repo().get_field("density"))
     , m_mo(sim.physics_manager().get<amr_wind::ABL>().abl_wall_function().mo())
+    , m_wall_temperature_flux_source(sim.repo().get_field("wall_temperature_flux_src_term"))
 {
 
     // some parm parse stuff?
@@ -62,6 +63,8 @@ void WallTemperatureFluxForcing::operator()(
     const auto& velocityField = m_velocity.state(field_impl::dof_state(fstate))(lev).const_array(mfi);
 
     const auto& temperatureField = m_temperature.state(field_impl::dof_state(fstate))(lev).const_array(mfi);
+
+    auto plotField = m_wall_temperature_flux_source(lev).array(mfi);
 
   //FieldState densityState = field_impl::phi_state(fstate);
   //const auto& density = m_density.state(densityState)(lev).const_array(mfi);
@@ -193,8 +196,9 @@ void WallTemperatureFluxForcing::operator()(
 
             // Adding the source term as surface temperature flux times surface area divided by cell
             // volume (division by cell volume is to make this a source per unit volume).
+            plotField(i, j, k) = q;
+
             src_term(i, j, k) += (q * dx[0] * dx[1]) / dV;
-          //src_term(i, j, k) += 0.0;
         });
 }
 
