@@ -345,6 +345,10 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // *************************************************************************************
     icns().compute_predictor_rhs(m_diff_type);
 
+    if (m_verbose > 2) {
+        PrintMaxVelLocations("after predictor rhs");
+    }
+
     // *************************************************************************************
     // Solve diffusion equation for u* but using eta_old at old time
     // *************************************************************************************
@@ -372,6 +376,10 @@ void incflo::ApplyPredictor(bool incremental_projection)
     }
     icns().post_solve_actions();
 
+    if (m_verbose > 2) {
+        PrintMaxVelLocations("after diffusion solve");
+    }
+
     // ************************************************************************************
     //
     // Project velocity field, update pressure
@@ -380,6 +388,10 @@ void incflo::ApplyPredictor(bool incremental_projection)
     ApplyProjection(
         (density_new).vec_const_ptrs(), new_time, m_time.deltaT(),
         incremental_projection);
+
+    if (m_verbose > 2) {
+        PrintMaxVelLocations("after nodal projection");
+    }
 }
 
 //
