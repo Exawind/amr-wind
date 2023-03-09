@@ -50,8 +50,7 @@ public:
     void post_advance_work() override;
 
     //! Compute height of capping inversion
-    template <typename h1_dir, typename h2_dir>
-    void compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel);
+    void compute_zi();
 
     //! Return vel plane averaging instance
     const VelPlaneAveragingFine& vel_profile() const override
@@ -146,13 +145,13 @@ private:
     amrex::Real m_ref_theta{300.0};
 
     //! Variable to store capping inversion height
-    double m_zi{0.0};
+    amrex::Real m_zi{0.0};
 
     //! Wall-normal direction axis
     int m_normal_dir{2};
 
     //! Cell spacing at the coarsest level
-    double m_dn{0.0};
+    amrex::Real m_dn{0.0};
 
     //! Number of cells in the horizontal direction
     size_t m_ncells_h1{0};
