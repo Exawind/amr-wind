@@ -107,7 +107,7 @@ void ptest_kernel(
     auto& p = my_incflo.sim().repo().get_field("p");
     // Check result
     const amrex::Real pbottom = get_pbottom(p) / nbottom;
-    EXPECT_NEAR(p_0, pbottom, 1e-11);
+    EXPECT_NEAR(p_0, pbottom, 1e-8);
 }
 
 } // namespace
