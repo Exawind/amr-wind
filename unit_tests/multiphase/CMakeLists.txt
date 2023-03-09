@@ -6,4 +6,5 @@ target_sources(
   test_momflux.cpp
   test_vof_BCs.cpp
   test_mflux_schemes.cpp
+  test_reference_fields.cpp
   )

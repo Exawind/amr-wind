@@ -1,5 +1,6 @@
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/equation_systems/vof/volume_fractions.H"
+#include "amr-wind/physics/multiphase/hydrostatic_ops.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
 #include "amr-wind/fvm/filter.H"
@@ -9,66 +10,6 @@
 #include "amr-wind/core/SimTime.H"
 
 namespace amr_wind {
-
-void define_rho0(
-    amr_wind::Field& rho0,
-    const amrex::Real rho1,
-    const amrex::Real rho2,
-    const amrex::Real wlev,
-    const amrex::Vector<amrex::Geometry> geom)
-{
-    for (int lev = 0; lev < rho0.repo().num_active_levels(); ++lev) {
-        const auto& dx = geom[lev].CellSizeArray();
-        const auto& problo = geom[lev].ProbLoArray();
-        for (amrex::MFIter mfi(rho0(lev)); mfi.isValid(); ++mfi) {
-            amrex::Box const& bx = mfi.validbox();
-            auto rho0_arr = rho0(lev).array(mfi);
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real zbtm = problo[2] + k * dx[2];
-                    const amrex::Real vof =
-                        amrex::max(amrex::min(1.0, (wlev - zbtm) / dx[2]), 0.0);
-                    rho0_arr(i, j, k) = vof * rho1 + (1.0 - vof) * rho2;
-                });
-        }
-    }
-}
-
-void define_p0(
-    amr_wind::Field& p0,
-    const amrex::Real rho1,
-    const amrex::Real rho2,
-    const amrex::Real wlev,
-    const amrex::Real grav_z,
-    const amrex::Vector<amrex::Geometry> geom)
-{
-    for (int lev = 0; lev < p0.repo().num_active_levels(); ++lev) {
-        const auto& dx = geom[lev].CellSizeArray();
-        const auto& problo = geom[lev].ProbLoArray();
-        const auto& probhi = geom[lev].ProbHiArray();
-        for (amrex::MFIter mfi(p0(lev)); mfi.isValid(); ++mfi) {
-            amrex::Box const& nbx = mfi.grownnodaltilebox();
-            auto p0_arr = p0(lev).array(mfi);
-            amrex::ParallelFor(
-                nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    // Height of pressure node
-                    const amrex::Real hnode = k * dx[2];
-                    // Liquid height
-                    const amrex::Real hliq = wlev - problo[2];
-                    // Integrated (top-down in z) phase heights to pressure node
-                    amrex::Real ih_g = amrex::max(
-                        0.0, amrex::min(probhi[2] - hliq, probhi[2] - hnode));
-                    amrex::Real ih_l = amrex::max(
-                        0.0, amrex::min(hliq - hnode, hliq - problo[2]));
-                    // Integrated rho at pressure node
-                    const amrex::Real irho = rho1 * ih_l + rho2 * ih_g;
-
-                    // Add term to reference pressure
-                    p0_arr(i, j, k) = -irho * grav_z;
-                });
-        }
-    }
-}
 
 MultiPhase::MultiPhase(CFDSim& sim)
     : m_sim(sim)
@@ -167,7 +108,8 @@ void MultiPhase::post_init_actions()
         pp_multiphase.get("water_level", water_level0);
         // Initialize rho0 field for perturbational density, pressure
         auto& rho0 = m_sim.repo().get_field("reference_density");
-        define_rho0(rho0, m_rho1, m_rho2, water_level0, m_sim.mesh().Geom());
+        hydrostatic::define_rho0(
+            rho0, m_rho1, m_rho2, water_level0, m_sim.mesh().Geom());
 
         // Make p0 field if requested
         if (is_ptrue) {
@@ -175,7 +117,7 @@ void MultiPhase::post_init_actions()
             amrex::ParmParse pp("incflo");
             pp.queryarr("gravity", m_gravity);
             auto& p0 = m_sim.repo().get_field("reference_pressure");
-            define_p0(
+            hydrostatic::define_p0(
                 p0, m_rho1, m_rho2, water_level0, m_gravity[2],
                 m_sim.mesh().Geom());
         }
@@ -187,13 +129,14 @@ void MultiPhase::post_regrid_actions()
     // Reinitialize rho0 if needed
     if (is_pptb) {
         auto& rho0 = m_sim.repo().declare_field("reference_density", 1, 0, 1);
-        define_rho0(rho0, m_rho1, m_rho2, water_level0, m_sim.mesh().Geom());
+        hydrostatic::define_rho0(
+            rho0, m_rho1, m_rho2, water_level0, m_sim.mesh().Geom());
         // Reinitialize p0 if needed
         if (is_ptrue) {
             auto ng = (*m_vof).num_grow();
             auto& p0 = m_sim.repo().declare_nd_field(
                 "reference_pressure", 1, ng[0], 1);
-            define_p0(
+            hydrostatic::define_p0(
                 p0, m_rho1, m_rho2, water_level0, m_gravity[2],
                 m_sim.mesh().Geom());
         }
