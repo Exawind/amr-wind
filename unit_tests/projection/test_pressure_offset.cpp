@@ -58,11 +58,11 @@ amrex::Real get_pbottom(amr_wind::Field& pressure)
         pb_sum += amrex::ReduceSum(
             pressure(lev), 0,
             [=] AMREX_GPU_HOST_DEVICE(
-                amrex::Box const& bx,
+                amrex::Box const& nbx,
                 amrex::Array4<amrex::Real const> const& p_arr) -> amrex::Real {
                 amrex::Real pb_sum_fab = 0.0;
 
-                amrex::Loop(bx, [=, &pb_sum_fab](int i, int j, int k) noexcept {
+                amrex::Loop(nbx, [=, &pb_sum_fab](int i, int j, int k) noexcept {
                     pb_sum_fab += (k == 0) ? p_arr(i, j, k) : 0.0;
                 });
 
@@ -164,7 +164,7 @@ TEST_F(ProjPerturb, dynamic_only)
     // High-level setup
     populate_parameters();
     // Test with gravity term omitted
-    ptest_kernel(m_rho_0, 0.0, 0.0, m_nx * m_ny);
+    ptest_kernel(m_rho_0, 0.0, 0.0, (m_nx + 1) * (m_ny + 1));
 }
 
 TEST_F(ProjPerturb, full_pressure)
