@@ -43,7 +43,8 @@ MultiPhase.density_fluid1=1000.
 MultiPhase.density_fluid2=1.
 MultiPhase.interface_smoothing=0
 MultiPhase.interface_smoothing_frequency=1
-ICNS.source_terms = GravityForcing 
+ICNS.source_terms = GravityForcing
+ICNS.use_perturb_pressure = true
 MultiPhase.verbose=1
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
@@ -57,13 +58,13 @@ geometry.prob_lo        =     0.0   0.  -1   # Lo corner coordinates
 geometry.prob_hi        =     30.   1.   1  # Hi corner coordinates
 geometry.is_periodic    =     0     1     0   # Periodicity x y z (0/1)
 
-xlo.type =     "wave_generation"
-xhi.type =     "slip_wall"
+xlo.type =     "pressure_inflow"
+xhi.type =     "pressure_outflow"
 xlo.vof_type = "zero_gradient"
 xhi.vof_type = "zero_gradient"
 
 zlo.type =     "slip_wall"
-zhi.type =     "slip_wall"
+zhi.type =     "pressure_outflow"
 zlo.vof_type = "zero_gradient"
 zhi.vof_type = "zero_gradient"
 

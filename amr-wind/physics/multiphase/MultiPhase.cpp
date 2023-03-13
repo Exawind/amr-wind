@@ -1,5 +1,6 @@
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/equation_systems/vof/volume_fractions.H"
+#include "amr-wind/physics/multiphase/hydrostatic_ops.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
 #include "amr-wind/fvm/filter.H"
@@ -52,6 +53,19 @@ MultiPhase::MultiPhase(CFDSim& sim)
         BCScalar bc_ls(*m_levelset);
         bc_ls(levelset_default);
     }
+
+    // Address pressure approach through input values
+    amrex::ParmParse pp_icns("ICNS");
+    pp_icns.query("use_perturb_pressure", is_pptb);
+    pp_icns.query("reconstruct_true_pressure", is_ptrue);
+    // Declare fields
+    if (is_pptb) {
+        m_sim.repo().declare_field("reference_density", 1, 0, 1);
+        if (is_ptrue) {
+            m_sim.repo().declare_nd_field(
+                "reference_pressure", 1, (*m_vof).num_grow()[0], 1);
+        }
+    }
 }
 
 InterfaceCapturingMethod MultiPhase::interface_capturing_method()
@@ -79,6 +93,54 @@ void MultiPhase::post_init_actions()
     q1 = momentum_sum(1);
     q2 = momentum_sum(2);
     sumvof0 = volume_fraction_sum();
+
+    // Check if water level is specified (from case definition)
+    amrex::ParmParse pp_multiphase("MultiPhase");
+    bool is_wlev = pp_multiphase.contains("water_level");
+    // Abort if no water level specified
+    if (is_pptb && !is_wlev) {
+        amrex::Abort(
+            "Perturbational pressure requested, but physics case does not "
+            "specify water level.");
+    }
+    // Make rho0 field if both are specified
+    if (is_pptb && is_wlev) {
+        pp_multiphase.get("water_level", water_level0);
+        // Initialize rho0 field for perturbational density, pressure
+        auto& rho0 = m_sim.repo().get_field("reference_density");
+        hydrostatic::define_rho0(
+            rho0, m_rho1, m_rho2, water_level0, m_sim.mesh().Geom());
+
+        // Make p0 field if requested
+        if (is_ptrue) {
+            // Initialize p0 field for reconstructing p
+            amrex::ParmParse pp("incflo");
+            pp.queryarr("gravity", m_gravity);
+            auto& p0 = m_sim.repo().get_field("reference_pressure");
+            hydrostatic::define_p0(
+                p0, m_rho1, m_rho2, water_level0, m_gravity[2],
+                m_sim.mesh().Geom());
+        }
+    }
+}
+
+void MultiPhase::post_regrid_actions()
+{
+    // Reinitialize rho0 if needed
+    if (is_pptb) {
+        auto& rho0 = m_sim.repo().declare_field("reference_density", 1, 0, 1);
+        hydrostatic::define_rho0(
+            rho0, m_rho1, m_rho2, water_level0, m_sim.mesh().Geom());
+        // Reinitialize p0 if needed
+        if (is_ptrue) {
+            auto ng = (*m_vof).num_grow();
+            auto& p0 = m_sim.repo().declare_nd_field(
+                "reference_pressure", 1, ng[0], 1);
+            hydrostatic::define_p0(
+                p0, m_rho1, m_rho2, water_level0, m_gravity[2],
+                m_sim.mesh().Geom());
+        }
+    }
 }
 
 void MultiPhase::pre_advance_work()
