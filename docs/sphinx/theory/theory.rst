@@ -176,7 +176,7 @@ Using the perturbational form implies that the hydrostatic pressure is removed f
 
 - In mathematical form, the derivation and calculation of the full pressure is as follows:
 
-.. math:: \nabla p = \nabla p + \rho_0 \boldsymbol{g}
+.. math:: \nabla p = \nabla p' + \rho_0 \boldsymbol{g}
 
 - assume :math:`\boldsymbol{g} = g\hat{k}` and :math:`\frac{dp_0}{dz} = g\hat{k}`
 
