@@ -66,8 +66,8 @@ void GravityForcing::operator()(
             (!ipt ? 1.0
                   : 1.0 - (ir0 ? rho0_arr(i, j, k) : mr0c) / rho_arr(i, j, k));
 
-        vel_forces(i, j, k, 0) += gravity[0];
-        vel_forces(i, j, k, 1) += gravity[1];
+        vel_forces(i, j, k, 0) += gravity[0] * factor;
+        vel_forces(i, j, k, 1) += gravity[1] * factor;
         vel_forces(i, j, k, 2) += gravity[2] * factor;
     });
 }
