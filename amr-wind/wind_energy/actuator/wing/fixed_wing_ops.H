@@ -65,7 +65,7 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
         amrex::Real max_epsc = *std::max_element(
             wdata.epsilon_chord.begin(), wdata.epsilon_chord.end());
         amrex::Real search_radius =
-            amrex::max(max_eps, max_epsc) * max_chord * 3.0;
+            amrex::max(max_eps, max_epsc * max_chord) * 12.0;
         const auto& p1 = wdata.start;
         const auto& p2 = wdata.end;
         // clang-format off
@@ -78,6 +78,13 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
             amrex::max(p1.z(), p2.z()) + search_radius
         );
         // clang-format on
+//std::cout << "search_radius" << search_radius << std::endl;
+//std::cout << "xmin" << amrex::min(p1.x(), p2.x()) - search_radius  << std::endl;
+//std::cout << "ymin" << amrex::min(p1.y(), p2.y()) - search_radius  << std::endl;
+//std::cout << "zmin" << amrex::min(p1.z(), p2.z()) - search_radius  << std::endl;
+//std::cout << "xmax" << amrex::max(p1.x(), p2.x()) + search_radius  << std::endl;
+//std::cout << "ymax" << amrex::max(p1.y(), p2.y()) + search_radius  << std::endl;
+//std::cout << "zmax" << amrex::max(p1.z(), p2.z()) + search_radius  << std::endl;
     }
 };
 
@@ -96,10 +103,11 @@ struct InitDataOp<FixedWing, ActSrcLine>
             const auto wlen = vs::mag(grid.pos.back() - grid.pos.front());
             RealList wx(npts);
             for (int i = 0; i < npts; ++i) {
-                wx[i] = vs::mag(grid.pos[i]) / wlen;
+                wx[i] = vs::mag(grid.pos[i]-grid.pos[0]) / wlen;
             }
             meta.chord.resize(npts);
-            ::amr_wind::interp::linear_monotonic(
+            //::amr_wind::interp::linear_monotonic(
+            ::amr_wind::interp::linear(
                 meta.span_locs, meta.chord_inp, wx, meta.chord);
             // clang-format off
             meta.epsilon_chord = {

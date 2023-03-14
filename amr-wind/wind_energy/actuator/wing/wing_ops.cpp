@@ -106,6 +106,7 @@ void prepare_netcdf_file(
     grp.def_var("integrated_drag", NC_DOUBLE, {nt_name});
     grp.def_var("xyz", NC_DOUBLE, {np_name, "ndim"});
     grp.def_var("chord", NC_DOUBLE, {np_name});
+    grp.def_var("epsilon", NC_DOUBLE, {np_name, "ndim"});
     grp.def_var("dx", NC_DOUBLE, {np_name});
     grp.def_var("veff", NC_DOUBLE, {nt_name, np_name, "ndim"});
     grp.def_var("vrel", NC_DOUBLE, {nt_name, np_name, "ndim"});
@@ -123,6 +124,8 @@ void prepare_netcdf_file(
         xyz.put(&(grid.pos[0][0]), start, count);
         auto chord = grp.var("chord");
         chord.put(&(meta.chord[0]), {0}, {npts});
+        auto epsilon = grp.var("epsilon");
+        epsilon.put(&(grid.epsilon[0][0]), {0, 0}, {npts, AMREX_SPACEDIM});
         auto dx = grp.var("dx");
         dx.put(&(meta.dx[0]), {0}, {npts});
     }
