@@ -93,7 +93,7 @@ void ActSrcOp<ActTrait, ActSrcLine>::operator()(
         amrex::Real src_force[AMREX_SPACEDIM]{0.0, 0.0, 0.0};
         for (int ip = 0; ip < npts; ++ip) {
             const auto dist = cc - pos[ip];
-            const auto dist_local = dist; //tmat[ip] & dist;
+            const auto dist_local = dist; // tmat[ip] & dist;
             const auto gauss_fac = utils::gaussian3d(dist_local, eps[ip]);
             const auto& pforce = force[ip];
 
