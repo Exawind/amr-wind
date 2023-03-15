@@ -9,6 +9,7 @@ namespace amr_wind {
 
 class IntField;
 class ScratchField;
+class IntScratchField;
 
 /** AMR mesh data in TIOGA format
  */
@@ -93,11 +94,13 @@ public:
 
     AMROversetInfo& amr_overset_info() { return *m_amr_data; }
 
-    ScratchField& qvars_cell() { return *m_qcell; }
-    ScratchField& qvars_node() { return *m_qnode; }
+    ScratchField& qvars_cell() { return *m_qcell_host; }
+    ScratchField& qvars_node() { return *m_qnode_host; }
 
 private:
     void amr_to_tioga_mesh();
+
+    void amr_to_tioga_iblank();
 
     CFDSim& m_sim;
 
@@ -106,6 +109,12 @@ private:
 
     //! IBLANK for nodal fields
     IntField& m_iblank_node;
+
+    //! IBLANK on cell centered fields on host
+    std::unique_ptr<IntScratchField> m_iblank_cell_host;
+
+    //! IBLANK for nodal fields on host
+    std::unique_ptr<IntScratchField> m_iblank_node_host;
 
     //! AMReX mask for linear system solves
     IntField& m_mask_cell;
@@ -116,6 +125,9 @@ private:
 
     std::unique_ptr<ScratchField> m_qcell;
     std::unique_ptr<ScratchField> m_qnode;
+
+    std::unique_ptr<ScratchField> m_qcell_host;
+    std::unique_ptr<ScratchField> m_qnode_host;
 
     std::vector<std::string> m_cell_vars;
     std::vector<std::string> m_node_vars;

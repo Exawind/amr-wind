@@ -9,6 +9,7 @@
 #include "amr-wind/core/Field.H"
 #include "amr-wind/core/IntField.H"
 #include "amr-wind/core/ScratchField.H"
+#include "amr-wind/core/IntScratchField.H"
 
 #include "AMReX_AmrCore.H"
 #include "AMReX_MultiFab.H"
@@ -320,6 +321,28 @@ public:
      *  the ScratchField object across timesteps.
      */
     std::unique_ptr<ScratchField> create_scratch_field(
+        const int ncomp = 1,
+        const int nghost = 0,
+        const FieldLoc floc = FieldLoc::CELL) const;
+
+    std::unique_ptr<ScratchField> create_scratch_field_on_host(
+        const std::string& name,
+        const int ncomp = 1,
+        const int nghost = 0,
+        const FieldLoc floc = FieldLoc::CELL) const;
+
+    std::unique_ptr<ScratchField> create_scratch_field_on_host(
+        const int ncomp = 1,
+        const int nghost = 0,
+        const FieldLoc floc = FieldLoc::CELL) const;
+
+    std::unique_ptr<IntScratchField> create_int_scratch_field_on_host(
+        const std::string& name,
+        const int ncomp = 1,
+        const int nghost = 0,
+        const FieldLoc floc = FieldLoc::CELL) const;
+
+    std::unique_ptr<IntScratchField> create_int_scratch_field_on_host(
         const int ncomp = 1,
         const int nghost = 0,
         const FieldLoc floc = FieldLoc::CELL) const;

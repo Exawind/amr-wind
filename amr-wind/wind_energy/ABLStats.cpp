@@ -9,18 +9,9 @@
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_ParallelDescriptor.H"
+#include "AMReX_ValLocPair.H"
 
 namespace amr_wind {
-
-namespace {
-struct TemperatureGradient
-{
-    // cppcheck-suppress unusedStructMember
-    double grad_z;
-    // cppcheck-suppress unusedStructMember
-    double max_grad_loc;
-};
-} // namespace
 
 ABLStats::ABLStats(
     CFDSim& sim, const ABLWallFunction& abl_wall_func, const int dir)
@@ -163,17 +154,7 @@ void ABLStats::post_advance_work()
         return;
     }
 
-    switch (m_normal_dir) {
-    case 0:
-        compute_zi(YDir(), ZDir());
-        break;
-    case 1:
-        compute_zi(XDir(), ZDir());
-        break;
-    case 2:
-        compute_zi(XDir(), YDir());
-        break;
-    }
+    compute_zi();
 
     m_pa_tt();
     m_pa_tu();
@@ -183,8 +164,7 @@ void ABLStats::post_advance_work()
     process_output();
 }
 
-template <typename h1_dir, typename h2_dir>
-void ABLStats::compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel)
+void ABLStats::compute_zi()
 {
 
     auto gradT = (this->m_sim.repo())
@@ -192,53 +172,45 @@ void ABLStats::compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel)
     fvm::gradient(*gradT, m_temperature);
 
     // Only compute zi using coarsest level
+    const int lev = 0;
+    const int dir = m_normal_dir;
+    const auto& geom = (this->m_sim.repo()).mesh().Geom(lev);
+    auto const& domain_box = geom.Domain();
+    const auto& gradT_arrs = (*gradT)(lev).const_arrays();
+    auto device_tg_fab = amrex::ReduceToPlane<
+        amrex::ReduceOpMax, amrex::KeyValuePair<amrex::Real, int>>(
+        dir, domain_box, m_temperature(lev),
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k)
+            -> amrex::KeyValuePair<amrex::Real, int> {
+            const amrex::IntVect iv(i, j, k);
+            return {gradT_arrs[nbx](i, j, k, dir), iv[dir]};
+        });
 
-    amrex::Gpu::DeviceVector<TemperatureGradient> tgrad(
-        m_ncells_h1 * m_ncells_h2);
-    auto* tgrad_ptr = tgrad.data();
-    {
-        const int normal_dir = m_normal_dir;
-        const size_t ncells_h1 = m_ncells_h1;
-        amrex::Real dnval = m_dn;
-        for (amrex::MFIter mfi(m_temperature(0)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& gradT_arr = (*gradT)(0).array(mfi);
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    int h1 = h1Sel(i, j, k);
-                    int h2 = h2Sel(i, j, k);
-                    if (tgrad_ptr[h2 * ncells_h1 + h1].grad_z <
-                        gradT_arr(i, j, k, normal_dir)) {
-                        tgrad_ptr[h2 * ncells_h1 + h1].grad_z =
-                            gradT_arr(i, j, k, normal_dir);
-                        tgrad_ptr[h2 * ncells_h1 + h1].max_grad_loc =
-                            (k + 0.5) * dnval;
-                    }
-                });
-        }
-    }
-
-    amrex::Vector<TemperatureGradient> temp_grad(m_ncells_h1 * m_ncells_h2);
-    amrex::Vector<TemperatureGradient> gtemp_grad(m_ncells_h1 * m_ncells_h2);
-    amrex::Gpu::copy(
-        amrex::Gpu::deviceToHost, tgrad.begin(), tgrad.end(),
-        temp_grad.begin());
-#ifdef AMREX_USE_MPI
-    MPI_Reduce(
-        &temp_grad[0], &gtemp_grad[0], m_ncells_h1 * m_ncells_h2,
-        MPI_2DOUBLE_PRECISION, MPI_MAXLOC,
-        amrex::ParallelDescriptor::IOProcessorNumber(),
-        amrex::ParallelDescriptor::Communicator());
+#ifdef AMREX_USE_GPU
+    amrex::BaseFab<amrex::KeyValuePair<amrex::Real, int>> pinned_tg_fab(
+        device_tg_fab.box(), device_tg_fab.nComp(), amrex::The_Pinned_Arena());
+    amrex::Gpu::dtoh_memcpy(
+        pinned_tg_fab.dataPtr(), device_tg_fab.dataPtr(),
+        pinned_tg_fab.nBytes());
+#else
+    auto& pinned_tg_fab = device_tg_fab;
 #endif
 
-    m_zi = 0.0;
+    amrex::ParallelReduce::Max(
+        pinned_tg_fab.dataPtr(), static_cast<int>(pinned_tg_fab.size()),
+        amrex::ParallelDescriptor::IOProcessorNumber(),
+        amrex::ParallelDescriptor::Communicator());
+
     if (amrex::ParallelDescriptor::IOProcessor()) {
-        for (size_t i = 0; i < m_ncells_h1 * m_ncells_h2; i++) {
-            m_zi += gtemp_grad[i].max_grad_loc;
-        }
-        m_zi /=
-            (static_cast<double>(m_ncells_h1) *
-             static_cast<double>(m_ncells_h2));
+        const auto dnval = m_dn;
+        auto* p = pinned_tg_fab.dataPtr();
+        m_zi = amrex::Reduce::Sum<amrex::Real>(
+            pinned_tg_fab.size(),
+            [=] AMREX_GPU_DEVICE(int i) noexcept -> amrex::Real {
+                return (p[i].second() + 0.5) * dnval;
+            },
+            0.0);
+        m_zi /= static_cast<amrex::Real>(pinned_tg_fab.size());
     }
 }
 
