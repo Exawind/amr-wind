@@ -67,7 +67,7 @@ void HurricaneForcing::operator()(
     // Assumes that the velocity profile is at the cell-centers of the finest
     // level grid. For finer meshes, it will extrapolate beyond the Level0
     // cell-centers for the lo/hi cells.
-    //
+
     const int idir = m_axis;
     const int nh_max = static_cast<int>(m_vel_ht.size()) - 2;
     const int lp1 = lev + 1;

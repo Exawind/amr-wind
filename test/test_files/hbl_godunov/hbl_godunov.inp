@@ -47,9 +47,12 @@ ABL.surface_roughness_z0=0.0028
 ABL.wall_shear_stress_type="donelan"
 ABL.log_law_height=10.
 ABL.kappa = .41
-ABL.temperature_heights = 650.0 750.0 1000.0
-ABL.temperature_values = 300.0 308.0 308.75
+ABL.temperature_heights = 0.0  1000.0 1250. 3000.0
+ABL.temperature_values = 300.0 306.0  306.75 315.0
 ABL.surface_temp_flux = 0.03
+ABL.linear_profile = 1
+ABL.top_velocity = 0.0 33.3 0.0
+ABL.bottom_velocity = 0.0 40. 0.0
 
 BoussinesqBuoyancy.reference_temperature = 300.0
 
@@ -61,7 +64,7 @@ CoriolisForcing.east_vector              = 1.0 0.0 0.0
 HurricaneForcing.gradient_wind=40.
 HurricaneForcing.eyewall_radial_distance=40000.
 
-incflo.velocity = 40.0 0.0 0.0
+incflo.velocity = 0.0 40.0 0.0
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
@@ -81,4 +84,4 @@ zlo.temperature_type                     = "wall_model"
 zlo.tke_type                             = "zero_gradient"       
 zhi.type                                 = "slip_wall"           
 zhi.temperature_type                     = "fixed_gradient"      
-zhi.temperature                          = 0.003               
+zhi.temperature                          = 0.005               

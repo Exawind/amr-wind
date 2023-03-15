@@ -1,5 +1,5 @@
-#ifndef IDEALIZED_HURRICANE_FORCING_H
-#define IDEALIZED_HURRICANE_FORCING_H
+#ifndef HURRICANE_FORCING_H
+#define HURRICANE_FORCING_H
 
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
@@ -66,4 +66,4 @@ private:
 
 } // namespace amr_wind::pde::icns
 
-#endif /* IDEALIZED_HURRICANE_FORCING_H */
+#endif /* HURRICANE_FORCING_H */
