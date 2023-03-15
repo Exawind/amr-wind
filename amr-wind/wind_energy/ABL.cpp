@@ -5,6 +5,7 @@
 #include "amr-wind/wind_energy/ABLBoundaryPlane.H"
 #include "amr-wind/equation_systems/icns/source_terms/ABLForcing.H"
 #include "amr-wind/equation_systems/icns/source_terms/ABLMeanBoussinesq.H"
+#include "amr-wind/equation_systems/icns/source_terms/HurricaneForcing.H"
 #include "amr-wind/incflo.H"
 
 #include "AMReX_ParmParse.H"
@@ -166,6 +167,11 @@ void ABL::pre_advance_work()
 
     if (m_abl_mean_bous != nullptr) {
         m_abl_mean_bous->mean_temperature_update(m_stats->theta_profile());
+    }
+
+    if (m_hurricane_forcing != nullptr) {
+        m_hurricane_forcing->mean_velocity_update(
+            m_stats->vel_profile_coarse());
     }
 
     m_bndry_plane->pre_advance_work();

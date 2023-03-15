@@ -37,6 +37,7 @@ namespace amr_wind {
 namespace pde::icns {
 class ABLForcing;
 class ABLMeanBoussinesq;
+class HurricaneForcing;
 } // namespace pde::icns
 
 /** Atmospheric Boundary Layer physics
@@ -82,6 +83,11 @@ public:
         m_abl_mean_bous = term;
     }
 
+    void register_hurricane_forcing(pde::icns::HurricaneForcing* forcing) const
+    {
+        m_hurricane_forcing = forcing;
+    }
+
     const ABLBoundaryPlane& bndry_plane() const { return *m_bndry_plane; }
     const ABLModulatedPowerLaw& abl_mpl() const { return *m_abl_mpl; }
 
@@ -116,6 +122,8 @@ private:
     std::unique_ptr<ABLStatsBase> m_stats;
 
     mutable pde::icns::ABLMeanBoussinesq* m_abl_mean_bous{nullptr};
+
+    mutable pde::icns::HurricaneForcing* m_hurricane_forcing{nullptr};
 
     //! Default value set based on https://turbmodels.larc.nasa.gov/sst.html
     amrex::Real m_init_sdr{25.0};

@@ -17,6 +17,18 @@ void populate_abl_params()
         pp.add("surface_roughness_z0", 0.1);
     }
 
+    // Initial conditions (Linear profile)
+    {
+        amrex::ParmParse pp("ABL");
+        bool linear_profile = false;
+        pp.add("linear_profile", static_cast<int>(linear_profile));
+
+        amrex::Vector<amrex::Real> top_velocity{{20., 0.0, 0.0}};
+        amrex::Vector<amrex::Real> bottom_velocity{{4.0, 0.0, 0.0}};
+        pp.addarr("top_velocity", top_velocity);
+        pp.addarr("bottom_velocity", bottom_velocity);
+    }
+
     // Body force
     {
         amrex::ParmParse pp("BodyForce");
@@ -45,6 +57,20 @@ void populate_abl_params()
         pp.addarr("geostrophic_wind", gwind);
     }
 
+    // Hurricane Forcing
+    {
+        amrex::ParmParse pp("HurricaneForcing");
+        amrex::Real gradient_wind{40.0};
+        amrex::Real radial_distance{40000.0};
+        amrex::Real gradient_wind_radial_decay{-0.008};
+        amrex::Real gradient_wind_zero_height{18000.};
+
+        pp.add("gradient_wind", gradient_wind);
+        pp.add("eyewall_radial_distance", radial_distance);
+        pp.query("gradient_wind_radial_decay", gradient_wind_radial_decay);
+        pp.query("gradient_wind_zero_height", gradient_wind_zero_height);
+    }
+
     // Coriolis term
     {
         amrex::ParmParse pp("CoriolisForcing");
@@ -71,6 +97,7 @@ void populate_abl_params()
         amrex::Vector<int> ncell{{8, 8, 64}};
         pp.addarr("n_cell", ncell);
     }
+
     {
         amrex::ParmParse pp("geometry");
         amrex::Vector<amrex::Real> probhi{{120.0, 120.0, 1000.0}};
