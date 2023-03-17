@@ -209,7 +209,6 @@ amrex::Array<amrex::Real, 24> amr_wind::diagnostics::PrintMaxVelLocations(
 
     // Get locations of these extrema
     auto problo = (repo.mesh().Geom())[0].ProbLoArray();
-    auto dx = (repo.mesh().Geom())[0].CellSizeArray();
     amrex::GpuArray<amrex::Real, 3> u_max_loc{problo[0], problo[1], problo[2]};
     amrex::GpuArray<amrex::Real, 3> v_max_loc{problo[0], problo[1], problo[2]};
     amrex::GpuArray<amrex::Real, 3> w_max_loc{problo[0], problo[1], problo[2]};
@@ -229,6 +228,9 @@ amrex::Array<amrex::Real, 24> amr_wind::diagnostics::PrintMaxVelLocations(
                 0, amrex::MFInfo());
             level_mask.setVal(1);
         }
+
+        problo = (repo.mesh().Geom())[lev].ProbLoArray();
+        auto dx = (repo.mesh().Geom())[lev].CellSizeArray();
 
         // Loop coordinates directions
         for (int n = 0; n < 3; n++) {
@@ -396,7 +398,6 @@ amrex::Array<amrex::Real, 24> amr_wind::diagnostics::PrintMaxMACVelLocations(
 
     // Get locations of these extrema
     auto problo = (repo.mesh().Geom())[0].ProbLoArray();
-    auto dx = (repo.mesh().Geom())[0].CellSizeArray();
     amrex::GpuArray<amrex::Real, 3> uMAC_max_loc{
         problo[0], problo[1], problo[2]};
     amrex::GpuArray<amrex::Real, 3> vMAC_max_loc{
@@ -422,6 +423,9 @@ amrex::Array<amrex::Real, 24> amr_wind::diagnostics::PrintMaxMACVelLocations(
                 1, amrex::MFInfo());
             level_mask.setVal(1);
         }
+
+        problo = (repo.mesh().Geom())[lev].ProbLoArray();
+        auto dx = (repo.mesh().Geom())[lev].CellSizeArray();
 
         // Loop coordinates directions
         for (int n = 0; n < 3; n++) {
