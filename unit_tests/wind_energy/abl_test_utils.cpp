@@ -67,8 +67,23 @@ void populate_abl_params()
 
         pp.add("gradient_wind", gradient_wind);
         pp.add("eyewall_radial_distance", radial_distance);
-        pp.query("gradient_wind_radial_decay", gradient_wind_radial_decay);
-        pp.query("gradient_wind_zero_height", gradient_wind_zero_height);
+        pp.add("gradient_wind_radial_decay", gradient_wind_radial_decay);
+        pp.add("gradient_wind_zero_height", gradient_wind_zero_height);
+    }
+
+    // Rayleigh damping
+    {
+
+        amrex::ParmParse pp("RayleighDamping");
+        amrex::Real time_scale{40.0};
+        amrex::Real damping_length{1000};
+        amrex::Real full_damping_length{500};
+        amrex::Vector<amrex::Real> reference_velocity{{15., 0., 0.}};
+
+        pp.add("time_scale", time_scale);
+        pp.add("damping_length", damping_length);
+        pp.add("full_damping_length", full_damping_length);
+        pp.addarr("reference_velocity", reference_velocity);
     }
 
     // Coriolis term
