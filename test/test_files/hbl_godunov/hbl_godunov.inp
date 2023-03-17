@@ -1,0 +1,87 @@
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            SIMULATION STOP            #
+#.......................................#
+time.stop_time               =   22000.0     # Max (simulated) time to evolve
+time.max_step                =   10          # Max number of time steps
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#         TIME STEP COMPUTATION         #
+#.......................................#
+time.fixed_dt         =   0.5        # Use this constant dt if > 0
+time.cfl              =   0.95         # CFL factor
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            INPUT AND OUTPUT           #
+#.......................................#
+time.plot_interval            =  10       # Steps between plot files
+time.checkpoint_interval      =  5       # Steps between checkpoint files
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#               PHYSICS                 #
+#.......................................#
+incflo.verbose = 3
+incflo.use_godunov                       = true                
+incflo.godunov_type                      = weno_z              
+incflo.diffusion_type                    = 0                   # Type of diffusion scheme used.  0 = explicit diffusion, 1 = Crank-Nicolson, 2 = fully implicit
+turbulence.model                         = OneEqKsgsM84        
+TKE.source_terms                         = KsgsM84Src          
+nodal_proj.mg_rtol                       = 1e-06               
+nodal_proj.mg_atol                       = 1e-12               
+mac_proj.mg_rtol                         = 1e-06               
+mac_proj.mg_atol                         = 1e-12               
+diffusion.mg_rtol                        = 1e-06               
+diffusion.mg_atol                        = 1e-12               
+temperature_diffusion.mg_rtol            = 1e-10               
+temperature_diffusion.mg_atol            = 1e-13               
+incflo.gravity                           = 0.0 0.0 -9.81       # Gravitational acceleration vector (x,y,z) [m/s^2]
+incflo.density                           = 1.17                # Fluid density [kg/m^3]
+transport.viscosity                      = 1.853e-05           # Fluid dynamic viscosity [kg/m-s]
+transport.laminar_prandtl                = 0.7                 # Laminar prandtl number
+transport.turbulent_prandtl              = 0.3333              # Turbulent prandtl number
+
+
+incflo.physics = ABL
+ICNS.source_terms = BoussinesqBuoyancy CoriolisForcing HurricaneForcing
+ABL.reference_temperature = 300.0
+ABL.surface_roughness_z0=0.0028
+ABL.wall_shear_stress_type="donelan"
+ABL.log_law_height=10.
+ABL.kappa = .41
+ABL.temperature_heights = 0.0  1000.0 1250. 3000.0
+ABL.temperature_values = 300.0 306.0  306.75 315.0
+ABL.surface_temp_flux = 0.03
+ABL.linear_profile = 1
+ABL.top_velocity = 0.0 33.3 0.0
+ABL.bottom_velocity = 0.0 40. 0.0
+
+BoussinesqBuoyancy.reference_temperature = 300.0
+
+CoriolisForcing.latitude = 90. 
+CoriolisForcing.rotational_time_period   = 86164.0900027328    
+CoriolisForcing.north_vector             = 0.0 1.0 0.0         
+CoriolisForcing.east_vector              = 1.0 0.0 0.0   
+
+HurricaneForcing.gradient_wind=40.
+HurricaneForcing.eyewall_radial_distance=40000.
+
+incflo.velocity = 0.0 40.0 0.0
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#        ADAPTIVE MESH REFINEMENT       #
+#.......................................#
+amr.n_cell              = 64 64 64    # Grid cells at coarsest AMRlevel
+amr.max_level           = 0           # Max AMR level in hierarchy 
+
+# GEOMETRY 
+geometry.prob_lo        =   0.       0.     0.  # Lo corner coordinates
+geometry.prob_hi        =   3000.  3000.  3000.  # Hi corner coordinates
+geometry.is_periodic    =   1   1   0   # Periodicity x y z (0/1)
+
+# Boundary conditions
+
+zlo.type                                 = "wall_model"          
+zlo.temperature_type                     = "wall_model"         
+zlo.tke_type                             = "zero_gradient"       
+zhi.type                                 = "slip_wall"           
+zhi.temperature_type                     = "fixed_gradient"      
+zhi.temperature                          = 0.005               
