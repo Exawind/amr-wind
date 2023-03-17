@@ -29,8 +29,8 @@ void incflo::ReadParameters()
         // Godunov-related flags
         pp.query("use_godunov", m_use_godunov);
 
-        // The default for diffusion_type is 2, i.e. the default m_diff_type is
-        // DiffusionType::Implicit
+        // The default for diffusion_type is 1, i.e. the default m_diff_type is
+        // DiffusionType::Crank_Nicolson
         int diffusion_type = 1;
         pp.query("diffusion_type", diffusion_type);
         if (diffusion_type == 0) {

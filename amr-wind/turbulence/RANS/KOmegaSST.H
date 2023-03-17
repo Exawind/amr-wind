@@ -86,6 +86,8 @@ protected:
     amrex::Real m_sigma_omega1{0.5};
     amrex::Real m_sigma_omega2{0.856};
     amrex::Real m_a1{0.31};
+    amrex::Real m_tke_amb{0.0};
+    amrex::Real m_sdr_amb{0.0};
 
     //! Buoyancy modified constants
     bool m_include_buoyancy{false};
