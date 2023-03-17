@@ -176,7 +176,8 @@ TEST_F(TurbLESTest, test_smag_setup_calc)
     dens.setVal(rho0);
 
     // Update turbulent viscosity directly
-    tmodel.update_turbulent_viscosity(amr_wind::FieldState::New);
+    tmodel.update_turbulent_viscosity(
+        amr_wind::FieldState::New, DiffusionType::Crank_Nicolson);
     auto& muturb = sim().repo().get_field("mu_turb");
 
     // Check values of turbulent viscosity
@@ -287,7 +288,8 @@ TEST_F(TurbLESTest, test_1eqKsgs_setup_calc)
     tke.setVal(tke_val);
 
     // Update turbulent viscosity directly
-    tmodel.update_turbulent_viscosity(amr_wind::FieldState::New);
+    tmodel.update_turbulent_viscosity(
+        amr_wind::FieldState::New, DiffusionType::Crank_Nicolson);
     auto& muturb = sim().repo().get_field("mu_turb");
 
     // Check values of turbulent viscosity
@@ -373,7 +375,8 @@ TEST_F(TurbLESTest, test_AMD_setup_calc)
     init_field1(temp, Tgz);
 
     // Update turbulent viscosity directly
-    tmodel.update_turbulent_viscosity(amr_wind::FieldState::New);
+    tmodel.update_turbulent_viscosity(
+        amr_wind::FieldState::New, DiffusionType::Crank_Nicolson);
     auto& muturb = sim().repo().get_field("mu_turb");
 
     // Check values of turbulent viscosity

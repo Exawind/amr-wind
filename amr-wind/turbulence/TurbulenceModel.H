@@ -5,6 +5,7 @@
 
 #include "amr-wind/core/Factory.H"
 #include "amr-wind/core/FieldDescTypes.H"
+#include "amr-wind/incflo.H"
 
 namespace amr_wind {
 
@@ -47,7 +48,8 @@ public:
      *  \param fstate State used for updates to differentiate logic in predictor
      *  and corrector steps.
      */
-    virtual void update_turbulent_viscosity(const FieldState fstate) = 0;
+    virtual void update_turbulent_viscosity(
+        const FieldState fstate, const DiffusionType diff_type) = 0;
 
     //! Do any post advance actions for the turbulence model
     virtual void post_advance_work() = 0;

@@ -61,7 +61,8 @@ TurbulenceModel::CoeffsDictType KOmegaSST<Transport>::model_coeffs() const
 }
 
 template <typename Transport>
-void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
+void KOmegaSST<Transport>::update_turbulent_viscosity(
+    const FieldState fstate, const DiffusionType diff_type)
 {
     BL_PROFILE(
         "amr-wind::" + this->identifier() + "::update_turbulent_viscosity");
@@ -182,24 +183,53 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
 
                     f1_arr(i, j, k) = tmp_f1;
 
-                    diss_arr(i, j, k) = -beta_star * rho_arr(i, j, k) *
-                                        tke_arr(i, j, k) * sdr_arr(i, j, k);
-                    tke_lhs_arr(i, j, k) = 0.5 * beta_star * rho_arr(i, j, k) *
-                                           sdr_arr(i, j, k) * deltaT;
-
+                    // For TKE equation:
                     shear_prod_arr(i, j, k) = amrex::min<amrex::Real>(
-                        mu_arr(i, j, k) * tmp4 * tmp4,
+                        amrex::max<amrex::Real>(
+                            mu_arr(i, j, k) * tmp4 * tmp4, 0.0),
                         10.0 * beta_star * rho_arr(i, j, k) * tke_arr(i, j, k) *
                             sdr_arr(i, j, k));
 
-                    sdr_lhs_arr(i, j, k) = 0.5 * rho_arr(i, j, k) * beta *
+                    diss_arr(i, j, k) = -beta_star * rho_arr(i, j, k) *
+                                        tke_arr(i, j, k) * sdr_arr(i, j, k);
+
+                    tke_lhs_arr(i, j, k) = 0.5 * beta_star * rho_arr(i, j, k) *
                                            sdr_arr(i, j, k) * deltaT;
-                    sdr_src_arr(i, j, k) =
-                        rho_arr(i, j, k) * alpha * tmp4 * tmp4 +
+
+                    // For SDR equation:
+                    amrex::Real production_omega =
+                        rho_arr(i, j, k) * alpha *
+                        amrex::min<amrex::Real>(
+                            tmp4 * tmp4, 10.0 * beta_star * sdr_arr(i, j, k) *
+                                             sdr_arr(i, j, k));
+
+                    amrex::Real cross_diffusion =
                         (1.0 - tmp_f1) * 2.0 * rho_arr(i, j, k) * sigma_omega2 *
-                            gko / (sdr_arr(i, j, k) + 1e-15);
-                    sdr_diss_arr(i, j, k) = -rho_arr(i, j, k) * beta *
-                                            sdr_arr(i, j, k) * sdr_arr(i, j, k);
+                        gko / (sdr_arr(i, j, k) + 1e-15);
+
+                    if (diff_type == DiffusionType::Crank_Nicolson) {
+
+                        sdr_src_arr(i, j, k) = production_omega;
+
+                        sdr_diss_arr(i, j, k) = cross_diffusion;
+
+                        sdr_lhs_arr(i, j, k) =
+                            (rho_arr(i, j, k) * beta * sdr_arr(i, j, k) +
+                             0.5 * std::abs(cross_diffusion) /
+                                 (sdr_arr(i, j, k) + 1e-15)) *
+                            deltaT;
+                    } else {
+
+                        sdr_src_arr(i, j, k) =
+                            production_omega + cross_diffusion;
+
+                        sdr_diss_arr(i, j, k) = -rho_arr(i, j, k) * beta *
+                                                sdr_arr(i, j, k) *
+                                                sdr_arr(i, j, k);
+
+                        sdr_lhs_arr(i, j, k) = 0.5 * rho_arr(i, j, k) * beta *
+                                               sdr_arr(i, j, k) * deltaT;
+                    }
                 });
         }
     }

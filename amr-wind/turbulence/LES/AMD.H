@@ -22,7 +22,8 @@ public:
     std::string model_name() const override { return "AMD"; }
 
     //! Update the turbulent viscosity field
-    void update_turbulent_viscosity(const FieldState fstate) override;
+    void update_turbulent_viscosity(
+        const FieldState fstate, const DiffusionType /*unused*/) override;
 
     //! Update the effective thermal diffusivity field
     void update_alphaeff(Field& alphaeff) override;

@@ -39,7 +39,8 @@ void AMD<Transport>::parse_model_coeffs()
 }
 
 template <typename Transport>
-void AMD<Transport>::update_turbulent_viscosity(const FieldState fstate)
+void AMD<Transport>::update_turbulent_viscosity(
+    const FieldState fstate, const DiffusionType /*unused*/)
 {
     BL_PROFILE(
         "amr-wind::" + this->identifier() + "::update_turbulent_viscosity");

@@ -2,6 +2,7 @@
 #include "amr-wind/utilities/trig_ops.H"
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
+#include "amr-wind/incflo.H"
 
 #include "AMReX_Gpu.H"
 #include "AMReX_Random.H"
@@ -138,7 +139,7 @@ TEST_F(ABLMeshTest, abl_wall_model)
     icns_eq.initialize();
     // Initialize viscosity
     sim().turbulence_model().update_turbulent_viscosity(
-        amr_wind::FieldState::Old);
+        amr_wind::FieldState::Old, DiffusionType::Crank_Nicolson);
     icns_eq.compute_mueff(amr_wind::FieldState::Old);
 
     // Check test setup by verifying mu

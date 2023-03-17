@@ -205,7 +205,8 @@ protected:
         }
 
         // Update turbulent viscosity directly
-        tmodel.update_turbulent_viscosity(amr_wind::FieldState::New);
+        tmodel.update_turbulent_viscosity(
+            amr_wind::FieldState::New, DiffusionType::Crank_Nicolson);
     }
 
     const amrex::Real dx = 10.0 / 10.0;
