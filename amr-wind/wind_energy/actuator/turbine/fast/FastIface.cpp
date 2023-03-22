@@ -160,7 +160,7 @@ void FastIface::advance_turbine(const int local_id)
         fast_func(FAST_OpFM_Step, &fi.tid_local);
     }
 
-    if ( ( fi.time_index / fi.num_substeps) % fi.chkpt_interval == 0) {
+    if ((fi.time_index / fi.num_substeps) % fi.chkpt_interval == 0) {
         char rst_file[fast_strlen()];
         copy_filename(" ", rst_file);
         fast_func(FAST_CreateCheckpoint, &fi.tid_local, rst_file);
@@ -307,17 +307,17 @@ void FastIface::fast_restart_turbine(FastTurbine& fi)
 
     AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
         amrex::FileSystem::Exists(fi.checkpoint_file + ".chkp"),
-        "FastIface: Cannot find OpenFAST checkpoint file: "
-        + fi.checkpoint_file);
+        "FastIface: Cannot find OpenFAST checkpoint file: " +
+            fi.checkpoint_file);
 
     int abort_lev;
     char chkpt_file[fast_strlen()];
     copy_filename(fi.checkpoint_file, chkpt_file);
 
     fast_func(
-        FAST_OpFM_Restart, &fi.tid_local, chkpt_file, &abort_lev,
-        &fi.dt_fast, &fi.num_blades, &fi.num_blade_elem, &fi.time_index,
-        &fi.to_cfd, &fi.from_cfd, &fi.to_sc, &fi.from_sc);
+        FAST_OpFM_Restart, &fi.tid_local, chkpt_file, &abort_lev, &fi.dt_fast,
+        &fi.num_blades, &fi.num_blade_elem, &fi.time_index, &fi.to_cfd,
+        &fi.from_cfd, &fi.to_sc, &fi.from_sc);
 
     {
 #ifdef AMR_WIND_USE_OPENFAST
@@ -348,7 +348,6 @@ void FastIface::fast_restart_turbine(FastTurbine& fi)
             "FastIFace: OpenFAST timestep is not an integral "
             "multiple of CFD timestep");
     }
-    
 }
 
 #ifdef AMR_WIND_USE_OPENFAST

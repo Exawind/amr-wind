@@ -44,7 +44,7 @@ inline void FAST_AllocateTurbines(int*, int*, char*) {}
 inline void FAST_DeallocateTurbines(int*, char*) {}
 inline void FAST_OpFM_Solution0(int*, int*, char*) {}
 inline void FAST_OpFM_Step(int*, int*, char*) {}
-inline void FAST_CreateCheckpoint(int *, char, int *, char *) {}
+inline void FAST_CreateCheckpoint(int*, char, int*, char*) {}
 
 // clang-format off
 #ifdef AMR_WIND_FAST_USE_SCDX
