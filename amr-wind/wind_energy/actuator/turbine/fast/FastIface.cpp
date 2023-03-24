@@ -89,7 +89,7 @@ void FastIface::parse_inputs(
         m_sim_mode = SimMode::replay;
 
         std::string sim_mode{"replay"};
-        pp.query("sim_mode", sim_mode);
+        pp.query("openfast_sim_mode", sim_mode);
         if (sim_mode == "replay") {
             m_sim_mode = SimMode::replay;
         } else if (sim_mode == "restart") {
