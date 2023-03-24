@@ -301,6 +301,8 @@ void FastIface::fast_replay_turbine(FastTurbine& fi)
 #endif
 }
 
+// cppcheck-suppress constParameter
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 void FastIface::fast_restart_turbine(FastTurbine& fi)
 {
     BL_PROFILE("amr-wind::FastIface::restart_turbine");

@@ -50,7 +50,7 @@ FAST_OpFM_Solution0(int* /*unused*/, int* /*unused*/, char* /*unused*/)
 inline void FAST_OpFM_Step(int* /*unused*/, int* /*unused*/, char* /*unused*/)
 {}
 inline void
-FAST_CreateCheckpoint(int* /*unused*/, char* /*unused*/, int*, char* /*unused*/)
+FAST_CreateCheckpoint(int* /*unused*/, char* /*unused*/, int* /*unused*/, char* /*unused*/)
 {}
 
 // clang-format off

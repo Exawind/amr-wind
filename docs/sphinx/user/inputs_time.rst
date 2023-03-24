@@ -1,3 +1,5 @@
+.. _inputs_time:
+
 Section: time
 ~~~~~~~~~~~~~~~~~
 
