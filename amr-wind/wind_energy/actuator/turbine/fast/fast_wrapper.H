@@ -40,11 +40,18 @@ inline constexpr int fast_strlen() { return 1025; }
 
 inline void exw_fast_output_redirect(char* /*unused*/) {}
 
-inline void FAST_AllocateTurbines(int*, int*, char*) {}
-inline void FAST_DeallocateTurbines(int*, char*) {}
-inline void FAST_OpFM_Solution0(int*, int*, char*) {}
-inline void FAST_OpFM_Step(int*, int*, char*) {}
-inline void FAST_CreateCheckpoint(int*, char*, int*, char*) {}
+inline void
+FAST_AllocateTurbines(int* /*unused*/, int* /*unused*/, char* /*unused*/)
+{}
+inline void FAST_DeallocateTurbines(int* /*unused*/, char* /*unused*/) {}
+inline void
+FAST_OpFM_Solution0(int* /*unused*/, int* /*unused*/, char* /*unused*/)
+{}
+inline void FAST_OpFM_Step(int* /*unused*/, int* /*unused*/, char* /*unused*/)
+{}
+inline void
+FAST_CreateCheckpoint(int* /*unused*/, char* /*unused*/, int*, char* /*unused*/)
+{}
 
 // clang-format off
 #ifdef AMR_WIND_FAST_USE_SCDX
