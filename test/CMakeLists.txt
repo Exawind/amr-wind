@@ -222,7 +222,7 @@ add_test_re(inflow_bds_amr)
 add_test_re(linear_godunov_amr)
 add_test_re(linear_bds_amr)
 add_test_re(hbl_godunov)
-
+add_test_re(vortex_dipole_wall_collision)
 
 if(NOT AMR_WIND_ENABLE_CUDA)
   add_test_re(ctv_godunov_plm)
