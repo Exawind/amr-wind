@@ -40,13 +40,19 @@ WallTemperatureFluxForcing::~WallTemperatureFluxForcing() = default;
 
 template <typename ShearStress>
 void WallTemperatureFluxForcing::compute_wall_src(
-    const ShearStress& tau,
+    const int& idir,
+    const int& kLow,
+    const int& kHigh,
+    const amrex::Real& dV,
     const amrex::Real& weightLow,
     const amrex::Real& weightHigh,
+    const amrex::GpuArray<amrex::Real,AMREX_SPACEDIM>& dx,
+    const amrex::Box& bx,
+    const ShearStress& tau,
     const amrex::Array4<amrex::Real>& src_term,
     const amrex::Array4<amrex::Real>& plotField,
-    const amrex::Array4<amrex::Real>& velocityField,
-    const amrex::Array4<amrex::Real>& temperatureField)
+    const amrex::Array4<const amrex::Real>& velocityField,
+    const amrex::Array4<const amrex::Real>& temperatureField) const
 {
     amrex::ParallelFor(amrex::bdryLo(bx, idir),
     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept 
@@ -98,21 +104,20 @@ void WallTemperatureFluxForcing::operator()(
         dV *= dx[dir];
     }
 
-    //
+    // Direction
     const int idir = m_direction;
 
+    // Velocity field
     const auto& velocityField =
         m_velocity.state(field_impl::dof_state(fstate))(lev).const_array(mfi);
 
+    // Temperature field
     const auto& temperatureField =
         m_temperature.state(field_impl::dof_state(fstate))(lev).const_array(
             mfi);
-
+    
+    // Plot field
     auto plotField = m_wall_temperature_flux_source(lev).array(mfi);
-
-    // FieldState densityState = field_impl::phi_state(fstate);
-    // const auto& density =
-    // m_density.state(densityState)(lev).const_array(mfi);
 
     // Get the desired sampling height.
     const amrex::Real zref = m_mo.zref;
@@ -137,41 +142,33 @@ void WallTemperatureFluxForcing::operator()(
         kHigh = bx.bigEnd(idir);
         kLow = kHigh - 1;
     }
-    // kLow = (kLow < 0) ? 0 : kLow;
-    // kHigh = (kLow == kHigh) ? kHigh + 1 : kHigh;
-    // kHigh = (kHigh > bx.bigEnd(idir)) ? bx.bigEnd(idir) : kHigh;
-    // kLow = (kLow == kHigh) ? kLow - 1 : kLow;
 
     const amrex::Real weightLow = amrex::Real(kHigh) - index;
     const amrex::Real weightHigh = index - amrex::Real(kLow);
-
-    /*
-        std::cout << "index = " << index << std::endl;
-        std::cout << "kLow = " << kLow << std::endl;
-        std::cout << "kHigh = " << kHigh << std::endl;
-        std::cout << "weightLow = " << weightLow << std::endl;
-        std::cout << "weightHigh = " << weightHigh << std::endl;
-    */
 
     if (!(bx.smallEnd(idir) == domain.smallEnd(idir))) return;
     if (idir != 2) return;
 
     if (m_wall_shear_stress_type == "constant") {
         auto tau = ShearStressConstant(m_mo);
-        compute_wall_src(tau, weightLow, weightHigh, src_term, plotField, velocityField, temperatureField);
+        compute_wall_src(idir, kLow, kHigh, dV, weightLow, weightHigh, dx,
+                         bx, tau, src_term, plotField, velocityField, temperatureField);
     } else if (m_wall_shear_stress_type == "default") {
         auto tau = ShearStressDefault(m_mo);
-        compute_wall_src(tau, weightLow, weightHigh, src_term, plotField, velocityField, temperatureField);
+        compute_wall_src(idir, kLow, kHigh, dV, weightLow, weightHigh, dx,
+                         bx, tau, src_term, plotField, velocityField, temperatureField);
     } else if (m_wall_shear_stress_type == "local") {
         auto tau = ShearStressLocal(m_mo);
-        compute_wall_src(tau, weightLow, weightHigh, src_term, plotField, velocityField, temperatureField);
+        compute_wall_src(idir, kLow, kHigh, dV, weightLow, weightHigh, dx,
+                         bx, tau, src_term, plotField, velocityField, temperatureField);
     } else if (m_wall_shear_stress_type == "schumann") {
         auto tau = ShearStressSchumann(m_mo);
-        compute_wall_src(tau, weightLow, weightHigh, src_term, plotField, velocityField, temperatureField);
+        compute_wall_src(idir, kLow, kHigh, dV, weightLow, weightHigh, dx,
+                         bx, tau, src_term, plotField, velocityField, temperatureField);
     } else {
         auto tau = ShearStressMoeng(m_mo);
-        compute_wall_src(tau, weightLow, weightHigh, src_term, plotField, velocityField, temperatureField);
+        compute_wall_src(idir, kLow, kHigh, dV, weightLow, weightHigh, dx,
+                         bx, tau, src_term, plotField, velocityField, temperatureField);
     }
 }
-
 } // namespace amr_wind::pde::temperature

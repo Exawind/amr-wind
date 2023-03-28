@@ -39,16 +39,23 @@ WallMomentumFluxForcing::~WallMomentumFluxForcing() = default;
 
 template <typename ShearStress>
 void WallMomentumFluxForcing::compute_wall_src(
-    const ShearStress& tau,
+    const int& idir,
+    const int& kLow,
+    const int& kHigh,
+    const amrex::Real& dV,
     const amrex::Real& weightLow,
     const amrex::Real& weightHigh,
+    const amrex::GpuArray<amrex::Real,AMREX_SPACEDIM>& dx,
+    const amrex::Box& bx,
+    const ShearStress& tau,
     const amrex::Array4<amrex::Real>& src_term,
     const amrex::Array4<amrex::Real>& plotField,
-    const amrex::Array4<amrex::Real>& velocityField)
+    const amrex::Array4<const amrex::Real>& velocityField) const
 {
+    
     amrex::ParallelFor(amrex::bdryLo(bx, idir),
     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
-    {
+    { 
         // Get the local velocity at the cell center adjacent
         // to this wall face.
         const amrex::Real uLow = velocityField(i, j, kLow, 0);
@@ -65,7 +72,7 @@ void WallMomentumFluxForcing::compute_wall_src(
         // mean state based on Monin-Obukhov similarity.
         amrex::Real tau_xz = tau.calc_vel_x(u, S);
         amrex::Real tau_yz = tau.calc_vel_y(v, S);
-        
+
         // Adding the source term as surface stress vector times surface
         // area divided by cell volume (division by cell volume is to make
         // this a source per unit volume).
@@ -77,6 +84,7 @@ void WallMomentumFluxForcing::compute_wall_src(
         src_term(i, j, k, 1) -= (tau_yz * dx[0] * dx[1]) / dV;
         src_term(i, j, k, 2) += 0.0;
     });
+
 }
 
 void WallMomentumFluxForcing::operator()(
@@ -99,17 +107,15 @@ void WallMomentumFluxForcing::operator()(
     // Domain size information.
     const auto& domain = geom.Domain();
 
-    //
+    // Direction
     const int idir = m_direction;
 
+    // Velocity field
     const auto& velocityField =
         m_velocity.state(field_impl::dof_state(fstate))(lev).const_array(mfi);
 
+    // Plot field
     auto plotField = m_wall_momentum_flux_source(lev).array(mfi);
-
-    // FieldState densityState = field_impl::phi_state(fstate);
-    // const auto& density =
-    // m_density.state(densityState)(lev).const_array(mfi);
 
     // Get the desired sampling height.
     const amrex::Real zref = m_mo.zref;
@@ -118,7 +124,7 @@ void WallMomentumFluxForcing::operator()(
     // interpolation weights.
     const amrex::Real index = (zref / dx[idir]) - 0.5;
 
-    int kLow = int(std::floor(index));
+    int kLow  = int(std::floor(index));
     int kHigh = int(std::ceil(index));
     // if kLow and kHigh point to the same grid cell, separate them by one cell.
     if (kLow == kHigh) {
@@ -134,45 +140,33 @@ void WallMomentumFluxForcing::operator()(
         kHigh = bx.bigEnd(idir);
         kLow = kHigh - 1;
     }
-    // kLow = (kLow < 0) ? 0 : kLow;
-    // kHigh = (kLow == kHigh) ? kHigh + 1 : kHigh;
-    // kHigh = (kHigh > bx.bigEnd(idir)) ? bx.bigEnd(idir) : kHigh;
-    // kLow = (kLow == kHigh) ? kLow - 1 : kLow;
 
-    const amrex::Real weightLow = amrex::Real(kHigh) - index;
+    const amrex::Real weightLow  = amrex::Real(kHigh) - index;
     const amrex::Real weightHigh = index - amrex::Real(kLow);
-
-    /*
-        std::cout << "index = " << index << std::endl;
-        std::cout << "kLow = " << kLow << std::endl;
-        std::cout << "kHigh = " << kHigh << std::endl;
-        std::cout << "weightLow = " << weightLow << std::endl;
-        std::cout << "weightHigh = " << weightHigh << std::endl;
-        std::cout << "bx.smallEnd(0) : bx.bigEnd(0) = " << bx.smallEnd(0) << " :
-       " << bx.bigEnd(0) << std::endl; std::cout << "bx.smallEnd(1) :
-       bx.bigEnd(1) = " << bx.smallEnd(1) << " : " << bx.bigEnd(1) << std::endl;
-        std::cout << "bx.smallEnd(2) : bx.bigEnd(2) = " << bx.smallEnd(2) << " :
-       " << bx.bigEnd(2) << std::endl;
-    */
 
     if (!(bx.smallEnd(idir) == domain.smallEnd(idir))) return;
     if (idir != 2) return;
 
     if (m_wall_shear_stress_type == "constant") {
         auto tau = ShearStressConstant(m_mo);
-        compute_wall_src(tau, weightLow, weightHigh, src_term, plotField, velocityField);
+        compute_wall_src(idir, kLow, kHigh, dV, weightLow, weightHigh, dx,
+                         bx, tau, src_term, plotField, velocityField);
     } else if (m_wall_shear_stress_type == "default") {
         auto tau = ShearStressDefault(m_mo);
-        compute_wall_src(tau, weightLow, weightHigh, src_term, plotField, velocityField);
+        compute_wall_src(idir, kLow, kHigh, dV, weightLow, weightHigh, dx,
+                         bx, tau, src_term, plotField, velocityField);
     } else if (m_wall_shear_stress_type == "local") {
         auto tau = ShearStressLocal(m_mo);
-        compute_wall_src(tau, weightLow, weightHigh, src_term, plotField, velocityField);
+        compute_wall_src(idir, kLow, kHigh, dV, weightLow, weightHigh, dx,
+                         bx, tau, src_term, plotField, velocityField);
     } else if (m_wall_shear_stress_type == "schumann") {
         auto tau = ShearStressSchumann(m_mo);
-        compute_wall_src(tau, weightLow, weightHigh, src_term, plotField, velocityField);
+        compute_wall_src(idir, kLow, kHigh, dV, weightLow, weightHigh, dx,
+                         bx, tau, src_term, plotField, velocityField);
     } else {
         auto tau = ShearStressMoeng(m_mo);
-        compute_wall_src(tau, weightLow, weightHigh, src_term, plotField, velocityField);
+        compute_wall_src(idir, kLow, kHigh, dV, weightLow, weightHigh, dx,
+                         bx, tau, src_term, plotField, velocityField);
     }
 }
 } // namespace amr_wind::pde::icns
