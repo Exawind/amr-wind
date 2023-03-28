@@ -14,6 +14,7 @@ target_sources(${amr_wind_lib_name}
   HybridRANSLESABL.cpp
   VortexRing.cpp
   ScalarAdvection.cpp
+  VortexDipole.cpp
   )
 
 add_subdirectory(multiphase)
