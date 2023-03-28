@@ -125,6 +125,16 @@ void incflo::InitialIterations()
             }
         }
     }
+
+    // Add mean pressure back if available
+    if (m_repo.field_exists("reference_pressure")) {
+        auto& pressure = m_repo.get_field("p");
+        auto& p0 = m_repo.get_field("reference_pressure");
+        for (int lev = 0; lev <= finest_level; lev++) {
+            amrex::MultiFab::Add(
+                pressure(lev), p0(lev), 0, 0, 1, pressure.num_grow()[0]);
+        }
+    }
     amrex::Print() << "Completed initial pressure iterations" << std::endl
                    << std::endl;
 }

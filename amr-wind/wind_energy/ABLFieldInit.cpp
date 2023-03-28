@@ -33,6 +33,11 @@ ABLFieldInit::ABLFieldInit()
 
     pp_abl.query("init_tke", m_tke_init);
 
+    pp_abl.query("linear_profile", m_linear_profile);
+
+    pp_abl.query("top_velocity", m_top_vel);
+    pp_abl.query("bottom_velocity", m_bottom_vel);
+
     // TODO: Modify this to accept velocity as a function of height
     amrex::ParmParse pp_incflo("incflo");
     pp_incflo.get("density", m_rho);
@@ -76,6 +81,9 @@ void ABLFieldInit::operator()(
     const auto& probhi = geom.ProbHiArray();
 
     const bool perturb_vel = m_perturb_vel;
+
+    const bool linear_profile = m_linear_profile;
+
     const amrex::Real rho_init = m_rho;
 
     const amrex::Real umean =
@@ -83,6 +91,14 @@ void ABLFieldInit::operator()(
     const amrex::Real vmean =
         !m_vel_timetable.empty() ? m_vel_speed * std::sin(m_vel_dir) : m_vel[1];
     const amrex::Real wmean = !m_vel_timetable.empty() ? 0.0 : m_vel[2];
+
+    const amrex::Real top_u_vel = m_top_vel[0];
+    const amrex::Real top_v_vel = m_top_vel[1];
+    const amrex::Real top_w_vel = m_top_vel[2];
+
+    const amrex::Real bottom_u_vel = m_bottom_vel[0];
+    const amrex::Real bottom_v_vel = m_bottom_vel[1];
+    const amrex::Real bottom_w_vel = m_bottom_vel[2];
 
     const amrex::Real aval = m_Uperiods * 2.0 * pi / (probhi[1] - problo[1]);
     const amrex::Real bval = m_Vperiods * 2.0 * pi / (probhi[0] - problo[0]);
@@ -115,6 +131,18 @@ void ABLFieldInit::operator()(
         }
 
         temperature(i, j, k, 0) += theta;
+
+        if (linear_profile) {
+            velocity(i, j, k, 0) =
+                bottom_u_vel +
+                z * (top_u_vel - bottom_u_vel) / (probhi[2] - problo[2]);
+            velocity(i, j, k, 1) =
+                bottom_v_vel +
+                z * (top_v_vel - bottom_v_vel) / (probhi[2] - problo[2]);
+            velocity(i, j, k, 2) =
+                bottom_w_vel +
+                z * (top_w_vel - bottom_w_vel) / (probhi[2] - problo[2]);
+        }
 
         if (perturb_vel) {
             const amrex::Real xl = x - problo[0];

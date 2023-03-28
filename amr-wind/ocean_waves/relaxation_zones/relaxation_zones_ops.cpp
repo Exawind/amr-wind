@@ -40,6 +40,9 @@ void read_inputs(
     if (wdata.has_ramp) {
         pp.query("timeramp_period", wdata.ramp_period);
     }
+
+    amrex::ParmParse pp_multiphase("MultiPhase");
+    pp_multiphase.add("water_level", wdata.zsl);
 }
 
 void init_data_structures(RelaxZonesBaseData& /*unused*/) {}

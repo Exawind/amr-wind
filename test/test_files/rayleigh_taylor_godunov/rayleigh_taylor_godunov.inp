@@ -29,7 +29,8 @@ zlo.type                = "sw"
 zhi.type                = "sw"
 
 incflo.physics = RayleighTaylor
-ICNS.source_terms = DensityBuoyancy
+ICNS.source_terms = GravityForcing
+ICNS.use_perturb_pressure = true
 RayleighTaylor.rho_lo = 0.5
 RayleighTaylor.rho_hi = 2.0
 

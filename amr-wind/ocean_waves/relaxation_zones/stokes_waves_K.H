@@ -132,8 +132,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real my_sinh_sin(
-    int i,
-    int j,
+    int m,
+    int n,
     amrex::Real phase,
     amrex::Real a11,
     amrex::Real a22,
@@ -145,45 +145,46 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real my_sinh_sin(
     amrex::Real a53,
     amrex::Real a55,
     amrex::Real eps,
-    amrex::Real k,
-    amrex::Real waterdepth)
+    amrex::Real wavenumber,
+    amrex::Real waterdepth,
+    amrex::Real z)
 {
     amrex::Real D = 0.0;
-    if (i == 1 && j == 1) {
+    if (m == 1 && n == 1) {
         D = a11;
     }
-    if (i == 2 && j == 2) {
+    if (m == 2 && n == 2) {
         D = a22;
     }
-    if (i == 3 && j == 1) {
+    if (m == 3 && n == 1) {
         D = a31;
     }
-    if (i == 3 && j == 3) {
+    if (m == 3 && n == 3) {
         D = a33;
     }
-    if (i == 4 && j == 2) {
+    if (m == 4 && n == 2) {
         D = a42;
     }
-    if (i == 4 && j == 4) {
+    if (m == 4 && n == 4) {
         D = a44;
     }
-    if (i == 5 && j == 1) {
+    if (m == 5 && n == 1) {
         D = a51;
     }
-    if (i == 5 && j == 3) {
+    if (m == 5 && n == 3) {
         D = a53;
     }
-    if (i == 5 && j == 5) {
+    if (m == 5 && n == 5) {
         D = a55;
     }
 
-    return std::pow(eps, i) * D * j * k * std::sinh(j * k * waterdepth) *
-           std::sin(j * phase);
+    return std::pow(eps, m) * D * n * wavenumber *
+           std::sinh(n * wavenumber * (waterdepth + z)) * std::sin(n * phase);
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real my_cosh_cos(
-    int i,
-    int j,
+    int m,
+    int n,
     amrex::Real phase,
     amrex::Real a11,
     amrex::Real a22,
@@ -195,40 +196,41 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real my_cosh_cos(
     amrex::Real a53,
     amrex::Real a55,
     amrex::Real eps,
-    amrex::Real k,
-    amrex::Real waterdepth)
+    amrex::Real wavenumber,
+    amrex::Real waterdepth,
+    amrex::Real z)
 {
     amrex::Real D = 0.0;
-    if (i == 1 && j == 1) {
+    if (m == 1 && n == 1) {
         D = a11;
     }
-    if (i == 2 && j == 2) {
+    if (m == 2 && n == 2) {
         D = a22;
     }
-    if (i == 3 && j == 1) {
+    if (m == 3 && n == 1) {
         D = a31;
     }
-    if (i == 3 && j == 3) {
+    if (m == 3 && n == 3) {
         D = a33;
     }
-    if (i == 4 && j == 2) {
+    if (m == 4 && n == 2) {
         D = a42;
     }
-    if (i == 4 && j == 4) {
+    if (m == 4 && n == 4) {
         D = a44;
     }
-    if (i == 5 && j == 1) {
+    if (m == 5 && n == 1) {
         D = a51;
     }
-    if (i == 5 && j == 3) {
+    if (m == 5 && n == 3) {
         D = a53;
     }
-    if (i == 5 && j == 5) {
+    if (m == 5 && n == 5) {
         D = a55;
     }
 
-    return std::pow(eps, i) * D * j * k * std::cosh(j * k * waterdepth) *
-           std::cos(j * phase);
+    return std::pow(eps, m) * D * n * wavenumber *
+           std::cosh(m * wavenumber * (waterdepth + z)) * std::cos(n * phase);
 }
 
 // Based on Fenton 1985
@@ -238,13 +240,14 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_waves(
     amrex::Real waterdepth,
     amrex::Real waveheight,
     amrex::Real x,
+    amrex::Real z,
     amrex::Real time,
     amrex::Real& eta,
     amrex::Real& u_w,
     amrex::Real& v_w,
     amrex::Real& w_w)
 {
-    const amrex::Real k = 2.0 * M_PI / wavelength;
+    const amrex::Real wavenumber = 2.0 * M_PI / wavelength;
 
     // some parameters
     amrex::Real c0{0.0};
@@ -254,19 +257,19 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_waves(
     amrex::Real a51{0.0}, a53{0.0}, a55{0.0}, b53{0.0}, b55{0.0};
 
     stokes_coefficients(
-        StokesOrder, k, waterdepth, c0, a11, a22, b22, c2, d2, e2, a31, a33,
-        b31, a42, a44, b42, b44, c4, d4, e4, a51, b53, a55, b53, b55);
+        StokesOrder, wavenumber, waterdepth, c0, a11, a22, b22, c2, d2, e2, a31,
+        a33, b31, a42, a44, b42, b44, c4, d4, e4, a51, b53, a55, b53, b55);
 
-    const amrex::Real eps = k * waveheight / 2.; // Steepness (ka)
+    const amrex::Real eps = wavenumber * waveheight / 2.; // Steepness (ka)
     const amrex::Real c = (c0 + std::pow(eps, 2) * c2 + std::pow(eps, 4) * c4) *
-                          std::sqrt(9.81 / k);
+                          std::sqrt(9.81 / wavenumber);
     // const amrex::Real Q =
     //    c * waterdepth * std::sqrt(std::pow(k, 3) / 9.81) +
     //    d2 * std::pow(eps, 2) +
     //    d4 * std::pow(eps, 4) * std::sqrt(9.81 / std::pow(k, 3));
 
-    const amrex::Real omega = c * k;
-    const amrex::Real phase = k * x - omega * time;
+    const amrex::Real omega = c * wavenumber;
+    const amrex::Real phase = wavenumber * x - omega * time;
 
     eta =
         (eps * std::cos(phase)                           // first order term
@@ -280,66 +283,66 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_waves(
 
     // Compute cosines
     const amrex::Real cc11 = my_cosh_cos(
-        1, 1, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps, k,
-        waterdepth);
+        1, 1, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
+        wavenumber, waterdepth, z);
     const amrex::Real cc22 = my_cosh_cos(
-        2, 2, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps, k,
-        waterdepth);
+        2, 2, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
+        wavenumber, waterdepth, z);
     const amrex::Real cc31 = my_cosh_cos(
-        3, 1, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps, k,
-        waterdepth);
+        3, 1, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
+        wavenumber, waterdepth, z);
     const amrex::Real cc33 = my_cosh_cos(
-        3, 3, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps, k,
-        waterdepth);
+        3, 3, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
+        wavenumber, waterdepth, z);
     const amrex::Real cc42 = my_cosh_cos(
-        4, 2, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps, k,
-        waterdepth);
+        4, 2, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
+        wavenumber, waterdepth, z);
     const amrex::Real cc44 = my_cosh_cos(
-        4, 4, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps, k,
-        waterdepth);
+        4, 4, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
+        wavenumber, waterdepth, z);
     const amrex::Real cc51 = my_cosh_cos(
-        5, 1, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps, k,
-        waterdepth);
+        5, 1, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
+        wavenumber, waterdepth, z);
     const amrex::Real cc53 = my_cosh_cos(
-        5, 3, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps, k,
-        waterdepth);
+        5, 3, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
+        wavenumber, waterdepth, z);
     const amrex::Real cc55 = my_cosh_cos(
-        5, 5, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps, k,
-        waterdepth);
+        5, 5, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
+        wavenumber, waterdepth, z);
 
     // Compute sines
     const amrex::Real ss11 = my_sinh_sin(
-        1, 1, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps, k,
-        waterdepth);
+        1, 1, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
+        wavenumber, waterdepth, z);
     const amrex::Real ss22 = my_sinh_sin(
-        2, 2, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps, k,
-        waterdepth);
+        2, 2, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
+        wavenumber, waterdepth, z);
     const amrex::Real ss31 = my_sinh_sin(
-        3, 1, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps, k,
-        waterdepth);
+        3, 1, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
+        wavenumber, waterdepth, z);
     const amrex::Real ss33 = my_sinh_sin(
-        3, 3, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps, k,
-        waterdepth);
+        3, 3, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
+        wavenumber, waterdepth, z);
     const amrex::Real ss42 = my_sinh_sin(
-        4, 2, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps, k,
-        waterdepth);
+        4, 2, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
+        wavenumber, waterdepth, z);
     const amrex::Real ss44 = my_sinh_sin(
-        4, 4, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps, k,
-        waterdepth);
+        4, 4, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
+        wavenumber, waterdepth, z);
     const amrex::Real ss51 = my_sinh_sin(
-        5, 1, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps, k,
-        waterdepth);
+        5, 1, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
+        wavenumber, waterdepth, z);
     const amrex::Real ss53 = my_sinh_sin(
-        5, 3, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps, k,
-        waterdepth);
+        5, 3, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
+        wavenumber, waterdepth, z);
     const amrex::Real ss55 = my_sinh_sin(
-        5, 5, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps, k,
-        waterdepth);
+        5, 5, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
+        wavenumber, waterdepth, z);
 
-    u_w = c0 * std::sqrt(9.81 / std::pow(k, 3)) *
+    u_w = c0 * std::sqrt(9.81 / std::pow(wavenumber, 3)) *
           (cc11 + cc22 + cc31 + cc33 + cc42 + cc44 + cc51 + cc53 + cc55);
     v_w = 0.0;
-    w_w = c0 * std::sqrt(9.81 / std::pow(k, 3)) *
+    w_w = c0 * std::sqrt(9.81 / std::pow(wavenumber, 3)) *
           (ss11 + ss22 + ss31 + ss33 + ss42 + ss44 + ss51 + ss53 + ss55);
 }
 
