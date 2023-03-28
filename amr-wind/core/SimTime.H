@@ -121,6 +121,9 @@ public:
     AMREX_FORCE_INLINE
     int stop_time_index() const { return m_stop_time_index; }
 
+    AMREX_FORCE_INLINE
+    int chkpt_interval() const { return m_chkpt_interval; }
+
     //! Read user defined options from input file
     void parse_parameters();
 

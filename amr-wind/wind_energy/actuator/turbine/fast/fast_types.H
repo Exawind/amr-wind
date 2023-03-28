@@ -72,6 +72,9 @@ struct FastTurbine
     //! Does FAST need solution0
     bool is_solution0{true};
 
+    //! Checkpoint interval for FAST
+    int chkpt_interval;
+
     // Data structures that are used to exchange between fast/cfd
 
     exw_fast::OpFM_InputType to_cfd;

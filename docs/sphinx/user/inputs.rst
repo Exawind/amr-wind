@@ -1,3 +1,5 @@
+.. _inputs:
+
 AMR-Wind inputs file
 =====================
 
