@@ -246,7 +246,7 @@ void FastIface::fast_init_turbine(FastTurbine& fi)
     // integral multiple of CFD timestep
     double dt_err =
         fi.dt_cfd / (static_cast<double>(fi.num_substeps) * fi.dt_fast) - 1.0;
-    if (dt_err > 1.0e-4) {
+    if (dt_err > 1.0e-12) {
         amrex::Abort(
             "FastIFace: OpenFAST timestep is not an integral "
             "multiple of CFD timestep");
