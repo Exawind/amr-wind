@@ -5,9 +5,17 @@
 #include "amr-wind/wind_energy/actuator/ActParser.H"
 
 namespace amr_wind::actuator {
+
+enum class FLLCType { ConstantChord, VariableChord };
+
+static std::map<std::string, FLLCType> FLLCTypeMap{
+    {"constant_chord", FLLCType::ConstantChord},
+    {"variable_chord", FLLCType::VariableChord}};
+
 struct FLLCData
 {
     // constants
+    FLLCType correction_type{FLLCType::VariableChord};
     amrex::Real epsilon;
     amrex::Real relaxation_factor{0.1};
     RealList dr;

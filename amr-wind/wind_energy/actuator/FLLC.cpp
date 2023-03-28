@@ -45,6 +45,9 @@ void FLLCParse(const utils::ActParser& pp, FLLCData& data)
 {
     pp.query("epsilon", data.epsilon);
     pp.query("fllc_relaxation_factor", data.relaxation_factor);
+    std::string typeString = "variable_chord";
+    pp.query("fllc_type", typeString);
+    data.correction_type = FLLCTypeMap.at(typeString);
 
     if (!pp.contains("epsilon") || !pp.contains("epsilon_chord")) {
         amrex::Abort(
