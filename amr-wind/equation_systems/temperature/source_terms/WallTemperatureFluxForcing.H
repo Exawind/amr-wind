@@ -32,6 +32,16 @@ public:
 
     ~WallTemperatureFluxForcing() override;
 
+    template <typename ShearStress>
+    void compute_wall_src(
+        const ShearStress& tau,
+        const amrex::Real& weightLow,
+        const amrex::Real& weightHigh,
+        const amrex::Array4<amrex::Real>& src_term,
+        const amrex::Array4<amrex::Real>& plotField,
+        const amrex::Array4<amrex::Real>& velocityField,
+        const amrex::Array4<amrex::Real>& temperatureField);
+
     void operator()(
         const int lev,
         const amrex::MFIter& mfi,
