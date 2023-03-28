@@ -88,6 +88,23 @@ Example for ``FixedWingLine``::
   that would be greater than at least 2.5 times the grid size ``dx``.
   The default is `0`.
 
+.. input_param:: Actuator.FixedWingLine.fllc_type
+
+  **type:** String, optional
+
+  This option tells whether to use the original fllc formulation as outlined in
+  `Martinez-Tossas and Meneveau (2019) <https://doi.org/10.1017/jfm.2018.994>`_
+  which assumes a constant chord length across blade (`constant_chord`), or
+  to use a new forumlation which accounts for chord variations (`variable_chord`).
+
+.. input_param:: Actuator.FixedWingLine.fllc_relaxation_factor
+
+  **type:** Double
+
+  The relaxation factor to be applied to the updated velocity see:
+  `Martinez-Tossas and Meneveau (2019) <https://doi.org/10.1017/jfm.2018.994>`_
+  The default value is `0.1`.
+
 .. input_param:: Actuator.FixedWingLine.pitch
 
    **type:** Real number, optional
@@ -202,6 +219,14 @@ Example for ``TurbineFastLine``::
 .. input_param:: Actuator.TurbineFastLine.fllc
 
    Same as :input_param:`Actuator.FixedWingLine.fllc`.
+
+.. input_param:: Actuator.TurbineFastLine.fllc_relaxation_factor
+
+   Same as :input_param:`Actuator.FixedWingLine.fllc_relaxation_factor`.
+
+.. input_param:: Actuator.TurbineFastLine.fllc_type
+
+   Same as :input_param:`Actuator.FixedWingLine.fllc_type`.
 
 .. input_param:: Actuator.TurbineFastLine.openfast_start_time
 
