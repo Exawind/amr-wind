@@ -639,16 +639,16 @@ void ABLBoundaryPlane::write_file()
                 // note: by using the entire domain box we end up using 1
                 // processor to hold all boundaries
                 amrex::Box domain = geom[lev].Domain();
-                amrex::BoxArray ba(domain);
-                amrex::DistributionMapping dm{ba};
-
-                amrex::BndryRegister bndry(
-                    ba, dm, m_in_rad, m_out_rad, m_extent_rad,
-                    field.num_comp());
-
-                bndry.copyFrom(
-                    field(lev), 0, 0, 0, field.num_comp(),
-                    geom[lev].periodicity());
+//                amrex::BoxArray ba(domain);
+//                amrex::DistributionMapping dm{ba};
+//
+//                amrex::BndryRegister bndry(
+//                    ba, dm, m_in_rad, m_out_rad, m_extent_rad,
+//                    field.num_comp());
+//
+//                bndry.copyFrom(
+//                    field(lev), 0, 0, 0, field.num_comp(),
+//                    geom[lev].periodicity());
 
                 std::string filename = amrex::MultiFabFileFullPrefix(
                     lev, chkname, level_prefix, field.name());
@@ -933,13 +933,13 @@ void ABLBoundaryPlane::read_file()
                 amrex::BoxArray ba(domain);
                 amrex::DistributionMapping dm{ba};
 
-                amrex::BndryRegister bndry1(
-                    ba, dm, m_in_rad, m_out_rad, m_extent_rad, field.num_comp());
-                amrex::BndryRegister bndry2(
-                    ba, dm, m_in_rad, m_out_rad, m_extent_rad, field.num_comp());
-
-                bndry1.setVal(1.0e13);
-                bndry2.setVal(1.0e13);
+//                amrex::BndryRegister bndry1(
+//                    ba, dm, m_in_rad, m_out_rad, m_extent_rad, field.num_comp());
+//                amrex::BndryRegister bndry2(
+//                    ba, dm, m_in_rad, m_out_rad, m_extent_rad, field.num_comp());
+//
+//                bndry1.setVal(1.0e13);
+//                bndry2.setVal(1.0e13);
 
                 std::string filename1 = amrex::MultiFabFileFullPrefix(
                     lev, chkname1, level_prefix, field.name());
