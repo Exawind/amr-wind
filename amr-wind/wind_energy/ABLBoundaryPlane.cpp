@@ -928,59 +928,60 @@ void ABLBoundaryPlane::read_file()
         const std::string level_prefix = "Level_";
 
         const int lev = 0;
-        for (auto* fld : m_fields) {
+        for(int lev = 0; lev < m_repo.mesh().finestLevel(); ++lev) {
+            for (auto* fld : m_fields) {
 
-            auto& field = *fld;
-            const auto& geom = field.repo().mesh().Geom();
+                auto& field = *fld;
+                const auto& geom = field.repo().mesh().Geom();
 
-            amrex::Box domain = geom[lev].Domain();
-            amrex::BoxArray ba(domain);
-            amrex::DistributionMapping dm{ba};
+                amrex::Box domain = geom[lev].Domain();
+                amrex::BoxArray ba(domain);
+                amrex::DistributionMapping dm{ba};
 
-            amrex::BndryRegister bndry1(
-                ba, dm, m_in_rad, m_out_rad, m_extent_rad, field.num_comp());
-            amrex::BndryRegister bndry2(
-                ba, dm, m_in_rad, m_out_rad, m_extent_rad, field.num_comp());
+                amrex::BndryRegister bndry1(
+                    ba, dm, m_in_rad, m_out_rad, m_extent_rad, field.num_comp());
+                amrex::BndryRegister bndry2(
+                    ba, dm, m_in_rad, m_out_rad, m_extent_rad, field.num_comp());
 
-            bndry1.setVal(1.0e13);
-            bndry2.setVal(1.0e13);
+                bndry1.setVal(1.0e13);
+                bndry2.setVal(1.0e13);
 
-            std::string filename1 = amrex::MultiFabFileFullPrefix(
-                lev, chkname1, level_prefix, field.name());
-            std::string filename2 = amrex::MultiFabFileFullPrefix(
-                lev, chkname2, level_prefix, field.name());
+                std::string filename1 = amrex::MultiFabFileFullPrefix(
+                    lev, chkname1, level_prefix, field.name());
+                std::string filename2 = amrex::MultiFabFileFullPrefix(
+                    lev, chkname2, level_prefix, field.name());
 
-            for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
-                auto ori = oit();
+                for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+                    auto ori = oit();
 
-                if ((!m_in_data.is_populated(ori)) ||
-                    (field.bc_type()[ori] != BC::mass_inflow)) {
-                    continue;
+                    if ((!m_in_data.is_populated(ori)) ||
+                        (field.bc_type()[ori] != BC::mass_inflow)) {
+                        continue;
+                    }
+
+                    std::string facename1 =
+                        amrex::Concatenate(filename1 + '_', ori, 1);
+                    std::string facename2 =
+                        amrex::Concatenate(filename2 + '_', ori, 1);
+
+                    //                bndry1[ori].read(facename1);
+                    //                bndry2[ori].read(facename2);
+
+                    amrex::MultiFab mfn, mfnp1;
+
+                    amrex::VisMF::Read(
+                        mfn, facename1, nullptr,
+                        amrex::ParallelDescriptor::IOProcessorNumber(), 1);
+                    amrex::VisMF::Read(
+                        mfnp1, facename2, nullptr,
+                        amrex::ParallelDescriptor::IOProcessorNumber(), 1);
+
+                    m_in_data.read_data_native2(
+                        oit, mfn, mfnp1, lev, fld, time, m_in_times);
                 }
-
-                std::string facename1 =
-                    amrex::Concatenate(filename1 + '_', ori, 1);
-                std::string facename2 =
-                    amrex::Concatenate(filename2 + '_', ori, 1);
-
-                //                bndry1[ori].read(facename1);
-                //                bndry2[ori].read(facename2);
-
-                amrex::MultiFab mfn, mfnp1;
-
-                amrex::VisMF::Read(
-                    mfn, facename1, nullptr,
-                    amrex::ParallelDescriptor::IOProcessorNumber(), 1);
-                amrex::VisMF::Read(
-                    mfnp1, facename2, nullptr,
-                    amrex::ParallelDescriptor::IOProcessorNumber(), 1);
-
-                m_in_data.read_data_native2(
-                    oit, mfn, mfnp1, lev, fld, time, m_in_times);
             }
         }
     }
-
     m_in_data.interpolate2(time);
 }
 
