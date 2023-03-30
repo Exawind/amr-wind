@@ -5,6 +5,8 @@
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include <AMReX_PlotFileUtil.H>
+#include <AMReX_MultiFabUtil.H>
+#include <AMReX_VisMF.H>
 
 namespace amr_wind {
 
@@ -72,6 +74,10 @@ void InletData::resize(const int size)
     m_data_n.resize(size);
     m_data_np1.resize(size);
     m_data_interp.resize(size);
+
+    m_mf_data_n.resize(size);
+    m_mf_data_np1.resize(size);
+    m_mf_data_interp.resize(size);
 }
 
 void InletData::define_plane(const amrex::Orientation ori)
@@ -79,6 +85,10 @@ void InletData::define_plane(const amrex::Orientation ori)
     m_data_n[ori] = std::make_unique<PlaneVector>();
     m_data_np1[ori] = std::make_unique<PlaneVector>();
     m_data_interp[ori] = std::make_unique<PlaneVector>();
+
+    m_mf_data_n[ori] = std::make_unique<PlaneMFVector>();
+    m_mf_data_np1[ori] = std::make_unique<PlaneMFVector>();
+    m_mf_data_interp[ori] = std::make_unique<PlaneMFVector>();
 }
 
 void InletData::define_level_data(
@@ -90,6 +100,22 @@ void InletData::define_level_data(
     m_data_n[ori]->push_back(amrex::FArrayBox(bx, static_cast<int>(nc)));
     m_data_np1[ori]->push_back(amrex::FArrayBox(bx, static_cast<int>(nc)));
     m_data_interp[ori]->push_back(amrex::FArrayBox(bx, static_cast<int>(nc)));
+}
+
+void InletData::define_level_mf_data(
+    const amrex::Orientation ori, const amrex::MultiFab& mf, const size_t nc)
+{
+    if (!this->is_populated(ori)) {
+        return;
+    }
+
+    const int ngrow = 0;
+    m_mf_data_n[ori]->push_back(amrex::MultiFab(
+        mf.boxArray(), mf.DistributionMap(), static_cast<int>(nc), ngrow));
+    m_mf_data_np1[ori]->push_back(amrex::MultiFab(
+        mf.boxArray(), mf.DistributionMap(), static_cast<int>(nc), ngrow));
+    m_mf_data_interp[ori]->push_back(amrex::MultiFab(
+        mf.boxArray(), mf.DistributionMap(), static_cast<int>(nc), ngrow));
 }
 
 #ifdef AMR_WIND_USE_NETCDF
@@ -118,9 +144,9 @@ void InletData::read_data(
     const size_t n0 = bx.length(perp[0]);
     const size_t n1 = bx.length(perp[1]);
 
-    amrex::Vector<size_t> start{
-        static_cast<size_t>(idx), static_cast<size_t>(lo[perp[0]]),
-        static_cast<size_t>(lo[perp[1]]), 0};
+    amrex::Vector<size_t> start{static_cast<size_t>(idx),
+                                static_cast<size_t>(lo[perp[0]]),
+                                static_cast<size_t>(lo[perp[1]]), 0};
     amrex::Vector<size_t> count{1, n0, n1, nc};
     amrex::Vector<amrex::Real> buffer(n0 * n1 * nc);
     grp.var(fld->name()).get(buffer.data(), start, count);
@@ -148,6 +174,37 @@ void InletData::read_data(
 }
 
 #endif
+
+void InletData::read_data_native2(
+    const amrex::OrientationIter oit,
+    amrex::MultiFab& mfn,
+    amrex::MultiFab& mfnp1,
+    const int lev,
+    const Field* fld,
+    const amrex::Real time,
+    const amrex::Vector<amrex::Real>& times)
+{
+    const size_t nc = fld->num_comp();
+    const int nstart =
+        static_cast<int>(m_components[static_cast<int>(fld->id())]);
+
+    const int idx = closest_index(times, time);
+    const int idxp1 = idx + 1;
+
+    m_tn = times[idx];
+    m_tnp1 = times[idxp1];
+
+    auto ori = oit();
+
+    AMREX_ALWAYS_ASSERT(((m_tn <= time) && (time <= m_tnp1)));
+    AMREX_ALWAYS_ASSERT(fld->num_comp() == mfn.nComp());
+    AMREX_ASSERT(mf1.boxArray() == mf2.boxArray());
+
+    if (lev >= (*m_mf_data_n[ori]).size()) return;
+
+    (*m_mf_data_n[ori])[lev].ParallelCopy(mfn, 0, 0, nc, 0, 0);
+    (*m_mf_data_np1[ori])[lev].ParallelCopy(mfnp1, 0, 0, nc, 0, 0);
+}
 
 void InletData::read_data_native(
     const amrex::OrientationIter oit,
@@ -246,6 +303,32 @@ void InletData::interpolate(const amrex::Real time)
             dati.linInterp<amrex::RunOn::Device>(
                 datn, 0, datnp1, 0, m_tn, m_tnp1, m_tinterp, datn.box(), 0,
                 dati.nComp());
+        }
+    }
+}
+
+void InletData::interpolate2(const amrex::Real time)
+{
+    m_tinterp = time;
+
+    amrex::Real alpha = (m_tnp1 - time) / (m_tnp1 - m_tn);
+    amrex::Real beta = 1.0 - alpha;
+
+    for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+        auto ori = oit();
+        if (!this->is_populated(ori)) {
+            continue;
+        }
+
+        const int lnlevels = static_cast<int>(m_data_n[ori]->size());
+        for (int lev = 0; lev < lnlevels; ++lev) {
+
+            const auto& datn = (*m_mf_data_n[ori])[lev];
+            const auto& datnp1 = (*m_mf_data_np1[ori])[lev];
+            auto& dati = (*m_mf_data_interp[ori])[lev];
+
+            amrex::MultiFab::LinComb(
+                dati, alpha, datn, 0, beta, datnp1, 0, 0, dati.nComp(), 0);
         }
     }
 }
@@ -546,7 +629,8 @@ void ABLBoundaryPlane::write_file()
                        << " at time " << time << std::endl;
 
         const std::string level_prefix = "Level_";
-        amrex::PreBuildDirectorHierarchy(chkname, level_prefix, 1, true);
+        amrex::PreBuildDirectorHierarchy(
+            chkname, level_prefix, m_repo.mesh().finestLevel() + 1, true);
 
         // for now only output level 0
         const int lev = 0;
@@ -584,7 +668,32 @@ void ABLBoundaryPlane::write_file()
 
                 std::string facename =
                     amrex::Concatenate(filename + '_', ori, 1);
-                bndry[ori].write(facename);
+                //                bndry[ori].write(facename);
+
+                //                fix me need to remove 1.0e-8, if it stays
+                //                should I multiply by a dx?...
+                // need to interpolate on domain high face but use the inside
+                // index, need to adjust function inside get_slice_data
+                amrex::Real x =
+                    oit().isHigh()
+                        ? m_repo.mesh().Geom(0).ProbHi(oit().coordDir()) -
+                              1.0e-8
+                        : m_repo.mesh().Geom(0).ProbLo(oit().coordDir());
+
+                std::cout << "x, ori " << x << ' ' << ori << std::endl;
+
+                const auto slice = get_slice_data(
+                    oit().coordDir(), x, field(lev),
+                    field.repo().mesh().Geom(lev), 0, field.num_comp(), true);
+
+                amrex::VisMF::Write(*slice, facename);
+
+                // could optionally output plt files here instead
+                //                std::string facename2 = "plt_"+field.name();
+                //
+                //                amrex::WriteSingleLevelPlotfile(facename2,
+                //                *slice, {field.name()}, m_repo.mesh().Geom(0),
+                //                time, t_step);
             }
         }
     }
@@ -745,6 +854,19 @@ void ABLBoundaryPlane::read_header()
             phi[normal] = ori.isHigh() ? minBox.hiVect()[normal] + 1 : -1;
             const amrex::Box pbx(plo, phi);
             m_in_data.define_level_data(ori, pbx, nc);
+
+            amrex::Real x =
+                oit().isHigh()
+                    ? m_repo.mesh().Geom(0).ProbHi(oit().coordDir()) - 1.0e-8
+                    : m_repo.mesh().Geom(0).ProbLo(oit().coordDir());
+
+            // temporary hack... really just need the BA and DM
+            // could make this public AMReX_MultiFabUtil.cpp allocateSlice
+            const auto slice = get_slice_data(
+                oit().coordDir(), x, (*m_fields[0])(lev),
+                m_repo.mesh().Geom(lev), 0, 1, false);
+
+            m_in_data.define_level_mf_data(ori, *slice, nc);
         }
     }
 }
@@ -762,7 +884,7 @@ void ABLBoundaryPlane::read_file()
 
     // return early if current data files can still be interpolated in time
     if ((m_in_data.tn() <= time) && (time < m_in_data.tnp1())) {
-        m_in_data.interpolate(time);
+        m_in_data.interpolate2(time);
         return;
     }
 
@@ -842,16 +964,25 @@ void ABLBoundaryPlane::read_file()
                 std::string facename2 =
                     amrex::Concatenate(filename2 + '_', ori, 1);
 
-                bndry1[ori].read(facename1);
-                bndry2[ori].read(facename2);
+                //                bndry1[ori].read(facename1);
+                //                bndry2[ori].read(facename2);
 
-                m_in_data.read_data_native(
-                    oit, bndry1, bndry2, lev, fld, time, m_in_times);
+                amrex::MultiFab mfn, mfnp1;
+
+                amrex::VisMF::Read(
+                    mfn, facename1, nullptr,
+                    amrex::ParallelDescriptor::IOProcessorNumber(), 1);
+                amrex::VisMF::Read(
+                    mfnp1, facename2, nullptr,
+                    amrex::ParallelDescriptor::IOProcessorNumber(), 1);
+
+                m_in_data.read_data_native2(
+                    oit, mfn, mfnp1, lev, fld, time, m_in_times);
             }
         }
     }
 
-    m_in_data.interpolate(time);
+    m_in_data.interpolate2(time);
 }
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
@@ -896,29 +1027,15 @@ void ABLBoundaryPlane::populate_data(
 
         const size_t nc = mfab.nComp();
 
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-        for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid();
-             ++mfi) {
+        const auto& src = m_in_data.interpolate_data2(ori, lev);
 
-            const auto& sbx = mfi.growntilebox(1);
-            const auto& src = m_in_data.interpolate_data(ori, lev);
-            const auto& bx = sbx & src.box();
-            if (bx.isEmpty()) {
-                continue;
-            }
+        amrex::MultiBlockIndexMapping dtos{};
+        dtos.offset[ori.coordDir()] = -1;
+        const int nstart = m_in_data.component(static_cast<int>(fld.id()));
 
-            const auto& dest = mfab.array(mfi);
-            const auto& src_arr = src.array();
-            const int nstart = m_in_data.component(static_cast<int>(fld.id()));
-            amrex::ParallelFor(
-                bx, nc,
-                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                    dest(i, j, k, n + dcomp) =
-                        src_arr(i, j, k, n + nstart + orig_comp);
-                });
-        }
+        amrex::ParallelCopy(
+            mfab, mfab.boxArray().minimalBox(), src, nstart + orig_comp, dcomp,
+            mfab.nComp(), amrex::IntVect(1), dtos);
     }
 
     const auto& geom = fld.repo().mesh().Geom();
@@ -986,9 +1103,8 @@ void ABLBoundaryPlane::write_data(
                 lbx, n1, nc, perp, v_offset, fld_arr, buffer.data);
             amrex::Gpu::streamSynchronize();
 
-            buffer.start = {
-                m_out_counter, static_cast<size_t>(lo[perp[0]]),
-                static_cast<size_t>(lo[perp[1]]), 0};
+            buffer.start = {m_out_counter, static_cast<size_t>(lo[perp[0]]),
+                            static_cast<size_t>(lo[perp[1]]), 0};
             buffer.count = {1, n0, n1, nc};
         } else if (bhi[normal] == dhi[normal] && ori.isHigh()) {
             amrex::IntVect lo(blo);
@@ -1009,9 +1125,8 @@ void ABLBoundaryPlane::write_data(
                 lbx, n1, nc, perp, v_offset, fld_arr, buffer.data);
             amrex::Gpu::streamSynchronize();
 
-            buffer.start = {
-                m_out_counter, static_cast<size_t>(lo[perp[0]]),
-                static_cast<size_t>(lo[perp[1]]), 0};
+            buffer.start = {m_out_counter, static_cast<size_t>(lo[perp[0]]),
+                            static_cast<size_t>(lo[perp[1]]), 0};
             buffer.count = {1, n0, n1, nc};
         }
     }

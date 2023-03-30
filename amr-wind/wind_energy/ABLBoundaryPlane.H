@@ -27,6 +27,7 @@ struct BufferData
 class InletData
 {
     using PlaneVector = amrex::Vector<amrex::FArrayBox>;
+    using PlaneMFVector = amrex::Vector<amrex::MultiFab>;
 
 public:
     InletData() = default;
@@ -38,6 +39,11 @@ public:
     void define_level_data(
         const amrex::Orientation /*ori*/,
         const amrex::Box& /*bx*/,
+        const size_t /*nc*/);
+
+    void define_level_mf_data(
+        const amrex::Orientation /*ori*/,
+        const amrex::MultiFab& /*bx*/,
         const size_t /*nc*/);
 
 #ifdef AMR_WIND_USE_NETCDF
@@ -59,12 +65,28 @@ public:
         const amrex::Real time,
         const amrex::Vector<amrex::Real>& /*times*/);
 
+    void read_data_native2(
+        const amrex::OrientationIter oit,
+        amrex::MultiFab& bndry_n,
+        amrex::MultiFab& bndry_np1,
+        const int lev,
+        const Field* /*fld*/,
+        const amrex::Real time,
+        const amrex::Vector<amrex::Real>& /*times*/);
+
     void interpolate(const amrex::Real /*time*/);
+    void interpolate2(const amrex::Real /*time*/);
     bool is_populated(amrex::Orientation /*ori*/) const;
     const amrex::FArrayBox&
     interpolate_data(const amrex::Orientation ori, const int lev) const
     {
         return (*m_data_interp[ori])[lev];
+    }
+
+    const amrex::MultiFab&
+    interpolate_data2(const amrex::Orientation ori, const int lev) const
+    {
+        return (*m_mf_data_interp[ori])[lev];
     }
 
     int& component(const int id) { return m_components[id]; }
@@ -84,6 +106,10 @@ private:
     amrex::Vector<std::unique_ptr<PlaneVector>> m_data_n;
     amrex::Vector<std::unique_ptr<PlaneVector>> m_data_np1;
     amrex::Vector<std::unique_ptr<PlaneVector>> m_data_interp;
+
+    amrex::Vector<std::unique_ptr<PlaneMFVector>> m_mf_data_n;
+    amrex::Vector<std::unique_ptr<PlaneMFVector>> m_mf_data_np1;
+    amrex::Vector<std::unique_ptr<PlaneMFVector>> m_mf_data_interp;
 
     //! Time for plane at n
     amrex::Real m_tn{-1.0};
