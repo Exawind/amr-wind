@@ -833,8 +833,6 @@ void ABLBoundaryPlane::read_header()
             nc += fld->num_comp();
         }
 
-        // TODO: need to generalize to lev > 0 somehow
-        const int lev = 0;
         for (int lev = 0; lev < m_repo.mesh().finestLevel(); ++lev) {
             for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
                 auto ori = oit();
