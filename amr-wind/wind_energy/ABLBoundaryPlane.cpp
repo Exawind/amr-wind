@@ -185,9 +185,6 @@ void InletData::read_data_native2(
     const amrex::Vector<amrex::Real>& times)
 {
     const size_t nc = fld->num_comp();
-    const int nstart =
-        static_cast<int>(m_components[static_cast<int>(fld->id())]);
-
     const int idx = closest_index(times, time);
     const int idxp1 = idx + 1;
 
@@ -632,8 +629,7 @@ void ABLBoundaryPlane::write_file()
         amrex::PreBuildDirectorHierarchy(
             chkname, level_prefix, m_repo.mesh().finestLevel() + 1, true);
 
-        // for now only output level 0
-        for (int lev = 0; lev < m_repo.mesh().finestLevel(); ++lev) {
+        for (int lev = 0; lev <= m_repo.mesh().finestLevel(); ++lev) {
             for (auto* fld : m_fields) {
 
                 auto& field = *fld;
@@ -833,7 +829,7 @@ void ABLBoundaryPlane::read_header()
             nc += fld->num_comp();
         }
 
-        for (int lev = 0; lev < m_repo.mesh().finestLevel(); ++lev) {
+        for (int lev = 0; lev <= m_repo.mesh().finestLevel(); ++lev) {
             for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
                 auto ori = oit();
 
@@ -927,8 +923,7 @@ void ABLBoundaryPlane::read_file()
 
         const std::string level_prefix = "Level_";
 
-        const int lev = 0;
-        for(int lev = 0; lev < m_repo.mesh().finestLevel(); ++lev) {
+        for(int lev = 0; lev <= m_repo.mesh().finestLevel(); ++lev) {
             for (auto* fld : m_fields) {
 
                 auto& field = *fld;
@@ -1025,7 +1020,7 @@ void ABLBoundaryPlane::populate_data(
             amrex::Abort("No inflow data at this level.");
         }
 
-        const size_t nc = mfab.nComp();
+//        const size_t nc = mfab.nComp();
 
         const auto& src = m_in_data.interpolate_data2(ori, lev);
 
