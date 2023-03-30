@@ -633,67 +633,65 @@ void ABLBoundaryPlane::write_file()
             chkname, level_prefix, m_repo.mesh().finestLevel() + 1, true);
 
         // for now only output level 0
-        const int lev = 0;
+        for (int lev = 0; lev < m_repo.mesh().finestLevel(); ++lev) {
+            for (auto* fld : m_fields) {
 
-        for (auto* fld : m_fields) {
+                auto& field = *fld;
 
-            auto& field = *fld;
+                const auto& geom = field.repo().mesh().Geom();
 
-            const auto& geom = field.repo().mesh().Geom();
+                // note: by using the entire domain box we end up using 1
+                // processor to hold all boundaries
+                amrex::Box domain = geom[lev].Domain();
+                amrex::BoxArray ba(domain);
+                amrex::DistributionMapping dm{ba};
 
-            // note: by using the entire domain box we end up using 1 processor
-            // to hold all boundaries
-            amrex::Box domain = geom[lev].Domain();
-            amrex::BoxArray ba(domain);
-            amrex::DistributionMapping dm{ba};
+                amrex::BndryRegister bndry(
+                    ba, dm, m_in_rad, m_out_rad, m_extent_rad,
+                    field.num_comp());
 
-            amrex::BndryRegister bndry(
-                ba, dm, m_in_rad, m_out_rad, m_extent_rad, field.num_comp());
+                bndry.copyFrom(
+                    field(lev), 0, 0, 0, field.num_comp(),
+                    geom[lev].periodicity());
 
-            bndry.copyFrom(
-                field(lev), 0, 0, 0, field.num_comp(), geom[lev].periodicity());
+                std::string filename = amrex::MultiFabFileFullPrefix(
+                    lev, chkname, level_prefix, field.name());
 
-            std::string filename = amrex::MultiFabFileFullPrefix(
-                lev, chkname, level_prefix, field.name());
+                // print individual faces
+                for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+                    auto ori = oit();
+                    const std::string plane = m_plane_names[ori];
 
-            // print individual faces
-            for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
-                auto ori = oit();
-                const std::string plane = m_plane_names[ori];
+                    if (std::find(m_planes.begin(), m_planes.end(), plane) ==
+                        m_planes.end()) {
+                        continue;
+                    }
 
-                if (std::find(m_planes.begin(), m_planes.end(), plane) ==
-                    m_planes.end()) {
-                    continue;
+                    std::string facename =
+                        amrex::Concatenate(filename + '_', ori, 1);
+                    //                bndry[ori].write(facename);
+
+                    // fix me need to remove 1.0e-8, if it stays
+                    // should I multiply by a dx?...
+
+                    // need to interpolate on domain high face but use the
+                    // inside index, need to adjust function inside
+                    // get_slice_data
+                    amrex::Real x =
+                        oit().isHigh()
+                            ? m_repo.mesh().Geom(0).ProbHi(oit().coordDir()) -
+                                  1.0e-8
+                            : m_repo.mesh().Geom(0).ProbLo(oit().coordDir());
+
+                    std::cout << "x, ori " << x << ' ' << ori << std::endl;
+
+                    const auto slice = get_slice_data(
+                        oit().coordDir(), x, field(lev),
+                        field.repo().mesh().Geom(lev), 0, field.num_comp(),
+                        true);
+
+                    amrex::VisMF::Write(*slice, facename);
                 }
-
-                std::string facename =
-                    amrex::Concatenate(filename + '_', ori, 1);
-                //                bndry[ori].write(facename);
-
-                //                fix me need to remove 1.0e-8, if it stays
-                //                should I multiply by a dx?...
-                // need to interpolate on domain high face but use the inside
-                // index, need to adjust function inside get_slice_data
-                amrex::Real x =
-                    oit().isHigh()
-                        ? m_repo.mesh().Geom(0).ProbHi(oit().coordDir()) -
-                              1.0e-8
-                        : m_repo.mesh().Geom(0).ProbLo(oit().coordDir());
-
-                std::cout << "x, ori " << x << ' ' << ori << std::endl;
-
-                const auto slice = get_slice_data(
-                    oit().coordDir(), x, field(lev),
-                    field.repo().mesh().Geom(lev), 0, field.num_comp(), true);
-
-                amrex::VisMF::Write(*slice, facename);
-
-                // could optionally output plt files here instead
-                //                std::string facename2 = "plt_"+field.name();
-                //
-                //                amrex::WriteSingleLevelPlotfile(facename2,
-                //                *slice, {field.name()}, m_repo.mesh().Geom(0),
-                //                time, t_step);
             }
         }
     }
@@ -837,36 +835,39 @@ void ABLBoundaryPlane::read_header()
 
         // TODO: need to generalize to lev > 0 somehow
         const int lev = 0;
-        for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
-            auto ori = oit();
+        for (int lev = 0; lev < m_repo.mesh().finestLevel(); ++lev) {
+            for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+                auto ori = oit();
 
-            // TODO: would be safer and less storage to not allocate all of
-            // these but we do not use m_planes for input and need to detect
-            // mass inflow from field bcs same for define level data below
-            m_in_data.define_plane(ori);
+                // TODO: would be safer and less storage to not allocate all of
+                // these but we do not use m_planes for input and need to detect
+                // mass inflow from field bcs same for define level data below
+                m_in_data.define_plane(ori);
 
-            const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
+                const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
 
-            amrex::IntVect plo(minBox.loVect());
-            amrex::IntVect phi(minBox.hiVect());
-            const int normal = ori.coordDir();
-            plo[normal] = ori.isHigh() ? minBox.hiVect()[normal] + 1 : -1;
-            phi[normal] = ori.isHigh() ? minBox.hiVect()[normal] + 1 : -1;
-            const amrex::Box pbx(plo, phi);
-            m_in_data.define_level_data(ori, pbx, nc);
+                amrex::IntVect plo(minBox.loVect());
+                amrex::IntVect phi(minBox.hiVect());
+                const int normal = ori.coordDir();
+                plo[normal] = ori.isHigh() ? minBox.hiVect()[normal] + 1 : -1;
+                phi[normal] = ori.isHigh() ? minBox.hiVect()[normal] + 1 : -1;
+                const amrex::Box pbx(plo, phi);
+                m_in_data.define_level_data(ori, pbx, nc);
 
-            amrex::Real x =
-                oit().isHigh()
-                    ? m_repo.mesh().Geom(0).ProbHi(oit().coordDir()) - 1.0e-8
-                    : m_repo.mesh().Geom(0).ProbLo(oit().coordDir());
+                amrex::Real x =
+                    oit().isHigh()
+                        ? m_repo.mesh().Geom(0).ProbHi(oit().coordDir()) -
+                              1.0e-8
+                        : m_repo.mesh().Geom(0).ProbLo(oit().coordDir());
 
-            // temporary hack... really just need the BA and DM
-            // could make this public AMReX_MultiFabUtil.cpp allocateSlice
-            const auto slice = get_slice_data(
-                oit().coordDir(), x, (*m_fields[0])(lev),
-                m_repo.mesh().Geom(lev), 0, 1, false);
+                // temporary hack... really just need the BA and DM
+                // could make this public AMReX_MultiFabUtil.cpp allocateSlice
+                const auto slice = get_slice_data(
+                    oit().coordDir(), x, (*m_fields[0])(lev),
+                    m_repo.mesh().Geom(lev), 0, 1, false);
 
-            m_in_data.define_level_mf_data(ori, *slice, nc);
+                m_in_data.define_level_mf_data(ori, *slice, nc);
+            }
         }
     }
 }
