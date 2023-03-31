@@ -148,6 +148,9 @@ void helics_storage::recv_messages_from_controller()
             const std::string comma = ",";
             tokenize(charFromControlCenter.str(), comma, return_list);
 
+            // skip the time stamp and source strings from return_list
+            return_list.pop_front();
+            return_list.pop_front();
             for (int i = m_turbine_yaw_to_amrwind.size() - 1; i >= 0; --i) {
                 m_turbine_yaw_to_amrwind[i] = return_list.front();
                 return_list.pop_front();
