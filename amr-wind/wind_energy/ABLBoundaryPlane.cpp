@@ -199,8 +199,11 @@ void InletData::read_data_native2(
 
     if (lev >= (*m_mf_data_n[ori]).size()) return;
 
-    (*m_mf_data_n[ori])[lev].ParallelCopy(mfn, 0, 0, nc, 0, 0);
-    (*m_mf_data_np1[ori])[lev].ParallelCopy(mfnp1, 0, 0, nc, 0, 0);
+    const int nstart =
+        static_cast<int>(m_components[static_cast<int>(fld->id())]);
+
+    (*m_mf_data_n[ori])[lev].ParallelCopy(mfn, 0, nstart, nc, 0, 0);
+    (*m_mf_data_np1[ori])[lev].ParallelCopy(mfnp1, 0, nstart, nc, 0, 0);
 }
 
 void InletData::read_data_native(
@@ -634,22 +637,6 @@ void ABLBoundaryPlane::write_file()
 
                 auto& field = *fld;
 
-                const auto& geom = field.repo().mesh().Geom();
-
-                // note: by using the entire domain box we end up using 1
-                // processor to hold all boundaries
-                amrex::Box domain = geom[lev].Domain();
-//                amrex::BoxArray ba(domain);
-//                amrex::DistributionMapping dm{ba};
-//
-//                amrex::BndryRegister bndry(
-//                    ba, dm, m_in_rad, m_out_rad, m_extent_rad,
-//                    field.num_comp());
-//
-//                bndry.copyFrom(
-//                    field(lev), 0, 0, 0, field.num_comp(),
-//                    geom[lev].periodicity());
-
                 std::string filename = amrex::MultiFabFileFullPrefix(
                     lev, chkname, level_prefix, field.name());
 
@@ -678,8 +665,6 @@ void ABLBoundaryPlane::write_file()
                             ? m_repo.mesh().Geom(0).ProbHi(oit().coordDir()) -
                                   1.0e-8
                             : m_repo.mesh().Geom(0).ProbLo(oit().coordDir());
-
-                    std::cout << "x, ori " << x << ' ' << ori << std::endl;
 
                     const auto slice = get_slice_data(
                         oit().coordDir(), x, field(lev),
@@ -848,6 +833,7 @@ void ABLBoundaryPlane::read_header()
                 const amrex::Box pbx(plo, phi);
                 m_in_data.define_level_data(ori, pbx, nc);
 
+                // need to get rid of the 1.0e-8 by modifying get_slice_data
                 amrex::Real x =
                     oit().isHigh()
                         ? m_repo.mesh().Geom(0).ProbHi(oit().coordDir()) -
@@ -923,24 +909,10 @@ void ABLBoundaryPlane::read_file()
 
         const std::string level_prefix = "Level_";
 
-        for(int lev = 0; lev <= m_repo.mesh().finestLevel(); ++lev) {
+        for (int lev = 0; lev <= m_repo.mesh().finestLevel(); ++lev) {
             for (auto* fld : m_fields) {
 
                 auto& field = *fld;
-                const auto& geom = field.repo().mesh().Geom();
-
-                amrex::Box domain = geom[lev].Domain();
-                amrex::BoxArray ba(domain);
-                amrex::DistributionMapping dm{ba};
-
-//                amrex::BndryRegister bndry1(
-//                    ba, dm, m_in_rad, m_out_rad, m_extent_rad, field.num_comp());
-//                amrex::BndryRegister bndry2(
-//                    ba, dm, m_in_rad, m_out_rad, m_extent_rad, field.num_comp());
-//
-//                bndry1.setVal(1.0e13);
-//                bndry2.setVal(1.0e13);
-
                 std::string filename1 = amrex::MultiFabFileFullPrefix(
                     lev, chkname1, level_prefix, field.name());
                 std::string filename2 = amrex::MultiFabFileFullPrefix(
@@ -958,9 +930,6 @@ void ABLBoundaryPlane::read_file()
                         amrex::Concatenate(filename1 + '_', ori, 1);
                     std::string facename2 =
                         amrex::Concatenate(filename2 + '_', ori, 1);
-
-                    //                bndry1[ori].read(facename1);
-                    //                bndry2[ori].read(facename2);
 
                     amrex::MultiFab mfn, mfnp1;
 
@@ -1020,17 +989,15 @@ void ABLBoundaryPlane::populate_data(
             amrex::Abort("No inflow data at this level.");
         }
 
-//        const size_t nc = mfab.nComp();
-
         const auto& src = m_in_data.interpolate_data2(ori, lev);
 
         amrex::MultiBlockIndexMapping dtos{};
-        dtos.offset[ori.coordDir()] = -1;
+        dtos.offset[ori.coordDir()] = oit().isHigh() ? 1 : -1;
         const int nstart = m_in_data.component(static_cast<int>(fld.id()));
 
         amrex::ParallelCopy(
-            mfab, mfab.boxArray().minimalBox(), src, nstart + orig_comp, dcomp,
-            mfab.nComp(), amrex::IntVect(1), dtos);
+            mfab, mfab.boxArray().minimalBox().grow(1), src, nstart + orig_comp,
+            dcomp, mfab.nComp(), amrex::IntVect(1), dtos);
     }
 
     const auto& geom = fld.repo().mesh().Geom();

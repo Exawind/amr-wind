@@ -240,11 +240,6 @@ private:
     //! Flag indicating if this capability is available
     bool m_is_initialized{false};
 
-    //! controls extents on native bndry output
-    const int m_in_rad = 1;
-    const int m_out_rad = 1;
-    const int m_extent_rad = 0;
-
     //! output format for bndry output
     std::string m_out_fmt{"native"};
 };
