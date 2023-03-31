@@ -1065,8 +1065,9 @@ void ABLBoundaryPlane::write_data(
                 lbx, n1, nc, perp, v_offset, fld_arr, buffer.data);
             amrex::Gpu::streamSynchronize();
 
-            buffer.start = {m_out_counter, static_cast<size_t>(lo[perp[0]]),
-                            static_cast<size_t>(lo[perp[1]]), 0};
+            buffer.start = {
+                m_out_counter, static_cast<size_t>(lo[perp[0]]),
+                static_cast<size_t>(lo[perp[1]]), 0};
             buffer.count = {1, n0, n1, nc};
         } else if (bhi[normal] == dhi[normal] && ori.isHigh()) {
             amrex::IntVect lo(blo);
@@ -1087,8 +1088,9 @@ void ABLBoundaryPlane::write_data(
                 lbx, n1, nc, perp, v_offset, fld_arr, buffer.data);
             amrex::Gpu::streamSynchronize();
 
-            buffer.start = {m_out_counter, static_cast<size_t>(lo[perp[0]]),
-                            static_cast<size_t>(lo[perp[1]]), 0};
+            buffer.start = {
+                m_out_counter, static_cast<size_t>(lo[perp[0]]),
+                static_cast<size_t>(lo[perp[1]]), 0};
             buffer.count = {1, n0, n1, nc};
         }
     }
