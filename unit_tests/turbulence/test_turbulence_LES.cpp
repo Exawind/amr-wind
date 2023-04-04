@@ -97,17 +97,19 @@ protected:
 TEST_F(TurbLESTest, test_smag_setup_calc)
 {
     // Parser inputs for turbulence model
+    const amrex::Real Cs = 0.16;
+    const amrex::Real visc = 1e-5;
     {
         amrex::ParmParse pp("turbulence");
         pp.add("model", (std::string) "Smagorinsky");
     }
     {
         amrex::ParmParse pp("Smagorinsky_coeffs");
-        pp.add("Cs", 0.16);
+        pp.add("Cs", Cs);
     }
     {
         amrex::ParmParse pp("transport");
-        pp.add("viscosity", 1e-5);
+        pp.add("viscosity", visc);
     }
 
     // Initialize necessary parts of solver
@@ -128,15 +130,19 @@ TEST_F(TurbLESTest, test_smag_setup_calc)
     for (const std::pair<const std::string, const amrex::Real> n : model_dict) {
         // Only a single model parameter, Cs
         EXPECT_EQ(n.first, "Cs");
-        EXPECT_EQ(n.second, 0.16);
+        EXPECT_EQ(n.second, Cs);
     }
+
+    // Constants for fields
+    const amrex::Real srate = 0.5;
+    const amrex::Real rho0 = 1.2;
 
     // Set up velocity field with constant strainrate
     auto& vel = sim().repo().get_field("velocity");
-    init_field3(vel, 1.0);
+    init_field3(vel, srate);
     // Set up uniform unity density field
     auto& dens = sim().repo().get_field("density");
-    dens.setVal(1.0);
+    dens.setVal(rho0);
 
     // Update turbulent viscosity directly
     tmodel.update_turbulent_viscosity(amr_wind::FieldState::New);
@@ -147,7 +153,7 @@ TEST_F(TurbLESTest, test_smag_setup_calc)
     auto max_val = utils::field_max(muturb);
     const amrex::Real tol = 1e-12;
     const amrex::Real smag_answer =
-        1.0 * std::pow(0.16, 2) * std::pow(std::cbrt(dx * dy * dz), 2);
+        rho0 * std::pow(Cs, 2) * std::pow(std::cbrt(dx * dy * dz), 2) * srate;
     EXPECT_NEAR(min_val, smag_answer, tol);
     EXPECT_NEAR(max_val, smag_answer, tol);
 
@@ -163,27 +169,33 @@ TEST_F(TurbLESTest, test_smag_setup_calc)
 TEST_F(TurbLESTest, test_1eqKsgs_setup_calc)
 {
     // Parser inputs for turbulence model
+    const amrex::Real Ceps = 0.11;
+    const amrex::Real Ce = 0.99;
+    const amrex::Real Tref = 263.5;
+    const amrex::Real gravz = 10.0;
+    const amrex::Real rho0 = 1.2;
     {
         amrex::ParmParse pp("turbulence");
         pp.add("model", (std::string) "OneEqKsgsM84");
     }
     {
         amrex::ParmParse pp("OneEqKsgsM84_coeffs");
-        pp.add("Ceps", 0.11);
-        pp.add("Ce", 0.99);
+        pp.add("Ceps", Ceps);
+        pp.add("Ce", Ce);
     }
     {
         amrex::ParmParse pp("incflo");
         amrex::Vector<std::string> physics{"ABL"};
         pp.addarr("physics", physics);
-        pp.add("density", 1.0);
+        pp.add("density", rho0);
         amrex::Vector<amrex::Real> vvec{8.0, 0.0, 0.0};
         pp.addarr("velocity", vvec);
-        amrex::Vector<amrex::Real> gvec{0.0, 0.0, -10.0};
+        amrex::Vector<amrex::Real> gvec{0.0, 0.0, -gravz};
+        pp.addarr("gravity", gvec);
     }
     {
         amrex::ParmParse pp("ABL");
-        pp.add("reference_temperature", 263.5);
+        pp.add("reference_temperature", Tref);
         pp.add("surface_temp_rate", -0.25);
         amrex::Vector<amrex::Real> t_hts{0.0, 100.0, 400.0};
         pp.addarr("temperature_heights", t_hts);
@@ -211,28 +223,33 @@ TEST_F(TurbLESTest, test_1eqKsgs_setup_calc)
         // Two model parameters
         if (ct == 0) {
             EXPECT_EQ(n.first, "Ceps");
-            EXPECT_EQ(n.second, 0.11);
+            EXPECT_EQ(n.second, Ceps);
         } else {
             EXPECT_EQ(n.first, "Ce");
-            EXPECT_EQ(n.second, 0.99);
+            EXPECT_EQ(n.second, Ce);
         }
         ++ct;
     }
 
+    // Constants for fields
+    const amrex::Real srate = 20.0;
+    const amrex::Real Tgz = 2.0;
+    const amrex::Real tlscale_val = 1.1;
+    const amrex::Real tke_val = 0.1;
     // Set up velocity field with constant strainrate
     auto& vel = sim().repo().get_field("velocity");
-    init_field3(vel, 1.0);
+    init_field3(vel, srate);
     // Set up uniform unity density field
     auto& dens = sim().repo().get_field("density");
-    dens.setVal(1.0);
+    dens.setVal(rho0);
     // Set up temperature field with constant gradient in z
     auto& temp = sim().repo().get_field("temperature");
-    init_field1(temp, 1.0);
+    init_field1(temp, Tgz);
     // Give values to tlscale and tke arrays
     auto& tlscale = sim().repo().get_field("turb_lscale");
-    tlscale.setVal(1.0);
+    tlscale.setVal(tlscale_val);
     auto& tke = sim().repo().get_field("tke");
-    tke.setVal(1.0);
+    tke.setVal(tke_val);
 
     // Update turbulent viscosity directly
     tmodel.update_turbulent_viscosity(amr_wind::FieldState::New);
@@ -243,10 +260,11 @@ TEST_F(TurbLESTest, test_1eqKsgs_setup_calc)
     const auto max_val = utils::field_max(muturb);
     const amrex::Real tol = 1e-12;
     const amrex::Real ksgs_answer =
-        1.0 *
+        rho0 * Ce *
         amrex::min<amrex::Real>(
-            std::cbrt(dx * dy * dz), 0.76 * sqrt(1.0 / 10.0 * 263.5)) *
-        0.99 * sqrt(1.0);
+            std::cbrt(dx * dy * dz),
+            0.76 * sqrt(tke_val / (Tgz * gravz) * Tref)) *
+        sqrt(tke_val);
     EXPECT_NEAR(min_val, ksgs_answer, tol);
     EXPECT_NEAR(max_val, ksgs_answer, tol);
 }
