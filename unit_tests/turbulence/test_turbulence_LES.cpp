@@ -112,8 +112,6 @@ TEST_F(TurbLESTest, test_turb_smag_setup)
     dens.setVal(1.0);
 
     // Update turbulent viscosity by updating effective viscosity
-    // auto& mueff = sim().repo().get_field("velocity_mueff");
-    // tmodel.update_mueff(mueff);
     tmodel.update_turbulent_viscosity(amr_wind::FieldState::New);
     auto& muturb = sim().repo().get_field("mu_turb");
 
