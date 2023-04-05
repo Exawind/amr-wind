@@ -67,7 +67,6 @@ struct FLLCOp
          * Compute equation 5.3 from Martinez-Tossas and Meneveau 2019
          */
         for (int ip = 0; ip < npts; ++ip) {
-            const auto& tmat = data.orientation[ip];
             const auto force = data.force[ip];
             const auto vel = data.vel_rel[ip];
             const auto dr = fllc.dr[ip];
