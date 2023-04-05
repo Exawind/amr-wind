@@ -96,7 +96,7 @@ struct InitDataOp<FixedWing, ActSrcLine>
             const auto wlen = vs::mag(grid.pos.back() - grid.pos.front());
             RealList wx(npts);
             for (int i = 0; i < npts; ++i) {
-                wx[i] = vs::mag(grid.pos[i]) / wlen;
+                wx[i] = vs::mag(grid.pos[i] - grid.pos[0]) / wlen;
             }
             meta.chord.resize(npts);
             ::amr_wind::interp::linear_monotonic(
