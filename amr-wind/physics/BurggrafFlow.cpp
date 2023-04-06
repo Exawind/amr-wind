@@ -98,10 +98,10 @@ void BurggrafFlow::initialize_fields(int level, const amrex::Geometry& geom)
                 const amrex::Real G1 =
                     -24 * std::pow(y, 5) + 8 * std::pow(y, 3) - 4 * y;
 
+                src(i, j, k, 0) = 0.0;
                 src(i, j, k, 1) =
                     (8 / Re * (24 * F + 2 * f1 * g2 + f3 * g) +
                      64 * (F2 * G1 - g * g1 * F1));
-                src(i, j, k, 0) = 0.0;
                 src(i, j, k, 2) = 0.0;
             });
     }
