@@ -164,6 +164,10 @@ TEST_F(TurbLESTest, test_smag_setup_calc)
     max_val = utils::field_max(mueff);
     EXPECT_NEAR(min_val, smag_answer + 1e-5, tol);
     EXPECT_NEAR(max_val, smag_answer + 1e-5, tol);
+
+    // Check that this effective viscosity is what gets to icns diffusion
+    auto visc_name = pde_mgr.icns().fields().mueff.name();
+    EXPECT_EQ(visc_name, "velocity_mueff");
 }
 
 TEST_F(TurbLESTest, test_1eqKsgs_setup_calc)
