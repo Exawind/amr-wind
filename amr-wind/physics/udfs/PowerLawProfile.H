@@ -57,7 +57,8 @@ struct PowerLawProfile
     DeviceType device_instance() const { return m_op; }
 
     DeviceOp m_op;
-};
+
+}; // namespace udf
 
 } // namespace udf
 } // namespace amr_wind

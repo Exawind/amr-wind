@@ -10,4 +10,5 @@ target_sources(${amr_wind_lib_name} PRIVATE
   ABLMeanBoussinesq.cpp
   ActuatorForcing.cpp
   SynthTurbForcing.cpp
+  BurggrafFlowForcing.cpp
   )
