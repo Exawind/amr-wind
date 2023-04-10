@@ -31,12 +31,27 @@ public:
 
     ~WallMomentumFluxForcing() override;
 
+    template <typename ShearStress>
+    void compute_wall_src(
+       const int& idir,
+       const int& kLow,
+       const int& kHigh,
+       const amrex::Real& dV,
+       const amrex::Real& weightLow,
+       const amrex::Real& weightHigh,
+       const amrex::GpuArray<amrex::Real,AMREX_SPACEDIM>& dx,
+       const amrex::Box& bx,
+       const ShearStress& tau,
+       const amrex::Array4<amrex::Real>& src_term,
+       const amrex::Array4<amrex::Real>& plotField,
+       const amrex::Array4<const amrex::Real>& velocityField) const;
+        
     void operator()(
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,
         const FieldState fstate,
-        const amrex::Array4<amrex::Real>& src_term) const override;
+        const amrex::Array4<amrex::Real>& src_term) const;
 
 private:
     const amrex::AmrCore& m_mesh;
