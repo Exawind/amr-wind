@@ -4,7 +4,6 @@
 #include <string>
 #include "amr-wind/turbulence/TurbModelBase.H"
 #include "amr-wind/core/FieldRepo.H"
-// #include "amr-wind/derive/derive_stencils.H"
 #include "amr-wind/fvm/stencils.H"
 
 namespace amr_wind::turbulence {

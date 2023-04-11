@@ -2,7 +2,6 @@
 
 #include "amr-wind/turbulence/LES/AMD.H"
 #include "amr-wind/turbulence/TurbModelDefs.H"
-// #include "amr-wind/derive/derive_K.H"
 
 #include "AMReX_REAL.H"
 #include "AMReX_MultiFab.H"
