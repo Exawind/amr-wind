@@ -15,7 +15,6 @@ struct BurggrafLid
     struct DeviceOp
     {
         int idir{0};
-        amrex::Real uvec[AMREX_SPACEDIM];
 
         AMREX_GPU_DEVICE
         inline void operator()(
@@ -24,17 +23,21 @@ struct BurggrafLid
             amrex::GeometryData const& geom,
             const amrex::Real /*unused*/,
             amrex::Orientation /*unused*/,
-            const int /*comp*/,
-            const int /*dcomp*/,
-            const int /*unused*/) const
+            const int comp,
+            const int dcomp,
+            const int orig_comp) const
         {
             const auto* problo = geom.ProbLo();
             const auto* dx = geom.CellSize();
             const auto x = problo[idir] + (iv[idir] + 0.5) * dx[idir];
             amrex::Real val =
                 16 * (std::pow(x, 4) - 2 * std::pow(x, 3) + std::pow(x, 2));
+            amrex::Real uvec[AMREX_SPACEDIM];
+            uvec[0] = val;
+            uvec[1] = 0.0;
+            uvec[2] = 0.0;
 
-            field(iv[0], iv[1], iv[2], 0) = val;
+            field(iv[0], iv[1], iv[2], dcomp + comp) = uvec[orig_comp + comp];
         }
     };
     using DeviceType = DeviceOp;
