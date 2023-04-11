@@ -203,7 +203,7 @@ void AMD<Transport>::update_turbulent_viscosity(const FieldState fstate)
 template<typename Transport>
 void AMD<Transport>::update_alphaeff(Field& alphaeff) {
 
-    BL_PROFILE("amr-wind::" + this->identifier() + "::update_turbulent_viscosity");
+    BL_PROFILE("amr-wind::" + this->identifier() + "::update_alphaeff");
 
     auto& repo = alphaeff.repo();
     auto& geom_vec = repo.mesh().Geom();
