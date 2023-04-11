@@ -1,9 +1,13 @@
 #include "abl_test_utils.H"
+#include "aw_test_utils/MeshTest.H"
 
-namespace amr_wind_tests::utils {
+namespace amr_wind_tests {
 
-void populate_abl_params()
+void ABLMeshTest::populate_parameters()
 {
+    // Must populate with default parameters first to signify parameters do not
+    // need to be reread within initialize_mesh
+    MeshTest::populate_parameters();
     // Initial conditions (Temperature)
     {
         amrex::ParmParse pp("ABL");

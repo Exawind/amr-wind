@@ -34,7 +34,6 @@ void write_ncf()
 TEST_F(ABLMeshTest, abl_init_netcdf)
 {
     populate_parameters();
-    utils::populate_abl_params();
 
     // Supply name of input NetCDF file to parser
     {
@@ -80,7 +79,6 @@ TEST_F(ABLMeshTest, abl_init_netcdf)
 TEST_F(ABLMeshTest, abl_init_netcdf_multilevel)
 {
     populate_parameters();
-    utils::populate_abl_params();
 
     // Supply name of input NetCDF file to parser
     {

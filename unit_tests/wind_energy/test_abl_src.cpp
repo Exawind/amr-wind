@@ -25,7 +25,7 @@ using ICNSFields =
 TEST_F(ABLMeshTest, abl_forcing)
 {
     constexpr amrex::Real tol = 1.0e-12;
-    utils::populate_abl_params();
+    populate_parameters();
     initialize_mesh();
 
     auto& pde_mgr = sim().pde_manager();
@@ -86,7 +86,7 @@ TEST_F(ABLMeshTest, abl_forcing)
 TEST_F(ABLMeshTest, body_force)
 {
     constexpr amrex::Real tol = 1.0e-12;
-    utils::populate_abl_params();
+    populate_parameters();
     initialize_mesh();
 
     auto& pde_mgr = sim().pde_manager();
@@ -141,7 +141,7 @@ TEST_F(ABLMeshTest, body_force)
 TEST_F(ABLMeshTest, geostrophic_forcing)
 {
     constexpr amrex::Real tol = 1.0e-12;
-    utils::populate_abl_params();
+    populate_parameters();
 
     amrex::ParmParse pp("CoriolisForcing");
     pp.add("latitude", 90.0);
@@ -179,7 +179,7 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
 TEST_F(ABLMeshTest, rayleigh_damping)
 {
     constexpr amrex::Real tol = 1.0e-12;
-    utils::populate_abl_params();
+    populate_parameters();
 
     amrex::ParmParse pp("RayleighDamping");
 
@@ -217,7 +217,7 @@ TEST_F(ABLMeshTest, rayleigh_damping)
 TEST_F(ABLMeshTest, hurricane_forcing)
 {
     constexpr amrex::Real tol = 1.0e-12;
-    utils::populate_abl_params();
+    populate_parameters();
 
     amrex::ParmParse pp("CoriolisForcing");
     pp.add("latitude", 90.0);
@@ -244,8 +244,9 @@ TEST_F(ABLMeshTest, hurricane_forcing)
     });
 
     constexpr amrex::Real corfac = 2.0 * amr_wind::utils::two_pi() / 86400.0;
-    const amrex::Real ratio_top = (18000. - 7.5) / 18000.;
-    const amrex::Real ratio_bottom = (18000. - 0.5) / 18000.;
+    const amrex::Real ratio_top =
+        (18000. - (1000. - 1000. / 64. / 2.)) / 18000.;
+    const amrex::Real ratio_bottom = (18000. - 1000. / 64. / 2.) / 18000.;
     const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds_max{
         {-corfac * 40.0 * ratio_top -
              40.0 * ratio_top * 40.0 * ratio_top / 40000.0,
@@ -273,7 +274,7 @@ TEST_F(ABLMeshTest, coriolis_const_vel)
     const amrex::Real vel_comp = 10.0 + 5.0 * (amrex::Random() - 0.5);
 
     // Initialize parameters
-    utils::populate_abl_params();
+    populate_parameters();
     initialize_mesh();
 
     auto fields = ICNSFields(sim())(sim().time());
@@ -345,14 +346,15 @@ void cor_height_init_vel_field(
 
 TEST_F(ABLMeshTest, coriolis_height_variation)
 {
-    constexpr int kdim = 7;
+    // ABL unit test mesh has 64 cells in z
+    constexpr int kdim = 63;
     constexpr amrex::Real tol = 1.0e-12;
     constexpr amrex::Real corfac = 2.0 * amr_wind::utils::two_pi() / 86400.0;
     // Latitude is set to 45 degrees in the input file so sinphi = cosphi
     const amrex::Real latfac = std::sin(amr_wind::utils::radians(45.0));
 
     // Initialize parameters
-    utils::populate_abl_params();
+    populate_parameters();
     initialize_mesh();
 
     auto fields = ICNSFields(sim())(sim().time());
@@ -412,7 +414,7 @@ TEST_F(ABLMeshTest, boussinesq)
     constexpr amrex::Real tol = 1.0e-12;
 
     // Initialize parameters
-    utils::populate_abl_params();
+    populate_parameters();
     initialize_mesh();
 
     auto& pde_mgr = sim().pde_manager();
@@ -458,7 +460,7 @@ TEST_F(ABLMeshTest, boussinesq_nph)
     constexpr amrex::Real tol = 1.0e-12;
 
     // Initialize parameters
-    utils::populate_abl_params();
+    populate_parameters();
     initialize_mesh();
 
     auto& pde_mgr = sim().pde_manager();
@@ -527,7 +529,7 @@ TEST_F(ABLMeshTest, densitybuoyancy)
     constexpr amrex::Real tol = 1.0e-12;
 
     // Initialize parameters
-    utils::populate_abl_params();
+    populate_parameters();
     initialize_mesh();
 
     auto& pde_mgr = sim().pde_manager();

@@ -11,11 +11,11 @@ class ABLTest : public AmrexTest
 
 // Introduce namespace for the text fixture
 class ABLMeshTest : public MeshTest
-{};
+{
+protected:
+    void populate_parameters() override;
+};
 
-namespace utils {
-void populate_abl_params();
-}
 } // namespace amr_wind_tests
 
 #endif /* ABL_TEST_UTILS_H */
