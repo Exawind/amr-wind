@@ -80,13 +80,13 @@ void ABLMeshTest::populate_parameters()
 
         amrex::ParmParse pp("RayleighDamping");
         amrex::Real time_scale{40.0};
-        amrex::Real damping_length{1000};
-        amrex::Real full_damping_length{500};
+        amrex::Real length_sloped_damping{200};
+        amrex::Real length_complete_damping{50};
         amrex::Vector<amrex::Real> reference_velocity{{15., 0., 0.}};
 
         pp.add("time_scale", time_scale);
-        pp.add("damping_length", damping_length);
-        pp.add("full_damping_length", full_damping_length);
+        pp.add("length_sloped_damping", length_sloped_damping);
+        pp.add("length_complete_damping", length_complete_damping);
         pp.addarr("reference_velocity", reference_velocity);
     }
 
