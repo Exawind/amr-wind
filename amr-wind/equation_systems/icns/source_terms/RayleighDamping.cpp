@@ -45,7 +45,7 @@ void RayleighDamping::operator()(
     const amrex::Real dFull = m_dFull;
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        amrex::Real coeff = 0.0; // Need to work on defining this
+        amrex::Real coeff = 0.0;
         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
         if (probhi[2] - z > dRD) {

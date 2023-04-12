@@ -124,4 +124,4 @@ void ABLMeshTest::populate_parameters()
     }
 }
 
-} // namespace amr_wind_tests::utils
+} // namespace amr_wind_tests

@@ -180,9 +180,6 @@ TEST_F(ABLMeshTest, rayleigh_damping)
 {
     constexpr amrex::Real tol = 1.0e-12;
     populate_parameters();
-
-    amrex::ParmParse pp("RayleighDamping");
-
     initialize_mesh();
 
     auto& pde_mgr = sim().pde_manager();
@@ -206,12 +203,18 @@ TEST_F(ABLMeshTest, rayleigh_damping)
 
     const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{
         {-15.0 / 40.0, 0.0, 0.0}};
+    // Damping where coefficient is 1 is 500 long
+    // Intermediate damping region (0 to 1) is 1000 long
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {
         const auto min_val = utils::field_min(src_term, i);
         const auto max_val = utils::field_max(src_term, i);
+        std::cout << min_val << " " << max_val << std::endl;
         EXPECT_NEAR(min_val, golds[i], tol);
         EXPECT_NEAR(min_val, max_val, tol);
     }
+
+    std::cout << "bounds " << sim().mesh().Geom(0).ProbLoArray()[2] << " "
+              << sim().mesh().Geom(0).ProbHiArray()[2] << std::endl;
 }
 
 TEST_F(ABLMeshTest, hurricane_forcing)
