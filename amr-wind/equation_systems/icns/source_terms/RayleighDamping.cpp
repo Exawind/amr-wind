@@ -53,9 +53,7 @@ void RayleighDamping::operator()(
         if (probhi[2] - z > dRD + dFull) {
             coeff = 0.0;
         } else if (probhi[2] - z > dFull) {
-            coeff =
-                0.5 * std::cos(M_PI * (probhi[2] - dFull - z) / dRD) +
-                0.5;
+            coeff = 0.5 * std::cos(M_PI * (probhi[2] - dFull - z) / dRD) + 0.5;
         } else {
             coeff = 1.0;
         }
