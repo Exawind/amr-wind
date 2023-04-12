@@ -82,7 +82,7 @@ void ABLMeshTest::populate_parameters()
         amrex::Real time_scale{40.0};
         amrex::Real length_sloped_damping{200};
         amrex::Real length_complete_damping{50};
-        amrex::Vector<amrex::Real> reference_velocity{{15., 0., 0.}};
+        amrex::Vector<amrex::Real> reference_velocity{{12., 1., -3.}};
 
         pp.add("time_scale", time_scale);
         pp.add("length_sloped_damping", length_sloped_damping);
