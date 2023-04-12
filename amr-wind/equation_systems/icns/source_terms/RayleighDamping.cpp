@@ -7,16 +7,18 @@
 
 namespace amr_wind::pde::icns {
 
-/** Body Force
- */
 RayleighDamping::RayleighDamping(const CFDSim& sim)
     : m_mesh(sim.mesh()), m_velocity(sim.repo().get_field("velocity"))
 {
-    // Rea the Rayleigh Damping Layer parameters
+    // Read the Rayleigh Damping Layer parameters
     amrex::ParmParse pp("RayleighDamping");
     pp.query("time_scale", m_tau);
-    pp.query("damping_length", m_dRD);
-    pp.query("full_damping_length", m_dFull);
+    // Length where damping coefficient depends on spatial position
+    // In sloped region, coefficient goes from 1 to 0
+    pp.query("length_sloped_damping", m_dRD);
+    // Length where damping coefficient is set to 1
+    pp.query("length_complete_damping", m_dFull);
+    // Total damping length is m_dRD + m_dFull. Total length is not read in.
     pp.getarr("reference_velocity", m_ref_vel);
 }
 
