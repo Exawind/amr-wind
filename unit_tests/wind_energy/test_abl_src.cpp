@@ -19,6 +19,40 @@
 
 namespace amr_wind_tests {
 
+namespace {
+amrex::Real get_val_at_height(
+    amr_wind::Field& field,
+    const int lev,
+    const int comp,
+    const amrex::Real ploz,
+    const amrex::Real dz,
+    const amrex::Real height)
+{
+    amrex::Real error_total = 0;
+
+    error_total += amrex::ReduceSum(
+        field(lev), 0,
+        [=] AMREX_GPU_HOST_DEVICE(
+            amrex::Box const& bx,
+            amrex::Array4<amrex::Real const> const& f_arr) -> amrex::Real {
+            amrex::Real error = 0;
+
+            amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                const amrex::Real z = ploz + (0.5 + k) * dz;
+                // Check if current cell is closest to desired height
+                if (std::abs(z - height) < 0.5 * dz) {
+                    // Add field value to output
+                    error += f_arr(i, j, k, comp);
+                }
+            });
+
+            return error;
+        });
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
+    return error_total;
+}
+} // namespace
+
 using ICNSFields =
     amr_wind::pde::FieldRegOp<amr_wind::pde::ICNS, amr_wind::fvm::Godunov>;
 
@@ -201,20 +235,62 @@ TEST_F(ABLMeshTest, rayleigh_damping)
         rayleigh_damping(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
     });
 
-    const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{
-        {-15.0 / 40.0, 0.0, 0.0}};
-    // Damping where coefficient is 1 is 500 long
-    // Intermediate damping region (0 to 1) is 1000 long
-    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-        const auto min_val = utils::field_min(src_term, i);
-        const auto max_val = utils::field_max(src_term, i);
-        std::cout << min_val << " " << max_val << std::endl;
-        EXPECT_NEAR(min_val, golds[i], tol);
-        EXPECT_NEAR(min_val, max_val, tol);
+    // Domain is from 0 to 1000 in z, with 64 cells
+    // Damping where coefficient is 1 is 50 long
+    // Intermediate damping region (0 to 1) is 250 long
+    const amrex::Real dz = sim().mesh().Geom(0).CellSizeArray()[2];
+    const amrex::Real ploz = sim().mesh().Geom(0).ProbLoArray()[2];
+    const amrex::Real phiz = sim().mesh().Geom(0).ProbHiArray()[2];
+    // Testing locations:
+    // 0: below top of domain
+    // 1: above bottom of complete damping zone
+    // 2: below top of graded damping zone
+    // 3: above bottom of graded damping zone
+    // 4: below bottom of graded damping (no damping)
+    const amrex::Array<amrex::Real, 5> test_heights{
+        phiz - 0.1, phiz - 50 + 0.5 * dz,
+        phiz - dz * (0.5 + std::ceil(50 / dz)),
+        phiz - dz * (-0.5 + std::ceil(250 / dz)), phiz - 250 - 0.5 * dz};
+    // Expected values of coeff for each location
+    const amrex::Array<amrex::Real, 5> golds{
+        1., 1.,
+        0.5 * std::cos(M_PI * (1000 - 50 - test_heights[2]) / 200) + 0.5,
+        0.5 * std::cos(M_PI * (1000 - 50 - test_heights[3]) / 200) + 0.5, 0.0};
+
+    // Get damping values from src term
+    amrex::Array<amrex::Real, 5> src_x_vals;
+    amrex::Array<amrex::Real, 5> src_y_vals;
+    amrex::Array<amrex::Real, 5> src_z_vals;
+    // Multiply to remove tau factor and divide by nx*ny cells because of sum
+    const amrex::Real tau = 40.;
+    const int nx = 8;
+    const int ny = 8;
+    for (int n = 0; n < 5; ++n) {
+        src_x_vals[n] =
+            get_val_at_height(src_term, 0, 0, ploz, dz, test_heights[n]) * tau /
+            nx / ny;
+        src_y_vals[n] =
+            get_val_at_height(src_term, 0, 1, ploz, dz, test_heights[n]) * tau /
+            nx / ny;
+        src_z_vals[n] =
+            get_val_at_height(src_term, 0, 2, ploz, dz, test_heights[n]) * tau /
+            nx / ny;
     }
 
-    std::cout << "bounds " << sim().mesh().Geom(0).ProbLoArray()[2] << " "
-              << sim().mesh().Geom(0).ProbHiArray()[2] << std::endl;
+    // Check each src value against expectations
+    // Reference velocity is (12, 1, -3)
+    for (int n = 0; n < 5; ++n) {
+        EXPECT_NEAR(src_x_vals[n], 12. * golds[n], tol);
+        EXPECT_NEAR(src_y_vals[n], 1. * golds[n], tol);
+        EXPECT_NEAR(src_z_vals[n], -3. * golds[n], tol);
+    }
+    // Check intermediate points against manual expectations (near 1, near 0)
+    EXPECT_NEAR(src_x_vals[2], 12. * 1.0, 12. * 0.05);
+    EXPECT_NEAR(src_y_vals[2], 1. * 1.0, 1. * 0.05);
+    EXPECT_NEAR(src_z_vals[2], -3. * 1.0, 3. * 0.05);
+    EXPECT_NEAR(src_x_vals[3], 12. * 0.0, 12. * 0.005);
+    EXPECT_NEAR(src_y_vals[3], 1. * 0.0, 1. * 0.005);
+    EXPECT_NEAR(src_z_vals[3], -3. * 0.0, 3. * 0.005);
 }
 
 TEST_F(ABLMeshTest, hurricane_forcing)
