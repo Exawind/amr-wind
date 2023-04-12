@@ -12,12 +12,12 @@ RayleighDamping::RayleighDamping(const CFDSim& sim)
 {
     // Read the Rayleigh Damping Layer parameters
     amrex::ParmParse pp("RayleighDamping");
-    pp.query("time_scale", m_tau);
+    pp.get("time_scale", m_tau);
     // Length where damping coefficient depends on spatial position
     // In sloped region, coefficient goes from 1 to 0
-    pp.query("length_sloped_damping", m_dRD);
+    pp.get("length_sloped_damping", m_dRD);
     // Length where damping coefficient is set to 1
-    pp.query("length_complete_damping", m_dFull);
+    pp.get("length_complete_damping", m_dFull);
     // Total damping length is m_dRD + m_dFull. Total length is not read in.
     pp.getarr("reference_velocity", m_ref_vel);
 }
