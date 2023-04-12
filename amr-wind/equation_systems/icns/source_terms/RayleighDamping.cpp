@@ -50,11 +50,11 @@ void RayleighDamping::operator()(
         amrex::Real coeff = 0.0;
         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-        if (probhi[2] - z > dRD) {
+        if (probhi[2] - z > dRD + dFull) {
             coeff = 0.0;
         } else if (probhi[2] - z > dFull) {
             coeff =
-                0.5 * std::cos(M_PI * (probhi[2] - dFull - z) / (dRD - dFull)) +
+                0.5 * std::cos(M_PI * (probhi[2] - dFull - z) / dRD) +
                 0.5;
         } else {
             coeff = 1.0;
