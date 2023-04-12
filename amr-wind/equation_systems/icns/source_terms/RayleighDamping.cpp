@@ -59,9 +59,9 @@ void RayleighDamping::operator()(
         } else {
             coeff = 1.0;
         }
-        src_term(i, j, k, 0) += coeff * (vel(i, j, k, 0) - ref_vel[0]) / tau;
-        src_term(i, j, k, 1) += coeff * (vel(i, j, k, 1) - ref_vel[1]) / tau;
-        src_term(i, j, k, 2) += coeff * (vel(i, j, k, 2) - ref_vel[2]) / tau;
+        src_term(i, j, k, 0) += coeff * (ref_vel[0] - vel(i, j, k, 0)) / tau;
+        src_term(i, j, k, 1) += coeff * (ref_vel[1] - vel(i, j, k, 1)) / tau;
+        src_term(i, j, k, 2) += coeff * (ref_vel[2] - vel(i, j, k, 2)) / tau;
     });
 }
 
