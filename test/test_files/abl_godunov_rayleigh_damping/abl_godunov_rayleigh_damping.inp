@@ -46,7 +46,7 @@ RayleighDamping.reference_velocity = 7.0 5.0 0.0 #in metres per second
 incflo.velocity = 6.128355544951824  5.142300877492314 0.0
 
 ABL.temperature_heights = 650.0 750.0 1000.0
-ABL.temperature_values = 300.0 308.0 308.75
+ABL.temperature_values = 300.0 300.0 300.0
 
 ABL.kappa = .41
 ABL.surface_roughness_z0 = 0.15
