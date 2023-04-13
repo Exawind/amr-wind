@@ -39,9 +39,9 @@ CoriolisForcing.latitude = 41.3
 ABLForcing.abl_forcing_height = 90
 
 RayleighDamping.time_scale=40. #in seconds
-RayleighDamping.length_complete_damping = 200 #in metres
-RayleighDamping.length_sloped_damping   = 300 #in metres
-RayleighDamping.reference_velocity = 7.0 5.0 0.0 #in metres per second
+RayleighDamping.length_complete_damping = 500 #in metres
+RayleighDamping.length_sloped_damping   = 500 #in metres
+RayleighDamping.reference_velocity = 15.0 2.0 0.0 #in metres per second
 
 incflo.velocity = 6.128355544951824  5.142300877492314 0.0
 
