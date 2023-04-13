@@ -20,6 +20,8 @@ RayleighDamping::RayleighDamping(const CFDSim& sim)
     pp.get("length_complete_damping", m_dFull);
     // Total damping length is m_dRD + m_dFull. Total length is not read in.
     pp.getarr("reference_velocity", m_ref_vel);
+
+    // Based upon Allaerts & Meyers (JFM, 2017) and Durran & Klemp (AMS, 1983)
 }
 
 RayleighDamping::~RayleighDamping() = default;
