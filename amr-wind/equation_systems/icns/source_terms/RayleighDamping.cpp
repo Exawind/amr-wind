@@ -21,6 +21,9 @@ RayleighDamping::RayleighDamping(const CFDSim& sim)
     // Total damping length is m_dRD + m_dFull. Total length is not read in.
     pp.getarr("reference_velocity", m_ref_vel);
 
+    // Which coordinate directions to force
+    pp.queryarr("force_coord_directions", m_fcoord);
+
     // Based upon Allaerts & Meyers (JFM, 2017) and Durran & Klemp (AMS, 1983)
 }
 
@@ -48,6 +51,11 @@ void RayleighDamping::operator()(
     const amrex::Real dRD = m_dRD;
     const amrex::Real dFull = m_dFull;
 
+    // Which coordinate directions to force
+    const amrex::Real fx = m_fcoord[0];
+    const amrex::Real fy = m_fcoord[1];
+    const amrex::Real fz = m_fcoord[2];
+
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::Real coeff = 0.0;
         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
@@ -59,9 +67,12 @@ void RayleighDamping::operator()(
         } else {
             coeff = 1.0;
         }
-        src_term(i, j, k, 0) += coeff * (ref_vel[0] - vel(i, j, k, 0)) / tau;
-        src_term(i, j, k, 1) += coeff * (ref_vel[1] - vel(i, j, k, 1)) / tau;
-        src_term(i, j, k, 2) += coeff * (ref_vel[2] - vel(i, j, k, 2)) / tau;
+        src_term(i, j, k, 0) +=
+            fx * coeff * (ref_vel[0] - vel(i, j, k, 0)) / tau;
+        src_term(i, j, k, 1) +=
+            fy * coeff * (ref_vel[1] - vel(i, j, k, 1)) / tau;
+        src_term(i, j, k, 2) +=
+            fz * coeff * (ref_vel[2] - vel(i, j, k, 2)) / tau;
     });
 }
 

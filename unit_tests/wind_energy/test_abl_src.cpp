@@ -279,17 +279,18 @@ TEST_F(ABLMeshTest, rayleigh_damping)
 
     // Check each src value against expectations
     // Reference velocity is (12, 1, -3)
+    // Damping is turned off in the y direction
     for (int n = 0; n < 5; ++n) {
         EXPECT_NEAR(src_x_vals[n], 12. * golds[n], tol);
-        EXPECT_NEAR(src_y_vals[n], 1. * golds[n], tol);
+        EXPECT_NEAR(src_y_vals[n], 1. * golds[n] * 0., tol);
         EXPECT_NEAR(src_z_vals[n], -3. * golds[n], tol);
     }
     // Check intermediate points against manual expectations (near 1, near 0)
     EXPECT_NEAR(src_x_vals[2], 12. * 1.0, 12. * 0.05);
-    EXPECT_NEAR(src_y_vals[2], 1. * 1.0, 1. * 0.05);
+    EXPECT_NEAR(src_y_vals[2], 1. * 1.0 * 0.0, tol);
     EXPECT_NEAR(src_z_vals[2], -3. * 1.0, 3. * 0.05);
     EXPECT_NEAR(src_x_vals[3], 12. * 0.0, 12. * 0.005);
-    EXPECT_NEAR(src_y_vals[3], 1. * 0.0, 1. * 0.005);
+    EXPECT_NEAR(src_y_vals[3], 1. * 0.0 * 0.0, tol);
     EXPECT_NEAR(src_z_vals[3], -3. * 0.0, 3. * 0.005);
 }
 

@@ -83,11 +83,13 @@ void ABLMeshTest::populate_parameters()
         amrex::Real length_sloped_damping{200};
         amrex::Real length_complete_damping{50};
         amrex::Vector<amrex::Real> reference_velocity{{12., 1., -3.}};
+        amrex::Vector<int> fcoord{{1, 0, 1}};
 
         pp.add("time_scale", time_scale);
         pp.add("length_sloped_damping", length_sloped_damping);
         pp.add("length_complete_damping", length_complete_damping);
         pp.addarr("reference_velocity", reference_velocity);
+        pp.addarr("force_coord_directions", fcoord);
     }
 
     // Coriolis term
