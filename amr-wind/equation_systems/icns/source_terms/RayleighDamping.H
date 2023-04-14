@@ -45,6 +45,9 @@ private:
 
     //! Time scale defined by the user
     amrex::Real m_tau{5.0};
+
+    //! Which coordinate directions are forced
+    amrex::Vector<int> m_fcoord{{1, 1, 1}};
 };
 
 } // namespace amr_wind::pde::icns
