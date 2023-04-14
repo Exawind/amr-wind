@@ -38,9 +38,12 @@ ABL.reference_temperature = 300.0
 CoriolisForcing.latitude = 41.3
 ABLForcing.abl_forcing_height = 90
 
-RayleighDamping.time_scale=40. #in seconds
 RayleighDamping.length_complete_damping = 500 #in metres
 RayleighDamping.length_sloped_damping   = 500 #in metres
+# The RayleighDamping values below are not realistic for a production run, but are 
+# chosen for the sake of impacting the flow in the 10 timesteps ofthe regression test. 
+# More realistic values: timescale = 200 seconds, reference_velocity = incflo.velocity
+RayleighDamping.time_scale=40. #in seconds
 RayleighDamping.reference_velocity = 15.0 2.0 0.0 #in metres per second
 
 incflo.velocity = 6.128355544951824  5.142300877492314 0.0
