@@ -40,6 +40,7 @@ ABLForcing.abl_forcing_height = 90
 
 RayleighDamping.length_complete_damping = 500 #in metres
 RayleighDamping.length_sloped_damping   = 500 #in metres
+RayleighDamping.force_coord_directions  = 1 1 1
 # The RayleighDamping values below are not realistic for a production run, but are 
 # chosen for the sake of impacting the flow in the 10 timesteps ofthe regression test. 
 # More realistic values: timescale = 200 seconds, reference_velocity = incflo.velocity
