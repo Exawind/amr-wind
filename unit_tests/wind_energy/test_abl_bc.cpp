@@ -20,7 +20,8 @@
 namespace amr_wind_tests {
 
 namespace {
-amrex::Real get_val_at_base(amr_wind::Field& field, const int comp)
+amrex::Real
+get_val_at_kindex(amr_wind::Field& field, const int comp, const int kref)
 {
     const int lev = 0;
     amrex::Real error_total = 0;
@@ -34,7 +35,7 @@ amrex::Real get_val_at_base(amr_wind::Field& field, const int comp)
 
             amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
                 // Check if current cell is just above lower wall
-                if (k == 0) {
+                if (k == kref) {
                     // Add field value to output
                     error += f_arr(i, j, k, comp);
                 }
@@ -139,7 +140,6 @@ TEST_F(ABLMeshTest, abl_wall_model)
     // Initialize viscosity
     sim().turbulence_model().update_turbulent_viscosity(
         amr_wind::FieldState::Old);
-    auto& mueff = icns_eq.fields().mueff;
     icns_eq.compute_mueff(amr_wind::FieldState::Old);
 
     // Check test setup by verifying mu
@@ -163,15 +163,14 @@ TEST_F(ABLMeshTest, abl_wall_model)
         DiffusionType::Explicit); // this is RK2, might not help
 
     // Get resulting velocity in first cell
-    const amrex::Real vbase = get_val_at_base(velocity, dir) / 8 / 8;
+    const amrex::Real vbase = get_val_at_kindex(velocity, dir, 0) / 8 / 8;
 
     // Calculate expected velocity after one step
     const amrex::Real dz = sim().mesh().Geom(0).CellSizeArray()[2];
     const amrex::Real zref = 0.5 * dz;
-    const amrex::Real tau = kappa * vval / (std::log(zref / z0));
-    const amrex::Real vexpct = 0.0 - dt * tau / dz;
-    std::cout << utils::field_min(velocity) << " " << utils::field_max(velocity)
-              << " " << vbase << " " << tau << std::endl;
+    const amrex::Real utau = kappa * vval / (std::log(zref / z0));
+    const amrex::Real tau_wall = std::pow(utau, 2);
+    const amrex::Real vexpct = vval + dt * (0.0 - tau_wall) / dz;
     EXPECT_NEAR(vexpct, vbase, tol);
 }
 
