@@ -6,6 +6,7 @@ target_sources(${amr_wind_unit_test_exe_name} PRIVATE
   test_abl_init.cpp
   test_abl_src.cpp
   test_abl_stats.cpp
+  test_abl_bc.cpp
   )
 
 if (AMR_WIND_ENABLE_NETCDF)
