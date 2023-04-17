@@ -49,6 +49,7 @@ private:
     const Field& m_vel;
     const Field& m_temperature;
     const Field& m_rho;
+    amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
 
 };
 
@@ -101,16 +102,15 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amd_muvel(
     const amrex::Real dx2 = dx*dx;
     const amrex::Real dy2 = dy*dy;
     const amrex::Real dz2 = dz*dz;
-    const amrex::Real num_shear = -C * C * (2.0 * (ux * (ux*ux*dx2 + uy*uy*dy2 + uz*uz*dz2)
-                                           + uy * (vx*vx*dx2 + vy*vy*dy2 + vz*vz*dz2)
-                                           + uz * (wx*wx*dx2 + wy*wy*dy2 + wz*wz*dz2))
+    const amrex::Real num_shear = -2.0 * C* (ux * (ux*ux*dx2 + uy*uy*dy2 + uz*uz*dz2)
+                                           + vy * (vx*vx*dx2 + vy*vy*dy2 + vz*vz*dz2)
+                                           + wz * (wx*wx*dx2 + wy*wy*dy2 + wz*wz*dz2)
                                     + (uy + vx) * (ux*vx*dx2 + uy*vy*dy2 + uz*vz*dz2)
                                     + (uz + wx) * (ux*wx*dx2 + uy*wy*dy2 + uz*wz*dz2)
                                     + (vz + wy) * (vx*wx*dx2 + vy*wy*dy2 + vz*wz*dz2) );
-
-    amrex::Real num_buoy = C * beta * (dx * wx * tx
-                                       + dy * wy * ty
-                                       + dz * wz * tz);
+    amrex::Real num_buoy = C * beta * (  dx2 * wx * tx
+                                       + dy2 * wy * ty
+                                       + dz2 * wz * tz);
     amrex::Real denom = (ux*ux + uy*uy + uz*uz
                          + vx*vx + vy*vy + vz*vz
                          + wx*wx + wy*wy + wz*wz)
@@ -166,7 +166,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amd_thermal_diff(
     const amrex::Real dx2 = dx*dx;
     const amrex::Real dy2 = dy*dy;
     const amrex::Real dz2 = dz*dz;
-    const amrex::Real num = -C * C * ( (dx2 * ux * tx + dy2 * uy * ty + dz2 * uz * tz) * tx
+    const amrex::Real num = -C * ((dx2 * ux * tx + dy2 * uy * ty + dz2 * uz * tz) * tx
                                 + (dx2 * vx * tx + dy2 * vy * ty + dz2 * vz * tz) * ty
                                 + (dx2 * wx * tx + dy2 * wy * ty + dz2 * wz * tz) * tz );
 

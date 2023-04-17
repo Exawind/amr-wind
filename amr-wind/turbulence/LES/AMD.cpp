@@ -26,6 +26,11 @@ AMD<Transport>::AMD(CFDSim& sim)
         pp.get("reference_temperature", m_ref_theta);
     }
 
+    {
+        amrex::ParmParse pp("incflo");
+        pp.queryarr("gravity", m_gravity);
+    }
+
 }
 
 template <typename Transport>
@@ -47,7 +52,7 @@ void AMD<Transport>::update_turbulent_viscosity(const FieldState fstate)
     auto& temp = m_temperature.state(fstate);
     auto& den = m_rho.state(fstate);
     auto& geom_vec = repo.mesh().Geom();
-    const amrex::Real beta = 1.0/m_ref_theta;
+    const amrex::Real beta = -m_gravity[2]/m_ref_theta;
     const amrex::Real C_poincare = this->m_C;
     namespace stencil = amr_wind::fvm::stencil;
 
