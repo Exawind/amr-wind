@@ -95,7 +95,6 @@ TEST_F(ABLMeshTest, abl_wall_model)
     }
     {
         amrex::ParmParse pp("incflo");
-        // Use explicit for this test?
         pp.add("diffusion_type", 0);
     }
     {
@@ -158,9 +157,8 @@ TEST_F(ABLMeshTest, abl_wall_model)
     // Setup mask_cell array to avoid errors in solve
     auto& mask_cell = sim().repo().declare_int_field("mask_cell", 1, 1);
     mask_cell.setVal(1);
-    // Compute result
-    icns_eq.compute_predictor_rhs(
-        DiffusionType::Explicit); // this is RK2, might not help
+    // Compute result with just diffusion term
+    icns_eq.compute_predictor_rhs(DiffusionType::Explicit);
 
     // Get resulting velocity in first cell
     const amrex::Real vbase = get_val_at_kindex(velocity, dir, 0) / 8 / 8;
