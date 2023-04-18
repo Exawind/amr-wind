@@ -38,6 +38,37 @@ void init_field3(amr_wind::Field& fld, amrex::Real srate)
     }
 }
 
+void init_field_amd(amr_wind::Field& fld, amrex::Real scale)
+{
+    const auto& mesh = fld.repo().mesh();
+    const int nlevels = fld.repo().num_active_levels();
+
+    amrex::Real offset = 0.0;
+    if (fld.field_location() == amr_wind::FieldLoc::CELL) {
+        offset = 0.5;
+    }
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& dx = mesh.Geom(lev).CellSizeArray();
+        const auto& problo = mesh.Geom(lev).ProbLoArray();
+
+        for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
+            auto bx = mfi.growntilebox();
+            const auto& farr = fld(lev).array(mfi);
+
+            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                const amrex::Real x = problo[0] + (i + offset) * dx[0];
+                const amrex::Real y = problo[1] + (j + offset) * dx[1];
+                const amrex::Real z = problo[2] + (k + offset) * dx[2];
+
+                farr(i, j, k, 0) =  1 * x / sqrt(6.0) * scale;
+                farr(i, j, k, 1) = -2 * y / sqrt(6.0) * scale;
+                farr(i, j, k, 2) = -1 * z / sqrt(6.0) * scale;
+            });
+        }
+    }
+}
+
 void init_field1(amr_wind::Field& fld, amrex::Real tgrad)
 {
     const auto& mesh = fld.repo().mesh();
@@ -329,11 +360,11 @@ TEST_F(TurbLESTest, test_AMD_setup_calc)
     }
 
     // Constants for fields
-    const amrex::Real srate = 0.5;
-    const amrex::Real Tgz = 100.0;
+    const amrex::Real scale = 1.50;
+    const amrex::Real Tgz = 20.0;
     // Set up velocity field with constant strainrate
     auto& vel = sim().repo().get_field("velocity");
-    init_field3(vel, srate);
+    init_field_amd(vel, scale);
     // Set up uniform unity density field
     auto& dens = sim().repo().get_field("density");
     dens.setVal(rho0);
@@ -351,8 +382,17 @@ TEST_F(TurbLESTest, test_AMD_setup_calc)
     const amrex::Real tol = 1e-12;
 
     const amrex::Real amd_answer =
-        C * ( -2.0 * std::pow(srate/sqrt(6),3) * (dx*dx + dy*dy + dz*dz) + gravz/Tref * (Tgz*srate/sqrt(6)*dz*dz))/(srate*srate/2.0);
+        C * ( -2.0 * std::pow(scale/sqrt(6),3) * (dx*dx - 8*dy*dy - dz*dz) + gravz/Tref * (-1.0*Tgz*scale/sqrt(6)*dz*dz))/(1*scale*scale);
     EXPECT_NEAR(min_val, amd_answer, tol);
     EXPECT_NEAR(max_val, amd_answer, tol);
+
+    //Check values of alphaeff
+    auto& alphaeff = sim().repo().declare_cc_field("alphaeff");
+    tmodel.update_alphaeff(alphaeff);
+    const auto ae_min_val = utils::field_min(alphaeff);
+    const auto ae_max_val = utils::field_max(alphaeff);
+    const amrex::Real amd_ae_answer = C*dz*dz*scale*1.0/sqrt(6);
+    EXPECT_NEAR(ae_min_val, amd_ae_answer, tol);
+    EXPECT_NEAR(ae_max_val, amd_ae_answer, tol);
 }
 } // namespace amr_wind_tests
