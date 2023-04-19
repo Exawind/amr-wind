@@ -41,7 +41,8 @@ public:
     bool add_temperature_perturbations() const { return m_perturb_theta; }
 
     //! Initialize TKE field
-    void init_tke(const amrex::Geometry& geom, amrex::MultiFab& tke) const;
+    void init_tke(
+        const int lev, const amrex::Geometry& geom, amrex::MultiFab& tke) const;
 
 private:
     //! Initial velocity components
@@ -100,6 +101,12 @@ private:
     //! Initial value for tke field
     amrex::Real m_tke_init{0.1};
 
+    //! Multiplicative factor for init tke profile
+    amrex::Real m_tke_init_factor{0.4};
+
+    //! Cutoff height for init tke profile
+    amrex::Real m_tke_cutoff_height{250.};
+
     //! Top velocity
     amrex::RealArray m_top_vel{{20.0, 0.0, 0.0}};
 
@@ -114,6 +121,9 @@ private:
 
     //! Perturb temperature field with random fluctuations
     bool m_perturb_theta{false};
+
+    //! Initialize tke profile non-constant
+    bool m_tke_init_profile{false};
 };
 
 } // namespace amr_wind

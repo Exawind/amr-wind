@@ -204,9 +204,36 @@ void ABLFieldInit::perturb_temperature(
 
 //! Initialize sfs tke field at the beginning of the simulation
 void ABLFieldInit::init_tke(
-    const amrex::Geometry& /* geom */, amrex::MultiFab& tke) const
+    const int lev, const amrex::Geometry& geom, amrex::MultiFab& tke_fab) const
 {
-    tke.setVal(m_tke_init, 1);
+    tke_fab.setVal(m_tke_init, 1);
+
+    if (!m_tke_init_profile) return;
+
+    const auto& dx = geom.CellSizeArray();
+    const auto& problo = geom.ProbLoArray();
+    const auto tke_cutoff_height = m_tke_cutoff_height;
+    const auto tke_init_factor = m_tke_init_factor;
+
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+    for (amrex::MFIter mfi(tke_fab, amrex::TilingIfNotGPU()); mfi.isValid();
+         ++mfi) {
+        const auto& bx = mfi.growntilebox(1);
+        const auto& tke = tke_fab.array(mfi);
+
+        amrex::ParallelFor(
+            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                if (z < tke_cutoff_height) {
+                    tke(i, j, k) =
+                        tke_init_factor * (1. - z / tke_cutoff_height);
+                } else {
+                    tke(i, j, k) = 0.;
+                }
+            });
+    }
 }
 
 } // namespace amr_wind
