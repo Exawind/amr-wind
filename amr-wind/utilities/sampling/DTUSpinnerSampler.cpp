@@ -146,17 +146,17 @@ vs::Vector generate_lidar_pattern(
 {
     vs::Vector axis(1, 0, 0);
 
-    const vs::Vector ground(0, 0, -1);
+    const vs::Vector ground(0, 0, 1);
 
     const double innerTheta = InnerPrism.theta0 + InnerPrism.rot * time * 360;
     const double outerTheta = OuterPrism.theta0 + OuterPrism.rot * time * 360;
 
     const auto reflection_1 = rotate_euler_vec(
-        axis, -innerTheta,
+        axis, innerTheta,
         rotate_euler_vec(ground, -(InnerPrism.azimuth / 2 + 90), axis));
 
     const auto reflection_2 = rotate_euler_vec(
-        axis, -outerTheta,
+        axis, outerTheta,
         rotate_euler_vec(ground, OuterPrism.azimuth / 2, axis));
 
     return reflect(reflection_2, reflect(reflection_1, axis));
