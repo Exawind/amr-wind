@@ -208,7 +208,9 @@ void ABLFieldInit::init_tke(
 {
     tke_fab.setVal(m_tke_init, 1);
 
-    if (!m_tke_init_profile) return;
+    if (!m_tke_init_profile) {
+        return;
+    }
 
     const auto& dx = geom.CellSizeArray();
     const auto& problo = geom.ProbLoArray();
