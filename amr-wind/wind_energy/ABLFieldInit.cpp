@@ -32,6 +32,9 @@ ABLFieldInit::ABLFieldInit()
     pp_abl.query("theta_amplitude", m_deltaT);
 
     pp_abl.query("init_tke", m_tke_init);
+    pp_abl.query("init_tke_beare_profile", m_tke_init_profile);
+    pp_abl.query("init_tke_beare_factor", m_tke_init_factor);
+    pp_abl.query("init_tke_cutoff_height", m_tke_cutoff_height);
 
     pp_abl.query("linear_profile", m_linear_profile);
 
