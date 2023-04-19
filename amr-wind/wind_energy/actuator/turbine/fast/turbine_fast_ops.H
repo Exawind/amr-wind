@@ -437,6 +437,8 @@ struct ComputeForceOp<TurbineFast, SrcTrait>
             meta.fast->advance_turbine(tf.tid_local);
         }
 
+        meta.fast->get_hub_stats(tf.tid_local);
+
         // Populate nacelle force into the OpenFAST data structure so that it
         // gets broadcasted to all influenced processes in subsequent scattering
         // of data.
