@@ -41,8 +41,7 @@ public:
     bool add_temperature_perturbations() const { return m_perturb_theta; }
 
     //! Initialize TKE field
-    void init_tke(
-        const int lev, const amrex::Geometry& geom, amrex::MultiFab& tke) const;
+    void init_tke(const amrex::Geometry& geom, amrex::MultiFab& tke) const;
 
 private:
     //! Initial velocity components
