@@ -18,8 +18,7 @@ AMD<Transport>::AMD(CFDSim& sim)
     , m_rho(sim.repo().get_field("density"))
 {
     auto& phy_mgr = this->m_sim.physics_manager();
-    if (phy_mgr.contains("ABL"))
-    {
+    if (phy_mgr.contains("ABL")) {
         {
             amrex::ParmParse pp("ABL");
             pp.get("reference_temperature", m_ref_theta);
@@ -54,8 +53,7 @@ void AMD<Transport>::update_turbulent_viscosity(const FieldState fstate)
     const auto& geom_vec2 = repo.mesh();
     amrex::Real beta = 0.0;
     auto& phy_mgr = this->m_sim.physics_manager();
-    if (phy_mgr.contains("ABL"))
-    {
+    if (phy_mgr.contains("ABL")) {
         beta = -m_gravity[2] / m_ref_theta;
     }
 
