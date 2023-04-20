@@ -89,6 +89,7 @@ void ABLStats::calc_averages()
     m_pa_temp();
     m_pa_vel_fine();
     m_pa_temp_fine();
+    m_pa_mueff();
 }
 
 //! Calculate sfs stress averages
