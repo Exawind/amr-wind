@@ -18,17 +18,16 @@ AMD<Transport>::AMD(CFDSim& sim)
     , m_rho(sim.repo().get_field("density"))
 {
     auto& phy_mgr = this->m_sim.physics_manager();
-    if (!phy_mgr.contains("ABL"))
-        amrex::Abort("AMD model only works with ABL physics");
-
+    if (phy_mgr.contains("ABL"))
     {
-        amrex::ParmParse pp("ABL");
-        pp.get("reference_temperature", m_ref_theta);
-    }
-
-    {
-        amrex::ParmParse pp("incflo");
-        pp.queryarr("gravity", m_gravity);
+        {
+            amrex::ParmParse pp("ABL");
+            pp.get("reference_temperature", m_ref_theta);
+        }
+        {
+            amrex::ParmParse pp("incflo");
+            pp.queryarr("gravity", m_gravity);
+        }
     }
 }
 
@@ -51,8 +50,15 @@ void AMD<Transport>::update_turbulent_viscosity(const FieldState fstate)
     auto& vel = m_vel.state(fstate);
     auto& temp = m_temperature.state(fstate);
     auto& den = m_rho.state(fstate);
-    auto& geom_vec = repo.mesh().Geom();
-    const amrex::Real beta = -m_gravity[2] / m_ref_theta;
+    const auto& geom_vec = repo.mesh().Geom();
+    const auto& geom_vec2 = repo.mesh();
+    amrex::Real beta = 0.0;
+    auto& phy_mgr = this->m_sim.physics_manager();
+    if (phy_mgr.contains("ABL"))
+    {
+        beta = -m_gravity[2] / m_ref_theta;
+    }
+
     const amrex::Real C_poincare = this->m_C;
     namespace stencil = amr_wind::fvm::stencil;
 
@@ -224,7 +230,7 @@ void AMD<Transport>::update_alphaeff(Field& alphaeff)
     BL_PROFILE("amr-wind::" + this->identifier() + "::update_alphaeff");
 
     auto& repo = alphaeff.repo();
-    auto& geom_vec = repo.mesh().Geom();
+    const auto& geom_vec = repo.mesh().Geom();
     const amrex::Real C_poincare = this->m_C;
     namespace stencil = amr_wind::fvm::stencil;
 
