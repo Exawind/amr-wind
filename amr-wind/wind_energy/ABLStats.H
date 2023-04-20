@@ -170,6 +170,9 @@ private:
     //! Number of cells in the horizontal direction
     size_t m_ncells_h1{0};
     size_t m_ncells_h2{0};
+
+    //! Do energy budget
+    bool m_do_energy_budget{false};
 };
 
 } // namespace amr_wind
