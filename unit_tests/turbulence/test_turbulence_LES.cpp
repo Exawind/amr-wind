@@ -61,7 +61,7 @@ void init_field_amd(amr_wind::Field& fld, amrex::Real scale)
                 const amrex::Real y = problo[1] + (j + offset) * dx[1];
                 const amrex::Real z = problo[2] + (k + offset) * dx[2];
 
-                farr(i, j, k, 0) =  1 * x / sqrt(6.0) * scale;
+                farr(i, j, k, 0) = 1 * x / sqrt(6.0) * scale;
                 farr(i, j, k, 1) = -2 * y / sqrt(6.0) * scale;
                 farr(i, j, k, 2) = -1 * z / sqrt(6.0) * scale;
             });
@@ -382,16 +382,20 @@ TEST_F(TurbLESTest, test_AMD_setup_calc)
     const amrex::Real tol = 1e-12;
 
     const amrex::Real amd_answer =
-        C * ( -2.0 * std::pow(scale/sqrt(6),3) * (dx*dx - 8*dy*dy - dz*dz) + gravz/Tref * (-1.0*Tgz*scale/sqrt(6)*dz*dz))/(1*scale*scale);
+        C *
+        (-2.0 * std::pow(scale / sqrt(6), 3) *
+             (dx * dx - 8 * dy * dy - dz * dz) +
+         gravz / Tref * (-1.0 * Tgz * scale / sqrt(6) * dz * dz)) /
+        (1 * scale * scale);
     EXPECT_NEAR(min_val, amd_answer, tol);
     EXPECT_NEAR(max_val, amd_answer, tol);
 
-    //Check values of alphaeff
+    // Check values of alphaeff
     auto& alphaeff = sim().repo().declare_cc_field("alphaeff");
     tmodel.update_alphaeff(alphaeff);
     const auto ae_min_val = utils::field_min(alphaeff);
     const auto ae_max_val = utils::field_max(alphaeff);
-    const amrex::Real amd_ae_answer = C*dz*dz*scale*1.0/sqrt(6);
+    const amrex::Real amd_ae_answer = C * dz * dz * scale * 1.0 / sqrt(6);
     EXPECT_NEAR(ae_min_val, amd_ae_answer, tol);
     EXPECT_NEAR(ae_max_val, amd_ae_answer, tol);
 }

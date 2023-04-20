@@ -10,7 +10,7 @@
 namespace amr_wind {
 namespace turbulence {
 
-template<typename Transport>
+template <typename Transport>
 AMD<Transport>::AMD(CFDSim& sim)
     : TurbModelBase<Transport>(sim)
     , m_vel(sim.repo().get_field("velocity"))
@@ -30,7 +30,6 @@ AMD<Transport>::AMD(CFDSim& sim)
         amrex::ParmParse pp("incflo");
         pp.queryarr("gravity", m_gravity);
     }
-
 }
 
 template <typename Transport>
@@ -44,7 +43,8 @@ void AMD<Transport>::parse_model_coeffs()
 template <typename Transport>
 void AMD<Transport>::update_turbulent_viscosity(const FieldState fstate)
 {
-    BL_PROFILE("amr-wind::" + this->identifier() + "::update_turbulent_viscosity");
+    BL_PROFILE(
+        "amr-wind::" + this->identifier() + "::update_turbulent_viscosity");
 
     auto& mu_turb = this->mu_turb();
     auto& repo = mu_turb.repo();
@@ -52,12 +52,12 @@ void AMD<Transport>::update_turbulent_viscosity(const FieldState fstate)
     auto& temp = m_temperature.state(fstate);
     auto& den = m_rho.state(fstate);
     auto& geom_vec = repo.mesh().Geom();
-    const amrex::Real beta = -m_gravity[2]/m_ref_theta;
+    const amrex::Real beta = -m_gravity[2] / m_ref_theta;
     const amrex::Real C_poincare = this->m_C;
     namespace stencil = amr_wind::fvm::stencil;
 
     const int nlevels = repo.num_active_levels();
-    for (int lev=0; lev < nlevels; ++lev) {
+    for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = geom_vec[lev];
         const auto& domain = geom.Domain();
 
@@ -74,11 +74,11 @@ void AMD<Transport>::update_turbulent_viscosity(const FieldState fstate)
 
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                  const amrex::Real rho = rho_arr(i, j, k);
-                  mu_arr(i, j, k) =
-                      rho * amd_muvel<stencil::StencilInterior>
-                      (i,j,k,dx,dy,dz,beta,C_poincare,vel_arr,temp_arr);
-            });
+                    const amrex::Real rho = rho_arr(i, j, k);
+                    mu_arr(i, j, k) = rho * amd_muvel<stencil::StencilInterior>(
+                                                i, j, k, dx, dy, dz, beta,
+                                                C_poincare, vel_arr, temp_arr);
+                });
 
             // TODO: Check if the following is correct for `foextrap` BC types
             const auto& bxi = mfi.tilebox();
@@ -94,12 +94,14 @@ void AMD<Transport>::update_turbulent_viscosity(const FieldState fstate)
                     auto bxlo = amrex::Box(low, hi);
 
                     amrex::ParallelFor(
-                        bxlo, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                                  const amrex::Real rho = rho_arr(i, j, k);
-                                  mu_arr(i, j, k) =
-                                      rho * amd_muvel<stencil::StencilILO>
-                                      (i,j,k,dx,dy,dz,beta,C_poincare,vel_arr,temp_arr);
-                              });
+                        bxlo,
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real rho = rho_arr(i, j, k);
+                            mu_arr(i, j, k) =
+                                rho * amd_muvel<stencil::StencilILO>(
+                                          i, j, k, dx, dy, dz, beta, C_poincare,
+                                          vel_arr, temp_arr);
+                        });
                 }
 
                 if (bxi.bigEnd(idim) == domain.bigEnd(idim)) {
@@ -112,12 +114,14 @@ void AMD<Transport>::update_turbulent_viscosity(const FieldState fstate)
                     auto bxhi = amrex::Box(low, hi);
 
                     amrex::ParallelFor(
-                        bxhi, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                                  const amrex::Real rho = rho_arr(i, j, k);
-                                  mu_arr(i, j, k) =
-                                      rho * amd_muvel<stencil::StencilIHI>
-                                      (i,j,k,dx,dy,dz,beta,C_poincare,vel_arr,temp_arr);
-                              });
+                        bxhi,
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real rho = rho_arr(i, j, k);
+                            mu_arr(i, j, k) =
+                                rho * amd_muvel<stencil::StencilIHI>(
+                                          i, j, k, dx, dy, dz, beta, C_poincare,
+                                          vel_arr, temp_arr);
+                        });
                 }
             } // if (!geom.isPeriodic)
 
@@ -133,12 +137,14 @@ void AMD<Transport>::update_turbulent_viscosity(const FieldState fstate)
                     auto bxlo = amrex::Box(low, hi);
 
                     amrex::ParallelFor(
-                        bxlo, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                                  const amrex::Real rho = rho_arr(i, j, k);
-                                  mu_arr(i, j, k) =
-                                      rho * amd_muvel<stencil::StencilJLO>
-                                      (i,j,k,dx,dy,dz,beta,C_poincare,vel_arr,temp_arr);
-                              });
+                        bxlo,
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real rho = rho_arr(i, j, k);
+                            mu_arr(i, j, k) =
+                                rho * amd_muvel<stencil::StencilJLO>(
+                                          i, j, k, dx, dy, dz, beta, C_poincare,
+                                          vel_arr, temp_arr);
+                        });
                 }
 
                 if (bxi.bigEnd(idim) == domain.bigEnd(idim)) {
@@ -151,12 +157,14 @@ void AMD<Transport>::update_turbulent_viscosity(const FieldState fstate)
                     auto bxhi = amrex::Box(low, hi);
 
                     amrex::ParallelFor(
-                        bxhi, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                                  const amrex::Real rho = rho_arr(i, j, k);
-                                  mu_arr(i, j, k) =
-                                      rho * amd_muvel<stencil::StencilJHI>
-                                      (i,j,k,dx,dy,dz,beta,C_poincare,vel_arr,temp_arr);
-                              });
+                        bxhi,
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real rho = rho_arr(i, j, k);
+                            mu_arr(i, j, k) =
+                                rho * amd_muvel<stencil::StencilJHI>(
+                                          i, j, k, dx, dy, dz, beta, C_poincare,
+                                          vel_arr, temp_arr);
+                        });
                 }
             } // if (!geom.isPeriodic)
 
@@ -172,12 +180,14 @@ void AMD<Transport>::update_turbulent_viscosity(const FieldState fstate)
                     auto bxlo = amrex::Box(low, hi);
 
                     amrex::ParallelFor(
-                        bxlo, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                                  const amrex::Real rho = rho_arr(i, j, k);
-                                  mu_arr(i, j, k) =
-                                      rho * amd_muvel<stencil::StencilKLO>
-                                      (i,j,k,dx,dy,dz,beta,C_poincare,vel_arr,temp_arr);
-                              });
+                        bxlo,
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real rho = rho_arr(i, j, k);
+                            mu_arr(i, j, k) =
+                                rho * amd_muvel<stencil::StencilKLO>(
+                                          i, j, k, dx, dy, dz, beta, C_poincare,
+                                          vel_arr, temp_arr);
+                        });
                 }
 
                 if (bxi.bigEnd(idim) == domain.bigEnd(idim)) {
@@ -190,12 +200,14 @@ void AMD<Transport>::update_turbulent_viscosity(const FieldState fstate)
                     auto bxhi = amrex::Box(low, hi);
 
                     amrex::ParallelFor(
-                        bxhi, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                                  const amrex::Real rho = rho_arr(i, j, k);
-                                  mu_arr(i, j, k) =
-                                      rho * amd_muvel<stencil::StencilKHI>
-                                      (i,j,k,dx,dy,dz,beta,C_poincare,vel_arr,temp_arr);
-                              });
+                        bxhi,
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real rho = rho_arr(i, j, k);
+                            mu_arr(i, j, k) =
+                                rho * amd_muvel<stencil::StencilKHI>(
+                                          i, j, k, dx, dy, dz, beta, C_poincare,
+                                          vel_arr, temp_arr);
+                        });
                 }
             } // if (!geom.isPeriodic)
         }
@@ -205,8 +217,9 @@ void AMD<Transport>::update_turbulent_viscosity(const FieldState fstate)
 }
 
 //! Update the effective thermal diffusivity field
-template<typename Transport>
-void AMD<Transport>::update_alphaeff(Field& alphaeff) {
+template <typename Transport>
+void AMD<Transport>::update_alphaeff(Field& alphaeff)
+{
 
     BL_PROFILE("amr-wind::" + this->identifier() + "::update_alphaeff");
 
@@ -216,7 +229,7 @@ void AMD<Transport>::update_alphaeff(Field& alphaeff) {
     namespace stencil = amr_wind::fvm::stencil;
 
     const int nlevels = repo.num_active_levels();
-    for (int lev=0; lev < nlevels; ++lev) {
+    for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = geom_vec[lev];
         const auto& domain = geom.Domain();
 
@@ -233,12 +246,12 @@ void AMD<Transport>::update_alphaeff(Field& alphaeff) {
 
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                  const amrex::Real rho = rho_arr(i, j, k);
-                  alpha_arr(i, j, k) =
-                      rho * amd_thermal_diff<stencil::StencilInterior>
-                      (i,j,k,dx,dy,dz,C_poincare,vel_arr,temp_arr);
-            });
-
+                    const amrex::Real rho = rho_arr(i, j, k);
+                    alpha_arr(i, j, k) =
+                        rho *
+                        amd_thermal_diff<stencil::StencilInterior>(
+                            i, j, k, dx, dy, dz, C_poincare, vel_arr, temp_arr);
+                });
 
             // TODO: Check if the following is correct for `foextrap` BC types
             const auto& bxi = mfi.tilebox();
@@ -254,12 +267,14 @@ void AMD<Transport>::update_alphaeff(Field& alphaeff) {
                     auto bxlo = amrex::Box(low, hi);
 
                     amrex::ParallelFor(
-                        bxlo, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                                  const amrex::Real rho = rho_arr(i, j, k);
-                                  alpha_arr(i, j, k) =
-                                      rho * amd_thermal_diff<stencil::StencilILO>
-                                      (i,j,k,dx,dy,dz,C_poincare,vel_arr,temp_arr);
-                              });
+                        bxlo,
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real rho = rho_arr(i, j, k);
+                            alpha_arr(i, j, k) =
+                                rho * amd_thermal_diff<stencil::StencilILO>(
+                                          i, j, k, dx, dy, dz, C_poincare,
+                                          vel_arr, temp_arr);
+                        });
                 }
 
                 if (bxi.bigEnd(idim) == domain.bigEnd(idim)) {
@@ -272,12 +287,14 @@ void AMD<Transport>::update_alphaeff(Field& alphaeff) {
                     auto bxhi = amrex::Box(low, hi);
 
                     amrex::ParallelFor(
-                        bxhi, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                                  const amrex::Real rho = rho_arr(i, j, k);
-                                  alpha_arr(i, j, k) =
-                                      rho * amd_thermal_diff<stencil::StencilIHI>
-                                      (i,j,k,dx,dy,dz,C_poincare,vel_arr,temp_arr);
-                              });
+                        bxhi,
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real rho = rho_arr(i, j, k);
+                            alpha_arr(i, j, k) =
+                                rho * amd_thermal_diff<stencil::StencilIHI>(
+                                          i, j, k, dx, dy, dz, C_poincare,
+                                          vel_arr, temp_arr);
+                        });
                 }
             } // if (!geom.isPeriodic)
 
@@ -293,12 +310,14 @@ void AMD<Transport>::update_alphaeff(Field& alphaeff) {
                     auto bxlo = amrex::Box(low, hi);
 
                     amrex::ParallelFor(
-                        bxlo, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                                  const amrex::Real rho = rho_arr(i, j, k);
-                                  alpha_arr(i, j, k) =
-                                      rho * amd_thermal_diff<stencil::StencilJLO>
-                                      (i,j,k,dx,dy,dz,C_poincare,vel_arr,temp_arr);
-                              });
+                        bxlo,
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real rho = rho_arr(i, j, k);
+                            alpha_arr(i, j, k) =
+                                rho * amd_thermal_diff<stencil::StencilJLO>(
+                                          i, j, k, dx, dy, dz, C_poincare,
+                                          vel_arr, temp_arr);
+                        });
                 }
 
                 if (bxi.bigEnd(idim) == domain.bigEnd(idim)) {
@@ -311,12 +330,14 @@ void AMD<Transport>::update_alphaeff(Field& alphaeff) {
                     auto bxhi = amrex::Box(low, hi);
 
                     amrex::ParallelFor(
-                        bxhi, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                                  const amrex::Real rho = rho_arr(i, j, k);
-                                  alpha_arr(i, j, k) =
-                                      rho * amd_thermal_diff<stencil::StencilJHI>
-                                      (i,j,k,dx,dy,dz,C_poincare,vel_arr,temp_arr);
-                              });
+                        bxhi,
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real rho = rho_arr(i, j, k);
+                            alpha_arr(i, j, k) =
+                                rho * amd_thermal_diff<stencil::StencilJHI>(
+                                          i, j, k, dx, dy, dz, C_poincare,
+                                          vel_arr, temp_arr);
+                        });
                 }
             } // if (!geom.isPeriodic)
 
@@ -332,12 +353,14 @@ void AMD<Transport>::update_alphaeff(Field& alphaeff) {
                     auto bxlo = amrex::Box(low, hi);
 
                     amrex::ParallelFor(
-                        bxlo, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                                  const amrex::Real rho = rho_arr(i, j, k);
-                                  alpha_arr(i, j, k) =
-                                      rho * amd_thermal_diff<stencil::StencilKLO>
-                                      (i,j,k,dx,dy,dz,C_poincare,vel_arr,temp_arr);
-                              });
+                        bxlo,
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real rho = rho_arr(i, j, k);
+                            alpha_arr(i, j, k) =
+                                rho * amd_thermal_diff<stencil::StencilKLO>(
+                                          i, j, k, dx, dy, dz, C_poincare,
+                                          vel_arr, temp_arr);
+                        });
                 }
 
                 if (bxi.bigEnd(idim) == domain.bigEnd(idim)) {
@@ -350,27 +373,24 @@ void AMD<Transport>::update_alphaeff(Field& alphaeff) {
                     auto bxhi = amrex::Box(low, hi);
 
                     amrex::ParallelFor(
-                        bxhi, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                                  const amrex::Real rho = rho_arr(i, j, k);
-                                  alpha_arr(i, j, k) =
-                                      rho * amd_thermal_diff<stencil::StencilKHI>
-                                      (i,j,k,dx,dy,dz,C_poincare,vel_arr,temp_arr);
-                              });
+                        bxhi,
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real rho = rho_arr(i, j, k);
+                            alpha_arr(i, j, k) =
+                                rho * amd_thermal_diff<stencil::StencilKHI>(
+                                          i, j, k, dx, dy, dz, C_poincare,
+                                          vel_arr, temp_arr);
+                        });
                 }
             } // if (!geom.isPeriodic)
         }
     }
-
 }
 
-
-
-template<typename Transport>
+template <typename Transport>
 TurbulenceModel::CoeffsDictType AMD<Transport>::model_coeffs() const
 {
-    return TurbulenceModel::CoeffsDictType{
-        {"C_poincare", this->m_C}
-    };
+    return TurbulenceModel::CoeffsDictType{{"C_poincare", this->m_C}};
 }
 
 } // namespace turbulence
