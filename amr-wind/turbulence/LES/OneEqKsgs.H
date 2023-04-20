@@ -23,6 +23,7 @@ protected:
     Field& m_turb_lscale;
     Field& m_shear_prod;
     Field& m_buoy_prod;
+    Field& m_dissip;
     Field& m_rho;
 
     Field* m_tke{nullptr};

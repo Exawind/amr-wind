@@ -6,6 +6,7 @@
 #include "amr-wind/utilities/tensor_ops.H"
 #include "amr-wind/equation_systems/icns/source_terms/ABLForcing.H"
 #include "amr-wind/equation_systems/PDEHelpers.H"
+#include "amr-wind/equation_systems/SchemeTraits.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_ParallelDescriptor.H"
@@ -136,6 +137,56 @@ void ABLStats::calc_sfs_stress_avgs(
                         t_sfs_arr(i, j, k, icomp) =
                             -alphaeff_arr(i, j, k) * gradT_arr(i, j, k, icomp);
                     }
+                });
+        }
+    }
+}
+
+//! Calculate sfs stress averages
+void ABLStats::calc_tke_diffusion(
+    ScratchField& diffusion,
+    const Field& buoy_prod,
+    const Field& shear_prod,
+    const Field& dissipation,
+    const amrex::Real dt)
+{
+
+    BL_PROFILE("amr-wind::ABLStats::calc_tke_diffusion");
+
+    // Get tke fields
+    Field& tke = m_sim.repo().get_field("tke");
+    Field& tke_old = tke.state(amr_wind::FieldState::Old);
+    // Get conv_term from tke eq
+    auto& pde_mgr = m_sim.pde_manager();
+    // Check for presence of tke-godunov
+    std::string tke_pde_name = "tke-" + amr_wind::fvm::Godunov::scheme_name();
+    if (!pde_mgr.has_pde(tke_pde_name)) {
+        amrex::Abort(
+            "ABL Stats Failure: " + tke_pde_name +
+            " not present. Energy budget relies on tke equation and Godunov "
+            "assumptions");
+    }
+    auto& tke_eqn = pde_mgr(tke_pde_name);
+    Field& conv_term = tke_eqn.fields().conv_term;
+
+    const int nlevels = m_sim.repo().num_active_levels();
+    for (int lev = 0; lev < nlevels; ++lev) {
+        for (amrex::MFIter mfi(diffusion(lev)); mfi.isValid(); ++mfi) {
+            const auto& bx = mfi.tilebox();
+            const auto& diffusion_arr = diffusion(lev).array(mfi);
+            const auto& buoy_prod_arr = buoy_prod(lev).const_array(mfi);
+            const auto& shear_prod_arr = shear_prod(lev).const_array(mfi);
+            const auto& dissipation_arr = dissipation(lev).const_array(mfi);
+            const auto& tke_arr = tke(lev).const_array(mfi);
+            const auto& tke_old_arr = tke_old(lev).const_array(mfi);
+            const auto& conv_arr = conv_term(lev).const_array(mfi);
+
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    diffusion_arr(i, j, k) =
+                        (tke_arr(i, j, k) - tke_old_arr(i, j, k)) / dt -
+                        conv_arr(i, j, k) - shear_prod_arr(i, j, k) -
+                        buoy_prod_arr(i, j, k) + dissipation_arr(i, j, k);
                 });
         }
     }
@@ -419,6 +470,16 @@ void ABLStats::write_netcdf()
     ScratchFieldPlaneAveraging pa_tsfs(
         *t_sfs_stress, m_sim.time(), m_normal_dir);
     pa_tsfs();
+
+    // SGS tke terms
+    auto& tke_buoy_prod = m_sim.repo().get_field("buoy_prod");
+    auto& tke_shear_prod = m_sim.repo().get_field("shear_prod");
+    auto& tke_dissip = m_sim.repo().get_field("dissipation");
+    auto tke_diffusion = m_sim.repo().create_scratch_field("tke_diffusion", 1);
+    // Solve for diffusion term using other terms
+    calc_tke_diffusion(
+        *tke_diffusion, tke_buoy_prod, tke_shear_prod, tke_dissip,
+        m_sim.time().deltaT());
 
     if (!amrex::ParallelDescriptor::IOProcessor()) return;
     auto ncf = ncutils::NCFile::open(m_ncfile_name, NC_WRITE);

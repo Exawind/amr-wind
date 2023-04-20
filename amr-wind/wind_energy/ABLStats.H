@@ -85,6 +85,14 @@ public:
     void
     calc_sfs_stress_avgs(ScratchField& sfs_stress, ScratchField& t_sfs_stress);
 
+    //! Calculate tke diffusion term by eliminating other terms
+    void calc_tke_diffusion(
+        ScratchField& diffusion,
+        const Field& buoy_prod,
+        const Field& shear_prod,
+        const Field& dissipation,
+        const amrex::Real dt);
+
 protected:
     //! Read user inputs and create the necessary files
     void initialize();
