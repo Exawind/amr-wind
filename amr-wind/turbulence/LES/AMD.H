@@ -19,13 +19,13 @@ public:
     explicit AMD(CFDSim& sim);
 
     //! Model name for debugging purposes
-    virtual std::string model_name() const override { return "AMD"; }
+    std::string model_name() const override { return "AMD"; }
 
     //! Update the turbulent viscosity field
-    virtual void update_turbulent_viscosity(const FieldState fstate) override;
+    void update_turbulent_viscosity(const FieldState fstate) override;
 
     //! Update the effective thermal diffusivity field
-    virtual void update_alphaeff(Field& alphaeff) override;
+    void update_alphaeff(Field& alphaeff) override;
 
     //! Return model coefficients dictionary
     TurbulenceModel::CoeffsDictType model_coeffs() const override;
