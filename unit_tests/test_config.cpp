@@ -58,7 +58,7 @@ TEST(Configuration, GPU)
 #endif
 #elif defined(AMREX_USE_HIP)
     amrex::Print() << "GPU backend: HIP" << std::endl;
-#elif defined(AMREX_USE_DPCPP)
+#elif defined(AMREX_USE_SYCL)
     amrex::Print() << "GPU backend: SYCL" << std::endl;
 #endif
 
