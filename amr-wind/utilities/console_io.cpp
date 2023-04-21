@@ -126,7 +126,7 @@ void print_banner(MPI_Comm comm, std::ostream& out)
         << "(Backend: CUDA)"
 #elif defined(AMREX_USE_HIP)
         << "(Backend: HIP)"
-#elif defined(AMREX_USE_DPCPP)
+#elif defined(AMREX_USE_SYCL)
         << "(Backend: SYCL)"
 #endif
         << std::endl
