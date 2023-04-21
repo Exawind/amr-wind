@@ -191,7 +191,7 @@ jobs:
           cmake -G Ninja -B build-SYCL \
             -DCMAKE_BUILD_TYPE:STRING=Release \
             -DCMAKE_CXX_COMPILER:STRING=$(which icpx) \
-            -DCMAKE_C_COMPILER:STRING=$(which clang) \
+            -DCMAKE_C_COMPILER:STRING=$(which icx) \
             -DAMR_WIND_ENABLE_MPI:BOOL=OFF \
             -DAMR_WIND_ENABLE_SYCL:BOOL=ON \
             ${{github.workspace}}
