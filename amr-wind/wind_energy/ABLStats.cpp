@@ -7,6 +7,7 @@
 #include "amr-wind/equation_systems/icns/source_terms/ABLForcing.H"
 #include "amr-wind/equation_systems/PDEHelpers.H"
 #include "amr-wind/equation_systems/SchemeTraits.H"
+#include "amr-wind/equation_systems/tke/TKE.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_ParallelDescriptor.H"
@@ -160,14 +161,22 @@ void ABLStats::calc_tke_diffusion(
     // Get conv_term from tke eq
     auto& pde_mgr = m_sim.pde_manager();
     // Check for presence of tke-godunov
-    std::string tke_pde_name = "tke-" + amr_wind::fvm::Godunov::scheme_name();
+    std::string tke_pde_name = amr_wind::pde::TKE::pde_name();
     if (!pde_mgr.has_pde(tke_pde_name)) {
         amrex::Abort(
             "ABL Stats Failure: " + tke_pde_name +
-            " not present. Energy budget relies on tke equation and Godunov "
+            " PDE not present. Energy budget relies on TKE equation and "
+            "Godunov "
+            "assumptions.");
+    }
+    std::string tke_scheme_name = amr_wind::fvm::Godunov::scheme_name();
+    if (pde_mgr.scheme() != tke_scheme_name) {
+        amrex::Abort(
+            "ABL Stats Failure: " + amr_wind::fvm::Godunov::scheme_name() +
+            " not being used. Energy budget relies on tke equation and Godunov "
             "assumptions");
     }
-    auto& tke_eqn = pde_mgr(tke_pde_name);
+    auto& tke_eqn = pde_mgr(tke_pde_name + "-" + tke_scheme_name);
     Field& conv_term = tke_eqn.fields().conv_term;
 
     const int nlevels = m_sim.repo().num_active_levels();
