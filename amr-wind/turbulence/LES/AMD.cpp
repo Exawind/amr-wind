@@ -46,11 +46,10 @@ void AMD<Transport>::update_turbulent_viscosity(const FieldState fstate)
 
     auto& mu_turb = this->mu_turb();
     auto& repo = mu_turb.repo();
-    auto& vel = m_vel.state(fstate);
-    auto& temp = m_temperature.state(fstate);
-    auto& den = m_rho.state(fstate);
+    const auto& vel = m_vel.state(fstate);
+    const auto& temp = m_temperature.state(fstate);
+    const auto& den = m_rho.state(fstate);
     const auto& geom_vec = repo.mesh().Geom();
-    const auto& geom_vec2 = repo.mesh();
     amrex::Real beta = 0.0;
     auto& phy_mgr = this->m_sim.physics_manager();
     if (phy_mgr.contains("ABL")) {
