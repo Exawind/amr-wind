@@ -32,7 +32,8 @@ inline amrex::Real field_max(const amr_wind::Field& field, const int icomp = 0)
     return max_val;
 }
 
-inline amrex::Real field_min(const amr_wind::ScratchField& field, const int icomp = 0)
+inline amrex::Real
+field_min(const amr_wind::ScratchField& field, const int icomp = 0)
 {
     amrex::Real min_val = std::numeric_limits<amrex::Real>::max();
     for (int lev = 0; lev < field.repo().num_active_levels(); ++lev) {
@@ -42,7 +43,8 @@ inline amrex::Real field_min(const amr_wind::ScratchField& field, const int icom
     return min_val;
 }
 
-inline amrex::Real field_max(const amr_wind::ScratchField& field, const int icomp = 0)
+inline amrex::Real
+field_max(const amr_wind::ScratchField& field, const int icomp = 0)
 {
     amrex::Real max_val = -std::numeric_limits<amrex::Real>::max();
     for (int lev = 0; lev < field.repo().num_active_levels(); ++lev) {
