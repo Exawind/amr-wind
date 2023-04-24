@@ -10,6 +10,7 @@ KsgsM84Src::KsgsM84Src(const CFDSim& sim)
     : m_turb_lscale(sim.repo().get_field("turb_lscale"))
     , m_shear_prod(sim.repo().get_field("shear_prod"))
     , m_buoy_prod(sim.repo().get_field("buoy_prod"))
+    , m_dissip(sim.repo().get_field("dissipation"))
     , m_tke(sim.repo().get_field("tke"))
 {
     AMREX_ALWAYS_ASSERT(sim.turbulence_model().model_name() == "OneEqKsgsM84");
@@ -30,6 +31,7 @@ void KsgsM84Src::operator()(
     const auto& tlscale_arr = (this->m_turb_lscale)(lev).array(mfi);
     const auto& shear_prod_arr = (this->m_shear_prod)(lev).array(mfi);
     const auto& buoy_prod_arr = (this->m_buoy_prod)(lev).array(mfi);
+    const auto& dissip_arr = (this->m_dissip)(lev).array(mfi);
     const auto& tke_arr = (this->m_tke)(lev).array(mfi);
     const amrex::Real Ceps = this->m_Ceps;
     const amrex::Real CepsGround = this->m_CepsGround;
@@ -43,11 +45,11 @@ void KsgsM84Src::operator()(
     const amrex::Real ds = std::cbrt(dx * dy * dz);
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        amrex::Real ceps_local =
-            (Ceps / 0.93) * (0.19 + (0.74 * tlscale_arr(i, j, k) / ds));
+        dissip_arr(i, j, k) = calc_dissip(
+            calc_ceps_local(Ceps, tlscale_arr(i, j, k), ds), tke_arr(i, j, k),
+            tlscale_arr(i, j, k));
         src_term(i, j, k) += shear_prod_arr(i, j, k) + buoy_prod_arr(i, j, k) -
-                             ceps_local * std::sqrt(tke_arr(i, j, k)) *
-                                 tke_arr(i, j, k) / tlscale_arr(i, j, k);
+                             dissip_arr(i, j, k);
     });
 
     const auto& bctype = (this->m_tke).bc_type();
@@ -59,13 +61,13 @@ void KsgsM84Src::operator()(
             if (blo.ok()) {
                 amrex::ParallelFor(
                     blo, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        amrex::Real ceps_local =
-                            (Ceps / 0.93) *
-                            (0.19 + (0.74 * tlscale_arr(i, j, k) / ds));
-                        src_term(i, j, k) += (ceps_local - CepsGround) *
-                                             std::sqrt(tke_arr(i, j, k)) *
-                                             tke_arr(i, j, k) /
-                                             tlscale_arr(i, j, k);
+                        // Remove previous dissipation term
+                        src_term(i, j, k) += dissip_arr(i, j, k);
+                        // Calculate new dissipation term
+                        dissip_arr(i, j, k) = calc_dissip(
+                            CepsGround, tke_arr(i, j, k), tlscale_arr(i, j, k));
+                        // Add new dissiaption term
+                        src_term(i, j, k) -= dissip_arr(i, j, k);
                     });
             } else {
                 amrex::Abort("Bad box extracted in KsgsM84Src");
@@ -80,13 +82,13 @@ void KsgsM84Src::operator()(
             if (bhi.ok()) {
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        amrex::Real ceps_local =
-                            (Ceps / 0.93) *
-                            (0.19 + (0.74 * tlscale_arr(i, j, k) / ds));
-                        src_term(i, j, k) += (ceps_local - CepsGround) *
-                                             std::sqrt(tke_arr(i, j, k)) *
-                                             tke_arr(i, j, k) /
-                                             tlscale_arr(i, j, k);
+                        // Remove previous dissipation term
+                        src_term(i, j, k) += dissip_arr(i, j, k);
+                        // Calculate new dissipation term
+                        dissip_arr(i, j, k) = calc_dissip(
+                            CepsGround, tke_arr(i, j, k), tlscale_arr(i, j, k));
+                        // Add new dissiaption term
+                        src_term(i, j, k) -= dissip_arr(i, j, k);
                     });
             }
         }

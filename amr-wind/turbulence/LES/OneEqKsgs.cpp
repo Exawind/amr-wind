@@ -19,6 +19,7 @@ OneEqKsgs<Transport>::OneEqKsgs(CFDSim& sim)
     , m_turb_lscale(sim.repo().declare_field("turb_lscale", 1, 1, 1))
     , m_shear_prod(sim.repo().declare_field("shear_prod", 1, 1, 1))
     , m_buoy_prod(sim.repo().declare_field("buoy_prod", 1, 1, 1))
+    , m_dissip(sim.repo().declare_field("dissipation", 1, 1, 1))
     , m_rho(sim.repo().get_field("density"))
 {
     auto& tke_eqn =

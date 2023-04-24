@@ -151,6 +151,8 @@ public:
 
     bool constant_density() const { return m_constant_density; }
 
+    std::string scheme() const { return m_scheme; }
+
 private:
     //! Instance of the CFD simulation controller
     CFDSim& m_sim;
