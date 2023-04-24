@@ -90,8 +90,9 @@ void remove_nans(amr_wind::Field& field)
             const auto& field_arr = field(lev).array(mfi);
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    field_arr(i, j, k) =
-                        isnan(field_arr(i, j, k)) ? 0.0 : field_arr(i, j, k);
+                    field_arr(i, j, k) = std::isnan(field_arr(i, j, k))
+                                             ? 0.0
+                                             : field_arr(i, j, k);
                 });
         }
     }
