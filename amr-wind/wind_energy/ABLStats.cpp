@@ -453,6 +453,12 @@ void ABLStats::prepare_netcdf_file()
 
     // Energy budget
     if (m_do_energy_budget) {
+        if (!m_sim.repo().field_exists("buoy_prod")) {
+            amrex::Abort(
+                "ABL Stats Failure: buoy_prod field not present, indicating "
+                "OneEqKsgs turbulence model not being used. Energy budget "
+                "currently only applies to this turbulence model.");
+        }
         grp.def_var("tke_buoy", NC_DOUBLE, two_dim);
         grp.def_var("tke_shear", NC_DOUBLE, two_dim);
         grp.def_var("tke_dissip", NC_DOUBLE, two_dim);
