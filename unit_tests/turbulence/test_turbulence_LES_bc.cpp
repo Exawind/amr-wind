@@ -114,10 +114,6 @@ protected:
             amrex::Vector<amrex::Real> probhi{{10.0, 10.0, 10.0}};
             pp.addarr("prob_lo", problo);
             pp.addarr("prob_hi", probhi);
-        }
-        {
-            // Periodicity
-            amrex::ParmParse pp("geometry");
             amrex::Vector<int> periodic{{1, 1, 0}};
             pp.addarr("is_periodic", periodic);
             // Boundary conditions
@@ -150,11 +146,14 @@ protected:
         {
             amrex::ParmParse pp("ABL");
             pp.add("reference_temperature", Tref);
-            pp.add("surface_temp_rate", -0.25);
             amrex::Vector<amrex::Real> t_hts{0.0, 100.0, 400.0};
             pp.addarr("temperature_heights", t_hts);
             amrex::Vector<amrex::Real> t_vals{265.0, 265.0, 268.0};
             pp.addarr("temperature_values", t_vals);
+        }
+        {
+            amrex::ParmParse pp("transport");
+            pp.add("viscosity", mu);
         }
     }
     void test_calls_body()
@@ -162,18 +161,16 @@ protected:
         // Initialize necessary parts of solver
         initialize_mesh();
         auto& pde_mgr = sim().pde_manager();
-        pde_mgr.register_icns();
+        auto& icns_eq = pde_mgr.register_icns();
         sim().init_physics();
-
-        // Create turbulence model
         sim().create_turbulence_model();
+        icns_eq.initialize();
+
         // Get turbulence model
         auto& tmodel = sim().turbulence_model();
         // Set up velocity field with constant strainrate
         auto& vel = sim().repo().get_field("velocity");
         init_field3(vel, srate);
-        // Perform fillpatch to allow BCs to operate
-        vel.fillpatch(0.0);
         // Set up uniform unity density field
         auto& dens = sim().repo().get_field("density");
         dens.setVal(rho0);
@@ -186,8 +183,26 @@ protected:
         auto& tke = sim().repo().get_field("tke");
         tke.setVal(tke_val);
 
+        // Perform post init for physics
+        // (turns on wall model if specified)
+        for (auto& pp : sim().physics()) {
+            pp->post_init_actions();
+        }
+        // Perform fillpatch to allow BCs (slip, no_slip) to operate
+        vel.fillpatch(0.0);
+        temp.fillpatch(0.0);
+        // Ensure nonzero viscosity (only molecular at this point)
+        icns_eq.compute_mueff(amr_wind::FieldState::New);
+
+        // Advance states (important for wall model)
+        pde_mgr.advance_states();
+        // Compute diffusion term to use BCs (wall model)
+        icns_eq.compute_diffusion_term(amr_wind::FieldState::New);
+
         // Update turbulent viscosity directly
+        std::cout << "before update turb visc\n";
         tmodel.update_turbulent_viscosity(amr_wind::FieldState::New);
+        std::cout << "after update turb visc\n";
     }
 
     const amrex::Real dx = 10.0 / 10.0;
@@ -205,6 +220,8 @@ protected:
     const amrex::Real Tgz = 2.0;
     const amrex::Real tlscale_val = 1.1;
     const amrex::Real tke_val = 0.1;
+    // Molecular viscosity
+    const amrex::Real mu = 1e-2;
 };
 
 TEST_F(TurbLESTestBC, test_1eqKsgs_noslip)
@@ -272,6 +289,58 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_slip)
     EXPECT_GT(std::abs(shear_wall - s_naive), tol);
     // Answer that accounts for slip_wall BC (Neumann)
     const amrex::Real s_true = uz_wallface_neumann * sqrt(2.0);
+    EXPECT_NEAR(shear_wall, s_true, tol);
+}
+
+TEST_F(TurbLESTestBC, test_1eqKsgs_wallmodel)
+{
+    constexpr amrex::Real kappa = 0.4;
+    constexpr amrex::Real z0 = 0.11;
+    populate_parameters();
+    {
+        amrex::ParmParse pp("zlo");
+        pp.add("type", (std::string) "wall_model");
+    }
+    {
+        amrex::ParmParse pp("ABL");
+        pp.add("wall_shear_stress_type", (std::string) "local");
+        pp.add("kappa", kappa);
+        pp.add("surface_roughness_z0", z0);
+    }
+    OneEqKsgs_setup_params();
+    test_calls_body();
+    auto& muturb = sim().repo().get_field("mu_turb");
+
+    // Get shear production field
+    auto& shear_prod = sim().repo().get_field("shear_prod");
+
+    // Check for constant value in bulk
+    auto shear_bulk = get_val_at_kindex(shear_prod, muturb, 0, 1) / 10. / 20.;
+    EXPECT_NEAR(shear_bulk, srate, tol);
+
+    // Velocity gradients assumed in setup (init_field3)
+    const amrex::Real uz_bulk = srate / sqrt(2.0);
+
+    // Shear value at the wall used by wall model
+    const amrex::Real zref = 0.5 * dz;
+    const amrex::Real uref = zref * uz_bulk;
+    const amrex::Real vmag_ref = std::sqrt(2 * uref * uref);
+    const amrex::Real utau = kappa * vmag_ref / (std::log(zref / z0));
+    const amrex::Real uz_wall = uref / vmag_ref * std::pow(utau, 2) * rho0 / mu;
+
+    // Velocity gradient with wallmodel BC
+    const amrex::Real uz_wallface_dirichlet =
+        (1.0 / 3.0 * (uz_bulk * 1.5) + 1.0 * (uz_bulk * 0.5) -
+         4.0 / 3.0 * uz_wall / dz);
+    const amrex::Real uz_wallface_model = 0.5 * (uz_bulk + uz_wall);
+    // Naive answer, assumes wall Dirichlet
+    const amrex::Real s_naive = std::abs(uz_wallface_dirichlet) * sqrt(2.0);
+    // Get value just above wall due to BC
+    auto shear_wall = get_val_at_kindex(shear_prod, muturb, 0, 0) / 10. / 20.;
+    // Check that the result is not equal to the naive
+    EXPECT_GT(std::abs(shear_wall - s_naive) / 20.0, tol);
+    // Answer that accounts for slip_wall BC (Neumann)
+    const amrex::Real s_true = uz_wallface_model * sqrt(2.0);
     EXPECT_NEAR(shear_wall, s_true, tol);
 }
 
