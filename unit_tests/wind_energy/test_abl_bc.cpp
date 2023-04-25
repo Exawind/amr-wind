@@ -13,7 +13,7 @@ get_val_at_kindex(amr_wind::Field& field, const int comp, const int kref)
     amrex::Real error_total = 0;
 
     error_total += amrex::ReduceSum(
-        field(lev), 0,
+        field(lev), 3,
         [=] AMREX_GPU_HOST_DEVICE(
             amrex::Box const& bx,
             amrex::Array4<amrex::Real const> const& f_arr) -> amrex::Real {
@@ -21,7 +21,7 @@ get_val_at_kindex(amr_wind::Field& field, const int comp, const int kref)
 
             amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
                 // Check if current cell is just above lower wall
-                if (k == kref) {
+                if (k == kref && (i > -1 && i < 8) && (j > -1 && j < 8)) {
                     // Add field value to output
                     error += f_arr(i, j, k, comp);
                 }
@@ -116,6 +116,12 @@ TEST_F(ABLMeshTest, abl_wall_model)
         pp->post_init_actions();
     }
 
+    // Perform fillpatch and certify this does not use wall function
+    // (Just in implementation check, not a functionality check)
+    velocity.fillpatch(0.0);
+    const amrex::Real dudz_fp = get_val_at_kindex(velocity, dir, -1) / 8 / 8;
+    EXPECT_NEAR(dudz_fp, vval, tol);
+
     // Advance states to prepare for time step
     pde_mgr.advance_states();
 
@@ -156,6 +162,10 @@ TEST_F(ABLMeshTest, abl_wall_model)
     const amrex::Real tau_wall = std::pow(utau, 2);
     const amrex::Real vexpct = vval + dt * (0.0 - tau_wall) / dz;
     EXPECT_NEAR(vexpct, vbase, tol);
+
+    // Check for velocity gradient values within boundary
+    const amrex::Real dudz = get_val_at_kindex(velocity, dir, -1) / 8 / 8;
+    EXPECT_NEAR(dudz, tau_wall / mu, tol);
 }
 
 } // namespace amr_wind_tests
