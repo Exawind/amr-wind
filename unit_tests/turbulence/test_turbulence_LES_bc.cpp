@@ -241,4 +241,38 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_noslip)
     EXPECT_NEAR(shear_wall, s_true, tol);
 }
 
+TEST_F(TurbLESTestBC, test_1eqKsgs_slip)
+{
+    populate_parameters();
+    {
+        amrex::ParmParse pp("zlo");
+        pp.add("type", (std::string) "slip_wall");
+    }
+    OneEqKsgs_setup_params();
+    test_calls_body();
+    auto& muturb = sim().repo().get_field("mu_turb");
+
+    // Get shear production field
+    auto& shear_prod = sim().repo().get_field("shear_prod");
+
+    // Check for constant value in bulk
+    auto shear_bulk = get_val_at_kindex(shear_prod, muturb, 0, 1) / 10. / 20.;
+    EXPECT_NEAR(shear_bulk, srate, tol);
+
+    // Velocity gradients assumed in setup (init_field3)
+    const amrex::Real uz_bulk = srate / sqrt(2.0);
+    const amrex::Real uz_wallface_dirichlet =
+        (0.5 * (uz_bulk * 1.5 * dz + uz_bulk * 0.5 * dz) - 0.0) / dz;
+    const amrex::Real uz_wallface_neumann = 0.5 * (uz_bulk + 0.0);
+    // Naive answer, assumes no_slip_wall (Dirichlet)
+    const amrex::Real s_naive = uz_wallface_dirichlet * sqrt(2.0);
+    // Check for different value just above wall due to BC
+    auto shear_wall = get_val_at_kindex(shear_prod, muturb, 0, 0) / 10. / 20.;
+    // Check that the result is not equal to the naive value
+    EXPECT_GT(std::abs(shear_wall - s_naive), tol);
+    // Answer that accounts for slip_wall BC (Neumann)
+    const amrex::Real s_true = uz_wallface_neumann * sqrt(2.0);
+    EXPECT_NEAR(shear_wall, s_true, tol);
+}
+
 } // namespace amr_wind_tests
