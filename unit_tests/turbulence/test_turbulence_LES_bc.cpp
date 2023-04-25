@@ -56,8 +56,6 @@ void init_field3(amr_wind::Field& fld, amrex::Real srate)
             const auto& farr = fld(lev).array(mfi);
 
             amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-                const amrex::Real x = problo[0] + (i + offset) * dx[0];
-                const amrex::Real y = problo[1] + (j + offset) * dx[1];
                 const amrex::Real z = problo[2] + (k + offset) * dx[2];
 
                 farr(i, j, k, 0) = z / sqrt(2.0) * srate;
@@ -128,90 +126,96 @@ protected:
             // zlo is defined in each case
         }
     }
+    void OneEqKsgs_setup_params()
+    {
+        {
+            amrex::ParmParse pp("turbulence");
+            pp.add("model", (std::string) "OneEqKsgsM84");
+        }
+        {
+            amrex::ParmParse pp("OneEqKsgsM84_coeffs");
+            pp.add("Ceps", Ceps);
+            pp.add("Ce", Ce);
+        }
+        {
+            amrex::ParmParse pp("incflo");
+            amrex::Vector<std::string> physics{"ABL"};
+            pp.addarr("physics", physics);
+            pp.add("density", rho0);
+            amrex::Vector<amrex::Real> vvec{8.0, 0.0, 0.0};
+            pp.addarr("velocity", vvec);
+            amrex::Vector<amrex::Real> gvec{0.0, 0.0, -gravz};
+            pp.addarr("gravity", gvec);
+        }
+        {
+            amrex::ParmParse pp("ABL");
+            pp.add("reference_temperature", Tref);
+            pp.add("surface_temp_rate", -0.25);
+            amrex::Vector<amrex::Real> t_hts{0.0, 100.0, 400.0};
+            pp.addarr("temperature_heights", t_hts);
+            amrex::Vector<amrex::Real> t_vals{265.0, 265.0, 268.0};
+            pp.addarr("temperature_values", t_vals);
+        }
+    }
+    void test_calls_body()
+    {
+        // Initialize necessary parts of solver
+        initialize_mesh();
+        auto& pde_mgr = sim().pde_manager();
+        pde_mgr.register_icns();
+        sim().init_physics();
+
+        // Create turbulence model
+        sim().create_turbulence_model();
+        // Get turbulence model
+        auto& tmodel = sim().turbulence_model();
+        // Set up velocity field with constant strainrate
+        auto& vel = sim().repo().get_field("velocity");
+        init_field3(vel, srate);
+        // Perform fillpatch to allow BCs to operate
+        vel.fillpatch(0.0);
+        // Set up uniform unity density field
+        auto& dens = sim().repo().get_field("density");
+        dens.setVal(rho0);
+        // Set up temperature field with constant gradient in z
+        auto& temp = sim().repo().get_field("temperature");
+        init_field1(temp, Tgz);
+        // Give values to tlscale and tke arrays
+        auto& tlscale = sim().repo().get_field("turb_lscale");
+        tlscale.setVal(tlscale_val);
+        auto& tke = sim().repo().get_field("tke");
+        tke.setVal(tke_val);
+
+        // Update turbulent viscosity directly
+        tmodel.update_turbulent_viscosity(amr_wind::FieldState::New);
+    }
 
     const amrex::Real dx = 10.0 / 10.0;
     const amrex::Real dy = 10.0 / 20.0;
     const amrex::Real dz = 10.0 / 30.0;
     const amrex::Real tol = 1.0e-12;
-};
-
-TEST_F(TurbLESTestBC, test_1eqKsgs_noslip)
-{
     // Parser inputs for turbulence model
     const amrex::Real Ceps = 0.11;
     const amrex::Real Ce = 0.99;
     const amrex::Real Tref = 263.5;
     const amrex::Real gravz = 10.0;
     const amrex::Real rho0 = 1.2;
-    {
-        amrex::ParmParse pp("zlo");
-        pp.add("type", (std::string) "no_slip_wall");
-    }
-    {
-        amrex::ParmParse pp("turbulence");
-        pp.add("model", (std::string) "OneEqKsgsM84");
-    }
-    {
-        amrex::ParmParse pp("OneEqKsgsM84_coeffs");
-        pp.add("Ceps", Ceps);
-        pp.add("Ce", Ce);
-    }
-    {
-        amrex::ParmParse pp("incflo");
-        amrex::Vector<std::string> physics{"ABL"};
-        pp.addarr("physics", physics);
-        pp.add("density", rho0);
-        amrex::Vector<amrex::Real> vvec{8.0, 0.0, 0.0};
-        pp.addarr("velocity", vvec);
-        amrex::Vector<amrex::Real> gvec{0.0, 0.0, -gravz};
-        pp.addarr("gravity", gvec);
-    }
-    {
-        amrex::ParmParse pp("ABL");
-        pp.add("reference_temperature", Tref);
-        pp.add("surface_temp_rate", -0.25);
-        amrex::Vector<amrex::Real> t_hts{0.0, 100.0, 400.0};
-        pp.addarr("temperature_heights", t_hts);
-        amrex::Vector<amrex::Real> t_vals{265.0, 265.0, 268.0};
-        pp.addarr("temperature_values", t_vals);
-    }
-
-    // Initialize necessary parts of solver
-    populate_parameters();
-    initialize_mesh();
-    auto& pde_mgr = sim().pde_manager();
-    pde_mgr.register_icns();
-    sim().init_physics();
-
-    // Create turbulence model
-    sim().create_turbulence_model();
-    // Get turbulence model
-    auto& tmodel = sim().turbulence_model();
-
     // Constants for fields
     const amrex::Real srate = 20.0;
     const amrex::Real Tgz = 2.0;
     const amrex::Real tlscale_val = 1.1;
     const amrex::Real tke_val = 0.1;
-    // Set up velocity field with constant strainrate
-    auto& vel = sim().repo().get_field("velocity");
-    init_field3(vel, srate);
-    // Perform fillpatch to allow BCs to operate
-    vel.fillpatch(0.0);
-    // Set up uniform unity density field
-    auto& dens = sim().repo().get_field("density");
-    dens.setVal(rho0);
-    // Set up temperature field with constant gradient in z
-    auto& temp = sim().repo().get_field("temperature");
-    init_field1(temp, Tgz);
-    // Give values to tlscale and tke arrays
-    auto& tlscale = sim().repo().get_field("turb_lscale");
-    tlscale.setVal(tlscale_val);
-    auto& tke = sim().repo().get_field("tke");
-    tke.setVal(tke_val);
+};
 
-    // Update turbulent viscosity directly
-    tmodel.update_turbulent_viscosity(amr_wind::FieldState::New);
+TEST_F(TurbLESTestBC, test_1eqKsgs_noslip)
+{
+    populate_parameters();
+    {
+        amrex::ParmParse pp("zlo");
+        pp.add("type", (std::string) "no_slip_wall");
+    }
+    OneEqKsgs_setup_params();
+    test_calls_body();
     auto& muturb = sim().repo().get_field("mu_turb");
 
     // Get shear production field
