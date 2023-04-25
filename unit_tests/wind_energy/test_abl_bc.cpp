@@ -1,21 +1,7 @@
 #include "abl_test_utils.H"
-#include "amr-wind/utilities/trig_ops.H"
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
-
-#include "AMReX_Gpu.H"
-#include "AMReX_Random.H"
-#include "amr-wind/equation_systems/icns/icns.H"
 #include "amr-wind/equation_systems/icns/icns_ops.H"
-#include "amr-wind/equation_systems/icns/MomentumSource.H"
-#include "amr-wind/equation_systems/icns/source_terms/BodyForce.H"
-#include "amr-wind/equation_systems/icns/source_terms/ABLForcing.H"
-#include "amr-wind/equation_systems/icns/source_terms/GeostrophicForcing.H"
-#include "amr-wind/equation_systems/icns/source_terms/CoriolisForcing.H"
-#include "amr-wind/equation_systems/icns/source_terms/BoussinesqBuoyancy.H"
-#include "amr-wind/equation_systems/icns/source_terms/DensityBuoyancy.H"
-#include "amr-wind/equation_systems/icns/source_terms/HurricaneForcing.H"
-#include "amr-wind/equation_systems/icns/source_terms/RayleighDamping.H"
 
 namespace amr_wind_tests {
 
