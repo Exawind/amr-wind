@@ -4,6 +4,7 @@
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"
 #include "amr-wind/CFDSim.H"
+#include "amr-wind/utilities/WallFunction.H"
 #include <AMReX_REAL.H>
 
 namespace amr_wind::channel_flow {
@@ -47,6 +48,8 @@ private:
     const amr_wind::SimTime& m_time;
     const FieldRepo& m_repo;
     const amrex::AmrCore& m_mesh;
+
+    WallFunction m_wall_func;
 
     //! Wall normal directon - Default y direction
     int m_norm_dir{1};

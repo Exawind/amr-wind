@@ -12,6 +12,7 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
     : m_time(sim.time())
     , m_repo(sim.repo())
     , m_mesh(sim.mesh())
+    , m_wall_func(sim)
     , m_mesh_mapping(sim.has_mesh_mapping())
 {
     {
@@ -103,7 +104,7 @@ void ChannelFlow::initialize_fields(
             const auto& dx = geom.CellSizeArray();
             const auto& problo = geom.ProbLoArray();
             auto vel = velocity.array(mfi);
-            //auto wd = walldist.array(mfi);
+            // auto wd = walldist.array(mfi);
 
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -271,6 +272,14 @@ void ChannelFlow::post_init_actions()
 {
     if (m_laminar) {
         output_error();
+    }
+
+    auto& velocity = m_repo.get_field("velocity");
+    amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
+    amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
+    if ((velocity.bc_type()[zlo] == BC::wall_model) ||
+        (velocity.bc_type()[zhi] == BC::wall_model)) {
+        velocity.register_custom_bc<VelWallFunc>(m_wall_func);
     }
 }
 
