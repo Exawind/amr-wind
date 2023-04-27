@@ -287,6 +287,9 @@ void ChannelFlow::post_init_actions()
     amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
     if ((velocity.bc_type()[zlo] == BC::wall_model) ||
         (velocity.bc_type()[zhi] == BC::wall_model)) {
+        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+            m_norm_dir == 2,
+            "Wall normal direction should be 2 if using a wall model");
         velocity.register_custom_bc<VelWallFunc>(m_wall_func);
     }
 }
