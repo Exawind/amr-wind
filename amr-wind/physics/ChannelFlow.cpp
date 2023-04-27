@@ -53,6 +53,10 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
         f << std::setw(m_w) << "time" << std::setw(m_w) << "L2_u" << std::endl;
         f.close();
     }
+
+    if (!m_repo.field_exists("wall_dist")) {
+        m_repo.declare_field("wall_dist", 1, 1, 1);
+    }
 }
 
 /** Initialize the velocity, density, tke and sdr fields at the beginning of the
@@ -100,7 +104,7 @@ void ChannelFlow::initialize_fields(
             auto& sdr = m_repo.get_field("sdr")(level);
             sdr.setVal(m_sdr0);
         }
-        // auto& walldist = m_repo.get_field("wall_dist")(level);
+        auto& walldist = m_repo.get_field("wall_dist")(level);
 
         for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
             const auto& vbx = mfi.validbox();
@@ -108,7 +112,7 @@ void ChannelFlow::initialize_fields(
             const auto& dx = geom.CellSizeArray();
             const auto& problo = geom.ProbLoArray();
             auto vel = velocity.array(mfi);
-            // auto wd = walldist.array(mfi);
+            auto wd = walldist.array(mfi);
 
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -117,7 +121,7 @@ void ChannelFlow::initialize_fields(
                     if (h > 1.0) {
                         h = 2.0 - h;
                     }
-                    // wd(i, j, k) = h;
+                    wd(i, j, k) = h;
                     const amrex::Real hp = h / y_tau;
                     vel(i, j, k, 0) =
                         utau * (1. / kappa * std::log1p(kappa * hp) +

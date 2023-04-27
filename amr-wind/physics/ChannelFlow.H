@@ -46,7 +46,7 @@ public:
 
 private:
     const amr_wind::SimTime& m_time;
-    const FieldRepo& m_repo;
+    FieldRepo& m_repo;
     const amrex::AmrCore& m_mesh;
 
     WallFunction m_wall_func;
