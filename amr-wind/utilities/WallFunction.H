@@ -42,7 +42,7 @@ public:
 
     void operator()(Field& velocity, const FieldState rho_state) override;
 
-    void wall_model(
+    static void wall_model(
         Field& velocity, const FieldState rho_state, const amrex::Real utau);
 
 private:

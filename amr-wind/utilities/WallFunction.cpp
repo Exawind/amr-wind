@@ -11,7 +11,7 @@
 
 namespace amr_wind {
 
-WallFunction::WallFunction(const CFDSim& sim) : m_sim(sim), m_mesh(sim.mesh())
+WallFunction::WallFunction(const CFDSim& sim) : m_sim(sim), m_mesh(m_sim.mesh())
 {
     {
         amrex::ParmParse pp("BodyForce");
@@ -65,7 +65,6 @@ void VelWallFunc::wall_model(
         amrex::MFItInfo mfi_info{};
 
         const auto& rho_lev = density(lev);
-        auto& vold_lev = velocity.state(FieldState::Old)(lev);
         auto& vel_lev = velocity(lev);
         const auto& eta_lev = viscosity(lev);
 
@@ -78,7 +77,6 @@ void VelWallFunc::wall_model(
         for (amrex::MFIter mfi(vel_lev, mfi_info); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.validbox();
             auto varr = vel_lev.array(mfi);
-            auto vold_arr = vold_lev.array(mfi);
             auto den = rho_lev.array(mfi);
             auto eta = eta_lev.array(mfi);
 
@@ -88,9 +86,6 @@ void VelWallFunc::wall_model(
                     amrex::bdryLo(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real mu = eta(i, j, k);
-                        const amrex::Real uu = vold_arr(i, j, k, 0);
-                        const amrex::Real vv = vold_arr(i, j, k, 1);
-                        const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
 
                         // Dirichlet BC
                         varr(i, j, k - 1, 2) = 0.0;
@@ -107,9 +102,6 @@ void VelWallFunc::wall_model(
                     amrex::bdryHi(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real mu = eta(i, j, k - 1);
-                        const amrex::Real uu = vold_arr(i, j, k - 1, 0);
-                        const amrex::Real vv = vold_arr(i, j, k - 1, 1);
-                        const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
 
                         // Dirichlet BC
                         varr(i, j, k, 2) = 0.0;
