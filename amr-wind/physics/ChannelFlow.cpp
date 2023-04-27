@@ -36,8 +36,8 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
         } else {
             pp.query("density", m_rho);
             pp.query("re_tau", m_re_tau);
-            // pp.query("tke0", m_tke0);
-            // pp.query("sdr0", m_sdr0);
+            pp.query("tke0", m_tke0);
+            pp.query("sdr0", m_sdr0);
         }
     }
     {
@@ -92,11 +92,15 @@ void ChannelFlow::initialize_fields(
     density.setVal(m_rho);
 
     if (!m_laminar) {
-        // auto& tke = m_repo.get_field("tke")(level);
-        // auto& sdr = m_repo.get_field("sdr")(level);
+        if (m_repo.field_exists("tke")) {
+            auto& tke = m_repo.get_field("tke")(level);
+            tke.setVal(m_tke0);
+        }
+        if (m_repo.field_exists("sdr")) {
+            auto& sdr = m_repo.get_field("sdr")(level);
+            sdr.setVal(m_sdr0);
+        }
         // auto& walldist = m_repo.get_field("wall_dist")(level);
-        // tke.setVal(m_tke0);
-        // sdr.setVal(m_sdr0);
 
         for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
             const auto& vbx = mfi.validbox();

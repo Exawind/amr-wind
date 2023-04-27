@@ -69,11 +69,11 @@ private:
     //! y_tau
     amrex::Real m_ytau{0.001};
 
-    // //! initial tke value
-    // amrex::Real m_tke0{0.0};
+    //! initial tke value
+    amrex::Real m_tke0{0.0};
 
-    // //! initial sdr value
-    // amrex::Real m_sdr0{1000.0};
+    //! initial sdr value
+    amrex::Real m_sdr0{1000.0};
 
     //! Von-Karman constant
     amrex::Real m_kappa{0.41};
