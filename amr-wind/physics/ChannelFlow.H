@@ -75,6 +75,18 @@ private:
     //! initial sdr value
     amrex::Real m_sdr0{1000.0};
 
+    //! flag for perturbations of the initial condition
+    bool m_perturb_vel{false};
+
+    //! perturbation period (y-direction)
+    amrex::Real m_perturb_y_period{1.0};
+
+    //! perturbation period (z-direction)
+    amrex::Real m_perturb_z_period{1.0};
+
+    //! perturbation factor (fraction of utau)
+    amrex::Real m_perturb_fac{0.1};
+
     //! Von-Karman constant
     amrex::Real m_kappa{0.41};
 

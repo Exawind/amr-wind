@@ -38,6 +38,10 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
             pp.query("re_tau", m_re_tau);
             pp.query("tke0", m_tke0);
             pp.query("sdr0", m_sdr0);
+            pp.query("perturb_velocity", m_perturb_vel);
+            pp.query("perturb_y_period", m_perturb_y_period);
+            pp.query("perturb_z_period", m_perturb_z_period);
+            pp.query("perturb_factor", m_perturb_fac);
         }
     }
     {
@@ -94,6 +98,8 @@ void ChannelFlow::initialize_fields(
     auto& velocity = velocity_field(level);
     auto& density = m_repo.get_field("density")(level);
     density.setVal(m_rho);
+    const auto perturb_vel = m_perturb_vel;
+    const auto perturb_amp = m_perturb_fac * m_utau;
 
     if (!m_laminar) {
         if (m_repo.field_exists("tke")) {
@@ -111,6 +117,16 @@ void ChannelFlow::initialize_fields(
 
             const auto& dx = geom.CellSizeArray();
             const auto& problo = geom.ProbLoArray();
+            const auto& probhi = geom.ProbHiArray();
+            const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> lengths{
+                AMREX_D_DECL(
+                    probhi[0] - problo[0], probhi[1] - problo[1],
+                    probhi[2] - problo[2])};
+            const amrex::Real pi = M_PI;
+            const amrex::Real y_perturb =
+                m_perturb_y_period * 2.0 * pi / lengths[1];
+            const amrex::Real z_perturb =
+                m_perturb_z_period * 2.0 * pi / lengths[2];
             auto vel = velocity.array(mfi);
             auto wd = walldist.array(mfi);
 
@@ -127,8 +143,17 @@ void ChannelFlow::initialize_fields(
                         utau * (1. / kappa * std::log1p(kappa * hp) +
                                 7.8 * (1.0 - std::exp(-hp / 11.0) -
                                        (hp / 11.0) * std::exp(-hp / 3.0)));
-                    vel(i, j, k, 1) = 0.0;
-                    vel(i, j, k, 2) = 0.0;
+
+                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                    const amrex::Real perty = perturb_amp *
+                                              std::sin(y_perturb * y) *
+                                              std::cos(z_perturb * z);
+                    const amrex::Real pertz = -perturb_amp *
+                                              std::cos(y_perturb * y) *
+                                              std::sin(z_perturb * z);
+                    vel(i, j, k, 1) = 0.0 + (perturb_vel ? perty : 0.0);
+                    vel(i, j, k, 2) = 0.0 + (perturb_vel ? pertz : 0.0);
                 });
         }
     } else {
