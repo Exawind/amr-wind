@@ -1,4 +1,4 @@
-#include "amr-wind/utilities/WallFunction.H"
+#include "amr-wind/boundary_conditions/wall_models/WallFunction.H"
 #include "amr-wind/utilities/tensor_ops.H"
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/diffusion/diffusion.H"

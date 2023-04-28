@@ -4,7 +4,7 @@
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"
 #include "amr-wind/CFDSim.H"
-#include "amr-wind/utilities/WallFunction.H"
+#include "amr-wind/boundary_conditions/wall_models/WallFunction.H"
 #include <AMReX_REAL.H>
 
 namespace amr_wind::channel_flow {
