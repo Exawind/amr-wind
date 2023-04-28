@@ -47,7 +47,7 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
         m_utau = m_mu * m_re_tau / (m_rho * 1.0);
         m_ytau = m_mu / (m_utau * m_rho);
     }
-    if (amrex::ParallelDescriptor::IOProcessor()) {
+    if ((amrex::ParallelDescriptor::IOProcessor()) && (m_laminar)) {
         std::ofstream f;
         f.open(m_output_fname.c_str());
         f << std::setw(m_w) << "time" << std::setw(m_w) << "L2_u" << std::endl;
