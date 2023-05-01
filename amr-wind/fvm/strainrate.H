@@ -153,9 +153,6 @@ struct StrainRate
                     cp2 = Stencil::oc00;
                     cp1 = Stencil::oc01;
                     c = Stencil::oc02;
-                    ux = (cp2 * phi(i + 2, j, k, 0) +
-                          cp1 * phi(i + 1, j, k, 0) + c * phi(i, j, k, 0)) *
-                         idx[0];
                     vx = (cp2 * phi(i + 2, j, k, 1) +
                           cp1 * phi(i + 1, j, k, 1) + c * phi(i, j, k, 1)) *
                          idx[0];
@@ -168,9 +165,6 @@ struct StrainRate
                     c = Stencil::oc00;
                     cm1 = Stencil::oc01;
                     cm2 = Stencil::oc02;
-                    ux = (c * phi(i, j, k, 0) + cm1 * phi(i - 1, j, k, 0) +
-                          cm2 * phi(i - 2, j, k, 0)) *
-                         idx[0];
                     vx = (c * phi(i, j, k, 1) + cm1 * phi(i - 1, j, k, 1) +
                           cm2 * phi(i - 2, j, k, 1)) *
                          idx[0];
@@ -186,9 +180,6 @@ struct StrainRate
                     uy = (cp2 * phi(i, j + 2, k, 0) +
                           cp1 * phi(i, j + 1, k, 0) + c * phi(i, j, k, 0)) *
                          idx[1];
-                    vy = (cp2 * phi(i, j + 2, k, 1) +
-                          cp1 * phi(i, j + 1, k, 1) + c * phi(i, j, k, 1)) *
-                         idx[1];
                     wy = (cp2 * phi(i, j + 2, k, 2) +
                           cp1 * phi(i, j + 1, k, 2) + c * phi(i, j, k, 2)) *
                          idx[1];
@@ -200,9 +191,6 @@ struct StrainRate
                     cm2 = Stencil::oc12;
                     uy = (c * phi(i, j, k, 0) + cm1 * phi(i, j - 1, k, 0) +
                           cm2 * phi(i, j - 2, k, 0)) *
-                         idx[1];
-                    vy = (c * phi(i, j, k, 1) + cm1 * phi(i, j - 1, k, 1) +
-                          cm2 * phi(i, j - 2, k, 1)) *
                          idx[1];
                     wy = (c * phi(i, j, k, 2) + cm1 * phi(i, j - 1, k, 2) +
                           cm2 * phi(i, j - 2, k, 2)) *
@@ -219,9 +207,6 @@ struct StrainRate
                     vz = (cp2 * phi(i, j, k + 2, 1) +
                           cp1 * phi(i, j, k + 1, 1) + c * phi(i, j, k, 1)) *
                          idx[2];
-                    wz = (cp2 * phi(i, j, k + 2, 2) +
-                          cp1 * phi(i, j, k + 1, 2) + c * phi(i, j, k, 2)) *
-                         idx[2];
                 }
                 // zhi --> modifies gradients in z
                 if (f_zhi == f_wm) {
@@ -233,9 +218,6 @@ struct StrainRate
                          idx[2];
                     vz = (c * phi(i, j, k, 1) + cm1 * phi(i, j, k - 1, 1) +
                           cm2 * phi(i, j, k - 2, 1)) *
-                         idx[2];
-                    wz = (c * phi(i, j, k, 2) + cm1 * phi(i, j, k - 1, 2) +
-                          cm2 * phi(i, j, k - 2, 2)) *
                          idx[2];
                 }
 
