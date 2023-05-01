@@ -165,13 +165,7 @@ void ABLFieldInit::perturb_temperature(
     // cppcheck-suppress constParameter
     Field& temperature) const
 {
-    /** Perturbations for the temperature field is adapted from the following
-     * paper:
-     *
-     *  D. Munoz-Esparza, B. Kosovic, J. van Beeck, J. D. Mirocha, A stocastic
-     *  perturbation method to generate inflow turbulence in large-eddy
-     *  simulation models: Application to neutrally stratified atmospheric
-     *  boundary layers. Physics of Fluids, Vol. 27, 2015.
+    /** Perturbations for the temperature field
      *
      */
 
