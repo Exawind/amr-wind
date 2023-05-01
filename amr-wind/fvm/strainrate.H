@@ -191,6 +191,95 @@ struct StrainRate
                          idx[2];
                 }
 
+                // --- Check for slip wall BCs ---
+                // xlo --> modifies gradients in x
+                dir = 0;
+                if (bctype[oxlo] == BC::slip_wall &&
+                    bx.smallEnd(dir) == geom.Domain().smallEnd(dir) &&
+                    bx.bigEnd(dir) == geom.Domain().smallEnd(dir)) {
+                    cp1 = Stencil::nc00;
+                    c = Stencil::nc01;
+                    cm1 = Stencil::nc02;
+                    vx = (cp1 * phi(i + 1, j, k, 1) + c * phi(i, j, k, 1)) *
+                             idx[0] +
+                         cm1 * phi(i - 1, j, k, 1);
+                    wx = (cp1 * phi(i + 1, j, k, 2) + c * phi(i, j, k, 2)) *
+                             idx[0] +
+                         cm1 * phi(i - 1, j, k, 2);
+                }
+                // xhi --> modifies gradients in x
+                if (bctype[oxhi] == BC::slip_wall &&
+                    bx.bigEnd(dir) == geom.Domain().bigEnd(dir) &&
+                    bx.smallEnd(dir) == geom.Domain().bigEnd(dir)) {
+                    cp1 = Stencil::nc00;
+                    c = Stencil::nc01;
+                    cm1 = Stencil::nc02;
+                    vx = cp1 * phi(i + 1, j, k, 1) +
+                         (c * phi(i, j, k, 1) + cm1 * phi(i - 1, j, k, 1)) *
+                             idx[0];
+                    wx = cp1 * phi(i + 1, j, k, 2) +
+                         (c * phi(i, j, k, 2) + cm1 * phi(i - 1, j, k, 2)) *
+                             idx[0];
+                }
+                // ylo --> modifies gradients in x
+                dir = 1;
+                if (bctype[oylo] == BC::slip_wall &&
+                    bx.smallEnd(dir) == geom.Domain().smallEnd(dir) &&
+                    bx.bigEnd(dir) == geom.Domain().smallEnd(dir)) {
+                    cp1 = Stencil::nc10;
+                    c = Stencil::nc11;
+                    cm1 = Stencil::nc12;
+                    uy = (cp1 * phi(i, j + 1, k, 0) + c * phi(i, j, k, 0)) *
+                             idx[1] +
+                         cm1 * phi(i, j - 1, k, 0);
+                    wy = (cp1 * phi(i, j + 1, k, 2) + c * phi(i, j, k, 2)) *
+                             idx[1] +
+                         cm1 * phi(i, j - 1, k, 2);
+                }
+                // yhi --> modifies gradients in y
+                if (bctype[oyhi] == BC::slip_wall &&
+                    bx.bigEnd(dir) == geom.Domain().bigEnd(dir) &&
+                    bx.smallEnd(dir) == geom.Domain().bigEnd(dir)) {
+                    cp1 = Stencil::nc10;
+                    c = Stencil::nc11;
+                    cm1 = Stencil::nc12;
+                    uy = cp1 * phi(i, j + 1, k, 0) +
+                         (c * phi(i, j, k, 0) + cm1 * phi(i, j - 1, k, 0)) *
+                             idx[1];
+                    wy = cp1 * phi(i, j + 1, k, 2) +
+                         (c * phi(i, j, k, 2) + cm1 * phi(i, j - 1, k, 2)) *
+                             idx[1];
+                }
+                // zlo --> modifies gradients in z
+                dir = 2;
+                if (bctype[ozlo] == BC::slip_wall &&
+                    bx.smallEnd(dir) == geom.Domain().smallEnd(dir) &&
+                    bx.bigEnd(dir) == geom.Domain().smallEnd(dir)) {
+                    cp1 = Stencil::nc20;
+                    c = Stencil::nc21;
+                    cm1 = Stencil::nc22;
+                    uz = (cp1 * phi(i, j, k + 1, 0) + c * phi(i, j, k, 0)) *
+                             idx[2] +
+                         cm1 * phi(i, j, k - 1, 0);
+                    vz = (cp1 * phi(i, j, k + 1, 1) + c * phi(i, j, k, 1)) *
+                             idx[2] +
+                         cm1 * phi(i, j, k - 1, 1);
+                }
+                // zhi --> modifies gradients in z
+                if (bctype[ozhi] == BC::slip_wall &&
+                    bx.bigEnd(dir) == geom.Domain().bigEnd(dir) &&
+                    bx.smallEnd(dir) == geom.Domain().bigEnd(dir)) {
+                    cp1 = Stencil::nc20;
+                    c = Stencil::nc21;
+                    cm1 = Stencil::nc22;
+                    uz = cp1 * phi(i, j, k + 1, 0) +
+                         (c * phi(i, j, k, 0) + cm1 * phi(i, j, k - 1, 0)) *
+                             idx[2];
+                    vz = cp1 * phi(i, j, k + 1, 1) +
+                         (c * phi(i, j, k, 1) + cm1 * phi(i, j, k - 1, 1)) *
+                             idx[2];
+                }
+
                 strphi(i, j, k) = sqrt(
                     2.0 * std::pow(ux, 2) + 2.0 * std::pow(vy, 2) +
                     2.0 * std::pow(wz, 2) + std::pow(uy + vx, 2) +

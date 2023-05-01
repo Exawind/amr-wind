@@ -133,6 +133,17 @@ struct StencilInterior
     static constexpr amrex::Real oc21 = 0.;
     static constexpr amrex::Real oc22 = 0.;
 
+    // Derivatives with Neumann (should not be used in interior)
+    static constexpr amrex::Real nc00 = 0.;
+    static constexpr amrex::Real nc01 = 0.;
+    static constexpr amrex::Real nc02 = 0.;
+    static constexpr amrex::Real nc10 = 0.;
+    static constexpr amrex::Real nc11 = 0.;
+    static constexpr amrex::Real nc12 = 0.;
+    static constexpr amrex::Real nc20 = 0.;
+    static constexpr amrex::Real nc21 = 0.;
+    static constexpr amrex::Real nc22 = 0.;
+
     // Second derivatives
     static constexpr amrex::Real s00 = 1.0;
     static constexpr amrex::Real s01 = -2.0;
@@ -189,6 +200,18 @@ struct StencilILO
     static constexpr amrex::Real oc21 = 0.;
     static constexpr amrex::Real oc22 = 0.;
 
+    // Derivatives with Neumann
+    // (average interior difference with gradient in bdy)
+    static constexpr amrex::Real nc00 = 0.5;
+    static constexpr amrex::Real nc01 = -0.5;
+    static constexpr amrex::Real nc02 = 0.5;
+    static constexpr amrex::Real nc10 = 0.;
+    static constexpr amrex::Real nc11 = 0.;
+    static constexpr amrex::Real nc12 = 0.;
+    static constexpr amrex::Real nc20 = 0.;
+    static constexpr amrex::Real nc21 = 0.;
+    static constexpr amrex::Real nc22 = 0.;
+
     static constexpr amrex::Real s00 = 4. / 3.; // axx
     static constexpr amrex::Real s01 = -4;      // bxx
     static constexpr amrex::Real s02 = 8. / 3.; // cxx
@@ -241,6 +264,18 @@ struct StencilJLO
     static constexpr amrex::Real oc20 = 0.;
     static constexpr amrex::Real oc21 = 0.;
     static constexpr amrex::Real oc22 = 0.;
+
+    // Derivatives with Neumann
+    // (average interior difference with gradient in bdy)
+    static constexpr amrex::Real nc00 = 0.;
+    static constexpr amrex::Real nc01 = 0.;
+    static constexpr amrex::Real nc02 = 0.;
+    static constexpr amrex::Real nc10 = 0.5;
+    static constexpr amrex::Real nc11 = -0.5;
+    static constexpr amrex::Real nc12 = 0.5;
+    static constexpr amrex::Real nc20 = 0.;
+    static constexpr amrex::Real nc21 = 0.;
+    static constexpr amrex::Real nc22 = 0.;
 
     static constexpr amrex::Real s00 = 1.0;     // axx
     static constexpr amrex::Real s01 = -2.0;    // bxx
@@ -295,6 +330,18 @@ struct StencilKLO
     static constexpr amrex::Real oc21 = 2.0;  // k + 1
     static constexpr amrex::Real oc22 = -1.5; // k
 
+    // Derivatives with Neumann
+    // (average interior difference with gradient in bdy)
+    static constexpr amrex::Real nc00 = 0.;
+    static constexpr amrex::Real nc01 = 0.;
+    static constexpr amrex::Real nc02 = 0.;
+    static constexpr amrex::Real nc10 = 0.;
+    static constexpr amrex::Real nc11 = 0.;
+    static constexpr amrex::Real nc12 = 0.;
+    static constexpr amrex::Real nc20 = 0.5;
+    static constexpr amrex::Real nc21 = -0.5;
+    static constexpr amrex::Real nc22 = 0.5;
+
     static constexpr amrex::Real s00 = 1.0;     // axx
     static constexpr amrex::Real s01 = -2.0;    // bxx
     static constexpr amrex::Real s02 = 1.0;     // cxx
@@ -347,6 +394,18 @@ struct StencilIHI
     static constexpr amrex::Real oc20 = 0.;
     static constexpr amrex::Real oc21 = 0.;
     static constexpr amrex::Real oc22 = 0.;
+
+    // Derivatives with Neumann
+    // (average interior difference with gradient in bdy)
+    static constexpr amrex::Real nc00 = 0.5;
+    static constexpr amrex::Real nc01 = 0.5;
+    static constexpr amrex::Real nc02 = -0.5;
+    static constexpr amrex::Real nc10 = 0.;
+    static constexpr amrex::Real nc11 = 0.;
+    static constexpr amrex::Real nc12 = 0.;
+    static constexpr amrex::Real nc20 = 0.;
+    static constexpr amrex::Real nc21 = 0.;
+    static constexpr amrex::Real nc22 = 0.;
 
     static constexpr amrex::Real s00 = 8. / 3.; // axx
     static constexpr amrex::Real s01 = -4.;     // bxx
@@ -401,6 +460,18 @@ struct StencilJHI
     static constexpr amrex::Real oc21 = 0.;
     static constexpr amrex::Real oc22 = 0.;
 
+    // Derivatives with Neumann
+    // (average interior difference with gradient in bdy)
+    static constexpr amrex::Real nc00 = 0.;
+    static constexpr amrex::Real nc01 = 0.;
+    static constexpr amrex::Real nc02 = 0.;
+    static constexpr amrex::Real nc10 = 0.5;
+    static constexpr amrex::Real nc11 = 0.5;
+    static constexpr amrex::Real nc12 = -0.5;
+    static constexpr amrex::Real nc20 = 0.;
+    static constexpr amrex::Real nc21 = 0.;
+    static constexpr amrex::Real nc22 = 0.;
+
     static constexpr amrex::Real s00 = 1.0;     // axx
     static constexpr amrex::Real s01 = -2.0;    // bxx
     static constexpr amrex::Real s02 = 1.0;     // cxx
@@ -454,6 +525,18 @@ struct StencilKHI
     static constexpr amrex::Real oc21 = -2.0; // k - 1
     static constexpr amrex::Real oc22 = 0.5;  // k - 2
 
+    // Derivatives with Neumann
+    // (average interior difference with gradient in bdy)
+    static constexpr amrex::Real nc00 = 0.;
+    static constexpr amrex::Real nc01 = 0.;
+    static constexpr amrex::Real nc02 = 0.;
+    static constexpr amrex::Real nc10 = 0.;
+    static constexpr amrex::Real nc11 = 0.;
+    static constexpr amrex::Real nc12 = 0.;
+    static constexpr amrex::Real nc20 = 0.5;
+    static constexpr amrex::Real nc21 = 0.5;
+    static constexpr amrex::Real nc22 = -0.5;
+
     static constexpr amrex::Real s00 = 1.0;     // axx
     static constexpr amrex::Real s01 = -2.0;    // bxx
     static constexpr amrex::Real s02 = 1.0;     // cxx
@@ -505,6 +588,17 @@ struct StencilILO_JLO
     static constexpr amrex::Real oc20 = 0.;
     static constexpr amrex::Real oc21 = 0.;
     static constexpr amrex::Real oc22 = 0.;
+
+    // Derivatives with Neumann
+    static constexpr amrex::Real nc00 = 0.5;
+    static constexpr amrex::Real nc01 = -0.5;
+    static constexpr amrex::Real nc02 = 0.5;
+    static constexpr amrex::Real nc10 = 0.5;
+    static constexpr amrex::Real nc11 = -0.5;
+    static constexpr amrex::Real nc12 = 0.5;
+    static constexpr amrex::Real nc20 = 0.;
+    static constexpr amrex::Real nc21 = 0.;
+    static constexpr amrex::Real nc22 = 0.;
 
     static constexpr amrex::Real s00 = 4. / 3.; // axx
     static constexpr amrex::Real s01 = -4;      // bxx
@@ -558,6 +652,17 @@ struct StencilJLO_KLO
     static constexpr amrex::Real oc21 = 2.0;  // k + 1
     static constexpr amrex::Real oc22 = -1.5; // k
 
+    // Derivatives with Neumann
+    static constexpr amrex::Real nc00 = 0.;
+    static constexpr amrex::Real nc01 = 0.;
+    static constexpr amrex::Real nc02 = 0.;
+    static constexpr amrex::Real nc10 = 0.5;
+    static constexpr amrex::Real nc11 = -0.5;
+    static constexpr amrex::Real nc12 = 0.5;
+    static constexpr amrex::Real nc20 = 0.5;
+    static constexpr amrex::Real nc21 = -0.5;
+    static constexpr amrex::Real nc22 = 0.5;
+
     static constexpr amrex::Real s00 = 1;       // axx
     static constexpr amrex::Real s01 = -2;      // bxx
     static constexpr amrex::Real s02 = 1;       // cxx
@@ -609,6 +714,17 @@ struct StencilILO_KLO
     static constexpr amrex::Real oc20 = -0.5; // k + 2
     static constexpr amrex::Real oc21 = 2.0;  // k + 1
     static constexpr amrex::Real oc22 = -1.5; // k
+
+    // Derivatives with Neumann
+    static constexpr amrex::Real nc00 = 0.5;
+    static constexpr amrex::Real nc01 = -0.5;
+    static constexpr amrex::Real nc02 = 0.5;
+    static constexpr amrex::Real nc10 = 0.;
+    static constexpr amrex::Real nc11 = 0.;
+    static constexpr amrex::Real nc12 = 0.;
+    static constexpr amrex::Real nc20 = 0.5;
+    static constexpr amrex::Real nc21 = -0.5;
+    static constexpr amrex::Real nc22 = 0.5;
 
     static constexpr amrex::Real s00 = 4. / 3.; // axx
     static constexpr amrex::Real s01 = -4;      // bxx
@@ -662,6 +778,17 @@ struct StencilIHI_JHI
     static constexpr amrex::Real oc21 = 0.;
     static constexpr amrex::Real oc22 = 0.;
 
+    // Derivatives with Neumann
+    static constexpr amrex::Real nc00 = 0.5;
+    static constexpr amrex::Real nc01 = 0.5;
+    static constexpr amrex::Real nc02 = -0.5;
+    static constexpr amrex::Real nc10 = 0.5;
+    static constexpr amrex::Real nc11 = 0.5;
+    static constexpr amrex::Real nc12 = -0.5;
+    static constexpr amrex::Real nc20 = 0.;
+    static constexpr amrex::Real nc21 = 0.;
+    static constexpr amrex::Real nc22 = 0.;
+
     static constexpr amrex::Real s00 = 8. / 3.; // axx
     static constexpr amrex::Real s01 = -4.;     // bxx
     static constexpr amrex::Real s02 = 4. / 3.; // cxx
@@ -713,6 +840,17 @@ struct StencilJHI_KHI
     static constexpr amrex::Real oc20 = 1.5;  // k
     static constexpr amrex::Real oc21 = -2.0; // k - 1
     static constexpr amrex::Real oc22 = 0.5;  // k - 2
+
+    // Derivatives with Neumann
+    static constexpr amrex::Real nc00 = 0.;
+    static constexpr amrex::Real nc01 = 0.;
+    static constexpr amrex::Real nc02 = 0.;
+    static constexpr amrex::Real nc10 = 0.5;
+    static constexpr amrex::Real nc11 = 0.5;
+    static constexpr amrex::Real nc12 = -0.5;
+    static constexpr amrex::Real nc20 = 0.5;
+    static constexpr amrex::Real nc21 = 0.5;
+    static constexpr amrex::Real nc22 = -0.5;
 
     static constexpr amrex::Real s00 = 1.0;     // axx
     static constexpr amrex::Real s01 = -2.0;    // bxx
@@ -766,6 +904,17 @@ struct StencilIHI_KHI
     static constexpr amrex::Real oc21 = -2.0; // k - 1
     static constexpr amrex::Real oc22 = 0.5;  // k - 2
 
+    // Derivatives with Neumann
+    static constexpr amrex::Real nc00 = 0.5;
+    static constexpr amrex::Real nc01 = 0.5;
+    static constexpr amrex::Real nc02 = -0.5;
+    static constexpr amrex::Real nc10 = 0.;
+    static constexpr amrex::Real nc11 = 0.;
+    static constexpr amrex::Real nc12 = 0.;
+    static constexpr amrex::Real nc20 = 0.5;
+    static constexpr amrex::Real nc21 = 0.5;
+    static constexpr amrex::Real nc22 = -0.5;
+
     static constexpr amrex::Real s00 = 8. / 3.; // axx
     static constexpr amrex::Real s01 = -4.;     // bxx
     static constexpr amrex::Real s02 = 4. / 3.; // cxx
@@ -817,6 +966,17 @@ struct StencilILO_JHI
     static constexpr amrex::Real oc20 = 0.;
     static constexpr amrex::Real oc21 = 0.;
     static constexpr amrex::Real oc22 = 0.;
+
+    // Derivatives with Neumann
+    static constexpr amrex::Real nc00 = 0.5;
+    static constexpr amrex::Real nc01 = -0.5;
+    static constexpr amrex::Real nc02 = 0.5;
+    static constexpr amrex::Real nc10 = 0.5;
+    static constexpr amrex::Real nc11 = 0.5;
+    static constexpr amrex::Real nc12 = -0.5;
+    static constexpr amrex::Real nc20 = 0.;
+    static constexpr amrex::Real nc21 = 0.;
+    static constexpr amrex::Real nc22 = 0.;
 
     static constexpr amrex::Real s00 = 4. / 3.; // axx
     static constexpr amrex::Real s01 = -4;      // bxx
@@ -870,6 +1030,17 @@ struct StencilJLO_KHI
     static constexpr amrex::Real oc21 = -2.0; // k - 1
     static constexpr amrex::Real oc22 = 0.5;  // k - 2
 
+    // Derivatives with Neumann
+    static constexpr amrex::Real nc00 = 0.;
+    static constexpr amrex::Real nc01 = 0.;
+    static constexpr amrex::Real nc02 = 0.;
+    static constexpr amrex::Real nc10 = 0.5;
+    static constexpr amrex::Real nc11 = -0.5;
+    static constexpr amrex::Real nc12 = 0.5;
+    static constexpr amrex::Real nc20 = 0.5;
+    static constexpr amrex::Real nc21 = 0.5;
+    static constexpr amrex::Real nc22 = -0.5;
+
     static constexpr amrex::Real s00 = 1;       // axx
     static constexpr amrex::Real s01 = -2;      // bxx
     static constexpr amrex::Real s02 = 1;       // cxx
@@ -921,6 +1092,17 @@ struct StencilILO_KHI
     static constexpr amrex::Real oc20 = 1.5;  // k
     static constexpr amrex::Real oc21 = -2.0; // k - 1
     static constexpr amrex::Real oc22 = 0.5;  // k - 2
+
+    // Derivatives with Neumann
+    static constexpr amrex::Real nc00 = 0.5;
+    static constexpr amrex::Real nc01 = -0.5;
+    static constexpr amrex::Real nc02 = 0.5;
+    static constexpr amrex::Real nc10 = 0.;
+    static constexpr amrex::Real nc11 = 0.;
+    static constexpr amrex::Real nc12 = 0.;
+    static constexpr amrex::Real nc20 = 0.5;
+    static constexpr amrex::Real nc21 = 0.5;
+    static constexpr amrex::Real nc22 = -0.5;
 
     static constexpr amrex::Real s00 = 4. / 3.; // axx
     static constexpr amrex::Real s01 = -4;      // bxx
@@ -974,6 +1156,17 @@ struct StencilIHI_JLO
     static constexpr amrex::Real oc21 = 0.;
     static constexpr amrex::Real oc22 = 0.;
 
+    // Derivatives with Neumann
+    static constexpr amrex::Real nc00 = 0.5;
+    static constexpr amrex::Real nc01 = 0.5;
+    static constexpr amrex::Real nc02 = -0.5;
+    static constexpr amrex::Real nc10 = 0.5;
+    static constexpr amrex::Real nc11 = -0.5;
+    static constexpr amrex::Real nc12 = 0.5;
+    static constexpr amrex::Real nc20 = 0.;
+    static constexpr amrex::Real nc21 = 0.;
+    static constexpr amrex::Real nc22 = 0.;
+
     static constexpr amrex::Real s00 = 8. / 3.; // axx
     static constexpr amrex::Real s01 = -4.;     // bxx
     static constexpr amrex::Real s02 = 4. / 3.; // cxx
@@ -1025,6 +1218,17 @@ struct StencilJHI_KLO
     static constexpr amrex::Real oc20 = -0.5; // k + 2
     static constexpr amrex::Real oc21 = 2.0;  // k + 1
     static constexpr amrex::Real oc22 = -1.5; // k
+
+    // Derivatives with Neumann
+    static constexpr amrex::Real nc00 = 0.;
+    static constexpr amrex::Real nc01 = 0.;
+    static constexpr amrex::Real nc02 = 0.;
+    static constexpr amrex::Real nc10 = 0.5;
+    static constexpr amrex::Real nc11 = 0.5;
+    static constexpr amrex::Real nc12 = -0.5;
+    static constexpr amrex::Real nc20 = 0.5;
+    static constexpr amrex::Real nc21 = -0.5;
+    static constexpr amrex::Real nc22 = 0.5;
 
     static constexpr amrex::Real s00 = 1.0;     // axx
     static constexpr amrex::Real s01 = -2.0;    // bxx
@@ -1078,6 +1282,17 @@ struct StencilIHI_KLO
     static constexpr amrex::Real oc21 = 2.0;  // k + 1
     static constexpr amrex::Real oc22 = -1.5; // k
 
+    // Derivatives with Neumann
+    static constexpr amrex::Real nc00 = 0.5;
+    static constexpr amrex::Real nc01 = 0.5;
+    static constexpr amrex::Real nc02 = -0.5;
+    static constexpr amrex::Real nc10 = 0.;
+    static constexpr amrex::Real nc11 = 0.;
+    static constexpr amrex::Real nc12 = 0.;
+    static constexpr amrex::Real nc20 = 0.5;
+    static constexpr amrex::Real nc21 = -0.5;
+    static constexpr amrex::Real nc22 = 0.5;
+
     static constexpr amrex::Real s00 = 8. / 3.;   // axx
     static constexpr amrex::Real s01 = -4.;       // bxx
     static constexpr amrex::Real s02 = 4. / 3.;   // cxx
@@ -1129,6 +1344,17 @@ struct StencilILO_JLO_KLO
     static constexpr amrex::Real oc20 = -0.5; // k + 2
     static constexpr amrex::Real oc21 = 2.0;  // k + 1
     static constexpr amrex::Real oc22 = -1.5; // k
+
+    // Derivatives with Neumann
+    static constexpr amrex::Real nc00 = 0.5;
+    static constexpr amrex::Real nc01 = -0.5;
+    static constexpr amrex::Real nc02 = 0.5;
+    static constexpr amrex::Real nc10 = 0.5;
+    static constexpr amrex::Real nc11 = -0.5;
+    static constexpr amrex::Real nc12 = 0.5;
+    static constexpr amrex::Real nc20 = 0.5;
+    static constexpr amrex::Real nc21 = -0.5;
+    static constexpr amrex::Real nc22 = 0.5;
 
     static constexpr amrex::Real s00 = 4. / 3.; // axx
     static constexpr amrex::Real s01 = -4;      // bxx
@@ -1183,6 +1409,17 @@ struct StencilILO_JHI_KLO
     static constexpr amrex::Real oc21 = 2.0;  // k + 1
     static constexpr amrex::Real oc22 = -1.5; // k
 
+    // Derivatives with Neumann
+    static constexpr amrex::Real nc00 = 0.5;
+    static constexpr amrex::Real nc01 = -0.5;
+    static constexpr amrex::Real nc02 = 0.5;
+    static constexpr amrex::Real nc10 = 0.5;
+    static constexpr amrex::Real nc11 = 0.5;
+    static constexpr amrex::Real nc12 = -0.5;
+    static constexpr amrex::Real nc20 = 0.5;
+    static constexpr amrex::Real nc21 = -0.5;
+    static constexpr amrex::Real nc22 = 0.5;
+
     static constexpr amrex::Real s00 = 4. / 3.; // axx
     static constexpr amrex::Real s01 = -4;      // bxx
     static constexpr amrex::Real s02 = 8. / 3.; // cxx
@@ -1235,6 +1472,17 @@ struct StencilIHI_JLO_KLO
     static constexpr amrex::Real oc20 = -0.5; // k + 2
     static constexpr amrex::Real oc21 = 2.0;  // k + 1
     static constexpr amrex::Real oc22 = -1.5; // k
+
+    // Derivatives with Neumann
+    static constexpr amrex::Real nc00 = 0.5;
+    static constexpr amrex::Real nc01 = 0.5;
+    static constexpr amrex::Real nc02 = -0.5;
+    static constexpr amrex::Real nc10 = 0.5;
+    static constexpr amrex::Real nc11 = -0.5;
+    static constexpr amrex::Real nc12 = 0.5;
+    static constexpr amrex::Real nc20 = 0.5;
+    static constexpr amrex::Real nc21 = -0.5;
+    static constexpr amrex::Real nc22 = 0.5;
 
     static constexpr amrex::Real s00 = 8. / 3.; // axx
     static constexpr amrex::Real s01 = -4.;     // bxx
@@ -1289,6 +1537,17 @@ struct StencilIHI_JHI_KLO
     static constexpr amrex::Real oc21 = 2.0;  // k + 1
     static constexpr amrex::Real oc22 = -1.5; // k
 
+    // Derivatives with Neumann
+    static constexpr amrex::Real nc00 = 0.5;
+    static constexpr amrex::Real nc01 = 0.5;
+    static constexpr amrex::Real nc02 = -0.5;
+    static constexpr amrex::Real nc10 = 0.5;
+    static constexpr amrex::Real nc11 = 0.5;
+    static constexpr amrex::Real nc12 = -0.5;
+    static constexpr amrex::Real nc20 = 0.5;
+    static constexpr amrex::Real nc21 = -0.5;
+    static constexpr amrex::Real nc22 = 0.5;
+
     static constexpr amrex::Real s00 = 8. / 3.;   // axx
     static constexpr amrex::Real s01 = -4.;       // bxx
     static constexpr amrex::Real s02 = 4. / 3.;   // cxx
@@ -1341,6 +1600,17 @@ struct StencilILO_JLO_KHI
     static constexpr amrex::Real oc20 = 1.5;  // k
     static constexpr amrex::Real oc21 = -2.0; // k - 1
     static constexpr amrex::Real oc22 = 0.5;  // k - 2
+
+    // Derivatives with Neumann
+    static constexpr amrex::Real nc00 = 0.5;
+    static constexpr amrex::Real nc01 = -0.5;
+    static constexpr amrex::Real nc02 = 0.5;
+    static constexpr amrex::Real nc10 = 0.5;
+    static constexpr amrex::Real nc11 = -0.5;
+    static constexpr amrex::Real nc12 = 0.5;
+    static constexpr amrex::Real nc20 = 0.5;
+    static constexpr amrex::Real nc21 = 0.5;
+    static constexpr amrex::Real nc22 = -0.5;
 
     static constexpr amrex::Real s00 = 4. / 3.; // axx
     static constexpr amrex::Real s01 = -4;      // bxx
@@ -1395,6 +1665,17 @@ struct StencilILO_JHI_KHI
     static constexpr amrex::Real oc21 = -2.0; // k - 1
     static constexpr amrex::Real oc22 = 0.5;  // k - 2
 
+    // Derivatives with Neumann
+    static constexpr amrex::Real nc00 = 0.5;
+    static constexpr amrex::Real nc01 = -0.5;
+    static constexpr amrex::Real nc02 = 0.5;
+    static constexpr amrex::Real nc10 = 0.5;
+    static constexpr amrex::Real nc11 = 0.5;
+    static constexpr amrex::Real nc12 = -0.5;
+    static constexpr amrex::Real nc20 = 0.5;
+    static constexpr amrex::Real nc21 = 0.5;
+    static constexpr amrex::Real nc22 = -0.5;
+
     static constexpr amrex::Real s00 = 4. / 3.; // axx
     static constexpr amrex::Real s01 = -4;      // bxx
     static constexpr amrex::Real s02 = 8. / 3.; // cxx
@@ -1448,6 +1729,17 @@ struct StencilIHI_JLO_KHI
     static constexpr amrex::Real oc21 = -2.0; // k - 1
     static constexpr amrex::Real oc22 = 0.5;  // k - 2
 
+    // Derivatives with Neumann
+    static constexpr amrex::Real nc00 = 0.5;
+    static constexpr amrex::Real nc01 = 0.5;
+    static constexpr amrex::Real nc02 = -0.5;
+    static constexpr amrex::Real nc10 = 0.5;
+    static constexpr amrex::Real nc11 = -0.5;
+    static constexpr amrex::Real nc12 = 0.5;
+    static constexpr amrex::Real nc20 = 0.5;
+    static constexpr amrex::Real nc21 = 0.5;
+    static constexpr amrex::Real nc22 = -0.5;
+
     static constexpr amrex::Real s00 = 8. / 3.; // axx
     static constexpr amrex::Real s01 = -4.;     // bxx
     static constexpr amrex::Real s02 = 4. / 3.; // cxx
@@ -1500,6 +1792,17 @@ struct StencilIHI_JHI_KHI
     static constexpr amrex::Real oc20 = 1.5;  // k
     static constexpr amrex::Real oc21 = -2.0; // k - 1
     static constexpr amrex::Real oc22 = 0.5;  // k - 2
+
+    // Derivatives with Neumann
+    static constexpr amrex::Real nc00 = 0.5;
+    static constexpr amrex::Real nc01 = 0.5;
+    static constexpr amrex::Real nc02 = -0.5;
+    static constexpr amrex::Real nc10 = 0.5;
+    static constexpr amrex::Real nc11 = 0.5;
+    static constexpr amrex::Real nc12 = -0.5;
+    static constexpr amrex::Real nc20 = 0.5;
+    static constexpr amrex::Real nc21 = 0.5;
+    static constexpr amrex::Real nc22 = -0.5;
 
     static constexpr amrex::Real s00 = 8. / 3.; // axx
     static constexpr amrex::Real s01 = -4.;     // bxx
