@@ -30,6 +30,7 @@ struct StrainRate
         if (bx.isEmpty()) {
             return;
         }
+        const auto& bctype = m_phi.bc_type();
 
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -75,6 +76,120 @@ struct StrainRate
                 wz = (cp1 * phi(i, j, k + 1, 2) + c * phi(i, j, k, 2) +
                       cm1 * phi(i, j, k - 1, 2)) *
                      idx[2];
+
+                // --- Check for wall boundary BCs ---
+                amrex::Real cp2 = 0.0, cm2 = 0.0;
+                // xlo --> modifies gradients in x
+                int dir = 0;
+                amrex::Orientation oxlo(dir, amrex::Orientation::low);
+                if (bctype[oxlo] == BC::wall_model &&
+                    bx.smallEnd(dir) == geom.Domain().smallEnd(dir) &&
+                    bx.bigEnd(dir) == geom.Domain().smallEnd(dir)) {
+                    cp2 = Stencil::oc00;
+                    cp1 = Stencil::oc01;
+                    c = Stencil::oc02;
+                    ux = (cp2 * phi(i + 2, j, k, 0) +
+                          cp1 * phi(i + 1, j, k, 0) + c * phi(i, j, k, 0)) *
+                         idx[0];
+                    vx = (cp2 * phi(i + 2, j, k, 1) +
+                          cp1 * phi(i + 1, j, k, 1) + c * phi(i, j, k, 1)) *
+                         idx[0];
+                    wx = (cp2 * phi(i + 2, j, k, 2) +
+                          cp1 * phi(i + 1, j, k, 2) + c * phi(i, j, k, 2)) *
+                         idx[0];
+                }
+                // xhi --> modifies gradients in x
+                amrex::Orientation oxhi(dir, amrex::Orientation::high);
+                if (bctype[oxhi] == BC::wall_model &&
+                    bx.bigEnd(dir) == geom.Domain().bigEnd(dir) &&
+                    bx.smallEnd(dir) == geom.Domain().bigEnd(dir)) {
+                    c = Stencil::oc00;
+                    cm1 = Stencil::oc01;
+                    cm2 = Stencil::oc02;
+                    ux = (c * phi(i, j, k, 0) + cm1 * phi(i - 1, j, k, 0) +
+                          cm2 * phi(i - 2, j, k, 0)) *
+                         idx[0];
+                    vx = (c * phi(i, j, k, 1) + cm1 * phi(i - 1, j, k, 1) +
+                          cm2 * phi(i - 2, j, k, 1)) *
+                         idx[0];
+                    wx = (c * phi(i, j, k, 2) + cm1 * phi(i - 1, j, k, 2) +
+                          cm2 * phi(i - 2, j, k, 2)) *
+                         idx[0];
+                }
+                // ylo --> modifies gradients in x
+                dir = 1;
+                amrex::Orientation oylo(dir, amrex::Orientation::low);
+                if (bctype[oylo] == BC::wall_model &&
+                    bx.smallEnd(dir) == geom.Domain().smallEnd(dir) &&
+                    bx.bigEnd(dir) == geom.Domain().smallEnd(dir)) {
+                    cp2 = Stencil::oc10;
+                    cp1 = Stencil::oc11;
+                    c = Stencil::oc12;
+                    uy = (cp2 * phi(i, j + 2, k, 0) +
+                          cp1 * phi(i, j + 1, k, 0) + c * phi(i, j, k, 0)) *
+                         idx[1];
+                    vy = (cp2 * phi(i, j + 2, k, 1) +
+                          cp1 * phi(i, j + 1, k, 1) + c * phi(i, j, k, 1)) *
+                         idx[1];
+                    wy = (cp2 * phi(i, j + 2, k, 2) +
+                          cp1 * phi(i, j + 1, k, 2) + c * phi(i, j, k, 2)) *
+                         idx[1];
+                }
+                // yhi --> modifies gradients in y
+                amrex::Orientation oyhi(dir, amrex::Orientation::high);
+                if (bctype[oyhi] == BC::wall_model &&
+                    bx.bigEnd(dir) == geom.Domain().bigEnd(dir) &&
+                    bx.smallEnd(dir) == geom.Domain().bigEnd(dir)) {
+                    c = Stencil::oc10;
+                    cm1 = Stencil::oc11;
+                    cm2 = Stencil::oc12;
+                    uy = (c * phi(i, j, k, 0) + cm1 * phi(i, j - 1, k, 0) +
+                          cm2 * phi(i, j - 2, k, 0)) *
+                         idx[1];
+                    vy = (c * phi(i, j, k, 1) + cm1 * phi(i, j - 1, k, 1) +
+                          cm2 * phi(i, j - 2, k, 1)) *
+                         idx[1];
+                    wy = (c * phi(i, j, k, 2) + cm1 * phi(i, j - 1, k, 2) +
+                          cm2 * phi(i, j - 2, k, 2)) *
+                         idx[1];
+                }
+                // zlo --> modifies gradients in z
+                dir = 2;
+                amrex::Orientation ozlo(dir, amrex::Orientation::low);
+                if (bctype[ozlo] == BC::wall_model &&
+                    bx.smallEnd(dir) == geom.Domain().smallEnd(dir) &&
+                    bx.bigEnd(dir) == geom.Domain().smallEnd(dir)) {
+                    cp2 = Stencil::oc20;
+                    cp1 = Stencil::oc21;
+                    c = Stencil::oc22;
+                    uz = (cp2 * phi(i, j, k + 2, 0) +
+                          cp1 * phi(i, j, k + 1, 0) + c * phi(i, j, k, 0)) *
+                         idx[2];
+                    vz = (cp2 * phi(i, j, k + 2, 1) +
+                          cp1 * phi(i, j, k + 1, 1) + c * phi(i, j, k, 1)) *
+                         idx[2];
+                    wz = (cp2 * phi(i, j, k + 2, 2) +
+                          cp1 * phi(i, j, k + 1, 2) + c * phi(i, j, k, 2)) *
+                         idx[2];
+                }
+                // zhi --> modifies gradients in z
+                amrex::Orientation ozhi(dir, amrex::Orientation::high);
+                if (bctype[ozhi] == BC::wall_model &&
+                    bx.bigEnd(dir) == geom.Domain().bigEnd(dir) &&
+                    bx.smallEnd(dir) == geom.Domain().bigEnd(dir)) {
+                    c = Stencil::oc20;
+                    cm1 = Stencil::oc21;
+                    cm2 = Stencil::oc22;
+                    uz = (c * phi(i, j, k, 0) + cm1 * phi(i, j, k - 1, 0) +
+                          cm2 * phi(i, j, k - 2, 0)) *
+                         idx[2];
+                    vz = (c * phi(i, j, k, 1) + cm1 * phi(i, j, k - 1, 1) +
+                          cm2 * phi(i, j, k - 2, 1)) *
+                         idx[2];
+                    wz = (c * phi(i, j, k, 2) + cm1 * phi(i, j, k - 1, 2) +
+                          cm2 * phi(i, j, k - 2, 2)) *
+                         idx[2];
+                }
 
                 strphi(i, j, k) = sqrt(
                     2.0 * std::pow(ux, 2) + 2.0 * std::pow(vy, 2) +
