@@ -32,6 +32,75 @@ struct StrainRate
         }
         const auto& bctype = m_phi.bc_type();
 
+        // Create reference ints for BC flags
+        const int f_wm = 1;
+        const int f_sw = 2;
+
+        // Create orientation objects for logicals
+        amrex::Orientation oxlo(0, amrex::Orientation::low);
+        amrex::Orientation oxhi(0, amrex::Orientation::high);
+        amrex::Orientation oylo(1, amrex::Orientation::low);
+        amrex::Orientation oyhi(1, amrex::Orientation::high);
+        amrex::Orientation ozlo(2, amrex::Orientation::low);
+        amrex::Orientation ozhi(2, amrex::Orientation::high);
+        // Create block - BC flags for device
+        // Set to 0 first if in bdy block
+        int f_xlo = (bx.smallEnd(0) == geom.Domain().smallEnd(0) &&
+                     bx.bigEnd(0) == geom.Domain().smallEnd(0))
+                        ? 0
+                        : -1;
+        int f_xhi = (bx.smallEnd(0) == geom.Domain().bigEnd(0) &&
+                     bx.bigEnd(0) == geom.Domain().bigEnd(0))
+                        ? 0
+                        : -1;
+        int f_ylo = (bx.smallEnd(1) == geom.Domain().smallEnd(1) &&
+                     bx.bigEnd(1) == geom.Domain().smallEnd(1))
+                        ? 0
+                        : -1;
+        int f_yhi = (bx.smallEnd(1) == geom.Domain().bigEnd(1) &&
+                     bx.bigEnd(1) == geom.Domain().bigEnd(1))
+                        ? 0
+                        : -1;
+        int f_zlo = (bx.smallEnd(2) == geom.Domain().smallEnd(2) &&
+                     bx.bigEnd(2) == geom.Domain().smallEnd(2))
+                        ? 0
+                        : -1;
+        int f_zhi = (bx.smallEnd(2) == geom.Domain().bigEnd(2) &&
+                     bx.bigEnd(2) == geom.Domain().bigEnd(2))
+                        ? 0
+                        : -1;
+        // If in bdy block, set values for BCs
+        f_xlo = (f_xlo == 0)
+                    ? ((bctype[oxlo] == BC::wall_model)
+                           ? f_wm
+                           : ((bctype[oxlo] == BC::slip_wall) ? f_sw : f_xlo))
+                    : f_xlo;
+        f_xhi = (f_xhi == 0)
+                    ? ((bctype[oxhi] == BC::wall_model)
+                           ? f_wm
+                           : ((bctype[oxhi] == BC::slip_wall) ? f_sw : f_xhi))
+                    : f_xhi;
+        f_ylo = (f_ylo == 0)
+                    ? ((bctype[oylo] == BC::wall_model)
+                           ? f_wm
+                           : ((bctype[oylo] == BC::slip_wall) ? f_sw : f_ylo))
+                    : f_ylo;
+        f_yhi = (f_yhi == 0)
+                    ? ((bctype[oyhi] == BC::wall_model)
+                           ? f_wm
+                           : ((bctype[oyhi] == BC::slip_wall) ? f_sw : f_yhi))
+                    : f_yhi;
+        f_zlo = (f_zlo == 0)
+                    ? ((bctype[ozlo] == BC::wall_model)
+                           ? f_wm
+                           : ((bctype[ozlo] == BC::slip_wall) ? f_sw : f_zlo))
+                    : f_zlo;
+        f_zhi = (f_zhi == 0)
+                    ? ((bctype[ozhi] == BC::wall_model)
+                           ? f_wm
+                           : ((bctype[ozhi] == BC::slip_wall) ? f_sw : f_zhi))
+                    : f_zhi;
+
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real cp1, c, cm1, ux, uy, uz, vx, vy, vz, wx, wy, wz;
@@ -80,11 +149,7 @@ struct StrainRate
                 // --- Check for wall boundary BCs ---
                 amrex::Real cp2 = 0.0, cm2 = 0.0;
                 // xlo --> modifies gradients in x
-                int dir = 0;
-                amrex::Orientation oxlo(dir, amrex::Orientation::low);
-                if (bctype[oxlo] == BC::wall_model &&
-                    bx.smallEnd(dir) == geom.Domain().smallEnd(dir) &&
-                    bx.bigEnd(dir) == geom.Domain().smallEnd(dir)) {
+                if (f_xlo == f_wm) {
                     cp2 = Stencil::oc00;
                     cp1 = Stencil::oc01;
                     c = Stencil::oc02;
@@ -99,10 +164,7 @@ struct StrainRate
                          idx[0];
                 }
                 // xhi --> modifies gradients in x
-                amrex::Orientation oxhi(dir, amrex::Orientation::high);
-                if (bctype[oxhi] == BC::wall_model &&
-                    bx.bigEnd(dir) == geom.Domain().bigEnd(dir) &&
-                    bx.smallEnd(dir) == geom.Domain().bigEnd(dir)) {
+                if (f_xhi == f_wm) {
                     c = Stencil::oc00;
                     cm1 = Stencil::oc01;
                     cm2 = Stencil::oc02;
@@ -117,11 +179,7 @@ struct StrainRate
                          idx[0];
                 }
                 // ylo --> modifies gradients in x
-                dir = 1;
-                amrex::Orientation oylo(dir, amrex::Orientation::low);
-                if (bctype[oylo] == BC::wall_model &&
-                    bx.smallEnd(dir) == geom.Domain().smallEnd(dir) &&
-                    bx.bigEnd(dir) == geom.Domain().smallEnd(dir)) {
+                if (f_ylo == f_wm) {
                     cp2 = Stencil::oc10;
                     cp1 = Stencil::oc11;
                     c = Stencil::oc12;
@@ -136,10 +194,7 @@ struct StrainRate
                          idx[1];
                 }
                 // yhi --> modifies gradients in y
-                amrex::Orientation oyhi(dir, amrex::Orientation::high);
-                if (bctype[oyhi] == BC::wall_model &&
-                    bx.bigEnd(dir) == geom.Domain().bigEnd(dir) &&
-                    bx.smallEnd(dir) == geom.Domain().bigEnd(dir)) {
+                if (f_yhi == f_wm) {
                     c = Stencil::oc10;
                     cm1 = Stencil::oc11;
                     cm2 = Stencil::oc12;
@@ -154,11 +209,7 @@ struct StrainRate
                          idx[1];
                 }
                 // zlo --> modifies gradients in z
-                dir = 2;
-                amrex::Orientation ozlo(dir, amrex::Orientation::low);
-                if (bctype[ozlo] == BC::wall_model &&
-                    bx.smallEnd(dir) == geom.Domain().smallEnd(dir) &&
-                    bx.bigEnd(dir) == geom.Domain().smallEnd(dir)) {
+                if (f_zlo == f_wm) {
                     cp2 = Stencil::oc20;
                     cp1 = Stencil::oc21;
                     c = Stencil::oc22;
@@ -173,10 +224,7 @@ struct StrainRate
                          idx[2];
                 }
                 // zhi --> modifies gradients in z
-                amrex::Orientation ozhi(dir, amrex::Orientation::high);
-                if (bctype[ozhi] == BC::wall_model &&
-                    bx.bigEnd(dir) == geom.Domain().bigEnd(dir) &&
-                    bx.smallEnd(dir) == geom.Domain().bigEnd(dir)) {
+                if (f_zhi == f_wm) {
                     c = Stencil::oc20;
                     cm1 = Stencil::oc21;
                     cm2 = Stencil::oc22;
@@ -193,10 +241,7 @@ struct StrainRate
 
                 // --- Check for slip wall BCs ---
                 // xlo --> modifies gradients in x
-                dir = 0;
-                if (bctype[oxlo] == BC::slip_wall &&
-                    bx.smallEnd(dir) == geom.Domain().smallEnd(dir) &&
-                    bx.bigEnd(dir) == geom.Domain().smallEnd(dir)) {
+                if (f_xlo == f_sw) {
                     cp1 = Stencil::nc00;
                     c = Stencil::nc01;
                     cm1 = Stencil::nc02;
@@ -208,9 +253,7 @@ struct StrainRate
                          cm1 * phi(i - 1, j, k, 2);
                 }
                 // xhi --> modifies gradients in x
-                if (bctype[oxhi] == BC::slip_wall &&
-                    bx.bigEnd(dir) == geom.Domain().bigEnd(dir) &&
-                    bx.smallEnd(dir) == geom.Domain().bigEnd(dir)) {
+                if (f_xhi == f_sw) {
                     cp1 = Stencil::nc00;
                     c = Stencil::nc01;
                     cm1 = Stencil::nc02;
@@ -222,10 +265,7 @@ struct StrainRate
                              idx[0];
                 }
                 // ylo --> modifies gradients in x
-                dir = 1;
-                if (bctype[oylo] == BC::slip_wall &&
-                    bx.smallEnd(dir) == geom.Domain().smallEnd(dir) &&
-                    bx.bigEnd(dir) == geom.Domain().smallEnd(dir)) {
+                if (f_ylo == f_sw) {
                     cp1 = Stencil::nc10;
                     c = Stencil::nc11;
                     cm1 = Stencil::nc12;
@@ -237,9 +277,7 @@ struct StrainRate
                          cm1 * phi(i, j - 1, k, 2);
                 }
                 // yhi --> modifies gradients in y
-                if (bctype[oyhi] == BC::slip_wall &&
-                    bx.bigEnd(dir) == geom.Domain().bigEnd(dir) &&
-                    bx.smallEnd(dir) == geom.Domain().bigEnd(dir)) {
+                if (f_yhi == f_sw) {
                     cp1 = Stencil::nc10;
                     c = Stencil::nc11;
                     cm1 = Stencil::nc12;
@@ -251,10 +289,7 @@ struct StrainRate
                              idx[1];
                 }
                 // zlo --> modifies gradients in z
-                dir = 2;
-                if (bctype[ozlo] == BC::slip_wall &&
-                    bx.smallEnd(dir) == geom.Domain().smallEnd(dir) &&
-                    bx.bigEnd(dir) == geom.Domain().smallEnd(dir)) {
+                if (f_zlo == f_sw) {
                     cp1 = Stencil::nc20;
                     c = Stencil::nc21;
                     cm1 = Stencil::nc22;
@@ -266,9 +301,7 @@ struct StrainRate
                          cm1 * phi(i, j, k - 1, 1);
                 }
                 // zhi --> modifies gradients in z
-                if (bctype[ozhi] == BC::slip_wall &&
-                    bx.bigEnd(dir) == geom.Domain().bigEnd(dir) &&
-                    bx.smallEnd(dir) == geom.Domain().bigEnd(dir)) {
+                if (f_zhi == f_sw) {
                     cp1 = Stencil::nc20;
                     c = Stencil::nc21;
                     cm1 = Stencil::nc22;
