@@ -122,6 +122,17 @@ struct StencilInterior
     static constexpr amrex::Real c21 = c01;
     static constexpr amrex::Real c22 = c02;
 
+    // One-sided first derivatives (should not be used in interior)
+    static constexpr amrex::Real oc00 = 0.;
+    static constexpr amrex::Real oc01 = 0.;
+    static constexpr amrex::Real oc02 = 0.;
+    static constexpr amrex::Real oc10 = 0.;
+    static constexpr amrex::Real oc11 = 0.;
+    static constexpr amrex::Real oc12 = 0.;
+    static constexpr amrex::Real oc20 = 0.;
+    static constexpr amrex::Real oc21 = 0.;
+    static constexpr amrex::Real oc22 = 0.;
+
     // Second derivatives
     static constexpr amrex::Real s00 = 1.0;
     static constexpr amrex::Real s01 = -2.0;
@@ -166,6 +177,18 @@ struct StencilILO
     static constexpr amrex::Real c21 = c11;
     static constexpr amrex::Real c22 = c12;
 
+    // One-sided first derivatives
+    // (extend in positive x, others unused)
+    static constexpr amrex::Real oc00 = -0.5; // i + 2
+    static constexpr amrex::Real oc01 = 2.0;  // i + 1
+    static constexpr amrex::Real oc02 = -1.5; // i
+    static constexpr amrex::Real oc10 = 0.;
+    static constexpr amrex::Real oc11 = 0.;
+    static constexpr amrex::Real oc12 = 0.;
+    static constexpr amrex::Real oc20 = 0.;
+    static constexpr amrex::Real oc21 = 0.;
+    static constexpr amrex::Real oc22 = 0.;
+
     static constexpr amrex::Real s00 = 4. / 3.; // axx
     static constexpr amrex::Real s01 = -4;      // bxx
     static constexpr amrex::Real s02 = 8. / 3.; // cxx
@@ -206,6 +229,18 @@ struct StencilJLO
     static constexpr amrex::Real c20 = c00;
     static constexpr amrex::Real c21 = c01;
     static constexpr amrex::Real c22 = c02;
+
+    // One-sided first derivatives
+    // (extend in positive y, others unused)
+    static constexpr amrex::Real oc00 = 0.;
+    static constexpr amrex::Real oc01 = 0.;
+    static constexpr amrex::Real oc02 = 0.;
+    static constexpr amrex::Real oc10 = -0.5; // j + 2
+    static constexpr amrex::Real oc11 = 2.0;  // j + 1
+    static constexpr amrex::Real oc12 = -1.5; // j
+    static constexpr amrex::Real oc20 = 0.;
+    static constexpr amrex::Real oc21 = 0.;
+    static constexpr amrex::Real oc22 = 0.;
 
     static constexpr amrex::Real s00 = 1.0;     // axx
     static constexpr amrex::Real s01 = -2.0;    // bxx
@@ -248,6 +283,18 @@ struct StencilKLO
     static constexpr amrex::Real c21 = 1.0;
     static constexpr amrex::Real c22 = -4.0 / 3.0;
 
+    // One-sided first derivatives
+    // (extend in positive z, others unused)
+    static constexpr amrex::Real oc00 = 0.;
+    static constexpr amrex::Real oc01 = 0.;
+    static constexpr amrex::Real oc02 = 0.;
+    static constexpr amrex::Real oc10 = 0.;
+    static constexpr amrex::Real oc11 = 0.;
+    static constexpr amrex::Real oc12 = 0.;
+    static constexpr amrex::Real oc20 = -0.5; // k + 2
+    static constexpr amrex::Real oc21 = 2.0;  // k + 1
+    static constexpr amrex::Real oc22 = -1.5; // k
+
     static constexpr amrex::Real s00 = 1.0;     // axx
     static constexpr amrex::Real s01 = -2.0;    // bxx
     static constexpr amrex::Real s02 = 1.0;     // cxx
@@ -288,6 +335,18 @@ struct StencilIHI
     static constexpr amrex::Real c20 = c10;
     static constexpr amrex::Real c21 = c11;
     static constexpr amrex::Real c22 = c12;
+
+    // One-sided first derivatives
+    // (extend in negative x, others unused)
+    static constexpr amrex::Real oc00 = 1.5;  // i
+    static constexpr amrex::Real oc01 = -2.0; // i - 1
+    static constexpr amrex::Real oc02 = 0.5;  // i - 2
+    static constexpr amrex::Real oc10 = 0.;
+    static constexpr amrex::Real oc11 = 0.;
+    static constexpr amrex::Real oc12 = 0.;
+    static constexpr amrex::Real oc20 = 0.;
+    static constexpr amrex::Real oc21 = 0.;
+    static constexpr amrex::Real oc22 = 0.;
 
     static constexpr amrex::Real s00 = 8. / 3.; // axx
     static constexpr amrex::Real s01 = -4.;     // bxx
@@ -330,6 +389,18 @@ struct StencilJHI
     static constexpr amrex::Real c21 = c01;
     static constexpr amrex::Real c22 = c02;
 
+    // One-sided first derivatives
+    // (extend in negative y, others unused)
+    static constexpr amrex::Real oc00 = 0.;
+    static constexpr amrex::Real oc01 = 0.;
+    static constexpr amrex::Real oc02 = 0.;
+    static constexpr amrex::Real oc10 = 1.5;  // j
+    static constexpr amrex::Real oc11 = -2.0; // j - 1
+    static constexpr amrex::Real oc12 = 0.5;  // j - 2
+    static constexpr amrex::Real oc20 = 0.;
+    static constexpr amrex::Real oc21 = 0.;
+    static constexpr amrex::Real oc22 = 0.;
+
     static constexpr amrex::Real s00 = 1.0;     // axx
     static constexpr amrex::Real s01 = -2.0;    // bxx
     static constexpr amrex::Real s02 = 1.0;     // cxx
@@ -371,6 +442,18 @@ struct StencilKHI
     static constexpr amrex::Real c21 = -1.0;
     static constexpr amrex::Real c22 = -1.0 / 3.0;
 
+    // One-sided first derivatives
+    // (extend in negative z, others unused)
+    static constexpr amrex::Real oc00 = 0.;
+    static constexpr amrex::Real oc01 = 0.;
+    static constexpr amrex::Real oc02 = 0.;
+    static constexpr amrex::Real oc10 = 0.;
+    static constexpr amrex::Real oc11 = 0.;
+    static constexpr amrex::Real oc12 = 0.;
+    static constexpr amrex::Real oc20 = 1.5;  // k
+    static constexpr amrex::Real oc21 = -2.0; // k - 1
+    static constexpr amrex::Real oc22 = 0.5;  // k - 2
+
     static constexpr amrex::Real s00 = 1.0;     // axx
     static constexpr amrex::Real s01 = -2.0;    // bxx
     static constexpr amrex::Real s02 = 1.0;     // cxx
@@ -410,6 +493,18 @@ struct StencilILO_JLO
     static constexpr amrex::Real c20 = 0.5;
     static constexpr amrex::Real c21 = 0;
     static constexpr amrex::Real c22 = -0.5;
+
+    // One-sided first derivatives
+    // (forward x, forward y)
+    static constexpr amrex::Real oc00 = -0.5; // i + 2
+    static constexpr amrex::Real oc01 = 2.0;  // i + 1
+    static constexpr amrex::Real oc02 = -1.5; // i
+    static constexpr amrex::Real oc10 = -0.5; // j + 2
+    static constexpr amrex::Real oc11 = 2.0;  // j + 1
+    static constexpr amrex::Real oc12 = -1.5; // j
+    static constexpr amrex::Real oc20 = 0.;
+    static constexpr amrex::Real oc21 = 0.;
+    static constexpr amrex::Real oc22 = 0.;
 
     static constexpr amrex::Real s00 = 4. / 3.; // axx
     static constexpr amrex::Real s01 = -4;      // bxx
@@ -451,6 +546,18 @@ struct StencilJLO_KLO
     static constexpr amrex::Real c21 = c11;
     static constexpr amrex::Real c22 = c12;
 
+    // One-sided first derivatives
+    // (forward y, forward z)
+    static constexpr amrex::Real oc00 = 0.;
+    static constexpr amrex::Real oc01 = 0.;
+    static constexpr amrex::Real oc02 = 0.;
+    static constexpr amrex::Real oc10 = -0.5; // j + 2
+    static constexpr amrex::Real oc11 = 2.0;  // j + 1
+    static constexpr amrex::Real oc12 = -1.5; // j
+    static constexpr amrex::Real oc20 = -0.5; // k + 2
+    static constexpr amrex::Real oc21 = 2.0;  // k + 1
+    static constexpr amrex::Real oc22 = -1.5; // k
+
     static constexpr amrex::Real s00 = 1;       // axx
     static constexpr amrex::Real s01 = -2;      // bxx
     static constexpr amrex::Real s02 = 1;       // cxx
@@ -490,6 +597,18 @@ struct StencilILO_KLO
     static constexpr amrex::Real c20 = c00;
     static constexpr amrex::Real c21 = c01;
     static constexpr amrex::Real c22 = c02;
+
+    // One-sided first derivatives
+    // (forward x, forward z)
+    static constexpr amrex::Real oc00 = -0.5; // i + 2
+    static constexpr amrex::Real oc01 = 2.0;  // i + 1
+    static constexpr amrex::Real oc02 = -1.5; // i
+    static constexpr amrex::Real oc10 = 0.;
+    static constexpr amrex::Real oc11 = 0.;
+    static constexpr amrex::Real oc12 = 0.;
+    static constexpr amrex::Real oc20 = -0.5; // k + 2
+    static constexpr amrex::Real oc21 = 2.0;  // k + 1
+    static constexpr amrex::Real oc22 = -1.5; // k
 
     static constexpr amrex::Real s00 = 4. / 3.; // axx
     static constexpr amrex::Real s01 = -4;      // bxx
@@ -531,6 +650,18 @@ struct StencilIHI_JHI
     static constexpr amrex::Real c21 = 0.0;
     static constexpr amrex::Real c22 = -0.5;
 
+    // One-sided first derivatives
+    // (backward x, backward y)
+    static constexpr amrex::Real oc00 = 1.5;  // i
+    static constexpr amrex::Real oc01 = -2.0; // i - 1
+    static constexpr amrex::Real oc02 = 0.5;  // i - 2
+    static constexpr amrex::Real oc10 = 1.5;  // j
+    static constexpr amrex::Real oc11 = -2.0; // j - 1
+    static constexpr amrex::Real oc12 = 0.5;  // j - 2
+    static constexpr amrex::Real oc20 = 0.;
+    static constexpr amrex::Real oc21 = 0.;
+    static constexpr amrex::Real oc22 = 0.;
+
     static constexpr amrex::Real s00 = 8. / 3.; // axx
     static constexpr amrex::Real s01 = -4.;     // bxx
     static constexpr amrex::Real s02 = 4. / 3.; // cxx
@@ -570,6 +701,18 @@ struct StencilJHI_KHI
     static constexpr amrex::Real c20 = c10;
     static constexpr amrex::Real c21 = c11;
     static constexpr amrex::Real c22 = c12;
+
+    // One-sided first derivatives
+    // (backward y, backward z)
+    static constexpr amrex::Real oc00 = 0.;
+    static constexpr amrex::Real oc01 = 0.;
+    static constexpr amrex::Real oc02 = 0.;
+    static constexpr amrex::Real oc10 = 1.5;  // j
+    static constexpr amrex::Real oc11 = -2.0; // j - 1
+    static constexpr amrex::Real oc12 = 0.5;  // j - 2
+    static constexpr amrex::Real oc20 = 1.5;  // k
+    static constexpr amrex::Real oc21 = -2.0; // k - 1
+    static constexpr amrex::Real oc22 = 0.5;  // k - 2
 
     static constexpr amrex::Real s00 = 1.0;     // axx
     static constexpr amrex::Real s01 = -2.0;    // bxx
@@ -611,6 +754,18 @@ struct StencilIHI_KHI
     static constexpr amrex::Real c21 = c01;
     static constexpr amrex::Real c22 = c02;
 
+    // One-sided first derivatives
+    // (backward x, backward z)
+    static constexpr amrex::Real oc00 = 1.5;  // i
+    static constexpr amrex::Real oc01 = -2.0; // i - 1
+    static constexpr amrex::Real oc02 = 0.5;  // i - 2
+    static constexpr amrex::Real oc10 = 0.;
+    static constexpr amrex::Real oc11 = 0.;
+    static constexpr amrex::Real oc12 = 0.;
+    static constexpr amrex::Real oc20 = 1.5;  // k
+    static constexpr amrex::Real oc21 = -2.0; // k - 1
+    static constexpr amrex::Real oc22 = 0.5;  // k - 2
+
     static constexpr amrex::Real s00 = 8. / 3.; // axx
     static constexpr amrex::Real s01 = -4.;     // bxx
     static constexpr amrex::Real s02 = 4. / 3.; // cxx
@@ -650,6 +805,18 @@ struct StencilILO_JHI
     static constexpr amrex::Real c20 = 0.5;
     static constexpr amrex::Real c21 = 0;
     static constexpr amrex::Real c22 = -0.5;
+
+    // One-sided first derivatives
+    // (forward x, backward y)
+    static constexpr amrex::Real oc00 = -0.5; // i + 2
+    static constexpr amrex::Real oc01 = 2.0;  // i + 1
+    static constexpr amrex::Real oc02 = -1.5; // i
+    static constexpr amrex::Real oc10 = 1.5;  // j
+    static constexpr amrex::Real oc11 = -2.0; // j - 1
+    static constexpr amrex::Real oc12 = 0.5;  // j - 2
+    static constexpr amrex::Real oc20 = 0.;
+    static constexpr amrex::Real oc21 = 0.;
+    static constexpr amrex::Real oc22 = 0.;
 
     static constexpr amrex::Real s00 = 4. / 3.; // axx
     static constexpr amrex::Real s01 = -4;      // bxx
@@ -691,6 +858,18 @@ struct StencilJLO_KHI
     static constexpr amrex::Real c21 = -1.;
     static constexpr amrex::Real c22 = -1. / 3.;
 
+    // One-sided first derivatives
+    // (forward y, backward z)
+    static constexpr amrex::Real oc00 = 0.;
+    static constexpr amrex::Real oc01 = 0.;
+    static constexpr amrex::Real oc02 = 0.;
+    static constexpr amrex::Real oc10 = -0.5; // j + 2
+    static constexpr amrex::Real oc11 = 2.0;  // j + 1
+    static constexpr amrex::Real oc12 = -1.5; // j
+    static constexpr amrex::Real oc20 = 1.5;  // k
+    static constexpr amrex::Real oc21 = -2.0; // k - 1
+    static constexpr amrex::Real oc22 = 0.5;  // k - 2
+
     static constexpr amrex::Real s00 = 1;       // axx
     static constexpr amrex::Real s01 = -2;      // bxx
     static constexpr amrex::Real s02 = 1;       // cxx
@@ -730,6 +909,18 @@ struct StencilILO_KHI
     static constexpr amrex::Real c20 = 4. / 3.;
     static constexpr amrex::Real c21 = -1.;
     static constexpr amrex::Real c22 = -1. / 3.;
+
+    // One-sided first derivatives
+    // (forward x, backward z)
+    static constexpr amrex::Real oc00 = -0.5; // i + 2
+    static constexpr amrex::Real oc01 = 2.0;  // i + 1
+    static constexpr amrex::Real oc02 = -1.5; // i
+    static constexpr amrex::Real oc10 = 0.;
+    static constexpr amrex::Real oc11 = 0.;
+    static constexpr amrex::Real oc12 = 0.;
+    static constexpr amrex::Real oc20 = 1.5;  // k
+    static constexpr amrex::Real oc21 = -2.0; // k - 1
+    static constexpr amrex::Real oc22 = 0.5;  // k - 2
 
     static constexpr amrex::Real s00 = 4. / 3.; // axx
     static constexpr amrex::Real s01 = -4;      // bxx
@@ -771,6 +962,18 @@ struct StencilIHI_JLO
     static constexpr amrex::Real c21 = 0.0;
     static constexpr amrex::Real c22 = -0.5;
 
+    // One-sided first derivatives
+    // (backward x, forward y)
+    static constexpr amrex::Real oc00 = 1.5;  // i
+    static constexpr amrex::Real oc01 = -2.0; // i - 1
+    static constexpr amrex::Real oc02 = 0.5;  // i - 2
+    static constexpr amrex::Real oc10 = -0.5; // j + 2
+    static constexpr amrex::Real oc11 = 2.0;  // j + 1
+    static constexpr amrex::Real oc12 = -1.5; // j
+    static constexpr amrex::Real oc20 = 0.;
+    static constexpr amrex::Real oc21 = 0.;
+    static constexpr amrex::Real oc22 = 0.;
+
     static constexpr amrex::Real s00 = 8. / 3.; // axx
     static constexpr amrex::Real s01 = -4.;     // bxx
     static constexpr amrex::Real s02 = 4. / 3.; // cxx
@@ -810,6 +1013,18 @@ struct StencilJHI_KLO
     static constexpr amrex::Real c20 = 1. / 3.;
     static constexpr amrex::Real c21 = 1.;
     static constexpr amrex::Real c22 = -4. / 3.;
+
+    // One-sided first derivatives
+    // (backward y, forward z)
+    static constexpr amrex::Real oc00 = 0.;
+    static constexpr amrex::Real oc01 = 0.;
+    static constexpr amrex::Real oc02 = 0.;
+    static constexpr amrex::Real oc10 = 1.5;  // j
+    static constexpr amrex::Real oc11 = -2.0; // j - 1
+    static constexpr amrex::Real oc12 = 0.5;  // j - 2
+    static constexpr amrex::Real oc20 = -0.5; // k + 2
+    static constexpr amrex::Real oc21 = 2.0;  // k + 1
+    static constexpr amrex::Real oc22 = -1.5; // k
 
     static constexpr amrex::Real s00 = 1.0;     // axx
     static constexpr amrex::Real s01 = -2.0;    // bxx
@@ -851,6 +1066,18 @@ struct StencilIHI_KLO
     static constexpr amrex::Real c21 = 1.;
     static constexpr amrex::Real c22 = -4. / 3.;
 
+    // One-sided first derivatives
+    // (backward x, forward z)
+    static constexpr amrex::Real oc00 = 1.5;  // i
+    static constexpr amrex::Real oc01 = -2.0; // i - 1
+    static constexpr amrex::Real oc02 = 0.5;  // i - 2
+    static constexpr amrex::Real oc10 = 0.;
+    static constexpr amrex::Real oc11 = 0.;
+    static constexpr amrex::Real oc12 = 0.;
+    static constexpr amrex::Real oc20 = -0.5; // k + 2
+    static constexpr amrex::Real oc21 = 2.0;  // k + 1
+    static constexpr amrex::Real oc22 = -1.5; // k
+
     static constexpr amrex::Real s00 = 8. / 3.;   // axx
     static constexpr amrex::Real s01 = -4.;       // bxx
     static constexpr amrex::Real s02 = 4. / 3.;   // cxx
@@ -890,6 +1117,18 @@ struct StencilILO_JLO_KLO
     static constexpr amrex::Real c20 = c00;
     static constexpr amrex::Real c21 = c01;
     static constexpr amrex::Real c22 = c02;
+
+    // One-sided first derivatives
+    // (forward x, forward y, forward z)
+    static constexpr amrex::Real oc00 = -0.5; // i + 2
+    static constexpr amrex::Real oc01 = 2.0;  // i + 1
+    static constexpr amrex::Real oc02 = -1.5; // i
+    static constexpr amrex::Real oc10 = -0.5; // j + 2
+    static constexpr amrex::Real oc11 = 2.0;  // j + 1
+    static constexpr amrex::Real oc12 = -1.5; // j
+    static constexpr amrex::Real oc20 = -0.5; // k + 2
+    static constexpr amrex::Real oc21 = 2.0;  // k + 1
+    static constexpr amrex::Real oc22 = -1.5; // k
 
     static constexpr amrex::Real s00 = 4. / 3.; // axx
     static constexpr amrex::Real s01 = -4;      // bxx
@@ -932,6 +1171,18 @@ struct StencilILO_JHI_KLO
     static constexpr amrex::Real c21 = c01;
     static constexpr amrex::Real c22 = c02;
 
+    // One-sided first derivatives
+    // (forward x, backward y, forward z)
+    static constexpr amrex::Real oc00 = -0.5; // i + 2
+    static constexpr amrex::Real oc01 = 2.0;  // i + 1
+    static constexpr amrex::Real oc02 = -1.5; // i
+    static constexpr amrex::Real oc10 = 1.5;  // j
+    static constexpr amrex::Real oc11 = -2.0; // j - 1
+    static constexpr amrex::Real oc12 = 0.5;  // j - 2
+    static constexpr amrex::Real oc20 = -0.5; // k + 2
+    static constexpr amrex::Real oc21 = 2.0;  // k + 1
+    static constexpr amrex::Real oc22 = -1.5; // k
+
     static constexpr amrex::Real s00 = 4. / 3.; // axx
     static constexpr amrex::Real s01 = -4;      // bxx
     static constexpr amrex::Real s02 = 8. / 3.; // cxx
@@ -972,6 +1223,18 @@ struct StencilIHI_JLO_KLO
     static constexpr amrex::Real c20 = c10;
     static constexpr amrex::Real c21 = c11;
     static constexpr amrex::Real c22 = c12;
+
+    // One-sided first derivatives
+    // (backward x, forward y, forward z)
+    static constexpr amrex::Real oc00 = 1.5;  // i
+    static constexpr amrex::Real oc01 = -2.0; // i - 1
+    static constexpr amrex::Real oc02 = 0.5;  // i - 2
+    static constexpr amrex::Real oc10 = -0.5; // j + 2
+    static constexpr amrex::Real oc11 = 2.0;  // j + 1
+    static constexpr amrex::Real oc12 = -1.5; // j
+    static constexpr amrex::Real oc20 = -0.5; // k + 2
+    static constexpr amrex::Real oc21 = 2.0;  // k + 1
+    static constexpr amrex::Real oc22 = -1.5; // k
 
     static constexpr amrex::Real s00 = 8. / 3.; // axx
     static constexpr amrex::Real s01 = -4.;     // bxx
@@ -1014,6 +1277,18 @@ struct StencilIHI_JHI_KLO
     static constexpr amrex::Real c21 = 1.0;
     static constexpr amrex::Real c22 = -4.0 / 3.;
 
+    // One-sided first derivatives
+    // (backward x, backward y, forward z)
+    static constexpr amrex::Real oc00 = 1.5;  // i
+    static constexpr amrex::Real oc01 = -2.0; // i - 1
+    static constexpr amrex::Real oc02 = 0.5;  // i - 2
+    static constexpr amrex::Real oc10 = 1.5;  // j
+    static constexpr amrex::Real oc11 = -2.0; // j - 1
+    static constexpr amrex::Real oc12 = 0.5;  // j - 2
+    static constexpr amrex::Real oc20 = -0.5; // k + 2
+    static constexpr amrex::Real oc21 = 2.0;  // k + 1
+    static constexpr amrex::Real oc22 = -1.5; // k
+
     static constexpr amrex::Real s00 = 8. / 3.;   // axx
     static constexpr amrex::Real s01 = -4.;       // bxx
     static constexpr amrex::Real s02 = 4. / 3.;   // cxx
@@ -1054,6 +1329,18 @@ struct StencilILO_JLO_KHI
     static constexpr amrex::Real c20 = 4. / 3.;
     static constexpr amrex::Real c21 = -1.;
     static constexpr amrex::Real c22 = -1. / 3.;
+
+    // One-sided first derivatives
+    // (forward x, forward y, backward z)
+    static constexpr amrex::Real oc00 = -0.5; // i + 2
+    static constexpr amrex::Real oc01 = 2.0;  // i + 1
+    static constexpr amrex::Real oc02 = -1.5; // i
+    static constexpr amrex::Real oc10 = -0.5; // j + 2
+    static constexpr amrex::Real oc11 = 2.0;  // j + 1
+    static constexpr amrex::Real oc12 = -1.5; // j
+    static constexpr amrex::Real oc20 = 1.5;  // k
+    static constexpr amrex::Real oc21 = -2.0; // k - 1
+    static constexpr amrex::Real oc22 = 0.5;  // k - 2
 
     static constexpr amrex::Real s00 = 4. / 3.; // axx
     static constexpr amrex::Real s01 = -4;      // bxx
@@ -1096,6 +1383,18 @@ struct StencilILO_JHI_KHI
     static constexpr amrex::Real c21 = -1.;
     static constexpr amrex::Real c22 = -1. / 3.;
 
+    // One-sided first derivatives
+    // (forward x, backward y, backward z)
+    static constexpr amrex::Real oc00 = -0.5; // i + 2
+    static constexpr amrex::Real oc01 = 2.0;  // i + 1
+    static constexpr amrex::Real oc02 = -1.5; // i
+    static constexpr amrex::Real oc10 = 1.5;  // j
+    static constexpr amrex::Real oc11 = -2.0; // j - 1
+    static constexpr amrex::Real oc12 = 0.5;  // j - 2
+    static constexpr amrex::Real oc20 = 1.5;  // k
+    static constexpr amrex::Real oc21 = -2.0; // k - 1
+    static constexpr amrex::Real oc22 = 0.5;  // k - 2
+
     static constexpr amrex::Real s00 = 4. / 3.; // axx
     static constexpr amrex::Real s01 = -4;      // bxx
     static constexpr amrex::Real s02 = 8. / 3.; // cxx
@@ -1137,6 +1436,18 @@ struct StencilIHI_JLO_KHI
     static constexpr amrex::Real c21 = -1.;
     static constexpr amrex::Real c22 = -1. / 3.;
 
+    // One-sided first derivatives
+    // (backward x, forward y, backward z)
+    static constexpr amrex::Real oc00 = 1.5;  // i
+    static constexpr amrex::Real oc01 = -2.0; // i - 1
+    static constexpr amrex::Real oc02 = 0.5;  // i - 2
+    static constexpr amrex::Real oc10 = -0.5; // j + 2
+    static constexpr amrex::Real oc11 = 2.0;  // j + 1
+    static constexpr amrex::Real oc12 = -1.5; // j
+    static constexpr amrex::Real oc20 = 1.5;  // k
+    static constexpr amrex::Real oc21 = -2.0; // k - 1
+    static constexpr amrex::Real oc22 = 0.5;  // k - 2
+
     static constexpr amrex::Real s00 = 8. / 3.; // axx
     static constexpr amrex::Real s01 = -4.;     // bxx
     static constexpr amrex::Real s02 = 4. / 3.; // cxx
@@ -1177,6 +1488,18 @@ struct StencilIHI_JHI_KHI
     static constexpr amrex::Real c20 = 4. / 3.;
     static constexpr amrex::Real c21 = -1.;
     static constexpr amrex::Real c22 = -1. / 3.;
+
+    // One-sided first derivatives
+    // (backward x, backward y, backward z)
+    static constexpr amrex::Real oc00 = 1.5;  // i
+    static constexpr amrex::Real oc01 = -2.0; // i - 1
+    static constexpr amrex::Real oc02 = 0.5;  // i - 2
+    static constexpr amrex::Real oc10 = 1.5;  // j
+    static constexpr amrex::Real oc11 = -2.0; // j - 1
+    static constexpr amrex::Real oc12 = 0.5;  // j - 2
+    static constexpr amrex::Real oc20 = 1.5;  // k
+    static constexpr amrex::Real oc21 = -2.0; // k - 1
+    static constexpr amrex::Real oc22 = 0.5;  // k - 2
 
     static constexpr amrex::Real s00 = 8. / 3.; // axx
     static constexpr amrex::Real s01 = -4.;     // bxx
