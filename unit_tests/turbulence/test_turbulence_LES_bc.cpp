@@ -200,9 +200,7 @@ protected:
         icns_eq.compute_diffusion_term(amr_wind::FieldState::New);
 
         // Update turbulent viscosity directly
-        std::cout << "before update turb visc\n";
         tmodel.update_turbulent_viscosity(amr_wind::FieldState::New);
-        std::cout << "after update turb visc\n";
     }
 
     const amrex::Real dx = 10.0 / 10.0;
@@ -307,6 +305,11 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_wallmodel)
         pp.add("kappa", kappa);
         pp.add("surface_roughness_z0", z0);
     }
+    {
+        // Explicit diffusion populates wall cells, doesn't update velocity
+        amrex::ParmParse pp("incflo");
+        pp.add("diffusion_type", 0);
+    }
     OneEqKsgs_setup_params();
     test_calls_body();
     auto& muturb = sim().repo().get_field("mu_turb");
@@ -328,19 +331,18 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_wallmodel)
     const amrex::Real utau = kappa * vmag_ref / (std::log(zref / z0));
     const amrex::Real uz_wall = uref / vmag_ref * std::pow(utau, 2) * rho0 / mu;
 
-    // Velocity gradient with wallmodel BC
+    // Velocity gradient with wallmodel value included as dirichlet
     const amrex::Real uz_wallface_dirichlet =
         (1.0 / 3.0 * (uz_bulk * 1.5) + 1.0 * (uz_bulk * 0.5) -
          4.0 / 3.0 * uz_wall / dz);
-    const amrex::Real uz_wallface_model = 0.5 * (uz_bulk + uz_wall);
     // Naive answer, assumes wall Dirichlet
     const amrex::Real s_naive = std::abs(uz_wallface_dirichlet) * sqrt(2.0);
     // Get value just above wall due to BC
     auto shear_wall = get_val_at_kindex(shear_prod, muturb, 0, 0) / 10. / 20.;
     // Check that the result is not equal to the naive
     EXPECT_GT(std::abs(shear_wall - s_naive) / 20.0, tol);
-    // Answer that accounts for slip_wall BC (Neumann)
-    const amrex::Real s_true = uz_wallface_model * sqrt(2.0);
+    // Answer that uses one-sided differences
+    const amrex::Real s_true = srate;
     EXPECT_NEAR(shear_wall, s_true, tol);
 }
 
