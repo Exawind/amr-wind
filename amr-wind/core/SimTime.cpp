@@ -234,6 +234,9 @@ void SimTime::set_restart_time(int tidx, amrex::Real time)
     m_new_time = time;
     m_cur_time = time;
     m_start_time = time;
+
+    m_chkpt_start_index = m_start_time_index;
+    m_plt_start_index   = m_start_time_index;
 }
 
 } // namespace amr_wind
