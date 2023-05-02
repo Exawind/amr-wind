@@ -122,7 +122,7 @@ protected:
             // zlo is defined in each case
         }
     }
-    void OneEqKsgs_setup_params()
+    void OneEqKsgs_setup_params() const
     {
         {
             amrex::ParmParse pp("turbulence");
