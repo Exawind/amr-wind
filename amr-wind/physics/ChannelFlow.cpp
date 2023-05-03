@@ -31,6 +31,7 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
         if (m_laminar) {
             pp.query("density", m_rho);
             pp.query("Mean_Velocity", m_mean_vel);
+            pp.query("half_channel", m_half);
         } else {
             pp.query("density", m_rho);
             pp.query("re_tau", m_re_tau);
@@ -159,6 +160,10 @@ amrex::Real ChannelFlow::compute_error(const IndexSelector& idxOp)
             }
         }
         ht = probhi_physical[norm_dir] - problo[norm_dir];
+        // For half channel, channel height is double the domain height
+        if (m_half) {
+            ht *= 2.0;
+        }
     }
 
     const auto& velocity = m_repo.get_field("velocity");
