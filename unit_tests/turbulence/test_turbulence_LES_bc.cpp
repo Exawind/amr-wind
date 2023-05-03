@@ -455,4 +455,48 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_zerogradient)
     EXPECT_NEAR(shear_wall, s_true, tol);
 }
 
+TEST_F(TurbLESTestBC, test_1eqKsgs_symmetricwall)
+{
+    populate_parameters();
+    {
+        amrex::ParmParse pp("zlo");
+        pp.add("type", (std::string) "symmetric_wall");
+    }
+    OneEqKsgs_setup_params();
+    test_calls_body();
+    auto& muturb = sim().repo().get_field("mu_turb");
+
+    // Get shear production field
+    auto& shear_prod = sim().repo().get_field("shear_prod");
+
+    // Check for constant value in bulk
+    auto shear_bulk = get_val_at_kindex(shear_prod, muturb, 0, 1) / 10. / 20.;
+    EXPECT_NEAR(shear_bulk, srate, tol);
+
+    // Velocity gradients assumed in setup (init_field3)
+    const amrex::Real uz_bulk = srate / 2.0;
+
+    // Naive answer, assumes extrapolation
+    const amrex::Real s_naive = srate;
+    // Check for different value just above wall due to BC
+    auto shear_wall = get_val_at_kindex(shear_prod, muturb, 0, 0) / 10. / 20.;
+    // Check that the result is not equal to the naive value
+    EXPECT_GT(std::abs(shear_wall - s_naive), tol);
+    // Answer that accounts for BC (Neumann)
+    const amrex::Real uz_wallface_neumann =
+        (1.0 / 3.0 * (uz_bulk * 1.5 * dz + 2.0) +
+         1.0 * (uz_bulk * 0.5 * dz + 2.0) -
+         4.0 / 3.0 * (uz_bulk * 0.5 * dz + 2.0)) /
+        dz;
+    // Wall condition on w
+    const amrex::Real wz_wallface =
+        (1.0 / 3.0 * (uz_bulk * 1.5 * dz + 2.0) +
+         1.0 * (uz_bulk * 0.5 * dz + 2.0) - 4.0 / 3.0 * (0.0)) /
+        dz;
+    const amrex::Real s_true = sqrt(
+        2.0 * wz_wallface * wz_wallface +
+        2.0 * uz_wallface_neumann * uz_wallface_neumann);
+    EXPECT_NEAR(shear_wall, s_true, tol);
+}
+
 } // namespace amr_wind_tests
