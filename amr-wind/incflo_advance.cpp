@@ -224,8 +224,6 @@ void incflo::ApplyPredictor(bool incremental_projection)
         amr_wind::field_ops::copy(
             velocity_new, velocity_old, 0, 0, velocity_new.num_comp(), 1);
         icns().compute_diffusion_term(amr_wind::FieldState::Old);
-        // Fill physical boundaries with correct values after diffusion
-        icns().fields().field.fillphysbc(new_time);
         if (m_use_godunov) {
             auto& velocity_forces = icns_fields.src_term;
             // only the old states are used in predictor
@@ -245,8 +243,6 @@ void incflo::ApplyPredictor(bool incremental_projection)
                 field.num_comp(), 1);
 
             eqn->compute_diffusion_term(amr_wind::FieldState::Old);
-            // Fill physical boundaries with correct values after diffusion
-            field.fillphysbc(new_time);
 
             if (m_use_godunov) {
                 amr_wind::field_ops::add(
@@ -325,8 +321,6 @@ void incflo::ApplyPredictor(bool incremental_projection)
             amr_wind::field_ops::saxpy(
                 eqn->fields().field, +dto2, diff_new, 0, 0, 1, 0);
         }
-        // Fill physical boundaries with correct values after diffusion
-        eqn->fields().field.fillphysbc(new_time);
         eqn->post_solve_actions();
 
         // Update scalar at n+1/2
@@ -380,8 +374,6 @@ void incflo::ApplyPredictor(bool incremental_projection)
         amr_wind::field_ops::saxpy(
             icns().fields().field, +dto2, diff_new, 0, 0, AMREX_SPACEDIM, 0);
     }
-    // Fill physical boundaries with correct values after diffusion
-    icns().fields().field.fillphysbc(new_time);
     icns().post_solve_actions();
 
     if (m_verbose > 2) {
