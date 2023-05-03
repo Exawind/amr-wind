@@ -156,7 +156,7 @@ protected:
             pp.add("viscosity", mu);
         }
     }
-    void test_calls_body(bool second_fillpatch = false)
+    void test_calls_body(bool fillphbc_after = false)
     {
         // Initialize necessary parts of solver
         initialize_mesh();
@@ -200,8 +200,8 @@ protected:
         icns_eq.compute_diffusion_term(amr_wind::FieldState::New);
 
         // Fillpatch afterward
-        if (second_fillpatch) {
-            vel.fillpatch(0.0);
+        if (fillphbc_after) {
+            vel.fillphysbc(0.0);
         }
 
         // Update turbulent viscosity directly
@@ -322,8 +322,8 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_wallmodel)
         pp.add("diffusion_type", 0);
     }
     OneEqKsgs_setup_params();
-    const bool second_fillpatch = true;
-    test_calls_body(second_fillpatch);
+    const bool fillphbc_after = true;
+    test_calls_body(fillphbc_after);
     auto& muturb = sim().repo().get_field("mu_turb");
 
     // Get shear production field
@@ -367,8 +367,8 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_wallmodel_failnofillpatch)
         pp.add("diffusion_type", 0);
     }
     OneEqKsgs_setup_params();
-    const bool second_fillpatch = false;
-    test_calls_body(second_fillpatch);
+    const bool fillphbc_after = false;
+    test_calls_body(fillphbc_after);
     auto& muturb = sim().repo().get_field("mu_turb");
 
     // Get shear production field
