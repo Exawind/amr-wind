@@ -9,17 +9,17 @@
 namespace amr_wind::channel_flow {
 
 ChannelFlow::ChannelFlow(CFDSim& sim)
-    : m_time(sim.time())
+    : m_sim(sim)
+    , m_time(sim.time())
     , m_repo(sim.repo())
     , m_mesh(sim.mesh())
     , m_wall_func(sim)
     , m_mesh_mapping(sim.has_mesh_mapping())
 {
     {
-        std::string turbulence_model;
         amrex::ParmParse pp("turbulence");
-        pp.query("model", turbulence_model);
-        if (turbulence_model == "Laminar") {
+        pp.query("model", m_turbulence_model);
+        if (m_turbulence_model == "Laminar") {
             m_laminar = true;
         }
     }
@@ -42,6 +42,32 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
             pp.query("perturb_y_period", m_perturb_y_period);
             pp.query("perturb_z_period", m_perturb_z_period);
             pp.query("perturb_factor", m_perturb_fac);
+            pp.query(
+                "analytical_smagorinsky_test", m_analytical_smagorinsky_test);
+            if (m_analytical_smagorinsky_test) {
+                if (m_turbulence_model == "Smagorinsky") {
+                    pp.query("C0", m_C0);
+                    pp.query("C1", m_C1);
+                    {
+                        amrex::ParmParse ppb("BodyForce");
+                        amrex::Vector<amrex::Real> body_force{{0.0, 0.0, 0.0}};
+                        ppb.queryarr("magnitude", body_force);
+                        m_dpdx = -body_force[0];
+                        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+                            std::abs(body_force[1]) < 1e-16,
+                            "body force in y should be zero for this wall "
+                            "function");
+                        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+                            std::abs(body_force[2]) < 1e-16,
+                            "body force in z should be zero for this wall "
+                            "function");
+                    }
+                } else {
+                    amrex::Abort(
+                        "Use Smagorinsky model for the analytical Smagorinsky "
+                        "test");
+                }
+            }
         }
     }
     {
@@ -51,7 +77,8 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
         m_utau = m_mu * m_re_tau / (m_rho * 1.0);
         m_ytau = m_mu / (m_utau * m_rho);
     }
-    if ((amrex::ParallelDescriptor::IOProcessor()) && (m_laminar)) {
+    if ((amrex::ParallelDescriptor::IOProcessor()) &&
+        (m_laminar || m_analytical_smagorinsky_test)) {
         std::ofstream f;
         f.open(m_output_fname.c_str());
         f << std::setw(m_w) << "time" << std::setw(m_w) << "L2_u" << std::endl;
@@ -99,62 +126,106 @@ void ChannelFlow::initialize_fields(
     auto& density = m_repo.get_field("density")(level);
     density.setVal(m_rho);
     const auto perturb_vel = m_perturb_vel;
-    const auto perturb_amp = m_perturb_fac * m_utau;
+    const auto perturb_fac = m_perturb_fac;
+    const auto perturb_amp = perturb_fac * m_utau;
+    const amrex::Real pi = M_PI;
+    const auto& problo = geom.ProbLoArray();
+    const auto& probhi = geom.ProbHiArray();
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> lengths{AMREX_D_DECL(
+        probhi[0] - problo[0], probhi[1] - problo[1], probhi[2] - problo[2])};
+    const auto y_perturb = m_perturb_y_period * 2.0 * pi / lengths[1];
+    const auto z_perturb = m_perturb_z_period * 2.0 * pi / lengths[2];
 
     if (!m_laminar) {
-        if (m_repo.field_exists("tke")) {
-            auto& tke = m_repo.get_field("tke")(level);
-            tke.setVal(m_tke0);
-        }
-        if (m_repo.field_exists("sdr")) {
-            auto& sdr = m_repo.get_field("sdr")(level);
-            sdr.setVal(m_sdr0);
-        }
-        auto& walldist = m_repo.get_field("wall_dist")(level);
+        if (m_analytical_smagorinsky_test) {
+            auto coeffs = m_sim.turbulence_model().model_coeffs();
+            const auto Cs = coeffs["Cs"];
+            const auto mu = m_mu;
+            const auto rho = m_rho;
+            const auto C0 = m_C0;
+            const auto C1 = m_C1;
+            const auto dpdx = m_dpdx;
+            for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
+                const auto& vbx = mfi.validbox();
 
-        for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
-            const auto& vbx = mfi.validbox();
+                const auto& dx = geom.CellSizeArray();
+                const auto& problo = geom.ProbLoArray();
+                const auto& probhi = geom.ProbHiArray();
+                auto vel = velocity.array(mfi);
 
-            const auto& dx = geom.CellSizeArray();
-            const auto& problo = geom.ProbLoArray();
-            const auto& probhi = geom.ProbHiArray();
-            const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> lengths{
-                AMREX_D_DECL(
-                    probhi[0] - problo[0], probhi[1] - problo[1],
-                    probhi[2] - problo[2])};
-            const amrex::Real pi = M_PI;
-            const amrex::Real y_perturb =
-                m_perturb_y_period * 2.0 * pi / lengths[1];
-            const amrex::Real z_perturb =
-                m_perturb_z_period * 2.0 * pi / lengths[2];
-            auto vel = velocity.array(mfi);
-            auto wd = walldist.array(mfi);
+                amrex::ParallelFor(
+                    vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        const int n_ind = idxOp(i, j, k);
+                        amrex::Real h =
+                            problo[n_idx] + (n_ind + 0.5) * dx[n_idx];
+                        if (h > 1.0) {
+                            h = 2.0 - h;
+                        }
+                        const amrex::Real hp = h / y_tau;
+                        const amrex::Real Cs2 = Cs * Cs;
+                        const amrex::Real dx2 = dx[n_idx] * dx[n_idx];
+                        const amrex::Real Cs2dx2 = Cs2 * dx2;
+                        vel(i, j, k, 0) =
+                            -mu / (rho * Cs2dx2) * h +
+                            Cs2dx2 / (3 * dpdx) *
+                                std::pow(
+                                    (2.0 / Cs2dx2 * dpdx * h +
+                                     (mu / (rho * Cs2dx2)) *
+                                         (mu / (rho * Cs2dx2)) +
+                                     C1),
+                                    3.0 / 2.0) +
+                            C0 +
+                            (perturb_vel ? perturb_fac * std::sin(z_perturb * h)
+                                         : 0.0);
+                        vel(i, j, k, 1) = 0.0;
+                        vel(i, j, k, 2) = 0.0;
+                    });
+            }
+        } else {
+            if (m_repo.field_exists("tke")) {
+                auto& tke = m_repo.get_field("tke")(level);
+                tke.setVal(m_tke0);
+            }
+            if (m_repo.field_exists("sdr")) {
+                auto& sdr = m_repo.get_field("sdr")(level);
+                sdr.setVal(m_sdr0);
+            }
+            auto& walldist = m_repo.get_field("wall_dist")(level);
 
-            amrex::ParallelFor(
-                vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const int n_ind = idxOp(i, j, k);
-                    amrex::Real h = problo[n_idx] + (n_ind + 0.5) * dx[n_idx];
-                    if (h > 1.0) {
-                        h = 2.0 - h;
-                    }
-                    wd(i, j, k) = h;
-                    const amrex::Real hp = h / y_tau;
-                    vel(i, j, k, 0) =
-                        utau * (1. / kappa * std::log1p(kappa * hp) +
-                                7.8 * (1.0 - std::exp(-hp / 11.0) -
-                                       (hp / 11.0) * std::exp(-hp / 3.0)));
+            for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
+                const auto& vbx = mfi.validbox();
 
-                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                    const amrex::Real perty = perturb_amp *
-                                              std::sin(y_perturb * y) *
-                                              std::cos(z_perturb * z);
-                    const amrex::Real pertz = -perturb_amp *
-                                              std::cos(y_perturb * y) *
-                                              std::sin(z_perturb * z);
-                    vel(i, j, k, 1) = 0.0 + (perturb_vel ? perty : 0.0);
-                    vel(i, j, k, 2) = 0.0 + (perturb_vel ? pertz : 0.0);
-                });
+                const auto& dx = geom.CellSizeArray();
+                auto vel = velocity.array(mfi);
+                auto wd = walldist.array(mfi);
+
+                amrex::ParallelFor(
+                    vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        const int n_ind = idxOp(i, j, k);
+                        amrex::Real h =
+                            problo[n_idx] + (n_ind + 0.5) * dx[n_idx];
+                        if (h > 1.0) {
+                            h = 2.0 - h;
+                        }
+                        wd(i, j, k) = h;
+                        const amrex::Real hp = h / y_tau;
+                        vel(i, j, k, 0) =
+                            utau * (1. / kappa * std::log1p(kappa * hp) +
+                                    7.8 * (1.0 - std::exp(-hp / 11.0) -
+                                           (hp / 11.0) * std::exp(-hp / 3.0)));
+
+                        const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                        const amrex::Real perty = perturb_amp *
+                                                  std::sin(y_perturb * y) *
+                                                  std::cos(z_perturb * z);
+                        const amrex::Real pertz = -perturb_amp *
+                                                  std::cos(y_perturb * y) *
+                                                  std::sin(z_perturb * z);
+                        vel(i, j, k, 1) = 0.0 + (perturb_vel ? perty : 0.0);
+                        vel(i, j, k, 2) = 0.0 + (perturb_vel ? pertz : 0.0);
+                    });
+            }
         }
     } else {
         velocity.setVal(0.0);
@@ -285,7 +356,11 @@ void ChannelFlow::output_error()
         u_err = compute_error(YDir());
         break;
     case 2:
-        u_err = compute_error(ZDir());
+        if (m_laminar) {
+            u_err = compute_error(ZDir());
+        } else if (m_analytical_smagorinsky_test) {
+            u_err = 0.0;
+        }
         break;
     default:
         amrex::Abort("axis must be equal to 1 or 2");
@@ -303,7 +378,7 @@ void ChannelFlow::output_error()
 
 void ChannelFlow::post_init_actions()
 {
-    if (m_laminar) {
+    if (m_laminar || m_analytical_smagorinsky_test) {
         output_error();
     }
 
@@ -321,7 +396,7 @@ void ChannelFlow::post_init_actions()
 
 void ChannelFlow::post_advance_work()
 {
-    if (m_laminar) {
+    if (m_laminar || m_analytical_smagorinsky_test) {
         output_error();
     }
 }

@@ -5,6 +5,7 @@
 #include "amr-wind/core/Field.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/boundary_conditions/wall_models/WallFunction.H"
+#include "amr-wind/turbulence/TurbulenceModel.H"
 #include <AMReX_REAL.H>
 
 namespace amr_wind::channel_flow {
@@ -45,6 +46,9 @@ public:
     void post_advance_work() override;
 
 private:
+    //! CFD simulation controller instance
+    CFDSim& m_sim;
+
     const amr_wind::SimTime& m_time;
     FieldRepo& m_repo;
     const amrex::AmrCore& m_mesh;
@@ -90,6 +94,9 @@ private:
     //! Von-Karman constant
     amrex::Real m_kappa{0.41};
 
+    //! Turbulence model
+    std::string m_turbulence_model;
+
     bool m_laminar{false};
 
     bool m_mesh_mapping{false};
@@ -97,6 +104,18 @@ private:
     amrex::Real m_mean_vel;
 
     bool m_half{false};
+
+    //! flag for analytical smagorinsky test
+    bool m_analytical_smagorinsky_test{false};
+
+    //! Analytical Smagorinsky first coefficient
+    amrex::Real m_C0{0.0};
+
+    //! Analytical Smagorinsky second coefficient
+    amrex::Real m_C1{0.0};
+
+    //! Body forcing (x direction)
+    amrex::Real m_dpdx{0.0};
 
     //! direction of mean velocity
     int m_mean_vel_dir{0};
