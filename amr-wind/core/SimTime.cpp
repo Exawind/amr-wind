@@ -230,6 +230,15 @@ void SimTime::set_restart_time(int tidx, amrex::Real time)
 {
     m_time_index = tidx;
     m_start_time_index = tidx;
+    m_regrid_start_index = tidx;
+    m_plt_start_index = tidx;
+    m_chkpt_start_index = tidx;
+
+    // check if the user has set plt/regrid/checkpoint index
+    amrex::ParmParse pp("time");
+    pp.query("regrid_start", m_regrid_start_index);
+    pp.query("plot_start", m_plt_start_index);
+    pp.query("checkpoint_start", m_chkpt_start_index);
 
     m_new_time = time;
     m_cur_time = time;
