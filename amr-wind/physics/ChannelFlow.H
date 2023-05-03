@@ -8,6 +8,31 @@
 #include "amr-wind/turbulence/TurbulenceModel.H"
 #include <AMReX_REAL.H>
 
+namespace {
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real analytical_smagorinsky_profile(
+    const amrex::Real h,
+    const amrex::Real Cs,
+    const amrex::Real dx,
+    const amrex::Real rho,
+    const amrex::Real mu,
+    const amrex::Real dpdx,
+    const amrex::Real C0,
+    const amrex::Real C1)
+{
+    const amrex::Real Cs2 = Cs * Cs;
+    const amrex::Real dx2 = dx * dx;
+    const amrex::Real Cs2dx2 = Cs2 * dx2;
+    return -mu / (rho * Cs2dx2) * h +
+           Cs2dx2 / (3 * dpdx) *
+               std::pow(
+                   (2.0 / Cs2dx2 * dpdx * h +
+                    (mu / (rho * Cs2dx2)) * (mu / (rho * Cs2dx2)) + C1),
+                   3.0 / 2.0) +
+           C0;
+}
+
+} // namespace
+
 namespace amr_wind::channel_flow {
 
 /** Channel Flow physics
@@ -34,6 +59,8 @@ public:
 
     template <typename IndexSelector>
     amrex::Real compute_error(const IndexSelector& idxOp);
+
+    amrex::Real compute_analytical_smagorinsky_error();
 
     void output_error();
 

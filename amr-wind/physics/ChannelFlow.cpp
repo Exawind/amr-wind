@@ -131,6 +131,7 @@ void ChannelFlow::initialize_fields(
     const amrex::Real pi = M_PI;
     const auto& problo = geom.ProbLoArray();
     const auto& probhi = geom.ProbHiArray();
+    const auto& dx = geom.CellSizeArray();
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> lengths{AMREX_D_DECL(
         probhi[0] - problo[0], probhi[1] - problo[1], probhi[2] - problo[2])};
     const auto y_perturb = m_perturb_y_period * 2.0 * pi / lengths[1];
@@ -147,10 +148,6 @@ void ChannelFlow::initialize_fields(
             const auto dpdx = m_dpdx;
             for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
                 const auto& vbx = mfi.validbox();
-
-                const auto& dx = geom.CellSizeArray();
-                const auto& problo = geom.ProbLoArray();
-                const auto& probhi = geom.ProbHiArray();
                 auto vel = velocity.array(mfi);
 
                 amrex::ParallelFor(
@@ -161,22 +158,12 @@ void ChannelFlow::initialize_fields(
                         if (h > 1.0) {
                             h = 2.0 - h;
                         }
-                        const amrex::Real hp = h / y_tau;
-                        const amrex::Real Cs2 = Cs * Cs;
-                        const amrex::Real dx2 = dx[n_idx] * dx[n_idx];
-                        const amrex::Real Cs2dx2 = Cs2 * dx2;
+                        const amrex::Real ux = analytical_smagorinsky_profile(
+                            h, Cs, dx[n_idx], rho, mu, dpdx, C0, C1);
                         vel(i, j, k, 0) =
-                            -mu / (rho * Cs2dx2) * h +
-                            Cs2dx2 / (3 * dpdx) *
-                                std::pow(
-                                    (2.0 / Cs2dx2 * dpdx * h +
-                                     (mu / (rho * Cs2dx2)) *
-                                         (mu / (rho * Cs2dx2)) +
-                                     C1),
-                                    3.0 / 2.0) +
-                            C0 +
-                            (perturb_vel ? perturb_fac * std::sin(z_perturb * h)
-                                         : 0.0);
+                            ux + (perturb_vel
+                                      ? perturb_fac * std::sin(z_perturb * h)
+                                      : 0.0);
                         vel(i, j, k, 1) = 0.0;
                         vel(i, j, k, 2) = 0.0;
                     });
@@ -194,8 +181,6 @@ void ChannelFlow::initialize_fields(
 
             for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
                 const auto& vbx = mfi.validbox();
-
-                const auto& dx = geom.CellSizeArray();
                 auto vel = velocity.array(mfi);
                 auto wd = walldist.array(mfi);
 
@@ -344,6 +329,71 @@ amrex::Real ChannelFlow::compute_error(const IndexSelector& idxOp)
     return std::sqrt(error / total_vol);
 }
 
+amrex::Real ChannelFlow::compute_analytical_smagorinsky_error()
+{
+    amrex::Real error = 0.0;
+    const auto mu = m_mu;
+    auto coeffs = m_sim.turbulence_model().model_coeffs();
+    const auto Cs = coeffs["Cs"];
+    const auto rho = m_rho;
+    const auto C0 = m_C0;
+    const auto C1 = m_C1;
+    const auto dpdx = m_dpdx;
+
+    const auto& velocity = m_repo.get_field("velocity");
+
+    const int nlevels = m_repo.num_active_levels();
+    for (int lev = 0; lev < nlevels; ++lev) {
+
+        const auto& dx = m_mesh.Geom(lev).CellSizeArray();
+        const auto& prob_lo = m_mesh.Geom(lev).ProbLoArray();
+
+        amrex::iMultiFab level_mask;
+        if (lev < nlevels - 1) {
+            level_mask = makeFineMask(
+                m_mesh.boxArray(lev), m_mesh.DistributionMap(lev),
+                m_mesh.boxArray(lev + 1), amrex::IntVect(2), 1, 0);
+        } else {
+            level_mask.define(
+                m_mesh.boxArray(lev), m_mesh.DistributionMap(lev), 1, 0,
+                amrex::MFInfo());
+            level_mask.setVal(1);
+        }
+
+        const auto& vel = velocity(lev);
+        auto const& vel_arr = vel.const_arrays();
+        auto const& mask_arr = level_mask.const_arrays();
+
+        error += amrex::ParReduce(
+            amrex::TypeList<amrex::ReduceOpSum>{},
+            amrex::TypeList<amrex::Real>{}, vel, amrex::IntVect(0),
+            [=] AMREX_GPU_HOST_DEVICE(int box_no, int i, int j, int k)
+                -> amrex::GpuTuple<amrex::Real> {
+                auto const& vel_bx = vel_arr[box_no];
+                auto const& mask_bx = mask_arr[box_no];
+
+                const int n_idx = 2;
+                amrex::Real h = prob_lo[n_idx] + (k + 0.5) * dx[n_idx];
+                if (h > 1.0) {
+                    h = 2.0 - h;
+                }
+                const amrex::Real u = vel_bx(i, j, k, 0);
+                const amrex::Real u_exact = analytical_smagorinsky_profile(
+                    h, Cs, dx[n_idx], rho, mu, dpdx, C0, C1);
+
+                const amrex::Real cell_vol = dx[0] * dx[1] * dx[2];
+
+                return cell_vol * mask_bx(i, j, k) * (u - u_exact) *
+                       (u - u_exact);
+            });
+    }
+
+    amrex::ParallelDescriptor::ReduceRealSum(error);
+
+    const auto total_vol = m_mesh.Geom(0).ProbDomain().volume();
+    return std::sqrt(error / total_vol);
+}
+
 void ChannelFlow::output_error()
 {
     // analytical solution exists only for flow in streamwise direction
@@ -359,7 +409,7 @@ void ChannelFlow::output_error()
         if (m_laminar) {
             u_err = compute_error(ZDir());
         } else if (m_analytical_smagorinsky_test) {
-            u_err = 0.0;
+            u_err = compute_analytical_smagorinsky_error();
         }
         break;
     default:
