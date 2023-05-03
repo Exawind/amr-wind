@@ -76,6 +76,8 @@ void BCIface::read_bctype()
             ibctype[ori] = BC::fixed_gradient;
         } else if ((bcstr == "wave_generation") || (bcstr == "wg")) {
             ibctype[ori] = BC::wave_generation;
+        } else if ((bcstr == "symmetric_wall") || (bcstr == "symw")) {
+            ibctype[ori] = BC::symmetric_wall;
         } else {
             ibctype[ori] = BC::undefined;
         }
@@ -206,6 +208,19 @@ void BCVelocity::set_bcrec()
                 bcrec[dir].setHi(dir, amrex::BCType::ext_dir);
             }
             break;
+        case BC::symmetric_wall:
+            if (side == amrex::Orientation::low) {
+                // Tangential directions use first-order extrapolation
+                set_bcrec_lo(dir, amrex::BCType::foextrap);
+                // Normal direction uses dirichlet (ext-dir)
+                bcrec[dir].setLo(dir, amrex::BCType::ext_dir);
+            } else {
+                // Tangential directions use first-order extrapolation
+                set_bcrec_hi(dir, amrex::BCType::foextrap);
+                // Normal direction uses dirichlet (ext-dir)
+                bcrec[dir].setHi(dir, amrex::BCType::ext_dir);
+            }
+            break;
 
         default:
             amrex::Abort("Invalid incflo BC type encountered");
@@ -254,6 +269,7 @@ void BCScalar::set_bcrec()
         case BC::pressure_inflow:
         case BC::pressure_outflow:
         case BC::zero_gradient:
+        case BC::symmetric_wall:
             if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, amrex::BCType::foextrap);
             } else {

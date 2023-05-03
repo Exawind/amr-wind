@@ -42,13 +42,16 @@ The boundary conditions that can be specified in the input file are:
   if the user does not specify any inputs in the input file.
 
 - =zero_gradient= :: Sets =BCRec= to =foextrap= and =LinOpBCType= to Neumann.
-  Like =no_slip_wall=, the normal component of velocity is automatically reset
-  to zero. The value on the boundary face is the same as the value at the cell
+  Note, unlike the =no_slip_wall=, the normal component of velocity is also zero
+  Neumann. The value on the boundary face is the same as the value at the cell
   center. No additional inputs are necessary when this BC is specified.
 
 - =slip_wall= :: =BCRec = hoextrap= and =LinOpBCType = Neumann=. The value on
   the boundary face is /extrapolated/ from the two interior cells using a
   one-sided stencil. No additional inputs are necessary when this BC is specified.
+
+- =symmetric_wall= ::  Sets =BCRec= to =foextrap= and =LinOpBCType= to Neumann.
+  Similar to =zero_gradient= but the normal component of velocity is set to 0.
 
 - =fixed_gradient= :: =BCRec = hoextrap= and =LinOpBCType = inhomogNeumann=.
   Like =slip_wall= the value on the face is extrapolated (during fillpatch)

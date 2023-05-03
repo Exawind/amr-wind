@@ -14,6 +14,7 @@ enum struct BC {
     fixed_gradient,
     periodic,
     wave_generation,
+    symmetric_wall,
     undefined
 };
 
