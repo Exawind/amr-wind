@@ -203,3 +203,10 @@ AMR-wind :math:`L_2` error after :math:`t=200` seconds.
 
 .. image:: ./ekman_spiral_error.pdf 
    :width: 300pt
+
+Channel flow with Smagorinsky LES
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This test verifies the implementation of the Smagorinsky LES model as
+well as the wall model boundary conditions using an analytical channel
+flow solution.
