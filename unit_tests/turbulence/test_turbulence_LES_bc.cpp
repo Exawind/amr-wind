@@ -433,7 +433,7 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_zerogradient)
     EXPECT_NEAR(shear_bulk, srate, tol);
 
     // Velocity gradients assumed in setup (init_field3)
-    const amrex::Real uz_bulk = srate / sqrt(2.0);
+    const amrex::Real uz_bulk = srate / 2.0;
 
     // Naive answer, assumes extrapolation
     const amrex::Real s_naive = srate;
@@ -447,7 +447,11 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_zerogradient)
          1.0 * (uz_bulk * 0.5 * dz + 2.0) -
          4.0 / 3.0 * (uz_bulk * 0.5 * dz + 2.0)) /
         dz;
-    const amrex::Real s_true = uz_wallface_neumann * sqrt(2.0);
+    // Neumann is applied to w as well
+    const amrex::Real wz_wallface_neumann = uz_wallface_neumann;
+    const amrex::Real s_true = sqrt(
+        2.0 * wz_wallface_neumann * wz_wallface_neumann +
+        2.0 * uz_wallface_neumann * uz_wallface_neumann);
     EXPECT_NEAR(shear_wall, s_true, tol);
 }
 
