@@ -203,3 +203,91 @@ AMR-wind :math:`L_2` error after :math:`t=200` seconds.
 
 .. image:: ./ekman_spiral_error.pdf 
    :width: 300pt
+
+Channel flow with Smagorinsky LES
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This test verifies the implementation of the Smagorinsky LES model as
+well as the wall model boundary conditions using an analytical channel
+flow solution.
+
+Smagorinsky model:
+
+.. math:: \nu_t = C_s^2 (2 \langle S_{ij} S_{ij} \rangle)^{\frac{1}{2}} \Delta^2
+
+This simplifies in a 1-D case to
+
+.. math:: \nu_t = C_s^2 \Delta^2 \lvert \frac{\partial U}{\partial z} \rvert
+
+Mean velocity equations:
+
+.. math:: \frac{\partial U}{\partial t} = -\frac{\mathrm{d} P}{\mathrm{d} x} + \left(\nu + C_s^2 \lvert \frac{\partial U}{\partial z} \rvert \Delta^2 \right) \frac{\partial^2 U}{{\partial z^2}}
+
+Steady state solution (assuming :math:`\frac{\partial U}{\partial z} > 0`):
+
+.. math:: 0 = -\frac{\mathrm{d} P}{\mathrm{d} x} + \left(\nu + C_s^2 \frac{\partial U}{\partial z} \Delta^2 \right) \frac{\partial^2 U}{{\partial z^2}}
+
+The analytical solution is:
+
+.. math:: U = -\frac{\nu}{C_s^2 \Delta^2} z + \frac{C_s^2 \Delta^2}{3 \frac{\mathrm{d} P}{\mathrm{d} x}} \left( \frac{2}{C_s^2 \Delta^2} \frac{\mathrm{d} P}{\mathrm{d} x} z + \left(\frac{\nu}{C_s^2 \Delta^2}\right)^2 + \mathcal{C}_1 \right)^{\frac{3}{2}} + \mathcal{C}_0
+
+where :math:`\mathcal{C}_i` are arbitrary constants.
+
+To solve for :math:`\mathcal{C}_1`, we set the requirement that
+:math:`(\nu+\nu_t)\frac{\partial U}{\partial z}\Bigg\vert_{z=0} = -\frac{\partial P}{\partial x}` using
+
+.. math::
+
+   \begin{aligned}
+       \frac{\partial U}{\partial z} &= -\frac{\nu}{C_s^2 \Delta^2} + \left( \frac{2}{C_s^2 \Delta^2} \frac{\mathrm{d} P}{\mathrm{d} x} z + \left(\frac{\nu}{C_s^2 \Delta^2}\right)^2 + \mathcal{C}_1 \right)^{\frac{1}{2}} \\
+   \end{aligned}
+
+This gives us a value for :math:`\mathcal{C}_1` as
+
+.. math:: \mathcal{C}_1 = \frac{1}{2} \left(-\left(\frac{\nu}{C_s^2\Delta^2}\right)^2 - \frac{2}{C_s^2\Delta^2} \frac{\mathrm{d} P}{\mathrm{d} x} +  \left(\left(\frac{\nu}{C_s^2\Delta^2}\right)^4 + 4\left(\frac{\nu}{C_s^2\Delta^2}\right)^2 \left(-\frac{\mathrm{d} P}{\mathrm{d} x} \frac{1}{C_s^2 \Delta^2}\right)\right)^{\frac{1}{2}}\right)
+
+Using this :math:`\mathcal{C}_1` and setting :math:`U(z=0)=0`, we get
+:math:`\mathcal{C}_0` as:
+
+.. math:: \mathcal{C}_0 = - \frac{C_s^2 \Delta^2}{3 \frac{\mathrm{d} P}{\mathrm{d} x}} \left(  \left(\frac{\nu}{C_s^2 \Delta^2}\right)^2 + \mathcal{C}_1 \right)^{\frac{3}{2}}
+
+Finally, to make this problem well-posed, instead of setting a slip-wall
+at the top boundary, we set a Dirichlet boundary condition using
+:math:`U(z)` computed at :math:`z_{\mathrm{hi}}`.
+
+Parameter values for testing
+############################
+
+.. math::
+
+   \begin{aligned}
+       \nu &= 3.5e-3\\
+       \frac{\mathrm{d} P}{\mathrm{d} x} &= -0.003969\\
+       C_s &= 0.1\\
+       \Delta &= \frac{1}{n_z}
+   \end{aligned}
+
+The hand computed values for the constants and boundary conditions for
+varying :math:`n_z` are:
+
+.. container:: center
+
+   +-------------+-----------------------+------------------------+------------------------+
+   | :math:`n_z` | :math:`\mathcal{C}_0` | :math:`\mathcal{C}_1`  | :math:`U\vert_{z=1}`   |
+   +=============+=======================+========================+========================+
+   | 8           | 169.90632344067848    | 49.63299783004268      | 0.5322727144609587     |
+   +-------------+-----------------------+------------------------+------------------------+
+   | 16          | 2449.4399999999982    | 201.95839999999998     | 0.5576738677495996     |
+   +-------------+-----------------------+------------------------+------------------------+
+   | 32          | 38115.76743991355     | 811.5733178848386      | 0.5646234542509774     |
+   +-------------+-----------------------+------------------------+------------------------+
+   | 64          | 605551.4603806001     | 3250.1208744082833     | 0.5664029656909406     |
+   +-------------+-----------------------+------------------------+------------------------+
+
+Test results
+############
+
+These are results of running the test case for 100 seconds.
+
+.. image:: ./channel_smagorinsky.png
+   :width: 300pt
