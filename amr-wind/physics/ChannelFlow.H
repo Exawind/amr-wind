@@ -81,6 +81,8 @@ private:
 
     amrex::Real m_mean_vel;
 
+    bool m_half{false};
+
     //! direction of mean velocity
     int m_mean_vel_dir{0};
 

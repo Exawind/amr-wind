@@ -41,6 +41,7 @@ protected:
             case BC::pressure_outflow:
             case BC::zero_gradient:
             case BC::no_slip_wall:
+            case BC::symmetric_wall:
                 if (side == amrex::Orientation::low) {
                     set_bcrec_lo(dir, amrex::BCType::foextrap);
                 } else {
