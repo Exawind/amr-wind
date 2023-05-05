@@ -60,6 +60,13 @@ void incflo::advance()
     }
 }
 
+void incflo::redo_proj()
+{
+    BL_PROFILE("amr-wind::incflo::redo_proj");
+
+    RedoPredictorProj();
+}
+
 // Apply predictor step
 //
 //  For Godunov, this completes the timestep. For MOL, this is the first part of
@@ -385,6 +392,9 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // Project velocity field, update pressure
     //
     // ************************************************************************************
+    // Store starred* state as old, for the sake of redoing projection with
+    // hybrid solver
+    amr_wind::field_ops::copy(velocity_old, velocity_new, 0, 0, 3, 3);
     ApplyProjection(
         (density_new).vec_const_ptrs(), new_time, m_time.deltaT(),
         incremental_projection);
@@ -606,6 +616,27 @@ void incflo::ApplyCorrector()
     bool incremental = false;
     ApplyProjection(
         (density_new).vec_const_ptrs(), new_time, m_time.deltaT(), incremental);
+}
+
+void incflo::RedoPredictorProj(bool incremental_projection)
+{
+    BL_PROFILE("amr-wind::incflo::RedoPredictorProj");
+
+    // We use the new time value for things computed on the "*" state
+    Real new_time = m_time.new_time();
+
+    auto& icns_fields = icns().fields();
+    auto& velocity_new = icns_fields.field;
+    auto& velocity_star = velocity_new.state(amr_wind::FieldState::Old);
+    auto& density_new = density();
+
+    // Replace new state with starred state
+    amr_wind::field_ops::copy(velocity_new, velocity_star, 0, 0, 3, 3);
+
+    // Project velocity field, update pressure
+    ApplyProjection(
+        (density_new).vec_const_ptrs(), new_time, m_time.deltaT(),
+        incremental_projection);
 }
 
 void incflo::prescribe_advance()

@@ -99,6 +99,7 @@ public:
     void advance();
     void prescribe_advance();
     void post_advance_work();
+    void redo_proj();
 
     amr_wind::CFDSim& sim() { return m_sim; }
     const amr_wind::SimTime& time() const { return m_time; }
@@ -136,6 +137,7 @@ public:
         int lev, amrex::Real time, amrex::MultiFab& vel, int nghost);
 
     void ApplyPredictor(bool incremental_projection = false);
+    void RedoPredictorProj(bool incremental_projection = false);
     void ApplyCorrector();
     void ApplyPrescribeStep();
 
