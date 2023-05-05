@@ -392,6 +392,9 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // Project velocity field, update pressure
     //
     // ************************************************************************************
+    RemoveEstimatedGradP(
+        (density_new).vec_const_ptrs(), new_time, m_time.deltaT(),
+        incremental_projection);
     // Store starred* state as old, for the sake of redoing projection with
     // hybrid solver
     amr_wind::field_ops::copy(velocity_old, velocity_new, 0, 0, 3, 3);

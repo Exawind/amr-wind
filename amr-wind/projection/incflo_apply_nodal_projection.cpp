@@ -103,6 +103,60 @@ incflo::get_projection_bc(Orientation::Side side) const noexcept
  * projection.
  *
  */
+
+void incflo::RemoveEstimatedGradP(
+    Vector<MultiFab const*> density,
+    Real time,
+    Real scaling_factor,
+    bool incremental)
+{
+    BL_PROFILE("amr-wind::incflo::RemoveEstimatedGradP");
+
+    bool mesh_mapping = m_sim.has_mesh_mapping();
+    amr_wind::Field const* mesh_fac =
+        mesh_mapping
+            ? &(m_repo.get_mesh_mapping_field(amr_wind::FieldLoc::CELL))
+            : nullptr;
+
+    auto& grad_p = m_repo.get_field("gp");
+    auto& pressure = m_repo.get_field("p");
+    auto& velocity = icns().fields().field;
+    auto& velocity_old = icns().fields().field.state(amr_wind::FieldState::Old);
+    if (!incremental) {
+        for (int lev = 0; lev <= finest_level; lev++) {
+
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+            for (MFIter mfi(velocity(lev), TilingIfNotGPU()); mfi.isValid();
+                 ++mfi) {
+                Box const& bx = mfi.tilebox();
+                Array4<Real> const& u = velocity(lev).array(mfi);
+                Array4<Real const> const& rho = density[lev]->const_array(mfi);
+                Array4<Real const> const& gp = grad_p(lev).const_array(mfi);
+                amrex::Array4<amrex::Real const> fac =
+                    mesh_mapping ? ((*mesh_fac)(lev).const_array(mfi))
+                                 : amrex::Array4<amrex::Real const>();
+
+                amrex::ParallelFor(
+                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        Real soverrho = scaling_factor / rho(i, j, k);
+                        amrex::Real fac_x =
+                            mesh_mapping ? (fac(i, j, k, 0)) : 1.0;
+                        amrex::Real fac_y =
+                            mesh_mapping ? (fac(i, j, k, 1)) : 1.0;
+                        amrex::Real fac_z =
+                            mesh_mapping ? (fac(i, j, k, 2)) : 1.0;
+
+                        u(i, j, k, 0) += 1 / fac_x * gp(i, j, k, 0) * soverrho;
+                        u(i, j, k, 1) += 1 / fac_y * gp(i, j, k, 1) * soverrho;
+                        u(i, j, k, 2) += 1 / fac_z * gp(i, j, k, 2) * soverrho;
+                    });
+            }
+        }
+    }
+}
+
 void incflo::ApplyProjection(
     Vector<MultiFab const*> density,
     Real time,
@@ -153,43 +207,6 @@ void incflo::ApplyProjection(
     // ensure velocity is in stretched mesh space
     if (velocity.in_uniform_space() && mesh_mapping) {
         velocity.to_stretched_space();
-    }
-
-    // Add the ( grad p /ro ) back to u* (note the +dt)
-    // Also account for mesh mapping in ( grad p /ro ) ->  1/fac * grad(p) *
-    // dt/rho
-    if (!incremental) {
-        for (int lev = 0; lev <= finest_level; lev++) {
-
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-            for (MFIter mfi(velocity(lev), TilingIfNotGPU()); mfi.isValid();
-                 ++mfi) {
-                Box const& bx = mfi.tilebox();
-                Array4<Real> const& u = velocity(lev).array(mfi);
-                Array4<Real const> const& rho = density[lev]->const_array(mfi);
-                Array4<Real const> const& gp = grad_p(lev).const_array(mfi);
-                amrex::Array4<amrex::Real const> fac =
-                    mesh_mapping ? ((*mesh_fac)(lev).const_array(mfi))
-                                 : amrex::Array4<amrex::Real const>();
-
-                amrex::ParallelFor(
-                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        Real soverrho = scaling_factor / rho(i, j, k);
-                        amrex::Real fac_x =
-                            mesh_mapping ? (fac(i, j, k, 0)) : 1.0;
-                        amrex::Real fac_y =
-                            mesh_mapping ? (fac(i, j, k, 1)) : 1.0;
-                        amrex::Real fac_z =
-                            mesh_mapping ? (fac(i, j, k, 2)) : 1.0;
-
-                        u(i, j, k, 0) += 1 / fac_x * gp(i, j, k, 0) * soverrho;
-                        u(i, j, k, 1) += 1 / fac_y * gp(i, j, k, 1) * soverrho;
-                        u(i, j, k, 2) += 1 / fac_z * gp(i, j, k, 2) * soverrho;
-                    });
-            }
-        }
     }
 
     bool add_surface_tension = m_sim.physics_manager().contains("MultiPhase");
