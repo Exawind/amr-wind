@@ -11,13 +11,15 @@
 
 namespace amr_wind {
 
-WallFunction::WallFunction(CFDSim& sim) : m_sim(sim), m_mesh(m_sim.mesh()), m_pa_vel(sim, m_direction)
+WallFunction::WallFunction(CFDSim& sim)
+    : m_sim(sim), m_mesh(m_sim.mesh()), m_pa_vel(sim, m_direction)
 {
     {
         amrex::ParmParse pp("BodyForce");
         amrex::Vector<amrex::Real> body_force{{0.0, 0.0, 0.0}};
         pp.getarr("magnitude", body_force);
-        m_log_law.utau_mean = std::sqrt(body_force[0]*body_force[0] + body_force[1]*body_force[1]);
+        m_log_law.utau_mean = std::sqrt(
+            body_force[0] * body_force[0] + body_force[1] * body_force[1]);
         AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
             std::abs(body_force[2]) < 1e-16,
             "body force in z should be zero for this wall function");
@@ -41,7 +43,8 @@ VelWallFunc::VelWallFunc(Field& /*unused*/, WallFunction& wall_func)
     pp.query("wall_shear_stress_type", m_wall_shear_stress_type);
     m_wall_shear_stress_type = amrex::toLower(m_wall_shear_stress_type);
 
-    if (m_wall_shear_stress_type == "constant" || m_wall_shear_stress_type == "log_law") {
+    if (m_wall_shear_stress_type == "constant" ||
+        m_wall_shear_stress_type == "log_law") {
         amrex::Print() << "Shear Stress model: " << m_wall_shear_stress_type
                        << std::endl;
     } else {
@@ -104,8 +107,10 @@ void VelWallFunc::wall_model(
                         varr(i, j, k - 1, 2) = 0.0;
 
                         // Shear stress BC
-                        varr(i, j, k - 1, 0) = utau * utau / mu * den(i, j, k) * uu/wspd;
-                        varr(i, j, k - 1, 1) = utau * utau / mu * den(i, j, k) * vv/wspd;
+                        varr(i, j, k - 1, 0) =
+                            utau * utau / mu * den(i, j, k) * uu / wspd;
+                        varr(i, j, k - 1, 1) =
+                            utau * utau / mu * den(i, j, k) * vv / wspd;
                     });
             }
 
@@ -124,8 +129,10 @@ void VelWallFunc::wall_model(
                         varr(i, j, k, 2) = 0.0;
 
                         // Shear stress BC
-                        varr(i, j, k, 0) = -utau * utau / mu * den(i, j, k) * uu/wspd;
-                        varr(i, j, k, 1) = -utau * utau / mu * den(i, j, k) * vv/wspd;
+                        varr(i, j, k, 0) =
+                            -utau * utau / mu * den(i, j, k) * uu / wspd;
+                        varr(i, j, k, 1) =
+                            -utau * utau / mu * den(i, j, k) * vv / wspd;
                     });
             }
         }
@@ -219,7 +226,8 @@ void VelWallFunc::operator()(Field& velocity, const FieldState rho_state)
 void WallFunction::update_umean()
 {
     m_pa_vel();
-    m_log_law.wspd_mean = m_pa_vel.line_hvelmag_average_interpolated(m_log_law.zref);
+    m_log_law.wspd_mean =
+        m_pa_vel.line_hvelmag_average_interpolated(m_log_law.zref);
     m_log_law.update_utau_mean();
 }
 } // namespace amr_wind

@@ -35,7 +35,7 @@ private:
 
     //! LogLaw instance
     LogLaw m_log_law;
-    int m_direction{2};   ///< Direction normal to wall, hardcoded to z
+    int m_direction{2}; ///< Direction normal to wall, hardcoded to z
     VelPlaneAveragingFine m_pa_vel;
 };
 
