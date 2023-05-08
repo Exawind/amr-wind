@@ -20,8 +20,9 @@ struct LogLaw
     // Reference height for log law
     amrex::Real zref;
     amrex::Real nu; // molecular viscosity
-    // u_tau state variable, gets updated in update_utau
-    amrex::Real utau_mean;
+    // u_tau state variable, gets updated in update_utau depending on
+    // the type of wall model used
+    amrex::Real utau_mean{1.0};
     amrex::Real wspd_mean; // mean horizontal velocity magnitude
 
     void update_utau_mean() { utau_mean = get_utau(wspd_mean); }
@@ -45,13 +46,6 @@ struct LogLaw
                 utau - (wspd_pred - wspd) / wspd_deriv; // Newton-Raphson update
             ++iter;
         } while ((std::abs(utau_iter - utau) > 1e-5) && iter <= max_iters);
-
-        if (iter >= max_iters) {
-            amrex::Print()
-                << "LogLaw::update_utau: Convergence criteria not met after "
-                << max_iters << " iterations" << std::endl
-                << "utau = " << utau << " wspd = " << wspd << std::endl;
-        }
         return utau;
     }
 };
