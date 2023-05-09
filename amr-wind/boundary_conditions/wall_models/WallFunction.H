@@ -25,6 +25,7 @@ public:
 
     //! Update the mean velocity at a given timestep
     void update_umean();
+    void update_utau_mean();
 
     ~WallFunction() = default;
 
@@ -54,8 +55,11 @@ public:
     static void wall_model(
         Field& velocity, const FieldState rho_state, const amrex::Real utau);
 
+    template <typename ShearStressSimple>
     static void wall_model(
-        Field& velocity, const FieldState rho_state, const LogLaw& log_law);
+        Field& velocity,
+        const FieldState rho_state,
+        const ShearStressSimple& tau);
 
 private:
     WallFunction& m_wall_func;

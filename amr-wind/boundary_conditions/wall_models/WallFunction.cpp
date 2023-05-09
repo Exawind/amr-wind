@@ -1,4 +1,5 @@
 #include "amr-wind/boundary_conditions/wall_models/WallFunction.H"
+#include "amr-wind/boundary_conditions/wall_models/ShearStressSimple.H"
 #include "amr-wind/utilities/tensor_ops.H"
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/diffusion/diffusion.H"
@@ -44,7 +45,8 @@ VelWallFunc::VelWallFunc(Field& /*unused*/, WallFunction& wall_func)
     m_wall_shear_stress_type = amrex::toLower(m_wall_shear_stress_type);
 
     if (m_wall_shear_stress_type == "constant" ||
-        m_wall_shear_stress_type == "log_law") {
+        m_wall_shear_stress_type == "log_law" ||
+        m_wall_shear_stress_type == "schumann") {
         amrex::Print() << "Shear Stress model: " << m_wall_shear_stress_type
                        << std::endl;
     } else {
@@ -52,8 +54,9 @@ VelWallFunc::VelWallFunc(Field& /*unused*/, WallFunction& wall_func)
     }
 }
 
+template <typename ShearStressSimple>
 void VelWallFunc::wall_model(
-    Field& velocity, const FieldState rho_state, const LogLaw& log_law)
+    Field& velocity, const FieldState rho_state, const ShearStressSimple& tau)
 {
     BL_PROFILE("amr-wind::VelWallFunc");
     constexpr int idim = 2;
@@ -101,16 +104,14 @@ void VelWallFunc::wall_model(
                         const amrex::Real uu = vold_arr(i, j, k, 0);
                         const amrex::Real vv = vold_arr(i, j, k, 1);
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
-                        amrex::Real utau = log_law.get_utau(wspd);
-
                         // Dirichlet BC
                         varr(i, j, k - 1, 2) = 0.0;
 
                         // Shear stress BC
                         varr(i, j, k - 1, 0) =
-                            utau * utau / mu * den(i, j, k) * uu / wspd;
+                            tau.get_shear(uu, wspd) / mu * den(i, j, k);
                         varr(i, j, k - 1, 1) =
-                            utau * utau / mu * den(i, j, k) * vv / wspd;
+                            tau.get_shear(vv, wspd) / mu * den(i, j, k);
                     });
             }
 
@@ -123,16 +124,14 @@ void VelWallFunc::wall_model(
                         const amrex::Real uu = vold_arr(i, j, k - 1, 0);
                         const amrex::Real vv = vold_arr(i, j, k - 1, 1);
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
-                        amrex::Real utau = log_law.get_utau(wspd);
-
                         // Dirichlet BC
                         varr(i, j, k, 2) = 0.0;
 
                         // Shear stress BC
                         varr(i, j, k, 0) =
-                            -utau * utau / mu * den(i, j, k) * uu / wspd;
+                            -tau.get_shear(uu, wspd) / mu * den(i, j, k);
                         varr(i, j, k, 1) =
-                            -utau * utau / mu * den(i, j, k) * vv / wspd;
+                            -tau.get_shear(vv, wspd) / mu * den(i, j, k);
                     });
             }
         }
@@ -217,9 +216,14 @@ void VelWallFunc::operator()(Field& velocity, const FieldState rho_state)
     if (m_wall_shear_stress_type == "constant") {
         wall_model(velocity, rho_state, m_wall_func.utau());
     } else if (m_wall_shear_stress_type == "log_law") {
-        const auto& log_law = m_wall_func.log_law();
-        wall_model(velocity, rho_state, log_law);
         m_wall_func.update_umean();
+        m_wall_func.update_utau_mean();
+        auto tau = SimpleShearLogLaw(m_wall_func.log_law());
+        wall_model(velocity, rho_state, tau);
+    } else if (m_wall_shear_stress_type == "schumann") {
+        m_wall_func.update_umean();
+        auto tau = SimpleShearSchumann(m_wall_func.log_law());
+        wall_model(velocity, rho_state, tau);
     }
 }
 
@@ -228,6 +232,7 @@ void WallFunction::update_umean()
     m_pa_vel();
     m_log_law.wspd_mean =
         m_pa_vel.line_hvelmag_average_interpolated(m_log_law.zref);
-    m_log_law.update_utau_mean();
 }
+
+void WallFunction::update_utau_mean() { m_log_law.update_utau_mean(); }
 } // namespace amr_wind
