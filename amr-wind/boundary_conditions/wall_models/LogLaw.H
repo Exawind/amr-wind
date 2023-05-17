@@ -11,8 +11,6 @@ struct LogLaw
      * magnitude at a zref. This is akin to an explicit non-linear
      * Robin boundary condition at the wall.
      */
-    LogLaw(const LogLaw& ll) = default;
-    LogLaw() = default;
 
     // Log law constants from Lee & Moser 2015
     // https://doi.org/10.1017/jfm.2015.268.
