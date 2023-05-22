@@ -9,7 +9,7 @@ namespace amr_wind {
 struct SimpleShearSchumann
 {
     explicit SimpleShearSchumann(const amr_wind::LogLaw& ll)
-        : utau2(ll.utau_mean * ll.utau_mean), wspd_mean(ll.wspd_mean)
+        : utau2(ll.utau_mean * ll.utau_mean), wspd_mean(ll.wspd_mean), m_ll(ll)
     {}
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
@@ -20,6 +20,7 @@ struct SimpleShearSchumann
 
     amrex::Real utau2;
     amrex::Real wspd_mean;
+    const amr_wind::LogLaw m_ll;
 };
 struct SimpleShearLogLaw
 {

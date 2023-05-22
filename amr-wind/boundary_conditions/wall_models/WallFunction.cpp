@@ -29,12 +29,17 @@ WallFunction::WallFunction(CFDSim& sim)
         amrex::ParmParse pp("transport");
         pp.query("viscosity", m_log_law.nu);
     }
-    const auto& geom = m_mesh.Geom(0);
-    // Reference height for log-law, this is always the first cell height
-    // NOTE: this wall function assumes that the first cell height and the
-    // last cell height are the same
-    m_log_law.zref =
-        (geom.ProbLo(m_direction) + 0.5 * geom.CellSize(m_direction));
+    {
+        amrex::ParmParse pp("WallFunction");
+        // Reference height for log-law
+        if (pp.contains("log_law_ref_index")) {
+            pp.get("log_law_ref_index", m_log_law.ref_index);
+        }
+        const auto& geom = m_mesh.Geom(0);
+        m_log_law.zref =
+            (geom.ProbLo(m_direction) +
+             (m_log_law.ref_index + 0.5) * geom.CellSize(m_direction));
+    }
 }
 
 VelWallFunc::VelWallFunc(Field& /*unused*/, WallFunction& wall_func)
@@ -64,6 +69,7 @@ void VelWallFunc::wall_model(
     const auto& density = repo.get_field("density", rho_state);
     const auto& viscosity = repo.get_field("velocity_mueff");
     const int nlevels = repo.num_active_levels();
+    const auto idx_offset = tau.m_ll.ref_index;
 
     amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
     amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
@@ -101,8 +107,10 @@ void VelWallFunc::wall_model(
                     amrex::bdryLo(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real mu = eta(i, j, k);
-                        const amrex::Real uu = vold_arr(i, j, k, 0);
-                        const amrex::Real vv = vold_arr(i, j, k, 1);
+                        const amrex::Real uu =
+                            vold_arr(i, j, k + idx_offset, 0);
+                        const amrex::Real vv =
+                            vold_arr(i, j, k + idx_offset, 1);
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
                         // Dirichlet BC
                         varr(i, j, k - 1, 2) = 0.0;
@@ -121,8 +129,10 @@ void VelWallFunc::wall_model(
                     amrex::bdryHi(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real mu = eta(i, j, k - 1);
-                        const amrex::Real uu = vold_arr(i, j, k - 1, 0);
-                        const amrex::Real vv = vold_arr(i, j, k - 1, 1);
+                        const amrex::Real uu =
+                            vold_arr(i, j, k - 1 - idx_offset, 0);
+                        const amrex::Real vv =
+                            vold_arr(i, j, k - 1 - idx_offset, 1);
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
                         // Dirichlet BC
                         varr(i, j, k, 2) = 0.0;

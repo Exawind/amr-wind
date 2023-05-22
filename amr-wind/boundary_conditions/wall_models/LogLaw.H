@@ -19,6 +19,7 @@ struct LogLaw
     int max_iters = 25; // Max iterations for u_tau Newton-Raphson solve
     // Reference height for log law
     amrex::Real zref;
+    int ref_index{0};
     amrex::Real nu; // molecular viscosity
     // u_tau state variable, gets updated in update_utau depending on
     // the type of wall model used
