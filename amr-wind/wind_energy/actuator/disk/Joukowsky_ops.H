@@ -225,7 +225,9 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                 const auto point_current = grid.pos[ip];
 
                 // TODO add sign convention for rotation (+/- RPM)
-                const auto theta_vec = utils::compute_tangential_vector(
+                // Negative sign on theta_vec means turbine is rotating
+                // clockwise when standing upstream looking downstream
+                const auto theta_vec = -utils::compute_tangential_vector(
                     ddata.center, ddata.normal_vec, point_current);
 
                 // normal vec by definition is opposite of the wind direction
