@@ -95,6 +95,7 @@ public:
     bool regrid_and_update();
     void pre_advance_stage1();
     void pre_advance_stage2();
+    void do_advance();
     void advance();
     void prescribe_advance();
     void post_advance_work();
