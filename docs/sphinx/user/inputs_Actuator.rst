@@ -105,6 +105,13 @@ Example for ``FixedWingLine``::
   `Martinez-Tossas and Meneveau (2019) <https://doi.org/10.1017/jfm.2018.994>`_
   The default value is `0.1`.
 
+.. input_param:: Actuator.FixedWingLine.fllc_start_time
+
+  **type:** Double
+
+  The time in the simulation from when to start using the correction.
+  The default value is `0`.
+
 .. input_param:: Actuator.FixedWingLine.pitch
 
    **type:** Real number, optional
