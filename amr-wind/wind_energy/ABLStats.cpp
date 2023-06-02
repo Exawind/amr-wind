@@ -6,6 +6,8 @@
 #include "amr-wind/utilities/tensor_ops.H"
 #include "amr-wind/equation_systems/icns/source_terms/ABLForcing.H"
 #include "amr-wind/equation_systems/PDEHelpers.H"
+#include "amr-wind/equation_systems/SchemeTraits.H"
+#include "amr-wind/equation_systems/tke/TKE.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_ParallelDescriptor.H"
@@ -53,6 +55,7 @@ void ABLStats::initialize()
         pp.queryarr("gravity", gravity);
         m_gravity = utils::vec_mag(gravity.data());
         pp.get("reference_temperature", m_ref_theta);
+        pp.query("stats_do_energy_budget", m_do_energy_budget);
     }
 
     // Get normal direction and associated stuff
@@ -89,6 +92,7 @@ void ABLStats::calc_averages()
     m_pa_temp();
     m_pa_vel_fine();
     m_pa_temp_fine();
+    m_pa_mueff();
 }
 
 //! Calculate sfs stress averages
@@ -135,6 +139,64 @@ void ABLStats::calc_sfs_stress_avgs(
                         t_sfs_arr(i, j, k, icomp) =
                             -alphaeff_arr(i, j, k) * gradT_arr(i, j, k, icomp);
                     }
+                });
+        }
+    }
+}
+
+//! Calculate sfs stress averages
+void ABLStats::calc_tke_diffusion(
+    ScratchField& diffusion,
+    const Field& buoy_prod,
+    const Field& shear_prod,
+    const Field& dissipation,
+    const amrex::Real dt)
+{
+
+    BL_PROFILE("amr-wind::ABLStats::calc_tke_diffusion");
+
+    // Get tke fields
+    Field& tke = m_sim.repo().get_field("tke");
+    Field& tke_old = tke.state(amr_wind::FieldState::Old);
+    // Get conv_term from tke eq
+    auto& pde_mgr = m_sim.pde_manager();
+    // Check for presence of tke-godunov
+    std::string tke_pde_name = amr_wind::pde::TKE::pde_name();
+    if (!pde_mgr.has_pde(tke_pde_name)) {
+        amrex::Abort(
+            "ABL Stats Failure: " + tke_pde_name +
+            " PDE not present. Energy budget relies on TKE equation and "
+            "Godunov "
+            "assumptions.");
+    }
+    std::string tke_scheme_name = amr_wind::fvm::Godunov::scheme_name();
+    if (pde_mgr.scheme() != tke_scheme_name) {
+        amrex::Abort(
+            "ABL Stats Failure: " + amr_wind::fvm::Godunov::scheme_name() +
+            " not being used. Energy budget relies on tke equation and Godunov "
+            "assumptions");
+    }
+    auto& tke_eqn = pde_mgr(tke_pde_name + "-" + tke_scheme_name);
+    Field& conv_term = tke_eqn.fields().conv_term;
+
+    const int nlevels = m_sim.repo().num_active_levels();
+    for (int lev = 0; lev < nlevels; ++lev) {
+        for (amrex::MFIter mfi(diffusion(lev)); mfi.isValid(); ++mfi) {
+            const auto& bx = mfi.tilebox();
+            const auto& diffusion_arr = diffusion(lev).array(mfi);
+            const auto& buoy_prod_arr = buoy_prod(lev).const_array(mfi);
+            const auto& shear_prod_arr = shear_prod(lev).const_array(mfi);
+            const auto& dissipation_arr = dissipation(lev).const_array(mfi);
+            const auto& tke_arr = tke(lev).const_array(mfi);
+            const auto& tke_old_arr = tke_old(lev).const_array(mfi);
+            const auto& conv_arr = conv_term(lev).const_array(mfi);
+
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    diffusion_arr(i, j, k) =
+                        (tke_arr(i, j, k) - tke_old_arr(i, j, k)) / dt -
+                        conv_arr(i, j, k) - shear_prod_arr(i, j, k) -
+                        buoy_prod_arr(i, j, k) + dissipation_arr(i, j, k);
                 });
         }
     }
@@ -389,6 +451,20 @@ void ABLStats::prepare_netcdf_file()
     grp.def_var("u'w'_sfs", NC_DOUBLE, two_dim);
     grp.def_var("v'w'_sfs", NC_DOUBLE, two_dim);
 
+    // Energy budget
+    if (m_do_energy_budget) {
+        if (!m_sim.repo().field_exists("buoy_prod")) {
+            amrex::Abort(
+                "ABL Stats Failure: buoy_prod field not present, indicating "
+                "OneEqKsgs turbulence model not being used. Energy budget "
+                "currently only applies to this turbulence model.");
+        }
+        grp.def_var("tke_buoy", NC_DOUBLE, two_dim);
+        grp.def_var("tke_shear", NC_DOUBLE, two_dim);
+        grp.def_var("tke_dissip", NC_DOUBLE, two_dim);
+        grp.def_var("tke_diff", NC_DOUBLE, two_dim);
+    }
+
     ncf.exit_def_mode();
 
     {
@@ -532,6 +608,48 @@ void ABLStats::write_netcdf()
                 pa_tsfs.line_average(i, l_vec);
                 auto var = grp.var(var_names[i]);
                 var.put(l_vec.data(), start, count);
+            }
+        }
+
+        if (m_do_energy_budget) {
+            // TKE terms
+            auto& tke_buoy_prod = m_sim.repo().get_field("buoy_prod");
+            auto& tke_shear_prod = m_sim.repo().get_field("shear_prod");
+            auto& tke_dissip = m_sim.repo().get_field("dissipation");
+            // Scratch field for diffusion
+            auto tke_diffusion =
+                m_sim.repo().create_scratch_field("tke_diffusion", 1);
+            // Solve for diffusion term using other terms
+            calc_tke_diffusion(
+                *tke_diffusion, tke_buoy_prod, tke_shear_prod, tke_dissip,
+                m_sim.time().deltaT());
+            {
+                FieldPlaneAveraging pa_tke_buoy_prod(
+                    tke_dissip, m_sim.time(), m_normal_dir);
+                pa_tke_buoy_prod();
+                auto var = grp.var("tke_buoy");
+                var.put(pa_tke_buoy_prod.line_average().data(), start, count);
+            }
+            {
+                FieldPlaneAveraging pa_tke_shear_prod(
+                    tke_shear_prod, m_sim.time(), m_normal_dir);
+                pa_tke_shear_prod();
+                auto var = grp.var("tke_shear");
+                var.put(pa_tke_shear_prod.line_average().data(), start, count);
+            }
+            {
+                FieldPlaneAveraging pa_tke_dissip(
+                    tke_dissip, m_sim.time(), m_normal_dir);
+                pa_tke_dissip();
+                auto var = grp.var("tke_dissip");
+                var.put(pa_tke_dissip.line_average().data(), start, count);
+            }
+            {
+                ScratchFieldPlaneAveraging pa_tke_diff(
+                    *tke_diffusion, m_sim.time(), m_normal_dir);
+                pa_tke_diff();
+                auto var = grp.var("tke_diff");
+                var.put(pa_tke_diff.line_average().data(), start, count);
             }
         }
     }
