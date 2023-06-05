@@ -175,18 +175,18 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
         }
 
         // Compute the solid body term S0 (Sorensen 2022, eq. 27)
-	amrex::Real S0 = 0.0;
-	const amrex::Real alpha1 = ddata.S0_alpha1;
-	const amrex::Real alpha2 = ddata.S0_alpha2;
+        amrex::Real S0 = 0.0;
+        const amrex::Real alpha1 = ddata.S0_alpha1;
+        const amrex::Real alpha2 = ddata.S0_alpha2;
 
         if (ddata.Ct_rated > 0.0) {
-	    if (Ct < ddata.Ct_rated) {
-	      S0 = alpha1 * std::pow( (ddata.Ct_rated - Ct)/ddata.Ct_rated,
-                                      3.0);
-	    } else {
-	      S0 = alpha2 * (ddata.Ct_rated - Ct)/ddata.Ct_rated;
-	    }
-	}
+            if (Ct < ddata.Ct_rated) {
+                S0 = alpha1 *
+                     std::pow((ddata.Ct_rated - Ct) / ddata.Ct_rated, 3.0);
+            } else {
+                S0 = alpha2 * (ddata.Ct_rated - Ct) / ddata.Ct_rated;
+            }
+        }
 
         // step 1: compute Ct, a1 and a2 coefficients (eq 16)
         // a3, a4, a5 coefficients are from Sorensen, 2022
@@ -209,14 +209,14 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                   std::pow(ddata.root_correction[ip], 2.0) * x * dx;
 
             a4 += ddata.tip_correction[ip] * ddata.root_correction[ip] *
-	          std::pow(x, 3.0) * dx;
+                  std::pow(x, 3.0) * dx;
 
             a5 += std::pow(ddata.tip_correction[ip], 2.0) *
-                  std::pow(ddata.root_correction[ip], 2.0) *
-                  std::pow(x, 3.0) * dx;
+                  std::pow(ddata.root_correction[ip], 2.0) * std::pow(x, 3.0) *
+                  dx;
         }
 
-        // step 2: determine the circulation (q0) from a1, a2 and Ct 
+        // step 2: determine the circulation (q0) from a1, a2 and Ct
         //         (eq. 18, Sorensen, 2022)
 
         //      sqrt[(a2*L+a3*S0)^2+a1*(0.5*Ct-2*a4*L*S0-a5*S0^2)]-(a2*L+a3*S0)
@@ -224,8 +224,8 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
         //                            a1
 
         const amrex::Real term1 = std::pow(a2 * lambda + a3 * S0, 2.0);
-	const amrex::Real term2 = a1 * ( 0.5* Ct - 2.0 * a4 * lambda * S0
-					 - a5 * S0 * S0);
+        const amrex::Real term2 =
+            a1 * ( 0.5* Ct - 2.0 * a4 * lambda * S0 - a5 * S0 * S0);
         const amrex::Real term3 = a2 * lambda + a3 * S0;
 
         const amrex::Real numerator = std::sqrt(term1 + term2) - term3;
@@ -247,12 +247,9 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
         const amrex::Real B_q0 = B_numerator / B_denominator;
 
         if (data.info().is_root_proc) {
-            std::cout << "turbine: " << data.info().id
-		      << " S0: " << S0
-		      << " q0: " << q0
-		      << " orig_q0: " << B_q0
-		      << std::endl;
-	}
+            std::cout << "turbine: " << data.info().id << " S0: " << S0
+		      << " q0: " << q0 << " orig_q0: " << B_q0 << std::endl;
+        }
 
         // step 3: compute normal force (fz) and azimuthal force (f_theta) (eq
         // 13) and cp (eq 20)
@@ -272,8 +269,8 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                 amrex::max<amrex::Real>((i + 0.5) * dx, machine_eps);
 
             const amrex::Real f_z =
-	        (q0 / x + S0 * x) * g * F *
-	        (lambda * x + 0.5 * (q0 / x + S0 * x) * g * F);
+                (q0 / x + S0 * x) * g * F *
+                (lambda * x + 0.5 * (q0 / x + S0 * x) * g * F);
 
             ddata.f_normal[i] = f_z;
 
@@ -293,8 +290,8 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                 const amrex::Real u_disk_ij =
                     -ddata.normal_vec & disk_velocity[ip];
 
-                const amrex::Real f_theta = u_disk_ij / U_ref *
-                    (q0 / x + S0 * x) * g * F;
+                const amrex::Real f_theta =
+                    u_disk_ij / U_ref * (q0 / x + S0 * x) * g * F;
                 ddata.f_theta[ip] = f_theta;
 
                 // eq 18
