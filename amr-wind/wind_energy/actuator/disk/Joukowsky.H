@@ -24,6 +24,8 @@ struct JoukowskyData : public DiskBaseData
     amrex::Real root_correction_exponent{4.0};
     // --- Sorenson 2022 equation 26 constants ----
     amrex::Real Ct_rated{0.0};
+    amrex::Real S0_alpha1{-0.20};
+    amrex::Real S0_alpha2{-0.05};
     // --------------------------------------------
     int num_blades{3};
     vs::Vector disk_force{0.0, 0.0, 0.0};

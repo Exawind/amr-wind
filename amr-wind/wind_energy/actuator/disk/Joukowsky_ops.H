@@ -176,12 +176,15 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
 
         // Compute the solid body term S0 (Sorensen 2022, eq. 27)
 	amrex::Real S0 = 0.0;
+	const amrex::Real alpha1 = ddata.S0_alpha1;
+	const amrex::Real alpha2 = ddata.S0_alpha2;
 
         if (ddata.Ct_rated > 0.0) {
 	    if (Ct < ddata.Ct_rated) {
-	      S0 = 0.08 * std::pow( (ddata.Ct_rated - Ct)/ddata.Ct_rated, 3.0);
+	      S0 = alpha1 * std::pow( (ddata.Ct_rated - Ct)/ddata.Ct_rated,
+                                      3.0);
 	    } else {
-	      S0 = 0.05 * (ddata.Ct_rated - Ct)/ddata.Ct_rated;
+	      S0 = alpha2 * (ddata.Ct_rated - Ct)/ddata.Ct_rated;
 	    }
 	}
 
@@ -231,6 +234,25 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
             amrex::max<amrex::Real>(1.0 * a1, machine_eps);
 
         const amrex::Real q0 = numerator / denominator;
+
+        const amrex::Real a2_2 = a2 * a2;
+
+        const amrex::Real B_term1 = 16.0 * lambda_2 * a2_2;
+        const amrex::Real B_term2 = 8.0 * Ct * a1;
+        const amrex::Real B_term3 = 4.0 * lambda * a2;
+        const amrex::Real B_numerator = std::sqrt(B_term1 + B_term2) - B_term3;
+        const amrex::Real B_denominator =
+            amrex::max<amrex::Real>(4.0 * a1, machine_eps);
+
+        const amrex::Real B_q0 = B_numerator / B_denominator;
+
+        if (data.info().is_root_proc) {
+            std::cout << "turbine: " << data.info().id
+		      << " S0: " << S0
+		      << " q0: " << q0
+		      << " orig_q0: " << B_q0
+		      << std::endl;
+	}
 
         // step 3: compute normal force (fz) and azimuthal force (f_theta) (eq
         // 13) and cp (eq 20)

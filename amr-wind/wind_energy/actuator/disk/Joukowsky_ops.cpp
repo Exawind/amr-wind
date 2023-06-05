@@ -27,7 +27,9 @@ void optional_parameters(JoukowskyData& meta, const utils::ActParser& pp)
     pp.query("root_correction_exponent", meta.root_correction_exponent);
     pp.query("root_correction_coefficient", meta.root_correction_coefficient);
     pp.query("num_blades", meta.num_blades);
-    pp.query("ct_rated", meta.Ct_rated);
+    pp.query("ct_region2", meta.Ct_rated);
+    pp.query("S0_alpha1", meta.S0_alpha1);
+    pp.query("S0_alpha2", meta.S0_alpha2);
 }
 
 void required_parameters(JoukowskyData& meta, const utils::ActParser& pp)
