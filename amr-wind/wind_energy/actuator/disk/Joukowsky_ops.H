@@ -225,7 +225,7 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
 
         const amrex::Real term1 = std::pow(a2 * lambda + a3 * S0, 2.0);
         const amrex::Real term2 =
-            a1 * ( 0.5* Ct - 2.0 * a4 * lambda * S0 - a5 * S0 * S0);
+            a1 * (0.5 * Ct - 2.0 * a4 * lambda * S0 - a5 * S0 * S0);
         const amrex::Real term3 = a2 * lambda + a3 * S0;
 
         const amrex::Real numerator = std::sqrt(term1 + term2) - term3;
@@ -248,7 +248,7 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
 
         if (data.info().is_root_proc) {
             std::cout << "turbine: " << data.info().id << " S0: " << S0
-		      << " q0: " << q0 << " orig_q0: " << B_q0 << std::endl;
+                      << " q0: " << q0 << " orig_q0: " << B_q0 << std::endl;
         }
 
         // step 3: compute normal force (fz) and azimuthal force (f_theta) (eq
