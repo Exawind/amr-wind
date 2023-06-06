@@ -32,6 +32,8 @@ public:
     //! Populate and return a vector of probe locations to be sampled
     void sampling_locations(SampleLocType& /*locs*/) const override;
 
+    void output_locations(SampleLocType& locs) const override {return sampling_locations(locs);}
+
     void
     define_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
     void
@@ -41,12 +43,18 @@ public:
     std::string label() const override { return m_label; }
     std::string& label() override { return m_label; }
 
+    //! Type of this sampling object
+    std::string sampletype() const override { return identifier(); }
+
     //! Unique identifier for this set of probe locations
     int id() const override { return m_id; }
     int& id() override { return m_id; }
 
     //! Number of probe locations along the line
     int num_points() const override { return m_npts; }
+
+    //! Number of output probe locations (after data reduction etc.)
+    int num_output_points() const override { return m_npts; }
 
 protected:
     const CFDSim& m_sim;
