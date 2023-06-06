@@ -61,6 +61,7 @@ void Sampling::initialize()
         pp1.query("type", stype);
         auto obj = SamplerBase::create(stype, m_sim);
         obj->label() = lbl;
+        obj->sampletype() = stype;
         obj->id() = idx++;
         obj->initialize(key);
 
@@ -73,6 +74,8 @@ void Sampling::initialize()
     if (m_out_fmt == "netcdf") {
         prepare_netcdf_file();
     }
+
+    m_sample_buf.assign(m_total_particles * m_var_names.size(), 0.0);
 }
 
 void Sampling::update_container()
@@ -119,20 +122,56 @@ void Sampling::post_advance_work()
 
     m_scontainer->interpolate_fields(m_fields);
 
-    // TODO: This is where the reduction needs to happen for radar
+    fill_buffer();
+
+    create_output_buffer();
 
     process_output();
+    m_output_buf.clear();
 }
 
 void Sampling::post_regrid_actions()
 {
-
     BL_PROFILE("amr-wind::Sampling::post_regrid_actions");
     m_scontainer->Redistribute();
 }
 
+void Sampling::create_output_buffer()
+{
+    BL_PROFILE("amr-wind::Sampling::create_output_buffer");
+    const int nvars = m_var_names.size();
+    for (int iv = 0; iv < nvars; ++iv) {
+        int offset = iv * m_scontainer->num_sampling_particles();
+        for (const auto& obj : m_samplers) {
+            int sample_size = obj->num_points();
+            if(obj->do_data_modification()){ 
+                // Run data through specific sampler's mod method
+                const std::vector<double> temp_sb_mod(&m_sample_buf[offset],&m_sample_buf[offset+sample_size]);
+                std::vector<double> mod_result = obj->modify_sample_data(temp_sb_mod);
+                m_output_buf.insert(m_output_buf.end(),mod_result.begin(),mod_result.end());
+                offset += sample_size;
+            }else{
+                // Directly put m_sample_buf in m_output_buf
+                std::vector<double> temp_sb(&m_sample_buf[offset],&m_sample_buf[offset+sample_size]);
+                m_output_buf.insert(m_output_buf.end(),temp_sb.begin(),temp_sb.end());
+                offset += sample_size;
+            }
+        }
+    }
+    amrex::Print() << "m_sample_buf size " << m_sample_buf.size() << std::endl; 
+    amrex::Print() << "m_output_buf size " << m_output_buf.size() << std::endl; 
+    m_output_particles = m_output_buf.size()/nvars;
+}
+
+void Sampling::fill_buffer()
+{
+    BL_PROFILE("amr-wind::Sampling::fill_buffer");
+    m_scontainer->populate_buffer(m_sample_buf);
+}
+
 void Sampling::process_output()
 {
+    BL_PROFILE("amr-wind::Sampling::process_output");
     if (m_out_fmt == "native") {
         impl_write_native();
     } else if (m_out_fmt == "ascii") {
@@ -208,7 +247,7 @@ void Sampling::prepare_netcdf_file()
     for (const auto& obj : m_samplers) {
         auto grp = ncf.def_group(obj->label());
 
-        grp.def_dim(npart_name, obj->num_points());
+        grp.def_dim(npart_name, obj->num_output_points());
         obj->define_netcdf_metadata(grp);
         grp.def_var("coordinates", NC_DOUBLE, {npart_name, "ndim"});
         for (const auto& vname : m_var_names)
@@ -223,9 +262,9 @@ void Sampling::prepare_netcdf_file()
         for (const auto& obj : m_samplers) {
             auto grp = ncf.group(obj->label());
             obj->populate_netcdf_metadata(grp);
-            obj->sampling_locations(locs);
+            obj->output_locations(locs);
             auto xyz = grp.var("coordinates");
-            count[0] = obj->num_points();
+            count[0] = obj->num_output_points();
             xyz.put(&locs[0][0], start, count);
         }
     }
@@ -240,9 +279,6 @@ void Sampling::prepare_netcdf_file()
 void Sampling::write_netcdf()
 {
 #ifdef AMR_WIND_USE_NETCDF
-    std::vector<double> buf(m_total_particles * m_var_names.size(), 0.0);
-    m_scontainer->populate_buffer(buf);
-
     if (!amrex::ParallelDescriptor::IOProcessor()) return;
     auto ncf = ncutils::NCFile::open(m_ncfile_name, NC_WRITE);
     const std::string nt_name = "num_time_steps";
@@ -265,16 +301,16 @@ void Sampling::write_netcdf()
     for (int iv = 0; iv < nvars; ++iv) {
         start[1] = 0;
         count[1] = 0;
-        int offset = iv * m_scontainer->num_sampling_particles();
+        int offset = iv * num_output_particles();
         for (const auto& obj : m_samplers) {
             auto grp = ncf.group(obj->label());
             auto var = grp.var(m_var_names[iv]);
             // Do sampler specific output if needed
-            bool do_output = obj->output_netcdf_field(&buf[offset], var);
+            bool do_output = obj->output_netcdf_field(&m_output_buf[offset], var);
             // Do generic output if specific output returns true
             if (do_output) {
-                count[1] = obj->num_points();
-                var.put(&buf[offset], start, count);
+                count[1] = obj->num_output_points();
+                var.put(&m_output_buf[offset], start, count);
                 offset += count[1];
             }
         }

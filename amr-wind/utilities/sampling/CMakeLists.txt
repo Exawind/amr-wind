@@ -3,6 +3,7 @@ target_sources(${amr_wind_lib_name}
 
   Sampling.cpp
   SamplingContainer.cpp
+  SamplingUtils.cpp
   LineSampler.cpp
   ConeSampler.cpp
   LidarSampler.cpp
