@@ -80,6 +80,9 @@ void initialize_volume_fractions(
         if (i + j + k > 5) {
             vof_arr(i, j, k) = 0.3;
         }
+        if (i + j + k > 10) {
+            vof_arr(i, j, k) = 0.7;
+        }
         // Set up a liquid cell
         if (i == 0 && j == 0 && k == 0) {
             vof_arr(i, j, k) = 1.0;
@@ -215,7 +218,7 @@ amrex::Real sharpen_test_impl(amr_wind::Field& vof)
                 amrex::Real error = 0;
 
                 amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
-                    // Initial VOF distribution is 0, 0.3, or 1.0
+                    // Initial VOF distribution is 0, 0.3, 0.7, or 1.0
                     // Expected answer based on implementation of
                     // amr_wind::multiphase::sharpen_kernel
                     amrex::Real vof_answer = 0.0;
@@ -223,6 +226,12 @@ amrex::Real sharpen_test_impl(amr_wind::Field& vof)
                         // because VOF < 0.5
                         const amrex::Real sign = -1.0;
                         const amrex::Real delta = std::abs(0.3 - 0.5);
+                        vof_answer = 0.5 + sign * std::pow(delta, 1.0 / 3.0);
+                    }
+                    if (i + j + k > 10) {
+                        // because VOF > 0.5
+                        const amrex::Real sign = 1.0;
+                        const amrex::Real delta = std::abs(0.7 - 0.5);
                         vof_answer = 0.5 + sign * std::pow(delta, 1.0 / 3.0);
                     }
                     // Set up a liquid cell
