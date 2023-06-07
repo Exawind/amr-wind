@@ -21,7 +21,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real sharpen_kernel(
                       std::pow(std::abs(volfrac(i, j, k) - 0.5), 1.0 / 3.0)));
 }
 
-void sharpen_acquired_vof(
+static void sharpen_acquired_vof(
     const int nlevels, amr_wind::IntField& f_iblank, amr_wind::Field& f_vof)
 {
     // Sharpen data from nalu-wind (in iblank regions)
