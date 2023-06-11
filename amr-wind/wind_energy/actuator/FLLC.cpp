@@ -45,6 +45,7 @@ void FLLCParse(const utils::ActParser& pp, FLLCData& data)
 {
     pp.query("epsilon", data.epsilon);
     pp.query("fllc_relaxation_factor", data.relaxation_factor);
+    pp.query("fllc_start_time", data.fllc_start_time);
     std::string typeString = "variable_chord";
     pp.query("fllc_type", typeString);
     data.correction_type = FLLCTypeMap.at(typeString);

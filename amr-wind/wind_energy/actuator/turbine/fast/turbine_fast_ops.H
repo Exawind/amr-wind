@@ -414,10 +414,13 @@ struct ComputeForceOp<TurbineFast, SrcTrait>
         // by this turbine
         scatter_data(data);
 
+        const auto& time = data.sim().time();
+
         auto& tdata = data.meta();
         if (!tdata.fllc.empty()) {
             for (int i = 0; i < tdata.num_blades; ++i) {
-                if (!(tdata.fllc[i].initialized)) {
+                if (!(tdata.fllc[i].initialized) &&
+                    (time.current_time() > tdata.fllc[i].fllc_start_time)) {
                     FLLCInit(
                         tdata.fllc[i], tdata.blades[i], tdata.eps_chord[0]);
                 }
