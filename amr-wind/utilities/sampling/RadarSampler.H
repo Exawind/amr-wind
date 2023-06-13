@@ -93,9 +93,12 @@ public:
 
     //! Run data modification for specific sampler
     virtual bool do_data_modification() { return true; }
+    virtual bool do_convert_velocity_los() { return true; }
 
     //! Modify sample buffer after sampling happens
-    std::vector<double> modify_sample_data(const std::vector<double>&) override;
+    std::vector<double> modify_sample_data(const std::vector<double>&, const amrex::Vector<std::string>&) override;
+
+    void calc_lineofsight_velocity(const std::vector<std::vector<double>>&) override;
 
 
 
