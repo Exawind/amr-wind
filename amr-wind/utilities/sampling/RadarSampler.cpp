@@ -211,9 +211,10 @@ void RadarSampler::update_sampling_locations()
 
             vs::Vector vertical_ref(m_vertical[0],m_vertical[1],m_vertical[2]);
             vs::Vector radar_ref(m_axis[0],m_axis[1],m_axis[2]);
+
+            // Assume vertical_ref and radar_ref are normal to each other and unit
             vs::Vector swept_axis(sampling_utils::rotate_euler_vector(vertical_ref,sweep_angle,radar_ref));
-            vs::Vector normal_ref(-vertical_ref ^ swept_axis);
-            //vs::Vector rotation_axis(sampling_utils::rotate_euler_vector(normal_ref,elevation_angle,vertical_ref));
+            vs::Vector elevation_axis(-vertical_ref ^ swept_axis);
 
             // Add rotated cone to current cones
             for (int i = 0; i < m_cone_size; ++i) {
@@ -221,7 +222,7 @@ void RadarSampler::update_sampling_locations()
                                        initial_cone[i][1] - m_start[1], 
                                        initial_cone[i][2] - m_start[2]);
                 vs::Vector swept_point(sampling_utils::rotate_euler_vector(vertical_ref,sweep_angle,temp_point));
-                vs::Vector rotated_point(sampling_utils::rotate_euler_vector(normal_ref,elevation_angle,swept_point));
+                vs::Vector rotated_point(sampling_utils::rotate_euler_vector(elevation_axis,elevation_angle,swept_point));
                 int point_index = i + k*m_cone_size;
                 current_cones[point_index][0] = rotated_point[0] + m_start[0];
                 current_cones[point_index][1] = rotated_point[1] + m_start[1];
@@ -370,7 +371,20 @@ void RadarSampler::origin_cone()
 
 }
 
-std::vector<double> RadarSampler::modify_sample_data(const std::vector<double>& sample_data)
+void RadarSampler::calc_lineofsight_velocity(const std::vector<std::vector<double>>& velocity_raw)
+{
+  AMREX_ALWAYS_ASSERT(static_cast<int>(velocity_raw.size()) == num_points());
+  amrex::Print() << "Calculate line of sight" << std::endl;
+
+  // Get current cone tips and normalize
+  // Calculate rotation matrix to radar axis
+  // Dot product every velocity value with corresponding 
+  // Output single value LOS to m_current_vel_los
+  // Do line average of LOS 
+  // Output as special output_netcdf_field
+}
+
+std::vector<double> RadarSampler::modify_sample_data(const std::vector<double>& sample_data, const amrex::Vector<std::string>& var_names)
 {
   // sample_data enters this method for each sampled variable
   // there are m_ntotal steps (cones) based on device sampling rate
@@ -379,10 +393,12 @@ std::vector<double> RadarSampler::modify_sample_data(const std::vector<double>& 
   const int n_buf = sample_data.size();
   const int n_cones = m_ntotal;
   const int n_vars = n_buf/num_points();
+  const int n_vars_re = var_names.size();
 
   std::vector<double> mod_data(num_output_points());
 
   for (int iv = 0; iv < n_vars; ++iv) {
+    std::string svar = var_names[iv];
     for (int ic = 0; ic < n_cones; ++ic) {
       int c_idx = iv*n_cones + ic;
       int c_start = c_idx*num_points_cone();

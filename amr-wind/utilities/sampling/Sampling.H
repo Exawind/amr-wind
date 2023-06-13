@@ -65,6 +65,7 @@ public:
     void fill_buffer();
 
     void create_output_buffer();
+    void convert_velocity_lineofsight();
 
     int num_total_particles() const
     {

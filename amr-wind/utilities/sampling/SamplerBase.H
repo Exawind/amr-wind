@@ -67,9 +67,12 @@ public:
 
     //! Run data modification for specific sampler?
     virtual bool do_data_modification() { return false; }
+    virtual bool do_convert_velocity_los() { return false; }
 
     //! Sample buffer modification instructions
-    virtual std::vector<double> modify_sample_data(const std::vector<double>&) {}
+    virtual std::vector<double> modify_sample_data(const std::vector<double>&, const amrex::Vector<std::string>&) {}
+
+    virtual void calc_lineofsight_velocity(const std::vector<std::vector<double>>&) {}
 
     //! Populate metadata in the NetCDF file
     virtual void
