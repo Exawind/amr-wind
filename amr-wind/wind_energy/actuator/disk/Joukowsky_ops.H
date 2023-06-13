@@ -126,6 +126,12 @@ struct InitDataOp<Joukowsky, ActSrcDisk>
 
   Sørensen, Jens Nørkær, et al. "Analytical body forces in numerical actuator
   disc model of wind turbines." Renewable Energy 147 (2020): 2259-2271.
+
+  Upgraded to handle rated turbine conditions following the implementation
+  Sørensen, J. N.: Generalized analytical body force model for actuator
+  disc computations of wind turbines,
+  Wind Energ. Sci. Discuss. [preprint], https://doi.org/10.5194/wes-2022-108
+  https://wes.copernicus.org/preprints/wes-2022-108/
  */
 template <>
 struct ComputeForceOp<Joukowsky, ActSrcDisk>
@@ -168,9 +174,27 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
             }
         }
 
+        // Compute the solid body term S0 (Sorensen 2022, eq. 27)
+        amrex::Real S0 = 0.0;
+        const amrex::Real alpha1 = ddata.S0_alpha1;
+        const amrex::Real alpha2 = ddata.S0_alpha2;
+
+        if (ddata.Ct_rated > 0.0) {
+            if (Ct < ddata.Ct_rated) {
+                S0 = alpha1 *
+                     std::pow((ddata.Ct_rated - Ct) / ddata.Ct_rated, 3.0);
+            } else {
+                S0 = alpha2 * (ddata.Ct_rated - Ct) / ddata.Ct_rated;
+            }
+        }
+
         // step 1: compute Ct, a1 and a2 coefficients (eq 16)
+        // a3, a4, a5 coefficients are from Sorensen, 2022
         amrex::Real a1 = 0.0;
         amrex::Real a2 = 0.0;
+        amrex::Real a3 = 0.0;
+        amrex::Real a4 = 0.0;
+        amrex::Real a5 = 0.0;
 
         for (int ip = 0; ip < ddata.num_vel_pts_r; ip++) {
             const amrex::Real x =
@@ -180,20 +204,34 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                   std::pow(ddata.root_correction[ip], 2.0) / x * dx;
 
             a2 += ddata.tip_correction[ip] * ddata.root_correction[ip] * x * dx;
+
+            a3 += std::pow(ddata.tip_correction[ip], 2.0) *
+                  std::pow(ddata.root_correction[ip], 2.0) * x * dx;
+
+            a4 += ddata.tip_correction[ip] * ddata.root_correction[ip] *
+                  std::pow(x, 3.0) * dx;
+
+            a5 += std::pow(ddata.tip_correction[ip], 2.0) *
+                  std::pow(ddata.root_correction[ip], 2.0) * std::pow(x, 3.0) *
+                  dx;
         }
 
-        // step 2: determine the circulation (q0) from a1, a2 and Ct (eq 17)
+        // step 2: determine the circulation (q0) from a1, a2 and Ct
+        //         (eq. 18, Sorensen, 2022)
 
-        const amrex::Real a2_2 = a2 * a2;
+        //      sqrt[(a2*L+a3*S0)^2+a1*(0.5*Ct-2*a4*L*S0-a5*S0^2)]-(a2*L+a3*S0)
+        // q0 = --------------------------------------------------------------
+        //                            a1
 
-        const amrex::Real term1 = 16.0 * lambda_2 * a2_2;
-        const amrex::Real term2 = 8.0 * Ct * a1;
-        const amrex::Real term3 = 4.0 * lambda * a2;
+        const amrex::Real term1 = std::pow(a2 * lambda + a3 * S0, 2.0);
+        const amrex::Real term2 =
+            a1 * (0.5 * Ct - 2.0 * a4 * lambda * S0 - a5 * S0 * S0);
+        const amrex::Real term3 = a2 * lambda + a3 * S0;
 
         const amrex::Real numerator = std::sqrt(term1 + term2) - term3;
 
         const amrex::Real denominator =
-            amrex::max<amrex::Real>(4.0 * a1, machine_eps);
+            amrex::max<amrex::Real>(a1, machine_eps);
 
         const amrex::Real q0 = numerator / denominator;
 
@@ -215,7 +253,8 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                 amrex::max<amrex::Real>((i + 0.5) * dx, machine_eps);
 
             const amrex::Real f_z =
-                q0 * g * F / x * (lambda * x + 0.5 * q0 * g * F / x);
+                (q0 / x + S0 * x) * g * F *
+                (lambda * x + 0.5 * (q0 / x + S0 * x) * g * F);
 
             ddata.f_normal[i] = f_z;
 
@@ -235,7 +274,8 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                 const amrex::Real u_disk_ij =
                     -ddata.normal_vec & disk_velocity[ip];
 
-                const amrex::Real f_theta = u_disk_ij / U_ref * q0 * g * F / x;
+                const amrex::Real f_theta =
+                    u_disk_ij / U_ref * (q0 / x + S0 * x) * g * F;
                 ddata.f_theta[ip] = f_theta;
 
                 // eq 18
