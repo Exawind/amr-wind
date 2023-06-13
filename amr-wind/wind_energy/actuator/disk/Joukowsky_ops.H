@@ -231,7 +231,7 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
         const amrex::Real numerator = std::sqrt(term1 + term2) - term3;
 
         const amrex::Real denominator =
-            amrex::max<amrex::Real>(1.0 * a1, machine_eps);
+            amrex::max<amrex::Real>(a1, machine_eps);
 
         const amrex::Real q0 = numerator / denominator;
 
