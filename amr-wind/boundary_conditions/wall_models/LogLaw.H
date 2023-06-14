@@ -48,7 +48,7 @@ struct LogLaw
                 utau - (wspd_pred - wspd) / wspd_deriv; // Newton-Raphson update
             ++iter;
         }
-        if (iter == max_iters) amrex::Abort();
+        if (iter == max_iters) { amrex::Abort(); }
         return utau;
     }
 };
