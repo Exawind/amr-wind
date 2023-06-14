@@ -2,6 +2,7 @@
 #define LogLaw_H
 
 #include "AMReX_AmrCore.H"
+#include <AMReX.H>
 namespace amr_wind {
 struct LogLaw
 {
@@ -31,13 +32,13 @@ struct LogLaw
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
     get_utau(amrex::Real wspd) const
     {
-        amrex::Real utau_iter;
+        amrex::Real utau_iter = -1;
         amrex::Real wspd_pred;
         amrex::Real wspd_deriv;
         amrex::Real zplus;
         amrex::Real utau = utau_mean;
         int iter = 0;
-        do {
+        while ((std::abs(utau_iter - utau) > 1e-5) && iter <= max_iters) {
             utau_iter = utau;
             zplus = zref * utau / nu;
             // Get wspd for a given utau from log-law
@@ -46,7 +47,8 @@ struct LogLaw
             utau =
                 utau - (wspd_pred - wspd) / wspd_deriv; // Newton-Raphson update
             ++iter;
-        } while ((std::abs(utau_iter - utau) > 1e-5) && iter <= max_iters);
+        }
+        if (iter == max_iters) amrex::Abort();
         return utau;
     }
 };
