@@ -42,7 +42,9 @@ public:
     int num_points() const override { return (m_npts * m_ns); }
 
     bool output_netcdf_field(
-        double* /*unused*/, ncutils::NCVar& /*unused*/) override;
+        const std::vector<double>& output_buffer,
+        ncutils::NCGroup& grp,
+        const size_t nt) override;
 
     void
     define_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
