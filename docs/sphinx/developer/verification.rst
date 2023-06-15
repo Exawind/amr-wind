@@ -204,6 +204,30 @@ AMR-wind :math:`L_2` error after :math:`t=200` seconds.
 .. image:: ./ekman_spiral_error.pdf 
    :width: 300pt
 
+Channel flow (laminar, quasi-2D) with different BCs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+These tests use the Poiseuille flow solution for a channel to verify the implementation of the boundary conditions. Input files for these tests are included among the regression test directories.
+
+
+AMR-wind :math:`L_2` error for whole channel after velocity field has converged to steady state. This evaluates the no-slip boundary conditions at the top and bottom of the domain. Results are identical for different normal directions and flow directions (x, y, and z).
+
+.. image:: ./Channel_Laminar.png
+   :width: 300pt
+
+AMR-wind :math:`L_2` error for half-channel after velocity field has converged to steady state. At the upper boundary, the zero-gradient and symmetric wall boundary conditions are employed.
+
+.. image:: ./HalfChannel_Laminar.png
+   :width: 300pt
+
+Burggraf flow: lid-driven cavity with body force
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This flow, described by Burggraf (JFM, 2006), is a two-dimensional flow with no-slip walls. The upper wall has a spatially-varying tangential velocity (which is applied to the simulation via a user-defined-function, or UDF, boundary condition), and a spatially-varying body force. At steady state, this flow has an analytical solution that we use to verify the implementation of the UDF BC.
+
+.. image:: ./Burggraf_error.png
+   :width: 300pt
+
 Channel flow with Smagorinsky LES
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
