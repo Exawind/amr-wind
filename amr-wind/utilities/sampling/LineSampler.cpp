@@ -23,9 +23,6 @@ void LineSampler::initialize(const std::string& key)
 
 void LineSampler::check_bounds()
 {
-
-    amrex::Print() << "Linesampler: checkbounds" << std::endl;
-
     const int lev = 0;
     const auto* prob_lo = m_sim.mesh().Geom(lev).ProbLo();
     const auto* prob_hi = m_sim.mesh().Geom(lev).ProbHi();
@@ -54,7 +51,6 @@ void LineSampler::check_bounds()
                           "truncated to match domain"
                        << std::endl;
     }
-    amrex::Print() << "Leaving Linesampler: checkbounds" << std::endl;
 }
 
 void LineSampler::sampling_locations(SampleLocType& locs) const
