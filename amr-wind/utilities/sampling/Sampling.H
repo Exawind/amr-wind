@@ -126,8 +126,8 @@ private:
     // Current sample buffer for full container
     std::vector<double> m_sample_buf;
 
-     // Current sample buffer for output
-    std::vector<double> m_output_buf;   
+    // Current sample buffer for output
+    std::vector<double> m_output_buf;
 
     //! Format of the data output (native, ascii, netcdf, etc.)
 #ifdef AMR_WIND_USE_NETCDF
@@ -143,7 +143,7 @@ private:
     //! Number of sampling container particles:
     size_t m_total_particles{0};
 
-    //! Number of output particles 
+    //! Number of output particles
     size_t m_output_particles{0};
 
     //! Frequency of data sampling and output

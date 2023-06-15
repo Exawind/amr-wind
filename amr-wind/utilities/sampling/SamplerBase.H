@@ -59,8 +59,10 @@ public:
     virtual void update_sampling_locations() {}
 
     //! Run specific output for the sampler
-    virtual bool
-    output_netcdf_field(double* /*unused*/, ncutils::NCVar& /*unused*/)
+    virtual bool output_netcdf_field(
+        const std::vector<double>& /*unused*/,
+        ncutils::NCGroup& /*unused*/,
+        const size_t /*unused*/)
     {
         return true;
     }
@@ -70,9 +72,13 @@ public:
     virtual bool do_convert_velocity_los() { return false; }
 
     //! Sample buffer modification instructions
-    virtual std::vector<double> modify_sample_data(const std::vector<double>&, const amrex::Vector<std::string>&) {}
+    virtual std::vector<double> modify_sample_data(
+        const std::vector<double>&, const amrex::Vector<std::string>&)
+    {}
 
-    virtual void calc_lineofsight_velocity(const std::vector<std::vector<double>>&) {}
+    virtual void
+    calc_lineofsight_velocity(const std::vector<std::vector<double>>&)
+    {}
 
     //! Populate metadata in the NetCDF file
     virtual void

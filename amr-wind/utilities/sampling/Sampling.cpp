@@ -141,15 +141,15 @@ void Sampling::convert_velocity_lineofsight()
     BL_PROFILE("amr-wind::Sampling::convert_velocity_lineofsight");
     const int nvars = m_var_names.size();
     std::vector<int> vel_map;
-   
+
     for (int iv = 0; iv < nvars; ++iv) {
-        if(m_var_names[iv].compare("velocityx")==0){
+        if (m_var_names[iv].compare("velocityx") == 0) {
             vel_map.push_back(iv);
         }
-        if(m_var_names[iv].compare("velocityy")==0){
+        if (m_var_names[iv].compare("velocityy") == 0) {
             vel_map.push_back(iv);
         }
-        if(m_var_names[iv].compare("velocityz")==0){
+        if (m_var_names[iv].compare("velocityz") == 0) {
             vel_map.push_back(iv);
         }
     }
@@ -158,12 +158,15 @@ void Sampling::convert_velocity_lineofsight()
 
     int soffset = 0;
     for (const auto& obj : m_samplers) {
-        int sample_size = obj->num_points(); // sample locs for individual sampler
-        std::vector<std::vector<double>> temp_vel(sample_size,std::vector<double>(AMREX_SPACEDIM));
-        if(obj->do_convert_velocity_los()){
+        int sample_size =
+            obj->num_points(); // sample locs for individual sampler
+        std::vector<std::vector<double>> temp_vel(
+            sample_size, std::vector<double>(AMREX_SPACEDIM));
+        if (obj->do_convert_velocity_los()) {
             for (int iv = 0; iv < AMREX_SPACEDIM; ++iv) {
                 int vel_off = vel_map[iv];
-                int offset = vel_off * m_scontainer->num_sampling_particles() + soffset;
+                int offset =
+                    vel_off * m_scontainer->num_sampling_particles() + soffset;
                 for (int j = 0; j < sample_size; ++j) {
                     temp_vel[j][iv] = m_sample_buf[offset];
                 }
@@ -182,24 +185,29 @@ void Sampling::create_output_buffer()
         int offset = iv * m_scontainer->num_sampling_particles();
         for (const auto& obj : m_samplers) {
             int sample_size = obj->num_points();
-            if(obj->do_data_modification()){ 
+            if (obj->do_data_modification()) {
                 // Run data through specific sampler's mod method
-                const std::vector<double> temp_sb_mod(&m_sample_buf[offset],&m_sample_buf[offset+sample_size]);
-                std::vector<double> mod_result = obj->modify_sample_data(temp_sb_mod, m_var_names);
-                m_output_buf.insert(m_output_buf.end(),mod_result.begin(),mod_result.end());
+                const std::vector<double> temp_sb_mod(
+                    &m_sample_buf[offset], &m_sample_buf[offset + sample_size]);
+                std::vector<double> mod_result =
+                    obj->modify_sample_data(temp_sb_mod, m_var_names);
+                m_output_buf.insert(
+                    m_output_buf.end(), mod_result.begin(), mod_result.end());
                 offset += sample_size;
-            }else{
+            } else {
                 // Directly put m_sample_buf in m_output_buf
-                std::vector<double> temp_sb(&m_sample_buf[offset],&m_sample_buf[offset+sample_size]);
-                m_output_buf.insert(m_output_buf.end(),temp_sb.begin(),temp_sb.end());
+                std::vector<double> temp_sb(
+                    &m_sample_buf[offset], &m_sample_buf[offset + sample_size]);
+                m_output_buf.insert(
+                    m_output_buf.end(), temp_sb.begin(), temp_sb.end());
                 offset += sample_size;
             }
         }
     }
 
-    amrex::Print() << "m_sample_buf size " << m_sample_buf.size() << std::endl; 
-    amrex::Print() << "m_output_buf size " << m_output_buf.size() << std::endl; 
-    m_output_particles = m_output_buf.size()/nvars;
+    amrex::Print() << "m_sample_buf size " << m_sample_buf.size() << std::endl;
+    amrex::Print() << "m_output_buf size " << m_output_buf.size() << std::endl;
+    m_output_particles = m_output_buf.size() / nvars;
 }
 
 void Sampling::fill_buffer()
@@ -291,6 +299,7 @@ void Sampling::prepare_netcdf_file()
         grp.def_var("coordinates", NC_DOUBLE, {npart_name, "ndim"});
         for (const auto& vname : m_var_names)
             grp.def_var(vname, NC_DOUBLE, two_dim);
+        grp.def_var("los_velocity", NC_DOUBLE, two_dim);
     }
     ncf.exit_def_mode();
 
@@ -336,7 +345,7 @@ void Sampling::write_netcdf()
     std::vector<size_t> start{nt, 0};
     std::vector<size_t> count{1, 0};
 
-    // Output requests from input deck
+    // Standard sampler output from input deck
     const int nvars = m_var_names.size();
     for (int iv = 0; iv < nvars; ++iv) {
         start[1] = 0;
@@ -345,19 +354,23 @@ void Sampling::write_netcdf()
         for (const auto& obj : m_samplers) {
             auto grp = ncf.group(obj->label());
             auto var = grp.var(m_var_names[iv]);
-            // Do sampler specific output if needed
-            bool do_output = obj->output_netcdf_field(&m_output_buf[offset], var);
-            // Do generic output if specific output returns true
-            if (do_output) {
-                count[1] = obj->num_output_points();
-                var.put(&m_output_buf[offset], start, count);
-                offset += count[1];
-            }
+            count[1] = obj->num_output_points();
+            var.put(&m_output_buf[offset], start, count);
+            offset += count[1];
+        }
+    }
+
+    // Custom sampler output from sampler function
+    for (const auto& obj : m_samplers) {
+        auto grp = ncf.group(obj->label());
+        bool custom_output = obj->output_netcdf_field(m_output_buf, grp, nt);
+        if (custom_output) {
+            amrex::Print() << "Custom sampler output" << std::endl;
         }
     }
 
     // Output calculated variables
-    //for (const auto& obj : m_samplers) {
+    // for (const auto& obj : m_samplers) {
     //   start[1] = 0;
     //    count[1] = 0;
     //    if(obj->do_convert_velocity_los()) {
@@ -367,7 +380,6 @@ void Sampling::write_netcdf()
     //       var.put(obj->velocity_los(), start, count);
     //    }
     //}
-    
 
     ncf.close();
 #endif

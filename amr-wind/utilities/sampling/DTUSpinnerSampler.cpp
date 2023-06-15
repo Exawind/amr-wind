@@ -171,7 +171,8 @@ void DTUSpinnerSampler::update_sampling_locations()
 #ifdef AMR_WIND_USE_NETCDF
 
 bool DTUSpinnerSampler::output_netcdf_field(
-    double* /*unused*/, ncutils::NCVar& /*unused*/)
+        const std::vector<double>& output_buffer,
+        ncutils::NCGroup& grp, const size_t nt)
 {
     return true;
 }
@@ -208,7 +209,8 @@ void DTUSpinnerSampler::output_netcdf_data(
 #else
 
 bool DTUSpinnerSampler::output_netcdf_field(
-    double* /*unused*/, ncutils::NCVar& /*unused*/)
+        const std::vector<double>& output_buffer,
+        ncutils::NCGroup& grp, const size_t nt)
 {
     return true;
 }

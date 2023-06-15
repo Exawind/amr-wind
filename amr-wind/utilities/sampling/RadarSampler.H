@@ -24,6 +24,9 @@ public:
 
     ~RadarSampler() override;
 
+    using LosRotType = amrex::Vector<vs::Tensor>;
+    using LosUnitType = amrex::Vector<vs::Vector>;
+
     /** Read user inputs and initialize the sampling object
      *
      *  \param key Prefix used to parse inputs from file
@@ -31,7 +34,7 @@ public:
     void initialize(const std::string& key) override;
 
     enum class phase { FORWARD, FORWARD_PAUSE, REVERSE, REVERSE_PAUSE };
-    //enum class NormalRule { SIGMA1, SIGMA2, SIGMA3, HALFPOWER };
+    // enum class NormalRule { SIGMA1, SIGMA2, SIGMA3, HALFPOWER };
 
     void check_bounds();
 
@@ -48,7 +51,10 @@ public:
     void sampling_locations(SampleLocType& /*locs*/) const override;
     void update_sampling_locations() override;
     void cone_axis_locations(SampleLocType& /*locs*/) const;
-    void output_locations(SampleLocType& locs) const override {return cone_axis_locations(locs);}
+    void output_locations(SampleLocType& locs) const override
+    {
+        return cone_axis_locations(locs);
+    }
 
     void
     define_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
@@ -57,6 +63,11 @@ public:
     void output_netcdf_data(
         const ncutils::NCGroup& /*unused*/,
         const size_t /*unused*/) const override;
+
+    bool output_netcdf_field(
+        const std::vector<double>& output_buffer,
+        ncutils::NCGroup& grp,
+        const size_t nt) override;
 
     //! Name of this sampling object
     std::string label() const override { return m_label; }
@@ -70,38 +81,42 @@ public:
     int& id() override { return m_id; }
 
     //! Number of sampling container locations in a timestep
-    int num_points() const override { return m_ntotal*(m_npts + ntheta*m_npts*(nphi-1)); }
+    int num_points() const override
+    {
+        return m_ntotal * (m_npts + ntheta * m_npts * (nphi - 1));
+    }
 
     //! Number of probe locations to output
-    int num_output_points() const override { return m_ntotal*m_npts; }
+    int num_output_points() const override { return m_ntotal * m_npts; }
 
     //! Number of probe locations on Radar axis
     int num_points_axis() const { return m_npts; }
 
-    //! Number of probe locations in a cone 
-    int num_points_cone() const { return m_npts + ntheta*m_npts*(nphi-1); }
+    //! Number of probe locations in a cone
+    int num_points_cone() const
+    {
+        return m_npts + ntheta * m_npts * (nphi - 1);
+    }
 
-    //! Number of probe locations in a spherical cap    
-    int num_points_quad() const { return 1 + ntheta*(nphi-1); }
+    //! Number of probe locations in a spherical cap
+    int num_points_quad() const { return 1 + ntheta * (nphi - 1); }
 
-    void
-    line_average(
-    const std::vector<double>& weights,
-    const std::vector<double>& values,
-    std::vector<double>& reduced,
-    int offset);
+    void line_average(
+        const std::vector<double>& weights,
+        const std::vector<double>& values,
+        std::vector<double>& reduced,
+        int offset);
 
     //! Run data modification for specific sampler
     virtual bool do_data_modification() { return true; }
     virtual bool do_convert_velocity_los() { return true; }
 
     //! Modify sample buffer after sampling happens
-    std::vector<double> modify_sample_data(const std::vector<double>&, const amrex::Vector<std::string>&) override;
+    std::vector<double> modify_sample_data(
+        const std::vector<double>&, const amrex::Vector<std::string>&) override;
 
-    void calc_lineofsight_velocity(const std::vector<std::vector<double>>&) override;
-
-
-
+    void
+    calc_lineofsight_velocity(const std::vector<std::vector<double>>&) override;
 
 protected:
     const CFDSim& m_sim;
@@ -117,17 +132,21 @@ protected:
     SamplerBase::SampleLocType initial_cone;
     SamplerBase::SampleLocType current_cones;
 
+    LosRotType los_proj;
+    LosUnitType los_unit;
+    std::vector<double> m_los_velocity;
+
     std::vector<double> m_weights;
     std::vector<vs::Vector> m_rays;
 
-    amrex::Real m_sample_freq; // Simulation sample rate
+    amrex::Real m_sample_freq;       // Simulation sample rate
     amrex::Real m_radar_sample_freq; // Actual device sample rate
     int m_npts{0};
     amrex::Real m_cone_angle;
     std::string m_radar_quad_type;
     int m_npts_azimuth{0};
     amrex::Real m_beam_length;
-    amrex::Real m_angular_speed;    
+    amrex::Real m_angular_speed;
     amrex::Vector<amrex::Real> m_axis;
     amrex::Vector<amrex::Real> m_vertical;
     amrex::Real m_sweep_angle;
@@ -140,12 +159,12 @@ protected:
     vs::Vector m_radar_rotation_axis;
 
     amrex::Real m_radar_time; // Current radar time
-    amrex::Real m_periodic_time; // Running cycle time (Forward, pause, reverse, pause)
+    amrex::Real
+        m_periodic_time; // Running cycle time (Forward, pause, reverse, pause)
     int m_ns;
     int m_ntotal;
     int m_cone_size;
     phase m_current_phase;
-
 };
 
 } // namespace amr_wind::sampling
