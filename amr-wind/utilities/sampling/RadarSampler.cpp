@@ -19,7 +19,7 @@ void RadarSampler::initialize(const std::string& key)
     // This is the origin of the scan (x, y, z) [m]
     pp.getarr("origin", m_start);
     pp.getarr("endpoint", m_end);
-    // AMREX_ALWAYS_ASSERT(static_cast<int>(m_origin.size()) == AMREX_SPACEDIM);
+    AMREX_ALWAYS_ASSERT(static_cast<int>(m_start.size()) == AMREX_SPACEDIM);
 
     // Sampling Frequency
     pp.get("sampling_frequency", m_sample_freq);
@@ -45,11 +45,13 @@ void RadarSampler::initialize(const std::string& key)
     // Angular speed of the beam [deg/s]
     pp.get("angular_speed", m_angular_speed);
 
-    // Unit vector axis of the beam [-]
+    // Unit vector, horizontal center-axis of the beam [-]
     pp.getarr("axis", m_axis);
+    AMREX_ALWAYS_ASSERT(static_cast<int>(m_axis.size()) == AMREX_SPACEDIM);
 
     // Unit vertical axis [-]
     pp.getarr("vertical_unit_dir", m_vertical);
+    AMREX_ALWAYS_ASSERT(static_cast<int>(m_vertical.size()) == AMREX_SPACEDIM);
 
     // Sweep angle of the beam [deg]
     pp.get("sweep_angle", m_sweep_angle);
@@ -60,6 +62,12 @@ void RadarSampler::initialize(const std::string& key)
     // Elevation angles [deg]
     pp.getarr("elevation_angles", m_elevation_angles);
 
+    // Print radar debug info
+    pp.query("debug_print", m_debug_print);
+
+    // Output cone points
+    pp.query("output_cone_points", m_output_cone_points);
+
     // Set initial periodic time to half-way point of forward sweep
     m_periodic_time = 0.5 * m_sweep_angle / m_angular_speed;
     m_current_phase = determine_operation_phase();
@@ -67,16 +75,8 @@ void RadarSampler::initialize(const std::string& key)
     m_cone_size = num_points_cone();
 
     RadarSampler::new_cone();
-
-    amrex::Print() << "Passed originate cone" << std::endl;
-
     RadarSampler::update_sampling_locations();
-
-    amrex::Print() << "Passed update sampling" << std::endl;
-
     check_bounds();
-
-    amrex::Print() << "Passed check bounds" << std::endl;
 }
 
 void RadarSampler::check_bounds()
@@ -167,8 +167,6 @@ double RadarSampler::determine_current_sweep_angle() const
 
 void RadarSampler::update_sampling_locations()
 {
-
-    // amrex::Print() << "RADAR UPDATE SAMPLING LOCATIONS" << std::endl;
     amrex::Real time = m_sim.time().current_time();
     amrex::Real start_time = m_sim.time().start_time();
     amrex::Real dt_sim = m_sim.time().deltaT();
@@ -189,11 +187,15 @@ void RadarSampler::update_sampling_locations()
     los_unit.resize(m_ntotal * num_points_quad());
     los_proj.resize(m_ntotal * num_points_quad());
 
-    amrex::Print() << "ts_diff: " << ts_diff << "\t"
-                   << "m_ns: " << m_ns << "\t"
-                   << "m_ntotal: " << m_ntotal << "\t"
-                   << "Radar Time: " << m_radar_time << "\t"
-                   << "AMR Time: " << time << std::endl;
+    if(m_debug_print){
+        amrex::Print() << "-------------------------" << std::endl
+                    << "ts_diff: " << ts_diff << "\t"
+                    << "m_ns: " << m_ns << "\t"
+                    << "m_ntotal: " << m_ntotal << "\t"
+                    << "Radar Time: " << m_radar_time << "\t"
+                    << "AMR Time: " << time << std::endl
+                    << "-------------------------" << std::endl;
+    }
 
     int conetipbegin = m_cone_size - 1 - num_points_quad();
     int conetipend = m_cone_size;
@@ -206,14 +208,16 @@ void RadarSampler::update_sampling_locations()
             double elevation_angle = m_elevation_angles.at(
                 sweep_count() % m_elevation_angles.size());
 
-            amrex::Print() << "-------------------------" << std::endl
-                           << "Total Sweep: " << total_sweep_time() << "\t"
-                           << "Periodic Time: " << per_time << "\t"
-                           << "Radar Time: " << m_radar_time << "\t"
-                           << "S Angle: " << sweep_angle << "\t"
-                           << "E Angle: " << elevation_angle << "\t"
-                           << "Sim Time: " << time << std::endl
-                           << "-------------------------" << std::endl;
+            if(m_debug_print){
+                amrex::Print() << "-------------------------" << std::endl
+                            << "Total Sweep: " << total_sweep_time() << "\t"
+                            << "Periodic Time: " << per_time << "\t"
+                            << "Radar Time: " << m_radar_time << "\t"
+                            << "S Angle: " << sweep_angle << "\t"
+                            << "E Angle: " << elevation_angle << "\t"
+                            << "Sim Time: " << time << std::endl
+                            << "-------------------------" << std::endl;
+            }
 
             vs::Vector vertical_ref(
                 m_vertical[0], m_vertical[1], m_vertical[2]);
@@ -242,6 +246,7 @@ void RadarSampler::update_sampling_locations()
                 current_cones[point_index][1] = rotated_point[1] + m_start[1];
                 current_cones[point_index][2] = rotated_point[2] + m_start[2];
 
+                // Add a single cap to help calc line of sight
                 if (i > conetipbegin && i < conetipend) {
                     vs::Vector unit_cone_point(rotated_point.normalize());
                     vs::Tensor unit_proj_mat =
@@ -252,13 +257,13 @@ void RadarSampler::update_sampling_locations()
                 }
             }
 
-            amrex::Print() << "LOS Unit Size: " << los_unit.size() << std::endl;
-            amrex::Print() << "LOS Proj Size: " << los_proj.size() << std::endl;
-
             m_radar_time += dt_sample;
+
         } else {
+            // This cone falls outside time bounds
+            // For this timestep
             int cq_idx = k * num_points_quad();
-            // Fill with -99999.99
+
             for (int i = 0; i < m_cone_size; ++i) {
                 int point_index = i + k * m_cone_size;
                 current_cones[point_index][0] = -99999.99;
@@ -270,6 +275,7 @@ void RadarSampler::update_sampling_locations()
                     vs::Vector unit_zero_point(0.0, 0.0, 0.0);
                     vs::Tensor zero_mat =
                         sampling_utils::unit_projection_matrix(unit_zero_point);
+                    los_unit[cq_idx] = unit_zero_point;
                     los_proj[cq_idx] = zero_mat;
                     cq_idx++;
                 }
@@ -294,10 +300,12 @@ void RadarSampler::new_cone()
 
     int nquad = num_points_quad();
 
-    for (int j = 0; j < nquad; ++j) {
-        amrex::Print() << "Rays x: " << m_rays[j][0] << "\t"
-                       << "Rays y: " << m_rays[j][1] << "\t"
-                       << "Rays z: " << m_rays[j][2] << "\t" << std::endl;
+    if(m_debug_print){
+        for (int j = 0; j < nquad; ++j) {
+            amrex::Print() << "Rays x: " << m_rays[j][0] << "\t"
+                        << "Rays y: " << m_rays[j][1] << "\t"
+                        << "Rays z: " << m_rays[j][2] << "\t" << std::endl;
+        }
     }
 
     amrex::Array<amrex::Real, AMREX_SPACEDIM> dx;
@@ -306,14 +314,16 @@ void RadarSampler::new_cone()
         dx[d] = (canon_vector[d] - origin_vector[d]) / m_npts;
     }
 
-    amrex::Print() << "-------------------------" << std::endl
-                   << "Beam Length: " << m_beam_length << "\t"
-                   << "nquad: " << nquad << "\t"
-                   << "dx[2]: " << dx[2] << "\t"
-                   << "m_npts: " << m_npts << "\t"
-                   << "ntheta: " << ntheta << "\t"
-                   << "nphi: " << nphi << std::endl
-                   << "-------------------------" << std::endl;
+    if(m_debug_print){
+        amrex::Print() << "-------------------------" << std::endl
+                    << "Beam Length: " << m_beam_length << "\t"
+                    << "nquad: " << nquad << "\t"
+                    << "dx[2]: " << dx[2] << "\t"
+                    << "m_npts: " << m_npts << "\t"
+                    << "ntheta: " << ntheta << "\t"
+                    << "nphi: " << nphi << std::endl
+                    << "-------------------------" << std::endl;
+    }
 
     for (int n = 0; n < m_npts; ++n) {
         for (int j = 0; j < nquad; ++j) {
@@ -340,87 +350,10 @@ void RadarSampler::new_cone()
     }
 }
 
-void RadarSampler::origin_cone()
-{
-
-    vs::Vector canon_vector(0.0, 0.0, 1.0);
-    vs::Vector origin_vector(0.0, 0.0, 0.0);
-
-    int full_size = m_npts + ntheta * (m_npts - 1) * (nphi - 1);
-    initial_cone.resize(full_size);
-
-    const amrex::Real nptsdiv = amrex::max(m_npts - 1, 1);
-    const amrex::Real nthediv = amrex::max(ntheta, 1);
-    const amrex::Real nphidiv = amrex::max(nphi - 1, 1);
-    amrex::Array<amrex::Real, AMREX_SPACEDIM> dx;
-
-    for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-        dx[d] = (canon_vector[d] - origin_vector[d]) / nptsdiv;
-    }
-
-    // Assemble Radar axis unit beam
-    for (int i = 0; i < m_npts; ++i) {
-        // amrex::Print() << "i: " << i << std::endl;
-        for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-            // locs[i][d] = origin_vector[d] + i * dx[d];
-            initial_cone[i][d] = origin_vector[d] + i * dx[d];
-        }
-    }
-
-    const amrex::Real dphi = m_cone_angle / nphidiv;
-    const amrex::Real dtheta = 360.0 / nthediv;
-    amrex::Real c_theta = 0.0;
-    amrex::Real c_phi = 0.0;
-
-    // Assemble all other unit beams
-    for (int t = 0; t < ntheta; ++t) {
-        c_theta = t * dtheta;
-        for (int p = 0; p < nphi - 1; ++p) {
-            c_phi = static_cast<double>((p + 1) * dphi);
-            for (int i = 0; i < m_npts - 1; ++i) {
-                int ci = m_npts + i + (m_npts - 1) * (p + (nphi - 1) * t);
-
-                const vs::Vector temp_loc(
-                    origin_vector[0] + dx[0] + i * dx[0],
-                    origin_vector[1] + dx[1] + i * dx[1],
-                    origin_vector[2] + dx[2] + i * dx[2]);
-                const vs::Vector temp_ang(0.0, c_phi, c_theta);
-                vs::Vector temp_output =
-                    sampling_utils::canon_rotator(temp_ang, temp_loc);
-
-                for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-                    initial_cone[ci][d] = temp_output[d];
-                }
-            }
-        }
-    }
-
-    // Transform to scale and align Radar axis with start and end points
-    // vs::Vector
-    // target_beam(m_end[0]-m_start[0],m_end[1]-m_start[1],m_end[2]-m_start[2]);
-    // amrex::Real target_beam_scale = std::sqrt(std::pow(target_beam[0],2.0)+
-    //                    std::pow(target_beam[1],2.0)+
-    //                    std::pow(target_beam[2],2.0));
-    vs::Vector init_axis(m_axis[0], m_axis[1], m_axis[2]);
-    vs::Vector tc_axis = canon_vector ^ init_axis;
-    amrex::Real tc_angle = std::acos(init_axis & canon_vector) * 180.0 / PI;
-
-    for (int i = 0; i < full_size; ++i) {
-        vs::Vector temp_loc(
-            initial_cone[i][0], initial_cone[i][1], initial_cone[i][2]);
-        vs::Vector new_rot(
-            sampling_utils::rotate_euler_vector(tc_axis, tc_angle, temp_loc));
-        initial_cone[i][0] = new_rot[0] * m_beam_length + m_start[0];
-        initial_cone[i][1] = new_rot[1] * m_beam_length + m_start[1];
-        initial_cone[i][2] = new_rot[2] * m_beam_length + m_start[2];
-    }
-}
-
 void RadarSampler::calc_lineofsight_velocity(
     const std::vector<std::vector<double>>& velocity_raw)
 {
     AMREX_ALWAYS_ASSERT(static_cast<int>(velocity_raw.size()) == num_points());
-    // amrex::Print() << "Calculate line of sight" << std::endl;
 
     m_los_velocity.resize(num_output_points());
     std::vector<double> los_temp(num_points());
@@ -434,7 +367,6 @@ void RadarSampler::calc_lineofsight_velocity(
                 velocity_raw[p_idx][2]);
             vs::Vector los_vel_vector(temp_vel & los_proj[cq_idx]);
             los_temp[p_idx] = (los_vel_vector & los_unit[cq_idx]);
-            // m_los_velocity[p_idx] = vs::mag(los_vel_vector);
         }
     }
 
@@ -445,15 +377,9 @@ void RadarSampler::calc_lineofsight_velocity(
             los_temp.begin() + (k + 1) * num_points_cone());
         line_average(m_weights, temp_vals, m_los_velocity, a_start);
     }
-
-    // Get current cone tips and normalize
-    // Calculate rotation matrix to radar axis
-    // Dot product every velocity value with corresponding
-    // Output single value LOS to m_current_vel_los
-    // Do line average of LOS
-    // Output as special output_netcdf_field
 }
 
+// TODO: Fix modify_sample_data...single var output, not multiple
 std::vector<double> RadarSampler::modify_sample_data(
     const std::vector<double>& sample_data,
     const amrex::Vector<std::string>& var_names)
@@ -521,6 +447,7 @@ void RadarSampler::sampling_locations(SampleLocType& locs) const
     }
 }
 
+// TODO: Double check this calculation
 void RadarSampler::cone_axis_locations(SampleLocType& axis_locs) const
 {
     axis_locs.resize(num_output_points());
@@ -547,8 +474,11 @@ void RadarSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
     grp.def_dim("ndim", AMREX_SPACEDIM);
     grp.def_dim("num_points_cone", num_points());
     grp.def_var("points", NC_DOUBLE, {"num_time_steps", "num_points", "ndim"});
-    grp.def_var(
-        "conepoints", NC_DOUBLE, {"num_time_steps", "num_points_cone", "ndim"});
+    
+    if(m_output_cone_points){
+        grp.def_var(
+            "conepoints", NC_DOUBLE, {"num_time_steps", "num_points_cone", "ndim"});
+    }
 }
 
 void RadarSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
@@ -556,12 +486,8 @@ void RadarSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
 void RadarSampler::output_netcdf_data(
     const ncutils::NCGroup& grp, const size_t nt) const
 {
-    amrex::Print() << "Output Radar Sampler Netcdf Data" << std::endl;
     std::vector<size_t> start{nt, 0, 0};
     std::vector<size_t> count{1, 0, AMREX_SPACEDIM};
-
-    std::vector<size_t> cone_start{nt, 0, 0};
-    std::vector<size_t> cone_count{1, 0, AMREX_SPACEDIM};
 
     SamplerBase::SampleLocType locs;
     cone_axis_locations(locs);
@@ -569,11 +495,16 @@ void RadarSampler::output_netcdf_data(
     auto xyz = grp.var("points");
     xyz.put(&locs[0][0], start, count);
 
-    SamplerBase::SampleLocType conelocs;
-    sampling_locations(conelocs);
-    cone_count[1] = num_points();
-    auto cone_xyz = grp.var("conepoints");
-    cone_xyz.put(&conelocs[0][0], cone_start, cone_count);
+    if(m_output_cone_points){
+        std::vector<size_t> cone_start{nt, 0, 0};
+        std::vector<size_t> cone_count{1, 0, AMREX_SPACEDIM};
+
+        SamplerBase::SampleLocType conelocs;
+        sampling_locations(conelocs);
+        cone_count[1] = num_points();
+        auto cone_xyz = grp.var("conepoints");
+        cone_xyz.put(&conelocs[0][0], cone_start, cone_count);
+    }
 }
 
 bool RadarSampler::output_netcdf_field(

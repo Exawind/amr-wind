@@ -200,8 +200,6 @@ void Sampling::create_output_buffer()
         }
     }
 
-    amrex::Print() << "m_sample_buf size " << m_sample_buf.size() << std::endl;
-    amrex::Print() << "m_output_buf size " << m_output_buf.size() << std::endl;
     m_output_particles = m_output_buf.size() / nvars;
 }
 
@@ -359,9 +357,6 @@ void Sampling::write_netcdf()
     for (const auto& obj : m_samplers) {
         auto grp = ncf.group(obj->label());
         bool custom_output = obj->output_netcdf_field(m_output_buf, grp, nt);
-        if (custom_output) {
-            amrex::Print() << "Custom sampler output" << std::endl;
-        }
     }
 
     // Output calculated variables

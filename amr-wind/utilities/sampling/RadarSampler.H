@@ -38,7 +38,6 @@ public:
 
     void check_bounds();
 
-    void origin_cone();
     void new_cone();
 
     double total_sweep_time() const;
@@ -165,6 +164,9 @@ protected:
     int m_ntotal;
     int m_cone_size;
     phase m_current_phase;
+
+    bool m_debug_print{false};
+    bool m_output_cone_points{false};
 };
 
 } // namespace amr_wind::sampling
