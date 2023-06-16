@@ -198,7 +198,9 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
                     const amrex::Real diss_amb =
                         beta_star * rho_arr(i, j, k) * sdr_amb * tke_amb;
                     diss_arr(i, j, k) = -beta_star * rho_arr(i, j, k) *
-                                        tke_arr(i, j, k) * sdr_arr(i, j, k) + diss_amb;
+                                            tke_arr(i, j, k) *
+                                            sdr_arr(i, j, k) +
+                                        diss_amb;
 
                     tke_lhs_arr(i, j, k) = 0.5 * beta_star * rho_arr(i, j, k) *
                                            sdr_arr(i, j, k) * deltaT;
@@ -234,9 +236,9 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
                             production_omega + cross_diffusion;
 
                         sdr_diss_arr(i, j, k) = -rho_arr(i, j, k) * beta *
-                                                sdr_arr(i, j, k) *
-                                                sdr_arr(i, j, k)+
-                                            sdr_diss_amb;
+                                                    sdr_arr(i, j, k) *
+                                                    sdr_arr(i, j, k) +
+                                                sdr_diss_amb;
 
                         sdr_lhs_arr(i, j, k) = 0.5 * rho_arr(i, j, k) * beta *
                                                sdr_arr(i, j, k) * deltaT;
