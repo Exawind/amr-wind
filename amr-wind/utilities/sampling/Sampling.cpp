@@ -190,7 +190,7 @@ void Sampling::create_output_buffer()
                 const std::vector<double> temp_sb_mod(
                     &m_sample_buf[offset], &m_sample_buf[offset + sample_size]);
                 std::vector<double> mod_result =
-                    obj->modify_sample_data(temp_sb_mod, m_var_names);
+                    obj->modify_sample_data(temp_sb_mod, m_var_names[iv]);
                 m_output_buf.insert(
                     m_output_buf.end(), mod_result.begin(), mod_result.end());
                 offset += sample_size;

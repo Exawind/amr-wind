@@ -21,8 +21,8 @@ vs::Vector canon_rotator(const vs::Vector& angles, const vs::Vector& data)
 vs::Tensor unit_projection_matrix(const vs::Vector& a)
 {
     return vs::Tensor(
-        a[0] * a[0], a[1] * a[2], a[1] * a[3], a[1] * a[2], a[2] * a[2],
-        a[2] * a[3], a[1] * a[3], a[2] * a[3], a[3] * a[3]);
+        a[0] * a[0], a[0] * a[1], a[0] * a[2], a[0] * a[1], a[1] * a[1],
+        a[1] * a[2], a[0] * a[2], a[1] * a[2], a[2] * a[2]);
 }
 
 vs::Tensor rotation_matrix(vs::Vector dst, vs::Vector src)
@@ -74,11 +74,6 @@ void spherical_cap_quadrature(
     std::transform(
         weights1D.cbegin(), weights1D.cend(), weights1D.begin(),
         [gammav](double w) { return w * 0.5 * (1 - std::cos(gammav)); });
-
-    // std::vector<vs::Vector> rays;
-    // rays.reserve(abscissae1D.size() * ntheta);
-    // std::vector<double> weights;
-    // weights.reserve(rays.size());
 
     const int nphi = int(abscissae1D.size());
 
