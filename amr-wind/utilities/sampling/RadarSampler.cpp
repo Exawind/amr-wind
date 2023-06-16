@@ -18,14 +18,13 @@ void RadarSampler::initialize(const std::string& key)
 
     // This is the origin of the scan (x, y, z) [m]
     pp.getarr("origin", m_start);
-    pp.getarr("endpoint", m_end);
     AMREX_ALWAYS_ASSERT(static_cast<int>(m_start.size()) == AMREX_SPACEDIM);
 
     // Sampling Frequency
     pp.get("sampling_frequency", m_sample_freq);
 
     // Sampling Frequency
-    pp.get("radar_sampling_frequency", m_radar_sample_freq);
+    pp.get("device_sampling_frequency", m_radar_sample_freq);
 
     // The number of points in single beam
     pp.get("num_points", m_npts);
@@ -68,7 +67,14 @@ void RadarSampler::initialize(const std::string& key)
     // Output cone points
     pp.query("output_cone_points", m_output_cone_points);
 
+    // Set initial m_end but isn't used for anything
+    m_end.resize(AMREX_SPACEDIM);
+    for (int d = 0; d < AMREX_SPACEDIM; ++d) {
+        m_end[d] = m_axis[d] * m_beam_length + m_start[d];
+    }
+
     // Set initial periodic time to half-way point of forward sweep
+    // But this gets overwritten in update_sampling_locations
     m_periodic_time = 0.5 * m_sweep_angle / m_angular_speed;
     m_current_phase = determine_operation_phase();
 
@@ -187,14 +193,14 @@ void RadarSampler::update_sampling_locations()
     los_unit.resize(m_ntotal * num_points_quad());
     los_proj.resize(m_ntotal * num_points_quad());
 
-    if(m_debug_print){
+    if (m_debug_print) {
         amrex::Print() << "-------------------------" << std::endl
-                    << "ts_diff: " << ts_diff << "\t"
-                    << "m_ns: " << m_ns << "\t"
-                    << "m_ntotal: " << m_ntotal << "\t"
-                    << "Radar Time: " << m_radar_time << "\t"
-                    << "AMR Time: " << time << std::endl
-                    << "-------------------------" << std::endl;
+                       << "ts_diff: " << ts_diff << "\t"
+                       << "m_ns: " << m_ns << "\t"
+                       << "m_ntotal: " << m_ntotal << "\t"
+                       << "Radar Time: " << m_radar_time << "\t"
+                       << "AMR Time: " << time << std::endl
+                       << "-------------------------" << std::endl;
     }
 
     int conetipbegin = m_cone_size - 1 - num_points_quad();
@@ -208,15 +214,15 @@ void RadarSampler::update_sampling_locations()
             double elevation_angle = m_elevation_angles.at(
                 sweep_count() % m_elevation_angles.size());
 
-            if(m_debug_print){
+            if (m_debug_print) {
                 amrex::Print() << "-------------------------" << std::endl
-                            << "Total Sweep: " << total_sweep_time() << "\t"
-                            << "Periodic Time: " << per_time << "\t"
-                            << "Radar Time: " << m_radar_time << "\t"
-                            << "S Angle: " << sweep_angle << "\t"
-                            << "E Angle: " << elevation_angle << "\t"
-                            << "Sim Time: " << time << std::endl
-                            << "-------------------------" << std::endl;
+                               << "Total Sweep: " << total_sweep_time() << "\t"
+                               << "Periodic Time: " << per_time << "\t"
+                               << "Radar Time: " << m_radar_time << "\t"
+                               << "S Angle: " << sweep_angle << "\t"
+                               << "E Angle: " << elevation_angle << "\t"
+                               << "Sim Time: " << time << std::endl
+                               << "-------------------------" << std::endl;
             }
 
             vs::Vector vertical_ref(
@@ -300,11 +306,11 @@ void RadarSampler::new_cone()
 
     int nquad = num_points_quad();
 
-    if(m_debug_print){
+    if (m_debug_print) {
         for (int j = 0; j < nquad; ++j) {
             amrex::Print() << "Rays x: " << m_rays[j][0] << "\t"
-                        << "Rays y: " << m_rays[j][1] << "\t"
-                        << "Rays z: " << m_rays[j][2] << "\t" << std::endl;
+                           << "Rays y: " << m_rays[j][1] << "\t"
+                           << "Rays z: " << m_rays[j][2] << "\t" << std::endl;
         }
     }
 
@@ -314,15 +320,15 @@ void RadarSampler::new_cone()
         dx[d] = (canon_vector[d] - origin_vector[d]) / m_npts;
     }
 
-    if(m_debug_print){
+    if (m_debug_print) {
         amrex::Print() << "-------------------------" << std::endl
-                    << "Beam Length: " << m_beam_length << "\t"
-                    << "nquad: " << nquad << "\t"
-                    << "dx[2]: " << dx[2] << "\t"
-                    << "m_npts: " << m_npts << "\t"
-                    << "ntheta: " << ntheta << "\t"
-                    << "nphi: " << nphi << std::endl
-                    << "-------------------------" << std::endl;
+                       << "Beam Length: " << m_beam_length << "\t"
+                       << "nquad: " << nquad << "\t"
+                       << "dx[2]: " << dx[2] << "\t"
+                       << "m_npts: " << m_npts << "\t"
+                       << "ntheta: " << ntheta << "\t"
+                       << "nphi: " << nphi << std::endl
+                       << "-------------------------" << std::endl;
     }
 
     for (int n = 0; n < m_npts; ++n) {
@@ -381,8 +387,7 @@ void RadarSampler::calc_lineofsight_velocity(
 
 // TODO: Fix modify_sample_data...single var output, not multiple
 std::vector<double> RadarSampler::modify_sample_data(
-    const std::vector<double>& sample_data,
-    const amrex::Vector<std::string>& var_names)
+    const std::vector<double>& sample_data, const std::string& var_name)
 {
     // sample_data enters this method for each sampled variable
     // there are m_ntotal steps (cones) based on device sampling rate
@@ -390,25 +395,19 @@ std::vector<double> RadarSampler::modify_sample_data(
 
     const int n_buf = sample_data.size();
     const int n_cones = m_ntotal;
-    const int n_vars = n_buf / num_points();
-    const int n_vars_re = var_names.size();
-
     std::vector<double> mod_data(num_output_points());
 
-    for (int iv = 0; iv < n_vars; ++iv) {
-        std::string svar = var_names[iv];
-        for (int ic = 0; ic < n_cones; ++ic) {
-            int c_idx = iv * n_cones + ic;
-            int c_start = c_idx * num_points_cone();
-            int c_end = (c_idx + 1) * num_points_cone();
-            int a_start = c_idx * num_points_axis();
+    for (int ic = 0; ic < n_cones; ++ic) {
+        int c_start = ic * num_points_cone();
+        int c_end = (ic + 1) * num_points_cone();
+        int a_start = ic * num_points_axis();
 
-            // Send a single cone to be line averaged
-            std::vector<double> temp_vals(
-                sample_data.begin() + c_start, sample_data.begin() + c_end);
-            line_average(m_weights, temp_vals, mod_data, a_start);
-        }
+        // Send a single cone to be line averaged
+        std::vector<double> temp_vals(
+            sample_data.begin() + c_start, sample_data.begin() + c_end);
+        line_average(m_weights, temp_vals, mod_data, a_start);
     }
+
     return mod_data;
 }
 
@@ -474,10 +473,11 @@ void RadarSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
     grp.def_dim("ndim", AMREX_SPACEDIM);
     grp.def_dim("num_points_cone", num_points());
     grp.def_var("points", NC_DOUBLE, {"num_time_steps", "num_points", "ndim"});
-    
-    if(m_output_cone_points){
+
+    if (m_output_cone_points) {
         grp.def_var(
-            "conepoints", NC_DOUBLE, {"num_time_steps", "num_points_cone", "ndim"});
+            "conepoints", NC_DOUBLE,
+            {"num_time_steps", "num_points_cone", "ndim"});
     }
 }
 
@@ -495,7 +495,7 @@ void RadarSampler::output_netcdf_data(
     auto xyz = grp.var("points");
     xyz.put(&locs[0][0], start, count);
 
-    if(m_output_cone_points){
+    if (m_output_cone_points) {
         std::vector<size_t> cone_start{nt, 0, 0};
         std::vector<size_t> cone_count{1, 0, AMREX_SPACEDIM};
 
