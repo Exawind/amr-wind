@@ -157,7 +157,7 @@ void incflo::advance()
  *  \f{align}
  *  \kappa = \begin{cases}
  *  0 & \text{Explicit} \\
- *  0.5 & \text{Crank-Nicholson} \\
+ *  0.5 & \text{Crank-Nicolson} \\
  *  1 & \text{Implicit}
  *  \end{cases}
  *  \f}
@@ -475,7 +475,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
  *  \f{align}
  *  \kappa = \begin{cases}
  *  0 & \text{Explicit} \\
- *  0.5 & \text{Crank-Nicholson} \\
+ *  0.5 & \text{Crank-Nicolson} \\
  *  1 & \text{Implicit}
  *  \end{cases}
  *  \f}
