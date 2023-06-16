@@ -41,7 +41,10 @@ public:
     //! Populate and return a vector of probe locations to be sampled
     void sampling_locations(SampleLocType& /*locs*/) const override;
 
-    void output_locations(SampleLocType& locs) const override {return sampling_locations(locs);}
+    void output_locations(SampleLocType& locs) const override
+    {
+        return sampling_locations(locs);
+    }
 
     void
     define_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;

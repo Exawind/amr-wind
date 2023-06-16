@@ -22,10 +22,9 @@ void ConeSampler::initialize(const std::string& key)
     pp.get("phi", m_phi);
     pp.getarr("start", m_start);
     pp.getarr("end", m_end);
-    
+
     check_bounds();
 }
-
 
 vs::Vector canon_rotation(const vs::Vector& angles, const vs::Vector& data)
 {
@@ -77,11 +76,11 @@ void ConeSampler::check_bounds()
 void ConeSampler::sampling_locations(SampleLocType& locs) const
 {
     // size assumes only one axis set of points
-    int full_size = m_npts + m_ntheta*(m_npts-1)*(m_nphi-1);
+    int full_size = m_npts + m_ntheta * (m_npts - 1) * (m_nphi - 1);
     locs.resize(full_size);
 
     vs::Vector canon_vector(0.0, 0.0, 1.0);
-    vs::Vector origin_vector(0.0, 0.0, 0.0); 
+    vs::Vector origin_vector(0.0, 0.0, 0.0);
 
     const amrex::Real nptsdiv = amrex::max(m_npts - 1, 1);
     const amrex::Real nthediv = amrex::max(m_ntheta, 1);
@@ -94,7 +93,7 @@ void ConeSampler::sampling_locations(SampleLocType& locs) const
 
     // Assemble cone axis unit beam
     for (int i = 0; i < m_npts; ++i) {
-        //amrex::Print() << "i: " << i << std::endl;
+        // amrex::Print() << "i: " << i << std::endl;
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
             locs[i][d] = origin_vector[d] + i * dx[d];
         }
@@ -108,43 +107,43 @@ void ConeSampler::sampling_locations(SampleLocType& locs) const
     // Assemble all other unit beams
     for (int t = 0; t < m_ntheta; ++t) {
         c_theta = t * dtheta;
-        for (int p = 0; p < m_nphi-1; ++p) {
+        for (int p = 0; p < m_nphi - 1; ++p) {
             c_phi = static_cast<double>((p + 1) * dphi);
-            for (int i = 0; i < m_npts-1; ++i) {
-                int ci = m_npts + i + (m_npts-1)*(p + (m_nphi-1)*t);
+            for (int i = 0; i < m_npts - 1; ++i) {
+                int ci = m_npts + i + (m_npts - 1) * (p + (m_nphi - 1) * t);
 
-                const vs::Vector temp_loc(origin_vector[0]+dx[0] + i * dx[0],
-                                          origin_vector[1]+dx[1] + i * dx[1],
-                                          origin_vector[2]+dx[2] + i * dx[2]);
-                const vs::Vector temp_ang(0.0,c_phi,c_theta); 
-                vs::Vector rot_loc = canon_rotation(temp_ang,temp_loc);
+                const vs::Vector temp_loc(
+                    origin_vector[0] + dx[0] + i * dx[0],
+                    origin_vector[1] + dx[1] + i * dx[1],
+                    origin_vector[2] + dx[2] + i * dx[2]);
+                const vs::Vector temp_ang(0.0, c_phi, c_theta);
+                vs::Vector rot_loc = canon_rotation(temp_ang, temp_loc);
 
                 locs[ci][0] = rot_loc[0];
                 locs[ci][1] = rot_loc[1];
-                locs[ci][2] = rot_loc[2]; 
-
+                locs[ci][2] = rot_loc[2];
             }
         }
     }
 
     // Transform to scale and align cone axis with start and end points
-    vs::Vector target_beam(m_end[0]-m_start[0],m_end[1]-m_start[1],m_end[2]-m_start[2]); 
-    amrex::Real target_beam_scale = std::sqrt(std::pow(target_beam[0],2.0)+
-                        std::pow(target_beam[1],2.0)+
-                        std::pow(target_beam[2],2.0));
+    vs::Vector target_beam(
+        m_end[0] - m_start[0], m_end[1] - m_start[1], m_end[2] - m_start[2]);
+    amrex::Real target_beam_scale = std::sqrt(
+        std::pow(target_beam[0], 2.0) + std::pow(target_beam[1], 2.0) +
+        std::pow(target_beam[2], 2.0));
 
     vs::Vector unit_target = target_beam.normalize();
     vs::Vector tc_axis = canon_vector ^ unit_target;
-    amrex::Real tc_angle = std::acos(unit_target & canon_vector)*180.0/PI;
-    
-    for (int i = 0; i < full_size; ++i) {
-        vs::Vector temp_loc(locs[i][0],locs[i][1],locs[i][2]);
-        vs::Vector new_rot(rotate_euler_vec(tc_axis,tc_angle,temp_loc));
-        locs[i][0] = new_rot[0]*target_beam_scale + m_start[0];
-        locs[i][1] = new_rot[1]*target_beam_scale + m_start[1];
-        locs[i][2] = new_rot[2]*target_beam_scale + m_start[2];
-    }
+    amrex::Real tc_angle = std::acos(unit_target & canon_vector) * 180.0 / PI;
 
+    for (int i = 0; i < full_size; ++i) {
+        vs::Vector temp_loc(locs[i][0], locs[i][1], locs[i][2]);
+        vs::Vector new_rot(rotate_euler_vec(tc_axis, tc_angle, temp_loc));
+        locs[i][0] = new_rot[0] * target_beam_scale + m_start[0];
+        locs[i][1] = new_rot[1] * target_beam_scale + m_start[1];
+        locs[i][2] = new_rot[2] * target_beam_scale + m_start[2];
+    }
 }
 
 #ifdef AMR_WIND_USE_NETCDF
