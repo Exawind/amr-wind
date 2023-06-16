@@ -57,7 +57,7 @@ inline void FAST_CreateCheckpoint(
 #ifdef AMR_WIND_FAST_USE_SCDX
 inline void FAST_OpFM_Init(
     int*, double*, const char*, int*, int*, int*, int*, float*,
-    float*, int*, int*, float*, int*, double*, int*, int*,
+    float*, int*, int*, float*, int*, double*, int*, int*, int*,
     OpFM_InputType*, OpFM_OutputType*, SC_DX_InputType*,
     SC_DX_OutputType*, int*, char*) {}
 
@@ -68,7 +68,7 @@ inline void FAST_OpFM_Restart(
 #else
 inline void FAST_OpFM_Init(
     int* /*unused*/, double* /*unused*/, const char* /*unused*/, int* /*unused*/, int* /*unused*/, int* /*unused*/, int* /*unused*/, int* /*unused*/, float* /*unused*/,
-    int* /*unused*/, double* /*unused*/, int* /*unused*/, int* /*unused*/, OpFM_InputType* /*unused*/, OpFM_OutputType* /*unused*/,
+    int* /*unused*/, double* /*unused*/, int* /*unused*/, int* /*unused*/, int* /*unused*/, OpFM_InputType* /*unused*/, OpFM_OutputType* /*unused*/,
     SC_InputType* /*unused*/, SC_OutputType* /*unused*/, int* /*unused*/, char* /*unused*/) {}
 
 inline void FAST_OpFM_Restart(
