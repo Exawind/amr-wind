@@ -3,6 +3,7 @@
 #include "aw_test_utils/test_utils.H"
 #include "amr-wind/equation_systems/tke/TKE.H"
 #include "amr-wind/wind_energy/ABLStats.H"
+#include "amr-wind/incflo.H"
 
 namespace amr_wind_tests {
 
@@ -180,6 +181,7 @@ TEST_F(ABLMeshTest, stats_energy_budget)
         amrex::ParmParse pp("transport");
         pp.add("viscosity", (amrex::Real)1e-5);
     }
+
     // incflo.diffusion_type = 1
     populate_parameters();
     initialize_mesh();
@@ -237,7 +239,7 @@ TEST_F(ABLMeshTest, stats_energy_budget)
 
     // Step forward in time for tke equation
     sim().turbulence_model().update_turbulent_viscosity(
-        amr_wind::FieldState::Old);
+        amr_wind::FieldState::Old, DiffusionType::Crank_Nicolson);
     tke_eqn.compute_advection_term(amr_wind::FieldState::Old);
     // Remove NaNs (not sure why they're there, but need to be removed)
     remove_nans(tke_eqn.fields().conv_term);
