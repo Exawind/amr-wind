@@ -72,9 +72,11 @@ public:
     virtual bool do_convert_velocity_los() { return false; }
 
     //! Sample buffer modification instructions
-    virtual std::vector<double>
-    modify_sample_data(const std::vector<double>&, const std::string&)
-    {}
+    virtual std::vector<double> modify_sample_data(
+        const std::vector<double>& sampledata, const std::string& var)
+    {
+        return sampledata;
+    }
 
     virtual void
     calc_lineofsight_velocity(const std::vector<std::vector<double>>&)
