@@ -134,7 +134,7 @@ double RadarSampler::periodic_time()
 int RadarSampler::sweep_count() const
 {
     const double sweep_time = m_sweep_angle / m_angular_speed + m_reset_time;
-    return std::floor(m_radar_time / sweep_time);
+    return static_cast<int>(std::floor(m_radar_time / sweep_time));
 }
 
 RadarSampler::phase RadarSampler::determine_operation_phase() const
@@ -387,13 +387,12 @@ void RadarSampler::calc_lineofsight_velocity(
 
 // TODO: Fix modify_sample_data...single var output, not multiple
 std::vector<double> RadarSampler::modify_sample_data(
-    const std::vector<double>& sample_data, const std::string& var_name)
+    const std::vector<double>& sample_data, const std::string& /*unused*/)
 {
     // sample_data enters this method for each sampled variable
-    // there are m_ntotal steps (cones) based on device sampling rate
+    // there are m_ntotal steps (cones) based on sampling rate
     AMREX_ALWAYS_ASSERT(static_cast<int>(sample_data.size()) == num_points());
 
-    const int n_buf = sample_data.size();
     const int n_cones = m_ntotal;
     std::vector<double> mod_data(num_output_points());
 

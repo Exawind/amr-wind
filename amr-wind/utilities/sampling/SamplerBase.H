@@ -73,7 +73,7 @@ public:
 
     //! Sample buffer modification instructions
     virtual std::vector<double> modify_sample_data(
-        const std::vector<double>& sampledata, const std::string& var)
+        const std::vector<double>& sampledata, const std::string& /*unused*/)
     {
         return sampledata;
     }
