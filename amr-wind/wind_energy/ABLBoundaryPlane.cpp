@@ -905,6 +905,9 @@ void ABLBoundaryPlane::populate_data(
             auto sbx = mfi.growntilebox(1);
             if (!sbx.cellCentered()) {
                 sbx.enclosedCells();
+                if (ori.isHigh()) {
+                    sbx += amrex::IntVect::TheDimensionVector(ori.coordDir());
+                }
             }
             const auto& src = m_in_data.interpolate_data(ori, lev);
             const auto& bx = sbx & src.box();
