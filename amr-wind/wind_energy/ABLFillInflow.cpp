@@ -7,7 +7,7 @@ ABLFillInflow::ABLFillInflow(
     const amrex::AmrCore& mesh,
     const SimTime& time,
     const ABLBoundaryPlane& bndry_plane)
-    : FieldFillPatchOps<FieldBCNoOp>(
+    : FieldFillPatchOps<FieldBCDirichlet>(
           field, mesh, time, FieldInterpolator::CellConsLinear)
     , m_bndry_plane(bndry_plane)
 {}
@@ -21,7 +21,8 @@ void ABLFillInflow::fillpatch(
     const amrex::IntVect& nghost,
     const FieldState fstate)
 {
-    FieldFillPatchOps<FieldBCNoOp>::fillpatch(lev, time, mfab, nghost, fstate);
+    FieldFillPatchOps<FieldBCDirichlet>::fillpatch(
+        lev, time, mfab, nghost, fstate);
 
     m_bndry_plane.populate_data(lev, time, m_field, mfab);
 }
@@ -33,7 +34,7 @@ void ABLFillInflow::fillpatch_from_coarse(
     const amrex::IntVect& nghost,
     const FieldState fstate)
 {
-    FieldFillPatchOps<FieldBCNoOp>::fillpatch_from_coarse(
+    FieldFillPatchOps<FieldBCDirichlet>::fillpatch_from_coarse(
         lev, time, mfab, nghost, fstate);
 
     m_bndry_plane.populate_data(lev, time, m_field, mfab);
@@ -46,7 +47,8 @@ void ABLFillInflow::fillphysbc(
     const amrex::IntVect& nghost,
     const FieldState fstate)
 {
-    FieldFillPatchOps<FieldBCNoOp>::fillphysbc(lev, time, mfab, nghost, fstate);
+    FieldFillPatchOps<FieldBCDirichlet>::fillphysbc(
+        lev, time, mfab, nghost, fstate);
 
     m_bndry_plane.populate_data(lev, time, m_field, mfab);
 }
@@ -87,7 +89,7 @@ void ABLFillInflow::fillpatch_sibling_fields(
         }
     }
 
-    FieldFillPatchOps<FieldBCNoOp>::fillpatch_sibling_fields(
+    FieldFillPatchOps<FieldBCDirichlet>::fillpatch_sibling_fields(
         lev, time, mfabs, ffabs, cfabs, nghost, lbcrec, fstate, itype);
 
     for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
