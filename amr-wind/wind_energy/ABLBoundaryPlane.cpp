@@ -894,6 +894,11 @@ void ABLBoundaryPlane::populate_data(
             amrex::Abort("No inflow data at this level.");
         }
 
+        if (ori.isHigh()) {
+            amrex::Warning(
+                "We typically don't inflow boundary planes on the high side.");
+        }
+
         const size_t nc = mfab.nComp();
 
 #ifdef AMREX_USE_OMP
@@ -905,9 +910,6 @@ void ABLBoundaryPlane::populate_data(
             auto sbx = mfi.growntilebox(1);
             if (!sbx.cellCentered()) {
                 sbx.enclosedCells();
-                if (ori.isHigh()) {
-                    sbx += amrex::IntVect::TheDimensionVector(ori.coordDir());
-                }
             }
             const auto& src = m_in_data.interpolate_data(ori, lev);
             const auto& bx = sbx & src.box();
