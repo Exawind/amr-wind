@@ -902,7 +902,10 @@ void ABLBoundaryPlane::populate_data(
         for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid();
              ++mfi) {
 
-            const auto& sbx = mfi.growntilebox(1);
+            auto sbx = mfi.growntilebox(1);
+            if (!sbx.cellCentered()) {
+                sbx.enclosedCells();
+            }
             const auto& src = m_in_data.interpolate_data(ori, lev);
             const auto& bx = sbx & src.box();
             if (bx.isEmpty()) {
