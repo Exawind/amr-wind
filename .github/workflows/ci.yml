@@ -356,7 +356,7 @@ jobs:
         run: |
           /bin/bash -c " \
             source ${SPACK_MANAGER}/start.sh && \
-            quick-create -n ci amr-wind+ascent+hdf5+hypre+masa+netcdf~shared@main && \
+            quick-create -n ci -s amr-wind+ascent+hdf5+hypre+masa+netcdf~shared@main && \
             spack cd -e && \
             ln -s ${GITHUB_WORKSPACE} amr-wind && \
             spack develop amr-wind@main && \
