@@ -353,13 +353,14 @@ jobs:
         with:
           submodules: true
       - name: Test
-        working-directory: /spack-manager/environments/exawind
         run: |
           /bin/bash -c " \
             source ${SPACK_MANAGER}/start.sh && \
+            quick-create -n ci amr-wind+ascent+hdf5+hypre+masa+netcdf~shared@main && \
+            spack cd -e && \
             ln -s ${GITHUB_WORKSPACE} amr-wind && \
-            source ${SPACK_MANAGER}/start.sh && \
-            quick-develop -s amr-wind+ascent+hdf5+hypre+masa+netcdf~shared@main && \
+            spack develop amr-wind@main && \
+            spack manager external --latest --blacklist amr-wind gmake
             spack install && \
             spack cd -b amr-wind && \
             spack build-env amr-wind ctest -j $(nproc) -L unit --output-on-failure \
