@@ -69,8 +69,6 @@ void LineSampler::sampling_locations(SampleLocType& locs) const
             locs[i][d] = m_start[d] + i * dx[d];
         }
     }
-
-    amrex::Print() << "Passed Sampling Locations" << std::endl;
 }
 
 #ifdef AMR_WIND_USE_NETCDF

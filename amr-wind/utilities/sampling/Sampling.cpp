@@ -288,16 +288,29 @@ void Sampling::prepare_netcdf_file()
     ncf.def_dim(nt_name, NC_UNLIMITED);
     ncf.def_dim("ndim", AMREX_SPACEDIM);
     ncf.def_var("time", NC_DOUBLE, {nt_name});
+
     // Define groups for each sampler
     for (const auto& obj : m_samplers) {
         auto grp = ncf.def_group(obj->label());
-
         grp.def_dim(npart_name, obj->num_output_points());
         obj->define_netcdf_metadata(grp);
         grp.def_var("coordinates", NC_DOUBLE, {npart_name, "ndim"});
-        for (const auto& vname : m_var_names)
-            grp.def_var(vname, NC_DOUBLE, two_dim);
-        grp.def_var("los_velocity", NC_DOUBLE, two_dim);
+
+        // Create variables in each sampler
+        // Removing velocity components when LOS velocity is output
+        for (const std::string vname : m_var_names) {
+            if (obj->do_convert_velocity_los() == false) {
+                grp.def_var(vname, NC_DOUBLE, two_dim);
+            } else {
+                if (vname.find("velocity") == std::string::npos) {
+                    grp.def_var(vname, NC_DOUBLE, two_dim);
+                }
+            }
+        }
+
+        if (obj->do_convert_velocity_los()) {
+            grp.def_var("los_velocity", NC_DOUBLE, two_dim);
+        }
     }
     ncf.exit_def_mode();
 
@@ -346,35 +359,33 @@ void Sampling::write_netcdf()
     // Standard sampler output from input deck
     const int nvars = m_var_names.size();
     for (int iv = 0; iv < nvars; ++iv) {
+        std::string vname = m_var_names[iv];
         start[1] = 0;
         count[1] = 0;
         int offset = iv * num_output_particles();
         for (const auto& obj : m_samplers) {
             auto grp = ncf.group(obj->label());
-            auto var = grp.var(m_var_names[iv]);
             count[1] = obj->num_output_points();
-            var.put(&m_output_buf[offset], start, count);
+
+            if (obj->do_convert_velocity_los() == false) {
+                auto var = grp.var(vname);
+                var.put(&m_output_buf[offset], start, count);
+            } else {
+                if (vname.find("velocity") == std::string::npos) {
+                    auto var = grp.var(vname);
+                    var.put(&m_output_buf[offset], start, count);
+                }
+            }
             offset += count[1];
         }
     }
 
     // Custom sampler output from sampler function
+    // Output of los_velocity goes here in addition to other custom output
     for (const auto& obj : m_samplers) {
         auto grp = ncf.group(obj->label());
         bool custom_output = obj->output_netcdf_field(m_output_buf, grp, nt);
     }
-
-    // Output calculated variables
-    // for (const auto& obj : m_samplers) {
-    //   start[1] = 0;
-    //    count[1] = 0;
-    //    if(obj->do_convert_velocity_los()) {
-    //        auto grp = ncf.group(obj->label());
-    //        auto var = grp.var("velocity_los");
-    //        count[1] = obj->num_output_points();
-    //       var.put(obj->velocity_los(), start, count);
-    //    }
-    //}
 
     ncf.close();
 #endif
