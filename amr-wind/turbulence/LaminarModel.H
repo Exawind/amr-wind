@@ -27,7 +27,9 @@ public:
     std::string model_name() const override { return "laminar"; }
 
     //! Update the effective/turbulent viscosity field
-    void update_turbulent_viscosity(const FieldState fstate) override;
+    void update_turbulent_viscosity(
+        const FieldState fstate,
+        const DiffusionType diff_type /*unused*/) override;
 
     //! No post advance work for this model
     void post_advance_work() override {}

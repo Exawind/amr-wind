@@ -40,10 +40,21 @@ helics_storage::helics_storage(CFDSim& sim) : m_sim(sim)
 
 #ifdef AMR_WIND_USE_HELICS
     amrex::ParmParse phelics("helics");
-    phelics.query("activated", helics_activated);
+    phelics.query("activated", m_helics_activated);
+
+    std::string broker_address = "127.0.0.1";
+    int broker_port = 23405;
+
+    phelics.query("broker_address", broker_address);
+    phelics.query("broker_port", broker_port);
+
+    m_fedinitstring.append(" --broker_address=" + broker_address);
+    m_fedinitstring.append(" --brokerport=" + std::to_string(broker_port));
+    amrex::Print() << "helics fedinitstring: " << m_fedinitstring << std::endl;
+
 #endif
 
-    if (!helics_activated) {
+    if (!m_helics_activated) {
         return;
     }
 
@@ -51,6 +62,8 @@ helics_storage::helics_storage(CFDSim& sim) : m_sim(sim)
     if (amrex::ParallelDescriptor::IOProcessor()) {
 
         m_fi = std::make_unique<helicscpp::FederateInfo>("zmq");
+        m_fi->setCoreInit(m_fedinitstring);
+
         m_vfed = std::make_unique<helicscpp::CombinationFederate>(
             "Test receiver Federate", *m_fi);
 
@@ -87,7 +100,7 @@ helics_storage::helics_storage(CFDSim& sim) : m_sim(sim)
 void helics_storage::pre_advance_work()
 {
 #ifdef AMR_WIND_USE_HELICS
-    if (helics_activated) {
+    if (m_helics_activated) {
         send_messages_to_controller();
         recv_messages_from_controller();
     }
@@ -114,7 +127,7 @@ void helics_storage::recv_messages_from_controller()
     // receive turbine yaw directions (num_turbines)
     if (amrex::ParallelDescriptor::IOProcessor()) {
         std::stringstream charFromControlCenter;
-        currenttime = m_vfed->requestNextStep();
+        m_currenttime = m_vfed->requestNextStep();
         int subCount = m_vfed->getInputCount();
         helicscpp::Input sub;
 
@@ -126,7 +139,7 @@ void helics_storage::recv_messages_from_controller()
                            << charFromControlCenter.str();
         }
 
-        if (currenttime > 1) {
+        if (m_currenttime > 1) {
             // Igonre timestep 0 since message pipe has junk.
             // // Unpack the values from the control center using a string
             // stream
@@ -135,6 +148,9 @@ void helics_storage::recv_messages_from_controller()
             const std::string comma = ",";
             tokenize(charFromControlCenter.str(), comma, return_list);
 
+            // skip the time stamp and source strings from return_list
+            return_list.pop_front();
+            return_list.pop_front();
             for (int i = m_turbine_yaw_to_amrwind.size() - 1; i >= 0; --i) {
                 m_turbine_yaw_to_amrwind[i] = return_list.front();
                 return_list.pop_front();

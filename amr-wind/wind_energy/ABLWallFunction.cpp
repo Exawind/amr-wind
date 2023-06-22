@@ -143,6 +143,7 @@ ABLVelWallFunc::ABLVelWallFunc(
     if (m_wall_shear_stress_type == "constant" ||
         m_wall_shear_stress_type == "local" ||
         m_wall_shear_stress_type == "schumann" ||
+        m_wall_shear_stress_type == "donelan" ||
         m_wall_shear_stress_type == "moeng") {
         amrex::Print() << "Shear Stress model: " << m_wall_shear_stress_type
                        << std::endl;
@@ -260,6 +261,11 @@ void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
     } else if (m_wall_shear_stress_type == "schumann") {
 
         auto tau = ShearStressSchumann(mo);
+        wall_model(velocity, rho_state, tau);
+
+    } else if (m_wall_shear_stress_type == "donelan") {
+
+        auto tau = ShearStressDonelan(mo);
         wall_model(velocity, rho_state, tau);
     }
 }
@@ -380,6 +386,11 @@ void ABLTempWallFunc::operator()(Field& temperature, const FieldState rho_state)
     } else if (m_wall_shear_stress_type == "schumann") {
 
         auto tau = ShearStressSchumann(mo);
+        wall_model(temperature, rho_state, tau);
+
+    } else if (m_wall_shear_stress_type == "donelan") {
+
+        auto tau = ShearStressDonelan(mo);
         wall_model(temperature, rho_state, tau);
     }
 }

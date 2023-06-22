@@ -50,13 +50,18 @@ public:
     void post_advance_work() override;
 
     //! Compute height of capping inversion
-    template <typename h1_dir, typename h2_dir>
-    void compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel);
+    void compute_zi();
 
     //! Return vel plane averaging instance
     const VelPlaneAveragingFine& vel_profile() const override
     {
         return m_pa_vel_fine;
+    };
+
+    //! Return vel plane averaging instance
+    const VelPlaneAveraging& vel_profile_coarse() const override
+    {
+        return m_pa_vel;
     };
 
     //! Return instance that handles temperature statistics
@@ -79,6 +84,14 @@ public:
     //! Calculate sfs stress averages
     void
     calc_sfs_stress_avgs(ScratchField& sfs_stress, ScratchField& t_sfs_stress);
+
+    //! Calculate tke diffusion term by eliminating other terms
+    void calc_tke_diffusion(
+        ScratchField& diffusion,
+        const Field& buoy_prod,
+        const Field& shear_prod,
+        const Field& dissipation,
+        const amrex::Real dt);
 
 protected:
     //! Read user inputs and create the necessary files
@@ -146,17 +159,20 @@ private:
     amrex::Real m_ref_theta{300.0};
 
     //! Variable to store capping inversion height
-    double m_zi{0.0};
+    amrex::Real m_zi{0.0};
 
     //! Wall-normal direction axis
     int m_normal_dir{2};
 
     //! Cell spacing at the coarsest level
-    double m_dn{0.0};
+    amrex::Real m_dn{0.0};
 
     //! Number of cells in the horizontal direction
     size_t m_ncells_h1{0};
     size_t m_ncells_h2{0};
+
+    //! Do energy budget
+    bool m_do_energy_budget{false};
 };
 
 } // namespace amr_wind

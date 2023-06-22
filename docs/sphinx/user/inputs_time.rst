@@ -1,3 +1,5 @@
+.. _inputs_time:
+
 Section: time
 ~~~~~~~~~~~~~~~~~
 
@@ -83,21 +85,21 @@ This section deals with parameters that control the simulation.
    
 .. input_param:: time.regrid_start
 
-  **type:** Integer, optional, default = 0
+  **type:** Integer, optional, default = 0; default = start index upon restart
 
   This user-specified parameter sets the base timestep onwards which the mesh is adaptively
   refined.
 
 .. input_param:: time.plot_start
 
-  **type:** Integer, optional, default = 0
+  **type:** Integer, optional, default = 0; default = start index upon restart
 
   This user-specified parameter sets the base timestep onwards which the output (plot files)
   are written to the disk.
 
 .. input_param:: time.checkpoint_start
 
-  **type:** Integer, optional, default = 0
+  **type:** Integer, optional, default = 0; default = start index upon restart
 
   This user-specified parameter sets the base timestep onwards which the checkpoint (restart) 
   files are written to the disk.

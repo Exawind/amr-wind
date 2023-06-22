@@ -88,7 +88,6 @@ void incflo::init_mesh()
 void incflo::init_amr_wind_modules()
 {
     BL_PROFILE("amr-wind::incflo::init_amr_wind_modules");
-
     if (m_sim.has_overset()) {
         m_sim.overset_manager()->post_init_actions();
     } else {
@@ -276,11 +275,8 @@ void incflo::Evolve()
 
         amrex::Real time1 = amrex::ParallelDescriptor::second();
         // Advance to time t + dt
-        if (m_prescribe_vel) {
-            prescribe_advance();
-        } else {
-            advance();
-        }
+        do_advance();
+
         amrex::Print() << std::endl;
         amrex::Real time2 = amrex::ParallelDescriptor::second();
         post_advance_work();
@@ -309,6 +305,15 @@ void incflo::Evolve()
     }
     if (m_time.write_last_checkpoint()) {
         m_sim.io_manager().write_checkpoint_file();
+    }
+}
+
+void incflo::do_advance()
+{
+    if (m_prescribe_vel) {
+        prescribe_advance();
+    } else {
+        advance();
     }
 }
 

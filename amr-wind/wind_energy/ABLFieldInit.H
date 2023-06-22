@@ -100,11 +100,29 @@ private:
     //! Initial value for tke field
     amrex::Real m_tke_init{0.1};
 
+    //! Multiplicative factor for init tke profile
+    amrex::Real m_tke_init_factor{0.4};
+
+    //! Cutoff height for init tke profile
+    amrex::Real m_tke_cutoff_height{250.};
+
+    //! Top velocity
+    amrex::RealArray m_top_vel{{20.0, 0.0, 0.0}};
+
+    //! Bottom velocity
+    amrex::RealArray m_bottom_vel{{4.0, 0.0, 0.0}};
+
+    //! Initial linear velocity profile boolean
+    bool m_linear_profile{false};
+
     //! Perturb initial velocity field with sinusoidal fluctuations
     bool m_perturb_vel{true};
 
     //! Perturb temperature field with random fluctuations
     bool m_perturb_theta{false};
+
+    //! Initialize tke profile non-constant
+    bool m_tke_init_profile{false};
 };
 
 } // namespace amr_wind

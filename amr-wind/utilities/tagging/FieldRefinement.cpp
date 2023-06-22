@@ -91,17 +91,17 @@ void FieldRefinement::operator()(
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real axp =
-                        amrex::Math::abs(farr(i + 1, j, k) - farr(i, j, k));
+                        std::abs(farr(i + 1, j, k) - farr(i, j, k));
                     const amrex::Real ayp =
-                        amrex::Math::abs(farr(i, j + 1, k) - farr(i, j, k));
+                        std::abs(farr(i, j + 1, k) - farr(i, j, k));
                     const amrex::Real azp =
-                        amrex::Math::abs(farr(i, j, k + 1) - farr(i, j, k));
+                        std::abs(farr(i, j, k + 1) - farr(i, j, k));
                     const amrex::Real axm =
-                        amrex::Math::abs(farr(i - 1, j, k) - farr(i, j, k));
+                        std::abs(farr(i - 1, j, k) - farr(i, j, k));
                     const amrex::Real aym =
-                        amrex::Math::abs(farr(i, j - 1, k) - farr(i, j, k));
+                        std::abs(farr(i, j - 1, k) - farr(i, j, k));
                     const amrex::Real azm =
-                        amrex::Math::abs(farr(i, j, k - 1) - farr(i, j, k));
+                        std::abs(farr(i, j, k - 1) - farr(i, j, k));
                     const amrex::Real ax = amrex::max(axp, axm);
                     const amrex::Real ay = amrex::max(ayp, aym);
                     const amrex::Real az = amrex::max(azp, azm);

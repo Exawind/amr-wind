@@ -38,8 +38,11 @@ void read_inputs(
 
     pp.query("timeramp", wdata.has_ramp);
     if (wdata.has_ramp) {
-        pp.query("timeramp_perior", wdata.ramp_period);
+        pp.query("timeramp_period", wdata.ramp_period);
     }
+
+    amrex::ParmParse pp_multiphase("MultiPhase");
+    pp_multiphase.add("water_level", wdata.zsl);
 }
 
 void init_data_structures(RelaxZonesBaseData& /*unused*/) {}
@@ -118,13 +121,9 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                             (1. - Gamma) * target_volfrac(i, j, k) * rampf +
                             Gamma * volfrac(i, j, k);
                         volfrac(i, j, k) = (vf > 1. - 1.e-10) ? 1.0 : vf;
-                        // Conserve momentum when density changes
+                        // Force liquid velocity, update according to mom.
                         amrex::Real rho_ = rho1 * volfrac(i, j, k) +
                                            rho2 * (1.0 - volfrac(i, j, k));
-                        vel(i, j, k, 0) *= rho(i, j, k) / rho_;
-                        vel(i, j, k, 1) *= rho(i, j, k) / rho_;
-                        vel(i, j, k, 2) *= rho(i, j, k) / rho_;
-                        // Force liquid velocity, update according to mom.
                         vel(i, j, k, 0) =
                             (rho1 * volfrac(i, j, k) *
                                  (rampf * (1. - Gamma) *
@@ -156,25 +155,28 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                                 (1.0 - Gamma) *
                                     utils::free_surface_to_vof(zsl, z, dx[2]) +
                                 Gamma * volfrac(i, j, k);
-                            vel(i, j, k, 0) =
-                                Gamma * vel(i, j, k, 0) * volfrac(i, j, k);
-                            vel(i, j, k, 1) =
-                                Gamma * vel(i, j, k, 1) * volfrac(i, j, k);
-                            vel(i, j, k, 2) =
-                                Gamma * vel(i, j, k, 2) * volfrac(i, j, k);
+                            // Conserve momentum when density changes
+                            amrex::Real rho_ = rho1 * volfrac(i, j, k) +
+                                               rho2 * (1.0 - volfrac(i, j, k));
+                            // Target solution in liquid is vel = 0
+                            vel(i, j, k, 0) = (rho1 * volfrac(i, j, k) * Gamma +
+                                               rho2 * (1. - volfrac(i, j, k))) *
+                                              vel(i, j, k, 0) / rho_;
+                            vel(i, j, k, 0) = (rho1 * volfrac(i, j, k) * Gamma +
+                                               rho2 * (1. - volfrac(i, j, k))) *
+                                              vel(i, j, k, 0) / rho_;
+                            vel(i, j, k, 0) = (rho1 * volfrac(i, j, k) * Gamma +
+                                               rho2 * (1. - volfrac(i, j, k))) *
+                                              vel(i, j, k, 0) / rho_;
                         }
                         if (has_outprofile) {
                             const amrex::Real vf =
                                 (1. - Gamma) * target_volfrac(i, j, k) * rampf +
                                 Gamma * volfrac(i, j, k);
                             volfrac(i, j, k) = (vf > 1. - 1.e-10) ? 1.0 : vf;
-                            // Conserve momentum when density changes
+                            // Force liquid velocity, update according to mom.
                             amrex::Real rho_ = rho1 * volfrac(i, j, k) +
                                                rho2 * (1.0 - volfrac(i, j, k));
-                            vel(i, j, k, 0) *= rho(i, j, k) / rho_;
-                            vel(i, j, k, 1) *= rho(i, j, k) / rho_;
-                            vel(i, j, k, 2) *= rho(i, j, k) / rho_;
-                            // Force liquid velocity, update according to mom.
                             vel(i, j, k, 0) = (rho1 * volfrac(i, j, k) *
                                                    (rampf * (1. - Gamma) *
                                                         target_vel(i, j, k, 0) +

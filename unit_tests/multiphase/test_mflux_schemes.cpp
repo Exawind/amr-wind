@@ -36,9 +36,9 @@ void init_scalar_slopechange(amr_wind::Field& fld, int dir, int center)
 
             amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                 farr(i, j, k, 0) = (amrex::Real)(
-                    dir == 0 ? amrex::Math::abs(i - center)
-                             : (dir == 1 ? amrex::Math::abs(j - center)
-                                         : amrex::Math::abs(k - center)));
+                    dir == 0 ? std::abs(i - center)
+                             : (dir == 1 ? std::abs(j - center)
+                                         : std::abs(k - center)));
             });
         }
     }

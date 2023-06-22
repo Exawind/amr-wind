@@ -1,9 +1,13 @@
 #include "abl_test_utils.H"
+#include "aw_test_utils/MeshTest.H"
 
-namespace amr_wind_tests::utils {
+namespace amr_wind_tests {
 
-void populate_abl_params()
+void ABLMeshTest::populate_parameters()
 {
+    // Must populate with default parameters first to signify parameters do not
+    // need to be reread within initialize_mesh
+    MeshTest::populate_parameters();
     // Initial conditions (Temperature)
     {
         amrex::ParmParse pp("ABL");
@@ -15,6 +19,18 @@ void populate_abl_params()
         pp.add("reference_temperature", 300.0);
         pp.add("kappa", 0.41);
         pp.add("surface_roughness_z0", 0.1);
+    }
+
+    // Initial conditions (Linear profile)
+    {
+        amrex::ParmParse pp("ABL");
+        bool linear_profile = false;
+        pp.add("linear_profile", static_cast<int>(linear_profile));
+
+        amrex::Vector<amrex::Real> top_velocity{{20., 0.0, 0.0}};
+        amrex::Vector<amrex::Real> bottom_velocity{{4.0, 0.0, 0.0}};
+        pp.addarr("top_velocity", top_velocity);
+        pp.addarr("bottom_velocity", bottom_velocity);
     }
 
     // Body force
@@ -45,6 +61,37 @@ void populate_abl_params()
         pp.addarr("geostrophic_wind", gwind);
     }
 
+    // Hurricane Forcing
+    {
+        amrex::ParmParse pp("HurricaneForcing");
+        amrex::Real gradient_wind{40.0};
+        amrex::Real radial_distance{40000.0};
+        amrex::Real gradient_wind_radial_decay{-0.008};
+        amrex::Real gradient_wind_zero_height{18000.};
+
+        pp.add("gradient_wind", gradient_wind);
+        pp.add("eyewall_radial_distance", radial_distance);
+        pp.add("gradient_wind_radial_decay", gradient_wind_radial_decay);
+        pp.add("gradient_wind_zero_height", gradient_wind_zero_height);
+    }
+
+    // Rayleigh damping
+    {
+
+        amrex::ParmParse pp("RayleighDamping");
+        amrex::Real time_scale{40.0};
+        amrex::Real length_sloped_damping{200};
+        amrex::Real length_complete_damping{50};
+        amrex::Vector<amrex::Real> reference_velocity{{12., 1., -3.}};
+        amrex::Vector<int> fcoord{{1, 0, 1}};
+
+        pp.add("time_scale", time_scale);
+        pp.add("length_sloped_damping", length_sloped_damping);
+        pp.add("length_complete_damping", length_complete_damping);
+        pp.addarr("reference_velocity", reference_velocity);
+        pp.addarr("force_coord_directions", fcoord);
+    }
+
     // Coriolis term
     {
         amrex::ParmParse pp("CoriolisForcing");
@@ -71,6 +118,7 @@ void populate_abl_params()
         amrex::Vector<int> ncell{{8, 8, 64}};
         pp.addarr("n_cell", ncell);
     }
+
     {
         amrex::ParmParse pp("geometry");
         amrex::Vector<amrex::Real> probhi{{120.0, 120.0, 1000.0}};
@@ -78,4 +126,4 @@ void populate_abl_params()
     }
 }
 
-} // namespace amr_wind_tests::utils
+} // namespace amr_wind_tests

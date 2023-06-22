@@ -248,7 +248,7 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
                 const auto& imask_arr = level_mask.array(mfi);
                 amrex::ParallelFor(
                     vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        if (amrex::Math::abs(iblank_arr(i, j, k)) < 1) {
+                        if (std::abs(iblank_arr(i, j, k)) < 1) {
                             imask_arr(i, j, k) = 0;
                         }
                     });

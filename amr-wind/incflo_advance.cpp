@@ -157,7 +157,7 @@ void incflo::advance()
  *  \f{align}
  *  \kappa = \begin{cases}
  *  0 & \text{Explicit} \\
- *  0.5 & \text{Crank-Nicholson} \\
+ *  0.5 & \text{Crank-Nicolson} \\
  *  1 & \text{Implicit}
  *  \end{cases}
  *  \f}
@@ -196,7 +196,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // TODO: This sub-section has not been adjusted for mesh mapping - adjust in
     // corrector too
     m_sim.turbulence_model().update_turbulent_viscosity(
-        amr_wind::FieldState::Old);
+        amr_wind::FieldState::Old, m_diff_type);
     icns().compute_mueff(amr_wind::FieldState::Old);
     for (auto& eqns : scalar_eqns()) {
         eqns->compute_mueff(amr_wind::FieldState::Old);
@@ -345,6 +345,10 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // *************************************************************************************
     icns().compute_predictor_rhs(m_diff_type);
 
+    if (m_verbose > 2) {
+        PrintMaxVelLocations("after predictor rhs");
+    }
+
     // *************************************************************************************
     // Solve diffusion equation for u* but using eta_old at old time
     // *************************************************************************************
@@ -372,6 +376,10 @@ void incflo::ApplyPredictor(bool incremental_projection)
     }
     icns().post_solve_actions();
 
+    if (m_verbose > 2) {
+        PrintMaxVelLocations("after diffusion solve");
+    }
+
     // ************************************************************************************
     //
     // Project velocity field, update pressure
@@ -380,6 +388,10 @@ void incflo::ApplyPredictor(bool incremental_projection)
     ApplyProjection(
         (density_new).vec_const_ptrs(), new_time, m_time.deltaT(),
         incremental_projection);
+
+    if (m_verbose > 2) {
+        PrintMaxVelLocations("after nodal projection");
+    }
 }
 
 //
@@ -463,7 +475,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
  *  \f{align}
  *  \kappa = \begin{cases}
  *  0 & \text{Explicit} \\
- *  0.5 & \text{Crank-Nicholson} \\
+ *  0.5 & \text{Crank-Nicolson} \\
  *  1 & \text{Implicit}
  *  \end{cases}
  *  \f}
@@ -505,7 +517,7 @@ void incflo::ApplyCorrector()
     // Compute viscosity / diffusive coefficients
     // *************************************************************************************
     m_sim.turbulence_model().update_turbulent_viscosity(
-        amr_wind::FieldState::New);
+        amr_wind::FieldState::New, m_diff_type);
     icns().compute_mueff(amr_wind::FieldState::New);
     for (auto& eqns : scalar_eqns()) {
         eqns->compute_mueff(amr_wind::FieldState::New);
@@ -624,7 +636,7 @@ void incflo::ApplyPrescribeStep()
 
     // Compute diffusive and source terms for scalars
     m_sim.turbulence_model().update_turbulent_viscosity(
-        amr_wind::FieldState::Old);
+        amr_wind::FieldState::Old, m_diff_type);
     for (auto& eqns : scalar_eqns()) {
         eqns->compute_mueff(amr_wind::FieldState::Old);
     }

@@ -35,6 +35,8 @@ void KOmegaSST<Transport>::parse_model_coeffs()
         pp.query("sigma_k2", this->m_sigma_k2);
         pp.query("sigma_omega1", this->m_sigma_omega1);
         pp.query("sigma_omega2", this->m_sigma_omega2);
+        pp.query("tke_amb", this->m_tke_amb);
+        pp.query("sdr_amb", this->m_sdr_amb);
         pp.query("sigma_t", this->m_sigma_t);
     }
 
@@ -57,16 +59,18 @@ TurbulenceModel::CoeffsDictType KOmegaSST<Transport>::model_coeffs() const
         {"sigma_k2", this->m_sigma_k2},
         {"sigma_omega1", this->m_sigma_omega1},
         {"sigma_omega2", this->m_sigma_omega2},
+        {"tke_amb", this->m_tke_amb},
+        {"sdr_amb", this->m_sdr_amb},
         {"a1", this->m_a1}};
 }
 
 template <typename Transport>
-void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
+void KOmegaSST<Transport>::update_turbulent_viscosity(
+    const FieldState fstate, const DiffusionType diff_type)
 {
     BL_PROFILE(
         "amr-wind::" + this->identifier() + "::update_turbulent_viscosity");
 
-    auto& mu_turb = this->mu_turb();
     const amrex::Real beta_star = this->m_beta_star;
     const amrex::Real alpha1 = this->m_alpha1;
     const amrex::Real alpha2 = this->m_alpha2;
@@ -74,15 +78,20 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
     const amrex::Real beta2 = this->m_beta2;
     const amrex::Real sigma_omega2 = this->m_sigma_omega2;
     const amrex::Real a1 = this->m_a1;
+    const amrex::Real tke_amb = this->m_tke_amb;
+    const amrex::Real sdr_amb = this->m_sdr_amb;
 
+    auto& mu_turb = this->mu_turb();
     auto lam_mu = (this->m_transport).mu();
     const auto& den = this->m_rho.state(fstate);
     const auto& tke = (*this->m_tke).state(fstate);
     const auto& sdr = (*this->m_sdr).state(fstate);
     // cppcheck-suppress constVariable
     auto& repo = mu_turb.repo();
-
-    const int nlevels = repo.num_active_levels();
+    auto& tke_lhs = (this->m_sim).repo().get_field("tke_lhs_src_term");
+    tke_lhs.setVal(0.0);
+    // cppcheck-suppress constVariable
+    auto& sdr_lhs = (this->m_sim).repo().get_field("sdr_lhs_src_term");
 
     auto gradK = (this->m_sim.repo()).create_scratch_field(3, 0);
     fvm::gradient(*gradK, tke);
@@ -98,17 +107,13 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
     // Compute strain rate into shear production term
     fvm::strainrate(this->m_shear_prod, vel);
 
-    auto& tke_lhs = (this->m_sim).repo().get_field("tke_lhs_src_term");
-    tke_lhs.setVal(0.0);
-    // cppcheck-suppress constVariable
-    auto& sdr_lhs = (this->m_sim).repo().get_field("sdr_lhs_src_term");
-
     const amrex::Real deltaT = (this->m_sim).time().deltaT();
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
         {m_gravity[0], m_gravity[1], m_gravity[2]}};
     const amrex::Real Bfac = this->m_buoyancy_factor;
     const amrex::Real sigmat = this->m_sigma_t;
 
+    const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
@@ -137,7 +142,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
                          gradK_arr(i, j, k, 1) * gradOmega_arr(i, j, k, 1) +
                          gradK_arr(i, j, k, 2) * gradOmega_arr(i, j, k, 2));
 
-                    amrex::Real cdkomega = amrex::max(
+                    amrex::Real cdkomega = amrex::max<amrex::Real>(
                         1e-10, 2.0 * rho_arr(i, j, k) * sigma_omega2 * gko /
                                    (sdr_arr(i, j, k) + 1e-15));
 
@@ -156,7 +161,8 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
                          1e-15);
                     amrex::Real tmp4 = shear_prod_arr(i, j, k);
 
-                    amrex::Real arg1 = amrex::min(amrex::max(tmp2, tmp3), tmp1);
+                    amrex::Real arg1 = amrex::min<amrex::Real>(
+                        amrex::max<amrex::Real>(tmp2, tmp3), tmp1);
                     amrex::Real tmp_f1 = std::tanh(arg1 * arg1 * arg1 * arg1);
 
                     amrex::Real alpha = tmp_f1 * (alpha1 - alpha2) + alpha2;
@@ -166,9 +172,9 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
                         amrex::max<amrex::Real>(2.0 * tmp2, tmp3);
                     amrex::Real f2 = std::tanh(arg2 * arg2);
 
-                    mu_arr(i, j, k) =
-                        rho_arr(i, j, k) * a1 * tke_arr(i, j, k) /
-                        amrex::max(a1 * sdr_arr(i, j, k), tmp4 * f2);
+                    mu_arr(i, j, k) = rho_arr(i, j, k) * a1 * tke_arr(i, j, k) /
+                                      amrex::max<amrex::Real>(
+                                          a1 * sdr_arr(i, j, k), tmp4 * f2);
 
                     // Buoyancy term
                     amrex::Real tmpB =
@@ -182,24 +188,61 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
 
                     f1_arr(i, j, k) = tmp_f1;
 
-                    diss_arr(i, j, k) = -beta_star * rho_arr(i, j, k) *
-                                        tke_arr(i, j, k) * sdr_arr(i, j, k);
-                    tke_lhs_arr(i, j, k) = 0.5 * beta_star * rho_arr(i, j, k) *
-                                           sdr_arr(i, j, k) * deltaT;
-
+                    // For TKE equation:
                     shear_prod_arr(i, j, k) = amrex::min<amrex::Real>(
-                        mu_arr(i, j, k) * tmp4 * tmp4,
+                        amrex::max<amrex::Real>(
+                            mu_arr(i, j, k) * tmp4 * tmp4, 0.0),
                         10.0 * beta_star * rho_arr(i, j, k) * tke_arr(i, j, k) *
                             sdr_arr(i, j, k));
 
-                    sdr_lhs_arr(i, j, k) = 0.5 * rho_arr(i, j, k) * beta *
+                    const amrex::Real diss_amb =
+                        beta_star * rho_arr(i, j, k) * sdr_amb * tke_amb;
+                    diss_arr(i, j, k) = -beta_star * rho_arr(i, j, k) *
+                                            tke_arr(i, j, k) *
+                                            sdr_arr(i, j, k) +
+                                        diss_amb;
+
+                    tke_lhs_arr(i, j, k) = 0.5 * beta_star * rho_arr(i, j, k) *
                                            sdr_arr(i, j, k) * deltaT;
-                    sdr_src_arr(i, j, k) =
-                        rho_arr(i, j, k) * alpha * tmp4 * tmp4 +
+
+                    // For SDR equation:
+                    amrex::Real production_omega =
+                        rho_arr(i, j, k) * alpha *
+                        amrex::min<amrex::Real>(
+                            tmp4 * tmp4, 10.0 * beta_star * sdr_arr(i, j, k) *
+                                             sdr_arr(i, j, k));
+
+                    amrex::Real cross_diffusion =
                         (1.0 - tmp_f1) * 2.0 * rho_arr(i, j, k) * sigma_omega2 *
-                            gko / (sdr_arr(i, j, k) + 1e-15);
-                    sdr_diss_arr(i, j, k) = -rho_arr(i, j, k) * beta *
-                                            sdr_arr(i, j, k) * sdr_arr(i, j, k);
+                        gko / (sdr_arr(i, j, k) + 1e-15);
+
+                    const amrex::Real sdr_diss_amb =
+                        beta * rho_arr(i, j, k) * sdr_amb * sdr_amb;
+
+                    if (diff_type == DiffusionType::Crank_Nicolson) {
+
+                        sdr_src_arr(i, j, k) = production_omega;
+
+                        sdr_diss_arr(i, j, k) = cross_diffusion;
+
+                        sdr_lhs_arr(i, j, k) =
+                            (rho_arr(i, j, k) * beta * sdr_arr(i, j, k) +
+                             0.5 * std::abs(cross_diffusion) /
+                                 (sdr_arr(i, j, k) + 1e-15)) *
+                            deltaT;
+                    } else {
+
+                        sdr_src_arr(i, j, k) =
+                            production_omega + cross_diffusion;
+
+                        sdr_diss_arr(i, j, k) = -rho_arr(i, j, k) * beta *
+                                                    sdr_arr(i, j, k) *
+                                                    sdr_arr(i, j, k) +
+                                                sdr_diss_amb;
+
+                        sdr_lhs_arr(i, j, k) = 0.5 * rho_arr(i, j, k) * beta *
+                                               sdr_arr(i, j, k) * deltaT;
+                    }
                 });
         }
     }

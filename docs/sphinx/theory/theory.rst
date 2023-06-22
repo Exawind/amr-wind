@@ -160,6 +160,162 @@ Re-initialization of the level-set
 
 where :math:`\phi^0=\phi(x,0)` represents the location of the interface. 
 
+Source terms
+------------------------------------
+
+Gravity Forcing
+~~~~~~~~~~~~~~~~
+
+The implementation of this source term allows the user to choose the full gravity term (:math:`\rho g`) or a perturbational form (:math:`(\rho - \rho_0) g`). By default, the full term is used, but the perturbational form can be turned on by adding ``ICNS.use_perturb_pressure = true`` to the input file.
+
+The reference density (:math:`\rho_0`) is defined as ``1.0`` by default, can be defined as a constant through the input argument, ``incflo::density``, or can be defined as a spatially varying field within the flow setup (see physics/multiphase/Multiphase.cpp).
+
+Using the perturbational form implies that the hydrostatic pressure is removed from the pressure variable, including its output. This means that the solution to the Poisson equation is actually the perturbational pressure, :math:`p'`, not :math:`p`. If the full pressure, :math:`p`, is desired for analysis or postprocessing purposes, the hydrostatic pressure can be added back to the pressure field via the input argument ``ICNS.reconstruct_true_pressure = true``. In order for this to operate in the code, the reference pressure field must be defined for the specific flow case being run. 
+
+- An example of this is in physics/multiphase/Multiphase.cpp. To construct the reference pressure field, the reference gravity term must be integrated. This particular example assumes that the reference density only varies in z (or is constant), gravity acts only in z, and the hydrostatic pressure at zhi is equal to 0. 
+
+- In mathematical form, the derivation and calculation of the full pressure is as follows:
+
+.. math:: \nabla p = \nabla p' + \rho_0 \boldsymbol{g}
+
+- assume :math:`\boldsymbol{g} = g\hat{k}` and :math:`\frac{dp_0}{dz} = g\hat{k}`
+
+.. math:: p = p' + \int_{z_{min}}^z \rho_0 g dz + p(z = z_{min}) 
+
+- reframe in reference to the top boundary, and assume :math:`p(z = z_{max}) = 0`
+   
+.. math:: p = p' - \int_z^{z_{max}} \rho_0 g dz + p(z = z_{max}) = p' - \int_z^{z_{max}} \rho_0 g dz
+
+
+Turbulence Models
+-----------------------------
+
+LES models for subgrid scales
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+AMD model
+^^^^^^^^^^^
+
+The eddy viscosity is calculated using an anisotropic derivative with a
+different filter width in each direction
+
+.. math::
+
+   \begin{aligned}
+       \hat{\partial}_i &= \sqrt{C} \delta_i \partial_i \textrm{ for } i=1,2,3 \\
+       C &= 1/3 \textrm{ Poincare coefficient for } 2^{nd} \textrm{ order gradient} \\
+       \delta_i &= \textrm{Filter width along dimension } i \textrm{ for anisotropic grids}\\
+       \beta &= g/\Theta_0 \textrm{ Gravity constant over reference temperature}
+   \end{aligned}
+
+The anisotropic derivative is used to define the eddy viscosity as
+
+.. math::
+
+   \begin{aligned}
+       \tau_{ij} &= -2 \nu_t \widetilde{S}_{ij} \\
+       \nu_t &= \frac{- (\hat{\partial}_k \widetilde{u}_i) (\hat{\partial}_k \widetilde{u}_j) \widetilde{S}_{ij} +  \beta (\hat{\partial}_k \widetilde{w}) (\hat{\partial}_k (\widetilde{\Theta} - \langle {\widetilde{\Theta}} \rangle) )  }{ (\partial_l \widetilde{u}_m) (\partial_l \widetilde{u}_m) } \\
+       \tau_{\theta j} &= -2 D_e \frac{\partial \widetilde{\Theta}}{\partial x_j} \\
+       D_e &= \frac{- (\hat{\partial}_k \widetilde{u}_i) (\hat{\partial}_k \widetilde{\Theta}) \partial_i \widetilde{\Theta} }{(\partial_l \widetilde{\Theta}) (\partial_l \widetilde{\Theta})}
+   \end{aligned}
+
+- **Implementation details:**
+
+
+For ease of implementation, each part of :math:`\nu_t` and :math:`D_e`
+is expanded in this subsection, these are used in ``AMD.h`` within
+functions ``amd_muvel`` and ``amd_thermal_diff``.
+
+**Terms for** :math:`\nu_t` **in** ``amd_muvel``
+
+
+#. :math:`(\hat{\partial}_k \widetilde{u}_i) (\hat{\partial}_k \widetilde{u}_j) \widetilde{S}_{ij}`
+   is a contraction of 2 symmetric tensors, :math:`(\hat{\partial}_k
+   \widetilde{u}_i) (\hat{\partial}_k \widetilde{u}_j)` and
+   :math:`\widetilde{S}_{ij}`, therefore we get 6 unique terms, 3
+   diagonals and 3 off-diagonals. The diagonal terms get a factor of 2
+   from :math:`\widetilde{S}_{ij}` and the off-diagonal terms get a
+   factor of 2 from symmetry. This term is ``num_shear``.
+
+   .. math::
+
+      \begin{aligned}
+          \begin{split}
+          (\hat{\partial}_k \widetilde{u}_i) (\hat{\partial}_k \widetilde{u}_j) \widetilde{S}_{ij} = \\
+          2*C* [\\
+          {}&u_x*(u_x^2 dx^2 + u_y^2 dy^2 + u_z^2 dz^2) +\\
+          {}&v_y*(v_x^2 dx^2 + v_y^2 dy^2 + v_z^2 dz^2) +\\
+          {}&w_z*(w_x^2 dx^2 + w_y^2 dy^2 + w_z^2 dz^2) +\\
+          {}&(u_y+v_x) * (
+          u_x v_x dx^2 +
+          u_y v_y dy^2 +
+          u_z v_z dz^2
+          ) +\\
+          {}&(u_z+w_x) * (
+          u_x w_x dx^2 +
+          u_y w_y dy^2 +
+          u_z w_z dz^2
+          ) +\\
+          {}&(v_z+w_y) * (
+          v_x w_x dx^2 +
+          v_y w_y dy^2 +
+          v_z w_z dz^2
+          )\\
+          ]
+          \end{split}
+      \end{aligned}
+
+#. :math:`\beta (\hat{\partial}_k \widetilde{w}) (\hat{\partial}_k (\widetilde{\Theta} - \langle {\widetilde{\Theta}} \rangle) )`
+   is implemented as ``num_buoy``
+
+   .. math::
+
+      \beta (\hat{\partial}_k \widetilde{w}) (\hat{\partial}_k (\widetilde{\Theta} - \langle {\widetilde{\Theta}} \rangle) ) =
+      \beta* C* ( w_x \Theta_x dx^2 + w_y \Theta_y dy^2 + w_z \Theta_z dz^2)
+
+#. :math:`(\partial_l \widetilde{u}_m) (\partial_l \widetilde{u}_m)` is
+   double contraction of rank 2 tensors, and has 9 unique terms. This is
+   implemented as ``denom``
+
+   .. math::
+
+      \begin{aligned}
+          \begin{split}
+              (\partial_l \widetilde{u}_m) (\partial_l \widetilde{u}_m) = \\
+              {}& u_x u_x + u_y u_y + u_z u_z \\
+              {}& v_x v_x + v_y v_y + v_z v_z \\
+              {}& w_x w_x + w_y w_y + w_z w_z
+          \end{split}
+      \end{aligned}
+
+**Terms for** :math:`D_e` **in** ``amd_thermal_diff``
+
+#. :math:`(\hat{\partial}_k \widetilde{u}_i) (\hat{\partial}_k \widetilde{\Theta}) \partial_i \widetilde{\Theta}`
+   is a double contraction, has 9 unique terms. This is implemented as
+   ``num``
+
+   .. math::
+
+      \begin{aligned}
+          \begin{split}
+          (\hat{\partial}_k \widetilde{u}_i) (\hat{\partial}_k \widetilde{\Theta}) \partial_i \widetilde{\Theta} = \\
+          C*[ \\
+          {}& (u_x \Theta_x dx^2 + u_y \Theta_y dy^2 + u_z \Theta_z dz^2)*\Theta_x +\\
+          {}& (v_x \Theta_x dx^2 + v_y \Theta_y dy^2 + v_z \Theta_z dz^2)*\Theta_y +\\
+          {}& (w_x \Theta_x dx^2 + w_y \Theta_y dy^2 + w_z \Theta_z dz^2)*\Theta_z \\
+          ]
+          \end{split}
+      \end{aligned}
+
+#. :math:`(\partial_l \widetilde{\Theta}) (\partial_l \widetilde{\Theta}) = \Theta_x^2 + \Theta_y^2 + \Theta_z^2`
+   is implemented as ``denom``
+
+- **Unit tests**
+
+There is a simple unit test for both :math:`\nu_t` and :math:`D_e` in
+``unit_tests/turbulence/test_turbulence_LES.cpp`` under
+``test_AMD_setup_calc``.
+
 Navigating source code
 ------------------------
 

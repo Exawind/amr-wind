@@ -872,7 +872,7 @@ void ABLBoundaryPlane::populate_data(
 
     AMREX_ALWAYS_ASSERT(
         ((m_in_data.tn() <= time) || (time <= m_in_data.tnp1())));
-    AMREX_ALWAYS_ASSERT(amrex::Math::abs(time - m_in_data.tinterp()) < 1e-12);
+    AMREX_ALWAYS_ASSERT(std::abs(time - m_in_data.tinterp()) < 1e-12);
 
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
@@ -894,6 +894,11 @@ void ABLBoundaryPlane::populate_data(
             amrex::Abort("No inflow data at this level.");
         }
 
+        if (ori.isHigh()) {
+            amrex::Warning(
+                "We typically don't inflow boundary planes on the high side.");
+        }
+
         const size_t nc = mfab.nComp();
 
 #ifdef AMREX_USE_OMP
@@ -902,7 +907,10 @@ void ABLBoundaryPlane::populate_data(
         for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid();
              ++mfi) {
 
-            const auto& sbx = mfi.growntilebox(1);
+            auto sbx = mfi.growntilebox(1);
+            if (!sbx.cellCentered()) {
+                sbx.enclosedCells();
+            }
             const auto& src = m_in_data.interpolate_data(ori, lev);
             const auto& bx = sbx & src.box();
             if (bx.isEmpty()) {

@@ -1,3 +1,5 @@
+.. _inputs_io:
+
 Section: io
 ~~~~~~~~~~~~~~~~~
 
