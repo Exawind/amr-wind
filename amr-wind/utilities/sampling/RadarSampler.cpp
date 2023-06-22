@@ -511,8 +511,8 @@ bool RadarSampler::output_netcdf_field(
     ncutils::NCGroup& grp,
     const size_t nt)
 {
-    // Note: output_buffer is entire buffer...all samplers all 
-    // variables for this timestep 
+    // Note: output_buffer is entire buffer...all samplers all
+    // variables for this timestep
     std::vector<size_t> start{nt, 0};
     std::vector<size_t> count{1, 0};
     start[1] = 0;
