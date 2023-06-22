@@ -537,6 +537,12 @@ void RadarSampler::output_netcdf_data(
     const ncutils::NCGroup& /*unused*/, const size_t /*unused*/) const
 {}
 
+bool RadarSampler::output_netcdf_field(
+    const std::vector<double>& output_buffer,
+    ncutils::NCGroup& grp,
+    const size_t nt)
+{}
+
 #endif
 
 } // namespace amr_wind::sampling
