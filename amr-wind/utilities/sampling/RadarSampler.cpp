@@ -541,7 +541,9 @@ bool RadarSampler::output_netcdf_field(
     const std::vector<double>& output_buffer,
     ncutils::NCGroup& grp,
     const size_t nt)
-{}
+{
+    return true;
+}
 
 #endif
 
