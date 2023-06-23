@@ -27,7 +27,7 @@ using namespace amrex;
  *
  *  \f$F_x, F_y, F_z\f$ are acceleration due to forcing terms. By default,
  *  \f$C\f$ is always used for computing CFL. The term \f$V\f$ is only used when
- *  the user has chosen implicit or Crank-Nicholson scheme for diffusion, and
+ *  the user has chosen implicit or Crank-Nicolson scheme for diffusion, and
  *  contributions from forcing term when `time.use_force_cfl` is `true` (default
  *  is `true`).
  *

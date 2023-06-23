@@ -81,7 +81,7 @@ inline void laminar_scal_diff_update(
 
 template <typename Transport>
 void Laminar<Transport>::update_turbulent_viscosity(
-    const FieldState /* fstate */)
+    const FieldState /* fstate */, const DiffusionType /*unused*/)
 {
     // Empty function as there is no turbulent field
 }

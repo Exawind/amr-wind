@@ -203,7 +203,7 @@ void ABLFieldInit::perturb_temperature(
 void ABLFieldInit::init_tke(
     const amrex::Geometry& geom, amrex::MultiFab& tke_fab) const
 {
-    tke_fab.setVal(m_tke_init, 1);
+    tke_fab.setVal(m_tke_init);
 
     if (!m_tke_init_profile) {
         return;
@@ -219,18 +219,19 @@ void ABLFieldInit::init_tke(
 #endif
     for (amrex::MFIter mfi(tke_fab, amrex::TilingIfNotGPU()); mfi.isValid();
          ++mfi) {
-        const auto& bx = mfi.growntilebox(1);
+        const auto& bx = mfi.tilebox();
         const auto& tke = tke_fab.array(mfi);
 
         // Profile definition from Beare et al. (2006)
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+
                 if (z < tke_cutoff_height) {
                     tke(i, j, k) = tke_init_factor *
-                                   std::pow(1. - z / tke_cutoff_height, 3.0);
+                                   std::pow(1. - z / tke_cutoff_height, 3);
                 } else {
-                    tke(i, j, k) = 0.;
+                    tke(i, j, k) = 1.e-20;
                 }
             });
     }
