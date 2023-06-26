@@ -14,6 +14,7 @@ add_subdirectory(fvm)
 add_subdirectory(multiphase)
 add_subdirectory(ocean_waves)
 add_subdirectory(projection)
+add_subdirectory(boundary_conditions)
 
 if(AMR_WIND_ENABLE_MASA)
   add_subdirectory(mms)

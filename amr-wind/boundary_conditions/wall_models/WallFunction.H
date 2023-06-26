@@ -3,6 +3,8 @@
 
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/core/FieldBCOps.H"
+#include "amr-wind/utilities/FieldPlaneAveragingFine.H"
+#include "amr-wind/boundary_conditions/wall_models/LogLaw.H"
 
 namespace amr_wind {
 
@@ -16,9 +18,14 @@ namespace amr_wind {
 class WallFunction
 {
 public:
-    explicit WallFunction(const CFDSim& sim);
+    explicit WallFunction(CFDSim& sim);
 
-    amrex::Real utau() const { return m_utau; }
+    amrex::Real utau() const { return m_log_law.utau_mean; }
+    LogLaw log_law() const { return m_log_law; }
+
+    //! Update the mean velocity at a given timestep
+    void update_umean();
+    void update_utau_mean();
 
     ~WallFunction() = default;
 
@@ -27,7 +34,10 @@ private:
 
     const amrex::AmrCore& m_mesh;
 
-    amrex::Real m_utau{0.0};
+    //! LogLaw instance
+    LogLaw m_log_law;
+    int m_direction{2}; ///< Direction normal to wall, hardcoded to z
+    VelPlaneAveragingFine m_pa_vel;
 };
 
 /** Applies a shear-stress value at the domain boundary
@@ -38,15 +48,21 @@ private:
 class VelWallFunc : public FieldBCIface
 {
 public:
-    VelWallFunc(Field& velocity, const WallFunction& wall_func);
+    VelWallFunc(Field& velocity, WallFunction& wall_func);
 
     void operator()(Field& velocity, const FieldState rho_state) override;
 
     static void wall_model(
         Field& velocity, const FieldState rho_state, const amrex::Real utau);
 
+    template <typename ShearStressSimple>
+    static void wall_model(
+        Field& velocity,
+        const FieldState rho_state,
+        const ShearStressSimple& tau);
+
 private:
-    const WallFunction& m_wall_func;
+    WallFunction& m_wall_func;
     std::string m_wall_shear_stress_type{"constant"};
 };
 } // namespace amr_wind
