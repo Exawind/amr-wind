@@ -485,7 +485,8 @@ TEST_F(TurbLESTest, test_AMDNoTherm_setup_calc)
     dens.setVal(rho0);
 
     // Update turbulent viscosity directly
-    tmodel.update_turbulent_viscosity(amr_wind::FieldState::New);
+    tmodel.update_turbulent_viscosity(
+        amr_wind::FieldState::New, DiffusionType::Crank_Nicolson);
     auto& muturb = sim().repo().get_field("mu_turb");
 
     // Check values of turbulent viscosity

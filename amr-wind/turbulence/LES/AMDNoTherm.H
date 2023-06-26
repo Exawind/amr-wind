@@ -4,6 +4,7 @@
 #include <AMReX_Config.H>
 #include <AMReX_AmrCore.H>
 #include <string>
+#include "amr-wind/incflo_enums.H"
 #include "amr-wind/turbulence/TurbModelBase.H"
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/fvm/stencils.H"
@@ -27,7 +28,8 @@ public:
     std::string model_name() const override { return "AMDNoTherm"; }
 
     //! Update the turbulent viscosity field
-    void update_turbulent_viscosity(const FieldState fstate) override;
+    void update_turbulent_viscosity(
+        const FieldState fstate, const DiffusionType /*unused*/) override;
 
     //! Return model coefficients dictionary
     TurbulenceModel::CoeffsDictType model_coeffs() const override;
