@@ -52,8 +52,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amd_base_muvel(
     int i,
     int j,
     int k,
-    const amrex::Real* dx, // Grid spacing in x direction
-    amrex::Real C,         // Poincare const
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx, // Grid spacing
+    amrex::Real C,                                         // Poincare const
     amrex::Array4<amrex::Real const> const& gradVel) noexcept
 {
 
@@ -61,20 +61,20 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amd_base_muvel(
     amrex::Real denom = 0;
     for (int ii = 0; ii < AMREX_SPACEDIM; ++ii) {
         for (int jj = 0; jj < AMREX_SPACEDIM; ++jj) {
-            denom += gradVel(i, j, k, ii * AMREX_SPACEDIM + jj) *
-                     gradVel(i, j, k, ii * AMREX_SPACEDIM + jj);
+            denom = denom + gradVel(i, j, k, ii * AMREX_SPACEDIM + jj) *
+                                gradVel(i, j, k, ii * AMREX_SPACEDIM + jj);
             amrex::Real sij =
                 0.5 * (gradVel(i, j, k, ii * AMREX_SPACEDIM + jj) +
                        gradVel(i, j, k, jj * AMREX_SPACEDIM + ii));
             for (int kk = 0; kk < AMREX_SPACEDIM; ++kk) {
                 amrex::Real dkui = gradVel(i, j, k, ii * AMREX_SPACEDIM + kk);
                 amrex::Real dkuj = gradVel(i, j, k, jj * AMREX_SPACEDIM + kk);
-                num_shear += dkui * dkuj * dx[kk] * dx[kk] * sij;
+                num_shear = num_shear + dkui * dkuj * dx[kk] * dx[kk] * sij;
             }
         }
     }
     denom = std::max(1e-15, denom);
-    num_shear *= -C;
+    num_shear = -C * num_shear;
 
     return std::max(1e-15, num_shear / denom);
 }

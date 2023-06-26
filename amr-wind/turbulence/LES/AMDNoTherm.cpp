@@ -48,7 +48,7 @@ void AMDNoTherm<Transport>::update_turbulent_viscosity(
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = geom_vec[lev];
 
-        const auto& dx = geom.CellSize();
+        const auto& dx = geom.CellSizeArray();
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
             const auto& gradVel_arr = (*gradVel)(lev).array(mfi);
