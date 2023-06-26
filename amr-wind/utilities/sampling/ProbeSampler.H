@@ -39,7 +39,7 @@ public:
     std::string& label() override { return m_label; }
     int id() const override { return m_id; }
     int& id() override { return m_id; }
-    
+
     long num_points() const override { return m_npts; }
 
     //! Number of output probe locations (after data reduction etc.)
