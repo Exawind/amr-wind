@@ -110,8 +110,9 @@ public:
     bool do_convert_velocity_los() override { return true; }
 
     //! Modify sample buffer after sampling happens
-    std::vector<double>
-    modify_sample_data(const std::vector<double>& sample_data, const std::string& /*unused*/) override;
+    std::vector<double> modify_sample_data(
+        const std::vector<double>& sample_data,
+        const std::string& /*unused*/) override;
 
     void
     calc_lineofsight_velocity(const std::vector<std::vector<double>>&) override;
