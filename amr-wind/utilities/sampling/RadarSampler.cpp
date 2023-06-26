@@ -141,15 +141,19 @@ RadarSampler::phase RadarSampler::determine_operation_phase() const
 {
     const double phase_time = m_sweep_angle / m_angular_speed;
 
+    RadarSampler::phase current_phase;
+
     if (m_periodic_time < phase_time) {
-        return phase::FORWARD;
+        current_phase = phase::FORWARD;
     } else if (m_periodic_time < phase_time + m_reset_time) {
-        return phase::FORWARD_PAUSE;
+        current_phase = phase::FORWARD_PAUSE;
     } else if (m_periodic_time < 2 * phase_time + m_reset_time) {
-        return phase::REVERSE;
+        current_phase = phase::REVERSE;
     } else {
-        return phase::REVERSE_PAUSE;
+        current_phase = phase::REVERSE_PAUSE;
     }
+
+    return current_phase;
 }
 
 double RadarSampler::determine_current_sweep_angle() const
@@ -178,8 +182,9 @@ void RadarSampler::update_sampling_locations()
     amrex::Real dt_sim = m_sim.time().deltaT();
     amrex::Real dt_sample = 1.0 / m_sample_freq;
     amrex::Real ts_diff = time - m_radar_time;
+    amrex::Real st_diff = time - start_time;
 
-    if (time == start_time) {
+    if (st_diff < 1.0e-10) {
         m_radar_time = time;
     }
 
@@ -445,12 +450,11 @@ void RadarSampler::sampling_locations(SampleLocType& locs) const
     }
 }
 
-// TODO: Double check this calculation
+// TODO: Create test for this calculation
 void RadarSampler::cone_axis_locations(SampleLocType& axis_locs) const
 {
     axis_locs.resize(num_output_points());
 
-    // locs = create_cone();
     for (int k = 0; k < m_ntotal; k++) {
         for (int i = 0; i < m_npts; ++i) {
             int pi = i + k * m_npts;

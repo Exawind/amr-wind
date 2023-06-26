@@ -40,11 +40,11 @@ public:
     virtual int& id() = 0;
 
     //! Total number of probes that belong to this sampling instance
-    virtual int num_points() const = 0;
+    virtual long num_points() const = 0;
 
     //! Total number of probes to be output
     //! Note: Same as num_points() for sampling without data reduction
-    virtual int num_output_points() const = 0;
+    virtual long num_output_points() const = 0;
 
     //! Read inputs and perform initialization actions
     virtual void initialize(const std::string& key) = 0;
@@ -78,8 +78,8 @@ public:
         return sampledata;
     }
 
-    virtual void
-    calc_lineofsight_velocity(const std::vector<std::vector<double>>&)
+    virtual void calc_lineofsight_velocity(
+        const std::vector<std::vector<double>>& /*unused*/)
     {}
 
     //! Populate metadata in the NetCDF file

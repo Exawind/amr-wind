@@ -34,7 +34,6 @@ public:
     void initialize(const std::string& key) override;
 
     enum class phase { FORWARD, FORWARD_PAUSE, REVERSE, REVERSE_PAUSE };
-    // enum class NormalRule { SIGMA1, SIGMA2, SIGMA3, HALFPOWER };
 
     void check_bounds();
 
@@ -80,25 +79,25 @@ public:
     int& id() override { return m_id; }
 
     //! Number of sampling container locations in a timestep
-    int num_points() const override
+    long num_points() const override
     {
         return m_ntotal * (m_npts + ntheta * m_npts * (nphi - 1));
     }
 
     //! Number of probe locations to output
-    int num_output_points() const override { return m_ntotal * m_npts; }
+    long num_output_points() const override { return m_ntotal * m_npts; }
 
     //! Number of probe locations on Radar axis
-    int num_points_axis() const { return m_npts; }
+    long num_points_axis() const { return m_npts; }
 
     //! Number of probe locations in a cone
-    int num_points_cone() const
+    long num_points_cone() const
     {
         return m_npts + ntheta * m_npts * (nphi - 1);
     }
 
     //! Number of probe locations in a spherical cap
-    int num_points_quad() const { return 1 + ntheta * (nphi - 1); }
+    long num_points_quad() const { return 1 + ntheta * (nphi - 1); }
 
     void line_average(
         const std::vector<double>& weights,
@@ -107,12 +106,12 @@ public:
         int offset);
 
     //! Run data modification for specific sampler
-    virtual bool do_data_modification() { return true; }
-    virtual bool do_convert_velocity_los() { return true; }
+    bool do_data_modification() override { return true; }
+    bool do_convert_velocity_los() override { return true; }
 
     //! Modify sample buffer after sampling happens
     std::vector<double>
-    modify_sample_data(const std::vector<double>&, const std::string&) override;
+    modify_sample_data(const std::vector<double>& sample_data, const std::string& /*unused*/) override;
 
     void
     calc_lineofsight_velocity(const std::vector<std::vector<double>>&) override;

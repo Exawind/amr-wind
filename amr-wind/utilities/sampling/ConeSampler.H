@@ -58,16 +58,16 @@ public:
     int& id() override { return m_id; }
 
     //! Number of probe locations
-    int num_points() const override
+    long num_points() const override
     {
         return m_npts + m_ntheta * (m_npts - 1) * (m_nphi - 1);
     }
 
     //! Number of probe locations on cone axis
-    int num_points_axis() const { return m_npts; }
+    long num_points_axis() const { return m_npts; }
 
     //! Number of output probe locations (after data reduction etc.)
-    int num_output_points() const override { return m_npts; }
+    long num_output_points() const override { return m_npts; }
 
 protected:
     const CFDSim& m_sim;

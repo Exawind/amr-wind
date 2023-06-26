@@ -54,10 +54,10 @@ public:
     int& id() override { return m_id; }
 
     //! Number of probe locations along the line
-    int num_points() const override { return m_npts; }
+    long num_points() const override { return m_npts; }
 
     //! Number of output probe locations (after data reduction etc.)
-    int num_output_points() const override { return m_npts; }
+    long num_output_points() const override { return m_npts; }
 
 protected:
     const CFDSim& m_sim;

@@ -40,7 +40,7 @@ public:
      */
     void update_sampling_locations() override;
 
-    int num_points() const override { return (m_npts * m_ns); }
+    long num_points() const override { return (m_npts * m_ns); }
 
     bool output_netcdf_field(
         const std::vector<double>& output_buffer,

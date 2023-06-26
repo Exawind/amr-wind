@@ -143,13 +143,13 @@ void Sampling::convert_velocity_lineofsight()
     std::vector<int> vel_map;
 
     for (int iv = 0; iv < nvars; ++iv) {
-        if (m_var_names[iv].compare("velocityx") == 0) {
+        if (m_var_names[iv] == "velocityx") {
             vel_map.push_back(iv);
         }
-        if (m_var_names[iv].compare("velocityy") == 0) {
+        if (m_var_names[iv] == "velocityy") {
             vel_map.push_back(iv);
         }
-        if (m_var_names[iv].compare("velocityz") == 0) {
+        if (m_var_names[iv] == "velocityz") {
             vel_map.push_back(iv);
         }
     }
