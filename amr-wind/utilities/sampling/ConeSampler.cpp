@@ -93,7 +93,6 @@ void ConeSampler::sampling_locations(SampleLocType& locs) const
 
     // Assemble cone axis unit beam
     for (int i = 0; i < m_npts; ++i) {
-        // amrex::Print() << "i: " << i << std::endl;
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
             locs[i][d] = origin_vector[d] + i * dx[d];
         }

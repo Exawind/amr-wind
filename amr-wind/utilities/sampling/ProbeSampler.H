@@ -39,10 +39,11 @@ public:
     std::string& label() override { return m_label; }
     int id() const override { return m_id; }
     int& id() override { return m_id; }
-    int num_points() const override { return m_npts; }
+    
+    long num_points() const override { return m_npts; }
 
     //! Number of output probe locations (after data reduction etc.)
-    int num_output_points() const override { return m_npts; }
+    long num_output_points() const override { return m_npts; }
 
 private:
     SampleLocType m_probes;
