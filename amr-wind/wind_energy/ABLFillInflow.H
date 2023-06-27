@@ -15,7 +15,7 @@ namespace amr_wind {
  *
  *  \sa ABLBoundaryPlane
  */
-class ABLFillInflow : public FieldFillPatchOps<FieldBCNoOp>
+class ABLFillInflow : public FieldFillPatchOps<FieldBCDirichlet>
 {
 public:
     ABLFillInflow(

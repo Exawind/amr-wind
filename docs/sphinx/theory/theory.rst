@@ -192,9 +192,47 @@ Turbulence Models
 
 LES models for subgrid scales
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Smagorinsky model
+^^^^^^^^^^^^^^^^^
 
-AMD model
-^^^^^^^^^^^
+Simple eddy viscosity model, the dissipation is calculated using the
+resolved strain rate tensor and the grid resolution as
+
+.. math::
+
+   \begin{aligned}
+       \tau_{ij} &= -2 \nu_t \widetilde{S}_{ij} \\
+       \nu_t &= C_s^2 \Delta^2 (2 \langle S_{ij} S_{ij} \rangle)^{\frac{1}{2}}
+   \end{aligned}
+
+
+AMDNoTherm model
+^^^^^^^^^^^^^^^^^
+This is the implementation of the base AMD model, useful for flows without a temperature field.
+
+The eddy viscosity is calculated using an anisotropic derivative with a
+different filter width in each direction
+
+.. math::
+
+   \begin{aligned}
+       \hat{\partial}_i &= \sqrt{C} \delta_i \partial_i \textrm{ for } i=1,2,3 \\
+       C &= 1/3, \textrm{ Poincare coefficient for } 2^{nd} \textrm{ order gradient} \\
+       \delta_i &= \textrm{Filter width along dimension } i \textrm{ for anisotropic grids}
+   \end{aligned}
+
+The anisotropic derivative is used to define the eddy viscosity as
+
+.. math::
+
+   \begin{aligned}
+       \tau_{ij} &= -2 \nu_t \widetilde{S}_{ij} \\
+       \nu_t &= \frac{- (\hat{\partial}_k \widetilde{u}_i) (\hat{\partial}_k \widetilde{u}_j) \widetilde{S}_{ij}}{ (\partial_l \widetilde{u}_m) (\partial_l \widetilde{u}_m) }
+   \end{aligned}
+
+
+AMD model (for ABL)
+^^^^^^^^^^^^^^^^^^^
 
 The eddy viscosity is calculated using an anisotropic derivative with a
 different filter width in each direction
@@ -315,6 +353,99 @@ functions ``amd_muvel`` and ``amd_thermal_diff``.
 There is a simple unit test for both :math:`\nu_t` and :math:`D_e` in
 ``unit_tests/turbulence/test_turbulence_LES.cpp`` under
 ``test_AMD_setup_calc``.
+
+Wall models
+-----------
+The wall models descibed in this section are implemented in ``AMR-wind`` for
+running wall-bounded flows (non-ABL cases).
+
+Log-law wall model
+~~~~~~~~~~~~~~~~~~
+
+This wall model computes the local :math:`u_\tau` from the velocity at
+the first grid cell, and uses this to compute the shear stress, which is
+then used as a boundary condition.
+
+The log law:
+
+.. math:: u_{\mathrm{mag}} = u_\tau \left(\frac{1}{\kappa}\log\left(\frac{u_\tau z}{\nu}\right) + B\right). \label{eq:loglaw}
+
+Given a horizontal velocity magnitude
+:math:`u_{\mathrm{mag}} = \sqrt{u^2 + v^2}` at
+:math:`z = z_{\mathrm{ref}}`, :math:`u_\tau` can be computed using a
+non-linear solve to satisfy `[eq:loglaw] <#eq:loglaw>`__.
+
+In ``AMR-wind`` Newton-Raphson iterations are used with a convergence
+criterion of :math:`\lvert u_\tau^{n+1} - u_\tau^n \rvert < 10^{-5}`.
+For this, derivative of
+:math:`\frac{\partial u_{\mathrm{mag}}}{\partial {u_\tau}}` is used,
+
+.. math:: \frac{\partial u_{\mathrm{mag}}}{\partial {u_\tau}} = \left(\frac{1}{\kappa}\left(1+\log\left(\frac{u_\tau z_{\mathrm{ref}}}{\nu}\right)\right) + B\right)
+
+.. math:: u_\tau^{n+1} = u_\tau^{n} - \left(u_\tau^n \left(\frac{1}{\kappa}\log\left(\frac{u_\tau^n z_{\mathrm{ref}}}{\nu}\right) + B\right) - u_{\mathrm{mag}}\right)/\frac{\partial u_{\mathrm{mag}}}{\partial {u_\tau}}.
+
+Finally, the shear stress is calculated as,
+
+.. math::
+
+   \begin{aligned}
+       \tau_{xz} &= u_\tau^2 \frac{u}{u_\mathrm{mag}} \\
+       \tau_{yz} &= u_\tau^2 \frac{v}{u_\mathrm{mag}}
+   \end{aligned}
+
+Constant stress model
+~~~~~~~~~~~~~~~~~~~~~
+
+NOTE: This wall model will be ill-posed unless combined with a Dirichlet
+boundary condition on the other wall, :math:`\langle u \rangle` can
+drift by a constant otherwise.
+
+This is a trivial wall model, where the shear stresses are specified as
+constants. For a pressure gradient driven channel,
+
+.. math::
+
+   \begin{aligned}
+       u_\tau^2 &= -\frac{\mathrm{d} P}{\mathrm{d} x} \\
+       \tau_{xz} &= u_\tau^2 \\
+       \tau_{yz} &= 0
+   \end{aligned}
+
+Schumann model
+~~~~~~~~~~~~~~
+
+NOTE: This wall model will be ill-posed unless combined with a Dirichlet
+boundary condition on the other wall, :math:`\langle u \rangle` can
+drift by a constant otherwise.
+
+This model is a modified version of the constant stress model, where the
+fluctuations from a reference height :math:`z_\mathrm{ref}` are used to
+add fluctuations in the shear stress.
+
+.. math::
+
+   \begin{aligned}
+       u_\tau^2 &= -\frac{\mathrm{d} P}{\mathrm{d} x} \\
+       \tau_{xz} &= u_\tau^2 \frac{u}{\langle u_\mathrm{mag} \rangle} \\
+       \tau_{yz} &= u_\tau^2 \frac{v}{\langle u_\mathrm{mag} \rangle}
+   \end{aligned}
+
+where, :math:`\langle u_\mathrm{mag} \rangle` is the planar average of
+:math:`u_{\mathrm{mag}} = \sqrt{u^2 + v^2}` at :math:`z_\mathrm{ref}`.
+
+Symmetric wall boundary
+~~~~~~~~~~~~~~~~~~~~~~~
+
+This is a boundary condition to for flows with a symmetry across the
+z direction (example: *half-channel* simulations) at the centerline.
+
+.. math::
+
+   \begin{aligned}
+       \tau_{xz} &= 0 \\
+       \tau_{yz} &= 0 \\
+       w &= 0
+   \end{aligned}
 
 Navigating source code
 ------------------------
