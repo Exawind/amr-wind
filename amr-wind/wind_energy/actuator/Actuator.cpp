@@ -179,9 +179,14 @@ void Actuator::update_positions()
     m_container->update_positions();
 
     // Sample velocities at the new locations
-    const auto& vel = m_sim.repo().get_field("velocity");
+    /*const auto& vel = m_sim.repo().get_field("velocity");
     const auto& density = m_sim.repo().get_field("density");
-    m_container->sample_fields(vel, density);
+    m_container->sample_fields(vel, density);*/
+    const auto& umac = m_sim.repo().get_field("u_mac");
+    const auto& vmac = m_sim.repo().get_field("v_mac");
+    const auto& wmac = m_sim.repo().get_field("w_mac");
+    const auto& density = m_sim.repo().get_field("density");
+    m_container->sample_fields(umac, vmac, wmac, density);
 }
 
 /** Provide updated velocities from container to actuator instances
