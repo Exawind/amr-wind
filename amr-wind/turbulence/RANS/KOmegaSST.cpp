@@ -234,7 +234,8 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
                                  (sdr_arr(i, j, k) + 1e-15)) *
                             deltaT;
                     } else if (diff_type == DiffusionType::Implicit) {
-
+                        /* Source term linearization is based on Florian
+                           Menter's (1993) AIAA paper */
                         diss_arr(i, j, k) = 0.0;
 
                         sdr_src_arr(i, j, k) = production_omega;
