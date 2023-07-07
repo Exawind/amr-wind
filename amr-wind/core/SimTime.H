@@ -158,6 +158,9 @@ private:
     //! Initial reduction in timestep size for startup
     amrex::Real m_init_shrink{0.1};
 
+    //! Maximum growth of dt between timesteps
+    amrex::Real m_dt_growth{0.1};
+
     //! Counter for the number of timesteps since start of simulation
     int m_time_index{0};
 
@@ -176,8 +179,11 @@ private:
     //! Maximum timesteps for simulation
     int m_stop_time_index{-1};
 
-    //! Time interval for plot file output
+    //! Time step interval for plot file output
     int m_plt_interval{-1};
+
+    //! Time interval for plot file output
+    amrex::Real m_plt_t_interval{-1.0};
 
     //! Time interval for writing checkpoint/restart files
     int m_chkpt_interval{-1};
