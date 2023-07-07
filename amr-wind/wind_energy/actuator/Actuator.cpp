@@ -24,6 +24,9 @@ void Actuator::pre_init_actions()
     amrex::Vector<std::string> labels;
     pp.getarr("labels", labels);
 
+    // Check if sampling should be modified
+    pp.query("sample_vel_nmhalf", m_sample_nmhalf);
+
     const int nturbines = static_cast<int>(labels.size());
 
     for (int i = 0; i < nturbines; ++i) {
@@ -179,14 +182,17 @@ void Actuator::update_positions()
     m_container->update_positions();
 
     // Sample velocities at the new locations
-    /*const auto& vel = m_sim.repo().get_field("velocity");
-    const auto& density = m_sim.repo().get_field("density");
-    m_container->sample_fields(vel, density);*/
-    const auto& umac = m_sim.repo().get_field("u_mac");
-    const auto& vmac = m_sim.repo().get_field("v_mac");
-    const auto& wmac = m_sim.repo().get_field("w_mac");
-    const auto& density = m_sim.repo().get_field("density");
-    m_container->sample_fields(umac, vmac, wmac, density);
+    if (m_sample_nmhalf) {
+        const auto& umac = m_sim.repo().get_field("u_mac");
+        const auto& vmac = m_sim.repo().get_field("v_mac");
+        const auto& wmac = m_sim.repo().get_field("w_mac");
+        const auto& density = m_sim.repo().get_field("density");
+        m_container->sample_fields(umac, vmac, wmac, density);
+    } else {
+        const auto& vel = m_sim.repo().get_field("velocity");
+        const auto& density = m_sim.repo().get_field("density");
+        m_container->sample_fields(vel, density);
+    }
 }
 
 /** Provide updated velocities from container to actuator instances

@@ -75,6 +75,8 @@ private:
     std::vector<std::unique_ptr<ActuatorModel>> m_actuators;
 
     std::unique_ptr<ActuatorContainer> m_container;
+
+    bool m_sample_nmhalf{false};
 };
 
 } // namespace actuator
