@@ -24,9 +24,6 @@ void Actuator::pre_init_actions()
     amrex::Vector<std::string> labels;
     pp.getarr("labels", labels);
 
-    // Check if sampling should be modified
-    pp.query("sample_vel_nmhalf", m_sample_nmhalf);
-
     const int nturbines = static_cast<int>(labels.size());
 
     for (int i = 0; i < nturbines; ++i) {
@@ -37,6 +34,12 @@ void Actuator::pre_init_actions()
         std::string type;
         pp.query("type", type);
         pp1.query("type", type);
+        if (type == "TurbineFastLine") {
+            // Only one kind of sampling can be chosen. If TurbineFastLine is
+            // being used as Actuator type, the default behavior is to sample
+            // velocity at n-1/2 so that forcing is at n+1/2
+            m_sample_nmhalf = true;
+        }
         AMREX_ALWAYS_ASSERT(!type.empty());
 
         auto obj = ActuatorModel::create(type, m_sim, tname, i);
@@ -47,6 +50,9 @@ void Actuator::pre_init_actions()
         obj->read_inputs(inp);
         m_actuators.emplace_back(std::move(obj));
     }
+
+    // Check if sampling should be modified aside from default behavior
+    pp.query("sample_vel_nmhalf", m_sample_nmhalf);
 }
 
 void Actuator::post_init_actions()
