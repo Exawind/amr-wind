@@ -160,6 +160,8 @@ void ABLVelWallFunc::wall_model(
 
     constexpr int idim = 2;
     const auto& repo = velocity.repo();
+    auto& umac = repo.get_field("u_mac");
+    auto& vmac = repo.get_field("v_mac");
     const auto& density = repo.get_field("density", rho_state);
     const auto& viscosity = repo.get_field("velocity_mueff");
     const int nlevels = repo.num_active_levels();
@@ -178,6 +180,8 @@ void ABLVelWallFunc::wall_model(
 
         const auto& rho_lev = density(lev);
         auto& vold_lev = velocity.state(FieldState::Old)(lev);
+        auto& umac_lev = umac(lev);
+        auto& vmac_lev = vmac(lev);
         auto& vel_lev = velocity(lev);
         const auto& eta_lev = viscosity(lev);
 
@@ -191,6 +195,8 @@ void ABLVelWallFunc::wall_model(
             const auto& bx = mfi.validbox();
             auto varr = vel_lev.array(mfi);
             auto vold_arr = vold_lev.array(mfi);
+            auto umac_arr = umac_lev.array(mfi);
+            auto vmac_arr = vmac_lev.array(mfi);
             auto den = rho_lev.array(mfi);
             auto eta = eta_lev.array(mfi);
 
@@ -200,8 +206,15 @@ void ABLVelWallFunc::wall_model(
                     amrex::bdryLo(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real mu = eta(i, j, k);
-                        const amrex::Real uu = vold_arr(i, j, k, 0);
-                        const amrex::Real vv = vold_arr(i, j, k, 1);
+                        // const amrex::Real uu = vold_arr(i, j, k, 0);
+                        // const amrex::Real vv = vold_arr(i, j, k, 1);
+                        const amrex::Real uu =
+                            0.5 * (umac_arr(i, j, k) + umac_arr(i + 1, j, k));
+                        // Is this reasonable, to interpolate using the wall
+                        // value? Or should I extrapolate using the two points
+                        // above the wall?
+                        const amrex::Real vv =
+                            0.5 * (vmac_arr(i, j, k) + umac_arr(i, j + 1, k));
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
 
                         // Dirichlet BC
@@ -299,6 +312,8 @@ void ABLTempWallFunc::wall_model(
 
     BL_PROFILE("amr-wind::ABLTempWallFunc");
     auto& velocity = repo.get_field("velocity");
+    auto& umac = repo.get_field("u_mac");
+    auto& vmac = repo.get_field("v_mac");
     const auto& density = repo.get_field("density", rho_state);
     const auto& alpha = repo.get_field("temperature_mueff");
     const int nlevels = repo.num_active_levels();
@@ -310,6 +325,8 @@ void ABLTempWallFunc::wall_model(
 
         const auto& rho_lev = density(lev);
         auto& vold_lev = velocity.state(FieldState::Old)(lev);
+        auto& umac_lev = umac(lev);
+        auto& vmac_lev = vmac(lev);
         auto& told_lev = temperature.state(FieldState::Old)(lev);
         auto& theta = temperature(lev);
         const auto& eta_lev = alpha(lev);
@@ -323,6 +340,8 @@ void ABLTempWallFunc::wall_model(
         for (amrex::MFIter mfi(theta, mfi_info); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.validbox();
             auto vold_arr = vold_lev.array(mfi);
+            auto umac_arr = umac_lev.array(mfi);
+            auto vmac_arr = vmac_lev.array(mfi);
             auto told_arr = told_lev.array(mfi);
             auto tarr = theta.array(mfi);
             auto den = rho_lev.array(mfi);
@@ -334,8 +353,15 @@ void ABLTempWallFunc::wall_model(
                     amrex::bdryLo(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real alphaT = eta(i, j, k);
-                        const amrex::Real uu = vold_arr(i, j, k, 0);
-                        const amrex::Real vv = vold_arr(i, j, k, 1);
+                        // const amrex::Real uu = vold_arr(i, j, k, 0);
+                        // const amrex::Real vv = vold_arr(i, j, k, 1);
+                        const amrex::Real uu =
+                            0.5 * (umac_arr(i, j, k) + umac_arr(i + 1, j, k));
+                        // Is this reasonable, to interpolate using the wall
+                        // value? Or should I extrapolate using the two points
+                        // above the wall?
+                        const amrex::Real vv =
+                            0.5 * (vmac_arr(i, j, k) + umac_arr(i, j + 1, k));
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
                         const amrex::Real theta2 = told_arr(i, j, k);
                         tarr(i, j, k - 1) = den(i, j, k) *
