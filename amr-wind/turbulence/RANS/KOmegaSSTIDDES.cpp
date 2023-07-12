@@ -251,7 +251,7 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
                                             tke_arr(i, j, k) / l_iddes +
                                         diss_amb;
 
-                    tke_lhs_arr(i, j, k) = 0.5 * rho_arr(i, j, k) *
+                    tke_lhs_arr(i, j, k) = rho_arr(i, j, k) *
                                            std::sqrt(tke_arr(i, j, k)) /
                                            l_iddes * deltaT;
 
@@ -273,6 +273,8 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
 
                     if (diff_type == DiffusionType::Crank_Nicolson) {
 
+                        tke_lhs_arr(i, j, k) = 0.5 * tke_lhs_arr(i, j, k);
+
                         sdr_src_arr(i, j, k) = production_omega;
 
                         sdr_diss_arr(i, j, k) = cross_diffusion;
@@ -283,6 +285,20 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
                                  (sdr_arr(i, j, k) + 1e-15)) *
                             deltaT;
 
+                    } else if (diff_type == DiffusionType::Implicit) {
+                        /* Source term linearization is based on Florian
+                           Menter's (1993) AIAA paper */
+                        diss_arr(i, j, k) = 0.0;
+
+                        sdr_src_arr(i, j, k) = production_omega;
+
+                        sdr_diss_arr(i, j, k) = 0.0;
+
+                        sdr_lhs_arr(i, j, k) =
+                            (2.0 * rho_arr(i, j, k) * beta * sdr_arr(i, j, k) +
+                             std::abs(cross_diffusion) /
+                                 (sdr_arr(i, j, k) + 1e-15)) *
+                            deltaT;
                     } else {
                         sdr_src_arr(i, j, k) =
                             production_omega + cross_diffusion;
