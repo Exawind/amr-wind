@@ -13,9 +13,25 @@ inline void init_field(amr_wind::Field& fld)
     const int nlevels = fld.repo().num_active_levels();
     const int ncomp = fld.num_comp();
 
-    amrex::Real offset = 0.0;
+    amrex::Real offsetx = 0.0;
+    amrex::Real offsety = 0.0;
+    amrex::Real offsetz = 0.0;
     if (fld.field_location() == amr_wind::FieldLoc::CELL) {
-        offset = 0.5;
+        offsetx = 0.5;
+        offsety = 0.5;
+        offsetz = 0.5;
+    }
+    if (fld.field_location() == amr_wind::FieldLoc::XFACE) {
+        offsety = 0.5;
+        offsetz = 0.5;
+    }
+    if (fld.field_location() == amr_wind::FieldLoc::YFACE) {
+        offsetx = 0.5;
+        offsetz = 0.5;
+    }
+    if (fld.field_location() == amr_wind::FieldLoc::ZFACE) {
+        offsetx = 0.5;
+        offsety = 0.5;
     }
 
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -27,9 +43,9 @@ inline void init_field(amr_wind::Field& fld)
             const auto& farr = fld(lev).array(mfi);
 
             amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-                const amrex::Real x = problo[0] + (i + offset) * dx[0];
-                const amrex::Real y = problo[1] + (j + offset) * dx[1];
-                const amrex::Real z = problo[2] + (k + offset) * dx[2];
+                const amrex::Real x = problo[0] + (i + offsetx) * dx[0];
+                const amrex::Real y = problo[1] + (j + offsety) * dx[1];
+                const amrex::Real z = problo[2] + (k + offsetz) * dx[2];
 
                 for (int d = 0; d < ncomp; d++) {
                     farr(i, j, k, d) = x + y + z;
