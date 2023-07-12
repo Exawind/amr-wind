@@ -210,9 +210,6 @@ void ABLVelWallFunc::wall_model(
                         // const amrex::Real vv = vold_arr(i, j, k, 1);
                         const amrex::Real uu =
                             0.5 * (umac_arr(i, j, k) + umac_arr(i + 1, j, k));
-                        // Is this reasonable, to interpolate using the wall
-                        // value? Or should I extrapolate using the two points
-                        // above the wall?
                         const amrex::Real vv =
                             0.5 * (vmac_arr(i, j, k) + umac_arr(i, j + 1, k));
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
@@ -357,9 +354,6 @@ void ABLTempWallFunc::wall_model(
                         // const amrex::Real vv = vold_arr(i, j, k, 1);
                         const amrex::Real uu =
                             0.5 * (umac_arr(i, j, k) + umac_arr(i + 1, j, k));
-                        // Is this reasonable, to interpolate using the wall
-                        // value? Or should I extrapolate using the two points
-                        // above the wall?
                         const amrex::Real vv =
                             0.5 * (vmac_arr(i, j, k) + umac_arr(i, j + 1, k));
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
