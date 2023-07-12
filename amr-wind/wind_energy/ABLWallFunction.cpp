@@ -200,8 +200,10 @@ void ABLVelWallFunc::wall_model(
                     amrex::bdryLo(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real mu = eta(i, j, k);
-                        const amrex::Real uu = vold_arr(i, j, k, 0);
-                        const amrex::Real vv = vold_arr(i, j, k, 1);
+                        const amrex::Real uu =
+                            0.5 * (vold_arr(i, j, k, 0) + varr(i, j, k, 0));
+                        const amrex::Real vv =
+                            0.5 * (vold_arr(i, j, k, 1) + varr(i, j, k, 1));
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
 
                         // Dirichlet BC
@@ -309,6 +311,7 @@ void ABLTempWallFunc::wall_model(
         amrex::MFItInfo mfi_info{};
 
         const auto& rho_lev = density(lev);
+        auto& vnew_lev = velocity(lev);
         auto& vold_lev = velocity.state(FieldState::Old)(lev);
         auto& told_lev = temperature.state(FieldState::Old)(lev);
         auto& theta = temperature(lev);
@@ -323,6 +326,7 @@ void ABLTempWallFunc::wall_model(
         for (amrex::MFIter mfi(theta, mfi_info); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.validbox();
             auto vold_arr = vold_lev.array(mfi);
+            auto vnew_arr = vnew_lev.array(mfi);
             auto told_arr = told_lev.array(mfi);
             auto tarr = theta.array(mfi);
             auto den = rho_lev.array(mfi);
@@ -334,8 +338,10 @@ void ABLTempWallFunc::wall_model(
                     amrex::bdryLo(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real alphaT = eta(i, j, k);
-                        const amrex::Real uu = vold_arr(i, j, k, 0);
-                        const amrex::Real vv = vold_arr(i, j, k, 1);
+                        const amrex::Real uu =
+                            0.5 * (vold_arr(i, j, k, 0) + vnew_arr(i, j, k, 0));
+                        const amrex::Real vv =
+                            0.5 * (vold_arr(i, j, k, 1) + vnew_arr(i, j, k, 1));
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
                         const amrex::Real theta2 = told_arr(i, j, k);
                         tarr(i, j, k - 1) = den(i, j, k) *
