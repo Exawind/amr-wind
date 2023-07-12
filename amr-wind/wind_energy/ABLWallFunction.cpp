@@ -211,7 +211,7 @@ void ABLVelWallFunc::wall_model(
                         const amrex::Real uu =
                             0.5 * (umac_arr(i, j, k) + umac_arr(i + 1, j, k));
                         const amrex::Real vv =
-                            0.5 * (vmac_arr(i, j, k) + umac_arr(i, j + 1, k));
+                            0.5 * (vmac_arr(i, j, k) + vmac_arr(i, j + 1, k));
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
 
                         // Dirichlet BC
@@ -355,7 +355,7 @@ void ABLTempWallFunc::wall_model(
                         const amrex::Real uu =
                             0.5 * (umac_arr(i, j, k) + umac_arr(i + 1, j, k));
                         const amrex::Real vv =
-                            0.5 * (vmac_arr(i, j, k) + umac_arr(i, j + 1, k));
+                            0.5 * (vmac_arr(i, j, k) + vmac_arr(i, j + 1, k));
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
                         const amrex::Real theta2 = told_arr(i, j, k);
                         tarr(i, j, k - 1) = den(i, j, k) *
