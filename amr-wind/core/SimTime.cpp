@@ -131,7 +131,8 @@ void SimTime::set_current_cfl(
             // Shorten dt if going to overshoot next output time
             m_dt[0] = std::min(
                 m_dt[0],
-                (std::floor((m_cur_time + 1e-8 * m_dt[0]) / m_chkpt_t_interval) +
+                (std::floor(
+                     (m_cur_time + 1e-8 * m_dt[0]) / m_chkpt_t_interval) +
                  1) * m_chkpt_t_interval -
                     m_cur_time);
             // how it works: the floor operator gets the index of the last
@@ -241,7 +242,12 @@ bool SimTime::write_checkpoint() const
 {
     return (
         (m_chkpt_interval > 0) &&
-        ((m_time_index - m_chkpt_start_index) % m_chkpt_interval == 0));
+            ((m_time_index - m_chkpt_start_index) % m_chkpt_interval == 0) ||
+        (m_chkpt_t_interval > 0.0 &&
+         (std::abs(
+              m_new_time / m_chkpt_t_interval -
+              std::round(m_new_time / m_chkpt_t_interval)) <
+          1e-8 * m_new_time)));
 }
 
 bool SimTime::write_last_plot_file() const
