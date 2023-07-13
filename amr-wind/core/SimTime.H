@@ -185,8 +185,11 @@ private:
     //! Time interval for plot file output
     amrex::Real m_plt_t_interval{-1.0};
 
-    //! Time interval for writing checkpoint/restart files
+    //! Time step interval for writing checkpoint/restart files
     int m_chkpt_interval{-1};
+
+    //! Time interval for writing checkpoint/restart files
+    amrex::Real m_chkpt_t_interval{-1.0};
 
     //! Time interval for regridding
     int m_regrid_interval{-1};

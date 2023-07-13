@@ -26,6 +26,7 @@ void SimTime::parse_parameters()
     pp.query("plot_interval", m_plt_interval);
     pp.query("plot_time_interval", m_plt_t_interval);
     pp.query("checkpoint_interval", m_chkpt_interval);
+    pp.query("checkpoint_time_interval", m_chkpt_t_interval);
     pp.query("regrid_start", m_regrid_start_index);
     pp.query("plot_start", m_plt_start_index);
     pp.query("checkpoint_start", m_chkpt_start_index);
@@ -126,6 +127,21 @@ void SimTime::set_current_cfl(
         m_dt[0] = dt_new;
 
         // Shorten timestep to hit output frequency exactly
+        if (m_chkpt_t_interval > 0.0) {
+            // Shorten dt if going to overshoot next output time
+            m_dt[0] = std::min(
+                m_dt[0],
+                (std::floor((m_cur_time + 1e-8 * m_dt[0]) / m_chkpt_t_interval) +
+                 1) * m_chkpt_t_interval -
+                    m_cur_time);
+            // how it works: the floor operator gets the index of the last
+            // output, with a tolerance proportional to the current dt.
+            // adding 1 and multiplying by the time interval finds the next
+            // expected output time. if the time increment between the current
+            // time and the next expected output is less than the current dt,
+            // then the dt becomes this increment to get to the next output
+            // time.
+        }
         if (m_plt_t_interval > 0.0) {
             // Shorten dt if going to overshoot next output time
             m_dt[0] = std::min(
@@ -133,13 +149,6 @@ void SimTime::set_current_cfl(
                 (std::floor((m_cur_time + 1e-8 * m_dt[0]) / m_plt_t_interval) +
                  1) * m_plt_t_interval -
                     m_cur_time);
-            // how it works: the floor operator gets the index of the last
-            // output plt, with a tolerance proportional to the current dt.
-            // adding 1 and multiplying by the plt time interval finds the next
-            // expected output time. if the time increment between the current
-            // time and the next expected output is less than the current dt,
-            // then the dt becomes this increment to get to the next output
-            // time.
         }
 
         if (m_is_init && m_initial_dt > 0.0) {
