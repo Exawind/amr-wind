@@ -94,8 +94,6 @@ protected:
     amrex::Real m_buoyancy_factor = 0.0;
     amrex::Real m_sigma_t{0.85};
     amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
-
-    DiffusionType m_diff_type = DiffusionType::Crank_Nicolson;
 };
 
 } // namespace amr_wind::turbulence
