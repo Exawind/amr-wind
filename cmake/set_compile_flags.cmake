@@ -35,10 +35,10 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
   if (${AMR_WIND_USE_INTERNAL_AMREX})
     if ((CMAKE_CXX_COMPILER_ID STREQUAL "Clang") AND AMR_WIND_ENABLE_FPE_TRAP_FOR_TESTS)
       target_compile_options(
-        amrex PUBLIC $<$<COMPILE_LANGUAGE:CXX>:-ffp-exception-behavior=maytrap>)
+        amrex_3d PUBLIC $<$<COMPILE_LANGUAGE:CXX>:-ffp-exception-behavior=maytrap>)
     endif()
     target_compile_options(
-      amrex PUBLIC $<$<COMPILE_LANGUAGE:CXX>:-Wno-pass-failed>)
+      amrex_3d PUBLIC $<$<COMPILE_LANGUAGE:CXX>:-Wno-pass-failed>)
   else()
     if ((CMAKE_CXX_COMPILER_ID STREQUAL "Clang") AND AMR_WIND_ENABLE_FPE_TRAP_FOR_TESTS)
       target_compile_options(

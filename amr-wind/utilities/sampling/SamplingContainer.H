@@ -64,7 +64,7 @@ class SamplingContainer
 {
 public:
     explicit SamplingContainer(amrex::AmrCore& mesh)
-        : AmrParticleContainer<
+        : amrex::AmrParticleContainer<
               SNStructReal,
               SNStructInt,
               SNArrayReal,
