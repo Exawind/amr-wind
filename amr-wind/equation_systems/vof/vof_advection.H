@@ -95,7 +95,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
             auto& old_dof_field = dof_field.state(amr_wind::FieldState::Old);
             for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
                 amrex::MultiFab::Copy(
-                    dof_field(lev), old_dof_field(lev), 0, 0,
+                    old_dof_field(lev), dof_field(lev), 0, 0,
                     dof_field.num_comp(), dof_field.num_grow());
             }
         }
