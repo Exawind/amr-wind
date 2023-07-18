@@ -91,6 +91,13 @@ struct AdvectionOp<VOF, fvm::Godunov>
             auto& f_iblank = repo.get_int_field("iblank_cell");
             amr_wind::multiphase::sharpen_acquired_vof(
                 nlevels, f_iblank, dof_field);
+            // Update old vof so that old density can be updated
+            auto& old_dof_field = dof_field.state(amr_wind::FieldState::Old);
+            for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+                amrex::MultiFab::Copy(
+                    dof_field(lev), old_dof_field(lev), 0, 0,
+                    dof_field.num_comp(), dof_field.num_grow());
+            }
         }
         // Split advection step 1, with cmask calculation
         multiphase::split_advection_step(
