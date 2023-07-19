@@ -53,6 +53,24 @@ void SimTime::parse_parameters()
             "specified. timestep- and time-based checkpointing should not be "
             "used together; please only specify one.");
     }
+
+    if (m_plt_t_interval < 0.0 && m_force_plt_dt) {
+        amrex::Abort(
+            "enforce_plot_time_dt is true, but no plot time interval has been "
+            "provided.");
+    }
+
+    if (m_chkpt_t_interval < 0.0 && m_force_chkpt_dt) {
+        amrex::Abort(
+            "enforce_checkpoint_time_dt is true, but no checkpoint time "
+            "interval has been provided.");
+    }
+
+    if (!m_adaptive && (m_force_plt_dt || m_force_chkpt_dt)) {
+        amrex::Abort(
+            "an output time interval has been specified to be enforced upon "
+            "dt, but dt is not adaptive.");
+    }
 }
 
 bool SimTime::new_timestep()
