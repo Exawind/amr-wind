@@ -38,6 +38,7 @@ void KOmegaSSTIDDES<Transport>::parse_model_coeffs()
     pp.query("Ct", this->m_Ct);
     pp.query("Cw", this->m_Cw);
     pp.query("kappa", this->m_kappa);
+    pp.query("sdr_prod_clip_factor", this->m_sdr_prod_clip_factor);
 }
 
 template <typename Transport>
@@ -63,7 +64,8 @@ TurbulenceModel::CoeffsDictType KOmegaSSTIDDES<Transport>::model_coeffs() const
         {"Cl", this->m_Cl},
         {"Ct", this->m_Ct},
         {"Cw", this->m_Cw},
-        {"kappa", this->m_kappa}};
+        {"kappa", this->m_kappa},
+        {"sdr_prod_clip_factor", this->m_sdr_prod_clip_factor}};
 }
 
 template <typename Transport>
@@ -90,6 +92,7 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
     const amrex::Real Ct = this->m_Ct;
     const amrex::Real Cw = this->m_Cw;
     const amrex::Real kappa = this->m_kappa;
+    const amrex::Real sdr_prod_clip_factor = this->m_sdr_prod_clip_factor;
 
     auto& mu_turb = this->mu_turb();
     auto lam_mu = (this->m_transport).mu();
@@ -251,7 +254,7 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
                                             tke_arr(i, j, k) / l_iddes +
                                         diss_amb;
 
-                    tke_lhs_arr(i, j, k) = 0.5 * rho_arr(i, j, k) *
+                    tke_lhs_arr(i, j, k) = rho_arr(i, j, k) *
                                            std::sqrt(tke_arr(i, j, k)) /
                                            l_iddes * deltaT;
 
@@ -260,7 +263,7 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
                         rho_arr(i, j, k) * alpha *
                         amrex::min<amrex::Real>(
                             tmp4 * tmp4,
-                            10.0 *
+                            sdr_prod_clip_factor *
                                 amrex::max<amrex::Real>(sdr_arr(i, j, k), 0.0) *
                                 std::sqrt(tke_arr(i, j, k)) / l_iddes);
 
@@ -273,6 +276,8 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
 
                     if (diff_type == DiffusionType::Crank_Nicolson) {
 
+                        tke_lhs_arr(i, j, k) = 0.5 * tke_lhs_arr(i, j, k);
+
                         sdr_src_arr(i, j, k) = production_omega;
 
                         sdr_diss_arr(i, j, k) = cross_diffusion;
@@ -283,6 +288,20 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
                                  (sdr_arr(i, j, k) + 1e-15)) *
                             deltaT;
 
+                    } else if (diff_type == DiffusionType::Implicit) {
+                        /* Source term linearization is based on Florian
+                           Menter's (1993) AIAA paper */
+                        diss_arr(i, j, k) = 0.0;
+
+                        sdr_src_arr(i, j, k) = production_omega;
+
+                        sdr_diss_arr(i, j, k) = 0.0;
+
+                        sdr_lhs_arr(i, j, k) =
+                            (2.0 * rho_arr(i, j, k) * beta * sdr_arr(i, j, k) +
+                             std::abs(cross_diffusion) /
+                                 (sdr_arr(i, j, k) + 1e-15)) *
+                            deltaT;
                     } else {
                         sdr_src_arr(i, j, k) =
                             production_omega + cross_diffusion;
