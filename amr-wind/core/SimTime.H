@@ -204,10 +204,10 @@ private:
     bool m_force_plt_dt{false};
 
     //! Relative (to dt) tolerance for plot time interval output
-    amrex::Real m_plt_t_tol{-1e-8};
+    amrex::Real m_plt_t_tol{1e-8};
 
     //! Relative (to plt_t_interval) tolerance for enforcing dt
-    amrex::Real m_force_plt_tol{-1e-8};
+    amrex::Real m_force_plt_tol{1e-3};
 
     //! Time step interval for writing checkpoint/restart files
     int m_chkpt_interval{-1};
@@ -219,10 +219,10 @@ private:
     bool m_force_chkpt_dt{false};
 
     //! Relative (to dt) tolerance for checkpoint time interval output
-    amrex::Real m_chkpt_t_tol{-1e-8};
+    amrex::Real m_chkpt_t_tol{1e-8};
 
     //! Relative (to chkpt_t_interval) tolerance for enforcing dt
-    amrex::Real m_force_chkpt_tol{-1e-8};
+    amrex::Real m_force_chkpt_tol{1e-3};
 
     //! Time interval for regridding
     int m_regrid_interval{-1};
