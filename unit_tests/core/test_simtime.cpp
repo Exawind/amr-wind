@@ -186,10 +186,12 @@ TEST_F(SimTimeTest, enforce_dt_out)
     // Should not change if starting near interval
     result = time.get_enforced_dt_for_output(0.1, 4.0, 2.0, 1e-3);
     EXPECT_NEAR(result, 0.1, 1e-12);
-    result = time.get_enforced_dt_for_output(0.1, 4.0 - 2.0 * 0.99e-3, 2.0, 1e-3);
+    result =
+        time.get_enforced_dt_for_output(0.1, 4.0 - 2.0 * 0.99e-3, 2.0, 1e-3);
     EXPECT_NEAR(result, 0.1, 1e-12);
     // Past the tolerance, will change
-    result = time.get_enforced_dt_for_output(0.1, 4.0 - 2.0 * 1.01e-3, 2.0, 1e-3);
+    result =
+        time.get_enforced_dt_for_output(0.1, 4.0 - 2.0 * 1.01e-3, 2.0, 1e-3);
     EXPECT_LT(result, 0.1);
 
     // Shortens dt if overlapping with intervals
