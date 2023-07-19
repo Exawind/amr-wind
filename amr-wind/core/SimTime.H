@@ -4,6 +4,8 @@
 #include "AMReX_REAL.H"
 #include "AMReX_GpuQualifiers.H"
 #include "AMReX_Extension.H"
+#include <algorithm>
+#include <cmath>
 
 namespace amr_wind {
 
@@ -126,6 +128,18 @@ public:
 
     //! Read user defined options from input file
     void parse_parameters();
+
+    AMREX_FORCE_INLINE
+    amrex::Real get_enforced_dt_for_output(
+        const amrex::Real dt,
+        const amrex::Real cur_time,
+        const amrex::Real interval)
+    {
+        // Tolerance for being slightly under is .1% of requested interval
+        return std::min(
+            dt,
+            (std::floor(cur_time / interval + 1e-3) + 1) * interval - cur_time);
+    }
 
 private:
     //! Timestep sizes

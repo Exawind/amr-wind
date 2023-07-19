@@ -163,12 +163,8 @@ void SimTime::set_current_cfl(
         // Shorten timestep to hit output frequency exactly
         if (m_chkpt_t_interval > 0.0 && m_force_chkpt_dt) {
             // Shorten dt if going to overshoot next output time
-            m_dt[0] = std::min(
-                m_dt[0],
-                (std::floor(
-                     (m_cur_time + 1e-8 * m_dt[0]) / m_chkpt_t_interval) +
-                 1) * m_chkpt_t_interval -
-                    m_cur_time);
+            m_dt[0] = get_enforced_dt_for_output(
+                m_dt[0], m_cur_time, m_chkpt_interval);
             // how it works: the floor operator gets the index of the last
             // output, with a tolerance proportional to the current dt.
             // adding 1 and multiplying by the time interval finds the next
@@ -179,11 +175,8 @@ void SimTime::set_current_cfl(
         }
         if (m_plt_t_interval > 0.0 && m_force_plt_dt) {
             // Shorten dt if going to overshoot next output time
-            m_dt[0] = std::min(
-                m_dt[0],
-                (std::floor((m_cur_time + 1e-8 * m_dt[0]) / m_plt_t_interval) +
-                 1) * m_plt_t_interval -
-                    m_cur_time);
+            m_dt[0] = get_enforced_dt_for_output(
+                m_dt[0], m_cur_time, m_plt_t_interval);
         }
 
         if (m_is_init && m_initial_dt > 0.0) {
