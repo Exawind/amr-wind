@@ -185,11 +185,17 @@ private:
     //! Time interval for plot file output
     amrex::Real m_plt_t_interval{-1.0};
 
+    //! Bool for if plt time interval should be forced
+    bool m_force_plt_dt{false};
+
     //! Time step interval for writing checkpoint/restart files
     int m_chkpt_interval{-1};
 
     //! Time interval for writing checkpoint/restart files
     amrex::Real m_chkpt_t_interval{-1.0};
+
+    //! Bool for if checkpoint time interval should be forced
+    bool m_force_chkpt_dt{false};
 
     //! Time interval for regridding
     int m_regrid_interval{-1};

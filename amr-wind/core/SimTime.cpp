@@ -25,8 +25,10 @@ void SimTime::parse_parameters()
     pp.query("regrid_interval", m_regrid_interval);
     pp.query("plot_interval", m_plt_interval);
     pp.query("plot_time_interval", m_plt_t_interval);
+    pp.query("enforce_plot_time_dt", m_force_plt_dt);
     pp.query("checkpoint_interval", m_chkpt_interval);
     pp.query("checkpoint_time_interval", m_chkpt_t_interval);
+    pp.query("enforce_checkpoint_time_dt", m_force_chkpt_dt);
     pp.query("regrid_start", m_regrid_start_index);
     pp.query("plot_start", m_plt_start_index);
     pp.query("checkpoint_start", m_chkpt_start_index);
@@ -127,7 +129,7 @@ void SimTime::set_current_cfl(
         m_dt[0] = dt_new;
 
         // Shorten timestep to hit output frequency exactly
-        if (m_chkpt_t_interval > 0.0) {
+        if (m_chkpt_t_interval > 0.0 && m_force_chkpt_dt) {
             // Shorten dt if going to overshoot next output time
             m_dt[0] = std::min(
                 m_dt[0],
@@ -143,7 +145,7 @@ void SimTime::set_current_cfl(
             // then the dt becomes this increment to get to the next output
             // time.
         }
-        if (m_plt_t_interval > 0.0) {
+        if (m_plt_t_interval > 0.0 && m_force_plt_dt) {
             // Shorten dt if going to overshoot next output time
             m_dt[0] = std::min(
                 m_dt[0],
@@ -233,9 +235,9 @@ bool SimTime::write_plot_file() const
         ((m_plt_interval > 0) &&
          ((m_time_index - m_plt_start_index) % m_plt_interval == 0)) ||
         (m_plt_t_interval > 0.0 &&
-         (std::abs(
-              m_new_time / m_plt_t_interval -
-              std::round(m_new_time / m_plt_t_interval)) < 1e-8 * m_new_time)));
+         (m_new_time / m_plt_t_interval -
+              std::floor(m_new_time / m_plt_t_interval) + 1e-8 * m_dt[0] <
+          m_dt[0])));
 }
 
 bool SimTime::write_checkpoint() const
@@ -244,9 +246,8 @@ bool SimTime::write_checkpoint() const
         (m_chkpt_interval > 0) &&
             ((m_time_index - m_chkpt_start_index) % m_chkpt_interval == 0) ||
         (m_chkpt_t_interval > 0.0 &&
-         (std::abs(
-              m_new_time / m_chkpt_t_interval -
-              std::round(m_new_time / m_chkpt_t_interval)) <
+         (m_new_time / m_chkpt_t_interval -
+              std::floor(m_new_time / m_chkpt_t_interval) + 1e-8 * m_dt[0] <
           1e-8 * m_new_time)));
 }
 
