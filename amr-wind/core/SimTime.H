@@ -133,12 +133,13 @@ public:
     amrex::Real get_enforced_dt_for_output(
         const amrex::Real dt,
         const amrex::Real cur_time,
-        const amrex::Real interval) const
+        const amrex::Real interval,
+        const amrex::Real tol) const
     {
-        // Tolerance for being slightly under is .1% of requested interval
+        // Tolerance for being slightly under is relative to requested interval
         return std::min(
             dt,
-            (std::floor(cur_time / interval + 1e-3) + 1) * interval - cur_time);
+            (std::floor(cur_time / interval + tol) + 1) * interval - cur_time);
     }
 
 private:
@@ -202,6 +203,12 @@ private:
     //! Bool for if plt time interval should be forced
     bool m_force_plt_dt{false};
 
+    //! Relative (to dt) tolerance for plot time interval output
+    amrex::Real m_plt_t_tol{-1e-8};
+
+    //! Relative (to plt_t_interval) tolerance for enforcing dt
+    amrex::Real m_force_plt_tol{-1e-8};
+
     //! Time step interval for writing checkpoint/restart files
     int m_chkpt_interval{-1};
 
@@ -210,6 +217,12 @@ private:
 
     //! Bool for if checkpoint time interval should be forced
     bool m_force_chkpt_dt{false};
+
+    //! Relative (to dt) tolerance for checkpoint time interval output
+    amrex::Real m_chkpt_t_tol{-1e-8};
+
+    //! Relative (to chkpt_t_interval) tolerance for enforcing dt
+    amrex::Real m_force_chkpt_tol{-1e-8};
 
     //! Time interval for regridding
     int m_regrid_interval{-1};

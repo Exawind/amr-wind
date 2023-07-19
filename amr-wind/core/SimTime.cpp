@@ -34,6 +34,12 @@ void SimTime::parse_parameters()
     pp.query("checkpoint_start", m_chkpt_start_index);
     pp.query("use_force_cfl", m_use_force_cfl);
 
+    // Tolerances
+    pp.query("plot_time_interval_reltol", m_plt_t_tol);
+    pp.query("enforce_plot_dt_reltol", m_force_plt_tol);
+    pp.query("checkpoint_time_interval_reltol", m_chkpt_t_tol);
+    pp.query("enforce_checkpoint_dt_reltol", m_force_chkpt_tol);
+
     if (m_fixed_dt > 0.0) {
         m_dt[0] = m_fixed_dt;
     } else {
@@ -164,7 +170,7 @@ void SimTime::set_current_cfl(
         if (m_chkpt_t_interval > 0.0 && m_force_chkpt_dt) {
             // Shorten dt if going to overshoot next output time
             m_dt[0] = get_enforced_dt_for_output(
-                m_dt[0], m_cur_time, m_chkpt_interval);
+                m_dt[0], m_cur_time, m_chkpt_interval, m_force_chkpt_tol);
             // how it works: the floor operator gets the index of the last
             // output, with a tolerance proportional to the current dt.
             // adding 1 and multiplying by the time interval finds the next
@@ -176,7 +182,7 @@ void SimTime::set_current_cfl(
         if (m_plt_t_interval > 0.0 && m_force_plt_dt) {
             // Shorten dt if going to overshoot next output time
             m_dt[0] = get_enforced_dt_for_output(
-                m_dt[0], m_cur_time, m_plt_t_interval);
+                m_dt[0], m_cur_time, m_plt_t_interval, m_force_plt_tol);
         }
 
         if (m_is_init && m_initial_dt > 0.0) {
@@ -260,8 +266,9 @@ bool SimTime::write_plot_file() const
         ((m_plt_interval > 0) &&
          ((m_time_index - m_plt_start_index) % m_plt_interval == 0)) ||
         (m_plt_t_interval > 0.0 &&
-         (m_new_time / m_plt_t_interval + 1e-8 * m_dt[0] -
-              std::floor(m_new_time / m_plt_t_interval + 1e-8 * m_dt[0]) <
+         (m_new_time / m_plt_t_interval + m_plt_t_tol * m_dt[0] -
+              std::floor(
+                  m_new_time / m_plt_t_interval + m_plt_t_tol * m_dt[0]) <
           m_dt[0] / m_plt_t_interval)));
 }
 
@@ -271,8 +278,9 @@ bool SimTime::write_checkpoint() const
         ((m_chkpt_interval > 0) &&
          ((m_time_index - m_chkpt_start_index) % m_chkpt_interval == 0)) ||
         (m_chkpt_t_interval > 0.0 &&
-         (m_new_time / m_chkpt_t_interval + 1e-8 * m_dt[0] -
-              std::floor(m_new_time / m_chkpt_t_interval + 1e-8 * m_dt[0]) <
+         (m_new_time / m_chkpt_t_interval + m_chkpt_t_tol * m_dt[0] -
+              std::floor(
+                  m_new_time / m_chkpt_t_interval + m_chkpt_t_tol * m_dt[0]) <
           m_dt[0] / m_chkpt_t_interval)));
 }
 
