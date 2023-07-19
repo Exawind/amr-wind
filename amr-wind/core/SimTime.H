@@ -133,7 +133,7 @@ public:
     amrex::Real get_enforced_dt_for_output(
         const amrex::Real dt,
         const amrex::Real cur_time,
-        const amrex::Real interval)
+        const amrex::Real interval) const
     {
         // Tolerance for being slightly under is .1% of requested interval
         return std::min(
