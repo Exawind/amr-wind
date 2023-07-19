@@ -39,6 +39,20 @@ void SimTime::parse_parameters()
     } else {
         m_adaptive = true;
     }
+
+    if (m_plt_interval > 0 && m_plt_t_interval > 0.0) {
+        amrex::Abort(
+            "plot_interval and plot_time_interval are both specified. "
+            "timestep- and time-based plotting should not be used together; "
+            "please only specify one.");
+    }
+
+    if (m_chkpt_interval > 0 && m_chkpt_t_interval > 0.0) {
+        amrex::Abort(
+            "checkpoint_interval and checkpoint_time_interval are both "
+            "specified. timestep- and time-based checkpointing should not be "
+            "used together; please only specify one.");
+    }
 }
 
 bool SimTime::new_timestep()
@@ -235,20 +249,20 @@ bool SimTime::write_plot_file() const
         ((m_plt_interval > 0) &&
          ((m_time_index - m_plt_start_index) % m_plt_interval == 0)) ||
         (m_plt_t_interval > 0.0 &&
-         (m_new_time / m_plt_t_interval -
-              std::floor(m_new_time / m_plt_t_interval) + 1e-8 * m_dt[0] <
-          m_dt[0])));
+         (m_new_time / m_plt_t_interval + 1e-8 * m_dt[0] -
+              std::floor(m_new_time / m_plt_t_interval + 1e-8 * m_dt[0]) <
+          m_dt[0] / m_plt_t_interval)));
 }
 
 bool SimTime::write_checkpoint() const
 {
     return (
-        (m_chkpt_interval > 0) &&
-            ((m_time_index - m_chkpt_start_index) % m_chkpt_interval == 0) ||
+        ((m_chkpt_interval > 0) &&
+         ((m_time_index - m_chkpt_start_index) % m_chkpt_interval == 0)) ||
         (m_chkpt_t_interval > 0.0 &&
-         (m_new_time / m_chkpt_t_interval -
-              std::floor(m_new_time / m_chkpt_t_interval) + 1e-8 * m_dt[0] <
-          1e-8 * m_new_time)));
+         (m_new_time / m_chkpt_t_interval + 1e-8 * m_dt[0] -
+              std::floor(m_new_time / m_chkpt_t_interval + 1e-8 * m_dt[0]) <
+          m_dt[0] / m_chkpt_t_interval)));
 }
 
 bool SimTime::write_last_plot_file() const
