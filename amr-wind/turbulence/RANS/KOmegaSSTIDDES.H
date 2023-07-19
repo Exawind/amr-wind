@@ -60,6 +60,7 @@ protected:
     amrex::Real m_Ct{1.87};
     amrex::Real m_Cw{0.15};
     amrex::Real m_kappa{0.41};
+    amrex::Real m_sdr_prod_clip_factor{10.0};
 };
 
 } // namespace amr_wind::turbulence
