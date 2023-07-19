@@ -25,6 +25,9 @@ struct WingBaseData
     //! Ending coordinate of the wing
     vs::Vector end;
 
+    //! The normal vector perpendicular to the span
+    vs::Vector blade_x{1.0, 0, 0};
+
     //! Gaussian smearing factor input by user
     vs::Vector eps_inp;
 
