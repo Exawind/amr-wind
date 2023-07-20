@@ -277,4 +277,47 @@ TEST_F(SimTimeTest, enforce_timeinterval_bigtimetol)
     EXPECT_EQ(plot_step_sum, 2 + 6);
 }
 
+TEST_F(SimTimeTest, enforce_timeinterval_bigdttol)
+{
+    build_simtime_params();
+    {
+        amrex::ParmParse pp("time");
+        pp.add("regrid_interval", -1);
+        pp.add("checkpoint_interval", -1);
+        pp.add("plot_interval", -1);
+
+        pp.add("plot_time_interval", 0.5);
+        pp.add("enforce_plot_time_dt", true);
+
+        // Weak enforcement of plot time interval on dt
+        pp.add("enforce_plot_dt_reltol", 1e0);
+        pp.add("plot_time_interval_reltol", 1e-8);
+
+        pp.add("stop_time", 1.0);
+        pp.add("max_step", 10);
+    }
+    amr_wind::SimTime time;
+    time.parse_parameters();
+
+    int counter = 0;
+    int plot_counter = 0;
+    amrex::Real plot_time_sum = 0.0;
+    int plot_step_sum = 0;
+    while (time.new_timestep()) {
+        time.set_current_cfl(0.45 / 0.4, 0.0, 0.0);
+        ++counter;
+        if (time.write_plot_file()) {
+            ++plot_counter;
+            plot_time_sum += time.new_time();
+            plot_step_sum += counter;
+        }
+    }
+    // With big dt tolerance, dt never gets shortened except at the end
+    // (reaching t = 1.0). Ordinary plot time interval tolerance ensures that
+    // plot files are still written at the first step after interval is passed.
+    EXPECT_EQ(plot_counter, 2);
+    EXPECT_NEAR(plot_time_sum, 0.8 + 1.0, 1e-8);
+    EXPECT_EQ(plot_step_sum, 2 + 3);
+}
+
 } // namespace amr_wind_tests
