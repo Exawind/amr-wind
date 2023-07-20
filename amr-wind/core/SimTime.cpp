@@ -60,13 +60,13 @@ void SimTime::parse_parameters()
             "used together; please only specify one.");
     }
 
-    if (m_plt_t_interval < 0.0 && m_force_plt_dt) {
+    if (m_plt_t_interval <= 0.0 && m_force_plt_dt) {
         amrex::Abort(
             "enforce_plot_time_dt is true, but no plot time interval has been "
             "provided.");
     }
 
-    if (m_chkpt_t_interval < 0.0 && m_force_chkpt_dt) {
+    if (m_chkpt_t_interval <= 0.0 && m_force_chkpt_dt) {
         amrex::Abort(
             "enforce_checkpoint_time_dt is true, but no checkpoint time "
             "interval has been provided.");
@@ -262,25 +262,42 @@ bool SimTime::do_regrid() const
 
 bool SimTime::write_plot_file() const
 {
+    // If dt is enforced, allow smallest tolerance to be in effect. This avoids
+    // unintentionally plotting in subsequent timesteps because of shortened dt
+    amrex::Real tol = m_plt_t_tol * m_dt[0];
+    tol =
+        (m_force_chkpt_dt
+             ? std::min(tol, m_force_chkpt_tol * m_chkpt_t_interval)
+             : tol);
+    tol =
+        (m_force_plt_dt ? std::min(tol, m_force_plt_tol * m_plt_t_interval)
+                        : tol);
     return (
         ((m_plt_interval > 0) &&
          ((m_time_index - m_plt_start_index) % m_plt_interval == 0)) ||
         (m_plt_t_interval > 0.0 &&
-         ((m_new_time + m_plt_t_tol * m_dt[0]) / m_plt_t_interval -
-              std::floor(
-                  (m_new_time + m_plt_t_tol * m_dt[0]) / m_plt_t_interval) <
+         ((m_new_time + tol) / m_plt_t_interval -
+              std::floor((m_new_time + tol) / m_plt_t_interval) <
           m_dt[0] / m_plt_t_interval)));
 }
 
 bool SimTime::write_checkpoint() const
 {
+    // If dt is enforced, use smallest tolerance
+    amrex::Real tol = m_plt_t_tol * m_dt[0];
+    tol =
+        (m_force_chkpt_dt
+             ? std::min(tol, m_force_chkpt_tol * m_chkpt_t_interval)
+             : tol);
+    tol =
+        (m_force_plt_dt ? std::min(tol, m_force_plt_tol * m_plt_t_interval)
+                        : tol);
     return (
         ((m_chkpt_interval > 0) &&
          ((m_time_index - m_chkpt_start_index) % m_chkpt_interval == 0)) ||
         (m_chkpt_t_interval > 0.0 &&
-         ((m_new_time + m_chkpt_t_tol * m_dt[0]) / m_chkpt_t_interval -
-              std::floor(
-                  (m_new_time + m_chkpt_t_tol * m_dt[0]) / m_chkpt_t_interval) <
+         ((m_new_time + tol) / m_chkpt_t_interval -
+              std::floor((m_new_time + tol) / m_chkpt_t_interval) <
           m_dt[0] / m_chkpt_t_interval)));
 }
 

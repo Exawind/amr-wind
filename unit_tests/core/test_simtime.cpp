@@ -83,6 +83,7 @@ TEST_F(SimTimeTest, time_loop)
         if (time.do_regrid()) {
             ++regrid_counter;
         }
+        std::cout << time.new_time() << std::endl;
     }
     EXPECT_EQ(counter, 5);
     EXPECT_EQ(plot_counter, 5);
@@ -197,6 +198,83 @@ TEST_F(SimTimeTest, enforce_dt_out)
     // Shortens dt if overlapping with intervals
     result = time.get_enforced_dt_for_output(0.1, 3.95, 2.0, 1e-3);
     EXPECT_NEAR(result, 0.05, 1e-12);
+}
+
+TEST_F(SimTimeTest, enforce_timeinterval)
+{
+    build_simtime_params();
+    {
+        amrex::ParmParse pp("time");
+        pp.add("regrid_interval", -1);
+        pp.add("checkpoint_interval", -1);
+        pp.add("plot_interval", -1);
+
+        pp.add("plot_time_interval", 0.5);
+        pp.add("enforce_plot_time_dt", true);
+
+        // Default values for tolerances
+        pp.add("stop_time", 1.0);
+        pp.add("max_step", 10);
+    }
+    amr_wind::SimTime time;
+    time.parse_parameters();
+
+    int counter = 0;
+    int plot_counter = 0;
+    amrex::Real plot_time_sum = 0.0;
+    int plot_step_sum = 0;
+    while (time.new_timestep()) {
+        time.set_current_cfl(0.45 / 0.4, 0.0, 0.0);
+        ++counter;
+        if (time.write_plot_file()) {
+            ++plot_counter;
+            plot_time_sum += time.new_time();
+            plot_step_sum += counter;
+        }
+    }
+    EXPECT_EQ(plot_counter, 2);
+    EXPECT_NEAR(plot_time_sum, 1.5, 1e-8);
+    EXPECT_EQ(plot_step_sum, 2 + 6);
+}
+
+TEST_F(SimTimeTest, enforce_timeinterval_bigtimetol)
+{
+    build_simtime_params();
+    {
+        amrex::ParmParse pp("time");
+        pp.add("regrid_interval", -1);
+        pp.add("checkpoint_interval", -1);
+        pp.add("plot_interval", -1);
+
+        pp.add("plot_time_interval", 0.5);
+        pp.add("enforce_plot_time_dt", true);
+
+        // Choose values that could give issues
+        pp.add("enforce_plot_dt_reltol", 1e-8);
+        pp.add("plot_time_interval_reltol", 1e0);
+
+        pp.add("stop_time", 1.0);
+        pp.add("max_step", 10);
+    }
+    amr_wind::SimTime time;
+    time.parse_parameters();
+
+    int counter = 0;
+    int plot_counter = 0;
+    amrex::Real plot_time_sum = 0.0;
+    int plot_step_sum = 0;
+    while (time.new_timestep()) {
+        time.set_current_cfl(0.45 / 0.4, 0.0, 0.0);
+        ++counter;
+        if (time.write_plot_file()) {
+            ++plot_counter;
+            plot_time_sum += time.new_time();
+            plot_step_sum += counter;
+        }
+    }
+    EXPECT_EQ(plot_counter, 2);
+    EXPECT_NEAR(plot_time_sum, 1.5, 1e-8);
+    EXPECT_EQ(plot_step_sum, 2 + 6);
 }
 
 } // namespace amr_wind_tests
