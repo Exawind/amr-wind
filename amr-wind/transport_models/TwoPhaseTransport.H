@@ -65,16 +65,13 @@ public:
 
         if (m_ifacetype == InterfaceCapturingMethod::VOF) {
 
-            // cppcheck-suppress constVariable
-            auto& vof = m_repo.get_field("vof");
+            const auto& vof = m_repo.get_field("vof");
 
             for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
                 for (amrex::MFIter mfi((*mu)(lev)); mfi.isValid(); ++mfi) {
                     const auto& vbx = mfi.growntilebox();
-                    const amrex::Array4<amrex::Real>& volfrac =
-                        vof(lev).array(mfi);
-                    const amrex::Array4<amrex::Real>& visc =
-                        (*mu)(lev).array(mfi);
+                    const auto& volfrac = vof(lev).const_array(mfi);
+                    const auto& visc = (*mu)(lev).array(mfi);
                     const amrex::Real mu1 = m_mu1;
                     const amrex::Real mu2 = m_mu2;
                     amrex::ParallelFor(
@@ -88,18 +85,15 @@ public:
 
         } else if (m_ifacetype == InterfaceCapturingMethod::LS) {
 
-            // cppcheck-suppress constVariable
-            auto& levelset = m_repo.get_field("levelset");
+            const auto& levelset = m_repo.get_field("levelset");
             const auto& geom = m_repo.mesh().Geom();
 
             for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
                 for (amrex::MFIter mfi((*mu)(lev)); mfi.isValid(); ++mfi) {
                     const auto& vbx = mfi.growntilebox();
                     const auto& dx = geom[lev].CellSizeArray();
-                    const amrex::Array4<amrex::Real>& visc =
-                        (*mu)(lev).array(mfi);
-                    const amrex::Array4<amrex::Real>& phi =
-                        levelset(lev).array(mfi);
+                    const auto& visc = (*mu)(lev).array(mfi);
+                    const auto& phi = levelset(lev).const_array(mfi);
                     const amrex::Real eps =
                         std::cbrt(2. * dx[0] * dx[1] * dx[2]);
                     const amrex::Real mu1 = m_mu1;
