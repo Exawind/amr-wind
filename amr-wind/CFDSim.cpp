@@ -23,18 +23,19 @@ CFDSim::~CFDSim() = default;
 
 void CFDSim::create_turbulence_model()
 {
-    std::string transport_model = "ConstTransport";
-    std::string turbulence_model = "Laminar";
+    std::string transport_model_name = "ConstTransport";
+    std::string turbulence_model_name = "Laminar";
     {
         amrex::ParmParse pp("transport");
-        pp.query("model", transport_model);
+        pp.query("model", transport_model_name);
     }
     {
         amrex::ParmParse pp("turbulence");
-        pp.query("model", turbulence_model);
+        pp.query("model", turbulence_model_name);
     }
 
-    const std::string identifier = turbulence_model + "-" + transport_model;
+    const std::string identifier =
+        turbulence_model_name + "-" + transport_model_name;
     m_turbulence = turbulence::TurbulenceModel::create(identifier, *this);
     m_turbulence->parse_model_coeffs();
 }
@@ -45,7 +46,7 @@ void CFDSim::init_physics()
     amrex::Vector<std::string> phys_names;
     pp.queryarr("physics", phys_names);
 
-    for (auto& phy : phys_names) {
+    for (const auto& phy : phys_names) {
         m_physics_mgr.create(phy, *this);
     }
 }

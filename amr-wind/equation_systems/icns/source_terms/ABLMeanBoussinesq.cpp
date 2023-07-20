@@ -126,7 +126,8 @@ void ABLMeanBoussinesq::mean_temperature_update(const FieldPlaneAveraging& tavg)
         tavg.line_average().end(), m_theta_vals.begin());
 }
 
-void ABLMeanBoussinesq::read_temperature_profile(std::string profile_file_name)
+void ABLMeanBoussinesq::read_temperature_profile(
+    const std::string& profile_file_name)
 {
 
     amrex::Vector<amrex::Real> theta_ht, theta_vals;

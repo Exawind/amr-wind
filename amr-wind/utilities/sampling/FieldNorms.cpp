@@ -23,7 +23,7 @@ void FieldNorms::initialize()
         pp.query("output_frequency", m_out_freq);
     }
 
-    auto& io_mng = m_sim.io_manager();
+    const auto& io_mng = m_sim.io_manager();
     for (const auto& fld : io_mng.plot_fields()) {
         ioutils::add_var_names(m_var_names, fld->name(), fld->num_comp());
     }

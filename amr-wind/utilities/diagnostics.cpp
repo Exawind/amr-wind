@@ -41,10 +41,10 @@ amrex::Real amr_wind::diagnostics::get_vel_min(
 }
 
 amrex::Real amr_wind::diagnostics::get_vel_loc(
-    amrex::MultiFab& vel,
-    amrex::iMultiFab& level_mask,
-    int vdir,
-    int ldir,
+    const amrex::MultiFab& vel,
+    const amrex::iMultiFab& level_mask,
+    const int vdir,
+    const int ldir,
     amrex::Real vel_max,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> problo,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx)
@@ -114,10 +114,10 @@ amrex::Real amr_wind::diagnostics::get_macvel_min(
 }
 
 amrex::Real amr_wind::diagnostics::get_macvel_loc(
-    amrex::MultiFab& macvel,
-    amrex::iMultiFab& level_mask,
-    int vdir,
-    int ldir,
+    const amrex::MultiFab& macvel,
+    const amrex::iMultiFab& level_mask,
+    const int vdir,
+    const int ldir,
     amrex::Real mvel_max,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> problo,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx)
@@ -154,7 +154,7 @@ amrex::Array<amrex::Real, 24> amr_wind::diagnostics::PrintMaxVelLocations(
     BL_PROFILE("amr-wind::diagnostics::PrintMaxVelLocations");
 
     // Get fields
-    auto& vel = repo.get_field("velocity");
+    const auto& vel = repo.get_field("velocity");
     const int finest_level = repo.num_active_levels() - 1;
 
     // Get infinity norm of velocities
@@ -335,9 +335,9 @@ amrex::Array<amrex::Real, 24> amr_wind::diagnostics::PrintMaxMACVelLocations(
     BL_PROFILE("amr-wind::diagnostics::PrintMaxMACVelLocations");
 
     // Get fields
-    auto& u_mac = repo.get_field("u_mac");
-    auto& v_mac = repo.get_field("v_mac");
-    auto& w_mac = repo.get_field("w_mac");
+    const auto& u_mac = repo.get_field("u_mac");
+    const auto& v_mac = repo.get_field("v_mac");
+    const auto& w_mac = repo.get_field("w_mac");
     const int finest_level = repo.num_active_levels() - 1;
 
     // Get infinity norm of mac velocities

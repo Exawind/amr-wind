@@ -102,7 +102,7 @@ void ABLStats::calc_sfs_stress_avgs(
 
     BL_PROFILE("amr-wind::ABLStats::calc_sfs_stress_avgs");
 
-    auto& repo = m_sim.repo();
+    const auto& repo = m_sim.repo();
 
     const auto& m_vel = repo.get_field("velocity");
     auto gradVel = repo.create_scratch_field(9);

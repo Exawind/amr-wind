@@ -36,7 +36,7 @@ void KsgsM84Src::operator()(
     const amrex::Real Ceps = this->m_Ceps;
     const amrex::Real CepsGround = this->m_CepsGround;
 
-    auto& repo = (this->m_tke).repo();
+    const auto& repo = (this->m_tke).repo();
     const auto geom = repo.mesh().Geom(lev);
 
     const amrex::Real dx = geom.CellSize()[0];

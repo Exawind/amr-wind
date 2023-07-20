@@ -103,7 +103,7 @@ void TiogaInterface::post_regrid_actions()
 void TiogaInterface::pre_overset_conn_work()
 {
 
-    auto& repo = m_sim.repo();
+    const auto& repo = m_sim.repo();
     const int num_ghost = m_sim.pde_manager().num_ghost_state();
     m_iblank_cell_host = repo.create_int_scratch_field_on_host(
         "iblank_cell_host", 1, num_ghost, FieldLoc::CELL);
@@ -122,7 +122,7 @@ void TiogaInterface::pre_overset_conn_work()
 void TiogaInterface::post_overset_conn_work()
 {
 
-    auto& repo = m_sim.repo();
+    const auto& repo = m_sim.repo();
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
         htod_memcpy(m_iblank_cell(lev), (*m_iblank_cell_host)(lev), 0, 0, 1);
@@ -389,7 +389,7 @@ void TiogaInterface::amr_to_tioga_mesh()
 void TiogaInterface::amr_to_tioga_iblank()
 {
     BL_PROFILE("amr-wind::TiogaInterface::amr_to_tioga_iblank");
-    auto& mesh = m_sim.mesh();
+    const auto& mesh = m_sim.mesh();
     const int nlevels = mesh.finestLevel() + 1;
 
     // Reset local patch counter

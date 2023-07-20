@@ -209,7 +209,7 @@ TEST_F(TurbLESTest, test_smag_setup_calc)
     // Update turbulent viscosity directly
     tmodel.update_turbulent_viscosity(
         amr_wind::FieldState::New, DiffusionType::Crank_Nicolson);
-    auto& muturb = sim().repo().get_field("mu_turb");
+    const auto& muturb = sim().repo().get_field("mu_turb");
 
     // Check values of turbulent viscosity
     auto min_val = utils::field_min(muturb);
@@ -321,7 +321,7 @@ TEST_F(TurbLESTest, test_1eqKsgs_setup_calc)
     // Update turbulent viscosity directly
     tmodel.update_turbulent_viscosity(
         amr_wind::FieldState::New, DiffusionType::Crank_Nicolson);
-    auto& muturb = sim().repo().get_field("mu_turb");
+    const auto& muturb = sim().repo().get_field("mu_turb");
 
     // Check values of turbulent viscosity
     const auto min_val = utils::field_min(muturb);
@@ -408,7 +408,7 @@ TEST_F(TurbLESTest, test_AMD_setup_calc)
     // Update turbulent viscosity directly
     tmodel.update_turbulent_viscosity(
         amr_wind::FieldState::New, DiffusionType::Crank_Nicolson);
-    auto& muturb = sim().repo().get_field("mu_turb");
+    const auto& muturb = sim().repo().get_field("mu_turb");
 
     // Check values of turbulent viscosity
     const auto min_val = utils::field_min(muturb);
@@ -487,7 +487,7 @@ TEST_F(TurbLESTest, test_AMDNoTherm_setup_calc)
     // Update turbulent viscosity directly
     tmodel.update_turbulent_viscosity(
         amr_wind::FieldState::New, DiffusionType::Crank_Nicolson);
-    auto& muturb = sim().repo().get_field("mu_turb");
+    const auto& muturb = sim().repo().get_field("mu_turb");
 
     // Check values of turbulent viscosity
     const auto min_val = utils::field_min(muturb);
