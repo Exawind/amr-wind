@@ -253,7 +253,7 @@ void FastIface::fast_init_turbine(FastTurbine& fi)
     }
 }
 
-// cppcheck-suppress constParameter
+// cppcheck-suppress constParameterReference
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 void FastIface::fast_replay_turbine(FastTurbine& fi)
 {
@@ -301,7 +301,6 @@ void FastIface::fast_replay_turbine(FastTurbine& fi)
 #endif
 }
 
-// cppcheck-suppress constParameter
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 void FastIface::fast_restart_turbine(FastTurbine& fi)
 {

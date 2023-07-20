@@ -131,6 +131,7 @@ std::pair<const std::string, const std::string> BCIface::get_dirichlet_udfs()
                         "faces");
                 } else {
                     inflow_udf = val;
+                    has_inflow_udf = true;
                 }
             }
         }
@@ -146,6 +147,7 @@ std::pair<const std::string, const std::string> BCIface::get_dirichlet_udfs()
                         "faces");
                 } else {
                     wall_udf = val;
+                    has_wall_udf = true;
                 }
             }
         }

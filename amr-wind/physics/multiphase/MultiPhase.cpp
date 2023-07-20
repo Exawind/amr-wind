@@ -366,11 +366,11 @@ void MultiPhase::calculate_advected_facedensity()
     amrex::Real c_r2 = m_rho2;
 
     // Get advected vof terms at each face
-    // cppcheck-suppress constVariable
+    // cppcheck-suppress constVariableReference
     auto& advalpha_x = m_sim.repo().get_field("advalpha_x");
-    // cppcheck-suppress constVariable
+    // cppcheck-suppress constVariableReference
     auto& advalpha_y = m_sim.repo().get_field("advalpha_y");
-    // cppcheck-suppress constVariable
+    // cppcheck-suppress constVariableReference
     auto& advalpha_z = m_sim.repo().get_field("advalpha_z");
 
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -382,9 +382,9 @@ void MultiPhase::calculate_advected_facedensity()
             const auto& ybx = amrex::surroundingNodes(bx, 1);
             const auto& zbx = amrex::surroundingNodes(bx, 2);
 
-            auto aa_x = advalpha_x(lev).array(mfi);
-            auto aa_y = advalpha_y(lev).array(mfi);
-            auto aa_z = advalpha_z(lev).array(mfi);
+            const auto& aa_x = advalpha_x(lev).array(mfi);
+            const auto& aa_y = advalpha_y(lev).array(mfi);
+            const auto& aa_z = advalpha_z(lev).array(mfi);
 
             amrex::ParallelFor(
                 bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {

@@ -143,7 +143,7 @@ TEST_F(ABLMeshTest, abl_wall_model)
     icns_eq.compute_mueff(amr_wind::FieldState::Old);
 
     // Check test setup by verifying mu
-    auto& viscosity = sim().repo().get_field("velocity_mueff");
+    const auto& viscosity = sim().repo().get_field("velocity_mueff");
     EXPECT_NEAR(mu, utils::field_max(viscosity), tol);
     EXPECT_NEAR(mu, utils::field_min(viscosity), tol);
 
