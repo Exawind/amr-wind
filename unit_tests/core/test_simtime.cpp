@@ -177,26 +177,24 @@ TEST_F(SimTimeTest, enforce_dt_out)
     amr_wind::SimTime time;
 
     // Should not change if already correct
-    amrex::Real result = time.get_enforced_dt_for_output(0.1, 3.9, 2.0, 1e-3);
+    amrex::Real result = get_enforced_dt_for_output(0.1, 3.9, 2.0, 1e-3);
     EXPECT_NEAR(result, 0.1, 1e-12);
 
     // Should not change if short of interval
-    result = time.get_enforced_dt_for_output(0.1, 3.9 - 2.0 * 5e-4, 2.0, 1e-3);
+    result = get_enforced_dt_for_output(0.1, 3.9 - 2.0 * 5e-4, 2.0, 1e-3);
     EXPECT_NEAR(result, 0.1, 1e-12);
 
     // Should not change if starting near interval
-    result = time.get_enforced_dt_for_output(0.1, 4.0, 2.0, 1e-3);
+    result = get_enforced_dt_for_output(0.1, 4.0, 2.0, 1e-3);
     EXPECT_NEAR(result, 0.1, 1e-12);
-    result =
-        time.get_enforced_dt_for_output(0.1, 4.0 - 2.0 * 0.99e-3, 2.0, 1e-3);
+    result = get_enforced_dt_for_output(0.1, 4.0 - 2.0 * 0.99e-3, 2.0, 1e-3);
     EXPECT_NEAR(result, 0.1, 1e-12);
     // Past the tolerance, will change
-    result =
-        time.get_enforced_dt_for_output(0.1, 4.0 - 2.0 * 1.01e-3, 2.0, 1e-3);
+    result = get_enforced_dt_for_output(0.1, 4.0 - 2.0 * 1.01e-3, 2.0, 1e-3);
     EXPECT_LT(result, 0.1);
 
     // Shortens dt if overlapping with intervals
-    result = time.get_enforced_dt_for_output(0.1, 3.95, 2.0, 1e-3);
+    result = get_enforced_dt_for_output(0.1, 3.95, 2.0, 1e-3);
     EXPECT_NEAR(result, 0.05, 1e-12);
 }
 

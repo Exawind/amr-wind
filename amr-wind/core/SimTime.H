@@ -7,6 +7,19 @@
 #include <algorithm>
 #include <cmath>
 
+namespace {
+AMREX_FORCE_INLINE static amrex::Real get_enforced_dt_for_output(
+    const amrex::Real dt,
+    const amrex::Real cur_time,
+    const amrex::Real interval,
+    const amrex::Real tol)
+{
+    // Tolerance for being slightly under is relative to requested interval
+    return std::min(
+        dt, (std::floor(cur_time / interval + tol) + 1) * interval - cur_time);
+}
+} // namespace
+
 namespace amr_wind {
 
 /** Time manager for simulations
@@ -128,19 +141,6 @@ public:
 
     //! Read user defined options from input file
     void parse_parameters();
-
-    AMREX_FORCE_INLINE
-    amrex::Real get_enforced_dt_for_output(
-        const amrex::Real dt,
-        const amrex::Real cur_time,
-        const amrex::Real interval,
-        const amrex::Real tol) const
-    {
-        // Tolerance for being slightly under is relative to requested interval
-        return std::min(
-            dt,
-            (std::floor(cur_time / interval + tol) + 1) * interval - cur_time);
-    }
 
 private:
     //! Timestep sizes
