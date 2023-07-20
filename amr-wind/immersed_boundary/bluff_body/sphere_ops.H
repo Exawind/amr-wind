@@ -44,9 +44,9 @@ struct InitDataOp<Sphere>
         const auto& wdata = data.meta();
 
         auto& sim = data.sim();
-        // cppcheck-suppress constVariable
+        // cppcheck-suppress constVariableReference
         auto& mask_node = sim.repo().get_int_field("mask_node");
-        // cppcheck-suppress constVariable
+        // cppcheck-suppress constVariableReference
         auto& levelset = sim.repo().get_field("ib_levelset");
 
         auto nlevels = sim.repo().num_active_levels();
@@ -58,7 +58,7 @@ struct InitDataOp<Sphere>
 
             for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.growntilebox();
-                auto phi = levelset(lev).array(mfi);
+                const auto& phi = levelset(lev).array(mfi);
 
                 const amrex::Real x0 = wdata.center_loc[0];
                 const amrex::Real y0 = wdata.center_loc[1];
@@ -74,12 +74,12 @@ struct InitDataOp<Sphere>
                             (x - x0) * (x - x0) + (y - y0) * (y - y0) +
                             (z - z0) * (z - z0));
 
-                        amrex::Real phi_loc = r - R;
+                        const amrex::Real phi_loc = r - R;
                         phi(i, j, k) = std::min(phi_loc, phi_glob);
                     });
 
                 const auto& nbx = mfi.nodaltilebox();
-                auto epsilon_node = mask_node(lev).array(mfi);
+                const auto& epsilon_node = mask_node(lev).array(mfi);
                 amrex::ParallelFor(
                     nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real x = problo[0] + i * dx[0];
