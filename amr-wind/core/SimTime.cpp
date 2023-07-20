@@ -77,6 +77,17 @@ void SimTime::parse_parameters()
             "an output time interval has been specified to be enforced upon "
             "dt, but dt is not adaptive.");
     }
+
+    if (m_force_plt_dt && m_force_chkpt_dt) {
+        amrex::Print()
+            << "WARNING: Time intervals will be enforced upon dt for both "
+               "plotfiles and checkpoint files.";
+        amrex::Print()
+            << " -- If these time intervals are different and not factors of "
+               "each other, inefficient behavior may result, depending on "
+               "tolerances: dt may be shortened often and outputs may occur in "
+               "consecutive timesteps.";
+    }
 }
 
 bool SimTime::new_timestep()
@@ -263,7 +274,7 @@ bool SimTime::do_regrid() const
 bool SimTime::write_plot_file() const
 {
     // If dt is enforced, allow smallest tolerance to be in effect. This avoids
-    // unintentionally plotting in subsequent timesteps because of shortened dt
+    // unintentionally plotting in consecutive timesteps because of shortened dt
     amrex::Real tol = m_plt_t_tol * m_dt[0];
     tol =
         (m_force_chkpt_dt
