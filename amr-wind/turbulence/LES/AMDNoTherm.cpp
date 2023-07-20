@@ -13,6 +13,7 @@ namespace amr_wind {
 namespace turbulence {
 
 template <typename Transport>
+// cppcheck-suppress uninitMemberVar
 AMDNoTherm<Transport>::AMDNoTherm(CFDSim& sim)
     : TurbModelBase<Transport>(sim)
     , m_vel(sim.repo().get_field("velocity"))
