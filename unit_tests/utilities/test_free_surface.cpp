@@ -138,9 +138,7 @@ class FSRefineMesh : public AmrTestMesh
 {
 public:
     FSRefineMesh()
-        : m_sim(*this)
-        , m_repo(m_sim.repo())
-        , m_mesh_refiner(new amr_wind::RefineCriteriaManager(m_sim))
+        : m_mesh_refiner(new amr_wind::RefineCriteriaManager(m_sim))
     {}
     amr_wind::FieldRepo& field_repo() { return m_repo; }
     amr_wind::CFDSim& sim() { return m_sim; }
@@ -193,8 +191,6 @@ protected:
     }
 
 private:
-    amr_wind::CFDSim m_sim;
-    amr_wind::FieldRepo& m_repo;
     std::unique_ptr<amr_wind::RefineCriteriaManager> m_mesh_refiner;
 };
 

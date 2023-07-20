@@ -318,7 +318,7 @@ TEST_F(FieldRepoTest, int_scratch_fields)
     populate_parameters();
     create_mesh_instance();
 
-    auto& frepo = mesh().field_repo();
+    const auto& frepo = mesh().field_repo();
 // Check that int scratch field creation is disallowed before mesh is created
 #if !(defined(AMREX_USE_MPI) && defined(__APPLE__))
     EXPECT_THROW(
