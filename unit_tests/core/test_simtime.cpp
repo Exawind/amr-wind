@@ -174,8 +174,6 @@ TEST_F(SimTimeTest, plt_chk_timeinterval_loop)
 
 TEST_F(SimTimeTest, enforce_dt_out)
 {
-    amr_wind::SimTime time;
-
     // Should not change if already correct
     amrex::Real result = get_enforced_dt_for_output(0.1, 3.9, 2.0, 1e-3);
     EXPECT_NEAR(result, 0.1, 1e-12);
