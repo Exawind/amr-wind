@@ -314,7 +314,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
     void operator()(const FieldState fstate, const amrex::Real dt)
     {
-        auto& repo = fields.repo;
+        const auto& repo = fields.repo;
         const auto& geom = repo.mesh().Geom();
 
         const auto& src_term = fields.src_term;

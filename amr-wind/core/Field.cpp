@@ -268,7 +268,7 @@ void Field::fillphysbc(amrex::Real time) noexcept
 void Field::apply_bc_funcs(const FieldState rho_state) noexcept
 {
     BL_ASSERT(m_info->bc_initialized() && m_info->m_bc_copied_to_device);
-    for (auto& func : m_info->m_bc_func) {
+    for (const auto& func : m_info->m_bc_func) {
         (*func)(*this, rho_state);
     }
 }
