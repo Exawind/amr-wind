@@ -31,7 +31,7 @@ void apply_mms_vel(CFDSim& sim)
     const int nlevels = sim.repo().num_active_levels();
 
     const auto& levelset = sim.repo().get_field("ib_levelset");
-    // cppcheck-suppress constVariable
+    // cppcheck-suppress constVariableReference
     auto& velocity = sim.repo().get_field("velocity");
     auto& m_conv_taylor_green =
         sim.physics_manager().get<ctv::ConvectingTaylorVortex>();
@@ -50,8 +50,8 @@ void apply_mms_vel(CFDSim& sim)
 
         for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.growntilebox();
-            auto phi = levelset(lev).array(mfi);
-            auto varr = velocity(lev).array(mfi);
+            const auto& phi = levelset(lev).const_array(mfi);
+            const auto& varr = velocity(lev).array(mfi);
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real x = problo[0] + (i + 0.5) * dx[0];

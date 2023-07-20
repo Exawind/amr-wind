@@ -318,7 +318,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         const auto& geom = repo.mesh().Geom();
 
         const auto& src_term = fields.src_term;
-        // cppcheck-suppress constVariable
+        // cppcheck-suppress constVariableReference
         auto& conv_term = fields.conv_term;
         const auto& dof_field = fields.field.state(fstate);
 
@@ -550,8 +550,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
         const amrex::Real /*time*/)
     {
 
-        // cppcheck-suppress constVariable
-        auto& repo = fields.repo;
+        const auto& repo = fields.repo;
         auto& dof_field = fields.field.state(fstate);
 
         // computation of velocity on faces requires
@@ -579,7 +578,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
 
         const auto& repo = fields.repo;
         const auto& geom = repo.mesh().Geom();
-        // cppcheck-suppress constVariable
+        // cppcheck-suppress constVariableReference
         auto& conv_term = fields.conv_term.state(fstate);
         const auto& dof_field = fields.field.state(fstate);
         const auto& rho = repo.get_field("density").state(fstate);

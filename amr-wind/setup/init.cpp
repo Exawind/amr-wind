@@ -128,6 +128,7 @@ void incflo::InitialIterations()
 
     // Add mean pressure back if available
     if (m_repo.field_exists("reference_pressure")) {
+        // cppcheck-suppress constVariableReference
         auto& press = m_repo.get_field("p");
         const auto& p0 = m_repo.get_field("reference_pressure");
         for (int lev = 0; lev <= finest_level; lev++) {
