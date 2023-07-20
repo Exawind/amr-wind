@@ -31,7 +31,7 @@ class WaveEnergy : public PostProcessBase::Register<WaveEnergy>
 public:
     static std::string identifier() { return "WaveEnergy"; }
 
-    WaveEnergy(CFDSim& /*sim*/, std::string /*label*/);
+    WaveEnergy(CFDSim& /*sim*/, const std::string& /*label*/);
 
     ~WaveEnergy() override;
 
