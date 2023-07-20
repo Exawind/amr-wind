@@ -268,7 +268,7 @@ void Field::fillphysbc(amrex::Real time) noexcept
 void Field::apply_bc_funcs(const FieldState rho_state) noexcept
 {
     BL_ASSERT(m_info->bc_initialized() && m_info->m_bc_copied_to_device);
-    for (auto& func : m_info->m_bc_func) {
+    for (const auto& func : m_info->m_bc_func) {
         (*func)(*this, rho_state);
     }
 }
@@ -296,8 +296,9 @@ void Field::advance_states() noexcept
     for (int i = num_time_states() - 1; i > 0; --i) {
         const auto sold = static_cast<FieldState>(i);
         const auto snew = static_cast<FieldState>(i - 1);
+        // cppcheck-suppress constVariableReference
         auto& old_field = state(sold);
-        auto& new_field = state(snew);
+        const auto& new_field = state(snew);
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
             amrex::MultiFab::Copy(
                 old_field(lev), new_field(lev), 0, 0, num_comp(), num_grow());
@@ -308,6 +309,7 @@ void Field::advance_states() noexcept
 void Field::copy_state(FieldState to_state, FieldState from_state) noexcept
 {
     BL_PROFILE("amr-wind::Field::copy_state");
+    // cppcheck-suppress constVariableReference
     auto& to_field = state(to_state);
     const auto& from_field = state(from_state);
 

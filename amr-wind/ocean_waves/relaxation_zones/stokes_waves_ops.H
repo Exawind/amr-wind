@@ -36,16 +36,16 @@ struct InitDataOp<StokesWaves>
         const auto& wdata = data.meta();
 
         auto& sim = data.sim();
-        // cppcheck-suppress constVariable
+        // cppcheck-suppress constVariableReference
         auto& m_levelset = sim.repo().get_field("levelset");
-        // cppcheck-suppress constVariable
+        // cppcheck-suppress constVariableReference
         auto& velocity = sim.repo().get_field("velocity");
         const auto& problo = geom.ProbLoArray();
         const auto& dx = geom.CellSizeArray();
         for (amrex::MFIter mfi(m_levelset(level)); mfi.isValid(); ++mfi) {
 
-            auto phi = m_levelset(level).array(mfi);
-            auto vel = velocity(level).array(mfi);
+            const auto& phi = m_levelset(level).array(mfi);
+            const auto& vel = velocity(level).array(mfi);
 
             const amrex::Real zsl = wdata.zsl;
             const auto& gbx3 = mfi.growntilebox(3);
@@ -71,9 +71,9 @@ struct UpdateRelaxZonesOp<StokesWaves>
         auto& sim = data.sim();
 
         const auto& time = sim.time().new_time();
-        // cppcheck-suppress constVariable
+        // cppcheck-suppress constVariableReference
         auto& m_ow_levelset = sim.repo().get_field("ow_levelset");
-        // cppcheck-suppress constVariable
+        // cppcheck-suppress constVariableReference
         auto& m_ow_velocity = sim.repo().get_field("ow_velocity");
 
         auto nlevels = sim.repo().num_active_levels();
@@ -84,8 +84,8 @@ struct UpdateRelaxZonesOp<StokesWaves>
             const auto& dx = geom[lev].CellSizeArray();
 
             for (amrex::MFIter mfi(m_ow_levelset(lev)); mfi.isValid(); ++mfi) {
-                auto phi = m_ow_levelset(lev).array(mfi);
-                auto vel = m_ow_velocity(lev).array(mfi);
+                const auto& phi = m_ow_levelset(lev).array(mfi);
+                const auto& vel = m_ow_velocity(lev).array(mfi);
 
                 const amrex::Real waveheight = wdata.wave_height;
                 const amrex::Real wavelength = wdata.wave_length;

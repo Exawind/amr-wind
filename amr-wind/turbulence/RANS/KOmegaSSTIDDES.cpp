@@ -19,6 +19,7 @@ template <typename Transport>
 KOmegaSSTIDDES<Transport>::~KOmegaSSTIDDES() = default;
 
 template <typename Transport>
+// cppcheck-suppress uninitMemberVar
 KOmegaSSTIDDES<Transport>::KOmegaSSTIDDES(CFDSim& sim)
     : KOmegaSST<Transport>(sim)
     , m_rans_ind(sim.repo().declare_field("rans_indicator", 1, 1, 1))
@@ -99,12 +100,11 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
     const auto& den = this->m_rho.state(fstate);
     const auto& tke = (*this->m_tke).state(fstate);
     const auto& sdr = (*this->m_sdr).state(fstate);
-    // cppcheck-suppress constVariable
-    auto& repo = mu_turb.repo();
+    const auto& repo = mu_turb.repo();
     const auto& geom_vec = repo.mesh().Geom();
     auto& tke_lhs = (this->m_sim).repo().get_field("tke_lhs_src_term");
     tke_lhs.setVal(0.0);
-    // cppcheck-suppress constVariable
+    // cppcheck-suppress constVariableReference
     auto& sdr_lhs = (this->m_sim).repo().get_field("sdr_lhs_src_term");
 
     auto gradK = (this->m_sim.repo()).create_scratch_field(3, 0);

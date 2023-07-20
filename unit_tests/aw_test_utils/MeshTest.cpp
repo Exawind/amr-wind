@@ -34,7 +34,7 @@ void MeshTest::reset_prob_domain()
     pp.getarr("is_periodic", periodic, 0, AMREX_SPACEDIM);
 
     amrex::RealBox rb(problo.data(), probhi.data());
-    amrex::Geometry* gg = amrex::AMReX::top()->getDefaultGeometry();
+    const amrex::Geometry* gg = amrex::AMReX::top()->getDefaultGeometry();
 
     if (gg != nullptr) {
         amrex::Geometry::ResetDefaultProbDomain(rb);
