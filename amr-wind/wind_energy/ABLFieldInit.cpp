@@ -160,10 +160,7 @@ void ABLFieldInit::operator()(
 }
 
 void ABLFieldInit::perturb_temperature(
-    const int lev,
-    const amrex::Geometry& geom,
-    // cppcheck-suppress constParameter
-    Field& temperature) const
+    const int lev, const amrex::Geometry& geom, Field& temperature) const
 {
     /** Perturbations for the temperature field
      *
