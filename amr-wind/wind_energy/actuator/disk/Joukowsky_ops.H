@@ -340,7 +340,8 @@ private:
 
 public:
     // cppcheck-suppress constParameter
-    explicit ProcessOutputsOp<Joukowsky, ActSrcDisk>(const Joukowsky::DataType& data)
+    explicit ProcessOutputsOp<Joukowsky, ActSrcDisk>(
+        const Joukowsky::DataType& data)
         : m_data(data)
     {}
     void operator()(Joukowsky::DataType& /*data*/) {}

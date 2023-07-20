@@ -139,7 +139,8 @@ private:
 
 public:
     // cppcheck-suppress constParameter
-    explicit ProcessOutputsOp<UniformCt, ActSrcDisk>(const UniformCt::DataType& data)
+    explicit ProcessOutputsOp<UniformCt, ActSrcDisk>(
+        const UniformCt::DataType& data)
         : m_data(data)
     {}
     void operator()(UniformCt::DataType& /*unused*/) {}
