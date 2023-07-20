@@ -266,9 +266,9 @@ bool SimTime::write_plot_file() const
         ((m_plt_interval > 0) &&
          ((m_time_index - m_plt_start_index) % m_plt_interval == 0)) ||
         (m_plt_t_interval > 0.0 &&
-         (m_new_time / m_plt_t_interval + m_plt_t_tol * m_dt[0] -
+         ((m_new_time + m_plt_t_tol * m_dt[0]) / m_plt_t_interval -
               std::floor(
-                  m_new_time / m_plt_t_interval + m_plt_t_tol * m_dt[0]) <
+                  (m_new_time + m_plt_t_tol * m_dt[0]) / m_plt_t_interval) <
           m_dt[0] / m_plt_t_interval)));
 }
 
@@ -278,9 +278,9 @@ bool SimTime::write_checkpoint() const
         ((m_chkpt_interval > 0) &&
          ((m_time_index - m_chkpt_start_index) % m_chkpt_interval == 0)) ||
         (m_chkpt_t_interval > 0.0 &&
-         (m_new_time / m_chkpt_t_interval + m_chkpt_t_tol * m_dt[0] -
+         ((m_new_time + m_chkpt_t_tol * m_dt[0]) / m_chkpt_t_interval -
               std::floor(
-                  m_new_time / m_chkpt_t_interval + m_chkpt_t_tol * m_dt[0]) <
+                  (m_new_time + m_chkpt_t_tol * m_dt[0]) / m_chkpt_t_interval) <
           m_dt[0] / m_chkpt_t_interval)));
 }
 
