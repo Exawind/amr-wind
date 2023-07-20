@@ -46,7 +46,7 @@ void AMD<Transport>::update_turbulent_viscosity(
         "amr-wind::" + this->identifier() + "::update_turbulent_viscosity");
 
     auto& mu_turb = this->mu_turb();
-    auto& repo = mu_turb.repo();
+    const auto& repo = mu_turb.repo();
     const auto& vel = m_vel.state(fstate);
     const auto& temp = m_temperature.state(fstate);
     const auto& den = m_rho.state(fstate);
@@ -227,7 +227,7 @@ void AMD<Transport>::update_alphaeff(Field& alphaeff)
 
     BL_PROFILE("amr-wind::" + this->identifier() + "::update_alphaeff");
 
-    auto& repo = alphaeff.repo();
+    const auto& repo = alphaeff.repo();
     const auto& geom_vec = repo.mesh().Geom();
     const amrex::Real C_poincare = this->m_C;
     namespace stencil = amr_wind::fvm::stencil;

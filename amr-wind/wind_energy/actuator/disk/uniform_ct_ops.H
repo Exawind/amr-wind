@@ -127,7 +127,7 @@ struct ProcessOutputsOp<UniformCt, ActSrcDisk>
 {
 private:
     // cppcheck-suppress uninitMemberVarPrivate
-    UniformCt::DataType& m_data;
+    const UniformCt::DataType& m_data;
     //! Path to the output directory (specified by Actuator physics class)
     std::string m_out_dir;
 
@@ -139,7 +139,7 @@ private:
 
 public:
     // cppcheck-suppress constParameter
-    explicit ProcessOutputsOp<UniformCt, ActSrcDisk>(UniformCt::DataType& data)
+    explicit ProcessOutputsOp<UniformCt, ActSrcDisk>(const UniformCt::DataType& data)
         : m_data(data)
     {}
     void operator()(UniformCt::DataType& /*unused*/) {}
