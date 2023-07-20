@@ -16,7 +16,11 @@ public:
     virtual void
     ErrorEst(int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow);
 
-    void read_chkpt_file();
+    void read_chkpt_metadata();
+
+    void create_twolevelgrid_coarsebase();
+
+    void populate_finest_level();
 
     void coarsen_chkpt_file();
 
