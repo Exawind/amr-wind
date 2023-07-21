@@ -138,7 +138,6 @@ private:
     int m_out_freq{10};
 
 public:
-    // cppcheck-suppress constParameter
     explicit ProcessOutputsOp<UniformCt, ActSrcDisk>(
         const UniformCt::DataType& data)
         : m_data(data)
