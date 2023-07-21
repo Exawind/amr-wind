@@ -9,9 +9,9 @@
 
 namespace amr_wind::wave_energy {
 
-WaveEnergy::WaveEnergy(CFDSim& sim, const std::string& label)
+WaveEnergy::WaveEnergy(CFDSim& sim, std::string label)
     : m_sim(sim)
-    , m_label(label)
+    , m_label(std::move(label))
     , m_velocity(sim.repo().get_field("velocity"))
     , m_vof(sim.repo().get_field("vof"))
 {}

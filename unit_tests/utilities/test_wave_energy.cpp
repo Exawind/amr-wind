@@ -59,7 +59,8 @@ void init_vof(amr_wind::Field& fld)
 class WaveEnergyImpl : public amr_wind::wave_energy::WaveEnergy
 {
 public:
-    WaveEnergyImpl(amr_wind::CFDSim& sim, const std::string& label)
+    // cppcheck-suppress passedByValue
+    WaveEnergyImpl(amr_wind::CFDSim& sim, std::string label)
         : amr_wind::wave_energy::WaveEnergy(sim, label)
     {}
 
