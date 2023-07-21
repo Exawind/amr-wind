@@ -1,5 +1,6 @@
 #include "CoarsenCheckpt.H"
-#include "amr-wind/utilities/IOManager.H"
+#include "AMReX_MultiFabUtil.H"
+#include "AMReX_PlotFileUtil.H"
 
 namespace {
 void GotoNextLine(std::istream& is)
@@ -12,7 +13,8 @@ void GotoNextLine(std::istream& is)
 namespace amr_wind {
 namespace tools {
 
-CoarsenCheckpt::CoarsenCheckpt() : incflo() {}
+CoarsenCheckpt::CoarsenCheckpt() : incflo(), m_io_mgr(new IOManager_Mod(sim()))
+{}
 
 void CoarsenCheckpt::ErrorEst(
     int lev, amrex::TagBoxArray& tags, amrex::Real, int)
@@ -49,9 +51,7 @@ void CoarsenCheckpt::read_chkpt_file()
 }
 */
 
-void CoarsenCheckpt::create_twolevelgrid_coarsebase() {}
-
-void CoarsenCheckpt::populate_finest_level()
+void CoarsenCheckpt::read_chkpt_add_baselevel()
 {
     BL_PROFILE("amr-wind::incflo::ReadCheckpointFile()");
 
@@ -193,26 +193,26 @@ void CoarsenCheckpt::populate_finest_level()
     constexpr int lev0{0};
     amrex::Box orig_domain(ba_inp[lev0].minimalBox());
 
-    if (replicate) {
-        amrex::Print() << " OLD BA had " << ba_inp[lev0].size() << " GRIDS "
-                       << std::endl;
-        amrex::Print() << " OLD Domain" << orig_domain << std::endl;
-    }
+    // create base level BoxArray
 
-    for (int lev = 0; lev <= finest_level; ++lev) {
+    // create base level from scratch
+    // MakeNewLevelFromScratch(0, sim().time().current_time(), ba, dm);
+
+    for (int levnew = 1; levnew <= finest_level + 1; ++levnew) {
         amrex::BoxList bl;
+        int levold = levnew - 1;
         for (int k = 0; k < rep[2]; k++) {
             for (int j = 0; j < rep[1]; j++) {
                 for (int i = 0; i < rep[0]; i++) {
-                    for (int nb = 0; nb < ba_inp[lev].size(); nb++) {
-                        amrex::Box b(ba_inp[lev][nb]);
+                    for (int nb = 0; nb < ba_inp[levold].size(); nb++) {
+                        amrex::Box b(ba_inp[levold][nb]);
                         amrex::IntVect shift_vec(
                             i * orig_domain.length(0),
                             j * orig_domain.length(1),
                             k * orig_domain.length(2));
 
                         // equivalent to 2^lev
-                        shift_vec *= (1 << lev);
+                        shift_vec *= (1 << levold);
 
                         b.shift(shift_vec);
                         bl.push_back(b);
@@ -223,252 +223,21 @@ void CoarsenCheckpt::populate_finest_level()
         amrex::BoxArray ba_rep;
         ba_rep.define(bl);
 
-        if (replicate && lev == 0) {
-
-            for (int d = 0; d < AMREX_SPACEDIM; d++) {
-                auto new_domain = ba_rep.minimalBox();
-                const auto* hi_vect = new_domain.hiVect();
-
-                if (hi_vect[d] + 1 != n_cell_input[d]) {
-                    amrex::Abort(
-                        "input file error, domain size changed which indicated "
-                        "replication, but the amr.n_cell is inconsistent with "
-                        "that change in domain size, please adjust amr.n_cell, "
-                        "or geometry.prob_lo, or geometry.prob_hi");
-                }
-            }
-
-            amrex::Print() << " NEW BA had " << ba_rep.size() << " GRIDS "
-                           << std::endl;
-            amrex::Print() << " NEW Domain" << ba_rep.minimalBox() << std::endl;
-        }
-
         // Create distribution mapping
-        dm_inp[lev].define(ba_inp[lev], amrex::ParallelDescriptor::NProcs());
+        dm_inp[levold].define(
+            ba_inp[levold], amrex::ParallelDescriptor::NProcs());
 
         amrex::BoxArray ba(ba_rep.simplified());
-        ba.maxSize(maxGridSize(lev));
-        if (refine_grid_layout) {
-            ChopGrids(lev, ba, amrex::ParallelDescriptor::NProcs());
-        }
+        ba.maxSize(maxGridSize(levnew));
+
         amrex::DistributionMapping dm =
             amrex::DistributionMapping{ba, amrex::ParallelDescriptor::NProcs()};
 
-        MakeNewLevelFromScratch(lev, sim().time().current_time(), ba, dm);
+        MakeNewLevelFromScratch(levnew, sim().time().current_time(), ba, dm);
     }
 
-    sim().io_manager().read_checkpoint_fields(
-        restart_file, ba_inp, dm_inp, rep);
-}
-
-void CoarsenCheckpt::read_chkpt_metadata()
-{
-    BL_PROFILE("amr-wind::incflo::ReadCheckpointFile()");
-
-    const std::string& restart_file = sim().io_manager().restart_file();
-    amrex::Print() << "Coarsening checkpoint " << restart_file << std::endl;
-
-    amrex::Real prob_lo[AMREX_SPACEDIM] = {0.0};
-    amrex::Real prob_hi[AMREX_SPACEDIM] = {0.0};
-
-    /***************************************************************************
-     * Load header: set up problem domain (including BoxArray)                 *
-     *              allocate incflo memory (incflo::AllocateArrays)            *
-     *              (by calling MakeNewLevelFromScratch)
-     ***************************************************************************/
-
-    std::string File(restart_file + "/Header");
-
-    amrex::VisMF::IO_Buffer io_buffer(amrex::VisMF::GetIOBufferSize());
-
-    amrex::Vector<char> fileCharPtr;
-    amrex::ParallelDescriptor::ReadAndBcastFile(File, fileCharPtr);
-    std::string fileCharPtrString(fileCharPtr.dataPtr());
-    std::istringstream is(fileCharPtrString, std::istringstream::in);
-
-    std::string line, word;
-
-    // Start reading from checkpoint file
-
-    // Title line
-    std::getline(is, line);
-
-    // Finest level
-    is >> finest_level;
-    GotoNextLine(is);
-
-    int nstep;
-    amrex::Real cur_time, dt_restart;
-    // Step count
-    is >> nstep;
-    GotoNextLine(is);
-
-    // Current time
-    is >> cur_time;
-    GotoNextLine(is);
-
-    sim().time().set_restart_time(nstep, cur_time);
-
-    // Time step size
-    is >> dt_restart;
-    GotoNextLine(is);
-
-    is >> sim().time().deltaTNm1();
-    GotoNextLine(is);
-
-    is >> sim().time().deltaTNm2();
-    GotoNextLine(is);
-
-    // Low coordinates of domain bounding box
-    std::getline(is, line);
-    {
-        std::istringstream lis(line);
-        int i = 0;
-        while (lis >> word) {
-            prob_lo[i++] = std::stod(word);
-        }
-    }
-
-    // High coordinates of domain bounding box
-    std::getline(is, line);
-    {
-        std::istringstream lis(line);
-        int i = 0;
-        while (lis >> word) {
-            prob_hi[i++] = std::stod(word);
-        }
-    }
-
-    amrex::Vector<amrex::Real> prob_lo_input(AMREX_SPACEDIM);
-    amrex::Vector<amrex::Real> prob_hi_input(AMREX_SPACEDIM);
-
-    {
-        amrex::ParmParse pp("geometry");
-        pp.getarr("prob_lo", prob_lo_input);
-        pp.getarr("prob_hi", prob_hi_input);
-    }
-
-    amrex::Vector<int> n_cell_input(AMREX_SPACEDIM);
-
-    {
-        amrex::ParmParse pp("amr");
-        pp.getarr("n_cell", n_cell_input);
-    }
-
-    amrex::IntVect rep(1, 1, 1);
-    for (int d = 0; d < AMREX_SPACEDIM; d++) {
-        AMREX_ALWAYS_ASSERT(prob_hi[d] > prob_lo[d]); // NOLINT
-
-        const amrex::Real domain_ratio =
-            (prob_hi_input[d] - prob_lo_input[d]) / (prob_hi[d] - prob_lo[d]);
-
-        rep[d] = static_cast<int>(domain_ratio);
-
-        constexpr amrex::Real domain_eps = 1.0e-6;
-        if (std::abs(static_cast<amrex::Real>(rep[d]) - domain_ratio) >
-            domain_eps) {
-            amrex::Abort(
-                "Domain size changed which indicates replication but there is "
-                "either some precision issues or a non integer domain size "
-                "change was input");
-        }
-    }
-
-    bool replicate = (rep != amrex::IntVect::TheUnitVector());
-
-    if (replicate) {
-        amrex::Print() << "replicating restart file: " << rep << std::endl;
-    }
-
-    // Set up problem domain
-    amrex::RealBox rb(prob_lo_input.data(), prob_hi_input.data());
-    amrex::Geometry::ResetDefaultProbDomain(rb);
-    for (int lev = 0; lev <= max_level; ++lev) {
-        SetGeometry(
-            lev, amrex::Geometry(
-                     Geom(lev).Domain(), rb, Geom(lev).CoordInt(),
-                     Geom(lev).isPeriodic()));
-    }
-
-    amrex::Vector<amrex::BoxArray> ba_inp(finest_level + 1);
-    amrex::Vector<amrex::DistributionMapping> dm_inp(finest_level + 1);
-
-    for (int lev = 0; lev <= finest_level; ++lev) {
-        // read in level 'lev' BoxArray from Header
-        ba_inp[lev].readFrom(is);
-        GotoNextLine(is);
-    }
-
-    // always use level 0 to check domain size
-    constexpr int lev0{0};
-    amrex::Box orig_domain(ba_inp[lev0].minimalBox());
-
-    if (replicate) {
-        amrex::Print() << " OLD BA had " << ba_inp[lev0].size() << " GRIDS "
-                       << std::endl;
-        amrex::Print() << " OLD Domain" << orig_domain << std::endl;
-    }
-
-    for (int lev = 0; lev <= finest_level; ++lev) {
-        amrex::BoxList bl;
-        for (int k = 0; k < rep[2]; k++) {
-            for (int j = 0; j < rep[1]; j++) {
-                for (int i = 0; i < rep[0]; i++) {
-                    for (int nb = 0; nb < ba_inp[lev].size(); nb++) {
-                        amrex::Box b(ba_inp[lev][nb]);
-                        amrex::IntVect shift_vec(
-                            i * orig_domain.length(0),
-                            j * orig_domain.length(1),
-                            k * orig_domain.length(2));
-
-                        // equivalent to 2^lev
-                        shift_vec *= (1 << lev);
-
-                        b.shift(shift_vec);
-                        bl.push_back(b);
-                    }
-                }
-            }
-        }
-        amrex::BoxArray ba_rep;
-        ba_rep.define(bl);
-
-        if (replicate && lev == 0) {
-
-            for (int d = 0; d < AMREX_SPACEDIM; d++) {
-                auto new_domain = ba_rep.minimalBox();
-                const auto* hi_vect = new_domain.hiVect();
-
-                if (hi_vect[d] + 1 != n_cell_input[d]) {
-                    amrex::Abort(
-                        "input file error, domain size changed which indicated "
-                        "replication, but the amr.n_cell is inconsistent with "
-                        "that change in domain size, please adjust amr.n_cell, "
-                        "or geometry.prob_lo, or geometry.prob_hi");
-                }
-            }
-
-            amrex::Print() << " NEW BA had " << ba_rep.size() << " GRIDS "
-                           << std::endl;
-            amrex::Print() << " NEW Domain" << ba_rep.minimalBox() << std::endl;
-        }
-
-        // Create distribution mapping
-        dm_inp[lev].define(ba_inp[lev], amrex::ParallelDescriptor::NProcs());
-
-        amrex::BoxArray ba(ba_rep.simplified());
-        ba.maxSize(maxGridSize(lev));
-        if (refine_grid_layout) {
-            ChopGrids(lev, ba, amrex::ParallelDescriptor::NProcs());
-        }
-        amrex::DistributionMapping dm =
-            amrex::DistributionMapping{ba, amrex::ParallelDescriptor::NProcs()};
-
-        MakeNewLevelFromScratch(lev, sim().time().current_time(), ba, dm);
-    }
-
-    sim().io_manager().read_checkpoint_fields(
-        restart_file, ba_inp, dm_inp, rep);
+    io_manager().read_checkpoint_fields_offset(
+        restart_file, ba_inp, dm_inp, rep, 1);
 }
 
 void CoarsenCheckpt::coarsen_chkpt_file()
@@ -484,12 +253,8 @@ void CoarsenCheckpt::coarsen_chkpt_file()
         printGridSummary(amrex::OutStream(), 0, finestLevel());
     }
 
-    read_chkpt_metadata();
-
-    create_twolevelgrid_coarsebase();
-
-    populate_finest_level();
-
+    // Initialize modified io_manager
+    read_chkpt_add_baselevel();
     // average down
 }
 
@@ -510,6 +275,95 @@ void CoarsenCheckpt::run_utility()
         sim().io_manager().write_checkpoint_file(start_level);
     }
     // write checkpoint file, only level 0
+}
+
+IOManager_Mod::IOManager_Mod(CFDSim& sim) : m_sim(sim), IOManager(sim) {}
+
+void IOManager_Mod::read_checkpoint_fields_offset(
+    const std::string& restart_file,
+    const amrex::Vector<amrex::BoxArray>& ba_chk,
+    const amrex::Vector<amrex::DistributionMapping>& dm_chk,
+    const amrex::IntVect& rep,
+    const int off)
+{
+    BL_PROFILE("amr-wind::IOManager::read_checkpoint_fields");
+
+    // Track set of fields that might be missing at this level
+    std::set<std::string> missing;
+    const std::string level_prefix = "Level_";
+    const int nlevels = m_sim.mesh().finestLevel() + 1;
+
+    // always use the level 0 domain
+    amrex::Box orig_domain(ba_chk[0].minimalBox());
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        for (auto* fld : m_chk_fields) {
+            auto& field = *fld;
+            const auto& fab_file = amrex::MultiFabFileFullPrefix(
+                lev, restart_file, level_prefix, field.name());
+
+            // Fields might be registered for checkpoint but might not be
+            // necessary for actually performing the simulation. Check if the
+            // field exists before attempting to read the restart field.
+            if (!amrex::VisMF::Exist(fab_file)) {
+                missing.insert(field.name());
+                continue;
+            }
+
+            auto& mfab = field(lev);
+            const auto& ba_fab = amrex::convert(ba_chk[lev], mfab.ixType());
+            if (mfab.boxArray() == ba_fab &&
+                mfab.DistributionMap() == dm_chk[lev]) {
+                amrex::VisMF::Read(
+                    field(lev),
+                    amrex::MultiFabFileFullPrefix(
+                        lev, restart_file, level_prefix, field.name()));
+            } else {
+                amrex::MultiFab tmp(
+                    ba_fab, dm_chk[lev], mfab.nComp(), mfab.nGrowVect());
+                amrex::VisMF::Read(
+                    tmp, amrex::MultiFabFileFullPrefix(
+                             lev, restart_file, level_prefix, field.name()));
+
+                for (int k = 0; k < rep[2]; k++) {
+                    for (int j = 0; j < rep[1]; j++) {
+                        for (int i = 0; i < rep[0]; i++) {
+
+                            amrex::IntVect shift_vec(
+                                i * orig_domain.length(0),
+                                j * orig_domain.length(1),
+                                k * orig_domain.length(2));
+
+                            // equivalent to 2^lev
+                            shift_vec *= (1 << lev);
+
+                            tmp.shift(shift_vec);
+                            mfab.ParallelCopy(tmp);
+                            tmp.shift(-shift_vec);
+                        }
+                    }
+                }
+
+                mfab.setBndry(0.0);
+            }
+        }
+    }
+
+    // If fields were missing, print diagnostic message.
+    if (!missing.empty()) {
+        amrex::Print() << "\nWARNING: The following fields were missing in the "
+                          "restart file for one or more levels. Please check "
+                          "your restart file and inputs."
+                       << std::endl
+                       << "Missing checkpoint fields: " << std::endl;
+        for (const auto& ff : missing) {
+            amrex::Print() << "  - " << ff << std::endl;
+        }
+        amrex::Print() << std::endl;
+        if (!m_allow_missing_restart_fields) {
+            amrex::Abort("Missing fields in restart file.");
+        }
+    }
 }
 
 } // namespace tools
