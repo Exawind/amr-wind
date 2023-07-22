@@ -23,8 +23,7 @@ void CoarsenCheckpt::run_utility()
                    << std::endl;
     coarsen_chkpt_file();
     const int start_level = 0;
-    const int end_level =
-        finestLevel(); // std::min(start_level, finestLevel() - 1);
+    const int end_level = std::min(start_level, finestLevel() - 1);
     amrex::Print() << "Writing coarsened levels: " << start_level << " - "
                    << end_level << std::endl;
     sim().io_manager().write_checkpoint_file(start_level, end_level);
@@ -165,24 +164,14 @@ void CoarsenCheckpt::read_chkpt_add_baselevel()
     amrex::Box orig_domain(ba_inp[lev0].minimalBox());
 
     // create base level BoxArray
-    amrex::BoxList bl;
-    for (int nb = 0; nb < ba_inp[0].size(); nb++) {
-        amrex::Box b(ba_inp[0][nb]);
-        bl.push_back(b);
-    }
-    /*
-        amrex::BoxArray ba;
-        ba.define(bl);
-        std::cout << "max grid size\n";
-        ba.maxSize(maxGridSize(levdst));
+    const amrex::BoxArray& ba = MakeBaseGrids();
+    amrex::DistributionMapping dm =
+        amrex::DistributionMapping{ba, amrex::ParallelDescriptor::NProcs()};
 
-        amrex::DistributionMapping dm =
-            amrex::DistributionMapping{ba, amrex::ParallelDescriptor::NProcs()};
+    std::cout << "new level from scratch\n";
 
-        std::cout << "new level from scratch\n";
+    MakeNewLevelFromScratch(0, sim().time().current_time(), ba, dm);
 
-        MakeNewLevelFromScratch(0, sim().time().current_time(), ba, dm);
-    */
     std::cout << "before loop\n";
 
     for (int levsrc = 0; levsrc <= finest_level_src; ++levsrc) {
