@@ -92,6 +92,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
             amr_wind::multiphase::sharpen_acquired_vof(
                 nlevels, f_iblank, dof_field);
             // Update old vof so that old density can be updated
+            // cppcheck-suppress constVariableReference
             auto& old_dof_field = dof_field.state(amr_wind::FieldState::Old);
             for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
                 amrex::MultiFab::Copy(
