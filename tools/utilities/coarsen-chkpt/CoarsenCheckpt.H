@@ -16,8 +16,9 @@ public:
         const std::string& restart_file,
         const amrex::Vector<amrex::BoxArray>& ba_chk,
         const amrex::Vector<amrex::DistributionMapping>& dm_chk,
-        const amrex::IntVect& rep,
-        const int off);
+        const amrex::IntVect& rep);
+
+    void average_down_all_fields();
 
 private:
     CFDSim& m_sim;
@@ -36,17 +37,14 @@ public:
 
     virtual ~CoarsenCheckpt() = default;
 
-    virtual void
-    ErrorEst(int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow);
-
     void read_chkpt_add_baselevel();
 
     void coarsen_chkpt_file();
 
     void run_utility();
 
-    IOManager_Mod& io_manager() { return *m_io_mgr; }
-    const IOManager_Mod& io_manager() const { return *m_io_mgr; }
+    IOManager_Mod& io_manager_mod() { return *m_io_mgr; }
+    const IOManager_Mod& io_manager_mod() const { return *m_io_mgr; }
 
 private:
     amrex::Vector<amrex::BoxArray> m_orig_ba;

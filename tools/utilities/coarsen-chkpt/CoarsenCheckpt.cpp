@@ -16,50 +16,51 @@ namespace tools {
 CoarsenCheckpt::CoarsenCheckpt() : incflo(), m_io_mgr(new IOManager_Mod(sim()))
 {}
 
-void CoarsenCheckpt::ErrorEst(
-    int lev, amrex::TagBoxArray& tags, amrex::Real, int)
+void CoarsenCheckpt::run_utility()
 {
-    // Tell AMReX to globally refine the mesh
-    if (lev < m_orig_ba.size()) {
-        tags.setVal(m_orig_ba[lev], amrex::TagBox::SET);
-    } else {
-        tags.setVal(amrex::TagBox::SET);
-    }
+
+    amrex::Print() << "Reading checkpoint file and adding base coarse level"
+                   << std::endl;
+    coarsen_chkpt_file();
+    const int start_level = 0;
+    const int end_level = std::min(start_level, finestLevel() - 1);
+    amrex::Print() << "Writing coarsened levels: " << start_level << " - "
+                   << end_level << std::endl;
+    io_manager_mod().write_checkpoint_file(start_level, end_level);
 }
 
-/*
-void CoarsenCheckpt::read_chkpt_file()
+void CoarsenCheckpt::coarsen_chkpt_file()
 {
+
     BL_PROFILE("refine-chkpt::read_chkpt_file");
-    // Initialize I/O manager to enable restart
-    auto& io_mgr = sim().io_manager();
-    io_mgr.initialize_io();
+    // Initialize modified io manager
+    io_manager_mod().initialize_io();
 
     // Ensure that the user has provided a valid checkpoint file
-    AMREX_ALWAYS_ASSERT(io_mgr.is_restart());
+    AMREX_ALWAYS_ASSERT(io_manager_mod().is_restart());
 
-    ReadCheckpointFile();
+    // Read checkpoint file and add level
+    read_chkpt_add_baselevel();
+
     if (amrex::ParallelDescriptor::IOProcessor()) {
-        amrex::Print() << "Input grid summary: " << std::endl;
+        amrex::Print() << "Total (new) grid summary: " << std::endl;
         printGridSummary(amrex::OutStream(), 0, finestLevel());
     }
 
-    m_orig_ba.resize(finestLevel() + 1);
-    for (int lev = 0; lev < finestLevel() + 1; ++lev) {
-        m_orig_ba[lev] = boxArray(lev);
-    }
+    // Average down
+    amrex::Print() << "Averaging down to fill new coarse level" << std::endl;
+    io_manager_mod().average_down_all_fields();
 }
-*/
 
 void CoarsenCheckpt::read_chkpt_add_baselevel()
 {
     BL_PROFILE("amr-wind::incflo::ReadCheckpointFile()");
 
-    const std::string& restart_file = sim().io_manager().restart_file();
+    const std::string& restart_file = io_manager_mod().restart_file();
     amrex::Print() << "Coarsening checkpoint " << restart_file << std::endl;
 
-    amrex::Real prob_lo[AMREX_SPACEDIM] = {0.0};
-    amrex::Real prob_hi[AMREX_SPACEDIM] = {0.0};
+    amrex::Vector<amrex::Real> prob_lo(AMREX_SPACEDIM);
+    amrex::Vector<amrex::Real> prob_hi(AMREX_SPACEDIM);
 
     /***************************************************************************
      * Load header: set up problem domain (including BoxArray)                 *
@@ -129,50 +130,15 @@ void CoarsenCheckpt::read_chkpt_add_baselevel()
         }
     }
 
-    amrex::Vector<amrex::Real> prob_lo_input(AMREX_SPACEDIM);
-    amrex::Vector<amrex::Real> prob_hi_input(AMREX_SPACEDIM);
-
-    {
-        amrex::ParmParse pp("geometry");
-        pp.getarr("prob_lo", prob_lo_input);
-        pp.getarr("prob_hi", prob_hi_input);
-    }
-
-    amrex::Vector<int> n_cell_input(AMREX_SPACEDIM);
-
-    {
-        amrex::ParmParse pp("amr");
-        pp.getarr("n_cell", n_cell_input);
-    }
-
-    amrex::IntVect rep(1, 1, 1);
-    for (int d = 0; d < AMREX_SPACEDIM; d++) {
-        AMREX_ALWAYS_ASSERT(prob_hi[d] > prob_lo[d]); // NOLINT
-
-        const amrex::Real domain_ratio =
-            (prob_hi_input[d] - prob_lo_input[d]) / (prob_hi[d] - prob_lo[d]);
-
-        rep[d] = static_cast<int>(domain_ratio);
-
-        constexpr amrex::Real domain_eps = 1.0e-6;
-        if (std::abs(static_cast<amrex::Real>(rep[d]) - domain_ratio) >
-            domain_eps) {
-            amrex::Abort(
-                "Domain size changed which indicates replication but there is "
-                "either some precision issues or a non integer domain size "
-                "change was input");
-        }
-    }
-
-    bool replicate = (rep != amrex::IntVect::TheUnitVector());
-
-    if (replicate) {
-        amrex::Print() << "replicating restart file: " << rep << std::endl;
-    }
+    // Redefine number of levels and base cells
+    int finest_level_src = finest_level;
+    ++finest_level;
+    max_level = finest_level;
 
     // Set up problem domain
-    amrex::RealBox rb(prob_lo_input.data(), prob_hi_input.data());
+    amrex::RealBox rb(prob_lo.data(), prob_hi.data());
     amrex::Geometry::ResetDefaultProbDomain(rb);
+    std::cout << max_level << " max_level\n";
     for (int lev = 0; lev <= max_level; ++lev) {
         SetGeometry(
             lev, amrex::Geometry(
@@ -180,101 +146,62 @@ void CoarsenCheckpt::read_chkpt_add_baselevel()
                      Geom(lev).isPeriodic()));
     }
 
-    amrex::Vector<amrex::BoxArray> ba_inp(finest_level + 1);
-    amrex::Vector<amrex::DistributionMapping> dm_inp(finest_level + 1);
+    std::cout << "before declare ba_inp\n";
+    amrex::Vector<amrex::BoxArray> ba_inp(finest_level_src + 1);
+    amrex::Vector<amrex::DistributionMapping> dm_inp(finest_level_src + 1);
 
-    for (int lev = 0; lev <= finest_level; ++lev) {
+    std::cout << "before read ba_inp\n";
+    for (int lev = 0; lev <= finest_level_src; ++lev) {
         // read in level 'lev' BoxArray from Header
         ba_inp[lev].readFrom(is);
         GotoNextLine(is);
     }
+
+    std::cout << "before domain check\n";
 
     // always use level 0 to check domain size
     constexpr int lev0{0};
     amrex::Box orig_domain(ba_inp[lev0].minimalBox());
 
     // create base level BoxArray
-
-    // create base level from scratch
-    // MakeNewLevelFromScratch(0, sim().time().current_time(), ba, dm);
-
-    for (int levnew = 1; levnew <= finest_level + 1; ++levnew) {
-        amrex::BoxList bl;
-        int levold = levnew - 1;
-        for (int k = 0; k < rep[2]; k++) {
-            for (int j = 0; j < rep[1]; j++) {
-                for (int i = 0; i < rep[0]; i++) {
-                    for (int nb = 0; nb < ba_inp[levold].size(); nb++) {
-                        amrex::Box b(ba_inp[levold][nb]);
-                        amrex::IntVect shift_vec(
-                            i * orig_domain.length(0),
-                            j * orig_domain.length(1),
-                            k * orig_domain.length(2));
-
-                        // equivalent to 2^lev
-                        shift_vec *= (1 << levold);
-
-                        b.shift(shift_vec);
-                        bl.push_back(b);
-                    }
-                }
-            }
-        }
-        amrex::BoxArray ba_rep;
-        ba_rep.define(bl);
-
-        // Create distribution mapping
-        dm_inp[levold].define(
-            ba_inp[levold], amrex::ParallelDescriptor::NProcs());
-
-        amrex::BoxArray ba(ba_rep.simplified());
-        ba.maxSize(maxGridSize(levnew));
+    amrex::BoxList bl;
+    for (int nb = 0; nb < ba_inp[0].size(); nb++) {
+        amrex::Box b(ba_inp[0][nb]);
+        bl.push_back(b);
+    }
+    /*
+        amrex::BoxArray ba;
+        ba.define(bl);
+        std::cout << "max grid size\n";
+        ba.maxSize(maxGridSize(levdst));
 
         amrex::DistributionMapping dm =
             amrex::DistributionMapping{ba, amrex::ParallelDescriptor::NProcs()};
 
-        MakeNewLevelFromScratch(levnew, sim().time().current_time(), ba, dm);
+        std::cout << "new level from scratch\n";
+
+        MakeNewLevelFromScratch(0, sim().time().current_time(), ba, dm);
+    */
+    std::cout << "before loop\n";
+
+    for (int levsrc = 0; levsrc <= finest_level_src; ++levsrc) {
+        int levdst = levsrc + 1;
+        // Create distribution mapping
+        dm_inp[levsrc].define(
+            ba_inp[levsrc], amrex::ParallelDescriptor::NProcs());
+
+        std::cout << "new level from scratch\n";
+
+        MakeNewLevelFromScratch(
+            levdst, sim().time().current_time(), ba_inp[levsrc],
+            dm_inp[levsrc]);
     }
 
-    io_manager().read_checkpoint_fields_offset(
-        restart_file, ba_inp, dm_inp, rep, 1);
-}
+    std::cout << "before read fields\n";
 
-void CoarsenCheckpt::coarsen_chkpt_file()
-{
-    amrex::Print() << "Uniformly refining mesh" << std::endl;
-    amrex::Real rstart = amrex::ParallelDescriptor::second();
-    regrid(0, sim().time().current_time());
-    amrex::Real rend = amrex::ParallelDescriptor::second();
-    amrex::Print() << "Refinement time elapsed: " << (rend - rstart)
-                   << std::endl;
-    if (amrex::ParallelDescriptor::IOProcessor()) {
-        amrex::Print() << "Refined grid summary: " << std::endl;
-        printGridSummary(amrex::OutStream(), 0, finestLevel());
-    }
-
-    // Initialize modified io_manager
-    read_chkpt_add_baselevel();
-    // average down
-}
-
-void CoarsenCheckpt::run_utility()
-{
-
-    if ((maxLevel() - finestLevel()) != 1) {
-        amrex::Print() << "Checkpoint refinement only supported for one "
-                          "refinement level at a time\n"
-                       << "  Current finest level = " << finestLevel()
-                       << "\n  Requested max level  = " << maxLevel()
-                       << "\n  Unable to refine checkpoint file" << std::endl;
-    } else {
-        coarsen_chkpt_file();
-        const int start_level = 1;
-        amrex::Print() << "Writing refined levels: " << start_level << " - "
-                       << finestLevel() << std::endl;
-        sim().io_manager().write_checkpoint_file(start_level);
-    }
-    // write checkpoint file, only level 0
+    amrex::IntVect rep(1, 1, 1);
+    io_manager_mod().read_checkpoint_fields_offset(
+        restart_file, ba_inp, dm_inp, rep);
 }
 
 IOManager_Mod::IOManager_Mod(CFDSim& sim) : m_sim(sim), IOManager(sim) {}
@@ -283,8 +210,7 @@ void IOManager_Mod::read_checkpoint_fields_offset(
     const std::string& restart_file,
     const amrex::Vector<amrex::BoxArray>& ba_chk,
     const amrex::Vector<amrex::DistributionMapping>& dm_chk,
-    const amrex::IntVect& rep,
-    const int off)
+    const amrex::IntVect& rep)
 {
     BL_PROFILE("amr-wind::IOManager::read_checkpoint_fields");
 
@@ -296,11 +222,12 @@ void IOManager_Mod::read_checkpoint_fields_offset(
     // always use the level 0 domain
     amrex::Box orig_domain(ba_chk[0].minimalBox());
 
-    for (int lev = 0; lev < nlevels; ++lev) {
+    for (int levsrc = 0; levsrc < nlevels - 1; ++levsrc) {
+        const int levdst = levsrc - 1;
         for (auto* fld : m_chk_fields) {
             auto& field = *fld;
             const auto& fab_file = amrex::MultiFabFileFullPrefix(
-                lev, restart_file, level_prefix, field.name());
+                levsrc, restart_file, level_prefix, field.name());
 
             // Fields might be registered for checkpoint but might not be
             // necessary for actually performing the simulation. Check if the
@@ -310,20 +237,20 @@ void IOManager_Mod::read_checkpoint_fields_offset(
                 continue;
             }
 
-            auto& mfab = field(lev);
-            const auto& ba_fab = amrex::convert(ba_chk[lev], mfab.ixType());
+            auto& mfab = field(levdst);
+            const auto& ba_fab = amrex::convert(ba_chk[levsrc], mfab.ixType());
             if (mfab.boxArray() == ba_fab &&
-                mfab.DistributionMap() == dm_chk[lev]) {
+                mfab.DistributionMap() == dm_chk[levsrc]) {
                 amrex::VisMF::Read(
-                    field(lev),
+                    field(levdst),
                     amrex::MultiFabFileFullPrefix(
-                        lev, restart_file, level_prefix, field.name()));
+                        levsrc, restart_file, level_prefix, field.name()));
             } else {
                 amrex::MultiFab tmp(
-                    ba_fab, dm_chk[lev], mfab.nComp(), mfab.nGrowVect());
+                    ba_fab, dm_chk[levdst], mfab.nComp(), mfab.nGrowVect());
                 amrex::VisMF::Read(
                     tmp, amrex::MultiFabFileFullPrefix(
-                             lev, restart_file, level_prefix, field.name()));
+                             levsrc, restart_file, level_prefix, field.name()));
 
                 for (int k = 0; k < rep[2]; k++) {
                     for (int j = 0; j < rep[1]; j++) {
@@ -335,7 +262,7 @@ void IOManager_Mod::read_checkpoint_fields_offset(
                                 k * orig_domain.length(2));
 
                             // equivalent to 2^lev
-                            shift_vec *= (1 << lev);
+                            shift_vec *= (1 << levdst);
 
                             tmp.shift(shift_vec);
                             mfab.ParallelCopy(tmp);
@@ -363,6 +290,18 @@ void IOManager_Mod::read_checkpoint_fields_offset(
         if (!m_allow_missing_restart_fields) {
             amrex::Abort("Missing fields in restart file.");
         }
+    }
+}
+
+void IOManager_Mod::average_down_all_fields()
+{
+    // Target level is the new, unpopulated base level
+    int lev = 0;
+    for (auto* fld : m_chk_fields) {
+        auto& field = *fld;
+        amrex::average_down(
+            field(lev + 1), field(lev), 0, AMREX_SPACEDIM,
+            m_sim.mesh().refRatio(lev));
     }
 }
 
