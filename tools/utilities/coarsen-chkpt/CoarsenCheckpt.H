@@ -2,33 +2,9 @@
 #define COARSENCHECKPT_H
 
 #include "amr-wind/incflo.H"
-#include "amr-wind/utilities/IOManager.H"
 
 namespace amr_wind {
 namespace tools {
-
-class IOManager_Mod : public IOManager
-{
-public:
-    explicit IOManager_Mod(CFDSim& /*sim*/);
-
-    void read_checkpoint_fields_offset(
-        const std::string& restart_file,
-        const amrex::Vector<amrex::BoxArray>& ba_chk,
-        const amrex::Vector<amrex::DistributionMapping>& dm_chk,
-        const amrex::IntVect& rep);
-
-    void average_down_all_fields();
-
-private:
-    CFDSim& m_sim;
-
-    //! Final list of fields for restart
-    amrex::Vector<Field*> m_chk_fields;
-
-    //! Flag indicating whether we should allow missing restart fields
-    bool m_allow_missing_restart_fields{false};
-};
 
 class CoarsenCheckpt : public incflo
 {
@@ -43,13 +19,16 @@ public:
 
     void run_utility();
 
-    IOManager_Mod& io_manager_mod() { return *m_io_mgr; }
-    const IOManager_Mod& io_manager_mod() const { return *m_io_mgr; }
+    void read_checkpoint_fields_offset(
+        const std::string& restart_file,
+        const amrex::Vector<amrex::BoxArray>& ba_chk,
+        const amrex::Vector<amrex::DistributionMapping>& dm_chk,
+        const amrex::IntVect& rep);
+
+    void average_down_all_fields();
 
 private:
     amrex::Vector<amrex::BoxArray> m_orig_ba;
-
-    std::unique_ptr<IOManager_Mod> m_io_mgr;
 };
 
 } // namespace tools

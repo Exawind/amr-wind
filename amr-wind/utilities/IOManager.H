@@ -86,6 +86,11 @@ public:
 
     const amrex::Vector<Field*>& plot_fields() const { return m_plt_fields; }
 
+    const amrex::Vector<Field*>& checkpoint_fields() const
+    {
+        return m_chk_fields;
+    }
+
 private:
     void write_header(
         const std::string& /*chkname*/,

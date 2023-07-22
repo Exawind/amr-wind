@@ -1,6 +1,7 @@
 #include "CoarsenCheckpt.H"
 #include "AMReX_MultiFabUtil.H"
 #include "AMReX_PlotFileUtil.H"
+#include "amr-wind/utilities/IOManager.H"
 
 namespace {
 void GotoNextLine(std::istream& is)
@@ -13,8 +14,7 @@ void GotoNextLine(std::istream& is)
 namespace amr_wind {
 namespace tools {
 
-CoarsenCheckpt::CoarsenCheckpt() : incflo(), m_io_mgr(new IOManager_Mod(sim()))
-{}
+CoarsenCheckpt::CoarsenCheckpt() : incflo() {}
 
 void CoarsenCheckpt::run_utility()
 {
@@ -23,10 +23,11 @@ void CoarsenCheckpt::run_utility()
                    << std::endl;
     coarsen_chkpt_file();
     const int start_level = 0;
-    const int end_level = std::min(start_level, finestLevel() - 1);
+    const int end_level =
+        finestLevel(); // std::min(start_level, finestLevel() - 1);
     amrex::Print() << "Writing coarsened levels: " << start_level << " - "
                    << end_level << std::endl;
-    io_manager_mod().write_checkpoint_file(start_level, end_level);
+    sim().io_manager().write_checkpoint_file(start_level, end_level);
 }
 
 void CoarsenCheckpt::coarsen_chkpt_file()
@@ -34,10 +35,10 @@ void CoarsenCheckpt::coarsen_chkpt_file()
 
     BL_PROFILE("refine-chkpt::read_chkpt_file");
     // Initialize modified io manager
-    io_manager_mod().initialize_io();
+    sim().io_manager().initialize_io();
 
     // Ensure that the user has provided a valid checkpoint file
-    AMREX_ALWAYS_ASSERT(io_manager_mod().is_restart());
+    AMREX_ALWAYS_ASSERT(sim().io_manager().is_restart());
 
     // Read checkpoint file and add level
     read_chkpt_add_baselevel();
@@ -49,14 +50,14 @@ void CoarsenCheckpt::coarsen_chkpt_file()
 
     // Average down
     amrex::Print() << "Averaging down to fill new coarse level" << std::endl;
-    io_manager_mod().average_down_all_fields();
+    average_down_all_fields();
 }
 
 void CoarsenCheckpt::read_chkpt_add_baselevel()
 {
     BL_PROFILE("amr-wind::incflo::ReadCheckpointFile()");
 
-    const std::string& restart_file = io_manager_mod().restart_file();
+    const std::string& restart_file = sim().io_manager().restart_file();
     amrex::Print() << "Coarsening checkpoint " << restart_file << std::endl;
 
     amrex::Vector<amrex::Real> prob_lo(AMREX_SPACEDIM);
@@ -200,13 +201,10 @@ void CoarsenCheckpt::read_chkpt_add_baselevel()
     std::cout << "before read fields\n";
 
     amrex::IntVect rep(1, 1, 1);
-    io_manager_mod().read_checkpoint_fields_offset(
-        restart_file, ba_inp, dm_inp, rep);
+    read_checkpoint_fields_offset(restart_file, ba_inp, dm_inp, rep);
 }
 
-IOManager_Mod::IOManager_Mod(CFDSim& sim) : m_sim(sim), IOManager(sim) {}
-
-void IOManager_Mod::read_checkpoint_fields_offset(
+void CoarsenCheckpt::read_checkpoint_fields_offset(
     const std::string& restart_file,
     const amrex::Vector<amrex::BoxArray>& ba_chk,
     const amrex::Vector<amrex::DistributionMapping>& dm_chk,
@@ -217,15 +215,18 @@ void IOManager_Mod::read_checkpoint_fields_offset(
     // Track set of fields that might be missing at this level
     std::set<std::string> missing;
     const std::string level_prefix = "Level_";
-    const int nlevels = m_sim.mesh().finestLevel() + 1;
+    const int nlevels = sim().mesh().finestLevel() + 1;
 
     // always use the level 0 domain
     amrex::Box orig_domain(ba_chk[0].minimalBox());
 
+    std::cout << "before read level loop\n";
+
     for (int levsrc = 0; levsrc < nlevels - 1; ++levsrc) {
-        const int levdst = levsrc - 1;
-        for (auto* fld : m_chk_fields) {
+        const int levdst = levsrc + 1;
+        for (auto* fld : sim().io_manager().checkpoint_fields()) {
             auto& field = *fld;
+            std::cout << "reading data " << field.name() << std::endl;
             const auto& fab_file = amrex::MultiFabFileFullPrefix(
                 levsrc, restart_file, level_prefix, field.name());
 
@@ -287,21 +288,22 @@ void IOManager_Mod::read_checkpoint_fields_offset(
             amrex::Print() << "  - " << ff << std::endl;
         }
         amrex::Print() << std::endl;
-        if (!m_allow_missing_restart_fields) {
+        if (true) {
+            // Need to have all fields
             amrex::Abort("Missing fields in restart file.");
         }
     }
 }
 
-void IOManager_Mod::average_down_all_fields()
+void CoarsenCheckpt::average_down_all_fields()
 {
     // Target level is the new, unpopulated base level
     int lev = 0;
-    for (auto* fld : m_chk_fields) {
+    for (auto* fld : sim().io_manager().checkpoint_fields()) {
         auto& field = *fld;
         amrex::average_down(
             field(lev + 1), field(lev), 0, AMREX_SPACEDIM,
-            m_sim.mesh().refRatio(lev));
+            sim().mesh().refRatio(lev));
     }
 }
 
