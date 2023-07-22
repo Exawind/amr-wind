@@ -138,7 +138,6 @@ void CoarsenCheckpt::read_chkpt_add_baselevel()
     // Set up problem domain
     amrex::RealBox rb(prob_lo.data(), prob_hi.data());
     amrex::Geometry::ResetDefaultProbDomain(rb);
-    std::cout << max_level << " max_level\n";
     for (int lev = 0; lev <= max_level; ++lev) {
         SetGeometry(
             lev, amrex::Geometry(
@@ -146,18 +145,14 @@ void CoarsenCheckpt::read_chkpt_add_baselevel()
                      Geom(lev).isPeriodic()));
     }
 
-    std::cout << "before declare ba_inp\n";
     amrex::Vector<amrex::BoxArray> ba_inp(finest_level_src + 1);
     amrex::Vector<amrex::DistributionMapping> dm_inp(finest_level_src + 1);
 
-    std::cout << "before read ba_inp\n";
     for (int lev = 0; lev <= finest_level_src; ++lev) {
         // read in level 'lev' BoxArray from Header
         ba_inp[lev].readFrom(is);
         GotoNextLine(is);
     }
-
-    std::cout << "before domain check\n";
 
     // always use level 0 to check domain size
     constexpr int lev0{0};
@@ -168,28 +163,22 @@ void CoarsenCheckpt::read_chkpt_add_baselevel()
     amrex::DistributionMapping dm =
         amrex::DistributionMapping{ba, amrex::ParallelDescriptor::NProcs()};
 
-    std::cout << "new level from scratch\n";
-
     MakeNewLevelFromScratch(0, sim().time().current_time(), ba, dm);
 
-    std::cout << "before loop\n";
-
+    // Loop and create input levels at higher level numbers
     for (int levsrc = 0; levsrc <= finest_level_src; ++levsrc) {
         int levdst = levsrc + 1;
         // Create distribution mapping
         dm_inp[levsrc].define(
             ba_inp[levsrc], amrex::ParallelDescriptor::NProcs());
 
-        std::cout << "new level from scratch\n";
-
         MakeNewLevelFromScratch(
             levdst, sim().time().current_time(), ba_inp[levsrc],
             dm_inp[levsrc]);
     }
 
-    std::cout << "before read fields\n";
-
-    amrex::IntVect rep(1, 1, 1);
+    // Read checkpoint fields into non-coarsened destination levels
+    amrex::IntVect rep(1, 1, 1); // no replication
     read_checkpoint_fields_offset(restart_file, ba_inp, dm_inp, rep);
 }
 
@@ -209,13 +198,10 @@ void CoarsenCheckpt::read_checkpoint_fields_offset(
     // always use the level 0 domain
     amrex::Box orig_domain(ba_chk[0].minimalBox());
 
-    std::cout << "before read level loop\n";
-
     for (int levsrc = 0; levsrc < nlevels - 1; ++levsrc) {
         const int levdst = levsrc + 1;
         for (auto* fld : sim().io_manager().checkpoint_fields()) {
             auto& field = *fld;
-            std::cout << "reading data " << field.name() << std::endl;
             const auto& fab_file = amrex::MultiFabFileFullPrefix(
                 levsrc, restart_file, level_prefix, field.name());
 
