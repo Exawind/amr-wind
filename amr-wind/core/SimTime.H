@@ -8,7 +8,7 @@
 #include <cmath>
 
 namespace {
-AMREX_FORCE_INLINE static amrex::Real get_enforced_dt_for_output(
+AMREX_FORCE_INLINE amrex::Real get_enforced_dt_for_output(
     const amrex::Real dt,
     const amrex::Real cur_time,
     const amrex::Real interval,
