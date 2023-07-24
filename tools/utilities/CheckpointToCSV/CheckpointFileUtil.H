@@ -13,7 +13,9 @@ using namespace amrex;
 class CheckpointFileDataImpl
 {
 public:
-    CheckpointFileDataImpl(std::string const& chkptfile_name);
+    CheckpointFileDataImpl(
+        std::string const& chkptfile_name,
+        Vector<std::string> addl_field_names = {});
 
     [[nodiscard]] int spaceDim() const noexcept { return m_spacedim; }
 
@@ -89,7 +91,7 @@ private:
     std::string m_chkptfile_name;
     std::string m_file_version;
     int m_ncomp;
-    Vector<std::string> m_var_names;
+    Vector<std::string> m_var_names = {"density", "gp", "velocity"};
     const int m_spacedim{3};
     Real m_time;
     Real m_dt_restart;

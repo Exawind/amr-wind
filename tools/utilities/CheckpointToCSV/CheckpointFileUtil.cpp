@@ -18,9 +18,14 @@ void GotoNextLine(std::istream& is)
 } // namespace
 
 CheckpointFileDataImpl::CheckpointFileDataImpl(
-    std::string const& chkptfile_name)
+    std::string const& chkptfile_name, Vector<std::string> addl_field_names)
     : m_chkptfile_name(chkptfile_name)
 {
+    // Add field names from input
+    const int naf = addl_field_names.size();
+    for (int n = 0; n < naf; ++n) {
+        m_var_names.push_back(addl_field_names[n]);
+    }
     // Header
     std::string File(chkptfile_name + "/Header");
     Vector<char> fileCharPtr;

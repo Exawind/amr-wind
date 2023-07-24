@@ -24,6 +24,8 @@ void main_main()
     format out_format = csv;
     std::string format_str;
     std::string output_file;
+    std::string addl_fname;
+    Vector<std::string> addl_fnames{};
 
     // CLI handling: Collect parameters and help
     for(unsigned char i = 1; i <= nargs; i++)
@@ -61,14 +63,20 @@ void main_main()
             output_file = amrex::get_command_argument(++i);
             
         }
+        if(arg == "-f" || arg == "--field")
+        {
+            addl_fname = amrex::get_command_argument(++i);
+            const int nfields = addl_fnames.size();
+            addl_fnames.push_back(addl_fname);
+        }
     }
     amrex::Print() << "Converting checkpoint file " << checkpointfile << " to format " << format_str << std::endl;
     // Help information
 
-    // Load Plotfile
+    // Load Checkpoint File
     time_req = clock();
     std::cout << checkpointfile << " before chkptfile\n";
-    CheckpointFileDataImpl chkptfile(checkpointfile); // Takes care of invalid files
+    CheckpointFileDataImpl chkptfile(checkpointfile, addl_fnames); // Takes care of invalid files
     
     std::cout << "before data\n";
     // Get Meta Data (See Notes 1.)
