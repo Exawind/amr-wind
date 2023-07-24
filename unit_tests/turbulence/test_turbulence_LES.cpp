@@ -69,6 +69,37 @@ void init_field_amd(amr_wind::Field& fld, amrex::Real scale)
     }
 }
 
+void init_field_incomp(amr_wind::Field& fld, amrex::Real scale)
+{
+    const auto& mesh = fld.repo().mesh();
+    const int nlevels = fld.repo().num_active_levels();
+
+    amrex::Real offset = 0.0;
+    if (fld.field_location() == amr_wind::FieldLoc::CELL) {
+        offset = 0.5;
+    }
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& dx = mesh.Geom(lev).CellSizeArray();
+        const auto& problo = mesh.Geom(lev).ProbLoArray();
+
+        for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
+            auto bx = mfi.growntilebox();
+            const auto& farr = fld(lev).array(mfi);
+
+            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                const amrex::Real x = problo[0] + (i + offset) * dx[0];
+                const amrex::Real y = problo[1] + (j + offset) * dx[1];
+                const amrex::Real z = problo[2] + (k + offset) * dx[2];
+
+                farr(i, j, k, 0) = 1 * x * scale;
+                farr(i, j, k, 1) = -2 * y * scale;
+                farr(i, j, k, 2) = 1 * z * scale;
+            });
+        }
+    }
+}
+
 void init_field1(amr_wind::Field& fld, amrex::Real tgrad)
 {
     const auto& mesh = fld.repo().mesh();
@@ -178,7 +209,7 @@ TEST_F(TurbLESTest, test_smag_setup_calc)
     // Update turbulent viscosity directly
     tmodel.update_turbulent_viscosity(
         amr_wind::FieldState::New, DiffusionType::Crank_Nicolson);
-    auto& muturb = sim().repo().get_field("mu_turb");
+    const auto& muturb = sim().repo().get_field("mu_turb");
 
     // Check values of turbulent viscosity
     auto min_val = utils::field_min(muturb);
@@ -290,7 +321,7 @@ TEST_F(TurbLESTest, test_1eqKsgs_setup_calc)
     // Update turbulent viscosity directly
     tmodel.update_turbulent_viscosity(
         amr_wind::FieldState::New, DiffusionType::Crank_Nicolson);
-    auto& muturb = sim().repo().get_field("mu_turb");
+    const auto& muturb = sim().repo().get_field("mu_turb");
 
     // Check values of turbulent viscosity
     const auto min_val = utils::field_min(muturb);
@@ -377,7 +408,7 @@ TEST_F(TurbLESTest, test_AMD_setup_calc)
     // Update turbulent viscosity directly
     tmodel.update_turbulent_viscosity(
         amr_wind::FieldState::New, DiffusionType::Crank_Nicolson);
-    auto& muturb = sim().repo().get_field("mu_turb");
+    const auto& muturb = sim().repo().get_field("mu_turb");
 
     // Check values of turbulent viscosity
     const auto min_val = utils::field_min(muturb);
@@ -401,5 +432,72 @@ TEST_F(TurbLESTest, test_AMD_setup_calc)
     const amrex::Real amd_ae_answer = C * dz * dz * scale * 1.0 / sqrt(6);
     EXPECT_NEAR(ae_min_val, amd_ae_answer, tol);
     EXPECT_NEAR(ae_max_val, amd_ae_answer, tol);
+}
+
+TEST_F(TurbLESTest, test_AMDNoTherm_setup_calc)
+{
+    // Parser inputs for turbulence model
+    const amrex::Real C = 0.3;
+    const amrex::Real rho0 = 1.0;
+    {
+        amrex::ParmParse pp("turbulence");
+        pp.add("model", (std::string) "AMDNoTherm");
+    }
+    {
+        amrex::ParmParse pp("AMDNoTherm_coeffs");
+        pp.add("C_poincare", C);
+    }
+    {
+        amrex::ParmParse pp("incflo");
+        pp.add("density", rho0);
+        amrex::Vector<amrex::Real> vvec{8.0, 0.0, 0.0};
+        pp.addarr("velocity", vvec);
+    }
+
+    // Initialize necessary parts of solver
+    populate_parameters();
+    initialize_mesh();
+    auto& pde_mgr = sim().pde_manager();
+    pde_mgr.register_icns();
+    sim().init_physics();
+
+    // Create turbulence model
+    sim().create_turbulence_model();
+    // Get turbulence model
+    auto& tmodel = sim().turbulence_model();
+
+    // Get coefficients
+    auto model_dict = tmodel.model_coeffs();
+
+    for (const std::pair<const std::string, const amrex::Real> n : model_dict) {
+        // Only a single model parameter, Cs
+        EXPECT_EQ(n.first, "C_poincare");
+        EXPECT_EQ(n.second, C);
+    }
+
+    // Constants for fields
+    const amrex::Real scale = 2.0;
+    // Set up velocity field with constant strainrate
+    auto& vel = sim().repo().get_field("velocity");
+    init_field_incomp(vel, scale);
+    // Set up uniform unity density field
+    auto& dens = sim().repo().get_field("density");
+    dens.setVal(rho0);
+
+    // Update turbulent viscosity directly
+    tmodel.update_turbulent_viscosity(
+        amr_wind::FieldState::New, DiffusionType::Crank_Nicolson);
+    const auto& muturb = sim().repo().get_field("mu_turb");
+
+    // Check values of turbulent viscosity
+    const auto min_val = utils::field_min(muturb);
+    const auto max_val = utils::field_max(muturb);
+    const amrex::Real tol = 1e-12;
+
+    const amrex::Real amd_answer = -C * std::pow(scale, 3) *
+                                   (dx * dx - 8 * dy * dy + dz * dz) /
+                                   (6 * scale * scale);
+    EXPECT_NEAR(min_val, amd_answer, tol);
+    EXPECT_NEAR(max_val, amd_answer, tol);
 }
 } // namespace amr_wind_tests

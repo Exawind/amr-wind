@@ -19,20 +19,74 @@ void SimTime::parse_parameters()
     pp.query("fixed_dt", m_fixed_dt);
     pp.query("initial_dt", m_initial_dt);
     pp.query("init_shrink", m_init_shrink);
+    pp.query("max_dt_growth", m_dt_growth);
     pp.query("cfl", m_max_cfl);
     pp.query("verbose", m_verbose);
     pp.query("regrid_interval", m_regrid_interval);
     pp.query("plot_interval", m_plt_interval);
+    pp.query("plot_time_interval", m_plt_t_interval);
+    pp.query("enforce_plot_time_dt", m_force_plt_dt);
     pp.query("checkpoint_interval", m_chkpt_interval);
+    pp.query("checkpoint_time_interval", m_chkpt_t_interval);
+    pp.query("enforce_checkpoint_time_dt", m_force_chkpt_dt);
     pp.query("regrid_start", m_regrid_start_index);
     pp.query("plot_start", m_plt_start_index);
     pp.query("checkpoint_start", m_chkpt_start_index);
     pp.query("use_force_cfl", m_use_force_cfl);
 
+    // Tolerances
+    pp.query("plot_time_interval_reltol", m_plt_t_tol);
+    pp.query("enforce_plot_dt_reltol", m_force_plt_tol);
+    pp.query("checkpoint_time_interval_reltol", m_chkpt_t_tol);
+    pp.query("enforce_checkpoint_dt_reltol", m_force_chkpt_tol);
+
     if (m_fixed_dt > 0.0) {
         m_dt[0] = m_fixed_dt;
     } else {
         m_adaptive = true;
+    }
+
+    if (m_plt_interval > 0 && m_plt_t_interval > 0.0) {
+        amrex::Abort(
+            "plot_interval and plot_time_interval are both specified. "
+            "timestep- and time-based plotting should not be used together; "
+            "please only specify one.");
+    }
+
+    if (m_chkpt_interval > 0 && m_chkpt_t_interval > 0.0) {
+        amrex::Abort(
+            "checkpoint_interval and checkpoint_time_interval are both "
+            "specified. timestep- and time-based checkpointing should not be "
+            "used together; please only specify one.");
+    }
+
+    if (m_plt_t_interval <= 0.0 && m_force_plt_dt) {
+        amrex::Abort(
+            "enforce_plot_time_dt is true, but no plot time interval has been "
+            "provided.");
+    }
+
+    if (m_chkpt_t_interval <= 0.0 && m_force_chkpt_dt) {
+        amrex::Abort(
+            "enforce_checkpoint_time_dt is true, but no checkpoint time "
+            "interval has been provided.");
+    }
+
+    if (!m_adaptive && (m_force_plt_dt || m_force_chkpt_dt)) {
+        amrex::Abort(
+            "an output time interval has been specified to be enforced upon "
+            "dt, but dt is not adaptive.");
+    }
+
+    if (m_force_plt_dt && m_force_chkpt_dt) {
+        amrex::Print()
+            << "WARNING: Time intervals will be enforced upon dt for both "
+               "plotfiles and checkpoint files.";
+        amrex::Print()
+            << " -- If these time intervals are different and not factors of "
+               "each other, inefficient behavior may result, depending on "
+               "tolerances: dt may be shortened often and outputs may occur in "
+               "consecutive timesteps.";
     }
 }
 
@@ -110,9 +164,9 @@ void SimTime::set_current_cfl(
         dt_new *= m_init_shrink;
     }
 
-    // Limit timestep growth to 10% per timestep
+    // Limit timestep growth to % per timestep
     if (m_dt[0] > 0.0) {
-        dt_new = amrex::min<amrex::Real>(dt_new, 1.1 * m_dt[0]);
+        dt_new = amrex::min<amrex::Real>(dt_new, (1.0 + m_dt_growth) * m_dt[0]);
     }
 
     // Don't overshoot stop time
@@ -122,6 +176,25 @@ void SimTime::set_current_cfl(
 
     if (m_adaptive) {
         m_dt[0] = dt_new;
+
+        // Shorten timestep to hit output frequency exactly
+        if (m_chkpt_t_interval > 0.0 && m_force_chkpt_dt) {
+            // Shorten dt if going to overshoot next output time
+            m_dt[0] = get_enforced_dt_for_output(
+                m_dt[0], m_cur_time, m_chkpt_interval, m_force_chkpt_tol);
+            // how it works: the floor operator gets the index of the last
+            // output, with a tolerance proportional to the current dt.
+            // adding 1 and multiplying by the time interval finds the next
+            // expected output time. if the time increment between the current
+            // time and the next expected output is less than the current dt,
+            // then the dt becomes this increment to get to the next output
+            // time.
+        }
+        if (m_plt_t_interval > 0.0 && m_force_plt_dt) {
+            // Shorten dt if going to overshoot next output time
+            m_dt[0] = get_enforced_dt_for_output(
+                m_dt[0], m_cur_time, m_plt_t_interval, m_force_plt_tol);
+        }
 
         if (m_is_init && m_initial_dt > 0.0) {
             m_dt[0] = amrex::min(dt_new, m_initial_dt);
@@ -200,16 +273,43 @@ bool SimTime::do_regrid() const
 
 bool SimTime::write_plot_file() const
 {
+    // If dt is enforced, allow smallest tolerance to be in effect. This avoids
+    // unintentionally plotting in consecutive timesteps because of shortened dt
+    amrex::Real tol = m_plt_t_tol * m_dt[0];
+    tol =
+        (m_force_chkpt_dt
+             ? std::min(tol, m_force_chkpt_tol * m_chkpt_t_interval)
+             : tol);
+    tol =
+        (m_force_plt_dt ? std::min(tol, m_force_plt_tol * m_plt_t_interval)
+                        : tol);
     return (
-        (m_plt_interval > 0) &&
-        ((m_time_index - m_plt_start_index) % m_plt_interval == 0));
+        ((m_plt_interval > 0) &&
+         ((m_time_index - m_plt_start_index) % m_plt_interval == 0)) ||
+        (m_plt_t_interval > 0.0 &&
+         ((m_new_time + tol) / m_plt_t_interval -
+              std::floor((m_new_time + tol) / m_plt_t_interval) <
+          m_dt[0] / m_plt_t_interval)));
 }
 
 bool SimTime::write_checkpoint() const
 {
+    // If dt is enforced, use smallest tolerance
+    amrex::Real tol = m_plt_t_tol * m_dt[0];
+    tol =
+        (m_force_chkpt_dt
+             ? std::min(tol, m_force_chkpt_tol * m_chkpt_t_interval)
+             : tol);
+    tol =
+        (m_force_plt_dt ? std::min(tol, m_force_plt_tol * m_plt_t_interval)
+                        : tol);
     return (
-        (m_chkpt_interval > 0) &&
-        ((m_time_index - m_chkpt_start_index) % m_chkpt_interval == 0));
+        ((m_chkpt_interval > 0) &&
+         ((m_time_index - m_chkpt_start_index) % m_chkpt_interval == 0)) ||
+        (m_chkpt_t_interval > 0.0 &&
+         ((m_new_time + tol) / m_chkpt_t_interval -
+              std::floor((m_new_time + tol) / m_chkpt_t_interval) <
+          m_dt[0] / m_chkpt_t_interval)));
 }
 
 bool SimTime::write_last_plot_file() const

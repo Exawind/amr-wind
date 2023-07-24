@@ -173,7 +173,10 @@ void ABLModulatedPowerLaw::set_velocity(
                                       : amrex::adjCellHi(domain, idir, nghost);
 
         for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
-            const auto& gbx = amrex::grow(mfi.validbox(), nghost);
+            auto gbx = amrex::grow(mfi.validbox(), nghost);
+            if (!gbx.cellCentered()) {
+                gbx.enclosedCells();
+            }
             const auto& bx = gbx & dbx;
             if (!bx.ok()) {
                 continue;
@@ -247,7 +250,10 @@ void ABLModulatedPowerLaw::set_temperature(
                                       : amrex::adjCellHi(domain, idir, nghost);
 
         for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
-            const auto& gbx = amrex::grow(mfi.validbox(), nghost);
+            auto gbx = amrex::grow(mfi.validbox(), nghost);
+            if (!gbx.cellCentered()) {
+                gbx.enclosedCells();
+            }
             const auto& bx = gbx & dbx;
             if (!bx.ok()) {
                 continue;

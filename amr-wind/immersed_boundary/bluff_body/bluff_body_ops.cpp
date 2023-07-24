@@ -31,7 +31,7 @@ void apply_mms_vel(CFDSim& sim)
     const int nlevels = sim.repo().num_active_levels();
 
     const auto& levelset = sim.repo().get_field("ib_levelset");
-    // cppcheck-suppress constVariable
+    // cppcheck-suppress constVariableReference
     auto& velocity = sim.repo().get_field("velocity");
     auto& m_conv_taylor_green =
         sim.physics_manager().get<ctv::ConvectingTaylorVortex>();
@@ -50,8 +50,8 @@ void apply_mms_vel(CFDSim& sim)
 
         for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.growntilebox();
-            auto phi = levelset(lev).array(mfi);
-            auto varr = velocity(lev).array(mfi);
+            const auto& phi = levelset(lev).const_array(mfi);
+            const auto& varr = velocity(lev).array(mfi);
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
@@ -77,7 +77,7 @@ void apply_dirichlet_vel(CFDSim& sim, const amrex::Vector<amrex::Real>& vel_bc)
 {
     const int nlevels = sim.repo().num_active_levels();
     auto& geom = sim.mesh().Geom();
-    // cppcheck-suppress constVariable
+    // cppcheck-suppress constVariableReference
     auto& velocity = sim.repo().get_field("velocity");
     auto& levelset = sim.repo().get_field("ib_levelset");
     levelset.fillpatch(sim.time().current_time());
@@ -94,13 +94,13 @@ void apply_dirichlet_vel(CFDSim& sim, const amrex::Vector<amrex::Real>& vel_bc)
 
         for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
-            auto varr = velocity(lev).array(mfi);
-            auto phi_arr = levelset(lev).array(mfi);
+            const auto& varr = velocity(lev).array(mfi);
+            const auto& phi_arr = levelset(lev).const_array(mfi);
             auto norm_arr = normal(lev).array(mfi);
 
-            amrex::Real velx = vel_bc[0];
-            amrex::Real vely = vel_bc[1];
-            amrex::Real velz = vel_bc[2];
+            const amrex::Real velx = vel_bc[0];
+            const amrex::Real vely = vel_bc[1];
+            const amrex::Real velz = vel_bc[2];
 
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
