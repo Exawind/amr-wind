@@ -154,10 +154,6 @@ void CoarsenCheckpt::read_chkpt_add_baselevel()
         GotoNextLine(is);
     }
 
-    // always use level 0 to check domain size
-    constexpr int lev0{0};
-    amrex::Box orig_domain(ba_inp[lev0].minimalBox());
-
     // create base level BoxArray
     const amrex::BoxArray& ba = MakeBaseGrids();
     amrex::DistributionMapping dm =
@@ -202,6 +198,7 @@ void CoarsenCheckpt::read_checkpoint_fields_offset(
         const int levdst = levsrc + 1;
         for (auto* fld : sim().io_manager().checkpoint_fields()) {
             auto& field = *fld;
+            // cppcheck-suppress constVariableReference
             const auto& fab_file = amrex::MultiFabFileFullPrefix(
                 levsrc, restart_file, level_prefix, field.name());
 

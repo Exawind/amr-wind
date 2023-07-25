@@ -56,7 +56,6 @@ void main_main()
         }
         if (arg == "-af" || arg == "--addfield") {
             addl_fname = amrex::get_command_argument(++i);
-            const int nfields = addl_fnames.size();
             addl_fnames.push_back(addl_fname);
         }
     }
@@ -81,19 +80,19 @@ void main_main()
     const Box prob_domain = chkptfile.probDomain(0);
     const auto ncells_domain = prob_domain.d_numPts();
     Array<Real, AMREX_SPACEDIM> dx = chkptfile.cellSize(0);
-    const auto lo = amrex::lbound(prob_domain);
-    const auto hi = amrex::ubound(prob_domain);
+    const auto dlo = amrex::lbound(prob_domain);
+    const auto dhi = amrex::ubound(prob_domain);
     IntVect lengths = prob_domain.length(); // hi + 1 for all dims.
-    double phis_x = dx[0] * (hi.x + 1);
-    double phis_y = dx[1] * (hi.y + 1);
-    double phis_z = dx[2] * (hi.z + 1);
+    double phis_x = dx[0] * (dhi.x + 1);
+    double phis_y = dx[1] * (dhi.y + 1);
+    double phis_z = dx[2] * (dhi.z + 1);
     Array<Real, AMREX_SPACEDIM> problo = chkptfile.probLo();
     Array<Real, AMREX_SPACEDIM> probhi = chkptfile.probHi();
     // Output Files
     amrex::Print() << "Time: " << time << std::endl
                    << "dx: " << dx << std::endl
                    << "Lengths: " << lengths << std::endl
-                   << "lo: " << lo << " hi: " << hi << std::endl
+                   << "lo: " << dlo << " hi: " << dhi << std::endl
                    << "Physical dimensions: (" << phis_x << ", " << phis_y
                    << " , " << phis_z << ")" << std::endl
                    << "Physical coords: " << problo << " to " << probhi
@@ -104,56 +103,59 @@ void main_main()
                    << std::endl
                    << "Number of Boxes: " << nboxes << std::endl
                    << "levels: " << levels << std::endl;
-    // create Header
-    /**
-     * Header Data in CSV
-     *
-     * Will follow https://www.w3.org/TR/tabular-data-model/#embedded-metadata
-     *
-     */
-    // Output csv-formatted data
-    std::ofstream output_stream;
-    output_stream.open(output_file);
 
-    // Create Headers
-    output_stream << "x,"
-                  << "y,"
-                  << "z";
-    int num_vars = 0;
-    for (auto const& name : var_names) {
-        output_stream << "," << name;
-        num_vars++;
-    }
-    output_stream << "\n";
-    const MultiFab& chkptmf = chkptfile.get(0);
+    if (out_format == csv) {
+        // create Header
+        /**
+         * Header Data in CSV
+         *
+         * Will follow
+         * https://www.w3.org/TR/tabular-data-model/#embedded-metadata
+         *
+         */
+        // Output csv-formatted data
+        std::ofstream output_stream;
+        output_stream.open(output_file);
 
-    // Loop through MultiFab for data
-    for (MFIter mfi(chkptmf); mfi.isValid(); ++mfi) {
-        // Loop through MultiFab object.
-        const auto& chkpt = chkptmf.array(mfi);
-        const Box& bx = mfi.validbox();
+        // Create Headers
+        output_stream << "x,"
+                      << "y,"
+                      << "z";
+        int num_vars = 0;
+        for (auto const& name : var_names) {
+            output_stream << "," << name;
+            num_vars++;
+        }
+        output_stream << "\n";
+        const MultiFab& chkptmf = chkptfile.get(0);
 
-        // Seems to be used for masking out non-current box data
+        // Loop through MultiFab for data
+        for (MFIter mfi(chkptmf); mfi.isValid(); ++mfi) {
+            // Loop through MultiFab object.
+            const Box& bx = mfi.validbox();
 
-        const auto& data = chkptmf.array(mfi); // there is only one box
-        // Parallelize the pulling of data
-        const Dim3 lo = amrex::lbound(bx);
-        const Dim3 hi = amrex::ubound(bx);
-        for (int z = lo.z; z <= hi.z; ++z) {
-            for (int y = lo.y; y <= hi.y; ++y) {
-                // AMREX_PRAGMA_SIMD
-                for (int x = lo.x; x <= hi.x; ++x) {
-                    output_stream << x << "," << y << "," << z;
-                    for (int n = 0; n < num_vars; n++) {
-                        output_stream << "," << data(x, y, z, n);
+            // Seems to be used for masking out non-current box data
+
+            const auto& data = chkptmf.array(mfi); // there is only one box
+            // Parallelize the pulling of data
+            const Dim3 lo = amrex::lbound(bx);
+            const Dim3 hi = amrex::ubound(bx);
+            for (int z = lo.z; z <= hi.z; ++z) {
+                for (int y = lo.y; y <= hi.y; ++y) {
+                    // AMREX_PRAGMA_SIMD
+                    for (int x = lo.x; x <= hi.x; ++x) {
+                        output_stream << x << "," << y << "," << z;
+                        for (int n = 0; n < num_vars; n++) {
+                            output_stream << "," << data(x, y, z, n);
+                        }
+                        output_stream << "\n";
                     }
-                    output_stream << "\n";
                 }
             }
         }
+        output_stream.close();
     }
 
-    output_stream.close();
     time_req = clock() - time_req;
     amrex::Print() << "It took " << (float)time_req / CLOCKS_PER_SEC
                    << " seconds to convert." << std::endl;
