@@ -161,10 +161,6 @@ void main_main()
                 }
             }
         }
-        /*amrex::ParallelFor(ibox, [=] AMREX_GPU_DEVICE (int i, int j, int k)
-        {
-            data(i,j,k) = chkpt(i,j,k);
-        });*/
     }
 
     output_stream.close();

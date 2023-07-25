@@ -43,8 +43,7 @@ CheckpointFileDataImpl::CheckpointFileDataImpl(
 
     std::string line, word;
 
-    // Start reading from checkpoint file
-
+    // !! -- Start reading from checkpoint file -- !!
     // Title line
     std::getline(is, line);
 
@@ -59,8 +58,6 @@ CheckpointFileDataImpl::CheckpointFileDataImpl(
     // Current time
     is >> m_time;
     GotoNextLine(is);
-
-    // m_time.set_restart_time(nstep, cur_time);
 
     // Time step size
     is >> m_dt_restart;
@@ -107,7 +104,6 @@ CheckpointFileDataImpl::CheckpointFileDataImpl(
         // get minimal box from box array for prob domain
         m_prob_domain[lev] = m_ba[lev].minimalBox();
         // make distribution map
-        // Create distribution mapping
         m_dmap[lev].define(m_ba[lev], ParallelDescriptor::NProcs());
         // ngrow is set to 0, don't know how to find it properly
         m_ngrow[lev] = {0, 0, 0};
@@ -127,36 +123,6 @@ CheckpointFileDataImpl::CheckpointFileDataImpl(
     }
 
     AMREX_ASSERT(m_nlevels > 0 && m_nlevels <= 1000);
-
-    // m_mf_name.resize(m_nlevels * m_nfields);
-
-    /*m_vismf.resize(m_nlevels);
-    m_ba.resize(m_nlevels);
-    m_dmap.resize(m_nlevels);
-    m_ngrow.resize(m_nlevels);
-    for (int ilev = 0; ilev < m_nlevels; ++ilev) {
-        int levtmp, ngrids, levsteptmp;
-        Real gtime;
-        is >> levtmp >> ngrids >> gtime;
-        is >> levsteptmp;
-        Real glo[3], ghi[3];
-        AMREX_ASSERT(ngrids >= 0 && ngrids < std::numeric_limits<int>::max());
-        for (int igrid = 0; igrid < ngrids; ++igrid) {
-            for (int idim = 0; idim < m_spacedim; ++idim) {
-                is >> glo[idim] >> ghi[idim];
-            }
-        }
-        // Checkpoint stores variables separately
-        std::string relname;
-        is >> relname;
-        m_mf_name[ilev] = m_chkptfile_name + "/" + relname;
-        if (m_ncomp > 0) {
-            m_vismf[ilev] = std::make_unique<VisMF>(m_mf_name[ilev]);
-            m_ba[ilev] = m_vismf[ilev]->boxArray();
-            m_dmap[ilev].define(m_ba[ilev]);
-            m_ngrow[ilev] = m_vismf[ilev]->nGrowVect();
-        }
-    }*/
 }
 
 void CheckpointFileDataImpl::syncDistributionMap(

@@ -23,16 +23,6 @@ public:
 
     [[nodiscard]] int finestLevel() const noexcept { return m_finest_level; }
 
-    /*[[nodiscard]] int refRatio(int level) const noexcept
-    {
-        return m_ref_ratio[level];
-    }*/
-
-    /*[[nodiscard]] int levelStep(int level) const noexcept
-    {
-        return m_level_steps[level];
-    }*/
-
     [[nodiscard]] const BoxArray& boxArray(int level) const noexcept
     {
         return m_ba[level];
@@ -49,17 +39,11 @@ public:
     void
     syncDistributionMap(int level, CheckpointFileDataImpl const& src) noexcept;
 
-    /* [[nodiscard]] int coordSys() const noexcept { return m_coordsys; } */
 
     [[nodiscard]] Box probDomain(int level) const noexcept
     {
         return m_prob_domain[level];
     }
-
-    /*[[nodiscard]] Array<Real, AMREX_SPACEDIM> probSize() const noexcept
-    {
-        return m_prob_size;
-    } */
     [[nodiscard]] Array<Real, AMREX_SPACEDIM> probLo() const noexcept
     {
         return m_prob_lo;
