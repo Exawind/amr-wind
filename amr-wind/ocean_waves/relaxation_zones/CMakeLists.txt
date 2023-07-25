@@ -5,4 +5,5 @@ target_sources(${amr_wind_lib_name}
   LinearWaves.cpp
   StokesWaves.cpp
   HOSWaves.cpp
+  W2AWaves.cpp
   )

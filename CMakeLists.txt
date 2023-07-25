@@ -44,6 +44,7 @@ option(AMR_WIND_ENABLE_HYPRE "Enable HYPRE integration" OFF)
 option(AMR_WIND_ENABLE_OPENFAST "Enable OpenFAST integration" OFF)
 option(AMR_WIND_ENABLE_ASCENT "Enable Ascent visualization library" OFF)
 option(AMR_WIND_ENABLE_UMPIRE "Enable Umpire GPU memory pools" OFF)
+option(AMR_WIND_ENABLE_W2A "Enable Waves2AMR library" OFF)
 
 #Options for C++
 set(CMAKE_CXX_STANDARD 17)
@@ -74,6 +75,13 @@ if (AMR_WIND_ENABLE_UMPIRE)
   set(CMAKE_PREFIX_PATH ${UMPIRE_DIR} ${CMAKE_PREFIX_PATH})
   find_package(Umpire REQUIRED)
   include_directories(SYSTEM ${UMPIRE_INCLUDE_DIRS})
+endif()
+
+if(AMR_WIND_ENABLE_W2A)
+  set(CMAKE_PREFIX_PATH ${W2A_DIR} ${CMAKE_PREFIX_PATH})
+  find_package(Waves2AMR REQUIRED)
+  target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_W2A)
+  target_link_libraries_system(${amr_wind_lib_name} PUBLIC Waves2AMR::Waves2AMR)
 endif()
 
 if(AMR_WIND_TEST_WITH_FCOMPARE)
