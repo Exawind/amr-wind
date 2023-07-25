@@ -155,9 +155,6 @@ MultiFab CheckpointFileDataImpl::get(int level) noexcept
             MultiFab tmp_mfab(
                 m_ba[level], m_dmap[level], m_var_ncomp[nf], m_ngrow[level]);
 
-            const auto& fab_file = amrex::MultiFabFileFullPrefix(
-                lev, m_chkptfile_name, level_prefix, m_var_names[nf]);
-
             // Read current field into temporary fab
             amrex::VisMF::Read(
                 tmp_mfab,

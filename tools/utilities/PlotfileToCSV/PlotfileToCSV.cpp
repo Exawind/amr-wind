@@ -26,16 +26,16 @@ void main_main()
     std::string output_file;
 
     // CLI handling: Collect parameters and help
-    for (unsigned char i = 1; i <= nargs; i++) {
+    for (int i = 1; i <= nargs; i += 2) {
         const std::string& arg = amrex::get_command_argument(i);
         if (arg == "--format" || arg == "-f") {
             // Select format. See enumeration for available options.
-            const std::string& arg_format = amrex::get_command_argument(++i);
+            const std::string& arg_format = amrex::get_command_argument(i + 1);
             if (arg_format == "csv") {
                 out_format = csv;
                 format_str = "csv";
             } else if (arg_format == "hdf5") {
-                // out_format = hdf5;
+                out_format = hdf5;
                 amrex::Abort("HDF5 format has not been implemented yet.");
             } else {
                 amrex::Print() << "Invalid format: " << arg_format << std::endl;
@@ -45,12 +45,12 @@ void main_main()
         }
         if (arg == "--plt" || arg == "--plotfile" || arg == "--file" ||
             arg == "-p") {
-            const std::string& plt_tmp = amrex::get_command_argument(++i);
+            const std::string& plt_tmp = amrex::get_command_argument(i + 1);
             plotfile = plt_tmp;
             continue;
         }
         if (arg == "-o" || arg == "--output") {
-            output_file = amrex::get_command_argument(++i);
+            output_file = amrex::get_command_argument(i + 1);
         }
     }
     amrex::Print() << "Converting plotfile " << plotfile << " to format "
