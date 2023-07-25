@@ -10,6 +10,9 @@
 
 using namespace amrex;
 
+// Adapted from amrex/Src/Base/AMReX_PlotFileDataImpl.H
+// not inherited because constructor needed to be rewritten
+
 class CheckpointFileDataImpl
 {
 public:
