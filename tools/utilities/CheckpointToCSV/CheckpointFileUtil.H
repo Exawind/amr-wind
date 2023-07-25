@@ -78,6 +78,11 @@ public:
         return m_var_names;
     }
 
+    [[nodiscard]] const Vector<std::string>& varNamesComponents() const noexcept
+    {
+        return m_var_names_full;
+    }
+
     [[nodiscard]] int nComp() const noexcept { return m_ncomp; }
     [[nodiscard]] IntVect nGrowVect(int level) const noexcept
     {
@@ -85,13 +90,16 @@ public:
     }
 
     MultiFab get(int level) noexcept;
-    MultiFab get(int level, std::string const& varname) noexcept;
 
 private:
     std::string m_chkptfile_name;
-    std::string m_file_version;
-    int m_ncomp;
-    Vector<std::string> m_var_names = {"density", "gp", "velocity"};
+    int m_ncomp{8};
+    int m_nfields{4};
+    Vector<std::string> m_var_names = {"density", "gp", "p", "velocity"};
+    Vector<std::string> m_var_names_full = {
+        "density", "gpx",       "gpy",       "gpz",
+        "p",       "velocityx", "velocityy", "velocityz"};
+    Vector<int> m_var_ncomp = {1, 3, 1, 3};
     const int m_spacedim{3};
     Real m_time;
     Real m_dt_restart;

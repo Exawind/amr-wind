@@ -75,14 +75,12 @@ void main_main()
 
     // Load Checkpoint File
     time_req = clock();
-    std::cout << checkpointfile << " before chkptfile\n";
     CheckpointFileDataImpl chkptfile(checkpointfile, addl_fnames); // Takes care of invalid files
     
-    std::cout << "before data\n";
     // Get Meta Data (See Notes 1.)
     int dim = chkptfile.spaceDim();
     int levels = chkptfile.finestLevel() + 1;
-    const Vector<std::string>& var_names = chkptfile.varNames();
+    const Vector<std::string>& var_names = chkptfile.varNamesComponents();
     amrex::Real time = chkptfile.time();
     // Least finest level dimensions
     // For info on boxArray, see note 2.

@@ -1,5 +1,6 @@
 #include "CheckpointFileUtil.H"
 #include <AMReX_AsyncOut.H>
+#include <AMReX_PlotFileUtil.H>
 #include <AMReX_FPC.H>
 #include <AMReX_FabArrayUtility.H>
 #include <AMReX_ParallelDescriptor.H>
@@ -25,7 +26,14 @@ CheckpointFileDataImpl::CheckpointFileDataImpl(
     const int naf = addl_field_names.size();
     for (int n = 0; n < naf; ++n) {
         m_var_names.push_back(addl_field_names[n]);
+        m_var_names_full.push_back(addl_field_names[n]);
+        m_var_ncomp.push_back(1);
     }
+    // Total number of components, assume addl fields are one component
+    m_ncomp += naf;
+    // Total number of fields
+    m_nfields += naf;
+
     // Header
     std::string File(chkptfile_name + "/Header");
     Vector<char> fileCharPtr;
@@ -87,23 +95,42 @@ CheckpointFileDataImpl::CheckpointFileDataImpl(
     // Read in box array to get domain box
     m_nlevels = m_finest_level + 1;
     m_ba.resize(m_nlevels);
+    m_dmap.resize(m_nlevels);
+    m_ngrow.resize(m_nlevels);
     m_prob_domain.resize(m_nlevels);
+    m_cell_size.resize(
+        m_nlevels, Array<Real, AMREX_SPACEDIM>{{AMREX_D_DECL(1., 1., 1.)}});
     for (int lev = 0; lev <= m_finest_level; ++lev) {
         // read in level 'lev' BoxArray from Header
         m_ba[lev].readFrom(is);
         GotoNextLine(is);
         // get minimal box from box array for prob domain
         m_prob_domain[lev] = m_ba[lev].minimalBox();
+        // make distribution map
+        // Create distribution mapping
+        m_dmap[lev].define(m_ba[lev], ParallelDescriptor::NProcs());
+        // ngrow is set to 0, don't know how to find it properly
+        m_ngrow[lev] = {0, 0, 0};
     }
 
-    // m_var_names
-    // add to defaults?
+    // Calculate cell size for lowest level
+    for (int idim = 0; idim < m_spacedim; ++idim) {
+        m_cell_size[0][idim] = (m_prob_hi[idim] - m_prob_lo[idim]) /
+                               (m_prob_domain[0].bigEnd(idim) -
+                                m_prob_domain[0].smallEnd(idim) + 1);
+    }
+    // Do the higher levels using refratio, assume 2
+    for (int lev = 1; lev <= m_finest_level; ++lev) {
+        for (int idim = 0; idim < m_spacedim; ++idim) {
+            m_cell_size[lev][idim] = m_cell_size[lev - 1][idim];
+        }
+    }
 
-    
     AMREX_ASSERT(m_nlevels > 0 && m_nlevels <= 1000);
 
-    m_mf_name.resize(m_nlevels);
-    m_vismf.resize(m_nlevels);
+    // m_mf_name.resize(m_nlevels * m_nfields);
+
+    /*m_vismf.resize(m_nlevels);
     m_ba.resize(m_nlevels);
     m_dmap.resize(m_nlevels);
     m_ngrow.resize(m_nlevels);
@@ -119,6 +146,7 @@ CheckpointFileDataImpl::CheckpointFileDataImpl(
                 is >> glo[idim] >> ghi[idim];
             }
         }
+        // Checkpoint stores variables separately
         std::string relname;
         is >> relname;
         m_mf_name[ilev] = m_chkptfile_name + "/" + relname;
@@ -128,7 +156,7 @@ CheckpointFileDataImpl::CheckpointFileDataImpl(
             m_dmap[ilev].define(m_ba[ilev]);
             m_ngrow[ilev] = m_vismf[ilev]->nGrowVect();
         }
-    }
+    }*/
 }
 
 void CheckpointFileDataImpl::syncDistributionMap(
@@ -151,27 +179,30 @@ void CheckpointFileDataImpl::syncDistributionMap(
 
 MultiFab CheckpointFileDataImpl::get(int level) noexcept
 {
+    const std::string level_prefix{"Level_"};
     MultiFab mf(m_ba[level], m_dmap[level], m_ncomp, m_ngrow[level]);
-    VisMF::Read(mf, m_mf_name[level]);
-    return mf;
-}
 
-MultiFab
-CheckpointFileDataImpl::get(int level, std::string const& varname) noexcept
-{
-    MultiFab mf(m_ba[level], m_dmap[level], 1, m_ngrow[level]);
-    auto r = std::find(std::begin(m_var_names), std::end(m_var_names), varname);
-    if (r == std::end(m_var_names)) {
-        amrex::Abort(
-            "CheckpointFileDataImpl::get: varname not found " + varname);
-    } else {
-        int icomp = static_cast<int>(std::distance(std::begin(m_var_names), r));
-        for (MFIter mfi(mf); mfi.isValid(); ++mfi) {
-            int gid = mfi.index();
-            FArrayBox& dstfab = mf[mfi];
-            std::unique_ptr<FArrayBox> srcfab(
-                m_vismf[level]->readFAB(gid, icomp));
-            dstfab.copy<RunOn::Host>(*srcfab);
+    // Do checkpoint reading, which is a field at a time
+    for (int lev = 0; lev < m_nlevels; ++lev) {
+        int icomp = 0;
+        for (int nf = 0; nf < m_nfields; ++nf) {
+            MultiFab tmp_mfab(
+                m_ba[level], m_dmap[level], m_var_ncomp[nf], m_ngrow[level]);
+
+            const auto& fab_file = amrex::MultiFabFileFullPrefix(
+                lev, m_chkptfile_name, level_prefix, m_var_names[nf]);
+
+            // Read current field into temporary fab
+            amrex::VisMF::Read(
+                tmp_mfab,
+                amrex::MultiFabFileFullPrefix(
+                    lev, m_chkptfile_name, level_prefix, m_var_names[nf]));
+
+            // Copy from tmp fab to bigger fab
+            amrex::MultiFab::Copy(
+                mf, tmp_mfab, 0, icomp, m_var_ncomp[nf], m_ngrow[lev]);
+            // Advance index among total components
+            icomp += m_var_ncomp[nf];
         }
     }
     return mf;
