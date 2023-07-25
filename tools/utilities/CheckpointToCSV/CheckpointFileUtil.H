@@ -39,7 +39,6 @@ public:
     void
     syncDistributionMap(int level, CheckpointFileDataImpl const& src) noexcept;
 
-
     [[nodiscard]] Box probDomain(int level) const noexcept
     {
         return m_prob_domain[level];
