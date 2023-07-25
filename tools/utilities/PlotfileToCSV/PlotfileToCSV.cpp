@@ -96,60 +96,59 @@ void main_main()
                    << std::endl
                    << "Number of Boxes: " << nboxes << std::endl
                    << "levels: " << levels << std::endl;
-    // create Header
-    /**
-     * Header Data in CSV
-     *
-     * Will follow https://www.w3.org/TR/tabular-data-model/#embedded-metadata
-     *
-     */
-    // Output csv-formatted data
-    std::ofstream output_stream;
-    output_stream.open(output_file);
 
-    // Create Headers
-    output_stream << "x,"
-                  << "y,"
-                  << "z";
-    int num_vars = 0;
-    for (auto const& name : var_names) {
-        output_stream << "," << name;
-        num_vars++;
-    }
-    output_stream << "\n";
-    const MultiFab& pltmf = pltfile.get(0);
+    if (out_format == csv) {
+        // create Header
+        /**
+         * Header Data in CSV
+         *
+         * Will follow
+         * https://www.w3.org/TR/tabular-data-model/#embedded-metadata
+         *
+         */
+        // Output csv-formatted data
+        std::ofstream output_stream;
+        output_stream.open(output_file);
 
-    // Loop through MultiFab for data
-    for (MFIter mfi(pltmf); mfi.isValid(); ++mfi) {
-        // Loop through MultiFab object.
-        const auto& plt = pltmf.array(mfi);
-        const Box& bx = mfi.validbox();
+        // Create Headers
+        output_stream << "x,"
+                      << "y,"
+                      << "z";
+        int num_vars = 0;
+        for (auto const& name : var_names) {
+            output_stream << "," << name;
+            num_vars++;
+        }
+        output_stream << "\n";
+        const MultiFab& pltmf = pltfile.get(0);
 
-        // Seems to be used for masking out non-current box data
+        // Loop through MultiFab for data
+        for (MFIter mfi(pltmf); mfi.isValid(); ++mfi) {
+            // Loop through MultiFab object.
+            const Box& bx = mfi.validbox();
 
-        const auto& data = pltmf.array(mfi); // there is only one box
-        // Parallelize the pulling of data
-        const Dim3 lo = amrex::lbound(bx);
-        const Dim3 hi = amrex::ubound(bx);
-        for (int z = lo.z; z <= hi.z; ++z) {
-            for (int y = lo.y; y <= hi.y; ++y) {
-                // AMREX_PRAGMA_SIMD
-                for (int x = lo.x; x <= hi.x; ++x) {
-                    output_stream << x << "," << y << "," << z;
-                    for (int n = 0; n < num_vars; n++) {
-                        output_stream << "," << data(x, y, z, n);
+            // Seems to be used for masking out non-current box data
+
+            const auto& data = pltmf.array(mfi); // there is only one box
+            // Parallelize the pulling of data
+            const Dim3 lo = amrex::lbound(bx);
+            const Dim3 hi = amrex::ubound(bx);
+            for (int z = lo.z; z <= hi.z; ++z) {
+                for (int y = lo.y; y <= hi.y; ++y) {
+                    // AMREX_PRAGMA_SIMD
+                    for (int x = lo.x; x <= hi.x; ++x) {
+                        output_stream << x << "," << y << "," << z;
+                        for (int n = 0; n < num_vars; n++) {
+                            output_stream << "," << data(x, y, z, n);
+                        }
+                        output_stream << "\n";
                     }
-                    output_stream << "\n";
                 }
             }
         }
-        /*amrex::ParallelFor(ibox, [=] AMREX_GPU_DEVICE (int i, int j, int k)
-        {
-            data(i,j,k) = plt(i,j,k);
-        });*/
+        output_stream.close();
     }
 
-    output_stream.close();
     time_req = clock() - time_req;
     amrex::Print() << "It took " << (float)time_req / CLOCKS_PER_SEC
                    << " seconds to convert." << std::endl;
