@@ -16,7 +16,7 @@ using namespace amrex;
 class CheckpointFileDataImpl
 {
 public:
-    CheckpointFileDataImpl(
+    explicit CheckpointFileDataImpl(
         std::string const& chkptfile_name,
         Vector<std::string> addl_field_names = {});
 
@@ -94,12 +94,10 @@ private:
     int m_finest_level, m_nlevels;
     Array<Real, AMREX_SPACEDIM> m_prob_lo{{AMREX_D_DECL(0., 0., 0.)}};
     Array<Real, AMREX_SPACEDIM> m_prob_hi{{AMREX_D_DECL(1., 1., 1.)}};
-    Array<Real, AMREX_SPACEDIM> m_prob_size{{AMREX_D_DECL(1., 1., 1.)}};
     Vector<int> m_ref_ratio;
     Vector<Box> m_prob_domain;
     int m_nstep;
     Vector<Array<Real, AMREX_SPACEDIM>> m_cell_size;
-    int m_coordsys;
     Vector<std::string> m_mf_name;
     Vector<std::unique_ptr<VisMF>> m_vismf;
     Vector<BoxArray> m_ba;
