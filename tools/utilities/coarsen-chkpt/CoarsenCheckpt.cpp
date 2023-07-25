@@ -197,8 +197,8 @@ void CoarsenCheckpt::read_checkpoint_fields_offset(
     for (int levsrc = 0; levsrc < nlevels - 1; ++levsrc) {
         const int levdst = levsrc + 1;
         for (auto* fld : sim().io_manager().checkpoint_fields()) {
-            auto& field = *fld;
             // cppcheck-suppress constVariableReference
+            auto& field = *fld;
             const auto& fab_file = amrex::MultiFabFileFullPrefix(
                 levsrc, restart_file, level_prefix, field.name());
 
