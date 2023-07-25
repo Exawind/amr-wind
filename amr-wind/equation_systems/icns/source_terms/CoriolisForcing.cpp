@@ -25,6 +25,9 @@ namespace amr_wind::pde::icns {
  */
 CoriolisForcing::CoriolisForcing(const CFDSim& sim)
     : m_velocity(sim.repo().get_field("velocity"))
+    , m_umac(sim.repo().get_field("u_mac"))
+    , m_vmac(sim.repo().get_field("v_mac"))
+    , m_wmac(sim.repo().get_field("w_mac"))
 {
     static_assert(AMREX_SPACEDIM == 3, "ABL implementation requires 3D domain");
     amrex::ParmParse pp("CoriolisForcing");
@@ -69,17 +72,31 @@ void CoriolisForcing::operator()(
     const auto corfac = m_coriolis_factor;
     const auto& vel =
         m_velocity.state(field_impl::dof_state(fstate))(lev).const_array(mfi);
+    const auto& umac = m_umac(lev).const_array(mfi);
+    const auto& vmac = m_vmac(lev).const_array(mfi);
+    const auto& wmac = m_wmac(lev).const_array(mfi);
+
+    // Determine if mac velocity is available at n+1/2 ("New" call of src)
+    bool use_mac_nph = (fstate == amr_wind::FieldState::New);
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        const amrex::Real ue = east[0] * vel(i, j, k, 0) +
-                               east[1] * vel(i, j, k, 1) +
-                               east[2] * vel(i, j, k, 2);
-        const amrex::Real un = north[0] * vel(i, j, k, 0) +
-                               north[1] * vel(i, j, k, 1) +
-                               north[2] * vel(i, j, k, 2);
-        const amrex::Real uu = up[0] * vel(i, j, k, 0) +
-                               up[1] * vel(i, j, k, 1) +
-                               up[2] * vel(i, j, k, 2);
+        // Get cell-centered velocities for each case
+        amrex::Real uc = 0., vc = 0., wc = 0.;
+        if (use_mac_nph) {
+            // These are at n+1/2, for the RHS of icns equation
+            uc = 0.5 * (umac(i, j, k) + umac(i + 1, j, k));
+            vc = 0.5 * (vmac(i, j, k) + vmac(i, j + 1, k));
+            wc = 0.5 * (wmac(i, j, k) + wmac(i, j, k + 1));
+        } else {
+            // These are at n, for the Godunov extrapolation leading to mac vels
+            // and within the momentum fluxes
+            uc = vel(i, j, k, 0);
+            vc = vel(i, j, k, 1);
+            wc = vel(i, j, k, 2);
+        }
+        const amrex::Real ue = east[0] * uc + east[1] * vc + east[2] * wc;
+        const amrex::Real un = north[0] * uc + north[1] * vc + north[2] * wc;
+        const amrex::Real uu = up[0] * uc + up[1] * vc + up[2] * wc;
 
         const amrex::Real ae = +corfac * (un * sinphi - uu * cosphi);
         const amrex::Real an = -corfac * ue * sinphi;

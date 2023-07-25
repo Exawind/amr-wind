@@ -28,6 +28,9 @@ public:
 
 private:
     const Field& m_velocity;
+    const Field& m_umac;
+    const Field& m_vmac;
+    const Field& m_wmac;
 
     ///@{
     /** Orientation of the grid w.r.t. to planetary coordinate system
