@@ -6,6 +6,10 @@
 namespace amr_wind {
 namespace tools {
 
+// Adapted from RefineCheckpt tool
+// additional code from amr-wind/utilities/io.cpp and
+// amr-wind/utilities/IOManager.cpp
+
 class CoarsenCheckpt : public incflo
 {
 public:
