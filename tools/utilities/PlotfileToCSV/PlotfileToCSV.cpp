@@ -13,7 +13,7 @@
 
 using namespace amrex;
 
-enum format {csv, hdf5};
+enum format { csv, hdf5 };
 
 void main_main()
 {
@@ -26,49 +26,41 @@ void main_main()
     std::string output_file;
 
     // CLI handling: Collect parameters and help
-    for(unsigned char i = 1; i <= nargs; i++)
-    {
+    for (unsigned char i = 1; i <= nargs; i++) {
         const std::string& arg = amrex::get_command_argument(i);
-        if(arg == "--format" || arg == "-f")
-        {
+        if (arg == "--format" || arg == "-f") {
             // Select format. See enumeration for available options.
             const std::string& arg_format = amrex::get_command_argument(++i);
-            if(arg_format == "csv")
-            {
+            if (arg_format == "csv") {
                 out_format = csv;
                 format_str = "csv";
-            }
-            else if(arg_format == "hdf5")
-            {
+            } else if (arg_format == "hdf5") {
                 // out_format = hdf5;
                 amrex::Abort("HDF5 format has not been implemented yet.");
-            }
-            else
-            {
-                amrex::Print() << "Invalid format: " << arg_format << std::endl; 
+            } else {
+                amrex::Print() << "Invalid format: " << arg_format << std::endl;
                 amrex::Abort();
             }
             continue;
         }
-        if(arg == "--plt" || arg == "--plotfile" || arg == "--file" || arg == "-p")
-        {
+        if (arg == "--plt" || arg == "--plotfile" || arg == "--file" ||
+            arg == "-p") {
             const std::string& plt_tmp = amrex::get_command_argument(++i);
             plotfile = plt_tmp;
             continue;
         }
-        if(arg == "-o" || arg == "--output")
-        {
+        if (arg == "-o" || arg == "--output") {
             output_file = amrex::get_command_argument(++i);
-            
         }
     }
-    amrex::Print() << "Converting plotfile " << plotfile << " to format " << format_str << std::endl;
+    amrex::Print() << "Converting plotfile " << plotfile << " to format "
+                   << format_str << std::endl;
     // Help information
 
     // Load Plotfile
     time_req = clock();
     PlotFileData pltfile(plotfile); // Takes care of invalid files
-    
+
     // Get Meta Data (See Notes 1.)
     int dim = pltfile.spaceDim();
     int levels = pltfile.finestLevel() + 1;
@@ -80,44 +72,47 @@ void main_main()
     const Long ncells = pltfile.boxArray(0).numPts();
     const Box prob_domain = pltfile.probDomain(0);
     const auto ncells_domain = prob_domain.d_numPts();
-    Array<Real,AMREX_SPACEDIM> dx = pltfile.cellSize(0);
+    Array<Real, AMREX_SPACEDIM> dx = pltfile.cellSize(0);
     const auto lo = amrex::lbound(prob_domain);
     const auto hi = amrex::ubound(prob_domain);
     IntVect lengths = prob_domain.length(); // hi + 1 for all dims.
     double phis_x = dx[0] * (hi.x + 1);
     double phis_y = dx[1] * (hi.y + 1);
     double phis_z = dx[2] * (hi.z + 1);
-    Array<Real,AMREX_SPACEDIM> problo = pltfile.probLo();
-    Array<Real,AMREX_SPACEDIM> probhi = pltfile.probHi();
+    Array<Real, AMREX_SPACEDIM> problo = pltfile.probLo();
+    Array<Real, AMREX_SPACEDIM> probhi = pltfile.probHi();
     // Output Files
-    amrex::Print()
-        << "Time: " << time << std::endl
-        << "dx: " << dx << std::endl
-        << "Lengths: " << lengths << std::endl
-        << "lo: " << lo << " hi: " << hi << std::endl
-        << "Physical dimensions: (" << phis_x << ", " << phis_y << " , " << phis_z << ")" << std::endl
-        << "Physical coords: " << problo << " to " << probhi << std::endl
-        << "Dimensions: " << dim << std::endl
-        << "Number of Cells: " << ncells << std::endl
-        << "Number of cells/points in domain: " << ncells_domain << std::endl
-        << "Number of Boxes: " << nboxes << std::endl
-        << "levels: " << levels << std::endl;
+    amrex::Print() << "Time: " << time << std::endl
+                   << "dx: " << dx << std::endl
+                   << "Lengths: " << lengths << std::endl
+                   << "lo: " << lo << " hi: " << hi << std::endl
+                   << "Physical dimensions: (" << phis_x << ", " << phis_y
+                   << " , " << phis_z << ")" << std::endl
+                   << "Physical coords: " << problo << " to " << probhi
+                   << std::endl
+                   << "Dimensions: " << dim << std::endl
+                   << "Number of Cells: " << ncells << std::endl
+                   << "Number of cells/points in domain: " << ncells_domain
+                   << std::endl
+                   << "Number of Boxes: " << nboxes << std::endl
+                   << "levels: " << levels << std::endl;
     // create Header
     /**
      * Header Data in CSV
-     * 
+     *
      * Will follow https://www.w3.org/TR/tabular-data-model/#embedded-metadata
-     * 
-    */
+     *
+     */
     // Output csv-formatted data
     std::ofstream output_stream;
     output_stream.open(output_file);
 
     // Create Headers
-    output_stream << "x," << "y," << "z";
+    output_stream << "x,"
+                  << "y,"
+                  << "z";
     int num_vars = 0;
-    for (auto const& name : var_names) 
-    {
+    for (auto const& name : var_names) {
         output_stream << "," << name;
         num_vars++;
     }
@@ -125,8 +120,7 @@ void main_main()
     const MultiFab& pltmf = pltfile.get(0);
 
     // Loop through MultiFab for data
-    for (MFIter mfi(pltmf); mfi.isValid(); ++mfi) 
-    {
+    for (MFIter mfi(pltmf); mfi.isValid(); ++mfi) {
         // Loop through MultiFab object.
         const auto& plt = pltmf.array(mfi);
         const Box& bx = mfi.validbox();
@@ -137,17 +131,13 @@ void main_main()
         // Parallelize the pulling of data
         const Dim3 lo = amrex::lbound(bx);
         const Dim3 hi = amrex::ubound(bx);
-        for (int z = lo.z; z <= hi.z; ++z)
-         {
-            for (int y = lo.y; y <= hi.y; ++y) 
-            {
-            //AMREX_PRAGMA_SIMD
-                for (int x = lo.x; x <= hi.x; ++x) 
-                {
+        for (int z = lo.z; z <= hi.z; ++z) {
+            for (int y = lo.y; y <= hi.y; ++y) {
+                // AMREX_PRAGMA_SIMD
+                for (int x = lo.x; x <= hi.x; ++x) {
                     output_stream << x << "," << y << "," << z;
-                    for(int n = 0; n < num_vars; n++)
-                    {
-                        output_stream << "," << data(x,y,z,n);
+                    for (int n = 0; n < num_vars; n++) {
+                        output_stream << "," << data(x, y, z, n);
                     }
                     output_stream << "\n";
                 }
@@ -161,12 +151,11 @@ void main_main()
 
     output_stream.close();
     time_req = clock() - time_req;
-    amrex::Print() << "It took " << (float)time_req / CLOCKS_PER_SEC << " seconds to convert." << std::endl;
+    amrex::Print() << "It took " << (float)time_req / CLOCKS_PER_SEC
+                   << " seconds to convert." << std::endl;
 }
 
-
-
-int main (int argc, char* argv[])
+int main(int argc, char* argv[])
 {
     amrex::SetVerbose(0);
     amrex::Initialize(argc, argv, false);
@@ -179,11 +168,13 @@ int main (int argc, char* argv[])
 /*************************/
 /*
 1. The attributes and member functions are available within theAMReX
-    documentation at: 
-        - https://amrex-codes.github.io/amrex/doxygen/AMReX__PlotFileUtil_8H_source.html
+    documentation at:
+        -
+https://amrex-codes.github.io/amrex/doxygen/AMReX__PlotFileUtil_8H_source.html
 2. BoxArray contains the information with respect to the boxes/cells.
-    The data structure's documentation: 
-        - https://amrex-codes.github.io/amrex/doxygen/classamrex_1_1BoxArray.html
-3. Documentation on Box object: 
+    The data structure's documentation:
+        -
+https://amrex-codes.github.io/amrex/doxygen/classamrex_1_1BoxArray.html
+3. Documentation on Box object:
         - https://amrex-codes.github.io/amrex/doxygen/classamrex_1_1Box.html
 */
