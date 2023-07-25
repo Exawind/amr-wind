@@ -73,19 +73,19 @@ void main_main()
     const Box prob_domain = pltfile.probDomain(0);
     const auto ncells_domain = prob_domain.d_numPts();
     Array<Real, AMREX_SPACEDIM> dx = pltfile.cellSize(0);
-    const auto lo = amrex::lbound(prob_domain);
-    const auto hi = amrex::ubound(prob_domain);
+    const auto dlo = amrex::lbound(prob_domain);
+    const auto dhi = amrex::ubound(prob_domain);
     IntVect lengths = prob_domain.length(); // hi + 1 for all dims.
-    double phis_x = dx[0] * (hi.x + 1);
-    double phis_y = dx[1] * (hi.y + 1);
-    double phis_z = dx[2] * (hi.z + 1);
+    double phis_x = dx[0] * (dhi.x + 1);
+    double phis_y = dx[1] * (dhi.y + 1);
+    double phis_z = dx[2] * (dhi.z + 1);
     Array<Real, AMREX_SPACEDIM> problo = pltfile.probLo();
     Array<Real, AMREX_SPACEDIM> probhi = pltfile.probHi();
     // Output Files
     amrex::Print() << "Time: " << time << std::endl
                    << "dx: " << dx << std::endl
                    << "Lengths: " << lengths << std::endl
-                   << "lo: " << lo << " hi: " << hi << std::endl
+                   << "lo: " << dlo << " hi: " << dhi << std::endl
                    << "Physical dimensions: (" << phis_x << ", " << phis_y
                    << " , " << phis_z << ")" << std::endl
                    << "Physical coords: " << problo << " to " << probhi
