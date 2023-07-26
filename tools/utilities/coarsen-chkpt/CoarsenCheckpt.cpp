@@ -197,7 +197,6 @@ void CoarsenCheckpt::read_checkpoint_fields_offset(
     for (int levsrc = 0; levsrc < nlevels - 1; ++levsrc) {
         const int levdst = levsrc + 1;
         for (auto* fld : sim().io_manager().checkpoint_fields()) {
-            // cppcheck-suppress constVariableReference
             auto& field = *fld;
             const auto& fab_file = amrex::MultiFabFileFullPrefix(
                 levsrc, restart_file, level_prefix, field.name());
@@ -272,6 +271,7 @@ void CoarsenCheckpt::average_down_all_fields()
     // Target level is the new, unpopulated base level
     int lev = 0;
     for (auto* fld : sim().io_manager().checkpoint_fields()) {
+        // cppcheck-suppress constVariableReference
         auto& field = *fld;
         amrex::average_down(
             field(lev + 1), field(lev), 0, AMREX_SPACEDIM,
