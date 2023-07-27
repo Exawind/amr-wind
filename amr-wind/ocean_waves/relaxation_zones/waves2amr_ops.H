@@ -210,11 +210,8 @@ struct ReadInputsOp<W2AWaves>
         // Assert Waves2AMR must be used for initial condition file
         amrex::Abort(
             "ocean_waves/W2AWaves: AMR-Wind was not built with Waves2AMR "
-            "support; associated wave data cannot be processed for relaxation zones.");
-#endif
-
-#ifdef AMR_WIND_USE_W2A
-
+            "support; associated wave data cannot be processed for relaxation "
+            "zones.");
 #endif
 
         auto& wdata = data.meta();
@@ -222,6 +219,53 @@ struct ReadInputsOp<W2AWaves>
         relaxation_zones::read_inputs(wdata, info, pp);
 
         pp.get("HOS_modes_filename", wdata.modes_file);
+
+#ifdef AMR_WIND_USE_W2A
+
+        // Initialize mode reader
+        wdata.rmodes(modes_file);
+
+        // Initialize variables to store modes
+        int vsize = wdata.rmodes.get_vector_size();
+        double initval = 0.0;
+        wdata.mX.resize(vsize, initval);
+        wdata.mY.resize(vsize, initval);
+        wdata.mZ.resize(vsize, initval);
+        wdata.mFS.resize(vsize, initval);
+
+        // Get dimensions of data
+        wdata.n0 = wdata.rmodes.get_first_dimension();
+        wdata.n1 = wdata.rmodes.get_second_dimension();
+        // Get depth
+        wdata.depth = wdata.rmodes.get_depth();
+        // Get dimensional length
+        wdata.dimL = wdata.rmodes.getL();
+        // Get dt of HOS data
+        wdata.dt_modes = wdata.rmodes.get_dtout();
+
+        // Allocate pointers for FFTW
+        wdata.eta_mptr = modes_hosgrid::allocate_complex(wdata.n0, wdata.n1);
+        wdata.u_mptr = modes_hosgrid::allocate_complex(wdata.n0, wdata.n1);
+        wdata.v_mptr = modes_hosgrid::allocate_complex(wdata.n0, wdata.n1);
+        wdata.w_mptr = modes_hosgrid::allocate_complex(wdata.n0, wdata.n1);
+
+        // Set up plan for FFTW
+        wdata.plan =
+            modes_hosgrid::plan_ifftw(wdata.n0, wdata.n1, wdata.eta_ptr);
+
+        // Create height vector for velocity mode conversion before
+        // interpolation
+        int flag = interp_to_mfab::create_height_vector(
+            wdata.hvec, wdata.nheights, wdata.dz0, wdata.zsl, -wdata.depth);
+        // Fail if flag indicates it should
+        if (flag > 0) {
+            amrex::Abort(
+                "Waves2AMR ReadInputsOp: create_height_vector error, failure "
+                "code " +
+                std::to_string(flag));
+        }
+
+#endif
 
         // Declare fields for HOS
         auto& w2a_levelset =
@@ -247,21 +291,48 @@ struct InitDataOp<W2AWaves>
         auto& sim = data.sim();
         // cppcheck-suppress constVariable
 
-        auto& m_levelset = sim.repo().get_field("levelset");
-        auto& m_velocity = sim.repo().get_field("velocity");
-        // Set up variables that are re-written at each level
-        RealList eta, u, v, w;
-        int HOS_nx, HOS_ny, HOS_nz;
-        amrex::Real HOS_Lx, HOS_Ly, HOS_zmin, HOS_zmax;
+        auto& levelset = sim.repo().get_field("levelset");
+        auto& velocity = sim.repo().get_field("velocity");
 
         const auto& problo = geom.ProbLoArray();
         const auto& probhi = geom.ProbHiArray();
         const auto& dx = geom.CellSizeArray();
-        // Read HOS data at current level
-        ReadW2AFileLev(
-            level, wdata.HOS_prefix, wdata.HOS_n, wdata.HOS_t, wdata.HOS_dt,
-            eta, u, v, w, HOS_nx, HOS_Lx, HOS_ny, HOS_Ly, HOS_nz, HOS_zmin,
-            HOS_zmax);
+
+        // Get local (to this processor) height vector
+        int flag = interp_to_mfab::get_local_height_indices(
+            wdata.indvec, wdata.hvec, velocity, problo, dx);
+
+        // Check if local processor overlaps with a relaxation zone
+
+        // Work is done if there are no overlapping points
+        if (flag > 0) // add conditional about relax zone
+        {
+            return;
+        }
+        // Read data at current time
+        wdata.rmodes.get_data(
+            sim.time().current_time(), wdata.mX, wdata.mY, wdata.mZ, wdata.mFS);
+
+        // Convert modes to spatial data
+        modes_hosgrid::copy_complex(
+            wdata.n0, wdata.n1, wdata.mFS, wdata.eta_mptr);
+        wdata.sp_eta_vec.resize(wdata.n0 * wdata.n1, 0.0);
+        modes_hosgrid::populate_hos_eta(
+            wdata.rmodes, wdata.plan, wdata.eta_mptr, wdata.sp_eta_vec);
+        wdata.sp_u_vec.resize(wdata.n0 * wdata.n1 * wdata.indvec.size());
+        wdata.sp_v_vec.resize(wdata.n0 * wdata.n1 * wdata.indvec.size());
+        wdata.sp_w_vec.resize(wdata.n0 * wdata.n1 * wdata.indvec.size());
+        for (int iht = 0; iht < wdata.indvec.size(); ++iht) {
+            // Get sample height
+            amrex::Real ht = wdata.hvec[wdata.indvec[iht]];
+            // Sample velocity
+            modes_hosgrid::populate_hos_vel(
+                wdata.rmodes, ht, wdata.mX, wdata.mY, wdata.mZ, wdata.plan,
+                wdata.u_mptr, wdata.v_mptr, wdata.w_mptr, wdata.sp_u_vec,
+                wdata.sp_v_vec, wdata.sp_w_vec);
+        }
+
+        // Interpolate to MultiFabs
 
         // Check if current dimensions are compatible
         if (problo[0] < -1e-6 || probhi[0] > HOS_Lx * (1.0 + 1e-6) ||

@@ -2,6 +2,8 @@
 #define W2AWAVES_H
 
 #include "amr-wind/ocean_waves/relaxation_zones/RelaxationZones.H"
+#include <vector>
+#include <complex>
 #ifdef AMR_WIND_USE_W2A
 #include <Waves2AMR.H>
 #endif
@@ -12,16 +14,45 @@ struct W2AWavesData : public RelaxZonesBaseData
 {
     // Prefix for HOS files
     std::string modes_file{"modes_HOS_SWENSE.dat"};
-    // Index of first timestep to be used (in filename)
-    int HOS_n0{0};
-    // Current index
-    int HOS_n{0};
+    // Number of modes in each direction
+    int n0{0};
+    int n1{0};
+    // Depth of reference sim
+    amrex::Real depth{0.};
+    // Length to dimensionalize nondim data
+    amrex::Real dimL{0.};
+    // Timestep of reference data
+    amrex::Real dt_modes{0.0};
     // Time when ow arrays were last changed (last timestep)
     amrex::Real t_last{-1.0};
     // Time of current HOS lists
-    amrex::Real HOS_t{0.0};
-    // Timestep from HOS data
-    amrex::Real HOS_dt{0.0};
+    amrex::Real t{0.0};
+    
+
+    // Vectors to store modes
+    std::vector<std::complex<double>> mX, mY, mZ, mFS;
+
+// Struct variables that have special types
+#ifdef AMR_WIND_USE_W2A
+    // FFTW plan
+    fftw_plan plan;
+    // FFTW pointers to store modes ready for ifft
+    fftw_complex *eta_mptr, u_mptr, v_mptr, w_mptr;
+    // ReadModes object
+    ReadModes rmodes;
+#endif
+
+    // Height vector (where velocity is sampled) stuff
+    amrex::Vector<amrex::Real> hvec;
+    // Index vector (overlap b/w heights and processor)
+    amrex::Vector<int> indvec;
+    // Cell height of interpolation grid near interface
+    amrex::Real dz0{0.};
+    // Number of sampling points
+    int nheights{0};
+    // Vectors for spatial data from transformed modes
+    amrex::Gpu::DeviceVector<amrex::Real> sp_eta_vec, sp_u_vec, sp_v_vec,
+        sp_w_vec;
 };
 
 struct W2AWaves : public RelaxZonesType
