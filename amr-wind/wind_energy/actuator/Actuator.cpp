@@ -190,6 +190,7 @@ void Actuator::update_positions()
     // Sample velocities at the new locations
     if (m_sample_nmhalf &&
         (m_sim.time().current_time() > m_sim.time().start_time())) {
+        // Avoid using mac velocities if at init or restart
         const auto& umac = m_sim.repo().get_field("u_mac");
         const auto& vmac = m_sim.repo().get_field("v_mac");
         const auto& wmac = m_sim.repo().get_field("w_mac");
