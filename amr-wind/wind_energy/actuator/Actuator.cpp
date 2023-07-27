@@ -188,7 +188,8 @@ void Actuator::update_positions()
     m_container->update_positions();
 
     // Sample velocities at the new locations
-    if (m_sample_nmhalf) {
+    if (m_sample_nmhalf &
+        (m_sim.time().current_time() > m_sim.time().start_time())) {
         const auto& umac = m_sim.repo().get_field("u_mac");
         const auto& vmac = m_sim.repo().get_field("v_mac");
         const auto& wmac = m_sim.repo().get_field("w_mac");
