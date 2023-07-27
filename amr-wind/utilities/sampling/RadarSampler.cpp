@@ -181,12 +181,13 @@ void RadarSampler::update_sampling_locations()
     amrex::Real start_time = m_sim.time().start_time();
     amrex::Real dt_sim = m_sim.time().deltaT();
     amrex::Real dt_sample = 1.0 / m_sample_freq;
-    amrex::Real ts_diff = time - m_radar_time;
     amrex::Real st_diff = time - start_time;
 
     if (st_diff < 1.0e-10) {
         m_radar_time = time;
     }
+
+    amrex::Real ts_diff = time - m_radar_time;
 
     // Correction for time mismatch
     int time_corr = (ts_diff > dt_sample) ? int(ts_diff / dt_sample) : 0;
