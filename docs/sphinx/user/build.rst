@@ -80,9 +80,9 @@ Architecture options
 
    Enable `NVIDIA CUDA GPU <https://developer.nvidia.com/cuda-zone>`_ builds. Default: OFF
 
-.. cmakeval:: AMR_WIND_ENABLE_DPCPP
+.. cmakeval:: AMR_WIND_ENABLE_SYCL
 
-   Enable `Intel OneAPI DPC++ <https://software.intel.com/content/www/us/en/develop/tools/oneapi.html>`_ builds. Default: OFF
+   Enable `Intel OneAPI SyCL <https://software.intel.com/content/www/us/en/develop/tools/oneapi.html>`_ builds. Default: OFF
 
 Dependencies
 ~~~~~~~~~~~~~
@@ -154,8 +154,8 @@ General CMake options
 
    Set the C++ compiler used for compiling the code.
 
-   For Intel DPC++ builds (see :cmakeval:`AMR_WIND_ENABLE_DPCPP`) this should be
-   set to `dpcpp`.
+   For Intel SyCL builds (see :cmakeval:`AMR_WIND_ENABLE_SYCL`) this should be
+   set to `icpx`.
 
 .. cmakeval:: CMAKE_C_COMPILER
 

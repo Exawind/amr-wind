@@ -118,7 +118,7 @@ void ReadHOSFileLev(
 }
 
 void StoreHOSDataLoop(
-    HOSWaves::MetaType& wdata,
+    const HOSWaves::MetaType& wdata,
     amrex::Array4<amrex::Real> const& phi,
     amrex::Array4<amrex::Real> const& vel,
     const amrex::Real* dev_eta_data,

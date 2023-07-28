@@ -87,7 +87,7 @@ void TimeAveraging::post_advance_work()
     }
 
     const amrex::Real elapsed_time = (cur_time - m_start_time);
-    for (auto& avg : m_averages) {
+    for (const auto& avg : m_averages) {
         (*avg)(time, m_filter, elapsed_time);
     }
 }

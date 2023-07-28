@@ -168,4 +168,129 @@ TEST_F(ActuatorTest, act_container)
     }
 }
 
+TEST_F(ActuatorTest, act_container_macvels)
+{
+    const int nprocs = amrex::ParallelDescriptor::NProcs();
+    if (nprocs > 2) {
+        GTEST_SKIP();
+    }
+
+    const int iproc = amrex::ParallelDescriptor::MyProc();
+    initialize_mesh();
+    auto& umac =
+        sim().repo().declare_field("u_mac", 1, 3, 1, amr_wind::FieldLoc::XFACE);
+    auto& vmac =
+        sim().repo().declare_field("v_mac", 1, 3, 1, amr_wind::FieldLoc::YFACE);
+    auto& wmac =
+        sim().repo().declare_field("w_mac", 1, 3, 1, amr_wind::FieldLoc::ZFACE);
+    auto& density = sim().repo().declare_field("density", 1, 3);
+    init_field(umac);
+    init_field(vmac);
+    init_field(wmac);
+    density.setVal(1.0);
+
+    // Number of turbines in an MPI rank
+    const int num_turbines = 2;
+    // Number of points per turbine
+    const int num_nodes = 16;
+
+    TestActContainer ac(mesh(), num_turbines);
+    auto& data = ac.get_data_obj();
+
+    for (int it = 0; it < num_turbines; ++it) {
+        data.num_pts[it] = num_nodes;
+    }
+
+    ac.initialize_container();
+
+    {
+        const int lev = 0;
+        int idx = 0;
+        const amrex::Real dz = mesh().Geom(lev).CellSize(2);
+        const amrex::Real ypos = 32.0 * (iproc + 1);
+        auto& pvec = data.position;
+        for (int it = 0; it < num_turbines; ++it) {
+            const amrex::Real xpos = 32.0 * (it + 1);
+            for (int ni = 0; ni < num_nodes; ++ni) {
+                const amrex::Real zpos = (ni + 0.5) * dz;
+
+                pvec[idx].x() = xpos;
+                pvec[idx].y() = ypos;
+                pvec[idx].z() = zpos;
+                ++idx;
+            }
+        }
+        ASSERT_EQ(idx, ac.num_actuator_points());
+    }
+
+    ac.update_positions();
+
+    // Check that the update positions scattered the particles to the MPI rank
+    // that contains the cell enclosing the particle location
+#ifndef AMREX_USE_GPU
+    ASSERT_EQ(
+        ac.num_actuator_points() * nprocs, ac.NumberOfParticlesAtLevel(0));
+#endif
+    {
+        using ParIter = amr_wind::actuator::ActuatorContainer::ParIterType;
+        int total_particles = 0;
+        const int lev = 0;
+        for (ParIter pti(ac, lev); pti.isValid(); ++pti) {
+            total_particles += pti.numParticles();
+        }
+
+        if (iproc == 0) {
+            ASSERT_EQ(num_turbines * num_nodes * nprocs, total_particles);
+        } else {
+            ASSERT_EQ(total_particles, 0);
+        }
+    }
+
+    ac.sample_fields(umac, vmac, wmac, density);
+    ac.Redistribute();
+
+    // Check to make sure that the velocity sampling gathered the particles back
+    // to their original MPI ranks
+#ifndef AMREX_USE_GPU
+    ASSERT_EQ(
+        ac.num_actuator_points() * nprocs, ac.NumberOfParticlesAtLevel(0));
+#endif
+    {
+        using ParIter = amr_wind::actuator::ActuatorContainer::ParIterType;
+        int counter = 0;
+        int total_particles = 0;
+        const int lev = 0;
+        for (ParIter pti(ac, lev); pti.isValid(); ++pti) {
+            ++counter;
+            total_particles += pti.numParticles();
+        }
+
+        // All particles should have been recalled back to the same patch within
+        // each MPI rank
+        ASSERT_EQ(counter, 1);
+        // Total number of particles should be the same as what this MPI rank
+        // created
+        ASSERT_EQ(num_turbines * num_nodes, total_particles);
+    }
+
+    // Check the interpolated velocity field
+    {
+        namespace vs = amr_wind::vs;
+        constexpr amrex::Real rtol = 1.0e-12;
+        amrex::Real rerr = 0.0;
+        const int npts = ac.num_actuator_points();
+        const auto& pvec = data.position;
+        const auto& vvec = data.velocity;
+        for (int ip = 0; ip < npts; ++ip) {
+            const auto& pos = pvec[ip];
+            const auto& pvel = vvec[ip];
+
+            const amrex::Real vval = pos.x() + pos.y() + pos.z();
+            const vs::Vector vgold{vval, vval, vval};
+            rerr += vs::mag_sqr(pvel - vgold);
+        }
+        EXPECT_NEAR(rerr, 0.0, rtol);
+    }
+}
+
 } // namespace amr_wind_tests

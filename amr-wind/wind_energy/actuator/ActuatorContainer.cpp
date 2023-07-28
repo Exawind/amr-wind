@@ -213,6 +213,29 @@ void ActuatorContainer::sample_fields(const Field& vel, const Field& density)
     m_is_scattered = false;
 }
 
+void ActuatorContainer::sample_fields(
+    const Field& umac,
+    const Field& vmac,
+    const Field& wmac,
+    const Field& density)
+{
+    BL_PROFILE("amr-wind::actuator::ActuatorContainer::sample_velocities");
+    AMREX_ALWAYS_ASSERT(m_container_initialized && m_is_scattered);
+
+    // Sample velocity field
+    interpolate_fields(umac, vmac, wmac, density);
+
+    // Recall particles to the MPI ranks that contains their corresponding
+    // turbines
+    // Redistribute();
+
+    // Populate the velocity buffer that all actuator instances can access
+    populate_field_buffers();
+
+    // Indicate that the particles have been restored to their original MPI rank
+    m_is_scattered = false;
+}
+
 /** Helper method for ActuatorContainer::sample_fields
  *
  *  Loops over the particle tiles and copies velocity data from particles to the
@@ -340,6 +363,128 @@ void ActuatorContainer::interpolate_fields(
                     // to the MPI ranks with the turbines upon redistribution
                     pp.pos(ic) = dptr[iproc][ic];
                 }
+
+                // density
+                pp.rdata(AMREX_SPACEDIM) =
+                    wx_lo * wy_lo * wz_lo * darr(i, j, k) +
+                    wx_lo * wy_lo * wz_hi * darr(i, j, k + 1) +
+                    wx_lo * wy_hi * wz_lo * darr(i, j + 1, k) +
+                    wx_lo * wy_hi * wz_hi * darr(i, j + 1, k + 1) +
+                    wx_hi * wy_lo * wz_lo * darr(i + 1, j, k) +
+                    wx_hi * wy_lo * wz_hi * darr(i + 1, j, k + 1) +
+                    wx_hi * wy_hi * wz_lo * darr(i + 1, j + 1, k) +
+                    wx_hi * wy_hi * wz_hi * darr(i + 1, j + 1, k + 1);
+            });
+        }
+    }
+}
+
+void ActuatorContainer::interpolate_fields(
+    const Field& umac,
+    const Field& vmac,
+    const Field& wmac,
+    const Field& density)
+{
+    BL_PROFILE("amr-wind::actuator::ActuatorContainer::interpolate_velocities");
+    auto* dptr = m_pos_device.data();
+    const int nlevels = m_mesh.finestLevel() + 1;
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& geom = m_mesh.Geom(lev);
+        const auto dx = geom.CellSizeArray();
+        const auto dxi = geom.InvCellSizeArray();
+        const auto plo = geom.ProbLoArray();
+
+        for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
+            const int np = pti.numParticles();
+            auto* pstruct = pti.GetArrayOfStructs()().data();
+            const auto uarr = umac(lev).const_array(pti);
+            const auto varr = vmac(lev).const_array(pti);
+            const auto warr = wmac(lev).const_array(pti);
+            const auto darr = density(lev).const_array(pti);
+
+            amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
+                auto& pp = pstruct[ip];
+                // Determine offsets within the containing cell
+                const amrex::Real x =
+                    (pp.pos(0) - plo[0] - 0.5 * dx[0]) * dxi[0];
+                const amrex::Real y =
+                    (pp.pos(1) - plo[1] - 0.5 * dx[1]) * dxi[1];
+                const amrex::Real z =
+                    (pp.pos(2) - plo[2] - 0.5 * dx[2]) * dxi[2];
+
+                const amrex::Real xf = (pp.pos(0) - plo[0]) * dxi[0];
+                const amrex::Real yf = (pp.pos(1) - plo[1]) * dxi[1];
+                const amrex::Real zf = (pp.pos(2) - plo[2]) * dxi[2];
+
+                // Index of the low corner
+                const int i = static_cast<int>(std::floor(x));
+                const int j = static_cast<int>(std::floor(y));
+                const int k = static_cast<int>(std::floor(z));
+
+                const int i_f = static_cast<int>(std::floor(xf));
+                const int j_f = static_cast<int>(std::floor(yf));
+                const int k_f = static_cast<int>(std::floor(zf));
+
+                // Interpolation weights in each direction (linear basis)
+                const amrex::Real wx_hi = (x - i);
+                const amrex::Real wy_hi = (y - j);
+                const amrex::Real wz_hi = (z - k);
+
+                const amrex::Real wx_lo = 1.0 - wx_hi;
+                const amrex::Real wy_lo = 1.0 - wy_hi;
+                const amrex::Real wz_lo = 1.0 - wz_hi;
+
+                const amrex::Real wxf_hi = (xf - i_f);
+                const amrex::Real wyf_hi = (yf - j_f);
+                const amrex::Real wzf_hi = (zf - k_f);
+
+                const amrex::Real wxf_lo = 1.0 - wxf_hi;
+                const amrex::Real wyf_lo = 1.0 - wyf_hi;
+                const amrex::Real wzf_lo = 1.0 - wzf_hi;
+
+                const int iproc = pp.cpu();
+
+                // u
+                int ic = 0;
+                pp.rdata(ic) =
+                    wxf_lo * wy_lo * wz_lo * uarr(i_f, j, k) +
+                    wxf_lo * wy_lo * wz_hi * uarr(i_f, j, k + 1) +
+                    wxf_lo * wy_hi * wz_lo * uarr(i_f, j + 1, k) +
+                    wxf_lo * wy_hi * wz_hi * uarr(i_f, j + 1, k + 1) +
+                    wxf_hi * wy_lo * wz_lo * uarr(i_f + 1, j, k) +
+                    wxf_hi * wy_lo * wz_hi * uarr(i_f + 1, j, k + 1) +
+                    wxf_hi * wy_hi * wz_lo * uarr(i_f + 1, j + 1, k) +
+                    wxf_hi * wy_hi * wz_hi * uarr(i_f + 1, j + 1, k + 1);
+
+                // Reset position vectors so that the particles return back
+                // to the MPI ranks with the turbines upon redistribution
+                pp.pos(ic) = dptr[iproc][ic];
+
+                // v
+                ic = 1;
+                pp.rdata(ic) =
+                    wx_lo * wyf_lo * wz_lo * varr(i, j_f, k) +
+                    wx_lo * wyf_lo * wz_hi * varr(i, j_f, k + 1) +
+                    wx_lo * wyf_hi * wz_lo * varr(i, j_f + 1, k) +
+                    wx_lo * wyf_hi * wz_hi * varr(i, j_f + 1, k + 1) +
+                    wx_hi * wyf_lo * wz_lo * varr(i + 1, j_f, k) +
+                    wx_hi * wyf_lo * wz_hi * varr(i + 1, j_f, k + 1) +
+                    wx_hi * wyf_hi * wz_lo * varr(i + 1, j_f + 1, k) +
+                    wx_hi * wyf_hi * wz_hi * varr(i + 1, j_f + 1, k + 1);
+                pp.pos(ic) = dptr[iproc][ic];
+
+                // w
+                ic = 2;
+                pp.rdata(ic) =
+                    wx_lo * wy_lo * wzf_lo * warr(i, j, k_f) +
+                    wx_lo * wy_lo * wzf_hi * warr(i, j, k_f + 1) +
+                    wx_lo * wy_hi * wzf_lo * warr(i, j + 1, k_f) +
+                    wx_lo * wy_hi * wzf_hi * warr(i, j + 1, k_f + 1) +
+                    wx_hi * wy_lo * wzf_lo * warr(i + 1, j, k_f) +
+                    wx_hi * wy_lo * wzf_hi * warr(i + 1, j, k_f + 1) +
+                    wx_hi * wy_hi * wzf_lo * warr(i + 1, j + 1, k_f) +
+                    wx_hi * wy_hi * wzf_hi * warr(i + 1, j + 1, k_f + 1);
+                pp.pos(ic) = dptr[iproc][ic];
 
                 // density
                 pp.rdata(AMREX_SPACEDIM) =

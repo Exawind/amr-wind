@@ -22,10 +22,10 @@ amrex::Real get_vel_min(
     const int vdir);
 
 amrex::Real get_vel_loc(
-    amrex::MultiFab& vel,
-    amrex::iMultiFab& level_mask,
-    int vdir,
-    int ldir,
+    const amrex::MultiFab& vel,
+    const amrex::iMultiFab& level_mask,
+    const int vdir,
+    const int ldir,
     amrex::Real vel_max,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> problo,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx);
@@ -47,10 +47,10 @@ amrex::Real get_macvel_min(
     const int vdir);
 
 amrex::Real get_macvel_loc(
-    amrex::MultiFab& macvel,
-    amrex::iMultiFab& level_mask,
-    int vdir,
-    int ldir,
+    const amrex::MultiFab& macvel,
+    const amrex::iMultiFab& level_mask,
+    const int vdir,
+    const int ldir,
     amrex::Real vel_max,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> problo,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx);
