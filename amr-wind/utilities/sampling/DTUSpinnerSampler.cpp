@@ -319,22 +319,21 @@ void DTUSpinnerSampler::update_sampling_locations()
     }
 #endif
 
-    // amrex::Real time = m_sim.time().current_time();
     // Sampling called in post_advance so time should be new_time
+    // Not current_time()
     amrex::Real time = m_sim.time().new_time();
     amrex::Real start_time = m_sim.time().start_time();
     amrex::Real dt_sim = m_sim.time().deltaT();
-    amrex::Real ts_diff = time - m_time_sampling;
     const amrex::Real dt_s = m_scan_time / m_num_samples;
 
-    // amrex::Print() << "Running update sampling locations at time: " << time
-    // << std::endl;
 
     // Initialize the sampling time to the first time in the simulation
     if (time == start_time && m_update_count == 0) {
         m_time_sampling = time;
         m_hub_location_init = m_hub_location;
     }
+
+    amrex::Real ts_diff = time - m_time_sampling;
 
     // Correction for time mismatch
     int time_corr = (ts_diff > dt_s) ? int(ts_diff / dt_s) : 0;

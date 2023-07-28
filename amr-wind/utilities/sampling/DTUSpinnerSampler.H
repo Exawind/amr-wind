@@ -73,8 +73,12 @@ public:
         const size_t /*unused*/) const override;
 
 private:
+    // Number of subsamples in this timestep
     int m_ns{1};
+
+    // Max number of subsamples in all timesteps
     int m_ntotal{1};
+
     int m_update_count{0};
     amrex::Real radtodeg{180.0 / M_PI};
     amrex::Real pi{M_PI};
