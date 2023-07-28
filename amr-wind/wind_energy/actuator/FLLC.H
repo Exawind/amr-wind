@@ -18,6 +18,7 @@ struct FLLCData
     FLLCType correction_type{FLLCType::VariableChord};
     amrex::Real epsilon;
     amrex::Real relaxation_factor{0.1};
+    amrex::Real fllc_start_time{0.0};
     RealList dr;
     RealList optimal_epsilon;
 

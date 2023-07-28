@@ -364,7 +364,7 @@ TEST_F(ABLMeshTest, coriolis_const_vel)
 
     // Velocity in x-direction test
     {
-        amrex::Real golds[AMREX_SPACEDIM] = {
+        const amrex::Real golds[AMREX_SPACEDIM] = {
             0.0, -corfac * latfac * vel_comp, corfac * latfac * vel_comp};
         vel.setVal(0.0);
         src_term.setVal(0.0);
@@ -388,7 +388,7 @@ TEST_F(ABLMeshTest, coriolis_const_vel)
 
     // Velocity in y-direction test
     {
-        amrex::Real golds[AMREX_SPACEDIM] = {
+        const amrex::Real golds[AMREX_SPACEDIM] = {
             corfac * latfac * vel_comp, 0.0, 0.0};
         vel.setVal(0.0);
         src_term.setVal(0.0);

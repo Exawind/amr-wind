@@ -3,6 +3,7 @@
 #include "aw_test_utils/test_utils.H"
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/equation_systems/vof/volume_fractions.H"
+#include "amr-wind/equation_systems/vof/vof_hybridsolver_ops.H"
 
 namespace amr_wind_tests {
 
@@ -78,6 +79,9 @@ void initialize_volume_fractions(
         // Set up some multiphase cells
         if (i + j + k > 5) {
             vof_arr(i, j, k) = 0.3;
+        }
+        if (i + j + k > 10) {
+            vof_arr(i, j, k) = 0.7;
         }
         // Set up a liquid cell
         if (i == 0 && j == 0 && k == 0) {
@@ -199,6 +203,55 @@ amrex::Real interface_band_test_impl(amr_wind::Field& vof)
     return error_total;
 }
 
+amrex::Real sharpen_test_impl(amr_wind::Field& vof)
+{
+    amrex::Real error_total = 0;
+
+    for (int lev = 0; lev < vof.repo().num_active_levels(); ++lev) {
+
+        error_total += amrex::ReduceSum(
+            vof(lev), 0,
+            [=] AMREX_GPU_HOST_DEVICE(
+                amrex::Box const& bx,
+                amrex::Array4<amrex::Real const> const& vof_arr)
+                -> amrex::Real {
+                amrex::Real error = 0;
+
+                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                    // Initial VOF distribution is 0, 0.3, 0.7, or 1.0
+                    // Expected answer based on implementation of
+                    // amr_wind::multiphase::sharpen_kernel
+                    amrex::Real vof_answer = 0.0;
+                    if (i + j + k > 5) {
+                        // because VOF < 0.5
+                        const amrex::Real sign = -1.0;
+                        const amrex::Real delta = std::abs(0.3 - 0.5);
+                        vof_answer = 0.5 + sign * std::pow(delta, 1.0 / 3.0);
+                    }
+                    if (i + j + k > 10) {
+                        // because VOF > 0.5
+                        const amrex::Real sign = 1.0;
+                        const amrex::Real delta = std::abs(0.7 - 0.5);
+                        vof_answer = 0.5 + sign * std::pow(delta, 1.0 / 3.0);
+                    }
+                    // Set up a liquid cell
+                    if (i == 0 && j == 0 && k == 0) {
+                        vof_answer = 1.0;
+                    }
+
+                    // Limit answer to VOF bounds
+                    vof_answer = std::max(0.0, std::min(1.0, vof_answer));
+
+                    // Difference between actual and expected
+                    error += std::abs(vof_arr(i, j, k) - vof_answer);
+                });
+
+                return error;
+            });
+    }
+    return error_total;
+}
+
 } // namespace
 
 TEST_F(VOFToolTest, interface_band)
@@ -257,6 +310,37 @@ TEST_F(VOFToolTest, levelset_to_vof)
     error_total = levelset_to_vof_test_impl(dx, levelset);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
     EXPECT_NEAR(error_total, 0.0, 0.016);
+}
+
+TEST_F(VOFToolTest, sharpen_acquired_vof)
+{
+
+    populate_parameters();
+    {
+        amrex::ParmParse pp("geometry");
+        amrex::Vector<int> periodic{{0, 0, 0}};
+        pp.addarr("is_periodic", periodic);
+    }
+
+    initialize_mesh();
+
+    auto& repo = sim().repo();
+    const int ncomp = 1;
+    const int nghost = 3;
+    const int nghost_int = 1;
+    auto& vof = repo.declare_field("vof", ncomp, nghost);
+    auto& iblank = repo.declare_int_field("iblank_cell", ncomp, nghost_int);
+
+    // Use as if entire domain is from nalu
+    iblank.setVal(-1);
+    // Initialize and sharpen vof
+    init_vof(vof);
+    amr_wind::multiphase::sharpen_acquired_vof(1, iblank, vof);
+
+    // Check results
+    amrex::Real error_total = sharpen_test_impl(vof);
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
+    EXPECT_NEAR(error_total, 0.0, 1e-15);
 }
 
 } // namespace amr_wind_tests

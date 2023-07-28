@@ -27,6 +27,9 @@ void optional_parameters(JoukowskyData& meta, const utils::ActParser& pp)
     pp.query("root_correction_exponent", meta.root_correction_exponent);
     pp.query("root_correction_coefficient", meta.root_correction_coefficient);
     pp.query("num_blades", meta.num_blades);
+    pp.query("ct_region2", meta.Ct_rated);
+    pp.query("S0_alpha1", meta.S0_alpha1);
+    pp.query("S0_alpha2", meta.S0_alpha2);
 }
 
 void required_parameters(JoukowskyData& meta, const utils::ActParser& pp)
@@ -90,7 +93,7 @@ void prepare_netcdf_file(
     const std::string nr_name = "num_radial_points";
 
     ncf.enter_def_mode();
-    ncf.put_attr("title", "AMR-Wind ActuatorDisk actuator output");
+    ncf.put_attr("title", "AMR-Wind ActuatorDisk actuator output [Joukowsky]");
     ncf.put_attr("version", ioutils::amr_wind_version());
     ncf.put_attr("created_on", ioutils::timestamp());
     ncf.def_dim(nt_name, NC_UNLIMITED);

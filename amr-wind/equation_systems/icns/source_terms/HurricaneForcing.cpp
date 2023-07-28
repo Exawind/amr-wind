@@ -21,14 +21,12 @@ HurricaneForcing::HurricaneForcing(const CFDSim& sim) : m_mesh(sim.mesh())
         amrex::ParmParse pp("CoriolisForcing");
         amrex::Real rot_time_period = 86400.0;
         pp.query("rotational_time_period", rot_time_period);
-        m_coriolis_factor = 2.0 * utils::two_pi() / rot_time_period;
-        amrex::Print() << "Geostrophic forcing: Coriolis factor = "
-                       << m_coriolis_factor << std::endl;
         amrex::Real latitude = 90.0;
         pp.query("latitude", latitude);
-        AMREX_ALWAYS_ASSERT(
-            amrex::Math::abs(latitude - 90.0) <
-            static_cast<amrex::Real>(vs::DTraits<float>::eps()));
+        m_coriolis_factor = (2.0 * utils::two_pi() / rot_time_period) *
+                            std::sin(utils::radians(latitude));
+        amrex::Print() << "Geostrophic forcing: Coriolis factor = "
+                       << m_coriolis_factor << std::endl;
     }
 
     {
