@@ -345,9 +345,9 @@ jobs:
           -DAMR_WIND_ENABLE_CLANG_TIDY:BOOL=ON \
           ${{github.workspace}}
       - name: Check
+        working-directory: ${{runner.workspace}}/build-clang-tidy
         run: |
-          cmake --build ${{runner.workspace}}/build-clang-tidy --parallel ${{env.NPROCS}} 2>&1 | \
-            tee -a clang-tidy-full-report.txt
+          cmake --build . --parallel ${{env.NPROCS}} 2>&1 | tee -a clang-tidy-full-report.txt
           cat clang-tidy-full-report.txt | grep "warning:" | grep -v "submods" | sort | uniq | \
             awk 'BEGIN{i=0}{print $0}{i++}END{print "Warnings: "i}' > clang-tidy-ci-report.txt
       - name: Full report
