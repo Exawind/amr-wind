@@ -12,7 +12,7 @@
 #include "amr-wind/equation_systems/BCOps.H"
 
 namespace amr_wind::ocean_waves::ops {
-
+/*
 void StoreW2ADataLoop(
     const W2AWaves::MetaType& wdata,
     amrex::Array4<amrex::Real> const& phi,
@@ -198,7 +198,7 @@ void StoreW2ADataLoop(
         }
     });
 }
-
+*/
 template <>
 struct ReadInputsOp<W2AWaves>
 {
@@ -220,10 +220,10 @@ struct ReadInputsOp<W2AWaves>
 
         pp.get("HOS_modes_filename", wdata.modes_file);
 
-#ifdef AMR_WIND_USE_W2A
+        //#ifdef AMR_WIND_USE_W2A
 
         // Initialize mode reader
-        wdata.rmodes(modes_file);
+        wdata.rmodes.initialize(wdata.modes_file);
 
         // Initialize variables to store modes
         int vsize = wdata.rmodes.get_vector_size();
@@ -236,10 +236,13 @@ struct ReadInputsOp<W2AWaves>
         // Get dimensions of data
         wdata.n0 = wdata.rmodes.get_first_dimension();
         wdata.n1 = wdata.rmodes.get_second_dimension();
+        // Get resolution
+        wdata.dx0 = wdata.rmodes.get_xlen() / wdata.n0;
+        wdata.dx1 = wdata.rmodes.get_ylen() / wdata.n1;
         // Get depth
         wdata.depth = wdata.rmodes.get_depth();
         // Get dimensional length
-        wdata.dimL = wdata.rmodes.getL();
+        wdata.dimL = wdata.rmodes.get_L();
         // Get dt of HOS data
         wdata.dt_modes = wdata.rmodes.get_dtout();
 
@@ -251,7 +254,7 @@ struct ReadInputsOp<W2AWaves>
 
         // Set up plan for FFTW
         wdata.plan =
-            modes_hosgrid::plan_ifftw(wdata.n0, wdata.n1, wdata.eta_ptr);
+            modes_hosgrid::plan_ifftw(wdata.n0, wdata.n1, wdata.eta_mptr);
 
         // Create height vector for velocity mode conversion before
         // interpolation
@@ -265,7 +268,7 @@ struct ReadInputsOp<W2AWaves>
                 std::to_string(flag));
         }
 
-#endif
+        //#endif
 
         // Declare fields for HOS
         auto& w2a_levelset =
@@ -299,8 +302,10 @@ struct InitDataOp<W2AWaves>
         const auto& dx = geom.CellSizeArray();
 
         // Get local (to this processor) height vector
+        amrex::Vector<int> indvec;
         int flag = interp_to_mfab::get_local_height_indices(
-            wdata.indvec, wdata.hvec, velocity, problo, dx);
+            indvec, wdata.hvec, velocity(level), problo, dx);
+        // !!! Need to figure out how to use indvec with multiple levels !!! //
 
         // Check if local processor overlaps with a relaxation zone
 
@@ -319,12 +324,12 @@ struct InitDataOp<W2AWaves>
         wdata.sp_eta_vec.resize(wdata.n0 * wdata.n1, 0.0);
         modes_hosgrid::populate_hos_eta(
             wdata.rmodes, wdata.plan, wdata.eta_mptr, wdata.sp_eta_vec);
-        wdata.sp_u_vec.resize(wdata.n0 * wdata.n1 * wdata.indvec.size());
-        wdata.sp_v_vec.resize(wdata.n0 * wdata.n1 * wdata.indvec.size());
-        wdata.sp_w_vec.resize(wdata.n0 * wdata.n1 * wdata.indvec.size());
-        for (int iht = 0; iht < wdata.indvec.size(); ++iht) {
+        wdata.sp_u_vec.resize(wdata.n0 * wdata.n1 * indvec.size());
+        wdata.sp_v_vec.resize(wdata.n0 * wdata.n1 * indvec.size());
+        wdata.sp_w_vec.resize(wdata.n0 * wdata.n1 * indvec.size());
+        for (int iht = 0; iht < indvec.size(); ++iht) {
             // Get sample height
-            amrex::Real ht = wdata.hvec[wdata.indvec[iht]];
+            amrex::Real ht = wdata.hvec[indvec[iht]];
             // Sample velocity
             modes_hosgrid::populate_hos_vel(
                 wdata.rmodes, ht, wdata.mX, wdata.mY, wdata.mZ, wdata.plan,
@@ -332,66 +337,70 @@ struct InitDataOp<W2AWaves>
                 wdata.sp_v_vec, wdata.sp_w_vec);
         }
 
-        // Interpolate to MultiFabs
+        // Interpolate to MultiFabs (one level at a time)
+        interp_to_mfab::interp_eta_to_levelset_multifab(
+            wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, wdata.zsl,
+            wdata.sp_eta_vec, levelset(level), problo, dx);
+        interp_to_mfab::interp_velocity_to_multifab(
+            wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, indvec, wdata.hvec,
+            wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec, velocity(level),
+            problo, dx);
 
-        // Check if current dimensions are compatible
-        if (problo[0] < -1e-6 || probhi[0] > HOS_Lx * (1.0 + 1e-6) ||
-            problo[1] < -1e-6 || probhi[1] > HOS_Ly * (1.0 + 1e-6)) {
-            amrex::Abort(
-                "HOS OceanWaves: Lateral dimensions incompatible, level " +
-                std::to_string(level));
-        }
-        amrex::Gpu::DeviceVector<amrex::Real> dev_eta, dev_u, dev_v, dev_w;
-        dev_eta.resize(static_cast<long>(HOS_nx) * HOS_ny);
-        dev_u.resize(static_cast<long>(HOS_nx) * HOS_ny * HOS_nz);
-        dev_v.resize(static_cast<long>(HOS_nx) * HOS_ny * HOS_nz);
-        dev_w.resize(static_cast<long>(HOS_nx) * HOS_ny * HOS_nz);
+        /*
+                // Check if current dimensions are compatible
+                if (problo[0] < -1e-6 || probhi[0] > HOS_Lx * (1.0 + 1e-6) ||
+                    problo[1] < -1e-6 || probhi[1] > HOS_Ly * (1.0 + 1e-6)) {
+                    amrex::Abort(
+                        "HOS OceanWaves: Lateral dimensions incompatible, level
+           " + std::to_string(level));
+                }
+                amrex::Gpu::DeviceVector<amrex::Real> dev_eta, dev_u, dev_v,
+           dev_w; dev_eta.resize(static_cast<long>(HOS_nx) * HOS_ny);
+                dev_u.resize(static_cast<long>(HOS_nx) * HOS_ny * HOS_nz);
+                dev_v.resize(static_cast<long>(HOS_nx) * HOS_ny * HOS_nz);
+                dev_w.resize(static_cast<long>(HOS_nx) * HOS_ny * HOS_nz);
 
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, eta.begin(), eta.end(), dev_eta.begin());
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, u.begin(), u.end(), dev_u.begin());
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, v.begin(), v.end(), dev_v.begin());
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, w.begin(), w.end(), dev_w.begin());
+                amrex::Gpu::copy(
+                    amrex::Gpu::hostToDevice, eta.begin(), eta.end(),
+           dev_eta.begin()); amrex::Gpu::copy( amrex::Gpu::hostToDevice,
+           u.begin(), u.end(), dev_u.begin()); amrex::Gpu::copy(
+                    amrex::Gpu::hostToDevice, v.begin(), v.end(),
+           dev_v.begin()); amrex::Gpu::copy( amrex::Gpu::hostToDevice,
+           w.begin(), w.end(), dev_w.begin());
 
-        const amrex::Real* dev_eta_data = dev_eta.data();
-        const amrex::Real* dev_u_data = dev_u.data();
-        const amrex::Real* dev_v_data = dev_v.data();
-        const amrex::Real* dev_w_data = dev_w.data();
-        // Loop to populate field data
-        for (amrex::MFIter mfi(m_levelset(level)); mfi.isValid(); ++mfi) {
-            auto phi = m_levelset(level).array(mfi);
-            auto vel = m_velocity(level).array(mfi);
-            const auto& vbx = mfi.validbox();
-            if (init_waves) {
-                StoreW2ADataLoop(
-                    wdata, phi, vel, dev_eta_data, dev_u_data, dev_v_data,
-                    dev_w_data, HOS_Lx, HOS_nx, HOS_Ly, HOS_ny, HOS_zmin,
-                    HOS_zmax, HOS_nz, problo, dx, vbx);
-            } else {
-                const auto& gbx = grow(vbx, 3);
-                const amrex::Real zsl = wdata.zsl;
-                amrex::ParallelFor(
-                    gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                        phi(i, j, k) = zsl - z;
-                        vel(i, j, k, 0) = 0.0;
-                        vel(i, j, k, 1) = 0.0;
-                        vel(i, j, k, 2) = 0.0;
-                    });
-            }
-        }
+                const amrex::Real* dev_eta_data = dev_eta.data();
+                const amrex::Real* dev_u_data = dev_u.data();
+                const amrex::Real* dev_v_data = dev_v.data();
+                const amrex::Real* dev_w_data = dev_w.data();
+                // Loop to populate field data
+                for (amrex::MFIter mfi(m_levelset(level)); mfi.isValid(); ++mfi)
+           { auto phi = m_levelset(level).array(mfi); auto vel =
+           m_velocity(level).array(mfi); const auto& vbx = mfi.validbox(); if
+           (init_waves) { StoreW2ADataLoop( wdata, phi, vel, dev_eta_data,
+           dev_u_data, dev_v_data, dev_w_data, HOS_Lx, HOS_nx, HOS_Ly, HOS_ny,
+           HOS_zmin, HOS_zmax, HOS_nz, problo, dx, vbx); } else { const auto&
+           gbx = grow(vbx, 3); const amrex::Real zsl = wdata.zsl;
+                        amrex::ParallelFor(
+                            gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k)
+           noexcept { const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                                phi(i, j, k) = zsl - z;
+                                vel(i, j, k, 0) = 0.0;
+                                vel(i, j, k, 1) = 0.0;
+                                vel(i, j, k, 2) = 0.0;
+                            });
+                    }
+                }
+
+                */
         // Average down from top level for consistency
         const int nlevels = sim.repo().num_active_levels();
         if (level == nlevels - 1) {
             for (int lev = nlevels - 1; lev > 0; --lev) {
                 amrex::average_down(
-                    m_velocity(lev), m_velocity(lev - 1), 0, AMREX_SPACEDIM,
+                    velocity(lev), velocity(lev - 1), 0, AMREX_SPACEDIM,
                     sim.mesh().refRatio(lev - 1));
                 amrex::average_down(
-                    m_levelset(lev), m_levelset(lev - 1), 0, 1,
+                    levelset(lev), levelset(lev - 1), 0, 1,
                     sim.mesh().refRatio(lev - 1));
             }
         }
@@ -406,6 +415,8 @@ struct UpdateRelaxZonesOp<W2AWaves>
         auto& wdata = data.meta();
 
         auto& sim = data.sim();
+
+        /*
         // cppcheck-suppress constVariable
         // Nudge the solution toward where it should be
         amrex::Real time = sim.time().new_time();
@@ -459,6 +470,11 @@ struct UpdateRelaxZonesOp<W2AWaves>
 
         // Read HOS data if necessary
         if (read_flag) {
+
+            // Interpolate to fields (vector of MultiFabs)
+            interp_to_mfab::interp_eta_to_levelset_field();
+            interp_to_mfab::interp_velocity_to_field();
+
             // Set up variables that are re-written at each level
             RealList eta, u, v, w;
             int HOS_nx, HOS_ny, HOS_nz;
@@ -549,7 +565,7 @@ struct UpdateRelaxZonesOp<W2AWaves>
                             (time - t_last) / (HOS_t - t_last + 1e-16);
                     });
             }
-        }
+        }*/
     }
 };
 
