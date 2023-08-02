@@ -5,7 +5,7 @@
 #include <vector>
 #include <complex>
 #ifdef AMR_WIND_USE_W2A
-#include <Waves2AMR.H>
+//#include <Waves2AMR.h>
 #endif
 #include "/Users/mkuhn/Waves2AMR/Waves2AMR.h"
 
@@ -31,20 +31,21 @@ struct W2AWavesData : public RelaxZonesBaseData
     amrex::Real t_last{-1.0};
     // Time of current HOS lists
     amrex::Real t{0.0};
-    
+    // Timestep of current HOS lists
+    int ntime{0};
 
     // Vectors to store modes
     std::vector<std::complex<double>> mX, mY, mZ, mFS;
 
-// Struct variables that have special types
-//#ifdef AMR_WIND_USE_W2A
+    // Struct variables that have special types
+    //#ifdef AMR_WIND_USE_W2A
     // FFTW plan
     fftw_plan plan;
     // FFTW pointers to store modes ready for ifft
     fftw_complex *eta_mptr, *u_mptr, *v_mptr, *w_mptr;
     // ReadModes object
     ReadModes rmodes;
-//#endif
+    //#endif
 
     // Height vector (where velocity is sampled) stuff
     amrex::Vector<amrex::Real> hvec;

@@ -77,13 +77,6 @@ if (AMR_WIND_ENABLE_UMPIRE)
   include_directories(SYSTEM ${UMPIRE_INCLUDE_DIRS})
 endif()
 
-if(AMR_WIND_ENABLE_W2A)
-  set(CMAKE_PREFIX_PATH ${W2A_DIR} ${CMAKE_PREFIX_PATH})
-  find_package(Waves2AMR REQUIRED)
-  target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_W2A)
-  target_link_libraries_system(${amr_wind_lib_name} PUBLIC Waves2AMR::Waves2AMR)
-endif()
-
 if(AMR_WIND_TEST_WITH_FCOMPARE)
   set(AMR_WIND_ENABLE_FCOMPARE ON)
 endif()
@@ -190,6 +183,13 @@ if(AMR_WIND_ENABLE_HELICS)
   target_include_directories(${amr_wind_lib_name} PUBLIC ${HELICS_INSTALL_DIR}/include)
   target_link_libraries(${amr_wind_lib_name} PUBLIC HELICS::helicsCpp98)
   target_compile_definitions(${amr_wind_lib_name} PRIVATE AMR_WIND_USE_HELICS)
+endif()
+
+if(AMR_WIND_ENABLE_W2A)
+  set(CMAKE_PREFIX_PATH ${W2A_DIR} ${CMAKE_PREFIX_PATH})
+  set(W2A_lib /Users/mkuhn/Waves2AMR/build/libWaves2AMR.dylib)
+  target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_W2A)
+  target_link_libraries(${amr_wind_lib_name} PUBLIC ${W2A_lib})
 endif()
 
 #Build amr-wind and link to amrex library
