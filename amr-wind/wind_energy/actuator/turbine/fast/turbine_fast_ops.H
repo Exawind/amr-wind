@@ -243,7 +243,7 @@ struct InitDataOp<TurbineFast, SrcTrait>
         amrex::ParallelDescriptor::Comm_dup(
             amrex::ParallelDescriptor::Communicator(), tdata.tcomm);
 
-        int sz_info[4]{0, 0, 0, 0};
+        int sz_info[5]{0, 0, 0, 0, 0};
         if (info.is_root_proc) {
             tdata.fast->init_turbine(tdata.fast_data.tid_local);
 
@@ -252,6 +252,7 @@ struct InitDataOp<TurbineFast, SrcTrait>
             sz_info[1] = tf.to_cfd.fx_Len;
             sz_info[2] = tf.from_cfd.u_Len;
             sz_info[3] = tf.num_pts_tower;
+            sz_info[4] = tf.num_blade_elem;
         }
 
         // Broadcast data to everyone
@@ -262,7 +263,7 @@ struct InitDataOp<TurbineFast, SrcTrait>
             tdata.num_blades = sz_info[0];
             // back calculate what the value per blade for number of points in
             // the openfast data structure
-            tdata.num_vel_pts_blade = sz_info[2] / tdata.num_blades;
+            tdata.num_vel_pts_blade = sz_info[4];
             data.grid().resize(sz_info[1], sz_info[2]);
             tdata.chord.resize(sz_info[1]);
             tdata.num_pts_tower = sz_info[3];
