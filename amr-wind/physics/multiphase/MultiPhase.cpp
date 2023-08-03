@@ -325,13 +325,13 @@ void MultiPhase::set_density_via_levelset()
     m_density.fillpatch(m_sim.time().current_time());
 }
 
-void MultiPhase::set_density_via_vof()
+void MultiPhase::set_density_via_vof(amr_wind::FieldState fstate)
 {
     const int nlevels = m_sim.repo().num_active_levels();
 
     for (int lev = 0; lev < nlevels; ++lev) {
-        auto& density = m_density(lev);
-        auto& vof = (*m_vof)(lev);
+        auto& density = m_density.state(fstate)(lev);
+        auto& vof = (*m_vof).state(fstate)(lev);
 
         for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
             const auto& vbx = mfi.validbox();
