@@ -34,7 +34,7 @@ struct ReadInputsOp<W2AWaves>
 
         pp.get("HOS_modes_filename", wdata.modes_file);
 
-        //#ifdef AMR_WIND_USE_W2A
+#ifdef AMR_WIND_USE_W2A
 
         // Initialize mode reader
         wdata.rmodes.initialize(wdata.modes_file);
@@ -82,7 +82,7 @@ struct ReadInputsOp<W2AWaves>
                 std::to_string(flag));
         }
 
-        //#endif
+#endif
 
         // Declare fields for HOS
         auto& w2a_levelset =
@@ -113,6 +113,8 @@ struct InitDataOp<W2AWaves>
 
         const auto& problo = geom.ProbLoArray();
         const auto& dx = geom.CellSizeArray();
+
+#ifdef AMR_WIND_USE_W2A
 
         // Get local (to this processor) height vector
         amrex::Vector<int> indvec;
@@ -173,6 +175,8 @@ struct InitDataOp<W2AWaves>
             wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, indvec, wdata.hvec,
             wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec, velocity(level),
             problo, dx);
+
+#endif
 
         // Average down from top level for consistency
         const int nlevels = sim.repo().num_active_levels();
@@ -254,6 +258,8 @@ struct UpdateRelaxZonesOp<W2AWaves>
         // Read HOS data if necessary
         if (read_flag) {
 
+#ifdef AMR_WIND_USE_W2A
+
             // Get data from modes
             wdata.rmodes.get_data(
                 sim.time().new_time(), wdata.mX, wdata.mY, wdata.mZ, wdata.mFS);
@@ -300,6 +306,8 @@ struct UpdateRelaxZonesOp<W2AWaves>
                 wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, indvec, wdata.hvec,
                 wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec,
                 w2a_velocity.vec_ptrs(), geom);
+
+#endif
 
             // Average down to get fine information on coarse grid where
             // possible

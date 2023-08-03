@@ -5,9 +5,8 @@
 #include <vector>
 #include <complex>
 #ifdef AMR_WIND_USE_W2A
-//#include <Waves2AMR.h>
-#endif
 #include "/Users/mkuhn/Waves2AMR/Waves2AMR.h"
+#endif
 
 namespace amr_wind::ocean_waves {
 
@@ -37,15 +36,15 @@ struct W2AWavesData : public RelaxZonesBaseData
     // Vectors to store modes
     std::vector<std::complex<double>> mX, mY, mZ, mFS;
 
-    // Struct variables that have special types
-    //#ifdef AMR_WIND_USE_W2A
+// Struct variables that have special types
+#ifdef AMR_WIND_USE_W2A
     // FFTW plan
     fftw_plan plan;
     // FFTW pointers to store modes ready for ifft
     fftw_complex *eta_mptr, *u_mptr, *v_mptr, *w_mptr;
     // ReadModes object
     ReadModes rmodes;
-    //#endif
+#endif
 
     // Height vector (where velocity is sampled) stuff
     amrex::Vector<amrex::Real> hvec;
