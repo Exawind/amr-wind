@@ -274,7 +274,7 @@ void CoarsenCheckpt::average_down_all_fields()
         // cppcheck-suppress constVariableReference
         auto& field = *fld;
         amrex::average_down(
-            field(lev + 1), field(lev), 0, AMREX_SPACEDIM,
+            field(lev + 1), field(lev), 0, field.num_comp(),
             sim().mesh().refRatio(lev));
     }
 }
