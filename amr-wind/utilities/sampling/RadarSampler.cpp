@@ -1,6 +1,7 @@
 #include "amr-wind/utilities/sampling/RadarSampler.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/tensor_ops.H"
+#include "amr-wind/utilities/trig_ops.H"
 
 #include "AMReX_ParmParse.H"
 
@@ -307,7 +308,7 @@ void RadarSampler::new_cone()
     m_weights.resize(num_points_quad());
 
     sampling_utils::spherical_cap_truncated_normal(
-        m_cone_angle, ntheta, sampling_utils::NormalRule::HALFPOWER, m_rays,
+        utils::radians(m_cone_angle), ntheta, sampling_utils::NormalRule::HALFPOWER, m_rays,
         m_weights);
 
     int nquad = num_points_quad();
