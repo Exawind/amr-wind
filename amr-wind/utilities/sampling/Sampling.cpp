@@ -169,7 +169,7 @@ void Sampling::convert_velocity_lineofsight()
                 int offset =
                     vel_off * m_scontainer->num_sampling_particles() + soffset;
                 for (int j = 0; j < sample_size; ++j) {
-                    temp_vel[j][iv] = m_sample_buf[offset+j];
+                    temp_vel[j][iv] = m_sample_buf[offset + j];
                 }
             }
             obj->calc_lineofsight_velocity(temp_vel);
