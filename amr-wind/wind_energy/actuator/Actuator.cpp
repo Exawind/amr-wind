@@ -285,7 +285,7 @@ void Actuator::post_advance_work()
     }
 }
 
-ActuatorModel& Actuator::get_act_bylabel(std::string& actlabel) const
+ActuatorModel& Actuator::get_act_bylabel(const std::string& actlabel) const
 {
     int thisid = 0; // Default to first actuator
     for (const auto& act : m_actuators) {

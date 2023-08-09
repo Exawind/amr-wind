@@ -151,15 +151,16 @@ vs::Vector generate_lidar_pattern(
     const double innerTheta = InnerPrism.theta0 + InnerPrism.rot * time * 360;
     const double outerTheta = OuterPrism.theta0 + OuterPrism.rot * time * 360;
 
-    // NOLINTNEXTLINE(readability-suspicious-call-argument)
+    // NOLINTBEGIN(readability-suspicious-call-argument)
     const auto reflection_1 = rotate_euler_vec(
         axis, innerTheta,
         rotate_euler_vec(ground, -(InnerPrism.azimuth / 2 + 90), axis));
 
-    // NOLINTNEXTLINE(readability-suspicious-call-argument)
+    
     const auto reflection_2 = rotate_euler_vec(
         axis, outerTheta,
         rotate_euler_vec(ground, OuterPrism.azimuth / 2, axis));
+    // NOLINTEND(readability-suspicious-call-argument)
 
     return reflect(reflection_2, reflect(reflection_1, axis));
 }
