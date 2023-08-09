@@ -14,8 +14,7 @@
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
 #include "amr-wind/utilities/trig_ops.H"
 
-namespace amr_wind {
-namespace sampling {
+namespace amr_wind::sampling {
 
 TEST(SpinnerTest, test_spinner)
 {
@@ -38,5 +37,6 @@ TEST(SpinnerTest, test_spinner)
                    << beam_vector[2] << std::endl;
     }
 }
-} // namespace sampling
-} // namespace amr_wind
+
+} // namespace amr_wind::sampling
+

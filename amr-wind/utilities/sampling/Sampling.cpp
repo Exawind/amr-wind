@@ -269,11 +269,6 @@ void Sampling::write_netcdf()
         count[1] = 0;
         int offset = iv * m_scontainer->num_sampling_particles();
         for (const auto& obj : m_samplers) {
-            // int offset = iv * obj->num_points();
-            // amrex::Print() << "Object Label: " << obj->label() << std::endl;
-            // amrex::Print() << "Num points: " << obj->num_points() << "
-            // Num_sampling_particles: " <<
-            // m_scontainer->num_sampling_particles() << std::endl;
             auto grp = ncf.group(obj->label());
             auto var = grp.var(m_var_names[iv]);
             // Do sampler specific output if needed

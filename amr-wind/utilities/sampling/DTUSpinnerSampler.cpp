@@ -151,10 +151,12 @@ vs::Vector generate_lidar_pattern(
     const double innerTheta = InnerPrism.theta0 + InnerPrism.rot * time * 360;
     const double outerTheta = OuterPrism.theta0 + OuterPrism.rot * time * 360;
 
+    // NOLINTNEXTLINE(readability-suspicious-call-argument)
     const auto reflection_1 = rotate_euler_vec(
         axis, innerTheta,
         rotate_euler_vec(ground, -(InnerPrism.azimuth / 2 + 90), axis));
 
+    // NOLINTNEXTLINE(readability-suspicious-call-argument)
     const auto reflection_2 = rotate_euler_vec(
         axis, outerTheta,
         rotate_euler_vec(ground, OuterPrism.azimuth / 2, axis));
@@ -325,9 +327,10 @@ void DTUSpinnerSampler::update_sampling_locations()
     amrex::Real start_time = m_sim.time().start_time();
     amrex::Real dt_sim = m_sim.time().deltaT();
     const amrex::Real dt_s = m_scan_time / m_num_samples;
+    amrex::Real start_diff = std::abs(time - start_time); 
 
     // Initialize the sampling time to the first time in the simulation
-    if (time == start_time && m_update_count == 0) {
+    if (start_diff < 1e-10  && m_update_count == 0) {
         m_time_sampling = time;
         m_hub_location_init = m_hub_location;
     }
@@ -389,8 +392,8 @@ void DTUSpinnerSampler::update_sampling_locations()
             int offset = k * AMREX_SPACEDIM;
 
             if (k < m_ns) {
-                amrex::Real step = (time != start_time) ? 1.0 * k : 0.0;
-                amrex::Real srat = (time != start_time) ? step / m_ns : 0.0;
+                amrex::Real step = (start_diff > 1e-10) ? 1.0 * k : 0.0;
+                amrex::Real srat = (start_diff > 1e-10) ? step / m_ns : 0.0;
 
                 // Unit vector in the direction of the beam
                 auto beam_vector = generate_lidar_pattern(
@@ -575,13 +578,11 @@ void DTUSpinnerSampler::output_netcdf_data(
     zp.put(&zlocs[0], starti, counti);
 
     auto angs = grp.var("rotor_angles_rad");
-    // std::vector<size_t> astart{nt, 0};
     std::vector<size_t> acount{1, 3};
     double rangs[3] = {m_hub_tilt, m_hub_roll, m_hub_yaw};
     angs.put(rangs, start, acount);
 
     auto hpos = grp.var("rotor_hub_pos");
-    // std::vector<size_t> pstart{nt, 0};
     std::vector<size_t> pcount{1, AMREX_SPACEDIM};
     double rhpos[3] = {m_lidar_center[0], m_lidar_center[1], m_lidar_center[2]};
     hpos.put(rhpos, start, pcount);

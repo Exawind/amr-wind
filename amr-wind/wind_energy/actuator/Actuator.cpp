@@ -285,7 +285,7 @@ void Actuator::post_advance_work()
     }
 }
 
-ActuatorModel& Actuator::get_act_bylabel(std::string actlabel) const
+ActuatorModel& Actuator::get_act_bylabel(std::string& actlabel) const
 {
     int thisid = 0; // Default to first actuator
     for (const auto& act : m_actuators) {
@@ -299,13 +299,12 @@ ActuatorModel& Actuator::get_act_bylabel(std::string actlabel) const
 }
 
 template <typename T>
-T* Actuator::get_actuator(std::string key) const
+T* Actuator::get_actuator(std::string& key) const
 {
-    int thisid = 0; // Default to first actuator
     for (const auto& act : m_actuators) {
         std::string thislabel = act->label();
         if (thislabel == key) {
-            thisid = act->id();
+            int thisid = act->id();
             T* converted = dynamic_cast<T*>(*m_actuators.at(thisid));
             return converted;
         }
