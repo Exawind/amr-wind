@@ -327,10 +327,10 @@ void DTUSpinnerSampler::update_sampling_locations()
     amrex::Real start_time = m_sim.time().start_time();
     amrex::Real dt_sim = m_sim.time().deltaT();
     const amrex::Real dt_s = m_scan_time / m_num_samples;
-    amrex::Real start_diff = std::abs(time - start_time); 
+    amrex::Real start_diff = std::abs(time - start_time);
 
     // Initialize the sampling time to the first time in the simulation
-    if (start_diff < 1e-10  && m_update_count == 0) {
+    if (start_diff < 1e-10 && m_update_count == 0) {
         m_time_sampling = time;
         m_hub_location_init = m_hub_location;
     }

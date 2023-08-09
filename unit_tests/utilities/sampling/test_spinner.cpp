@@ -39,4 +39,3 @@ TEST(SpinnerTest, test_spinner)
 }
 
 } // namespace amr_wind::sampling
-
