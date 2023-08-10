@@ -7,3 +7,6 @@
 [submodule "submods/AMReX-Hydro"]
 	path = submods/AMReX-Hydro
 	url = https://github.com/AMReX-Codes/AMReX-Hydro
+[submodule "submods/Waves2AMR"]
+	path = submods/Waves2AMR
+	url = https://github.com/mbkuhn/Waves2AMR/

@@ -35,6 +35,7 @@ set(AMR_WIND_PRECISION "DOUBLE" CACHE STRING "Floating point precision SINGLE or
 # Third party libraries
 option(AMR_WIND_USE_INTERNAL_AMREX "Add AMReX as subproject" ON)
 option(AMR_WIND_USE_INTERNAL_AMREX_HYDRO "Add AMReX-Hydro as subproject" ON)
+option(AMR_WIND_USE_INTERNAL_WAVES2AMR "Add Waves2AMR as subproject" ON)
 option(AMR_WIND_ENABLE_HDF5 "Enable HDF5 library" OFF)
 option(AMR_WIND_ENABLE_HDF5_ZFP "Enable ZFP compression in HDF5 library" OFF)
 option(AMR_WIND_ENABLE_NETCDF "Enable NetCDF library" OFF)
@@ -89,6 +90,12 @@ endif()
 ########################### AMReX #####################################
 init_amrex()
 init_amrex_hydro()
+
+########################## Waves2AMR ##################################
+if (AMR_WIND_ENABLE_W2A)
+  # submodule for the code, not always compiled
+  init_waves2amr()
+endif()
 
 ########################### AMR-Wind #####################################
 
@@ -183,13 +190,6 @@ if(AMR_WIND_ENABLE_HELICS)
   target_include_directories(${amr_wind_lib_name} PUBLIC ${HELICS_INSTALL_DIR}/include)
   target_link_libraries(${amr_wind_lib_name} PUBLIC HELICS::helicsCpp98)
   target_compile_definitions(${amr_wind_lib_name} PRIVATE AMR_WIND_USE_HELICS)
-endif()
-
-if(AMR_WIND_ENABLE_W2A)
-  set(CMAKE_PREFIX_PATH ${W2A_DIR} ${CMAKE_PREFIX_PATH})
-  set(W2A_lib /Users/mkuhn/Waves2AMR/build/libWaves2AMR.dylib)
-  target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_W2A)
-  target_link_libraries(${amr_wind_lib_name} PUBLIC ${W2A_lib})
 endif()
 
 #Build amr-wind and link to amrex library
