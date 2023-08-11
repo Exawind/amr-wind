@@ -41,7 +41,7 @@ CoriolisForcing::CoriolisForcing(const CFDSim& sim)
     amrex::Real rot_time_period = 86164.091;
     pp.query("rotational_time_period", rot_time_period);
 
-    m_omega = 2.0 * utils::pi() / rot_time_period;
+    m_omega = utils::two_pi() / rot_time_period;
     m_coriolis_factor = 2.0 * m_omega;
 
     pp.queryarr("east_vector", m_east, 0, AMREX_SPACEDIM);
