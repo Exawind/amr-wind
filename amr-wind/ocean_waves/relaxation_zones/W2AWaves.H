@@ -20,8 +20,6 @@ struct W2AWavesData : public RelaxZonesBaseData
     // Spatial resolution in each direction
     amrex::Real dx0{0.};
     amrex::Real dx1{0.};
-    // Depth of reference sim
-    amrex::Real depth{0.};
     // Length to dimensionalize nondim data
     amrex::Real dimL{0.};
     // Timestep of reference data
@@ -48,10 +46,6 @@ struct W2AWavesData : public RelaxZonesBaseData
 
     // Height vector (where velocity is sampled) stuff
     amrex::Vector<amrex::Real> hvec;
-    // Cell height of interpolation grid near interface
-    amrex::Real dz0{0.};
-    // Number of sampling points
-    int nheights{0};
     // Vectors for spatial data from transformed modes
     amrex::Gpu::DeviceVector<amrex::Real> sp_eta_vec, sp_u_vec, sp_v_vec,
         sp_w_vec;

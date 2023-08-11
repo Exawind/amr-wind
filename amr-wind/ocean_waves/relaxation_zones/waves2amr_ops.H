@@ -36,6 +36,16 @@ struct ReadInputsOp<W2AWaves>
 
 #ifdef AMR_WIND_USE_W2A
 
+        amrex::Vector<amrex::Real> prob_lo_input(AMREX_SPACEDIM);
+        amrex::ParmParse pp_geom("geometry");
+        pp_geom.getarr("prob_lo", prob_lo_input);
+
+        // Read user inputs to height vector
+        int nheights = 0;
+        amrex::Real dz0 = 0.;
+        pp.get("number_interp_points_in_z", nheights);
+        pp.get("interp_spacing_at_surface", dz0);
+
         // Initialize mode reader
         wdata.rmodes.initialize(wdata.modes_file);
 
@@ -54,11 +64,18 @@ struct ReadInputsOp<W2AWaves>
         wdata.dx0 = wdata.rmodes.get_xlen() / wdata.n0;
         wdata.dx1 = wdata.rmodes.get_ylen() / wdata.n1;
         // Get depth
-        wdata.depth = wdata.rmodes.get_depth();
+        const amrex::Real depth = wdata.rmodes.get_depth();
         // Get dimensional length
         wdata.dimL = wdata.rmodes.get_L();
         // Get dt of HOS data
         wdata.dt_modes = wdata.rmodes.get_dtout();
+
+        // Warning if depth does not correspond to simulation
+        if (std::abs(depth - (wdata.zsl - prob_lo_input[2])) > 1e-3 * depth) {
+            amrex::Print()
+                << "WARNING: Mismatch between water depths from AMR-Wind "
+                   "domain and HOS data interpreted by Waves2AMR";
+        }
 
         // Allocate pointers for FFTW
         wdata.eta_mptr = modes_hosgrid::allocate_complex(wdata.n0, wdata.n1);
@@ -71,9 +88,9 @@ struct ReadInputsOp<W2AWaves>
             modes_hosgrid::plan_ifftw(wdata.n0, wdata.n1, wdata.eta_mptr);
 
         // Create height vector for velocity mode conversion before
-        // interpolation
+        // interpolation, with prob_lo as bottom
         int flag = interp_to_mfab::create_height_vector(
-            wdata.hvec, wdata.nheights, wdata.dz0, wdata.zsl, -wdata.depth);
+            wdata.hvec, nheights, dz0, wdata.zsl, prob_lo_input[2]);
         // Fail if flag indicates it should
         if (flag > 0) {
             amrex::Abort(
