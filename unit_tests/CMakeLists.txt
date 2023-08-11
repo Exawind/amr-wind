@@ -33,7 +33,7 @@ target_include_directories(${amr_wind_unit_test_exe_name} SYSTEM PRIVATE
 
 target_link_libraries(${amr_wind_unit_test_exe_name} PUBLIC ${amr_wind_lib_name} AMReX-Hydro::amrex_hydro_api)
 if (AMR_WIND_ENABLE_W2A)
-  target_link_libraries(${amr_wind_unit_test_exe_name} PUBLIC ${amr_wind_lib_name} Waves2AMR::waves_2_amr_api)
+  target_link_libraries(${amr_wind_unit_test_exe_name} PUBLIC Waves2AMR::waves_2_amr_api)
 endif()
 
 #Define what we want to be installed during a make install
