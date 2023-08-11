@@ -131,6 +131,13 @@ endif()
 
 include(set_compile_flags)
 
+if (AMR_WIND_ENABLE_W2A)
+  # Turn on the use of the library via bool, it has already been included above
+  target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_W2A)
+  set(fftw_lib ${CMAKE_CURRENT_SOURCE_DIR}/submods/Waves2AMR/fftw/lib/libfftw3.a)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/submods/Waves2AMR/fftw/include/)
+endif()
+
 if(AMR_WIND_ENABLE_NETCDF)
   set(CMAKE_PREFIX_PATH ${NETCDF_DIR} ${CMAKE_PREFIX_PATH})
   find_package(NetCDF REQUIRED)

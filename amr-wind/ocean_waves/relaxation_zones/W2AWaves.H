@@ -5,7 +5,9 @@
 #include <vector>
 #include <complex>
 #ifdef AMR_WIND_USE_W2A
-#include "/Users/mkuhn/Waves2AMR/Waves2AMR.h"
+#include "read_modes.h"
+#include "modes_hosgrid.h"
+#include "interp_to_mfab.h"
 #endif
 
 namespace amr_wind::ocean_waves {

@@ -176,6 +176,8 @@ struct InitDataOp<W2AWaves>
             wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec, velocity(level),
             problo, dx);
 
+#else
+        amrex::ignore_unused(init_waves, problo, dx);
 #endif
 
         // Average down from top level for consistency

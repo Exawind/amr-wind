@@ -46,6 +46,12 @@ target_link_libraries_system(${amr_wind_lib_name} PUBLIC AMReX::amrex AMReX-Hydr
 target_link_libraries(${amr_wind_exe_name} PRIVATE ${amr_wind_lib_name} AMReX-Hydro::amrex_hydro_api)
 target_link_libraries(${aw_api_lib} PUBLIC ${amr_wind_lib_name} AMReX-Hydro::amrex_hydro_api)
 
+if (AMR_WIND_ENABLE_W2A)
+  target_link_libraries_system(${amr_wind_lib_name} PUBLIC Waves2AMR::waves_2_amr_api)
+  target_link_libraries(${amr_wind_exe_name} PRIVATE ${amr_wind_lib_name} Waves2AMR::waves_2_amr_api)
+  target_link_libraries(${aw_api_lib} PUBLIC ${amr_wind_lib_name} Waves2AMR::waves_2_amr_api)
+endif()
+
 # Set -fpic options
 set_target_properties(${amr_wind_lib_name} buildInfo${amr_wind_lib_name}
   PROPERTIES POSITION_INDEPENDENT_CODE ON)
