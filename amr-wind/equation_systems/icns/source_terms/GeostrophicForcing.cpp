@@ -31,7 +31,7 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
     amrex::Real rot_time_period = 86164.091;
     ppc.query("rotational_time_period", rot_time_period);
 
-    amrex::Real omega = 2.0 * utils::two_pi() / rot_time_period;
+    amrex::Real omega = 2.0 * utils::pi() / rot_time_period;
     amrex::Real latitude = 90;
     ppc.get("latitude", latitude);
     latitude = utils::radians(latitude);

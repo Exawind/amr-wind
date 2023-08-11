@@ -200,7 +200,7 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
     });
 
     constexpr amrex::Real corfac =
-        4.0 * amr_wind::utils::two_pi() / 86164.091 * 0.80901699437;
+        2.0 * amr_wind::utils::two_pi() / 86164.091 * 0.80901699437;
     const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{
         {-corfac * 6.0, corfac * 10.0, 0.0}};
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {
@@ -348,7 +348,7 @@ TEST_F(ABLMeshTest, hurricane_forcing)
 TEST_F(ABLMeshTest, coriolis_const_vel)
 {
     constexpr amrex::Real tol = 1.0e-12;
-    constexpr amrex::Real corfac = 4.0 * amr_wind::utils::two_pi() / 86164.091;
+    constexpr amrex::Real corfac = 2.0 * amr_wind::utils::two_pi() / 86164.091;
     // Latitude is set to 45 degrees in the input file so sinphi = cosphi
     const amrex::Real latfac = std::sin(amr_wind::utils::radians(45.0));
     // Initialize a random value for the velocity component
@@ -430,7 +430,7 @@ TEST_F(ABLMeshTest, coriolis_height_variation)
     // ABL unit test mesh has 64 cells in z
     constexpr int kdim = 63;
     constexpr amrex::Real tol = 1.0e-12;
-    constexpr amrex::Real corfac = 4.0 * amr_wind::utils::two_pi() / 86164.091;
+    constexpr amrex::Real corfac = 2.0 * amr_wind::utils::two_pi() / 86164.091;
     // Latitude is set to 45 degrees in the input file so sinphi = cosphi
     const amrex::Real latfac = std::sin(amr_wind::utils::radians(45.0));
 
