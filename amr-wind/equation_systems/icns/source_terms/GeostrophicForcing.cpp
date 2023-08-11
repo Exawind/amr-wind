@@ -38,6 +38,7 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
     amrex::Real sinphi = std::sin(latitude);
 
     coriolis_factor = 2.0 * omega * sinphi;
+    ppc.query("is_horizontal", m_is_horizontal);
     amrex::Print() << "Geostrophic forcing: Coriolis factor = "
                    << coriolis_factor << std::endl;
 
@@ -59,12 +60,13 @@ void GeostrophicForcing::operator()(
     const FieldState /*fstate*/,
     const amrex::Array4<amrex::Real>& src_term) const
 {
+    amrex::Real fac = (m_is_horizontal) ? 0. : 1.;
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> forcing{
         {m_g_forcing[0], m_g_forcing[1], m_g_forcing[2]}};
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         src_term(i, j, k, 0) += forcing[0];
         src_term(i, j, k, 1) += forcing[1];
-        // No forcing in z-direction
+        src_term(i, j, k, 1) += fac * forcing[2];
     });
 }
 

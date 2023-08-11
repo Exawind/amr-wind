@@ -50,7 +50,7 @@ private:
     //! `2.0 * \Omega
     amrex::Real m_coriolis_factor{0.0};
 
-    bool m_is_2d{false};
+    bool m_is_horizontal{true};
 };
 
 } // namespace amr_wind::pde::icns

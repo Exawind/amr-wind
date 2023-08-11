@@ -50,7 +50,7 @@ CoriolisForcing::CoriolisForcing(const CFDSim& sim)
     utils::vec_normalize(m_north.data());
     utils::cross_prod(m_east.data(), m_north.data(), m_up.data());
 
-    pp.query("is_two_dimensional", m_is_2d);
+    pp.query("is_horizontal", m_is_horizontal);
 }
 
 CoriolisForcing::~CoriolisForcing() = default;
@@ -75,7 +75,7 @@ void CoriolisForcing::operator()(
     const auto& vel =
         m_velocity.state(field_impl::dof_state(fstate))(lev).const_array(mfi);
 
-    amrex::Real fac = (m_is_2d) ? 0 : 1;
+    amrex::Real fac = (m_is_horizontal) ? 0. : 1.;
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real ue = east[0] * vel(i, j, k, 0) +
