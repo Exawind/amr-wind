@@ -181,7 +181,7 @@ struct InitDataOp<W2AWaves>
             modes_hosgrid::populate_hos_vel(
                 wdata.rmodes, ht, wdata.mX, wdata.mY, wdata.mZ, wdata.plan,
                 wdata.u_mptr, wdata.v_mptr, wdata.w_mptr, wdata.sp_u_vec,
-                wdata.sp_v_vec, wdata.sp_w_vec);
+                wdata.sp_v_vec, wdata.sp_w_vec, iht * wdata.n0 * wdata.n1);
         }
 
         // Interpolate to MultiFabs (one level at a time)
@@ -314,7 +314,7 @@ struct UpdateRelaxZonesOp<W2AWaves>
                 modes_hosgrid::populate_hos_vel(
                     wdata.rmodes, ht, wdata.mX, wdata.mY, wdata.mZ, wdata.plan,
                     wdata.u_mptr, wdata.v_mptr, wdata.w_mptr, wdata.sp_u_vec,
-                    wdata.sp_v_vec, wdata.sp_w_vec);
+                    wdata.sp_v_vec, wdata.sp_w_vec, iht * wdata.n0 * wdata.n1);
             }
 
             // Interpolate to fields (vector of MultiFabs)
