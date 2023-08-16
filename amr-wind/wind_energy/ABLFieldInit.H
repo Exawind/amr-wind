@@ -23,7 +23,7 @@ public:
     ABLFieldInit();
 
     void initialize_from_inputfile(); // default
-    void initialize_from_netcdf(); // general wind/temperature profiles
+    void initialize_from_netcdf();    // general wind/temperature profiles
 
     void operator()(
         const amrex::Box& vbx,
