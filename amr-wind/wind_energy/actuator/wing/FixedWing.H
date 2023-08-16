@@ -4,8 +4,7 @@
 #include "amr-wind/wind_energy/actuator/wing/ActuatorWing.H"
 #include "amr-wind/wind_energy/actuator/aero/AirfoilTable.H"
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 struct FixedWingData : public WingBaseData
 {
@@ -27,7 +26,6 @@ struct FixedWing : public WingType
     static std::string identifier() { return "FixedWing"; }
 };
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator
 
 #endif /* FIXEDWING_H */

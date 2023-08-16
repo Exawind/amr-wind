@@ -4,8 +4,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/PostProcessing.H"
 
-namespace amr_wind {
-namespace wave_energy {
+namespace amr_wind::wave_energy {
 
 /** wave energy object
  *  \ingroup Wave Energy
@@ -13,13 +12,19 @@ namespace wave_energy {
  *  A concrete implementation of the post-processing interface that deals with
  *  integrating total wave energy. This routine calculates the kinetic energy
  *  (KE) and potential energy (PE) according to the following definitions. It
- *  allows for a user-defined potential energy offset, as well (PE_0), intended
- *  to give the result PE = 0 for an undisturbed interface.
+ *  caclulates the correct potential energy offset, assuming an equilibrium
+ *  water level of 0 unless specified otherwise by an input parameter. It also
+ *  assumes the traditional coordinate system, where interface height/depth is
+ *  in z.
  *
- *  KE = 0.5 * (Integral over liquid phase) \rho * u^2 dV
- *  PE = (Integral over liquid phase) \rho * g * z_liq dV + PE_0
+ *  Integral definitions (not output)
+ *  KE_i = 0.5 * (Integral over liquid phase) \rho * u^2 dV
+ *  PE_i = (Integral over liquid phase) \rho * g * z_liq dV
+ *  (offset for PE would be 1/2 * Lx * Ly * \rho_liq * g * depth^2)
  *
- *  Note: the output quantities are not normalized.
+ *  Normalized definitions (which are output) in form of avg kinematic energy
+ *  KE = KE_i / (d * \rho_liq * Lx * Ly)
+ *  PE = PE_i / (d * \rho_liq * Lx * Ly) + 1/2 * g * depth
  */
 class WaveEnergy : public PostProcessBase::Register<WaveEnergy>
 {
@@ -54,7 +59,7 @@ public:
 
 private:
     //! prepare ASCII file and directory
-    void prepare_ascii_file();
+    virtual void prepare_ascii_file();
 
     //! Output sampled data in ASCII format
     virtual void write_ascii();
@@ -83,9 +88,8 @@ private:
 
     //! offset for potential energy calculation
     amrex::Real m_pe_off = 0.0;
-
-    //! density of liquid phase
-    amrex::Real m_rho1 = 10.0;
+    //! volumetric scaling for each energy
+    amrex::Real m_escl = 1.0;
 
     //! filename for ASCII output
     std::string m_out_fname;
@@ -100,7 +104,6 @@ private:
     int m_precision{12};
 };
 
-} // namespace wave_energy
-} // namespace amr_wind
+} // namespace amr_wind::wave_energy
 
 #endif /* WAVEENERGY_H */

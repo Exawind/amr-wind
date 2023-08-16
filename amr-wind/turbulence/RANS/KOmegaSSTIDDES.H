@@ -4,8 +4,7 @@
 #include <string>
 #include "amr-wind/turbulence/RANS/KOmegaSST.H"
 
-namespace amr_wind {
-namespace turbulence {
+namespace amr_wind::turbulence {
 
 /** K-Omega-SST-IDDES Hybrid RANS/LES turbulence model
  *
@@ -37,7 +36,8 @@ public:
     std::string model_name() const override { return "KOmegaSSTIDDES"; }
 
     //! Update the turbulent viscosity field
-    void update_turbulent_viscosity(const FieldState fstate) override;
+    void update_turbulent_viscosity(
+        const FieldState fstate, const DiffusionType diff_type) override;
 
     //! No post advance work for this model
     void post_advance_work() override {}
@@ -49,16 +49,20 @@ public:
     TurbulenceModel::CoeffsDictType model_coeffs() const override;
 
 protected:
+    Field& m_rans_ind;
+
     //! Turbulence constants
     amrex::Real m_Cdes1{0.78};
     amrex::Real m_Cdes2{0.61};
     amrex::Real m_Cdt1{20.0};
     amrex::Real m_Cdt2{3.0};
+    amrex::Real m_Cl{5.0};
+    amrex::Real m_Ct{1.87};
     amrex::Real m_Cw{0.15};
     amrex::Real m_kappa{0.41};
+    amrex::Real m_sdr_prod_clip_factor{10.0};
 };
 
-} // namespace turbulence
-} // namespace amr_wind
+} // namespace amr_wind::turbulence
 
 #endif /* KOMEGASSTIDDES_H */

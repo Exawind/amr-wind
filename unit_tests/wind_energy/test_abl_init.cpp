@@ -9,7 +9,6 @@ namespace {} // namespace
 TEST_F(ABLMeshTest, abl_initialization)
 {
     populate_parameters();
-    utils::populate_abl_params();
 
     // For the first test disable velocity perturbations
     {

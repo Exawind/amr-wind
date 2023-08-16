@@ -6,15 +6,13 @@
 #include "amr-wind/wind_energy/ABLWallFunction.H"
 
 namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace pde::icns {
 class ABLForcing;
 class ABLMesoForcingMom;
-} // namespace icns
-namespace temperature {
+} // namespace pde::icns
+namespace pde::temperature {
 class ABLMesoForcingTemp;
 }
-} // namespace pde
 
 enum class ABLStatsMode : int {
     computed = 0, ///! Computed using planar averages
@@ -35,6 +33,7 @@ public:
     virtual ABLStatsMode abl_mode() const = 0;
 
     //! Interpolating object for vertical velocity profile
+    virtual const VelPlaneAveraging& vel_profile_coarse() const = 0;
     virtual const VelPlaneAveragingFine& vel_profile() const = 0;
 
     //! Interpolating object for vertical temperature profile

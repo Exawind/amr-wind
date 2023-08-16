@@ -4,9 +4,7 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 /** Gravity Forcing term
  *  \ingroup icns_src
@@ -29,10 +27,18 @@ public:
 
 private:
     amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
+
+    Field* m_rho{nullptr};
+    Field* m_rho0{nullptr};
+
+    // Input reference to perturbational form
+    bool is_pptb{false};
+    // Presence of rho0 for perturbational form
+    bool is_rho0{false};
+    // Constant reference density
+    amrex::Real m_rho0_const{1.0};
 };
 
-} // namespace icns
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns
 
 #endif /* GravityForcing_H */

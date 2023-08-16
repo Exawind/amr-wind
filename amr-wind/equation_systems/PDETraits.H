@@ -1,8 +1,7 @@
 #ifndef PDETRAITS_H
 #define PDETRAITS_H
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /** Characteristics of a vector transport equation
  *  \ingroup eqsys
@@ -55,7 +54,6 @@ struct ScalarTransport
     // static constexpr bool need_nph_state = true;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* PDETRAITS_H */

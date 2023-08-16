@@ -61,9 +61,8 @@ amrex::BoxArray realbox_to_boxarray(
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
             amrex::Real bbox_min = amrex::max(rb.lo()[i], problo[i]);
             amrex::Real bbox_max = amrex::min(rb.hi()[i], probhi[i]);
-            amrex::Real rlo =
-                amrex::Math::floor((bbox_min - problo[i]) / dx[i]);
-            amrex::Real rhi = amrex::Math::ceil((bbox_max - problo[i]) / dx[i]);
+            amrex::Real rlo = std::floor((bbox_min - problo[i]) / dx[i]);
+            amrex::Real rhi = std::ceil((bbox_max - problo[i]) / dx[i]);
             lo[i] = static_cast<int>(rlo);
             hi[i] = static_cast<int>(rhi);
         }
@@ -97,7 +96,7 @@ void CartBoxRefinement::read_inputs(
     const amrex::AmrCore& mesh, std::istream& ifh)
 {
     const auto& geom = mesh.Geom();
-    int max_lev = geom.size();
+    int max_lev = static_cast<int>(geom.size());
 
     int nlev_in;
     ifh >> nlev_in;

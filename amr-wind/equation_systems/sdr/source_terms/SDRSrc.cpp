@@ -4,9 +4,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/turbulence/TurbulenceModel.H"
 
-namespace amr_wind {
-namespace pde {
-namespace tke {
+namespace amr_wind::pde::tke {
 
 SDRSrc::SDRSrc(const CFDSim& sim)
     : m_sdr_src(sim.repo().get_field("omega_src"))
@@ -23,7 +21,7 @@ void SDRSrc::operator()(
     const amrex::Array4<amrex::Real>& src_term) const
 {
     const auto& sdr_src_arr = (this->m_sdr_src)(lev).array(mfi);
-    const auto& sdr_diss_arr = (this->m_sdr_src)(lev).array(mfi);
+    const auto& sdr_diss_arr = (this->m_sdr_diss)(lev).array(mfi);
 
     const amrex::Real factor = (fstate == FieldState::NPH) ? 0.5 : 1.0;
 
@@ -33,6 +31,4 @@ void SDRSrc::operator()(
     });
 }
 
-} // namespace tke
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::tke

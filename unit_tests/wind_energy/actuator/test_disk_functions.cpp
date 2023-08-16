@@ -1,9 +1,7 @@
 #include "gtest/gtest.h"
 #include "amr-wind/wind_energy/actuator/disk/disk_ops.H"
 
-namespace amr_wind {
-namespace actuator {
-namespace disk {
+namespace amr_wind::actuator::disk {
 
 struct AreaComputerData
 {
@@ -41,7 +39,6 @@ protected:
     amrex::Real area;
 };
 
-// cppcheck-suppress uninitDerivedMemberVar
 TEST_P(TestAreaComputer, area_matches)
 {
     const auto params = GetParam();
@@ -55,7 +52,6 @@ TEST_P(TestAreaComputer, area_matches)
     EXPECT_NEAR(area, area_computed, 1.e-12 * area);
 }
 
-// cppcheck-suppress uninitDerivedMemberVar
 TEST_P(TestAreaComputer, weight_sums_to_one)
 {
     const auto params = GetParam();
@@ -120,6 +116,4 @@ INSTANTIATE_TEST_SUITE_P(
         AreaComputerData{127.0, 10, 3},
         AreaComputerData{30.0, 5, 30}),
     TestAreaComputer::PrintParamNamesToString());
-} // namespace disk
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator::disk

@@ -95,7 +95,9 @@ public:
     bool regrid_and_update();
     void pre_advance_stage1();
     void pre_advance_stage2();
+    void do_advance();
     void advance();
+    void prescribe_advance();
     void post_advance_work();
 
     amr_wind::CFDSim& sim() { return m_sim; }
@@ -128,12 +130,14 @@ public:
 
     // for cuda
     void ComputeDt(bool explicit_diffusion);
+    void ComputePrescribeDt();
 
     void set_inflow_velocity(
         int lev, amrex::Real time, amrex::MultiFab& vel, int nghost);
 
     void ApplyPredictor(bool incremental_projection = false);
     void ApplyCorrector();
+    void ApplyPrescribeStep();
 
     void ApplyProjection(
         amrex::Vector<amrex::MultiFab const*> density,
@@ -166,13 +170,15 @@ private:
 
     bool m_constant_density = true;
 
-    // Default to MOL (not Godunov)
-    bool m_use_godunov = false;
+    bool m_use_godunov = true;
+
+    // Prescribe advection velocity
+    bool m_prescribe_vel = false;
 
     //! number of cells on all levels including covered cells
     amrex::Long m_cell_count{-1};
 
-    DiffusionType m_diff_type = DiffusionType::Implicit;
+    DiffusionType m_diff_type = DiffusionType::Crank_Nicolson;
 
     //
     // end of member variables
@@ -185,7 +191,7 @@ private:
 
     bool need_divtau() const
     {
-        return !(!m_use_godunov and DiffusionType::Implicit == m_diff_type);
+        return (m_use_godunov || (DiffusionType::Implicit != m_diff_type));
     }
 
     amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM>
@@ -208,6 +214,7 @@ private:
     //
     ///////////////////////////////////////////////////////////////////////////
     void PrintMaxValues(const std::string& header);
+    void PrintMaxVelLocations(const std::string& header);
     void PrintMaxVel(int lev) const;
     void PrintMaxGp(int lev) const;
     void CheckForNans(int lev) const;

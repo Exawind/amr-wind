@@ -9,9 +9,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 /** Density based buoyancy source term
  *
@@ -23,9 +21,7 @@ namespace icns {
 DensityBuoyancy::DensityBuoyancy(const CFDSim& sim)
     : m_density(sim.repo().get_field("density"))
 {
-    //    amrex::ParmParse pp(identifier());
-
-    // FIXME: gravity in `incflo` namespace
+    // gravity in `incflo` namespace
     {
         amrex::ParmParse pp("incflo");
         pp.queryarr("gravity", m_gravity);
@@ -67,6 +63,4 @@ void DensityBuoyancy::operator()(
     });
 }
 
-} // namespace icns
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns

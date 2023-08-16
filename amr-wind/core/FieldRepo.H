@@ -9,6 +9,7 @@
 #include "amr-wind/core/Field.H"
 #include "amr-wind/core/IntField.H"
 #include "amr-wind/core/ScratchField.H"
+#include "amr-wind/core/IntScratchField.H"
 
 #include "AMReX_AmrCore.H"
 #include "AMReX_MultiFab.H"
@@ -324,6 +325,28 @@ public:
         const int nghost = 0,
         const FieldLoc floc = FieldLoc::CELL) const;
 
+    std::unique_ptr<ScratchField> create_scratch_field_on_host(
+        const std::string& name,
+        const int ncomp = 1,
+        const int nghost = 0,
+        const FieldLoc floc = FieldLoc::CELL) const;
+
+    std::unique_ptr<ScratchField> create_scratch_field_on_host(
+        const int ncomp = 1,
+        const int nghost = 0,
+        const FieldLoc floc = FieldLoc::CELL) const;
+
+    std::unique_ptr<IntScratchField> create_int_scratch_field_on_host(
+        const std::string& name,
+        const int ncomp = 1,
+        const int nghost = 0,
+        const FieldLoc floc = FieldLoc::CELL) const;
+
+    std::unique_ptr<IntScratchField> create_int_scratch_field_on_host(
+        const int ncomp = 1,
+        const int nghost = 0,
+        const FieldLoc floc = FieldLoc::CELL) const;
+
     //! Advance all fields with more than one timestate to the new timestep
     void advance_states() noexcept;
 
@@ -334,7 +357,10 @@ public:
     int num_active_levels() const noexcept { return m_mesh.finestLevel() + 1; }
 
     //! Number of fields registered in the database
-    int num_fields() const noexcept { return m_field_vec.size(); }
+    int num_fields() const noexcept
+    {
+        return static_cast<int>(m_field_vec.size());
+    }
 
     //! Return list of fields registered (for unit-test purposes only)
     const amrex::Vector<std::unique_ptr<Field>>& fields() const

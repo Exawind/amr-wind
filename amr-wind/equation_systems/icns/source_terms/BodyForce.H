@@ -8,9 +8,7 @@
 #include <AMReX_Vector.H>
 #include <cstddef>
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 /** Apply a user-defined body force as a source term
  *  \ingroup icns_src
@@ -58,8 +56,6 @@ private:
     amrex::Gpu::DeviceVector<amrex::Real> m_ht;
 };
 
-} // namespace icns
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns
 
 #endif /* BODYFORCE_H */

@@ -1,6 +1,7 @@
 target_sources(${amr_wind_lib_name} PRIVATE
   ABLForcing.cpp
   GeostrophicForcing.cpp
+  HurricaneForcing.cpp
   BoussinesqBuoyancy.cpp
   DensityBuoyancy.cpp
   GravityForcing.cpp
@@ -10,4 +11,6 @@ target_sources(${amr_wind_lib_name} PRIVATE
   ActuatorForcing.cpp
   SynthTurbForcing.cpp
   ABLMesoForcingMom.cpp
+  BurggrafFlowForcing.cpp
+  RayleighDamping.cpp
   )

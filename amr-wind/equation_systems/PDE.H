@@ -8,8 +8,7 @@
 #include "amr-wind/equation_systems/CompRHSOps.H"
 #include "amr-wind/equation_systems/DiffusionOps.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /** Implementation of the PDE interface for transport equations
  *  \ingroup eqsys
@@ -132,7 +131,7 @@ public:
     {
         BL_PROFILE(
             "amr-wind::" + this->identifier() + "::pre_advection_actions");
-        m_adv_op->preadvect(fstate, m_time.deltaT());
+        m_adv_op->preadvect(fstate, m_time.deltaT(), m_time.new_time());
     }
 
     void compute_predictor_rhs(const DiffusionType difftype) override
@@ -194,7 +193,6 @@ protected:
     PostSolveOp<PDE> m_post_solve_op;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* PDE_H */

@@ -80,8 +80,7 @@ protected:
 
 } // namespace amr_wind_tests
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 namespace ops {
 
 template <>
@@ -164,7 +163,7 @@ struct ProcessOutputsOp<::amr_wind_tests::Joukowsky, ActSrcDisk>
 {
     ProcessOutputsOp<::amr_wind_tests::Joukowsky, ActSrcDisk>(
         ::amr_wind_tests::Joukowsky::DataType& /**/)
-    {} // cppcheck-suppress missingReturn
+    {}
     void operator()(::amr_wind_tests::Joukowsky::DataType& /*data*/) {}
     void read_io_options(const utils::ActParser& /**/) {}
     void prepare_outputs(const std::string& /**/) {}
@@ -174,8 +173,7 @@ struct ProcessOutputsOp<::amr_wind_tests::Joukowsky, ActSrcDisk>
 } // namespace ops
 template class ::amr_wind::actuator::
     ActModel<::amr_wind_tests::Joukowsky, ::amr_wind::actuator::ActSrcDisk>;
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator
 
 namespace amr_wind_tests {
 class ActPhysicsTest : public ::amr_wind::actuator::Actuator

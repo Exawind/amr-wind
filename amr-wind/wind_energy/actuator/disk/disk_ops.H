@@ -6,8 +6,7 @@
 #include "amr-wind/utilities/tensor_ops.H"
 #include "amr-wind/utilities/linear_interpolation.H"
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 namespace disk {
 // refactor these when we add more disk types later
 void prepare_netcdf_file(
@@ -176,7 +175,6 @@ struct UpdatePosOp<
     void operator()(typename ActTrait::DataType& /*data*/) {}
 };
 } // namespace ops
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator
 
 #endif /* DISK_OPS_H_ */

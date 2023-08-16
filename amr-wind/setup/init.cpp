@@ -1,4 +1,3 @@
-// #include <AMReX_ParmParse.H>
 #include <AMReX_BC_TYPES.H>
 #include "amr-wind/incflo.H"
 #include <cmath>
@@ -30,9 +29,9 @@ void incflo::ReadParameters()
         // Godunov-related flags
         pp.query("use_godunov", m_use_godunov);
 
-        // The default for diffusion_type is 2, i.e. the default m_diff_type is
-        // DiffusionType::Implicit
-        int diffusion_type = 2;
+        // The default for diffusion_type is 1, i.e. the default m_diff_type is
+        // DiffusionType::Crank_Nicolson
+        int diffusion_type = 1;
         pp.query("diffusion_type", diffusion_type);
         if (diffusion_type == 0) {
             m_diff_type = DiffusionType::Explicit;
@@ -124,6 +123,17 @@ void incflo::InitialIterations()
                 scal.copy_state(
                     amr_wind::FieldState::New, amr_wind::FieldState::Old);
             }
+        }
+    }
+
+    // Add mean pressure back if available
+    if (m_repo.field_exists("reference_pressure")) {
+        // cppcheck-suppress constVariableReference
+        auto& press = m_repo.get_field("p");
+        const auto& p0 = m_repo.get_field("reference_pressure");
+        for (int lev = 0; lev <= finest_level; lev++) {
+            amrex::MultiFab::Add(
+                press(lev), p0(lev), 0, 0, 1, press.num_grow()[0]);
         }
     }
     amrex::Print() << "Completed initial pressure iterations" << std::endl

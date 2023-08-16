@@ -7,8 +7,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace sampling {
+namespace amr_wind::sampling {
 
 Sampling::Sampling(CFDSim& sim, std::string label)
     : m_sim(sim), m_label(std::move(label))
@@ -53,7 +52,7 @@ void Sampling::initialize()
     // Load different probe types, default probe type is line
     int idx = 0;
     m_total_particles = 0;
-    for (auto& lbl : labels) {
+    for (const auto& lbl : labels) {
         const std::string key = m_label + "." + lbl;
         amrex::ParmParse pp1(key);
         std::string stype = "LineSampler";
@@ -85,7 +84,8 @@ void Sampling::update_container()
     m_scontainer->initialize_particles(m_samplers);
     // Redistribute particles to appropriate boxes/MPI ranks
     m_scontainer->Redistribute();
-    m_scontainer->num_sampling_particles() = m_total_particles;
+    m_scontainer->num_sampling_particles() =
+        static_cast<int>(m_total_particles);
 }
 
 void Sampling::update_sampling_locations()
@@ -142,12 +142,12 @@ void Sampling::impl_write_native()
     BL_PROFILE("amr-wind::Sampling::write_native");
 
     const std::string post_dir = "post_processing";
-    const std::string sdir =
+    const std::string name =
         amrex::Concatenate(m_label, m_sim.time().time_index());
     amrex::Vector<std::string> int_var_names{"uid", "set_id", "probe_id"};
 
     m_scontainer->WritePlotFile(
-        post_dir, sdir, m_var_names, int_var_names,
+        post_dir, name, m_var_names, int_var_names,
         [=] AMREX_GPU_HOST_DEVICE(
             const SamplingContainer::SuperParticleType& p) {
             return p.id() > 0;
@@ -276,5 +276,4 @@ void Sampling::write_netcdf()
 #endif
 }
 
-} // namespace sampling
-} // namespace amr_wind
+} // namespace amr_wind::sampling

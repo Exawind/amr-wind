@@ -3,10 +3,7 @@
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/wind_energy/actuator/disk/disk_ops.H"
 
-namespace amr_wind {
-namespace actuator {
-namespace ops {
-namespace joukowsky {
+namespace amr_wind::actuator::ops::joukowsky {
 void check_for_parse_conflicts(const utils::ActParser& pp)
 {
     auto error_collector = ops::base::check_for_parse_conflicts(pp);
@@ -30,6 +27,9 @@ void optional_parameters(JoukowskyData& meta, const utils::ActParser& pp)
     pp.query("root_correction_exponent", meta.root_correction_exponent);
     pp.query("root_correction_coefficient", meta.root_correction_coefficient);
     pp.query("num_blades", meta.num_blades);
+    pp.query("ct_region2", meta.Ct_rated);
+    pp.query("S0_alpha1", meta.S0_alpha1);
+    pp.query("S0_alpha2", meta.S0_alpha2);
 }
 
 void required_parameters(JoukowskyData& meta, const utils::ActParser& pp)
@@ -93,7 +93,7 @@ void prepare_netcdf_file(
     const std::string nr_name = "num_radial_points";
 
     ncf.enter_def_mode();
-    ncf.put_attr("title", "AMR-Wind ActuatorDisk actuator output");
+    ncf.put_attr("title", "AMR-Wind ActuatorDisk actuator output [Joukowsky]");
     ncf.put_attr("version", ioutils::amr_wind_version());
     ncf.put_attr("created_on", ioutils::timestamp());
     ncf.def_dim(nt_name, NC_UNLIMITED);
@@ -175,7 +175,7 @@ void write_netcdf(
     grp.var("power").put(&data.current_power, {nt}, {1});
     grp.var("density").put(&data.density, {nt}, {1});
     grp.var("total_disk_force")
-        .put(&data.disk_force[0], {nt}, {1, AMREX_SPACEDIM});
+        .put(&data.disk_force[0], {nt, 0}, {1, AMREX_SPACEDIM});
     grp.var("angular_velocity").put(&data.current_angular_velocity, {nt}, {1});
     grp.var("f_normal").put(&(data.f_normal[0]), {nt, 0}, {1, nr});
     grp.var("f_theta").put(&(data.f_theta[0]), {nt, 0}, {1, np});
@@ -184,7 +184,4 @@ void write_netcdf(
 #endif
 }
 
-} // namespace joukowsky
-} // namespace ops
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator::ops::joukowsky

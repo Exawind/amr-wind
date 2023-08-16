@@ -6,10 +6,7 @@
 #include "AMReX_REAL.H"
 #include "AMReX_ParmParse.H"
 #include "AMReX_MLLinOp.H"
-
-namespace amrex {
-class MLMG;
-} // namespace amrex
+#include "AMReX_MLMG.H"
 
 namespace Hydro {
 class NodalProjector;

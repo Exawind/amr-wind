@@ -8,8 +8,7 @@
 #include <algorithm>
 #include <memory>
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 Actuator::Actuator(CFDSim& sim)
     : m_sim(sim), m_act_source(sim.repo().declare_field("actuator_src_term", 3))
@@ -25,7 +24,7 @@ void Actuator::pre_init_actions()
     amrex::Vector<std::string> labels;
     pp.getarr("labels", labels);
 
-    const int nturbines = labels.size();
+    const int nturbines = static_cast<int>(labels.size());
 
     for (int i = 0; i < nturbines; ++i) {
         const std::string& tname = labels[i];
@@ -35,6 +34,12 @@ void Actuator::pre_init_actions()
         std::string type;
         pp.query("type", type);
         pp1.query("type", type);
+        if (type == "TurbineFastLine" || type == "TurbineFastDisk") {
+            // Only one kind of sampling can be chosen. If OpenFAST is involved
+            // in the Actuator type, the default behavior is to sample velocity
+            // at n-1/2 so that forcing is at n+1/2
+            m_sample_nmhalf = true;
+        }
         AMREX_ALWAYS_ASSERT(!type.empty());
 
         auto obj = ActuatorModel::create(type, m_sim, tname, i);
@@ -45,6 +50,9 @@ void Actuator::pre_init_actions()
         obj->read_inputs(inp);
         m_actuators.emplace_back(std::move(obj));
     }
+
+    // Check if sampling should be modified aside from default behavior
+    pp.query("sample_vel_nmhalf", m_sample_nmhalf);
 }
 
 void Actuator::post_init_actions()
@@ -93,6 +101,40 @@ void Actuator::pre_advance_work()
     update_velocities();
     compute_forces();
     compute_source_term();
+    communicate_turbine_io();
+}
+
+void Actuator::communicate_turbine_io()
+{
+#ifdef AMR_WIND_USE_HELICS
+    if (!m_sim.helics().is_activated()) {
+        return;
+    }
+    // send power and yaw from root actuator proc to io proc
+    const int ptag = 0;
+    const int ytag = 1;
+    const size_t size = 1;
+    for (auto& ac : m_actuators) {
+        if (ac->info().is_root_proc) {
+            amrex::ParallelDescriptor::Send(
+                &m_sim.helics().m_turbine_power_to_controller[ac->info().id],
+                size, amrex::ParallelDescriptor::IOProcessorNumber(), ptag);
+            amrex::ParallelDescriptor::Send(
+                &m_sim.helics()
+                     .m_turbine_wind_direction_to_controller[ac->info().id],
+                size, amrex::ParallelDescriptor::IOProcessorNumber(), ytag);
+        }
+        if (amrex::ParallelDescriptor::IOProcessor()) {
+            amrex::ParallelDescriptor::Recv(
+                &m_sim.helics().m_turbine_power_to_controller[ac->info().id],
+                size, ac->info().root_proc, ptag);
+            amrex::ParallelDescriptor::Recv(
+                &m_sim.helics()
+                     .m_turbine_wind_direction_to_controller[ac->info().id],
+                size, ac->info().root_proc, ytag);
+        }
+    }
+#endif
 }
 
 /** Set up the container for sampling velocities
@@ -104,11 +146,11 @@ void Actuator::pre_advance_work()
 void Actuator::setup_container()
 {
     const int ntotal = num_actuators();
-    const int nlocal = std::count_if(
+    const int nlocal = static_cast<int>(std::count_if(
         m_actuators.begin(), m_actuators.end(),
         [](const std::unique_ptr<ActuatorModel>& obj) {
             return obj->info().sample_vel_in_proc;
-        });
+        }));
 
     m_container = std::make_unique<ActuatorContainer>(m_sim.mesh(), nlocal);
 
@@ -146,9 +188,19 @@ void Actuator::update_positions()
     m_container->update_positions();
 
     // Sample velocities at the new locations
-    const auto& vel = m_sim.repo().get_field("velocity");
-    const auto& density = m_sim.repo().get_field("density");
-    m_container->sample_fields(vel, density);
+    if (m_sample_nmhalf &&
+        (m_sim.time().current_time() > m_sim.time().start_time())) {
+        // Avoid using mac velocities if at init or restart
+        const auto& umac = m_sim.repo().get_field("u_mac");
+        const auto& vmac = m_sim.repo().get_field("v_mac");
+        const auto& wmac = m_sim.repo().get_field("w_mac");
+        const auto& density = m_sim.repo().get_field("density");
+        m_container->sample_fields(umac, vmac, wmac, density);
+    } else {
+        const auto& vel = m_sim.repo().get_field("velocity");
+        const auto& density = m_sim.repo().get_field("density");
+        m_container->sample_fields(vel, density);
+    }
 }
 
 /** Provide updated velocities from container to actuator instances
@@ -234,5 +286,4 @@ void Actuator::post_advance_work()
     }
 }
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator

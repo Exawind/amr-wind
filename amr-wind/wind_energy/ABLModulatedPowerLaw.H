@@ -32,7 +32,9 @@ public:
         const int lev,
         const amrex::Real time,
         const Field& fld,
-        amrex::MultiFab& mfab) const;
+        amrex::MultiFab& mfab,
+        const int dcomp = 0,
+        const int orig_comp = 0) const;
 
     void set_temperature(
         const int lev,
@@ -51,14 +53,13 @@ private:
     amrex::Real m_zoffset{0.0};
     amrex::Real m_zref{90};
     amrex::Real m_shear_exp{0.1};
-    //    amrex::Real m_umin{0.0};
     amrex::Real m_umax_factor{1.2};
     amrex::Real m_bulk_velocity{15.0};
     amrex::Real m_shearlayer_height{600.0};
     amrex::Real m_shearlayer_smear_thickness{30.0};
-    amrex::Real m_wind_speed{10.0};
-    amrex::Real m_wind_direction{45.0};
-    amrex::Vector<amrex::Real> m_uvec{{10.0, 0.0, 0.0}};
+    amrex::Real m_wind_speed{8.0};
+    amrex::Real m_wind_direction{270.0};
+    amrex::Vector<amrex::Real> m_uvec{{8.0, 0.0, 0.0}};
 
     amrex::Real m_start_time{0.0};
     amrex::Real m_stop_time{std::numeric_limits<amrex::Real>::max()};

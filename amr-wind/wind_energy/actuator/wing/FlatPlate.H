@@ -4,8 +4,7 @@
 #include "amr-wind/wind_energy/actuator/wing/ActuatorWing.H"
 #include "amr-wind/wind_energy/actuator/aero/AirfoilTable.H"
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 struct FlatPlateData : public WingBaseData
 {
@@ -25,7 +24,6 @@ struct FlatPlate : public WingType
     static std::string identifier() { return "FlatPlate"; }
 };
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator
 
 #endif /* FLATPLATE_H */

@@ -1,8 +1,7 @@
 #include "amr-wind/wind_energy/actuator/disk/disk_ops.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/io_utils.H"
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 namespace disk {
 void prepare_netcdf_file(
     const std::string& name,
@@ -93,8 +92,7 @@ void write_netcdf(
 #endif
 }
 } // namespace disk
-namespace ops {
-namespace base {
+namespace ops::base {
 
 AreaComputer::AreaComputer(
     const amrex::Real radius, const int num_r, const int num_theta)
@@ -311,7 +309,7 @@ std::ostringstream check_for_parse_conflicts(const utils::ActParser& pp)
 
 vs::Vector compute_coplanar_vector(const vs::Vector& normal)
 {
-    // FIXME: only works for abl with z pointing up
+    // TODO: only works for abl with z pointing up
     return (vs::Vector::khat() ^ normal).normalize();
 }
 
@@ -394,7 +392,5 @@ void compute_disk_points(
         }
     }
 }
-} // namespace base
-} // namespace ops
-} // namespace actuator
-} // namespace amr_wind
+} // namespace ops::base
+} // namespace amr_wind::actuator

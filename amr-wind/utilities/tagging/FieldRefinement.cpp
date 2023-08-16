@@ -38,14 +38,18 @@ void FieldRefinement::initialize(const std::string& key)
     }
 
     {
-        const int fcount = std::min(field_err.size(), m_field_error.size());
+        const int fcount = std::min(
+            static_cast<int>(field_err.size()),
+            static_cast<int>(m_field_error.size()));
         for (int i = 0; i < fcount; ++i) {
             m_field_error[i] = field_err[i];
         }
         m_max_lev_field = fcount - 1;
     }
     {
-        const int fcount = std::min(grad_err.size(), m_grad_error.size());
+        const int fcount = std::min(
+            static_cast<int>(grad_err.size()),
+            static_cast<int>(m_grad_error.size()));
         for (int i = 0; i < fcount; ++i) {
             m_grad_error[i] = grad_err[i];
         }
@@ -87,17 +91,17 @@ void FieldRefinement::operator()(
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real axp =
-                        amrex::Math::abs(farr(i + 1, j, k) - farr(i, j, k));
+                        std::abs(farr(i + 1, j, k) - farr(i, j, k));
                     const amrex::Real ayp =
-                        amrex::Math::abs(farr(i, j + 1, k) - farr(i, j, k));
+                        std::abs(farr(i, j + 1, k) - farr(i, j, k));
                     const amrex::Real azp =
-                        amrex::Math::abs(farr(i, j, k + 1) - farr(i, j, k));
+                        std::abs(farr(i, j, k + 1) - farr(i, j, k));
                     const amrex::Real axm =
-                        amrex::Math::abs(farr(i - 1, j, k) - farr(i, j, k));
+                        std::abs(farr(i - 1, j, k) - farr(i, j, k));
                     const amrex::Real aym =
-                        amrex::Math::abs(farr(i, j - 1, k) - farr(i, j, k));
+                        std::abs(farr(i, j - 1, k) - farr(i, j, k));
                     const amrex::Real azm =
-                        amrex::Math::abs(farr(i, j, k - 1) - farr(i, j, k));
+                        std::abs(farr(i, j, k - 1) - farr(i, j, k));
                     const amrex::Real ax = amrex::max(axp, axm);
                     const amrex::Real ay = amrex::max(ayp, aym);
                     const amrex::Real az = amrex::max(azp, azm);

@@ -11,8 +11,7 @@
 #include "AMReX_Gpu.H"
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /** MOL advection operator for scalar transport equations
  *  \ingroup pdeop
@@ -36,7 +35,11 @@ struct AdvectionOp<
         , w_mac(fields_in.repo.get_field("w_mac"))
     {}
 
-    void preadvect(const FieldState /*unused*/, const amrex::Real /*unused*/) {}
+    void preadvect(
+        const FieldState /*unused*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/)
+    {}
 
     void operator()(const FieldState fstate, const amrex::Real /*unused*/)
     {
@@ -46,7 +49,7 @@ struct AdvectionOp<
         const auto& repo = fields.repo;
         const auto& geom = repo.mesh().Geom();
 
-        // cppcheck-suppress constVariable
+        // cppcheck-suppress constVariableReference
         auto& conv_term = fields.conv_term.state(fstate);
         const auto& dof_field = fields.field.state(fstate);
         const auto& den = density.state(fstate);
@@ -125,7 +128,6 @@ struct AdvectionOp<
     Field& w_mac;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* ADVOP_MOL_H */

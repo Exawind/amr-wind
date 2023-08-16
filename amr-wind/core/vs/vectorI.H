@@ -5,8 +5,7 @@
 #include <cmath>
 #include "amr-wind/core/vs/vector.H"
 
-namespace amr_wind {
-namespace vs {
+namespace amr_wind::vs {
 
 template <typename T>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T>
@@ -228,7 +227,6 @@ operator/(const T2 fac, VectorT<T1>&& inp)
 }
 
 #endif
-} // namespace vs
-} // namespace amr_wind
+} // namespace amr_wind::vs
 
 #endif /* VS_VECTORI_H */

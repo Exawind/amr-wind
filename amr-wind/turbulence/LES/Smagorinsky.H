@@ -5,8 +5,7 @@
 #include "amr-wind/turbulence/TurbModelBase.H"
 #include "amr-wind/core/FieldRepo.H"
 
-namespace amr_wind {
-namespace turbulence {
+namespace amr_wind::turbulence {
 
 /** Smagorinsky LES Model
  *  \ingroup turb_model
@@ -26,7 +25,8 @@ public:
     std::string model_name() const override { return "Smagorinsky"; }
 
     //! Update the turbulent viscosity field
-    void update_turbulent_viscosity(const FieldState fstate) override;
+    void update_turbulent_viscosity(
+        const FieldState fstate, const DiffusionType /*unused*/) override;
 
     //! No post advance work for this model
     void post_advance_work() override {}
@@ -45,7 +45,6 @@ private:
     const Field& m_rho;
 };
 
-} // namespace turbulence
-} // namespace amr_wind
+} // namespace amr_wind::turbulence
 
 #endif /* SMAGORINSKY_H */

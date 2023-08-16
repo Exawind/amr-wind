@@ -6,8 +6,7 @@
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/IOManager.H"
 
-namespace amr_wind {
-namespace field_norms {
+namespace amr_wind::field_norms {
 
 FieldNorms::FieldNorms(CFDSim& sim, std::string label)
     : m_sim(sim), m_label(std::move(label))
@@ -24,7 +23,7 @@ void FieldNorms::initialize()
         pp.query("output_frequency", m_out_freq);
     }
 
-    auto& io_mng = m_sim.io_manager();
+    const auto& io_mng = m_sim.io_manager();
     for (const auto& fld : io_mng.plot_fields()) {
         ioutils::add_var_names(m_var_names, fld->name(), fld->num_comp());
     }
@@ -139,5 +138,4 @@ void FieldNorms::write_ascii()
     }
 }
 
-} // namespace field_norms
-} // namespace amr_wind
+} // namespace amr_wind::field_norms

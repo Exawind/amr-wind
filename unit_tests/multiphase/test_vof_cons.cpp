@@ -4,11 +4,13 @@
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/equation_systems/vof/vof.H"
 #include "amr-wind/equation_systems/SchemeTraits.H"
+#include "amr-wind/utilities/tagging/CartBoxRefinement.H"
 
 namespace amr_wind_tests {
+namespace {
 
-static void
-initialize_volume_fractions(const int dir, const int nx, amr_wind::Field& vof)
+void initialize_volume_fractions(
+    const int dir, const int nx, amr_wind::Field& vof)
 {
 
     run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
@@ -56,7 +58,7 @@ initialize_volume_fractions(const int dir, const int nx, amr_wind::Field& vof)
     vof.fillpatch(0.0);
 }
 
-static void initialize_adv_velocities(
+void initialize_adv_velocities(
     amr_wind::Field& vof,
     amr_wind::Field& umac,
     amr_wind::Field& vmac,
@@ -77,8 +79,7 @@ static void initialize_adv_velocities(
     });
 }
 
-static void
-check_accuracy(int dir, int nx, amrex::Real tol, amr_wind::Field& vof)
+void check_accuracy(int dir, int nx, amrex::Real tol, amr_wind::Field& vof)
 {
     run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
         const auto& vof_arr = vof(lev).const_array(mfi);
@@ -116,6 +117,7 @@ check_accuracy(int dir, int nx, amrex::Real tol, amr_wind::Field& vof)
         }
     });
 }
+} // namespace
 
 class VOFConsTest : public MeshTest
 {
@@ -179,6 +181,30 @@ protected:
             amrex::ParmParse pp("geometry");
             amrex::Vector<int> periodic{{1, 1, 1}};
             pp.addarr("is_periodic", periodic);
+        }
+        // dir = -2 corresponds to multi-level
+        if (dir == -2) {
+            {
+                amrex::ParmParse pp("amr");
+                amrex::Vector<int> ncell{{m_nx + 1, m_nx + 1, m_nx + 1}};
+                pp.add("max_level", 1);
+                pp.add("max_grid_size", m_nx + 1);
+                pp.add("blocking_factor", 2);
+                pp.addarr("n_cell", ncell);
+            }
+            // Create the "input file"
+            std::stringstream ss;
+            ss << "1 // Number of levels" << std::endl;
+            ss << "1 // Number of boxes at this level" << std::endl;
+            ss << "0.8 0.5 0.5 0.9 0.5 0.5" << std::endl;
+
+            create_mesh_instance<RefineMesh>();
+            std::unique_ptr<amr_wind::CartBoxRefinement> box_refine(
+                new amr_wind::CartBoxRefinement(sim()));
+            box_refine->read_inputs(mesh(), ss);
+
+            mesh<RefineMesh>()->refine_criteria_vec().push_back(
+                std::move(box_refine));
         }
 
         initialize_mesh();
@@ -249,5 +275,7 @@ TEST_F(VOFConsTest, Z) { testing_coorddir(2, 0.45); }
 // during directionally-split advection
 TEST_F(VOFConsTest, CFL045) { testing_coorddir(-1, 0.45); }
 TEST_F(VOFConsTest, CFL01) { testing_coorddir(-1, 0.1); }
+// Test transport across multiple mesh levels - just check conservation
+TEST_F(VOFConsTest, 2level) { testing_coorddir(-2, 0.5 * 0.45); }
 
 } // namespace amr_wind_tests

@@ -84,19 +84,19 @@ TEST_F(FieldRepoTest, field_post_declare)
 
     // Check that the IDs are consistent
     {
-        auto& f1 = frepo.get_field("vel");
-        auto& f2 = frepo.get_field(0);
+        const auto& f1 = frepo.get_field("vel");
+        const auto& f2 = frepo.get_field(0);
         EXPECT_EQ(f1.id(), f2.id());
     }
     // Velocity has two states...
     {
-        auto& f1 = frepo.get_field("density");
-        auto& f2 = frepo.get_field(2);
+        const auto& f1 = frepo.get_field("density");
+        const auto& f2 = frepo.get_field(2);
         EXPECT_EQ(f1.id(), f2.id());
     }
     {
-        auto& f1 = frepo.get_field("pressure");
-        auto& f2 = frepo.get_field(3);
+        const auto& f1 = frepo.get_field("pressure");
+        const auto& f2 = frepo.get_field(3);
         EXPECT_EQ(f1.id(), f2.id());
     }
 }
@@ -312,14 +312,46 @@ TEST_F(FieldRepoTest, scratch_fields)
     }
 }
 
+TEST_F(FieldRepoTest, int_scratch_fields)
+{
+
+    populate_parameters();
+    create_mesh_instance();
+
+    const auto& frepo = mesh().field_repo();
+// Check that int scratch field creation is disallowed before mesh is created
+#if !(defined(AMREX_USE_MPI) && defined(__APPLE__))
+    EXPECT_THROW(
+        frepo.create_int_scratch_field_on_host(1, 0), amrex::RuntimeError);
+#endif
+    initialize_mesh();
+
+    auto ibcell_host = frepo.create_int_scratch_field_on_host(
+        "iblank_cell_host", 1, 0, amr_wind::FieldLoc::CELL);
+    auto ibnode_host = frepo.create_int_scratch_field_on_host(
+        "iblank_node_host", 1, 0, amr_wind::FieldLoc::NODE);
+
+    const int nlevels = frepo.num_active_levels();
+
+    (*ibcell_host).setVal(1);
+    (*ibnode_host).setVal(0);
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        EXPECT_EQ((*ibcell_host)(lev).max(0), 1);
+        EXPECT_EQ((*ibcell_host)(lev).min(0), 1);
+        EXPECT_EQ((*ibnode_host)(lev).max(0), 0);
+        EXPECT_EQ((*ibnode_host)(lev).min(0), 0);
+    }
+}
+
 TEST_F(FieldRepoTest, int_fields)
 {
     initialize_mesh();
 
     auto& frepo = mesh().field_repo();
-    // cppcheck-suppress constVariable
+    // cppcheck-suppress constVariableReference
     auto& ibcell = frepo.declare_int_field("iblank_cell", 1, 0, 1);
-    // cppcheck-suppress constVariable
+    // cppcheck-suppress constVariableReference
     auto& ibnode = frepo.declare_int_field(
         "iblank_node", 1, 0, 1, amr_wind::FieldLoc::NODE);
 

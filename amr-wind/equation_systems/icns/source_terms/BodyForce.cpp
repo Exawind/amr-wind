@@ -9,9 +9,7 @@
 #include <cstddef>
 #include <ios>
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 /** Body Force
  */
@@ -126,6 +124,4 @@ void BodyForce::operator()(
     }
 }
 
-} // namespace icns
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns

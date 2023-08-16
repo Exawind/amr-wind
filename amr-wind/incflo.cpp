@@ -88,7 +88,6 @@ void incflo::init_mesh()
 void incflo::init_amr_wind_modules()
 {
     BL_PROFILE("amr-wind::incflo::init_amr_wind_modules");
-
     if (m_sim.has_overset()) {
         m_sim.overset_manager()->post_init_actions();
     } else {
@@ -266,12 +265,18 @@ void incflo::Evolve()
 
         regrid_and_update();
 
-        pre_advance_stage1();
-        pre_advance_stage2();
+        if (m_prescribe_vel) {
+            pre_advance_stage2();
+            ComputePrescribeDt();
+        } else {
+            pre_advance_stage1();
+            pre_advance_stage2();
+        }
 
         amrex::Real time1 = amrex::ParallelDescriptor::second();
         // Advance to time t + dt
-        advance();
+        do_advance();
+
         amrex::Print() << std::endl;
         amrex::Real time2 = amrex::ParallelDescriptor::second();
         post_advance_work();
@@ -300,6 +305,15 @@ void incflo::Evolve()
     }
     if (m_time.write_last_checkpoint()) {
         m_sim.io_manager().write_checkpoint_file();
+    }
+}
+
+void incflo::do_advance()
+{
+    if (m_prescribe_vel) {
+        prescribe_advance();
+    } else {
+        advance();
     }
 }
 
@@ -370,6 +384,11 @@ void incflo::init_physics_and_pde()
     }
 
     m_sim.init_physics();
+    {
+        // Check for if velocity is prescribed
+        amrex::ParmParse pp("incflo");
+        pp.query("prescribe_velocity", m_prescribe_vel);
+    }
     m_sim.create_turbulence_model();
 
     // Initialize the refinement criteria

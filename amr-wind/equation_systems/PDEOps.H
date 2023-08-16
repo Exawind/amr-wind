@@ -9,8 +9,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /**
  *  \defgroup pdeop PDE Operators
@@ -84,7 +83,6 @@ struct SrcTermOpBase
 
         for (auto& src_name : src_terms) {
             // Prefer to use emplace_back here
-            // cppcheck-suppress useStlAlgorithm
             sources.emplace_back(PDE::SrcTerm::create(src_name, sim));
         }
     }
@@ -139,7 +137,7 @@ struct SrcTermOpBase
                 const auto& bx = mfi.tilebox();
                 const auto& vf = src_term.array(mfi);
 
-                for (auto& src : this->sources) {
+                for (const auto& src : this->sources) {
                     (*src)(lev, mfi, bx, fstate, vf);
                 }
             }
@@ -214,7 +212,6 @@ struct PostSolveOp
     PDEFields& m_fields;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* PDEOPS_H */

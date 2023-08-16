@@ -7,6 +7,7 @@
 #include "amr-wind/equation_systems/icns/source_terms/ABLMeanBoussinesq.H"
 #include "amr-wind/equation_systems/icns/source_terms/ABLMesoForcingMom.H"
 #include "amr-wind/equation_systems/temperature/source_terms/ABLMesoForcingTemp.H"
+#include "amr-wind/equation_systems/icns/source_terms/HurricaneForcing.H"
 #include "amr-wind/incflo.H"
 #include "amr-wind/wind_energy/ABLMesoscaleForcing.H"
 #include "amr-wind/wind_energy/ABLMesoscaleInput.H"
@@ -25,7 +26,7 @@ ABL::ABL(CFDSim& sim)
     , m_abl_wall_func(sim)
 {
     // Register temperature equation
-    // FIXME: this should be optional?
+    // TODO: this should be optional?
     auto& teqn = sim.pde_manager().register_transport_pde("Temperature");
     m_temperature = &(teqn.fields().field);
 
@@ -39,6 +40,8 @@ ABL::ABL(CFDSim& sim)
         pp.query("statistics_mode", statistics_mode);
         m_stats =
             ABLStatsBase::create(statistics_mode, sim, m_abl_wall_func, dir);
+        // Check for file input
+        m_file_input = pp.contains("initial_condition_input_file");
     }
 
     amrex::ParmParse pp("ABL");
@@ -72,6 +75,11 @@ ABL::ABL(CFDSim& sim)
 
     // Instantiate the ABL Modulated Power Law
     m_abl_mpl = std::make_unique<ABLModulatedPowerLaw>(sim);
+
+    // Instantiate the file-based field initializer
+    if (m_file_input) {
+        m_field_init_file = std::make_unique<ABLFieldInitFile>();
+    }
 }
 
 ABL::~ABL() = default;
@@ -93,12 +101,25 @@ void ABL::initialize_fields(int level, const amrex::Geometry& geom)
         temp.setVal(0.0);
     }
 
+    bool interp_fine_levels = false;
     for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
 
+        // Initialize with ABL profiles
         (*m_field_init)(
             vbx, geom, velocity.array(mfi), density.array(mfi),
             temp.array(mfi));
+
+        // Overwrite velocities from file
+        if (m_file_input) {
+            interp_fine_levels =
+                (*m_field_init_file)(vbx, geom, velocity.array(mfi), level);
+        }
+    }
+
+    if (interp_fine_levels) {
+        // Fill the finer levels using coarse data
+        m_velocity.fillpatch_from_coarse(level, 0.0, velocity, 0);
     }
 
     if (m_sim.repo().field_exists("tke")) {
@@ -152,6 +173,23 @@ void ABL::pre_advance_work()
         const amrex::Real vy = vel_pa.line_average_interpolated(zh, 1);
         // Set the mean velocities at the forcing height so that the source
         // terms can be computed during the time integration calls
+
+#ifdef AMR_WIND_USE_HELICS
+        if (m_sim.helics().is_activated()) {
+            const amrex::Real wind_speed =
+                m_sim.helics().m_inflow_wind_speed_to_amrwind;
+            const amrex::Real wind_direction =
+                -m_sim.helics().m_inflow_wind_direction_to_amrwind + 270.0;
+            const amrex::Real wind_direction_radian =
+                amr_wind::utils::radians(wind_direction);
+            const amrex::Real tvx =
+                wind_speed * std::cos(wind_direction_radian);
+            const amrex::Real tvy =
+                wind_speed * std::sin(wind_direction_radian);
+            m_abl_forcing->set_target_velocities(tvx, tvy);
+        }
+#endif
+
         m_abl_forcing->set_mean_velocities(vx, vy);
     }
 
@@ -181,6 +219,11 @@ void ABL::pre_advance_work()
         amrex::Print() << "Current surface temperature flux: " << interpTflux
                        << " K-m/s" << std::endl;
         m_abl_wall_func.update_tflux(interpTflux);
+    }
+
+    if (m_hurricane_forcing != nullptr) {
+        m_hurricane_forcing->mean_velocity_update(
+            m_stats->vel_profile_coarse());
     }
 
     m_bndry_plane->pre_advance_work();

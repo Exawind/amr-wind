@@ -5,8 +5,7 @@
 #include "amr-wind/wind_energy/actuator/disk/ActuatorDisk.H"
 #include "amr-wind/core/vs/vector_space.H"
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 struct JoukowskyData : public DiskBaseData
 {
@@ -20,9 +19,19 @@ struct JoukowskyData : public DiskBaseData
     amrex::Real vortex_core_size;
     amrex::Real current_cp;
     amrex::Real current_power;
-    // --- Sorenson 2020 equation 10 constants ----
+    // --- Sorensen 2020 equation 10 constants ----
     amrex::Real root_correction_coefficient{2.335};
     amrex::Real root_correction_exponent{4.0};
+    // --- Sorensen 2022 equation 26 constants ----
+    // Note that Ct_rated is the Ct in the region 2 part of the power curve.
+    // Ct_rated is called ct_region2 in the input file.
+    amrex::Real Ct_rated{0.0};
+    // Note that the defaults for S0 have changed from the paper.
+    // Sorensen 2022 had S0_alpha1 = 0.08 and S0_alpha2 = 0.05.
+    // Current version uses negative alpha coefficients, possibly to account
+    // for the change in rotor rotation.
+    amrex::Real S0_alpha1{-0.20};
+    amrex::Real S0_alpha2{-0.05};
     // --------------------------------------------
     int num_blades{3};
     vs::Vector disk_force{0.0, 0.0, 0.0};
@@ -40,7 +49,6 @@ struct Joukowsky : public DiskType
     static std::string identifier() { return "Joukowsky"; }
 };
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator
 
 #endif /* Joukowsky_H_ */

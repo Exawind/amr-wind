@@ -4,11 +4,9 @@
 #include "amr-wind/equation_systems/BCOps.H"
 #include "amr-wind/equation_systems/sdr/sdr_ops.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 template class PDESystem<SDR, fvm::Godunov>;
 template class PDESystem<SDR, fvm::MOL>;
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde

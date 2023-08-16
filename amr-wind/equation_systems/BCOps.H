@@ -5,8 +5,7 @@
 #include "amr-wind/equation_systems/PDEOps.H"
 #include "amr-wind/boundary_conditions/BCInterface.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /** BC operations for all scalar transport equations
  *  \ingroup pdeop
@@ -46,7 +45,6 @@ struct BCOp<
     const SimTime& m_time;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif /* BCOPS_H */

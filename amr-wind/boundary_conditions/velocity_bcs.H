@@ -7,9 +7,9 @@
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/physics/udfs/LinearProfile.H"
 #include "amr-wind/physics/udfs/PowerLawProfile.H"
+#include "amr-wind/physics/udfs/BurggrafLid.H"
 
-namespace amr_wind {
-namespace vel_bc {
+namespace amr_wind::vel_bc {
 
 template <typename WallOp>
 void register_inflow_vel_dirichlet(
@@ -24,6 +24,10 @@ void register_inflow_vel_dirichlet(
             mesh, time, InflowOp(field));
     } else if (inflow_udf == "PowerLawProfile") {
         using InflowOp = BCOpCreator<udf::PowerLawProfile, WallOp>;
+        field.register_fill_patch_op<FieldFillPatchOps<InflowOp>>(
+            mesh, time, InflowOp(field));
+    } else if (inflow_udf == "BurggrafLid") {
+        using InflowOp = BCOpCreator<udf::BurggrafLid, WallOp>;
         field.register_fill_patch_op<FieldFillPatchOps<InflowOp>>(
             mesh, time, InflowOp(field));
     } else {
@@ -53,7 +57,6 @@ void register_velocity_dirichlet(
         field, inflow_udf, mesh, time);
 }
 
-} // namespace vel_bc
-} // namespace amr_wind
+} // namespace amr_wind::vel_bc
 
 #endif /* VELOCITY_BCS_H */

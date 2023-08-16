@@ -6,10 +6,7 @@
 #include "amr-wind/immersed_boundary/IB.H"
 #include "amr-wind/immersed_boundary/bluff_body/bluff_body_ops.H"
 
-namespace amr_wind {
-namespace ib {
-
-namespace ops {
+namespace amr_wind::ib::ops {
 
 template <>
 struct ReadInputsOp<Cylinder>
@@ -49,9 +46,9 @@ struct InitDataOp<Cylinder>
         const auto& wdata = data.meta();
 
         auto& sim = data.sim();
-        // cppcheck-suppress constVariable
+        // cppcheck-suppress constVariableReference
         auto& mask_node = sim.repo().get_int_field("mask_node");
-        // cppcheck-suppress constVariable
+        // cppcheck-suppress constVariableReference
         auto& levelset = sim.repo().get_field("ib_levelset");
 
         auto nlevels = sim.repo().num_active_levels();
@@ -62,7 +59,7 @@ struct InitDataOp<Cylinder>
             const auto& dx = geom[lev].CellSizeArray();
 
             for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
-                auto phi = levelset(lev).array(mfi);
+                const auto& phi = levelset(lev).array(mfi);
 
                 const amrex::Real x0 = wdata.center_loc[0];
                 const amrex::Real y0 = wdata.center_loc[1];
@@ -72,23 +69,23 @@ struct InitDataOp<Cylinder>
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                         const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                        amrex::Real phi_glob = phi(i, j, k);
-                        amrex::Real r = std::sqrt(
+                        const amrex::Real phi_glob = phi(i, j, k);
+                        const amrex::Real r = std::sqrt(
                             (x - x0) * (x - x0) + (y - y0) * (y - y0));
 
-                        amrex::Real phi_loc = r - R;
+                        const amrex::Real phi_loc = r - R;
 
                         phi(i, j, k) = std::min(phi_loc, phi_glob);
                     });
 
                 const auto& nbx = mfi.nodaltilebox();
-                auto epsilon_node = mask_node(lev).array(mfi);
+                const auto& epsilon_node = mask_node(lev).array(mfi);
                 amrex::ParallelFor(
                     nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real x = problo[0] + i * dx[0];
                         const amrex::Real y = problo[1] + j * dx[1];
 
-                        amrex::Real r = std::sqrt(
+                        const amrex::Real r = std::sqrt(
                             (x - x0) * (x - x0) + (y - y0) * (y - y0));
 
                         if (r <= R) {
@@ -100,8 +97,6 @@ struct InitDataOp<Cylinder>
     }
 };
 
-} // namespace ops
-} // namespace ib
-} // namespace amr_wind
+} // namespace amr_wind::ib::ops
 
 #endif /* CYLINDER_OPS_H */

@@ -4,8 +4,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/PostProcessing.H"
 
-namespace amr_wind {
-namespace field_norms {
+namespace amr_wind::field_norms {
 
 /** field norm object
  *  \ingroup Field Norm
@@ -81,7 +80,6 @@ private:
     int m_precision{12};
 };
 
-} // namespace field_norms
-} // namespace amr_wind
+} // namespace amr_wind::field_norms
 
 #endif /* FIELDNORMS_H */

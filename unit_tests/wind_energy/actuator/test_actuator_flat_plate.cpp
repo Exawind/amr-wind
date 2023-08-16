@@ -57,8 +57,7 @@ struct FlatPlate : public act::WingType
 
 } // namespace amr_wind_tests
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 namespace ops {
 
@@ -170,8 +169,7 @@ struct ComputeForceOp<::amr_wind_tests::FlatPlate, SrcTrait>
 
 template class ::amr_wind::actuator::
     ActModel<::amr_wind_tests::FlatPlate, ::amr_wind::actuator::ActSrcLine>;
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator
 
 namespace amr_wind_tests {
 

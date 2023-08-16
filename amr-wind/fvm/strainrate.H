@@ -3,8 +3,7 @@
 
 #include "amr-wind/fvm/fvm_utils.H"
 
-namespace amr_wind {
-namespace fvm {
+namespace amr_wind::fvm {
 
 /** Strain rate operator
  *  \ingroup fvm
@@ -116,7 +115,6 @@ inline std::unique_ptr<ScratchField> strainrate(const FType& phi)
     return strphi;
 }
 
-} // namespace fvm
-} // namespace amr_wind
+} // namespace amr_wind::fvm
 
 #endif /* STRAINRATE_H */

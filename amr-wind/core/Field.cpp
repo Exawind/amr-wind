@@ -20,8 +20,10 @@ FieldInfo::FieldInfo(
     , m_ngrow(ngrow)
     , m_nstates(nstates)
     , m_floc(floc)
-    , m_bc_values(AMREX_SPACEDIM * 2, amrex::Vector<amrex::Real>(ncomp, 0.0))
-    , m_bc_values_dview(ncomp * AMREX_SPACEDIM * 2)
+    , m_bc_values(
+          static_cast<long>(AMREX_SPACEDIM) * 2,
+          amrex::Vector<amrex::Real>(ncomp, 0.0))
+    , m_bc_values_dview(static_cast<long>(ncomp) * AMREX_SPACEDIM * 2)
     , m_bcrec(ncomp)
     , m_bcrec_d(ncomp)
     , m_states(FieldInfo::max_field_states, nullptr)
@@ -63,7 +65,8 @@ void FieldInfo::copy_bc_to_device() noexcept
         amrex::Abort("Invalid BC type encountered");
     }
 
-    amrex::Vector<amrex::Real> h_data(m_ncomp * AMREX_SPACEDIM * 2);
+    amrex::Vector<amrex::Real> h_data(
+        static_cast<long>(m_ncomp) * AMREX_SPACEDIM * 2);
 
     // Copy data to a flat array for transfer to device
     {
@@ -205,6 +208,32 @@ void Field::fillpatch(amrex::Real time) noexcept
     fillpatch(time, num_grow());
 }
 
+void Field::fillpatch_sibling_fields(
+    amrex::Real time,
+    amrex::IntVect ng,
+    amrex::Array<Field*, AMREX_SPACEDIM>& fields) const noexcept
+{
+    BL_PROFILE("amr-wind::Field::fillpatch array");
+    BL_ASSERT(m_info->m_fillpatch_op);
+    BL_ASSERT(m_info->bc_initialized() && m_info->m_bc_copied_to_device);
+    BL_ASSERT(m_info->m_ncomp == static_cast<int>(fields.size()));
+    auto& fop = *(m_info->m_fillpatch_op);
+    const int nlevels = m_repo.num_active_levels();
+    for (int lev = 0; lev < nlevels; ++lev) {
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs = {AMREX_D_DECL(
+            &((*fields[0])(lev)), &((*fields[1])(lev)), &((*fields[2])(lev)))};
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> cfabs;
+        if (lev > 0) {
+            for (int i = 0; i < static_cast<int>(fields.size()); i++) {
+                cfabs[i] = &((*fields[i])(lev - 1));
+            }
+        }
+
+        fop.fillpatch_sibling_fields(
+            lev, time, mfabs, mfabs, cfabs, ng, m_info->m_bcrec, field_state());
+    }
+}
+
 void Field::fillphysbc(
     int lev,
     amrex::Real time,
@@ -239,7 +268,7 @@ void Field::fillphysbc(amrex::Real time) noexcept
 void Field::apply_bc_funcs(const FieldState rho_state) noexcept
 {
     BL_ASSERT(m_info->bc_initialized() && m_info->m_bc_copied_to_device);
-    for (auto& func : m_info->m_bc_func) {
+    for (const auto& func : m_info->m_bc_func) {
         (*func)(*this, rho_state);
     }
 }
@@ -267,8 +296,9 @@ void Field::advance_states() noexcept
     for (int i = num_time_states() - 1; i > 0; --i) {
         const auto sold = static_cast<FieldState>(i);
         const auto snew = static_cast<FieldState>(i - 1);
+        // cppcheck-suppress constVariableReference
         auto& old_field = state(sold);
-        auto& new_field = state(snew);
+        const auto& new_field = state(snew);
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
             amrex::MultiFab::Copy(
                 old_field(lev), new_field(lev), 0, 0, num_comp(), num_grow());
@@ -279,6 +309,7 @@ void Field::advance_states() noexcept
 void Field::copy_state(FieldState to_state, FieldState from_state) noexcept
 {
     BL_PROFILE("amr-wind::Field::copy_state");
+    // cppcheck-suppress constVariableReference
     auto& to_field = state(to_state);
     const auto& from_field = state(from_state);
 

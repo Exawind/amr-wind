@@ -89,7 +89,7 @@ void FastIface::parse_inputs(
         m_sim_mode = SimMode::replay;
 
         std::string sim_mode{"replay"};
-        pp.query("sim_mode", sim_mode);
+        pp.query("openfast_sim_mode", sim_mode);
         if (sim_mode == "replay") {
             m_sim_mode = SimMode::replay;
         } else if (sim_mode == "restart") {
@@ -106,7 +106,7 @@ int FastIface::register_turbine(FastTurbine& data)
 {
     BL_PROFILE("amr-wind::FastIface::register_turbine");
     AMREX_ALWAYS_ASSERT(!m_is_initialized);
-    const int local_id = m_turbine_data.size();
+    const int local_id = static_cast<int>(m_turbine_data.size());
     const int gid = data.tid_global;
     m_turbine_map[gid] = local_id;
     data.tid_local = local_id;
@@ -118,7 +118,7 @@ int FastIface::register_turbine(FastTurbine& data)
 void FastIface::allocate_fast_turbines()
 {
     BL_PROFILE("amr-wind::FastIface::allocate_turbines");
-    int nturbines = m_turbine_data.size();
+    int nturbines = static_cast<int>(m_turbine_data.size());
     fast_func(FAST_AllocateTurbines, &nturbines);
     m_is_initialized = true;
 }
@@ -158,6 +158,13 @@ void FastIface::advance_turbine(const int local_id)
     write_velocity_data(fi);
     for (int i = 0; i < fi.num_substeps; ++i, ++fi.time_index) {
         fast_func(FAST_OpFM_Step, &fi.tid_local);
+    }
+
+    if (fi.chkpt_interval > 0 &&
+        (fi.time_index / fi.num_substeps) % fi.chkpt_interval == 0) {
+        char rst_file[fast_strlen()];
+        copy_filename(" ", rst_file);
+        fast_func(FAST_CreateCheckpoint, &fi.tid_local, rst_file);
     }
 }
 
@@ -240,14 +247,14 @@ void FastIface::fast_init_turbine(FastTurbine& fi)
     // integral multiple of CFD timestep
     double dt_err =
         fi.dt_cfd / (static_cast<double>(fi.num_substeps) * fi.dt_fast) - 1.0;
-    if (dt_err > 1.0e-4) {
+    if (dt_err > 1.0e-12) {
         amrex::Abort(
             "FastIFace: OpenFAST timestep is not an integral "
             "multiple of CFD timestep");
     }
 }
 
-// cppcheck-suppress constParameter
+// cppcheck-suppress constParameterReference
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 void FastIface::fast_replay_turbine(FastTurbine& fi)
 {
@@ -296,9 +303,53 @@ void FastIface::fast_replay_turbine(FastTurbine& fi)
 }
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void FastIface::fast_restart_turbine(FastTurbine& /*unused*/)
+void FastIface::fast_restart_turbine(FastTurbine& fi)
 {
     BL_PROFILE("amr-wind::FastIface::restart_turbine");
+
+    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+        amrex::FileSystem::Exists(fi.checkpoint_file + ".chkp"),
+        "FastIface: Cannot find OpenFAST checkpoint file: " +
+            fi.checkpoint_file);
+
+    int abort_lev;
+    char chkpt_file[fast_strlen()];
+    copy_filename(fi.checkpoint_file, chkpt_file);
+
+    fast_func(
+        FAST_OpFM_Restart, &fi.tid_local, chkpt_file, &abort_lev, &fi.dt_fast,
+        &fi.num_blades, &fi.num_blade_elem, &fi.time_index, &fi.to_cfd,
+        &fi.from_cfd, &fi.to_sc, &fi.from_sc);
+
+    {
+#ifdef AMR_WIND_USE_OPENFAST
+        // Check if OpenFAST has tower and reset tower nodes appropriately
+        const int npts = fi.to_cfd.fx_Len;
+        const int nrotor_pts = fi.num_blades * fi.num_pts_blade + 1;
+        if (nrotor_pts == npts) {
+            amrex::OutStream()
+                << "OpenFAST model does not include tower for turbine: "
+                << fi.tlabel << " Turning off tower actuator points"
+                << std::endl;
+            fi.num_pts_tower = 0;
+        }
+        AMREX_ALWAYS_ASSERT(npts == (nrotor_pts + fi.num_pts_tower));
+#endif
+    }
+
+    // Determine the number of substeps for FAST per CFD timestep
+    fi.num_substeps = static_cast<int>(std::floor(fi.dt_cfd / fi.dt_fast));
+
+    AMREX_ALWAYS_ASSERT(fi.num_substeps > 0);
+    // Check that the time step sizes are consistent and FAST advances at an
+    // integral multiple of CFD timestep
+    double dt_err =
+        fi.dt_cfd / (static_cast<double>(fi.num_substeps) * fi.dt_fast) - 1.0;
+    if (dt_err > 1.0e-4) {
+        amrex::Abort(
+            "FastIFace: OpenFAST timestep is not an integral "
+            "multiple of CFD timestep");
+    }
 }
 
 #ifdef AMR_WIND_USE_OPENFAST

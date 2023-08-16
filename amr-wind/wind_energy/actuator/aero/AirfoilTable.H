@@ -5,8 +5,7 @@
 #include <iosfwd>
 #include <memory>
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 class AirfoilLoader;
 
@@ -26,7 +25,7 @@ public:
         amrex::Real& cd,
         amrex::Real& cm) const;
 
-    int num_entries() const { return m_aoa.size(); }
+    int num_entries() const { return static_cast<int>(m_aoa.size()); }
 
     const RealList& aoa() const { return m_aoa; }
 
@@ -81,8 +80,7 @@ struct AirfoilTraits
     using AirfoilLookup = AirfoilTable;
 };
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator
 
 #include "amr-wind/wind_energy/actuator/aero/AirfoilTableI.H"
 

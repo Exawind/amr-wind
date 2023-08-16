@@ -6,8 +6,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace averaging {
+namespace amr_wind::averaging {
 
 TimeAveraging::TimeAveraging(CFDSim& sim, std::string label)
     : m_sim(sim), m_label(std::move(label))
@@ -88,10 +87,9 @@ void TimeAveraging::post_advance_work()
     }
 
     const amrex::Real elapsed_time = (cur_time - m_start_time);
-    for (auto& avg : m_averages) {
+    for (const auto& avg : m_averages) {
         (*avg)(time, m_filter, elapsed_time);
     }
 }
 
-} // namespace averaging
-} // namespace amr_wind
+} // namespace amr_wind::averaging

@@ -1,9 +1,7 @@
 #include "amr-wind/wind_energy/actuator/actuator_utils.H"
 #include "amr-wind/wind_energy/actuator/actuator_types.H"
 
-namespace amr_wind {
-namespace actuator {
-namespace utils {
+namespace amr_wind::actuator::utils {
 
 namespace {
 
@@ -26,8 +24,8 @@ realbox_to_box(const amrex::RealBox& rbx, const amrex::Geometry& geom)
         amrex::Real bbox_min = amrex::max(rbx.lo()[i], problo[i]);
         amrex::Real bbox_max = amrex::min(rbx.hi()[i], probhi[i]);
 
-        amrex::Real rlo = amrex::Math::floor((bbox_min - problo[i]) * dxi[i]);
-        amrex::Real rhi = amrex::Math::ceil((bbox_max - problo[i]) * dxi[i]);
+        amrex::Real rlo = std::floor((bbox_min - problo[i]) * dxi[i]);
+        amrex::Real rhi = std::ceil((bbox_max - problo[i]) * dxi[i]);
 
         lo[i] = static_cast<int>(rlo);
         hi[i] = static_cast<int>(rhi);
@@ -103,7 +101,8 @@ void determine_root_proc(ActInfo& info, amrex::Vector<int>& act_proc_count)
     // Determine the MPI rank that contains the fewest turbines
     auto it = std::min_element(act_proc_count.begin(), act_proc_count.end());
     // Make it the root process for this turbine
-    info.root_proc = std::distance(act_proc_count.begin(), it);
+    info.root_proc =
+        static_cast<int>(std::distance(act_proc_count.begin(), it));
     // Make sure the root process is part of the process list
     plist.insert(info.root_proc);
     // Increment turbine count with the global tracking array
@@ -121,6 +120,4 @@ void determine_root_proc(ActInfo& info, amrex::Vector<int>& act_proc_count)
     }
 }
 
-} // namespace utils
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator::utils

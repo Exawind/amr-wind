@@ -3,11 +3,11 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/physics/udfs/LinearProfile.H"
 #include "amr-wind/physics/udfs/PowerLawProfile.H"
+#include "amr-wind/physics/udfs/BurggrafLid.H"
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace udf {
+namespace amr_wind::udf {
 
 ConstValue::ConstValue(Field& fld) : m_field(fld)
 {
@@ -48,7 +48,7 @@ void UDFImpl<T>::operator()(int level, const amrex::Geometry& geom)
 
         amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
             for (int n = 0; n < ncomp; ++n) {
-                dop({i, j, k}, marr, geomData, time, {}, n);
+                dop({i, j, k}, marr, geomData, time, {}, n, 0, 0);
             }
         });
     }
@@ -56,6 +56,6 @@ void UDFImpl<T>::operator()(int level, const amrex::Geometry& geom)
 
 template class UDFImpl<LinearProfile>;
 template class UDFImpl<PowerLawProfile>;
+template class UDFImpl<BurggrafLid>;
 
-} // namespace udf
-} // namespace amr_wind
+} // namespace amr_wind::udf

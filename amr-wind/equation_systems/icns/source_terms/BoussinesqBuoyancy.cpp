@@ -4,9 +4,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 /** Boussinesq buoyancy source term for ABL simulations
  *
@@ -29,7 +27,7 @@ BoussinesqBuoyancy::BoussinesqBuoyancy(const CFDSim& sim)
         m_beta = 1.0 / m_ref_theta;
     }
 
-    // FIXME: gravity in `incflo` namespace
+    // gravity in `incflo` namespace
     amrex::ParmParse pp_incflo("incflo");
     pp_incflo.queryarr("gravity", m_gravity);
 }
@@ -61,6 +59,4 @@ void BoussinesqBuoyancy::operator()(
     });
 }
 
-} // namespace icns
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns

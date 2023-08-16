@@ -21,8 +21,7 @@
  *  \ingroup utilities
  */
 
-namespace amr_wind {
-namespace sampling {
+namespace amr_wind::sampling {
 
 /** Collection of data sampling objects
  *  \ingroup sampling
@@ -63,7 +62,10 @@ public:
     //! Write sampled data in binary format
     virtual void impl_write_native();
 
-    int num_total_particles() const { return m_total_particles; }
+    int num_total_particles() const
+    {
+        return static_cast<int>(m_total_particles);
+    }
 
     const amrex::Vector<std::string>& var_names() const { return m_var_names; }
 
@@ -129,7 +131,6 @@ private:
     int m_out_freq{100};
 };
 
-} // namespace sampling
-} // namespace amr_wind
+} // namespace amr_wind::sampling
 
 #endif /* SAMPLING_H */

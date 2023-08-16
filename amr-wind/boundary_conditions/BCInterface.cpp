@@ -4,29 +4,8 @@
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind {
-namespace {
-amrex::Vector<std::string> bcnames = {"xlo", "ylo", "zlo", "xhi", "yhi", "zhi"};
-}
 
 BCIface::BCIface(Field& field) : m_field(field) {}
-
-inline void
-BCIface::set_bcrec_lo(int dir, amrex::BCType::mathematicalBndryTypes bcrec)
-{
-    auto& fbcrec = m_field.bcrec();
-    for (int i = 0; i < m_field.num_comp(); ++i) {
-        fbcrec[i].setLo(dir, bcrec);
-    }
-}
-
-inline void
-BCIface::set_bcrec_hi(int dir, amrex::BCType::mathematicalBndryTypes bcrec)
-{
-    auto& fbcrec = m_field.bcrec();
-    for (int i = 0; i < m_field.num_comp(); ++i) {
-        fbcrec[i].setHi(dir, bcrec);
-    }
-}
 
 void BCIface::operator()(const amrex::Real value)
 {
@@ -95,6 +74,10 @@ void BCIface::read_bctype()
             ibctype[ori] = BC::zero_gradient;
         } else if ((bcstr == "fixed_gradient") || (bcstr == "fg")) {
             ibctype[ori] = BC::fixed_gradient;
+        } else if ((bcstr == "wave_generation") || (bcstr == "wg")) {
+            ibctype[ori] = BC::wave_generation;
+        } else if ((bcstr == "symmetric_wall") || (bcstr == "symw")) {
+            ibctype[ori] = BC::symmetric_wall;
         } else {
             ibctype[ori] = BC::undefined;
         }
@@ -114,13 +97,8 @@ void BCIface::set_bcfuncs()
         auto ori = oit();
         const auto bct = ibctype[ori];
 
-        switch (bct) {
-        case BC::fixed_gradient:
+        if (bct == BC::fixed_gradient) {
             m_field.register_custom_bc<FixedGradientBC>(ori);
-            break;
-
-        default:
-            break;
         }
     }
 }
@@ -142,8 +120,7 @@ std::pair<const std::string, const std::string> BCIface::get_dirichlet_udfs()
         const auto bct = bctype[ori];
         amrex::ParmParse pp(bcid);
 
-        switch (bct) {
-        case BC::mass_inflow: {
+        if (bct == BC::mass_inflow) {
             if (pp.contains(inflow_key.c_str())) {
                 std::string val;
                 pp.get(inflow_key.c_str(), val);
@@ -154,12 +131,12 @@ std::pair<const std::string, const std::string> BCIface::get_dirichlet_udfs()
                         "faces");
                 } else {
                     inflow_udf = val;
+                    has_inflow_udf = true;
                 }
             }
-            break;
         }
 
-        case BC::slip_wall: {
+        if (bct == BC::slip_wall) {
             if (pp.contains(wall_key.c_str())) {
                 std::string val;
                 pp.get(wall_key.c_str(), val);
@@ -170,13 +147,9 @@ std::pair<const std::string, const std::string> BCIface::get_dirichlet_udfs()
                         "faces");
                 } else {
                     wall_udf = val;
+                    has_wall_udf = true;
                 }
             }
-            break;
-        }
-
-        default:
-            break;
         }
     }
 
@@ -213,6 +186,7 @@ void BCVelocity::set_bcrec()
             }
             break;
 
+        case BC::wave_generation:
         case BC::mass_inflow:
         case BC::no_slip_wall:
             if (side == amrex::Orientation::low) {
@@ -236,6 +210,19 @@ void BCVelocity::set_bcrec()
                 bcrec[dir].setHi(dir, amrex::BCType::ext_dir);
             }
             break;
+        case BC::symmetric_wall:
+            if (side == amrex::Orientation::low) {
+                // Tangential directions use first-order extrapolation
+                set_bcrec_lo(dir, amrex::BCType::foextrap);
+                // Normal direction uses dirichlet (ext-dir)
+                bcrec[dir].setLo(dir, amrex::BCType::ext_dir);
+            } else {
+                // Tangential directions use first-order extrapolation
+                set_bcrec_hi(dir, amrex::BCType::foextrap);
+                // Normal direction uses dirichlet (ext-dir)
+                bcrec[dir].setHi(dir, amrex::BCType::ext_dir);
+            }
+            break;
 
         default:
             amrex::Abort("Invalid incflo BC type encountered");
@@ -255,20 +242,10 @@ void BCVelocity::read_values()
         const auto bct = bctype[ori];
 
         amrex::ParmParse pp(bcid);
-        switch (bct) {
-        case BC::mass_inflow:
-            pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
-            break;
-
-        case BC::no_slip_wall:
-            pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
+        pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
+        if (bct == BC::no_slip_wall) {
             // Set normal component to zero
             bcval[ori][ori.coordDir()] = 0.0;
-            break;
-
-        default:
-            pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
-            break;
         }
     }
 }
@@ -294,6 +271,7 @@ void BCScalar::set_bcrec()
         case BC::pressure_inflow:
         case BC::pressure_outflow:
         case BC::zero_gradient:
+        case BC::symmetric_wall:
             if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, amrex::BCType::foextrap);
             } else {
@@ -301,6 +279,7 @@ void BCScalar::set_bcrec()
             }
             break;
 
+        case BC::wave_generation:
         case BC::mass_inflow:
         case BC::no_slip_wall:
             if (side == amrex::Orientation::low) {
@@ -338,14 +317,10 @@ void BCScalar::read_values()
         const auto bct = bctype[ori];
 
         amrex::ParmParse pp(bcid);
-        switch (bct) {
-        case BC::mass_inflow:
+        if (bct == BC::mass_inflow) {
             pp.getarr(fname.c_str(), bcval[ori], 0, ndim);
-            break;
-
-        default:
+        } else {
             pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
-            break;
         }
     }
 }
@@ -362,14 +337,8 @@ void BCPressure::read_values()
         const auto bct = bctype[ori];
 
         amrex::ParmParse pp(bcid);
-        switch (bct) {
-        case BC::pressure_inflow:
-        case BC::pressure_outflow:
+        if ((bct == BC::pressure_inflow) || (bct == BC::pressure_outflow)) {
             pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
-            break;
-
-        default:
-            break;
         }
     }
 }
@@ -383,22 +352,18 @@ void BCSrcTerm::set_bcrec()
         const auto bct = ibctype[ori];
         const int dir = ori.coordDir();
 
-        switch (bct) {
-        case BC::periodic:
+        if (bct == BC::periodic) {
             if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, amrex::BCType::int_dir);
             } else {
                 set_bcrec_hi(dir, amrex::BCType::int_dir);
             }
-            break;
-
-        default:
+        } else {
             if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, amrex::BCType::foextrap);
             } else {
                 set_bcrec_hi(dir, amrex::BCType::foextrap);
             }
-            break;
         }
     }
 }
@@ -412,22 +377,18 @@ void BCFillPatchExtrap::set_bcrec()
         const auto bct = ibctype[ori];
         const int dir = ori.coordDir();
 
-        switch (bct) {
-        case BC::periodic:
+        if (bct == BC::periodic) {
             if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, amrex::BCType::int_dir);
             } else {
                 set_bcrec_hi(dir, amrex::BCType::int_dir);
             }
-            break;
-
-        default:
+        } else {
             if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, m_extrap_type);
             } else {
                 set_bcrec_hi(dir, m_extrap_type);
             }
-            break;
         }
     }
 }

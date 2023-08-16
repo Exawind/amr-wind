@@ -5,9 +5,7 @@
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 /** Boussinesq buoyancy source term for ABL simulations
  *
@@ -34,7 +32,7 @@ ABLMeanBoussinesq::ABLMeanBoussinesq(const CFDSim& sim) : m_mesh(sim.mesh())
         m_beta = 1.0 / m_ref_theta;
     }
 
-    // FIXME: gravity in `incflo` namespace
+    // gravity in `incflo` namespace
     amrex::ParmParse pp_incflo("incflo");
     pp_incflo.queryarr("gravity", m_gravity);
 
@@ -128,7 +126,8 @@ void ABLMeanBoussinesq::mean_temperature_update(const FieldPlaneAveraging& tavg)
         tavg.line_average().end(), m_theta_vals.begin());
 }
 
-void ABLMeanBoussinesq::read_temperature_profile(std::string profile_file_name)
+void ABLMeanBoussinesq::read_temperature_profile(
+    const std::string& profile_file_name)
 {
 
     amrex::Vector<amrex::Real> theta_ht, theta_vals;
@@ -154,6 +153,4 @@ void ABLMeanBoussinesq::read_temperature_profile(std::string profile_file_name)
         m_theta_vals.begin());
 }
 
-} // namespace icns
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns

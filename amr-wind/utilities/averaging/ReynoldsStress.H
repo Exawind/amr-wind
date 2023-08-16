@@ -3,8 +3,7 @@
 
 #include "amr-wind/utilities/averaging/TimeAveraging.H"
 
-namespace amr_wind {
-namespace averaging {
+namespace amr_wind::averaging {
 
 /** Compute correlation from 2 CFD fields
  *  The formula used to compute the correlations between two fields:
@@ -47,7 +46,6 @@ private:
     Field& m_re_stress;
 };
 
-} // namespace averaging
-} // namespace amr_wind
+} // namespace amr_wind::averaging
 
 #endif /* REYNOLDSSTRESS_H */

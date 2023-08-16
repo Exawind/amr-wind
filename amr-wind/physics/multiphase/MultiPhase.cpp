@@ -1,5 +1,6 @@
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/equation_systems/vof/volume_fractions.H"
+#include "amr-wind/physics/multiphase/hydrostatic_ops.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
 #include "amr-wind/fvm/filter.H"
@@ -52,6 +53,19 @@ MultiPhase::MultiPhase(CFDSim& sim)
         BCScalar bc_ls(*m_levelset);
         bc_ls(levelset_default);
     }
+
+    // Address pressure approach through input values
+    amrex::ParmParse pp_icns("ICNS");
+    pp_icns.query("use_perturb_pressure", is_pptb);
+    pp_icns.query("reconstruct_true_pressure", is_ptrue);
+    // Declare fields
+    if (is_pptb) {
+        m_sim.repo().declare_field("reference_density", 1, 0, 1);
+        if (is_ptrue) {
+            m_sim.repo().declare_nd_field(
+                "reference_pressure", 1, (*m_vof).num_grow()[0], 1);
+        }
+    }
 }
 
 InterfaceCapturingMethod MultiPhase::interface_capturing_method()
@@ -79,6 +93,54 @@ void MultiPhase::post_init_actions()
     q1 = momentum_sum(1);
     q2 = momentum_sum(2);
     sumvof0 = volume_fraction_sum();
+
+    // Check if water level is specified (from case definition)
+    amrex::ParmParse pp_multiphase("MultiPhase");
+    bool is_wlev = pp_multiphase.contains("water_level");
+    // Abort if no water level specified
+    if (is_pptb && !is_wlev) {
+        amrex::Abort(
+            "Perturbational pressure requested, but physics case does not "
+            "specify water level.");
+    }
+    // Make rho0 field if both are specified
+    if (is_pptb && is_wlev) {
+        pp_multiphase.get("water_level", water_level0);
+        // Initialize rho0 field for perturbational density, pressure
+        auto& rho0 = m_sim.repo().get_field("reference_density");
+        hydrostatic::define_rho0(
+            rho0, m_rho1, m_rho2, water_level0, m_sim.mesh().Geom());
+
+        // Make p0 field if requested
+        if (is_ptrue) {
+            // Initialize p0 field for reconstructing p
+            amrex::ParmParse pp("incflo");
+            pp.queryarr("gravity", m_gravity);
+            auto& p0 = m_sim.repo().get_field("reference_pressure");
+            hydrostatic::define_p0(
+                p0, m_rho1, m_rho2, water_level0, m_gravity[2],
+                m_sim.mesh().Geom());
+        }
+    }
+}
+
+void MultiPhase::post_regrid_actions()
+{
+    // Reinitialize rho0 if needed
+    if (is_pptb) {
+        auto& rho0 = m_sim.repo().declare_field("reference_density", 1, 0, 1);
+        hydrostatic::define_rho0(
+            rho0, m_rho1, m_rho2, water_level0, m_sim.mesh().Geom());
+        // Reinitialize p0 if needed
+        if (is_ptrue) {
+            auto ng = (*m_vof).num_grow();
+            auto& p0 = m_sim.repo().declare_nd_field(
+                "reference_pressure", 1, ng[0], 1);
+            hydrostatic::define_p0(
+                p0, m_rho1, m_rho2, water_level0, m_gravity[2],
+                m_sim.mesh().Geom());
+        }
+    }
 }
 
 void MultiPhase::pre_advance_work()
@@ -263,13 +325,13 @@ void MultiPhase::set_density_via_levelset()
     m_density.fillpatch(m_sim.time().current_time());
 }
 
-void MultiPhase::set_density_via_vof()
+void MultiPhase::set_density_via_vof(amr_wind::FieldState fstate)
 {
     const int nlevels = m_sim.repo().num_active_levels();
 
     for (int lev = 0; lev < nlevels; ++lev) {
-        auto& density = m_density(lev);
-        auto& vof = (*m_vof)(lev);
+        auto& density = m_density.state(fstate)(lev);
+        auto& vof = (*m_vof).state(fstate)(lev);
 
         for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
             const auto& vbx = mfi.validbox();
@@ -285,6 +347,63 @@ void MultiPhase::set_density_via_vof()
         }
     }
     m_density.fillpatch(m_sim.time().current_time());
+}
+
+void MultiPhase::set_nph_density()
+{
+
+    amr_wind::field_ops::lincomb(
+        m_density.state(amr_wind::FieldState::NPH), 0.5,
+        m_density.state(amr_wind::FieldState::Old), 0, 0.5, m_density, 0, 0,
+        m_density.num_comp(), 1);
+}
+
+// Using phase densities to convert advected VOF arrays to advected density
+void MultiPhase::calculate_advected_facedensity()
+{
+    const int nlevels = m_sim.repo().num_active_levels();
+    amrex::Real c_r1 = m_rho1;
+    amrex::Real c_r2 = m_rho2;
+
+    // Get advected vof terms at each face
+    // cppcheck-suppress constVariableReference
+    auto& advalpha_x = m_sim.repo().get_field("advalpha_x");
+    // cppcheck-suppress constVariableReference
+    auto& advalpha_y = m_sim.repo().get_field("advalpha_y");
+    // cppcheck-suppress constVariableReference
+    auto& advalpha_z = m_sim.repo().get_field("advalpha_z");
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+
+        for (amrex::MFIter mfi((*m_vof)(lev)); mfi.isValid(); ++mfi) {
+            const auto& bx = mfi.tilebox();
+            const auto& bxg1 = amrex::grow(bx, 1);
+            const auto& xbx = amrex::surroundingNodes(bx, 0);
+            const auto& ybx = amrex::surroundingNodes(bx, 1);
+            const auto& zbx = amrex::surroundingNodes(bx, 2);
+
+            const auto& aa_x = advalpha_x(lev).array(mfi);
+            const auto& aa_y = advalpha_y(lev).array(mfi);
+            const auto& aa_z = advalpha_z(lev).array(mfi);
+
+            amrex::ParallelFor(
+                bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    // Volume terms at each face become density terms
+                    if (xbx.contains(i, j, k)) {
+                        aa_x(i, j, k) =
+                            c_r1 * aa_x(i, j, k) + c_r2 * (1.0 - aa_x(i, j, k));
+                    }
+                    if (ybx.contains(i, j, k)) {
+                        aa_y(i, j, k) =
+                            c_r1 * aa_y(i, j, k) + c_r2 * (1.0 - aa_y(i, j, k));
+                    }
+                    if (zbx.contains(i, j, k)) {
+                        aa_z(i, j, k) =
+                            c_r1 * aa_z(i, j, k) + c_r2 * (1.0 - aa_z(i, j, k));
+                    }
+                });
+        }
+    }
 }
 
 void MultiPhase::favre_filtering()

@@ -9,9 +9,7 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 /** Buoyancy term from density variations
  *  \ingroup icns_src
@@ -42,8 +40,6 @@ private:
     Field& m_density;
 };
 
-} // namespace icns
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns
 
 #endif /* DensityBuoyancy_H */

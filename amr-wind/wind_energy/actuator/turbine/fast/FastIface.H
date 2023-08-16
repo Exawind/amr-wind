@@ -39,14 +39,17 @@ public:
 
     void save_restart(const int local_id);
 
-    int num_local_turbines() const { return m_turbine_data.size(); }
+    int num_local_turbines() const
+    {
+        return static_cast<int>(m_turbine_data.size());
+    }
 
 protected:
     void allocate_fast_turbines();
 
     void fast_init_turbine(FastTurbine& /*fi*/);
 
-    void fast_restart_turbine(FastTurbine& /*unused*/);
+    void fast_restart_turbine(FastTurbine& /*fi*/);
 
     void fast_replay_turbine(FastTurbine& /*fi*/);
 

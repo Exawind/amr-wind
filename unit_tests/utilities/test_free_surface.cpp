@@ -1,13 +1,12 @@
-
 #include "aw_test_utils/MeshTest.H"
-
 #include "amr-wind/utilities/sampling/FreeSurface.H"
+#include "amr-wind/utilities/tagging/FieldRefinement.H"
 
 namespace amr_wind_tests {
 
 namespace {
 
-amrex::Real init_vof(amr_wind::Field& vof_fld, amrex::Real water_level)
+void init_vof(amr_wind::Field& vof_fld, amrex::Real water_level)
 {
     const auto& mesh = vof_fld.repo().mesh();
     const int nlevels = vof_fld.repo().num_active_levels();
@@ -16,8 +15,6 @@ amrex::Real init_vof(amr_wind::Field& vof_fld, amrex::Real water_level)
     amrex::Real offset = 0.5;
     // VOF has only one component
     int d = 0;
-    // Linearly interpolated water level
-    amrex::Real liwl_max = -100.0;
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = mesh.Geom(lev).CellSizeArray();
@@ -30,65 +27,30 @@ amrex::Real init_vof(amr_wind::Field& vof_fld, amrex::Real water_level)
             amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                 const amrex::Real z = problo[2] + (k + offset) * dx[2];
 
-                amrex::Real local_vof = std::min(
+                amrex::Real local_vof = amrex::min<amrex::Real>(
                     1.0,
-                    std::max(
+                    amrex::max<amrex::Real>(
                         0.0, (water_level - (z - offset * dx[2])) / dx[2]));
                 farr(i, j, k, d) = local_vof;
             });
         }
-        // Use ReduceMax to get linearly interpolated water level
-        amrex::Real liwl_lev = -100.0;
-        liwl_lev = amrex::ReduceMax(
-            vof_fld(lev), 0.,
-            [=] AMREX_GPU_HOST_DEVICE(
-                amrex::Box const& b,
-                amrex::Array4<amrex::Real const> const& field_arr)
-                -> amrex::Real {
-                amrex::Real liwl = -100.0;
-                amrex::Loop(b, [=, &liwl](int i, int j, int k) noexcept {
-                    const amrex::Real z = problo[2] + (k + offset) * dx[2];
-                    auto local_vof = field_arr(i, j, k, 0);
-                    if (local_vof > 0 && local_vof < 1) {
-                        liwl =
-                            z + (0.5 - local_vof) / (0.0 - local_vof) * dx[2];
-                    }
-                });
-                return liwl;
-            });
-        liwl_max = amrex::max(liwl_max, liwl_lev);
     }
-    amrex::ParallelDescriptor::ReduceRealMax(liwl_max);
-    // If only single-phase cells, no interpolation needed
-    if (liwl_max < 0) {
-        liwl_max = water_level;
-    }
-    // Return result
-    return liwl_max;
 }
 
 void init_vof_multival(
-    amr_wind::Field& vof_fld,
-    amrex::Real& wl2,
-    amrex::Real& wl1,
-    amrex::Real& wl0)
+    amr_wind::Field& vof_fld, amrex::Real wl0, amrex::Real wl1, amrex::Real wl2)
 {
     const auto& mesh = vof_fld.repo().mesh();
     const int nlevels = vof_fld.repo().num_active_levels();
 
     // This function initializes a vof field divided by a liquid-gas interface
-    // at wl0, above which is another layer of liquid, introducing interfaces
-    // at wl1 and wl2. The water level parameters (wl) are modified to the
-    // linearly-interpolated values as well.
+    // at wl2, above which is another layer of liquid, introducing interfaces
+    // at wl1 and wl0. From top down: wl0, wl1, wl2.
 
     // Since VOF is cell centered
     amrex::Real offset = 0.5;
     // VOF has only one component
     int d = 0;
-    // Linearly interpolated water level
-    amrex::Real wl2_max = -100.0;
-    amrex::Real wl1_max = -100.0;
-    amrex::Real wl0_max = -100.0;
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = mesh.Geom(lev).CellSizeArray();
@@ -103,136 +65,28 @@ void init_vof_multival(
                 amrex::Real local_vof;
                 // Above wl1
                 if (z - offset * dx[2] > wl1) {
-                    local_vof = std::min(
-                        1.0,
-                        std::max(0.0, (wl2 - (z - offset * dx[2])) / dx[2]));
+                    local_vof = amrex::min<amrex::Real>(
+                        1.0, amrex::max<amrex::Real>(
+                                 0.0, (wl0 - (z - offset * dx[2])) / dx[2]));
                 } else {
                     // Above wl0
-                    if (z - offset * dx[2] > wl0) {
-                        local_vof = std::min(
+                    if (z - offset * dx[2] > wl2) {
+                        local_vof = amrex::min<amrex::Real>(
                             1.0,
-                            std::max(
+                            amrex::max<amrex::Real>(
                                 0.0, ((z + offset * dx[2]) - wl1) / dx[2]));
                     } else {
                         // Bottom portion
-                        local_vof = std::min(
+                        local_vof = amrex::min<amrex::Real>(
                             1.0,
-                            std::max(
-                                0.0, (wl0 - (z - offset * dx[2])) / dx[2]));
+                            amrex::max<amrex::Real>(
+                                0.0, (wl2 - (z - offset * dx[2])) / dx[2]));
                     }
                 }
                 farr(i, j, k, d) = local_vof;
             });
         }
-        // Use ReduceMax to get linearly interpolated water level: wl2
-        amrex::Real liwl_lev = amrex::ReduceMax(
-            vof_fld(lev), 0.,
-            [=] AMREX_GPU_HOST_DEVICE(
-                amrex::Box const& b,
-                amrex::Array4<amrex::Real const> const& field_arr)
-                -> amrex::Real {
-                amrex::Real liwl = -100.0;
-                amrex::Loop(b, [=, &liwl](int i, int j, int k) noexcept {
-                    const amrex::Real z = problo[2] + (k + offset) * dx[2];
-                    auto local_vof = field_arr(i, j, k, d);
-                    if (local_vof > 0 && local_vof < 1) {
-                        // Multiphase cell
-                        if (local_vof > 0.5) {
-                            // Cell at k + 1 is vof = 0
-                            liwl = z + (0.5 - local_vof) / (0.0 - local_vof) *
-                                           dx[2];
-                        } else {
-                            // Cell at k - 1 is vof = 1
-                            liwl = z - (0.5 - local_vof) / (1.0 - local_vof) *
-                                           dx[2];
-                        }
-                    } else {
-                        if (local_vof == 1 && field_arr(i, j, k + 1, d) == 0) {
-                            // Single-phase cells, liquid to gas
-                            liwl = z + 0.5 * dx[2];
-                        }
-                    }
-                });
-                return liwl;
-            });
-        wl2_max = amrex::max(wl2_max, liwl_lev);
-        // Use ReduceMax to get linearly interpolated water level: wl1
-        liwl_lev = amrex::ReduceMax(
-            vof_fld(lev), 0.,
-            [=] AMREX_GPU_HOST_DEVICE(
-                amrex::Box const& b,
-                amrex::Array4<amrex::Real const> const& field_arr)
-                -> amrex::Real {
-                amrex::Real liwl = -100.0;
-                amrex::Loop(b, [=, &liwl](int i, int j, int k) noexcept {
-                    const amrex::Real z = problo[2] + (k + offset) * dx[2];
-                    auto local_vof = field_arr(i, j, k, d);
-                    if (z < wl2) {
-                        if (local_vof > 0 && local_vof < 1) {
-                            // Multiphase cell, use interp rules of FreeSurface
-                            if (local_vof < 0.5) {
-                                // Cell at k + 1 is vof = 1
-                                liwl = z + (0.5 - local_vof) /
-                                               (1.0 - local_vof) * dx[2];
-                            } else {
-                                // Cell at k - 1 is vof = 0
-                                liwl = z - (0.5 - local_vof) /
-                                               (0.0 - local_vof) * dx[2];
-                            }
-                        } else {
-                            if (local_vof == 0 &&
-                                field_arr(i, j, k + 1, d) == 1) {
-                                // Single-phase cells, gas to liquid
-                                liwl = z + 0.5 * dx[2];
-                            }
-                        }
-                    }
-                });
-                return liwl;
-            });
-        wl1_max = amrex::max(wl1_max, liwl_lev);
-        // Use ReduceMax to get linearly interpolated water level: wl0
-        liwl_lev = amrex::ReduceMax(
-            vof_fld(lev), 0.,
-            [=] AMREX_GPU_HOST_DEVICE(
-                amrex::Box const& b,
-                amrex::Array4<amrex::Real const> const& field_arr)
-                -> amrex::Real {
-                amrex::Real liwl = -100.0;
-                amrex::Loop(b, [=, &liwl](int i, int j, int k) noexcept {
-                    const amrex::Real z = problo[2] + (k + offset) * dx[2];
-                    auto local_vof = field_arr(i, j, k, d);
-                    if (z < wl1) {
-                        if (local_vof > 0 && local_vof < 1) {
-                            // Multiphase cell
-                            if (local_vof > 0.5) {
-                                // Cell at k + 1 is vof = 0
-                                liwl = z + (0.5 - local_vof) /
-                                               (0.0 - local_vof) * dx[2];
-                            } else {
-                                // Cell at k - 1 is vof = 1
-                                liwl = z - (0.5 - local_vof) /
-                                               (1.0 - local_vof) * dx[2];
-                            }
-                        } else {
-                            if (local_vof == 1 &&
-                                field_arr(i, j, k + 1, d) == 0) {
-                                // Single-phase cells, gas to liquid
-                                liwl = z + 0.5 * dx[2];
-                            }
-                        }
-                    }
-                });
-                return liwl;
-            });
-        wl0_max = amrex::max(wl0_max, liwl_lev);
     }
-    wl2 = wl2_max;
-    wl1 = wl1_max;
-    wl0 = wl0_max;
-    amrex::ParallelDescriptor::ReduceRealMax(wl2);
-    amrex::ParallelDescriptor::ReduceRealMax(wl1);
-    amrex::ParallelDescriptor::ReduceRealMax(wl0);
 }
 
 void init_vof_slope(
@@ -268,14 +122,76 @@ void init_vof_slope(
                                        slope * (x - 0.5 * domain_length) +
                                        slope * (y - 0.5 * domain_length);
 
-                amrex::Real local_vof = std::min(
-                    1.0,
-                    std::max(0.0, (local_ht - (z - offset * dx[2])) / dx[2]));
+                amrex::Real local_vof = amrex::min<amrex::Real>(
+                    1.0, amrex::max<amrex::Real>(
+                             0.0, (local_ht - (z - offset * dx[2])) / dx[2]));
                 farr(i, j, k, d) = local_vof;
             });
         }
     }
 }
+
+//! Custom mesh class to be able to refine like a simulation would
+//  - combination of AmrTestMesh and incflo classes
+//  - with ability to initialize the refiner and regrid
+class FSRefineMesh : public AmrTestMesh
+{
+public:
+    FSRefineMesh() : m_mesh_refiner(new amr_wind::RefineCriteriaManager(m_sim))
+    {}
+    amr_wind::FieldRepo& field_repo() { return m_repo; }
+    amr_wind::CFDSim& sim() { return m_sim; }
+    void init_refiner() { m_mesh_refiner->initialize(); }
+    void remesh() { regrid(0, 0.0); }
+
+protected:
+    void MakeNewLevelFromScratch(
+        int lev,
+        amrex::Real time,
+        const amrex::BoxArray& ba,
+        const amrex::DistributionMapping& dm) override
+    {
+        SetBoxArray(lev, ba);
+        SetDistributionMap(lev, dm);
+
+        m_repo.make_new_level_from_scratch(lev, time, ba, dm);
+    }
+
+    void MakeNewLevelFromCoarse(
+        int lev,
+        amrex::Real time,
+        const amrex::BoxArray& ba,
+        const amrex::DistributionMapping& dm) override
+    {
+        SetBoxArray(lev, ba);
+        SetDistributionMap(lev, dm);
+
+        m_repo.make_new_level_from_coarse(lev, time, ba, dm);
+    }
+
+    void RemakeLevel(
+        int lev,
+        amrex::Real time,
+        const amrex::BoxArray& ba,
+        const amrex::DistributionMapping& dm) override
+    {
+        SetBoxArray(lev, ba);
+        SetDistributionMap(lev, dm);
+
+        m_repo.remake_level(lev, time, ba, dm);
+    }
+
+    void ClearLevel(int lev) override { m_repo.clear_level(lev); }
+
+    void ErrorEst(
+        int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow) override
+    {
+        m_mesh_refiner->tag_cells(lev, tags, time, ngrow);
+    }
+
+private:
+    std::unique_ptr<amr_wind::RefineCriteriaManager> m_mesh_refiner;
+};
 
 class FreeSurfaceImpl : public amr_wind::free_surface::FreeSurface
 {
@@ -394,7 +310,7 @@ protected:
         {
             amrex::ParmParse pp("amr");
             amrex::Vector<int> ncell{{32, 32, 64}};
-            pp.add("max_level", 0);
+            pp.add("max_level", m_nlev);
             pp.addarr("n_cell", ncell);
         }
         {
@@ -405,15 +321,16 @@ protected:
             pp.addarr("is_periodic", amrex::Vector<int>{{1, 1, 0}});
         }
     }
-    void setup_grid0D(int ninst)
+    void setup_grid0D(int ninst, std::string fsname)
     {
-        amrex::ParmParse pp("freesurface");
+        amrex::ParmParse pp(fsname);
         pp.add("output_frequency", 1);
         pp.add("num_instances", ninst);
         pp.addarr("num_points", amrex::Vector<int>{1, 1});
         pp.addarr("start", pt_coord);
         pp.addarr("end", pt_coord);
     }
+    void setup_grid0D(int ninst) { setup_grid0D(ninst, "freesurface"); }
     void setup_grid2D(int ninst)
     {
         amrex::ParmParse pp("freesurface");
@@ -432,6 +349,15 @@ protected:
         pp.addarr("start", plnarrow_s);
         pp.addarr("end", plnarrow_e);
     }
+    void setup_fieldrefinement()
+    {
+        amrex::ParmParse pp("tagging");
+        pp.add("labels", (std::string) "t1");
+        amrex::ParmParse ppt1("tagging.t1");
+        ppt1.add("type", (std::string) "FieldRefinement");
+        ppt1.add("field_name", fname);
+        ppt1.addarr("field_error", amrex::Vector<amrex::Real>{fref_val});
+    }
     // Parameters to reuse
     const amrex::Real water_level0 = 64.0;
     const amrex::Real water_level1 = 31.5;
@@ -444,6 +370,9 @@ protected:
     const amrex::Vector<amrex::Real> plnarrow_s{{63.0, 63.0, 0.0}};
     const amrex::Vector<amrex::Real> plnarrow_e{{65.0, 65.0, 0.0}};
     const int npts = 3;
+    const amrex::Real fref_val = 0.5;
+    const std::string fname = "flag";
+    int m_nlev = 0;
 };
 
 TEST_F(FreeSurfaceTest, point)
@@ -506,7 +435,6 @@ TEST_F(FreeSurfaceTest, multivalued)
     amrex::Real wl2 = probhi[2] / 5;
 
     init_vof_multival(vof, wl0, wl1, wl2);
-    std::cout << wl0 << " " << wl1 << " " << wl2 << " " << std::endl;
     auto& m_sim = sim();
     FreeSurfaceImpl tool(m_sim, "freesurface");
     tool.initialize();
@@ -517,11 +445,11 @@ TEST_F(FreeSurfaceTest, multivalued)
     EXPECT_EQ(heights.size(), 3 * npts * npts);
 
     // Check output values
-    int nout = tool.check_output(0, "~", probhi[2] * 2 / 3);
+    int nout = tool.check_output(0, "~", wl0);
     ASSERT_EQ(nout, npts * npts);
-    nout = tool.check_output(1, "~", probhi[2] / 2);
+    nout = tool.check_output(1, "~", wl1);
     ASSERT_EQ(nout, npts * npts);
-    nout = tool.check_output(2, "~", probhi[2] / 5);
+    nout = tool.check_output(2, "~", wl2);
     ASSERT_EQ(nout, npts * npts);
 }
 
@@ -542,7 +470,7 @@ TEST_F(FreeSurfaceTest, sloped)
 
     // Calculate expected output values
     amrex::Vector<amrex::Real> out_vec;
-    out_vec.resize(npts * npts, 0.0);
+    out_vec.resize(static_cast<long>(npts) * static_cast<long>(npts), 0.0);
     // Step in x, then y
     out_vec[0] = water_level2 + slope * (-1.0 - 1.0);
     out_vec[1] = water_level2 + slope * (+0.0 - 1.0);
@@ -556,6 +484,80 @@ TEST_F(FreeSurfaceTest, sloped)
     // Check output value
     int nout = tool.check_output_vec("~", out_vec);
     ASSERT_EQ(nout, npts * npts);
+}
+
+TEST_F(FreeSurfaceTest, multisampler)
+{
+    initialize_mesh();
+    auto& repo = sim().repo();
+    auto& vof = repo.declare_field("vof", 1, 2);
+
+    // Set up parameters for one sampler
+    setup_grid0D(1, "freesurface0");
+
+    // Set up parameters for another sampler
+    setup_grid2D_narrow();
+
+    // Initialize VOF distribution and access sim
+    init_vof(vof, water_level1);
+    auto& m_sim = sim();
+
+    // Initialize first sampler
+    FreeSurfaceImpl tool1(m_sim, "freesurface0");
+    tool1.initialize();
+
+    // Initialize second sampler
+    FreeSurfaceImpl tool2(m_sim, "freesurface");
+    tool2.initialize();
+}
+
+TEST_F(FreeSurfaceTest, regrid)
+{
+    // Allow 2 levels
+    m_nlev = 1;
+    // Set up parameters for domain
+    populate_parameters();
+    // Set up parameters for refinement
+    setup_fieldrefinement();
+    // Set up parameters for sampler
+    setup_grid2D(1);
+    // Create mesh and initialize
+    reset_prob_domain();
+    auto rmesh = FSRefineMesh();
+    rmesh.initialize_mesh(0.0);
+
+    // Repo and fields
+    auto& repo = rmesh.field_repo();
+    auto& vof = repo.declare_field("vof", 1, 2);
+    auto& flag = repo.declare_field(fname, 1, 2);
+
+    // Set up scalar for determining refinement - all fine level
+    flag.setVal(2.0 * fref_val);
+
+    // Initialize mesh refiner and remesh
+    rmesh.init_refiner();
+    rmesh.remesh();
+
+    // Initialize VOF distribution and access sim
+    init_vof(vof, water_level1);
+    auto& rsim = rmesh.sim();
+
+    // Initialize sampler and check result on initial mesh
+    FreeSurfaceImpl tool(rsim, "freesurface");
+    tool.initialize();
+    tool.post_advance_work();
+    tool.check_output("~", water_level1);
+
+    // Change scalar for determining refinement - no fine level
+    flag.setVal(0.0);
+
+    // Regrid, update fields, and do post_regrid_actions for tool
+    rmesh.remesh();
+    tool.post_regrid_actions();
+
+    // Check that result is unchanged on new mesh
+    tool.post_advance_work();
+    tool.check_output("~", water_level1);
 }
 
 } // namespace amr_wind_tests

@@ -8,8 +8,7 @@
 #include "amr-wind/wind_energy/actuator/ActParser.H"
 #include "amr-wind/wind_energy/actuator/FLLCOp.H"
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 namespace wing {
 
 /** Parse common data for modeling fixed wings as actuators
@@ -115,6 +114,7 @@ struct ComputeForceOp<
         const auto& dx = wdata.dx;
         const auto& chord = wdata.chord;
         const auto& aflookup = airfoil_lookup<ActTrait>(data);
+        const auto& time = data.sim().time();
 
         amrex::Real total_lift = 0.0;
         amrex::Real total_drag = 0.0;
@@ -158,7 +158,8 @@ struct ComputeForceOp<
         wdata.drag = total_drag;
 
         if (wdata.fllc) {
-            if (!(wdata.fllc->initialized)) {
+            if (!(wdata.fllc->initialized) &&
+                (time.current_time() > wdata.fllc->fllc_start_time)) {
                 wdata.component_view =
                     amr_wind::actuator::wing::make_component_view<ActTrait>(
                         data);
@@ -216,7 +217,6 @@ public:
 };
 
 } // namespace ops
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator
 
 #endif /* WING_OPS_H */

@@ -11,21 +11,20 @@ namespace amrex {
 const char* buildInfoGetGitHash(int i);
 }
 
-namespace amr_wind {
-namespace ioutils {
+namespace amr_wind::ioutils {
 
 inline std::string amr_wind_version()
 {
-    return std::string(amrex::buildInfoGetGitHash(1));
+    return {amrex::buildInfoGetGitHash(1)};
 }
 
 inline std::string timestamp()
 {
     auto etime = std::chrono::system_clock::now();
     auto etimet = std::chrono::system_clock::to_time_t(etime);
-    std::ostringstream buf;
-    buf << std::ctime(&etimet);
-    std::string tstamp = buf.str();
+    char buf[64];
+    ctime_r(&etimet, buf);
+    std::string tstamp(buf);
     return tstamp;
 }
 
@@ -60,7 +59,6 @@ inline void add_var_names(
         }
     }
 }
-} // namespace ioutils
-} // namespace amr_wind
+} // namespace amr_wind::ioutils
 
 #endif /* IO_UTILS_H */

@@ -40,6 +40,10 @@ incflo::get_projection_bc(Orientation::Side side) const noexcept
                 r[dir] = LinOpBCType::Dirichlet;
                 break;
             }
+            case BC::mass_inflow: {
+                r[dir] = LinOpBCType::inflow;
+                break;
+            }
             default:
                 r[dir] = LinOpBCType::Neumann;
                 break;
@@ -319,7 +323,7 @@ void incflo::ApplyProjection(
         nodal_projector->computeRHS(div_vel_rhs->vec_ptrs(), vel, {}, {});
         // Mask the righ-hand side of the Poisson solve for the nodes inside the
         // body
-        auto& imask_node = repo().get_int_field("mask_node");
+        const auto& imask_node = repo().get_int_field("mask_node");
         for (int lev = 0; lev <= finest_level; ++lev) {
             amrex::MultiFab::Multiply(
                 *div_vel_rhs->vec_ptrs()[lev],
@@ -331,7 +335,7 @@ void incflo::ApplyProjection(
     // Setup masking for overset simulations
     if (sim().has_overset()) {
         auto& linop = nodal_projector->getLinOp();
-        auto& imask_node = repo().get_int_field("mask_node");
+        const auto& imask_node = repo().get_int_field("mask_node");
         for (int lev = 0; lev <= finest_level; ++lev) {
             linop.setOversetMask(lev, imask_node(lev));
         }
@@ -405,6 +409,15 @@ void incflo::ApplyProjection(
                         p_lev(i, j, k) = p_proj(i, j, k);
                     });
             }
+        }
+    }
+
+    // Determine if reference pressure should be added back
+    if (m_repo.field_exists("reference_pressure") && time != 0.0) {
+        const auto& p0 = m_repo.get_field("reference_pressure");
+        for (int lev = 0; lev <= finest_level; lev++) {
+            amrex::MultiFab::Add(
+                pressure(lev), p0(lev), 0, 0, 1, pressure.num_grow()[0]);
         }
     }
 

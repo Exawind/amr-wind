@@ -3,8 +3,7 @@
 
 #include "amr-wind/turbulence/TurbModel.H"
 
-namespace amr_wind {
-namespace turbulence {
+namespace amr_wind::turbulence {
 
 /** Laminar model
  *  \ingroup turb_model
@@ -28,7 +27,9 @@ public:
     std::string model_name() const override { return "laminar"; }
 
     //! Update the effective/turbulent viscosity field
-    void update_turbulent_viscosity(const FieldState fstate) override;
+    void update_turbulent_viscosity(
+        const FieldState fstate,
+        const DiffusionType diff_type /*unused*/) override;
 
     //! No post advance work for this model
     void post_advance_work() override {}
@@ -59,7 +60,6 @@ public:
     TurbulenceModel::CoeffsDictType model_coeffs() const override;
 };
 
-} // namespace turbulence
-} // namespace amr_wind
+} // namespace amr_wind::turbulence
 
 #endif /* LAMINARMODEL_H */

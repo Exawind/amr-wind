@@ -15,6 +15,8 @@ VortexPatch::VortexPatch(CFDSim& sim)
     pp.queryarr("location", m_loc, 0, AMREX_SPACEDIM);
     pp.query("radius", m_radius);
     pp.query("period", m_TT);
+    amrex::ParmParse pinc("incflo");
+    pinc.add("prescribe_velocity", true);
 }
 
 /** Initialize the velocity and levelset fields at the beginning of the
@@ -39,8 +41,15 @@ void VortexPatch::initialize_fields(int level, const amrex::Geometry& geom)
     const amrex::Real rho1 = mphase.rho1();
     const amrex::Real rho2 = mphase.rho2();
 
+    auto& u_mac = m_sim.repo().get_field("u_mac")(level);
+    auto& v_mac = m_sim.repo().get_field("v_mac")(level);
+    auto& w_mac = m_sim.repo().get_field("w_mac")(level);
+
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
+        auto uf = u_mac.array(mfi);
+        auto vf = v_mac.array(mfi);
+        auto wf = w_mac.array(mfi);
         auto vel = velocity.array(mfi);
         auto phi = levelset.array(mfi);
         auto rho = density.array(mfi);
@@ -51,6 +60,18 @@ void VortexPatch::initialize_fields(int level, const amrex::Geometry& geom)
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                 const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                 const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                const amrex::Real xf = problo[0] + i * dx[0];
+                const amrex::Real yf = problo[1] + j * dx[1];
+                const amrex::Real zf = problo[2] + k * dx[2];
+                uf(i, j, k) = 2.0 * std::sin(M_PI * xf) * std::sin(M_PI * xf) *
+                              std::sin(2.0 * M_PI * y) *
+                              std::sin(2.0 * M_PI * z);
+                vf(i, j, k) = -std::sin(M_PI * yf) * std::sin(M_PI * yf) *
+                              std::sin(2.0 * M_PI * x) *
+                              std::sin(2.0 * M_PI * z);
+                wf(i, j, k) = -std::sin(M_PI * zf) * std::sin(M_PI * zf) *
+                              std::sin(2.0 * M_PI * x) *
+                              std::sin(2.0 * M_PI * y);
 
                 vel(i, j, k, 0) =
                     2.0 * std::sin(M_PI * x) * std::sin(M_PI * x) *
@@ -83,7 +104,54 @@ void VortexPatch::initialize_fields(int level, const amrex::Geometry& geom)
     }
 }
 
-void VortexPatch::pre_advance_work() {}
+void VortexPatch::pre_advance_work()
+{
+    const auto& time =
+        m_sim.time().current_time() + 0.5 * m_sim.time().deltaT();
+
+    const int nlevels = m_sim.repo().num_active_levels();
+    const auto& geom = m_sim.mesh().Geom();
+
+    // Overriding the velocity field
+    for (int lev = 0; lev < nlevels; ++lev) {
+        auto& u_mac = m_sim.repo().get_field("u_mac")(lev);
+        auto& v_mac = m_sim.repo().get_field("v_mac")(lev);
+        auto& w_mac = m_sim.repo().get_field("w_mac")(lev);
+        for (amrex::MFIter mfi(m_velocity(lev)); mfi.isValid(); ++mfi) {
+            const auto& vbx = mfi.growntilebox(1);
+            const auto& dx = geom[lev].CellSizeArray();
+            const auto& problo = geom[lev].ProbLoArray();
+            const amrex::Real TT = m_TT;
+            auto uf = u_mac.array(mfi);
+            auto vf = v_mac.array(mfi);
+            auto wf = w_mac.array(mfi);
+            amrex::ParallelFor(
+                vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                    const amrex::Real xf = problo[0] + i * dx[0];
+                    const amrex::Real yf = problo[1] + j * dx[1];
+                    const amrex::Real zf = problo[2] + k * dx[2];
+                    uf(i, j, k) =
+                        2.0 * std::sin(M_PI * xf) * std::sin(M_PI * xf) *
+                        std::sin(2.0 * M_PI * y) * std::sin(2.0 * M_PI * z) *
+                        std::cos(M_PI * time / TT);
+                    vf(i, j, k) = -std::sin(M_PI * yf) * std::sin(M_PI * yf) *
+                                  std::sin(2.0 * M_PI * x) *
+                                  std::sin(2.0 * M_PI * z) *
+                                  std::cos(M_PI * time / TT);
+                    wf(i, j, k) = -std::sin(M_PI * zf) * std::sin(M_PI * zf) *
+                                  std::sin(2.0 * M_PI * x) *
+                                  std::sin(2.0 * M_PI * y) *
+                                  std::cos(M_PI * time / TT);
+                });
+        }
+        u_mac.FillBoundary(geom[lev].periodicity());
+        v_mac.FillBoundary(geom[lev].periodicity());
+        w_mac.FillBoundary(geom[lev].periodicity());
+    }
+}
 
 void VortexPatch::post_advance_work()
 {

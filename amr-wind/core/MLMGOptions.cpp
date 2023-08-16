@@ -1,6 +1,5 @@
 #include "amr-wind/core/MLMGOptions.H"
 
-#include "AMReX_MLMG.H"
 #include "hydro_MacProjector.H"
 #include "hydro_NodalProjector.H"
 

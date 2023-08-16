@@ -6,8 +6,7 @@
 #include "AMReX_Geometry.H"
 #include "AMReX_MFIter.H"
 
-namespace amr_wind {
-namespace fvm {
+namespace amr_wind::fvm {
 
 /** filter operator
  *  \ingroup fvm
@@ -103,7 +102,6 @@ inline std::unique_ptr<ScratchField> filter(const FType& phi)
     return filterphi;
 }
 
-} // namespace fvm
-} // namespace amr_wind
+} // namespace amr_wind::fvm
 
 #endif /* FILTER_H */

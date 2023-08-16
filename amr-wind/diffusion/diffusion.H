@@ -7,23 +7,6 @@
 
 namespace diffusion {
 
-void wall_model_bc_moeng(
-    amr_wind::Field& velocity,
-    const amrex::Real utau,
-    const amr_wind::FieldState fstate,
-    const amrex::FArrayBox& instplanar);
-
-void wall_model_bc(
-    amr_wind::Field& velocity,
-    const amrex::Real utau,
-    const amrex::Real umag,
-    const amr_wind::FieldState fstate);
-
-void temp_wall_model_bc(
-    amr_wind::Field& temperature,
-    const amrex::FArrayBox& instplanar,
-    const amr_wind::FieldState fstate);
-
 amrex::Vector<amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM>>
 get_diffuse_tensor_bc(
     amr_wind::Field& velocity, amrex::Orientation::Side side) noexcept;

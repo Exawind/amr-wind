@@ -3,9 +3,7 @@
 
 #include "amr-wind/equation_systems/tke/TKESource.H"
 
-namespace amr_wind {
-namespace pde {
-namespace tke {
+namespace amr_wind::pde::tke {
 
 /** TKE source term based on Moeng 1984 paper
  *  \ingroup tke_src turb_model we_abl
@@ -33,11 +31,22 @@ private:
     Field& m_turb_lscale;
     Field& m_shear_prod;
     Field& m_buoy_prod;
+    Field& m_dissip;
     Field& m_tke;
 };
 
-} // namespace tke
-} // namespace pde
-} // namespace amr_wind
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real calc_ceps_local(
+    const amrex::Real Ceps, const amrex::Real tlscale, const amrex::Real ds)
+{
+    return (Ceps / 0.93) * (0.19 + (0.74 * tlscale / ds));
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real calc_dissip(
+    const amrex::Real Ceps, const amrex::Real tke, const amrex::Real tlscale)
+{
+    return Ceps * std::sqrt(tke) * tke / tlscale;
+}
+
+} // namespace amr_wind::pde::tke
 
 #endif /* KSGSM84SRC_H */

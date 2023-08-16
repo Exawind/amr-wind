@@ -27,6 +27,7 @@ Vector<Array<LinOpBCType, AMREX_SPACEDIM>> get_diffuse_tensor_bc(
                 r[2][dir] = LinOpBCType::Neumann;
                 break;
             }
+            case BC::wave_generation:
             case BC::mass_inflow:
             case BC::no_slip_wall: {
                 // All three components are Dirichlet
@@ -35,6 +36,7 @@ Vector<Array<LinOpBCType, AMREX_SPACEDIM>> get_diffuse_tensor_bc(
                 r[2][dir] = LinOpBCType::Dirichlet;
                 break;
             }
+            case BC::symmetric_wall:
             case BC::slip_wall: {
                 // Tangential components are Neumann
                 // Normal     component  is  Dirichlet
@@ -76,6 +78,7 @@ get_diffuse_scalar_bc(amr_wind::Field& scalar, Orientation::Side side) noexcept
             case BC::pressure_inflow:
             case BC::pressure_outflow:
             case BC::zero_gradient:
+            case BC::symmetric_wall:
             case BC::slip_wall: {
                 r[dir] = LinOpBCType::Neumann;
                 break;
@@ -85,6 +88,7 @@ get_diffuse_scalar_bc(amr_wind::Field& scalar, Orientation::Side side) noexcept
                 r[dir] = LinOpBCType::inhomogNeumann;
                 break;
             }
+            case BC::wave_generation:
             case BC::mass_inflow:
             case BC::no_slip_wall: {
                 r[dir] = LinOpBCType::Dirichlet;

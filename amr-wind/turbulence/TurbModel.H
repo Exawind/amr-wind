@@ -4,8 +4,7 @@
 #include "amr-wind/turbulence/TurbulenceModel.H"
 #include "amr-wind/CFDSim.H"
 
-namespace amr_wind {
-namespace turbulence {
+namespace amr_wind::turbulence {
 
 /** Turbulence model with a specific transport model
  *  \ingroup turb_model
@@ -70,7 +69,6 @@ protected:
     Field* m_alphaeff{nullptr};
 };
 
-} // namespace turbulence
-} // namespace amr_wind
+} // namespace amr_wind::turbulence
 
 #endif /* TURBMODEL_H */

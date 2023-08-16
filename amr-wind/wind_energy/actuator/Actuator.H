@@ -51,7 +51,7 @@ public:
 
 protected:
     //! Total number of actuator components (e.g., turbines) in the flowfield
-    int num_actuators() const { return m_actuators.size(); }
+    int num_actuators() const { return static_cast<int>(m_actuators.size()); }
 
     virtual void prepare_outputs();
 
@@ -66,6 +66,8 @@ private:
 
     void compute_source_term();
 
+    void communicate_turbine_io();
+
     CFDSim& m_sim;
 
     Field& m_act_source;
@@ -73,6 +75,8 @@ private:
     std::vector<std::unique_ptr<ActuatorModel>> m_actuators;
 
     std::unique_ptr<ActuatorContainer> m_container;
+
+    bool m_sample_nmhalf{false};
 };
 
 } // namespace actuator

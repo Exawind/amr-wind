@@ -3,8 +3,7 @@
 
 #include "AMReX_MLTensorOp.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 template <typename LinOp>
 DiffSolverIface<LinOp>::DiffSolverIface(
@@ -165,5 +164,4 @@ void DiffSolverIface<LinOp>::linsys_solve(const amrex::Real dt)
 template class DiffSolverIface<amrex::MLABecLaplacian>;
 template class DiffSolverIface<amrex::MLTensorOp>;
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde

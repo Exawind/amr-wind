@@ -6,8 +6,7 @@
 #include "AMReX_Geometry.H"
 #include "AMReX_MFIter.H"
 
-namespace amr_wind {
-namespace fvm {
+namespace amr_wind::fvm {
 
 /** Gradient operator
  *  \ingroup fvm
@@ -107,7 +106,6 @@ inline std::unique_ptr<ScratchField> gradient(const FType& phi)
     return gradphi;
 }
 
-} // namespace fvm
-} // namespace amr_wind
+} // namespace amr_wind::fvm
 
 #endif /* GRADIENT_H */

@@ -22,6 +22,9 @@ class ABLFieldInit
 public:
     ABLFieldInit();
 
+    void initialize_from_inputfile(); // default
+    void initialize_from_netcdf(); // general wind/temperature profiles
+
     void operator()(
         const amrex::Box& vbx,
         const amrex::Geometry& geom,
@@ -107,11 +110,29 @@ private:
     //! Initial value for tke field
     amrex::Real m_tke_init{0.1};
 
+    //! Multiplicative factor for init tke profile
+    amrex::Real m_tke_init_factor{0.4};
+
+    //! Cutoff height for init tke profile
+    amrex::Real m_tke_cutoff_height{250.};
+
+    //! Top velocity
+    amrex::RealArray m_top_vel{{20.0, 0.0, 0.0}};
+
+    //! Bottom velocity
+    amrex::RealArray m_bottom_vel{{4.0, 0.0, 0.0}};
+
+    //! Initial linear velocity profile boolean
+    bool m_linear_profile{false};
+
     //! Perturb initial velocity field with sinusoidal fluctuations
     bool m_perturb_vel{true};
 
     //! Perturb temperature field with random fluctuations
     bool m_perturb_theta{false};
+
+    //! Initialize tke profile non-constant
+    bool m_tke_init_profile{false};
 
     //! Profiles of u, v, and theta are read in from a NetCDF File
     bool m_init_uvtheta_profile{false};

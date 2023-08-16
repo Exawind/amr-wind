@@ -10,8 +10,7 @@
 #include "AMReX_Vector.H"
 #include "amr-wind/core/FieldRepo.H"
 
-namespace amr_wind_tests {
-namespace utils {
+namespace amr_wind_tests::utils {
 
 inline amrex::Real field_min(const amr_wind::Field& field, const int icomp = 0)
 {
@@ -24,6 +23,28 @@ inline amrex::Real field_min(const amr_wind::Field& field, const int icomp = 0)
 }
 
 inline amrex::Real field_max(const amr_wind::Field& field, const int icomp = 0)
+{
+    amrex::Real max_val = -std::numeric_limits<amrex::Real>::max();
+    for (int lev = 0; lev < field.repo().num_active_levels(); ++lev) {
+        max_val = amrex::max(max_val, field(lev).max(icomp));
+    }
+
+    return max_val;
+}
+
+inline amrex::Real
+field_min(const amr_wind::ScratchField& field, const int icomp = 0)
+{
+    amrex::Real min_val = std::numeric_limits<amrex::Real>::max();
+    for (int lev = 0; lev < field.repo().num_active_levels(); ++lev) {
+        min_val = amrex::min(min_val, field(lev).min(icomp));
+    }
+
+    return min_val;
+}
+
+inline amrex::Real
+field_max(const amr_wind::ScratchField& field, const int icomp = 0)
 {
     amrex::Real max_val = -std::numeric_limits<amrex::Real>::max();
     for (int lev = 0; lev < field.repo().num_active_levels(); ++lev) {
@@ -122,7 +143,6 @@ inline void field_minmax(
     field_max(nlevels, field, max_val);
 }
 
-} // namespace utils
-} // namespace amr_wind_tests
+} // namespace amr_wind_tests::utils
 
 #endif /* TEST_UTILS_H */
