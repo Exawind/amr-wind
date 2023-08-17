@@ -99,8 +99,9 @@ struct ReadInputsOp<W2AWaves>
                 std::to_string(flag));
         }
 
-        // If init_wave_field is activated, get modes on every processor
-        if (wdata.init_wave_field) {
+        // If init_wave_field is activated and initialization will be done, get
+        // modes on every processor
+        if (wdata.init_wave_field && data.sim().time().time_index() == 0) {
             wdata.rmodes.get_data(
                 data.sim().time().current_time(), wdata.mX, wdata.mY, wdata.mZ,
                 wdata.mFS);
