@@ -99,6 +99,34 @@ struct ReadInputsOp<W2AWaves>
                 std::to_string(flag));
         }
 
+        // If init_wave_field is activated, get modes on every processor
+        if (wdata.init_wave_field) {
+            wdata.rmodes.get_data(
+                data.sim().time().current_time(), wdata.mX, wdata.mY, wdata.mZ,
+                wdata.mFS);
+
+            // Convert modes to spatial data
+            modes_hosgrid::copy_complex(
+                wdata.n0, wdata.n1, wdata.mFS, wdata.eta_mptr);
+            wdata.sp_eta_vec.resize(wdata.n0 * wdata.n1, 0.0);
+            modes_hosgrid::populate_hos_eta(
+                wdata.rmodes, wdata.plan, wdata.eta_mptr, wdata.sp_eta_vec);
+            // Mesh is not yet created, so get data at every height
+            int n_hts = wdata.hvec.size();
+            wdata.sp_u_vec.resize(wdata.n0 * wdata.n1 * n_hts);
+            wdata.sp_v_vec.resize(wdata.n0 * wdata.n1 * n_hts);
+            wdata.sp_w_vec.resize(wdata.n0 * wdata.n1 * n_hts);
+            for (int iht = 0; iht < n_hts; ++iht) {
+                // Get sample height
+                amrex::Real ht = wdata.hvec[iht];
+                // Sample velocity
+                modes_hosgrid::populate_hos_vel(
+                    wdata.rmodes, ht, wdata.mX, wdata.mY, wdata.mZ, wdata.plan,
+                    wdata.u_mptr, wdata.v_mptr, wdata.w_mptr, wdata.sp_u_vec,
+                    wdata.sp_v_vec, wdata.sp_w_vec, iht * wdata.n0 * wdata.n1);
+            }
+        }
+
 #endif
 
         // Declare fields for HOS
@@ -133,16 +161,8 @@ struct InitDataOp<W2AWaves>
 
 #ifdef AMR_WIND_USE_W2A
 
-        // Get local (to this processor) height vector
-        amrex::Vector<int> indvec;
-        int flag = interp_to_mfab::get_local_height_indices(
-            indvec, wdata.hvec, velocity(level), problo, dx);
-
-        // NEED conditional about overlap relax zone laterally
-
-        // Blank initialization if there are no overlapping points
-        if (flag > 0 || !init_waves) // add conditional about relax zone
-        {
+        // Blank initialization if asked for
+        if (!init_waves) {
             // Loop to populate field data
             for (amrex::MFIter mfi(levelset(level)); mfi.isValid(); ++mfi) {
                 auto phi = levelset(level).array(mfi);
@@ -161,29 +181,13 @@ struct InitDataOp<W2AWaves>
             }
             return;
         }
-        // Read data at current time
-        wdata.rmodes.get_data(
-            sim.time().current_time(), wdata.mX, wdata.mY, wdata.mZ, wdata.mFS);
 
-        // Convert modes to spatial data
-        modes_hosgrid::copy_complex(
-            wdata.n0, wdata.n1, wdata.mFS, wdata.eta_mptr);
-        wdata.sp_eta_vec.resize(wdata.n0 * wdata.n1, 0.0);
-        modes_hosgrid::populate_hos_eta(
-            wdata.rmodes, wdata.plan, wdata.eta_mptr, wdata.sp_eta_vec);
-        wdata.sp_u_vec.resize(wdata.n0 * wdata.n1 * indvec.size());
-        wdata.sp_v_vec.resize(wdata.n0 * wdata.n1 * indvec.size());
-        wdata.sp_w_vec.resize(wdata.n0 * wdata.n1 * indvec.size());
-        for (int iht = 0; iht < indvec.size(); ++iht) {
-            // Get sample height
-            amrex::Real ht = wdata.hvec[indvec[iht]];
-            // Sample velocity
-            modes_hosgrid::populate_hos_vel(
-                wdata.rmodes, ht, wdata.mX, wdata.mY, wdata.mZ, wdata.plan,
-                wdata.u_mptr, wdata.v_mptr, wdata.w_mptr, wdata.sp_u_vec,
-                wdata.sp_v_vec, wdata.sp_w_vec, iht * wdata.n0 * wdata.n1);
+        // indvec is complete upon initialization (all heights every proc)
+        amrex::Vector<int> indvec;
+        indvec.resize(wdata.hvec.size());
+        for (int n = 0; n < indvec.size(); ++n) {
+            indvec[n] = n;
         }
-
         // Interpolate to MultiFabs (one level at a time)
         interp_to_mfab::interp_eta_to_levelset_multifab(
             wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, wdata.zsl,
