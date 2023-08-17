@@ -36,16 +36,21 @@ CoriolisForcing::CoriolisForcing(const CFDSim& sim)
     m_sinphi = std::sin(m_latitude);
     m_cosphi = std::cos(m_latitude);
 
-    // Read the rotational time period (in seconds)
-    amrex::Real rot_time_period = 86400.0;
+    // Read the rotational time period (in seconds) -- This is 23hrs and 56
+    // minutes and 4.091 seconds
+    amrex::Real rot_time_period = 86164.091;
     pp.query("rotational_time_period", rot_time_period);
-    m_coriolis_factor = 2.0 * utils::two_pi() / rot_time_period;
+
+    m_omega = utils::two_pi() / rot_time_period;
+    m_coriolis_factor = 2.0 * m_omega;
 
     pp.queryarr("east_vector", m_east, 0, AMREX_SPACEDIM);
     pp.queryarr("north_vector", m_north, 0, AMREX_SPACEDIM);
     utils::vec_normalize(m_east.data());
     utils::vec_normalize(m_north.data());
     utils::cross_prod(m_east.data(), m_north.data(), m_up.data());
+
+    pp.query("is_horizontal", m_is_horizontal);
 }
 
 CoriolisForcing::~CoriolisForcing() = default;
@@ -70,6 +75,8 @@ void CoriolisForcing::operator()(
     const auto& vel =
         m_velocity.state(field_impl::dof_state(fstate))(lev).const_array(mfi);
 
+    amrex::Real fac = (m_is_horizontal) ? 0. : 1.;
+
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real ue = east[0] * vel(i, j, k, 0) +
                                east[1] * vel(i, j, k, 1) +
@@ -81,9 +88,9 @@ void CoriolisForcing::operator()(
                                up[1] * vel(i, j, k, 1) +
                                up[2] * vel(i, j, k, 2);
 
-        const amrex::Real ae = +corfac * (un * sinphi - uu * cosphi);
+        const amrex::Real ae = +corfac * (un * sinphi - fac * uu * cosphi);
         const amrex::Real an = -corfac * ue * sinphi;
-        const amrex::Real au = +corfac * ue * cosphi;
+        const amrex::Real au = +fac * corfac * ue * cosphi;
 
         const amrex::Real ax = ae * east[0] + an * north[0] + au * up[0];
         const amrex::Real ay = ae * east[1] + an * north[1] + au * up[1];
