@@ -20,7 +20,7 @@ closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
     auto const it = std::upper_bound(vec.begin(), vec.end(), value);
     AMREX_ALWAYS_ASSERT(it != vec.end());
 
-    const int idx = std::distance(vec.begin(), it);
+    const int idx = static_cast<int>(std::distance(vec.begin(), it));
     return std::max(idx - 1, 0);
 }
 } // namespace

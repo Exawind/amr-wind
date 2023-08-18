@@ -20,7 +20,7 @@ closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
     auto const it = std::upper_bound(vec.begin(), vec.end(), value);
     AMREX_ALWAYS_ASSERT(it != vec.end());
 
-    const int idx = std::distance(vec.begin(), it);
+    const int idx = static_cast<int>(std::distance(vec.begin(), it));
     return std::max(idx - 1, 0);
 }
 } // namespace
@@ -71,7 +71,7 @@ void ABLMesoForcingTemp::mean_temperature_init(
         m_mesh.Geom(0).Domain().length(m_axis) ==
         static_cast<int>(tavg.line_centroids().size()));
 
-    m_nht = tavg.line_centroids().size();
+    m_nht = static_cast<int>(tavg.line_centroids().size());
     m_zht.resize(m_nht);
 
     m_theta_ht.resize(tavg.line_centroids().size());
