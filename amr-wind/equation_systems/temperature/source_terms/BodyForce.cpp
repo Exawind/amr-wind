@@ -30,7 +30,7 @@ BodyForce::BodyForce(const CFDSim& sim) : m_time(sim.time()), m_mesh(sim.mesh())
 }
 BodyForce::~BodyForce() = default;
 
-void BodyForce::read_bforce_profile(std::string filename)
+void BodyForce::read_bforce_profile(const std::string& filename)
 {
     std::ifstream infile;
     amrex::Vector<amrex::Real> bforce_theta;

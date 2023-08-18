@@ -27,7 +27,7 @@ public:
         const FieldState /*fstate*/,
         const amrex::Array4<amrex::Real>& src_term) const override;
 
-    void read_bforce_profile(std::string filename);
+    void read_bforce_profile(const std::string& filename);
 
 private:
     const SimTime& m_time;
