@@ -65,8 +65,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_minmod_bc(
 }
 
 // This version is called after the MAC projection, when we use the
-// MAC-projected velocity
-//      for upwinding
+// MAC-projected velocity for upwinding
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_minmod_fpu_x(
     const int i,
     const int j,
@@ -200,6 +199,88 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_minmod_fpu_z(
     } else {
         Im = S(i, j, k, n);
     }
+}
+
+// This version is when no temporal extrapolation is needed
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_minmod_x(
+    const int i,
+    const int j,
+    const int k,
+    const int n,
+    const amrex::Real dx,
+    amrex::Real& Im,
+    amrex::Real& Ip,
+    const amrex::Array4<const amrex::Real>& S,
+    const amrex::BCRec& bc,
+    const int domlo,
+    const int domhi)
+{
+    using namespace amrex;
+    amrex::Real sm1 = S(i - 1, j, k, n);
+    amrex::Real s0 = S(i, j, k, n);
+    amrex::Real sp1 = S(i + 1, j, k, n);
+    amrex::Real dsp = 0.0;
+    amrex::Real dsm = 0.0;
+    minmod(sm1, s0, sp1, dsm, dsp);
+    Godunov_minmod_bc(
+        i, sm1, s0, sp1, dsm, dsp, bc.lo(0), bc.hi(0), domlo, domhi);
+
+    Ip = s0 + 0.5 * dsp;
+    Im = s0 - 0.5 * dsm;
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_minmod_y(
+    const int i,
+    const int j,
+    const int k,
+    const int n,
+    const amrex::Real dx,
+    amrex::Real& Im,
+    amrex::Real& Ip,
+    const amrex::Array4<const amrex::Real>& S,
+    const amrex::BCRec& bc,
+    const int domlo,
+    const int domhi)
+{
+    using namespace amrex;
+    amrex::Real sm1 = S(i, j - 1, k, n);
+    amrex::Real s0 = S(i, j, k, n);
+    amrex::Real sp1 = S(i, j + 1, k, n);
+    amrex::Real dsp = 0.0;
+    amrex::Real dsm = 0.0;
+    minmod(sm1, s0, sp1, dsm, dsp);
+    Godunov_minmod_bc(
+        j, sm1, s0, sp1, dsm, dsp, bc.lo(1), bc.hi(1), domlo, domhi);
+
+    Ip = s0 + 0.5 * dsp;
+    Im = s0 - 0.5 * dsm;
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_minmod_z(
+    const int i,
+    const int j,
+    const int k,
+    const int n,
+    const amrex::Real dx,
+    amrex::Real& Im,
+    amrex::Real& Ip,
+    const amrex::Array4<const amrex::Real>& S,
+    const amrex::BCRec& bc,
+    const int domlo,
+    const int domhi)
+{
+    using namespace amrex;
+    amrex::Real sm1 = S(i, j, k - 1, n);
+    amrex::Real s0 = S(i, j, k, n);
+    amrex::Real sp1 = S(i, j, k + 1, n);
+    amrex::Real dsp = 0.0;
+    amrex::Real dsm = 0.0;
+    minmod(sm1, s0, sp1, dsm, dsp);
+    Godunov_minmod_bc(
+        k, sm1, s0, sp1, dsm, dsp, bc.lo(2), bc.hi(2), domlo, domhi);
+
+    Ip = s0 + 0.5 * dsp;
+    Im = s0 - 0.5 * dsm;
 }
 
 } // namespace

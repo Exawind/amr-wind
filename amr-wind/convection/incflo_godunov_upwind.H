@@ -25,6 +25,19 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_upwind_fpu(
     Im = S(i, j, k, n);
 }
 
+// This version does the same thing, different name
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_upwind(
+    const int i,
+    const int j,
+    const int k,
+    const int n,
+    amrex::Real& Im,
+    amrex::Real& Ip,
+    const amrex::Array4<const amrex::Real>& S)
+{
+    Godunov_upwind_fpu(i, j, k, n, Im, Ip, S);
+}
+
 } // namespace
 
 #endif

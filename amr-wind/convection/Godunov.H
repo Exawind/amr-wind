@@ -31,6 +31,23 @@ void compute_fluxes(
     amrex::Real dt,
     godunov::scheme godunov_scheme);
 
+void compute_fluxes_spatial(
+    int lev,
+    amrex::Box const& bx,
+    int ncomp,
+    amrex::Array4<amrex::Real> const& fx,
+    amrex::Array4<amrex::Real> const& fy,
+    amrex::Array4<amrex::Real> const& fz,
+    amrex::Array4<amrex::Real const> const& q,
+    amrex::Array4<amrex::Real const> const& umac,
+    amrex::Array4<amrex::Real const> const& vmac,
+    amrex::Array4<amrex::Real const> const& wmac,
+    amrex::BCRec const* pbc,
+    int const* iconserv,
+    amrex::Real* p,
+    amrex::Vector<amrex::Geometry> geom,
+    godunov::scheme godunov_scheme);
+
 void predict_weno(
     int lev,
     amrex::Box const& bx,

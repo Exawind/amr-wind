@@ -576,3 +576,279 @@ void godunov::compute_fluxes(
             }
         });
 }
+
+void godunov::compute_fluxes_spatial(
+    int lev,
+    Box const& bx,
+    int ncomp,
+    Array4<Real> const& fx,
+    Array4<Real> const& fy,
+    Array4<Real> const& fz,
+    Array4<Real const> const& q,
+    Array4<Real const> const& umac,
+    Array4<Real const> const& vmac,
+    Array4<Real const> const& wmac,
+    BCRec const* pbc,
+    int const* iconserv,
+    Real* p,
+    Vector<amrex::Geometry> geom,
+    godunov::scheme godunov_scheme)
+{
+
+    /* iconserv functionality:
+     * ------------------------------------------------------------------------
+     * != 1 : fluxes not multiplied by MAC velocity
+     * == 1 : fluxes include factor of MAC velocity
+     * no effect on interpolation because velocity is fixed in time */
+
+    BL_PROFILE("amr-wind::godunov::compute_fluxes_spatial");
+    Box const& xbx = amrex::surroundingNodes(bx, 0);
+    Box const& ybx = amrex::surroundingNodes(bx, 1);
+    Box const& zbx = amrex::surroundingNodes(bx, 2);
+    Box const& bxg1 = amrex::grow(bx, 1);
+    Box xebox = Box(xbx).grow(1, 1).grow(2, 1);
+    Box yebox = Box(ybx).grow(0, 1).grow(2, 1);
+    Box zebox = Box(zbx).grow(0, 1).grow(1, 1);
+
+    const Real dx = geom[lev].CellSize(0);
+    const Real dy = geom[lev].CellSize(1);
+    const Real dz = geom[lev].CellSize(2);
+
+    Box const& domain = geom[lev].Domain();
+    const auto dlo = amrex::lbound(domain);
+    const auto dhi = amrex::ubound(domain);
+
+    Array4<Real> Imx = makeArray4(p, bxg1, ncomp);
+    p += Imx.size();
+    Array4<Real> Ipx = makeArray4(p, bxg1, ncomp);
+    p += Ipx.size();
+    Array4<Real> Imy = makeArray4(p, bxg1, ncomp);
+    p += Imy.size();
+    Array4<Real> Ipy = makeArray4(p, bxg1, ncomp);
+    p += Ipy.size();
+    Array4<Real> Imz = makeArray4(p, bxg1, ncomp);
+    p += Imz.size();
+    Array4<Real> Ipz = makeArray4(p, bxg1, ncomp);
+    p += Ipz.size();
+    Array4<Real> xlo = makeArray4(p, xebox, ncomp);
+    p += xlo.size();
+    Array4<Real> xhi = makeArray4(p, xebox, ncomp);
+    p += xhi.size();
+    Array4<Real> ylo = makeArray4(p, yebox, ncomp);
+    p += ylo.size();
+    Array4<Real> yhi = makeArray4(p, yebox, ncomp);
+    p += yhi.size();
+    Array4<Real> zlo = makeArray4(p, zebox, ncomp);
+    p += zlo.size();
+    Array4<Real> zhi = makeArray4(p, zebox, ncomp);
+
+    // Use PPM to generate Im and Ip */
+    switch (godunov_scheme) {
+    case godunov::scheme::WENOJS: {
+        amrex::ParallelFor(
+            bxg1, ncomp,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                Godunov_weno_x(
+                    i, j, k, n, dx, Imx(i, j, k, n), Ipx(i, j, k, n), q,
+                    pbc[n], dlo.x, dhi.x, true);
+                Godunov_weno_y(
+                    i, j, k, n, dy, Imy(i, j, k, n), Ipy(i, j, k, n), q,
+                    pbc[n], dlo.y, dhi.y, true);
+                Godunov_weno_z(
+                    i, j, k, n, dz, Imz(i, j, k, n), Ipz(i, j, k, n), q,
+                    pbc[n], dlo.z, dhi.z, true);
+            });
+        break;
+    }
+    case godunov::scheme::WENOZ: {
+        amrex::ParallelFor(
+            bxg1, ncomp,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                Godunov_weno_x(
+                    i, j, k, n, dx, Imx(i, j, k, n), Ipx(i, j, k, n), q,
+                    pbc[n], dlo.x, dhi.x, false);
+                Godunov_weno_y(
+                    i, j, k, n, dy, Imy(i, j, k, n), Ipy(i, j, k, n), q,
+                    pbc[n], dlo.y, dhi.y, false);
+                Godunov_weno_z(
+                    i, j, k, n, dz, Imz(i, j, k, n), Ipz(i, j, k, n), q,
+                    pbc[n], dlo.z, dhi.z, false);
+            });
+        break;
+    }
+    // Insert centered case
+    case godunov::scheme::MINMOD: {
+        amrex::ParallelFor(
+            bxg1, ncomp,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                Godunov_minmod_x(
+                    i, j, k, n, dx, Imx(i, j, k, n), Ipx(i, j, k, n), q,
+                    pbc[n], dlo.x, dhi.x);
+                Godunov_minmod_y(
+                    i, j, k, n, dy, Imy(i, j, k, n), Ipy(i, j, k, n), q,
+                    pbc[n], dlo.y, dhi.y);
+                Godunov_minmod_z(
+                    i, j, k, n, dz, Imz(i, j, k, n), Ipz(i, j, k, n), q,
+                    pbc[n], dlo.z, dhi.z);
+            });
+        break;
+    }
+    case godunov::scheme::UPWIND: {
+        amrex::ParallelFor(
+            bxg1, ncomp,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                Godunov_upwind(i, j, k, n, Imx(i, j, k, n), Ipx(i, j, k, n), q);
+                Godunov_upwind(i, j, k, n, Imy(i, j, k, n), Ipy(i, j, k, n), q);
+                Godunov_upwind(i, j, k, n, Imz(i, j, k, n), Ipz(i, j, k, n), q);
+            });
+        break;
+    }
+    default: {
+        amrex::Abort(
+            "Only CENTRAL, WENOZ, and WENOJS use this code path, or in "
+            "multiphase simulations, MINMOD and UPWIND also use it");
+    }
+    }
+
+    // This boundary condition loop may be unnecessary, skipping for now
+    bool intermediate_bcs = false;
+    if (intermediate_bcs) {
+        amrex::ParallelFor(
+            xebox, ncomp,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                // Get interp values at face from each side's calculation
+                Real lo = Ipx(i - 1, j, k, n);
+                Real hi = Imx(i, j, k, n);
+
+                // Modify face values according to bc
+                auto bc = pbc[n];
+                Real uad = umac(i, j, k);
+                Godunov_trans_xbc(
+                    i, j, k, n, q, lo, hi, uad, bc.lo(0), bc.hi(0), dlo.x,
+                    dhi.x);
+
+                // Get modified values and upwind, save face value to Imx
+                xlo(i, j, k, n) = lo;
+                xhi(i, j, k, n) = hi;
+            },
+            yebox, ncomp,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                Real lo = Ipy(i, j - 1, k, n);
+                Real hi = Imy(i, j, k, n);
+
+                auto bc = pbc[n];
+                Real vad = vmac(i, j, k);
+
+                Godunov_trans_ybc(
+                    i, j, k, n, q, lo, hi, vad, bc.lo(1), bc.hi(1), dlo.y,
+                    dhi.y);
+
+                ylo(i, j, k, n) = lo;
+                yhi(i, j, k, n) = hi;
+            },
+            zebox, ncomp,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                Real lo = Ipz(i, j, k - 1, n);
+                Real hi = Imz(i, j, k, n);
+
+                auto bc = pbc[n];
+                Godunov_trans_zbc(
+                    i, j, k, n, q, lo, hi, wmac(i, j, k), bc.lo(2), bc.hi(2),
+                    dlo.z, dhi.z);
+
+                zlo(i, j, k, n) = lo;
+                zhi(i, j, k, n) = hi;
+            });
+    } else {
+        // Just copy the values to the other arrays
+        amrex::ParallelFor(
+            xebox, ncomp,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                // Get interp values at face from each side's calculation
+                xlo(i, j, k, n) = Ipx(i - 1, j, k, n);
+                xhi(i, j, k, n) = Imx(i, j, k, n);
+            },
+            yebox, ncomp,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                ylo(i, j, k, n) = Ipy(i, j - 1, k, n);
+                yhi(i, j, k, n) = Imy(i, j, k, n);
+            },
+            zebox, ncomp,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                zlo(i, j, k, n) = Ipz(i, j, k - 1, n);
+                zhi(i, j, k, n) = Imz(i, j, k, n);
+            });
+    }
+
+    // Choose between face interpolations on either side using upwinding
+    // (central interpolation is the same on both sides, so no upwinding occurs)
+    amrex::ParallelFor(
+        xbx, ncomp, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+            Real stl, sth;
+            constexpr Real small_vel = 1.e-10;
+            stl = xlo(i, j, k, n);
+            sth = xhi(i, j, k, n);
+
+            auto bc = pbc[n];
+            Godunov_cc_xbc_lo(i, j, k, n, q, stl, sth, umac, bc.lo(0), dlo.x);
+            Godunov_cc_xbc_hi(i, j, k, n, q, stl, sth, umac, bc.hi(0), dhi.x);
+
+            Real qx = (umac(i, j, k) >= 0.) ? stl : sth;
+            qx = (std::abs(umac(i, j, k)) < small_vel) ? 0.5 * (stl + sth) : qx;
+
+            if (iconserv[n] == 1) {
+                fx(i, j, k, n) = umac(i, j, k) * qx;
+            } else {
+                fx(i, j, k, n) = qx;
+            }
+        });
+
+    //
+    // y-direction
+    //
+    amrex::ParallelFor(
+        ybx, ncomp, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+            Real stl, sth;
+            constexpr Real small_vel = 1.e-10;
+
+            stl = ylo(i, j, k, n);
+            sth = yhi(i, j, k, n);
+
+            auto bc = pbc[n];
+            Godunov_cc_ybc_lo(i, j, k, n, q, stl, sth, vmac, bc.lo(1), dlo.y);
+            Godunov_cc_ybc_hi(i, j, k, n, q, stl, sth, vmac, bc.hi(1), dhi.y);
+
+            Real qy = (vmac(i, j, k) >= 0.) ? stl : sth;
+            qy = (std::abs(vmac(i, j, k)) < small_vel) ? 0.5 * (stl + sth) : qy;
+
+            if (iconserv[n] == 1) {
+                fy(i, j, k, n) = vmac(i, j, k) * qy;
+            } else {
+                fy(i, j, k, n) = qy;
+            }
+        });
+
+    //
+    // z-direction
+    //
+    amrex::ParallelFor(
+        zbx, ncomp, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+            Real stl, sth;
+            constexpr Real small_vel = 1.e-10;
+            stl = zlo(i, j, k, n);
+            sth = zhi(i, j, k, n);
+
+            auto bc = pbc[n];
+            Godunov_cc_zbc_lo(i, j, k, n, q, stl, sth, wmac, bc.lo(2), dlo.z);
+            Godunov_cc_zbc_hi(i, j, k, n, q, stl, sth, wmac, bc.hi(2), dhi.z);
+
+            Real qz = (wmac(i, j, k) >= 0.) ? stl : sth;
+            qz = (std::abs(wmac(i, j, k)) < small_vel) ? 0.5 * (stl + sth) : qz;
+
+            if (iconserv[n] == 1) {
+                fz(i, j, k, n) = wmac(i, j, k) * qz;
+            } else {
+                fz(i, j, k, n) = qz;
+            }
+        });
+}

@@ -374,8 +374,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_pred_z(
 }
 
 // This version is called after the MAC projection, when we use the
-// MAC-projected velocity
-//      for upwinding
+// MAC-projected velocity for upwinding
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_x(
     const int i,
     const int j,
@@ -551,6 +550,129 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_z(
     } else {
         Im = S(i, j, k, n);
     }
+}
+
+// This version is when no temporal extrapolation is needed
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_x(
+    const int i,
+    const int j,
+    const int k,
+    const int n,
+    const amrex::Real dx,
+    amrex::Real& Im,
+    amrex::Real& Ip,
+    const amrex::Array4<const amrex::Real>& S,
+    const amrex::BCRec& bc,
+    const int domlo,
+    const int domhi,
+    const bool weno_js)
+{
+
+    using namespace amrex;
+
+    constexpr amrex::Real small_vel = 1e-10;
+
+    amrex::Real sm2 = S(i - 2, j, k, n);
+    amrex::Real sm1 = S(i - 1, j, k, n);
+    amrex::Real s0 = S(i, j, k, n);
+    amrex::Real sp1 = S(i + 1, j, k, n);
+    amrex::Real sp2 = S(i + 2, j, k, n);
+
+    // right of i-1/2
+    amrex::Real sedge1 = weno5(sp2, sp1, s0, sm1, sm2, weno_js); // NOLINT
+    // left of i+1/2
+    amrex::Real sedge2 = weno5(sm2, sm1, s0, sp1, sp2, weno_js); // NOLINT
+
+    // Modify according to BCs
+    amrex::Real sm = sedge1;
+    amrex::Real sp = sedge2;
+    Godunov_weno_xbc(
+        i, j, k, n, sm, sp, sedge1, sedge2, S, bc.lo(0), bc.hi(0), domlo,
+        domhi);
+
+    // Save spatially interpolated values (no upwinding!)
+    Ip = sp;
+    Im = sm;
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_y(
+    const int i,
+    const int j,
+    const int k,
+    const int n,
+    const amrex::Real dx,
+    amrex::Real& Im,
+    amrex::Real& Ip,
+    const amrex::Array4<const amrex::Real>& S,
+    const amrex::BCRec& bc,
+    const int domlo,
+    const int domhi,
+    const bool weno_js)
+{
+
+    using namespace amrex;
+
+    constexpr amrex::Real small_vel = 1e-10;
+
+    amrex::Real sm2 = S(i, j - 2, k, n);
+    amrex::Real sm1 = S(i, j - 1, k, n);
+    amrex::Real s0 = S(i, j, k, n);
+    amrex::Real sp1 = S(i, j + 1, k, n);
+    amrex::Real sp2 = S(i, j + 2, k, n);
+
+    // right of j-1/2
+    amrex::Real sedge1 = weno5(sp2, sp1, s0, sm1, sm2, weno_js); // NOLINT
+    // left of j+1/2
+    amrex::Real sedge2 = weno5(sm2, sm1, s0, sp1, sp2, weno_js); // NOLINT
+
+    amrex::Real sm = sedge1;
+    amrex::Real sp = sedge2;
+    Godunov_weno_ybc(
+        i, j, k, n, sm, sp, sedge1, sedge2, S, bc.lo(1), bc.hi(1), domlo,
+        domhi);
+
+    Ip = sp;
+    Im = sm;
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_z(
+    const int i,
+    const int j,
+    const int k,
+    const int n,
+    const amrex::Real dx,
+    amrex::Real& Im,
+    amrex::Real& Ip,
+    const amrex::Array4<const amrex::Real>& S,
+    const amrex::BCRec& bc,
+    const int domlo,
+    const int domhi,
+    const bool weno_js)
+{
+
+    using namespace amrex;
+
+    constexpr amrex::Real small_vel = 1e-10;
+
+    amrex::Real sm2 = S(i, j, k - 2, n);
+    amrex::Real sm1 = S(i, j, k - 1, n);
+    amrex::Real s0 = S(i, j, k, n);
+    amrex::Real sp1 = S(i, j, k + 1, n);
+    amrex::Real sp2 = S(i, j, k + 2, n);
+
+    // right of k-1/2
+    amrex::Real sedge1 = weno5(sp2, sp1, s0, sm1, sm2, weno_js); // NOLINT
+    // left of k+1/2
+    amrex::Real sedge2 = weno5(sm2, sm1, s0, sp1, sp2, weno_js); // NOLINT
+
+    amrex::Real sm = sedge1;
+    amrex::Real sp = sedge2;
+    Godunov_weno_zbc(
+        i, j, k, n, sm, sp, sedge1, sedge2, S, bc.lo(2), bc.hi(2), domlo,
+        domhi);
+
+    Ip = sp;
+    Im = sm;
 }
 
 } // namespace
