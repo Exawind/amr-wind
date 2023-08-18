@@ -43,8 +43,8 @@ public:
     void mean_velocity_init(
         const VelPlaneAveragingFine& vavg, const ABLMesoscaleInput& ncfile);
 
-    void mean_velocity_heights(
-        std::unique_ptr<ABLMesoscaleInput> const& ncfile);
+    void
+    mean_velocity_heights(std::unique_ptr<ABLMesoscaleInput> const& ncfile);
 
     void mean_velocity_heights(
         const VelPlaneAveragingFine& vavg,
