@@ -6,8 +6,9 @@
 
 namespace amr_wind {
 
+// cppcheck-suppress uninitMemberVar
 ABLMesoscaleInput::ABLMesoscaleInput(
-    const std::string ncfile, const std::string var_prefix)
+    const std::string& ncfile, const std::string& var_prefix)
     : m_filename(ncfile)
 {
 #ifdef AMR_WIND_USE_NETCDF

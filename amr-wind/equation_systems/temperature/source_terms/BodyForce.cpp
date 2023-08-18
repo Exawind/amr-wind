@@ -14,9 +14,7 @@
 #include <ios>
 #include <string>
 
-namespace amr_wind {
-namespace pde {
-namespace temperature {
+namespace amr_wind::pde::temperature {
 
 BodyForce::BodyForce(const CFDSim& sim) : m_time(sim.time()), m_mesh(sim.mesh())
 {
@@ -96,6 +94,4 @@ void BodyForce::operator()(
     }
 }
 
-} // namespace temperature
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::temperature

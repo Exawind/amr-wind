@@ -11,9 +11,7 @@
 #include "amr-wind/wind_energy/ABLMesoscaleForcing.H"
 #include "amr-wind/wind_energy/ABLMesoscaleInput.H"
 
-namespace amr_wind {
-namespace pde {
-namespace temperature {
+namespace amr_wind::pde::temperature {
 
 class ABLMesoForcingTemp
     : public ABLMesoscaleForcing
@@ -39,11 +37,11 @@ public:
         const FieldPlaneAveragingFine& tavg, const ABLMesoscaleInput& ncfile);
 
     amrex::Real
-    mean_temperature_heights(std::unique_ptr<ABLMesoscaleInput>& ncfile);
+    mean_temperature_heights(std::unique_ptr<ABLMesoscaleInput> const& ncfile);
 
     amrex::Real mean_temperature_heights(
         const FieldPlaneAveragingFine& tavg,
-        std::unique_ptr<ABLMesoscaleInput>& ncfile);
+        std::unique_ptr<ABLMesoscaleInput> const& ncfile);
 
     amrex::Vector<amrex::Real>& theta_error() { return m_err_Theta; }
 
@@ -65,10 +63,6 @@ private:
     amrex::Array<amrex::Real, 4> m_poly_coeff_theta;
 };
 
-} // namespace temperature
-
-} // namespace pde
-
-} // namespace amr_wind
+} // namespace amr_wind::pde::temperature
 
 #endif

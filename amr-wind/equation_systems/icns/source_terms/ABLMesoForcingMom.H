@@ -12,9 +12,7 @@
 #include "amr-wind/wind_energy/ABLMesoscaleForcing.H"
 #include "amr-wind/wind_energy/ABLMesoscaleInput.H"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 /** Forcing term for meso-micro scale coupled ABL simulations
  *  \ingroup icns_src we_abl
@@ -45,11 +43,12 @@ public:
     void mean_velocity_init(
         const VelPlaneAveragingFine& vavg, const ABLMesoscaleInput& ncfile);
 
-    void mean_velocity_heights(std::unique_ptr<ABLMesoscaleInput>& ncfile);
+    void mean_velocity_heights(
+        std::unique_ptr<ABLMesoscaleInput> const& ncfile);
 
     void mean_velocity_heights(
         const VelPlaneAveragingFine& vavg,
-        std::unique_ptr<ABLMesoscaleInput>& ncfile);
+        std::unique_ptr<ABLMesoscaleInput> const& ncfile);
 
     amrex::Vector<amrex::Real>& mom_u_error() { return m_err_U; }
     amrex::Vector<amrex::Real>& mom_v_error() { return m_err_V; }
@@ -81,8 +80,6 @@ private:
     amrex::Array<amrex::Real, 4> m_poly_coeff_V;
 };
 
-} // namespace icns
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns
 
 #endif // ABLMESOFORCINGMOM_H

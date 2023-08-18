@@ -8,9 +8,7 @@
 #include <AMReX_Vector.H>
 #include <cstddef>
 
-namespace amr_wind {
-namespace pde {
-namespace temperature {
+namespace amr_wind::pde::temperature {
 
 class BodyForce : public TemperatureSource::Register<BodyForce>
 {
@@ -43,8 +41,6 @@ private:
     amrex::Gpu::DeviceVector<amrex::Real> m_ht;
 };
 
-} // namespace temperature
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::temperature
 
 #endif

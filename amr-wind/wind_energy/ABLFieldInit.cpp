@@ -84,6 +84,7 @@ void ABLFieldInit::initialize_from_inputfile()
         m_thvv_d.begin());
 }
 
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 void ABLFieldInit::initialize_from_netcdf()
 {
 #ifndef AMR_WIND_USE_NETCDF

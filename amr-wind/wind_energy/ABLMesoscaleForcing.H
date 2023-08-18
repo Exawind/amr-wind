@@ -13,7 +13,7 @@ class ABLMesoscaleForcing
 {
 
 public:
-    ABLMesoscaleForcing(const CFDSim& sim, const std::string identifier);
+    ABLMesoscaleForcing(const CFDSim& sim, const std::string& identifier);
 
     void indirectForcingInit();
 
@@ -25,7 +25,7 @@ protected:
     const SimTime& m_time;
     const amrex::AmrCore& m_mesh;
 
-    int m_idx_time;
+    int m_idx_time{0};
     int m_axis{2};
 
     // inputs
@@ -35,7 +35,7 @@ protected:
 
     // planar averaging heights
     amrex::Vector<amrex::Real> m_zht;
-    int m_nht;
+    int m_nht{0}; // set by derived ABLMesoForcing[Mom|Temp] class
 
     //
     // regression vars for indirect forcing

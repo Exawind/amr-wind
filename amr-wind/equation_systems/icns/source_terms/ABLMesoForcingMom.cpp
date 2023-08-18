@@ -9,9 +9,7 @@
 #include <AMReX_REAL.H>
 #include <iomanip>
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
+namespace amr_wind::pde::icns {
 
 namespace {
 
@@ -110,7 +108,7 @@ void ABLMesoForcingMom::mean_velocity_init(
 }
 
 void ABLMesoForcingMom::mean_velocity_heights(
-    std::unique_ptr<ABLMesoscaleInput>& ncfile)
+    std::unique_ptr<ABLMesoscaleInput> const& ncfile)
 {
     if (m_forcing_scheme.empty()) {
         return;
@@ -162,7 +160,7 @@ void ABLMesoForcingMom::mean_velocity_heights(
 
 void ABLMesoForcingMom::mean_velocity_heights(
     const VelPlaneAveragingFine& vavg,
-    std::unique_ptr<ABLMesoscaleInput>& ncfile)
+    std::unique_ptr<ABLMesoscaleInput> const& ncfile)
 {
     if (m_forcing_scheme.empty()) {
         return;
@@ -398,6 +396,4 @@ void ABLMesoForcingMom::operator()(
     });
 }
 
-} // namespace icns
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns

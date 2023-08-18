@@ -9,9 +9,7 @@
 #include <AMReX_REAL.H>
 #include <memory>
 
-namespace amr_wind {
-namespace pde {
-namespace temperature {
+namespace amr_wind::pde::temperature {
 
 namespace {
 
@@ -100,7 +98,7 @@ void ABLMesoForcingTemp::mean_temperature_init(
 }
 
 amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
-    std::unique_ptr<ABLMesoscaleInput>& ncfile)
+    std::unique_ptr<ABLMesoscaleInput> const& ncfile)
 {
 
     amrex::Real currtime;
@@ -152,7 +150,7 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
 
 amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
     const FieldPlaneAveragingFine& tavg,
-    std::unique_ptr<ABLMesoscaleInput>& ncfile)
+    std::unique_ptr<ABLMesoscaleInput> const& ncfile)
 {
 
     amrex::Real currtime;
@@ -342,6 +340,4 @@ void ABLMesoForcingTemp::operator()(
     });
 }
 
-} // namespace temperature
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde::temperature

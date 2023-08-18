@@ -9,7 +9,7 @@
 namespace amr_wind {
 
 ABLMesoscaleForcing::ABLMesoscaleForcing(
-    const CFDSim& sim, const std::string identifier)
+    const CFDSim& sim, const std::string& identifier)
     : m_time(sim.time()), m_mesh(sim.mesh())
 {
     amrex::Print() << "Constructing " << identifier << " object" << std::endl;
@@ -171,6 +171,7 @@ void ABLMesoscaleForcing::indirectForcingInit()
 
 void ABLMesoscaleForcing::invertMat(
     const amrex::Array2D<amrex::Real, 0, 3, 0, 3>& m,
+    // cppcheck-suppress constParameterReference
     amrex::Array2D<amrex::Real, 0, 3, 0, 3>& im)
 {
     amrex::Real A2323 = m(2, 2) * m(3, 3) - m(2, 3) * m(3, 2);
