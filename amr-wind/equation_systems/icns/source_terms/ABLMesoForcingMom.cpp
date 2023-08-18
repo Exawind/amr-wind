@@ -75,7 +75,7 @@ void ABLMesoForcingMom::mean_velocity_init(
         m_mesh.Geom(0).Domain().length(m_axis) ==
         static_cast<int>(vavg.line_centroids().size()));
 
-    m_nht = vavg.line_centroids().size();
+    m_nht = static_cast<int>(vavg.line_centroids().size());
     m_zht.resize(m_nht);
 
     m_velAvg_ht.resize(vavg.line_centroids().size());

@@ -8,8 +8,8 @@ namespace amr_wind {
 
 // cppcheck-suppress uninitMemberVar
 ABLMesoscaleInput::ABLMesoscaleInput(
-    const std::string& ncfile, const std::string& var_prefix)
-    : m_filename(ncfile)
+    std::string ncfile, const std::string& var_prefix)
+    : m_filename{std::move(ncfile)}
 {
 #ifdef AMR_WIND_USE_NETCDF
     auto ncf = ncutils::NCFile::open_par(
@@ -56,7 +56,8 @@ ABLMesoscaleInput::ABLMesoscaleInput(
 
 #else
     amrex::Abort(
-        "NetCDF support was not enabled during build time. Please recompile");
+        "ABLMesoscaleInput: NetCDF support was not enabled during build time. "
+        "Please recompile");
 #endif
 
     amrex::ParmParse pp("ABL");

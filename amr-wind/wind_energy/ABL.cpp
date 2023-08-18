@@ -47,7 +47,7 @@ ABL::ABL(CFDSim& sim)
     amrex::ParmParse pp("ABL");
 
     std::string ncfile;
-    std::string var_prefix = "";
+    std::string var_prefix;
 
     if (pp.contains("mesoscale_forcing")) {
 #ifndef AMR_WIND_USE_NETCDF
