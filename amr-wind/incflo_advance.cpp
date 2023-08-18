@@ -350,6 +350,27 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // *************************************************************************************
     icns().compute_predictor_rhs(m_diff_type);
 
+    const int n_adv_iters = 2; // <-- Remove later
+    for (int ia = 1; ia < n_adv_iters; ++ia) {
+        // Fillpatch the velocity
+        icns().fields().field.fillpatch(0.0);
+        // Get n + 1/2 velocity
+        amr_wind::field_ops::lincomb(
+            icns().fields().field.state(amr_wind::FieldState::NPH), 0.5,
+            icns().fields().field.state(amr_wind::FieldState::Old), 0, 0.5,
+            icns().fields().field, 0, 0, icns().fields().field.num_comp(),
+            icns().fields().field.num_grow());
+
+        // Recompute advection of momentum
+        icns().compute_advection_term(amr_wind::FieldState::NPH);
+
+        // Recompute source and diffusion terms (if requested?)
+        /* icns().compute_source_term(amr_wind::FieldState::NPH)
+           icns().compute_diffusion_term(amr_wind::FieldState::NPH)*/
+
+        // RHS
+        icns().compute_predictor_rhs(m_diff_type);
+    }
     if (m_verbose > 2) {
         PrintMaxVelLocations("after predictor rhs");
     }
