@@ -120,6 +120,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             godunov_scheme = godunov::scheme::WENO_JS;
         } else if (amrex::toLower(godunov_type) == "weno_z") {
             godunov_scheme = godunov::scheme::WENOZ;
+        } else if (amrex::toLower(godunov_type) == "central") {
+            godunov_scheme = godunov::scheme::CENTRAL;
         } else {
             amrex::Abort(
                 "Invalid godunov_type specified. For godunov_type select "
@@ -240,7 +242,9 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         // cppcheck-suppress constVariableReference
         auto& conv_term = fields.conv_term;
         // if fstate is NPH, then n and n+1 are known, need only spatial interp
-        bool only_spatial = fstate == FieldState::NPH;
+        bool only_spatial =
+            (fstate == FieldState::NPH ||
+             godunov_scheme == godunov::scheme::CENTRAL);
         const auto& dof_field = fields.field.state(fstate);
 
         auto flux_x =
