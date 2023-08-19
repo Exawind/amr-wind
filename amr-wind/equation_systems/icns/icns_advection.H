@@ -98,6 +98,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             godunov_scheme = godunov::scheme::WENOJS;
         } else if (amrex::toLower(godunov_type) == "weno_z") {
             godunov_scheme = godunov::scheme::WENOZ;
+        } else if (amrex::toLower(godunov_type) == "central") {
+            godunov_scheme = godunov::scheme::CENTRAL;
         } else {
             amrex::Print()
                 << "For godunov_type select between plm, ppm, "
@@ -149,7 +151,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             if ((godunov_scheme == godunov::scheme::PPM_NOLIM) ||
                 (godunov_scheme == godunov::scheme::WENOJS) ||
-                (godunov_scheme == godunov::scheme::WENOZ)) {
+                (godunov_scheme == godunov::scheme::WENOZ) ||
+                (godunov_scheme == godunov::scheme::CENTRAL)) {
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
@@ -239,6 +242,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                                 true);
                             break;
                         }
+                        case godunov::scheme::CENTRAL:
                         case godunov::scheme::WENOZ: {
                             godunov::predict_weno(
                                 lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz,
@@ -321,7 +325,9 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         // cppcheck-suppress constVariableReference
         auto& conv_term = fields.conv_term;
         // if fstate is NPH, then n and n+1 are known, need only spatial interp
-        bool only_spatial = fstate == FieldState::NPH;
+        bool only_spatial =
+            (fstate == FieldState::NPH ||
+             godunov_scheme == godunov::scheme::CENTRAL);
         const auto& dof_field = fields.field.state(fstate);
 
         auto flux_x =
@@ -393,7 +399,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                 if (only_spatial) {
                     // Only need interpolation of n+1/2 state to faces
                     if ((godunov_scheme == godunov::scheme::WENOJS) ||
-                        (godunov_scheme == godunov::scheme::WENOZ)) {
+                        (godunov_scheme == godunov::scheme::WENOZ) ||
+                        (godunov_scheme == godunov::scheme::CENTRAL)) {
                         amrex::FArrayBox tmpfab(
                             amrex::grow(bx, 1), ICNS::ndim * 14);
                         godunov::compute_fluxes_spatial(

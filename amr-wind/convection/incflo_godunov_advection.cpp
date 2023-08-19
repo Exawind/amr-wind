@@ -3,6 +3,7 @@
 #include "amr-wind/convection/incflo_godunov_weno.H"
 #include "amr-wind/convection/incflo_godunov_minmod.H"
 #include "amr-wind/convection/incflo_godunov_upwind.H"
+#include "amr-wind/convection/incflo_godunov_central.H"
 #include "amr-wind/convection/Godunov.H"
 #include <AMReX_Geometry.H>
 
@@ -649,14 +650,14 @@ void godunov::compute_fluxes_spatial(
             bxg1, ncomp,
             [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
                 Godunov_weno_x(
-                    i, j, k, n, dx, Imx(i, j, k, n), Ipx(i, j, k, n), q,
-                    pbc[n], dlo.x, dhi.x, true);
+                    i, j, k, n, dx, Imx(i, j, k, n), Ipx(i, j, k, n), q, pbc[n],
+                    dlo.x, dhi.x, true);
                 Godunov_weno_y(
-                    i, j, k, n, dy, Imy(i, j, k, n), Ipy(i, j, k, n), q,
-                    pbc[n], dlo.y, dhi.y, true);
+                    i, j, k, n, dy, Imy(i, j, k, n), Ipy(i, j, k, n), q, pbc[n],
+                    dlo.y, dhi.y, true);
                 Godunov_weno_z(
-                    i, j, k, n, dz, Imz(i, j, k, n), Ipz(i, j, k, n), q,
-                    pbc[n], dlo.z, dhi.z, true);
+                    i, j, k, n, dz, Imz(i, j, k, n), Ipz(i, j, k, n), q, pbc[n],
+                    dlo.z, dhi.z, true);
             });
         break;
     }
@@ -665,31 +666,46 @@ void godunov::compute_fluxes_spatial(
             bxg1, ncomp,
             [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
                 Godunov_weno_x(
-                    i, j, k, n, dx, Imx(i, j, k, n), Ipx(i, j, k, n), q,
-                    pbc[n], dlo.x, dhi.x, false);
+                    i, j, k, n, dx, Imx(i, j, k, n), Ipx(i, j, k, n), q, pbc[n],
+                    dlo.x, dhi.x, false);
                 Godunov_weno_y(
-                    i, j, k, n, dy, Imy(i, j, k, n), Ipy(i, j, k, n), q,
-                    pbc[n], dlo.y, dhi.y, false);
+                    i, j, k, n, dy, Imy(i, j, k, n), Ipy(i, j, k, n), q, pbc[n],
+                    dlo.y, dhi.y, false);
                 Godunov_weno_z(
-                    i, j, k, n, dz, Imz(i, j, k, n), Ipz(i, j, k, n), q,
-                    pbc[n], dlo.z, dhi.z, false);
+                    i, j, k, n, dz, Imz(i, j, k, n), Ipz(i, j, k, n), q, pbc[n],
+                    dlo.z, dhi.z, false);
             });
         break;
     }
-    // Insert centered case
+    case godunov::scheme::CENTRAL: {
+        amrex::ParallelFor(
+            bxg1, ncomp,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                Godunov_central_x(
+                    i, j, k, n, dx, Imx(i, j, k, n), Ipx(i, j, k, n), q, pbc[n],
+                    dlo.x, dhi.x);
+                Godunov_central_y(
+                    i, j, k, n, dy, Imy(i, j, k, n), Ipy(i, j, k, n), q, pbc[n],
+                    dlo.y, dhi.y);
+                Godunov_central_z(
+                    i, j, k, n, dz, Imz(i, j, k, n), Ipz(i, j, k, n), q, pbc[n],
+                    dlo.z, dhi.z);
+            });
+        break;
+    }
     case godunov::scheme::MINMOD: {
         amrex::ParallelFor(
             bxg1, ncomp,
             [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
                 Godunov_minmod_x(
-                    i, j, k, n, dx, Imx(i, j, k, n), Ipx(i, j, k, n), q,
-                    pbc[n], dlo.x, dhi.x);
+                    i, j, k, n, dx, Imx(i, j, k, n), Ipx(i, j, k, n), q, pbc[n],
+                    dlo.x, dhi.x);
                 Godunov_minmod_y(
-                    i, j, k, n, dy, Imy(i, j, k, n), Ipy(i, j, k, n), q,
-                    pbc[n], dlo.y, dhi.y);
+                    i, j, k, n, dy, Imy(i, j, k, n), Ipy(i, j, k, n), q, pbc[n],
+                    dlo.y, dhi.y);
                 Godunov_minmod_z(
-                    i, j, k, n, dz, Imz(i, j, k, n), Ipz(i, j, k, n), q,
-                    pbc[n], dlo.z, dhi.z);
+                    i, j, k, n, dz, Imz(i, j, k, n), Ipz(i, j, k, n), q, pbc[n],
+                    dlo.z, dhi.z);
             });
         break;
     }
