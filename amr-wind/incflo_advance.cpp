@@ -350,8 +350,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // *************************************************************************************
     icns().compute_predictor_rhs(m_diff_type);
 
-    const int n_adv_iters = 2; // <-- Remove later
-    for (int ia = 1; ia < n_adv_iters; ++ia) {
+    for (int ia = 1; ia < m_adv_iters; ++ia) {
         // Fillpatch the velocity
         icns().fields().field.fillpatch(0.0);
         // Get n + 1/2 velocity

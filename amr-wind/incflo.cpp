@@ -372,6 +372,10 @@ void incflo::init_physics_and_pde()
         if (activate_overset) {
             m_sim.activate_overset();
         }
+
+        // Get number of advection iterations
+        pp.query("advection_iterations", m_adv_iters);
+        m_adv_iters = std::max(1, m_adv_iters);
     }
 
     auto& pde_mgr = m_sim.pde_manager();
