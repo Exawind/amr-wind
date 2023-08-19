@@ -172,6 +172,9 @@ private:
     // Prescribe advection velocity
     bool m_prescribe_vel = false;
 
+    // Advection iterations every timestep
+    int m_adv_iters{1};
+
     //! number of cells on all levels including covered cells
     amrex::Long m_cell_count{-1};
 
