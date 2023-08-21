@@ -11,7 +11,7 @@ class ABLMesoscaleInput
 {
 
 public:
-    ABLMesoscaleInput(std::string ncfile, std::string var_prefix="");
+    ABLMesoscaleInput(std::string ncfile, std::string var_prefix = "");
 
     // ~ABLMesoscaleInput() = default;
 
