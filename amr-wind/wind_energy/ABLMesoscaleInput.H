@@ -14,7 +14,7 @@ public:
     // cppcheck-suppress noExplicitConstructor
     ABLMesoscaleInput(std::string ncfile, std::string var_prefix = "");
 
-    // ~ABLMesoscaleInput() = default;
+    ~ABLMesoscaleInput() = default;
 
     const amrex::Vector<amrex::Real>& meso_heights() const { return m_height; }
 
@@ -28,10 +28,9 @@ public:
 
     const amrex::Vector<amrex::Real>& meso_tflux() const { return m_tflux; }
 
-    // ***FIXME***
-    // const amrex::Vector<amrex::Real>& meso_transition_height() const {
-    //     return m_transition_height;
-    // }
+    const amrex::Vector<amrex::Real>& meso_transition_height() const {
+        return m_transition_height;
+    }
 
     bool is_tendency_forcing() const { return m_abl_tendency; }
 
@@ -50,13 +49,17 @@ private:
     amrex::Vector<amrex::Real> m_temp;
     amrex::Vector<amrex::Real> m_tflux;
 
-    // optional input for partial profile assimilation
-    // ***FIXME***
-    // unexpected behaviors, as described in
-    // ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7 MUST COMMENT THIS LINE OUT
-    // (variable def) to consistently fix problem:
+    // possible unexpected behaviors, as described in
+    // ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7
     //
-    // amrex::Vector<amrex::Real> m_transition_height;
+    // See also:
+    // - wind_energy/ABLMesoscaleInput.cpp
+    // - equation_systems/icns/source_terms/ABLMesoForcingMom.cpp 
+    // - equation_systems/temperature/source_terms/ABLMesoForcingTemp.cpp 
+    // 
+    // workaround is to not try to read in and update this transition height
+    // variable on the fly
+    amrex::Vector<amrex::Real> m_transition_height;
 
     int m_nheight;
     int m_ntime;

@@ -54,8 +54,6 @@ public:
     amrex::Vector<amrex::Real>& mom_v_error() { return m_err_V; }
 
 private:
-    // std::string m_forcing_tendency;
-
     // these are inputs
     amrex::Gpu::DeviceVector<amrex::Real> m_meso_ht;
     amrex::Gpu::DeviceVector<amrex::Real> m_meso_u_vals;

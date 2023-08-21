@@ -59,34 +59,8 @@ ABLMesoscaleForcing::ABLMesoscaleForcing(
                 setTransitionWeighting();
             } else {
                 // expect to read transition_height history in netCDF input file
-                // weighting profile will be updated at every step
+                // and the weighting profile will need to be updated every step
                 m_update_transition_height = true;
-
-                // ***WORKAROUND***
-                // after commenting out code to read in transition_heights from
-                // the mesoscale input file (see FIXME lines)
-                std::string fname;
-                pp.get("transition_heights_file", fname);
-                std::ifstream datfile(fname);
-                AMREX_ALWAYS_ASSERT(datfile.is_open());
-                amrex::Real tval, zval;
-                int ntimes = 0;
-                while (datfile >> tval >> zval) {
-                    ntimes++;
-                }
-                datfile.clear();
-                datfile.seekg(0);
-                m_transition_height_hist.resize(ntimes);
-                amrex::Print() << "WORKAROUND: Reading transition heights from "
-                               << fname << std::endl;
-                for (int itime = 0; itime < ntimes; itime++) {
-                    datfile >> tval >> zval;
-                    m_transition_height_hist[itime] = zval;
-                    amrex::Print() << tval << " " << zval << std::endl;
-                }
-                amrex::Print()
-                    << "Note: the times in the mesoscale input file "
-                    << "must match these " << ntimes << " values" << std::endl;
             }
         }
 
@@ -122,7 +96,6 @@ void ABLMesoscaleForcing::updateWeights()
     for (int i = 0; i < m_nht; ++i) {
         m_W[i] =
             interp::linear(m_weighting_heights, m_weighting_values, m_zht[i]);
-        // amrex::Print() << "  " << m_zht[i] << " " << m_W[i] << std::endl;
     }
 }
 

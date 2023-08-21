@@ -232,20 +232,13 @@ void ABLMesoForcingMom::mean_velocity_heights(
 
     if (amrex::toLower(m_forcing_scheme) == "indirect") {
         if (m_update_transition_height) {
-            // ***FIXME***
-            // unexpected behaviors, as described in
+            // possible unexpected behaviors, as described in
             // ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7
-            //
-            // m_transition_height = coeff_interp[0] *
-            // ncfile->meso_transition_height()[m_idx_time] +
-            //                      coeff_interp[1] *
-            //                      ncfile->meso_transition_height()[m_idx_time
-            //                      + 1];
-
-            // WORKAROUND
-            m_transition_height =
-                coeff_interp[0] * m_transition_height_hist[m_idx_time] +
-                coeff_interp[1] * m_transition_height_hist[m_idx_time + 1];
+            m_transition_height = 
+                coeff_interp[0] *
+                    ncfile->meso_transition_height()[m_idx_time]
+                + coeff_interp[1] *
+                    ncfile->meso_transition_height()[m_idx_time+1];
             amrex::Print() << "current transition height = "
                            << m_transition_height << std::endl;
 
@@ -374,23 +367,20 @@ void ABLMesoForcingMom::operator()(
         const amrex::Real ht = problo[idir] + (iv[idir] + 0.5) * dx[idir];
         const int il = amrex::min(k / lp1, nh_max);
         const int ir = il + 1;
-        amrex::Real Utemp;
-        amrex::Real Vtemp;
 
-        Utemp = u_error_val[il] + ((u_error_val[ir] - u_error_val[il]) /
-                                   (vheights[ir] - vheights[il])) *
-                                      (ht - vheights[il]);
+        amrex::Real u_err =
+            u_error_val[il] + ((u_error_val[ir] - u_error_val[il]) /
+                               (vheights[ir] - vheights[il]))
+                            * (ht - vheights[il]);
 
-        Vtemp = v_error_val[il] + ((v_error_val[ir] - v_error_val[il]) /
-                                   (vheights[ir] - vheights[il])) *
-                                      (ht - vheights[il]);
+        amrex::Real v_err =
+            v_error_val[il] + ((v_error_val[ir] - v_error_val[il]) /
+                               (vheights[ir] - vheights[il]))
+                            * (ht - vheights[il]);
 
-        // // Compute Source term
-        // src_term(i, j, k, 0) += u_error_val[k] * kcoeff / dt;
-        // src_term(i, j, k, 1) += v_error_val[k] * kcoeff / dt;
-
-        src_term(i, j, k, 0) += Utemp * kcoeff / dt;
-        src_term(i, j, k, 1) += Vtemp * kcoeff / dt;
+        // Compute Source term
+        src_term(i, j, k, 0) += kcoeff * u_err / dt;
+        src_term(i, j, k, 1) += kcoeff * v_err / dt;
 
         // No forcing in z-direction
     });

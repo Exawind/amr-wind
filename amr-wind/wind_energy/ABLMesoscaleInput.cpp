@@ -42,16 +42,17 @@ ABLMesoscaleInput::ABLMesoscaleInput(std::string ncfile, std::string var_prefix)
     }
     ncf.var(m_var_prefix + "tflux").get(m_tflux.data());
 
-    // ***FIXME***
-    // MUST COMMENT THIS LINE OUT (resize cmd) to consistently fix problem:
-    //
-    // m_transition_height.resize(m_ntime);
-    //
-    // if (ncf.has_var("transition_height")) {
-    //    amrex::Print() << "found transition_height in ABLMesoscaleInput file"
-    //                   << std::endl;
-    //    ncf.var("transition_height").get(m_transition_height.data());
-    //}
+    // possible unexpected behaviors, as described in
+    // ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7
+    // 
+    // workaround was to comment this out:
+    m_transition_height.resize(m_ntime);
+    
+    if (ncf.has_var("transition_height")) {
+        amrex::Print() << "Found transition_height in ABLMesoscaleInput file"
+                       << std::endl;
+        ncf.var("transition_height").get(m_transition_height.data());
+    }
 
 #else
     amrex::Abort(

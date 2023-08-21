@@ -206,20 +206,13 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
 
     if (amrex::toLower(m_forcing_scheme) == "indirect") {
         if (m_update_transition_height) {
-            // ***FIXME***
-            // unexpected behaviors, as described in
+            // possible unexpected behaviors, as described in
             // ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7
-            //
-            // m_transition_height = coeff_interp[0] *
-            // ncfile->meso_transition_height()[m_idx_time] +
-            //                      coeff_interp[1] *
-            //                      ncfile->meso_transition_height()[m_idx_time
-            //                      + 1];
-
-            // WORKAROUND
             m_transition_height =
-                coeff_interp[0] * m_transition_height_hist[m_idx_time] +
-                coeff_interp[1] * m_transition_height_hist[m_idx_time + 1];
+                coeff_interp[0] *
+                    ncfile->meso_transition_height()[m_idx_time]
+                + coeff_interp[1] * 
+                    ncfile->meso_transition_height()[m_idx_time+1];
             amrex::Print() << "current transition height = "
                            << m_transition_height << std::endl;
 
@@ -327,16 +320,13 @@ void ABLMesoForcingTemp::operator()(
         const amrex::Real ht = problo[idir] + (iv[idir] + 0.5) * dx[idir];
         const int il = amrex::min(k / lp1, nh_max);
         const int ir = il + 1;
-        amrex::Real temp;
-
-        temp =
+        amrex::Real theta_err =
             theta_error_val[il] + ((theta_error_val[ir] - theta_error_val[il]) /
-                                   (theights[ir] - theights[il])) *
-                                      (ht - theights[il]);
+                                   (theights[ir] - theights[il]))
+                                * (ht - theights[il]);
 
         // Compute Source term
-        // src_term(i, j, k, 0) += (theta_error_val[k]) * kcoeff / dt;
-        src_term(i, j, k, 0) += temp * kcoeff / dt;
+        src_term(i, j, k, 0) += kcoeff * theta_err / dt;
     });
 }
 
