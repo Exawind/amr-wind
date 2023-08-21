@@ -11,6 +11,7 @@ class ABLMesoscaleInput
 {
 
 public:
+    // cppcheck-suppress noExplicitConstructor
     ABLMesoscaleInput(std::string ncfile, std::string var_prefix = "");
 
     // ~ABLMesoscaleInput() = default;
@@ -39,6 +40,7 @@ public:
 
 private:
     std::string m_filename;
+    std::string m_var_prefix; // to support legacy WRF meso input files
 
     amrex::Vector<amrex::Real> m_height;
     amrex::Vector<amrex::Real> m_time;

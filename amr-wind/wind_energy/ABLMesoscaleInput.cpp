@@ -9,6 +9,7 @@ namespace amr_wind {
 // cppcheck-suppress uninitMemberVar
 ABLMesoscaleInput::ABLMesoscaleInput(std::string ncfile, std::string var_prefix)
     : m_filename{std::move(ncfile)}
+    , m_var_prefix{std::move(var_prefix)}
 {
 #ifdef AMR_WIND_USE_NETCDF
     auto ncf = ncutils::NCFile::open_par(
@@ -32,15 +33,15 @@ ABLMesoscaleInput::ABLMesoscaleInput(std::string ncfile, std::string var_prefix)
     m_tflux.resize(m_ntime);
 
     if (m_nheight > 0) {
-        ncf.var(var_prefix + "momentum_u").get(m_u.data());
-        ncf.var(var_prefix + "momentum_v").get(m_v.data());
-        ncf.var(var_prefix + "temperature").get(m_temp.data());
+        ncf.var(m_var_prefix + "momentum_u").get(m_u.data());
+        ncf.var(m_var_prefix + "momentum_v").get(m_v.data());
+        ncf.var(m_var_prefix + "temperature").get(m_temp.data());
     } else {
         amrex::Print() << "No height dimension in netcdf input file; no "
                           "forcing profiles read."
                        << std::endl;
     }
-    ncf.var(var_prefix + "tflux").get(m_tflux.data());
+    ncf.var(m_var_prefix + "tflux").get(m_tflux.data());
 
     // ***FIXME***
     // MUST COMMENT THIS LINE OUT (resize cmd) to consistently fix problem:
