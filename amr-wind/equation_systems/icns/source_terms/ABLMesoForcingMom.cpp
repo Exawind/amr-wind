@@ -234,10 +234,10 @@ void ABLMesoForcingMom::mean_velocity_heights(
         if (m_update_transition_height) {
             // possible unexpected behaviors, as described in
             // ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7
-            m_transition_height = 
+            m_transition_height =
                 coeff_interp[0] * ncfile->meso_transition_height()[m_idx_time] +
                 coeff_interp[1] *
-                    ncfile->meso_transition_height()[m_idx_time+1];
+                    ncfile->meso_transition_height()[m_idx_time + 1];
             amrex::Print() << "current transition height = "
                            << m_transition_height << std::endl;
 
