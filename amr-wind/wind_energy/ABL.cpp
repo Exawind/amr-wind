@@ -54,6 +54,7 @@ ABL::ABL(CFDSim& sim)
         amrex::Abort("Mesoscale forcing capability requires NetCDF");
 #else
         pp.query("mesoscale_forcing", ncfile);
+        m_meso_file.reset(new ABLMesoscaleInput(ncfile));
 #endif
 
     } else if (pp.contains("WRFforcing")) {
@@ -63,11 +64,9 @@ ABL::ABL(CFDSim& sim)
         amrex::Print() << "Note: ABL.WRFforcing is deprecated -- "
                        << "use ABL.mesoscale_forcing instead" << std::endl;
         pp.query("WRFforcing", ncfile);
-        var_prefix = "wrf_";
+        m_meso_file.reset(new ABLMesoscaleInput(ncfile, "wrf_"));
 #endif
     }
-
-    m_meso_file.reset(new ABLMesoscaleInput(ncfile, var_prefix));
 
     // Instantiate the ABL field initializer
     m_field_init = std::make_unique<ABLFieldInit>();
