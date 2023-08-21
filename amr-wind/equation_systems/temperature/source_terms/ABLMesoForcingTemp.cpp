@@ -209,9 +209,8 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
             // possible unexpected behaviors, as described in
             // ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7
             m_transition_height =
-                coeff_interp[0] *
-                    ncfile->meso_transition_height()[m_idx_time]
-                + coeff_interp[1] * 
+                coeff_interp[0] * ncfile->meso_transition_height()[m_idx_time] +
+                coeff_interp[1] * 
                     ncfile->meso_transition_height()[m_idx_time+1];
             amrex::Print() << "current transition height = "
                            << m_transition_height << std::endl;
@@ -322,8 +321,8 @@ void ABLMesoForcingTemp::operator()(
         const int ir = il + 1;
         amrex::Real theta_err =
             theta_error_val[il] + ((theta_error_val[ir] - theta_error_val[il]) /
-                                   (theights[ir] - theights[il]))
-                                * (ht - theights[il]);
+                                   (theights[ir] - theights[il])) *
+                                      (ht - theights[il]);
 
         // Compute Source term
         src_term(i, j, k, 0) += kcoeff * theta_err / dt;

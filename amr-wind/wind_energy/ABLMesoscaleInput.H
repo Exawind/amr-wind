@@ -28,7 +28,8 @@ public:
 
     const amrex::Vector<amrex::Real>& meso_tflux() const { return m_tflux; }
 
-    const amrex::Vector<amrex::Real>& meso_transition_height() const {
+    const amrex::Vector<amrex::Real>& meso_transition_height() const
+    {
         return m_transition_height;
     }
 
@@ -54,9 +55,9 @@ private:
     //
     // See also:
     // - wind_energy/ABLMesoscaleInput.cpp
-    // - equation_systems/icns/source_terms/ABLMesoForcingMom.cpp 
-    // - equation_systems/temperature/source_terms/ABLMesoForcingTemp.cpp 
-    // 
+    // - equation_systems/icns/source_terms/ABLMesoForcingMom.cpp
+    // - equation_systems/temperature/source_terms/ABLMesoForcingTemp.cpp
+    //
     // workaround is to not try to read in and update this transition height
     // variable on the fly
     amrex::Vector<amrex::Real> m_transition_height;

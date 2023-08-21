@@ -44,10 +44,10 @@ ABLMesoscaleInput::ABLMesoscaleInput(std::string ncfile, std::string var_prefix)
 
     // possible unexpected behaviors, as described in
     // ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7
-    // 
+    //
     // workaround was to comment this out:
     m_transition_height.resize(m_ntime);
-    
+
     if (ncf.has_var("transition_height")) {
         amrex::Print() << "Found transition_height in ABLMesoscaleInput file"
                        << std::endl;

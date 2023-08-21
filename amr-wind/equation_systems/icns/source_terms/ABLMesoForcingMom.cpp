@@ -235,9 +235,8 @@ void ABLMesoForcingMom::mean_velocity_heights(
             // possible unexpected behaviors, as described in
             // ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7
             m_transition_height = 
-                coeff_interp[0] *
-                    ncfile->meso_transition_height()[m_idx_time]
-                + coeff_interp[1] *
+                coeff_interp[0] * ncfile->meso_transition_height()[m_idx_time] +
+                coeff_interp[1] *
                     ncfile->meso_transition_height()[m_idx_time+1];
             amrex::Print() << "current transition height = "
                            << m_transition_height << std::endl;
@@ -370,13 +369,13 @@ void ABLMesoForcingMom::operator()(
 
         amrex::Real u_err =
             u_error_val[il] + ((u_error_val[ir] - u_error_val[il]) /
-                               (vheights[ir] - vheights[il]))
-                            * (ht - vheights[il]);
+                               (vheights[ir] - vheights[il])) *
+                                  (ht - vheights[il]);
 
         amrex::Real v_err =
             v_error_val[il] + ((v_error_val[ir] - v_error_val[il]) /
-                               (vheights[ir] - vheights[il]))
-                            * (ht - vheights[il]);
+                               (vheights[ir] - vheights[il])) *
+                                  (ht - vheights[il]);
 
         // Compute Source term
         src_term(i, j, k, 0) += kcoeff * u_err / dt;
