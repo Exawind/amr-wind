@@ -243,8 +243,10 @@ struct UpdateRelaxZonesOp<W2AWaves>
 
         // NEED to improve time treatment between this routine and ReadModes
 
-        // Check if HOS time needs to be incremented
+        // Check if new HOS data needs to be read, increment HOS_t
         bool read_flag = false;
+        // Check if indvec and other arrays need to be resized
+        bool resize_flag = false;
         while (time > wdata.t) {
             // Increment time step
             ++wdata.ntime;
@@ -256,6 +258,7 @@ struct UpdateRelaxZonesOp<W2AWaves>
         // Signifies initialization from scratch or a restart
         if (wdata.t_last < 0.0) {
             read_flag = true;
+            resize_flag = true;
             // Need to read in previous or current time for ow state
             while (time < wdata.t) {
                 // Go back
@@ -275,6 +278,10 @@ struct UpdateRelaxZonesOp<W2AWaves>
             // Record latest time as 'last' for next timestep
             wdata.t_last = time;
         }
+        // Resizing (assuming reading is taking place) must happen after regrid
+        if (wdata.regrid_occurred) {
+            resize_flag = true;
+        }
 
         auto nlevels = sim.repo().num_active_levels();
         auto geom = sim.mesh().Geom();
@@ -288,33 +295,52 @@ struct UpdateRelaxZonesOp<W2AWaves>
             wdata.rmodes.get_data(
                 sim.time().new_time(), wdata.mX, wdata.mY, wdata.mZ, wdata.mFS);
 
-            // Get heights for this processor
-            amrex::Vector<int> indvec;
-            int flag = interp_to_mfab::get_local_height_indices(
-                indvec, wdata.hvec, m_ow_velocity.vec_ptrs(), geom);
+            if (resize_flag) {
+                // Get heights for this processor
+                int flag = interp_to_mfab::get_local_height_indices(
+                    wdata.indvec, wdata.hvec, m_ow_velocity.vec_ptrs(), geom);
 
-            // NEED conditional about overlap relax zone laterally
+                // Check lateral bounds (in x)
+                const int dir = 0;
+                flag += 1 - interp_to_mfab::check_lateral_overlap_lo(
+                                wdata.gen_length, dir, m_ow_velocity.vec_ptrs(),
+                                geom);
+                if (wdata.has_outprofile) {
+                    flag += 1 - interp_to_mfab::check_lateral_overlap_hi(
+                                    wdata.beach_length, dir,
+                                    m_ow_velocity.vec_ptrs(), geom);
+                }
 
-            // Work is done if there are no overlapping points
-            if (flag > 0) // add conditional about relax zone
-            {
-                return;
+                if (flag > 0) {
+                    // No overlapping with spatial data or no overlapping with
+                    // relaxation zones, interpolation can be skipped
+                    wdata.do_interp = false;
+                } else {
+                    // Do resizing
+                    wdata.sp_eta_vec.resize(wdata.n0 * wdata.n1, 0.0);
+                    wdata.sp_u_vec.resize(
+                        wdata.n0 * wdata.n1 * wdata.indvec.size());
+                    wdata.sp_v_vec.resize(
+                        wdata.n0 * wdata.n1 * wdata.indvec.size());
+                    wdata.sp_w_vec.resize(
+                        wdata.n0 * wdata.n1 * wdata.indvec.size());
+                }
             }
 
-            // NEED check for if resizing vectors is necessary
+            // Skip work if no interpolation is needed
+            if (!wdata.do_interp) {
+                return;
+            }
 
             // Convert to spatial data in vectors
             modes_hosgrid::copy_complex(
                 wdata.n0, wdata.n1, wdata.mFS, wdata.eta_mptr);
-            wdata.sp_eta_vec.resize(wdata.n0 * wdata.n1, 0.0);
             modes_hosgrid::populate_hos_eta(
                 wdata.rmodes, wdata.plan, wdata.eta_mptr, wdata.sp_eta_vec);
-            wdata.sp_u_vec.resize(wdata.n0 * wdata.n1 * indvec.size());
-            wdata.sp_v_vec.resize(wdata.n0 * wdata.n1 * indvec.size());
-            wdata.sp_w_vec.resize(wdata.n0 * wdata.n1 * indvec.size());
-            for (int iht = 0; iht < indvec.size(); ++iht) {
+
+            for (int iht = 0; iht < wdata.indvec.size(); ++iht) {
                 // Get sample height
-                amrex::Real ht = wdata.hvec[indvec[iht]];
+                amrex::Real ht = wdata.hvec[wdata.indvec[iht]];
                 // Sample velocity
                 modes_hosgrid::populate_hos_vel(
                     wdata.rmodes, ht, wdata.mX, wdata.mY, wdata.mZ, wdata.plan,
@@ -327,8 +353,8 @@ struct UpdateRelaxZonesOp<W2AWaves>
                 wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, wdata.zsl,
                 wdata.sp_eta_vec, w2a_levelset.vec_ptrs(), geom);
             interp_to_mfab::interp_velocity_to_field(
-                wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, indvec, wdata.hvec,
-                wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec,
+                wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, wdata.indvec,
+                wdata.hvec, wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec,
                 w2a_velocity.vec_ptrs(), geom);
 
 #endif

@@ -46,6 +46,10 @@ struct W2AWavesData : public RelaxZonesBaseData
 
     // Height vector (where velocity is sampled) stuff
     amrex::Vector<amrex::Real> hvec;
+    // Index vector (where hvec overlaps with local boxes)
+    amrex::Vector<int> indvec;
+    // Flag indicating interpolation should take place on this processor
+    bool do_interp{true};
     // Vectors for spatial data from transformed modes
     amrex::Gpu::DeviceVector<amrex::Real> sp_eta_vec, sp_u_vec, sp_v_vec,
         sp_w_vec;
