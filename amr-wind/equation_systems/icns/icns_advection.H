@@ -122,6 +122,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             godunov_scheme = godunov::scheme::WENOZ;
         } else if (amrex::toLower(godunov_type) == "central") {
             godunov_scheme = godunov::scheme::CENTRAL;
+        } else if (amrex::toLower(godunov_type) == "weno_z_central") {
+            godunov_scheme = godunov::scheme::WENOZ_CENTRAL;
         } else {
             amrex::Abort(
                 "Invalid godunov_type specified. For godunov_type select "
