@@ -62,9 +62,11 @@ void OceanWaves::post_init_actions()
     relaxation_zones();
 }
 
-void OceanWaves::post_regrid_actions() {
+void OceanWaves::post_regrid_actions()
+{
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::post_regrid_actions");
-    m_owm->record_regrid_flag();}
+    m_owm->record_regrid_flag();
+}
 
 void OceanWaves::pre_advance_work()
 {
