@@ -121,6 +121,7 @@ void godunov::compute_fluxes(
             });
         break;
     }
+    case godunov::scheme::WENOZ_CENTRAL:
     case godunov::scheme::WENOZ: {
         amrex::ParallelFor(
             bxg1, ncomp,
@@ -677,6 +678,7 @@ void godunov::compute_fluxes_spatial(
             });
         break;
     }
+    case godunov::scheme::WENOZ_CENTRAL:
     case godunov::scheme::CENTRAL: {
         amrex::ParallelFor(
             bxg1, ncomp,

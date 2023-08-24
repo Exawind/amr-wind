@@ -17,6 +17,7 @@ enum class scheme {
     BDS,
     WENOJS,
     WENOZ,
+    WENOZ_CENTRAL,
     CENTRAL,
     MINMOD,
     UPWIND
