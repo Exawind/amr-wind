@@ -24,12 +24,18 @@ struct W2AWavesData : public RelaxZonesBaseData
     amrex::Real dimL{0.};
     // Timestep of reference data
     amrex::Real dt_modes{0.0};
-    // Time when ow arrays were last changed (last timestep)
-    amrex::Real t_last{-1.0};
-    // Time of current HOS lists
-    amrex::Real t{0.0};
-    // Timestep of current HOS lists
+
+    // Time (in HOS sim) to begin reading from
+    // (this corresponds to t = 0 in AMR-Wind sim, functions as offset)
+    amrex::Real t_winit{-1.0};
+    // Timestep (in HOS sim) of latest imported wave data
     int ntime{0};
+
+    // Time (in AMR-Wind sim) when ow arrays were last changed
+    // (this is from the last timestep, goes with time-interpolated data)
+    amrex::Real t_last{-1.0};
+    // Time (in AMR-Wind sim) of latest imported wave data
+    amrex::Real t{0.0};
 
     // Vectors to store modes
     std::vector<std::complex<double>> mX, mY, mZ, mFS;
@@ -50,6 +56,8 @@ struct W2AWavesData : public RelaxZonesBaseData
     amrex::Vector<int> indvec;
     // Flag indicating interpolation should take place on this processor
     bool do_interp{true};
+    // Flag indicating regrid has occurred since the last resizing of vecs
+    bool resize_flag{false};
     // Vectors for spatial data from transformed modes
     amrex::Gpu::DeviceVector<amrex::Real> sp_eta_vec, sp_u_vec, sp_v_vec,
         sp_w_vec;

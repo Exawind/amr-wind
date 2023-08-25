@@ -10,6 +10,7 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/equation_systems/BCOps.H"
+#include "AMReX_MultiFabUtil.H"
 
 namespace amr_wind::ocean_waves::ops {
 
@@ -34,6 +35,10 @@ struct ReadInputsOp<W2AWaves>
         relaxation_zones::read_inputs(wdata, info, pp);
 
         pp.get("HOS_modes_filename", wdata.modes_file);
+        pp.query("HOS_init_timestep", wdata.ntime);
+        if (!pp.contains("HOS_init_timestep")) {
+            pp.query("HOS_init_time", wdata.t_winit);
+        }
 
 #ifdef AMR_WIND_USE_W2A
 
@@ -49,6 +54,21 @@ struct ReadInputsOp<W2AWaves>
 
         // Initialize mode reader
         wdata.rmodes.initialize(wdata.modes_file);
+
+        // Get dt of HOS data
+        wdata.dt_modes = wdata.rmodes.get_dtout();
+
+        // Get initial time and timestep synced
+        if (wdata.t_winit > 0.0) {
+            // If initial time was specified
+            // Get time index near requested time
+            wdata.ntime = wdata.rmodes.time2step(wdata.t_winit, wdata.ntime);
+            // Sync time to time index
+            wdata.t_winit = wdata.dt_modes * wdata.ntime;
+        } else {
+            // If initial timestep is being used
+            wdata.t_winit = wdata.dt_modes * wdata.ntime;
+        }
 
         // Initialize variables to store modes
         int vsize = wdata.rmodes.get_vector_size();
@@ -68,8 +88,6 @@ struct ReadInputsOp<W2AWaves>
         const amrex::Real depth = wdata.rmodes.get_depth();
         // Get dimensional length
         wdata.dimL = wdata.rmodes.get_L();
-        // Get dt of HOS data
-        wdata.dt_modes = wdata.rmodes.get_dtout();
 
         // Warning if depth does not correspond to simulation
         if (std::abs(depth - (wdata.zsl - prob_lo_input[2])) > 1e-3 * depth) {
@@ -104,8 +122,7 @@ struct ReadInputsOp<W2AWaves>
         // modes on every processor
         if (wdata.init_wave_field && data.sim().time().time_index() == 0) {
             wdata.rmodes.get_data(
-                data.sim().time().current_time(), wdata.mX, wdata.mY, wdata.mZ,
-                wdata.mFS);
+                wdata.ntime, wdata.mX, wdata.mY, wdata.mZ, wdata.mFS);
 
             // Convert modes to spatial data
             modes_hosgrid::copy_complex(
@@ -186,6 +203,9 @@ struct InitDataOp<W2AWaves>
             return;
         }
 
+        // Set t_last to 0.0 to signify information read in
+        wdata.t_last = 0.0;
+
         // indvec is complete upon initialization (all heights every proc)
         amrex::Vector<int> indvec;
         indvec.resize(wdata.hvec.size());
@@ -201,22 +221,16 @@ struct InitDataOp<W2AWaves>
             wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec, velocity(level),
             problo, dx);
 
+        // Copy to ow fields for future interpolation
+        auto& ow_levelset = sim.repo().get_field("ow_levelset");
+        auto& ow_velocity = sim.repo().get_field("ow_velocity");
+        amrex::MultiFab::Copy(ow_levelset(level), levelset(level), 0, 0, 1, 3);
+        amrex::MultiFab::Copy(
+            ow_velocity(level), velocity(level), 0, 0, AMREX_SPACEDIM, 3);
+
 #else
         amrex::ignore_unused(init_waves, problo, dx);
 #endif
-
-        // Average down from top level for consistency
-        const int nlevels = sim.repo().num_active_levels();
-        if (level == nlevels - 1) {
-            for (int lev = nlevels - 1; lev > 0; --lev) {
-                amrex::average_down(
-                    velocity(lev), velocity(lev - 1), 0, AMREX_SPACEDIM,
-                    sim.mesh().refRatio(lev - 1));
-                amrex::average_down(
-                    levelset(lev), levelset(lev - 1), 0, 1,
-                    sim.mesh().refRatio(lev - 1));
-            }
-        }
     }
 }; // namespace ocean_waves
 
@@ -241,64 +255,66 @@ struct UpdateRelaxZonesOp<W2AWaves>
         auto& w2a_levelset = sim.repo().get_field("w2a_levelset");
         auto& w2a_velocity = sim.repo().get_field("w2a_velocity");
 
-        // Get value for time interpolation
-        amrex::Real t_last = wdata.t_last;
-
-        // NEED to improve time treatment between this routine and ReadModes
-
-        // Check if new HOS data needs to be read, increment HOS_t
-        bool read_flag = false;
-        // Check if indvec and other arrays need to be resized
-        bool resize_flag = false;
-        while (time > wdata.t) {
-            // Increment time step
-            ++wdata.ntime;
-            // Increment time
-            wdata.t += wdata.dt_modes;
-            // Flag to store new data
-            read_flag = true;
-        }
-        // Signifies initialization from scratch or a restart
-        if (wdata.t_last < 0.0) {
-            read_flag = true;
-            resize_flag = true;
-            // Need to read in previous or current time for ow state
-            while (time < wdata.t) {
-                // Go back
-                --wdata.ntime;
-                wdata.t -= wdata.dt_modes;
-            }
-
-            // Store the correct time for next interpolation
-            wdata.t_last = wdata.t;
-            // Modify time to get initial ow values correct
-            time = wdata.t;
-
-            // Initialize ow fields to 0 to be safe for time interp
-            m_ow_levelset.setVal(0.0);
-            m_ow_velocity.setVal(0.0);
-        } else {
-            // Record latest time as 'last' for next timestep
-            wdata.t_last = time;
-        }
-        // Resizing (assuming reading is taking place) must happen after regrid
-        if (wdata.regrid_occurred) {
-            resize_flag = true;
-        }
-
         auto nlevels = sim.repo().num_active_levels();
         auto geom = sim.mesh().Geom();
 
-        // Read HOS data if necessary
-        if (read_flag) {
+        // Get value for time interpolation
+        amrex::Real t_last = wdata.t_last;
 
 #ifdef AMR_WIND_USE_W2A
+        // Check if new HOS data needs to be read
+        bool read_flag = false;
+        // Check if time indicates reading must take place
+        int new_ntime =
+            wdata.rmodes.time2step(time + wdata.t_winit, wdata.ntime);
+        if (new_ntime != wdata.ntime) {
+            // New data is needed - reading should happen
+            read_flag = true;
+            // Time index for reading
+            wdata.ntime = new_ntime;
+            // Sim time to go with recorded data
+            wdata.t = new_ntime * wdata.dt_modes + wdata.t_winit;
+        }
+        // Check if reading must take place for other reasons
+        if (wdata.t_last < -1e-10) {
+            // Signifies initialization from scratch without waves or a restart
+            read_flag = true;
+            // Resizing needs to happen for the first time
+            wdata.resize_flag = true;
 
-            // Get data from modes
-            wdata.rmodes.get_data(
-                sim.time().new_time(), wdata.mX, wdata.mY, wdata.mZ, wdata.mFS);
+            if (std::abs(sim.time().current_time()) < 1e-10) {
+                // Start from scratch
+                // NEED: how do I start from scratch without the original data?
+            } else {
+                // Restart
+                // NEED: how do I restart properly? need old ow fields?
+            }
 
-            if (resize_flag) {
+        } else if (std::abs(wdata.t_last) < 1e-10) {
+            // Signifies initialization with waves
+            read_flag = true;
+            // Resizing needs to happen for the first time
+            wdata.resize_flag = true;
+
+            // levelset and velocity fields are up-to-date at t=0
+            // interpolation is ready to go
+        }
+        // Record latest time as 'last' for next timestep
+        wdata.t_last = time;
+
+        // Resizing (assuming reading is taking place) must happen after regrid
+        if (wdata.regrid_occurred) {
+            // resize_flag remains true until resizing occurs, but
+            // regrid_occurred resets every timestep
+            wdata.resize_flag = true;
+        }
+
+        // Read HOS data if necessary based on time
+        if (read_flag) {
+
+            if (wdata.resize_flag) {
+                // Reset flag
+                wdata.resize_flag = false;
                 // Get heights for this processor
                 int flag = interp_to_mfab::get_local_height_indices(
                     wdata.indvec, wdata.hvec, m_ow_velocity.vec_ptrs(), geom);
@@ -335,6 +351,10 @@ struct UpdateRelaxZonesOp<W2AWaves>
                 return;
             }
 
+            // Get data from modes
+            wdata.rmodes.get_data(
+                wdata.ntime, wdata.mX, wdata.mY, wdata.mZ, wdata.mFS);
+
             // Convert to spatial data in vectors
             modes_hosgrid::copy_complex(
                 wdata.n0, wdata.n1, wdata.mFS, wdata.eta_mptr);
@@ -360,12 +380,8 @@ struct UpdateRelaxZonesOp<W2AWaves>
                 wdata.hvec, wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec,
                 w2a_velocity.vec_ptrs(), geom);
 
-#else
-            amrex::ignore_unused(resize_flag);
-#endif
-
             // Average down to get fine information on coarse grid where
-            // possible
+            // possible (may be unnecessary)
             for (int lev = nlevels - 1; lev > 0; --lev) {
                 amrex::average_down(
                     w2a_velocity(lev), w2a_velocity(lev - 1), 0, AMREX_SPACEDIM,
@@ -378,6 +394,7 @@ struct UpdateRelaxZonesOp<W2AWaves>
             w2a_velocity.fillpatch(0.0);
             w2a_levelset.fillpatch(0.0);
         }
+#endif
 
         // Temporally interpolate at every timestep to get target solution
         for (int lev = 0; lev < nlevels; ++lev) {
