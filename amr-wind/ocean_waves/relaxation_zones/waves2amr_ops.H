@@ -29,6 +29,7 @@ struct ReadInputsOp<W2AWaves>
 #endif
 
         auto& wdata = data.meta();
+        // cppcheck-suppress constVariableReference
         auto& info = data.info();
         relaxation_zones::read_inputs(wdata, info, pp);
 
@@ -133,8 +134,10 @@ struct ReadInputsOp<W2AWaves>
         // Declare fields for HOS
         auto& w2a_levelset =
             data.sim().repo().declare_field("w2a_levelset", 1, 3, 1);
+        // cppcheck-suppress constVariableReference
         auto& w2a_velocity = data.sim().repo().declare_field(
             "w2a_velocity", AMREX_SPACEDIM, 3, 1);
+        // cppcheck-suppress constVariableReference
 
         // Extrapolation can work well when finer data is available
         w2a_levelset.set_default_fillpatch_bc(data.sim().time());
@@ -357,6 +360,8 @@ struct UpdateRelaxZonesOp<W2AWaves>
                 wdata.hvec, wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec,
                 w2a_velocity.vec_ptrs(), geom);
 
+#else
+            amrex::ignore_unused(resize_flag);
 #endif
 
             // Average down to get fine information on coarse grid where
