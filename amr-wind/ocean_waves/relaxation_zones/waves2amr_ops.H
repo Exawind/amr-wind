@@ -12,6 +12,104 @@
 #include "amr-wind/equation_systems/BCOps.H"
 #include "AMReX_MultiFabUtil.H"
 
+namespace {
+
+int evaluate_read_resize(
+    int& ntime,
+    bool& read_flag,
+    bool& resize_flag,
+    amrex::Real& wtime,
+    amrex::Real& t_last,
+    const int new_ntime,
+    const amrex::Real wtinit,
+    const amrex::Real wdt,
+    const amrex::Real newtime)
+{
+    // Flag to indicate that data must be read twice for interpolation
+    int double_data = 0;
+    // Check if time indicates reading must take place
+    if (new_ntime != ntime) {
+        // New data is needed - reading should happen
+        read_flag = true;
+        // Time index for reading
+        ntime = new_ntime;
+        // Sim time to go with recorded data
+        wtime = new_ntime * wdt + wtinit;
+    }
+    // Check if reading must take place for other reasons
+    if (t_last < -1e-10) {
+        // Signifies initialization from scratch without waves or a restart
+        read_flag = true;
+        // Resizing needs to happen for the first time
+        resize_flag = true;
+
+        // Confirm that new time is not coincident with modes time step
+        if (std::abs(wtime - newtime) > 1e-10) {
+            // Data must be read before and after wtime
+            double_data = 1;
+        } else {
+            // Data need only be read once, w2a fields will replace ow fields
+            double_data = 2;
+        }
+
+    } else if (std::abs(t_last) < 1e-10) {
+        // Signifies initialization with waves
+        read_flag = true;
+        // Resizing needs to happen for the first time
+        resize_flag = true;
+
+        // levelset and velocity fields are up-to-date at t=0
+        // interpolation is ready to go
+    }
+    // Record latest time as 'last' for next timestep
+    t_last = newtime;
+    // Return flag regarding double reading
+    return double_data;
+}
+
+#ifdef AMR_WIND_USE_W2A
+
+void populate_fields_all_levels(
+    amr_wind::ocean_waves::W2AWaves::MetaType& wdata,
+    amrex::Vector<amrex::Geometry> geom_all,
+    amr_wind::Field& lvs_field,
+    amr_wind::Field& vel_field,
+    int ntime_off = 0)
+{
+
+    // Get data from modes
+    wdata.rmodes.get_data(
+        wdata.ntime + ntime_off, wdata.mX, wdata.mY, wdata.mZ, wdata.mFS);
+
+    // Convert to spatial data in vectors
+    modes_hosgrid::copy_complex(wdata.n0, wdata.n1, wdata.mFS, wdata.eta_mptr);
+    modes_hosgrid::populate_hos_eta(
+        wdata.rmodes, wdata.plan, wdata.eta_mptr, wdata.sp_eta_vec);
+
+    for (int iht = 0; iht < wdata.indvec.size(); ++iht) {
+        // Get sample height
+        amrex::Real ht = wdata.hvec[wdata.indvec[iht]];
+        // Sample velocity
+        modes_hosgrid::populate_hos_vel(
+            wdata.rmodes, ht, wdata.mX, wdata.mY, wdata.mZ, wdata.plan,
+            wdata.u_mptr, wdata.v_mptr, wdata.w_mptr, wdata.sp_u_vec,
+            wdata.sp_v_vec, wdata.sp_w_vec, iht * wdata.n0 * wdata.n1);
+    }
+
+    // Interpolate to fields (vector of MultiFabs)
+    interp_to_mfab::interp_eta_to_levelset_field(
+        wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, wdata.zsl, wdata.sp_eta_vec,
+        lvs_field.vec_ptrs(), geom_all);
+    interp_to_mfab::interp_velocity_to_field(
+        wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, wdata.indvec, wdata.hvec,
+        wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec, vel_field.vec_ptrs(),
+        geom_all);
+}
+
+#endif
+
+} // namespace
+
 namespace amr_wind::ocean_waves::ops {
 
 template <>
@@ -245,7 +343,7 @@ struct UpdateRelaxZonesOp<W2AWaves>
 
         // cppcheck-suppress constVariable
         // Nudge the solution toward where it should be
-        amrex::Real time = sim.time().new_time();
+        amrex::Real newtime = sim.time().new_time();
 
         // Update ow fields every time
         auto& m_ow_levelset = sim.repo().get_field("ow_levelset");
@@ -266,42 +364,10 @@ struct UpdateRelaxZonesOp<W2AWaves>
         bool read_flag = false;
         // Check if time indicates reading must take place
         int new_ntime =
-            wdata.rmodes.time2step(time + wdata.t_winit, wdata.ntime);
-        if (new_ntime != wdata.ntime) {
-            // New data is needed - reading should happen
-            read_flag = true;
-            // Time index for reading
-            wdata.ntime = new_ntime;
-            // Sim time to go with recorded data
-            wdata.t = new_ntime * wdata.dt_modes + wdata.t_winit;
-        }
-        // Check if reading must take place for other reasons
-        if (wdata.t_last < -1e-10) {
-            // Signifies initialization from scratch without waves or a restart
-            read_flag = true;
-            // Resizing needs to happen for the first time
-            wdata.resize_flag = true;
-
-            if (std::abs(sim.time().current_time()) < 1e-10) {
-                // Start from scratch
-                // NEED: how do I start from scratch without the original data?
-            } else {
-                // Restart
-                // NEED: how do I restart properly? need old ow fields?
-            }
-
-        } else if (std::abs(wdata.t_last) < 1e-10) {
-            // Signifies initialization with waves
-            read_flag = true;
-            // Resizing needs to happen for the first time
-            wdata.resize_flag = true;
-
-            // levelset and velocity fields are up-to-date at t=0
-            // interpolation is ready to go
-        }
-        // Record latest time as 'last' for next timestep
-        wdata.t_last = time;
-
+            wdata.rmodes.time2step(newtime + wdata.t_winit, wdata.ntime);
+        int double_data = evaluate_read_resize(
+            wdata.ntime, read_flag, wdata.resize_flag, wdata.t, wdata.t_last,
+            new_ntime, wdata.t_winit, wdata.dt_modes, newtime);
         // Resizing (assuming reading is taking place) must happen after regrid
         if (wdata.regrid_occurred) {
             // resize_flag remains true until resizing occurs, but
@@ -351,34 +417,7 @@ struct UpdateRelaxZonesOp<W2AWaves>
                 return;
             }
 
-            // Get data from modes
-            wdata.rmodes.get_data(
-                wdata.ntime, wdata.mX, wdata.mY, wdata.mZ, wdata.mFS);
-
-            // Convert to spatial data in vectors
-            modes_hosgrid::copy_complex(
-                wdata.n0, wdata.n1, wdata.mFS, wdata.eta_mptr);
-            modes_hosgrid::populate_hos_eta(
-                wdata.rmodes, wdata.plan, wdata.eta_mptr, wdata.sp_eta_vec);
-
-            for (int iht = 0; iht < wdata.indvec.size(); ++iht) {
-                // Get sample height
-                amrex::Real ht = wdata.hvec[wdata.indvec[iht]];
-                // Sample velocity
-                modes_hosgrid::populate_hos_vel(
-                    wdata.rmodes, ht, wdata.mX, wdata.mY, wdata.mZ, wdata.plan,
-                    wdata.u_mptr, wdata.v_mptr, wdata.w_mptr, wdata.sp_u_vec,
-                    wdata.sp_v_vec, wdata.sp_w_vec, iht * wdata.n0 * wdata.n1);
-            }
-
-            // Interpolate to fields (vector of MultiFabs)
-            interp_to_mfab::interp_eta_to_levelset_field(
-                wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, wdata.zsl,
-                wdata.sp_eta_vec, w2a_levelset.vec_ptrs(), geom);
-            interp_to_mfab::interp_velocity_to_field(
-                wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, wdata.indvec,
-                wdata.hvec, wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec,
-                w2a_velocity.vec_ptrs(), geom);
+            populate_fields_all_levels(wdata, geom, w2a_levelset, w2a_velocity);
 
             // Average down to get fine information on coarse grid where
             // possible (may be unnecessary)
@@ -390,9 +429,38 @@ struct UpdateRelaxZonesOp<W2AWaves>
                     w2a_levelset(lev), w2a_levelset(lev - 1), 0, 1,
                     sim.mesh().refRatio(lev - 1));
             }
-            // Fill in across internal boundaries
+            // Fill in across internal boundaries (only goes with avg down)
             w2a_velocity.fillpatch(0.0);
             w2a_levelset.fillpatch(0.0);
+
+            // If double read is required, then copy older wave data to ow_
+            // fields and modify interpolation parameters to get things right
+            if (double_data == 1) {
+                populate_fields_all_levels(
+                    wdata, geom, m_ow_levelset, m_ow_velocity, -1);
+
+                // Average down to get fine information on coarse grid where
+                // possible (may be unnecessary)
+                for (int lev = nlevels - 1; lev > 0; --lev) {
+                    amrex::average_down(
+                        m_ow_velocity(lev), m_ow_velocity(lev - 1), 0,
+                        AMREX_SPACEDIM, sim.mesh().refRatio(lev - 1));
+                    amrex::average_down(
+                        m_ow_levelset(lev), m_ow_levelset(lev - 1), 0, 1,
+                        sim.mesh().refRatio(lev - 1));
+                }
+                // Fill in across internal boundaries (only goes with avg down)
+                m_ow_velocity.fillpatch(0.0);
+                m_ow_levelset.fillpatch(0.0);
+
+                // Prior t_last (corresponding to ow fields)
+                t_last = (wdata.ntime - 1) * wdata.dt_modes;
+            } else if (double_data == 2) {
+                // Restarting simulation, new time happens to be at ntime
+                // Initialize ow fields to 0 for time interp, will be replaced
+                m_ow_levelset.setVal(0.0);
+                m_ow_velocity.setVal(0.0);
+            }
         }
 #endif
 
@@ -410,17 +478,17 @@ struct UpdateRelaxZonesOp<W2AWaves>
                     gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         // Interpolate temporally every time
                         phi(i, j, k) += (W2A_phi(i, j, k) - phi(i, j, k)) *
-                                        (time - t_last) /
+                                        (newtime - t_last) /
                                         (W2A_t - t_last + 1e-16);
                         vel(i, j, k, 0) +=
                             (W2A_vel(i, j, k, 0) - vel(i, j, k, 0)) *
-                            (time - t_last) / (W2A_t - t_last + 1e-16);
+                            (newtime - t_last) / (W2A_t - t_last + 1e-16);
                         vel(i, j, k, 1) +=
                             (W2A_vel(i, j, k, 1) - vel(i, j, k, 1)) *
-                            (time - t_last) / (W2A_t - t_last + 1e-16);
+                            (newtime - t_last) / (W2A_t - t_last + 1e-16);
                         vel(i, j, k, 2) +=
                             (W2A_vel(i, j, k, 2) - vel(i, j, k, 2)) *
-                            (time - t_last) / (W2A_t - t_last + 1e-16);
+                            (newtime - t_last) / (W2A_t - t_last + 1e-16);
                     });
             }
         }
