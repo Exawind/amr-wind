@@ -328,8 +328,6 @@ TEST_F(OceanWavesOpTest, relaxation_zone)
 
 TEST_F(OceanWavesOpTest, gas_phase)
 {
-    // Write HOS file
-    write_HOS_txt("HOSGridData_lev0_0.txt", 1.0);
 
     constexpr double tol = 1.0e-3;
 
