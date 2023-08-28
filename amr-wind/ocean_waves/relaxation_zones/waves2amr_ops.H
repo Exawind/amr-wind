@@ -12,8 +12,8 @@
 #include "amr-wind/equation_systems/BCOps.H"
 #include "AMReX_MultiFabUtil.H"
 
+#ifdef AMR_WIND_USE_W2A
 namespace {
-
 int evaluate_read_resize(
     int& ntime,
     bool& read_flag,
@@ -67,8 +67,6 @@ int evaluate_read_resize(
     return double_data;
 }
 
-#ifdef AMR_WIND_USE_W2A
-
 void populate_fields_all_levels(
     amr_wind::ocean_waves::W2AWaves::MetaType& wdata,
     amrex::Vector<amrex::Geometry> geom_all,
@@ -105,10 +103,8 @@ void populate_fields_all_levels(
         wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec, vel_field.vec_ptrs(),
         geom_all);
 }
-
-#endif
-
 } // namespace
+#endif
 
 namespace amr_wind::ocean_waves::ops {
 
