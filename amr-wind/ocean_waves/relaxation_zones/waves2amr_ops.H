@@ -31,10 +31,20 @@ int evaluate_read_resize(
     if (new_ntime != ntime) {
         // New data is needed - reading should happen
         read_flag = true;
+        // If time index has proceeded more than 1 step
+        if (new_ntime > ntime + 1) {
+            // Double reading is necessary
+            double_data = 1;
+        }
         // Time index for reading
         ntime = new_ntime;
         // Sim time to go with recorded data
         wtime = new_ntime * wdt + wtinit;
+        // If double reading is deemed necessary, check for convenience
+        if (double_data == 1 && std::abs(wtime - newtime) <= 1e-10) {
+            // Reading can be done just once, w2a fields replace ow fields
+            double_data = 2;
+        }
     }
     // Check if reading must take place for other reasons
     if (t_last < -1e-10) {
@@ -494,10 +504,11 @@ struct UpdateRelaxZonesOp<W2AWaves>
                 // Prior t_last (corresponding to ow fields)
                 t_last = (wdata.ntime - 1) * wdata.dt_modes;
             } else if (double_data == 2) {
-                // Restarting simulation, new time happens to be at ntime
+                // Restarting simulation or taking a big step, new time at ntime
                 // Initialize ow fields to 0 for time interp, will be replaced
                 m_ow_levelset.setVal(0.0);
                 m_ow_velocity.setVal(0.0);
+                // No modification needed for t_last, leads to interp factor = 1
             }
         }
 #endif

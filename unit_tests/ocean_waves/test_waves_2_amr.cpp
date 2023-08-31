@@ -203,6 +203,47 @@ TEST_F(OceanWavesW2ATest, time_advance)
     EXPECT_EQ(t, 41 * dt_modes);
     EXPECT_EQ(t_last, newtime);
     EXPECT_NEAR(f_interp, 0.01 / (4.1 - 4.0), 1e-10);
+    // -- No resize, yes reading, big timestep means double read
+    resize_flag = false;
+    read_flag = false;
+    ntime = 40;
+    new_ntime = 42;
+    newtime = 4.15;
+    t_last = 4.0;
+    // built-in change to t_last_prior
+    t_last_prior = (new_ntime - 1) * dt_modes;
+    double_data = evaluate_read_resize(
+        ntime, read_flag, resize_flag, t, t_last, new_ntime, t_winit, dt_modes,
+        newtime);
+    f_interp = (newtime - t_last_prior) / (t - t_last_prior);
+    EXPECT_EQ(double_data, 1);
+    EXPECT_EQ(ntime, 42);
+    EXPECT_TRUE(read_flag);
+    EXPECT_FALSE(resize_flag);
+    EXPECT_EQ(t, 42 * dt_modes);
+    EXPECT_EQ(t_last, newtime);
+    // interp is from 4.1 (replaced) to 4.15
+    EXPECT_NEAR(f_interp, (4.15 - 4.1) / (4.2 - 4.1), 1e-10);
+    // -- No resize, yes reading, big timestep leads to convenient single read
+    resize_flag = false;
+    read_flag = false;
+    ntime = 40;
+    new_ntime = 42;
+    newtime = 4.2;
+    t_last = 4.0;
+    t_last_prior = t_last;
+    double_data = evaluate_read_resize(
+        ntime, read_flag, resize_flag, t, t_last, new_ntime, t_winit, dt_modes,
+        newtime);
+    f_interp = (newtime - t_last_prior) / (t - t_last_prior);
+    EXPECT_EQ(double_data, 2);
+    EXPECT_EQ(ntime, 42);
+    EXPECT_TRUE(read_flag);
+    EXPECT_FALSE(resize_flag);
+    EXPECT_EQ(t, 42 * dt_modes);
+    EXPECT_EQ(t_last, newtime);
+    // interp is from 4.0 to 4.2, but it leads to 1
+    EXPECT_NEAR(f_interp, (4.2 - 4.0) / (4.2 - 4.0), 1e-10);
 }
 
 } // namespace amr_wind_tests
