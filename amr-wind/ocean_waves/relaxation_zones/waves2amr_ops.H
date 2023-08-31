@@ -169,10 +169,10 @@ struct ReadInputsOp<W2AWaves>
             "ocean_waves/W2AWaves: AMR-Wind was not built with Waves2AMR "
             "support; associated wave data cannot be processed for relaxation "
             "zones.");
-#endif
 
+        amrex::ignore_unused(data, pp);
+#else
         auto& wdata = data.meta();
-        // cppcheck-suppress constVariableReference
         auto& info = data.info();
         relaxation_zones::read_inputs(wdata, info, pp);
 
@@ -181,8 +181,6 @@ struct ReadInputsOp<W2AWaves>
         if (!pp.contains("HOS_init_timestep")) {
             pp.query("HOS_init_time", wdata.t_winit);
         }
-
-#ifdef AMR_WIND_USE_W2A
 
         amrex::Vector<amrex::Real> prob_lo_input(AMREX_SPACEDIM);
         amrex::ParmParse pp_geom("geometry");
@@ -290,19 +288,16 @@ struct ReadInputsOp<W2AWaves>
             }
         }
 
-#endif
-
         // Declare fields for HOS
         auto& w2a_levelset =
             data.sim().repo().declare_field("w2a_levelset", 1, 3, 1);
-        // cppcheck-suppress constVariableReference
         auto& w2a_velocity = data.sim().repo().declare_field(
             "w2a_velocity", AMREX_SPACEDIM, 3, 1);
-        // cppcheck-suppress constVariableReference
 
         // Extrapolation can work well when finer data is available
         w2a_levelset.set_default_fillpatch_bc(data.sim().time());
         w2a_velocity.set_default_fillpatch_bc(data.sim().time());
+#endif
     }
 }; // namespace ops
 
@@ -312,6 +307,8 @@ struct InitDataOp<W2AWaves>
     void
     operator()(W2AWaves::DataType& data, int level, const amrex::Geometry& geom)
     {
+
+#ifdef AMR_WIND_USE_W2A
         auto& wdata = data.meta();
         bool init_waves = wdata.init_wave_field;
 
@@ -323,8 +320,6 @@ struct InitDataOp<W2AWaves>
 
         const auto& problo = geom.ProbLoArray();
         const auto& dx = geom.CellSizeArray();
-
-#ifdef AMR_WIND_USE_W2A
 
         // Blank initialization if asked for
         if (!init_waves) {
@@ -373,9 +368,8 @@ struct InitDataOp<W2AWaves>
         amrex::MultiFab::Copy(ow_levelset(level), levelset(level), 0, 0, 1, 3);
         amrex::MultiFab::Copy(
             ow_velocity(level), velocity(level), 0, 0, AMREX_SPACEDIM, 3);
-
 #else
-        amrex::ignore_unused(init_waves, problo, dx);
+        amrex::ignore_unused(data, level, geom);
 #endif
     }
 }; // namespace ocean_waves
@@ -385,13 +379,13 @@ struct UpdateRelaxZonesOp<W2AWaves>
 {
     void operator()(W2AWaves::DataType& data)
     {
-        auto& wdata = data.meta();
 
+#ifdef AMR_WIND_USE_W2A
+        auto& wdata = data.meta();
         auto& sim = data.sim();
 
-        // cppcheck-suppress constVariable
         // Nudge the solution toward where it should be
-        amrex::Real newtime = sim.time().new_time();
+        const amrex::Real newtime = sim.time().new_time();
 
         // Update ow fields every time
         auto& m_ow_levelset = sim.repo().get_field("ow_levelset");
@@ -407,7 +401,6 @@ struct UpdateRelaxZonesOp<W2AWaves>
         // Get value for time interpolation
         amrex::Real t_last = wdata.t_last;
 
-#ifdef AMR_WIND_USE_W2A
         // Check if new HOS data needs to be read
         bool read_flag = false;
         // Check if time indicates reading must take place
@@ -511,7 +504,6 @@ struct UpdateRelaxZonesOp<W2AWaves>
                 // No modification needed for t_last, leads to interp factor = 1
             }
         }
-#endif
 
         // Temporally interpolate at every timestep to get target solution
         for (int lev = 0; lev < nlevels; ++lev) {
@@ -541,6 +533,9 @@ struct UpdateRelaxZonesOp<W2AWaves>
                     });
             }
         }
+#else
+        amrex::ignore_unused(data);
+#endif
     }
 };
 
