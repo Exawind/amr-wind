@@ -67,6 +67,41 @@ int evaluate_read_resize(
     return double_data;
 }
 
+void postprocess_velocity_mfab_liquid(
+    amrex::MultiFab& vel_mfab,
+    amrex::MultiFab& lvs_mfab,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx)
+{
+    for (amrex::MFIter mfi(vel_mfab); mfi.isValid(); ++mfi) {
+        auto vel = vel_mfab.array(mfi);
+        auto phi = lvs_mfab.const_array(mfi);
+        const auto& vbx = mfi.validbox();
+        const auto& gbx = grow(vbx, 3);
+        amrex::ParallelFor(
+            gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                // Set velocity to zero if no liquid present
+                if (phi(i, j, k) + 0.5 * dx[2] < 0.0) {
+                    vel(i, j, k, 0) = 0.0;
+                    vel(i, j, k, 1) = 0.0;
+                    vel(i, j, k, 2) = 0.0;
+                }
+            });
+    }
+}
+
+void postprocess_velocity_field_liquid(
+    amr_wind::Field& vel_field,
+    amr_wind::Field& lvs_field,
+    amrex::Vector<amrex::Geometry> geom_all)
+{
+    int nlevels = vel_field.repo().num_active_levels();
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& dx_lev = geom_all[lev].CellSizeArray();
+        postprocess_velocity_mfab_liquid(
+            vel_field(lev), lvs_field(lev), dx_lev);
+    }
+}
+
 void populate_fields_all_levels(
     amr_wind::ocean_waves::W2AWaves::MetaType& wdata,
     amrex::Vector<amrex::Geometry> geom_all,
@@ -102,6 +137,9 @@ void populate_fields_all_levels(
         wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, wdata.indvec, wdata.hvec,
         wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec, vel_field.vec_ptrs(),
         geom_all);
+
+    // Zero velocity in pure gas cells
+    postprocess_velocity_field_liquid(vel_field, lvs_field, geom_all);
 }
 } // namespace
 #endif
@@ -142,9 +180,11 @@ struct ReadInputsOp<W2AWaves>
 
         // Read user inputs to height vector
         int nheights = 0;
+        int nh_above = 1;
         amrex::Real dz0 = 0.;
         pp.get("number_interp_points_in_z", nheights);
         pp.get("interp_spacing_at_surface", dz0);
+        pp.query("number_interp_above_surface", nh_above);
 
         // Initialize mode reader
         wdata.rmodes.initialize(wdata.modes_file);
@@ -203,7 +243,7 @@ struct ReadInputsOp<W2AWaves>
         // Create height vector for velocity mode conversion before
         // interpolation, with prob_lo as bottom
         int flag = interp_to_mfab::create_height_vector(
-            wdata.hvec, nheights, dz0, wdata.zsl, prob_lo_input[2]);
+            wdata.hvec, nheights, dz0, wdata.zsl, prob_lo_input[2], nh_above);
         // Fail if flag indicates it should
         if (flag > 0) {
             amrex::Abort(
@@ -314,6 +354,8 @@ struct InitDataOp<W2AWaves>
             wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, indvec, wdata.hvec,
             wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec, velocity(level),
             problo, dx);
+        // Zero velocity in pure liquid cells
+        postprocess_velocity_mfab_liquid(velocity(level), levelset(level), dx);
 
         // Copy to ow fields for future interpolation
         auto& ow_levelset = sim.repo().get_field("ow_levelset");
