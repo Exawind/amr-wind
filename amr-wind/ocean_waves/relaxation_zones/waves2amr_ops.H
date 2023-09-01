@@ -159,6 +159,7 @@ namespace amr_wind::ocean_waves::ops {
 template <>
 struct ReadInputsOp<W2AWaves>
 {
+    // cppcheck-suppress constParameterReference
     void operator()(
         W2AWaves::DataType& data, const ::amr_wind::utils::MultiParser& pp)
     {
@@ -304,6 +305,7 @@ struct ReadInputsOp<W2AWaves>
 template <>
 struct InitDataOp<W2AWaves>
 {
+    // cppcheck-suppress constParameterReference
     void
     operator()(W2AWaves::DataType& data, int level, const amrex::Geometry& geom)
     {
@@ -377,6 +379,7 @@ struct InitDataOp<W2AWaves>
 template <>
 struct UpdateRelaxZonesOp<W2AWaves>
 {
+    // cppcheck-suppress constParameterReference
     void operator()(W2AWaves::DataType& data)
     {
 
