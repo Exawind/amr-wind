@@ -159,7 +159,8 @@ namespace amr_wind::ocean_waves::ops {
 template <>
 struct ReadInputsOp<W2AWaves>
 {
-    void operator()( // cppcheck-suppress constParameterReference
+    void operator()(
+        // cppcheck-suppress constParameterReference
         W2AWaves::DataType& data,
         const ::amr_wind::utils::MultiParser& pp)
     {
@@ -305,7 +306,8 @@ struct ReadInputsOp<W2AWaves>
 template <>
 struct InitDataOp<W2AWaves>
 {
-    void // cppcheck-suppress constParameterReference
+    void
+    // cppcheck-suppress constParameterReference
     operator()(W2AWaves::DataType& data, int level, const amrex::Geometry& geom)
     {
 
@@ -314,7 +316,6 @@ struct InitDataOp<W2AWaves>
         bool init_waves = wdata.init_wave_field;
 
         auto& sim = data.sim();
-        // cppcheck-suppress constVariable
 
         auto& levelset = sim.repo().get_field("levelset");
         auto& velocity = sim.repo().get_field("velocity");
@@ -391,7 +392,6 @@ struct UpdateRelaxZonesOp<W2AWaves>
 
         // Update ow fields every time
         auto& m_ow_levelset = sim.repo().get_field("ow_levelset");
-        // cppcheck-suppress constVariable
         auto& m_ow_velocity = sim.repo().get_field("ow_velocity");
         // Update HOS fields when necessary
         auto& w2a_levelset = sim.repo().get_field("w2a_levelset");
