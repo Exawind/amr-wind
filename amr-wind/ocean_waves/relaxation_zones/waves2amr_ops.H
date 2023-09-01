@@ -159,9 +159,9 @@ namespace amr_wind::ocean_waves::ops {
 template <>
 struct ReadInputsOp<W2AWaves>
 {
-    // cppcheck-suppress constParameterReference
-    void operator()(
-        W2AWaves::DataType& data, const ::amr_wind::utils::MultiParser& pp)
+    void operator()( // cppcheck-suppress constParameterReference
+        W2AWaves::DataType& data,
+        const ::amr_wind::utils::MultiParser& pp)
     {
 // Check for W2A initialization
 #ifndef AMR_WIND_USE_W2A
@@ -305,8 +305,7 @@ struct ReadInputsOp<W2AWaves>
 template <>
 struct InitDataOp<W2AWaves>
 {
-    // cppcheck-suppress constParameterReference
-    void
+    void // cppcheck-suppress constParameterReference
     operator()(W2AWaves::DataType& data, int level, const amrex::Geometry& geom)
     {
 
