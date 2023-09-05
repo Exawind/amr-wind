@@ -88,7 +88,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
         }
 
         // Sharpen acquired vof field if hybrid solver is being used
-        if (repo.int_field_exists("iblank_cell")) {
+        if (repo.int_field_exists("iblank_cell") && m_sharpen) {
             auto& f_iblank = repo.get_int_field("iblank_cell");
             amr_wind::multiphase::sharpen_acquired_vof(
                 nlevels, f_iblank, dof_field);
