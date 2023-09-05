@@ -47,8 +47,8 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
                 const amrex::Real z0 =
                     water_level +
                     Amp * std::exp(
-                              -kappa * (std::pow(x - 0.5 * Lx, 2) +
-                                        std::pow(y - 0.5 * Ly, 2)));
+                              -kappa * (std::pow(x - problo[0] - 0.5 * Lx, 2) +
+                                        std::pow(y - problo[1] - 0.5 * Ly, 2)));
                 phi(i, j, k) = z0 - z;
             });
     }
