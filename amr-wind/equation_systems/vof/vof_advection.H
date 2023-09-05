@@ -23,6 +23,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
     {
         amrex::ParmParse pp_multiphase("VOF");
         pp_multiphase.query("remove_debris", m_rm_debris);
+        pp_multiphase.query("sharpen_nalu_field", m_sharpen);
 
         // Setup density factor arrays for multiplying velocity flux
         fields_in.repo.declare_face_normal_field(
@@ -120,6 +121,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
     Field& w_mac;
     int isweep = 0;
     bool m_rm_debris{true};
+    bool m_sharpen{true};
     // Lagrangian transport is deprecated, only Eulerian is supported
 };
 
