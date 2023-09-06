@@ -37,7 +37,9 @@ struct AdvectionOp<VOF, fvm::Godunov>
         const FieldState /*unused*/,
         const amrex::Real /*unused*/,
         const amrex::Real /*unused*/)
-    {}
+    {
+        // Would be best to sharpen old vof and update old density here
+    }
 
     void operator()(const FieldState /*unused*/, const amrex::Real dt)
     {
