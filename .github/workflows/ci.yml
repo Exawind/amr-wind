@@ -92,7 +92,7 @@ jobs:
         ccache -z
         set -eu -o pipefail
         cmake --build ${{runner.workspace}}/build-ci-${{matrix.build_type}} --parallel ${{env.NPROCS}} 2>&1 | \
-          tee -a build-output.txt
+          tee -a ${{runner.workspace}}/build-ci-${{matrix.build_type}}/build-output.txt
     - name: Ccache Report
       run: |
         ccache -s
@@ -103,6 +103,7 @@ jobs:
       working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}
       run: |
         echo "::add-matcher::.github/problem-matchers/gcc.json"
+        set -eu -o pipefail
         egrep "warning:|error:" build-output.txt | egrep -v "submods" | sort | uniq | \
           awk 'BEGIN{i=0}{print $0}{i++}END{print "Warnings: "i}' > build-output-warnings.txt
         cat build-output-warnings.txt
@@ -348,7 +349,6 @@ jobs:
       - name: Check
         working-directory: ${{runner.workspace}}/build-clang-tidy
         run: |
-          #set -eu -o pipefail
           cmake --build . --parallel ${{env.NPROCS}} 2>&1 | tee -a clang-tidy-full-report.txt
           cat clang-tidy-full-report.txt | grep "warning:" | grep -v "submods" | sort | uniq | \
             awk 'BEGIN{i=0}{print $0}{i++}END{print "Warnings: "i}' > clang-tidy-ci-report.txt
