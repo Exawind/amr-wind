@@ -437,7 +437,7 @@ void incflo::ApplyProjection(
 }
 
 void incflo::UpdateGradP(
-    Vector<MultiFab const*> density, Real time, Real scaling_factor)
+    Vector<MultiFab const*> density, Real /*time*/, Real scaling_factor)
 {
     BL_PROFILE("amr-wind::incflo::UpdateGradP");
 
