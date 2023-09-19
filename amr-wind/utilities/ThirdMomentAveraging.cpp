@@ -158,9 +158,9 @@ void ThirdMomentAveraging::compute_average(
         m_plane_average3.line_average().data(),
         m_plane_average3.line_average().size());
 
-    amrex::Real* line_avg1 = lavg1.data();
-    amrex::Real* line_avg2 = lavg2.data();
-    amrex::Real* line_avg3 = lavg3.data();
+    const auto* line_avg1 = lavg1.data();
+    const auto* line_avg2 = lavg2.data();
+    const auto* line_avg3 = lavg3.data();
 
     amrex::Real denom = 1.0 / (amrex::Real)m_plane_average1.ncell_plane();
 

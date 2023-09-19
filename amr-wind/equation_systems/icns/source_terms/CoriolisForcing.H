@@ -44,8 +44,13 @@ private:
     amrex::Real m_sinphi{0.0};
     amrex::Real m_cosphi{0.0};
 
-    //! `2.0 * \Omega`
+    //! \Omega --> Earth’s rotation angular speed
+    amrex::Real m_omega{7.3e-5};
+
+    //! `2.0 * \Omega
     amrex::Real m_coriolis_factor{0.0};
+
+    bool m_is_horizontal{false};
 };
 
 } // namespace amr_wind::pde::icns
