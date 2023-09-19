@@ -95,6 +95,8 @@ void SamplingContainer::initialize_particles(
 {
     BL_PROFILE("amr-wind::SamplingContainer::initialize");
 
+    amrex::Print() << "Start Initialize Particles" << std::endl;
+
     // We will assign all particles to the first box in level 0 and let
     // redistribute scatter it to the appropriate rank and box.
     const int lev = 0;
@@ -111,6 +113,9 @@ void SamplingContainer::initialize_particles(
         num_particles += probes->num_points();
     }
     m_total_particles = num_particles;
+
+    amrex::Print() << "m_total_particles CONTAINER " << m_total_particles
+                   << std::endl;
 
     const int grid_id = 0;
     const int tile_id = 0;

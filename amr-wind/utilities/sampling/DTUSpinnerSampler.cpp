@@ -38,8 +38,10 @@ void DTUSpinnerSampler::initialize(const std::string& key)
 
     // The time table [s]
     pp.getarr("time_table", m_time_table);
+
     // Azimuth angle (this is in the N, E, S, W direction) [degrees]
     pp.getarr("azimuth_table", m_azimuth_table);
+    
     // Elevation angle [degrees]
     pp.getarr("elevation_table", m_elevation_table);
 

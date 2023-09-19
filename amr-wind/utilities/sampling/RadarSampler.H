@@ -54,6 +54,8 @@ public:
         return cone_axis_locations(locs);
     }
 
+    void post_sample_actions() override;
+
     void
     define_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
     void
@@ -81,11 +83,18 @@ public:
     //! Number of sampling container locations in a timestep
     long num_points() const override
     {
-        return m_ntotal * (m_npts + ntheta * m_npts * (nphi - 1));
+        return m_interp_steps * m_ntotal *
+               (m_npts + ntheta * m_npts * (nphi - 1));
     }
 
     //! Number of probe locations to output
     long num_output_points() const override { return m_ntotal * m_npts; }
+
+    //! Number of sampling container locations per interp step
+    long num_points_scan() const
+    {
+        return m_ntotal * (m_npts + ntheta * m_npts * (nphi - 1));
+    }
 
     //! Number of probe locations on Radar axis
     long num_points_axis() const { return m_npts; }
@@ -108,14 +117,15 @@ public:
     //! Run data modification for specific sampler
     bool do_data_modification() override { return true; }
     bool do_convert_velocity_los() override { return true; }
+    bool do_subsampling_interp() override { return true; }
 
     //! Modify sample buffer after sampling happens
     std::vector<double> modify_sample_data(
         const std::vector<double>& sample_data,
         const std::string& /*unused*/) override;
 
-    void
-    calc_lineofsight_velocity(const std::vector<std::vector<double>>&) override;
+    void calc_lineofsight_velocity(
+        const std::vector<std::vector<double>>&, const int) override;
 
 protected:
     const CFDSim& m_sim;
@@ -130,10 +140,16 @@ protected:
 
     SamplerBase::SampleLocType initial_cone;
     SamplerBase::SampleLocType current_cones;
+    SamplerBase::SampleLocType prior_cones;
+    SamplerBase::SampleLocType sample_cones;
 
     LosRotType los_proj;
     LosUnitType los_unit;
+
     std::vector<double> m_los_velocity;
+    std::vector<double> m_los_velocity_next;
+    std::vector<double> m_los_velocity_prior;
+    std::vector<double> m_los_velocity_interp;
 
     std::vector<double> m_weights;
     std::vector<vs::Vector> m_rays;
@@ -157,16 +173,25 @@ protected:
 
     vs::Vector m_radar_rotation_axis;
 
+    long m_radar_iter{0};     // Iteration tracking from radar perspective
     amrex::Real m_radar_time; // Current radar time
     amrex::Real
         m_periodic_time; // Running cycle time (Forward, pause, reverse, pause)
-    int m_ns;
-    int m_ntotal;
+    int m_ns;            // Number of radar steps in current timestep
+    int m_ntotal;        // Max number of radar timesteps in any timestep
     int m_cone_size;
     phase m_current_phase;
 
     bool m_debug_print{false};
     bool m_output_cone_points{false};
+
+    long m_interp_steps{2};
+    int m_ns_prior;
+    int m_ntotal_prior;
+    long m_num_points_prior;
+    long m_num_output_points_prior;
+
+    long m_fill_val{-99999.99};
 };
 
 } // namespace amr_wind::sampling

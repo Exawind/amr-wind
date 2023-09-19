@@ -62,8 +62,9 @@ public:
     //! Write sampled data in binary format
     virtual void impl_write_native();
 
+    void sampling_workflow();
+    void sampling_post();
     void fill_buffer();
-
     void create_output_buffer();
     void convert_velocity_lineofsight();
 
@@ -136,6 +137,9 @@ private:
 #else
     std::string m_out_fmt{"native"};
 #endif
+
+    // Sample initial condition for interpolation consistency
+    bool m_restart_sample{false};
 
     // number of field components
     int m_ncomp{0};

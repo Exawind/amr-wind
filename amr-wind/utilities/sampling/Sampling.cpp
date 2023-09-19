@@ -31,6 +31,7 @@ void Sampling::initialize()
         pp.query("output_frequency", m_out_freq);
         pp.query("output_format", m_out_fmt);
         pp.query("output_delay", m_out_delay);
+        pp.query("restart_sample", m_restart_sample);
     }
 
     // Process field information
@@ -67,15 +68,31 @@ void Sampling::initialize()
 
         m_total_particles += obj->num_points();
         m_samplers.emplace_back(std::move(obj));
+        amrex::Print() << stype << ": " << m_total_particles << std::endl;
     }
 
+    amrex::Print() << "Finished Create Samplers" << std::endl;
+
+    amrex::Print() << "m_total_particles " << m_total_particles << std::endl;
+
     update_container();
+
+    amrex::Print() << "Finished Update Container" << std::endl;
 
     if (m_out_fmt == "netcdf") {
         prepare_netcdf_file();
     }
 
+    amrex::Print() << "m_total_particles" << m_total_particles << std::endl;
+
     m_sample_buf.assign(m_total_particles * m_var_names.size(), 0.0);
+
+    if (m_restart_sample) {
+        sampling_workflow();
+        sampling_post();
+    }
+
+    amrex::Print() << "Finished Sampler Initialize" << std::endl;
 }
 
 void Sampling::update_container()
@@ -84,10 +101,22 @@ void Sampling::update_container()
 
     // Initialize the particle container based on user inputs
     m_scontainer = std::make_unique<SamplingContainer>(m_sim.mesh());
+
+    amrex::Print() << "Update Container: Make Cont" << std::endl;
+
     m_scontainer->setup_container(m_ncomp);
+
+    amrex::Print() << "Update Container: Setup Cont" << std::endl;
+
     m_scontainer->initialize_particles(m_samplers);
+
+    amrex::Print() << "Update Container: Initialize Particles" << std::endl;
+
     // Redistribute particles to appropriate boxes/MPI ranks
     m_scontainer->Redistribute();
+
+    amrex::Print() << "Update Container: Redistribute" << std::endl;
+
     m_scontainer->num_sampling_particles() =
         static_cast<int>(m_total_particles);
 }
@@ -109,25 +138,68 @@ void Sampling::post_advance_work()
     BL_PROFILE("amr-wind::Sampling::post_advance_work");
     const auto& time = m_sim.time();
     const int tidx = time.time_index();
+
     // Skip processing if delay has not been reached
     if (tidx < m_out_delay) {
         return;
     }
+
     // Skip processing if it is not an output timestep
     if (!(tidx % m_out_freq == 0)) {
         return;
     }
 
+    amrex::Print() << "Running Sampling::post_advance_work" << std::endl;
+    amrex::Print() << "Current Time: " << time.current_time()
+                   << " New Time: " << time.new_time() << std::endl;
+
+    sampling_workflow();
+
+    process_output();
+
+    sampling_post();
+}
+
+void Sampling::sampling_workflow()
+{
+
+    BL_PROFILE("amr-wind::Sampling::sampling_workflow");
+
     update_sampling_locations();
+
+    amrex::Print() << "Sampling WORKFLOW: Update Sampling Locs" << std::endl;
 
     m_scontainer->interpolate_fields(m_fields);
 
+    amrex::Print() << "Sampling WORKFLOW: Actual Sampling" << std::endl;
+
     fill_buffer();
+
+    amrex::Print() << "Sampling WORKFLOW: Fill Buffer" << std::endl;
+
     convert_velocity_lineofsight();
+
+    amrex::Print() << "Sampling WORKFLOW: Calc LOS" << std::endl;
+
     create_output_buffer();
-    process_output();
+
+    amrex::Print() << "Sampling WORKFLOW: Create Out Buf" << std::endl;
+
+    amrex::Print() << "Finished Sampling WORKFLOW" << std::endl;
+}
+
+void Sampling::sampling_post()
+{
+
+    BL_PROFILE("amr-wind::Sampling::sampling_post");
+
+    for (const auto& obj : m_samplers) {
+        obj->post_sample_actions();
+    }
 
     m_output_buf.clear();
+
+    amrex::Print() << "Finished Sampling POST" << std::endl;
 }
 
 void Sampling::post_regrid_actions()
@@ -160,19 +232,33 @@ void Sampling::convert_velocity_lineofsight()
     for (const auto& obj : m_samplers) {
         int sample_size =
             obj->num_points(); // sample locs for individual sampler
+
+        int scan_size =
+            (obj->do_subsampling_interp()) ? sample_size / 2 : sample_size;
+
         std::vector<std::vector<double>> temp_vel(
-            sample_size, std::vector<double>(AMREX_SPACEDIM));
+            scan_size, std::vector<double>(AMREX_SPACEDIM));
+        std::vector<std::vector<double>> temp_vel_next(
+            scan_size, std::vector<double>(AMREX_SPACEDIM));
+
         if (obj->do_convert_velocity_los()) {
             for (int iv = 0; iv < AMREX_SPACEDIM; ++iv) {
                 int vel_off = vel_map[iv];
-                // TODO: This offset is wrong
+
                 int offset =
                     vel_off * m_scontainer->num_sampling_particles() + soffset;
-                for (int j = 0; j < sample_size; ++j) {
+                for (int j = 0; j < scan_size; ++j) {
                     temp_vel[j][iv] = m_sample_buf[offset + j];
+                    if (obj->do_subsampling_interp()) {
+                        temp_vel_next[j][iv] =
+                            m_sample_buf[scan_size + offset + j];
+                    }
                 }
             }
-            obj->calc_lineofsight_velocity(temp_vel);
+            obj->calc_lineofsight_velocity(temp_vel, 0);
+            if (obj->do_subsampling_interp()) {
+                obj->calc_lineofsight_velocity(temp_vel_next, 1);
+            }
         }
         soffset += sample_size;
     }
@@ -227,6 +313,8 @@ void Sampling::process_output()
     } else {
         amrex::Abort("Sampling: Invalid output format encountered");
     }
+
+    amrex::Print() << "Finished PROCESS OUTPUT" << std::endl;
 }
 
 void Sampling::impl_write_native()
@@ -334,6 +422,7 @@ void Sampling::prepare_netcdf_file()
         "NetCDF support was not enabled during build time. Please recompile or "
         "use native format");
 #endif
+    amrex::Print() << "Finished PREPARE NETCDF" << std::endl;
 }
 
 void Sampling::write_netcdf()
@@ -381,6 +470,8 @@ void Sampling::write_netcdf()
         }
     }
 
+    amrex::Print() << "Finished WRITE STANDARD" << std::endl;
+
     // Custom sampler output from sampler function
     // Output of los_velocity goes here in addition to other custom output
     for (const auto& obj : m_samplers) {
@@ -390,6 +481,7 @@ void Sampling::write_netcdf()
 
     ncf.close();
 #endif
+    amrex::Print() << "Finished WRITE ALL" << std::endl;
 }
 
 } // namespace amr_wind::sampling

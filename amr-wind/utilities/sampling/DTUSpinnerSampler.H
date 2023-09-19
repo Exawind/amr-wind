@@ -40,6 +40,8 @@ public:
      */
     void update_sampling_locations() override;
 
+    void post_sample_actions() override { return; }
+
     long num_points() const override { return (m_npts * m_ns); }
 
     bool output_netcdf_field(
