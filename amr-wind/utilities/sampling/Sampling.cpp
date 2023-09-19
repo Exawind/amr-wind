@@ -70,19 +70,11 @@ void Sampling::initialize()
         amrex::Print() << stype << ": " << m_total_particles << std::endl;
     }
 
-    amrex::Print() << "Finished Create Samplers" << std::endl;
-
-    amrex::Print() << "m_total_particles " << m_total_particles << std::endl;
-
     update_container();
-
-    amrex::Print() << "Finished Update Container" << std::endl;
 
     if (m_out_fmt == "netcdf") {
         prepare_netcdf_file();
     }
-
-    amrex::Print() << "m_total_particles" << m_total_particles << std::endl;
 
     m_sample_buf.assign(m_total_particles * m_var_names.size(), 0.0);
 
@@ -90,8 +82,6 @@ void Sampling::initialize()
         sampling_workflow();
         sampling_post();
     }
-
-    amrex::Print() << "Finished Sampler Initialize" << std::endl;
 }
 
 void Sampling::update_container()
@@ -101,20 +91,12 @@ void Sampling::update_container()
     // Initialize the particle container based on user inputs
     m_scontainer = std::make_unique<SamplingContainer>(m_sim.mesh());
 
-    amrex::Print() << "Update Container: Make Cont" << std::endl;
-
     m_scontainer->setup_container(m_ncomp);
-
-    amrex::Print() << "Update Container: Setup Cont" << std::endl;
 
     m_scontainer->initialize_particles(m_samplers);
 
-    amrex::Print() << "Update Container: Initialize Particles" << std::endl;
-
     // Redistribute particles to appropriate boxes/MPI ranks
     m_scontainer->Redistribute();
-
-    amrex::Print() << "Update Container: Redistribute" << std::endl;
 
     m_scontainer->num_sampling_particles() =
         static_cast<int>(m_total_particles);
@@ -161,25 +143,13 @@ void Sampling::sampling_workflow()
 
     update_sampling_locations();
 
-    amrex::Print() << "Sampling WORKFLOW: Update Sampling Locs" << std::endl;
-
     m_scontainer->interpolate_fields(m_fields);
-
-    amrex::Print() << "Sampling WORKFLOW: Actual Sampling" << std::endl;
 
     fill_buffer();
 
-    amrex::Print() << "Sampling WORKFLOW: Fill Buffer" << std::endl;
-
     convert_velocity_lineofsight();
 
-    amrex::Print() << "Sampling WORKFLOW: Calc LOS" << std::endl;
-
     create_output_buffer();
-
-    amrex::Print() << "Sampling WORKFLOW: Create Out Buf" << std::endl;
-
-    amrex::Print() << "Finished Sampling WORKFLOW" << std::endl;
 }
 
 void Sampling::sampling_post()
@@ -192,8 +162,6 @@ void Sampling::sampling_post()
     }
 
     m_output_buf.clear();
-
-    amrex::Print() << "Finished Sampling POST" << std::endl;
 }
 
 void Sampling::post_regrid_actions()
@@ -307,8 +275,6 @@ void Sampling::process_output()
     } else {
         amrex::Abort("Sampling: Invalid output format encountered");
     }
-
-    amrex::Print() << "Finished PROCESS OUTPUT" << std::endl;
 }
 
 void Sampling::impl_write_native()
