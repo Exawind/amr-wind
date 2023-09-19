@@ -562,14 +562,10 @@ bool RadarSampler::output_netcdf_field(
     ncutils::NCGroup& grp,
     const size_t nt)
 {
-    amrex::Print() << "Start Output LOS" << std::endl;
-    m_los_velocity_interp.resize(m_los_velocity.size());
+    // Note: output_buffer is entire buffer...all samplers all
+    // variables for this timestep
 
-    amrex::Print() << "m_los_vel size: " << m_los_velocity.size() << std::endl;
-    amrex::Print() << "m_los_vel_interp size: " << m_los_velocity_interp.size()
-                   << std::endl;
-    amrex::Print() << "m_los_vel_prior size: " << m_los_velocity_prior.size()
-                   << std::endl;
+    m_los_velocity_interp.resize(m_los_velocity.size());
 
     for (int k = 0; k < m_ntotal; k++) {
         double mrat = (double)k / m_ntotal;
@@ -580,10 +576,6 @@ bool RadarSampler::output_netcdf_field(
         }
     }
 
-    amrex::Print() << "Output LOS: Just after loop" << std::endl;
-
-    // Note: output_buffer is entire buffer...all samplers all
-    // variables for this timestep
     std::vector<size_t> start{nt, 0};
     std::vector<size_t> count{1, 0};
     start[1] = 0;
@@ -592,8 +584,6 @@ bool RadarSampler::output_netcdf_field(
     auto var = grp.var("los_velocity");
     count[1] = num_output_points();
     var.put(&m_los_velocity_interp[0], start, count);
-
-    amrex::Print() << "Output LOS: Just before return" << std::endl;
 
     return true;
 }
