@@ -191,7 +191,7 @@ protected:
     long m_num_points_prior;
     long m_num_output_points_prior;
 
-    long m_fill_val{-99999.99};
+    double m_fill_val{-99999.99};
 };
 
 } // namespace amr_wind::sampling
