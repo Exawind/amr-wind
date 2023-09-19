@@ -34,6 +34,8 @@ public:
      */
     void update_sampling_locations() override;
 
+    void post_sample_actions() override { return; }
+
     void
     define_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
     void

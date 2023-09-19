@@ -81,8 +81,23 @@ void RadarSampler::initialize(const std::string& key)
 
     m_cone_size = num_points_cone();
 
+    // Calculate total number of necessary beams per timstep
+    // Due to subsampling freq
+    amrex::Real dt_sim = m_sim.time().deltaT();
+    amrex::Real dt_sample = 1.0 / m_sample_freq;
+    double timestep_sample_ratio = dt_sim / dt_sample;
+    m_ntotal = int(std::ceil(timestep_sample_ratio));
+
+    AMREX_ALWAYS_ASSERT(timestep_sample_ratio >= 1.0);
+
+    amrex::Print() << "m_ntotal: " << m_ntotal << std::endl;
+
+    prior_cones.resize(num_points_scan());
+    current_cones.resize(num_points_scan());
+
     RadarSampler::new_cone();
-    RadarSampler::update_sampling_locations();
+    // RadarSampler::update_sampling_locations();
+
     check_bounds();
 }
 
@@ -194,9 +209,7 @@ void RadarSampler::update_sampling_locations()
     int time_corr = (ts_diff > dt_sample) ? int(ts_diff / dt_sample) : 0;
 
     m_ns = int(dt_sim / dt_sample) + time_corr;
-    m_ntotal = int(std::ceil(dt_sim / dt_sample));
 
-    current_cones.resize(m_ntotal * num_points());
     los_unit.resize(m_ntotal * num_points_quad());
     los_proj.resize(m_ntotal * num_points_quad());
 
@@ -279,9 +292,9 @@ void RadarSampler::update_sampling_locations()
 
             for (int i = 0; i < m_cone_size; ++i) {
                 int point_index = i + k * m_cone_size;
-                current_cones[point_index][0] = -99999.99;
-                current_cones[point_index][1] = -99999.99;
-                current_cones[point_index][2] = -99999.99;
+                current_cones[point_index][0] = m_fill_val;
+                current_cones[point_index][1] = m_fill_val;
+                current_cones[point_index][2] = m_fill_val;
 
                 // Create zero projection matrix
                 if (i > conetipbegin && i < conetipend) {
@@ -295,6 +308,8 @@ void RadarSampler::update_sampling_locations()
             }
         }
     }
+
+    m_radar_iter++;
 }
 
 void RadarSampler::new_cone()
@@ -308,8 +323,8 @@ void RadarSampler::new_cone()
     m_weights.resize(num_points_quad());
 
     sampling_utils::spherical_cap_truncated_normal(
-        utils::radians(m_cone_angle), ntheta, sampling_utils::NormalRule::HALFPOWER, m_rays,
-        m_weights);
+        utils::radians(m_cone_angle), ntheta,
+        sampling_utils::NormalRule::HALFPOWER, m_rays, m_weights);
 
     int nquad = num_points_quad();
 
@@ -364,12 +379,16 @@ void RadarSampler::new_cone()
 }
 
 void RadarSampler::calc_lineofsight_velocity(
-    const std::vector<std::vector<double>>& velocity_raw)
+    const std::vector<std::vector<double>>& velocity_raw, const int interp_idx)
 {
-    AMREX_ALWAYS_ASSERT(static_cast<int>(velocity_raw.size()) == num_points());
+    AMREX_ALWAYS_ASSERT(
+        static_cast<int>(velocity_raw.size()) == num_points_scan());
 
+    m_los_velocity_next.resize(num_output_points());
     m_los_velocity.resize(num_output_points());
-    std::vector<double> los_temp(num_points());
+    m_los_velocity_prior.resize(num_output_points());
+
+    std::vector<double> los_temp(num_points_scan());
 
     for (int k = 0; k < m_ntotal; k++) {
         for (int i = 0; i < m_cone_size; ++i) {
@@ -388,7 +407,11 @@ void RadarSampler::calc_lineofsight_velocity(
         std::vector<double> temp_vals(
             los_temp.begin() + k * num_points_cone(),
             los_temp.begin() + (k + 1) * num_points_cone());
-        line_average(m_weights, temp_vals, m_los_velocity, a_start);
+        if (interp_idx > 0) {
+            line_average(m_weights, temp_vals, m_los_velocity_next, a_start);
+        } else {
+            line_average(m_weights, temp_vals, m_los_velocity, a_start);
+        }
     }
 }
 
@@ -445,10 +468,17 @@ void RadarSampler::sampling_locations(SampleLocType& locs) const
 {
     locs.resize(num_points());
 
-    for (int i = 0; i < num_points(); ++i) {
-        locs[i][0] = current_cones[i][0];
-        locs[i][1] = current_cones[i][1];
-        locs[i][2] = current_cones[i][2];
+    for (int i = 0; i < num_points_scan(); ++i) {
+        locs[i][0] = (m_radar_iter > 0) ? prior_cones[i][0] : m_fill_val;
+        locs[i][1] = (m_radar_iter > 0) ? prior_cones[i][1] : m_fill_val;
+        locs[i][2] = (m_radar_iter > 0) ? prior_cones[i][2] : m_fill_val;
+    }
+
+    for (int i = 0; i < num_points_scan(); ++i) {
+        int ioff = i + num_points_scan();
+        locs[ioff][0] = current_cones[i][0];
+        locs[ioff][1] = current_cones[i][1];
+        locs[ioff][2] = current_cones[i][2];
     }
 }
 
@@ -461,11 +491,26 @@ void RadarSampler::cone_axis_locations(SampleLocType& axis_locs) const
         for (int i = 0; i < m_npts; ++i) {
             int pi = i + k * m_npts;
             int ci = i * num_points_quad() + k * num_points_cone();
-            axis_locs[pi][0] = current_cones[ci][0];
-            axis_locs[pi][1] = current_cones[ci][1];
-            axis_locs[pi][2] = current_cones[ci][2];
+            axis_locs[pi][0] = prior_cones[ci][0];
+            axis_locs[pi][1] = prior_cones[ci][1];
+            axis_locs[pi][2] = prior_cones[ci][2];
         }
     }
+}
+
+void RadarSampler::post_sample_actions()
+{
+
+    prior_cones.resize(num_points_scan());
+    prior_cones = current_cones;
+
+    m_los_velocity_prior.resize(num_output_points());
+    m_los_velocity_prior = m_los_velocity_next;
+
+    m_ns_prior = m_ns;
+    m_ntotal_prior = m_ntotal;
+    m_num_points_prior = num_points();
+    m_num_output_points_prior = num_output_points();
 }
 
 #ifdef AMR_WIND_USE_NETCDF
@@ -476,7 +521,7 @@ void RadarSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
     grp.put_attr("end", m_end);
 
     grp.def_dim("ndim", AMREX_SPACEDIM);
-    grp.def_dim("num_points_cone", num_points());
+    grp.def_dim("num_points_cone", num_points_scan());
     grp.def_var("points", NC_DOUBLE, {"num_time_steps", "num_points", "ndim"});
 
     if (m_output_cone_points) {
@@ -517,6 +562,26 @@ bool RadarSampler::output_netcdf_field(
     ncutils::NCGroup& grp,
     const size_t nt)
 {
+    amrex::Print() << "Start Output LOS" << std::endl;
+    m_los_velocity_interp.resize(m_los_velocity.size());
+
+    amrex::Print() << "m_los_vel size: " << m_los_velocity.size() << std::endl;
+    amrex::Print() << "m_los_vel_interp size: " << m_los_velocity_interp.size()
+                   << std::endl;
+    amrex::Print() << "m_los_vel_prior size: " << m_los_velocity_prior.size()
+                   << std::endl;
+
+    for (int k = 0; k < m_ntotal; k++) {
+        double mrat = (double)k / m_ntotal;
+        for (int i = 0; i < m_npts; ++i) {
+            int pi = i + k * m_npts;
+            m_los_velocity_interp[pi] = mrat * m_los_velocity[pi] +
+                                        (1.0 - mrat) * m_los_velocity_prior[pi];
+        }
+    }
+
+    amrex::Print() << "Output LOS: Just after loop" << std::endl;
+
     // Note: output_buffer is entire buffer...all samplers all
     // variables for this timestep
     std::vector<size_t> start{nt, 0};
@@ -526,7 +591,9 @@ bool RadarSampler::output_netcdf_field(
 
     auto var = grp.var("los_velocity");
     count[1] = num_output_points();
-    var.put(&m_los_velocity[0], start, count);
+    var.put(&m_los_velocity_interp[0], start, count);
+
+    amrex::Print() << "Output LOS: Just before return" << std::endl;
 
     return true;
 }

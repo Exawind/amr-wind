@@ -58,6 +58,9 @@ public:
     //! Update the sampling locations
     virtual void update_sampling_locations() {}
 
+    //! Update the sampling locations
+    virtual void post_sample_actions() {}
+
     //! Run specific output for the sampler
     virtual bool output_netcdf_field(
         const std::vector<double>& /*unused*/,
@@ -70,6 +73,7 @@ public:
     //! Run data modification for specific sampler?
     virtual bool do_data_modification() { return false; }
     virtual bool do_convert_velocity_los() { return false; }
+    virtual bool do_subsampling_interp() { return false; }
 
     //! Sample buffer modification instructions
     virtual std::vector<double> modify_sample_data(
@@ -79,7 +83,8 @@ public:
     }
 
     virtual void calc_lineofsight_velocity(
-        const std::vector<std::vector<double>>& /*unused*/)
+        const std::vector<std::vector<double>>& /*unused*/,
+        const int /*unused*/)
     {}
 
     //! Populate metadata in the NetCDF file
