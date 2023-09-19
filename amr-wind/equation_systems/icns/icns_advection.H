@@ -113,8 +113,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         } else if (amrex::toLower(mflux_type) == "upwind") {
             mflux_scheme = godunov::scheme::UPWIND;
         } else {
-            amrex::Print() << "For mflux_type, default is upwind" << std::endl;
-            mflux_scheme = godunov::scheme::UPWIND;
+            amrex::Abort("Invalid argument entered for mflux_type.");
         }
 
         // Formulation of discrete ICNS equation
@@ -314,11 +313,11 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
     void operator()(const FieldState fstate, const amrex::Real dt)
     {
-        auto& repo = fields.repo;
+        const auto& repo = fields.repo;
         const auto& geom = repo.mesh().Geom();
 
         const auto& src_term = fields.src_term;
-        // cppcheck-suppress constVariable
+        // cppcheck-suppress constVariableReference
         auto& conv_term = fields.conv_term;
         const auto& dof_field = fields.field.state(fstate);
 
@@ -515,7 +514,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     godunov::scheme godunov_scheme = godunov::scheme::PPM;
     godunov::scheme mflux_scheme = godunov::scheme::UPWIND;
     std::string godunov_type;
-    std::string mflux_type;
+    std::string mflux_type{"upwind"};
     const bool fluxes_are_area_weighted{false};
     bool godunov_use_forces_in_trans{false};
     int m_cons{1};
@@ -550,8 +549,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
         const amrex::Real /*time*/)
     {
 
-        // cppcheck-suppress constVariable
-        auto& repo = fields.repo;
+        const auto& repo = fields.repo;
         auto& dof_field = fields.field.state(fstate);
 
         // computation of velocity on faces requires
@@ -579,7 +577,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
 
         const auto& repo = fields.repo;
         const auto& geom = repo.mesh().Geom();
-        // cppcheck-suppress constVariable
+        // cppcheck-suppress constVariableReference
         auto& conv_term = fields.conv_term.state(fstate);
         const auto& dof_field = fields.field.state(fstate);
         const auto& rho = repo.get_field("density").state(fstate);

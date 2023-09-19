@@ -86,11 +86,10 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
     const auto& den = this->m_rho.state(fstate);
     const auto& tke = (*this->m_tke).state(fstate);
     const auto& sdr = (*this->m_sdr).state(fstate);
-    // cppcheck-suppress constVariable
-    auto& repo = mu_turb.repo();
+    const auto& repo = mu_turb.repo();
     auto& tke_lhs = (this->m_sim).repo().get_field("tke_lhs_src_term");
     tke_lhs.setVal(0.0);
-    // cppcheck-suppress constVariable
+    // cppcheck-suppress constVariableReference
     auto& sdr_lhs = (this->m_sim).repo().get_field("sdr_lhs_src_term");
 
     auto gradK = (this->m_sim.repo()).create_scratch_field(3, 0);
@@ -197,12 +196,13 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
 
                     const amrex::Real diss_amb =
                         beta_star * rho_arr(i, j, k) * sdr_amb * tke_amb;
+
                     diss_arr(i, j, k) = -beta_star * rho_arr(i, j, k) *
                                             tke_arr(i, j, k) *
                                             sdr_arr(i, j, k) +
                                         diss_amb;
 
-                    tke_lhs_arr(i, j, k) = 0.5 * beta_star * rho_arr(i, j, k) *
+                    tke_lhs_arr(i, j, k) = beta_star * rho_arr(i, j, k) *
                                            sdr_arr(i, j, k) * deltaT;
 
                     // For SDR equation:
@@ -221,6 +221,8 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
 
                     if (diff_type == DiffusionType::Crank_Nicolson) {
 
+                        tke_lhs_arr(i, j, k) = 0.5 * tke_lhs_arr(i, j, k);
+
                         sdr_src_arr(i, j, k) = production_omega;
 
                         sdr_diss_arr(i, j, k) = cross_diffusion;
@@ -230,8 +232,22 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
                              0.5 * std::abs(cross_diffusion) /
                                  (sdr_arr(i, j, k) + 1e-15)) *
                             deltaT;
-                    } else {
+                    } else if (diff_type == DiffusionType::Implicit) {
+                        /* Source term linearization is based on Florian
+                           Menter's (1993) AIAA paper */
+                        diss_arr(i, j, k) = 0.0;
 
+                        sdr_src_arr(i, j, k) = production_omega;
+
+                        sdr_diss_arr(i, j, k) = 0.0;
+
+                        sdr_lhs_arr(i, j, k) =
+                            (2.0 * rho_arr(i, j, k) * beta * sdr_arr(i, j, k) +
+                             std::abs(cross_diffusion) /
+                                 (sdr_arr(i, j, k) + 1e-15)) *
+                            deltaT;
+
+                    } else {
                         sdr_src_arr(i, j, k) =
                             production_omega + cross_diffusion;
 

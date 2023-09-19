@@ -53,7 +53,7 @@ void Sampling::initialize()
     // Load different probe types, default probe type is line
     int idx = 0;
     m_total_particles = 0;
-    for (auto& lbl : labels) {
+    for (const auto& lbl : labels) {
         const std::string key = m_label + "." + lbl;
         amrex::ParmParse pp1(key);
         std::string stype = "LineSampler";

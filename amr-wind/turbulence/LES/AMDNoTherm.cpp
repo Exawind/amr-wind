@@ -13,6 +13,7 @@ namespace amr_wind {
 namespace turbulence {
 
 template <typename Transport>
+// cppcheck-suppress uninitMemberVar
 AMDNoTherm<Transport>::AMDNoTherm(CFDSim& sim)
     : TurbModelBase<Transport>(sim)
     , m_vel(sim.repo().get_field("velocity"))
@@ -35,7 +36,7 @@ void AMDNoTherm<Transport>::update_turbulent_viscosity(
         "amr-wind::" + this->identifier() + "::update_turbulent_viscosity");
 
     auto& mu_turb = this->mu_turb();
-    auto& repo = mu_turb.repo();
+    const auto& repo = mu_turb.repo();
     const auto& vel = m_vel.state(fstate);
     const auto& den = m_rho.state(fstate);
     auto gradVel = repo.create_scratch_field(AMREX_SPACEDIM * AMREX_SPACEDIM);

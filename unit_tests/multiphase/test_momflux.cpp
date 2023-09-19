@@ -204,7 +204,7 @@ protected:
         const auto& advrho_f = repo.get_field("advalpha_" + sdir);
 
         // Get convective term
-        auto& conv_term =
+        const auto& conv_term =
             mom_eqn.fields().conv_term.state(amr_wind::FieldState::New);
 
         // Base level
@@ -214,12 +214,12 @@ protected:
         const auto& problo = geom[lev].ProbLoArray();
         for (amrex::MFIter mfi(vof(lev)); mfi.isValid(); ++mfi) {
 
-            const auto& um = umac(lev).array(mfi);
-            const auto& vm = vmac(lev).array(mfi);
-            const auto& wm = wmac(lev).array(mfi);
-            const auto& rf = advrho_f(lev).array(mfi);
-            const auto& vel = velocity(lev).array(mfi);
-            const auto& dqdt = conv_term(lev).array(mfi);
+            const auto& um = umac(lev).const_array(mfi);
+            const auto& vm = vmac(lev).const_array(mfi);
+            const auto& wm = wmac(lev).const_array(mfi);
+            const auto& rf = advrho_f(lev).const_array(mfi);
+            const auto& vel = velocity(lev).const_array(mfi);
+            const auto& dqdt = conv_term(lev).const_array(mfi);
 
             // Small mesh, loop in serial for check
             for (int i = 0; i < 2; ++i) {

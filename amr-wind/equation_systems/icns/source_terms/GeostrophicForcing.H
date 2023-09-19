@@ -31,6 +31,8 @@ private:
 
     //! Forcing source term (pressure gradient)
     amrex::Vector<amrex::Real> m_g_forcing{{0.0, 0.0, 0.0}};
+
+    bool m_is_horizontal{false};
 };
 
 } // namespace amr_wind::pde::icns
