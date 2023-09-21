@@ -344,7 +344,7 @@ void SharpenNaluData(CFDSim& sim, const int nit)
         for (int lev = 0; lev < nlevels; ++lev) {
             // Thickness of interface should be 1/2 the size of the cell?
             auto dx = (geom[lev]).CellSizeArray();
-            const amrex::Real i_th = 0.5 * std::cbrt(dx[0] * dx[1] * dx[2]);
+            const amrex::Real i_th = 0.125 * std::cbrt(dx[0] * dx[1] * dx[2]);
 
             // Populate approximate signed distance function
             populate_grad_psi(
