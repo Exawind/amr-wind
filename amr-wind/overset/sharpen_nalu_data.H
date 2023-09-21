@@ -15,20 +15,6 @@ amrex::Real asdf(const amrex::Real a_vof, const amrex::Real i_th)
     return (i_th * log((a_vof + 1e-100) / (1. - a_vof + 1e-100)));
 }
 
-// Hyperbolic tangent (squared) with a limit
-amrex::Real tanh2_lim(const amrex::Real arg)
-{
-    constexpr amrex::Real tol = 1e-12;
-    amrex::Real result = tanh(arg) * tanh(arg);
-    // Force tanh result based on limits of asdf calc
-    if (arg < 0.5 * log(1e-100 / (1.0 + 1e-100)) + tol) {
-        result = 1.0;
-    } else if (arg > 0.5 * log((1.0 + 1e-100) / 1e-100) - tol) {
-        result = 1.0;
-    }
-    return result;
-}
-
 void process_vof(amrex::MultiFab& mf_vof)
 {
     constexpr amrex::Real tiny = 1e-6;
@@ -156,7 +142,8 @@ amrex::Real alpha_flux(
             psi_eval = psi_dnw;
         }
     }
-    const amrex::Real omtanh2_choose = 1.0 - tanh2_lim(0.5 * psi_eval / i_th);
+    const amrex::Real omtanh2_choose =
+        1.0 - tanh(0.5 * psi_eval / i_th) * tanh(0.5 * psi_eval / i_th);
     const amrex::Real a_flux =
         (i_th * gphi - 0.25 * omtanh2_choose * gpsi_norm_avg);
     return a_flux;
