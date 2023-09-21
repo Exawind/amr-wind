@@ -176,19 +176,25 @@ void populate_sharpen_fluxes(
             xbx, ybx, zbx,
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 // vof flux
-                amrex::Real f_vof = alpha_flux(i, j, k, 0, i_th, vof, gpsi, dx);
-                fx(i, j, k, 0) = f_vof;
-                // density flux
+                amrex::Real flux = alpha_flux(i, j, k, 0, i_th, vof, gpsi, dx);
+                fx(i, j, k, 0) = flux;
+                // density flux (will not be stored in the future)
+                flux *= (rho1 - rho2);
+                fx(i, j, k, 1) = flux;
                 // fx(i, j, k, 1) = rho1 * fx(i,j,k,0) + rho2 * (1.0 -
                 // fx(i,j,k,0)); pressure gradient fluxes
             },
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                amrex::Real f_vof = alpha_flux(i, j, k, 1, i_th, vof, gpsi, dx);
-                fy(i, j, k, 0) = f_vof;
+                amrex::Real flux = alpha_flux(i, j, k, 1, i_th, vof, gpsi, dx);
+                fy(i, j, k, 0) = flux;
+                flux *= (rho1 - rho2);
+                fy(i, j, k, 1) = flux;
             },
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                amrex::Real f_vof = alpha_flux(i, j, k, 2, i_th, vof, gpsi, dx);
-                fz(i, j, k, 0) = f_vof;
+                amrex::Real flux = alpha_flux(i, j, k, 2, i_th, vof, gpsi, dx);
+                fz(i, j, k, 0) = flux;
+                flux *= (rho1 - rho2);
+                fz(i, j, k, 1) = flux;
             });
     }
 }
@@ -240,6 +246,7 @@ void apply_fluxes(
     amrex::MultiFab& mf_fy,
     amrex::MultiFab& mf_fz,
     amrex::MultiFab& mf_vof,
+    amrex::MultiFab& mf_dens,
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx,
     const amrex::Real i_th)
 {
@@ -251,14 +258,20 @@ void apply_fluxes(
         const amrex::Array4<amrex::Real>& fy = mf_fy.array(mfi);
         const amrex::Array4<amrex::Real>& fz = mf_fz.array(mfi);
         const amrex::Array4<amrex::Real>& vof = mf_vof.array(mfi);
+        const amrex::Array4<amrex::Real>& dens = mf_dens.array(mfi);
         // Only faces with iblank = -1 on both sides can have nonzero flux
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 const amrex::Real oldvof = vof(i, j, k);
+                const amrex::Real olddens = dens(i, j, k);
                 vof(i, j, k) +=
                     i_th * ((fx(i + 1, j, k, 0) - fx(i, j, k, 0)) / dx[0] +
                             (fy(i, j + 1, k, 0) - fy(i, j, k, 0)) / dx[1] +
                             (fz(i, j, k + 1, 0) - fz(i, j, k, 0)) / dx[2]);
+                dens(i, j, k) +=
+                    i_th * ((fx(i + 1, j, k, 1) - fx(i, j, k, 1)) / dx[0] +
+                            (fy(i, j + 1, k, 1) - fy(i, j, k, 1)) / dx[1] +
+                            (fz(i, j, k + 1, 1) - fz(i, j, k, 1)) / dx[2]);
                 /*if (i == 20 && j == 20 && vof(i, j, k) > 1.0) {
                     std::cout << i << " " << j << " " << k << " "
                               << vof(i, j, k) << " " << oldvof << " "
@@ -352,8 +365,8 @@ void SharpenNaluData(CFDSim& sim, const int nit)
 
             // Apply fluxes
             apply_fluxes(
-                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev), dx,
-                i_th);
+                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev),
+                rho(lev), dx, i_th);
 
             // Replace vof with another field to look at it
             // equate_vof((*grad_asdf)(lev), vof(lev));
@@ -367,6 +380,7 @@ void SharpenNaluData(CFDSim& sim, const int nit)
 
         // Fillpatch for ghost cells
         vof.fillpatch(sim.time().current_time());
+        rho.fillpatch(sim.time().current_time());
 
         // Update density
     }
