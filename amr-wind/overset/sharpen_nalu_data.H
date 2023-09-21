@@ -240,7 +240,6 @@ void apply_fluxes(
     amrex::MultiFab& mf_fy,
     amrex::MultiFab& mf_fz,
     amrex::MultiFab& mf_vof,
-    amrex::iMultiFab& mf_iblank,
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx,
     const amrex::Real i_th)
 {
@@ -252,29 +251,20 @@ void apply_fluxes(
         const amrex::Array4<amrex::Real>& fy = mf_fy.array(mfi);
         const amrex::Array4<amrex::Real>& fz = mf_fz.array(mfi);
         const amrex::Array4<amrex::Real>& vof = mf_vof.array(mfi);
-        const amrex::Array4<const int>& iblank = mf_iblank.const_array(mfi);
         // Only faces with iblank = -1 on both sides can have nonzero flux
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 const amrex::Real oldvof = vof(i, j, k);
                 vof(i, j, k) +=
-                    i_th *
-                    ((iblank(i, j, k) != -1)
-                         ? 0.
-                         : (fx(i + 1, j, k, 0) - fx(i, j, k, 0)) / dx[0] +
-                               (fy(i, j + 1, k, 0) - fy(i, j, k, 0)) / dx[1] +
-                               (fz(i, j, k + 1, 0) - fz(i, j, k, 0)) / dx[2]);
-                // if (i == 20 && j == 20 && k == 33) {
-                if (i == 20 && j == 20 && vof(i, j, k) > 1.0) {
+                    i_th * ((fx(i + 1, j, k, 0) - fx(i, j, k, 0)) / dx[0] +
+                            (fy(i, j + 1, k, 0) - fy(i, j, k, 0)) / dx[1] +
+                            (fz(i, j, k + 1, 0) - fz(i, j, k, 0)) / dx[2]);
+                /*if (i == 20 && j == 20 && vof(i, j, k) > 1.0) {
                     std::cout << i << " " << j << " " << k << " "
                               << vof(i, j, k) << " " << oldvof << " "
                               << fz(i, j, k + 1, 0) << " " << fz(i, j, k, 0)
                               << std::endl;
-                }
-                /*if (vof(i, j, k) > 0.0 && vof(i, j, k) < 1e-8)
-                    vof(i, j, k) = 0.0;*/
-                // vof(i, j, k) = std::min(1.0, std::max(0.0, vof(i, j, k)));
-
+                }*/
                 // This outer conditional is just for the sake of debugging
                 if (vof(i, j, k) < 1.0 && vof(i, j, k) > 0.0) {
                     vof(i, j, k) =
@@ -362,8 +352,8 @@ void SharpenNaluData(CFDSim& sim, const int nit)
 
             // Apply fluxes
             apply_fluxes(
-                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev),
-                iblank_cell(lev), dx, i_th);
+                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev), dx,
+                i_th);
 
             // Replace vof with another field to look at it
             // equate_vof((*grad_asdf)(lev), vof(lev));
@@ -377,6 +367,8 @@ void SharpenNaluData(CFDSim& sim, const int nit)
 
         // Fillpatch for ghost cells
         vof.fillpatch(sim.time().current_time());
+
+        // Update density
     }
 }
 } // namespace overset
