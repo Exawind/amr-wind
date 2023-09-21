@@ -115,7 +115,6 @@ amrex::Real alpha_flux(
     const amrex::Real i_th,
     amrex::Array4<amrex::Real const> const& volfrac,
     amrex::Array4<amrex::Real const> const& gdstfnc,
-    amrex::Array4<int const> const& iblank,
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx)
 {
     // Set up neighbor indices
@@ -126,12 +125,9 @@ amrex::Real alpha_flux(
     jj += (dir == 1) ? -1 : 0;
     kk += (dir == 2) ? -1 : 0;
 
-    // Get face quantities
     // Gradient of phi normal to interface
     const amrex::Real gphi = (volfrac(i, j, k) - volfrac(ii, jj, kk)) / dx[dir];
-    const amrex::Real psi_avg =
-        0.5 * (gdstfnc(i, j, k, 3) + gdstfnc(ii, jj, kk, 3));
-    // Get average gpsi magnitude, replace
+    // Get gpsi magnitude for average normal
     const amrex::Real gpsi_mag_ = std::sqrt(
         std::pow(gdstfnc(i, j, k, 0), 2) + std::pow(gdstfnc(i, j, k, 1), 2) +
         std::pow(gdstfnc(i, j, k, 2), 2));
@@ -142,55 +138,8 @@ amrex::Real alpha_flux(
     const amrex::Real gpsi_norm_avg =
         0.5 * (gdstfnc(ii, jj, kk, dir) / (gpsi_mag_nb + 1e-10) +
                gdstfnc(i, j, k, dir) / (gpsi_mag_ + 1e-10));
-    // Determine bcs for each cell
-    int ibdy_ = 0, jbdy_ = 0, kbdy_ = 0;
-    int ibdy_nb = 0, jbdy_nb = 0, kbdy_nb = 0;
-    ibdy_ += (iblank(i, j, k) + iblank(i - 1, j, k) > -2)
-                 ? -1
-                 : (iblank(i, j, k) + iblank(i + 1, j, k) > -2 ? +1 : 0);
-    ibdy_nb +=
-        (iblank(ii, jj, k) + iblank(ii - 1, jj, kk) > -2)
-            ? -1
-            : (iblank(ii, jj, kk) + iblank(ii + 1, jj, kk) > -2 ? +1 : 0);
-    jbdy_ += (iblank(i, j, k) + iblank(i, j - 1, k) > -2)
-                 ? -1
-                 : (iblank(i, j, k) + iblank(i, j + 1, k) > -2 ? +1 : 0);
-    jbdy_nb +=
-        (iblank(ii, jj, k) + iblank(ii, jj - 1, kk) > -2)
-            ? -1
-            : (iblank(ii, jj, kk) + iblank(ii, jj + 1, kk) > -2 ? +1 : 0);
-    kbdy_ += (iblank(i, j, k) + iblank(i, j, k - 1) > -2)
-                 ? -1
-                 : (iblank(i, j, k) + iblank(i, j, k + 1) > -2 ? +1 : 0);
-    kbdy_nb +=
-        (iblank(ii, jj, k) + iblank(ii, jj, kk - 1) > -2)
-            ? -1
-            : (iblank(ii, jj, kk) + iblank(ii, jj, kk + 1) > -2 ? +1 : 0);
-    // Get normals for each cell
-    amrex::Real mx_ = 0., my_ = 0., mz_ = 0.;
-    amrex::Real mx_nb = 0., my_nb = 0., mz_nb = 0.;
-    amr_wind::multiphase::youngs_fd_normal_neumann(
-        i, j, k, ibdy_, jbdy_, kbdy_, volfrac, mx_, my_, mz_);
-    amr_wind::multiphase::youngs_fd_normal_neumann(
-        ii, jj, kk, ibdy_nb, jbdy_nb, kbdy_nb, volfrac, mx_nb, my_nb, mz_nb);
-    amrex::Real mn_ = dir == 0 ? mx_ : (dir == 1 ? my_ : mz_);
-    const amrex::Real mn_nb = dir == 0 ? mx_nb : (dir == 1 ? my_nb : mz_nb);
-    // Average normals from each and divide by dx (not done by other)
-    mx_ = 0.5 * (mx_ + mx_nb) / dx[0];
-    my_ = 0.5 * (my_ + my_nb) / dx[1];
-    mz_ = 0.5 * (mz_ + mz_nb) / dx[2];
-    mn_ = 0.5 * (mn_ + mn_nb) / dx[dir];
-    // Calculate magnitude and normalize, replacing normal gradient
-    const amrex::Real gphi_norm = gphi / std::sqrt(
-                                             mx_ * mx_ + my_ * my_ + mz_ * mz_ -
-                                             mn_ * mn_ + gphi * gphi + 1e-100);
 
-    // Tanh term - using average of tanh2 in each cell
-    amrex::Real omtanh2_avg =
-        1.0 - 0.5 * (tanh2_lim(0.5 * gdstfnc(i, j, k, 3) / i_th) +
-                     tanh2_lim(0.5 * gdstfnc(ii, jj, kk, 3) / i_th));
-    amrex::Real omtanh_avg2 =
-        1.0 - tanh(0.5 * psi_avg / i_th) * tanh(0.5 * psi_avg / i_th);
+    // Determine which psi to use for tanh term
     const amrex::Real psi_upw =
         gphi < 0. ? gdstfnc(i, j, k, 3) : gdstfnc(ii, jj, kk, 3);
     const amrex::Real psi_dnw =
@@ -199,35 +148,17 @@ amrex::Real alpha_flux(
     if (psi_upw * psi_dnw >= 0.0) {
         // Upwind and downwind are same majority
         if (psi_upw < 0.0) {
-            // Upwind in majority gas
+            // Upwind in majority gas (avoid over-emptying)
             psi_eval = psi_upw;
         }
         if (psi_dnw > 0.0) {
-            // Downwind in majority liquid
+            // Downwind in majority liquid (avoid over-filling)
             psi_eval = psi_dnw;
         }
     }
-    const amrex::Real omtanh2_upw = 1.0 - tanh2_lim(0.5 * psi_upw / i_th);
     const amrex::Real omtanh2_choose = 1.0 - tanh2_lim(0.5 * psi_eval / i_th);
-
-    /*if (i == 20 && j == 20 && omtanh_avg2 > 0.0 &&
-        std::abs(gphi_norm) > 1e-12) {
-        std::cout << "omtanh " << i << " " << j << " " << k << " " << dir << " "
-                  << omtanh_avg2 << " " << omtanh2_avg << std::endl;
-    }*/
-
     const amrex::Real a_flux =
-        (i_th * gphi - 0.25 * omtanh2_choose * gphi_norm);
-    // const amrex::Real a_flux = (i_th * gphi - 0.25 * omtanh2_upw *
-    // gphi_norm);
-    //  const amrex::Real a_flux = (i_th * gphi - 0.25 * omtanh2_avg *
-    //  gphi_norm); const amrex::Real a_flux = (i_th * gphi - 0.25 * omtanh_avg2
-    //  * gphi_norm); const amrex::Real a_flux = (i_th * gphi - 0.25 *
-    //  omtanh_avg2
-    //  * gpsi_norm_avg); const amrex::Real a_flux = (- 0.25 * omtanh_avg2 *
-    //  gpsi_norm_avg);
-
-    // Would be multiplied by Gamma (velocity scale)
+        (i_th * gphi - 0.25 * omtanh2_choose * gpsi_norm_avg);
     return a_flux;
 }
 
@@ -237,7 +168,6 @@ void populate_sharpen_fluxes(
     amrex::MultiFab& mf_fz,
     amrex::MultiFab& mf_gpsi,
     amrex::MultiFab& mf_vof,
-    amrex::iMultiFab& mf_iblank,
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx,
     const amrex::Real i_th,
     const amrex::Real rho1,
@@ -254,56 +184,23 @@ void populate_sharpen_fluxes(
         const amrex::Array4<amrex::Real>& fz = mf_fz.array(mfi);
         const amrex::Array4<const amrex::Real>& gpsi = mf_gpsi.const_array(mfi);
         const amrex::Array4<const amrex::Real>& vof = mf_vof.const_array(mfi);
-        const amrex::Array4<const int>& iblank = mf_iblank.const_array(mfi);
         // Populate vof and density fluxes for each direction
         amrex::ParallelFor(
             xbx, ybx, zbx,
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 // vof flux
-                amrex::Real f_vof =
-                    alpha_flux(i, j, k, 0, i_th, vof, gpsi, iblank, dx);
-                // check for overemptying depending on sign
-                /*if (f_vof > 0.0) {
-                    // vof is removed from cell i
-                    f_vof = std::min(f_vof, vof(i, j, k) * dx[0] / dxf);
-                } else {
-                    // vof is removed from cell i-1
-                    f_vof = std::max(f_vof, -vof(i - 1, j, k) * dx[0] / dxf);
-                }*/
-                // save modified flux
+                amrex::Real f_vof = alpha_flux(i, j, k, 0, i_th, vof, gpsi, dx);
                 fx(i, j, k, 0) = f_vof;
                 // density flux
                 // fx(i, j, k, 1) = rho1 * fx(i,j,k,0) + rho2 * (1.0 -
                 // fx(i,j,k,0)); pressure gradient fluxes
             },
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                amrex::Real f_vof =
-                    alpha_flux(i, j, k, 1, i_th, vof, gpsi, iblank, dx);
-                // check for overemptying depending on sign
-                /*if (f_vof > 0.0) {
-                    // vof is removed from cell j
-                    f_vof = std::min(f_vof, vof(i, j, k) * dx[1] / dxf);
-                } else {
-                    // vof is removed from cell j-1
-                    f_vof = std::max(f_vof, -vof(i, j - 1, k) * dx[1] / dxf);
-                }*/
+                amrex::Real f_vof = alpha_flux(i, j, k, 1, i_th, vof, gpsi, dx);
                 fy(i, j, k, 0) = f_vof;
             },
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                amrex::Real f_vof =
-                    alpha_flux(i, j, k, 2, i_th, vof, gpsi, iblank, dx);
-                /*if (i == 20 && j == 20 && k == 33)
-                    std::cout << "f_vof " << f_vof;
-                // check for overemptying depending on sign
-                if (f_vof > 0.0) {
-                    // vof is removed from cell k
-                    f_vof = std::min(f_vof, vof(i, j, k) * dx[2] / dxf);
-                } else {
-                    // vof is removed from cell k-1
-                    f_vof = std::max(f_vof, -vof(i, j, k - 1) * dx[2] / dxf);
-                }*/
-                if (i == 20 && j == 20 && k == 33)
-                    std::cout << " " << f_vof << std::endl;
+                amrex::Real f_vof = alpha_flux(i, j, k, 2, i_th, vof, gpsi, dx);
                 fz(i, j, k, 0) = f_vof;
             });
     }
@@ -313,7 +210,6 @@ void process_fluxes(
     amrex::MultiFab& mf_fx,
     amrex::MultiFab& mf_fy,
     amrex::MultiFab& mf_fz,
-    amrex::MultiFab& mf_vof,
     amrex::iMultiFab& mf_iblank)
 {
     int ncomp = mf_fx.nComp();
@@ -326,7 +222,6 @@ void process_fluxes(
         const amrex::Array4<amrex::Real>& fx = mf_fx.array(mfi);
         const amrex::Array4<amrex::Real>& fy = mf_fy.array(mfi);
         const amrex::Array4<amrex::Real>& fz = mf_fz.array(mfi);
-        const amrex::Array4<const amrex::Real>& vof = mf_vof.const_array(mfi);
         const amrex::Array4<const int>& iblank = mf_iblank.const_array(mfi);
         // Only faces with iblank = -1 on both sides can have nonzero flux
         // Faces with single-phase on one side cannot have flux
@@ -334,33 +229,18 @@ void process_fluxes(
             xbx, ybx, zbx,
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 bool zero_all = (iblank(i - 1, j, k) + iblank(i, j, k) > -2);
-                /*zero_all = zero_all ||
-                           ((vof(i - 1, j, k) < tiny ||
-                             vof(i - 1, j, k) > 1. - tiny) ||
-                            (vof(i, j, k) < tiny || vof(i, j, k) > 1. -
-                   tiny));*/
                 for (int n = 0; n < ncomp; ++n) {
                     fx(i, j, k, n) *= zero_all ? 0. : 1.;
                 }
             },
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 bool zero_all = (iblank(i, j - 1, k) + iblank(i, j, k) > -2);
-                /*zero_all = zero_all ||
-                           ((vof(i, j - 1, k) < tiny ||
-                             vof(i, j - 1, k) > 1. - tiny) ||
-                            (vof(i, j, k) < tiny || vof(i, j, k) > 1. -
-                   tiny));*/
                 for (int n = 0; n < ncomp; ++n) {
                     fy(i, j, k, n) *= zero_all ? 0. : 1.;
                 }
             },
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 bool zero_all = (iblank(i, j, k - 1) + iblank(i, j, k) > -2);
-                /*zero_all = zero_all ||
-                           ((vof(i, j, k - 1) < tiny ||
-                             vof(i, j, k - 1) > 1. - tiny) ||
-                            (vof(i, j, k) < tiny || vof(i, j, k) > 1. -
-                   tiny));*/
                 for (int n = 0; n < ncomp; ++n) {
                     fz(i, j, k, n) *= zero_all ? 0. : 1.;
                 }
@@ -486,12 +366,11 @@ void SharpenNaluData(CFDSim& sim, const int nit)
             // Sharpening fluxes for vof, density, pressure gradient
             populate_sharpen_fluxes(
                 (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev),
-                (*grad_asdf)(lev), vof(lev), iblank_cell(lev), dx, i_th, rhol,
-                rhog);
+                (*grad_asdf)(lev), vof(lev), dx, i_th, rhol, rhog);
 
             // Zero fluxes outside nalu portion of domain
             process_fluxes(
-                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev),
+                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev),
                 iblank_cell(lev));
 
             // Apply fluxes
