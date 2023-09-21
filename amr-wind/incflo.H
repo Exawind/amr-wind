@@ -173,6 +173,9 @@ private:
     bool m_do_initial_proj = true;
     int m_initial_iterations = 3;
 
+    // Sharpening multiphase for overset
+    int m_sharpen_iterations = 1;
+
     bool m_constant_density = true;
 
     bool m_use_godunov = true;

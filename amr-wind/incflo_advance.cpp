@@ -8,6 +8,7 @@
 #include "amr-wind/utilities/console_io.H"
 #include "amr-wind/utilities/PostProcessing.H"
 #include "AMReX_MultiFabUtil.H"
+#include "amr-wind/overset/sharpen_nalu_data.H"
 
 using namespace amrex;
 
@@ -195,7 +196,11 @@ void incflo::ApplyPredictor(bool incremental_projection)
         UpdateGradP(
             (density_old).vec_const_ptrs(), m_time.current_time(),
             m_time.deltaT());
+        // Sharpen nalu fields too
+        amr_wind::overset::SharpenNaluData(sim(), m_sharpen_iterations);
     }
+
+    return;
 
     // *************************************************************************************
     // Compute viscosity / diffusive coefficients
@@ -267,6 +272,10 @@ void incflo::ApplyPredictor(bool incremental_projection)
         for (auto& eqn : scalar_eqns()) {
             eqn->fields().src_term.fillpatch(m_time.current_time(), ng);
         }
+    }
+
+    if (m_verbose > 2) {
+        PrintMaxVelLocations("before pre advection");
     }
 
     // Extrapolate and apply MAC projection for advection velocities

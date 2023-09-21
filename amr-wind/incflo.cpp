@@ -388,6 +388,9 @@ void incflo::init_physics_and_pde()
         // Check for if velocity is prescribed
         amrex::ParmParse pp("incflo");
         pp.query("prescribe_velocity", m_prescribe_vel);
+
+        // Check for sharpening iterations (overset feature)
+        pp.query("sharpen_iterations", m_sharpen_iterations);
     }
     m_sim.create_turbulence_model();
 
