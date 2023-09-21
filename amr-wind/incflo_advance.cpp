@@ -200,8 +200,6 @@ void incflo::ApplyPredictor(bool incremental_projection)
         amr_wind::overset::SharpenNaluData(sim(), m_sharpen_iterations);
     }
 
-    return;
-
     // *************************************************************************************
     // Compute viscosity / diffusive coefficients
     // *************************************************************************************
