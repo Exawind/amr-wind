@@ -131,16 +131,11 @@ amrex::Real alpha_flux(
     const amrex::Real psi_dnw =
         gphi < 0. ? gdstfnc(ii, jj, kk, 3) : gdstfnc(i, j, k, 3);
     amrex::Real psi_eval = 0.5 * (psi_upw + psi_dnw);
-    if (psi_upw * psi_dnw >= 0.0) {
-        // Upwind and downwind are same majority
-        if (psi_upw < 0.0) {
-            // Upwind in majority gas (avoid over-emptying)
-            psi_eval = psi_upw;
-        }
-        if (psi_dnw > 0.0) {
-            // Downwind in majority liquid (avoid over-filling)
-            psi_eval = psi_dnw;
-        }
+    // Use upwinding to avoid over-emptying
+    if ((psi_upw < 0.0 && psi_dnw < 0.0) && psi_dnw > asdf(0.4, i_th)) {
+        // Upwind when both upwind and downwind are majority gas, and downwind
+        // is not close to interface
+        psi_eval = psi_upw;
     }
     const amrex::Real omtanh2_choose =
         1.0 - tanh(0.5 * psi_eval / i_th) * tanh(0.5 * psi_eval / i_th);
