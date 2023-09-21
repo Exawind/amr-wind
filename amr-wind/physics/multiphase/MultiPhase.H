@@ -63,6 +63,8 @@ public:
 
     amrex::Real rho2() const { return m_rho2; }
 
+    amrex::Vector<amrex::Real> gravity() const {return m_gravity; }
+
 private:
     const CFDSim& m_sim;
 
