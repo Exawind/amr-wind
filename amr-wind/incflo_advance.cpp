@@ -191,13 +191,14 @@ void incflo::ApplyPredictor(bool incremental_projection)
     const auto& density_old = density_new.state(amr_wind::FieldState::Old);
     auto& density_nph = density_new.state(amr_wind::FieldState::NPH);
 
-    // Recalculate incoming pressure gradient field if overset
+    // Process data for overset multiphase
     if (sim().has_overset()) {
+        // Sharpen nalu fields
+        amr_wind::overset::SharpenNaluData(sim(), m_sharpen_iterations);
+        // Recalculate pressure gradient with incoming sharpened field
         UpdateGradP(
             (density_old).vec_const_ptrs(), m_time.current_time(),
             m_time.deltaT());
-        // Sharpen nalu fields too
-        amr_wind::overset::SharpenNaluData(sim(), m_sharpen_iterations);
     }
 
     // *************************************************************************************
