@@ -194,7 +194,9 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // Process data for overset multiphase
     if (sim().has_overset()) {
         // Sharpen nalu fields
-        amr_wind::overset::SharpenNaluData(sim(), m_sharpen_iterations);
+        amr_wind::overset::SharpenNaluData(
+            sim(), m_sharpen_iterations, m_sharpen_tolerance,
+            m_sharpen_calctolniter);
         // Recalculate pressure gradient with incoming sharpened field
         UpdateGradP(
             (density_old).vec_const_ptrs(), m_time.current_time(),
