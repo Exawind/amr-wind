@@ -139,8 +139,6 @@ class FSRefineMesh : public AmrTestMesh
 public:
     FSRefineMesh() : m_mesh_refiner(new amr_wind::RefineCriteriaManager(m_sim))
     {}
-    amr_wind::FieldRepo& field_repo() { return m_repo; }
-    amr_wind::CFDSim& sim() { return m_sim; }
     void init_refiner() { m_mesh_refiner->initialize(); }
     void remesh() { regrid(0, 0.0); }
 
