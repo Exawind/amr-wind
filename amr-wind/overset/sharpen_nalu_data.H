@@ -560,6 +560,7 @@ void SharpenNaluData(CFDSim& sim, const int nit)
         // Fillpatch for ghost cells
         vof.fillpatch(sim.time().current_time());
         rho.fillpatch(sim.time().current_time());
+        velocity.fillpatch(sim.time().current_time());
 
         // Update density
 
@@ -570,6 +571,9 @@ void SharpenNaluData(CFDSim& sim, const int nit)
         amr_wind::field_ops::copy(
             rho.state(amr_wind::FieldState::Old), rho, 0, 0, rho.num_comp(),
             rho.num_grow());
+        amr_wind::field_ops::copy(
+            velocity.state(amr_wind::FieldState::Old), velocity, 0, 0,
+            velocity.num_comp(), velocity.num_grow());
     }
 
     // Fillpatch for pressure to make sure pressure stencil has all points
