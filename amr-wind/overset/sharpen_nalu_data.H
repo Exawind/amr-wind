@@ -434,20 +434,12 @@ void apply_fluxes(
                               << fz(i, j, k + 1, 0) << " " << fz(i, j, k, 0)
                               << std::endl;
                 }*/
-                // This outer conditional is just for the sake of debugging
-                /*if (vof(i, j, k) < 1.0 && vof(i, j, k) > 0.0) {
-                    vof(i, j, k) =
-                        vof(i, j, k) < tiny
-                            ? 0.0
-                            : (vof(i, j, k) > 1. - tiny ? 1. : vof(i, j, k));
-                    dens(i, j, k) =
-                        dens(i, j, k) < 1000.0 * tiny + 1.0 * (1.0 - tiny)
-                            ? 1.0
-                            : (dens(i, j, k) >
-                                       1000.0 * (1.0 - tiny) + 1.0 * tiny
-                                   ? 1000.
-                                   : dens(i, j, k));
-                }*/
+                // Ensure vof is bounded
+                vof(i, j, k) =
+                    vof(i, j, k) < tiny
+                        ? 0.0
+                        : (vof(i, j, k) > 1. - tiny ? 1. : vof(i, j, k));
+                // Density can be corrected later
             });
 
         // Apply pressure source/sink
