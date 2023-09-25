@@ -459,6 +459,47 @@ void apply_fluxes(
     }
 }
 
+amrex::Real measure_convergence(
+    amrex::MultiFab& mf_fx, amrex::MultiFab& mf_fy, amrex::MultiFab& mf_fz)
+{
+    // Get the maximum flux magnitude, but just for vof fluxes
+    const amrex::Real err_fx = amrex::ReduceMax(
+        mf_fx, 0,
+        [=] AMREX_GPU_HOST_DEVICE(
+            amrex::Box const& bx,
+            amrex::Array4<amrex::Real const> const& fx) -> amrex::Real {
+            amrex::Real err_fab = -1.0;
+            amrex::Loop(bx, [=, &err_fab](int i, int j, int k) noexcept {
+                err_fab = amrex::max(err_fab, std::abs(fx(i, j, k, 0)));
+            });
+            return err_fab;
+        });
+    const amrex::Real err_fy = amrex::ReduceMax(
+        mf_fy, 0,
+        [=] AMREX_GPU_HOST_DEVICE(
+            amrex::Box const& bx,
+            amrex::Array4<amrex::Real const> const& fy) -> amrex::Real {
+            amrex::Real err_fab = -1.0;
+            amrex::Loop(bx, [=, &err_fab](int i, int j, int k) noexcept {
+                err_fab = amrex::max(err_fab, std::abs(fy(i, j, k, 0)));
+            });
+            return err_fab;
+        });
+    const amrex::Real err_fz = amrex::ReduceMax(
+        mf_fz, 0,
+        [=] AMREX_GPU_HOST_DEVICE(
+            amrex::Box const& bx,
+            amrex::Array4<amrex::Real const> const& fz) -> amrex::Real {
+            amrex::Real err_fab = -1.0;
+            amrex::Loop(bx, [=, &err_fab](int i, int j, int k) noexcept {
+                err_fab = amrex::max(err_fab, std::abs(fz(i, j, k, 0)));
+            });
+            return err_fab;
+        });
+    const amrex::Real err = amrex::max(err_fx, amrex::max(err_fy, err_fz));
+    return err;
+}
+
 // for debugging
 void equate_vof(amrex::MultiFab& mf_gpsi, amrex::MultiFab& mf_vof)
 {
@@ -474,7 +515,8 @@ void equate_vof(amrex::MultiFab& mf_gpsi, amrex::MultiFab& mf_vof)
     }
 }
 
-void SharpenNaluData(CFDSim& sim, const int nit)
+void SharpenNaluData(
+    CFDSim& sim, const int nit, const amrex::Real tol, const int ncconv)
 {
     auto& repo = sim.repo();
     auto nlevels = repo.num_active_levels();
@@ -516,8 +558,16 @@ void SharpenNaluData(CFDSim& sim, const int nit)
     }*/
 
     // Pseudo-time loop
-    for (int n = 0; n < nit; ++n) {
-        // amrex::Print() << "new step " << n << std::endl;
+    amrex::Real err = 100.0 * tol;
+    int n = 0;
+    while (n < nit && err > tol) {
+        // Increment step counter
+        ++n;
+        // Determine if convergence error is calculated this step
+        bool cconv = n % ncconv == 0;
+        // Zero error if being calculated this step
+        err = cconv ? 0.0 : err;
+
         for (int lev = 0; lev < nlevels; ++lev) {
             // Thickness of interface should be 1/2 the size of the cell?
             auto dx = (geom[lev]).CellSizeArray();
@@ -547,6 +597,14 @@ void SharpenNaluData(CFDSim& sim, const int nit)
                 (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), (*p_src)(lev),
                 vof(lev), rho(lev), velocity(lev), p(lev), dx, i_th);
 
+            // Measure convergence to determine if loop can stop
+            if (cconv) {
+                // Update error at specified interval of steps
+                const amrex::Real err_lev = measure_convergence(
+                    (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev));
+                err = amrex::max(err, err_lev);
+            }
+
             // Replace vof with another field to look at it
             // equate_vof((*grad_asdf)(lev), vof(lev));
         }
@@ -574,6 +632,14 @@ void SharpenNaluData(CFDSim& sim, const int nit)
         amr_wind::field_ops::copy(
             velocity.state(amr_wind::FieldState::Old), velocity, 0, 0,
             velocity.num_comp(), velocity.num_grow());
+
+        // Ensure that err is same across processors
+        if (cconv) {
+            amrex::ParallelDescriptor::ReduceRealMax(err);
+        }
+
+        /*amrex::Print() << "sharpen step " << n << " " << err << " " << tol
+                       << std::endl;*/
     }
 
     // Fillpatch for pressure to make sure pressure stencil has all points
