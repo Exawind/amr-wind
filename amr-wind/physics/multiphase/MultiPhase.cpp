@@ -66,6 +66,8 @@ MultiPhase::MultiPhase(CFDSim& sim)
                 "reference_pressure", 1, (*m_vof).num_grow()[0], 1);
         }
     }
+
+    pp_multiphase.query("initialize_pressure", m_init_p);
 }
 
 InterfaceCapturingMethod MultiPhase::interface_capturing_method()
@@ -121,6 +123,20 @@ void MultiPhase::post_init_actions()
                 p0, m_rho1, m_rho2, water_level0, m_gravity[2],
                 m_sim.mesh().Geom());
         }
+    }
+
+    if (m_init_p && !is_wlev) {
+        amrex::Abort(
+            "Initialize pressure requested, but physics case does not "
+            "specify water level.");
+    }
+    // Make p field if both are specified
+    if (m_init_p && is_wlev) {
+        pp_multiphase.get("water_level", water_level0);
+        // Initialize rho0 field for perturbational density, pressure
+        auto& p = m_sim.repo().get_field("p");
+        hydrostatic::define_p0(
+            p, m_rho1, m_rho2, water_level0, m_gravity[2], m_sim.mesh().Geom());
     }
 }
 
