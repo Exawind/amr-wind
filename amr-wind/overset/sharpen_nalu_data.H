@@ -508,7 +508,11 @@ void equate_vof(amrex::MultiFab& mf_gpsi, amrex::MultiFab& mf_vof)
 }
 
 void SharpenNaluData(
-    CFDSim& sim, const int nit, const amrex::Real tol, const int ncconv)
+    CFDSim& sim,
+    const int nit,
+    const amrex::Real tol,
+    const int ncconv,
+    const amrex::Real rlscale)
 {
     auto& repo = sim.repo();
     auto nlevels = repo.num_active_levels();
@@ -563,7 +567,7 @@ void SharpenNaluData(
         for (int lev = 0; lev < nlevels; ++lev) {
             // Thickness of interface should be 1/2 the size of the cell?
             auto dx = (geom[lev]).CellSizeArray();
-            const amrex::Real i_th = 0.125 * std::cbrt(dx[0] * dx[1] * dx[2]);
+            const amrex::Real i_th = rlscale * std::cbrt(dx[0] * dx[1] * dx[2]);
 
             // Populate approximate signed distance function
             populate_grad_psi(

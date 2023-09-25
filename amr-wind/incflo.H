@@ -177,6 +177,7 @@ private:
     int m_sharpen_iterations = 1;
     amrex::Real m_sharpen_tolerance = 1e-8;
     int m_sharpen_calctolniter = 5;
+    amrex::Real m_sharpen_rlscale = 0.125;
 
     bool m_constant_density = true;
 
