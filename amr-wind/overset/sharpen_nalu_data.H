@@ -618,28 +618,28 @@ void SharpenNaluData(
 
         // Update density
 
-        // Copy to old
-        amr_wind::field_ops::copy(
-            vof.state(amr_wind::FieldState::Old), vof, 0, 0, vof.num_comp(),
-            vof.num_grow());
-        amr_wind::field_ops::copy(
-            rho.state(amr_wind::FieldState::Old), rho, 0, 0, rho.num_comp(),
-            rho.num_grow());
-        amr_wind::field_ops::copy(
-            velocity.state(amr_wind::FieldState::Old), velocity, 0, 0,
-            velocity.num_comp(), velocity.num_grow());
-
         // Ensure that err is same across processors
         if (cconv) {
             amrex::ParallelDescriptor::ReduceRealMax(err);
         }
 
-        /*amrex::Print() << "sharpen step " << n << " " << err << " " << tol
-                       << std::endl;*/
+        amrex::Print() << "sharpen step " << n << " " << err << " " << tol
+                       << std::endl;
     }
 
+    // Copy to old
+    amr_wind::field_ops::copy(
+        vof.state(amr_wind::FieldState::Old), vof, 0, 0, vof.num_comp(),
+        vof.num_grow());
+    amr_wind::field_ops::copy(
+        rho.state(amr_wind::FieldState::Old), rho, 0, 0, rho.num_comp(),
+        rho.num_grow());
+    amr_wind::field_ops::copy(
+        velocity.state(amr_wind::FieldState::Old), velocity, 0, 0,
+        velocity.num_comp(), velocity.num_grow());
+
     // Fillpatch for pressure to make sure pressure stencil has all points
-    // p.fillpatch(sim.time().current_time());
+    p.fillpatch(sim.time().current_time());
 }
 } // namespace overset
 } // namespace amr_wind
