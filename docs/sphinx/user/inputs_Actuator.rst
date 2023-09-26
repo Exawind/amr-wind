@@ -29,6 +29,21 @@ turbines as actuator disks and actuator line models.
    supported are: ``TurbineFastLine``, ``TurbineFastDisk``, and 
    ``FixedWingLine``.
 
+.. input_param:: Actuator.sample_vel_nmhalf
+
+   **type:** Bool, optional
+   
+   This option sets the type of velocity sampling used to inform the actuator model. 
+   Setting this variable to true (or `1`) makes the Actuator velocity sampling use 
+   the face-centered velocity field at the time instant of `n-1/2`. For simulations 
+   coupled to OpenFAST, this enables the actuator forces to be implemented at the 
+   time instant of `n+1/2`, which fits best with the underlying numerical model of AMR-Wind
+   and has been shown to dramatically improve the accuracy of the Actuator Line Model. 
+   This option defaults to true (`1`) when the Actuator type is ``TurbineFastLine`` or 
+   ``TurbineFastDisk``, and it defaults to false (`0`) in all other cases. When the 
+   option is false, the actuator routine samples the cell-centered velocity
+   at the time instant `n`.
+
 FixedWingLine
 """""""""""""
 
@@ -104,6 +119,13 @@ Example for ``FixedWingLine``::
   The relaxation factor to be applied to the updated velocity see:
   `Martinez-Tossas and Meneveau (2019) <https://doi.org/10.1017/jfm.2018.994>`_
   The default value is `0.1`.
+
+.. input_param:: Actuator.FixedWingLine.fllc_start_time
+
+  **type:** Double
+
+  The time in the simulation from when to start using the correction.
+  The default value is `0`.
 
 .. input_param:: Actuator.FixedWingLine.pitch
 

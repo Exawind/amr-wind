@@ -20,7 +20,9 @@ FieldInfo::FieldInfo(
     , m_ngrow(ngrow)
     , m_nstates(nstates)
     , m_floc(floc)
-    , m_bc_values(AMREX_SPACEDIM * 2, amrex::Vector<amrex::Real>(ncomp, 0.0))
+    , m_bc_values(
+          static_cast<long>(AMREX_SPACEDIM) * 2,
+          amrex::Vector<amrex::Real>(ncomp, 0.0))
     , m_bc_values_dview(static_cast<long>(ncomp) * AMREX_SPACEDIM * 2)
     , m_bcrec(ncomp)
     , m_bcrec_d(ncomp)
@@ -266,7 +268,7 @@ void Field::fillphysbc(amrex::Real time) noexcept
 void Field::apply_bc_funcs(const FieldState rho_state) noexcept
 {
     BL_ASSERT(m_info->bc_initialized() && m_info->m_bc_copied_to_device);
-    for (auto& func : m_info->m_bc_func) {
+    for (const auto& func : m_info->m_bc_func) {
         (*func)(*this, rho_state);
     }
 }
@@ -295,7 +297,7 @@ void Field::advance_states() noexcept
         const auto sold = static_cast<FieldState>(i);
         const auto snew = static_cast<FieldState>(i - 1);
         auto& old_field = state(sold);
-        auto& new_field = state(snew);
+        const auto& new_field = state(snew);
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
             amrex::MultiFab::Copy(
                 old_field(lev), new_field(lev), 0, 0, num_comp(), num_grow());

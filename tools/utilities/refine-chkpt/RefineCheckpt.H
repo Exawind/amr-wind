@@ -14,7 +14,8 @@ public:
     virtual ~RefineCheckpt() = default;
 
     virtual void
-    ErrorEst(int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow);
+    ErrorEst(int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow)
+        override;
 
     void read_chkpt_file();
 

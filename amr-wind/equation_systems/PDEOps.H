@@ -83,7 +83,6 @@ struct SrcTermOpBase
 
         for (auto& src_name : src_terms) {
             // Prefer to use emplace_back here
-            // cppcheck-suppress useStlAlgorithm
             sources.emplace_back(PDE::SrcTerm::create(src_name, sim));
         }
     }
@@ -117,7 +116,8 @@ struct SrcTermOpBase
     }
 
     //! Update source terms during time-integration procedure
-    void operator()(const FieldState fstate, const bool /* mesh_mapping */)
+    virtual void
+    operator()(const FieldState fstate, const bool /* mesh_mapping */)
     {
         // Zero out source term
         this->fields.src_term.setVal(0.0);

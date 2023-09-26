@@ -124,7 +124,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fluxes_bc_save(
     if (dir == 0) {
         // For wall BCs, do not allow flow into or out of domain
         if (bclo == BC::no_slip_wall || bclo == BC::slip_wall ||
-            bclo == BC::wall_model) {
+            bclo == BC::wall_model || bclo == BC::symmetric_wall) {
             if (i == domlo) {
                 vofR(domlo - 1, j, k) = 0.0;
                 vofL(domlo, j, k) = 0.0;
@@ -132,7 +132,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fluxes_bc_save(
         }
 
         if (bchi == BC::no_slip_wall || bchi == BC::slip_wall ||
-            bchi == BC::wall_model) {
+            bchi == BC::wall_model || bchi == BC::symmetric_wall) {
             if (i == domhi + 1) {
                 vofL(domhi + 1, j, k) = 0.0;
                 vofR(domhi, j, k) = 0.0;
@@ -146,14 +146,14 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fluxes_bc_save(
         // eulerian_implicit(), so this sum is not for the sake of accumulation
     } else if (dir == 1) {
         if (bclo == BC::no_slip_wall || bclo == BC::slip_wall ||
-            bclo == BC::wall_model) {
+            bclo == BC::wall_model || bclo == BC::symmetric_wall) {
             if (j == domlo) {
                 vofR(i, domlo - 1, k) = 0.0;
                 vofL(i, domlo, k) = 0.0;
             }
         }
         if (bchi == BC::no_slip_wall || bchi == BC::slip_wall ||
-            bchi == BC::wall_model) {
+            bchi == BC::wall_model || bchi == BC::symmetric_wall) {
             if (j == domhi + 1) {
                 vofL(i, domhi + 1, k) = 0.0;
                 vofR(i, domhi, k) = 0.0;
@@ -163,14 +163,14 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fluxes_bc_save(
         f_f(i, j, k) = advalpha_f(i, j, k) * disp;
     } else if (dir == 2) {
         if (bclo == BC::no_slip_wall || bclo == BC::slip_wall ||
-            bclo == BC::wall_model) {
+            bclo == BC::wall_model || bclo == BC::symmetric_wall) {
             if (k == domlo) {
                 vofR(i, j, domlo - 1) = 0.0;
                 vofL(i, j, domlo) = 0.0;
             }
         }
         if (bchi == BC::no_slip_wall || bchi == BC::slip_wall ||
-            bchi == BC::wall_model) {
+            bchi == BC::wall_model || bchi == BC::symmetric_wall) {
             if (k == domhi + 1) {
                 vofL(i, j, domhi + 1) = 0.0;
                 vofR(i, j, domhi) = 0.0;

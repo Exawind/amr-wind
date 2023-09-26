@@ -42,13 +42,16 @@ The boundary conditions that can be specified in the input file are:
   if the user does not specify any inputs in the input file.
 
 - =zero_gradient= :: Sets =BCRec= to =foextrap= and =LinOpBCType= to Neumann.
-  Like =no_slip_wall=, the normal component of velocity is automatically reset
-  to zero. The value on the boundary face is the same as the value at the cell
+  Note, unlike the =no_slip_wall=, the normal component of velocity is also zero
+  Neumann. The value on the boundary face is the same as the value at the cell
   center. No additional inputs are necessary when this BC is specified.
 
 - =slip_wall= :: =BCRec = hoextrap= and =LinOpBCType = Neumann=. The value on
   the boundary face is /extrapolated/ from the two interior cells using a
   one-sided stencil. No additional inputs are necessary when this BC is specified.
+
+- =symmetric_wall= ::  Sets =BCRec= to =foextrap= and =LinOpBCType= to Neumann.
+  Similar to =zero_gradient= but the normal component of velocity is set to 0.
 
 - =fixed_gradient= :: =BCRec = hoextrap= and =LinOpBCType = inhomogNeumann=.
   Like =slip_wall= the value on the face is extrapolated (during fillpatch)
@@ -86,7 +89,8 @@ possible for scalars and tangential component of velocity.
 | pressure_outflow | po    | foextrap    | foextrap | foextrap | foextrap |
 | mass_inflow      | mi    | ext_dir     | ext_dir  | ext_dir  | foextrap |
 | no_slip_wall     | nsw   | ext_dir (0) | ext_dir  | ext_dir  | foextrap |
-| zero_gradient    | zg    | ext_dir (0) | foextrap | foextrap | foextrap |
+| symmetric_wall   | symw  | ext_dir (0) | foextrap | foextrap | foextrap |
+| zero_gradient    | zg    | foextrap    | foextrap | foextrap | foextrap |
 | slip_wall        | sw    | ext_dir (0) | hoextrap | hoextrap | foextrap |
 | wall_model       | wm    | ext_dir (0) | hoextrap | hoextrap | foextrap |
 | fixed_gradient   | fg    | hoextrap    | hoextrap | hoextrap | foextrap |
@@ -103,6 +107,7 @@ projection (pressure) and MAC projections.
 | pressure_outflow | po    | Dirichlet        |
 | mass_inflow      | mi    | Neumann          |
 | zero_gradient    | zg    | Neumann          |
+| symmetric_wall   | symw  | Neumann          |
 | no_slip_wall     | nsw   | Neumann          |
 | slip_wall        | sw    | Neumann          |
 | wall_model       | wm    | Neumann          |
@@ -118,6 +123,7 @@ projection (pressure) and MAC projections.
 | mass_inflow      | mi    | Dirichlet        | Dirichlet            |
 | zero_gradient    | zg    | Dirichlet (0)    | Neumann              |
 | no_slip_wall     | nsw   | Dirichlet (0)    | Dirichlet            |
+| symmetric_wall   | symw  | Dirichlet (0)    | Neumann              |
 | slip_wall        | sw    | Dirichlet (0)    | Neumann              |
 | wall_model       | wm    | Dirichlet (0)    | Inhomog Neumann      |
 | fixed_gradient   | fg    | Inhomog Neumann  | Inhomog Neumann      |
@@ -132,6 +138,7 @@ projection (pressure) and MAC projections.
 | pressure_outflow | po    | Neumann          |
 | mass_inflow      | mi    | Dirichlet        |
 | zero_gradient    | zg    | Neumann          |
+| symmetric_wall   | symw  | Neumann          |
 | no_slip_wall     | nsw   | Dirichlet        |
 | slip_wall        | sw    | Neumann          |
 | wall_model       | wm    | Inhomog Neumann  |

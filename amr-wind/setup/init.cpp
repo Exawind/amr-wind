@@ -29,8 +29,8 @@ void incflo::ReadParameters()
         // Godunov-related flags
         pp.query("use_godunov", m_use_godunov);
 
-        // The default for diffusion_type is 2, i.e. the default m_diff_type is
-        // DiffusionType::Implicit
+        // The default for diffusion_type is 1, i.e. the default m_diff_type is
+        // DiffusionType::Crank_Nicolson
         int diffusion_type = 1;
         pp.query("diffusion_type", diffusion_type);
         if (diffusion_type == 0) {
@@ -128,11 +128,11 @@ void incflo::InitialIterations()
 
     // Add mean pressure back if available
     if (m_repo.field_exists("reference_pressure")) {
-        auto& pressure = m_repo.get_field("p");
-        auto& p0 = m_repo.get_field("reference_pressure");
+        auto& press = m_repo.get_field("p");
+        const auto& p0 = m_repo.get_field("reference_pressure");
         for (int lev = 0; lev <= finest_level; lev++) {
             amrex::MultiFab::Add(
-                pressure(lev), p0(lev), 0, 0, 1, pressure.num_grow()[0]);
+                press(lev), p0(lev), 0, 0, 1, press.num_grow()[0]);
         }
     }
     amrex::Print() << "Completed initial pressure iterations" << std::endl

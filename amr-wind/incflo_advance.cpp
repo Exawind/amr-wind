@@ -157,7 +157,7 @@ void incflo::advance()
  *  \f{align}
  *  \kappa = \begin{cases}
  *  0 & \text{Explicit} \\
- *  0.5 & \text{Crank-Nicholson} \\
+ *  0.5 & \text{Crank-Nicolson} \\
  *  1 & \text{Implicit}
  *  \end{cases}
  *  \f}
@@ -190,13 +190,20 @@ void incflo::ApplyPredictor(bool incremental_projection)
     const auto& density_old = density_new.state(amr_wind::FieldState::Old);
     auto& density_nph = density_new.state(amr_wind::FieldState::NPH);
 
+    // Recalculate incoming pressure gradient field if overset
+    if (sim().has_overset()) {
+        UpdateGradP(
+            (density_old).vec_const_ptrs(), m_time.current_time(),
+            m_time.deltaT());
+    }
+
     // *************************************************************************************
     // Compute viscosity / diffusive coefficients
     // *************************************************************************************
     // TODO: This sub-section has not been adjusted for mesh mapping - adjust in
     // corrector too
     m_sim.turbulence_model().update_turbulent_viscosity(
-        amr_wind::FieldState::Old);
+        amr_wind::FieldState::Old, m_diff_type);
     icns().compute_mueff(amr_wind::FieldState::Old);
     for (auto& eqns : scalar_eqns()) {
         eqns->compute_mueff(amr_wind::FieldState::Old);
@@ -475,7 +482,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
  *  \f{align}
  *  \kappa = \begin{cases}
  *  0 & \text{Explicit} \\
- *  0.5 & \text{Crank-Nicholson} \\
+ *  0.5 & \text{Crank-Nicolson} \\
  *  1 & \text{Implicit}
  *  \end{cases}
  *  \f}
@@ -517,7 +524,7 @@ void incflo::ApplyCorrector()
     // Compute viscosity / diffusive coefficients
     // *************************************************************************************
     m_sim.turbulence_model().update_turbulent_viscosity(
-        amr_wind::FieldState::New);
+        amr_wind::FieldState::New, m_diff_type);
     icns().compute_mueff(amr_wind::FieldState::New);
     for (auto& eqns : scalar_eqns()) {
         eqns->compute_mueff(amr_wind::FieldState::New);
@@ -636,7 +643,7 @@ void incflo::ApplyPrescribeStep()
 
     // Compute diffusive and source terms for scalars
     m_sim.turbulence_model().update_turbulent_viscosity(
-        amr_wind::FieldState::Old);
+        amr_wind::FieldState::Old, m_diff_type);
     for (auto& eqns : scalar_eqns()) {
         eqns->compute_mueff(amr_wind::FieldState::Old);
     }

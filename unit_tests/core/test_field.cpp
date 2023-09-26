@@ -318,7 +318,7 @@ TEST_F(FieldRepoTest, int_scratch_fields)
     populate_parameters();
     create_mesh_instance();
 
-    auto& frepo = mesh().field_repo();
+    const auto& frepo = mesh().field_repo();
 // Check that int scratch field creation is disallowed before mesh is created
 #if !(defined(AMREX_USE_MPI) && defined(__APPLE__))
     EXPECT_THROW(
@@ -326,10 +326,8 @@ TEST_F(FieldRepoTest, int_scratch_fields)
 #endif
     initialize_mesh();
 
-    // cppcheck-suppress constVariable
     auto ibcell_host = frepo.create_int_scratch_field_on_host(
         "iblank_cell_host", 1, 0, amr_wind::FieldLoc::CELL);
-    // cppcheck-suppress constVariable
     auto ibnode_host = frepo.create_int_scratch_field_on_host(
         "iblank_node_host", 1, 0, amr_wind::FieldLoc::NODE);
 
@@ -351,9 +349,7 @@ TEST_F(FieldRepoTest, int_fields)
     initialize_mesh();
 
     auto& frepo = mesh().field_repo();
-    // cppcheck-suppress constVariable
     auto& ibcell = frepo.declare_int_field("iblank_cell", 1, 0, 1);
-    // cppcheck-suppress constVariable
     auto& ibnode = frepo.declare_int_field(
         "iblank_node", 1, 0, 1, amr_wind::FieldLoc::NODE);
 

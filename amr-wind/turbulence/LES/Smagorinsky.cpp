@@ -19,7 +19,8 @@ Smagorinsky<Transport>::Smagorinsky(CFDSim& sim)
 {}
 
 template <typename Transport>
-void Smagorinsky<Transport>::update_turbulent_viscosity(const FieldState fstate)
+void Smagorinsky<Transport>::update_turbulent_viscosity(
+    const FieldState fstate, const DiffusionType /*unused*/)
 {
     BL_PROFILE(
         "amr-wind::" + this->identifier() + "::update_turbulent_viscosity");

@@ -42,7 +42,8 @@ public:
 
     void set_density_via_levelset();
 
-    void set_density_via_vof();
+    void set_density_via_vof(
+        amr_wind::FieldState fstate = amr_wind::FieldState::New);
 
     void set_nph_density();
 

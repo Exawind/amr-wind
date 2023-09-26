@@ -19,6 +19,7 @@ OneEqKsgs<Transport>::OneEqKsgs(CFDSim& sim)
     , m_turb_lscale(sim.repo().declare_field("turb_lscale", 1, 1, 1))
     , m_shear_prod(sim.repo().declare_field("shear_prod", 1, 1, 1))
     , m_buoy_prod(sim.repo().declare_field("buoy_prod", 1, 1, 1))
+    , m_dissip(sim.repo().declare_field("dissipation", 1, 1, 1))
     , m_rho(sim.repo().get_field("density"))
 {
     auto& tke_eqn =
@@ -86,7 +87,7 @@ TurbulenceModel::CoeffsDictType OneEqKsgsM84<Transport>::model_coeffs() const
 
 template <typename Transport>
 void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
-    const FieldState fstate)
+    const FieldState fstate, const DiffusionType /*unused*/)
 {
     BL_PROFILE(
         "amr-wind::" + this->identifier() + "::update_turbulent_viscosity");
@@ -232,7 +233,6 @@ void OneEqKsgsM84<Transport>::post_advance_work()
     // Update sdr field based on sfs ke
 
     auto& tke = *(this->m_tke);
-    // cppcheck-suppress constVariable
     auto& sdr = *(this->m_sdr);
     const amrex::Real Ce = this->m_Ce;
 
@@ -288,7 +288,8 @@ TurbulenceModel::CoeffsDictType OneEqKsgsS94<Transport>::model_coeffs() const
 template <typename Transport>
 void OneEqKsgsS94<Transport>::update_turbulent_viscosity(
     const FieldState // fstate
-    /*unused*/)
+    /*unused*/,
+    const DiffusionType /*unused*/)
 {
     BL_PROFILE(
         "amr-wind::" + this->identifier() + "::update_turbulent_viscosity");

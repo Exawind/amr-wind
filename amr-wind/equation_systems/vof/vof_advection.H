@@ -3,6 +3,7 @@
 #define VOF_ADVECTION_H
 
 #include "amr-wind/equation_systems/vof/vof.H"
+#include "amr-wind/equation_systems/vof/vof_hybridsolver_ops.H"
 #include "amr-wind/equation_systems/vof/SplitAdvection.H"
 
 namespace amr_wind::pde {
@@ -50,8 +51,8 @@ struct AdvectionOp<VOF, fvm::Godunov>
         // cppcheck-suppress constVariable
         auto& dof_field = fields.field;
         //
-        // Advect volume using either the Explicit Lagrangian onto-cell or
-        // Implicit Eulerian Sweeping method with PLIC reconstruction
+        // Advect volume using Implicit Eulerian Sweeping method with PLIC
+        // reconstruction
         //
 
         auto flux_x =
@@ -85,6 +86,20 @@ struct AdvectionOp<VOF, fvm::Godunov>
             advas[lev][2] = &aa_z(lev);
         }
 
+        // Sharpen acquired vof field if hybrid solver is being used
+        if (repo.int_field_exists("iblank_cell")) {
+            auto& f_iblank = repo.get_int_field("iblank_cell");
+            amr_wind::multiphase::sharpen_acquired_vof(
+                nlevels, f_iblank, dof_field);
+            // Update old vof so that old density can be updated
+            // cppcheck-suppress constVariableReference
+            auto& old_dof_field = dof_field.state(amr_wind::FieldState::Old);
+            for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+                amrex::MultiFab::Copy(
+                    old_dof_field(lev), dof_field(lev), 0, 0,
+                    dof_field.num_comp(), dof_field.num_grow());
+            }
+        }
         // Split advection step 1, with cmask calculation
         multiphase::split_advection_step(
             isweep, 0, nlevels, dof_field, fluxes, (*fluxC), advas, u_mac,
