@@ -506,6 +506,11 @@ void populate_sharpen_discrete_fluxes(
                 fz(i, j, k, 4) *= flux;
                 // Turn "on" all z faces, later modified in process_fluxes
                 fz(i, j, k, 5) = 1.0;
+
+                /*if (i == 30 && j == 30 && (k == 31 || k == 32 || k == 33)) {
+                    std::cout << "populate_fluxes " << i << " " << j << " " << k
+                              << " " << fz(i, j, k, 0) << std::endl;
+                }*/
             });
     }
 }
@@ -551,6 +556,12 @@ void process_fluxes_calc_src(
                 for (int n = 0; n < ncompz; ++n) {
                     fz(i, j, k, n) *= zero_all ? 0. : 1.;
                 }
+                /*if (i == 30 && j == 30 && (k == 31 || k == 32 || k == 33)) {
+                    std::cout
+                        << "process_fluxes " << i << " " << j << " " << k << " "
+                        << fz(i, j, k, 0) << " zero_all " << zero_all << " "
+                        << iblank(i, j, k - 1) + iblank(i, j, k) << std::endl;
+                }*/
             });
         // With knowledge of fluxes, compute pressure source term
         amrex::Box const& nbx = mfi.nodaltilebox();
@@ -631,12 +642,14 @@ void apply_fluxes(
                      ptfac * ((fx(i + 1, j, k, 4) - fx(i, j, k, 4)) / dx[0] +
                               (fy(i, j + 1, k, 4) - fy(i, j, k, 4)) / dx[1] +
                               (fz(i, j, k + 1, 4) - fz(i, j, k, 4)) / dx[2]));
-                /*if (i == 30 && j == 30 && vof(i, j, k) > 1.0) {
-                    std::cout << i << " " << j << " " << k << " "
-                              << vof(i, j, k) << " " << oldvof << " "
-                              << fz(i, j, k + 1, 0) << " " << fz(i, j, k, 0)
+
+                /*if (i == 30 && j == 30 && (k == 31 || k == 32)) {
+                    std::cout << "apply_fluxes " << i << " " << j << " " << k
+                              << " " << oldvof << " " << vof(i, j, k) << " "
+                              << fz(i, j, k + 1, 0) << " " << -fz(i, j, k, 0)
                               << std::endl;
                 }*/
+
                 // Ensure vof is bounded
                 /*vof(i, j, k) =
                     vof(i, j, k) < tiny
@@ -984,8 +997,8 @@ void SharpenNaluDataDiscrete(
             }
         }
 
-        // sim.time().increment_timestep();
         // sim.io_manager().write_plot_file();
+        // sim.time().increment_timestep();
 
         // Average down fluxes
         // Get pseudo CFL (multiplier for sharpening term)
