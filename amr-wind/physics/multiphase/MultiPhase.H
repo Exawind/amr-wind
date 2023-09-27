@@ -57,6 +57,16 @@ public:
 
     void favre_filtering();
 
+    void set_intf_init_method_to_vof()
+    {
+        m_interface_init_method = InterfaceCapturingMethod::VOF;
+    }
+
+    void set_intf_init_method_to_ls()
+    {
+        m_interface_init_method = InterfaceCapturingMethod::LS;
+    };
+
     amrex::Real volume_fraction_sum();
 
     amrex::Real momentum_sum(int n);
@@ -67,7 +77,7 @@ public:
 
     amrex::Real rho2() const { return m_rho2; }
 
-    amrex::Vector<amrex::Real> gravity() const {return m_gravity; }
+    amrex::Vector<amrex::Real> gravity() const { return m_gravity; }
 
 private:
     const CFDSim& m_sim;
@@ -93,7 +103,6 @@ private:
     // Reconstructing true pressure field at end of timestep
     bool is_ptrue{false};
 
-
     bool m_init_p{false};
 
     // Info to create rho0
@@ -109,6 +118,9 @@ private:
     std::string m_interface_model{"vof"};
     InterfaceCapturingMethod m_interface_capturing_method =
         InterfaceCapturingMethod::VOF;
+
+    InterfaceCapturingMethod m_interface_init_method =
+        InterfaceCapturingMethod::LS;
 
     // Verbose flag for multiphase
     int m_verbose{0};

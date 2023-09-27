@@ -80,13 +80,32 @@ void MultiPhase::post_init_actions()
 
     const auto& io_mgr = m_sim.io_manager();
     if (!io_mgr.is_restart()) {
-        switch (m_interface_capturing_method) {
-        case InterfaceCapturingMethod::VOF:
-            levelset2vof();
-            set_density_via_vof();
-            break;
+        // Different steps depending on how case is initialized, solved
+        switch (m_interface_init_method) {
         case InterfaceCapturingMethod::LS:
-            set_density_via_levelset();
+            switch (m_interface_capturing_method) {
+            case InterfaceCapturingMethod::VOF:
+                levelset2vof();
+                set_density_via_vof();
+                break;
+            case InterfaceCapturingMethod::LS:
+                set_density_via_levelset();
+                break;
+            };
+            break;
+
+        case InterfaceCapturingMethod::VOF:
+            switch (m_interface_capturing_method) {
+            case InterfaceCapturingMethod::VOF:
+                // VOF has been specified directly, just update density
+                set_density_via_vof();
+                break;
+            case InterfaceCapturingMethod::LS:
+                amrex::Abort(
+                    "Initialization failed. Case cannot be initialized with "
+                    "VOF and then simulated with Levelset");
+                break;
+            };
             break;
         };
     }
@@ -179,7 +198,8 @@ void MultiPhase::post_advance_work()
 {
     switch (m_interface_capturing_method) {
     case InterfaceCapturingMethod::VOF:
-        // Compute and print the total volume fraction, momenta, and differences
+        // Compute and print the total volume fraction, momenta, and
+        // differences
         if (m_verbose > 0) {
             m_total_volfrac = volume_fraction_sum();
             amrex::Real mom_x = momentum_sum(0) - q0;
@@ -563,7 +583,8 @@ void MultiPhase::levelset2vof(IntField& iblank_cell, ScratchField& vof_scr)
                     if (iblank(i, j, k) != iblank(i, j, k - 1)) {
                         kbdy = -1;
                     }
-                    // no cell should be isolated such that -1 and 1 are needed
+                    // no cell should be isolated such that -1 and 1 are
+                    // needed
                     if (iblank(i, j, k) != iblank(i + 1, j, k)) {
                         ibdy = +1;
                     }
