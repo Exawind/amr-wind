@@ -12,7 +12,7 @@ namespace overset {
 amrex::Real asdf(const amrex::Real a_vof, const amrex::Real i_th)
 {
     // function of local vof value and interface thickness
-    return (i_th * log((a_vof + 1e-100) / (1. - a_vof + 1e-100)));
+    return (i_th * log((a_vof + 1e-12) / (1. - a_vof + 1e-12)));
 }
 
 void process_vof(amrex::MultiFab& mf_vof)
