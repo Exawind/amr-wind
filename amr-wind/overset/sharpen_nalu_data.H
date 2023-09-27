@@ -4,6 +4,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/equation_systems/vof/volume_fractions.H"
+#include "amr-wind/utilities/IOManager.H"
 
 namespace amr_wind {
 namespace overset {
@@ -347,18 +348,34 @@ amrex::Real alpha_discrete_flux(
     // Average value used across the interface
     amrex::Real dphi_eval = 0.5 * (dphi_ + dphi_nb);
     // Upwinding when on the gas side, downwinding on the liquid
-    if (gphi > 0.0) {
-        dphi_eval = (vof(ii, jj, kk) < 0.5 && vof(i, j, k) <= 0.5) ? dphi_nb
-                                                                   : dphi_eval;
-        dphi_eval =
-            (vof(ii, jj, kk) >= 0.5 && vof(i, j, k) > 0.5) ? dphi_ : dphi_eval;
+    constexpr amrex::Real margin = 0.1;
+    if ((std::abs(vof(i, j, k) - 0.5) > margin ||
+         std::abs(vof(ii, jj, kk) - 0.5) > margin)) {
+        if (gphi > 0.0) {
+            dphi_eval = (vof(ii, jj, kk) < 0.5 && vof(i, j, k) <= 0.5 + margin)
+                            ? dphi_nb
+                            : dphi_eval;
+            dphi_eval = (vof(ii, jj, kk) >= 0.5 - margin && vof(i, j, k) > 0.5)
+                            ? dphi_
+                            : dphi_eval;
+        }
+        if (gphi < 0.0) {
+            dphi_eval = (vof(i, j, k) < 0.5 && vof(ii, jj, kk) <= 0.5 + margin)
+                            ? dphi_
+                            : dphi_eval;
+            dphi_eval = (vof(i, j, k) >= 0.5 - margin && vof(ii, jj, kk) > 0.5)
+                            ? dphi_nb
+                            : dphi_eval;
+        }
     }
-    if (gphi < 0.0) {
-        dphi_eval =
-            (vof(i, j, k) < 0.5 && vof(ii, jj, kk) <= 0.5) ? dphi_ : dphi_eval;
-        dphi_eval = (vof(i, j, k) >= 0.5 && vof(ii, jj, kk) > 0.5) ? dphi_nb
-                                                                   : dphi_eval;
-    }
+
+    /*if (dir == 2 && i == 30 && j == 30 &&
+        (std::abs(vof(i, j, k) - 0.5) < 0.1 ||
+         std::abs(vof(ii, jj, kk) - 0.5) < 0.1)) {
+        std::cout << i << " " << j << " " << k << " " << vof(i, j, k) << " "
+                  << vof(ii, jj, kk) << " " << dphi_eval << " " << dphi_ << " "
+                  << dphi_nb << std::endl;
+    }*/
 
     return dphi_eval;
 }
@@ -612,7 +629,7 @@ void apply_fluxes(
                      ptfac * ((fx(i + 1, j, k, 4) - fx(i, j, k, 4)) / dx[0] +
                               (fy(i, j + 1, k, 4) - fy(i, j, k, 4)) / dx[1] +
                               (fz(i, j, k + 1, 4) - fz(i, j, k, 4)) / dx[2]));
-                /*if (i == 20 && j == 20 && vof(i, j, k) > 1.0) {
+                /*if (i == 30 && j == 30 && vof(i, j, k) > 1.0) {
                     std::cout << i << " " << j << " " << k << " "
                               << vof(i, j, k) << " " << oldvof << " "
                               << fz(i, j, k + 1, 0) << " " << fz(i, j, k, 0)
@@ -964,6 +981,9 @@ void SharpenNaluDataDiscrete(
             }
         }
 
+        // sim.time().increment_timestep();
+        // sim.io_manager().write_plot_file();
+
         // Average down fluxes
         // Get pseudo CFL (multiplier for sharpening term)
         // Apply fluxes
@@ -971,9 +991,9 @@ void SharpenNaluDataDiscrete(
         // Average down vof for consistency
 
         // Fillpatch for ghost cells
-        /*vof.fillpatch(sim.time().current_time());
+        vof.fillpatch(sim.time().current_time());
         rho.fillpatch(sim.time().current_time());
-        velocity.fillpatch(sim.time().current_time());*/
+        velocity.fillpatch(sim.time().current_time());
 
         // Update density
 
@@ -984,7 +1004,13 @@ void SharpenNaluDataDiscrete(
 
         amrex::Print() << "sharpen step " << n << " " << err << " " << tol
                        << std::endl;
+
+        // std::cout << n << " new step\n";
     }
+
+    /*for (int lev = 0; lev < nlevels; ++lev) {
+        equate_vof((*target_vof)(lev), vof(lev));
+    }*/
 
     // Copy to old
     amr_wind::field_ops::copy(
