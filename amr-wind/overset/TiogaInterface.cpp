@@ -127,6 +127,9 @@ void TiogaInterface::post_overset_conn_work()
     for (int lev = 0; lev < nlevels; ++lev) {
         htod_memcpy(m_iblank_cell(lev), (*m_iblank_cell_host)(lev), 0, 0, 1);
         htod_memcpy(m_iblank_node(lev), (*m_iblank_node_host)(lev), 0, 0, 1);
+
+        m_iblank_cell(lev).FillBoundary(m_sim.mesh().Geom()[lev].periodicity());
+        m_iblank_node(lev).FillBoundary(m_sim.mesh().Geom()[lev].periodicity());
     }
 
     iblank_to_mask(m_iblank_cell, m_mask_cell);
