@@ -394,6 +394,7 @@ void incflo::init_physics_and_pde()
         pp.query("sharpen_tolerance", m_sharpen_tolerance);
         pp.query("sharpen_calctol_niter", m_sharpen_calctolniter);
         pp.query("sharpen_rlscale", m_sharpen_rlscale);
+        pp.query("sharpen_margin", m_sharpen_margin);
 
         // Determine if overset values should be forced into projection
         pp.query("disable_overset_nodal", m_disable_onodal);

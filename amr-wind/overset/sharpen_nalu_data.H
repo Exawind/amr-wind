@@ -319,6 +319,7 @@ amrex::Real alpha_discrete_flux(
     int j,
     int k,
     int dir,
+    const amrex::Real margin,
     amrex::Array4<amrex::Real const> const& vof,
     amrex::Array4<amrex::Real const> const& tg_vof,
     amrex::Array4<amrex::Real const> const& normal,
@@ -348,7 +349,7 @@ amrex::Real alpha_discrete_flux(
     // Average value used across the interface
     amrex::Real dphi_eval = 0.5 * (dphi_ + dphi_nb);
     // Upwinding when on the gas side, downwinding on the liquid
-    constexpr amrex::Real margin = 0.1;
+    // Across the interface defined as crossing 0.5 or within margin of 0.5
     if ((std::abs(vof(i, j, k) - 0.5) > margin ||
          std::abs(vof(ii, jj, kk) - 0.5) > margin)) {
         if (gphi > 0.0) {
@@ -449,6 +450,7 @@ void populate_sharpen_discrete_fluxes(
     amrex::MultiFab& mf_target_vof,
     amrex::MultiFab& mf_norm,
     amrex::MultiFab& mf_levelset,
+    const amrex::Real margin,
     const amrex::Real rho1,
     const amrex::Real rho2)
 {
@@ -472,8 +474,8 @@ void populate_sharpen_discrete_fluxes(
             xbx, ybx, zbxp1,
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 // vof flux
-                amrex::Real flux =
-                    alpha_discrete_flux(i, j, k, 0, vof, tg_vof, norm, lvs);
+                amrex::Real flux = alpha_discrete_flux(
+                    i, j, k, 0, margin, vof, tg_vof, norm, lvs);
                 fx(i, j, k, 0) = flux;
                 // density flux
                 flux *= (rho1 - rho2);
@@ -484,8 +486,8 @@ void populate_sharpen_discrete_fluxes(
                 fx(i, j, k, 4) *= flux;
             },
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                amrex::Real flux =
-                    alpha_discrete_flux(i, j, k, 1, vof, tg_vof, norm, lvs);
+                amrex::Real flux = alpha_discrete_flux(
+                    i, j, k, 1, margin, vof, tg_vof, norm, lvs);
                 fy(i, j, k, 0) = flux;
                 flux *= (rho1 - rho2);
                 fy(i, j, k, 1) = flux;
@@ -494,8 +496,8 @@ void populate_sharpen_discrete_fluxes(
                 fy(i, j, k, 4) *= flux;
             },
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                amrex::Real flux =
-                    alpha_discrete_flux(i, j, k, 2, vof, tg_vof, norm, lvs);
+                amrex::Real flux = alpha_discrete_flux(
+                    i, j, k, 2, margin, vof, tg_vof, norm, lvs);
                 fz(i, j, k, 0) = flux;
                 flux *= (rho1 - rho2);
                 fz(i, j, k, 1) = flux;
@@ -868,7 +870,8 @@ void SharpenNaluDataDiscrete(
     const int nit,
     const amrex::Real tol,
     const int ncconv,
-    const amrex::Real rlscale)
+    const amrex::Real rlscale,
+    const amrex::Real margin)
 {
     auto& repo = sim.repo();
     auto nlevels = repo.num_active_levels();
@@ -959,8 +962,8 @@ void SharpenNaluDataDiscrete(
             // Sharpening fluxes for vof, density, pressure gradient
             populate_sharpen_discrete_fluxes(
                 (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev),
-                (*target_vof)(lev), (*normal_vec)(lev), levelset(lev), rhol,
-                rhog);
+                (*target_vof)(lev), (*normal_vec)(lev), levelset(lev), margin,
+                rhol, rhog);
 
             // Process fluxes
             process_fluxes_calc_src(
