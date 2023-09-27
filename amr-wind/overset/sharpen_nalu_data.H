@@ -651,11 +651,11 @@ void apply_fluxes(
                 }*/
 
                 // Ensure vof is bounded
-                /*vof(i, j, k) =
+                vof(i, j, k) =
                     vof(i, j, k) < tiny
                         ? 0.0
-                        : (vof(i, j, k) > 1. - tiny ? 1. : vof(i, j, k));*/
-                // Density can be corrected later
+                        : (vof(i, j, k) > 1. - tiny ? 1. : vof(i, j, k));
+                // Density is corrected later
             });
 
         // Apply pressure source/sink
@@ -849,10 +849,10 @@ void SharpenNaluData(
 
         // Fillpatch for ghost cells
         vof.fillpatch(sim.time().current_time());
-        rho.fillpatch(sim.time().current_time());
         velocity.fillpatch(sim.time().current_time());
 
-        // Update density
+        // Update density (fillpatch built in)
+        mphase.set_density_via_vof();
 
         // Ensure that err is same across processors
         if (cconv) {
