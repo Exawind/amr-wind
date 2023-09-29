@@ -1,5 +1,4 @@
 #include "amr-wind/wind_energy/actuator/Actuator.H"
-#include "amr-wind/wind_energy/actuator/ActuatorModel.H"
 #include "amr-wind/wind_energy/actuator/ActParser.H"
 #include "amr-wind/wind_energy/actuator/ActuatorContainer.H"
 #include "amr-wind/CFDSim.H"
@@ -265,6 +264,34 @@ void Actuator::post_advance_work()
             ac->write_outputs();
         }
     }
+}
+
+ActuatorModel& Actuator::get_act_bylabel(const std::string& actlabel) const
+{
+    int thisid = 0; // Default to first actuator
+    for (const auto& act : m_actuators) {
+        std::string thislabel = act->label();
+        if (thislabel == actlabel) {
+            thisid = act->id();
+        }
+    }
+
+    return *m_actuators.at(thisid);
+}
+
+template <typename T>
+T* Actuator::get_actuator(std::string& key) const
+{
+    for (const auto& act : m_actuators) {
+        std::string thislabel = act->label();
+        if (thislabel == key) {
+            int thisid = act->id();
+            T* converted = dynamic_cast<T*>(*m_actuators.at(thisid));
+            return converted;
+        }
+    }
+
+    amrex::Abort("Could not find actuator");
 }
 
 } // namespace amr_wind::actuator
