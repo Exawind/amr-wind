@@ -46,8 +46,8 @@ public:
     vs::Vector generate_lidar_pattern(
         PrismParameters InnerPrism, PrismParameters OuterPrism, double time);
 
-    vs::Vector
-    adjust_lidar_pattern(vs::Vector beamPt, double yaw, double pitch, double roll);
+    vs::Vector adjust_lidar_pattern(
+        vs::Vector beamPt, double yaw, double pitch, double roll);
 
 #ifdef AMR_WIND_USE_OPENFAST
 
