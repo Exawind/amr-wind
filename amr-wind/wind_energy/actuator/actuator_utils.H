@@ -75,7 +75,7 @@ gaussian1d(const amrex::Real& dist, const amrex::Real& eps)
 
 /** Compute distance between two points
  *
- * @param origin Origin for the cylindrical coodinate system
+ * @param origin Origin for the cylindrical coordinate system
  * @param normal Normal  relative to origin (defines cylinder orientation)
  * @param point1 location of the first point in Cartesian coordinates
  * @param point2 location of second point in Cartesian coordinates
