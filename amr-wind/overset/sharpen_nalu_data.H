@@ -381,6 +381,76 @@ amrex::Real alpha_discrete_flux(
     return dphi_eval;
 }
 
+void velocity_discrete_face(
+    int i,
+    int j,
+    int k,
+    int dir,
+    const amrex::Real margin,
+    amrex::Array4<amrex::Real const> const& vof,
+    amrex::Array4<amrex::Real const> const& velocity,
+    amrex::Real& uface,
+    amrex::Real& vface,
+    amrex::Real& wface)
+{
+    // Set up neighbor indices
+    int ii = i;
+    int jj = j;
+    int kk = k;
+    ii += (dir == 0) ? -1 : 0;
+    jj += (dir == 1) ? -1 : 0;
+    kk += (dir == 2) ? -1 : 0;
+
+    // Gradient of phi normal to interface
+    const amrex::Real gphi = (vof(i, j, k) - vof(ii, jj, kk));
+
+    // Get velocities on both sides
+    const amrex::Real u_ = velocity(i, j, k, 0);
+    const amrex::Real v_ = velocity(i, j, k, 1);
+    const amrex::Real w_ = velocity(i, j, k, 2);
+    const amrex::Real u_nb = velocity(ii, jj, kk, 0);
+    const amrex::Real v_nb = velocity(ii, jj, kk, 1);
+    const amrex::Real w_nb = velocity(ii, jj, kk, 2);
+    // Average value used across the interface
+    uface = 0.5 * (u_ + u_nb);
+    vface = 0.5 * (v_ + v_nb);
+    wface = 0.5 * (w_ + w_nb);
+    // Upwinding when on the gas side, downwinding on the liquid
+    // Across the interface defined as crossing 0.5 or within margin of 0.5
+    // Same concept as the alpha flux. Get velocity from same cells as density
+    if ((std::abs(vof(i, j, k) - 0.5) > margin ||
+         std::abs(vof(ii, jj, kk) - 0.5) > margin)) {
+        if (gphi > 0.0) {
+            bool upw = vof(ii, jj, kk) < 0.5 && vof(i, j, k) <= 0.5 + margin;
+            bool dnw = vof(ii, jj, kk) >= 0.5 - margin && vof(i, j, k) > 0.5;
+            uface = upw ? u_nb : uface;
+            vface = upw ? v_nb : vface;
+            wface = upw ? w_nb : wface;
+            uface = dnw ? u_ : uface;
+            vface = dnw ? v_ : vface;
+            wface = dnw ? w_ : wface;
+        }
+        if (gphi < 0.0) {
+            bool upw = vof(i, j, k) < 0.5 && vof(ii, jj, kk) <= 0.5 + margin;
+            bool dnw = vof(i, j, k) >= 0.5 - margin && vof(ii, jj, kk) > 0.5;
+            uface = upw ? u_ : uface;
+            vface = upw ? v_ : vface;
+            wface = upw ? w_ : wface;
+            uface = dnw ? u_nb : uface;
+            vface = dnw ? v_nb : vface;
+            wface = dnw ? w_nb : wface;
+        }
+    }
+
+    /*if (dir == 2 && i == 30 && j == 30 &&
+        (std::abs(vof(i, j, k) - 0.5) < 0.1 ||
+         std::abs(vof(ii, jj, kk) - 0.5) < 0.1)) {
+        std::cout << i << " " << j << " " << k << " " << vof(i, j, k) << " "
+                  << vof(ii, jj, kk) << " " << dphi_eval << " " << dphi_ << " "
+                  << dphi_nb << std::endl;
+    }*/
+}
+
 void populate_sharpen_fluxes(
     amrex::MultiFab& mf_fx,
     amrex::MultiFab& mf_fy,
@@ -450,6 +520,7 @@ void populate_sharpen_discrete_fluxes(
     amrex::MultiFab& mf_target_vof,
     amrex::MultiFab& mf_norm,
     amrex::MultiFab& mf_levelset,
+    amrex::MultiFab& mf_velocity,
     const amrex::Real margin,
     const amrex::Real rho1,
     const amrex::Real rho2)
@@ -469,6 +540,8 @@ void populate_sharpen_discrete_fluxes(
         const amrex::Array4<const amrex::Real>& norm = mf_norm.const_array(mfi);
         const amrex::Array4<const amrex::Real>& lvs =
             mf_levelset.const_array(mfi);
+        const amrex::Array4<const amrex::Real>& vel =
+            mf_velocity.const_array(mfi);
         // Populate vof and density fluxes for each direction
         amrex::ParallelFor(
             xbx, ybx, zbxp1,
@@ -481,9 +554,12 @@ void populate_sharpen_discrete_fluxes(
                 flux *= (rho1 - rho2);
                 fx(i, j, k, 1) = flux;
                 // momentum fluxes (dens flux * face vel)
-                fx(i, j, k, 2) *= flux;
-                fx(i, j, k, 3) *= flux;
-                fx(i, j, k, 4) *= flux;
+                amrex::Real uf, vf, wf;
+                velocity_discrete_face(
+                    i, j, k, 0, margin, vof, vel, uf, vf, wf);
+                fx(i, j, k, 2) = flux * uf;
+                fx(i, j, k, 3) = flux * vf;
+                fx(i, j, k, 4) = flux * wf;
             },
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real flux = alpha_discrete_flux(
@@ -491,9 +567,12 @@ void populate_sharpen_discrete_fluxes(
                 fy(i, j, k, 0) = flux;
                 flux *= (rho1 - rho2);
                 fy(i, j, k, 1) = flux;
-                fy(i, j, k, 2) *= flux;
-                fy(i, j, k, 3) *= flux;
-                fy(i, j, k, 4) *= flux;
+                amrex::Real uf, vf, wf;
+                velocity_discrete_face(
+                    i, j, k, 1, margin, vof, vel, uf, vf, wf);
+                fy(i, j, k, 2) = flux * uf;
+                fy(i, j, k, 3) = flux * vf;
+                fy(i, j, k, 4) = flux * wf;
             },
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real flux = alpha_discrete_flux(
@@ -501,9 +580,12 @@ void populate_sharpen_discrete_fluxes(
                 fz(i, j, k, 0) = flux;
                 flux *= (rho1 - rho2);
                 fz(i, j, k, 1) = flux;
-                fz(i, j, k, 2) *= flux;
-                fz(i, j, k, 3) *= flux;
-                fz(i, j, k, 4) *= flux;
+                amrex::Real uf, vf, wf;
+                velocity_discrete_face(
+                    i, j, k, 2, margin, vof, vel, uf, vf, wf);
+                fz(i, j, k, 2) = flux * uf;
+                fz(i, j, k, 3) = flux * vf;
+                fz(i, j, k, 4) = flux * wf;
                 // Turn "on" all z faces, later modified in process_fluxes
                 fz(i, j, k, 5) = 1.0;
 
@@ -717,7 +799,7 @@ void equate_vof(amrex::MultiFab& mf_gpsi, amrex::MultiFab& mf_vof)
         const amrex::Array4<amrex::Real>& vof = mf_vof.array(mfi);
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                vof(i, j, k) = gpsi(i, j, k, 3);
+                vof(i, j, k) = gpsi(i, j, k, 0);
             });
     }
 }
@@ -968,17 +1050,17 @@ void SharpenNaluDataDiscrete(
                 (*normal_vec)(lev), vof(lev), iblank_cell(lev));
 
             // Populate interpolated face velocities, store in flux arrays
-            populate_face_vel(
+            /*populate_face_vel(
                 velocity(lev), iblank_cell(lev), (*flux_x)(lev), (*flux_y)(lev),
-                (*flux_z)(lev));
+                (*flux_z)(lev));*/
 
-            // Sharpening fluxes for vof, density, pressure gradient
+            // Sharpening fluxes for vof, density, and momentum
             populate_sharpen_discrete_fluxes(
                 (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev),
-                (*target_vof)(lev), (*normal_vec)(lev), levelset(lev), margin,
-                rhol, rhog);
+                (*target_vof)(lev), (*normal_vec)(lev), levelset(lev),
+                velocity(lev), margin, rhol, rhog);
 
-            // Process fluxes
+            // Process fluxes and get pressure source term
             process_fluxes_calc_src(
                 (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), (*p_src)(lev),
                 iblank_cell(lev), grav_z);
