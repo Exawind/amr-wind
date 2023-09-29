@@ -96,7 +96,6 @@ void RadarSampler::initialize(const std::string& key)
     current_cones.resize(num_points_scan());
 
     RadarSampler::new_cone();
-    // RadarSampler::update_sampling_locations();
 
     check_bounds();
 }
