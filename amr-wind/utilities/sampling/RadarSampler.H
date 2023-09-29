@@ -178,7 +178,7 @@ protected:
     amrex::Real
         m_periodic_time; // Running cycle time (Forward, pause, reverse, pause)
     int m_ns;            // Number of radar steps in current timestep
-    long m_ntotal;        // Max number of radar timesteps in any timestep
+    long m_ntotal;       // Max number of radar timesteps in any timestep
     int m_cone_size;
     phase m_current_phase;
 
