@@ -2,6 +2,7 @@
 #define ACTUATOR_H
 
 #include "amr-wind/core/Physics.H"
+#include "amr-wind/wind_energy/actuator/ActuatorModel.H"
 
 /** \defgroup actuator Actuator source terms
  *  Actuator source modeling for wind turbines
@@ -48,6 +49,13 @@ public:
     void pre_advance_work() override;
 
     void post_advance_work() override;
+
+    ActuatorModel& get_act(int index) const { return *m_actuators.at(index); }
+
+    ActuatorModel& get_act_bylabel(const std::string& actlabel) const;
+
+    template <typename T>
+    T* get_actuator(std::string& key) const;
 
 protected:
     //! Total number of actuator components (e.g., turbines) in the flowfield

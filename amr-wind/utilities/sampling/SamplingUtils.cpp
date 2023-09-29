@@ -3,11 +3,39 @@
 
 namespace amr_wind::sampling::sampling_utils {
 
+vs::Vector reflect(vs::Vector line, vs::Vector vec)
+{
+
+    vs::Tensor ref(
+        1 - 2 * line.x() * line.x(), -2 * line.x() * line.y(),
+        -2 * line.x() * line.z(), -2 * line.y() * line.x(),
+        1 - 2 * line.y() * line.y(), -2 * line.y() * line.z(),
+        -2 * line.z() * line.x(), -2 * line.z() * line.y(),
+        1 - 2 * line.z() * line.z());
+
+    return vec & ref;
+}
+
+vs::Vector rotate_euler_vec(vs::Vector axis, double angle, vs::Vector vec)
+{
+
+    axis.normalize();
+    const auto RotMat = vs::quaternion(axis, angle);
+    return vec & RotMat;
+}
+
 vs::Vector rotate_euler_vector(vs::Vector& axis, double& angle, vs::Vector& vec)
 {
     axis.normalize();
     const auto RotMat = vs::quaternion(axis, angle);
     return vec & RotMat;
+}
+
+vs::Vector rotation(const vs::Vector& angles, const vs::Vector& data)
+{
+    const vs::Tensor rotMatrix =
+        vs::xrot(angles.x()) & vs::yrot(angles.y()) & vs::zrot(angles.z());
+    return data & rotMatrix;
 }
 
 vs::Vector canon_rotator(const vs::Vector& angles, const vs::Vector& data)
