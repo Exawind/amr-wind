@@ -99,9 +99,8 @@ void DTUSpinnerSampler::initialize(const std::string& key)
     check_bounds();
 }
 
-
-vs::Vector
-DTUSpinnerSampler::adjust_lidar_pattern(vs::Vector beamPt, double yaw, double pitch, double roll)
+vs::Vector DTUSpinnerSampler::adjust_lidar_pattern(
+    vs::Vector beamPt, double yaw, double pitch, double roll)
 {
 
     const vs::Vector angles(roll, pitch, yaw);
@@ -121,14 +120,16 @@ vs::Vector DTUSpinnerSampler::generate_lidar_pattern(
     // NOLINTBEGIN(readability-suspicious-call-argument)
     auto reflection_1 = sampling_utils::rotate_euler_vec(
         axis, innerTheta,
-        sampling_utils::rotate_euler_vec(ground, -(InnerPrism.azimuth / 2 + 90), axis));
+        sampling_utils::rotate_euler_vec(
+            ground, -(InnerPrism.azimuth / 2 + 90), axis));
 
     auto reflection_2 = sampling_utils::rotate_euler_vec(
         axis, outerTheta,
         sampling_utils::rotate_euler_vec(ground, OuterPrism.azimuth / 2, axis));
     // NOLINTEND(readability-suspicious-call-argument)
 
-    return sampling_utils::reflect(reflection_2, sampling_utils::reflect(reflection_1, axis));
+    return sampling_utils::reflect(
+        reflection_2, sampling_utils::reflect(reflection_1, axis));
 }
 
 //

@@ -36,7 +36,7 @@ public:
     void init_solution(const int local_id);
 
     void get_hub_stats(const int local_id);
-    
+
     void advance_turbine(const int local_id);
 
     void save_restart(const int local_id);

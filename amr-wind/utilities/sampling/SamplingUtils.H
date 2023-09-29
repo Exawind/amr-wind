@@ -19,8 +19,7 @@ namespace amr_wind::sampling::sampling_utils {
 enum class NormalRule { SIGMA1, SIGMA2, SIGMA3, HALFPOWER };
 
 vs::Vector reflect(vs::Vector line, vs::Vector vec);
-vs::Vector
-rotate_euler_vec(vs::Vector axis, double angle, vs::Vector vec);
+vs::Vector rotate_euler_vec(vs::Vector axis, double angle, vs::Vector vec);
 vs::Vector
 rotate_euler_vector(vs::Vector& axis, double& angle, vs::Vector& vec);
 vs::Vector rotation(const vs::Vector& angles, const vs::Vector& data);
