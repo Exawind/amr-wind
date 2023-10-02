@@ -4,6 +4,7 @@
 #include "amr-wind/equation_systems/PDEBase.H"
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/utilities/IOManager.H"
+#include "AMReX_ParmParse.H"
 
 #include <memory>
 #include <numeric>
@@ -77,6 +78,9 @@ TiogaInterface::TiogaInterface(CFDSim& sim)
           FieldLoc::NODE))
 {
     m_sim.io_manager().register_output_int_var(m_iblank_cell.name());
+
+    amrex::ParmParse pp("Overset");
+    pp.query("ignore_nalu_pressure_field", m_disable_pressure_from_nalu);
 }
 
 // clang-format on
@@ -130,6 +134,11 @@ void TiogaInterface::post_overset_conn_work()
 
         m_iblank_cell(lev).FillBoundary(m_sim.mesh().Geom()[lev].periodicity());
         m_iblank_node(lev).FillBoundary(m_sim.mesh().Geom()[lev].periodicity());
+    }
+
+    // Disable pressure input coming from nalu-wind
+    if (m_disable_pressure_from_nalu) {
+        m_iblank_node.setVal(1.0);
     }
 
     iblank_to_mask(m_iblank_cell, m_mask_cell);
@@ -285,18 +294,21 @@ void TiogaInterface::update_solution()
     }
 
     // Update nodal variables on device
-    {
-        int icomp = 0;
-        for (const auto& cvar : m_node_vars) {
-            auto& fld = repo.get_field(cvar);
-            const int ncomp = fld.num_comp();
-            // Host to device copy happens here
-            const int nlevels = repo.num_active_levels();
-            for (int lev = 0; lev < nlevels; ++lev) {
-                htod_memcpy(fld(lev), (*m_qnode_host)(lev), icomp, 0, ncomp);
+    if (!m_disable_pressure_from_nalu) {
+        {
+            int icomp = 0;
+            for (const auto& cvar : m_node_vars) {
+                auto& fld = repo.get_field(cvar);
+                const int ncomp = fld.num_comp();
+                // Host to device copy happens here
+                const int nlevels = repo.num_active_levels();
+                for (int lev = 0; lev < nlevels; ++lev) {
+                    htod_memcpy(
+                        fld(lev), (*m_qnode_host)(lev), icomp, 0, ncomp);
+                }
+                fld.fillpatch(m_sim.time().new_time());
+                icomp += ncomp;
             }
-            fld.fillpatch(m_sim.time().new_time());
-            icomp += ncomp;
         }
     }
 

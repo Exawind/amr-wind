@@ -966,7 +966,8 @@ void SharpenNaluDataDiscrete(
     const amrex::Real tol,
     const int ncconv,
     const amrex::Real rlscale,
-    const amrex::Real margin)
+    const amrex::Real margin,
+    const bool sh_pressure)
 {
     auto& repo = sim.repo();
     auto nlevels = repo.num_active_levels();
@@ -980,7 +981,8 @@ void SharpenNaluDataDiscrete(
     auto& mphase = sim.physics_manager().get<MultiPhase>();
     const amrex::Real rhol = mphase.rho1();
     const amrex::Real rhog = mphase.rho2();
-    const amrex::Real grav_z = mphase.gravity()[2];
+    // If pressure is not to be modified, set gravity to 0
+    const amrex::Real grav_z = sh_pressure ? mphase.gravity()[2] : 0.0;
 
     // Get blanking for cells
     auto& iblank_cell = repo.get_int_field("iblank_cell");
