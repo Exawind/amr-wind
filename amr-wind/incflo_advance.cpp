@@ -200,7 +200,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
         amr_wind::overset::SharpenNaluDataDiscrete(
             sim(), m_sharpen_iterations, m_sharpen_tolerance,
             m_sharpen_calctolniter, m_sharpen_rlscale, m_sharpen_margin,
-            m_sharpen_hs_pressure);
+            m_sharpen_proctg_tol, m_sharpen_hs_pressure);
         // Recalculate pressure gradient with incoming sharpened field
         UpdateGradP(
             (density_old).vec_const_ptrs(), m_time.current_time(),
