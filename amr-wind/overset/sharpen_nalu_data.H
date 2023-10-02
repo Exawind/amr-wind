@@ -1090,10 +1090,10 @@ void SharpenNaluDataDiscrete(
 
         // Fillpatch for ghost cells
         vof.fillpatch(sim.time().current_time());
-        rho.fillpatch(sim.time().current_time());
         velocity.fillpatch(sim.time().current_time());
 
-        // Update density
+        // Update density (fillpatch built in)
+        mphase.set_density_via_vof();
 
         // Ensure that err is same across processors
         if (cconv) {
