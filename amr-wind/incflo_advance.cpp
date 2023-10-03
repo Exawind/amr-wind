@@ -194,9 +194,6 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // Process data for overset multiphase
     if (sim().has_overset()) {
         // Sharpen nalu fields
-        /*amr_wind::overset::SharpenNaluData(
-            sim(), m_sharpen_iterations, m_sharpen_tolerance,
-            m_sharpen_calctolniter, m_sharpen_rlscale);*/
         amr_wind::overset::SharpenNaluDataDiscrete(
             sim(), m_sharpen_iterations, m_sharpen_tolerance,
             m_sharpen_calctolniter, m_sharpen_rlscale, m_sharpen_margin,
@@ -205,7 +202,9 @@ void incflo::ApplyPredictor(bool incremental_projection)
         UpdateGradP(
             (density_old).vec_const_ptrs(), m_time.current_time(),
             m_time.deltaT());
-        amr_wind::overset::ReplaceMaskedGradP(sim());
+        if (m_sharpen_hsp_guess) {
+            amr_wind::overset::ReplaceMaskedGradP(sim());
+        }
     }
 
     // *************************************************************************************
@@ -411,7 +410,9 @@ void incflo::ApplyPredictor(bool incremental_projection)
         (density_new).vec_const_ptrs(), new_time, m_time.deltaT(),
         incremental_projection);
 
-    amr_wind::overset::ReapplyModifiedGradP(sim());
+    if (m_sharpen_hsp_replace) {
+        amr_wind::overset::ReapplyModifiedGradP(sim());
+    }
 
     if (m_verbose > 2) {
         PrintMaxVelLocations("after nodal projection");
