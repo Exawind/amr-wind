@@ -22,13 +22,13 @@ team.
    <https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines>`_ for best
    practices when coding in C++.
 
-**Write code targeting heterogenous architectures**
+**Write code targeting heterogeneous architectures**
 
    All code must be written in a way such that it can run on GPUs without
    errors. Please consult the `GPU section
    <https://amrex-codes.github.io/amrex/docs_html/GPU_Chapter.html>`_ in AMReX
    documentation to learn the correct data structures and looping paradigms to
-   use when targeting heterogenous architectures.
+   use when targeting heterogeneous architectures.
 
 **Unit and regression tests**
 

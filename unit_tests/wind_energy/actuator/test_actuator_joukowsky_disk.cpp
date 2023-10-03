@@ -14,6 +14,7 @@ namespace vs = amr_wind::vs;
 
 struct Joukowsky : public act::Joukowsky
 {
+    // cppcheck-suppress duplInheritedMember
     static std::string identifier() { return "TestJoukowsky"; }
 };
 

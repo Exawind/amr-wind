@@ -224,7 +224,7 @@ public:
             } else if (key == "LinearBasis") {
                 m_function = &SpreadingFunction::linear_basis_spreading;
             } else {
-                amrex::Abort("Invalide spreading type");
+                amrex::Abort("Invalid spreading type");
             }
         } else {
             m_function = &SpreadingFunction::linear_basis_in_theta;

@@ -43,7 +43,7 @@ namespace pde {
  *  terms, the diffusion term, and the convective term. A PDE may declare
  *  additional fields that are not stored in this object, but can be queried
  *  using the FieldRepo instance. For example, the incompressible Navier-Stokes
- *  (ICNS) always declars density and pressure in addition to the velocity
+ *  (ICNS) always declares density and pressure in addition to the velocity
  *  fields.
  *
  */
@@ -59,7 +59,7 @@ public:
     //! Perform initialization actions for a PDE after the mesh is generated
     virtual void initialize() = 0;
 
-    //! Preform updates specific to PDE after a regrid is performed
+    //! Perform updates specific to PDE after a regrid is performed
     virtual void post_regrid_actions() = 0;
 
     //! Compute the source (forcing) terms for this PDE
