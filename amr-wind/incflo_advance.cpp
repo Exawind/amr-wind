@@ -411,6 +411,8 @@ void incflo::ApplyPredictor(bool incremental_projection)
         (density_new).vec_const_ptrs(), new_time, m_time.deltaT(),
         incremental_projection);
 
+    amr_wind::overset::ReapplyModifiedGradP(sim());
+
     if (m_verbose > 2) {
         PrintMaxVelLocations("after nodal projection");
     }

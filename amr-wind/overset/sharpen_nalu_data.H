@@ -369,7 +369,6 @@ void apply_fluxes(
     amrex::MultiFab& mf_pressure,
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx)
 {
-    int ncomp = mf_fx.nComp();
     constexpr amrex::Real tiny = 1e-12;
     // Pseudo-time factor
     const amrex::Real ptfac = 1.0;
@@ -527,6 +526,28 @@ void replace_gradp_hs(
                     gp(i, j, k, 1) = 0.;
                     gp(i, j, k, 2) = rho(i, j, k) * grav_z;
                 }
+            });
+    }
+}
+
+void apply_pressure_gradient(
+    amrex::MultiFab& mf_vel,
+    amrex::MultiFab& mf_density,
+    amrex::MultiFab& mf_gp,
+    const amrex::Real scaling_factor)
+{
+    for (amrex::MFIter mfi(mf_gp); mfi.isValid(); ++mfi) {
+        const auto& vbx = mfi.validbox();
+        const amrex::Array4<amrex::Real>& vel = mf_vel.array(mfi);
+        const amrex::Array4<const amrex::Real>& rho =
+            mf_density.const_array(mfi);
+        const amrex::Array4<const amrex::Real>& gp = mf_gp.const_array(mfi);
+        amrex::ParallelFor(
+            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                const amrex::Real soverrho = scaling_factor / rho(i, j, k);
+                vel(i, j, k, 0) -= gp(i, j, k, 0) * soverrho;
+                vel(i, j, k, 1) -= gp(i, j, k, 1) * soverrho;
+                vel(i, j, k, 2) -= gp(i, j, k, 2) * soverrho;
             });
     }
 }
@@ -711,10 +732,42 @@ void ReplaceMaskedGradP(CFDSim& sim)
 
     // Replace initial gp with best guess (hydrostatic)
     for (int lev = 0; lev < nlevels; ++lev) {
-        // Populate approximate signed distance function
         replace_gradp_hs(gp(lev), rho(lev), iblank_cell(lev), grav_z);
     }
 }
+
+void ReapplyModifiedGradP(CFDSim& sim)
+{
+    auto& repo = sim.repo();
+    auto nlevels = repo.num_active_levels();
+    auto geom = sim.mesh().Geom();
+
+    // Get gravity
+    auto& mphase = sim.physics_manager().get<MultiPhase>();
+    const amrex::Real grav_z = mphase.gravity()[2];
+
+    // Get timestep
+    const amrex::Real dt = sim.time().deltaT();
+
+    // Get blanking for cells
+    auto& iblank_cell = repo.get_int_field("iblank_cell");
+
+    // Get fields that will be modified or used
+    auto& vel = repo.get_field("velocity");
+    auto& rho = repo.get_field("density");
+    auto& gp = repo.get_field("gp");
+
+    // For iblanked cells, replace gp with original gp, to get original vel
+    for (int lev = 0; lev < nlevels; ++lev) {
+        // Remove pressure gradient term
+        apply_pressure_gradient(vel(lev), rho(lev), gp(lev), -dt);
+        // Modify pressure gradient
+        replace_gradp_hs(gp(lev), rho(lev), iblank_cell(lev), grav_z);
+        // Reapply pressure gradient term
+        apply_pressure_gradient(vel(lev), rho(lev), gp(lev), dt);
+    }
+}
+
 } // namespace overset
 } // namespace amr_wind
 
