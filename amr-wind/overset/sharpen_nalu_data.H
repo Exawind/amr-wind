@@ -348,11 +348,12 @@ void apply_fluxes(
     amrex::MultiFab& mf_dens,
     amrex::MultiFab& mf_vel,
     amrex::MultiFab& mf_pressure,
-    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx)
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx,
+    amrex::Real ptfac)
 {
     constexpr amrex::Real tiny = 1e-12;
     // Pseudo-time factor
-    const amrex::Real ptfac = 1.0;
+    // const amrex::Real ptfac = 1.0;
     for (amrex::MFIter mfi(mf_vof); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
         amrex::Box const& nbx = mfi.nodaltilebox();
@@ -621,6 +622,8 @@ void SharpenNaluDataDiscrete(
         // Zero error if being calculated this step
         err = cconv ? 0.0 : err;
 
+        const amrex::Real ptfac = std::min(1.0, 0.75 + (amrex::Real)n * 0.05);
+
         for (int lev = 0; lev < nlevels; ++lev) {
             // Height of cell is needed for pressure source
             auto dx = (geom[lev]).CellSizeArray();
@@ -643,7 +646,7 @@ void SharpenNaluDataDiscrete(
             // Apply fluxes
             apply_fluxes(
                 (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), (*p_src)(lev),
-                vof(lev), rho(lev), velocity(lev), p(lev), dx);
+                vof(lev), rho(lev), velocity(lev), p(lev), dx, ptfac);
 
             // Measure convergence to determine if loop can stop
             if (cconv) {
