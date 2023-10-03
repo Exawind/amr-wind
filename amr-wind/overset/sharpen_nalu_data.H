@@ -507,6 +507,30 @@ void harmonize_vof(
     }
 }
 
+void replace_gradp_hs(
+    amrex::MultiFab& mf_gp,
+    amrex::MultiFab& mf_density,
+    amrex::iMultiFab& mf_iblank,
+    const amrex::Real grav_z)
+{
+    for (amrex::MFIter mfi(mf_gp); mfi.isValid(); ++mfi) {
+        const auto& gbx = mfi.growntilebox();
+        const amrex::Array4<amrex::Real>& gp = mf_gp.array(mfi);
+        const amrex::Array4<const amrex::Real>& rho =
+            mf_density.const_array(mfi);
+        const amrex::Array4<const int>& iblank = mf_iblank.const_array(mfi);
+        amrex::ParallelFor(
+            gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                // Replace amr-wind vof values with originals
+                if (iblank(i, j, k) == -1) {
+                    gp(i, j, k, 0) = 0.;
+                    gp(i, j, k, 1) = 0.;
+                    gp(i, j, k, 2) = rho(i, j, k) * grav_z;
+                }
+            });
+    }
+}
+
 void SharpenNaluDataDiscrete(
     CFDSim& sim,
     const int nit,
@@ -666,6 +690,30 @@ void SharpenNaluDataDiscrete(
 
     // Fillpatch for pressure to make sure pressure stencil has all points
     p.fillpatch(sim.time().current_time());
+}
+
+void ReplaceMaskedGradP(CFDSim& sim)
+{
+    auto& repo = sim.repo();
+    auto nlevels = repo.num_active_levels();
+    auto geom = sim.mesh().Geom();
+
+    // Get gravity
+    auto& mphase = sim.physics_manager().get<MultiPhase>();
+    const amrex::Real grav_z = mphase.gravity()[2];
+
+    // Get blanking for cells
+    auto& iblank_cell = repo.get_int_field("iblank_cell");
+
+    // Get fields that will be modified or used
+    auto& rho = repo.get_field("density");
+    auto& gp = repo.get_field("gp");
+
+    // Replace initial gp with best guess (hydrostatic)
+    for (int lev = 0; lev < nlevels; ++lev) {
+        // Populate approximate signed distance function
+        replace_gradp_hs(gp(lev), rho(lev), iblank_cell(lev), grav_z);
+    }
 }
 } // namespace overset
 } // namespace amr_wind

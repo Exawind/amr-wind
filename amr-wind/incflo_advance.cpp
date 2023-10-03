@@ -205,6 +205,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
         UpdateGradP(
             (density_old).vec_const_ptrs(), m_time.current_time(),
             m_time.deltaT());
+        amr_wind::overset::ReplaceMaskedGradP(sim());
     }
 
     // *************************************************************************************
