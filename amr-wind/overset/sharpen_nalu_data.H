@@ -161,7 +161,6 @@ void velocity_discrete_face(
     int j,
     int k,
     int dir,
-    const amrex::Real margin,
     amrex::Array4<amrex::Real const> const& vof,
     amrex::Array4<amrex::Real const> const& velocity,
     amrex::Real& uface,
@@ -186,35 +185,20 @@ void velocity_discrete_face(
     const amrex::Real u_nb = velocity(ii, jj, kk, 0);
     const amrex::Real v_nb = velocity(ii, jj, kk, 1);
     const amrex::Real w_nb = velocity(ii, jj, kk, 2);
-    // Average value used across the interface
+    // Average value when gphi = 0
     uface = 0.5 * (u_ + u_nb);
     vface = 0.5 * (v_ + v_nb);
     wface = 0.5 * (w_ + w_nb);
-    // Upwinding when on the gas side, downwinding on the liquid
-    // Across the interface defined as crossing 0.5 or within margin of 0.5
-    // Same concept as the alpha flux. Get velocity from same cells as density
-    if ((std::abs(vof(i, j, k) - 0.5) > margin ||
-         std::abs(vof(ii, jj, kk) - 0.5) > margin)) {
-        if (gphi > 0.0) {
-            bool upw = vof(ii, jj, kk) < 0.5 && vof(i, j, k) <= 0.5 + margin;
-            bool dnw = vof(ii, jj, kk) >= 0.5 - margin && vof(i, j, k) > 0.5;
-            uface = upw ? u_nb : uface;
-            vface = upw ? v_nb : vface;
-            wface = upw ? w_nb : wface;
-            uface = dnw ? u_ : uface;
-            vface = dnw ? v_ : vface;
-            wface = dnw ? w_ : wface;
-        }
-        if (gphi < 0.0) {
-            bool upw = vof(i, j, k) < 0.5 && vof(ii, jj, kk) <= 0.5 + margin;
-            bool dnw = vof(i, j, k) >= 0.5 - margin && vof(ii, jj, kk) > 0.5;
-            uface = upw ? u_ : uface;
-            vface = upw ? v_ : vface;
-            wface = upw ? w_ : wface;
-            uface = dnw ? u_nb : uface;
-            vface = dnw ? v_nb : vface;
-            wface = dnw ? w_nb : wface;
-        }
+    // Use simple upwinding
+    if (gphi > 0.0) {
+        uface = u_nb;
+        vface = v_nb;
+        wface = w_nb;
+    }
+    if (gphi < 0.0) {
+        uface = u_;
+        vface = v_;
+        wface = w_;
     }
 }
 
@@ -258,8 +242,7 @@ void populate_sharpen_discrete_fluxes(
                 fx(i, j, k, 1) = flux;
                 // momentum fluxes (dens flux * face vel)
                 amrex::Real uf, vf, wf;
-                velocity_discrete_face(
-                    i, j, k, 0, margin, vof, vel, uf, vf, wf);
+                velocity_discrete_face(i, j, k, 0, vof, vel, uf, vf, wf);
                 fx(i, j, k, 2) = flux * uf;
                 fx(i, j, k, 3) = flux * vf;
                 fx(i, j, k, 4) = flux * wf;
@@ -271,8 +254,7 @@ void populate_sharpen_discrete_fluxes(
                 flux *= (rho1 - rho2);
                 fy(i, j, k, 1) = flux;
                 amrex::Real uf, vf, wf;
-                velocity_discrete_face(
-                    i, j, k, 1, margin, vof, vel, uf, vf, wf);
+                velocity_discrete_face(i, j, k, 1, vof, vel, uf, vf, wf);
                 fy(i, j, k, 2) = flux * uf;
                 fy(i, j, k, 3) = flux * vf;
                 fy(i, j, k, 4) = flux * wf;
@@ -284,8 +266,7 @@ void populate_sharpen_discrete_fluxes(
                 flux *= (rho1 - rho2);
                 fz(i, j, k, 1) = flux;
                 amrex::Real uf, vf, wf;
-                velocity_discrete_face(
-                    i, j, k, 2, margin, vof, vel, uf, vf, wf);
+                velocity_discrete_face(i, j, k, 2, vof, vel, uf, vf, wf);
                 fz(i, j, k, 2) = flux * uf;
                 fz(i, j, k, 3) = flux * vf;
                 fz(i, j, k, 4) = flux * wf;
