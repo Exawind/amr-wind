@@ -7,7 +7,7 @@
 
 namespace amr_wind_tests {
 
-/** Global setup/teardown test enviroment configuration for AMR-Wind unit tests
+/** Global setup/teardown test environment configuration for AMR-Wind unit tests
  *
  *  This class is registered with GoogleTest infrastructure to perform global
  *  setup/teardown tasks. The base implementation calls the amrex::Initialize

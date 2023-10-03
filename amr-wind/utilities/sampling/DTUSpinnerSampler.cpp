@@ -80,7 +80,7 @@ void DTUSpinnerSampler::sampling_locations(SampleLocType& locs) const
 
         int offset = k * AMREX_SPACEDIM;
 
-        // Loop per spacial dimension
+        // Loop per spatial dimension
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
             dx[d] = (m_end[d + offset] - m_start[d + offset]) / ndiv;
         }

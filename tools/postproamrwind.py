@@ -29,7 +29,7 @@ def timeaverage(dat, t1, t2, Ncells, Ncomp):
 # Loads the line_plot.txt file given by filename, for all times
 # between t1 and t2.
 #
-# If the line_plot.txt file is missing a header, provde the input
+# If the line_plot.txt file is missing a header, provide the input
 # headerinfo=[ncell ncomp]
 def loadfile(filename, t1, t2, headerinfo=[]):
     if len(headerinfo)>0: hasheader=False

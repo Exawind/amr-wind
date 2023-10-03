@@ -96,7 +96,7 @@ void MLMGOptions::operator()(amrex::MLMG& mlmg)
         else if (hypre_interface == "semi_structured")
             mlmg.setHypreInterface(amrex::Hypre::Interface::semi_structed);
         else if (hypre_interface == "structured")
-            mlmg.setHypreInterface(amrex::Hypre::Interface::structed);
+            mlmg.setHypreInterface(amrex::Hypre::Interface::structured);
         else
             amrex::Abort(
                 "Invalid hypre interface. Valid options: ij semi_structured "
