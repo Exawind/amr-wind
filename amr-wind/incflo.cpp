@@ -399,6 +399,7 @@ void incflo::init_physics_and_pde()
         pp.query("sharpen_hs_pressure", m_sharpen_hs_pressure);
         pp.query("sharpen_guess_hsp", m_sharpen_hsp_guess);
         pp.query("sharpen_replace_hsp", m_sharpen_hsp_replace);
+        pp.query("sharpen_pressure_grad", m_sharpen_gradp);
 
         // Determine if overset values should be forced into projection
         pp.query("disable_overset_nodal", m_disable_onodal);

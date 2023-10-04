@@ -183,6 +183,7 @@ private:
     bool m_sharpen_hs_pressure = true;
     bool m_sharpen_hsp_guess = false;
     bool m_sharpen_hsp_replace = false;
+    bool m_sharpen_gradp = false;
 
     bool m_constant_density = true;
 
