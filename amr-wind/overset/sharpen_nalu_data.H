@@ -549,16 +549,88 @@ amrex::Real measure_convergence(
     return err;
 }
 
-// for debugging
-void equate_vof(amrex::MultiFab& mf_gpsi, amrex::MultiFab& mf_vof)
+amrex::Real calculate_pseudo_dt_flux(
+    amrex::MultiFab& mf_fx,
+    amrex::MultiFab& mf_fy,
+    amrex::MultiFab& mf_fz,
+    amrex::MultiFab& mf_vof,
+    amrex::Real tol)
 {
-    for (amrex::MFIter mfi(mf_vof); mfi.isValid(); ++mfi) {
+    // Get the maximum flux magnitude, but just for vof fluxes
+    const amrex::Real pdt_fx = amrex::ReduceMin(
+        mf_fx, mf_vof, 0,
+        [=] AMREX_GPU_HOST_DEVICE(
+            amrex::Box const& bx, amrex::Array4<amrex::Real const> const& fx,
+            amrex::Array4<amrex::Real const> const& vof) -> amrex::Real {
+            amrex::Real pdt_fab = 1.0;
+            amrex::Loop(bx, [=, &pdt_fab](int i, int j, int k) noexcept {
+                amrex::Real pdt_lim = 1.0;
+                if (fx(i, j, k, 0) > tol && vof(i, j, k) > tol) {
+                    // VOF is removed from cell i
+                    pdt_lim = vof(i, j, k) / fx(i, j, k, 0);
+                } else if (fx(i, j, k, 0) < -tol && vof(i - 1, j, k) > tol) {
+                    // VOF is removed from cell i-1
+                    pdt_lim = vof(i - 1, j, k) / -fx(i, j, k, 0);
+                }
+                pdt_fab = amrex::min(pdt_fab, pdt_lim);
+            });
+            return pdt_fab;
+        });
+    const amrex::Real pdt_fy = amrex::ReduceMin(
+        mf_fy, mf_vof, 0,
+        [=] AMREX_GPU_HOST_DEVICE(
+            amrex::Box const& bx, amrex::Array4<amrex::Real const> const& fy,
+            amrex::Array4<amrex::Real const> const& vof) -> amrex::Real {
+            amrex::Real pdt_fab = 1.0;
+            amrex::Loop(bx, [=, &pdt_fab](int i, int j, int k) noexcept {
+                amrex::Real pdt_lim = 1.0;
+                if (fy(i, j, k, 0) > tol && vof(i, j, k) > tol) {
+                    // VOF is removed from cell j
+                    pdt_lim = vof(i, j, k) / fy(i, j, k, 0);
+                } else if (fy(i, j, k, 0) < -tol && vof(i, j - 1, k) > tol) {
+                    // VOF is removed from cell j-1
+                    pdt_lim = vof(i, j - 1, k) / -fy(i, j, k, 0);
+                }
+                pdt_fab = amrex::min(pdt_fab, pdt_lim);
+            });
+            return pdt_fab;
+        });
+    const amrex::Real pdt_fz = amrex::ReduceMin(
+        mf_fz, mf_vof, 0,
+        [=] AMREX_GPU_HOST_DEVICE(
+            amrex::Box const& bx, amrex::Array4<amrex::Real const> const& fz,
+            amrex::Array4<amrex::Real const> const& vof) -> amrex::Real {
+            amrex::Real pdt_fab = 1.0;
+            amrex::Loop(bx, [=, &pdt_fab](int i, int j, int k) noexcept {
+                amrex::Real pdt_lim = 1.0;
+                if (fz(i, j, k, 0) > tol && vof(i, j, k) > tol) {
+                    // VOF is removed from cell k
+                    pdt_lim = vof(i, j, k) / fz(i, j, k, 0);
+                } else if (fz(i, j, k, 0) < -tol && vof(i, j, k - 1) > tol) {
+                    // VOF is removed from cell k-1
+                    pdt_lim = vof(i, j, k - 1) / -fz(i, j, k, 0);
+                }
+                pdt_fab = amrex::min(pdt_fab, pdt_lim);
+            });
+            return pdt_fab;
+        });
+    const amrex::Real pdt = amrex::min(pdt_fx, amrex::min(pdt_fy, pdt_fz));
+    return pdt;
+}
+
+// for debugging
+void equate_field(amrex::MultiFab& mf_dest, amrex::MultiFab& mf_src)
+{
+    for (amrex::MFIter mfi(mf_dest); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
-        const amrex::Array4<const amrex::Real>& gpsi = mf_gpsi.const_array(mfi);
-        const amrex::Array4<amrex::Real>& vof = mf_vof.array(mfi);
+        const amrex::Array4<const amrex::Real>& src = mf_src.const_array(mfi);
+        const amrex::Array4<amrex::Real>& dest = mf_dest.array(mfi);
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                vof(i, j, k) = gpsi(i, j, k, 0);
+                dest(i, j, k) = std::sqrt(
+                    src(i, j, k, 0) * src(i, j, k, 0) +
+                    src(i, j, k, 1) * src(i, j, k, 1) +
+                    src(i, j, k, 2) * src(i, j, k, 2));
             });
     }
 }
@@ -726,9 +798,13 @@ void SharpenNaluDataDiscrete(
         harmonize_vof((*target_vof)(lev), vof(lev), iblank_cell(lev));
     }
 
-    // Purely for debugging, should be removed later
+    // Put fluxes in vector for averaging down during iterations
+    amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> fluxes(
+        repo.num_active_levels());
     for (int lev = 0; lev < nlevels; ++lev) {
-        equate_vof((*target_vof)(lev), levelset(lev));
+        fluxes[lev][0] = &(*flux_x)(lev);
+        fluxes[lev][1] = &(*flux_y)(lev);
+        fluxes[lev][2] = &(*flux_z)(lev);
     }
 
     // Pseudo-time loop
@@ -742,12 +818,13 @@ void SharpenNaluDataDiscrete(
         // Zero error if being calculated this step
         err = cconv ? 0.0 : err;
 
-        const amrex::Real ptfac = std::min(1.0, 0.75 + (amrex::Real)n * 0.05);
+        // Maximum possible value of pseudo time factor (dtau)
+        amrex::Real ptfac = 1.0;
+
+        // Maximum pseudoCFL, 0.5 seems to work well
+        const amrex::Real pCFL = 0.5;
 
         for (int lev = 0; lev < nlevels; ++lev) {
-            // Height of cell is needed for pressure source
-            auto dx = (geom[lev]).CellSizeArray();
-
             // Populate normal vector
             populate_normal_vector(
                 (*normal_vec)(lev), vof(lev), iblank_cell(lev));
@@ -763,12 +840,6 @@ void SharpenNaluDataDiscrete(
                 (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), (*p_src)(lev),
                 iblank_cell(lev), grav_z);
 
-            // Apply fluxes
-            apply_fluxes(
-                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), (*p_src)(lev),
-                vof(lev), rho(lev), velocity(lev), gp(lev), p(lev), dx, ptfac,
-                sh_gradp);
-
             // Measure convergence to determine if loop can stop
             if (cconv) {
                 // Update error at specified interval of steps
@@ -778,14 +849,41 @@ void SharpenNaluDataDiscrete(
             }
         }
 
+        // Average down fluxes across levels for consistency
+        for (int lev = nlevels - 1; lev > 0; --lev) {
+            amrex::IntVect rr =
+                geom[lev].Domain().size() / geom[lev - 1].Domain().size();
+            amrex::average_down_faces(
+                GetArrOfConstPtrs(fluxes[lev]), fluxes[lev - 1], rr,
+                geom[lev - 1]);
+        }
+
+        // Get pseudo dt (dtau)
+        for (int lev = 0; lev < nlevels; ++lev) {
+            // Compare vof fluxes to vof in source cells
+            // Convergence tolerance determines what size of fluxes matter
+            const amrex::Real ptfac_lev = calculate_pseudo_dt_flux(
+                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev), tol);
+            ptfac = amrex::min(ptfac, ptfac_lev);
+        }
+        amrex::ParallelDescriptor::ReduceRealMin(ptfac);
+
+        // Conform pseudo dt (dtau) to pseudo CFL
+        ptfac = pCFL * ptfac;
+
+        // Apply fluxes
+        for (int lev = 0; lev < nlevels; ++lev) {
+            // Height of cell is needed for pressure source
+            auto dx = (geom[lev]).CellSizeArray();
+
+            apply_fluxes(
+                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), (*p_src)(lev),
+                vof(lev), rho(lev), velocity(lev), gp(lev), p(lev), dx, ptfac,
+                sh_gradp);
+        }
+
         // sim.io_manager().write_plot_file();
         // sim.time().increment_timestep();
-
-        // Average down fluxes
-        // Get pseudo CFL (multiplier for sharpening term)
-        // Apply fluxes
-
-        // Average down vof for consistency
 
         // Fillpatch for ghost cells
         vof.fillpatch(sim.time().current_time());
@@ -801,6 +899,13 @@ void SharpenNaluDataDiscrete(
 
         amrex::Print() << "sharpen step " << n << " " << err << " " << tol
                        << std::endl;
+    }
+
+    // Purely for debugging via visualization, should be removed later
+    // Currently set up to overwrite the levelset field (not used as time
+    // evolves) with the post-sharpening velocity magnitude
+    for (int lev = 0; lev < nlevels; ++lev) {
+        equate_field(levelset(lev), velocity(lev));
     }
 
     // Copy to old
