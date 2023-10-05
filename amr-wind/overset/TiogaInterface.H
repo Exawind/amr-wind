@@ -104,7 +104,7 @@ private:
 
     CFDSim& m_sim;
 
-    bool m_disable_pressure_from_nalu{false};
+    bool m_disable_pressure_from_nalu{true};
 
     //! IBLANK on cell centered fields
     IntField& m_iblank_cell;

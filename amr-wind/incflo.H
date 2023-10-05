@@ -174,15 +174,15 @@ private:
     int m_initial_iterations = 3;
 
     // Sharpening multiphase for overset
-    int m_sharpen_iterations = 20;
+    int m_sharpen_iterations = 10;
     amrex::Real m_sharpen_tolerance = 1e-12;
-    int m_sharpen_calctolniter = 5;
+    int m_sharpen_calctolniter = 1;
     amrex::Real m_sharpen_rlscale = 1.5;
     amrex::Real m_sharpen_margin = 0.1;
     amrex::Real m_sharpen_proctg_tol = 0.0;
-    bool m_sharpen_hs_pressure = true;
-    bool m_sharpen_hsp_guess = false;
-    bool m_sharpen_hsp_replace = false;
+    bool m_sharpen_hs_pressure = false;
+    bool m_sharpen_hsp_guess = true;
+    bool m_sharpen_hsp_replace = true;
     bool m_sharpen_gradp = false;
 
     bool m_constant_density = true;
@@ -190,7 +190,7 @@ private:
     bool m_use_godunov = true;
 
     // Other choices for overset
-    bool m_disable_onodal = false;
+    bool m_disable_onodal = true;
 
     // Prescribe advection velocity
     bool m_prescribe_vel = false;

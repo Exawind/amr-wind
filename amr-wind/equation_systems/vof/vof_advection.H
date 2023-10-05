@@ -148,8 +148,8 @@ struct AdvectionOp<VOF, fvm::Godunov>
     Field& w_mac;
     int isweep = 0;
     bool m_rm_debris{true};
-    bool m_sharpen_acq{true};
-    bool m_sharpen_dest{true};
+    bool m_sharpen_acq{false};
+    bool m_sharpen_dest{false};
     bool m_replace_mask{true};
     // Lagrangian transport is deprecated, only Eulerian is supported
 };
