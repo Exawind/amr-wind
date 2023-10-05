@@ -437,9 +437,11 @@ void incflo::ApplyProjection(
 }
 
 void incflo::UpdateGradP(
-    Vector<MultiFab const*> density, Real time, Real scaling_factor)
+    Vector<MultiFab const*> density, Real /*time*/, Real scaling_factor)
 {
     BL_PROFILE("amr-wind::incflo::UpdateGradP");
+
+    // Pressure and sigma are necessary to calculate the pressure gradient
 
     bool variable_density =
         (!m_sim.pde_manager().constant_density() ||
@@ -495,17 +497,17 @@ void incflo::UpdateGradP(
         }
     }
 
-    // Perform projection
+    // Set up projection object
     std::unique_ptr<Hydro::NodalProjector> nodal_projector;
 
     auto bclo = get_projection_bc(Orientation::low);
     auto bchi = get_projection_bc(Orientation::high);
 
+    // Velocity multifab is needed for proper initialization, but only the size
+    // matters for the purpose of calculating gradp, the values do not matter
     Vector<MultiFab*> vel;
     for (int lev = 0; lev <= finest_level; ++lev) {
         vel.push_back(&(velocity(lev)));
-        vel[lev]->setBndry(0.0);
-        set_inflow_velocity(lev, time, *vel[lev], 1);
     }
 
     amr_wind::MLMGOptions options("nodal_proj");
@@ -549,5 +551,5 @@ void incflo::UpdateGradP(
         }
     }
 
-    // Average down is unnecessary because it is build into calcGradPhi
+    // Average down is unnecessary because it is built into calcGradPhi
 }

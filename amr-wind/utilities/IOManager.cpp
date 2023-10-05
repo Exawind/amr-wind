@@ -181,7 +181,7 @@ void IOManager::write_plot_file()
 #endif
 }
 
-void IOManager::write_checkpoint_file(const int start_level)
+void IOManager::write_checkpoint_file(const int start_level, int end_level)
 {
     BL_PROFILE("amr-wind::IOManager::write_checkpoint_file");
     const std::string level_prefix = "Level_";
@@ -191,12 +191,16 @@ void IOManager::write_checkpoint_file(const int start_level)
     amrex::Print() << "Writing checkpoint file " << chkname << " at time "
                    << m_sim.time().new_time() << std::endl;
     const auto& mesh = m_sim.mesh();
+    // Modify end_level if need be
+    end_level = (end_level == -1) ? mesh.finestLevel() : end_level;
+    end_level = std::max(end_level, start_level);
+
     amrex::PreBuildDirectorHierarchy(
-        chkname, level_prefix, mesh.finestLevel() + 1 - start_level, true);
-    write_header(chkname, start_level);
+        chkname, level_prefix, end_level + 1 - start_level, true);
+    write_header(chkname, start_level, end_level);
     write_info_file(chkname);
 
-    for (int lev = start_level; lev < mesh.finestLevel() + 1; ++lev) {
+    for (int lev = start_level; lev < end_level + 1; ++lev) {
         for (auto* fld : m_chk_fields) {
             auto& field = *fld;
             amrex::VisMF::Write(
@@ -293,7 +297,8 @@ void IOManager::read_checkpoint_fields(
     }
 }
 
-void IOManager::write_header(const std::string& chkname, const int start_level)
+void IOManager::write_header(
+    const std::string& chkname, const int start_level, const int end_level)
 {
     if (!amrex::ParallelDescriptor::IOProcessor()) {
         return;
@@ -317,7 +322,7 @@ void IOManager::write_header(const std::string& chkname, const int start_level)
     const auto& mesh = m_sim.mesh();
     const auto& time = m_sim.time();
     hdr << "Checkpoint version: 1\n"
-        << mesh.finestLevel() - start_level << "\n"
+        << end_level - start_level << "\n"
         << time.time_index() << "\n"
         << time.new_time() << "\n"
         << time.deltaT() << "\n"
@@ -334,7 +339,7 @@ void IOManager::write_header(const std::string& chkname, const int start_level)
     }
     hdr << "\n";
 
-    for (int lev = start_level; lev < mesh.finestLevel() + 1; ++lev) {
+    for (int lev = start_level; lev < end_level + 1; ++lev) {
         mesh.boxArray(lev).writeOn(hdr);
         hdr << "\n";
     }

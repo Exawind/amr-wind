@@ -18,6 +18,7 @@ namespace amr_wind::sampling {
 class LidarSampler : public LineSampler
 {
 public:
+    // cppcheck-suppress duplInheritedMember
     static std::string identifier() { return "LidarSampler"; }
 
     explicit LidarSampler(const CFDSim& /*sim*/);

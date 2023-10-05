@@ -402,11 +402,8 @@ void MultiPhase::calculate_advected_facedensity()
     amrex::Real c_r2 = m_rho2;
 
     // Get advected vof terms at each face
-    // cppcheck-suppress constVariableReference
     auto& advalpha_x = m_sim.repo().get_field("advalpha_x");
-    // cppcheck-suppress constVariableReference
     auto& advalpha_y = m_sim.repo().get_field("advalpha_y");
-    // cppcheck-suppress constVariableReference
     auto& advalpha_z = m_sim.repo().get_field("advalpha_z");
 
     for (int lev = 0; lev < nlevels; ++lev) {
