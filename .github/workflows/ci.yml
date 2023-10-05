@@ -61,7 +61,7 @@ jobs:
         echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
         echo "CCACHE_COMPRESSLEVEL=5" >> $GITHUB_ENV
         echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
-        echo "CCACHE_MAXSIZE=1G" >> $GITHUB_ENV
+        echo "CCACHE_MAXSIZE=700M" >> $GITHUB_ENV
     - name: Install Ccache
       run: |
         if [ "${RUNNER_OS}" != "macOS" ]; then
@@ -134,7 +134,7 @@ jobs:
           echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
           echo "CCACHE_COMPRESSLEVEL=5" >> $GITHUB_ENV
           echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
-          echo "CCACHE_MAXSIZE=1G" >> $GITHUB_ENV
+          echo "CCACHE_MAXSIZE=800M" >> $GITHUB_ENV
       - name: Install Ccache
         run: |
           wget https://github.com/ccache/ccache/releases/download/v4.8/ccache-4.8-linux-x86_64.tar.xz
@@ -190,7 +190,7 @@ jobs:
           echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
           echo "CCACHE_COMPRESSLEVEL=5" >> $GITHUB_ENV
           echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
-          echo "CCACHE_MAXSIZE=1G" >> $GITHUB_ENV
+          echo "CCACHE_MAXSIZE=200M" >> $GITHUB_ENV
       - name: Install Ccache
         run: |
           wget https://github.com/ccache/ccache/releases/download/v4.8/ccache-4.8-linux-x86_64.tar.xz
@@ -251,7 +251,7 @@ jobs:
           echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
           echo "CCACHE_COMPRESSLEVEL=5" >> $GITHUB_ENV
           echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
-          echo "CCACHE_MAXSIZE=1G" >> $GITHUB_ENV
+          echo "CCACHE_MAXSIZE=200M" >> $GITHUB_ENV
           echo "CCACHE_DEPEND=1" >> $GITHUB_ENV
       - name: Install Ccache
         run: |
@@ -334,9 +334,27 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: true
+    - name: Setup
+      run: |
+        echo "NPROCS=$(nproc)" >> $GITHUB_ENV
+        echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
+        echo "CCACHE_COMPRESSLEVEL=5" >> $GITHUB_ENV
+        echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
+        echo "CCACHE_MAXSIZE=800M" >> $GITHUB_ENV
+    - name: Install Ccache
+      run: |
+        wget https://github.com/ccache/ccache/releases/download/v4.8/ccache-4.8-linux-x86_64.tar.xz
+        tar xvf ccache-4.8-linux-x86_64.tar.xz
+        sudo cp -f ccache-4.8-linux-x86_64/ccache /usr/local/bin/
+    - name: Set Up Ccache
+      uses: actions/cache@v3
+      with:
+        path: ${{matrix.ccache_cache}}
+        key: ccache-${{github.workflow}}-${{github.job}}-git-${{github.sha}}
+        restore-keys: |
+             ccache-${{github.workflow}}-${{github.job}}-git-
       - name: Configure
         run: |
-          echo "NPROCS=$(nproc)" >> $GITHUB_ENV
           cmake \
           -B ${{runner.workspace}}/build-clang-tidy \
           -DCMAKE_BUILD_TYPE:STRING=Debug \
@@ -348,6 +366,7 @@ jobs:
           -DAMR_WIND_ENABLE_MASA:BOOL=OFF \
           -DAMR_WIND_ENABLE_ALL_WARNINGS:BOOL=ON \
           -DAMR_WIND_ENABLE_CLANG_TIDY:BOOL=ON \
+          -DCMAKE_CXX_COMPILER_LAUNCHER:STRING=ccache \
           ${{github.workspace}}
       - name: Check
         working-directory: ${{runner.workspace}}/build-clang-tidy
@@ -355,6 +374,10 @@ jobs:
           cmake --build . --parallel ${{env.NPROCS}} 2>&1 | tee -a clang-tidy-full-report.txt
           cat clang-tidy-full-report.txt | grep "warning:" | grep -v "submods" | sort | uniq | \
             awk 'BEGIN{i=0}{print $0}{i++}END{print "Warnings: "i}' > clang-tidy-ci-report.txt
+      - name: Ccache Report
+        run: |
+          ccache -s
+          du -hs ${HOME}/.cache/ccache
       - name: Full report
         working-directory: ${{runner.workspace}}/build-clang-tidy
         run: cat clang-tidy-full-report.txt
