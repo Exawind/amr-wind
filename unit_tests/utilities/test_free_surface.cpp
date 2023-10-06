@@ -367,7 +367,7 @@ protected:
     const amrex::Vector<amrex::Real> pl_end{{128.0, 128.0, 0.0}};
     const amrex::Vector<amrex::Real> plnarrow_s{{63.0, 63.0, 0.0}};
     const amrex::Vector<amrex::Real> plnarrow_e{{65.0, 65.0, 0.0}};
-    const int npts = 3;
+    static constexpr int npts = 3;
     const amrex::Real fref_val = 0.5;
     const std::string fname = "flag";
     int m_nlev = 0;
@@ -467,18 +467,17 @@ TEST_F(FreeSurfaceTest, sloped)
     tool.post_advance_work();
 
     // Calculate expected output values
-    amrex::Vector<amrex::Real> out_vec;
-    out_vec.resize(static_cast<long>(npts) * static_cast<long>(npts), 0.0);
+    amrex::Vector<amrex::Real> out_vec(static_cast<long>(npts * npts), 0.0);
     // Step in x, then y
-    out_vec[0] = water_level2 + slope * (-1.0 - 1.0);
-    out_vec[1] = water_level2 + slope * (+0.0 - 1.0);
-    out_vec[2] = water_level2 + slope * (+1.0 - 1.0);
-    out_vec[3] = water_level2 + slope * (-1.0 + 0.0);
-    out_vec[4] = water_level2 + slope * (+0.0 + 0.0);
-    out_vec[5] = water_level2 + slope * (+1.0 + 0.0);
-    out_vec[6] = water_level2 + slope * (-1.0 + 1.0);
-    out_vec[7] = water_level2 + slope * (+0.0 + 1.0);
-    out_vec[8] = water_level2 + slope * (+1.0 + 1.0);
+    out_vec[0] = (water_level2 + slope * (-1.0 - 1.0));
+    out_vec[1] = (water_level2 + slope * (+0.0 - 1.0));
+    out_vec[2] = (water_level2 + slope * (+1.0 - 1.0));
+    out_vec[3] = (water_level2 + slope * (-1.0 + 0.0));
+    out_vec[4] = (water_level2 + slope * (+0.0 + 0.0));
+    out_vec[5] = (water_level2 + slope * (+1.0 + 0.0));
+    out_vec[6] = (water_level2 + slope * (-1.0 + 1.0));
+    out_vec[7] = (water_level2 + slope * (+0.0 + 1.0));
+    out_vec[8] = (water_level2 + slope * (+1.0 + 1.0));
     // Check output value
     int nout = tool.check_output_vec("~", out_vec);
     ASSERT_EQ(nout, npts * npts);
