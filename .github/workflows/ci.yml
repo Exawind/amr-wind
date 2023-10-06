@@ -46,7 +46,7 @@ jobs:
             ccache_size: 250M
           - build_type: Debug
             ctest_args: -L unit
-            ccache_size: 1000M
+            ccache_size: 500M
         exclude:
           - os: macos-latest
             build_type: Debug
@@ -61,7 +61,7 @@ jobs:
       run: |
         echo "NPROCS=${{matrix.procs}}" >> $GITHUB_ENV
         echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
-        echo "CCACHE_COMPRESSLEVEL=10" >> $GITHUB_ENV
+        echo "CCACHE_COMPRESSLEVEL=1" >> $GITHUB_ENV
         echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
         echo "CCACHE_MAXSIZE=${{matrix.ccache_size}}" >> $GITHUB_ENV
     - name: Install Ccache
@@ -134,7 +134,7 @@ jobs:
         run: |
           echo "NPROCS=$(nproc)" >> $GITHUB_ENV
           echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
-          echo "CCACHE_COMPRESSLEVEL=10" >> $GITHUB_ENV
+          echo "CCACHE_COMPRESSLEVEL=1" >> $GITHUB_ENV
           echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
           echo "CCACHE_MAXSIZE=500M" >> $GITHUB_ENV
       - name: Install Ccache
@@ -190,7 +190,7 @@ jobs:
         run: |
           echo "NPROCS=$(nproc)" >> $GITHUB_ENV
           echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
-          echo "CCACHE_COMPRESSLEVEL=10" >> $GITHUB_ENV
+          echo "CCACHE_COMPRESSLEVEL=1" >> $GITHUB_ENV
           echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
           echo "CCACHE_MAXSIZE=250M" >> $GITHUB_ENV
       - name: Install Ccache
@@ -251,7 +251,7 @@ jobs:
         run: |
           echo "NPROCS=$(nproc)" >> $GITHUB_ENV
           echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
-          echo "CCACHE_COMPRESSLEVEL=10" >> $GITHUB_ENV
+          echo "CCACHE_COMPRESSLEVEL=1" >> $GITHUB_ENV
           echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
           echo "CCACHE_MAXSIZE=250M" >> $GITHUB_ENV
           echo "CCACHE_DEPEND=1" >> $GITHUB_ENV
@@ -340,7 +340,7 @@ jobs:
         run: |
           echo "NPROCS=$(nproc)" >> $GITHUB_ENV
           echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
-          echo "CCACHE_COMPRESSLEVEL=10" >> $GITHUB_ENV
+          echo "CCACHE_COMPRESSLEVEL=1" >> $GITHUB_ENV
           echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
           echo "CCACHE_MAXSIZE=250M" >> $GITHUB_ENV
       - name: Install Ccache
