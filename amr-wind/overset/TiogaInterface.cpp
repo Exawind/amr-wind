@@ -4,6 +4,7 @@
 #include "amr-wind/equation_systems/PDEBase.H"
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/utilities/IOManager.H"
+#include "AMReX_ParmParse.H"
 
 #include <memory>
 #include <numeric>
@@ -77,6 +78,9 @@ TiogaInterface::TiogaInterface(CFDSim& sim)
           FieldLoc::NODE))
 {
     m_sim.io_manager().register_output_int_var(m_iblank_cell.name());
+
+    amrex::ParmParse pp("Overset");
+    pp.query("ignore_nalu_pressure_field", m_disable_pressure_from_nalu);
 }
 
 // clang-format on
@@ -127,6 +131,9 @@ void TiogaInterface::post_overset_conn_work()
     for (int lev = 0; lev < nlevels; ++lev) {
         htod_memcpy(m_iblank_cell(lev), (*m_iblank_cell_host)(lev), 0, 0, 1);
         htod_memcpy(m_iblank_node(lev), (*m_iblank_node_host)(lev), 0, 0, 1);
+
+        m_iblank_cell(lev).FillBoundary(m_sim.mesh().Geom()[lev].periodicity());
+        m_iblank_node(lev).FillBoundary(m_sim.mesh().Geom()[lev].periodicity());
     }
 
     iblank_to_mask(m_iblank_cell, m_mask_cell);
@@ -282,7 +289,8 @@ void TiogaInterface::update_solution()
     }
 
     // Update nodal variables on device
-    {
+    if (!m_disable_pressure_from_nalu) {
+        // Pressure is the only nodal variable - skip copy if requested
         int icomp = 0;
         for (const auto& cvar : m_node_vars) {
             auto& fld = repo.get_field(cvar);

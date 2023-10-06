@@ -66,6 +66,8 @@ MultiPhase::MultiPhase(CFDSim& sim)
                 "reference_pressure", 1, (*m_vof).num_grow()[0], 1);
         }
     }
+
+    pp_multiphase.query("initialize_pressure", m_init_p);
 }
 
 InterfaceCapturingMethod MultiPhase::interface_capturing_method()
@@ -78,13 +80,32 @@ void MultiPhase::post_init_actions()
 
     const auto& io_mgr = m_sim.io_manager();
     if (!io_mgr.is_restart()) {
-        switch (m_interface_capturing_method) {
-        case InterfaceCapturingMethod::VOF:
-            levelset2vof();
-            set_density_via_vof();
-            break;
+        // Different steps depending on how case is initialized, solved
+        switch (m_interface_init_method) {
         case InterfaceCapturingMethod::LS:
-            set_density_via_levelset();
+            switch (m_interface_capturing_method) {
+            case InterfaceCapturingMethod::VOF:
+                levelset2vof();
+                set_density_via_vof();
+                break;
+            case InterfaceCapturingMethod::LS:
+                set_density_via_levelset();
+                break;
+            };
+            break;
+
+        case InterfaceCapturingMethod::VOF:
+            switch (m_interface_capturing_method) {
+            case InterfaceCapturingMethod::VOF:
+                // VOF has been specified directly, just update density
+                set_density_via_vof();
+                break;
+            case InterfaceCapturingMethod::LS:
+                amrex::Abort(
+                    "Initialization failed. Case cannot be initialized with "
+                    "VOF and then simulated with Levelset");
+                break;
+            };
             break;
         };
     }
@@ -121,6 +142,20 @@ void MultiPhase::post_init_actions()
                 p0, m_rho1, m_rho2, water_level0, m_gravity[2],
                 m_sim.mesh().Geom());
         }
+    }
+
+    if (m_init_p && !is_wlev) {
+        amrex::Abort(
+            "Initialize pressure requested, but physics case does not "
+            "specify water level.");
+    }
+    // Make p field if both are specified
+    if (m_init_p && is_wlev) {
+        pp_multiphase.get("water_level", water_level0);
+        // Initialize rho0 field for perturbational density, pressure
+        auto& p = m_sim.repo().get_field("p");
+        hydrostatic::define_p0(
+            p, m_rho1, m_rho2, water_level0, m_gravity[2], m_sim.mesh().Geom());
     }
 }
 
@@ -163,7 +198,8 @@ void MultiPhase::post_advance_work()
 {
     switch (m_interface_capturing_method) {
     case InterfaceCapturingMethod::VOF:
-        // Compute and print the total volume fraction, momenta, and differences
+        // Compute and print the total volume fraction, momenta, and
+        // differences
         if (m_verbose > 0) {
             m_total_volfrac = volume_fraction_sum();
             amrex::Real mom_x = momentum_sum(0) - q0;
@@ -509,6 +545,84 @@ void MultiPhase::levelset2vof()
     }
     // Fill ghost and boundary cells before simulation begins
     (*m_vof).fillpatch(0.0);
+}
+
+void MultiPhase::levelset2vof(IntField& iblank_cell, ScratchField& vof_scr)
+{
+    const int nlevels = m_sim.repo().num_active_levels();
+    (*m_levelset).fillpatch(m_sim.time().current_time());
+    const auto& geom = m_sim.mesh().Geom();
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        auto& levelset = (*m_levelset)(lev);
+        auto& vof = vof_scr(lev);
+        const auto& dx = geom[lev].CellSizeArray();
+
+        for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
+            const auto& vbx = mfi.validbox();
+            const amrex::Array4<amrex::Real>& phi = levelset.array(mfi);
+            const amrex::Array4<amrex::Real>& volfrac = vof.array(mfi);
+            const amrex::Array4<const int>& iblank =
+                iblank_cell(lev).const_array(mfi);
+            const amrex::Real eps = 2. * std::cbrt(dx[0] * dx[1] * dx[2]);
+            amrex::ParallelFor(
+                vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    // Neumann of levelset across iblank boundaries
+                    int ibdy = 0;
+                    int jbdy = 0;
+                    int kbdy = 0;
+                    if (iblank(i, j, k) != iblank(i - 1, j, k)) {
+                        ibdy = -1;
+                    }
+                    if (iblank(i, j, k) != iblank(i, j - 1, k)) {
+                        jbdy = -1;
+                    }
+                    if (iblank(i, j, k) != iblank(i, j, k - 1)) {
+                        kbdy = -1;
+                    }
+                    // no cell should be isolated such that -1 and 1 are
+                    // needed
+                    if (iblank(i, j, k) != iblank(i + 1, j, k)) {
+                        ibdy = +1;
+                    }
+                    if (iblank(i, j, k) != iblank(i, j + 1, k)) {
+                        jbdy = +1;
+                    }
+                    if (iblank(i, j, k) != iblank(i, j, k + 1)) {
+                        kbdy = +1;
+                    }
+                    amrex::Real mx, my, mz;
+                    multiphase::youngs_fd_normal_neumann(
+                        i, j, k, ibdy, jbdy, kbdy, phi, mx, my, mz);
+                    mx = std::abs(mx / 32.);
+                    my = std::abs(my / 32.);
+                    mz = std::abs(mz / 32.);
+                    amrex::Real normL1 = (mx + my + mz);
+                    mx = mx / normL1;
+                    my = my / normL1;
+                    mz = mz / normL1;
+                    // Make sure that alpha is negative far away from the
+                    // interface
+                    amrex::Real alpha;
+                    if (phi(i, j, k) < -eps) {
+                        alpha = -1.0;
+                    } else {
+                        alpha = phi(i, j, k) / normL1;
+                        alpha = alpha + 0.5;
+                    }
+                    if (alpha >= 1.0) {
+                        volfrac(i, j, k) = 1.0;
+                    } else if (alpha <= 0.0) {
+                        volfrac(i, j, k) = 0.0;
+                    } else {
+                        volfrac(i, j, k) =
+                            multiphase::cut_volume(mx, my, mz, alpha, 0.0, 1.0);
+                    }
+                });
+        }
+    }
+    // Fill ghost and boundary cells before simulation begins
+    vof_scr.fillpatch(0.0);
 }
 
 } // namespace amr_wind

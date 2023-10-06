@@ -1,24 +1,24 @@
-#ifndef SloshingTank_H
-#define SloshingTank_H
+#ifndef FuzzyInterface_H
+#define FuzzyInterface_H
 
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"
 
-/** Multiphase Sloshing Tank 3D physics
- *  \ingroup mulitphase_physics
+/** Multiphase 3D physics
+ *  \ingroup multiphase_physics
  *
  */
 
 namespace amr_wind {
 
-class SloshingTank : public Physics::Register<SloshingTank>
+class FuzzyInterface : public Physics::Register<FuzzyInterface>
 {
 public:
-    static std::string identifier() { return "SloshingTank"; }
+    static std::string identifier() { return "FuzzyInterface"; }
 
-    explicit SloshingTank(CFDSim& sim);
+    explicit FuzzyInterface(CFDSim& sim);
 
-    ~SloshingTank() override = default;
+    ~FuzzyInterface() override = default;
 
     //! Initialize the levelset and velocity fields for Sloshing Tank
     //! simulations
@@ -34,17 +34,16 @@ public:
 
 private:
     Field& m_velocity;
-    Field& m_levelset;
+    Field& m_vof;
     Field& m_pressure;
-
-    //! Initial free surface amplitude magnitude
-    amrex::Real m_amplitude{0.1};
-
-    //! Peak enhancement factor
-    amrex::Real m_kappa{0.25};
 
     //! Initial zero-level free-surface water depth
     amrex::Real m_waterlevel{0.0};
+    //! Divide vof between smooth and discrete at x
+    amrex::Real m_lx_vofjump{-0.25};
+    amrex::Real m_hx_vofjump{0.25};
+    // Thickness of interface in smooth section
+    amrex::Real m_intf_th{0.0};
 
     //! Stuff to get from MultiPhase physics
     amrex::Real m_rho1{1000.};
@@ -53,4 +52,4 @@ private:
 };
 
 } // namespace amr_wind
-#endif /* SloshingTank_H */
+#endif /* FuzzyInterface_H */
