@@ -384,11 +384,12 @@ jobs:
             awk 'BEGIN{i=0}{print $0}{i++}END{print "Warnings: "i}' > clang-tidy-ci-report.txt
       - name: Ccache Report
         run: |
-          ccache -s
+          ls ~/.cache
           ls ~/.cache/ccache
           du -hs ~/.cache/ccache
           ls ~/.cache/ctcache
           du -hs ~/.cache/ctcache
+          ccache -s
       - name: Full report
         working-directory: ${{runner.workspace}}/build-clang-tidy
         run: cat clang-tidy-full-report.txt
