@@ -346,15 +346,18 @@ jobs:
           echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
           echo "CCACHE_EXTRAFILES=${{github.workspace}}/.clang-tidy" >> $GITHUB_ENV
           echo "CCACHE_MAXSIZE=50M" >> $GITHUB_ENV
+          echo "CTCACHE_DIR=~/.cache/ctcache" >> $GITHUB_ENV
       - name: Install Ccache
         run: |
           wget https://github.com/ccache/ccache/releases/download/v4.8/ccache-4.8-linux-x86_64.tar.xz
+          sudo curl https://raw.githubusercontent.com/matus-chochlik/ctcache/7fd516e91c17779cbc6fc18bd119313d9532dd90/clang-tidy-cache -Lo /usr/bin/clang-tidy-cache
           tar xvf ccache-4.8-linux-x86_64.tar.xz
           sudo cp -f ccache-4.8-linux-x86_64/ccache /usr/local/bin/
+          sudo chmod +x /usr/bin/clang-tidy-cache
       - name: Set Up Ccache
         uses: actions/cache@v3
         with:
-          path: ~/.cache/ccache
+          path: ~/.cache
           key: ccache-${{github.workflow}}-${{github.job}}-git-${{github.sha}}
           restore-keys: |
                ccache-${{github.workflow}}-${{github.job}}-git-
@@ -384,6 +387,8 @@ jobs:
           ccache -s
           ls ~/.cache/ccache
           du -hs ~/.cache/ccache
+          ls ~/.cache/ctcache
+          du -hs ~/.cache/ctcache
       - name: Full report
         working-directory: ${{runner.workspace}}/build-clang-tidy
         run: cat clang-tidy-full-report.txt
