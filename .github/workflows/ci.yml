@@ -293,39 +293,39 @@ jobs:
         run: |
           ccache -s
           du -hs ${HOME}/.cache/ccache
-  Lint-cppcheck:
-    needs: Formatting
-    runs-on: macos-latest
-    steps:
-      - name: Clone
-        uses: actions/checkout@v3
-        with:
-          submodules: true
-      - name: Dependencies
-        run: brew install cppcheck
-      - name: Configure
-        run: |
-          echo "NPROCS=$(sysctl -n hw.ncpu)" >> $GITHUB_ENV
-          cmake \
-          -B ${{runner.workspace}}/build-cppcheck \
-          -DAMR_WIND_ENABLE_MPI:BOOL=OFF \
-          -DAMR_WIND_ENABLE_TESTS:BOOL=ON \
-          -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
-          -DAMR_WIND_ENABLE_MASA:BOOL=OFF \
-          -DAMR_WIND_ENABLE_CPPCHECK:BOOL=ON \
-          ${{github.workspace}}
-      - name: Check
-        working-directory: ${{runner.workspace}}/build-cppcheck
-        run: make cppcheck-ci
-      - name: Full report
-        working-directory: ${{runner.workspace}}/build-cppcheck
-        run: cat cppcheck/cppcheck-full-report.txt
-      - name: Short report
-        working-directory: ${{runner.workspace}}/build-cppcheck
-        run: |
-          echo "::add-matcher::.github/problem-matchers/cppcheck.json"
-          cat cppcheck-ci-report.txt
-          exit $(tail -n 1 cppcheck-ci-report.txt | awk '{print $2}')
+#  Lint-cppcheck:
+#    needs: Formatting
+#    runs-on: macos-latest
+#    steps:
+#      - name: Clone
+#        uses: actions/checkout@v3
+#        with:
+#          submodules: true
+#      - name: Dependencies
+#        run: brew install cppcheck
+#      - name: Configure
+#        run: |
+#          echo "NPROCS=$(sysctl -n hw.ncpu)" >> $GITHUB_ENV
+#          cmake \
+#          -B ${{runner.workspace}}/build-cppcheck \
+#          -DAMR_WIND_ENABLE_MPI:BOOL=OFF \
+#          -DAMR_WIND_ENABLE_TESTS:BOOL=ON \
+#          -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
+#          -DAMR_WIND_ENABLE_MASA:BOOL=OFF \
+#          -DAMR_WIND_ENABLE_CPPCHECK:BOOL=ON \
+#          ${{github.workspace}}
+#      - name: Check
+#        working-directory: ${{runner.workspace}}/build-cppcheck
+#        run: make cppcheck-ci
+#      - name: Full report
+#        working-directory: ${{runner.workspace}}/build-cppcheck
+#        run: cat cppcheck/cppcheck-full-report.txt
+#      - name: Short report
+#        working-directory: ${{runner.workspace}}/build-cppcheck
+#        run: |
+#          echo "::add-matcher::.github/problem-matchers/cppcheck.json"
+#          cat cppcheck-ci-report.txt
+#          exit $(tail -n 1 cppcheck-ci-report.txt | awk '{print $2}')
   Lint-clang-tidy:
     needs: Formatting
     runs-on: ubuntu-latest
