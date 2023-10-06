@@ -420,11 +420,13 @@ void incflo::ApplyPredictor(bool incremental_projection)
         (density_new).vec_const_ptrs(), new_time, m_time.deltaT(),
         incremental_projection);
 
-    if (m_sharpen_hsp_replace) {
-        amr_wind::overset::ReapplyModifiedGradP(sim());
-    }
-    if (m_sharpen_gradp) {
-        amr_wind::overset::ReapplyOversetGradP(*gp_copy, sim());
+    if (sim().has_overset()) {
+        if (m_sharpen_hsp_replace) {
+            amr_wind::overset::ReapplyModifiedGradP(sim());
+        }
+        if (m_sharpen_gradp) {
+            amr_wind::overset::ReapplyOversetGradP(*gp_copy, sim());
+        }
     }
 
     if (m_verbose > 2) {
