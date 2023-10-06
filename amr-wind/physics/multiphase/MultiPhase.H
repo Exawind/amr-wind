@@ -3,6 +3,8 @@
 
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"
+#include "amr-wind/core/IntField.H"
+#include "amr-wind/core/ScratchField.H"
 
 /** Multiphase physics
  *
@@ -51,7 +53,19 @@ public:
 
     void levelset2vof();
 
+    void levelset2vof(IntField& iblank_cell, ScratchField& vof_scr);
+
     void favre_filtering();
+
+    void set_intf_init_method_to_vof()
+    {
+        m_interface_init_method = InterfaceCapturingMethod::VOF;
+    }
+
+    void set_intf_init_method_to_ls()
+    {
+        m_interface_init_method = InterfaceCapturingMethod::LS;
+    };
 
     amrex::Real volume_fraction_sum();
 
@@ -62,6 +76,8 @@ public:
     amrex::Real rho1() const { return m_rho1; }
 
     amrex::Real rho2() const { return m_rho2; }
+
+    amrex::Vector<amrex::Real> gravity() const { return m_gravity; }
 
 private:
     const CFDSim& m_sim;
@@ -87,6 +103,8 @@ private:
     // Reconstructing true pressure field at end of timestep
     bool is_ptrue{false};
 
+    bool m_init_p{false};
+
     // Info to create rho0
     amrex::Real water_level0{0.0};
     // Info to reconstruct true pressure
@@ -100,6 +118,9 @@ private:
     std::string m_interface_model{"vof"};
     InterfaceCapturingMethod m_interface_capturing_method =
         InterfaceCapturingMethod::VOF;
+
+    InterfaceCapturingMethod m_interface_init_method =
+        InterfaceCapturingMethod::LS;
 
     // Verbose flag for multiphase
     int m_verbose{0};

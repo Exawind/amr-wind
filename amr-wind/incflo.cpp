@@ -388,6 +388,21 @@ void incflo::init_physics_and_pde()
         // Check for if velocity is prescribed
         amrex::ParmParse pp("incflo");
         pp.query("prescribe_velocity", m_prescribe_vel);
+
+        // Check for sharpening iterations (overset feature)
+        pp.query("sharpen_iterations", m_sharpen_iterations);
+        pp.query("sharpen_tolerance", m_sharpen_tolerance);
+        pp.query("sharpen_calctol_niter", m_sharpen_calctolniter);
+        pp.query("sharpen_rlscale", m_sharpen_rlscale);
+        pp.query("sharpen_margin", m_sharpen_margin);
+        pp.query("sharpen_targetvof_tol", m_sharpen_proctg_tol);
+        pp.query("sharpen_hs_pressure", m_sharpen_hs_pressure);
+        pp.query("sharpen_guess_hsp", m_sharpen_hsp_guess);
+        pp.query("sharpen_replace_hsp", m_sharpen_hsp_replace);
+        pp.query("sharpen_pressure_grad", m_sharpen_gradp);
+
+        // Determine if overset values should be forced into projection
+        pp.query("disable_overset_nodal", m_disable_onodal);
     }
     m_sim.create_turbulence_model();
 
