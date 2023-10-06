@@ -98,9 +98,8 @@ jobs:
     - name: Ccache Report
       run: |
         ccache -s
-        if [ "${RUNNER_OS}" != "macOS" ]; then
-          du -hs ${HOME}/.cache/ccache
-        fi
+        ls ${{matrix.ccache_cache}}
+        du -hs ${{matrix.ccache_cache}}
     - name: Report
       working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}
       run: |
@@ -176,7 +175,8 @@ jobs:
       - name: Ccache Report
         run: |
           ccache -s
-          du -hs ${HOME}/.cache/ccache
+          ls ~/.cache/ccache
+          du -hs ~/.cache/ccache
   GPU-AMD:
     name: GPU-HIP
     needs: Formatting
@@ -237,7 +237,8 @@ jobs:
       - name: Ccache Report
         run: |
           ccache -s
-          du -hs ${HOME}/.cache/ccache
+          ls ~/.cache/ccache
+          du -hs ~/.cache/ccache
   GPU-Intel:
     name: GPU-SYCL
     needs: Formatting
@@ -294,7 +295,8 @@ jobs:
       - name: Ccache Report
         run: |
           ccache -s
-          du -hs ${HOME}/.cache/ccache
+          ls ~/.cache/ccache
+          du -hs ~/.cache/ccache
 #  Lint-cppcheck:
 #    needs: Formatting
 #    runs-on: macos-latest
@@ -342,6 +344,7 @@ jobs:
           echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
           echo "CCACHE_COMPRESSLEVEL=1" >> $GITHUB_ENV
           echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
+          echo "CCACHE_EXTRAFILES=${{github.workspace}}/.clang-tidy" >> $GITHUB_ENV
           echo "CCACHE_MAXSIZE=50M" >> $GITHUB_ENV
       - name: Install Ccache
         run: |
@@ -379,7 +382,8 @@ jobs:
       - name: Ccache Report
         run: |
           ccache -s
-          du -hs ${HOME}/.cache/ccache
+          ls ~/.cache/ccache
+          du -hs ~/.cache/ccache
       - name: Full report
         working-directory: ${{runner.workspace}}/build-clang-tidy
         run: cat clang-tidy-full-report.txt
