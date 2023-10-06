@@ -349,7 +349,7 @@ jobs:
       - name: Set Up Ccache
         uses: actions/cache@v3
         with:
-          path: ${{matrix.ccache_cache}}
+          path: ~/.cache/ccache
           key: ccache-${{github.workflow}}-${{github.job}}-git-${{github.sha}}
           restore-keys: |
                ccache-${{github.workflow}}-${{github.job}}-git-
