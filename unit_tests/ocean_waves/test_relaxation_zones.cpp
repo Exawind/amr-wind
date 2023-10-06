@@ -123,7 +123,7 @@ void init_relaxation_field(amr_wind::Field& theor_field, amrex::Real gen_length)
         const auto& bx = mfi.validbox();
         const auto& dx = geom[lev].CellSizeArray();
         const auto& problo = geom[lev].ProbLoArray();
-        const auto& probhi = geom[lev].ProbLoArray();
+        const auto& probhi = geom[lev].ProbHiArray();
         if (gen_length > 0.) {
             initialize_relaxation_zone_field(
                 bx, theor_field_arr, dx[0], problo[0], gen_length);
