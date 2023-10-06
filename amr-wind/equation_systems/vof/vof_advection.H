@@ -23,6 +23,9 @@ struct AdvectionOp<VOF, fvm::Godunov>
     {
         amrex::ParmParse pp_multiphase("VOF");
         pp_multiphase.query("remove_debris", m_rm_debris);
+        pp_multiphase.query("sharpen_acq_field", m_sharpen_acq);
+        pp_multiphase.query("sharpen_dest_field", m_sharpen_dest);
+        pp_multiphase.query("replace_masked", m_replace_mask);
 
         // Setup density factor arrays for multiplying velocity flux
         fields_in.repo.declare_face_normal_field(
@@ -34,7 +37,9 @@ struct AdvectionOp<VOF, fvm::Godunov>
         const FieldState /*unused*/,
         const amrex::Real /*unused*/,
         const amrex::Real /*unused*/)
-    {}
+    {
+        // Would be best to sharpen old vof and update old density here
+    }
 
     void operator()(const FieldState /*unused*/, const amrex::Real dt)
     {
@@ -43,13 +48,38 @@ struct AdvectionOp<VOF, fvm::Godunov>
 
         auto& repo = fields.repo;
         const auto& geom = repo.mesh().Geom();
+        const int nlevels = repo.num_active_levels();
 
         auto& aa_x = repo.get_field("advalpha_x");
         auto& aa_y = repo.get_field("advalpha_y");
         auto& aa_z = repo.get_field("advalpha_z");
 
-        // cppcheck-suppress constVariable
-        auto& dof_field = fields.field;
+        // Old and new states
+        auto& dof_old = fields.field.state(amr_wind::FieldState::Old);
+        auto& dof_new = fields.field;
+        // Working state of vof is nph, to keep others untouched during step
+        auto& dof_field = fields.field.state(amr_wind::FieldState::NPH);
+
+        // Sharpen starting vof field if hybrid solver is being used
+        if (repo.int_field_exists("iblank_cell") && m_sharpen_acq) {
+            auto& f_iblank = repo.get_int_field("iblank_cell");
+            amr_wind::multiphase::sharpen_acquired_vof(
+                nlevels, f_iblank, dof_old);
+        }
+        // Sharpen future vof field if hybrid solver is being used
+        if (repo.int_field_exists("iblank_cell") && m_sharpen_dest) {
+            auto& f_iblank = repo.get_int_field("iblank_cell");
+            amr_wind::multiphase::sharpen_acquired_vof(
+                nlevels, f_iblank, dof_new);
+        }
+
+        // Initialize as old state values
+        for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+            amrex::MultiFab::Copy(
+                dof_field(lev), dof_old(lev), 0, 0, dof_field.num_comp(),
+                dof_field.num_grow());
+        }
+
         //
         // Advect volume using Implicit Eulerian Sweeping method with PLIC
         // reconstruction
@@ -71,8 +101,6 @@ struct AdvectionOp<VOF, fvm::Godunov>
             isweep = 1;
         }
 
-        const int nlevels = repo.num_active_levels();
-
         amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> fluxes(
             nlevels);
         amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> advas(
@@ -86,20 +114,6 @@ struct AdvectionOp<VOF, fvm::Godunov>
             advas[lev][2] = &aa_z(lev);
         }
 
-        // Sharpen acquired vof field if hybrid solver is being used
-        if (repo.int_field_exists("iblank_cell")) {
-            auto& f_iblank = repo.get_int_field("iblank_cell");
-            amr_wind::multiphase::sharpen_acquired_vof(
-                nlevels, f_iblank, dof_field);
-            // Update old vof so that old density can be updated
-            // cppcheck-suppress constVariableReference
-            auto& old_dof_field = dof_field.state(amr_wind::FieldState::Old);
-            for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-                amrex::MultiFab::Copy(
-                    old_dof_field(lev), dof_field(lev), 0, 0,
-                    dof_field.num_comp(), dof_field.num_grow());
-            }
-        }
         // Split advection step 1, with cmask calculation
         multiphase::split_advection_step(
             isweep, 0, nlevels, dof_field, fluxes, (*fluxC), advas, u_mac,
@@ -112,6 +126,20 @@ struct AdvectionOp<VOF, fvm::Godunov>
         multiphase::split_advection_step(
             isweep, 2, nlevels, dof_field, fluxes, (*fluxC), advas, u_mac,
             v_mac, w_mac, dof_field.bc_type(), geom, dt, m_rm_debris);
+
+        // Replace masked cells using overset
+        if (repo.int_field_exists("iblank_cell") && m_replace_mask) {
+            auto& f_iblank = repo.get_int_field("iblank_cell");
+            amr_wind::multiphase::replace_masked_vof(
+                nlevels, f_iblank, dof_field, dof_new);
+        }
+
+        // Copy working version of vof to new state
+        for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+            amrex::MultiFab::Copy(
+                dof_new(lev), dof_field(lev), 0, 0, dof_field.num_comp(),
+                dof_field.num_grow());
+        }
     }
 
     PDEFields& fields;
@@ -120,6 +148,9 @@ struct AdvectionOp<VOF, fvm::Godunov>
     Field& w_mac;
     int isweep = 0;
     bool m_rm_debris{true};
+    bool m_sharpen_acq{false};
+    bool m_sharpen_dest{false};
+    bool m_replace_mask{true};
     // Lagrangian transport is deprecated, only Eulerian is supported
 };
 
