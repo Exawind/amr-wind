@@ -413,6 +413,10 @@ TEST_F(VOFToolTest, sharpen_replace_old_density)
         pp.addarr("physics", physics);
         pp.add("use_godunov", (int)1);
     }
+    {
+        amrex::ParmParse pp("VOF");
+        pp.add("sharpen_acq_field", (int)1);
+    }
 
     initialize_mesh();
 
@@ -437,7 +441,7 @@ TEST_F(VOFToolTest, sharpen_replace_old_density)
     iblank.setVal(-1);
 
     // Initialize vof
-    init_vof(vof);
+    init_vof(vof.state(amr_wind::FieldState::Old));
 
     // Initialize advective velocities with something
     auto& umac = repo.get_field("u_mac");
