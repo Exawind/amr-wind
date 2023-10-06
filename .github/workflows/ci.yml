@@ -29,7 +29,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        build_type: [RelWithDebInfo, Debug]
+        build_type: [Release, Debug]
         include:
           - os: macos-latest
             install_deps: brew install mpich ccache
@@ -41,7 +41,7 @@ jobs:
             comp: gnu
             procs: $(nproc)
             ccache_cache: ~/.cache/ccache
-          - build_type: RelWithDebInfo
+          - build_type: Release
             ctest_args: -LE no_ci
           - build_type: Debug
             ctest_args: -L unit
@@ -61,7 +61,7 @@ jobs:
         echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
         echo "CCACHE_COMPRESSLEVEL=10" >> $GITHUB_ENV
         echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
-        echo "CCACHE_MAXSIZE=700M" >> $GITHUB_ENV
+        echo "CCACHE_MAXSIZE=250M" >> $GITHUB_ENV
     - name: Install Ccache
       run: |
         if [ "${RUNNER_OS}" != "macOS" ]; then
@@ -190,7 +190,7 @@ jobs:
           echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
           echo "CCACHE_COMPRESSLEVEL=10" >> $GITHUB_ENV
           echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
-          echo "CCACHE_MAXSIZE=200M" >> $GITHUB_ENV
+          echo "CCACHE_MAXSIZE=250M" >> $GITHUB_ENV
       - name: Install Ccache
         run: |
           wget https://github.com/ccache/ccache/releases/download/v4.8/ccache-4.8-linux-x86_64.tar.xz
@@ -251,7 +251,7 @@ jobs:
           echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
           echo "CCACHE_COMPRESSLEVEL=10" >> $GITHUB_ENV
           echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
-          echo "CCACHE_MAXSIZE=200M" >> $GITHUB_ENV
+          echo "CCACHE_MAXSIZE=250M" >> $GITHUB_ENV
           echo "CCACHE_DEPEND=1" >> $GITHUB_ENV
       - name: Install Ccache
         run: |
@@ -340,7 +340,7 @@ jobs:
           echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
           echo "CCACHE_COMPRESSLEVEL=10" >> $GITHUB_ENV
           echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
-          echo "CCACHE_MAXSIZE=800M" >> $GITHUB_ENV
+          echo "CCACHE_MAXSIZE=250M" >> $GITHUB_ENV
       - name: Install Ccache
         run: |
           wget https://github.com/ccache/ccache/releases/download/v4.8/ccache-4.8-linux-x86_64.tar.xz
@@ -357,7 +357,7 @@ jobs:
         run: |
           cmake \
           -B ${{runner.workspace}}/build-clang-tidy \
-          -DCMAKE_BUILD_TYPE:STRING=Debug \
+          -DCMAKE_BUILD_TYPE:STRING=Release \
           -DCMAKE_CXX_COMPILER:STRING=clang++ \
           -DCMAKE_C_COMPILER:STRING=clang \
           -DAMR_WIND_ENABLE_MPI:BOOL=OFF \
