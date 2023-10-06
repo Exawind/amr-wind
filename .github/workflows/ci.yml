@@ -354,6 +354,7 @@ jobs:
           tar xvf ccache-4.8-linux-x86_64.tar.xz
           sudo cp -f ccache-4.8-linux-x86_64/ccache /usr/local/bin/
           sudo chmod +x /usr/bin/clang-tidy-cache
+          mkdir -p ~/.cache/ctcache
       - name: Set Up Ccache
         uses: actions/cache@v3
         with:

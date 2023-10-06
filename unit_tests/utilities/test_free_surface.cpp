@@ -367,7 +367,7 @@ protected:
     const amrex::Vector<amrex::Real> pl_end{{128.0, 128.0, 0.0}};
     const amrex::Vector<amrex::Real> plnarrow_s{{63.0, 63.0, 0.0}};
     const amrex::Vector<amrex::Real> plnarrow_e{{65.0, 65.0, 0.0}};
-    const int npts = 3;
+    static constexpr int npts = 3;
     const amrex::Real fref_val = 0.5;
     const std::string fname = "flag";
     int m_nlev = 0;
