@@ -162,12 +162,12 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                             vel(i, j, k, 0) = (rho1 * volfrac(i, j, k) * Gamma +
                                                rho2 * (1. - volfrac(i, j, k))) *
                                               vel(i, j, k, 0) / rho_;
-                            vel(i, j, k, 0) = (rho1 * volfrac(i, j, k) * Gamma +
+                            vel(i, j, k, 1) = (rho1 * volfrac(i, j, k) * Gamma +
                                                rho2 * (1. - volfrac(i, j, k))) *
-                                              vel(i, j, k, 0) / rho_;
-                            vel(i, j, k, 0) = (rho1 * volfrac(i, j, k) * Gamma +
+                                              vel(i, j, k, 1) / rho_;
+                            vel(i, j, k, 2) = (rho1 * volfrac(i, j, k) * Gamma +
                                                rho2 * (1. - volfrac(i, j, k))) *
-                                              vel(i, j, k, 0) / rho_;
+                                              vel(i, j, k, 2) / rho_;
                         }
                         if (has_outprofile) {
                             const amrex::Real vf =
