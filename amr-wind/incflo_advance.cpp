@@ -202,7 +202,8 @@ void incflo::ApplyPredictor(bool incremental_projection)
             m_sharpen_calctolniter, m_sharpen_rlscale, m_sharpen_margin,
             m_sharpen_proctg_tol, m_sharpen_hs_pressure, m_sharpen_gradp);
         // Recalculate pressure gradient with incoming sharpened field
-        if (!m_sharpen_gradp || sim().time().current_time() == 0.0) {
+        if ((!m_sharpen_gradp || sim().time().current_time() == 0.0) &&
+            !m_sharpen_hsp_guess) {
             UpdateGradP(
                 (density_old).vec_const_ptrs(), m_time.current_time(),
                 m_time.deltaT());

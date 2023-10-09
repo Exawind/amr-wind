@@ -79,6 +79,8 @@ public:
 
     amrex::Vector<amrex::Real> gravity() const { return m_gravity; }
 
+    bool perturb_p() const { return is_pptb; }
+
 private:
     const CFDSim& m_sim;
 

@@ -660,8 +660,10 @@ void replace_gradp_hs(
     amrex::MultiFab& mf_gp,
     amrex::MultiFab& mf_density,
     amrex::iMultiFab& mf_iblank,
-    const amrex::Real grav_z)
+    const amrex::Real grav_z,
+    const bool is_pptb)
 {
+    const amrex::Real gz = is_pptb? 0. : grav_z;
     for (amrex::MFIter mfi(mf_gp); mfi.isValid(); ++mfi) {
         const auto& gbx = mfi.growntilebox();
         const amrex::Array4<amrex::Real>& gp = mf_gp.array(mfi);
@@ -674,7 +676,7 @@ void replace_gradp_hs(
                 if (iblank(i, j, k) == -1) {
                     gp(i, j, k, 0) = 0.;
                     gp(i, j, k, 1) = 0.;
-                    gp(i, j, k, 2) = rho(i, j, k) * grav_z;
+                    gp(i, j, k, 2) = rho(i, j, k) * gz;
                 }
             });
     }
@@ -932,6 +934,7 @@ void ReplaceMaskedGradP(CFDSim& sim)
     // Get gravity
     auto& mphase = sim.physics_manager().get<MultiPhase>();
     const amrex::Real grav_z = mphase.gravity()[2];
+    const bool is_pptb = mphase.perturb_p();
 
     // Get blanking for cells
     auto& iblank_cell = repo.get_int_field("iblank_cell");
@@ -942,7 +945,7 @@ void ReplaceMaskedGradP(CFDSim& sim)
 
     // Replace initial gp with best guess (hydrostatic)
     for (int lev = 0; lev < nlevels; ++lev) {
-        replace_gradp_hs(gp(lev), rho(lev), iblank_cell(lev), grav_z);
+        replace_gradp_hs(gp(lev), rho(lev), iblank_cell(lev), grav_z, is_pptb);
     }
 }
 
@@ -955,6 +958,7 @@ void ReapplyModifiedGradP(CFDSim& sim)
     // Get gravity
     auto& mphase = sim.physics_manager().get<MultiPhase>();
     const amrex::Real grav_z = mphase.gravity()[2];
+    const bool is_pptb = mphase.perturb_p();
 
     // Get timestep
     const amrex::Real dt = sim.time().deltaT();
@@ -972,7 +976,7 @@ void ReapplyModifiedGradP(CFDSim& sim)
         // Remove pressure gradient term
         apply_pressure_gradient(vel(lev), rho(lev), gp(lev), -dt);
         // Modify pressure gradient
-        replace_gradp_hs(gp(lev), rho(lev), iblank_cell(lev), grav_z);
+        replace_gradp_hs(gp(lev), rho(lev), iblank_cell(lev), grav_z, is_pptb);
         // Reapply pressure gradient term
         apply_pressure_gradient(vel(lev), rho(lev), gp(lev), dt);
     }
