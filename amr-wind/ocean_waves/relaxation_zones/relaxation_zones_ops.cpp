@@ -151,10 +151,20 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                         const amrex::Real Gamma = utils::Gamma_absorb(
                             x - (probhi[0] - beach_length), beach_length, 1.0);
                         if (has_beach) {
+                            const amrex::Real oldvof = volfrac(i, j, k);
+                            // Only modify volume fraction if both phases
+                            // present
+                            if (volfrac(i, j, k) > 1e-12 &&
+                                volfrac(i, j, k) < 1. - 1e-12) {
                             volfrac(i, j, k) =
                                 (1.0 - Gamma) *
                                     utils::free_surface_to_vof(zsl, z, dx[2]) +
                                 Gamma * volfrac(i, j, k);
+                            volfrac(i, j, k) =
+                                (volfrac(i, j, k) > 1. - 1.e-10)
+                                    ? 1.0
+                                    : volfrac(i, j, k);
+                            }
                             // Conserve momentum when density changes
                             amrex::Real rho_ = rho1 * volfrac(i, j, k) +
                                                rho2 * (1.0 - volfrac(i, j, k));
