@@ -156,14 +156,14 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                             // present
                             if (volfrac(i, j, k) > 1e-12 &&
                                 volfrac(i, j, k) < 1. - 1e-12) {
-                            volfrac(i, j, k) =
-                                (1.0 - Gamma) *
-                                    utils::free_surface_to_vof(zsl, z, dx[2]) +
-                                Gamma * volfrac(i, j, k);
-                            volfrac(i, j, k) =
-                                (volfrac(i, j, k) > 1. - 1.e-10)
-                                    ? 1.0
-                                    : volfrac(i, j, k);
+                                volfrac(i, j, k) =
+                                    (1.0 - Gamma) * utils::free_surface_to_vof(
+                                                        zsl, z, dx[2]) +
+                                    Gamma * volfrac(i, j, k);
+                                volfrac(i, j, k) =
+                                    (volfrac(i, j, k) > 1. - 1.e-10)
+                                        ? 1.0
+                                        : volfrac(i, j, k);
                             }
                             // Conserve momentum when density changes
                             amrex::Real rho_ = rho1 * volfrac(i, j, k) +
