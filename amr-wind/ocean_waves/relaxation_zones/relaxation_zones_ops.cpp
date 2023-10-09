@@ -32,6 +32,7 @@ void read_inputs(
         pp.query("relax_zone_out_length", wdata.beach_length);
     } else {
         pp.query("numerical_beach_length", wdata.beach_length);
+        pp.query("numerical_beach_lfactor", wdata.beach_length_factor);
         wdata.has_beach = true;
         pp.query("initialize_wave_field", wdata.init_wave_field);
     }
@@ -100,6 +101,7 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
 
             const amrex::Real gen_length = wdata.gen_length;
             const amrex::Real beach_length = wdata.beach_length;
+            const amrex::Real beach_length_factor = wdata.beach_length_factor;
             const amrex::Real zsl = wdata.zsl;
             const bool has_beach = wdata.has_beach;
             const bool has_outprofile = wdata.has_outprofile;
@@ -149,7 +151,8 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                     // Numerical beach (sponge layer)
                     if (x + beach_length >= probhi[0]) {
                         const amrex::Real Gamma = utils::Gamma_absorb(
-                            x - (probhi[0] - beach_length), beach_length, 1.0);
+                            x - (probhi[0] - beach_length), beach_length,
+                            beach_length_factor);
                         if (has_beach) {
                             const amrex::Real oldvof = volfrac(i, j, k);
                             // Only modify volume fraction if both phases
