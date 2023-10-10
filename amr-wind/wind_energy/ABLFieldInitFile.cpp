@@ -102,7 +102,7 @@ bool ABLFieldInitFile::operator()(
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 // The counter to go from 3d to 1d vector
-                auto idx = (i - i0) * ct2 * ct1 + (j - j0) * ct1 + (k - k0);
+                auto idx = (i - i0) * ct2 * ct1 + (j - j0) * ct2 + (k - k0);
                 // Pass values from temporary array to the velocity field
                 velocity(i, j, k, 0) = uvel_dptr[idx];
                 velocity(i, j, k, 1) = vvel_dptr[idx];
