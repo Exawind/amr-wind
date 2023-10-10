@@ -63,9 +63,10 @@ public:
                 new TurbulenceOp<PDE>(m_sim.turbulence_model(), m_fields));
         }
 
-        bool variable_density =
-            (!m_sim.pde_manager().constant_density() ||
-             m_sim.physics_manager().contains("MultiPhase"));
+        int variable_density =
+            m_sim.pde_manager().constant_density()
+                ? 0
+                : (m_sim.physics_manager().contains("MultiPhase") ? 2 : 1);
 
         m_adv_op.reset(new AdvectionOp<PDE, Scheme>(
             m_fields, m_sim.has_overset(), variable_density,
@@ -83,9 +84,10 @@ public:
                 m_fields, m_sim.has_overset(), m_sim.has_mesh_mapping()));
         }
 
-        bool variable_density =
-            (!m_sim.pde_manager().constant_density() ||
-             m_sim.physics_manager().contains("MultiPhase"));
+        int variable_density =
+            m_sim.pde_manager().constant_density()
+                ? 0
+                : (m_sim.physics_manager().contains("MultiPhase") ? 2 : 1);
 
         m_adv_op.reset(new AdvectionOp<PDE, Scheme>(
             m_fields, m_sim.has_overset(), variable_density,

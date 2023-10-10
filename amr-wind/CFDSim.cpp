@@ -61,6 +61,8 @@ void CFDSim::activate_overset()
 
 bool CFDSim::has_overset() const { return (static_cast<bool>(m_overset_mgr)); }
 
+bool CFDSim::is_multiphase() const { return (repo().field_exists("vof")); }
+
 void CFDSim::activate_mesh_map()
 {
     amrex::ParmParse pp("geometry");

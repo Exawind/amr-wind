@@ -9,5 +9,4 @@ target_sources(${amr_wind_lib_name}
   SloshingTank.cpp
   RainDrop.cpp
   BreakingWaves.cpp
-  FuzzyInterface.cpp
   )

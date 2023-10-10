@@ -103,6 +103,8 @@ public:
 
     bool has_overset() const;
 
+    bool is_multiphase() const;
+
     //! Instantiate the turbulence model based on user inputs
     void create_turbulence_model();
 

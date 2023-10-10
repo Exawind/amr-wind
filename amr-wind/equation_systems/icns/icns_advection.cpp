@@ -41,7 +41,7 @@ amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> get_projection_bc(
 } // namespace
 
 MacProjOp::MacProjOp(
-    FieldRepo& repo, bool has_overset, bool variable_density, bool mesh_mapping)
+    FieldRepo& repo, bool has_overset, int variable_density, bool mesh_mapping)
     : m_repo(repo)
     , m_options("mac_proj")
     , m_has_overset(has_overset)
@@ -50,9 +50,8 @@ MacProjOp::MacProjOp(
 {
     amrex::ParmParse pp("incflo");
     pp.query("density", m_rho_0);
-    bool disable_omac{true};
-    pp.query("disable_overset_mac", disable_omac);
-    if (m_has_overset && disable_omac) {
+    // For multiphase overset, disable the pressure masking
+    if (m_has_overset && m_variable_density == 2) {
         m_has_overset = false;
     }
 }
@@ -145,7 +144,7 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
     // For now assume variable viscosity for overset
     // this can be removed once the nsolve overset
     // masking is implemented in cell based AMReX poisson solvers
-    if (m_variable_density || m_has_overset || m_mesh_mapping) {
+    if (m_variable_density != 0 || m_has_overset || m_mesh_mapping) {
         amrex::Vector<amrex::Array<amrex::MultiFab const*, ICNS::ndim>>
             rho_face_const;
         rho_face_const.reserve(m_repo.num_active_levels());

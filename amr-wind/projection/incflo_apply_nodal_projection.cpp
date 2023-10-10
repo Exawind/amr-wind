@@ -333,7 +333,7 @@ void incflo::ApplyProjection(
     }
 
     // Setup masking for overset simulations
-    if (sim().has_overset() && !m_disable_onodal) {
+    if (sim().has_overset() && !m_sim.is_multiphase()) {
         auto& linop = nodal_projector->getLinOp();
         const auto& imask_node = repo().get_int_field("mask_node");
         for (int lev = 0; lev <= finest_level; ++lev) {
@@ -341,7 +341,7 @@ void incflo::ApplyProjection(
         }
     }
 
-    if (m_sim.has_overset() && !m_disable_onodal) {
+    if (m_sim.has_overset() && !m_sim.is_multiphase()) {
         auto phif = m_repo.create_scratch_field(1, 1, amr_wind::FieldLoc::NODE);
         if (incremental) {
             for (int lev = 0; lev <= finestLevel(); ++lev) {

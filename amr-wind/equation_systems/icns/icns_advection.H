@@ -24,7 +24,7 @@ public:
     MacProjOp(
         FieldRepo& /*repo*/,
         bool /*has_overset*/,
-        bool /*variable_density*/,
+        int /*variable_density*/,
         bool /*mesh_mapping*/);
 
     void operator()(const FieldState fstate, const amrex::Real dt);
@@ -49,7 +49,7 @@ private:
     MLMGOptions m_options;
     bool m_has_overset{false};
     bool m_need_init{true};
-    bool m_variable_density{false};
+    int m_variable_density{0};
     bool m_mesh_mapping{false};
     amrex::Real m_rho_0{1.0};
 };
@@ -63,7 +63,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     AdvectionOp(
         PDEFields& fields_in,
         bool has_overset,
-        bool variable_density,
+        int variable_density,
         bool mesh_mapping)
         : fields(fields_in)
         , u_mac(fields_in.repo.get_field("u_mac"))
@@ -532,7 +532,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
     AdvectionOp(
         PDEFields& fields_in,
         bool has_overset,
-        bool variable_density,
+        int variable_density,
         bool mesh_mapping)
         : fields(fields_in)
         , u_mac(fields_in.repo.get_field("u_mac"))
