@@ -659,24 +659,28 @@ void harmonize_vof(
 void replace_gradp_hs(
     amrex::MultiFab& mf_gp,
     amrex::MultiFab& mf_density,
+    amrex::MultiFab& mf_refdens,
     amrex::iMultiFab& mf_iblank,
     const amrex::Real grav_z,
     const bool is_pptb)
 {
-    const amrex::Real gz = is_pptb? 0. : grav_z;
     for (amrex::MFIter mfi(mf_gp); mfi.isValid(); ++mfi) {
         const auto& gbx = mfi.growntilebox();
         const amrex::Array4<amrex::Real>& gp = mf_gp.array(mfi);
         const amrex::Array4<const amrex::Real>& rho =
             mf_density.const_array(mfi);
+        const amrex::Array4<const amrex::Real>& rho0 =
+            mf_refdens.const_array(mfi);
         const amrex::Array4<const int>& iblank = mf_iblank.const_array(mfi);
         amrex::ParallelFor(
             gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 // Replace amr-wind vof values with originals
                 if (iblank(i, j, k) == -1) {
+                    const amrex::Real dfac =
+                        is_pptb ? rho(i, j, k) - rho0(i, j, k) : rho(i, j, k);
                     gp(i, j, k, 0) = 0.;
                     gp(i, j, k, 1) = 0.;
-                    gp(i, j, k, 2) = rho(i, j, k) * gz;
+                    gp(i, j, k, 2) = dfac * grav_z;
                 }
             });
     }
@@ -940,12 +944,20 @@ void ReplaceMaskedGradP(CFDSim& sim)
     auto& iblank_cell = repo.get_int_field("iblank_cell");
 
     // Get fields that will be modified or used
+    Field* rho0{nullptr};
     auto& rho = repo.get_field("density");
     auto& gp = repo.get_field("gp");
+    if (is_pptb) {
+        rho0 = &(sim.repo().get_field("reference_density"));
+    } else {
+        // Point to existing field, won't be used
+        rho0 = &rho;
+    }
 
     // Replace initial gp with best guess (hydrostatic)
     for (int lev = 0; lev < nlevels; ++lev) {
-        replace_gradp_hs(gp(lev), rho(lev), iblank_cell(lev), grav_z, is_pptb);
+        replace_gradp_hs(
+            gp(lev), rho(lev), (*rho0)(lev), iblank_cell(lev), grav_z, is_pptb);
     }
 }
 
@@ -967,16 +979,24 @@ void ReapplyModifiedGradP(CFDSim& sim)
     auto& iblank_cell = repo.get_int_field("iblank_cell");
 
     // Get fields that will be modified or used
+    Field* rho0{nullptr};
     auto& vel = repo.get_field("velocity");
     auto& rho = repo.get_field("density");
     auto& gp = repo.get_field("gp");
+    if (is_pptb) {
+        rho0 = &(sim.repo().get_field("reference_density"));
+    } else {
+        // Point to existing field, won't be used
+        rho0 = &rho;
+    }
 
     // For iblanked cells, replace gp with original gp, to get original vel
     for (int lev = 0; lev < nlevels; ++lev) {
         // Remove pressure gradient term
         apply_pressure_gradient(vel(lev), rho(lev), gp(lev), -dt);
         // Modify pressure gradient
-        replace_gradp_hs(gp(lev), rho(lev), iblank_cell(lev), grav_z, is_pptb);
+        replace_gradp_hs(
+            gp(lev), rho(lev), (*rho0)(lev), iblank_cell(lev), grav_z, is_pptb);
         // Reapply pressure gradient term
         apply_pressure_gradient(vel(lev), rho(lev), gp(lev), dt);
     }
