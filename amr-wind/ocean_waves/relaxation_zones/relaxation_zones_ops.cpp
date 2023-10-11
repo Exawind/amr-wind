@@ -154,7 +154,6 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                             x - (probhi[0] - beach_length), beach_length,
                             beach_length_factor);
                         if (has_beach) {
-                            const amrex::Real oldvof = volfrac(i, j, k);
                             // Only modify volume fraction if both phases
                             // present
                             if (volfrac(i, j, k) > 1e-12 &&
