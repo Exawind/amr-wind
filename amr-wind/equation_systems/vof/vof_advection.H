@@ -23,7 +23,6 @@ struct AdvectionOp<VOF, fvm::Godunov>
     {
         amrex::ParmParse pp_multiphase("VOF");
         pp_multiphase.query("remove_debris", m_rm_debris);
-        pp_multiphase.query("replace_masked", m_replace_mask);
 
         // Setup density factor arrays for multiplying velocity flux
         fields_in.repo.declare_face_normal_field(
@@ -111,7 +110,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
             v_mac, w_mac, dof_field.bc_type(), geom, dt, m_rm_debris);
 
         // Replace masked cells using overset
-        if (repo.int_field_exists("iblank_cell") && m_replace_mask) {
+        if (repo.int_field_exists("iblank_cell")) {
             auto& f_iblank = repo.get_int_field("iblank_cell");
             amr_wind::multiphase::replace_masked_vof(
                 nlevels, f_iblank, dof_field, dof_new);
@@ -131,7 +130,6 @@ struct AdvectionOp<VOF, fvm::Godunov>
     Field& w_mac;
     int isweep = 0;
     bool m_rm_debris{true};
-    bool m_replace_mask{true};
     // Lagrangian transport is deprecated, only Eulerian is supported
 };
 
