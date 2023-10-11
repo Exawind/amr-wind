@@ -9,7 +9,8 @@ namespace amr_wind {
 namespace overset {
 
 // Approximate signed distance function
-amrex::Real asdf(const amrex::Real a_vof, const amrex::Real i_th)
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+asdf(const amrex::Real a_vof, const amrex::Real i_th)
 {
     // function of local vof value and interface thickness
     return (i_th * log((a_vof + 1e-12) / (1. - a_vof + 1e-12)));
@@ -100,7 +101,7 @@ void populate_normal_vector(
     }
 }
 
-amrex::Real alpha_discrete_flux(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real alpha_discrete_flux(
     int i,
     int j,
     int k,
@@ -155,7 +156,7 @@ amrex::Real alpha_discrete_flux(
     return dphi_eval;
 }
 
-void velocity_discrete_face(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void velocity_discrete_face(
     int i,
     int j,
     int k,
