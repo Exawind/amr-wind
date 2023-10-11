@@ -9,7 +9,8 @@
 namespace amr_wind::overset {
 
 // Approximate signed distance function
-amrex::Real AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE asdf(const amrex::Real a_vof, const amrex::Real i_th)
+amrex::Real AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+asdf(const amrex::Real a_vof, const amrex::Real i_th)
 {
     // function of local vof value and interface thickness
     return (i_th * log((a_vof + 1e-12) / (1. - a_vof + 1e-12)));
