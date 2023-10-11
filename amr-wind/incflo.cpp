@@ -396,7 +396,6 @@ void incflo::init_physics_and_pde()
         pp.query("sharpen_rlscale", m_sharpen_rlscale);
         pp.query("sharpen_margin", m_sharpen_margin);
         pp.query("sharpen_targetvof_tol", m_sharpen_proctg_tol);
-
     }
     m_sim.create_turbulence_model();
 
