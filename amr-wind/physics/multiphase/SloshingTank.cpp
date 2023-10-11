@@ -78,7 +78,7 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
                                         std::pow(y - problo[1] - 0.5 * Ly, 2)));
                 // Liquid height
                 const amrex::Real hliq = z0 - problo[2];
-                // Hight of current position from base
+                // Height of current position from base
                 const amrex::Real hz = z - problo[2];
                 // Integrated (top-down in z) phase heights to pressure node
                 amrex::Real ih_g =
