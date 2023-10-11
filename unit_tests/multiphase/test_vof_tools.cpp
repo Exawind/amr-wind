@@ -478,4 +478,34 @@ TEST_F(VOFToolTest, sharpen_replace_old_density)
     EXPECT_NEAR(error_total, 0.0, 1e-15);
 }
 
+TEST_F(VOFToolTest, replace_masked_vof)
+{
+
+    populate_parameters();
+    initialize_mesh();
+
+    auto& repo = sim().repo();
+    const int ncomp = 1;
+    const int nghost = 3;
+    const int nghost_int = 1;
+    auto& vof = repo.declare_field("vof", ncomp, nghost);
+    auto& vof_mod = repo.declare_field("vof_mod", ncomp, nghost);
+    auto& iblank = repo.declare_int_field("iblank_cell", ncomp, nghost_int);
+
+    // Use as if entire domain is from nalu
+    iblank.setVal(-1);
+    // Initialize and sharpen vof
+    init_vof(vof);
+    amr_wind::multiphase::sharpen_acquired_vof(1, iblank, vof);
+    // Initialize other field (working copy of vof)
+    vof_mod.setVal(100.0);
+    // Replace masked vof values with new ones
+    amr_wind::multiphase::replace_masked_vof(1, iblank, vof_mod, vof);
+
+    // Check results
+    amrex::Real error_total = sharpen_test_impl(vof_mod);
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
+    EXPECT_NEAR(error_total, 0.0, 1e-15);
+}
+
 } // namespace amr_wind_tests

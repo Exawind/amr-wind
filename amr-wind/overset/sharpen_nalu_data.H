@@ -436,7 +436,6 @@ void apply_fluxes(
         const amrex::Array4<amrex::Real>& sp = mf_psource.array(mfi);
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real oldvof = vof(i, j, k);
                 const amrex::Real olddens = dens(i, j, k);
                 vof(i, j, k) += ptfac * ((fx(i + 1, j, k, 0) - fx(i, j, k, 0)) +
                                          (fy(i, j + 1, k, 0) - fy(i, j, k, 0)) +

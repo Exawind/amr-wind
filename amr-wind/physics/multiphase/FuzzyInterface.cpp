@@ -65,7 +65,7 @@ void FuzzyInterface::initialize_fields(int level, const amrex::Geometry& geom)
                 const amrex::Real vof_sharp =
                     std::max(0.0, std::min(1.0, (water_level - zbtm) / dx[2]));
                 const amrex::Real vof_smooth =
-                    -0.5 * (std::erf((z - water_level) / m_intf_th) + 1.0) +
+                    -0.5 * (std::erf((z - water_level) / i_th) + 1.0) +
                     1.0;
                 if (x < lx_vj || x > hx_vj) {
                     // Sharp vof
@@ -80,7 +80,6 @@ void FuzzyInterface::initialize_fields(int level, const amrex::Geometry& geom)
             nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 // For pressure nodes, no offset
                 const amrex::Real x = problo[0] + i * dx[0];
-                const amrex::Real y = problo[1] + j * dx[1];
                 const amrex::Real z = problo[2] + k * dx[2];
 
                 // Sharp interpretation
