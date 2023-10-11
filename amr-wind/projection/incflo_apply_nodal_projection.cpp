@@ -319,7 +319,7 @@ void incflo::ApplyProjection(
     bool has_ib = m_sim.physics_manager().contains("IB");
     if (has_ib) {
         auto div_vel_rhs =
-            sim().repo().create_scratch_field(1, 0, amr_wind::FieldLoc::NODE);
+            m_sim.repo().create_scratch_field(1, 0, amr_wind::FieldLoc::NODE);
         nodal_projector->computeRHS(div_vel_rhs->vec_ptrs(), vel, {}, {});
         // Mask the righ-hand side of the Poisson solve for the nodes inside the
         // body
@@ -333,7 +333,7 @@ void incflo::ApplyProjection(
     }
 
     // Setup masking for overset simulations
-    if (sim().has_overset() && !m_sim.is_multiphase()) {
+    if (m_sim.has_overset() && !m_sim.is_multiphase()) {
         auto& linop = nodal_projector->getLinOp();
         const auto& imask_node = repo().get_int_field("mask_node");
         for (int lev = 0; lev <= finest_level; ++lev) {
