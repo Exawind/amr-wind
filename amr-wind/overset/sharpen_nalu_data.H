@@ -746,7 +746,9 @@ void SharpenNaluDataDiscrete(
 
     // Check for vof variable -- sharpening only required with VOF
     bool yesVOF = repo.field_exists("vof");
-    if (!yesVOF) return;
+    if (!yesVOF) {
+        return;
+    }
 
     // Get phase densities
     auto& mphase = sim.physics_manager().get<MultiPhase>();
