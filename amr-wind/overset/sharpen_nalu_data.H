@@ -889,9 +889,6 @@ void SharpenNaluDataDiscrete(
                 sh_gradp);
         }
 
-        // sim.io_manager().write_plot_file();
-        // sim.time().increment_timestep();
-
         // Fillpatch for ghost cells
         vof.fillpatch(sim.time().current_time());
         velocity.fillpatch(sim.time().current_time());
