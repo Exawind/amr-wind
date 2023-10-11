@@ -185,9 +185,6 @@ private:
 
     bool m_use_godunov = true;
 
-    // Other choices for overset
-    bool m_disable_onodal = true;
-
     // Prescribe advection velocity
     bool m_prescribe_vel = false;
 
