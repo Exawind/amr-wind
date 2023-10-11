@@ -993,7 +993,8 @@ void ReapplyModifiedGradP(CFDSim& sim)
         // Remove pressure gradient term
         apply_pressure_gradient(vel(lev), rho(lev), gp(lev), -dt);
         // Modify pressure gradient
-        replace_gradp_hs(gp(lev), rho(lev), iblank_cell(lev), grav_z, is_pptb);
+        replace_gradp_hs(
+            gp(lev), rho(lev), (*rho0)(lev), iblank_cell(lev), grav_z, is_pptb);
         // Reapply pressure gradient term
         apply_pressure_gradient(vel(lev), rho(lev), gp(lev), dt);
     }
