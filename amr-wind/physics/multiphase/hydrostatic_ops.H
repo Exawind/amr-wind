@@ -50,8 +50,8 @@ static void define_p0(
                     // Integrated (top-down in z) phase heights to pressure node
                     amrex::Real ih_g = amrex::max(
                         0.0, amrex::min(probhi[2] - wlev, probhi[2] - z));
-                    amrex::Real ih_l = amrex::max(
-                        0.0, amrex::min(wlev - z, wlev - problo[2]));
+                    amrex::Real ih_l =
+                        amrex::max(0.0, amrex::min(wlev - z, wlev - problo[2]));
                     // Integrated rho at pressure node
                     const amrex::Real irho = rho1 * ih_l + rho2 * ih_g;
 

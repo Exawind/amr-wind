@@ -40,7 +40,7 @@ public:
      */
     bool new_timestep();
 
-    void increment_timestep() {++m_time_index;}
+    void increment_timestep() { ++m_time_index; }
 
     /** Return true if simulation should continue
      */

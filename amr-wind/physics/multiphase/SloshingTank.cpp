@@ -81,8 +81,8 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
                 // Hight of current position from base
                 const amrex::Real hz = z - problo[2];
                 // Integrated (top-down in z) phase heights to pressure node
-                amrex::Real ih_g = amrex::max(
-                    0.0, amrex::min(probhi[2] - z0, probhi[2] - z));
+                amrex::Real ih_g =
+                    amrex::max(0.0, amrex::min(probhi[2] - z0, probhi[2] - z));
                 amrex::Real ih_l =
                     amrex::max(0.0, amrex::min(z0 - z, z0 - problo[2]));
                 // Integrated rho at pressure node
