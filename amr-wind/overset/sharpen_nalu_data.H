@@ -5,8 +5,7 @@
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/equation_systems/vof/volume_fractions.H"
 
-namespace amr_wind {
-namespace overset {
+namespace amr_wind::overset {
 
 // Approximate signed distance function
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
@@ -570,10 +569,6 @@ void SharpenNaluDataDiscrete(
     auto nlevels = repo.num_active_levels();
     auto geom = sim.mesh().Geom();
 
-    // Check for vof variable -- sharpening only required with VOF
-    bool yesVOF = repo.field_exists("vof");
-    if (!yesVOF) return;
-
     // Get phase densities
     auto& mphase = sim.physics_manager().get<MultiPhase>();
     const amrex::Real rhol = mphase.rho1();
@@ -802,7 +797,6 @@ void ReapplyModifiedGradP(CFDSim& sim)
     }
 }
 
-} // namespace overset
-} // namespace amr_wind
+} // namespace amr_wind::overset
 
 #endif

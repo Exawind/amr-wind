@@ -23,7 +23,7 @@ protected:
 
         // Initialize MAC projection operator
         const auto& mco =
-            amr_wind::pde::MacProjOp(sim().repo(), false, false, false);
+            amr_wind::pde::MacProjOp(sim().repo(), false, 0, false);
         // Get background density and check
         const amrex::Real rho0 = mco.rho0();
         EXPECT_EQ(rho0, m_rho_0);
