@@ -161,8 +161,8 @@ void ABLFieldInit::operator()(
 
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                //const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                //const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                // const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                // const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                 const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
                 density(i, j, k) = rho_init;
@@ -214,8 +214,8 @@ void ABLFieldInit::operator()(
 
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                //const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                //const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                // const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                // const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                 const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
                 density(i, j, k) = rho_init;
