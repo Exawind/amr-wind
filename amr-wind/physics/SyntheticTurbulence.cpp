@@ -45,6 +45,7 @@ public:
 
     ~LinearShearProfile() override = default;
 
+    // cppcheck-suppress duplInheritedMember
     LinearShearOp device_instance() const { return m_op; }
 
 private:
@@ -87,6 +88,7 @@ public:
 
     ~PowerLawProfile() override = default;
 
+    // cppcheck-suppress duplInheritedMember
     PowerLawOp device_instance() const { return m_op; }
 
 private:
@@ -169,7 +171,7 @@ void load_turb_plane_data(
     auto wvel = ncf.var("wvel");
 
     if ((ir - il) == 1) {
-        // two consequtive planes load them in one shot
+        // two consecutive planes load them in one shot
         uvel.get(&turb_grid.uvel[0], start, count);
         vvel.get(&turb_grid.vvel[0], start, count);
         wvel.get(&turb_grid.wvel[0], start, count);
@@ -456,7 +458,7 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
     // vector)
     m_turb_grid.tr_mat = vs::zrot(270.0 - wind_direction);
 
-    amrex::Print() << "Synthethic turbulence forcing initialized \n"
+    amrex::Print() << "Synthetic turbulence forcing initialized \n"
                    << "  Turbulence file = " << m_turb_filename << "\n"
                    << "  Box lengths = [" << m_turb_grid.box_len[0] << ", "
                    << m_turb_grid.box_len[1] << ", " << m_turb_grid.box_len[2]

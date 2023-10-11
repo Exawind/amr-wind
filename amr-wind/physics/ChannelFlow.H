@@ -83,7 +83,7 @@ private:
 
     WallFunction m_wall_func;
 
-    //! Wall normal directon - Default y direction
+    //! Wall normal direction - Default y direction
     int m_norm_dir{1};
 
     //! initial density value

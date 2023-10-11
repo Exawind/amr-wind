@@ -10,7 +10,7 @@
 
 /**
  *  \defgroup field_bc Boundary conditions management
- *  Boundary conditions managment
+ *  Boundary conditions management
  *
  *  This group documents the boundary condition management interface within
  *  AMR-Wind. Boundary conditions are registered on a Field instance and are

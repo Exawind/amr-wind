@@ -90,7 +90,7 @@ struct ActGrid
     //! Velocity vector at the sampled locations
     VecList vel;
 
-    //! Density at the smapled locations
+    //! Density at the sampled locations
     RealList density;
 
     /** Helper method to resize the data arrays defined on the grid

@@ -24,6 +24,7 @@ template <typename Transport>
 class KOmegaSSTIDDES : public KOmegaSST<Transport>
 {
 public:
+    // cppcheck-suppress duplInheritedMember
     static std::string identifier()
     {
         return "KOmegaSSTIDDES-" + Transport::identifier();

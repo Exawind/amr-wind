@@ -12,12 +12,13 @@ namespace amr_wind::sampling {
  *  Defines probes along a line defined by a time history from `m_azimuth_table`
  *  and `m_elevation_table` with a length of `m_length`. This determines the
  * `start` and `end` points at every time-step and divides the line into equal
- * segements as determined by `num_points`. The length of each segment is given
+ * segments as determined by `num_points`. The length of each segment is given
  * by \f[ m_length / (num_points - 1) \f]
  */
 class DTUSpinnerSampler : public LidarSampler
 {
 public:
+    // cppcheck-suppress duplInheritedMember
     static std::string identifier() { return "DTUSpinnerSampler"; }
 
     explicit DTUSpinnerSampler(const CFDSim& /*sim*/);
