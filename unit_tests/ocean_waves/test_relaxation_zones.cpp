@@ -99,6 +99,22 @@ void initialize_relaxation_zone_field(
     });
 }
 
+void initialize_relaxation_zone_field(
+    const amrex::Box& bx,
+    const amrex::Array4<amrex::Real>& theor_farr,
+    amrex::Real dx,
+    amrex::Real xlo,
+    amrex::Real xhi,
+    amrex::Real abs_length)
+{
+    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        const amrex::Real x = xlo + (i + 0.5) * dx - xhi + abs_length;
+        amrex::Real xtilde = std::max(std::min(x / abs_length, 1.0), 0.0);
+        theor_farr(i, j, k) =
+            std::expm1(std::pow(xtilde, 3.5)) / std::expm1(1.0);
+    });
+}
+
 void init_relaxation_field(amr_wind::Field& theor_field, amrex::Real gen_length)
 {
     const auto& geom = theor_field.repo().mesh().Geom();
@@ -107,8 +123,15 @@ void init_relaxation_field(amr_wind::Field& theor_field, amrex::Real gen_length)
         const auto& bx = mfi.validbox();
         const auto& dx = geom[lev].CellSizeArray();
         const auto& problo = geom[lev].ProbLoArray();
-        initialize_relaxation_zone_field(
-            bx, theor_field_arr, dx[0], problo[0], gen_length);
+        const auto& probhi = geom[lev].ProbHiArray();
+        if (gen_length > 0.) {
+            initialize_relaxation_zone_field(
+                bx, theor_field_arr, dx[0], problo[0], gen_length);
+        }
+        if (gen_length < 0.) {
+            initialize_relaxation_zone_field(
+                bx, theor_field_arr, dx[0], problo[0], probhi[0], -gen_length);
+        }
     });
 }
 
@@ -133,10 +156,17 @@ void apply_relaxation_zone_field(
                     const amrex::Real x = amrex::min(
                         amrex::max(problo[0] + (i + 0.5) * dx[0], problo[0]),
                         probhi[0]);
-                    if (x <= problo[0] + gen_length) {
+                    if (x <= problo[0] + gen_length && gen_length > 0.) {
                         const amrex::Real Gamma =
                             amr_wind::ocean_waves::utils::Gamma_generate(
                                 x - problo[0], gen_length);
+                        comp_arr(i, j, k) = targ_arr(i, j, k) * (1. - Gamma) +
+                                            comp_arr(i, j, k) * Gamma;
+                    }
+                    if (x >= probhi[0] + gen_length && gen_length < 0.) {
+                        const amrex::Real Gamma =
+                            amr_wind::ocean_waves::utils::Gamma_absorb(
+                                x - (probhi[0] + gen_length), -gen_length, 1.0);
                         comp_arr(i, j, k) = targ_arr(i, j, k) * (1. - Gamma) +
                                             comp_arr(i, j, k) * Gamma;
                     }
@@ -323,6 +353,11 @@ TEST_F(OceanWavesOpTest, relaxation_zone)
     init_relaxation_field(theoretical_field, gen_length);
     apply_relaxation_zone_field(comp_field, target_field, gen_length);
     amrex::Real error_total = field_error(comp_field, theoretical_field);
+    EXPECT_NEAR(error_total, 0.0, tol);
+    comp_field.setVal(0.0);
+    init_relaxation_field(theoretical_field, -gen_length);
+    apply_relaxation_zone_field(comp_field, target_field, -gen_length);
+    error_total = field_error(comp_field, theoretical_field);
     EXPECT_NEAR(error_total, 0.0, tol);
 }
 

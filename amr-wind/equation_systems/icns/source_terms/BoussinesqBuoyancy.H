@@ -6,7 +6,7 @@
 
 namespace amr_wind::pde::icns {
 
-/** Boussinesq bouyancy source term
+/** Boussinesq buoyancy source term
  *  \ingroup icns_src we_abl
  *
  *  \f[

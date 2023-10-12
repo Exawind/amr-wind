@@ -40,7 +40,7 @@ public:
      */
     bool new_timestep();
 
-    void increment_timestep() {++m_time_index;}
+    void increment_timestep() { ++m_time_index; }
 
     /** Return true if simulation should continue
      */
@@ -187,7 +187,7 @@ private:
     //! Initial starting time index for generating checkpoint files
     int m_chkpt_start_index{0};
 
-    //! Initial starting time index for generating ouput files
+    //! Initial starting time index for generating output files
     int m_plt_start_index{0};
 
     //! Initial starting time index for regriding

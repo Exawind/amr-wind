@@ -12,7 +12,7 @@ namespace amr_wind::wave_energy {
  *  A concrete implementation of the post-processing interface that deals with
  *  integrating total wave energy. This routine calculates the kinetic energy
  *  (KE) and potential energy (PE) according to the following definitions. It
- *  caclulates the correct potential energy offset, assuming an equilibrium
+ *  calculates the correct potential energy offset, assuming an equilibrium
  *  water level of 0 unless specified otherwise by an input parameter. It also
  *  assumes the traditional coordinate system, where interface height/depth is
  *  in z.

@@ -29,7 +29,7 @@ MultiPhase::MultiPhase(CFDSim& sim)
         m_interface_capturing_method = amr_wind::InterfaceCapturingMethod::VOF;
         auto& vof_eqn = sim.pde_manager().register_transport_pde("VOF");
         m_vof = &(vof_eqn.fields().field);
-        // Create levelset as a auxilliary field only !
+        // Create levelset as a auxiliary field only !
         m_levelset = &(m_sim.repo().get_field("levelset"));
         const amrex::Real levelset_default = 0.0;
         BCScalar bc_ls(*m_levelset);
@@ -47,7 +47,7 @@ MultiPhase::MultiPhase(CFDSim& sim)
         m_interface_capturing_method = amr_wind::InterfaceCapturingMethod::VOF;
         auto& vof_eqn = sim.pde_manager().register_transport_pde("VOF");
         m_vof = &(vof_eqn.fields().field);
-        // Create levelset as a auxilliary field only !
+        // Create levelset as a auxiliary field only !
         m_levelset = &(m_sim.repo().get_field("levelset"));
         const amrex::Real levelset_default = 0.0;
         BCScalar bc_ls(*m_levelset);

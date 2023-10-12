@@ -65,8 +65,7 @@ void FuzzyInterface::initialize_fields(int level, const amrex::Geometry& geom)
                 const amrex::Real vof_sharp =
                     std::max(0.0, std::min(1.0, (water_level - zbtm) / dx[2]));
                 const amrex::Real vof_smooth =
-                    -0.5 * (std::erf((z - water_level) / m_intf_th) + 1.0) +
-                    1.0;
+                    -0.5 * (std::erf((z - water_level) / i_th) + 1.0) + 1.0;
                 if (x < lx_vj || x > hx_vj) {
                     // Sharp vof
                     vof(i, j, k) = vof_sharp;
@@ -80,16 +79,15 @@ void FuzzyInterface::initialize_fields(int level, const amrex::Geometry& geom)
             nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 // For pressure nodes, no offset
                 const amrex::Real x = problo[0] + i * dx[0];
-                const amrex::Real y = problo[1] + j * dx[1];
                 const amrex::Real z = problo[2] + k * dx[2];
 
                 // Sharp interpretation
-                amrex::Real ih_g =
-                    amrex::max(0.0, amrex::min(probhi[2] - water_level, probhi[2] - z));
-                amrex::Real ih_l =
-                    amrex::max(0.0, amrex::min(water_level - z, water_level - problo[2]));
+                amrex::Real ih_g = amrex::max(
+                    0.0, amrex::min(probhi[2] - water_level, probhi[2] - z));
+                amrex::Real ih_l = amrex::max(
+                    0.0, amrex::min(water_level - z, water_level - problo[2]));
                 const amrex::Real irho = rho1 * ih_l + rho2 * ih_g;
-                const amrex::Real psharp = - irho * grav_z;
+                const amrex::Real psharp = -irho * grav_z;
 
                 // Smooth interpretation
                 const double x0 = (z - water_level) / i_th;
@@ -104,8 +102,7 @@ void FuzzyInterface::initialize_fields(int level, const amrex::Geometry& geom)
                     i_th;
                 const double int_vof0 = 0.5 * z - 0.5 * int_erf0;
                 const double int_vof1 = 0.5 * probhi[2] - 0.5 * int_erf1;
-                const double int_rho0 =
-                    rho1 * int_vof0 + rho2 * (z - int_vof0);
+                const double int_rho0 = rho1 * int_vof0 + rho2 * (z - int_vof0);
                 const double int_rho1 =
                     rho1 * int_vof1 + rho2 * (probhi[2] - int_vof1);
 
@@ -113,7 +110,7 @@ void FuzzyInterface::initialize_fields(int level, const amrex::Geometry& geom)
                 const amrex::Real psmooth = -(int_rho1 - int_rho0) * grav_z;
 
                 // Populate pressure
-                p(i, j, k) = (x < lx_vj || x > hx_vj)? psharp : psmooth;
+                p(i, j, k) = (x < lx_vj || x > hx_vj) ? psharp : psmooth;
             });
     }
 }

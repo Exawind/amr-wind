@@ -6,11 +6,11 @@
 #include "amr-wind/equation_systems/vof/volume_fractions.H"
 #include "amr-wind/utilities/IOManager.H"
 
-namespace amr_wind {
-namespace overset {
+namespace amr_wind::overset {
 
 // Approximate signed distance function
-amrex::Real asdf(const amrex::Real a_vof, const amrex::Real i_th)
+amrex::Real AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+asdf(const amrex::Real a_vof, const amrex::Real i_th)
 {
     // function of local vof value and interface thickness
     return (i_th * log((a_vof + 1e-12) / (1. - a_vof + 1e-12)));
@@ -101,7 +101,7 @@ void populate_normal_vector(
     }
 }
 
-amrex::Real alpha_discrete_flux(
+amrex::Real AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE alpha_discrete_flux(
     int i,
     int j,
     int k,
@@ -156,7 +156,7 @@ amrex::Real alpha_discrete_flux(
     return dphi_eval;
 }
 
-void velocity_discrete_face(
+void AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE velocity_discrete_face(
     int i,
     int j,
     int k,
@@ -202,7 +202,7 @@ void velocity_discrete_face(
     }
 }
 
-void gp_rho_discrete_face(
+void AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE gp_rho_discrete_face(
     int i,
     int j,
     int k,
@@ -436,7 +436,6 @@ void apply_fluxes(
         const amrex::Array4<amrex::Real>& sp = mf_psource.array(mfi);
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real oldvof = vof(i, j, k);
                 const amrex::Real olddens = dens(i, j, k);
                 vof(i, j, k) += ptfac * ((fx(i + 1, j, k, 0) - fx(i, j, k, 0)) +
                                          (fy(i, j + 1, k, 0) - fy(i, j, k, 0)) +
@@ -659,22 +658,28 @@ void harmonize_vof(
 void replace_gradp_hs(
     amrex::MultiFab& mf_gp,
     amrex::MultiFab& mf_density,
+    amrex::MultiFab& mf_refdens,
     amrex::iMultiFab& mf_iblank,
-    const amrex::Real grav_z)
+    const amrex::Real grav_z,
+    const bool is_pptb)
 {
     for (amrex::MFIter mfi(mf_gp); mfi.isValid(); ++mfi) {
         const auto& gbx = mfi.growntilebox();
         const amrex::Array4<amrex::Real>& gp = mf_gp.array(mfi);
         const amrex::Array4<const amrex::Real>& rho =
             mf_density.const_array(mfi);
+        const amrex::Array4<const amrex::Real>& rho0 =
+            mf_refdens.const_array(mfi);
         const amrex::Array4<const int>& iblank = mf_iblank.const_array(mfi);
         amrex::ParallelFor(
             gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 // Replace amr-wind vof values with originals
                 if (iblank(i, j, k) == -1) {
+                    const amrex::Real dfac =
+                        is_pptb ? rho(i, j, k) - rho0(i, j, k) : rho(i, j, k);
                     gp(i, j, k, 0) = 0.;
                     gp(i, j, k, 1) = 0.;
-                    gp(i, j, k, 2) = rho(i, j, k) * grav_z;
+                    gp(i, j, k, 2) = dfac * grav_z;
                 }
             });
     }
@@ -741,7 +746,9 @@ void SharpenNaluDataDiscrete(
 
     // Check for vof variable -- sharpening only required with VOF
     bool yesVOF = repo.field_exists("vof");
-    if (!yesVOF) return;
+    if (!yesVOF) {
+        return;
+    }
 
     // Get phase densities
     auto& mphase = sim.physics_manager().get<MultiPhase>();
@@ -882,9 +889,6 @@ void SharpenNaluDataDiscrete(
                 sh_gradp);
         }
 
-        // sim.io_manager().write_plot_file();
-        // sim.time().increment_timestep();
-
         // Fillpatch for ghost cells
         vof.fillpatch(sim.time().current_time());
         velocity.fillpatch(sim.time().current_time());
@@ -932,17 +936,26 @@ void ReplaceMaskedGradP(CFDSim& sim)
     // Get gravity
     auto& mphase = sim.physics_manager().get<MultiPhase>();
     const amrex::Real grav_z = mphase.gravity()[2];
+    const bool is_pptb = mphase.perturb_p();
 
     // Get blanking for cells
     auto& iblank_cell = repo.get_int_field("iblank_cell");
 
     // Get fields that will be modified or used
+    Field* rho0{nullptr};
     auto& rho = repo.get_field("density");
     auto& gp = repo.get_field("gp");
+    if (is_pptb) {
+        rho0 = &(sim.repo().get_field("reference_density"));
+    } else {
+        // Point to existing field, won't be used
+        rho0 = &rho;
+    }
 
     // Replace initial gp with best guess (hydrostatic)
     for (int lev = 0; lev < nlevels; ++lev) {
-        replace_gradp_hs(gp(lev), rho(lev), iblank_cell(lev), grav_z);
+        replace_gradp_hs(
+            gp(lev), rho(lev), (*rho0)(lev), iblank_cell(lev), grav_z, is_pptb);
     }
 }
 
@@ -955,6 +968,7 @@ void ReapplyModifiedGradP(CFDSim& sim)
     // Get gravity
     auto& mphase = sim.physics_manager().get<MultiPhase>();
     const amrex::Real grav_z = mphase.gravity()[2];
+    const bool is_pptb = mphase.perturb_p();
 
     // Get timestep
     const amrex::Real dt = sim.time().deltaT();
@@ -963,16 +977,24 @@ void ReapplyModifiedGradP(CFDSim& sim)
     auto& iblank_cell = repo.get_int_field("iblank_cell");
 
     // Get fields that will be modified or used
+    Field* rho0{nullptr};
     auto& vel = repo.get_field("velocity");
     auto& rho = repo.get_field("density");
     auto& gp = repo.get_field("gp");
+    if (is_pptb) {
+        rho0 = &(sim.repo().get_field("reference_density"));
+    } else {
+        // Point to existing field, won't be used
+        rho0 = &rho;
+    }
 
     // For iblanked cells, replace gp with original gp, to get original vel
     for (int lev = 0; lev < nlevels; ++lev) {
         // Remove pressure gradient term
         apply_pressure_gradient(vel(lev), rho(lev), gp(lev), -dt);
         // Modify pressure gradient
-        replace_gradp_hs(gp(lev), rho(lev), iblank_cell(lev), grav_z);
+        replace_gradp_hs(
+            gp(lev), rho(lev), (*rho0)(lev), iblank_cell(lev), grav_z, is_pptb);
         // Reapply pressure gradient term
         apply_pressure_gradient(vel(lev), rho(lev), gp(lev), dt);
     }
@@ -1014,7 +1036,6 @@ void ReapplyOversetGradP(ScratchField& gp_copy, CFDSim& sim)
     }
 }
 
-} // namespace overset
-} // namespace amr_wind
+} // namespace amr_wind::overset
 
 #endif

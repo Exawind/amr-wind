@@ -13,7 +13,7 @@ namespace amr_wind::ib {
 namespace bluff_body {
 
 /** Parse common data for modeling non-blade bluff bodies via an immersed
- * bounary
+ * boundary
  */
 void read_inputs(
     BluffBodyBaseData& /*wdata*/,

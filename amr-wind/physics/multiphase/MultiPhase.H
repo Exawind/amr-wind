@@ -8,7 +8,7 @@
 
 /** Multiphase physics
  *
- * This class implemnts the necessary code to simulate multiphase
+ * This class implements the necessary code to simulate multiphase
  * (air-water interaction) problems with AMR-Wind. It reads the
  * namespace `MultiPhase' from the input file to determine how the
  * initial conditions are generated.
@@ -78,6 +78,8 @@ public:
     amrex::Real rho2() const { return m_rho2; }
 
     amrex::Vector<amrex::Real> gravity() const { return m_gravity; }
+
+    bool perturb_p() const { return is_pptb; }
 
 private:
     const CFDSim& m_sim;
