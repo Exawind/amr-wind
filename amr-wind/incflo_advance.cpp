@@ -196,14 +196,27 @@ void incflo::ApplyPredictor(bool incremental_projection)
 
     // Process data for overset multiphase
     if (sim().has_overset()) {
+        if (m_sharpen_gradp_exchp) {
+            // Copy current gradp
+            amr_wind::overset::CopyGradP(
+                *gp_copy, gp, sim().repo().num_active_levels());
+            // Update gradp
+            UpdateGradP(
+                (density_old).vec_const_ptrs(), m_time.current_time(),
+                m_time.deltaT());
+            // Replace unmasked portions with original gradp
+            amr_wind::overset::ReplaceUnMaskedGradP(
+                gp, *gp_copy, sim().repo().get_int_field("iblank_cell"));
+        }
         // Sharpen nalu fields
         amr_wind::overset::SharpenNaluDataDiscrete(
             sim(), m_sharpen_iterations, m_sharpen_tolerance,
             m_sharpen_calctolniter, m_sharpen_rlscale, m_sharpen_margin,
-            m_sharpen_proctg_tol, m_sharpen_hs_pressure, m_sharpen_gradp);
+            m_sharpen_proctg_tol, m_sharpen_hs_pressure,
+            m_sharpen_gradp || m_sharpen_gradp_exchp);
         // Recalculate pressure gradient with incoming sharpened field
         if ((!m_sharpen_gradp || sim().time().current_time() == 0.0) &&
-            !m_sharpen_hsp_guess) {
+            !m_sharpen_hsp_guess && !m_sharpen_gradp_exchp) {
             UpdateGradP(
                 (density_old).vec_const_ptrs(), m_time.current_time(),
                 m_time.deltaT());
@@ -212,7 +225,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
             (m_sharpen_gradp && sim().time().current_time() == 0.0)) {
             amr_wind::overset::ReplaceMaskedGradP(sim());
         }
-        if (m_sharpen_gradp) {
+        if (m_sharpen_gradp || m_sharpen_gradp_exchp) {
             amr_wind::overset::CopyGradP(
                 *gp_copy, gp, sim().repo().num_active_levels());
         }
@@ -425,7 +438,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
         if (m_sharpen_hsp_replace) {
             amr_wind::overset::ReapplyModifiedGradP(sim());
         }
-        if (m_sharpen_gradp) {
+        if (m_sharpen_gradp || m_sharpen_gradp_exchp) {
             amr_wind::overset::ReapplyOversetGradP(*gp_copy, sim());
         }
     }

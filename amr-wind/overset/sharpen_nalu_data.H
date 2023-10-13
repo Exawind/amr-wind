@@ -688,7 +688,8 @@ void replace_gradp_hs(
 void replace_gradp(
     amrex::MultiFab& mf_gp,
     amrex::MultiFab& mf_gp0,
-    amrex::iMultiFab& mf_iblank)
+    amrex::iMultiFab& mf_iblank,
+    int ib_val)
 {
     for (amrex::MFIter mfi(mf_gp); mfi.isValid(); ++mfi) {
         const auto& gbx = mfi.growntilebox();
@@ -698,7 +699,7 @@ void replace_gradp(
         amrex::ParallelFor(
             gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 // Replace amr-wind vof values with originals
-                if (iblank(i, j, k) == -1) {
+                if (iblank(i, j, k) == ib_val) {
                     gp(i, j, k, 0) = gp0(i, j, k, 0);
                     gp(i, j, k, 1) = gp0(i, j, k, 1);
                     gp(i, j, k, 2) = gp0(i, j, k, 2);
@@ -1029,10 +1030,19 @@ void ReapplyOversetGradP(ScratchField& gp_copy, CFDSim& sim)
     for (int lev = 0; lev < nlevels; ++lev) {
         // Remove pressure gradient term
         apply_pressure_gradient(vel(lev), rho(lev), gp(lev), -dt);
-        // Modify pressure gradient
-        replace_gradp(gp(lev), gp_copy(lev), iblank_cell(lev));
+        // Modify pressure gradient, replace blanked version
+        replace_gradp(gp(lev), gp_copy(lev), iblank_cell(lev), -1);
         // Reapply pressure gradient term
         apply_pressure_gradient(vel(lev), rho(lev), gp(lev), dt);
+    }
+}
+
+void ReplaceUnMaskedGradP(
+    Field& gp, ScratchField& gp_copy, IntField& iblank_cell)
+{
+    // Replace gp with copy from before exchange
+    for (int lev = 0; lev < gp.repo().num_active_levels(); ++lev) {
+        replace_gradp(gp(lev), gp_copy(lev), iblank_cell(lev), 1);
     }
 }
 
