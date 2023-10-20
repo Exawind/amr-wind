@@ -53,6 +53,7 @@ void Actuator::pre_init_actions()
 
     // Check if sampling should be modified aside from default behavior
     pp.query("sample_vel_nmhalf", m_sample_nmhalf);
+    pp.query("sample_midadvance", m_sample_midadvance);
 }
 
 void Actuator::post_init_actions()
@@ -96,12 +97,28 @@ void Actuator::pre_advance_work()
 {
     BL_PROFILE("amr-wind::actuator::Actuator::pre_advance_work");
 
-    m_container->reset_container();
-    update_positions();
-    update_velocities();
-    compute_forces();
-    compute_source_term();
-    communicate_turbine_io();
+    if (!m_sample_midadvance) {
+        m_container->reset_container();
+        update_positions();
+        update_velocities();
+        compute_forces();
+        compute_source_term();
+        communicate_turbine_io();
+    }
+}
+
+void Actuator::mid_advance_work()
+{
+    BL_PROFILE("amr-wind::actuator::Actuator::mid_advance_work");
+
+    if (m_sample_midadvance) {
+        m_container->reset_container();
+        update_positions();
+        update_velocities();
+        compute_forces();
+        compute_source_term();
+        communicate_turbine_io();
+    }
 }
 
 void Actuator::communicate_turbine_io()

@@ -272,6 +272,11 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // Extrapolate and apply MAC projection for advection velocities
     icns().pre_advection_actions(amr_wind::FieldState::Old);
 
+    // Intended for velocity-based source terms in physics classes
+    for (auto& pp : m_sim.physics()) {
+        pp->mid_advance_work();
+    }
+
     // For scalars only first
     // *************************************************************************************
     // if ( m_use_godunov) Compute the explicit advective terms

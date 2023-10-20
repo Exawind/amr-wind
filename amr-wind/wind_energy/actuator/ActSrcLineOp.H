@@ -16,9 +16,13 @@ private:
     Field& m_act_src;
 
     DeviceVecList m_pos;
+    DeviceVecList m_pos_old;
     DeviceVecList m_force;
     DeviceVecList m_epsilon;
     DeviceTensorList m_orientation;
+
+    amrex::Real m_ftwt{1.0};
+    bool init_old{false};
 
     void copy_to_device();
 
@@ -41,9 +45,13 @@ void ActSrcOp<ActTrait, ActSrcLine>::initialize()
 {
     const auto& grid = m_data.grid();
     m_pos.resize(grid.pos.size());
+    m_pos_old.resize(grid.pos.size());
     m_force.resize(grid.force.size());
     m_epsilon.resize(grid.epsilon.size());
     m_orientation.resize(grid.orientation.size());
+
+    amrex::ParmParse pp("ALM");
+    pp.query("forward_time_weight", m_ftwt);
 }
 
 template <typename ActTrait>
@@ -63,6 +71,13 @@ void ActSrcOp<ActTrait, ActSrcLine>::copy_to_device()
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, grid.orientation.begin(),
         grid.orientation.end(), m_orientation.begin());
+
+    if (!init_old) {
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, grid.pos.begin(), grid.pos.end(),
+            m_pos_old.begin());
+    }
+    init_old = true;
 }
 
 template <typename ActTrait>
@@ -79,9 +94,12 @@ void ActSrcOp<ActTrait, ActSrcLine>::operator()(
 
     const int npts = m_pos.size();
     const auto* pos = m_pos.data();
+    const auto* opos = m_pos_old.data();
     const auto* force = m_force.data();
     const auto* eps = m_epsilon.data();
     const auto* tmat = m_orientation.data();
+
+    const auto wt = m_ftwt;
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const vs::Vector cc{
@@ -92,6 +110,7 @@ void ActSrcOp<ActTrait, ActSrcLine>::operator()(
 
         amrex::Real src_force[AMREX_SPACEDIM]{0.0, 0.0, 0.0};
         for (int ip = 0; ip < npts; ++ip) {
+            const auto pos_ip = wt * pos[ip] + (1.0 - wt) * opos[ip];
             const auto dist = cc - pos[ip];
             const auto dist_local = tmat[ip] & dist;
             const auto gauss_fac = utils::gaussian3d(dist_local, eps[ip]);
@@ -106,6 +125,12 @@ void ActSrcOp<ActTrait, ActSrcLine>::operator()(
         sarr(i, j, k, 1) += src_force[1];
         sarr(i, j, k, 2) += src_force[2];
     });
+
+    // Populate old position
+    const auto& grid = m_data.grid();
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, grid.pos.begin(), grid.pos.end(),
+        m_pos_old.begin());
 }
 } // namespace amr_wind::actuator::ops
 

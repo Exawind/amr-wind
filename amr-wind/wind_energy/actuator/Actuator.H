@@ -47,6 +47,8 @@ public:
 
     void pre_advance_work() override;
 
+    void mid_advance_work();
+
     void post_advance_work() override;
 
 protected:
@@ -77,6 +79,7 @@ private:
     std::unique_ptr<ActuatorContainer> m_container;
 
     bool m_sample_nmhalf{false};
+    bool m_sample_midadvance{false};
 };
 
 } // namespace actuator
