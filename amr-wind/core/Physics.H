@@ -80,7 +80,7 @@ public:
     virtual void pre_advance_work() = 0;
 
     //! Perform tasks during timestep, intended for after MAC
-    void mid_advance_work() {}
+    virtual void mid_advance_work() {}
 
     //! Perform tasks necessary after advancing timestep
     virtual void post_advance_work() = 0;
