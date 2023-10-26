@@ -265,8 +265,8 @@ void populate_sharpen_discrete_fluxes(
 {
     for (amrex::MFIter mfi(mf_vof); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
-        const auto& xbx = amrex::surroundingNodes(vbx, 0);
-        const auto& ybx = amrex::surroundingNodes(vbx, 1);
+        const auto& xbxp1 = grow(amrex::surroundingNodes(vbx, 0), 1);
+        const auto& ybxp1 = grow(amrex::surroundingNodes(vbx, 1), 1);
         // Extra points for zbox are for pressure source
         const auto& zbxp1 = grow(amrex::surroundingNodes(vbx, 2), 1);
         const amrex::Array4<amrex::Real>& fx = mf_fx.array(mfi);
@@ -285,7 +285,7 @@ void populate_sharpen_discrete_fluxes(
             mf_density.const_array(mfi);
         // Populate vof and density fluxes for each direction
         amrex::ParallelFor(
-            xbx, ybx, zbxp1,
+            xbxp1, ybxp1, zbxp1,
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 // vof flux
                 amrex::Real flux =
@@ -304,6 +304,7 @@ void populate_sharpen_discrete_fluxes(
                 fx(i, j, k, 5) = flux * uf;
                 fx(i, j, k, 6) = flux * vf;
                 fx(i, j, k, 7) = flux * wf;
+                fx(i, j, k, 8) = 1.0;
             },
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real flux =
@@ -320,6 +321,7 @@ void populate_sharpen_discrete_fluxes(
                 fy(i, j, k, 5) = flux * uf;
                 fy(i, j, k, 6) = flux * vf;
                 fy(i, j, k, 7) = flux * wf;
+                fy(i, j, k, 8) = 1.0;
             },
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real flux =
@@ -346,26 +348,32 @@ void process_fluxes_calc_src(
     amrex::MultiFab& mf_fx,
     amrex::MultiFab& mf_fy,
     amrex::MultiFab& mf_fz,
+    amrex::MultiFab& mf_vof,
     amrex::MultiFab& mf_psource,
     amrex::iMultiFab& mf_iblank,
-    const amrex::Real grav_z)
+    const amrex::Real grav_z,
+    const int sh_p_flag)
 {
     int ncompx = mf_fx.nComp();
     int ncompy = mf_fy.nComp();
     int ncompz = mf_fz.nComp();
+    if (sh_p_flag == 0) {
+        mf_psource.setVal(0.0);
+    }
     for (amrex::MFIter mfi(mf_iblank); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
-        const auto& xbx = amrex::surroundingNodes(vbx, 0);
-        const auto& ybx = amrex::surroundingNodes(vbx, 1);
+        const auto& xbxp1 = grow(amrex::surroundingNodes(vbx, 0), 1);
+        const auto& ybxp1 = grow(amrex::surroundingNodes(vbx, 1), 1);
         const auto& zbxp1 = grow(amrex::surroundingNodes(vbx, 2), 1);
         const amrex::Array4<amrex::Real>& fx = mf_fx.array(mfi);
         const amrex::Array4<amrex::Real>& fy = mf_fy.array(mfi);
         const amrex::Array4<amrex::Real>& fz = mf_fz.array(mfi);
+        const amrex::Array4<amrex::Real>& vof = mf_vof.array(mfi);
         const amrex::Array4<amrex::Real>& sp = mf_psource.array(mfi);
         const amrex::Array4<const int>& iblank = mf_iblank.const_array(mfi);
         // Only faces with iblank = -1 on both sides can have nonzero flux
         amrex::ParallelFor(
-            xbx, ybx, zbxp1,
+            xbxp1, ybxp1, zbxp1,
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 bool zero_all = (iblank(i - 1, j, k) + iblank(i, j, k) > -2);
                 for (int n = 0; n < ncompx; ++n) {
@@ -386,22 +394,123 @@ void process_fluxes_calc_src(
             });
         // With knowledge of fluxes, compute pressure source term
         amrex::Box const& nbx = mfi.nodaltilebox();
-        amrex::ParallelFor(
-            nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                // To get the local density flux corresponding to the node,
-                // average the surrounding fluxes. Fluxes in AMR-Wind domain are
-                // zeroed, and they are flagged as 0 to avoid dividing by the
-                // wrong number in the average. For AMR-Wind nodes (not
-                // bordering nalu-wind cells), psource = 0 / (0 + tiny)
-                const amrex::Real rho_flux =
-                    (fz(i, j, k, 1) + fz(i - 1, j, k, 1) + fz(i, j - 1, k, 1) +
-                     fz(i - 1, j - 1, k, 1)) /
-                    (fz(i, j, k, 8) + fz(i - 1, j, k, 8) + fz(i, j - 1, k, 8) +
-                     fz(i - 1, j - 1, k, 8) + 1e-100);
-                // Pressure source is proportional to local density source
-                // (because more or less density is above node)
-                sp(i, j, k) = rho_flux * grav_z;
-            });
+        if (sh_p_flag == 1) {
+            amrex::ParallelFor(
+                nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    // To get the local density flux corresponding to the node,
+                    // average the surrounding fluxes. Fluxes in AMR-Wind domain
+                    // are zeroed, and they are flagged as 0 to avoid dividing
+                    // by the wrong number in the average. For AMR-Wind nodes
+                    // (not bordering nalu-wind cells), psource = 0 / (0 + tiny)
+                    const amrex::Real rho_flux =
+                        (fz(i, j, k, 1) + fz(i - 1, j, k, 1) +
+                         fz(i, j - 1, k, 1) + fz(i - 1, j - 1, k, 1)) /
+                        (fz(i, j, k, 8) + fz(i - 1, j, k, 8) +
+                         fz(i, j - 1, k, 8) + fz(i - 1, j - 1, k, 8) + 1e-100);
+                    // Pressure source is proportional to local density source
+                    // (because more or less density is above node)
+                    sp(i, j, k) = rho_flux * grav_z;
+                });
+        }
+        if (sh_p_flag == 2) {
+            amrex::ParallelFor(
+                nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    // Get components of outer product between f and gradp/rho
+                    // from interpolating between values at neighboring faces
+                    const amrex::Real fxgpx_flux =
+                        (fx(i, j, k, 5) + fx(i, j, k - 1, 5) +
+                         fx(i, j - 1, k, 5) + fx(i, j - 1, k - 1, 5)) /
+                        (fx(i, j, k, 8) + fx(i, j, k - 1, 8) +
+                         fx(i, j - 1, k, 8) + fx(i, j - 1, k - 1, 8) + 1e-100);
+                    const amrex::Real fxgpy_flux =
+                        (fx(i, j, k, 6) + fx(i, j, k - 1, 6) +
+                         fx(i, j - 1, k, 6) + fx(i, j - 1, k - 1, 6)) /
+                        (fx(i, j, k, 8) + fx(i, j, k - 1, 8) +
+                         fx(i, j - 1, k, 8) + fx(i, j - 1, k - 1, 8) + 1e-100);
+                    const amrex::Real fxgpz_flux =
+                        (fx(i, j, k, 7) + fx(i, j, k - 1, 7) +
+                         fx(i, j - 1, k, 7) + fx(i, j - 1, k - 1, 7)) /
+                        (fx(i, j, k, 8) + fx(i, j, k - 1, 8) +
+                         fx(i, j - 1, k, 8) + fx(i, j - 1, k - 1, 8) + 1e-100);
+
+                    const amrex::Real fygpx_flux =
+                        (fy(i, j, k, 5) + fy(i - 1, j, k, 5) +
+                         fy(i, j, k - 1, 5) + fy(i - 1, j, k - 1, 5)) /
+                        (fy(i, j, k, 8) + fy(i - 1, j, k, 8) +
+                         fy(i, j, k - 1, 8) + fy(i - 1, j, k - 1, 8) + 1e-100);
+                    const amrex::Real fygpy_flux =
+                        (fy(i, j, k, 6) + fy(i - 1, j, k, 6) +
+                         fy(i, j, k - 1, 6) + fy(i - 1, j, k - 1, 6)) /
+                        (fy(i, j, k, 8) + fy(i - 1, j, k, 8) +
+                         fy(i, j, k - 1, 8) + fy(i - 1, j, k - 1, 8) + 1e-100);
+                    const amrex::Real fygpz_flux =
+                        (fy(i, j, k, 7) + fy(i - 1, j, k, 7) +
+                         fy(i, j, k - 1, 7) + fy(i - 1, j, k - 1, 7)) /
+                        (fy(i, j, k, 8) + fy(i - 1, j, k, 8) +
+                         fy(i, j, k - 1, 8) + fy(i - 1, j, k - 1, 8) + 1e-100);
+
+                    const amrex::Real fzgpx_flux =
+                        (fz(i, j, k, 5) + fz(i - 1, j, k, 5) +
+                         fz(i, j - 1, k, 5) + fz(i - 1, j - 1, k, 5)) /
+                        (fz(i, j, k, 8) + fz(i - 1, j, k, 8) +
+                         fz(i, j - 1, k, 8) + fz(i - 1, j - 1, k, 8) + 1e-100);
+                    const amrex::Real fzgpy_flux =
+                        (fz(i, j, k, 6) + fz(i - 1, j, k, 6) +
+                         fz(i, j - 1, k, 6) + fz(i - 1, j - 1, k, 6)) /
+                        (fz(i, j, k, 8) + fz(i - 1, j, k, 8) +
+                         fz(i, j - 1, k, 8) + fz(i - 1, j - 1, k, 8) + 1e-100);
+                    const amrex::Real fzgpz_flux =
+                        (fz(i, j, k, 7) + fz(i - 1, j, k, 7) +
+                         fz(i, j - 1, k, 7) + fz(i - 1, j - 1, k, 7)) /
+                        (fz(i, j, k, 8) + fz(i - 1, j, k, 8) +
+                         fz(i, j - 1, k, 8) + fz(i - 1, j - 1, k, 8) + 1e-100);
+
+                    // Calculate interface normal at pressure node
+                    amrex::Real n0 =
+                        ((vof(i, j, k) - vof(i - 1, j, k)) * fx(i, j, k, 8) +
+                         (vof(i, j - 1, k) - vof(i - 1, j - 1, k)) *
+                             fx(i, j - 1, k, 8) +
+                         (vof(i, j, k - 1) - vof(i - 1, j, k - 1)) *
+                             fx(i, j, k - 1, 8) +
+                         (vof(i, j - 1, k - 1) - vof(i - 1, j - 1, k - 1)) *
+                             fx(i, j - 1, k - 1, 8)) /
+                        (fx(i, j, k, 8) + fx(i, j, k - 1, 8) +
+                         fx(i, j - 1, k, 8) + fx(i, j - 1, k - 1, 8) + 1e-100);
+                    amrex::Real n1 =
+                        ((vof(i, j, k) - vof(i, j - 1, k)) * fy(i, j, k, 8) +
+                         (vof(i - 1, j, k) - vof(i - 1, j - 1, k)) *
+                             fy(i - 1, j, k, 8) +
+                         (vof(i, j, k - 1) - vof(i, j - 1, k - 1)) *
+                             fy(i, j, k - 1, 8) +
+                         (vof(i - 1, j, k - 1) - vof(i - 1, j - 1, k - 1)) *
+                             fy(i - 1, j, k - 1, 8)) /
+                        (fy(i, j, k, 8) + fy(i, j, k - 1, 8) +
+                         fy(i - 1, j, k, 8) + fy(i - 1, j, k - 1, 8) + 1e-100);
+                    amrex::Real n2 =
+                        ((vof(i, j, k) - vof(i, j, k - 1)) * fz(i, j, k, 8) +
+                         (vof(i - 1, j, k) - vof(i - 1, j, k - 1)) *
+                             fz(i - 1, j, k, 8) +
+                         (vof(i, j - 1, k) - vof(i, j - 1, k - 1)) *
+                             fz(i, j - 1, k, 8) +
+                         (vof(i - 1, j - 1, k) - vof(i - 1, j - 1, k - 1)) *
+                             fz(i - 1, j - 1, k, 8)) /
+                        (fz(i, j, k, 8) + fz(i, j - 1, k, 8) +
+                         fz(i - 1, j, k, 8) + fz(i - 1, j - 1, k, 8) + 1e-100);
+                    // Normalize vector
+                    amrex::Real nmag =
+                        std::sqrt(n0 * n0 + n1 * n1 + n2 * n2) + 1e-100;
+                    n0 /= nmag;
+                    n1 /= nmag;
+                    n2 /= nmag;
+
+                    // Perform double contraction
+                    sp(i, j, k) = fxgpx_flux * n0 * n0 + fxgpy_flux * n0 * n1 +
+                                  fxgpz_flux * n0 * n2 + fygpx_flux * n1 * n0 +
+                                  fygpy_flux * n1 * n1 + fygpz_flux * n1 * n2 +
+                                  fzgpx_flux * n2 * n0 + fzgpy_flux * n2 * n1 +
+                                  fzgpz_flux * n2 * n2;
+                });
+        }
     }
 }
 
@@ -640,13 +749,13 @@ void harmonize_vof(
     amrex::iMultiFab& mf_iblank)
 {
     for (amrex::MFIter mfi(mf_vof_target); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.validbox();
+        const auto& gbx = mfi.growntilebox();
         const amrex::Array4<amrex::Real>& tg_vof = mf_vof_target.array(mfi);
         const amrex::Array4<const amrex::Real>& og_vof =
             mf_vof_original.const_array(mfi);
         const amrex::Array4<const int>& iblank = mf_iblank.const_array(mfi);
         amrex::ParallelFor(
-            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 // Replace amr-wind vof values with originals
                 if (iblank(i, j, k) != -1) {
                     tg_vof(i, j, k) = og_vof(i, j, k);
@@ -738,9 +847,18 @@ void SharpenNaluDataDiscrete(
     const amrex::Real rlscale,
     const amrex::Real margin,
     const amrex::Real proc_tgvof_tol,
-    const bool sh_pressure,
-    const bool sh_gradp)
+    const bool sh_hs_pres,
+    const bool sh_gradp,
+    const bool sh_pressure)
 {
+    // Set sharpen pressure flag according to bools
+    int sh_p_flag = 0; // pressure source will be 0
+    if (sh_hs_pres) {
+        sh_p_flag = 1; // pressure source moves hs p according to density fluxes
+    } else if (sh_pressure) {
+        sh_p_flag = 2; // pressure source moves p according to gradp fluxes
+    }
+
     auto& repo = sim.repo();
     auto nlevels = repo.num_active_levels();
     auto geom = sim.mesh().Geom();
@@ -755,8 +873,8 @@ void SharpenNaluDataDiscrete(
     auto& mphase = sim.physics_manager().get<MultiPhase>();
     const amrex::Real rhol = mphase.rho1();
     const amrex::Real rhog = mphase.rho2();
-    // If pressure is not to be modified, set gravity to 0
-    const amrex::Real grav_z = sh_pressure ? mphase.gravity()[2] : 0.0;
+    // Gravity value in z
+    const amrex::Real grav_z = mphase.gravity()[2];
 
     // Get blanking for cells
     auto& iblank_cell = repo.get_int_field("iblank_cell");
@@ -771,8 +889,8 @@ void SharpenNaluDataDiscrete(
 
     // Create scratch fields for fluxes - 5 components are vof, density, and
     // 3 of velocity (flux_z has 6th component for flag in p_src calc)
-    auto flux_x = repo.create_scratch_field(8, 0, amr_wind::FieldLoc::XFACE);
-    auto flux_y = repo.create_scratch_field(8, 0, amr_wind::FieldLoc::YFACE);
+    auto flux_x = repo.create_scratch_field(9, 1, amr_wind::FieldLoc::XFACE);
+    auto flux_y = repo.create_scratch_field(9, 1, amr_wind::FieldLoc::YFACE);
     auto flux_z = repo.create_scratch_field(9, 1, amr_wind::FieldLoc::ZFACE);
     // Create scratch field for pressure source term
     auto p_src = repo.create_scratch_field(1, 0, amr_wind::FieldLoc::NODE);
@@ -815,6 +933,9 @@ void SharpenNaluDataDiscrete(
         fluxes[lev][2] = &(*flux_z)(lev);
     }
 
+    // Should replace fillpatch with fillboundary throughout routine
+    gp.fillpatch(sim.time().current_time());
+
     // Pseudo-time loop
     amrex::Real err = 100.0 * tol;
     int n = 0;
@@ -845,8 +966,8 @@ void SharpenNaluDataDiscrete(
 
             // Process fluxes and get pressure source term
             process_fluxes_calc_src(
-                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), (*p_src)(lev),
-                iblank_cell(lev), grav_z);
+                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev),
+                (*p_src)(lev), iblank_cell(lev), grav_z, sh_p_flag);
 
             // Measure convergence to determine if loop can stop
             if (cconv) {
@@ -887,12 +1008,17 @@ void SharpenNaluDataDiscrete(
             apply_fluxes(
                 (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), (*p_src)(lev),
                 vof(lev), rho(lev), velocity(lev), gp(lev), p(lev), dx, ptfac,
-                sh_gradp);
+                sh_gradp || sh_p_flag == 2);
         }
+
+        // sim.io_manager().write_plot_file();
+        // sim.time().increment_timestep();
+        // p.fillpatch(sim.time().current_time());
 
         // Fillpatch for ghost cells
         vof.fillpatch(sim.time().current_time());
         velocity.fillpatch(sim.time().current_time());
+        gp.fillpatch(sim.time().current_time());
 
         // Update density (fillpatch built in)
         mphase.set_density_via_vof();

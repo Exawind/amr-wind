@@ -208,12 +208,18 @@ void incflo::ApplyPredictor(bool incremental_projection)
             amr_wind::overset::ReplaceUnMaskedGradP(
                 gp, *gp_copy, sim().repo().get_int_field("iblank_cell"));
         }
+
+        if (m_sharpen_pressure) {
+            UpdateGradP(
+                (density_old).vec_const_ptrs(), m_time.current_time(),
+                m_time.deltaT());
+        }
         // Sharpen nalu fields
         amr_wind::overset::SharpenNaluDataDiscrete(
             sim(), m_sharpen_iterations, m_sharpen_tolerance,
             m_sharpen_calctolniter, m_sharpen_rlscale, m_sharpen_margin,
             m_sharpen_proctg_tol, m_sharpen_hs_pressure,
-            m_sharpen_gradp || m_sharpen_gradp_exchp);
+            m_sharpen_gradp || m_sharpen_gradp_exchp, m_sharpen_pressure);
         // Recalculate pressure gradient with incoming sharpened field
         if ((!m_sharpen_gradp || sim().time().current_time() == 0.0) &&
             !m_sharpen_hsp_guess && !m_sharpen_gradp_exchp) {
@@ -229,6 +235,13 @@ void incflo::ApplyPredictor(bool incremental_projection)
             amr_wind::overset::CopyGradP(
                 *gp_copy, gp, sim().repo().num_active_levels());
         }
+        if (m_sharpen_pressure) {
+            UpdateGradP(
+                (density_old).vec_const_ptrs(), m_time.current_time(),
+                m_time.deltaT());
+        }
+
+        return;
     }
 
     // *************************************************************************************
