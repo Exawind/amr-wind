@@ -59,6 +59,13 @@ void ActSrcOp<ActTrait, ActSrcLine>::copy_to_device()
 {
     const auto& grid = m_data.grid();
 
+    // Populate old positions before new positions are updated
+    if (init_old) {
+        amrex::Gpu::copy(
+            amrex::Gpu::deviceToDevice, m_pos.begin(), m_pos.end(),
+            m_pos_old.begin());
+    }
+
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, grid.pos.begin(), grid.pos.end(),
         m_pos.begin());
@@ -125,12 +132,6 @@ void ActSrcOp<ActTrait, ActSrcLine>::operator()(
         sarr(i, j, k, 1) += src_force[1];
         sarr(i, j, k, 2) += src_force[2];
     });
-
-    // Populate old position
-    const auto& grid = m_data.grid();
-    amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, grid.pos.begin(), grid.pos.end(),
-        m_pos_old.begin());
 }
 } // namespace amr_wind::actuator::ops
 
