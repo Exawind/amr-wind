@@ -417,6 +417,7 @@ void process_fluxes_calc_src(
                 });
         }
         if (sh_p_flag == 2) {
+            constexpr amrex::Real tiny = 1e-100;
             amrex::ParallelFor(
                 nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     // Get components of outer product between f and gradp/rho
@@ -425,49 +426,49 @@ void process_fluxes_calc_src(
                         (fx(i, j, k, 5) + fx(i, j, k - 1, 5) +
                          fx(i, j - 1, k, 5) + fx(i, j - 1, k - 1, 5)) /
                         (fx(i, j, k, 8) + fx(i, j, k - 1, 8) +
-                         fx(i, j - 1, k, 8) + fx(i, j - 1, k - 1, 8) + 1e-100);
+                         fx(i, j - 1, k, 8) + fx(i, j - 1, k - 1, 8) + tiny);
                     const amrex::Real fxgpy_flux =
                         (fx(i, j, k, 6) + fx(i, j, k - 1, 6) +
                          fx(i, j - 1, k, 6) + fx(i, j - 1, k - 1, 6)) /
                         (fx(i, j, k, 8) + fx(i, j, k - 1, 8) +
-                         fx(i, j - 1, k, 8) + fx(i, j - 1, k - 1, 8) + 1e-100);
+                         fx(i, j - 1, k, 8) + fx(i, j - 1, k - 1, 8) + tiny);
                     const amrex::Real fxgpz_flux =
                         (fx(i, j, k, 7) + fx(i, j, k - 1, 7) +
                          fx(i, j - 1, k, 7) + fx(i, j - 1, k - 1, 7)) /
                         (fx(i, j, k, 8) + fx(i, j, k - 1, 8) +
-                         fx(i, j - 1, k, 8) + fx(i, j - 1, k - 1, 8) + 1e-100);
+                         fx(i, j - 1, k, 8) + fx(i, j - 1, k - 1, 8) + tiny);
 
                     const amrex::Real fygpx_flux =
                         (fy(i, j, k, 5) + fy(i - 1, j, k, 5) +
                          fy(i, j, k - 1, 5) + fy(i - 1, j, k - 1, 5)) /
                         (fy(i, j, k, 8) + fy(i - 1, j, k, 8) +
-                         fy(i, j, k - 1, 8) + fy(i - 1, j, k - 1, 8) + 1e-100);
+                         fy(i, j, k - 1, 8) + fy(i - 1, j, k - 1, 8) + tiny);
                     const amrex::Real fygpy_flux =
                         (fy(i, j, k, 6) + fy(i - 1, j, k, 6) +
                          fy(i, j, k - 1, 6) + fy(i - 1, j, k - 1, 6)) /
                         (fy(i, j, k, 8) + fy(i - 1, j, k, 8) +
-                         fy(i, j, k - 1, 8) + fy(i - 1, j, k - 1, 8) + 1e-100);
+                         fy(i, j, k - 1, 8) + fy(i - 1, j, k - 1, 8) + tiny);
                     const amrex::Real fygpz_flux =
                         (fy(i, j, k, 7) + fy(i - 1, j, k, 7) +
                          fy(i, j, k - 1, 7) + fy(i - 1, j, k - 1, 7)) /
                         (fy(i, j, k, 8) + fy(i - 1, j, k, 8) +
-                         fy(i, j, k - 1, 8) + fy(i - 1, j, k - 1, 8) + 1e-100);
+                         fy(i, j, k - 1, 8) + fy(i - 1, j, k - 1, 8) + tiny);
 
                     const amrex::Real fzgpx_flux =
                         (fz(i, j, k, 5) + fz(i - 1, j, k, 5) +
                          fz(i, j - 1, k, 5) + fz(i - 1, j - 1, k, 5)) /
                         (fz(i, j, k, 8) + fz(i - 1, j, k, 8) +
-                         fz(i, j - 1, k, 8) + fz(i - 1, j - 1, k, 8) + 1e-100);
+                         fz(i, j - 1, k, 8) + fz(i - 1, j - 1, k, 8) + tiny);
                     const amrex::Real fzgpy_flux =
                         (fz(i, j, k, 6) + fz(i - 1, j, k, 6) +
                          fz(i, j - 1, k, 6) + fz(i - 1, j - 1, k, 6)) /
                         (fz(i, j, k, 8) + fz(i - 1, j, k, 8) +
-                         fz(i, j - 1, k, 8) + fz(i - 1, j - 1, k, 8) + 1e-100);
+                         fz(i, j - 1, k, 8) + fz(i - 1, j - 1, k, 8) + tiny);
                     const amrex::Real fzgpz_flux =
                         (fz(i, j, k, 7) + fz(i - 1, j, k, 7) +
                          fz(i, j - 1, k, 7) + fz(i - 1, j - 1, k, 7)) /
                         (fz(i, j, k, 8) + fz(i - 1, j, k, 8) +
-                         fz(i, j - 1, k, 8) + fz(i - 1, j - 1, k, 8) + 1e-100);
+                         fz(i, j - 1, k, 8) + fz(i - 1, j - 1, k, 8) + tiny);
 
                     // Calculate interface normal at pressure node
                     amrex::Real n0 =
@@ -479,7 +480,7 @@ void process_fluxes_calc_src(
                          (vof(i, j - 1, k - 1) - vof(i - 1, j - 1, k - 1)) *
                              fx(i, j - 1, k - 1, 8)) /
                         (fx(i, j, k, 8) + fx(i, j, k - 1, 8) +
-                         fx(i, j - 1, k, 8) + fx(i, j - 1, k - 1, 8) + 1e-100);
+                         fx(i, j - 1, k, 8) + fx(i, j - 1, k - 1, 8) + tiny);
                     amrex::Real n1 =
                         ((vof(i, j, k) - vof(i, j - 1, k)) * fy(i, j, k, 8) +
                          (vof(i - 1, j, k) - vof(i - 1, j - 1, k)) *
@@ -489,7 +490,7 @@ void process_fluxes_calc_src(
                          (vof(i - 1, j, k - 1) - vof(i - 1, j - 1, k - 1)) *
                              fy(i - 1, j, k - 1, 8)) /
                         (fy(i, j, k, 8) + fy(i, j, k - 1, 8) +
-                         fy(i - 1, j, k, 8) + fy(i - 1, j, k - 1, 8) + 1e-100);
+                         fy(i - 1, j, k, 8) + fy(i - 1, j, k - 1, 8) + tiny);
                     amrex::Real n2 =
                         ((vof(i, j, k) - vof(i, j, k - 1)) * fz(i, j, k, 8) +
                          (vof(i - 1, j, k) - vof(i - 1, j, k - 1)) *
@@ -499,10 +500,10 @@ void process_fluxes_calc_src(
                          (vof(i - 1, j - 1, k) - vof(i - 1, j - 1, k - 1)) *
                              fz(i - 1, j - 1, k, 8)) /
                         (fz(i, j, k, 8) + fz(i, j - 1, k, 8) +
-                         fz(i - 1, j, k, 8) + fz(i - 1, j - 1, k, 8) + 1e-100);
+                         fz(i - 1, j, k, 8) + fz(i - 1, j - 1, k, 8) + tiny);
                     // Normalize vector
                     amrex::Real nmag =
-                        std::sqrt(n0 * n0 + n1 * n1 + n2 * n2) + 1e-100;
+                        std::sqrt(n0 * n0 + n1 * n1 + n2 * n2) + tiny;
                     n0 /= nmag;
                     n1 /= nmag;
                     n2 /= nmag;
@@ -926,9 +927,6 @@ void SharpenNaluDataDiscrete(
         std::min(std::min(dx_lev0[0], dx_lev0[1]), dx_lev0[2]);
     amrex::Real pvscale = max_pvscale;
 
-    // Populate gp scratch field
-    amr_wind::field_ops::copy(gp, gp_noghost, 0, 0, 3, 0);
-
     // Prep things that do not change with iterations
     for (int lev = 0; lev < nlevels; ++lev) {
         // Thickness used here is user parameter, whatever works best
@@ -938,8 +936,10 @@ void SharpenNaluDataDiscrete(
         // Populate approximate signed distance function
         populate_psi(levelset(lev), vof(lev), i_th);
 
-        // Populate ghost cells of gp scratch field
-        gp(lev).FillBoundary(sim.mesh().Geom()[lev].periodicity());
+        // Populate gp scratch field
+        gp(lev).setVal(0.0); // for external boundaries
+        amrex::MultiFab::Copy(gp(lev), gp_noghost(lev), 0, 0, 3, 0); // nonghost
+        gp(lev).FillBoundary(sim.mesh().Geom()[lev].periodicity());  // internal
 
         // Get pseudo-velocity scale, proportional to smallest dx in iblank
         const amrex::Real pvscale_lev =
