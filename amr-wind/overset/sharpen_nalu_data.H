@@ -884,7 +884,7 @@ void SharpenNaluDataDiscrete(
     auto& levelset = repo.get_field("levelset");
     auto& rho = repo.get_field("density");
     auto& velocity = repo.get_field("velocity");
-    auto& gp = repo.get_field("gp");
+    auto& gp_noghost = repo.get_field("gp");
     auto& p = repo.get_field("p");
 
     // Create scratch fields for fluxes - 5 components are vof, density, and
@@ -900,6 +900,9 @@ void SharpenNaluDataDiscrete(
 
     auto target_vof = repo.create_scratch_field(1, vof.num_grow()[0]);
 
+    auto gp_scr = repo.create_scratch_field(3, 1);
+    auto& gp = *gp_scr;
+
     // Create levelset field
     for (int lev = 0; lev < nlevels; ++lev) {
         // Thickness used here is user parameter, whatever works best
@@ -908,6 +911,12 @@ void SharpenNaluDataDiscrete(
 
         // Populate approximate signed distance function
         populate_psi(levelset(lev), vof(lev), i_th);
+
+        // Populate gp_ghost
+        amrex::Copy(gp(lev), gp_noghost(lev), 0, 0, 3, 0);
+
+        // Populate gp_ghost
+        gp(lev).FillBoundary(sim.mesh().Geom()[lev].periodicity());
     }
 
     // Convert levelset to vof to get target_vof
@@ -932,9 +941,6 @@ void SharpenNaluDataDiscrete(
         fluxes[lev][1] = &(*flux_y)(lev);
         fluxes[lev][2] = &(*flux_z)(lev);
     }
-
-    // Should replace fillpatch with fillboundary throughout routine
-    gp.fillpatch(sim.time().current_time());
 
     // Pseudo-time loop
     amrex::Real err = 100.0 * tol;
@@ -1009,18 +1015,14 @@ void SharpenNaluDataDiscrete(
                 (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), (*p_src)(lev),
                 vof(lev), rho(lev), velocity(lev), gp(lev), p(lev), dx, ptfac,
                 sh_gradp || sh_p_flag == 2);
+
+            // Update ghost cells
+            vof(lev).FillBoundary(sim.mesh().Geom()[lev].periodicity());
+            velocity(lev).FillBoundary(sim.mesh().Geom()[lev].periodicity());
+            gp(lev).FillBoundary(sim.mesh().Geom()[lev].periodicity());
         }
 
-        // sim.io_manager().write_plot_file();
-        // sim.time().increment_timestep();
-        // p.fillpatch(sim.time().current_time());
-
-        // Fillpatch for ghost cells
-        vof.fillpatch(sim.time().current_time());
-        velocity.fillpatch(sim.time().current_time());
-        gp.fillpatch(sim.time().current_time());
-
-        // Update density (fillpatch built in)
+        // Update density according to vof (fillpatch built in)
         mphase.set_density_via_vof();
 
         // Ensure that err is same across processors
