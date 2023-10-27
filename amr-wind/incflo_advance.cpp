@@ -221,8 +221,9 @@ void incflo::ApplyPredictor(bool incremental_projection)
             m_sharpen_proctg_tol, m_sharpen_hs_pressure,
             m_sharpen_gradp || m_sharpen_gradp_exchp, m_sharpen_pressure);
         // Recalculate pressure gradient with incoming sharpened field
-        if ((!m_sharpen_gradp || sim().time().current_time() == 0.0) &&
-            !m_sharpen_hsp_guess && !m_sharpen_gradp_exchp) {
+        if ((((!m_sharpen_gradp || sim().time().current_time() == 0.0) &&
+              !m_sharpen_hsp_guess && !m_sharpen_gradp_exchp)) ||
+            m_sharpen_pressure) {
             UpdateGradP(
                 (density_old).vec_const_ptrs(), m_time.current_time(),
                 m_time.deltaT());
@@ -231,17 +232,10 @@ void incflo::ApplyPredictor(bool incremental_projection)
             (m_sharpen_gradp && sim().time().current_time() == 0.0)) {
             amr_wind::overset::ReplaceMaskedGradP(sim());
         }
-        if (m_sharpen_gradp || m_sharpen_gradp_exchp) {
+        if (m_sharpen_gradp || m_sharpen_gradp_exchp || m_sharpen_pressure) {
             amr_wind::overset::CopyGradP(
                 *gp_copy, gp, sim().repo().num_active_levels());
         }
-        if (m_sharpen_pressure) {
-            UpdateGradP(
-                (density_old).vec_const_ptrs(), m_time.current_time(),
-                m_time.deltaT());
-        }
-
-        return;
     }
 
     // *************************************************************************************
@@ -451,7 +445,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
         if (m_sharpen_hsp_replace) {
             amr_wind::overset::ReapplyModifiedGradP(sim());
         }
-        if (m_sharpen_gradp || m_sharpen_gradp_exchp) {
+        if (m_sharpen_gradp || m_sharpen_gradp_exchp || m_sharpen_pressure) {
             amr_wind::overset::ReapplyOversetGradP(*gp_copy, sim());
         }
     }

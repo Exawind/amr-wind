@@ -259,6 +259,7 @@ void populate_sharpen_discrete_fluxes(
     amrex::MultiFab& mf_velocity,
     amrex::MultiFab& mf_gp,
     amrex::MultiFab& mf_density,
+    const amrex::Real Gamma,
     const amrex::Real margin,
     const amrex::Real rho1,
     const amrex::Real rho2)
@@ -289,6 +290,7 @@ void populate_sharpen_discrete_fluxes(
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 // vof flux
                 amrex::Real flux =
+                    Gamma *
                     alpha_discrete_flux(i, j, k, 0, margin, vof, tg_vof, norm);
                 fx(i, j, k, 0) = flux;
                 // density flux
@@ -308,6 +310,7 @@ void populate_sharpen_discrete_fluxes(
             },
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real flux =
+                    Gamma *
                     alpha_discrete_flux(i, j, k, 1, margin, vof, tg_vof, norm);
                 fy(i, j, k, 0) = flux;
                 flux *= (rho1 - rho2);
@@ -325,6 +328,7 @@ void populate_sharpen_discrete_fluxes(
             },
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real flux =
+                    Gamma *
                     alpha_discrete_flux(i, j, k, 2, margin, vof, tg_vof, norm);
                 fz(i, j, k, 0) = flux;
                 flux *= (rho1 - rho2);
@@ -546,46 +550,47 @@ void apply_fluxes(
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 const amrex::Real olddens = dens(i, j, k);
-                vof(i, j, k) += ptfac * ((fx(i + 1, j, k, 0) - fx(i, j, k, 0)) +
-                                         (fy(i, j + 1, k, 0) - fy(i, j, k, 0)) +
-                                         (fz(i, j, k + 1, 0) - fz(i, j, k, 0)));
+                vof(i, j, k) +=
+                    ptfac * ((fx(i + 1, j, k, 0) - fx(i, j, k, 0)) / dx[0] +
+                             (fy(i, j + 1, k, 0) - fy(i, j, k, 0)) / dx[1] +
+                             (fz(i, j, k + 1, 0) - fz(i, j, k, 0)) / dx[2]);
                 dens(i, j, k) +=
-                    ptfac * ((fx(i + 1, j, k, 1) - fx(i, j, k, 1)) +
-                             (fy(i, j + 1, k, 1) - fy(i, j, k, 1)) +
-                             (fz(i, j, k + 1, 1) - fz(i, j, k, 1)));
+                    ptfac * ((fx(i + 1, j, k, 1) - fx(i, j, k, 1)) / dx[0] +
+                             (fy(i, j + 1, k, 1) - fy(i, j, k, 1)) / dx[1] +
+                             (fz(i, j, k + 1, 1) - fz(i, j, k, 1)) / dx[2]);
                 vel(i, j, k, 0) =
                     1.0 / dens(i, j, k) *
                     (olddens * vel(i, j, k, 0) +
-                     ptfac * ((fx(i + 1, j, k, 2) - fx(i, j, k, 2)) +
-                              (fy(i, j + 1, k, 2) - fy(i, j, k, 2)) +
-                              (fz(i, j, k + 1, 2) - fz(i, j, k, 2))));
+                     ptfac * ((fx(i + 1, j, k, 2) - fx(i, j, k, 2)) / dx[0] +
+                              (fy(i, j + 1, k, 2) - fy(i, j, k, 2)) / dx[1] +
+                              (fz(i, j, k + 1, 2) - fz(i, j, k, 2)) / dx[2]));
                 vel(i, j, k, 1) =
                     1.0 / dens(i, j, k) *
                     (olddens * vel(i, j, k, 1) +
-                     ptfac * ((fx(i + 1, j, k, 3) - fx(i, j, k, 3)) +
-                              (fy(i, j + 1, k, 3) - fy(i, j, k, 3)) +
-                              (fz(i, j, k + 1, 3) - fz(i, j, k, 3))));
+                     ptfac * ((fx(i + 1, j, k, 3) - fx(i, j, k, 3)) / dx[0] +
+                              (fy(i, j + 1, k, 3) - fy(i, j, k, 3)) / dx[1] +
+                              (fz(i, j, k + 1, 3) - fz(i, j, k, 3)) / dx[2]));
                 vel(i, j, k, 2) =
                     1.0 / dens(i, j, k) *
                     (olddens * vel(i, j, k, 2) +
-                     ptfac * ((fx(i + 1, j, k, 4) - fx(i, j, k, 4)) +
-                              (fy(i, j + 1, k, 4) - fy(i, j, k, 4)) +
-                              (fz(i, j, k + 1, 4) - fz(i, j, k, 4))));
+                     ptfac * ((fx(i + 1, j, k, 4) - fx(i, j, k, 4)) / dx[0] +
+                              (fy(i, j + 1, k, 4) - fy(i, j, k, 4)) / dx[1] +
+                              (fz(i, j, k + 1, 4) - fz(i, j, k, 4)) / dx[2]));
 
                 if (mod_gp) {
 
                     gp(i, j, k, 0) +=
-                        ptfac * ((fx(i + 1, j, k, 5) - fx(i, j, k, 5)) +
-                                 (fy(i, j + 1, k, 5) - fy(i, j, k, 5)) +
-                                 (fz(i, j, k + 1, 5) - fz(i, j, k, 5)));
+                        ptfac * ((fx(i + 1, j, k, 5) - fx(i, j, k, 5)) / dx[0] +
+                                 (fy(i, j + 1, k, 5) - fy(i, j, k, 5)) / dx[1] +
+                                 (fz(i, j, k + 1, 5) - fz(i, j, k, 5)) / dx[2]);
                     gp(i, j, k, 1) +=
-                        ptfac * ((fx(i + 1, j, k, 6) - fx(i, j, k, 6)) +
-                                 (fy(i, j + 1, k, 6) - fy(i, j, k, 6)) +
-                                 (fz(i, j, k + 1, 6) - fz(i, j, k, 6)));
+                        ptfac * ((fx(i + 1, j, k, 6) - fx(i, j, k, 6)) / dx[0] +
+                                 (fy(i, j + 1, k, 6) - fy(i, j, k, 6)) / dx[1] +
+                                 (fz(i, j, k + 1, 6) - fz(i, j, k, 6)) / dx[2]);
                     gp(i, j, k, 2) +=
-                        ptfac * ((fx(i + 1, j, k, 7) - fx(i, j, k, 7)) +
-                                 (fy(i, j + 1, k, 7) - fy(i, j, k, 7)) +
-                                 (fz(i, j, k + 1, 7) - fz(i, j, k, 7)));
+                        ptfac * ((fx(i + 1, j, k, 7) - fx(i, j, k, 7)) / dx[0] +
+                                 (fy(i, j + 1, k, 7) - fy(i, j, k, 7)) / dx[1] +
+                                 (fz(i, j, k + 1, 7) - fz(i, j, k, 7)) / dx[2]);
                 }
 
                 /*if (gp(i, j, k, 2) > 100.0)
@@ -611,7 +616,7 @@ void apply_fluxes(
         amrex::ParallelFor(
             nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 // Move hydrostatic pressure around due to density flux
-                p(i, j, k) += ptfac * sp(i, j, k) * dx[2];
+                p(i, j, k) += ptfac * sp(i, j, k);
             });
     }
 }
@@ -657,11 +662,25 @@ amrex::Real measure_convergence(
     return err;
 }
 
+amrex::Real calculate_pseudo_velocity_scale(
+    amrex::iMultiFab& mf_iblank,
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx,
+    const amrex::Real pvmax)
+{
+    // Get minimum length scale from dx
+    const amrex::Real dx_min = std::min(std::min(dx[0], dx[1]), dx[2]);
+    // The dx of this level should be considered if iblank = -1 here
+    // Otherwise, set to max possible value for this mesh (level 0 values)
+    const amrex::Real pvscale = (mf_iblank.min(0) == -1) ? dx_min : pvmax;
+    return pvscale;
+}
+
 amrex::Real calculate_pseudo_dt_flux(
     amrex::MultiFab& mf_fx,
     amrex::MultiFab& mf_fy,
     amrex::MultiFab& mf_fz,
     amrex::MultiFab& mf_vof,
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx,
     amrex::Real tol)
 {
     // Get the maximum flux magnitude, but just for vof fluxes
@@ -675,10 +694,10 @@ amrex::Real calculate_pseudo_dt_flux(
                 amrex::Real pdt_lim = 1.0;
                 if (fx(i, j, k, 0) > tol && vof(i, j, k) > tol) {
                     // VOF is removed from cell i
-                    pdt_lim = vof(i, j, k) / fx(i, j, k, 0);
+                    pdt_lim = vof(i, j, k) * dx[0] / fx(i, j, k, 0);
                 } else if (fx(i, j, k, 0) < -tol && vof(i - 1, j, k) > tol) {
                     // VOF is removed from cell i-1
-                    pdt_lim = vof(i - 1, j, k) / -fx(i, j, k, 0);
+                    pdt_lim = vof(i - 1, j, k) * dx[0] / -fx(i, j, k, 0);
                 }
                 pdt_fab = amrex::min(pdt_fab, pdt_lim);
             });
@@ -694,10 +713,10 @@ amrex::Real calculate_pseudo_dt_flux(
                 amrex::Real pdt_lim = 1.0;
                 if (fy(i, j, k, 0) > tol && vof(i, j, k) > tol) {
                     // VOF is removed from cell j
-                    pdt_lim = vof(i, j, k) / fy(i, j, k, 0);
+                    pdt_lim = vof(i, j, k) * dx[1] / fy(i, j, k, 0);
                 } else if (fy(i, j, k, 0) < -tol && vof(i, j - 1, k) > tol) {
                     // VOF is removed from cell j-1
-                    pdt_lim = vof(i, j - 1, k) / -fy(i, j, k, 0);
+                    pdt_lim = vof(i, j - 1, k) * dx[1] / -fy(i, j, k, 0);
                 }
                 pdt_fab = amrex::min(pdt_fab, pdt_lim);
             });
@@ -713,10 +732,10 @@ amrex::Real calculate_pseudo_dt_flux(
                 amrex::Real pdt_lim = 1.0;
                 if (fz(i, j, k, 0) > tol && vof(i, j, k) > tol) {
                     // VOF is removed from cell k
-                    pdt_lim = vof(i, j, k) / fz(i, j, k, 0);
+                    pdt_lim = vof(i, j, k) * dx[2] / fz(i, j, k, 0);
                 } else if (fz(i, j, k, 0) < -tol && vof(i, j, k - 1) > tol) {
                     // VOF is removed from cell k-1
-                    pdt_lim = vof(i, j, k - 1) / -fz(i, j, k, 0);
+                    pdt_lim = vof(i, j, k - 1) * dx[2] / -fz(i, j, k, 0);
                 }
                 pdt_fab = amrex::min(pdt_fab, pdt_lim);
             });
@@ -887,23 +906,30 @@ void SharpenNaluDataDiscrete(
     auto& gp_noghost = repo.get_field("gp");
     auto& p = repo.get_field("p");
 
-    // Create scratch fields for fluxes - 5 components are vof, density, and
-    // 3 of velocity (flux_z has 6th component for flag in p_src calc)
+    // Create scratch fields for fluxes - components are vof, density, and
+    // 3 of velocity, 3 of pressure gradient, 1 addl component for p_src flag
     auto flux_x = repo.create_scratch_field(9, 1, amr_wind::FieldLoc::XFACE);
     auto flux_y = repo.create_scratch_field(9, 1, amr_wind::FieldLoc::YFACE);
     auto flux_z = repo.create_scratch_field(9, 1, amr_wind::FieldLoc::ZFACE);
     // Create scratch field for pressure source term
     auto p_src = repo.create_scratch_field(1, 0, amr_wind::FieldLoc::NODE);
-    // Create scratch field for approximate signed distance function and grad
-    // (components 0-2 are gradient, 3 is asdf)
+    // Create scratch fields for normal vector and target vof field
     auto normal_vec = repo.create_scratch_field(3, vof.num_grow()[0] - 1);
-
     auto target_vof = repo.create_scratch_field(1, vof.num_grow()[0]);
-
+    // Create scratch field for pressure gradient that has ghost cells
     auto gp_scr = repo.create_scratch_field(3, 1);
     auto& gp = *gp_scr;
 
-    // Create levelset field
+    // Give initial max possible value of pseudo-velocity scale
+    auto dx_lev0 = (geom[0]).CellSizeArray();
+    const amrex::Real max_pvscale =
+        std::min(std::min(dx_lev0[0], dx_lev0[1]), dx_lev0[2]);
+    amrex::Real pvscale = max_pvscale;
+
+    // Populate gp scratch field
+    amr_wind::field_ops::copy(gp, gp_noghost, 0, 0, 3, 0);
+
+    // Prep things that do not change with iterations
     for (int lev = 0; lev < nlevels; ++lev) {
         // Thickness used here is user parameter, whatever works best
         auto dx = (geom[lev]).CellSizeArray();
@@ -912,12 +938,15 @@ void SharpenNaluDataDiscrete(
         // Populate approximate signed distance function
         populate_psi(levelset(lev), vof(lev), i_th);
 
-        // Populate gp_ghost
-        amrex::Copy(gp(lev), gp_noghost(lev), 0, 0, 3, 0);
-
-        // Populate gp_ghost
+        // Populate ghost cells of gp scratch field
         gp(lev).FillBoundary(sim.mesh().Geom()[lev].periodicity());
+
+        // Get pseudo-velocity scale, proportional to smallest dx in iblank
+        const amrex::Real pvscale_lev =
+            calculate_pseudo_velocity_scale(iblank_cell(lev), dx, max_pvscale);
+        pvscale = std::min(pvscale, pvscale_lev);
     }
+    amrex::ParallelDescriptor::ReduceRealMin(pvscale);
 
     // Convert levelset to vof to get target_vof
     mphase.levelset2vof(iblank_cell, *target_vof);
@@ -968,7 +997,7 @@ void SharpenNaluDataDiscrete(
             populate_sharpen_discrete_fluxes(
                 (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev),
                 (*target_vof)(lev), (*normal_vec)(lev), velocity(lev), gp(lev),
-                rho(lev), margin, rhol, rhog);
+                rho(lev), pvscale, margin, rhol, rhog);
 
             // Process fluxes and get pressure source term
             process_fluxes_calc_src(
@@ -978,8 +1007,10 @@ void SharpenNaluDataDiscrete(
             // Measure convergence to determine if loop can stop
             if (cconv) {
                 // Update error at specified interval of steps
-                const amrex::Real err_lev = measure_convergence(
-                    (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev));
+                const amrex::Real err_lev =
+                    measure_convergence(
+                        (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev)) /
+                    pvscale;
                 err = amrex::max(err, err_lev);
             }
         }
@@ -996,9 +1027,11 @@ void SharpenNaluDataDiscrete(
         // Get pseudo dt (dtau)
         for (int lev = 0; lev < nlevels; ++lev) {
             // Compare vof fluxes to vof in source cells
+            auto dx = (geom[lev]).CellSizeArray();
             // Convergence tolerance determines what size of fluxes matter
             const amrex::Real ptfac_lev = calculate_pseudo_dt_flux(
-                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev), tol);
+                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev), dx,
+                tol);
             ptfac = amrex::min(ptfac, ptfac_lev);
         }
         amrex::ParallelDescriptor::ReduceRealMin(ptfac);
@@ -1008,7 +1041,6 @@ void SharpenNaluDataDiscrete(
 
         // Apply fluxes
         for (int lev = 0; lev < nlevels; ++lev) {
-            // Height of cell is needed for pressure source
             auto dx = (geom[lev]).CellSizeArray();
 
             apply_fluxes(
