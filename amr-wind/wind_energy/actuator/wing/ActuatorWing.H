@@ -40,6 +40,9 @@ struct WingBaseData
     //! Relative velocity at the actuator node
     VecList vel_rel;
 
+    //! Translational velocity
+    vs::Vector vel_tr{0.0, 0.0, 0.0};
+
     //! Filtered Lifting Line Correction data
     std::unique_ptr<FLLCData> fllc;
 
@@ -66,6 +69,11 @@ struct WingBaseData
 
     //! Total integrated drag over the wing
     amrex::Real drag{0.0};
+
+    //! Option for velocity positions
+    int topt_velpos{0};
+    //! Option for force positions
+    int topt_pos{0};
 };
 
 struct WingType : public ActuatorType

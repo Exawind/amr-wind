@@ -78,6 +78,11 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
             amrex::max(p1.z(), p2.z()) + search_radius
         );
         // clang-format on
+
+        // Inputs for velocity. Default is 0 (fixed)
+        pp.query("velocity", wdata.vel_tr);
+        pp.query("velpos_option", wdata.topt_velpos);
+        pp.query("forcepos_option", wdata.topt_pos);
     }
 };
 

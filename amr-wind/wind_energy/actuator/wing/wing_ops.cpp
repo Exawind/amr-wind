@@ -14,6 +14,7 @@ void read_inputs(WingBaseData& wdata, ActInfo& info, const utils::ActParser& pp)
     pp.get("end", wdata.end);
     pp.get("epsilon", wdata.eps_inp);
     pp.get("pitch", wdata.pitch);
+    pp.get("velocity", wdata.vel_tr);
 
     amrex::Real max_eps =
         *std::max_element(wdata.eps_inp.begin(), wdata.eps_inp.end());
@@ -166,6 +167,43 @@ void write_netcdf(
 #else
     amrex::ignore_unused(ncfile, meta, info, grid, time);
 #endif
+}
+
+void move_wing(
+    VecList& points,
+    vs::Vector vtr,
+    amrex::Real tn,
+    amrex::Real tnp1,
+    int t_opt)
+{
+    // This routine assumes constant dt!!!!
+    const int npts = points.size();
+    for (int ip = 0; ip < npts; ++ip) {
+        // Different behavior on the first timestep
+        if (tn < 1e-10) {
+            switch (t_opt) {
+            case 0:
+                // at n
+                // do nothing
+                break;
+            case 1:
+                // at n+1/2
+                points[ip].x() += vtr.x() * 0.5 * (tnp1 - tn);
+                points[ip].y() += vtr.y() * 0.5 * (tnp1 - tn);
+                points[ip].z() += vtr.z() * 0.5 * (tnp1 - tn);
+                break;
+            case 2:
+                points[ip].x() += vtr.x() * (tnp1 - tn);
+                points[ip].y() += vtr.y() * (tnp1 - tn);
+                points[ip].z() += vtr.z() * (tnp1 - tn);
+            }
+        } else {
+            // After first timestep, points advance by full dt
+            points[ip].x() += vtr.x() * (tnp1 - tn);
+            points[ip].y() += vtr.y() * (tnp1 - tn);
+            points[ip].z() += vtr.z() * (tnp1 - tn);
+        }
+    }
 }
 
 } // namespace amr_wind::actuator::wing

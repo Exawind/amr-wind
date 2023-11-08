@@ -33,6 +33,13 @@ void write_netcdf(
     const ActGrid& /*grid*/,
     const amrex::Real /*time*/);
 
+void move_wing(
+    VecList& points,
+    vs::Vector vtr,
+    amrex::Real tn,
+    amrex::Real tnp1,
+    int t_opt);
+
 template <typename T>
 ComponentView make_component_view(typename T::DataType& data)
 {
@@ -77,7 +84,16 @@ struct UpdatePosOp<
         std::is_base_of<WingType, ActTrait>::value &&
         UseDefaultOp<ActTrait, ActSrcLine>::update_pos>::type>
 {
-    void operator()(typename ActTrait::DataType& /*unused*/) {}
+    void operator()(typename ActTrait::DataType& data)
+    {
+        // Move wing for velocity points
+        auto& grid = data.grid();
+        auto& wdata = data.meta();
+        const auto& time = data.sim().time();
+        actuator::wing::move_wing(
+            grid.vel_pos, wdata.vel_tr, time.current_time(), time.new_time(),
+            wdata.topt_velpos);
+    }
 };
 
 template <typename ActTrait>
@@ -116,6 +132,11 @@ struct ComputeForceOp<
         const auto& aflookup = airfoil_lookup<ActTrait>(data);
         const auto& time = data.sim().time();
 
+        // Move wing for force points
+        actuator::wing::move_wing(
+            grid.pos, wdata.vel_tr, time.current_time(), time.new_time(),
+            wdata.topt_pos);
+
         amrex::Real total_lift = 0.0;
         amrex::Real total_drag = 0.0;
         for (int ip = 0; ip < npts; ++ip) {
@@ -132,9 +153,9 @@ struct ComputeForceOp<
             blade_x = (blade_y ^ blade_z).unit();
 
             vs::Vector windvector;
-            windvector[0] = grid.vel[ip] & blade_x;
+            windvector[0] = (grid.vel[ip] - wdata.vel_tr) & blade_x;
             windvector[1] = 0;
-            windvector[2] = grid.vel[ip] & blade_z;
+            windvector[2] = (grid.vel[ip] - wdata.vel_tr) & blade_z;
 
             const auto vmag = vs::mag(windvector);
             const auto aoa = std::atan2(windvector[2], windvector[0]) +
