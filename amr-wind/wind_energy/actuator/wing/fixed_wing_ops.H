@@ -55,6 +55,10 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
                 "Actuator fixed wing requires specification of one or both "
                 "of 'epsilon' or 'epsilon_chord'");
         }
+        // Inputs for velocity. Default is 0 0 0 (fixed)
+        pp.query("velocity", wdata.vel_tr);
+        pp.query("velpos_option", wdata.topt_velpos);
+        pp.query("forcepos_option", wdata.topt_pos);
 
         AMREX_ALWAYS_ASSERT(wdata.span_locs.size() == wdata.chord_inp.size());
 
@@ -66,23 +70,34 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
             wdata.epsilon_chord.begin(), wdata.epsilon_chord.end());
         amrex::Real search_radius =
             amrex::max(max_eps, max_epsc) * max_chord * 3.0;
+        // Extend bounding box in case of velocity
+        constexpr amrex::Real tiny = 1e-8;
+        // If velocity is present, assume wing can travel entire domain
+        const bool up_ = wdata.vel_tr.x() > tiny;
+        const amrex::Real up_ext = data.sim().mesh().Geom(0).ProbHiArray()[0];
+        const bool um_ = wdata.vel_tr.x() < -tiny;
+        const amrex::Real um_ext = data.sim().mesh().Geom(0).ProbLoArray()[0];
+        const bool vp_ = wdata.vel_tr.y() > tiny;
+        const amrex::Real vp_ext = data.sim().mesh().Geom(0).ProbHiArray()[1];
+        const bool vm_ = wdata.vel_tr.y() < -tiny;
+        const amrex::Real vm_ext = data.sim().mesh().Geom(0).ProbLoArray()[1];
+        const bool wp_ = wdata.vel_tr.z() > tiny;
+        const amrex::Real wp_ext = data.sim().mesh().Geom(0).ProbHiArray()[2];
+        const bool wm_ = wdata.vel_tr.z() < -tiny;
+        const amrex::Real wm_ext = data.sim().mesh().Geom(0).ProbLoArray()[2];
+
         const auto& p1 = wdata.start;
         const auto& p2 = wdata.end;
         // clang-format off
         info.bound_box = amrex::RealBox(
-            amrex::min(p1.x(), p2.x()) - search_radius,
-            amrex::min(p1.y(), p2.y()) - search_radius,
-            amrex::min(p1.z(), p2.z()) - search_radius,
-            amrex::max(p1.x(), p2.x()) + search_radius,
-            amrex::max(p1.y(), p2.y()) + search_radius,
-            amrex::max(p1.z(), p2.z()) + search_radius
+            um_? um_ext: amrex::min(p1.x(), p2.x()) - search_radius,
+            vm_? vm_ext: amrex::min(p1.y(), p2.y()) - search_radius,
+            wm_? wm_ext: amrex::min(p1.z(), p2.z()) - search_radius,
+            up_? up_ext: amrex::max(p1.x(), p2.x()) + search_radius,
+            vp_? vp_ext: amrex::max(p1.y(), p2.y()) + search_radius,
+            wp_? wp_ext: amrex::max(p1.z(), p2.z()) + search_radius
         );
         // clang-format on
-
-        // Inputs for velocity. Default is 0 (fixed)
-        pp.query("velocity", wdata.vel_tr);
-        pp.query("velpos_option", wdata.topt_velpos);
-        pp.query("forcepos_option", wdata.topt_pos);
     }
 };
 
