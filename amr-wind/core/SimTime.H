@@ -200,6 +200,13 @@ private:
     //! Time interval for plot file output
     amrex::Real m_plt_t_interval{-1.0};
 
+    //! Time step delay for plot file output
+    //! -- this means that output only happens after the delay
+    int m_plt_delay{0};
+
+    //! Time delay for plot file output
+    amrex::Real m_plt_t_delay{0.0};
+
     //! Bool for if plt time interval should be forced
     bool m_force_plt_dt{false};
 
@@ -214,6 +221,12 @@ private:
 
     //! Time interval for writing checkpoint/restart files
     amrex::Real m_chkpt_t_interval{-1.0};
+
+    //! Time step delay for checkpoint/restart output
+    int m_chkpt_delay{0};
+
+    //! Time delay for checkpoint/restart output
+    amrex::Real m_chkpt_t_delay{0.0};
 
     //! Bool for if checkpoint time interval should be forced
     bool m_force_chkpt_dt{false};

@@ -25,9 +25,13 @@ void SimTime::parse_parameters()
     pp.query("regrid_interval", m_regrid_interval);
     pp.query("plot_interval", m_plt_interval);
     pp.query("plot_time_interval", m_plt_t_interval);
+    pp.query("plot_delay", m_plt_delay);
+    pp.query("plot_time_delay", m_plt_t_delay);
     pp.query("enforce_plot_time_dt", m_force_plt_dt);
     pp.query("checkpoint_interval", m_chkpt_interval);
     pp.query("checkpoint_time_interval", m_chkpt_t_interval);
+    pp.query("checkpoint_delay", m_chkpt_delay);
+    pp.query("checkpoint_time_delay", m_chkpt_t_delay);
     pp.query("enforce_checkpoint_time_dt", m_force_chkpt_dt);
     pp.query("regrid_start", m_regrid_start_index);
     pp.query("plot_start", m_plt_start_index);
@@ -284,9 +288,10 @@ bool SimTime::write_plot_file() const
         (m_force_plt_dt ? std::min(tol, m_force_plt_tol * m_plt_t_interval)
                         : tol);
     return (
-        ((m_plt_interval > 0) &&
+        ((m_plt_interval > 0) && (m_time_index - m_plt_delay >= 0) &&
          ((m_time_index - m_plt_start_index) % m_plt_interval == 0)) ||
-        (m_plt_t_interval > 0.0 &&
+        ((m_plt_t_interval > 0.0) &&
+         (m_new_time + tol - m_plt_t_delay >= 0.0) &&
          ((m_new_time + tol) / m_plt_t_interval -
               std::floor((m_new_time + tol) / m_plt_t_interval) <
           m_dt[0] / m_plt_t_interval)));
@@ -304,9 +309,10 @@ bool SimTime::write_checkpoint() const
         (m_force_plt_dt ? std::min(tol, m_force_plt_tol * m_plt_t_interval)
                         : tol);
     return (
-        ((m_chkpt_interval > 0) &&
+        ((m_chkpt_interval > 0) && (m_time_index - m_chkpt_delay >= 0) &&
          ((m_time_index - m_chkpt_start_index) % m_chkpt_interval == 0)) ||
-        (m_chkpt_t_interval > 0.0 &&
+        ((m_chkpt_t_interval > 0.0) &&
+         (m_new_time + tol - m_chkpt_t_delay >= 0.0) &&
          ((m_new_time + tol) / m_chkpt_t_interval -
               std::floor((m_new_time + tol) / m_chkpt_t_interval) <
           m_dt[0] / m_chkpt_t_interval)));
