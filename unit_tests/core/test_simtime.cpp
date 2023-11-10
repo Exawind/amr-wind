@@ -388,4 +388,49 @@ TEST_F(SimTimeTest, enforce_timeinterval_bigdttol)
     EXPECT_EQ(plot_step_sum, 2 + 3);
 }
 
+TEST_F(SimTimeTest, enforce_timeinterval_delay)
+{
+    build_simtime_params();
+    {
+        amrex::ParmParse pp("time");
+        pp.add("regrid_interval", -1);
+        pp.add("checkpoint_interval", -1);
+        pp.add("plot_interval", -1);
+
+        pp.add("plot_time_interval", 0.5);
+        pp.add("plot_time_delay", 0.9);
+        pp.add("enforce_plot_time_dt", true);
+
+        // Default values for tolerances
+        pp.add("stop_time", 1.0);
+        pp.add("max_step", 10);
+    }
+    amr_wind::SimTime time;
+    time.parse_parameters();
+
+    int counter = 0;
+    int plot_counter = 0;
+    amrex::Real plot_time_sum = 0.0;
+    int plot_step_sum = 0;
+    amrex::Real time2 = 0.0;
+    while (time.new_timestep()) {
+        time.set_current_cfl(0.45 / 0.4, 0.0, 0.0);
+        ++counter;
+        if (time.write_plot_file()) {
+            ++plot_counter;
+            plot_time_sum += time.new_time();
+            plot_step_sum += counter;
+        }
+        if (counter == 2) {
+            time2 = time.new_time();
+        }
+    }
+    EXPECT_EQ(plot_counter, 1);
+    EXPECT_NEAR(plot_time_sum, 1.0, 1e-8);
+    // dt should not shorten for t = 0.5
+    EXPECT_GT(time2, 0.5);
+    // leading to fewer steps
+    EXPECT_EQ(plot_step_sum, 3);
+}
+
 } // namespace amr_wind_tests

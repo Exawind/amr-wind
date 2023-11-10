@@ -182,7 +182,9 @@ void SimTime::set_current_cfl(
         m_dt[0] = dt_new;
 
         // Shorten timestep to hit output frequency exactly
-        if (m_chkpt_t_interval > 0.0 && m_force_chkpt_dt) {
+        // Only should be active after delay interval is passed
+        if (m_chkpt_t_interval > 0.0 && m_force_chkpt_dt &&
+            m_cur_time + m_dt[0] - m_chkpt_t_delay >= 0) {
             // Shorten dt if going to overshoot next output time
             m_dt[0] = get_enforced_dt_for_output(
                 m_dt[0], m_cur_time, m_chkpt_interval, m_force_chkpt_tol);
@@ -194,7 +196,8 @@ void SimTime::set_current_cfl(
             // then the dt becomes this increment to get to the next output
             // time.
         }
-        if (m_plt_t_interval > 0.0 && m_force_plt_dt) {
+        if (m_plt_t_interval > 0.0 && m_force_plt_dt &&
+            m_cur_time + m_dt[0] - m_plt_t_delay >= 0) {
             // Shorten dt if going to overshoot next output time
             m_dt[0] = get_enforced_dt_for_output(
                 m_dt[0], m_cur_time, m_plt_t_interval, m_force_plt_tol);
