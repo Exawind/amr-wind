@@ -3,26 +3,59 @@
 Section: io
 ~~~~~~~~~~~~~~~~~
 
-This section deals with parameters that control input/output to the simulation.
+This section deals with parameters that affect input/output to the simulation, 
+solely the checkpoint and plot files. These inputs do not affect when these files 
+are output, but they address file naming and high-level parameters. The "time" section 
+controls when these files are output. 
+
+| Primary location in code: ``amr-wind/utilities/IOManager.cpp``.
 
 .. input_param:: io.check_file
 
    **type:** String, optional, default = "chk"
 
-   If :input_param:`time.checkpoint_interval` is greater than zero this is the name of the checkpoint 
+   If :input_param:`time.checkpoint_interval` or :input_param:`time.checkpoint_time_interval` is greater than zero this is the name of the checkpoint 
    file appended with the current timestep
    
 .. input_param:: io.plot_file
 
    **type:** String, optional, default = "plt"
 
-   If :input_param:`time.plot_interval` is greater than zero this is the name of the plot
-   file appended with the current timestep
+   If :input_param:`time.plot_interval` or :input_param:`time.plot_time_interval` is greater than zero this is the name of the plot
+   file appended with the current timestep.
    
 .. input_param:: io.restart_file
 
    **type:** String, optional, default = ""
 
-   If a string is present `amr-wind` will restart using the specified file in the string.
+   If a string is present `amr-wind` will restart using the specified file in the string. This is the only argument addressing "input" of data to the simulation instead of "output".
+
+.. input_param:: io.output_default_variables
+
+   **type:** Boolean, optional, default = true
+
+   Based on what fields are active in a simulation, `amr-wind` generates a list of variables to output to plotfiles (e.g., velocity, density, and p). If these defaults are not desired, this input argument can be set to false.
    
-   
+.. input_param:: io.allow_missing_restart_fields
+
+   **type:** Boolean, optional, default = true
+
+   When initializing a simulation, `amr-wind` determines which fields are necessary based on the physics and other details in the input file. If a simulation begins with a restart file, it is possible that the restart file has fewer fields than what the new simulation needs, depending on the input arguments. This argument allows the simulation to continue despite the mismatch. If set to "false", the simulation will abort when necessary fields are missing in the restart file.
+
+.. input_param:: io.outputs
+
+   **type:** List of strings, optional, default = ""
+
+   Add variable names to this input argument to add them to the plotfile output. These must be variables that exist in the simulation and consist of real numbers (not integers).
+
+.. input_param:: io.int_outputs
+
+   **type:** List of strings, optional, default = ""
+
+   Add variable names to this input argument to add them to the plotfile output. These must be variables that exist in the simulation and consist of integers (not real numbers).
+
+.. input_param:: io.skip_outputs
+
+   **type:** List of strings, optional, default = ""
+
+   Add variable names to this input argument to omit them from the plotfile output. These refer to variables that are be real numbers, and this is a way to individually omit default output variables.
