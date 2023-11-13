@@ -199,7 +199,7 @@ This section also addresses the time-dependent nature of checkpoint files, plot 
    **type:** Boolean, optional, default = false
 
    In the case of a variable dt simulation, the simulation time will not likely correspond
-   exacly to the plot time interval. However, by setting this parameter to true, the time step size (dt)
+   exactly to the plot time interval. However, by setting this parameter to true, the time step size (dt)
    will be shortened when necessary to enforce the simulation time to match the plot time interval. Enabling 
    this feature while also enabling :input_param:`time.enforce_checkpoint_time_dt` will result in a warning message.
 
