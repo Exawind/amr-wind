@@ -40,6 +40,16 @@ struct WingBaseData
     //! Relative velocity at the actuator node
     VecList vel_rel;
 
+    //! Translational velocity
+    vs::Vector vel_tr{0.0, 0.0, 0.0};
+
+    //! Wing motion type
+    int motion_type{0};
+
+    //! Parameters for sine motions
+    vs::Vector s_vector{0.0, 0.0, 0.0};
+    amrex::Real s_period{0.0};
+
     //! Filtered Lifting Line Correction data
     std::unique_ptr<FLLCData> fllc;
 

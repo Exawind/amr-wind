@@ -168,4 +168,61 @@ void write_netcdf(
 #endif
 }
 
+void refresh_wing_position(VecList& vpoints, VecList fpoints)
+{
+    const int npts = vpoints.size();
+    for (int ip = 0; ip < npts; ++ip) {
+        // Move velocity points to latest force points
+        vpoints[ip].x() = fpoints[ip].x();
+        vpoints[ip].y() = fpoints[ip].y();
+        vpoints[ip].z() = fpoints[ip].z();
+    }
+}
+
+void new_wing_position_velocity(
+    VecList& points,
+    vs::Vector& vtr,
+    amrex::Real tn,
+    amrex::Real tnp1,
+    int motion,
+    amrex::Real period,
+    vs::Vector svec)
+{
+    // Get displacement of points from n to n+1
+    // Also, if translation velocity changes, update it
+    vs::Vector disp{0.0, 0.0, 0.0};
+    switch (motion) {
+    case (0):
+        // "none"
+        break;
+    case (1):
+        // "linear"
+        // Use velocity to get displacement
+        disp.x() = vtr.x() * (tnp1 - tn);
+        disp.y() = vtr.y() * (tnp1 - tn);
+        disp.z() = vtr.z() * (tnp1 - tn);
+        // Velocity is unchanged
+    case (2):
+        // "sine"
+        // Calculate displacement using sine
+        disp.x() = svec.x() * (std::sin(2.0 * M_PI * tnp1 / period) -
+                               std::sin(2.0 * M_PI * tn / period));
+        disp.y() = svec.y() * (std::sin(2.0 * M_PI * tnp1 / period) -
+                               std::sin(2.0 * M_PI * tn / period));
+        disp.z() = svec.z() * (std::sin(2.0 * M_PI * tnp1 / period) -
+                               std::sin(2.0 * M_PI * tn / period));
+        // The translational velocity over the time step is disp/dt
+        vtr.x() = disp.x() / (tnp1 - tn);
+        vtr.y() = disp.y() / (tnp1 - tn);
+        vtr.z() = disp.z() / (tnp1 - tn);
+    }
+    const int npts = points.size();
+    for (int ip = 0; ip < npts; ++ip) {
+        // Move points according to displacement
+        points[ip].x() = points[ip].x() + disp.x();
+        points[ip].y() = points[ip].y() + disp.y();
+        points[ip].z() = points[ip].z() + disp.z();
+    }
+}
+
 } // namespace amr_wind::actuator::wing

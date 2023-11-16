@@ -45,6 +45,26 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
         pp.queryarr("chord", wdata.chord_inp);
         bool use_fllc = false;
         pp.query("fllc", use_fllc);
+
+        std::string motion_type{"none"};
+        pp.query("motion_type", motion_type);
+        {
+            if (amrex::toLower(motion_type) == "none") {
+                wdata.motion_type = 0;
+                // do nothing, this is default
+            } else if (amrex::toLower(motion_type) == "linear") {
+                wdata.motion_type = 1;
+                // get velocity
+                pp.get("velocity", wdata.vel_tr);
+            } else if (amrex::toLower(motion_type) == "sine") {
+                wdata.motion_type = 2;
+                // get parameters
+                pp.get("sine_period", wdata.s_period);
+                pp.get("sine_vector", wdata.s_vector);
+            } else {
+                amrex::Abort("Invalid wing motion type specified.");
+            }
+        }
         if (use_fllc) {
             wdata.fllc = std::make_unique<FLLCData>();
             FLLCParse(pp, *(wdata.fllc));
