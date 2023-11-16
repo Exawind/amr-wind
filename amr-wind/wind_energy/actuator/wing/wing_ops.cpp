@@ -202,6 +202,7 @@ void new_wing_position_velocity(
         disp.y() = vtr.y() * (tnp1 - tn);
         disp.z() = vtr.z() * (tnp1 - tn);
         // Velocity is unchanged
+        break;
     case (2):
         // "sine"
         // Calculate displacement using sine
@@ -215,6 +216,7 @@ void new_wing_position_velocity(
         vtr.x() = disp.x() / (tnp1 - tn);
         vtr.y() = disp.y() / (tnp1 - tn);
         vtr.z() = disp.z() / (tnp1 - tn);
+        break;
     }
     const int npts = points.size();
     for (int ip = 0; ip < npts; ++ip) {
