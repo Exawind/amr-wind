@@ -34,12 +34,6 @@ void Actuator::pre_init_actions()
         std::string type;
         pp.query("type", type);
         pp1.query("type", type);
-        if (type == "TurbineFastLine" || type == "TurbineFastDisk") {
-            // Only one kind of sampling can be chosen. If OpenFAST is involved
-            // in the Actuator type, the default behavior is to sample velocity
-            // at n-1/2 so that forcing is at n+1/2
-            m_sample_nmhalf = true;
-        }
         AMREX_ALWAYS_ASSERT(!type.empty());
 
         auto obj = ActuatorModel::create(type, m_sim, tname, i);
