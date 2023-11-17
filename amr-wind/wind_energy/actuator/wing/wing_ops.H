@@ -139,6 +139,7 @@ struct ComputeForceOp<
             grid.pos, wdata.vel_tr, time.current_time(), time.new_time(),
             wdata.motion_type, wdata.s_period, wdata.s_vector);
 
+        // Calculate the local force using sampled velocity (at n)
         amrex::Real total_lift = 0.0;
         amrex::Real total_drag = 0.0;
         for (int ip = 0; ip < npts; ++ip) {
