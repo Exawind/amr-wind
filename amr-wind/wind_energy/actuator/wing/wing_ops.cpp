@@ -213,9 +213,10 @@ void new_wing_position_velocity(
         disp.z() = svec.z() * (std::sin(2.0 * M_PI * tnp1 / period) -
                                std::sin(2.0 * M_PI * tn / period));
         // The translational velocity over the time step is disp/dt
-        vtr.x() = disp.x() / (tnp1 - tn);
-        vtr.y() = disp.y() / (tnp1 - tn);
-        vtr.z() = disp.z() / (tnp1 - tn);
+        vtr.x() = disp.x() / (tnp1 - tn + 1e-20);
+        vtr.y() = disp.y() / (tnp1 - tn + 1e-20);
+        vtr.z() = disp.z() / (tnp1 - tn + 1e-20);
+        // The tiny number in the denominator is important for initialization
         break;
     }
     const int npts = points.size();
