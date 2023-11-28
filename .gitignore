@@ -9,8 +9,8 @@ exec/*.pvtp
 test/*.ex
 test/tmp_build_dir/
 test/Backtrace.*
-test/*plt*/
-test/chk*/
+test/**/*plt*/
+test/**/chk*/
 test/AMR-WindGoldFiles
 .DS_store
 spack*
