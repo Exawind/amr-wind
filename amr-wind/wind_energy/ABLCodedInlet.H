@@ -15,7 +15,7 @@ namespace amr_wind {
 typedef void (*Vfun_handle)(
     double time, double x, double y, double z, double (&ptvel)[3]);
 typedef void (*Tfun_handle)(
-    double time, double x, double y, double z, double &pttemp);
+    double time, double x, double y, double z, double& pttemp);
 
 struct UserCoded
 {
