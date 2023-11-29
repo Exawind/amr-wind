@@ -128,16 +128,18 @@ void ABLCodedInlet::set_velocity(
             const int numcomp = mfab.nComp();
 
             amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                bx, [=,coded=m_user_coded] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-//                    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> vels = {
-//                        AMREX_D_DECL(
-//                            tvx * (pfac + tanhterm), tvy * (pfac + tanhterm),
-//                            tvz)};
-//                    for (int n = 0; n < numcomp; n++) {
-//                        arr(i, j, k, dcomp + n) = vels[orig_comp + n];
-//                    }
+                    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> vels = {
+                        AMREX_D_DECL(
+                            coded.velx(time,x,y,z), coded.vely(time,x,y,z),
+                            coded.velz(time,x,y,z))};
+                    for (int n = 0; n < numcomp; n++) {
+                        arr(i, j, k, dcomp + n) = vels[orig_comp + n];
+                    }
                 });
         }
     }
@@ -186,12 +188,13 @@ void ABLCodedInlet::set_temperature(
             const auto& arr = mfab[mfi].array();
 
             amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(
+                bx, [=,coded=m_user_coded] AMREX_GPU_DEVICE(
                         int i, int j, int k) noexcept {
+                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-//                    amrex::Real theta = tv[0];
-//                    arr(i, j, k) = theta;
+                    arr(i, j, k) = coded.temp(time,x,y,z);
                 });
         }
     }
