@@ -93,7 +93,6 @@ void ABLCodedInlet::set_velocity(
 
     const auto& geom = m_mesh.Geom(lev);
     const auto& problo = geom.ProbLoArray();
-    const auto& probhi = geom.ProbHiArray();
     const auto& dx = geom.CellSizeArray();
 
     const auto& bctype = fld.bc_type();
