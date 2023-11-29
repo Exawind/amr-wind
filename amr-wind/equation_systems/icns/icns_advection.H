@@ -113,8 +113,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         } else if (amrex::toLower(mflux_type) == "upwind") {
             mflux_scheme = godunov::scheme::UPWIND;
         } else {
-            amrex::Print() << "For mflux_type, default is upwind" << std::endl;
-            mflux_scheme = godunov::scheme::UPWIND;
+            amrex::Abort("Invalid argument entered for mflux_type.");
         }
 
         // Formulation of discrete ICNS equation
@@ -515,7 +514,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     godunov::scheme godunov_scheme = godunov::scheme::PPM;
     godunov::scheme mflux_scheme = godunov::scheme::UPWIND;
     std::string godunov_type;
-    std::string mflux_type;
+    std::string mflux_type{"upwind"};
     const bool fluxes_are_area_weighted{false};
     bool godunov_use_forces_in_trans{false};
     int m_cons{1};

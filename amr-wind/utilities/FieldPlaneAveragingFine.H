@@ -42,7 +42,7 @@ public:
 
     ~FPlaneAveragingFine() = default;
 
-    void operator()();
+    virtual void operator()();
 
     void convert_x_to_ind(amrex::Real x, int& ind, amrex::Real& c) const;
 
@@ -118,7 +118,7 @@ public:
 
     ~VelPlaneAveragingFine() = default;
 
-    void operator()();
+    void operator()() override;
 
 private:
     amrex::Vector<amrex::Real>

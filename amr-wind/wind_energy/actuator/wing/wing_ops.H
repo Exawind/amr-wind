@@ -119,14 +119,26 @@ struct ComputeForceOp<
         amrex::Real total_lift = 0.0;
         amrex::Real total_drag = 0.0;
         for (int ip = 0; ip < npts; ++ip) {
-            const auto& tmat = grid.orientation[ip];
-            // Effective velocity at the wing control point in local frame
-            auto wvel = tmat & grid.vel[ip];
-            // Set spanwise component to zero to get a pure 2D velocity
-            wvel.y() = 0.0;
 
-            const auto vmag = vs::mag(wvel);
-            const auto aoa = std::atan2(wvel.z(), wvel.x());
+            // Build the local reference frame
+            vs::Vector wspan = wdata.end - wdata.start;
+
+            // Use the global coord to orient the blade
+            // The default is for inflow in the x direction
+            auto blade_x = wdata.blade_x.unit();
+            auto blade_y = wspan.unit();
+            auto blade_z = (blade_x ^ blade_y).unit();
+            // Ensure orthogonality for new reference frame
+            blade_x = (blade_y ^ blade_z).unit();
+
+            vs::Vector windvector;
+            windvector[0] = grid.vel[ip] & blade_x;
+            windvector[1] = 0;
+            windvector[2] = grid.vel[ip] & blade_z;
+
+            const auto vmag = vs::mag(windvector);
+            const auto aoa = std::atan2(windvector[2], windvector[0]) +
+                             amr_wind::utils::radians(wdata.pitch);
 
             // Make up some Cl, Cd values
             amrex::Real cl, cd;
@@ -136,16 +148,19 @@ struct ComputeForceOp<
             const auto qval = 0.5 * vmag * vmag * chord[ip] * dx[ip];
             const auto lift = qval * cl;
             const auto drag = qval * cd;
+
             // Determine unit vector parallel and perpendicular to velocity
             // vector
-            const auto drag_dir = wvel.unit() & tmat;
-            const auto lift_dir = drag_dir ^ tmat.y();
+            // Directions
+            const auto drag_dir =
+                (blade_x * windvector.x() + blade_z * windvector.z()).unit();
+            const auto lift_dir = (drag_dir ^ blade_y).unit();
 
             // Compute force on fluid from this section of wing
             grid.force[ip] = -(lift_dir * lift + drag * drag_dir);
 
             // Assign values for output
-            wdata.vel_rel[ip] = wvel;
+            wdata.vel_rel[ip] = windvector;
             wdata.aoa[ip] = amr_wind::utils::degrees(aoa);
             wdata.cl[ip] = cl;
             wdata.cd[ip] = cd;

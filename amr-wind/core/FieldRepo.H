@@ -131,7 +131,7 @@ public:
     /** Create a new field instance
      *
      *  @param name Unique identifier for this field
-     *  @param ncomp Number of components in this field (defalt: 1)
+     *  @param ncomp Number of components in this field (default: 1)
      *  @param ngrow Number of ghost cells/nodes for this field (default: 1)
      *  @param nstates Number of time states for this field (default: 1)
      *  @param floc Field location (default: cell-centered)
@@ -267,7 +267,7 @@ public:
      *
      *  Integer fields are used for masks and iblanking with overset meshes
      *
-     *  \param name [in] Unique indentifier for the field
+     *  \param name [in] Unique identifier for the field
      */
     IntField& declare_int_field(
         const std::string& name,

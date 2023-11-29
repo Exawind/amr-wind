@@ -127,7 +127,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
 
     if (StokesOrder > 5 || StokesOrder < 2) {
         amrex::Abort(
-            "invalid stokes order speficied. It should be between 2,3,4 or 5 ");
+            "invalid stokes order specified. It should be between 2,3,4 or 5 ");
     }
 }
 

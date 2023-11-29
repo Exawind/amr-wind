@@ -6,7 +6,7 @@
 
 /** Multiphase physics
  *
- * This class implemnts the necessary code to simulate multiphase
+ * This class implements the necessary code to simulate multiphase
  * (air-water interaction) problems with AMR-Wind. It reads the
  * namespace `MultiPhase' from the input file to determine how the
  * initial conditions are generated.

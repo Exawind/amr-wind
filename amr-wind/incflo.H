@@ -145,6 +145,11 @@ public:
         amrex::Real scaling_factor,
         bool incremental);
 
+    void UpdateGradP(
+        amrex::Vector<amrex::MultiFab const*> density,
+        amrex::Real time,
+        amrex::Real scaling_factor);
+
     //! Initialize Physics instances as well as PDEs (include turbulence models)
     void init_physics_and_pde();
 

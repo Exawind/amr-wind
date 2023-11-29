@@ -9,7 +9,7 @@ namespace amr_wind::kinetic_energy {
 /** kinetic energy object
  *  \ingroup Kinetic Energy
  *
- *  A concrete impelementation of the post-processing interface that deals with
+ *  A concrete implementation of the post-processing interface that deals with
  *  integrating total kinetic energy
  *
  */

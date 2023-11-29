@@ -356,7 +356,7 @@ There is a simple unit test for both :math:`\nu_t` and :math:`D_e` in
 
 Wall models
 -----------
-The wall models descibed in this section are implemented in ``AMR-wind`` for
+The wall models described in this section are implemented in ``AMR-wind`` for
 running wall-bounded flows (non-ABL cases).
 
 Log-law wall model

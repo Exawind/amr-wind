@@ -78,7 +78,7 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
         : SrcTermOpBase<ICNS>(fields_in), grad_p(fields_in.repo.get_field("gp"))
     {}
 
-    void operator()(const FieldState fstate, const bool mesh_mapping)
+    void operator()(const FieldState fstate, const bool mesh_mapping) override
     {
         const auto rhostate = field_impl::phi_state(fstate);
         const auto& density = m_density.state(rhostate);

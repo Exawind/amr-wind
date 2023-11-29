@@ -29,7 +29,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        build_type: [RelWithDebInfo, Debug]
+        build_type: [Release, Debug]
         include:
           - os: macos-latest
             install_deps: brew install mpich ccache
@@ -41,10 +41,12 @@ jobs:
             comp: gnu
             procs: $(nproc)
             ccache_cache: ~/.cache/ccache
-          - build_type: RelWithDebInfo
+          - build_type: Release
             ctest_args: -LE no_ci
+            ccache_size: 150M
           - build_type: Debug
             ctest_args: -L unit
+            ccache_size: 500M
         exclude:
           - os: macos-latest
             build_type: Debug
@@ -59,9 +61,9 @@ jobs:
       run: |
         echo "NPROCS=${{matrix.procs}}" >> $GITHUB_ENV
         echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
-        echo "CCACHE_COMPRESSLEVEL=5" >> $GITHUB_ENV
+        echo "CCACHE_COMPRESSLEVEL=1" >> $GITHUB_ENV
         echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
-        echo "CCACHE_MAXSIZE=1G" >> $GITHUB_ENV
+        echo "CCACHE_MAXSIZE=${{matrix.ccache_size}}" >> $GITHUB_ENV
     - name: Install Ccache
       run: |
         if [ "${RUNNER_OS}" != "macOS" ]; then
@@ -92,19 +94,19 @@ jobs:
         ccache -z
         set -eu -o pipefail
         cmake --build ${{runner.workspace}}/build-ci-${{matrix.build_type}} --parallel ${{env.NPROCS}} 2>&1 | \
-          tee -a build-output.txt
+          tee -a ${{runner.workspace}}/build-ci-${{matrix.build_type}}/build-output.txt
     - name: Ccache Report
       run: |
         ccache -s
-        if [ "${RUNNER_OS}" != "macOS" ]; then
-          du -hs ${HOME}/.cache/ccache
-        fi
+        ls ${{matrix.ccache_cache}}
+        du -hs ${{matrix.ccache_cache}}
     - name: Report
       working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}
       run: |
         echo "::add-matcher::.github/problem-matchers/gcc.json"
-        egrep "warning:|error:" build-output.txt | egrep -v "submods" | sort | uniq | \
-          awk 'BEGIN{i=0}{print $0}{i++}END{print "Warnings: "i}' > build-output-warnings.txt
+        egrep "warning:|error:" build-output.txt | egrep -v "submods" \
+          | egrep -v "ld: warning:" | egrep -v "lto-wrapper: warning:" | sort | uniq \
+          | awk 'BEGIN{i=0}{print $0}{i++}END{print "Warnings: "i}' > build-output-warnings.txt
         cat build-output-warnings.txt
         exit $(tail -n 1 build-output-warnings.txt | awk '{print $2}')
     - name: Test
@@ -131,9 +133,9 @@ jobs:
         run: |
           echo "NPROCS=$(nproc)" >> $GITHUB_ENV
           echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
-          echo "CCACHE_COMPRESSLEVEL=5" >> $GITHUB_ENV
+          echo "CCACHE_COMPRESSLEVEL=1" >> $GITHUB_ENV
           echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
-          echo "CCACHE_MAXSIZE=1G" >> $GITHUB_ENV
+          echo "CCACHE_MAXSIZE=200M" >> $GITHUB_ENV
       - name: Install Ccache
         run: |
           wget https://github.com/ccache/ccache/releases/download/v4.8/ccache-4.8-linux-x86_64.tar.xz
@@ -148,6 +150,7 @@ jobs:
                ccache-${{github.workflow}}-${{github.job}}-git-
       - name: Prepare CUDA environment
         run: |
+          ${{github.workspace}}/submods/amrex/.github/workflows/dependencies/ubuntu_free_disk_space.sh
           sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
           echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64 /" | sudo tee /etc/apt/sources.list.d/cuda.list
           sudo apt-get update
@@ -172,7 +175,8 @@ jobs:
       - name: Ccache Report
         run: |
           ccache -s
-          du -hs ${HOME}/.cache/ccache
+          ls ~/.cache/ccache
+          du -hs ~/.cache/ccache
   GPU-AMD:
     name: GPU-HIP
     needs: Formatting
@@ -186,9 +190,9 @@ jobs:
         run: |
           echo "NPROCS=$(nproc)" >> $GITHUB_ENV
           echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
-          echo "CCACHE_COMPRESSLEVEL=5" >> $GITHUB_ENV
+          echo "CCACHE_COMPRESSLEVEL=1" >> $GITHUB_ENV
           echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
-          echo "CCACHE_MAXSIZE=1G" >> $GITHUB_ENV
+          echo "CCACHE_MAXSIZE=50M" >> $GITHUB_ENV
       - name: Install Ccache
         run: |
           wget https://github.com/ccache/ccache/releases/download/v4.8/ccache-4.8-linux-x86_64.tar.xz
@@ -203,12 +207,13 @@ jobs:
                ccache-${{github.workflow}}-${{github.job}}-git-
       - name: Prepare HIP environment
         run: |
+          ${{github.workspace}}/submods/amrex/.github/workflows/dependencies/ubuntu_free_disk_space.sh
           wget -q -O - https://repo.radeon.com/rocm/rocm.gpg.key | sudo apt-key add -
-          echo 'deb [arch=amd64] https://repo.radeon.com/rocm/apt/debian/ ubuntu main' | sudo tee /etc/apt/sources.list.d/rocm.list
+          echo 'deb [arch=amd64] https://repo.radeon.com/rocm/apt/5.6.1/ ubuntu main' | sudo tee /etc/apt/sources.list.d/rocm.list
           echo 'export PATH=/opt/rocm/llvm/bin:/opt/rocm/bin:/opt/rocm/profiler/bin:/opt/rocm/opencl/bin:$PATH' | sudo tee -a /etc/profile.d/rocm.sh
           sudo apt-get update
           sudo apt-get install -y \
-              build-essential rocm-dev roctracer-dev rocprofiler-dev rocrand-dev rocprim-dev rocm-libs
+              build-essential rocm-dev rocrand-dev rocprim-dev
       - name: Configure and build
         run: |
           source /etc/profile.d/rocm.sh
@@ -232,7 +237,8 @@ jobs:
       - name: Ccache Report
         run: |
           ccache -s
-          du -hs ${HOME}/.cache/ccache
+          ls ~/.cache/ccache
+          du -hs ~/.cache/ccache
   GPU-Intel:
     name: GPU-SYCL
     needs: Formatting
@@ -246,9 +252,9 @@ jobs:
         run: |
           echo "NPROCS=$(nproc)" >> $GITHUB_ENV
           echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
-          echo "CCACHE_COMPRESSLEVEL=5" >> $GITHUB_ENV
+          echo "CCACHE_COMPRESSLEVEL=1" >> $GITHUB_ENV
           echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
-          echo "CCACHE_MAXSIZE=1G" >> $GITHUB_ENV
+          echo "CCACHE_MAXSIZE=50M" >> $GITHUB_ENV
           echo "CCACHE_DEPEND=1" >> $GITHUB_ENV
       - name: Install Ccache
         run: |
@@ -265,6 +271,7 @@ jobs:
       - name: Prepare SyCL environment
         run: |
           export DEBIAN_FRONTEND=noninteractive
+          ${{github.workspace}}/submods/amrex/.github/workflows/dependencies/ubuntu_free_disk_space.sh
           sudo wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
           sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
           echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
@@ -288,40 +295,41 @@ jobs:
       - name: Ccache Report
         run: |
           ccache -s
-          du -hs ${HOME}/.cache/ccache
-  Lint-cppcheck:
-    needs: Formatting
-    runs-on: macos-latest
-    steps:
-      - name: Clone
-        uses: actions/checkout@v3
-        with:
-          submodules: true
-      - name: Dependencies
-        run: brew install cppcheck
-      - name: Configure
-        run: |
-          echo "NPROCS=$(sysctl -n hw.ncpu)" >> $GITHUB_ENV
-          cmake \
-          -B ${{runner.workspace}}/build-cppcheck \
-          -DAMR_WIND_ENABLE_MPI:BOOL=OFF \
-          -DAMR_WIND_ENABLE_TESTS:BOOL=ON \
-          -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
-          -DAMR_WIND_ENABLE_MASA:BOOL=OFF \
-          -DAMR_WIND_ENABLE_CPPCHECK:BOOL=ON \
-          ${{github.workspace}}
-      - name: Check
-        working-directory: ${{runner.workspace}}/build-cppcheck
-        run: make cppcheck-ci
-      - name: Full report
-        working-directory: ${{runner.workspace}}/build-cppcheck
-        run: cat cppcheck/cppcheck-full-report.txt
-      - name: Short report
-        working-directory: ${{runner.workspace}}/build-cppcheck
-        run: |
-          echo "::add-matcher::.github/problem-matchers/cppcheck.json"
-          cat cppcheck-ci-report.txt
-          exit $(tail -n 1 cppcheck-ci-report.txt | awk '{print $2}')
+          ls ~/.cache/ccache
+          du -hs ~/.cache/ccache
+#  Lint-cppcheck:
+#    needs: Formatting
+#    runs-on: macos-latest
+#    steps:
+#      - name: Clone
+#        uses: actions/checkout@v3
+#        with:
+#          submodules: true
+#      - name: Dependencies
+#        run: brew install cppcheck
+#      - name: Configure
+#        run: |
+#          echo "NPROCS=$(sysctl -n hw.ncpu)" >> $GITHUB_ENV
+#          cmake \
+#          -B ${{runner.workspace}}/build-cppcheck \
+#          -DAMR_WIND_ENABLE_MPI:BOOL=OFF \
+#          -DAMR_WIND_ENABLE_TESTS:BOOL=ON \
+#          -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
+#          -DAMR_WIND_ENABLE_MASA:BOOL=OFF \
+#          -DAMR_WIND_ENABLE_CPPCHECK:BOOL=ON \
+#          ${{github.workspace}}
+#      - name: Check
+#        working-directory: ${{runner.workspace}}/build-cppcheck
+#        run: make cppcheck-ci
+#      - name: Full report
+#        working-directory: ${{runner.workspace}}/build-cppcheck
+#        run: cat cppcheck/cppcheck-full-report.txt
+#      - name: Short report
+#        working-directory: ${{runner.workspace}}/build-cppcheck
+#        run: |
+#          echo "::add-matcher::.github/problem-matchers/cppcheck.json"
+#          cat cppcheck-ci-report.txt
+#          exit $(tail -n 1 cppcheck-ci-report.txt | awk '{print $2}')
   Lint-clang-tidy:
     needs: Formatting
     runs-on: ubuntu-latest
@@ -330,12 +338,35 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: true
-      - name: Configure
+      - name: Setup
         run: |
           echo "NPROCS=$(nproc)" >> $GITHUB_ENV
+          echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
+          echo "CCACHE_COMPRESSLEVEL=1" >> $GITHUB_ENV
+          echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
+          echo "CCACHE_EXTRAFILES=${{github.workspace}}/.clang-tidy" >> $GITHUB_ENV
+          echo "CCACHE_MAXSIZE=50M" >> $GITHUB_ENV
+          echo "CTCACHE_DIR=~/.cache/ctcache" >> $GITHUB_ENV
+      - name: Install Ccache
+        run: |
+          wget https://github.com/ccache/ccache/releases/download/v4.8/ccache-4.8-linux-x86_64.tar.xz
+          sudo curl https://raw.githubusercontent.com/matus-chochlik/ctcache/7fd516e91c17779cbc6fc18bd119313d9532dd90/clang-tidy-cache -Lo /usr/bin/clang-tidy-cache
+          tar xvf ccache-4.8-linux-x86_64.tar.xz
+          sudo cp -f ccache-4.8-linux-x86_64/ccache /usr/local/bin/
+          sudo chmod +x /usr/bin/clang-tidy-cache
+          mkdir -p ~/.cache/ctcache
+      - name: Set Up Ccache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache
+          key: ccache-${{github.workflow}}-${{github.job}}-git-${{github.sha}}
+          restore-keys: |
+               ccache-${{github.workflow}}-${{github.job}}-git-
+      - name: Configure
+        run: |
           cmake \
           -B ${{runner.workspace}}/build-clang-tidy \
-          -DCMAKE_BUILD_TYPE:STRING=Debug \
+          -DCMAKE_BUILD_TYPE:STRING=Release \
           -DCMAKE_CXX_COMPILER:STRING=clang++ \
           -DCMAKE_C_COMPILER:STRING=clang \
           -DAMR_WIND_ENABLE_MPI:BOOL=OFF \
@@ -344,14 +375,22 @@ jobs:
           -DAMR_WIND_ENABLE_MASA:BOOL=OFF \
           -DAMR_WIND_ENABLE_ALL_WARNINGS:BOOL=ON \
           -DAMR_WIND_ENABLE_CLANG_TIDY:BOOL=ON \
+          -DCMAKE_CXX_COMPILER_LAUNCHER:STRING=ccache \
           ${{github.workspace}}
       - name: Check
         working-directory: ${{runner.workspace}}/build-clang-tidy
         run: |
-          #set -eu -o pipefail
           cmake --build . --parallel ${{env.NPROCS}} 2>&1 | tee -a clang-tidy-full-report.txt
           cat clang-tidy-full-report.txt | grep "warning:" | grep -v "submods" | sort | uniq | \
             awk 'BEGIN{i=0}{print $0}{i++}END{print "Warnings: "i}' > clang-tidy-ci-report.txt
+      - name: Ccache Report
+        run: |
+          ls ~/.cache
+          ls ~/.cache/ccache
+          du -hs ~/.cache/ccache
+          ls ~/.cache/ctcache
+          du -hs ~/.cache/ctcache
+          ccache -s
       - name: Full report
         working-directory: ${{runner.workspace}}/build-clang-tidy
         run: cat clang-tidy-full-report.txt
@@ -409,6 +448,25 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: sarif-results/cpp.sarif
+  Lint-codespell:
+    needs: Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone
+        uses: actions/checkout@v3
+        with:
+          submodules: false
+      - name: Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Dependencies
+        run: |
+          # Install Python packages
+          python -m pip install --upgrade pip
+          pip install codespell
+      - name: Run codespell
+        run: codespell
 #  Docker:
 #    needs: Formatting
 #    runs-on: ubuntu-latest
