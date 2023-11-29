@@ -8,6 +8,7 @@
 #include <sstream>
 #include <iostream>
 #include <string>
+#include <dlfcn.h>
 
 namespace amr_wind {
 
@@ -24,12 +25,47 @@ ABLCodedInlet::ABLCodedInlet(CFDSim& sim)
     pp.query("lib", m_user_lib);
     if (m_user_lib != "") {
         if (FILE *lib = fopen(m_user_lib.c_str(), "r")) {
+            // lib found
             fclose(lib);
+
+            // symbols from shared library
+            userfun_lib = dlopen(m_user_lib.c_str(), RTLD_NOW);
+            eval_xvel = reinterpret_cast<ufun_handle>(
+                    dlsym(userfun_lib, "velocityx"));
+            eval_yvel = reinterpret_cast<vfun_handle>(
+                    dlsym(userfun_lib, "velocityy"));
+            eval_zvel = reinterpret_cast<wfun_handle>(
+                    dlsym(userfun_lib, "velocityz"));
+            eval_temp = reinterpret_cast<Tfun_handle>(
+                    dlsym(userfun_lib, "temperature"));
+
+            // attempt to use user-coded functions
+            amrex::Real utmp = eval_xvel(0,0,0,0);
+            amrex::Print() << "ABLCodedInlet: Loaded xvelocity_field function "
+                << "u(0,0,0,0)=" << utmp << std::endl;
+            amrex::Real vtmp = eval_xvel(0,0,0,0);
+            amrex::Print() << "ABLCodedInlet: Loaded yvelocity_field function "
+                << "v(0,0,0,0)=" << vtmp << std::endl;
+            amrex::Real wtmp = eval_xvel(0,0,0,0);
+            amrex::Print() << "ABLCodedInlet: Loaded zvelocity_field function "
+                << "w(0,0,0,0)=" << wtmp << std::endl;
+            amrex::Real Ttmp = eval_temp(0,0,0,0);
+            amrex::Print() << "ABLCodedInlet: Loaded temperature_field function "
+                << "T(0,0,0,0)=" << Ttmp << std::endl;
+
             m_active = true;
+
         } else {
             amrex::Print() << "ABLCodedInlet: Shared library not found "
                 << m_user_lib << std::endl;
         }
+    }
+}
+
+ABLCodedInlet::~ABLCodedInlet()
+{
+    if (m_active) {
+        dlclose(userfun_lib);
     }
 }
 

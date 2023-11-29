@@ -11,6 +11,12 @@
 
 namespace amr_wind {
 
+// signatures should match coded_inlet_fields.h
+typedef float (*ufun_handle)(float time, float x, float y, float z);
+typedef float (*vfun_handle)(float time, float x, float y, float z);
+typedef float (*wfun_handle)(float time, float x, float y, float z);
+typedef float (*Tfun_handle)(float time, float x, float y, float z);
+
 /** Interface for ABL user-coded time-varying inlet condition
  *  \ingroup we_abl
  *
@@ -22,6 +28,8 @@ class ABLCodedInlet
 
 public:
     explicit ABLCodedInlet(CFDSim& /*sim*/);
+
+    ~ABLCodedInlet();
 
     //! Execute initialization actions after mesh has been fully generated
     void post_init_actions();
@@ -54,6 +62,12 @@ private:
 
     bool m_active{false};
     std::string m_user_lib;
+
+    void *userfun_lib;
+    ufun_handle eval_xvel;
+    vfun_handle eval_yvel;
+    wfun_handle eval_zvel;
+    Tfun_handle eval_temp;
 };
 
 } // namespace amr_wind
