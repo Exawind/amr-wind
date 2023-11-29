@@ -24,32 +24,34 @@ ABLCodedInlet::ABLCodedInlet(CFDSim& sim)
 
     pp.query("lib", m_user_lib);
     if (m_user_lib != "") {
-        if (FILE *lib = fopen(m_user_lib.c_str(), "r")) {
+        if (FILE* lib = fopen(m_user_lib.c_str(), "r")) {
             // lib found
             fclose(lib);
 
             // symbols from shared library
             userfun_lib = dlopen(m_user_lib.c_str(), RTLD_NOW);
-            m_user_coded.get_vel = reinterpret_cast<Vfun_handle>(
-                    dlsym(userfun_lib, "velocity"));
+            m_user_coded.get_vel =
+                reinterpret_cast<Vfun_handle>(dlsym(userfun_lib, "velocity"));
             m_user_coded.get_temp = reinterpret_cast<Tfun_handle>(
-                    dlsym(userfun_lib, "temperature"));
+                dlsym(userfun_lib, "temperature"));
 
             // attempt to use user-coded functions
             double Vtmp[3];
-            m_user_coded.get_vel(0,0,0,0,Vtmp);
+            m_user_coded.get_vel(0, 0, 0, 0, Vtmp);
             amrex::Print() << "ABLCodedInlet: Loaded xvelocity_field function "
-                << "V(0,0,0,0)=" << Vtmp[0] << " " << Vtmp[1] << " " << Vtmp[2] << std::endl;
+                           << "V(0,0,0,0)=" << Vtmp[0] << " " << Vtmp[1] << " "
+                           << Vtmp[2] << std::endl;
             double Ttmp;
-            m_user_coded.get_temp(0,0,0,0,Ttmp);
-            amrex::Print() << "ABLCodedInlet: Loaded temperature_field function "
+            m_user_coded.get_temp(0, 0, 0, 0, Ttmp);
+            amrex::Print()
+                << "ABLCodedInlet: Loaded temperature_field function "
                 << "T(0,0,0,0)=" << Ttmp << std::endl;
 
             m_active = true;
 
         } else {
             amrex::Print() << "ABLCodedInlet: Shared library not found "
-                << m_user_lib << std::endl;
+                           << m_user_lib << std::endl;
         }
     }
 }
@@ -64,8 +66,10 @@ ABLCodedInlet::~ABLCodedInlet()
 void ABLCodedInlet::post_init_actions()
 {
     if (m_active) {
-        m_velocity.register_fill_patch_op<ABLFillCodedInlet>(m_mesh, m_time, *this);
-        m_temperature.register_fill_patch_op<ABLFillCodedInlet>(m_mesh, m_time, *this);
+        m_velocity.register_fill_patch_op<ABLFillCodedInlet>(
+            m_mesh, m_time, *this);
+        m_temperature.register_fill_patch_op<ABLFillCodedInlet>(
+            m_mesh, m_time, *this);
     }
 }
 
@@ -120,16 +124,17 @@ void ABLCodedInlet::set_velocity(
             const int numcomp = mfab.nComp();
 
             amrex::ParallelFor(
-                bx, [=,coded=m_user_coded] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                bx, [=, coded = m_user_coded] AMREX_GPU_DEVICE(
+                        int i, int j, int k) noexcept {
                     const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                     const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
                     double Vtmp[3];
-                    coded.get_vel(time,x,y,z,Vtmp);
+                    coded.get_vel(time, x, y, z, Vtmp);
 
                     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> vels = {
-                        AMREX_D_DECL(Vtmp[0],Vtmp[1],Vtmp[2])};
+                        AMREX_D_DECL(Vtmp[0], Vtmp[1], Vtmp[2])};
                     for (int n = 0; n < numcomp; n++) {
                         arr(i, j, k, dcomp + n) = vels[orig_comp + n];
                     }
@@ -181,13 +186,13 @@ void ABLCodedInlet::set_temperature(
             const auto& arr = mfab[mfi].array();
 
             amrex::ParallelFor(
-                bx, [=,coded=m_user_coded] AMREX_GPU_DEVICE(
+                bx, [=, coded = m_user_coded] AMREX_GPU_DEVICE(
                         int i, int j, int k) noexcept {
                     const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                     const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                    coded.get_temp(time,x,y,z,arr(i,j,k));
+                    coded.get_temp(time, x, y, z, arr(i, j, k));
                 });
         }
     }

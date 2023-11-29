@@ -12,10 +12,13 @@
 namespace amr_wind {
 
 // signatures should match coded_inlet_fields.h
-typedef void (*Vfun_handle)(double time, double x, double y, double z, double (&ptvel)[3]);
-typedef void (*Tfun_handle)(double time, double x, double y, double z, double &pttemp);
+typedef void (*Vfun_handle)(
+    double time, double x, double y, double z, double (&ptvel)[3]);
+typedef void (*Tfun_handle)(
+    double time, double x, double y, double z, double &pttemp);
 
-struct UserCoded {
+struct UserCoded
+{
     Vfun_handle get_vel;
     Tfun_handle get_temp;
 };
@@ -66,7 +69,7 @@ private:
     bool m_active{false};
     std::string m_user_lib;
 
-    void *userfun_lib;
+    void* userfun_lib;
     UserCoded m_user_coded;
 };
 
