@@ -30,26 +30,18 @@ ABLCodedInlet::ABLCodedInlet(CFDSim& sim)
 
             // symbols from shared library
             userfun_lib = dlopen(m_user_lib.c_str(), RTLD_NOW);
-            m_user_coded.velx = reinterpret_cast<ufun_handle>(
-                    dlsym(userfun_lib, "velocityx"));
-            m_user_coded.vely = reinterpret_cast<vfun_handle>(
-                    dlsym(userfun_lib, "velocityy"));
-            m_user_coded.velz = reinterpret_cast<wfun_handle>(
-                    dlsym(userfun_lib, "velocityz"));
-            m_user_coded.temp = reinterpret_cast<Tfun_handle>(
+            m_user_coded.get_vel = reinterpret_cast<Vfun_handle>(
+                    dlsym(userfun_lib, "velocity"));
+            m_user_coded.get_temp = reinterpret_cast<Tfun_handle>(
                     dlsym(userfun_lib, "temperature"));
 
             // attempt to use user-coded functions
-            amrex::Real utmp = m_user_coded.velx(0,0,0,0);
+            double Vtmp[3];
+            m_user_coded.get_vel(0,0,0,0,Vtmp);
             amrex::Print() << "ABLCodedInlet: Loaded xvelocity_field function "
-                << "u(0,0,0,0)=" << utmp << std::endl;
-            amrex::Real vtmp = m_user_coded.vely(0,0,0,0);
-            amrex::Print() << "ABLCodedInlet: Loaded yvelocity_field function "
-                << "v(0,0,0,0)=" << vtmp << std::endl;
-            amrex::Real wtmp = m_user_coded.velz(0,0,0,0);
-            amrex::Print() << "ABLCodedInlet: Loaded zvelocity_field function "
-                << "w(0,0,0,0)=" << wtmp << std::endl;
-            amrex::Real Ttmp = m_user_coded.temp(0,0,0,0);
+                << "V(0,0,0,0)=" << Vtmp[0] << " " << Vtmp[1] << " " << Vtmp[2] << std::endl;
+            double Ttmp;
+            m_user_coded.get_temp(0,0,0,0,Ttmp);
             amrex::Print() << "ABLCodedInlet: Loaded temperature_field function "
                 << "T(0,0,0,0)=" << Ttmp << std::endl;
 
@@ -133,10 +125,11 @@ void ABLCodedInlet::set_velocity(
                     const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
+                    double Vtmp[3];
+                    coded.get_vel(time,x,y,z,Vtmp);
+
                     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> vels = {
-                        AMREX_D_DECL(
-                            coded.velx(time,x,y,z), coded.vely(time,x,y,z),
-                            coded.velz(time,x,y,z))};
+                        AMREX_D_DECL(Vtmp[0],Vtmp[1],Vtmp[2])};
                     for (int n = 0; n < numcomp; n++) {
                         arr(i, j, k, dcomp + n) = vels[orig_comp + n];
                     }
@@ -194,7 +187,7 @@ void ABLCodedInlet::set_temperature(
                     const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                    arr(i, j, k) = coded.temp(time,x,y,z);
+                    coded.get_temp(time,x,y,z,arr(i,j,k));
                 });
         }
     }

@@ -1,6 +1,4 @@
 extern "C" {
-float velocityx(float time, float x, float y, float z);
-float velocityy(float time, float x, float y, float z);
-float velocityz(float time, float x, float y, float z);
-float temperature(float time, float x, float y, float z);
+void velocity(double time, double x, double y, double z, double (&ptvel)[3]);
+void temperature(double time, double x, double y, double z, double &pttemp);
 }
