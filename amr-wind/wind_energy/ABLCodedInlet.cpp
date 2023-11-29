@@ -23,7 +23,7 @@ ABLCodedInlet::ABLCodedInlet(CFDSim& sim)
     amrex::ParmParse pp("codedInlet");
 
     pp.query("lib", m_user_lib);
-    if (m_user_lib != "") {
+    if (!m_user_lib.empty()) {
         if (FILE* lib = fopen(m_user_lib.c_str(), "r")) {
             // lib found
             fclose(lib);
