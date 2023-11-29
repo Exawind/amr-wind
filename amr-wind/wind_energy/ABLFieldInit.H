@@ -22,6 +22,9 @@ class ABLFieldInit
 public:
     ABLFieldInit();
 
+    void initialize_from_inputfile(); // default
+    void initialize_from_netcdf();    // general wind/temperature profiles
+
     void operator()(
         const amrex::Box& vbx,
         const amrex::Geometry& geom,
@@ -61,11 +64,18 @@ private:
     //! terrain
     amrex::Vector<amrex::Real> m_theta_heights;
     amrex::Vector<amrex::Real> m_theta_values;
+
+    amrex::Vector<amrex::Real> m_u_values;
+    amrex::Vector<amrex::Real> m_v_values;
+
     ///@}
 
     // Device copies of the above arrays
     amrex::Gpu::DeviceVector<amrex::Real> m_thht_d;
     amrex::Gpu::DeviceVector<amrex::Real> m_thvv_d;
+
+    amrex::Gpu::DeviceVector<amrex::Real> m_prof_u_d;
+    amrex::Gpu::DeviceVector<amrex::Real> m_prof_v_d;
 
     //! Initial density field
     amrex::Real m_rho;
@@ -123,6 +133,9 @@ private:
 
     //! Initialize tke profile non-constant
     bool m_tke_init_profile{false};
+
+    //! Profiles of u, v, and theta are read in from a NetCDF File
+    bool m_init_uvtheta_profile{false};
 };
 
 } // namespace amr_wind
