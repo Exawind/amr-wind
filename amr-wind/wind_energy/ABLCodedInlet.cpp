@@ -31,8 +31,8 @@ ABLCodedInlet::ABLCodedInlet(CFDSim& sim)
             // symbols from shared library
             userfun_lib = dlopen(m_user_lib.c_str(), RTLD_NOW);
             m_user_coded.get_vel =
-                reinterpret_cast<Vfun_handle>(dlsym(userfun_lib, "velocity"));
-            m_user_coded.get_temp = reinterpret_cast<Tfun_handle>(
+                reinterpret_cast<Vfun_ptr>(dlsym(userfun_lib, "velocity"));
+            m_user_coded.get_temp = reinterpret_cast<Tfun_ptr>(
                 dlsym(userfun_lib, "temperature"));
 
             // attempt to use user-coded functions

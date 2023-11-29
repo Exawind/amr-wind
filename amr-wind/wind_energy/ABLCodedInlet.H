@@ -12,15 +12,15 @@
 namespace amr_wind {
 
 // signatures should match coded_inlet_fields.h
-typedef void (*Vfun_handle)(
+using Vfun_ptr = void (*)(
     double time, double x, double y, double z, double (&ptvel)[3]);
-typedef void (*Tfun_handle)(
+using Tfun_ptr = void (*)(
     double time, double x, double y, double z, double& pttemp);
 
 struct UserCoded
 {
-    Vfun_handle get_vel;
-    Tfun_handle get_temp;
+    Vfun_ptr get_vel;
+    Tfun_ptr get_temp;
 };
 
 /** Interface for ABL user-coded time-varying inlet condition
