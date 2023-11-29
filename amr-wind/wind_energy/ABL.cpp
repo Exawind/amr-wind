@@ -124,6 +124,7 @@ void ABL::post_init_actions()
 
     m_bndry_plane->post_init_actions();
     m_abl_mpl->post_init_actions();
+    m_abl_coded_inlet->post_init_actions();
 }
 
 /** Perform tasks at the beginning of a new timestep
@@ -179,6 +180,7 @@ void ABL::pre_advance_work()
 
     m_bndry_plane->pre_advance_work();
     m_abl_mpl->pre_advance_work();
+    m_abl_coded_inlet->pre_advance_work();
 }
 
 /** Perform tasks at the end of a new timestep
@@ -191,6 +193,7 @@ void ABL::post_advance_work()
     m_stats->post_advance_work();
     m_bndry_plane->post_advance_work();
     m_abl_mpl->post_advance_work();
+    m_abl_coded_inlet->post_advance_work();
 }
 
 } // namespace amr_wind

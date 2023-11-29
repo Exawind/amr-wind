@@ -1,6 +1,6 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/wind_energy/ABLCodedInlet.H"
-//#include "amr-wind/wind_energy/ABLFillCodedInlet.H"
+#include "amr-wind/wind_energy/ABLFillCodedInlet.H"
 #include "AMReX_Gpu.H"
 #include "AMReX_ParmParse.H"
 #include <AMReX_PlotFileUtil.H>
@@ -72,8 +72,8 @@ ABLCodedInlet::~ABLCodedInlet()
 void ABLCodedInlet::post_init_actions()
 {
     if (m_active) {
-        //m_velocity.register_fill_patch_op<ABLFillCodedInlet>(m_mesh, m_time, *this);
-        //m_temperature.register_fill_patch_op<ABLFillCodedInlet>(m_mesh, m_time, *this);
+        m_velocity.register_fill_patch_op<ABLFillCodedInlet>(m_mesh, m_time, *this);
+        m_temperature.register_fill_patch_op<ABLFillCodedInlet>(m_mesh, m_time, *this);
     }
 }
 
