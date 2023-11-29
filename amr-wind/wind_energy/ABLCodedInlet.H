@@ -17,6 +17,13 @@ typedef float (*vfun_handle)(float time, float x, float y, float z);
 typedef float (*wfun_handle)(float time, float x, float y, float z);
 typedef float (*Tfun_handle)(float time, float x, float y, float z);
 
+struct UserCoded {
+    ufun_handle velx;
+    vfun_handle vely;
+    wfun_handle velz;
+    Tfun_handle temp;
+};
+
 /** Interface for ABL user-coded time-varying inlet condition
  *  \ingroup we_abl
  *
@@ -64,10 +71,7 @@ private:
     std::string m_user_lib;
 
     void *userfun_lib;
-    ufun_handle eval_xvel;
-    vfun_handle eval_yvel;
-    wfun_handle eval_zvel;
-    Tfun_handle eval_temp;
+    UserCoded m_user_coded;
 };
 
 } // namespace amr_wind
