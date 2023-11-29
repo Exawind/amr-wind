@@ -29,7 +29,7 @@ MultiPhase::MultiPhase(CFDSim& sim)
         m_interface_capturing_method = amr_wind::InterfaceCapturingMethod::VOF;
         auto& vof_eqn = sim.pde_manager().register_transport_pde("VOF");
         m_vof = &(vof_eqn.fields().field);
-        // Create levelset as a auxilliary field only !
+        // Create levelset as a auxiliary field only !
         m_levelset = &(m_sim.repo().get_field("levelset"));
         const amrex::Real levelset_default = 0.0;
         BCScalar bc_ls(*m_levelset);
@@ -47,7 +47,7 @@ MultiPhase::MultiPhase(CFDSim& sim)
         m_interface_capturing_method = amr_wind::InterfaceCapturingMethod::VOF;
         auto& vof_eqn = sim.pde_manager().register_transport_pde("VOF");
         m_vof = &(vof_eqn.fields().field);
-        // Create levelset as a auxilliary field only !
+        // Create levelset as a auxiliary field only !
         m_levelset = &(m_sim.repo().get_field("levelset"));
         const amrex::Real levelset_default = 0.0;
         BCScalar bc_ls(*m_levelset);
@@ -366,11 +366,8 @@ void MultiPhase::calculate_advected_facedensity()
     amrex::Real c_r2 = m_rho2;
 
     // Get advected vof terms at each face
-    // cppcheck-suppress constVariableReference
     auto& advalpha_x = m_sim.repo().get_field("advalpha_x");
-    // cppcheck-suppress constVariableReference
     auto& advalpha_y = m_sim.repo().get_field("advalpha_y");
-    // cppcheck-suppress constVariableReference
     auto& advalpha_z = m_sim.repo().get_field("advalpha_z");
 
     for (int lev = 0; lev < nlevels; ++lev) {

@@ -298,7 +298,7 @@ void ActuatorContainer::populate_field_buffers()
 
 /** Helper method for ActuatorContainer::sample_fields
  *
- *  Performs a trilinear interpolation of the velocity/desnity field to particle
+ *  Performs a trilinear interpolation of the velocity/density field to particle
  *  locations. It also updates the particle locations such that the next
  *  Redistribute call restores the particles back to their original MPI rank
  *  where they were created.

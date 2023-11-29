@@ -44,7 +44,7 @@ public:
 
     ~FPlaneAveraging() = default;
 
-    void operator()();
+    virtual void operator()();
 
     /** evaluate line average at specific location for any average component */
     amrex::Real line_average_interpolated(amrex::Real x, int comp) const;
@@ -139,7 +139,7 @@ public:
 
     ~VelPlaneAveraging() = default;
 
-    void operator()();
+    void operator()() override;
 
 private:
     amrex::Vector<amrex::Real>

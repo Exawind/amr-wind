@@ -30,7 +30,7 @@ public:
     using SchemeType = Scheme;
 
     //! Unique identifier used to register and create this instance on-demand
-    //! through the factor iterface
+    //! through the factor interface
     static std::string identifier()
     {
         return PDE::pde_name() + "-" + Scheme::scheme_name();

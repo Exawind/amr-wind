@@ -9,7 +9,7 @@ namespace amr_wind::enstrophy {
 /** enstrophy object
  *  \ingroup Enstrophy
  *
- *  A concrete impelementation of the post-processing interface that deals with
+ *  A concrete implementation of the post-processing interface that deals with
  *  the total enstrophy
  *
  */
