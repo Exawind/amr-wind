@@ -12,10 +12,10 @@
 namespace amr_wind {
 
 // signatures should match coded_inlet_fields.h
-using Vfun_ptr = void (*)(
-    double time, double x, double y, double z, double (&ptvel)[3]);
-using Tfun_ptr = void (*)(
-    double time, double x, double y, double z, double& pttemp);
+using Vfun_ptr =
+    void (*)(double time, double x, double y, double z, double (&ptvel)[3]);
+using Tfun_ptr =
+    void (*)(double time, double x, double y, double z, double& pttemp);
 
 struct UserCoded
 {
