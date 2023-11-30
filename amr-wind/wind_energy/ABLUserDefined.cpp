@@ -70,10 +70,8 @@ ABLUserDefined::~ABLUserDefined()
 void ABLUserDefined::post_init_actions()
 {
     if (m_active) {
-        m_velocity.register_fill_patch_op<ABLFillUDF>(
-            m_mesh, m_time, *this);
-        m_temperature.register_fill_patch_op<ABLFillUDF>(
-            m_mesh, m_time, *this);
+        m_velocity.register_fill_patch_op<ABLFillUDF>(m_mesh, m_time, *this);
+        m_temperature.register_fill_patch_op<ABLFillUDF>(m_mesh, m_time, *this);
     }
 }
 
