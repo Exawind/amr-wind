@@ -35,17 +35,18 @@ ABLUserDefined::ABLUserDefined(CFDSim& sim)
             m_udf.get_temp =
                 reinterpret_cast<Tfun_ptr>(dlsym(userfun_lib, "temperature"));
 
-            // attempt to use user-coded functions
+            // RTLD_NOW does not seem to guarantee that symbols are loaded
+            // immediately -- do a test function call here to verify the user
+            // code is well behaved.
             double Vtmp[3];
             m_udf.get_vel(0, 0, 0, 0, Vtmp);
-            amrex::Print() << "ABLUserDefined: Loaded xvelocity_field function "
-                           << "V(0,0,0,0)=" << Vtmp[0] << " " << Vtmp[1] << " "
-                           << Vtmp[2] << std::endl;
+            amrex::Print() << "ABLUserDefined: Loaded xvelocity_field function"
+                           << std::endl;
             double Ttmp;
             m_udf.get_temp(0, 0, 0, 0, Ttmp);
             amrex::Print()
-                << "ABLUserDefined: Loaded temperature_field function "
-                << "T(0,0,0,0)=" << Ttmp << std::endl;
+                << "ABLUserDefined: Loaded temperature_field function"
+                << std::endl;
 
             m_active = true;
 
