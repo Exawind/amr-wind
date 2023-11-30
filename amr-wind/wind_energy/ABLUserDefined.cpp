@@ -22,6 +22,8 @@ ABLUserDefined::ABLUserDefined(CFDSim& sim)
 {
     amrex::ParmParse pp("UDF");
 
+#ifdef AMR_WIND_USE_EXTERNAL_UDF
+    // load external UDF library
     pp.query("inflow_lib", m_inflow_lib);
     if (!m_inflow_lib.empty()) {
         if (FILE* lib = fopen(m_inflow_lib.c_str(), "r")) {
@@ -55,6 +57,7 @@ ABLUserDefined::ABLUserDefined(CFDSim& sim)
                            << m_inflow_lib << std::endl;
         }
     }
+#endif
 }
 
 ABLUserDefined::~ABLUserDefined()
@@ -123,6 +126,7 @@ void ABLUserDefined::set_velocity(
             const auto& arr = mfab[mfi].array();
             const int numcomp = mfab.nComp();
 
+#ifdef AMR_WIND_USE_EXTERNAL_UDF
             amrex::ParallelFor(
                 bx, [=, udf = m_udf] AMREX_GPU_DEVICE(
                         int i, int j, int k) noexcept {
@@ -139,6 +143,7 @@ void ABLUserDefined::set_velocity(
                         arr(i, j, k, dcomp + n) = vels[orig_comp + n];
                     }
                 });
+#endif
         }
     }
 }
@@ -185,6 +190,7 @@ void ABLUserDefined::set_temperature(
 
             const auto& arr = mfab[mfi].array();
 
+#ifdef AMR_WIND_USE_EXTERNAL_UDF
             amrex::ParallelFor(
                 bx, [=, udf = m_udf] AMREX_GPU_DEVICE(
                         int i, int j, int k) noexcept {
@@ -194,6 +200,7 @@ void ABLUserDefined::set_temperature(
 
                     udf.get_temp(time, x, y, z, arr(i, j, k));
                 });
+#endif
         }
     }
 }

@@ -44,6 +44,7 @@ option(AMR_WIND_ENABLE_HYPRE "Enable HYPRE integration" OFF)
 option(AMR_WIND_ENABLE_OPENFAST "Enable OpenFAST integration" OFF)
 option(AMR_WIND_ENABLE_ASCENT "Enable Ascent visualization library" OFF)
 option(AMR_WIND_ENABLE_UMPIRE "Enable Umpire GPU memory pools" OFF)
+option(AMR_WIND_ENABLE_EXTERNAL_UDF "Enable external UDF library to be loaded at runtime" OFF)
 
 #Options for C++
 set(CMAKE_CXX_STANDARD 17)
@@ -59,6 +60,12 @@ if(AMR_WIND_ENABLE_CUDA)
   # Fix issues with GPU builds
   if(AMR_WIND_ENABLE_OPENFAST)
     enable_language(Fortran)
+  endif()
+endif()
+
+if (AMR_WIND_ENABLE_EXTERNAL_UDF)
+  if (AMR_WIND_ENABLE_ROCM OR AMR_WIND_ENABLE_SYCL)
+    message(FATAL_ERROR "Runtime UDF library loading is not currently supported for ROCm/HIP/SYCL.")
   endif()
 endif()
 
@@ -182,6 +189,10 @@ if(AMR_WIND_ENABLE_HELICS)
   target_include_directories(${amr_wind_lib_name} PUBLIC ${HELICS_INSTALL_DIR}/include)
   target_link_libraries(${amr_wind_lib_name} PUBLIC HELICS::helicsCpp98)
   target_compile_definitions(${amr_wind_lib_name} PRIVATE AMR_WIND_USE_HELICS)
+endif()
+
+if (AMR_WIND_ENABLE_EXTERNAL_UDF)
+  target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_EXTERNAL_UDF)
 endif()
 
 #Build amr-wind and link to amrex library
