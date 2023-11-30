@@ -1,9 +1,9 @@
-#ifndef ABLFILLCODEDINLET_H
-#define ABLFILLCODEDINLET_H
+#ifndef ABLFILLUDF_H
+#define ABLFILLUDF_H
 
 #include "amr-wind/core/FieldFillPatchOps.H"
 #include "amr-wind/core/FieldBCOps.H"
-#include "amr-wind/wind_energy/ABLCodedInlet.H"
+#include "amr-wind/wind_energy/ABLUserDefined.H"
 
 namespace amr_wind {
 
@@ -15,16 +15,16 @@ namespace amr_wind {
  *
  *  \sa ABLBoundaryPlane
  */
-class ABLFillCodedInlet : public FieldFillPatchOps<FieldBCDirichlet>
+class ABLFillUDF : public FieldFillPatchOps<FieldBCDirichlet>
 {
 public:
-    ABLFillCodedInlet(
+    ABLFillUDF(
         Field& field,
         const amrex::AmrCore& mesh,
         const SimTime& time,
-        const ABLCodedInlet& abl_coded_inlet);
+        const ABLUserDefined& abl_udf);
 
-    ~ABLFillCodedInlet() override;
+    ~ABLFillUDF() override;
 
     void fillpatch(
         int lev,
@@ -62,9 +62,9 @@ public:
         const FieldState fstate = FieldState::New) override;
 
 protected:
-    const ABLCodedInlet& m_abl_coded_inlet;
+    const ABLUserDefined& m_abl_udf;
 };
 
 } // namespace amr_wind
 
-#endif /* ABLFILLCODEDINLET_H */
+#endif /* ABLFILLUDF_H */

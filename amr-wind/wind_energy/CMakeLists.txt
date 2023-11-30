@@ -11,8 +11,8 @@ target_sources(${amr_wind_lib_name}
   MOData.cpp
   ABLFillMPL.cpp
   ABLModulatedPowerLaw.cpp
-  ABLFillCodedInlet.cpp
-  ABLCodedInlet.cpp
+  ABLFillUDF.cpp
+  ABLUserDefined.cpp
   )
 
 add_subdirectory(actuator)

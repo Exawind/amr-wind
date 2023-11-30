@@ -21,7 +21,7 @@ void incflo::set_inflow_velocity(
         const auto& bndry_plane = abl.bndry_plane();
         bndry_plane.populate_data(lev, time, lvelocity, vel);
         abl.abl_mpl().set_velocity(lev, time, lvelocity, vel);
-        abl.abl_coded_inlet().set_velocity(lev, time, lvelocity, vel);
+        abl.abl_udf().set_velocity(lev, time, lvelocity, vel);
     }
 }
 

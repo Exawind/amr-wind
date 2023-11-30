@@ -1,20 +1,20 @@
-#include "amr-wind/wind_energy/ABLFillCodedInlet.H"
+#include "amr-wind/wind_energy/ABLFillUDF.H"
 
 namespace amr_wind {
 
-ABLFillCodedInlet::ABLFillCodedInlet(
+ABLFillUDF::ABLFillUDF(
     Field& field,
     const amrex::AmrCore& mesh,
     const SimTime& time,
-    const ABLCodedInlet& abl_coded_inlet)
+    const ABLUserDefined& abl_udf)
     : FieldFillPatchOps<FieldBCDirichlet>(
           field, mesh, time, FieldInterpolator::CellConsLinear)
-    , m_abl_coded_inlet(abl_coded_inlet)
+    , m_abl_udf(abl_udf)
 {}
 
-ABLFillCodedInlet::~ABLFillCodedInlet() = default;
+ABLFillUDF::~ABLFillUDF() = default;
 
-void ABLFillCodedInlet::fillpatch(
+void ABLFillUDF::fillpatch(
     int lev,
     amrex::Real time,
     amrex::MultiFab& mfab,
@@ -25,13 +25,13 @@ void ABLFillCodedInlet::fillpatch(
         lev, time, mfab, nghost, fstate);
 
     if (m_field.base_name() == "velocity") {
-        m_abl_coded_inlet.set_velocity(lev, time, m_field, mfab);
+        m_abl_udf.set_velocity(lev, time, m_field, mfab);
     } else if (m_field.base_name() == "temperature") {
-        m_abl_coded_inlet.set_temperature(lev, time, m_field, mfab);
+        m_abl_udf.set_temperature(lev, time, m_field, mfab);
     }
 }
 
-void ABLFillCodedInlet::fillpatch_from_coarse(
+void ABLFillUDF::fillpatch_from_coarse(
     int lev,
     amrex::Real time,
     amrex::MultiFab& mfab,
@@ -42,13 +42,13 @@ void ABLFillCodedInlet::fillpatch_from_coarse(
         lev, time, mfab, nghost, fstate);
 
     if (m_field.base_name() == "velocity") {
-        m_abl_coded_inlet.set_velocity(lev, time, m_field, mfab);
+        m_abl_udf.set_velocity(lev, time, m_field, mfab);
     } else if (m_field.base_name() == "temperature") {
-        m_abl_coded_inlet.set_temperature(lev, time, m_field, mfab);
+        m_abl_udf.set_temperature(lev, time, m_field, mfab);
     }
 }
 
-void ABLFillCodedInlet::fillphysbc(
+void ABLFillUDF::fillphysbc(
     int lev,
     amrex::Real time,
     amrex::MultiFab& mfab,
@@ -59,13 +59,13 @@ void ABLFillCodedInlet::fillphysbc(
         lev, time, mfab, nghost, fstate);
 
     if (m_field.base_name() == "velocity") {
-        m_abl_coded_inlet.set_velocity(lev, time, m_field, mfab);
+        m_abl_udf.set_velocity(lev, time, m_field, mfab);
     } else if (m_field.base_name() == "temperature") {
-        m_abl_coded_inlet.set_temperature(lev, time, m_field, mfab);
+        m_abl_udf.set_temperature(lev, time, m_field, mfab);
     }
 }
 
-void ABLFillCodedInlet::fillpatch_sibling_fields(
+void ABLFillUDF::fillpatch_sibling_fields(
     int lev,
     amrex::Real time,
     amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& mfabs,
@@ -106,7 +106,7 @@ void ABLFillCodedInlet::fillpatch_sibling_fields(
             lev, time, mfabs, ffabs, cfabs, nghost, lbcrec, fstate, itype);
 
         for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
-            m_abl_coded_inlet.set_velocity(lev, time, m_field, *mfabs[i], 0, i);
+            m_abl_udf.set_velocity(lev, time, m_field, *mfabs[i], 0, i);
         }
     }
 }

@@ -12,7 +12,7 @@
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
 #include "amr-wind/wind_energy/ABLStatsBase.H"
 #include "amr-wind/wind_energy/ABLModulatedPowerLaw.H"
-#include "amr-wind/wind_energy/ABLCodedInlet.H"
+#include "amr-wind/wind_energy/ABLUserDefined.H"
 
 /**
  *  \defgroup wind Wind energy modeling
@@ -91,7 +91,7 @@ public:
 
     const ABLBoundaryPlane& bndry_plane() const { return *m_bndry_plane; }
     const ABLModulatedPowerLaw& abl_mpl() const { return *m_abl_mpl; }
-    const ABLCodedInlet& abl_coded_inlet() const { return *m_abl_coded_inlet; }
+    const ABLUserDefined& abl_udf() const { return *m_abl_udf; }
 
     //! Return the ABL statistics calculator
     const ABLStatsBase& abl_statistics() const { return *m_stats; }
@@ -117,8 +117,8 @@ private:
     //! ABL modulated power law instance
     std::unique_ptr<ABLModulatedPowerLaw> m_abl_mpl;
 
-    //! ABL coded inlet instance
-    std::unique_ptr<ABLCodedInlet> m_abl_coded_inlet;
+    //! ABL user-defined function instance
+    std::unique_ptr<ABLUserDefined> m_abl_udf;
 
     //! Reference to ABL forcing term if present
     mutable pde::icns::ABLForcing* m_abl_forcing{nullptr};

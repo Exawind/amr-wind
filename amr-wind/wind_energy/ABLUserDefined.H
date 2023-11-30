@@ -1,5 +1,5 @@
-#ifndef ABLCODEDINLET_H
-#define ABLCODEDINLET_H
+#ifndef ABLUSERDEFINED_H
+#define ABLUSERDEFINED_H
 
 #include "amr-wind/core/Field.H"
 #include "amr-wind/CFDSim.H"
@@ -11,13 +11,13 @@
 
 namespace amr_wind {
 
-// signatures should match coded_inlet_fields.h
+// signatures should match external_udf.h
 using Vfun_ptr =
     void (*)(double time, double x, double y, double z, double (&ptvel)[3]);
 using Tfun_ptr =
     void (*)(double time, double x, double y, double z, double& pttemp);
 
-struct UserCoded
+struct UserDefinedFunctions
 {
     Vfun_ptr get_vel;
     Tfun_ptr get_temp;
@@ -29,13 +29,13 @@ struct UserCoded
  *  This class sets velocity and temperature at mass inflow bc's
  *
  */
-class ABLCodedInlet
+class ABLUserDefined
 {
 
 public:
-    explicit ABLCodedInlet(CFDSim& /*sim*/);
+    explicit ABLUserDefined(CFDSim& /*sim*/);
 
-    ~ABLCodedInlet();
+    ~ABLUserDefined();
 
     //! Execute initialization actions after mesh has been fully generated
     void post_init_actions();
@@ -67,12 +67,12 @@ private:
     Field& m_temperature;
 
     bool m_active{false};
-    std::string m_user_lib;
+    std::string m_inflow_lib;
 
     void* userfun_lib;
-    UserCoded m_user_coded;
+    UserDefinedFunctions m_udf;
 };
 
 } // namespace amr_wind
 
-#endif /* ABLCODEDINLET_H */
+#endif /* ABLUSERDEFINED_H */

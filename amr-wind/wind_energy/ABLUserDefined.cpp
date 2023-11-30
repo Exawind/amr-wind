@@ -1,6 +1,6 @@
 #include "amr-wind/CFDSim.H"
-#include "amr-wind/wind_energy/ABLCodedInlet.H"
-#include "amr-wind/wind_energy/ABLFillCodedInlet.H"
+#include "amr-wind/wind_energy/ABLUserDefined.H"
+#include "amr-wind/wind_energy/ABLFillUDF.H"
 #include "AMReX_Gpu.H"
 #include "AMReX_ParmParse.H"
 #include <AMReX_PlotFileUtil.H>
@@ -12,7 +12,7 @@
 
 namespace amr_wind {
 
-ABLCodedInlet::ABLCodedInlet(CFDSim& sim)
+ABLUserDefined::ABLUserDefined(CFDSim& sim)
     : m_sim(sim)
     , m_time(m_sim.time())
     , m_repo(m_sim.repo())
@@ -20,64 +20,64 @@ ABLCodedInlet::ABLCodedInlet(CFDSim& sim)
     , m_velocity(m_sim.repo().get_field("velocity"))
     , m_temperature(m_sim.repo().get_field("temperature"))
 {
-    amrex::ParmParse pp("codedInlet");
+    amrex::ParmParse pp("UDF");
 
-    pp.query("lib", m_user_lib);
-    if (!m_user_lib.empty()) {
-        if (FILE* lib = fopen(m_user_lib.c_str(), "r")) {
+    pp.query("inflow_lib", m_inflow_lib);
+    if (!m_inflow_lib.empty()) {
+        if (FILE* lib = fopen(m_inflow_lib.c_str(), "r")) {
             // lib found
             fclose(lib);
 
             // symbols from shared library
-            userfun_lib = dlopen(m_user_lib.c_str(), RTLD_NOW);
-            m_user_coded.get_vel =
+            userfun_lib = dlopen(m_inflow_lib.c_str(), RTLD_NOW);
+            m_udf.get_vel =
                 reinterpret_cast<Vfun_ptr>(dlsym(userfun_lib, "velocity"));
-            m_user_coded.get_temp =
+            m_udf.get_temp =
                 reinterpret_cast<Tfun_ptr>(dlsym(userfun_lib, "temperature"));
 
             // attempt to use user-coded functions
             double Vtmp[3];
-            m_user_coded.get_vel(0, 0, 0, 0, Vtmp);
-            amrex::Print() << "ABLCodedInlet: Loaded xvelocity_field function "
+            m_udf.get_vel(0, 0, 0, 0, Vtmp);
+            amrex::Print() << "ABLUserDefined: Loaded xvelocity_field function "
                            << "V(0,0,0,0)=" << Vtmp[0] << " " << Vtmp[1] << " "
                            << Vtmp[2] << std::endl;
             double Ttmp;
-            m_user_coded.get_temp(0, 0, 0, 0, Ttmp);
+            m_udf.get_temp(0, 0, 0, 0, Ttmp);
             amrex::Print()
-                << "ABLCodedInlet: Loaded temperature_field function "
+                << "ABLUserDefined: Loaded temperature_field function "
                 << "T(0,0,0,0)=" << Ttmp << std::endl;
 
             m_active = true;
 
         } else {
-            amrex::Print() << "ABLCodedInlet: Shared library not found "
-                           << m_user_lib << std::endl;
+            amrex::Print() << "ABLUserDefined: Shared library not found "
+                           << m_inflow_lib << std::endl;
         }
     }
 }
 
-ABLCodedInlet::~ABLCodedInlet()
+ABLUserDefined::~ABLUserDefined()
 {
     if (m_active) {
         dlclose(userfun_lib);
     }
 }
 
-void ABLCodedInlet::post_init_actions()
+void ABLUserDefined::post_init_actions()
 {
     if (m_active) {
-        m_velocity.register_fill_patch_op<ABLFillCodedInlet>(
+        m_velocity.register_fill_patch_op<ABLFillUDF>(
             m_mesh, m_time, *this);
-        m_temperature.register_fill_patch_op<ABLFillCodedInlet>(
+        m_temperature.register_fill_patch_op<ABLFillUDF>(
             m_mesh, m_time, *this);
     }
 }
 
-void ABLCodedInlet::pre_advance_work() {}
+void ABLUserDefined::pre_advance_work() {}
 
-void ABLCodedInlet::post_advance_work() {}
+void ABLUserDefined::post_advance_work() {}
 
-void ABLCodedInlet::set_velocity(
+void ABLUserDefined::set_velocity(
     const int lev,
     const amrex::Real time,
     const Field& fld,
@@ -89,7 +89,7 @@ void ABLCodedInlet::set_velocity(
         return;
     }
 
-    BL_PROFILE("amr-wind::ABLCodedInlet::set_velocity");
+    BL_PROFILE("amr-wind::ABLUserDefined::set_velocity");
 
     const auto& geom = m_mesh.Geom(lev);
     const auto& problo = geom.ProbLoArray();
@@ -123,14 +123,14 @@ void ABLCodedInlet::set_velocity(
             const int numcomp = mfab.nComp();
 
             amrex::ParallelFor(
-                bx, [=, coded = m_user_coded] AMREX_GPU_DEVICE(
+                bx, [=, udf = m_udf] AMREX_GPU_DEVICE(
                         int i, int j, int k) noexcept {
                     const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                     const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
                     double Vtmp[3];
-                    coded.get_vel(time, x, y, z, Vtmp);
+                    udf.get_vel(time, x, y, z, Vtmp);
 
                     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> vels = {
                         AMREX_D_DECL(Vtmp[0], Vtmp[1], Vtmp[2])};
@@ -142,7 +142,7 @@ void ABLCodedInlet::set_velocity(
     }
 }
 
-void ABLCodedInlet::set_temperature(
+void ABLUserDefined::set_temperature(
     const int lev,
     const amrex::Real time,
     const Field& fld,
@@ -152,7 +152,7 @@ void ABLCodedInlet::set_temperature(
         return;
     }
 
-    BL_PROFILE("amr-wind::ABLCodedInlet::set_temperature");
+    BL_PROFILE("amr-wind::ABLUserDefined::set_temperature");
 
     const auto& geom = m_mesh.Geom(lev);
     const auto& problo = geom.ProbLoArray();
@@ -185,13 +185,13 @@ void ABLCodedInlet::set_temperature(
             const auto& arr = mfab[mfi].array();
 
             amrex::ParallelFor(
-                bx, [=, coded = m_user_coded] AMREX_GPU_DEVICE(
+                bx, [=, udf = m_udf] AMREX_GPU_DEVICE(
                         int i, int j, int k) noexcept {
                     const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                     const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                    coded.get_temp(time, x, y, z, arr(i, j, k));
+                    udf.get_temp(time, x, y, z, arr(i, j, k));
                 });
         }
     }

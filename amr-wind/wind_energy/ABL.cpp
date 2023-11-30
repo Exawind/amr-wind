@@ -48,8 +48,8 @@ ABL::ABL(CFDSim& sim)
     // Instantiate the ABL Modulated Power Law
     m_abl_mpl = std::make_unique<ABLModulatedPowerLaw>(sim);
 
-    // Instantiate the ABL Coded Inlet
-    m_abl_coded_inlet = std::make_unique<ABLCodedInlet>(sim);
+    // Instantiate the ABL User-Defined Function
+    m_abl_udf = std::make_unique<ABLUserDefined>(sim);
 
     // Instantiate the file-based field initializer
     if (m_file_input) {
@@ -124,7 +124,7 @@ void ABL::post_init_actions()
 
     m_bndry_plane->post_init_actions();
     m_abl_mpl->post_init_actions();
-    m_abl_coded_inlet->post_init_actions();
+    m_abl_udf->post_init_actions();
 }
 
 /** Perform tasks at the beginning of a new timestep
@@ -180,7 +180,7 @@ void ABL::pre_advance_work()
 
     m_bndry_plane->pre_advance_work();
     m_abl_mpl->pre_advance_work();
-    m_abl_coded_inlet->pre_advance_work();
+    m_abl_udf->pre_advance_work();
 }
 
 /** Perform tasks at the end of a new timestep
@@ -193,7 +193,7 @@ void ABL::post_advance_work()
     m_stats->post_advance_work();
     m_bndry_plane->post_advance_work();
     m_abl_mpl->post_advance_work();
-    m_abl_coded_inlet->post_advance_work();
+    m_abl_udf->post_advance_work();
 }
 
 } // namespace amr_wind
