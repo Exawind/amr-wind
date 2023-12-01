@@ -69,8 +69,10 @@ private:
     bool m_active{false};
     std::string m_inflow_lib;
 
+#ifdef AMR_WIND_USE_EXTERNAL_UDF
     void* userfun_lib;
     UserDefinedFunctions m_udf;
+#endif
 };
 
 } // namespace amr_wind

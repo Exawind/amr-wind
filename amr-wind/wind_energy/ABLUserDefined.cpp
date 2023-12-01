@@ -8,7 +8,9 @@
 #include <sstream>
 #include <iostream>
 #include <string>
+#ifdef AMR_WIND_USE_EXTERNAL_UDF
 #include <dlfcn.h>
+#endif
 
 namespace amr_wind {
 
@@ -22,10 +24,10 @@ ABLUserDefined::ABLUserDefined(CFDSim& sim)
 {
     amrex::ParmParse pp("UDF");
 
-#ifdef AMR_WIND_USE_EXTERNAL_UDF
     // load external UDF library
     pp.query("inflow_lib", m_inflow_lib);
     if (!m_inflow_lib.empty()) {
+#ifdef AMR_WIND_USE_EXTERNAL_UDF
         if (FILE* lib = fopen(m_inflow_lib.c_str(), "r")) {
             // lib found
             fclose(lib);
@@ -56,8 +58,10 @@ ABLUserDefined::ABLUserDefined(CFDSim& sim)
             amrex::Print() << "ABLUserDefined: Shared library not found "
                            << m_inflow_lib << std::endl;
         }
-    }
+#else
+        amrex::Abort("Need to compile with AMR_WIND_USE_EXTERNAL_UDF flag");
 #endif
+    }
 }
 
 ABLUserDefined::~ABLUserDefined()
@@ -79,6 +83,7 @@ void ABLUserDefined::pre_advance_work() {}
 
 void ABLUserDefined::post_advance_work() {}
 
+#ifdef AMR_WIND_USE_EXTERNAL_UDF
 void ABLUserDefined::set_velocity(
     const int lev,
     const amrex::Real time,
@@ -124,7 +129,6 @@ void ABLUserDefined::set_velocity(
             const auto& arr = mfab[mfi].array();
             const int numcomp = mfab.nComp();
 
-#ifdef AMR_WIND_USE_EXTERNAL_UDF
             amrex::ParallelFor(
                 bx, [=, udf = m_udf] AMREX_GPU_DEVICE(
                         int i, int j, int k) noexcept {
@@ -141,7 +145,6 @@ void ABLUserDefined::set_velocity(
                         arr(i, j, k, dcomp + n) = vels[orig_comp + n];
                     }
                 });
-#endif
         }
     }
 }
@@ -188,7 +191,6 @@ void ABLUserDefined::set_temperature(
 
             const auto& arr = mfab[mfi].array();
 
-#ifdef AMR_WIND_USE_EXTERNAL_UDF
             amrex::ParallelFor(
                 bx, [=, udf = m_udf] AMREX_GPU_DEVICE(
                         int i, int j, int k) noexcept {
@@ -198,9 +200,25 @@ void ABLUserDefined::set_temperature(
 
                     udf.get_temp(time, x, y, z, arr(i, j, k));
                 });
-#endif
         }
     }
 }
+#else
+void ABLUserDefined::set_velocity(
+    const int /*lev*/,
+    const amrex::Real /*time*/,
+    const Field& /*fld*/,
+    amrex::MultiFab& /*mfab*/,
+    const int /*dcomp*/,
+    const int /*orig_comp*/) const
+{}
+
+void ABLUserDefined::set_temperature(
+    const int /*lev*/,
+    const amrex::Real /*time*/,
+    const Field& /*fld*/,
+    amrex::MultiFab& /*mfab*/) const
+{}
+#endif
 
 } // namespace amr_wind
