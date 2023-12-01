@@ -64,14 +64,16 @@ ABLUserDefined::ABLUserDefined(CFDSim& sim)
     }
 }
 
+#ifdef AMR_WIND_USE_EXTERNAL_UDF
 ABLUserDefined::~ABLUserDefined()
 {
-#ifdef AMR_WIND_USE_EXTERNAL_UDF
     if (m_active) {
         dlclose(userfun_lib);
     }
-#endif
 }
+#else
+ABLUserDefined::~ABLUserDefined() = default;
+#endif
 
 void ABLUserDefined::post_init_actions()
 {
