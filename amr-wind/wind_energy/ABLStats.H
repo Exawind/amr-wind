@@ -16,7 +16,12 @@ namespace amr_wind {
 
 namespace pde::icns {
 class ABLForcing;
+class ABLMesoForcingMom;
 } // namespace pde::icns
+
+namespace pde::temperature {
+class ABLMesoForcingTemp;
+}
 
 /**
  *  \defgroup abl_istats ABL Statistics
@@ -81,6 +86,18 @@ public:
         m_abl_forcing = forcing;
     }
 
+    void register_meso_mom_forcing(
+        pde::icns::ABLMesoForcingMom* forcing) const override
+    {
+        m_abl_meso_mom_forcing = forcing;
+    }
+
+    void register_meso_temp_forcing(
+        pde::temperature::ABLMesoForcingTemp* forcing) const override
+    {
+        m_abl_meso_temp_forcing = forcing;
+    }
+
     //! Calculate sfs stress averages
     void
     calc_sfs_stress_avgs(ScratchField& sfs_stress, ScratchField& t_sfs_stress);
@@ -136,6 +153,10 @@ private:
 
     //! Reference to ABL forcing term if present
     mutable pde::icns::ABLForcing* m_abl_forcing{nullptr};
+
+    mutable pde::icns::ABLMesoForcingMom* m_abl_meso_mom_forcing{nullptr};
+    mutable pde::temperature::ABLMesoForcingTemp* m_abl_meso_temp_forcing{
+        nullptr};
 
     //! Format of the data output (ascii, netcdf, etc.)
 #ifdef AMR_WIND_USE_NETCDF

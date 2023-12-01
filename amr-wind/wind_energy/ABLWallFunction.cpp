@@ -132,6 +132,11 @@ void ABLWallFunction::update_umean(
     m_mo.update_fluxes();
 }
 
+void ABLWallFunction::update_tflux(const amrex::Real tflux)
+{
+    m_mo.surf_temp_flux = tflux;
+}
+
 ABLVelWallFunc::ABLVelWallFunc(
     Field& /*unused*/, const ABLWallFunction& wall_func)
     : m_wall_func(wall_func)
