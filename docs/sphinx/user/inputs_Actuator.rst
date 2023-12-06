@@ -29,21 +29,6 @@ turbines as actuator disks and actuator line models.
    supported are: ``TurbineFastLine``, ``TurbineFastDisk``, and 
    ``FixedWingLine``.
 
-.. input_param:: Actuator.sample_vel_nmhalf
-
-   **type:** Bool, optional
-   
-   This option sets the type of velocity sampling used to inform the actuator model. 
-   Setting this variable to true (or `1`) makes the Actuator velocity sampling use 
-   the face-centered velocity field at the time instant of `n-1/2`. For simulations 
-   coupled to OpenFAST, this enables the actuator forces to be implemented at the 
-   time instant of `n+1/2`, which fits best with the underlying numerical model of AMR-Wind
-   and has been shown to dramatically improve the accuracy of the Actuator Line Model. 
-   This option defaults to true (`1`) when the Actuator type is ``TurbineFastLine`` or 
-   ``TurbineFastDisk``, and it defaults to false (`0`) in all other cases. When the 
-   option is false, the actuator routine samples the cell-centered velocity
-   at the time instant `n`.
-
 FixedWingLine
 """""""""""""
 
@@ -178,6 +163,36 @@ Example for ``FixedWingLine``::
    **type:** int, optional
    
    This is how often to write actuator output. The default is ``10``.
+
+.. input_param:: Actuator.FixedWingLine.motion_type
+
+   **type:** String, optional
+
+   Slightly contrary to its name, the FixedWingLine actuator allows for motion, 
+   though other aspects of the actuator remain fixed (such as the orientation and 
+   the dimensions). The currently supported options are ``none`` (default), ``linear``,
+   and ``sine``. Linear motion moves the actuator at a constant velocity in a straight
+   line whereas sine motion oscillates the actuator according to a temporal sine signal.
+
+.. input_param:: Actuator.FixedWindLine.velocity
+
+   **type:** List of 3 real numbers, mandatory when motion_type = ``linear``
+
+   This vector provides the prescribed constant velocity of the actuator motion.
+
+.. input_param:: Actuator.FixedWindLine.sine_vector
+
+   **type:** List of 3 real numbers, mandatory when motion_type = ``sine``
+
+   This vector provides the actuator displacement from its initial, specified location as it
+   moves according to the oscillatory sine signal. The range of motion of the actuator
+   will be between (initial location + sine vector) and (initial location - sine vector).
+
+.. input_param:: Actuator.FixedWindLine.sine_period
+
+   **type:** Real number, mandatory when motion_type = ``linear``
+
+   This value specifies the temporal period of the sine signal.
 
 
 TurbineFastLine
