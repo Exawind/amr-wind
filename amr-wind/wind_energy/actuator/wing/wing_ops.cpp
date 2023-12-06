@@ -168,9 +168,8 @@ void write_netcdf(
 #endif
 }
 
-void refresh_wing_position(VecList& vpoints, VecList fpoints)
+void refresh_wing_position(VecList& vpoints, VecList fpoints, const int npts)
 {
-    const int npts = vpoints.size();
     for (int ip = 0; ip < npts; ++ip) {
         // Move velocity points to latest force points
         vpoints[ip].x() = fpoints[ip].x();
@@ -182,6 +181,7 @@ void refresh_wing_position(VecList& vpoints, VecList fpoints)
 void new_wing_position_velocity(
     VecList& points,
     vs::Vector& vtr,
+    const int npts,
     amrex::Real tn,
     amrex::Real tnp1,
     int motion,
@@ -219,7 +219,6 @@ void new_wing_position_velocity(
         // The tiny number in the denominator is important for initialization
         break;
     }
-    const int npts = points.size();
     for (int ip = 0; ip < npts; ++ip) {
         // Move points according to displacement
         points[ip].x() = points[ip].x() + disp.x();

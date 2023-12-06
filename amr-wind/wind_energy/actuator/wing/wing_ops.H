@@ -33,11 +33,12 @@ void write_netcdf(
     const ActGrid& /*grid*/,
     const amrex::Real /*time*/);
 
-void refresh_wing_position(VecList& vpoints, VecList fpoints);
+void refresh_wing_position(VecList& vpoints, VecList fpoints, const int npts);
 
 void new_wing_position_velocity(
     VecList& points,
     vs::Vector& vtr,
+    const int npts,
     amrex::Real tn,
     amrex::Real tnp1,
     int motion,
@@ -92,7 +93,8 @@ struct UpdatePosOp<
     {
         // Put wing at current (time n) position from force points
         auto& grid = data.grid();
-        actuator::wing::refresh_wing_position(grid.vel_pos, grid.pos);
+        const int npts = data.meta().num_pts;
+        actuator::wing::refresh_wing_position(grid.vel_pos, grid.pos, npts);
     }
 };
 
@@ -136,7 +138,7 @@ struct ComputeForceOp<
         // Also, get velocity of actuator from n to n+1
         // (will be unchanged for "none" and "linear" motion)
         actuator::wing::new_wing_position_velocity(
-            grid.pos, wdata.vel_tr, time.current_time(), time.new_time(),
+            grid.pos, wdata.vel_tr, npts, time.current_time(), time.new_time(),
             wdata.motion_type, wdata.s_period, wdata.s_vector);
 
         // Calculate the local force using sampled velocity (at n)
