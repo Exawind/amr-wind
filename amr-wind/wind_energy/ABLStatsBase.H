@@ -8,7 +8,11 @@
 namespace amr_wind {
 namespace pde::icns {
 class ABLForcing;
+class ABLMesoForcingMom;
 } // namespace pde::icns
+namespace pde::temperature {
+class ABLMesoForcingTemp;
+}
 
 enum class ABLStatsMode : int {
     computed = 0, ///! Computed using planar averages
@@ -47,6 +51,12 @@ public:
 
     virtual void
     register_forcing_term(pde::icns::ABLForcing* forcing) const = 0;
+
+    virtual void
+    register_meso_mom_forcing(pde::icns::ABLMesoForcingMom* forcing) const = 0;
+
+    virtual void register_meso_temp_forcing(
+        pde::temperature::ABLMesoForcingTemp* forcing) const = 0;
 };
 
 } // namespace amr_wind
