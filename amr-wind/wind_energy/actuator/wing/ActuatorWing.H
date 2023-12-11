@@ -44,7 +44,7 @@ struct WingBaseData
     vs::Vector vel_tr{0.0, 0.0, 0.0};
 
     //! Wing motion type
-    int motion_type{0};
+    std::string motion_type{"none"};
 
     //! Parameters for sine motions
     vs::Vector s_vector{0.0, 0.0, 0.0};

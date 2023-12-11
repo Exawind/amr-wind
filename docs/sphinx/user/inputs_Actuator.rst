@@ -168,7 +168,7 @@ Example for ``FixedWingLine``::
 
    **type:** String, optional
 
-   Slightly contrary to its name, the FixedWingLine actuator allows for motion, 
+   The FixedWingLine actuator allows for motion, 
    though other aspects of the actuator remain fixed (such as the orientation and 
    the dimensions). The currently supported options are ``none`` (default), ``linear``,
    and ``sine``. Linear motion moves the actuator at a constant velocity in a straight

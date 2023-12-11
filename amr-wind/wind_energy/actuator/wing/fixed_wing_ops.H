@@ -46,23 +46,21 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
         bool use_fllc = false;
         pp.query("fllc", use_fllc);
 
-        std::string motion_type{"none"};
-        pp.query("motion_type", motion_type);
+        pp.query("motion_type", wdata.motion_type);
         {
-            if (amrex::toLower(motion_type) == "none") {
-                wdata.motion_type = 0;
+            if (amrex::toLower(wdata.motion_type) == "none") {
                 // do nothing, this is default
-            } else if (amrex::toLower(motion_type) == "linear") {
-                wdata.motion_type = 1;
+            } else if (amrex::toLower(wdata.motion_type) == "linear") {
                 // get velocity
                 pp.get("velocity", wdata.vel_tr);
-            } else if (amrex::toLower(motion_type) == "sine") {
-                wdata.motion_type = 2;
+            } else if (amrex::toLower(wdata.motion_type) == "sine") {
                 // get parameters
                 pp.get("sine_period", wdata.s_period);
                 pp.get("sine_vector", wdata.s_vector);
             } else {
-                amrex::Abort("Invalid wing motion type specified.");
+                amrex::Abort(
+                    "Invalid FixedWingLine motion type. Valid options are "
+                    "none, linear, and sine.");
             }
         }
         if (use_fllc) {
@@ -89,8 +87,7 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
         const auto& p1 = wdata.start;
         const auto& p2 = wdata.end;
         // Set up bounding box depending on motion type
-        switch (wdata.motion_type) {
-        case 0: {
+        if (amrex::toLower(wdata.motion_type) == "none") {
             // clang-format off
             info.bound_box = amrex::RealBox(
                 amrex::min(p1.x(), p2.x()) - search_radius,
@@ -100,9 +97,7 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
                 amrex::max(p1.y(), p2.y()) + search_radius,
                 amrex::max(p1.z(), p2.z()) + search_radius);
             // clang-format on
-            break;
-        }
-        case 1: {
+        } else if (amrex::toLower(wdata.motion_type) == "linear") {
             // Extend bounding box in case of velocity
             constexpr amrex::Real tiny = 1e-8;
             // If velocity is present, assume wing can travel entire domain
@@ -131,9 +126,7 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
                 up_ ? up_ext : amrex::max(p1.x(), p2.x()) + search_radius,
                 vp_ ? vp_ext : amrex::max(p1.y(), p2.y()) + search_radius,
                 wp_ ? wp_ext : amrex::max(p1.z(), p2.z()) + search_radius);
-            break;
-        }
-        case 2: {
+        } else if (amrex::toLower(wdata.motion_type) == "sine") {
             // clang-format off
             info.bound_box = amrex::RealBox(
                 amrex::min(p1.x(), p2.x()) - wdata.s_vector.x() - search_radius,
@@ -143,8 +136,6 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
                 amrex::max(p1.y(), p2.y()) + wdata.s_vector.y() + search_radius,
                 amrex::max(p1.z(), p2.z()) + wdata.s_vector.z() + search_radius);
             // clang-format on
-            break;
-        }
         }
     }
 };

@@ -184,27 +184,21 @@ void new_wing_position_velocity(
     const int npts,
     amrex::Real tn,
     amrex::Real tnp1,
-    int motion,
+    const std::string motion,
     amrex::Real period,
     vs::Vector svec)
 {
     // Get displacement of points from n to n+1
     // Also, if translation velocity changes, update it
     vs::Vector disp{0.0, 0.0, 0.0};
-    switch (motion) {
-    case (0):
-        // "none"
-        break;
-    case (1):
-        // "linear"
+    // Do nothing for "none"
+    if (amrex::toLower(motion) == "linear") {
         // Use velocity to get displacement
         disp.x() = vtr.x() * (tnp1 - tn);
         disp.y() = vtr.y() * (tnp1 - tn);
         disp.z() = vtr.z() * (tnp1 - tn);
         // Velocity is unchanged
-        break;
-    case (2):
-        // "sine"
+    } else if (amrex::toLower(motion) == "sine") {
         // Calculate displacement using sine
         disp.x() = svec.x() * (std::sin(2.0 * M_PI * tnp1 / period) -
                                std::sin(2.0 * M_PI * tn / period));
@@ -217,7 +211,6 @@ void new_wing_position_velocity(
         vtr.y() = disp.y() / (tnp1 - tn + 1e-20);
         vtr.z() = disp.z() / (tnp1 - tn + 1e-20);
         // The tiny number in the denominator is important for initialization
-        break;
     }
     for (int ip = 0; ip < npts; ++ip) {
         // Move points according to displacement

@@ -41,7 +41,7 @@ void new_wing_position_velocity(
     const int npts,
     amrex::Real tn,
     amrex::Real tnp1,
-    int motion,
+    const std::string motion,
     amrex::Real period,
     vs::Vector svec);
 
