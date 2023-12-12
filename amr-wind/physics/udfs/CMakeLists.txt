@@ -5,4 +5,6 @@ target_sources(${amr_wind_lib_name}
   LinearProfile.cpp
   PowerLawProfile.cpp
   BurggrafLid.cpp
+  Rankine.cpp
+  CustomVelocity.cpp
   )

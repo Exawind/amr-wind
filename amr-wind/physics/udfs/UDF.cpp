@@ -4,6 +4,8 @@
 #include "amr-wind/physics/udfs/LinearProfile.H"
 #include "amr-wind/physics/udfs/PowerLawProfile.H"
 #include "amr-wind/physics/udfs/BurggrafLid.H"
+#include "amr-wind/physics/udfs/Rankine.H"
+#include "amr-wind/physics/udfs/CustomVelocity.H"
 
 #include "AMReX_ParmParse.H"
 
@@ -57,5 +59,7 @@ void UDFImpl<T>::operator()(int level, const amrex::Geometry& geom)
 template class UDFImpl<LinearProfile>;
 template class UDFImpl<PowerLawProfile>;
 template class UDFImpl<BurggrafLid>;
+template class UDFImpl<Rankine>;
+template class UDFImpl<CustomVelocity>;
 
 } // namespace amr_wind::udf
