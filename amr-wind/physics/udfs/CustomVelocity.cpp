@@ -15,6 +15,24 @@ CustomVelocity::CustomVelocity(const Field& /*fld*/)
     // xlo.type = "mass_inflow"
     // xlo.velocity.inflow_type = CustomVelocity
     // CustomVelocity.foo = 1.0
+
+    // clang-format off
+    // TODO: Do ParmParse here if needed
+    //const int ncomp = fld.num_comp();
+    //{
+    //    amrex::ParmParse pp("incflo");
+    //    amrex::Vector<amrex::Real> vel(0.0, ncomp);
+    //    pp.getarr("velocity", vel);
+    //    AMREX_ALWAYS_ASSERT(vel.size() == ncomp);
+    //    for (int i = 0; i < ncomp; ++i) {
+    //        m_op.vel_ref[i] = vel[i];
+    //    }
+    //}
+    //{
+    //    amrex::ParmParse pp("CustomVelocity");
+    //    pp.query("foo", m_op.foo);
+    //}
+    // clang-format on
     amrex::Abort(
         "Please define the body of this function and the corresponding struct "
         "in the header file before using it. Then remove this message");
