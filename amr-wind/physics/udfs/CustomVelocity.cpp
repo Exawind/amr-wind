@@ -11,6 +11,10 @@ namespace amr_wind::udf {
 CustomVelocity::CustomVelocity(const Field& fld)
 {
     // This is a where the user can set some user defined variables
+    // This capability can be activated with the following in the input file:
+    // xlo.type = "mass_inflow"
+    // xlo.velocity.inflow_type = CustomVelocity
+    // CustomVelocity.foo = 1.0
 }
 
 } // namespace amr_wind::udf
