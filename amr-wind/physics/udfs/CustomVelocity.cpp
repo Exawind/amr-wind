@@ -15,6 +15,9 @@ CustomVelocity::CustomVelocity(const Field& /*fld*/)
     // xlo.type = "mass_inflow"
     // xlo.velocity.inflow_type = CustomVelocity
     // CustomVelocity.foo = 1.0
+    amrex::Abort(
+        "Please define the body of this function and the corresponding struct "
+        "in the header file before using it. Then remove this message");
 }
 
 } // namespace amr_wind::udf
