@@ -8,7 +8,7 @@
 
 namespace amr_wind::udf {
 
-CustomVelocity::CustomVelocity(const Field& fld)
+CustomVelocity::CustomVelocity(const Field& /*fld*/)
 {
     // This is a where the user can set some user defined variables
     // This capability can be activated with the following in the input file:
