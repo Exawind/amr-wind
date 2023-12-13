@@ -17,20 +17,16 @@ CustomVelocity::CustomVelocity(const Field& /*fld*/)
     // CustomVelocity.foo = 1.0
 
     // clang-format off
-    // TODO: Do ParmParse here if needed
-    //const int ncomp = fld.num_comp();
     //{
-    //    amrex::ParmParse pp("incflo");
+    //    const int ncomp = fld.num_comp();
+    //    amrex::ParmParse pp("CustomVelocity");
+    //    pp.query("foo", m_op.foo);
     //    amrex::Vector<amrex::Real> vel(0.0, ncomp);
     //    pp.getarr("velocity", vel);
     //    AMREX_ALWAYS_ASSERT(vel.size() == ncomp);
     //    for (int i = 0; i < ncomp; ++i) {
-    //        m_op.vel_ref[i] = vel[i];
+    //        m_op.bar[i] = vel[i];
     //    }
-    //}
-    //{
-    //    amrex::ParmParse pp("CustomVelocity");
-    //    pp.query("foo", m_op.foo);
     //}
     // clang-format on
     amrex::Abort(

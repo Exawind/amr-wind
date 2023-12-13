@@ -15,9 +15,9 @@ struct CustomVelocity
     struct DeviceOp
     {
         // clang-format off
-        // TODO: Declare parameters here if needed
+        // Declare parameters here if needed. For example:
         // amrex::Real foo{1.0};
-        // amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> vel_ref = {0.0};
+        // amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> bar = {0.0};
         // clang-format on
 
         AMREX_GPU_DEVICE
@@ -35,13 +35,12 @@ struct CustomVelocity
             // clang-format off
             // const auto* problo = geom.ProbLo();
             // const auto* dx = geom.CellSize();
-            // TODO: define vel below
             // const auto x = problo[0] + (iv[0] + 0.5) * dx[0];
             // const auto y = problo[1] + (iv[1] + 0.5) * dx[1];
             // const auto z = problo[2] + (iv[2] + 0.5) * dx[2];
             // const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> vel = {1.0, 0.0, 0.0};
 
-            // TODO: uncomment line below
+            // Once the above is done, fill the field as:
             // field(iv[0], iv[1], iv[2], dcomp + comp) = vel[orig_comp + comp];
             // clang-format on
         }
