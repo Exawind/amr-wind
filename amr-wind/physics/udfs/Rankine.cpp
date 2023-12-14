@@ -28,6 +28,11 @@ Rankine::Rankine(const Field& fld)
         amrex::ParmParse pp("Rankine");
         pp.query("Umax", m_op.Umax);
         pp.query("Rmax", m_op.Rmax);
+        amrex::Vector<amrex::Real> start_location;
+        pp.queryarr("start_location", start_location);
+        for (int i = 0; i < start_location.size(); ++i) {
+            m_op.start_location[i] = start_location[i];
+        }
     }
 }
 
