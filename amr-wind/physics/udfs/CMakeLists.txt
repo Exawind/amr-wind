@@ -7,4 +7,5 @@ target_sources(${amr_wind_lib_name}
   BurggrafLid.cpp
   Rankine.cpp
   CustomVelocity.cpp
+  CustomScalar.cpp
   )
