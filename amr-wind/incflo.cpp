@@ -107,7 +107,7 @@ void incflo::init_amr_wind_modules()
         eqn->initialize();
     }
 
-    // m_sim.pde_manager().fillpatch_state_fields(m_time.current_time());
+    m_sim.pde_manager().fillpatch_state_fields(m_time.current_time());
     m_sim.post_manager().post_init_actions();
 }
 
@@ -201,7 +201,7 @@ bool incflo::regrid_and_update()
             mask_node.setVal(1);
         }
 
-        // m_sim.pde_manager().fillpatch_state_fields(m_time.current_time());
+        m_sim.pde_manager().fillpatch_state_fields(m_time.current_time());
 
         icns().post_regrid_actions();
         for (auto& eqn : scalar_eqns()) {
