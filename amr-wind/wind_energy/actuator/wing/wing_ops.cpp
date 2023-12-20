@@ -168,4 +168,56 @@ void write_netcdf(
 #endif
 }
 
+void refresh_wing_position(VecList& vpoints, VecList fpoints, const int npts)
+{
+    for (int ip = 0; ip < npts; ++ip) {
+        // Move velocity points to latest force points
+        vpoints[ip].x() = fpoints[ip].x();
+        vpoints[ip].y() = fpoints[ip].y();
+        vpoints[ip].z() = fpoints[ip].z();
+    }
+}
+
+void new_wing_position_velocity(
+    VecList& points,
+    vs::Vector& vtr,
+    const int npts,
+    amrex::Real tn,
+    amrex::Real tnp1,
+    const std::string motion,
+    amrex::Real period,
+    vs::Vector svec)
+{
+    // Get displacement of points from n to n+1
+    // Also, if translation velocity changes, update it
+    vs::Vector disp{0.0, 0.0, 0.0};
+    // Do nothing for "none"
+    if (amrex::toLower(motion) == "linear") {
+        // Use velocity to get displacement
+        disp.x() = vtr.x() * (tnp1 - tn);
+        disp.y() = vtr.y() * (tnp1 - tn);
+        disp.z() = vtr.z() * (tnp1 - tn);
+        // Velocity is unchanged
+    } else if (amrex::toLower(motion) == "sine") {
+        // Calculate displacement using sine
+        disp.x() = svec.x() * (std::sin(2.0 * M_PI * tnp1 / period) -
+                               std::sin(2.0 * M_PI * tn / period));
+        disp.y() = svec.y() * (std::sin(2.0 * M_PI * tnp1 / period) -
+                               std::sin(2.0 * M_PI * tn / period));
+        disp.z() = svec.z() * (std::sin(2.0 * M_PI * tnp1 / period) -
+                               std::sin(2.0 * M_PI * tn / period));
+        // The translational velocity over the time step is disp/dt
+        vtr.x() = disp.x() / (tnp1 - tn + 1e-20);
+        vtr.y() = disp.y() / (tnp1 - tn + 1e-20);
+        vtr.z() = disp.z() / (tnp1 - tn + 1e-20);
+        // The tiny number in the denominator is important for initialization
+    }
+    for (int ip = 0; ip < npts; ++ip) {
+        // Move points according to displacement
+        points[ip].x() = points[ip].x() + disp.x();
+        points[ip].y() = points[ip].y() + disp.y();
+        points[ip].z() = points[ip].z() + disp.z();
+    }
+}
+
 } // namespace amr_wind::actuator::wing

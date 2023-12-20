@@ -45,6 +45,24 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
         pp.queryarr("chord", wdata.chord_inp);
         bool use_fllc = false;
         pp.query("fllc", use_fllc);
+
+        pp.query("motion_type", wdata.motion_type);
+        {
+            if (amrex::toLower(wdata.motion_type) == "none") {
+                // do nothing, this is default
+            } else if (amrex::toLower(wdata.motion_type) == "linear") {
+                // get velocity
+                pp.get("velocity", wdata.vel_tr);
+            } else if (amrex::toLower(wdata.motion_type) == "sine") {
+                // get parameters
+                pp.get("sine_period", wdata.s_period);
+                pp.get("sine_vector", wdata.s_vector);
+            } else {
+                amrex::Abort(
+                    "Invalid FixedWingLine motion type. Valid options are "
+                    "none, linear, and sine.");
+            }
+        }
         if (use_fllc) {
             wdata.fllc = std::make_unique<FLLCData>();
             FLLCParse(pp, *(wdata.fllc));
@@ -68,16 +86,57 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
             amrex::max(max_eps, max_epsc) * max_chord * 3.0;
         const auto& p1 = wdata.start;
         const auto& p2 = wdata.end;
-        // clang-format off
-        info.bound_box = amrex::RealBox(
-            amrex::min(p1.x(), p2.x()) - search_radius,
-            amrex::min(p1.y(), p2.y()) - search_radius,
-            amrex::min(p1.z(), p2.z()) - search_radius,
-            amrex::max(p1.x(), p2.x()) + search_radius,
-            amrex::max(p1.y(), p2.y()) + search_radius,
-            amrex::max(p1.z(), p2.z()) + search_radius
-        );
-        // clang-format on
+        // Set up bounding box depending on motion type
+        if (amrex::toLower(wdata.motion_type) == "none") {
+            // clang-format off
+            info.bound_box = amrex::RealBox(
+                amrex::min(p1.x(), p2.x()) - search_radius,
+                amrex::min(p1.y(), p2.y()) - search_radius,
+                amrex::min(p1.z(), p2.z()) - search_radius,
+                amrex::max(p1.x(), p2.x()) + search_radius,
+                amrex::max(p1.y(), p2.y()) + search_radius,
+                amrex::max(p1.z(), p2.z()) + search_radius);
+            // clang-format on
+        } else if (amrex::toLower(wdata.motion_type) == "linear") {
+            // Extend bounding box in case of velocity
+            constexpr amrex::Real tiny = 1e-8;
+            // If velocity is present, assume wing can travel entire domain
+            const bool up_ = wdata.vel_tr.x() > tiny;
+            const amrex::Real up_ext =
+                data.sim().mesh().Geom(0).ProbHiArray()[0];
+            const bool um_ = wdata.vel_tr.x() < -tiny;
+            const amrex::Real um_ext =
+                data.sim().mesh().Geom(0).ProbLoArray()[0];
+            const bool vp_ = wdata.vel_tr.y() > tiny;
+            const amrex::Real vp_ext =
+                data.sim().mesh().Geom(0).ProbHiArray()[1];
+            const bool vm_ = wdata.vel_tr.y() < -tiny;
+            const amrex::Real vm_ext =
+                data.sim().mesh().Geom(0).ProbLoArray()[1];
+            const bool wp_ = wdata.vel_tr.z() > tiny;
+            const amrex::Real wp_ext =
+                data.sim().mesh().Geom(0).ProbHiArray()[2];
+            const bool wm_ = wdata.vel_tr.z() < -tiny;
+            const amrex::Real wm_ext =
+                data.sim().mesh().Geom(0).ProbLoArray()[2];
+            info.bound_box = amrex::RealBox(
+                um_ ? um_ext : amrex::min(p1.x(), p2.x()) - search_radius,
+                vm_ ? vm_ext : amrex::min(p1.y(), p2.y()) - search_radius,
+                wm_ ? wm_ext : amrex::min(p1.z(), p2.z()) - search_radius,
+                up_ ? up_ext : amrex::max(p1.x(), p2.x()) + search_radius,
+                vp_ ? vp_ext : amrex::max(p1.y(), p2.y()) + search_radius,
+                wp_ ? wp_ext : amrex::max(p1.z(), p2.z()) + search_radius);
+        } else if (amrex::toLower(wdata.motion_type) == "sine") {
+            // clang-format off
+            info.bound_box = amrex::RealBox(
+                amrex::min(p1.x(), p2.x()) - wdata.s_vector.x() - search_radius,
+                amrex::min(p1.y(), p2.y()) - wdata.s_vector.y() - search_radius,
+                amrex::min(p1.z(), p2.z()) - wdata.s_vector.z() - search_radius,
+                amrex::max(p1.x(), p2.x()) + wdata.s_vector.x() + search_radius,
+                amrex::max(p1.y(), p2.y()) + wdata.s_vector.y() + search_radius,
+                amrex::max(p1.z(), p2.z()) + wdata.s_vector.z() + search_radius);
+            // clang-format on
+        }
     }
 };
 
