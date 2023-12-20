@@ -62,6 +62,8 @@ void BCIface::read_bctype()
             ibctype[ori] = BC::pressure_inflow;
         } else if ((bcstr == "pressure_outflow") || (bcstr == "po")) {
             ibctype[ori] = BC::pressure_outflow;
+        } else if ((bcstr == "mass_outflow") || (bcstr == "mo")) {
+            ibctype[ori] = BC::mass_outflow;
         } else if ((bcstr == "mass_inflow") || (bcstr == "mi")) {
             ibctype[ori] = BC::mass_inflow;
         } else if ((bcstr == "no_slip_wall") || (bcstr == "nsw")) {
@@ -186,6 +188,7 @@ void BCVelocity::set_bcrec()
             }
             break;
 
+        case BC::mass_outflow:
         case BC::wave_generation:
         case BC::mass_inflow:
         case BC::no_slip_wall:
@@ -210,6 +213,7 @@ void BCVelocity::set_bcrec()
                 bcrec[dir].setHi(dir, amrex::BCType::ext_dir);
             }
             break;
+
         case BC::symmetric_wall:
             if (side == amrex::Orientation::low) {
                 // Tangential directions use first-order extrapolation
