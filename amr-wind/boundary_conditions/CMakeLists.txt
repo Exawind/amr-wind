@@ -3,7 +3,7 @@ target_sources(${amr_wind_lib_name}
       #C++
       BCInterface.cpp
       FixedGradientBC.cpp
-      MassOutflow.cpp
+      MassOutflowBC.cpp
    )
 
 add_subdirectory(wall_models)
