@@ -48,16 +48,15 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
 
         pp.query("motion_type", wdata.motion_type);
         {
-            if (amrex::toLower(wdata.motion_type) == "none") {
-                // do nothing, this is default
-            } else if (amrex::toLower(wdata.motion_type) == "linear") {
+            // do nothing for default, "none"
+            if (amrex::toLower(wdata.motion_type) == "linear") {
                 // get velocity
                 pp.get("velocity", wdata.vel_tr);
             } else if (amrex::toLower(wdata.motion_type) == "sine") {
                 // get parameters
                 pp.get("sine_period", wdata.s_period);
                 pp.get("sine_vector", wdata.s_vector);
-            } else {
+            } else if (amrex::toLower(wdata.motion_type) != "none") {
                 amrex::Abort(
                     "Invalid FixedWingLine motion type. Valid options are "
                     "none, linear, and sine.");

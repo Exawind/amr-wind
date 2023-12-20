@@ -39,11 +39,11 @@ void new_wing_position_velocity(
     VecList& points,
     vs::Vector& vtr,
     const int npts,
-    amrex::Real tn,
-    amrex::Real tnp1,
+    const amrex::Real tn,
+    const amrex::Real tnp1,
     const std::string motion,
-    amrex::Real period,
-    vs::Vector svec);
+    const amrex::Real period,
+    const vs::Vector svec);
 
 template <typename T>
 ComponentView make_component_view(typename T::DataType& data)

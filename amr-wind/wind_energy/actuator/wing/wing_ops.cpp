@@ -182,11 +182,11 @@ void new_wing_position_velocity(
     VecList& points,
     vs::Vector& vtr,
     const int npts,
-    amrex::Real tn,
-    amrex::Real tnp1,
+    const amrex::Real tn,
+    const amrex::Real tnp1,
     const std::string motion,
-    amrex::Real period,
-    vs::Vector svec)
+    const amrex::Real period,
+    const vs::Vector svec)
 {
     // Get displacement of points from n to n+1
     // Also, if translation velocity changes, update it
