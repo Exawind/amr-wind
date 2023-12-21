@@ -9,6 +9,10 @@
 #include "amr-wind/core/MeshMap.H"
 #include "amr-wind/helics.H"
 
+#ifdef ERF_USE_MULTIBLOCK
+class MultiBlockContainer;
+#endif
+
 /** AMR-Wind
  *
  *  All C++ code in AMR-Wind is organized within the amr_wind namespace.
@@ -61,6 +65,11 @@ public:
     //! Return simulation time control
     SimTime& time() { return m_time; }
     const SimTime& time() const { return m_time; }
+
+#ifdef ERF_USE_MULTIBLOCK
+    void set_mbc(MultiBlockContainer* mbc) {m_mbc = mbc;}
+    MultiBlockContainer** mbc() {return &m_mbc;}
+#endif
 
     //! Return the field repository
     FieldRepo& repo() { return m_repo; }
@@ -170,6 +179,10 @@ private:
 
     // State of solver - know if during an overset timestep or not
     bool m_during_overset_advance{false};
+
+#ifdef ERF_USE_MULTIBLOCK
+    MultiBlockContainer* m_mbc = nullptr;
+#endif
 };
 
 } // namespace amr_wind
