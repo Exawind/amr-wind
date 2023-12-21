@@ -58,6 +58,9 @@ public:
     // Evolve solution to final time through repeated calls to Advance()
     void Evolve();
 
+    // Evolve solution in a multiblock framework by desired number of steps
+    void Evolve_MB(int MBstep, int max_block_step);
+
     // Tag cells for refinement
     void
     ErrorEst(int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow)
@@ -150,6 +153,10 @@ public:
     void init_physics_and_pde();
 
     void ReadCheckpointFile();
+
+#ifdef ERF_USE_MULTIBLOCK
+    void SetMultiBlockPointer(MultiBlockContainer *mbc) { m_sim.set_mbc(mbc); }
+#endif
 
 private:
     //
