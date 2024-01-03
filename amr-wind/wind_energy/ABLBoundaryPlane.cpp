@@ -535,7 +535,8 @@ void ABLBoundaryPlane::write_file()
     if (m_out_fmt == "native") {
         if (amrex::ParallelDescriptor::IOProcessor()) {
             std::ofstream oftime(m_time_file, std::ios::out | std::ios::app);
-            oftime << t_step << ' ' << std::fixed << std::setprecision(15) << time << '\n';
+            oftime << t_step << ' ' << std::fixed << std::setprecision(15)
+                   << time << '\n';
             oftime.close();
         }
 
