@@ -19,8 +19,7 @@ void MultiLevelVector::resize(
 
 void MultiLevelVector::sync_host_to_device()
 {
-    const auto nlevels = m_data_h.size();
-    for (int lev = 0; lev < nlevels; ++lev) {
+    for (int lev = 0; lev < m_data_h.size(); ++lev) {
 #ifdef AMREX_USE_GPU
         amrex::Gpu::htod_memcpy_async(
             m_data_d[lev].data(), m_data_h[lev].data(),
