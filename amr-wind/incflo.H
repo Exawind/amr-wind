@@ -13,6 +13,9 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/overset/OversetOps.H"
 
+#ifdef ERF_USE_MULTIBLOCK
+  class MultiBlockContainer;
+#endif
 namespace amr_wind {
 namespace pde {
 class PDEBase;
