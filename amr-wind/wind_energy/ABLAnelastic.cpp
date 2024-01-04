@@ -7,7 +7,9 @@ ABLAnelastic::ABLAnelastic(CFDSim& sim) : m_mesh(sim.mesh())
     amrex::ParmParse pp("ABL");
     pp.query("anelastic", m_is_anelastic);
     pp.query("anelastic_axis", m_axis);
-    amrex::Abort("ABL with anelastic is not fully functional yet");
+    if (m_is_anelastic) {
+        amrex::Abort("ABL with anelastic is not fully functional yet");
+    }
 }
 
 void ABLAnelastic::post_init_actions()
