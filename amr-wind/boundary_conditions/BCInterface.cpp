@@ -127,8 +127,7 @@ std::pair<const std::string, const std::string> BCIface::get_dirichlet_udfs()
 
                 if (has_inflow_udf && (inflow_udf != val)) {
                     amrex::Abort(
-                        "BCVelocity: Inflow UDF must be same for all inflow "
-                        "faces");
+                        "BC: Inflow UDF must be same for all inflow faces");
                 } else {
                     inflow_udf = val;
                     has_inflow_udf = true;
@@ -143,8 +142,7 @@ std::pair<const std::string, const std::string> BCIface::get_dirichlet_udfs()
 
                 if (has_wall_udf && (wall_udf != val)) {
                     amrex::Abort(
-                        "BCVelocity: Wall UDF must be same for all wall "
-                        "faces");
+                        "BC: Wall UDF must be same for all wall faces");
                 } else {
                     wall_udf = val;
                     has_wall_udf = true;
@@ -311,13 +309,16 @@ void BCScalar::read_values()
     const auto& bctype = m_field.bc_type();
     auto& bcval = m_field.bc_values();
     const int ndim = m_field.num_comp();
+    const auto udfs = get_dirichlet_udfs();
+    const auto const_dirichlet_inflow = udfs.first == "ConstDirichlet";
+
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
         const auto& bcid = bcnames[ori];
         const auto bct = bctype[ori];
 
         amrex::ParmParse pp(bcid);
-        if (bct == BC::mass_inflow) {
+        if ((bct == BC::mass_inflow) && (const_dirichlet_inflow)) {
             pp.getarr(fname.c_str(), bcval[ori], 0, ndim);
         } else {
             pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
