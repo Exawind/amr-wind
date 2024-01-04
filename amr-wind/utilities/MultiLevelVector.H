@@ -11,8 +11,9 @@ namespace amr_wind {
  *  \ingroup utilities
  *
  *  This class enables multi-level vectors. The primary vector is the
- *  size of the number of levels and it contains DeviceVectors size
- *  for the number of points in a given direction of the domain.
+ *  size of the number of levels and it contains host and device
+ *  vectors sized for the number of points in a given direction of the
+ *  domain.
  */
 class MultiLevelVector
 {
@@ -21,20 +22,28 @@ public:
 
     void resize(const int axis, const amrex::Vector<amrex::Geometry>& geom);
 
-    amrex::Gpu::DeviceVector<amrex::Real>& data(const int lev)
+    amrex::Vector<amrex::Real>& host_data(const int lev)
     {
-        return m_data[lev];
+        return m_data_h[lev];
     };
 
-    int size() const { return static_cast<int>(m_data.size()); }
+    amrex::Gpu::DeviceVector<amrex::Real>& device_data(const int lev)
+    {
+        return m_data_d[lev];
+    };
+
+    void sync_host_to_device();
+
+    int size() const { return static_cast<int>(m_data_h.size()); }
+
     int ncells(const int lev) const
     {
-        return static_cast<int>(m_data[lev].size());
+        return static_cast<int>(m_data_h[lev].size());
     }
 
 private:
-    amrex::Vector<amrex::Real> m_dx;
-    amrex::Vector<amrex::Gpu::DeviceVector<amrex::Real>> m_data;
+    amrex::Vector<amrex::Gpu::DeviceVector<amrex::Real>> m_data_d;
+    amrex::Vector<amrex::Vector<amrex::Real>> m_data_h;
 };
 } // namespace amr_wind
 #endif
