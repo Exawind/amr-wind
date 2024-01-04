@@ -31,6 +31,14 @@ private:
     int m_axis{2};
     MultiLevelVector m_density;
     MultiLevelVector m_pressure;
+
+    // Gravity
+    amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
+
+    // Constant reference density
+    amrex::Real m_rho0_const{1.0};
+
+    amrex::Real m_atmospheric_pressure{1.01325e5};
 };
 } // namespace amr_wind
 #endif

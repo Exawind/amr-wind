@@ -14,10 +14,10 @@ void MultiLevelVector::resize(
         m_data_h[lev].assign(ncells, 0);
         m_data_d[lev].resize(ncells);
     }
-    sync_host_to_device();
+    copy_host_to_device();
 };
 
-void MultiLevelVector::sync_host_to_device()
+void MultiLevelVector::copy_host_to_device()
 {
     for (int lev = 0; lev < m_data_h.size(); ++lev) {
 #ifdef AMREX_USE_GPU

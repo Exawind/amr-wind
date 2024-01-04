@@ -32,7 +32,7 @@ public:
         return m_data_d[lev];
     };
 
-    void sync_host_to_device();
+    void copy_host_to_device();
 
     int size() const { return static_cast<int>(m_data_h.size()); }
 
