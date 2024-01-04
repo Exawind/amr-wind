@@ -27,6 +27,12 @@ public:
         return m_data[lev];
     };
 
+    int size() const { return static_cast<int>(m_data.size()); }
+    int ncells(const int lev) const
+    {
+        return static_cast<int>(m_data[lev].size());
+    }
+
 private:
     amrex::Vector<amrex::Real> m_dx;
     amrex::Vector<amrex::Gpu::DeviceVector<amrex::Real>> m_data;
