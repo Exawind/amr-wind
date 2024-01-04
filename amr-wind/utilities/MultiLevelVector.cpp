@@ -10,9 +10,7 @@ void MultiLevelVector::resize(
     for (int lev = 0; lev < nlevels; ++lev) {
         m_dx[lev] = geom[lev].CellSize()[axis];
 
-        const int dom_lo = geom[lev].Domain().smallEnd()[axis];
-        const int dom_hi = geom[lev].Domain().bigEnd()[axis];
-        const int ncells = dom_hi - dom_lo + 1;
+        const int ncells = geom[lev].Domain().length()[axis];
         m_data[lev].resize(ncells);
         m_data[lev].assign(ncells, 0);
     }
