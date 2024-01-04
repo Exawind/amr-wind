@@ -16,9 +16,12 @@ private:
     Field& m_act_src;
 
     DeviceVecList m_pos;
+    DeviceVecList m_pos_old;
     DeviceVecList m_force;
     DeviceVecList m_epsilon;
     DeviceTensorList m_orientation;
+
+    bool init_old{false};
 
     void copy_to_device();
 
@@ -41,6 +44,7 @@ void ActSrcOp<ActTrait, ActSrcLine>::initialize()
 {
     const auto& grid = m_data.grid();
     m_pos.resize(grid.pos.size());
+    m_pos_old.resize(grid.pos.size());
     m_force.resize(grid.force.size());
     m_epsilon.resize(grid.epsilon.size());
     m_orientation.resize(grid.orientation.size());
@@ -50,6 +54,13 @@ template <typename ActTrait>
 void ActSrcOp<ActTrait, ActSrcLine>::copy_to_device()
 {
     const auto& grid = m_data.grid();
+
+    // Populate old positions before new positions are updated
+    if (init_old) {
+        amrex::Gpu::copy(
+            amrex::Gpu::deviceToDevice, m_pos.begin(), m_pos.end(),
+            m_pos_old.begin());
+    }
 
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, grid.pos.begin(), grid.pos.end(),
@@ -63,6 +74,13 @@ void ActSrcOp<ActTrait, ActSrcLine>::copy_to_device()
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, grid.orientation.begin(),
         grid.orientation.end(), m_orientation.begin());
+
+    if (!init_old) {
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, grid.pos.begin(), grid.pos.end(),
+            m_pos_old.begin());
+        init_old = true;
+    }
 }
 
 template <typename ActTrait>
@@ -79,6 +97,7 @@ void ActSrcOp<ActTrait, ActSrcLine>::operator()(
 
     const int npts = m_pos.size();
     const auto* pos = m_pos.data();
+    const auto* opos = m_pos_old.data();
     const auto* force = m_force.data();
     const auto* eps = m_epsilon.data();
     const auto* tmat = m_orientation.data();
@@ -92,7 +111,10 @@ void ActSrcOp<ActTrait, ActSrcLine>::operator()(
 
         amrex::Real src_force[AMREX_SPACEDIM]{0.0, 0.0, 0.0};
         for (int ip = 0; ip < npts; ++ip) {
-            const auto dist = cc - pos[ip];
+            // Put force at n+1/2 location for Godunov
+            constexpr amrex::Real wt = 0.5;
+            const auto pos_ip = wt * pos[ip] + (1.0 - wt) * opos[ip];
+            const auto dist = cc - pos_ip;
             const auto dist_local = tmat[ip] & dist;
             const auto gauss_fac = utils::gaussian3d(dist_local, eps[ip]);
             const auto& pforce = force[ip];

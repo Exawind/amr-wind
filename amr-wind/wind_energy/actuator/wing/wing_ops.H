@@ -33,6 +33,18 @@ void write_netcdf(
     const ActGrid& /*grid*/,
     const amrex::Real /*time*/);
 
+void refresh_wing_position(VecList& vpoints, VecList fpoints, const int npts);
+
+void new_wing_position_velocity(
+    VecList& points,
+    vs::Vector& vtr,
+    const int npts,
+    const amrex::Real tn,
+    const amrex::Real tnp1,
+    const std::string motion,
+    const amrex::Real period,
+    const vs::Vector svec);
+
 template <typename T>
 ComponentView make_component_view(typename T::DataType& data)
 {
@@ -77,7 +89,13 @@ struct UpdatePosOp<
         std::is_base_of<WingType, ActTrait>::value &&
         UseDefaultOp<ActTrait, ActSrcLine>::update_pos>::type>
 {
-    void operator()(typename ActTrait::DataType& /*unused*/) {}
+    void operator()(typename ActTrait::DataType& data)
+    {
+        // Put wing at current (time n) position from force points
+        auto& grid = data.grid();
+        const int npts = data.meta().num_pts;
+        actuator::wing::refresh_wing_position(grid.vel_pos, grid.pos, npts);
+    }
 };
 
 template <typename ActTrait>
@@ -116,6 +134,14 @@ struct ComputeForceOp<
         const auto& aflookup = airfoil_lookup<ActTrait>(data);
         const auto& time = data.sim().time();
 
+        // Move force points to location at n+1
+        // Also, get velocity of actuator from n to n+1
+        // (will be unchanged for "none" and "linear" motion)
+        actuator::wing::new_wing_position_velocity(
+            grid.pos, wdata.vel_tr, npts, time.current_time(), time.new_time(),
+            wdata.motion_type, wdata.s_period, wdata.s_vector);
+
+        // Calculate the local force using sampled velocity (at n)
         amrex::Real total_lift = 0.0;
         amrex::Real total_drag = 0.0;
         for (int ip = 0; ip < npts; ++ip) {
@@ -131,10 +157,11 @@ struct ComputeForceOp<
             // Ensure orthogonality for new reference frame
             blade_x = (blade_y ^ blade_z).unit();
 
+            // Wind vector is relative to actuator motion
             vs::Vector windvector;
-            windvector[0] = grid.vel[ip] & blade_x;
+            windvector[0] = (grid.vel[ip] - wdata.vel_tr) & blade_x;
             windvector[1] = 0;
-            windvector[2] = grid.vel[ip] & blade_z;
+            windvector[2] = (grid.vel[ip] - wdata.vel_tr) & blade_z;
 
             const auto vmag = vs::mag(windvector);
             const auto aoa = std::atan2(windvector[2], windvector[0]) +
