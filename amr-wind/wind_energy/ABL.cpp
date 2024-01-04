@@ -155,6 +155,8 @@ void ABL::post_init_actions()
     m_abl_anelastic->post_init_actions();
 }
 
+void ABL::post_regrid_actions() { m_abl_anelastic->post_regrid_actions(); }
+
 /** Perform tasks at the beginning of a new timestep
  *
  *  For ABL simulations this method invokes the FieldPlaneAveraging class to

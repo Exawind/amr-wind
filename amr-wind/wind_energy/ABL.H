@@ -73,7 +73,7 @@ public:
 
     void post_init_actions() override;
 
-    void post_regrid_actions() override {}
+    void post_regrid_actions() override;
 
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 
