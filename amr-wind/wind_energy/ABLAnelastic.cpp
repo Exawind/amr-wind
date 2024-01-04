@@ -26,7 +26,6 @@ void ABLAnelastic::post_regrid_actions()
 }
 
 void ABLAnelastic::initialize_data()
-
 {
     m_density.resize(m_axis, m_mesh.Geom());
     m_pressure.resize(m_axis, m_mesh.Geom());
