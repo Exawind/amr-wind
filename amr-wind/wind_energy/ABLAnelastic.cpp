@@ -40,8 +40,8 @@ void ABLAnelastic::initialize_data()
     m_pressure.resize(m_axis, m_mesh.Geom());
 
     for (int lev = 0; lev < m_density.size(); lev++) {
-        auto dens = m_density.host_data(lev);
-        auto pres = m_pressure.host_data(lev);
+        auto& dens = m_density.host_data(lev);
+        auto& pres = m_pressure.host_data(lev);
         dens.assign(dens.size(), m_rho0_const);
         pres[0] = m_atmospheric_pressure;
         for (int k = 0; k < pres.size() - 1; k++) {

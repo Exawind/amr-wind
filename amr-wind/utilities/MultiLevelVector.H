@@ -28,6 +28,11 @@ public:
         return m_data_h[lev];
     };
 
+    amrex::Vector<amrex::Real>& host_data(const int lev)
+    {
+        return m_data_h[lev];
+    };
+
     const amrex::Gpu::DeviceVector<amrex::Real>&
     device_data(const int lev) const
     {
