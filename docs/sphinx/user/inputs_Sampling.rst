@@ -17,6 +17,15 @@ actual keyword is determined by the labels provided to
    Specify the output frequency (in timesteps) when data sampling is performed
    and output to disk.
 
+.. input_param:: sampling.output_delay
+
+   **type:** Integer, optional, default = 0
+
+   Specify the output delay (in timesteps) when data sampling and output will begin
+   during a simulation. E.g., a delay of 100 will wait until the 100th timestep to 
+   check if, according to the output frequency, sampling should be performed and 
+   output to disk.
+
 .. input_param:: sampling.output_format
 
    **type:** String, optional, default = "native"

@@ -129,6 +129,9 @@ private:
 
     //! Frequency of data sampling and output
     int m_out_freq{100};
+
+    //! Delay number of timestep before output
+    int m_out_delay{0};
 };
 
 } // namespace amr_wind::sampling

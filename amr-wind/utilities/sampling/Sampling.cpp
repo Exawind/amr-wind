@@ -30,6 +30,7 @@ void Sampling::initialize()
         pp.getarr("fields", field_names);
         pp.query("output_frequency", m_out_freq);
         pp.query("output_format", m_out_fmt);
+        pp.query("output_delay", m_out_delay);
     }
 
     // Process field information
@@ -105,6 +106,10 @@ void Sampling::post_advance_work()
     BL_PROFILE("amr-wind::Sampling::post_advance_work");
     const auto& time = m_sim.time();
     const int tidx = time.time_index();
+    // Skip processing if delay has not been reached
+    if (tidx < m_out_delay) {
+        return;
+    }
     // Skip processing if it is not an output timestep
     if (!(tidx % m_out_freq == 0)) {
         return;
