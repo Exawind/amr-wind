@@ -1,6 +1,7 @@
 #include "amr-wind/equation_systems/icns/source_terms/GravityForcing.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/core/FieldUtils.H"
+#include "amr-wind/wind_energy/ABL.H"
 
 #include "AMReX_ParmParse.H"
 
@@ -21,17 +22,15 @@ GravityForcing::GravityForcing(const CFDSim& sim)
     // Get density fields
     m_rho = &(sim.repo().get_field("density"));
 
+    const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
+    m_use_reference_density = abl.anelastic().is_anelastic();
+    if (m_use_reference_density) {
+        m_rho0 = abl.anelastic().density();
+    }
+
     // Check if perturbational pressure desired
     amrex::ParmParse pp_icns("ICNS");
-    pp_icns.query("use_perturb_pressure", is_pptb);
-    // Determine if rho0 field exists
-    is_rho0 = sim.repo().field_exists("reference_density");
-    if (is_rho0) {
-        m_rho0 = &(sim.repo().get_field("reference_density"));
-    } else {
-        // Point to existing field, won't be used
-        m_rho0 = m_rho;
-    }
+    pp_icns.query("use_perturb_pressure", m_use_perturb_pressure);
 }
 
 GravityForcing::~GravityForcing() = default;
@@ -56,15 +55,18 @@ void GravityForcing::operator()(
 
     const auto& rho_arr =
         ((*m_rho).state(field_impl::phi_state(fstate)))(lev).const_array(mfi);
-    const auto& rho0_arr = (*m_rho0)(lev).const_array(mfi);
-    const bool ir0 = is_rho0;
-    const bool ipt = is_pptb;
-    const amrex::Real mr0c = m_rho0_const;
 
+    amrex::Gpu::DeviceVector<amrex::Real> rho0;
+    if (m_use_reference_density) {
+        rho0 = m_rho0->device_data(lev);
+    }
+
+    const bool ir0 = m_use_reference_density;
+    const bool ipt = m_use_perturb_pressure;
+    const amrex::Real mr0c = m_rho0_const;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real factor =
-            (!ipt ? 1.0
-                  : 1.0 - (ir0 ? rho0_arr(i, j, k) : mr0c) / rho_arr(i, j, k));
+            (!ipt ? 1.0 : 1.0 - (ir0 ? rho0[k] : mr0c) / rho_arr(i, j, k));
 
         vel_forces(i, j, k, 0) += gravity[0] * factor;
         vel_forces(i, j, k, 1) += gravity[1] * factor;

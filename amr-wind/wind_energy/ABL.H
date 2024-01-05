@@ -113,6 +113,8 @@ public:
 
     const ABLMesoscaleInput& abl_meso_file() const { return *m_meso_file; }
 
+    const ABLAnelastic& anelastic() const { return *m_abl_anelastic; }
+
 private:
     const CFDSim& m_sim;
 

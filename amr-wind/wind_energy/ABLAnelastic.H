@@ -24,6 +24,8 @@ public:
     void initialize_data();
     bool is_anelastic() const { return m_is_anelastic; }
 
+    const MultiLevelVector* density() const { return &m_density; }
+
 private:
     const amrex::AmrCore& m_mesh;
 

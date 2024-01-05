@@ -23,12 +23,13 @@ public:
 
     void resize(const int axis, const amrex::Vector<amrex::Geometry>& geom);
 
-    amrex::Vector<amrex::Real>& host_data(const int lev)
+    const amrex::Vector<amrex::Real>& host_data(const int lev) const
     {
         return m_data_h[lev];
     };
 
-    amrex::Gpu::DeviceVector<amrex::Real>& device_data(const int lev)
+    const amrex::Gpu::DeviceVector<amrex::Real>&
+    device_data(const int lev) const
     {
         return m_data_d[lev];
     };
