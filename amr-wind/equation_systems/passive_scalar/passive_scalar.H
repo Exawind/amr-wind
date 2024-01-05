@@ -7,8 +7,7 @@
 #include "amr-wind/equation_systems/PDE.H"
 #include "amr-wind/equation_systems/SourceTerm.H"
 
-namespace amr_wind {
-namespace pde {
+namespace amr_wind::pde {
 
 /**
  *  \defgroup passive_eqn Passive scalar transport equation
