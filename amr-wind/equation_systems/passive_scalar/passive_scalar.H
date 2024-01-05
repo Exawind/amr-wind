@@ -40,7 +40,7 @@ struct PassiveScalar : ScalarTransport
 
     static constexpr int ndim = 1;
     static constexpr bool multiply_rho = true;
-    static constexpr bool has_diffusion = false;
+    static constexpr bool has_diffusion = true;
     static constexpr bool need_nph_state = true;
 };
 
