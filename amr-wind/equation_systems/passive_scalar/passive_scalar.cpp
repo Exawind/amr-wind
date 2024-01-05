@@ -8,5 +8,4 @@ namespace amr_wind::pde {
 template class PDESystem<PassiveScalar, fvm::Godunov>;
 template class PDESystem<PassiveScalar, fvm::MOL>;
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde

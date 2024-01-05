@@ -43,7 +43,6 @@ struct PassiveScalar : ScalarTransport
     static constexpr bool need_nph_state = true;
 };
 
-} // namespace pde
-} // namespace amr_wind
+} // namespace amr_wind::pde
 
 #endif
