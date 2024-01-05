@@ -49,7 +49,7 @@ void ABLAnelastic::initialize_data()
                 pres[k] - 0.5 * (dens[k] + dens[k + 1]) * m_gravity[m_axis];
         }
     }
-    m_density.copy_to_device();
-    m_pressure.copy_to_device();
+    m_density.copy_host_to_device();
+    m_pressure.copy_host_to_device();
 }
 } // namespace amr_wind
