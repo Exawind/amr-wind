@@ -129,11 +129,9 @@ ScalarAdvection::ScalarAdvection(CFDSim& sim)
     , m_velocity(sim.repo().get_field("velocity"))
     , m_density(sim.repo().get_field("density"))
 {
-    // Register temperature equation
-    auto& teqn = sim.pde_manager().register_transport_pde("Temperature");
-
-    // Defer getting temperature field until PDE has been registered
-    m_scalar = &(teqn.fields().field);
+    // Register passive scalar equation
+    auto& pseqn = sim.pde_manager().register_transport_pde("PassiveScalar");
+    m_scalar = &(pseqn.fields().field);
 
     amrex::ParmParse pp_scalar_advection("scalaradvection");
     pp_scalar_advection.query("u", m_u);
@@ -152,7 +150,7 @@ ScalarAdvection::ScalarAdvection(CFDSim& sim)
     pp_incflo.query("density", m_rho);
 }
 
-/** Initialize the velocity and temperature fields at the beginning of the
+/** Initialize the velocity and passive scalar fields at the beginning of the
  *  simulation.
  */
 void ScalarAdvection::initialize_fields(
