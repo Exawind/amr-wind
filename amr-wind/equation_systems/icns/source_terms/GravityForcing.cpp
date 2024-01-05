@@ -22,10 +22,12 @@ GravityForcing::GravityForcing(const CFDSim& sim)
     // Get density fields
     m_rho = &(sim.repo().get_field("density"));
 
-    const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
-    m_use_reference_density = abl.anelastic().is_anelastic();
-    if (m_use_reference_density) {
-        m_rho0 = abl.anelastic().density();
+    if (sim.physics_manager().contains("ABL")) {
+        const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
+        m_use_reference_density = abl.anelastic().is_anelastic();
+        if (m_use_reference_density) {
+            m_rho0 = abl.anelastic().density();
+        }
     }
 
     // Check if perturbational pressure desired
