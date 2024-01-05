@@ -58,10 +58,8 @@ void GravityForcing::operator()(
     const auto& rho_arr =
         ((*m_rho).state(field_impl::phi_state(fstate)))(lev).const_array(mfi);
 
-    amrex::Gpu::DeviceVector<amrex::Real> rho0;
-    if (m_use_reference_density) {
-        rho0 = m_rho0->device_data(lev);
-    }
+    const amrex::Real* rho0 =
+        m_use_reference_density ? m_rho0->device_data(lev).data() : nullptr;
 
     const bool ir0 = m_use_reference_density;
     const bool ipt = m_use_perturb_pressure;
