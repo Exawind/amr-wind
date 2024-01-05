@@ -13,9 +13,9 @@ ABLAnelastic::ABLAnelastic(CFDSim& sim) : m_mesh(sim.mesh())
         pp.queryarr("gravity", m_gravity);
         pp.query("density", m_rho0_const);
     }
-    if (m_is_anelastic) {
-        amrex::Abort("ABL with anelastic is not fully functional yet");
-    }
+    // if (m_is_anelastic) {
+    //     amrex::Abort("ABL with anelastic is not fully functional yet");
+    // }
 }
 
 void ABLAnelastic::post_init_actions()
@@ -44,9 +44,8 @@ void ABLAnelastic::initialize_data()
         auto pres = m_pressure.host_data(lev);
         dens.assign(dens.size(), m_rho0_const);
         pres[0] = m_atmospheric_pressure;
-        for (int k = 0; k < dens.size() - 1; k++) {
-            pres[k + 1] =
-                pres[k] - 0.5 * (dens[k] + dens[k + 1]) * m_gravity[m_axis];
+        for (int k = 0; k < pres.size() - 1; k++) {
+            pres[k + 1] = pres[k] - dens[k] * m_gravity[m_axis];
         }
     }
     m_density.copy_host_to_device();

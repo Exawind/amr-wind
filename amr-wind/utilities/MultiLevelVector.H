@@ -4,6 +4,7 @@
 #include "AMReX_Geometry.H"
 #include "AMReX_Vector.H"
 #include "AMReX_GpuContainers.H"
+#include "amr-wind/core/FieldDescTypes.H"
 
 namespace amr_wind {
 
@@ -18,7 +19,7 @@ namespace amr_wind {
 class MultiLevelVector
 {
 public:
-    MultiLevelVector() = default;
+    MultiLevelVector(const FieldLoc floc = FieldLoc::CELL) : m_floc(floc){};
 
     void resize(const int axis, const amrex::Vector<amrex::Geometry>& geom);
 
@@ -42,6 +43,7 @@ public:
     }
 
 private:
+    const FieldLoc m_floc;
     amrex::Vector<amrex::Gpu::DeviceVector<amrex::Real>> m_data_d;
     amrex::Vector<amrex::Vector<amrex::Real>> m_data_h;
 };

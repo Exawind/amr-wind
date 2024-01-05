@@ -29,8 +29,8 @@ private:
 
     bool m_is_anelastic{false};
     int m_axis{2};
-    MultiLevelVector m_density;
-    MultiLevelVector m_pressure;
+    MultiLevelVector m_density{FieldLoc::CELL};
+    MultiLevelVector m_pressure{FieldLoc::NODE};
 
     // Gravity
     amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
