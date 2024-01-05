@@ -49,7 +49,6 @@ amrex::Real get_Fgz_sum(amr_wind::Field& src_term)
 void Fgtest_kernel(
     const amrex::Real Fz_ref,
     const int ncells,
-    const int nz,
     const amr_wind::FieldState fstate)
 {
     incflo my_incflo;
@@ -137,7 +136,7 @@ TEST_F(GravityForcingTest, full_term_u)
     // Expected average gravity term
     amrex::Real Fg = -5.0;
     // Test with ordinary gravity term (rho not included)
-    Fgtest_kernel(Fg, m_nx * m_ny * m_nz, m_nz, amr_wind::FieldState::Old);
+    Fgtest_kernel(Fg, m_nx * m_ny * m_nz, amr_wind::FieldState::Old);
 }
 
 TEST_F(GravityForcingTest, full_term_rhou)
@@ -162,7 +161,7 @@ TEST_F(GravityForcingTest, full_term_rhou)
     }
     Fg *= fac / m_nz;
     // Test with ordinary gravity term (rho included)
-    Fgtest_kernel(Fg, m_nx * m_ny * m_nz, m_nz, amr_wind::FieldState::New);
+    Fgtest_kernel(Fg, m_nx * m_ny * m_nz, amr_wind::FieldState::New);
 }
 
 TEST_F(GravityForcingTest, perturb_const)
@@ -183,7 +182,7 @@ TEST_F(GravityForcingTest, perturb_const)
     // Expected average gravity term
     amrex::Real Fg = (1.0 - rho_ref) * gz / 1.0;
     // Test with ordinary gravity term (rho not multiplied)
-    Fgtest_kernel(Fg, m_nx * m_ny * m_nz, m_nz, amr_wind::FieldState::Old);
+    Fgtest_kernel(Fg, m_nx * m_ny * m_nz, amr_wind::FieldState::Old);
 }
 
 TEST_F(GravityForcingTest, abl_anelastic)
@@ -218,7 +217,7 @@ TEST_F(GravityForcingTest, abl_anelastic)
     // Expected average gravity term
     amrex::Real Fg = (1.0 - rho_ref) * gz / 1.0;
     // Test with ordinary gravity term (rho included)
-    Fgtest_kernel(Fg, m_nx * m_ny * m_nz, m_nz, amr_wind::FieldState::Old);
+    Fgtest_kernel(Fg, m_nx * m_ny * m_nz, amr_wind::FieldState::Old);
 }
 
 } // namespace amr_wind_tests
