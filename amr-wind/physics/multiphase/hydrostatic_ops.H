@@ -2,9 +2,65 @@
 #define HYDROSTATIC_OPS_H
 #include <AMReX_MultiFabUtil.H>
 #include "amr-wind/core/FieldRepo.H"
+#include "amr-wind/utilities/MultiLevelVector.H"
 
 namespace amr_wind::hydrostatic {
 
+static void define_rho0(
+    MultiLevelVector& rho0,
+    const amrex::Real rho1,
+    const amrex::Real rho2,
+    const amrex::Real wlev,
+    const amrex::Vector<amrex::Geometry> geom)
+{
+    for (int lev = 0; lev < rho0.size(); ++lev) {
+        const auto& dx = geom[lev].CellSizeArray();
+        const auto& problo = geom[lev].ProbLoArray();
+        auto* rho0_ptr = rho0.host_data(lev).data();
+        for (int k = 0; k < rho0.ncells(lev); k++) {
+            const amrex::Real zbtm = problo[2] + k * dx[2];
+            const amrex::Real vof =
+                amrex::max(amrex::min(1.0, (wlev - zbtm) / dx[2]), 0.0);
+            rho0_ptr[k] = vof * rho1 + (1.0 - vof) * rho2;
+        }
+    }
+    rho0.copy_host_to_device();
+}
+
+static void define_p0(
+    MultiLevelVector& p0,
+    const amrex::Real rho1,
+    const amrex::Real rho2,
+    const amrex::Real wlev,
+    const amrex::Real grav_z,
+    const amrex::Vector<amrex::Geometry> geom)
+{
+    for (int lev = 0; lev < p0.size(); ++lev) {
+        const auto& dx = geom[lev].CellSizeArray();
+        const auto& problo = geom[lev].ProbLoArray();
+        const auto& probhi = geom[lev].ProbHiArray();
+        auto* p0_ptr = p0.host_data(lev).data();
+        for (int k = 0; k < p0.ncells(lev); k++) {
+            // Height of pressure node
+            const amrex::Real hnode = k * dx[2];
+            // Liquid height
+            const amrex::Real hliq = wlev - problo[2];
+            // Integrated (top-down in z) phase heights to pressure node
+            amrex::Real ih_g = amrex::max(
+                0.0, amrex::min(probhi[2] - hliq, probhi[2] - hnode));
+            amrex::Real ih_l =
+                amrex::max(0.0, amrex::min(hliq - hnode, hliq - problo[2]));
+            // Integrated rho at pressure node
+            const amrex::Real irho = rho1 * ih_l + rho2 * ih_g;
+
+            // Add term to reference pressure
+            p0_ptr[k] = -irho * grav_z;
+        }
+    }
+    p0.copy_host_to_device();
+}
+
+// fixme remove
 static void define_rho0(
     amr_wind::Field& rho0,
     const amrex::Real rho1,
@@ -29,6 +85,7 @@ static void define_rho0(
     }
 }
 
+// fixme remove
 static void define_p0(
     amr_wind::Field& p0,
     const amrex::Real rho1,

@@ -22,15 +22,9 @@ void MultiLevelVector::resize(
 void MultiLevelVector::copy_host_to_device()
 {
     for (int lev = 0; lev < m_data_h.size(); ++lev) {
-#ifdef AMREX_USE_GPU
-        amrex::Gpu::htod_memcpy_async(
-            m_data_d[lev].data(), m_data_h[lev].data(),
-            sizeof(amrex::Real) * m_data_h[lev].size());
-#else
-        std::memcpy(
-            m_data_d[lev].data(), m_data_h[lev].data(),
-            sizeof(amrex::Real) * m_data_h[lev].size());
-#endif
+        amrex::Gpu::copyAsync(
+            amrex::Gpu::hostToDevice, m_data_h[lev].begin(),
+            m_data_h[lev].end(), m_data_d[lev].begin());
     }
 }
 
