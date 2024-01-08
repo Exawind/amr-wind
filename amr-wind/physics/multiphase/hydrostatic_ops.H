@@ -61,31 +61,6 @@ static void define_p0(
 }
 
 // fixme remove
-static void define_rho0(
-    amr_wind::Field& rho0,
-    const amrex::Real rho1,
-    const amrex::Real rho2,
-    const amrex::Real wlev,
-    const amrex::Vector<amrex::Geometry> geom)
-{
-    for (int lev = 0; lev < rho0.repo().num_active_levels(); ++lev) {
-        const auto& dx = geom[lev].CellSizeArray();
-        const auto& problo = geom[lev].ProbLoArray();
-        for (amrex::MFIter mfi(rho0(lev)); mfi.isValid(); ++mfi) {
-            amrex::Box const& bx = mfi.validbox();
-            auto rho0_arr = rho0(lev).array(mfi);
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real zbtm = problo[2] + k * dx[2];
-                    const amrex::Real vof =
-                        amrex::max(amrex::min(1.0, (wlev - zbtm) / dx[2]), 0.0);
-                    rho0_arr(i, j, k) = vof * rho1 + (1.0 - vof) * rho2;
-                });
-        }
-    }
-}
-
-// fixme remove
 static void define_p0(
     amr_wind::Field& p0,
     const amrex::Real rho1,

@@ -4,7 +4,10 @@
 #include "AMReX_Geometry.H"
 #include "AMReX_Vector.H"
 #include "AMReX_GpuContainers.H"
+#include "AMReX_MFParallelFor.H"
 #include "amr-wind/core/FieldDescTypes.H"
+#include "amr-wind/core/Field.H"
+#include "amr-wind/core/FieldRepo.H"
 
 namespace amr_wind {
 
@@ -41,6 +44,8 @@ public:
 
     void copy_host_to_device();
 
+    void to_field(Field& fld);
+
     int size() const { return static_cast<int>(m_data_h.size()); }
 
     int ncells(const int lev) const
@@ -50,6 +55,7 @@ public:
 
 private:
     const FieldLoc m_floc;
+    int m_axis{2};
     amrex::Vector<amrex::Gpu::DeviceVector<amrex::Real>> m_data_d;
     amrex::Vector<amrex::Vector<amrex::Real>> m_data_h;
 };

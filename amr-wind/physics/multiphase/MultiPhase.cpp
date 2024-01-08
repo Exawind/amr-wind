@@ -58,12 +58,29 @@ MultiPhase::MultiPhase(CFDSim& sim)
     amrex::ParmParse pp_icns("ICNS");
     pp_icns.query("use_perturb_pressure", is_pptb);
     pp_icns.query("reconstruct_true_pressure", is_ptrue);
+
+    {
+        amrex::Vector<std::string> out_vars;
+        amrex::ParmParse ppio("io");
+        ppio.queryarr("outputs", out_vars);
+        m_output_reference_density =
+            std::find(out_vars.begin(), out_vars.end(), "reference_density") !=
+            out_vars.end();
+        m_output_reference_pressure =
+            std::find(out_vars.begin(), out_vars.end(), "reference_pressure") !=
+            out_vars.end();
+    }
+
     // Declare fields
     if (is_pptb) {
-        m_sim.repo().declare_field("reference_density", 1, 0, 1);
+        m_rho0.resize(2, m_sim.mesh().Geom());
+        m_use_reference_density = true;
+        if (m_output_reference_density) {
+            m_sim.repo().declare_field("reference_density", 1, 0, 1);
+        }
         if (is_ptrue) {
-            m_sim.repo().declare_nd_field(
-                "reference_pressure", 1, (*m_vof).num_grow()[0], 1);
+          m_sim.repo().declare_nd_field(
+            "reference_pressure", 1, (*m_vof).num_grow()[0], 1);
         }
     }
 }
@@ -109,9 +126,12 @@ void MultiPhase::post_init_actions()
     // Make rho0 field if both are specified
     if (is_pptb && is_wlev) {
         // Initialize rho0 field for perturbational density, pressure
-        auto& rho0 = m_sim.repo().get_field("reference_density");
-        hydrostatic::define_rho0(
-            rho0, m_rho1, m_rho2, water_level0, m_sim.mesh().Geom());
+        amr_wind::hydrostatic::define_rho0(
+            m_rho0, m_rho1, m_rho2, water_level0, m_sim.mesh().Geom());
+        if (m_output_reference_density) {
+            auto& rho0 = m_sim.repo().get_field("reference_density");
+            m_rho0.to_field(rho0);
+        }
 
         // Make p0 field if requested
         if (is_ptrue) {
@@ -130,9 +150,15 @@ void MultiPhase::post_regrid_actions()
 {
     // Reinitialize rho0 if needed
     if (is_pptb) {
-        auto& rho0 = m_sim.repo().declare_field("reference_density", 1, 0, 1);
-        hydrostatic::define_rho0(
-            rho0, m_rho1, m_rho2, water_level0, m_sim.mesh().Geom());
+        m_rho0.resize(2, m_sim.mesh().Geom());
+        amr_wind::hydrostatic::define_rho0(
+            m_rho0, m_rho1, m_rho2, water_level0, m_sim.mesh().Geom());
+        if (m_output_reference_density) {
+            auto& rho0 =
+                m_sim.repo().declare_field("reference_density", 1, 0, 1);
+            m_rho0.to_field(rho0);
+        }
+
         // Reinitialize p0 if needed
         if (is_ptrue) {
             auto ng = (*m_vof).num_grow();

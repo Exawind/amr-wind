@@ -2,6 +2,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/core/FieldUtils.H"
 #include "amr-wind/wind_energy/ABL.H"
+#include "amr-wind/physics/multiphase/MultiPhase.H"
 
 #include "AMReX_ParmParse.H"
 
@@ -24,9 +25,15 @@ GravityForcing::GravityForcing(const CFDSim& sim)
 
     if (sim.physics_manager().contains("ABL")) {
         const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
-        m_use_reference_density = abl.anelastic().is_anelastic();
+        m_use_reference_density = abl.use_reference_density();
         if (m_use_reference_density) {
-            m_rho0 = abl.anelastic().density();
+            m_rho0 = abl.reference_density();
+        }
+    } else if (sim.physics_manager().contains("MultiPhase")) {
+        const auto& mf = sim.physics_manager().get<amr_wind::MultiPhase>();
+        m_use_reference_density = mf.use_reference_density();
+        if (m_use_reference_density) {
+            m_rho0 = mf.reference_density();
         }
     }
 

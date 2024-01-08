@@ -115,6 +115,16 @@ public:
 
     const ABLAnelastic& anelastic() const { return *m_abl_anelastic; }
 
+    bool use_reference_density() const
+    {
+        return m_abl_anelastic->is_anelastic();
+    }
+
+    const MultiLevelVector* reference_density() const
+    {
+        return m_abl_anelastic->density();
+    }
+
 private:
     const CFDSim& m_sim;
 

@@ -6,6 +6,7 @@ void MultiLevelVector::resize(
     const int axis, const amrex::Vector<amrex::Geometry>& geom)
 {
     const auto nlevels = geom.size();
+    m_axis = axis;
     m_data_h.resize(nlevels);
     m_data_d.resize(nlevels);
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -28,4 +29,22 @@ void MultiLevelVector::copy_host_to_device()
     }
 }
 
+void MultiLevelVector::to_field(Field& fld)
+{
+    AMREX_ALWAYS_ASSERT(fld.repo().num_active_levels() == m_data_h.size());
+    AMREX_ALWAYS_ASSERT(fld.num_comp() == 1);
+    for (int lev = 0; lev < m_data_h.size(); ++lev) {
+        auto const& farrs = fld(lev).arrays();
+        const amrex::IntVect ngs(0);
+        const auto* d_ptr = m_data_d[lev].data();
+        const int axis = m_axis;
+        amrex::ParallelFor(
+            fld(lev), ngs,
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                const int idx = (axis == 0) ? i : ((axis == 1) ? j : k);
+                farrs[nbx](i, j, k, 0) = d_ptr[idx];
+            });
+        amrex::Gpu::synchronize();
+    }
+}
 } // namespace amr_wind
