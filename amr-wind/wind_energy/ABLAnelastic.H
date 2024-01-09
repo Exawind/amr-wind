@@ -1,6 +1,7 @@
 #ifndef ABLANELASTIC_H
 #define ABLANELASTIC_H
 #include "amr-wind/CFDSim.H"
+#include "amr-wind/utilities/MultiLevelVector.H"
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind {
@@ -35,6 +36,9 @@ private:
     amrex::Real m_atmospheric_pressure{1.01325e5};
 
     const int m_axis{2};
+
+    MultiLevelVector m_density{FieldLoc::CELL};
+    MultiLevelVector m_pressure{FieldLoc::NODE};
 };
 } // namespace amr_wind
 #endif
