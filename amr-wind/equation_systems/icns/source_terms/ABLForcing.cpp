@@ -9,7 +9,8 @@
 
 namespace amr_wind::pde::icns {
 
-ABLForcing::ABLForcing(const CFDSim& sim) : m_time(sim.time()), m_mesh(sim.mesh())
+ABLForcing::ABLForcing(const CFDSim& sim)
+    : m_time(sim.time()), m_mesh(sim.mesh())
 {
     const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
     abl.register_forcing_term(this);
