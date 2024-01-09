@@ -2,6 +2,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/core/vs/vstraits.H"
+#include "amr-wind/physics/multiphase/MultiPhase.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
@@ -20,7 +21,7 @@ namespace amr_wind::pde::icns {
  *    GeostrophicForcing namespace
  *
  */
-GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
+GeostrophicForcing::GeostrophicForcing(const CFDSim& sim) : m_mesh(sim.mesh())
 {
     amrex::Real coriolis_factor = 0.0;
 
@@ -49,24 +50,59 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& /*unused*/)
     m_g_forcing = {
         -coriolis_factor * m_target_vel[1], coriolis_factor * m_target_vel[0],
         0.0};
+
+    // Set up relaxation toward 0 forcing near the air-water interface
+    if (sim.repo().field_exists("vof")) {
+        // If vof exists, get multiphase physics
+        const auto& mphase = sim.physics_manager().get<amr_wind::MultiPhase>();
+        // Retrieve interface position
+        m_water_level = mphase.water_level();
+        // Confirm that water level will be used
+        m_use_phase_ramp = true;
+        // Parse for thickness of ramping function
+        ppg.get("wind_forcing_off_height", m_forcing_mphase0);
+        ppg.get("wind_forcing_ramp_height", m_forcing_mphase1);
+    }
 }
 
 GeostrophicForcing::~GeostrophicForcing() = default;
 
 void GeostrophicForcing::operator()(
-    const int /*lev*/,
+    const int lev,
     const amrex::MFIter& /*mfi*/,
     const amrex::Box& bx,
     const FieldState /*fstate*/,
     const amrex::Array4<amrex::Real>& src_term) const
 {
-    amrex::Real fac = (m_is_horizontal) ? 0. : 1.;
+    amrex::Real hfac = (m_is_horizontal) ? 0. : 1.;
+
+    const bool ph_ramp = m_use_phase_ramp;
+    const amrex::Real wlev = m_water_level;
+    const amrex::Real wrht0 = m_forcing_mphase0;
+    const amrex::Real wrht1 = m_forcing_mphase1;
+    const auto& problo = m_mesh.Geom(lev).ProbLoArray();
+    const auto& dx = m_mesh.Geom(lev).CellSizeArray();
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> forcing{
         {m_g_forcing[0], m_g_forcing[1], m_g_forcing[2]}};
+
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        src_term(i, j, k, 0) += forcing[0];
-        src_term(i, j, k, 1) += forcing[1];
-        src_term(i, j, k, 1) += fac * forcing[2];
+        amrex::Real wfac = 1.0;
+        if (ph_ramp) {
+            const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+            if (z - wlev < wrht0 + wrht1) {
+                if (z - wlev < wrht0) {
+                    // Apply no forcing within first interval
+                    wfac = 0.0;
+                } else {
+                    // Ramp from 0 to 1 over second interval
+                    wfac =
+                        0.5 - 0.5 * std::cos(M_PI * (z - wlev - wrht0) / wrht1);
+                }
+            }
+        }
+        src_term(i, j, k, 0) += wfac * forcing[0];
+        src_term(i, j, k, 1) += wfac * forcing[1];
+        src_term(i, j, k, 1) += wfac * hfac * forcing[2];
     });
 }
 

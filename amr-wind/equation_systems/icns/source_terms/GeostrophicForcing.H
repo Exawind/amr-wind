@@ -26,6 +26,11 @@ public:
         const amrex::Array4<amrex::Real>& src_term) const override;
 
 private:
+    const amrex::AmrCore& m_mesh;
+
+    //! Activated when water is present in domain
+    bool m_use_phase_ramp{false};
+
     //! Target velocity
     amrex::Vector<amrex::Real> m_target_vel{{0.0, 0.0, 0.0}};
 
@@ -33,6 +38,14 @@ private:
     amrex::Vector<amrex::Real> m_g_forcing{{0.0, 0.0, 0.0}};
 
     bool m_is_horizontal{false};
+
+    //! Height from water interface where force is off
+    amrex::Real m_forcing_mphase0;
+    //! Height from water interface over which force is ramped
+    amrex::Real m_forcing_mphase1;
+
+    //! Local storage of interface location
+    amrex::Real m_water_level;
 };
 
 } // namespace amr_wind::pde::icns
