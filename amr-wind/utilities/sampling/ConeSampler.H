@@ -11,7 +11,7 @@ namespace amr_wind::sampling {
  *  \ingroup sampling
  *
  *  Defines probes along a line defined by `start` and `end` coordinates and
- *  divides it into equal segements as determined by `num_points`. The length of
+ *  divides it into equal segments as determined by `num_points`. The length of
  *  each segment is given by \f[ (end - start) / (num_points - 1) \f]
  */
 class ConeSampler : public SamplerBase::Register<ConeSampler>
