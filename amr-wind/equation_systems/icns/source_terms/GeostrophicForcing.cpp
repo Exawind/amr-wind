@@ -67,6 +67,9 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& sim) : m_mesh(sim.mesh())
         m_vof = &sim.repo().get_field("vof");
         // Parse for number of cells in band
         ppg.query("wind_forcing_band", m_n_band);
+    } else {
+        // Point to something, will not be used
+        m_vof = &sim.repo().get_field("velocity");
     }
 }
 

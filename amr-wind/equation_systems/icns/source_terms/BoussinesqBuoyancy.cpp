@@ -30,6 +30,9 @@ BoussinesqBuoyancy::BoussinesqBuoyancy(const CFDSim& sim)
     is_vof = sim.repo().field_exists("vof");
     if (is_vof) {
         m_vof = &sim.repo().get_field("vof");
+    } else {
+        // Point to something, will not be used
+        m_vof = &m_temperature;
     }
 
     // gravity in `incflo` namespace
