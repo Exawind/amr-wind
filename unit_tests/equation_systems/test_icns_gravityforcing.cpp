@@ -49,10 +49,18 @@ amrex::Real get_Fgz_sum(amr_wind::Field& src_term)
 void Fgtest_kernel(
     const amrex::Real Fz_ref,
     const int ncells,
-    const amr_wind::FieldState fstate)
+    const int nz,
+    const amr_wind::FieldState fstate,
+    const bool make_ref_dens = false)
 {
     incflo my_incflo;
     my_incflo.init_mesh();
+    if (make_ref_dens) {
+        // Create reference density field (only used if turned on via parser)
+        auto& ref_dens =
+            my_incflo.sim().repo().declare_field("reference_density", 1, 3, 1);
+        init_density(ref_dens, nz / 2);
+    }
     my_incflo.init_amr_wind_modules();
     auto& density = my_incflo.sim().repo().get_field("density").state(
         amr_wind::FieldState::NPH);
@@ -136,7 +144,7 @@ TEST_F(GravityForcingTest, full_term_u)
     // Expected average gravity term
     amrex::Real Fg = -5.0;
     // Test with ordinary gravity term (rho not included)
-    Fgtest_kernel(Fg, m_nx * m_ny * m_nz, amr_wind::FieldState::Old);
+    Fgtest_kernel(Fg, m_nx * m_ny * m_nz, m_nz, amr_wind::FieldState::Old);
 }
 
 TEST_F(GravityForcingTest, full_term_rhou)
@@ -161,7 +169,7 @@ TEST_F(GravityForcingTest, full_term_rhou)
     }
     Fg *= fac / m_nz;
     // Test with ordinary gravity term (rho included)
-    Fgtest_kernel(Fg, m_nx * m_ny * m_nz, amr_wind::FieldState::New);
+    Fgtest_kernel(Fg, m_nx * m_ny * m_nz, m_nz, amr_wind::FieldState::New);
 }
 
 TEST_F(GravityForcingTest, perturb_const)
@@ -182,12 +190,11 @@ TEST_F(GravityForcingTest, perturb_const)
     // Expected average gravity term
     amrex::Real Fg = (1.0 - rho_ref) * gz / 1.0;
     // Test with ordinary gravity term (rho not multiplied)
-    Fgtest_kernel(Fg, m_nx * m_ny * m_nz, amr_wind::FieldState::Old);
+    Fgtest_kernel(Fg, m_nx * m_ny * m_nz, m_nz, amr_wind::FieldState::Old);
 }
 
-TEST_F(GravityForcingTest, abl_anelastic)
+TEST_F(GravityForcingTest, perturb_field)
 {
-    const amrex::Real rho_ref = 0.5;
     const amrex::Real gz = -9.81;
     // High-level setup
     populate_parameters();
@@ -195,29 +202,16 @@ TEST_F(GravityForcingTest, abl_anelastic)
         amrex::ParmParse pp("ICNS");
         pp.add("use_perturb_pressure", (bool)true);
     }
-    {
-        amrex::ParmParse pp("incflo");
-        amrex::Vector<std::string> physics{"ABL"};
-        pp.addarr("physics", physics);
-        pp.add("density", rho_ref);
-        amrex::Vector<amrex::Real> vel{{0.0, 0.0, 0.0}};
-        pp.addarr("velocity", vel);
-        amrex::Vector<amrex::Real> grav{{0.0, 0.0, gz}};
-        pp.addarr("gravity", grav);
-    }
-    {
-        amrex::ParmParse pp("ABL");
-        amrex::Vector<amrex::Real> theights{{0.0, 650.0, 750.0, 1000.0}};
-        amrex::Vector<amrex::Real> tvalues{{300.0, 300.0, 308.0, 308.75}};
-        pp.addarr("temperature_heights", theights);
-        pp.addarr("temperature_values", tvalues);
-        pp.add("reference_temperature", 300.0);
-        pp.add("anelastic", (bool)true);
-    }
     // Expected average gravity term
-    amrex::Real Fg = (1.0 - rho_ref) * gz / 1.0;
+    amrex::Real Fg = gz;
+    amrex::Real fac = 0.0;
+    for (int k = 0; k < m_nz; ++k) {
+        fac += (k > m_nz / 2) ? 0.0 : k + 4;
+    }
+    Fg *= fac / m_nz;
     // Test with ordinary gravity term (rho included)
-    Fgtest_kernel(Fg, m_nx * m_ny * m_nz, amr_wind::FieldState::Old);
+    Fgtest_kernel(
+        Fg, m_nx * m_ny * m_nz, m_nz, amr_wind::FieldState::New, true);
 }
 
 } // namespace amr_wind_tests

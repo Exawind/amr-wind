@@ -2,7 +2,6 @@
 #define GravityForcing_H
 
 #include "amr-wind/core/FieldRepo.H"
-#include "amr-wind/utilities/MultiLevelVector.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 
 namespace amr_wind::pde::icns {
@@ -30,7 +29,7 @@ private:
     amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
 
     Field* m_rho{nullptr};
-    const MultiLevelVector* m_rho0{nullptr};
+    Field* m_rho0{nullptr};
 
     // Input reference to perturbational form
     bool m_use_perturb_pressure{false};

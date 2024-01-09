@@ -2,7 +2,7 @@
 
 namespace amr_wind {
 
-ABLAnelastic::ABLAnelastic(CFDSim& sim) : m_mesh(sim.mesh())
+ABLAnelastic::ABLAnelastic(CFDSim& sim) : m_sim(sim)
 {
     {
         amrex::ParmParse pp("ABL");
@@ -13,9 +13,6 @@ ABLAnelastic::ABLAnelastic(CFDSim& sim) : m_mesh(sim.mesh())
         pp.queryarr("gravity", m_gravity);
         pp.query("density", m_rho0_const);
     }
-    // if (m_is_anelastic) {
-    //     amrex::Abort("ABL with anelastic is not fully functional yet");
-    // }
 }
 
 void ABLAnelastic::post_init_actions()
@@ -36,19 +33,29 @@ void ABLAnelastic::post_regrid_actions()
 
 void ABLAnelastic::initialize_data()
 {
-    m_density.resize(m_axis, m_mesh.Geom());
-    m_pressure.resize(m_axis, m_mesh.Geom());
+    auto& rho0 = m_sim.repo().declare_field("reference_density", 1, 0, 1);
+    auto& p0 = m_sim.repo().declare_nd_field("reference_pressure", 1, 0, 1);
 
-    for (int lev = 0; lev < m_density.size(); lev++) {
-        auto& dens = m_density.host_data(lev);
-        auto& pres = m_pressure.host_data(lev);
-        dens.assign(dens.size(), m_rho0_const);
-        pres[0] = m_atmospheric_pressure;
-        for (int k = 0; k < pres.size() - 1; k++) {
-            pres[k + 1] = pres[k] - dens[k] * m_gravity[m_axis];
-        }
+    rho0.setVal(m_rho0_const);
+    p0.setVal(m_atmospheric_pressure);
+
+    const auto axis = m_axis;
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
+        {m_gravity[0], m_gravity[1], m_gravity[2]}};
+    for (int lev = 0; lev < p0.repo().num_active_levels(); ++lev) {
+        const auto& darrs = rho0(lev).const_arrays();
+        const auto& parrs = p0(lev).arrays();
+        const amrex::IntVect ngs(0);
+        amrex::ParallelFor(
+            rho0(lev), ngs,
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                const auto& darr = darrs[nbx];
+                const auto& parr = parrs[nbx];
+                const amrex::IntVect iv(i, j, k);
+                const auto ivp = iv + amrex::IntVect::TheDimensionVector(axis);
+                parr(ivp) = parr(iv) - darr(iv) * gravity[m_axis];
+            });
+        amrex::Gpu::synchronize();
     }
-    m_density.copy_host_to_device();
-    m_pressure.copy_host_to_device();
 }
 } // namespace amr_wind

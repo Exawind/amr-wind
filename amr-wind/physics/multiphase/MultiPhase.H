@@ -3,7 +3,6 @@
 
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"
-#include "amr-wind/utilities/MultiLevelVector.H"
 
 /** Multiphase physics
  *
@@ -60,10 +59,6 @@ public:
 
     InterfaceCapturingMethod interface_capturing_method();
 
-    bool use_reference_density() const { return m_use_reference_density; }
-
-    const MultiLevelVector* reference_density() const { return &m_rho0; }
-
     amrex::Real rho1() const { return m_rho1; }
 
     amrex::Real rho2() const { return m_rho2; }
@@ -90,15 +85,11 @@ private:
 
     // Bools according to ICNS settings
     // Turning on perturbational density and pressure
-    bool is_pptb{false};
+    bool m_use_perturb_pressure{false};
     // Reconstructing true pressure field at end of timestep
-    bool is_ptrue{false};
+    bool m_reconstruct_true_pressure{false};
 
     // Info to create rho0
-    bool m_use_reference_density{false};
-    bool m_output_reference_density{false};
-    bool m_output_reference_pressure{false};
-    MultiLevelVector m_rho0{FieldLoc::CELL};
     amrex::Real water_level0{0.0};
     // Info to reconstruct true pressure
     amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};

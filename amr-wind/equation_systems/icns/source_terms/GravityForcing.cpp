@@ -1,8 +1,6 @@
 #include "amr-wind/equation_systems/icns/source_terms/GravityForcing.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/core/FieldUtils.H"
-#include "amr-wind/wind_energy/ABL.H"
-#include "amr-wind/physics/multiphase/MultiPhase.H"
 
 #include "AMReX_ParmParse.H"
 
@@ -23,23 +21,13 @@ GravityForcing::GravityForcing(const CFDSim& sim)
     // Get density fields
     m_rho = &(sim.repo().get_field("density"));
 
-    if (sim.physics_manager().contains("ABL")) {
-        const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
-        m_use_reference_density = abl.use_reference_density();
-        if (m_use_reference_density) {
-            m_rho0 = abl.reference_density();
-        }
-    } else if (sim.physics_manager().contains("MultiPhase")) {
-        const auto& mf = sim.physics_manager().get<amr_wind::MultiPhase>();
-        m_use_reference_density = mf.use_reference_density();
-        if (m_use_reference_density) {
-            m_rho0 = mf.reference_density();
-        }
-    }
-
     // Check if perturbational pressure desired
     amrex::ParmParse pp_icns("ICNS");
     pp_icns.query("use_perturb_pressure", m_use_perturb_pressure);
+    m_use_reference_density = sim.repo().field_exists("reference_density");
+    m_rho0 = m_use_reference_density
+                 ? &(sim.repo().get_field("reference_density"))
+                 : m_rho;
 }
 
 GravityForcing::~GravityForcing() = default;
@@ -64,16 +52,15 @@ void GravityForcing::operator()(
 
     const auto& rho_arr =
         ((*m_rho).state(field_impl::phi_state(fstate)))(lev).const_array(mfi);
-
-    const amrex::Real* rho0 =
-        m_use_reference_density ? m_rho0->device_data(lev).data() : nullptr;
-
+    const auto& rho0_arr = (*m_rho0)(lev).const_array(mfi);
     const bool ir0 = m_use_reference_density;
     const bool ipt = m_use_perturb_pressure;
     const amrex::Real mr0c = m_rho0_const;
+
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real factor =
-            (!ipt ? 1.0 : 1.0 - (ir0 ? rho0[k] : mr0c) / rho_arr(i, j, k));
+            (!ipt ? 1.0
+                  : 1.0 - (ir0 ? rho0_arr(i, j, k) : mr0c) / rho_arr(i, j, k));
 
         vel_forces(i, j, k, 0) += gravity[0] * factor;
         vel_forces(i, j, k, 1) += gravity[1] * factor;
