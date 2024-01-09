@@ -2,6 +2,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/wind_energy/ABL.H"
 #include "amr-wind/physics/multiphase/MultiPhase.H"
+#include "amr-wind/equation_systems/vof/volume_fractions.H"
 #include "amr-wind/utilities/trig_ops.H"
 
 #include "AMReX_ParmParse.H"
@@ -57,6 +58,10 @@ ABLForcing::ABLForcing(const CFDSim& sim)
         // Parse for thickness of ramping function
         pp_abl.get("abl_forcing_off_height", m_forcing_mphase0);
         pp_abl.get("abl_forcing_ramp_height", m_forcing_mphase1);
+        // Store reference to vof field
+        m_vof = &sim.repo().get_field("vof");
+        // Parse for number of cells in band
+        pp_abl.query("abl_forcing_band", m_n_band);
     }
 }
 
@@ -64,7 +69,7 @@ ABLForcing::~ABLForcing() = default;
 
 void ABLForcing::operator()(
     const int lev,
-    const amrex::MFIter& /*mfi*/,
+    const amrex::MFIter& mfi,
     const amrex::Box& bx,
     const FieldState /*fstate*/,
     const amrex::Array4<amrex::Real>& src_term) const
@@ -74,12 +79,14 @@ void ABLForcing::operator()(
     const amrex::Real dvdt = m_abl_forcing[1];
 
     const bool ph_ramp = m_use_phase_ramp;
+    const int n_band = m_n_band;
     const amrex::Real wlev = m_water_level;
     const amrex::Real wrht0 = m_forcing_mphase0;
     const amrex::Real wrht1 = m_forcing_mphase1;
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
 
+    const auto& vof = (*m_vof)(lev).const_array(mfi);
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::Real fac = 1.0;
         if (ph_ramp) {
@@ -93,6 +100,14 @@ void ABLForcing::operator()(
                     fac =
                         0.5 - 0.5 * std::cos(M_PI * (z - wlev - wrht0) / wrht1);
                 }
+            }
+            // Check for presence of liquid (like a droplet)
+            // - interface_band checks for closeness to interface
+            // - need to also check for within liquid
+            if (multiphase::interface_band(i, j, k, vof, n_band) ||
+                vof(i, j, k) > 1.0 - 1e-12) {
+                // Turn off forcing
+                fac = 0.0;
             }
         }
         src_term(i, j, k, 0) += fac * dudt;

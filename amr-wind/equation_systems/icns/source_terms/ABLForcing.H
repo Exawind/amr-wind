@@ -68,6 +68,9 @@ private:
     //! Activated when water is present in domain
     bool m_use_phase_ramp{false};
 
+    //! Number of cells in band to prevent forcing near liquid
+    int m_n_band{2};
+
     //! ABL forcing terms
     amrex::RealArray m_abl_forcing{{0.0, 0.0, 0.0}};
 
@@ -99,6 +102,9 @@ private:
 
     //! Local storage of interface location
     amrex::Real m_water_level;
+
+    //! VOF field, to avoid forcing on liquid above force-off height
+    const Field* m_vof;
 };
 
 } // namespace amr_wind::pde::icns
