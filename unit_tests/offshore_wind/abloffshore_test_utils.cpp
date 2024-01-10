@@ -76,6 +76,13 @@ void ABLOffshoreMeshTest::populate_parameters()
         pp.addarr("gravity", grav);
     }
 
+    // Water level
+    {
+        amrex::ParmParse pp("MultiPhase");
+        // half cell height
+        pp.add("water_level", 0.5 * 1000.0 / 128.0);
+    }
+
     // Adjust computational domain to be more like ABL mesh in the z direction
     // with a negative portion as well for the water to occupy
     {

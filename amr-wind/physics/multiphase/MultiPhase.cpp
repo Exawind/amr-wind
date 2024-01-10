@@ -103,9 +103,11 @@ void MultiPhase::post_init_actions()
             "Perturbational pressure requested, but physics case does not "
             "specify water level.");
     }
+    if (is_wlev) {
+        pp_multiphase.get("water_level", water_level0);
+    }
     // Make rho0 field if both are specified
     if (is_pptb && is_wlev) {
-        pp_multiphase.get("water_level", water_level0);
         // Initialize rho0 field for perturbational density, pressure
         auto& rho0 = m_sim.repo().get_field("reference_density");
         hydrostatic::define_rho0(
