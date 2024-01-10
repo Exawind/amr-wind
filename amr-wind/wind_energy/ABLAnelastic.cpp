@@ -60,7 +60,7 @@ void ABLAnelastic::initialize_data()
 
     auto& rho0 = m_sim.repo().get_field("reference_density");
     auto& p0 = m_sim.repo().get_field("reference_pressure");
-    m_density.to_field(rho0);
-    m_pressure.to_field(p0);
+    m_density.copy_to_field(rho0);
+    m_pressure.copy_to_field(p0);
 }
 } // namespace amr_wind

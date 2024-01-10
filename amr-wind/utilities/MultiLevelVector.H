@@ -44,7 +44,7 @@ public:
 
     void copy_host_to_device();
 
-    void to_field(Field& fld);
+    void copy_to_field(Field& fld);
 
     int size() const { return static_cast<int>(m_data_h.size()); }
 

@@ -29,7 +29,7 @@ void MultiLevelVector::copy_host_to_device()
     }
 }
 
-void MultiLevelVector::to_field(Field& fld)
+void MultiLevelVector::copy_to_field(Field& fld)
 {
     AMREX_ALWAYS_ASSERT(fld.repo().num_active_levels() == m_data_h.size());
     AMREX_ALWAYS_ASSERT(fld.num_comp() == 1);
