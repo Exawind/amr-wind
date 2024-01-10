@@ -128,6 +128,7 @@ TEST_F(ABLOffshoreMeshTest, abl_forcing)
         auto& volume_fraction = sim().repo().get_field("vof");
         auto waterlev = mphase.water_level();
         auto& geom = sim().mesh().Geom();
+        // Initialize vof field before calculating forcing function
         run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
             const auto& bx = mfi.tilebox();
             const auto& gbx = mfi.growntilebox(3);
@@ -211,6 +212,9 @@ TEST_F(ABLOffshoreMeshTest, geostrophic_forcing)
     auto& pde_mgr = sim().pde_manager();
     pde_mgr.register_icns();
     sim().init_physics();
+    auto& mphase = sim().physics_manager().get<amr_wind::MultiPhase>();
+    // Make sure to read water level
+    mphase.post_init_actions();
 
     auto& src_term = pde_mgr.icns().fields().src_term;
     auto& density = sim().repo().get_field("density");
@@ -218,10 +222,15 @@ TEST_F(ABLOffshoreMeshTest, geostrophic_forcing)
 
     amr_wind::pde::icns::GeostrophicForcing geostrophic_forcing(sim());
     src_term.setVal(0.0);
+    auto& volume_fraction = sim().repo().get_field("vof");
+    auto waterlev = mphase.water_level();
+    auto& geom = sim().mesh().Geom();
     run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
         const auto& bx = mfi.tilebox();
+        const auto& gbx = mfi.growntilebox(3);
+        const auto& vof_arr = volume_fraction(lev).array(mfi);
+        init_vof_field(geom[lev], gbx, vof_arr, waterlev);
         const auto& src_arr = src_term(lev).array(mfi);
-
         geostrophic_forcing(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
     });
 
@@ -232,8 +241,54 @@ TEST_F(ABLOffshoreMeshTest, geostrophic_forcing)
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {
         const auto min_val = utils::field_min(src_term, i);
         const auto max_val = utils::field_max(src_term, i);
-        EXPECT_NEAR(min_val, golds[i], tol);
-        EXPECT_NEAR(min_val, max_val, tol);
+        EXPECT_NEAR(
+            std::max(std::abs(max_val), std::abs(min_val)), std::abs(golds[i]),
+            tol);
+        EXPECT_NEAR(std::min(std::abs(max_val), std::abs(min_val)), 0.0, tol);
+    }
+
+    // Check that values are turned off in off region
+    // Check that values are turned off in proximity to interface
+    // Check that values follow cosine curve in ramp region
+    const amrex::Real dz = geom[0].CellSize(2);
+    const amrex::Real ploz = geom[0].ProbLo(2);
+    // Forcing limit parameters from abloffshore_test_utils
+    const amrex::Real ht0 = 10.0;
+    const amrex::Real ht1 = 30.0;
+    const amrex::Array<amrex::Real, 5> test_heights{
+        waterlev - dz, waterlev + 0.5 * ht0, waterlev + 2.0 * dz,
+        std::floor((waterlev + ht0 + ht1 - dz) / dz) * dz + 0.5 * dz,
+        waterlev + ht0 + ht1 + dz};
+    // Expected values of coeff for each location
+    const amrex::Array<amrex::Real, 5> coeff_golds{
+        0., 0., 0.,
+        -0.5 * std::cos(M_PI * (test_heights[3] - waterlev - ht0) / ht1) + 0.5,
+        1.0};
+
+    // Get damping values from src term
+    amrex::Array<amrex::Real, 5> src_x_vals;
+    amrex::Array<amrex::Real, 5> src_y_vals;
+    amrex::Array<amrex::Real, 5> src_z_vals;
+    // Divide by nx*ny cells because of sum
+    const int nx = 8;
+    const int ny = 8;
+    for (int n = 0; n < 5; ++n) {
+        src_x_vals[n] =
+            get_val_at_height(src_term, 0, 0, ploz, dz, test_heights[n]) / nx /
+            ny;
+        src_y_vals[n] =
+            get_val_at_height(src_term, 0, 1, ploz, dz, test_heights[n]) / nx /
+            ny;
+        src_z_vals[n] =
+            get_val_at_height(src_term, 0, 2, ploz, dz, test_heights[n]) / nx /
+            ny;
+    }
+
+    // Check each src value against expectations
+    for (int n = 0; n < 5; ++n) {
+        EXPECT_NEAR(src_x_vals[n], coeff_golds[n] * golds[0], tol);
+        EXPECT_NEAR(src_y_vals[n], coeff_golds[n] * golds[1], tol);
+        EXPECT_NEAR(src_z_vals[n], coeff_golds[n] * golds[2], tol);
     }
 }
 
