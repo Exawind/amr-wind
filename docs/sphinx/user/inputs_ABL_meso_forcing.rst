@@ -74,7 +74,7 @@ temperature, respectively.
    When blending to a constant forcing profile, the slope of the forcing
    profile at the transition height (specified by
    :input_param:`ABLMesoForcing*.constant_transition_height` or provided in the
-   :input_param:`ABL*.mesoscale_forcing` datafile) is linearly reduced to 0 from
+   :input_param:`ABL.mesoscale_forcing` datafile) is linearly reduced to 0 from
    the transition height up to the transition height +
    :input_param:`ABLMesoForcing*.transition_thickness`.
 
