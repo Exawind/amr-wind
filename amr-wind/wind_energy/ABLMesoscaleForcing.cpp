@@ -28,28 +28,29 @@ ABLMesoscaleForcing::ABLMesoscaleForcing(
     }
 
     if (amrex::toLower(m_forcing_scheme) == "indirect") {
-        if (amrex::toLower(m_forcing_transition) == "none") {
-            if (pp.queryarr("weighting_heights", m_weighting_heights) == 1) {
-                pp.getarr("weighting_values", m_weighting_values);
-                amrex::Print() << "  given weighting profile" << std::endl;
-                for (int i = 0; i < m_weighting_heights.size(); ++i) {
-                    amrex::Print() << "  " << m_weighting_heights[i] << " "
-                                   << m_weighting_values[i] << std::endl;
-                }
-                AMREX_ALWAYS_ASSERT(
-                    m_weighting_heights.size() == m_weighting_values.size());
+        if (pp.queryarr("weighting_heights", m_weighting_heights) == 1) {
+            pp.getarr("weighting_values", m_weighting_values);
+            amrex::Print() << "  given weighting profile" << std::endl;
+            for (int i = 0; i < m_weighting_heights.size(); ++i) {
+                amrex::Print() << "  " << m_weighting_heights[i] << " "
+                               << m_weighting_values[i] << std::endl;
+            }
+            AMREX_ALWAYS_ASSERT(
+                m_weighting_heights.size() == m_weighting_values.size());
+            m_user_specified_weighting = true;
+        }
 
-            } else {
+        if (amrex::toLower(m_forcing_transition) == "none") {
+            if (!m_user_specified_weighting) {
                 // default is to have uniform weighting throughout
-                amrex::Print() << "  setting default weighting" << std::endl;
+                amrex::Print() << "  using default weighting" << std::endl;
                 amrex::Real zmin = m_mesh.Geom(0).ProbLo(m_axis);
                 amrex::Real zmax = m_mesh.Geom(0).ProbHi(m_axis);
                 m_weighting_heights = {zmin, zmax};
                 m_weighting_values = {1.0, 1.0};
             }
-        } else // weightings will be automatically set based on forcing
-               // transition
-        {
+        } else {
+            // weightings will be automatically set based on forcing transition
             pp.get(
                 "transition_thickness",
                 m_transition_thickness); // constant, required
@@ -77,6 +78,8 @@ ABLMesoscaleForcing::ABLMesoscaleForcing(
 
 void ABLMesoscaleForcing::setTransitionWeighting()
 {
+    if (m_user_specified_weighting) return;
+
     amrex::Real zmin = m_mesh.Geom(0).ProbLo(m_axis);
     amrex::Real zmax = m_mesh.Geom(0).ProbHi(m_axis);
     m_weighting_heights = {
