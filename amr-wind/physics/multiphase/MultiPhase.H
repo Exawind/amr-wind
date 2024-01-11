@@ -63,6 +63,8 @@ public:
 
     amrex::Real rho2() const { return m_rho2; }
 
+    amrex::Real water_level() const { return water_level0; }
+
 private:
     const CFDSim& m_sim;
 
