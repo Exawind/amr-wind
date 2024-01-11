@@ -14,6 +14,11 @@ ABLAnelastic::ABLAnelastic(CFDSim& sim) : m_sim(sim)
         pp.query("density", m_rho0_const);
     }
     if (m_is_anelastic) {
+        {
+            // ensure use of perturbational pressure form
+            amrex::ParmParse pp("ICNS");
+            pp.add("use_perturb_pressure", (bool)true);
+        }
         m_sim.repo().declare_field("reference_density", 1, 0, 1);
         m_sim.repo().declare_nd_field("reference_pressure", 1, 0, 1);
     }
