@@ -27,7 +27,7 @@ GravityForcing::GravityForcing(const CFDSim& sim)
     m_use_reference_density = sim.repo().field_exists("reference_density");
     m_rho0 = m_use_reference_density
                  ? &(sim.repo().get_field("reference_density"))
-                 : m_rho;
+                 : nullptr;
 }
 
 GravityForcing::~GravityForcing() = default;
@@ -52,7 +52,9 @@ void GravityForcing::operator()(
 
     const auto& rho_arr =
         ((*m_rho).state(field_impl::phi_state(fstate)))(lev).const_array(mfi);
-    const auto& rho0_arr = (*m_rho0)(lev).const_array(mfi);
+    const auto& rho0_arr = m_use_reference_density
+                               ? (*m_rho0)(lev).const_array(mfi)
+                               : amrex::Array4<amrex::Real>();
     const bool ir0 = m_use_reference_density;
     const bool ipt = m_use_perturb_pressure;
     const amrex::Real mr0c = m_rho0_const;
