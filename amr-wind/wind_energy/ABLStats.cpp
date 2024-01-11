@@ -507,9 +507,11 @@ void ABLStats::write_netcdf()
         *t_sfs_stress, m_sim.time(), m_normal_dir);
     pa_tsfs();
 
-    auto& m_ksgs = m_sim.repo().get_field("tke");
-    FieldPlaneAveraging pa_ksgs(m_ksgs, m_sim.time(), m_normal_dir);
-    pa_ksgs();
+    if (m_sim.repo().field_exists("tke")) {
+        auto& m_ksgs = m_sim.repo().get_field("tke");
+        FieldPlaneAveraging pa_ksgs(m_ksgs, m_sim.time(), m_normal_dir);
+        pa_ksgs();
+    }
 
     if (!amrex::ParallelDescriptor::IOProcessor()) return;
     auto ncf = ncutils::NCFile::open(m_ncfile_name, NC_WRITE);
