@@ -295,7 +295,6 @@ TEST_F(ABLOffshoreMeshTest, geostrophic_forcing)
 
 TEST_F(ABLOffshoreMeshTest, boussinesq)
 {
-    constexpr int kdim = 7;
     constexpr amrex::Real tol = 1.0e-12;
 
     // Initialize parameters
