@@ -74,8 +74,8 @@ temperature, respectively.
    When blending to a constant forcing profile, the slope of the forcing
    profile at the transition height (specified by
    :input_param:`ABLMesoForcing*.constant_transition_height` or provided in the
-   :input_param:`ABLMesoForcing*.mesoscale_forcing` datafile) is linearly
-   reduced to 0 from the transition height up to the transition height +
+   :input_param:`ABL*.mesoscale_forcing` datafile) is linearly reduced to 0 from
+   the transition height up to the transition height +
    :input_param:`ABLMesoForcing*.transition_thickness`.
 
    When blending to the DPA forcing profile (e.g., in the free atmosphere), the
@@ -87,7 +87,7 @@ temperature, respectively.
 Indirect Profile Assimilation
 -----------------------------
 The following parameters are specific to the IPA scheme
-(:input_param:`ABLMesoForcing*.forcing_scheme = "indirect"`). At the moment,
+(:input_param:`ABLMesoForcing*.forcing_scheme` = "indirect"). At the moment,
 only third-order polynomial regression is supported.
 
 .. input_param:: ABLMesoForcing*.weighting_heights
@@ -97,7 +97,7 @@ only third-order polynomial regression is supported.
 
    Height(s) in meters at which IPA regression weights are provided.
    
-.. input_param:: ABLMesoForcing*.weighting_weights
+.. input_param:: ABLMesoForcing*.weighting_values
 
    **type:** List of Reals (has to be same length as
    :input_param:`ABLMesoForcing*.weighting_heights`), optional
@@ -140,5 +140,5 @@ profiles may be applied.
    entirety of the simulation. To specify a time-varying transition layer
    height that, e.g., tracks the evolution of the ABL height, omit this
    parameter and include the time-varying ``transition_height`` variable within
-   the :input_param:`ABLMesoForcing*.mesoscale_forcing` datafile.
+   the :input_param:`ABL.mesoscale_forcing` datafile.
 
