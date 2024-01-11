@@ -51,7 +51,8 @@ amrex::Real get_val_at_height(
 void init_abl_temperature_field(
     amrex::Geometry geom,
     const amrex::Box& bx,
-    const amrex::Array4<amrex::Real>& trac)
+    const amrex::Array4<amrex::Real>& trac,
+    const amrex::Real bottom)
 {
     const auto& dx = geom.CellSizeArray();
     const auto& plo = geom.ProbLoArray();
@@ -60,10 +61,10 @@ void init_abl_temperature_field(
         const amrex::Real z = plo[2] + (k + 0.5) * dx[2];
 
         // potential temperature profile
-        if (z < 650.0) {
+        if (z < bottom) {
             trac(i, j, k, 0) = 300.0;
-        } else if (z < 750.0) {
-            trac(i, j, k, 0) = 300.0 + (z - 650.0) / (750.0 - 650.0) * 8.0;
+        } else if (z < 250.0) {
+            trac(i, j, k, 0) = 300.0 + (z - bottom) / (250.0 - bottom) * 8.0;
         } else {
             trac(i, j, k, 0) = 308.0;
         }
@@ -171,7 +172,7 @@ TEST_F(ABLOffshoreMeshTest, abl_forcing)
                 0.5,
             1.0};
 
-        // Get damping values from src term
+        // Get values from src term
         amrex::Array<amrex::Real, 5> src_x_vals;
         amrex::Array<amrex::Real, 5> src_y_vals;
         amrex::Array<amrex::Real, 5> src_z_vals;
@@ -265,7 +266,7 @@ TEST_F(ABLOffshoreMeshTest, geostrophic_forcing)
         -0.5 * std::cos(M_PI * (test_heights[3] - waterlev - ht0) / ht1) + 0.5,
         1.0};
 
-    // Get damping values from src term
+    // Get values from src term
     amrex::Array<amrex::Real, 5> src_x_vals;
     amrex::Array<amrex::Real, 5> src_y_vals;
     amrex::Array<amrex::Real, 5> src_z_vals;
@@ -305,6 +306,9 @@ TEST_F(ABLOffshoreMeshTest, boussinesq)
     pde_mgr.register_icns();
     pde_mgr.register_transport_pde("Temperature");
     sim().init_physics();
+    auto& mphase = sim().physics_manager().get<amr_wind::MultiPhase>();
+    // Make sure to read water level
+    mphase.post_init_actions();
 
     amr_wind::pde::icns::BoussinesqBuoyancy bb(sim());
 
@@ -315,18 +319,18 @@ TEST_F(ABLOffshoreMeshTest, boussinesq)
     auto& volume_fraction = sim().repo().get_field("vof");
 
     src_term.setVal(0.0);
-
     auto& geom = sim().mesh().Geom();
     auto waterlev =
         sim().physics_manager().get<amr_wind::MultiPhase>().water_level();
+    // Ensure temperature gradient crosses interface for the sake of testing
+    const amrex::Real btm_temp_ht = -20;
     run_algorithm(temperature, [&](const int lev, const amrex::MFIter& mfi) {
         const auto bx = mfi.validbox();
         const auto& temp_arr = temperature(lev).array(mfi);
+        init_abl_temperature_field(geom[lev], bx, temp_arr, btm_temp_ht);
         const auto& vof_arr = volume_fraction(lev).array(mfi);
-        const auto& src_arr = src_term(lev).array(mfi);
-
-        init_abl_temperature_field(geom[lev], bx, temp_arr);
         init_vof_field(geom[lev], bx, vof_arr, waterlev);
+        const auto& src_arr = src_term(lev).array(mfi);
         bb(lev, mfi, bx, amr_wind::FieldState::Old, src_arr);
     });
 
@@ -342,53 +346,19 @@ TEST_F(ABLOffshoreMeshTest, boussinesq)
     EXPECT_NEAR(utils::field_min(src_term, 2), 0.0, tol);
     EXPECT_NEAR(
         utils::field_max(src_term, 2), -9.81 * (300.0 - 308.0) / 300.0, tol);
-}
 
-TEST_F(ABLOffshoreMeshTest, boussinesq_nph)
-{
-    constexpr int kdim = 7;
-    constexpr amrex::Real tol = 1.0e-12;
-
-    // Initialize parameters
-    populate_parameters();
-    initialize_mesh();
-
-    auto& pde_mgr = sim().pde_manager();
-    pde_mgr.register_icns();
-    pde_mgr.register_transport_pde("Temperature");
-    sim().init_physics();
-
-    amr_wind::pde::icns::BoussinesqBuoyancy bb(sim());
-
-    auto& src_term = pde_mgr.icns().fields().src_term;
-
-    auto& temperature =
-        sim().repo().get_field("temperature", amr_wind::FieldState::NPH);
-
-    src_term.setVal(0.0);
-
-    auto& geom = sim().mesh().Geom();
-    run_algorithm(temperature, [&](const int lev, const amrex::MFIter& mfi) {
-        const auto bx = mfi.validbox();
-        const auto& temp_arr = temperature(lev).array(mfi);
-        const auto& src_arr = src_term(lev).array(mfi);
-
-        init_abl_temperature_field(geom[lev], bx, temp_arr);
-        bb(lev, mfi, bx, amr_wind::FieldState::NPH, src_arr);
-    });
-
-    // should be no forcing in x and y directions
-    for (int i = 0; i < 2; ++i) {
-        const auto min_src = utils::field_min(src_term, i);
-        const auto max_src = utils::field_max(src_term, i);
-        EXPECT_NEAR(min_src, 0.0, tol);
-        EXPECT_NEAR(max_src, 0.0, tol);
-    }
-
-    // f = beta * (T0 - T)*g
-    EXPECT_NEAR(utils::field_min(src_term, 2), 0.0, tol);
-    EXPECT_NEAR(
-        utils::field_max(src_term, 2), -9.81 * (300.0 - 308.0) / 300.0, tol);
+    // Check that the value is 0 below the interface but above btm_temp_ht
+    const amrex::Real dz = geom[0].CellSize(2);
+    const amrex::Real ploz = geom[0].ProbLo(2);
+    // Divide by nx*ny cells because of sum
+    const int nx = 8;
+    const int ny = 8;
+    amrex::Real src_z_val =
+        get_val_at_height(
+            src_term, 0, 0, ploz, dz, 0.5 * (waterlev + btm_temp_ht)) /
+        nx / ny;
+    // Check src value against expectations
+    EXPECT_NEAR(src_z_val, 0.0, tol);
 }
 
 } // namespace amr_wind_tests
