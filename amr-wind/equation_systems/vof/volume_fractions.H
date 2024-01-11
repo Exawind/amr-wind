@@ -431,14 +431,15 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool interface_band(
     int i,
     int j,
     int k,
-    amrex::Array4<amrex::Real const> const& volfrac) noexcept
+    amrex::Array4<amrex::Real const> const& volfrac,
+    int n_band = 1) noexcept
 {
+    // n_band must be <= number of vof ghost cells (3)
     constexpr amrex::Real tiny = 1e-12;
     // Check if near interface
     amrex::Real VOF_max = 0.0;
     amrex::Real VOF_min = 1.0;
     bool VOF_mid = false;
-    constexpr int n_band = 1; // must be 1, 2, or 3
     for (int ii = -n_band; ii <= n_band; ++ii) {
         for (int jj = -n_band; jj <= n_band; ++jj) {
             for (int kk = -n_band; kk <= n_band; ++kk) {
