@@ -417,7 +417,7 @@ void incflo::ApplyProjection(
         const auto& p0 = m_repo.get_field("reference_pressure");
         for (int lev = 0; lev <= finest_level; lev++) {
             amrex::MultiFab::Add(
-                pressure(lev), p0(lev), 0, 0, 1, pressure.num_grow()[0]);
+                pressure(lev), p0(lev), 0, 0, 1, p0.num_grow()[0]);
         }
     }
 
