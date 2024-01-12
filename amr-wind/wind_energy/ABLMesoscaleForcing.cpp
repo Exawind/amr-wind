@@ -82,7 +82,9 @@ ABLMesoscaleForcing::ABLMesoscaleForcing(
 
 void ABLMesoscaleForcing::setTransitionWeighting()
 {
-    if (m_user_specified_weighting) return;
+    if (m_user_specified_weighting) {
+        return;
+    }
 
     amrex::Real zmin = m_mesh.Geom(0).ProbLo(m_axis);
     amrex::Real zmax = m_mesh.Geom(0).ProbHi(m_axis);
