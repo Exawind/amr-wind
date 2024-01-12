@@ -68,8 +68,8 @@ temperature, respectively.
    complicated MMC modeling scenarios, e.g., with complex background conditions
    and/or uncertainty in the mesoscale data. The default is apply the
    :input_param:`ABLMesoForcing*.forcing_scheme` for the full mesoscale profile
-   over the entire microscale domain. Other options include "indirectToConstant"
-   and "indirectToDirect".
+   over the entire microscale domain. Other options include "directToConstant",
+   "indirectToConstant", and "indirectToDirect".
    
    When blending to a constant forcing profile, the slope of the forcing
    profile at the transition height (specified by
