@@ -45,8 +45,8 @@ ABLMesoscaleForcing::ABLMesoscaleForcing(
         if (!haveForcingTransition()) {
             if (!m_user_specified_weighting) {
                 // default is to have uniform weighting throughout
-                amrex::Print() << "  using default regression weighting"
-                               << std::endl;
+                amrex::Print()
+                    << "  using default regression weighting" << std::endl;
                 amrex::Real zmin = m_mesh.Geom(0).ProbLo(m_axis);
                 amrex::Real zmax = m_mesh.Geom(0).ProbHi(m_axis);
                 m_weighting_heights = {zmin, zmax};
@@ -89,9 +89,7 @@ void ABLMesoscaleForcing::setTransitionWeighting()
     amrex::Real zmax = m_mesh.Geom(0).ProbHi(m_axis);
 
     m_blending_heights = {
-        zmin,
-        m_transition_height,
-        m_transition_height + m_transition_thickness,
+        zmin, m_transition_height, m_transition_height + m_transition_thickness,
         zmax};
     m_blending_values = {1.0, 1.0, 0.0, 0.0};
 
@@ -117,8 +115,8 @@ void ABLMesoscaleForcing::updateWeights()
     }
 
     if (haveForcingTransition()) {
-        // note the blending weights will differ from the regression weights if a
-        // user-specified weighting profile is specified
+        // note the blending weights will differ from the regression weights if
+        // a user-specified weighting profile is specified
         for (int i = 0; i < m_nht; ++i) {
             m_blend[i] =
                 interp::linear(m_blending_heights, m_blending_values, m_zht[i]);
@@ -283,7 +281,8 @@ void ABLMesoscaleForcing::blendForcings(
 {
     amrex::Print() << "Blending forcings" << std::endl;
     for (int iht = 0; iht < m_nht; iht++) {
-        error[iht] = m_blend[iht] * lower[iht] + (1.0 - m_blend[iht]) * upper[iht];
+        error[iht] =
+            m_blend[iht] * lower[iht] + (1.0 - m_blend[iht]) * upper[iht];
     }
 }
 
