@@ -57,9 +57,9 @@ ABLMesoscaleForcing::ABLMesoscaleForcing(
             if (pp.query("constant_transition_height", m_transition_height) ==
                 1) {
                 amrex::Print() << "  fixed transition layer between "
-                    << m_transition_height << " and "
-                    << m_transition_height + m_transition_thickness
-                    << std::endl;
+                               << m_transition_height << " and "
+                               << m_transition_height + m_transition_thickness
+                               << std::endl;
                 // set weighting profile
                 setTransitionWeighting();
             } else {
