@@ -50,15 +50,12 @@ protected:
     // - input (or current value of, if forcing_transition is specified)
     // regression weighting profile
     std::string m_forcing_transition;
-    amrex::Real m_transition_height; // constant or variable
+    amrex::Real m_transition_height;
     bool m_update_transition_height{false};
-    amrex::Real m_transition_thickness; // constant
+    amrex::Real m_transition_thickness;
 
-    // - WORKAROUND
-    amrex::Vector<amrex::Real> m_transition_height_hist;
-
-    amrex::Vector<amrex::Real> m_weighting_heights; // constant or variable
-    amrex::Vector<amrex::Real> m_weighting_values;  // constant or variable
+    amrex::Vector<amrex::Real> m_weighting_heights;
+    amrex::Vector<amrex::Real> m_weighting_values;
     bool m_user_specified_weighting{false};
 
     // - W(z) at planar averaging heights
