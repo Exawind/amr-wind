@@ -30,7 +30,7 @@ ABLMesoscaleForcing::ABLMesoscaleForcing(
     if (amrex::toLower(m_forcing_scheme) == "indirect") {
         if (pp.queryarr("weighting_heights", m_weighting_heights) == 1) {
             pp.getarr("weighting_values", m_weighting_values);
-            amrex::Print() << "  given weighting profile" << std::endl;
+            amrex::Print() << "  given weighting profile:" << std::endl;
             for (int i = 0; i < m_weighting_heights.size(); ++i) {
                 amrex::Print() << "  " << m_weighting_heights[i] << " "
                                << m_weighting_values[i] << std::endl;
@@ -56,6 +56,10 @@ ABLMesoscaleForcing::ABLMesoscaleForcing(
                 m_transition_thickness); // constant, required
             if (pp.query("constant_transition_height", m_transition_height) ==
                 1) {
+                amrex::Print() << "  fixed transition layer between "
+                    << m_transition_height << " and "
+                    << m_transition_height + m_transition_thickness
+                    << std::endl;
                 // set weighting profile
                 setTransitionWeighting();
             } else {
