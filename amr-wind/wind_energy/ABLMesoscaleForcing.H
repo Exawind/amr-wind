@@ -80,6 +80,11 @@ protected:
     //
     // forcing profile manipulation
     //
+    bool haveForcingTransition()
+    {
+        return (amrex::toLower(m_forcing_transition) != "none");
+    }
+
     bool forcingToConstant()
     {
         // - check if m_forcing_transition ends with "Constant"

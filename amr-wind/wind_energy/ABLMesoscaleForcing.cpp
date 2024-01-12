@@ -42,7 +42,7 @@ ABLMesoscaleForcing::ABLMesoscaleForcing(
             m_user_specified_weighting = true;
         }
 
-        if (amrex::toLower(m_forcing_transition) == "none") {
+        if (!haveForcingTransition()) {
             if (!m_user_specified_weighting) {
                 // default is to have uniform weighting throughout
                 amrex::Print() << "  using default regression weighting"
@@ -116,11 +116,13 @@ void ABLMesoscaleForcing::updateWeights()
             interp::linear(m_weighting_heights, m_weighting_values, m_zht[i]);
     }
 
-    // note the blending weights will differ from the regression weights if a
-    // user-specified weighting profile is specified
-    for (int i = 0; i < m_nht; ++i) {
-        m_blend[i] =
-            interp::linear(m_blending_heights, m_blending_values, m_zht[i]);
+    if (haveForcingTransition()) {
+        // note the blending weights will differ from the regression weights if a
+        // user-specified weighting profile is specified
+        for (int i = 0; i < m_nht; ++i) {
+            m_blend[i] =
+                interp::linear(m_blending_heights, m_blending_values, m_zht[i]);
+        }
     }
 }
 
@@ -133,8 +135,9 @@ void ABLMesoscaleForcing::indirectForcingInit()
         // - partial profile assim w/ variable transition height (1st step only)
         amrex::Print() << "Initializing indirect forcing" << std::endl;
         m_W.resize(m_nht);
+        m_blend.resize(m_nht);
         updateWeights();
-    } else if (amrex::toLower(m_forcing_transition) != "none") {
+    } else if (haveForcingTransition()) {
         // Will be here for:
         // - partial profile assim w/ variable transition height
         amrex::Print() << "Reinitializing indirect forcing" << std::endl;
