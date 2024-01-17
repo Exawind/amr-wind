@@ -139,4 +139,16 @@ Example::
 The first line of the file contains the total number of probes for this set.
 This is followed by the coordinates (three real numbers), one line per probe.
 
+Sampling on a volume
+`````````````````````
 
+The ``VolumeSampler`` samples a 3D volume that starts at ``origin`` and
+extends to ``axis``. The resolution in all directions is specified by
+``num_points``.
+
+Example::
+
+  sampling.volume1.type        = VolumeSampler
+  sampling.volume1.axis        = 3.0 1.0 0.5
+  sampling.volume1.origin      = 0.0 0.0 -0.5
+  sampling.volume1.num_points  = 30 10 10
