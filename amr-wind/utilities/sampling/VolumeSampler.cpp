@@ -46,8 +46,9 @@ void VolumeSampler::sampling_locations(SampleLocType& locs) const
         for (int j = 0; j < m_npts_dir[1]; ++j) {
             for (int i = 0; i < m_npts_dir[0]; ++i) {
                 for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-                    locs[idx][d] =
-                        m_origin[d] + dx[d] * i + dx[d] * j + dx[d] * k;
+                    locs[idx][0] = m_origin[0] + dx[0] * i;
+                    locs[idx][1] = m_origin[1] + dx[1] * j;
+                    locs[idx][2] = m_origin[2] + dx[2] * k;
                 }
                 ++idx;
             }
