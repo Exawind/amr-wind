@@ -25,7 +25,7 @@ void VolumeSampler::initialize(const std::string& key)
     const size_t tmp = m_npts_dir[0] * m_npts_dir[1] * m_npts_dir[2];
     if (tmp > static_cast<size_t>(std::numeric_limits<int>::max())) {
         amrex::Abort(
-            "VolumeSampler: Plane definition " + key +
+            "VolumeSampler: Volume definition " + key +
             " exceeds 32-bit integer limits");
     }
     m_npts = static_cast<int>(tmp);
@@ -35,21 +35,17 @@ void VolumeSampler::sampling_locations(SampleLocType& locs) const
 {
     locs.resize(m_npts);
 
-    amrex::Array<amrex::Real, AMREX_SPACEDIM> dx;
-
-    for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-        dx[d] = m_axis[d] / m_npts_dir[d];
-    }
+    const amrex::Array<amrex::Real, AMREX_SPACEDIM> dx = {
+        m_axis[0] / m_npts_dir[0], m_axis[1] / m_npts_dir[1],
+        m_axis[2] / m_npts_dir[2]};
 
     int idx = 0;
     for (int k = 0; k < m_npts_dir[2]; ++k) {
         for (int j = 0; j < m_npts_dir[1]; ++j) {
             for (int i = 0; i < m_npts_dir[0]; ++i) {
-                for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-                    locs[idx][0] = m_origin[0] + dx[0] * i;
-                    locs[idx][1] = m_origin[1] + dx[1] * j;
-                    locs[idx][2] = m_origin[2] + dx[2] * k;
-                }
+                locs[idx][0] = m_origin[0] + dx[0] * i;
+                locs[idx][1] = m_origin[1] + dx[1] * j;
+                locs[idx][2] = m_origin[2] + dx[2] * k;
                 ++idx;
             }
         }

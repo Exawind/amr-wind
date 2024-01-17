@@ -4,6 +4,7 @@
 #include "amr-wind/utilities/sampling/Sampling.H"
 #include "amr-wind/utilities/sampling/SamplingContainer.H"
 #include "amr-wind/utilities/sampling/PlaneSampler.H"
+#include "amr-wind/utilities/sampling/VolumeSampler.H"
 
 namespace amr_wind_tests {
 
@@ -290,6 +291,22 @@ TEST_F(SamplingTest, plane_sampler)
         std::cerr << std::endl;
     }
 #endif
+}
+
+TEST_F(SamplingTest, volume_sampler)
+{
+    initialize_mesh();
+    amrex::ParmParse pp("volume");
+    pp.addarr("axis", amrex::Vector<double>{1.0, 1.0, 1.0});
+    pp.addarr("origin", amrex::Vector<double>{0.0, 0.0, 0.0});
+    pp.addarr("num_points", amrex::Vector<int>{3, 5, 5});
+
+    amr_wind::sampling::VolumeSampler volume(sim());
+    volume.initialize("volume");
+    amr_wind::sampling::VolumeSampler::SampleLocType locs;
+    volume.sampling_locations(locs);
+
+    ASSERT_EQ(locs.size(), 3 * 5 * 5);
 }
 
 } // namespace amr_wind_tests
