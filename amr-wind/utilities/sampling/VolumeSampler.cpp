@@ -14,11 +14,11 @@ void VolumeSampler::initialize(const std::string& key)
 {
     amrex::ParmParse pp(key);
 
-    pp.getarr("axis", m_axis);
-    pp.getarr("origin", m_origin);
+    pp.getarr("hi", m_hi);
+    pp.getarr("lo", m_lo);
     pp.getarr("num_points", m_npts_dir);
-    AMREX_ALWAYS_ASSERT(static_cast<int>(m_axis.size()) == AMREX_SPACEDIM);
-    AMREX_ALWAYS_ASSERT(static_cast<int>(m_origin.size()) == AMREX_SPACEDIM);
+    AMREX_ALWAYS_ASSERT(static_cast<int>(m_hi.size()) == AMREX_SPACEDIM);
+    AMREX_ALWAYS_ASSERT(static_cast<int>(m_lo.size()) == AMREX_SPACEDIM);
     AMREX_ALWAYS_ASSERT(static_cast<int>(m_npts_dir.size()) == AMREX_SPACEDIM);
 
     // Update total number of points
@@ -36,16 +36,16 @@ void VolumeSampler::sampling_locations(SampleLocType& locs) const
     locs.resize(m_npts);
 
     const amrex::Array<amrex::Real, AMREX_SPACEDIM> dx = {
-        m_axis[0] / m_npts_dir[0], m_axis[1] / m_npts_dir[1],
-        m_axis[2] / m_npts_dir[2]};
+        m_hi[0] / m_npts_dir[0], m_hi[1] / m_npts_dir[1],
+        m_hi[2] / m_npts_dir[2]};
 
     int idx = 0;
     for (int k = 0; k < m_npts_dir[2]; ++k) {
         for (int j = 0; j < m_npts_dir[1]; ++j) {
             for (int i = 0; i < m_npts_dir[0]; ++i) {
-                locs[idx][0] = m_origin[0] + dx[0] * i;
-                locs[idx][1] = m_origin[1] + dx[1] * j;
-                locs[idx][2] = m_origin[2] + dx[2] * k;
+                locs[idx][0] = m_lo[0] + dx[0] * i;
+                locs[idx][1] = m_lo[1] + dx[1] * j;
+                locs[idx][2] = m_lo[2] + dx[2] * k;
                 ++idx;
             }
         }
@@ -58,8 +58,8 @@ void VolumeSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
     const std::vector<int> ijk{m_npts_dir[0], m_npts_dir[1], m_npts_dir[2]};
     grp.put_attr("sampling_type", identifier());
     grp.put_attr("ijk_dims", ijk);
-    grp.put_attr("origin", m_origin);
-    grp.put_attr("axis", m_axis);
+    grp.put_attr("lo", m_lo);
+    grp.put_attr("hi", m_hi);
 }
 
 void VolumeSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}

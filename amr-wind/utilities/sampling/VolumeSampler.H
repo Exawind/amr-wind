@@ -9,7 +9,7 @@ namespace amr_wind::sampling {
  *  \ingroup sampling
  *
  *  Defines probe locations on a volume defined by an
- *  `axis` that originates from the point `origin`.
+ *  `hi` that loates from the point `lo`.
  *  The resolution of the volume is defined by the vector npts_dir.
  *
  */
@@ -48,8 +48,8 @@ public:
     int num_points() const override { return m_npts; }
 
 private:
-    amrex::Vector<amrex::Real> m_axis;
-    amrex::Vector<amrex::Real> m_origin;
+    amrex::Vector<amrex::Real> m_hi;
+    amrex::Vector<amrex::Real> m_lo;
     amrex::Vector<int> m_npts_dir;
 
     std::string m_label;

@@ -297,8 +297,8 @@ TEST_F(SamplingTest, volume_sampler)
 {
     initialize_mesh();
     amrex::ParmParse pp("volume");
-    pp.addarr("axis", amrex::Vector<double>{1.0, 1.0, 1.0});
-    pp.addarr("origin", amrex::Vector<double>{0.0, 0.0, 0.0});
+    pp.addarr("hi", amrex::Vector<double>{1.0, 1.0, 1.0});
+    pp.addarr("lo", amrex::Vector<double>{0.0, 0.0, 0.0});
     pp.addarr("num_points", amrex::Vector<int>{3, 5, 5});
 
     amr_wind::sampling::VolumeSampler volume(sim());
