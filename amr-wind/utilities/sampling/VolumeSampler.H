@@ -9,7 +9,7 @@ namespace amr_wind::sampling {
  *  \ingroup sampling
  *
  *  Defines probe locations on a volume defined by an
- *  `hi` that loates from the point `lo`.
+ *  ` volume that originates from the point `lo` and extends to `hi`.
  *  The resolution of the volume is defined by the vector npts_dir.
  *
  */

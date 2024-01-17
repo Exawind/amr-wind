@@ -36,8 +36,9 @@ void VolumeSampler::sampling_locations(SampleLocType& locs) const
     locs.resize(m_npts);
 
     const amrex::Array<amrex::Real, AMREX_SPACEDIM> dx = {
-        m_hi[0] / m_npts_dir[0], m_hi[1] / m_npts_dir[1],
-        m_hi[2] / m_npts_dir[2]};
+        (m_hi[0] - m_lo[0]) / m_npts_dir[0],
+        (m_hi[1] - m_lo[1]) / m_npts_dir[1],
+        (m_hi[2] - m_lo[2]) / m_npts_dir[2]};
 
     int idx = 0;
     for (int k = 0; k < m_npts_dir[2]; ++k) {
