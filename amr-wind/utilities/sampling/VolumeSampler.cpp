@@ -22,7 +22,8 @@ void VolumeSampler::initialize(const std::string& key)
     AMREX_ALWAYS_ASSERT(static_cast<int>(m_npts_dir.size()) == AMREX_SPACEDIM);
 
     // Update total number of points
-    const size_t tmp = m_npts_dir[0] * m_npts_dir[1] * m_npts_dir[2];
+    const size_t tmp =
+        static_cast<size_t>(m_npts_dir[0]) * m_npts_dir[1] * m_npts_dir[2];
     if (tmp > static_cast<size_t>(std::numeric_limits<int>::max())) {
         amrex::Abort(
             "VolumeSampler: Volume definition " + key +
