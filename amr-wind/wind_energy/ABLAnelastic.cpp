@@ -37,8 +37,6 @@ void ABLAnelastic::post_regrid_actions()
     if (!m_is_anelastic) {
         return;
     }
-    m_sim.repo().declare_field("reference_density", 1, 0, 1);
-    m_sim.repo().declare_nd_field("reference_pressure", 1, 0, 1);
     initialize_data();
 }
 
