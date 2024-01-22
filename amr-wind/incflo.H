@@ -185,6 +185,9 @@ private:
 
     DiffusionType m_diff_type = DiffusionType::Crank_Nicolson;
 
+    //! reconstruct true pressure
+    bool m_reconstruct_true_pressure{false};
+
     //
     // end of member variables
     //

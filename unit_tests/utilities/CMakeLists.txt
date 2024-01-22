@@ -9,6 +9,7 @@ target_sources(${amr_wind_unit_test_exe_name} PRIVATE
   test_free_surface.cpp
   test_wave_energy.cpp
   test_diagnostics.cpp
+  test_multilevelvector.cpp
   )
 
 if (AMR_WIND_ENABLE_NETCDF)
