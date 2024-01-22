@@ -7,6 +7,7 @@ ABLAnelastic::ABLAnelastic(CFDSim& sim) : m_sim(sim)
     {
         amrex::ParmParse pp("ABL");
         pp.query("anelastic", m_is_anelastic);
+        pp.query("bottom_reference_pressure", m_bottom_reference_pressure);
     }
     {
         amrex::ParmParse pp("incflo");
@@ -49,13 +50,11 @@ void ABLAnelastic::initialize_data()
     for (int lev = 0; lev < m_density.size(); lev++) {
         auto& dens = m_density.host_data(lev);
         auto& pres = m_pressure.host_data(lev);
+        const auto& dx = m_sim.mesh().Geom(lev).CellSizeArray();
         dens.assign(dens.size(), m_rho0_const);
-        pres[0] = m_atmospheric_pressure;
-        const amrex::Real factor =
-            lev == 0 ? 1
-                     : std::pow(m_sim.mesh().refRatio(lev - 1)[m_axis], lev);
+        pres[0] = m_bottom_reference_pressure;
         for (int k = 0; k < pres.size() - 1; k++) {
-            pres[k + 1] = pres[k] - dens[k] * m_gravity[m_axis] / factor;
+            pres[k + 1] = pres[k] - dens[k] * m_gravity[m_axis] * dx[m_axis];
         }
     }
     m_density.copy_host_to_device();

@@ -33,7 +33,7 @@ private:
 
     amrex::Real m_rho0_const{1.0};
 
-    amrex::Real m_atmospheric_pressure{1.01325e5};
+    amrex::Real m_bottom_reference_pressure{1.01325e5};
 
     const int m_axis{2};
 
