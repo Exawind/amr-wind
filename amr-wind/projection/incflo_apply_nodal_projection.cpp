@@ -126,9 +126,14 @@ void incflo::ApplyProjection(
         }
     }
 
-    bool variable_density =
+    bool is_anelastic = false;
+    if (m_sim.physics_manager().contains("ABL")) {
+        const auto& abl = m_sim.physics_manager().get<amr_wind::ABL>();
+        is_anelastic = abl.anelastic().is_anelastic();
+    }
+    const bool variable_density =
         (!m_sim.pde_manager().constant_density() ||
-         m_sim.physics_manager().contains("MultiPhase"));
+         m_sim.physics_manager().contains("MultiPhase") || is_anelastic);
 
     bool mesh_mapping = m_sim.has_mesh_mapping();
 
@@ -443,7 +448,12 @@ void incflo::UpdateGradP(
 
     // Pressure and sigma are necessary to calculate the pressure gradient
 
-    bool variable_density =
+    bool is_anelastic = false;
+    if (m_sim.physics_manager().contains("ABL")) {
+        const auto& abl = m_sim.physics_manager().get<amr_wind::ABL>();
+        is_anelastic = abl.anelastic().is_anelastic();
+    }
+    const bool variable_density =
         (!m_sim.pde_manager().constant_density() ||
          m_sim.physics_manager().contains("MultiPhase"));
 

@@ -7,6 +7,7 @@
 #include "amr-wind/equation_systems/PDEOps.H"
 #include "amr-wind/equation_systems/CompRHSOps.H"
 #include "amr-wind/equation_systems/DiffusionOps.H"
+#include "amr-wind/wind_energy/ABL.H"
 
 namespace amr_wind::pde {
 
@@ -63,9 +64,14 @@ public:
                 new TurbulenceOp<PDE>(m_sim.turbulence_model(), m_fields));
         }
 
-        bool variable_density =
+        bool is_anelastic = false;
+        if (m_sim.physics_manager().contains("ABL")) {
+            const auto& abl = m_sim.physics_manager().get<ABL>();
+            is_anelastic = abl.anelastic().is_anelastic();
+        }
+        const bool variable_density =
             (!m_sim.pde_manager().constant_density() ||
-             m_sim.physics_manager().contains("MultiPhase"));
+             m_sim.physics_manager().contains("MultiPhase") || is_anelastic);
 
         m_adv_op.reset(new AdvectionOp<PDE, Scheme>(
             m_fields, m_sim.has_overset(), variable_density,
@@ -86,9 +92,14 @@ public:
                 m_fields, m_sim.has_overset(), m_sim.has_mesh_mapping()));
         }
 
-        bool variable_density =
+        bool is_anelastic = false;
+        if (m_sim.physics_manager().contains("ABL")) {
+            const auto& abl = m_sim.physics_manager().get<ABL>();
+            is_anelastic = abl.anelastic().is_anelastic();
+        }
+        const bool variable_density =
             (!m_sim.pde_manager().constant_density() ||
-             m_sim.physics_manager().contains("MultiPhase"));
+             m_sim.physics_manager().contains("MultiPhase") || is_anelastic);
 
         m_adv_op.reset(new AdvectionOp<PDE, Scheme>(
             m_fields, m_sim.has_overset(), variable_density,
