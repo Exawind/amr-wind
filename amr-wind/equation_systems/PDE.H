@@ -66,7 +66,7 @@ public:
 
         bool is_anelastic = false;
         if (m_sim.physics_manager().contains("ABL")) {
-            const auto& abl = m_sim.physics_manager().get<ABL>();
+            const auto& abl = m_sim.physics_manager().template get<ABL>();
             is_anelastic = abl.anelastic().is_anelastic();
         }
         const bool variable_density =
@@ -94,7 +94,7 @@ public:
 
         bool is_anelastic = false;
         if (m_sim.physics_manager().contains("ABL")) {
-            const auto& abl = m_sim.physics_manager().get<ABL>();
+            const auto& abl = m_sim.physics_manager().template get<ABL>();
             is_anelastic = abl.anelastic().is_anelastic();
         }
         const bool variable_density =
