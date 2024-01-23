@@ -148,7 +148,7 @@ void incflo::ApplyProjection(
     amr_wind::Field const* mesh_detJ =
         mesh_mapping ? &(m_repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::CELL))
                      : nullptr;
-    const auto ref_density =
+    const auto* ref_density =
         is_anelastic ? &(m_repo.get_field("reference_density")) : nullptr;
 
     // TODO: Mesh mapping doesn't work with immersed boundaries
@@ -483,7 +483,7 @@ void incflo::UpdateGradP(
     amr_wind::Field const* mesh_detJ =
         mesh_mapping ? &(m_repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::CELL))
                      : nullptr;
-    const auto ref_density =
+    const auto* ref_density =
         is_anelastic ? &(m_repo.get_field("reference_density")) : nullptr;
 
     // Create sigma while accounting for mesh mapping

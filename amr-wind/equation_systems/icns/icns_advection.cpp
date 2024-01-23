@@ -157,7 +157,7 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
         auto scaled_density =
             is_anelastic ? m_repo.create_scratch_field(density.num_comp(), 0)
                          : nullptr;
-        const auto ref_density =
+        const auto* ref_density =
             is_anelastic ? &(m_repo.get_field("reference_density")) : nullptr;
 
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
