@@ -41,12 +41,17 @@ amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> get_projection_bc(
 } // namespace
 
 MacProjOp::MacProjOp(
-    FieldRepo& repo, bool has_overset, bool variable_density, bool mesh_mapping)
+    FieldRepo& repo,
+    bool has_overset,
+    bool variable_density,
+    bool mesh_mapping,
+    bool is_anelastic)
     : m_repo(repo)
     , m_options("mac_proj")
     , m_has_overset(has_overset)
     , m_variable_density(variable_density)
     , m_mesh_mapping(mesh_mapping)
+    , m_is_anelastic(is_anelastic)
 {
     amrex::ParmParse pp("incflo");
     pp.query("density", m_rho_0);
@@ -140,7 +145,8 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
     // For now assume variable viscosity for overset
     // this can be removed once the nsolve overset
     // masking is implemented in cell based AMReX poisson solvers
-    if (m_variable_density || m_has_overset || m_mesh_mapping) {
+    if (m_variable_density || m_has_overset || m_mesh_mapping ||
+        m_is_anelastic) {
         amrex::Vector<amrex::Array<amrex::MultiFab const*, ICNS::ndim>>
             rho_face_const;
         rho_face_const.reserve(m_repo.num_active_levels());
@@ -153,19 +159,18 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
         amrex::Vector<amrex::Array<amrex::MultiFab*, ICNS::ndim>> rho_face(
             m_repo.num_active_levels());
 
-        bool is_anelastic = true; // move this elsewhere?
         auto scaled_density =
-            is_anelastic ? m_repo.create_scratch_field(density.num_comp(), 0)
-                         : nullptr;
+            m_is_anelastic ? m_repo.create_scratch_field(density.num_comp(), 0)
+                           : nullptr;
         const auto* ref_density =
-            is_anelastic ? &(m_repo.get_field("reference_density")) : nullptr;
+            m_is_anelastic ? &(m_repo.get_field("reference_density")) : nullptr;
 
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
             rho_face[lev][0] = &(*rho_xf)(lev);
             rho_face[lev][1] = &(*rho_yf)(lev);
             rho_face[lev][2] = &(*rho_zf)(lev);
 
-            if (is_anelastic) {
+            if (m_is_anelastic) {
                 amrex::MultiFab::Copy(
                     (*scaled_density)(lev), density(lev), 0, 0,
                     density.num_comp(), density.num_grow());

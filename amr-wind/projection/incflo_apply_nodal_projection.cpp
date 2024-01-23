@@ -133,7 +133,7 @@ void incflo::ApplyProjection(
     }
     const bool variable_density =
         (!m_sim.pde_manager().constant_density() ||
-         m_sim.physics_manager().contains("MultiPhase") || is_anelastic);
+         m_sim.physics_manager().contains("MultiPhase"));
 
     bool mesh_mapping = m_sim.has_mesh_mapping();
 
@@ -260,7 +260,7 @@ void incflo::ApplyProjection(
     // Create sigma while accounting for mesh mapping
     // sigma = 1/(fac^2)*J * dt/rho
     Vector<amrex::MultiFab> sigma(finest_level + 1);
-    if (variable_density || mesh_mapping) {
+    if (variable_density || mesh_mapping || is_anelastic) {
         int ncomp = mesh_mapping ? AMREX_SPACEDIM : 1;
         for (int lev = 0; lev <= finest_level; ++lev) {
             sigma[lev].define(
@@ -317,7 +317,7 @@ void incflo::ApplyProjection(
 
     amr_wind::MLMGOptions options("nodal_proj");
 
-    if (variable_density || mesh_mapping) {
+    if (variable_density || mesh_mapping || is_anelastic) {
         nodal_projector = std::make_unique<Hydro::NodalProjector>(
             vel, GetVecOfConstPtrs(sigma), Geom(0, finest_level),
             options.lpinfo());
@@ -489,7 +489,7 @@ void incflo::UpdateGradP(
     // Create sigma while accounting for mesh mapping
     // sigma = 1/(fac^2)*J * dt/rho
     Vector<amrex::MultiFab> sigma(finest_level + 1);
-    if (variable_density || mesh_mapping) {
+    if (variable_density || mesh_mapping || is_anelastic) {
         int ncomp = mesh_mapping ? AMREX_SPACEDIM : 1;
         for (int lev = 0; lev <= finest_level; ++lev) {
             sigma[lev].define(
@@ -544,7 +544,7 @@ void incflo::UpdateGradP(
 
     amr_wind::MLMGOptions options("nodal_proj");
 
-    if (variable_density || mesh_mapping) {
+    if (variable_density || mesh_mapping || is_anelastic) {
         nodal_projector = std::make_unique<Hydro::NodalProjector>(
             vel, GetVecOfConstPtrs(sigma), Geom(0, finest_level),
             options.lpinfo());

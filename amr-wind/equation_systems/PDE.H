@@ -71,11 +71,11 @@ public:
         }
         const bool variable_density =
             (!m_sim.pde_manager().constant_density() ||
-             m_sim.physics_manager().contains("MultiPhase") || is_anelastic);
+             m_sim.physics_manager().contains("MultiPhase"));
 
         m_adv_op.reset(new AdvectionOp<PDE, Scheme>(
             m_fields, m_sim.has_overset(), variable_density,
-            m_sim.has_mesh_mapping()));
+            m_sim.has_mesh_mapping(), is_anelastic));
         m_src_op.init_source_terms(m_sim);
 
         // Post-solve operations should also apply after initialization
@@ -99,11 +99,11 @@ public:
         }
         const bool variable_density =
             (!m_sim.pde_manager().constant_density() ||
-             m_sim.physics_manager().contains("MultiPhase") || is_anelastic);
+             m_sim.physics_manager().contains("MultiPhase"));
 
         m_adv_op.reset(new AdvectionOp<PDE, Scheme>(
             m_fields, m_sim.has_overset(), variable_density,
-            m_sim.has_mesh_mapping()));
+            m_sim.has_mesh_mapping(), is_anelastic));
 
         // Post-solve operations should also apply after a regrid
         m_post_solve_op(m_time.current_time());
