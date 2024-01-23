@@ -153,14 +153,30 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
         amrex::Vector<amrex::Array<amrex::MultiFab*, ICNS::ndim>> rho_face(
             m_repo.num_active_levels());
 
+        bool is_anelastic = true; // move this elsewhere?
+        auto scaled_density =
+            is_anelastic ? m_repo.create_scratch_field(density.num_comp(), 0)
+                         : nullptr;
+        const auto ref_density =
+            is_anelastic ? &(m_repo.get_field("reference_density")) : nullptr;
+
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
             rho_face[lev][0] = &(*rho_xf)(lev);
             rho_face[lev][1] = &(*rho_yf)(lev);
             rho_face[lev][2] = &(*rho_zf)(lev);
 
-            amrex::average_cellcenter_to_face(
-                rho_face[lev], density(lev), geom[lev]);
-
+            if (is_anelastic) {
+                amrex::MultiFab::Copy(
+                    (*scaled_density)(lev), density(lev), 0, 0,
+                    density.num_comp(), density.num_grow());
+                (*scaled_density)(lev).divide(
+                    (*ref_density)(lev), 0, density.num_comp(), 0);
+                amrex::average_cellcenter_to_face(
+                    rho_face[lev], (*scaled_density)(lev), geom[lev]);
+            } else {
+                amrex::average_cellcenter_to_face(
+                    rho_face[lev], density(lev), geom[lev]);
+            }
             if (m_mesh_mapping) {
                 mac_proj_to_uniform_space(
                     m_repo, u_mac, v_mac, w_mac, rho_face[lev], factor, lev);

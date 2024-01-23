@@ -148,6 +148,8 @@ void incflo::ApplyProjection(
     amr_wind::Field const* mesh_detJ =
         mesh_mapping ? &(m_repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::CELL))
                      : nullptr;
+    const auto ref_density =
+        is_anelastic ? &(m_repo.get_field("reference_density")) : nullptr;
 
     // TODO: Mesh mapping doesn't work with immersed boundaries
     // Do the pre pressure correction work -- this applies to IB only
@@ -178,10 +180,16 @@ void incflo::ApplyProjection(
                 amrex::Array4<amrex::Real const> fac =
                     mesh_mapping ? ((*mesh_fac)(lev).const_array(mfi))
                                  : amrex::Array4<amrex::Real const>();
+                const auto& ref_rho = is_anelastic
+                                          ? (*ref_density)(lev).const_array(mfi)
+                                          : amrex::Array4<amrex::Real>();
 
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         Real soverrho = scaling_factor / rho(i, j, k);
+                        if (is_anelastic) {
+                            soverrho *= ref_rho(i, j, k);
+                        }
                         amrex::Real fac_x =
                             mesh_mapping ? (fac(i, j, k, 0)) : 1.0;
                         amrex::Real fac_y =
@@ -271,6 +279,9 @@ void incflo::ApplyProjection(
                 amrex::Array4<amrex::Real const> detJ =
                     mesh_mapping ? ((*mesh_detJ)(lev).const_array(mfi))
                                  : amrex::Array4<amrex::Real const>();
+                const auto& ref_rho = is_anelastic
+                                          ? (*ref_density)(lev).const_array(mfi)
+                                          : amrex::Array4<amrex::Real>();
 
                 amrex::ParallelFor(
                     bx, ncomp,
@@ -281,6 +292,9 @@ void incflo::ApplyProjection(
                             mesh_mapping ? (detJ(i, j, k)) : 1.0;
                         sig(i, j, k, n) = std::pow(fac_cc, -2.) * det_j *
                                           scaling_factor / rho(i, j, k);
+                        if (is_anelastic) {
+                            sig(i, j, k, n) *= ref_rho(i, j, k);
+                        }
                     });
             }
         }
@@ -469,6 +483,8 @@ void incflo::UpdateGradP(
     amr_wind::Field const* mesh_detJ =
         mesh_mapping ? &(m_repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::CELL))
                      : nullptr;
+    const auto ref_density =
+        is_anelastic ? &(m_repo.get_field("reference_density")) : nullptr;
 
     // Create sigma while accounting for mesh mapping
     // sigma = 1/(fac^2)*J * dt/rho
@@ -492,6 +508,9 @@ void incflo::UpdateGradP(
                 amrex::Array4<amrex::Real const> detJ =
                     mesh_mapping ? ((*mesh_detJ)(lev).const_array(mfi))
                                  : amrex::Array4<amrex::Real const>();
+                const auto& ref_rho = is_anelastic
+                                          ? (*ref_density)(lev).const_array(mfi)
+                                          : amrex::Array4<amrex::Real>();
 
                 amrex::ParallelFor(
                     bx, ncomp,
@@ -502,6 +521,9 @@ void incflo::UpdateGradP(
                             mesh_mapping ? (detJ(i, j, k)) : 1.0;
                         sig(i, j, k, n) = std::pow(fac_cc, -2.) * det_j *
                                           scaling_factor / rho(i, j, k);
+                        if (is_anelastic) {
+                            sig(i, j, k, n) *= ref_rho(i, j, k);
+                        }
                     });
             }
         }
