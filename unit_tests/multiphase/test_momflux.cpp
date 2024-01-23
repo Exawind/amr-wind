@@ -59,6 +59,82 @@ void initialize_volume_fractions(
     // Left half is liquid, right half is gas
 }
 
+void check_accuracy(
+    const int dir,
+    const amrex::Real tol,
+    const amrex::Real rho1,
+    const amrex::Real rho2,
+    const amrex::Real vel_val,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& problo,
+    const amrex::GpuArray<amrex::Real, 3>& varr,
+    const amrex::Box& bx,
+    const amrex::Array4<const amrex::Real>& um,
+    const amrex::Array4<const amrex::Real>& vm,
+    const amrex::Array4<const amrex::Real>& wm,
+    const amrex::Array4<const amrex::Real>& rf,
+    const amrex::Array4<const amrex::Real>& vel,
+    const amrex::Array4<const amrex::Real>& dqdt)
+{
+    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        int icheck = 0;
+        switch (dir) {
+        case 0:
+            icheck = i;
+            break;
+        case 1:
+            icheck = j;
+            break;
+        case 2:
+            icheck = k;
+            break;
+        }
+        // x is face location
+        const amrex::Real x = problo[dir] + icheck * dx[dir];
+#ifndef AMREX_USE_GPU
+        // Check that MAC velocity is as expected, unchanged
+        EXPECT_NEAR(um(i, j, k), varr[0], tol);
+        EXPECT_NEAR(vm(i, j, k), varr[1], tol);
+        EXPECT_NEAR(wm(i, j, k), varr[2], tol);
+        // Check that velocity is unchanged after advection
+        EXPECT_NEAR(vel(i, j, k, 0), varr[0], tol);
+        EXPECT_NEAR(vel(i, j, k, 1), varr[1], tol);
+        EXPECT_NEAR(vel(i, j, k, 2), varr[2], tol);
+
+        // Test volume fractions at faces
+        if (x == 0.5) {
+            // Center face (coming from left cell)
+            amrex::Real advvof = 1.0;
+            amrex::Real advrho = rho1 * advvof + rho2 * (1.0 - advvof);
+            EXPECT_NEAR(rf(i, j, k), advrho, tol);
+        } else {
+            if (x == 0.0) {
+                // Left face (coming from right cell, periodic
+                // BC)
+                amrex::Real advvof = 0.0;
+                amrex::Real advrho = rho1 * advvof + rho2 * (1.0 - advvof);
+                EXPECT_NEAR(rf(i, j, k), advrho, tol);
+            }
+        }
+
+        // Test momentum fluxes by checking convective term
+        if (icheck == 0) {
+            // Left cell (gas entering, liquid leaving)
+            EXPECT_NEAR(
+                dqdt(i, j, k, dir), vel_val * vel_val * (rho2 - rho1) / 0.5,
+                tol);
+        } else {
+            if (icheck == 1) {
+                // Right cell (liquid entering, gas leaving)
+                EXPECT_NEAR(
+                    dqdt(i, j, k, dir), vel_val * vel_val * (rho1 - rho2) / 0.5,
+                    tol);
+            }
+        }
+#endif
+    });
+}
+
 } // namespace
 
 class MassMomFluxOpTest : public MeshTest
@@ -131,14 +207,10 @@ protected:
         sim().init_physics();
 
         // Initialize constant velocity field
-        amrex::Array<amrex::Real, 3> varr = {0};
+        amrex::GpuArray<amrex::Real, 3> varr = {0};
         varr[dir] = m_vel;
         auto& velocity = mom_eqn.fields().field;
         init_field3(velocity, varr[0], varr[1], varr[2]);
-        amrex::Real uvel, vvel, wvel;
-        uvel = varr[0];
-        vvel = varr[1];
-        wvel = varr[2];
 
         // Initialize volume fraction field
         auto& vof = repo.get_field("vof");
@@ -209,92 +281,54 @@ protected:
 
         // Base level
         const auto& geom = repo.mesh().Geom();
-        int lev = 0;
-        const auto& dx = geom[lev].CellSizeArray();
-        const auto& problo = geom[lev].ProbLoArray();
-        for (amrex::MFIter mfi(vof(lev)); mfi.isValid(); ++mfi) {
-
+        run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
+            const auto& dx = geom[lev].CellSizeArray();
+            const auto& problo = geom[lev].ProbLoArray();
+            const auto& bx = mfi.validbox();
             const auto& um = umac(lev).const_array(mfi);
             const auto& vm = vmac(lev).const_array(mfi);
             const auto& wm = wmac(lev).const_array(mfi);
             const auto& rf = advrho_f(lev).const_array(mfi);
             const auto& vel = velocity(lev).const_array(mfi);
             const auto& dqdt = conv_term(lev).const_array(mfi);
-
-            // Small mesh, loop in serial for check
-            for (int i = 0; i < 2; ++i) {
-                for (int j = 0; j < 2; ++j) {
-                    for (int k = 0; k < 2; ++k) {
-                        int icheck = 0;
-                        switch (dir) {
-                        case 0:
-                            icheck = i;
-                            break;
-                        case 1:
-                            icheck = j;
-                            break;
-                        case 2:
-                            icheck = k;
-                            break;
-                        }
-                        // x is face location
-                        const amrex::Real x = problo[dir] + icheck * dx[dir];
-
-                        // Check that MAC velocity is as expected, unchanged
-                        EXPECT_NEAR(um(i, j, k), uvel, tol);
-                        EXPECT_NEAR(vm(i, j, k), vvel, tol);
-                        EXPECT_NEAR(wm(i, j, k), wvel, tol);
-                        // Check that velocity is unchanged after advection
-                        EXPECT_NEAR(vel(i, j, k, 0), uvel, tol);
-                        EXPECT_NEAR(vel(i, j, k, 1), vvel, tol);
-                        EXPECT_NEAR(vel(i, j, k, 2), wvel, tol);
-
-                        // Test volume fractions at faces
-                        if (x == 0.5) {
-                            // Center face (coming from left cell)
-                            amrex::Real advvof = 1.0;
-                            amrex::Real advrho =
-                                m_rho1 * advvof + m_rho2 * (1.0 - advvof);
-                            EXPECT_NEAR(rf(i, j, k), advrho, tol);
-                        } else {
-                            if (x == 0.0) {
-                                // Left face (coming from right cell, periodic
-                                // BC)
-                                amrex::Real advvof = 0.0;
-                                amrex::Real advrho =
-                                    m_rho1 * advvof + m_rho2 * (1.0 - advvof);
-                                EXPECT_NEAR(rf(i, j, k), advrho, tol);
-                            }
-                        }
-
-                        // Test momentum fluxes by checking convective term
-                        if (icheck == 0) {
-                            // Left cell (gas entering, liquid leaving)
-                            EXPECT_NEAR(
-                                dqdt(i, j, k, dir),
-                                m_vel * m_vel * (m_rho2 - m_rho1) / 0.5, tol);
-                        } else {
-                            if (icheck == 1) {
-                                // Right cell (liquid entering, gas leaving)
-                                EXPECT_NEAR(
-                                    dqdt(i, j, k, dir),
-                                    m_vel * m_vel * (m_rho1 - m_rho2) / 0.5,
-                                    tol);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+            check_accuracy(
+                dir, tol, m_rho1, m_rho2, m_vel, dx, problo, varr, bx, um, vm,
+                wm, rf, vel, dqdt);
+        });
     }
+
     const amrex::Real m_rho1 = 1000.0;
     const amrex::Real m_rho2 = 1.0;
     const amrex::Real m_vel = 5.0;
     const amrex::Real dt = 0.45 * 0.5 / m_vel; // first number is CFL
 };
 
-TEST_F(MassMomFluxOpTest, fluxfaceX) { testing_coorddir(0); }
-TEST_F(MassMomFluxOpTest, fluxfaceY) { testing_coorddir(1); }
-TEST_F(MassMomFluxOpTest, fluxfaceZ) { testing_coorddir(2); }
+TEST_F(MassMomFluxOpTest, fluxfaceX)
+{
+#ifndef AMREX_USE_GPU
+    testing_coorddir(0);
+#else
+    amrex::Print() << "MassMomFluxOpTest doesn't work on GPU yet." << std::endl;
+    GTEST_SKIP();
+#endif
+}
+TEST_F(MassMomFluxOpTest, fluxfaceY)
+{
+#ifndef AMREX_USE_GPU
+    testing_coorddir(1);
+#else
+    amrex::Print() << "MassMomFluxOpTest doesn't work on GPU yet." << std::endl;
+    GTEST_SKIP();
+#endif
+}
+TEST_F(MassMomFluxOpTest, fluxfaceZ)
+{
+#ifndef AMREX_USE_GPU
+    testing_coorddir(2);
+#else
+    amrex::Print() << "MassMomFluxOpTest doesn't work on GPU yet." << std::endl;
+    GTEST_SKIP();
+#endif
+}
 
 } // namespace amr_wind_tests
