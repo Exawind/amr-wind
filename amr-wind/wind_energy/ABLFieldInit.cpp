@@ -56,7 +56,13 @@ void ABLFieldInit::initialize_from_inputfile()
 
     // TODO: Modify this to accept velocity as a function of height
     amrex::ParmParse pp_incflo("incflo");
-    pp_incflo.get("density", m_rho);
+    amrex::ParmParse pp_mphase("MultiPhase");
+    if (!pp_mphase.contains("density_fluid2")) {
+        pp_incflo.get("density", m_rho);
+    } else {
+        pp_mphase.get("density_fluid2", m_rho);
+        // Note: density field will later be overwritten by MultiPhase post_init
+    }
 
     amrex::ParmParse pp_forcing("ABLForcing");
     pp_forcing.query("velocity_timetable", m_vel_timetable);
