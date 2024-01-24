@@ -4,6 +4,7 @@
 #include "amr-wind/utilities/PostProcessing.H"
 #include "amr-wind/overset/OversetManager.H"
 #include "amr-wind/core/ExtSolver.H"
+#include "amr-wind/wind_energy/ABL.H"
 
 #include "AMReX_ParmParse.H"
 
@@ -72,4 +73,12 @@ void CFDSim::activate_mesh_map()
     }
 }
 
+bool CFDSim::is_anelastic()
+{
+    if (m_physics_mgr.contains("ABL")) {
+        const auto& abl = m_physics_mgr.template get<ABL>();
+        return abl.anelastic().is_anelastic();
+    }
+    return false;
+}
 } // namespace amr_wind
