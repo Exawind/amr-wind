@@ -117,7 +117,7 @@ public:
 
     bool has_mesh_mapping() const { return m_mesh_mapping; }
 
-    bool is_anelastic();
+    bool is_anelastic() const;
 
 private:
     amrex::AmrCore& m_mesh;

@@ -73,7 +73,7 @@ void CFDSim::activate_mesh_map()
     }
 }
 
-bool CFDSim::is_anelastic()
+bool CFDSim::is_anelastic() const
 {
     if (m_physics_mgr.contains("ABL")) {
         const auto& abl = m_physics_mgr.template get<ABL>();
