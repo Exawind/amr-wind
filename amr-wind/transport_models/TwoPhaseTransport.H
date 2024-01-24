@@ -32,6 +32,18 @@ public:
         pp.query("laminar_prandtl_fluid1", m_Pr1);
         pp.query("laminar_prandtl_fluid2", m_Pr2);
         pp.query("turbulent_prandtl", m_Prt);
+
+        // Check for single-phase quantities and warn
+        if (pp.contains("viscosity")) {
+            amrex::Print()
+                << "WARNING: single-phase viscosity has been specified but "
+                   "will not be used! (TwoPhaseTransport)";
+        }
+        if (pp.contains("laminar_prandtl")) {
+            amrex::Print()
+                << "WARNING: single-phase laminar_prandtl has been specified "
+                   "but will not be used! (TwoPhaseTransport)";
+        }
     }
 
     ~TwoPhaseTransport() override = default;
