@@ -172,14 +172,12 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
             rho_face[lev][2] = &(*rho_zf)(lev);
 
             if (m_is_anelastic) {
-                // Am I worried about grow cells? I am. I need scaled_density to
-                // have 1 grow cell. What do we do there for reference density?
                 amrex::MultiFab::Copy(
                     (*scaled_density)(lev), density(lev), 0, 0,
                     density.num_comp(), density.num_grow());
                 (*scaled_density)(lev).divide(
                     (*ref_density)(lev), 0, density.num_comp(),
-                    0); // should be density.num_grow?!
+                    density.num_grow()[0]);
                 amrex::average_cellcenter_to_face(
                     rho_face[lev], (*scaled_density)(lev), geom[lev]);
             } else {

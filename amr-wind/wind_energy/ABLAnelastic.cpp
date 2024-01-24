@@ -20,7 +20,10 @@ ABLAnelastic::ABLAnelastic(CFDSim& sim) : m_sim(sim)
             amrex::ParmParse pp("ICNS");
             pp.add("use_perturb_pressure", (bool)true);
         }
-        m_sim.repo().declare_field("reference_density", 1, 0, 1);
+        const auto& density = m_sim.repo().get_field("density");
+        auto& ref_density = m_sim.repo().declare_field(
+            "reference_density", 1, density.num_grow()[0], 1);
+        ref_density.set_default_fillpatch_bc(m_sim.time());
         m_sim.repo().declare_nd_field("reference_pressure", 1, 0, 1);
     }
 }
@@ -47,6 +50,9 @@ void ABLAnelastic::initialize_data()
     m_density.resize(m_axis, m_sim.mesh().Geom());
     m_pressure.resize(m_axis, m_sim.mesh().Geom());
 
+    AMREX_ALWAYS_ASSERT(m_sim.repo().num_active_levels() == m_density.size());
+    AMREX_ALWAYS_ASSERT(m_sim.repo().num_active_levels() == m_pressure.size());
+
     for (int lev = 0; lev < m_density.size(); lev++) {
         auto& dens = m_density.host_data(lev);
         auto& pres = m_pressure.host_data(lev);
@@ -64,5 +70,7 @@ void ABLAnelastic::initialize_data()
     auto& p0 = m_sim.repo().get_field("reference_pressure");
     m_density.copy_to_field(rho0);
     m_pressure.copy_to_field(p0);
+
+    rho0.fillpatch(m_sim.time().current_time());
 }
 } // namespace amr_wind
