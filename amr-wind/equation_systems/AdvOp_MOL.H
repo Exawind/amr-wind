@@ -72,15 +72,13 @@ struct AdvectionOp<
                 auto rho_arr = den(lev).const_array(mfi);
                 auto tra_arr = dof_field(lev).const_array(mfi);
                 amrex::FArrayBox rhotracfab;
-                amrex::Elixir eli_rt;
                 amrex::Array4<amrex::Real> rhotrac;
 
                 if (PDE::multiply_rho) {
 
                     amrex::Box rhotrac_box =
                         amrex::grow(bx, fvm::MOL::nghost_state);
-                    rhotracfab.resize(rhotrac_box, PDE::ndim);
-                    eli_rt = rhotracfab.elixir();
+                    rhotracfab.resize(rhotrac_box, PDE::ndim, amrex::The_Async_Arena());
                     rhotrac = rhotracfab.array();
 
                     amrex::ParallelFor(
@@ -98,8 +96,7 @@ struct AdvectionOp<
                     amrex::Box tmpbox = amrex::surroundingNodes(bx);
                     const int tmpcomp = nmaxcomp * AMREX_SPACEDIM;
 
-                    amrex::FArrayBox tmpfab(tmpbox, tmpcomp);
-                    amrex::Elixir eli = tmpfab.elixir();
+                    amrex::FArrayBox tmpfab(tmpbox, tmpcomp, amrex::The_Async_Arena());
 
                     amrex::Array4<amrex::Real> fx = tmpfab.array(0);
                     amrex::Array4<amrex::Real> fy = tmpfab.array(nmaxcomp);
