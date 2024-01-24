@@ -605,7 +605,8 @@ struct AdvectionOp<ICNS, fvm::MOL>
                 amrex::Box gbx = grow(bx, fvm::MOL::nghost_state);
 
                 // Set up momentum array
-                amrex::FArrayBox qfab(gbx, ICNS::ndim, amrex::The_Async_Arena());
+                amrex::FArrayBox qfab(
+                    gbx, ICNS::ndim, amrex::The_Async_Arena());
                 const auto& q = qfab.array();
                 // Calculate momentum
                 auto rho_arr = rho(lev).const_array(mfi);
@@ -622,7 +623,8 @@ struct AdvectionOp<ICNS, fvm::MOL>
                 amrex::Box tmpbox = amrex::surroundingNodes(bx);
                 const int tmpcomp = nmaxcomp * AMREX_SPACEDIM;
 
-                amrex::FArrayBox tmpfab(tmpbox, tmpcomp, amrex::The_Async_Arena());
+                amrex::FArrayBox tmpfab(
+                    tmpbox, tmpcomp, amrex::The_Async_Arena());
 
                 amrex::Array4<amrex::Real> fx = tmpfab.array(0);
                 amrex::Array4<amrex::Real> fy = tmpfab.array(nmaxcomp);
