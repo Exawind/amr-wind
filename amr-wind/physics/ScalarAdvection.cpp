@@ -286,13 +286,13 @@ ScalarAdvection::compute_error(const Shape& scalar_function)
                     x - x_conv_dist, y - y_conv_dist, dx[0], dx[1], x0, y0,
                     amplitude, x_width, y_width, x_wavenumber, y_wavenumber);
                 return cell_vol * mask_bx(i, j, k) * (s - s_exact) *
-                           (s - s_exact);
+                       (s - s_exact);
             });
         amrex::ParallelDescriptor::ReduceRealSum(err_lev);
         err[level] = err_lev;
         err[nlevels] += err_lev;
     }
-    
+
     for (int level = 0; level < nlevels + 1; ++level) {
         err[level] = std::sqrt(err[level] / total_vol);
     }
