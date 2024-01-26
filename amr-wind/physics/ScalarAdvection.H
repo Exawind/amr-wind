@@ -21,8 +21,7 @@ public:
 
     ~ScalarAdvection() override = default;
 
-    //! Initialize the temperature and velocity fields for ScalarAdvection
-    //! simulations
+    //! Initialize the fields for ScalarAdvection simulations
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 
     template <typename Shape>

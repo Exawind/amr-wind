@@ -223,7 +223,7 @@ AMR-wind :math:`L_2` error for half-channel after velocity field has converged t
 Burggraf flow: lid-driven cavity with body force
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This flow, described by Burggraf (JFM, 2006), is a two-dimensional flow with no-slip walls. The upper wall has a spatially-varying tangential velocity (which is applied to the simulation via a user-defined-function, or UDF, boundary condition), and a spatially-varying body force. At steady state, this flow has an analytical solution that we use to verify the implementation of the UDF BC.
+This flow, described by Burggraf (JFM, 1966), is a two-dimensional flow with no-slip walls. The upper wall has a spatially-varying tangential velocity (which is applied to the simulation via a user-defined-function, or UDF, boundary condition), and a spatially-varying body force. At steady state, this flow has an analytical solution that we use to verify the implementation of the UDF BC.
 
 .. image:: ./Burggraf_error.png
    :width: 300pt

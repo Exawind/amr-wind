@@ -5,12 +5,16 @@
 #include "amr-wind/utilities/DirectionSelector.H"
 #include "amr-wind/utilities/tensor_ops.H"
 #include "amr-wind/equation_systems/icns/source_terms/ABLForcing.H"
+#include "amr-wind/equation_systems/icns/source_terms/ABLMesoForcingMom.H"
+#include "amr-wind/equation_systems/temperature/source_terms/ABLMesoForcingTemp.H"
 #include "amr-wind/equation_systems/PDEHelpers.H"
 #include "amr-wind/equation_systems/SchemeTraits.H"
 #include "amr-wind/equation_systems/tke/TKE.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_ParallelDescriptor.H"
+#include <AMReX_REAL.H>
+#include <AMReX_Vector.H>
 #include "AMReX_ValLocPair.H"
 
 namespace amr_wind {
@@ -430,6 +434,12 @@ void ABLStats::prepare_netcdf_file()
     grp.def_var("w", NC_DOUBLE, two_dim);
     grp.def_var("hvelmag", NC_DOUBLE, two_dim);
     grp.def_var("theta", NC_DOUBLE, two_dim);
+    amrex::ParmParse pp("ABL");
+    if (pp.contains("mesoscale_forcing") || pp.contains("WRFforcing")) {
+        grp.def_var("abl_meso_forcing_mom_x", NC_DOUBLE, two_dim);
+        grp.def_var("abl_meso_forcing_mom_y", NC_DOUBLE, two_dim);
+        grp.def_var("abl_meso_forcing_theta", NC_DOUBLE, two_dim);
+    }
     grp.def_var("mueff", NC_DOUBLE, two_dim);
     grp.def_var("theta'theta'_r", NC_DOUBLE, two_dim);
     grp.def_var("u'theta'_r", NC_DOUBLE, two_dim);
@@ -450,6 +460,8 @@ void ABLStats::prepare_netcdf_file()
     grp.def_var("u'v'_sfs", NC_DOUBLE, two_dim);
     grp.def_var("u'w'_sfs", NC_DOUBLE, two_dim);
     grp.def_var("v'w'_sfs", NC_DOUBLE, two_dim);
+    if (m_sim.repo().field_exists("tke"))
+        grp.def_var("k_sgs", NC_DOUBLE, two_dim);
 
     // Energy budget
     if (m_do_energy_budget) {
@@ -494,6 +506,12 @@ void ABLStats::write_netcdf()
     ScratchFieldPlaneAveraging pa_tsfs(
         *t_sfs_stress, m_sim.time(), m_normal_dir);
     pa_tsfs();
+
+    if (m_sim.repo().field_exists("tke")) {
+        auto& m_ksgs = m_sim.repo().get_field("tke");
+        FieldPlaneAveraging pa_ksgs(m_ksgs, m_sim.time(), m_normal_dir);
+        pa_ksgs();
+    }
 
     if (!amrex::ParallelDescriptor::IOProcessor()) return;
     auto ncf = ncutils::NCFile::open(m_ncfile_name, NC_WRITE);
@@ -546,6 +564,28 @@ void ABLStats::write_netcdf()
         {
             auto var = grp.var("theta");
             var.put(m_pa_temp.line_average().data(), start, count);
+        }
+
+        {
+            if (m_abl_meso_mom_forcing != nullptr) {
+                amrex::Vector<amrex::Real> meso_forcing_mom_u(n_levels);
+                amrex::Vector<amrex::Real> meso_forcing_mom_v(n_levels);
+
+                meso_forcing_mom_u = m_abl_meso_mom_forcing->mom_u_error();
+                auto var_x = grp.var("abl_meso_forcing_mom_x");
+                var_x.put(meso_forcing_mom_u.data(), start, count);
+
+                meso_forcing_mom_v = m_abl_meso_mom_forcing->mom_v_error();
+                auto var_y = grp.var("abl_meso_forcing_mom_y");
+                var_y.put(meso_forcing_mom_v.data(), start, count);
+            }
+            if (m_abl_meso_temp_forcing != nullptr) {
+                amrex::Vector<amrex::Real> meso_forcing_theta(n_levels);
+
+                meso_forcing_theta = m_abl_meso_temp_forcing->theta_error();
+                auto var_theta = grp.var("abl_meso_forcing_theta");
+                var_theta.put(meso_forcing_theta.data(), start, count);
+            }
         }
 
         {
@@ -653,6 +693,7 @@ void ABLStats::write_netcdf()
             }
         }
     }
+
     ncf.close();
 #endif
 }

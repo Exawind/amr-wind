@@ -168,7 +168,7 @@ Gravity Forcing
 
 The implementation of this source term allows the user to choose the full gravity term (:math:`\rho g`) or a perturbational form (:math:`(\rho - \rho_0) g`). By default, the full term is used, but the perturbational form can be turned on by adding ``ICNS.use_perturb_pressure = true`` to the input file.
 
-The reference density (:math:`\rho_0`) is defined as ``1.0`` by default, can be defined as a constant through the input argument, ``incflo::density``, or can be defined as a spatially varying field within the flow setup (see physics/multiphase/Multiphase.cpp).
+The reference density (:math:`\rho_0`) is defined as ``1.0`` by default, can be defined as a constant through the input argument, ``incflo.density``, or can be defined as a spatially varying field within the flow setup (see physics/multiphase/Multiphase.cpp).
 
 Using the perturbational form implies that the hydrostatic pressure is removed from the pressure variable, including its output. This means that the solution to the Poisson equation is actually the perturbational pressure, :math:`p'`, not :math:`p`. If the full pressure, :math:`p`, is desired for analysis or postprocessing purposes, the hydrostatic pressure can be added back to the pressure field via the input argument ``ICNS.reconstruct_true_pressure = true``. In order for this to operate in the code, the reference pressure field must be defined for the specific flow case being run. 
 
@@ -356,7 +356,7 @@ There is a simple unit test for both :math:`\nu_t` and :math:`D_e` in
 
 Wall models
 -----------
-The wall models descibed in this section are implemented in ``AMR-wind`` for
+The wall models described in this section are implemented in ``AMR-wind`` for
 running wall-bounded flows (non-ABL cases).
 
 Log-law wall model

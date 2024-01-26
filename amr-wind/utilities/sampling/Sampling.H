@@ -26,10 +26,10 @@ namespace amr_wind::sampling {
 /** Collection of data sampling objects
  *  \ingroup sampling
  *
- *  A concrete impelementation of the post-processing interface that deals with
+ *  A concrete implementation of the post-processing interface that deals with
  *  data probes. Multiple instances of sampling entities (e.g., point cloud or
  *  probes, line, or plane samplers) can be registered. Internally, the data
- *  probles are represented as amr_wind::sampling::SamplingContainer for
+ *  problems are represented as amr_wind::sampling::SamplingContainer for
  *  tracking their position within the CFD mesh and updating the fields of
  *  interest.
  *
@@ -129,6 +129,9 @@ private:
 
     //! Frequency of data sampling and output
     int m_out_freq{100};
+
+    //! Delay number of timestep before output
+    int m_out_delay{0};
 };
 
 } // namespace amr_wind::sampling

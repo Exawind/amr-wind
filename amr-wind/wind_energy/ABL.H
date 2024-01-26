@@ -12,6 +12,7 @@
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
 #include "amr-wind/wind_energy/ABLStatsBase.H"
 #include "amr-wind/wind_energy/ABLModulatedPowerLaw.H"
+#include "amr-wind/wind_energy/ABLAnelastic.H"
 
 /**
  *  \defgroup wind Wind energy modeling
@@ -34,11 +35,18 @@ class incflo;
 
 namespace amr_wind {
 
+class ABLMesoscaleInput;
+
 namespace pde::icns {
 class ABLForcing;
 class ABLMeanBoussinesq;
+class ABLMesoForcingMom;
 class HurricaneForcing;
 } // namespace pde::icns
+
+namespace pde::temperature {
+class ABLMesoForcingTemp;
+}
 
 /** Atmospheric Boundary Layer physics
  *  \ingroup we_abl
@@ -65,7 +73,7 @@ public:
 
     void post_init_actions() override;
 
-    void post_regrid_actions() override {}
+    void post_regrid_actions() override;
 
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 
@@ -82,6 +90,15 @@ public:
     {
         m_abl_mean_bous = term;
     }
+    void register_meso_mom_forcing(pde::icns::ABLMesoForcingMom* forcing) const
+    {
+        m_abl_meso_mom_forcing = forcing;
+    }
+    void register_meso_temp_forcing(
+        pde::temperature::ABLMesoForcingTemp* forcing) const
+    {
+        m_abl_meso_temp_forcing = forcing;
+    }
 
     void register_hurricane_forcing(pde::icns::HurricaneForcing* forcing) const
     {
@@ -93,6 +110,10 @@ public:
 
     //! Return the ABL statistics calculator
     const ABLStatsBase& abl_statistics() const { return *m_stats; }
+
+    const ABLMesoscaleInput& abl_meso_file() const { return *m_meso_file; }
+
+    const ABLAnelastic& anelastic() const { return *m_abl_anelastic; }
 
 private:
     const CFDSim& m_sim;
@@ -121,7 +142,16 @@ private:
     //! ABL integrated statistics object
     std::unique_ptr<ABLStatsBase> m_stats;
 
+    //! ABL anelastic instance
+    std::unique_ptr<ABLAnelastic> m_abl_anelastic;
+
     mutable pde::icns::ABLMeanBoussinesq* m_abl_mean_bous{nullptr};
+
+    mutable pde::icns::ABLMesoForcingMom* m_abl_meso_mom_forcing{nullptr};
+    mutable pde::temperature::ABLMesoForcingTemp* m_abl_meso_temp_forcing{
+        nullptr};
+
+    std::unique_ptr<ABLMesoscaleInput> m_meso_file;
 
     mutable pde::icns::HurricaneForcing* m_hurricane_forcing{nullptr};
 

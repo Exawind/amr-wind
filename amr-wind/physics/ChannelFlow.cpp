@@ -201,10 +201,10 @@ void ChannelFlow::initialize_fields(
 
                         const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                        const amrex::Real perty = perturb_amp *
+                        const amrex::Real perty = z_perturb * perturb_amp *
                                                   std::sin(y_perturb * y) *
                                                   std::cos(z_perturb * z);
-                        const amrex::Real pertz = -perturb_amp *
+                        const amrex::Real pertz = -y_perturb * perturb_amp *
                                                   std::cos(y_perturb * y) *
                                                   std::sin(z_perturb * z);
                         vel(i, j, k, 1) = 0.0 + (perturb_vel ? perty : 0.0);

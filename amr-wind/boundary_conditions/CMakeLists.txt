@@ -3,6 +3,7 @@ target_sources(${amr_wind_lib_name}
       #C++
       BCInterface.cpp
       FixedGradientBC.cpp
+      scalar_bcs.cpp
    )
 
 add_subdirectory(wall_models)

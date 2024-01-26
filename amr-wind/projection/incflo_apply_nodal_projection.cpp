@@ -413,11 +413,11 @@ void incflo::ApplyProjection(
     }
 
     // Determine if reference pressure should be added back
-    if (m_repo.field_exists("reference_pressure") && time != 0.0) {
+    if (m_reconstruct_true_pressure && time != 0.0) {
         const auto& p0 = m_repo.get_field("reference_pressure");
         for (int lev = 0; lev <= finest_level; lev++) {
             amrex::MultiFab::Add(
-                pressure(lev), p0(lev), 0, 0, 1, pressure.num_grow()[0]);
+                pressure(lev), p0(lev), 0, 0, 1, p0.num_grow()[0]);
         }
     }
 

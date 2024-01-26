@@ -34,12 +34,6 @@ void Actuator::pre_init_actions()
         std::string type;
         pp.query("type", type);
         pp1.query("type", type);
-        if (type == "TurbineFastLine" || type == "TurbineFastDisk") {
-            // Only one kind of sampling can be chosen. If OpenFAST is involved
-            // in the Actuator type, the default behavior is to sample velocity
-            // at n-1/2 so that forcing is at n+1/2
-            m_sample_nmhalf = true;
-        }
         AMREX_ALWAYS_ASSERT(!type.empty());
 
         auto obj = ActuatorModel::create(type, m_sim, tname, i);
@@ -50,9 +44,6 @@ void Actuator::pre_init_actions()
         obj->read_inputs(inp);
         m_actuators.emplace_back(std::move(obj));
     }
-
-    // Check if sampling should be modified aside from default behavior
-    pp.query("sample_vel_nmhalf", m_sample_nmhalf);
 }
 
 void Actuator::post_init_actions()
@@ -188,19 +179,9 @@ void Actuator::update_positions()
     m_container->update_positions();
 
     // Sample velocities at the new locations
-    if (m_sample_nmhalf &&
-        (m_sim.time().current_time() > m_sim.time().start_time())) {
-        // Avoid using mac velocities if at init or restart
-        const auto& umac = m_sim.repo().get_field("u_mac");
-        const auto& vmac = m_sim.repo().get_field("v_mac");
-        const auto& wmac = m_sim.repo().get_field("w_mac");
-        const auto& density = m_sim.repo().get_field("density");
-        m_container->sample_fields(umac, vmac, wmac, density);
-    } else {
-        const auto& vel = m_sim.repo().get_field("velocity");
-        const auto& density = m_sim.repo().get_field("density");
-        m_container->sample_fields(vel, density);
-    }
+    const auto& vel = m_sim.repo().get_field("velocity");
+    const auto& density = m_sim.repo().get_field("density");
+    m_container->sample_fields(vel, density);
 }
 
 /** Provide updated velocities from container to actuator instances

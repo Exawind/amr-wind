@@ -6,7 +6,7 @@
 
 /** Multiphase physics
  *
- * This class implemnts the necessary code to simulate multiphase
+ * This class implements the necessary code to simulate multiphase
  * (air-water interaction) problems with AMR-Wind. It reads the
  * namespace `MultiPhase' from the input file to determine how the
  * initial conditions are generated.
@@ -63,6 +63,8 @@ public:
 
     amrex::Real rho2() const { return m_rho2; }
 
+    amrex::Real water_level() const { return water_level0; }
+
 private:
     const CFDSim& m_sim;
 
@@ -83,9 +85,9 @@ private:
 
     // Bools according to ICNS settings
     // Turning on perturbational density and pressure
-    bool is_pptb{false};
+    bool m_use_perturb_pressure{false};
     // Reconstructing true pressure field at end of timestep
-    bool is_ptrue{false};
+    bool m_reconstruct_true_pressure{false};
 
     // Info to create rho0
     amrex::Real water_level0{0.0};

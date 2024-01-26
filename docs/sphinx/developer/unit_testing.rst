@@ -105,7 +105,7 @@ check other expected behaviors of the function rather than just its correctness.
 For example, consider a function ``square_root`` that
 computes the square root of a given real number, but is supposed to throw a
 runtime error if it encounters a negative number. Unit tests allow us to test
-both cases: 1. the function produces the correct resuts for positive numbers
+both cases: 1. the function produces the correct results for positive numbers
 and, 2. it throws an error for negative numbers. The following code shows this example
 
 .. code-block:: c++

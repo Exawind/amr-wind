@@ -131,6 +131,35 @@ TEST_F(SimTimeTest, fixed_dt_loop)
     EXPECT_FALSE(time.write_last_plot_file());
 }
 
+TEST_F(SimTimeTest, fixed_dt_delay)
+{
+    build_simtime_params();
+    {
+        amrex::ParmParse pp("time");
+        pp.add("fixed_dt", 0.2);
+        pp.add("regrid_interval", -1);
+        pp.add("checkpoint_delay", 3);
+        pp.add("plot_delay", 5);
+    }
+    amr_wind::SimTime time;
+    time.parse_parameters();
+
+    int plot_counter = 0;
+    int chkpt_counter = 0;
+    while (time.new_timestep()) {
+        time.set_current_cfl(2.0, 0.0, 0.0);
+
+        if (time.write_plot_file()) {
+            ++plot_counter;
+        }
+        if (time.write_checkpoint()) {
+            ++chkpt_counter;
+        }
+    }
+    EXPECT_EQ(plot_counter, 6);
+    EXPECT_EQ(chkpt_counter, 4);
+}
+
 TEST_F(SimTimeTest, plt_chk_timeinterval_loop)
 {
     build_simtime_params();
@@ -168,6 +197,49 @@ TEST_F(SimTimeTest, plt_chk_timeinterval_loop)
     }
     EXPECT_EQ(plot_counter, 5);
     EXPECT_EQ(plot_step_sum, 4 + 7 + 10 + 14 + 17);
+    EXPECT_EQ(chkpt_counter, 1);
+    EXPECT_EQ(chkpt_step_sum, 14);
+}
+
+TEST_F(SimTimeTest, plt_chk_timeinterval_delay)
+{
+    build_simtime_params();
+    {
+        amrex::ParmParse pp("time");
+        pp.add("regrid_interval", -1);
+        pp.add("checkpoint_interval", -1);
+        pp.add("plot_interval", -1);
+        pp.add("checkpoint_time_interval", 2.0);
+        pp.add("checkpoint_time_delay", 4.0);
+        pp.add("plot_time_interval", 1.0);
+        pp.add("plot_time_delay", 3.0);
+        pp.add("fixed_dt", 0.3);
+        pp.add("stop_time", 5.0);
+        pp.add("max_step", 100);
+    }
+    amr_wind::SimTime time;
+    time.parse_parameters();
+
+    int counter = 0;
+    int plot_counter = 0;
+    int plot_step_sum = 0;
+    int chkpt_counter = 0;
+    int chkpt_step_sum = 0;
+    while (time.new_timestep()) {
+        time.set_current_cfl(0.45 / 0.3, 0.0, 0.0);
+        ++counter;
+
+        if (time.write_plot_file()) {
+            ++plot_counter;
+            plot_step_sum += counter;
+        }
+        if (time.write_checkpoint()) {
+            ++chkpt_counter;
+            chkpt_step_sum += counter;
+        }
+    }
+    EXPECT_EQ(plot_counter, 3);
+    EXPECT_EQ(plot_step_sum, 10 + 14 + 17);
     EXPECT_EQ(chkpt_counter, 1);
     EXPECT_EQ(chkpt_step_sum, 14);
 }
@@ -314,6 +386,51 @@ TEST_F(SimTimeTest, enforce_timeinterval_bigdttol)
     EXPECT_EQ(plot_counter, 2);
     EXPECT_NEAR(plot_time_sum, 0.8 + 1.0, 1e-8);
     EXPECT_EQ(plot_step_sum, 2 + 3);
+}
+
+TEST_F(SimTimeTest, enforce_timeinterval_delay)
+{
+    build_simtime_params();
+    {
+        amrex::ParmParse pp("time");
+        pp.add("regrid_interval", -1);
+        pp.add("checkpoint_interval", -1);
+        pp.add("plot_interval", -1);
+
+        pp.add("plot_time_interval", 0.5);
+        pp.add("plot_time_delay", 0.9);
+        pp.add("enforce_plot_time_dt", true);
+
+        // Default values for tolerances
+        pp.add("stop_time", 1.0);
+        pp.add("max_step", 10);
+    }
+    amr_wind::SimTime time;
+    time.parse_parameters();
+
+    int counter = 0;
+    int plot_counter = 0;
+    amrex::Real plot_time_sum = 0.0;
+    int plot_step_sum = 0;
+    amrex::Real time2 = 0.0;
+    while (time.new_timestep()) {
+        time.set_current_cfl(0.45 / 0.4, 0.0, 0.0);
+        ++counter;
+        if (time.write_plot_file()) {
+            ++plot_counter;
+            plot_time_sum += time.new_time();
+            plot_step_sum += counter;
+        }
+        if (counter == 2) {
+            time2 = time.new_time();
+        }
+    }
+    EXPECT_EQ(plot_counter, 1);
+    EXPECT_NEAR(plot_time_sum, 1.0, 1e-8);
+    // dt should not shorten for t = 0.5
+    EXPECT_GT(time2, 0.5);
+    // leading to fewer steps
+    EXPECT_EQ(plot_step_sum, 3);
 }
 
 } // namespace amr_wind_tests

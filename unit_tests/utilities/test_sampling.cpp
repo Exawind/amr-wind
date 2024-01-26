@@ -4,6 +4,7 @@
 #include "amr-wind/utilities/sampling/Sampling.H"
 #include "amr-wind/utilities/sampling/SamplingContainer.H"
 #include "amr-wind/utilities/sampling/PlaneSampler.H"
+#include "amr-wind/utilities/sampling/VolumeSampler.H"
 
 namespace amr_wind_tests {
 
@@ -48,6 +49,8 @@ public:
         : amr_wind::sampling::Sampling(sim, label)
     {}
 
+    bool write_flag{false};
+
 protected:
     void prepare_netcdf_file() override {}
     void process_output() override
@@ -56,6 +59,8 @@ protected:
         std::vector<double> buf(
             num_total_particles() * var_names().size(), 0.0);
         sampling_container().populate_buffer(buf);
+
+        write_flag = true;
     }
 };
 
@@ -217,6 +222,45 @@ TEST_F(SamplingTest, sampling)
     SamplingImpl probes(sim(), "sampling");
     probes.initialize();
     probes.post_advance_work();
+
+    EXPECT_TRUE(probes.write_flag);
+}
+
+TEST_F(SamplingTest, sampling_timing)
+{
+    initialize_mesh();
+    auto& repo = sim().repo();
+    auto& vel = repo.declare_field("velocity", 3, 2);
+    auto& pres = repo.declare_nd_field("pressure", 1, 2);
+    auto& rho = repo.declare_field("density", 1, 2);
+    init_field(vel);
+    init_field(pres);
+    init_field(rho);
+
+    {
+        amrex::ParmParse pp("sampling");
+        pp.add("output_frequency", 1);
+        pp.add("output_delay", 1);
+        pp.addarr("labels", amrex::Vector<std::string>{"line1"});
+        pp.addarr(
+            "fields",
+            amrex::Vector<std::string>{"density", "pressure", "velocity"});
+    }
+    {
+        amrex::ParmParse pp("sampling.line1");
+        pp.add("type", std::string("LineSampler"));
+        pp.add("num_points", 16);
+        pp.addarr("start", amrex::Vector<amrex::Real>{66.0, 66.0, 1.0});
+        pp.addarr("end", amrex::Vector<amrex::Real>{66.0, 66.0, 127.0});
+    }
+
+    SamplingImpl probes(sim(), "sampling");
+    probes.initialize();
+    probes.post_advance_work();
+    EXPECT_FALSE(probes.write_flag);
+    sim().time().new_timestep();
+    probes.post_advance_work();
+    EXPECT_TRUE(probes.write_flag);
 }
 
 TEST_F(SamplingTest, plane_sampler)
@@ -247,6 +291,22 @@ TEST_F(SamplingTest, plane_sampler)
         std::cerr << std::endl;
     }
 #endif
+}
+
+TEST_F(SamplingTest, volume_sampler)
+{
+    initialize_mesh();
+    amrex::ParmParse pp("volume");
+    pp.addarr("hi", amrex::Vector<double>{1.0, 1.0, 1.0});
+    pp.addarr("lo", amrex::Vector<double>{0.0, 0.0, 0.0});
+    pp.addarr("num_points", amrex::Vector<int>{3, 5, 5});
+
+    amr_wind::sampling::VolumeSampler volume(sim());
+    volume.initialize("volume");
+    amr_wind::sampling::VolumeSampler::SampleLocType locs;
+    volume.sampling_locations(locs);
+
+    ASSERT_EQ(locs.size(), 3 * 5 * 5);
 }
 
 } // namespace amr_wind_tests

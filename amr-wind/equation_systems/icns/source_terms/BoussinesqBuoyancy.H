@@ -6,7 +6,7 @@
 
 namespace amr_wind::pde::icns {
 
-/** Boussinesq bouyancy source term
+/** Boussinesq buoyancy source term
  *  \ingroup icns_src we_abl
  *
  *  \f[
@@ -31,6 +31,7 @@ public:
 
 private:
     const Field& m_temperature;
+    const Field* m_vof;
 
     amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
 
@@ -39,6 +40,9 @@ private:
 
     //! Thermal expansion coefficient
     amrex::Real m_beta{0.0};
+
+    //! Check for VOF
+    bool is_vof{false};
 };
 } // namespace amr_wind::pde::icns
 

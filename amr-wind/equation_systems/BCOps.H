@@ -4,6 +4,7 @@
 #include "amr-wind/equation_systems/PDETraits.H"
 #include "amr-wind/equation_systems/PDEOps.H"
 #include "amr-wind/boundary_conditions/BCInterface.H"
+#include "amr-wind/boundary_conditions/scalar_bcs.H"
 
 namespace amr_wind::pde {
 
@@ -25,6 +26,9 @@ struct BCOp<
     {
         BCScalar bc(m_fields.field);
         bc(PDE::default_bc_value);
+        const auto udfs = bc.get_dirichlet_udfs();
+        scalar_bc::register_scalar_dirichlet(
+            m_fields.field, m_fields.repo.mesh(), m_time, udfs);
 
         // Used for fillpatch operation on the source term
         BCSrcTerm bc_src(m_fields.src_term);

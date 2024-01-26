@@ -213,7 +213,7 @@ bool incflo::regrid_and_update()
         m_sim.post_manager().post_regrid_actions();
     }
 
-    // update cell counts if unitialized or if a regrid happened
+    // update cell counts if uninitialized or if a regrid happened
     if (m_cell_count == -1 || m_time.do_regrid()) {
         m_cell_count = 0;
         for (int i = 0; i <= finest_level; i++) {

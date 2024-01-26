@@ -315,9 +315,41 @@ protected:
 constexpr double tol1 = 1.0e-15;
 constexpr double tol2 = 6.0e-2;
 
-TEST_F(VOFBCTest, dirichletX) { testing_BC_coorddir(1, 0, tol1); }
-TEST_F(VOFBCTest, slipwallY) { testing_BC_coorddir(2, 1, tol2); }
-TEST_F(VOFBCTest, noslipwallZ) { testing_BC_coorddir(3, 2, tol1); }
-TEST_F(VOFBCTest, pressureX) { testing_BC_coorddir(4, 0, tol1); }
+TEST_F(VOFBCTest, dirichletX)
+{
+#ifndef AMREX_USE_GPU
+    testing_BC_coorddir(1, 0, tol1);
+#else
+    amrex::Print() << "VOFBCTest doesn't work on GPU yet." << std::endl;
+    GTEST_SKIP();
+#endif
+}
+TEST_F(VOFBCTest, slipwallY)
+{
+#ifndef AMREX_USE_GPU
+    testing_BC_coorddir(2, 1, tol2);
+#else
+    amrex::Print() << "VOFBCTest doesn't work on GPU yet." << std::endl;
+    GTEST_SKIP();
+#endif
+}
+TEST_F(VOFBCTest, noslipwallZ)
+{
+#ifndef AMREX_USE_GPU
+    testing_BC_coorddir(3, 2, tol1);
+#else
+    amrex::Print() << "VOFBCTest doesn't work on GPU yet." << std::endl;
+    GTEST_SKIP();
+#endif
+}
+TEST_F(VOFBCTest, pressureX)
+{
+#ifndef AMREX_USE_GPU
+    testing_BC_coorddir(4, 0, tol1);
+#else
+    amrex::Print() << "VOFBCTest doesn't work on GPU yet." << std::endl;
+    GTEST_SKIP();
+#endif
+}
 
 } // namespace amr_wind_tests

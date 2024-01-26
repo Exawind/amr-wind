@@ -5,11 +5,16 @@
 #include "amr-wind/wind_energy/ABLBoundaryPlane.H"
 #include "amr-wind/equation_systems/icns/source_terms/ABLForcing.H"
 #include "amr-wind/equation_systems/icns/source_terms/ABLMeanBoussinesq.H"
+#include "amr-wind/equation_systems/icns/source_terms/ABLMesoForcingMom.H"
+#include "amr-wind/equation_systems/temperature/source_terms/ABLMesoForcingTemp.H"
 #include "amr-wind/equation_systems/icns/source_terms/HurricaneForcing.H"
 #include "amr-wind/incflo.H"
+#include "amr-wind/wind_energy/ABLMesoscaleForcing.H"
+#include "amr-wind/wind_energy/ABLMesoscaleInput.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_MultiFab.H"
+#include "AMReX_Print.H"
 
 namespace amr_wind {
 
@@ -39,6 +44,29 @@ ABL::ABL(CFDSim& sim)
         m_file_input = pp.contains("initial_condition_input_file");
     }
 
+    amrex::ParmParse pp("ABL");
+
+    if (pp.contains("mesoscale_forcing")) {
+#ifndef AMR_WIND_USE_NETCDF
+        amrex::Abort("Mesoscale forcing capability requires NetCDF");
+#else
+        std::string ncfile;
+        pp.get("mesoscale_forcing", ncfile);
+        m_meso_file.reset(new ABLMesoscaleInput(ncfile));
+#endif
+
+    } else if (pp.contains("WRFforcing")) {
+#ifndef AMR_WIND_USE_NETCDF
+        amrex::Abort("WRF forcing capability requires NetCDF");
+#else
+        amrex::Print() << "Note: ABL.WRFforcing is deprecated -- "
+                       << "use ABL.mesoscale_forcing instead" << std::endl;
+        std::string ncfile;
+        pp.get("WRFforcing", ncfile);
+        m_meso_file.reset(new ABLMesoscaleInput(ncfile, "wrf_"));
+#endif
+    }
+
     // Instantiate the ABL field initializer
     m_field_init = std::make_unique<ABLFieldInit>();
 
@@ -47,6 +75,9 @@ ABL::ABL(CFDSim& sim)
 
     // Instantiate the ABL Modulated Power Law
     m_abl_mpl = std::make_unique<ABLModulatedPowerLaw>(sim);
+
+    // Instantiate the ABL anelastic module
+    m_abl_anelastic = std::make_unique<ABLAnelastic>(sim);
 
     // Instantiate the file-based field initializer
     if (m_file_input) {
@@ -121,7 +152,10 @@ void ABL::post_init_actions()
 
     m_bndry_plane->post_init_actions();
     m_abl_mpl->post_init_actions();
+    m_abl_anelastic->post_init_actions();
 }
+
+void ABL::post_regrid_actions() { m_abl_anelastic->post_regrid_actions(); }
 
 /** Perform tasks at the beginning of a new timestep
  *
@@ -167,6 +201,30 @@ void ABL::pre_advance_work()
 
     if (m_abl_mean_bous != nullptr) {
         m_abl_mean_bous->mean_temperature_update(m_stats->theta_profile());
+    }
+
+    if (m_abl_meso_mom_forcing != nullptr) {
+
+        if (m_meso_file->is_tendency_forcing()) {
+            m_abl_meso_mom_forcing->mean_velocity_heights(m_meso_file);
+        } else {
+            m_abl_meso_mom_forcing->mean_velocity_heights(
+                m_stats->vel_profile(), m_meso_file);
+        }
+    }
+
+    if (m_abl_meso_temp_forcing != nullptr) {
+        amrex::Real interpTflux;
+        if (m_meso_file->is_tendency_forcing()) {
+            interpTflux =
+                m_abl_meso_temp_forcing->mean_temperature_heights(m_meso_file);
+        } else {
+            interpTflux = m_abl_meso_temp_forcing->mean_temperature_heights(
+                m_stats->theta_profile_fine(), m_meso_file);
+        }
+        amrex::Print() << "Current surface temperature flux: " << interpTflux
+                       << " K-m/s" << std::endl;
+        m_abl_wall_func.update_tflux(interpTflux);
     }
 
     if (m_hurricane_forcing != nullptr) {

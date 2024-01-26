@@ -129,11 +129,9 @@ ScalarAdvection::ScalarAdvection(CFDSim& sim)
     , m_velocity(sim.repo().get_field("velocity"))
     , m_density(sim.repo().get_field("density"))
 {
-    // Register temperature equation
-    auto& teqn = sim.pde_manager().register_transport_pde("Temperature");
-
-    // Defer getting temperature field until PDE has been registered
-    m_scalar = &(teqn.fields().field);
+    // Register passive scalar equation
+    auto& pseqn = sim.pde_manager().register_transport_pde("PassiveScalar");
+    m_scalar = &(pseqn.fields().field);
 
     amrex::ParmParse pp_scalar_advection("scalaradvection");
     pp_scalar_advection.query("u", m_u);
@@ -152,7 +150,7 @@ ScalarAdvection::ScalarAdvection(CFDSim& sim)
     pp_incflo.query("density", m_rho);
 }
 
-/** Initialize the velocity and temperature fields at the beginning of the
+/** Initialize the velocity and passive scalar fields at the beginning of the
  *  simulation.
  */
 void ScalarAdvection::initialize_fields(
@@ -254,7 +252,6 @@ ScalarAdvection::compute_error(const Shape& scalar_function)
     amrex::Vector<amrex::Real> err(nlevels + 1, 0.0);
 
     for (int level = 0; level < nlevels; ++level) {
-        amrex::Real err_lev = 0.0;
         amrex::iMultiFab level_mask;
         if (level < nlevels - 1) {
             level_mask = makeFineMask(
@@ -273,24 +270,24 @@ ScalarAdvection::compute_error(const Shape& scalar_function)
         const amrex::Real cell_vol = dx[0] * dx[1] * dx[2];
 
         const auto& scalar = (*m_scalar)(level);
-        for (amrex::MFIter mfi(scalar); mfi.isValid(); ++mfi) {
-            const auto& vbx = mfi.validbox();
-            const auto& scalar_arr = scalar.array(mfi);
-            const auto& mask_arr = level_mask.array(mfi);
-
-            amrex::Real err_fab = 0.0;
-            amrex::LoopOnCpu(vbx, [=, &err_fab](int i, int j, int k) noexcept {
+        auto const& scalar_arr = scalar.const_arrays();
+        auto const& mask_arr = level_mask.const_arrays();
+        amrex::Real err_lev = amrex::ParReduce(
+            amrex::TypeList<amrex::ReduceOpSum>{},
+            amrex::TypeList<amrex::Real>{}, scalar, amrex::IntVect(0),
+            [=] AMREX_GPU_HOST_DEVICE(int box_no, int i, int j, int k)
+                -> amrex::GpuTuple<amrex::Real> {
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                 const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                const amrex::Real s = scalar_arr(i, j, k, 0);
+                auto const& scalar_bx = scalar_arr[box_no];
+                auto const& mask_bx = mask_arr[box_no];
+                const amrex::Real s = scalar_bx(i, j, k, 0);
                 const amrex::Real s_exact = scalar_function(
                     x - x_conv_dist, y - y_conv_dist, dx[0], dx[1], x0, y0,
                     amplitude, x_width, y_width, x_wavenumber, y_wavenumber);
-                err_fab += cell_vol * mask_arr(i, j, k) * (s - s_exact) *
-                           (s - s_exact);
+                return cell_vol * mask_bx(i, j, k) * (s - s_exact) *
+                       (s - s_exact);
             });
-            err_lev += err_fab;
-        }
         amrex::ParallelDescriptor::ReduceRealSum(err_lev);
         err[level] = err_lev;
         err[nlevels] += err_lev;

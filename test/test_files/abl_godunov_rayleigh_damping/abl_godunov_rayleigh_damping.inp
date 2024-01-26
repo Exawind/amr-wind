@@ -42,7 +42,7 @@ RayleighDamping.length_complete_damping = 500 #in metres
 RayleighDamping.length_sloped_damping   = 500 #in metres
 RayleighDamping.force_coord_directions  = 1 1 1
 # The RayleighDamping values below are not realistic for a production run, but are 
-# chosen for the sake of impacting the flow in the 10 timesteps ofthe regression test. 
+# chosen for the sake of impacting the flow in the 10 timesteps of the regression test. 
 # More realistic values: timescale = 200 seconds, reference_velocity = incflo.velocity
 RayleighDamping.time_scale=40. #in seconds
 RayleighDamping.reference_velocity = 15.0 2.0 0.0 #in metres per second
