@@ -173,8 +173,6 @@ private:
     bool m_do_initial_proj = true;
     int m_initial_iterations = 3;
 
-    bool m_constant_density = true;
-
     bool m_use_godunov = true;
 
     // Prescribe advection velocity

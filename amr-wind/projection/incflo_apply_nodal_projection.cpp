@@ -176,16 +176,10 @@ void incflo::ApplyProjection(
                 amrex::Array4<amrex::Real const> fac =
                     mesh_mapping ? ((*mesh_fac)(lev).const_array(mfi))
                                  : amrex::Array4<amrex::Real const>();
-                const auto& ref_rho = is_anelastic
-                                          ? (*ref_density)(lev).const_array(mfi)
-                                          : amrex::Array4<amrex::Real>();
 
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         Real soverrho = scaling_factor / rho(i, j, k);
-                        if (is_anelastic) {
-                            soverrho *= ref_rho(i, j, k);
-                        }
                         amrex::Real fac_x =
                             mesh_mapping ? (fac(i, j, k, 0)) : 1.0;
                         amrex::Real fac_y =
@@ -311,6 +305,14 @@ void incflo::ApplyProjection(
         }
     }
 
+    if (is_anelastic) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            amrex::Multiply(
+                velocity(lev), (*ref_density)(lev), 0, 0, density[lev]->nComp(),
+                0);
+        }
+    }
+
     amr_wind::MLMGOptions options("nodal_proj");
 
     if (variable_density || mesh_mapping || is_anelastic) {
@@ -371,8 +373,17 @@ void incflo::ApplyProjection(
     } else {
         nodal_projector->project(options.rel_tol, options.abs_tol);
     }
+
     amr_wind::io::print_mlmg_info(
         "Nodal_projection", nodal_projector->getMLMG());
+
+    if (is_anelastic) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            amrex::Divide(
+                velocity(lev), (*ref_density)(lev), 0, 0, density[lev]->nComp(),
+                0);
+        }
+    }
 
     // scale U^* back to -> U = fac/J * U^bar
     if (mesh_mapping) {
@@ -478,6 +489,9 @@ void incflo::UpdateGradP(
     const auto* ref_density =
         is_anelastic ? &(m_repo.get_field("reference_density")) : nullptr;
 
+    // ASA does not think we actually need to define sigma here. It
+    // should not be used by calcGradPhi
+
     // Create sigma while accounting for mesh mapping
     // sigma = 1/(fac^2)*J * dt/rho
     Vector<amrex::MultiFab> sigma(finest_level + 1);
@@ -532,6 +546,14 @@ void incflo::UpdateGradP(
     Vector<MultiFab*> vel;
     for (int lev = 0; lev <= finest_level; ++lev) {
         vel.push_back(&(velocity(lev)));
+    }
+
+    if (is_anelastic) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            amrex::Multiply(
+                velocity(lev), (*ref_density)(lev), 0, 0, density[lev]->nComp(),
+                0);
+        }
     }
 
     amr_wind::MLMGOptions options("nodal_proj");

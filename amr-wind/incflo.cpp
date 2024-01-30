@@ -374,7 +374,7 @@ void incflo::init_physics_and_pde()
 
     // Register density first so that we can compute its `n+1/2` state before
     // other scalars attempt to use it in their computations.
-    if (!m_constant_density) {
+    if (!pde_mgr.constant_density()) {
         if (!pde_mgr.scalar_eqns().empty()) {
             amrex::Abort(
                 "For non-constant density, it must be the first equation "

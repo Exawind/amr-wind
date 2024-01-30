@@ -288,7 +288,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // *************************************************************************************
     // Update density first
     // *************************************************************************************
-    if (m_constant_density) {
+    if (m_sim.pde_manager().constant_density()) {
         amr_wind::field_ops::copy(density_nph, density_old, 0, 0, 1, 1);
     }
 
@@ -544,7 +544,7 @@ void incflo::ApplyCorrector()
     // *************************************************************************************
     // Update density first
     // *************************************************************************************
-    if (m_constant_density) {
+    if (m_sim.pde_manager().constant_density()) {
         amr_wind::field_ops::copy(density_nph, density_old, 0, 0, 1, 1);
     }
 
@@ -694,7 +694,7 @@ void incflo::ApplyPrescribeStep()
     // *************************************************************************************
     // Update density first
     // *************************************************************************************
-    if (m_constant_density) {
+    if (m_sim.pde_manager().constant_density()) {
         amr_wind::field_ops::copy(density_nph, density_old, 0, 0, 1, 1);
     }
 

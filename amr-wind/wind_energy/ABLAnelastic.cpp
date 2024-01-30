@@ -9,16 +9,26 @@ ABLAnelastic::ABLAnelastic(CFDSim& sim) : m_sim(sim)
         pp.query("anelastic", m_is_anelastic);
         pp.query("bottom_reference_pressure", m_bottom_reference_pressure);
     }
+    std::string godunov_type;
+    int conserv = 1;
     {
         amrex::ParmParse pp("incflo");
         pp.queryarr("gravity", m_gravity);
         pp.query("density", m_rho0_const);
+        pp.query("godunov_type", godunov_type);
+        pp.query("icns_conserv", conserv);
     }
     if (m_is_anelastic) {
         {
             // ensure use of perturbational pressure form
             amrex::ParmParse pp("ICNS");
             pp.add("use_perturb_pressure", (bool)true);
+        }
+        if (conserv != 1) {
+            amrex::Abort("ABLAnelastic is not supported for icns_conserv != 1");
+        }
+        if (amrex::toLower(godunov_type) == "bds") {
+            amrex::Abort("ABLAnelastic is not supported by BDS");
         }
         const auto& density = m_sim.repo().get_field("density");
         auto& ref_density = m_sim.repo().declare_field(
