@@ -71,7 +71,7 @@ MultiPhase::MultiPhase(CFDSim& sim)
     amrex::ParmParse pp_incflo("incflo");
     if (pp_incflo.contains("density")) {
         amrex::Print() << "WARNING: single-phase density has been specified "
-                          "but will not be used! (MultiPhase physics)";
+                          "but will not be used! (MultiPhase physics)\n";
     }
 }
 

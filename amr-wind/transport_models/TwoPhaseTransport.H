@@ -37,12 +37,12 @@ public:
         if (pp.contains("viscosity")) {
             amrex::Print()
                 << "WARNING: single-phase viscosity has been specified but "
-                   "will not be used! (TwoPhaseTransport)";
+                   "will not be used! (TwoPhaseTransport)\n";
         }
         if (pp.contains("laminar_prandtl")) {
             amrex::Print()
                 << "WARNING: single-phase laminar_prandtl has been specified "
-                   "but will not be used! (TwoPhaseTransport)";
+                   "but will not be used! (TwoPhaseTransport)\n";
         }
     }
 
