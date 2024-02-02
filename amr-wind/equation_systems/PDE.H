@@ -7,7 +7,6 @@
 #include "amr-wind/equation_systems/PDEOps.H"
 #include "amr-wind/equation_systems/CompRHSOps.H"
 #include "amr-wind/equation_systems/DiffusionOps.H"
-#include "amr-wind/wind_energy/ABL.H"
 
 namespace amr_wind::pde {
 
