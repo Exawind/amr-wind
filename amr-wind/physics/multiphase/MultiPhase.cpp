@@ -66,6 +66,13 @@ MultiPhase::MultiPhase(CFDSim& sim)
                 "reference_pressure", 1, (*m_vof).num_grow()[0], 1);
         }
     }
+
+    // Warn if density specified in single-phase sense
+    amrex::ParmParse pp_incflo("incflo");
+    if (pp_incflo.contains("density")) {
+        amrex::Print() << "WARNING: single-phase density has been specified "
+                          "but will not be used! (MultiPhase physics)\n";
+    }
 }
 
 InterfaceCapturingMethod MultiPhase::interface_capturing_method()
