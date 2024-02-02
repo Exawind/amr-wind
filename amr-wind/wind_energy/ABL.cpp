@@ -76,6 +76,9 @@ ABL::ABL(CFDSim& sim)
     // Instantiate the ABL Modulated Power Law
     m_abl_mpl = std::make_unique<ABLModulatedPowerLaw>(sim);
 
+    // Instantiate the ABL anelastic module
+    m_abl_anelastic = std::make_unique<ABLAnelastic>(sim);
+
     // Instantiate the file-based field initializer
     if (m_file_input) {
         m_field_init_file = std::make_unique<ABLFieldInitFile>();
@@ -149,7 +152,10 @@ void ABL::post_init_actions()
 
     m_bndry_plane->post_init_actions();
     m_abl_mpl->post_init_actions();
+    m_abl_anelastic->post_init_actions();
 }
+
+void ABL::post_regrid_actions() { m_abl_anelastic->post_regrid_actions(); }
 
 /** Perform tasks at the beginning of a new timestep
  *

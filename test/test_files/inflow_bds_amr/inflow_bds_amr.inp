@@ -59,6 +59,9 @@ amr.n_error_buf = 2
 amrex.abort_on_out_of_memory=1
 amrex.the_arena_is_managed=1
 amrex.async_out=0
+# needed because a debug build using BDS + amrex.the_arena_is_managed=0 OOMs the GPU (problem is in incflo as well)
+# This is not needed for a non-debug build
+amrex.the_arena_init_size=4500000000
 
 amr.max_level = 2
 tagging.labels = static

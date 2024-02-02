@@ -85,9 +85,9 @@ private:
 
     // Bools according to ICNS settings
     // Turning on perturbational density and pressure
-    bool is_pptb{false};
+    bool m_use_perturb_pressure{false};
     // Reconstructing true pressure field at end of timestep
-    bool is_ptrue{false};
+    bool m_reconstruct_true_pressure{false};
 
     // Info to create rho0
     amrex::Real water_level0{0.0};
