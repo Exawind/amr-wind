@@ -126,7 +126,8 @@ void incflo::ApplyProjection(
         }
     }
 
-    bool variable_density =
+    const bool is_anelastic = m_sim.is_anelastic();
+    const bool variable_density =
         (!m_sim.pde_manager().constant_density() ||
          m_sim.physics_manager().contains("MultiPhase"));
 
@@ -143,6 +144,8 @@ void incflo::ApplyProjection(
     amr_wind::Field const* mesh_detJ =
         mesh_mapping ? &(m_repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::CELL))
                      : nullptr;
+    const auto* ref_density =
+        is_anelastic ? &(m_repo.get_field("reference_density")) : nullptr;
 
     // TODO: Mesh mapping doesn't work with immersed boundaries
     // Do the pre pressure correction work -- this applies to IB only
@@ -266,6 +269,9 @@ void incflo::ApplyProjection(
                 amrex::Array4<amrex::Real const> detJ =
                     mesh_mapping ? ((*mesh_detJ)(lev).const_array(mfi))
                                  : amrex::Array4<amrex::Real const>();
+                const auto& ref_rho = is_anelastic
+                                          ? (*ref_density)(lev).const_array(mfi)
+                                          : amrex::Array4<amrex::Real>();
 
                 amrex::ParallelFor(
                     bx, ncomp,
@@ -276,6 +282,9 @@ void incflo::ApplyProjection(
                             mesh_mapping ? (detJ(i, j, k)) : 1.0;
                         sig(i, j, k, n) = std::pow(fac_cc, -2.) * det_j *
                                           scaling_factor / rho(i, j, k);
+                        if (is_anelastic) {
+                            sig(i, j, k, n) *= ref_rho(i, j, k);
+                        }
                     });
             }
         }
@@ -293,6 +302,14 @@ void incflo::ApplyProjection(
         vel[lev]->setBndry(0.0);
         if (!proj_for_small_dt and !incremental) {
             set_inflow_velocity(lev, time, *vel[lev], 1);
+        }
+    }
+
+    if (is_anelastic) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            amrex::Multiply(
+                velocity(lev), (*ref_density)(lev), 0, 0, density[lev]->nComp(),
+                0);
         }
     }
 
@@ -356,8 +373,17 @@ void incflo::ApplyProjection(
     } else {
         nodal_projector->project(options.rel_tol, options.abs_tol);
     }
+
     amr_wind::io::print_mlmg_info(
         "Nodal_projection", nodal_projector->getMLMG());
+
+    if (is_anelastic) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            amrex::Divide(
+                velocity(lev), (*ref_density)(lev), 0, 0, density[lev]->nComp(),
+                0);
+        }
+    }
 
     // scale U^* back to -> U = fac/J * U^bar
     if (mesh_mapping) {
@@ -443,7 +469,8 @@ void incflo::UpdateGradP(
 
     // Pressure and sigma are necessary to calculate the pressure gradient
 
-    bool variable_density =
+    const bool is_anelastic = m_sim.is_anelastic();
+    const bool variable_density =
         (!m_sim.pde_manager().constant_density() ||
          m_sim.physics_manager().contains("MultiPhase"));
 
@@ -459,6 +486,11 @@ void incflo::UpdateGradP(
     amr_wind::Field const* mesh_detJ =
         mesh_mapping ? &(m_repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::CELL))
                      : nullptr;
+    const auto* ref_density =
+        is_anelastic ? &(m_repo.get_field("reference_density")) : nullptr;
+
+    // ASA does not think we actually need to define sigma here. It
+    // should not be used by calcGradPhi
 
     // Create sigma while accounting for mesh mapping
     // sigma = 1/(fac^2)*J * dt/rho
@@ -482,6 +514,9 @@ void incflo::UpdateGradP(
                 amrex::Array4<amrex::Real const> detJ =
                     mesh_mapping ? ((*mesh_detJ)(lev).const_array(mfi))
                                  : amrex::Array4<amrex::Real const>();
+                const auto& ref_rho = is_anelastic
+                                          ? (*ref_density)(lev).const_array(mfi)
+                                          : amrex::Array4<amrex::Real>();
 
                 amrex::ParallelFor(
                     bx, ncomp,
@@ -492,6 +527,9 @@ void incflo::UpdateGradP(
                             mesh_mapping ? (detJ(i, j, k)) : 1.0;
                         sig(i, j, k, n) = std::pow(fac_cc, -2.) * det_j *
                                           scaling_factor / rho(i, j, k);
+                        if (is_anelastic) {
+                            sig(i, j, k, n) *= ref_rho(i, j, k);
+                        }
                     });
             }
         }
@@ -508,6 +546,14 @@ void incflo::UpdateGradP(
     Vector<MultiFab*> vel;
     for (int lev = 0; lev <= finest_level; ++lev) {
         vel.push_back(&(velocity(lev)));
+    }
+
+    if (is_anelastic) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            amrex::Multiply(
+                velocity(lev), (*ref_density)(lev), 0, 0, density[lev]->nComp(),
+                0);
+        }
     }
 
     amr_wind::MLMGOptions options("nodal_proj");

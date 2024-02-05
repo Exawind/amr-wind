@@ -27,6 +27,7 @@ incflo.density             = 1.0          # Reference density
 
 incflo.use_godunov = 1
 incflo.godunov_type = "weno_z"
+incflo.constant_density = false
 incflo.diffusion_type = 2
 incflo.initial_iterations = 3
 incflo.do_initial_proj = 1

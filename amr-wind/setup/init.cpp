@@ -23,9 +23,6 @@ void incflo::ReadParameters()
         pp.query("initial_iterations", m_initial_iterations);
         pp.query("do_initial_proj", m_do_initial_proj);
 
-        // Physics
-        pp.query("constant_density", m_constant_density);
-
         // Godunov-related flags
         pp.query("use_godunov", m_use_godunov);
 
@@ -84,7 +81,7 @@ void incflo::InitialIterations()
         vel.copy_state(amr_wind::FieldState::Old, amr_wind::FieldState::New);
         vel.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
 
-        if (m_constant_density) {
+        if (m_sim.pde_manager().constant_density()) {
             auto& rho = density();
             rho.copy_state(
                 amr_wind::FieldState::Old, amr_wind::FieldState::New);
@@ -117,7 +114,7 @@ void incflo::InitialIterations()
             vel.copy_state(
                 amr_wind::FieldState::New, amr_wind::FieldState::Old);
 
-            if (m_constant_density) {
+            if (m_sim.pde_manager().constant_density()) {
                 auto& rho = density();
                 rho.copy_state(
                     amr_wind::FieldState::New, amr_wind::FieldState::Old);
