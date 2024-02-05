@@ -18,7 +18,7 @@ void MultiLevelVector::resize(
         m_data_d[lev].resize(nc);
     }
     copy_host_to_device();
-};
+}
 
 void MultiLevelVector::copy_host_to_device()
 {
