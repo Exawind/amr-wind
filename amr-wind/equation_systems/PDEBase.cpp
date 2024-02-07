@@ -24,6 +24,21 @@ PDEMgr::PDEMgr(CFDSim& sim) : m_sim(sim)
     pp.query("use_godunov", m_use_godunov);
     pp.query("constant_density", m_constant_density);
 
+    bool is_anelastic = false;
+    {
+        amrex::ParmParse pp_abl("ABL");
+        pp_abl.query("anelastic", is_anelastic);
+    }
+
+    if ((is_anelastic) && (m_constant_density)) {
+        amrex::Print()
+            << "WARNING: Anelastic implies variable density. Setting "
+               "contant_density to false. Add incflo.constant_density=false to "
+               "your input file to remove this warning."
+            << std::endl;
+        m_constant_density = false;
+    }
+
     m_scheme =
         m_use_godunov ? fvm::Godunov::scheme_name() : fvm::MOL::scheme_name();
 }

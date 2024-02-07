@@ -73,8 +73,7 @@ void ABLFillMPL::fillpatch_sibling_fields(
     amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& cfabs,
     const amrex::IntVect& nghost,
     const amrex::Vector<amrex::BCRec>& bcrec,
-    const FieldState fstate,
-    const FieldInterpolator itype)
+    const FieldState fstate)
 {
     if (m_field.base_name() == "velocity") {
         // For an ABL MPL, we first just foextrap the mac velocities
@@ -103,7 +102,7 @@ void ABLFillMPL::fillpatch_sibling_fields(
         }
 
         FieldFillPatchOps<FieldBCDirichlet>::fillpatch_sibling_fields(
-            lev, time, mfabs, ffabs, cfabs, nghost, lbcrec, fstate, itype);
+            lev, time, mfabs, ffabs, cfabs, nghost, lbcrec, fstate);
 
         for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
             m_abl_mpl.set_velocity(lev, time, m_field, *mfabs[i], 0, i);
