@@ -90,8 +90,6 @@ void RadarSampler::initialize(const std::string& key)
 
     AMREX_ALWAYS_ASSERT(timestep_sample_ratio >= 1.0);
 
-    amrex::Print() << "m_ntotal: " << m_ntotal << std::endl;
-
     prior_cones.resize(num_points_scan());
     current_cones.resize(num_points_scan());
 

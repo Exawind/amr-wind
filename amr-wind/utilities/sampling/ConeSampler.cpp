@@ -4,8 +4,6 @@
 
 #include "AMReX_ParmParse.H"
 
-#define PI 3.14159265
-
 namespace amr_wind::sampling {
 
 ConeSampler::ConeSampler(const CFDSim& sim) : m_sim(sim) {}
@@ -134,7 +132,7 @@ void ConeSampler::sampling_locations(SampleLocType& locs) const
 
     vs::Vector unit_target = target_beam.normalize();
     vs::Vector tc_axis = canon_vector ^ unit_target;
-    amrex::Real tc_angle = std::acos(unit_target & canon_vector) * 180.0 / PI;
+    amrex::Real tc_angle = std::acos(unit_target & canon_vector) * 180.0 / M_PI;
 
     for (int i = 0; i < full_size; ++i) {
         vs::Vector temp_loc(locs[i][0], locs[i][1], locs[i][2]);
@@ -161,7 +159,6 @@ void ConeSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
 void ConeSampler::output_netcdf_data(
     const ncutils::NCGroup& grp, const size_t nt) const
 {
-    amrex::Print() << "Output Cone Sampler Netcdf Data" << std::endl;
     std::vector<size_t> start{nt, 0, 0};
     std::vector<size_t> count{1, 0, AMREX_SPACEDIM};
     SamplerBase::SampleLocType locs;

@@ -68,7 +68,6 @@ void Sampling::initialize()
 
         m_total_particles += obj->num_points();
         m_samplers.emplace_back(std::move(obj));
-        amrex::Print() << stype << ": " << m_total_particles << std::endl;
     }
 
     update_container();
@@ -130,10 +129,6 @@ void Sampling::post_advance_work()
     if (!(tidx % m_out_freq == 0)) {
         return;
     }
-
-    amrex::Print() << "Running Sampling::post_advance_work" << std::endl;
-    amrex::Print() << "Current Time: " << time.current_time()
-                   << " New Time: " << time.new_time() << std::endl;
 
     sampling_workflow();
 
@@ -388,7 +383,6 @@ void Sampling::prepare_netcdf_file()
         "NetCDF support was not enabled during build time. Please recompile or "
         "use native format");
 #endif
-    amrex::Print() << "Finished PREPARE NETCDF" << std::endl;
 }
 
 void Sampling::write_netcdf()
@@ -436,8 +430,6 @@ void Sampling::write_netcdf()
         }
     }
 
-    amrex::Print() << "Finished WRITE STANDARD" << std::endl;
-
     // Custom sampler output from sampler function
     // Output of los_velocity goes here in addition to other custom output
     for (const auto& obj : m_samplers) {
@@ -447,7 +439,6 @@ void Sampling::write_netcdf()
 
     ncf.close();
 #endif
-    amrex::Print() << "Finished WRITE ALL" << std::endl;
 }
 
 } // namespace amr_wind::sampling
