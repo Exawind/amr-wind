@@ -101,9 +101,15 @@ public:
     {
         this->m_sim.io_manager().register_io_var("mu_turb");
 
-        // Effective viscosity field
+        // Effective viscosity field for output
         auto& fields = this->m_sim.pde_manager().icns().fields();
         this->m_sim.io_manager().register_io_var(fields.mueff.name());
+
+        // Effective diffusive parameter fields for scalars
+        for (auto& sc_eqn : this->m_sim.pde_manager().scalar_eqns()) {
+            this->m_sim.io_manager().register_output_var(
+                sc_eqn->fields().mueff.name());
+        }
 
         m_mu_turb.set_default_fillpatch_bc(this->m_sim.time());
     }

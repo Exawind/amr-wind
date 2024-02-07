@@ -13,6 +13,7 @@ target_sources(${amr_wind_lib_name}
   ABLMesoscaleInput.cpp
   ABLFillMPL.cpp
   ABLModulatedPowerLaw.cpp
+  ABLAnelastic.cpp
   )
 
 add_subdirectory(actuator)

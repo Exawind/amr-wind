@@ -41,12 +41,17 @@ amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> get_projection_bc(
 } // namespace
 
 MacProjOp::MacProjOp(
-    FieldRepo& repo, bool has_overset, bool variable_density, bool mesh_mapping)
+    FieldRepo& repo,
+    bool has_overset,
+    bool variable_density,
+    bool mesh_mapping,
+    bool is_anelastic)
     : m_repo(repo)
     , m_options("mac_proj")
     , m_has_overset(has_overset)
     , m_variable_density(variable_density)
     , m_mesh_mapping(mesh_mapping)
+    , m_is_anelastic(is_anelastic)
 {
     amrex::ParmParse pp("incflo");
     pp.query("density", m_rho_0);
@@ -136,11 +141,24 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
 
     amrex::Real factor = m_has_overset ? 0.5 * dt : 1.0;
 
+    std::unique_ptr<ScratchField> ref_rho_xf, ref_rho_yf, ref_rho_zf;
+    if (m_is_anelastic) {
+        ref_rho_xf =
+            m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::XFACE);
+        ref_rho_yf =
+            m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::YFACE);
+        ref_rho_zf =
+            m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::ZFACE);
+    }
+    amrex::Vector<amrex::Array<amrex::MultiFab*, ICNS::ndim>> ref_rho_face(
+        m_repo.num_active_levels());
+
     // TODO: remove the or in the if statement for m_has_overset
     // For now assume variable viscosity for overset
     // this can be removed once the nsolve overset
     // masking is implemented in cell based AMReX poisson solvers
-    if (m_variable_density || m_has_overset || m_mesh_mapping) {
+    if (m_variable_density || m_has_overset || m_mesh_mapping ||
+        m_is_anelastic) {
         amrex::Vector<amrex::Array<amrex::MultiFab const*, ICNS::ndim>>
             rho_face_const;
         rho_face_const.reserve(m_repo.num_active_levels());
@@ -153,6 +171,9 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
         amrex::Vector<amrex::Array<amrex::MultiFab*, ICNS::ndim>> rho_face(
             m_repo.num_active_levels());
 
+        const auto* ref_density =
+            m_is_anelastic ? &(m_repo.get_field("reference_density")) : nullptr;
+
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
             rho_face[lev][0] = &(*rho_xf)(lev);
             rho_face[lev][1] = &(*rho_yf)(lev);
@@ -160,6 +181,19 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
 
             amrex::average_cellcenter_to_face(
                 rho_face[lev], density(lev), geom[lev]);
+
+            if (m_is_anelastic) {
+                ref_rho_face[lev][0] = &(*ref_rho_xf)(lev);
+                ref_rho_face[lev][1] = &(*ref_rho_yf)(lev);
+                ref_rho_face[lev][2] = &(*ref_rho_zf)(lev);
+                amrex::average_cellcenter_to_face(
+                    ref_rho_face[lev], (*ref_density)(lev), geom[lev]);
+                for (int idim = 0; idim < ICNS::ndim; ++idim) {
+                    rho_face[lev][idim]->divide(
+                        *(ref_rho_face[lev][idim]), 0, density.num_comp(),
+                        rho_face[lev][idim]->nGrow());
+                }
+            }
 
             if (m_mesh_mapping) {
                 mac_proj_to_uniform_space(
@@ -187,10 +221,16 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
     }
 
     for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
-
         mac_vec[lev][0] = &u_mac(lev);
         mac_vec[lev][1] = &v_mac(lev);
         mac_vec[lev][2] = &w_mac(lev);
+        if (m_is_anelastic) {
+            for (int idim = 0; idim < ICNS::ndim; ++idim) {
+                amrex::Multiply(
+                    *(mac_vec[lev][idim]), *(ref_rho_face[lev][idim]), 0, 0,
+                    density.num_comp(), 0);
+            }
+        }
     }
 
     m_mac_proj->setUMAC(mac_vec);
@@ -207,6 +247,16 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
 
     } else {
         m_mac_proj->project(m_options.rel_tol, m_options.abs_tol);
+    }
+
+    if (m_is_anelastic) {
+        for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
+            for (int idim = 0; idim < ICNS::ndim; ++idim) {
+                amrex::Divide(
+                    *(mac_vec[lev][idim]), *(ref_rho_face[lev][idim]), 0, 0,
+                    density.num_comp(), 0);
+            }
+        }
     }
 
     io::print_mlmg_info("MAC_projection", m_mac_proj->getMLMG());

@@ -23,15 +23,11 @@ GravityForcing::GravityForcing(const CFDSim& sim)
 
     // Check if perturbational pressure desired
     amrex::ParmParse pp_icns("ICNS");
-    pp_icns.query("use_perturb_pressure", is_pptb);
-    // Determine if rho0 field exists
-    is_rho0 = sim.repo().field_exists("reference_density");
-    if (is_rho0) {
-        m_rho0 = &(sim.repo().get_field("reference_density"));
-    } else {
-        // Point to existing field, won't be used
-        m_rho0 = m_rho;
-    }
+    pp_icns.query("use_perturb_pressure", m_use_perturb_pressure);
+    m_use_reference_density = sim.repo().field_exists("reference_density");
+    m_rho0 = m_use_reference_density
+                 ? &(sim.repo().get_field("reference_density"))
+                 : nullptr;
 }
 
 GravityForcing::~GravityForcing() = default;
@@ -56,9 +52,11 @@ void GravityForcing::operator()(
 
     const auto& rho_arr =
         ((*m_rho).state(field_impl::phi_state(fstate)))(lev).const_array(mfi);
-    const auto& rho0_arr = (*m_rho0)(lev).const_array(mfi);
-    const bool ir0 = is_rho0;
-    const bool ipt = is_pptb;
+    const auto& rho0_arr = m_use_reference_density
+                               ? (*m_rho0)(lev).const_array(mfi)
+                               : amrex::Array4<amrex::Real>();
+    const bool ir0 = m_use_reference_density;
+    const bool ipt = m_use_perturb_pressure;
     const amrex::Real mr0c = m_rho0_const;
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {

@@ -15,9 +15,9 @@ jobs:
         with:
           access_token: ${{github.token}}
       - name: Clone
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
       - name: Dependencies
