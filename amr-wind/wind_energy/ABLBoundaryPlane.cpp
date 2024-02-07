@@ -728,25 +728,31 @@ void ABLBoundaryPlane::read_header()
             nc += fld->num_comp();
         }
 
-        // TODO: need to generalize to lev > 0 somehow
-        const int lev = 0;
         for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
             auto ori = oit();
 
-            // TODO: would be safer and less storage to not allocate all of
-            // these but we do not use m_planes for input and need to detect
-            // mass inflow from field bcs same for define level data below
+            if (std::all_of(
+                    m_fields.begin(), m_fields.end(), [ori](const auto* fld) {
+                        return fld->bc_type()[ori] != BC::mass_inflow;
+                    })) {
+                continue;
+            }
+
             m_in_data.define_plane(ori);
 
-            const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
+            const int nlevels = m_repo.num_active_levels();
+            for (int lev = 0; lev < nlevels; ++lev) {
 
-            amrex::IntVect plo(minBox.loVect());
-            amrex::IntVect phi(minBox.hiVect());
-            const int normal = ori.coordDir();
-            plo[normal] = ori.isHigh() ? minBox.hiVect()[normal] + 1 : -1;
-            phi[normal] = ori.isHigh() ? minBox.hiVect()[normal] + 1 : -1;
-            const amrex::Box pbx(plo, phi);
-            m_in_data.define_level_data(ori, pbx, nc);
+                const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
+
+                amrex::IntVect plo(minBox.loVect());
+                amrex::IntVect phi(minBox.hiVect());
+                const int normal = ori.coordDir();
+                plo[normal] = ori.isHigh() ? minBox.hiVect()[normal] + 1 : -1;
+                phi[normal] = ori.isHigh() ? minBox.hiVect()[normal] + 1 : -1;
+                const amrex::Box pbx(plo, phi);
+                m_in_data.define_level_data(ori, pbx, nc);
+            }
         }
     }
 }
@@ -808,47 +814,51 @@ void ABLBoundaryPlane::read_file()
 
         const std::string level_prefix = "Level_";
 
-        const int lev = 0;
-        for (auto* fld : m_fields) {
+        const int nlevels = m_repo.num_active_levels();
+        for (int lev = 0; lev < nlevels; ++lev) {
+            for (auto* fld : m_fields) {
 
-            auto& field = *fld;
-            const auto& geom = field.repo().mesh().Geom();
+                auto& field = *fld;
+                const auto& geom = field.repo().mesh().Geom();
 
-            amrex::Box domain = geom[lev].Domain();
-            amrex::BoxArray ba(domain);
-            amrex::DistributionMapping dm{ba};
+                amrex::Box domain = geom[lev].Domain();
+                amrex::BoxArray ba(domain);
+                amrex::DistributionMapping dm{ba};
 
-            amrex::BndryRegister bndry1(
-                ba, dm, m_in_rad, m_out_rad, m_extent_rad, field.num_comp());
-            amrex::BndryRegister bndry2(
-                ba, dm, m_in_rad, m_out_rad, m_extent_rad, field.num_comp());
+                amrex::BndryRegister bndry1(
+                    ba, dm, m_in_rad, m_out_rad, m_extent_rad,
+                    field.num_comp());
+                amrex::BndryRegister bndry2(
+                    ba, dm, m_in_rad, m_out_rad, m_extent_rad,
+                    field.num_comp());
 
-            bndry1.setVal(1.0e13);
-            bndry2.setVal(1.0e13);
+                bndry1.setVal(1.0e13);
+                bndry2.setVal(1.0e13);
 
-            std::string filename1 = amrex::MultiFabFileFullPrefix(
-                lev, chkname1, level_prefix, field.name());
-            std::string filename2 = amrex::MultiFabFileFullPrefix(
-                lev, chkname2, level_prefix, field.name());
+                std::string filename1 = amrex::MultiFabFileFullPrefix(
+                    lev, chkname1, level_prefix, field.name());
+                std::string filename2 = amrex::MultiFabFileFullPrefix(
+                    lev, chkname2, level_prefix, field.name());
 
-            for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
-                auto ori = oit();
+                for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+                    auto ori = oit();
 
-                if ((!m_in_data.is_populated(ori)) ||
-                    (field.bc_type()[ori] != BC::mass_inflow)) {
-                    continue;
+                    if ((!m_in_data.is_populated(ori)) ||
+                        (field.bc_type()[ori] != BC::mass_inflow)) {
+                        continue;
+                    }
+
+                    std::string facename1 =
+                        amrex::Concatenate(filename1 + '_', ori, 1);
+                    std::string facename2 =
+                        amrex::Concatenate(filename2 + '_', ori, 1);
+
+                    bndry1[ori].read(facename1);
+                    bndry2[ori].read(facename2);
+
+                    m_in_data.read_data_native(
+                        oit, bndry1, bndry2, lev, fld, time, m_in_times);
                 }
-
-                std::string facename1 =
-                    amrex::Concatenate(filename1 + '_', ori, 1);
-                std::string facename2 =
-                    amrex::Concatenate(filename2 + '_', ori, 1);
-
-                bndry1[ori].read(facename1);
-                bndry2[ori].read(facename2);
-
-                m_in_data.read_data_native(
-                    oit, bndry1, bndry2, lev, fld, time, m_in_times);
             }
         }
     }
