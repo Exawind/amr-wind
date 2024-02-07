@@ -151,6 +151,16 @@ void populate_fields_all_levels(
     // Zero velocity in pure gas cells
     postprocess_velocity_field_liquid(vel_field, lvs_field, geom_all);
 }
+
+int update_offset_timestep(const int ntime, const int n0)
+{
+    // Offending timestep (goes too far): ntime + offset
+    // Farthest back timesteps are permitted to go: n0
+    // Subtract offset by offending timestep, add back lower limit
+    // new offset = offset - (ntime + offset) + n0
+    return (-ntime + n0);
+}
+
 } // namespace
 #endif
 
@@ -276,7 +286,8 @@ struct ReadInputsOp<W2AWaves>
                 wdata.mFS);
             if (!no_EOF) {
                 // End of file detected, reset reading
-                wdata.n_offset -= (wdata.ntime - wdata.n_winit);
+                wdata.n_offset =
+                    update_offset_timestep(wdata.ntime, wdata.n_winit);
                 // Print warning to screen
                 amrex::Print()
                     << "WARNING (waves2amr_ops): end of mode data file "
@@ -438,12 +449,13 @@ struct UpdateRelaxZonesOp<W2AWaves>
         int double_data = evaluate_read_resize(
             wdata.ntime, read_flag, wdata.resize_flag, wdata.t, wdata.t_last,
             new_ntime, wdata.t_winit, wdata.dt_modes, newtime);
-        // Check if stop time is exceeded, introduce offset to new_ntime
+        // Check if stop time is exceeded, introduce offset to ntime
         if (read_flag) {
             // Need to only check when reading is occuring
             if (wdata.ntime + wdata.n_offset > wdata.n_wstop) {
-                // If exceeding stop step, contribute to offset
-                wdata.n_offset -= (wdata.n_wstop - wdata.n_winit);
+                // If exceeding stop step, calculate new offset
+                wdata.n_offset =
+                    update_offset_timestep(wdata.ntime, wdata.n_winit);
                 // Print warning to screen
                 amrex::Print()
                     << "WARNING (waves2amr_ops): available mode data exceeded, "

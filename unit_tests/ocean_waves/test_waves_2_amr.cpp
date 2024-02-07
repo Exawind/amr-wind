@@ -246,4 +246,20 @@ TEST_F(OceanWavesW2ATest, time_advance)
     EXPECT_NEAR(f_interp, (4.2 - 4.0) / (4.2 - 4.0), 1e-10);
 }
 
+TEST_F(OceanWavesW2ATest, time_reset)
+{
+    // Testing the arithmetic for resetting data back to the beginning
+    int nstop = 10;
+    int n0 = 1;
+
+    int ntime = 11;
+    int noff = update_offset_timestep(ntime, n0);
+    EXPECT_EQ(ntime + noff, 1);
+
+    // As if continued through another set of data
+    ntime = nstop + ntime;
+    noff = update_offset_timestep(ntime, n0);
+    EXPECT_EQ(ntime + noff, 1);
+}
+
 } // namespace amr_wind_tests
