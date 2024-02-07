@@ -546,46 +546,47 @@ void ABLBoundaryPlane::write_file()
         amrex::Print() << "Writing abl boundary checkpoint file " << chkname
                        << " at time " << time << std::endl;
 
+        const int nlevels = m_repo.num_active_levels();
         const std::string level_prefix = "Level_";
-        amrex::PreBuildDirectorHierarchy(chkname, level_prefix, 1, true);
+        amrex::PreBuildDirectorHierarchy(chkname, level_prefix, nlevels, true);
+        for (int lev = 0; lev < nlevels; ++lev) {
+            for (auto* fld : m_fields) {
 
-        // for now only output level 0
-        const int lev = 0;
+                auto& field = *fld;
 
-        for (auto* fld : m_fields) {
+                const auto& geom = field.repo().mesh().Geom();
 
-            auto& field = *fld;
+                // note: by using the entire domain box we end up using 1
+                // processor to hold all boundaries
+                amrex::Box domain = geom[lev].Domain();
+                amrex::BoxArray ba(domain);
+                amrex::DistributionMapping dm{ba};
 
-            const auto& geom = field.repo().mesh().Geom();
+                amrex::BndryRegister bndry(
+                    ba, dm, m_in_rad, m_out_rad, m_extent_rad,
+                    field.num_comp());
 
-            // note: by using the entire domain box we end up using 1 processor
-            // to hold all boundaries
-            amrex::Box domain = geom[lev].Domain();
-            amrex::BoxArray ba(domain);
-            amrex::DistributionMapping dm{ba};
+                bndry.copyFrom(
+                    field(lev), 0, 0, 0, field.num_comp(),
+                    geom[lev].periodicity());
 
-            amrex::BndryRegister bndry(
-                ba, dm, m_in_rad, m_out_rad, m_extent_rad, field.num_comp());
+                std::string filename = amrex::MultiFabFileFullPrefix(
+                    lev, chkname, level_prefix, field.name());
 
-            bndry.copyFrom(
-                field(lev), 0, 0, 0, field.num_comp(), geom[lev].periodicity());
+                // print individual faces
+                for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+                    auto ori = oit();
+                    const std::string plane = m_plane_names[ori];
 
-            std::string filename = amrex::MultiFabFileFullPrefix(
-                lev, chkname, level_prefix, field.name());
+                    if (std::find(m_planes.begin(), m_planes.end(), plane) ==
+                        m_planes.end()) {
+                        continue;
+                    }
 
-            // print individual faces
-            for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
-                auto ori = oit();
-                const std::string plane = m_plane_names[ori];
-
-                if (std::find(m_planes.begin(), m_planes.end(), plane) ==
-                    m_planes.end()) {
-                    continue;
+                    std::string facename =
+                        amrex::Concatenate(filename + '_', ori, 1);
+                    bndry[ori].write(facename);
                 }
-
-                std::string facename =
-                    amrex::Concatenate(filename + '_', ori, 1);
-                bndry[ori].write(facename);
             }
         }
     }
