@@ -22,7 +22,7 @@ struct W2AWavesData : public RelaxZonesBaseData
     amrex::Real dx1{0.};
     // Length to dimensionalize nondim data
     amrex::Real dimL{0.};
-    // Timestep of reference data
+    // Timestep size of reference data
     amrex::Real dt_modes{0.0};
 
     // Time (in HOS sim) to begin reading from
@@ -30,6 +30,12 @@ struct W2AWavesData : public RelaxZonesBaseData
     amrex::Real t_winit{-1.0};
     // Timestep (in HOS sim) of latest imported wave data
     int ntime{0};
+    // Timestep (in HOS sim) of first imported wave data
+    int n_winit{0};
+    // Timestep (in HOS sim) of last available wave data
+    int n_wstop{0};
+    // Timestep offset (in HOS sim) for resetting to earlier data
+    int n_offset{0};
 
     // Time (in AMR-Wind sim) when ow arrays were last changed
     // (this is from the last timestep, goes with time-interpolated data)

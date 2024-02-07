@@ -209,9 +209,13 @@ struct ReadInputsOp<W2AWaves>
             wdata.ntime = wdata.rmodes.time2step(wdata.t_winit, wdata.ntime);
             // Sync time to time index
             wdata.t_winit = wdata.dt_modes * wdata.ntime;
+            // Save first timestep
+            wdata.n_winit = wdata.ntime;
         } else {
             // If initial timestep is being used
             wdata.t_winit = wdata.dt_modes * wdata.ntime;
+            // Save first timestep
+            wdata.n_winit = wdata.ntime;
         }
 
         // Initialize variables to store modes
@@ -232,6 +236,8 @@ struct ReadInputsOp<W2AWaves>
         const amrex::Real depth = wdata.rmodes.get_depth();
         // Get dimensional length
         wdata.dimL = wdata.rmodes.get_L();
+        // Get nominal last timestep of data
+        wdata.n_wstop = (int)wdata.rmodes.get_Tstop() / wdata.dt_modes;
 
         // Warning if depth does not correspond to simulation
         if (std::abs(depth - (wdata.zsl - prob_lo_input[2])) > 1e-3 * depth) {
@@ -265,8 +271,29 @@ struct ReadInputsOp<W2AWaves>
         // If init_wave_field is activated and initialization will be done, get
         // modes on every processor
         if (wdata.init_wave_field && data.sim().time().time_index() == 0) {
-            wdata.rmodes.get_data(
-                wdata.ntime, wdata.mX, wdata.mY, wdata.mZ, wdata.mFS);
+            bool no_EOF = wdata.rmodes.get_data(
+                wdata.ntime + wdata.n_offset, wdata.mX, wdata.mY, wdata.mZ,
+                wdata.mFS);
+            if (!no_EOF) {
+                // End of file detected, reset reading
+                wdata.n_offset -= (wdata.ntime - wdata.n_winit);
+                // Print warning to screen
+                amrex::Print()
+                    << "WARNING (waves2amr_ops): end of mode data file "
+                       "detected, resetting to beginning of mode data.\n";
+                // Read data again, now from a valid timestep
+                no_EOF = wdata.rmodes.get_data(
+                    wdata.ntime + wdata.n_offset, wdata.mX, wdata.mY, wdata.mZ,
+                    wdata.mFS);
+                // If no valid data is detected at this point, abort
+                if (!no_EOF) {
+                    amrex::Abort(
+                        "waves2amr_ops: end of mode data file detected after "
+                        "resetting to beginning; please evaluate HOS_init_time "
+                        "or HOS_init_timestep and check the length of the mode "
+                        "file.");
+                }
+            }
 
             // Convert modes to spatial data
             modes_hosgrid::copy_complex(
@@ -411,6 +438,18 @@ struct UpdateRelaxZonesOp<W2AWaves>
         int double_data = evaluate_read_resize(
             wdata.ntime, read_flag, wdata.resize_flag, wdata.t, wdata.t_last,
             new_ntime, wdata.t_winit, wdata.dt_modes, newtime);
+        // Check if stop time is exceeded, introduce offset to new_ntime
+        if (read_flag) {
+            // Need to only check when reading is occuring
+            if (wdata.ntime + wdata.n_offset > wdata.n_wstop) {
+                // If exceeding stop step, contribute to offset
+                wdata.n_offset -= (wdata.n_wstop - wdata.n_winit);
+                // Print warning to screen
+                amrex::Print()
+                    << "WARNING (waves2amr_ops): available mode data exceeded, "
+                       "resetting to beginning of mode data.\n";
+            }
+        }
         // Resizing (assuming reading is taking place) must happen after regrid
         if (wdata.regrid_occurred) {
             // resize_flag remains true until resizing occurs, but
