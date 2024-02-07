@@ -23,9 +23,10 @@ FPlaneAveragingFine<FType>::FPlaneAveragingFine(
     const int dom_hi = geom[finestLevel].Domain().bigEnd()[m_axis];
 
     AMREX_ALWAYS_ASSERT(dom_lo == 0);
+    const auto& mesh = m_field.repo().mesh();
     int dom_hi2 = geom[0].Domain().bigEnd()[m_axis] + 1;
     for (int i = 0; i < finestLevel; ++i) {
-        dom_hi2 *= 2;
+        dom_hi2 *= mesh.refRatio(i)[m_axis];
     }
     AMREX_ALWAYS_ASSERT(dom_hi + 1 == dom_hi2);
 

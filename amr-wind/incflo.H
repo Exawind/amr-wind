@@ -173,8 +173,6 @@ private:
     bool m_do_initial_proj = true;
     int m_initial_iterations = 3;
 
-    bool m_constant_density = true;
-
     bool m_use_godunov = true;
 
     // Prescribe advection velocity
@@ -184,6 +182,9 @@ private:
     amrex::Long m_cell_count{-1};
 
     DiffusionType m_diff_type = DiffusionType::Crank_Nicolson;
+
+    //! reconstruct true pressure
+    bool m_reconstruct_true_pressure{false};
 
     //
     // end of member variables

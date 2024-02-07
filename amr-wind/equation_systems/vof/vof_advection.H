@@ -15,7 +15,11 @@ template <>
 struct AdvectionOp<VOF, fvm::Godunov>
 {
     AdvectionOp(
-        PDEFields& fields_in, bool /*unused*/, bool /*unused*/, bool /*unused*/)
+        PDEFields& fields_in,
+        bool /*unused*/,
+        bool /*unused*/,
+        bool /*unused*/,
+        bool /*unused*/)
         : fields(fields_in)
         , u_mac(fields_in.repo.get_field("u_mac"))
         , v_mac(fields_in.repo.get_field("v_mac"))

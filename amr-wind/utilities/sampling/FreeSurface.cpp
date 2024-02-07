@@ -534,9 +534,10 @@ void FreeSurface::post_advance_work()
             amrex::Gpu::hostToDevice, &m_out[static_cast<long>(ni) * m_npts],
             &m_out[(ni + 1) * m_npts - 1] + 1, dout_last.begin());
         // Reset current output device vector
-        for (int n = 0; n < m_npts; n++) {
-            dout_ptr[n] = plo0[m_coorddir];
-        }
+        const auto coorddir = m_coorddir;
+        amrex::ParallelFor(m_npts, [=] AMREX_GPU_DEVICE(int n) {
+            dout_ptr[n] = plo0[coorddir];
+        });
     }
 
     process_output();

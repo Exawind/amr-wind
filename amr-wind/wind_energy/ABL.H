@@ -12,6 +12,7 @@
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
 #include "amr-wind/wind_energy/ABLStatsBase.H"
 #include "amr-wind/wind_energy/ABLModulatedPowerLaw.H"
+#include "amr-wind/wind_energy/ABLAnelastic.H"
 
 /**
  *  \defgroup wind Wind energy modeling
@@ -72,7 +73,7 @@ public:
 
     void post_init_actions() override;
 
-    void post_regrid_actions() override {}
+    void post_regrid_actions() override;
 
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 
@@ -112,6 +113,8 @@ public:
 
     const ABLMesoscaleInput& abl_meso_file() const { return *m_meso_file; }
 
+    const ABLAnelastic& anelastic() const { return *m_abl_anelastic; }
+
 private:
     const CFDSim& m_sim;
 
@@ -138,6 +141,9 @@ private:
 
     //! ABL integrated statistics object
     std::unique_ptr<ABLStatsBase> m_stats;
+
+    //! ABL anelastic instance
+    std::unique_ptr<ABLAnelastic> m_abl_anelastic;
 
     mutable pde::icns::ABLMeanBoussinesq* m_abl_mean_bous{nullptr};
 

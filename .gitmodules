@@ -6,4 +6,4 @@
 	url = https://github.com/google/googletest.git
 [submodule "submods/AMReX-Hydro"]
 	path = submods/AMReX-Hydro
-	url = https://github.com/AMReX-Codes/AMReX-Hydro
+	url = https://github.com/AMReX-Fluids/AMReX-Hydro.git

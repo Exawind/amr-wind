@@ -61,8 +61,7 @@ public:
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& cfabs,
         const amrex::IntVect& nghost,
         const amrex::Vector<amrex::BCRec>& bcrec,
-        const FieldState fstate = FieldState::New,
-        const FieldInterpolator itype = FieldInterpolator::FaceDivFree) = 0;
+        const FieldState fstate = FieldState::New) = 0;
 
     //! Implementation that handles filling patches from a coarse to fine level
     virtual void fillpatch_from_coarse(
@@ -117,8 +116,7 @@ public:
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& /*cfabs*/,
         const amrex::IntVect& /*nghost*/,
         const amrex::Vector<amrex::BCRec>& /*bcrec*/,
-        const FieldState /*fstate*/,
-        const FieldInterpolator /*itype*/) override
+        const FieldState /*fstate*/) override
     {
         for (const auto& mfab : mfabs) {
             mfab->setVal(m_fill_val);
@@ -179,26 +177,34 @@ public:
         Field& field,
         const amrex::AmrCore& mesh,
         const SimTime& time,
-        FieldInterpolator itype = FieldInterpolator::CellConsLinear)
+        FieldInterpolator itype = FieldInterpolator::CellConsLinear,
+        FieldInterpolator face_itype = FieldInterpolator::FaceDivFree)
         : m_time(time)
         , m_mesh(mesh)
         , m_field(field)
         , m_op(field)
         , m_mapper(field_impl::get_interpolation_operator(itype))
-    {}
+        , m_face_mapper(field_impl::get_interpolation_operator(face_itype))
+    {
+        check_face_mapper();
+    }
 
     FieldFillPatchOps(
         Field& field,
         const amrex::AmrCore& mesh,
         const SimTime& time,
         const BCOpCreator& bc_op,
-        FieldInterpolator itype = FieldInterpolator::CellConsLinear)
+        FieldInterpolator itype = FieldInterpolator::CellConsLinear,
+        FieldInterpolator face_itype = FieldInterpolator::FaceDivFree)
         : m_time(time)
         , m_mesh(mesh)
         , m_field(field)
         , m_op(bc_op)
         , m_mapper(field_impl::get_interpolation_operator(itype))
-    {}
+        , m_face_mapper(field_impl::get_interpolation_operator(face_itype))
+    {
+        check_face_mapper();
+    }
 
     /** Utility function to get a vector of multifabs for over states
      *
@@ -302,8 +308,7 @@ public:
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& cfabs,
         const amrex::IntVect& nghost,
         const amrex::Vector<amrex::BCRec>& bcrec,
-        const FieldState /*fstate = FieldState::New*/,
-        const FieldInterpolator itype = FieldInterpolator::FaceDivFree) override
+        const FieldState /*fstate = FieldState::New*/) override
     {
 
         if (lev == 0) {
@@ -335,13 +340,11 @@ public:
             const amrex::Array<amrex::Vector<amrex::BCRec>, AMREX_SPACEDIM>
                 bcrec_arr = {AMREX_D_DECL(bcrec, bcrec, bcrec)};
 
-            auto* mapper = field_impl::get_interpolation_operator(itype);
-
             amrex::FillPatchTwoLevels(
                 mfabs, nghost, time, {cfabs}, {time}, {ffabs}, {time}, 0, 0, 1,
                 m_mesh.Geom(lev - 1), m_mesh.Geom(lev), cphysbc_arr, idx,
-                fphysbc_arr, idx, m_mesh.refRatio(lev - 1), mapper, bcrec_arr,
-                idx);
+                fphysbc_arr, idx, m_mesh.refRatio(lev - 1), m_face_mapper,
+                bcrec_arr, idx);
         }
     }
 
@@ -426,6 +429,20 @@ public:
 protected:
     Functor bc_functor() { return m_op(); }
 
+    void check_face_mapper()
+    {
+        if (std::any_of(
+                m_mesh.refRatio().begin(), m_mesh.refRatio().end(),
+                [](amrex::IntVect iv) { return iv != amrex::IntVect(2); })) {
+            amrex::Print()
+                << "WARNING: Changing the face interpolator to FaceLinear "
+                   "because a refinement ratio is different than 2"
+                << std::endl;
+            m_face_mapper = field_impl::get_interpolation_operator(
+                FieldInterpolator::FaceLinear);
+        }
+    }
+
     const SimTime& m_time;
     const amrex::AmrCore& m_mesh;
     Field& m_field;
@@ -434,6 +451,9 @@ protected:
 
     //! Function that handles interpolation from coarse to fine level
     amrex::Interpolater* m_mapper;
+
+    //! Function that handles interpolation from coarse to fine level for faces
+    amrex::Interpolater* m_face_mapper;
 };
 
 } // namespace amr_wind
