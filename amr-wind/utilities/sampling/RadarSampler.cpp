@@ -220,7 +220,7 @@ void RadarSampler::update_sampling_locations()
                        << "-------------------------" << std::endl;
     }
 
-    int conetipbegin = m_cone_size - 1 - num_points_quad();
+    long conetipbegin = m_cone_size - 1 - num_points_quad();
     int conetipend = m_cone_size;
 
     // Loop for oversampling
@@ -252,7 +252,7 @@ void RadarSampler::update_sampling_locations()
                 vertical_ref, sweep_angle, radar_ref));
             vs::Vector elevation_axis(-vertical_ref ^ swept_axis);
 
-            int cq_idx = k * num_points_quad();
+            long cq_idx = k * num_points_quad();
 
             // Add rotated cone to current cones
             for (int i = 0; i < m_cone_size; ++i) {
@@ -285,7 +285,7 @@ void RadarSampler::update_sampling_locations()
         } else {
             // This cone falls outside time bounds
             // For this timestep
-            int cq_idx = k * num_points_quad();
+            long cq_idx = k * num_points_quad();
 
             for (int i = 0; i < m_cone_size; ++i) {
                 int point_index = i + k * m_cone_size;
@@ -323,7 +323,7 @@ void RadarSampler::new_cone()
         utils::radians(m_cone_angle), ntheta,
         sampling_utils::NormalRule::HALFPOWER, m_rays, m_weights);
 
-    int nquad = num_points_quad();
+    long nquad = num_points_quad();
 
     if (m_debug_print) {
         for (int j = 0; j < nquad; ++j) {
@@ -390,7 +390,7 @@ void RadarSampler::calc_lineofsight_velocity(
     for (int k = 0; k < m_ntotal; k++) {
         for (int i = 0; i < m_cone_size; ++i) {
             int p_idx = i + k * m_cone_size;
-            int cq_idx = i % num_points_quad();
+            long cq_idx = i % num_points_quad();
             vs::Vector temp_vel(
                 velocity_raw[p_idx][0], velocity_raw[p_idx][1],
                 velocity_raw[p_idx][2]);
@@ -400,7 +400,7 @@ void RadarSampler::calc_lineofsight_velocity(
     }
 
     for (int k = 0; k < m_ntotal; k++) {
-        int a_start = k * num_points_axis();
+        long a_start = k * num_points_axis();
         std::vector<double> temp_vals(
             los_temp.begin() + k * num_points_cone(),
             los_temp.begin() + (k + 1) * num_points_cone());
@@ -420,13 +420,13 @@ std::vector<double> RadarSampler::modify_sample_data(
     // there are m_ntotal steps (cones) based on sampling rate
     AMREX_ALWAYS_ASSERT(static_cast<int>(sample_data.size()) == num_points());
 
-    const int n_cones = m_ntotal;
+    const long n_cones = m_ntotal;
     std::vector<double> mod_data(num_output_points());
 
     for (int ic = 0; ic < n_cones; ++ic) {
-        int c_start = ic * num_points_cone();
-        int c_end = (ic + 1) * num_points_cone();
-        int a_start = ic * num_points_axis();
+        long c_start = ic * num_points_cone();
+        long c_end = (ic + 1) * num_points_cone();
+        long a_start = ic * num_points_axis();
 
         // Send a single cone to be line averaged
         std::vector<double> temp_vals(

@@ -108,7 +108,7 @@ public:
     //! Number of probe locations in a spherical cap
     long num_points_quad() const { return 1 + ntheta * (nphi - 1); }
 
-    void line_average(
+    static void line_average(
         const std::vector<double>& weights,
         const std::vector<double>& values,
         std::vector<double>& reduced,

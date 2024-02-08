@@ -138,7 +138,7 @@ void DTUSpinnerSampler::sampling_locations(SampleLocType& locs) const
 {
 
     // The total number of points at this time step
-    int n_samples = m_beam_points * m_ntotal;
+    long n_samples = m_beam_points * m_ntotal;
 
     // Resize to number of points in line times number of sampling times
     if (locs.size() < n_samples) {
