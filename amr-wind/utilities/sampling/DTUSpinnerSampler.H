@@ -43,10 +43,10 @@ public:
      */
     void sampling_locations(SampleLocType& /*locs*/) const override;
 
-    vs::Vector generate_lidar_pattern(
+    static vs::Vector generate_lidar_pattern(
         PrismParameters InnerPrism, PrismParameters OuterPrism, double time);
 
-    vs::Vector adjust_lidar_pattern(
+    static vs::Vector adjust_lidar_pattern(
         vs::Vector beamPt, double yaw, double pitch, double roll);
 
 #ifdef AMR_WIND_USE_OPENFAST
@@ -61,7 +61,7 @@ public:
      */
     void update_sampling_locations() override;
 
-    void post_sample_actions() override { return; }
+    void post_sample_actions() override{};
 
     long num_points() const override { return (m_beam_points * m_ntotal); }
 
@@ -78,7 +78,7 @@ private:
     int m_ns{1};
 
     // Max number of subsamples in all timesteps
-    int m_ntotal{1};
+    long m_ntotal{1};
 
     int m_update_count{0};
     const amrex::Real radtodeg{180.0 / M_PI};

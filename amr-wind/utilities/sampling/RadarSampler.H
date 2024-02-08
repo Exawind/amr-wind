@@ -125,7 +125,8 @@ public:
         const std::string& /*unused*/) override;
 
     void calc_lineofsight_velocity(
-        const std::vector<std::vector<double>>&, const int) override;
+        const std::vector<std::vector<double>>& /*velocity_raw*/,
+        const int /*interp_idx*/) override;
 
 protected:
     const CFDSim& m_sim;
