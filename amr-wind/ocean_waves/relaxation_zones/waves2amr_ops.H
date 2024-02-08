@@ -451,7 +451,7 @@ struct UpdateRelaxZonesOp<W2AWaves>
             new_ntime, wdata.t_winit, wdata.dt_modes, newtime);
         // Check if stop time is exceeded, introduce offset to ntime
         if (read_flag) {
-            // Need to only check when reading is occuring
+            // Need to only check when reading is occurring
             if (wdata.ntime + wdata.n_offset > wdata.n_wstop) {
                 // If exceeding stop step, calculate new offset
                 wdata.n_offset =
