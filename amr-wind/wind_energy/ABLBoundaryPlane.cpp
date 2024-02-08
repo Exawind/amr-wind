@@ -543,7 +543,7 @@ void ABLBoundaryPlane::write_file()
         const std::string chkname =
             m_filename + amrex::Concatenate("/bndry_output", t_step);
 
-        amrex::Print() << "Writing abl boundary checkpoint file " << chkname
+        amrex::Print() << "Writing ABL boundary checkpoint file " << chkname
                        << " at time " << time << std::endl;
 
         const int nlevels = m_repo.num_active_levels();
@@ -740,7 +740,7 @@ void ABLBoundaryPlane::read_header()
 
             m_in_data.define_plane(ori);
 
-            const int nlevels = m_repo.num_active_levels();
+            const int nlevels = boundary_native_file_levels();
             for (int lev = 0; lev < nlevels; ++lev) {
 
                 const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
@@ -814,7 +814,7 @@ void ABLBoundaryPlane::read_file()
 
         const std::string level_prefix = "Level_";
 
-        const int nlevels = m_repo.num_active_levels();
+        const int nlevels = boundary_native_file_levels();
         for (int lev = 0; lev < nlevels; ++lev) {
             for (auto* fld : m_fields) {
 
@@ -1062,6 +1062,24 @@ void ABLBoundaryPlane::impl_buffer_field(
         });
 }
 #endif
+
+// Count the number of levels defined by the native boundary files
+int ABLBoundaryPlane::boundary_native_file_levels()
+{
+    int nlevels = 0;
+    const std::string chkname =
+        m_filename + amrex::Concatenate("/bndry_output", m_in_timesteps[0]);
+    const std::string level_prefix = "Level_";
+    for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
+        const std::string levname = amrex::LevelFullPath(lev, chkname);
+        if (amrex::FileExists(levname)) {
+            nlevels = lev + 1;
+        } else {
+            break;
+        }
+    }
+    return nlevels;
+}
 
 //! True if box intersects the boundary
 bool ABLBoundaryPlane::box_intersects_boundary(
