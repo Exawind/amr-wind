@@ -566,6 +566,8 @@ void ABLBoundaryPlane::write_file()
                     ba, dm, m_in_rad, m_out_rad, m_extent_rad,
                     field.num_comp());
 
+                bndry.setVal(1.0e13);
+
                 bndry.copyFrom(
                     field(lev), 0, 0, 0, field.num_comp(),
                     geom[lev].periodicity());
