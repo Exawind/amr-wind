@@ -231,7 +231,7 @@ void SamplingContainer::populate_buffer(std::vector<double>& buf)
     const int nlevels = m_mesh.finestLevel() + 1;
     for (int lev = 0; lev < nlevels; ++lev) {
         for (int fid = 0; fid < NumRuntimeRealComps(); ++fid) {
-            const int offset = fid * num_sampling_particles();
+            const long offset = fid * num_sampling_particles();
             for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
                 const int np = pti.numParticles();
                 auto* pstruct = pti.GetArrayOfStructs()().data();
