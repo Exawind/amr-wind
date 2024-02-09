@@ -112,6 +112,15 @@ void postprocess_velocity_field_liquid(
     }
 }
 
+int update_offset_timestep(const int ntime, const int n0)
+{
+    // Offending timestep (goes too far): ntime + offset
+    // Farthest back timesteps are permitted to go: n0
+    // Subtract offset by offending timestep, add back lower limit
+    // new offset = offset - (ntime + offset) + n0
+    return (-ntime + n0);
+}
+
 void populate_fields_all_levels(
     amr_wind::ocean_waves::W2AWaves::MetaType& wdata,
     amrex::Vector<amrex::Geometry> geom_all,
@@ -121,8 +130,29 @@ void populate_fields_all_levels(
 {
 
     // Get data from modes
-    wdata.rmodes.get_data(
-        wdata.ntime + ntime_off, wdata.mX, wdata.mY, wdata.mZ, wdata.mFS);
+    bool no_EOF = wdata.rmodes.get_data(
+        wdata.ntime + wdata.n_offset + ntime_off, wdata.mX, wdata.mY, wdata.mZ,
+        wdata.mFS);
+    // Navigate when end of file is reached
+    if (!no_EOF) {
+        // End of file detected, reset reading
+        wdata.n_offset = update_offset_timestep(wdata.ntime, wdata.n_winit);
+        // Print warning to screen
+        amrex::Print() << "WARNING (waves2amr_ops): end of mode data file "
+                          "detected, resetting to beginning of mode data.\n";
+        // Read data again, now from a valid timestep
+        no_EOF = wdata.rmodes.get_data(
+            wdata.ntime + wdata.n_offset + ntime_off, wdata.mX, wdata.mY,
+            wdata.mZ, wdata.mFS);
+        // If no valid data is detected at this point, abort
+        if (!no_EOF) {
+            amrex::Abort(
+                "waves2amr_ops: end of mode data file detected after "
+                "resetting to beginning; please evaluate HOS_init_time "
+                "or HOS_init_timestep and check the length of the mode "
+                "file.");
+        }
+    }
 
     // Convert to spatial data in vectors
     modes_hosgrid::copy_complex(wdata.n0, wdata.n1, wdata.mFS, wdata.eta_mptr);
@@ -150,15 +180,6 @@ void populate_fields_all_levels(
 
     // Zero velocity in pure gas cells
     postprocess_velocity_field_liquid(vel_field, lvs_field, geom_all);
-}
-
-int update_offset_timestep(const int ntime, const int n0)
-{
-    // Offending timestep (goes too far): ntime + offset
-    // Farthest back timesteps are permitted to go: n0
-    // Subtract offset by offending timestep, add back lower limit
-    // new offset = offset - (ntime + offset) + n0
-    return (-ntime + n0);
 }
 
 } // namespace
@@ -247,7 +268,18 @@ struct ReadInputsOp<W2AWaves>
         // Get dimensional length
         wdata.dimL = wdata.rmodes.get_L();
         // Get nominal last timestep of data
-        wdata.n_wstop = (int)wdata.rmodes.get_Tstop() / wdata.dt_modes;
+        wdata.n_wstop =
+            (int)((wdata.rmodes.get_Tstop() + 1e-8) / wdata.dt_modes);
+
+        // Check if stop time is exceeded, introduce offset to ntime
+        if (wdata.ntime + wdata.n_offset > wdata.n_wstop) {
+            // If exceeding stop step, calculate new offset
+            wdata.n_offset = update_offset_timestep(wdata.ntime, wdata.n_winit);
+            // Print warning to screen
+            amrex::Print()
+                << "WARNING (waves2amr_ops): available mode data exceeded, "
+                   "resetting to beginning of mode data.\n";
+        }
 
         // Warning if depth does not correspond to simulation
         if (std::abs(depth - (wdata.zsl - prob_lo_input[2])) > 1e-3 * depth) {
@@ -526,22 +558,6 @@ struct UpdateRelaxZonesOp<W2AWaves>
                 return;
             }
 
-            populate_fields_all_levels(wdata, geom, w2a_levelset, w2a_velocity);
-
-            // Average down to get fine information on coarse grid where
-            // possible (may be unnecessary)
-            for (int lev = nlevels - 1; lev > 0; --lev) {
-                amrex::average_down(
-                    w2a_velocity(lev), w2a_velocity(lev - 1), 0, AMREX_SPACEDIM,
-                    sim.mesh().refRatio(lev - 1));
-                amrex::average_down(
-                    w2a_levelset(lev), w2a_levelset(lev - 1), 0, 1,
-                    sim.mesh().refRatio(lev - 1));
-            }
-            // Fill in across internal boundaries (only goes with avg down)
-            w2a_velocity.fillpatch(0.0);
-            w2a_levelset.fillpatch(0.0);
-
             // If double read is required, then copy older wave data to ow_
             // fields and modify interpolation parameters to get things right
             if (double_data == 1) {
@@ -571,6 +587,23 @@ struct UpdateRelaxZonesOp<W2AWaves>
                 m_ow_velocity.setVal(0.0);
                 // No modification needed for t_last, leads to interp factor = 1
             }
+
+            // After possible prior read, now read data for this ntime
+            populate_fields_all_levels(wdata, geom, w2a_levelset, w2a_velocity);
+
+            // Average down to get fine information on coarse grid where
+            // possible (may be unnecessary)
+            for (int lev = nlevels - 1; lev > 0; --lev) {
+                amrex::average_down(
+                    w2a_velocity(lev), w2a_velocity(lev - 1), 0, AMREX_SPACEDIM,
+                    sim.mesh().refRatio(lev - 1));
+                amrex::average_down(
+                    w2a_levelset(lev), w2a_levelset(lev - 1), 0, 1,
+                    sim.mesh().refRatio(lev - 1));
+            }
+            // Fill in across internal boundaries (only goes with avg down)
+            w2a_velocity.fillpatch(0.0);
+            w2a_levelset.fillpatch(0.0);
         }
 
         // Temporally interpolate at every timestep to get target solution
