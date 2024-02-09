@@ -106,7 +106,7 @@ void SamplingContainer::initialize_particles(
         return;
     }
 
-    int num_particles = 0;
+    long num_particles = 0;
     for (const auto& probes : samplers) {
         num_particles += probes->num_points();
     }

@@ -48,9 +48,8 @@ vs::Vector canon_rotator(const vs::Vector& angles, const vs::Vector& data)
 
 vs::Tensor unit_projection_matrix(const vs::Vector& a)
 {
-    return vs::Tensor(
-        a[0] * a[0], a[0] * a[1], a[0] * a[2], a[0] * a[1], a[1] * a[1],
-        a[1] * a[2], a[0] * a[2], a[1] * a[2], a[2] * a[2]);
+    return {a[0] * a[0], a[0] * a[1], a[0] * a[2], a[0] * a[1], a[1] * a[1],
+            a[1] * a[2], a[0] * a[2], a[1] * a[2], a[2] * a[2]};
 }
 
 vs::Tensor rotation_matrix(vs::Vector dst, vs::Vector src)
@@ -68,8 +67,8 @@ vs::Tensor rotation_matrix(vs::Vector dst, vs::Vector src)
 vs::Tensor skew_cross(vs::Vector a, vs::Vector b)
 {
     auto cross = b ^ a;
-    return vs::Tensor(
-        0, -cross[2], cross[1], cross[2], 0, -cross[0], -cross[1], cross[0], 0);
+    return {0,         -cross[2], cross[1], cross[2], 0,
+            -cross[0], -cross[1], cross[0], 0};
 }
 
 vs::Tensor scale(vs::Tensor v, double a)

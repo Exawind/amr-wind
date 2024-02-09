@@ -174,7 +174,7 @@ void Sampling::post_regrid_actions()
 void Sampling::convert_velocity_lineofsight()
 {
     BL_PROFILE("amr-wind::Sampling::convert_velocity_lineofsight");
-    const int nvars = m_var_names.size();
+    const long nvars = m_var_names.size();
     std::vector<int> vel_map;
 
     for (int iv = 0; iv < nvars; ++iv) {
@@ -193,7 +193,7 @@ void Sampling::convert_velocity_lineofsight()
 
     int soffset = 0;
     for (const auto& obj : m_samplers) {
-        int sample_size =
+        long sample_size =
             obj->num_points(); // sample locs for individual sampler
 
         int scan_size =
@@ -230,11 +230,11 @@ void Sampling::convert_velocity_lineofsight()
 void Sampling::create_output_buffer()
 {
     BL_PROFILE("amr-wind::Sampling::create_output_buffer");
-    const int nvars = m_var_names.size();
+    const long nvars = m_var_names.size();
     for (int iv = 0; iv < nvars; ++iv) {
         int offset = iv * m_scontainer->num_sampling_particles();
         for (const auto& obj : m_samplers) {
-            int sample_size = obj->num_points();
+            long sample_size = obj->num_points();
             if (obj->do_data_modification()) {
                 // Run data through specific sampler's mod method
                 const std::vector<double> temp_sb_mod(

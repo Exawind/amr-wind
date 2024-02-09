@@ -352,7 +352,7 @@ void RadarSampler::new_cone()
 
     for (int n = 0; n < m_npts; ++n) {
         for (int j = 0; j < nquad; ++j) {
-            int pt_idx = j + n * nquad;
+            long pt_idx = j + n * nquad;
             const auto radius = dx[2] * n;
             initial_cone[pt_idx][0] = radius * m_rays[j][0];
             initial_cone[pt_idx][1] = radius * m_rays[j][1];
@@ -441,7 +441,7 @@ void RadarSampler::line_average(
     const std::vector<double>& weights,
     const std::vector<double>& values,
     std::vector<double>& reduced,
-    int offset)
+    long offset)
 {
     const int nline = static_cast<int>(values.size() / weights.size());
     const int nquad = static_cast<int>(weights.size());
@@ -472,7 +472,7 @@ void RadarSampler::sampling_locations(SampleLocType& locs) const
     }
 
     for (int i = 0; i < num_points_scan(); ++i) {
-        int ioff = i + num_points_scan();
+        long ioff = i + num_points_scan();
         locs[ioff][0] = current_cones[i][0];
         locs[ioff][1] = current_cones[i][1];
         locs[ioff][2] = current_cones[i][2];
@@ -487,7 +487,7 @@ void RadarSampler::cone_axis_locations(SampleLocType& axis_locs) const
     for (int k = 0; k < m_ntotal; k++) {
         for (int i = 0; i < m_npts; ++i) {
             int pi = i + k * m_npts;
-            int ci = i * num_points_quad() + k * num_points_cone();
+            long ci = i * num_points_quad() + k * num_points_cone();
             axis_locs[pi][0] = prior_cones[ci][0];
             axis_locs[pi][1] = prior_cones[ci][1];
             axis_locs[pi][2] = prior_cones[ci][2];

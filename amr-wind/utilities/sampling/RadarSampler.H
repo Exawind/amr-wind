@@ -112,7 +112,7 @@ public:
         const std::vector<double>& weights,
         const std::vector<double>& values,
         std::vector<double>& reduced,
-        int offset);
+        long offset);
 
     //! Run data modification for specific sampler
     bool do_data_modification() override { return true; }
@@ -180,7 +180,7 @@ protected:
         m_periodic_time; // Running cycle time (Forward, pause, reverse, pause)
     int m_ns;            // Number of radar steps in current timestep
     long m_ntotal;       // Max number of radar timesteps in any timestep
-    int m_cone_size;
+    long m_cone_size;
     phase m_current_phase;
 
     bool m_debug_print{false};
@@ -188,7 +188,7 @@ protected:
 
     long m_interp_steps{2};
     int m_ns_prior;
-    int m_ntotal_prior;
+    long m_ntotal_prior;
     long m_num_points_prior;
     long m_num_output_points_prior;
 
