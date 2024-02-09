@@ -241,7 +241,7 @@ void SamplingContainer::populate_buffer(std::vector<double>& buf)
                     np, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
                         auto& pp = pstruct[ip];
                         const int pidx = pp.idata(IIx::uid);
-                        const int ii = offset + pidx;
+                        const long ii = offset + pidx;
                         dbuf_ptr[ii] = parr[ip];
                     });
             }
