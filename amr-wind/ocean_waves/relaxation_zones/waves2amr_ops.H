@@ -475,26 +475,35 @@ struct UpdateRelaxZonesOp<W2AWaves>
             if (wdata.resize_flag) {
                 // Reset flag
                 wdata.resize_flag = false;
-                // Get heights for this processor
-                int flag = interp_to_mfab::get_local_height_indices(
-                    wdata.indvec, wdata.hvec, m_ow_velocity.vec_ptrs(), geom);
+                // Flags for indicating overlap, assume none at first
+                bool flag_z = false;
+                bool flag_xlo = false;
+                bool flag_xhi = false;
+                // Get heights for this processor, check overlap in z
+                flag_z =
+                    (interp_to_mfab::get_local_height_indices(
+                         wdata.indvec, wdata.hvec, m_ow_velocity.vec_ptrs(),
+                         geom) == 0);
+                // No overlap from heights definitely means no interp
 
                 // Check lateral bounds (in x)
                 const int dir = 0;
-                flag += 1 - interp_to_mfab::check_lateral_overlap_lo(
-                                wdata.gen_length, dir, m_ow_velocity.vec_ptrs(),
-                                geom);
+                flag_xlo =
+                    (interp_to_mfab::check_lateral_overlap_lo(
+                         wdata.gen_length, dir, m_ow_velocity.vec_ptrs(),
+                         geom) == 1);
+                // No overlap with gen region means no interp, unless ...
                 if (wdata.has_outprofile) {
-                    flag += 1 - interp_to_mfab::check_lateral_overlap_hi(
-                                    wdata.beach_length, dir,
-                                    m_ow_velocity.vec_ptrs(), geom);
+                    // ... if overlap exists here, needing interp
+                    flag_xhi =
+                        (interp_to_mfab::check_lateral_overlap_hi(
+                             wdata.beach_length, dir, m_ow_velocity.vec_ptrs(),
+                             geom) == 1);
                 }
 
-                if (flag > 0) {
-                    // No overlapping with spatial data or no overlapping with
-                    // relaxation zones, interpolation can be skipped
-                    wdata.do_interp = false;
-                } else {
+                if (flag_z && (flag_xlo || flag_xhi)) {
+                    // Interpolation is needed
+                    wdata.do_interp = true;
                     // Do resizing
                     wdata.sp_eta_vec.resize(wdata.n0 * wdata.n1, 0.0);
                     wdata.sp_u_vec.resize(
@@ -503,6 +512,12 @@ struct UpdateRelaxZonesOp<W2AWaves>
                         wdata.n0 * wdata.n1 * wdata.indvec.size());
                     wdata.sp_w_vec.resize(
                         wdata.n0 * wdata.n1 * wdata.indvec.size());
+                    // Sizes will remain constant and need for interpolation
+                    // will remain until a regrid occurs
+                } else {
+                    // No overlapping with spatial data or no overlapping with
+                    // relaxation zones, interpolation can be skipped
+                    wdata.do_interp = false;
                 }
             }
 
