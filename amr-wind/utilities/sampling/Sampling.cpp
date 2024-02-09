@@ -206,7 +206,7 @@ void Sampling::convert_velocity_lineofsight()
 
         if (obj->do_convert_velocity_los()) {
             for (int iv = 0; iv < AMREX_SPACEDIM; ++iv) {
-                int vel_off = vel_map[iv];
+                long vel_off = vel_map[iv];
 
                 long offset =
                     vel_off * m_scontainer->num_sampling_particles() + soffset;
