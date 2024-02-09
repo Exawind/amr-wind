@@ -483,7 +483,7 @@ struct UpdateRelaxZonesOp<W2AWaves>
                 flag_z =
                     (interp_to_mfab::get_local_height_indices(
                          wdata.indvec, wdata.hvec, m_ow_velocity.vec_ptrs(),
-                         geom) == 0);
+                         geom) == 1);
                 // No overlap from heights definitely means no interp
 
                 // Check lateral bounds (in x)
