@@ -191,12 +191,12 @@ void Sampling::convert_velocity_lineofsight()
 
     AMREX_ALWAYS_ASSERT(static_cast<int>(vel_map.size()) == AMREX_SPACEDIM);
 
-    int soffset = 0;
+    long soffset = 0;
     for (const auto& obj : m_samplers) {
         long sample_size =
             obj->num_points(); // sample locs for individual sampler
 
-        int scan_size =
+        long scan_size =
             (obj->do_subsampling_interp()) ? sample_size / 2 : sample_size;
 
         std::vector<std::vector<double>> temp_vel(
@@ -208,7 +208,7 @@ void Sampling::convert_velocity_lineofsight()
             for (int iv = 0; iv < AMREX_SPACEDIM; ++iv) {
                 int vel_off = vel_map[iv];
 
-                int offset =
+                long offset =
                     vel_off * m_scontainer->num_sampling_particles() + soffset;
                 for (int j = 0; j < scan_size; ++j) {
                     temp_vel[j][iv] = m_sample_buf[offset + j];
@@ -232,7 +232,7 @@ void Sampling::create_output_buffer()
     BL_PROFILE("amr-wind::Sampling::create_output_buffer");
     const long nvars = m_var_names.size();
     for (int iv = 0; iv < nvars; ++iv) {
-        int offset = iv * m_scontainer->num_sampling_particles();
+        long offset = iv * m_scontainer->num_sampling_particles();
         for (const auto& obj : m_samplers) {
             long sample_size = obj->num_points();
             if (obj->do_data_modification()) {

@@ -221,7 +221,7 @@ void RadarSampler::update_sampling_locations()
     }
 
     long conetipbegin = m_cone_size - 1 - num_points_quad();
-    int conetipend = m_cone_size;
+    long conetipend = m_cone_size;
 
     // Loop for oversampling
     for (int k = 0; k < m_ntotal; k++) {
@@ -264,7 +264,7 @@ void RadarSampler::update_sampling_locations()
                     vertical_ref, sweep_angle, temp_point));
                 vs::Vector rotated_point(sampling_utils::rotate_euler_vector(
                     elevation_axis, elevation_angle, swept_point));
-                int point_index = i + k * m_cone_size;
+                long point_index = i + k * m_cone_size;
                 current_cones[point_index][0] = rotated_point[0] + m_start[0];
                 current_cones[point_index][1] = rotated_point[1] + m_start[1];
                 current_cones[point_index][2] = rotated_point[2] + m_start[2];
@@ -288,7 +288,7 @@ void RadarSampler::update_sampling_locations()
             long cq_idx = k * num_points_quad();
 
             for (int i = 0; i < m_cone_size; ++i) {
-                int point_index = i + k * m_cone_size;
+                long point_index = i + k * m_cone_size;
                 current_cones[point_index][0] = m_fill_val;
                 current_cones[point_index][1] = m_fill_val;
                 current_cones[point_index][2] = m_fill_val;
@@ -389,7 +389,7 @@ void RadarSampler::calc_lineofsight_velocity(
 
     for (int k = 0; k < m_ntotal; k++) {
         for (int i = 0; i < m_cone_size; ++i) {
-            int p_idx = i + k * m_cone_size;
+            long p_idx = i + k * m_cone_size;
             long cq_idx = i % num_points_quad();
             vs::Vector temp_vel(
                 velocity_raw[p_idx][0], velocity_raw[p_idx][1],
