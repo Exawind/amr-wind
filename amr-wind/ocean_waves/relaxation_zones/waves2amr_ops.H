@@ -228,7 +228,11 @@ struct ReadInputsOp<W2AWaves>
         pp.query("number_interp_above_surface", nh_above);
 
         // Initialize mode reader
-        wdata.rmodes.initialize(wdata.modes_file);
+        bool file_exists = wdata.rmodes.initialize(wdata.modes_file);
+
+        // Abort if file does not exist
+        amrex::Abort(
+            "Waves2AMR ReadInputsOp: modes file requested does not exist");
 
         // Get dt of HOS data
         wdata.dt_modes = wdata.rmodes.get_dtout();
