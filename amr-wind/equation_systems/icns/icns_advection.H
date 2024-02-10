@@ -25,7 +25,8 @@ public:
         FieldRepo& /*repo*/,
         bool /*has_overset*/,
         bool /*variable_density*/,
-        bool /*mesh_mapping*/);
+        bool /*mesh_mapping*/,
+        bool /*is_anelastic*/);
 
     void operator()(const FieldState fstate, const amrex::Real dt);
 
@@ -51,6 +52,7 @@ private:
     bool m_need_init{true};
     bool m_variable_density{false};
     bool m_mesh_mapping{false};
+    bool m_is_anelastic{false};
     amrex::Real m_rho_0{1.0};
 };
 
@@ -64,12 +66,18 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         PDEFields& fields_in,
         bool has_overset,
         bool variable_density,
-        bool mesh_mapping)
+        bool mesh_mapping,
+        bool is_anelastic)
         : fields(fields_in)
         , u_mac(fields_in.repo.get_field("u_mac"))
         , v_mac(fields_in.repo.get_field("v_mac"))
         , w_mac(fields_in.repo.get_field("w_mac"))
-        , m_macproj_op(fields.repo, has_overset, variable_density, mesh_mapping)
+        , m_macproj_op(
+              fields.repo,
+              has_overset,
+              variable_density,
+              mesh_mapping,
+              is_anelastic)
     {
 
         amrex::ParmParse pp("incflo");
@@ -533,14 +541,19 @@ struct AdvectionOp<ICNS, fvm::MOL>
         PDEFields& fields_in,
         bool has_overset,
         bool variable_density,
-        bool mesh_mapping)
+        bool mesh_mapping,
+        bool is_anelastic)
         : fields(fields_in)
         , u_mac(fields_in.repo.get_field("u_mac"))
         , v_mac(fields_in.repo.get_field("v_mac"))
         , w_mac(fields_in.repo.get_field("w_mac"))
         , m_mesh_mapping(mesh_mapping)
         , m_macproj_op(
-              fields.repo, has_overset, variable_density, m_mesh_mapping)
+              fields.repo,
+              has_overset,
+              variable_density,
+              m_mesh_mapping,
+              is_anelastic)
     {}
 
     void preadvect(

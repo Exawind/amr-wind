@@ -17,7 +17,7 @@ time.cfl              =   0.95         # CFL factor
 #            INPUT AND OUTPUT           #
 #.......................................#
 time.plot_interval            =   10       # Steps between plot files
-time.checkpoint_interval           =  1       # Steps between checkpoint files
+time.checkpoint_interval           =  -1000       # Steps between checkpoint files
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
@@ -26,44 +26,35 @@ incflo.gravity          =   0.  0. -9.81  # Gravitational force (3D)
 incflo.density             = 1.0          # Reference density 
 
 incflo.use_godunov = 1
-incflo.godunov_type = "weno_z"
-incflo.constant_density = false
 incflo.diffusion_type = 2
-incflo.initial_iterations = 3
-incflo.do_initial_proj = 1
 transport.viscosity = 1.0e-5
 transport.laminar_prandtl = 0.7
 transport.turbulent_prandtl = 0.3333
 turbulence.model = Smagorinsky
 Smagorinsky_coeffs.Cs = 0.135
 
-io.outputs = reference_density reference_pressure
 
 incflo.physics = ABL
-ICNS.source_terms = GravityForcing
+ICNS.source_terms = BoussinesqBuoyancy CoriolisForcing ABLForcing
+BoussinesqBuoyancy.reference_temperature = 300.0
 ABL.reference_temperature = 300.0
-ABL.perturb_temperature = false
-ABL.perturb_velocity = false
+CoriolisForcing.latitude = 41.3
+ABLForcing.abl_forcing_height = 90
 
-incflo.velocity = 0.0 0.0 0.0
+incflo.velocity = 6.128355544951824  5.142300877492314 0.0
 
 ABL.temperature_heights = 650.0 750.0 1000.0
 ABL.temperature_values = 300.0 308.0 308.75
 
 ABL.kappa = .41
 ABL.surface_roughness_z0 = 0.15
-ABL.surface_temp_rate = -0.25
-ABL.surface_temp_init = 265.0
-ABL.wall_shear_stress_type = constant
-
-ABL.anelastic = 1
-ICNS.reconstruct_true_pressure = true
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
 amr.n_cell              = 24 24 24    # Grid cells at coarsest AMRlevel
 amr.max_level           = 1           # Max AMR level in hierarchy 
+amr.ref_ratio = 4 4 4
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
@@ -73,9 +64,9 @@ geometry.prob_hi        =   1000.  1000.  1000.  # Hi corner coordinates
 geometry.is_periodic    =   1   1   0   # Periodicity x y z (0/1)
 
 # Boundary conditions
-zlo.type = "no_slip_wall"
+zlo.type =   "wall_model"
 
-zhi.type = "slip_wall"
+zhi.type =   "slip_wall"
 zhi.temperature_type = "fixed_gradient"
 zhi.temperature = 0.003 # tracer is used to specify potential temperature gradient
 
