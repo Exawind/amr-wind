@@ -183,13 +183,21 @@ protected:
         // Populate boundary cells
         vof.fillpatch(0.0);
 
-        /* -- Check VOF boundary values from fillpatch -- */
         // Base level
         int lev = 0;
+
+        // Create scratch field to store error
+        auto error_ptr = repo.create_scratch_field(2, 0);
+        auto& error_fld = *error_ptr;
+        // Initialize at 0
+        error_fld(lev).setVal(0.0);
+
+        /* -- Check VOF boundary values from fillpatch -- */
         int i = 0;
         int j = 0;
         int k = 0;
         for (amrex::MFIter mfi(vof(lev)); mfi.isValid(); ++mfi) {
+            auto err_arr = error_fld(lev).array(mfi);
             const auto& vof_arr = vof(lev).array(mfi);
             // Check lo and hi
             for (int i0 = 0; i0 < 2; ++i0) {
@@ -231,11 +239,17 @@ protected:
                             break;
                         }
                         // Check against reference value
-                        EXPECT_NEAR(vof_arr(i, j, k), ref_val, tol);
+                        err_arr(i, j, k, 0) =
+                            std::abs(vof_arr(i, j, k) - ref_val);
                     }
                 }
             }
         }
+
+        // Check error from first part
+        constexpr amrex::Real refval_check = 0.0;
+        amrex::Real err_lev = error_fld(lev).max(0);
+        EXPECT_NEAR(err_lev, refval_check, tol);
 
         // Test positive and negative velocity
         for (int sign = -1; sign < 2; sign += 2) {
@@ -265,6 +279,7 @@ protected:
             /* -- Check VOF boundary fluxes -- */
             for (amrex::MFIter mfi(vof(lev)); mfi.isValid(); ++mfi) {
 
+                auto err_arr = error_fld(lev).array(mfi);
                 const auto& af = advalpha_f(lev).array(mfi);
                 // Check lo and hi
                 for (int i0 = 0; i0 < 2; ++i0) {
@@ -295,14 +310,24 @@ protected:
                             amrex::Real advrho =
                                 m_rho1 * advvof + m_rho2 * (1.0 - advvof);
                             if (nonzero_flux) {
-                                EXPECT_GT(af(i, j, k), advrho);
+                                err_arr(i, j, k, 0) =
+                                    af(i, j, k) > 0.0 ? 0.0 : 1.0;
                             } else {
-                                EXPECT_EQ(af(i, j, k), advrho);
+                                err_arr(i, j, k, 1) =
+                                    std::abs(af(i, j, k) - advrho);
                             }
                         }
                     }
                 }
             }
+
+            // Check error from second part for this value of sign
+            constexpr amrex::Real nonzeroflux_check = 0.0;
+            constexpr amrex::Real zerovofflux_check = 0.0;
+            err_lev = error_fld(lev).max(0);
+            EXPECT_NEAR(err_lev, nonzeroflux_check, tol);
+            err_lev = error_fld(lev).max(1);
+            EXPECT_NEAR(err_lev, zerovofflux_check, tol);
         }
     }
     const amrex::Real m_rho1 = 1000.0;
