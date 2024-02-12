@@ -281,62 +281,14 @@ protected:
     amrex::Real dt = 0.0; // will be set according to CFL
 };
 
-TEST_F(VOFConsTest, X)
-{
-#ifndef AMREX_USE_GPU
-    testing_coorddir(0, 0.45);
-#else
-    amrex::Print() << "VOFConsTest doesn't work on GPU yet." << std::endl;
-    GTEST_SKIP();
-#endif
-}
-TEST_F(VOFConsTest, Y)
-{
-#ifndef AMREX_USE_GPU
-    testing_coorddir(1, 0.45);
-#else
-    amrex::Print() << "VOFConsTest doesn't work on GPU yet." << std::endl;
-    GTEST_SKIP();
-#endif
-}
-TEST_F(VOFConsTest, Z)
-{
-#ifndef AMREX_USE_GPU
-    testing_coorddir(2, 0.45);
-#else
-    amrex::Print() << "VOFConsTest doesn't work on GPU yet." << std::endl;
-    GTEST_SKIP();
-#endif
-}
+TEST_F(VOFConsTest, X) { testing_coorddir(0, 0.45); }
+TEST_F(VOFConsTest, Y) { testing_coorddir(1, 0.45); }
+TEST_F(VOFConsTest, Z) { testing_coorddir(2, 0.45); }
 // Need multi-directional velocity and vof field to test communication of vof
 // during directionally-split advection
-TEST_F(VOFConsTest, CFL045)
-{
-#ifndef AMREX_USE_GPU
-    testing_coorddir(-1, 0.45);
-#else
-    amrex::Print() << "VOFConsTest doesn't work on GPU yet." << std::endl;
-    GTEST_SKIP();
-#endif
-}
-TEST_F(VOFConsTest, CFL01)
-{
-#ifndef AMREX_USE_GPU
-    testing_coorddir(-1, 0.1);
-#else
-    amrex::Print() << "VOFConsTest doesn't work on GPU yet." << std::endl;
-    GTEST_SKIP();
-#endif
-}
+TEST_F(VOFConsTest, CFL045) { testing_coorddir(-1, 0.45); }
+TEST_F(VOFConsTest, CFL01) { testing_coorddir(-1, 0.1); }
 // Test transport across multiple mesh levels - just check conservation
-TEST_F(VOFConsTest, 2level)
-{
-#ifndef AMREX_USE_GPU
-    testing_coorddir(-2, 0.5 * 0.45);
-#else
-    amrex::Print() << "VOFConsTest doesn't work on GPU yet." << std::endl;
-    GTEST_SKIP();
-#endif
-}
+TEST_F(VOFConsTest, 2level) { testing_coorddir(-2, 0.5 * 0.45); }
 
 } // namespace amr_wind_tests

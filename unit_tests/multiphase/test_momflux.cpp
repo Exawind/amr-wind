@@ -341,32 +341,8 @@ protected:
     const amrex::Real dt = 0.45 * 0.5 / m_vel; // first number is CFL
 };
 
-TEST_F(MassMomFluxOpTest, fluxfaceX)
-{
-#ifndef AMREX_USE_GPU
-    testing_coorddir(0);
-#else
-    amrex::Print() << "MassMomFluxOpTest doesn't work on GPU yet." << std::endl;
-    GTEST_SKIP();
-#endif
-}
-TEST_F(MassMomFluxOpTest, fluxfaceY)
-{
-#ifndef AMREX_USE_GPU
-    testing_coorddir(1);
-#else
-    amrex::Print() << "MassMomFluxOpTest doesn't work on GPU yet." << std::endl;
-    GTEST_SKIP();
-#endif
-}
-TEST_F(MassMomFluxOpTest, fluxfaceZ)
-{
-#ifndef AMREX_USE_GPU
-    testing_coorddir(2);
-#else
-    amrex::Print() << "MassMomFluxOpTest doesn't work on GPU yet." << std::endl;
-    GTEST_SKIP();
-#endif
-}
+TEST_F(MassMomFluxOpTest, fluxfaceX) { testing_coorddir(0); }
+TEST_F(MassMomFluxOpTest, fluxfaceY) { testing_coorddir(1); }
+TEST_F(MassMomFluxOpTest, fluxfaceZ) { testing_coorddir(2); }
 
 } // namespace amr_wind_tests
