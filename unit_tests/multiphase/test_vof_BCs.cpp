@@ -14,6 +14,125 @@ void initialize_volume_fractions(
         vof_arr(i, j, k) = 1.0 - 0.1 * (i + j + k);
     });
 }
+
+void get_accuracy_vofsol(
+    amr_wind::ScratchField& err_fld,
+    const int lev,
+    const int dir,
+    const int vof_distr,
+    const amrex::Real vof_bdyval,
+    const amr_wind::Field& vof)
+{
+    /* -- Check VOF boundary values from fillpatch -- */
+    for (amrex::MFIter mfi(vof(lev)); mfi.isValid(); ++mfi) {
+        auto err_arr = err_fld(lev).array(mfi);
+        const auto& vof_arr = vof(lev).array(mfi);
+        // Check lo and hi
+        amrex::ParallelFor(2, [=] AMREX_GPU_DEVICE(int i0) {
+            int off = i0 * 3;
+            int i = 0;
+            int j = 0;
+            int k = 0;
+            // Small mesh, loop in serial for check
+            for (int i1 = 0; i1 < 2; ++i1) {
+                for (int i2 = 0; i2 < 2; ++i2) {
+                    // Organize indices
+                    switch (dir) {
+                    case 0:
+                        i = -1 + off;
+                        j = i1;
+                        k = i2;
+                        break;
+                    case 1:
+                        i = i1;
+                        j = -1 + off;
+                        k = i2;
+                        break;
+                    case 2:
+                        i = i1;
+                        j = i2;
+                        k = -1 + off;
+                        break;
+                    }
+                    // Calculate reference value
+                    amrex::Real ref_val = vof_bdyval; // case 0
+                    switch (vof_distr) {
+                    case 1:
+                        // hoextrap
+                        ref_val = 1.0 - 0.1 * (i + j + k);
+                        break;
+                    case 2:
+                        // foextrap
+                        int ii = std::max(0, std::min(1, i));
+                        int jj = std::max(0, std::min(1, j));
+                        int kk = std::max(0, std::min(1, k));
+                        ref_val = 1.0 - 0.1 * (ii + jj + kk);
+                        break;
+                    }
+                    // Check against reference value
+                    err_arr(i, j, k, 0) = std::abs(vof_arr(i, j, k) - ref_val);
+                }
+            }
+        });
+    }
+}
+
+void get_accuracy_advalpha(
+    amr_wind::ScratchField& err_fld,
+    const int lev,
+    const int dir,
+    const bool nonzero_flux,
+    const amrex::Real rho1,
+    const amrex::Real rho2,
+    const amr_wind::Field& vof,
+    const amr_wind::Field& advalpha_f)
+{
+    /* -- Check VOF boundary fluxes -- */
+    for (amrex::MFIter mfi(vof(lev)); mfi.isValid(); ++mfi) {
+
+        auto err_arr = err_fld(lev).array(mfi);
+        const auto& af = advalpha_f(lev).array(mfi);
+        // Check lo and hi
+        amrex::ParallelFor(2, [=] AMREX_GPU_DEVICE(int i0) {
+            int off = i0 * 2;
+            int i = 0;
+            int j = 0;
+            int k = 0;
+            // Small mesh, loop in serial for check
+            for (int i1 = 0; i1 < 2; ++i1) {
+                for (int i2 = 0; i2 < 2; ++i2) {
+                    // Organize indices
+                    switch (dir) {
+                    case 0:
+                        i = 0 + off;
+                        j = i1;
+                        k = i2;
+                        break;
+                    case 1:
+                        i = i1;
+                        j = 0 + off;
+                        k = i2;
+                        break;
+                    case 2:
+                        i = i1;
+                        j = i2;
+                        k = 0 + off;
+                        break;
+                    }
+                    // Check whether flux is nonzero
+                    constexpr amrex::Real advvof = 0.0;
+                    const amrex::Real advrho =
+                        rho1 * advvof + rho2 * (1.0 - advvof);
+                    if (nonzero_flux) {
+                        err_arr(i, j, k, 0) = af(i, j, k) > 0.0 ? 0.0 : 1.0;
+                    } else {
+                        err_arr(i, j, k, 1) = std::abs(af(i, j, k) - advrho);
+                    }
+                }
+            }
+        });
+    }
+}
 } // namespace
 
 class VOFBCTest : public MeshTest
@@ -192,60 +311,8 @@ protected:
         // Initialize at 0
         error_fld(lev).setVal(0.0);
 
-        /* -- Check VOF boundary values from fillpatch -- */
-        for (amrex::MFIter mfi(vof(lev)); mfi.isValid(); ++mfi) {
-            auto err_arr = error_fld(lev).array(mfi);
-            const auto& vof_arr = vof(lev).array(mfi);
-            const amrex::Real vof_bdyval = m_vof_bdyval;
-            // Check lo and hi
-            amrex::ParallelFor(2, [=] AMREX_GPU_DEVICE(int i0) {
-                int off = i0 * 3;
-                int i = 0;
-                int j = 0;
-                int k = 0;
-                // Small mesh, loop in serial for check
-                for (int i1 = 0; i1 < 2; ++i1) {
-                    for (int i2 = 0; i2 < 2; ++i2) {
-                        // Organize indices
-                        switch (dir) {
-                        case 0:
-                            i = -1 + off;
-                            j = i1;
-                            k = i2;
-                            break;
-                        case 1:
-                            i = i1;
-                            j = -1 + off;
-                            k = i2;
-                            break;
-                        case 2:
-                            i = i1;
-                            j = i2;
-                            k = -1 + off;
-                            break;
-                        }
-                        // Calculate reference value
-                        amrex::Real ref_val = vof_bdyval; // case 0
-                        switch (vof_distr) {
-                        case 1:
-                            // hoextrap
-                            ref_val = 1.0 - 0.1 * (i + j + k);
-                            break;
-                        case 2:
-                            // foextrap
-                            int ii = std::max(0, std::min(1, i));
-                            int jj = std::max(0, std::min(1, j));
-                            int kk = std::max(0, std::min(1, k));
-                            ref_val = 1.0 - 0.1 * (ii + jj + kk);
-                            break;
-                        }
-                        // Check against reference value
-                        err_arr(i, j, k, 0) =
-                            std::abs(vof_arr(i, j, k) - ref_val);
-                    }
-                }
-            });
-        }
+        // Compute error
+        get_accuracy_vofsol(error_fld, lev, dir, vof_distr, m_vof_bdyval, vof);
 
         // Check error from first part
         constexpr amrex::Real refval_check = 0.0;
@@ -277,55 +344,10 @@ protected:
             // Get advected alpha
             const auto& advalpha_f = repo.get_field("advalpha_" + sdir);
 
-            /* -- Check VOF boundary fluxes -- */
-            for (amrex::MFIter mfi(vof(lev)); mfi.isValid(); ++mfi) {
-
-                auto err_arr = error_fld(lev).array(mfi);
-                const auto& af = advalpha_f(lev).array(mfi);
-                const amrex::Real rho1 = m_rho1;
-                const amrex::Real rho2 = m_rho2;
-                // Check lo and hi
-                amrex::ParallelFor(2, [=] AMREX_GPU_DEVICE(int i0) {
-                    int off = i0 * 2;
-                    int i = 0;
-                    int j = 0;
-                    int k = 0;
-                    // Small mesh, loop in serial for check
-                    for (int i1 = 0; i1 < 2; ++i1) {
-                        for (int i2 = 0; i2 < 2; ++i2) {
-                            // Organize indices
-                            switch (dir) {
-                            case 0:
-                                i = 0 + off;
-                                j = i1;
-                                k = i2;
-                                break;
-                            case 1:
-                                i = i1;
-                                j = 0 + off;
-                                k = i2;
-                                break;
-                            case 2:
-                                i = i1;
-                                j = i2;
-                                k = 0 + off;
-                                break;
-                            }
-                            // Check whether flux is nonzero
-                            constexpr amrex::Real advvof = 0.0;
-                            const amrex::Real advrho =
-                                rho1 * advvof + rho2 * (1.0 - advvof);
-                            if (nonzero_flux) {
-                                err_arr(i, j, k, 0) =
-                                    af(i, j, k) > 0.0 ? 0.0 : 1.0;
-                            } else {
-                                err_arr(i, j, k, 1) =
-                                    std::abs(af(i, j, k) - advrho);
-                            }
-                        }
-                    }
-                });
-            }
+            // Compute error
+            get_accuracy_advalpha(
+                error_fld, lev, dir, nonzero_flux, m_rho1, m_rho2, vof,
+                advalpha_f);
 
             // Check error from second part for this value of sign
             constexpr amrex::Real nonzeroflux_check = 0.0;
