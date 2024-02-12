@@ -193,15 +193,16 @@ protected:
         error_fld(lev).setVal(0.0);
 
         /* -- Check VOF boundary values from fillpatch -- */
-        int i = 0;
-        int j = 0;
-        int k = 0;
         for (amrex::MFIter mfi(vof(lev)); mfi.isValid(); ++mfi) {
             auto err_arr = error_fld(lev).array(mfi);
             const auto& vof_arr = vof(lev).array(mfi);
+            const amrex::Real vof_bdyval = m_vof_bdyval;
             // Check lo and hi
-            for (int i0 = 0; i0 < 2; ++i0) {
+            amrex::ParallelFor(2, [=] AMREX_GPU_DEVICE(int i0) {
                 int off = i0 * 3;
+                int i = 0;
+                int j = 0;
+                int k = 0;
                 // Small mesh, loop in serial for check
                 for (int i1 = 0; i1 < 2; ++i1) {
                     for (int i2 = 0; i2 < 2; ++i2) {
@@ -224,7 +225,7 @@ protected:
                             break;
                         }
                         // Calculate reference value
-                        amrex::Real ref_val = m_vof_bdyval; // case 0
+                        amrex::Real ref_val = vof_bdyval; // case 0
                         switch (vof_distr) {
                         case 1:
                             // hoextrap
@@ -243,7 +244,7 @@ protected:
                             std::abs(vof_arr(i, j, k) - ref_val);
                     }
                 }
-            }
+            });
         }
 
         // Check error from first part
@@ -281,9 +282,14 @@ protected:
 
                 auto err_arr = error_fld(lev).array(mfi);
                 const auto& af = advalpha_f(lev).array(mfi);
+                const amrex::Real rho1 = m_rho1;
+                const amrex::Real rho2 = m_rho2;
                 // Check lo and hi
-                for (int i0 = 0; i0 < 2; ++i0) {
+                amrex::ParallelFor(2, [=] AMREX_GPU_DEVICE(int i0) {
                     int off = i0 * 2;
+                    int i = 0;
+                    int j = 0;
+                    int k = 0;
                     // Small mesh, loop in serial for check
                     for (int i1 = 0; i1 < 2; ++i1) {
                         for (int i2 = 0; i2 < 2; ++i2) {
@@ -306,9 +312,9 @@ protected:
                                 break;
                             }
                             // Check whether flux is nonzero
-                            amrex::Real advvof = 0.0;
-                            amrex::Real advrho =
-                                m_rho1 * advvof + m_rho2 * (1.0 - advvof);
+                            constexpr amrex::Real advvof = 0.0;
+                            const amrex::Real advrho =
+                                rho1 * advvof + rho2 * (1.0 - advvof);
                             if (nonzero_flux) {
                                 err_arr(i, j, k, 0) =
                                     af(i, j, k) > 0.0 ? 0.0 : 1.0;
@@ -318,7 +324,7 @@ protected:
                             }
                         }
                     }
-                }
+                });
             }
 
             // Check error from second part for this value of sign
