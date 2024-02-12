@@ -231,8 +231,10 @@ struct ReadInputsOp<W2AWaves>
         bool file_exists = wdata.rmodes.initialize(wdata.modes_file);
 
         // Abort if file does not exist
-        amrex::Abort(
-            "Waves2AMR ReadInputsOp: modes file requested does not exist");
+        if (!file_exists) {
+            amrex::Abort(
+                "Waves2AMR ReadInputsOp: modes file requested does not exist");
+        }
 
         // Get dt of HOS data
         wdata.dt_modes = wdata.rmodes.get_dtout();
