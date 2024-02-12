@@ -268,7 +268,6 @@ void populate_sharpen_discrete_fluxes(
         const auto& vbx = mfi.validbox();
         const auto& xbxp1 = grow(amrex::surroundingNodes(vbx, 0), 1);
         const auto& ybxp1 = grow(amrex::surroundingNodes(vbx, 1), 1);
-        // Extra points for zbox are for pressure source
         const auto& zbxp1 = grow(amrex::surroundingNodes(vbx, 2), 1);
         const amrex::Array4<amrex::Real>& fx = mf_fx.array(mfi);
         const amrex::Array4<amrex::Real>& fy = mf_fy.array(mfi);
@@ -306,6 +305,7 @@ void populate_sharpen_discrete_fluxes(
                 fx(i, j, k, 5) = flux * uf;
                 fx(i, j, k, 6) = flux * vf;
                 fx(i, j, k, 7) = flux * wf;
+                // Turn "on" all flux faces, later modified in process_fluxes
                 fx(i, j, k, 8) = 1.0;
             },
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -342,7 +342,6 @@ void populate_sharpen_discrete_fluxes(
                 fz(i, j, k, 5) = flux * uf;
                 fz(i, j, k, 6) = flux * vf;
                 fz(i, j, k, 7) = flux * wf;
-                // Turn "on" all z faces, later modified in process_fluxes
                 fz(i, j, k, 8) = 1.0;
             });
     }
@@ -918,7 +917,8 @@ void SharpenNaluDataDiscrete(
     auto normal_vec = repo.create_scratch_field(3, vof.num_grow()[0] - 1);
     auto target_vof = repo.create_scratch_field(1, vof.num_grow()[0]);
     // Create scratch field for pressure gradient that has ghost cells
-    auto gp_scr = repo.create_scratch_field(3, 1);
+    // Sharpening fluxes (at faces) have 1 ghost, requiring fields to have >= 2
+    auto gp_scr = repo.create_scratch_field(3, 2);
     auto& gp = *gp_scr;
 
     // Give initial max possible value of pseudo-velocity scale
