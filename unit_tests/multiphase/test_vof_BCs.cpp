@@ -126,7 +126,7 @@ void get_accuracy_advalpha(
                     if (nonzero_flux) {
                         err_arr(i, j, k, 0) = af(i, j, k) > 0.0 ? 0.0 : 1.0;
                     } else {
-                        err_arr(i, j, k, 1) = std::abs(af(i, j, k) - advrho);
+                        err_arr(i, j, k, 0) = std::abs(af(i, j, k) - advrho);
                     }
                 }
             }
@@ -305,8 +305,8 @@ protected:
         // Base level
         int lev = 0;
 
-        // Create scratch field to store error
-        auto error_ptr = repo.create_scratch_field(2, 0);
+        // Create scratch field to store error (with ghost cells for BCs)
+        auto error_ptr = repo.create_scratch_field(1, 1);
         auto& error_fld = *error_ptr;
         // Initialize at 0
         error_fld(lev).setVal(0.0);
@@ -316,11 +316,12 @@ protected:
 
         // Check error from first part
         constexpr amrex::Real refval_check = 0.0;
-        amrex::Real err_lev = error_fld(lev).max(0);
-        EXPECT_NEAR(err_lev, refval_check, tol);
+        EXPECT_NEAR(error_fld(lev).max(0, 1), refval_check, tol);
 
         // Test positive and negative velocity
         for (int sign = -1; sign < 2; sign += 2) {
+            // Reset error for each sign value
+            error_fld(lev).setVal(0.0);
 
             // Get mac velocity fields and set values based on dir
             auto& umac = repo.get_field("u_mac");
@@ -350,12 +351,8 @@ protected:
                 advalpha_f);
 
             // Check error from second part for this value of sign
-            constexpr amrex::Real nonzeroflux_check = 0.0;
-            constexpr amrex::Real zerovofflux_check = 0.0;
-            err_lev = error_fld(lev).max(0);
-            EXPECT_NEAR(err_lev, nonzeroflux_check, tol);
-            err_lev = error_fld(lev).max(1);
-            EXPECT_NEAR(err_lev, zerovofflux_check, tol);
+            constexpr amrex::Real flux_check = 0.0;
+            EXPECT_NEAR(error_fld(lev).max(0, 1), flux_check, tol);
         }
     }
     const amrex::Real m_rho1 = 1000.0;

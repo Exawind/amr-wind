@@ -266,11 +266,8 @@ protected:
             // Check error in each mfab
             constexpr amrex::Real vofsol_check = 0.0;
             for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-                // Sum error for each component individually
-                amrex::Real err_lev = error_fld(lev).max(0);
-                // Check error
-                EXPECT_NEAR(err_lev, vofsol_check, tol);
-                err_lev = error_fld(lev).max(1);
+                // Sum error and check
+                EXPECT_NEAR(error_fld(lev).max(0), vofsol_check, tol);
             }
         }
     }

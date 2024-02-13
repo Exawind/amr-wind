@@ -314,24 +314,15 @@ protected:
 
         // Check error in each mfab
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-            // Sum error for each component individually
-            amrex::Real err_lev = error_fld(lev).max(0);
-            // Check error
-            EXPECT_NEAR(err_lev, umac_check, tol);
-            err_lev = error_fld(lev).max(1);
-            EXPECT_NEAR(err_lev, vmac_check, tol);
-            err_lev = error_fld(lev).max(2);
-            EXPECT_NEAR(err_lev, wmac_check, tol);
-            err_lev = error_fld(lev).max(3);
-            EXPECT_NEAR(err_lev, u_check, tol);
-            err_lev = error_fld(lev).max(4);
-            EXPECT_NEAR(err_lev, v_check, tol);
-            err_lev = error_fld(lev).max(5);
-            EXPECT_NEAR(err_lev, w_check, tol);
-            err_lev = error_fld(lev).max(6);
-            EXPECT_NEAR(err_lev, advrho_check, tol);
-            err_lev = error_fld(lev).max(7);
-            EXPECT_NEAR(err_lev, dqdt_check, tol);
+            // Sum error for each component individually and check
+            EXPECT_NEAR(error_fld(lev).max(0), umac_check, tol);
+            EXPECT_NEAR(error_fld(lev).max(1), vmac_check, tol);
+            EXPECT_NEAR(error_fld(lev).max(2), wmac_check, tol);
+            EXPECT_NEAR(error_fld(lev).max(3), u_check, tol);
+            EXPECT_NEAR(error_fld(lev).max(4), v_check, tol);
+            EXPECT_NEAR(error_fld(lev).max(5), w_check, tol);
+            EXPECT_NEAR(error_fld(lev).max(6), advrho_check, tol);
+            EXPECT_NEAR(error_fld(lev).max(7), dqdt_check, tol);
         }
     }
 
