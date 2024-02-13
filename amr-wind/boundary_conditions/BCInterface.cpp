@@ -64,6 +64,8 @@ void BCIface::read_bctype()
             ibctype[ori] = BC::pressure_outflow;
         } else if ((bcstr == "mass_inflow") || (bcstr == "mi")) {
             ibctype[ori] = BC::mass_inflow;
+        } else if ((bcstr == "mass_inflow_outflow") || (bcstr == "mio")) {
+            ibctype[ori] = BC::mass_inflow_outflow;
         } else if ((bcstr == "no_slip_wall") || (bcstr == "nsw")) {
             ibctype[ori] = BC::no_slip_wall;
         } else if ((bcstr == "slip_wall") || (bcstr == "sw")) {
@@ -192,6 +194,11 @@ void BCVelocity::set_bcrec()
             } else {
                 set_bcrec_hi(dir, amrex::BCType::ext_dir);
             }
+            break;
+
+        case BC::mass_inflow_outflow:
+            set_bcrec_lo(dir, amrex::BCType::user_1);
+            set_bcrec_hi(dir, amrex::BCType::user_1);
             break;
 
         case BC::slip_wall:

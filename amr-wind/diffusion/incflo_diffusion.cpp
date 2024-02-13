@@ -20,6 +20,7 @@ Vector<Array<LinOpBCType, AMREX_SPACEDIM>> get_diffuse_tensor_bc(
             switch (bc) {
             case BC::pressure_inflow:
             case BC::pressure_outflow:
+            case BC::mass_inflow_outflow:
             case BC::zero_gradient: {
                 // All three components are Neumann
                 r[0][dir] = LinOpBCType::Neumann;
