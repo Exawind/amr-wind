@@ -66,6 +66,10 @@ void Actuator::post_init_actions()
         act->init_actuator_source();
     }
 
+    // Ensure velocity fills ghost cells prior to sampling
+    auto& vel = m_sim.repo().get_field("velocity");
+    vel.fillpatch(m_sim.time().current_time());
+
     setup_container();
     update_positions();
     update_velocities();
