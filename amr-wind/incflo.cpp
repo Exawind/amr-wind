@@ -98,13 +98,13 @@ void incflo::init_amr_wind_modules()
         mask_node.setVal(1);
     }
 
-    for (auto& pp : m_sim.physics()) {
-        pp->post_init_actions();
-    }
-
     icns().initialize();
     for (auto& eqn : scalar_eqns()) {
         eqn->initialize();
+    }
+
+    for (auto& pp : m_sim.physics()) {
+        pp->post_init_actions();
     }
 
     m_sim.pde_manager().fillpatch_state_fields(m_time.current_time());
