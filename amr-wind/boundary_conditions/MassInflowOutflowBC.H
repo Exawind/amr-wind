@@ -29,5 +29,5 @@ private:
 } // namespace amr_wind
 
 
-#endif
+#endif /* MASSINFLOWOUTFLOWBC_H */
 
