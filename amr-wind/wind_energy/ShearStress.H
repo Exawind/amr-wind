@@ -171,8 +171,7 @@ struct ShearStressDonelan
         , theta_surface(mo.surf_temp)
         , temp_flux_surface(mo.surf_temp_flux)
         , alg_type(mo.alg_type)
-    {
-    }
+    {}
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
     calc_vel_x(amrex::Real u, amrex::Real wspd) const
