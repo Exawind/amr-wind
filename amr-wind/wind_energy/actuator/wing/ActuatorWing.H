@@ -37,6 +37,15 @@ struct WingBaseData
     //! Pitch angle for the wing
     amrex::Real pitch{0.0};
 
+    //! File name for pitch actuation table
+    std::string pitch_timetable;
+
+    //! Pitch actuation: time table
+    amrex::Vector<amrex::Real> time_table;
+
+    //! Pitch actuation: pitch angle table
+    amrex::Vector<amrex::Real> pitch_table;
+
     //! Relative velocity at the actuator node
     VecList vel_rel;
 

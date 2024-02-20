@@ -46,6 +46,24 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
         bool use_fllc = false;
         pp.query("fllc", use_fllc);
 
+        // Initialize tables for pitch actuation
+        pp_abl.query("pitch_timetable", wdata.pitch_timetable);
+        if (!wdata.pitch_timetable.empty()) {
+            std::ifstream ifh(wdata.pitch_timetable, std::ios::in);
+            if (!ifh.good()) {
+                amrex::Abort("Cannot find input file: " + wdata.pitch_timetable);
+            }
+            amrex::Real data_time;
+            amrex::Real data_pitch_deg;
+            ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            while (ifh >> data_time) {
+                ifh >> data_pitch_deg;
+                amrex::Real data_pitch_rad = utils::radians(data_pitch_deg);
+                wdata.time_table.push_back(data_time);
+                wdata.pitch_table.push_back(data_pitch_rad);
+            }
+        }
+
         pp.query("motion_type", wdata.motion_type);
         {
             // do nothing for default, "none"

@@ -7,6 +7,7 @@
 #include "amr-wind/wind_energy/actuator/aero/AirfoilTable.H"
 #include "amr-wind/wind_energy/actuator/ActParser.H"
 #include "amr-wind/wind_energy/actuator/FLLCOp.H"
+#include "amr-wind/utilities/linear_interpolation.H"
 
 namespace amr_wind::actuator {
 namespace wing {
@@ -141,6 +142,12 @@ struct ComputeForceOp<
             grid.pos, wdata.vel_tr, npts, time.current_time(), time.new_time(),
             wdata.motion_type, wdata.s_period, wdata.s_vector);
 
+        // Interpolate pitch actuation at time step n
+        if (!wdata.pitch_timetable.empty()) {
+            const amrex::Real current_pitch = ::amr_wind::interp::linear(
+                wdata.time_table, wdata.pitch_table, time.current_time());
+        }        
+
         // Calculate the local force using sampled velocity (at n)
         amrex::Real total_lift = 0.0;
         amrex::Real total_drag = 0.0;
@@ -164,8 +171,16 @@ struct ComputeForceOp<
             windvector[2] = (grid.vel[ip] - wdata.vel_tr) & blade_z;
 
             const auto vmag = vs::mag(windvector);
-            const auto aoa = std::atan2(windvector[2], windvector[0]) +
+
+            // Calculate the aoa based on 
+            //      the pitch actuation table if supplied
+            //      or otherwise the initial pitch angle
+            if (!wdata.pitch_timetable.empty()) {
+                const auto aoa = std::atan2(windvector[2], windvector[0]) + current_pitch;
+            } else {
+                const auto aoa = std::atan2(windvector[2], windvector[0]) +
                              amr_wind::utils::radians(wdata.pitch);
+            }
 
             // Make up some Cl, Cd values
             amrex::Real cl, cd;
