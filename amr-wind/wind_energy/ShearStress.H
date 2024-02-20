@@ -209,15 +209,16 @@ struct ShearStressDonelan
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
     calc_theta(amrex::Real /* wspd */, amrex::Real /* theta */) const
     {
+        amrex::Real flux = 0.0;
         switch (alg_type) {
         case amr_wind::MOData::ThetaCalcType::HEAT_FLUX:
-            return temp_flux_surface;
+            flux = temp_flux_surface;
             break;
-
         case amr_wind::MOData::ThetaCalcType::SURFACE_TEMPERATURE:
-            return 0.0012 * wspd_mean * (theta_surface - theta_mean);
+            flux = 0.0012 * wspd_mean * (theta_surface - theta_mean);
             break;
         }
+        return flux;
     };
 
     amrex::Real wspd_mean;
