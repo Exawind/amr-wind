@@ -19,7 +19,7 @@ namespace amr_wind {
  */
 struct MOData
 {
-    enum ThetaCalcType {
+    enum class ThetaCalcType {
         HEAT_FLUX = 0,      ///< Heat-flux specified
         SURFACE_TEMPERATURE ///< Surface temperature specified
     };
@@ -46,7 +46,7 @@ struct MOData
     amrex::Real beta_m{16.0};
     amrex::Real beta_h{16.0};
 
-    ThetaCalcType alg_type{HEAT_FLUX};
+    ThetaCalcType alg_type{ThetaCalcType::HEAT_FLUX};
 
     amrex::Real phi_m() const
     {
