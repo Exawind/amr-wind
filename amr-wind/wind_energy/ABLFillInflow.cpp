@@ -61,8 +61,7 @@ void ABLFillInflow::fillpatch_sibling_fields(
     amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& cfabs,
     const amrex::IntVect& nghost,
     const amrex::Vector<amrex::BCRec>& bcrec,
-    const FieldState fstate,
-    const FieldInterpolator itype)
+    const FieldState fstate)
 {
     // For an ABL fill, we just foextrap the mac velocities
     amrex::Vector<amrex::BCRec> lbcrec(m_field.num_comp());
@@ -90,7 +89,7 @@ void ABLFillInflow::fillpatch_sibling_fields(
     }
 
     FieldFillPatchOps<FieldBCDirichlet>::fillpatch_sibling_fields(
-        lev, time, mfabs, ffabs, cfabs, nghost, lbcrec, fstate, itype);
+        lev, time, mfabs, ffabs, cfabs, nghost, lbcrec, fstate);
 
     for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
         m_bndry_plane.populate_data(lev, time, m_field, *mfabs[i], 0, i);

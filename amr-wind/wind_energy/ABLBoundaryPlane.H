@@ -168,6 +168,7 @@ private:
         const int,
         const Field*);
 #endif
+    int boundary_native_file_levels();
 
     std::string m_title{"ABL boundary planes"};
 
