@@ -144,7 +144,7 @@ struct ComputeForceOp<
 
         // Interpolate pitch actuation at time step n
         if (!wdata.pitch_timetable.empty()) {
-            const amrex::Real current_pitch = ::amr_wind::interp::linear(
+            const amrex::Real current_pitch = amr_wind::interp::linear(
                 wdata.time_table, wdata.pitch_table, time.current_time());
         }        
 
