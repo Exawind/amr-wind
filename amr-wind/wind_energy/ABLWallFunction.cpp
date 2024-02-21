@@ -85,7 +85,7 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
         }
     }
 
-    m_mo.alg_type = m_tempflux ? MOData::ThetaCalcType::HEAT_FLUX 
+    m_mo.alg_type = m_tempflux ? MOData::ThetaCalcType::HEAT_FLUX
                                : MOData::ThetaCalcType::SURFACE_TEMPERATURE;
     m_mo.gravity = utils::vec_mag(m_gravity.data());
 }
