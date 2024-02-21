@@ -70,7 +70,7 @@ void HurricaneTempForcing::operator()(
                                 (heights[ir] - heights[il])) *
                                    (ht - heights[il]);
 
-        src_term(i, j, k, 0) += vmean * dTdR;
+        src_term(i, j, k) += vmean * dTdR;
     });
 }
 

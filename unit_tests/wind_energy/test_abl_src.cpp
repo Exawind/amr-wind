@@ -17,6 +17,8 @@
 #include "amr-wind/equation_systems/icns/source_terms/HurricaneForcing.H"
 #include "amr-wind/equation_systems/icns/source_terms/RayleighDamping.H"
 
+#include "amr-wind/equation_systems/temperature/source_terms/HurricaneTempForcing.H"
+
 namespace amr_wind_tests {
 
 namespace {
@@ -262,7 +264,8 @@ TEST_F(ABLMeshTest, rayleigh_damping)
     amrex::Array<amrex::Real, 5> src_x_vals;
     amrex::Array<amrex::Real, 5> src_y_vals;
     amrex::Array<amrex::Real, 5> src_z_vals;
-    // Multiply to remove tau factor and divide by nx*ny cells because of sum
+    // Multiply to remove tau factor and divide by nx*ny cells because of
+    // sum
     const amrex::Real tau = 40.;
     const int nx = 8;
     const int ny = 8;
@@ -286,7 +289,8 @@ TEST_F(ABLMeshTest, rayleigh_damping)
         EXPECT_NEAR(src_y_vals[n], 1. * golds[n] * 0., tol);
         EXPECT_NEAR(src_z_vals[n], -3. * golds[n], tol);
     }
-    // Check intermediate points against manual expectations (near 1, near 0)
+    // Check intermediate points against manual expectations (near 1, near
+    // 0)
     EXPECT_NEAR(src_x_vals[2], 12. * 1.0, 12. * 0.05);
     EXPECT_NEAR(src_y_vals[2], 1. * 1.0 * 0.0, tol);
     EXPECT_NEAR(src_z_vals[2], -3. * 1.0, 3. * 0.05);
@@ -299,31 +303,55 @@ TEST_F(ABLMeshTest, hurricane_forcing)
 {
     constexpr amrex::Real tol = 1.0e-12;
     populate_parameters();
-
-    amrex::ParmParse pp("CoriolisForcing");
-    pp.add("latitude", 90.0);
-
+    {
+        amrex::ParmParse pp("CoriolisForcing");
+        pp.add("latitude", 90.0);
+    }
+    {
+        amrex::ParmParse pp("HurricaneTempForcing");
+        pp.add("radial_decay", 0.001);
+    }
     initialize_mesh();
 
     auto& pde_mgr = sim().pde_manager();
     pde_mgr.register_icns();
+    // pde_mgr.register_transport_pde("Temperature");
     sim().init_physics();
 
-    auto& src_term = pde_mgr.icns().fields().src_term;
+    auto& src_term_icns = pde_mgr.icns().fields().src_term;
+
+    auto& temp_eqn = pde_mgr("Temperature-Godunov");
+    auto& src_term_temp = temp_eqn.fields().src_term;
+
     auto& velocity = sim().repo().get_field("velocity");
     velocity.setVal({{0., .0, 0.0}});
     auto& density = sim().repo().get_field("density");
     density.setVal(1.0);
 
+    // Calculate Hurricane Forcing to the momentum equation
     amr_wind::pde::icns::HurricaneForcing hurricane_forcing(sim());
-    src_term.setVal(0.0);
-    run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
+    src_term_icns.setVal(0.0);
+    run_algorithm(src_term_icns, [&](const int lev, const amrex::MFIter& mfi) {
         const auto& bx = mfi.tilebox();
-        const auto& src_arr = src_term(lev).array(mfi);
+        const auto& src_arr = src_term_icns(lev).array(mfi);
 
         hurricane_forcing(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
     });
 
+    velocity.setVal({{0., 1.0, 0.0}});
+    // Calculate Hurricane Forcing to the temperature equation
+    amr_wind::pde::temperature::HurricaneTempForcing hurricane_temp_forcing(
+        sim());
+    src_term_temp.setVal(0.0);
+    run_algorithm(src_term_temp, [&](const int lev, const amrex::MFIter& mfi) {
+        const auto& bx = mfi.tilebox();
+        const auto& src_arr = src_term_temp(lev).array(mfi);
+
+        hurricane_temp_forcing(
+            lev, mfi, bx, amr_wind::FieldState::New, src_arr);
+    });
+
+    // Test the momentum hurricane forcing
     constexpr amrex::Real corfac = 2.0 * amr_wind::utils::two_pi() / 86400.0;
     const amrex::Real ratio_top =
         (18000. - (1000. - 1000. / 64. / 2.)) / 18000.;
@@ -338,11 +366,16 @@ TEST_F(ABLMeshTest, hurricane_forcing)
          0.0, 0.0}};
 
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-        const auto max_val = utils::field_max(src_term, i);
-        const auto min_val = utils::field_min(src_term, i);
+        const auto max_val = utils::field_max(src_term_icns, i);
+        const auto min_val = utils::field_min(src_term_icns, i);
         EXPECT_NEAR(min_val, golds_min[i], tol);
         EXPECT_NEAR(max_val, golds_max[i], tol);
     }
+
+    // Test the temperature equation hurricane forcing
+    const amrex::Real gold = 0.0;
+    const auto max_val = utils::field_max(src_term_temp);
+    EXPECT_NEAR(max_val, gold, tol);
 }
 
 TEST_F(ABLMeshTest, coriolis_const_vel)
