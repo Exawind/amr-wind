@@ -173,6 +173,7 @@ struct ComputeForceOp<
             if (!wdata.pitch_timetable.empty()) {
                 const amrex::Real current_pitch = amr_wind::interp::linear(wdata.time_table,
                     wdata.pitch_table, time.current_time());
+                amrex::Print(current_pitch);
                 aoa = std::atan2(windvector[2], windvector[0]) + current_pitch;
             } else {
                 aoa = std::atan2(windvector[2], windvector[0]) + amr_wind::utils::radians(wdata.pitch);
