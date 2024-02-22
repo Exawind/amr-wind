@@ -580,9 +580,6 @@ struct UpdateRelaxZonesOp<W2AWaves>
                         m_ow_levelset(lev), m_ow_levelset(lev - 1), 0, 1,
                         sim.mesh().refRatio(lev - 1));
                 }
-                // Fill in across internal boundaries (only goes with avg down)
-                m_ow_velocity.fillpatch(0.0);
-                m_ow_levelset.fillpatch(0.0);
 
                 // Prior t_last (corresponding to ow fields)
                 t_last = (wdata.ntime - 1) * wdata.dt_modes;
@@ -607,9 +604,6 @@ struct UpdateRelaxZonesOp<W2AWaves>
                     w2a_levelset(lev), w2a_levelset(lev - 1), 0, 1,
                     sim.mesh().refRatio(lev - 1));
             }
-            // Fill in across internal boundaries (only goes with avg down)
-            w2a_velocity.fillpatch(0.0);
-            w2a_levelset.fillpatch(0.0);
         }
 
         // Temporally interpolate at every timestep to get target solution
