@@ -5,6 +5,7 @@
 #include "amr-wind/utilities/sampling/SamplingContainer.H"
 #include "amr-wind/utilities/sampling/PlaneSampler.H"
 #include "amr-wind/utilities/sampling/VolumeSampler.H"
+#include "amr-wind/utilities/sampling/DTUSpinnerSampler.H"
 
 namespace amr_wind_tests {
 
@@ -308,5 +309,38 @@ TEST_F(SamplingTest, volume_sampler)
 
     ASSERT_EQ(locs.size(), 3 * 5 * 5);
 }
+
+
+TEST_F(SamplingTest, spinner_sampler)
+{
+    initialize_mesh();
+    amrex::ParmParse pp("spinner");
+
+    pp.add("mode", "fixed");
+    pp.add("turbine", "WTG01");
+    pp.add("hub_debug", false);
+    pp.add("inner_prism_theta0", 90.0);
+    pp.add("inner_prism_rotrate", 3.5);
+    pp.add("inner_prism_azimuth", 15.2);
+    pp.add("outer_prism_theta0",  90.0);
+    pp.add("outer_prism_rotrate", 6.5);
+    pp.add("outer_prism_azimuth", 15.2);
+    pp.addarr("lidar_center", amrex::Vector<amrex::Real> {630.0, 192.0, 120.0});
+    pp.add("scan_time", 2.0);
+    pp.add("num_samples", 984);
+    pp.add("beam_length", 270.0);
+    pp.add("beam_points", 432);
+    pp.add("fixed_yaw", 0);
+    pp.add("fixed_roll", 0);
+    pp.add("fixed_tilt", 0);
+
+    amr_wind::sampling::DTUSpinnerSampler spinner(sim());
+    spinner.initialize("spinner");
+    amr_wind::sampling::DTUSpinnerSampler::SampleLocType locs;
+    spinner.sampling_locations(locs);
+
+    ASSERT_EQ(locs.size(), 3 * 5 * 5);
+}
+
 
 } // namespace amr_wind_tests
