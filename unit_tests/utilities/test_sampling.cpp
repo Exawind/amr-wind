@@ -316,8 +316,8 @@ TEST_F(SamplingTest, spinner_sampler)
     initialize_mesh();
     amrex::ParmParse pp("spinner");
 
-    pp.add("mode", "fixed");
-    pp.add("turbine", "WTG01");
+    pp.add("mode", std::string("fixed"));
+    pp.add("turbine", std::string("WTG01"));
     pp.add("hub_debug", false);
     pp.add("inner_prism_theta0", 90.0);
     pp.add("inner_prism_rotrate", 3.5);
