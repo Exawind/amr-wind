@@ -314,7 +314,7 @@ void DTUSpinnerSampler::update_sampling_locations()
     int n_size = AMREX_SPACEDIM * (m_ns);
     int n_totalsize = AMREX_SPACEDIM * (m_ntotal);
 
-    if (m_hub_debug == true) {
+    if (m_hub_debug) {
         amrex::Print() << "ts_diff: " << ts_diff << "\t"
                        << "m_ns: " << m_ns << "\t"
                        << "Spin Time: " << m_time_sampling << "\t"
@@ -331,7 +331,7 @@ void DTUSpinnerSampler::update_sampling_locations()
     }
 
 #ifdef AMR_WIND_USE_OPENFAST
-    if (m_hub_debug == true) {
+    if (m_hub_debug) {
         amrex::Print() << "Turbine Hub Pos: " << current_hub_abs_pos[0] << " "
                        << current_hub_abs_pos[1] << " "
                        << current_hub_abs_pos[2] << " " << std::endl;

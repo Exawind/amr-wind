@@ -352,7 +352,7 @@ TEST_F(SamplingTest, radar_sampler)
     pp.add("sampling_frequency", 85.0);
     pp.add("device_sampling_frequency", 30.0);
     pp.add("radar_cone_angle", 0.25);
-    pp.add("radar_quadrature_type", "truncated_normal_halfpower");
+    pp.add("radar_quadrature_type", std::string("truncated_normal_halfpower"));
     pp.add("radar_npts_azimuth", 5);
     pp.add("radar_beam_length", 100.0);
     pp.add("angular_speed", 30.0);
