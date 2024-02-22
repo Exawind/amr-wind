@@ -447,7 +447,7 @@ struct InitDataOp<W2AWaves>
         amrex::MultiFab::Copy(
             ow_velocity(level), velocity(level), 0, 0, AMREX_SPACEDIM, 3);
 
-        // Start w2a fields at 0, some areas will not be modifed
+        // Start w2a fields at 0, some areas will not be modified
         auto& w2a_levelset = sim.repo().get_field("w2a_levelset");
         auto& w2a_velocity = sim.repo().get_field("w2a_velocity");
         w2a_levelset.setVal(0.0);
@@ -564,7 +564,7 @@ struct UpdateRelaxZonesOp<W2AWaves>
                     wdata.do_interp = false;
                 }
             }
-            // Only perform reading where needed, commmunicate offset though
+            // Only perform reading where needed, communicate offset though
             amrex::ParallelDescriptor::ReduceIntMax(wdata.n_offset);
 
             // If double read is required, then copy older wave data to ow_
