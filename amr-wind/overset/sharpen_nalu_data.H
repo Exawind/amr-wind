@@ -354,13 +354,12 @@ void process_fluxes_calc_src(
     amrex::MultiFab& mf_vof,
     amrex::MultiFab& mf_psource,
     amrex::iMultiFab& mf_iblank,
-    const amrex::Real grav_z,
-    const int sh_p_flag)
+    const bool sh_p_flag)
 {
     int ncompx = mf_fx.nComp();
     int ncompy = mf_fy.nComp();
     int ncompz = mf_fz.nComp();
-    if (sh_p_flag == 0) {
+    if (!sh_p_flag) {
         mf_psource.setVal(0.0);
     }
     for (amrex::MFIter mfi(mf_iblank); mfi.isValid(); ++mfi) {
@@ -397,25 +396,7 @@ void process_fluxes_calc_src(
             });
         // With knowledge of fluxes, compute pressure source term
         amrex::Box const& nbx = mfi.nodaltilebox();
-        if (sh_p_flag == 1) {
-            amrex::ParallelFor(
-                nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    // To get the local density flux corresponding to the node,
-                    // average the surrounding fluxes. Fluxes in AMR-Wind domain
-                    // are zeroed, and they are flagged as 0 to avoid dividing
-                    // by the wrong number in the average. For AMR-Wind nodes
-                    // (not bordering nalu-wind cells), psource = 0 / (0 + tiny)
-                    const amrex::Real rho_flux =
-                        (fz(i, j, k, 1) + fz(i - 1, j, k, 1) +
-                         fz(i, j - 1, k, 1) + fz(i - 1, j - 1, k, 1)) /
-                        (fz(i, j, k, 8) + fz(i - 1, j, k, 8) +
-                         fz(i, j - 1, k, 8) + fz(i - 1, j - 1, k, 8) + 1e-100);
-                    // Pressure source is proportional to local density source
-                    // (because more or less density is above node)
-                    sp(i, j, k) = rho_flux * grav_z;
-                });
-        }
-        if (sh_p_flag == 2) {
+        if (sh_p_flag) {
             constexpr amrex::Real tiny = 1e-100;
             amrex::ParallelFor(
                 nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -866,18 +847,8 @@ void SharpenNaluDataDiscrete(
     const amrex::Real rlscale,
     const amrex::Real margin,
     const amrex::Real proc_tgvof_tol,
-    const bool sh_hs_pres,
-    const bool sh_gradp,
     const bool sh_pressure)
 {
-    // Set sharpen pressure flag according to bools
-    int sh_p_flag = 0; // pressure source will be 0
-    if (sh_hs_pres) {
-        sh_p_flag = 1; // pressure source moves hs p according to density fluxes
-    } else if (sh_pressure) {
-        sh_p_flag = 2; // pressure source moves p according to gradp fluxes
-    }
-
     auto& repo = sim.repo();
     auto nlevels = repo.num_active_levels();
     auto geom = sim.mesh().Geom();
@@ -892,8 +863,6 @@ void SharpenNaluDataDiscrete(
     auto& mphase = sim.physics_manager().get<MultiPhase>();
     const amrex::Real rhol = mphase.rho1();
     const amrex::Real rhog = mphase.rho2();
-    // Gravity value in z
-    const amrex::Real grav_z = mphase.gravity()[2];
 
     // Get blanking for cells
     auto& iblank_cell = repo.get_int_field("iblank_cell");
@@ -1002,7 +971,7 @@ void SharpenNaluDataDiscrete(
             // Process fluxes and get pressure source term
             process_fluxes_calc_src(
                 (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev),
-                (*p_src)(lev), iblank_cell(lev), grav_z, sh_p_flag);
+                (*p_src)(lev), iblank_cell(lev), sh_pressure);
 
             // Measure convergence to determine if loop can stop
             if (cconv) {
@@ -1046,7 +1015,7 @@ void SharpenNaluDataDiscrete(
             apply_fluxes(
                 (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), (*p_src)(lev),
                 vof(lev), rho(lev), velocity(lev), gp(lev), p(lev), dx, ptfac,
-                sh_gradp || sh_p_flag == 2);
+                sh_pressure);
 
             // Update ghost cells
             vof(lev).FillBoundary(sim.mesh().Geom()[lev].periodicity());

@@ -180,12 +180,10 @@ private:
     amrex::Real m_sharpen_rlscale = 1.5;
     amrex::Real m_sharpen_margin = 0.1;
     amrex::Real m_sharpen_proctg_tol = 0.0;
-    bool m_sharpen_hs_pressure = false;
     bool m_sharpen_hsp_guess = false;
     bool m_sharpen_hsp_replace = false;
-    bool m_sharpen_gradp = false;
-    bool m_sharpen_gradp_exchp = false;
     bool m_sharpen_pressure = true;
+    bool m_sharpen_replace_gp = false;
 
     bool m_constant_density = true;
 

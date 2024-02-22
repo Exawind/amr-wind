@@ -106,7 +106,7 @@ void incflo::init_amr_wind_modules()
     for (auto& eqn : scalar_eqns()) {
         eqn->initialize();
     }
-    // Initialize pressure gradient 
+    // Initialize pressure gradient
     // (for cases with initial pressure field)
     UpdateGradP(
         sim().repo().get_field("density").vec_const_ptrs(),
@@ -401,11 +401,10 @@ void incflo::init_physics_and_pde()
         pp.query("sharpen_rlscale", m_sharpen_rlscale);
         pp.query("sharpen_margin", m_sharpen_margin);
         pp.query("sharpen_targetvof_tol", m_sharpen_proctg_tol);
-        pp.query("sharpen_hs_pressure", m_sharpen_hs_pressure);
+
         pp.query("sharpen_guess_hsp", m_sharpen_hsp_guess);
         pp.query("sharpen_replace_hsp", m_sharpen_hsp_replace);
-        pp.query("sharpen_pressure_grad", m_sharpen_gradp);
-        pp.query("sharpen_gp_exchange_p", m_sharpen_gradp_exchp);
+        pp.query("sharpen_replace_gp", m_sharpen_replace_gp);
         pp.query("sharpen_pressure", m_sharpen_pressure);
 
         // Determine if overset values should be forced into projection
