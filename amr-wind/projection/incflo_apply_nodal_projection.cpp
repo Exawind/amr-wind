@@ -46,6 +46,7 @@ amr_wind::nodal_projection::get_projection_bc(
                 r[dir] = LinOpBCType::Dirichlet;
                 break;
             }
+            case BC::mass_inflow_outflow:
             case BC::mass_inflow: {
                 r[dir] = LinOpBCType::inflow;
                 break;
