@@ -446,6 +446,12 @@ struct InitDataOp<W2AWaves>
         amrex::MultiFab::Copy(ow_levelset(level), levelset(level), 0, 0, 1, 3);
         amrex::MultiFab::Copy(
             ow_velocity(level), velocity(level), 0, 0, AMREX_SPACEDIM, 3);
+
+        // Start w2a fields at 0, some areas will not be modifed
+        auto& w2a_levelset = sim.repo().get_field("w2a_levelset");
+        auto& w2a_velocity = sim.repo().get_field("w2a_velocity");
+        w2a_levelset.setVal(0.0);
+        w2a_velocity.setVal(0.0);
 #else
         amrex::ignore_unused(data, level, geom);
 #endif
@@ -558,17 +564,16 @@ struct UpdateRelaxZonesOp<W2AWaves>
                     wdata.do_interp = false;
                 }
             }
-
-            // Skip work if no interpolation is needed
-            if (!wdata.do_interp) {
-                return;
-            }
+            // Only perform reading where needed, commmunicate offset though
+            amrex::ParallelDescriptor::ReduceIntMax(wdata.n_offset);
 
             // If double read is required, then copy older wave data to ow_
             // fields and modify interpolation parameters to get things right
             if (double_data == 1) {
-                populate_fields_all_levels(
-                    wdata, geom, m_ow_levelset, m_ow_velocity, -1);
+                if (wdata.do_interp) {
+                    populate_fields_all_levels(
+                        wdata, geom, m_ow_levelset, m_ow_velocity, -1);
+                }
 
                 // Average down to get fine information on coarse grid where
                 // possible (may be unnecessary)
@@ -580,6 +585,9 @@ struct UpdateRelaxZonesOp<W2AWaves>
                         m_ow_levelset(lev), m_ow_levelset(lev - 1), 0, 1,
                         sim.mesh().refRatio(lev - 1));
                 }
+                // Fill patch to get correct ghost cells after average down
+                m_ow_velocity.fillpatch(0.0);
+                m_ow_levelset.fillpatch(0.0);
 
                 // Prior t_last (corresponding to ow fields)
                 t_last = (wdata.ntime - 1) * wdata.dt_modes;
@@ -592,7 +600,10 @@ struct UpdateRelaxZonesOp<W2AWaves>
             }
 
             // After possible prior read, now read data for this ntime
-            populate_fields_all_levels(wdata, geom, w2a_levelset, w2a_velocity);
+            if (wdata.do_interp) {
+                populate_fields_all_levels(
+                    wdata, geom, w2a_levelset, w2a_velocity);
+            }
 
             // Average down to get fine information on coarse grid where
             // possible (may be unnecessary)
@@ -604,6 +615,9 @@ struct UpdateRelaxZonesOp<W2AWaves>
                     w2a_levelset(lev), w2a_levelset(lev - 1), 0, 1,
                     sim.mesh().refRatio(lev - 1));
             }
+            // Fill patch to get correct ghost cells after average down
+            w2a_velocity.fillpatch(0.0);
+            w2a_levelset.fillpatch(0.0);
         }
 
         // Temporally interpolate at every timestep to get target solution
