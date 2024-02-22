@@ -6,6 +6,7 @@
 #include "amr-wind/utilities/sampling/PlaneSampler.H"
 #include "amr-wind/utilities/sampling/VolumeSampler.H"
 #include "amr-wind/utilities/sampling/DTUSpinnerSampler.H"
+#include "amr-wind/utilities/sampling/RadarSampler.H"
 
 namespace amr_wind_tests {
 
@@ -310,7 +311,6 @@ TEST_F(SamplingTest, volume_sampler)
     ASSERT_EQ(locs.size(), 3 * 5 * 5);
 }
 
-
 TEST_F(SamplingTest, spinner_sampler)
 {
     initialize_mesh();
@@ -322,10 +322,10 @@ TEST_F(SamplingTest, spinner_sampler)
     pp.add("inner_prism_theta0", 90.0);
     pp.add("inner_prism_rotrate", 3.5);
     pp.add("inner_prism_azimuth", 15.2);
-    pp.add("outer_prism_theta0",  90.0);
+    pp.add("outer_prism_theta0", 90.0);
     pp.add("outer_prism_rotrate", 6.5);
     pp.add("outer_prism_azimuth", 15.2);
-    pp.addarr("lidar_center", amrex::Vector<amrex::Real> {630.0, 192.0, 120.0});
+    pp.addarr("lidar_center", amrex::Vector<amrex::Real>{630.0, 192.0, 120.0});
     pp.add("scan_time", 2.0);
     pp.add("num_samples", 984);
     pp.add("beam_length", 270.0);
@@ -339,8 +339,39 @@ TEST_F(SamplingTest, spinner_sampler)
     amr_wind::sampling::DTUSpinnerSampler::SampleLocType locs;
     spinner.sampling_locations(locs);
 
-    ASSERT_EQ(locs.size(), 3 * 5 * 5);
+    ASSERT_EQ(locs.size(), 21600);
 }
 
+TEST_F(SamplingTest, radar_sampler)
+{
+    initialize_mesh();
+    amrex::ParmParse pp("radar");
+
+    pp.add("num_points", 512);
+    pp.addarr("origin", amrex::Vector<amrex::Real>{1.0, 1.0, 1.0});
+    pp.add("sampling_frequency", 85.0);
+    pp.add("device_sampling_frequency", 30.0);
+    pp.add("radar_cone_angle", 0.25);
+    pp.add("radar_quadrature_type", "truncated_normal_halfpower");
+    pp.add("radar_npts_azimuth", 5);
+    pp.add("radar_beam_length", 100.0);
+    pp.add("angular_speed", 30.0);
+    pp.add("sweep_angle", 145.0);
+    pp.add("reset_time", 0.0);
+    pp.addarr(
+        "elevation_angles",
+        amrex::Vector<amrex::Real>{0.0, 0.1, 0.2, 0.3, 0.4});
+    pp.addarr(
+        "axis", amrex::Vector<amrex::Real>{0.707106781, 0.707106781, 0.0});
+    pp.addarr("vertical_unit_dir", amrex::Vector<amrex::Real>{0.0, 0.0, 1.0});
+    pp.add("debug_print", false);
+
+    amr_wind::sampling::RadarSampler radar(sim());
+    radar.initialize("radar");
+    amr_wind::sampling::RadarSampler::SampleLocType locs;
+    radar.sampling_locations(locs);
+
+    ASSERT_EQ(locs.size(), 193536);
+}
 
 } // namespace amr_wind_tests
