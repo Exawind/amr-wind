@@ -197,8 +197,11 @@ void BCVelocity::set_bcrec()
             break;
 
         case BC::mass_inflow_outflow:
-            set_bcrec_lo(dir, amrex::BCType::user_1);
-            set_bcrec_hi(dir, amrex::BCType::user_1);
+            if (side == amrex::Orientation::low) {
+                set_bcrec_lo(dir, amrex::BCType::user_1);
+            } else {
+                set_bcrec_hi(dir, amrex::BCType::user_1);
+            }
             break;
 
         case BC::slip_wall:
