@@ -160,6 +160,10 @@ struct UpdateRelaxZonesOp<LinearWaves>
                                 std::sinh(wavenumber * (zc + waterdepth)) /
                                 std::sinh(wavenumber * waterdepth) *
                                 std::sin(phase);
+                        } else {
+                            vel(i, j, k, 0) = 0.0;
+                            vel(i, j, k, 1) = 0.0;
+                            vel(i, j, k, 2) = 0.0;
                         }
                     });
             }
