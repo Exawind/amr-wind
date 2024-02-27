@@ -46,23 +46,21 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
         bool use_fllc = false;
         pp.query("fllc", use_fllc);
 
-        // Initialize tables for pitch actuation
-        pp.query("pitch_timetable", wdata.pitch_timetable);
-        if (!wdata.pitch_timetable.empty()) {
-            std::ifstream ifh(wdata.pitch_timetable, std::ios::in);
+        // Initialize tables for pitch actuation (in degrees)
+        pp.query("pitch_timetable", wdata.pitch_timetable_file);
+        if (!wdata.pitch_timetable_file.empty()) {
+            std::ifstream ifh(wdata.pitch_timetable_file, std::ios::in);
             if (!ifh.good()) {
                 amrex::Abort(
-                    "Cannot find input file: " + wdata.pitch_timetable);
+                    "Cannot find input file: " + wdata.pitch_timetable_file);
             }
             amrex::Real data_time;
             amrex::Real data_pitch_deg;
             ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             while (ifh >> data_time) {
                 ifh >> data_pitch_deg;
-                amrex::Real data_pitch_rad =
-                    amr_wind::utils::radians(data_pitch_deg);
                 wdata.time_table.push_back(data_time);
-                wdata.pitch_table.push_back(data_pitch_rad);
+                wdata.pitch_table.push_back(data_pitch_deg);
             }
         }
 

@@ -38,7 +38,7 @@ struct WingBaseData
     amrex::Real pitch{0.0};
 
     //! File name for pitch actuation table
-    std::string pitch_timetable;
+    std::string pitch_timetable_file;
 
     //! Pitch actuation: time table
     amrex::Vector<amrex::Real> time_table;
