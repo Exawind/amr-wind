@@ -173,101 +173,102 @@ struct ComputeForceOp<
                     wdata.time_table, wdata.pitch_table, time.current_time());
                 amrex::Print() << "Wing Ops: Current wing pitch is "
                                << wdata.pitch << " degrees.\n";
-            
-            const auto aoa = std::atan2(windvector[2], windvector[0]) +
-                  amr_wind::utils::radians(wdata.pitch);
-            
 
-            // Make up some Cl, Cd values
-            amrex::Real cl, cd;
-            aflookup(aoa, cl, cd);
+                const auto aoa = std::atan2(windvector[2], windvector[0]) +
+                                 amr_wind::utils::radians(wdata.pitch);
 
-            // Assume unit chord
-            const auto qval = 0.5 * vmag * vmag * chord[ip] * dx[ip];
-            const auto lift = qval * cl;
-            const auto drag = qval * cd;
+                // Make up some Cl, Cd values
+                amrex::Real cl, cd;
+                aflookup(aoa, cl, cd);
 
-            // Determine unit vector parallel and perpendicular to velocity
-            // vector
-            // Directions
-            const auto drag_dir =
-                (blade_x * windvector.x() + blade_z * windvector.z()).unit();
-            const auto lift_dir = (drag_dir ^ blade_y).unit();
+                // Assume unit chord
+                const auto qval = 0.5 * vmag * vmag * chord[ip] * dx[ip];
+                const auto lift = qval * cl;
+                const auto drag = qval * cd;
 
-            // Compute force on fluid from this section of wing
-            grid.force[ip] = -(lift_dir * lift + drag * drag_dir);
+                // Determine unit vector parallel and perpendicular to velocity
+                // vector
+                // Directions
+                const auto drag_dir =
+                    (blade_x * windvector.x() + blade_z * windvector.z())
+                        .unit();
+                const auto lift_dir = (drag_dir ^ blade_y).unit();
 
-            // Assign values for output
-            wdata.vel_rel[ip] = windvector;
-            wdata.aoa[ip] = amr_wind::utils::degrees(aoa);
-            wdata.cl[ip] = cl;
-            wdata.cd[ip] = cd;
+                // Compute force on fluid from this section of wing
+                grid.force[ip] = -(lift_dir * lift + drag * drag_dir);
 
-            total_lift += lift;
-            total_drag += drag;
-        }
+                // Assign values for output
+                wdata.vel_rel[ip] = windvector;
+                wdata.aoa[ip] = amr_wind::utils::degrees(aoa);
+                wdata.cl[ip] = cl;
+                wdata.cd[ip] = cd;
 
-        wdata.lift = total_lift;
-        wdata.drag = total_drag;
+                total_lift += lift;
+                total_drag += drag;
+            }
 
-        if (wdata.fllc) {
-            if (!(wdata.fllc->initialized) &&
-                (time.current_time() > wdata.fllc->fllc_start_time)) {
-                wdata.component_view =
-                    amr_wind::actuator::wing::make_component_view<ActTrait>(
-                        data);
-                FLLCInit(
-                    *(wdata.fllc.get()), wdata.component_view,
-                    wdata.epsilon_chord[0]);
+            wdata.lift = total_lift;
+            wdata.drag = total_drag;
+
+            if (wdata.fllc) {
+                if (!(wdata.fllc->initialized) &&
+                    (time.current_time() > wdata.fllc->fllc_start_time)) {
+                    wdata.component_view =
+                        amr_wind::actuator::wing::make_component_view<ActTrait>(
+                            data);
+                    FLLCInit(
+                        *(wdata.fllc.get()), wdata.component_view,
+                        wdata.epsilon_chord[0]);
+                }
             }
         }
-    }
-};
+    };
 
-template <typename ActTrait, typename SrcTrait>
-struct ProcessOutputsOp<
-    ActTrait,
-    SrcTrait,
-    typename std::enable_if<
-        std::is_base_of<WingType, ActTrait>::value &&
-        UseDefaultOp<ActTrait, ActSrcLine>::process_outputs>::type>
-{
-private:
-    typename ActTrait::DataType& m_data;
-
-    std::string m_out_dir;
-    std::string m_nc_filename;
-    int m_out_freq{10};
-
-public:
-    explicit ProcessOutputsOp(typename ActTrait::DataType& data) : m_data(data)
-    {}
-
-    void read_io_options(const utils::ActParser& pp)
+    template <typename ActTrait, typename SrcTrait>
+    struct ProcessOutputsOp<
+        ActTrait,
+        SrcTrait,
+        typename std::enable_if<
+            std::is_base_of<WingType, ActTrait>::value &&
+            UseDefaultOp<ActTrait, ActSrcLine>::process_outputs>::type>
     {
-        pp.query("output_frequency", m_out_freq);
-    }
+    private:
+        typename ActTrait::DataType& m_data;
 
-    void prepare_outputs(const std::string& out_dir)
-    {
-        m_nc_filename = out_dir + "/" + m_data.info().label + ".nc";
-        wing::prepare_netcdf_file(
-            m_nc_filename, m_data.meta(), m_data.info(), m_data.grid());
-    }
+        std::string m_out_dir;
+        std::string m_nc_filename;
+        int m_out_freq{10};
 
-    void write_outputs()
-    {
-        const auto& time = m_data.sim().time();
-        const int tidx = time.time_index();
-        if (tidx % m_out_freq != 0) {
-            return;
+    public:
+        explicit ProcessOutputsOp(typename ActTrait::DataType& data)
+            : m_data(data)
+        {}
+
+        void read_io_options(const utils::ActParser& pp)
+        {
+            pp.query("output_frequency", m_out_freq);
         }
 
-        wing::write_netcdf(
-            m_nc_filename, m_data.meta(), m_data.info(), m_data.grid(),
-            time.new_time());
-    }
-};
+        void prepare_outputs(const std::string& out_dir)
+        {
+            m_nc_filename = out_dir + "/" + m_data.info().label + ".nc";
+            wing::prepare_netcdf_file(
+                m_nc_filename, m_data.meta(), m_data.info(), m_data.grid());
+        }
+
+        void write_outputs()
+        {
+            const auto& time = m_data.sim().time();
+            const int tidx = time.time_index();
+            if (tidx % m_out_freq != 0) {
+                return;
+            }
+
+            wing::write_netcdf(
+                m_nc_filename, m_data.meta(), m_data.info(), m_data.grid(),
+                time.new_time());
+        }
+    };
 
 } // namespace ops
 } // namespace amr_wind::actuator
