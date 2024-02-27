@@ -168,7 +168,6 @@ struct ComputeForceOp<
 
             // Calculate the aoa based on the pitch actuation table if supplied
             // (interpolate pitch angle at step n) or the initial pitch angle
-            amrex::Real aoa;
             if (!wdata.pitch_timetable_file.empty()) {
                 wdata.pitch = amr_wind::interp::linear(
                     wdata.time_table, wdata.pitch_table, time.current_time());
