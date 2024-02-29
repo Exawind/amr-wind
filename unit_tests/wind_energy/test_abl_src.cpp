@@ -324,7 +324,7 @@ TEST_F(ABLMeshTest, hurricane_forcing)
     auto& src_term_temp = temp_eqn.fields().src_term;
 
     auto& velocity = sim().repo().get_field("velocity");
-    velocity.setVal({{0., .0, 0.0}});
+    velocity.setVal({{0.0, 0.0, 0.0}});
     auto& density = sim().repo().get_field("density");
     density.setVal(1.0);
 
@@ -338,7 +338,6 @@ TEST_F(ABLMeshTest, hurricane_forcing)
         hurricane_forcing(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
     });
 
-    velocity.setVal({{0., 1.0, 0.0}});
     // Calculate Hurricane Forcing to the temperature equation
     amr_wind::pde::temperature::HurricaneTempForcing hurricane_temp_forcing(
         sim());
@@ -353,23 +352,23 @@ TEST_F(ABLMeshTest, hurricane_forcing)
 
     // Test the momentum hurricane forcing
     constexpr amrex::Real corfac = 2.0 * amr_wind::utils::two_pi() / 86400.0;
-    const amrex::Real ratio_top =
-        (18000. - (1000. - 1000. / 64. / 2.)) / 18000.;
-    const amrex::Real ratio_bottom = (18000. - 1000. / 64. / 2.) / 18000.;
+    const amrex::Real dz = sim().mesh().Geom(0).CellSizeArray()[2];
+    const amrex::Real ratio_top = (18000. - (1000. - 0.5 * dz)) / 18000.;
+    const amrex::Real ratio_bottom = (18000. - 0.5 * dz) / 18000.;
     const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds_max{
         {-corfac * 40.0 * ratio_top -
              40.0 * ratio_top * 40.0 * ratio_top / 40000.0,
          0.0, 0.0}};
     const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds_min{
-        {-corfac * 40.0 * ratio_bottom -
-             40.0 * ratio_bottom * 40.0 * ratio_bottom / 40000.0,
+        {-corfac * ratio_bottom * 40 -
+             ratio_bottom * 40.0 * ratio_bottom * 40.0 / 40000.0,
          0.0, 0.0}};
 
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {
         const auto max_val = utils::field_max(src_term_icns, i);
         const auto min_val = utils::field_min(src_term_icns, i);
-        EXPECT_NEAR(min_val, golds_min[i], tol);
         EXPECT_NEAR(max_val, golds_max[i], tol);
+        EXPECT_NEAR(min_val, golds_min[i], tol);
     }
 
     // Test the temperature equation hurricane forcing

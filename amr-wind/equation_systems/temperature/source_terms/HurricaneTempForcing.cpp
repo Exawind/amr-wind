@@ -21,6 +21,7 @@ HurricaneTempForcing::HurricaneTempForcing(const CFDSim& sim)
     {
         amrex::ParmParse pp("HurricaneTempForcing");
         pp.query("radial_decay", m_dTdR);
+        pp.query("radial_decay_zero_height", m_dTzh);
 
         mean_velocity_init(abl.abl_statistics().vel_profile_coarse());
     }
@@ -40,6 +41,7 @@ void HurricaneTempForcing::operator()(
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
 
     const amrex::Real dTdR = m_dTdR;
+    const amrex::Real dTzh = m_dTzh;
 
     // Mean velocity profile used to compute background hurricane forcing term
     //
@@ -65,12 +67,13 @@ void HurricaneTempForcing::operator()(
                                 (heights[ir] - heights[il])) *
                                    (ht - heights[il]);
         */
+        const amrex::Real dTdR_z = dTdR * (dTzh - ht) / dTzh;
         const amrex::Real vmean =
             vals[3 * il + 1] + ((vals[3 * ir + 1] - vals[3 * il + 1]) /
                                 (heights[ir] - heights[il])) *
                                    (ht - heights[il]);
 
-        src_term(i, j, k) -= vmean * dTdR;
+        src_term(i, j, k) -= vmean * dTdR_z;
     });
 }
 

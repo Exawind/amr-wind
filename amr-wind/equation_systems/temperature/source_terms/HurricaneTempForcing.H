@@ -40,7 +40,10 @@ private:
     int m_axis{2};
 
     //! Temperature radial decay
-    amrex::Real m_dTdR{0.00};
+    amrex::Real m_dTdR{0.001};
+
+    //! Zero Temperature height
+    amrex::Real m_dTzh{18000.};
 };
 
 } // namespace amr_wind::pde::temperature
