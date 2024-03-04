@@ -364,6 +364,46 @@ inline amrex::Real global_max_magnitude(FType& field)
     return maxglobal;
 }
 
+/** Computes the global minimum of a field from all levels
+ *  * \ingroup field_ops
+ *   *
+ *    * \param [in] field we need to compute its global minimum magnitude
+ *     */
+template <typename FType>
+inline amrex::Real global_min_magnitude(FType& field)
+{
+    const auto& repo = field.repo();
+    const auto ncomp = field.num_comp();
+
+    amrex::Real minglobal = 0.0;
+    const int nlevels = repo.num_active_levels();
+    for (int lev = 0; lev < nlevels; ++lev) {
+        amrex::Real minglobal_lev = 0.0;
+        minglobal_lev = amrex::ReduceMin(
+            field(lev), 0.,
+            [=] AMREX_GPU_HOST_DEVICE(
+                amrex::Box const& b,
+                amrex::Array4<amrex::Real const> const& field_arr)
+                -> amrex::Real {
+                amrex::Real mx = 0.0;
+                amrex::Loop(b, [=, &mx](int i, int j, int k) noexcept {
+                    amrex::Real mag = 0.0;
+                    for (int icomp = 0; icomp < ncomp; ++icomp) {
+                        mag = mag + field_arr(i, j, k, icomp) *
+                                        field_arr(i, j, k, icomp);
+                    }
+                    mx = amrex::min(std::sqrt(mag), mx);
+                });
+                return mx;
+            });
+        minglobal = amrex::min(minglobal, minglobal_lev);
+    }
+
+    amrex::ParallelAllReduce::Min<amrex::Real>(
+        minglobal, amrex::ParallelContext::CommunicatorSub());
+    return minglobal;
+}
+
 /** Normalizes a field using its magnitude
  * \ingroup field_ops
  *

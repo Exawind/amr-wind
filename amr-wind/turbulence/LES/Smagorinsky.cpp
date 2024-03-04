@@ -6,6 +6,7 @@
 #include "AMReX_REAL.H"
 #include "AMReX_MultiFab.H"
 #include "AMReX_ParmParse.H"
+#include "amr-wind/equation_systems/vof/volume_fractions.H"
 
 namespace amr_wind {
 namespace turbulence {
@@ -32,6 +33,16 @@ void Smagorinsky<Transport>::update_turbulent_viscosity(
     const auto& geom_vec = repo.mesh().Geom();
     const amrex::Real Cs_sqr = this->m_Cs * this->m_Cs;
 
+    const bool is_vof = this->m_sim.repo().field_exists("vof");
+    amrex::Real rho_min=0.;
+
+    const auto& vof = this->m_sim.repo().get_field("vof");
+    if (is_vof) {
+        rho_min = amr_wind::field_ops::global_min_magnitude(m_rho);
+    }
+
+    // const auto& vof_arr = (*m_vof)(lev).const_array(mfi);
+
     // Populate strainrate into the turbulent viscosity arrays to avoid creating
     // a temporary buffer
     fvm::strainrate(mu_turb, vel);
@@ -52,9 +63,20 @@ void Smagorinsky<Transport>::update_turbulent_viscosity(
             const auto& mu_arr = mu_turb(lev).array(mfi);
             const auto& rho_arr = den(lev).const_array(mfi);
 
+            const auto& vof_arr = vof(lev).const_array(mfi);
+
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real rho = rho_arr(i, j, k);
+                    amrex::Real rho;
+
+                    const bool is_air = vof_arr(i, j, k) < 1.;
+                    //
+                    if (is_vof) {
+                        rho = amrex::min(rho_arr(i, j, k), rho_min);
+                    } else {
+                        rho = rho_arr(i, j, k);
+                    }
+
                     mu_arr(i, j, k) *= rho * smag_factor;
                 });
         }
