@@ -34,7 +34,7 @@ void Smagorinsky<Transport>::update_turbulent_viscosity(
     const amrex::Real Cs_sqr = this->m_Cs * this->m_Cs;
 
     const bool is_vof = this->m_sim.repo().field_exists("vof");
-    amrex::Real rho_min=0.;
+    amrex::Real rho_min = 1e9;
 
     const auto& vof = this->m_sim.repo().get_field("vof");
     if (is_vof) {

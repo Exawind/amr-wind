@@ -375,17 +375,17 @@ inline amrex::Real global_min_magnitude(FType& field)
     const auto& repo = field.repo();
     const auto ncomp = field.num_comp();
 
-    amrex::Real minglobal = 0.0;
+    amrex::Real minglobal = 1e9;
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
-        amrex::Real minglobal_lev = 0.0;
+        amrex::Real minglobal_lev = 1e9;
         minglobal_lev = amrex::ReduceMin(
             field(lev), 0.,
             [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& b,
                 amrex::Array4<amrex::Real const> const& field_arr)
                 -> amrex::Real {
-                amrex::Real mx = 0.0;
+                amrex::Real mx = 1e9;
                 amrex::Loop(b, [=, &mx](int i, int j, int k) noexcept {
                     amrex::Real mag = 0.0;
                     for (int icomp = 0; icomp < ncomp; ++icomp) {
