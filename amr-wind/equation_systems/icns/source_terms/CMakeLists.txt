@@ -13,4 +13,5 @@ target_sources(${amr_wind_lib_name} PRIVATE
   ABLMesoForcingMom.cpp
   BurggrafFlowForcing.cpp
   RayleighDamping.cpp
+    NonLinearSGSTerm.cpp	
   )
