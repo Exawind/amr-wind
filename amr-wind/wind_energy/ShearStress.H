@@ -14,6 +14,8 @@
  * \ingroup we_abl
  */
 
+namespace amr_wind {
+
 struct ShearStressConstant
 {
     explicit ShearStressConstant(const amr_wind::MOData& mo)
@@ -167,6 +169,8 @@ struct ShearStressDonelan
         : wspd_mean(mo.vmag_mean)
         , theta_mean(mo.theta_mean)
         , theta_surface(mo.surf_temp)
+        , temp_flux_surface(mo.surf_temp_flux)
+        , alg_type(mo.alg_type)
     {}
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
@@ -204,12 +208,25 @@ struct ShearStressDonelan
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
     calc_theta(amrex::Real /* wspd */, amrex::Real /* theta */) const
     {
-        return 0.0012 * wspd_mean * (theta_surface - theta_mean);
+        amrex::Real flux = 0.0;
+        switch (alg_type) {
+        case amr_wind::MOData::ThetaCalcType::HEAT_FLUX:
+            flux = temp_flux_surface;
+            break;
+        case amr_wind::MOData::ThetaCalcType::SURFACE_TEMPERATURE:
+            flux = 0.0012 * wspd_mean * (theta_surface - theta_mean);
+            break;
+        }
+        return flux;
     };
 
     amrex::Real wspd_mean;
     amrex::Real theta_mean;
     amrex::Real theta_surface;
+    amrex::Real temp_flux_surface;
+    amr_wind::MOData::ThetaCalcType alg_type;
 };
+
+} // namespace amr_wind
 
 #endif /* ShearStress_H */

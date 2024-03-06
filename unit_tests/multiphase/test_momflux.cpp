@@ -59,9 +59,9 @@ void initialize_volume_fractions(
     // Left half is liquid, right half is gas
 }
 
-void check_accuracy(
+void get_accuracy(
+    amrex::Array4<amrex::Real>& err_arr,
     const int dir,
-    const amrex::Real tol,
     const amrex::Real rho1,
     const amrex::Real rho2,
     const amrex::Real vel_val,
@@ -91,47 +91,44 @@ void check_accuracy(
         }
         // x is face location
         const amrex::Real x = problo[dir] + icheck * dx[dir];
-#ifndef AMREX_USE_GPU
         // Check that MAC velocity is as expected, unchanged
-        EXPECT_NEAR(um(i, j, k), varr[0], tol);
-        EXPECT_NEAR(vm(i, j, k), varr[1], tol);
-        EXPECT_NEAR(wm(i, j, k), varr[2], tol);
+        err_arr(i, j, k, 0) = std::abs(um(i, j, k) - varr[0]);
+        err_arr(i, j, k, 1) = std::abs(vm(i, j, k) - varr[1]);
+        err_arr(i, j, k, 2) = std::abs(wm(i, j, k) - varr[2]);
         // Check that velocity is unchanged after advection
-        EXPECT_NEAR(vel(i, j, k, 0), varr[0], tol);
-        EXPECT_NEAR(vel(i, j, k, 1), varr[1], tol);
-        EXPECT_NEAR(vel(i, j, k, 2), varr[2], tol);
+        err_arr(i, j, k, 3) = std::abs(vel(i, j, k, 0) - varr[0]);
+        err_arr(i, j, k, 4) = std::abs(vel(i, j, k, 1) - varr[1]);
+        err_arr(i, j, k, 5) = std::abs(vel(i, j, k, 2) - varr[2]);
 
         // Test volume fractions at faces
         if (x == 0.5) {
             // Center face (coming from left cell)
             amrex::Real advvof = 1.0;
             amrex::Real advrho = rho1 * advvof + rho2 * (1.0 - advvof);
-            EXPECT_NEAR(rf(i, j, k), advrho, tol);
+            err_arr(i, j, k, 6) = std::abs(rf(i, j, k) - advrho);
         } else {
             if (x == 0.0) {
                 // Left face (coming from right cell, periodic
                 // BC)
                 amrex::Real advvof = 0.0;
                 amrex::Real advrho = rho1 * advvof + rho2 * (1.0 - advvof);
-                EXPECT_NEAR(rf(i, j, k), advrho, tol);
+                err_arr(i, j, k, 6) = std::abs(rf(i, j, k) - advrho);
             }
         }
 
         // Test momentum fluxes by checking convective term
         if (icheck == 0) {
             // Left cell (gas entering, liquid leaving)
-            EXPECT_NEAR(
-                dqdt(i, j, k, dir), vel_val * vel_val * (rho2 - rho1) / 0.5,
-                tol);
+            err_arr(i, j, k, 7) = std::abs(
+                dqdt(i, j, k, dir) - vel_val * vel_val * (rho2 - rho1) / 0.5);
         } else {
             if (icheck == 1) {
                 // Right cell (liquid entering, gas leaving)
-                EXPECT_NEAR(
-                    dqdt(i, j, k, dir), vel_val * vel_val * (rho1 - rho2) / 0.5,
-                    tol);
+                err_arr(i, j, k, 7) = std::abs(
+                    dqdt(i, j, k, dir) -
+                    vel_val * vel_val * (rho1 - rho2) / 0.5);
             }
         }
-#endif
     });
 }
 
@@ -279,7 +276,14 @@ protected:
         const auto& conv_term =
             mom_eqn.fields().conv_term.state(amr_wind::FieldState::New);
 
-        // Base level
+        // Create scratch field to store error, 1 component for each err type
+        auto error_ptr = repo.create_scratch_field(8, 0);
+        auto& error_fld = *error_ptr;
+        // Initialize at 0
+        for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+            error_fld(lev).setVal(0.0);
+        }
+
         const auto& geom = repo.mesh().Geom();
         run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
             const auto& dx = geom[lev].CellSizeArray();
@@ -291,10 +295,35 @@ protected:
             const auto& rf = advrho_f(lev).const_array(mfi);
             const auto& vel = velocity(lev).const_array(mfi);
             const auto& dqdt = conv_term(lev).const_array(mfi);
-            check_accuracy(
-                dir, tol, m_rho1, m_rho2, m_vel, dx, problo, varr, bx, um, vm,
+            // Populate error scratch field
+            auto error = error_fld(lev).array(mfi);
+            get_accuracy(
+                error, dir, m_rho1, m_rho2, m_vel, dx, problo, varr, bx, um, vm,
                 wm, rf, vel, dqdt);
         });
+
+        // Label 0's with variable names so gtest output is decipherable
+        constexpr amrex::Real umac_check = 0.0;
+        constexpr amrex::Real vmac_check = 0.0;
+        constexpr amrex::Real wmac_check = 0.0;
+        constexpr amrex::Real u_check = 0.0;
+        constexpr amrex::Real v_check = 0.0;
+        constexpr amrex::Real w_check = 0.0;
+        constexpr amrex::Real advrho_check = 0.0;
+        constexpr amrex::Real dqdt_check = 0.0;
+
+        // Check error in each mfab
+        for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+            // Sum error for each component individually and check
+            EXPECT_NEAR(error_fld(lev).max(0), umac_check, tol);
+            EXPECT_NEAR(error_fld(lev).max(1), vmac_check, tol);
+            EXPECT_NEAR(error_fld(lev).max(2), wmac_check, tol);
+            EXPECT_NEAR(error_fld(lev).max(3), u_check, tol);
+            EXPECT_NEAR(error_fld(lev).max(4), v_check, tol);
+            EXPECT_NEAR(error_fld(lev).max(5), w_check, tol);
+            EXPECT_NEAR(error_fld(lev).max(6), advrho_check, tol);
+            EXPECT_NEAR(error_fld(lev).max(7), dqdt_check, tol);
+        }
     }
 
     const amrex::Real m_rho1 = 1000.0;
@@ -303,32 +332,8 @@ protected:
     const amrex::Real dt = 0.45 * 0.5 / m_vel; // first number is CFL
 };
 
-TEST_F(MassMomFluxOpTest, fluxfaceX)
-{
-#ifndef AMREX_USE_GPU
-    testing_coorddir(0);
-#else
-    amrex::Print() << "MassMomFluxOpTest doesn't work on GPU yet." << std::endl;
-    GTEST_SKIP();
-#endif
-}
-TEST_F(MassMomFluxOpTest, fluxfaceY)
-{
-#ifndef AMREX_USE_GPU
-    testing_coorddir(1);
-#else
-    amrex::Print() << "MassMomFluxOpTest doesn't work on GPU yet." << std::endl;
-    GTEST_SKIP();
-#endif
-}
-TEST_F(MassMomFluxOpTest, fluxfaceZ)
-{
-#ifndef AMREX_USE_GPU
-    testing_coorddir(2);
-#else
-    amrex::Print() << "MassMomFluxOpTest doesn't work on GPU yet." << std::endl;
-    GTEST_SKIP();
-#endif
-}
+TEST_F(MassMomFluxOpTest, fluxfaceX) { testing_coorddir(0); }
+TEST_F(MassMomFluxOpTest, fluxfaceY) { testing_coorddir(1); }
+TEST_F(MassMomFluxOpTest, fluxfaceZ) { testing_coorddir(2); }
 
 } // namespace amr_wind_tests
