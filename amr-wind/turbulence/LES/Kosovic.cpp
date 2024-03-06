@@ -119,9 +119,7 @@ void Kosovic<Transport>::update_alphaeff(Field& alphaeff)
     auto lam_alpha = (this->m_transport).alpha();
     auto& mu_turb = this->m_mu_turb;
     auto& repo = mu_turb.repo();
-    //    const auto& geom_vec = repo.mesh().Geom();
-    amrex::Real muCoeff = 3;
-    if (m_refMOL > 0) muCoeff = 1;
+    const amrex::Real muCoeff = (m_refMOL < 0) ? 3 : 1;
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
