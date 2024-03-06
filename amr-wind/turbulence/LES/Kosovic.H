@@ -31,8 +31,8 @@ public:
     //! No post advance work for this model
     void post_advance_work() override {}
 
-  //! Update the effective thermal diffusivity field
-  void update_alphaeff(Field& alphaeff) override;
+    //! Update the effective thermal diffusivity field
+    void update_alphaeff(Field& alphaeff) override;
 
     //! Parse turbulence model coefficients
     void parse_model_coeffs() override;
@@ -42,22 +42,22 @@ public:
 
 private:
     //! Kosovic coefficient (default value set for ABL simulations)
-  amrex::Real m_Cb{0.36};
-  amrex::Real m_Cs{0.135};
-  amrex::Real m_C1{2.1};
-  amrex::Real m_C2{2.1};
-  amrex::Real m_Sk{0.5};
-  bool m_surfaceRANS{false};
-  amrex::Real m_surfaceFactor{0};
-  amrex::Real m_switchLoc{24};
-  amrex::Real m_surfaceRANSExp{2};
-  amrex::Real m_LESTurnOff{1e15};
-  bool m_writeTerms{false};
-  amrex::Real m_refMOL{-1e30};
-  const Field& m_vel;
-  const Field& m_rho;
-  Field& m_Nij;
-  Field& m_divNij;
+    amrex::Real m_Cb{0.36};
+    amrex::Real m_Cs{0.135};
+    amrex::Real m_C1{2.1};
+    amrex::Real m_C2{2.1};
+    amrex::Real m_Sk{0.5};
+    bool m_surfaceRANS{false};
+    amrex::Real m_surfaceFactor{0};
+    amrex::Real m_switchLoc{24};
+    amrex::Real m_surfaceRANSExp{2};
+    amrex::Real m_LESTurnOff{1e15};
+    bool m_writeTerms{false};
+    amrex::Real m_refMOL{-1e30};
+    const Field& m_vel;
+    const Field& m_rho;
+    Field& m_Nij;
+    Field& m_divNij;
 };
 
 } // namespace amr_wind::turbulence
