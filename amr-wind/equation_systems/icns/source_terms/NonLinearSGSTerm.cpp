@@ -8,11 +8,7 @@ namespace amr_wind::pde::icns {
 
 NonLinearSGSTerm::NonLinearSGSTerm(const CFDSim& sim)
     : m_divNij(sim.repo().get_field("divNij"))
-{
-  //if (!sim.physics_manager().contains("Actuator")) {
-  //     amrex::Abort("NonLinearSGSTerm requires Actuator physics to be active");
-  // }
-}
+{}
 
 NonLinearSGSTerm::~NonLinearSGSTerm() = default;
 
@@ -29,8 +25,10 @@ void NonLinearSGSTerm::operator()(
         src_term(i, j, k, 0) += varr(i, j, k, 0);
         src_term(i, j, k, 1) += varr(i, j, k, 1);
         src_term(i, j, k, 2) += varr(i, j, k, 2);
-	if(i==10 && j==10 && k==10)
-	  amrex::Print()<<"NL:"<<varr(i,j,k,0)<<"  "<<varr(i,j,k,1)<<"  "<<varr(i,j,k,2)<<std::endl;
+        /*if (i == 10 && j == 10 && k == 10)
+            amrex::Print() << "NL:" << varr(i, j, k, 0) << "  "
+                           << varr(i, j, k, 1) << "  " << varr(i, j, k, 2)
+                           << std::endl;*/
     });
 }
 

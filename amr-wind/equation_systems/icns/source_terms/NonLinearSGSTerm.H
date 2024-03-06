@@ -6,11 +6,11 @@
 
 namespace amr_wind::pde::icns {
 
-/** Body forces introduced by turbines modeled as actuators in flow field.
+/** Adds the non-linear terms from the Kosovic Model to Momentum Equation..
  *
- *  \ingroup icns_src actuator
+ *  \ingroup icns_src NonLinearSGS
  *
- *  \sa Acuator
+ *  \sa NonLinearSGS
  */
 class NonLinearSGSTerm : public MomentumSource::Register<NonLinearSGSTerm>
 {
@@ -34,4 +34,4 @@ private:
 
 } // namespace amr_wind::pde::icns
 
-#endif /* ACTUATORFORCING_H */
+#endif /* NONLINEARSGSTERM_H */
