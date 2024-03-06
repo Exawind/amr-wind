@@ -132,7 +132,7 @@ Often for simulations involving walls, (e.g., channel flows, complex terrains et
 .. toctree::
    :glob:
    :maxdepth: 2
-   
+
    mapping.rst
 
 Multiphase flow modelling
@@ -185,6 +185,36 @@ Using the perturbational form implies that the hydrostatic pressure is removed f
 - reframe in reference to the top boundary, and assume :math:`p(z = z_{max}) = 0`
    
 .. math:: p = p' - \int_z^{z_{max}} \rho_0 g dz + p(z = z_{max}) = p' - \int_z^{z_{max}} \rho_0 g dz
+
+
+Mesoscale Forcing
+~~~~~~~~~~~~~~~~~
+
+To incorporate larger-scale atmospheric dynamics under real conditions,
+`AMR-Wind` offers two approaches. If mesoscale momentum and/or temperature
+source terms are known exactly, e.g., from a numerical weather prediction (NWP)
+model, then these may be directly applied. These mesoscale source terms would
+come from the RHS of the mesoscale equations of motion and may also include the
+effects of additional modeled physics such as radiation or moisture. This
+mesoscale forcing approach is called the "tendencies" (or "mesoscale budget
+components") approach. For more information, see `Draxl et al. (BLM 2021)
+<https://doi.org/10.1007/s10546-020-00584-z>`_
+
+If the mesoscale source terms are not known a priori, they may be derived on
+the fly with a profile assimilation technique. This is an engineering approach
+that applies a proportional controller to drive the instantaneous planar
+averaged wind and/or temperature profiles towards known time--height data. This
+approach can be used with NWP model output or observational data. For more
+information, see `Allaerts et al. (BLM 2020)
+<https://doi.org/10.1007/s10546-020-00538-5>`_
+
+The application of these forcing approaches is detailed in:
+
+.. toctree::
+   :glob:
+   :maxdepth: 2
+   
+   ../user/inputs_ABL_meso_forcing.rst
 
 
 Turbulence Models
