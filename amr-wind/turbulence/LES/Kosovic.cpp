@@ -77,7 +77,7 @@ void Kosovic<Transport>::update_turbulent_viscosity(
         const amrex::Real locSwitchLoc = m_switchLoc;
         const amrex::Real locSurfaceRANSExp = m_surfaceRANSExp;
         const amrex::Real locSurfaceFactor = m_surfaceFactor;
-        const amrex::Ream locC1 = m_C1;
+        const amrex::Real locC1 = m_C1;
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
             const auto& mu_arr = mu_turb(lev).array(mfi);
