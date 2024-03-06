@@ -77,6 +77,7 @@ void Kosovic<Transport>::update_turbulent_viscosity(
         const amrex::Real locSwitchLoc = m_switchLoc;
         const amrex::Real locSurfaceRANSExp = m_surfaceRANSExp;
         const amrex::Real locSurfaceFactor = m_surfaceFactor;
+        const amrex::Ream locC1 = m_C1;
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
             const auto& mu_arr = mu_turb(lev).array(mfi);
@@ -103,9 +104,9 @@ void Kosovic<Transport>::update_turbulent_viscosity(
                     amrex::Real stressScale =
                         locSurfaceFactor *
                             (std::pow(1 - fmu, locSurfaceRANSExp) *
-                                 smag_factor * 0.25 * m_C1 +
+                                 smag_factor * 0.25 * locC1 +
                              std::pow(fmu, locSurfaceRANSExp) * ransL) +
-                        (1 - locSurfaceFactor) * smag_factor * 0.25 * m_C1;
+                        (1 - locSurfaceFactor) * smag_factor * 0.25 * locC1;
                     divNijLevel(i, j, k, 0) *= rho * stressScale * turnOff;
                     divNijLevel(i, j, k, 1) *= rho * stressScale * turnOff;
                     divNijLevel(i, j, k, 2) *= rho * stressScale * turnOff;
