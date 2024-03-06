@@ -72,7 +72,11 @@ void Kosovic<Transport>::update_turbulent_viscosity(
         const amrex::Real ds = std::cbrt(dx * dy * dz);
         const amrex::Real ds_sqr = ds * ds;
         const amrex::Real smag_factor = Cs_sqr * ds_sqr;
-
+	const amrex::Real locMOL=m_refMOL;
+	const amrex::Real locLESTurnOff=m_LESTurnOff;
+	const amrex::Real locSwitchLoc=m_switchLoc;
+	const amrex::Real locSurfaceRANSExp=m_surfaceRANSExp;
+	const amrex::Real locSurfaceFactor=m_surfaceFactor;
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
             const auto& mu_arr = mu_turb(lev).array(mfi);
@@ -82,25 +86,25 @@ void Kosovic<Transport>::update_turbulent_viscosity(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real rho = rho_arr(i, j, k);
                     const amrex::Real x3 = problo[2] + (k + 0.5) * dz;
-                    const amrex::Real fmu = std::exp(-x3 / m_switchLoc);
+                    const amrex::Real fmu = std::exp(-x3 / locSwitchLoc);
                     const amrex::Real phiM =
-                        (m_refMOL < 0) ? std::pow(1 - 16 * x3 / m_refMOL, -0.25)
-                                       : 1 + 5 * x3 / m_refMOL;
+                        (locMOL < 0) ? std::pow(1 - 16 * x3 / locMOL, -0.25)
+                                       : 1 + 5 * x3 / locMOL;
                     const amrex::Real ransL =
                         std::pow(0.41 * (k + 1) * dz / phiM, 2);
-                    amrex::Real turnOff = std::exp(-x3 / m_LESTurnOff);
+                    amrex::Real turnOff = std::exp(-x3 / locLESTurnOff);
                     amrex::Real viscosityScale =
-                        m_surfaceFactor *
-                            (std::pow(1 - fmu, m_surfaceRANSExp) * smag_factor +
-                             std::pow(fmu, m_surfaceRANSExp) * ransL) +
-                        (1 - m_surfaceFactor) * smag_factor;
+                        locSurfaceFactor *
+                            (std::pow(1 - fmu, locSurfaceRANSExp) * smag_factor +
+                             std::pow(fmu, locSurfaceRANSExp) * ransL) +
+                        (1 - locSurfaceFactor) * smag_factor;
                     mu_arr(i, j, k) *= rho * viscosityScale * turnOff;
                     amrex::Real stressScale =
-                        m_surfaceFactor *
-                            (std::pow(1 - fmu, m_surfaceRANSExp) * smag_factor *
+                        locSurfaceFactor *
+                            (std::pow(1 - fmu, locSurfaceRANSExp) * smag_factor *
                                  0.25 * m_C1 +
-                             std::pow(fmu, m_surfaceRANSExp) * ransL) +
-                        (1 - m_surfaceFactor) * smag_factor * 0.25 * m_C1;
+                             std::pow(fmu, locSurfaceRANSExp) * ransL) +
+                        (1 - locSurfaceFactor) * smag_factor * 0.25 * m_C1;
                     divNijLevel(i, j, k, 0) *= rho * stressScale * turnOff;
                     divNijLevel(i, j, k, 1) *= rho * stressScale * turnOff;
                     divNijLevel(i, j, k, 2) *= rho * stressScale * turnOff;
