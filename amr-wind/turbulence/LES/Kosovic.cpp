@@ -72,11 +72,11 @@ void Kosovic<Transport>::update_turbulent_viscosity(
         const amrex::Real ds = std::cbrt(dx * dy * dz);
         const amrex::Real ds_sqr = ds * ds;
         const amrex::Real smag_factor = Cs_sqr * ds_sqr;
-	const amrex::Real locMOL=m_refMOL;
-	const amrex::Real locLESTurnOff=m_LESTurnOff;
-	const amrex::Real locSwitchLoc=m_switchLoc;
-	const amrex::Real locSurfaceRANSExp=m_surfaceRANSExp;
-	const amrex::Real locSurfaceFactor=m_surfaceFactor;
+        const amrex::Real locMOL = m_refMOL;
+        const amrex::Real locLESTurnOff = m_LESTurnOff;
+        const amrex::Real locSwitchLoc = m_switchLoc;
+        const amrex::Real locSurfaceRANSExp = m_surfaceRANSExp;
+        const amrex::Real locSurfaceFactor = m_surfaceFactor;
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
             const auto& mu_arr = mu_turb(lev).array(mfi);
@@ -89,20 +89,21 @@ void Kosovic<Transport>::update_turbulent_viscosity(
                     const amrex::Real fmu = std::exp(-x3 / locSwitchLoc);
                     const amrex::Real phiM =
                         (locMOL < 0) ? std::pow(1 - 16 * x3 / locMOL, -0.25)
-                                       : 1 + 5 * x3 / locMOL;
+                                     : 1 + 5 * x3 / locMOL;
                     const amrex::Real ransL =
                         std::pow(0.41 * (k + 1) * dz / phiM, 2);
                     amrex::Real turnOff = std::exp(-x3 / locLESTurnOff);
                     amrex::Real viscosityScale =
                         locSurfaceFactor *
-                            (std::pow(1 - fmu, locSurfaceRANSExp) * smag_factor +
+                            (std::pow(1 - fmu, locSurfaceRANSExp) *
+                                 smag_factor +
                              std::pow(fmu, locSurfaceRANSExp) * ransL) +
                         (1 - locSurfaceFactor) * smag_factor;
                     mu_arr(i, j, k) *= rho * viscosityScale * turnOff;
                     amrex::Real stressScale =
                         locSurfaceFactor *
-                            (std::pow(1 - fmu, locSurfaceRANSExp) * smag_factor *
-                                 0.25 * m_C1 +
+                            (std::pow(1 - fmu, locSurfaceRANSExp) *
+                                 smag_factor * 0.25 * m_C1 +
                              std::pow(fmu, locSurfaceRANSExp) * ransL) +
                         (1 - locSurfaceFactor) * smag_factor * 0.25 * m_C1;
                     divNijLevel(i, j, k, 0) *= rho * stressScale * turnOff;
