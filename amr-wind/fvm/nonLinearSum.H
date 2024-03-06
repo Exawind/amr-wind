@@ -80,25 +80,52 @@ struct nonLinearSum
                     2.0 * std::pow(ux, 2) + 2.0 * std::pow(vy, 2) +
                     2.0 * std::pow(wz, 2) + std::pow(uy + vx, 2) +
                     std::pow(vz + wy, 2) + std::pow(wx + uz, 2));*/
-		
-		// N11
-		strphi(i,j,k,0)=(ux*ux+uy*vx+uz*wx)-(ux*ux+uy*uy+uz*uz)+3*(ux*ux+vx*vx+wx*wx)+(ux*ux+vx*uy+wx*uz);
-		// N12
-		strphi(i,j,k,1)=(ux*uy+uy*vy+uz*wy)-(ux*vx+uy*vy+uz*vz)+3*(ux*uy+vx*vy+wx*wy)+(ux*vx+vx*vy+wx*vz);
-		// N13
-		strphi(i,j,k,2)=(ux*uz+uy*vz+uz*wz)-(ux*wx+uy*wy+uz*wz)+3*(ux*uz+vx*vz+wx*wz)+(ux*wx+vx*wy+wx*wz);
-		// N21
-		strphi(i,j,k,3)=(vx*ux+vy*vx+vz*wx)-(vx*ux+vy*uy+vz*uz)+3*(uy*ux+vy*vx+wy*wx)+(uy*ux+vy*uy+wy*uz);
-		// N22 
-		strphi(i,j,k,4)=(vx*uy+vy*vy+vz*wy)-(vx*vx+vy*vy+vz*vz)+3*(uy*vx+vy*vy+wy*wy)+(uy*vx+vy*vy+wy*vz);
-		// N23 
-		strphi(i,j,k,5)=(vx*uz+vy*vz+vz*wz)-(vx*wx+vy*wy+vz*wz)+3*(uy*wx+vy*vz+wy*wz)+(uy*wx+vy*wy+wy*wz);
-		// N31
-		strphi(i,j,k,6)=(wx*ux+wy*vx+wz*wx)-(wx*ux+wy*uy+wz*uz)+3*(uz*ux+vz*vx+wz*wx)+(uz*ux+vz*uy+wz*uz);
-		// N32
-		strphi(i,j,k,7)=(wx*uy+wy*vy+wz*wy)-(wx*vx+wy*vy+wz*vz)+3*(uz*uy+vz*vy+wz*wy)+(uz*vx+vz*vy+wz*vz);
-		// N33
-		strphi(i,j,k,8)=(wx*uz+wy*vz+wz*wz)-(wx*wx+wy*wy+wz*wz)+3*(uz*uz+vz*vz+wz*wz)+(uz*wx+vz*wy+wz*wz);
+
+                // N11
+                strphi(i, j, k, 0) = (ux * ux + uy * vx + uz * wx) -
+                                     (ux * ux + uy * uy + uz * uz) +
+                                     3 * (ux * ux + vx * vx + wx * wx) +
+                                     (ux * ux + vx * uy + wx * uz);
+                // N12
+                strphi(i, j, k, 1) = (ux * uy + uy * vy + uz * wy) -
+                                     (ux * vx + uy * vy + uz * vz) +
+                                     3 * (ux * uy + vx * vy + wx * wy) +
+                                     (ux * vx + vx * vy + wx * vz);
+                // N13
+                strphi(i, j, k, 2) = (ux * uz + uy * vz + uz * wz) -
+                                     (ux * wx + uy * wy + uz * wz) +
+                                     3 * (ux * uz + vx * vz + wx * wz) +
+                                     (ux * wx + vx * wy + wx * wz);
+                // N21
+                strphi(i, j, k, 3) = (vx * ux + vy * vx + vz * wx) -
+                                     (vx * ux + vy * uy + vz * uz) +
+                                     3 * (uy * ux + vy * vx + wy * wx) +
+                                     (uy * ux + vy * uy + wy * uz);
+                // N22
+                strphi(i, j, k, 4) = (vx * uy + vy * vy + vz * wy) -
+                                     (vx * vx + vy * vy + vz * vz) +
+                                     3 * (uy * vx + vy * vy + wy * wy) +
+                                     (uy * vx + vy * vy + wy * vz);
+                // N23
+                strphi(i, j, k, 5) = (vx * uz + vy * vz + vz * wz) -
+                                     (vx * wx + vy * wy + vz * wz) +
+                                     3 * (uy * wx + vy * vz + wy * wz) +
+                                     (uy * wx + vy * wy + wy * wz);
+                // N31
+                strphi(i, j, k, 6) = (wx * ux + wy * vx + wz * wx) -
+                                     (wx * ux + wy * uy + wz * uz) +
+                                     3 * (uz * ux + vz * vx + wz * wx) +
+                                     (uz * ux + vz * uy + wz * uz);
+                // N32
+                strphi(i, j, k, 7) = (wx * uy + wy * vy + wz * wy) -
+                                     (wx * vx + wy * vy + wz * vz) +
+                                     3 * (uz * uy + vz * vy + wz * wy) +
+                                     (uz * vx + vz * vy + wz * vz);
+                // N33
+                strphi(i, j, k, 8) = (wx * uz + wy * vz + wz * wz) -
+                                     (wx * wx + wy * wy + wz * wz) +
+                                     3 * (uz * uz + vz * vz + wz * wz) +
+                                     (uz * wx + vz * wy + wz * wz);
             });
     }
 
