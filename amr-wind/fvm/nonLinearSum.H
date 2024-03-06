@@ -5,13 +5,13 @@
 
 namespace amr_wind::fvm {
 
-/** Strain rate operator
+/** Non-linear Term for Kosovic Model
  *  \ingroup fvm
  */
 template <typename FTypeIn, typename FTypeOut>
-struct nonLinearSum
+struct NonLinearSum
 {
-    nonLinearSum(FTypeOut& strphi, const FTypeIn& phi)
+    NonLinearSum(FTypeOut& strphi, const FTypeIn& phi)
         : m_strphi(strphi), m_phi(phi)
     {
         AMREX_ALWAYS_ASSERT(AMREX_SPACEDIM == m_phi.num_comp());
@@ -76,11 +76,6 @@ struct nonLinearSum
                       cm1 * phi(i, j, k - 1, 2)) *
                      idx[2];
 
-                /*strphi(i, j, k) = sqrt(
-                    2.0 * std::pow(ux, 2) + 2.0 * std::pow(vy, 2) +
-                    2.0 * std::pow(wz, 2) + std::pow(uy + vx, 2) +
-                    std::pow(vz + wy, 2) + std::pow(wx + uz, 2));*/
-
                 // N11
                 strphi(i, j, k, 0) = (ux * ux + uy * vx + uz * wx) -
                                      (ux * ux + uy * uy + uz * uz) +
@@ -133,24 +128,24 @@ struct nonLinearSum
     const FTypeIn& m_phi;
 };
 
-/** Compute the magnitude of strain rate
+/** Compute the non-linear term for the Kosovic Sub-grid scale model
  *  \ingroup fvm
  *
- *  \param strphi [out] Field where the strain rate magnitude is populated
- *  \param phi [in] The velocity vector field
+ *  \param strphi [out] Field where the non-linear terms is populated
+ *  \param phi [in] The stress tensor  field
  */
 template <typename FTypeIn, typename FTypeOut>
 inline void nonlinearsum(FTypeOut& strphi, const FTypeIn& phi)
 {
-    BL_PROFILE("amr-wind::fvm::strainrate");
-    nonLinearSum<FTypeIn, FTypeOut> str(strphi, phi);
+    BL_PROFILE("amr-wind::fvm::nonlinearsum");
+    NonLinearSum<FTypeIn, FTypeOut> str(strphi, phi);
     impl::apply(str, phi);
 }
 
-/** Compute the magnitude of strain rate return as a ScratchField
+/** Compute the non-linear term as a ScratchField
  *  \ingroup fvm
  *
- *  \param phi [in] The velocity vector field
+ *  \param phi [in] The stress tensor  field
  */
 template <typename FType>
 inline std::unique_ptr<ScratchField> nonlinearsum(const FType& phi)
@@ -163,4 +158,4 @@ inline std::unique_ptr<ScratchField> nonlinearsum(const FType& phi)
 
 } // namespace amr_wind::fvm
 
-#endif /* STRAINRATE_H */
+#endif /* NONLINEARSUM_H */
