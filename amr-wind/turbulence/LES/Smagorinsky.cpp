@@ -7,6 +7,8 @@
 #include "AMReX_MultiFab.H"
 #include "AMReX_ParmParse.H"
 #include "amr-wind/equation_systems/vof/volume_fractions.H"
+#include "amr-wind/fvm/filter_harmonic.H"
+#include "amr-wind/fvm/gradient.H"
 
 namespace amr_wind {
 namespace turbulence {
@@ -33,15 +35,17 @@ void Smagorinsky<Transport>::update_turbulent_viscosity(
     const auto& geom_vec = repo.mesh().Geom();
     const amrex::Real Cs_sqr = this->m_Cs * this->m_Cs;
 
+    auto gradvof = (this->m_sim.repo()).create_scratch_field(3, 0);
+    auto vofgradmag = (this->m_sim.repo()).create_scratch_field(1, 0);
+
     const bool is_vof = this->m_sim.repo().field_exists("vof");
     amrex::Real rho_min = 1e9;
 
     const auto& vof = this->m_sim.repo().get_field("vof");
     if (is_vof) {
         rho_min = amr_wind::field_ops::global_min_magnitude(m_rho);
+        fvm::gradient(*gradvof, vof);
     }
-
-    // const auto& vof_arr = (*m_vof)(lev).const_array(mfi);
 
     // Populate strainrate into the turbulent viscosity arrays to avoid creating
     // a temporary buffer
@@ -62,21 +66,25 @@ void Smagorinsky<Transport>::update_turbulent_viscosity(
             const auto& bx = mfi.tilebox();
             const auto& mu_arr = mu_turb(lev).array(mfi);
             const auto& rho_arr = den(lev).const_array(mfi);
-
             const auto& vof_arr = vof(lev).const_array(mfi);
+            const auto& gradvof_arr = (*gradvof)(lev).const_array(mfi);
 
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     amrex::Real rho;
+                    rho = rho_arr(i, j, k);
 
-                    const bool is_air = vof_arr(i, j, k) < 1.;
-                    //
+                    // Only use the minimum density whenever there a mix.
+                    // This is done to ensure that the viscosity will not be
+                    // artificially increased
                     if (is_vof) {
-                        rho = amrex::min(rho_arr(i, j, k), rho_min);
-                    } else {
-                        rho = rho_arr(i, j, k);
+                        if (vof_arr(i, j, k) < 1 ||
+                            (std::pow(gradvof_arr(i, j, k, 0), 2) +
+                             std::pow(gradvof_arr(i, j, k, 1), 2) +
+                             std::pow(gradvof_arr(i, j, k, 2), 2)) > 1e-12) {
+                            rho = rho_min;
+                        }
                     }
-
                     mu_arr(i, j, k) *= rho * smag_factor;
                 });
         }
