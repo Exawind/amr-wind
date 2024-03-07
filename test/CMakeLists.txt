@@ -249,6 +249,8 @@ if(AMR_WIND_ENABLE_NETCDF)
   add_test_re(abl_bndry_output)
   add_test_re(abl_bndry_output_amr_inflow)
   add_test_re(abl_virtual_lidar)
+  add_test_re(abl_meso_input_dpa)
+  add_test_re(abl_meso_input_ipa)
 endif()
 
 if(AMR_WIND_ENABLE_MASA)
