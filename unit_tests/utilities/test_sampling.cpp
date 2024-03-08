@@ -386,13 +386,10 @@ TEST_F(SamplingTest, sampling_utils)
     vs::Vector unity{0.0, 1.0, 0.0};
     vs::Vector unitz{0.0, 0.0, 1.0};
     vs::Vector nunitx{-1.0, 0.0, 0.0};
-    vs::Vector nunity{0.0, -1.0, 0.0};
-    vs::Vector nunitz{0.0, 0.0, -1.0};
     vs::Vector ffn{-0.70710678, -0.70710678, 0.0};
     vs::Vector ffnr{-0.70710678, 0.70710678, 0.0};
     vs::Vector result;
     vs::Vector angles{0.0, 180.0, 0.0};
-    vs::Tensor tresult;
 
     result = amr_wind::sampling::sampling_utils::reflect(unity, ffn);
     EXPECT_NEAR(result[0], ffnr[0], toler);
