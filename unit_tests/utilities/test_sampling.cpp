@@ -408,4 +408,26 @@ TEST_F(SamplingTest, sampling_utils)
     EXPECT_NEAR(result[2], unitz[2], toler);
 }
 
+TEST_F(SamplingTest, quadrature)
+{
+    double toler = 1e-12;
+    namespace vs = amr_wind::vs;
+    namespace su = amr_wind::sampling::sampling_utils;
+    int ntheta = 5;
+    double gammav = 0.25 * M_PI / 180.0;
+    std::vector<double> weights = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                   0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                   0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    vs::Vector sr{0.0, 0.0, 1.0};
+    std::vector<vs::Vector> rays = {sr, sr, sr, sr, sr, sr, sr, sr, sr, sr, sr,
+                                    sr, sr, sr, sr, sr, sr, sr, sr, sr, sr};
+
+    su::spherical_cap_truncated_normal(
+        gammav, ntheta, su::NormalRule::HALFPOWER, rays, weights);
+
+    EXPECT_NEAR(weights[0], 1.1826123083219489e-05, toler);
+    EXPECT_NEAR(weights[10], 3.004263660003298e-06, toler);
+    EXPECT_NEAR(weights[20], 6.6402168628164281e-07, toler);
+}
+
 } // namespace amr_wind_tests
