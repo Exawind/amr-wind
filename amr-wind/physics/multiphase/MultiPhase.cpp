@@ -568,7 +568,7 @@ void MultiPhase::levelset2vof(IntField& iblank_cell, ScratchField& vof_scr)
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     // Neumann of levelset across iblank boundaries
-                    int ibdy = 0;
+                    /*int ibdy = 0;
                     int jbdy = 0;
                     int kbdy = 0;
                     if (iblank(i, j, k) != iblank(i - 1, j, k)) {
@@ -580,20 +580,32 @@ void MultiPhase::levelset2vof(IntField& iblank_cell, ScratchField& vof_scr)
                     if (iblank(i, j, k) != iblank(i, j, k - 1)) {
                         kbdy = -1;
                     }
-                    // no cell should be isolated such that -1 and 1 are
-                    // needed
                     if (iblank(i, j, k) != iblank(i + 1, j, k)) {
-                        ibdy = +1;
+                        if (ibdy == -1) {
+                            ibdy = +2;
+                        } else {
+                            ibdy = +1;
+                        }
                     }
                     if (iblank(i, j, k) != iblank(i, j + 1, k)) {
-                        jbdy = +1;
+                        if (jbdy == -1) {
+                            jbdy = +2;
+                        } else {
+                            jbdy = +1;
+                        }
                     }
                     if (iblank(i, j, k) != iblank(i, j, k + 1)) {
-                        kbdy = +1;
-                    }
+                        if (kbdy == -1) {
+                            kbdy = +2;
+                        } else {
+                            kbdy = +1;
+                        }
+                    }*/
                     amrex::Real mx, my, mz;
-                    multiphase::youngs_fd_normal_neumann(
-                        i, j, k, ibdy, jbdy, kbdy, phi, mx, my, mz);
+                    /*multiphase::youngs_fd_normal_neumann(
+                        i, j, k, ibdy, jbdy, kbdy, phi, mx, my, mz);*/
+                    multiphase::youngs_fd_normal_extrap(
+                        i, j, k, phi, iblank, mx, my, mz);
                     mx = std::abs(mx / 32.);
                     my = std::abs(my / 32.);
                     mz = std::abs(mz / 32.);

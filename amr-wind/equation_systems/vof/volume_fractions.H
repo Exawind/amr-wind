@@ -16,6 +16,236 @@ namespace amr_wind::multiphase {
  *  to zero.
  */
 
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void estimates(
+    amrex::Real& est1,
+    amrex::Real& est2,
+    amrex::Real& est3,
+    amrex::Real& est4,
+    const amrex::Real vof,
+    const amrex::Real vof1a,
+    const amrex::Real vof1b,
+    const amrex::Real vof2a,
+    const amrex::Real vof2b,
+    const amrex::Real vof3,
+    const amrex::Real vof4)
+{
+    est1 = 2.0 * vof1a - vof1b;
+    est2 = 2.0 * vof2a - vof2b;
+    est3 = 2.0 * vof - vof3;
+    est4 = 2.0 * vof - vof4;
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real estimate_weights(
+    amrex::Real& wt1,
+    amrex::Real& wt2,
+    amrex::Real& wt3,
+    amrex::Real& wt4,
+    const int ibl1a,
+    const int ibl1b,
+    const int ibl2a,
+    const int ibl2b,
+    const int ibl3,
+    const int ibl4)
+{
+    if (ibl1a == -1 && ibl1b == -1) {
+        wt1 = 1.0;
+    }
+    if (ibl2a == -1 && ibl2b == -1) {
+        wt2 = 1.0;
+    }
+    wt1 = wt1 / (wt1 + wt2 + 1e-12);
+    wt2 = wt2 / (wt1 + wt2 + 1e-12);
+    if (wt1 + wt2 < 1e-12) {
+        if (ibl3 == -1) {
+            wt3 = 1.0;
+        }
+        if (ibl4 == -1) {
+            wt4 = 1.0;
+        }
+        wt3 = wt3 / (wt3 + wt4 + 1e-12);
+        wt4 = wt4 / (wt3 + wt4 + 1e-12);
+        if (wt3 + wt4 < 1e-12) {
+            // additional weight is 1 because others are 0
+            return 1.0;
+        } else {
+            // additional weight is 0
+            return 0.0;
+        }
+    }
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real central_corner(
+    int i,
+    int j,
+    int k,
+    int ii,
+    int jj,
+    int kk,
+    amrex::Array4<amrex::Real const> const& volfrac,
+    amrex::Array4<int const> const& iblank) noexcept
+{
+    // Get index offsets
+    const int n0i = ii - i;
+    const int n1i = 0;
+    // Populate n0j if n0i is empty
+    const int n0j = (n0i == 0) ? jj - j : 0;
+    // Populate n1j if n0i and n0j are empty
+    const int n1j = (n0i == 0 && n0j == 0) ? jj - j : 0;
+    // There will always be another index, so n0k will always be 0
+    const int n0k = 0;
+    // Will always be second index or no offset for n1k
+    const int n1k = kk - k;
+    // Separate offsets
+    amrex::Real est = volfrac(i, j, k);
+    amrex::Real est1 = 0.0, est2 = 0.0, est3 = 0.0, est4 = 0.0;
+    estimates(
+        est1, est2, est3, est4, volfrac(i, j, k),
+        volfrac(ii - n0i, jj - n0j, kk - n0k),
+        volfrac(ii - 2 * n0i, jj - 2 * n0j, kk - 2 * n0k),
+        volfrac(ii - n1i, jj - n1j, kk - n1k),
+        volfrac(ii - 2 * n1i, j - 2 * n1j, k - 2 * n1k),
+        volfrac(i - n0i, j - n0j, k - n0k), volfrac(i - n1i, j - n1j, k - n1k));
+    amrex::Real wt1 = 0.0, wt2 = 0.0, wt3 = 0.0, wt4 = 0.0;
+    amrex::Real wt = estimate_weights(
+        wt1, wt2, wt3, wt4, volfrac(ii - n0i, jj - n0j, kk - n0k),
+        volfrac(ii - 2 * n0i, jj - 2 * n0j, kk - 2 * n0k),
+        volfrac(ii - n1i, jj - n1j, kk - n1k),
+        volfrac(ii - 2 * n1i, j - 2 * n1j, k - 2 * n1k),
+        volfrac(i - n0i, j - n0j, k - n0k), volfrac(i - n1i, j - n1j, k - n1k));
+
+    // Output combination of estimates
+    return wt1 * est1 + wt2 * est2 + wt3 * est3 + wt4 * est4 + wt * est;
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void estimates(
+    amrex::Real& est1,
+    amrex::Real& est2,
+    amrex::Real& est3,
+    amrex::Real& est4,
+    amrex::Real& est5,
+    amrex::Real& est6,
+    const amrex::Real vof,
+    const amrex::Real vof1a,
+    const amrex::Real vof1b,
+    const amrex::Real vof2a,
+    const amrex::Real vof2b,
+    const amrex::Real vof3a,
+    const amrex::Real vof3b,
+    const amrex::Real vof4,
+    const amrex::Real vof5,
+    const amrex::Real vof6)
+{
+    est1 = 2.0 * vof1a - vof1b;
+    est2 = 2.0 * vof2a - vof2b;
+    est3 = 2.0 * vof3a - vof3b;
+    est4 = 2.0 * vof - vof4;
+    est5 = 2.0 * vof - vof5;
+    est6 = 2.0 * vof - vof6;
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real estimate_weights(
+    amrex::Real& wt1,
+    amrex::Real& wt2,
+    amrex::Real& wt3,
+    amrex::Real& wt4,
+    amrex::Real& wt5,
+    amrex::Real& wt6,
+    const int ibl1a,
+    const int ibl1b,
+    const int ibl2a,
+    const int ibl2b,
+    const int ibl3a,
+    const int ibl3b,
+    const int ibl4,
+    const int ibl5,
+    const int ibl6)
+{
+    if (ibl1a == -1 && ibl1b == -1) {
+        wt1 = 1.0;
+    }
+    if (ibl2a == -1 && ibl2b == -1) {
+        wt2 = 1.0;
+    }
+    if (ibl3a == -1 && ibl3b == -1) {
+        wt3 = 1.0;
+    }
+    wt1 = wt1 / (wt1 + wt2 + wt3 + 1e-12);
+    wt2 = wt2 / (wt1 + wt2 + wt3 + 1e-12);
+    wt3 = wt3 / (wt1 + wt2 + wt3 + 1e-12);
+    if (wt1 + wt2 + wt3 < 1e-12) {
+        if (ibl4 == -1) {
+            wt4 = 1.0;
+        }
+        if (ibl5 == -1) {
+            wt5 = 1.0;
+        }
+        if (ibl6 == -1) {
+            wt6 = 1.0;
+        }
+        wt4 = wt4 / (wt4 + wt5 + wt6 + 1e-12);
+        wt5 = wt5 / (wt4 + wt5 + wt6 + 1e-12);
+        wt6 = wt6 / (wt4 + wt5 + wt6 + 1e-12);
+        if (wt4 + wt5 + wt6 < 1e-12) {
+            // additional weight is 1 because others are 0
+            return 1.0;
+        } else {
+            // additional weight is 0
+            return 0.0;
+        }
+    }
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real corner_corner(
+    int i,
+    int j,
+    int k,
+    int ii,
+    int jj,
+    int kk,
+    amrex::Array4<amrex::Real const> const& volfrac,
+    amrex::Array4<int const> const& iblank) noexcept
+{
+    // Get index offsets
+    const int n0i = ii - i;
+    const int n1i = 0;
+    const int n2i = 0;
+    const int n0j = 0;
+    const int n1j = jj - j;
+    const int n2j = 0;
+    const int n0k = 0;
+    const int n1k = 0;
+    const int n2k = kk - k;
+    // Separate offsets
+    amrex::Real est = volfrac(i, j, k);
+    amrex::Real est1 = 0.0, est2 = 0.0, est3 = 0.0, est4 = 0.0, est5 = 0.0,
+                est6 = 0.0;
+    estimates(
+        est1, est2, est3, est4, est5, est6, volfrac(i, j, k),
+        volfrac(ii - n0i, jj - n0j, kk - n0k),
+        volfrac(ii - 2 * n0i, jj - 2 * n0j, kk - 2 * n0k),
+        volfrac(ii - n1i, jj - n1j, kk - n1k),
+        volfrac(ii - 2 * n1i, j - 2 * n1j, k - 2 * n1k),
+        volfrac(ii - n2i, jj - n2j, kk - n2k),
+        volfrac(ii - 2 * n2i, j - 2 * n2j, k - 2 * n2k),
+        volfrac(i - n0i, j - n0j, k - n0k), volfrac(i - n1i, j - n1j, k - n1k),
+        volfrac(i - n2i, j - n2j, k - n2k));
+    amrex::Real wt1 = 0.0, wt2 = 0.0, wt3 = 0.0, wt4 = 0.0, wt5 = 0.0,
+                wt6 = 0.0;
+    amrex::Real wt = estimate_weights(
+        wt1, wt2, wt3, wt4, wt5, wt6, volfrac(ii - n0i, jj - n0j, kk - n0k),
+        volfrac(ii - 2 * n0i, jj - 2 * n0j, kk - 2 * n0k),
+        volfrac(ii - n1i, jj - n1j, kk - n1k),
+        volfrac(ii - 2 * n1i, j - 2 * n1j, k - 2 * n1k),
+        volfrac(ii - n2i, jj - n2j, kk - n2k),
+        volfrac(ii - 2 * n2i, j - 2 * n2j, k - 2 * n2k),
+        volfrac(i - n0i, j - n0j, k - n0k), volfrac(i - n1i, j - n1j, k - n1k),
+        volfrac(i - n2i, j - n2j, k - n2k));
+
+    // Output combination of estimates
+    return wt1 * est1 + wt2 * est2 + wt3 * est3 + wt4 * est4 + wt5 * est5 +
+           wt6 * est6 + wt * est;
+}
+
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_fd_normal(
     int i,
     int j,
@@ -120,6 +350,176 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_fd_normal_neumann(
           2.0 * (volfrac(im1, j, kp1) + volfrac(ip1, j, kp1) +
                  volfrac(i, jm1, kp1) + volfrac(i, jp1, kp1)) +
           4.0 * volfrac(i, j, kp1);
+    mz = mm1 - mm2;
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_fd_normal_extrap(
+    int i,
+    int j,
+    int k,
+    amrex::Array4<amrex::Real const> const& volfrac,
+    amrex::Array4<int const> const& iblank,
+    amrex::Real& mx,
+    amrex::Real& my,
+    amrex::Real& mz) noexcept
+{
+    amrex::Real mm1, mm2;
+
+    // Default values of volfrac in 27-cell stencil:
+    amrex::Real vof000 = volfrac(i - 1, j - 1, k - 1);
+    amrex::Real vof100 = volfrac(i, j - 1, k - 1);
+    amrex::Real vof010 = volfrac(i - 1, j, k - 1);
+    amrex::Real vof001 = volfrac(i - 1, j - 1, k);
+    amrex::Real vof110 = volfrac(i, j, k - 1);
+    amrex::Real vof101 = volfrac(i, j - 1, k);
+    amrex::Real vof011 = volfrac(i - 1, j, k);
+    amrex::Real vof111 = volfrac(i, j, k);
+    amrex::Real vof200 = volfrac(i + 1, j - 1, k - 1);
+    amrex::Real vof020 = volfrac(i - 1, j + 1, k - 1);
+    amrex::Real vof002 = volfrac(i - 1, j - 1, k + 1);
+    amrex::Real vof220 = volfrac(i + 1, j + 1, k - 1);
+    amrex::Real vof202 = volfrac(i + 1, j - 1, k + 1);
+    amrex::Real vof022 = volfrac(i - 1, j + 1, k + 1);
+    amrex::Real vof222 = volfrac(i + 1, j + 1, k + 1);
+    amrex::Real vof211 = volfrac(i + 1, j, k);
+    amrex::Real vof121 = volfrac(i, j + 1, k);
+    amrex::Real vof112 = volfrac(i, j, k + 1);
+    amrex::Real vof122 = volfrac(i, j + 1, k + 1);
+    amrex::Real vof212 = volfrac(i + 1, j, k + 1);
+    amrex::Real vof221 = volfrac(i + 1, j + 1, k);
+    amrex::Real vof012 = volfrac(i - 1, j, k + 1);
+    amrex::Real vof021 = volfrac(i - 1, j + 1, k);
+    amrex::Real vof120 = volfrac(i, j + 1, k - 1);
+    amrex::Real vof102 = volfrac(i, j - 1, k + 1);
+    amrex::Real vof210 = volfrac(i + 1, j, k - 1);
+    amrex::Real vof201 = volfrac(i + 1, j - 1, k);
+
+    // Use logic to extrapolate stencil members from overset data
+    if (iblank(i, j, k) == -1) {
+        // Only care about overset data
+        // Only extrapolate from overset data
+        if (iblank(i + 1, j, k) == 1 && iblank(i - 1, j, k) == -1) {
+            vof211 =
+                volfrac(i, j, k) + (volfrac(i, j, k) - volfrac(i - 1, j, k));
+        }
+        if (iblank(i - 1, j, k) == 1 && iblank(i + 1, j, k) == -1) {
+            vof011 =
+                volfrac(i, j, k) - (volfrac(i + 1, j, k) - volfrac(i, j, k));
+        }
+        if (iblank(i, j + 1, k) == 1 && iblank(i, j - 1, k) == -1) {
+            vof121 =
+                volfrac(i, j, k) + (volfrac(i, j, k) - volfrac(i, j - 1, k));
+        }
+        if (iblank(i, j - 1, k) == 1 && iblank(i, j + 1, k) == -1) {
+            vof101 =
+                volfrac(i, j, k) - (volfrac(i, j, k) - volfrac(i, j + 1, k));
+        }
+        if (iblank(i, j, k + 1) == 1 && iblank(i, j, k - 1) == -1) {
+            vof112 =
+                volfrac(i, j, k) + (volfrac(i, j, k) - volfrac(i, j, k - 1));
+        }
+        if (iblank(i, j, k - 1) == 1 && iblank(i, j, k + 1) == -1) {
+            vof110 =
+                volfrac(i, j, k) - (volfrac(i, j, k) - volfrac(i, j, k + 1));
+        }
+        int ii = i - 1, jj = j - 1, kk = k;
+        if (iblank(ii, jj, kk) == 1) {
+            vof001 = central_corner(i, j, k, ii, jj, kk, volfrac, iblank);
+        }
+        ii = i + 1, jj = j - 1, kk = k;
+        if (iblank(ii, jj, kk) == 1) {
+            vof201 = central_corner(i, j, k, ii, jj, kk, volfrac, iblank);
+        }
+        ii = i - 1, jj = j + 1, kk = k;
+        if (iblank(ii, jj, kk) == 1) {
+            vof021 = central_corner(i, j, k, ii, jj, kk, volfrac, iblank);
+        }
+        ii = i + 1, jj = j + 1, kk = k;
+        if (iblank(ii, jj, kk) == 1) {
+            vof221 = central_corner(i, j, k, ii, jj, kk, volfrac, iblank);
+        }
+        ii = i, jj = j - 1, kk = k - 1;
+        if (iblank(ii, jj, kk) == 1) {
+            vof100 = central_corner(i, j, k, ii, jj, kk, volfrac, iblank);
+        }
+        ii = i, jj = j - 1, kk = k + 1;
+        if (iblank(ii, jj, kk) == 1) {
+            vof102 = central_corner(i, j, k, ii, jj, kk, volfrac, iblank);
+        }
+        ii = i, jj = j + 1, kk = k - 1;
+        if (iblank(ii, jj, kk) == 1) {
+            vof120 = central_corner(i, j, k, ii, jj, kk, volfrac, iblank);
+        }
+        ii = i, jj = j + 1, kk = k + 1;
+        if (iblank(ii, jj, kk) == 1) {
+            vof122 = central_corner(i, j, k, ii, jj, kk, volfrac, iblank);
+        }
+        ii = i - 1, jj = j, kk = k - 1;
+        if (iblank(ii, jj, kk) == 1) {
+            vof010 = central_corner(i, j, k, ii, jj, kk, volfrac, iblank);
+        }
+        ii = i + 1, jj = j, kk = k - 1;
+        if (iblank(ii, jj, kk) == 1) {
+            vof210 = central_corner(i, j, k, ii, jj, kk, volfrac, iblank);
+        }
+        ii = i - 1, jj = j, kk = k + 1;
+        if (iblank(ii, jj, kk) == 1) {
+            vof012 = central_corner(i, j, k, ii, jj, kk, volfrac, iblank);
+        }
+        ii = i + 1, jj = j, kk = k + 1;
+        if (iblank(ii, jj, kk) == 1) {
+            vof212 = central_corner(i, j, k, ii, jj, kk, volfrac, iblank);
+        }
+        ii = i - 1, jj = j - 1, kk = k - 1;
+        if (iblank(ii, jj, kk) == 1) {
+            vof000 = corner_corner(i, j, k, ii, jj, kk, volfrac, iblank);
+        }
+        ii = i + 1, jj = j - 1, kk = k - 1;
+        if (iblank(ii, jj, kk) == 1) {
+            vof200 = corner_corner(i, j, k, ii, jj, kk, volfrac, iblank);
+        }
+        ii = i - 1, jj = j + 1, kk = k - 1;
+        if (iblank(ii, jj, kk) == 1) {
+            vof020 = corner_corner(i, j, k, ii, jj, kk, volfrac, iblank);
+        }
+        ii = i - 1, jj = j - 1, kk = k + 1;
+        if (iblank(ii, jj, kk) == 1) {
+            vof002 = corner_corner(i, j, k, ii, jj, kk, volfrac, iblank);
+        }
+        ii = i + 1, jj = j + 1, kk = k - 1;
+        if (iblank(ii, jj, kk) == 1) {
+            vof220 = corner_corner(i, j, k, ii, jj, kk, volfrac, iblank);
+        }
+        ii = i - 1, jj = j + 1, kk = k + 1;
+        if (iblank(ii, jj, kk) == 1) {
+            vof022 = corner_corner(i, j, k, ii, jj, kk, volfrac, iblank);
+        }
+        ii = i + 1, jj = j - 1, kk = k + 1;
+        if (iblank(ii, jj, kk) == 1) {
+            vof202 = corner_corner(i, j, k, ii, jj, kk, volfrac, iblank);
+        }
+        ii = i + 1, jj = j + 1, kk = k + 1;
+        if (iblank(ii, jj, kk) == 1) {
+            vof222 = corner_corner(i, j, k, ii, jj, kk, volfrac, iblank);
+        }
+    }
+
+    mm1 = vof000 + vof002 + vof020 + vof022 +
+          2.0 * (vof001 + vof021 + vof010 + vof012) + 4.0 * vof011;
+    mm2 = vof200 + vof202 + vof220 + vof222 +
+          2.0 * (vof201 + vof221 + vof210 + vof212) + 4.0 * vof211;
+    mx = mm1 - mm2;
+
+    mm1 = vof000 + vof002 + vof200 + vof202 +
+          2.0 * (vof001 + vof201 + vof100 + vof102) + 4.0 * vof101;
+    mm2 = vof020 + vof022 + vof220 + vof222 +
+          2.0 * (vof021 + vof221 + vof120 + vof122) + 4.0 * vof121;
+    my = mm1 - mm2;
+
+    mm1 = vof000 + vof020 + vof200 + vof220 +
+          2.0 * (vof010 + vof210 + vof100 + vof120) + 4.0 * vof110;
+    mm2 = vof002 + vof022 + vof202 + vof222 +
+          2.0 * (vof012 + vof212 + vof102 + vof122) + 4.0 * vof112;
     mz = mm1 - mm2;
 }
 
