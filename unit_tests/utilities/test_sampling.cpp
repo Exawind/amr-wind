@@ -7,6 +7,10 @@
 #include "amr-wind/utilities/sampling/VolumeSampler.H"
 #include "amr-wind/utilities/sampling/DTUSpinnerSampler.H"
 #include "amr-wind/utilities/sampling/RadarSampler.H"
+#include "amr-wind/utilities/sampling/SamplingUtils.H"
+#include "AMReX_Vector.H"
+#include "amr-wind/core/vs/vector_space.H"
+#include "amr-wind/utilities/tensor_ops.H"
 
 namespace amr_wind_tests {
 
@@ -372,6 +376,39 @@ TEST_F(SamplingTest, radar_sampler)
     radar.sampling_locations(locs);
 
     ASSERT_EQ(locs.size(), 193536);
+}
+
+TEST_F(SamplingTest, sampling_utils)
+{
+    namespace vs = amr_wind::vs;
+    double toler = 1.0e-10;
+    vs::Vector unitx{1.0, 0.0, 0.0};
+    vs::Vector unity{0.0, 1.0, 0.0};
+    vs::Vector unitz{0.0, 0.0, 1.0};
+    vs::Vector nunitx{-1.0, 0.0, 0.0};
+    vs::Vector nunity{0.0, -1.0, 0.0};
+    vs::Vector nunitz{0.0, 0.0, -1.0};
+    vs::Vector ffn{-0.70710678, -0.70710678, 0.0};
+    vs::Vector ffnr{-0.70710678, 0.70710678, 0.0};
+    vs::Vector result;
+    vs::Vector angles{0.0, 180.0, 0.0};
+    vs::Tensor tresult;
+
+    result = amr_wind::sampling::sampling_utils::reflect(unity, ffn);
+    EXPECT_NEAR(result[0], ffnr[0], toler);
+    EXPECT_NEAR(result[1], ffnr[1], toler);
+    EXPECT_NEAR(result[2], ffnr[2], toler);
+
+    result = amr_wind::sampling::sampling_utils::rotation(angles, unitx);
+    EXPECT_NEAR(result[0], nunitx[0], toler);
+    EXPECT_NEAR(result[1], nunitx[1], toler);
+    EXPECT_NEAR(result[2], nunitx[2], toler);
+
+    result = amr_wind::sampling::sampling_utils::rotate_euler_vec(
+        unity, -90.0, unitx);
+    EXPECT_NEAR(result[0], unitz[0], toler);
+    EXPECT_NEAR(result[1], unitz[1], toler);
+    EXPECT_NEAR(result[2], unitz[2], toler);
 }
 
 } // namespace amr_wind_tests
