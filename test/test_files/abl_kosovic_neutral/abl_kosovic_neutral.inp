@@ -37,7 +37,7 @@ turbulence.model                            = Kosovic
 # Changes the length scale from filter width to kappa * z /phiM and blends with LES length scale using 
 # an exponential function 
 Kosovic.surfaceRANS                         = true
-# A power coefficient of two for the exponetial term gave best result 
+# A power coefficient of two for the exponential term gave best result 
 Kosovic.surfaceRANSExp                      = 2
 # Writing the non-linear terms for check 
 Kosovic.writeTerms                          = false
