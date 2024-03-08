@@ -1,0 +1,102 @@
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            SIMULATION STOP            #
+#.......................................#
+time.stop_time               =  14400.0     # Max (simulated) time to evolve
+time.max_step                =  10
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#         TIME STEP COMPUTATION         #
+#.......................................#
+time.fixed_dt         =   1.0          # Use this constant dt if > 0
+time.cfl              =   0.95         # CFL factor
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            INPUT AND OUTPUT           #
+#.......................................#
+time.plot_interval            =  1800     # Steps between plot files
+time.checkpoint_interval      =  -1       # Steps between checkpoint files
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#               PHYSICS                 #
+#.......................................#
+incflo.gravity          =   0.  0. -9.81  # Gravitational force (3D)
+incflo.density             = 1.21629512          # Reference density 
+
+incflo.use_godunov = 1
+incflo.diffusion_type = 0
+transport.viscosity = 1.0e-5
+transport.laminar_prandtl = 0.7
+transport.turbulent_prandtl = 0.3333
+turbulence.model = Smagorinsky
+Smagorinsky_coeffs.Cs = 0.135
+
+# turned off Coriolis because input data were missing the v velocity
+
+incflo.physics = ABL 
+#ICNS.source_terms = BoussinesqBuoyancy CoriolisForcing ABLForcing
+BoussinesqBuoyancy.reference_temperature = 300.0
+ABL.reference_temperature = 300.0
+#CoriolisForcing.latitude = 41.3
+#ABLForcing.abl_forcing_height = 90
+
+incflo.velocity = 0 0 0 # dummy values
+
+ABL.kappa = .41
+ABL.surface_roughness_z0 = 0.0002
+
+ABL.stats_output_frequency = 60
+
+
+# testing:
+incflo.do_initial_proj = false
+incflo.initial_iterations = 0
+ABL.perturb_velocity = false
+ABL.perturb_temperature = false
+
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#     M     M    M     M     C C C      #
+#     M M M M    M M M M    C     C     #
+#     M  M  M    M  M  M    C           #
+#     M     M    M     M    C           #
+#     M     M    M     M    C     C     #
+#     M     M    M     M     C C C      #
+#.......................................#
+ICNS.source_terms = BoussinesqBuoyancy ABLMesoForcingMom
+Temperature.source_terms = ABLMesoForcingTemp
+
+# initial conditions
+ABL.initial_condition_input_file = "meso_init.nc" # this is only for u,v
+ABL.temperature_heights = 50 150 250 350 450 550 650 750 850 950 1050 1150 1250 1350 1450 1550 1650 1750 1850 1950
+ABL.temperature_values = 283.71 283.73 284.13 284.95 285.65 286.01 286.40 286.85 287.28 287.60 287.87 288.20 288.55 288.79 289.20 289.49 289.94 290.42 290.92 291.49
+
+# forcing
+ABL.mesoscale_forcing = "meso_forcing.nc"
+ABLMesoForcingMom.forcing_scheme = "direct"
+ABLMesoForcingTemp.forcing_scheme = "direct"
+
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#        ADAPTIVE MESH REFINEMENT       #
+#.......................................#
+amr.n_cell              = 32 32 32    # Grid cells at coarsest AMRlevel
+amr.max_level           = 0           # Max AMR level in hierarchy 
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#              GEOMETRY                 #
+#.......................................#
+geometry.prob_lo        =   0.       0.     0.  # Lo corner coordinates
+geometry.prob_hi        =   1000.  1000.  1000.  # Hi corner coordinates
+geometry.is_periodic    =   1   1   0   # Periodicity x y z (0/1)
+
+# Boundary conditions
+zlo.type =   "wall_model"
+
+zhi.type =   "slip_wall"
+zhi.temperature_type = "fixed_gradient"
+#zhi.temperature = 0.003 # should be overwritten by ABLMesoForcingTemp
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#              VERBOSITY                #
+#.......................................#
+incflo.verbose          =   0          # incflo_level

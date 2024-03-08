@@ -47,21 +47,28 @@ protected:
 
     amrex::Array2D<amrex::Real, 0, 3, 0, 3> m_im_zTz;
 
-    // - input (or current value of, if forcing_transition is specified)
-    // regression weighting profile
+    // - regression weighting profile inputs (these may be constant or the
+    // instantaneous value, if forcing_transition is specified)
     std::string m_forcing_transition;
-    amrex::Real m_transition_height; // constant or variable
-    bool m_update_transition_height = false;
-    amrex::Real m_transition_thickness; // constant
+    amrex::Real m_transition_height;
+    bool m_update_transition_height{false};
+    amrex::Real m_transition_thickness;
 
-    // - WORKAROUND
-    amrex::Vector<amrex::Real> m_transition_height_hist;
+    amrex::Vector<amrex::Real> m_weighting_heights;
+    amrex::Vector<amrex::Real> m_weighting_values;
+    bool m_user_specified_weighting{false};
 
-    amrex::Vector<amrex::Real> m_weighting_heights; // constant or variable
-    amrex::Vector<amrex::Real> m_weighting_values;  // constant or variable
-
-    // - W(z) at planar averaging heights
+    // - W(z) at planar averaging heights, for regression
     amrex::Vector<amrex::Real> m_W;
+
+    // - blending heights (constant over time if the transition height is also
+    // constant)
+    amrex::Vector<amrex::Real> m_blending_heights;
+    amrex::Vector<amrex::Real> m_blending_values;
+
+    // - weights at planar averaging heights, for blending indirect-direct
+    // forcing profiles
+    amrex::Vector<amrex::Real> m_blend;
 
     //
     // weighting profile manipulation
@@ -73,6 +80,11 @@ protected:
     //
     // forcing profile manipulation
     //
+    bool haveForcingTransition()
+    {
+        return (amrex::toLower(m_forcing_transition) != "none");
+    }
+
     bool forcingToConstant()
     {
         // - check if m_forcing_transition ends with "Constant"

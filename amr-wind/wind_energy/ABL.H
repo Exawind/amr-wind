@@ -46,7 +46,8 @@ class HurricaneForcing;
 
 namespace pde::temperature {
 class ABLMesoForcingTemp;
-}
+class HurricaneTempForcing;
+} // namespace pde::temperature
 
 /** Atmospheric Boundary Layer physics
  *  \ingroup we_abl
@@ -105,6 +106,12 @@ public:
         m_hurricane_forcing = forcing;
     }
 
+    void register_hurricane_temp_forcing(
+        pde::temperature::HurricaneTempForcing* forcing) const
+    {
+        m_hurricane_temp_forcing = forcing;
+    }
+
     const ABLBoundaryPlane& bndry_plane() const { return *m_bndry_plane; }
     const ABLModulatedPowerLaw& abl_mpl() const { return *m_abl_mpl; }
 
@@ -154,7 +161,8 @@ private:
     std::unique_ptr<ABLMesoscaleInput> m_meso_file;
 
     mutable pde::icns::HurricaneForcing* m_hurricane_forcing{nullptr};
-
+    mutable pde::temperature::HurricaneTempForcing* m_hurricane_temp_forcing{
+        nullptr};
     //! Default value set based on https://turbmodels.larc.nasa.gov/sst.html
     amrex::Real m_init_sdr{25.0};
 

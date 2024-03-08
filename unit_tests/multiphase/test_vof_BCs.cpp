@@ -14,6 +14,125 @@ void initialize_volume_fractions(
         vof_arr(i, j, k) = 1.0 - 0.1 * (i + j + k);
     });
 }
+
+void get_accuracy_vofsol(
+    amr_wind::ScratchField& err_fld,
+    const int lev,
+    const int dir,
+    const int vof_distr,
+    const amrex::Real vof_bdyval,
+    const amr_wind::Field& vof)
+{
+    /* -- Check VOF boundary values from fillpatch -- */
+    for (amrex::MFIter mfi(vof(lev)); mfi.isValid(); ++mfi) {
+        auto err_arr = err_fld(lev).array(mfi);
+        const auto& vof_arr = vof(lev).array(mfi);
+        // Check lo and hi
+        amrex::ParallelFor(2, [=] AMREX_GPU_DEVICE(int i0) {
+            int off = i0 * 3;
+            int i = 0;
+            int j = 0;
+            int k = 0;
+            // Small mesh, loop in serial for check
+            for (int i1 = 0; i1 < 2; ++i1) {
+                for (int i2 = 0; i2 < 2; ++i2) {
+                    // Organize indices
+                    switch (dir) {
+                    case 0:
+                        i = -1 + off;
+                        j = i1;
+                        k = i2;
+                        break;
+                    case 1:
+                        i = i1;
+                        j = -1 + off;
+                        k = i2;
+                        break;
+                    case 2:
+                        i = i1;
+                        j = i2;
+                        k = -1 + off;
+                        break;
+                    }
+                    // Calculate reference value
+                    amrex::Real ref_val = vof_bdyval; // case 0
+                    switch (vof_distr) {
+                    case 1:
+                        // hoextrap
+                        ref_val = 1.0 - 0.1 * (i + j + k);
+                        break;
+                    case 2:
+                        // foextrap
+                        int ii = std::max(0, std::min(1, i));
+                        int jj = std::max(0, std::min(1, j));
+                        int kk = std::max(0, std::min(1, k));
+                        ref_val = 1.0 - 0.1 * (ii + jj + kk);
+                        break;
+                    }
+                    // Check against reference value
+                    err_arr(i, j, k, 0) = std::abs(vof_arr(i, j, k) - ref_val);
+                }
+            }
+        });
+    }
+}
+
+void get_accuracy_advalpha(
+    amr_wind::ScratchField& err_fld,
+    const int lev,
+    const int dir,
+    const bool nonzero_flux,
+    const amrex::Real rho1,
+    const amrex::Real rho2,
+    const amr_wind::Field& vof,
+    const amr_wind::Field& advalpha_f)
+{
+    /* -- Check VOF boundary fluxes -- */
+    for (amrex::MFIter mfi(vof(lev)); mfi.isValid(); ++mfi) {
+
+        auto err_arr = err_fld(lev).array(mfi);
+        const auto& af = advalpha_f(lev).array(mfi);
+        // Check lo and hi
+        amrex::ParallelFor(2, [=] AMREX_GPU_DEVICE(int i0) {
+            int off = i0 * 2;
+            int i = 0;
+            int j = 0;
+            int k = 0;
+            // Small mesh, loop in serial for check
+            for (int i1 = 0; i1 < 2; ++i1) {
+                for (int i2 = 0; i2 < 2; ++i2) {
+                    // Organize indices
+                    switch (dir) {
+                    case 0:
+                        i = 0 + off;
+                        j = i1;
+                        k = i2;
+                        break;
+                    case 1:
+                        i = i1;
+                        j = 0 + off;
+                        k = i2;
+                        break;
+                    case 2:
+                        i = i1;
+                        j = i2;
+                        k = 0 + off;
+                        break;
+                    }
+                    // Check whether flux is nonzero
+                    constexpr amrex::Real advvof = 0.0;
+                    const amrex::Real advrho =
+                        rho1 * advvof + rho2 * (1.0 - advvof);
+                    if (nonzero_flux) {
+                        err_arr(i, j, k, 0) = af(i, j, k) > 0.0 ? 0.0 : 1.0;
+                    } else {
+                        err_arr(i, j, k, 0) = std::abs(af(i, j, k) - advrho);
+                    }
+                }
+            }
+        });
+    }
+}
 } // namespace
 
 class VOFBCTest : public MeshTest
@@ -183,62 +302,26 @@ protected:
         // Populate boundary cells
         vof.fillpatch(0.0);
 
-        /* -- Check VOF boundary values from fillpatch -- */
         // Base level
         int lev = 0;
-        int i = 0;
-        int j = 0;
-        int k = 0;
-        for (amrex::MFIter mfi(vof(lev)); mfi.isValid(); ++mfi) {
-            const auto& vof_arr = vof(lev).array(mfi);
-            // Check lo and hi
-            for (int i0 = 0; i0 < 2; ++i0) {
-                int off = i0 * 3;
-                // Small mesh, loop in serial for check
-                for (int i1 = 0; i1 < 2; ++i1) {
-                    for (int i2 = 0; i2 < 2; ++i2) {
-                        // Organize indices
-                        switch (dir) {
-                        case 0:
-                            i = -1 + off;
-                            j = i1;
-                            k = i2;
-                            break;
-                        case 1:
-                            i = i1;
-                            j = -1 + off;
-                            k = i2;
-                            break;
-                        case 2:
-                            i = i1;
-                            j = i2;
-                            k = -1 + off;
-                            break;
-                        }
-                        // Calculate reference value
-                        amrex::Real ref_val = m_vof_bdyval; // case 0
-                        switch (vof_distr) {
-                        case 1:
-                            // hoextrap
-                            ref_val = 1.0 - 0.1 * (i + j + k);
-                            break;
-                        case 2:
-                            // foextrap
-                            int ii = std::max(0, std::min(1, i));
-                            int jj = std::max(0, std::min(1, j));
-                            int kk = std::max(0, std::min(1, k));
-                            ref_val = 1.0 - 0.1 * (ii + jj + kk);
-                            break;
-                        }
-                        // Check against reference value
-                        EXPECT_NEAR(vof_arr(i, j, k), ref_val, tol);
-                    }
-                }
-            }
-        }
+
+        // Create scratch field to store error (with ghost cells for BCs)
+        auto error_ptr = repo.create_scratch_field(1, 1);
+        auto& error_fld = *error_ptr;
+        // Initialize at 0
+        error_fld(lev).setVal(0.0);
+
+        // Compute error
+        get_accuracy_vofsol(error_fld, lev, dir, vof_distr, m_vof_bdyval, vof);
+
+        // Check error from first part
+        constexpr amrex::Real refval_check = 0.0;
+        EXPECT_NEAR(error_fld(lev).max(0, 1), refval_check, tol);
 
         // Test positive and negative velocity
         for (int sign = -1; sign < 2; sign += 2) {
+            // Reset error for each sign value
+            error_fld(lev).setVal(0.0);
 
             // Get mac velocity fields and set values based on dir
             auto& umac = repo.get_field("u_mac");
@@ -262,47 +345,14 @@ protected:
             // Get advected alpha
             const auto& advalpha_f = repo.get_field("advalpha_" + sdir);
 
-            /* -- Check VOF boundary fluxes -- */
-            for (amrex::MFIter mfi(vof(lev)); mfi.isValid(); ++mfi) {
+            // Compute error
+            get_accuracy_advalpha(
+                error_fld, lev, dir, nonzero_flux, m_rho1, m_rho2, vof,
+                advalpha_f);
 
-                const auto& af = advalpha_f(lev).array(mfi);
-                // Check lo and hi
-                for (int i0 = 0; i0 < 2; ++i0) {
-                    int off = i0 * 2;
-                    // Small mesh, loop in serial for check
-                    for (int i1 = 0; i1 < 2; ++i1) {
-                        for (int i2 = 0; i2 < 2; ++i2) {
-                            // Organize indices
-                            switch (dir) {
-                            case 0:
-                                i = 0 + off;
-                                j = i1;
-                                k = i2;
-                                break;
-                            case 1:
-                                i = i1;
-                                j = 0 + off;
-                                k = i2;
-                                break;
-                            case 2:
-                                i = i1;
-                                j = i2;
-                                k = 0 + off;
-                                break;
-                            }
-                            // Check whether flux is nonzero
-                            amrex::Real advvof = 0.0;
-                            amrex::Real advrho =
-                                m_rho1 * advvof + m_rho2 * (1.0 - advvof);
-                            if (nonzero_flux) {
-                                EXPECT_GT(af(i, j, k), advrho);
-                            } else {
-                                EXPECT_EQ(af(i, j, k), advrho);
-                            }
-                        }
-                    }
-                }
-            }
+            // Check error from second part for this value of sign
+            constexpr amrex::Real flux_check = 0.0;
+            EXPECT_NEAR(error_fld(lev).max(0, 1), flux_check, tol);
         }
     }
     const amrex::Real m_rho1 = 1000.0;
@@ -315,41 +365,9 @@ protected:
 constexpr double tol1 = 1.0e-15;
 constexpr double tol2 = 6.0e-2;
 
-TEST_F(VOFBCTest, dirichletX)
-{
-#ifndef AMREX_USE_GPU
-    testing_BC_coorddir(1, 0, tol1);
-#else
-    amrex::Print() << "VOFBCTest doesn't work on GPU yet." << std::endl;
-    GTEST_SKIP();
-#endif
-}
-TEST_F(VOFBCTest, slipwallY)
-{
-#ifndef AMREX_USE_GPU
-    testing_BC_coorddir(2, 1, tol2);
-#else
-    amrex::Print() << "VOFBCTest doesn't work on GPU yet." << std::endl;
-    GTEST_SKIP();
-#endif
-}
-TEST_F(VOFBCTest, noslipwallZ)
-{
-#ifndef AMREX_USE_GPU
-    testing_BC_coorddir(3, 2, tol1);
-#else
-    amrex::Print() << "VOFBCTest doesn't work on GPU yet." << std::endl;
-    GTEST_SKIP();
-#endif
-}
-TEST_F(VOFBCTest, pressureX)
-{
-#ifndef AMREX_USE_GPU
-    testing_BC_coorddir(4, 0, tol1);
-#else
-    amrex::Print() << "VOFBCTest doesn't work on GPU yet." << std::endl;
-    GTEST_SKIP();
-#endif
-}
+TEST_F(VOFBCTest, dirichletX) { testing_BC_coorddir(1, 0, tol1); }
+TEST_F(VOFBCTest, slipwallY) { testing_BC_coorddir(2, 1, tol2); }
+TEST_F(VOFBCTest, noslipwallZ) { testing_BC_coorddir(3, 2, tol1); }
+TEST_F(VOFBCTest, pressureX) { testing_BC_coorddir(4, 0, tol1); }
 
 } // namespace amr_wind_tests

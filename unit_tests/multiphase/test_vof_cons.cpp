@@ -79,9 +79,11 @@ void initialize_adv_velocities(
     });
 }
 
-void check_accuracy(int dir, int nx, amrex::Real tol, amr_wind::Field& vof)
+void get_accuracy(
+    amr_wind::ScratchField& err_fld, int dir, int nx, amr_wind::Field& vof)
 {
     run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
+        auto err_arr = err_fld(lev).array(mfi);
         const auto& vof_arr = vof(lev).const_array(mfi);
         const auto& bx = mfi.validbox();
         amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
@@ -98,17 +100,15 @@ void check_accuracy(int dir, int nx, amrex::Real tol, amr_wind::Field& vof)
                 break;
             }
             // Check if current solution matches initial solution
-#ifndef AMREX_USE_GPU
             if (2 * icheck + 1 == nx) {
-                EXPECT_NEAR(vof_arr(i, j, k), 0.5, tol);
+                err_arr(i, j, k) = std::abs(vof_arr(i, j, k) - 0.5);
             } else {
                 if (2 * icheck + 1 < nx) {
-                    EXPECT_NEAR(vof_arr(i, j, k), 1.0, tol);
+                    err_arr(i, j, k) = std::abs(vof_arr(i, j, k) - 1.0);
                 } else {
-                    EXPECT_NEAR(vof_arr(i, j, k), 0.0, tol);
+                    err_arr(i, j, k) = std::abs(vof_arr(i, j, k) - 0.0);
                 }
             }
-#endif
         });
     });
 }
@@ -253,7 +253,22 @@ protected:
         }
 
         if (dir >= 0) {
-            check_accuracy(dir, m_nx, tol, vof);
+            // Create scratch field to store error
+            auto error_ptr = repo.create_scratch_field(1, 0);
+            auto& error_fld = *error_ptr;
+            // Initialize at 0
+            for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+                error_fld(lev).setVal(0.0);
+            }
+
+            get_accuracy(error_fld, dir, m_nx, vof);
+
+            // Check error in each mfab
+            constexpr amrex::Real vofsol_check = 0.0;
+            for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+                // Sum error and check
+                EXPECT_NEAR(error_fld(lev).max(0), vofsol_check, tol);
+            }
         }
     }
     const amrex::Real m_rho1 = 1000.0;
@@ -263,62 +278,14 @@ protected:
     amrex::Real dt = 0.0; // will be set according to CFL
 };
 
-TEST_F(VOFConsTest, X)
-{
-#ifndef AMREX_USE_GPU
-    testing_coorddir(0, 0.45);
-#else
-    amrex::Print() << "VOFConsTest doesn't work on GPU yet." << std::endl;
-    GTEST_SKIP();
-#endif
-}
-TEST_F(VOFConsTest, Y)
-{
-#ifndef AMREX_USE_GPU
-    testing_coorddir(1, 0.45);
-#else
-    amrex::Print() << "VOFConsTest doesn't work on GPU yet." << std::endl;
-    GTEST_SKIP();
-#endif
-}
-TEST_F(VOFConsTest, Z)
-{
-#ifndef AMREX_USE_GPU
-    testing_coorddir(2, 0.45);
-#else
-    amrex::Print() << "VOFConsTest doesn't work on GPU yet." << std::endl;
-    GTEST_SKIP();
-#endif
-}
+TEST_F(VOFConsTest, X) { testing_coorddir(0, 0.45); }
+TEST_F(VOFConsTest, Y) { testing_coorddir(1, 0.45); }
+TEST_F(VOFConsTest, Z) { testing_coorddir(2, 0.45); }
 // Need multi-directional velocity and vof field to test communication of vof
 // during directionally-split advection
-TEST_F(VOFConsTest, CFL045)
-{
-#ifndef AMREX_USE_GPU
-    testing_coorddir(-1, 0.45);
-#else
-    amrex::Print() << "VOFConsTest doesn't work on GPU yet." << std::endl;
-    GTEST_SKIP();
-#endif
-}
-TEST_F(VOFConsTest, CFL01)
-{
-#ifndef AMREX_USE_GPU
-    testing_coorddir(-1, 0.1);
-#else
-    amrex::Print() << "VOFConsTest doesn't work on GPU yet." << std::endl;
-    GTEST_SKIP();
-#endif
-}
+TEST_F(VOFConsTest, CFL045) { testing_coorddir(-1, 0.45); }
+TEST_F(VOFConsTest, CFL01) { testing_coorddir(-1, 0.1); }
 // Test transport across multiple mesh levels - just check conservation
-TEST_F(VOFConsTest, 2level)
-{
-#ifndef AMREX_USE_GPU
-    testing_coorddir(-2, 0.5 * 0.45);
-#else
-    amrex::Print() << "VOFConsTest doesn't work on GPU yet." << std::endl;
-    GTEST_SKIP();
-#endif
-}
+TEST_F(VOFConsTest, 2level) { testing_coorddir(-2, 0.5 * 0.45); }
 
 } // namespace amr_wind_tests
