@@ -277,7 +277,7 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
         }
     }
 
-    enforce_solvability(mac_vec);
+    //enforce_solvability(mac_vec);
     m_mac_proj->setUMAC(mac_vec);
 
     if (m_has_overset) {

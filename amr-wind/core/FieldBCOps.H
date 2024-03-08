@@ -182,7 +182,8 @@ struct DirichletOp
                     continue;
                 }
 
-                if (m_bc_type[ori] == BC::mass_inflow) {
+                if ((m_bc_type[ori] == BC::mass_inflow) ||
+                    (m_bc_type[ori] == BC::mass_inflow_outflow)) {
                     m_inflow_op(
                         iv, field, geom, time, ori, n, dcomp, orig_comp);
                 } else {

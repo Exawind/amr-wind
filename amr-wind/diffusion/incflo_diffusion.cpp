@@ -78,6 +78,7 @@ get_diffuse_scalar_bc(amr_wind::Field& scalar, Orientation::Side side) noexcept
             switch (bc) {
             case BC::pressure_inflow:
             case BC::pressure_outflow:
+            case BC::mass_inflow_outflow:
             case BC::zero_gradient:
             case BC::symmetric_wall:
             case BC::slip_wall: {
