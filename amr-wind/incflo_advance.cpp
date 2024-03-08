@@ -193,10 +193,21 @@ void incflo::ApplyPredictor(bool incremental_projection)
 
     auto gp_copy = density().repo().create_scratch_field(3);
     auto& gp = density().repo().get_field("gp");
+    auto& pressure = density().repo().get_field("p");
 
     // Process data for overset multiphase
     if (sim().has_overset()) {
         if (m_sharpen_pressure) {
+            // Remove reference pressure if perturb pressure is being used
+            if (m_repo.field_exists("reference_pressure")) {
+                // Do I need a check for initial iterations?
+                const auto& p0 = sim().repo().get_field("reference_pressure");
+                for (int lev = 0; lev <= finest_level; lev++) {
+                    amrex::MultiFab::Subtract(
+                        pressure(lev), p0(lev), 0, 0, 1,
+                        pressure.num_grow()[0]);
+                }
+            }
             // Start with an up-to-date pressure gradient field that will be
             // used in the sharpening process
             UpdateGradP(
