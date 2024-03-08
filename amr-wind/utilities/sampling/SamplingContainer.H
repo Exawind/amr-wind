@@ -88,14 +88,14 @@ public:
     //! Populate the buffer with data for all the particles
     void populate_buffer(std::vector<double>& buf);
 
-    int num_sampling_particles() const { return m_total_particles; }
+    long num_sampling_particles() const { return m_total_particles; }
 
-    int& num_sampling_particles() { return m_total_particles; }
+    long& num_sampling_particles() { return m_total_particles; }
 
 private:
     amrex::AmrCore& m_mesh;
 
-    int m_total_particles{0};
+    long m_total_particles{0};
 };
 
 } // namespace sampling
