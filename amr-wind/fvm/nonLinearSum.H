@@ -151,7 +151,7 @@ template <typename FType>
 inline std::unique_ptr<ScratchField> nonlinearsum(const FType& phi)
 {
     const std::string gname = phi.name() + "_nonlinearsum";
-    auto strphi = phi.repo().create_scratch_field(gname, 1);
+    auto strphi = phi.repo().create_scratch_field(gname, 9);
     nonlinearsum(*strphi, phi);
     return strphi;
 }
