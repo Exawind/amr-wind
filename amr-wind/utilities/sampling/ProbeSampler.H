@@ -16,6 +16,9 @@ class ProbeSampler : public SamplerBase::Register<ProbeSampler>
 public:
     static std::string identifier() { return "ProbeSampler"; }
 
+    //! Type of this sampling object
+    std::string sampletype() const override { return identifier(); }
+
     explicit ProbeSampler(const CFDSim& /*unused*/);
 
     ~ProbeSampler() override;
@@ -24,6 +27,11 @@ public:
 
     void sampling_locations(SampleLocType& /*locs*/) const override;
 
+    void output_locations(SampleLocType& locs) const override
+    {
+        return sampling_locations(locs);
+    }
+
     void
     define_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
 
@@ -31,7 +39,11 @@ public:
     std::string& label() override { return m_label; }
     int id() const override { return m_id; }
     int& id() override { return m_id; }
-    int num_points() const override { return m_npts; }
+
+    long num_points() const override { return m_npts; }
+
+    //! Number of output probe locations (after data reduction etc.)
+    long num_output_points() const override { return m_npts; }
 
 private:
     SampleLocType m_probes;

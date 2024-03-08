@@ -37,6 +37,13 @@ struct FastTurbine
     //! Position of tower base in global coordinate system
     float base_pos[ndim];
 
+    //! Hub stats for Spinner Lidar
+    float hub_abs_pos[3];
+
+    float hub_rot_vel[3];
+
+    double hub_orient[9];
+
     SimMode sim_mode{SimMode::init};
 
     //! OpenFAST input file

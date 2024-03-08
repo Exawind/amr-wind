@@ -106,7 +106,7 @@ void SamplingContainer::initialize_particles(
         return;
     }
 
-    int num_particles = 0;
+    long num_particles = 0;
     for (const auto& probes : samplers) {
         num_particles += probes->num_points();
     }
@@ -231,7 +231,7 @@ void SamplingContainer::populate_buffer(std::vector<double>& buf)
     const int nlevels = m_mesh.finestLevel() + 1;
     for (int lev = 0; lev < nlevels; ++lev) {
         for (int fid = 0; fid < NumRuntimeRealComps(); ++fid) {
-            const int offset = fid * num_sampling_particles();
+            const long offset = fid * num_sampling_particles();
             for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
                 const int np = pti.numParticles();
                 auto* pstruct = pti.GetArrayOfStructs()().data();
@@ -241,7 +241,7 @@ void SamplingContainer::populate_buffer(std::vector<double>& buf)
                     np, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
                         auto& pp = pstruct[ip];
                         const int pidx = pp.idata(IIx::uid);
-                        const int ii = offset + pidx;
+                        const long ii = offset + pidx;
                         dbuf_ptr[ii] = parr[ip];
                     });
             }
