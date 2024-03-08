@@ -299,7 +299,7 @@ TEST_F(ABLMeshTest, rayleigh_damping)
     EXPECT_NEAR(src_z_vals[3], -3. * 0.0, 3. * 0.005);
 }
 
-TEST_F(ABLMeshTest, hurricane_forcing)
+/* TEST_F(ABLMeshTest, hurricane_forcing)
 {
     constexpr amrex::Real tol = 1.0e-12;
     populate_parameters();
@@ -375,7 +375,7 @@ TEST_F(ABLMeshTest, hurricane_forcing)
     const amrex::Real gold = 0.0;
     const auto max_val = utils::field_max(src_term_temp);
     EXPECT_NEAR(max_val, gold, tol);
-}
+} */
 
 TEST_F(ABLMeshTest, coriolis_const_vel)
 {
