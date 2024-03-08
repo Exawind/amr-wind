@@ -240,9 +240,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_11(
     const amrex::Real ux = dphidx_eval(degree, coeffx, x, y, z);
     const amrex::Real uy = dphidy_eval(degree, coeffx, x, y, z);
     const amrex::Real uz = dphidz_eval(degree, coeffx, x, y, z);
-
     const amrex::Real vx = dphidx_eval(degree, coeffy, x, y, z);
-
     const amrex::Real wx = dphidx_eval(degree, coeffz, x, y, z);
 
     return (ux * ux + uy * vx + uz * wx) - (ux * ux + uy * uy + uz * uz) +
@@ -262,11 +260,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_12(
     const amrex::Real ux = dphidx_eval(degree, coeffx, x, y, z);
     const amrex::Real uy = dphidy_eval(degree, coeffx, x, y, z);
     const amrex::Real uz = dphidz_eval(degree, coeffx, x, y, z);
-
     const amrex::Real vx = dphidx_eval(degree, coeffy, x, y, z);
     const amrex::Real vy = dphidy_eval(degree, coeffy, x, y, z);
     const amrex::Real vz = dphidz_eval(degree, coeffy, x, y, z);
-
     const amrex::Real wx = dphidx_eval(degree, coeffz, x, y, z);
     const amrex::Real wy = dphidy_eval(degree, coeffz, x, y, z);
 
@@ -287,10 +283,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_13(
     const amrex::Real ux = dphidx_eval(degree, coeffx, x, y, z);
     const amrex::Real uy = dphidy_eval(degree, coeffx, x, y, z);
     const amrex::Real uz = dphidz_eval(degree, coeffx, x, y, z);
-
     const amrex::Real vx = dphidx_eval(degree, coeffy, x, y, z);
     const amrex::Real vz = dphidz_eval(degree, coeffy, x, y, z);
-
     const amrex::Real wx = dphidx_eval(degree, coeffz, x, y, z);
     const amrex::Real wy = dphidy_eval(degree, coeffz, x, y, z);
     const amrex::Real wz = dphidz_eval(degree, coeffz, x, y, z);
@@ -312,11 +306,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_21(
     const amrex::Real ux = dphidx_eval(degree, coeffx, x, y, z);
     const amrex::Real uy = dphidy_eval(degree, coeffx, x, y, z);
     const amrex::Real uz = dphidz_eval(degree, coeffx, x, y, z);
-
     const amrex::Real vx = dphidx_eval(degree, coeffy, x, y, z);
     const amrex::Real vy = dphidy_eval(degree, coeffy, x, y, z);
     const amrex::Real vz = dphidz_eval(degree, coeffy, x, y, z);
-
     const amrex::Real wx = dphidx_eval(degree, coeffz, x, y, z);
     const amrex::Real wy = dphidy_eval(degree, coeffz, x, y, z);
 
@@ -335,11 +327,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_22(
 {
 
     const amrex::Real uy = dphidy_eval(degree, coeffx, x, y, z);
-
     const amrex::Real vx = dphidx_eval(degree, coeffy, x, y, z);
     const amrex::Real vy = dphidy_eval(degree, coeffy, x, y, z);
     const amrex::Real vz = dphidz_eval(degree, coeffy, x, y, z);
-
     const amrex::Real wy = dphidy_eval(degree, coeffz, x, y, z);
 
     return (vx * uy + vy * vy + vz * wy) - (vx * vx + vy * vy + vz * vz) +
@@ -358,11 +348,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_23(
 
     const amrex::Real uy = dphidy_eval(degree, coeffx, x, y, z);
     const amrex::Real uz = dphidz_eval(degree, coeffx, x, y, z);
-
     const amrex::Real vx = dphidx_eval(degree, coeffy, x, y, z);
     const amrex::Real vy = dphidy_eval(degree, coeffy, x, y, z);
     const amrex::Real vz = dphidz_eval(degree, coeffy, x, y, z);
-
     const amrex::Real wx = dphidx_eval(degree, coeffz, x, y, z);
     const amrex::Real wy = dphidy_eval(degree, coeffz, x, y, z);
     const amrex::Real wz = dphidz_eval(degree, coeffz, x, y, z);
@@ -384,10 +372,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_31(
     const amrex::Real ux = dphidx_eval(degree, coeffx, x, y, z);
     const amrex::Real uy = dphidy_eval(degree, coeffx, x, y, z);
     const amrex::Real uz = dphidz_eval(degree, coeffx, x, y, z);
-
     const amrex::Real vx = dphidx_eval(degree, coeffy, x, y, z);
     const amrex::Real vz = dphidz_eval(degree, coeffy, x, y, z);
-
     const amrex::Real wx = dphidx_eval(degree, coeffz, x, y, z);
     const amrex::Real wy = dphidy_eval(degree, coeffz, x, y, z);
     const amrex::Real wz = dphidz_eval(degree, coeffz, x, y, z);
@@ -408,11 +394,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_32(
 
     const amrex::Real uy = dphidy_eval(degree, coeffx, x, y, z);
     const amrex::Real uz = dphidz_eval(degree, coeffx, x, y, z);
-
     const amrex::Real vx = dphidx_eval(degree, coeffy, x, y, z);
     const amrex::Real vy = dphidy_eval(degree, coeffy, x, y, z);
     const amrex::Real vz = dphidz_eval(degree, coeffy, x, y, z);
-
     const amrex::Real wx = dphidx_eval(degree, coeffz, x, y, z);
     const amrex::Real wy = dphidy_eval(degree, coeffz, x, y, z);
     const amrex::Real wz = dphidz_eval(degree, coeffz, x, y, z);
@@ -432,9 +416,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_33(
 {
 
     const amrex::Real uz = dphidz_eval(degree, coeffx, x, y, z);
-
     const amrex::Real vz = dphidz_eval(degree, coeffy, x, y, z);
-
     const amrex::Real wx = dphidx_eval(degree, coeffz, x, y, z);
     const amrex::Real wy = dphidy_eval(degree, coeffz, x, y, z);
     const amrex::Real wz = dphidz_eval(degree, coeffz, x, y, z);
