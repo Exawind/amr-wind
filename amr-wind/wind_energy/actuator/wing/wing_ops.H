@@ -167,10 +167,11 @@ struct ComputeForceOp<
             const auto vmag = vs::mag(windvector);
 
             // Calculate the aoa based on the pitch actuation table if supplied
-            // (interpolate pitch angle at step n) or the initial pitch angle
+            // (interpolate pitch angle at step n+1/2) or the initial pitch angle
             if (!wdata.pitch_timetable_file.empty()) {
+                const auto time_interp = (time.current_time() + time.new_time()) / 2.0;
                 wdata.pitch = amr_wind::interp::linear(
-                    wdata.time_table, wdata.pitch_table, time.current_time());
+                    wdata.time_table, wdata.pitch_table, time_interp);
                 amrex::Print() << "Wing Ops: Current wing pitch is "
                                << wdata.pitch << " degrees.\n";
             }
