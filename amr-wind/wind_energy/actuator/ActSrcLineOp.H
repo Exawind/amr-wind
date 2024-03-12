@@ -116,7 +116,17 @@ void ActSrcOp<ActTrait, ActSrcLine>::operator()(
             const auto pos_ip = wt * pos[ip] + (1.0 - wt) * opos[ip];
             const auto dist = cc - pos_ip;
             const auto dist_local = tmat[ip] & dist;
-            const auto gauss_fac = utils::gaussian3d(dist_local, eps[ip]);
+            // If the spanwise eps is zero use the two-dimensional Gaussian
+            // The order of epsilon is (chord, thickness, span)
+            amrex::Real gauss_fac;
+            if (eps[ip].z() < 1e-12) {
+                // vector is only defined for n=3 -> append  zeros
+                vs::Vector eps_2d{eps[ip].x(), eps[ip].y(), 0.0};
+                vs::Vector dist_local_2d{dist_local.x(), dist_local.z(), 0.0};
+                gauss_fac = utils::gaussian2d(dist_local_2d, eps_2d);
+            } else {
+                gauss_fac = utils::gaussian3d(dist_local, eps[ip]);
+            }
             const auto& pforce = force[ip];
 
             src_force[0] += gauss_fac * pforce.x();

@@ -7,6 +7,7 @@
 #include "amr-wind/wind_energy/actuator/aero/AirfoilTable.H"
 #include "amr-wind/wind_energy/actuator/ActParser.H"
 #include "amr-wind/wind_energy/actuator/FLLCOp.H"
+#include "amr-wind/utilities/linear_interpolation.H"
 
 namespace amr_wind::actuator {
 namespace wing {
@@ -164,6 +165,17 @@ struct ComputeForceOp<
             windvector[2] = (grid.vel[ip] - wdata.vel_tr) & blade_z;
 
             const auto vmag = vs::mag(windvector);
+
+            // Calculate the aoa based on the pitch actuation table if supplied
+            // (interpolate pitch angle at step n+1/2) or the initial pitch angle
+            if (!wdata.pitch_timetable_file.empty()) {
+                const auto time_interp = (time.current_time() + time.new_time()) / 2.0;
+                wdata.pitch = amr_wind::interp::linear(
+                    wdata.time_table, wdata.pitch_table, time_interp);
+                amrex::Print() << "Wing Ops: Current wing pitch is "
+                               << wdata.pitch << " degrees.\n";
+            }
+
             const auto aoa = std::atan2(windvector[2], windvector[0]) +
                              amr_wind::utils::radians(wdata.pitch);
 
