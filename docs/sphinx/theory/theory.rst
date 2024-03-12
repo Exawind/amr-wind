@@ -384,6 +384,33 @@ There is a simple unit test for both :math:`\nu_t` and :math:`D_e` in
 ``unit_tests/turbulence/test_turbulence_LES.cpp`` under
 ``test_AMD_setup_calc``.
 
+Non-linear Sub-grid Scale Model 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The non-linear model extends the Smagorinsky model by including an extra term computed from the strain and vorticity rate. 
+The modification proposed by `Branco (JFM 1997) <https://doi.org/10.1017/S0022112096004697>`_ and implemented in WRF (`Mirocha et. al (MWR 2010) <https://doi.org/10.1175/2010MWR3286.1>`_) 
+is the model considered. The sub-grid scale stress tensor is calculated as follows: 
+
+ .. math::
+    M_{ij}= -(C_s \Delta)^2 
+    [
+      2(2S_{mn}S_{mn})^{1/2}S_{ij}+C_1(S_{ik}S_{kj}-\frac{1}{3}S_{mn}S_{mn} \delta_{ij})
+      +C_2(S_{ik}R_{kj}-R_{ik}S_{kj})
+    ]
+
+Here :math:`S_{ij}` is the strain-rate tensor and :math:`R_{ij}` is the vorticity rate tensor. The model constants are: 
+:math:`C_s=[8*(1+C_b)/27\pi^2]^{1/2}`, :math:`C_1=C_2=960^{1/2}C_b/7(1+C_b)S_k`, :math:`S_k=0.5`, and :math:`C_b=0.36`.  
+
+The default length scale of :math:`L=C_s\Delta` causes over-prediction of the mean wind speed profiles. To avoid this over-prediction, the
+length scale is modified as follows 
+
+.. math::
+   L=(1-\exp(-z/H))^2(\frac{\kappa z}{\phi_M})^2+(\exp(-z/H))^2(C_s \Delta)^2
+
+Here the term :math:`H=1.5 dz` specifies the location at which the length scale switches to :math:`L=C_s\Delta` and :math:`\phi_M`
+is the atmospheric stability function. Currently, the implementation for the stability function uses a single global value. 
+The implementation of the non-linear model is split into two parts. The subgrid-scale viscosity term is directly used 
+within the ``AMR-wind`` diffusion framework. The last two terms in :math:`M_{ij}` are added as source-terms in the momentum equation. 
+
 Wall models
 -----------
 The wall models described in this section are implemented in ``AMR-wind`` for
