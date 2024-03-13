@@ -272,15 +272,14 @@ void AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE velocity_discrete_face_bndry(
     vface = 0.5 * (v_ + v_nb);
     wface = 0.5 * (w_ + w_nb);
     // Defer to iblank == -1 values
-    constexpr amrex::Real reduce_factor = 0.5;
     if (iblank(i, j, k) == -1 && iblank(ii, jj, kk) == 1) {
-        uface = 0.5 * u_;
-        vface = 0.5 * v_;
-        wface = 0.5 * w_;
+        uface = u_;
+        vface = v_;
+        wface = w_;
     } else if (iblank(i, j, k) == 1 && iblank(ii, jj, kk) == -1) {
-        uface = 0.5 * u_nb;
-        vface = 0.5 * v_nb;
-        wface = 0.5 * w_nb;
+        uface = u_nb;
+        vface = v_nb;
+        wface = w_nb;
     }
 }
 
@@ -363,15 +362,14 @@ void AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE gp_rho_discrete_face_bndry(
     vface = 0.5 * (v_ + v_nb);
     wface = 0.5 * (w_ + w_nb);
     // Defer to iblank == -1 values
-    constexpr amrex::Real reduce_factor = 0.5;
     if (iblank(i, j, k) == -1 && iblank(ii, jj, kk) == 1) {
-        uface = 0.5 * u_;
-        vface = 0.5 * v_;
-        wface = 0.5 * w_;
+        uface = u_;
+        vface = v_;
+        wface = w_;
     } else if (iblank(i, j, k) == 1 && iblank(ii, jj, kk) == -1) {
-        uface = 0.5 * u_nb;
-        vface = 0.5 * v_nb;
-        wface = 0.5 * w_nb;
+        uface = u_nb;
+        vface = v_nb;
+        wface = w_nb;
     }
 }
 
