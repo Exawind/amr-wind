@@ -505,7 +505,7 @@ TEST_F(TurbLESTest, test_kosovic_setup_calc)
     // Parser inputs for turbulence model
     const amrex::Real Cb = 0.36;
     const amrex::Real visc = 1e-5;
-    const amrex::Real Cs= std::sqrt(8 * (1 + Cb) / (27 * M_PI * M_PI));
+    const amrex::Real Cs = std::sqrt(8 * (1 + Cb) / (27 * M_PI * M_PI));
     {
         amrex::ParmParse pp("turbulence");
         pp.add("model", (std::string) "Kosovic");
