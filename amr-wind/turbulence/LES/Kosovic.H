@@ -42,6 +42,10 @@ public:
 
 private:
     //! Kosovic coefficient (default value set for ABL simulations)
+    // Ref: Mirocha et. al "Implementation of a Nonlinear Subfilter Turbulence
+    //  Stress Model for Large-Eddy Simulation in the Advanced Research WRF
+    //  Model"
+    // , MWR 2012.
     amrex::Real m_Cb{0.36};
     amrex::Real m_Cs{0.135};
     amrex::Real m_C1{2.1};
