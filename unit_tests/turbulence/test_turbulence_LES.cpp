@@ -560,8 +560,9 @@ TEST_F(TurbLESTest, test_kosovic_setup_calc)
     auto min_val = utils::field_min(muturb);
     auto max_val = utils::field_max(muturb);
     const amrex::Real tol = 1e-12;
-    const amrex::Real kosovic_answer =
-        rho0 * std::pow(kosovic_Cs, 2) * std::pow(std::cbrt(dx * dy * dz), 2) * srate;
+    const amrex::Real kosovic_answer = rho0 * std::pow(kosovic_Cs, 2) *
+                                       std::pow(std::cbrt(dx * dy * dz), 2) *
+                                       srate;
     EXPECT_NEAR(min_val, kosovic_answer, tol);
     EXPECT_NEAR(max_val, kosovic_answer, tol);
 
