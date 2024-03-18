@@ -153,7 +153,7 @@ void Kosovic<Transport>::parse_model_coeffs()
 template <typename Transport>
 TurbulenceModel::CoeffsDictType Kosovic<Transport>::model_coeffs() const
 {
-    return TurbulenceModel::CoeffsDictType{{"Cs", this->m_Cs}};
+    return TurbulenceModel::CoeffsDictType{{"Cb", this->m_Cb}};
 }
 
 } // namespace turbulence
