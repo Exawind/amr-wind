@@ -65,13 +65,23 @@ sampling.lidar.azimuth_table= 0 90.0
 sampling.lidar.elevation_table= 0 45.0
 
 sampling.spinner.type       = DTUSpinnerSampler
-sampling.spinner.dt_s = 0.1
-sampling.spinner.num_points = 25
-sampling.spinner.origin = 250.0 250.0 250.0
-sampling.spinner.length= 200.0
-sampling.spinner.time_table= 0 11.0
-sampling.spinner.azimuth_table= 0 90.0
-sampling.spinner.elevation_table= 0 300.0
+sampling.spinner.mode                       = fixed #use "hub" to connect to turbine named below 
+sampling.spinner.turbine                   = WTG01
+sampling.spinner.hub_debug                  = false
+sampling.spinner.inner_prism_theta0       = 90
+sampling.spinner.inner_prism_rotrate        = 3.5
+sampling.spinner.inner_prism_azimuth      = 15.2
+sampling.spinner.outer_prism_theta0      = 90
+sampling.spinner.outer_prism_rotrate      = 6.5
+sampling.spinner.outer_prism_azimuth       = 15.2
+sampling.spinner.lidar_center              = 250.0 250.0 250.0 #this gets ovewritten for "hub"
+sampling.spinner.scan_time                  = 2
+sampling.spinner.num_samples              = 984
+sampling.spinner.beam_length              = 200.0 # test smaller number
+sampling.spinner.beam_points              = 25
+sampling.spinner.fixed_yaw                  = 0
+sampling.spinner.fixed_roll              = 0
+sampling.spinner.fixed_tilt              = 0
 
 
 
