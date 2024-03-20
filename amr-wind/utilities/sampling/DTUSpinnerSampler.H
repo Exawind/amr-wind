@@ -65,7 +65,10 @@ public:
 
     long num_points() const override { return (m_beam_points * m_ntotal); }
 
-    long num_output_points() const override { return (m_beam_points * m_ntotal); }
+    long num_output_points() const override
+    {
+        return (m_beam_points * m_ntotal);
+    }
 
     void
     define_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
