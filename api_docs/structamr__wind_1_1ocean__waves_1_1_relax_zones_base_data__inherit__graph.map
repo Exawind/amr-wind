@@ -1,0 +1,6 @@
+<map id="amr_wind::ocean_waves::RelaxZonesBaseData" name="amr_wind::ocean_waves::RelaxZonesBaseData">
+<area shape="rect" id="node1" title="Base data representation of a regular waves." alt="" coords="5,71,188,112"/>
+<area shape="rect" id="node2" href="$structamr__wind_1_1ocean__waves_1_1_h_o_s_waves_data.html" title=" " alt="" coords="236,5,419,47"/>
+<area shape="rect" id="node3" href="$structamr__wind_1_1ocean__waves_1_1_linear_waves_data.html" title=" " alt="" coords="236,71,419,112"/>
+<area shape="rect" id="node4" href="$structamr__wind_1_1ocean__waves_1_1_stokes_waves_data.html" title=" " alt="" coords="236,136,419,177"/>
+</map>

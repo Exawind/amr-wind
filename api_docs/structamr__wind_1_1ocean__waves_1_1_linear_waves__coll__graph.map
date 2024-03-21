@@ -1,0 +1,5 @@
+<map id="amr_wind::ocean_waves::LinearWaves" name="amr_wind::ocean_waves::LinearWaves">
+<area shape="rect" id="node1" title=" " alt="" coords="5,184,188,225"/>
+<area shape="rect" id="node2" href="$structamr__wind_1_1ocean__waves_1_1_relax_zones_type.html" title=" " alt="" coords="5,95,188,136"/>
+<area shape="rect" id="node3" href="$structamr__wind_1_1ocean__waves_1_1_ocean_waves_type.html" title="Abstract representation of an ocean wave type." alt="" coords="5,5,188,47"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="amr_wind::ib::ImmersedBoundaryModel" name="amr_wind::ib::ImmersedBoundaryModel">
+<area shape="rect" id="node1" title="Abstract representation of an immersed boundary in the flowfield." alt="" coords="645,29,888,70"/>
+<area shape="rect" id="node2" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="397,14,596,85"/>
+<area shape="rect" id="node3" href="$structamr__wind_1_1_factory.html" title="Runtime selection of options based on string keyword lookup." alt="" coords="5,29,157,70"/>
+</map>

@@ -1,0 +1,13 @@
+<map id="amr_wind::pde::PDEFields" name="amr_wind::pde::PDEFields">
+<area shape="rect" id="node1" title="Collection of fields related to a PDE." alt="" coords="1503,84,1693,111"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1_field.html" title="Computational field." alt="" coords="1256,56,1381,83"/>
+<area shape="rect" id="node3" title=" " alt="" coords="812,146,972,187"/>
+<area shape="rect" id="node4" title=" " alt="" coords="257,167,415,193"/>
+<area shape="rect" id="node5" title=" " alt="" coords="55,149,94,176"/>
+<area shape="rect" id="node10" title=" " alt="" coords="260,98,412,139"/>
+<area shape="rect" id="node6" title=" " alt="" coords="293,25,379,52"/>
+<area shape="rect" id="node9" title=" " alt="" coords="625,90,788,131"/>
+<area shape="rect" id="node7" title=" " alt="" coords="5,13,144,54"/>
+<area shape="rect" id="node8" href="$classamr__wind_1_1_field_repo.html" title="Field Repository." alt="" coords="996,97,1155,124"/>
+<area shape="rect" id="node11" title=" " alt="" coords="55,79,94,105"/>
+</map>

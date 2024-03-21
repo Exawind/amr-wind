@@ -1,0 +1,6 @@
+<map id="amr_wind::sampling::LidarSampler" name="amr_wind::sampling::LidarSampler">
+<area shape="rect" id="node1" title="Sample data along a line that moves in time." alt="" coords="13,184,168,225"/>
+<area shape="rect" id="node4" href="$classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html" title="Sample data along a line that moves in time." alt="" coords="10,273,171,315"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1sampling_1_1_line_sampler.html" title="Sample data along a line." alt="" coords="13,95,168,136"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,5,176,47"/>
+</map>

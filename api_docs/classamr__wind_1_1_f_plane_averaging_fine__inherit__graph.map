@@ -1,0 +1,5 @@
+<map id="amr_wind::FPlaneAveragingFine&lt; FType &gt;" name="amr_wind::FPlaneAveragingFine&lt; FType &gt;">
+<area shape="rect" id="node1" title="Output average of a field on planes normal to a given direction." alt="" coords="25,5,228,47"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1_f_plane_averaging_fine.html" title=" " alt="" coords="25,109,228,151"/>
+<area shape="rect" id="node3" href="$classamr__wind_1_1_vel_plane_averaging_fine.html" title="Specific application of FieldPlaneAveraging to the velocity field." alt="" coords="5,200,248,227"/>
+</map>

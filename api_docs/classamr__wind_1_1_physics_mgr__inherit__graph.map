@@ -1,0 +1,5 @@
+<map id="amr_wind::PhysicsMgr" name="amr_wind::PhysicsMgr">
+<area shape="rect" id="node1" title="A collection of Physics models instances that are active during a simulation." alt="" coords="7,215,175,241"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1_coll_mgr.html" title=" " alt="" coords="5,124,177,165"/>
+<area shape="rect" id="node3" href="$classamr__wind_1_1_coll_mgr.html" title="Interface to manage objects of sub&#45;classes based on factory registration." alt="" coords="5,5,177,61"/>
+</map>

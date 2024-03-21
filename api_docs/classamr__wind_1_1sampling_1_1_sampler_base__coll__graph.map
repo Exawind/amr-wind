@@ -1,0 +1,5 @@
+<map id="amr_wind::sampling::SamplerBase" name="amr_wind::sampling::SamplerBase">
+<area shape="rect" id="node1" title="Abstract representation of data probes to sample flow data." alt="" coords="29,200,183,241"/>
+<area shape="rect" id="node2" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="5,109,207,151"/>
+<area shape="rect" id="node3" href="$structamr__wind_1_1_factory.html" title="Runtime selection of options based on string keyword lookup." alt="" coords="30,5,182,47"/>
+</map>

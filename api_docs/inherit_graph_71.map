@@ -1,0 +1,11 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" title=" " alt="" coords="5,242,200,269"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1ascent__int_1_1_ascent_post_process.html" title=" " alt="" coords="263,5,424,47"/>
+<area shape="rect" id="node3" href="$classamr__wind_1_1averaging_1_1_time_averaging.html" title="A collection of time&#45;averaged quantities." alt="" coords="264,71,423,112"/>
+<area shape="rect" id="node4" href="$classamr__wind_1_1enstrophy_1_1_enstrophy.html" title="enstrophy object" alt="" coords="264,136,423,177"/>
+<area shape="rect" id="node5" href="$classamr__wind_1_1field__norms_1_1_field_norms.html" title="field norm object" alt="" coords="258,201,429,243"/>
+<area shape="rect" id="node6" href="$classamr__wind_1_1free__surface_1_1_free_surface.html" title="Collection of data sampling objects." alt="" coords="256,267,431,308"/>
+<area shape="rect" id="node7" href="$classamr__wind_1_1kinetic__energy_1_1_kinetic_energy.html" title="kinetic energy object" alt="" coords="248,332,439,373"/>
+<area shape="rect" id="node8" href="$classamr__wind_1_1sampling_1_1_sampling.html" title="Collection of data sampling objects." alt="" coords="266,397,421,439"/>
+<area shape="rect" id="node9" href="$classamr__wind_1_1wave__energy_1_1_wave_energy.html" title="wave energy object" alt="" coords="253,463,434,504"/>
+</map>

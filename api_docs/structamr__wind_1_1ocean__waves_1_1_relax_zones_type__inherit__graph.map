@@ -1,0 +1,7 @@
+<map id="amr_wind::ocean_waves::RelaxZonesType" name="amr_wind::ocean_waves::RelaxZonesType">
+<area shape="rect" id="node1" title=" " alt="" coords="236,71,419,112"/>
+<area shape="rect" id="node3" href="$structamr__wind_1_1ocean__waves_1_1_h_o_s_waves.html" title=" " alt="" coords="467,5,649,47"/>
+<area shape="rect" id="node4" href="$structamr__wind_1_1ocean__waves_1_1_linear_waves.html" title=" " alt="" coords="467,71,649,112"/>
+<area shape="rect" id="node5" href="$structamr__wind_1_1ocean__waves_1_1_stokes_waves.html" title=" " alt="" coords="467,136,649,177"/>
+<area shape="rect" id="node2" href="$structamr__wind_1_1ocean__waves_1_1_ocean_waves_type.html" title="Abstract representation of an ocean wave type." alt="" coords="5,71,188,112"/>
+</map>

@@ -1,0 +1,11 @@
+<map id="amr_wind::pde::DiffSolverIface&lt; LinOp &gt;" name="amr_wind::pde::DiffSolverIface&lt; LinOp &gt;">
+<area shape="rect" id="node1" title="Base class for all diffusion operators." alt="" coords="5,108,196,149"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1pde_1_1_diff_solver_iface.html" title=" " alt="" coords="417,5,608,47"/>
+<area shape="rect" id="node4" href="$classamr__wind_1_1pde_1_1_diff_solver_iface.html" title=" " alt="" coords="407,71,619,112"/>
+<area shape="rect" id="node6" href="$classamr__wind_1_1pde_1_1_diff_solver_iface.html" title=" " alt="" coords="417,136,608,177"/>
+<area shape="rect" id="node8" href="$classamr__wind_1_1pde_1_1_diff_solver_iface.html" title=" " alt="" coords="417,209,608,251"/>
+<area shape="rect" id="node3" href="$structamr__wind_1_1pde_1_1_diffusion_op_3_01_s_d_r_00_01_scheme_01_4.html" title="Diffusion operator for SDR equation." alt="" coords="696,5,880,47"/>
+<area shape="rect" id="node5" href="$classamr__wind_1_1pde_1_1_i_c_n_s_diff_tensor_op.html" title=" " alt="" coords="668,78,908,105"/>
+<area shape="rect" id="node7" href="$structamr__wind_1_1pde_1_1_diffusion_op_3_01_t_k_e_00_01_scheme_01_4.html" title="Diffusion operator for scalar transport equations." alt="" coords="696,132,880,173"/>
+<area shape="rect" id="node9" href="$structamr__wind_1_1pde_1_1_diffusion_op_3_01_p_d_e_00_01_scheme_00_01typename_01std_1_1enable__idc2715d6b8dc44a54011031d07be4ff9.html" title="Diffusion operator for scalar transport equations." alt="" coords="681,198,895,283"/>
+</map>

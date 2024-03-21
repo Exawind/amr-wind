@@ -1,0 +1,5 @@
+<map id="amr_wind::BCPressure" name="amr_wind::BCPressure">
+<area shape="rect" id="node1" title="Specialization of BC initialization for pressure." alt="" coords="5,155,173,181"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1_b_c_scalar.html" title="Boundary condition initialization for scalar transport variables." alt="" coords="13,80,165,107"/>
+<area shape="rect" id="node3" href="$classamr__wind_1_1_b_c_iface.html" title="Abstract class that defines the interface for processing BCs." alt="" coords="17,5,161,32"/>
+</map>
