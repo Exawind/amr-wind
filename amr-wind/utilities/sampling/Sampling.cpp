@@ -31,6 +31,7 @@ void Sampling::initialize()
         pp.query("output_frequency", m_out_freq);
         pp.query("output_format", m_out_fmt);
         pp.query("output_delay", m_out_delay);
+        pp.query("restart_sample", m_restart_sample);
     }
 
     // Process field information
@@ -61,6 +62,7 @@ void Sampling::initialize()
         pp1.query("type", stype);
         auto obj = SamplerBase::create(stype, m_sim);
         obj->label() = lbl;
+        obj->sampletype() = stype;
         obj->id() = idx++;
         obj->initialize(key);
 
@@ -73,6 +75,13 @@ void Sampling::initialize()
     if (m_out_fmt == "netcdf") {
         prepare_netcdf_file();
     }
+
+    m_sample_buf.assign(m_total_particles * m_var_names.size(), 0.0);
+
+    if (m_restart_sample) {
+        sampling_workflow();
+        sampling_post();
+    }
 }
 
 void Sampling::update_container()
@@ -81,10 +90,14 @@ void Sampling::update_container()
 
     // Initialize the particle container based on user inputs
     m_scontainer = std::make_unique<SamplingContainer>(m_sim.mesh());
+
     m_scontainer->setup_container(m_ncomp);
+
     m_scontainer->initialize_particles(m_samplers);
+
     // Redistribute particles to appropriate boxes/MPI ranks
     m_scontainer->Redistribute();
+
     m_scontainer->num_sampling_particles() =
         static_cast<int>(m_total_particles);
 }
@@ -106,31 +119,154 @@ void Sampling::post_advance_work()
     BL_PROFILE("amr-wind::Sampling::post_advance_work");
     const auto& time = m_sim.time();
     const int tidx = time.time_index();
+
     // Skip processing if delay has not been reached
     if (tidx < m_out_delay) {
         return;
     }
+
     // Skip processing if it is not an output timestep
     if (!(tidx % m_out_freq == 0)) {
         return;
     }
 
+    sampling_workflow();
+
+    process_output();
+
+    sampling_post();
+}
+
+void Sampling::sampling_workflow()
+{
+
+    BL_PROFILE("amr-wind::Sampling::sampling_workflow");
+
     update_sampling_locations();
 
     m_scontainer->interpolate_fields(m_fields);
 
-    process_output();
+    fill_buffer();
+
+    convert_velocity_lineofsight();
+
+    create_output_buffer();
+}
+
+void Sampling::sampling_post()
+{
+
+    BL_PROFILE("amr-wind::Sampling::sampling_post");
+
+    for (const auto& obj : m_samplers) {
+        obj->post_sample_actions();
+    }
+
+    m_output_buf.clear();
 }
 
 void Sampling::post_regrid_actions()
 {
-
     BL_PROFILE("amr-wind::Sampling::post_regrid_actions");
     m_scontainer->Redistribute();
 }
 
+void Sampling::convert_velocity_lineofsight()
+{
+    BL_PROFILE("amr-wind::Sampling::convert_velocity_lineofsight");
+    const long nvars = m_var_names.size();
+    std::vector<int> vel_map;
+
+    for (int iv = 0; iv < nvars; ++iv) {
+        if (m_var_names[iv] == "velocityx") {
+            vel_map.push_back(iv);
+        }
+        if (m_var_names[iv] == "velocityy") {
+            vel_map.push_back(iv);
+        }
+        if (m_var_names[iv] == "velocityz") {
+            vel_map.push_back(iv);
+        }
+    }
+
+    AMREX_ALWAYS_ASSERT(static_cast<int>(vel_map.size()) == AMREX_SPACEDIM);
+
+    long soffset = 0;
+    for (const auto& obj : m_samplers) {
+        long sample_size =
+            obj->num_points(); // sample locs for individual sampler
+
+        long scan_size =
+            (obj->do_subsampling_interp()) ? sample_size / 2 : sample_size;
+
+        std::vector<std::vector<double>> temp_vel(
+            scan_size, std::vector<double>(AMREX_SPACEDIM));
+        std::vector<std::vector<double>> temp_vel_next(
+            scan_size, std::vector<double>(AMREX_SPACEDIM));
+
+        if (obj->do_convert_velocity_los()) {
+            for (int iv = 0; iv < AMREX_SPACEDIM; ++iv) {
+                long vel_off = vel_map[iv];
+
+                long offset =
+                    vel_off * m_scontainer->num_sampling_particles() + soffset;
+                for (int j = 0; j < scan_size; ++j) {
+                    temp_vel[j][iv] = m_sample_buf[offset + j];
+                    if (obj->do_subsampling_interp()) {
+                        temp_vel_next[j][iv] =
+                            m_sample_buf[scan_size + offset + j];
+                    }
+                }
+            }
+            obj->calc_lineofsight_velocity(temp_vel, 0);
+            if (obj->do_subsampling_interp()) {
+                obj->calc_lineofsight_velocity(temp_vel_next, 1);
+            }
+        }
+        soffset += sample_size;
+    }
+}
+
+void Sampling::create_output_buffer()
+{
+    BL_PROFILE("amr-wind::Sampling::create_output_buffer");
+    const long nvars = m_var_names.size();
+    for (int iv = 0; iv < nvars; ++iv) {
+        long offset = iv * m_scontainer->num_sampling_particles();
+        for (const auto& obj : m_samplers) {
+            long sample_size = obj->num_points();
+            if (obj->do_data_modification()) {
+                // Run data through specific sampler's mod method
+                const std::vector<double> temp_sb_mod(
+                    &m_sample_buf[offset], &m_sample_buf[offset + sample_size]);
+                std::vector<double> mod_result =
+                    obj->modify_sample_data(temp_sb_mod, m_var_names[iv]);
+                m_output_buf.insert(
+                    m_output_buf.end(), mod_result.begin(), mod_result.end());
+                offset += sample_size;
+            } else {
+                // Directly put m_sample_buf in m_output_buf
+                std::vector<double> temp_sb(
+                    &m_sample_buf[offset], &m_sample_buf[offset + sample_size]);
+                m_output_buf.insert(
+                    m_output_buf.end(), temp_sb.begin(), temp_sb.end());
+                offset += sample_size;
+            }
+        }
+    }
+
+    m_output_particles = m_output_buf.size() / nvars;
+}
+
+void Sampling::fill_buffer()
+{
+    BL_PROFILE("amr-wind::Sampling::fill_buffer");
+    m_scontainer->populate_buffer(m_sample_buf);
+}
+
 void Sampling::process_output()
 {
+    BL_PROFILE("amr-wind::Sampling::process_output");
     if (m_out_fmt == "native") {
         impl_write_native();
     } else if (m_out_fmt == "ascii") {
@@ -202,15 +338,29 @@ void Sampling::prepare_netcdf_file()
     ncf.def_dim(nt_name, NC_UNLIMITED);
     ncf.def_dim("ndim", AMREX_SPACEDIM);
     ncf.def_var("time", NC_DOUBLE, {nt_name});
+
     // Define groups for each sampler
     for (const auto& obj : m_samplers) {
         auto grp = ncf.def_group(obj->label());
-
-        grp.def_dim(npart_name, obj->num_points());
+        grp.def_dim(npart_name, obj->num_output_points());
         obj->define_netcdf_metadata(grp);
         grp.def_var("coordinates", NC_DOUBLE, {npart_name, "ndim"});
-        for (const auto& vname : m_var_names)
-            grp.def_var(vname, NC_DOUBLE, two_dim);
+
+        // Create variables in each sampler
+        // Removing velocity components when LOS velocity is output
+        for (const std::string vname : m_var_names) {
+            if (obj->do_convert_velocity_los() == false) {
+                grp.def_var(vname, NC_DOUBLE, two_dim);
+            } else {
+                if (vname.find("velocity") == std::string::npos) {
+                    grp.def_var(vname, NC_DOUBLE, two_dim);
+                }
+            }
+        }
+
+        if (obj->do_convert_velocity_los()) {
+            grp.def_var("los_velocity", NC_DOUBLE, two_dim);
+        }
     }
     ncf.exit_def_mode();
 
@@ -221,9 +371,9 @@ void Sampling::prepare_netcdf_file()
         for (const auto& obj : m_samplers) {
             auto grp = ncf.group(obj->label());
             obj->populate_netcdf_metadata(grp);
-            obj->sampling_locations(locs);
+            obj->output_locations(locs);
             auto xyz = grp.var("coordinates");
-            count[0] = obj->num_points();
+            count[0] = obj->num_output_points();
             xyz.put(&locs[0][0], start, count);
         }
     }
@@ -238,9 +388,6 @@ void Sampling::prepare_netcdf_file()
 void Sampling::write_netcdf()
 {
 #ifdef AMR_WIND_USE_NETCDF
-    std::vector<double> buf(m_total_particles * m_var_names.size(), 0.0);
-    m_scontainer->populate_buffer(buf);
-
     if (!amrex::ParallelDescriptor::IOProcessor()) return;
     auto ncf = ncutils::NCFile::open(m_ncfile_name, NC_WRITE);
     const std::string nt_name = "num_time_steps";
@@ -259,24 +406,37 @@ void Sampling::write_netcdf()
     std::vector<size_t> start{nt, 0};
     std::vector<size_t> count{1, 0};
 
+    // Standard sampler output from input deck
     const int nvars = m_var_names.size();
     for (int iv = 0; iv < nvars; ++iv) {
+        std::string vname = m_var_names[iv];
         start[1] = 0;
         count[1] = 0;
-        int offset = iv * m_scontainer->num_sampling_particles();
+        int offset = iv * num_output_particles();
         for (const auto& obj : m_samplers) {
             auto grp = ncf.group(obj->label());
-            auto var = grp.var(m_var_names[iv]);
-            // Do sampler specific output if needed
-            bool do_output = obj->output_netcdf_field(&buf[offset], var);
-            // Do generic output if specific output returns true
-            if (do_output) {
-                count[1] = obj->num_points();
-                var.put(&buf[offset], start, count);
-                offset += count[1];
+            count[1] = obj->num_output_points();
+
+            if (obj->do_convert_velocity_los() == false) {
+                auto var = grp.var(vname);
+                var.put(&m_output_buf[offset], start, count);
+            } else {
+                if (vname.find("velocity") == std::string::npos) {
+                    auto var = grp.var(vname);
+                    var.put(&m_output_buf[offset], start, count);
+                }
             }
+            offset += count[1];
         }
     }
+
+    // Custom sampler output from sampler function
+    // Output of los_velocity goes here in addition to other custom output
+    for (const auto& obj : m_samplers) {
+        auto grp = ncf.group(obj->label());
+        bool custom_output = obj->output_netcdf_field(m_output_buf, grp, nt);
+    }
+
     ncf.close();
 #endif
 }

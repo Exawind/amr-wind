@@ -227,6 +227,204 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real strainrate(
         (vz + wy) * (vz + wy) + (wx + uz) * (wx + uz));
 }
 
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_11(
+    int degree,
+    const amrex::Real* coeffx,
+    const amrex::Real* coeffy,
+    const amrex::Real* coeffz,
+    amrex::Real x,
+    amrex::Real y,
+    amrex::Real z) noexcept
+{
+
+    const amrex::Real ux = dphidx_eval(degree, coeffx, x, y, z);
+    const amrex::Real uy = dphidy_eval(degree, coeffx, x, y, z);
+    const amrex::Real uz = dphidz_eval(degree, coeffx, x, y, z);
+    const amrex::Real vx = dphidx_eval(degree, coeffy, x, y, z);
+    const amrex::Real wx = dphidx_eval(degree, coeffz, x, y, z);
+
+    return (ux * ux + uy * vx + uz * wx) - (ux * ux + uy * uy + uz * uz) +
+           3 * (ux * ux + vx * vx + wx * wx) + (ux * ux + vx * uy + wx * uz);
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_12(
+    int degree,
+    const amrex::Real* coeffx,
+    const amrex::Real* coeffy,
+    const amrex::Real* coeffz,
+    amrex::Real x,
+    amrex::Real y,
+    amrex::Real z) noexcept
+{
+
+    const amrex::Real ux = dphidx_eval(degree, coeffx, x, y, z);
+    const amrex::Real uy = dphidy_eval(degree, coeffx, x, y, z);
+    const amrex::Real uz = dphidz_eval(degree, coeffx, x, y, z);
+    const amrex::Real vx = dphidx_eval(degree, coeffy, x, y, z);
+    const amrex::Real vy = dphidy_eval(degree, coeffy, x, y, z);
+    const amrex::Real vz = dphidz_eval(degree, coeffy, x, y, z);
+    const amrex::Real wx = dphidx_eval(degree, coeffz, x, y, z);
+    const amrex::Real wy = dphidy_eval(degree, coeffz, x, y, z);
+
+    return (ux * uy + uy * vy + uz * wy) - (ux * vx + uy * vy + uz * vz) +
+           3 * (ux * uy + vx * vy + wx * wy) + (ux * vx + vx * vy + wx * vz);
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_13(
+    int degree,
+    const amrex::Real* coeffx,
+    const amrex::Real* coeffy,
+    const amrex::Real* coeffz,
+    amrex::Real x,
+    amrex::Real y,
+    amrex::Real z) noexcept
+{
+
+    const amrex::Real ux = dphidx_eval(degree, coeffx, x, y, z);
+    const amrex::Real uy = dphidy_eval(degree, coeffx, x, y, z);
+    const amrex::Real uz = dphidz_eval(degree, coeffx, x, y, z);
+    const amrex::Real vx = dphidx_eval(degree, coeffy, x, y, z);
+    const amrex::Real vz = dphidz_eval(degree, coeffy, x, y, z);
+    const amrex::Real wx = dphidx_eval(degree, coeffz, x, y, z);
+    const amrex::Real wy = dphidy_eval(degree, coeffz, x, y, z);
+    const amrex::Real wz = dphidz_eval(degree, coeffz, x, y, z);
+
+    return (ux * uz + uy * vz + uz * wz) - (ux * wx + uy * wy + uz * wz) +
+           3 * (ux * uz + vx * vz + wx * wz) + (ux * wx + vx * wy + wx * wz);
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_21(
+    int degree,
+    const amrex::Real* coeffx,
+    const amrex::Real* coeffy,
+    const amrex::Real* coeffz,
+    amrex::Real x,
+    amrex::Real y,
+    amrex::Real z) noexcept
+{
+
+    const amrex::Real ux = dphidx_eval(degree, coeffx, x, y, z);
+    const amrex::Real uy = dphidy_eval(degree, coeffx, x, y, z);
+    const amrex::Real uz = dphidz_eval(degree, coeffx, x, y, z);
+    const amrex::Real vx = dphidx_eval(degree, coeffy, x, y, z);
+    const amrex::Real vy = dphidy_eval(degree, coeffy, x, y, z);
+    const amrex::Real vz = dphidz_eval(degree, coeffy, x, y, z);
+    const amrex::Real wx = dphidx_eval(degree, coeffz, x, y, z);
+    const amrex::Real wy = dphidy_eval(degree, coeffz, x, y, z);
+
+    return (vx * ux + vy * vx + vz * wx) - (vx * ux + vy * uy + vz * uz) +
+           3 * (uy * ux + vy * vx + wy * wx) + (uy * ux + vy * uy + wy * uz);
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_22(
+    int degree,
+    const amrex::Real* coeffx,
+    const amrex::Real* coeffy,
+    const amrex::Real* coeffz,
+    amrex::Real x,
+    amrex::Real y,
+    amrex::Real z) noexcept
+{
+
+    const amrex::Real uy = dphidy_eval(degree, coeffx, x, y, z);
+    const amrex::Real vx = dphidx_eval(degree, coeffy, x, y, z);
+    const amrex::Real vy = dphidy_eval(degree, coeffy, x, y, z);
+    const amrex::Real vz = dphidz_eval(degree, coeffy, x, y, z);
+    const amrex::Real wy = dphidy_eval(degree, coeffz, x, y, z);
+
+    return (vx * uy + vy * vy + vz * wy) - (vx * vx + vy * vy + vz * vz) +
+           3 * (uy * vx + vy * vy + wy * wy) + (uy * vx + vy * vy + wy * vz);
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_23(
+    int degree,
+    const amrex::Real* coeffx,
+    const amrex::Real* coeffy,
+    const amrex::Real* coeffz,
+    amrex::Real x,
+    amrex::Real y,
+    amrex::Real z) noexcept
+{
+
+    const amrex::Real uy = dphidy_eval(degree, coeffx, x, y, z);
+    const amrex::Real uz = dphidz_eval(degree, coeffx, x, y, z);
+    const amrex::Real vx = dphidx_eval(degree, coeffy, x, y, z);
+    const amrex::Real vy = dphidy_eval(degree, coeffy, x, y, z);
+    const amrex::Real vz = dphidz_eval(degree, coeffy, x, y, z);
+    const amrex::Real wx = dphidx_eval(degree, coeffz, x, y, z);
+    const amrex::Real wy = dphidy_eval(degree, coeffz, x, y, z);
+    const amrex::Real wz = dphidz_eval(degree, coeffz, x, y, z);
+
+    return (vx * uz + vy * vz + vz * wz) - (vx * wx + vy * wy + vz * wz) +
+           3 * (uy * wx + vy * vz + wy * wz) + (uy * wx + vy * wy + wy * wz);
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_31(
+    int degree,
+    const amrex::Real* coeffx,
+    const amrex::Real* coeffy,
+    const amrex::Real* coeffz,
+    amrex::Real x,
+    amrex::Real y,
+    amrex::Real z) noexcept
+{
+
+    const amrex::Real ux = dphidx_eval(degree, coeffx, x, y, z);
+    const amrex::Real uy = dphidy_eval(degree, coeffx, x, y, z);
+    const amrex::Real uz = dphidz_eval(degree, coeffx, x, y, z);
+    const amrex::Real vx = dphidx_eval(degree, coeffy, x, y, z);
+    const amrex::Real vz = dphidz_eval(degree, coeffy, x, y, z);
+    const amrex::Real wx = dphidx_eval(degree, coeffz, x, y, z);
+    const amrex::Real wy = dphidy_eval(degree, coeffz, x, y, z);
+    const amrex::Real wz = dphidz_eval(degree, coeffz, x, y, z);
+
+    return (wx * ux + wy * vx + wz * wx) - (wx * ux + wy * uy + wz * uz) +
+           3 * (uz * ux + vz * vx + wz * wx) + (uz * ux + vz * uy + wz * uz);
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_32(
+    int degree,
+    const amrex::Real* coeffx,
+    const amrex::Real* coeffy,
+    const amrex::Real* coeffz,
+    amrex::Real x,
+    amrex::Real y,
+    amrex::Real z) noexcept
+{
+
+    const amrex::Real uy = dphidy_eval(degree, coeffx, x, y, z);
+    const amrex::Real uz = dphidz_eval(degree, coeffx, x, y, z);
+    const amrex::Real vx = dphidx_eval(degree, coeffy, x, y, z);
+    const amrex::Real vy = dphidy_eval(degree, coeffy, x, y, z);
+    const amrex::Real vz = dphidz_eval(degree, coeffy, x, y, z);
+    const amrex::Real wx = dphidx_eval(degree, coeffz, x, y, z);
+    const amrex::Real wy = dphidy_eval(degree, coeffz, x, y, z);
+    const amrex::Real wz = dphidz_eval(degree, coeffz, x, y, z);
+
+    return (wx * uy + wy * vy + wz * wy) - (wx * vx + wy * vy + wz * vz) +
+           3 * (uz * uy + vz * vy + wz * wy) + (uz * vx + vz * vy + wz * vz);
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_33(
+    int degree,
+    const amrex::Real* coeffx,
+    const amrex::Real* coeffy,
+    const amrex::Real* coeffz,
+    amrex::Real x,
+    amrex::Real y,
+    amrex::Real z) noexcept
+{
+
+    const amrex::Real uz = dphidz_eval(degree, coeffx, x, y, z);
+    const amrex::Real vz = dphidz_eval(degree, coeffy, x, y, z);
+    const amrex::Real wx = dphidx_eval(degree, coeffz, x, y, z);
+    const amrex::Real wy = dphidy_eval(degree, coeffz, x, y, z);
+    const amrex::Real wz = dphidz_eval(degree, coeffz, x, y, z);
+
+    return (wx * uz + wy * vz + wz * wz) - (wx * wx + wy * wy + wz * wz) +
+           3 * (uz * uz + vz * vz + wz * wz) + (uz * wx + vz * wy + wz * wz);
+}
+
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real vorticity_x(
     int degree,
     const amrex::Real* /* coeffx */,

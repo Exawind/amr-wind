@@ -48,13 +48,13 @@ void MOData::update_fluxes(int max_iters)
     do {
         utau_iter = utau;
         switch (alg_type) {
-        case HEAT_FLUX:
+        case ThetaCalcType::HEAT_FLUX:
             surf_temp = surf_temp_flux * (std::log(zref / z0) - psi_h) /
                             (utau * kappa) +
                         theta_mean;
             break;
 
-        case SURFACE_TEMPERATURE:
+        case ThetaCalcType::SURFACE_TEMPERATURE:
             surf_temp_flux = -(theta_mean - surf_temp) * utau * kappa /
                              (std::log(zref / z0) - psi_h);
             break;

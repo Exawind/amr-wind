@@ -1,10 +1,18 @@
 #ifndef DTUSPINNERSAMPLER_H
 #define DTUSPINNERSAMPLER_H
 
+#include "amr-wind/utilities/sampling/SamplingUtils.H"
 #include "amr-wind/utilities/sampling/LidarSampler.H"
 #include "amr-wind/core/vs/vector_space.H"
 
 namespace amr_wind::sampling {
+
+struct PrismParameters
+{
+    amrex::Real theta0{90};
+    amrex::Real rot{3.5};
+    amrex::Real azimuth{15.2};
+};
 
 /** Sample data along a line that moves in time
  *  \ingroup sampling
@@ -35,15 +43,32 @@ public:
      */
     void sampling_locations(SampleLocType& /*locs*/) const override;
 
+    static vs::Vector generate_lidar_pattern(
+        PrismParameters InnerPrism, PrismParameters OuterPrism, double time);
+
+    static vs::Vector adjust_lidar_pattern(
+        vs::Vector beamPt, double yaw, double pitch, double roll);
+
+#ifdef AMR_WIND_USE_OPENFAST
+
+    void bcast_turbine(double* /*turbine_pack*/, int /*root_proc*/);
+    void get_turbine_data(std::string turbine_label);
+
+#endif
+
     /** Determine how the subsampling will be done
      *
      */
     void update_sampling_locations() override;
 
-    int num_points() const override { return (m_npts * m_ns); }
+    void post_sample_actions() override{};
 
-    bool output_netcdf_field(
-        double* /*unused*/, ncutils::NCVar& /*unused*/) override;
+    long num_points() const override { return (m_beam_points * m_ntotal); }
+
+    long num_output_points() const override
+    {
+        return (m_beam_points * m_ntotal);
+    }
 
     void
     define_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
@@ -54,9 +79,51 @@ public:
         const size_t /*unused*/) const override;
 
 private:
+    // Number of subsamples in this timestep
     int m_ns{1};
-    amrex::Real m_dt_s{0.01};
+
+    // Max number of subsamples in all timesteps
+    long m_ntotal{1};
+
+    int m_update_count{0};
+    const amrex::Real radtodeg{180.0 / M_PI};
+    const amrex::Real pi{M_PI};
+    const amrex::Real twopi{2.0 * M_PI};
+    const amrex::Real threepi{3.0 * M_PI};
     amrex::Real m_time_sampling{0};
+    PrismParameters m_InnerPrism;
+    PrismParameters m_OuterPrism;
+    amrex::Vector<amrex::Real> m_lidar_center{0.0, 0.0, 0.0};
+    amrex::Real m_scan_time{2};
+    amrex::Real m_num_samples{984};
+    amrex::Real m_beam_length{270};
+    int m_beam_points{432};
+    amrex::Real m_fixed_yaw{0};
+    amrex::Real m_fixed_roll{0};
+    amrex::Real m_fixed_tilt{0};
+    amrex::Real m_hub_yaw{0};
+    amrex::Real m_hub_roll{0};
+    amrex::Real m_hub_tilt{0};
+    std::string m_spinner_mode{"fixed"};
+    std::string m_turbine_label;
+    bool m_hub_debug{false};
+    vs::Vector m_hub_location{0, 0, 0};
+    vs::Vector m_hub_location_init{0, 0, 0};
+
+#ifdef AMR_WIND_USE_OPENFAST
+
+    float turbine_base_pos[3]{0, 0, 0};
+    float current_hub_abs_pos[3]{0, 0, 0};
+    float current_hub_rot_vel[3]{0, 0, 0};
+    double current_hub_orient[9]{0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+#endif
+
+    amrex::Real m_last_hub_yaw{0};
+    amrex::Real m_last_hub_roll{0};
+    amrex::Real m_last_hub_tilt{0};
+    amrex::Vector<amrex::Real> m_last_lidar_center{0.0, 0.0, 0.0};
+    amrex::Vector<amrex::Real> step_lidar_center{0.0, 0.0, 0.0};
 };
 
 } // namespace amr_wind::sampling

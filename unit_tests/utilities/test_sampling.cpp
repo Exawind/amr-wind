@@ -5,6 +5,12 @@
 #include "amr-wind/utilities/sampling/SamplingContainer.H"
 #include "amr-wind/utilities/sampling/PlaneSampler.H"
 #include "amr-wind/utilities/sampling/VolumeSampler.H"
+#include "amr-wind/utilities/sampling/DTUSpinnerSampler.H"
+#include "amr-wind/utilities/sampling/RadarSampler.H"
+#include "amr-wind/utilities/sampling/SamplingUtils.H"
+#include "AMReX_Vector.H"
+#include "amr-wind/core/vs/vector_space.H"
+#include "amr-wind/utilities/tensor_ops.H"
 
 namespace amr_wind_tests {
 
@@ -307,6 +313,121 @@ TEST_F(SamplingTest, volume_sampler)
     volume.sampling_locations(locs);
 
     ASSERT_EQ(locs.size(), 3 * 5 * 5);
+}
+
+TEST_F(SamplingTest, spinner_sampler)
+{
+    initialize_mesh();
+    amrex::ParmParse pp("spinner");
+
+    pp.add("mode", std::string("fixed"));
+    pp.add("turbine", std::string("WTG01"));
+    pp.add("hub_debug", false);
+    pp.add("inner_prism_theta0", 90.0);
+    pp.add("inner_prism_rotrate", 3.5);
+    pp.add("inner_prism_azimuth", 15.2);
+    pp.add("outer_prism_theta0", 90.0);
+    pp.add("outer_prism_rotrate", 6.5);
+    pp.add("outer_prism_azimuth", 15.2);
+    pp.addarr("lidar_center", amrex::Vector<amrex::Real>{630.0, 192.0, 120.0});
+    pp.add("scan_time", 2.0);
+    pp.add("num_samples", 984);
+    pp.add("beam_length", 270.0);
+    pp.add("beam_points", 432);
+    pp.add("fixed_yaw", 0);
+    pp.add("fixed_roll", 0);
+    pp.add("fixed_tilt", 0);
+
+    amr_wind::sampling::DTUSpinnerSampler spinner(sim());
+    spinner.initialize("spinner");
+    amr_wind::sampling::DTUSpinnerSampler::SampleLocType locs;
+    spinner.sampling_locations(locs);
+
+    ASSERT_EQ(locs.size(), 21600);
+}
+
+TEST_F(SamplingTest, radar_sampler)
+{
+    initialize_mesh();
+    amrex::ParmParse pp("radar");
+
+    pp.add("num_points", 512);
+    pp.addarr("origin", amrex::Vector<amrex::Real>{1.0, 1.0, 1.0});
+    pp.add("sampling_frequency", 85.0);
+    pp.add("device_sampling_frequency", 30.0);
+    pp.add("radar_cone_angle", 0.25);
+    pp.add("radar_quadrature_type", std::string("truncated_normal_halfpower"));
+    pp.add("radar_npts_azimuth", 5);
+    pp.add("radar_beam_length", 100.0);
+    pp.add("angular_speed", 30.0);
+    pp.add("sweep_angle", 145.0);
+    pp.add("reset_time", 0.0);
+    pp.addarr(
+        "elevation_angles",
+        amrex::Vector<amrex::Real>{0.0, 0.1, 0.2, 0.3, 0.4});
+    pp.addarr(
+        "axis", amrex::Vector<amrex::Real>{0.707106781, 0.707106781, 0.0});
+    pp.addarr("vertical_unit_dir", amrex::Vector<amrex::Real>{0.0, 0.0, 1.0});
+    pp.add("debug_print", false);
+
+    amr_wind::sampling::RadarSampler radar(sim());
+    radar.initialize("radar");
+    amr_wind::sampling::RadarSampler::SampleLocType locs;
+    radar.sampling_locations(locs);
+
+    ASSERT_EQ(locs.size(), 193536);
+}
+
+TEST_F(SamplingTest, sampling_utils)
+{
+    namespace vs = amr_wind::vs;
+    double toler = 1.0e-10;
+    vs::Vector unitx{1.0, 0.0, 0.0};
+    vs::Vector unity{0.0, 1.0, 0.0};
+    vs::Vector unitz{0.0, 0.0, 1.0};
+    vs::Vector nunitx{-1.0, 0.0, 0.0};
+    vs::Vector ffn{-0.70710678, -0.70710678, 0.0};
+    vs::Vector ffnr{-0.70710678, 0.70710678, 0.0};
+    vs::Vector result;
+    vs::Vector angles{0.0, 180.0, 0.0};
+
+    result = amr_wind::sampling::sampling_utils::reflect(unity, ffn);
+    EXPECT_NEAR(result[0], ffnr[0], toler);
+    EXPECT_NEAR(result[1], ffnr[1], toler);
+    EXPECT_NEAR(result[2], ffnr[2], toler);
+
+    result = amr_wind::sampling::sampling_utils::rotation(angles, unitx);
+    EXPECT_NEAR(result[0], nunitx[0], toler);
+    EXPECT_NEAR(result[1], nunitx[1], toler);
+    EXPECT_NEAR(result[2], nunitx[2], toler);
+
+    result = amr_wind::sampling::sampling_utils::rotate_euler_vec(
+        unity, -90.0, unitx);
+    EXPECT_NEAR(result[0], unitz[0], toler);
+    EXPECT_NEAR(result[1], unitz[1], toler);
+    EXPECT_NEAR(result[2], unitz[2], toler);
+}
+
+TEST_F(SamplingTest, quadrature)
+{
+    double toler = 1e-12;
+    namespace vs = amr_wind::vs;
+    namespace su = amr_wind::sampling::sampling_utils;
+    int ntheta = 5;
+    double gammav = 0.25 * M_PI / 180.0;
+    std::vector<double> weights = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                   0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                   0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    vs::Vector sr{0.0, 0.0, 1.0};
+    std::vector<vs::Vector> rays = {sr, sr, sr, sr, sr, sr, sr, sr, sr, sr, sr,
+                                    sr, sr, sr, sr, sr, sr, sr, sr, sr, sr};
+
+    su::spherical_cap_truncated_normal(
+        gammav, ntheta, su::NormalRule::HALFPOWER, rays, weights);
+
+    EXPECT_NEAR(weights[0], 1.1826123083219489e-05, toler);
+    EXPECT_NEAR(weights[10], 3.004263660003298e-06, toler);
+    EXPECT_NEAR(weights[20], 6.6402168628164281e-07, toler);
 }
 
 } // namespace amr_wind_tests
