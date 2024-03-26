@@ -618,6 +618,8 @@ void MultiPhase::levelset2vof(IntField& iblank_cell, ScratchField& vof_scr)
                     amrex::Real alpha;
                     if (phi(i, j, k) < -eps) {
                         alpha = -1.0;
+                    } else if (phi(i,j,k) > eps) {
+                        alpha = 1.0;
                     } else {
                         alpha = phi(i, j, k) / normL1;
                         alpha = alpha + 0.5;

@@ -177,7 +177,7 @@ private:
     int m_sharpen_iterations = 10;
     amrex::Real m_sharpen_tolerance = 1e-12;
     int m_sharpen_calctolniter = 1;
-    amrex::Real m_sharpen_rlscale = 1.5;
+    amrex::Real m_sharpen_rlscale = 3.5;
     amrex::Real m_sharpen_margin = 0.1;
     amrex::Real m_sharpen_proctg_tol = 0.0;
     bool m_sharpen_hsp_guess = false;
