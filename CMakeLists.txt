@@ -56,10 +56,6 @@ if(AMR_WIND_ENABLE_CUDA)
     message(FATAL_ERROR "Your nvcc version is ${CMAKE_CUDA_COMPILER_VERSION} which is unsupported."
       "Please use CUDA toolkit version 10.0 or newer.")
   endif()
-  # Fix issues with GPU builds
-  if(AMR_WIND_ENABLE_OPENFAST)
-    enable_language(Fortran)
-  endif()
 endif()
 
 if(AMR_WIND_ENABLE_ROCM)
@@ -152,6 +148,7 @@ endif()
 
 if(AMR_WIND_ENABLE_OPENFAST)
   set(CMAKE_PREFIX_PATH ${OPENFAST_DIR} ${CMAKE_PREFIX_PATH})
+  enable_language(Fortran)
   find_package(OpenFAST REQUIRED)
   include(CheckIncludeFileCXX)
   set(CMAKE_REQUIRED_INCLUDES "${OpenFAST_INCLUDE_DIRS}")
