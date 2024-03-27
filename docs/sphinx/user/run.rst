@@ -31,6 +31,9 @@ Restarting AMR-Wind with OpenFAST Turbines
 -------------------------------------------
 
 .. note::
+   AMR-Wind supports OpenFAST version 3.5 (and patched versions of 3.5). Updates to OpenFAST input files should follow the `OpenFAST documentation <https://openfast.readthedocs.io/en/dev/source/user/api_change.html>`_ on the matter.
+
+.. note::
    Currently, AMR-Wind automatically creates an OpenFAST .chkp file for every AMR-Wind checkpoint. These .chkp files 
    are found within each OpenFAST turbine directory.
 
