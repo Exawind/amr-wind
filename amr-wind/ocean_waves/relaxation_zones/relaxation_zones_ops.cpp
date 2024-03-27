@@ -36,7 +36,7 @@ void read_inputs(
         pp.query("initialize_wave_field", wdata.init_wave_field);
     }
 
-    pp.query("timeramp", wdata.has_ramp);
+    wdata.has_ramp = pp.contains("timeramp_period");
     if (wdata.has_ramp) {
         pp.query("timeramp_period", wdata.ramp_period);
     }

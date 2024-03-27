@@ -10,7 +10,8 @@ as initial conditions and discretization options.
 
    Specify a string or a list of strings for each type of physics to initialize and simulate.
    Physics is additive and more than one type of physics may be used.
-   Current implemented physics are FreeStream, SyntheticTurbulence, ABL, Actuator, RayleighTaylor, BoussinesqBubble, TaylorGreenVortex, and ScalarAdvection (which is an example of using a passive scalar advection)
+   Current implemented physics include FreeStream, SyntheticTurbulence, ABL, Actuator, RayleighTaylor, BoussinesqBubble, TaylorGreenVortex, and ScalarAdvection (which is an example of using a passive scalar advection).
+   For multiphase simulations, the MultiPhase physics must be specified, and for forcing wave profiles into the domain, the OceanWaves physics must be specified as well.
    
 .. input_param:: incflo.density
 

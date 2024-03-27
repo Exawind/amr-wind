@@ -3,3 +3,9 @@ target_sources(${amr_wind_unit_test_exe_name} PRIVATE
   test_relaxation_zones.cpp
   test_wave_theories.cpp
   )
+
+if (AMR_WIND_ENABLE_W2A)
+  target_sources(${amr_wind_unit_test_exe_name} PRIVATE
+    test_waves_2_amr.cpp
+    )
+endif()
