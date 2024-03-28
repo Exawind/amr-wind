@@ -35,6 +35,41 @@ void process_vof(amrex::MultiFab& mf_vof, const amrex::Real vof_tol)
     }
 }
 
+void check_iblank(
+    amrex::MultiFab& mf_dest,
+    amrex::iMultiFab& mf_ibcell,
+    amrex::iMultiFab& mf_ibnode)
+{
+    for (amrex::MFIter mfi(mf_dest); mfi.isValid(); ++mfi) {
+        const auto& vbx = mfi.validbox();
+        const amrex::Array4<amrex::Real>& dest = mf_dest.array(mfi);
+        const amrex::Array4<int const>& ibc = mf_ibcell.const_array(mfi);
+        const amrex::Array4<int const>& ibn = mf_ibnode.const_array(mfi);
+        // Populate approximate signed distance function
+        amrex::ParallelFor(
+            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                if (ibc(i, j, k) == -1) {
+                    // Check neighboring nodes
+                    bool check = ibn(i, j, k) == -1;
+                    check = check && ibn(i + 1, j, k) == -1;
+                    check = check && ibn(i, j + 1, k) == -1;
+                    check = check && ibn(i, j, k + 1) == -1;
+                    check = check && ibn(i + 1, j + 1, k) == -1;
+                    check = check && ibn(i, j + 1, k - 1) == -1;
+                    check = check && ibn(i + 1, j, k + 1) == -1;
+                    check = check && ibn(i + 1, j + 1, k + 1) == -1;
+                    if (check) {
+                        dest(i, j, k) = 0.0;
+                    } else {
+                        dest(i, j, k) = 1.0;
+                    }
+                } else {
+                    dest(i, j, k) = 0.0;
+                }
+            });
+    }
+}
+
 void populate_psi(
     amrex::MultiFab& mf_psi, amrex::MultiFab& mf_vof, const amrex::Real i_th)
 {
@@ -995,6 +1030,45 @@ void replace_gradp(
     }
 }
 
+void replace_gradp(
+    amrex::MultiFab& mf_gp,
+    amrex::MultiFab& mf_gp0,
+    amrex::iMultiFab& mf_iblank,
+    amrex::iMultiFab& mf_iblank_node)
+{
+    for (amrex::MFIter mfi(mf_gp); mfi.isValid(); ++mfi) {
+        const auto& gbx = mfi.growntilebox();
+        const amrex::Array4<amrex::Real>& gp = mf_gp.array(mfi);
+        const amrex::Array4<const amrex::Real>& gp0 = mf_gp0.const_array(mfi);
+        const amrex::Array4<const int>& iblank = mf_iblank.const_array(mfi);
+        const amrex::Array4<const int>& iblnod =
+            mf_iblank_node.const_array(mfi);
+        amrex::ParallelFor(
+            gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                // Replace amr-wind values with originals
+                if (iblank(i, j, k) == -1) {
+                    bool check = iblnod(i, j, k) == -1;
+                    check = check && iblnod(i + 1, j, k) == -1;
+                    check = check && iblnod(i, j + 1, k) == -1;
+                    check = check && iblnod(i, j, k + 1) == -1;
+                    check = check && iblnod(i + 1, j + 1, k) == -1;
+                    check = check && iblnod(i, j + 1, k - 1) == -1;
+                    check = check && iblnod(i + 1, j, k + 1) == -1;
+                    check = check && iblnod(i + 1, j + 1, k + 1) == -1;
+                    if (!check) {
+                        gp(i, j, k, 0) = gp0(i, j, k, 0);
+                        gp(i, j, k, 1) = gp0(i, j, k, 1);
+                        gp(i, j, k, 2) = gp0(i, j, k, 2);
+                    }
+                } else {
+                    gp(i, j, k, 0) = gp0(i, j, k, 0);
+                    gp(i, j, k, 1) = gp0(i, j, k, 1);
+                    gp(i, j, k, 2) = gp0(i, j, k, 2);
+                }
+            });
+    }
+}
+
 void apply_pressure_gradient(
     amrex::MultiFab& mf_vel,
     amrex::MultiFab& mf_density,
@@ -1069,6 +1143,8 @@ void SharpenNaluDataDiscrete(
     auto gp_scr = repo.create_scratch_field(3, 2);
     auto& gp = *gp_scr;
 
+    // auto ib_check = repo.create_scratch_field(1, 0);
+
     // Give initial max possible value of pseudo-velocity scale
     auto dx_lev0 = (geom[0]).CellSizeArray();
     const amrex::Real max_pvscale =
@@ -1077,6 +1153,8 @@ void SharpenNaluDataDiscrete(
 
     // Prep things that do not change with iterations
     for (int lev = 0; lev < nlevels; ++lev) {
+        // check_iblank((*ib_check)(lev), iblank_cell(lev), iblank_node(lev));
+
         // Thickness used here is user parameter, whatever works best
         auto dx = (geom[lev]).CellSizeArray();
         const amrex::Real i_th = rlscale * std::cbrt(dx[0] * dx[1] * dx[2]);
@@ -1360,6 +1438,19 @@ void ReplaceUnMaskedGradP(
     // Replace gp with copy from before exchange
     for (int lev = 0; lev < gp.repo().num_active_levels(); ++lev) {
         replace_gradp(gp(lev), gp_copy(lev), iblank_cell(lev), 1);
+    }
+}
+
+void ReplaceUnMaskedGradP(
+    Field& gp,
+    ScratchField& gp_copy,
+    IntField& iblank_cell,
+    IntField& iblank_node)
+{
+    // Replace gp with copy from before exchange
+    for (int lev = 0; lev < gp.repo().num_active_levels(); ++lev) {
+        replace_gradp(
+            gp(lev), gp_copy(lev), iblank_cell(lev), iblank_node(lev));
     }
 }
 

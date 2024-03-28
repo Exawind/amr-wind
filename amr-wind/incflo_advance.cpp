@@ -197,12 +197,21 @@ void incflo::ApplyPredictor(bool incremental_projection)
 
     // Process data for overset multiphase
     if (sim().has_overset()) {
+        // auto& iblank_cell = density().repo().get_int_field("iblank_cell");
+        // auto& iblank_node = density().repo().get_int_field("iblank_node");
         if (m_sharpen_pressure) {
             // Start with an up-to-date pressure gradient field that will be
             // used in the sharpening process
             UpdateGradP(
                 (density_old).vec_const_ptrs(), m_time.current_time(),
                 m_time.deltaT());
+            /*amr_wind::overset::CopyGradP(
+                *gp_copy, gp, sim().repo().num_active_levels());
+            UpdateGradP(
+                (density_old).vec_const_ptrs(), m_time.current_time(),
+                m_time.deltaT());
+            amr_wind::overset::ReplaceUnMaskedGradP(
+                gp, *gp_copy, iblank_cell, iblank_node);*/
         }
         // Sharpen nalu fields
         amr_wind::overset::SharpenNaluDataDiscrete(
@@ -225,6 +234,8 @@ void incflo::ApplyPredictor(bool incremental_projection)
             UpdateGradP(
                 (density_old).vec_const_ptrs(), m_time.current_time(),
                 m_time.deltaT());
+            /*amr_wind::overset::ReplaceUnMaskedGradP(
+                gp, *gp_copy, iblank_cell, iblank_node);*/
         }
         if (m_sharpen_hsp_guess) {
             // Use sharpened density to replace gradp with hydrostatic gradp
