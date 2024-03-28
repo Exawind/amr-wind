@@ -87,10 +87,6 @@ init_amrex_hydro()
 
 ########################### AMR-Wind #####################################
 
-if(AMR_WIND_ENABLE_MPI)
-  find_package(MPI REQUIRED)
-endif()
-
 # General information about machine, compiler, and build type
 message(STATUS "AMR-Wind Information:")
 message(STATUS "CMAKE_SYSTEM_NAME = ${CMAKE_SYSTEM_NAME}")
@@ -119,6 +115,25 @@ endif()
 
 include(set_compile_flags)
 
+if(AMR_WIND_ENABLE_OPENFAST)
+  set(CMAKE_PREFIX_PATH ${OPENFAST_DIR} ${CMAKE_PREFIX_PATH})
+  enable_language(Fortran)
+  find_package(OpenFAST REQUIRED)
+  include(CheckIncludeFileCXX)
+  set(CMAKE_REQUIRED_INCLUDES "${OpenFAST_INCLUDE_DIRS}")
+  check_include_file_cxx("SCDataEx_Types.h" USE_SCDX)
+  if(USE_SCDX)
+    target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_FAST_USE_SCDX)
+  endif()
+  target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_OPENFAST)
+  target_include_directories(${amr_wind_lib_name} PUBLIC ${OpenFAST_INCLUDE_DIRS})
+  target_link_libraries(${amr_wind_lib_name} PUBLIC ${OpenFAST_LIBRARIES})
+endif()
+
+if(AMR_WIND_ENABLE_MPI)
+  find_package(MPI REQUIRED)
+endif()
+
 if(AMR_WIND_ENABLE_NETCDF)
   set(CMAKE_PREFIX_PATH ${NETCDF_DIR} ${CMAKE_PREFIX_PATH})
   find_package(NetCDF REQUIRED)
@@ -144,21 +159,6 @@ if(AMR_WIND_ENABLE_MASA)
   find_package(MASA REQUIRED)
   target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_MASA)
   target_link_libraries(${amr_wind_lib_name} PUBLIC MASA::MASA)
-endif()
-
-if(AMR_WIND_ENABLE_OPENFAST)
-  set(CMAKE_PREFIX_PATH ${OPENFAST_DIR} ${CMAKE_PREFIX_PATH})
-  enable_language(Fortran)
-  find_package(OpenFAST REQUIRED)
-  include(CheckIncludeFileCXX)
-  set(CMAKE_REQUIRED_INCLUDES "${OpenFAST_INCLUDE_DIRS}")
-  check_include_file_cxx("SCDataEx_Types.h" USE_SCDX)
-  if(USE_SCDX)
-    target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_FAST_USE_SCDX)
-  endif()
-  target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_OPENFAST)
-  target_include_directories(${amr_wind_lib_name} PUBLIC ${OpenFAST_INCLUDE_DIRS})
-  target_link_libraries(${amr_wind_lib_name} PUBLIC ${OpenFAST_LIBRARIES})
 endif()
 
 if(AMR_WIND_ENABLE_ASCENT)
