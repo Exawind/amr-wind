@@ -92,7 +92,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amd_thermal_diff(
     int j,
     int k,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx, // Grid spacing
-    amrex::Real C,    // Poincare const
+    amrex::Real C,                                         // Poincare const
     amrex::Array4<amrex::Real const> const& gradVel,
     amrex::Array4<amrex::Real const> const& gradT) noexcept
 {

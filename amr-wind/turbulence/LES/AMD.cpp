@@ -118,11 +118,12 @@ void AMD<Transport>::update_alphaeff(Field& alphaeff)
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real rho = rho_arr(i, j, k);
-                    alpha_arr(i, j, k) = rho * amd_thermal_diff(i, j, k, dx, C_poincare,gradVel_arr, gradT_arr);
+                    alpha_arr(i, j, k) = rho * amd_thermal_diff(
+                                                   i, j, k, dx, C_poincare,
+                                                   gradVel_arr, gradT_arr);
                 });
         }
     }
-
 }
 
 template <typename Transport>
