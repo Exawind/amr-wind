@@ -81,10 +81,11 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
   message(WARNING "Disabling FPE trapping for tests when using AppleClang.")
 endif()
 
-########################### AMReX #####################################
 if(AMR_WIND_ENABLE_OPENFAST)
   enable_language(Fortran)
 endif()
+
+########################### AMReX #####################################
 init_amrex()
 init_amrex_hydro()
 
