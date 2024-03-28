@@ -1,10 +1,14 @@
 #ifndef AMD_H
 #define AMD_H
 
+#include <AMReX_GpuContainers.H>
 #include <string>
 #include "amr-wind/turbulence/TurbModelBase.H"
+#include "amr-wind/utilities/FieldPlaneAveraging.H"
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/fvm/stencils.H"
+#include "amr-wind/utilities/DirectionSelector.H"
+#include "amr-wind/utilities/linear_interpolation.H"
 
 namespace amr_wind::turbulence {
 /** AMD LES Model
@@ -24,6 +28,10 @@ public:
     //! Update the turbulent viscosity field
     void update_turbulent_viscosity(
         const FieldState fstate, const DiffusionType /*unused*/) override;
+
+    template <typename IndexSelector>
+    void update_turbulent_viscosity(
+        const FieldState fstate, const IndexSelector& idxOp);
 
     //! Update the effective thermal diffusivity field
     void update_alphaeff(Field& alphaeff) override;
@@ -45,12 +53,17 @@ private:
     //! Reference temperature (Kelvin)
     amrex::Real m_ref_theta{300.0};
 
+    //! Wall-normal direction axis
+    int m_normal_dir{2};
+
     const Field& m_vel;
     const Field& m_temperature;
     const Field& m_rho;
+    FieldPlaneAveraging m_pa_temp;
     amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
 };
 
+template <typename IndexSelector>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amd_muvel(
     int i,
     int j,
@@ -59,15 +72,25 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amd_muvel(
     amrex::Real beta, // Thermal expansion coefficient
     amrex::Real C,    // Poincare const
     amrex::Array4<amrex::Real const> const& gradVel,
-    amrex::Array4<amrex::Real const> const& gradT) noexcept
+    amrex::Array4<amrex::Real const> const& gradT,
+    amrex::Gpu::DeviceVector<amrex::Real> const& gradTbar,
+    amrex::Gpu::DeviceVector<amrex::Real> const& gradTbar_coord,
+    const int normal_dir,
+    const amrex::Real nlo,
+    const IndexSelector& idxOp) noexcept
 {
     amrex::Real num_shear = 0;
     amrex::Real num_buoy = 0;
     amrex::Real denom = 0;
+    const int n_ind = idxOp(i, j, k);
+    amrex::Real h = nlo + (n_ind + 0.5) * dx[normal_dir];
+    amrex::Real gradTbar_h =
+        amr_wind::interp::linear(gradTbar_coord, gradTbar, h);
     for (int ii = 0; ii < AMREX_SPACEDIM; ++ii) {
         // num_buoy = dw/dx_i dT/dx_i
-        num_buoy = num_buoy + gradVel(i, j, k, 2 * AMREX_SPACEDIM + ii) *
-                                  gradT(i, j, k, ii) * dx[ii] * dx[ii];
+        num_buoy =
+            num_buoy + gradVel(i, j, k, normal_dir * AMREX_SPACEDIM + ii) *
+                           (gradT(i, j, k, ii) - gradTbar_h) * dx[ii] * dx[ii];
         for (int jj = 0; jj < AMREX_SPACEDIM; ++jj) {
             amrex::Real diuj = gradVel(i, j, k, ii * AMREX_SPACEDIM + jj);
             amrex::Real djui = gradVel(i, j, k, jj * AMREX_SPACEDIM + ii);

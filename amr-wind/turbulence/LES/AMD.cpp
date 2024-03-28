@@ -1,8 +1,10 @@
+#include <AMReX_GpuContainers.H>
 #include <cmath>
 
 #include "amr-wind/fvm/gradient.H"
 #include "amr-wind/turbulence/LES/AMD.H"
 #include "amr-wind/turbulence/TurbModelDefs.H"
+#include "amr-wind/utilities/DirectionSelector.H"
 
 #include "AMReX_REAL.H"
 #include "AMReX_MultiFab.H"
@@ -18,6 +20,7 @@ AMD<Transport>::AMD(CFDSim& sim)
     , m_vel(sim.repo().get_field("velocity"))
     , m_temperature(sim.repo().get_field("temperature"))
     , m_rho(sim.repo().get_field("density"))
+    , m_pa_temp(m_temperature, sim.time(), m_normal_dir, true)
 {
     auto& phy_mgr = this->m_sim.physics_manager();
     if (phy_mgr.contains("ABL")) {
@@ -44,6 +47,27 @@ template <typename Transport>
 void AMD<Transport>::update_turbulent_viscosity(
     const FieldState fstate, const DiffusionType /*unused*/)
 {
+    switch (m_normal_dir) {
+    case 0:
+        update_turbulent_viscosity(fstate, XDir());
+        break;
+    case 1:
+        update_turbulent_viscosity(fstate, YDir());
+        break;
+    case 2:
+        update_turbulent_viscosity(fstate, ZDir());
+        break;
+    default:
+        amrex::Abort("Normal direction must be 0, 1 or 2");
+        break;
+    }
+}
+
+template <typename Transport>
+template <typename IndexSelector>
+void AMD<Transport>::update_turbulent_viscosity(
+    const FieldState fstate, const IndexSelector& idxOp)
+{
     BL_PROFILE(
         "amr-wind::" + this->identifier() + "::update_turbulent_viscosity");
 
@@ -54,21 +78,38 @@ void AMD<Transport>::update_turbulent_viscosity(
     const auto& den = m_rho.state(fstate);
     const auto& geom_vec = repo.mesh().Geom();
     amrex::Real beta = 0.0;
+    const int normal_dir = m_normal_dir;
     auto& phy_mgr = this->m_sim.physics_manager();
     if (phy_mgr.contains("ABL")) {
-        beta = -m_gravity[2] / m_ref_theta;
+        beta = -m_gravity[normal_dir] / m_ref_theta;
     }
 
-    const amrex::Real C_poincare = this->m_C;
+    const amrex::Real C_poincare = m_C;
 
     auto gradVel = repo.create_scratch_field(AMREX_SPACEDIM * AMREX_SPACEDIM);
     fvm::gradient(*gradVel, vel);
     auto gradT = repo.create_scratch_field(AMREX_SPACEDIM);
     fvm::gradient(*gradT, temp);
+    m_pa_temp(); // compute the current plane average
+    const auto& tpa_deriv = m_pa_temp.line_deriv();
+    amrex::Gpu::DeviceVector<amrex::Real> tpa_deriv_d(tpa_deriv.size(), 0.0);
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, tpa_deriv.begin(), tpa_deriv.end(),
+        tpa_deriv_d.begin());
+    amrex::Vector<amrex::Real> tpa_coord(tpa_deriv.size(), 0.0);
+    for (int i = 0; i < m_pa_temp.ncell_line(); ++i) {
+        tpa_coord[i] = m_pa_temp.xlo() + (0.5 + i) * m_pa_temp.dx();
+    }
+    amrex::Gpu::DeviceVector<amrex::Real> tpa_coord_d(tpa_coord.size(), 0.0);
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, tpa_coord.begin(), tpa_coord.end(),
+        tpa_coord_d.begin());
+
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = geom_vec[lev];
-
+        const auto& problo = geom.ProbLoArray();
+        const amrex::Real nlo = problo[normal_dir];
         const auto& dx = geom.CellSizeArray();
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
@@ -79,9 +120,11 @@ void AMD<Transport>::update_turbulent_viscosity(
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real rho = rho_arr(i, j, k);
-                    mu_arr(i, j, k) = rho * amd_muvel(
-                                                i, j, k, dx, beta, C_poincare,
-                                                gradVel_arr, gradT_arr);
+                    mu_arr(i, j, k) =
+                        rho * amd_muvel(
+                                  i, j, k, dx, beta, C_poincare, gradVel_arr,
+                                  gradT_arr, tpa_deriv_d, tpa_coord_d,
+                                  normal_dir, nlo, idxOp);
                 });
         }
     }
@@ -98,7 +141,7 @@ void AMD<Transport>::update_alphaeff(Field& alphaeff)
 
     const auto& repo = alphaeff.repo();
     const auto& geom_vec = repo.mesh().Geom();
-    const amrex::Real C_poincare = this->m_C;
+    const amrex::Real C_poincare = m_C;
     auto gradVel = repo.create_scratch_field(AMREX_SPACEDIM * AMREX_SPACEDIM);
     fvm::gradient(*gradVel, m_vel);
     auto gradT = repo.create_scratch_field(AMREX_SPACEDIM);
@@ -129,7 +172,7 @@ void AMD<Transport>::update_alphaeff(Field& alphaeff)
 template <typename Transport>
 TurbulenceModel::CoeffsDictType AMD<Transport>::model_coeffs() const
 {
-    return TurbulenceModel::CoeffsDictType{{"C_poincare", this->m_C}};
+    return TurbulenceModel::CoeffsDictType{{"C_poincare", m_C}};
 }
 
 } // namespace turbulence

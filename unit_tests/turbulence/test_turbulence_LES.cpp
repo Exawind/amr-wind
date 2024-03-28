@@ -415,12 +415,10 @@ TEST_F(TurbLESTest, test_AMD_setup_calc)
     const auto max_val = utils::field_max(muturb);
     const amrex::Real tol = 1e-12;
 
-    const amrex::Real amd_answer =
-        C *
-        (-1.0 * std::pow(scale / sqrt(6), 3) *
-             (dx * dx - 8 * dy * dy - dz * dz) +
-         gravz / Tref * (-1.0 * Tgz * scale / sqrt(6) * dz * dz)) /
-        (1 * scale * scale);
+    const amrex::Real amd_answer = C *
+                                   (-1.0 * std::pow(scale / sqrt(6), 3) *
+                                    (dx * dx - 8 * dy * dy - dz * dz)) /
+                                   (1 * scale * scale);
     EXPECT_NEAR(min_val, amd_answer, tol);
     EXPECT_NEAR(max_val, amd_answer, tol);
 
