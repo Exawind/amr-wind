@@ -99,165 +99,30 @@ void AMD<Transport>::update_alphaeff(Field& alphaeff)
     const auto& repo = alphaeff.repo();
     const auto& geom_vec = repo.mesh().Geom();
     const amrex::Real C_poincare = this->m_C;
-    namespace stencil = amr_wind::fvm::stencil;
+    auto gradVel = repo.create_scratch_field(AMREX_SPACEDIM * AMREX_SPACEDIM);
+    fvm::gradient(*gradVel, m_vel);
+    auto gradT = repo.create_scratch_field(AMREX_SPACEDIM);
+    fvm::gradient(*gradT, m_temperature);
 
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = geom_vec[lev];
-        const auto& domain = geom.Domain();
 
-        const amrex::Real dx = geom.CellSize()[0];
-        const amrex::Real dy = geom.CellSize()[1];
-        const amrex::Real dz = geom.CellSize()[2];
-
+        const auto& dx = geom.CellSizeArray();
         for (amrex::MFIter mfi(alphaeff(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
+            const auto& gradVel_arr = (*gradVel)(lev).array(mfi);
+            const auto& gradT_arr = (*gradT)(lev).array(mfi);
             const auto& alpha_arr = alphaeff(lev).array(mfi);
             const auto& rho_arr = m_rho(lev).const_array(mfi);
-            const auto& vel_arr = m_vel(lev).array(mfi);
-            const auto& temp_arr = m_temperature(lev).array(mfi);
-
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real rho = rho_arr(i, j, k);
-                    alpha_arr(i, j, k) =
-                        rho *
-                        amd_thermal_diff<stencil::StencilInterior>(
-                            i, j, k, dx, dy, dz, C_poincare, vel_arr, temp_arr);
+                    alpha_arr(i, j, k) = rho * amd_thermal_diff(i, j, k, dx, C_poincare,gradVel_arr, gradT_arr);
                 });
-
-            // TODO: Check if the following is correct for `foextrap` BC types
-            const auto& bxi = mfi.tilebox();
-            int idim = 0;
-            if (!geom.isPeriodic(idim)) {
-                if (bxi.smallEnd(idim) == domain.smallEnd(idim)) {
-                    amrex::IntVect low(bxi.smallEnd());
-                    amrex::IntVect hi(bxi.bigEnd());
-                    int sm = low[idim];
-                    low.setVal(idim, sm);
-                    hi.setVal(idim, sm);
-
-                    auto bxlo = amrex::Box(low, hi);
-
-                    amrex::ParallelFor(
-                        bxlo,
-                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const amrex::Real rho = rho_arr(i, j, k);
-                            alpha_arr(i, j, k) =
-                                rho * amd_thermal_diff<stencil::StencilILO>(
-                                          i, j, k, dx, dy, dz, C_poincare,
-                                          vel_arr, temp_arr);
-                        });
-                }
-
-                if (bxi.bigEnd(idim) == domain.bigEnd(idim)) {
-                    amrex::IntVect low(bxi.smallEnd());
-                    amrex::IntVect hi(bxi.bigEnd());
-                    int sm = hi[idim];
-                    low.setVal(idim, sm);
-                    hi.setVal(idim, sm);
-
-                    auto bxhi = amrex::Box(low, hi);
-
-                    amrex::ParallelFor(
-                        bxhi,
-                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const amrex::Real rho = rho_arr(i, j, k);
-                            alpha_arr(i, j, k) =
-                                rho * amd_thermal_diff<stencil::StencilIHI>(
-                                          i, j, k, dx, dy, dz, C_poincare,
-                                          vel_arr, temp_arr);
-                        });
-                }
-            } // if (!geom.isPeriodic)
-
-            idim = 1;
-            if (!geom.isPeriodic(idim)) {
-                if (bxi.smallEnd(idim) == domain.smallEnd(idim)) {
-                    amrex::IntVect low(bxi.smallEnd());
-                    amrex::IntVect hi(bxi.bigEnd());
-                    int sm = low[idim];
-                    low.setVal(idim, sm);
-                    hi.setVal(idim, sm);
-
-                    auto bxlo = amrex::Box(low, hi);
-
-                    amrex::ParallelFor(
-                        bxlo,
-                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const amrex::Real rho = rho_arr(i, j, k);
-                            alpha_arr(i, j, k) =
-                                rho * amd_thermal_diff<stencil::StencilJLO>(
-                                          i, j, k, dx, dy, dz, C_poincare,
-                                          vel_arr, temp_arr);
-                        });
-                }
-
-                if (bxi.bigEnd(idim) == domain.bigEnd(idim)) {
-                    amrex::IntVect low(bxi.smallEnd());
-                    amrex::IntVect hi(bxi.bigEnd());
-                    int sm = hi[idim];
-                    low.setVal(idim, sm);
-                    hi.setVal(idim, sm);
-
-                    auto bxhi = amrex::Box(low, hi);
-
-                    amrex::ParallelFor(
-                        bxhi,
-                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const amrex::Real rho = rho_arr(i, j, k);
-                            alpha_arr(i, j, k) =
-                                rho * amd_thermal_diff<stencil::StencilJHI>(
-                                          i, j, k, dx, dy, dz, C_poincare,
-                                          vel_arr, temp_arr);
-                        });
-                }
-            } // if (!geom.isPeriodic)
-
-            idim = 2;
-            if (!geom.isPeriodic(idim)) {
-                if (bxi.smallEnd(idim) == domain.smallEnd(idim)) {
-                    amrex::IntVect low(bxi.smallEnd());
-                    amrex::IntVect hi(bxi.bigEnd());
-                    int sm = low[idim];
-                    low.setVal(idim, sm);
-                    hi.setVal(idim, sm);
-
-                    auto bxlo = amrex::Box(low, hi);
-
-                    amrex::ParallelFor(
-                        bxlo,
-                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const amrex::Real rho = rho_arr(i, j, k);
-                            alpha_arr(i, j, k) =
-                                rho * amd_thermal_diff<stencil::StencilKLO>(
-                                          i, j, k, dx, dy, dz, C_poincare,
-                                          vel_arr, temp_arr);
-                        });
-                }
-
-                if (bxi.bigEnd(idim) == domain.bigEnd(idim)) {
-                    amrex::IntVect low(bxi.smallEnd());
-                    amrex::IntVect hi(bxi.bigEnd());
-                    int sm = hi[idim];
-                    low.setVal(idim, sm);
-                    hi.setVal(idim, sm);
-
-                    auto bxhi = amrex::Box(low, hi);
-
-                    amrex::ParallelFor(
-                        bxhi,
-                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const amrex::Real rho = rho_arr(i, j, k);
-                            alpha_arr(i, j, k) =
-                                rho * amd_thermal_diff<stencil::StencilKHI>(
-                                          i, j, k, dx, dy, dz, C_poincare,
-                                          vel_arr, temp_arr);
-                        });
-                }
-            } // if (!geom.isPeriodic)
         }
     }
+
 }
 
 template <typename Transport>

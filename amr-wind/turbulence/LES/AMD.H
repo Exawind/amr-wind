@@ -87,84 +87,29 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amd_muvel(
     return std::max(1e-15, (num_shear + num_buoy) / denom);
 }
 
-template <typename Stencil>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amd_thermal_diff(
     int i,
     int j,
     int k,
-    amrex::Real dx, // Grid spacing in x direction
-    amrex::Real dy, // Grid spacing in x direction
-    amrex::Real dz, // Grid spacing in x direction
-    amrex::Real C,  // Poincare const
-    amrex::Array4<amrex::Real const> const& vel,
-    amrex::Array4<amrex::Real const> const& theta) noexcept
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx, // Grid spacing
+    amrex::Real C,    // Poincare const
+    amrex::Array4<amrex::Real const> const& gradVel,
+    amrex::Array4<amrex::Real const> const& gradT) noexcept
 {
-    const amrex::Real idx = 1.0 / dx;
-    const amrex::Real idy = 1.0 / dy;
-    const amrex::Real idz = 1.0 / dz;
+    amrex::Real num = 0;
+    amrex::Real denom = 0;
+    for (int ii = 0; ii < AMREX_SPACEDIM; ++ii) {
+        amrex::Real diT = gradT(i, j, k, ii);
+        denom = denom + diT * diT;
+        for (int kk = 0; kk < AMREX_SPACEDIM; ++kk) {
+            amrex::Real dkui = gradVel(i, j, k, ii * AMREX_SPACEDIM + kk);
+            amrex::Real dkT = gradT(i, j, k, kk);
+            num = num + dkui * diT * dkT * dx[kk] * dx[kk];
+        }
+    }
 
-    amrex::Real cp1, c, cm1;
-
-    cp1 = Stencil::c00;
-    c = Stencil::c01;
-    cm1 = Stencil::c02;
-
-    const amrex::Real ux = (cp1 * vel(i + 1, j, k, 0) + c * vel(i, j, k, 0) +
-                            cm1 * vel(i - 1, j, k, 0)) *
-                           idx;
-    const amrex::Real vx = (cp1 * vel(i + 1, j, k, 1) + c * vel(i, j, k, 1) +
-                            cm1 * vel(i - 1, j, k, 1)) *
-                           idx;
-    const amrex::Real wx = (cp1 * vel(i + 1, j, k, 2) + c * vel(i, j, k, 2) +
-                            cm1 * vel(i - 1, j, k, 2)) *
-                           idx;
-    const amrex::Real tx = (cp1 * theta(i + 1, j, k) + c * theta(i, j, k) +
-                            cm1 * theta(i - 1, j, k)) *
-                           idx;
-
-    cp1 = Stencil::c10;
-    c = Stencil::c11;
-    cm1 = Stencil::c12;
-
-    const amrex::Real uy = (cp1 * vel(i, j + 1, k, 0) + c * vel(i, j, k, 0) +
-                            cm1 * vel(i, j - 1, k, 0)) *
-                           idy;
-    const amrex::Real vy = (cp1 * vel(i, j + 1, k, 1) + c * vel(i, j, k, 1) +
-                            cm1 * vel(i, j - 1, k, 1)) *
-                           idy;
-    const amrex::Real wy = (cp1 * vel(i, j + 1, k, 2) + c * vel(i, j, k, 2) +
-                            cm1 * vel(i, j - 1, k, 2)) *
-                           idy;
-    const amrex::Real ty = (cp1 * theta(i, j + 1, k) + c * theta(i, j, k) +
-                            cm1 * theta(i, j - 1, k)) *
-                           idy;
-
-    cp1 = Stencil::c20;
-    c = Stencil::c21;
-    cm1 = Stencil::c22;
-
-    const amrex::Real uz = (cp1 * vel(i, j, k + 1, 0) + c * vel(i, j, k, 0) +
-                            cm1 * vel(i, j, k - 1, 0)) *
-                           idz;
-    const amrex::Real vz = (cp1 * vel(i, j, k + 1, 1) + c * vel(i, j, k, 1) +
-                            cm1 * vel(i, j, k - 1, 1)) *
-                           idz;
-    const amrex::Real wz = (cp1 * vel(i, j, k + 1, 2) + c * vel(i, j, k, 2) +
-                            cm1 * vel(i, j, k - 1, 2)) *
-                           idz;
-    const amrex::Real tz = (cp1 * theta(i, j, k + 1) + c * theta(i, j, k) +
-                            cm1 * theta(i, j, k - 1)) *
-                           idz;
-
-    const amrex::Real dx2 = dx * dx;
-    const amrex::Real dy2 = dy * dy;
-    const amrex::Real dz2 = dz * dz;
-    const amrex::Real num =
-        -C * ((dx2 * ux * tx + dy2 * uy * ty + dz2 * uz * tz) * tx +
-              (dx2 * vx * tx + dy2 * vy * ty + dz2 * vz * tz) * ty +
-              (dx2 * wx * tx + dy2 * wy * ty + dz2 * wz * tz) * tz);
-
-    amrex::Real denom = tx * tx + ty * ty + tz * tz + 1e-15;
+    denom = std::max(1e-15, denom);
+    num = -C * num;
     return std::max(1e-15, num / denom);
 }
 
