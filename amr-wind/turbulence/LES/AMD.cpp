@@ -1,5 +1,6 @@
 #include <cmath>
 
+#include "amr-wind/fvm/gradient.H"
 #include "amr-wind/turbulence/LES/AMD.H"
 #include "amr-wind/turbulence/TurbModelDefs.H"
 
@@ -59,162 +60,29 @@ void AMD<Transport>::update_turbulent_viscosity(
     }
 
     const amrex::Real C_poincare = this->m_C;
-    namespace stencil = amr_wind::fvm::stencil;
 
+    auto gradVel = repo.create_scratch_field(AMREX_SPACEDIM * AMREX_SPACEDIM);
+    fvm::gradient(*gradVel, vel);
+    auto gradT = repo.create_scratch_field(AMREX_SPACEDIM);
+    fvm::gradient(*gradT, temp);
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = geom_vec[lev];
-        const auto& domain = geom.Domain();
 
-        const amrex::Real dx = geom.CellSize()[0];
-        const amrex::Real dy = geom.CellSize()[1];
-        const amrex::Real dz = geom.CellSize()[2];
-
+        const auto& dx = geom.CellSizeArray();
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
+            const auto& gradVel_arr = (*gradVel)(lev).array(mfi);
+            const auto& gradT_arr = (*gradT)(lev).array(mfi);
             const auto& mu_arr = mu_turb(lev).array(mfi);
             const auto& rho_arr = den(lev).const_array(mfi);
-            const auto& vel_arr = vel(lev).array(mfi);
-            const auto& temp_arr = temp(lev).array(mfi);
-
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real rho = rho_arr(i, j, k);
-                    mu_arr(i, j, k) = rho * amd_muvel<stencil::StencilInterior>(
-                                                i, j, k, dx, dy, dz, beta,
-                                                C_poincare, vel_arr, temp_arr);
+                    mu_arr(i, j, k) =
+                        rho *
+                        amd_muvel(i, j, k, dx, beta, C_poincare, gradVel_arr, gradT_arr);
                 });
-
-            // TODO: Check if the following is correct for `foextrap` BC types
-            const auto& bxi = mfi.tilebox();
-            int idim = 0;
-            if (!geom.isPeriodic(idim)) {
-                if (bxi.smallEnd(idim) == domain.smallEnd(idim)) {
-                    amrex::IntVect low(bxi.smallEnd());
-                    amrex::IntVect hi(bxi.bigEnd());
-                    int sm = low[idim];
-                    low.setVal(idim, sm);
-                    hi.setVal(idim, sm);
-
-                    auto bxlo = amrex::Box(low, hi);
-
-                    amrex::ParallelFor(
-                        bxlo,
-                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const amrex::Real rho = rho_arr(i, j, k);
-                            mu_arr(i, j, k) =
-                                rho * amd_muvel<stencil::StencilILO>(
-                                          i, j, k, dx, dy, dz, beta, C_poincare,
-                                          vel_arr, temp_arr);
-                        });
-                }
-
-                if (bxi.bigEnd(idim) == domain.bigEnd(idim)) {
-                    amrex::IntVect low(bxi.smallEnd());
-                    amrex::IntVect hi(bxi.bigEnd());
-                    int sm = hi[idim];
-                    low.setVal(idim, sm);
-                    hi.setVal(idim, sm);
-
-                    auto bxhi = amrex::Box(low, hi);
-
-                    amrex::ParallelFor(
-                        bxhi,
-                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const amrex::Real rho = rho_arr(i, j, k);
-                            mu_arr(i, j, k) =
-                                rho * amd_muvel<stencil::StencilIHI>(
-                                          i, j, k, dx, dy, dz, beta, C_poincare,
-                                          vel_arr, temp_arr);
-                        });
-                }
-            } // if (!geom.isPeriodic)
-
-            idim = 1;
-            if (!geom.isPeriodic(idim)) {
-                if (bxi.smallEnd(idim) == domain.smallEnd(idim)) {
-                    amrex::IntVect low(bxi.smallEnd());
-                    amrex::IntVect hi(bxi.bigEnd());
-                    int sm = low[idim];
-                    low.setVal(idim, sm);
-                    hi.setVal(idim, sm);
-
-                    auto bxlo = amrex::Box(low, hi);
-
-                    amrex::ParallelFor(
-                        bxlo,
-                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const amrex::Real rho = rho_arr(i, j, k);
-                            mu_arr(i, j, k) =
-                                rho * amd_muvel<stencil::StencilJLO>(
-                                          i, j, k, dx, dy, dz, beta, C_poincare,
-                                          vel_arr, temp_arr);
-                        });
-                }
-
-                if (bxi.bigEnd(idim) == domain.bigEnd(idim)) {
-                    amrex::IntVect low(bxi.smallEnd());
-                    amrex::IntVect hi(bxi.bigEnd());
-                    int sm = hi[idim];
-                    low.setVal(idim, sm);
-                    hi.setVal(idim, sm);
-
-                    auto bxhi = amrex::Box(low, hi);
-
-                    amrex::ParallelFor(
-                        bxhi,
-                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const amrex::Real rho = rho_arr(i, j, k);
-                            mu_arr(i, j, k) =
-                                rho * amd_muvel<stencil::StencilJHI>(
-                                          i, j, k, dx, dy, dz, beta, C_poincare,
-                                          vel_arr, temp_arr);
-                        });
-                }
-            } // if (!geom.isPeriodic)
-
-            idim = 2;
-            if (!geom.isPeriodic(idim)) {
-                if (bxi.smallEnd(idim) == domain.smallEnd(idim)) {
-                    amrex::IntVect low(bxi.smallEnd());
-                    amrex::IntVect hi(bxi.bigEnd());
-                    int sm = low[idim];
-                    low.setVal(idim, sm);
-                    hi.setVal(idim, sm);
-
-                    auto bxlo = amrex::Box(low, hi);
-
-                    amrex::ParallelFor(
-                        bxlo,
-                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const amrex::Real rho = rho_arr(i, j, k);
-                            mu_arr(i, j, k) =
-                                rho * amd_muvel<stencil::StencilKLO>(
-                                          i, j, k, dx, dy, dz, beta, C_poincare,
-                                          vel_arr, temp_arr);
-                        });
-                }
-
-                if (bxi.bigEnd(idim) == domain.bigEnd(idim)) {
-                    amrex::IntVect low(bxi.smallEnd());
-                    amrex::IntVect hi(bxi.bigEnd());
-                    int sm = hi[idim];
-                    low.setVal(idim, sm);
-                    hi.setVal(idim, sm);
-
-                    auto bxhi = amrex::Box(low, hi);
-
-                    amrex::ParallelFor(
-                        bxhi,
-                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const amrex::Real rho = rho_arr(i, j, k);
-                            mu_arr(i, j, k) =
-                                rho * amd_muvel<stencil::StencilKHI>(
-                                          i, j, k, dx, dy, dz, beta, C_poincare,
-                                          vel_arr, temp_arr);
-                        });
-                }
-            } // if (!geom.isPeriodic)
         }
     }
 

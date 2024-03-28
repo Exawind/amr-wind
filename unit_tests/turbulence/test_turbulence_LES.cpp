@@ -417,7 +417,7 @@ TEST_F(TurbLESTest, test_AMD_setup_calc)
 
     const amrex::Real amd_answer =
         C *
-        (-2.0 * std::pow(scale / sqrt(6), 3) *
+        (-1.0 * std::pow(scale / sqrt(6), 3) *
              (dx * dx - 8 * dy * dy - dz * dz) +
          gravz / Tref * (-1.0 * Tgz * scale / sqrt(6) * dz * dz)) /
         (1 * scale * scale);
