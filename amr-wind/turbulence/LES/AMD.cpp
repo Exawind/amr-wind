@@ -79,9 +79,9 @@ void AMD<Transport>::update_turbulent_viscosity(
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real rho = rho_arr(i, j, k);
-                    mu_arr(i, j, k) =
-                        rho *
-                        amd_muvel(i, j, k, dx, beta, C_poincare, gradVel_arr, gradT_arr);
+                    mu_arr(i, j, k) = rho * amd_muvel(
+                                                i, j, k, dx, beta, C_poincare,
+                                                gradVel_arr, gradT_arr);
                 });
         }
     }
