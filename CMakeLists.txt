@@ -81,15 +81,15 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
   message(WARNING "Disabling FPE trapping for tests when using AppleClang.")
 endif()
 
+if(AMR_WIND_ENABLE_OPENFAST)
+  enable_language(Fortran)
+endif()
+
 ########################### AMReX #####################################
 init_amrex()
 init_amrex_hydro()
 
 ########################### AMR-Wind #####################################
-
-if(AMR_WIND_ENABLE_MPI)
-  find_package(MPI REQUIRED)
-endif()
 
 # General information about machine, compiler, and build type
 message(STATUS "AMR-Wind Information:")
@@ -148,7 +148,6 @@ endif()
 
 if(AMR_WIND_ENABLE_OPENFAST)
   set(CMAKE_PREFIX_PATH ${OPENFAST_DIR} ${CMAKE_PREFIX_PATH})
-  enable_language(Fortran)
   find_package(OpenFAST REQUIRED)
   include(CheckIncludeFileCXX)
   set(CMAKE_REQUIRED_INCLUDES "${OpenFAST_INCLUDE_DIRS}")
