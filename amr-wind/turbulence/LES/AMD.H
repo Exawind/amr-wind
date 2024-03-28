@@ -69,11 +69,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amd_muvel(
         num_buoy = num_buoy + gradVel(i, j, k, 2 * AMREX_SPACEDIM + ii) *
                                   gradT(i, j, k, ii) * dx[ii] * dx[ii];
         for (int jj = 0; jj < AMREX_SPACEDIM; ++jj) {
-            denom = denom + gradVel(i, j, k, ii * AMREX_SPACEDIM + jj) *
-                                gradVel(i, j, k, ii * AMREX_SPACEDIM + jj);
-            amrex::Real sij =
-                0.5 * (gradVel(i, j, k, ii * AMREX_SPACEDIM + jj) +
-                       gradVel(i, j, k, jj * AMREX_SPACEDIM + ii));
+            amrex::Real diuj = gradVel(i, j, k, ii * AMREX_SPACEDIM + jj);
+            amrex::Real djui = gradVel(i, j, k, jj * AMREX_SPACEDIM + ii);
+            denom = denom + diuj * diuj;
+            amrex::Real sij = 0.5 * (diuj + djui);
             for (int kk = 0; kk < AMREX_SPACEDIM; ++kk) {
                 amrex::Real dkui = gradVel(i, j, k, ii * AMREX_SPACEDIM + kk);
                 amrex::Real dkuj = gradVel(i, j, k, jj * AMREX_SPACEDIM + kk);
