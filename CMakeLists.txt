@@ -82,6 +82,9 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
 endif()
 
 ########################### AMReX #####################################
+if(AMR_WIND_ENABLE_OPENFAST)
+  enable_language(Fortran)
+endif()
 init_amrex()
 init_amrex_hydro()
 
@@ -117,7 +120,6 @@ include(set_compile_flags)
 
 if(AMR_WIND_ENABLE_OPENFAST)
   set(CMAKE_PREFIX_PATH ${OPENFAST_DIR} ${CMAKE_PREFIX_PATH})
-  enable_language(Fortran)
   find_package(OpenFAST REQUIRED)
   include(CheckIncludeFileCXX)
   set(CMAKE_REQUIRED_INCLUDES "${OpenFAST_INCLUDE_DIRS}")
@@ -175,10 +177,6 @@ if(AMR_WIND_ENABLE_HELICS)
   target_include_directories(${amr_wind_lib_name} PUBLIC ${HELICS_INSTALL_DIR}/include)
   target_link_libraries(${amr_wind_lib_name} PUBLIC HELICS::helicsCpp98)
   target_compile_definitions(${amr_wind_lib_name} PRIVATE AMR_WIND_USE_HELICS)
-endif()
-
-if(AMR_WIND_ENABLE_MPI)
-  find_package(MPI REQUIRED)
 endif()
 
 #Build amr-wind and link to amrex library
