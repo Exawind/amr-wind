@@ -71,19 +71,21 @@ void AMD<Transport>::update_turbulent_viscosity(
     fvm::gradient(*gradT, temp);
     m_pa_temp(); // compute the current plane average
     const auto& tpa_deriv = m_pa_temp.line_deriv();
-    amrex::Gpu::DeviceVector<amrex::Real> tpa_deriv_d(tpa_deriv.size(), 0.0);
-    amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, tpa_deriv.begin(), tpa_deriv.end(),
-        tpa_deriv_d.begin());
     amrex::Vector<amrex::Real> tpa_coord(tpa_deriv.size(), 0.0);
     for (int i = 0; i < m_pa_temp.ncell_line(); ++i) {
         tpa_coord[i] = m_pa_temp.xlo() + (0.5 + i) * m_pa_temp.dx();
     }
+    amrex::Gpu::DeviceVector<amrex::Real> tpa_deriv_d(tpa_deriv.size(), 0.0);
     amrex::Gpu::DeviceVector<amrex::Real> tpa_coord_d(tpa_coord.size(), 0.0);
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, tpa_coord.begin(), tpa_coord.end(),
         tpa_coord_d.begin());
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, tpa_deriv.begin(), tpa_deriv.end(),
+        tpa_deriv_d.begin());
 
+    const amrex::Real* p_tpa_coord = tpa_coord_d.data();
+    const amrex::Real* p_tpa_deriv = tpa_deriv_d.data();
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = geom_vec[lev];
