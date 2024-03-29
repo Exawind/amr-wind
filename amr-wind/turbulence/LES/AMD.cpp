@@ -47,27 +47,6 @@ template <typename Transport>
 void AMD<Transport>::update_turbulent_viscosity(
     const FieldState fstate, const DiffusionType /*unused*/)
 {
-    switch (m_normal_dir) {
-    case 0:
-        update_turbulent_viscosity(fstate, XDir());
-        break;
-    case 1:
-        update_turbulent_viscosity(fstate, YDir());
-        break;
-    case 2:
-        update_turbulent_viscosity(fstate, ZDir());
-        break;
-    default:
-        amrex::Abort("Normal direction must be 0, 1 or 2");
-        break;
-    }
-}
-
-template <typename Transport>
-template <typename IndexSelector>
-void AMD<Transport>::update_turbulent_viscosity(
-    const FieldState fstate, const IndexSelector& idxOp)
-{
     BL_PROFILE(
         "amr-wind::" + this->identifier() + "::update_turbulent_viscosity");
 
@@ -124,7 +103,7 @@ void AMD<Transport>::update_turbulent_viscosity(
                         rho * amd_muvel(
                                   i, j, k, dx, beta, C_poincare, gradVel_arr,
                                   gradT_arr, tpa_deriv_d, tpa_coord_d,
-                                  normal_dir, nlo, idxOp);
+                                  normal_dir, nlo);
                 });
         }
     }

@@ -63,7 +63,6 @@ private:
     amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
 };
 
-template <typename IndexSelector>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amd_muvel(
     int i,
     int j,
@@ -76,36 +75,36 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amd_muvel(
     amrex::Gpu::DeviceVector<amrex::Real> const& gradTbar,
     amrex::Gpu::DeviceVector<amrex::Real> const& gradTbar_coord,
     const int normal_dir,
-    const amrex::Real nlo,
-    const IndexSelector& idxOp) noexcept
+    const amrex::Real nlo) noexcept
 {
     amrex::Real num_shear = 0;
     amrex::Real num_buoy = 0;
     amrex::Real denom = 0;
-    const int n_ind = idxOp(i, j, k);
-    amrex::Real h = nlo + (n_ind + 0.5) * dx[normal_dir];
-    amrex::Real gradTbar_h =
+    const int n_ind = amr_wind::direction_selector(i, j, k, normal_dir);
+    const amrex::Real h = nlo + (n_ind + 0.5) * dx[normal_dir];
+    const amrex::Real gradTbar_h =
         amr_wind::interp::linear(gradTbar_coord, gradTbar, h);
     for (int ii = 0; ii < AMREX_SPACEDIM; ++ii) {
         // num_buoy = dw/dx_i dT/dx_i
-        num_buoy =
-            num_buoy + gradVel(i, j, k, normal_dir * AMREX_SPACEDIM + ii) *
-                           (gradT(i, j, k, ii) - gradTbar_h) * dx[ii] * dx[ii];
+        num_buoy += gradVel(i, j, k, normal_dir * AMREX_SPACEDIM + ii) *
+                    (gradT(i, j, k, ii) - gradTbar_h) * dx[ii] * dx[ii];
         for (int jj = 0; jj < AMREX_SPACEDIM; ++jj) {
-            amrex::Real diuj = gradVel(i, j, k, ii * AMREX_SPACEDIM + jj);
-            amrex::Real djui = gradVel(i, j, k, jj * AMREX_SPACEDIM + ii);
-            denom = denom + diuj * diuj;
-            amrex::Real sij = 0.5 * (diuj + djui);
+            const amrex::Real diuj = gradVel(i, j, k, ii * AMREX_SPACEDIM + jj);
+            const amrex::Real djui = gradVel(i, j, k, jj * AMREX_SPACEDIM + ii);
+            denom += diuj * diuj;
+            const amrex::Real sij = 0.5 * (diuj + djui);
             for (int kk = 0; kk < AMREX_SPACEDIM; ++kk) {
-                amrex::Real dkui = gradVel(i, j, k, ii * AMREX_SPACEDIM + kk);
-                amrex::Real dkuj = gradVel(i, j, k, jj * AMREX_SPACEDIM + kk);
-                num_shear = num_shear + dkui * dkuj * dx[kk] * dx[kk] * sij;
+                const amrex::Real dkui =
+                    gradVel(i, j, k, ii * AMREX_SPACEDIM + kk);
+                const amrex::Real dkuj =
+                    gradVel(i, j, k, jj * AMREX_SPACEDIM + kk);
+                num_shear += dkui * dkuj * dx[kk] * dx[kk] * sij;
             }
         }
     }
     denom = std::max(1e-15, denom);
-    num_shear = -C * num_shear;
-    num_buoy = C * beta * num_buoy;
+    num_shear *= -C;
+    num_buoy *= C * beta;
     return std::max(1e-15, (num_shear + num_buoy) / denom);
 }
 
@@ -121,17 +120,17 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amd_thermal_diff(
     amrex::Real num = 0;
     amrex::Real denom = 0;
     for (int ii = 0; ii < AMREX_SPACEDIM; ++ii) {
-        amrex::Real diT = gradT(i, j, k, ii);
-        denom = denom + diT * diT;
+        const amrex::Real diT = gradT(i, j, k, ii);
+        denom += diT * diT;
         for (int kk = 0; kk < AMREX_SPACEDIM; ++kk) {
-            amrex::Real dkui = gradVel(i, j, k, ii * AMREX_SPACEDIM + kk);
-            amrex::Real dkT = gradT(i, j, k, kk);
-            num = num + dkui * diT * dkT * dx[kk] * dx[kk];
+            const amrex::Real dkui = gradVel(i, j, k, ii * AMREX_SPACEDIM + kk);
+            const amrex::Real dkT = gradT(i, j, k, kk);
+            num += dkui * diT * dkT * dx[kk] * dx[kk];
         }
     }
 
     denom = std::max(1e-15, denom);
-    num = -C * num;
+    num *= -C;
     return std::max(1e-15, num / denom);
 }
 
