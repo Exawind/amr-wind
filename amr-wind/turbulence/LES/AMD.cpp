@@ -92,10 +92,10 @@ void AMD<Transport>::update_turbulent_viscosity(
         const auto& dx = geom.CellSizeArray();
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
-            const auto& gradVel_arr = (*gradVel)(lev).array(mfi);
-            const auto& gradT_arr = (*gradT)(lev).array(mfi);
-            const auto& mu_arr = mu_turb(lev).array(mfi);
+            const auto& gradVel_arr = (*gradVel)(lev).const_array(mfi);
+            const auto& gradT_arr = (*gradT)(lev).const_array(mfi);
             const auto& rho_arr = den(lev).const_array(mfi);
+            const auto& mu_arr = mu_turb(lev).array(mfi);
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real rho = rho_arr(i, j, k);
@@ -133,10 +133,10 @@ void AMD<Transport>::update_alphaeff(Field& alphaeff)
         const auto& dx = geom.CellSizeArray();
         for (amrex::MFIter mfi(alphaeff(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
-            const auto& gradVel_arr = (*gradVel)(lev).array(mfi);
-            const auto& gradT_arr = (*gradT)(lev).array(mfi);
-            const auto& alpha_arr = alphaeff(lev).array(mfi);
+            const auto& gradVel_arr = (*gradVel)(lev).const_array(mfi);
+            const auto& gradT_arr = (*gradT)(lev).const_array(mfi);
             const auto& rho_arr = m_rho(lev).const_array(mfi);
+            const auto& alpha_arr = alphaeff(lev).array(mfi);
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real rho = rho_arr(i, j, k);

@@ -67,13 +67,13 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amd_muvel(
     int i,
     int j,
     int k,
-    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx, // Grid spacing
-    amrex::Real beta, // Thermal expansion coefficient
-    amrex::Real C,    // Poincare const
-    amrex::Array4<amrex::Real const> const& gradVel,
-    amrex::Array4<amrex::Real const> const& gradT,
-    amrex::Gpu::DeviceVector<amrex::Real> const& gradTbar,
-    amrex::Gpu::DeviceVector<amrex::Real> const& gradTbar_coord,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx, // Grid spacing
+    const amrex::Real beta, // Thermal expansion coefficient
+    const amrex::Real C,    // Poincare const
+    const amrex::Array4<amrex::Real const>& gradVel,
+    const amrex::Array4<amrex::Real const>& gradT,
+    const amrex::Gpu::DeviceVector<amrex::Real>& gradTbar,
+    const amrex::Gpu::DeviceVector<amrex::Real>& gradTbar_coord,
     const int normal_dir,
     const amrex::Real nlo) noexcept
 {
@@ -85,7 +85,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amd_muvel(
     const amrex::Real gradTbar_h =
         amr_wind::interp::linear(gradTbar_coord, gradTbar, h);
     for (int ii = 0; ii < AMREX_SPACEDIM; ++ii) {
-        // num_buoy = dw/dx_i dT/dx_i
+        // This should operate only on the wall normal velocity
         num_buoy += gradVel(i, j, k, normal_dir * AMREX_SPACEDIM + ii) *
                     (gradT(i, j, k, ii) - gradTbar_h) * dx[ii] * dx[ii];
         for (int jj = 0; jj < AMREX_SPACEDIM; ++jj) {
@@ -112,10 +112,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amd_thermal_diff(
     int i,
     int j,
     int k,
-    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx, // Grid spacing
-    amrex::Real C,                                         // Poincare const
-    amrex::Array4<amrex::Real const> const& gradVel,
-    amrex::Array4<amrex::Real const> const& gradT) noexcept
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx, // Grid spacing
+    const amrex::Real C,                                    // Poincare const
+    const amrex::Array4<amrex::Real const>& gradVel,
+    const amrex::Array4<amrex::Real const>& gradT) noexcept
 {
     amrex::Real num = 0;
     amrex::Real denom = 0;
