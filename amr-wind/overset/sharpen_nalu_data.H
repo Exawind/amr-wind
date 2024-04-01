@@ -733,7 +733,7 @@ void apply_fluxes(
                               (fy(i, j + 1, k, 2) - fy(i, j, k, 2)) / dx[1] +
                               (fz(i, j, k + 1, 2) - fz(i, j, k, 2)) / dx[2]));
                 vel(i, j, k, 1) =
-                    (1.0 - chng) * vel(i, j, k, 0) +
+                    (1.0 - chng) * vel(i, j, k, 1) +
                     chng * 1.0 / dens(i, j, k) *
                         (olddens * vel(i, j, k, 1) +
                          ptfac *
@@ -741,7 +741,7 @@ void apply_fluxes(
                               (fy(i, j + 1, k, 3) - fy(i, j, k, 3)) / dx[1] +
                               (fz(i, j, k + 1, 3) - fz(i, j, k, 3)) / dx[2]));
                 vel(i, j, k, 2) =
-                    (1.0 - chng) * vel(i, j, k, 0) +
+                    (1.0 - chng) * vel(i, j, k, 2) +
                     chng * 1.0 / dens(i, j, k) *
                         (olddens * vel(i, j, k, 2) +
                          ptfac *
