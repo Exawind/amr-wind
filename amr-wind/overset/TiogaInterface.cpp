@@ -43,6 +43,29 @@ void iblank_to_mask(const IntField& iblank, IntField& maskf)
         }
     }
 }
+
+void iblank_to_mask_hole(const IntField& iblank, IntField& maskf)
+{
+    const auto& nlevels = iblank.repo().mesh().finestLevel() + 1;
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& ibl = iblank(lev);
+        auto& mask = maskf(lev);
+
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+        for (amrex::MFIter mfi(ibl); mfi.isValid(); ++mfi) {
+            const auto& gbx = mfi.growntilebox();
+            const auto& ibarr = ibl.const_array(mfi);
+            const auto& marr = mask.array(mfi);
+            amrex::ParallelFor(
+                gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    marr(i, j, k) = std::abs(ibarr(i, j, k));
+                });
+        }
+    }
+}
 } // namespace
 
 AMROversetInfo::AMROversetInfo(const int nglobal, const int nlocal)
@@ -137,7 +160,7 @@ void TiogaInterface::post_overset_conn_work()
     }
 
     iblank_to_mask(m_iblank_cell, m_mask_cell);
-    iblank_to_mask(m_iblank_node, m_mask_node);
+    iblank_to_mask_hole(m_iblank_node, m_mask_node);
 
     // Update equation systems after a connectivity update
     m_sim.pde_manager().icns().post_regrid_actions();
