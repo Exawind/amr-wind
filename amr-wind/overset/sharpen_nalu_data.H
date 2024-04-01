@@ -566,8 +566,9 @@ void process_fluxes_calc_src(
             },
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 // Fluxing is allowed across overset boundaries in z
-                bool zero_all =
-                    std::min(iblank(i, j, k - 1), iblank(i, j, k)) > -1;
+                /*bool zero_all =
+                    std::min(iblank(i, j, k - 1), iblank(i, j, k)) > -1;*/
+                bool zero_all = (iblank(i, j, k - 1) + iblank(i, j, k) > -2);
                 for (int n = 0; n < ncompz; ++n) {
                     fz(i, j, k, n) *= zero_all ? 0. : 1.;
                 }

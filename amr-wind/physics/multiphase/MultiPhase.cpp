@@ -568,7 +568,7 @@ void MultiPhase::levelset2vof(IntField& iblank_cell, ScratchField& vof_scr)
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     // Neumann of levelset across iblank boundaries
-                    /*int ibdy = 0;
+                    int ibdy = 0;
                     int jbdy = 0;
                     int kbdy = 0;
                     if (iblank(i, j, k) != iblank(i - 1, j, k)) {
@@ -600,12 +600,12 @@ void MultiPhase::levelset2vof(IntField& iblank_cell, ScratchField& vof_scr)
                         } else {
                             kbdy = +1;
                         }
-                    }*/
+                    }
                     amrex::Real mx, my, mz;
-                    /*multiphase::youngs_fd_normal_neumann(
-                        i, j, k, ibdy, jbdy, kbdy, phi, mx, my, mz);*/
-                    multiphase::youngs_fd_normal_extrap(
-                        i, j, k, phi, iblank, mx, my, mz);
+                    multiphase::youngs_fd_normal_neumann(
+                        i, j, k, ibdy, jbdy, kbdy, phi, mx, my, mz);
+                    /*multiphase::youngs_fd_normal_extrap(
+                        i, j, k, phi, iblank, mx, my, mz);*/
                     mx = std::abs(mx / 32.);
                     my = std::abs(my / 32.);
                     mz = std::abs(mz / 32.);
