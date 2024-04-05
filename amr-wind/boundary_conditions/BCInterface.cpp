@@ -1,6 +1,7 @@
 #include "amr-wind/boundary_conditions/BCInterface.H"
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/boundary_conditions/FixedGradientBC.H"
+#include "amr-wind/boundary_conditions/MassInflowOutflowBC.H"
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind {
@@ -101,6 +102,11 @@ void BCIface::set_bcfuncs()
 
         if (bct == BC::fixed_gradient) {
             m_field.register_custom_bc<FixedGradientBC>(ori);
+        }
+
+        if (bct == BC::mass_inflow_outflow) {
+            amrex::Print() << "howdyyyyyyyyyyyy" << std::endl;
+            m_field.register_custom_bc<MassInflowOutflowBC>(ori);
         }
     }
 }
