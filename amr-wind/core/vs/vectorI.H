@@ -125,7 +125,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T>& VectorT<T>::normalize()
     return *this;
 }
 
-#if 0
 template <typename T>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T>
 operator+(VectorT<T>&& v1, const VectorT<T>& v2)
@@ -226,7 +225,6 @@ operator/(const T2 fac, VectorT<T1>&& inp)
     return inp;
 }
 
-#endif
 } // namespace amr_wind::vs
 
 #endif /* VS_VECTORI_H */

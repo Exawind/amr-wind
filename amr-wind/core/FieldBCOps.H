@@ -183,41 +183,6 @@ struct DirichletOp
                     m_wall_op(iv, field, geom, time, ori, n, dcomp, orig_comp);
                 }
             }
-
-#if 0
-            if (bc.lo(0) == amrex::BCType::ext_dir and
-                i < domain_box.smallEnd(0)) {
-                field(i, j, k, n) = m_bcv[amrex::Orientation(
-                    amrex::Direction::x, amrex::Orientation::low)][n];
-            } else if (
-                bc.hi(0) == amrex::BCType::ext_dir and
-                i > domain_box.bigEnd(0)) {
-                field(i, j, k, n) = m_bcv[amrex::Orientation(
-                    amrex::Direction::x, amrex::Orientation::high)][n];
-            }
-
-            if (bc.lo(1) == amrex::BCType::ext_dir and
-                j < domain_box.smallEnd(1)) {
-                field(i, j, k, n) = m_bcv[amrex::Orientation(
-                    amrex::Direction::y, amrex::Orientation::low)][n];
-            } else if (
-                bc.hi(1) == amrex::BCType::ext_dir and
-                j > domain_box.bigEnd(1)) {
-                field(i, j, k, n) = m_bcv[amrex::Orientation(
-                    amrex::Direction::y, amrex::Orientation::high)][n];
-            }
-
-            if (bc.lo(2) == amrex::BCType::ext_dir and
-                k < domain_box.smallEnd(2)) {
-                field(i, j, k, n) = m_bcv[amrex::Orientation(
-                    amrex::Direction::z, amrex::Orientation::low)][n];
-            } else if (
-                bc.hi(2) == amrex::BCType::ext_dir and
-                k > domain_box.bigEnd(2)) {
-                field(i, j, k, n) = m_bcv[amrex::Orientation(
-                    amrex::Direction::z, amrex::Orientation::high)][n];
-            }
-#endif
         }
     }
 

@@ -156,34 +156,6 @@ TEST_F(SamplingTest, scontainer)
     test_scontainer_impl(ptile.GetArrayOfStructs()(), npts);
     sc.Redistribute();
 
-#if 0
-    // Old host based implementation for reference
-    using PType = amr_wind::sampling::SamplingContainer::ParticleType;
-    const int dl = (end[2] - begin[2]) / static_cast<amrex::Real>(npts - 1);
-    for (int k = 0; k < npts; ++k) {
-        PType p;
-        const amrex::Real z = (k + 0.5) * dl;
-
-        p.id() = PType::NextID();
-        p.cpu() = amrex::ParallelDescriptor::MyProc();
-        p.pos(0) = begin[0];
-        p.pos(1) = begin[1];
-        p.pos(2) = z;
-
-        p.idata(IIx::sid) = 0;
-        p.idata(IIx::nid) = k;
-
-        ptile.push_back(p);
-
-        // Initialize the runtime array stuff
-        auto& soa = ptile.GetStructOfArrays();
-        for (int ii = 0; ii < ncomp; ++ii) {
-            soa.GetRealData(ii).push_back(0.0);
-        }
-    }
-    sc.Redistribute();
-#endif
-
 #ifndef AMREX_USE_GPU
     // TODO: Check why this causes errors in non-managed CUDA run
     ASSERT_EQ(npts, sc.NumberOfParticlesAtLevel(lev));
@@ -289,14 +261,6 @@ TEST_F(SamplingTest, plane_sampler)
     plane.sampling_locations(locs);
 
     ASSERT_EQ(locs.size(), 3 * 3 * 2);
-#if 0
-    for (amrex::Long i=0; i < locs.size(); ++i) {
-        for (int d=0; d < AMREX_SPACEDIM; ++d) {
-            std::cerr << locs[i][d] << " ";
-        }
-        std::cerr << std::endl;
-    }
-#endif
 }
 
 TEST_F(SamplingTest, volume_sampler)
