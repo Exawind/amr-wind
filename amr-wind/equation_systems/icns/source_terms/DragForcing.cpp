@@ -57,8 +57,8 @@ void DragForcing::operator()(
     vel_ht.resize(verticalSize);
     vel_vals.resize(verticalSize);
     amrex::Gpu::copy(
-        amrex::Gpu::deviceToDevice, device_vel_ht.begin(),
-        device_vel_ht.end(), vel_ht.begin());
+        amrex::Gpu::deviceToDevice, device_vel_ht.begin(), device_vel_ht.end(),
+        vel_ht.begin());
     amrex::Gpu::copy(
         amrex::Gpu::deviceToDevice, device_vel_vals.begin(),
         device_vel_vals.end(), vel_vals.begin());
