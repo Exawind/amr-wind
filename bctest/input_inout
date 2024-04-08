@@ -4,7 +4,7 @@
 #            SIMULATION STOP            #
 #.......................................#
 time.stop_time               = 2.00     # Max (simulated) time to evolve
-time.max_step                = -1000       # Max number of time steps
+time.max_step                = 1	#-1000       # Max number of time steps
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
@@ -25,6 +25,9 @@ incflo.density        = 1.0             # Reference density
 incflo.use_godunov    = 1
 incflo.diffusion_type = 1
 incflo.godunov_type = "weno_z"
+
+#incflo.initial_iterations = 0
+#incflo.do_initial_proj    = false
 
 transport.viscosity = 0.0
 turbulence.model = Laminar
