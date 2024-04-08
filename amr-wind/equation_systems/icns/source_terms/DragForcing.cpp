@@ -51,6 +51,9 @@ void DragForcing::operator()(
     const amrex::Real spongeDensity = m_spongeDensity;
     const amrex::Real startX = (1 - m_spongePercentX / 100.0) * prob_hi[0];
     const amrex::Real startY = (1 - m_spongePercentY / 100.0) * prob_hi[1];
+    amrex::Gpu::DeviceVector<amrex::Real> vel_ht = device_vel_ht;
+    amrex::Gpu::DeviceVector<amrex::Real> vel_vals = device_vel_vals;
+    const int verticalSize = vel_ht.size();
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real ux = vel(i, j, k, 0);
         const amrex::Real uy = vel(i, j, k, 1);
@@ -70,20 +73,8 @@ void DragForcing::operator()(
         }
         const amrex::Real m = std::sqrt(ux * ux + uy * uy + uz * uz);
         amrex::Real Cd = dragCoeff / dx[0];
-        amrex::Real spongeVelX = 0.0;
-        amrex::Real spongeVelY = 0.0;
-        amrex::Real spongeVelZ = 0.0;
-        amrex::Real residual = 1000;
-        amrex::Real height_error = 0.0;
-        for (unsigned long ii = 0; ii < device_vel_ht.size(); ++ii) {
-            height_error = std::abs(x3 - device_vel_ht[ii]);
-            if (height_error < residual) {
-                residual = height_error;
-                spongeVelX = device_vel_vals[3 * ii];
-                spongeVelY = device_vel_vals[3 * ii + 1];
-                spongeVelZ = device_vel_vals[3 * ii + 2];
-            }
-        }
+        amrex::Vector<amrex::Real> wind =
+            findRefVelocity(verticalSize, x3, vel_ht, vel_vals);
         // Terrain Drag
         amrex::Real kappa = 0.41;
         amrex::Real ustar =
@@ -96,13 +87,13 @@ void DragForcing::operator()(
         amrex::Real CdM = std::min(Cd * 5.0 / (m + 1e-5), 100.0);
         src_term(i, j, k, 0) -=
             (CdM * m * ux * blank(i, j, k) + Dxz * drag(i, j, k) +
-             (xdamping + ydamping) * (ux - spongeDensity * spongeVelX));
+             (xdamping + ydamping) * (ux - spongeDensity * wind[0]));
         src_term(i, j, k, 1) -=
             (CdM * m * uy * blank(i, j, k) + Dyz * drag(i, j, k) +
-             (xdamping + ydamping) * (uy - spongeDensity * spongeVelY));
+             (xdamping + ydamping) * (uy - spongeDensity * wind[1]));
         src_term(i, j, k, 2) -=
             (CdM * m * uz * blank(i, j, k) +
-             (xdamping + ydamping) * (uz - spongeDensity * spongeVelZ));
+             (xdamping + ydamping) * (uz - spongeDensity * wind[2]));
     });
 }
 

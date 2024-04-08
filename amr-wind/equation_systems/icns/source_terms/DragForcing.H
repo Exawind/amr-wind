@@ -44,6 +44,31 @@ private:
     amrex::Real m_spongePercentY{20};
 };
 
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Vector<amrex::Real>
+findRefVelocity(
+    const int verticalSize,
+    const amrex::Real x3,
+    amrex::Gpu::DeviceVector<amrex::Real> vel_ht,
+    amrex::Gpu::DeviceVector<amrex::Real> vel_vals)
+{
+    amrex::Real spongeVelX = 0.0;
+    amrex::Real spongeVelY = 0.0;
+    amrex::Real spongeVelZ = 0.0;
+    amrex::Real residual = 1000;
+    amrex::Real height_error = 0.0;
+    for (int ii = 0; ii < verticalSize; ++ii) {
+        height_error = std::abs(x3 - vel_ht[ii]);
+        if (height_error < residual) {
+            residual = height_error;
+            spongeVelX = vel_vals[3 * ii];
+            spongeVelY = vel_vals[3 * ii + 1];
+            spongeVelZ = vel_vals[3 * ii + 2];
+        }
+    }
+    amrex::Vector<amrex::Real> wind({spongeVelX, spongeVelY, spongeVelZ});
+    return wind;
+}
+
 } // namespace amr_wind::pde::icns
 
 #endif /* DRAGFORCING_H */
