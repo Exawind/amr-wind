@@ -51,7 +51,17 @@ void DragForcing::operator()(
     const amrex::Real spongeDensity = m_spongeDensity;
     const amrex::Real startX = (1 - m_spongePercentX / 100.0) * prob_hi[0];
     const amrex::Real startY = (1 - m_spongePercentY / 100.0) * prob_hi[1];
-    const int verticalSize = device_vel_ht.size();
+    unsigned long verticalSize = device_vel_ht.size();
+    amrex::Gpu::DeviceVector<amrex::Real> vel_ht;
+    amrex::Gpu::DeviceVector<amrex::Real> vel_vals;
+    vel_ht.resize(verticalSize);
+    vel_vals.resize(verticalSize);
+    amrex::Gpu::copy(
+        amrex::Gpu::deviceToDevice, device_vel_ht.begin(),
+        device_vel_ht.end(), vel_ht.begin());
+    amrex::Gpu::copy(
+        amrex::Gpu::deviceToDevice, device_vel_vals.begin(),
+        device_vel_vals.end(), vel_vals.begin());
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real ux = vel(i, j, k, 0);
         const amrex::Real uy = vel(i, j, k, 1);

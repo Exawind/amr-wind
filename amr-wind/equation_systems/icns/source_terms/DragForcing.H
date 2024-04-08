@@ -2,6 +2,7 @@
 #define DRAGFORCING_H
 
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
+#include "amr-wind/utilities/FieldPlaneAveraging.H"
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/CFDSim.H"
 
@@ -46,7 +47,7 @@ private:
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Vector<amrex::Real>
 findRefVelocity(
-    const int verticalSize,
+    unsigned long verticalSize,
     const amrex::Real x3,
     amrex::Gpu::DeviceVector<amrex::Real> vel_ht,
     amrex::Gpu::DeviceVector<amrex::Real> vel_vals)
@@ -56,7 +57,7 @@ findRefVelocity(
     amrex::Real spongeVelZ = 0.0;
     amrex::Real residual = 1000;
     amrex::Real height_error = 0.0;
-    for (int ii = 0; ii < verticalSize; ++ii) {
+    for (unsigned long ii = 0; ii < verticalSize; ++ii) {
         height_error = std::abs(x3 - vel_ht[ii]);
         if (height_error < residual) {
             residual = height_error;

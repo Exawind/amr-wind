@@ -58,7 +58,7 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
         const auto& vbx = mfi.validbox();
         auto levelBlanking = blanking.array(mfi);
         auto levelDrag = drag.array(mfi);
-        const int terrainSize = m_xterrain.size();
+        unsigned long terrainSize = m_xterrain.size();
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 const amrex::Real x1 = prob_lo[0] + (i + 0.5) * dx[0];

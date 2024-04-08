@@ -46,7 +46,7 @@ private:
 };
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real find_terrain_height(
-    const int terrainSize,
+    unsigned long terrainSize,
     const amrex::Real x1,
     const amrex::Real x2,
     amrex::Gpu::DeviceVector<amrex::Real> device_xterrain,
@@ -55,7 +55,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real find_terrain_height(
 {
     amrex::Real terrainHt = 0;
     amrex::Real residual = 300000;
-    for (int ii = 0; ii < terrainSize; ++ii) {
+    for (unsigned long ii = 0; ii < terrainSize; ++ii) {
         const amrex::Real radius = std::sqrt(
             std::pow(x1 - device_xterrain[ii], 2) +
             std::pow(x2 - device_yterrain[ii], 2));
