@@ -65,7 +65,10 @@ issue](https://github.com/Exawind/amr-wind/issues/new) on GitHub.
 
 We welcome contributions from the community in form of bug fixes, feature
 enhancements, documentation updates, etc. All contributions are processed
-through pull-requests on GitHub.
+through pull-requests on GitHub. Please refer to the 
+[coding guidelines](https://exawind.github.io/amr-wind/developer/coding_guidelines.html) as
+a reference for the best practices currently used to develop AMR-Wind.
+
 
 ## License
 
