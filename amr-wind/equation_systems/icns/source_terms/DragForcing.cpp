@@ -71,7 +71,7 @@ void DragForcing::operator()(
         }
         const amrex::Real m = std::sqrt(ux * ux + uy * uy + uz * uz);
         amrex::Real Cd = dragCoeff / dx[0];
-        amrex::Vector<amrex::Real> wind(3, 0);
+        amrex::Vector<amrex::Real> wind{{ux, uy, uz}};
         wind =
             findRefVelocity(verticalSize, x3, device_vel_ht, device_vel_vals);
         // Terrain Drag

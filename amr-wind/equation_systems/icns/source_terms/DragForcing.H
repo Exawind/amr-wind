@@ -65,7 +65,7 @@ findRefVelocity(
             spongeVelZ = vel_vals[3 * ii + 2];
         }
     }
-    amrex::Vector<amrex::Real> wind({spongeVelX, spongeVelY, spongeVelZ});
+    amrex::Vector<amrex::Real> wind{{spongeVelX, spongeVelY, spongeVelZ}};
     return wind;
 }
 
