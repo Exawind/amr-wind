@@ -25,7 +25,7 @@ DragForcing::DragForcing(const CFDSim& sim)
         fa_velocity.line_centroids().end(), device_vel_ht.begin());
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, fa_velocity.line_average().begin(),
-        fa_velocity.line_average().end(), device_vel_vals.begin()); 
+        fa_velocity.line_average().end(), device_vel_vals.begin());
 }
 
 DragForcing::~DragForcing() = default;
