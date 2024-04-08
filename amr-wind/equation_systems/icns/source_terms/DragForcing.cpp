@@ -46,72 +46,64 @@ void DragForcing::operator()(
     const auto& dx = geom.CellSizeArray();
     const auto& prob_lo = geom.ProbLoArray();
     const auto& prob_hi = geom.ProbHiArray();
-    const amrex::Real dragCoeff= m_dragCoeff;
+    const amrex::Real dragCoeff = m_dragCoeff;
     const amrex::Real spongeStrength = m_spongeStrength;
     const amrex::Real spongeDensity = m_spongeDensity;
-    const amrex::Real startX =
-        (1 - m_spongePercentX / 100.0) * prob_hi[0];
-    const amrex::Real startY =
-        (1 - m_spongePercentY / 100.0) * prob_hi[1];
-    amrex::ParallelFor(
-        bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-            const amrex::Real ux = vel(i, j, k, 0);
-            const amrex::Real uy = vel(i, j, k, 1);
-            const amrex::Real uz = vel(i, j, k, 2);
-            const amrex::Real x1 = prob_lo[0] + (i + 0.5) * dx[0];
-            const amrex::Real x2 = prob_lo[1] + (j + 0.5) * dx[1];
-            const amrex::Real x3 = prob_lo[2] + (k + 0.5) * dx[2];
-            amrex::Real xdamping = 0;
-            amrex::Real ydamping = 0;
-            if (x1 > startX) {
-                amrex::Real xi =
-                    (x1 - startX) / (prob_hi[0] - startX);
-                xdamping = spongeStrength * xi * xi;
+    const amrex::Real startX = (1 - m_spongePercentX / 100.0) * prob_hi[0];
+    const amrex::Real startY = (1 - m_spongePercentY / 100.0) * prob_hi[1];
+    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+        const amrex::Real ux = vel(i, j, k, 0);
+        const amrex::Real uy = vel(i, j, k, 1);
+        const amrex::Real uz = vel(i, j, k, 2);
+        const amrex::Real x1 = prob_lo[0] + (i + 0.5) * dx[0];
+        const amrex::Real x2 = prob_lo[1] + (j + 0.5) * dx[1];
+        const amrex::Real x3 = prob_lo[2] + (k + 0.5) * dx[2];
+        amrex::Real xdamping = 0;
+        amrex::Real ydamping = 0;
+        if (x1 > startX) {
+            amrex::Real xi = (x1 - startX) / (prob_hi[0] - startX);
+            xdamping = spongeStrength * xi * xi;
+        }
+        if (x2 > startY) {
+            amrex::Real yi = (x2 - startY) / (prob_hi[1] - startY);
+            ydamping = spongeStrength * yi * yi;
+        }
+        const amrex::Real m = std::sqrt(ux * ux + uy * uy + uz * uz);
+        amrex::Real Cd = dragCoeff / dx[0];
+        amrex::Real spongeVelX = 0.0;
+        amrex::Real spongeVelY = 0.0;
+        amrex::Real spongeVelZ = 0.0;
+        amrex::Real residual = 1000;
+        amrex::Real height_error = 0.0;
+        for (unsigned long ii = 0; ii < device_vel_ht.size(); ++ii) {
+            height_error = std::abs(x3 - device_vel_ht[ii]);
+            if (height_error < residual) {
+                residual = height_error;
+                spongeVelX = device_vel_vals[3 * ii];
+                spongeVelY = device_vel_vals[3 * ii + 1];
+                spongeVelZ = device_vel_vals[3 * ii + 2];
             }
-            if (x2 > startY) {
-                amrex::Real yi =
-                    (x2 - startY) / (prob_hi[1] - startY);
-                ydamping = spongeStrength * yi * yi;
-            }
-            const amrex::Real m = std::sqrt(ux * ux + uy * uy + uz * uz);
-            amrex::Real Cd = dragCoeff / dx[0];
-            amrex::Real spongeVelX = 0.0;
-            amrex::Real spongeVelY = 0.0;
-            amrex::Real spongeVelZ = 0.0;
-            amrex::Real residual = 1000;
-            amrex::Real height_error = 0.0;
-            for (unsigned long ii = 0; ii < device_vel_ht.size(); ++ii) {
-                height_error = std::abs(x3 - device_vel_ht[ii]);
-                if (height_error < residual) {
-                    residual = height_error;
-                    spongeVelX = device_vel_vals[3 * ii];
-                    spongeVelY = device_vel_vals[3 * ii + 1];
-                    spongeVelZ = device_vel_vals[3 * ii + 2];
-                }
-            }
-            // Terrain Drag
-            amrex::Real kappa = 0.41;
-            amrex::Real ustar = std::sqrt(ux * ux + uy * uy) * kappa /
-                                std::log((x3 + 0.1) / 0.1);
-            amrex::Real Dxz = -ustar * ustar * ux /
-                              (1e-5 + std::sqrt(ux * ux + uy * uy)) / dx[2];
-            amrex::Real Dyz = -ustar * ustar * uy /
-                              (1e-5 + std::sqrt(ux * ux + uy * uy)) / dx[2];
-            // Adjusting Cd for momentum
-            amrex::Real CdM = std::min(Cd * 5.0 / (m + 1e-5), 100.0);
-            src_term(i, j, k, 0) -=
-                (CdM * m * ux * blank(i, j, k) + Dxz * drag(i, j, k) +
-                 (xdamping + ydamping) *
-                     (ux - spongeDensity * spongeVelX));
-            src_term(i, j, k, 1) -=
-                (CdM * m * uy * blank(i, j, k) + Dyz * drag(i, j, k) +
-                 (xdamping + ydamping) *
-                     (uy - spongeDensity * spongeVelY));
-            src_term(i, j, k, 2) -=
-                (CdM * m * uz * blank(i, j, k) +
-                 (xdamping + ydamping) *
-                     (uz - spongeDensity * spongeVelZ));
-        });
+        }
+        // Terrain Drag
+        amrex::Real kappa = 0.41;
+        amrex::Real ustar =
+            std::sqrt(ux * ux + uy * uy) * kappa / std::log((x3 + 0.1) / 0.1);
+        amrex::Real Dxz =
+            -ustar * ustar * ux / (1e-5 + std::sqrt(ux * ux + uy * uy)) / dx[2];
+        amrex::Real Dyz =
+            -ustar * ustar * uy / (1e-5 + std::sqrt(ux * ux + uy * uy)) / dx[2];
+        // Adjusting Cd for momentum
+        amrex::Real CdM = std::min(Cd * 5.0 / (m + 1e-5), 100.0);
+        src_term(i, j, k, 0) -=
+            (CdM * m * ux * blank(i, j, k) + Dxz * drag(i, j, k) +
+             (xdamping + ydamping) * (ux - spongeDensity * spongeVelX));
+        src_term(i, j, k, 1) -=
+            (CdM * m * uy * blank(i, j, k) + Dyz * drag(i, j, k) +
+             (xdamping + ydamping) * (uy - spongeDensity * spongeVelY));
+        src_term(i, j, k, 2) -=
+            (CdM * m * uz * blank(i, j, k) +
+             (xdamping + ydamping) * (uz - spongeDensity * spongeVelZ));
+    });
 }
 
 } // namespace amr_wind::pde::icns
