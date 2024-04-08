@@ -7,11 +7,11 @@
 
 namespace amr_wind::pde::icns {
 
-/** Adds the non-linear terms from the Kosovic Model to Momentum Equation..
+/** Adding Terrain-induced drag forcing to momentum equation ..
  *
- *  \ingroup icns_src NonLinearSGS
+ *  \ingroup icns_src DragForcing
  *
- *  \sa NonLinearSGS
+ *  \sa DragForcing
  */
 class DragForcing : public MomentumSource::Register<DragForcing>
 {
@@ -35,9 +35,9 @@ private:
     const Field& m_velocity;
     Field& m_terrainBlank;
     Field& m_terrainDrag;
-    amrex::Gpu::DeviceVector<amrex::Real> gpu_vel_ht;
-    amrex::Gpu::DeviceVector<amrex::Real> gpu_vel_vals;
-    amrex::Real m_drag{8.0};
+    amrex::Gpu::DeviceVector<amrex::Real> device_vel_ht;
+    amrex::Gpu::DeviceVector<amrex::Real> device_vel_vals;
+    amrex::Real m_dragCoeff{8.0};
     amrex::Real m_spongeStrength{1.0};
     amrex::Real m_spongeDensity{1.0};
     amrex::Real m_spongePercentX{20};
@@ -46,4 +46,4 @@ private:
 
 } // namespace amr_wind::pde::icns
 
-#endif /* NONLINEARSGSTERM_H */
+#endif /* DRAGFORCING_H */
