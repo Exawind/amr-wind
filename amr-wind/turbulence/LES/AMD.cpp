@@ -1,4 +1,5 @@
 #include <AMReX_GpuContainers.H>
+#include <AMReX_GpuQualifiers.H>
 #include <cmath>
 
 #include "amr-wind/fvm/gradient.H"
@@ -92,22 +93,25 @@ void AMD<Transport>::update_turbulent_viscosity(
         const auto& problo = geom.ProbLoArray();
         const amrex::Real nlo = problo[normal_dir];
         const auto& dx = geom.CellSizeArray();
-        for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& gradVel_arr = (*gradVel)(lev).const_array(mfi);
-            const auto& gradT_arr = (*gradT)(lev).const_array(mfi);
-            const auto& rho_arr = den(lev).const_array(mfi);
-            const auto& mu_arr = mu_turb(lev).array(mfi);
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real rho = rho_arr(i, j, k);
-                    mu_arr(i, j, k) =
-                        rho * amd_muvel(
-                                  i, j, k, dx, beta, C_poincare, gradVel_arr,
-                                  gradT_arr, tpa_deriv_d, tpa_coord_d,
-                                  normal_dir, nlo);
-                });
-        }
+
+        const auto& gradVel_arrs = (*gradVel)(lev).const_arrays();
+        const auto& gradT_arrs = (*gradT)(lev).const_arrays();
+        const auto& rho_arrs = den(lev).const_arrays();
+        const auto& mu_arrs = mu_turb(lev).arrays();
+        const auto& mu_turb_lev = mu_turb(lev);
+        amrex::ParallelFor(
+            mu_turb_lev,
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                auto mu_arr = mu_arrs[nbx];
+                const auto rho_arr = rho_arrs[nbx];
+                const auto gradVel_arr = gradVel_arrs[nbx];
+                const auto gradT_arr = gradT_arrs[nbx];
+                mu_arr(i, j, k) =
+                    rho_arr(i, j, k) * amd_muvel(
+                                           i, j, k, dx, beta, C_poincare,
+                                           gradVel_arr, gradT_arr, tpa_deriv_d,
+                                           tpa_coord_d, normal_dir, nlo);
+            });
     }
 
     mu_turb.fillpatch(this->m_sim.time().current_time());
