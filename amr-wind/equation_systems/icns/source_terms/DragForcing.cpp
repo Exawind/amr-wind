@@ -15,7 +15,7 @@ DragForcing::DragForcing(const CFDSim& sim)
     , m_terrainDrag(sim.repo().get_field("terrainDrag"))
 
 {
-    /*const auto& abl = m_sim.physics_manager().get<amr_wind::ABL>();
+    const auto& abl = m_sim.physics_manager().get<amr_wind::ABL>();
     const VelPlaneAveraging& fa_velocity =
         abl.abl_statistics().vel_profile_coarse();
     device_vel_ht.resize(fa_velocity.line_centroids().size());
@@ -25,7 +25,7 @@ DragForcing::DragForcing(const CFDSim& sim)
         fa_velocity.line_centroids().end(), device_vel_ht.begin());
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, fa_velocity.line_average().begin(),
-        fa_velocity.line_average().end(), device_vel_vals.begin()); */
+        fa_velocity.line_average().end(), device_vel_vals.begin()); 
 }
 
 DragForcing::~DragForcing() = default;
@@ -51,19 +51,6 @@ void DragForcing::operator()(
     const amrex::Real spongeDensity = m_spongeDensity;
     const amrex::Real startX = (1 - m_spongePercentX / 100.0) * prob_hi[0];
     const amrex::Real startY = (1 - m_spongePercentY / 100.0) * prob_hi[1];
-    amrex::Gpu::DeviceVector<amrex::Real> device_vel_ht;
-    amrex::Gpu::DeviceVector<amrex::Real> device_vel_vals;
-    const auto& abl = m_sim.physics_manager().get<amr_wind::ABL>();
-    const VelPlaneAveraging& fa_velocity =
-        abl.abl_statistics().vel_profile_coarse();
-    device_vel_ht.resize(fa_velocity.line_centroids().size());
-    device_vel_vals.resize(fa_velocity.line_average().size());
-    amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, fa_velocity.line_centroids().begin(),
-        fa_velocity.line_centroids().end(), device_vel_ht.begin());
-    amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, fa_velocity.line_average().begin(),
-        fa_velocity.line_average().end(), device_vel_vals.begin());
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real ux = vel(i, j, k, 0);
         const amrex::Real uy = vel(i, j, k, 1);

@@ -35,8 +35,8 @@ private:
     const Field& m_velocity;
     Field& m_terrainBlank;
     Field& m_terrainDrag;
-    // amrex::Gpu::DeviceVector<amrex::Real> device_vel_ht;
-    // amrex::Gpu::DeviceVector<amrex::Real> device_vel_vals;
+    amrex::Gpu::DeviceVector<amrex::Real> device_vel_ht;
+    amrex::Gpu::DeviceVector<amrex::Real> device_vel_vals;
     amrex::Real m_dragCoeff{8.0};
     amrex::Real m_spongeStrength{1.0};
     amrex::Real m_spongeDensity{1.0};

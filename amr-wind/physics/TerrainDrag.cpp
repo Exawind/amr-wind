@@ -58,7 +58,7 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
         const auto& vbx = mfi.validbox();
         auto levelBlanking = blanking.array(mfi);
         auto levelDrag = drag.array(mfi);
-        const amrex::Real terrainSize = m_xterrain.size();
+        const int terrainSize=m_xterrain.size();
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 // compute the source term
@@ -66,37 +66,38 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
                 const amrex::Real x2 = prob_lo[1] + (j + 0.5) * dx[1];
                 const amrex::Real x3 = prob_lo[2] + (k + 0.5) * dx[2];
                 // Terrain Height
-                amrex::Real residual = 10000;
-                amrex::Real terrainHt = 0.0;
-                for (int ii = 0; ii < terrainSize; ++ii) {
-                    const amrex::Real radius = std::sqrt(
-                        std::pow(x1 - device_xterrain[ii], 2) +
-                        std::pow(x2 - device_yterrain[ii], 2));
-                    if (radius < residual) {
-                        residual = radius;
-                        terrainHt = device_zterrain[ii];
-                    }
-                }
+                //amrex::Real residual = 10000;
+                amrex::Real terrainHt = find_terrain_height(terrainSize,x1,x2,device_xterrain,device_yterrain,device_zterrain);
+                // for (int ii = 0; ii < terrainSize; ++ii) {
+                //     const amrex::Real radius = std::sqrt(
+                //         std::pow(x1 - device_xterrain[ii], 2) +
+                //         std::pow(x2 - device_yterrain[ii], 2));
+                //     if (radius < residual) {
+                //         residual = radius;
+                //         terrainHt = device_zterrain[ii];
+                //     }
+                // }
                 const amrex::Real turnOn = (x3 <= terrainHt) ? 1.0 : 0.0;
                 levelBlanking(i, j, k, 0) = turnOn;
             });
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 // Terrain Height
-                amrex::Real residual = 10000;
-                amrex::Real terrainHt = 0.0;
+                //amrex::Real residual = 10000;
+                //amrex::Real terrainHt = 0.0;
                 const amrex::Real x1 = prob_lo[0] + (i + 0.5) * dx[0];
                 const amrex::Real x2 = prob_lo[1] + (j + 0.5) * dx[1];
                 const amrex::Real x3 = prob_lo[2] + (k + 0.5) * dx[2];
-                for (int ii = 0; ii < terrainSize; ++ii) {
-                    const amrex::Real radius = std::sqrt(
-                        std::pow(x1 - device_xterrain[ii], 2) +
-                        std::pow(x2 - device_yterrain[ii], 2));
-                    if (radius < residual) {
-                        residual = radius;
-                        terrainHt = device_zterrain[ii];
-                    }
-                }
+                // for (int ii = 0; ii < terrainSize; ++ii) {
+                //     const amrex::Real radius = std::sqrt(
+                //         std::pow(x1 - device_xterrain[ii], 2) +
+                //         std::pow(x2 - device_yterrain[ii], 2));
+                //     if (radius < residual) {
+                //         residual = radius;
+                //         terrainHt = device_zterrain[ii];
+                //     }
+                // }
+                amrex::Real terrainHt = find_terrain_height(terrainSize,x1,x2,device_xterrain,device_yterrain,device_zterrain);
                 levelDrag(i, j, k, 0) = 0.0;
                 if (x3 > terrainHt && k > 0 &&
                     levelBlanking(i, j, k - 1, 0) == 1) {
@@ -105,5 +106,6 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
             });
     }
 }
+
 
 } // namespace amr_wind::terraindrag
