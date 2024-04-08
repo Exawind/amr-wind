@@ -39,8 +39,8 @@ void required_parameters(JoukowskyData& meta, const utils::ActParser& pp)
     pp.get("num_points_r", meta.num_vel_pts_r);
     pp.getarr("rpm", meta.angular_velocity);
     // Convert from rpm to rad/s
-    for (int i = 0; i < meta.angular_velocity.size(); ++i) {
-        meta.angular_velocity[i] = meta.angular_velocity[i] * M_PI / 30.0;
+    for (double & i : meta.angular_velocity) {
+        i *= M_PI / 30.0;
     }
 }
 

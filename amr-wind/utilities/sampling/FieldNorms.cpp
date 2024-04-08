@@ -113,8 +113,8 @@ void FieldNorms::prepare_ascii_file()
         std::ofstream f(m_out_fname.c_str());
         f << "time_step "
           << "time";
-        for (int i = 0; i < m_var_names.size(); ++i) {
-            f << ' ' << m_var_names[i];
+        for (const auto & m_var_name : m_var_names) {
+            f << ' ' << m_var_name;
         }
         f << std::endl;
         f.close();
@@ -130,8 +130,8 @@ void FieldNorms::write_ascii()
         f << m_sim.time().time_index() << std::fixed
           << std::setprecision(m_precision) << std::setw(m_width)
           << m_sim.time().new_time();
-        for (int i = 0; i < m_fnorms.size(); ++i) {
-            f << std::setw(m_width) << m_fnorms[i];
+        for (double m_fnorm : m_fnorms) {
+            f << std::setw(m_width) << m_fnorm;
         }
         f << std::endl;
         f.close();
