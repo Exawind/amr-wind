@@ -1,6 +1,8 @@
 #ifndef ICNS_DIFFUSION_H
 #define ICNS_DIFFUSION_H
 
+#include <memory>
+
 #include "amr-wind/equation_systems/PDETraits.H"
 #include "amr-wind/equation_systems/PDEOps.H"
 #include "amr-wind/equation_systems/PDEHelpers.H"
@@ -98,29 +100,38 @@ public:
             m_pdefields.field, amrex::Orientation::high);
 
         if (!has_overset) {
-            m_solver_scalar.reset(new amrex::MLABecLaplacian(
+
+            m_solver_scalar = std::make_unique<amrex::MLABecLaplacian>(
                 mesh.Geom(0, mesh.finestLevel()),
                 mesh.boxArray(0, mesh.finestLevel()),
-                mesh.DistributionMap(0, mesh.finestLevel()), isolve, {},
-                AMREX_SPACEDIM));
-            m_applier_scalar.reset(new amrex::MLABecLaplacian(
+                mesh.DistributionMap(0, mesh.finestLevel()), isolve,
+                amrex::Vector<
+                    amrex::FabFactory<amrex::MLABecLaplacian::FAB> const*>(),
+                AMREX_SPACEDIM);
+            m_applier_scalar = std::make_unique<amrex::MLABecLaplacian>(
                 mesh.Geom(0, mesh.finestLevel()),
                 mesh.boxArray(0, mesh.finestLevel()),
-                mesh.DistributionMap(0, mesh.finestLevel()), iapply, {},
-                AMREX_SPACEDIM));
+                mesh.DistributionMap(0, mesh.finestLevel()), iapply,
+                amrex::Vector<
+                    amrex::FabFactory<amrex::MLABecLaplacian::FAB> const*>(),
+                AMREX_SPACEDIM);
         } else {
             auto imask =
                 fields.repo.get_int_field("mask_cell").vec_const_ptrs();
-            m_solver_scalar.reset(new amrex::MLABecLaplacian(
+            m_solver_scalar = std::make_unique<amrex::MLABecLaplacian>(
                 mesh.Geom(0, mesh.finestLevel()),
                 mesh.boxArray(0, mesh.finestLevel()),
-                mesh.DistributionMap(0, mesh.finestLevel()), imask, isolve, {},
-                AMREX_SPACEDIM));
-            m_applier_scalar.reset(new amrex::MLABecLaplacian(
+                mesh.DistributionMap(0, mesh.finestLevel()), imask, isolve,
+                amrex::Vector<
+                    amrex::FabFactory<amrex::MLABecLaplacian::FAB> const*>(),
+                AMREX_SPACEDIM);
+            m_applier_scalar = std::make_unique<amrex::MLABecLaplacian>(
                 mesh.Geom(0, mesh.finestLevel()),
                 mesh.boxArray(0, mesh.finestLevel()),
-                mesh.DistributionMap(0, mesh.finestLevel()), imask, iapply, {},
-                AMREX_SPACEDIM));
+                mesh.DistributionMap(0, mesh.finestLevel()), imask, iapply,
+                amrex::Vector<
+                    amrex::FabFactory<amrex::MLABecLaplacian::FAB> const*>(),
+                AMREX_SPACEDIM);
         }
 
         m_solver_scalar->setMaxOrder(m_options.max_order);
@@ -318,27 +329,25 @@ public:
 
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
             if (!has_overset) {
-                m_solver_scalar[i].reset(new amrex::MLABecLaplacian(
+                m_solver_scalar[i] = std::make_unique<amrex::MLABecLaplacian>(
                     mesh.Geom(0, mesh.finestLevel()),
                     mesh.boxArray(0, mesh.finestLevel()),
-                    mesh.DistributionMap(0, mesh.finestLevel()), isolve));
-                m_applier_scalar[i].reset(new amrex::MLABecLaplacian(
+                    mesh.DistributionMap(0, mesh.finestLevel()), isolve);
+                m_applier_scalar[i] = std::make_unique<amrex::MLABecLaplacian>(
                     mesh.Geom(0, mesh.finestLevel()),
                     mesh.boxArray(0, mesh.finestLevel()),
-                    mesh.DistributionMap(0, mesh.finestLevel()), iapply));
+                    mesh.DistributionMap(0, mesh.finestLevel()), iapply);
             } else {
                 auto imask =
                     fields.repo.get_int_field("mask_cell").vec_const_ptrs();
-                m_solver_scalar[i].reset(new amrex::MLABecLaplacian(
+                m_solver_scalar[i] = std::make_unique<amrex::MLABecLaplacian>(
                     mesh.Geom(0, mesh.finestLevel()),
                     mesh.boxArray(0, mesh.finestLevel()),
-                    mesh.DistributionMap(0, mesh.finestLevel()), imask,
-                    isolve));
-                m_applier_scalar[i].reset(new amrex::MLABecLaplacian(
+                    mesh.DistributionMap(0, mesh.finestLevel()), imask, isolve);
+                m_applier_scalar[i] = std::make_unique<amrex::MLABecLaplacian>(
                     mesh.Geom(0, mesh.finestLevel()),
                     mesh.boxArray(0, mesh.finestLevel()),
-                    mesh.DistributionMap(0, mesh.finestLevel()), imask,
-                    iapply));
+                    mesh.DistributionMap(0, mesh.finestLevel()), imask, iapply);
             }
 
             m_solver_scalar[i]->setMaxOrder(m_options.max_order);
