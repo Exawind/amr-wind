@@ -68,6 +68,10 @@ MultiPhase::MultiPhase(CFDSim& sim)
     }
 
     pp_multiphase.query("initialize_pressure", m_init_p);
+
+    // Always populate gravity
+    amrex::ParmParse pp("incflo");
+    pp.queryarr("gravity", m_gravity);
 }
 
 InterfaceCapturingMethod MultiPhase::interface_capturing_method()
@@ -135,8 +139,6 @@ void MultiPhase::post_init_actions()
         // Make p0 field if requested
         if (is_ptrue) {
             // Initialize p0 field for reconstructing p
-            amrex::ParmParse pp("incflo");
-            pp.queryarr("gravity", m_gravity);
             auto& p0 = m_sim.repo().get_field("reference_pressure");
             hydrostatic::define_p0(
                 p0, m_rho1, m_rho2, water_level0, m_gravity[2],
