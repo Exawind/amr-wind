@@ -234,7 +234,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real my_cosh_cos(
     }
 
     return std::pow(eps, m) * D * n * wavenumber *
-           std::cosh(m * wavenumber * (waterdepth + z)) * std::cos(n * phase);
+           std::cosh(n * wavenumber * (waterdepth + z)) * std::cos(n * phase);
 }
 
 // Based on Fenton 1985
@@ -262,7 +262,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_waves(
 
     stokes_coefficients(
         StokesOrder, wavenumber, waterdepth, c0, a11, a22, b22, c2, d2, e2, a31,
-        a33, b31, a42, a44, b42, b44, c4, d4, e4, a51, b53, a55, b53, b55);
+        a33, b31, a42, a44, b42, b44, c4, d4, e4, a51, a53, a55, b53, b55);
 
     const amrex::Real eps = wavenumber * waveheight / 2.; // Steepness (ka)
     const amrex::Real c = (c0 + std::pow(eps, 2) * c2 + std::pow(eps, 4) * c4) *
