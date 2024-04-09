@@ -6,7 +6,7 @@ namespace {
 
 amrex::Real density_test_impl(
     amr_wind::Field& rho0,
-    const amrex::Vector<amrex::Geometry> geom,
+    const amrex::Vector<amrex::Geometry>& geom,
     const amrex::Real rho1,
     const amrex::Real rho2,
     const amrex::Real wlev)
@@ -43,7 +43,7 @@ amrex::Real density_test_impl(
 
 amrex::Real pressure_test_impl(
     amr_wind::Field& p0,
-    const amrex::Vector<amrex::Geometry> geom,
+    const amrex::Vector<amrex::Geometry>& geom,
     const amrex::Real rho1,
     const amrex::Real rho2,
     const amrex::Real wlev,
