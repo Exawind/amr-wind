@@ -24,7 +24,7 @@ amrex::Real stokes_wave_length(
     int iter = 0;
     amrex::Real k = omega / std::sqrt(g);
     amrex::Real f = g * k * std::tanh(k * d) - omega * omega;
-    while (f > 1e-10 || iter < iter_max) {
+    while (f > 1e-10 && iter < iter_max) {
         const amrex::Real dfdk =
             g * k * d * std::pow(1.0 / (std::cosh(k * d)), 2) +
             g * std::tanh(k * d);
