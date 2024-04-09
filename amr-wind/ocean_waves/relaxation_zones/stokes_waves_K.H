@@ -4,6 +4,10 @@
 #include <AMReX_FArrayBox.H>
 #include <cmath>
 
+// Stokes waves theory adapted from
+// Fenton, J., Fifth Order Stokes Theory for Steady Waves
+// Journal of Waterway, Port, Coastal and Ocean Engineering, 1985, 111, 216-234
+
 namespace amr_wind::ocean_waves::relaxation_zones {
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(

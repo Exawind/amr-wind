@@ -9,6 +9,42 @@
 #include "amr-wind/ocean_waves/relaxation_zones/relaxation_zones_ops.H"
 #include "amr-wind/equation_systems/vof/volume_fractions.H"
 
+namespace amr_wind::ocean_waves::relaxation_zones {
+
+// Compute wavelength as a function of wave period, water depth, and g
+amrex::Real stokes_wave_length(
+    const amrex::Real T, const amrex::Real d, const amrex::Real g)
+{
+    const amrex::Real omega = 2.0 * M_PI / T;
+    const amrex::Real lambda0 = (g * T * T) / 2.0 / M_PI;
+
+    // Begin Newton-Raphson iterations
+    constexpr amrex::Real tol = 1e-10;
+    constexpr int iter_max = 20;
+    int iter = 0;
+    amrex::Real k = omega / std::sqrt(g);
+    amrex::Real f = g * k * std::tanh(k * d) - omega * omega;
+    while (f > 1e-10 || iter < iter_max) {
+        const amrex::Real dfdk =
+            g * k * d * std::pow(1.0 / (std::cosh(k * d)), 2) +
+            g * std::tanh(k * d);
+        k = k - f / dfdk;
+
+        iter += 1;
+        f = g * k * std::tanh(k * d) - omega * omega;
+    }
+
+    if (k < tol || iter >= iter_max || isnan(k)) {
+        // Return negative wavelength if faulty result
+        return -1;
+    } else {
+        // Return wavelength calculated from wavenumber
+        return 2.0 * M_PI / k;
+    }
+}
+
+} // namespace amr_wind::ocean_waves::relaxation_zones
+
 namespace amr_wind::ocean_waves::ops {
 
 template <>
@@ -21,9 +57,29 @@ struct ReadInputsOp<StokesWaves>
         auto& info = data.info();
         relaxation_zones::read_inputs(wdata, info, pp);
 
-        pp.get("wave_length", wdata.wave_length);
         pp.get("wave_height", wdata.wave_height);
         pp.get("order", wdata.order);
+        if (pp.contains("wave_length")) {
+            pp.get("wave_length", wdata.wave_length);
+        } else {
+            // Wave length will be calculated using wave period
+            amrex::Real wave_period = 1.0;
+            pp.get("wave_period", wave_period);
+            // Get gravity from MultiPhase physics
+            const amrex::Real g = std::abs(
+                data.sim().physics_manager().get<MultiPhase>().gravity()[2]);
+            wdata.wave_length = relaxation_zones::stokes_wave_length(
+                wave_period, wdata.water_depth, g);
+            // Abort if wave length is negative
+            if (wdata.wave_length < 0.0) {
+                amrex::Abort(
+                    "Failed to properly calculate a wave length in "
+                    "stokes_waves_ops.H");
+            } else {
+                amrex::Print() << "Stokes wave length calculated to be "
+                               << wdata.wave_length << " m.\n";
+            }
+        }
     }
 };
 
