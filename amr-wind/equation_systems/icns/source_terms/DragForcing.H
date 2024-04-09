@@ -45,10 +45,10 @@ private:
     amrex::Real m_spongePercentY{20};
 };
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Vector<amrex::Real>
-findRefVelocity(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real findRefVelocity(
     unsigned long verticalSize,
     const amrex::Real x3,
+    const int idir,
     amrex::Gpu::DeviceVector<amrex::Real> vel_ht,
     amrex::Gpu::DeviceVector<amrex::Real> vel_vals)
 {
@@ -66,7 +66,12 @@ findRefVelocity(
             spongeVelZ = vel_vals[3 * ii + 2];
         }
     }
-    amrex::Vector<amrex::Real> wind{{spongeVelX, spongeVelY, spongeVelZ}};
+    amrex::Real wind = spongeVelZ;
+    if (idir == 1) {
+        wind = spongeVelX;
+    } else if (idir == 2) {
+        wind = spongeVelY;
+    }
     return wind;
 }
 

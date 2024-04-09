@@ -81,8 +81,12 @@ void DragForcing::operator()(
         }
         const amrex::Real m = std::sqrt(ux * ux + uy * uy + uz * uz);
         amrex::Real Cd = dragCoeff / dx[0];
-        amrex::Vector<amrex::Real> wind{{ux, uy, uz}};
-        wind = findRefVelocity(verticalSize, x3, vel_ht, vel_vals);
+        amrex::Real windx =
+            findRefVelocity(verticalSize, x3, 1, vel_ht, vel_vals);
+        amrex::Real windy =
+            findRefVelocity(verticalSize, x3, 2, vel_ht, vel_vals);
+        amrex::Real windz =
+            findRefVelocity(verticalSize, x3, 3, vel_ht, vel_vals);
         // Terrain Drag
         amrex::Real kappa = 0.41;
         amrex::Real ustar =
@@ -95,13 +99,13 @@ void DragForcing::operator()(
         amrex::Real CdM = std::min(Cd * 5.0 / (m + 1e-5), 100.0);
         src_term(i, j, k, 0) -=
             (CdM * m * ux * blank(i, j, k) + Dxz * drag(i, j, k) +
-             (xdamping + ydamping) * (ux - spongeDensity * wind[0]));
+             (xdamping + ydamping) * (ux - spongeDensity * windx));
         src_term(i, j, k, 1) -=
             (CdM * m * uy * blank(i, j, k) + Dyz * drag(i, j, k) +
-             (xdamping + ydamping) * (uy - spongeDensity * wind[1]));
+             (xdamping + ydamping) * (uy - spongeDensity * windy));
         src_term(i, j, k, 2) -=
             (CdM * m * uz * blank(i, j, k) +
-             (xdamping + ydamping) * (uz - spongeDensity * wind[2]));
+             (xdamping + ydamping) * (uz - spongeDensity * windz));
     });
 }
 
