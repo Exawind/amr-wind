@@ -3,18 +3,7 @@
 
 namespace amr_wind {
 namespace {
-AMREX_FORCE_INLINE
-amrex::Box lower_boundary_faces(const amrex::Box& b, int dir)
-{
-    amrex::IntVect lo(b.smallEnd());
-    amrex::IntVect hi(b.bigEnd());
-    int sm = lo[dir];
-    lo.setVal(dir, sm - 1);
-    hi.setVal(dir, sm - 1);
-    amrex::IndexType bxtype(b.ixType());
-    bxtype.set(dir);
-    return {lo, hi, bxtype};
-}
+
 } // namespace
 
 MassInflowOutflowBC::MassInflowOutflowBC(Field& field, amrex::Orientation ori)
@@ -32,10 +21,10 @@ void MassInflowOutflowBC::operator()(Field& /*field*/, const FieldState /*rho_st
     const auto islow = m_ori.isLow();
     const auto ishigh = m_ori.isHigh();
     const int nlevels = m_field.repo().num_active_levels();
-    //const amrex::Array<bool, amrex::SPACEDIM> index
+    const bool ib = (idim == 0), jb = (idim == 1), kb = (idim == 2);
 
-    amrex::Print() << "******* applying MIO at orientation: " << idx << std::endl;
-
+    amrex::Print() << "******* applying MIO fill-patch at orientation: " << idx << std::endl;
+    amrex::Print() << nlevels << " level(s)" << std::endl << std::endl;
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& domain = repo.mesh().Geom(lev).Domain();
 
@@ -53,24 +42,23 @@ void MassInflowOutflowBC::operator()(Field& /*field*/, const FieldState /*rho_st
 
             if (islow && (bx.smallEnd(idim) == domain.smallEnd(idim))) {
                 amrex::ParallelFor(
-                    lower_boundary_faces(bx, idim),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        if (vel(i, j, k, idim) < 0) {
-                            for (int n = 0; n < ncomp; ++n) {
-                                bc_a(i, j, k, n) = bc_a(i+1, j, k, n);
-                            }
+                    amrex::bdryLo(bx, idim), ncomp,
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                    //amrex::Print() << i << " " << j << " " << k << std::endl;
+                    //amrex::Print() << i-ib << " " << j-jb << " " << k-kb << std::endl;
+                    //amrex::Print() << vel(i-ib, j-jb, k-kb, idim) << " " << bc_a(i-ib, j-jb, k-kb, n) << " " << bc_a(i, j, k, n) << std::endl << std::endl;
+                        if (vel(i-ib, j-jb, k-kb, idim) < 0) {
+                                bc_a(i-ib, j-jb, k-kb, n) = bc_a(i, j, k, n);
                         }
                     });
             }
 
             if (ishigh && (bx.bigEnd(idim) == domain.bigEnd(idim))) {
                 amrex::ParallelFor(
-                    amrex::bdryHi(bx, idim),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    amrex::bdryHi(bx, idim), ncomp,
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
                         if (vel(i, j, k, idim) > 0) {
-                            for (int n = 0; n < ncomp; ++n) {
-                                bc_a(i, j, k, n) = bc_a(i-1, j, k, n);
-                            }
+                            bc_a(i, j, k, n) = bc_a(i-ib, j-jb, k-kb, n);
                         }
                     });
             }

@@ -51,7 +51,9 @@ struct BCOp<ICNS>
     {
         amrex::IntVect ng_diff(1);
         auto& field = m_fields.field;
+        amrex::Print() << "****** filling physical BCs ******" << std::endl;
         field.fillphysbc(m_time.new_time(), ng_diff);
+        amrex::Print() << "****** applying BC funcs ******" << std::endl;
         field.apply_bc_funcs(rho_state);
     }
 
