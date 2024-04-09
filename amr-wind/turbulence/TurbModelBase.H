@@ -14,7 +14,7 @@ namespace turb_base_impl {
 
 template <
     typename Transport,
-    typename std::enable_if<Transport::constant_properties>::type* = nullptr>
+    std::enable_if_t<Transport::constant_properties>* = nullptr>
 inline void visc_update(Field& evisc, Field& tvisc, Transport& transport)
 {
     evisc.setVal(transport.viscosity());
@@ -24,7 +24,7 @@ inline void visc_update(Field& evisc, Field& tvisc, Transport& transport)
 
 template <
     typename Transport,
-    typename std::enable_if<Transport::constant_properties>::type* = nullptr>
+    std::enable_if_t<Transport::constant_properties>* = nullptr>
 inline void alpha_update(Field& evisc, Field& tvisc, Transport& transport)
 {
     evisc.setVal(transport.thermal_diffusivity());
@@ -35,7 +35,7 @@ inline void alpha_update(Field& evisc, Field& tvisc, Transport& transport)
 
 template <
     typename Transport,
-    typename std::enable_if<Transport::constant_properties>::type* = nullptr>
+    std::enable_if_t<Transport::constant_properties>* = nullptr>
 inline void scal_diff_update(
     Field& evisc, Field& tvisc, Transport& transport, const std::string& name)
 {
@@ -47,7 +47,7 @@ inline void scal_diff_update(
 
 template <
     typename Transport,
-    typename std::enable_if<!Transport::constant_properties>::type* = nullptr>
+    std::enable_if_t<!Transport::constant_properties>* = nullptr>
 inline void visc_update(Field& evisc, Field& tvisc, Transport& transport)
 {
     auto lam_mu = transport.mu();
@@ -58,7 +58,7 @@ inline void visc_update(Field& evisc, Field& tvisc, Transport& transport)
 
 template <
     typename Transport,
-    typename std::enable_if<!Transport::constant_properties>::type* = nullptr>
+    std::enable_if_t<!Transport::constant_properties>* = nullptr>
 inline void alpha_update(Field& evisc, Field& tvisc, Transport& transport)
 {
     auto lam_alpha = transport.alpha();
@@ -69,7 +69,7 @@ inline void alpha_update(Field& evisc, Field& tvisc, Transport& transport)
 
 template <
     typename Transport,
-    typename std::enable_if<!Transport::constant_properties>::type* = nullptr>
+    std::enable_if_t<!Transport::constant_properties>* = nullptr>
 inline void scal_diff_update(
     Field& evisc, Field& tvisc, Transport& transport, const std::string& name)
 {

@@ -12,8 +12,7 @@ template <typename ActTrait>
 class ActSrcOp<
     ActTrait,
     ActSrcDisk,
-    typename std::enable_if<
-        std::is_base_of<TurbineType, ActTrait>::value>::type>
+    typename std::enable_if_t<std::is_base_of_v<TurbineType, ActTrait>>>
 {
 private:
     typename ActTrait::DataType& m_data;
@@ -43,8 +42,8 @@ template <typename ActTrait>
 void ActSrcOp<
     ActTrait,
     ActSrcDisk,
-    typename std::enable_if<
-        std::is_base_of<TurbineType, ActTrait>::value>::type>::initialize()
+    typename std::enable_if_t<std::is_base_of_v<TurbineType, ActTrait>>>::
+    initialize()
 {
     const auto& meta = m_data.meta();
     m_blades.resize(meta.num_blades);
@@ -56,8 +55,8 @@ template <typename ActTrait>
 void ActSrcOp<
     ActTrait,
     ActSrcDisk,
-    typename std::enable_if<
-        std::is_base_of<TurbineType, ActTrait>::value>::type>::copy_to_device()
+    typename std::enable_if_t<std::is_base_of_v<TurbineType, ActTrait>>>::
+    copy_to_device()
 {
     const auto& meta = m_data.meta();
     std::vector<ComponentView> tower_vec(1, meta.tower);
@@ -78,8 +77,7 @@ template <typename ActTrait>
 void ActSrcOp<
     ActTrait,
     ActSrcDisk,
-    typename std::enable_if<
-        std::is_base_of<TurbineType, ActTrait>::value>::type>::
+    typename std::enable_if_t<std::is_base_of_v<TurbineType, ActTrait>>>::
 operator()(const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
 {
     const std::string fname = ActTrait::identifier() + ActSrcDisk::identifier();

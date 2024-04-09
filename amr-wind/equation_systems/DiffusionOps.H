@@ -50,8 +50,7 @@ public:
     template <typename L>
     void set_bcoeffs(
         L& linop,
-        typename std::enable_if<
-            std::is_same<L, amrex::MLTensorOp>::value>::type* /*unused*/
+        std::enable_if_t<std::is_same_v<L, amrex::MLTensorOp>>* /*unused*/
         = nullptr)
     {
         const int nlevels = m_pdefields.repo.num_active_levels();
@@ -71,8 +70,7 @@ public:
     template <typename L>
     void set_bcoeffs(
         L& linop,
-        typename std::enable_if<
-            std::is_same<L, amrex::MLABecLaplacian>::value>::type* /*unused*/
+        std::enable_if_t<std::is_same_v<L, amrex::MLABecLaplacian>>* /*unused*/
         = nullptr)
     {
         const int nlevels = m_pdefields.repo.num_active_levels();
@@ -117,13 +115,13 @@ template <typename PDE, typename Scheme>
 struct DiffusionOp<
     PDE,
     Scheme,
-    typename std::enable_if<std::is_base_of<ScalarTransport, PDE>::value>::type>
+    std::enable_if_t<std::is_base_of_v<ScalarTransport, PDE>>>
     : public DiffSolverIface<typename PDE::MLDiffOp>
 {
     static_assert(
         PDE::ndim == 1, "DiffusionOp invoked for non-scalar PDE type");
     static_assert(
-        std::is_same<typename PDE::MLDiffOp, amrex::MLABecLaplacian>::value,
+        std::is_same_v<typename PDE::MLDiffOp, amrex::MLABecLaplacian>,
         "Invalid linear operator for scalar diffusion operator");
 
     DiffusionOp(

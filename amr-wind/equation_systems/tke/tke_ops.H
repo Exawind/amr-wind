@@ -109,7 +109,7 @@ struct DiffusionOp<TKE, Scheme> : public DiffSolverIface<typename TKE::MLDiffOp>
     static_assert(
         TKE::ndim == 1, "DiffusionOp invoked for non-scalar TKE type");
     static_assert(
-        std::is_same<typename TKE::MLDiffOp, amrex::MLABecLaplacian>::value,
+        std::is_same_v<typename TKE::MLDiffOp, amrex::MLABecLaplacian>,
         "Invalid linear operator for scalar diffusion operator");
 
     DiffusionOp(

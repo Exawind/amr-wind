@@ -12,7 +12,7 @@ template <typename ActTrait>
 class ActSrcOp<
     ActTrait,
     ActSrcDisk,
-    std::enable_if_t<std::is_base_of<DiskType, ActTrait>::value>>
+    std::enable_if_t<std::is_base_of_v<DiskType, ActTrait>>>
 {
     using TraitType = ActTrait;
 
@@ -20,7 +20,7 @@ class ActSrcOp<
     using MyType = ActSrcOp<
         T,
         ActSrcDisk,
-        std::enable_if_t<std::is_base_of<DiskType, T>::value>>;
+        std::enable_if_t<std::is_base_of_v<DiskType, T>>>;
 
     using SpreadType = SpreadingFunction<MyType<ActTrait>>;
 
@@ -55,7 +55,7 @@ template <typename ActTrait>
 void ActSrcOp<
     ActTrait,
     ActSrcDisk,
-    std::enable_if_t<std::is_base_of<DiskType, ActTrait>::value>>::
+    std::enable_if_t<std::is_base_of_v<DiskType, ActTrait>>>::
 operator()(const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
 {
     // cppcheck-suppress unreadVariable
@@ -68,7 +68,7 @@ template <typename ActTrait>
 void ActSrcOp<
     ActTrait,
     ActSrcDisk,
-    std::enable_if_t<std::is_base_of<DiskType, ActTrait>::value>>::initialize()
+    std::enable_if_t<std::is_base_of_v<DiskType, ActTrait>>>::initialize()
 {
     const auto& grid = m_data.grid();
     m_pos.resize(grid.pos.size());
@@ -80,8 +80,7 @@ template <typename ActTrait>
 void ActSrcOp<
     ActTrait,
     ActSrcDisk,
-    std::enable_if_t<std::is_base_of<DiskType, ActTrait>::value>>::
-    copy_to_device()
+    std::enable_if_t<std::is_base_of_v<DiskType, ActTrait>>>::copy_to_device()
 {
     const auto& grid = m_data.grid();
 
