@@ -32,6 +32,7 @@ struct CustomVelocity
             const int dcomp,
             const int orig_comp) const
         {
+            //amrex::Print() << "****** filling custom velocity at " << iv << std::endl;
             // Compute quantities to set the field values. For example:
             // clang-format off
             const auto* problo = geom.ProbLo();

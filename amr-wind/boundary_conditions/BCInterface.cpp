@@ -104,10 +104,12 @@ void BCIface::set_bcfuncs()
             m_field.register_custom_bc<FixedGradientBC>(ori);
         }
 
-        if (bct == BC::mass_inflow_outflow) {
+        if ((m_field.name() == "velocity")
+            && (bct == BC::mass_inflow_outflow)) {
             amrex::Print() << "howdyyyyyyyyyyyy" << std::endl;
             m_field.register_custom_bc<MassInflowOutflowBC>(ori);
         }
+
     }
 }
 
