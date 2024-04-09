@@ -170,8 +170,8 @@ protected:
 
         // Get string version of direction
         const std::string sdir = (dir == 0) ? "x" : ((dir == 1) ? "y" : "z");
-        const std::string odir0 = (dir == 0) ? "y" : ((dir == 1) ? "x" : "x");
-        const std::string odir1 = (dir == 0) ? "z" : ((dir == 1) ? "z" : "y");
+        const std::string odir0 = (dir == 0) ? "y" : "x";
+        const std::string odir1 = (dir == 2) ? "y" : "z";
 
         // Set up "correct" answers according to each option
         int vof_distr = 0;

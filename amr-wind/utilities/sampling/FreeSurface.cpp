@@ -457,11 +457,9 @@ void FreeSurface::post_advance_work()
                                         (dir == 0) ? mx
                                                    : ((dir == 1) ? my : mz);
                                     const amrex::Real mg1 =
-                                        (dir == 0) ? my
-                                                   : ((dir == 1) ? mx : mx);
+                                        (dir == 0) ? my : mx;
                                     const amrex::Real mg2 =
-                                        (dir == 0) ? mz
-                                                   : ((dir == 1) ? mz : my);
+                                        (dir == 2) ? my : mz;
                                     // Get height of interface
                                     if (mdr == 0) {
                                         // If slope is undefined in z,
