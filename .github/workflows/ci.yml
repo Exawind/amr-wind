@@ -349,6 +349,7 @@ jobs:
           echo "CTCACHE_DIR=~/.cache/ctcache" >> $GITHUB_ENV
       - name: Install clang-tidy
         run: |
+          export CLANG_TIDY_VERSION=17
           echo 'Acquire::Retries "3";' | sudo tee /etc/apt/apt.conf.d/80-retries
           if [[ ! -f /etc/apt/trusted.gpg.d/apt.llvm.org.asc ]]; then
               wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
@@ -357,10 +358,14 @@ jobs:
           source /etc/os-release # set UBUNTU_CODENAME
 
           sudo add-apt-repository "deb http://apt.llvm.org/${UBUNTU_CODENAME}/ llvm-toolchain-${UBUNTU_CODENAME} main"
+          sudo add-apt-repository "deb http://apt.llvm.org/${UBUNTU_CODENAME}/ llvm-toolchain-${UBUNTU_CODENAME}-${CLANG_TIDY_VERSION} main"
+
           sudo apt-get update
-          sudo apt-get upgrade
-          sudo apt-get install clang-tidy
+
+          sudo apt-get install -y --no-install-recommends clang-tidy-${CLANG_TIDY_VERSION} libomp-${CLANG_TIDY_VERSION}-dev
+
           echo "$(clang-tidy --version)"
+          
       - name: Install Ccache
         run: |
           wget https://github.com/ccache/ccache/releases/download/v4.8/ccache-4.8-linux-x86_64.tar.xz
