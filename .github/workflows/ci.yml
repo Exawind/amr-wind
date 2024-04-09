@@ -347,6 +347,20 @@ jobs:
           echo "CCACHE_EXTRAFILES=${{github.workspace}}/.clang-tidy" >> $GITHUB_ENV
           echo "CCACHE_MAXSIZE=50M" >> $GITHUB_ENV
           echo "CTCACHE_DIR=~/.cache/ctcache" >> $GITHUB_ENV
+      - name: Install clang-tidy
+        run: |
+          echo 'Acquire::Retries "3";' | sudo tee /etc/apt/apt.conf.d/80-retries
+          if [[ ! -f /etc/apt/trusted.gpg.d/apt.llvm.org.asc ]]; then
+              wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+          fi
+
+          source /etc/os-release # set UBUNTU_CODENAME
+
+          sudo add-apt-repository "deb http://apt.llvm.org/${UBUNTU_CODENAME}/ llvm-toolchain-${UBUNTU_CODENAME} main"
+          sudo apt-get update
+          sudo apt-get upgrade
+          sudo apt-get install clang-tidy
+          echo "$(clang-tidy --version)"
       - name: Install Ccache
         run: |
           wget https://github.com/ccache/ccache/releases/download/v4.8/ccache-4.8-linux-x86_64.tar.xz
