@@ -113,7 +113,7 @@ void FieldNorms::prepare_ascii_file()
         std::ofstream f(m_out_fname.c_str());
         f << "time_step "
           << "time";
-        for (const auto & m_var_name : m_var_names) {
+        for (const auto& m_var_name : m_var_names) {
             f << ' ' << m_var_name;
         }
         f << std::endl;
