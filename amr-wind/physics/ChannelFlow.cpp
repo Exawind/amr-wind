@@ -5,6 +5,7 @@
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/utilities/DirectionSelector.H"
+#include "amr-wind/boundary_conditions/MassInflowOutflowBC.H"
 
 namespace amr_wind::channel_flow {
 
@@ -451,6 +452,17 @@ void ChannelFlow::post_init_actions()
             std::abs(body_force[2]) < 1e-16,
             "body force in z should be zero if using a wall model");
     }
+/*
+    const auto& ibctype = velocity.bc_type();
+    for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+        auto ori = oit();
+        const auto bct = ibctype[ori];
+
+        if (bct == BC::mass_inflow_outflow) {
+            amrex::Print() << "howdyyyyyyyyyyyy" << std::endl;
+            velocity.register_custom_bc<MassInflowOutflowBC>(ori);
+        }
+    }*/
 }
 
 void ChannelFlow::post_advance_work()
