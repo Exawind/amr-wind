@@ -347,9 +347,9 @@ jobs:
           echo "CCACHE_EXTRAFILES=${{github.workspace}}/.clang-tidy" >> $GITHUB_ENV
           echo "CCACHE_MAXSIZE=50M" >> $GITHUB_ENV
           echo "CTCACHE_DIR=~/.cache/ctcache" >> $GITHUB_ENV
+          echo "CLANG_TIDY_VERSION=17" >> $GITHUB_ENV
       - name: Install clang-tidy
         run: |
-          echo "CLANG_TIDY_VERSION=17" >> $GITHUB_ENV
           echo 'Acquire::Retries "3";' | sudo tee /etc/apt/apt.conf.d/80-retries
           if [[ ! -f /etc/apt/trusted.gpg.d/apt.llvm.org.asc ]]; then
               wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
