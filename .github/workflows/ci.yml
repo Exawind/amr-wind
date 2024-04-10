@@ -359,6 +359,7 @@ jobs:
           sudo add-apt-repository "deb http://apt.llvm.org/${UBUNTU_CODENAME}/ llvm-toolchain-${UBUNTU_CODENAME}-${CLANG_TIDY_VERSION} main"
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends clang-tidy-${CLANG_TIDY_VERSION} libomp-${CLANG_TIDY_VERSION}-dev
+          shopt -s expand_aliases
           echo "$(clang-tidy --version)"
           echo "$(clang-tidy-17 --version)"
           alias clang-tidy=clang-tidy-17
@@ -380,6 +381,7 @@ jobs:
                ccache-${{github.workflow}}-${{github.job}}-git-
       - name: Configure
         run: |
+          shopt -s expand_aliases
           echo "$(clang-tidy --version)"
           echo "$(clang-tidy-17 --version)"
           alias clang-tidy=clang-tidy-17
