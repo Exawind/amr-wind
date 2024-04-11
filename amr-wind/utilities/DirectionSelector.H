@@ -111,7 +111,7 @@ ParallelBox(const amrex::Box& bx, const amrex::IntVect& iv)
 namespace amr_wind {
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE int
-direction_selector(int i, int j, int k, int dir)
+direction_selector(const int i, const int j, const int k, const int dir)
 {
     return (dir == 0) ? i : (dir == 1) ? j : k;
 }
