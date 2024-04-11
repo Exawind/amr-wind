@@ -2,6 +2,7 @@
 #define LINEAR_INTERPOLATION_H
 
 #include "AMReX_Gpu.H"
+#include <AMReX_Extension.H>
 
 namespace amr_wind::interp {
 
@@ -79,6 +80,7 @@ find_index(const It begin, const It end, const T& x, const int hint = 1)
 }
 
 template <typename C1, typename C2>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
 inline typename std::iterator_traits<C2>::value_type linear(
     const C1 xbegin,
     const C1 xend,
@@ -101,9 +103,6 @@ inline typename std::iterator_traits<C2>::value_type linear(
         const auto yout = facL * yinp[j] + facR * yinp[j + 1];
         return yout;
     }
-
-    amrex::Abort("idx undefined");
-    exit(1);
 }
 
 template <typename C1, typename C2>
