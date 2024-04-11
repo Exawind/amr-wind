@@ -106,8 +106,8 @@ protected:
     //   equal to W(z), but this is not a requirement; W=1 and W=0 correspond to
     //   the lower and upper profiles, respectively
     void blendForcings(
-        const amrex::Vector<amrex::Real> lower,
-        const amrex::Vector<amrex::Real> upper,
+        const amrex::Vector<amrex::Real>& lower,
+        const amrex::Vector<amrex::Real>& upper,
         amrex::Vector<amrex::Real>& error);
 };
 

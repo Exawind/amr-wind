@@ -275,8 +275,8 @@ void ABLMesoscaleForcing::constantForcingTransition(
 }
 
 void ABLMesoscaleForcing::blendForcings(
-    const amrex::Vector<amrex::Real> lower, // W=1
-    const amrex::Vector<amrex::Real> upper, // W=0
+    const amrex::Vector<amrex::Real>& lower, // W=1
+    const amrex::Vector<amrex::Real>& upper, // W=0
     amrex::Vector<amrex::Real>& error)
 {
     amrex::Print() << "Blending forcings" << std::endl;
