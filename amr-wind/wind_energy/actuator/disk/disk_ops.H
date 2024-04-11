@@ -137,7 +137,7 @@ template <typename ActTrait>
 struct UpdateVelOp<
     ActTrait,
     ActSrcDisk,
-    std::enable_if_t<std::is_base_of<DiskType, ActTrait>::value>>
+    std::enable_if_t<std::is_base_of_v<DiskType, ActTrait>>>
 {
     void operator()(typename ActTrait::DataType& data)
     {
@@ -170,7 +170,7 @@ template <typename ActTrait>
 struct UpdatePosOp<
     ActTrait,
     ActSrcDisk,
-    std::enable_if_t<std::is_base_of<DiskType, ActTrait>::value>>
+    std::enable_if_t<std::is_base_of_v<DiskType, ActTrait>>>
 {
     void operator()(typename ActTrait::DataType& /*data*/) {}
 };

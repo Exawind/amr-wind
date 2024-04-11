@@ -85,9 +85,9 @@ template <typename ActTrait>
 struct UpdatePosOp<
     ActTrait,
     ActSrcLine,
-    typename std::enable_if<
-        std::is_base_of<WingType, ActTrait>::value &&
-        UseDefaultOp<ActTrait, ActSrcLine>::update_pos>::type>
+    typename std::enable_if_t<
+        std::is_base_of_v<WingType, ActTrait> &&
+        UseDefaultOp<ActTrait, ActSrcLine>::update_pos>>
 {
     void operator()(typename ActTrait::DataType& data)
     {
@@ -102,9 +102,9 @@ template <typename ActTrait>
 struct UpdateVelOp<
     ActTrait,
     ActSrcLine,
-    typename std::enable_if<
-        std::is_base_of<WingType, ActTrait>::value &&
-        UseDefaultOp<ActTrait, ActSrcLine>::update_vel>::type>
+    typename std::enable_if_t<
+        std::is_base_of_v<WingType, ActTrait> &&
+        UseDefaultOp<ActTrait, ActSrcLine>::update_vel>>
 {
 
     void operator()(typename ActTrait::DataType& data)
@@ -120,9 +120,9 @@ template <typename ActTrait>
 struct ComputeForceOp<
     ActTrait,
     ActSrcLine,
-    typename std::enable_if<
-        std::is_base_of<WingType, ActTrait>::value &&
-        UseDefaultOp<ActTrait, ActSrcLine>::compute_force>::type>
+    typename std::enable_if_t<
+        std::is_base_of_v<WingType, ActTrait> &&
+        UseDefaultOp<ActTrait, ActSrcLine>::compute_force>>
 {
     void operator()(typename ActTrait::DataType& data)
     {
@@ -217,9 +217,9 @@ template <typename ActTrait, typename SrcTrait>
 struct ProcessOutputsOp<
     ActTrait,
     SrcTrait,
-    typename std::enable_if<
-        std::is_base_of<WingType, ActTrait>::value &&
-        UseDefaultOp<ActTrait, ActSrcLine>::process_outputs>::type>
+    typename std::enable_if_t<
+        std::is_base_of_v<WingType, ActTrait> &&
+        UseDefaultOp<ActTrait, ActSrcLine>::process_outputs>>
 {
 private:
     typename ActTrait::DataType& m_data;

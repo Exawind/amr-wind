@@ -414,24 +414,13 @@ void FreeSurface::post_advance_work()
                                 amrex::Real loc1 = loc_arr(i, j, k, 2 * n + 1);
 
                                 // Indices and slope variables
-                                amrex::Real mx = 0.0;
-                                amrex::Real my = 0.0;
-                                amrex::Real mz = 0.0;
-                                amrex::Real alpha = 1.0;
                                 // Get modified indices for checking up
                                 // and down and orient normal in search
                                 // direction
-                                switch (dir) {
-                                case 0:
-                                    mx = 1.0;
-                                    break;
-                                case 1:
-                                    my = 1.0;
-                                    break;
-                                case 2:
-                                    mz = 1.0;
-                                    break;
-                                }
+                                amrex::Real mx = (dir == 0) ? 1.0 : 0.0;
+                                amrex::Real my = (dir == 1) ? 1.0 : 0.0;
+                                amrex::Real mz = (dir == 2) ? 1.0 : 0.0;
+                                amrex::Real alpha = 1.0;
                                 // If cell is full of single phase
                                 // (accounts for when interface is at
                                 // intersection of cells but lower one
@@ -464,26 +453,13 @@ void FreeSurface::post_advance_work()
                                     // Initialize height measurement
                                     amrex::Real ht = plo[dir];
                                     // Reassign slope coefficients
-                                    amrex::Real mdr = 0.0;
-                                    amrex::Real mg1 = 0.0;
-                                    amrex::Real mg2 = 0.0;
-                                    switch (dir) {
-                                    case 0:
-                                        mdr = mx;
-                                        mg1 = my;
-                                        mg2 = mz;
-                                        break;
-                                    case 1:
-                                        mdr = my;
-                                        mg1 = mx;
-                                        mg2 = mz;
-                                        break;
-                                    case 2:
-                                        mdr = mz;
-                                        mg1 = mx;
-                                        mg2 = my;
-                                        break;
-                                    }
+                                    const amrex::Real mdr =
+                                        (dir == 0) ? mx
+                                                   : ((dir == 1) ? my : mz);
+                                    const amrex::Real mg1 =
+                                        (dir == 0) ? my : mx;
+                                    const amrex::Real mg2 =
+                                        (dir == 2) ? my : mz;
                                     // Get height of interface
                                     if (mdr == 0) {
                                         // If slope is undefined in z,
