@@ -86,7 +86,8 @@ void AMD<Transport>::update_turbulent_viscosity(
         tpa_deriv_d.begin());
 
     const amrex::Real* p_tpa_coord_begin = tpa_coord_d.data();
-    const amrex::Real* p_tpa_coord_end = tpa_coord_d.data() + tpa_coord_d.size();
+    const amrex::Real* p_tpa_coord_end =
+        tpa_coord_d.data() + tpa_coord_d.size();
     const amrex::Real* p_tpa_deriv = tpa_deriv_d.data();
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -110,8 +111,8 @@ void AMD<Transport>::update_turbulent_viscosity(
                 mu_arr(i, j, k) =
                     rho_arr(i, j, k) * amd_muvel(
                                            i, j, k, dx, beta, C_poincare,
-                                           gradVel_arr, gradT_arr, p_tpa_coord_begin,
-                                           p_tpa_coord_end,
+                                           gradVel_arr, gradT_arr,
+                                           p_tpa_coord_begin, p_tpa_coord_end,
                                            p_tpa_deriv, normal_dir, nlo);
             });
     }

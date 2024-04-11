@@ -80,12 +80,13 @@ find_index(const It begin, const It end, const T& x, const int hint = 1)
 }
 
 template <typename C1, typename C2>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-inline typename std::iterator_traits<C2>::value_type linear(
-    const C1 xbegin,
-    const C1 xend,
-    const C2 yinp,
-    const typename std::iterator_traits<C1>::value_type& xout)
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE inline
+    typename std::iterator_traits<C2>::value_type
+    linear(
+        const C1 xbegin,
+        const C1 xend,
+        const C2 yinp,
+        const typename std::iterator_traits<C1>::value_type& xout)
 {
     using DType1 = typename std::iterator_traits<C1>::value_type;
     const auto idx = bisection_search(xbegin, xend, xout);
