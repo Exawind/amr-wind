@@ -93,9 +93,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
 
     if ((idx.lim == Limits::LOWLIM) || (idx.lim == Limits::UPLIM)) {
         return yinp[idx.idx];
-    }
-
-    if (idx.lim == Limits::VALID) {
+    } else {
         static constexpr DType1 eps = 1.0e-8;
         int j = idx.idx;
         const auto denom = (xbegin[j + 1] - xbegin[j]);
