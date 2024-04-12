@@ -29,11 +29,11 @@ struct ReadInputsOp<StokesWaves>
             // Wave length will be calculated using wave period
             amrex::Real wave_period = 1.0;
             pp.get("wave_period", wave_period);
-            // Get gravity from MultiPhase physics
-            const amrex::Real g = std::abs(
-                data.sim().physics_manager().get<MultiPhase>().gravity()[2]);
+            // Get gravity from MultiPhase physics, assume z
+            wdata.g =
+                -data.sim().physics_manager().get<MultiPhase>().gravity()[2];
             wdata.wave_length = relaxation_zones::stokes_wave_length(
-                wave_period, wdata.water_depth, g);
+                wave_period, wdata.water_depth, wdata.g);
             // Abort if wave length is negative
             if (wdata.wave_length < 0.0) {
                 amrex::Abort(
@@ -110,6 +110,8 @@ struct UpdateRelaxZonesOp<StokesWaves>
                 const amrex::Real waveheight = wdata.wave_height;
                 const amrex::Real wavelength = wdata.wave_length;
                 const amrex::Real waterdepth = wdata.water_depth;
+                const amrex::Real zero_sea_level = wdata.zsl;
+                const amrex::Real g = wdata.g;
                 const int order = wdata.order;
 
                 const auto& gbx = mfi.growntilebox();
@@ -121,8 +123,8 @@ struct UpdateRelaxZonesOp<StokesWaves>
                         amrex::Real eta{0.0}, u_w{0.0}, v_w{0.0}, w_w{0.0};
 
                         relaxation_zones::stokes_waves(
-                            order, wavelength, waterdepth, waveheight, x, z,
-                            time, eta, u_w, v_w, w_w);
+                            order, wavelength, waterdepth, waveheight,
+                            zero_sea_level, g, x, z, time, eta, u_w, v_w, w_w);
 
                         phi(i, j, k) = eta - z;
                         if (phi(i, j, k) + 0.5 * dx[2] >= 0) {

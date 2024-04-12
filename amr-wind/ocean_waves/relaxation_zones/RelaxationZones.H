@@ -18,6 +18,8 @@ struct RelaxZonesBaseData
 
     amrex::Real water_depth{0.5};
 
+    amrex::Real g{9.81};
+
     // Wave generation/absorption parameters
     amrex::Real gen_length{4.0};
 
