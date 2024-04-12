@@ -319,7 +319,7 @@ protected:
             pp.addarr("is_periodic", amrex::Vector<int>{{1, 1, 0}});
         }
     }
-    void setup_grid0D(int ninst, std::string fsname)
+    void setup_grid0D(int ninst, const std::string& fsname)
     {
         amrex::ParmParse pp(fsname);
         pp.add("output_frequency", 1);

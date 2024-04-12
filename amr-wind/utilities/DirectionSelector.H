@@ -66,10 +66,10 @@ PerpendicularBox(const amrex::Box& bx, const amrex::IntVect& iv)
 {
     amrex::IntVect plane_lo, plane_hi;
 
-    if (std::is_same<IndexSelector, XDir>::value) {
+    if (std::is_same_v<IndexSelector, XDir>) {
         plane_lo = {iv[0], bx.smallEnd(1), bx.smallEnd(2)};
         plane_hi = {iv[0], bx.bigEnd(1), bx.bigEnd(2)};
-    } else if (std::is_same<IndexSelector, YDir>::value) {
+    } else if (std::is_same_v<IndexSelector, YDir>) {
         plane_lo = {bx.smallEnd(0), iv[1], bx.smallEnd(2)};
         plane_hi = {bx.bigEnd(0), iv[1], bx.bigEnd(2)};
     } else {
@@ -92,10 +92,10 @@ ParallelBox(const amrex::Box& bx, const amrex::IntVect& iv)
 {
     amrex::IntVect line_lo, line_hi;
 
-    if (std::is_same<IndexSelector, XDir>::value) {
+    if (std::is_same_v<IndexSelector, XDir>) {
         line_lo = {bx.smallEnd(0), iv[1], iv[2]};
         line_hi = {bx.bigEnd(0), iv[1], iv[2]};
-    } else if (std::is_same<IndexSelector, YDir>::value) {
+    } else if (std::is_same_v<IndexSelector, YDir>) {
         line_lo = {iv[0], bx.smallEnd(1), iv[2]};
         line_hi = {iv[0], bx.bigEnd(1), iv[2]};
     } else {

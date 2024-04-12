@@ -8,8 +8,12 @@ Checks: 'bugprone-*,
          modernize-*,
          -modernize-avoid-c-arrays,
          -modernize-use-trailing-return-type,
-         -modernize-make-unique,
          -modernize-use-nodiscard,
+         mpi-*,
+         performance-*,
+         -performance-avoid-endl,
+         -performance-inefficient-string-concatenation,
+         portability-*,
          readability-*,
          -readability-magic-numbers,
          -readability-identifier-naming,
@@ -19,6 +23,7 @@ Checks: 'bugprone-*,
          -readability-function-cognitive-complexity'
 WarningsAsErrors: ''
 HeaderFilterRegex: '.*'
+HeaderFileExtensions: ['', "H", 'h', 'hh', 'hpp', 'hxx']
 AnalyzeTemporaryDtors: false
 FormatStyle:     none
 User:            user

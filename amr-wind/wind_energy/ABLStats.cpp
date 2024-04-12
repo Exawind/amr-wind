@@ -67,19 +67,15 @@ void ABLStats::initialize()
     amrex::Box const& domain = geom.Domain();
     const auto dlo = amrex::lbound(domain);
     const auto dhi = amrex::ubound(domain);
-    switch (m_normal_dir) {
-    case 0:
+    if (m_normal_dir == 0) {
         m_ncells_h1 = dhi.y - dlo.y + 1;
         m_ncells_h2 = dhi.z - dlo.z + 1;
-        break;
-    case 1:
+    } else if (m_normal_dir == 1) {
         m_ncells_h1 = dhi.x - dlo.x + 1;
         m_ncells_h2 = dhi.z - dlo.z + 1;
-        break;
-    case 2:
+    } else if (m_normal_dir == 2) {
         m_ncells_h1 = dhi.x - dlo.x + 1;
         m_ncells_h2 = dhi.y - dlo.y + 1;
-        break;
     }
     m_dn = geom.CellSize()[m_normal_dir];
 

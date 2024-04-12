@@ -208,7 +208,7 @@ amrex::Real gas_velocity_error(
     return error_total;
 }
 
-void write_HOS_txt(std::string HOS_fname, amrex::Real factor)
+void write_HOS_txt(const std::string& HOS_fname, amrex::Real factor)
 {
     std::ofstream os(HOS_fname);
     // Write metadata to file

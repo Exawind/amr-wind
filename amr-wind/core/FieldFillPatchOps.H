@@ -226,7 +226,6 @@ public:
         return ret;
     }
 
-#if 1
     // Version that does no interpolation in time
 
     void fillpatch(
@@ -258,47 +257,6 @@ public:
                 m_mesh.refRatio(lev - 1), m_mapper, m_field.bcrec(), 0);
         }
     }
-
-#else
-    // Version that handles fields at two states and performs interpolation in
-    // time.
-
-    void fillpatch(
-        int lev,
-        amrex::Real time,
-        amrex::MultiFab& mfab,
-        const amrex::IntVect& nghost) override
-    {
-        auto mfab_vec_lev = get_mfab_vec(lev);
-        if (lev == 0) {
-            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> physbc(
-                m_mesh.Geom(lev), m_field.bcrec(), bc_functor());
-
-            amrex::FillPatchSingleLevel(
-                mfab, nghost, time, mfab_vec_lev,
-                {m_time.current_time(), m_time.new_time()}, 0, 0,
-                m_field.num_comp(), m_mesh.Geom(lev), physbc, 0);
-        } else {
-            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> cphysbc(
-                m_mesh.Geom(lev - 1), m_field.bcrec(), bc_functor());
-
-            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> fphysbc(
-                m_mesh.Geom(lev), m_field.bcrec(), bc_functor());
-
-            auto mfab_vec_levm1 = get_mfab_vec(lev - 1);
-
-            amrex::FillPatchTwoLevels(
-                mfab, nghost, time, mfab_vec_levm1,
-                {m_time.current_time(), m_time.new_time()}, mfab_vec_lev,
-                {m_time.current_time(), m_time.new_time()}, 0, 0,
-                m_field.num_comp(), m_mesh.Geom(lev - 1), m_mesh.Geom(lev),
-                cphysbc, 0, fphysbc, 0, m_mesh.refRatio(lev - 1), m_mapper,
-                m_field.bcrec(), 0);
-        }
-        amrex::Print() << lev << " " << m_time.current_time() << " "
-                       << m_time.new_time() << std::endl;
-    }
-#endif
 
     void fillpatch_sibling_fields(
         int lev,

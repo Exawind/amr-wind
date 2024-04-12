@@ -37,37 +37,30 @@ void get_accuracy_vofsol(
             for (int i1 = 0; i1 < 2; ++i1) {
                 for (int i2 = 0; i2 < 2; ++i2) {
                     // Organize indices
-                    switch (dir) {
-                    case 0:
+                    if (dir == 0) {
                         i = -1 + off;
                         j = i1;
                         k = i2;
-                        break;
-                    case 1:
+                    } else if (dir == 1) {
                         i = i1;
                         j = -1 + off;
                         k = i2;
-                        break;
-                    case 2:
+                    } else if (dir == 2) {
                         i = i1;
                         j = i2;
                         k = -1 + off;
-                        break;
                     }
                     // Calculate reference value
                     amrex::Real ref_val = vof_bdyval; // case 0
-                    switch (vof_distr) {
-                    case 1:
+                    if (vof_distr == 1) {
                         // hoextrap
                         ref_val = 1.0 - 0.1 * (i + j + k);
-                        break;
-                    case 2:
+                    } else if (vof_distr == 2) {
                         // foextrap
-                        int ii = std::max(0, std::min(1, i));
-                        int jj = std::max(0, std::min(1, j));
-                        int kk = std::max(0, std::min(1, k));
+                        const int ii = std::max(0, std::min(1, i));
+                        const int jj = std::max(0, std::min(1, j));
+                        const int kk = std::max(0, std::min(1, k));
                         ref_val = 1.0 - 0.1 * (ii + jj + kk);
-                        break;
                     }
                     // Check against reference value
                     err_arr(i, j, k, 0) = std::abs(vof_arr(i, j, k) - ref_val);
@@ -102,22 +95,18 @@ void get_accuracy_advalpha(
             for (int i1 = 0; i1 < 2; ++i1) {
                 for (int i2 = 0; i2 < 2; ++i2) {
                     // Organize indices
-                    switch (dir) {
-                    case 0:
+                    if (dir == 0) {
                         i = 0 + off;
                         j = i1;
                         k = i2;
-                        break;
-                    case 1:
+                    } else if (dir == 1) {
                         i = i1;
                         j = 0 + off;
                         k = i2;
-                        break;
-                    case 2:
+                    } else if (dir == 2) {
                         i = i1;
                         j = i2;
                         k = 0 + off;
-                        break;
                     }
                     // Check whether flux is nonzero
                     constexpr amrex::Real advvof = 0.0;
@@ -180,56 +169,34 @@ protected:
     {
 
         // Get string version of direction
-        std::string sdir = "d";
-        std::string odir0 = "d";
-        std::string odir1 = "d";
-        switch (dir) {
-        case 0:
-            sdir = "x";
-            odir0 = "y";
-            odir1 = "z";
-            break;
-        case 1:
-            sdir = "y";
-            odir0 = "x";
-            odir1 = "z";
-            break;
-        case 2:
-            sdir = "z";
-            odir0 = "x";
-            odir1 = "y";
-            break;
-        }
+        const std::string sdir = (dir == 0) ? "x" : ((dir == 1) ? "y" : "z");
+        const std::string odir0 = (dir == 0) ? "y" : "x";
+        const std::string odir1 = (dir == 2) ? "y" : "z";
 
         // Set up "correct" answers according to each option
         int vof_distr = 0;
         bool nonzero_flux = true;
         std::string bc_string = "sixteen chars --";
-        switch (option) {
-        case 1:
+        if (option == 1) {
             // Mass inflow
             vof_distr = 0;       // prescribed vof value in bdy
             nonzero_flux = true; // flux can occur
             bc_string = "mass_inflow";
-            break;
-        case 2:
+        } else if (option == 2) {
             // Slip wall
             vof_distr = 1;        // high-order extrapolation
             nonzero_flux = false; // flux cannot occur
             bc_string = "slip_wall";
-            break;
-        case 3:
+        } else if (option == 3) {
             // No-slip wall
             vof_distr = 2;        // zero-gradient at bdy
             nonzero_flux = false; // flux cannot occur
             bc_string = "no_slip_wall";
-            break;
-        case 4:
+        } else if (option == 4) {
             // Pressure outflow
             vof_distr = 2;       // zero-gradient at bdy
             nonzero_flux = true; // flux can occur
             bc_string = "pressure_outflow";
-            break;
         }
 
         populate_parameters();

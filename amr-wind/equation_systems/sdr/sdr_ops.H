@@ -74,7 +74,7 @@ struct DiffusionOp<SDR, Scheme> : public DiffSolverIface<typename SDR::MLDiffOp>
     static_assert(
         SDR::ndim == 1, "DiffusionOp invoked for non-scalar SDR type");
     static_assert(
-        std::is_same<typename SDR::MLDiffOp, amrex::MLABecLaplacian>::value,
+        std::is_same_v<typename SDR::MLDiffOp, amrex::MLABecLaplacian>,
         "Invalid linear operator for scalar diffusion operator");
 
     DiffusionOp(
@@ -103,9 +103,8 @@ struct DiffusionOp<SDR, Scheme> : public DiffSolverIface<typename SDR::MLDiffOp>
     {
         this->setup_operator(*this->m_applier, 0.0, -1.0, fstate);
 
-        auto tau_state = std::is_same<Scheme, fvm::Godunov>::value
-                             ? FieldState::New
-                             : fstate;
+        auto tau_state =
+            std::is_same_v<Scheme, fvm::Godunov> ? FieldState::New : fstate;
         amrex::MLMG mlmg(*this->m_applier);
         mlmg.apply(
             this->m_pdefields.diff_term.state(tau_state).vec_ptrs(),
