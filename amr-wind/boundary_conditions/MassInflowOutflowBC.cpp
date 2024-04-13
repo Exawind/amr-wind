@@ -23,8 +23,8 @@ void MassInflowOutflowBC::operator()(Field& /*field*/, const FieldState /*rho_st
     const int nlevels = m_field.repo().num_active_levels();
     const bool ib = (idim == 0), jb = (idim == 1), kb = (idim == 2);
 
-    amrex::Print() << "******* applying MIO fill-patch at orientation: " << idx << std::endl;
-    amrex::Print() << nlevels << " level(s)" << std::endl << std::endl;
+    amrex::Print() << "******* applying MIO custom Neumann fills at orientation: " << idx << std::endl;
+    //amrex::Print() << nlevels << " level(s)" << std::endl << std::endl;
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& domain = repo.mesh().Geom(lev).Domain();
 
