@@ -79,7 +79,9 @@ void incflo::InitialIterations()
     {
         auto& vel = icns().fields().field;
         vel.copy_state(amr_wind::FieldState::Old, amr_wind::FieldState::New);
+        amrex::Print() << "****** starting fillpatch from InitialIterations()" << std::endl;
         vel.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+        amrex::Print() << "****** completed fillpatch from InitialIterations()" << std::endl;
 
         if (m_sim.pde_manager().constant_density()) {
             auto& rho = density();
