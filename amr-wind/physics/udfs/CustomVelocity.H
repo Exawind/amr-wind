@@ -32,7 +32,9 @@ struct CustomVelocity
             const int dcomp,
             const int orig_comp) const
         {
-            //amrex::Print() << "****** filling custom velocity at " << iv << std::endl;
+            if ((iv[0] == -1) && (iv[1] == -1) && (iv[2] == 0))
+                amrex::Print() << "****** filling custom velocity at " << iv
+                               << " and at other ghost cells... " << std::endl;
             // Compute quantities to set the field values. For example:
             // clang-format off
             const auto* problo = geom.ProbLo();
@@ -47,9 +49,11 @@ struct CustomVelocity
             if (x <= 0.5) {
                 // at the low-x boundary, +ve vel in top portion, garbage in the rest
                 vel = {((z >= 0.5) ? pvel : -1e10), 0.0, 0.0};
+                //vel = {((z >= 0.5) ? pvel : -1.0), 0.0, 0.0};
             } else {
                 // at the high-x boundary, -ve vel in bottom portion, garbage in the rest
                 vel = {((z < 0.5) ? mvel : 1e10), 0.0, 0.0};
+                //vel = {((z < 0.5) ? mvel : 1.0), 0.0, 0.0};
             }
 
             field(iv[0], iv[1], iv[2], dcomp + comp) = vel[orig_comp + comp];

@@ -38,6 +38,7 @@ void register_inflow_vel_dirichlet(
             mesh, time, InflowOp(field));
     } else if (inflow_udf == "CustomVelocity") {
         using InflowOp = BCOpCreator<udf::CustomVelocity, WallOp>;
+        amrex::Print() << "******* registering CustomVelocity" << std::endl;
         field.register_fill_patch_op<FieldFillPatchOps<InflowOp>>(
             mesh, time, InflowOp(field));
     } else {

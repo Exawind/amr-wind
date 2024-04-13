@@ -106,7 +106,7 @@ void BCIface::set_bcfuncs()
 
         if ((m_field.name() == "velocity")
             && (bct == BC::mass_inflow_outflow)) {
-            amrex::Print() << "howdyyyyyyyyyyyy" << std::endl;
+            amrex::Print() << "******** registering MIO custom Neumann BC" << std::endl;
             m_field.register_custom_bc<MassInflowOutflowBC>(ori);
         }
 
