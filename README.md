@@ -75,8 +75,8 @@ AMR-Wind uses a type of semantic versioning to help users navigate different ver
 which are labeled with GitHub tags. These tagged versions are not exhaustive, and they adhere to
 the following convention. Given a version number MAJOR.MINOR.PATCH:
 1. MAJOR version for changes to input file compatibility for key aspects of the solver, when a key model is changed to significantly affect results of simulations, when a major new capability is added
-1. MINOR version for when a significant feature is added (in a backward compatible manner), accumulation of smaller features, or changes to input file compatibility for less central aspects of the solver (e.g., post-processing, forcing terms)
-1. PATCH version for backward compatible bug fixes
+2. MINOR version for when a significant feature is added (in a backward compatible manner), accumulation of smaller features, or changes to input file compatibility for less central aspects of the solver (e.g., post-processing, forcing terms)
+3. PATCH version for backward compatible bug fixes
 
 ## License
 
