@@ -108,9 +108,15 @@ AMREX_FORCE_INLINE amrex::Real stokes_wave_length(
         f -= omega * omega;
     }
 
-    if (k < tol || iter >= iter_max || std::isnan(k)) {
+    if (k < tol) {
         // Return negative wavelength if faulty result
         return -1;
+    }
+    if (std::isnan(k)) {
+        return -2;
+    }
+    if (iter == iter_max) {
+        return -3;
     }
     // Return wavelength calculated from wavenumber
     return 2.0 * M_PI / k;

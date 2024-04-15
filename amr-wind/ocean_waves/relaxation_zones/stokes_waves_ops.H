@@ -42,6 +42,16 @@ struct ReadInputsOp<StokesWaves>
                 wdata.g, tol_lambda, itmax_lambda);
             // Abort if wave length is negative
             if (wdata.wave_length < 0.0) {
+                if (wdata.wave_length == -1) {
+                    amrex::Print() << "Stokes wave length too close to 0.\n";
+                }
+                if (wdata.wave_length == -2) {
+                    amrex::Print() << "Stokes wave length is not a number.\n";
+                }
+                if (wdata.wave_length == -3) {
+                    amrex::Print() << "Stokes wave length calculation used "
+                                      "maximum iterations before converging.\n";
+                }
                 amrex::Abort(
                     "Failed to properly calculate a wave length in "
                     "stokes_waves_ops.H");
