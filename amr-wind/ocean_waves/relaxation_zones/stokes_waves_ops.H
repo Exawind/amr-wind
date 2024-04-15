@@ -32,8 +32,14 @@ struct ReadInputsOp<StokesWaves>
             // Wave length will be calculated using wave period
             amrex::Real wave_period = 1.0;
             pp.get("wave_period", wave_period);
+            // Get user-specified convergence criteria, if supplied
+            amrex::Real tol_lambda = 1e-10;
+            int itmax_lambda = 40;
+            pp.query("stokes_wavelength_tolerance", tol_lambda);
+            pp.query("stokes_wavelength_iter_max", itmax_lambda);
             wdata.wave_length = relaxation_zones::stokes_wave_length(
-                wave_period, wdata.water_depth, wdata.wave_height, wdata.order, wdata.g);
+                wave_period, wdata.water_depth, wdata.wave_height, wdata.order,
+                wdata.g, tol_lambda, itmax_lambda);
             // Abort if wave length is negative
             if (wdata.wave_length < 0.0) {
                 amrex::Abort(

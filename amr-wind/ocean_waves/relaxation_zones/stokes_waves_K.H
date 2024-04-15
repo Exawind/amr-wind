@@ -16,15 +16,15 @@ AMREX_FORCE_INLINE amrex::Real stokes_wave_length(
     const amrex::Real d,
     const amrex::Real H,
     const int order,
-    const amrex::Real g)
+    const amrex::Real g,
+    const amrex::Real tol,
+    const int iter_max)
 {
     // Calculate constants and derivatives that do not change with iteration
     const amrex::Real omega = 2.0 * M_PI / T;
     const amrex::Real depsdk = H / 2.0;
 
     // Begin Newton-Raphson iterations
-    constexpr amrex::Real tol = 1e-10;
-    constexpr int iter_max = 40;
     int iter = 0;
     // First guess is first-order
     amrex::Real k = omega / std::sqrt(g);
