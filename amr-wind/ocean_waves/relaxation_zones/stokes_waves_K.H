@@ -12,24 +12,100 @@ namespace amr_wind::ocean_waves::relaxation_zones {
 
 // Compute wavelength as a function of wave period, water depth, and g
 AMREX_FORCE_INLINE amrex::Real stokes_wave_length(
-    const amrex::Real T, const amrex::Real d, const amrex::Real g)
+    const amrex::Real T,
+    const amrex::Real d,
+    const amrex::Real H,
+    const int order,
+    const amrex::Real g)
 {
+    // Calculate constants and derivatives that do not change with iteration
     const amrex::Real omega = 2.0 * M_PI / T;
+    const amrex::Real depsdk = H / 2.0;
 
     // Begin Newton-Raphson iterations
     constexpr amrex::Real tol = 1e-10;
-    constexpr int iter_max = 20;
+    constexpr int iter_max = 40;
     int iter = 0;
+    // First guess is first-order
     amrex::Real k = omega / std::sqrt(g);
-    amrex::Real f = g * k * std::tanh(k * d) - omega * omega;
-    while (f > tol && iter < iter_max) {
-        const amrex::Real dfdk =
-            g * k * d * std::pow(1.0 / (std::cosh(k * d)), 2) +
-            g * std::tanh(k * d);
+    // Cannot skip loop
+    amrex::Real f = tol + 1.0;
+    while (std::abs(f) > tol && iter < iter_max) {
+        // Calculate current constants
+        const amrex::Real S = 1.0 / std::cosh(2.0 * k * d);
+        const amrex::Real C = 1.0 - S;
+        const amrex::Real eps = k * H / 2.0;
+        const amrex::Real C0 = std::sqrt(std::tanh(k * d));
+        const amrex::Real C2 = C0 * (2.0 + 7.0 * S * S) / (4.0 * C * C);
+        const amrex::Real numterm_C4 =
+            (4.0 + 32.0 * S - 116.0 * std::pow(S, 2) - 400.0 * std::pow(S, 3) -
+             71.0 * std::pow(S, 4) + 146.0 * std::pow(S, 5));
+        const amrex::Real C4 = C0 * numterm_C4 / (32.0 * std::pow(C, 5));
+        // Calculate pure derivates
+        const amrex::Real dSdk = -2.0 * d * std::sinh(2.0 * k * d) /
+                                 std::pow(std::cosh(2.0 * k * d), 2);
+        const amrex::Real dCdk = -dSdk;
+        const amrex::Real dC0dk =
+            d / (2.0 * C0 * std::pow(std::cosh(k * d), 2));
+        // Calculate derivatives with products
+        const amrex::Real dC2dk =
+            (4 * std::pow(C, 2) *
+                 (dC0dk * (2.0 + 7.0 * std::pow(S, 2)) + C0 * 14.0 * S * dSdk) -
+             C0 * (2.0 + 7.0 * std::pow(S, 2)) * 8.0 * C * dCdk) /
+            (16.0 * std::pow(C, 4));
+        const amrex::Real dC4dk =
+            (32.0 * std::pow(C, 5) *
+                 (dC0dk * numterm_C4 +
+                  C0 * (32.0 * dSdk - 232.0 * S * dSdk -
+                        1200 * std::pow(S, 2) * dSdk -
+                        284.0 * std::pow(S, 3) * dSdk + 730 * std::pow(S, 4))) -
+             C0 * numterm_C4 * 160.0 * std::pow(C, 4) * dCdk) /
+            (1024.0 * std::pow(C, 10));
+
+        // Calculate derivative for loop convergence
+        amrex::Real dfdk = g * std::pow(C0, 2) + g * k * 2.0 * C0 * dC0dk;
+        // Add additional terms depending on order
+        if (order >= 2) {
+            dfdk +=
+                g * (2.0 * C0 * std::pow(eps, 2) * C2 +
+                     std::pow(eps, 4) * std::pow(C2, 2)) +
+                g * k *
+                    (2.0 * dC0dk * std::pow(eps, 2) * C2 +
+                     2.0 * C0 *
+                         (2.0 * eps * depsdk * C2 + std::pow(eps, 2) * dC2dk) +
+                     4.0 * std::pow(eps, 3) * std::pow(C2, 2) * depsdk +
+                     std::pow(eps, 4) * 2.0 * C2 * dC2dk);
+        }
+        if (order >= 4) {
+            dfdk += g * (2.0 * std::pow(eps, 4) * C0 * C4 +
+                         2.0 * std::pow(eps, 6) * C2 * C4 +
+                         std::pow(eps, 8) * std::pow(C4, 2)) +
+                    g * k *
+                        (8.0 * std::pow(eps, 3) * depsdk * C0 * C4 +
+                         2.0 * std::pow(eps, 4) * (C0 * dC4dk + C4 * dC0dk) +
+                         12 * std::pow(eps, 5) * depsdk * C2 * C4 +
+                         2.0 * std::pow(eps, 6) * (C2 * dC4dk + C4 * dC2dk) +
+                         8.0 * std::pow(eps, 7) * depsdk * std::pow(C4, 2) +
+                         std::pow(eps, 8) * 2.0 * C4 * dC4dk);
+        }
         k = k - f / dfdk;
 
         iter += 1;
-        f = g * k * std::tanh(k * d) - omega * omega;
+        f = g * k * std::pow(C0, 2);
+        // Add additional terms depending on order
+        if (order >= 2) {
+            f += g * k *
+                 (2.0 * C0 * std::pow(eps, 2) * C2 +
+                  std::pow(eps, 4) * std::pow(C2, 2));
+        }
+        if (order >= 4) {
+            f += g * k *
+                 (2.0 * std::pow(eps, 4) * C0 * C4 +
+                  2.0 * std::pow(eps, 6) * C2 * C4 +
+                  std::pow(eps, 8) * std::pow(C4, 2));
+        }
+        // Subtract omega^2 to measure convergence
+        f -= omega * omega;
     }
 
     if (k < tol || iter >= iter_max || std::isnan(k)) {

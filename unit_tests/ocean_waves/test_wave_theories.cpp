@@ -80,10 +80,11 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
     amrex::Real wave_height = 0.2;
     amrex::Real wave_period = 2.2;
     amrex::Real water_depth = 5.0;
+    int wave_order = 5;
     constexpr amrex::Real g = 9.81;
     amrex::Real lambda =
         amr_wind::ocean_waves::relaxation_zones::stokes_wave_length(
-            wave_period, water_depth, g);
+            wave_period, water_depth, wave_height, wave_order, g);
 
     // Relation to check is from course notes:
     // https://www.caee.utexas.edu/prof/kinnas/ce358/oenotes/kinnas_stokes11.pdf
@@ -96,7 +97,7 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
 
     amrex::Real C0 = std::sqrt(std::tanh(k * water_depth));
     amrex::Real C2 = C0 * (2.0 + 7.0 * S * S) / (4.0 * C * C);
-    amrex::Real C4 =
+    const amrex::Real C4 =
         C0 *
         (4.0 + 32.0 * S - 116.0 * std::pow(S, 2) - 400.0 * std::pow(S, 3) -
          71.0 * std::pow(S, 4) + 146.0 * std::pow(S, 5)) /
@@ -108,8 +109,9 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
     wave_height = 0.05;
     wave_period = 1.5;
     water_depth = 0.9;
+    wave_order = 3;
     lambda = amr_wind::ocean_waves::relaxation_zones::stokes_wave_length(
-        wave_period, water_depth, g);
+        wave_period, water_depth, wave_height, wave_order, g);
 
     k = 2.0 * M_PI / lambda;
     const amrex::Real RHS2 = 2.0 * M_PI / (wave_period * std::sqrt(g * k));
@@ -120,11 +122,7 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
 
     C0 = std::sqrt(std::tanh(k * water_depth));
     C2 = C0 * (2.0 + 7.0 * S * S) / (4.0 * C * C);
-    C4 = C0 *
-         (4.0 + 32.0 * S - 116.0 * std::pow(S, 2) - 400.0 * std::pow(S, 3) -
-          71.0 * std::pow(S, 4) + 146.0 * std::pow(S, 5)) /
-         (32.0 * std::pow(C, 5));
-    const amrex::Real LHS2 = C0 + std::pow(eps, 2) * C2 + std::pow(eps, 4) * C4;
+    const amrex::Real LHS2 = C0 + std::pow(eps, 2) * C2;
     EXPECT_NEAR(LHS2, RHS2, 1e-8);
 }
 

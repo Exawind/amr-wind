@@ -33,7 +33,7 @@ struct ReadInputsOp<StokesWaves>
             amrex::Real wave_period = 1.0;
             pp.get("wave_period", wave_period);
             wdata.wave_length = relaxation_zones::stokes_wave_length(
-                wave_period, wdata.water_depth, wdata.g);
+                wave_period, wdata.water_depth, wdata.wave_height, wdata.order, wdata.g);
             // Abort if wave length is negative
             if (wdata.wave_length < 0.0) {
                 amrex::Abort(
