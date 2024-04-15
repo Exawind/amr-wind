@@ -216,7 +216,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real my_sinh_sin(
     }
 
     return std::pow(eps, m) * D * n * wavenumber *
-           std::sinh(n * wavenumber * (waterdepth + (z - zsl))) * std::sin(n * phase);
+           std::sinh(n * wavenumber * (waterdepth + (z - zsl))) *
+           std::sin(n * phase);
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real my_cosh_cos(
@@ -268,7 +269,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real my_cosh_cos(
     }
 
     return std::pow(eps, m) * D * n * wavenumber *
-           std::cosh(n * wavenumber * (waterdepth + (z - zsl))) * std::cos(n * phase);
+           std::cosh(n * wavenumber * (waterdepth + (z - zsl))) *
+           std::cos(n * phase);
 }
 
 // Based on Fenton 1985
