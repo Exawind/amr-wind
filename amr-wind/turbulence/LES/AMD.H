@@ -87,8 +87,11 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amd_muvel(
         gradTbar_coord_begin, gradTbar_coord_end, gradTbar, h);
     for (int ii = 0; ii < AMREX_SPACEDIM; ++ii) {
         // This should operate only on the wall normal velocity
-        num_buoy += gradVel(i, j, k, normal_dir * AMREX_SPACEDIM + ii) *
-                    (gradT(i, j, k, ii) - gradTbar_h) * dx[ii] * dx[ii];
+        num_buoy +=
+            gradVel(i, j, k, normal_dir * AMREX_SPACEDIM + ii) *
+            (gradT(i, j, k, ii) - ((ii == normal_dir) ? gradTbar_h : 0.0)) *
+            dx[ii] * dx[ii];
+
         for (int jj = 0; jj < AMREX_SPACEDIM; ++jj) {
             const amrex::Real diuj = gradVel(i, j, k, ii * AMREX_SPACEDIM + jj);
             const amrex::Real djui = gradVel(i, j, k, jj * AMREX_SPACEDIM + ii);
