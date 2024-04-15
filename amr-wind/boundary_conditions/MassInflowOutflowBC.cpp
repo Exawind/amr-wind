@@ -36,29 +36,36 @@ void MassInflowOutflowBC::operator()(Field& /*field*/, const FieldState /*rho_st
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
         for (amrex::MFIter mfi(m_field(lev), mfi_info); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.validbox();
+            auto bx = mfi.validbox();
+            bx.grow({!ib, !jb, !kb});
             const auto& bc_a = m_field(lev).array(mfi);
             const auto& vel = velocity(lev).array(mfi);
 
             if (islow && (bx.smallEnd(idim) == domain.smallEnd(idim))) {
                 amrex::ParallelFor(
-                    amrex::bdryLo(bx, idim), ncomp,
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                    //amrex::Print() << i << " " << j << " " << k << std::endl;
-                    //amrex::Print() << i-ib << " " << j-jb << " " << k-kb << std::endl;
-                    //amrex::Print() << vel(i-ib, j-jb, k-kb, idim) << " " << bc_a(i-ib, j-jb, k-kb, n) << " " << bc_a(i, j, k, n) << std::endl << std::endl;
+                    amrex::bdryLo(bx, idim),
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         if (vel(i-ib, j-jb, k-kb, idim) < 0) {
+                            for (int n = 0; n < ncomp; n++) {
                                 bc_a(i-ib, j-jb, k-kb, n) = bc_a(i, j, k, n);
+                            }
                         }
+
+                        /*for (int n = 0; n < ncomp; n++) {
+                            amrex::Print() << i << " " << j << " " << k << " " << n << std::endl;
+                            amrex::Print() << "result: " << vel(i-ib, j-jb, k-kb, idim) << " " << bc_a(i-ib, j-jb, k-kb, n) << " " << bc_a(i, j, k, n) << std::endl << std::endl;
+                        }*/
                     });
             }
 
             if (ishigh && (bx.bigEnd(idim) == domain.bigEnd(idim))) {
                 amrex::ParallelFor(
-                    amrex::bdryHi(bx, idim), ncomp,
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                    amrex::bdryHi(bx, idim),
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         if (vel(i, j, k, idim) > 0) {
-                            bc_a(i, j, k, n) = bc_a(i-ib, j-jb, k-kb, n);
+                            for (int n = 0; n < ncomp; n++) {
+                                bc_a(i, j, k, n) = bc_a(i-ib, j-jb, k-kb, n);
+                            }
                         }
                     });
             }

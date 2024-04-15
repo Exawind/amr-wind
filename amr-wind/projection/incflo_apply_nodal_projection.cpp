@@ -6,6 +6,9 @@
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/projection/nodal_projection_ops.H"
 
+#include "amr-wind/utilities/IOManager.H"
+
+
 using namespace amrex;
 
 void amr_wind::nodal_projection::set_inflow_velocity(
@@ -332,6 +335,13 @@ void incflo::ApplyProjection(
                 m_sim.physics_manager(), velocity, lev, time, *vel[lev], 1);
         }
     }
+
+    // need to apply custom Neumann funcs for inflow-outflow BC
+    // after setting the inflow vels above
+    if (!proj_for_small_dt and !incremental) {
+        velocity.apply_bc_funcs(amr_wind::FieldState::New);
+    }
+
 
     if (is_anelastic) {
         for (int lev = 0; lev <= finest_level; ++lev) {
