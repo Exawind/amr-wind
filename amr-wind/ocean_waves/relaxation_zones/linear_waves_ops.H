@@ -64,8 +64,7 @@ struct InitDataOp<LinearWaves>
 
                         const amrex::Real wavenumber = 2. * M_PI / wavelength;
                         const amrex::Real omega = std::pow(
-                            wavenumber * g *
-                                std::tanh(wavenumber * waterdepth),
+                            wavenumber * g * std::tanh(wavenumber * waterdepth),
                             0.5);
                         const amrex::Real phase = wavenumber * xc;
                         const amrex::Real eta =
@@ -141,8 +140,7 @@ struct UpdateRelaxZonesOp<LinearWaves>
 
                         const amrex::Real wavenumber = 2. * M_PI / wavelength;
                         const amrex::Real omega = std::pow(
-                            wavenumber * g *
-                                std::tanh(wavenumber * waterdepth),
+                            wavenumber * g * std::tanh(wavenumber * waterdepth),
                             0.5);
                         const amrex::Real phase =
                             wavenumber * xc - omega * time;
