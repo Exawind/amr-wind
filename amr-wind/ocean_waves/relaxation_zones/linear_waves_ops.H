@@ -19,6 +19,8 @@ struct ReadInputsOp<LinearWaves>
         auto& wdata = data.meta();
         auto& info = data.info();
         relaxation_zones::read_inputs(wdata, info, pp);
+        // Get gravity from MultiPhase physics, assume negative z
+        wdata.g = -data.sim().physics_manager().get<MultiPhase>().gravity()[2];
 
         pp.get("wave_length", wdata.wave_length);
         pp.get("wave_height", wdata.wave_height);
@@ -48,6 +50,7 @@ struct InitDataOp<LinearWaves>
             const auto& vel = m_velocity(level).array(mfi);
 
             const amrex::Real zsl = wdata.zsl;
+            const amrex::Real g = wdata.g;
             const auto& gbx3 = mfi.growntilebox(3);
 
             if (wdata.init_wave_field) {
@@ -61,7 +64,7 @@ struct InitDataOp<LinearWaves>
 
                         const amrex::Real wavenumber = 2. * M_PI / wavelength;
                         const amrex::Real omega = std::pow(
-                            wavenumber * 9.81 *
+                            wavenumber * g *
                                 std::tanh(wavenumber * waterdepth),
                             0.5);
                         const amrex::Real phase = wavenumber * xc;
@@ -128,6 +131,7 @@ struct UpdateRelaxZonesOp<LinearWaves>
                 const amrex::Real waveheight = wdata.wave_height;
                 const amrex::Real wavelength = wdata.wave_length;
                 const amrex::Real waterdepth = wdata.water_depth;
+                const amrex::Real g = wdata.g;
 
                 const auto& gbx = mfi.growntilebox(3);
                 amrex::ParallelFor(
@@ -137,7 +141,7 @@ struct UpdateRelaxZonesOp<LinearWaves>
 
                         const amrex::Real wavenumber = 2. * M_PI / wavelength;
                         const amrex::Real omega = std::pow(
-                            wavenumber * 9.81 *
+                            wavenumber * g *
                                 std::tanh(wavenumber * waterdepth),
                             0.5);
                         const amrex::Real phase =

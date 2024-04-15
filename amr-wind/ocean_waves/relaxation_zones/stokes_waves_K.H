@@ -35,10 +35,9 @@ AMREX_FORCE_INLINE amrex::Real stokes_wave_length(
     if (k < tol || iter >= iter_max || std::isnan(k)) {
         // Return negative wavelength if faulty result
         return -1;
-    } else {
-        // Return wavelength calculated from wavenumber
-        return 2.0 * M_PI / k;
     }
+    // Return wavelength calculated from wavenumber
+    return 2.0 * M_PI / k;
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(

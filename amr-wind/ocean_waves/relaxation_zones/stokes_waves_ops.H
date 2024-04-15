@@ -21,6 +21,9 @@ struct ReadInputsOp<StokesWaves>
         auto& info = data.info();
         relaxation_zones::read_inputs(wdata, info, pp);
 
+        // Get gravity from MultiPhase physics, assume negative z
+        wdata.g = -data.sim().physics_manager().get<MultiPhase>().gravity()[2];
+        // Get wave attributes
         pp.get("wave_height", wdata.wave_height);
         pp.get("order", wdata.order);
         if (pp.contains("wave_length")) {
@@ -29,9 +32,6 @@ struct ReadInputsOp<StokesWaves>
             // Wave length will be calculated using wave period
             amrex::Real wave_period = 1.0;
             pp.get("wave_period", wave_period);
-            // Get gravity from MultiPhase physics, assume z
-            wdata.g =
-                -data.sim().physics_manager().get<MultiPhase>().gravity()[2];
             wdata.wave_length = relaxation_zones::stokes_wave_length(
                 wave_period, wdata.water_depth, wdata.g);
             // Abort if wave length is negative

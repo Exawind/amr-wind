@@ -18,7 +18,8 @@ struct RelaxZonesBaseData
 
     amrex::Real water_depth{0.5};
 
-    amrex::Real g{9.81};
+    // Gravitational constant - wave types that use gravity store value here
+    amrex::Real g;
 
     // Wave generation/absorption parameters
     amrex::Real gen_length{4.0};
