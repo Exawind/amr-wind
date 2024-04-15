@@ -15,7 +15,6 @@ AMREX_FORCE_INLINE amrex::Real stokes_wave_length(
     const amrex::Real T, const amrex::Real d, const amrex::Real g)
 {
     const amrex::Real omega = 2.0 * M_PI / T;
-    const amrex::Real lambda0 = (g * T * T) / 2.0 / M_PI;
 
     // Begin Newton-Raphson iterations
     constexpr amrex::Real tol = 1e-10;
@@ -33,7 +32,7 @@ AMREX_FORCE_INLINE amrex::Real stokes_wave_length(
         f = g * k * std::tanh(k * d) - omega * omega;
     }
 
-    if (k < tol || iter >= iter_max || isnan(k)) {
+    if (k < tol || iter >= iter_max || std::isnan(k)) {
         // Return negative wavelength if faulty result
         return -1;
     } else {
