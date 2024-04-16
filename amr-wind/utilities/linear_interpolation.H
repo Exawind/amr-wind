@@ -2,6 +2,7 @@
 #define LINEAR_INTERPOLATION_H
 
 #include "AMReX_Gpu.H"
+#include <AMReX_Extension.H>
 
 namespace amr_wind::interp {
 
@@ -79,11 +80,13 @@ find_index(const It begin, const It end, const T& x, const int hint = 1)
 }
 
 template <typename C1, typename C2>
-inline typename std::iterator_traits<C2>::value_type linear(
-    const C1 xbegin,
-    const C1 xend,
-    const C2 yinp,
-    const typename std::iterator_traits<C1>::value_type& xout)
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    typename std::iterator_traits<C2>::value_type
+    linear(
+        const C1 xbegin,
+        const C1 xend,
+        const C2 yinp,
+        const typename std::iterator_traits<C1>::value_type& xout)
 {
     using DType1 = typename std::iterator_traits<C1>::value_type;
     const auto idx = bisection_search(xbegin, xend, xout);
@@ -91,19 +94,12 @@ inline typename std::iterator_traits<C2>::value_type linear(
     if ((idx.lim == Limits::LOWLIM) || (idx.lim == Limits::UPLIM)) {
         return yinp[idx.idx];
     }
-
-    if (idx.lim == Limits::VALID) {
-        static constexpr DType1 eps = 1.0e-8;
-        int j = idx.idx;
-        const auto denom = (xbegin[j + 1] - xbegin[j]);
-        const auto facR = (denom > eps) ? ((xout - xbegin[j]) / denom) : 1.0;
-        const auto facL = static_cast<DType1>(1.0) - facR;
-        const auto yout = facL * yinp[j] + facR * yinp[j + 1];
-        return yout;
-    }
-
-    amrex::Abort("idx undefined");
-    exit(1);
+    static constexpr DType1 eps = 1.0e-8;
+    const int j = idx.idx;
+    const auto denom = (xbegin[j + 1] - xbegin[j]);
+    const auto facR = (denom > eps) ? ((xout - xbegin[j]) / denom) : 1.0;
+    const auto facL = static_cast<DType1>(1.0) - facR;
+    return facL * yinp[j] + facR * yinp[j + 1];
 }
 
 template <typename C1, typename C2>

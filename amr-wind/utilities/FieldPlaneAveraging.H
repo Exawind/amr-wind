@@ -79,6 +79,10 @@ public:
     {
         return m_line_average;
     };
+    const amrex::Vector<amrex::Real>& line_deriv() const
+    {
+        return m_line_deriv;
+    };
     void line_average(int comp, amrex::Vector<amrex::Real>& l_vec);
     const amrex::Vector<amrex::Real>& line_centroids() const
     {
