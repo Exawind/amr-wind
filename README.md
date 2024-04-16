@@ -69,6 +69,14 @@ through pull-requests on GitHub. Please refer to the
 [coding guidelines](https://exawind.github.io/amr-wind/developer/coding_guidelines.html) as
 a reference for the best practices currently used to develop AMR-Wind.
 
+## Versioning and tags
+
+AMR-Wind uses a type of semantic versioning to help users navigate different versions of the code, 
+which are labeled with GitHub tags. These tagged versions are not exhaustive, and they adhere to
+the following convention. Given a version number MAJOR.MINOR.PATCH:
+1. MAJOR version for changes to input file compatibility for key aspects of the solver, when a key model is changed to significantly affect results of simulations, when a major new capability is added
+2. MINOR version for when a significant feature is added (in a backward compatible manner), accumulation of smaller features, or changes to input file compatibility for less central aspects of the solver (e.g., post-processing, forcing terms)
+3. PATCH version for backward compatible bug fixes
 
 ## License
 
