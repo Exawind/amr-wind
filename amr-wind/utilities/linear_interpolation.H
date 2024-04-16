@@ -95,12 +95,11 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
         return yinp[idx.idx];
     }
     static constexpr DType1 eps = 1.0e-8;
-    int j = idx.idx;
+    const int j = idx.idx;
     const auto denom = (xbegin[j + 1] - xbegin[j]);
     const auto facR = (denom > eps) ? ((xout - xbegin[j]) / denom) : 1.0;
     const auto facL = static_cast<DType1>(1.0) - facR;
-    const auto yout = facL * yinp[j] + facR * yinp[j + 1];
-    return yout;
+    return facL * yinp[j] + facR * yinp[j + 1];
 }
 
 template <typename C1, typename C2>
