@@ -401,7 +401,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_waves(
              (std::cos(2. * phase) + b44 * std::cos(4. * phase)) +
          std::pow(eps, 5) *
              (-(b53 + b55) * std::cos(phase) + b53 * std::cos(3 * phase) +
-              b55 * std::cos(5 * phase)));
+              b55 * std::cos(5 * phase))) + zsl;
 
     // Compute cosines
     const amrex::Real cc11 = stokes_cosh_cos(

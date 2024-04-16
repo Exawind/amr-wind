@@ -68,20 +68,22 @@ struct InitDataOp<LinearWaves>
                             0.5);
                         const amrex::Real phase = wavenumber * xc;
                         const amrex::Real eta =
-                            waveheight / 2.0 * std::cos(phase);
+                            waveheight / 2.0 * std::cos(phase) + zsl;
 
                         phi(i, j, k) = eta - zc;
 
                         if (phi(i, j, k) >= 0) {
                             vel(i, j, k, 0) =
                                 omega * waveheight / 2.0 *
-                                std::cosh(wavenumber * (zc + waterdepth)) /
+                                std::cosh(
+                                    wavenumber * (zc - zsl + waterdepth)) /
                                 std::sinh(wavenumber * waterdepth) *
                                 std::cos(phase);
                             vel(i, j, k, 1) = 0.0;
                             vel(i, j, k, 2) =
                                 omega * waveheight / 2.0 *
-                                std::sinh(wavenumber * (zc + waterdepth)) /
+                                std::sinh(
+                                    wavenumber * (zc - zsl + waterdepth)) /
                                 std::sinh(wavenumber * waterdepth) *
                                 std::sin(phase);
                         }
@@ -130,6 +132,7 @@ struct UpdateRelaxZonesOp<LinearWaves>
                 const amrex::Real waveheight = wdata.wave_height;
                 const amrex::Real wavelength = wdata.wave_length;
                 const amrex::Real waterdepth = wdata.water_depth;
+                const amrex::Real zsl = wdata.zsl;
                 const amrex::Real g = wdata.g;
 
                 const auto& gbx = mfi.growntilebox(3);
@@ -146,20 +149,22 @@ struct UpdateRelaxZonesOp<LinearWaves>
                             wavenumber * xc - omega * time;
 
                         const amrex::Real eta =
-                            waveheight / 2.0 * std::cos(phase);
+                            waveheight / 2.0 * std::cos(phase) + zsl;
 
                         phi(i, j, k) = eta - zc;
 
                         if (phi(i, j, k) + 0.5 * dx[2] >= 0) {
                             vel(i, j, k, 0) =
                                 omega * waveheight / 2.0 *
-                                std::cosh(wavenumber * (zc + waterdepth)) /
+                                std::cosh(
+                                    wavenumber * (zc - zsl + waterdepth)) /
                                 std::sinh(wavenumber * waterdepth) *
                                 std::cos(phase);
                             vel(i, j, k, 1) = 0.0;
                             vel(i, j, k, 2) =
                                 omega * waveheight / 2.0 *
-                                std::sinh(wavenumber * (zc + waterdepth)) /
+                                std::sinh(
+                                    wavenumber * (zc - zsl + waterdepth)) /
                                 std::sinh(wavenumber * waterdepth) *
                                 std::sin(phase);
                         }
