@@ -73,6 +73,8 @@ MultiPhase::MultiPhase(CFDSim& sim)
         amrex::Print() << "WARNING: single-phase density has been specified "
                           "but will not be used! (MultiPhase physics)\n";
     }
+    // Always populate gravity
+    pp_incflo.queryarr("gravity", m_gravity);
 }
 
 InterfaceCapturingMethod MultiPhase::interface_capturing_method()
@@ -123,8 +125,6 @@ void MultiPhase::post_init_actions()
         // Make p0 field if requested
         if (m_reconstruct_true_pressure) {
             // Initialize p0 field for reconstructing p
-            amrex::ParmParse pp("incflo");
-            pp.queryarr("gravity", m_gravity);
             auto& p0 = m_sim.repo().get_field("reference_pressure");
             hydrostatic::define_p0(
                 p0, m_rho1, m_rho2, water_level0, m_gravity[2],
