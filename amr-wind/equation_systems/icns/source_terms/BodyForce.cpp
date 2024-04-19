@@ -1,6 +1,7 @@
 #include "amr-wind/equation_systems/icns/source_terms/BodyForce.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/trig_ops.H"
+#include "amr-wind/utilities/linear_interpolation.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
@@ -16,18 +17,34 @@ namespace amr_wind::pde::icns {
 BodyForce::BodyForce(const CFDSim& sim) : m_time(sim.time()), m_mesh(sim.mesh())
 {
 
-    // Read the geostrophic wind speed vector (in m/s)
+    // Body Force arguments
     amrex::ParmParse pp("BodyForce");
     pp.query("type", m_type);
     m_type = amrex::toLower(m_type);
+    bool no_type_specified = !pp.contains("type");
+    bool file_specified = pp.contains("uniform_timetable_file");
 
+    // Prepare type of body force distribution
     if (m_type == "height-varying") {
+        // Constant in time, varies with z
         pp.get("bodyforce-file", m_bforce_file);
         read_bforce_profile(m_bforce_file);
+    } else if (
+        m_type == "uniform_timetable" ||
+        (no_type_specified && file_specified)) {
+        // Still used if type not specified but file is
+        // Uniform in space, varies with time
+        pp.get("uniform_timetable_file", m_utt_file);
+        read_bforce_timetable(m_utt_file);
     } else {
         pp.getarr("magnitude", m_body_force);
         if (m_type == "oscillatory") {
             pp.get("angular_frequency", m_omega);
+        } else if (m_type != "uniform") {
+            amrex::Abort(
+                "BodyForce type not supported. Please choose uniform "
+                "(default), height-varying, oscillatory, or "
+                "uniform_timetable.\n");
         }
     }
 }
@@ -66,6 +83,27 @@ void BodyForce::read_bforce_profile(const std::string& filename)
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, bforce_hts.begin(), bforce_hts.end(),
         m_ht.begin());
+}
+
+void BodyForce::read_bforce_timetable(const std::string& filename)
+{
+    std::ifstream ifh(filename, std::ios::in);
+    if (!ifh.good()) {
+        amrex::Abort("Cannot find input file: " + filename + "\n");
+    }
+    amrex::Real data_time;
+    amrex::Real data_fx;
+    amrex::Real data_fy;
+    amrex::Real data_fz;
+    // Skip first line (header)
+    ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    while (ifh >> data_time) {
+        ifh >> data_fx >> data_fy >> data_fz;
+        m_time_table.push_back(data_time);
+        m_fx_table.push_back(data_fx);
+        m_fy_table.push_back(data_fy);
+        m_fz_table.push_back(data_fz);
+    }
 }
 
 void BodyForce::operator()(
@@ -112,6 +150,16 @@ void BodyForce::operator()(
 
         amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> forcing{
             {m_body_force[0], m_body_force[1], m_body_force[2]}};
+
+        if (!m_utt_file.empty()) {
+            // Populate forcing from file if supplied
+            forcing[0] =
+                amr_wind::interp::linear(m_time_table, m_fx_table, time);
+            forcing[1] =
+                amr_wind::interp::linear(m_time_table, m_fy_table, time);
+            forcing[2] =
+                amr_wind::interp::linear(m_time_table, m_fz_table, time);
+        }
 
         amrex::Real coeff =
             (m_type == "oscillatory") ? std::cos(m_omega * time) : 1.0;
