@@ -39,6 +39,7 @@ CoriolisForcing.latitude = 41.3
 ABLForcing.abl_forcing_height = 90
 
 ABLForcing.velocity_timetable = "time_table.txt"
+ABLForcing.forcing_timetable_output_file = "abl_forces.txt"
 
 ABL.temperature_heights = 650.0 750.0 1000.0
 ABL.temperature_values = 300.0 308.0 308.75

@@ -43,6 +43,18 @@ ABLForcing::ABLForcing(const CFDSim& sim)
         pp_incflo.getarr("velocity", m_target_vel);
     }
 
+    m_write_force_timetable = pp_abl.contains("forcing_timetable_output_file");
+    if (m_write_force_timetable) {
+        pp_abl.get("forcing_timetable_output_file", m_force_timetable);
+        pp_abl.query("forcing_timetable_frequency", m_force_outfreq);
+        pp_abl.query("forcing_timetable_start_time", m_force_outstart);
+        if (amrex::ParallelDescriptor::IOProcessor()) {
+            std::ofstream outfile;
+            outfile.open(m_force_timetable, std::ios::out);
+            outfile << "time\tfx\tfy\tfz\n";
+        }
+    }
+
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {
         m_mean_vel[i] = m_target_vel[i];
     }

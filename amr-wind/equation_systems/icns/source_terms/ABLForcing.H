@@ -55,6 +55,14 @@ public:
 
         m_abl_forcing[0] = (m_target_vel[0] - m_mean_vel[0]) / dt;
         m_abl_forcing[1] = (m_target_vel[1] - m_mean_vel[1]) / dt;
+
+        if (m_write_force_timetable &&
+            amrex::ParallelDescriptor::IOProcessor()) {
+            std::ofstream outfile;
+            outfile.open(m_force_timetable, std::ios::out | std::ios_base::app);
+            outfile << std::scientific << current_time << "\t" << m_abl_forcing[0]
+                    << "\t" << m_abl_forcing[1] << "\t" << 0.0 << std::endl;
+        }
     }
 
     amrex::RealArray abl_forcing() const { return m_abl_forcing; }
@@ -76,6 +84,15 @@ private:
 
     //! File name for velocity forcing time table
     std::string m_vel_timetable;
+
+    //! Bool for writing forcing time table
+    bool m_write_force_timetable{false};
+    //! File name for forcing time table output
+    std::string m_force_timetable;
+    //! Output frequency for forces
+    int m_force_outfreq{1};
+    //! Output start time for force
+    amrex::Real m_force_outstart{0.0};
 
     //! Velocity forcing time table
     amrex::Vector<amrex::Real> m_time_table;
