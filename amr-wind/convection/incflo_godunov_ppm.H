@@ -30,8 +30,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_xbc(
     if (i <= domlo) {
         if (bclo == BCType::ext_dir ||
             (bclo == BCType::user_1 && uedge > 0.0)) {
-            Print() << "trans_xbc_domlo_extdir triggered at " << i << " " << j << " " << k << " " << n
-                    << "  as uedge is " << uedge << std::endl;
+            //Print() << "trans_xbc_domlo_extdir triggered at " << i << " " << j << " " << k << " " << n
+            //        << "  as uedge is " << uedge << std::endl;
             // IAMR does this but it breaks lo/hi symmetry
             // Real st = (uedge <= small_vel) ? hi : s(domlo-1,j,k,n);
             // So here we do something simpler...
@@ -42,16 +42,13 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_xbc(
             bclo == BCType::foextrap || bclo == BCType::hoextrap ||
             bclo == BCType::reflect_even ||
             (bclo == BCType::user_1 && uedge <= 0.0)) {
-            Print() << "trans_xbc_domlo_foextrap triggered at " << i << " " << j << " " << k << " " << n
-                    << "  as uedge is " << uedge << std::endl;
+            //Print() << "trans_xbc_domlo_foextrap triggered at " << i << " " << j << " " << k << " " << n
+            //        << "  as uedge is " << uedge << std::endl;
             lo = hi;
 
         } else if (bclo == BCType::reflect_odd) {
             hi = 0.;
             lo = 0.;
-        } else {
-            Print() << "trans_xbc_domlo_nothing triggered at " << i << " " << j << " " << k << " " << n
-                    << "  as uedge is " << uedge << std::endl;
         }
     }
 
@@ -59,8 +56,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_xbc(
     if (i > domhi) {
         if (bchi == BCType::ext_dir ||
             (bchi == BCType::user_1 && uedge < 0.0)) {     // is this correct use of uedge here??
-            Print() << "trans_xbc_domhi_extdir triggered at " << i << " " << j << " " << k << " " << n
-                    << "  as uedge is " << uedge << std::endl;
+            //Print() << "trans_xbc_domhi_extdir triggered at " << i << " " << j << " " << k << " " << n
+            //        << "  as uedge is " << uedge << std::endl;
             // IAMR does this but it breaks lo/hi symmetry
             // Real st = (uedge >= -small_vel)? lo : s(domhi+1,j,k,n);
             // So here we do something simpler...
@@ -71,8 +68,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_xbc(
             bchi == BCType::foextrap || bchi == BCType::hoextrap ||
             bchi == BCType::reflect_even ||
             (bchi == BCType::user_1 && uedge >= 0.0)) {
-            Print() << "trans_xbc_domhi_foextrap triggered at " << i << " " << j << " " << k << " " << n
-                    << "  as uedge is " << uedge << std::endl;
+            //Print() << "trans_xbc_domhi_foextrap triggered at " << i << " " << j << " " << k << " " << n
+            //        << "  as uedge is " << uedge << std::endl;
             hi = lo;
 
         } else if (bchi == BCType::reflect_odd) {
@@ -218,14 +215,14 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_xbc_lo(
 
     if (i == domlo) {
         if ((bclo == BCType::ext_dir && uedge(i, j, k) >= 0.) ||
-            (bclo == BCType::user_1 && uedge(i, j, k) >= 0.)) {
+            (bclo == BCType::user_1 && uedge(i, j, k) > 0.)) {
             hi = s(domlo - 1, j, k, n);
             lo = hi;
         } else if (
             bclo == BCType::foextrap || bclo == BCType::hoextrap ||
             bclo == BCType::reflect_even ||
             (bclo == BCType::ext_dir && uedge(i, j, k) < 0) ||
-            (bclo == BCType::user_1 && uedge(i, j, k) < 0)) {
+            (bclo == BCType::user_1 && uedge(i, j, k) <= 0)) {
             lo = hi;
 
         } else if (bclo == BCType::reflect_odd) {
@@ -253,14 +250,14 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_xbc_hi(
 
     if (i == domhi + 1) {
         if ((bchi == BCType::ext_dir && uedge(i, j, k) <= 0.) ||
-            (bchi == BCType::user_1 && uedge(i, j, k) <= 0.)) {
+            (bchi == BCType::user_1 && uedge(i, j, k) < 0.)) {
             lo = s(domhi + 1, j, k, n);
             hi = lo;
         } else if (
             bchi == BCType::foextrap || bchi == BCType::hoextrap ||
             bchi == BCType::reflect_even ||
             (bchi == BCType::ext_dir && uedge(i, j, k) > 0) ||
-            (bchi == BCType::user_1 && uedge(i, j, k) > 0)) {
+            (bchi == BCType::user_1 && uedge(i, j, k) >= 0)) {
             hi = lo;
 
         } else if (bchi == BCType::reflect_odd) {
