@@ -71,7 +71,7 @@ void MacProjOp::enforce_solvability (
     auto& velocity = m_repo.get_field("velocity");
     amrex::BCRec const* bc_type = velocity.bcrec_device().data();
     const amrex::Vector<amrex::Geometry>& geom = m_repo.mesh().Geom();
-
+    amrex::Print() << "Calling enforceSolvability from AMR-Wind" << std::endl;
     m_mac_proj->enforceSolvability(a_umac, bc_type, geom);
 }
 
@@ -277,7 +277,7 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
         }
     }
 
-    //enforce_solvability(mac_vec);
+    enforce_solvability(mac_vec);
     m_mac_proj->setUMAC(mac_vec);
 
     if (m_has_overset) {
