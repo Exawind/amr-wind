@@ -3,13 +3,13 @@
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            SIMULATION STOP            #
 #.......................................#
-time.stop_time               = 2.00     # Max (simulated) time to evolve
+time.stop_time               = 5.00     # Max (simulated) time to evolve
 time.max_step                = 1	#-1000       # Max number of time steps
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
-time.fixed_dt         =   0.02       # Use this constant dt if > 0
+time.fixed_dt         =   0.01	#0.02       # Use this constant dt if > 0
 time.cfl              =   0.95        # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -46,6 +46,7 @@ io.output_default_variables = 1
 amr.n_cell              = 16 8 16     # Grid cells at coarsest AMRlevel
 amr.blocking_factor     = 4
 amr.max_level           = 0           # Max AMR level in hierarchy
+fabarray.mfiter_tile_size = 1024 1024 1024
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
