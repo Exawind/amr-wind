@@ -60,8 +60,9 @@ public:
             amrex::ParallelDescriptor::IOProcessor()) {
             std::ofstream outfile;
             outfile.open(m_force_timetable, std::ios::out | std::ios_base::app);
-            outfile << std::scientific << current_time << "\t" << m_abl_forcing[0]
-                    << "\t" << m_abl_forcing[1] << "\t" << 0.0 << std::endl;
+            outfile << std::scientific << current_time << "\t"
+                    << m_abl_forcing[0] << "\t" << m_abl_forcing[1] << "\t"
+                    << 0.0 << std::endl;
         }
     }
 
