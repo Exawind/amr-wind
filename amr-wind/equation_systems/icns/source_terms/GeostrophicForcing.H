@@ -28,7 +28,7 @@ public:
 private:
     //! Time
     const SimTime& m_time;
-    
+
     const amrex::AmrCore& m_mesh;
 
     //! Activated when water is present in domain
