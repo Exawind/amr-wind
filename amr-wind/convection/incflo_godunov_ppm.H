@@ -29,7 +29,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_xbc(
     // Low X
     if (i <= domlo) {
         if (bclo == BCType::ext_dir ||
-            (bclo == BCType::user_1 && uedge > 0.0)) {
+            (bclo == BCType::user_1 && uedge >= 0.0)) {
             //Print() << "trans_xbc_domlo_extdir triggered at " << i << " " << j << " " << k << " " << n
             //        << "  as uedge is " << uedge << std::endl;
             // IAMR does this but it breaks lo/hi symmetry
@@ -41,7 +41,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_xbc(
         } else if (
             bclo == BCType::foextrap || bclo == BCType::hoextrap ||
             bclo == BCType::reflect_even ||
-            (bclo == BCType::user_1 && uedge <= 0.0)) {
+            (bclo == BCType::user_1 && uedge < 0.0)) {
             //Print() << "trans_xbc_domlo_foextrap triggered at " << i << " " << j << " " << k << " " << n
             //        << "  as uedge is " << uedge << std::endl;
             lo = hi;
@@ -55,7 +55,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_xbc(
     // High X
     if (i > domhi) {
         if (bchi == BCType::ext_dir ||
-            (bchi == BCType::user_1 && uedge < 0.0)) {     // is this correct use of uedge here??
+            (bchi == BCType::user_1 && uedge <= 0.0)) {     // is this correct use of uedge here??
             //Print() << "trans_xbc_domhi_extdir triggered at " << i << " " << j << " " << k << " " << n
             //        << "  as uedge is " << uedge << std::endl;
             // IAMR does this but it breaks lo/hi symmetry
@@ -67,7 +67,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_xbc(
         } else if (
             bchi == BCType::foextrap || bchi == BCType::hoextrap ||
             bchi == BCType::reflect_even ||
-            (bchi == BCType::user_1 && uedge >= 0.0)) {
+            (bchi == BCType::user_1 && uedge > 0.0)) {
             //Print() << "trans_xbc_domhi_foextrap triggered at " << i << " " << j << " " << k << " " << n
             //        << "  as uedge is " << uedge << std::endl;
             hi = lo;
@@ -215,14 +215,14 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_xbc_lo(
 
     if (i == domlo) {
         if ((bclo == BCType::ext_dir && uedge(i, j, k) >= 0.) ||
-            (bclo == BCType::user_1 && uedge(i, j, k) > 0.)) {
+            (bclo == BCType::user_1 && uedge(i, j, k) >= 0.)) {
             hi = s(domlo - 1, j, k, n);
             lo = hi;
         } else if (
             bclo == BCType::foextrap || bclo == BCType::hoextrap ||
             bclo == BCType::reflect_even ||
             (bclo == BCType::ext_dir && uedge(i, j, k) < 0) ||
-            (bclo == BCType::user_1 && uedge(i, j, k) <= 0)) {
+            (bclo == BCType::user_1 && uedge(i, j, k) < 0)) {
             lo = hi;
 
         } else if (bclo == BCType::reflect_odd) {
@@ -250,14 +250,14 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_xbc_hi(
 
     if (i == domhi + 1) {
         if ((bchi == BCType::ext_dir && uedge(i, j, k) <= 0.) ||
-            (bchi == BCType::user_1 && uedge(i, j, k) < 0.)) {
+            (bchi == BCType::user_1 && uedge(i, j, k) <= 0.)) {
             lo = s(domhi + 1, j, k, n);
             hi = lo;
         } else if (
             bchi == BCType::foextrap || bchi == BCType::hoextrap ||
             bchi == BCType::reflect_even ||
             (bchi == BCType::ext_dir && uedge(i, j, k) > 0) ||
-            (bchi == BCType::user_1 && uedge(i, j, k) >= 0)) {
+            (bchi == BCType::user_1 && uedge(i, j, k) > 0)) {
             hi = lo;
 
         } else if (bchi == BCType::reflect_odd) {
