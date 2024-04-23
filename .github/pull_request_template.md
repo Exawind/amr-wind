@@ -6,7 +6,7 @@
 
 <!-- Please try to limit your pull request to one type, submit multiple pull requests if needed. -->
 
-Please check the type of change your PR introduces:
+Please check the type of change introduced:
 
 - [ ] Bugfix
 - [ ] Feature
@@ -18,10 +18,10 @@ Please check the type of change your PR introduces:
 
 ## Checklist
 
-The following should accompany this PR:
+The following is included:
 
 - [ ] new unit-test(s)
-- [ ] new regression test(s) pass
+- [ ] new regression test(s)
 - [ ] documentation for new capability
 
 This PR was tested by running:
@@ -37,4 +37,4 @@ This PR was tested by running:
 
 <!-- Any other information that is important to this PR such as screenshots of how the component looks before and after the change. -->
 
-Issue Number: N/A
+Issue Number: <!-- Note related issues -->
