@@ -42,6 +42,7 @@ public:
 
         const auto& current_time = m_time.current_time();
         const auto& dt = m_time.deltaT();
+        const auto& t_step = m_time.time_index();
 
         if (!m_vel_timetable.empty()) {
             const amrex::Real current_spd = ::amr_wind::interp::linear(
@@ -57,7 +58,9 @@ public:
         m_abl_forcing[1] = (m_target_vel[1] - m_mean_vel[1]) / dt;
 
         if (m_write_force_timetable &&
-            amrex::ParallelDescriptor::IOProcessor()) {
+            amrex::ParallelDescriptor::IOProcessor() &&
+            (t_step % m_force_outfreq == 0) &&
+            (current_time >= m_force_outstart)) {
             std::ofstream outfile;
             outfile.open(m_force_timetable, std::ios::out | std::ios_base::app);
             outfile << std::scientific << current_time << "\t"
