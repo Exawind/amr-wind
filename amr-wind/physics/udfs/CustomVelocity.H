@@ -48,14 +48,14 @@ struct CustomVelocity
             amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> vel;
             if (x <= 0.5) {
                 // at the low-x boundary, +ve vel in top portion, garbage in the rest
-                vel = {((z >= 0.5) ? pvel : -1e10), 0.0, 0.0};
+                //vel = {((z >= 0.5) ? pvel : -1e10), 0.0, 0.0};
                 //vel = {((z >= 0.5) ? pvel : 0.0), 0.0, 0.0};
-                //vel = {((z >= 0.5) ? pvel : -1.0), 0.0, 0.0};
+                vel = {((z >= 0.5) ? pvel : mvel), 0.0, 0.0};
             } else {
                 // at the high-x boundary, -ve vel in bottom portion, garbage in the rest
-                vel = {((z < 0.5) ? mvel : 1e10), 0.0, 0.0};
+                //vel = {((z < 0.5) ? mvel : 1e10), 0.0, 0.0};
                 //vel = {((z < 0.5) ? mvel : 0.0), 0.0, 0.0};
-                //vel = {((z < 0.5) ? mvel : 1.0), 0.0, 0.0};
+                vel = {((z < 0.5) ? mvel : pvel), 0.0, 0.0};
             }
 
             field(iv[0], iv[1], iv[2], dcomp + comp) = vel[orig_comp + comp];
