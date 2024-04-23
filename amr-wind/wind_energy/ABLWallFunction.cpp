@@ -175,6 +175,11 @@ void ABLVelWallFunc::wall_model(
         return;
     }
 
+    if ((velocity.bc_type()[zhi] == BC::wall_model) &&
+        (m_wall_shear_stress_type == "moeng")) {
+        amrex::Abort("The Moeng wall model is not applicable for a zhi BC");
+    }
+
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
         const auto& domain = geom.Domain();
@@ -299,6 +304,11 @@ void ABLTempWallFunc::wall_model(
     if ((temperature.bc_type()[zlo] != BC::wall_model) &&
         (temperature.bc_type()[zhi] != BC::wall_model)) {
         return;
+    }
+
+    if ((temperature.bc_type()[zhi] == BC::wall_model) &&
+        (m_wall_shear_stress_type == "moeng")) {
+        amrex::Abort("The Moeng wall model is not applicable for a zhi BC");
     }
 
     BL_PROFILE("amr-wind::ABLTempWallFunc");
