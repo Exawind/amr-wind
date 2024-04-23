@@ -22,7 +22,8 @@ namespace amr_wind::pde::icns {
  *    GeostrophicForcing namespace
  *
  */
-GeostrophicForcing::GeostrophicForcing(const CFDSim& sim) : m_mesh(sim.mesh())
+GeostrophicForcing::GeostrophicForcing(const CFDSim& sim)
+    : m_time(sim.time()), m_mesh(sim.mesh())
 {
     amrex::Real coriolis_factor = 0.0;
 
@@ -51,6 +52,19 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& sim) : m_mesh(sim.mesh())
     m_g_forcing = {
         -coriolis_factor * m_target_vel[1], coriolis_factor * m_target_vel[0],
         0.0};
+
+    // Record forcing if requested
+    m_write_force_timetable = ppg.contains("forcing_timetable_output_file");
+    if (m_write_force_timetable) {
+        ppg.get("forcing_timetable_output_file", m_force_timetable);
+        ppg.query("forcing_timetable_frequency", m_force_outfreq);
+        ppg.query("forcing_timetable_start_time", m_force_outstart);
+        if (amrex::ParallelDescriptor::IOProcessor()) {
+            std::ofstream outfile;
+            outfile.open(m_force_timetable, std::ios::out);
+            outfile << "time\tfx\tfy\tfz\n";
+        }
+    }
 
     // Set up relaxation toward 0 forcing near the air-water interface
     if (sim.repo().field_exists("vof")) {
@@ -83,6 +97,18 @@ void GeostrophicForcing::operator()(
     const amrex::Array4<amrex::Real>& src_term) const
 {
     amrex::Real hfac = (m_is_horizontal) ? 0. : 1.;
+
+    const auto& current_time = m_time.current_time();
+    const auto& t_step = m_time.time_index();
+
+    if (m_write_force_timetable && amrex::ParallelDescriptor::IOProcessor() &&
+        (t_step % m_force_outfreq == 0) && (current_time >= m_force_outstart)) {
+        std::ofstream outfile;
+        outfile.open(m_force_timetable, std::ios::out | std::ios_base::app);
+        outfile << std::scientific << current_time << "\t" << m_g_forcing[0]
+                << "\t" << m_g_forcing[1] << "\t" << hfac * m_g_forcing[2]
+                << std::endl;
+    }
 
     const bool ph_ramp = m_use_phase_ramp;
     const int n_band = m_n_band;

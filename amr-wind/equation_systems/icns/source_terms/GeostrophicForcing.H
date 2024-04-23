@@ -26,6 +26,9 @@ public:
         const amrex::Array4<amrex::Real>& src_term) const override;
 
 private:
+    //! Time
+    const SimTime& m_time;
+    
     const amrex::AmrCore& m_mesh;
 
     //! Activated when water is present in domain
@@ -41,6 +44,15 @@ private:
     amrex::Vector<amrex::Real> m_g_forcing{{0.0, 0.0, 0.0}};
 
     bool m_is_horizontal{false};
+
+    //! Bool for writing forcing time table
+    bool m_write_force_timetable{false};
+    //! File name for forcing time table output
+    std::string m_force_timetable;
+    //! Output frequency for forces
+    int m_force_outfreq{1};
+    //! Output start time for force
+    amrex::Real m_force_outstart{0.0};
 
     //! Height from water interface where force is off
     amrex::Real m_forcing_mphase0;
