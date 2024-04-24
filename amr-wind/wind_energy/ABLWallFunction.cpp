@@ -170,8 +170,10 @@ void ABLVelWallFunc::wall_model(
 
     amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
     amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
-    if ((velocity.bc_type()[zlo] != BC::wall_model) &&
-        (velocity.bc_type()[zhi] != BC::wall_model)) {
+    if (velocity.bc_type()[zhi] == BC::wall_model) {
+        amrex::Abort("ABL wall models are not applicable to a zhi BC");
+    }
+    if (velocity.bc_type()[zlo] != BC::wall_model) {
         return;
     }
 
@@ -216,27 +218,6 @@ void ABLVelWallFunc::wall_model(
                             tau.calc_vel_x(uu, wspd) * den(i, j, k) / mu;
                         varr(i, j, k - 1, 1) =
                             tau.calc_vel_y(vv, wspd) * den(i, j, k) / mu;
-                    });
-            }
-
-            if (bx.bigEnd(idim) == domain.bigEnd(idim) &&
-                velocity.bc_type()[zhi] == BC::wall_model) {
-                amrex::ParallelFor(
-                    amrex::bdryHi(bx, idim),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::Real mu = eta(i, j, k - 1);
-                        const amrex::Real uu = vold_arr(i, j, k - 1, 0);
-                        const amrex::Real vv = vold_arr(i, j, k - 1, 1);
-                        const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
-
-                        // Dirichlet BC
-                        varr(i, j, k, 2) = 0.0;
-
-                        // Shear stress BC
-                        varr(i, j, k, 0) =
-                            -tau.calc_vel_x(uu, wspd) * den(i, j, k - 1) / mu;
-                        varr(i, j, k, 1) =
-                            -tau.calc_vel_y(vv, wspd) * den(i, j, k - 1) / mu;
                     });
             }
         }
@@ -295,9 +276,10 @@ void ABLTempWallFunc::wall_model(
     // Return early if the user hasn't requested a wall model BC for temperature
     amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
     amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
-
-    if ((temperature.bc_type()[zlo] != BC::wall_model) &&
-        (temperature.bc_type()[zhi] != BC::wall_model)) {
+    if (temperature.bc_type()[zhi] == BC::wall_model) {
+        amrex::Abort("ABL wall models are not applicable to a zhi BC");
+    }
+    if (temperature.bc_type()[zlo] != BC::wall_model) {
         return;
     }
 
@@ -345,22 +327,6 @@ void ABLTempWallFunc::wall_model(
                         tarr(i, j, k - 1) = den(i, j, k) *
                                             tau.calc_theta(wspd, theta2) /
                                             alphaT;
-                    });
-            }
-
-            if (bx.bigEnd(idim) == domain.bigEnd(idim) &&
-                temperature.bc_type()[zhi] == BC::wall_model) {
-
-                amrex::ParallelFor(
-                    amrex::bdryHi(bx, idim),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::Real alphaT = eta(i, j, k - 1);
-                        const amrex::Real uu = vold_arr(i, j, k - 1, 0);
-                        const amrex::Real vv = vold_arr(i, j, k - 1, 1);
-                        const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
-                        const amrex::Real theta2 = told_arr(i, j, k - 1);
-                        tarr(i, j, k) = -den(i, j, k - 1) *
-                                        tau.calc_theta(wspd, theta2) / alphaT;
                     });
             }
         }
