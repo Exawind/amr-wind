@@ -104,9 +104,7 @@ void GeostrophicForcing::operator()(
     const amrex::Array4<amrex::Real>& src_term) const
 {
     amrex::Real hfac = (m_is_horizontal) ? 0. : 1.;
-
     const auto& current_time = m_time.current_time();
-    const auto& t_step = m_time.time_index();
 
     const bool ph_ramp = m_use_phase_ramp;
     const int n_band = m_n_band;
