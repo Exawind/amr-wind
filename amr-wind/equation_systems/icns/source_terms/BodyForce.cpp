@@ -25,9 +25,13 @@ BodyForce::BodyForce(const CFDSim& sim) : m_time(sim.time()), m_mesh(sim.mesh())
     bool file_specified = pp.contains("uniform_timetable_file");
 
     // Prepare type of body force distribution
-    if (m_type == "height-varying") {
+    if (m_type == "height_varying" || m_type == "height-varying") {
         // Constant in time, varies with z
-        pp.get("bodyforce-file", m_bforce_file);
+        // Using underscores is preferred, remains backwards compatible
+        pp.query("bodyforce-file", m_bforce_file);
+        if (m_bforce_file.empty()) {
+            pp.get("bodyforce_file", m_bforce_file);
+        }
         read_bforce_profile(m_bforce_file);
     } else if (
         m_type == "uniform_timetable" ||
@@ -40,10 +44,10 @@ BodyForce::BodyForce(const CFDSim& sim) : m_time(sim.time()), m_mesh(sim.mesh())
         pp.getarr("magnitude", m_body_force);
         if (m_type == "oscillatory") {
             pp.get("angular_frequency", m_omega);
-        } else if (m_type != "uniform") {
+        } else if (m_type != "uniform_constant") {
             amrex::Abort(
-                "BodyForce type not supported. Please choose uniform "
-                "(default), height-varying, oscillatory, or "
+                "BodyForce type not supported. Please choose uniform_constant "
+                "(default), height_varying, oscillatory, or "
                 "uniform_timetable.\n");
         }
     }
@@ -123,7 +127,7 @@ void BodyForce::operator()(
     const amrex::Real* force_x = m_prof_x.data();
     const amrex::Real* force_y = m_prof_y.data();
 
-    if (m_type == "height-varying") {
+    if (m_type == "height_varying" || m_type == "height-varying") {
 
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {

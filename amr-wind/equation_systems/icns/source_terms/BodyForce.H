@@ -45,7 +45,7 @@ private:
     amrex::Vector<amrex::Real> m_body_force{{0.0, 0.0, 0.0}};
 
     //! Body Force Type
-    std::string m_type{"uniform"};
+    std::string m_type{"uniform_constant"};
     //! Uniform time table file
     std::string m_utt_file;
 
