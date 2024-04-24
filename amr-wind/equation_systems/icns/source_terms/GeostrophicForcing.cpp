@@ -26,8 +26,6 @@ namespace amr_wind::pde::icns {
 GeostrophicForcing::GeostrophicForcing(const CFDSim& sim)
     : m_time(sim.time()), m_mesh(sim.mesh())
 {
-    amrex::Real coriolis_factor = 0.0;
-
     // Read the rotational time period (in seconds)
     amrex::ParmParse ppc("CoriolisForcing");
     // Read the rotational time period (in seconds) -- This is 23hrs and 56
@@ -44,7 +42,7 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& sim)
     m_coriolis_factor = 2.0 * omega * sinphi;
     ppc.query("is_horizontal", m_is_horizontal);
     amrex::Print() << "Geostrophic forcing: Coriolis factor = "
-                   << coriolis_factor << std::endl;
+                   << m_coriolis_factor << std::endl;
 
     // Read the geostrophic wind speed vector (in m/s)
     amrex::ParmParse ppg("GeostrophicForcing");
@@ -70,8 +68,8 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& sim)
     }
 
     m_g_forcing = {
-        -coriolis_factor * m_target_vel[1], coriolis_factor * m_target_vel[0],
-        0.0};
+        -m_coriolis_factor * m_target_vel[1],
+        m_coriolis_factor * m_target_vel[0], 0.0};
 
     // Set up relaxation toward 0 forcing near the air-water interface
     if (sim.repo().field_exists("vof")) {
