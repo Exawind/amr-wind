@@ -4,6 +4,7 @@
 #include "amr-wind/core/vs/vstraits.H"
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/equation_systems/vof/volume_fractions.H"
+#include "amr-wind/utilities/linear_interpolation.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
@@ -22,7 +23,8 @@ namespace amr_wind::pde::icns {
  *    GeostrophicForcing namespace
  *
  */
-GeostrophicForcing::GeostrophicForcing(const CFDSim& sim) : m_mesh(sim.mesh())
+GeostrophicForcing::GeostrophicForcing(const CFDSim& sim)
+    : m_time(sim.time()), m_mesh(sim.mesh())
 {
     amrex::Real coriolis_factor = 0.0;
 
@@ -39,14 +41,33 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& sim) : m_mesh(sim.mesh())
     latitude = utils::radians(latitude);
     amrex::Real sinphi = std::sin(latitude);
 
-    coriolis_factor = 2.0 * omega * sinphi;
+    m_coriolis_factor = 2.0 * omega * sinphi;
     ppc.query("is_horizontal", m_is_horizontal);
     amrex::Print() << "Geostrophic forcing: Coriolis factor = "
                    << coriolis_factor << std::endl;
 
     // Read the geostrophic wind speed vector (in m/s)
     amrex::ParmParse ppg("GeostrophicForcing");
-    ppg.getarr("geostrophic_wind", m_target_vel);
+    ppg.query("geostrophic_wind_timetable", m_vel_timetable);
+    if (!m_vel_timetable.empty()) {
+        std::ifstream ifh(m_vel_timetable, std::ios::in);
+        if (!ifh.good()) {
+            amrex::Abort("Cannot find input file: " + m_vel_timetable);
+        }
+        amrex::Real data_time;
+        amrex::Real data_speed;
+        amrex::Real data_deg;
+        ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        while (ifh >> data_time) {
+            ifh >> data_speed >> data_deg;
+            amrex::Real data_rad = utils::radians(data_deg);
+            m_time_table.push_back(data_time);
+            m_speed_table.push_back(data_speed);
+            m_direction_table.push_back(data_rad);
+        }
+    } else {
+        ppg.getarr("geostrophic_wind", m_target_vel);
+    }
 
     m_g_forcing = {
         -coriolis_factor * m_target_vel[1], coriolis_factor * m_target_vel[0],
@@ -84,6 +105,9 @@ void GeostrophicForcing::operator()(
 {
     amrex::Real hfac = (m_is_horizontal) ? 0. : 1.;
 
+    const auto& current_time = m_time.current_time();
+    const auto& t_step = m_time.time_index();
+
     const bool ph_ramp = m_use_phase_ramp;
     const int n_band = m_n_band;
     const amrex::Real wlev = m_water_level;
@@ -93,6 +117,21 @@ void GeostrophicForcing::operator()(
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> forcing{
         {m_g_forcing[0], m_g_forcing[1], m_g_forcing[2]}};
+
+    // Calculate forcing values if target velocity is a function of time
+    if (!m_vel_timetable.empty()) {
+        const amrex::Real current_spd =
+            amr_wind::interp::linear(m_time_table, m_speed_table, current_time);
+        const amrex::Real current_dir = amr_wind::interp::linear(
+            m_time_table, m_direction_table, current_time);
+
+        const amrex::Real target_u = current_spd * std::cos(current_dir);
+        const amrex::Real target_v = current_spd * std::sin(current_dir);
+
+        forcing[0] = -m_coriolis_factor * target_v;
+        forcing[1] = m_coriolis_factor * target_u;
+        forcing[2] = 0.0;
+    }
 
     const auto& vof = (*m_vof)(lev).const_array(mfi);
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
