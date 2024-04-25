@@ -155,7 +155,7 @@ void SamplingContainer::initialize_particles(
 
 void SamplingContainer::interpolate_fields(const amrex::Vector<Field*>& fields)
 {
-    BL_PROFILE("amr-wind::SamplingContainer::interpolate");
+    BL_PROFILE("amr-wind::SamplingContainer::interpolate_fields");
 
     const int nlevels = m_mesh.finestLevel() + 1;
 
@@ -220,6 +220,40 @@ void SamplingContainer::interpolate_fields(const amrex::Vector<Field*>& fields)
             }
         }
     }
+}
+
+void SamplingContainer::interpolate_derived_fields(
+  const amrex::Vector<std::string>& derived_field_names, const int ncomp, const int scomp)
+{
+    BL_PROFILE("amr-wind::SamplingContainer::interpolate_derived_fields");
+
+    const int nlevels = m_mesh.finestLevel() + 1;
+
+    const auto& dermgr = m_sim.io_manager().derived_manager();
+    auto outfield = m_sim.repo().create_scratch_field(ncomp);
+
+    int icomp = 0;
+    for (const auto& fname : derived_field_names) {
+      const auto& qty = dermgr.get(fname);
+      qty(*outfield, icomp);
+      icomp += qty.num_comp();
+    }
+    AMREX_ALWAYS_ASSERT(icomp == ncomp);
+
+    // const auto& dermgr = m_sim.io_manager().derived_manager();
+    // auto outfield = m_sim.repo().create_scratch_field(dermgr.num_comp(derived_field_names));
+    // amrex::Print() << "der comp: " << dermgr.num_comp() << " " << dermgr.num_comp(derived_field_names) << std::endl;
+    // for (int lev = 0; lev < nlevels; ++lev) {
+    //     const auto& geom = m_mesh.Geom(lev);
+    //     const auto dx = geom.CellSizeArray();
+    //     const auto dxi = geom.InvCellSizeArray();
+    //     const auto plo = geom.ProbLoArray();
+
+    //     for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
+    //         const int np = pti.numParticles();
+    //         auto& pvec = pti.GetArrayOfStructs()();
+    //     }
+    // }
 }
 
 void SamplingContainer::populate_buffer(std::vector<double>& buf)

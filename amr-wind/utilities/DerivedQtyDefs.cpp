@@ -12,7 +12,7 @@ VorticityMag::VorticityMag(
     AMREX_ALWAYS_ASSERT(args.empty());
 }
 
-void VorticityMag::operator()(ScratchField& fld, const int scomp)
+void VorticityMag::operator()(ScratchField& fld, const int scomp) const
 {
     AMREX_ASSERT(fld.num_comp() > (scomp));
     auto vort_mag = fld.subview(scomp, 1);
@@ -26,7 +26,7 @@ QCriterion::QCriterion(
     AMREX_ALWAYS_ASSERT(args.empty());
 }
 
-void QCriterion::operator()(ScratchField& fld, const int scomp)
+void QCriterion::operator()(ScratchField& fld, const int scomp) const
 {
     AMREX_ASSERT(fld.num_comp() > (scomp));
     auto q_crit = fld.subview(scomp, 1);
@@ -40,7 +40,7 @@ QCriterionNondim::QCriterionNondim(
     AMREX_ALWAYS_ASSERT(args.empty());
 }
 
-void QCriterionNondim::operator()(ScratchField& fld, const int scomp)
+void QCriterionNondim::operator()(ScratchField& fld, const int scomp) const
 {
     AMREX_ASSERT(fld.num_comp() > (scomp));
     auto q_crit_nd = fld.subview(scomp, 1);
@@ -54,7 +54,7 @@ StrainRateMag::StrainRateMag(
     AMREX_ALWAYS_ASSERT(args.empty());
 }
 
-void StrainRateMag::operator()(ScratchField& fld, const int scomp)
+void StrainRateMag::operator()(ScratchField& fld, const int scomp) const
 {
     AMREX_ASSERT(fld.num_comp() > (scomp));
     auto srate = fld.subview(scomp, 1);
@@ -67,7 +67,7 @@ Gradient::Gradient(const FieldRepo& repo, const std::vector<std::string>& args)
     m_phi = &repo.get_field(args[0]);
 }
 
-void Gradient::operator()(ScratchField& fld, const int scomp)
+void Gradient::operator()(ScratchField& fld, const int scomp) const
 {
     AMREX_ASSERT(fld.num_comp() >= (scomp + num_comp()));
     auto gradphi = fld.subview(scomp, num_comp());
@@ -82,7 +82,7 @@ Divergence::Divergence(
     AMREX_ALWAYS_ASSERT(m_phi->num_comp() == AMREX_SPACEDIM);
 }
 
-void Divergence::operator()(ScratchField& fld, const int scomp)
+void Divergence::operator()(ScratchField& fld, const int scomp) const
 {
     AMREX_ASSERT(fld.num_comp() >= (scomp + num_comp()));
     auto divphi = fld.subview(scomp, num_comp());
@@ -97,7 +97,7 @@ Laplacian::Laplacian(
     AMREX_ALWAYS_ASSERT(m_phi->num_comp() == AMREX_SPACEDIM);
 }
 
-void Laplacian::operator()(ScratchField& fld, const int scomp)
+void Laplacian::operator()(ScratchField& fld, const int scomp) const
 {
     AMREX_ASSERT(fld.num_comp() >= (scomp + num_comp()));
     auto lapphi = fld.subview(scomp, num_comp());
@@ -130,7 +130,7 @@ void FieldComponents::var_names(amrex::Vector<std::string>& plt_var_names)
     }
 }
 
-void FieldComponents::operator()(ScratchField& fld, const int scomp)
+void FieldComponents::operator()(ScratchField& fld, const int scomp) const
 {
     AMREX_ASSERT(fld.num_comp() >= (scomp + num_comp()));
     int dst_comp = scomp;

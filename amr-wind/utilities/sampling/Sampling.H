@@ -4,6 +4,8 @@
 #include <memory>
 
 #include "amr-wind/CFDSim.H"
+#include "amr-wind/utilities/IOManager.H"
+#include "amr-wind/utilities/DerivedQuantity.H"
 #include "amr-wind/utilities/PostProcessing.H"
 #include "amr-wind/utilities/sampling/SamplerBase.H"
 #include "amr-wind/utilities/sampling/SamplingContainer.H"
@@ -117,6 +119,9 @@ private:
     //! List of fields to be sampled for this collection of probes
     amrex::Vector<Field*> m_fields;
 
+    //! List of derived fields to be sampled for this collection of probes
+    amrex::Vector<std::string> m_derived_field_names;
+
     /** Name of this sampling object.
      *
      *  The label is used to read user inputs from file and is also used for
@@ -143,6 +148,9 @@ private:
 
     // number of field components
     int m_ncomp{0};
+
+    // number of derived field components
+    int m_ndcomp{0};
 
     //! Number of sampling container particles:
     size_t m_total_particles{0};

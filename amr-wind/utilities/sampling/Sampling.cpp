@@ -28,6 +28,7 @@ void Sampling::initialize()
         amrex::ParmParse pp(m_label);
         pp.getarr("labels", labels);
         pp.getarr("fields", field_names);
+        pp.queryarr("derived_fields", m_derived_field_names);
         pp.query("output_frequency", m_out_freq);
         pp.query("output_format", m_out_fmt);
         pp.query("output_delay", m_out_delay);
@@ -41,6 +42,8 @@ void Sampling::initialize()
         if (!repo.field_exists(fname)) {
             amrex::Print()
                 << "WARNING: Sampling: Non-existent field requested: " << fname
+                << ". This is a mistake or the requested field is a derived "
+                   "field and should be added to the derived_fields parameter"
                 << std::endl;
             continue;
         }
@@ -49,6 +52,15 @@ void Sampling::initialize()
         m_ncomp += fld.num_comp();
         m_fields.emplace_back(&fld);
         ioutils::add_var_names(m_var_names, fld.name(), fld.num_comp());
+    }
+
+    // Process derived field information
+    m_ndcomp = 0;
+    auto& dermgr = m_sim.io_manager().derived_manager();
+    for (const auto& fname : m_derived_field_names) {
+        auto& qty = dermgr.create(fname);
+        m_ndcomp += qty.num_comp();
+        ioutils::add_var_names(m_var_names, qty.name(), qty.num_comp());
     }
 
     // Load different probe types, default probe type is line
@@ -89,9 +101,9 @@ void Sampling::update_container()
     BL_PROFILE("amr-wind::Sampling::update_container");
 
     // Initialize the particle container based on user inputs
-    m_scontainer = std::make_unique<SamplingContainer>(m_sim.mesh());
+    m_scontainer = std::make_unique<SamplingContainer>(m_sim);
 
-    m_scontainer->setup_container(m_ncomp);
+    m_scontainer->setup_container(m_ncomp + m_ndcomp);
 
     m_scontainer->initialize_particles(m_samplers);
 
@@ -145,6 +157,8 @@ void Sampling::sampling_workflow()
     update_sampling_locations();
 
     m_scontainer->interpolate_fields(m_fields);
+
+    m_scontainer->interpolate_derived_fields(m_derived_field_names, m_ndcomp, m_ncomp);
 
     fill_buffer();
 

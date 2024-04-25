@@ -23,7 +23,7 @@ public:
 
     virtual int num_comp() const = 0;
 
-    virtual void operator()(ScratchField& fld, const int scomp = 0) = 0;
+    virtual void operator()(ScratchField& fld, const int scomp = 0) const = 0;
 
     virtual void var_names(amrex::Vector<std::string>& /*plt_var_names*/);
 };
@@ -44,7 +44,10 @@ public:
     //! Add a derived quantity
     DerivedQty& create(const std::string& key);
 
-    //! Return the total number of components across all derived quantities
+    //! Get a derived quantity
+  DerivedQty& get(const std::string& key) const;
+
+//! Return the total number of components across all derived quantities
     int num_comp() const noexcept;
 
     bool contains(const std::string& key) const noexcept;
