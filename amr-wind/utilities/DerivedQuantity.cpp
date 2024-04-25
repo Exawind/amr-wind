@@ -78,7 +78,8 @@ DerivedQty& DerivedQtyMgr::get(const std::string& key) const
 {
     auto qty_name = strip_spaces(key);
 
-    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(contains(qty_name), "Requested derived quantity does not exist");
+    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+        contains(qty_name), "Requested derived quantity does not exist");
     return *m_derived_vec[m_obj_map.at(qty_name)];
 }
 

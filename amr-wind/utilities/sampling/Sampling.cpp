@@ -158,7 +158,8 @@ void Sampling::sampling_workflow()
 
     m_scontainer->interpolate_fields(m_fields);
 
-    m_scontainer->interpolate_derived_fields(m_derived_field_names, m_ndcomp, m_ncomp);
+    m_scontainer->interpolate_derived_fields(
+        m_derived_field_names, m_ndcomp, m_ncomp);
 
     fill_buffer();
 

@@ -45,9 +45,9 @@ public:
     DerivedQty& create(const std::string& key);
 
     //! Get a derived quantity
-  DerivedQty& get(const std::string& key) const;
+    DerivedQty& get(const std::string& key) const;
 
-//! Return the total number of components across all derived quantities
+    //! Return the total number of components across all derived quantities
     int num_comp() const noexcept;
 
     bool contains(const std::string& key) const noexcept;
