@@ -143,7 +143,7 @@ TEST_F(SamplingTest, scontainer)
     const int ncomp = 5;
     initialize_mesh();
 
-    amr_wind::sampling::SamplingContainer sc(sim());
+    amr_wind::sampling::SamplingContainer sc(mesh());
     // Set up runtime components and prime the particle container
     sc.setup_container(ncomp);
 

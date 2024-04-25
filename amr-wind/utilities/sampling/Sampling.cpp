@@ -10,7 +10,9 @@
 namespace amr_wind::sampling {
 
 Sampling::Sampling(CFDSim& sim, std::string label)
-    : m_sim(sim), m_label(std::move(label))
+    : m_sim(sim)
+    , m_derived_mgr(new DerivedQtyMgr(m_sim.repo()))
+    , m_label(std::move(label))
 {}
 
 Sampling::~Sampling() = default;
@@ -23,12 +25,14 @@ void Sampling::initialize()
     amrex::Vector<std::string> labels;
     // Fields to be sampled - requested by user
     amrex::Vector<std::string> field_names;
+    // Derived fields to be sampled - requested by user
+    amrex::Vector<std::string> derived_field_names;
 
     {
         amrex::ParmParse pp(m_label);
         pp.getarr("labels", labels);
         pp.getarr("fields", field_names);
-        pp.queryarr("derived_fields", m_derived_field_names);
+        pp.queryarr("derived_fields", derived_field_names);
         pp.query("output_frequency", m_out_freq);
         pp.query("output_format", m_out_fmt);
         pp.query("output_delay", m_out_delay);
@@ -55,12 +59,10 @@ void Sampling::initialize()
     }
 
     // Process derived field information
-    m_ndcomp = 0;
-    auto& dermgr = m_sim.io_manager().derived_manager();
-    for (const auto& fname : m_derived_field_names) {
-        auto& qty = dermgr.create(fname);
-        m_ndcomp += qty.num_comp();
-        ioutils::add_var_names(m_var_names, qty.name(), qty.num_comp());
+    if (!derived_field_names.empty()) {
+        m_derived_mgr->create(derived_field_names);
+        m_ndcomp = m_derived_mgr->num_comp();
+        m_derived_mgr->var_names(m_var_names);
     }
 
     // Load different probe types, default probe type is line
@@ -101,7 +103,7 @@ void Sampling::update_container()
     BL_PROFILE("amr-wind::Sampling::update_container");
 
     // Initialize the particle container based on user inputs
-    m_scontainer = std::make_unique<SamplingContainer>(m_sim);
+    m_scontainer = std::make_unique<SamplingContainer>(m_sim.mesh());
 
     m_scontainer->setup_container(m_ncomp + m_ndcomp);
 
@@ -159,7 +161,7 @@ void Sampling::sampling_workflow()
     m_scontainer->interpolate_fields(m_fields);
 
     m_scontainer->interpolate_derived_fields(
-        m_derived_field_names, m_ndcomp, m_ncomp);
+        *m_derived_mgr, m_sim.repo(), m_ncomp);
 
     fill_buffer();
 

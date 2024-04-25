@@ -175,22 +175,12 @@ void SamplingContainer::interpolate_fields(const amrex::Vector<Field*>& fields)
 }
 
 void SamplingContainer::interpolate_derived_fields(
-    const amrex::Vector<std::string>& derived_field_names,
-    const int ncomp,
-    const int scomp)
+    const DerivedQtyMgr& derived_mgr, const FieldRepo& repo, const int scomp)
 {
     BL_PROFILE("amr-wind::SamplingContainer::interpolate_derived_fields");
 
-    const auto& dermgr = m_sim.io_manager().derived_manager();
-    auto outfield = m_sim.repo().create_scratch_field(ncomp);
-
-    int icomp = 0;
-    for (const auto& fname : derived_field_names) {
-        const auto& qty = dermgr.get(fname);
-        qty(*outfield, icomp);
-        icomp += qty.num_comp();
-    }
-    AMREX_ALWAYS_ASSERT(icomp == ncomp);
+    auto outfield = repo.create_scratch_field(derived_mgr.num_comp());
+    derived_mgr(*outfield, 0);
 
     const int nlevels = m_mesh.finestLevel() + 1;
 

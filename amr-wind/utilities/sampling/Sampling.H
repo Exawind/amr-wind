@@ -4,7 +4,6 @@
 #include <memory>
 
 #include "amr-wind/CFDSim.H"
-#include "amr-wind/utilities/IOManager.H"
 #include "amr-wind/utilities/DerivedQuantity.H"
 #include "amr-wind/utilities/PostProcessing.H"
 #include "amr-wind/utilities/sampling/SamplerBase.H"
@@ -120,7 +119,7 @@ private:
     amrex::Vector<Field*> m_fields;
 
     //! List of derived fields to be sampled for this collection of probes
-    amrex::Vector<std::string> m_derived_field_names;
+    std::unique_ptr<DerivedQtyMgr> m_derived_mgr;
 
     /** Name of this sampling object.
      *

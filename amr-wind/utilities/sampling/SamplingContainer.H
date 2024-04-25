@@ -4,7 +4,6 @@
 #include <memory>
 
 #include "AMReX_AmrParticles.H"
-#include "amr-wind/utilities/IOManager.H"
 #include "amr-wind/utilities/DerivedQuantity.H"
 
 namespace amr_wind {
@@ -65,14 +64,13 @@ class SamplingContainer
           SNArrayInt>
 {
 public:
-    explicit SamplingContainer(CFDSim& sim)
+    explicit SamplingContainer(amrex::AmrCore& mesh)
         : amrex::AmrParticleContainer<
               SNStructReal,
               SNStructInt,
               SNArrayReal,
-              SNArrayInt>(&sim.mesh())
-        , m_sim(sim)
-        , m_mesh(m_sim.mesh())
+              SNArrayInt>(&mesh)
+        , m_mesh(mesh)
     {}
 
     /** Define the container and allocate memory for runtime components
@@ -90,8 +88,8 @@ public:
 
     //! Perform derived field interpolation to sampling locations
     void interpolate_derived_fields(
-        const amrex::Vector<std::string>& derived_field_names,
-        const int ncomp,
+        const DerivedQtyMgr& derived_mgr,
+        const FieldRepo& repo,
         const int scomp);
 
     //! Populate the buffer with data for all the particles
@@ -110,8 +108,6 @@ private:
         const FieldLoc floc,
         const int ncomp,
         const int scomp);
-
-    const CFDSim& m_sim;
 
     const amrex::AmrCore& m_mesh;
 

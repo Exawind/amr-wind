@@ -74,15 +74,6 @@ DerivedQty& DerivedQtyMgr::create(const std::string& key)
     return *m_derived_vec.back();
 }
 
-DerivedQty& DerivedQtyMgr::get(const std::string& key) const
-{
-    auto qty_name = strip_spaces(key);
-
-    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-        contains(qty_name), "Requested derived quantity does not exist");
-    return *m_derived_vec[m_obj_map.at(qty_name)];
-}
-
 void DerivedQtyMgr::create(const amrex::Vector<std::string>& keys)
 {
     for (const auto& qty : keys) {
@@ -90,12 +81,12 @@ void DerivedQtyMgr::create(const amrex::Vector<std::string>& keys)
     }
 }
 
-void DerivedQtyMgr::operator()(ScratchField& fld, const int scomp)
+void DerivedQtyMgr::operator()(ScratchField& fld, const int scomp) const
 {
     AMREX_ALWAYS_ASSERT((scomp + num_comp()) <= fld.num_comp());
 
     int icomp = scomp;
-    for (auto& qty : m_derived_vec) {
+    for (const auto& qty : m_derived_vec) {
         (*qty)(fld, icomp);
         icomp += qty->num_comp();
     }

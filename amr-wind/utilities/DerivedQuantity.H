@@ -37,7 +37,7 @@ public:
     explicit DerivedQtyMgr(const FieldRepo& repo);
     ~DerivedQtyMgr() = default;
 
-    void operator()(ScratchField& fld, const int scomp = 0);
+    void operator()(ScratchField& fld, const int scomp = 0) const;
 
     void create(const amrex::Vector<std::string>& keys);
 

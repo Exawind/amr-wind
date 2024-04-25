@@ -91,9 +91,6 @@ public:
         return m_chk_fields;
     }
 
-    const DerivedQtyMgr& derived_manager() const { return *m_derived_mgr; }
-    DerivedQtyMgr& derived_manager() { return *m_derived_mgr; }
-
 private:
     void write_header(
         const std::string& /*chkname*/,
