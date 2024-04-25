@@ -192,21 +192,18 @@ void Sampling::convert_velocity_lineofsight()
 {
     BL_PROFILE("amr-wind::Sampling::convert_velocity_lineofsight");
     const long nvars = m_var_names.size();
-    std::vector<int> vel_map;
+    amrex::Vector<int> vel_map(AMREX_SPACEDIM, 0);
 
-    for (int iv = 0; iv < nvars; ++iv) {
-        if (m_var_names[iv] == "velocityx") {
-            vel_map.push_back(iv);
-        }
-        if (m_var_names[iv] == "velocityy") {
-            vel_map.push_back(iv);
-        }
-        if (m_var_names[iv] == "velocityz") {
-            vel_map.push_back(iv);
+    const amrex::Vector<std::string> vnames = {
+        "velocityx", "velocityy", "velocityz"};
+    for (int n = 0; n < vnames.size(); n++) {
+        auto vit = std::find(m_var_names.begin(), m_var_names.end(), vnames[n]);
+        if (vit != m_var_names.end()) {
+            vel_map[n] = vit - m_var_names.begin();
+        } else {
+            amrex::Abort("Can't find " + vnames[n]);
         }
     }
-
-    AMREX_ALWAYS_ASSERT(static_cast<int>(vel_map.size()) == AMREX_SPACEDIM);
 
     long soffset = 0;
     for (const auto& obj : m_samplers) {
