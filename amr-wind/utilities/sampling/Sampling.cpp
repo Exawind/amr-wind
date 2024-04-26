@@ -191,15 +191,14 @@ void Sampling::post_regrid_actions()
 void Sampling::convert_velocity_lineofsight()
 {
     BL_PROFILE("amr-wind::Sampling::convert_velocity_lineofsight");
-    const long nvars = m_var_names.size();
-    amrex::Vector<int> vel_map(AMREX_SPACEDIM, 0);
 
+    amrex::Vector<int> vel_map(AMREX_SPACEDIM, 0);
     const amrex::Vector<std::string> vnames = {
         "velocityx", "velocityy", "velocityz"};
     for (int n = 0; n < vnames.size(); n++) {
         auto vit = std::find(m_var_names.begin(), m_var_names.end(), vnames[n]);
         if (vit != m_var_names.end()) {
-            vel_map[n] = vit - m_var_names.begin();
+            vel_map[n] = static_cast<int>(vit - m_var_names.begin());
         } else {
             amrex::Abort("Can't find " + vnames[n]);
         }
