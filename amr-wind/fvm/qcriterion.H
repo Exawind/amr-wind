@@ -86,7 +86,7 @@ struct Qcriterion
                                        0.5 * std::pow(vz - wy, 2) +
                                        0.5 * std::pow(wx - uz, 2);
                 if (nondim) {
-                    qcritphi(i, j, k) = 0.5 * (W2 / S2 - 1.0);
+                  qcritphi(i, j, k) = 0.5 * (W2 / amrex::max(1e-14, S2) - 1.0);
                 } else {
                     qcritphi(i, j, k) = 0.5 * (W2 - S2);
                 }
