@@ -22,7 +22,7 @@ struct ReadInputsOp<TurbineFast, SrcTrait>
         auto& tdata = data.meta();
 
         // Get density value for normalization
-        pp.query("density", tdata.density);
+        pp.get("density", tdata.density);
 
         // Initialize OpenFAST specific data
         const auto& tinfo = data.info();
