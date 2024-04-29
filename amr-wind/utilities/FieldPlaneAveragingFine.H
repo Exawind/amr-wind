@@ -116,7 +116,7 @@ class VelPlaneAveragingFine : public FieldPlaneAveragingFine
 public:
     VelPlaneAveragingFine(CFDSim& sim, int axis_in);
 
-    ~VelPlaneAveragingFine() = default;
+    ~VelPlaneAveragingFine() override = default;
 
     void operator()() override;
 
