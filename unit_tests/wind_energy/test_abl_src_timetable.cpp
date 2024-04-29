@@ -243,11 +243,84 @@ TEST_F(ABLSrcTimeTableTest, abl_writeforces)
 TEST_F(ABLSrcTimeTableTest, bodyforce)
 {
 
+    constexpr amrex::Real tol = 1.0e-12;
+
+    // Set up simulation parameters and mesh
+    populate_parameters();
     // Body Forcing
     {
         amrex::ParmParse pp("BodyForce");
-        pp.add("type", "uniform_timetable");
+        pp.add("type", (std::string) "uniform_timetable");
         pp.add("uniform_timetable_file", forces_fname);
+    }
+    // Velocity
+    {
+        amrex::ParmParse pp("incflo");
+        pp.addarr("velocity", amrex::Vector<amrex::Real>{8.0, 0.0, 0.0});
+    }
+    initialize_mesh();
+
+    // Set up PDEs and physics objects
+    auto& pde_mgr = sim().pde_manager();
+    pde_mgr.register_icns();
+    sim().init_physics();
+    auto& velocity = pde_mgr.icns().fields().field;
+    auto& ABL = sim().physics_manager().get<amr_wind::ABL>();
+
+    // Get icns source term, which will be tested
+    auto& src_term = pde_mgr.icns().fields().src_term;
+    src_term.setVal(0.0);
+    // Source term object for abl_forcing
+    amr_wind::pde::icns::BodyForce body_forcing(sim());
+    run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
+        const auto& bx = mfi.tilebox();
+        const auto& src_arr = src_term(lev).array(mfi);
+
+        body_forcing(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
+    });
+
+    // Force is 0 initially
+    amrex::Vector<amrex::Real> target_force = {0.0, 0.0, 0.0};
+    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+        const auto min_val = utils::field_min(src_term, i);
+        const auto max_val = utils::field_max(src_term, i);
+        EXPECT_NEAR(min_val, target_force[i], tol);
+        EXPECT_NEAR(min_val, max_val, tol);
+    }
+
+    // Advance time (twice to make current_time change)
+    sim().time().new_timestep();
+    sim().time().new_timestep();
+
+    // Recalculate forcing and check
+    src_term.setVal(0.0);
+    run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
+        const auto& bx = mfi.tilebox();
+        const auto& src_arr = src_term(lev).array(mfi);
+
+        body_forcing(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
+    });
+    // Forces correspond to ABL Forcing from other test
+    const amrex::Vector<amrex::Real> init_vel{8.0, 0.0, 0.0};
+    target_force[0] = (8.0 * std::cos(M_PI / 180.0 * 2.5) - init_vel[0]) / dt;
+    target_force[1] = (8.0 * std::sin(M_PI / 180.0 * 2.5) - init_vel[1]) / dt;
+    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+        const auto min_val = utils::field_min(src_term, i);
+        const auto max_val = utils::field_max(src_term, i);
+        EXPECT_NEAR(min_val, target_force[i], tol);
+        EXPECT_NEAR(min_val, max_val, tol);
+    }
+
+    // Delete body force file
+    const char* fname = forces_fname.c_str();
+    {
+        std::ifstream f(fname);
+        if (f.good()) {
+            remove(fname);
+        }
+        // Check that file is removed
+        std::ifstream ff(fname);
+        EXPECT_FALSE(ff.good());
     }
 }
 
