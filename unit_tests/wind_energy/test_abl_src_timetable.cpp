@@ -122,8 +122,6 @@ TEST_F(ABLSrcTimeTableTest, abl)
     auto& pde_mgr = sim().pde_manager();
     pde_mgr.register_icns();
     sim().init_physics();
-    auto& velocity = pde_mgr.icns().fields().field;
-    auto& ABL = sim().physics_manager().get<amr_wind::ABL>();
 
     // Get icns source term, which will be tested
     auto& src_term = pde_mgr.icns().fields().src_term;
@@ -235,8 +233,6 @@ TEST_F(ABLSrcTimeTableTest, bodyforce)
     auto& pde_mgr = sim().pde_manager();
     pde_mgr.register_icns();
     sim().init_physics();
-    auto& velocity = pde_mgr.icns().fields().field;
-    auto& ABL = sim().physics_manager().get<amr_wind::ABL>();
 
     // Get icns source term, which will be tested
     auto& src_term = pde_mgr.icns().fields().src_term;
@@ -333,8 +329,6 @@ TEST_F(ABLSrcTimeTableTest, geostrophic)
     auto& pde_mgr = sim().pde_manager();
     pde_mgr.register_icns();
     sim().init_physics();
-    auto& velocity = pde_mgr.icns().fields().field;
-    auto& ABL = sim().physics_manager().get<amr_wind::ABL>();
 
     // Get icns source term, which will be tested
     auto& src_term = pde_mgr.icns().fields().src_term;
