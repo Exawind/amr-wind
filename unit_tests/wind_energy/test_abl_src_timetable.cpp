@@ -23,6 +23,23 @@ void write_target_velocity_file(const std::string& fname)
     os << "0.3\t8.0\t5.0\n";
     os << "0.5\t8.0\t12.0\n";
 }
+void write_body_force_file(const std::string& fname)
+{
+    std::ofstream os(fname);
+    // Write header **??**
+    os << "time\tfx\tfy\tfz\n";
+    // Write time table
+    os << "0.000000000000000\t0.000000000000000\t0.000000000000000\t0."
+          "000000000000000\n";
+    os << "0.050000000000000\t0.000000000000000\t0.000000000000000\t0."
+          "000000000000000\n";
+    os << "0.150000000000000\t-0.076142273451376\t3.489550989226880\t0."
+          "000000000000000\n";
+    os << "0.250000000000000\t-0.304424152660356\t6.972459419812656\t0."
+          "000000000000000\n";
+    os << "0.350000000000000\t-0.878730931046654\t11.824752890368849\t0."
+          "000000000000000\n";
+}
 } // namespace
 
 namespace amr_wind_tests {
@@ -191,60 +208,13 @@ TEST_F(ABLSrcTimeTableTest, abl)
     }
 }
 
-TEST_F(ABLSrcTimeTableTest, abl_writeforces)
-{
-    constexpr amrex::Real tol = 1.0e-12;
-
-    // Write target wind file
-    write_target_velocity_file(tvel_fname);
-
-    // Set up simulation parameters and mesh
-    populate_parameters();
-    // ABL Forcing
-    {
-        amrex::ParmParse pp("ABLForcing");
-        pp.add("abl_forcing_height", 90.0);
-        pp.add("velocity_timetable", tvel_fname);
-        pp.add("forcing_timetable_output_file", forces_fname);
-    }
-    initialize_mesh();
-
-    // Set up PDEs and physics objects
-    auto& pde_mgr = sim().pde_manager();
-    pde_mgr.register_icns();
-    sim().init_physics();
-    auto& velocity = pde_mgr.icns().fields().field;
-    auto& ABL = sim().physics_manager().get<amr_wind::ABL>();
-
-    // Source term object for ABLForcing
-    amr_wind::pde::icns::ABLForcing abl_forcing(sim());
-
-    // Loop through timesteps to put in force outputs
-    for (int n = 0; n < nsteps; ++n) {
-        // Write to file
-        const amrex::Vector<amrex::Real> init_vel{8.0, 0.0, 0.0};
-        abl_forcing.set_mean_velocities(init_vel[0], init_vel[1]);
-        // Advance time
-        sim().time().new_timestep();
-    }
-
-    // Delete target wind file, forces file will remain
-    const char* fname = tvel_fname.c_str();
-    {
-        std::ifstream f(fname);
-        if (f.good()) {
-            remove(fname);
-        }
-        // Check that file is removed
-        std::ifstream ff(fname);
-        EXPECT_FALSE(ff.good());
-    }
-}
-
 TEST_F(ABLSrcTimeTableTest, bodyforce)
 {
 
     constexpr amrex::Real tol = 1.0e-12;
+
+    // Write bodyforce file
+    write_body_force_file(forces_fname);
 
     // Set up simulation parameters and mesh
     populate_parameters();
