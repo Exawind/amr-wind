@@ -105,7 +105,8 @@ void GeostrophicForcing::operator()(
     const amrex::Array4<amrex::Real>& src_term) const
 {
     amrex::Real hfac = (m_is_horizontal) ? 0. : 1.;
-    const auto& current_time = m_time.current_time();
+    // Forces applied at n+1/2
+    const auto& nph_time = 0.5 * (m_time.current_time() + m_time.new_time());
 
     const bool ph_ramp = m_use_phase_ramp;
     const int n_band = m_n_band;
@@ -119,13 +120,13 @@ void GeostrophicForcing::operator()(
 
     // Calculate forcing values if target velocity is a function of time
     if (!m_vel_timetable.empty()) {
-        const amrex::Real current_spd =
-            amr_wind::interp::linear(m_time_table, m_speed_table, current_time);
-        const amrex::Real current_dir = amr_wind::interp::linear(
-            m_time_table, m_direction_table, current_time);
+        const amrex::Real nph_spd =
+            amr_wind::interp::linear(m_time_table, m_speed_table, nph_time);
+        const amrex::Real nph_dir =
+            amr_wind::interp::linear(m_time_table, m_direction_table, nph_time);
 
-        const amrex::Real target_u = current_spd * std::cos(current_dir);
-        const amrex::Real target_v = current_spd * std::sin(current_dir);
+        const amrex::Real target_u = nph_spd * std::cos(nph_dir);
+        const amrex::Real target_v = nph_spd * std::sin(nph_dir);
 
         forcing[0] = -m_coriolis_factor * target_v;
         forcing[1] = m_coriolis_factor * target_u;

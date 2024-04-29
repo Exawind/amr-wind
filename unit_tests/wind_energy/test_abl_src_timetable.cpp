@@ -19,8 +19,9 @@ void write_target_velocity_file(const std::string& fname)
     os << "Time\tWindSpeed\tHorzAngle\n";
     // Write time table
     os << "0.0\t8.0\t0.0\n";
-    os << "0.2\t8.0\t5.0\n";
-    os << "5.0\t8.0\t30.0\n";
+    os << "0.1\t8.0\t0.0\n";
+    os << "0.3\t8.0\t5.0\n";
+    os << "0.5\t8.0\t12.0\n";
 }
 } // namespace
 
@@ -153,7 +154,7 @@ TEST_F(ABLSrcTimeTableTest, abl)
         EXPECT_NEAR(min_val, max_val, tol);
     }
 
-    // Advance time (twice to make current_time change)
+    // Advance time (twice to get to interpolation interval)
     sim().time().new_timestep();
     sim().time().new_timestep();
 
@@ -288,27 +289,32 @@ TEST_F(ABLSrcTimeTableTest, bodyforce)
         EXPECT_NEAR(min_val, max_val, tol);
     }
 
-    // Advance time (twice to make current_time change)
-    sim().time().new_timestep();
-    sim().time().new_timestep();
+    amrex::Vector<amrex::Real> angles{0.0, 2.5, 5.0, 8.5};
 
-    // Recalculate forcing and check
-    src_term.setVal(0.0);
-    run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
-        const auto& bx = mfi.tilebox();
-        const auto& src_arr = src_term(lev).array(mfi);
+    // Loop through timesteps to check force outputs
+    for (int n = 0; n < nsteps - 1; ++n) {
+        // Advance time
+        sim().time().new_timestep();
+        // Recalculate forcing and check
+        src_term.setVal(0.0);
+        run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
+            const auto& bx = mfi.tilebox();
+            const auto& src_arr = src_term(lev).array(mfi);
 
-        body_forcing(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
-    });
-    // Forces correspond to ABL Forcing from other test
-    const amrex::Vector<amrex::Real> init_vel{8.0, 0.0, 0.0};
-    target_force[0] = (8.0 * std::cos(M_PI / 180.0 * 2.5) - init_vel[0]) / dt;
-    target_force[1] = (8.0 * std::sin(M_PI / 180.0 * 2.5) - init_vel[1]) / dt;
-    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-        const auto min_val = utils::field_min(src_term, i);
-        const auto max_val = utils::field_max(src_term, i);
-        EXPECT_NEAR(min_val, target_force[i], tol);
-        EXPECT_NEAR(min_val, max_val, tol);
+            body_forcing(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
+        });
+        // Forces correspond to ABL Forcing from other test
+        const amrex::Vector<amrex::Real> init_vel{8.0, 0.0, 0.0};
+        target_force[0] =
+            (8.0 * std::cos(M_PI / 180.0 * angles[n]) - init_vel[0]) / dt;
+        target_force[1] =
+            (8.0 * std::sin(M_PI / 180.0 * angles[n]) - init_vel[1]) / dt;
+        for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+            const auto min_val = utils::field_min(src_term, i);
+            const auto max_val = utils::field_max(src_term, i);
+            EXPECT_NEAR(min_val, target_force[i], tol);
+            EXPECT_NEAR(min_val, max_val, tol);
+        }
     }
 
     // Delete body force file
@@ -326,14 +332,6 @@ TEST_F(ABLSrcTimeTableTest, bodyforce)
 
 TEST_F(ABLSrcTimeTableTest, geostrophic)
 {
-    // write target wind file
-
-    // initialize and check force values
-
-    // check forces at later time
-
-    // delete target wind file
-
     constexpr amrex::Real tol = 1.0e-12;
     // Default Coriolis parameters
     const amrex::Real cf =
@@ -391,7 +389,7 @@ TEST_F(ABLSrcTimeTableTest, geostrophic)
         EXPECT_NEAR(min_val, max_val, tol);
     }
 
-    // Advance time (twice to make current_time change)
+    // Advance time (twice to get to interpolation interval)
     sim().time().new_timestep();
     sim().time().new_timestep();
 
@@ -403,10 +401,10 @@ TEST_F(ABLSrcTimeTableTest, geostrophic)
 
         gstr_forcing(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
     });
-    // New target velocity is 8 at 2.5deg
+    // New target velocity is 8 at 1.25deg (nph velocity)
     const amrex::Vector<amrex::Real> targ_vel{
-        8.0 * std::cos(M_PI / 180.0 * 2.5), 8.0 * std::sin(M_PI / 180.0 * 2.5),
-        0.0};
+        8.0 * std::cos(M_PI / 180.0 * 1.25),
+        8.0 * std::sin(M_PI / 180.0 * 1.25), 0.0};
     target_force[0] = -cf * targ_vel[1];
     target_force[1] = cf * targ_vel[0];
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {

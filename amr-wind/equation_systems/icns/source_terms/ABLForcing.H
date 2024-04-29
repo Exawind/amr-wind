@@ -41,17 +41,22 @@ public:
         m_mean_vel[1] = uy;
 
         const auto& current_time = m_time.current_time();
+        const auto& new_time = m_time.new_time();
+        const auto& nph_time = 0.5 * (current_time + new_time);
         const auto& dt = m_time.deltaT();
         const auto& t_step = m_time.time_index();
 
         if (!m_vel_timetable.empty()) {
-            const amrex::Real current_spd = ::amr_wind::interp::linear(
-                m_time_table, m_speed_table, current_time);
-            const amrex::Real current_dir = ::amr_wind::interp::linear(
-                m_time_table, m_direction_table, current_time);
+            // Forces should be applied at n+1/2. Because ABL forcing is a
+            // delta, the difference between the target velocity (at n+1) and
+            // the current velocity (at n) puts the force term at n+1/2
+            const amrex::Real new_spd = ::amr_wind::interp::linear(
+                m_time_table, m_speed_table, new_time);
+            const amrex::Real new_dir = ::amr_wind::interp::linear(
+                m_time_table, m_direction_table, new_time);
 
-            m_target_vel[0] = current_spd * std::cos(current_dir);
-            m_target_vel[1] = current_spd * std::sin(current_dir);
+            m_target_vel[0] = new_spd * std::cos(new_dir);
+            m_target_vel[1] = new_spd * std::sin(new_dir);
         }
 
         m_abl_forcing[0] = (m_target_vel[0] - m_mean_vel[0]) / dt;
@@ -62,10 +67,11 @@ public:
             (t_step % m_force_outfreq == 0) &&
             (current_time >= m_force_outstart)) {
             std::ofstream outfile;
+            // Forces are recorded at n+1/2
             outfile.open(m_force_timetable, std::ios::out | std::ios::app);
-            outfile << std::fixed << std::setprecision(15) << current_time
-                    << "\t" << m_abl_forcing[0] << "\t" << m_abl_forcing[1]
-                    << "\t" << 0.0 << std::endl;
+            outfile << std::fixed << std::setprecision(15) << nph_time << "\t"
+                    << m_abl_forcing[0] << "\t" << m_abl_forcing[1] << "\t"
+                    << 0.0 << std::endl;
         }
     }
 
