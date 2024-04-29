@@ -73,7 +73,9 @@ Section: Momentum Sources
    forcing velocity. Each line in the file should be a sequence of 
    three floats specifying the inputs in that order (e.g., 0.0 8.0 -5.0). If this
    argument is present, the :input_param:`GeostrophicForcing.geostrophic_wind`
-   will be ignored.
+   will be ignored. Note that the code expects there to be a single-line header
+   at the beginning of the geostrophic wind timetable file; if no header exists, 
+   the first line of data will be ignored.
    
 .. input_param:: ABLForcing.abl_forcing_height
 
@@ -91,7 +93,9 @@ Section: Momentum Sources
    forcing velocity. Each line in the file should be a sequence of 
    three floats specifying the inputs in that order (e.g., 0.0 8.0 -5.0). If this
    argument is present, the :input_param:`incflo.velocity` argument
-   will be ignored.
+   will be ignored. Note that the code expects there to be a single-line header
+   at the beginning of the velocity timetable file; if no header exists, the first 
+   line of data will be ignored.
 
 .. input_param:: ABLForcing.forcing_timetable_output_file
 
@@ -152,4 +156,6 @@ Section: Momentum Sources
    
    The text file for specifying the body force vector as a function of time. This text file must contain
    times, force components in x, force components in y, and force components in z. This argument is mandatory for
-   the uniform_timetable body force type and is only active for the uniform_timetable type.
+   the uniform_timetable body force type and is only active for the uniform_timetable type.  Note that the code 
+   expects there to be a single-line header at the beginning of the uniform timetable file; if no header exists, 
+   the first line of data will be ignored.
