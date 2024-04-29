@@ -42,7 +42,7 @@ public:
         int axis_in,
         bool compute_deriv = false);
 
-    ~FPlaneAveraging() = default;
+    virtual ~FPlaneAveraging() = default;
 
     virtual void operator()();
 
@@ -141,7 +141,7 @@ class VelPlaneAveraging : public FieldPlaneAveraging
 public:
     VelPlaneAveraging(CFDSim& sim, int axis_in);
 
-    ~VelPlaneAveraging() = default;
+    ~VelPlaneAveraging() override = default;
 
     void operator()() override;
 

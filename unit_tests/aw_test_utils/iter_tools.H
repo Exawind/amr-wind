@@ -22,7 +22,9 @@ namespace amr_wind_tests {
  */
 template <typename Functor>
 void run_algorithm(
-    const int nlevels, amrex::Vector<amrex::MultiFab*>& field, Functor func)
+    const int nlevels,
+    amrex::Vector<amrex::MultiFab*>& field,
+    const Functor& func)
 {
     for (int lev = 0; lev < nlevels; ++lev) {
         auto& lfab = *field[lev];
@@ -34,7 +36,7 @@ void run_algorithm(
 }
 
 template <typename Functor>
-void run_algorithm(amr_wind::Field& field, Functor func)
+void run_algorithm(amr_wind::Field& field, const Functor& func)
 {
     const int nlevels = field.repo().num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
