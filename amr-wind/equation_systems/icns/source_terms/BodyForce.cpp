@@ -93,7 +93,8 @@ void BodyForce::read_bforce_timetable(const std::string& filename)
 {
     std::ifstream ifh(filename, std::ios::in);
     if (!ifh.good()) {
-        amrex::Abort("Cannot find input file: " + filename + "\n");
+        amrex::Abort(
+            "Cannot find BodyForce uniform_timetable_file: " + filename + "\n");
     }
     amrex::Real data_time;
     amrex::Real data_fx;
