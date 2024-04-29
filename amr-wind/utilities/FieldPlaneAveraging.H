@@ -42,7 +42,7 @@ public:
         int axis_in,
         bool compute_deriv = false);
 
-    ~FPlaneAveraging() = default;
+    virtual ~FPlaneAveraging() = default;
 
     virtual void operator()();
 

@@ -40,7 +40,7 @@ public:
     FPlaneAveragingFine(
         const FType& field_in, const amr_wind::SimTime& time, int axis_in);
 
-    ~FPlaneAveragingFine() = default;
+    virtual ~FPlaneAveragingFine() = default;
 
     virtual void operator()();
 
