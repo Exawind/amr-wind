@@ -110,7 +110,7 @@ TEST_F(ABLSrcTimeTableTest, abl)
     // Get icns source term, which will be tested
     auto& src_term = pde_mgr.icns().fields().src_term;
     src_term.setVal(0.0);
-    // Source term object for abl_forcing
+    // Source term object for ABLForcing
     amr_wind::pde::icns::ABLForcing abl_forcing(sim());
     run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
         const auto& bx = mfi.tilebox();
@@ -215,7 +215,7 @@ TEST_F(ABLSrcTimeTableTest, abl_writeforces)
     auto& velocity = pde_mgr.icns().fields().field;
     auto& ABL = sim().physics_manager().get<amr_wind::ABL>();
 
-    // Source term object for abl_forcing
+    // Source term object for ABLForcing
     amr_wind::pde::icns::ABLForcing abl_forcing(sim());
 
     // Loop through timesteps to put in force outputs
@@ -270,7 +270,7 @@ TEST_F(ABLSrcTimeTableTest, bodyforce)
     // Get icns source term, which will be tested
     auto& src_term = pde_mgr.icns().fields().src_term;
     src_term.setVal(0.0);
-    // Source term object for abl_forcing
+    // Source term object for BodyForce
     amr_wind::pde::icns::BodyForce body_forcing(sim());
     run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
         const auto& bx = mfi.tilebox();
@@ -326,21 +326,107 @@ TEST_F(ABLSrcTimeTableTest, bodyforce)
 
 TEST_F(ABLSrcTimeTableTest, geostrophic)
 {
-    constexpr amrex::Real tol = 1.0e-12;
-
     // write target wind file
-
-    // Geostrophic Forcing
-    {
-        amrex::ParmParse pp("GeostrophicForcing");
-        pp.add("geostrophic_wind_timetable", tvel_fname);
-    }
 
     // initialize and check force values
 
     // check forces at later time
 
     // delete target wind file
+
+    constexpr amrex::Real tol = 1.0e-12;
+    // Default Coriolis parameters
+    const amrex::Real cf =
+        2.0 * (2.0 * M_PI / 86164.091) * std::sin(M_PI / 180.0 * 90.0);
+
+    // Write target wind file
+    write_target_velocity_file(tvel_fname);
+
+    // Set up simulation parameters and mesh
+    populate_parameters();
+    // Geostrophic Forcing
+    {
+        amrex::ParmParse pp("GeostrophicForcing");
+        pp.add("geostrophic_wind_timetable", tvel_fname);
+    }
+    // Coriolis Forcing (for parameters)
+    {
+        amrex::ParmParse pp("CoriolisForcing");
+        pp.add("latitude", 90.);
+    }
+    // Velocity
+    {
+        amrex::ParmParse pp("incflo");
+        pp.addarr("velocity", amrex::Vector<amrex::Real>{8.0, 0.0, 0.0});
+    }
+    initialize_mesh();
+
+    // Set up PDEs and physics objects
+    auto& pde_mgr = sim().pde_manager();
+    pde_mgr.register_icns();
+    sim().init_physics();
+    auto& velocity = pde_mgr.icns().fields().field;
+    auto& ABL = sim().physics_manager().get<amr_wind::ABL>();
+
+    // Get icns source term, which will be tested
+    auto& src_term = pde_mgr.icns().fields().src_term;
+    src_term.setVal(0.0);
+    // Source term object for geostrophic forcing
+    amr_wind::pde::icns::GeostrophicForcing gstr_forcing(sim());
+    run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
+        const auto& bx = mfi.tilebox();
+        const auto& src_arr = src_term(lev).array(mfi);
+
+        gstr_forcing(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
+    });
+
+    // Initial velocity should be the same as target velocity
+    const amrex::Vector<amrex::Real> init_vel{8.0, 0.0, 0.0};
+    amrex::Vector<amrex::Real> target_force = {
+        -cf * init_vel[1], cf * init_vel[0], 0.0};
+    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+        const auto min_val = utils::field_min(src_term, i);
+        const auto max_val = utils::field_max(src_term, i);
+        EXPECT_NEAR(min_val, target_force[i], tol);
+        EXPECT_NEAR(min_val, max_val, tol);
+    }
+
+    // Advance time (twice to make current_time change)
+    sim().time().new_timestep();
+    sim().time().new_timestep();
+
+    // Recalculate forcing and check
+    src_term.setVal(0.0);
+    run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
+        const auto& bx = mfi.tilebox();
+        const auto& src_arr = src_term(lev).array(mfi);
+
+        gstr_forcing(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
+    });
+    // New target velocity is 8 at 2.5deg
+    const amrex::Vector<amrex::Real> targ_vel{
+        8.0 * std::cos(M_PI / 180.0 * 2.5), 8.0 * std::sin(M_PI / 180.0 * 2.5),
+        0.0};
+    target_force[0] = -cf * targ_vel[1];
+    target_force[1] = cf * targ_vel[0];
+    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+        const auto min_val = utils::field_min(src_term, i);
+        const auto max_val = utils::field_max(src_term, i);
+        EXPECT_NEAR(min_val, target_force[i], tol);
+        EXPECT_NEAR(min_val, max_val, tol);
+    }
+
+    // Delete target wind file
+    const char* fname = tvel_fname.c_str();
+    {
+        std::ifstream f(fname);
+        if (f.good()) {
+            remove(fname);
+        }
+        // Check that file is removed
+        std::ifstream ff(fname);
+        EXPECT_FALSE(ff.good());
+    }
 }
 
 } // namespace amr_wind_tests
