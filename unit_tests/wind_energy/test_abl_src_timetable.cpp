@@ -19,7 +19,7 @@ void write_target_velocity_file(const std::string& fname)
     os << "Time\tWindSpeed\tHorzAngle\n";
     // Write time table
     os << "0.0\t8.0\t0.0\n";
-    os << "0.1\t8.0\t0.0\n";
+    os << "0.1\t8.0\t360.0\n";
     os << "0.3\t8.0\t5.0\n";
     os << "0.5\t8.0\t12.0\n";
 }

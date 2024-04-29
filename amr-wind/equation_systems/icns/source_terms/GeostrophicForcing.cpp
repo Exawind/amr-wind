@@ -122,8 +122,8 @@ void GeostrophicForcing::operator()(
     if (!m_vel_timetable.empty()) {
         const amrex::Real nph_spd =
             amr_wind::interp::linear(m_time_table, m_speed_table, nph_time);
-        const amrex::Real nph_dir =
-            amr_wind::interp::linear(m_time_table, m_direction_table, nph_time);
+        const amrex::Real nph_dir = amr_wind::interp::linear_angle(
+            m_time_table, m_direction_table, nph_time, 2.0 * M_PI);
 
         const amrex::Real target_u = nph_spd * std::cos(nph_dir);
         const amrex::Real target_v = nph_spd * std::sin(nph_dir);
