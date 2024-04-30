@@ -153,6 +153,8 @@ inline void linear(const C1& xinp, const C2& yinp, const C1& xout, C2& yout)
     }
 }
 
+// Angles in yinp should be defined between [-upper_bound, +upper_bound]
+// Use cases would be degrees (upper_bound =360) and radians (upper_bound =2pi)
 template <typename C1, typename C2>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     typename std::iterator_traits<C2>::value_type
@@ -193,6 +195,27 @@ inline typename C2::value_type linear_angle(
     return linear_angle(
         xinp.data(), (xinp.data() + xinp.size()), yinp.data(), xout,
         upper_bound);
+}
+
+template <typename C1, typename C2>
+inline void linear_angle(
+    const C1& xinp,
+    const C2& yinp,
+    const C1& xout,
+    C2& yout,
+    const typename C1::value_type& upper_bound)
+{
+    AMREX_ASSERT(
+        static_cast<amrex::Long>(xinp.size()) ==
+        static_cast<amrex::Long>(yinp.size()));
+    AMREX_ASSERT(
+        static_cast<amrex::Long>(xout.size()) ==
+        static_cast<amrex::Long>(yout.size()));
+
+    int npts = xout.size();
+    for (int i = 0; i < npts; ++i) {
+        yout[i] = linear_angle(xinp, yinp, xout[i], upper_bound);
+    }
 }
 
 } // namespace amr_wind::interp
