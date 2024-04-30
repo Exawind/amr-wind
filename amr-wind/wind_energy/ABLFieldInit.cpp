@@ -69,7 +69,9 @@ void ABLFieldInit::initialize_from_inputfile()
     if (!m_vel_timetable.empty()) {
         std::ifstream ifh(m_vel_timetable, std::ios::in);
         if (!ifh.good()) {
-            amrex::Abort("Cannot find input file: " + m_vel_timetable);
+            amrex::Abort(
+                "Cannot find ABLForcing velocity_timetable file: " +
+                m_vel_timetable);
         }
         amrex::Real m_vel_time;
         amrex::Real m_vel_ang;

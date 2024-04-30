@@ -153,6 +153,71 @@ inline void linear(const C1& xinp, const C2& yinp, const C1& xout, C2& yout)
     }
 }
 
+// Angles in yinp should be defined between [-upper_bound, +upper_bound]
+// Use cases would be degrees (upper_bound =360) and radians (upper_bound =2pi)
+template <typename C1, typename C2>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    typename std::iterator_traits<C2>::value_type
+    linear_angle(
+        const C1 xbegin,
+        const C1 xend,
+        const C2 yinp,
+        const typename std::iterator_traits<C1>::value_type& xout,
+        const typename std::iterator_traits<C1>::value_type& upper_bound)
+{
+    using DType1 = typename std::iterator_traits<C1>::value_type;
+    const auto idx = bisection_search(xbegin, xend, xout);
+
+    if ((idx.lim == Limits::LOWLIM) || (idx.lim == Limits::UPLIM)) {
+        return yinp[idx.idx];
+    }
+    static constexpr DType1 eps = 1.0e-8;
+    const int j = idx.idx;
+    const auto denom = (xbegin[j + 1] - xbegin[j]);
+    /* https://math.stackexchange.com/questions/2144234/interpolating-between-2-angles
+     */
+    const auto R = (denom > eps) ? ((xout - xbegin[j]) / denom) : 0.0;
+    const auto ub = upper_bound;
+    const auto hb = 0.5 * upper_bound;
+    const auto ohb = 1.5 * upper_bound;
+    return yinp[j] +
+           (std::fmod((std::fmod(yinp[j + 1] - yinp[j], ub) + ohb), ub) - hb) *
+               R;
+}
+
+template <typename C1, typename C2>
+inline typename C2::value_type linear_angle(
+    const C1& xinp,
+    const C2& yinp,
+    const typename C1::value_type& xout,
+    const typename C1::value_type& upper_bound)
+{
+    return linear_angle(
+        xinp.data(), (xinp.data() + xinp.size()), yinp.data(), xout,
+        upper_bound);
+}
+
+template <typename C1, typename C2>
+inline void linear_angle(
+    const C1& xinp,
+    const C2& yinp,
+    const C1& xout,
+    C2& yout,
+    const typename C1::value_type& upper_bound)
+{
+    AMREX_ASSERT(
+        static_cast<amrex::Long>(xinp.size()) ==
+        static_cast<amrex::Long>(yinp.size()));
+    AMREX_ASSERT(
+        static_cast<amrex::Long>(xout.size()) ==
+        static_cast<amrex::Long>(yout.size()));
+
+    int npts = xout.size();
+    for (int i = 0; i < npts; ++i) {
+        yout[i] = linear_angle(xinp, yinp, xout[i], upper_bound);
+    }
+}
+
 } // namespace amr_wind::interp
 
 #endif /* LINEAR_INTERPOLATION_H */

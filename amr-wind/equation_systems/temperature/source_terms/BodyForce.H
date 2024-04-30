@@ -33,7 +33,7 @@ private:
     const SimTime& m_time;
     const amrex::AmrCore& m_mesh;
 
-    std::string m_type{"height-varying"};
+    std::string m_type{"height_varying"};
     std::string m_bforce_file;
     size_t m_bforce_profile_nhts;
 
