@@ -171,7 +171,7 @@ struct ReadInputsOp<TurbineFast, SrcTrait>
                    "the precursor simulation and the specified TurbineFast "
                    "density, " +
                        std::to_string(rho_tdef)
-                << ".\n".
+                << ".\n";
         }
     }
 };
