@@ -319,7 +319,6 @@ TEST_F(ABLMeshTest, hurricane_forcing)
 
     auto& pde_mgr = sim().pde_manager();
     pde_mgr.register_icns();
-    // pde_mgr.register_transport_pde("Temperature");
     sim().init_physics();
 
     auto& src_term_icns = pde_mgr.icns().fields().src_term;
