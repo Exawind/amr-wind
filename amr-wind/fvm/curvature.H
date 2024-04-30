@@ -15,6 +15,7 @@ struct Curvature
         : m_curphi(curphi), m_phi(phi)
     {
         AMREX_ALWAYS_ASSERT(m_phi.num_comp() == m_curphi.num_comp());
+        AMREX_ALWAYS_ASSERT(m_phi.num_grow() > m_curphi.num_grow());
     }
 
     template <typename Stencil>
