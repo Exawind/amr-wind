@@ -37,7 +37,8 @@ public:
     void impl_write_native();
 
     //! calculate the L2 norm of a given field and component
-    static amrex::Real L2_norm(amr_wind::Field& field, const int comp);
+    static amrex::Real
+    L2_norm(amr_wind::Field& field, const int comp, const bool use_mask);
 
     const amrex::Vector<std::string>& var_names() const { return m_var_names; }
 
@@ -78,6 +79,9 @@ private:
 
     //! precision in ASCII output
     int m_precision{12};
+
+    //! Mask redundant grids (finest available grid only)
+    bool m_use_mask{true};
 };
 
 } // namespace amr_wind::field_norms
