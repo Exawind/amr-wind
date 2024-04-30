@@ -179,7 +179,7 @@ void SamplingContainer::interpolate_derived_fields(
 {
     BL_PROFILE("amr-wind::SamplingContainer::interpolate_derived_fields");
 
-    auto outfield = repo.create_scratch_field(derived_mgr.num_comp());
+    auto outfield = repo.create_scratch_field(derived_mgr.num_comp(), 1);
     derived_mgr(*outfield, 0);
 
     const int nlevels = m_mesh.finestLevel() + 1;

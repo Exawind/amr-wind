@@ -26,7 +26,7 @@ struct Curvature
         const auto& curphi = m_curphi(lev).array(mfi);
         const auto& phi = m_phi(lev).const_array(mfi);
 
-        const auto& bx_in = mfi.tilebox();
+        const auto& bx_in = mfi.growntilebox(m_curphi.num_grow());
         const auto& bx = Stencil::box(bx_in, geom);
         if (bx.isEmpty()) {
             return;
