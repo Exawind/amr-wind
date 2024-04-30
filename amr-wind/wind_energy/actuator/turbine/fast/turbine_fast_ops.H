@@ -27,6 +27,8 @@ struct ReadInputsOp<TurbineFast, SrcTrait>
         // Check if user wants to override density checks
         bool override_density_check = false;
         pp.query("override_density_check", override_density_check);
+        // Check if simulation is a restart
+        bool is_restart = data.sim().io_manager().is_restart();
 
         // Initialize OpenFAST specific data
         const auto& tinfo = data.info();
@@ -74,7 +76,8 @@ struct ReadInputsOp<TurbineFast, SrcTrait>
 
         perform_checks(data);
 
-        perform_density_checks(tdata.density, override_density_check);
+        perform_density_checks(
+            tdata.density, override_density_check, is_restart);
     }
 
     void perform_checks(typename TurbineFast::DataType& data)
@@ -85,7 +88,8 @@ struct ReadInputsOp<TurbineFast, SrcTrait>
     }
 
     // Check other density parsing arguments against turbine air density
-    void perform_density_checks(const amrex::Real rho_tdef, const bool no_check)
+    void perform_density_checks(
+        const amrex::Real rho_tdef, const bool no_check, const bool is_rst)
     {
         // Check if other arguments are in input file
         amrex::ParmParse pp_incflo("incflo");
@@ -94,7 +98,7 @@ struct ReadInputsOp<TurbineFast, SrcTrait>
         bool is_cstdns = pp_cstdns.contains("value");
         // Flags for detecting conflicts
         bool cft_incflo = false;
-        bool cft_cstdens = false;
+        bool cft_cstdns = false;
 
         // Do warnings or aborts depending on values
         const amrex::Real tiny = std::numeric_limits<amrex::Real>::epsilon();
@@ -105,13 +109,14 @@ struct ReadInputsOp<TurbineFast, SrcTrait>
                 cft_incflo = true;
                 if (!no_check) {
                     amrex::Abort(
-                        "Density conflict detected between FAST Turbine "
-                        "density and incflo.density.\n-----Values are " +
+                        "Density conflict detected between TurbineFast "
+                        "density and incflo.density.\n----- Values are " +
                         std::to_string(rho_tdef) + " and " +
                         std::to_string(rho_incflo) +
                         ", respectively. Check the problem setup and the "
                         "turbine definition.\n----- If this difference is "
-                        "intended, set the override_density flag to true.\n");
+                        "intended, set the override_density_check flag to "
+                        "true.\n");
                 } else {
                     amrex::Print()
                         << "WARNING: Density conflict detected between FAST "
@@ -123,46 +128,49 @@ struct ReadInputsOp<TurbineFast, SrcTrait>
                 }
             }
         }
-        if (is_cstdens) {
-            amrex::Real rho_cstdens = 1.0;
-            pp_cstdns.query("value", rho_cstdens);
-            if (std::abs(rho_cstdens - rho_tdef) > tiny) {
-                cft_cstdens = true;
+        if (is_cstdns) {
+            amrex::Real rho_cstdns = 1.0;
+            pp_cstdns.query("value", rho_cstdns);
+            if (std::abs(rho_cstdns - rho_tdef) > tiny) {
+                cft_cstdns = true;
                 if (!no_check) {
                     amrex::Abort(
-                        "Density conflict detected between FAST Turbine "
+                        "Density conflict detected between TurbineFast "
                         "density and ConstValue.density.value.\n----- Values "
                         "are " +
                         std::to_string(rho_tdef) + " and " +
-                        std::to_string(rho_cstdens) +
+                        std::to_string(rho_cstdns) +
                         ", respectively. Check the problem setup and the "
                         "turbine definition.\n----- If this difference is "
-                        "intended, set the override_density flag to true.\n");
+                        "intended, set the override_density_check flag to "
+                        "true.\n");
                 } else {
                     amrex::Print()
-                        << "WARNING: Density conflict detected between FAST "
-                           "Turbine density and "
+                        << "WARNING: Density conflict detected between "
+                           "TurbineFast "
+                           "density and "
                            "ConstValue.density.value.\n----- Values are " +
                                std::to_string(rho_tdef) + " and " +
-                               std::to_string(rho_cstdens) +
+                               std::to_string(rho_cstdns) +
                                ", respectively. Abort overridden by flag.\n";
                 }
             }
         }
         if (!is_incflo && !is_cstdns) {
             amrex::Print()
-                << "FAST Turbine: no density conflict detected, but no density "
-                   "arguments found to check against. This is likely a "
-                   "simulation begun using a checkpoint file, and the user "
-                   "must manually confirm that the precursor simulation used a "
-                   "compatible density.\n";
-        } else if (!cft_incflo && !cft_cstdens) {
+                << "TurbineFast: no density conflict detected, but no density "
+                   "arguments found to check against.\n";
+        } else if (!cft_incflo && !cft_cstdns) {
+            amrex::Print() << "TurbineFast: no density conflict detected.\n";
+        }
+        if (is_rst) {
             amrex::Print()
-                << "FAST Turbine: no density conflict detected. If this is a "
-                   "simulation begun using a checkpoint file, some density "
-                   "arguments may be unused, and the user must manually "
-                   "confirm that the precursor simulation used a compatible "
-                   "density.\n";
+                << "TurbineFast: simulation begins using a checkpoint file, "
+                   "density compatibility must be manually confirmed between "
+                   "the precursor simulation and the specified TurbineFast "
+                   "density, " +
+                       std::to_string(rho_tdef)
+                << ".\n".
         }
     }
 };
