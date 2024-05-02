@@ -28,7 +28,7 @@ struct Qcriterion
         const auto& phi = m_phi(lev).const_array(mfi);
         const bool nondim = m_nondim;
 
-        const auto& bx_in = mfi.growntilebox(m_qcritphi.num_grow());
+        const auto& bx_in = mfi.tilebox();
         const auto& bx = Stencil::box(bx_in, geom);
         if (bx.isEmpty()) {
             return;

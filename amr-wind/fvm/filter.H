@@ -33,7 +33,7 @@ struct Filter
         const auto& filterphi_arr = m_filterphi(lev).array(mfi);
         const auto& phi_arr = m_phi(lev).const_array(mfi);
 
-        const auto& bx_in = mfi.growntilebox(m_filterphi.num_grow());
+        const auto& bx_in = mfi.tilebox();
         const auto& bx = Stencil::box(bx_in, geom);
         if (bx.isEmpty()) {
             return;
