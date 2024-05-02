@@ -8,6 +8,10 @@
 #include "AMReX_MultiFabUtil.H"
 #include "hydro_MacProjector.H"
 
+#include "AMReX_PlotFileUtil.H"
+#include "AMReX_MultiFabUtil.H"
+#include "AMReX_MultiFab.H"
+
 namespace amr_wind::pde {
 
 namespace {
@@ -277,7 +281,14 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
         }
     }
 
+amrex::Array<const amrex::MultiFab*, AMREX_SPACEDIM> mac_arr = {&u_mac(0), &v_mac(0), &w_mac(0)};
+amrex::MultiFab mac_vec_cc(amrex::convert((u_mac(0)).boxArray(), amrex::IntVect{0,0,0}), (u_mac(0)).DistributionMap(), 3, 0);
+
+amrex::average_face_to_cellcenter(mac_vec_cc, 0, mac_arr);
+amrex::WriteSingleLevelPlotfile("plt_macvel_precorrect", mac_vec_cc, {"umac","vmac","wmac"}, geom[0], 0.0, 0);
     enforce_solvability(mac_vec);
+amrex::average_face_to_cellcenter(mac_vec_cc, 0, mac_arr);
+amrex::WriteSingleLevelPlotfile("plt_macvel_postcorrect", mac_vec_cc, {"umac","vmac","wmac"}, geom[0], 0.0, 0);
     m_mac_proj->setUMAC(mac_vec);
 
     if (m_has_overset) {
@@ -293,6 +304,8 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
     } else {
         m_mac_proj->project(m_options.rel_tol, m_options.abs_tol);
     }
+amrex::average_face_to_cellcenter(mac_vec_cc, 0, mac_arr);
+amrex::WriteSingleLevelPlotfile("plt_macvel_postproject", mac_vec_cc, {"umac","vmac","wmac"}, geom[0], 0.0, 0);
 
     if (m_is_anelastic) {
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {

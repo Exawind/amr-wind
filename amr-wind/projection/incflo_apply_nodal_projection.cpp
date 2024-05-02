@@ -8,6 +8,7 @@
 
 #include "amr-wind/utilities/IOManager.H"
 
+#include "AMReX_PlotFileUtil.H"
 
 using namespace amrex;
 
@@ -163,6 +164,7 @@ void incflo::ApplyProjection(
     auto& grad_p = m_repo.get_field("gp");
     auto& pressure = m_repo.get_field("p");
     auto& velocity = icns().fields().field;
+amrex::WriteSingleLevelPlotfile("plt_vel_pre_nodalproj", velocity(0), {"u","v","w"}, geom[0], 0.0, 0);
     auto& velocity_old = icns().fields().field.state(amr_wind::FieldState::Old);
     amr_wind::Field const* mesh_fac =
         mesh_mapping
@@ -468,6 +470,8 @@ void incflo::ApplyProjection(
                 velocity(lev), velocity_old(lev), 0, 0, AMREX_SPACEDIM, 0);
         }
     }
+
+amrex::WriteSingleLevelPlotfile("plt_vel_post_nodalproj", velocity(0), {"u","v","w"}, geom[0], 0.0, 0);
 
     // Get phi and fluxes
     auto phi = nodal_projector->getPhi();
