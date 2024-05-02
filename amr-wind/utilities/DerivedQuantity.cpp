@@ -90,6 +90,7 @@ void DerivedQtyMgr::operator()(ScratchField& fld, const int scomp) const
         (*qty)(fld, icomp);
         icomp += qty->num_comp();
     }
+    fld.fillpatch(0.0);
 }
 
 int DerivedQtyMgr::num_comp() const noexcept
