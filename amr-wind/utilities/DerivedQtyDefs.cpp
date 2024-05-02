@@ -15,7 +15,7 @@ VorticityMag::VorticityMag(
 void VorticityMag::operator()(ScratchField& fld, const int scomp) const
 {
     AMREX_ASSERT(fld.num_comp() > (scomp));
-    AMREX_ASSERT(m_vel.num_grow() > fld.num_grow());
+    AMREX_ASSERT(m_vel.num_grow() > 1);
     auto vort_mag = fld.subview(scomp, 1);
     fvm::vorticity_mag(vort_mag, m_vel);
 }
@@ -30,7 +30,7 @@ QCriterion::QCriterion(
 void QCriterion::operator()(ScratchField& fld, const int scomp) const
 {
     AMREX_ASSERT(fld.num_comp() > (scomp));
-    AMREX_ASSERT(m_vel.num_grow() > fld.num_grow());
+    AMREX_ASSERT(m_vel.num_grow() > 1);
     auto q_crit = fld.subview(scomp, 1);
     fvm::q_criterion(q_crit, m_vel);
 }
@@ -45,7 +45,7 @@ QCriterionNondim::QCriterionNondim(
 void QCriterionNondim::operator()(ScratchField& fld, const int scomp) const
 {
     AMREX_ASSERT(fld.num_comp() > (scomp));
-    AMREX_ASSERT(m_vel.num_grow() > fld.num_grow());
+    AMREX_ASSERT(m_vel.num_grow() > 1);
     auto q_crit_nd = fld.subview(scomp, 1);
     fvm::q_criterion(q_crit_nd, m_vel, true);
 }
@@ -60,7 +60,7 @@ StrainRateMag::StrainRateMag(
 void StrainRateMag::operator()(ScratchField& fld, const int scomp) const
 {
     AMREX_ASSERT(fld.num_comp() > (scomp));
-    AMREX_ASSERT(m_vel.num_grow() > fld.num_grow());
+    AMREX_ASSERT(m_vel.num_grow() > 1);
     auto srate = fld.subview(scomp, 1);
     fvm::strainrate(srate, m_vel);
 }
@@ -74,7 +74,7 @@ Gradient::Gradient(const FieldRepo& repo, const std::vector<std::string>& args)
 void Gradient::operator()(ScratchField& fld, const int scomp) const
 {
     AMREX_ASSERT(fld.num_comp() >= (scomp + num_comp()));
-    AMREX_ASSERT(m_phi->num_grow() > fld.num_grow());
+    AMREX_ASSERT(m_phi->num_grow() > 1);
     auto gradphi = fld.subview(scomp, num_comp());
     fvm::gradient(gradphi, *m_phi);
 }
@@ -90,7 +90,7 @@ Divergence::Divergence(
 void Divergence::operator()(ScratchField& fld, const int scomp) const
 {
     AMREX_ASSERT(fld.num_comp() >= (scomp + num_comp()));
-    AMREX_ASSERT(m_phi->num_grow() > fld.num_grow());
+    AMREX_ASSERT(m_phi->num_grow() > 1);
     auto divphi = fld.subview(scomp, num_comp());
     fvm::divergence(divphi, *m_phi);
 }
@@ -106,7 +106,7 @@ Laplacian::Laplacian(
 void Laplacian::operator()(ScratchField& fld, const int scomp) const
 {
     AMREX_ASSERT(fld.num_comp() >= (scomp + num_comp()));
-    AMREX_ASSERT(m_phi->num_grow() > fld.num_grow());
+    AMREX_ASSERT(m_phi->num_grow() > 1);
     auto lapphi = fld.subview(scomp, num_comp());
     fvm::laplacian(lapphi, *m_phi);
 }
@@ -140,7 +140,6 @@ void FieldComponents::var_names(amrex::Vector<std::string>& plt_var_names)
 void FieldComponents::operator()(ScratchField& fld, const int scomp) const
 {
     AMREX_ASSERT(fld.num_comp() >= (scomp + num_comp()));
-    AMREX_ASSERT(m_fld->num_grow() >= fld.num_grow());
     int dst_comp = scomp;
     for (auto icomp : m_comp) {
         field_ops::copy(fld, *m_fld, icomp, dst_comp, 1, 0);
