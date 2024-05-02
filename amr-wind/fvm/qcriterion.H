@@ -16,7 +16,7 @@ struct Qcriterion
         : m_qcritphi(qcritphi), m_phi(phi), m_nondim(nondim)
     {
         AMREX_ALWAYS_ASSERT(AMREX_SPACEDIM == m_phi.num_comp());
-        AMREX_ALWAYS_ASSERT(m_phi.num_grow() > m_qcritphi.num_grow());
+        AMREX_ALWAYS_ASSERT(m_phi.num_grow() > 0);
     }
 
     template <typename Stencil>

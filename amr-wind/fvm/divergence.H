@@ -19,7 +19,7 @@ struct Divergence
     {
         AMREX_ALWAYS_ASSERT(
             AMREX_SPACEDIM * divphi.num_comp() == phi.num_comp());
-        AMREX_ALWAYS_ASSERT(m_phi.num_grow() > m_divphi.num_grow());
+        AMREX_ALWAYS_ASSERT(m_phi.num_grow() > 0);
     }
 
     template <typename Stencil>

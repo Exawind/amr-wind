@@ -15,7 +15,7 @@ struct StrainRate
         : m_strphi(strphi), m_phi(phi)
     {
         AMREX_ALWAYS_ASSERT(AMREX_SPACEDIM == m_phi.num_comp());
-        AMREX_ALWAYS_ASSERT(m_phi.num_grow() > m_strphi.num_grow());
+        AMREX_ALWAYS_ASSERT(m_phi.num_grow() > 0);
     }
 
     template <typename Stencil>

@@ -15,7 +15,7 @@ struct Laplacian
     {
         AMREX_ALWAYS_ASSERT(m_lapphi.num_comp() == 1);
         AMREX_ALWAYS_ASSERT(m_phi.num_comp() == AMREX_SPACEDIM);
-        AMREX_ALWAYS_ASSERT(m_phi.num_grow() > m_lapphi.num_grow());
+        AMREX_ALWAYS_ASSERT(m_phi.num_grow() > 0);
     }
 
     template <typename Stencil>
