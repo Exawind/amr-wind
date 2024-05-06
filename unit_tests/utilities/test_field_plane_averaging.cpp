@@ -77,11 +77,10 @@ void add_linear(
     auto dx = geom.CellSizeArray();
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        amrex::Real x[3];
+        const amrex::GpuArray<amrex::Real, 3> x = {
 
-        x[0] = xlo[0] + (i + 0.5) * dx[0];
-        x[1] = xlo[1] + (j + 0.5) * dx[1];
-        x[2] = xlo[2] + (k + 0.5) * dx[2];
+            xlo[0] + (i + 0.5) * dx[0], xlo[1] + (j + 0.5) * dx[1],
+            xlo[2] + (k + 0.5) * dx[2]};
 
         velocity(i, j, k, 0) += a[0] * x[dir];
         velocity(i, j, k, 1) += a[1] * x[dir];
