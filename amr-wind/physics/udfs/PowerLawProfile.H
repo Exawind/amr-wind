@@ -21,7 +21,7 @@ struct PowerLawProfile
         amrex::Real shear_exp;
         amrex::Real umin{0.0};
         amrex::Real umax{100.0};
-        amrex::Real uvec[AMREX_SPACEDIM];
+        amrex::RealArray uvec;
 
         AMREX_GPU_DEVICE
         inline void operator()(

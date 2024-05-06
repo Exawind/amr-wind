@@ -11,7 +11,7 @@ namespace amr_wind::vs {
 template <typename T>
 struct VectorT
 {
-    T vv[3]{Traits::zero(), Traits::zero(), Traits::zero()};
+    amrex::GpuArray<T, 3> vv = {Traits::zero(), Traits::zero(), Traits::zero()};
 
     //! Number of components
     static constexpr int ncomp = 3;
@@ -129,10 +129,10 @@ struct VectorT
         return vv;
     }
 
-    iterator begin() noexcept { return vv; }
-    iterator end() noexcept { return vv + ncomp; }
-    const_iterator cbegin() const noexcept { return vv; }
-    const_iterator cend() const noexcept { return vv + ncomp; }
+    iterator begin() noexcept { return vv.begin(); }
+    iterator end() noexcept { return vv.end(); }
+    const_iterator cbegin() const noexcept { return vv.cbegin(); }
+    const_iterator cend() const noexcept { return vv.cend(); }
     size_type size() const noexcept { return ncomp; }
 };
 

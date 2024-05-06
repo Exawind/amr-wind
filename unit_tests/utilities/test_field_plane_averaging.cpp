@@ -138,10 +138,10 @@ TEST_F(FieldPlaneAveragingTest, test_linear)
 
         const amrex::Real x = problo[dir] + i * dx;
 
-        amrex::Real u[3];
-        u[0] = pa.line_average_interpolated(x, 0);
-        u[1] = pa.line_average_interpolated(x, 1);
-        u[2] = pa.line_average_interpolated(x, 2);
+        const amrex::Array<amrex::Real, 3> u = {
+            pa.line_average_interpolated(x, 0),
+            pa.line_average_interpolated(x, 1),
+            pa.line_average_interpolated(x, 2)};
 
         amrex::Real xtest;
 
@@ -184,11 +184,9 @@ void add_periodic(
     auto dx = geom.CellSizeArray();
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        amrex::Real x[3];
-
-        x[0] = xlo[0] + (i + 0.5) * dx[0];
-        x[1] = xlo[1] + (j + 0.5) * dx[1];
-        x[2] = xlo[2] + (k + 0.5) * dx[2];
+        const amrex::GpuArray<amrex::Real, 3> x = {
+            xlo[0] + (i + 0.5) * dx[0], xlo[1] + (j + 0.5) * dx[1],
+            xlo[2] + (k + 0.5) * dx[2]};
 
         for (int d = 0; d < 3; ++d) {
             if (d != dir) {

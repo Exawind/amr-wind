@@ -32,10 +32,7 @@ struct BurggrafLid
             const auto x = problo[idir] + (iv[idir] + 0.5) * dx[idir];
             amrex::Real val =
                 16 * (std::pow(x, 4) - 2 * std::pow(x, 3) + std::pow(x, 2));
-            amrex::Real uvec[AMREX_SPACEDIM];
-            uvec[0] = val;
-            uvec[1] = 0.0;
-            uvec[2] = 0.0;
+            amrex::RealArray uvec = {{val, 0.0, 0.0}};
 
             field(iv[0], iv[1], iv[2], dcomp + comp) = uvec[orig_comp + comp];
         }
