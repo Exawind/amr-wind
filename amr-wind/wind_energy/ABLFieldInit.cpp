@@ -73,6 +73,7 @@ void ABLFieldInit::initialize_from_inputfile()
                 "Cannot find ABLForcing velocity_timetable file: " +
                 m_vel_timetable);
         }
+        ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         amrex::Real m_vel_time;
         amrex::Real m_vel_ang;
         ifh >> m_vel_time >> m_vel_speed >> m_vel_ang;
