@@ -244,6 +244,9 @@ struct InitDataOp<TurbineFast, SrcTrait>
             amrex::ParallelDescriptor::Communicator(), tdata.tcomm);
 
         int sz_info[5]{0, 0, 0, 0, 0};
+        // Check if the size of sz_info is 5
+        assert(sizeof(sz_info) / sizeof(sz_info[0]) == 5);
+
         if (info.is_root_proc) {
             tdata.fast->init_turbine(tdata.fast_data.tid_local);
 
