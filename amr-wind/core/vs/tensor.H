@@ -170,10 +170,13 @@ struct TensorT
         return vv[pos];
     }
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T* data() noexcept { return vv; }
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T* data() noexcept
+    {
+        return vv.data();
+    }
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T* data() const noexcept
     {
-        return vv;
+        return vv.data();
     }
 
     iterator begin() noexcept { return vv.begin(); }
