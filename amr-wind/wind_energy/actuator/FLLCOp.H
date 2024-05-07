@@ -45,6 +45,7 @@ struct FLLCOp
         auto& u_les = fllc.les_velocity;
         auto& u_opt = fllc.optimal_velocity;
         auto& G = fllc.lift;
+        auto& nG = fllc.lift_n; // non-uniform G
         auto& dG = fllc.grad_lift;
         VecSlice u_force_pnt_slice =
             ::amr_wind::utils::slice(fllc.force_point_velocity, 0);

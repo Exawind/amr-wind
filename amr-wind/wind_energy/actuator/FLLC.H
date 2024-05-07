@@ -33,6 +33,12 @@ struct FLLCData
     bool different_sizes;
     RealList span_distance_vel;
     RealList span_distance_force;
+
+    // non-uniform variables
+    bool nonu{true};    // non-uniform flag
+    amrex::Real eps_dr; // the ratio of epsilon to actuator width
+    RealList r_n;       // non-uniform radius
+    VecList lift_n;     // non-uniform lift
 };
 
 /**
