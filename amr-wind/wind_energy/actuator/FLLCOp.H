@@ -45,7 +45,6 @@ struct FLLCOp
         auto& u_les = fllc.les_velocity;
         auto& u_opt = fllc.optimal_velocity;
         auto& G = fllc.lift;
-        auto& nG = fllc.lift_n; // non-uniform G
         auto& dG = fllc.grad_lift;
         VecSlice u_force_pnt_slice =
             ::amr_wind::utils::slice(fllc.force_point_velocity, 0);
@@ -163,9 +162,11 @@ struct FLLCOp
         const int npts = static_cast<int>(fllc.correction_velocity.size());
         auto& du = fllc.correction_velocity;
 
+auto& r_n = fllc.r_n;  // non-uniform points
         auto& u_les = fllc.les_velocity;
         auto& u_opt = fllc.optimal_velocity;
         auto& G = fllc.lift;
+        auto& G_n = fllc.lift_n; // non-uniform G
         VecSlice u_force_pnt_slice =
             ::amr_wind::utils::slice(fllc.force_point_velocity, 0);
         vs::Vector* vel_ptr = data.vel.data();
@@ -197,6 +198,11 @@ struct FLLCOp
 
             G[ip] = (force - vel * fv / vmag2) / dr;
         }
+
+// Get the non-uniform distribution of force
+interp::linear(fllc.span_distance_vel, G, r_n, G_n);
+//interp::linear(fllc.span_distance_vel, optimal_epsilon, r_n, optimal_epsilon_n);
+//interp::linear(fllc.span_distance_vel, data.vel_rel, r_n, data.vel_rel_n);
 
         /**
          * Step 2

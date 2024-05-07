@@ -38,6 +38,7 @@ struct FLLCData
     bool nonu{true};    // non-uniform flag
     amrex::Real eps_dr; // the ratio of epsilon to actuator width
     RealList r_n;       // non-uniform radius
+    RealList dr_n;       // non-uniform radius
     VecList lift_n;     // non-uniform lift
 };
 

@@ -68,6 +68,16 @@ void FLLCInit(
         idx++;
     }
 
+    // Central difference for non-uniform points
+int npts_n = data.r_n.size();
+data.dr_n.resize(npts_n);
+    for (int i = 1; i < npts_n - 1; ++i) {
+        data.dr_n[i] = std::abs(data.r_n[i + 1] - data.r_n[i - 1]) / 2.;
+    }
+    data.dr_n[0] = std::abs(data.r_n[1] - data.r_n[0]) / 2.;
+    data.dr_n[npts_n - 1] = std::abs(data.r_n[npts_n - 1] - data.r_n[npts_n - 2]) / 2.;
+
+
     data.initialized = true;
 }
 
