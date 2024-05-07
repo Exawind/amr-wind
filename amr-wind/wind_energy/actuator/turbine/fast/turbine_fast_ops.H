@@ -8,9 +8,7 @@
 #include "amr-wind/wind_energy/actuator/FLLCOp.H"
 #include "amr-wind/utilities/IOManager.H"
 
-namespace amr_wind {
-namespace actuator {
-namespace ops {
+namespace amr_wind::actuator::ops {
 
 template <typename SrcTrait>
 struct ReadInputsOp<TurbineFast, SrcTrait>
@@ -34,8 +32,9 @@ struct ReadInputsOp<TurbineFast, SrcTrait>
         // Initialize OpenFAST specific data
         const auto& tinfo = data.info();
         auto& tf = data.meta().fast_data;
-        for (int i = 0; i < AMREX_SPACEDIM; ++i)
+        for (int i = 0; i < AMREX_SPACEDIM; ++i) {
             tf.base_pos[i] = static_cast<float>(tinfo.base_pos[i]);
+        }
 
         tf.tlabel = tinfo.label;
         tf.tid_global = tinfo.id;
@@ -320,7 +319,7 @@ struct InitDataOp<TurbineFast, SrcTrait>
                 grid.vel_pos, start_vel, num_vel_pts_blade);
             // clang-format on
 
-            tdata.blades.emplace_back(std::move(cv));
+            tdata.blades.emplace_back(cv);
         }
         if (tdata.num_pts_tower > 0) {
             const int num_pts_tower = tdata.num_pts_tower;
@@ -435,7 +434,9 @@ struct UpdatePosOp<TurbineFast, SrcTrait>
         //
         // This is handled in Actuator class, but we add a check here just as a
         // safeguard
-        if (!data.info().is_root_proc) return;
+        if (!data.info().is_root_proc) {
+            return;
+        }
         BL_PROFILE("amr-wind::actuator::UpdatePosOp<TurbineFast>");
 
         const auto& tdata = data.meta();
@@ -444,8 +445,7 @@ struct UpdatePosOp<TurbineFast, SrcTrait>
         const auto& pyvel = tdata.fast_data.to_cfd.pyVel;
         const auto& pzvel = tdata.fast_data.to_cfd.pzVel;
         auto& vel_pos = data.grid().vel_pos;
-        const int nvpts = vel_pos.size();
-        for (int i = 0; i < nvpts; ++i) {
+        for (int i = 0; i < vel_pos.size(); ++i) {
             vel_pos[i].x() = static_cast<amrex::Real>(pxvel[i]) + bp.x();
             vel_pos[i].y() = static_cast<amrex::Real>(pyvel[i]) + bp.y();
             vel_pos[i].z() = static_cast<amrex::Real>(pzvel[i]) + bp.z();
@@ -462,7 +462,9 @@ struct UpdateVelOp<TurbineFast, SrcTrait>
         //
         // This is handled in Actuator class, but we add a check here just as a
         // safeguard
-        if (!data.info().is_root_proc) return;
+        if (!data.info().is_root_proc) {
+            return;
+        }
         BL_PROFILE("amr-wind::actuator::UpdateVelOp<TurbineFast>");
         auto& tdata = data.meta();
 
@@ -471,11 +473,10 @@ struct UpdateVelOp<TurbineFast, SrcTrait>
         auto& vvel = from_cfd.v;
         auto& wvel = from_cfd.w;
         const auto& vel = data.grid().vel;
-        const int nvpts = tdata.vel_rel.size();
 
         if (!tdata.fllc.empty()) {
             // Compute the relative velocity needed for the FLLC
-            for (int i = 0; i < nvpts; ++i) {
+            for (int i = 0; i < tdata.vel_rel.size(); ++i) {
                 tdata.vel_rel[i][0] =
                     uvel[i] - static_cast<amrex::Real>(
                                   tdata.fast_data.to_cfd.xdotForce[i]);
@@ -528,7 +529,9 @@ struct ComputeForceOp<TurbineFast, SrcTrait>
 
     void fast_step(typename TurbineFast::DataType& data)
     {
-        if (!data.info().is_root_proc) return;
+        if (!data.info().is_root_proc) {
+            return;
+        }
 
         auto& meta = data.meta();
         auto& tf = data.meta().fast_data;
@@ -548,7 +551,9 @@ struct ComputeForceOp<TurbineFast, SrcTrait>
 
     void compute_nacelle_force(typename TurbineFast::DataType& data)
     {
-        if (!data.info().is_root_proc) return;
+        if (!data.info().is_root_proc) {
+            return;
+        }
 
         const auto& cd = data.meta().nacelle_cd;
         const auto& area = data.meta().nacelle_area;
@@ -576,13 +581,15 @@ struct ComputeForceOp<TurbineFast, SrcTrait>
 
     void scatter_data(typename TurbineFast::DataType& data)
     {
-        if (!data.info().actuator_in_proc) return;
+        if (!data.info().actuator_in_proc) {
+            return;
+        }
 
         // Create an MPI transfer buffer that packs all data in one contiguous
         // array. 3 floats for the position vector, 3 floats for the force
         // vector, and 9 floats for the orientation matrix = 15 floats per
         // actuator node.
-        const int dsize = data.grid().pos.size() * 15;
+        const auto dsize = data.grid().pos.size() * 15;
         amrex::Vector<float> buf(dsize);
 
         // Copy data into MPI send/recv buffer from the OpenFAST data structure.
@@ -619,7 +626,9 @@ struct ComputeForceOp<TurbineFast, SrcTrait>
             BL_PROFILE(
                 "amr-wind::actuator::ComputeForceOp<TurbineFast>::scatter2");
             for (const int ip : procs) {
-                if (ip == data.info().root_proc) continue;
+                if (ip == data.info().root_proc) {
+                    continue;
+                }
 
                 amrex::ParallelDescriptor::Send(
                     buf.data(), dsize, ip, tag, data.meta().tcomm);
@@ -676,12 +685,15 @@ struct ComputeForceOp<TurbineFast, SrcTrait>
                 // from OpenFAST to AMR-Wind Tensor data structure. This is done
                 // so that post-multiplication of vector transforms from global
                 // to local reference frame.
-                const size_t off = iori + i * AMREX_SPACEDIM * AMREX_SPACEDIM;
-                for (int j = 0; j < AMREX_SPACEDIM; ++j)
-                    for (int k = 0; k < AMREX_SPACEDIM; ++k)
+                const auto off = static_cast<int>(iori) +
+                                 i * AMREX_SPACEDIM * AMREX_SPACEDIM;
+                for (int j = 0; j < AMREX_SPACEDIM; ++j) {
+                    for (int k = 0; k < AMREX_SPACEDIM; ++k) {
                         grid.orientation[i][j * AMREX_SPACEDIM + k] =
                             static_cast<amrex::Real>(
                                 buf[off + j + k * AMREX_SPACEDIM]);
+                    }
+                }
             }
 
             // Extract the rotor center of rotation
@@ -704,10 +716,10 @@ private:
     typename TurbineFast::DataType& m_data;
 
     //! Path to the output directory (specified by Actuator physics class)
-    std::string m_out_dir{""};
+    std::string m_out_dir;
 
     //! NetCDF output filename for this turbine
-    std::string m_nc_filename{""};
+    std::string m_nc_filename;
 
     //! Output frequency (specified in input file)
     int m_out_freq{10};
@@ -733,7 +745,9 @@ public:
     {
         const auto& time = m_data.sim().time();
         const int tidx = time.time_index();
-        if ((m_out_freq > 0) && (tidx % m_out_freq != 0)) return;
+        if ((m_out_freq > 0) && (tidx % m_out_freq != 0)) {
+            return;
+        }
 
         utils::write_netcdf(
             m_nc_filename, m_data.meta(), m_data.info(), m_data.grid(),
@@ -741,8 +755,6 @@ public:
     }
 };
 
-} // namespace ops
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator::ops
 
 #endif /* TURBINE_FAST_OPS_H */

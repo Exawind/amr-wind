@@ -57,7 +57,9 @@ void prepare_netcdf_file(
 {
 #ifdef AMR_WIND_USE_NETCDF
     // Only root process handles I/O
-    if (!info.is_root_proc) return;
+    if (!info.is_root_proc) {
+        return;
+    }
 
     auto ncf = ncutils::NCFile::create(ncfile, NC_CLOBBER | NC_NETCDF4);
     const std::string nt_name = "num_time_steps";
@@ -71,7 +73,8 @@ void prepare_netcdf_file(
     ncf.put_attr("created_on", ioutils::timestamp());
     ncf.def_dim(nt_name, NC_UNLIMITED);
     ncf.def_dim("ndim", AMREX_SPACEDIM);
-    ncf.def_dim("mat_dim", AMREX_SPACEDIM * AMREX_SPACEDIM);
+    ncf.def_dim(
+        "mat_dim", static_cast<size_t>(AMREX_SPACEDIM * AMREX_SPACEDIM));
 
     auto grp = ncf.def_group(info.label);
     grp.put_attr("num_blades", std::vector<int>{meta.num_blades});
@@ -102,9 +105,9 @@ void prepare_netcdf_file(
 
     {
         auto chord = grp.var("chord");
-        chord.put(&(meta.chord[0]), {0}, {nfpts});
+        chord.put(meta.chord.data(), {0}, {nfpts});
         auto eps = grp.var("epsilon");
-        eps.put(&(grid.epsilon[0][0]), {0, 0}, {nfpts, AMREX_SPACEDIM});
+        eps.put(grid.epsilon[0].data(), {0, 0}, {nfpts, AMREX_SPACEDIM});
     }
 
 #else
@@ -121,7 +124,9 @@ void write_netcdf(
 {
 #ifdef AMR_WIND_USE_NETCDF
     // Only root process handles I/O
-    if (!info.is_root_proc) return;
+    if (!info.is_root_proc) {
+        return;
+    }
 
     auto ncf = ncutils::NCFile::open(ncfile, NC_WRITE);
     const std::string nt_name = "num_time_steps";
@@ -132,18 +137,18 @@ void write_netcdf(
 
     auto grp = ncf.group(info.label);
     grp.var("time").put(&time, {nt}, {1});
-    grp.var("rot_center").put(&(meta.rot_center[0]), {nt, 0}, {1, 3});
-    grp.var("rotor_frame").put(&(meta.rotor_frame[0]), {nt, 0}, {1, 9});
+    grp.var("rot_center").put(meta.rot_center.data(), {nt, 0}, {1, 3});
+    grp.var("rotor_frame").put(meta.rotor_frame.data(), {nt, 0}, {1, 9});
     grp.var("xyz").put(
-        &(grid.pos[0][0]), {nt, 0, 0}, {1, nfpts, AMREX_SPACEDIM});
+        grid.pos[0].data(), {nt, 0, 0}, {1, nfpts, AMREX_SPACEDIM});
     grp.var("force").put(
-        &(grid.force[0][0]), {nt, 0, 0}, {1, nfpts, AMREX_SPACEDIM});
+        grid.force[0].data(), {nt, 0, 0}, {1, nfpts, AMREX_SPACEDIM});
     grp.var("orientation")
-        .put(&(grid.orientation[0][0]), {nt, 0, 0}, {1, nfpts, 9});
+        .put(grid.orientation[0].data(), {nt, 0, 0}, {1, nfpts, 9});
     grp.var("vel_xyz").put(
-        &(grid.vel_pos[0][0]), {nt, 0, 0}, {1, nvpts, AMREX_SPACEDIM});
+        grid.vel_pos[0].data(), {nt, 0, 0}, {1, nvpts, AMREX_SPACEDIM});
     grp.var("vel").put(
-        &(grid.vel[0][0]), {nt, 0, 0}, {1, nvpts, AMREX_SPACEDIM});
+        grid.vel[0].data(), {nt, 0, 0}, {1, nvpts, AMREX_SPACEDIM});
 #else
     amrex::ignore_unused(ncfile, meta, info, grid, time);
 #endif

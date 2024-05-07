@@ -43,7 +43,9 @@ void print_usage(MPI_Comm comm, std::ostream& out)
     MPI_Comm_rank(comm, &irank);
 
     // Only root process does the printing
-    if (irank != 0) return;
+    if (irank != 0) {
+        return;
+    }
 #else
     amrex::ignore_unused(comm);
 #endif
@@ -68,7 +70,9 @@ void print_error(MPI_Comm comm, const std::string& msg)
     MPI_Comm_rank(comm, &irank);
 
     // Only root process does the printing
-    if (irank != 0) return;
+    if (irank != 0) {
+        return;
+    }
 #else
     amrex::ignore_unused(comm);
 #endif
@@ -85,7 +89,9 @@ void print_banner(MPI_Comm comm, std::ostream& out)
     MPI_Comm_rank(comm, &irank);
 
     // Only root process does the printing
-    if (irank != 0) return;
+    if (irank != 0) {
+        return;
+    }
 #else
     amrex::ignore_unused(comm);
 #endif

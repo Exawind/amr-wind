@@ -760,7 +760,9 @@ void FreeSurface::prepare_netcdf_file()
     m_ncfile_name = post_dir + "/" + sname + ".nc";
 
     // Only I/O processor handles NetCDF generation
-    if (!amrex::ParallelDescriptor::IOProcessor()) return;
+    if (!amrex::ParallelDescriptor::IOProcessor()) {
+        return;
+    }
 
     auto ncf = ncutils::NCFile::create(m_ncfile_name, NC_CLOBBER | NC_NETCDF4);
     const std::string nt_name = "num_time_steps";
@@ -795,7 +797,7 @@ void FreeSurface::prepare_netcdf_file()
     std::vector<size_t> count{0, 2};
     count[0] = m_npts;
     auto xy = ncf.var("coordinates2D");
-    xy.put(&m_locs[0][0], start, count);
+    xy.put(m_locs[0].data(), start, count);
 
 #else
     amrex::Abort(
@@ -809,7 +811,9 @@ void FreeSurface::write_netcdf()
 {
 #ifdef AMR_WIND_USE_NETCDF
 
-    if (!amrex::ParallelDescriptor::IOProcessor()) return;
+    if (!amrex::ParallelDescriptor::IOProcessor()) {
+        return;
+    }
     auto ncf = ncutils::NCFile::open(m_ncfile_name, NC_WRITE);
     const std::string nt_name = "num_time_steps";
     // Index of the next timestep
@@ -826,7 +830,9 @@ void FreeSurface::write_netcdf()
     count[2] = m_npts;
     auto var = ncf.var("heights");
     for (int ni = 0; ni < m_ninst; ++ni) {
-        var.put(&m_out[ni * m_npts], start, count);
+        var.put(
+            &m_out[static_cast<size_t>(ni) * static_cast<size_t>(m_npts)],
+            start, count);
         ++start[1];
     }
 
