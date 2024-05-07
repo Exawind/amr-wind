@@ -145,7 +145,7 @@ void godunov::compute_fluxes(
             auto bc = pbc[n];
 
             Godunov_trans_xbc(
-                i, j, k, n, q, lo, hi, uad, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
+                i, j, k, n, q, lo, hi, uad, uad, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
             xlo(i, j, k, n) = lo;
             xhi(i, j, k, n) = hi;
             Real st = (uval) ? lo : hi;
@@ -346,7 +346,7 @@ if ((i==0) && (j==0) && (k==0))
 
             Real uad = umac(i, j, k);
             Godunov_trans_xbc(
-                i, j, k, n, q, l_xzlo, l_xzhi, uad, bc.lo(0), bc.hi(0), dlo.x,
+                i, j, k, n, q, l_xzlo, l_xzhi, uad, uad, bc.lo(0), bc.hi(0), dlo.x,
                 dhi.x);
 
             constexpr Real small_vel = 1.e-8;
@@ -457,7 +457,7 @@ if ((i==0) && (j==0) && (k==0))
 
             Real uad = umac(i, j, k);
             Godunov_trans_xbc(
-                i, j, k, n, q, l_xylo, l_xyhi, uad, bc.lo(0), bc.hi(0), dlo.x,
+                i, j, k, n, q, l_xylo, l_xyhi, uad, uad, bc.lo(0), bc.hi(0), dlo.x,
                 dhi.x);
 
             constexpr Real small_vel = 1.e-8;

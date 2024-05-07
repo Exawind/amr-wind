@@ -50,10 +50,13 @@ void godunov::make_trans_velocities(
                 lo = Ipx(i - 1, j, k, n);
                 hi = Imx(i, j, k, n);
             }
-
+/*if (((i==0) || (i==16)) && (j==3) && ((k==1) || (k==14))) {
+Print() << "lo hi at " << i << " " << j << " " << k << " " << n << "    "
+        << lo << " " << hi << std::endl;
+}*/
             auto bc = pbc[n];
             Godunov_trans_xbc(
-                i, j, k, n, vel, lo, hi, lo, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
+                i, j, k, n, vel, lo, hi, lo, hi, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
 
             constexpr Real small_vel = 1e-8;
 
@@ -184,7 +187,7 @@ void godunov::predict_godunov(
             auto bc = pbc[n];
 
             Godunov_trans_xbc(
-                i, j, k, n, q, lo, hi, uad, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
+                i, j, k, n, q, lo, hi, uad, uad, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
 
             xlo(i, j, k, n) = lo;
             xhi(i, j, k, n) = hi;
@@ -366,7 +369,7 @@ if ((i==0) && (j==0) && (k==0))
 
             Real uad = u_ad(i, j, k);
             Godunov_trans_xbc(
-                i, j, k, n, q, l_xzlo, l_xzhi, uad, bc.lo(0), bc.hi(0), dlo.x,
+                i, j, k, n, q, l_xzlo, l_xzhi, uad, uad, bc.lo(0), bc.hi(0), dlo.x,
                 dhi.x);
 
             constexpr Real small_vel = 1.e-8;
@@ -450,7 +453,7 @@ if ((i==0) && (j==0) && (k==0))
 
             Real uad = u_ad(i, j, k);
             Godunov_trans_xbc(
-                i, j, k, n, q, l_xylo, l_xyhi, uad, bc.lo(0), bc.hi(0), dlo.x,
+                i, j, k, n, q, l_xylo, l_xyhi, uad, uad, bc.lo(0), bc.hi(0), dlo.x,
                 dhi.x);
 
             constexpr Real small_vel = 1.e-8;
