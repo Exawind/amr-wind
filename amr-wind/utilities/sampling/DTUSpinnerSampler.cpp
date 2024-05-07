@@ -174,7 +174,7 @@ void DTUSpinnerSampler::bcast_turbine(
     BL_PROFILE("amr-wind::Sampling::DTUSpinnerSampler::bcast_turbine");
 
     amrex::ParallelDescriptor::Bcast(
-        turbine_pack.begin(), 18, root_proc,
+        turbine_pack.begin(), turbine_pack.size(), root_proc,
         amrex::ParallelDescriptor::Communicator());
 
     for (int i = 0; i < 9; i++) {
