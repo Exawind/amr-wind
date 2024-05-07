@@ -347,6 +347,18 @@ jobs:
           echo "CCACHE_EXTRAFILES=${{github.workspace}}/.clang-tidy" >> $GITHUB_ENV
           echo "CCACHE_MAXSIZE=50M" >> $GITHUB_ENV
           echo "CTCACHE_DIR=~/.cache/ctcache" >> $GITHUB_ENV
+          echo "CLANG_TIDY_VERSION=17" >> $GITHUB_ENV
+      - name: Install clang-tidy
+        run: |
+          echo 'Acquire::Retries "3";' | sudo tee /etc/apt/apt.conf.d/80-retries
+          if [[ ! -f /etc/apt/trusted.gpg.d/apt.llvm.org.asc ]]; then
+              wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+          fi
+          source /etc/os-release # set UBUNTU_CODENAME
+          sudo add-apt-repository "deb http://apt.llvm.org/${UBUNTU_CODENAME}/ llvm-toolchain-${UBUNTU_CODENAME} main"
+          sudo add-apt-repository "deb http://apt.llvm.org/${UBUNTU_CODENAME}/ llvm-toolchain-${UBUNTU_CODENAME}-${CLANG_TIDY_VERSION} main"
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends clang-tidy-${CLANG_TIDY_VERSION} libomp-${CLANG_TIDY_VERSION}-dev
       - name: Install Ccache
         run: |
           wget https://github.com/ccache/ccache/releases/download/v4.8/ccache-4.8-linux-x86_64.tar.xz
@@ -376,6 +388,7 @@ jobs:
           -DAMR_WIND_ENABLE_ALL_WARNINGS:BOOL=ON \
           -DAMR_WIND_ENABLE_CLANG_TIDY:BOOL=ON \
           -DCMAKE_CXX_COMPILER_LAUNCHER:STRING=ccache \
+          -DCLANG_TIDY_EXEC_NAME:STRING=clang-tidy-${CLANG_TIDY_VERSION} \
           ${{github.workspace}}
       - name: Check
         working-directory: ${{runner.workspace}}/build-clang-tidy
@@ -409,7 +422,7 @@ jobs:
         with:
           submodules: true
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
           languages: cpp
           queries: +security-and-quality
@@ -432,7 +445,7 @@ jobs:
         run: |
           cmake --build ${{runner.workspace}}/build-ci-codeql --parallel ${{env.NPROCS}}
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v3
         with:
           category: "/language:cpp"
           upload: False
@@ -445,7 +458,7 @@ jobs:
           input: sarif-results/cpp.sarif
           output: sarif-results/cpp.sarif
       - name: Upload CodeQL sarif
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: sarif-results/cpp.sarif
   Lint-codespell:
@@ -501,7 +514,7 @@ jobs:
           PR_NUMBER: ${{ github.event.number }}
         run: |
           echo $PR_NUMBER > pr_number.txt
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: pr_number
           path: pr_number.txt

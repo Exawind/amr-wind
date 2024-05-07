@@ -58,10 +58,6 @@ if(AMR_WIND_ENABLE_CUDA)
     message(FATAL_ERROR "Your nvcc version is ${CMAKE_CUDA_COMPILER_VERSION} which is unsupported."
       "Please use CUDA toolkit version 10.0 or newer.")
   endif()
-  # Fix issues with GPU builds
-  if(AMR_WIND_ENABLE_OPENFAST)
-    enable_language(Fortran)
-  endif()
 endif()
 
 if(AMR_WIND_ENABLE_ROCM)
@@ -87,6 +83,10 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
   message(WARNING "Disabling FPE trapping for tests when using AppleClang.")
 endif()
 
+if(AMR_WIND_ENABLE_OPENFAST)
+  enable_language(Fortran)
+endif()
+
 ########################### AMReX #####################################
 init_amrex()
 init_amrex_hydro()
@@ -98,10 +98,6 @@ if (AMR_WIND_ENABLE_W2A)
 endif()
 
 ########################### AMR-Wind #####################################
-
-if(AMR_WIND_ENABLE_MPI)
-  find_package(MPI REQUIRED)
-endif()
 
 # General information about machine, compiler, and build type
 message(STATUS "AMR-Wind Information:")
@@ -171,10 +167,6 @@ if(AMR_WIND_ENABLE_OPENFAST)
   find_package(OpenFAST REQUIRED)
   include(CheckIncludeFileCXX)
   set(CMAKE_REQUIRED_INCLUDES "${OpenFAST_INCLUDE_DIRS}")
-  check_include_file_cxx("SCDataEx_Types.h" USE_SCDX)
-  if(USE_SCDX)
-    target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_FAST_USE_SCDX)
-  endif()
   target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_OPENFAST)
   target_include_directories(${amr_wind_lib_name} PUBLIC ${OpenFAST_INCLUDE_DIRS})
   target_link_libraries(${amr_wind_lib_name} PUBLIC ${OpenFAST_LIBRARIES})

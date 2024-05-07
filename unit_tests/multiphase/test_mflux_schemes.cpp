@@ -121,25 +121,18 @@ void get_output_minmod(
             amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                 amrex::Real im_tmp = 0.0;
                 amrex::Real ip_tmp = 0.0;
-                switch (dir) {
-                case 0: {
+                if (dir == 0) {
                     Godunov_minmod_fpu_x(
                         i, j, k, 0, dt, dx[0], im_tmp, ip_tmp, farr, vel_mac,
                         pbc[0], dlo.x, dhi.x);
-                    break;
-                }
-                case 1: {
+                } else if (dir == 1) {
                     Godunov_minmod_fpu_y(
                         i, j, k, 0, dt, dx[1], im_tmp, ip_tmp, farr, vel_mac,
                         pbc[0], dlo.y, dhi.y);
-                    break;
-                }
-                case 2: {
+                } else if (dir == 2) {
                     Godunov_minmod_fpu_z(
                         i, j, k, 0, dt, dx[2], im_tmp, ip_tmp, farr, vel_mac,
                         pbc[0], dlo.z, dhi.z);
-                    break;
-                }
                 }
                 if (i == ii && j == jj && k == kk) {
                     dout_ptr[0] = im_tmp;

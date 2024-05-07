@@ -83,7 +83,7 @@ public:
         const amrex::Vector<std::unique_ptr<SamplerBase>>& /*samplers*/);
 
     //! Perform field interpolation to sampling locations
-    void interpolate_fields(const amrex::Vector<Field*> fields);
+    void interpolate_fields(const amrex::Vector<Field*>& fields);
 
     //! Populate the buffer with data for all the particles
     void populate_buffer(std::vector<double>& buf);

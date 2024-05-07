@@ -1,7 +1,7 @@
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            SIMULATION STOP            #
 #.......................................#
-time.stop_time               =   5.0     # Max (simulated) time to evolve
+time.stop_time               =   22000.0     # Max (simulated) time to evolve
 time.max_step                =   10          # Max number of time steps
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -23,12 +23,12 @@ incflo.gravity          =   0.  0. -9.81  # Gravitational force (3D)
 incflo.density             = 1.0          # Reference density 
 
 incflo.use_godunov = 1
-incflo.diffusion_type = 2
+incflo.godunov_type = weno_z
+incflo.diffusion_type = 1 
 transport.viscosity = 1.0e-5
 transport.laminar_prandtl = 0.7
 transport.turbulent_prandtl = 0.3333
-turbulence.model = Smagorinsky
-Smagorinsky_coeffs.Cs = 0.135
+turbulence.model = AMD
 
 
 incflo.physics = ABL
@@ -38,24 +38,13 @@ ABL.reference_temperature = 300.0
 CoriolisForcing.latitude = 41.3
 ABLForcing.abl_forcing_height = 90
 
-ABLForcing.velocity_timetable = "time_table.txt"
-# Note: the use of forcing timetable does not depend on velocity timetable;
-# however, if a precursor uses velocity timetable, force timetable is
-# recommended for subsequent simulations
-ABLForcing.forcing_timetable_output_file = "abl_forces.txt"
+incflo.velocity = 6.128355544951824  5.142300877492314 0.0
 
 ABL.temperature_heights = 650.0 750.0 1000.0
 ABL.temperature_values = 300.0 308.0 308.75
 
 ABL.kappa = .41
 ABL.surface_roughness_z0 = 0.15
-
-ABL.bndry_file = "bndry_files"
-ABL.bndry_io_mode = 0
-ABL.bndry_planes = ylo xlo
-ABL.bndry_output_start_time = 2.0
-ABL.bndry_var_names = velocity temperature
-ABL.bndry_output_format = native
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #

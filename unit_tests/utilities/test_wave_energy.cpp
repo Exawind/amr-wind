@@ -1,4 +1,6 @@
 
+#include <utility>
+
 #include "aw_test_utils/MeshTest.H"
 
 #include "amr-wind/utilities/sampling/WaveEnergy.H"
@@ -61,7 +63,7 @@ class WaveEnergyImpl : public amr_wind::wave_energy::WaveEnergy
 public:
     // cppcheck-suppress passedByValue
     WaveEnergyImpl(amr_wind::CFDSim& sim, std::string label)
-        : amr_wind::wave_energy::WaveEnergy(sim, label)
+        : amr_wind::wave_energy::WaveEnergy(sim, std::move(label))
     {}
 
 protected:

@@ -17,13 +17,13 @@ inline std::string strip_spaces(const std::string& inp)
 std::pair<std::string, std::vector<std::string>>
 parse_derived_qty(const std::string& key)
 {
-    auto popen = key.find("(");
+    auto popen = key.find('(');
     // If this is not a function type field then return it
     if (popen == std::string::npos) {
         return {key, {}};
     }
 
-    auto pclose = key.find(")");
+    auto pclose = key.find(')');
     if (pclose == std::string::npos) {
         amrex::Abort(
             "Error encountered when parsing derived field name: " + key);
@@ -40,7 +40,7 @@ parse_derived_qty(const std::string& key)
     std::vector<std::string> args;
     size_t start = 0;
     size_t pos;
-    while ((pos = fargs.find(",", start)) != std::string::npos) {
+    while ((pos = fargs.find(',', start)) != std::string::npos) {
         args.push_back(fargs.substr(start, pos - start));
         start = pos + 1;
     }

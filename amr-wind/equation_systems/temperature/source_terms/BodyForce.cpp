@@ -23,8 +23,12 @@ BodyForce::BodyForce(const CFDSim& sim) : m_time(sim.time()), m_mesh(sim.mesh())
     pp.query("type", m_type);
     m_type = amrex::toLower(m_type);
 
-    if (m_type == "height-varying") {
-        pp.get("bodyforce-file", m_bforce_file);
+    // Updated to underscores (more common) but still backwards-compatible
+    if (m_type == "height_varying" || m_type == "height-varying") {
+        pp.query("bodyforce-file", m_bforce_file);
+        if (m_bforce_file.empty()) {
+            pp.get("bodyforce_file", m_bforce_file);
+        }
         read_bforce_profile(m_bforce_file);
     }
 }
@@ -74,7 +78,7 @@ void BodyForce::operator()(
     const amrex::Real* force_ht = m_ht.data();
     const amrex::Real* force_theta = m_prof_theta.data();
 
-    if (m_type == "height-varying") {
+    if (m_type == "height_varying" || m_type == "height-varying") {
 
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {

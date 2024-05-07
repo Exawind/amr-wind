@@ -21,9 +21,50 @@ struct ReadInputsOp<StokesWaves>
         auto& info = data.info();
         relaxation_zones::read_inputs(wdata, info, pp);
 
-        pp.get("wave_length", wdata.wave_length);
+        // Get gravity from MultiPhase physics, assume negative z
+        wdata.g = -data.sim().physics_manager().get<MultiPhase>().gravity()[2];
+        // Get wave attributes
         pp.get("wave_height", wdata.wave_height);
         pp.get("order", wdata.order);
+        if (pp.contains("wave_length")) {
+            pp.get("wave_length", wdata.wave_length);
+        } else {
+            // Wave length will be calculated using wave period
+            amrex::Real wave_period = 1.0;
+            pp.get("wave_period", wave_period);
+            // User can specify a different order for wavelength calculation,
+            // e.g., an order of 1 will use the linear dispersion relation.
+            // Default is to use the same order as the waves themselves.
+            int order_lambda = wdata.order;
+            pp.query("stokes_wavelength_order", order_lambda);
+            // Get user-specified convergence criteria, if supplied
+            amrex::Real tol_lambda = 1e-10;
+            int itmax_lambda = 40;
+            pp.query("stokes_wavelength_tolerance", tol_lambda);
+            pp.query("stokes_wavelength_iter_max", itmax_lambda);
+            wdata.wave_length = relaxation_zones::stokes_wave_length(
+                wave_period, wdata.water_depth, wdata.wave_height, order_lambda,
+                wdata.g, tol_lambda, itmax_lambda);
+            // Abort if wave length is negative
+            if (wdata.wave_length < 0.0) {
+                if (wdata.wave_length == -1) {
+                    amrex::Print() << "Stokes wave length too close to 0.\n";
+                }
+                if (wdata.wave_length == -2) {
+                    amrex::Print() << "Stokes wave length is not a number.\n";
+                }
+                if (wdata.wave_length == -3) {
+                    amrex::Print() << "Stokes wave length calculation used "
+                                      "maximum iterations before converging.\n";
+                }
+                amrex::Abort(
+                    "Failed to properly calculate a wave length in "
+                    "stokes_waves_ops.H");
+            } else {
+                amrex::Print() << "Stokes wave length calculated to be "
+                               << wdata.wave_length << " m.\n";
+            }
+        }
     }
 };
 
@@ -90,6 +131,8 @@ struct UpdateRelaxZonesOp<StokesWaves>
                 const amrex::Real waveheight = wdata.wave_height;
                 const amrex::Real wavelength = wdata.wave_length;
                 const amrex::Real waterdepth = wdata.water_depth;
+                const amrex::Real zero_sea_level = wdata.zsl;
+                const amrex::Real g = wdata.g;
                 const int order = wdata.order;
 
                 const auto& gbx = mfi.growntilebox();
@@ -101,8 +144,8 @@ struct UpdateRelaxZonesOp<StokesWaves>
                         amrex::Real eta{0.0}, u_w{0.0}, v_w{0.0}, w_w{0.0};
 
                         relaxation_zones::stokes_waves(
-                            order, wavelength, waterdepth, waveheight, x, z,
-                            time, eta, u_w, v_w, w_w);
+                            order, wavelength, waterdepth, waveheight,
+                            zero_sea_level, g, x, z, time, eta, u_w, v_w, w_w);
 
                         phi(i, j, k) = eta - z;
                         if (phi(i, j, k) + 0.5 * dx[2] >= 0) {

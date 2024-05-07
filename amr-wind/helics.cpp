@@ -14,7 +14,9 @@ using namespace helicscpp;
 #endif
 
 void tokenize(
-    std::string s, const std::string& del, std::list<double>& return_list)
+    const std::string& s,
+    const std::string& del,
+    std::list<double>& return_list)
 {
 
     int start = 0;

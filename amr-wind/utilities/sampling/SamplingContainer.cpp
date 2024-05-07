@@ -153,7 +153,7 @@ void SamplingContainer::initialize_particles(
     AMREX_ALWAYS_ASSERT(pidx == num_particles);
 }
 
-void SamplingContainer::interpolate_fields(const amrex::Vector<Field*> fields)
+void SamplingContainer::interpolate_fields(const amrex::Vector<Field*>& fields)
 {
     BL_PROFILE("amr-wind::SamplingContainer::interpolate");
 

@@ -60,8 +60,7 @@ struct UseDefaultOp
 template <typename GeomTrait>
 struct UpdatePosOp<
     GeomTrait,
-    typename std::enable_if<
-        std::is_base_of<BluffBodyType, GeomTrait>::value>::type>
+    typename std::enable_if_t<std::is_base_of_v<BluffBodyType, GeomTrait>>>
 {
     void operator()(typename GeomTrait::DataType& /*unused*/) {}
 };
@@ -69,8 +68,7 @@ struct UpdatePosOp<
 template <typename GeomTrait>
 struct UpdateVelOp<
     GeomTrait,
-    typename std::enable_if<
-        std::is_base_of<BluffBodyType, GeomTrait>::value>::type>
+    typename std::enable_if_t<std::is_base_of_v<BluffBodyType, GeomTrait>>>
 {
     void operator()(typename GeomTrait::DataType& data)
     {
@@ -90,8 +88,7 @@ struct UpdateVelOp<
 template <typename GeomTrait>
 struct ComputeForceOp<
     GeomTrait,
-    typename std::enable_if<
-        std::is_base_of<BluffBodyType, GeomTrait>::value>::type>
+    typename std::enable_if_t<std::is_base_of_v<BluffBodyType, GeomTrait>>>
 {
     void operator()(typename GeomTrait::DataType& /*unused*/) {}
 };
@@ -99,8 +96,7 @@ struct ComputeForceOp<
 template <typename GeomTrait>
 struct ProcessOutputsOp<
     GeomTrait,
-    typename std::enable_if<
-        std::is_base_of<BluffBodyType, GeomTrait>::value>::type>
+    typename std::enable_if_t<std::is_base_of_v<BluffBodyType, GeomTrait>>>
 {
 private:
     typename GeomTrait::DataType& m_data;
