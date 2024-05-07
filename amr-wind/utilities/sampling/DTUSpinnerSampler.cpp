@@ -169,7 +169,7 @@ void DTUSpinnerSampler::sampling_locations(SampleLocType& locs) const
 
 #ifdef AMR_WIND_USE_OPENFAST
 void DTUSpinnerSampler::bcast_turbine(
-    const amrex::Array<double, 18>& turbine_pack, int root_proc)
+    amrex::Array<double, 18>& turbine_pack, int root_proc)
 {
     BL_PROFILE("amr-wind::Sampling::DTUSpinnerSampler::bcast_turbine");
 
@@ -224,7 +224,7 @@ void DTUSpinnerSampler::get_turbine_data(std::string turbine_label)
         const auto& info = actline->info();
 
         // Create buffer object
-        double turbine_pack[18] = {};
+        amrex::Array<double, 18> turbine_pack = {};
 
         // Pack, broadcast, then unpack
         for (int i = 0; i < 9; i++) {

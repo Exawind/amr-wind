@@ -52,8 +52,8 @@ public:
 #ifdef AMR_WIND_USE_OPENFAST
 
     void bcast_turbine(
-        const amrex::Array<double, 18>& /*turbine_pack*/, int /*root_proc*/);
-    void get_turbine_data(const std::string& turbine_label);
+        amrex::Array<double, 18>& /*turbine_pack*/, int /*root_proc*/);
+    void get_turbine_data(std::string turbine_label);
 
 #endif
 
