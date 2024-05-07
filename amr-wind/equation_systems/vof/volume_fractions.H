@@ -74,7 +74,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void mixed_youngs_central_normal(
     amrex::Real& mz) noexcept
 {
     amrex::Array2D<amrex::Real, 0, AMREX_SPACEDIM + 1, 0, AMREX_SPACEDIM> m;
-    // amrex::Real m[AMREX_SPACEDIM + 1][AMREX_SPACEDIM];
     amrex::Real m1, m2;
     // write the plane as: sgn(mx) X =  my Y +  mz Z + alpha
     //                           m00 X = m01 Y + m02 Z + alpha
