@@ -306,8 +306,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void interp_perturb_vel(
     const int nynz = t_grid.box_dims[1] * t_grid.box_dims[2];
     // Indices of the 2-D cell that contains the sampling point
     amrex::Array<int, 4> qidx = {
-        {wt.jl * nz + wt.kl, wt.jr * nz + wt.kl, wt.jr * nz + wt.kr,
-         wt.jl * nz + wt.kr}};
+        wt.jl * nz + wt.kl, wt.jr * nz + wt.kl, wt.jr * nz + wt.kr,
+        wt.jl * nz + wt.kr};
 
     vs::Vector vel_l, vel_r;
 
