@@ -5,14 +5,14 @@
 
 namespace amr_wind::utils {
 
-/** Compute the norm of a 3-D vector
+/** Compute the dot product of two vectors
  */
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T vec_norm(const T* x)
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T dot_prod(const T* x, const T* y)
 {
     static_assert(
         AMREX_SPACEDIM == 3, "Vector ops only defined for AMREX_SPACEDIM == 3");
-    return (x[0] * x[0] + x[1] * x[1] + x[2] * x[2]);
+    return (x[0] * y[0] + x[1] * y[1] + x[2] * y[2]);
 }
 
 /** Return the magnitude of a 3-D vector
@@ -20,7 +20,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T vec_norm(const T* x)
 template <typename T>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T vec_mag(const T* x)
 {
-    return std::sqrt(vec_norm(x));
+    return std::sqrt(dot_prod(x, x));
 }
 
 /** Convert a given vector to a unit vector
@@ -34,16 +34,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void vec_normalize(T* x)
     x[0] *= inv_mag;
     x[1] *= inv_mag;
     x[2] *= inv_mag;
-}
-
-/** Compute the dot product of two vectors
- */
-template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T dot_prod(const T* x, const T* y)
-{
-    static_assert(
-        AMREX_SPACEDIM == 3, "Vector ops only defined for AMREX_SPACEDIM == 3");
-    return (x[0] * y[0] + x[1] * y[1] + x[2] * y[2]);
 }
 
 template <typename T>

@@ -29,20 +29,6 @@ private:
 };
 } // namespace
 
-TEST(TensorOps, vec_norm)
-{
-    const amrex::Real expected_value = 14;
-
-    const TestVector tv;
-    const amrex::Real* pvec = tv.data();
-    amrex::Gpu::DeviceScalar<amrex::Real> ds(0.0);
-    auto* ddata = ds.dataPtr();
-    amrex::ParallelFor(1, [=] AMREX_GPU_DEVICE(int /*unused*/) {
-        ddata[0] = amr_wind::utils::vec_norm(pvec);
-    });
-    EXPECT_NEAR(ds.dataValue(), expected_value, tol);
-}
-
 TEST(TensorOps, vec_mag)
 {
     const amrex::Real expected_value = std::sqrt(14);
