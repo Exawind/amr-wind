@@ -37,6 +37,14 @@ struct WingBaseData
     //! Pitch angle for the wing
     amrex::Real pitch{0.0};
 
+    //! Only apply the fx component of the actuator force
+    //! This will set the actuator fz force to zero 
+    std::string fx_force_only{"none"};
+
+    //! Use |U|=1 for velocity magnitude at actuator points
+    //! ->ignores induced velocities for force calculation (but not the aoa!)
+    std::string uinf_unity{"none"};
+
     //! File name for pitch actuation table
     std::string pitch_timetable_file;
 

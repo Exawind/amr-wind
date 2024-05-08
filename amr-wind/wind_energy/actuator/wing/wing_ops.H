@@ -8,6 +8,7 @@
 #include "amr-wind/wind_energy/actuator/ActParser.H"
 #include "amr-wind/wind_energy/actuator/FLLCOp.H"
 #include "amr-wind/utilities/linear_interpolation.H"
+#include "amr-wind/core/vs/vector_space.H"
 
 namespace amr_wind::actuator {
 namespace wing {
@@ -132,6 +133,7 @@ struct ComputeForceOp<
         const int npts = wdata.num_pts;
         const auto& dx = wdata.dx;
         const auto& chord = wdata.chord;
+        const auto& eps = wdata.eps_inp;
         const auto& aflookup = airfoil_lookup<ActTrait>(data);
         const auto& time = data.sim().time();
 
@@ -149,6 +151,8 @@ struct ComputeForceOp<
 
             // Build the local reference frame
             vs::Vector wspan = wdata.end - wdata.start;
+            // Compute the magnitude (spanwise length)
+            const amrex::Real wspanMag = vs::mag(wspan);
 
             // Use the global coord to orient the blade
             // The default is for inflow in the x direction
@@ -184,7 +188,26 @@ struct ComputeForceOp<
             aflookup(aoa, cl, cd);
 
             // Assume unit chord
-            const auto qval = 0.5 * vmag * vmag * chord[ip] * dx[ip];
+            // If the spanwise eps is zero use the two-dimensional Gaussian
+            // The order of epsilon is (chord, thickness, span)
+            // For the 2D Gaussian the force is normalized on addition with the wing span
+            // in order to conserve the total applied force
+            amrex::Real qval;
+            
+            // Set velocity magnitude to 1 if desired
+            if (wdata.uinf_unity == "uinfUnity") {   
+                if (eps.z() < 1e-12) {
+                    qval = 0.5 * chord[ip] * dx[ip] / wspanMag;
+                } else {
+                    qval = 0.5 * chord[ip] * dx[ip];
+                }
+            } else {
+                if (eps.z() < 1e-12) {
+                    qval = 0.5 * vmag * vmag * chord[ip] * dx[ip] / wspanMag;
+                } else {
+                    qval = 0.5 * vmag * vmag * chord[ip] * dx[ip];
+                }
+            }
             const auto lift = qval * cl;
             const auto drag = qval * cd;
 
@@ -197,6 +220,11 @@ struct ComputeForceOp<
 
             // Compute force on fluid from this section of wing
             grid.force[ip] = -(lift_dir * lift + drag * drag_dir);
+
+            // Set vertical component to zero if desired
+            if (wdata.fx_force_only == "onlyFx") {
+                grid.force[ip].z() = 0.0;
+            }
 
             // Assign values for output
             wdata.vel_rel[ip] = windvector;

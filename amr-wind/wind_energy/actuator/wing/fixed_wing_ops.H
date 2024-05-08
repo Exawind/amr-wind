@@ -46,6 +46,12 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
         bool use_fllc = false;
         pp.query("fllc", use_fllc);
 
+        // If only a force in fx direction should be applied
+        pp.query("fx_force_only", wdata.fx_force_only);
+
+        // If force magnitude should be computed with |U|=1
+        pp.query("uinf_unity", wdata.uinf_unity);
+
         // Initialize tables for pitch actuation (in degrees)
         pp.query("pitch_timetable", wdata.pitch_timetable_file);
         if (!wdata.pitch_timetable_file.empty()) {
