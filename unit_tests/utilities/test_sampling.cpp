@@ -188,6 +188,8 @@ TEST_F(SamplingTest, sampling)
         pp.addarr(
             "fields",
             amrex::Vector<std::string>{"density", "pressure", "velocity"});
+        pp.addarr(
+            "derived_fields", amrex::Vector<std::string>{"mag_vorticity"});
     }
     {
         amrex::ParmParse pp("sampling.line1");
@@ -223,6 +225,8 @@ TEST_F(SamplingTest, sampling_timing)
         pp.addarr(
             "fields",
             amrex::Vector<std::string>{"density", "pressure", "velocity"});
+        pp.addarr(
+            "derived_fields", amrex::Vector<std::string>{"mag_vorticity"});
     }
     {
         amrex::ParmParse pp("sampling.line1");
