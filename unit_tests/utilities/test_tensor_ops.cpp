@@ -70,7 +70,7 @@ TEST(TensorOps, vec_normalize)
     const auto np = tv.size();
     amrex::ParallelFor(1, [=] AMREX_GPU_DEVICE(int /*unused*/) {
         amr_wind::utils::vec_normalize(pvec);
-        for (int i = 0; i < np; i++) {
+        for (int i = 0; i < static_cast<int>(np); i++) {
             ddata[i] = pvec[i];
         }
     });
