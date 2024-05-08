@@ -58,6 +58,9 @@ struct FastTurbine
     //! Total number of elements along the blade
     int num_blade_elem;
 
+    //! Node cluster type for the chord
+    int chord_cluster_type{0};
+
     //! Start time for this turbine
     double start_time{0.0};
 
@@ -87,13 +90,8 @@ struct FastTurbine
     exw_fast::OpFM_InputType to_cfd;
     exw_fast::OpFM_OutputType from_cfd;
 
-#ifdef AMR_WIND_FAST_USE_SCDX
     exw_fast::SC_DX_InputType to_sc;
     exw_fast::SC_DX_OutputType from_sc;
-#else
-    exw_fast::SC_InputType to_sc;
-    exw_fast::SC_OutputType from_sc;
-#endif
 };
 
 } // namespace exw_fast

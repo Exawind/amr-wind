@@ -1,7 +1,7 @@
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            SIMULATION STOP            #
 #.......................................#
-time.stop_time               =   22000.0     # Max (simulated) time to evolve
+time.stop_time               =   5.0     # Max (simulated) time to evolve
 time.max_step                =   10          # Max number of time steps
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -20,12 +20,9 @@ time.checkpoint_interval      =  5       # Steps between checkpoint files
 #               PHYSICS                 #
 #.......................................#
 incflo.gravity          =   0.  0. -9.81  # Gravitational force (3D)
-incflo.density             = 1.0          # Reference density
-
-io.derived_outputs = mag_vorticity "components(velocity,0,1)" "grad(temperature)"
+incflo.density             = 1.0          # Reference density 
 
 incflo.use_godunov = 1
-incflo.diffusion_type = 2
 transport.viscosity = 1.0e-5
 transport.laminar_prandtl = 0.7
 transport.turbulent_prandtl = 0.3333
@@ -34,13 +31,12 @@ Smagorinsky_coeffs.Cs = 0.135
 
 
 incflo.physics = ABL
-ICNS.source_terms = BoussinesqBuoyancy CoriolisForcing ABLForcing
+ICNS.source_terms = BoussinesqBuoyancy CoriolisForcing GeostrophicForcing
 BoussinesqBuoyancy.reference_temperature = 300.0
 ABL.reference_temperature = 300.0
 CoriolisForcing.latitude = 41.3
-ABLForcing.abl_forcing_height = 90
-
-incflo.velocity = 6.128355544951824  5.142300877492314 0.0
+GeostrophicForcing.geostrophic_wind_timetable = "time_table.txt"
+incflo.velocity = 8.0 0.0 0.0
 
 ABL.temperature_heights = 650.0 750.0 1000.0
 ABL.temperature_values = 300.0 308.0 308.75
@@ -48,11 +44,18 @@ ABL.temperature_values = 300.0 308.0 308.75
 ABL.kappa = .41
 ABL.surface_roughness_z0 = 0.15
 
+ABL.bndry_file = "bndry_files"
+ABL.bndry_io_mode = 0
+ABL.bndry_planes = ylo xlo
+ABL.bndry_output_start_time = 2.0
+ABL.bndry_var_names = velocity temperature
+ABL.bndry_output_format = native
+
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
 amr.n_cell              = 48 48 48    # Grid cells at coarsest AMRlevel
-amr.max_level           = 0           # Max AMR level in hierarchy
+amr.max_level           = 0           # Max AMR level in hierarchy 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
@@ -72,25 +75,3 @@ zhi.temperature = 0.003 # tracer is used to specify potential temperature gradie
 #              VERBOSITY                #
 #.......................................#
 incflo.verbose          =   0          # incflo_level
-
-#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
-#               SAMPLING                #
-#.......................................#
-incflo.post_processing       = sampling sampling2
-sampling.output_frequency    = 1
-sampling.fields              = velocity
-sampling.derived_fields      = mag_vorticity "components(velocity,0,1)" "grad(temperature)" "grad(density)"
-sampling.labels              = volume1
-sampling.volume1.type        = VolumeSampler
-sampling.volume1.lo          = 200.0 200.0 200.0
-sampling.volume1.hi          = 500.0 500.0 500.0
-sampling.volume1.num_points  = 30 10 10
-
-sampling2.output_frequency    = 1
-sampling2.fields              = velocity
-sampling2.derived_fields      = q_criterion_nondim
-sampling2.labels              = volume1
-sampling2.volume1.type        = VolumeSampler
-sampling2.volume1.lo          = 20.0 20.0 20.0
-sampling2.volume1.hi          = 50.0 50.0 50.0
-sampling2.volume1.num_points  = 5 5 5

@@ -26,7 +26,9 @@ ABLForcing::ABLForcing(const CFDSim& sim)
     if (!m_vel_timetable.empty()) {
         std::ifstream ifh(m_vel_timetable, std::ios::in);
         if (!ifh.good()) {
-            amrex::Abort("Cannot find input file: " + m_vel_timetable);
+            amrex::Abort(
+                "Cannot find ABLForcing velocity_timetable file: " +
+                m_vel_timetable);
         }
         amrex::Real data_time;
         amrex::Real data_speed;
@@ -41,6 +43,18 @@ ABLForcing::ABLForcing(const CFDSim& sim)
         }
     } else {
         pp_incflo.getarr("velocity", m_target_vel);
+    }
+
+    m_write_force_timetable = pp_abl.contains("forcing_timetable_output_file");
+    if (m_write_force_timetable) {
+        pp_abl.get("forcing_timetable_output_file", m_force_timetable);
+        pp_abl.query("forcing_timetable_frequency", m_force_outfreq);
+        pp_abl.query("forcing_timetable_start_time", m_force_outstart);
+        if (amrex::ParallelDescriptor::IOProcessor()) {
+            std::ofstream outfile;
+            outfile.open(m_force_timetable, std::ios::out);
+            outfile << "time\tfx\tfy\tfz\n";
+        }
     }
 
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {

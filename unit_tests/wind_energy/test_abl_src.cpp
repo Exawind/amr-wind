@@ -151,7 +151,8 @@ TEST_F(ABLMeshTest, body_force)
     // Mimic source term at later timesteps
     {
         auto& time = sim().time();
-        time.current_time() = 0.1;
+        time.new_timestep();
+        time.current_time() = 0.05;
         src_term.setVal(0.0);
 
         run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
@@ -162,9 +163,12 @@ TEST_F(ABLMeshTest, body_force)
         });
 
         const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{
-            {static_cast<amrex::Real>(1.0 * std::cos(0.1)),
-             static_cast<amrex::Real>(2.0 * std::cos(0.1)),
-             static_cast<amrex::Real>(3.0 * std::cos(0.1))}};
+            {static_cast<amrex::Real>(
+                 1.0 * std::cos(0.5 * (0.05 + time.new_time()))),
+             static_cast<amrex::Real>(
+                 2.0 * std::cos(0.5 * (0.05 + time.new_time()))),
+             static_cast<amrex::Real>(
+                 3.0 * std::cos(0.5 * (0.05 + time.new_time())))}};
         const auto valx2 = utils::field_max(src_term, 0);
         const auto valy2 = utils::field_max(src_term, 1);
         const auto valz2 = utils::field_max(src_term, 2);
@@ -315,7 +319,6 @@ TEST_F(ABLMeshTest, hurricane_forcing)
 
     auto& pde_mgr = sim().pde_manager();
     pde_mgr.register_icns();
-    // pde_mgr.register_transport_pde("Temperature");
     sim().init_physics();
 
     auto& src_term_icns = pde_mgr.icns().fields().src_term;
