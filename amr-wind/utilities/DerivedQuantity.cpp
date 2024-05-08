@@ -81,15 +81,16 @@ void DerivedQtyMgr::create(const amrex::Vector<std::string>& keys)
     }
 }
 
-void DerivedQtyMgr::operator()(ScratchField& fld, const int scomp)
+void DerivedQtyMgr::operator()(ScratchField& fld, const int scomp) const
 {
     AMREX_ALWAYS_ASSERT((scomp + num_comp()) <= fld.num_comp());
 
     int icomp = scomp;
-    for (auto& qty : m_derived_vec) {
+    for (const auto& qty : m_derived_vec) {
         (*qty)(fld, icomp);
         icomp += qty->num_comp();
     }
+    fld.fillpatch(0.0);
 }
 
 int DerivedQtyMgr::num_comp() const noexcept
