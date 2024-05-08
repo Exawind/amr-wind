@@ -29,7 +29,7 @@ private:
 };
 } // namespace
 
-TEST(TensorOps, vec_mag)
+void impl_vec_mag()
 {
     const amrex::Real expected_value = std::sqrt(14);
 
@@ -43,7 +43,7 @@ TEST(TensorOps, vec_mag)
     EXPECT_NEAR(ds.dataValue(), expected_value, tol);
 }
 
-TEST(TensorOps, vec_normalize)
+void impl_vec_normalize()
 {
     const amrex::Real mag = std::sqrt(14);
     const amrex::Vector<amrex::Real> expected_values = {
@@ -68,7 +68,8 @@ TEST(TensorOps, vec_normalize)
         EXPECT_NEAR(hs[i], expected_values[i], tol);
     }
 }
-TEST(TensorOps, dot_prod)
+
+void impl_dot_prod()
 {
     const amrex::Real expected_value = 14;
 
@@ -82,7 +83,7 @@ TEST(TensorOps, dot_prod)
     EXPECT_NEAR(ds.dataValue(), expected_value, tol);
 }
 
-TEST(TensorOps, cross_prod)
+void impl_cross_prod()
 {
     const amrex::Vector<amrex::Real> expected_values = {0.0, 0.0, 0.0};
 
@@ -102,7 +103,7 @@ TEST(TensorOps, cross_prod)
     }
 }
 
-TEST(TensorOps, transform_vec)
+void impl_transform_vec()
 {
     const amrex::Vector<amrex::Real> expected_values = {14.0, -20.0, 32.0};
 
@@ -124,8 +125,7 @@ TEST(TensorOps, transform_vec)
         EXPECT_NEAR(hs[i], expected_values[i], tol);
     }
 }
-
-TEST(TensorOps, inv_transform_vec)
+void impl_inv_transform_vec()
 {
     const amrex::Vector<amrex::Real> expected_values = {9.0, 11.0, 13.0};
 
@@ -147,5 +147,16 @@ TEST(TensorOps, inv_transform_vec)
         EXPECT_NEAR(hs[i], expected_values[i], tol);
     }
 }
+TEST(TensorOps, vec_mag) { impl_vec_mag(); }
+
+TEST(TensorOps, vec_normalize) { impl_vec_normalize(); }
+
+TEST(TensorOps, dot_prod) { impl_dot_prod(); }
+
+TEST(TensorOps, cross_prod) { impl_cross_prod(); }
+
+TEST(TensorOps, transform_vec) { impl_transform_vec(); }
+
+TEST(TensorOps, inv_transform_vec) { impl_inv_transform_vec(); }
 
 } // namespace amr_wind_tests
