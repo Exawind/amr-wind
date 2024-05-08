@@ -19,6 +19,7 @@ struct FLLCData
     amrex::Real epsilon;
     amrex::Real relaxation_factor{0.1};
     amrex::Real fllc_start_time{0.0};
+    RealList r;
     RealList dr;
     RealList optimal_epsilon;
 
@@ -35,11 +36,14 @@ struct FLLCData
     RealList span_distance_force;
 
     // non-uniform variables
-    bool nonu{true};    // non-uniform flag
-    amrex::Real eps_dr; // the ratio of epsilon to actuator width
-    RealList r_n;       // non-uniform radius
-    RealList dr_n;       // non-uniform radius
-    VecList lift_n;     // non-uniform lift
+    bool nonuniform{true};    // non-uniform flag
+    amrex::Real eps_dr{1.}; // the ratio of epsilon to actuator width
+    RealList nonuniform_r;       // non-uniform radius
+    RealList nonuniform_dr;       // non-uniform spacing
+    RealList vel_rel;       // uniform relative velocity
+    RealList vel_rel_n;       // non-uniform relative velocity
+    RealList optimal_epsilon_n;       // non-uniform radius
+    VecList nonuniform_lift;     // non-uniform lift
 };
 
 /**

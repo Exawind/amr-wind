@@ -160,13 +160,14 @@ struct FLLCOp
         namespace interp = ::amr_wind::interp;
 
         const int npts = static_cast<int>(fllc.correction_velocity.size());
+        const int npts_n = static_cast<int>(fllc.nonuniform_r.size());
         auto& du = fllc.correction_velocity;
 
-auto& r_n = fllc.r_n;  // non-uniform points
+auto& nonuniform_r = fllc.nonuniform_r;  // non-uniform points
         auto& u_les = fllc.les_velocity;
         auto& u_opt = fllc.optimal_velocity;
         auto& G = fllc.lift;
-        auto& G_n = fllc.lift_n; // non-uniform G
+        auto& nonuniform_G = fllc.nonuniform_lift; // non-uniform G
         VecSlice u_force_pnt_slice =
             ::amr_wind::utils::slice(fllc.force_point_velocity, 0);
         vs::Vector* vel_ptr = data.vel.data();
@@ -193,16 +194,21 @@ auto& r_n = fllc.r_n;  // non-uniform points
             const auto vmag =
                 std::max(vs::mag(vel), vs::DTraits<amrex::Real>::eps());
             const auto vmag2 = vmag * vmag;
-
+fllc.vel_rel[ip] = vmag;
             const auto fv = force & vel;
 
             G[ip] = (force - vel * fv / vmag2) / dr;
         }
 
+amrex::OutStream() << "Error NOT Here 1"  << std::endl;
+amrex::OutStream() << fllc.r.size() << " " << G.size() << " " << nonuniform_r.size() << " " << nonuniform_G.size()  << std::endl;
 // Get the non-uniform distribution of force
-interp::linear(fllc.span_distance_vel, G, r_n, G_n);
-//interp::linear(fllc.span_distance_vel, optimal_epsilon, r_n, optimal_epsilon_n);
-//interp::linear(fllc.span_distance_vel, data.vel_rel, r_n, data.vel_rel_n);
+interp::linear(fllc.r, G, nonuniform_r, nonuniform_G);
+amrex::OutStream() << "Error NOT Here 2"  << std::endl;
+interp::linear(fllc.r, fllc.optimal_epsilon, nonuniform_r, fllc.optimal_epsilon_n);
+amrex::OutStream() << "Error NOT Here 3"  << std::endl;
+interp::linear(fllc.r, fllc.vel_rel, nonuniform_r, fllc.vel_rel_n);
+amrex::OutStream() << "Error NOT Here 4"  << std::endl;
 
         /**
          * Step 2
@@ -212,19 +218,32 @@ interp::linear(fllc.span_distance_vel, G, r_n, G_n);
 
             const auto coefficient = 1.0 / (2.0 * amr_wind::utils::pi());
 
-            for (int jp = 0; jp < npts; ++jp) {
+            //for (int jp = 0; jp < npts; ++jp) {
+            for (int jp = 0; jp < npts_n; ++jp) {
 
                 const auto eps_les = fllc.epsilon;
-                const auto eps_opt = fllc.optimal_epsilon[jp];
+                //const auto eps_opt = fllc.optimal_epsilon[jp];
+                const auto eps_opt = fllc.optimal_epsilon_n[jp];
                 const auto eps_les2 = eps_les * eps_les;
                 const auto eps_opt2 = eps_opt * eps_opt;
-                const auto& vel = data.vel_rel[jp];
+                //const auto& vel = data.vel_rel[jp];
+                const auto& vel = fllc.vel_rel_n[jp];
                 const auto vmag =
-                    std::max(vs::mag(vel), vs::DTraits<amrex::Real>::eps());
+//                    std::max(vs::mag(vel), vs::DTraits<amrex::Real>::eps());
+                    std::abs(vel);
                 auto k_les = 0.;
                 auto k_opt = 0.;
 
-                if (ip == jp) {
+//amrex::OutStream() << "eps_les " << eps_les << std::endl;
+//amrex::OutStream() << "eps_opt " << eps_opt << std::endl;
+//amrex::OutStream() << "vel " << vel  << std::endl;
+//amrex::OutStream() << "vmag " << vmag  << std::endl;
+
+                    const auto r_dis =
+                        std::abs(fllc.r[ip] - fllc.nonuniform_r[jp]);
+
+                if (r_dis==0.) {
+                //if (ip == jp) {
 
                     k_les = .5 / (eps_les2);
                     k_opt = .5 / (eps_opt2);
@@ -233,8 +252,9 @@ interp::linear(fllc.span_distance_vel, G, r_n, G_n);
 
                 else {
 
-                    const auto r_dis =
-                        vs::mag(data.vel_pos[ip] - data.vel_pos[jp]);
+                   // const auto r_dis =
+                   //     //vs::mag(data.vel_pos[ip] - data.vel_pos[jp]);
+                   //     std::abs(fllc.r[ip] - fllc.nonuniform_r[jp]);
                     auto exp_les = std::exp(-r_dis * r_dis / eps_les2);
                     auto exp_opt = std::exp(-r_dis * r_dis / eps_opt2);
 
@@ -242,12 +262,22 @@ interp::linear(fllc.span_distance_vel, G, r_n, G_n);
                             1. / (2. * r_dis * r_dis) * (exp_les - 1.);
                     k_opt = exp_opt / eps_opt2 +
                             1. / (2. * r_dis * r_dis) * (exp_opt - 1.);
+//amrex::OutStream() << "r_dis " << r_dis << std::endl;
                 }
 
+
+//amrex::OutStream() << "k_les " << k_les << std::endl;
+//amrex::OutStream() << "k_opt " << k_opt << std::endl;
+
                 u_les[ip] = u_les[ip] +
-                            coefficient * G[jp] / vmag * k_les * fllc.dr[jp];
+                            //coefficient * G[jp] / vmag * k_les * fllc.dr[jp];
+                            coefficient * nonuniform_G[jp] / vmag * k_les * fllc.nonuniform_dr[jp];
                 u_opt[ip] = u_opt[ip] +
-                            coefficient * G[jp] / vmag * k_opt * fllc.dr[jp];
+                            //coefficient * G[jp] / vmag * k_opt * fllc.dr[jp];
+                            coefficient * nonuniform_G[jp] / vmag * k_opt * fllc.nonuniform_dr[jp];
+
+//amrex::OutStream() << "u_les[ip] " << u_les[ip] << std::endl;
+//amrex::OutStream() << "u_opt[ip] " << u_opt[ip] << std::endl;
             }
 
             // Relaxation to compute the induced velocity
@@ -255,6 +285,7 @@ interp::linear(fllc.span_distance_vel, G, r_n, G_n);
             du[ip] = (1. - f) * du[ip] + f * (u_opt[ip] - u_les[ip]);
         }
 
+amrex::OutStream() << "Error NOT Here 5"  << std::endl;
         /**
          * Step 3
          * Compute the induced velocity difference
