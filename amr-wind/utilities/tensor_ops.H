@@ -28,6 +28,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T vec_mag(const T* x)
 template <typename T>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void vec_normalize(T* x)
 {
+    static_assert(
+        AMREX_SPACEDIM == 3, "Vector ops only defined for AMREX_SPACEDIM == 3");
     const T inv_mag = 1.0 / vec_mag(x);
     x[0] *= inv_mag;
     x[1] *= inv_mag;
@@ -74,6 +76,8 @@ template <typename T>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void
 transform_vec(const T tmat[AMREX_SPACEDIM][AMREX_SPACEDIM], const T* x, T* y)
 {
+    static_assert(
+        AMREX_SPACEDIM == 3, "Vector ops only defined for AMREX_SPACEDIM == 3");
     y[0] = tmat[0][0] * x[0] + tmat[0][1] * x[1] + tmat[0][2] * x[2];
     y[1] = tmat[1][0] * x[0] + tmat[1][1] * x[1] + tmat[1][2] * x[2];
     y[2] = tmat[2][0] * x[0] + tmat[2][1] * x[1] + tmat[2][2] * x[2];
@@ -85,6 +89,8 @@ template <typename T>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void inv_transform_vec(
     const T tmat[AMREX_SPACEDIM][AMREX_SPACEDIM], const T* x, T* y)
 {
+    static_assert(
+        AMREX_SPACEDIM == 3, "Vector ops only defined for AMREX_SPACEDIM == 3");
     y[0] = tmat[0][0] * x[0] + tmat[1][0] * x[1] + tmat[2][0] * x[2];
     y[1] = tmat[0][1] * x[0] + tmat[1][1] * x[1] + tmat[2][1] * x[2];
     y[2] = tmat[0][2] * x[0] + tmat[1][2] * x[1] + tmat[2][2] * x[2];
