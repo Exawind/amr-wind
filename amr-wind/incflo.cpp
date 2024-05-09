@@ -310,6 +310,9 @@ void incflo::Evolve()
 
 void incflo::do_advance()
 {
+    if (m_sim.has_overset()) {
+        m_ovst_ops.pre_advance_actions();
+    }
     if (m_prescribe_vel) {
         prescribe_advance();
     } else {
@@ -364,6 +367,7 @@ void incflo::init_physics_and_pde()
 
         if (activate_overset) {
             m_sim.activate_overset();
+            m_ovst_ops.initialize(m_sim);
         }
     }
 
