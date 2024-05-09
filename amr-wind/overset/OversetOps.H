@@ -14,10 +14,10 @@ public:
     void initialize(CFDSim& sim);
     void pre_advance_actions();
 
-private:
-    // Functions called within public functions
+    // Needs to be public for cuda
     void update_gradp();
 
+private:
     CFDSim* m_sim_ptr;
 };
 

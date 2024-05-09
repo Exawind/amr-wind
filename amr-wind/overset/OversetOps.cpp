@@ -16,10 +16,6 @@ void OversetOps::pre_advance_actions()
     update_gradp();
 }
 
-/* ----------------------------------------------- */
-/* PUBLIC FUNCTIONS ABOVE, PRIVATE FUNCTIONS BELOW */
-/* ----------------------------------------------- */
-
 void OversetOps::update_gradp()
 {
     BL_PROFILE("amr-wind::OversetOps::update_gradp");
