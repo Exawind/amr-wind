@@ -19,7 +19,9 @@ void set_inflow_velocity(
     int nghost);
 
 Array<amrex::LinOpBCType, AMREX_SPACEDIM> get_projection_bc(
-    Orientation::Side side, amr_wind::Field& pressure, amrex::Geometry geom0);
+    Orientation::Side side,
+    amr_wind::Field& pressure,
+    Array<int, AMREX_SPACEDIM> is_periodic);
 
 } // namespace amr_wind::nodal_projection
 

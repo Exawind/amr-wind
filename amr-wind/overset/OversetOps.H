@@ -9,7 +9,7 @@ namespace amr_wind {
 class OversetOps
 {
 public:
-    OversetOps() {}
+    OversetOps() = default;
 
     void initialize(CFDSim& sim);
     void pre_advance_actions();

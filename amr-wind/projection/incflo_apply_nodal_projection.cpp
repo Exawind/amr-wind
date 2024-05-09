@@ -29,12 +29,14 @@ void amr_wind::nodal_projection::set_inflow_velocity(
 
 Array<amrex::LinOpBCType, AMREX_SPACEDIM>
 amr_wind::nodal_projection::get_projection_bc(
-    Orientation::Side side, amr_wind::Field& pressure, amrex::Geometry geom0)
+    Orientation::Side side,
+    amr_wind::Field& pressure,
+    Array<int, AMREX_SPACEDIM> is_periodic)
 {
     const auto& bctype = pressure.bc_type();
     Array<LinOpBCType, AMREX_SPACEDIM> r;
     for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
-        if (geom0.isPeriodic(dir)) {
+        if (is_periodic[dir]) {
             r[dir] = LinOpBCType::Periodic;
         } else {
             auto bc = bctype[Orientation(dir, side)];
@@ -298,9 +300,9 @@ void incflo::ApplyProjection(
     std::unique_ptr<Hydro::NodalProjector> nodal_projector;
 
     auto bclo = amr_wind::nodal_projection::get_projection_bc(
-        Orientation::low, pressure, m_sim.mesh().Geom()[0]);
+        Orientation::low, pressure, m_sim.mesh().Geom()[0].isPeriodic());
     auto bchi = amr_wind::nodal_projection::get_projection_bc(
-        Orientation::high, pressure, m_sim.mesh().Geom()[0]);
+        Orientation::high, pressure, m_sim.mesh().Geom()[0].isPeriodic());
 
     Vector<MultiFab*> vel;
     for (int lev = 0; lev <= finest_level; ++lev) {

@@ -105,9 +105,11 @@ void OversetOps::update_gradp()
     std::unique_ptr<Hydro::NodalProjector> nodal_projector;
 
     auto bclo = nodal_projection::get_projection_bc(
-        amrex::Orientation::low, pressure, (*m_sim_ptr).mesh().Geom(0));
+        amrex::Orientation::low, pressure,
+        (*m_sim_ptr).mesh().Geom(0).isPeriodic());
     auto bchi = nodal_projection::get_projection_bc(
-        amrex::Orientation::high, pressure, (*m_sim_ptr).mesh().Geom(0));
+        amrex::Orientation::high, pressure,
+        (*m_sim_ptr).mesh().Geom(0).isPeriodic());
 
     // Velocity multifab is needed for proper initialization, but only the size
     // matters for the purpose of calculating gradp, the values do not matter
