@@ -148,7 +148,7 @@ protected:
             pp.addarr("is_periodic", amrex::Vector<int>{{1, 1, 0}});
         }
     }
-    void setup_fnorm(bool levelmask_flag)
+    static void setup_fnorm(bool levelmask_flag)
     {
         amrex::ParmParse pp("fieldnorm");
         pp.add("output_frequency", 1);
