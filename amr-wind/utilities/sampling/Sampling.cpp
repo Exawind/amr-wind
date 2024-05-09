@@ -10,7 +10,9 @@
 namespace amr_wind::sampling {
 
 Sampling::Sampling(CFDSim& sim, std::string label)
-    : m_sim(sim), m_label(std::move(label))
+    : m_sim(sim)
+    , m_derived_mgr(new DerivedQtyMgr(m_sim.repo()))
+    , m_label(std::move(label))
 {}
 
 Sampling::~Sampling() = default;
@@ -23,11 +25,14 @@ void Sampling::initialize()
     amrex::Vector<std::string> labels;
     // Fields to be sampled - requested by user
     amrex::Vector<std::string> field_names;
+    // Derived fields to be sampled - requested by user
+    amrex::Vector<std::string> derived_field_names;
 
     {
         amrex::ParmParse pp(m_label);
         pp.getarr("labels", labels);
         pp.getarr("fields", field_names);
+        pp.queryarr("derived_fields", derived_field_names);
         pp.query("output_frequency", m_out_freq);
         pp.query("output_format", m_out_fmt);
         pp.query("output_delay", m_out_delay);
@@ -41,6 +46,8 @@ void Sampling::initialize()
         if (!repo.field_exists(fname)) {
             amrex::Print()
                 << "WARNING: Sampling: Non-existent field requested: " << fname
+                << ". This is a mistake or the requested field is a derived "
+                   "field and should be added to the derived_fields parameter"
                 << std::endl;
             continue;
         }
@@ -49,6 +56,13 @@ void Sampling::initialize()
         m_ncomp += fld.num_comp();
         m_fields.emplace_back(&fld);
         ioutils::add_var_names(m_var_names, fld.name(), fld.num_comp());
+    }
+
+    // Process derived field information
+    if (!derived_field_names.empty()) {
+        m_derived_mgr->create(derived_field_names);
+        m_ndcomp = m_derived_mgr->num_comp();
+        m_derived_mgr->var_names(m_var_names);
     }
 
     // Load different probe types, default probe type is line
@@ -91,7 +105,7 @@ void Sampling::update_container()
     // Initialize the particle container based on user inputs
     m_scontainer = std::make_unique<SamplingContainer>(m_sim.mesh());
 
-    m_scontainer->setup_container(m_ncomp);
+    m_scontainer->setup_container(m_ncomp + m_ndcomp);
 
     m_scontainer->initialize_particles(m_samplers);
 
@@ -146,6 +160,9 @@ void Sampling::sampling_workflow()
 
     m_scontainer->interpolate_fields(m_fields);
 
+    m_scontainer->interpolate_derived_fields(
+        *m_derived_mgr, m_sim.repo(), m_ncomp);
+
     fill_buffer();
 
     convert_velocity_lineofsight();
@@ -174,22 +191,18 @@ void Sampling::post_regrid_actions()
 void Sampling::convert_velocity_lineofsight()
 {
     BL_PROFILE("amr-wind::Sampling::convert_velocity_lineofsight");
-    const long nvars = m_var_names.size();
-    std::vector<int> vel_map;
 
-    for (int iv = 0; iv < nvars; ++iv) {
-        if (m_var_names[iv] == "velocityx") {
-            vel_map.push_back(iv);
-        }
-        if (m_var_names[iv] == "velocityy") {
-            vel_map.push_back(iv);
-        }
-        if (m_var_names[iv] == "velocityz") {
-            vel_map.push_back(iv);
+    amrex::Vector<int> vel_map(AMREX_SPACEDIM, 0);
+    const amrex::Vector<std::string> vnames = {
+        "velocityx", "velocityy", "velocityz"};
+    for (int n = 0; n < vnames.size(); n++) {
+        auto vit = std::find(m_var_names.begin(), m_var_names.end(), vnames[n]);
+        if (vit != m_var_names.end()) {
+            vel_map[n] = static_cast<int>(vit - m_var_names.begin());
+        } else {
+            amrex::Abort("Can't find " + vnames[n]);
         }
     }
-
-    AMREX_ALWAYS_ASSERT(static_cast<int>(vel_map.size()) == AMREX_SPACEDIM);
 
     long soffset = 0;
     for (const auto& obj : m_samplers) {

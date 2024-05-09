@@ -183,7 +183,7 @@ void ABLVelWallFunc::wall_model(
         amrex::MFItInfo mfi_info{};
 
         const auto& rho_lev = density(lev);
-        auto& vold_lev = velocity.state(FieldState::Old)(lev);
+        const auto& vold_lev = velocity.state(FieldState::Old)(lev);
         auto& vel_lev = velocity(lev);
         const auto& eta_lev = viscosity(lev);
 
@@ -195,10 +195,10 @@ void ABLVelWallFunc::wall_model(
 #endif
         for (amrex::MFIter mfi(vel_lev, mfi_info); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.validbox();
-            auto varr = vel_lev.array(mfi);
-            auto vold_arr = vold_lev.array(mfi);
-            auto den = rho_lev.array(mfi);
-            auto eta = eta_lev.array(mfi);
+            const auto& varr = vel_lev.array(mfi);
+            const auto& vold_arr = vold_lev.const_array(mfi);
+            const auto& den = rho_lev.const_array(mfi);
+            const auto& eta = eta_lev.const_array(mfi);
 
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                 velocity.bc_type()[zlo] == BC::wall_model) {
@@ -295,8 +295,8 @@ void ABLTempWallFunc::wall_model(
         amrex::MFItInfo mfi_info{};
 
         const auto& rho_lev = density(lev);
-        auto& vold_lev = velocity.state(FieldState::Old)(lev);
-        auto& told_lev = temperature.state(FieldState::Old)(lev);
+        const auto& vold_lev = velocity.state(FieldState::Old)(lev);
+        const auto& told_lev = temperature.state(FieldState::Old)(lev);
         auto& theta = temperature(lev);
         const auto& eta_lev = alpha(lev);
 
@@ -308,11 +308,11 @@ void ABLTempWallFunc::wall_model(
 #endif
         for (amrex::MFIter mfi(theta, mfi_info); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.validbox();
-            auto vold_arr = vold_lev.array(mfi);
-            auto told_arr = told_lev.array(mfi);
-            auto tarr = theta.array(mfi);
-            auto den = rho_lev.array(mfi);
-            auto eta = eta_lev.array(mfi);
+            const auto& vold_arr = vold_lev.const_array(mfi);
+            const auto& told_arr = told_lev.const_array(mfi);
+            const auto& tarr = theta.array(mfi);
+            const auto& den = rho_lev.const_array(mfi);
+            const auto& eta = eta_lev.const_array(mfi);
 
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                 temperature.bc_type()[zlo] == BC::wall_model) {
