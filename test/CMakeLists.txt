@@ -284,6 +284,10 @@ if(AMR_WIND_ENABLE_ASCENT)
   add_test_re(abl_godunov_ascent)
 endif()
 
+if(AMR_WIND_ENABLE_W2A)
+  add_test_re(ow_w2a)
+endif()
+
 #=============================================================================
 # Regression tests excluded from CI with a test dependency
 #=============================================================================

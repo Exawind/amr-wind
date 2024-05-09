@@ -89,3 +89,4 @@ This section documents the parameters available within each section.
    inputs_KineticEnergy.rst
    inputs_Enstrophy.rst
    inputs_Actuator.rst
+   inputs_ocean_waves.rst

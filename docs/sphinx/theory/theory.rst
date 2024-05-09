@@ -138,27 +138,15 @@ Often for simulations involving walls, (e.g., channel flows, complex terrains et
 Multiphase flow modelling
 ------------------------------------
 
-The level-set (LS) method was introduced by \cite{OsherSethian1988} to simulate the motion of a surface with curvature dependent speed. In the LS method, the two-phase interface is represented implicitly by a signed distance function (also called level-set function)
-
-
-.. math::
-
-   \phi ( \mathbf{x},t ) = \begin{cases} 
-      d , & \text{in water} \\
-      0,  & \text{on surface} \\
-      -d, & \text{in air.}
-   \end{cases}
-
-where :math:`d` is the distance from point :math:`\mathbf{x}` to the interface.
-
-.. math:: \frac{\partial \phi}{\partial t} + \mathbf{u} \nabla \phi = 0 
-
-where :math:`\mathbf{u}=(u_x,u_y,u_z)` is the velocity vector.
-Re-initialization of the level-set
-
-.. math:: \frac{\partial \phi}{\partial \tau} = \text{sgn}(\phi^0)(1-|\nabla \phi|)
-
-where :math:`\phi^0=\phi(x,0)` represents the location of the interface. 
+AMR-Wind employs the volume-of-fluid method for simulating two-phase (water-air) flows. 
+More specifically, the volume fraction field is advected explicitly using a
+directionally split geometric approach, and the advection of momentum is 
+discretized in a mass-consistent manner. Overall, this approach conserves mass
+and momentum while remaining stable at high density ratios (typically 1000).
+Viscosities can be specified for each fluid independently, but surface tension
+is not modeled by AMR-Wind currently. For further detail, see 
+`Kuhn, Deskos, Sprague (Computers & Fluids 2023)
+<https://doi.org/10.1016/j.compfluid.2022.105770>`_.
 
 Source terms
 ------------------------------------
