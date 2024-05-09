@@ -36,7 +36,7 @@ amr_wind::nodal_projection::get_projection_bc(
     const auto& bctype = pressure.bc_type();
     Array<LinOpBCType, AMREX_SPACEDIM> r;
     for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
-        if (is_periodic[dir]) {
+        if (is_periodic[dir] == 1) {
             r[dir] = LinOpBCType::Periodic;
         } else {
             auto bc = bctype[Orientation(dir, side)];
