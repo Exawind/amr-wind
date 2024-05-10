@@ -33,11 +33,11 @@ Steps to reproduce the behavior:
 <!-- name, modules loaded, environment variables, etc -->
 ```
 5. Input file attachments <!-- Please upload the input files in a zip or point to a public branch. -->
-6. Error:
+6. Error (paste or attach):
 ```
 <!-- error output -->
 ```
-7. If this is a segfault, a stack trace from a debug build:
+7. If this is a segfault, a stack trace from a debug build (paste or attach):
 ```
 <!-- stack trace -->
 ```
