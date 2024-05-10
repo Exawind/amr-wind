@@ -61,6 +61,7 @@ void Sampling::initialize()
     // Process derived field information
     if (!derived_field_names.empty()) {
         m_derived_mgr->create(derived_field_names);
+        m_derived_mgr->filter(field_names);
         m_ndcomp = m_derived_mgr->num_comp();
         m_derived_mgr->var_names(m_var_names);
     }
