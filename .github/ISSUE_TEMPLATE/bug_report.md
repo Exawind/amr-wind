@@ -15,7 +15,7 @@ Steps to reproduce the behavior:
 1. Compiler used
    - [ ] GCC
    - [ ] LLVM
-   - [ ] onapi (Intel)
+   - [ ] oneapi (Intel)
    - [ ] nvcc (NVIDIA)
    - [ ] rocm (AMD)
    - [ ] with MPI
