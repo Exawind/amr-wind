@@ -136,11 +136,9 @@ private:
 
     //! Format of the data output (native, ascii, netcdf, etc.)
 #ifdef AMR_WIND_USE_NETCDF
-    std::string m_out_fmt{"netcdf"};
     std::string m_ncfile_name;
-#else
-    std::string m_out_fmt{"native"};
 #endif
+    std::string m_out_fmt{"native"};
 
     // Sample initial condition for interpolation consistency
     bool m_restart_sample{false};
