@@ -26,6 +26,13 @@ void init_velocity(amr_wind::Field& velocity)
                 farr(i, j, k, 0) = 1.0 - std::pow(xc, 2.0);
                 farr(i, j, k, 1) = -1.0 + std::pow(zc, 2.0);
                 farr(i, j, k, 2) = 5.0 * std::cos(yc);
+
+                if (lev == 0 && nlevels > 1) {
+                    // Set base level to large values to detect masking errors
+                    farr(i, j, k, 0) = 1e5;
+                    farr(i, j, k, 1) = -1e5;
+                    farr(i, j, k, 2) = 1e5;
+                }
             });
         }
     }
@@ -58,6 +65,13 @@ void init_mac_velocity(
                 uarr(i, j, k) = 1.0 - std::pow(x, 2.0);
                 varr(i, j, k) = -1.0 + std::pow(zc, 2.0);
                 warr(i, j, k) = -3.0 * std::cos(yc);
+
+                if (lev == 0 && nlevels > 1) {
+                    // Set base level to large values to detect masking errors
+                    uarr(i, j, k) = 1e5;
+                    varr(i, j, k) = -1e5;
+                    warr(i, j, k) = 1e5;
+                }
             });
         }
     }
