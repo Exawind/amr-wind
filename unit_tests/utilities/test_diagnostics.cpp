@@ -237,22 +237,22 @@ TEST_F(DiagnosticsTest, Max_MACvel_MultiLevel)
     // Check max's and min's, according to profiles
     const amrex::Real tol = 1.0e-10;
     // max(umac)
-    EXPECT_NEAR(fc_results[0], 1.0 - std::pow(0.0 * 10.0 / 24.0, 2.0), tol);
+    EXPECT_NEAR(fc_results[0], 1.0 - std::pow(0.0 * 10.0 / 48.0, 2.0), tol);
     // min(umac)
-    EXPECT_NEAR(fc_results[4], 1.0 - std::pow(12 * 10.0 / 24.0, 2.0), tol);
+    EXPECT_NEAR(fc_results[4], 1.0 - std::pow(24 * 10.0 / 48.0, 2.0), tol);
     // max(vmac)
-    EXPECT_NEAR(fc_results[8], -1.0 + std::pow(3.5 * 4.0 / 8.0, 2.0), tol);
+    EXPECT_NEAR(fc_results[8], -1.0 + std::pow(7.5 * 4.0 / 16.0, 2.0), tol);
     // min(vmac)
-    EXPECT_NEAR(fc_results[12], -1.0 + std::pow(0.5 * 4.0 / 8.0, 2.0), tol);
+    EXPECT_NEAR(fc_results[12], -1.0 + std::pow(0.5 * 4.0 / 16.0, 2.0), tol);
     // min(wmac)
-    EXPECT_NEAR(fc_results[20], -3.0 * std::cos(0.5 * 10.0 / 24.0), tol);
+    EXPECT_NEAR(fc_results[20], -3.0 * std::cos(0.5 * 10.0 / 48.0), tol);
 
     // Check locations
     EXPECT_NEAR(fc_results[1], 0.0 * 10.0 / 24.0, tol);
-    EXPECT_NEAR(std::abs(fc_results[5]), 12 * 10.0 / 24.0, tol);
-    EXPECT_NEAR(std::abs(fc_results[11]), 3.5 * 4.0 / 8.0, tol);
-    EXPECT_NEAR(std::abs(fc_results[15]), 0.5 * 4.0 / 8.0, tol);
-    EXPECT_NEAR(std::abs(fc_results[22]), 0.5 * 10.0 / 24.0, tol);
+    EXPECT_NEAR(std::abs(fc_results[5]), 24 * 10.0 / 48.0, tol);
+    EXPECT_NEAR(std::abs(fc_results[11]), 7.5 * 4.0 / 16.0, tol);
+    EXPECT_NEAR(std::abs(fc_results[15]), 0.5 * 4.0 / 16.0, tol);
+    EXPECT_NEAR(std::abs(fc_results[22]), 0.5 * 10.0 / 48.0, tol);
 }
 
 } // namespace amr_wind_tests
