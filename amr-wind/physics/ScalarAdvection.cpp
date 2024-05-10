@@ -257,8 +257,8 @@ ScalarAdvection::compute_error(const Shape& scalar_function)
             level_mask = makeFineMask(
                 m_repo.mesh().boxArray(level),
                 m_repo.mesh().DistributionMap(level),
-                m_repo.mesh().boxArray(level + 1), m_repo.mesh().refRatio(lev),
-                1, 0);
+                m_repo.mesh().boxArray(level + 1),
+                m_repo.mesh().refRatio(level), 1, 0);
         } else {
             level_mask.define(
                 m_repo.mesh().boxArray(level),

@@ -222,7 +222,7 @@ void FreeSurface::initialize()
         if (lev < finest_level) {
             level_mask = makeFineMask(
                 m_sim.mesh().boxArray(lev), m_sim.mesh().DistributionMap(lev),
-                m_sim.mesh().boxArray(lev + 1), m_sim.mesh().refRatio(lev) 1,
+                m_sim.mesh().boxArray(lev + 1), m_sim.mesh().refRatio(lev), 1,
                 0);
         } else {
             level_mask.define(
