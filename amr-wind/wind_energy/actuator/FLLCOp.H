@@ -162,7 +162,7 @@ struct FLLCOp
         const int npts = static_cast<int>(fllc.correction_velocity.size());
         auto& du = fllc.correction_velocity;
 
-        auto& nonuniform_r = fllc.nonuniform_r; 
+        auto& nonuniform_r = fllc.nonuniform_r;
         auto& u_les = fllc.les_velocity;
         auto& u_opt = fllc.optimal_velocity;
         auto& G = fllc.lift;
@@ -257,10 +257,10 @@ struct FLLCOp
                             1. / (2. * r_dis * r_dis) * (exp_opt - 1.);
                 }
 
-                u_les[ip] = u_les[ip] +
-                            coefficient * G_new[jp] / vmag * k_les * dr[jp];
-                u_opt[ip] = u_opt[ip] +
-                            coefficient * G_new[jp] / vmag * k_opt * dr[jp];
+                u_les[ip] =
+                    u_les[ip] + coefficient * G_new[jp] / vmag * k_les * dr[jp];
+                u_opt[ip] =
+                    u_opt[ip] + coefficient * G_new[jp] / vmag * k_opt * dr[jp];
             }
 
             // Relaxation to compute the induced velocity
