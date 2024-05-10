@@ -384,8 +384,7 @@ struct InitDataOp<W2AWaves>
 {
     void
     // cppcheck-suppress constParameterReference
-    operator()(
-        W2AWaves::DataType & data, int level, const amrex::Geometry & geom)
+    operator()(W2AWaves::DataType& data, int level, const amrex::Geometry& geom)
     {
 
 #ifdef AMR_WIND_USE_W2A
