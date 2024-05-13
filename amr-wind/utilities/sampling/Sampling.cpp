@@ -61,6 +61,7 @@ void Sampling::initialize()
     // Process derived field information
     if (!derived_field_names.empty()) {
         m_derived_mgr->create(derived_field_names);
+        m_derived_mgr->filter(field_names);
         m_ndcomp = m_derived_mgr->num_comp();
         m_derived_mgr->var_names(m_var_names);
     }
@@ -312,8 +313,9 @@ void Sampling::impl_write_native()
 void Sampling::write_ascii()
 {
     BL_PROFILE("amr-wind::Sampling::write_ascii");
-    amrex::Print() << "WARNING: Sampling: ASCII output will impact performance"
-                   << std::endl;
+    amrex::Print()
+        << "WARNING: Sampling: ASCII output will negatively impact performance"
+        << std::endl;
 
     const std::string post_dir = "post_processing";
     const std::string sname =
@@ -403,6 +405,9 @@ void Sampling::write_netcdf()
 {
 #ifdef AMR_WIND_USE_NETCDF
     if (!amrex::ParallelDescriptor::IOProcessor()) return;
+    amrex::Print()
+        << "WARNING: Sampling: netcdf output will negatively impact performance"
+        << std::endl;
     auto ncf = ncutils::NCFile::open(m_ncfile_name, NC_WRITE);
     const std::string nt_name = "num_time_steps";
     // Index of the next timestep

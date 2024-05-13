@@ -53,6 +53,10 @@ public:
     void
     var_names(amrex::Vector<std::string>& /*plt_var_names*/) const noexcept;
 
+    void filter(const std::set<std::string>& /*erase*/);
+
+    void filter(const amrex::Vector<std::string>& /*erase*/);
+
 private:
     const FieldRepo& m_repo;
 
