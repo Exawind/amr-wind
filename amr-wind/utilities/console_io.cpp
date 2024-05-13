@@ -92,9 +92,9 @@ void print_banner(MPI_Comm comm, std::ostream& out)
 
     auto etime = std::chrono::system_clock::now();
     auto etimet = std::chrono::system_clock::to_time_t(etime);
-    char time_buf[64];
-    ctime_r(&etimet, time_buf);
-    const std::string tstamp(time_buf);
+    amrex::Array<char, 64> time_buf;
+    ctime_r(&etimet, time_buf.begin());
+    const std::string tstamp(time_buf.begin());
 
     const std::string dirty_tag = (version::amr_wind_dirty_repo == "DIRTY")
                                       ? ("-" + version::amr_wind_dirty_repo)
