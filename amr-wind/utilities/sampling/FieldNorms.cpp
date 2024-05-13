@@ -58,7 +58,7 @@ FieldNorms::L2_norm(amr_wind::Field& field, const int comp, const bool use_mask)
             if (lev < finest_level) {
                 level_mask = makeFineMask(
                     mesh.boxArray(lev), mesh.DistributionMap(lev),
-                    mesh.boxArray(lev + 1), amrex::IntVect(2), 1, 0);
+                    mesh.boxArray(lev + 1), mesh.refRatio(lev), 1, 0);
             } else {
                 level_mask.define(
                     mesh.boxArray(lev), mesh.DistributionMap(lev), 1, 0,

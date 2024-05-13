@@ -168,12 +168,14 @@ void DTUSpinnerSampler::sampling_locations(SampleLocType& locs) const
 }
 
 #ifdef AMR_WIND_USE_OPENFAST
-void DTUSpinnerSampler::bcast_turbine(double* turbine_pack, int root_proc)
+void DTUSpinnerSampler::bcast_turbine(
+    amrex::Array<double, 18>& turbine_pack, int root_proc)
 {
     BL_PROFILE("amr-wind::Sampling::DTUSpinnerSampler::bcast_turbine");
 
     amrex::ParallelDescriptor::Bcast(
-        turbine_pack, 18, root_proc, amrex::ParallelDescriptor::Communicator());
+        turbine_pack.begin(), turbine_pack.size(), root_proc,
+        amrex::ParallelDescriptor::Communicator());
 
     for (int i = 0; i < 9; i++) {
         current_hub_orient[i] = turbine_pack[i];
@@ -222,7 +224,7 @@ void DTUSpinnerSampler::get_turbine_data(std::string turbine_label)
         const auto& info = actline->info();
 
         // Create buffer object
-        double turbine_pack[18] = {};
+        amrex::Array<double, 18> turbine_pack = {};
 
         // Pack, broadcast, then unpack
         for (int i = 0; i < 9; i++) {
@@ -240,7 +242,7 @@ void DTUSpinnerSampler::get_turbine_data(std::string turbine_label)
         const auto& info = actdisk->info();
 
         // Create buffer object
-        double turbine_pack[18] = {};
+        amrex::Array<double, 18> turbine_pack = {};
 
         // Pack, broadcast, then unpack
         for (int i = 0; i < 9; i++) {
