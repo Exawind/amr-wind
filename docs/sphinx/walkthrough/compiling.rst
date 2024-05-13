@@ -1,4 +1,8 @@
-# 01_compiling.md
+.. _compiling:
+
+Compiling
+==================
+
 [Outdated documentation on compiling](https://exawind.github.io/amr-wind/user/build.html)
 
 [Spack-Manager example for ExaWind Codes](https://sandialabs.github.io/spack-manager/user_profiles/developers/snapshot_workflow.html)

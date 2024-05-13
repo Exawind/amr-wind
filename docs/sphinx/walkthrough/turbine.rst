@@ -1,3 +1,8 @@
+.. _turbine:
+
+Turbine Simulation Walkthrough
+==============================
+
 Now that we have run our precursor simulation and saved inflow boundary condition data, we can run a turbine simulation. Here is the config file:
 ```
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
