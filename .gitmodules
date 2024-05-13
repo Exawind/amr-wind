@@ -9,6 +9,4 @@
 	url = https://github.com/AMReX-Fluids/AMReX-Hydro.git
 [submodule "submods/Waves2AMR"]
 	path = submods/Wave2AMR
-	url = https://github.com/mbkuhn/Waves2AMR.git
-[submodule "submods/Wave2AMR"]
 	url = https://github.com/Exawind/Waves2AMR.git
