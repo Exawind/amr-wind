@@ -12,9 +12,9 @@ namespace amr_wind::vs {
 template <typename T>
 struct TensorT
 {
-    T vv[9]{Traits::zero(), Traits::zero(), Traits::zero(),
-            Traits::zero(), Traits::zero(), Traits::zero(),
-            Traits::zero(), Traits::zero(), Traits::zero()};
+    amrex::GpuArray<T, 9> vv = {Traits::zero(), Traits::zero(), Traits::zero(),
+                                Traits::zero(), Traits::zero(), Traits::zero(),
+                                Traits::zero(), Traits::zero(), Traits::zero()};
 
     static constexpr int ncomp = 9;
     using size_type = int;
@@ -170,16 +170,19 @@ struct TensorT
         return vv[pos];
     }
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T* data() noexcept { return vv; }
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T* data() noexcept
+    {
+        return vv.data();
+    }
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T* data() const noexcept
     {
-        return vv;
+        return vv.data();
     }
 
-    iterator begin() noexcept { return vv; }
-    iterator end() noexcept { return vv + ncomp; }
-    const_iterator cbegin() const noexcept { return vv; }
-    const_iterator cend() const noexcept { return vv + ncomp; }
+    iterator begin() noexcept { return vv.begin(); }
+    iterator end() noexcept { return vv.end(); }
+    const_iterator cbegin() const noexcept { return vv.cbegin(); }
+    const_iterator cend() const noexcept { return vv.cend(); }
     size_type size() const noexcept { return ncomp; }
 };
 

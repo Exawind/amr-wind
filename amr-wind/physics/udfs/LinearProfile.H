@@ -17,8 +17,8 @@ struct LinearProfile
         int idir{2};
         amrex::Real zmin;
         amrex::Real zmax;
-        amrex::Real fld_min[AMREX_SPACEDIM];
-        amrex::Real fld_max[AMREX_SPACEDIM];
+        amrex::RealArray fld_min;
+        amrex::RealArray fld_max;
 
         AMREX_GPU_DEVICE
         inline void operator()(

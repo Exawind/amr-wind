@@ -4,6 +4,7 @@
 #include "AMReX_REAL.H"
 #include "AMReX_GpuQualifiers.H"
 #include "AMReX_Extension.H"
+#include "AMReX_Vector.H"
 #include <algorithm>
 #include <cmath>
 
@@ -144,7 +145,8 @@ public:
 
 private:
     //! Timestep sizes
-    amrex::Real m_dt[max_time_states]{0.0};
+    amrex::Vector<amrex::Real> m_dt =
+        amrex::Vector<amrex::Real>(max_time_states, 0.0);
 
     //! Current simulation time
     amrex::Real m_cur_time{0.0};

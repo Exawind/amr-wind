@@ -107,8 +107,16 @@ void impl_transform_vec()
 {
     const amrex::Vector<amrex::Real> expected_values = {14.0, -20.0, 32.0};
 
-    const amrex::Real tmat[AMREX_SPACEDIM][AMREX_SPACEDIM] = {
-        {1.0, 2.0, 3.0}, {-2.0, -3.0, -4.0}, {4.0, 5.0, 6.0}};
+    amrex::Array2D<amrex::Real, 0, AMREX_SPACEDIM, 0, AMREX_SPACEDIM> tmat = {};
+    tmat(0, 0) = 1.0;
+    tmat(0, 1) = 2.0;
+    tmat(0, 2) = 3.0;
+    tmat(1, 0) = -2.0;
+    tmat(1, 1) = -3.0;
+    tmat(1, 2) = -4.0;
+    tmat(2, 0) = 4.0;
+    tmat(2, 1) = 5.0;
+    tmat(2, 2) = 6.0;
 
     const TestVector tv;
     const amrex::Real* pvec = tv.data();
@@ -129,8 +137,16 @@ void impl_inv_transform_vec()
 {
     const amrex::Vector<amrex::Real> expected_values = {9.0, 11.0, 13.0};
 
-    const amrex::Real tmat[AMREX_SPACEDIM][AMREX_SPACEDIM] = {
-        {1.0, 2.0, 3.0}, {-2.0, -3.0, -4.0}, {4.0, 5.0, 6.0}};
+    amrex::Array2D<amrex::Real, 0, AMREX_SPACEDIM, 0, AMREX_SPACEDIM> tmat = {};
+    tmat(0, 0) = 1.0;
+    tmat(0, 1) = 2.0;
+    tmat(0, 2) = 3.0;
+    tmat(1, 0) = -2.0;
+    tmat(1, 1) = -3.0;
+    tmat(1, 2) = -4.0;
+    tmat(2, 0) = 4.0;
+    tmat(2, 1) = 5.0;
+    tmat(2, 2) = 6.0;
 
     const TestVector tv;
     const amrex::Real* pvec = tv.data();
