@@ -1,13 +1,14 @@
 .. _precursor:
 
 Precursor (ABL) Walkthrough
-=====================
+===========================
 
 Now that we have AMR-Wind compiled, we can start to run simulations. In this section, we'll run two simulations of a weakly convective atmospheric boundary layer. The first simulation will be of a transient "spinup" phase, and the second simulation will serve as a "precursor" for a turbine simulation.
 
 Before we run anything, we first need to set up the [input](https://exawind.github.io/amr-wind/user/inputs.html) file (aka the "configuration"/"config" file). This is a text file, and its filename traditionally ends with `.i` or `.inp`. There are two general approaches to set one up: manually, or with the use of [amrwind-frontend](https://github.com/lawrenceccheung/amrwind-frontend). If I am setting up a big simulation, with many turbines and many refinement zones, I use amrwind-frontend. It shows the locations of all those objects, which is a great sanity check for expensive simulations. If I am running a simpler simulation, I will copy-paste text from a simulation that I have successfully run in the past. 
 
-### Spinup
+Spinup
+------
 Here is the content of our spinup config file:
 ```
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -237,7 +238,8 @@ Once the spinup simulation is done, it is important to sanity check that the fie
 
 You can also open the `plt#####` files using Paraview or other software that AMReX is compatible with. These files show a volume of the instantaneous fields at that timestep.
 
-### Precursor simulation
+Precursor simulation
+--------------------
 After sufficiently spinning up turbulence, I kick off a "precursor simulation". 
 
 In the context of wind turbine LES, a precursor is a simulation that is run without a turbine for the explicit purpose of generating inflow boundary conditions. Due to the way LES works, spinup and precursor simulations are almost always run with cyclic boundary conditions. This means wind that exits the outflow simulation is then recirculated back into the inflow. If we want to simulate a statistically homogeneous atmosphere, that's fine. However, this is problematic if you have a wind turbine---turbines generate wakes, and we don't want wakes recirculating back into the inflow. So we run wind turbine simulations with a prescribed "inflow boundary condition" (where the wind data comes from the precursor) and an "outflow boundary condition" (usually a pressure BC).

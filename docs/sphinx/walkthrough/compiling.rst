@@ -70,6 +70,7 @@ If you are simulating an OpenFAST turbine, you will probably need a controller f
 0. `module load` the libraries that you will be loading when you run AMR-Wind, e.g. on Eagle `module load gcc/8.4.0 mpt cmake` (note: I run with `gcc/8.4.0` instead of `11.2.0` like I demoed for DelftBlue)
 1. `cd` into a directory (ideally somewhere in `/projects/`), and clone ROSCO `git clone https://github.com/NREL/ROSCO.git`
 2. Compile ROSCO
+
 ```
 # Compile ROSCO
 cd ROSCO/ROSCO
