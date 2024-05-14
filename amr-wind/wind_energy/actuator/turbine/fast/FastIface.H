@@ -59,7 +59,7 @@ protected:
 
     void write_velocity_data(const FastTurbine& /*unused*/);
 
-    void read_velocity_data(
+    static void read_velocity_data(
         FastTurbine& /*unused*/,
         const ncutils::NCFile& /*unused*/,
         const size_t tid);

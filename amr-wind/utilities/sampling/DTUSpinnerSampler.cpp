@@ -180,14 +180,14 @@ void DTUSpinnerSampler::bcast_turbine(
     for (int i = 0; i < 9; i++) {
         current_hub_orient[i] = turbine_pack[i];
         if (i < 3) {
-            current_hub_abs_pos[i] = turbine_pack[i + 9];
-            current_hub_rot_vel[i] = turbine_pack[i + 12];
-            turbine_base_pos[i] = turbine_pack[i + 15];
+            current_hub_abs_pos[i] = static_cast<float>(turbine_pack[i + 9]);
+            current_hub_rot_vel[i] = static_cast<float>(turbine_pack[i + 12]);
+            turbine_base_pos[i] = static_cast<float>(turbine_pack[i + 15]);
         }
     }
 }
 
-void DTUSpinnerSampler::get_turbine_data(std::string turbine_label)
+void DTUSpinnerSampler::get_turbine_data(const std::string& turbine_label)
 {
 
     BL_PROFILE("amr-wind::Sampling::DTUSpinnerSampler::get_turbine_data");
@@ -205,22 +205,20 @@ void DTUSpinnerSampler::get_turbine_data(std::string turbine_label)
     }
 
     // Test cast to Line or Disk
-    actuator::ActModel<actuator::TurbineFast, actuator::ActSrcLine>* actline =
-        dynamic_cast<
-            actuator::ActModel<actuator::TurbineFast, actuator::ActSrcLine>*>(
-            &lidar_act);
+    auto* actline = dynamic_cast<
+        actuator::ActModel<actuator::TurbineFast, actuator::ActSrcLine>*>(
+        &lidar_act);
 
-    actuator::ActModel<actuator::TurbineFast, actuator::ActSrcDisk>* actdisk =
-        dynamic_cast<
-            actuator::ActModel<actuator::TurbineFast, actuator::ActSrcDisk>*>(
-            &lidar_act);
+    auto* actdisk = dynamic_cast<
+        actuator::ActModel<actuator::TurbineFast, actuator::ActSrcDisk>*>(
+        &lidar_act);
 
     bool testline{(actline != nullptr)};
     bool testdisk{(actdisk != nullptr)};
 
     // Read and broadcast data
     if (testline) {
-        auto& actdata = actline->meta().fast_data;
+        const auto& actdata = actline->meta().fast_data;
         const auto& info = actline->info();
 
         // Create buffer object
@@ -238,7 +236,7 @@ void DTUSpinnerSampler::get_turbine_data(std::string turbine_label)
 
         bcast_turbine(turbine_pack, info.root_proc);
     } else if (testdisk) {
-        auto& actdata = actdisk->meta().fast_data;
+        const auto& actdata = actdisk->meta().fast_data;
         const auto& info = actdisk->info();
 
         // Create buffer object
@@ -519,19 +517,16 @@ void DTUSpinnerSampler::output_netcdf_data(
     count[1] = num_points();
     counti[1] = num_points();
 
-    xyz.put(&locs[0][0], start, count);
+    xyz.put(locs[0].data(), start, count);
 
-    int n_samples = m_beam_points * m_ntotal;
+    auto n_samples = m_beam_points * m_ntotal;
 
-    double xlocs[n_samples];
-    double ylocs[n_samples];
-    double zlocs[n_samples];
+    std::vector<double> xlocs(n_samples, 0.0);
+    std::vector<double> ylocs(n_samples, 0.0);
+    std::vector<double> zlocs(n_samples, 0.0);
 
     // Loop per subsampling
     for (int k = 0; k < m_ntotal; ++k) {
-
-        int offset = k * AMREX_SPACEDIM;
-
         for (int i = 0; i < m_beam_points; ++i) {
             xlocs[i + k * m_beam_points] = locs[i + k * m_beam_points][0];
             ylocs[i + k * m_beam_points] = locs[i + k * m_beam_points][1];
@@ -539,19 +534,20 @@ void DTUSpinnerSampler::output_netcdf_data(
         }
     }
 
-    xp.put(&xlocs[0], starti, counti);
-    yp.put(&ylocs[0], starti, counti);
-    zp.put(&zlocs[0], starti, counti);
+    xp.put(xlocs.data(), starti, counti);
+    yp.put(ylocs.data(), starti, counti);
+    zp.put(zlocs.data(), starti, counti);
 
     auto angs = grp.var("rotor_angles_rad");
     std::vector<size_t> acount{1, 3};
-    double rangs[3] = {m_hub_tilt, m_hub_roll, m_hub_yaw};
-    angs.put(rangs, start, acount);
+    amrex::Array<double, 3> rangs = {m_hub_tilt, m_hub_roll, m_hub_yaw};
+    angs.put(rangs.begin(), start, acount);
 
     auto hpos = grp.var("rotor_hub_pos");
     std::vector<size_t> pcount{1, AMREX_SPACEDIM};
-    double rhpos[3] = {m_lidar_center[0], m_lidar_center[1], m_lidar_center[2]};
-    hpos.put(rhpos, start, pcount);
+    amrex::Array<double, 3> rhpos = {
+        m_lidar_center[0], m_lidar_center[1], m_lidar_center[2]};
+    hpos.put(rhpos.begin(), start, pcount);
 }
 
 #else

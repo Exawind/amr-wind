@@ -387,7 +387,7 @@ void FastIface::prepare_netcdf_file(FastTurbine& fi)
     ncf.exit_def_mode();
 
     {
-        const size_t npts = static_cast<size_t>(fi.from_cfd.u_Len);
+        const auto npts = static_cast<size_t>(fi.from_cfd.u_Len);
         auto xco = ncf.var("xco");
         xco.put(fi.to_cfd.pxVel, {0}, {npts});
         auto yco = ncf.var("yco");
@@ -412,7 +412,7 @@ void FastIface::write_velocity_data(const FastTurbine& fi)
     auto ncf = ncutils::NCFile::open(fname, NC_WRITE);
     const std::string nt_name = "num_time_steps";
     const size_t nt = ncf.dim(nt_name).len();
-    const size_t npts = static_cast<size_t>(fi.from_cfd.u_Len);
+    const auto npts = static_cast<size_t>(fi.from_cfd.u_Len);
 
     const double time = fi.time_index * fi.dt_fast;
     ncf.var("time").put(&time, {nt}, {1});
@@ -429,8 +429,8 @@ void FastIface::read_velocity_data(
     FastTurbine& fi, const ncutils::NCFile& ncf, const size_t tid)
 {
 #ifdef AMR_WIND_USE_NETCDF
-    const size_t nt = static_cast<size_t>(tid);
-    const size_t npts = static_cast<size_t>(fi.from_cfd.u_Len);
+    const auto nt = static_cast<size_t>(tid);
+    const auto npts = static_cast<size_t>(fi.from_cfd.u_Len);
 
     auto& uu = fi.from_cfd;
     ncf.var("uvel").get(uu.u, {nt, 0}, {1, npts});

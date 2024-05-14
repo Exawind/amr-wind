@@ -53,7 +53,7 @@ public:
 
     void bcast_turbine(
         amrex::Array<double, 18>& /*turbine_pack*/, int /*root_proc*/);
-    void get_turbine_data(std::string turbine_label);
+    void get_turbine_data(const std::string& turbine_label);
 
 #endif
 

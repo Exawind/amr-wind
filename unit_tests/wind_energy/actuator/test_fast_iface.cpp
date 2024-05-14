@@ -53,9 +53,9 @@ TEST_F(FastIfaceTest, fast_init)
     fi.tid_global = iproc;
     fi.num_pts_blade = 5;
     fi.num_pts_tower = 5;
-    fi.base_pos[0] = 64.0f;
-    fi.base_pos[1] = 64.0f;
-    fi.base_pos[2] = 0.0f;
+    fi.base_pos[0] = 64.0F;
+    fi.base_pos[1] = 64.0F;
+    fi.base_pos[2] = 0.0F;
     fi.input_file = "./fast_inp/nrel5mw.fst";
     fi.dt_cfd = 0.0625;
     fi.start_time = 0.0;
@@ -106,9 +106,9 @@ TEST_F(FastIfaceTest, fast_replay)
     fi.tid_global = iproc;
     fi.num_pts_blade = 5;
     fi.num_pts_tower = 5;
-    fi.base_pos[0] = 64.0f;
-    fi.base_pos[1] = 64.0f;
-    fi.base_pos[2] = 0.0f;
+    fi.base_pos[0] = 64.0F;
+    fi.base_pos[1] = 64.0F;
+    fi.base_pos[2] = 0.0F;
     fi.input_file = "./fast_inp/nrel5mw1.fst";
     fi.start_time = 0.125;
     fi.stop_time = 0.625;
