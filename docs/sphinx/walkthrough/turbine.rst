@@ -26,7 +26,7 @@ This script gives you two important things:
 
 Because we're simulating turbines, we also need to include OpenFAST files for each of the turbines. In this demo, we use 2.8 MW turbines from NREL's open source [turbine repo](https://github.com/NREL/openfast-turbine-models/tree/master/IEA-scaled/NREL-2.8-127/OpenFAST). When simulating OpenFAST turbines through AMR-Wind instead of directly through OpenFAST, it is important to make the follow changes to the OpenFAST files:
 * AeroDyn: Make sure `WakeMod` is 0
-* ElastoDyn: Set the initial RPM `RotSpeed` and inital yaw angle `NacYaw` to reasonable values
+* ElastoDyn: Set the initial RPM `RotSpeed` and initial yaw angle `NacYaw` to reasonable values
 * `*.fst`: Set `CompInflow` to be 2 and `OutFileFmt` to be 1
 * ServoDyn: Make sure `DLL_FileName` points to a `libdiscon.so` file from ROSCO
 
