@@ -200,12 +200,15 @@ struct FLLCOp
         }
 
         // Get the non-uniform distribution of force
-        interp::linear(fllc.r, G, nonuniform_r, nonuniform_G);
-        interp::linear(
-            fllc.r, fllc.optimal_epsilon, nonuniform_r,
-            fllc.nonuniform_optimal_epsilon);
-        interp::linear(
-            fllc.r, fllc.vel_rel, nonuniform_r, fllc.nonuniform_vel_rel);
+        if (fllc.nonuniform) {
+            interp::linear(fllc.r, G, nonuniform_r, nonuniform_G);
+            interp::linear(
+                fllc.r, fllc.optimal_epsilon, nonuniform_r,
+                fllc.nonuniform_optimal_epsilon);
+            interp::linear(
+                fllc.r, fllc.vel_rel, nonuniform_r, fllc.nonuniform_vel_rel);
+        }
+
         const auto optimal_epsilon = (fllc.nonuniform)
                                          ? fllc.nonuniform_optimal_epsilon
                                          : fllc.optimal_epsilon;
