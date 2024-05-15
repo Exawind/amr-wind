@@ -231,7 +231,7 @@ amrex::Real ChannelFlow::compute_error(const IndexSelector& idxOp)
 
     amrex::Real dpdx = 0;
     {
-        amrex::Vector<amrex::Real> body_force{{0.0, 0.0, 0.0}};
+        amrex::Vector<amrex::Real> body_force{0.0, 0.0, 0.0};
         amrex::ParmParse pp("BodyForce");
         pp.queryarr("magnitude", body_force, 0, AMREX_SPACEDIM);
         dpdx = body_force[flow_dir];
@@ -240,7 +240,7 @@ amrex::Real ChannelFlow::compute_error(const IndexSelector& idxOp)
     const auto& problo = m_mesh.Geom(0).ProbLoArray();
     amrex::Real ht = 0.0;
     {
-        amrex::Vector<amrex::Real> probhi_physical{{0.0, 0.0, 0.0}};
+        amrex::Vector<amrex::Real> probhi_physical{0.0, 0.0, 0.0};
         amrex::ParmParse pp("geometry");
         if (pp.contains("prob_hi_physical")) {
             pp.getarr("prob_hi_physical", probhi_physical);
