@@ -37,7 +37,7 @@ void MassInflowOutflowBC::operator()(Field& /*field*/, const FieldState /*rho_st
 #endif
         for (amrex::MFIter mfi(m_field(lev), mfi_info); mfi.isValid(); ++mfi) {
             auto bx = mfi.validbox();
-            //bx.grow({!ib, !jb, !kb});   // how to manage corner cells??
+            bx.grow({!ib, !jb, !kb});   // how to manage corner cells??
             const auto& bc_a = m_field(lev).array(mfi);
             const auto& vel = velocity(lev).array(mfi);
 
