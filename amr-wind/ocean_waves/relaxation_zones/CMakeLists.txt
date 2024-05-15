@@ -4,6 +4,5 @@ target_sources(${amr_wind_lib_name}
   relaxation_zones_ops.cpp
   LinearWaves.cpp
   StokesWaves.cpp
-  HOSWaves.cpp
   W2AWaves.cpp
   )
