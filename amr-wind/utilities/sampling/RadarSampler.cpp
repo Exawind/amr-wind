@@ -528,7 +528,9 @@ void RadarSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
     }
 }
 
-void RadarSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
+void RadarSampler::populate_netcdf_metadata(
+    const ncutils::NCGroup& /*unused*/) const
+{}
 
 void RadarSampler::output_netcdf_data(
     const ncutils::NCGroup& grp, const size_t nt) const
@@ -540,7 +542,7 @@ void RadarSampler::output_netcdf_data(
     cone_axis_locations(locs);
     count[1] = num_output_points();
     auto xyz = grp.var("points");
-    xyz.put(&locs[0][0], start, count);
+    xyz.put(locs[0].data(), start, count);
 
     if (m_output_cone_points) {
         std::vector<size_t> cone_start{nt, 0, 0};
@@ -550,7 +552,7 @@ void RadarSampler::output_netcdf_data(
         sampling_locations(conelocs);
         cone_count[1] = num_points();
         auto cone_xyz = grp.var("conepoints");
-        cone_xyz.put(&conelocs[0][0], cone_start, cone_count);
+        cone_xyz.put(conelocs[0].data(), cone_start, cone_count);
     }
 }
 
@@ -565,7 +567,7 @@ bool RadarSampler::output_netcdf_field(
     m_los_velocity_interp.resize(m_los_velocity.size());
 
     for (int k = 0; k < m_ntotal; k++) {
-        double mrat = (double)k / m_ntotal;
+        double mrat = static_cast<double>(k) / static_cast<double>(m_ntotal);
         for (int i = 0; i < m_npts; ++i) {
             int pi = i + k * m_npts;
             m_los_velocity_interp[pi] = mrat * m_los_velocity[pi] +
@@ -580,7 +582,7 @@ bool RadarSampler::output_netcdf_field(
 
     auto var = grp.var("los_velocity");
     count[1] = num_output_points();
-    var.put(&m_los_velocity_interp[0], start, count);
+    var.put(m_los_velocity_interp.data(), start, count);
 
     return true;
 }

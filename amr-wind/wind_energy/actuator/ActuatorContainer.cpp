@@ -55,9 +55,11 @@ void ActuatorContainer::initialize_container()
         const int nproc = amrex::ParallelDescriptor::NProcs();
         amrex::Vector<int> pts_per_proc(nproc, 0);
 #ifdef AMREX_USE_MPI
+        int local_total_pts = total_pts;
         MPI_Allgather(
-            &total_pts, 1, MPI_INT, pts_per_proc.data(), 1, MPI_INT,
+            &local_total_pts, 1, MPI_INT, pts_per_proc.data(), 1, MPI_INT,
             amrex::ParallelDescriptor::Communicator());
+        AMREX_ALWAYS_ASSERT(local_total_pts == total_pts);
 #else
         pts_per_proc[0] = total_pts;
 #endif

@@ -109,7 +109,7 @@ void ABLFieldInit::initialize_from_netcdf()
         profileFile, NC_NOWRITE | NC_NETCDF4 | NC_MPIIO,
         amrex::ParallelContext::CommunicatorSub(), MPI_INFO_NULL);
 
-    int num_prof_val = ncf.dim("nheight").len();
+    const auto num_prof_val = ncf.dim("nheight").len();
 
     m_theta_heights.resize(num_prof_val);
     m_theta_values.resize(num_prof_val);

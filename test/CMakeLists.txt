@@ -45,7 +45,7 @@ macro(setup_test)
     file(MAKE_DIRECTORY ${CURRENT_TEST_BINARY_DIR})
     file(GLOB TEST_FILES "${CURRENT_TEST_SOURCE_DIR}/*")
     file(COPY ${TEST_FILES} DESTINATION "${CURRENT_TEST_BINARY_DIR}/")
-    set(RUNTIME_OPTIONS "time.max_step=10 amr.plot_file=plt time.plot_interval=10 amrex.the_arena_is_managed=0 amrex.abort_on_out_of_gpu_memory=1")
+    set(RUNTIME_OPTIONS "time.max_step=10 io.plot_file=plt time.plot_interval=10 amrex.the_arena_is_managed=0 amrex.abort_on_out_of_gpu_memory=1")
     if(AMR_WIND_ENABLE_FPE_TRAP_FOR_TESTS)
       set(RUNTIME_OPTIONS "${RUNTIME_OPTIONS} amrex.signal_handling=1 amrex.fpe_trap_invalid=1 amrex.fpe_trap_zero=1 amrex.fpe_trap_overflow=1")
     else()
@@ -282,6 +282,10 @@ endif()
 
 if(AMR_WIND_ENABLE_ASCENT)
   add_test_re(abl_godunov_ascent)
+endif()
+
+if(AMR_WIND_ENABLE_W2A)
+  add_test_re(ow_w2a)
 endif()
 
 #=============================================================================

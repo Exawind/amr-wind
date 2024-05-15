@@ -18,11 +18,11 @@ template <typename FType, class... Args>
 inline void fast_func(const FType&& func, Args... args)
 {
     int ierr = ErrID_None;
-    char err_msg[fast_strlen()];
-    func(std::forward<Args>(args)..., &ierr, err_msg);
+    amrex::Array<char, fast_strlen()> err_msg;
+    func(std::forward<Args>(args)..., &ierr, err_msg.begin());
     if (ierr >= ErrID_Fatal) {
         std::string prefix = "FastIface: Error calling OpenFAST function: \n";
-        amrex::Abort(prefix + std::string(err_msg));
+        amrex::Abort(prefix + std::string(err_msg.begin()));
     }
 }
 
@@ -46,12 +46,12 @@ FastIface::FastIface(const amr_wind::CFDSim& /*unused*/) {}
 FastIface::~FastIface()
 {
     int ierr = ErrID_None;
-    char err_msg[fast_strlen()];
-    FAST_DeallocateTurbines(&ierr, err_msg);
+    amrex::Array<char, fast_strlen()> err_msg;
+    FAST_DeallocateTurbines(&ierr, err_msg.begin());
 
     if (ierr != ErrID_None) {
         amrex::OutStream() << "\nFastIface: Error deallocating turbine data\n"
-                           << err_msg << std::endl;
+                           << err_msg.begin() << std::endl;
     }
 }
 
@@ -141,8 +141,8 @@ void FastIface::get_hub_stats(const int local_id)
     auto& fi = *m_turbine_data[local_id];
 
     fast_func(
-        FAST_HubPosition, &fi.tid_local, fi.hub_abs_pos, fi.hub_rot_vel,
-        fi.hub_orient);
+        FAST_HubPosition, &fi.tid_local, fi.hub_abs_pos.begin(),
+        fi.hub_rot_vel.begin(), fi.hub_orient.begin());
 }
 
 void FastIface::advance_turbine(const int local_id)
@@ -173,9 +173,9 @@ void FastIface::advance_turbine(const int local_id)
 
     if (fi.chkpt_interval > 0 &&
         (fi.time_index / fi.num_substeps) % fi.chkpt_interval == 0) {
-        char rst_file[fast_strlen()];
-        copy_filename(" ", rst_file);
-        fast_func(FAST_CreateCheckpoint, &fi.tid_local, rst_file);
+        amrex::Array<char, fast_strlen()> rst_file;
+        copy_filename(" ", rst_file.begin());
+        fast_func(FAST_CreateCheckpoint, &fi.tid_local, rst_file.begin());
     }
 }
 
@@ -216,16 +216,16 @@ void FastIface::fast_init_turbine(FastTurbine& fi)
         "FastIface: Cannot find OpenFAST input file: " + fi.input_file);
 
     int abort_lev;
-    char inp_file[fast_strlen()];
-    copy_filename(fi.input_file, inp_file);
+    amrex::Array<char, fast_strlen()> inp_file;
+    copy_filename(fi.input_file, inp_file.begin());
 
     fast_func(
-        FAST_OpFM_Init, &fi.tid_local, &fi.stop_time, inp_file, &fi.tid_global,
-        &m_num_sc_inputs_glob, &m_num_sc_inputs, &m_num_sc_outputs,
-        &m_init_sc_inputs_glob, &m_init_sc_inputs_turbine, &fi.num_pts_blade,
-        &fi.num_pts_tower, fi.base_pos, &abort_lev, &fi.dt_fast, &fi.num_blades,
-        &fi.num_blade_elem, &fi.chord_cluster_type, &fi.to_cfd, &fi.from_cfd,
-        &fi.to_sc, &fi.from_sc);
+        FAST_OpFM_Init, &fi.tid_local, &fi.stop_time, inp_file.begin(),
+        &fi.tid_global, &m_num_sc_inputs_glob, &m_num_sc_inputs,
+        &m_num_sc_outputs, &m_init_sc_inputs_glob, &m_init_sc_inputs_turbine,
+        &fi.num_pts_blade, &fi.num_pts_tower, fi.base_pos.begin(), &abort_lev,
+        &fi.dt_fast, &fi.num_blades, &fi.num_blade_elem, &fi.chord_cluster_type,
+        &fi.to_cfd, &fi.from_cfd, &fi.to_sc, &fi.from_sc);
 
     {
 #ifdef AMR_WIND_USE_OPENFAST
@@ -317,13 +317,13 @@ void FastIface::fast_restart_turbine(FastTurbine& fi)
             fi.checkpoint_file);
 
     int abort_lev;
-    char chkpt_file[fast_strlen()];
-    copy_filename(fi.checkpoint_file, chkpt_file);
+    amrex::Array<char, fast_strlen()> chkpt_file;
+    copy_filename(fi.checkpoint_file, chkpt_file.begin());
 
     fast_func(
-        FAST_OpFM_Restart, &fi.tid_local, chkpt_file, &abort_lev, &fi.dt_fast,
-        &fi.num_blades, &fi.num_blade_elem, &fi.time_index, &fi.to_cfd,
-        &fi.from_cfd, &fi.to_sc, &fi.from_sc);
+        FAST_OpFM_Restart, &fi.tid_local, chkpt_file.begin(), &abort_lev,
+        &fi.dt_fast, &fi.num_blades, &fi.num_blade_elem, &fi.time_index,
+        &fi.to_cfd, &fi.from_cfd, &fi.to_sc, &fi.from_sc);
 
     {
 #ifdef AMR_WIND_USE_OPENFAST
@@ -387,7 +387,7 @@ void FastIface::prepare_netcdf_file(FastTurbine& fi)
     ncf.exit_def_mode();
 
     {
-        const size_t npts = static_cast<size_t>(fi.from_cfd.u_Len);
+        const auto npts = static_cast<size_t>(fi.from_cfd.u_Len);
         auto xco = ncf.var("xco");
         xco.put(fi.to_cfd.pxVel, {0}, {npts});
         auto yco = ncf.var("yco");
@@ -412,7 +412,7 @@ void FastIface::write_velocity_data(const FastTurbine& fi)
     auto ncf = ncutils::NCFile::open(fname, NC_WRITE);
     const std::string nt_name = "num_time_steps";
     const size_t nt = ncf.dim(nt_name).len();
-    const size_t npts = static_cast<size_t>(fi.from_cfd.u_Len);
+    const auto npts = static_cast<size_t>(fi.from_cfd.u_Len);
 
     const double time = fi.time_index * fi.dt_fast;
     ncf.var("time").put(&time, {nt}, {1});
@@ -429,8 +429,8 @@ void FastIface::read_velocity_data(
     FastTurbine& fi, const ncutils::NCFile& ncf, const size_t tid)
 {
 #ifdef AMR_WIND_USE_NETCDF
-    const size_t nt = static_cast<size_t>(tid);
-    const size_t npts = static_cast<size_t>(fi.from_cfd.u_Len);
+    const auto nt = static_cast<size_t>(tid);
+    const auto npts = static_cast<size_t>(fi.from_cfd.u_Len);
 
     auto& uu = fi.from_cfd;
     ncf.var("uvel").get(uu.u, {nt, 0}, {1, npts});

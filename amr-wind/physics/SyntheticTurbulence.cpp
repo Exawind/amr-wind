@@ -119,9 +119,9 @@ void process_nc_file(const std::string& turb_filename, SynthTurbData& turb_grid)
     auto ny = ncf.dim("ny").len();
     auto nz = ncf.dim("nz").len();
 
-    turb_grid.box_dims[0] = nx;
-    turb_grid.box_dims[1] = ny;
-    turb_grid.box_dims[2] = nz;
+    turb_grid.box_dims[0] = static_cast<int>(nx);
+    turb_grid.box_dims[1] = static_cast<int>(ny);
+    turb_grid.box_dims[2] = static_cast<int>(nz);
 
     // Box lengths and resolution
     auto box_len = ncf.var("box_lengths");
@@ -172,18 +172,19 @@ void load_turb_plane_data(
 
     if ((ir - il) == 1) {
         // two consecutive planes load them in one shot
-        uvel.get(&turb_grid.uvel[0], start, count);
-        vvel.get(&turb_grid.vvel[0], start, count);
-        wvel.get(&turb_grid.wvel[0], start, count);
+        uvel.get(turb_grid.uvel.data(), start, count);
+        vvel.get(turb_grid.vvel.data(), start, count);
+        wvel.get(turb_grid.wvel.data(), start, count);
     } else {
         // Load the planes separately
         count[0] = 1;
-        uvel.get(&turb_grid.uvel[0], start, count);
-        vvel.get(&turb_grid.vvel[0], start, count);
-        wvel.get(&turb_grid.wvel[0], start, count);
+        uvel.get(turb_grid.uvel.data(), start, count);
+        vvel.get(turb_grid.vvel.data(), start, count);
+        wvel.get(turb_grid.wvel.data(), start, count);
 
         start[0] = static_cast<size_t>(ir);
-        const size_t offset = turb_grid.box_dims[1] * turb_grid.box_dims[2];
+        const size_t offset = static_cast<size_t>(turb_grid.box_dims[1]) *
+                              static_cast<size_t>(turb_grid.box_dims[2]);
         uvel.get(&turb_grid.uvel[offset], start, count);
         vvel.get(&turb_grid.vvel[offset], start, count);
         wvel.get(&turb_grid.wvel[offset], start, count);
@@ -304,11 +305,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void interp_perturb_vel(
 {
     const int nz = t_grid.box_dims[2];
     const int nynz = t_grid.box_dims[1] * t_grid.box_dims[2];
-    // clang-format off
     // Indices of the 2-D cell that contains the sampling point
-    int qidx[4]{wt.jl * nz + wt.kl, wt.jr * nz + wt.kl, wt.jr * nz + wt.kr,
-                wt.jl * nz + wt.kr};
-    // clang-format on
+    amrex::Array<int, 4> qidx = {
+        wt.jl * nz + wt.kl, wt.jr * nz + wt.kl, wt.jr * nz + wt.kr,
+        wt.jl * nz + wt.kr};
 
     vs::Vector vel_l, vel_r;
 

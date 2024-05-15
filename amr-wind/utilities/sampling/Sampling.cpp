@@ -61,6 +61,7 @@ void Sampling::initialize()
     // Process derived field information
     if (!derived_field_names.empty()) {
         m_derived_mgr->create(derived_field_names);
+        m_derived_mgr->filter(field_names);
         m_ndcomp = m_derived_mgr->num_comp();
         m_derived_mgr->var_names(m_var_names);
     }
@@ -312,8 +313,9 @@ void Sampling::impl_write_native()
 void Sampling::write_ascii()
 {
     BL_PROFILE("amr-wind::Sampling::write_ascii");
-    amrex::Print() << "WARNING: Sampling: ASCII output will impact performance"
-                   << std::endl;
+    amrex::Print()
+        << "WARNING: Sampling: ASCII output will negatively impact performance"
+        << std::endl;
 
     const std::string post_dir = "post_processing";
     const std::string sname =
@@ -339,7 +341,9 @@ void Sampling::prepare_netcdf_file()
     m_ncfile_name = post_dir + "/" + sname + ".nc";
 
     // Only I/O processor handles NetCDF generation
-    if (!amrex::ParallelDescriptor::IOProcessor()) return;
+    if (!amrex::ParallelDescriptor::IOProcessor()) {
+        return;
+    }
 
     auto ncf = ncutils::NCFile::create(m_ncfile_name, NC_CLOBBER | NC_NETCDF4);
     const std::string nt_name = "num_time_steps";
@@ -362,8 +366,8 @@ void Sampling::prepare_netcdf_file()
 
         // Create variables in each sampler
         // Removing velocity components when LOS velocity is output
-        for (const std::string vname : m_var_names) {
-            if (obj->do_convert_velocity_los() == false) {
+        for (const std::string& vname : m_var_names) {
+            if (!obj->do_convert_velocity_los()) {
                 grp.def_var(vname, NC_DOUBLE, two_dim);
             } else {
                 if (vname.find("velocity") == std::string::npos) {
@@ -388,7 +392,7 @@ void Sampling::prepare_netcdf_file()
             obj->output_locations(locs);
             auto xyz = grp.var("coordinates");
             count[0] = obj->num_output_points();
-            xyz.put(&locs[0][0], start, count);
+            xyz.put(locs[0].data(), start, count);
         }
     }
 
@@ -402,7 +406,12 @@ void Sampling::prepare_netcdf_file()
 void Sampling::write_netcdf()
 {
 #ifdef AMR_WIND_USE_NETCDF
-    if (!amrex::ParallelDescriptor::IOProcessor()) return;
+    if (!amrex::ParallelDescriptor::IOProcessor()) {
+        return;
+    }
+    amrex::Print()
+        << "WARNING: Sampling: netcdf output will negatively impact performance"
+        << std::endl;
     auto ncf = ncutils::NCFile::open(m_ncfile_name, NC_WRITE);
     const std::string nt_name = "num_time_steps";
     // Index of the next timestep
@@ -421,17 +430,17 @@ void Sampling::write_netcdf()
     std::vector<size_t> count{1, 0};
 
     // Standard sampler output from input deck
-    const int nvars = m_var_names.size();
+    const auto nvars = m_var_names.size();
     for (int iv = 0; iv < nvars; ++iv) {
         std::string vname = m_var_names[iv];
         start[1] = 0;
         count[1] = 0;
-        int offset = iv * num_output_particles();
+        auto offset = iv * num_output_particles();
         for (const auto& obj : m_samplers) {
             auto grp = ncf.group(obj->label());
             count[1] = obj->num_output_points();
 
-            if (obj->do_convert_velocity_los() == false) {
+            if (!obj->do_convert_velocity_los()) {
                 auto var = grp.var(vname);
                 var.put(&m_output_buf[offset], start, count);
             } else {
@@ -440,7 +449,7 @@ void Sampling::write_netcdf()
                     var.put(&m_output_buf[offset], start, count);
                 }
             }
-            offset += count[1];
+            offset += static_cast<int>(count[1]);
         }
     }
 
@@ -448,7 +457,9 @@ void Sampling::write_netcdf()
     // Output of los_velocity goes here in addition to other custom output
     for (const auto& obj : m_samplers) {
         auto grp = ncf.group(obj->label());
-        bool custom_output = obj->output_netcdf_field(m_output_buf, grp, nt);
+        const bool custom_output =
+            obj->output_netcdf_field(m_output_buf, grp, nt);
+        AMREX_ALWAYS_ASSERT(custom_output);
     }
 
     ncf.close();

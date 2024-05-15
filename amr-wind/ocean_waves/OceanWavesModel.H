@@ -41,6 +41,10 @@ public:
     virtual void prepare_outputs(const std::string&) = 0;
 
     virtual void write_outputs() = 0;
+
+    virtual void record_regrid_flag() = 0;
+
+    virtual void reset_regrid_flag() = 0;
 };
 
 /** Concrete implementation of the WaveModel for different wave theories.
@@ -101,6 +105,10 @@ public:
     {
         m_out_op.prepare_outputs(out_dir);
     }
+
+    void record_regrid_flag() override { m_data.meta().regrid_occurred = true; }
+
+    void reset_regrid_flag() override { m_data.meta().regrid_occurred = false; }
 
     void write_outputs() override { m_out_op.write_outputs(); }
 
