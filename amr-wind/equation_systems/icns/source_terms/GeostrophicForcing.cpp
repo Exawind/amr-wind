@@ -116,7 +116,7 @@ void GeostrophicForcing::operator()(
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> forcing{
-        {m_g_forcing[0], m_g_forcing[1], m_g_forcing[2]}};
+        m_g_forcing[0], m_g_forcing[1], m_g_forcing[2]};
 
     // Calculate forcing values if target velocity is a function of time
     if (!m_vel_timetable.empty()) {

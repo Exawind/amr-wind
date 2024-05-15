@@ -48,7 +48,7 @@ void GravityForcing::operator()(
     const amrex::Array4<amrex::Real>& vel_forces) const
 {
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
-        {m_gravity[0], m_gravity[1], m_gravity[2]}};
+        m_gravity[0], m_gravity[1], m_gravity[2]};
 
     const auto& rho_arr =
         ((*m_rho).state(field_impl::phi_state(fstate)))(lev).const_array(mfi);

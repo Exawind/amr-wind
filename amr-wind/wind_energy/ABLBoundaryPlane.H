@@ -176,8 +176,8 @@ private:
     int m_write_frequency{1};
 
     //! Plane names
-    amrex::Vector<std::string> m_plane_names{
-        {"xlo", "ylo", "zlo", "xhi", "yhi", "zhi"}};
+    amrex::Vector<std::string> m_plane_names{"xlo", "ylo", "zlo",
+                                             "xhi", "yhi", "zhi"};
 
     //! IO boundary planes
     amrex::Vector<std::string> m_planes;
