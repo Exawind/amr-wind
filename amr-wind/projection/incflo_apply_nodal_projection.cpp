@@ -164,7 +164,7 @@ void incflo::ApplyProjection(
     auto& grad_p = m_repo.get_field("gp");
     auto& pressure = m_repo.get_field("p");
     auto& velocity = icns().fields().field;
-amrex::WriteSingleLevelPlotfile("plt_vel_pre_nodalproj", velocity(0), {"u","v","w"}, geom[0], 0.0, 0);
+//amrex::WriteSingleLevelPlotfile("plt_vel_pre_nodalproj", velocity(0), {"u","v","w"}, geom[0], 0.0, 0);
     auto& velocity_old = icns().fields().field.state(amr_wind::FieldState::Old);
     amr_wind::Field const* mesh_fac =
         mesh_mapping
@@ -337,6 +337,8 @@ amrex::WriteSingleLevelPlotfile("plt_vel_pre_nodalproj", velocity(0), {"u","v","
                 m_sim.physics_manager(), velocity, lev, time, *vel[lev], 1);
         }
     }
+//amrex::Print() << "*********** partition **********" << std::endl;
+//amrex::Print() << velocity(0)[0];
 
     // need to apply custom Neumann funcs for inflow-outflow BC
     // after setting the inflow vels above
@@ -344,6 +346,7 @@ amrex::WriteSingleLevelPlotfile("plt_vel_pre_nodalproj", velocity(0), {"u","v","
         velocity.apply_bc_funcs(amr_wind::FieldState::New);
     }
 
+//amrex::Print() << velocity(0)[0];
 
     if (is_anelastic) {
         for (int lev = 0; lev <= finest_level; ++lev) {
@@ -471,7 +474,7 @@ amrex::WriteSingleLevelPlotfile("plt_vel_pre_nodalproj", velocity(0), {"u","v","
         }
     }
 
-amrex::WriteSingleLevelPlotfile("plt_vel_post_nodalproj", velocity(0), {"u","v","w"}, geom[0], 0.0, 0);
+//amrex::WriteSingleLevelPlotfile("plt_vel_post_nodalproj", velocity(0), {"u","v","w"}, geom[0], 0.0, 0);
 
     // Get phi and fluxes
     auto phi = nodal_projector->getPhi();
