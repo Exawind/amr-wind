@@ -50,7 +50,7 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
                     pp.query("C1", m_C1);
                     {
                         amrex::ParmParse ppb("BodyForce");
-                        amrex::Vector<amrex::Real> body_force{{0.0, 0.0, 0.0}};
+                        amrex::Vector<amrex::Real> body_force{0.0, 0.0, 0.0};
                         ppb.queryarr("magnitude", body_force);
                         m_dpdx = -body_force[0];
                         AMREX_ALWAYS_ASSERT_WITH_MESSAGE(

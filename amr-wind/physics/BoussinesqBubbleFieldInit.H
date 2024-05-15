@@ -30,7 +30,7 @@ public:
 
 private:
     //! Initial bubble location
-    amrex::Vector<amrex::Real> m_loc{{0.25, 0.25, 0.5}};
+    amrex::Vector<amrex::Real> m_loc{0.25, 0.25, 0.5};
 
     //! Initial density field
     amrex::Real m_rho{1.0};

@@ -451,16 +451,15 @@ void ABLBoundaryPlane::write_header()
                 const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
                 const auto& lo = minBox.loVect();
                 const auto& hi = minBox.hiVect();
-                const amrex::Vector<amrex::Real> pdx{
-                    {dx[perp[0]], dx[perp[1]]}};
+                const amrex::Vector<amrex::Real> pdx{dx[perp[0]], dx[perp[1]]};
                 const amrex::Vector<amrex::Real> los{
-                    {lo[perp[0]] * dx[perp[0]], lo[perp[1]] * dx[perp[1]]}};
+                    lo[perp[0]] * dx[perp[0]], lo[perp[1]] * dx[perp[1]]};
                 const amrex::Vector<amrex::Real> his{
-                    {(hi[perp[0]] + 1) * dx[perp[0]],
-                     (hi[perp[1]] + 1) * dx[perp[1]]}};
+                    (hi[perp[0]] + 1) * dx[perp[0]],
+                    (hi[perp[1]] + 1) * dx[perp[1]]};
                 const amrex::Vector<amrex::Real> lengths{
-                    {minBox.length(perp[0]) * dx[perp[0]],
-                     minBox.length(perp[1]) * dx[perp[1]]}};
+                    minBox.length(perp[0]) * dx[perp[0]],
+                    minBox.length(perp[1]) * dx[perp[1]]};
 
                 lev_grp.var("lengths").put(lengths.data());
                 lev_grp.var("lo").put(los.data());
@@ -645,17 +644,16 @@ void ABLBoundaryPlane::read_header()
                 const auto& lo = minBox.loVect();
                 const auto& hi = minBox.hiVect();
                 const auto& dx = m_mesh.Geom(lev).CellSizeArray();
-                const amrex::Vector<amrex::Real> pdx{
-                    {dx[perp[0]], dx[perp[1]]}};
+                const amrex::Vector<amrex::Real> pdx{dx[perp[0]], dx[perp[1]]};
                 const amrex::Vector<amrex::Real> los{
-                    {lo[perp[0]] * pdx[0], lo[perp[1]] * pdx[1]}};
+                    lo[perp[0]] * pdx[0], lo[perp[1]] * pdx[1]};
                 const amrex::Vector<amrex::Real> his{
-                    {(hi[perp[0]] + 1) * pdx[0], (hi[perp[1]] + 1) * pdx[1]}};
+                    (hi[perp[0]] + 1) * pdx[0], (hi[perp[1]] + 1) * pdx[1]};
                 const amrex::Vector<amrex::Real> lengths{
-                    {minBox.length(perp[0]) * pdx[0],
-                     minBox.length(perp[1]) * pdx[1]}};
+                    minBox.length(perp[0]) * pdx[0],
+                    minBox.length(perp[1]) * pdx[1]};
 
-                amrex::Vector<amrex::Real> nc_dat{{0, 0}};
+                amrex::Vector<amrex::Real> nc_dat{0, 0};
                 lev_grp.var("lengths").get(nc_dat.data());
                 AMREX_ALWAYS_ASSERT(nc_dat == lengths);
                 lev_grp.var("lo").get(nc_dat.data());

@@ -31,7 +31,7 @@ public:
 
 private:
     //! User input parameters
-    amrex::Vector<amrex::Real> m_beta{{0.0, 3.0, 0.0}};
+    amrex::Vector<amrex::Real> m_beta{0.0, 3.0, 0.0};
 
     amrex::Real m_eps{1e-11};
 };

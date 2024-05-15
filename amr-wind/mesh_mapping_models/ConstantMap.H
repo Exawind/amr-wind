@@ -31,7 +31,7 @@ public:
 
 private:
     //! Factor to scale the mesh by
-    amrex::Vector<amrex::Real> m_fac{{1.0, 1.0, 1.0}};
+    amrex::Vector<amrex::Real> m_fac{1.0, 1.0, 1.0};
 };
 
 } // namespace amr_wind::const_map

@@ -26,7 +26,7 @@ public:
         const amrex::Array4<amrex::Real>& vel_forces) const override;
 
 private:
-    amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
+    amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
 
     Field* m_rho{nullptr};
     Field* m_rho0{nullptr};
