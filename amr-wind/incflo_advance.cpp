@@ -190,13 +190,6 @@ void incflo::ApplyPredictor(bool incremental_projection)
     const auto& density_old = density_new.state(amr_wind::FieldState::Old);
     auto& density_nph = density_new.state(amr_wind::FieldState::NPH);
 
-    // Recalculate incoming pressure gradient field if overset
-    if (sim().has_overset()) {
-        UpdateGradP(
-            (density_old).vec_const_ptrs(), m_time.current_time(),
-            m_time.deltaT());
-    }
-
     // *************************************************************************************
     // Compute viscosity / diffusive coefficients
     // *************************************************************************************
