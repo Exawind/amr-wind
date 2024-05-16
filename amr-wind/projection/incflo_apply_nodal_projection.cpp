@@ -31,7 +31,7 @@ Array<amrex::LinOpBCType, AMREX_SPACEDIM>
 amr_wind::nodal_projection::get_projection_bc(
     Orientation::Side side,
     amr_wind::Field& pressure,
-    Array<int, AMREX_SPACEDIM> is_periodic)
+    const Array<int, AMREX_SPACEDIM>& is_periodic)
 {
     const auto& bctype = pressure.bc_type();
     Array<LinOpBCType, AMREX_SPACEDIM> r;

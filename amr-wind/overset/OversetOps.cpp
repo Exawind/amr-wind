@@ -10,7 +10,7 @@ namespace amr_wind {
 
 void OversetOps::initialize(CFDSim& sim) { m_sim_ptr = &sim; }
 
-void OversetOps::pre_advance_actions()
+void OversetOps::pre_advance_work()
 {
     // Update pressure gradient using updated overset pressure field
     update_gradp();

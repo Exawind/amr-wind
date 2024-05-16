@@ -312,7 +312,7 @@ void incflo::Evolve()
 void incflo::do_advance()
 {
     if (m_sim.has_overset()) {
-        m_ovst_ops.pre_advance_actions();
+        m_ovst_ops.pre_advance_work();
     }
     if (m_prescribe_vel) {
         prescribe_advance();

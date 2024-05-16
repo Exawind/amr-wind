@@ -12,9 +12,8 @@ public:
     OversetOps() = default;
 
     void initialize(CFDSim& sim);
-    void pre_advance_actions();
+    void pre_advance_work();
 
-    // Needs to be public for cuda
     void update_gradp();
 
 private:
