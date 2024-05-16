@@ -113,7 +113,7 @@ void FLLCParse(const utils::ActParser& pp, FLLCData& data)
     pp.query("fllc_type", typeString);
     data.correction_type = FLLCTypeMap.at(typeString);
     pp.query("fllc_nonuniform", data.nonuniform);
-    pp.query("fllc_eps_dr", data.eps_dr);
+    pp.query("fllc_epsilon_dr_ratio", data.eps_dr);
 
     if (!pp.contains("epsilon") || !pp.contains("epsilon_chord")) {
         amrex::Abort(
