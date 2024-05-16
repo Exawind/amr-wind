@@ -90,7 +90,7 @@ private:
     int m_n_band{2};
 
     //! ABL forcing terms
-    amrex::RealArray m_abl_forcing{0.0, 0.0, 0.0};
+    amrex::RealArray m_abl_forcing{0.0};
 
     //! File name for velocity forcing time table
     std::string m_vel_timetable;
