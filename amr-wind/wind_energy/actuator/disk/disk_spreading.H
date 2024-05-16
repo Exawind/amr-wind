@@ -68,7 +68,7 @@ public:
                     problo[2] + (k + 0.5) * dx[2],
                 };
 
-                amrex::RealArray src_force = {0.0, 0.0, 0.0};
+                amrex::RealArray src_force = {0.0};
                 for (int ip = 0; ip < npts; ++ip) {
                     const auto& pforce = force[ip] / nForceTheta;
                     const auto pLoc = pos[ip];

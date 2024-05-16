@@ -327,7 +327,7 @@ void ABLStats::write_ascii()
         return;
     }
 
-    amrex::RealArray abl_forcing = {0.0, 0.0, 0.0};
+    amrex::RealArray abl_forcing = {0.0};
     if (m_abl_forcing != nullptr) {
         abl_forcing = m_abl_forcing->abl_forcing();
     }
@@ -537,7 +537,7 @@ void ABLStats::write_netcdf()
         ncf.var("L").put(&L, {nt}, {1});
         ncf.var("zi").put(&m_zi, {nt}, {1});
 
-        amrex::RealArray abl_forcing = {0.0, 0.0, 0.0};
+        amrex::RealArray abl_forcing = {0.0};
         if (m_abl_forcing != nullptr) {
             abl_forcing = m_abl_forcing->abl_forcing();
         }

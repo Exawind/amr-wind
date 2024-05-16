@@ -117,10 +117,10 @@ private:
     amrex::Real m_tke_cutoff_height{250.};
 
     //! Top velocity
-    amrex::RealArray m_top_vel{20.0, 0.0, 0.0};
+    amrex::RealArray m_top_vel{20.0};
 
     //! Bottom velocity
-    amrex::RealArray m_bottom_vel{4.0, 0.0, 0.0};
+    amrex::RealArray m_bottom_vel{4.0};
 
     //! Initial linear velocity profile boolean
     bool m_linear_profile{false};

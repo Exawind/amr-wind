@@ -109,7 +109,7 @@ void ActSrcOp<ActTrait, ActSrcLine>::operator()(
             problo[2] + (k + 0.5) * dx[2],
         };
 
-        amrex::RealArray src_force = {0.0, 0.0, 0.0};
+        amrex::RealArray src_force = {0.0};
         for (int ip = 0; ip < npts; ++ip) {
             // Put force at n+1/2 location for Godunov
             constexpr amrex::Real wt = 0.5;
