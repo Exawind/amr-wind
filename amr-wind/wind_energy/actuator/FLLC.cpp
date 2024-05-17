@@ -74,7 +74,7 @@ void FLLCInit(
             // This will ensure that the spacing will always meet the
             // requirement eps/dr
             dr = std::min(dr1, dr2);
-            assert(dr > 0.);
+            AMREX_ALWAYS_ASSERT(dr > std::numeric_limits<amrex::Real>::epsilon());
 
             // Append value to the array
             // Ensure that the value is smaller than the tip
