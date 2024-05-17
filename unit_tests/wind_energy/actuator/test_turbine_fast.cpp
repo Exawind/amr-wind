@@ -50,6 +50,8 @@ protected:
             pp.addarr(
                 "epsilon_chord", amrex::Vector<amrex::Real>{3.0, 3.0, 3.0});
 
+            pp.add("density", 1.0);
+
             pp.add("openfast_input_file", std::string("fast_inp/nrel5mw.fst"));
             pp.add("openfast_start_time", 0.0);
             pp.add("openfast_stop_time", 0.625);

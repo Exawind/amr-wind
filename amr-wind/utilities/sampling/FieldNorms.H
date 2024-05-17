@@ -33,20 +33,20 @@ public:
 
     void post_regrid_actions() override {}
 
-    //! Write sampled data in binary format
-    void impl_write_native();
-
     //! calculate the L2 norm of a given field and component
-    static amrex::Real L2_norm(amr_wind::Field& field, const int comp);
+    static amrex::Real
+    L2_norm(amr_wind::Field& field, const int comp, const bool use_mask);
 
     const amrex::Vector<std::string>& var_names() const { return m_var_names; }
 
+    const amrex::Vector<amrex::Real>& field_norms() const { return m_fnorms; }
+
 private:
     //! prepare ASCII file and directory
-    void prepare_ascii_file();
+    virtual void prepare_ascii_file();
 
     //! Output sampled data in ASCII format
-    void write_ascii();
+    virtual void write_ascii();
 
     //!  process all fields and calculate norms
     void process_field_norms();
@@ -78,6 +78,9 @@ private:
 
     //! precision in ASCII output
     int m_precision{12};
+
+    //! Mask redundant grids (finest available grid only)
+    bool m_use_mask{true};
 };
 
 } // namespace amr_wind::field_norms

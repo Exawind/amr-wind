@@ -67,6 +67,12 @@ actual keyword is determined by the labels provided to
 
    List of CFD simulation fields to sample and output
 
+.. input_param:: sampling.derived_fields
+
+   **type:** List of one or more strings
+
+   List of CFD simulation derived fields to sample and output (e.g. mag_vorticity)
+
 The individual sampling types are documented below
 
 Sampling along a line

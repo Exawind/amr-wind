@@ -79,7 +79,9 @@ void prepare_netcdf_file(
 {
 #ifdef AMR_WIND_USE_NETCDF
     // Only root process handles I/O
-    if (info.root_proc != amrex::ParallelDescriptor::MyProc()) return;
+    if (info.root_proc != amrex::ParallelDescriptor::MyProc()) {
+        return;
+    }
 
     auto ncf = ncutils::NCFile::create(ncfile, NC_CLOBBER | NC_NETCDF4);
     const std::string nt_name = "num_time_steps";
@@ -116,15 +118,15 @@ void prepare_netcdf_file(
     ncf.exit_def_mode();
 
     {
-        const size_t npts = static_cast<size_t>(meta.num_pts);
+        const auto npts = static_cast<size_t>(meta.num_pts);
         const std::vector<size_t> start{0, 0};
         const std::vector<size_t> count{npts, AMREX_SPACEDIM};
         auto xyz = grp.var("xyz");
-        xyz.put(&(grid.pos[0][0]), start, count);
+        xyz.put(grid.pos[0].data(), start, count);
         auto chord = grp.var("chord");
-        chord.put(&(meta.chord[0]), {0}, {npts});
+        chord.put(meta.chord.data(), {0}, {npts});
         auto dx = grp.var("dx");
-        dx.put(&(meta.dx[0]), {0}, {npts});
+        dx.put(meta.dx.data(), {0}, {npts});
     }
 #else
     amrex::ignore_unused(ncfile, meta, info, grid);
@@ -140,13 +142,15 @@ void write_netcdf(
 {
 #ifdef AMR_WIND_USE_NETCDF
     // Only root process handles I/O
-    if (info.root_proc != amrex::ParallelDescriptor::MyProc()) return;
+    if (info.root_proc != amrex::ParallelDescriptor::MyProc()) {
+        return;
+    }
 
     auto ncf = ncutils::NCFile::open(ncfile, NC_WRITE);
     const std::string nt_name = "num_time_steps";
     // Index of next timestep
     const size_t nt = ncf.dim(nt_name).len();
-    const size_t npts = static_cast<size_t>(meta.num_pts);
+    const auto npts = static_cast<size_t>(meta.num_pts);
 
     std::vector<size_t> start{nt, 0};
     std::vector<size_t> count{1, npts};
@@ -155,14 +159,14 @@ void write_netcdf(
     grp.var("integrated_lift").put(&meta.lift, {nt}, {1});
     grp.var("integrated_drag").put(&meta.drag, {nt}, {1});
     grp.var("vrel").put(
-        &(meta.vel_rel[0][0]), {nt, 0, 0}, {1, npts, AMREX_SPACEDIM});
+        meta.vel_rel[0].data(), {nt, 0, 0}, {1, npts, AMREX_SPACEDIM});
     grp.var("veff").put(
-        &(grid.vel[0][0]), {nt, 0, 0}, {1, npts, AMREX_SPACEDIM});
+        grid.vel[0].data(), {nt, 0, 0}, {1, npts, AMREX_SPACEDIM});
     grp.var("body_force")
-        .put(&(grid.force[0][0]), {nt, 0, 0}, {1, npts, AMREX_SPACEDIM});
-    grp.var("aoa").put(&(meta.aoa[0]), start, count);
-    grp.var("cl").put(&(meta.cl[0]), start, count);
-    grp.var("cd").put(&(meta.cd[0]), start, count);
+        .put(grid.force[0].data(), {nt, 0, 0}, {1, npts, AMREX_SPACEDIM});
+    grp.var("aoa").put(meta.aoa.data(), start, count);
+    grp.var("cl").put(meta.cl.data(), start, count);
+    grp.var("cd").put(meta.cd.data(), start, count);
 #else
     amrex::ignore_unused(ncfile, meta, info, grid, time);
 #endif

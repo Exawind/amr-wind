@@ -15,7 +15,7 @@ struct VorticityMag : public DerivedQty::Register<VorticityMag>
 
     int num_comp() const override { return ncomp; }
 
-    void operator()(ScratchField& fld, const int scomp = 0) override;
+    void operator()(ScratchField& fld, const int scomp = 0) const override;
 
 private:
     const Field& m_vel;
@@ -32,7 +32,7 @@ struct QCriterion : public DerivedQty::Register<QCriterion>
 
     int num_comp() const override { return ncomp; }
 
-    void operator()(ScratchField& fld, const int scomp = 0) override;
+    void operator()(ScratchField& fld, const int scomp = 0) const override;
 
 private:
     const Field& m_vel;
@@ -50,7 +50,7 @@ struct QCriterionNondim : public DerivedQty::Register<QCriterionNondim>
 
     int num_comp() const override { return ncomp; }
 
-    void operator()(ScratchField& fld, const int scomp = 0) override;
+    void operator()(ScratchField& fld, const int scomp = 0) const override;
 
 private:
     const Field& m_vel;
@@ -67,7 +67,7 @@ struct StrainRateMag : public DerivedQty::Register<StrainRateMag>
 
     int num_comp() const override { return ncomp; }
 
-    void operator()(ScratchField& fld, const int scomp = 0) override;
+    void operator()(ScratchField& fld, const int scomp = 0) const override;
 
 private:
     const Field& m_vel;
@@ -83,7 +83,7 @@ struct Gradient : public DerivedQty::Register<Gradient>
 
     int num_comp() const override { return AMREX_SPACEDIM * m_phi->num_comp(); }
 
-    void operator()(ScratchField& fld, const int scomp = 0) override;
+    void operator()(ScratchField& fld, const int scomp = 0) const override;
 
 private:
     const Field* m_phi;
@@ -99,7 +99,7 @@ struct Divergence : public DerivedQty::Register<Divergence>
 
     int num_comp() const override { return 1; }
 
-    void operator()(ScratchField& fld, const int scomp = 0) override;
+    void operator()(ScratchField& fld, const int scomp = 0) const override;
 
 private:
     const Field* m_phi;
@@ -116,7 +116,7 @@ struct Laplacian : public DerivedQty::Register<Laplacian>
 
     int num_comp() const override { return ncomp; }
 
-    void operator()(ScratchField& fld, const int scomp = 0) override;
+    void operator()(ScratchField& fld, const int scomp = 0) const override;
 
 private:
     const Field* m_phi;
@@ -135,7 +135,7 @@ struct FieldComponents : public DerivedQty::Register<FieldComponents>
 
     void var_names(amrex::Vector<std::string>& plt_var_names) override;
 
-    void operator()(ScratchField& fld, const int scomp = 0) override;
+    void operator()(ScratchField& fld, const int scomp = 0) const override;
 
 private:
     const Field* m_fld;

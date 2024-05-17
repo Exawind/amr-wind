@@ -98,7 +98,9 @@ void LidarSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
     grp.def_var("points", NC_DOUBLE, {"num_time_steps", "num_points", "ndim"});
 }
 
-void LidarSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
+void LidarSampler::populate_netcdf_metadata(
+    const ncutils::NCGroup& /*unused*/) const
+{}
 void LidarSampler::output_netcdf_data(
     const ncutils::NCGroup& grp, const size_t nt) const
 {
@@ -109,7 +111,7 @@ void LidarSampler::output_netcdf_data(
     sampling_locations(locs);
     auto xyz = grp.var("points");
     count[1] = num_points();
-    xyz.put(&locs[0][0], start, count);
+    xyz.put(locs[0].data(), start, count);
 }
 #else
 void LidarSampler::define_netcdf_metadata(

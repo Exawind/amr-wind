@@ -81,15 +81,16 @@ void DerivedQtyMgr::create(const amrex::Vector<std::string>& keys)
     }
 }
 
-void DerivedQtyMgr::operator()(ScratchField& fld, const int scomp)
+void DerivedQtyMgr::operator()(ScratchField& fld, const int scomp) const
 {
     AMREX_ALWAYS_ASSERT((scomp + num_comp()) <= fld.num_comp());
 
     int icomp = scomp;
-    for (auto& qty : m_derived_vec) {
+    for (const auto& qty : m_derived_vec) {
         (*qty)(fld, icomp);
         icomp += qty->num_comp();
     }
+    fld.fillpatch(0.0);
 }
 
 int DerivedQtyMgr::num_comp() const noexcept
@@ -113,6 +114,38 @@ void DerivedQtyMgr::var_names(
     for (const auto& qty : m_derived_vec) {
         qty->var_names(plt_var_names);
     }
+}
+
+void DerivedQtyMgr::filter(const amrex::Vector<std::string>& erase)
+{
+    const std::set<std::string> set_erase(erase.begin(), erase.end());
+    filter(set_erase);
+}
+
+void DerivedQtyMgr::filter(const std::set<std::string>& erase)
+{
+    // first erase from the unordered map
+    amrex::Vector<decltype(m_obj_map)::key_type> keys_to_erase;
+    for (int i = 0; i < m_derived_vec.size(); i++) {
+        if (erase.find(m_derived_vec[i]->name()) != erase.end()) {
+            auto it = std::find_if(
+                m_obj_map.begin(), m_obj_map.end(),
+                [&i](auto&& p) { return p.second == i; });
+            keys_to_erase.emplace_back(it->first);
+        }
+    }
+    for (auto&& key : keys_to_erase) {
+        m_obj_map.erase(key);
+    }
+
+    // then erase from the derived vec
+    m_derived_vec.erase(
+        std::remove_if(
+            m_derived_vec.begin(), m_derived_vec.end(),
+            [=](const auto& qty) {
+                return erase.find(qty->name()) != erase.end();
+            }),
+        m_derived_vec.end());
 }
 
 } // namespace amr_wind

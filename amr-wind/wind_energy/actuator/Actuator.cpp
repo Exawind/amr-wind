@@ -10,7 +10,8 @@
 namespace amr_wind::actuator {
 
 Actuator::Actuator(CFDSim& sim)
-    : m_sim(sim), m_act_source(sim.repo().declare_field("actuator_src_term", 3))
+    : m_sim(sim)
+    , m_act_source(sim.repo().declare_field("actuator_src_term", 3, 1))
 {}
 
 Actuator::~Actuator() = default;
@@ -244,6 +245,10 @@ void Actuator::compute_source_term()
                 }
             }
         }
+
+        // Ensure actuator src fills ghost cells prior to use (post-processing)
+        // Just need the interior velocity ghost cells updated
+        sfab.FillBoundary(geom.periodicity());
     }
 }
 

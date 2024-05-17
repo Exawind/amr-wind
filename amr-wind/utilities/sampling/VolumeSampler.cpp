@@ -64,7 +64,9 @@ void VolumeSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
     grp.put_attr("hi", m_hi);
 }
 
-void VolumeSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
+void VolumeSampler::populate_netcdf_metadata(
+    const ncutils::NCGroup& /*unused*/) const
+{}
 #else
 void VolumeSampler::define_netcdf_metadata(
     const ncutils::NCGroup& /*unused*/) const

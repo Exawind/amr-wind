@@ -53,7 +53,7 @@ ABL::ABL(CFDSim& sim)
 #else
         std::string ncfile;
         pp.get("mesoscale_forcing", ncfile);
-        m_meso_file.reset(new ABLMesoscaleInput(ncfile));
+        m_meso_file = std::make_unique<ABLMesoscaleInput>(ncfile);
 #endif
 
     } else if (pp.contains("WRFforcing")) {
@@ -64,7 +64,7 @@ ABL::ABL(CFDSim& sim)
                        << "use ABL.mesoscale_forcing instead" << std::endl;
         std::string ncfile;
         pp.get("WRFforcing", ncfile);
-        m_meso_file.reset(new ABLMesoscaleInput(ncfile, "wrf_"));
+        m_meso_file = std::make_unique<ABLMesoscaleInput>(ncfile, "wrf_");
 #endif
     }
 

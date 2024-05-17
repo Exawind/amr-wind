@@ -35,14 +35,14 @@ struct FastTurbine
     int num_pts_tower;
 
     //! Position of tower base in global coordinate system
-    float base_pos[ndim];
+    amrex::Array<float, ndim> base_pos;
 
     //! Hub stats for Spinner Lidar
-    float hub_abs_pos[3];
+    amrex::Array<float, 3> hub_abs_pos;
 
-    float hub_rot_vel[3];
+    amrex::Array<float, 3> hub_rot_vel;
 
-    double hub_orient[9];
+    amrex::Array<double, 9> hub_orient;
 
     SimMode sim_mode{SimMode::init};
 
@@ -57,6 +57,9 @@ struct FastTurbine
 
     //! Total number of elements along the blade
     int num_blade_elem;
+
+    //! Node cluster type for the chord
+    int chord_cluster_type{0};
 
     //! Start time for this turbine
     double start_time{0.0};
@@ -87,13 +90,8 @@ struct FastTurbine
     exw_fast::OpFM_InputType to_cfd;
     exw_fast::OpFM_OutputType from_cfd;
 
-#ifdef AMR_WIND_FAST_USE_SCDX
     exw_fast::SC_DX_InputType to_sc;
     exw_fast::SC_DX_OutputType from_sc;
-#else
-    exw_fast::SC_InputType to_sc;
-    exw_fast::SC_OutputType from_sc;
-#endif
 };
 
 } // namespace exw_fast
