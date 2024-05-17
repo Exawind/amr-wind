@@ -64,7 +64,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_fd_normal(
     mz = mm1 - mm2;
 }
 
-
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_fd_normal_neumann(
     int i,
     int j,
