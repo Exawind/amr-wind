@@ -22,9 +22,10 @@ void OversetOps::initialize(CFDSim& sim)
     pp.query("reinit_target_cutoff", m_target_cutoff);
 
     // Queries for coupling options
+    pp.query("replace_gradp_postsolve", m_replace_gp);
+    // OversetOps does not control these coupling options, merely reports them
     pp.query("disable_coupled_nodal_proj", m_disable_nodal_proj);
     pp.query("disable_coupled_mac_proj", m_disable_mac_proj);
-    pp.query("replace_gradp_postsolve", m_replace_gp);
 
     // Verbosity
     pp.query("verbose", m_verbose);
@@ -49,9 +50,6 @@ void OversetOps::initialize(CFDSim& sim)
 
     // Output parameters if verbose
     parameter_output();
-
-    // TODO:
-    // * set up coupling options
 }
 
 void OversetOps::pre_advance_work()
