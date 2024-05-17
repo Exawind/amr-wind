@@ -82,7 +82,7 @@ void FLLCInit(
             data.nonuniform_r.push_back(std::min(r_ + dr, data.r.back()));
         }
 
-        int npts_n = data.nonuniform_r.size();
+        int npts_n = static_cast<int>(data.nonuniform_r.size());
         data.nonuniform_dr.resize(npts_n);
         data.nonuniform_vel_rel.resize(npts_n);
         data.nonuniform_optimal_epsilon.resize(npts_n);
