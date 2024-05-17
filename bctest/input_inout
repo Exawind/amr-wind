@@ -37,7 +37,7 @@ ICNS.source_terms = BodyForce
 BodyForce.magnitude = 0 0 0
 
 incflo.physics = FreeStream
-FreeStream.velocity_type = CustomVelocity
+FreeStream.velocity_type = TwoLayer
 
 io.output_default_variables = 1
 
@@ -59,13 +59,13 @@ geometry.is_periodic    =   0   1   0   # Periodicity x y z (0/1)
 # Boundary conditions
 xlo.type = "mass_inflow_outflow"
 xlo.density = 1.0
-xlo.velocity.inflow_outflow_type = CustomVelocity
+xlo.velocity.inflow_outflow_type = TwoLayer
 
 xhi.type = "mass_inflow_outflow"
 xhi.density = 1.0
-xhi.velocity.inflow_outflow_type = CustomVelocity
-CustomVelocity.mvel = -1.0
-CustomVelocity.pvel = 1.0
+xhi.velocity.inflow_outflow_type = TwoLayer
+TwoLayer.mvel = -1.0
+TwoLayer.pvel = 1.0
 
 zlo.type =   "slip_wall"
 zhi.type =   "slip_wall"

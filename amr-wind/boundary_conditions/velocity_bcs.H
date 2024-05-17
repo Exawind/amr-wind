@@ -10,6 +10,7 @@
 #include "amr-wind/physics/udfs/BurggrafLid.H"
 #include "amr-wind/physics/udfs/Rankine.H"
 #include "amr-wind/physics/udfs/CustomVelocity.H"
+#include "amr-wind/physics/udfs/TwoLayer.H"
 
 namespace amr_wind::vel_bc {
 
@@ -38,7 +39,11 @@ void register_inflow_vel_dirichlet(
             mesh, time, InflowOp(field));
     } else if (inflow_udf == "CustomVelocity") {
         using InflowOp = BCOpCreator<udf::CustomVelocity, WallOp>;
-        amrex::Print() << "******* registering CustomVelocity" << std::endl;
+        field.register_fill_patch_op<FieldFillPatchOps<InflowOp>>(
+            mesh, time, InflowOp(field));
+    } else if (inflow_udf == "TwoLayer") {
+        using InflowOp = BCOpCreator<udf::TwoLayer, WallOp>;
+        amrex::Print() << "***** Registering TwoLayer UDF" << std::endl;
         field.register_fill_patch_op<FieldFillPatchOps<InflowOp>>(
             mesh, time, InflowOp(field));
     } else {
