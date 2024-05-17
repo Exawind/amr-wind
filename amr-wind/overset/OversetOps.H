@@ -19,7 +19,7 @@ public:
 
 private:
     // Functions called within public functions
-    void parameter_output();
+    void parameter_output() const;
     void sharpen_nalu_data();
     void set_hydrostatic_gradp();
     void replace_masked_gradp();

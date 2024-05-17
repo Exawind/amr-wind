@@ -150,7 +150,7 @@ void OversetOps::post_advance_work()
 /* PUBLIC FUNCTIONS ABOVE, PRIVATE FUNCTIONS BELOW */
 /* ----------------------------------------------- */
 
-void OversetOps::parameter_output()
+void OversetOps::parameter_output() const
 {
     // Print the details
     if (m_verbose > 0) {
