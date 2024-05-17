@@ -52,7 +52,6 @@ void OversetOps::initialize(CFDSim& sim)
 
     // TODO:
     // * set up coupling options
-    // * different behavior depending on prescribe flag
 }
 
 void OversetOps::pre_advance_work()
