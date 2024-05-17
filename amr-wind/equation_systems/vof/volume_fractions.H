@@ -64,6 +64,66 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_fd_normal(
     mz = mm1 - mm2;
 }
 
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_fd_normal_neumann(
+    int i,
+    int j,
+    int k,
+    int ibdy,
+    int jbdy,
+    int kbdy,
+    amrex::Array4<amrex::Real const> const& volfrac,
+    amrex::Real& mx,
+    amrex::Real& my,
+    amrex::Real& mz) noexcept
+{
+    amrex::Real mm1, mm2;
+
+    // Do neumann condition via indices
+    int im1 = ibdy == -1 ? i : i - 1;
+    int jm1 = jbdy == -1 ? j : j - 1;
+    int km1 = kbdy == -1 ? k : k - 1;
+    int ip1 = ibdy == +1 ? i : i + 1;
+    int jp1 = jbdy == +1 ? j : j + 1;
+    int kp1 = kbdy == +1 ? k : k + 1;
+
+    mm1 = volfrac(im1, jm1, km1) + volfrac(im1, jm1, kp1) +
+          volfrac(im1, jp1, km1) + volfrac(im1, jp1, kp1) +
+          2.0 * (volfrac(im1, jm1, k) + volfrac(im1, jp1, k) +
+                 volfrac(im1, j, km1) + volfrac(im1, j, kp1)) +
+          4.0 * volfrac(im1, j, k);
+    mm2 = volfrac(ip1, jm1, km1) + volfrac(ip1, jm1, kp1) +
+          volfrac(ip1, jp1, km1) + volfrac(ip1, jp1, kp1) +
+          2.0 * (volfrac(ip1, jm1, k) + volfrac(ip1, jp1, k) +
+                 volfrac(ip1, j, km1) + volfrac(ip1, j, kp1)) +
+          4.0 * volfrac(ip1, j, k);
+    mx = mm1 - mm2;
+
+    mm1 = volfrac(im1, jm1, km1) + volfrac(im1, jm1, kp1) +
+          volfrac(ip1, jm1, km1) + volfrac(ip1, jm1, kp1) +
+          2.0 * (volfrac(im1, jm1, k) + volfrac(ip1, jm1, k) +
+                 volfrac(i, jm1, km1) + volfrac(i, jm1, kp1)) +
+          4.0 * volfrac(i, jm1, k);
+    mm2 = volfrac(im1, jp1, km1) + volfrac(im1, jp1, kp1) +
+          volfrac(ip1, jp1, km1) + volfrac(ip1, jp1, kp1) +
+          2.0 * (volfrac(im1, jp1, k) + volfrac(ip1, jp1, k) +
+                 volfrac(i, jp1, km1) + volfrac(i, jp1, kp1)) +
+          4.0 * volfrac(i, jp1, k);
+    my = mm1 - mm2;
+
+    mm1 = volfrac(im1, jm1, km1) + volfrac(im1, jp1, km1) +
+          volfrac(ip1, jm1, km1) + volfrac(ip1, jp1, km1) +
+          2.0 * (volfrac(im1, j, km1) + volfrac(ip1, j, km1) +
+                 volfrac(i, jm1, km1) + volfrac(i, jp1, km1)) +
+          4.0 * volfrac(i, j, km1);
+    mm2 = volfrac(im1, jm1, kp1) + volfrac(im1, jp1, kp1) +
+          volfrac(ip1, jm1, kp1) + volfrac(ip1, jp1, kp1) +
+          2.0 * (volfrac(im1, j, kp1) + volfrac(ip1, j, kp1) +
+                 volfrac(i, jm1, kp1) + volfrac(i, jp1, kp1)) +
+          4.0 * volfrac(i, j, kp1);
+    mz = mm1 - mm2;
+}
+
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void mixed_youngs_central_normal(
     int i,
     int j,

@@ -3,6 +3,8 @@
 
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"
+#include "amr-wind/core/IntField.H"
+#include "amr-wind/core/ScratchField.H"
 
 /** Multiphase physics
  *
@@ -50,6 +52,8 @@ public:
     void calculate_advected_facedensity();
 
     void levelset2vof();
+
+    void levelset2vof(IntField& iblank_cell, ScratchField& vof_scr);
 
     void favre_filtering();
 
