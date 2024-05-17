@@ -20,7 +20,7 @@ amrex::Real amr_wind::diagnostics::get_vel_max(
                 max_fab = amrex::max(
                     max_fab, mask_arr(i, j, k) > 0
                                  ? factor * vel_arr(i, j, k, vdir)
-                                 : -std::numeric_limits<amrex::Real>::max());
+                                 : std::numeric_limits<amrex::Real>::lowest());
             });
             return max_fab;
         });
@@ -94,7 +94,7 @@ amrex::Real amr_wind::diagnostics::get_macvel_max(
                 max_fab = amrex::max(
                     max_fab, (mask_arr(i, j, k) + mask_arr(ii, jj, kk)) > 0
                                  ? factor * mvel_arr(i, j, k)
-                                 : -std::numeric_limits<amrex::Real>::max());
+                                 : std::numeric_limits<amrex::Real>::lowest());
             });
             return max_fab;
         });
