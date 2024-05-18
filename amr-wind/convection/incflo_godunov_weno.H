@@ -74,16 +74,16 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_xbc(
     if (bclo == BCType::ext_dir || bclo == BCType::hoextrap
      || (bclo == BCType::user_1 && velm >= 0.0)) {
         if (i == domlo) {
-//Print() << "weno_xbc_domlo_extdir   triggered at " << i << " " << j << " " << k << " " << n
-//        << "  as velm is " << velm << std::endl;
+            //Print() << "weno_xbc_domlo_extdir   triggered at " << i << " " << j << " " << k << " " << n
+            //        << "  as velm is " << velm << std::endl;
             sp = -0.2 * s(domlo - 1, j, k, n) + 0.75 * s(domlo, j, k, n) +
                  0.5 * s(domlo + 1, j, k, n) - 0.05 * s(domlo + 2, j, k, n);
 
             sm = s(domlo - 1, j, k, n);
 
         } else if (i == domlo + 1) {
-//Print() << "weno_xbc_domlop1_extdir triggered at " << i << " " << j << " " << k << " " << n
-//        << "  as velm is " << velm << std::endl;
+            //Print() << "weno_xbc_domlop1_extdir triggered at " << i << " " << j << " " << k << " " << n
+            //        << "  as velm is " << velm << std::endl;
             sm = -0.2 * s(domlo - 1, j, k, n) + 0.75 * s(domlo, j, k, n) +
                  0.5 * s(domlo + 1, j, k, n) - 0.05 * s(domlo + 2, j, k, n);
 
@@ -94,8 +94,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_xbc(
     if (bchi == BCType::ext_dir || bchi == BCType::hoextrap
      || (bchi == BCType::user_1 && velp <= 0.0)) {
         if (i == domhi) {
-//Print() << "weno_xbc_domhi_extdir   triggered at " << i << " " << j << " " << k << " " << n
-//        << "  as velp is " << velp << std::endl;
+            //Print() << "weno_xbc_domhi_extdir   triggered at " << i << " " << j << " " << k << " " << n
+            //        << "  as velp is " << velp << std::endl;
             sm = -0.2 * s(domhi + 1, j, k, n) + 0.75 * s(domhi, j, k, n) +
                  0.5 * s(domhi - 1, j, k, n) - 0.05 * s(domhi - 2, j, k, n);
 
@@ -277,10 +277,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_pred_x(
         Ip(i, j, k, n) = S(i, j, k, n);
         Im(i, j, k, n) = S(i, j, k, n);
     }
-/*if (((i==0) || (i==15)) && (j==3) && ((k==1) || (k==14))) {
-Print() << "Im Ip at " << i << " " << j << " " << k << " " << n << "    "
-        << Im(i, j, k, n) << " " << Ip(i, j, k, n) << std::endl;
-}*/
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_pred_y(

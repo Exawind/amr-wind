@@ -26,7 +26,7 @@ incflo.use_godunov    = 1
 incflo.diffusion_type = 1
 incflo.godunov_type = "weno_z"
 
-incflo.initial_iterations = 1
+#incflo.initial_iterations = 1
 #incflo.do_initial_proj    = false
 incflo.verbose 	= 3
 

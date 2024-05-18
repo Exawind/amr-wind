@@ -6,8 +6,7 @@
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/projection/nodal_projection_ops.H"
 
-#include "amr-wind/utilities/IOManager.H"
-
+// for debugging
 #include "AMReX_PlotFileUtil.H"
 
 using namespace amrex;
@@ -340,11 +339,13 @@ void incflo::ApplyProjection(
 //amrex::Print() << "*********** partition **********" << std::endl;
 //amrex::Print() << velocity(0)[0];
 
-    // need to apply custom Neumann funcs for inflow-outflow BC
-    // after setting the inflow vels above
+    // Need to apply custom Neumann funcs for inflow-outflow BC
+    // after setting the inflow vels above.
     if (!proj_for_small_dt and !incremental) {
         velocity.apply_bc_funcs(amr_wind::FieldState::New);
     }
+    // Currently doing this after setting the non-inflow boundaries to zero
+    // is causing issues at the corner cells.
 
 //amrex::Print() << velocity(0)[0];
 
