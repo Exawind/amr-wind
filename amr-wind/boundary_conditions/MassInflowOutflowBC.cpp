@@ -23,8 +23,7 @@ void MassInflowOutflowBC::operator()(Field& /*field*/, const FieldState /*rho_st
     const int nlevels = m_field.repo().num_active_levels();
     const bool ib = (idim == 0), jb = (idim == 1), kb = (idim == 2);
 
-    amrex::Print() << "******* applying MIO custom Neumann fills at orientation: " << idx << std::endl;
-    //amrex::Print() << nlevels << " level(s)" << std::endl << std::endl;
+    amrex::Print() << "***** Applying MIO custom Neumann fills at orientation: " << idx << std::endl;
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& domain = repo.mesh().Geom(lev).Domain();
 
@@ -37,7 +36,7 @@ void MassInflowOutflowBC::operator()(Field& /*field*/, const FieldState /*rho_st
 #endif
         for (amrex::MFIter mfi(m_field(lev), mfi_info); mfi.isValid(); ++mfi) {
             auto bx = mfi.validbox();
-            bx.grow({!ib, !jb, !kb});   // how to manage corner cells??
+            //bx.grow({!ib, !jb, !kb});   // how to manage corner cells??
             const auto& bc_a = m_field(lev).array(mfi);
             const auto& vel = velocity(lev).array(mfi);
 

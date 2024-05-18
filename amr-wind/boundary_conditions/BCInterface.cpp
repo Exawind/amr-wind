@@ -104,9 +104,9 @@ void BCIface::set_bcfuncs()
             m_field.register_custom_bc<FixedGradientBC>(ori);
         }
 
-        if ((m_field.name() == "velocity")
+        if ((m_field.name() == "velocity")      // only velocity for now
             && (bct == BC::mass_inflow_outflow)) {
-            amrex::Print() << "******** registering MIO custom Neumann BC" << std::endl;
+            amrex::Print() << "***** Registering MIO custom Neumann BC" << std::endl;
             m_field.register_custom_bc<MassInflowOutflowBC>(ori);
         }
 

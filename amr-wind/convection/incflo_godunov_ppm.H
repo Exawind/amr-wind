@@ -26,7 +26,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_xbc(
     const int domhi)
 {
     using namespace amrex;
-// is the "inverse" use of velm and velp justified?
+
+    // for MIO BC, use vel+ at bclo and vel- at bchi for determining ext_dir/foextrap treatment
     // Low X
     if (i <= domlo) {
         if (bclo == BCType::ext_dir ||
@@ -217,8 +218,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_xbc_lo(
     if (i == domlo) {
         if ((bclo == BCType::ext_dir && uedge(i, j, k) >= 0.) ||
             (bclo == BCType::user_1 && uedge(i, j, k) >= 0.)) {
-//Print() << "cc_xbc_lo_extdir triggered at " << i << " " << j << " " << k << " " << n
-//        << "  as uedge is " << uedge(i,j,k) << std::endl;
+            //Print() << "cc_xbc_lo_extdir triggered at " << i << " " << j << " " << k << " " << n
+            //        << "  as uedge is " << uedge(i,j,k) << std::endl;
             hi = s(domlo - 1, j, k, n);
             lo = hi;
         } else if (
@@ -226,8 +227,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_xbc_lo(
             bclo == BCType::reflect_even ||
             (bclo == BCType::ext_dir && uedge(i, j, k) < 0) ||
             (bclo == BCType::user_1 && uedge(i, j, k) < 0)) {
-//Print() << "cc_xbc_lo_foextrap triggered at " << i << " " << j << " " << k << " " << n
-//        << "  as uedge is " << uedge(i,j,k) << std::endl;
+            //Print() << "cc_xbc_lo_foextrap triggered at " << i << " " << j << " " << k << " " << n
+            //        << "  as uedge is " << uedge(i,j,k) << std::endl;
             lo = hi;
 
         } else if (bclo == BCType::reflect_odd) {
@@ -256,8 +257,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_xbc_hi(
     if (i == domhi + 1) {
         if ((bchi == BCType::ext_dir && uedge(i, j, k) <= 0.) ||
             (bchi == BCType::user_1 && uedge(i, j, k) <= 0.)) {
-//Print() << "cc_xbc_hi_extdir triggered at " << i << " " << j << " " << k << " " << n
-//        << "  as uedge is " << uedge(i,j,k) << std::endl;
+            //Print() << "cc_xbc_hi_extdir triggered at " << i << " " << j << " " << k << " " << n
+            //        << "  as uedge is " << uedge(i,j,k) << std::endl;
             lo = s(domhi + 1, j, k, n);
             hi = lo;
         } else if (
@@ -265,8 +266,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_xbc_hi(
             bchi == BCType::reflect_even ||
             (bchi == BCType::ext_dir && uedge(i, j, k) > 0) ||
             (bchi == BCType::user_1 && uedge(i, j, k) > 0)) {
-//Print() << "cc_xbc_hi_foextrap triggered at " << i << " " << j << " " << k << " " << n
-//        << "  as uedge is " << uedge(i,j,k) << std::endl;
+            //Print() << "cc_xbc_hi_foextrap triggered at " << i << " " << j << " " << k << " " << n
+            //        << "  as uedge is " << uedge(i,j,k) << std::endl;
             hi = lo;
 
         } else if (bchi == BCType::reflect_odd) {

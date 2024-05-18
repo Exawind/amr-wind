@@ -50,10 +50,7 @@ void godunov::make_trans_velocities(
                 lo = Ipx(i - 1, j, k, n);
                 hi = Imx(i, j, k, n);
             }
-/*if (((i==0) || (i==16)) && (j==3) && ((k==1) || (k==14))) {
-Print() << "lo hi at " << i << " " << j << " " << k << " " << n << "    "
-        << lo << " " << hi << std::endl;
-}*/
+
             auto bc = pbc[n];
             Godunov_trans_xbc(
                 i, j, k, n, vel, lo, hi, lo, hi, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
@@ -331,8 +328,8 @@ void godunov::predict_godunov(
             stl += 0.5 * l_dt * f(i - 1, j, k, n);
             sth += 0.5 * l_dt * f(i, j, k, n);
         }
-if ((i==0) && (j==0) && (k==0))
-    amrex::Print() << "******* now calling Godunov_cc_xbc_lo/hi from predict_godunov" << std::endl;
+//if ((i==0) && (j==0) && (k==0))
+//    amrex::Print() << "***** now calling Godunov_cc_xbc_lo/hi from predict_godunov" << std::endl;
         Godunov_cc_xbc_lo(i, j, k, n, q, stl, sth, u_ad, bc.lo(0), dlo.x);
         Godunov_cc_xbc_hi(i, j, k, n, q, stl, sth, u_ad, bc.hi(0), dhi.x);
 
