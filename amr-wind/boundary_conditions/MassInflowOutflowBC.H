@@ -8,10 +8,10 @@
 
 namespace amr_wind {
 
-/** Can handle both inflow and outflow cells in the same boundary
+/** Custom Neumann fills for the inflow-outflow BC
  *  \ingroup field_bc
  *
- *
+ *  Used to fill the outflow boundary cells for mass-inflow-outflow BC
  */
 class MassInflowOutflowBC : public FieldBCIface
 {
