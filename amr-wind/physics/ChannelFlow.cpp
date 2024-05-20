@@ -148,6 +148,7 @@ void ChannelFlow::initialize_fields(
             const auto C0 = m_C0;
             const auto C1 = m_C1;
             const auto dpdx = m_dpdx;
+            // this one
             for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
                 const auto& vbx = mfi.validbox();
                 auto vel = velocity.array(mfi);
@@ -181,6 +182,7 @@ void ChannelFlow::initialize_fields(
             }
             auto& walldist = m_repo.get_field("wall_dist")(level);
 
+            // this one
             for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
                 const auto& vbx = mfi.validbox();
                 auto vel = velocity.array(mfi);

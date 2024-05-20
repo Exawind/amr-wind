@@ -69,6 +69,7 @@ void BreakingWaves::initialize_fields(int level, const amrex::Geometry& geom)
         sdr.setVal(m_sdr0);
     }
 
+    // this one
     for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.growntilebox();
         auto vel = velocity.array(mfi);

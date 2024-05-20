@@ -19,6 +19,7 @@ static void replace_masked_vof(
         auto& vof = f_vof(lev);
         const auto& vof_new = f_vof_new(lev);
 
+        // this one
         for (amrex::MFIter mfi(iblank); mfi.isValid(); ++mfi) {
             const auto& gbx = mfi.growntilebox();
             const amrex::Array4<const int>& native_flag =

@@ -47,6 +47,7 @@ void Smagorinsky<Transport>::update_turbulent_viscosity(
         const amrex::Real ds_sqr = ds * ds;
         const amrex::Real smag_factor = Cs_sqr * ds_sqr;
 
+        // this one
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
             const auto& mu_arr = mu_turb(lev).array(mfi);

@@ -139,6 +139,7 @@ void AMD<Transport>::update_alphaeff(Field& alphaeff)
         const auto& geom = geom_vec[lev];
 
         const auto& dx = geom.CellSizeArray();
+        // this one
         for (amrex::MFIter mfi(alphaeff(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
             const auto& gradVel_arr = (*gradVel)(lev).const_array(mfi);
