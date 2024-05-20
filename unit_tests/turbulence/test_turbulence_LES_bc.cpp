@@ -51,6 +51,7 @@ void init_field3(amr_wind::Field& fld, amrex::Real srate)
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
 
+        // this one
         for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
             auto bx = mfi.growntilebox();
             const auto& farr = fld(lev).array(mfi);
@@ -80,6 +81,7 @@ void init_field1(amr_wind::Field& fld, amrex::Real tgrad)
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
 
+        // this one
         for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
             auto bx = mfi.growntilebox();
             const auto& farr = fld(lev).array(mfi);

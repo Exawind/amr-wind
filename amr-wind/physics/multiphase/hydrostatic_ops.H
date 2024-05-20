@@ -15,6 +15,7 @@ static void define_rho0(
     for (int lev = 0; lev < rho0.repo().num_active_levels(); ++lev) {
         const auto& dx = geom[lev].CellSizeArray();
         const auto& problo = geom[lev].ProbLoArray();
+        // this one
         for (amrex::MFIter mfi(rho0(lev)); mfi.isValid(); ++mfi) {
             amrex::Box const& bx = mfi.validbox();
             auto rho0_arr = rho0(lev).array(mfi);
@@ -41,6 +42,7 @@ static void define_p0(
         const auto& dx = geom[lev].CellSizeArray();
         const auto& problo = geom[lev].ProbLoArray();
         const auto& probhi = geom[lev].ProbHiArray();
+        // this one
         for (amrex::MFIter mfi(p0(lev)); mfi.isValid(); ++mfi) {
             amrex::Box const& nbx = mfi.grownnodaltilebox();
             auto p0_arr = p0(lev).array(mfi);

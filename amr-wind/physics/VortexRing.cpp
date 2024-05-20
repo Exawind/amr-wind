@@ -164,6 +164,7 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
 
         const auto& problo = m_repo.mesh().Geom(level).ProbLoArray();
 
+        // this one
         for (amrex::MFIter mfi(m_velocity(level)); mfi.isValid(); ++mfi) {
             const auto& dx = m_repo.mesh().Geom(level).CellSizeArray();
             const auto& nbx = mfi.nodaltilebox();
@@ -247,6 +248,7 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
     for (int level = 0; level <= m_repo.mesh().finestLevel(); ++level) {
         auto& velocity = m_velocity(level);
 
+        // this one
         for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
             const auto& vbx = mfi.validbox();
 
