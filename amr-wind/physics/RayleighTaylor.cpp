@@ -24,6 +24,7 @@ void RayleighTaylor::initialize_fields(int level, const amrex::Geometry& geom)
 
     velocity.setVal(0.0);
 
+    // needs openmp pragma?
     for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
 

@@ -62,7 +62,7 @@ public:
      */
     void update_sampling_locations() override;
 
-    void post_sample_actions() override{};
+    void post_sample_actions() override {};
 
     long num_points() const override { return (m_beam_points * m_ntotal); }
 

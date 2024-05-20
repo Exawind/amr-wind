@@ -83,6 +83,7 @@ void ZalesakDiskScalarVel::initialize_fields(
     const amrex::Real width = m_width;
     const amrex::Real depth = m_depth;
 
+    // this one
     for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
         const auto& gbx = mfi.growntilebox(1);
         auto uf = u_mac.array(mfi);
@@ -170,6 +171,7 @@ void ZalesakDiskScalarVel::pre_advance_work()
         auto& u_mac = m_sim.repo().get_field("u_mac")(lev);
         auto& v_mac = m_sim.repo().get_field("v_mac")(lev);
         auto& w_mac = m_sim.repo().get_field("w_mac")(lev);
+        // this one
         for (amrex::MFIter mfi(m_velocity(lev)); mfi.isValid(); ++mfi) {
             const auto& gbx = mfi.growntilebox(1);
             const auto& dx = geom[lev].CellSizeArray();
@@ -235,6 +237,7 @@ amrex::Real ZalesakDiskScalarVel::compute_error(const Field& field)
         }
 
         if (m_sim.has_overset()) {
+            // this one
             for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
                 const auto& vbx = mfi.validbox();
 

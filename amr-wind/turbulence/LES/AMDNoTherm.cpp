@@ -50,6 +50,7 @@ void AMDNoTherm<Transport>::update_turbulent_viscosity(
         const auto& geom = geom_vec[lev];
 
         const auto& dx = geom.CellSizeArray();
+        // this one
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
             const auto& gradVel_arr = (*gradVel)(lev).array(mfi);

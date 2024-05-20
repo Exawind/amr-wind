@@ -20,7 +20,6 @@ target_include_directories(${amr_wind_lib_name} PUBLIC
 add_subdirectory(core)
 add_subdirectory(boundary_conditions)
 add_subdirectory(convection)
-add_subdirectory(derive)
 add_subdirectory(diffusion)
 add_subdirectory(projection)
 add_subdirectory(setup)
