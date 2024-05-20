@@ -96,6 +96,7 @@ void OceanWavesBoundary::set_velocity(
         auto shift_to_interior =
             amrex::IntVect::TheDimensionVector(idir) * (ori.isLow() ? 1 : -1);
 
+        // this one
         for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
             auto gbx = amrex::grow(mfi.validbox(), nghost);
             amrex::IntVect shift_to_cc = {0, 0, 0};
@@ -166,6 +167,7 @@ void OceanWavesBoundary::set_vof(
         const auto& dbx = ori.isLow() ? amrex::adjCellLo(domain, idir, nghost)
                                       : amrex::adjCellHi(domain, idir, nghost);
 
+        // this one
         for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
             auto gbx = amrex::grow(mfi.validbox(), nghost);
             const auto& bx =
@@ -216,6 +218,7 @@ void OceanWavesBoundary::set_density(
         const auto& dbx = ori.isLow() ? amrex::adjCellLo(domain, idir, nghost)
                                       : amrex::adjCellHi(domain, idir, nghost);
 
+        // this one
         for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
             auto gbx = amrex::grow(mfi.validbox(), nghost);
             const auto& bx =
@@ -287,6 +290,7 @@ void OceanWavesBoundary::set_inflow_sibling_velocity(
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
+            // this one
             for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
                 const auto& vbx = mfi.validbox();
                 const auto& bx = vbx & dbx;
