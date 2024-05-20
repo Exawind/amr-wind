@@ -160,6 +160,7 @@ void ScalarAdvection::initialize_fields(
     auto& density = m_density(level);
     density.setVal(m_rho);
 
+    // this one
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
         auto vel = velocity.array(mfi);
@@ -213,6 +214,7 @@ void ScalarAdvection::initialize_scalar(const Shape& scalar_function)
         const auto& problo = m_repo.mesh().Geom(level).ProbLoArray();
         auto& scalar = (*m_scalar)(level);
 
+        // this one
         for (amrex::MFIter mfi(scalar); mfi.isValid(); ++mfi) {
             const auto& dx = m_repo.mesh().Geom(level).CellSizeArray();
             const auto& nbx = mfi.nodaltilebox();
