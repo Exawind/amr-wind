@@ -59,6 +59,7 @@ struct InitDataOp<Box>
         for (int lev = 0; lev < nlevels; ++lev) {
             const auto& problo = geom[lev].ProbLoArray();
             const auto& dx = geom[lev].CellSizeArray();
+            // this one
             for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.growntilebox();
                 const auto& epsilon_node = mask_node(lev).array(mfi);
