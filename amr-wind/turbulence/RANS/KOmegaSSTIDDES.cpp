@@ -130,6 +130,7 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
         const amrex::Real hmax =
             amrex::max<amrex::Real>(amrex::max<amrex::Real>(dx, dy), dz);
 
+        // this one
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
             const auto& lam_mu_arr = (*lam_mu)(lev).array(mfi);

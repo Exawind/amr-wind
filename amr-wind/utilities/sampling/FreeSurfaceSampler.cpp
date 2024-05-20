@@ -235,6 +235,7 @@ void FreeSurfaceSampler::initialize(const std::string& key)
             geom.ProbLoArray();
         const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> phi =
             geom.ProbHiArray();
+        // this one
         for (amrex::MFIter mfi(floc(lev)); mfi.isValid(); ++mfi) {
             auto loc_arr = floc(lev).array(mfi);
             auto idx_arr = fidx(lev).array(mfi);
@@ -431,6 +432,7 @@ bool FreeSurfaceSampler::update_sampling_locations()
                 geom.InvCellSizeArray();
             const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> plo =
                 geom.ProbLoArray();
+            // this one
             for (amrex::MFIter mfi(floc(lev)); mfi.isValid(); ++mfi) {
                 auto loc_arr = floc(lev).const_array(mfi);
                 auto idx_arr = fidx(lev).const_array(mfi);
@@ -606,6 +608,7 @@ void FreeSurfaceSampler::post_regrid_actions()
             geom.ProbLoArray();
         const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> phi =
             geom.ProbHiArray();
+        // this one
         for (amrex::MFIter mfi(floc(lev)); mfi.isValid(); ++mfi) {
             auto loc_arr = floc(lev).array(mfi);
             auto idx_arr = fidx(lev).array(mfi);

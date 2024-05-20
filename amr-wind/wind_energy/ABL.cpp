@@ -106,6 +106,7 @@ void ABL::initialize_fields(int level, const amrex::Geometry& geom)
     }
 
     bool interp_fine_levels = false;
+    // needs openmp pragma?
     for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
 
