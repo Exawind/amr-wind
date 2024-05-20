@@ -50,6 +50,7 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
     const amrex::Real hwidth = m_halfwidth;
     const amrex::Real depth = m_depth;
 
+    // this one
     for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
         const auto& gbx = mfi.growntilebox(1);
         auto uf = u_mac.array(mfi);
@@ -143,6 +144,7 @@ void ZalesakDisk::pre_advance_work()
         auto& u_mac = m_sim.repo().get_field("u_mac")(lev);
         auto& v_mac = m_sim.repo().get_field("v_mac")(lev);
         auto& w_mac = m_sim.repo().get_field("w_mac")(lev);
+        // this one
         for (amrex::MFIter mfi(m_velocity(lev)); mfi.isValid(); ++mfi) {
             const auto& gbx = mfi.growntilebox(1);
             const auto& dx = geom[lev].CellSizeArray();
@@ -175,6 +177,7 @@ void ZalesakDisk::post_advance_work()
 
     // Overriding the velocity field
     for (int lev = 0; lev < nlevels; ++lev) {
+        // this one
         for (amrex::MFIter mfi(m_velocity(lev)); mfi.isValid(); ++mfi) {
             const auto& vbx = mfi.validbox();
             const auto& dx = geom[lev].CellSizeArray();

@@ -11,6 +11,7 @@ void init_scalar_increasing(amr_wind::Field& fld, int dir)
     const int nlevels = fld.repo().num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
 
+        // this one
         for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
             auto bx = mfi.growntilebox(1);
             const auto& farr = fld(lev).array(mfi);
@@ -28,6 +29,7 @@ void init_scalar_slopechange(amr_wind::Field& fld, int dir, int center)
     const int nlevels = fld.repo().num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
 
+        // this one
         for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
             auto bx = mfi.growntilebox(1);
             const auto& farr = fld(lev).array(mfi);
@@ -47,6 +49,7 @@ void init_scalar_uniform(amr_wind::Field& fld, amrex::Real cst)
     const int nlevels = fld.repo().num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
 
+        // this one
         for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
             auto bx = mfi.growntilebox(1);
             const auto& farr = fld(lev).array(mfi);
@@ -81,6 +84,7 @@ void get_output_upwind(
 
         auto limiter = PPM::upwind();
 
+        // needs openmp pragma?
         for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
             auto bx = mfi.validbox();
             const auto& farr = fld(lev).const_array(mfi);
@@ -127,6 +131,7 @@ void get_output_minmod(
         const auto dlo = amrex::lbound(domain);
         const auto dhi = amrex::ubound(domain);
 
+        // needs openmp pragma?
         for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
             auto bx = mfi.validbox();
             const auto& farr = fld(lev).const_array(mfi);
