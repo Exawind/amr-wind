@@ -221,6 +221,7 @@ void viscosity_to_uniform_space(
         repo.get_mesh_mapping_det_j(amr_wind::FieldLoc::ZFACE);
 
     // beta accounted for mesh mapping (x-face) = J/fac^2 * mu
+    // needs openmp pragma?
     for (amrex::MFIter mfi(b[0]); mfi.isValid(); ++mfi) {
         amrex::Array4<amrex::Real> const& mu = b[0].array(mfi);
         amrex::Array4<amrex::Real const> const& fac =
@@ -235,6 +236,7 @@ void viscosity_to_uniform_space(
             });
     }
     // beta accounted for mesh mapping (y-face) = J/fac^2 * mu
+    // needs openmp pragma?
     for (amrex::MFIter mfi(b[1]); mfi.isValid(); ++mfi) {
         amrex::Array4<amrex::Real> const& mu = b[1].array(mfi);
         amrex::Array4<amrex::Real const> const& fac =
@@ -249,6 +251,7 @@ void viscosity_to_uniform_space(
             });
     }
     // beta accounted for mesh mapping (z-face) = J/fac^2 * mu
+    // needs openmp pragma?
     for (amrex::MFIter mfi(b[2]); mfi.isValid(); ++mfi) {
         amrex::Array4<amrex::Real> const& mu = b[2].array(mfi);
         amrex::Array4<amrex::Real const> const& fac =

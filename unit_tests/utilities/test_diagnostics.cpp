@@ -14,6 +14,7 @@ void init_velocity(amr_wind::Field& velocity)
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
 
+        // this one
         for (amrex::MFIter mfi(velocity(lev)); mfi.isValid(); ++mfi) {
             auto bx = mfi.validbox();
             const auto& farr = velocity(lev).array(mfi);
@@ -51,6 +52,7 @@ void init_mac_velocity(
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
 
+        // this one
         for (amrex::MFIter mfi(cc(lev)); mfi.isValid(); ++mfi) {
             auto bx = mfi.growntilebox(1);
             const auto& uarr = umac(lev).array(mfi);

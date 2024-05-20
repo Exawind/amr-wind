@@ -24,6 +24,7 @@ void get_accuracy_vofsol(
     const amr_wind::Field& vof)
 {
     /* -- Check VOF boundary values from fillpatch -- */
+    // needs openmp pragma?
     for (amrex::MFIter mfi(vof(lev)); mfi.isValid(); ++mfi) {
         auto err_arr = err_fld(lev).array(mfi);
         const auto& vof_arr = vof(lev).array(mfi);
@@ -81,6 +82,7 @@ void get_accuracy_advalpha(
     const amr_wind::Field& advalpha_f)
 {
     /* -- Check VOF boundary fluxes -- */
+    // needs openmp pragma?
     for (amrex::MFIter mfi(vof(lev)); mfi.isValid(); ++mfi) {
 
         auto err_arr = err_fld(lev).array(mfi);

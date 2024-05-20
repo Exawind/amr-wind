@@ -83,6 +83,7 @@ struct InitDataOp<StokesWaves>
         auto& velocity = sim.repo().get_field("velocity");
         const auto& problo = geom.ProbLoArray();
         const auto& dx = geom.CellSizeArray();
+        // this one
         for (amrex::MFIter mfi(m_levelset(level)); mfi.isValid(); ++mfi) {
 
             const auto& phi = m_levelset(level).array(mfi);
@@ -154,6 +155,7 @@ struct UpdateRelaxZonesOp<StokesWaves>
             const auto& problo = geom[lev].ProbLoArray();
             const auto& dx = geom[lev].CellSizeArray();
 
+            // this one
             for (amrex::MFIter mfi(m_ow_levelset(lev)); mfi.isValid(); ++mfi) {
                 const auto& phi = m_ow_levelset(lev).array(mfi);
                 const auto& vel = m_ow_velocity(lev).array(mfi);

@@ -65,6 +65,7 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
         auto& target_vof = m_ow_vof(lev);
         const auto& dx = geom[lev].CellSizeArray();
 
+        // this one
         for (amrex::MFIter mfi(ls); mfi.isValid(); ++mfi) {
             const auto& gbx = mfi.growntilebox(2);
             const amrex::Array4<amrex::Real>& phi = ls.array(mfi);
@@ -88,6 +89,7 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
     auto& density = sim.repo().get_field("density");
 
     for (int lev = 0; lev < nlevels; ++lev) {
+        // this one
         for (amrex::MFIter mfi(vof(lev)); mfi.isValid(); ++mfi) {
             const auto& gbx = mfi.growntilebox(2);
             const auto& dx = geom[lev].CellSizeArray();
