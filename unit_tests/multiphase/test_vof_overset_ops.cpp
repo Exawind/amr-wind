@@ -32,7 +32,10 @@ protected:
 
 namespace {
 void init_vof_etc(
-    amr_wind::Field& vof, amr_wind::Field& tg_vof, amr_wind::Field& norm)
+    amr_wind::Field& vof,
+    amr_wind::Field& tg_vof,
+    amr_wind::Field& norm,
+    const int& dir)
 {
     run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
         auto vof_arr = vof(lev).array(mfi);
@@ -44,57 +47,58 @@ void init_vof_etc(
             grow(bx, 2), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                 vof_arr(i, j, k) = 0.0;
                 tgvof_arr(i, j, k) = 0.;
-                norm_arr(i, j, k) = 1.0;
-                if (i == -1) {
+                norm_arr(i, j, k, dir) = 1.0;
+                const int idx = (dir == 0 ? i : (dir == 1 ? j : k));
+                if (idx == -1) {
                     // Within margin
                     vof_arr(i, j, k) = 0.41;
                     tgvof_arr(i, j, k) = 0.5;
-                    norm_arr(i, j, k) = -1.0;
-                } else if (i == 0) {
+                    norm_arr(i, j, k, dir) = -1.0;
+                } else if (idx == 0) {
                     // Within margin
                     vof_arr(i, j, k) = 0.55;
                     tgvof_arr(i, j, k) = 0.5;
-                    norm_arr(i, j, k) = 1.0;
-                } else if (i == 1) {
+                    norm_arr(i, j, k, dir) = 1.0;
+                } else if (idx == 1) {
                     // Outside margin, low
                     vof_arr(i, j, k) = 0.1;
                     tgvof_arr(i, j, k) = 0.2;
-                    norm_arr(i, j, k) = -1.0;
-                } else if (i == 2) {
+                    norm_arr(i, j, k, dir) = -1.0;
+                } else if (idx == 2) {
                     // Also low
                     vof_arr(i, j, k) = 0.2;
                     tgvof_arr(i, j, k) = 0.22;
-                    norm_arr(i, j, k) = 1.0;
-                } else if (i == 3) {
+                    norm_arr(i, j, k, dir) = 1.0;
+                } else if (idx == 3) {
                     // Above half
                     vof_arr(i, j, k) = 0.7;
                     tgvof_arr(i, j, k) = 0.8;
-                    norm_arr(i, j, k) = -1.0;
-                } else if (i == 4) {
+                    norm_arr(i, j, k, dir) = -1.0;
+                } else if (idx == 4) {
                     // Also high
                     vof_arr(i, j, k) = 0.65;
                     tgvof_arr(i, j, k) = 0.91;
-                    norm_arr(i, j, k) = 1.0;
-                } else if (i == 5) {
+                    norm_arr(i, j, k, dir) = 1.0;
+                } else if (idx == 5) {
                     // Also high, positive gradient
                     vof_arr(i, j, k) = 0.8;
                     tgvof_arr(i, j, k) = 0.75;
-                    norm_arr(i, j, k) = -1.0;
-                } else if (i == 6) {
+                    norm_arr(i, j, k, dir) = -1.0;
+                } else if (idx == 6) {
                     // Within margin
                     vof_arr(i, j, k) = 0.45;
                     tgvof_arr(i, j, k) = 0.5;
-                    norm_arr(i, j, k) = 1.0;
-                } else if (i == 7) {
+                    norm_arr(i, j, k, dir) = 1.0;
+                } else if (idx == 7) {
                     // Low, negative gradient
                     vof_arr(i, j, k) = 0.3;
                     tgvof_arr(i, j, k) = 0.2;
-                    norm_arr(i, j, k) = -1.0;
-                } else if (i == 8) {
+                    norm_arr(i, j, k, dir) = -1.0;
+                } else if (idx == 8) {
                     // High
                     vof_arr(i, j, k) = 0.7;
                     tgvof_arr(i, j, k) = 0.6;
-                    norm_arr(i, j, k) = 1.0;
+                    norm_arr(i, j, k, dir) = 1.0;
                 }
             });
     });
@@ -155,7 +159,7 @@ void calc_velocity_face(
     });
 }
 
-amrex::Real check_alpha_flux_impl(amr_wind::Field& flux)
+amrex::Real check_alpha_flux_impl(amr_wind::Field& flux, const int& dir)
 {
     amrex::Real error_total = 0;
 
@@ -169,42 +173,43 @@ amrex::Real check_alpha_flux_impl(amr_wind::Field& flux)
                 amrex::Real error = 0;
 
                 amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                    const int idx = (dir == 0 ? i : (dir == 1 ? j : k));
                     // Difference between actual and expected
-                    if (i == 0) {
+                    if (idx == 0) {
                         // Both within margin, will average
                         const amrex::Real flux_answer =
                             0.5 * ((0.5 - 0.41) * -1.0 + (0.5 - 0.55) * -1.0);
                         error += std::abs(f_arr(i, j, k) - flux_answer);
-                    } else if (i == 1) {
+                    } else if (idx == 1) {
                         // Current is low, neighbor within margin
                         const amrex::Real flux_answer = (0.2 - 0.1) * 1.0;
                         error += std::abs(f_arr(i, j, k) - flux_answer);
-                    } else if (i == 2) {
+                    } else if (idx == 2) {
                         // Low on both sides, gphi > 0
                         const amrex::Real flux_answer = (0.2 - 0.1) * -1.0;
                         error += std::abs(f_arr(i, j, k) - flux_answer);
-                    } else if (i == 3) {
+                    } else if (idx == 3) {
                         // Opposite sides of margin, no conditional fits
                         const amrex::Real flux_answer =
                             0.5 * ((0.8 - 0.7) * 1.0 + (0.22 - 0.2) * 1.0);
                         error += std::abs(f_arr(i, j, k) - flux_answer);
-                    } else if (i == 4) {
+                    } else if (idx == 4) {
                         // High on both sides, gphi < 0
                         const amrex::Real flux_answer = (0.8 - 0.7) * -1.0;
                         error += std::abs(f_arr(i, j, k) - flux_answer);
-                    } else if (i == 5) {
+                    } else if (idx == 5) {
                         // High on both sides, gphi > 0
                         const amrex::Real flux_answer = (0.75 - 0.8) * 1.0;
                         error += std::abs(f_arr(i, j, k) - flux_answer);
-                    } else if (i == 6) {
+                    } else if (idx == 6) {
                         // Current is within margin, neighbor is high
                         const amrex::Real flux_answer = (0.75 - 0.8) * -1.0;
                         error += std::abs(f_arr(i, j, k) - flux_answer);
-                    } else if (i == 7) {
+                    } else if (idx == 7) {
                         // Current is low, neighbor is within margin
                         const amrex::Real flux_answer = (0.2 - 0.3) * 1.0;
                         error += std::abs(f_arr(i, j, k) - flux_answer);
-                    } else if (i == 8) {
+                    } else if (idx == 8) {
                         // Opposite sides of margin, no conditional fits
                         const amrex::Real flux_answer =
                             0.5 * ((0.6 - 0.7) * -1.0 + (0.2 - 0.3) * -1.0);
@@ -258,25 +263,47 @@ TEST_F(VOFOversetOps, alpha_flux)
     const int nghost = 3;
     auto& vof = repo.declare_field("vof", ncomp, nghost);
     auto& tg_vof = repo.declare_field("target_vof", ncomp, nghost);
-    auto& norm = repo.declare_field("int_normal", ncomp, nghost);
-    auto& iblank = repo.declare_int_field("iblank", ncomp, nghost);
-    const int dir = 0;
+    auto& norm = repo.declare_field("int_normal", 3, nghost);
     const amrex::Real margin = 0.1;
 
-    // Not worried about overset boundaries in this test
-    iblank.setVal(1);
-
-    // Initialize vof and other fields
-    init_vof_etc(vof, tg_vof, norm);
-
-    // Create flux field
+    // Create flux fields
     auto& flux_x =
-        repo.declare_field("flux", 1, 0, 1, amr_wind::FieldLoc::XFACE);
+        repo.declare_field("flux_x", 1, 0, 1, amr_wind::FieldLoc::XFACE);
+    auto& flux_y =
+        repo.declare_field("flux_y", 1, 0, 1, amr_wind::FieldLoc::YFACE);
+    auto& flux_z =
+        repo.declare_field("flux_z", 1, 0, 1, amr_wind::FieldLoc::ZFACE);
+
+    // -- Variations in x direction -- //
+    int dir = 0;
+    // Initialize vof and other fields
+    init_vof_etc(vof, tg_vof, norm, dir);
     // Populate flux field
     calc_alpha_flux(flux_x, vof, tg_vof, norm, dir, margin);
-
     // Check results
-    amrex::Real error_total = check_alpha_flux_impl(flux_x);
+    amrex::Real error_total = check_alpha_flux_impl(flux_x, dir);
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
+    EXPECT_NEAR(error_total, 0.0, 1e-15);
+
+    // -- Variations in y direction -- //
+    dir = 1;
+    // Initialize vof and other fields
+    init_vof_etc(vof, tg_vof, norm, dir);
+    // Populate flux field
+    calc_alpha_flux(flux_y, vof, tg_vof, norm, dir, margin);
+    // Check results
+    error_total = check_alpha_flux_impl(flux_y, dir);
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
+    EXPECT_NEAR(error_total, 0.0, 1e-15);
+
+    // -- Variations in z direction -- //
+    dir = 2;
+    // Initialize vof and other fields
+    init_vof_etc(vof, tg_vof, norm, dir);
+    // Populate flux field
+    calc_alpha_flux(flux_z, vof, tg_vof, norm, dir, margin);
+    // Check results
+    error_total = check_alpha_flux_impl(flux_z, dir);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
     EXPECT_NEAR(error_total, 0.0, 1e-15);
 }
