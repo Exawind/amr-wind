@@ -327,8 +327,10 @@ void OversetOps::sharpen_nalu_data()
             amrex::ParallelDescriptor::ReduceRealMax(err);
         }
 
-        amrex::Print() << "sharpen step " << n << " " << err << " " << m_tol
-                       << std::endl;
+        if (m_verbose > 0) {
+            amrex::Print() << "OversetOps: sharpen step " << n << "  conv. err "
+                           << err << "  tol " << m_tol << std::endl;
+        }
     }
 
     // Purely for debugging via visualization, should be removed later
