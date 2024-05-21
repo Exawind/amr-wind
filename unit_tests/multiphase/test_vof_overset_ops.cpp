@@ -104,14 +104,39 @@ void init_vof_etc(
     });
 }
 
-void init_velocity_etc(amr_wind::Field& velocity)
+void init_velocity_etc(
+    amr_wind::Field& velocity, amr_wind::Field& vof, const int& dir)
 {
     run_algorithm(velocity, [&](const int lev, const amrex::MFIter& mfi) {
         auto vel_arr = velocity(lev).array(mfi);
+        auto vof_arr = vof(lev).array(mfi);
         const auto& bx = mfi.validbox();
         amrex::ParallelFor(
-            grow(bx, 1), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-                // Insert velocity distribution
+            grow(bx, 2), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                vel_arr(i, j, k) = 0.0;
+                vof_arr(i, j, k) = 0.0;
+                const int idx = (dir == 0 ? i : (dir == 1 ? j : k));
+                if (idx == -1) {
+                    vof_arr(i, j, k) = 0.41;
+                    vel_arr(i, j, k, 0) = 1.0;
+                    vel_arr(i, j, k, 1) = 2.0;
+                    vel_arr(i, j, k, 2) = 3.0;
+                } else if (idx == 0) {
+                    vof_arr(i, j, k) = 0.55;
+                    vel_arr(i, j, k, 0) = 1.5;
+                    vel_arr(i, j, k, 1) = 2.5;
+                    vel_arr(i, j, k, 2) = 3.5;
+                } else if (idx == 1) {
+                    vof_arr(i, j, k) = 0.2;
+                    vel_arr(i, j, k, 0) = 2.0;
+                    vel_arr(i, j, k, 1) = 3.0;
+                    vel_arr(i, j, k, 2) = 4.0;
+                } else if (idx == 2) {
+                    vof_arr(i, j, k) = 0.2;
+                    vel_arr(i, j, k, 0) = 2.5;
+                    vel_arr(i, j, k, 1) = 3.5;
+                    vel_arr(i, j, k, 2) = 4.5;
+                }
             });
     });
 }
@@ -139,8 +164,8 @@ void calc_alpha_flux(
 
 void calc_velocity_face(
     amr_wind::Field& flux,
-    amr_wind::Field& vof,
     amr_wind::Field& velocity,
+    amr_wind::Field& vof,
     const int& dir)
 {
     run_algorithm(flux, [&](const int lev, const amrex::MFIter& mfi) {
@@ -223,7 +248,7 @@ amrex::Real check_alpha_flux_impl(amr_wind::Field& flux, const int& dir)
     return error_total;
 }
 
-/*amrex::Real check_velocity_face_impl(amr_wind::Field& flux)
+amrex::Real check_velocity_face_impl(amr_wind::Field& flux, const int& dir)
 {
     amrex::Real error_total = 0;
 
@@ -237,20 +262,39 @@ amrex::Real check_alpha_flux_impl(amr_wind::Field& flux, const int& dir)
                 amrex::Real error = 0;
 
                 amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
-                    // Difference between actual and expected
-                    const amrex::Real flux_answer = ;
-                    error += std::abs(f_arr(i, j, k, 0) - flux_answer);
-                    const amrex::Real flux_answer = ;
-                    error += std::abs(f_arr(i, j, k, 1) - flux_answer);
-                    const amrex::Real flux_answer = ;
-                    error += std::abs(f_arr(i, j, k, 2) - flux_answer);
+                    const int idx = (dir == 0 ? i : (dir == 1 ? j : k));
+                    if (idx == 0) {
+                        // gphi > 0, uwpind from the "left"
+                        amrex::Real flux_answer = 1.0;
+                        error += std::abs(f_arr(i, j, k, 0) - flux_answer);
+                        flux_answer = 2.0;
+                        error += std::abs(f_arr(i, j, k, 1) - flux_answer);
+                        flux_answer = 3.0;
+                        error += std::abs(f_arr(i, j, k, 2) - flux_answer);
+                    } else if (idx == 1) {
+                        // gphi < 0, upwind from the "right"
+                        amrex::Real flux_answer = 2.0;
+                        error += std::abs(f_arr(i, j, k, 0) - flux_answer);
+                        flux_answer = 3.0;
+                        error += std::abs(f_arr(i, j, k, 1) - flux_answer);
+                        flux_answer = 4.0;
+                        error += std::abs(f_arr(i, j, k, 2) - flux_answer);
+                    } else if (idx == 2) {
+                        // gphi = 0, average both sides
+                        amrex::Real flux_answer = 0.5 * (2.5 + 2.0);
+                        error += std::abs(f_arr(i, j, k, 0) - flux_answer);
+                        flux_answer = 0.5 * (3.5 + 3.0);
+                        error += std::abs(f_arr(i, j, k, 1) - flux_answer);
+                        flux_answer = 0.5 * (4.5 + 4.0);
+                        error += std::abs(f_arr(i, j, k, 2) - flux_answer);
+                    }
                 });
 
                 return error;
             });
     }
     return error_total;
-}*/
+}
 } // namespace
 
 TEST_F(VOFOversetOps, alpha_flux)
@@ -259,10 +303,9 @@ TEST_F(VOFOversetOps, alpha_flux)
     initialize_mesh();
 
     auto& repo = sim().repo();
-    const int ncomp = 1;
     const int nghost = 3;
-    auto& vof = repo.declare_field("vof", ncomp, nghost);
-    auto& tg_vof = repo.declare_field("target_vof", ncomp, nghost);
+    auto& vof = repo.declare_field("vof", 1, nghost);
+    auto& tg_vof = repo.declare_field("target_vof", 1, nghost);
     auto& norm = repo.declare_field("int_normal", 3, nghost);
     const amrex::Real margin = 0.1;
 
@@ -308,6 +351,56 @@ TEST_F(VOFOversetOps, alpha_flux)
     EXPECT_NEAR(error_total, 0.0, 1e-15);
 }
 
-TEST_F(VOFOversetOps, velocity_face) {}
+TEST_F(VOFOversetOps, velocity_face)
+{
+    populate_parameters();
+    initialize_mesh();
+
+    auto& repo = sim().repo();
+    const int nghost = 3;
+    auto& velocity = repo.declare_field("velocity", 3, nghost);
+    auto& vof = repo.declare_field("vof", 1, nghost);
+
+    // Create flux fields
+    auto& flux_x =
+        repo.declare_field("flux_x", 3, 0, 1, amr_wind::FieldLoc::XFACE);
+    auto& flux_y =
+        repo.declare_field("flux_y", 3, 0, 1, amr_wind::FieldLoc::YFACE);
+    auto& flux_z =
+        repo.declare_field("flux_z", 3, 0, 1, amr_wind::FieldLoc::ZFACE);
+
+    // -- Variations in x direction -- //
+    int dir = 0;
+    // Initialize velocity and vof
+    init_velocity_etc(velocity, vof, dir);
+    // Populate flux field
+    calc_velocity_face(flux_x, velocity, vof, dir);
+    // Check results
+    amrex::Real error_total = check_velocity_face_impl(flux_x, dir);
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
+    EXPECT_NEAR(error_total, 0.0, 1e-15);
+
+    // -- Variations in y direction -- //
+    dir = 1;
+    // Initialize velocity and vof
+    init_velocity_etc(velocity, vof, dir);
+    // Populate flux field
+    calc_velocity_face(flux_y, velocity, vof, dir);
+    // Check results
+    error_total = check_velocity_face_impl(flux_y, dir);
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
+    EXPECT_NEAR(error_total, 0.0, 1e-15);
+
+    // -- Variations in z direction -- //
+    dir = 2;
+    // Initialize velocity and vof
+    init_velocity_etc(velocity, vof, dir);
+    // Populate flux field
+    calc_velocity_face(flux_z, velocity, vof, dir);
+    // Check results
+    error_total = check_velocity_face_impl(flux_z, dir);
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
+    EXPECT_NEAR(error_total, 0.0, 1e-15);
+}
 
 } // namespace amr_wind_tests
