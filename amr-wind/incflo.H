@@ -11,6 +11,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/core/FieldRepo.H"
+#include "amr-wind/overset/OversetOps.H"
 
 namespace amr_wind {
 namespace pde {
@@ -132,9 +133,6 @@ public:
     void ComputeDt(bool explicit_diffusion);
     void ComputePrescribeDt();
 
-    void set_inflow_velocity(
-        int lev, amrex::Real time, amrex::MultiFab& vel, int nghost);
-
     void ApplyPredictor(bool incremental_projection = false);
     void ApplyCorrector();
     void ApplyPrescribeStep();
@@ -163,6 +161,7 @@ private:
     amr_wind::CFDSim m_sim;
     amr_wind::SimTime& m_time;
     amr_wind::FieldRepo& m_repo;
+    amr_wind::OversetOps m_ovst_ops;
 
     std::unique_ptr<amr_wind::RefineCriteriaManager> m_mesh_refiner;
 
@@ -199,10 +198,6 @@ private:
     {
         return (m_use_godunov || (DiffusionType::Implicit != m_diff_type));
     }
-
-    amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM>
-    get_projection_bc(amrex::Orientation::Side side) const noexcept;
-
     ///////////////////////////////////////////////////////////////////////////
     //
     // setup

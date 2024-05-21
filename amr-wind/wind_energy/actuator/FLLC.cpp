@@ -74,14 +74,15 @@ void FLLCInit(
             // This will ensure that the spacing will always meet the
             // requirement eps/dr
             dr = std::min(dr1, dr2);
-            AMREX_ALWAYS_ASSERT(dr > std::numeric_limits<amrex::Real>::epsilon());
+            AMREX_ALWAYS_ASSERT(
+                dr > std::numeric_limits<amrex::Real>::epsilon());
 
             // Append value to the array
             // Ensure that the value is smaller than the tip
             data.nonuniform_r.push_back(std::min(r_ + dr, data.r.back()));
         }
 
-        int npts_n = data.nonuniform_r.size();
+        int npts_n = static_cast<int>(data.nonuniform_r.size());
         data.nonuniform_dr.resize(npts_n);
         data.nonuniform_vel_rel.resize(npts_n);
         data.nonuniform_optimal_epsilon.resize(npts_n);

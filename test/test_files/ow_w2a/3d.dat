@@ -1,0 +1,36 @@
+#     Restart previous computation::     i_restart::     0
+#      Choice of the computed case::        i_case::     3
+#--- Geometry of the horizontal domain
+#            Length in x-direction::          xlen::    9.3717632253682877E+03
+#            Length in y-direction::          ylen::    9.3717632253682877E+03
+#--- Time stuff
+#       Duration of the simulation::        T_stop::    1.2250000000000000E+01
+#      Sampling frequency (output)::         f_out::    1.6326530612244897E-01
+#           Tolerance of RK scheme::         toler::    9.9999999999999995E-08
+#        Dommermuth initialisation::             n::     4
+#        Dommermuth initialisation::            Ta::    1.2250000000000000E+02
+#--- Physical parameters
+#                          Gravity::          grav::    9.8100000000000005E+00
+#                      Water depth::         depth::    1.0000000000000000E+03
+#--- Irregular waves
+#                 Peak period in s::       Tp_real::    1.2250000000000000E+01
+#     Significant wave height in m::       Hs_real::    6.0000000000000000E+00
+#                 JONSWAP Spectrum::         gamma::    1.0000000000000000E+00
+#          Directionality (Dysthe)::          beta::    6.9999999999999996E-01
+#         Random phases generation:: random_phases::     1
+#--- Output files
+#                  Tecplot version::       tecplot::     1
+#        Output: 1-dim. 0-non dim.::     i_out_dim::     1
+#       3d free surface quantities::          i_3d::     1
+#                         3d modes::        i_a_3d::     1
+#     2d free surface, center line::          i_2d::     0
+#            Wave probes in domain::        i_prob::     0
+#         Swense output 1=yes,0=no::          i_sw::     1
+#--- Numerical parameters
+#      Modes number in x-direction::            n1::    64
+#      Modes number in y-direction::            n2::    64
+#           HOS nonlinearity order::             M::     3
+#        Dealiasing in x-direction::            p1::     3
+#        Dealiasing in y-direction::            p2::     3
+TITLE=" 3D free surface elevation "
+VARIABLES="x","y","eta","phis"

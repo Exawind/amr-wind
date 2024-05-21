@@ -36,10 +36,10 @@ TEST(Configuration, MPI)
     int nprocs = amrex::ParallelDescriptor::NProcs();
 
     amrex::Print() << "MPI configuration: " << nprocs << " ranks" << std::endl;
-    char mpi_lib_ver[MPI_MAX_LIBRARY_VERSION_STRING];
+    amrex::Array<char, MPI_MAX_LIBRARY_VERSION_STRING> mpi_lib_ver;
     int len;
-    MPI_Get_library_version(mpi_lib_ver, &len);
-    amrex::Print() << mpi_lib_ver << std::endl;
+    MPI_Get_library_version(mpi_lib_ver.begin(), &len);
+    amrex::Print() << mpi_lib_ver.begin() << std::endl;
 #else
     amrex::Print() << "AMR-Wind not built with MPI support." << std::endl;
     GTEST_SKIP();

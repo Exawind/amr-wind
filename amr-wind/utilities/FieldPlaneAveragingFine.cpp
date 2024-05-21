@@ -219,7 +219,7 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
         if (lev < finestLevel) {
             level_mask = makeFineMask(
                 mesh.boxArray(lev), mesh.DistributionMap(lev),
-                mesh.boxArray(lev + 1), amrex::IntVect(2), 1, 0);
+                mesh.boxArray(lev + 1), mesh.refRatio(lev), 1, 0);
         } else {
             level_mask.define(
                 mesh.boxArray(lev), mesh.DistributionMap(lev), 1, 0,
@@ -407,7 +407,7 @@ void VelPlaneAveragingFine::compute_hvelmag_averages(const IndexSelector& idxOp)
         if (lev < finestLevel) {
             level_mask = makeFineMask(
                 mesh.boxArray(lev), mesh.DistributionMap(lev),
-                mesh.boxArray(lev + 1), amrex::IntVect(2), 1, 0);
+                mesh.boxArray(lev + 1), mesh.refRatio(lev), 1, 0);
         } else {
             level_mask.define(
                 mesh.boxArray(lev), mesh.DistributionMap(lev), 1, 0,

@@ -10,7 +10,7 @@ namespace ncutils {
 
 namespace {
 
-char recname[NC_MAX_NAME + 1];
+std::array<char, NC_MAX_NAME + 1> recname;
 
 void check_nc_error(int ierr)
 {
@@ -23,8 +23,8 @@ void check_nc_error(int ierr)
 
 std::string NCDim::name() const
 {
-    check_nc_error(nc_inq_dimname(ncid, dimid, recname));
-    return std::string(recname);
+    check_nc_error(nc_inq_dimname(ncid, dimid, recname.begin()));
+    return {recname.begin()};
 }
 
 size_t NCDim::len() const
@@ -36,8 +36,8 @@ size_t NCDim::len() const
 
 std::string NCVar::name() const
 {
-    check_nc_error(nc_inq_varname(ncid, varid, recname));
-    return std::string(recname);
+    check_nc_error(nc_inq_varname(ncid, varid, recname.begin()));
+    return {recname.begin()};
 }
 
 int NCVar::ndim() const
@@ -53,11 +53,13 @@ std::vector<size_t> NCVar::shape() const
     std::vector<int> dimids(ndims);
     std::vector<size_t> vshape(ndims);
 
-    for (int i = 0; i < ndims; ++i)
+    for (int i = 0; i < ndims; ++i) {
         check_nc_error(nc_inq_vardimid(ncid, varid, dimids.data()));
+    }
 
-    for (int i = 0; i < ndims; ++i)
+    for (int i = 0; i < ndims; ++i) {
         check_nc_error(nc_inq_dimlen(ncid, dimids[i], &vshape[i]));
+    }
 
     return vshape;
 }
@@ -210,7 +212,7 @@ bool NCVar::has_attr(const std::string& name) const
 {
     int ierr;
     size_t lenp;
-    ierr = nc_inq_att(ncid, varid, name.data(), NULL, &lenp);
+    ierr = nc_inq_att(ncid, varid, name.data(), nullptr, &lenp);
     return (ierr == NC_NOERR);
 }
 
@@ -294,7 +296,7 @@ std::string NCGroup::full_name() const
 {
     size_t nlen;
     std::vector<char> grpname;
-    check_nc_error(nc_inq_grpname_full(ncid, &nlen, NULL));
+    check_nc_error(nc_inq_grpname_full(ncid, &nlen, nullptr));
     grpname.resize(nlen);
     check_nc_error(nc_inq_grpname_full(ncid, &nlen, grpname.data()));
     return std::string{grpname.begin(), grpname.end()};
@@ -304,14 +306,14 @@ NCGroup NCGroup::def_group(const std::string& name) const
 {
     int newid;
     check_nc_error(nc_def_grp(ncid, name.data(), &newid));
-    return NCGroup(newid, this);
+    return {newid, this};
 }
 
 NCGroup NCGroup::group(const std::string& name) const
 {
     int newid;
     check_nc_error(nc_inq_ncid(ncid, name.data(), &newid));
-    return NCGroup(newid, this);
+    return {newid, this};
 }
 
 NCDim NCGroup::dim(const std::string& name) const
@@ -331,7 +333,7 @@ NCDim NCGroup::def_dim(const std::string& name, const size_t len) const
 NCVar NCGroup::def_scalar(const std::string& name, const nc_type dtype) const
 {
     int newid;
-    check_nc_error(nc_def_var(ncid, name.data(), dtype, 0, NULL, &newid));
+    check_nc_error(nc_def_var(ncid, name.data(), dtype, 0, nullptr, &newid));
     return NCVar{ncid, newid};
 }
 
@@ -341,12 +343,15 @@ NCVar NCGroup::def_array(
     const std::vector<std::string>& dnames) const
 {
     int newid;
-    int ndims = dnames.size();
+    auto ndims = dnames.size();
     std::vector<int> dimids(ndims);
-    for (int i = 0; i < ndims; ++i) dimids[i] = dim(dnames[i]).dimid;
+    for (int i = 0; i < ndims; ++i) {
+        dimids[i] = dim(dnames[i]).dimid;
+    }
 
-    check_nc_error(
-        nc_def_var(ncid, name.data(), dtype, ndims, dimids.data(), &newid));
+    check_nc_error(nc_def_var(
+        ncid, name.data(), dtype, static_cast<int>(ndims), dimids.data(),
+        &newid));
     return NCVar{ncid, newid};
 }
 
@@ -360,40 +365,40 @@ NCVar NCGroup::var(const std::string& name) const
 int NCGroup::num_groups() const
 {
     int ngrps;
-    check_nc_error(nc_inq_grps(ncid, &ngrps, NULL));
+    check_nc_error(nc_inq_grps(ncid, &ngrps, nullptr));
     return ngrps;
 }
 
 int NCGroup::num_dimensions() const
 {
     int ndims;
-    check_nc_error(nc_inq(ncid, &ndims, NULL, NULL, NULL));
+    check_nc_error(nc_inq(ncid, &ndims, nullptr, nullptr, nullptr));
     return ndims;
 }
 
 int NCGroup::num_attributes() const
 {
     int nattrs;
-    check_nc_error(nc_inq(ncid, NULL, NULL, &nattrs, NULL));
+    check_nc_error(nc_inq(ncid, nullptr, nullptr, &nattrs, nullptr));
     return nattrs;
 }
 
 int NCGroup::num_variables() const
 {
     int nvars;
-    check_nc_error(nc_inq(ncid, NULL, &nvars, NULL, NULL));
+    check_nc_error(nc_inq(ncid, nullptr, &nvars, nullptr, nullptr));
     return nvars;
 }
 
 bool NCGroup::has_group(const std::string& name) const
 {
-    int ierr = nc_inq_ncid(ncid, name.data(), NULL);
+    int ierr = nc_inq_ncid(ncid, name.data(), nullptr);
     return (ierr == NC_NOERR);
 }
 
 bool NCGroup::has_dim(const std::string& name) const
 {
-    int ierr = nc_inq_dimid(ncid, name.data(), NULL);
+    int ierr = nc_inq_dimid(ncid, name.data(), nullptr);
     return (ierr == NC_NOERR);
 }
 
@@ -408,7 +413,7 @@ bool NCGroup::has_attr(const std::string& name) const
 {
     int ierr;
     size_t lenp;
-    ierr = nc_inq_att(ncid, NC_GLOBAL, name.data(), NULL, &lenp);
+    ierr = nc_inq_att(ncid, NC_GLOBAL, name.data(), nullptr, &lenp);
     return (ierr == NC_NOERR);
 }
 
@@ -483,12 +488,16 @@ std::vector<NCGroup> NCGroup::all_groups() const
     int ngrps = num_groups();
 
     // Empty list of groups return early without error
-    if (ngrps < 1) return grps;
+    if (ngrps < 1) {
+        return grps;
+    }
 
     std::vector<int> gids(ngrps);
     check_nc_error(nc_inq_grps(ncid, &ngrps, gids.data()));
     grps.reserve(ngrps);
-    for (int i = 0; i < ngrps; ++i) grps.emplace_back(NCGroup(gids[i], this));
+    for (int i = 0; i < ngrps; ++i) {
+        grps.emplace_back(NCGroup(gids[i], this));
+    }
     return grps;
 }
 
@@ -520,7 +529,9 @@ void NCGroup::enter_def_mode() const
     ierr = nc_redef(ncid);
 
     // Ignore already in define mode error
-    if (ierr == NC_EINDEFINE) return;
+    if (ierr == NC_EINDEFINE) {
+        return;
+    }
     // Handle all other errors
     check_nc_error(ierr);
 }
@@ -559,7 +570,9 @@ NCFile NCFile::open_par(
 
 NCFile::~NCFile()
 {
-    if (is_open) check_nc_error(nc_close(ncid));
+    if (is_open) {
+        check_nc_error(nc_close(ncid));
+    }
 }
 
 void NCFile::close()

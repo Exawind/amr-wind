@@ -6,8 +6,7 @@
 #include "amr-wind/wind_energy/actuator/turbine/fast/FastIface.H"
 #include "amr-wind/core/ExtSolver.H"
 
-namespace amr_wind {
-namespace actuator {
+namespace amr_wind::actuator {
 
 struct TurbineFastData : public TurbineBaseData
 {
@@ -26,10 +25,9 @@ struct TurbineFast : public TurbineType
     using MetaType = TurbineFastData;
     using DataType = ActDataHolder<TurbineFast>;
 
-    static const std::string identifier() { return "TurbineFast"; }
+    static std::string identifier() { return "TurbineFast"; }
 };
 
-} // namespace actuator
-} // namespace amr_wind
+} // namespace amr_wind::actuator
 
 #endif /* TURBINEFAST_H */

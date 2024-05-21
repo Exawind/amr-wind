@@ -73,10 +73,11 @@ void ABLFieldInit::initialize_from_inputfile()
                 "Cannot find ABLForcing velocity_timetable file: " +
                 m_vel_timetable);
         }
-        amrex::Real m_vel_time;
-        amrex::Real m_vel_ang;
-        ifh >> m_vel_time >> m_vel_speed >> m_vel_ang;
-        m_vel_dir = utils::radians(m_vel_ang);
+        ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        amrex::Real vel_time;
+        amrex::Real vel_ang;
+        ifh >> vel_time >> m_vel_speed >> vel_ang;
+        m_vel_dir = utils::radians(vel_ang);
     } else {
         pp_incflo.getarr("velocity", m_vel);
     }
@@ -108,7 +109,7 @@ void ABLFieldInit::initialize_from_netcdf()
         profileFile, NC_NOWRITE | NC_NETCDF4 | NC_MPIIO,
         amrex::ParallelContext::CommunicatorSub(), MPI_INFO_NULL);
 
-    int num_prof_val = ncf.dim("nheight").len();
+    const auto num_prof_val = ncf.dim("nheight").len();
 
     m_theta_heights.resize(num_prof_val);
     m_theta_values.resize(num_prof_val);

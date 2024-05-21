@@ -1,0 +1,31 @@
+Restart previous computation :: i_restart        :: 0
+Choice of computed case      :: i_case           :: 3
+--- Geometry of the horizontal domain
+Length in x-direction        :: xlen             :: 40.0
+Length in y-direction        :: ylen             :: 40.0
+--- Time stuff
+Duration of the simulation   :: T_stop           :: 1.0
+Sampling frequency (output)  :: f_out            :: 2.0
+Tolerance of RK scheme       :: toler            :: 1.0e-7
+Dommermuth initialisation    :: n                :: 4
+Dommermuth initialisation    :: Ta               :: 10.0
+--- Physical dimensional parameters
+Gravity                      :: grav             :: 9.81
+Water depth                  :: depth            :: 1000.
+--- Irregular waves (i_case=3)
+Peak period in s             :: Tp_real          :: 12.25
+Significant wave height in m :: Hs_real          :: 6.0
+JONSWAP Spectrum             :: gamma            :: 1.0
+Directionality (Dysthe)      :: beta             :: 0.7
+Random phases generation     :: random_phases    :: 1
+--- Output files
+Tecplot version              :: tecplot          :: 1
+Output: 1-dim. ; 0-nondim.   :: i_out_dim        :: 1
+3d free surface quantities   :: i_3d             :: 1
+3d modes                     :: i_a_3d           :: 1
+2d free surface, center line :: i_2d             :: 0
+Wave probes in domain        :: i_prob           :: 0
+Swense output 1='yes',0='no' :: i_sw             :: 1
+--- Numerical parameters
+Modes number in x-direction  :: n1               :: 256
+Modes number in y-direction  :: n2               :: 256
