@@ -287,9 +287,13 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
 
 //amrex::average_face_to_cellcenter(mac_vec_cc, 0, mac_arr);
 //amrex::WriteSingleLevelPlotfile("plt_macvel_precorrect", mac_vec_cc, {"umac","vmac","wmac"}, geom[0], 0.0, 0);
+amrex::Print() << "!!! umac precorrect" << std::endl;
+amrex::Print() << u_mac(0)[0];
 
     enforce_solvability(mac_vec);
 
+amrex::Print() << "!!! umac postcorrect" << std::endl;
+amrex::Print() << u_mac(0)[0];
 //amrex::average_face_to_cellcenter(mac_vec_cc, 0, mac_arr);
 //amrex::WriteSingleLevelPlotfile("plt_macvel_postcorrect", mac_vec_cc, {"umac","vmac","wmac"}, geom[0], 0.0, 0);
 
@@ -310,6 +314,8 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
     }
 //amrex::average_face_to_cellcenter(mac_vec_cc, 0, mac_arr);
 //amrex::WriteSingleLevelPlotfile("plt_macvel_postproject", mac_vec_cc, {"umac","vmac","wmac"}, geom[0], 0.0, 0);
+amrex::Print() << "!!! umac postproject" << std::endl;
+amrex::Print() << u_mac(0)[0];
 
     if (m_is_anelastic) {
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
