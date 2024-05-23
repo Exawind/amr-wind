@@ -13,13 +13,19 @@ concurrency:
 jobs:
   Formatting:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        path:
+          - 'amr-wind'
+          - 'unit_tests'
+          - 'tools/utilities'
     steps:
     - name: Clone
       uses: actions/checkout@v4
     - name: Check formatting
       uses: jidicula/clang-format-action@v4.13.0
       with:
-        check-path: './amr-wind ./unit_tests ./tools/utilities'
+        check-path: ${{ matrix.path }}
         clang-format-version: '18'
   CPU:
     needs: Formatting
