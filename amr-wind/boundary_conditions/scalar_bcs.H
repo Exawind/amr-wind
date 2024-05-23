@@ -29,7 +29,7 @@ void register_scalar_dirichlet(
     Field& field,
     const amrex::AmrCore& mesh,
     const SimTime& time,
-    const std::array<const std::string, 3> udfs);
+    const amrex::Array<const std::string, 3> udfs);
 
 } // namespace amr_wind::scalar_bc
 

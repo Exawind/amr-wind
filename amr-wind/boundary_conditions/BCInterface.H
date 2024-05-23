@@ -49,7 +49,7 @@ public:
     virtual void operator()(const amrex::Real value = 0.0);
 
     //! User-defined functions for Dirichlet-type boundaries
-    std::array<const std::string, 3> get_dirichlet_udfs();
+    amrex::Array<const std::string, 3> get_dirichlet_udfs();
 
 protected:
     //! Setup AMReX mathematical BC types

@@ -55,7 +55,7 @@ void register_velocity_dirichlet(
     Field& field,
     const amrex::AmrCore& mesh,
     const SimTime& time,
-    const std::array<const std::string, 3> udfs)
+    const amrex::Array<const std::string, 3> udfs)
 {
     const std::string inflow_udf = udfs[0];
     const std::string inflow_outflow_udf = udfs[1];
