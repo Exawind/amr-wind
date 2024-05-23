@@ -5,6 +5,7 @@
 #include <ctime>
 #include <string>
 #include <sstream>
+#include <unordered_set>
 #include "AMReX_Vector.H"
 
 namespace amrex {
@@ -58,6 +59,13 @@ inline void add_var_names(
             vnames.push_back(fname + std::to_string(i));
         }
     }
+}
+
+template <typename T>
+inline bool all_distinct(amrex::Vector<T> vec)
+{
+    std::unordered_set<T> s(vec.begin(), vec.end());
+    return static_cast<amrex::Long>(s.size()) == vec.size();
 }
 } // namespace amr_wind::ioutils
 

@@ -2,6 +2,7 @@
 
 #include "amr-wind/utilities/averaging/TimeAveraging.H"
 #include "amr-wind/utilities/averaging/ReAveraging.H"
+#include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/CFDSim.H"
 
 #include "AMReX_ParmParse.H"
@@ -21,6 +22,9 @@ void TimeAveraging::pre_init_actions()
     {
         amrex::ParmParse pp(m_label);
         pp.getarr("labels", labels);
+        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+            ioutils::all_distinct(labels),
+            "Duplicate labels in the input file");
         pp.query("averaging_start_time", m_start_time);
         pp.query("averaging_stop_time", m_stop_time);
         pp.get("averaging_window", m_filter);
@@ -34,16 +38,13 @@ void TimeAveraging::pre_init_actions()
 
         amrex::ParmParse pp1(pp_key);
         pp1.getarr("fields", fnames);
+        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+            ioutils::all_distinct(fnames),
+            "Duplicate fields in the input file");
         pp1.get("averaging_type", avg_type);
 
         for (const auto& fname : fnames) {
             const std::string key = fname + "_" + avg_type;
-
-            // Guard against multiple registrations of the field
-            const auto found = m_registered.find(key);
-            if (found != m_registered.end()) {
-                continue;
-            }
 
             // Create the averaging entity
             m_averages.emplace_back(
