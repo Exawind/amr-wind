@@ -334,6 +334,9 @@ void incflo::ApplyProjection(
         if (!proj_for_small_dt and !incremental) {
             amr_wind::nodal_projection::set_inflow_velocity(
                 m_sim.physics_manager(), velocity, lev, time, *vel[lev], 1);
+
+            // fill periodic boundaries to avoid corner cell issues
+            vel[lev]->FillBoundary(geom[lev].periodicity());
         }
     }
 //amrex::Print() << "*********** partition **********" << std::endl;
@@ -344,8 +347,6 @@ void incflo::ApplyProjection(
     if (!proj_for_small_dt and !incremental) {
         velocity.apply_bc_funcs(amr_wind::FieldState::New);
     }
-    // Currently doing this after setting the non-inflow boundaries to zero
-    // is causing issues at the corner cells.
 
 //amrex::Print() << velocity(0)[0];
 
