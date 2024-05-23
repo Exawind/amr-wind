@@ -17,12 +17,11 @@ jobs:
     - name: Clone
       uses: actions/checkout@v4
     - name: Check formatting
-      uses: DoozyX/clang-format-lint-action@v0.16.2
+      uses: jidicula/clang-format-action@v4.13.0
       with:
-        source: './amr-wind ./unit_tests ./tools/utilities'
-        exclude: '.'
+        check-path: './amr-wind ./unit_tests ./tools/utilities'
         extensions: 'H,h,cpp'
-        clangFormatVersion: 16
+        clang-format-version: '18'
   CPU:
     needs: Formatting
     runs-on: ${{matrix.os}}
