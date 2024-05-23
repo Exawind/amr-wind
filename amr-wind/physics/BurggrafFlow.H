@@ -56,7 +56,7 @@ public:
 
     void post_regrid_actions() override {}
 
-    void pre_advance_work() override {};
+    void pre_advance_work() override{};
 
     void post_advance_work() override;
 

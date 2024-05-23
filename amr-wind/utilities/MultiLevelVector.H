@@ -22,7 +22,7 @@ namespace amr_wind {
 class MultiLevelVector
 {
 public:
-    MultiLevelVector(const FieldLoc floc = FieldLoc::CELL) : m_floc(floc) {};
+    MultiLevelVector(const FieldLoc floc = FieldLoc::CELL) : m_floc(floc){};
 
     void resize(const int axis, const amrex::Vector<amrex::Geometry>& geom);
 
