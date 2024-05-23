@@ -114,7 +114,7 @@ void BCIface::set_bcfuncs()
     }
 }
 
-std::array<const std::string, 3> BCIface::get_dirichlet_udfs()
+amrex::Array<const std::string, 3> BCIface::get_dirichlet_udfs()
 {
     const auto& fname = m_field.name();
     const auto& bctype = m_field.bc_type();
