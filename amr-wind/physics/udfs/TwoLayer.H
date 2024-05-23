@@ -42,15 +42,15 @@ struct TwoLayer
             // clang-format off
             const auto* problo = geom.ProbLo();
             const auto* dx = geom.CellSize();
-            const auto x = problo[0] + (iv[0] + 0.5) * dx[0];
+            // const auto x = problo[0] + (iv[0] + 0.5) * dx[0];
             // const auto y = problo[1] + (iv[1] + 0.5) * dx[1];
-            const auto z = problo[2] + (iv[2] + 0.5) * dx[2];
+            const auto z = problo[2] + (iv[2] + 0.5) * dx[2];   // not true for w-mac vels
             // const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> vel = {1.0, 0.0, 0.0};
 
             // Once the above is done, fill the field as:
             amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> vel;
             vel = {((z >= 0.5) ? pvel : mvel), 0.0, 0.0};
-            //if (time == 0.0)  vel[0] *= 0.1;
+            if (time == 0.0)  vel[0] *= 0.9;
             field(iv[0], iv[1], iv[2], dcomp + comp) = vel[orig_comp + comp];
             /*
             if (x <= 0.5) {
