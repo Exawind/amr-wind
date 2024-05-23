@@ -31,7 +31,13 @@ void Sampling::initialize()
     {
         amrex::ParmParse pp(m_label);
         pp.getarr("labels", labels);
+        ioutils::assert_with_message(
+            ioutils::all_distinct(labels),
+            "Duplicates in " + m_label + ".labels");
         pp.getarr("fields", field_names);
+        ioutils::assert_with_message(
+            ioutils::all_distinct(field_names),
+            "Duplicates in " + m_label + ".fields");
         pp.queryarr("derived_fields", derived_field_names);
         pp.query("output_frequency", m_out_freq);
         pp.query("output_format", m_out_fmt);

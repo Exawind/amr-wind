@@ -3,6 +3,7 @@
 #include "amr-wind/wind_energy/actuator/ActuatorContainer.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/core/FieldRepo.H"
+#include "amr-wind/utilities/io_utils.H"
 
 #include <algorithm>
 #include <memory>
@@ -23,6 +24,9 @@ void Actuator::pre_init_actions()
 
     amrex::Vector<std::string> labels;
     pp.getarr("labels", labels);
+    ioutils::assert_with_message(
+        ioutils::all_distinct(labels),
+        "Duplicates in " + identifier() + ".labels");
 
     const int nturbines = static_cast<int>(labels.size());
 
