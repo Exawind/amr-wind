@@ -110,7 +110,7 @@ operator()(const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
             problo[2] + (k + 0.5) * dx[2],
         };
 
-        amrex::RealArray src_force = {0.0, 0.0, 0.0};
+        amrex::RealArray src_force = {0.0};
         for (int ib = 0; ib < nBlades; ++ib) {
             // blade/disk contribution
             {

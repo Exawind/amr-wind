@@ -29,7 +29,7 @@ private:
 
     bool m_is_anelastic{false};
 
-    amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
+    amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
 
     amrex::Real m_rho0_const{1.0};
 

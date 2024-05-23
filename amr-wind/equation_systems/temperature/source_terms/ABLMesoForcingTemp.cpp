@@ -107,7 +107,7 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
     // First the index in time
     m_idx_time = closest_index(ncfile->meso_times(), currtime);
 
-    amrex::Array<amrex::Real, 2> coeff_interp{{0.0, 0.0}};
+    amrex::Array<amrex::Real, 2> coeff_interp{0.0, 0.0};
 
     amrex::Real denom =
         ncfile->meso_times()[m_idx_time + 1] - ncfile->meso_times()[m_idx_time];
@@ -159,7 +159,7 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
     // First the index in time
     m_idx_time = closest_index(ncfile->meso_times(), currtime);
 
-    amrex::Array<amrex::Real, 2> coeff_interp{{0.0, 0.0}};
+    amrex::Array<amrex::Real, 2> coeff_interp{0.0, 0.0};
 
     amrex::Real denom =
         ncfile->meso_times()[m_idx_time + 1] - ncfile->meso_times()[m_idx_time];

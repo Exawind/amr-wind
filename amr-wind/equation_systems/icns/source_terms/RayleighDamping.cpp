@@ -43,7 +43,7 @@ void RayleighDamping::operator()(
 
     const amrex::Real tau = m_tau;
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> ref_vel{
-        {m_ref_vel[0], m_ref_vel[1], m_ref_vel[2]}};
+        m_ref_vel[0], m_ref_vel[1], m_ref_vel[2]};
     const auto& vel =
         m_velocity.state(field_impl::dof_state(fstate))(lev).const_array(mfi);
 

@@ -100,7 +100,7 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
     fvm::strainrate(this->m_shear_prod, vel);
 
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
-        {m_gravity[0], m_gravity[1], m_gravity[2]}};
+        m_gravity[0], m_gravity[1], m_gravity[2]};
     const amrex::Real beta = 1.0 / m_ref_theta;
 
     auto& mu_turb = this->mu_turb();

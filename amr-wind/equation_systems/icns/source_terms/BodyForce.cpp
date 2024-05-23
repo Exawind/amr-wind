@@ -154,7 +154,7 @@ void BodyForce::operator()(
     } else {
 
         amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> forcing{
-            {m_body_force[0], m_body_force[1], m_body_force[2]}};
+            m_body_force[0], m_body_force[1], m_body_force[2]};
 
         if (!m_utt_file.empty()) {
             // Populate forcing from file if supplied

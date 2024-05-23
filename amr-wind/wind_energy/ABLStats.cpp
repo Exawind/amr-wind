@@ -55,7 +55,7 @@ void ABLStats::initialize()
         pp.query("normal_direction", m_normal_dir);
         AMREX_ASSERT((0 <= m_normal_dir) && (m_normal_dir < AMREX_SPACEDIM));
         pp.query("kappa", m_kappa);
-        amrex::Vector<amrex::Real> gravity{{0.0, 0.0, -9.81}};
+        amrex::Vector<amrex::Real> gravity{0.0, 0.0, -9.81};
         pp.queryarr("gravity", gravity);
         m_gravity = utils::vec_mag(gravity.data());
         pp.get("reference_temperature", m_ref_theta);
@@ -327,7 +327,7 @@ void ABLStats::write_ascii()
         return;
     }
 
-    amrex::RealArray abl_forcing = {{0.0, 0.0, 0.0}};
+    amrex::RealArray abl_forcing = {0.0};
     if (m_abl_forcing != nullptr) {
         abl_forcing = m_abl_forcing->abl_forcing();
     }
@@ -537,7 +537,7 @@ void ABLStats::write_netcdf()
         ncf.var("L").put(&L, {nt}, {1});
         ncf.var("zi").put(&m_zi, {nt}, {1});
 
-        amrex::RealArray abl_forcing = {{0.0, 0.0, 0.0}};
+        amrex::RealArray abl_forcing = {0.0};
         if (m_abl_forcing != nullptr) {
             abl_forcing = m_abl_forcing->abl_forcing();
         }

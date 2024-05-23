@@ -107,7 +107,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
 
     const amrex::Real deltaT = (this->m_sim).time().deltaT();
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
-        {m_gravity[0], m_gravity[1], m_gravity[2]}};
+        m_gravity[0], m_gravity[1], m_gravity[2]};
     const amrex::Real Bfac = this->m_buoyancy_factor;
     const amrex::Real sigmat = this->m_sigma_t;
 

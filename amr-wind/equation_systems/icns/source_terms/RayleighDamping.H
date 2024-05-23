@@ -35,7 +35,7 @@ private:
     const Field& m_velocity;
 
     //! Reference velocity defined as an input
-    amrex::Vector<amrex::Real> m_ref_vel{{15.0, 0.0, 0.0}};
+    amrex::Vector<amrex::Real> m_ref_vel{15.0, 0.0, 0.0};
 
     //! Full length of the damping layer
     amrex::Real m_dRD{500.};
@@ -47,7 +47,7 @@ private:
     amrex::Real m_tau{5.0};
 
     //! Which coordinate directions are forced
-    amrex::Vector<int> m_fcoord{{1, 1, 1}};
+    amrex::Vector<int> m_fcoord{1, 1, 1};
 };
 
 } // namespace amr_wind::pde::icns

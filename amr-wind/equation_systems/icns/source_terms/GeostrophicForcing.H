@@ -51,10 +51,10 @@ private:
     int m_n_band{2};
 
     //! Target velocity
-    amrex::Vector<amrex::Real> m_target_vel{{0.0, 0.0, 0.0}};
+    amrex::Vector<amrex::Real> m_target_vel{0.0, 0.0, 0.0};
 
     //! Forcing source term (pressure gradient)
-    amrex::Vector<amrex::Real> m_g_forcing{{0.0, 0.0, 0.0}};
+    amrex::Vector<amrex::Real> m_g_forcing{0.0, 0.0, 0.0};
 
     bool m_is_horizontal{false};
 

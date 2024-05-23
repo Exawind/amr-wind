@@ -40,7 +40,7 @@ private:
     Field& m_density;
 
     //! Initial DamBreak location
-    amrex::Vector<amrex::Real> m_loc{{0.0, 0.0, 0.0}};
+    amrex::Vector<amrex::Real> m_loc{0.0, 0.0, 0.0};
 
     //! dam width value
     amrex::Real m_width{0.1};
