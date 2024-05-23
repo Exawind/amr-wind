@@ -62,10 +62,16 @@ inline void add_var_names(
 }
 
 template <typename T>
-inline bool all_distinct(amrex::Vector<T> vec)
+inline bool all_distinct(const amrex::Vector<T>& vec)
 {
     std::unordered_set<T> s(vec.begin(), vec.end());
     return static_cast<amrex::Long>(s.size()) == vec.size();
+}
+inline void assert_with_message(const bool val, const std::string& msg)
+{
+    if (!val) {
+        amrex::Abort(msg);
+    }
 }
 } // namespace amr_wind::ioutils
 

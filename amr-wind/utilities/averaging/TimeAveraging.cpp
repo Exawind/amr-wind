@@ -22,9 +22,9 @@ void TimeAveraging::pre_init_actions()
     {
         amrex::ParmParse pp(m_label);
         pp.getarr("labels", labels);
-        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+        ioutils::assert_with_message(
             ioutils::all_distinct(labels),
-            "Duplicate labels in the input file");
+            "Duplicates in " + m_label + ".labels");
         pp.query("averaging_start_time", m_start_time);
         pp.query("averaging_stop_time", m_stop_time);
         pp.get("averaging_window", m_filter);
@@ -38,9 +38,9 @@ void TimeAveraging::pre_init_actions()
 
         amrex::ParmParse pp1(pp_key);
         pp1.getarr("fields", fnames);
-        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+        ioutils::assert_with_message(
             ioutils::all_distinct(fnames),
-            "Duplicate fields in the input file");
+            "Duplicates in " + pp_key + ".fields");
         pp1.get("averaging_type", avg_type);
 
         for (const auto& fname : fnames) {

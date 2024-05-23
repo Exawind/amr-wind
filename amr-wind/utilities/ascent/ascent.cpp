@@ -28,9 +28,8 @@ void AscentPostProcess::initialize()
     {
         amrex::ParmParse pp("ascent");
         pp.getarr("fields", field_names);
-        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-            ioutils::all_distinct(field_names),
-            "Duplicate fields in the input file");
+        ioutils::assert_with_message(
+            ioutils::all_distinct(field_names), "Duplicates in ascent.fields");
         pp.query("output_frequency", m_out_freq);
     }
 

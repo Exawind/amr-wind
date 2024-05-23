@@ -27,8 +27,9 @@ void IB::pre_init_actions()
 
     amrex::Vector<std::string> labels;
     pp.getarr("labels", labels);
-    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-        ioutils::all_distinct(labels), "Duplicate labels in the input file");
+    ioutils::assert_with_message(
+        ioutils::all_distinct(labels),
+        "Duplicates in " + identifier() + ".labels");
 
     const int n_ibs = static_cast<int>(labels.size());
 
