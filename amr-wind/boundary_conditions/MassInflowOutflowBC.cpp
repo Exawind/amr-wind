@@ -36,7 +36,7 @@ void MassInflowOutflowBC::operator()(Field& /*field*/, const FieldState /*rho_st
 #endif
         for (amrex::MFIter mfi(m_field(lev), mfi_info); mfi.isValid(); ++mfi) {
             auto bx = mfi.validbox();
-            //bx.grow({!ib, !jb, !kb});   // how to manage corner cells??
+            bx.grow({!ib, !jb, !kb});   // filling 1 ghost cell is enough? – check
             const auto& bc_a = m_field(lev).array(mfi);
             const auto& vel = velocity(lev).array(mfi);
 
@@ -66,6 +66,11 @@ void MassInflowOutflowBC::operator()(Field& /*field*/, const FieldState /*rho_st
                                 bc_a(i, j, k, n) = bc_a(i-ib, j-jb, k-kb, n);
                             }
                         }
+
+                        /*for (int n = 0; n < ncomp; n++) {
+                            amrex::Print() << i << " " << j << " " << k << " " << n << std::endl;
+                            amrex::Print() << "result: " << vel(i-ib, j-jb, k-kb, idim) << " " << bc_a(i-ib, j-jb, k-kb, n) << " " << bc_a(i, j, k, n) << std::endl << std::endl;
+                        }*/
                     });
             }
         }
