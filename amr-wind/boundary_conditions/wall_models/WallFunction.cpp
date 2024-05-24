@@ -21,9 +21,6 @@ WallFunction::WallFunction(CFDSim& sim)
         pp.getarr("magnitude", body_force);
         m_log_law.utau_mean = std::sqrt(std::sqrt(
             body_force[0] * body_force[0] + body_force[1] * body_force[1]));
-        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-            std::abs(body_force[2]) < 1e-16,
-            "body force in z should be zero for this wall function");
     }
     {
         amrex::ParmParse pp("transport");
