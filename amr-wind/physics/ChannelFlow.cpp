@@ -441,6 +441,13 @@ void ChannelFlow::post_init_actions()
             m_norm_dir == 2,
             "Wall normal direction should be 2 if using a wall model");
         velocity.register_custom_bc<VelWallFunc>(m_wall_func);
+
+        amrex::ParmParse pp("BodyForce");
+        amrex::Vector<amrex::Real> body_force{0.0, 0.0, 0.0};
+        pp.getarr("magnitude", body_force);
+        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+            std::abs(body_force[2]) < 1e-16,
+            "body force in z should be zero if using a wall model");
     }
 }
 
