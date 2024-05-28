@@ -8,7 +8,7 @@ time.max_step                =   20
 #         TIME STEP COMPUTATION         #
 #.......................................#
 time.fixed_dt         =   0.004        # Use this constant dt if > 0
-time.cfl              =   0.45         # CFL factor
+time.cfl              =   0.95         # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
