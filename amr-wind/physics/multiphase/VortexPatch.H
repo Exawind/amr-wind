@@ -43,7 +43,7 @@ private:
     Field& m_density;
 
     //! Initial VortexPatch location
-    amrex::Vector<amrex::Real> m_loc{{0.35, 0.35, 0.35}};
+    amrex::Vector<amrex::Real> m_loc{0.35, 0.35, 0.35};
 
     //! vortex patch radius value
     amrex::Real m_radius{0.15};

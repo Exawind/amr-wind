@@ -138,27 +138,15 @@ Often for simulations involving walls, (e.g., channel flows, complex terrains et
 Multiphase flow modelling
 ------------------------------------
 
-The level-set (LS) method was introduced by \cite{OsherSethian1988} to simulate the motion of a surface with curvature dependent speed. In the LS method, the two-phase interface is represented implicitly by a signed distance function (also called level-set function)
-
-
-.. math::
-
-   \phi ( \mathbf{x},t ) = \begin{cases} 
-      d , & \text{in water} \\
-      0,  & \text{on surface} \\
-      -d, & \text{in air.}
-   \end{cases}
-
-where :math:`d` is the distance from point :math:`\mathbf{x}` to the interface.
-
-.. math:: \frac{\partial \phi}{\partial t} + \mathbf{u} \nabla \phi = 0 
-
-where :math:`\mathbf{u}=(u_x,u_y,u_z)` is the velocity vector.
-Re-initialization of the level-set
-
-.. math:: \frac{\partial \phi}{\partial \tau} = \text{sgn}(\phi^0)(1-|\nabla \phi|)
-
-where :math:`\phi^0=\phi(x,0)` represents the location of the interface. 
+AMR-Wind employs the volume-of-fluid method for simulating two-phase (water-air) flows. 
+More specifically, the volume fraction field is advected explicitly using a
+directionally split geometric approach, and the advection of momentum is 
+discretized in a mass-consistent manner. Overall, this approach conserves mass
+and momentum while remaining stable at high density ratios (typically 1000).
+Viscosities can be specified for each fluid independently, but surface tension
+is not modeled by AMR-Wind currently. For further detail, see 
+`Kuhn, Deskos, Sprague (Computers & Fluids 2023)
+<https://doi.org/10.1016/j.compfluid.2022.105770>`_.
 
 Source terms
 ------------------------------------
@@ -286,97 +274,6 @@ The anisotropic derivative is used to define the eddy viscosity as
        \tau_{\theta j} &= -2 D_e \frac{\partial \widetilde{\Theta}}{\partial x_j} \\
        D_e &= \frac{- (\hat{\partial}_k \widetilde{u}_i) (\hat{\partial}_k \widetilde{\Theta}) \partial_i \widetilde{\Theta} }{(\partial_l \widetilde{\Theta}) (\partial_l \widetilde{\Theta})}
    \end{aligned}
-
-- **Implementation details:**
-
-
-For ease of implementation, each part of :math:`\nu_t` and :math:`D_e`
-is expanded in this subsection, these are used in ``AMD.h`` within
-functions ``amd_muvel`` and ``amd_thermal_diff``.
-
-**Terms for** :math:`\nu_t` **in** ``amd_muvel``
-
-
-#. :math:`(\hat{\partial}_k \widetilde{u}_i) (\hat{\partial}_k \widetilde{u}_j) \widetilde{S}_{ij}`
-   is a contraction of 2 symmetric tensors, :math:`(\hat{\partial}_k
-   \widetilde{u}_i) (\hat{\partial}_k \widetilde{u}_j)` and
-   :math:`\widetilde{S}_{ij}`, therefore we get 6 unique terms, 3
-   diagonals and 3 off-diagonals. The diagonal terms get a factor of 2
-   from :math:`\widetilde{S}_{ij}` and the off-diagonal terms get a
-   factor of 2 from symmetry. This term is ``num_shear``.
-
-   .. math::
-
-      \begin{aligned}
-          \begin{split}
-          (\hat{\partial}_k \widetilde{u}_i) (\hat{\partial}_k \widetilde{u}_j) \widetilde{S}_{ij} = \\
-          2*C* [\\
-          {}&u_x*(u_x^2 dx^2 + u_y^2 dy^2 + u_z^2 dz^2) +\\
-          {}&v_y*(v_x^2 dx^2 + v_y^2 dy^2 + v_z^2 dz^2) +\\
-          {}&w_z*(w_x^2 dx^2 + w_y^2 dy^2 + w_z^2 dz^2) +\\
-          {}&(u_y+v_x) * (
-          u_x v_x dx^2 +
-          u_y v_y dy^2 +
-          u_z v_z dz^2
-          ) +\\
-          {}&(u_z+w_x) * (
-          u_x w_x dx^2 +
-          u_y w_y dy^2 +
-          u_z w_z dz^2
-          ) +\\
-          {}&(v_z+w_y) * (
-          v_x w_x dx^2 +
-          v_y w_y dy^2 +
-          v_z w_z dz^2
-          )\\
-          ]
-          \end{split}
-      \end{aligned}
-
-#. :math:`\beta (\hat{\partial}_k \widetilde{w}) (\hat{\partial}_k (\widetilde{\Theta} - \langle {\widetilde{\Theta}} \rangle) )`
-   is implemented as ``num_buoy``
-
-   .. math::
-
-      \beta (\hat{\partial}_k \widetilde{w}) (\hat{\partial}_k (\widetilde{\Theta} - \langle {\widetilde{\Theta}} \rangle) ) =
-      \beta* C* ( w_x \Theta_x dx^2 + w_y \Theta_y dy^2 + w_z \Theta_z dz^2)
-
-#. :math:`(\partial_l \widetilde{u}_m) (\partial_l \widetilde{u}_m)` is
-   double contraction of rank 2 tensors, and has 9 unique terms. This is
-   implemented as ``denom``
-
-   .. math::
-
-      \begin{aligned}
-          \begin{split}
-              (\partial_l \widetilde{u}_m) (\partial_l \widetilde{u}_m) = \\
-              {}& u_x u_x + u_y u_y + u_z u_z \\
-              {}& v_x v_x + v_y v_y + v_z v_z \\
-              {}& w_x w_x + w_y w_y + w_z w_z
-          \end{split}
-      \end{aligned}
-
-**Terms for** :math:`D_e` **in** ``amd_thermal_diff``
-
-#. :math:`(\hat{\partial}_k \widetilde{u}_i) (\hat{\partial}_k \widetilde{\Theta}) \partial_i \widetilde{\Theta}`
-   is a double contraction, has 9 unique terms. This is implemented as
-   ``num``
-
-   .. math::
-
-      \begin{aligned}
-          \begin{split}
-          (\hat{\partial}_k \widetilde{u}_i) (\hat{\partial}_k \widetilde{\Theta}) \partial_i \widetilde{\Theta} = \\
-          C*[ \\
-          {}& (u_x \Theta_x dx^2 + u_y \Theta_y dy^2 + u_z \Theta_z dz^2)*\Theta_x +\\
-          {}& (v_x \Theta_x dx^2 + v_y \Theta_y dy^2 + v_z \Theta_z dz^2)*\Theta_y +\\
-          {}& (w_x \Theta_x dx^2 + w_y \Theta_y dy^2 + w_z \Theta_z dz^2)*\Theta_z \\
-          ]
-          \end{split}
-      \end{aligned}
-
-#. :math:`(\partial_l \widetilde{\Theta}) (\partial_l \widetilde{\Theta}) = \Theta_x^2 + \Theta_y^2 + \Theta_z^2`
-   is implemented as ``denom``
 
 - **Unit tests**
 

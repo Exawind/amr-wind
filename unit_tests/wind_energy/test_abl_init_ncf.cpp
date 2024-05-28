@@ -21,9 +21,9 @@ void write_ncf()
     // Populate std vectors
     const std::vector<size_t> start{0, 0, 0};
     const std::vector<size_t> count{8, 8, 64};
-    const std::vector<double> fill_u(8 * 8 * 64, 0.0);
-    const std::vector<double> fill_v(8 * 8 * 64, 20.0);
-    const std::vector<double> fill_w(8 * 8 * 64, 10.0);
+    const std::vector<double> fill_u(static_cast<size_t>(8 * 8 * 64), 0.0);
+    const std::vector<double> fill_v(static_cast<size_t>(8 * 8 * 64), 20.0);
+    const std::vector<double> fill_w(static_cast<size_t>(8 * 8 * 64), 10.0);
     // Populate NetCDF vectors
     uvel.put(fill_u.data(), start, count);
     vvel.put(fill_v.data(), start, count);

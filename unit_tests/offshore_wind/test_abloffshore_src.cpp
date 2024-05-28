@@ -49,7 +49,7 @@ amrex::Real get_val_at_height(
     return error_total;
 }
 void init_abl_temperature_field(
-    amrex::Geometry geom,
+    const amrex::Geometry& geom,
     const amrex::Box& bx,
     const amrex::Array4<amrex::Real>& trac,
     const amrex::Real bottom)
@@ -71,7 +71,7 @@ void init_abl_temperature_field(
     });
 }
 void init_vof_field(
-    amrex::Geometry geom,
+    const amrex::Geometry& geom,
     const amrex::Box& bx,
     const amrex::Array4<amrex::Real>& vof,
     const amrex::Real wlev)

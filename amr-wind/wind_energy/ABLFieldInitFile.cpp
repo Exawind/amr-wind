@@ -59,17 +59,16 @@ bool ABLFieldInitFile::operator()(
         // from the input file
         // start is the first index from where to read data
         amrex::Vector<size_t> start{
-            {static_cast<size_t>(i0), static_cast<size_t>(j0),
-             static_cast<size_t>(k0)}};
+            static_cast<size_t>(i0), static_cast<size_t>(j0),
+            static_cast<size_t>(k0)};
         // count is the total number of elements to read in each direction
         amrex::Vector<size_t> count{
-            {static_cast<size_t>(i1 - i0 + 1), static_cast<size_t>(j1 - j0 + 1),
-             static_cast<size_t>(k1 - k0 + 1)}};
+            static_cast<size_t>(i1 - i0 + 1), static_cast<size_t>(j1 - j0 + 1),
+            static_cast<size_t>(k1 - k0 + 1)};
 
         // Working vector to read data onto host
-        amrex::Vector<double> tmp;
-        int dlen = count[0] * count[1] * count[2];
-        tmp.resize(dlen);
+        const auto dlen = count[0] * count[1] * count[2];
+        amrex::Vector<double> tmp(dlen, 0.0);
         // Vector to store the 3d data into a single array and set size
         amrex::Gpu::DeviceVector<amrex::Real> uvel_d(dlen, 0.0);
         amrex::Gpu::DeviceVector<amrex::Real> vvel_d(dlen, 0.0);
@@ -78,16 +77,13 @@ bool ABLFieldInitFile::operator()(
         // Read the velocity components u, v, w and copy to device
         uvel.get(tmp.data(), start, count);
         amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, &tmp[0], &tmp[dlen - 1] + 1,
-            uvel_d.begin());
+            amrex::Gpu::hostToDevice, tmp.begin(), tmp.end(), uvel_d.begin());
         vvel.get(tmp.data(), start, count);
         amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, &tmp[0], &tmp[dlen - 1] + 1,
-            vvel_d.begin());
+            amrex::Gpu::hostToDevice, tmp.begin(), tmp.end(), vvel_d.begin());
         wvel.get(tmp.data(), start, count);
         amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, &tmp[0], &tmp[dlen - 1] + 1,
-            wvel_d.begin());
+            amrex::Gpu::hostToDevice, tmp.begin(), tmp.end(), wvel_d.begin());
 
         // Pointers to velocity objects
         const auto* uvel_dptr = uvel_d.data();
@@ -95,8 +91,8 @@ bool ABLFieldInitFile::operator()(
         const auto* wvel_dptr = wvel_d.data();
 
         // Get count components for device
-        int ct1 = count[1];
-        int ct2 = count[2];
+        const auto ct1 = count[1];
+        const auto ct2 = count[2];
 
         // Amrex parallel for to assign the velocity at each point
         amrex::ParallelFor(
@@ -112,10 +108,9 @@ bool ABLFieldInitFile::operator()(
         ncf.close();
         // Populated directly, do not fill from another level
         return false;
-    } else {
-        // Skip level and interpolate data from already loaded coarse levels
-        return true;
-    }
+    } // Skip level and interpolate data from already loaded coarse levels
+    return true;
+
 #else
     amrex::ignore_unused(vbx, geom, velocity, lev);
     return false;

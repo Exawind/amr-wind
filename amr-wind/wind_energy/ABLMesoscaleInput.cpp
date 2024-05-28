@@ -15,20 +15,24 @@ ABLMesoscaleInput::ABLMesoscaleInput(std::string ncfile, std::string var_prefix)
         m_filename, NC_NOWRITE | NC_NETCDF4 | NC_MPIIO,
         amrex::ParallelContext::CommunicatorSub(), MPI_INFO_NULL);
 
-    m_nheight = ncf.has_dim("nheight") ? ncf.dim("nheight").len() : 0;
-    m_ntime = ncf.dim("ntime").len();
+    m_nheight =
+        ncf.has_dim("nheight") ? static_cast<int>(ncf.dim("nheight").len()) : 0;
+    m_ntime = static_cast<int>(ncf.dim("ntime").len());
     amrex::Print() << "Loading " << m_filename << " : " << m_ntime << " times, "
                    << m_nheight << " heights" << std::endl;
 
     m_height.resize(m_nheight);
     m_time.resize(m_ntime);
 
-    if (m_nheight > 0) ncf.var("heights").get(m_height.data());
+    if (m_nheight > 0) {
+        ncf.var("heights").get(m_height.data());
+    }
     ncf.var("times").get(m_time.data());
 
-    m_u.resize(m_nheight * m_ntime);
-    m_v.resize(m_nheight * m_ntime);
-    m_temp.resize(m_nheight * m_ntime);
+    m_u.resize(static_cast<size_t>(m_nheight) * static_cast<size_t>(m_ntime));
+    m_v.resize(static_cast<size_t>(m_nheight) * static_cast<size_t>(m_ntime));
+    m_temp.resize(
+        static_cast<size_t>(m_nheight) * static_cast<size_t>(m_ntime));
     m_tflux.resize(m_ntime);
 
     if (m_nheight > 0) {

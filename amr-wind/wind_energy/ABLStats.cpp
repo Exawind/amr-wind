@@ -55,11 +55,15 @@ void ABLStats::initialize()
         pp.query("normal_direction", m_normal_dir);
         AMREX_ASSERT((0 <= m_normal_dir) && (m_normal_dir < AMREX_SPACEDIM));
         pp.query("kappa", m_kappa);
-        amrex::Vector<amrex::Real> gravity{{0.0, 0.0, -9.81}};
-        pp.queryarr("gravity", gravity);
-        m_gravity = utils::vec_mag(gravity.data());
         pp.get("reference_temperature", m_ref_theta);
         pp.query("stats_do_energy_budget", m_do_energy_budget);
+    }
+
+    {
+        amrex::ParmParse pp("incflo");
+        amrex::Vector<amrex::Real> gravity{0.0, 0.0, -9.81};
+        pp.queryarr("gravity", gravity);
+        m_gravity = utils::vec_mag(gravity.data());
     }
 
     // Get normal direction and associated stuff
@@ -327,7 +331,7 @@ void ABLStats::write_ascii()
         return;
     }
 
-    amrex::RealArray abl_forcing = {{0.0, 0.0, 0.0}};
+    amrex::RealArray abl_forcing = {0.0};
     if (m_abl_forcing != nullptr) {
         abl_forcing = m_abl_forcing->abl_forcing();
     }
@@ -398,7 +402,9 @@ void ABLStats::prepare_netcdf_file()
     m_ncfile_name = stat_dir + "/" + sname + ".nc";
 
     // Only I/O processor handles NetCDF generation
-    if (!amrex::ParallelDescriptor::IOProcessor()) return;
+    if (!amrex::ParallelDescriptor::IOProcessor()) {
+        return;
+    }
 
     auto ncf = ncutils::NCFile::create(m_ncfile_name, NC_CLOBBER | NC_NETCDF4);
     const std::string nt_name = "num_time_steps";
@@ -456,8 +462,9 @@ void ABLStats::prepare_netcdf_file()
     grp.def_var("u'v'_sfs", NC_DOUBLE, two_dim);
     grp.def_var("u'w'_sfs", NC_DOUBLE, two_dim);
     grp.def_var("v'w'_sfs", NC_DOUBLE, two_dim);
-    if (m_sim.repo().field_exists("tke"))
+    if (m_sim.repo().field_exists("tke")) {
         grp.def_var("k_sgs", NC_DOUBLE, two_dim);
+    }
 
     // Energy budget
     if (m_do_energy_budget) {
@@ -509,7 +516,9 @@ void ABLStats::write_netcdf()
         pa_ksgs();
     }
 
-    if (!amrex::ParallelDescriptor::IOProcessor()) return;
+    if (!amrex::ParallelDescriptor::IOProcessor()) {
+        return;
+    }
     auto ncf = ncutils::NCFile::open(m_ncfile_name, NC_WRITE);
     const std::string nt_name = "num_time_steps";
     // Index of the next timestep
@@ -524,17 +533,19 @@ void ABLStats::write_netcdf()
         ncf.var("Q").put(&Q, {nt}, {1});
         auto Tsurf = m_abl_wall_func.mo().surf_temp;
         ncf.var("Tsurf").put(&Tsurf, {nt}, {1});
-        if (Q > 1e-10) wstar = std::cbrt(m_gravity * Q * m_zi / m_ref_theta);
+        if (Q > 1e-10) {
+            wstar = std::cbrt(m_gravity * Q * m_zi / m_ref_theta);
+        }
         ncf.var("wstar").put(&wstar, {nt}, {1});
         double L = m_abl_wall_func.mo().obukhov_len;
         ncf.var("L").put(&L, {nt}, {1});
         ncf.var("zi").put(&m_zi, {nt}, {1});
 
-        amrex::RealArray abl_forcing = {{0.0, 0.0, 0.0}};
+        amrex::RealArray abl_forcing = {0.0};
         if (m_abl_forcing != nullptr) {
             abl_forcing = m_abl_forcing->abl_forcing();
         }
-        ncf.var("abl_forcing_x").put(&abl_forcing[0], {nt}, {1});
+        ncf.var("abl_forcing_x").put(abl_forcing.data(), {nt}, {1});
         ncf.var("abl_forcing_y").put(&abl_forcing[1], {nt}, {1});
 
         auto grp = ncf.group("mean_profiles");

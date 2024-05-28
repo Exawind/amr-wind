@@ -84,7 +84,9 @@ void PlaneSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
     grp.put_attr("offsets", m_poffsets);
 }
 
-void PlaneSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
+void PlaneSampler::populate_netcdf_metadata(
+    const ncutils::NCGroup& /*unused*/) const
+{}
 #else
 void PlaneSampler::define_netcdf_metadata(
     const ncutils::NCGroup& /*unused*/) const

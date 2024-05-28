@@ -26,7 +26,23 @@ public:
         const amrex::Array4<amrex::Real>& src_term) const override;
 
 private:
+    const SimTime& m_time;
     const amrex::AmrCore& m_mesh;
+
+    //! File name for target velocity time table
+    std::string m_vel_timetable;
+
+    //! Velocity forcing time table
+    amrex::Vector<amrex::Real> m_time_table;
+
+    //! Velocity forcing speed table
+    amrex::Vector<amrex::Real> m_speed_table;
+
+    //! Velocity forcing direction table
+    amrex::Vector<amrex::Real> m_direction_table;
+
+    //! Coriolis factor
+    amrex::Real m_coriolis_factor;
 
     //! Activated when water is present in domain
     bool m_use_phase_ramp{false};
@@ -35,10 +51,10 @@ private:
     int m_n_band{2};
 
     //! Target velocity
-    amrex::Vector<amrex::Real> m_target_vel{{0.0, 0.0, 0.0}};
+    amrex::Vector<amrex::Real> m_target_vel{0.0, 0.0, 0.0};
 
     //! Forcing source term (pressure gradient)
-    amrex::Vector<amrex::Real> m_g_forcing{{0.0, 0.0, 0.0}};
+    amrex::Vector<amrex::Real> m_g_forcing{0.0, 0.0, 0.0};
 
     bool m_is_horizontal{false};
 

@@ -49,7 +49,7 @@ void DensityBuoyancy::operator()(
 {
     const amrex::Real density_0 = rho_0;
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
-        {m_gravity[0], m_gravity[1], m_gravity[2]}};
+        m_gravity[0], m_gravity[1], m_gravity[2]};
 
     FieldState den_state = field_impl::phi_state(fstate);
     const auto& density = m_density.state(den_state)(lev).const_array(mfi);

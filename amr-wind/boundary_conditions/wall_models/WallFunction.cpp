@@ -17,13 +17,10 @@ WallFunction::WallFunction(CFDSim& sim)
 {
     {
         amrex::ParmParse pp("BodyForce");
-        amrex::Vector<amrex::Real> body_force{{0.0, 0.0, 0.0}};
+        amrex::Vector<amrex::Real> body_force{0.0, 0.0, 0.0};
         pp.getarr("magnitude", body_force);
         m_log_law.utau_mean = std::sqrt(std::sqrt(
             body_force[0] * body_force[0] + body_force[1] * body_force[1]));
-        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-            std::abs(body_force[2]) < 1e-16,
-            "body force in z should be zero for this wall function");
     }
     {
         amrex::ParmParse pp("transport");
@@ -85,7 +82,7 @@ void VelWallFunc::wall_model(
 
         const auto& rho_lev = density(lev);
         auto& vel_lev = velocity(lev);
-        auto& vold_lev = velocity.state(FieldState::Old)(lev);
+        const auto& vold_lev = velocity.state(FieldState::Old)(lev);
         const auto& eta_lev = viscosity(lev);
 
         if (amrex::Gpu::notInLaunchRegion()) {
@@ -96,10 +93,10 @@ void VelWallFunc::wall_model(
 #endif
         for (amrex::MFIter mfi(vel_lev, mfi_info); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.validbox();
-            auto varr = vel_lev.array(mfi);
-            auto vold_arr = vold_lev.array(mfi);
-            auto den = rho_lev.array(mfi);
-            auto eta = eta_lev.array(mfi);
+            const auto& varr = vel_lev.array(mfi);
+            const auto& vold_arr = vold_lev.const_array(mfi);
+            const auto& den = rho_lev.const_array(mfi);
+            const auto& eta = eta_lev.const_array(mfi);
 
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                 velocity.bc_type()[zlo] == BC::wall_model) {
@@ -182,9 +179,9 @@ void VelWallFunc::wall_model(
 #endif
         for (amrex::MFIter mfi(vel_lev, mfi_info); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.validbox();
-            auto varr = vel_lev.array(mfi);
-            auto den = rho_lev.array(mfi);
-            auto eta = eta_lev.array(mfi);
+            const auto& varr = vel_lev.array(mfi);
+            const auto& den = rho_lev.const_array(mfi);
+            const auto& eta = eta_lev.const_array(mfi);
 
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                 velocity.bc_type()[zlo] == BC::wall_model) {

@@ -84,7 +84,7 @@ private:
     const Field& m_vof;
 
     //! gravity vector
-    amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
+    amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
 
     //! offset for potential energy calculation
     amrex::Real m_pe_off = 0.0;

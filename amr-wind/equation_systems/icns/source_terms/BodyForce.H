@@ -33,6 +33,7 @@ public:
         const amrex::Array4<amrex::Real>& src_term) const override;
 
     void read_bforce_profile(const std::string& filename);
+    void read_bforce_timetable(const std::string& filename);
 
 private:
     //! Time
@@ -41,10 +42,12 @@ private:
     const amrex::AmrCore& m_mesh;
 
     //! Forcing source term (pressure gradient)
-    amrex::Vector<amrex::Real> m_body_force{{0.0, 0.0, 0.0}};
+    amrex::Vector<amrex::Real> m_body_force{0.0, 0.0, 0.0};
 
     //! Body Force Type
-    std::string m_type{"constant"};
+    std::string m_type{"uniform_constant"};
+    //! Uniform time table file
+    std::string m_utt_file;
 
     //! Angular frequency used in the oscillatory forcing
     amrex::Real m_omega{0.0};
@@ -54,6 +57,12 @@ private:
     amrex::Gpu::DeviceVector<amrex::Real> m_prof_x;
     amrex::Gpu::DeviceVector<amrex::Real> m_prof_y;
     amrex::Gpu::DeviceVector<amrex::Real> m_ht;
+
+    //! Vectors for storing uniform_timetable inputs
+    amrex::Vector<amrex::Real> m_time_table;
+    amrex::Vector<amrex::Real> m_fx_table;
+    amrex::Vector<amrex::Real> m_fy_table;
+    amrex::Vector<amrex::Real> m_fz_table;
 };
 
 } // namespace amr_wind::pde::icns

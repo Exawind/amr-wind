@@ -85,7 +85,9 @@ void prepare_netcdf_file(
 #ifdef AMR_WIND_USE_NETCDF
     using dvec = std::vector<double>;
     // Only root process handles I/O
-    if (info.root_proc != amrex::ParallelDescriptor::MyProc()) return;
+    if (info.root_proc != amrex::ParallelDescriptor::MyProc()) {
+        return;
+    }
     auto ncf = ncutils::NCFile::create(name, NC_CLOBBER | NC_NETCDF4);
     const std::string nt_name = "num_time_steps";
     const std::string np_name = "num_actuator_points";
@@ -130,16 +132,16 @@ void prepare_netcdf_file(
 
     {
         {
-            const size_t npts = static_cast<size_t>(data.num_force_pts);
+            const auto npts = static_cast<size_t>(data.num_force_pts);
             const std::vector<size_t> start{0, 0};
             const std::vector<size_t> count{npts, AMREX_SPACEDIM};
-            grp.var("xyz").put(&(grid.pos[0][0]), start, count);
+            grp.var("xyz").put(grid.pos[0].data(), start, count);
         }
         {
-            const size_t npts = static_cast<size_t>(data.num_vel_pts);
+            const auto npts = static_cast<size_t>(data.num_vel_pts);
             const std::vector<size_t> start{0, 0};
             const std::vector<size_t> count{npts, AMREX_SPACEDIM};
-            grp.var("xyz_v").put(&(grid.vel_pos[0][0]), start, count);
+            grp.var("xyz_v").put(grid.vel_pos[0].data(), start, count);
         }
     }
 #else
@@ -156,7 +158,9 @@ void write_netcdf(
 {
 #ifdef AMR_WIND_USE_NETCDF
     // Only root process handles I/O
-    if (info.root_proc != amrex::ParallelDescriptor::MyProc()) return;
+    if (info.root_proc != amrex::ParallelDescriptor::MyProc()) {
+        return;
+    }
     auto ncf = ncutils::NCFile::open(name, NC_WRITE);
     const std::string nt_name = "num_time_steps";
     // Index of next timestep
@@ -166,19 +170,19 @@ void write_netcdf(
     auto grp = ncf.group(info.label);
     grp.var("time").put(&time, {nt}, {1});
     grp.var("vref").put(
-        &(data.reference_velocity[0]), {nt, 0}, {1, AMREX_SPACEDIM});
+        data.reference_velocity.data(), {nt, 0}, {1, AMREX_SPACEDIM});
     grp.var("vdisk").put(
-        &(data.mean_disk_velocity[0]), {nt, 0}, {1, AMREX_SPACEDIM});
+        data.mean_disk_velocity.data(), {nt, 0}, {1, AMREX_SPACEDIM});
     grp.var("tsr").put(&data.current_tip_speed_ratio, {nt}, {1});
     grp.var("ct").put(&data.current_ct, {nt}, {1});
     grp.var("cp").put(&data.current_cp, {nt}, {1});
     grp.var("power").put(&data.current_power, {nt}, {1});
     grp.var("density").put(&data.density, {nt}, {1});
     grp.var("total_disk_force")
-        .put(&data.disk_force[0], {nt, 0}, {1, AMREX_SPACEDIM});
+        .put(data.disk_force.data(), {nt, 0}, {1, AMREX_SPACEDIM});
     grp.var("angular_velocity").put(&data.current_angular_velocity, {nt}, {1});
-    grp.var("f_normal").put(&(data.f_normal[0]), {nt, 0}, {1, nr});
-    grp.var("f_theta").put(&(data.f_theta[0]), {nt, 0}, {1, np});
+    grp.var("f_normal").put(data.f_normal.data(), {nt, 0}, {1, nr});
+    grp.var("f_theta").put(data.f_theta.data(), {nt, 0}, {1, np});
 #else
     amrex::ignore_unused(name, data, info, time);
 #endif

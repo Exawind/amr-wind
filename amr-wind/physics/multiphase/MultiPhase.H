@@ -63,6 +63,8 @@ public:
 
     amrex::Real rho2() const { return m_rho2; }
 
+    amrex::Vector<amrex::Real> gravity() const { return m_gravity; }
+
     amrex::Real water_level() const { return water_level0; }
 
 private:
@@ -92,7 +94,7 @@ private:
     // Info to create rho0
     amrex::Real water_level0{0.0};
     // Info to reconstruct true pressure
-    amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
+    amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
 
     bool m_interface_smoothing{false};
 

@@ -18,7 +18,7 @@ void check_for_removed_syntax(
     }
     if (pp.contains("num_force_points")) {
         stream << error_start
-               << "'num_force_points' has been repalced with 'num_points_r'\n";
+               << "'num_force_points' has been replaced with 'num_points_r'\n";
     }
     if (pp.contains("num_theta_force_points")) {
         stream << error_start
