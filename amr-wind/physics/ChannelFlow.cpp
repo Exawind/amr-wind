@@ -24,17 +24,19 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
         }
     }
     {
+        {
+            amrex::ParmParse pp("incflo");
+            pp.query("density", m_rho);
+        }
         amrex::ParmParse pp("ChannelFlow");
         pp.query("flow_direction", m_mean_vel_dir);
         pp.query("normal_direction", m_norm_dir);
         pp.query("error_log_file", m_output_fname);
 
         if (m_laminar) {
-            pp.query("density", m_rho);
             pp.query("Mean_Velocity", m_mean_vel);
             pp.query("half_channel", m_half);
         } else {
-            pp.query("density", m_rho);
             pp.query("re_tau", m_re_tau);
             pp.query("tke0", m_tke0);
             pp.query("sdr0", m_sdr0);

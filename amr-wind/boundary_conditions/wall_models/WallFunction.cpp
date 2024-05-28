@@ -15,6 +15,8 @@ namespace amr_wind {
 WallFunction::WallFunction(CFDSim& sim)
     : m_sim(sim), m_mesh(m_sim.mesh()), m_pa_vel(sim, m_direction)
 {
+    amrex::Real mu;
+    amrex::Real rho{1.0};
     {
         amrex::ParmParse pp("BodyForce");
         amrex::Vector<amrex::Real> body_force{0.0, 0.0, 0.0};
@@ -24,8 +26,13 @@ WallFunction::WallFunction(CFDSim& sim)
     }
     {
         amrex::ParmParse pp("transport");
-        pp.query("viscosity", m_log_law.nu);
+        pp.get("viscosity", mu);
     }
+    {
+        amrex::ParmParse pp("incflo");
+        pp.query("density", rho);
+    }
+    m_log_law.nu = mu / rho;
     {
         amrex::ParmParse pp("WallFunction");
         // Reference height for log-law
