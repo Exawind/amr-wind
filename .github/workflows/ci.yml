@@ -28,7 +28,7 @@ jobs:
         check-path: ${{ matrix.path }}
         clang-format-version: '18'
   CPU:
-    needs: ["Formatting (amr-wind)", "Formatting (unit_tests)", "Formatting (tools/utilities)"]
+    needs: Formatting
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
