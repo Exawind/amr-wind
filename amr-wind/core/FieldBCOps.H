@@ -11,6 +11,17 @@
 
 namespace amr_wind {
 
+namespace {
+int CC_idx(int /* idir */)
+{
+    // no modification for cell-centered
+    return 0;
+}
+int FX_idx(int idir) { return (idir == 0) ? 1 : 0; }
+int FY_idx(int idir) { return (idir == 1) ? 1 : 0; }
+int FZ_idx(int idir) { return (idir == 2) ? 1 : 0; }
+} // namespace
+
 class Field;
 
 /** Interface to setup up boundary conditions on a field
@@ -42,6 +53,9 @@ public:
 struct FieldBCNoOp
 {
     using FunctorType = FieldBCNoOp;
+    using FunctorXType = FieldBCNoOp;
+    using FunctorYType = FieldBCNoOp;
+    using FunctorZType = FieldBCNoOp;
 
     AMREX_GPU_HOST
     constexpr FieldBCNoOp() = default;
@@ -50,6 +64,9 @@ struct FieldBCNoOp
     constexpr explicit FieldBCNoOp(const Field& /*unused*/) {}
 
     FunctorType operator()() const { return *this; }
+    FunctorXType opfx() const { return *this; }
+    FunctorYType opfy() const { return *this; }
+    FunctorZType opfz() const { return *this; }
 
     AMREX_GPU_DEVICE
     void operator()(
@@ -110,7 +127,7 @@ struct ConstDirichlet
 /** Sets constant values on specified boundaries
  *  \ingroup field_fillpatch
  */
-template <typename InflowOp, typename WallOp>
+template <typename InflowOp, typename WallOp, int IdxOp(int)>
 struct DirichletOp
 {
     using InflowOpType = InflowOp;
@@ -169,9 +186,10 @@ struct DirichletOp
                 }
 
                 // Check if the point in question is on the boundary
+                int mod_bigEnd = domain_box.bigEnd(idir) + IdxOp(idir);
                 const bool is_bndry =
                     (ori.isLow() ? (iv[idir] < domain_box.smallEnd(idir))
-                                 : (iv[idir] > domain_box.bigEnd(idir)));
+                                 : (iv[idir] > mod_bigEnd));
                 if (!is_bndry) {
                     continue;
                 }
@@ -203,11 +221,17 @@ struct DirichletOp
 
 struct FieldBCDirichlet
 {
-    using FunctorType = DirichletOp<ConstDirichlet, ConstDirichlet>;
+    using FunctorType = DirichletOp<ConstDirichlet, ConstDirichlet, &CC_idx>;
+    using FunctorXType = DirichletOp<ConstDirichlet, ConstDirichlet, &FX_idx>;
+    using FunctorYType = DirichletOp<ConstDirichlet, ConstDirichlet, &FY_idx>;
+    using FunctorZType = DirichletOp<ConstDirichlet, ConstDirichlet, &FZ_idx>;
 
     explicit FieldBCDirichlet(const Field& fld) : m_field(fld) {}
 
     inline FunctorType operator()() const { return FunctorType(m_field); }
+    inline FunctorXType opfx() const { return FunctorXType(m_field); }
+    inline FunctorYType opfy() const { return FunctorYType(m_field); }
+    inline FunctorZType opfz() const { return FunctorZType(m_field); }
 
     const Field& m_field;
 };
@@ -217,7 +241,10 @@ struct BCOpCreator
 {
     using InflowOpType = typename InflowOp::DeviceType;
     using WallOpType = typename WallOp::DeviceType;
-    using FunctorType = DirichletOp<InflowOpType, WallOpType>;
+    using FunctorType = DirichletOp<InflowOpType, WallOpType, &CC_idx>;
+    using FunctorXType = DirichletOp<InflowOpType, WallOpType, &FX_idx>;
+    using FunctorYType = DirichletOp<InflowOpType, WallOpType, &FY_idx>;
+    using FunctorZType = DirichletOp<InflowOpType, WallOpType, &FZ_idx>;
 
     explicit BCOpCreator(const Field& fld)
         : m_field(fld), m_inflow_op(fld), m_wall_op(fld)
@@ -231,6 +258,27 @@ struct BCOpCreator
     inline FunctorType operator()() const
     {
         return FunctorType{
+            m_field, m_inflow_op.device_instance(),
+            m_wall_op.device_instance()};
+    }
+
+    inline FunctorXType opfx() const
+    {
+        return FunctorXType{
+            m_field, m_inflow_op.device_instance(),
+            m_wall_op.device_instance()};
+    }
+
+    inline FunctorYType opfy() const
+    {
+        return FunctorYType{
+            m_field, m_inflow_op.device_instance(),
+            m_wall_op.device_instance()};
+    }
+
+    inline FunctorZType opfz() const
+    {
+        return FunctorZType{
             m_field, m_inflow_op.device_instance(),
             m_wall_op.device_instance()};
     }
