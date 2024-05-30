@@ -64,7 +64,7 @@ private:
 
     int m_nheight;
     int m_ntime;
-    bool m_abl_tendency;
+    bool m_abl_tendency{false};
 };
 
 } // namespace amr_wind
