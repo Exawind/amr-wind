@@ -172,12 +172,6 @@ void incflo::ApplyProjection(
     for (auto& pp : m_sim.physics()) {
         pp->pre_pressure_correction_work();
     }
-    if (sim().has_overset() && m_disable_onodal) {
-        auto& iblank = m_repo.get_int_field("iblank_cell");
-        for (int lev = 0; lev <= finest_level; lev++) {
-            apply_dirichlet_vel(velocity(lev), iblank(lev));
-        }
-    }
 
     // ensure velocity is in stretched mesh space
     if (velocity.in_uniform_space() && mesh_mapping) {
@@ -361,11 +355,15 @@ void incflo::ApplyProjection(
         nodal_projector->setCustomRHS(div_vel_rhs->vec_const_ptrs());
     }
     if ((sim().has_overset() && m_disable_onodal)) {
+        auto& iblank = m_repo.get_int_field("iblank_cell");
+        for (int lev = 0; lev <= finest_level; lev++) {
+            apply_dirichlet_vel(velocity(lev), iblank(lev));
+        }
         auto div_vel_rhs =
             sim().repo().create_scratch_field(1, 0, amr_wind::FieldLoc::NODE);
         nodal_projector->computeRHS(div_vel_rhs->vec_ptrs(), vel, {}, {});
-        // Mask the righ-hand side of the Poisson solve for the nodes inside the
-        // body
+        // Mask the right-hand side of the Poisson solve for the nodes inside
+        // the body
         const auto& imask_node = repo().get_int_field("mask_node");
         for (int lev = 0; lev <= finest_level; ++lev) {
             amrex::MultiFab::Multiply(
