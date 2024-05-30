@@ -280,14 +280,17 @@ public:
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FunctorZ>> physbcz(
                 m_mesh.Geom(lev), bcrec, bc_functor_z());
             int i = 0;
+            std::cout << "sibling fields FPSL dir i = 0 (umac)\n";
             amrex::FillPatchSingleLevel(
                 *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
                 m_mesh.Geom(lev), physbcx, i);
             i = 1;
+            std::cout << "sibling fields FPSL dir i = 1 (vmac)\n";
             amrex::FillPatchSingleLevel(
                 *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
                 m_mesh.Geom(lev), physbcy, i);
             i = 2;
+            std::cout << "sibling fields FPSL dir i = 2 (wmac)\n";
             amrex::FillPatchSingleLevel(
                 *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
                 m_mesh.Geom(lev), physbcz, i);
