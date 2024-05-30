@@ -167,6 +167,9 @@ class FieldFillPatchOps : public FieldFillPatchOpsBase
 {
 public:
     using Functor = typename BCOpCreator::FunctorType;
+    using FunctorX = typename BCOpCreator::FunctorXType;
+    using FunctorY = typename BCOpCreator::FunctorYType;
+    using FunctorZ = typename BCOpCreator::FunctorZType;
     /**
      *  @param field Field whose patches are filled by this instance
      *  @param mesh  The mesh instance to determine amrex::Geometry at a level
@@ -270,13 +273,31 @@ public:
     {
 
         if (lev == 0) {
-            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> physbc(
-                m_mesh.Geom(lev), bcrec, bc_functor());
+            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FunctorX>> physbcx(
+                m_mesh.Geom(lev), bcrec, bc_functor_x());
+            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FunctorY>> physbcy(
+                m_mesh.Geom(lev), bcrec, bc_functor_y());
+            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FunctorZ>> physbcz(
+                m_mesh.Geom(lev), bcrec, bc_functor_z());
+            int i = 0;
+            amrex::FillPatchSingleLevel(
+                *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
+                m_mesh.Geom(lev), physbcx, i);
+            i = 1;
+            amrex::FillPatchSingleLevel(
+                *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
+                m_mesh.Geom(lev), physbcy, i);
+            i = 2;
+            amrex::FillPatchSingleLevel(
+                *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
+                m_mesh.Geom(lev), physbcz, i);
+            /*
             for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
                 amrex::FillPatchSingleLevel(
                     *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
                     m_mesh.Geom(lev), physbc, i);
             }
+            */
         } else {
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> cphysbc(
                 m_mesh.Geom(lev - 1), bcrec, bc_functor());
@@ -386,6 +407,9 @@ public:
 
 protected:
     Functor bc_functor() { return m_op(); }
+    FunctorX bc_functor_x() { return m_op.opfx(); }
+    FunctorY bc_functor_y() { return m_op.opfy(); }
+    FunctorZ bc_functor_z() { return m_op.opfz(); }
 
     void check_face_mapper()
     {
