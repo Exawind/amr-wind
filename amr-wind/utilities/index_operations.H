@@ -34,4 +34,3 @@ AMREX_FORCE_INLINE T perpendicular_idx(const int normal)
 } /* namespace amr_wind */
 
 #endif /* INDEX_OPERATIONS_H */
-
