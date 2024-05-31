@@ -2,6 +2,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/wind_energy/ABL.H"
 #include "amr-wind/core/FieldUtils.H"
+#include "amr-wind/utilities/index_operations.H"
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
 #include "AMReX_Print.H"
@@ -10,20 +11,6 @@
 #include <iomanip>
 
 namespace amr_wind::pde::icns {
-
-namespace {
-
-//! Return closest index (from lower) of value in vector
-AMREX_FORCE_INLINE int
-closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
-{
-    auto const it = std::upper_bound(vec.begin(), vec.end(), value);
-    AMREX_ALWAYS_ASSERT(it != vec.end());
-
-    const int idx = static_cast<int>(std::distance(vec.begin(), it));
-    return std::max(idx - 1, 0);
-}
-} // namespace
 
 ABLMesoForcingMom::ABLMesoForcingMom(const CFDSim& sim)
     : ABLMesoscaleForcing(sim, identifier())
