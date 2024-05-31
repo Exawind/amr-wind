@@ -50,11 +50,22 @@ struct Rankine
             amrex::IntVect ivhi(AMREX_D_DECL(40, 12, 1));
             amrex::IntVect ivlo(AMREX_D_DECL(0, 12, 1));
             amrex::IntVect ivlm(AMREX_D_DECL(-1, 12, 1));
-            if (iv == ivlo) amrex::Print() << "Rankine.H op: filling " << vel[orig_comp + comp] << " at i=0" << std::endl;
-            if (iv == ivlm) amrex::Print() << "Rankine.H op: filling " << vel[orig_comp + comp] << " at i=-1" << std::endl;
-            if (iv == ivhi) amrex::Print() << "Rankine.H op: filling " << vel[orig_comp + comp] << " at i=40" << std::endl;
-            if (iv == ivhh) amrex::Print() << "Rankine.H op: filling " << vel[orig_comp + comp] << " at i=41" << std::endl;
-
+            if (iv == ivlo)
+                amrex::Print()
+                    << "Rankine.H op: filling " << vel[orig_comp + comp]
+                    << " at i=0" << std::endl;
+            if (iv == ivlm)
+                amrex::Print()
+                    << "Rankine.H op: filling " << vel[orig_comp + comp]
+                    << " at i=-1" << std::endl;
+            if (iv == ivhi)
+                amrex::Print()
+                    << "Rankine.H op: filling " << vel[orig_comp + comp]
+                    << " at i=40" << std::endl;
+            if (iv == ivhh)
+                amrex::Print()
+                    << "Rankine.H op: filling " << vel[orig_comp + comp]
+                    << " at i=41" << std::endl;
         }
     };
     using DeviceType = DeviceOp;

@@ -150,29 +150,6 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             w_mac(lev).setBndry(0.0);
         }
 
-        /*{
-            amrex::Real sample_vel = 0;
-            int ilev = 0;
-            sample_vel += amrex::ReduceSum(
-                u_mac(ilev), 1,
-                [=] AMREX_GPU_HOST_DEVICE(
-                    amrex::Box const& bx,
-                    amrex::Array4<amrex::Real const> const& f_arr)
-                    -> amrex::Real {
-                    amrex::Real val = 0;
-
-                    amrex::Loop(bx, [=, &val](int i, int j, int k) noexcept {
-                        if (i == 40 && j == 12 && k == 1) {
-                            val += f_arr(i, j, k);
-                        }
-                    });
-
-                    return val;
-                });
-            amrex::ParallelDescriptor::ReduceRealSum(sample_vel);
-            amrex::Print() << "before predict: umac(40,12,1) " << sample_vel << std::endl;
-        }*/
-
         //
         // Predict
         //
@@ -324,62 +301,12 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         // MAC projection
         m_macproj_op(fstate, dt);
 
-        /*for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-            u_mac(lev).setBndry(0.0);
-        }
-
-        {
-            amrex::Real sample_vel = 0;
-            int ilev = 0;
-            sample_vel += amrex::ReduceSum(
-                u_mac(ilev), 1,
-                [=] AMREX_GPU_HOST_DEVICE(
-                    amrex::Box const& bx,
-                    amrex::Array4<amrex::Real const> const& f_arr)
-                    -> amrex::Real {
-                    amrex::Real val = 0;
-
-                    amrex::Loop(bx, [=, &val](int i, int j, int k) noexcept {
-                        if (i == 40 && j == 12 && k == 1) {
-                            val += f_arr(i, j, k);
-                        }
-                    });
-
-                    return val;
-                });
-            amrex::ParallelDescriptor::ReduceRealSum(sample_vel);
-            amrex::Print() << "before fpsf: umac(40,12,1) " << sample_vel << std::endl;
-        }*/
-
         std::cout << "// Fill mac velocities using velocity BCs\n";
         if (fvm::Godunov::nghost_state > 0) {
             amrex::Array<Field*, AMREX_SPACEDIM> mac_vel = {
                 AMREX_D_DECL(&u_mac, &v_mac, &w_mac)};
             dof_field.fillpatch_sibling_fields(time, u_mac.num_grow(), mac_vel);
         }
-
-        /*{
-            amrex::Real sample_vel = 0;
-            int ilev = 0;
-            sample_vel += amrex::ReduceSum(
-                u_mac(ilev), 1,
-                [=] AMREX_GPU_HOST_DEVICE(
-                    amrex::Box const& bx,
-                    amrex::Array4<amrex::Real const> const& f_arr)
-                    -> amrex::Real {
-                    amrex::Real val = 0;
-
-                    amrex::Loop(bx, [=, &val](int i, int j, int k) noexcept {
-                        if (i == 40 && j == 12 && k == 1) {
-                            val += f_arr(i, j, k);
-                        }
-                    });
-
-                    return val;
-                });
-            amrex::ParallelDescriptor::ReduceRealSum(sample_vel);
-            amrex::Print() << "after fpsf: umac(40,12,1) " << sample_vel << std::endl;
-        }*/
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             u_mac(lev).FillBoundary(geom[lev].periodicity());
