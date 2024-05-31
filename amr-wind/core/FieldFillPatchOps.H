@@ -167,9 +167,8 @@ class FieldFillPatchOps : public FieldFillPatchOpsBase
 {
 public:
     using Functor = typename BCOpCreator::FunctorType;
-    using FunctorX = typename BCOpCreator::FunctorXType;
-    using FunctorY = typename BCOpCreator::FunctorYType;
-    using FunctorZ = typename BCOpCreator::FunctorZType;
+    template <int Index>
+    using FunctorF = typename BCOpCreator::template FunctorFType<Index>;
     /**
      *  @param field Field whose patches are filled by this instance
      *  @param mesh  The mesh instance to determine amrex::Geometry at a level
@@ -273,12 +272,12 @@ public:
     {
 
         if (lev == 0) {
-            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FunctorX>> physbcx(
-                m_mesh.Geom(lev), bcrec, bc_functor_x());
-            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FunctorY>> physbcy(
-                m_mesh.Geom(lev), bcrec, bc_functor_y());
-            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FunctorZ>> physbcz(
-                m_mesh.Geom(lev), bcrec, bc_functor_z());
+            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FunctorF<0>>> physbcx(
+                m_mesh.Geom(lev), bcrec, bc_functor_f<FunctorF<0>>());
+            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FunctorF<1>>> physbcy(
+                m_mesh.Geom(lev), bcrec, bc_functor_f<FunctorF<1>>());
+            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FunctorF<2>>> physbcz(
+                m_mesh.Geom(lev), bcrec, bc_functor_f<FunctorF<2>>());
             int i = 0;
             std::cout << "sibling fields FPSL dir i = 0 (umac)\n";
             amrex::FillPatchSingleLevel(
@@ -410,9 +409,11 @@ public:
 
 protected:
     Functor bc_functor() { return m_op(); }
-    FunctorX bc_functor_x() { return m_op.opfx(); }
-    FunctorY bc_functor_y() { return m_op.opfy(); }
-    FunctorZ bc_functor_z() { return m_op.opfz(); }
+    template <typename T>
+    T bc_functor_f()
+    {
+        return m_op.template opf<T>();
+    }
 
     void check_face_mapper()
     {

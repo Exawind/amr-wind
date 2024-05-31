@@ -12,14 +12,33 @@
 namespace amr_wind {
 
 namespace {
-int CC_idx(int /* idir */)
+template <int Index = -1>
+int IdxFuncs(int idir);
+
+template <>
+int IdxFuncs<-1>(int /* idir */)
 {
-    // no modification for cell-centered
     return 0;
-}
-int FX_idx(int idir) { return (idir == 0) ? 1 : 0; }
-int FY_idx(int idir) { return (idir == 1) ? 1 : 0; }
-int FZ_idx(int idir) { return (idir == 2) ? 1 : 0; }
+};
+
+template <>
+int IdxFuncs<0>(int idir)
+{
+    return (idir == 0) ? 1 : 0;
+};
+
+template <>
+int IdxFuncs<1>(int idir)
+{
+    return (idir == 1) ? 1 : 0;
+};
+
+template <>
+int IdxFuncs<2>(int idir)
+{
+    return (idir == 2) ? 1 : 0;
+};
+
 } // namespace
 
 class Field;
@@ -53,9 +72,8 @@ public:
 struct FieldBCNoOp
 {
     using FunctorType = FieldBCNoOp;
-    using FunctorXType = FieldBCNoOp;
-    using FunctorYType = FieldBCNoOp;
-    using FunctorZType = FieldBCNoOp;
+    template <int /* Index */>
+    using FunctorFType = FieldBCNoOp;
 
     AMREX_GPU_HOST
     constexpr FieldBCNoOp() = default;
@@ -64,9 +82,11 @@ struct FieldBCNoOp
     constexpr explicit FieldBCNoOp(const Field& /*unused*/) {}
 
     FunctorType operator()() const { return *this; }
-    FunctorXType opfx() const { return *this; }
-    FunctorYType opfy() const { return *this; }
-    FunctorZType opfz() const { return *this; }
+    template <typename T>
+    T opf() const
+    {
+        return *this;
+    }
 
     AMREX_GPU_DEVICE
     void operator()(
@@ -221,17 +241,20 @@ struct DirichletOp
 
 struct FieldBCDirichlet
 {
-    using FunctorType = DirichletOp<ConstDirichlet, ConstDirichlet, &CC_idx>;
-    using FunctorXType = DirichletOp<ConstDirichlet, ConstDirichlet, &FX_idx>;
-    using FunctorYType = DirichletOp<ConstDirichlet, ConstDirichlet, &FY_idx>;
-    using FunctorZType = DirichletOp<ConstDirichlet, ConstDirichlet, &FZ_idx>;
+    using FunctorType =
+        DirichletOp<ConstDirichlet, ConstDirichlet, &IdxFuncs<>>;
+    template <int Index>
+    using FunctorFType =
+        DirichletOp<ConstDirichlet, ConstDirichlet, &IdxFuncs<Index>>;
 
     explicit FieldBCDirichlet(const Field& fld) : m_field(fld) {}
 
     inline FunctorType operator()() const { return FunctorType(m_field); }
-    inline FunctorXType opfx() const { return FunctorXType(m_field); }
-    inline FunctorYType opfy() const { return FunctorYType(m_field); }
-    inline FunctorZType opfz() const { return FunctorZType(m_field); }
+    template <typename T>
+    inline T opf() const
+    {
+        return T(m_field);
+    }
 
     const Field& m_field;
 };
@@ -241,10 +264,10 @@ struct BCOpCreator
 {
     using InflowOpType = typename InflowOp::DeviceType;
     using WallOpType = typename WallOp::DeviceType;
-    using FunctorType = DirichletOp<InflowOpType, WallOpType, &CC_idx>;
-    using FunctorXType = DirichletOp<InflowOpType, WallOpType, &FX_idx>;
-    using FunctorYType = DirichletOp<InflowOpType, WallOpType, &FY_idx>;
-    using FunctorZType = DirichletOp<InflowOpType, WallOpType, &FZ_idx>;
+    using FunctorType = DirichletOp<InflowOpType, WallOpType, &IdxFuncs<>>;
+    template <int Index>
+    using FunctorFType =
+        DirichletOp<InflowOpType, WallOpType, &IdxFuncs<Index>>;
 
     explicit BCOpCreator(const Field& fld)
         : m_field(fld), m_inflow_op(fld), m_wall_op(fld)
@@ -262,23 +285,10 @@ struct BCOpCreator
             m_wall_op.device_instance()};
     }
 
-    inline FunctorXType opfx() const
+    template <typename T>
+    inline T opf() const
     {
-        return FunctorXType{
-            m_field, m_inflow_op.device_instance(),
-            m_wall_op.device_instance()};
-    }
-
-    inline FunctorYType opfy() const
-    {
-        return FunctorYType{
-            m_field, m_inflow_op.device_instance(),
-            m_wall_op.device_instance()};
-    }
-
-    inline FunctorZType opfz() const
-    {
-        return FunctorZType{
+        return T{
             m_field, m_inflow_op.device_instance(),
             m_wall_op.device_instance()};
     }
