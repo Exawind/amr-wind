@@ -205,11 +205,12 @@ struct DirichletOp
                     continue;
                 }
 
-                // Check if the point in question is on the boundary
-                int mod_bigEnd = domain_box.bigEnd(idir) + IdxOp(idir);
+                // Check if the point in question is on the boundary, which
+                // depends on the location of the field variable
+                int bigEnd_for_floc = domain_box.bigEnd(idir) + IdxOp(idir);
                 const bool is_bndry =
                     (ori.isLow() ? (iv[idir] < domain_box.smallEnd(idir))
-                                 : (iv[idir] > mod_bigEnd));
+                                 : (iv[idir] > bigEnd_for_floc));
                 if (!is_bndry) {
                     continue;
                 }
