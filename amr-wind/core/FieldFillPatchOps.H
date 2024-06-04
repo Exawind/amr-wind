@@ -270,36 +270,32 @@ public:
         const amrex::Vector<amrex::BCRec>& bcrec,
         const FieldState /*fstate = FieldState::New*/) override
     {
-
+        AMREX_ALWAYS_ASSERT(AMREX_SPACEDIM == 3);
         if (lev == 0) {
-            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FunctorF<0>>> physbcx(
-                m_mesh.Geom(lev), bcrec, bc_functor_f<FunctorF<0>>());
-            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FunctorF<1>>> physbcy(
-                m_mesh.Geom(lev), bcrec, bc_functor_f<FunctorF<1>>());
-            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FunctorF<2>>> physbcz(
-                m_mesh.Geom(lev), bcrec, bc_functor_f<FunctorF<2>>());
-            int i = 0;
-            std::cout << "sibling fields FPSL dir i = 0 (umac)\n";
-            amrex::FillPatchSingleLevel(
-                *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
-                m_mesh.Geom(lev), physbcx, i);
-            i = 1;
-            std::cout << "sibling fields FPSL dir i = 1 (vmac)\n";
-            amrex::FillPatchSingleLevel(
-                *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
-                m_mesh.Geom(lev), physbcy, i);
-            i = 2;
-            std::cout << "sibling fields FPSL dir i = 2 (wmac)\n";
-            amrex::FillPatchSingleLevel(
-                *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
-                m_mesh.Geom(lev), physbcz, i);
-            /*
-            for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
+            {
+                const int i = 0;
+                amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FunctorF<0>>> physbc(
+                    m_mesh.Geom(lev), bcrec, bc_functor_face<FunctorF<0>>());
                 amrex::FillPatchSingleLevel(
                     *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
                     m_mesh.Geom(lev), physbc, i);
             }
-            */
+            {
+                const int i = 1;
+                amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FunctorF<1>>> physbc(
+                    m_mesh.Geom(lev), bcrec, bc_functor_face<FunctorF<1>>());
+                amrex::FillPatchSingleLevel(
+                    *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
+                    m_mesh.Geom(lev), physbc, i);
+            }
+            {
+                const int i = 2;
+                amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FunctorF<2>>> physbc(
+                    m_mesh.Geom(lev), bcrec, bc_functor_face<FunctorF<2>>());
+                amrex::FillPatchSingleLevel(
+                    *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
+                    m_mesh.Geom(lev), physbc, i);
+            }
         } else {
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> cphysbc(
                 m_mesh.Geom(lev - 1), bcrec, bc_functor());
@@ -410,7 +406,7 @@ public:
 protected:
     Functor bc_functor() { return m_op(); }
     template <typename T>
-    T bc_functor_f()
+    T bc_functor_face()
     {
         return m_op.template opf<T>();
     }
