@@ -210,11 +210,11 @@ struct InitDataOp<FixedWing, ActSrcLine>
             meta.chord.resize(npts);
             ::amr_wind::interp::linear_monotonic(
                 meta.span_locs, meta.chord_inp, wx, meta.chord);
-            // clang-format off
             meta.epsilon_chord = {
-                meta.epsilon_chord.x(), meta.epsilon_chord.y(),
-                meta.epsilon_chord.z()};
-            // clang-format on
+                meta.epsilon_chord.x(), meta.epsilon_chord.z(),
+                meta.epsilon_chord.y()};
+            meta.eps_inp = {
+                meta.eps_inp.x(), meta.eps_inp.z(), meta.eps_inp.y()};
             for (int i = 0; i < npts; ++i) {
                 for (int n = 0; n < AMREX_SPACEDIM; ++n) {
                     const auto eps = meta.epsilon_chord[n] * meta.chord[i];
