@@ -17,8 +17,10 @@ amrex::Real amr_wind::diagnostics::get_vel_max(
             amrex::Array4<int const> const& mask_arr) -> amrex::Real {
             amrex::Real max_fab = -1e8;
             amrex::Loop(bx, [=, &max_fab](int i, int j, int k) noexcept {
-                max_fab = amrex::max(max_fab, factor * vel_arr(i, j, k, vdir)) *
-                          (mask_arr(i, j, k) > 0 ? 1.0 : -1.0);
+                max_fab = amrex::max(
+                    max_fab, mask_arr(i, j, k) > 0
+                                 ? factor * vel_arr(i, j, k, vdir)
+                                 : std::numeric_limits<amrex::Real>::lowest());
             });
             return max_fab;
         });
@@ -89,9 +91,10 @@ amrex::Real amr_wind::diagnostics::get_macvel_max(
                 int ii = i - (vdir == 0 ? 1 : 0);
                 int jj = j - (vdir == 1 ? 1 : 0);
                 int kk = k - (vdir == 2 ? 1 : 0);
-                max_fab =
-                    amrex::max(max_fab, factor * mvel_arr(i, j, k)) *
-                    (mask_arr(i, j, k) + mask_arr(ii, jj, kk) > 0 ? 1.0 : -1.0);
+                max_fab = amrex::max(
+                    max_fab, (mask_arr(i, j, k) + mask_arr(ii, jj, kk)) > 0
+                                 ? factor * mvel_arr(i, j, k)
+                                 : std::numeric_limits<amrex::Real>::lowest());
             });
             return max_fab;
         });
@@ -167,7 +170,7 @@ amrex::Array<amrex::Real, 24> amr_wind::diagnostics::PrintMaxVelLocations(
         if (lev < finest_level) {
             level_mask = makeFineMask(
                 repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev),
-                repo.mesh().boxArray(lev + 1), amrex::IntVect(2), 1, 0);
+                repo.mesh().boxArray(lev + 1), repo.mesh().refRatio(lev), 1, 0);
         } else {
             level_mask.define(
                 repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev), 1,
@@ -221,7 +224,7 @@ amrex::Array<amrex::Real, 24> amr_wind::diagnostics::PrintMaxVelLocations(
         if (lev < finest_level) {
             level_mask = makeFineMask(
                 repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev),
-                repo.mesh().boxArray(lev + 1), amrex::IntVect(2), 1, 0);
+                repo.mesh().boxArray(lev + 1), repo.mesh().refRatio(lev), 1, 0);
         } else {
             level_mask.define(
                 repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev), 1,
@@ -346,11 +349,23 @@ amrex::Array<amrex::Real, 24> amr_wind::diagnostics::PrintMaxMACVelLocations(
     amrex::Real uMAC_min{-1e8}, vMAC_min{-1e8}, wMAC_min{-1e8};
     for (int lev = 0; lev <= finest_level; lev++) {
         // Use level_mask to only count finest level present
+        // Do it with a ghost cell for the sake of checking faces
         amrex::iMultiFab level_mask;
         if (lev < finest_level) {
-            level_mask = makeFineMask(
-                repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev),
-                repo.mesh().boxArray(lev + 1), amrex::IntVect(2), 1, 1);
+            // MultiFab with ghost cell
+            level_mask.define(
+                repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev), 1,
+                1, amrex::MFInfo());
+            // Set to 0 (ghost cells will be 0)
+            level_mask.setVal(0);
+            // Populate non-ghost cells with fine mask
+            amrex::iMultiFab::Copy(
+                level_mask,
+                makeFineMask(
+                    repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev),
+                    repo.mesh().boxArray(lev + 1), repo.mesh().refRatio(lev), 1,
+                    0),
+                0, 0, 1, amrex::IntVect(0));
         } else {
             level_mask.define(
                 repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev), 1,
@@ -412,11 +427,23 @@ amrex::Array<amrex::Real, 24> amr_wind::diagnostics::PrintMaxMACVelLocations(
         problo[0], problo[1], problo[2]};
     for (int lev = 0; lev <= finest_level; lev++) {
         // Use level_mask to only count finest level present
+        // Do it with a ghost cell for the sake of checking faces
         amrex::iMultiFab level_mask;
         if (lev < finest_level) {
-            level_mask = makeFineMask(
-                repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev),
-                repo.mesh().boxArray(lev + 1), amrex::IntVect(2), 1, 1);
+            // MultiFab with ghost cell
+            level_mask.define(
+                repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev), 1,
+                1, amrex::MFInfo());
+            // Set to 0 (ghost cells will be 0)
+            level_mask.setVal(0);
+            // Populate non-ghost cells with fine mask
+            amrex::iMultiFab::Copy(
+                level_mask,
+                makeFineMask(
+                    repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev),
+                    repo.mesh().boxArray(lev + 1), repo.mesh().refRatio(lev), 1,
+                    0),
+                0, 0, 1, amrex::IntVect(0));
         } else {
             level_mask.define(
                 repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev), 1,

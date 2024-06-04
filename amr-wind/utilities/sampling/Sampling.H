@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "amr-wind/CFDSim.H"
+#include "amr-wind/utilities/DerivedQuantity.H"
 #include "amr-wind/utilities/PostProcessing.H"
 #include "amr-wind/utilities/sampling/SamplerBase.H"
 #include "amr-wind/utilities/sampling/SamplingContainer.H"
@@ -62,9 +63,20 @@ public:
     //! Write sampled data in binary format
     virtual void impl_write_native();
 
+    void sampling_workflow();
+    void sampling_post();
+    void fill_buffer();
+    void create_output_buffer();
+    void convert_velocity_lineofsight();
+
     int num_total_particles() const
     {
         return static_cast<int>(m_total_particles);
+    }
+
+    int num_output_particles() const
+    {
+        return static_cast<int>(m_output_particles);
     }
 
     const amrex::Vector<std::string>& var_names() const { return m_var_names; }
@@ -106,12 +118,21 @@ private:
     //! List of fields to be sampled for this collection of probes
     amrex::Vector<Field*> m_fields;
 
+    //! List of derived fields to be sampled for this collection of probes
+    std::unique_ptr<DerivedQtyMgr> m_derived_mgr;
+
     /** Name of this sampling object.
      *
      *  The label is used to read user inputs from file and is also used for
      *  naming files directories depending on the output format.
      */
     const std::string m_label;
+
+    // Current sample buffer for full container
+    std::vector<double> m_sample_buf;
+
+    // Current sample buffer for output
+    std::vector<double> m_output_buf;
 
     //! Format of the data output (native, ascii, netcdf, etc.)
 #ifdef AMR_WIND_USE_NETCDF
@@ -121,11 +142,20 @@ private:
     std::string m_out_fmt{"native"};
 #endif
 
+    // Sample initial condition for interpolation consistency
+    bool m_restart_sample{false};
+
     // number of field components
     int m_ncomp{0};
 
-    //! Number of particles:
+    // number of derived field components
+    int m_ndcomp{0};
+
+    //! Number of sampling container particles:
     size_t m_total_particles{0};
+
+    //! Number of output particles
+    size_t m_output_particles{0};
 
     //! Frequency of data sampling and output
     int m_out_freq{100};

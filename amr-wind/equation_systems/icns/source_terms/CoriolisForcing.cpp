@@ -63,11 +63,10 @@ void CoriolisForcing::operator()(
     const amrex::Array4<amrex::Real>& src_term) const
 {
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> east{
-        {m_east[0], m_east[1], m_east[2]}};
+        m_east[0], m_east[1], m_east[2]};
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> north{
-        {m_north[0], m_north[1], m_north[2]}};
-    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> up{
-        {m_up[0], m_up[1], m_up[2]}};
+        m_north[0], m_north[1], m_north[2]};
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> up{m_up[0], m_up[1], m_up[2]};
 
     const auto sinphi = m_sinphi;
     const auto cosphi = m_cosphi;

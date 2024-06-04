@@ -106,7 +106,7 @@ private:
     //! Default output variables registered automatically in the code
     std::set<std::string> m_pltvars_default;
 
-    //! Default output integer variales registered automatically in the code
+    //! Default output integer variables registered automatically in the code
     std::set<std::string> m_int_pltvars_default;
 
     //! Variables for output in checkpoint/restart files

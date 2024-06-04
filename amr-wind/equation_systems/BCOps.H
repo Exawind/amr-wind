@@ -12,9 +12,7 @@ namespace amr_wind::pde {
  *  \ingroup pdeop
  */
 template <typename PDE>
-struct BCOp<
-    PDE,
-    typename std::enable_if<std::is_base_of<ScalarTransport, PDE>::value>::type>
+struct BCOp<PDE, std::enable_if_t<std::is_base_of_v<ScalarTransport, PDE>>>
 {
     BCOp(PDEFields& fields, const SimTime& time)
         : m_fields(fields), m_time(time)

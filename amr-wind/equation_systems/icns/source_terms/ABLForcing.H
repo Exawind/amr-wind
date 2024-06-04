@@ -41,20 +41,38 @@ public:
         m_mean_vel[1] = uy;
 
         const auto& current_time = m_time.current_time();
+        const auto& new_time = m_time.new_time();
+        const auto& nph_time = 0.5 * (current_time + new_time);
         const auto& dt = m_time.deltaT();
+        const auto& t_step = m_time.time_index();
 
         if (!m_vel_timetable.empty()) {
-            const amrex::Real current_spd = ::amr_wind::interp::linear(
-                m_time_table, m_speed_table, current_time);
-            const amrex::Real current_dir = ::amr_wind::interp::linear(
-                m_time_table, m_direction_table, current_time);
+            // Forces should be applied at n+1/2. Because ABL forcing is a
+            // delta, the difference between the target velocity (at n+1) and
+            // the current velocity (at n) puts the force term at n+1/2
+            const amrex::Real new_spd = ::amr_wind::interp::linear(
+                m_time_table, m_speed_table, new_time);
+            const amrex::Real new_dir = ::amr_wind::interp::linear_angle(
+                m_time_table, m_direction_table, new_time, 2.0 * M_PI);
 
-            m_target_vel[0] = current_spd * std::cos(current_dir);
-            m_target_vel[1] = current_spd * std::sin(current_dir);
+            m_target_vel[0] = new_spd * std::cos(new_dir);
+            m_target_vel[1] = new_spd * std::sin(new_dir);
         }
 
         m_abl_forcing[0] = (m_target_vel[0] - m_mean_vel[0]) / dt;
         m_abl_forcing[1] = (m_target_vel[1] - m_mean_vel[1]) / dt;
+
+        if (m_write_force_timetable &&
+            amrex::ParallelDescriptor::IOProcessor() &&
+            (t_step % m_force_outfreq == 0) &&
+            (current_time >= m_force_outstart)) {
+            std::ofstream outfile;
+            // Forces are recorded at n+1/2
+            outfile.open(m_force_timetable, std::ios::out | std::ios::app);
+            outfile << std::fixed << std::setprecision(15) << nph_time << "\t"
+                    << m_abl_forcing[0] << "\t" << m_abl_forcing[1] << "\t"
+                    << 0.0 << std::endl;
+        }
     }
 
     amrex::RealArray abl_forcing() const { return m_abl_forcing; }
@@ -72,10 +90,19 @@ private:
     int m_n_band{2};
 
     //! ABL forcing terms
-    amrex::RealArray m_abl_forcing{{0.0, 0.0, 0.0}};
+    amrex::RealArray m_abl_forcing{0.0};
 
     //! File name for velocity forcing time table
     std::string m_vel_timetable;
+
+    //! Bool for writing forcing time table
+    bool m_write_force_timetable{false};
+    //! File name for forcing time table output
+    std::string m_force_timetable;
+    //! Output frequency for forces
+    int m_force_outfreq{1};
+    //! Output start time for force
+    amrex::Real m_force_outstart{0.0};
 
     //! Velocity forcing time table
     amrex::Vector<amrex::Real> m_time_table;
@@ -87,10 +114,10 @@ private:
     amrex::Vector<amrex::Real> m_direction_table;
 
     //! Target velocity
-    amrex::Vector<amrex::Real> m_target_vel{{0.0, 0.0, 0.0}};
+    amrex::Vector<amrex::Real> m_target_vel{0.0, 0.0, 0.0};
 
     //! Current mean vel
-    amrex::RealArray m_mean_vel{{0.0, 0.0, 0.0}};
+    amrex::RealArray m_mean_vel{0.0};
 
     //! Height at which the velocities are forcing
     amrex::Real m_forcing_height;

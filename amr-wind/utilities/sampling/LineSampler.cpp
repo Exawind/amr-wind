@@ -79,7 +79,9 @@ void LineSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
     grp.put_attr("end", m_end);
 }
 
-void LineSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
+void LineSampler::populate_netcdf_metadata(
+    const ncutils::NCGroup& /*unused*/) const
+{}
 #else
 void LineSampler::define_netcdf_metadata(
     const ncutils::NCGroup& /*unused*/) const

@@ -16,6 +16,7 @@ struct Qcriterion
         : m_qcritphi(qcritphi), m_phi(phi), m_nondim(nondim)
     {
         AMREX_ALWAYS_ASSERT(AMREX_SPACEDIM == m_phi.num_comp());
+        AMREX_ALWAYS_ASSERT(m_phi.num_grow() > amrex::IntVect(0));
     }
 
     template <typename Stencil>
@@ -86,7 +87,8 @@ struct Qcriterion
                                        0.5 * std::pow(vz - wy, 2) +
                                        0.5 * std::pow(wx - uz, 2);
                 if (nondim) {
-                    qcritphi(i, j, k) = 0.5 * (W2 / S2 - 1.0);
+                    qcritphi(i, j, k) =
+                        0.5 * (W2 / amrex::max(1e-14, S2) - 1.0);
                 } else {
                     qcritphi(i, j, k) = 0.5 * (W2 - S2);
                 }

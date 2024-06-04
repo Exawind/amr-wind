@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "AMReX_AmrParticles.H"
+#include "amr-wind/utilities/DerivedQuantity.H"
 
 namespace amr_wind {
 
@@ -83,19 +84,34 @@ public:
         const amrex::Vector<std::unique_ptr<SamplerBase>>& /*samplers*/);
 
     //! Perform field interpolation to sampling locations
-    void interpolate_fields(const amrex::Vector<Field*> fields);
+    void interpolate_fields(const amrex::Vector<Field*>& fields);
+
+    //! Perform derived field interpolation to sampling locations
+    void interpolate_derived_fields(
+        const DerivedQtyMgr& derived_mgr,
+        const FieldRepo& repo,
+        const int scomp);
 
     //! Populate the buffer with data for all the particles
     void populate_buffer(std::vector<double>& buf);
 
-    int num_sampling_particles() const { return m_total_particles; }
+    long num_sampling_particles() const { return m_total_particles; }
 
-    int& num_sampling_particles() { return m_total_particles; }
+    long& num_sampling_particles() { return m_total_particles; }
 
 private:
-    amrex::AmrCore& m_mesh;
+    //! Interpolate from an array4 onto particles
+    void interpolate(
+        const ParIterType& pti,
+        const amrex::Array4<const amrex::Real>& farr,
+        const int lev,
+        const FieldLoc floc,
+        const int ncomp,
+        const int scomp);
 
-    int m_total_particles{0};
+    const amrex::AmrCore& m_mesh;
+
+    long m_total_particles{0};
 };
 
 } // namespace sampling

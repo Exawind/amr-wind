@@ -67,7 +67,7 @@ EkmanSpiral::EkmanSpiral(const CFDSim& sim)
 
     {
         amrex::ParmParse pp("GeostrophicForcing");
-        amrex::Vector<amrex::Real> gwind{{15.0, 0.0, 0.0}};
+        amrex::Vector<amrex::Real> gwind{15.0, 0.0, 0.0};
         pp.getarr("geostrophic_wind", gwind);
         m_vel = gwind[0];
 
@@ -146,7 +146,7 @@ amrex::Real EkmanSpiral::compute_error(const Field& field)
         if (lev < nlevels - 1) {
             level_mask = makeFineMask(
                 m_mesh.boxArray(lev), m_mesh.DistributionMap(lev),
-                m_mesh.boxArray(lev + 1), amrex::IntVect(2), 1, 0);
+                m_mesh.boxArray(lev + 1), m_mesh.refRatio(lev), 1, 0);
         } else {
             level_mask.define(
                 m_mesh.boxArray(lev), m_mesh.DistributionMap(lev), 1, 0,

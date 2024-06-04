@@ -99,7 +99,7 @@ Example for ``FixedWingLine``::
 
 .. input_param:: Actuator.FixedWingLine.fllc_relaxation_factor
 
-  **type:** Double
+  **type:** Double, optional
 
   The relaxation factor to be applied to the updated velocity see:
   `Martinez-Tossas and Meneveau (2019) <https://doi.org/10.1017/jfm.2018.994>`_
@@ -107,10 +107,27 @@ Example for ``FixedWingLine``::
 
 .. input_param:: Actuator.FixedWingLine.fllc_start_time
 
-  **type:** Double
+  **type:** Double, optional
 
   The time in the simulation from when to start using the correction.
   The default value is `0`.
+
+.. input_param:: Actuator.FixedWingLine.fllc_nonuniform
+
+  **type:** Bool
+
+  The flag to specify if the actuator points used to compute the correction should be
+  non-uniformly distributed. This helps in using less points for the fllc while
+  still maintaining the accuracy of the fllc.
+  The default value is `true`.
+
+.. input_param:: Actuator.FixedWingLine.fllc_epsilon_dr_ratio
+
+  **type:** Double, optional
+
+  The ratio of epsilon to actuator point spacing used to create a non-uniform distribution.
+  A value of `1` or greater is recommended.
+  The default value is `1`.
 
 .. input_param:: Actuator.FixedWingLine.pitch
 

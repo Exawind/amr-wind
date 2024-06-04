@@ -8,6 +8,7 @@
 #include "amr-wind/equation_systems/icns/source_terms/ABLMesoForcingMom.H"
 #include "amr-wind/equation_systems/temperature/source_terms/ABLMesoForcingTemp.H"
 #include "amr-wind/equation_systems/icns/source_terms/HurricaneForcing.H"
+#include "amr-wind/equation_systems/temperature/source_terms/HurricaneTempForcing.H"
 #include "amr-wind/incflo.H"
 #include "amr-wind/wind_energy/ABLMesoscaleForcing.H"
 #include "amr-wind/wind_energy/ABLMesoscaleInput.H"
@@ -52,7 +53,7 @@ ABL::ABL(CFDSim& sim)
 #else
         std::string ncfile;
         pp.get("mesoscale_forcing", ncfile);
-        m_meso_file.reset(new ABLMesoscaleInput(ncfile));
+        m_meso_file = std::make_unique<ABLMesoscaleInput>(ncfile);
 #endif
 
     } else if (pp.contains("WRFforcing")) {
@@ -63,7 +64,7 @@ ABL::ABL(CFDSim& sim)
                        << "use ABL.mesoscale_forcing instead" << std::endl;
         std::string ncfile;
         pp.get("WRFforcing", ncfile);
-        m_meso_file.reset(new ABLMesoscaleInput(ncfile, "wrf_"));
+        m_meso_file = std::make_unique<ABLMesoscaleInput>(ncfile, "wrf_");
 #endif
     }
 
@@ -229,6 +230,11 @@ void ABL::pre_advance_work()
 
     if (m_hurricane_forcing != nullptr) {
         m_hurricane_forcing->mean_velocity_update(
+            m_stats->vel_profile_coarse());
+    }
+
+    if (m_hurricane_temp_forcing != nullptr) {
+        m_hurricane_temp_forcing->mean_velocity_update(
             m_stats->vel_profile_coarse());
     }
 

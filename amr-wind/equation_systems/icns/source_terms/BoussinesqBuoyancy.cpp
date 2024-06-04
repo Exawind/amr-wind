@@ -52,7 +52,7 @@ void BoussinesqBuoyancy::operator()(
     const amrex::Real T0 = m_ref_theta;
     const amrex::Real beta = m_beta;
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
-        {m_gravity[0], m_gravity[1], m_gravity[2]}};
+        m_gravity[0], m_gravity[1], m_gravity[2]};
 
     const bool ivf = is_vof;
     const auto& vof_arr = (*m_vof)(lev).const_array(mfi);

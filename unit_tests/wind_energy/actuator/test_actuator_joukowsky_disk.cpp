@@ -53,8 +53,8 @@ protected:
         amr_wind::actuator::ActuatorContainer::ParticleType::NextID(1U);
     }
 
-    static void
-    add_actuators(const std::string& type, amrex::Vector<std::string> labels)
+    static void add_actuators(
+        const std::string& type, const amrex::Vector<std::string>& labels)
     {
         amrex::ParmParse pp("Actuator");
         pp.add("type", type);

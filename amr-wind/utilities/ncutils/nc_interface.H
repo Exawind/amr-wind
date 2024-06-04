@@ -65,78 +65,86 @@ struct NCVar
     std::vector<size_t> shape() const;
 
     //! Write out the entire variable
-    void put(const double*) const;
-    void put(const float*) const;
-    void put(const int*) const;
+    void put(const double* /*ptr*/) const;
+    void put(const float* /*ptr*/) const;
+    void put(const int* /*ptr*/) const;
 
     //! Write out a slice of data
     void
-    put(const double*,
-        const std::vector<size_t>&,
-        const std::vector<size_t>&) const;
+    put(const double* /*dptr*/,
+        const std::vector<size_t>& /*start*/,
+        const std::vector<size_t>& /*count*/) const;
 
     //! Write out a slice of data with with strides (see hyperslab definition in
     //! NetCDF)
     void
-    put(const double*,
-        const std::vector<size_t>&,
-        const std::vector<size_t>&,
-        const std::vector<ptrdiff_t>&) const;
+    put(const double* /*dptr*/,
+        const std::vector<size_t>& /*start*/,
+        const std::vector<size_t>& /*count*/,
+        const std::vector<ptrdiff_t>& /*stride*/) const;
     //! Write out a slice of data
     void
-    put(const float*,
-        const std::vector<size_t>&,
-        const std::vector<size_t>&) const;
+    put(const float* /*dptr*/,
+        const std::vector<size_t>& /*start*/,
+        const std::vector<size_t>& /*count*/) const;
 
     //! Write out a slice of data with with strides (see hyperslab definition in
     //! NetCDF)
     void
-    put(const float*,
-        const std::vector<size_t>&,
-        const std::vector<size_t>&,
-        const std::vector<ptrdiff_t>&) const;
-    void put(const int*, const std::vector<size_t>&, const std::vector<size_t>&)
-        const;
+    put(const float* /*dptr*/,
+        const std::vector<size_t>& /*start*/,
+        const std::vector<size_t>& /*count*/,
+        const std::vector<ptrdiff_t>& /*stride*/) const;
     void
-    put(const int*,
-        const std::vector<size_t>&,
-        const std::vector<size_t>&,
-        const std::vector<ptrdiff_t>&) const;
+    put(const int* /*dptr*/,
+        const std::vector<size_t>& /*start*/,
+        const std::vector<size_t>& /*count*/) const;
+    void
+    put(const int* /*dptr*/,
+        const std::vector<size_t>& /*start*/,
+        const std::vector<size_t>& /*count*/,
+        const std::vector<ptrdiff_t>& /*stride*/) const;
 
     //! Read the entire variable from file
-    void get(double*) const;
-    void get(float*) const;
-    void get(int*) const;
+    void get(double* /*ptr*/) const;
+    void get(float* /*ptr*/) const;
+    void get(int* /*ptr*/) const;
 
     //! Read a chunk of data from the file
     void
-    get(double*, const std::vector<size_t>&, const std::vector<size_t>&) const;
+    get(double* /*dptr*/,
+        const std::vector<size_t>& /*start*/,
+        const std::vector<size_t>& /*count*/) const;
 
     //! Read a chunk of data with strides
     void
-    get(double*,
-        const std::vector<size_t>&,
-        const std::vector<size_t>&,
-        const std::vector<ptrdiff_t>&) const;
+    get(double* /*dptr*/,
+        const std::vector<size_t>& /*start*/,
+        const std::vector<size_t>& /*count*/,
+        const std::vector<ptrdiff_t>& /*stride*/) const;
 
     //! Read a chunk of data from the file
     void
-    get(float*, const std::vector<size_t>&, const std::vector<size_t>&) const;
+    get(float* /*dptr*/,
+        const std::vector<size_t>& /*start*/,
+        const std::vector<size_t>& /*count*/) const;
 
     //! Read a chunk of data with strides
     void
-    get(float*,
-        const std::vector<size_t>&,
-        const std::vector<size_t>&,
-        const std::vector<ptrdiff_t>&) const;
+    get(float* /*dptr*/,
+        const std::vector<size_t>& /*start*/,
+        const std::vector<size_t>& /*count*/,
+        const std::vector<ptrdiff_t>& /*stride*/) const;
 
     void
-    get(int*, const std::vector<size_t>&, const std::vector<size_t>&) const;
+    get(int* /*dptr*/,
+        const std::vector<size_t>& /*start*/,
+        const std::vector<size_t>& /*count*/) const;
     void
-    get(int*,
-        const std::vector<size_t>&,
-        const std::vector<size_t>&,
-        const std::vector<ptrdiff_t>&) const;
+    get(int* /*dptr*/,
+        const std::vector<size_t>& /*start*/,
+        const std::vector<size_t>& /*count*/,
+        const std::vector<ptrdiff_t>& /*stride*/) const;
 
     bool has_attr(const std::string& name) const;
     void put_attr(const std::string& name, const std::string& value) const;
@@ -191,34 +199,34 @@ public:
     int num_attributes() const;
 
     //! Check if a group exists
-    bool has_group(const std::string&) const;
+    bool has_group(const std::string& /*name*/) const;
 
     //! Check if a dimension exists by name
-    bool has_dim(const std::string&) const;
+    bool has_dim(const std::string& /*name*/) const;
 
     //! Check if a variable exists by name
-    bool has_var(const std::string&) const;
+    bool has_var(const std::string& /*name*/) const;
 
     //! Check if an attribute exists
-    bool has_attr(const std::string&) const;
+    bool has_attr(const std::string& /*name*/) const;
 
     /** Get the group by name
      *
      *  Throws error if the group doesn't exist, use `has_group` to check
      */
-    NCGroup group(const std::string&) const;
+    NCGroup group(const std::string& /*name*/) const;
 
     //! Get the dimension instance by name
-    NCDim dim(const std::string&) const;
+    NCDim dim(const std::string& /*name*/) const;
 
     //! Get the variable instance by name
-    NCVar var(const std::string&) const;
+    NCVar var(const std::string& /*name*/) const;
 
     //! Define new group
-    NCGroup def_group(const std::string&) const;
+    NCGroup def_group(const std::string& /*name*/) const;
 
     //! Define new dimension
-    NCDim def_dim(const std::string&, const size_t len) const;
+    NCDim def_dim(const std::string& /*name*/, const size_t len) const;
 
     //! Define a scalar variable, i.e., 0-dimensional array
     NCVar def_scalar(const std::string& name, const nc_type dtype) const;
@@ -227,7 +235,7 @@ public:
     NCVar def_array(
         const std::string& name,
         const nc_type dtype,
-        const std::vector<std::string>&) const;
+        const std::vector<std::string>& /*dnames*/) const;
 
     //! Define a variable (wrapper for def_array)
     NCVar def_var(

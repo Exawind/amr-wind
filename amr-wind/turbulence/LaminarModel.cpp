@@ -16,7 +16,7 @@ namespace {
 
 template <
     typename Transport,
-    typename std::enable_if<Transport::constant_properties>::type* = nullptr>
+    typename std::enable_if_t<Transport::constant_properties>* = nullptr>
 inline void laminar_visc_update(
     Field& evisc, Laminar<Transport>& /*unused*/, const Transport& transport)
 {
@@ -25,7 +25,7 @@ inline void laminar_visc_update(
 
 template <
     typename Transport,
-    typename std::enable_if<!Transport::constant_properties>::type* = nullptr>
+    typename std::enable_if_t<!Transport::constant_properties>* = nullptr>
 inline void laminar_visc_update(
     Field& evisc, Laminar<Transport>& lam, const Transport& /*unused*/)
 {
@@ -34,7 +34,7 @@ inline void laminar_visc_update(
 
 template <
     typename Transport,
-    typename std::enable_if<Transport::constant_properties>::type* = nullptr>
+    typename std::enable_if_t<Transport::constant_properties>* = nullptr>
 inline void laminar_alpha_update(
     Field& evisc, Laminar<Transport>& /*unused*/, const Transport& transport)
 {
@@ -43,7 +43,7 @@ inline void laminar_alpha_update(
 
 template <
     typename Transport,
-    typename std::enable_if<!Transport::constant_properties>::type* = nullptr>
+    typename std::enable_if_t<!Transport::constant_properties>* = nullptr>
 inline void laminar_alpha_update(
     Field& evisc, Laminar<Transport>& lam, const Transport& /*unused*/)
 {
@@ -53,7 +53,7 @@ inline void laminar_alpha_update(
 
 template <
     typename Transport,
-    typename std::enable_if<Transport::constant_properties>::type* = nullptr>
+    typename std::enable_if_t<Transport::constant_properties>* = nullptr>
 inline void laminar_scal_diff_update(
     Field& evisc,
     Laminar<Transport>& /*unused*/,
@@ -65,7 +65,7 @@ inline void laminar_scal_diff_update(
 
 template <
     typename Transport,
-    typename std::enable_if<!Transport::constant_properties>::type* = nullptr>
+    typename std::enable_if_t<!Transport::constant_properties>* = nullptr>
 inline void laminar_scal_diff_update(
     Field& evisc,
     Laminar<Transport>& lam,

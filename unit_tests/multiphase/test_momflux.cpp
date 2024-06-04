@@ -38,18 +38,7 @@ void initialize_volume_fractions(
 {
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-        int icheck = 0;
-        switch (dir) {
-        case 0:
-            icheck = i;
-            break;
-        case 1:
-            icheck = j;
-            break;
-        case 2:
-            icheck = k;
-            break;
-        }
+        const int icheck = (dir == 0) ? i : ((dir == 1) ? j : k);
         if (icheck > 0) {
             vof_arr(i, j, k) = 0.0;
         } else {
@@ -77,18 +66,7 @@ void get_accuracy(
     const amrex::Array4<const amrex::Real>& dqdt)
 {
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-        int icheck = 0;
-        switch (dir) {
-        case 0:
-            icheck = i;
-            break;
-        case 1:
-            icheck = j;
-            break;
-        case 2:
-            icheck = k;
-            break;
-        }
+        const int icheck = (dir == 0) ? i : ((dir == 1) ? j : k);
         // x is face location
         const amrex::Real x = problo[dir] + icheck * dx[dir];
         // Check that MAC velocity is as expected, unchanged
@@ -258,18 +236,7 @@ protected:
         const auto& wmac = repo.get_field("w_mac");
 
         // Get advected alpha
-        std::string sdir = "d";
-        switch (dir) {
-        case 0:
-            sdir = "x";
-            break;
-        case 1:
-            sdir = "y";
-            break;
-        case 2:
-            sdir = "z";
-            break;
-        }
+        const std::string sdir = (dir == 0) ? "x" : ((dir == 1) ? "y" : "z");
         const auto& advrho_f = repo.get_field("advalpha_" + sdir);
 
         // Get convective term

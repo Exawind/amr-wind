@@ -1,6 +1,7 @@
 #include "aw_test_utils/AmrexTest.H"
 
 #include "amr-wind/utilities/linear_interpolation.H"
+#include "amr-wind/utilities/trig_ops.H"
 #include "AMReX_Random.H"
 
 #include <vector>
@@ -144,6 +145,41 @@ TEST(LinearInterpolation, lin_monotonic)
     interp::linear_monotonic(xvec, yvec, xtest, ytest);
     for (size_t i = 0; i < xtest.size(); ++i) {
         EXPECT_NEAR(ytest[i], mult_fac * xtest[i], 1.0e-12);
+    }
+}
+
+TEST(LinearInterpolation, lin_interp_angle)
+{
+    namespace interp = amr_wind::interp;
+
+    const int vecsize = 8;
+    std::vector<amrex::Real> xvec(vecsize);
+    std::iota(xvec.begin(), xvec.end(), 0.0);
+    // Set up with angles that are awkward to interpolate between
+    std::vector<amrex::Real> yvec_deg{0.0,   30.0,   330.0, 300.0,
+                                      -15.0, -180.0, 120.0, -150.0};
+    // Create duplicate list in radians
+    std::vector<amrex::Real> yvec_rad(vecsize);
+    for (size_t i = 0; i < yvec_rad.size(); ++i) {
+        yvec_rad[i] = amr_wind::utils::radians(yvec_deg[i]);
+    }
+
+    // Set up output vectors, interp locations, and golds
+    std::vector<amrex::Real> xtest(vecsize), ytest_deg(vecsize),
+        ytest_rad(vecsize);
+    std::iota(xtest.begin(), xtest.end(), 0.5);
+    xtest[7] = 4.0;
+    std::vector<amrex::Real> ygold_deg{15.,   0.,   315., 322.5,
+                                       -97.5, -210, 165., 360. - 15.};
+
+    // Upper bound is 360 because y is in degrees
+    interp::linear_angle(xvec, yvec_deg, xtest, ytest_deg, 360.);
+    // Upper bound is 2pi because y is in radians
+    interp::linear_angle(xvec, yvec_rad, xtest, ytest_rad, 2. * M_PI);
+    for (size_t i = 0; i < xtest.size(); ++i) {
+        EXPECT_NEAR(ytest_deg[i], ygold_deg[i], 1.0e-12);
+        EXPECT_NEAR(
+            ytest_rad[i], amr_wind::utils::radians(ygold_deg[i]), 1.0e-12);
     }
 }
 

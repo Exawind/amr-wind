@@ -29,19 +29,7 @@ void initialize_volume_fractions(
                     }
                 }
             } else {
-                int icheck = 0;
-                // Left half is liquid, right half is gas
-                switch (dir) {
-                case 0:
-                    icheck = i;
-                    break;
-                case 1:
-                    icheck = j;
-                    break;
-                case 2:
-                    icheck = k;
-                    break;
-                }
+                const int icheck = (dir == 0) ? i : ((dir == 1) ? j : k);
                 if (2 * icheck + 1 == nx) {
                     vof_arr(i, j, k) = 0.5;
                 } else {
@@ -87,18 +75,7 @@ void get_accuracy(
         const auto& vof_arr = vof(lev).const_array(mfi);
         const auto& bx = mfi.validbox();
         amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-            int icheck = 0;
-            switch (dir) {
-            case 0:
-                icheck = i;
-                break;
-            case 1:
-                icheck = j;
-                break;
-            case 2:
-                icheck = k;
-                break;
-            }
+            const int icheck = (dir == 0) ? i : ((dir == 1) ? j : k);
             // Check if current solution matches initial solution
             if (2 * icheck + 1 == nx) {
                 err_arr(i, j, k) = std::abs(vof_arr(i, j, k) - 0.5);

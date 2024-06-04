@@ -83,11 +83,24 @@ macro(init_amrex_hydro)
   endif()
 endmacro(init_amrex_hydro)
 
+macro(init_waves2amr)
+  if (${AMR_WIND_USE_INTERNAL_WAVES2AMR})
+    set(WAVES2AMR_SUBMOD_LOCATION "${CMAKE_SOURCE_DIR}/submods/Waves2AMR")
+    include(${CMAKE_SOURCE_DIR}/cmake/set_waves2amr_options.cmake)
+    add_subdirectory(${WAVES2AMR_SUBMOD_LOCATION})
+  else()
+    set(CMAKE_PREFIX_PATH ${Waves2AMR_DIR} ${CMAKE_PREFIX_PATH})
+    find_package(Waves2AMR CONFIG REQUIRED)
+    message(STATUS "Found Waves2AMR = ${Waves2AMR_DIR}")
+  endif()
+endmacro(init_waves2amr)
+
 macro(init_code_checks)
   if(AMR_WIND_ENABLE_CLANG_TIDY)
-    find_program(CLANG_TIDY_EXE NAMES "clang-tidy")
+    set(CLANG_TIDY_EXEC_NAME "clang-tidy" CACHE STRING "Name of the clang-tidy executable")
+    find_program(CLANG_TIDY_EXE NAMES "${CLANG_TIDY_EXEC_NAME}")
     if(CLANG_TIDY_EXE)
-      message(STATUS "clang-tidy found: ${CLANG_TIDY_EXE}")
+      message(STATUS "${CLANG_TIDY_EXEC_NAME} found: ${CLANG_TIDY_EXE}")
       #find_program (CLANG_TIDY_CACHE_EXE NAMES "clang-tidy-cache")
       #if(CLANG_TIDY_CACHE_EXE)
       #  message(STATUS "clang-tidy-cache found: ${CLANG_TIDY_CACHE_EXE}")
@@ -95,7 +108,7 @@ macro(init_code_checks)
       #      CACHE STRING "A combined command to run clang-tidy with caching wrapper")
       #endif()
     else()
-      message(WARNING "clang-tidy not found.")
+      message(WARNING "${CLANG_TIDY_EXEC_NAME} not found.")
     endif()
   endif()
 
@@ -114,7 +127,7 @@ macro(init_code_checks)
           COMMAND ${CMAKE_COMMAND} -E make_directory cppcheck
           # cppcheck ignores -isystem directories, so we change them to regular -I include directories (with no spaces either)
           COMMAND sed "s/isystem /I/g" ${CMAKE_BINARY_DIR}/compile_commands.json > cppcheck_compile_commands.json
-          COMMAND ${CPPCHECK_EXE} --template=gcc --inline-suppr --suppress=unusedFunction --suppress=useStlAlgorithm --suppress=missingIncludeSystem --std=c++17 --language=c++ --enable=all --project=cppcheck_compile_commands.json -i ${CMAKE_SOURCE_DIR}/submods/amrex/Src -i ${CMAKE_SOURCE_DIR}/submods/AMReX-Hydro -i ${CMAKE_SOURCE_DIR}/submods/googletest --output-file=cppcheck-full-report.txt -j ${NP}
+          COMMAND ${CPPCHECK_EXE} --template=gcc --inline-suppr --suppress=unusedFunction --suppress=useStlAlgorithm --suppress=missingIncludeSystem --std=c++17 --language=c++ --enable=all --project=cppcheck_compile_commands.json -i ${CMAKE_SOURCE_DIR}/submods/amrex/Src -i ${CMAKE_SOURCE_DIR}/submods/AMReX-Hydro -i ${CMAKE_SOURCE_DIR}/submods/Waves2AMR -i ${CMAKE_SOURCE_DIR}/submods/googletest --output-file=cppcheck-full-report.txt -j ${NP}
           COMMENT "Run cppcheck on project compile_commands.json"
           BYPRODUCTS cppcheck-full-report.txt
           WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/cppcheck

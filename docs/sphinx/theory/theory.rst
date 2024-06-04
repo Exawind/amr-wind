@@ -132,33 +132,21 @@ Often for simulations involving walls, (e.g., channel flows, complex terrains et
 .. toctree::
    :glob:
    :maxdepth: 2
-   
+
    mapping.rst
 
 Multiphase flow modelling
 ------------------------------------
 
-The level-set (LS) method was introduced by \cite{OsherSethian1988} to simulate the motion of a surface with curvature dependent speed. In the LS method, the two-phase interface is represented implicitly by a signed distance function (also called level-set function)
-
-
-.. math::
-
-   \phi ( \mathbf{x},t ) = \begin{cases} 
-      d , & \text{in water} \\
-      0,  & \text{on surface} \\
-      -d, & \text{in air.}
-   \end{cases}
-
-where :math:`d` is the distance from point :math:`\mathbf{x}` to the interface.
-
-.. math:: \frac{\partial \phi}{\partial t} + \mathbf{u} \nabla \phi = 0 
-
-where :math:`\mathbf{u}=(u_x,u_y,u_z)` is the velocity vector.
-Re-initialization of the level-set
-
-.. math:: \frac{\partial \phi}{\partial \tau} = \text{sgn}(\phi^0)(1-|\nabla \phi|)
-
-where :math:`\phi^0=\phi(x,0)` represents the location of the interface. 
+AMR-Wind employs the volume-of-fluid method for simulating two-phase (water-air) flows. 
+More specifically, the volume fraction field is advected explicitly using a
+directionally split geometric approach, and the advection of momentum is 
+discretized in a mass-consistent manner. Overall, this approach conserves mass
+and momentum while remaining stable at high density ratios (typically 1000).
+Viscosities can be specified for each fluid independently, but surface tension
+is not modeled by AMR-Wind currently. For further detail, see 
+`Kuhn, Deskos, Sprague (Computers & Fluids 2023)
+<https://doi.org/10.1016/j.compfluid.2022.105770>`_.
 
 Source terms
 ------------------------------------
@@ -185,6 +173,36 @@ Using the perturbational form implies that the hydrostatic pressure is removed f
 - reframe in reference to the top boundary, and assume :math:`p(z = z_{max}) = 0`
    
 .. math:: p = p' - \int_z^{z_{max}} \rho_0 g dz + p(z = z_{max}) = p' - \int_z^{z_{max}} \rho_0 g dz
+
+
+Mesoscale Forcing
+~~~~~~~~~~~~~~~~~
+
+To incorporate larger-scale atmospheric dynamics under real conditions,
+`AMR-Wind` offers two approaches. If mesoscale momentum and/or temperature
+source terms are known exactly, e.g., from a numerical weather prediction (NWP)
+model, then these may be directly applied. These mesoscale source terms would
+come from the RHS of the mesoscale equations of motion and may also include the
+effects of additional modeled physics such as radiation or moisture. This
+mesoscale forcing approach is called the "tendencies" (or "mesoscale budget
+components") approach. For more information, see `Draxl et al. (BLM 2021)
+<https://doi.org/10.1007/s10546-020-00584-z>`_
+
+If the mesoscale source terms are not known a priori, they may be derived on
+the fly with a profile assimilation technique. This is an engineering approach
+that applies a proportional controller to drive the instantaneous planar
+averaged wind and/or temperature profiles towards known time--height data. This
+approach can be used with NWP model output or observational data. For more
+information, see `Allaerts et al. (BLM 2020)
+<https://doi.org/10.1007/s10546-020-00538-5>`_
+
+The application of these forcing approaches is detailed in:
+
+.. toctree::
+   :glob:
+   :maxdepth: 2
+   
+   ../user/inputs_ABL_meso_forcing.rst
 
 
 Turbulence Models
@@ -257,102 +275,38 @@ The anisotropic derivative is used to define the eddy viscosity as
        D_e &= \frac{- (\hat{\partial}_k \widetilde{u}_i) (\hat{\partial}_k \widetilde{\Theta}) \partial_i \widetilde{\Theta} }{(\partial_l \widetilde{\Theta}) (\partial_l \widetilde{\Theta})}
    \end{aligned}
 
-- **Implementation details:**
-
-
-For ease of implementation, each part of :math:`\nu_t` and :math:`D_e`
-is expanded in this subsection, these are used in ``AMD.h`` within
-functions ``amd_muvel`` and ``amd_thermal_diff``.
-
-**Terms for** :math:`\nu_t` **in** ``amd_muvel``
-
-
-#. :math:`(\hat{\partial}_k \widetilde{u}_i) (\hat{\partial}_k \widetilde{u}_j) \widetilde{S}_{ij}`
-   is a contraction of 2 symmetric tensors, :math:`(\hat{\partial}_k
-   \widetilde{u}_i) (\hat{\partial}_k \widetilde{u}_j)` and
-   :math:`\widetilde{S}_{ij}`, therefore we get 6 unique terms, 3
-   diagonals and 3 off-diagonals. The diagonal terms get a factor of 2
-   from :math:`\widetilde{S}_{ij}` and the off-diagonal terms get a
-   factor of 2 from symmetry. This term is ``num_shear``.
-
-   .. math::
-
-      \begin{aligned}
-          \begin{split}
-          (\hat{\partial}_k \widetilde{u}_i) (\hat{\partial}_k \widetilde{u}_j) \widetilde{S}_{ij} = \\
-          2*C* [\\
-          {}&u_x*(u_x^2 dx^2 + u_y^2 dy^2 + u_z^2 dz^2) +\\
-          {}&v_y*(v_x^2 dx^2 + v_y^2 dy^2 + v_z^2 dz^2) +\\
-          {}&w_z*(w_x^2 dx^2 + w_y^2 dy^2 + w_z^2 dz^2) +\\
-          {}&(u_y+v_x) * (
-          u_x v_x dx^2 +
-          u_y v_y dy^2 +
-          u_z v_z dz^2
-          ) +\\
-          {}&(u_z+w_x) * (
-          u_x w_x dx^2 +
-          u_y w_y dy^2 +
-          u_z w_z dz^2
-          ) +\\
-          {}&(v_z+w_y) * (
-          v_x w_x dx^2 +
-          v_y w_y dy^2 +
-          v_z w_z dz^2
-          )\\
-          ]
-          \end{split}
-      \end{aligned}
-
-#. :math:`\beta (\hat{\partial}_k \widetilde{w}) (\hat{\partial}_k (\widetilde{\Theta} - \langle {\widetilde{\Theta}} \rangle) )`
-   is implemented as ``num_buoy``
-
-   .. math::
-
-      \beta (\hat{\partial}_k \widetilde{w}) (\hat{\partial}_k (\widetilde{\Theta} - \langle {\widetilde{\Theta}} \rangle) ) =
-      \beta* C* ( w_x \Theta_x dx^2 + w_y \Theta_y dy^2 + w_z \Theta_z dz^2)
-
-#. :math:`(\partial_l \widetilde{u}_m) (\partial_l \widetilde{u}_m)` is
-   double contraction of rank 2 tensors, and has 9 unique terms. This is
-   implemented as ``denom``
-
-   .. math::
-
-      \begin{aligned}
-          \begin{split}
-              (\partial_l \widetilde{u}_m) (\partial_l \widetilde{u}_m) = \\
-              {}& u_x u_x + u_y u_y + u_z u_z \\
-              {}& v_x v_x + v_y v_y + v_z v_z \\
-              {}& w_x w_x + w_y w_y + w_z w_z
-          \end{split}
-      \end{aligned}
-
-**Terms for** :math:`D_e` **in** ``amd_thermal_diff``
-
-#. :math:`(\hat{\partial}_k \widetilde{u}_i) (\hat{\partial}_k \widetilde{\Theta}) \partial_i \widetilde{\Theta}`
-   is a double contraction, has 9 unique terms. This is implemented as
-   ``num``
-
-   .. math::
-
-      \begin{aligned}
-          \begin{split}
-          (\hat{\partial}_k \widetilde{u}_i) (\hat{\partial}_k \widetilde{\Theta}) \partial_i \widetilde{\Theta} = \\
-          C*[ \\
-          {}& (u_x \Theta_x dx^2 + u_y \Theta_y dy^2 + u_z \Theta_z dz^2)*\Theta_x +\\
-          {}& (v_x \Theta_x dx^2 + v_y \Theta_y dy^2 + v_z \Theta_z dz^2)*\Theta_y +\\
-          {}& (w_x \Theta_x dx^2 + w_y \Theta_y dy^2 + w_z \Theta_z dz^2)*\Theta_z \\
-          ]
-          \end{split}
-      \end{aligned}
-
-#. :math:`(\partial_l \widetilde{\Theta}) (\partial_l \widetilde{\Theta}) = \Theta_x^2 + \Theta_y^2 + \Theta_z^2`
-   is implemented as ``denom``
-
 - **Unit tests**
 
 There is a simple unit test for both :math:`\nu_t` and :math:`D_e` in
 ``unit_tests/turbulence/test_turbulence_LES.cpp`` under
 ``test_AMD_setup_calc``.
+
+Non-linear Sub-grid Scale Model 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The non-linear model extends the Smagorinsky model by including an extra term computed from the strain and vorticity rate. 
+The modification proposed by `Branco (JFM 1997) <https://doi.org/10.1017/S0022112096004697>`_ and implemented in WRF (`Mirocha et. al (MWR 2010) <https://doi.org/10.1175/2010MWR3286.1>`_) 
+is the model considered. The sub-grid scale stress tensor is calculated as follows: 
+
+ .. math::
+    M_{ij}= -(C_s \Delta)^2 
+    [
+      2(2S_{mn}S_{mn})^{1/2}S_{ij}+C_1(S_{ik}S_{kj}-\frac{1}{3}S_{mn}S_{mn} \delta_{ij})
+      +C_2(S_{ik}R_{kj}-R_{ik}S_{kj})
+    ]
+
+Here :math:`S_{ij}` is the strain-rate tensor and :math:`R_{ij}` is the vorticity rate tensor. The model constants are: 
+:math:`C_s=[8*(1+C_b)/27\pi^2]^{1/2}`, :math:`C_1=C_2=960^{1/2}C_b/7(1+C_b)S_k`, :math:`S_k=0.5`, and :math:`C_b=0.36`.  
+
+The default length scale of :math:`L=C_s\Delta` causes over-prediction of the mean wind speed profiles. To avoid this over-prediction, the
+length scale is modified as follows 
+
+.. math::
+   L=(1-\exp(-z/H))^2(\frac{\kappa z}{\phi_M})^2+(\exp(-z/H))^2(C_s \Delta)^2
+
+Here the term :math:`H=1.5 dz` specifies the location at which the length scale switches to :math:`L=C_s\Delta` and :math:`\phi_M`
+is the atmospheric stability function. Currently, the implementation for the stability function uses a single global value. 
+The implementation of the non-linear model is split into two parts. The subgrid-scale viscosity term is directly used 
+within the ``AMR-wind`` diffusion framework. The last two terms in :math:`M_{ij}` are added as source-terms in the momentum equation. 
 
 Wall models
 -----------

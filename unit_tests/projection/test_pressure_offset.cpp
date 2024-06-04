@@ -24,7 +24,7 @@ void init_vel_z(amr_wind::Field& vel, const amrex::Real w_const)
 
 void init_ref_p(
     amr_wind::Field& ref_p,
-    const amrex::Vector<amrex::Geometry> geom,
+    const amrex::Vector<amrex::Geometry>& geom,
     const amrex::Real F_g,
     const amrex::Real rho_0)
 {

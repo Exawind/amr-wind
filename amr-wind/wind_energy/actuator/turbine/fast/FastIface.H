@@ -35,6 +35,8 @@ public:
 
     void init_solution(const int local_id);
 
+    void get_hub_stats(const int local_id);
+
     void advance_turbine(const int local_id);
 
     void save_restart(const int local_id);
@@ -57,7 +59,7 @@ protected:
 
     void write_velocity_data(const FastTurbine& /*unused*/);
 
-    void read_velocity_data(
+    static void read_velocity_data(
         FastTurbine& /*unused*/,
         const ncutils::NCFile& /*unused*/,
         const size_t tid);
@@ -79,11 +81,9 @@ protected:
     int m_num_sc_inputs{0};
     int m_num_sc_outputs{0};
 
-#ifdef AMR_WIND_FAST_USE_SCDX
     int m_num_sc_inputs_glob{0};
     float m_init_sc_inputs_glob{0.0};
     float m_init_sc_inputs_turbine{0.0};
-#endif
 
     bool m_is_initialized{false};
 };

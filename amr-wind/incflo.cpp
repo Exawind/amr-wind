@@ -90,6 +90,7 @@ void incflo::init_amr_wind_modules()
     BL_PROFILE("amr-wind::incflo::init_amr_wind_modules");
     if (m_sim.has_overset()) {
         m_sim.overset_manager()->post_init_actions();
+        m_ovst_ops.initialize(m_sim);
     } else {
         auto& mask_cell = m_sim.repo().declare_int_field("mask_cell", 1, 1);
         auto& mask_node = m_sim.repo().declare_int_field(
@@ -310,6 +311,9 @@ void incflo::Evolve()
 
 void incflo::do_advance()
 {
+    if (m_sim.has_overset()) {
+        m_ovst_ops.pre_advance_work();
+    }
     if (m_prescribe_vel) {
         prescribe_advance();
     } else {

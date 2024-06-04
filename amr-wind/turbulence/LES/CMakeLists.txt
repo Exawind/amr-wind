@@ -3,4 +3,5 @@ target_sources(${amr_wind_lib_name} PRIVATE
   OneEqKsgs.cpp
   AMD.cpp
   AMDNoTherm.cpp
+  Kosovic.cpp		
   )

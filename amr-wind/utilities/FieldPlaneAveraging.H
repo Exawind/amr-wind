@@ -42,7 +42,7 @@ public:
         int axis_in,
         bool compute_deriv = false);
 
-    ~FPlaneAveraging() = default;
+    virtual ~FPlaneAveraging() = default;
 
     virtual void operator()();
 
@@ -78,6 +78,10 @@ public:
     const amrex::Vector<amrex::Real>& line_average() const
     {
         return m_line_average;
+    };
+    const amrex::Vector<amrex::Real>& line_deriv() const
+    {
+        return m_line_deriv;
     };
     void line_average(int comp, amrex::Vector<amrex::Real>& l_vec);
     const amrex::Vector<amrex::Real>& line_centroids() const
@@ -137,7 +141,7 @@ class VelPlaneAveraging : public FieldPlaneAveraging
 public:
     VelPlaneAveraging(CFDSim& sim, int axis_in);
 
-    ~VelPlaneAveraging() = default;
+    ~VelPlaneAveraging() override = default;
 
     void operator()() override;
 

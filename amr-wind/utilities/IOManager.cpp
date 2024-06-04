@@ -114,6 +114,7 @@ void IOManager::initialize_io()
 
     if (!out_derived_vars.empty()) {
         m_derived_mgr->create(out_derived_vars);
+        m_derived_mgr->filter(outputs);
         m_plt_num_comp += m_derived_mgr->num_comp();
         m_derived_mgr->var_names(m_plt_var_names);
     }

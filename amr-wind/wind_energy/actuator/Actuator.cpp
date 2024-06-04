@@ -1,9 +1,9 @@
 #include "amr-wind/wind_energy/actuator/Actuator.H"
-#include "amr-wind/wind_energy/actuator/ActuatorModel.H"
 #include "amr-wind/wind_energy/actuator/ActParser.H"
 #include "amr-wind/wind_energy/actuator/ActuatorContainer.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/core/FieldRepo.H"
+#include "amr-wind/utilities/io_utils.H"
 
 #include <algorithm>
 #include <memory>
@@ -11,7 +11,8 @@
 namespace amr_wind::actuator {
 
 Actuator::Actuator(CFDSim& sim)
-    : m_sim(sim), m_act_source(sim.repo().declare_field("actuator_src_term", 3))
+    : m_sim(sim)
+    , m_act_source(sim.repo().declare_field("actuator_src_term", 3, 1))
 {}
 
 Actuator::~Actuator() = default;
@@ -23,6 +24,9 @@ void Actuator::pre_init_actions()
 
     amrex::Vector<std::string> labels;
     pp.getarr("labels", labels);
+    ioutils::assert_with_message(
+        ioutils::all_distinct(labels),
+        "Duplicates in " + identifier() + ".labels");
 
     const int nturbines = static_cast<int>(labels.size());
 
@@ -245,6 +249,10 @@ void Actuator::compute_source_term()
                 }
             }
         }
+
+        // Ensure actuator src fills ghost cells prior to use (post-processing)
+        // Just need the interior velocity ghost cells updated
+        sfab.FillBoundary(geom.periodicity());
     }
 }
 
@@ -272,6 +280,34 @@ void Actuator::post_advance_work()
             ac->write_outputs();
         }
     }
+}
+
+ActuatorModel& Actuator::get_act_bylabel(const std::string& actlabel) const
+{
+    int thisid = 0; // Default to first actuator
+    for (const auto& act : m_actuators) {
+        std::string thislabel = act->label();
+        if (thislabel == actlabel) {
+            thisid = act->id();
+        }
+    }
+
+    return *m_actuators.at(thisid);
+}
+
+template <typename T>
+T* Actuator::get_actuator(std::string& key) const
+{
+    for (const auto& act : m_actuators) {
+        std::string thislabel = act->label();
+        if (thislabel == key) {
+            int thisid = act->id();
+            T* converted = dynamic_cast<T*>(*m_actuators.at(thisid));
+            return converted;
+        }
+    }
+
+    amrex::Abort("Could not find actuator");
 }
 
 } // namespace amr_wind::actuator
