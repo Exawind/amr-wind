@@ -151,12 +151,7 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
                 minpz = data.sim().mesh().Geom(0).ProbLoArray()[2];
                 maxpz = data.sim().mesh().Geom(0).ProbHiArray()[2];
             }
-            const amrex::Real vp_ext_ =
-                data.sim().mesh().Geom(0).ProbHiArray()[1];
-            const amrex::Real vm_ext_ =
-                data.sim().mesh().Geom(0).ProbLoArray()[1];
         }
-        const auto wspan = wdata.end - wdata.start;
         // Set up bounding box depending on motion type
         if (amrex::toLower(wdata.motion_type) == "none") {
             info.bound_box = amrex::RealBox(
