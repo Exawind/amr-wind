@@ -47,22 +47,11 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
         pp.query("fllc", use_fllc);
 
         amrex::Vector<int> fcf, dcf;
-        // If certain components of Gaussian should be ignored
-        pp.queryarr("active_gaussian_dirs", dcf);
-        // If only a force in fx direction should be applied
+        // If spanwise components of Gaussian should be ignored
+        pp.query("disable_spanwise_gaussian", wdata.gauss_2D);
+        // If certain components of force should be ignored
         pp.queryarr("active_force_dirs", fcf);
         // Populate vectors in data
-        if (!dcf.empty()) {
-            if (dcf.size() == AMREX_SPACEDIM) {
-                wdata.dcoord_flags.x() = (amrex::Real)dcf[0];
-                wdata.dcoord_flags.y() = (amrex::Real)dcf[1];
-                wdata.dcoord_flags.z() = (amrex::Real)dcf[2];
-            } else {
-                amrex::Abort(
-                    "fixed_wing: wrong number of components specified for "
-                    "active_gaussian_dirs.\n");
-            }
-        }
         if (!fcf.empty()) {
             if (fcf.size() == AMREX_SPACEDIM) {
                 wdata.fcoord_flags.x() = (amrex::Real)fcf[0];
@@ -136,17 +125,44 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
             amrex::max(max_eps, max_epsc) * max_chord * 3.0;
         const auto& p1 = wdata.start;
         const auto& p2 = wdata.end;
+        // Bounding box quantities used for all motion types
+        amrex::Real minpx = amrex::min(p1.x(), p2.x());
+        amrex::Real maxpx = amrex::max(p1.x(), p2.x());
+        amrex::Real minpy = amrex::min(p1.y(), p2.y());
+        amrex::Real maxpy = amrex::max(p1.y(), p2.y());
+        amrex::Real minpz = amrex::min(p1.z(), p2.z());
+        amrex::Real maxpz = amrex::max(p1.z(), p2.z());
+        // Bounding box limits for 2D actuator
+        if (wdata.gauss_2D) {
+            // Assume largest component of span needs entire domain, but the
+            // others do not need the bounding box to grow
+            const auto wspan = wdata.end - wdata.start;
+            if (std::abs(wspan.x()) >=
+                std::max(std::abs(wspan.y()), std::abs(wspan.z()))) {
+                // Biggest component is in x, grow bounding box
+                minpx = data.sim().mesh().Geom(0).ProbLoArray()[0];
+                maxpx = data.sim().mesh().Geom(0).ProbHiArray()[0];
+            } else if (std::abs(wspan.y()) >= std::abs(wspan.z())) {
+                // Biggest component is in y
+                minpy = data.sim().mesh().Geom(0).ProbLoArray()[1];
+                maxpy = data.sim().mesh().Geom(0).ProbHiArray()[1];
+            } else {
+                // Biggest component is in z
+                minpz = data.sim().mesh().Geom(0).ProbLoArray()[2];
+                maxpz = data.sim().mesh().Geom(0).ProbHiArray()[2];
+            }
+            const amrex::Real vp_ext_ =
+                data.sim().mesh().Geom(0).ProbHiArray()[1];
+            const amrex::Real vm_ext_ =
+                data.sim().mesh().Geom(0).ProbLoArray()[1];
+        }
+        const auto wspan = wdata.end - wdata.start;
         // Set up bounding box depending on motion type
         if (amrex::toLower(wdata.motion_type) == "none") {
-            // clang-format off
             info.bound_box = amrex::RealBox(
-                amrex::min(p1.x(), p2.x()) - search_radius,
-                amrex::min(p1.y(), p2.y()) - search_radius,
-                amrex::min(p1.z(), p2.z()) - search_radius,
-                amrex::max(p1.x(), p2.x()) + search_radius,
-                amrex::max(p1.y(), p2.y()) + search_radius,
-                amrex::max(p1.z(), p2.z()) + search_radius);
-            // clang-format on
+                minpx - search_radius, minpy - search_radius,
+                minpz - search_radius, maxpx + search_radius,
+                maxpy - search_radius, maxpz + search_radius);
         } else if (amrex::toLower(wdata.motion_type) == "linear") {
             // Extend bounding box in case of velocity
             constexpr amrex::Real tiny = 1e-8;
@@ -170,22 +186,20 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
             const amrex::Real wm_ext =
                 data.sim().mesh().Geom(0).ProbLoArray()[2];
             info.bound_box = amrex::RealBox(
-                um_ ? um_ext : amrex::min(p1.x(), p2.x()) - search_radius,
-                vm_ ? vm_ext : amrex::min(p1.y(), p2.y()) - search_radius,
-                wm_ ? wm_ext : amrex::min(p1.z(), p2.z()) - search_radius,
-                up_ ? up_ext : amrex::max(p1.x(), p2.x()) + search_radius,
-                vp_ ? vp_ext : amrex::max(p1.y(), p2.y()) + search_radius,
-                wp_ ? wp_ext : amrex::max(p1.z(), p2.z()) + search_radius);
+                um_ ? um_ext : minpx - search_radius,
+                vm_ ? vm_ext : minpy - search_radius,
+                wm_ ? wm_ext : minpz - search_radius,
+                up_ ? up_ext : maxpx + search_radius,
+                vp_ ? vp_ext : maxpy + search_radius,
+                wp_ ? wp_ext : maxpz + search_radius);
         } else if (amrex::toLower(wdata.motion_type) == "sine") {
-            // clang-format off
             info.bound_box = amrex::RealBox(
-                amrex::min(p1.x(), p2.x()) - wdata.s_vector.x() - search_radius,
-                amrex::min(p1.y(), p2.y()) - wdata.s_vector.y() - search_radius,
-                amrex::min(p1.z(), p2.z()) - wdata.s_vector.z() - search_radius,
-                amrex::max(p1.x(), p2.x()) + wdata.s_vector.x() + search_radius,
-                amrex::max(p1.y(), p2.y()) + wdata.s_vector.y() + search_radius,
-                amrex::max(p1.z(), p2.z()) + wdata.s_vector.z() + search_radius);
-            // clang-format on
+                minpx - wdata.s_vector.x() - search_radius,
+                minpy - wdata.s_vector.y() - search_radius,
+                minpz - wdata.s_vector.z() - search_radius,
+                maxpx + wdata.s_vector.x() + search_radius,
+                maxpy + wdata.s_vector.y() + search_radius,
+                maxpz + wdata.s_vector.z() + search_radius);
         }
     }
 };
@@ -221,8 +235,11 @@ struct InitDataOp<FixedWing, ActSrcLine>
                     grid.epsilon[i][n] = amrex::max(meta.eps_inp[n], eps);
                 }
             }
-            // Copy Gaussian flags to grid struct
-            grid.dcoord_flags = meta.dcoord_flags;
+            // Copy Gaussian flags to grid struct if 2D
+            if (meta.gauss_2D) {
+                // Local coords are chord, span, thickness internally
+                grid.dcoord_flags = vs::Vector(1.0, 0.0, 1.0);
+            }
         }
 
         meta.aflookup =

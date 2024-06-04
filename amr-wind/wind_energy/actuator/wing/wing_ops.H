@@ -202,8 +202,7 @@ struct ComputeForceOp<
                 qfac = 0.5 * wdata.prescribed_uinf * wdata.prescribed_uinf;
             }
             // Length scale in spanwise direction
-            if ((int)std::round(vs::mag_sqr(wdata.dcoord_flags)) == 2) {
-                // Assume disabled dimension is in spanwise direction
+            if (wdata.gauss_2D) {
                 // Do not multiply by a length scale, but divide by number of
                 // points because the Gaussians of each point all overlap
                 qfac /= (amrex::Real)npts;
@@ -215,7 +214,7 @@ struct ComputeForceOp<
                 const amrex::Real eps_span = grid.epsilon[ip][1];
                 qfac *= eps_span;
             } else {
-                // Assumes 3D implementation: multiply by spanwise dx
+                // 3D implementation: multiply by spanwise dx
                 qfac *= dx[ip];
             }
 

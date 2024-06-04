@@ -37,8 +37,8 @@ struct WingBaseData
     //! Pitch angle for the wing
     amrex::Real pitch{0.0};
 
-    //! Switch for turning off distance components in Gaussian calculation
-    vs::Vector dcoord_flags{1.0, 1.0, 1.0};
+    //! Switch for turning on 2D Gaussian (off in spanwise)
+    bool gauss_2D{false};
 
     //! Switch for turning off force components of actuator
     vs::Vector fcoord_flags{1.0, 1.0, 1.0};

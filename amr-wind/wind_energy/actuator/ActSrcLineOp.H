@@ -116,11 +116,11 @@ void ActSrcOp<ActTrait, ActSrcLine>::operator()(
             // Put force at n+1/2 location for Godunov
             constexpr amrex::Real wt = 0.5;
             const auto pos_ip = wt * pos[ip] + (1.0 - wt) * opos[ip];
-            const auto dist_3D = cc - pos_ip;
-            // In global coords, zero disabled distances (e.g., for 2D)
-            const auto dist = dist_3D * dcoord_flags;
-            // Convert to local (chord, thickness, span) coords
-            const auto dist_local = tmat[ip] & dist;
+            const auto dist = cc - pos_ip;
+            // Convert to local (chord, span, thickness) coords
+            const auto dist_local_3D = tmat[ip] & dist;
+            // In local coords, zero disabled distances (e.g., for 2D)
+            const auto dist_local = dist_local_3D * dcoord_flags;
             const auto gauss_fac = utils::gaussian3d(dist_local, eps[ip]);
             const auto& pforce = force[ip];
 
