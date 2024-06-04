@@ -102,6 +102,8 @@ void ActSrcOp<ActTrait, ActSrcLine>::operator()(
     const auto* eps = m_epsilon.data();
     const auto* tmat = m_orientation.data();
 
+    const vs::Vector dcoord_flags = m_data.grid().dcoord_flags;
+
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const vs::Vector cc{
             problo[0] + (i + 0.5) * dx[0],
@@ -114,20 +116,15 @@ void ActSrcOp<ActTrait, ActSrcLine>::operator()(
             // Put force at n+1/2 location for Godunov
             constexpr amrex::Real wt = 0.5;
             const auto pos_ip = wt * pos[ip] + (1.0 - wt) * opos[ip];
-            const auto dist = cc - pos_ip;
+            const auto dist_3D = cc - pos_ip;
+            // In global coords, zero disabled distances (e.g., for 2D)
+            const auto dist = dist_3D * dcoord_flags;
+            // Conver to local (chord, thickness, span) coords
             const auto dist_local = tmat[ip] & dist;
-            // If the spanwise eps is zero use the two-dimensional Gaussian
             // The order of epsilon is (chord, thickness, span)
             amrex::Real gauss_fac;
-            if (eps[ip].z() < 1e-12) {
-                // vector is only defined for n=3 -> append  zeros
-                vs::Vector eps_2d{eps[ip].x(), eps[ip].y(), 0.0};
-                vs::Vector dist_local_2d{dist_local.x(), dist_local.z(), 0.0};
-                gauss_fac = utils::gaussian2d(dist_local_2d, eps_2d);
-            } else {
-                gauss_fac = utils::gaussian3d(dist_local, eps[ip]);
-            }
-            const auto& pforce = force[ip];
+            gauss_fac = utils::gaussian3d(dist_local, eps[ip]);
+            const auto pforce = force[ip];
 
             src_force[0] += gauss_fac * pforce.x();
             src_force[1] += gauss_fac * pforce.y();

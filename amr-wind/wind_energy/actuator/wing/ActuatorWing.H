@@ -37,9 +37,11 @@ struct WingBaseData
     //! Pitch angle for the wing
     amrex::Real pitch{0.0};
 
-    //! Only apply the fx component of the actuator force
-    //! This will set the actuator fz force to zero
-    std::string fx_force_only{"none"};
+    //! Switch for turning off distance components in Gaussian calculation
+    vs::Vector dcoord_flags{1.0, 1.0, 1.0};
+
+    //! Switch for turning off force components of actuator
+    vs::Vector fcoord_flags{1.0, 1.0, 1.0};
 
     //! Use |U|=1 for velocity magnitude at actuator points
     //! ->ignores induced velocities for force calculation (but not the aoa!)

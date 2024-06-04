@@ -144,6 +144,9 @@ struct ComputeForceOp<
             grid.pos, wdata.vel_tr, npts, time.current_time(), time.new_time(),
             wdata.motion_type, wdata.s_period, wdata.s_vector);
 
+        // Get flags for force vector
+        const auto fcoord_flags = wdata.fcoord_flags;
+
         // Calculate the local force using sampled velocity (at n)
         amrex::Real total_lift = 0.0;
         amrex::Real total_drag = 0.0;
@@ -223,10 +226,8 @@ struct ComputeForceOp<
             // Compute force on fluid from this section of wing
             grid.force[ip] = -(lift_dir * lift + drag * drag_dir);
 
-            // Set vertical component to zero if desired
-            if (wdata.fx_force_only == "onlyFx") {
-                grid.force[ip].z() = 0.0;
-            }
+            // In global coords, zero disabled force components
+            grid.force[ip] = grid.force[ip] * fcoord_flags;
 
             // Assign values for output
             wdata.vel_rel[ip] = windvector;

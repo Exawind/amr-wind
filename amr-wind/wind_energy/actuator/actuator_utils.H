@@ -55,30 +55,6 @@ gaussian3d(const vs::Vector& dist, const vs::Vector& eps)
     return 0.0;
 }
 
-/** Return the Gaussian smearing factor in 2D
- *
- *  \param dist Distance vector of the cell center from the actuator node in
- *  local frame of reference.
- *
- *  \param eps Two-dimensional Gaussian scaling factor
- *
- *  \return Gaussian smearing factor in 2D
- */
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-gaussian2d(const vs::Vector& dist, const vs::Vector& eps)
-{
-    const vs::Vector rr{dist.x() / eps.x(), dist.y() / eps.y(), 0.0};
-    const amrex::Real rr_sqr = vs::mag_sqr(rr);
-
-    if (rr_sqr < 16.0) {
-        constexpr amrex::Real fac = 0.31830988618379067;
-        const amrex::Real eps_fac = eps.x() * eps.y();
-        return (fac / eps_fac) * std::exp(-rr.x() * rr.x() - rr.y() * rr.y());
-    }
-
-    return 0.0;
-}
-
 /** Return the Gaussian smearing factor in 1D
  *
  *  \param dist Distance vector of the cell center from the actuator node in
