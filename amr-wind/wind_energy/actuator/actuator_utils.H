@@ -54,7 +54,6 @@ gaussian3d(const vs::Vector& dist, const vs::Vector& eps)
 
     return 0.0;
 }
-
 /** Return the Gaussian smearing factor in 1D
  *
  *  \param dist Distance vector of the cell center from the actuator node in
