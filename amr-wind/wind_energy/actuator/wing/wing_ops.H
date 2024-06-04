@@ -171,9 +171,11 @@ struct ComputeForceOp<
             const auto vmag = vs::mag(windvector);
 
             // Calculate the aoa based on the pitch actuation table if supplied
-            // (interpolate pitch angle at step n+1/2) or the initial pitch angle
+            // (interpolate pitch angle at step n+1/2) or the initial pitch
+            // angle
             if (!wdata.pitch_timetable_file.empty()) {
-                const auto time_interp = (time.current_time() + time.new_time()) / 2.0;
+                const auto time_interp =
+                    (time.current_time() + time.new_time()) / 2.0;
                 wdata.pitch = amr_wind::interp::linear(
                     wdata.time_table, wdata.pitch_table, time_interp);
                 amrex::Print() << "Wing Ops: Current wing pitch is "
@@ -190,12 +192,12 @@ struct ComputeForceOp<
             // Assume unit chord
             // If the spanwise eps is zero use the two-dimensional Gaussian
             // The order of epsilon is (chord, thickness, span)
-            // For the 2D Gaussian the force is normalized on addition with the wing span
-            // in order to conserve the total applied force
+            // For the 2D Gaussian the force is normalized on addition with the
+            // wing span in order to conserve the total applied force
             amrex::Real qval;
-            
+
             // Set velocity magnitude to 1 if desired
-            if (wdata.uinf_unity == "uinfUnity") {   
+            if (wdata.uinf_unity == "uinfUnity") {
                 if (eps.z() < 1e-12) {
                     qval = 0.5 * chord[ip] * dx[ip] / wspanMag;
                 } else {
