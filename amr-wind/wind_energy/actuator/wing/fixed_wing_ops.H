@@ -46,7 +46,7 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
         bool use_fllc = false;
         pp.query("fllc", use_fllc);
 
-        amrex::Vector<amrex::Real> fcf, dcf;
+        amrex::Vector<int> fcf, dcf;
         // If certain components of Gaussian should be ignored
         pp.queryarr("active_gaussian_dirs", dcf);
         // If only a force in fx direction should be applied
@@ -54,9 +54,9 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
         // Populate vectors in data
         if (!dcf.empty()) {
             if (dcf.size() == AMREX_SPACEDIM) {
-                wdata.dcoord_flags.x() = dcf[0];
-                wdata.dcoord_flags.y() = dcf[1];
-                wdata.dcoord_flags.z() = dcf[2];
+                wdata.dcoord_flags.x() = (amrex::Real)dcf[0];
+                wdata.dcoord_flags.y() = (amrex::Real)dcf[1];
+                wdata.dcoord_flags.z() = (amrex::Real)dcf[2];
             } else {
                 amrex::Abort(
                     "fixed_wing: wrong number of components specified for "
@@ -65,9 +65,9 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
         }
         if (!fcf.empty()) {
             if (fcf.size() == AMREX_SPACEDIM) {
-                wdata.fcoord_flags.x() = fcf[0];
-                wdata.fcoord_flags.y() = fcf[1];
-                wdata.fcoord_flags.z() = fcf[2];
+                wdata.fcoord_flags.x() = (amrex::Real)fcf[0];
+                wdata.fcoord_flags.y() = (amrex::Real)fcf[1];
+                wdata.fcoord_flags.z() = (amrex::Real)fcf[2];
             } else {
                 amrex::Abort(
                     "fixed_wing: wrong number of components specified for "
@@ -75,8 +75,9 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
             }
         }
 
-        // If force magnitude should be computed with |U|=1
-        pp.query("uinf_unity", wdata.uinf_unity);
+        // If velocity magnitude for force calculation should be prescribed by
+        // user, not measured from the flow
+        pp.query("prescribed_uinf", wdata.prescribed_uinf);
 
         // Initialize tables for pitch actuation (in degrees)
         pp.query("pitch_timetable", wdata.pitch_timetable_file);

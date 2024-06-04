@@ -43,9 +43,8 @@ struct WingBaseData
     //! Switch for turning off force components of actuator
     vs::Vector fcoord_flags{1.0, 1.0, 1.0};
 
-    //! Use |U|=1 for velocity magnitude at actuator points
-    //! ->ignores induced velocities for force calculation (but not the aoa!)
-    std::string uinf_unity{"none"};
+    //! User-specified velocity magnitude, only active when positive
+    amrex::Real prescribed_uinf{-1.0};
 
     //! File name for pitch actuation table
     std::string pitch_timetable_file;

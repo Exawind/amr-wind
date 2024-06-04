@@ -133,7 +133,6 @@ struct ComputeForceOp<
         const int npts = wdata.num_pts;
         const auto& dx = wdata.dx;
         const auto& chord = wdata.chord;
-        const auto& eps = wdata.eps_inp;
         const auto& aflookup = airfoil_lookup<ActTrait>(data);
         const auto& time = data.sim().time();
 
@@ -154,8 +153,6 @@ struct ComputeForceOp<
 
             // Build the local reference frame
             vs::Vector wspan = wdata.end - wdata.start;
-            // Compute the magnitude (spanwise length)
-            const amrex::Real wspanMag = vs::mag(wspan);
 
             // Use the global coord to orient the blade
             // The default is for inflow in the x direction
@@ -197,22 +194,33 @@ struct ComputeForceOp<
             // The order of epsilon is (chord, thickness, span)
             // For the 2D Gaussian the force is normalized on addition with the
             // wing span in order to conserve the total applied force
-            amrex::Real qval;
 
-            // Set velocity magnitude to 1 if desired
-            if (wdata.uinf_unity == "uinfUnity") {
-                if (eps.z() < 1e-12) {
-                    qval = 0.5 * chord[ip] * dx[ip] / wspanMag;
-                } else {
-                    qval = 0.5 * chord[ip] * dx[ip];
-                }
-            } else {
-                if (eps.z() < 1e-12) {
-                    qval = 0.5 * vmag * vmag * chord[ip] * dx[ip] / wspanMag;
-                } else {
-                    qval = 0.5 * vmag * vmag * chord[ip] * dx[ip];
-                }
+            // Calculate factor for qval: 0.5 * Uinf * Uinf * dx
+            auto qfac = 0.5 * vmag * vmag;
+            // Replace velocity magnitude if specified
+            if (wdata.prescribed_uinf > 0.0) {
+                qfac = 0.5 * wdata.prescribed_uinf * wdata.prescribed_uinf;
             }
+            // Length scale in spanwise direction
+            if ((int)std::round(vs::mag_sqr(wdata.dcoord_flags)) == 2) {
+                // Assume disabled dimension is in spanwise direction
+                // Do not multiply by a length scale, but divide by number of
+                // points This is because the Gaussians of each point all
+                // overlap
+                qfac /= (amrex::Real)npts;
+                // Convert 3D Gaussian factor to 2D factor
+                constexpr amrex::Real G2D_from_3D =
+                    0.31830988618379067 / 0.17958712212516656;
+                qfac *= G2D_from_3D;
+                // Get rid of epsilon in spanwise direction
+                const amrex::Real eps_span = grid.epsilon[ip][1];
+                qfac *= eps_span;
+            } else {
+                // Assumes 3D implementation: multiply by spanwise dx
+                qfac *= dx[ip];
+            }
+
+            const auto qval = qfac * chord[ip];
             const auto lift = qval * cl;
             const auto drag = qval * cd;
 
