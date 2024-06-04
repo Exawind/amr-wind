@@ -50,19 +50,7 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
         // If spanwise components of Gaussian should be ignored
         pp.query("disable_spanwise_gaussian", wdata.gauss_2D);
         // If certain components of force should be ignored
-        pp.queryarr("active_force_dirs", fcf);
-        // Populate vectors in data
-        if (!fcf.empty()) {
-            if (fcf.size() == AMREX_SPACEDIM) {
-                wdata.fcoord_flags.x() = (amrex::Real)fcf[0];
-                wdata.fcoord_flags.y() = (amrex::Real)fcf[1];
-                wdata.fcoord_flags.z() = (amrex::Real)fcf[2];
-            } else {
-                amrex::Abort(
-                    "fixed_wing: wrong number of components specified for "
-                    "active_force_dirs.\n");
-            }
-        }
+        pp.query("active_force_dirs", wdata.fcoord_flags);
 
         // If velocity magnitude for force calculation should be prescribed by
         // user, not measured from the flow
