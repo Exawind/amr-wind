@@ -102,7 +102,7 @@ void ActSrcOp<ActTrait, ActSrcLine>::operator()(
     const auto* eps = m_epsilon.data();
     const auto* tmat = m_orientation.data();
 
-    const vs::Vector dcoord_flags = m_data.grid().dcoord_flags;
+    const auto dcoord_flags = m_data.grid().dcoord_flags;
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const vs::Vector cc{
