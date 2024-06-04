@@ -205,8 +205,7 @@ struct ComputeForceOp<
             if ((int)std::round(vs::mag_sqr(wdata.dcoord_flags)) == 2) {
                 // Assume disabled dimension is in spanwise direction
                 // Do not multiply by a length scale, but divide by number of
-                // points This is because the Gaussians of each point all
-                // overlap
+                // points because the Gaussians of each point all overlap
                 qfac /= (amrex::Real)npts;
                 // Convert 3D Gaussian factor to 2D factor
                 constexpr amrex::Real G2D_from_3D =
