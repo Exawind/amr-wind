@@ -119,7 +119,7 @@ void ActSrcOp<ActTrait, ActSrcLine>::operator()(
             const auto dist_3D = cc - pos_ip;
             // In global coords, zero disabled distances (e.g., for 2D)
             const auto dist = dist_3D * dcoord_flags;
-            // Conver to local (chord, thickness, span) coords
+            // Convert to local (chord, thickness, span) coords
             const auto dist_local = tmat[ip] & dist;
             const auto gauss_fac = utils::gaussian3d(dist_local, eps[ip]);
             const auto& pforce = force[ip];
