@@ -211,8 +211,8 @@ struct InitDataOp<FixedWing, ActSrcLine>
                 meta.span_locs, meta.chord_inp, wx, meta.chord);
             // clang-format off
             meta.epsilon_chord = {
-                meta.epsilon_chord.x(), meta.epsilon_chord.z(),
-                meta.epsilon_chord.y()};
+                meta.epsilon_chord.x(), meta.epsilon_chord.y(),
+                meta.epsilon_chord.z()};
             // clang-format on
             for (int i = 0; i < npts; ++i) {
                 for (int n = 0; n < AMREX_SPACEDIM; ++n) {
