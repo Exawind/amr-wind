@@ -12,31 +12,13 @@
 namespace amr_wind {
 
 namespace {
-template <int Index = -1>
-int IdxFuncs(int idir);
-
-template <>
-int IdxFuncs<-1>(int /* idir */)
+template <int face_dir>
+struct FaceOp
 {
-    return 0;
-};
-
-template <>
-int IdxFuncs<0>(int idir)
-{
-    return (idir == 0) ? 1 : 0;
-};
-
-template <>
-int IdxFuncs<1>(int idir)
-{
-    return (idir == 1) ? 1 : 0;
-};
-
-template <>
-int IdxFuncs<2>(int idir)
-{
-    return (idir == 2) ? 1 : 0;
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE int operator()(const int idir)
+    {
+        return (idir == face_dir) ? 1 : 0;
+    }
 };
 
 } // namespace
@@ -147,7 +129,7 @@ struct ConstDirichlet
 /** Sets constant values on specified boundaries
  *  \ingroup field_fillpatch
  */
-template <typename InflowOp, typename WallOp, int IdxOp(int)>
+template <typename InflowOp, typename WallOp, int face_dir = -1>
 struct DirichletOp
 {
     using InflowOpType = InflowOp;
@@ -208,7 +190,7 @@ struct DirichletOp
                 // Check if the point in question is on the boundary, which
                 // depends on the location of the field variable
                 const int bigEnd_for_floc =
-                    domain_box.bigEnd(idir) + IdxOp(idir);
+                    domain_box.bigEnd(idir) + FaceOp<face_dir>()(idir);
                 const bool is_bndry =
                     (ori.isLow() ? (iv[idir] < domain_box.smallEnd(idir))
                                  : (iv[idir] > bigEnd_for_floc));
@@ -243,11 +225,9 @@ struct DirichletOp
 
 struct FieldBCDirichlet
 {
-    using FunctorType =
-        DirichletOp<ConstDirichlet, ConstDirichlet, &IdxFuncs<>>;
+    using FunctorType = DirichletOp<ConstDirichlet, ConstDirichlet>;
     template <int Index>
-    using FunctorFType =
-        DirichletOp<ConstDirichlet, ConstDirichlet, &IdxFuncs<Index>>;
+    using FunctorFType = DirichletOp<ConstDirichlet, ConstDirichlet, Index>;
 
     explicit FieldBCDirichlet(const Field& fld) : m_field(fld) {}
 
@@ -266,10 +246,9 @@ struct BCOpCreator
 {
     using InflowOpType = typename InflowOp::DeviceType;
     using WallOpType = typename WallOp::DeviceType;
-    using FunctorType = DirichletOp<InflowOpType, WallOpType, &IdxFuncs<>>;
+    using FunctorType = DirichletOp<InflowOpType, WallOpType>;
     template <int Index>
-    using FunctorFType =
-        DirichletOp<InflowOpType, WallOpType, &IdxFuncs<Index>>;
+    using FunctorFType = DirichletOp<InflowOpType, WallOpType, Index>;
 
     explicit BCOpCreator(const Field& fld)
         : m_field(fld), m_inflow_op(fld), m_wall_op(fld)
