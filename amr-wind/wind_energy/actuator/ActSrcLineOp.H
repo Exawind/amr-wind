@@ -121,10 +121,8 @@ void ActSrcOp<ActTrait, ActSrcLine>::operator()(
             const auto dist = dist_3D * dcoord_flags;
             // Conver to local (chord, thickness, span) coords
             const auto dist_local = tmat[ip] & dist;
-            // The order of epsilon is (chord, thickness, span)
-            amrex::Real gauss_fac;
-            gauss_fac = utils::gaussian3d(dist_local, eps[ip]);
-            const auto pforce = force[ip];
+            const auto gauss_fac = utils::gaussian3d(dist_local, eps[ip]);
+            const auto& pforce = force[ip];
 
             src_force[0] += gauss_fac * pforce.x();
             src_force[1] += gauss_fac * pforce.y();
