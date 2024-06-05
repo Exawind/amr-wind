@@ -270,32 +270,33 @@ public:
         const amrex::Vector<amrex::BCRec>& bcrec,
         const FieldState /*fstate = FieldState::New*/) override
     {
-        AMREX_ALWAYS_ASSERT(AMREX_SPACEDIM == 3);
         if (lev == 0) {
-            {
-                const int i = 0;
-                amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FunctorF<0>>> physbc(
-                    m_mesh.Geom(lev), bcrec, bc_functor_face<FunctorF<0>>());
-                amrex::FillPatchSingleLevel(
-                    *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
-                    m_mesh.Geom(lev), physbc, i);
-            }
-            {
-                const int i = 1;
-                amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FunctorF<1>>> physbc(
-                    m_mesh.Geom(lev), bcrec, bc_functor_face<FunctorF<1>>());
-                amrex::FillPatchSingleLevel(
-                    *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
-                    m_mesh.Geom(lev), physbc, i);
-            }
-            {
-                const int i = 2;
-                amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FunctorF<2>>> physbc(
-                    m_mesh.Geom(lev), bcrec, bc_functor_face<FunctorF<2>>());
-                amrex::FillPatchSingleLevel(
-                    *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
-                    m_mesh.Geom(lev), physbc, i);
-            }
+            AMREX_D_TERM(
+                auto physbcx = std::make_pair(
+                    0, amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FunctorF<0>>>(
+                           m_mesh.Geom(lev), bcrec,
+                           bc_functor_face<FunctorF<0>>()));
+                ,
+                auto physbcy = std::make_pair(
+                    1, amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FunctorF<1>>>(
+                           m_mesh.Geom(lev), bcrec,
+                           bc_functor_face<FunctorF<1>>()));
+                ,
+                auto physbcz = std::make_pair(
+                    2, amrex::PhysBCFunct<amrex::GpuBndryFuncFab<FunctorF<2>>>(
+                           m_mesh.Geom(lev), bcrec,
+                           bc_functor_face<FunctorF<2>>())););
+            auto physbcs =
+                std::make_tuple(AMREX_D_DECL(physbcx, physbcy, physbcz));
+            std::apply(
+                [=](auto&&... args) {
+                    ((amrex::FillPatchSingleLevel(
+                         *mfabs[args.first], nghost, time, {ffabs[args.first]},
+                         {time}, 0, 0, 1, m_mesh.Geom(lev), args.second,
+                         args.first)),
+                     ...);
+                },
+                physbcs);
         } else {
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> cphysbc(
                 m_mesh.Geom(lev - 1), bcrec, bc_functor());
