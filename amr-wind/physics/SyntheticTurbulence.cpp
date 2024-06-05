@@ -161,9 +161,9 @@ void load_turb_plane_data(
     auto ncf = ncutils::NCFile::open(turb_filename, NC_NOWRITE);
 
     // clang-format off
-    std::vector<size_t> start{{static_cast<size_t>(il), 0, 0}};
-    std::vector<size_t> count{{2, static_cast<size_t>(turb_grid.box_dims[1]),
-                               static_cast<size_t>(turb_grid.box_dims[2])}};
+    std::vector<size_t> start{static_cast<size_t>(il), 0, 0};
+    std::vector<size_t> count{2, static_cast<size_t>(turb_grid.box_dims[1]),
+                               static_cast<size_t>(turb_grid.box_dims[2])};
     // clang-format on
 
     auto uvel = ncf.var("uvel");
@@ -373,7 +373,7 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
     // Load position and orientation of the grid
     amrex::Real wind_direction{270.};
     pp.query("wind_direction", wind_direction);
-    amrex::Vector<amrex::Real> location{{0.0, 0.0, 0.0}};
+    amrex::Vector<amrex::Real> location{0.0, 0.0, 0.0};
     pp.queryarr("grid_location", location);
 
     std::string mean_wind_type = "ConstValue";

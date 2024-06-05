@@ -214,36 +214,31 @@ void SamplingContainer::interpolate(
 
         switch (floc) {
         case FieldLoc::NODE: {
-            amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
-                {0.0, 0.0, 0.0}};
+            amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{0.0, 0.0, 0.0};
             sample_field(np, ic, pvec, parr, farr, plo, dxi, dx, offset);
             break;
         }
 
         case FieldLoc::CELL: {
-            amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
-                {0.5, 0.5, 0.5}};
+            amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{0.5, 0.5, 0.5};
             sample_field(np, ic, pvec, parr, farr, plo, dxi, dx, offset);
             break;
         }
 
         case FieldLoc::XFACE: {
-            amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
-                {0.0, 0.5, 0.5}};
+            amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{0.0, 0.5, 0.5};
             sample_field(np, ic, pvec, parr, farr, plo, dxi, dx, offset);
             break;
         }
 
         case FieldLoc::YFACE: {
-            amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
-                {0.5, 0.0, 0.5}};
+            amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{0.5, 0.0, 0.5};
             sample_field(np, ic, pvec, parr, farr, plo, dxi, dx, offset);
             break;
         }
 
         case FieldLoc::ZFACE: {
-            amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
-                {0.5, 0.5, 0.0}};
+            amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{0.5, 0.5, 0.0};
             sample_field(np, ic, pvec, parr, farr, plo, dxi, dx, offset);
             break;
         }

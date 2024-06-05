@@ -42,7 +42,7 @@ MultiPhase::MultiPhase(CFDSim& sim)
         m_levelset = &(levelset_eqn.fields().field);
     } else {
         amrex::Print() << "Please select an interface capturing model between "
-                          "VOF and Levelset: defaultin to VOF "
+                          "VOF and Levelset: defaulting to VOF "
                        << std::endl;
         m_interface_capturing_method = amr_wind::InterfaceCapturingMethod::VOF;
         auto& vof_eqn = sim.pde_manager().register_transport_pde("VOF");

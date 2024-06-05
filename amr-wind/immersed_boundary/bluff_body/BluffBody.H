@@ -20,10 +20,10 @@ struct BluffBodyBaseData
 
     bool has_wall_model{false};
 
-    amrex::Vector<amrex::Real> vel_bc{{0.0, 0.0, 0.0}};
+    amrex::Vector<amrex::Real> vel_bc{0.0, 0.0, 0.0};
 
     //! Total integrated forces on the immersed body
-    amrex::Vector<amrex::Real> frc{{0.0, 0.0, 0.0}};
+    amrex::Vector<amrex::Real> frc{0.0, 0.0, 0.0};
 };
 
 struct BluffBodyType : public IBType

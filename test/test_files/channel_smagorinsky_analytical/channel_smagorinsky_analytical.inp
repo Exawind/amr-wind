@@ -33,7 +33,6 @@ Smagorinsky_coeffs.Cs = 0.1
 ICNS.source_terms = BodyForce
 BodyForce.magnitude = 0.003969 0.0 0.0
 incflo.physics = ChannelFlow
-ChannelFlow.density = 1.0
 ChannelFlow.re_tau = 180.0
 ChannelFlow.normal_direction = 2
 ChannelFlow.perturb_velocity = true

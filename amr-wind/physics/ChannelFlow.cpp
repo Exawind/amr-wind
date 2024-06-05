@@ -24,17 +24,19 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
         }
     }
     {
+        {
+            amrex::ParmParse pp("incflo");
+            pp.query("density", m_rho);
+        }
         amrex::ParmParse pp("ChannelFlow");
         pp.query("flow_direction", m_mean_vel_dir);
         pp.query("normal_direction", m_norm_dir);
         pp.query("error_log_file", m_output_fname);
 
         if (m_laminar) {
-            pp.query("density", m_rho);
             pp.query("Mean_Velocity", m_mean_vel);
             pp.query("half_channel", m_half);
         } else {
-            pp.query("density", m_rho);
             pp.query("re_tau", m_re_tau);
             pp.query("tke0", m_tke0);
             pp.query("sdr0", m_sdr0);
@@ -50,7 +52,7 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
                     pp.query("C1", m_C1);
                     {
                         amrex::ParmParse ppb("BodyForce");
-                        amrex::Vector<amrex::Real> body_force{{0.0, 0.0, 0.0}};
+                        amrex::Vector<amrex::Real> body_force{0.0, 0.0, 0.0};
                         ppb.queryarr("magnitude", body_force);
                         m_dpdx = -body_force[0];
                         AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
@@ -231,7 +233,7 @@ amrex::Real ChannelFlow::compute_error(const IndexSelector& idxOp)
 
     amrex::Real dpdx = 0;
     {
-        amrex::Vector<amrex::Real> body_force{{0.0, 0.0, 0.0}};
+        amrex::Vector<amrex::Real> body_force{0.0, 0.0, 0.0};
         amrex::ParmParse pp("BodyForce");
         pp.queryarr("magnitude", body_force, 0, AMREX_SPACEDIM);
         dpdx = body_force[flow_dir];
@@ -240,7 +242,7 @@ amrex::Real ChannelFlow::compute_error(const IndexSelector& idxOp)
     const auto& problo = m_mesh.Geom(0).ProbLoArray();
     amrex::Real ht = 0.0;
     {
-        amrex::Vector<amrex::Real> probhi_physical{{0.0, 0.0, 0.0}};
+        amrex::Vector<amrex::Real> probhi_physical{0.0, 0.0, 0.0};
         amrex::ParmParse pp("geometry");
         if (pp.contains("prob_hi_physical")) {
             pp.getarr("prob_hi_physical", probhi_physical);
@@ -441,6 +443,13 @@ void ChannelFlow::post_init_actions()
             m_norm_dir == 2,
             "Wall normal direction should be 2 if using a wall model");
         velocity.register_custom_bc<VelWallFunc>(m_wall_func);
+
+        amrex::ParmParse pp("BodyForce");
+        amrex::Vector<amrex::Real> body_force{0.0, 0.0, 0.0};
+        pp.getarr("magnitude", body_force);
+        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+            std::abs(body_force[2]) < 1e-16,
+            "body force in z should be zero if using a wall model");
     }
 }
 

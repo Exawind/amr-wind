@@ -59,12 +59,12 @@ bool ABLFieldInitFile::operator()(
         // from the input file
         // start is the first index from where to read data
         amrex::Vector<size_t> start{
-            {static_cast<size_t>(i0), static_cast<size_t>(j0),
-             static_cast<size_t>(k0)}};
+            static_cast<size_t>(i0), static_cast<size_t>(j0),
+            static_cast<size_t>(k0)};
         // count is the total number of elements to read in each direction
         amrex::Vector<size_t> count{
-            {static_cast<size_t>(i1 - i0 + 1), static_cast<size_t>(j1 - j0 + 1),
-             static_cast<size_t>(k1 - k0 + 1)}};
+            static_cast<size_t>(i1 - i0 + 1), static_cast<size_t>(j1 - j0 + 1),
+            static_cast<size_t>(k1 - k0 + 1)};
 
         // Working vector to read data onto host
         const auto dlen = count[0] * count[1] * count[2];

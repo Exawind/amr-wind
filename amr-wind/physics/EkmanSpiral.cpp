@@ -67,7 +67,7 @@ EkmanSpiral::EkmanSpiral(const CFDSim& sim)
 
     {
         amrex::ParmParse pp("GeostrophicForcing");
-        amrex::Vector<amrex::Real> gwind{{15.0, 0.0, 0.0}};
+        amrex::Vector<amrex::Real> gwind{15.0, 0.0, 0.0};
         pp.getarr("geostrophic_wind", gwind);
         m_vel = gwind[0];
 

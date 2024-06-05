@@ -15,20 +15,24 @@ namespace amr_wind {
 WallFunction::WallFunction(CFDSim& sim)
     : m_sim(sim), m_mesh(m_sim.mesh()), m_pa_vel(sim, m_direction)
 {
+    amrex::Real mu;
+    amrex::Real rho{1.0};
     {
         amrex::ParmParse pp("BodyForce");
-        amrex::Vector<amrex::Real> body_force{{0.0, 0.0, 0.0}};
+        amrex::Vector<amrex::Real> body_force{0.0, 0.0, 0.0};
         pp.getarr("magnitude", body_force);
         m_log_law.utau_mean = std::sqrt(std::sqrt(
             body_force[0] * body_force[0] + body_force[1] * body_force[1]));
-        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-            std::abs(body_force[2]) < 1e-16,
-            "body force in z should be zero for this wall function");
     }
     {
         amrex::ParmParse pp("transport");
-        pp.query("viscosity", m_log_law.nu);
+        pp.get("viscosity", mu);
     }
+    {
+        amrex::ParmParse pp("incflo");
+        pp.query("density", rho);
+    }
+    m_log_law.nu = mu / rho;
     {
         amrex::ParmParse pp("WallFunction");
         // Reference height for log-law

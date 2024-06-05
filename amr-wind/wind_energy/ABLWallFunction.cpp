@@ -16,6 +16,11 @@ namespace amr_wind {
 ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     : m_sim(sim), m_mesh(sim.mesh())
 {
+    {
+        amrex::ParmParse pp("incflo");
+        pp.queryarr("gravity", m_gravity);
+    }
+
     amrex::ParmParse pp("ABL");
 
     pp.query("kappa", m_mo.kappa);
@@ -25,7 +30,6 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     pp.query("mo_beta_h", m_mo.beta_h);
     pp.query("surface_roughness_z0", m_mo.z0);
     pp.query("normal_direction", m_direction);
-    pp.queryarr("gravity", m_gravity);
     AMREX_ASSERT((0 <= m_direction) && (m_direction < AMREX_SPACEDIM));
 
     if (pp.contains("log_law_height")) {

@@ -42,10 +42,10 @@ private:
     CFDSim& m_sim;
 
     //! Initial Rain Drop location
-    amrex::Vector<amrex::Real> m_loc{{0.006, 0.006, 0.006}};
+    amrex::Vector<amrex::Real> m_loc{0.006, 0.006, 0.006};
 
     //! Initial Rain Drop velocity
-    amrex::Vector<amrex::Real> m_vel{{0.0, 0.0, 0.0}};
+    amrex::Vector<amrex::Real> m_vel{0.0, 0.0, 0.0};
 
     //! Raindrop radius value
     amrex::Real m_radius{0.003};

@@ -28,7 +28,6 @@ TKE.source_terms = KwSSTSrc
 SDR.source_terms = SDRSrc
 incflo.physics = ChannelFlow
 ChannelFlow.re_tau = 1000.0
-ChannelFlow.density = 1.0
 ChannelFlow.tke0 = 0.05
 ChannelFlow.sdr0 = 3528.0
 

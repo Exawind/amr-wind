@@ -4,39 +4,12 @@
 #include "AMReX_Gpu.H"
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
+#include "amr-wind/utilities/index_operations.H"
 #include <AMReX_PlotFileUtil.H>
 
 namespace amr_wind {
 
 namespace {
-
-//! Return closest index (from lower) of value in vector
-AMREX_FORCE_INLINE int
-closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
-{
-    auto const it = std::upper_bound(vec.begin(), vec.end(), value);
-    AMREX_ALWAYS_ASSERT(it != vec.end());
-
-    const int idx = static_cast<int>(std::distance(vec.begin(), it));
-    return std::max(idx - 1, 0);
-}
-
-//! Return indices perpendicular to normal
-template <typename T = amrex::GpuArray<int, 2>>
-AMREX_FORCE_INLINE T perpendicular_idx(const int normal)
-{
-    switch (normal) {
-    case 0:
-        return T{1, 2};
-    case 1:
-        return T{0, 2};
-    case 2:
-        return T{0, 1};
-    default:
-        amrex::Abort("Invalid normal value to determine perpendicular indices");
-    }
-    return T{-1, -1};
-}
 
 //! Return offset vector
 AMREX_FORCE_INLINE amrex::IntVect offset(const int face_dir, const int normal)
@@ -451,16 +424,15 @@ void ABLBoundaryPlane::write_header()
                 const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
                 const auto& lo = minBox.loVect();
                 const auto& hi = minBox.hiVect();
-                const amrex::Vector<amrex::Real> pdx{
-                    {dx[perp[0]], dx[perp[1]]}};
+                const amrex::Vector<amrex::Real> pdx{dx[perp[0]], dx[perp[1]]};
                 const amrex::Vector<amrex::Real> los{
-                    {lo[perp[0]] * dx[perp[0]], lo[perp[1]] * dx[perp[1]]}};
+                    lo[perp[0]] * dx[perp[0]], lo[perp[1]] * dx[perp[1]]};
                 const amrex::Vector<amrex::Real> his{
-                    {(hi[perp[0]] + 1) * dx[perp[0]],
-                     (hi[perp[1]] + 1) * dx[perp[1]]}};
+                    (hi[perp[0]] + 1) * dx[perp[0]],
+                    (hi[perp[1]] + 1) * dx[perp[1]]};
                 const amrex::Vector<amrex::Real> lengths{
-                    {minBox.length(perp[0]) * dx[perp[0]],
-                     minBox.length(perp[1]) * dx[perp[1]]}};
+                    minBox.length(perp[0]) * dx[perp[0]],
+                    minBox.length(perp[1]) * dx[perp[1]]};
 
                 lev_grp.var("lengths").put(lengths.data());
                 lev_grp.var("lo").put(los.data());
@@ -645,17 +617,16 @@ void ABLBoundaryPlane::read_header()
                 const auto& lo = minBox.loVect();
                 const auto& hi = minBox.hiVect();
                 const auto& dx = m_mesh.Geom(lev).CellSizeArray();
-                const amrex::Vector<amrex::Real> pdx{
-                    {dx[perp[0]], dx[perp[1]]}};
+                const amrex::Vector<amrex::Real> pdx{dx[perp[0]], dx[perp[1]]};
                 const amrex::Vector<amrex::Real> los{
-                    {lo[perp[0]] * pdx[0], lo[perp[1]] * pdx[1]}};
+                    lo[perp[0]] * pdx[0], lo[perp[1]] * pdx[1]};
                 const amrex::Vector<amrex::Real> his{
-                    {(hi[perp[0]] + 1) * pdx[0], (hi[perp[1]] + 1) * pdx[1]}};
+                    (hi[perp[0]] + 1) * pdx[0], (hi[perp[1]] + 1) * pdx[1]};
                 const amrex::Vector<amrex::Real> lengths{
-                    {minBox.length(perp[0]) * pdx[0],
-                     minBox.length(perp[1]) * pdx[1]}};
+                    minBox.length(perp[0]) * pdx[0],
+                    minBox.length(perp[1]) * pdx[1]};
 
-                amrex::Vector<amrex::Real> nc_dat{{0, 0}};
+                amrex::Vector<amrex::Real> nc_dat{0, 0};
                 lev_grp.var("lengths").get(nc_dat.data());
                 AMREX_ALWAYS_ASSERT(nc_dat == lengths);
                 lev_grp.var("lo").get(nc_dat.data());

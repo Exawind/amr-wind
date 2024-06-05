@@ -44,7 +44,7 @@ private:
     Field& m_density;
 
     //! Initial ZalesakDisk location
-    amrex::Vector<amrex::Real> m_loc{{0.5, 0.72, 0.24}};
+    amrex::Vector<amrex::Real> m_loc{0.5, 0.72, 0.24};
 
     //! sphere radius value
     amrex::Real m_radius{0.16};

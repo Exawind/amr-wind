@@ -60,7 +60,7 @@ private:
     const Field& m_temperature;
     const Field& m_rho;
     FieldPlaneAveraging m_pa_temp;
-    amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
+    amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
 };
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amd_muvel(

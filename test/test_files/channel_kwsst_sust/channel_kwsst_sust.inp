@@ -30,7 +30,6 @@ KOmegaSST_coeffs.tke_amb = 0.05
 KOmegaSST_coeffs.sdr_amb = 3528.0
 incflo.physics = ChannelFlow
 ChannelFlow.re_tau = 1000.0
-ChannelFlow.density = 1.0
 ChannelFlow.tke0 = 0.05
 ChannelFlow.sdr0 = 3528.0
 
