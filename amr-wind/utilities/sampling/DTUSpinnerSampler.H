@@ -51,8 +51,9 @@ public:
 
 #ifdef AMR_WIND_USE_OPENFAST
 
-    void bcast_turbine(double* /*turbine_pack*/, int /*root_proc*/);
-    void get_turbine_data(std::string turbine_label);
+    void bcast_turbine(
+        amrex::Array<double, 18>& /*turbine_pack*/, int /*root_proc*/);
+    void get_turbine_data(const std::string& turbine_label);
 
 #endif
 
@@ -112,10 +113,10 @@ private:
 
 #ifdef AMR_WIND_USE_OPENFAST
 
-    float turbine_base_pos[3]{0, 0, 0};
-    float current_hub_abs_pos[3]{0, 0, 0};
-    float current_hub_rot_vel[3]{0, 0, 0};
-    double current_hub_orient[9]{0, 0, 0, 0, 0, 0, 0, 0, 0};
+    amrex::Array<float, 3> turbine_base_pos = {0, 0, 0};
+    amrex::Array<float, 3> current_hub_abs_pos = {0, 0, 0};
+    amrex::Array<float, 3> current_hub_rot_vel = {0, 0, 0};
+    amrex::Array<double, 9> current_hub_orient = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 #endif
 

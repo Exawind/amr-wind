@@ -42,7 +42,7 @@ private:
     const amrex::AmrCore& m_mesh;
 
     //! Forcing source term (pressure gradient)
-    amrex::Vector<amrex::Real> m_body_force{{0.0, 0.0, 0.0}};
+    amrex::Vector<amrex::Real> m_body_force{0.0, 0.0, 0.0};
 
     //! Body Force Type
     std::string m_type{"uniform_constant"};

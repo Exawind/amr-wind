@@ -3,6 +3,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/core/MultiParser.H"
+#include "amr-wind/utilities/io_utils.H"
 
 #include <algorithm>
 
@@ -26,6 +27,9 @@ void IB::pre_init_actions()
 
     amrex::Vector<std::string> labels;
     pp.getarr("labels", labels);
+    ioutils::assert_with_message(
+        ioutils::all_distinct(labels),
+        "Duplicates in " + identifier() + ".labels");
 
     const int n_ibs = static_cast<int>(labels.size());
 

@@ -68,7 +68,7 @@ public:
                     problo[2] + (k + 0.5) * dx[2],
                 };
 
-                amrex::Real src_force[AMREX_SPACEDIM]{0.0, 0.0, 0.0};
+                amrex::RealArray src_force = {0.0};
                 for (int ip = 0; ip < npts; ++ip) {
                     const auto& pforce = force[ip] / nForceTheta;
                     const auto pLoc = pos[ip];
@@ -123,7 +123,7 @@ public:
                     problo[2] + (k + 0.5) * dx[2],
                 };
 
-                amrex::Real src_force[AMREX_SPACEDIM]{0.0, 0.0, 0.0};
+                amrex::RealArray src_force = {0.0};
                 for (int ip = 0; ip < npts; ++ip) {
                     const auto R = utils::delta_pnts_cyl(
                                        m_origin, m_normal, m_origin, pos[ip])
@@ -182,7 +182,7 @@ public:
                     problo[2] + (k + 0.5) * dx[2],
                 };
 
-                amrex::Real src_force[AMREX_SPACEDIM]{0.0, 0.0, 0.0};
+                amrex::RealArray src_force = {0.0};
                 for (int ip = 0; ip < npts; ++ip) {
                     const auto radius =
                         utils::delta_pnts_cyl(

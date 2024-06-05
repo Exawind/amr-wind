@@ -42,7 +42,7 @@ MultiPhase::MultiPhase(CFDSim& sim)
         m_levelset = &(levelset_eqn.fields().field);
     } else {
         amrex::Print() << "Please select an interface capturing model between "
-                          "VOF and Levelset: defaultin to VOF "
+                          "VOF and Levelset: defaulting to VOF "
                        << std::endl;
         m_interface_capturing_method = amr_wind::InterfaceCapturingMethod::VOF;
         auto& vof_eqn = sim.pde_manager().register_transport_pde("VOF");
@@ -214,7 +214,7 @@ amrex::Real MultiPhase::volume_fraction_sum()
         if (lev < nlevels - 1) {
             level_mask = makeFineMask(
                 mesh.boxArray(lev), mesh.DistributionMap(lev),
-                mesh.boxArray(lev + 1), amrex::IntVect(2), 1, 0);
+                mesh.boxArray(lev + 1), mesh.refRatio(lev), 1, 0);
         } else {
             level_mask.define(
                 mesh.boxArray(lev), mesh.DistributionMap(lev), 1, 0,
@@ -261,7 +261,7 @@ amrex::Real MultiPhase::momentum_sum(int n)
         if (lev < nlevels - 1) {
             level_mask = makeFineMask(
                 mesh.boxArray(lev), mesh.DistributionMap(lev),
-                mesh.boxArray(lev + 1), amrex::IntVect(2), 1, 0);
+                mesh.boxArray(lev + 1), mesh.refRatio(lev), 1, 0);
         } else {
             level_mask.define(
                 mesh.boxArray(lev), mesh.DistributionMap(lev), 1, 0,

@@ -112,6 +112,11 @@ void incflo::ComputeDt(bool explicit_diffusion)
                         result = std::abs(v_bx(i, j, k, 0)) * dxinv[0] / fac_x +
                                  std::abs(v_bx(i, j, k, 1)) * dxinv[1] / fac_y +
                                  std::abs(v_bx(i, j, k, 2)) * dxinv[2] / fac_z;
+
+                        // Multiply advective CFL by 2 when near interface
+                        result *= 2.0;
+                        // CFL requirement to ensure vof conservation is 0.5;
+                        // this is half the typical concept of a CFL (1.0)
                     }
                     return result;
                 });

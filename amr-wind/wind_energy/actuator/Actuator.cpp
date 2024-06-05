@@ -3,6 +3,7 @@
 #include "amr-wind/wind_energy/actuator/ActuatorContainer.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/core/FieldRepo.H"
+#include "amr-wind/utilities/io_utils.H"
 
 #include <algorithm>
 #include <memory>
@@ -10,7 +11,8 @@
 namespace amr_wind::actuator {
 
 Actuator::Actuator(CFDSim& sim)
-    : m_sim(sim), m_act_source(sim.repo().declare_field("actuator_src_term", 3))
+    : m_sim(sim)
+    , m_act_source(sim.repo().declare_field("actuator_src_term", 3, 1))
 {}
 
 Actuator::~Actuator() = default;
@@ -22,6 +24,9 @@ void Actuator::pre_init_actions()
 
     amrex::Vector<std::string> labels;
     pp.getarr("labels", labels);
+    ioutils::assert_with_message(
+        ioutils::all_distinct(labels),
+        "Duplicates in " + identifier() + ".labels");
 
     const int nturbines = static_cast<int>(labels.size());
 
@@ -244,6 +249,10 @@ void Actuator::compute_source_term()
                 }
             }
         }
+
+        // Ensure actuator src fills ghost cells prior to use (post-processing)
+        // Just need the interior velocity ghost cells updated
+        sfab.FillBoundary(geom.periodicity());
     }
 }
 

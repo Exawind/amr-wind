@@ -33,7 +33,7 @@ private:
     const Field& m_temperature;
     const Field* m_vof;
 
-    amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
+    amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
 
     //! Reference temperature (Kelvin)
     amrex::Real m_ref_theta{300.0};

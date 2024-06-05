@@ -16,10 +16,10 @@ template <typename Transport>
 OneEqKsgs<Transport>::OneEqKsgs(CFDSim& sim)
     : TurbModelBase<Transport>(sim)
     , m_vel(sim.repo().get_field("velocity"))
-    , m_turb_lscale(sim.repo().declare_field("turb_lscale", 1, 1, 1))
-    , m_shear_prod(sim.repo().declare_field("shear_prod", 1, 1, 1))
-    , m_buoy_prod(sim.repo().declare_field("buoy_prod", 1, 1, 1))
-    , m_dissip(sim.repo().declare_field("dissipation", 1, 1, 1))
+    , m_turb_lscale(sim.repo().declare_field("turb_lscale", 1))
+    , m_shear_prod(sim.repo().declare_field("shear_prod", 1))
+    , m_buoy_prod(sim.repo().declare_field("buoy_prod", 1))
+    , m_dissip(sim.repo().declare_field("dissipation", 1))
     , m_rho(sim.repo().get_field("density"))
 {
     auto& tke_eqn =
@@ -100,7 +100,7 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
     fvm::strainrate(this->m_shear_prod, vel);
 
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
-        {m_gravity[0], m_gravity[1], m_gravity[2]}};
+        m_gravity[0], m_gravity[1], m_gravity[2]};
     const amrex::Real beta = 1.0 / m_ref_theta;
 
     auto& mu_turb = this->mu_turb();

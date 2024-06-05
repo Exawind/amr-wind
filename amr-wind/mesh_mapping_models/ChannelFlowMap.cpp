@@ -59,7 +59,7 @@ void ChannelFlowMap::create_map(int lev, const amrex::Geometry& geom)
 void ChannelFlowMap::create_cell_node_map(int lev, const amrex::Geometry& geom)
 {
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> beta{
-        {m_beta[0], m_beta[1], m_beta[2]}};
+        m_beta[0], m_beta[1], m_beta[2]};
     const auto eps = m_eps;
 
     const auto& dx = geom.CellSizeArray();
@@ -67,8 +67,8 @@ void ChannelFlowMap::create_cell_node_map(int lev, const amrex::Geometry& geom)
     const auto& prob_hi = geom.ProbHiArray();
 
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> len{
-        {prob_hi[0] - prob_lo[0], prob_hi[1] - prob_lo[1],
-         prob_hi[2] - prob_lo[2]}};
+        prob_hi[0] - prob_lo[0], prob_hi[1] - prob_lo[1],
+        prob_hi[2] - prob_lo[2]};
 
     for (amrex::MFIter mfi((*m_mesh_scale_fac_cc)(lev)); mfi.isValid(); ++mfi) {
 
@@ -138,7 +138,7 @@ void ChannelFlowMap::create_cell_node_map(int lev, const amrex::Geometry& geom)
 void ChannelFlowMap::create_face_map(int lev, const amrex::Geometry& geom)
 {
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> beta{
-        {m_beta[0], m_beta[1], m_beta[2]}};
+        m_beta[0], m_beta[1], m_beta[2]};
     const auto eps = m_eps;
 
     const auto& dx = geom.CellSizeArray();
@@ -146,8 +146,8 @@ void ChannelFlowMap::create_face_map(int lev, const amrex::Geometry& geom)
     const auto& prob_hi = geom.ProbHiArray();
 
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> len{
-        {prob_hi[0] - prob_lo[0], prob_hi[1] - prob_lo[1],
-         prob_hi[2] - prob_lo[2]}};
+        prob_hi[0] - prob_lo[0], prob_hi[1] - prob_lo[1],
+        prob_hi[2] - prob_lo[2]};
 
     for (amrex::MFIter mfi((*m_mesh_scale_fac_xf)(lev)); mfi.isValid(); ++mfi) {
 
@@ -253,7 +253,7 @@ void ChannelFlowMap::create_face_map(int lev, const amrex::Geometry& geom)
 void ChannelFlowMap::create_non_uniform_mesh(
     int lev, const amrex::Geometry& geom)
 {
-    amrex::Vector<amrex::Real> probhi_physical{{0.0, 0.0, 0.0}};
+    amrex::Vector<amrex::Real> probhi_physical{0.0, 0.0, 0.0};
     {
         amrex::ParmParse pp("geometry");
         if (pp.contains("prob_hi_physical")) {
@@ -266,7 +266,7 @@ void ChannelFlowMap::create_non_uniform_mesh(
     }
 
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> beta{
-        {m_beta[0], m_beta[1], m_beta[2]}};
+        m_beta[0], m_beta[1], m_beta[2]};
     const auto eps = m_eps;
 
     const auto& dx = geom.CellSizeArray();
@@ -274,8 +274,8 @@ void ChannelFlowMap::create_non_uniform_mesh(
     const auto& prob_hi = geom.ProbHiArray();
 
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> len{
-        {probhi_physical[0] - prob_lo[0], probhi_physical[1] - prob_lo[1],
-         probhi_physical[2] - prob_lo[2]}};
+        probhi_physical[0] - prob_lo[0], probhi_physical[1] - prob_lo[1],
+        probhi_physical[2] - prob_lo[2]};
 
     for (amrex::MFIter mfi((*m_non_uniform_coord_cc)(lev)); mfi.isValid();
          ++mfi) {

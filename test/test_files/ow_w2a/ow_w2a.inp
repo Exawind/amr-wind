@@ -1,0 +1,61 @@
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            SIMULATION STOP            #
+#.......................................#
+time.stop_time               =   12.25     # Max (simulated) time to evolve
+time.max_step                =   10
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#         TIME STEP COMPUTATION         #
+#.......................................#
+time.fixed_dt         =   1.0        # Use this constant dt if > 0
+time.cfl              =   0.95         # CFL factor
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            INPUT AND OUTPUT           #
+#.......................................#
+time.plot_interval            =  10       # Steps between plot files
+time.checkpoint_interval      =  -1       # Steps between checkpoint files
+io.outputs = density velocity p vof ow_levelset ow_velocity w2a_levelset w2a_velocity
+
+OceanWaves.label = W2A1
+OceanWaves.W2A1.type = W2AWaves
+OceanWaves.W2A1.HOS_modes_filename = modes_HOS_SWENSE.dat
+OceanWaves.W2A1.relax_zone_gen_length=900
+OceanWaves.W2A1.relax_zone_out_length=900
+# These variables should change with resolution in z
+OceanWaves.W2A1.number_interp_points_in_z = 35
+OceanWaves.W2A1.interp_spacing_at_surface = 10.
+OceanWaves.W2A1.number_interp_above_surface = 5
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#               PHYSICS                 #
+#.......................................#
+incflo.use_godunov = 1
+incflo.godunov_type = weno_z
+incflo.mflux_type = minmod
+transport.model = TwoPhaseTransport
+transport.viscosity_fluid1=1.0e-3
+transport.viscosity_fluid2=1.8e-5
+turbulence.model = Laminar 
+
+incflo.physics = MultiPhase OceanWaves
+MultiPhase.density_fluid1=1000
+MultiPhase.density_fluid2=1.25
+ICNS.source_terms = GravityForcing 
+MultiPhase.verbose=0
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#        ADAPTIVE MESH REFINEMENT       #
+#.......................................#
+amr.n_cell              = 64 64 16
+amr.max_level = 1
+tagging.labels = sr         
+tagging.sr.type = CartBoxRefinement                         
+tagging.sr.static_refinement_def = static_box.refine
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#              GEOMETRY                 #
+#.......................................#
+geometry.prob_lo        =     0.0  0.0  -1000   # Lo corner coordinates
+geometry.prob_hi        =     9.3717632253682877E+03 9.3717632253682877E+03 200  # Hi corner coordinates
+geometry.is_periodic    =     1     1     0   # Periodicity x y z (0/1)
+
+zlo.type =   slip_wall
+zhi.type =   slip_wall

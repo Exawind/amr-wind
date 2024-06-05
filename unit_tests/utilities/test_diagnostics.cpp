@@ -26,6 +26,13 @@ void init_velocity(amr_wind::Field& velocity)
                 farr(i, j, k, 0) = 1.0 - std::pow(xc, 2.0);
                 farr(i, j, k, 1) = -1.0 + std::pow(zc, 2.0);
                 farr(i, j, k, 2) = 5.0 * std::cos(yc);
+
+                if (lev == 0 && nlevels > 1) {
+                    // Set base level to large values to detect masking errors
+                    farr(i, j, k, 0) = 1e5;
+                    farr(i, j, k, 1) = -1e5;
+                    farr(i, j, k, 2) = 1e5;
+                }
             });
         }
     }
@@ -58,6 +65,13 @@ void init_mac_velocity(
                 uarr(i, j, k) = 1.0 - std::pow(x, 2.0);
                 varr(i, j, k) = -1.0 + std::pow(zc, 2.0);
                 warr(i, j, k) = -3.0 * std::cos(yc);
+
+                if (lev == 0 && nlevels > 1) {
+                    // Set base level to large values to detect masking errors
+                    uarr(i, j, k) = 1e5;
+                    varr(i, j, k) = -1e5;
+                    warr(i, j, k) = 1e5;
+                }
             });
         }
     }
@@ -153,6 +167,106 @@ TEST_F(DiagnosticsTest, Max_MACvel)
     EXPECT_NEAR(std::abs(fc_results[11]), 3.5 * 4.0 / 8.0, tol);
     EXPECT_NEAR(std::abs(fc_results[15]), 0.5 * 4.0 / 8.0, tol);
     EXPECT_NEAR(std::abs(fc_results[22]), 0.5 * 10.0 / 24.0, tol);
+}
+
+TEST_F(DiagnosticsTest, Max_Vel_MultiLevel)
+{
+    populate_parameters();
+    {
+        amrex::ParmParse pp("amr");
+        pp.add("max_level", 1);
+    }
+    // Create the refinement input file
+    // Cover the whole domain for easier testing
+    std::stringstream ss;
+    ss << "1 // Number of levels" << std::endl;
+    ss << "1 // Number of boxes at this level" << std::endl;
+    ss << "-5 -5 -2 5 5 2" << std::endl;
+    create_mesh_instance<RefineMesh>();
+    std::unique_ptr<amr_wind::CartBoxRefinement> box_refine(
+        new amr_wind::CartBoxRefinement(sim()));
+    box_refine->read_inputs(mesh(), ss);
+    mesh<RefineMesh>()->refine_criteria_vec().push_back(std::move(box_refine));
+    initialize_mesh();
+
+    auto& repo = sim().repo();
+    auto& velocity = repo.declare_field("velocity", 3, 0);
+    init_velocity(velocity);
+
+    auto cc_results =
+        amr_wind::diagnostics::PrintMaxVelLocations(repo, "cell-centered");
+
+    // Check max's and min's, according to profiles
+    const amrex::Real tol = 1.0e-10;
+    // max(u)
+    EXPECT_NEAR(cc_results[0], 1.0 - std::pow(0.5 * 10.0 / 48.0, 2.0), tol);
+    // min(u)
+    EXPECT_NEAR(cc_results[4], 1.0 - std::pow(23.5 * 10.0 / 48.0, 2.0), tol);
+    // max(v)
+    EXPECT_NEAR(cc_results[8], -1.0 + std::pow(7.5 * 4.0 / 16.0, 2.0), tol);
+    // min(v)
+    EXPECT_NEAR(cc_results[12], -1.0 + std::pow(0.5 * 4.0 / 16.0, 2.0), tol);
+    // max(w)
+    EXPECT_NEAR(cc_results[16], 5.0 * std::cos(0.5 * 10.0 / 48.0), tol);
+
+    // Check locations (abs due to symmetry)
+    EXPECT_NEAR(std::abs(cc_results[1]), 0.5 * 10.0 / 48.0, tol);
+    EXPECT_NEAR(std::abs(cc_results[5]), 23.5 * 10.0 / 48.0, tol);
+    EXPECT_NEAR(std::abs(cc_results[11]), 7.5 * 4.0 / 16.0, tol);
+    EXPECT_NEAR(std::abs(cc_results[15]), 0.5 * 4.0 / 16.0, tol);
+    EXPECT_NEAR(std::abs(cc_results[18]), 0.5 * 10.0 / 48.0, tol);
+}
+
+TEST_F(DiagnosticsTest, Max_MACvel_MultiLevel)
+{
+    populate_parameters();
+    {
+        amrex::ParmParse pp("amr");
+        pp.add("max_level", 1);
+    }
+    // Create the refinement input file
+    // Cover the whole domain for easier testing
+    std::stringstream ss;
+    ss << "1 // Number of levels" << std::endl;
+    ss << "1 // Number of boxes at this level" << std::endl;
+    ss << "-5 -5 -2 5 5 2" << std::endl;
+    create_mesh_instance<RefineMesh>();
+    std::unique_ptr<amr_wind::CartBoxRefinement> box_refine(
+        new amr_wind::CartBoxRefinement(sim()));
+    box_refine->read_inputs(mesh(), ss);
+    mesh<RefineMesh>()->refine_criteria_vec().push_back(std::move(box_refine));
+    initialize_mesh();
+
+    auto& repo = sim().repo();
+    repo.declare_face_normal_field({"u_mac", "v_mac", "w_mac"}, 1, 1, 1);
+    auto& umac = repo.get_field("u_mac");
+    auto& vmac = repo.get_field("v_mac");
+    auto& wmac = repo.get_field("w_mac");
+    auto& cc = repo.declare_field("cc", 1, 0);
+    init_mac_velocity(cc, umac, vmac, wmac);
+
+    auto fc_results =
+        amr_wind::diagnostics::PrintMaxMACVelLocations(repo, "face-centered");
+
+    // Check max's and min's, according to profiles
+    const amrex::Real tol = 1.0e-10;
+    // max(umac)
+    EXPECT_NEAR(fc_results[0], 1.0 - std::pow(0.0 * 10.0 / 48.0, 2.0), tol);
+    // min(umac)
+    EXPECT_NEAR(fc_results[4], 1.0 - std::pow(24 * 10.0 / 48.0, 2.0), tol);
+    // max(vmac)
+    EXPECT_NEAR(fc_results[8], -1.0 + std::pow(7.5 * 4.0 / 16.0, 2.0), tol);
+    // min(vmac)
+    EXPECT_NEAR(fc_results[12], -1.0 + std::pow(0.5 * 4.0 / 16.0, 2.0), tol);
+    // min(wmac)
+    EXPECT_NEAR(fc_results[20], -3.0 * std::cos(0.5 * 10.0 / 48.0), tol);
+
+    // Check locations
+    EXPECT_NEAR(fc_results[1], 0.0 * 10.0 / 24.0, tol);
+    EXPECT_NEAR(std::abs(fc_results[5]), 24 * 10.0 / 48.0, tol);
+    EXPECT_NEAR(std::abs(fc_results[11]), 7.5 * 4.0 / 16.0, tol);
+    EXPECT_NEAR(std::abs(fc_results[15]), 0.5 * 4.0 / 16.0, tol);
+    EXPECT_NEAR(std::abs(fc_results[22]), 0.5 * 10.0 / 48.0, tol);
 }
 
 } // namespace amr_wind_tests

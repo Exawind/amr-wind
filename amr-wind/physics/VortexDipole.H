@@ -36,10 +36,10 @@ private:
     amrex::Real m_rho{1.0};
 
     //! Initial location of the left vortex
-    amrex::Vector<amrex::Real> m_loc_left{{-0.1, 0., 0.}};
+    amrex::Vector<amrex::Real> m_loc_left{-0.1, 0., 0.};
 
     //! Initial location of the right vortex
-    amrex::Vector<amrex::Real> m_loc_right{{0.1, 0., 0.}};
+    amrex::Vector<amrex::Real> m_loc_right{0.1, 0., 0.};
 
     //! Initial vorticity
     amrex::Real m_omegaEmag{299.5283853752};

@@ -42,12 +42,12 @@ public:
 
 #ifdef AMR_WIND_USE_NETCDF
     void read_data(
-        ncutils::NCGroup&,
-        const amrex::Orientation,
-        const int,
-        const Field*,
-        const amrex::Real,
-        const amrex::Vector<amrex::Real>&);
+        ncutils::NCGroup& /*grp*/,
+        const amrex::Orientation /*ori*/,
+        const int /*lev*/,
+        const Field* /*fld*/,
+        const amrex::Real /*time*/,
+        const amrex::Vector<amrex::Real>& /*times*/);
 #endif
 
     void read_data_native(
@@ -139,14 +139,14 @@ public:
         const int orig_comp = 0) const;
 
 #ifdef AMR_WIND_USE_NETCDF
-    void impl_buffer_field(
-        const amrex::Box&,
-        const int,
-        const int,
-        const amrex::GpuArray<int, 2>&,
-        const amrex::IntVect&,
-        const amrex::Array4<const amrex::Real>&,
-        amrex::Gpu::ManagedVector<amrex::Real>&);
+    static void impl_buffer_field(
+        const amrex::Box& /*bx*/,
+        const int /*n1*/,
+        const int /*nc*/,
+        const amrex::GpuArray<int, 2>& /*perp*/,
+        const amrex::IntVect& /*v_offset*/,
+        const amrex::Array4<const amrex::Real>& /*fld*/,
+        amrex::Gpu::ManagedVector<amrex::Real>& /*buffer*/);
 #endif
 
     bool is_initialized() const { return m_is_initialized; }
@@ -164,9 +164,9 @@ private:
 #ifdef AMR_WIND_USE_NETCDF
     void write_data(
         const ncutils::NCGroup& grp,
-        const amrex::Orientation,
-        const int,
-        const Field*);
+        const amrex::Orientation /*ori*/,
+        const int /*lev*/,
+        const Field* /*fld*/);
 #endif
     int boundary_native_file_levels();
 
@@ -176,8 +176,8 @@ private:
     int m_write_frequency{1};
 
     //! Plane names
-    amrex::Vector<std::string> m_plane_names{
-        {"xlo", "ylo", "zlo", "xhi", "yhi", "zhi"}};
+    amrex::Vector<std::string> m_plane_names{"xlo", "ylo", "zlo",
+                                             "xhi", "yhi", "zhi"};
 
     //! IO boundary planes
     amrex::Vector<std::string> m_planes;

@@ -231,7 +231,7 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
         if (lev < nlevels - 1) {
             level_mask = makeFineMask(
                 m_mesh.boxArray(lev), m_mesh.DistributionMap(lev),
-                m_mesh.boxArray(lev + 1), amrex::IntVect(2), 1, 0);
+                m_mesh.boxArray(lev + 1), m_mesh.refRatio(lev), 1, 0);
         } else {
             level_mask.define(
                 m_mesh.boxArray(lev), m_mesh.DistributionMap(lev), 1, 0,

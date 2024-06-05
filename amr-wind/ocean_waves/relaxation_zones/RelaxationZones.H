@@ -34,6 +34,8 @@ struct RelaxZonesBaseData
     bool has_outprofile{false};
 
     amrex::Real ramp_period{2.0};
+
+    bool regrid_occurred{false};
 };
 
 struct RelaxZonesType : public OceanWavesType
