@@ -36,8 +36,8 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
         pp.get("num_points", wdata.num_pts);
         pp.get("start", wdata.start);
         pp.get("end", wdata.end);
-        pp.query("epsilon", wdata.eps_inp);
-        pp.query("epsilon_chord", wdata.epsilon_chord);
+        pp.query_either("epsilon", wdata.eps_inp);
+        pp.query_either("epsilon_chord", wdata.epsilon_chord);
         if (!pp.contains("pitch_timetable")) {
             // Constant pitch is required without timetable
             pp.get("pitch", wdata.pitch);

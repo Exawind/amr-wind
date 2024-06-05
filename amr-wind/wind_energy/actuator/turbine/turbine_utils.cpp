@@ -21,10 +21,10 @@ void read_inputs(
             "of 'epsilon' or 'epsilon_chord'");
     }
 
-    pp.query("epsilon", tdata.eps_inp);
-    pp.query("epsilon_chord", tdata.eps_chord);
-    pp.query("epsilon_min", tdata.eps_min);
-    pp.query("epsilon_tower", tdata.eps_tower);
+    pp.query_either("epsilon", tdata.eps_inp);
+    pp.query_either("epsilon_chord", tdata.eps_chord);
+    pp.query_either("epsilon_min", tdata.eps_min);
+    pp.query_either("epsilon_tower", tdata.eps_tower);
 
     pp.get("base_position", tinfo.base_pos);
     pp.get("rotor_diameter", tinfo.rotor_diameter);

@@ -12,7 +12,7 @@ void read_inputs(WingBaseData& wdata, ActInfo& info, const utils::ActParser& pp)
     pp.get("num_points", wdata.num_pts);
     pp.get("start", wdata.start);
     pp.get("end", wdata.end);
-    pp.get("epsilon", wdata.eps_inp);
+    pp.get_either("epsilon", wdata.eps_inp);
     pp.get("pitch", wdata.pitch);
 
     amrex::Real max_eps =
