@@ -270,9 +270,9 @@ public:
     {
 
         if (lev == 0) {
-            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> physbc(
-                m_mesh.Geom(lev), bcrec, bc_functor());
             for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
+                amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> physbc(
+                    m_mesh.Geom(lev), bcrec, bc_functor_face(i));
                 amrex::FillPatchSingleLevel(
                     *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
                     m_mesh.Geom(lev), physbc, i);
@@ -386,6 +386,8 @@ public:
 
 protected:
     Functor bc_functor() { return m_op(); }
+
+    Functor bc_functor_face(const int face_dir) { return m_op(face_dir); }
 
     void check_face_mapper()
     {
