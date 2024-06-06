@@ -72,7 +72,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_xbc(
     using namespace amrex;
 
     if (bclo == BCType::ext_dir || bclo == BCType::hoextrap
-     || (bclo == BCType::user_1 && velm >= 0.0)) {
+     || (bclo == BCType::direction_dependent && velm >= 0.0)) {
         if (i == domlo) {
             //Print() << "weno_xbc_domlo_extdir   triggered at " << i << " " << j << " " << k << " " << n
             //        << "  as velm is " << velm << std::endl;
@@ -92,7 +92,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_xbc(
     }
 
     if (bchi == BCType::ext_dir || bchi == BCType::hoextrap
-     || (bchi == BCType::user_1 && velp <= 0.0)) {
+     || (bchi == BCType::direction_dependent && velp <= 0.0)) {
         if (i == domhi) {
             //Print() << "weno_xbc_domhi_extdir   triggered at " << i << " " << j << " " << k << " " << n
             //        << "  as velp is " << velp << std::endl;
@@ -131,7 +131,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_ybc(
     using namespace amrex;
 
     if (bclo == BCType::ext_dir || bclo == BCType::hoextrap
-     || (bclo == BCType::user_1 && velm >= 0.0)) {
+     || (bclo == BCType::direction_dependent && velm >= 0.0)) {
         if (j == domlo) {
             sp = -0.2 * s(i, domlo - 1, k, n) + 0.75 * s(i, domlo, k, n) +
                  0.5 * s(i, domlo + 1, k, n) - 0.05 * s(i, domlo + 2, k, n);
@@ -148,7 +148,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_ybc(
     }
 
     if (bchi == BCType::ext_dir || bchi == BCType::hoextrap
-     || (bchi == BCType::user_1 && velp <= 0.0)) {
+     || (bchi == BCType::direction_dependent && velp <= 0.0)) {
         if (j == domhi) {
             sm = -0.2 * s(i, domhi + 1, k, n) + 0.75 * s(i, domhi, k, n) +
                  0.5 * s(i, domhi - 1, k, n) - 0.05 * s(i, domhi - 2, k, n);
@@ -185,7 +185,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_zbc(
     using namespace amrex;
 
     if (bclo == BCType::ext_dir || bclo == BCType::hoextrap
-     || (bclo == BCType::user_1 && velm >= 0.0)) {
+     || (bclo == BCType::direction_dependent && velm >= 0.0)) {
         if (k == domlo) {
             sp = -0.2 * s(i, j, domlo - 1, n) + 0.75 * s(i, j, domlo, n) +
                  0.5 * s(i, j, domlo + 1, n) - 0.05 * s(i, j, domlo + 2, n);
@@ -202,7 +202,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_zbc(
     }
 
     if (bchi == BCType::ext_dir || bchi == BCType::hoextrap
-     || (bchi == BCType::user_1 && velp <= 0.0)) {
+     || (bchi == BCType::direction_dependent && velp <= 0.0)) {
         if (k == domhi) {
             sm = -0.2 * s(i, j, domhi + 1, n) + 0.75 * s(i, j, domhi, n) +
                  0.5 * s(i, j, domhi - 1, n) - 0.05 * s(i, j, domhi - 2, n);
