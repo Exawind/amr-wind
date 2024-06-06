@@ -49,7 +49,7 @@ struct FieldBCNoOp
     AMREX_GPU_HOST
     constexpr explicit FieldBCNoOp(const Field& /*unused*/) {}
 
-    FunctorType operator()(const int face_dir = -1) const { return *this; }
+    FunctorType operator()(const int /*face_dir*/ = -1) const { return *this; }
 
     AMREX_GPU_DEVICE
     void operator()(
