@@ -155,7 +155,7 @@ void OversetOps::parameter_output() const
     // Print the details
     if (m_verbose > 0) {
         // Important parameters
-        amrex::Print() << "Overset Coupling Parameters: \n"
+        amrex::Print() << "\nOverset Coupling Parameters: \n"
                        << "---- Coupled nodal projection : "
                        << !m_disable_nodal_proj << std::endl
                        << "---- Coupled MAC projection   : "
@@ -172,14 +172,16 @@ void OversetOps::parameter_output() const
                            << std::endl
                            << "---- Upwinding VOF margin : " << m_margin
                            << std::endl;
+            if (m_verbose > 1) {
+                // Less important or less used parameters
+                amrex::Print()
+                    << "---- Calc. conv. interval : " << m_calcconvint
+                    << std::endl
+                    << "---- Target field cutoff  : " << m_target_cutoff
+                    << std::endl;
+            }
         }
-    }
-    if (m_verbose > 1 && m_vof_exists) {
-        // Less important or less used parameters
-        amrex::Print() << "---- Calc. conv. interval : " << m_calcconvint
-                       << std::endl
-                       << "---- Target field cutoff  : " << m_target_cutoff
-                       << std::endl;
+        amrex::Print() << std::endl;
     }
 }
 
