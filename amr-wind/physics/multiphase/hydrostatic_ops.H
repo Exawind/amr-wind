@@ -10,7 +10,7 @@ static void define_rho0(
     const amrex::Real rho1,
     const amrex::Real rho2,
     const amrex::Real wlev,
-    const amrex::Vector<amrex::Geometry> geom)
+    const amrex::Vector<amrex::Geometry>& geom)
 {
     for (int lev = 0; lev < rho0.repo().num_active_levels(); ++lev) {
         const auto& dx = geom[lev].CellSizeArray();
@@ -35,7 +35,7 @@ static void define_p0(
     const amrex::Real rho2,
     const amrex::Real wlev,
     const amrex::Real grav_z,
-    const amrex::Vector<amrex::Geometry> geom)
+    const amrex::Vector<amrex::Geometry>& geom)
 {
     for (int lev = 0; lev < p0.repo().num_active_levels(); ++lev) {
         const auto& dx = geom[lev].CellSizeArray();
