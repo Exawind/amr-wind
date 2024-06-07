@@ -57,7 +57,7 @@ MacProjOp::MacProjOp(
     pp.query("density", m_rho_0);
     amrex::ParmParse pp_ovst("Overset");
     bool disable_ovst_mac = false;
-    pp.query("disable_coupled_mac_proj", disable_ovst_mac);
+    pp_ovst.query("disable_coupled_mac_proj", disable_ovst_mac);
     if (m_has_overset && disable_ovst_mac) {
         m_has_overset = false;
     }

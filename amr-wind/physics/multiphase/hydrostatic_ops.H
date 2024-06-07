@@ -10,7 +10,7 @@ static void define_rho0(
     const amrex::Real rho1,
     const amrex::Real rho2,
     const amrex::Real wlev,
-    const amrex::Vector<amrex::Geometry>& geom)
+    const amrex::Vector<amrex::Geometry> geom)
 {
     for (int lev = 0; lev < rho0.repo().num_active_levels(); ++lev) {
         const auto& dx = geom[lev].CellSizeArray();
@@ -35,7 +35,7 @@ static void define_p0(
     const amrex::Real rho2,
     const amrex::Real wlev,
     const amrex::Real grav_z,
-    const amrex::Vector<amrex::Geometry>& geom)
+    const amrex::Vector<amrex::Geometry> geom)
 {
     for (int lev = 0; lev < p0.repo().num_active_levels(); ++lev) {
         const auto& dx = geom[lev].CellSizeArray();
@@ -46,15 +46,12 @@ static void define_p0(
             auto p0_arr = p0(lev).array(mfi);
             amrex::ParallelFor(
                 nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    // Height of pressure node
-                    const amrex::Real hnode = k * dx[2];
-                    // Liquid height
-                    const amrex::Real hliq = wlev - problo[2];
+                    const amrex::Real z = problo[2] + k * dx[2];
                     // Integrated (top-down in z) phase heights to pressure node
                     amrex::Real ih_g = amrex::max(
-                        0.0, amrex::min(probhi[2] - hliq, probhi[2] - hnode));
-                    amrex::Real ih_l = amrex::max(
-                        0.0, amrex::min(hliq - hnode, hliq - problo[2]));
+                        0.0, amrex::min(probhi[2] - wlev, probhi[2] - z));
+                    amrex::Real ih_l =
+                        amrex::max(0.0, amrex::min(wlev - z, wlev - problo[2]));
                     // Integrated rho at pressure node
                     const amrex::Real irho = rho1 * ih_l + rho2 * ih_g;
 
