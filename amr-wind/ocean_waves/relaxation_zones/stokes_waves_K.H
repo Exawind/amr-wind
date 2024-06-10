@@ -10,6 +10,118 @@
 
 namespace amr_wind::ocean_waves::relaxation_zones {
 
+// Compute wavelength as a function of wave period, water depth, and g
+AMREX_FORCE_INLINE amrex::Real stokes_wave_length(
+    const amrex::Real T,
+    const amrex::Real d,
+    const amrex::Real H,
+    const int order,
+    const amrex::Real g,
+    const amrex::Real tol,
+    const int iter_max)
+{
+    // Calculate constants and derivatives that do not change with iteration
+    const amrex::Real omega = 2.0 * M_PI / T;
+    const amrex::Real depsdk = H / 2.0;
+
+    // Begin Newton-Raphson iterations
+    int iter = 0;
+    // First guess is first-order
+    amrex::Real k = omega / std::sqrt(g);
+    // Cannot skip loop
+    amrex::Real f = tol + 1.0;
+    while (std::abs(f) > tol && iter < iter_max) {
+        // Calculate current constants
+        const amrex::Real S = 1.0 / std::cosh(2.0 * k * d);
+        const amrex::Real C = 1.0 - S;
+        const amrex::Real eps = k * H / 2.0;
+        const amrex::Real C0 = std::sqrt(std::tanh(k * d));
+        const amrex::Real C2 = C0 * (2.0 + 7.0 * S * S) / (4.0 * C * C);
+        const amrex::Real numterm_C4 =
+            (4.0 + 32.0 * S - 116.0 * std::pow(S, 2) - 400.0 * std::pow(S, 3) -
+             71.0 * std::pow(S, 4) + 146.0 * std::pow(S, 5));
+        const amrex::Real C4 = C0 * numterm_C4 / (32.0 * std::pow(C, 5));
+        // Calculate pure derivates
+        const amrex::Real dSdk = -2.0 * d * std::sinh(2.0 * k * d) /
+                                 std::pow(std::cosh(2.0 * k * d), 2);
+        const amrex::Real dCdk = -dSdk;
+        const amrex::Real dC0dk =
+            d / (2.0 * C0 * std::pow(std::cosh(k * d), 2));
+        // Calculate derivatives with products
+        const amrex::Real dC2dk =
+            (4 * std::pow(C, 2) *
+                 (dC0dk * (2.0 + 7.0 * std::pow(S, 2)) + C0 * 14.0 * S * dSdk) -
+             C0 * (2.0 + 7.0 * std::pow(S, 2)) * 8.0 * C * dCdk) /
+            (16.0 * std::pow(C, 4));
+        const amrex::Real dC4dk =
+            (32.0 * std::pow(C, 5) *
+                 (dC0dk * numterm_C4 +
+                  C0 * (32.0 * dSdk - 232.0 * S * dSdk -
+                        1200 * std::pow(S, 2) * dSdk -
+                        284.0 * std::pow(S, 3) * dSdk + 730 * std::pow(S, 4))) -
+             C0 * numterm_C4 * 160.0 * std::pow(C, 4) * dCdk) /
+            (1024.0 * std::pow(C, 10));
+
+        // Calculate derivative for loop convergence
+        amrex::Real dfdk = g * std::pow(C0, 2) + g * k * 2.0 * C0 * dC0dk;
+        // Add additional terms depending on order
+        if (order >= 2) {
+            dfdk +=
+                g * (2.0 * C0 * std::pow(eps, 2) * C2 +
+                     std::pow(eps, 4) * std::pow(C2, 2)) +
+                g * k *
+                    (2.0 * dC0dk * std::pow(eps, 2) * C2 +
+                     2.0 * C0 *
+                         (2.0 * eps * depsdk * C2 + std::pow(eps, 2) * dC2dk) +
+                     4.0 * std::pow(eps, 3) * std::pow(C2, 2) * depsdk +
+                     std::pow(eps, 4) * 2.0 * C2 * dC2dk);
+        }
+        if (order >= 4) {
+            dfdk += g * (2.0 * std::pow(eps, 4) * C0 * C4 +
+                         2.0 * std::pow(eps, 6) * C2 * C4 +
+                         std::pow(eps, 8) * std::pow(C4, 2)) +
+                    g * k *
+                        (8.0 * std::pow(eps, 3) * depsdk * C0 * C4 +
+                         2.0 * std::pow(eps, 4) * (C0 * dC4dk + C4 * dC0dk) +
+                         12 * std::pow(eps, 5) * depsdk * C2 * C4 +
+                         2.0 * std::pow(eps, 6) * (C2 * dC4dk + C4 * dC2dk) +
+                         8.0 * std::pow(eps, 7) * depsdk * std::pow(C4, 2) +
+                         std::pow(eps, 8) * 2.0 * C4 * dC4dk);
+        }
+        k = k - f / dfdk;
+
+        iter += 1;
+        f = g * k * std::pow(C0, 2);
+        // Add additional terms depending on order
+        if (order >= 2) {
+            f += g * k *
+                 (2.0 * C0 * std::pow(eps, 2) * C2 +
+                  std::pow(eps, 4) * std::pow(C2, 2));
+        }
+        if (order >= 4) {
+            f += g * k *
+                 (2.0 * std::pow(eps, 4) * C0 * C4 +
+                  2.0 * std::pow(eps, 6) * C2 * C4 +
+                  std::pow(eps, 8) * std::pow(C4, 2));
+        }
+        // Subtract omega^2 to measure convergence
+        f -= omega * omega;
+    }
+
+    if (k < tol) {
+        // Return negative wavelength if faulty result
+        return -1;
+    }
+    if (std::isnan(k)) {
+        return -2;
+    }
+    if (iter == iter_max) {
+        return -3;
+    }
+    // Return wavelength calculated from wavenumber
+    return 2.0 * M_PI / k;
+}
+
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
     int StokesOrder,
     amrex::Real wavenumber,
@@ -135,7 +247,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
     }
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real my_sinh_sin(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real stokes_sinh_sin(
     int m,
     int n,
     amrex::Real phase,
@@ -151,6 +263,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real my_sinh_sin(
     amrex::Real eps,
     amrex::Real wavenumber,
     amrex::Real waterdepth,
+    amrex::Real zsl,
     amrex::Real z)
 {
     amrex::Real D = 0.0;
@@ -183,10 +296,11 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real my_sinh_sin(
     }
 
     return std::pow(eps, m) * D * n * wavenumber *
-           std::sinh(n * wavenumber * (waterdepth + z)) * std::sin(n * phase);
+           std::sinh(n * wavenumber * (waterdepth + (z - zsl))) *
+           std::sin(n * phase);
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real my_cosh_cos(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real stokes_cosh_cos(
     int m,
     int n,
     amrex::Real phase,
@@ -202,6 +316,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real my_cosh_cos(
     amrex::Real eps,
     amrex::Real wavenumber,
     amrex::Real waterdepth,
+    amrex::Real zsl,
     amrex::Real z)
 {
     amrex::Real D = 0.0;
@@ -234,7 +349,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real my_cosh_cos(
     }
 
     return std::pow(eps, m) * D * n * wavenumber *
-           std::cosh(n * wavenumber * (waterdepth + z)) * std::cos(n * phase);
+           std::cosh(n * wavenumber * (waterdepth + (z - zsl))) *
+           std::cos(n * phase);
 }
 
 // Based on Fenton 1985
@@ -243,6 +359,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_waves(
     amrex::Real wavelength,
     amrex::Real waterdepth,
     amrex::Real waveheight,
+    amrex::Real zsl,
+    amrex::Real g,
     amrex::Real x,
     amrex::Real z,
     amrex::Real time,
@@ -266,87 +384,87 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_waves(
 
     const amrex::Real eps = wavenumber * waveheight / 2.; // Steepness (ka)
     const amrex::Real c = (c0 + std::pow(eps, 2) * c2 + std::pow(eps, 4) * c4) *
-                          std::sqrt(9.81 / wavenumber);
+                          std::sqrt(g / wavenumber);
     // const amrex::Real Q =
-    //    c * waterdepth * std::sqrt(std::pow(k, 3) / 9.81) +
+    //    c * waterdepth * std::sqrt(std::pow(k, 3) / g) +
     //    d2 * std::pow(eps, 2) +
-    //    d4 * std::pow(eps, 4) * std::sqrt(9.81 / std::pow(k, 3));
+    //    d4 * std::pow(eps, 4) * std::sqrt(g / std::pow(k, 3));
 
     const amrex::Real omega = c * wavenumber;
     const amrex::Real phase = wavenumber * x - omega * time;
 
-    eta =
-        (eps * std::cos(phase)                           // first order term
-         + std::pow(eps, 2) * b22 * std::cos(2. * phase) // second order term
-         + std::pow(eps, 3) * b31 * (std::cos(phase) - std::cos(3. * phase)) +
-         std::pow(eps, 4) * b42 *
-             (std::cos(2. * phase) + b44 * std::cos(4. * phase)) +
-         std::pow(eps, 5) *
-             (-(b53 + b55) * std::cos(phase) + b53 * std::cos(3 * phase) +
-              b55 * std::cos(5 * phase)));
+    eta = (eps * std::cos(phase)                           // first order term
+           + std::pow(eps, 2) * b22 * std::cos(2. * phase) // second order term
+           + std::pow(eps, 3) * b31 * (std::cos(phase) - std::cos(3. * phase)) +
+           std::pow(eps, 4) * b42 *
+               (std::cos(2. * phase) + b44 * std::cos(4. * phase)) +
+           std::pow(eps, 5) *
+               (-(b53 + b55) * std::cos(phase) + b53 * std::cos(3 * phase) +
+                b55 * std::cos(5 * phase))) +
+          zsl;
 
     // Compute cosines
-    const amrex::Real cc11 = my_cosh_cos(
+    const amrex::Real cc11 = stokes_cosh_cos(
         1, 1, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
-        wavenumber, waterdepth, z);
-    const amrex::Real cc22 = my_cosh_cos(
+        wavenumber, waterdepth, zsl, z);
+    const amrex::Real cc22 = stokes_cosh_cos(
         2, 2, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
-        wavenumber, waterdepth, z);
-    const amrex::Real cc31 = my_cosh_cos(
+        wavenumber, waterdepth, zsl, z);
+    const amrex::Real cc31 = stokes_cosh_cos(
         3, 1, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
-        wavenumber, waterdepth, z);
-    const amrex::Real cc33 = my_cosh_cos(
+        wavenumber, waterdepth, zsl, z);
+    const amrex::Real cc33 = stokes_cosh_cos(
         3, 3, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
-        wavenumber, waterdepth, z);
-    const amrex::Real cc42 = my_cosh_cos(
+        wavenumber, waterdepth, zsl, z);
+    const amrex::Real cc42 = stokes_cosh_cos(
         4, 2, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
-        wavenumber, waterdepth, z);
-    const amrex::Real cc44 = my_cosh_cos(
+        wavenumber, waterdepth, zsl, z);
+    const amrex::Real cc44 = stokes_cosh_cos(
         4, 4, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
-        wavenumber, waterdepth, z);
-    const amrex::Real cc51 = my_cosh_cos(
+        wavenumber, waterdepth, zsl, z);
+    const amrex::Real cc51 = stokes_cosh_cos(
         5, 1, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
-        wavenumber, waterdepth, z);
-    const amrex::Real cc53 = my_cosh_cos(
+        wavenumber, waterdepth, zsl, z);
+    const amrex::Real cc53 = stokes_cosh_cos(
         5, 3, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
-        wavenumber, waterdepth, z);
-    const amrex::Real cc55 = my_cosh_cos(
+        wavenumber, waterdepth, zsl, z);
+    const amrex::Real cc55 = stokes_cosh_cos(
         5, 5, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
-        wavenumber, waterdepth, z);
+        wavenumber, waterdepth, zsl, z);
 
     // Compute sines
-    const amrex::Real ss11 = my_sinh_sin(
+    const amrex::Real ss11 = stokes_sinh_sin(
         1, 1, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
-        wavenumber, waterdepth, z);
-    const amrex::Real ss22 = my_sinh_sin(
+        wavenumber, waterdepth, zsl, z);
+    const amrex::Real ss22 = stokes_sinh_sin(
         2, 2, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
-        wavenumber, waterdepth, z);
-    const amrex::Real ss31 = my_sinh_sin(
+        wavenumber, waterdepth, zsl, z);
+    const amrex::Real ss31 = stokes_sinh_sin(
         3, 1, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
-        wavenumber, waterdepth, z);
-    const amrex::Real ss33 = my_sinh_sin(
+        wavenumber, waterdepth, zsl, z);
+    const amrex::Real ss33 = stokes_sinh_sin(
         3, 3, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
-        wavenumber, waterdepth, z);
-    const amrex::Real ss42 = my_sinh_sin(
+        wavenumber, waterdepth, zsl, z);
+    const amrex::Real ss42 = stokes_sinh_sin(
         4, 2, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
-        wavenumber, waterdepth, z);
-    const amrex::Real ss44 = my_sinh_sin(
+        wavenumber, waterdepth, zsl, z);
+    const amrex::Real ss44 = stokes_sinh_sin(
         4, 4, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
-        wavenumber, waterdepth, z);
-    const amrex::Real ss51 = my_sinh_sin(
+        wavenumber, waterdepth, zsl, z);
+    const amrex::Real ss51 = stokes_sinh_sin(
         5, 1, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
-        wavenumber, waterdepth, z);
-    const amrex::Real ss53 = my_sinh_sin(
+        wavenumber, waterdepth, zsl, z);
+    const amrex::Real ss53 = stokes_sinh_sin(
         5, 3, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
-        wavenumber, waterdepth, z);
-    const amrex::Real ss55 = my_sinh_sin(
+        wavenumber, waterdepth, zsl, z);
+    const amrex::Real ss55 = stokes_sinh_sin(
         5, 5, phase, a11, a22, a31, a33, a42, a44, a51, a53, a55, eps,
-        wavenumber, waterdepth, z);
+        wavenumber, waterdepth, zsl, z);
 
-    u_w = c0 * std::sqrt(9.81 / std::pow(wavenumber, 3)) *
+    u_w = c0 * std::sqrt(g / std::pow(wavenumber, 3)) *
           (cc11 + cc22 + cc31 + cc33 + cc42 + cc44 + cc51 + cc53 + cc55);
     v_w = 0.0;
-    w_w = c0 * std::sqrt(9.81 / std::pow(wavenumber, 3)) *
+    w_w = c0 * std::sqrt(g / std::pow(wavenumber, 3)) *
           (ss11 + ss22 + ss31 + ss33 + ss42 + ss44 + ss51 + ss53 + ss55);
 }
 
