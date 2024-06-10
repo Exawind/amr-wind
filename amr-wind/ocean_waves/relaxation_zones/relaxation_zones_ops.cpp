@@ -37,7 +37,7 @@ void read_inputs(
         pp.query("initialize_wave_field", wdata.init_wave_field);
     }
 
-    pp.query("timeramp", wdata.has_ramp);
+    wdata.has_ramp = pp.contains("timeramp_period");
     if (wdata.has_ramp) {
         pp.query("timeramp_period", wdata.ramp_period);
     }
@@ -124,29 +124,31 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                             Gamma * volfrac(i, j, k);
                         volfrac(i, j, k) = (vf > 1. - 1.e-10) ? 1.0 : vf;
                         // Force liquid velocity, update according to mom.
-                        amrex::Real rho_ = rho1 * volfrac(i, j, k) +
-                                           rho2 * (1.0 - volfrac(i, j, k));
-                        vel(i, j, k, 0) =
-                            (rho1 * volfrac(i, j, k) *
-                                 (rampf * (1. - Gamma) *
-                                      target_vel(i, j, k, 0) +
-                                  Gamma * vel(i, j, k, 0)) +
-                             rho2 * (1. - volfrac(i, j, k)) * vel(i, j, k, 0)) /
-                            rho_;
-                        vel(i, j, k, 1) =
-                            (rho1 * volfrac(i, j, k) *
-                                 (rampf * (1. - Gamma) *
-                                      target_vel(i, j, k, 1) +
-                                  Gamma * vel(i, j, k, 1)) +
-                             rho2 * (1. - volfrac(i, j, k)) * vel(i, j, k, 1)) /
-                            rho_;
-                        vel(i, j, k, 2) =
-                            (rho1 * volfrac(i, j, k) *
-                                 (rampf * (1. - Gamma) *
-                                      target_vel(i, j, k, 2) +
-                                  Gamma * vel(i, j, k, 2)) +
-                             rho2 * (1. - volfrac(i, j, k)) * vel(i, j, k, 2)) /
-                            rho_;
+                        if (target_volfrac(i, j, k) > 1e-12) {
+                            amrex::Real rho_ = rho1 * volfrac(i, j, k) +
+                                               rho2 * (1.0 - volfrac(i, j, k));
+                            vel(i, j, k, 0) = (rho1 * volfrac(i, j, k) *
+                                                   (rampf * (1. - Gamma) *
+                                                        target_vel(i, j, k, 0) +
+                                                    Gamma * vel(i, j, k, 0)) +
+                                               rho2 * (1. - volfrac(i, j, k)) *
+                                                   vel(i, j, k, 0)) /
+                                              rho_;
+                            vel(i, j, k, 1) = (rho1 * volfrac(i, j, k) *
+                                                   (rampf * (1. - Gamma) *
+                                                        target_vel(i, j, k, 1) +
+                                                    Gamma * vel(i, j, k, 1)) +
+                                               rho2 * (1. - volfrac(i, j, k)) *
+                                                   vel(i, j, k, 1)) /
+                                              rho_;
+                            vel(i, j, k, 2) = (rho1 * volfrac(i, j, k) *
+                                                   (rampf * (1. - Gamma) *
+                                                        target_vel(i, j, k, 2) +
+                                                    Gamma * vel(i, j, k, 2)) +
+                                               rho2 * (1. - volfrac(i, j, k)) *
+                                                   vel(i, j, k, 2)) /
+                                              rho_;
+                        }
                     }
                     // Numerical beach (sponge layer)
                     if (x + beach_length >= probhi[0]) {

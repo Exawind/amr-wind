@@ -52,8 +52,8 @@ struct UseDefaultOp
 template <typename WaveTheoryTrait>
 struct UpdateRelaxZonesOp<
     WaveTheoryTrait,
-    typename std::enable_if<
-        std::is_base_of<RelaxZonesType, WaveTheoryTrait>::value>::type>
+    typename std::enable_if_t<
+        std::is_base_of_v<RelaxZonesType, WaveTheoryTrait>>>
 {
     void operator()(typename WaveTheoryTrait::DataType& /*unused*/) {}
 };
@@ -61,8 +61,8 @@ struct UpdateRelaxZonesOp<
 template <typename WaveTheoryTrait>
 struct ApplyRelaxZonesOp<
     WaveTheoryTrait,
-    typename std::enable_if<
-        std::is_base_of<RelaxZonesType, WaveTheoryTrait>::value>::type>
+    typename std::enable_if_t<
+        std::is_base_of_v<RelaxZonesType, WaveTheoryTrait>>>
 {
     void operator()(typename WaveTheoryTrait::DataType& data)
     {
@@ -78,8 +78,8 @@ struct ApplyRelaxZonesOp<
 template <typename WaveTheoryTrait>
 struct ProcessOutputsOp<
     WaveTheoryTrait,
-    typename std::enable_if<
-        std::is_base_of<RelaxZonesType, WaveTheoryTrait>::value>::type>
+    typename std::enable_if_t<
+        std::is_base_of_v<RelaxZonesType, WaveTheoryTrait>>>
 {
 private:
     typename WaveTheoryTrait::DataType& m_data;

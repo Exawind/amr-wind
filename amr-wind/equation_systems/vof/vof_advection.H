@@ -23,8 +23,6 @@ struct AdvectionOp<VOF, fvm::Godunov>
     {
         amrex::ParmParse pp_multiphase("VOF");
         pp_multiphase.query("remove_debris", m_rm_debris);
-        pp_multiphase.query("sharpen_acq_field", m_sharpen_acq);
-        pp_multiphase.query("sharpen_dest_field", m_sharpen_dest);
         pp_multiphase.query("replace_masked", m_replace_mask);
 
         // Setup density factor arrays for multiplying velocity flux
@@ -37,9 +35,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
         const FieldState /*unused*/,
         const amrex::Real /*unused*/,
         const amrex::Real /*unused*/)
-    {
-        // Would be best to sharpen old vof and update old density here
-    }
+    {}
 
     void operator()(const FieldState /*unused*/, const amrex::Real dt)
     {
@@ -59,19 +55,6 @@ struct AdvectionOp<VOF, fvm::Godunov>
         auto& dof_new = fields.field;
         // Working state of vof is nph, to keep others untouched during step
         auto& dof_field = fields.field.state(amr_wind::FieldState::NPH);
-
-        // Sharpen starting vof field if hybrid solver is being used
-        if (repo.int_field_exists("iblank_cell") && m_sharpen_acq) {
-            auto& f_iblank = repo.get_int_field("iblank_cell");
-            amr_wind::multiphase::sharpen_acquired_vof(
-                nlevels, f_iblank, dof_old);
-        }
-        // Sharpen future vof field if hybrid solver is being used
-        if (repo.int_field_exists("iblank_cell") && m_sharpen_dest) {
-            auto& f_iblank = repo.get_int_field("iblank_cell");
-            amr_wind::multiphase::sharpen_acquired_vof(
-                nlevels, f_iblank, dof_new);
-        }
 
         // Initialize as old state values
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
@@ -148,8 +131,6 @@ struct AdvectionOp<VOF, fvm::Godunov>
     Field& w_mac;
     int isweep = 0;
     bool m_rm_debris{true};
-    bool m_sharpen_acq{false};
-    bool m_sharpen_dest{false};
     bool m_replace_mask{true};
     // Lagrangian transport is deprecated, only Eulerian is supported
 };

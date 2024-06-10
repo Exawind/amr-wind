@@ -193,26 +193,56 @@ void incflo::ApplyPredictor(bool incremental_projection)
 
     auto gp_copy = density().repo().create_scratch_field(3);
     auto& gp = density().repo().get_field("gp");
+    auto& pressure = density().repo().get_field("p");
 
     // Process data for overset multiphase
     if (sim().has_overset()) {
+        // auto& iblank_cell = density().repo().get_int_field("iblank_cell");
+        // auto& iblank_node = density().repo().get_int_field("iblank_node");
+        if (m_sharpen_pressure) {
+            // Start with an up-to-date pressure gradient field that will be
+            // used in the sharpening process
+            UpdateGradP(
+                (density_old).vec_const_ptrs(), m_time.current_time(),
+                m_time.deltaT());
+            /*amr_wind::overset::CopyGradP(
+                *gp_copy, gp, sim().repo().num_active_levels());
+            UpdateGradP(
+                (density_old).vec_const_ptrs(), m_time.current_time(),
+                m_time.deltaT());
+            amr_wind::overset::ReplaceUnMaskedGradP(
+                gp, *gp_copy, iblank_cell, iblank_node);*/
+        }
         // Sharpen nalu fields
         amr_wind::overset::SharpenNaluDataDiscrete(
             sim(), m_sharpen_iterations, m_sharpen_tolerance,
             m_sharpen_calctolniter, m_sharpen_rlscale, m_sharpen_margin,
-            m_sharpen_proctg_tol, m_sharpen_hs_pressure, m_sharpen_gradp);
-        // Recalculate pressure gradient with incoming sharpened field
-        if ((!m_sharpen_gradp || sim().time().current_time() == 0.0) &&
-            !m_sharpen_hsp_guess) {
+            m_sharpen_proctg_tol, m_sharpen_pressure);
+
+        if (m_sharpen_pressure) {
+            // Remove reference pressure if perturb pressure is being used
+            if (m_repo.field_exists("reference_pressure")) {
+                // Do I need a check for initial iterations?
+                const auto& p0 = sim().repo().get_field("reference_pressure");
+                for (int lev = 0; lev <= finest_level; lev++) {
+                    amrex::MultiFab::Subtract(
+                        pressure(lev), p0(lev), 0, 0, 1,
+                        pressure.num_grow()[0]);
+                }
+            }
+            // Recalculate pressure gradient with incoming sharpened p field
             UpdateGradP(
                 (density_old).vec_const_ptrs(), m_time.current_time(),
                 m_time.deltaT());
+            /*amr_wind::overset::ReplaceUnMaskedGradP(
+                gp, *gp_copy, iblank_cell, iblank_node);*/
         }
-        if (m_sharpen_hsp_guess ||
-            (m_sharpen_gradp && sim().time().current_time() == 0.0)) {
+        if (m_sharpen_hsp_guess) {
+            // Use sharpened density to replace gradp with hydrostatic gradp
             amr_wind::overset::ReplaceMaskedGradP(sim());
         }
-        if (m_sharpen_gradp) {
+        if (m_sharpen_replace_gp) {
+            // Copy current pressure gradient for use later
             amr_wind::overset::CopyGradP(
                 *gp_copy, gp, sim().repo().num_active_levels());
         }
@@ -423,9 +453,13 @@ void incflo::ApplyPredictor(bool incremental_projection)
 
     if (sim().has_overset()) {
         if (m_sharpen_hsp_replace) {
+            // Replace effect of solved gradp with effect of new hydrostatic
+            // gradp within overset regions
             amr_wind::overset::ReapplyModifiedGradP(sim());
         }
-        if (m_sharpen_gradp) {
+        if (m_sharpen_replace_gp) {
+            // Replace effect of solved gradp with effect of initial (n)
+            // sharpened gradp within overset regions
             amr_wind::overset::ReapplyOversetGradP(*gp_copy, sim());
         }
     }
