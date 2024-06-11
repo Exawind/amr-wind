@@ -190,29 +190,53 @@ void OversetOps::sharpen_nalu_data()
     auto& levelset = repo.get_field("levelset");
     auto& rho = repo.get_field("density");
     auto& velocity = repo.get_field("velocity");
+    auto& gp_noghost = repo.get_field("gp");
+    auto& p = repo.get_field("p");
 
     // Create scratch fields for fluxes
-    // 5 components are vof, density, and 3 of velocity
-    auto flux_x = repo.create_scratch_field(5, 0, amr_wind::FieldLoc::XFACE);
-    auto flux_y = repo.create_scratch_field(5, 0, amr_wind::FieldLoc::YFACE);
-    auto flux_z = repo.create_scratch_field(5, 0, amr_wind::FieldLoc::ZFACE);
-    // Create scratch field for approximate signed distance function and grad
-    // (components 0-2 are gradient, 3 is asdf)
+    // 9 components are vof, density, 3 of velocity, 3 of gp, and psource flag
+    auto flux_x = repo.create_scratch_field(9, 1, amr_wind::FieldLoc::XFACE);
+    auto flux_y = repo.create_scratch_field(9, 1, amr_wind::FieldLoc::YFACE);
+    auto flux_z = repo.create_scratch_field(9, 1, amr_wind::FieldLoc::ZFACE);
+    // Create scratch field for pressure source term
+    auto p_src = repo.create_scratch_field(1, 0, amr_wind::FieldLoc::NODE);
+    // Create scratch fields for normal vector and target vof field
     auto normal_vec = repo.create_scratch_field(3, vof.num_grow()[0] - 1);
-
     auto target_vof = repo.create_scratch_field(1, vof.num_grow()[0]);
+    // Create scratch field for pressure gradient that has ghost cells
+    // Sharpening fluxes (at faces) have 1 ghost, requiring fields to have >= 2
+    auto gp_scr = repo.create_scratch_field(3, 2);
+    auto& gp = *gp_scr;
 
-    // Create levelset field
+    // Give initial max possible value of pseudo-velocity scale
+    auto dx_lev0 = (geom[0]).CellSizeArray();
+    const amrex::Real max_pvscale =
+        std::min(std::min(dx_lev0[0], dx_lev0[1]), dx_lev0[2]);
+    amrex::Real pvscale = max_pvscale;
+
+    // Prep things that do not change with iterations
     for (int lev = 0; lev < nlevels; ++lev) {
         // Thickness used here is user parameter, whatever works best
-        auto dx = (geom[lev]).CellSizeArray();
+        const auto dx = (geom[lev]).CellSizeArray();
         const amrex::Real i_th =
             m_relative_length_scale * std::cbrt(dx[0] * dx[1] * dx[2]);
 
         // Populate approximate signed distance function
         overset_ops::populate_psi(levelset(lev), vof(lev), i_th, m_asdf_tiny);
+
+        // Populate gp scratch field
+        gp(lev).setVal(0.0); // for external boundaries
+        amrex::MultiFab::Copy(gp(lev), gp_noghost(lev), 0, 0, 3, 0); // nonghost
+        gp(lev).FillBoundary(geom[lev].periodicity());               // internal
+
+        // Get pseudo-velocity scale, proportional to smallest dx in iblank
+        const amrex::Real pvscale_lev =
+            overset_ops::calculate_pseudo_velocity_scale(
+                iblank_cell(lev), dx, max_pvscale);
+        pvscale = std::min(pvscale, pvscale_lev);
     }
     amrex::Gpu::synchronize();
+    amrex::ParallelDescriptor::ReduceRealMin(pvscale);
 
     // Convert levelset to vof to get target_vof
     m_mphase->levelset2vof(iblank_cell, *target_vof);
@@ -262,13 +286,14 @@ void OversetOps::sharpen_nalu_data()
             // Sharpening fluxes for vof, density, and momentum
             overset_ops::populate_sharpen_fluxes(
                 (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev),
-                (*target_vof)(lev), (*normal_vec)(lev), velocity(lev),
-                m_upw_margin, m_mphase->rho1(), m_mphase->rho2());
+                (*target_vof)(lev), (*normal_vec)(lev), velocity(lev), gp(lev),
+                rho(lev), pvscale, m_upw_margin, m_mphase->rho1(),
+                m_mphase->rho2());
 
             // Process fluxes
-            overset_ops::process_fluxes(
-                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev),
-                iblank_cell(lev));
+            overset_ops::process_fluxes_calc_src(
+                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), (*p_src)(lev),
+                vof(lev), iblank_cell(lev));
 
             // Measure convergence to determine if loop can stop
             if (calc_convg) {
@@ -305,15 +330,20 @@ void OversetOps::sharpen_nalu_data()
 
         // Apply fluxes
         for (int lev = 0; lev < nlevels; ++lev) {
-            overset_ops::apply_fluxes(
-                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev),
-                rho(lev), velocity(lev), ptfac, m_vof_tol);
-        }
-        amrex::Gpu::synchronize();
+            auto dx = (geom[lev]).CellSizeArray();
 
-        // Fillpatch for ghost cells
-        vof.fillpatch((*m_sim_ptr).time().current_time());
-        velocity.fillpatch((*m_sim_ptr).time().current_time());
+            overset_ops::apply_fluxes(
+                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), (*p_src)(lev),
+                vof(lev), rho(lev), velocity(lev), gp(lev), p(lev), dx, ptfac,
+                m_vof_tol);
+
+            // Update ghost cells
+            vof(lev).FillBoundary(geom[lev].periodicity());
+            velocity(lev).FillBoundary(geom[lev].periodicity());
+            gp(lev).FillBoundary(geom[lev].periodicity());
+        }
+
+        amrex::Gpu::synchronize();
 
         // Update density (fillpatch built in)
         m_mphase->set_density_via_vof();
@@ -328,6 +358,9 @@ void OversetOps::sharpen_nalu_data()
                            << err << "  tol " << m_convg_tol << std::endl;
         }
     }
+
+    // Fillpatch for pressure to make sure pressure stencil has all points
+    p.fillpatch((*m_sim_ptr).time().current_time());
 
     // Purely for debugging via visualization, should be removed later
     // Currently set up to overwrite the levelset field (not used as time
