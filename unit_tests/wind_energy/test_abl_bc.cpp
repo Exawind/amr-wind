@@ -55,15 +55,7 @@ void init_velocity(amr_wind::Field& fld, amrex::Real vval, int dir)
     fld.setVal(0.0);
 
     for (int lev = 0; lev < nlevels; ++lev) {
-
-        for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.growntilebox();
-            const auto& farr = fld(lev).array(mfi);
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-                // Initialize specified dir to specified value
-                farr(i, j, k, dir) = vval;
-            });
-        }
+        fld(lev).setVal(vval, dir, 1);
     }
 }
 } // namespace
