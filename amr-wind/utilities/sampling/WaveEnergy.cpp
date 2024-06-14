@@ -184,13 +184,10 @@ void WaveEnergy::prepare_ascii_file()
 {
     BL_PROFILE("amr-wind::WaveEnergy::prepare_ascii_file");
 
-    const std::string post_dir = "post_processing";
+    const std::string post_dir = m_sim.io_manager().post_processing_directory();
     const std::string sname =
         amrex::Concatenate(m_label, m_sim.time().time_index());
 
-    if (!amrex::UtilCreateDirectory(post_dir, 0755)) {
-        amrex::CreateDirectoryFailed(post_dir);
-    }
     m_out_fname = post_dir + "/" + sname + ".txt";
 
     if (amrex::ParallelDescriptor::IOProcessor()) {
