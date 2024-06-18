@@ -51,10 +51,17 @@ void MMS::initialize_fields(int level, const amrex::Geometry& geom)
     auto& velocity = m_velocity(level);
     auto& density = m_density(level);
 
-    for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
+    amrex::MultiFab h_density(
+        density.boxArray(), density.distributionMap, density.nComp(),
+        density.nGrow(), amrex::MFInfo().SetArena(amrex::The_Pinned_Arena()));
+    amrex::MultiFab h_velocity(
+        velocity.boxArray(), velocity.distributionMap, velocity.nComp(),
+        velocity.nGrow(), amrex::MFInfo().SetArena(amrex::The_Pinned_Arena()));
+
+    for (amrex::MFIter mfi(h_density); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
-        const auto& vel = velocity.array(mfi);
-        const auto& den = density.array(mfi);
+        const auto& vel = h_velocity.array(mfi);
+        const auto& den = h_density.array(mfi);
 
         amrex::LoopOnCpu(vbx, [=](int i, int j, int k) noexcept {
             const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
@@ -67,8 +74,8 @@ void MMS::initialize_fields(int level, const amrex::Geometry& geom)
             vel(i, j, k, 2) = masa_eval_3d_exact_w(x, y, z);
         });
     }
-    amrex::prefetchToDevice(velocity);
-    amrex::prefetchToDevice(density);
+    amrex::htod_memcpy(density, h_density);
+    amrex::htod_memcpy(velocity, h_velocity);
 }
 
 /** Fill the MMS source term.
@@ -82,13 +89,17 @@ void MMS::fill_src()
         const auto& dx = m_mesh.Geom(lev).CellSizeArray();
         const auto& problo = m_mesh.Geom(lev).ProbLoArray();
         auto& mms_src_term = m_mms_vel_source(lev);
+        amrex::MultiFab h_mms_src_term(
+            mms_src_term.boxArray(), mms_src_term.distributionMap,
+            mms_src_term.nComp(), mms_src_term.nGrow(),
+            amrex::MFInfo().SetArena(amrex::The_Pinned_Arena()));
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
         for (amrex::MFIter mfi(mms_src_term, amrex::TilingIfNotGPU());
              mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
-            const auto& mms_src = mms_src_term.array(mfi);
+            const auto& mms_src = h_mms_src_term.array(mfi);
 
             amrex::LoopOnCpu(bx, [=](int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
@@ -100,7 +111,7 @@ void MMS::fill_src()
                 mms_src(i, j, k, 2) = masa_eval_3d_source_w(x, y, z);
             });
         }
-        amrex::prefetchToDevice(mms_src_term);
+        amrex::htod_memcpy(mms_src_term, h_mms_src_term);
     }
 }
 
