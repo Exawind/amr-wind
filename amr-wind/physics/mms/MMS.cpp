@@ -111,7 +111,7 @@ void MMS::fill_src()
                 mms_src(i, j, k, 2) = masa_eval_3d_source_w(x, y, z);
             });
         }
-        amrex::htod_memcpy(mms_src_term, h_mms_src_term);
+        //amrex::htod_memcpy(mms_src_term, h_mms_src_term);
     }
 }
 
