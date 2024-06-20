@@ -98,28 +98,42 @@ void InletData::read_data(
     amrex::Vector<amrex::Real> buffer(n0 * n1 * nc);
     grp.var(fld->name()).get(buffer.data(), start, count);
 
-    const auto& datn = ((*m_data_n[ori])[lev]).array();
+    amrex::FArrayBox h_datn(
+        bx, (*m_data_n[ori])[lev].nComp(), amrex::The_Pinned_Arena());
+    const auto& h_datn_arr = h_datn.array();
     auto* d_buffer = buffer.dataPtr();
     amrex::LoopOnCpu(
         bx, static_cast<int>(nc), [=](int i, int j, int k, int n) noexcept {
             const int i0 = plane_idx(i, j, k, perp[0], lo[perp[0]]);
             const int i1 = plane_idx(i, j, k, perp[1], lo[perp[1]]);
-            datn(i, j, k, n + nstart) = d_buffer[((i0 * n1) + i1) * nc + n];
+            h_datn_arr(i, j, k, n + nstart) =
+                d_buffer[((i0 * n1) + i1) * nc + n];
         });
 
     start[0] = static_cast<size_t>(idxp1);
     grp.var(fld->name()).get(buffer.data(), start, count);
 
-    const auto& datnp1 = ((*m_data_np1[ori])[lev]).array();
+    amrex::FArrayBox h_datnp1(
+        bx, (*m_data_np1[ori])[lev].nComp(), amrex::The_Pinned_Arena());
+    const auto& h_datnp1_arr = h_datnp1.array();
     amrex::LoopOnCpu(
         bx, static_cast<int>(nc), [=](int i, int j, int k, int n) noexcept {
             const int i0 = plane_idx(i, j, k, perp[0], lo[perp[0]]);
             const int i1 = plane_idx(i, j, k, perp[1], lo[perp[1]]);
-            datnp1(i, j, k, n + nstart) = d_buffer[((i0 * n1) + i1) * nc + n];
+            h_datnp1_arr(i, j, k, n + nstart) =
+                d_buffer[((i0 * n1) + i1) * nc + n];
         });
 
-    ((*m_data_n[ori])[lev]).prefetchToDevice();
-    ((*m_data_np1[ori])[lev]).prefetchToDevice();
+    const auto nelems = bx.numPts() * nc;
+    amrex::Gpu::copyAsync(
+        amrex::Gpu::hostToDevice, h_datn.dataPtr(nstart),
+        h_datn.dataPtr(nstart) + nelems,
+        (*m_data_n[ori])[lev].dataPtr(nstart));
+    amrex::Gpu::copyAsync(
+        amrex::Gpu::hostToDevice, h_datnp1.dataPtr(nstart),
+        h_datnp1.dataPtr(nstart) + nelems,
+        (*m_data_np1[ori])[lev].dataPtr(nstart));
+    amrex::Gpu::streamSynchronize();
 }
 
 #endif
