@@ -138,16 +138,25 @@ MMS::compute_error(const int comp, const Field& field, amr_wind::mms::FuncDef f)
                 amrex::MFInfo());
             level_mask.setVal(1);
         }
+        amrex::iMultiFab h_level_mask(
+            level_mask.boxArray(), level_mask.distributionMap,
+            level_mask.nComp(), level_mask.nGrow(),
+            amrex::MFInfo().SetArena(amrex::The_Pinned_Arena()));
+        amrex::dtoh_memcpy(h_level_mask, level_mask);
 
         const auto& dx = m_mesh.Geom(lev).CellSizeArray();
         const auto& problo = m_mesh.Geom(lev).ProbLoArray();
         const amrex::Real cell_vol = dx[0] * dx[1] * dx[2];
 
         const auto& fld = field(lev);
+        amrex::MultiFab h_fld(
+            fld.boxArray(), fld.distributionMap, fld.nComp(), fld.nGrow(),
+            amrex::MFInfo().SetArena(amrex::The_Pinned_Arena()));
+        amrex::dtoh_memcpy(h_fld, fld);
         for (amrex::MFIter mfi(fld); mfi.isValid(); ++mfi) {
             const auto& vbx = mfi.validbox();
-            const auto& field_arr = fld.array(mfi);
-            const auto& mask_arr = level_mask.array(mfi);
+            const auto& field_arr = h_fld.array(mfi);
+            const auto& mask_arr = h_level_mask.array(mfi);
 
             amrex::Real err_fab = 0.0;
             amrex::LoopOnCpu(vbx, [=, &err_fab](int i, int j, int k) noexcept {
