@@ -6,6 +6,9 @@
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/projection/nodal_projection_ops.H"
 
+// for debugging
+#include "AMReX_PlotFileUtil.H"
+
 using namespace amrex;
 
 void amr_wind::nodal_projection::set_inflow_velocity(
@@ -46,6 +49,7 @@ amr_wind::nodal_projection::get_projection_bc(
                 r[dir] = LinOpBCType::Dirichlet;
                 break;
             }
+            case BC::mass_inflow_outflow:
             case BC::mass_inflow: {
                 r[dir] = LinOpBCType::inflow;
                 break;
@@ -142,6 +146,7 @@ void incflo::ApplyProjection(
     auto& grad_p = m_repo.get_field("gp");
     auto& pressure = m_repo.get_field("p");
     auto& velocity = icns().fields().field;
+//amrex::WriteSingleLevelPlotfile("plt_vel_pre_nodalproj", velocity(0), {"u","v","w"}, geom[0], 0.0, 0);
     auto& velocity_old = icns().fields().field.state(amr_wind::FieldState::Old);
     amr_wind::Field const* mesh_fac =
         mesh_mapping
@@ -311,8 +316,21 @@ void incflo::ApplyProjection(
         if (!proj_for_small_dt and !incremental) {
             amr_wind::nodal_projection::set_inflow_velocity(
                 m_sim.physics_manager(), velocity, lev, time, *vel[lev], 1);
+
+            // fill periodic boundaries to avoid corner cell issues
+            vel[lev]->FillBoundary(geom[lev].periodicity());
         }
     }
+//amrex::Print() << "*********** partition **********" << std::endl;
+//amrex::Print() << velocity(0)[0];
+
+    // Need to apply custom Neumann funcs for inflow-outflow BC
+    // after setting the inflow vels above.
+    if (!proj_for_small_dt and !incremental) {
+        velocity.apply_bc_funcs(amr_wind::FieldState::New);
+    }
+
+//amrex::Print() << velocity(0)[0];
 
     if (is_anelastic) {
         for (int lev = 0; lev <= finest_level; ++lev) {
@@ -406,6 +424,8 @@ void incflo::ApplyProjection(
                 velocity(lev), velocity_old(lev), 0, 0, AMREX_SPACEDIM, 0);
         }
     }
+
+//amrex::WriteSingleLevelPlotfile("plt_vel_post_nodalproj", velocity(0), {"u","v","w"}, geom[0], 0.0, 0);
 
     // Get phi and fluxes
     auto phi = nodal_projector->getPhi();

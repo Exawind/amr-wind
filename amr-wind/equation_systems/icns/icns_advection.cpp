@@ -7,6 +7,11 @@
 #include "AMReX_MultiFabUtil.H"
 #include "hydro_MacProjector.H"
 
+// only for debugging
+#include "AMReX_PlotFileUtil.H"
+#include "AMReX_MultiFabUtil.H"
+#include "AMReX_MultiFab.H"
+//
 namespace amr_wind::pde {
 
 namespace {
@@ -55,6 +60,17 @@ MacProjOp::MacProjOp(
 {
     amrex::ParmParse pp("incflo");
     pp.query("density", m_rho_0);
+}
+
+void MacProjOp::enforce_solvability (
+    const amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>>& a_umac
+) noexcept
+{
+    auto& velocity = m_repo.get_field("velocity");
+    amrex::BCRec const* bc_type = velocity.bcrec_device().data();
+    const amrex::Vector<amrex::Geometry>& geom = m_repo.mesh().Geom();
+    amrex::Print() << "***** Calling enforceSolvability from AMR-Wind" << std::endl;
+    m_mac_proj->enforceSolvability(a_umac, bc_type, geom);
 }
 
 void MacProjOp::init_projector(const MacProjOp::FaceFabPtrVec& beta) noexcept
@@ -233,6 +249,21 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
         }
     }
 
+//amrex::Array<const amrex::MultiFab*, AMREX_SPACEDIM> mac_arr = {&u_mac(0), &v_mac(0), &w_mac(0)};
+//amrex::MultiFab mac_vec_cc(amrex::convert((u_mac(0)).boxArray(), amrex::IntVect{0,0,0}), (u_mac(0)).DistributionMap(), 3, 0);
+
+//amrex::average_face_to_cellcenter(mac_vec_cc, 0, mac_arr);
+//amrex::WriteSingleLevelPlotfile("plt_macvel_precorrect", mac_vec_cc, {"umac","vmac","wmac"}, geom[0], 0.0, 0);
+//amrex::Print() << "!!! umac precorrect" << std::endl;
+//amrex::Print() << u_mac(0)[0];
+
+    enforce_solvability(mac_vec);
+
+//amrex::Print() << "!!! umac postcorrect" << std::endl;
+//amrex::Print() << u_mac(0)[0];
+//amrex::average_face_to_cellcenter(mac_vec_cc, 0, mac_arr);
+//amrex::WriteSingleLevelPlotfile("plt_macvel_postcorrect", mac_vec_cc, {"umac","vmac","wmac"}, geom[0], 0.0, 0);
+
     m_mac_proj->setUMAC(mac_vec);
 
     if (m_has_overset) {
@@ -248,6 +279,10 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
     } else {
         m_mac_proj->project(m_options.rel_tol, m_options.abs_tol);
     }
+//amrex::average_face_to_cellcenter(mac_vec_cc, 0, mac_arr);
+//amrex::WriteSingleLevelPlotfile("plt_macvel_postproject", mac_vec_cc, {"umac","vmac","wmac"}, geom[0], 0.0, 0);
+//amrex::Print() << "!!! umac postproject" << std::endl;
+//amrex::Print() << u_mac(0)[0];
 
     if (m_is_anelastic) {
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {

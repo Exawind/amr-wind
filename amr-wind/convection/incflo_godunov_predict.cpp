@@ -54,7 +54,7 @@ void godunov::make_trans_velocities(
 
             auto bc = pbc[n];
             Godunov_trans_xbc(
-                i, j, k, n, vel, lo, hi, lo, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
+                i, j, k, n, vel, lo, hi, lo, hi, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
 
             constexpr Real small_vel = 1e-10;
 
@@ -185,7 +185,7 @@ void godunov::predict_godunov(
             auto bc = pbc[n];
 
             Godunov_trans_xbc(
-                i, j, k, n, q, lo, hi, uad, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
+                i, j, k, n, q, lo, hi, uad, uad, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
 
             xlo(i, j, k, n) = lo;
             xhi(i, j, k, n) = hi;
@@ -329,7 +329,8 @@ void godunov::predict_godunov(
             stl += 0.5 * l_dt * f(i - 1, j, k, n);
             sth += 0.5 * l_dt * f(i, j, k, n);
         }
-
+//if ((i==0) && (j==0) && (k==0))
+//    amrex::Print() << "***** now calling Godunov_cc_xbc_lo/hi from predict_godunov" << std::endl;
         Godunov_cc_xbc_lo(i, j, k, n, q, stl, sth, u_ad, bc.lo(0), dlo.x);
         Godunov_cc_xbc_hi(i, j, k, n, q, stl, sth, u_ad, bc.hi(0), dhi.x);
 
@@ -366,7 +367,7 @@ void godunov::predict_godunov(
 
             Real uad = u_ad(i, j, k);
             Godunov_trans_xbc(
-                i, j, k, n, q, l_xzlo, l_xzhi, uad, bc.lo(0), bc.hi(0), dlo.x,
+                i, j, k, n, q, l_xzlo, l_xzhi, uad, uad, bc.lo(0), bc.hi(0), dlo.x,
                 dhi.x);
 
             constexpr Real small_vel = 1.e-10;
@@ -450,7 +451,7 @@ void godunov::predict_godunov(
 
             Real uad = u_ad(i, j, k);
             Godunov_trans_xbc(
-                i, j, k, n, q, l_xylo, l_xyhi, uad, bc.lo(0), bc.hi(0), dlo.x,
+                i, j, k, n, q, l_xylo, l_xyhi, uad, uad, bc.lo(0), bc.hi(0), dlo.x,
                 dhi.x);
 
             constexpr Real small_vel = 1.e-10;

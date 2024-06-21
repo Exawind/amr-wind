@@ -7,6 +7,7 @@
 #include "amr-wind/physics/udfs/Rankine.H"
 #include "amr-wind/physics/udfs/CustomVelocity.H"
 #include "amr-wind/physics/udfs/CustomScalar.H"
+#include "amr-wind/physics/udfs/TwoLayer.H"
 
 #include "AMReX_ParmParse.H"
 
@@ -63,5 +64,6 @@ template class UDFImpl<BurggrafLid>;
 template class UDFImpl<Rankine>;
 template class UDFImpl<CustomVelocity>;
 template class UDFImpl<CustomScalar>;
+template class UDFImpl<TwoLayer>;
 
 } // namespace amr_wind::udf
