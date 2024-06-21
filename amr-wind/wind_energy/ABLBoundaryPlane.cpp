@@ -127,8 +127,7 @@ void InletData::read_data(
     const auto nelems = bx.numPts() * nc;
     amrex::Gpu::copyAsync(
         amrex::Gpu::hostToDevice, h_datn.dataPtr(nstart),
-        h_datn.dataPtr(nstart) + nelems,
-        (*m_data_n[ori])[lev].dataPtr(nstart));
+        h_datn.dataPtr(nstart) + nelems, (*m_data_n[ori])[lev].dataPtr(nstart));
     amrex::Gpu::copyAsync(
         amrex::Gpu::hostToDevice, h_datnp1.dataPtr(nstart),
         h_datnp1.dataPtr(nstart) + nelems,
