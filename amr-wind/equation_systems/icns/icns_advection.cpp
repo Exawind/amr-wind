@@ -69,7 +69,7 @@ MacProjOp::MacProjOp(
     m_has_overset = m_has_overset && !disable_ovst_mac;
 }
 
-void MacProjOp::enforce_solvability (
+void MacProjOp::enforce_inout_solvability (
     const amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>>& a_umac
 ) noexcept
 {
@@ -77,7 +77,7 @@ void MacProjOp::enforce_solvability (
     amrex::BCRec const* bc_type = velocity.bcrec_device().data();
     const amrex::Vector<amrex::Geometry>& geom = m_repo.mesh().Geom();
     amrex::Print() << "***** Calling enforceSolvability from AMR-Wind" << std::endl;
-    m_mac_proj->enforceSolvability(a_umac, bc_type, geom);
+    HydroUtils::enforceInOutSolvability(a_umac, bc_type, geom);
 }
 
 void MacProjOp::init_projector(const MacProjOp::FaceFabPtrVec& beta) noexcept
@@ -282,20 +282,20 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
         }
     }
 
-amrex::Array<const amrex::MultiFab*, AMREX_SPACEDIM> mac_arr = {&u_mac(0), &v_mac(0), &w_mac(0)};
-amrex::MultiFab mac_vec_cc(amrex::convert((u_mac(0)).boxArray(), amrex::IntVect{0,0,0}), (u_mac(0)).DistributionMap(), 3, 0);
+//amrex::Array<const amrex::MultiFab*, AMREX_SPACEDIM> mac_arr = {&u_mac(0), &v_mac(0), &w_mac(0)};
+//amrex::MultiFab mac_vec_cc(amrex::convert((u_mac(0)).boxArray(), amrex::IntVect{0,0,0}), (u_mac(0)).DistributionMap(), 3, 0);
 
-amrex::average_face_to_cellcenter(mac_vec_cc, 0, mac_arr);
-amrex::WriteSingleLevelPlotfile("plt_macvel_precorrect", mac_vec_cc, {"umac","vmac","wmac"}, geom[0], 0.0, 0);
+//amrex::average_face_to_cellcenter(mac_vec_cc, 0, mac_arr);
+//amrex::WriteSingleLevelPlotfile("plt_macvel_precorrect", mac_vec_cc, {"umac","vmac","wmac"}, geom[0], 0.0, 0);
 //amrex::Print() << "!!! umac precorrect" << std::endl;
 //amrex::Print() << u_mac(0)[0];
 
-    enforce_solvability(mac_vec);
+    enforce_inout_solvability(mac_vec);
 
 //amrex::Print() << "!!! umac postcorrect" << std::endl;
 //amrex::Print() << u_mac(0)[0];
-amrex::average_face_to_cellcenter(mac_vec_cc, 0, mac_arr);
-amrex::WriteSingleLevelPlotfile("plt_macvel_postcorrect", mac_vec_cc, {"umac","vmac","wmac"}, geom[0], 0.0, 0);
+//amrex::average_face_to_cellcenter(mac_vec_cc, 0, mac_arr);
+//amrex::WriteSingleLevelPlotfile("plt_macvel_postcorrect", mac_vec_cc, {"umac","vmac","wmac"}, geom[0], 0.0, 0);
 
     m_mac_proj->setUMAC(mac_vec);
 
@@ -312,8 +312,8 @@ amrex::WriteSingleLevelPlotfile("plt_macvel_postcorrect", mac_vec_cc, {"umac","v
     } else {
         m_mac_proj->project(m_options.rel_tol, m_options.abs_tol);
     }
-amrex::average_face_to_cellcenter(mac_vec_cc, 0, mac_arr);
-amrex::WriteSingleLevelPlotfile("plt_macvel_postproject", mac_vec_cc, {"umac","vmac","wmac"}, geom[0], 0.0, 0);
+//amrex::average_face_to_cellcenter(mac_vec_cc, 0, mac_arr);
+//amrex::WriteSingleLevelPlotfile("plt_macvel_postproject", mac_vec_cc, {"umac","vmac","wmac"}, geom[0], 0.0, 0);
 //amrex::Print() << "!!! umac postproject" << std::endl;
 //amrex::Print() << u_mac(0)[0];
 
