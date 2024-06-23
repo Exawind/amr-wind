@@ -5,6 +5,7 @@
 #include "amr-wind/utilities/console_io.H"
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/projection/nodal_projection_ops.H"
+#include "hydro_utils.H"
 
 // for debugging
 #include "AMReX_PlotFileUtil.H"
@@ -78,6 +79,22 @@ void amr_wind::nodal_projection::apply_dirichlet_vel(
                 vel[nbx](i, j, k, n) = 0.0;
             }
         });
+}
+
+void
+amr_wind::nodal_projection::enforce_inout_solvability (
+    amr_wind::Field& velocity, const Vector<Geometry>& geom, const int num_levels)
+{
+    BCRec const* bc_type = velocity.bcrec_device().data();
+    Vector<Array<MultiFab*, AMREX_SPACEDIM>> vel_vec(num_levels);
+
+    for (int lev = 0; lev < num_levels; ++lev) {
+        vel_vec[lev][0] = new MultiFab(velocity(lev), amrex::make_alias, 0, 1);
+        vel_vec[lev][1] = new MultiFab(velocity(lev), amrex::make_alias, 1, 1);
+        vel_vec[lev][2] = new MultiFab(velocity(lev), amrex::make_alias, 2, 1);
+    }
+    Print() << "***** Calling enforceSolvability from AMR-Wind" << std::endl;
+    HydroUtils::enforceInOutSolvability(vel_vec, bc_type, geom, true);
 }
 
 /** Perform nodal projection
@@ -163,7 +180,7 @@ void incflo::ApplyProjection(
     auto& grad_p = m_repo.get_field("gp");
     auto& pressure = m_repo.get_field("p");
     auto& velocity = icns().fields().field;
-amrex::WriteSingleLevelPlotfile("plt_vel_pre_nodalproj", velocity(0), {"u","v","w"}, geom[0], 0.0, 0);
+//amrex::WriteSingleLevelPlotfile("plt_vel_pre_nodalproj", velocity(0), {"u","v","w"}, geom[0], 0.0, 0);
     auto& velocity_old = icns().fields().field.state(amr_wind::FieldState::Old);
     amr_wind::Field const* mesh_fac =
         mesh_mapping
@@ -345,7 +362,11 @@ amrex::WriteSingleLevelPlotfile("plt_vel_pre_nodalproj", velocity(0), {"u","v","
     // Need to apply custom Neumann funcs for inflow-outflow BC
     // after setting the inflow vels above.
     if (!proj_for_small_dt and !incremental) {
+
         velocity.apply_bc_funcs(amr_wind::FieldState::New);
+
+        amr_wind::nodal_projection::enforce_inout_solvability(
+            velocity, m_repo.mesh().Geom(), m_repo.num_active_levels());
     }
 
 //amrex::Print() << velocity(0)[0];
@@ -476,7 +497,7 @@ amrex::WriteSingleLevelPlotfile("plt_vel_pre_nodalproj", velocity(0), {"u","v","
         }
     }
 
-amrex::WriteSingleLevelPlotfile("plt_vel_post_nodalproj", velocity(0), {"u","v","w"}, geom[0], 0.0, 0);
+//amrex::WriteSingleLevelPlotfile("plt_vel_post_nodalproj", velocity(0), {"u","v","w"}, geom[0], 0.0, 0);
 
     // Get phi and fluxes
     auto phi = nodal_projector->getPhi();
