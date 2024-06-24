@@ -1,0 +1,7 @@
+<map id="amr_wind::ib::BluffBodyType" name="amr_wind::ib::BluffBodyType">
+<area shape="rect" id="node1" title=" " alt="" coords="149,80,355,107"/>
+<area shape="rect" id="node3" href="$structamr__wind_1_1ib_1_1_box.html" title=" " alt="" coords="5,155,144,181"/>
+<area shape="rect" id="node4" href="$structamr__wind_1_1ib_1_1_cylinder.html" title=" " alt="" coords="168,155,336,181"/>
+<area shape="rect" id="node5" href="$structamr__wind_1_1ib_1_1_sphere.html" title=" " alt="" coords="361,155,519,181"/>
+<area shape="rect" id="node2" href="$structamr__wind_1_1ib_1_1_i_b_type.html" title="Abstract representation of an immersed boundary type." alt="" coords="173,5,331,32"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="amr_wind::tagging::GeometryType" name="amr_wind::tagging::GeometryType">
+<area shape="rect" id="node1" title="Abstract definition of shapes for AMR." alt="" coords="12,259,163,300"/>
+<area shape="rect" id="node2" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="5,139,169,209"/>
+<area shape="rect" id="node3" href="$structamr__wind_1_1_factory.html" title="Runtime selection of options based on string keyword lookup." alt="" coords="11,5,163,47"/>
+</map>

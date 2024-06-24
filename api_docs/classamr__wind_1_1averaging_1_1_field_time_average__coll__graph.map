@@ -1,0 +1,5 @@
+<map id="amr_wind::averaging::FieldTimeAverage" name="amr_wind::averaging::FieldTimeAverage">
+<area shape="rect" id="node1" title="Abstract class for time&#45;averaging of CFD fields." alt="" coords="27,244,186,285"/>
+<area shape="rect" id="node2" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="5,139,208,195"/>
+<area shape="rect" id="node3" href="$structamr__wind_1_1_factory.html" title="Runtime selection of options based on string keyword lookup." alt="" coords="31,5,183,47"/>
+</map>

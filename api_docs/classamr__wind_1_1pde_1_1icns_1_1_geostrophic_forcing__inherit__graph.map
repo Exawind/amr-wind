@@ -1,0 +1,4 @@
+<map id="amr_wind::pde::icns::GeostrophicForcing" name="amr_wind::pde::icns::GeostrophicForcing">
+<area shape="rect" id="node1" title="Apply source term equivalent to drive the flow to match given geostrophic wind." alt="" coords="29,95,184,136"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,5,208,47"/>
+</map>

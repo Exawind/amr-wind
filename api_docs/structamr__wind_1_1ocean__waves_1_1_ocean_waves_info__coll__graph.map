@@ -1,0 +1,5 @@
+<map id="amr_wind::ocean_waves::OceanWavesInfo" name="amr_wind::ocean_waves::OceanWavesInfo">
+<area shape="rect" id="node1" title="Basic information that is common to all wave models." alt="" coords="5,185,188,227"/>
+<area shape="rect" id="node2" title=" " alt="" coords="53,96,140,123"/>
+<area shape="rect" id="node3" title=" " alt="" coords="27,5,166,47"/>
+</map>

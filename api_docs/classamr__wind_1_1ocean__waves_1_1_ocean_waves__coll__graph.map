@@ -1,0 +1,32 @@
+<map id="amr_wind::ocean_waves::OceanWaves" name="amr_wind::ocean_waves::OceanWaves">
+<area shape="rect" id="node1" title="ocean waves modeling" alt="" coords="2633,103,2816,144"/>
+<area shape="rect" id="node2" title=" " alt="" coords="2359,5,2503,47"/>
+<area shape="rect" id="node3" href="$classamr__wind_1_1_field.html" title="Computational field." alt="" coords="1405,71,1530,98"/>
+<area shape="rect" id="node4" title=" " alt="" coords="812,60,972,101"/>
+<area shape="rect" id="node5" title=" " alt="" coords="257,143,415,170"/>
+<area shape="rect" id="node6" title=" " alt="" coords="55,270,94,297"/>
+<area shape="rect" id="node11" title=" " alt="" coords="260,217,412,259"/>
+<area shape="rect" id="node14" title=" " alt="" coords="1389,397,1546,423"/>
+<area shape="rect" id="node7" title=" " alt="" coords="293,449,379,475"/>
+<area shape="rect" id="node10" title=" " alt="" coords="625,195,788,236"/>
+<area shape="rect" id="node19" href="$classamr__wind_1_1pde_1_1_p_d_e_mgr.html" title="PDE systems manager." alt="" coords="2636,562,2813,589"/>
+<area shape="rect" id="node22" title=" " alt="" coords="631,451,783,492"/>
+<area shape="rect" id="node8" title=" " alt="" coords="5,441,144,483"/>
+<area shape="rect" id="node9" href="$classamr__wind_1_1_field_repo.html" title="Field Repository." alt="" coords="1003,122,1161,149"/>
+<area shape="rect" id="node15" href="$classamr__wind_1_1_c_f_d_sim.html" title="Data structures for a CFD simulation." alt="" coords="2357,517,2504,543"/>
+<area shape="rect" id="node12" title=" " alt="" coords="55,179,94,206"/>
+<area shape="rect" id="node13" title=" " alt="" coords="2085,157,2333,213"/>
+<area shape="rect" id="node16" title=" " alt="" coords="1863,735,2041,776"/>
+<area shape="rect" id="node17" title=" " alt="" coords="1872,276,2032,317"/>
+<area shape="rect" id="node18" title=" " alt="" coords="1843,341,2061,383"/>
+<area shape="rect" id="node23" title=" " alt="" coords="2123,236,2296,277"/>
+<area shape="rect" id="node25" title=" " alt="" coords="1857,407,2047,448"/>
+<area shape="rect" id="node26" title=" " alt="" coords="1845,538,2059,594"/>
+<area shape="rect" id="node27" title=" " alt="" coords="1872,669,2032,711"/>
+<area shape="rect" id="node28" title=" " alt="" coords="1867,472,2037,513"/>
+<area shape="rect" id="node20" href="$classamr__wind_1_1_coll_mgr.html" title=" " alt="" coords="1619,843,1777,884"/>
+<area shape="rect" id="node21" href="$classamr__wind_1_1_coll_mgr.html" title="Interface to manage objects of sub&#45;classes based on factory registration." alt="" coords="996,777,1168,833"/>
+<area shape="rect" id="node30" href="$classamr__wind_1_1_coll_mgr.html" title=" " alt="" coords="1381,784,1553,825"/>
+<area shape="rect" id="node24" href="$classamr__wind_1_1_sim_time.html" title="Time manager for simulations." alt="" coords="1876,618,2028,645"/>
+<area shape="rect" id="node29" href="$classamr__wind_1_1_physics_mgr.html" title="A collection of Physics models instances that are active during a simulation." alt="" coords="1868,801,2036,827"/>
+</map>

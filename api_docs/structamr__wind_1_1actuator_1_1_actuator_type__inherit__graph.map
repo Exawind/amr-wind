@@ -1,0 +1,11 @@
+<map id="amr_wind::actuator::ActuatorType" name="amr_wind::actuator::ActuatorType">
+<area shape="rect" id="node1" title="Abstract representation of an actuator type." alt="" coords="5,136,153,177"/>
+<area shape="rect" id="node2" href="$structamr__wind_1_1actuator_1_1_disk_type.html" title=" " alt="" coords="201,71,349,112"/>
+<area shape="rect" id="node5" href="$structamr__wind_1_1actuator_1_1_turbine_type.html" title=" " alt="" coords="201,136,349,177"/>
+<area shape="rect" id="node7" href="$structamr__wind_1_1actuator_1_1_wing_type.html" title=" " alt="" coords="201,201,349,243"/>
+<area shape="rect" id="node3" href="$structamr__wind_1_1actuator_1_1_joukowsky.html" title=" " alt="" coords="397,5,545,47"/>
+<area shape="rect" id="node4" href="$structamr__wind_1_1actuator_1_1_uniform_ct.html" title=" " alt="" coords="397,71,545,112"/>
+<area shape="rect" id="node6" href="$structamr__wind_1_1actuator_1_1_turbine_fast.html" title=" " alt="" coords="397,136,545,177"/>
+<area shape="rect" id="node8" href="$structamr__wind_1_1actuator_1_1_fixed_wing.html" title=" " alt="" coords="397,201,545,243"/>
+<area shape="rect" id="node9" href="$structamr__wind_1_1actuator_1_1_flat_plate.html" title=" " alt="" coords="397,267,545,308"/>
+</map>

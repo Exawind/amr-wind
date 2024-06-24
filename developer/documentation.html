@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Documentation - user manual and source code docs &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=2709fde1"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Unit testing" href="unit_testing.html" />
+    <link rel="prev" title="Developer Documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Developer Documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Documentation - user manual and source code docs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#user-documentation">User documentation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#building-documentation">Building documentation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#writing-user-documentation">Writing user documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#documenting-source-code">Documenting source code</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="unit_testing.html">Unit testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="regression_testing.html">Regression testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="verification.html">Verification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coding_guidelines.html">Coding Guidelines</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Developer Documentation</a></li>
+      <li class="breadcrumb-item active">Documentation - user manual and source code docs</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/developer/documentation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="documentation-user-manual-and-source-code-docs">
+<span id="dev-documenting"></span><h1>Documentation - user manual and source code docs<a class="headerlink" href="#documentation-user-manual-and-source-code-docs" title="Link to this heading"></a></h1>
+<p>AMR-Wind comes with two different types of documentation:</p>
+<ul class="simple">
+<li><p>User &amp; developer manuals, such as the document you are reading now, that are
+written using <a class="reference external" href="https://www.sphinx-doc.org/en/master/index.html">Sphinx</a>, and</p></li>
+<li><p>Inline documentation within C++ source code that are written in a format that can be
+processed automatically by <a class="reference external" href="http://www.doxygen.nl/manual/index.html">Doxygen</a></p></li>
+</ul>
+<section id="user-documentation">
+<h2>User documentation<a class="headerlink" href="#user-documentation" title="Link to this heading"></a></h2>
+<p>AMR-Wind user documentation is written using a special format called
+ReStructured Text (ReST) and is converted into HTML and PDF formats using a
+python package Sphinx. Since the manuals are written in simple text files, they
+can be version controlled alongside the source code. Documentation is
+automatically generated with new updates to the GitHub repository and deployed
+at <a class="reference external" href="https://exawind.github.io/amr-wind">AMR-Wind documentation site</a>.</p>
+<section id="building-documentation">
+<h3>Building documentation<a class="headerlink" href="#building-documentation" title="Link to this heading"></a></h3>
+<p>To update and build documentation locally on your system you will need Sphinx
+installed on your system. Please consult the <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/installation.html">Sphinx installation page</a> for
+instructions to install Sphinx. Users of <a class="reference external" href="https://www.anaconda.com/">Anaconda python distribution</a> can install Sphinx by executing the following
+command within their desired environment.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">conda install sphinx</span>
+</pre></div>
+</div>
+<p>Once Sphinx is installed properly, you should have access to the
+<strong class="program">sphinx-build</strong> executable. To build documentation follow the instructions below:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Switch<span class="w"> </span>to<span class="w"> </span>AMR-Wind<span class="w"> </span>build<span class="w"> </span>directory
+<span class="go">cd ~/exawind/source/amr-wind/build/</span>
+
+<span class="gp"># </span>Build<span class="w"> </span>docs<span class="w"> </span><span class="k">in</span><span class="w"> </span>HTML<span class="w"> </span>format
+<span class="go">sphinx-build -M html ../docs/sphinx .</span>
+</pre></div>
+</div>
+<p>The above command will build docs in HTML format and the output is placed in
+<code class="file docutils literal notranslate"><span class="pre">html</span></code> directory within the <code class="file docutils literal notranslate"><span class="pre">build</span></code> directory. Documentation can
+also be generated in other formats, consult <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/builders/index.html">Sphinx docs</a> for available
+formats and their usage.</p>
+</section>
+<section id="writing-user-documentation">
+<h3>Writing user documentation<a class="headerlink" href="#writing-user-documentation" title="Link to this heading"></a></h3>
+<p>As mentioned previously, documentation is written using a special text format
+called reStructuredText. Sphinx user manual provides a <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html">reST Primer</a> that
+provides an overview of this format and how to write documentation using this format.</p>
+</section>
+</section>
+<section id="documenting-source-code">
+<h2>Documenting source code<a class="headerlink" href="#documenting-source-code" title="Link to this heading"></a></h2>
+<p>Source code (C++ files) are commented using a special format that allows Doxygen
+to extract the annotated comments and create source code documentation as well
+as inheritance diagrams. API documentation for the latest snapshot of the
+codebase can be browsed online <a class="reference external" href="https://exawind.github.io/amr-wind/api_docs">here</a>. To build the documentation
+locally, first install <code class="docutils literal notranslate"><span class="pre">doxygen</span></code> and <code class="docutils literal notranslate"><span class="pre">graphviz</span></code> executables on your system.
+Once they are successfully installed, execute the following command from the
+root directory of <code class="docutils literal notranslate"><span class="pre">amr-wind</span></code></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">doxygen ./docs/doxygen/Doxyfile</span>
+</pre></div>
+</div>
+<p>The default format is HTML, and upon successful completion of the above command,
+the documentation files are available in <code class="file docutils literal notranslate"><span class="pre">build/html</span></code> directory. Open
+<code class="file docutils literal notranslate"><span class="pre">build/html/index.html</span></code> on your browser to browse the locally generated
+documentation.</p>
+<p><a class="reference external" href="http://www.doxygen.nl/manual/index.html">Doxygen manual</a> provides an overview
+of the syntax that must be used. Please follow the Doxygen style of commenting
+code when commenting AMR-Wind sources.</p>
+<p>When commenting code, try to use self-documenting code, i.e., descriptive names
+for variables and functions that eliminate the need to describe what is going on
+in comments. In general, comments should address <em>why</em> something is being coded
+in a particular way, rather than how the code does things. Try to write the code
+in a clear manner so that it is obvious from reading the code instead of having
+to rely on comments to follow the code structure.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Developer Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_testing.html" class="btn btn-neutral float-right" title="Unit testing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

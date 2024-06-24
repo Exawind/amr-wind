@@ -1,0 +1,8 @@
+<map id="amr_wind::AMROversetInfo" name="amr_wind::AMROversetInfo">
+<area shape="rect" id="node1" title="AMR mesh data in TIOGA format." alt="" coords="663,120,863,147"/>
+<area shape="rect" id="node2" href="$structamr__wind_1_1tioga__iface_1_1_amr_dual_array.html" title=" " alt="" coords="346,5,525,61"/>
+<area shape="rect" id="node3" href="$structamr__wind_1_1tioga__iface_1_1_amr_dual_array.html" title="Wrapper to handle host/device views of the data for TIOGA overset." alt="" coords="5,130,172,171"/>
+<area shape="rect" id="node4" href="$structamr__wind_1_1tioga__iface_1_1_amr_dual_array.html" title=" " alt="" coords="345,86,525,127"/>
+<area shape="rect" id="node5" href="$structamr__wind_1_1tioga__iface_1_1_amr_dual_array.html" title=" " alt="" coords="346,152,525,208"/>
+<area shape="rect" id="node6" href="$structamr__wind_1_1tioga__iface_1_1_amr_dual_array.html" title=" " alt="" coords="351,249,520,290"/>
+</map>
