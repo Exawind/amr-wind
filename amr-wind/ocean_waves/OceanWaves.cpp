@@ -4,6 +4,7 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/core/MultiParser.H"
 #include "amr-wind/physics/multiphase/MultiPhase.H"
+#include "amr-wind/utilities/IOManager.H"
 
 #include <algorithm>
 
@@ -92,7 +93,8 @@ void OceanWaves::relaxation_zones()
 
 void OceanWaves::prepare_outputs()
 {
-    const std::string out_dir_prefix = "post_processing/ocean_waves";
+    const std::string post_dir = m_sim.io_manager().post_processing_directory();
+    const std::string out_dir_prefix = post_dir + "/ocean_waves";
     const std::string sname =
         amrex::Concatenate(out_dir_prefix, m_sim.time().time_index());
     if (!amrex::UtilCreateDirectory(sname, 0755)) {

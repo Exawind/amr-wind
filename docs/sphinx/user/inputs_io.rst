@@ -30,6 +30,12 @@ controls when these files are output.
 
    If a string is present `amr-wind` will restart using the specified file in the string. This is the only argument addressing "input" of data to the simulation instead of "output".
 
+.. input_param:: io.post_processing_directory
+
+   **type:** String, optional, default = "post_processing"
+
+   Name of the directory that will contain post processing output (e.g., sampling).
+
 .. input_param:: io.output_default_variables
 
    **type:** Boolean, optional, default = true
