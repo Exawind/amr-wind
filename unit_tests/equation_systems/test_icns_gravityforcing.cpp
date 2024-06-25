@@ -11,6 +11,7 @@ void init_density(amr_wind::Field& density, const int k_thresh = -3)
 
     for (int lev = 0; lev < nlevels; ++lev) {
 
+        // this one
         for (amrex::MFIter mfi(density(lev)); mfi.isValid(); ++mfi) {
             auto gbx = mfi.growntilebox();
             const auto& darr = density(lev).array(mfi);

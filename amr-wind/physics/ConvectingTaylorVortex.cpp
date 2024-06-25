@@ -156,6 +156,7 @@ void ConvectingTaylorVortex::initialize_fields(
     GpyExact gpy_exact;
     GpzExact gpz_exact;
 
+    // this one
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
 
@@ -240,6 +241,7 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
         }
 
         if (m_sim.has_overset()) {
+            // this one
             for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
                 const auto& vbx = mfi.validbox();
 

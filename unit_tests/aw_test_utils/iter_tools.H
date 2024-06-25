@@ -29,6 +29,7 @@ void run_algorithm(
     for (int lev = 0; lev < nlevels; ++lev) {
         auto& lfab = *field[lev];
 
+        // needs openmp pragma?
         for (amrex::MFIter mfi(lfab); mfi.isValid(); ++mfi) {
             func(lev, mfi);
         }
@@ -42,6 +43,7 @@ void run_algorithm(amr_wind::Field& field, const Functor& func)
     for (int lev = 0; lev < nlevels; ++lev) {
         auto& lfab = field(lev);
 
+        // needs openmp pragma?
         for (amrex::MFIter mfi(lfab); mfi.isValid(); ++mfi) {
             func(lev, mfi);
         }

@@ -82,6 +82,7 @@ void postprocess_velocity_mfab_liquid(
     amrex::MultiFab& lvs_mfab,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx)
 {
+    // this one
     for (amrex::MFIter mfi(vel_mfab); mfi.isValid(); ++mfi) {
         auto vel = vel_mfab.array(mfi);
         auto phi = lvs_mfab.const_array(mfi);
@@ -403,6 +404,7 @@ struct InitDataOp<W2AWaves>
         // Blank initialization if asked for
         if (!init_waves) {
             // Loop to populate field data
+            // this one
             for (amrex::MFIter mfi(levelset(level)); mfi.isValid(); ++mfi) {
                 auto phi = levelset(level).array(mfi);
                 auto vel = velocity(level).array(mfi);
@@ -623,6 +625,7 @@ struct UpdateRelaxZonesOp<W2AWaves>
 
         // Temporally interpolate at every timestep to get target solution
         for (int lev = 0; lev < nlevels; ++lev) {
+            // this one
             for (amrex::MFIter mfi(m_ow_levelset(lev)); mfi.isValid(); ++mfi) {
                 auto phi = m_ow_levelset(lev).array(mfi);
                 auto vel = m_ow_velocity(lev).array(mfi);

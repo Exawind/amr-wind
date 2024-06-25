@@ -113,6 +113,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
 
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
+        // this one
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
             const auto& lam_mu_arr = (*lam_mu)(lev).array(mfi);
@@ -281,6 +282,7 @@ void KOmegaSST<Transport>::update_scalar_diff(
         const auto& repo = deff.repo();
         const int nlevels = repo.num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {
+            // this one
             for (amrex::MFIter mfi(deff(lev)); mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.tilebox();
                 const auto& lam_mu_arr = (*lam_mu)(lev).array(mfi);
@@ -304,6 +306,7 @@ void KOmegaSST<Transport>::update_scalar_diff(
         const auto& repo = deff.repo();
         const int nlevels = repo.num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {
+            // this one
             for (amrex::MFIter mfi(deff(lev)); mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.tilebox();
                 const auto& lam_mu_arr = (*lam_mu)(lev).array(mfi);

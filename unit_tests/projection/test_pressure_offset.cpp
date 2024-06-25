@@ -11,6 +11,7 @@ void init_vel_z(amr_wind::Field& vel, const amrex::Real w_const)
 
     for (int lev = 0; lev < nlevels; ++lev) {
 
+        // this one
         for (amrex::MFIter mfi(vel(lev)); mfi.isValid(); ++mfi) {
             auto gbx = mfi.growntilebox();
             const auto& varr = vel(lev).array(mfi);
@@ -33,6 +34,7 @@ void init_ref_p(
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = geom[lev].CellSizeArray();
         const auto& probhi = geom[lev].ProbHiArray();
+        // this one
         for (amrex::MFIter mfi(ref_p(lev)); mfi.isValid(); ++mfi) {
             auto nbx = mfi.nodaltilebox();
             const auto& p0_arr = ref_p(lev).array(mfi);

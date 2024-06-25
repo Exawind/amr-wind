@@ -56,6 +56,7 @@ public:
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
+                // this one
                 for (amrex::MFIter mfi(divtau(lev), amrex::TilingIfNotGPU());
                      mfi.isValid(); ++mfi) {
                     const auto& bx = mfi.tilebox();
@@ -198,6 +199,7 @@ public:
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
+                // this one
                 for (amrex::MFIter mfi(divtau(lev), amrex::TilingIfNotGPU());
                      mfi.isValid(); ++mfi) {
                     const auto& bx = mfi.tilebox();
@@ -269,6 +271,7 @@ public:
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
+            // this one
             for (amrex::MFIter mfi(rhs, amrex::TilingIfNotGPU()); mfi.isValid();
                  ++mfi) {
                 const auto& bx = mfi.tilebox();
@@ -430,6 +433,7 @@ public:
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
+                // this one
                 for (amrex::MFIter mfi(divtau(lev), amrex::TilingIfNotGPU());
                      mfi.isValid(); ++mfi) {
                     const auto& bx = mfi.tilebox();
@@ -512,6 +516,7 @@ public:
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
+            // this one
             for (amrex::MFIter mfi(rhs, amrex::TilingIfNotGPU()); mfi.isValid();
                  ++mfi) {
                 const auto& bx = mfi.tilebox();

@@ -118,6 +118,7 @@ void ABLStats::calc_sfs_stress_avgs(
 
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
+        // this one
         for (amrex::MFIter mfi(m_mueff(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
             const auto& mueff_arr = m_mueff(lev).array(mfi);
@@ -185,6 +186,7 @@ void ABLStats::calc_tke_diffusion(
 
     const int nlevels = m_sim.repo().num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
+        // this one
         for (amrex::MFIter mfi(diffusion(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
             const auto& diffusion_arr = diffusion(lev).array(mfi);

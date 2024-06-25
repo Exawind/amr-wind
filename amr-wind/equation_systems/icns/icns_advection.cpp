@@ -287,6 +287,8 @@ void MacProjOp::mac_proj_to_uniform_space(
     // scale U^mac to accommodate for mesh mapping -> U^bar = J/fac *
     // U^mac beta accounted for mesh mapping = J/fac^2 * 1/rho construct
     // rho and mesh map u_mac on x-face
+    // this one
+    // needs openmp pragma?
     for (amrex::MFIter mfi(*(rho_face[0])); mfi.isValid(); ++mfi) {
         amrex::Array4<amrex::Real> const& u = u_mac(lev).array(mfi);
         amrex::Array4<amrex::Real> const& rho = rho_face[0]->array(mfi);
@@ -303,6 +305,8 @@ void MacProjOp::mac_proj_to_uniform_space(
             });
     }
     // construct rho on y-face
+    // this one
+    // needs openmp pragma?
     for (amrex::MFIter mfi(*(rho_face[1])); mfi.isValid(); ++mfi) {
         amrex::Array4<amrex::Real> const& v = v_mac(lev).array(mfi);
         amrex::Array4<amrex::Real> const& rho = rho_face[1]->array(mfi);
@@ -319,6 +323,8 @@ void MacProjOp::mac_proj_to_uniform_space(
             });
     }
     // construct rho on z-face
+    // this one
+    // needs openmp pragma?
     for (amrex::MFIter mfi(*(rho_face[2])); mfi.isValid(); ++mfi) {
         amrex::Array4<amrex::Real> const& w = w_mac(lev).array(mfi);
         amrex::Array4<amrex::Real> const& rho = rho_face[2]->array(mfi);

@@ -373,7 +373,7 @@ public:
             const auto& dbx =
                 ori.isLow() ? amrex::adjCellLo(domain, idir, nghost[idir])
                             : amrex::adjCellHi(domain, idir, nghost[idir]);
-
+            // needs openmp pragma?
             for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
                 const auto& gbx = amrex::grow(mfi.validbox(), nghost);
                 const auto& bx = gbx & dbx;

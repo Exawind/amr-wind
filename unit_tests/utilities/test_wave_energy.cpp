@@ -15,6 +15,7 @@ void init_velocity(amr_wind::Field& fld)
 
     for (int lev = 0; lev < nlevels; ++lev) {
 
+        // this one
         for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
             auto bx = mfi.validbox();
             const auto& farr = fld(lev).array(mfi);
@@ -34,6 +35,7 @@ void init_vof(amr_wind::Field& fld)
 
     for (int lev = 0; lev < nlevels; ++lev) {
 
+        // this one
         for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
             auto bx = mfi.validbox();
             const auto& vof_arr = fld(lev).array(mfi);
