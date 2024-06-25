@@ -48,6 +48,34 @@ void run_algorithm(amr_wind::Field& field, const Functor& func)
     }
 }
 
+template <typename Functor>
+void run_algorithm(
+    const int nlevels,
+    amrex::Vector<amrex::iMultiFab*>& intfield,
+    const Functor& func)
+{
+    for (int lev = 0; lev < nlevels; ++lev) {
+        auto& lfab = *intfield[lev];
+
+        for (amrex::MFIter mfi(lfab); mfi.isValid(); ++mfi) {
+            func(lev, mfi);
+        }
+    }
+}
+
+template <typename Functor>
+void run_algorithm(amr_wind::IntField& intfield, const Functor& func)
+{
+    const int nlevels = intfield.repo().num_active_levels();
+    for (int lev = 0; lev < nlevels; ++lev) {
+        auto& lfab = intfield(lev);
+
+        for (amrex::MFIter mfi(lfab); mfi.isValid(); ++mfi) {
+            func(lev, mfi);
+        }
+    }
+}
+
 } // namespace amr_wind_tests
 
 #endif /* ITER_TOOLS_H */

@@ -7,4 +7,5 @@ target_sources(
   test_vof_BCs.cpp
   test_mflux_schemes.cpp
   test_reference_fields.cpp
+  test_vof_overset_ops.cpp
   )
