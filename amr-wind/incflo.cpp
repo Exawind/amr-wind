@@ -319,6 +319,9 @@ void incflo::do_advance()
     } else {
         advance();
     }
+    if (m_sim.has_overset()) {
+        m_ovst_ops.post_advance_work();
+    }
 }
 
 // Make a new level from scratch using provided BoxArray and
