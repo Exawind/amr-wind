@@ -8,7 +8,7 @@
 
 namespace amr_wind::udf {
 
-TwoLayer::TwoLayer(const Field& /*fld*/)
+TwoLayer::TwoLayer(const Field& fld)
 {
     // This is a where the user can set some user defined variables
     // This capability can be activated with the following in the input file:
@@ -18,16 +18,20 @@ TwoLayer::TwoLayer(const Field& /*fld*/)
 
     // clang-format off
     {
-       //const int ncomp = fld.num_comp();
+       const int ncomp = fld.num_comp();
        amrex::ParmParse pp("TwoLayer");
-       pp.query("pvel", m_op.pvel);
-       pp.query("mvel", m_op.mvel);
-       //amrex::Vector<amrex::Real> vel(0.0, ncomp);
-       //pp.getarr("velocity", vel);
-       //AMREX_ALWAYS_ASSERT(vel.size() == ncomp);
-       //for (int i = 0; i < ncomp; ++i) {
-       //    m_op.bar[i] = vel[i];
-       //}
+       //pp.query("pvel", m_op.pvel);
+       //pp.query("mvel", m_op.mvel);
+       amrex::Vector<amrex::Real> pvel(0.0, ncomp);
+       amrex::Vector<amrex::Real> mvel(0.0, ncomp);
+       pp.getarr("pvel", pvel);
+       pp.getarr("mvel", mvel);
+       AMREX_ALWAYS_ASSERT(pvel.size() == ncomp);
+       AMREX_ALWAYS_ASSERT(mvel.size() == ncomp);
+       for (int i = 0; i < ncomp; ++i) {
+            m_op.pvel[i] = pvel[i];
+            m_op.mvel[i] = mvel[i];
+       }
     }
     // clang-format on
     //amrex::Abort(
