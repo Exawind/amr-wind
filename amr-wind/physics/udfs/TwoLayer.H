@@ -20,8 +20,10 @@ struct TwoLayer
         // amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> bar = {0.0};
         // clang-format on
 
-        // x-velocities of the top and bottom layer respectively
-        amrex::Real pvel{0.0};  amrex::Real mvel{0.0};
+        // velocities of the top and bottom layer respectively
+        //amrex::Real pvel{0.0};  amrex::Real mvel{0.0};
+        amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> pvel = {0.0};
+        amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> mvel = {0.0};
 
         AMREX_GPU_DEVICE
         inline void operator()(
@@ -49,8 +51,17 @@ struct TwoLayer
 
             // Once the above is done, fill the field as:
             amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> vel;
-            vel = {((z >= 0.5) ? pvel : mvel), 0.0, 0.0};
-            if (time == 0.0)  vel[0] *= 0.9;
+            //vel = {((z >= 0.5) ? pvel : mvel), 0.0, 0.0};
+            if (z>=0.5) {
+                vel = {pvel[0], pvel[1], 0.0};
+            } else {
+                vel = {mvel[0], mvel[1], 0.0};
+            }
+
+            if (time == 0.0)  {
+                vel[0] *= 0.9;
+                vel[1] *= 0.9;
+            }
             field(iv[0], iv[1], iv[2], dcomp + comp) = vel[orig_comp + comp];
             /*
             if (x <= 0.5) {

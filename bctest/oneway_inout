@@ -66,8 +66,8 @@ xlo.velocity.inflow_type = TwoLayer
 xhi.type = "mass_inflow_outflow"
 xhi.density = 1.0
 xhi.velocity.inflow_outflow_type = TwoLayer
-TwoLayer.mvel = 1.0
-TwoLayer.pvel = 1.0
+TwoLayer.mvel = 1.0 0.0 0.0
+TwoLayer.pvel = 1.0 0.0 0.0
 #xhi.type = "pressure_outflow"
 
 zlo.type =   "slip_wall"
