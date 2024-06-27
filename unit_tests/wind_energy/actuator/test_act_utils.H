@@ -38,21 +38,20 @@ inline void init_field(amr_wind::Field& fld)
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
 
-        for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.growntilebox();
-            const auto& farr = fld(lev).array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        const auto& farrs = fld(lev).arrays();
+        amrex::ParallelFor(
+            fld(lev), fld.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + offsetx) * dx[0];
                 const amrex::Real y = problo[1] + (j + offsety) * dx[1];
                 const amrex::Real z = problo[2] + (k + offsetz) * dx[2];
 
                 for (int d = 0; d < ncomp; d++) {
-                    farr(i, j, k, d) = x + y + z;
+                    farrs[nbx](i, j, k, d) = x + y + z;
                 }
             });
-        }
     }
+    amrex::Gpu::synchronize();
 }
 
 } // namespace amr_wind_tests

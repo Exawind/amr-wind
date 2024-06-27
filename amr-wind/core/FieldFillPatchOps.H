@@ -270,29 +270,39 @@ public:
     {
 
         if (lev == 0) {
-            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> physbc(
-                m_mesh.Geom(lev), bcrec, bc_functor());
             for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
+                amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> physbc(
+                    m_mesh.Geom(lev), bcrec, bc_functor_face(i));
                 amrex::FillPatchSingleLevel(
                     *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
                     m_mesh.Geom(lev), physbc, i);
             }
         } else {
-            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> cphysbc(
-                m_mesh.Geom(lev - 1), bcrec, bc_functor());
+            AMREX_D_TERM(
+                amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> cphysbcx(
+                    m_mesh.Geom(lev - 1), bcrec, bc_functor_face(0));
+                , amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> cphysbcy(
+                      m_mesh.Geom(lev - 1), bcrec, bc_functor_face(1));
+                , amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> cphysbcz(
+                      m_mesh.Geom(lev - 1), bcrec, bc_functor_face(2)););
 
-            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> fphysbc(
-                m_mesh.Geom(lev), bcrec, bc_functor());
+            AMREX_D_TERM(
+                amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> fphysbcx(
+                    m_mesh.Geom(lev), bcrec, bc_functor_face(0));
+                , amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> fphysbcy(
+                      m_mesh.Geom(lev), bcrec, bc_functor_face(1));
+                , amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> fphysbcz(
+                      m_mesh.Geom(lev), bcrec, bc_functor_face(2)););
 
             amrex::Array<
                 amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>>,
                 AMREX_SPACEDIM>
-                cphysbc_arr = {AMREX_D_DECL(cphysbc, cphysbc, cphysbc)};
+                cphysbc_arr = {AMREX_D_DECL(cphysbcx, cphysbcy, cphysbcz)};
 
             amrex::Array<
                 amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>>,
                 AMREX_SPACEDIM>
-                fphysbc_arr = {AMREX_D_DECL(fphysbc, fphysbc, fphysbc)};
+                fphysbc_arr = {AMREX_D_DECL(fphysbcx, fphysbcy, fphysbcz)};
 
             amrex::Array<int, AMREX_SPACEDIM> idx = {AMREX_D_DECL(0, 1, 2)};
             const amrex::Array<amrex::Vector<amrex::BCRec>, AMREX_SPACEDIM>
@@ -386,6 +396,8 @@ public:
 
 protected:
     Functor bc_functor() { return m_op(); }
+
+    Functor bc_functor_face(const int face_dir) { return m_op(face_dir); }
 
     void check_face_mapper()
     {

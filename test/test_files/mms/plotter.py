@@ -52,7 +52,7 @@ if __name__ == "__main__":
 
     lst = []
     for k, fdir in enumerate(args.fdirs):
-        df = pd.read_csv(os.path.join(fdir, "mms.log"), delim_whitespace=True)
+        df = pd.read_csv(os.path.join(fdir, "mms.log"), sep="\s+")
         df["res"] = float(fdir)
         lst.append(df.iloc[-1])
 

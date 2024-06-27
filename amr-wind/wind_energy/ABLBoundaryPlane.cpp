@@ -4,39 +4,12 @@
 #include "AMReX_Gpu.H"
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
+#include "amr-wind/utilities/index_operations.H"
 #include <AMReX_PlotFileUtil.H>
 
 namespace amr_wind {
 
 namespace {
-
-//! Return closest index (from lower) of value in vector
-AMREX_FORCE_INLINE int
-closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
-{
-    auto const it = std::upper_bound(vec.begin(), vec.end(), value);
-    AMREX_ALWAYS_ASSERT(it != vec.end());
-
-    const int idx = static_cast<int>(std::distance(vec.begin(), it));
-    return std::max(idx - 1, 0);
-}
-
-//! Return indices perpendicular to normal
-template <typename T = amrex::GpuArray<int, 2>>
-AMREX_FORCE_INLINE T perpendicular_idx(const int normal)
-{
-    switch (normal) {
-    case 0:
-        return T{1, 2};
-    case 1:
-        return T{0, 2};
-    case 2:
-        return T{0, 1};
-    default:
-        amrex::Abort("Invalid normal value to determine perpendicular indices");
-    }
-    return T{-1, -1};
-}
 
 //! Return offset vector
 AMREX_FORCE_INLINE amrex::IntVect offset(const int face_dir, const int normal)
@@ -125,28 +98,41 @@ void InletData::read_data(
     amrex::Vector<amrex::Real> buffer(n0 * n1 * nc);
     grp.var(fld->name()).get(buffer.data(), start, count);
 
-    const auto& datn = ((*m_data_n[ori])[lev]).array();
+    amrex::FArrayBox h_datn(
+        bx, (*m_data_n[ori])[lev].nComp(), amrex::The_Pinned_Arena());
+    const auto& h_datn_arr = h_datn.array();
     auto* d_buffer = buffer.dataPtr();
     amrex::LoopOnCpu(
         bx, static_cast<int>(nc), [=](int i, int j, int k, int n) noexcept {
             const int i0 = plane_idx(i, j, k, perp[0], lo[perp[0]]);
             const int i1 = plane_idx(i, j, k, perp[1], lo[perp[1]]);
-            datn(i, j, k, n + nstart) = d_buffer[((i0 * n1) + i1) * nc + n];
+            h_datn_arr(i, j, k, n + nstart) =
+                d_buffer[((i0 * n1) + i1) * nc + n];
         });
 
     start[0] = static_cast<size_t>(idxp1);
     grp.var(fld->name()).get(buffer.data(), start, count);
 
-    const auto& datnp1 = ((*m_data_np1[ori])[lev]).array();
+    amrex::FArrayBox h_datnp1(
+        bx, (*m_data_np1[ori])[lev].nComp(), amrex::The_Pinned_Arena());
+    const auto& h_datnp1_arr = h_datnp1.array();
     amrex::LoopOnCpu(
         bx, static_cast<int>(nc), [=](int i, int j, int k, int n) noexcept {
             const int i0 = plane_idx(i, j, k, perp[0], lo[perp[0]]);
             const int i1 = plane_idx(i, j, k, perp[1], lo[perp[1]]);
-            datnp1(i, j, k, n + nstart) = d_buffer[((i0 * n1) + i1) * nc + n];
+            h_datnp1_arr(i, j, k, n + nstart) =
+                d_buffer[((i0 * n1) + i1) * nc + n];
         });
 
-    ((*m_data_n[ori])[lev]).prefetchToDevice();
-    ((*m_data_np1[ori])[lev]).prefetchToDevice();
+    const auto nelems = bx.numPts() * nc;
+    amrex::Gpu::copyAsync(
+        amrex::Gpu::hostToDevice, h_datn.dataPtr(nstart),
+        h_datn.dataPtr(nstart) + nelems, (*m_data_n[ori])[lev].dataPtr(nstart));
+    amrex::Gpu::copyAsync(
+        amrex::Gpu::hostToDevice, h_datnp1.dataPtr(nstart),
+        h_datnp1.dataPtr(nstart) + nelems,
+        (*m_data_np1[ori])[lev].dataPtr(nstart));
+    amrex::Gpu::streamSynchronize();
 }
 
 #endif

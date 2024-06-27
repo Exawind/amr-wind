@@ -27,10 +27,10 @@ if __name__ == "__main__":
     # Read the files
     cols = ["variables", "minimum_value", "maximum_value"]
     input = pd.read_csv(
-        args.fname, delim_whitespace=True, skiprows=3, header=None, names=cols
+        args.fname, sep="\s+", skiprows=3, header=None, names=cols
     ).sort_values(by=["variables"])
     gold = pd.read_csv(
-        args.gold, delim_whitespace=True, skiprows=3, header=None, names=cols
+        args.gold, sep="\s+", skiprows=3, header=None, names=cols
     ).sort_values(by=["variables"])
 
     # Compare

@@ -32,7 +32,6 @@ turbulence.model = Laminar
 ICNS.source_terms = BodyForce
 BodyForce.magnitude = 12.0 0 0
 incflo.physics = ChannelFlow
-ChannelFlow.density = 1.0
 ChannelFlow.Mean_Velocity = 1.0
 ChannelFlow.half_channel = true
 

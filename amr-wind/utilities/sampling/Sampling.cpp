@@ -4,6 +4,7 @@
 #include "amr-wind/utilities/sampling/Sampling.H"
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
+#include "amr-wind/utilities/IOManager.H"
 
 #include "AMReX_ParmParse.H"
 
@@ -302,7 +303,7 @@ void Sampling::impl_write_native()
 {
     BL_PROFILE("amr-wind::Sampling::write_native");
 
-    const std::string post_dir = "post_processing";
+    const std::string post_dir = m_sim.io_manager().post_processing_directory();
     const std::string sampling_name =
         amrex::Concatenate(m_label, m_sim.time().time_index());
     const std::string name(post_dir + "/" + sampling_name);
@@ -323,13 +324,10 @@ void Sampling::write_ascii()
         << "WARNING: Sampling: ASCII output will negatively impact performance"
         << std::endl;
 
-    const std::string post_dir = "post_processing";
+    const std::string post_dir = m_sim.io_manager().post_processing_directory();
     const std::string sname =
         amrex::Concatenate(m_label, m_sim.time().time_index());
 
-    if (!amrex::UtilCreateDirectory(post_dir, 0755)) {
-        amrex::CreateDirectoryFailed(post_dir);
-    }
     const std::string fname = post_dir + "/" + sname + ".txt";
     m_scontainer->WriteAsciiFile(fname);
 }
@@ -338,12 +336,10 @@ void Sampling::prepare_netcdf_file()
 {
 #ifdef AMR_WIND_USE_NETCDF
 
-    const std::string post_dir = "post_processing";
+    const std::string post_dir = m_sim.io_manager().post_processing_directory();
     const std::string sname =
         amrex::Concatenate(m_label, m_sim.time().time_index());
-    if (!amrex::UtilCreateDirectory(post_dir, 0755)) {
-        amrex::CreateDirectoryFailed(post_dir);
-    }
+
     m_ncfile_name = post_dir + "/" + sname + ".nc";
 
     // Only I/O processor handles NetCDF generation

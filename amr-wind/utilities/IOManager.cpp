@@ -42,6 +42,7 @@ void IOManager::initialize_io()
     pp.query("output_default_variables", m_output_default_vars);
     pp.query("plot_file", m_plt_prefix);
     pp.query("check_file", m_chk_prefix);
+    pp.query("post_processing_directory", m_post_dir);
     pp.query("restart_file", m_restart_file);
     pp.query("allow_missing_restart_fields", m_allow_missing_restart_fields);
 #ifdef AMR_WIND_USE_HDF5

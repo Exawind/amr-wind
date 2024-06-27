@@ -222,6 +222,12 @@ protected:
         seqn.initialize();
 
         for (int n = 0; n < niter; ++n) {
+            // Copy new to old to prep for advection
+            for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+                amrex::MultiFab::Copy(
+                    vof.state(amr_wind::FieldState::Old)(lev), vof(lev), 0, 0,
+                    vof.num_comp(), vof.num_grow());
+            }
             // Perform VOF solve
             seqn.compute_advection_term(amr_wind::FieldState::Old);
             seqn.post_solve_actions();
