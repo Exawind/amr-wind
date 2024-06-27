@@ -39,7 +39,7 @@ Actuator.FixedWingLine.num_points = 21
 Actuator.FixedWingLine.epsilon = 3.0
 Actuator.FixedWingLine.span_locs = 0.0 1.0
 Actuator.FixedWingLine.chord = 2.0 2.0
-Actuator.FixedWingLine.airfoil_table = ../test2D_impl/DU21_A17.txt
+Actuator.FixedWingLine.airfoil_table = DU21_A17.txt
 Actuator.FixedWingLine.airfoil_type = openfast
 Actuator.F1.start = 0.0 -16.0 0.0
 Actuator.F1.end = 0.0 16.0 0.0
@@ -52,7 +52,7 @@ Actuator.F1.active_force_dirs = 0 1 1
 
 # Use timetable for pitch
 Actuator.F1.pitch = 4.0 # will remove
-Actuator.F1.pitch_timetable = sineWave.txt
+Actuator.F1.pitch_timetable = sine_wave.txt
 
 
 ICNS.source_terms = ActuatorForcing
