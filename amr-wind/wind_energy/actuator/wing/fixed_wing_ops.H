@@ -142,17 +142,17 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
                 std::max(std::abs(wspan.y()), std::abs(wspan.z()))) {
                 minpx = data.sim().mesh().Geom(0).ProbLoArray()[0];
                 maxpx = data.sim().mesh().Geom(0).ProbHiArray()[0];
-                warn_per = true;
+                warn_per = !per.isPeriodic(0);
                 sdir = "x";
             } else if (std::abs(wspan.y()) >= std::abs(wspan.z())) {
                 minpy = data.sim().mesh().Geom(0).ProbLoArray()[1];
                 maxpy = data.sim().mesh().Geom(0).ProbHiArray()[1];
-                warn_per = true;
+                warn_per = !per.isPeriodic(1);
                 sdir = "y";
             } else {
                 minpz = data.sim().mesh().Geom(0).ProbLoArray()[2];
                 maxpz = data.sim().mesh().Geom(0).ProbHiArray()[2];
-                warn_per = true;
+                warn_per = !per.isPeriodic(2);
                 sdir = "z";
             }
             if (warn_per) {
