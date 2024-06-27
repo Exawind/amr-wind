@@ -77,7 +77,7 @@ void godunov::make_trans_velocities(
 
             auto bc = pbc[n];
             Godunov_trans_ybc(
-                i, j, k, n, vel, lo, hi, lo, bc.lo(1), bc.hi(1), dlo.y, dhi.y);
+                i, j, k, n, vel, lo, hi, lo, hi, bc.lo(1), bc.hi(1), dlo.y, dhi.y);
 
             constexpr Real small_vel = 1e-8;
 
@@ -101,7 +101,7 @@ void godunov::make_trans_velocities(
 
             auto bc = pbc[n];
             Godunov_trans_zbc(
-                i, j, k, n, vel, lo, hi, lo, bc.lo(2), bc.hi(2), dlo.z, dhi.z);
+                i, j, k, n, vel, lo, hi, lo, hi, bc.lo(2), bc.hi(2), dlo.z, dhi.z);
 
             constexpr Real small_vel = 1e-8;
 
@@ -211,7 +211,7 @@ void godunov::predict_godunov(
             auto bc = pbc[n];
 
             Godunov_trans_ybc(
-                i, j, k, n, q, lo, hi, vad, bc.lo(1), bc.hi(1), dlo.y, dhi.y);
+                i, j, k, n, q, lo, hi, vad, vad, bc.lo(1), bc.hi(1), dlo.y, dhi.y);
 
             ylo(i, j, k, n) = lo;
             yhi(i, j, k, n) = hi;
@@ -238,7 +238,7 @@ void godunov::predict_godunov(
             auto bc = pbc[n];
 
             Godunov_trans_zbc(
-                i, j, k, n, q, lo, hi, wad, bc.lo(2), bc.hi(2), dlo.z, dhi.z);
+                i, j, k, n, q, lo, hi, wad, wad, bc.lo(2), bc.hi(2), dlo.z, dhi.z);
 
             zlo(i, j, k, n) = lo;
             zhi(i, j, k, n) = hi;
@@ -281,7 +281,7 @@ void godunov::predict_godunov(
 
             Real wad = w_ad(i, j, k);
             Godunov_trans_zbc(
-                i, j, k, n, q, l_zylo, l_zyhi, wad, bc.lo(2), bc.hi(2), dlo.z,
+                i, j, k, n, q, l_zylo, l_zyhi, wad, wad, bc.lo(2), bc.hi(2), dlo.z,
                 dhi.z);
 
             constexpr Real small_vel = 1.e-8;
@@ -300,7 +300,7 @@ void godunov::predict_godunov(
 
             Real vad = v_ad(i, j, k);
             Godunov_trans_ybc(
-                i, j, k, n, q, l_yzlo, l_yzhi, vad, bc.lo(1), bc.hi(1), dlo.y,
+                i, j, k, n, q, l_yzlo, l_yzhi, vad, vad, bc.lo(1), bc.hi(1), dlo.y,
                 dhi.y);
 
             constexpr Real small_vel = 1.e-8;
@@ -385,7 +385,7 @@ void godunov::predict_godunov(
 
             Real wad = w_ad(i, j, k);
             Godunov_trans_zbc(
-                i, j, k, n, q, l_zxlo, l_zxhi, wad, bc.lo(2), bc.hi(2), dlo.z,
+                i, j, k, n, q, l_zxlo, l_zxhi, wad, wad, bc.lo(2), bc.hi(2), dlo.z,
                 dhi.z);
 
             constexpr Real small_vel = 1.e-8;
@@ -473,7 +473,7 @@ void godunov::predict_godunov(
 
             Real vad = v_ad(i, j, k);
             Godunov_trans_ybc(
-                i, j, k, n, q, l_yxlo, l_yxhi, vad, bc.lo(1), bc.hi(1), dlo.y,
+                i, j, k, n, q, l_yxlo, l_yxhi, vad, vad, bc.lo(1), bc.hi(1), dlo.y,
                 dhi.y);
 
             constexpr Real small_vel = 1.e-8;
