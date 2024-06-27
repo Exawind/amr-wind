@@ -143,8 +143,11 @@ struct ComputeForceOp<
             grid.pos, wdata.vel_tr, npts, time.current_time(), time.new_time(),
             wdata.motion_type, wdata.s_period, wdata.s_vector);
 
-        // Get flags for force vector
-        const auto fcoord_flags = wdata.fcoord_flags;
+        // Get flags for each coordinate of force and put in vs::Vector
+        const vs::Vector force_coord_flags_vec = {
+            (amrex::Real)wdata.force_coord_flags[0],
+            (amrex::Real)wdata.force_coord_flags[1],
+            (amrex::Real)wdata.force_coord_flags[2]};
 
         // Calculate the local force using sampled velocity (at n)
         amrex::Real total_lift = 0.0;
@@ -196,11 +199,11 @@ struct ComputeForceOp<
             // wing span in order to conserve the total applied force
 
             // Calculate factor for qval: 0.5 * Uinf * Uinf * dx
-            auto qfac = 0.5 * vmag * vmag;
-            // Replace velocity magnitude if specified
-            if (wdata.prescribed_uinf > 0.0) {
-                qfac = 0.5 * wdata.prescribed_uinf * wdata.prescribed_uinf;
-            }
+            // but replace velocity magnitude if specified
+            auto qfac =
+                (wdata.prescribed_uinf < 0.0)
+                    ? 0.5 * vmag * vmag
+                    : 0.5 * wdata.prescribed_uinf * wdata.prescribed_uinf;
             // Length scale in spanwise direction
             if (wdata.gauss_2D) {
                 // Do not multiply by a length scale, but divide by number of
@@ -233,7 +236,7 @@ struct ComputeForceOp<
             grid.force[ip] = -(lift_dir * lift + drag * drag_dir);
 
             // In global coords, zero disabled force components
-            grid.force[ip] = grid.force[ip] * fcoord_flags;
+            grid.force[ip] *= force_coord_flags_vec;
 
             // Assign values for output
             wdata.vel_rel[ip] = windvector;

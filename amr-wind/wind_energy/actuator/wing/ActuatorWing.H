@@ -41,9 +41,9 @@ struct WingBaseData
     bool gauss_2D{false};
 
     //! Switch for turning off force components of actuator
-    vs::Vector fcoord_flags{1.0, 1.0, 1.0};
+    amrex::Vector<int> force_coord_flags{1, 1, 1};
 
-    //! User-specified velocity magnitude, only active when positive
+    //! User-specified velocity magnitude, only active when nonnegative
     amrex::Real prescribed_uinf{-1.0};
 
     //! File name for pitch actuation table

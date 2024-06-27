@@ -49,11 +49,17 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
         bool use_fllc = false;
         pp.query("fllc", use_fllc);
 
-        amrex::Vector<int> fcf, dcf;
         // If spanwise components of Gaussian should be ignored
         pp.query("disable_spanwise_gaussian", wdata.gauss_2D);
         // If certain components of force should be ignored
-        pp.query("active_force_dirs", wdata.fcoord_flags);
+        // (check that correct number of components are specified)
+        amrex::Vector<int> force_coord_flags_query_inp;
+        pp.queryarr("active_force_dirs", force_coord_flags_query_inp);
+        if (!force_coord_flags_query_inp.empty()) {
+            AMREX_ALWAYS_ASSERT(
+                force_coord_flags_query_inp.size() == AMREX_SPACEDIM);
+            wdata.force_coord_flags = force_coord_flags_query_inp;
+        }
 
         // If velocity magnitude for force calculation should be prescribed by
         // user, not measured from the flow
@@ -129,32 +135,32 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
             // others do not need the bounding box to grow
             const auto wspan = wdata.end - wdata.start;
             // Flag for checking periodicity in spanwise direction
-            int warn_per = -1;
+            bool warn_per{false};
+            std::string sdir{" "};
             auto per = data.sim().mesh().Geom()[0].periodicity();
             if (std::abs(wspan.x()) >=
                 std::max(std::abs(wspan.y()), std::abs(wspan.z()))) {
-                // Biggest component is in x, grow bounding box
                 minpx = data.sim().mesh().Geom(0).ProbLoArray()[0];
                 maxpx = data.sim().mesh().Geom(0).ProbHiArray()[0];
-                // Check periodicity
-                warn_per = !per.isPeriodic(0) ? 0 : warn_per;
+                warn_per = true;
+                sdir = "x";
             } else if (std::abs(wspan.y()) >= std::abs(wspan.z())) {
-                // Biggest component is in y
                 minpy = data.sim().mesh().Geom(0).ProbLoArray()[1];
                 maxpy = data.sim().mesh().Geom(0).ProbHiArray()[1];
-                // Check periodicity
-                warn_per = !per.isPeriodic(1) ? 1 : warn_per;
+                warn_per = true;
+                sdir = "y";
             } else {
-                // Biggest component is in z
                 minpz = data.sim().mesh().Geom(0).ProbLoArray()[2];
                 maxpz = data.sim().mesh().Geom(0).ProbHiArray()[2];
-                // Check periodicity
-                warn_per = !per.isPeriodic(2) ? 2 : warn_per;
+                warn_per = true;
+                sdir = "z";
             }
-            if (warn_per >= 0) {
+            if (warn_per) {
                 amrex::Print()
                     << "\nWARNING: fixed_wing_ops: Detected spanwise direction "
-                       "is not periodic, though 2D Gaussian is being used.\n\n";
+                    << sdir
+                    << " is not periodic, though 2D Gaussian is being "
+                       "used.\n\n";
             }
         }
         // Set up bounding box depending on motion type
