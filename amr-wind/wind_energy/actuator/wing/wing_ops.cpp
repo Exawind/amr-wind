@@ -12,7 +12,7 @@ void read_inputs(WingBaseData& wdata, ActInfo& info, const utils::ActParser& pp)
     pp.get("num_points", wdata.num_pts);
     pp.get("start", wdata.start);
     pp.get("end", wdata.end);
-    pp.get("epsilon", wdata.eps_inp);
+    pp.get_either("epsilon", wdata.eps_inp);
     pp.get("pitch", wdata.pitch);
 
     amrex::Real max_eps =
@@ -96,7 +96,6 @@ void prepare_netcdf_file(
     ncf.def_dim("ndim", AMREX_SPACEDIM);
 
     auto grp = ncf.def_group(info.label);
-    grp.put_attr("angle_of_attack", std::vector<double>{meta.pitch});
     // clang-format off
     grp.put_attr("epsilon",
         std::vector<double>{meta.eps_inp.x(),
@@ -104,6 +103,7 @@ void prepare_netcdf_file(
     // clang-format on
     grp.def_dim(np_name, meta.num_pts);
     grp.def_var("time", NC_DOUBLE, {nt_name});
+    grp.def_var("pitch", NC_DOUBLE, {nt_name});
     grp.def_var("integrated_lift", NC_DOUBLE, {nt_name});
     grp.def_var("integrated_drag", NC_DOUBLE, {nt_name});
     grp.def_var("xyz", NC_DOUBLE, {np_name, "ndim"});
@@ -156,6 +156,7 @@ void write_netcdf(
     std::vector<size_t> count{1, npts};
     auto grp = ncf.group(info.label);
     grp.var("time").put(&time, {nt}, {1});
+    grp.var("pitch").put(&meta.pitch, {nt}, {1});
     grp.var("integrated_lift").put(&meta.lift, {nt}, {1});
     grp.var("integrated_drag").put(&meta.drag, {nt}, {1});
     grp.var("vrel").put(

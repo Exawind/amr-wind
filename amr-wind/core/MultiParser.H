@@ -65,6 +65,51 @@ public:
         }
     }
 
+    /** Get a vector from the input file, but could be specified uniform instead
+     *
+     *  \param [in] name Keyword to search for
+     *  \param [out] value Vector value
+     */
+    void get_either(const std::string& name, vs::Vector& value) const
+    {
+        amrex::Vector<vs::Vector::value_type> val;
+        getarr(name, val);
+        AMREX_ALWAYS_ASSERT(val.size() == AMREX_SPACEDIM || val.size() == 1);
+        if (val.size() == 1) {
+            value.x() = val[0];
+            value.y() = val[0];
+            value.z() = val[0];
+        } else {
+            value.x() = val[0];
+            value.y() = val[1];
+            value.z() = val[2];
+        }
+    }
+
+    /** Query and return if a scalar (uniform) or vector exists in input file
+     *
+     *  \param [in] name Keyword to search for
+     *  \param [out] value Vector value
+     */
+    void query_either(const std::string& name, vs::Vector& value) const
+    {
+        amrex::Vector<vs::Vector::value_type> val;
+        queryarr(name, val);
+        if (!val.empty()) {
+            AMREX_ALWAYS_ASSERT(
+                val.size() == AMREX_SPACEDIM || val.size() == 1);
+            if (val.size() == 1) {
+                value.x() = val[0];
+                value.y() = val[0];
+                value.z() = val[0];
+            } else {
+                value.x() = val[0];
+                value.y() = val[1];
+                value.z() = val[2];
+            }
+        }
+    }
+
     //! Get the value for the keyword entry from either namespace
     template <typename T>
     void get(const std::string& name, T& value) const
