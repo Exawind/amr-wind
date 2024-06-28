@@ -143,6 +143,28 @@ struct ComputeForceOp<
             grid.pos, wdata.vel_tr, npts, time.current_time(), time.new_time(),
             wdata.motion_type, wdata.s_period, wdata.s_vector);
 
+        // Build the local reference frame
+        vs::Vector wspan = wdata.end - wdata.start;
+
+        // Use the global coord to orient the blade
+        // The default is for inflow in the x direction
+        auto blade_x = wdata.blade_x.unit();
+        auto blade_y = wspan.unit();
+        auto blade_z = (blade_x ^ blade_y).unit();
+        // Ensure orthogonality for new reference frame
+        blade_x = (blade_y ^ blade_z).unit();
+
+        // Calculate the aoa based on the pitch actuation table if supplied
+        // (interpolate pitch angle at step n+1/2) or the initial pitch angle
+        if (!wdata.pitch_timetable_file.empty()) {
+            const auto time_interp =
+                (time.current_time() + time.new_time()) / 2.0;
+            wdata.pitch = amr_wind::interp::linear_angle(
+                wdata.time_table, wdata.pitch_table, time_interp, 360.);
+            amrex::Print() << "Wing Ops: Current wing pitch is " << wdata.pitch
+                           << " degrees.\n";
+        }
+
         // Get flags for each coordinate of force and put in vs::Vector
         const vs::Vector force_coord_flags_vec = {
             (amrex::Real)wdata.force_coord_flags[0],
@@ -154,17 +176,6 @@ struct ComputeForceOp<
         amrex::Real total_drag = 0.0;
         for (int ip = 0; ip < npts; ++ip) {
 
-            // Build the local reference frame
-            vs::Vector wspan = wdata.end - wdata.start;
-
-            // Use the global coord to orient the blade
-            // The default is for inflow in the x direction
-            auto blade_x = wdata.blade_x.unit();
-            auto blade_y = wspan.unit();
-            auto blade_z = (blade_x ^ blade_y).unit();
-            // Ensure orthogonality for new reference frame
-            blade_x = (blade_y ^ blade_z).unit();
-
             // Wind vector is relative to actuator motion
             vs::Vector windvector;
             windvector[0] = (grid.vel[ip] - wdata.vel_tr) & blade_x;
@@ -172,31 +183,12 @@ struct ComputeForceOp<
             windvector[2] = (grid.vel[ip] - wdata.vel_tr) & blade_z;
 
             const auto vmag = vs::mag(windvector);
-
-            // Calculate the aoa based on the pitch actuation table if supplied
-            // (interpolate pitch angle at step n+1/2) or the initial pitch
-            // angle
-            if (!wdata.pitch_timetable_file.empty()) {
-                const auto time_interp =
-                    (time.current_time() + time.new_time()) / 2.0;
-                wdata.pitch = amr_wind::interp::linear(
-                    wdata.time_table, wdata.pitch_table, time_interp);
-                amrex::Print() << "Wing Ops: Current wing pitch is "
-                               << wdata.pitch << " degrees.\n";
-            }
-
             const auto aoa = std::atan2(windvector[2], windvector[0]) +
                              amr_wind::utils::radians(wdata.pitch);
 
-            // Make up some Cl, Cd values
+            // Get Cl, Cd values
             amrex::Real cl, cd;
             aflookup(aoa, cl, cd);
-
-            // Assume unit chord
-            // If the spanwise eps is zero use the two-dimensional Gaussian
-            // The order of epsilon is (chord, thickness, span)
-            // For the 2D Gaussian the force is normalized on addition with the
-            // wing span in order to conserve the total applied force
 
             // Calculate factor for qval: 0.5 * Uinf * Uinf * dx
             // but replace velocity magnitude if specified
@@ -226,8 +218,6 @@ struct ComputeForceOp<
             const auto drag = qval * cd;
 
             // Determine unit vector parallel and perpendicular to velocity
-            // vector
-            // Directions
             const auto drag_dir =
                 (blade_x * windvector.x() + blade_z * windvector.z()).unit();
             const auto lift_dir = (drag_dir ^ blade_y).unit();
