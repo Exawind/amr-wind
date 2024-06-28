@@ -163,6 +163,9 @@ struct ComputeForceOp<
                 wdata.time_table, wdata.pitch_table, time_interp, 360.);
             amrex::Print() << "Wing Ops: Current wing pitch is " << wdata.pitch
                            << " degrees.\n";
+            // Recalculate transformation matrix and update on grid struct
+            auto tmat = vs::quaternion(wspan, wdata.pitch);
+            grid.orientation.assign(npts, tmat);
         }
 
         // Get flags for each coordinate of force and put in vs::Vector
