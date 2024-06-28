@@ -131,6 +131,8 @@ private:
 
     std::vector<std::string> m_cell_vars;
     std::vector<std::string> m_node_vars;
+
+    bool m_disable_nodal_proj{false};
 };
 
 } // namespace amr_wind

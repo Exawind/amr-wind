@@ -108,7 +108,7 @@ protected:
         }
         {
             amrex::ParmParse pp("geometry");
-            amrex::Vector<amrex::Real> problo{{0.0, 0.0, 0.0}};
+            amrex::Vector<amrex::Real> problo{{-1.0, -1.0, -1.0}};
             amrex::Vector<amrex::Real> probhi{{1.0, 1.0, 1.0}};
 
             pp.addarr("prob_lo", problo);
@@ -120,7 +120,7 @@ protected:
     const amrex::Real m_rho2 = 1.0;
     const amrex::Real m_wlev = 0.5;
     const amrex::Real m_gz = -9.81;
-    const int m_nx = 3;
+    const int m_nx = 16;
 };
 
 TEST_F(MultiPhaseHydroStatic, reference_density)
