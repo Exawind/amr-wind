@@ -24,12 +24,7 @@ ConstValue.density.value = 1.0
 ConstValue.velocity.value = 10.0 0.0 0.0
 
 incflo.use_godunov = 1
-incflo.diffusion_type = 2
-incflo.do_initial_proj = 1
-incflo.initial_iterations = 3
 transport.viscosity = 1.0e-5
-transport.laminar_prandtl = 0.7
-transport.turbulent_prandtl = 0.3333
 turbulence.model = Laminar
 
 incflo.physics = FreeStream Actuator
@@ -51,9 +46,7 @@ Actuator.F1.prescribed_uinf = 1.0
 Actuator.F1.active_force_dirs = 0 1 1
 
 # Use timetable for pitch
-Actuator.F1.pitch = 4.0 # will remove
 Actuator.F1.pitch_timetable = sine_wave.txt
-
 
 ICNS.source_terms = ActuatorForcing
 
@@ -71,11 +64,3 @@ xlo.velocity = 10.0 0.0 0.0
 xhi.type = "pressure_outflow"
 zlo.type =   "slip_wall"
 zhi.type =   "slip_wall"
-
-incflo.verbose          =   0          # incflo_level
-nodal_proj.verbose = 0
-
-nodal_proj.mg_rtol = 1.0e-6
-nodal_proj.mg_atol = 1.0e-12
-mac_proj.mg_rtol = 1.0e-6
-mac_proj.mg_atol = 1.0e-12
