@@ -161,7 +161,8 @@ struct ComputeForceOp<
                 (time.current_time() + time.new_time()) / 2.0;
             wdata.pitch = amr_wind::interp::linear_angle(
                 wdata.time_table, wdata.pitch_table, time_interp, 360.);
-            amrex::Print() << "Wing Ops: Current wing pitch is " << wdata.pitch
+            amrex::Print() << "Wing Ops: Current wing pitch (at time "
+                           << time_interp << " s) is " << wdata.pitch
                            << " degrees.\n";
             // Recalculate transformation matrix and update on grid struct
             auto tmat = vs::quaternion(wspan, wdata.pitch);
