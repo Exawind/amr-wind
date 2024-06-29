@@ -3,13 +3,13 @@
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            SIMULATION STOP            #
 #.......................................#
-time.stop_time               = 10.00     # Max (simulated) time to evolve
+time.stop_time               = 20.00     # Max (simulated) time to evolve
 time.max_step                = -10    	#-1000       # Max number of time steps
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
-time.fixed_dt         =   0.02          # Use this constant dt if > 0
+time.fixed_dt         =   0.01          # Use this constant dt if > 0
 time.cfl              =   0.95          # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -54,9 +54,12 @@ fabarray.mfiter_tile_size = 1024 1024 1024
 #.......................................#
 geometry.prob_lo        =   0.0 0.0 0.0  # Lo corner coordinates
 geometry.prob_hi        =   1.0 0.5 1.0  # Hi corner coordinates
-geometry.is_periodic    =   0   1   0   # Periodicity x y z (0/1)
+geometry.is_periodic    =   0   0   0   # Periodicity x y z (0/1)
 
 # Boundary conditions
+TwoLayer.mvel = -1.0 -2.0  0.0
+TwoLayer.pvel =  1.0  2.0  0.0
+
 xlo.type = "mass_inflow_outflow"
 xlo.density = 1.0
 xlo.velocity.inflow_outflow_type = TwoLayer
@@ -64,8 +67,14 @@ xlo.velocity.inflow_outflow_type = TwoLayer
 xhi.type = "mass_inflow_outflow"
 xhi.density = 1.0
 xhi.velocity.inflow_outflow_type = TwoLayer
-TwoLayer.mvel = -1.0 0.0 0.0
-TwoLayer.pvel =  1.0 0.0 0.0
+
+ylo.type = "mass_inflow_outflow"
+ylo.density = 1.0
+ylo.velocity.inflow_outflow_type = TwoLayer
+
+yhi.type = "mass_inflow_outflow"
+yhi.density = 1.0
+yhi.velocity.inflow_outflow_type = TwoLayer
 
 zlo.type =   "slip_wall"
 zhi.type =   "slip_wall"
