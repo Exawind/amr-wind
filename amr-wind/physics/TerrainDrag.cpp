@@ -124,7 +124,7 @@ void TerrainDrag::post_init_actions()
                     levelBlanking(i, j, k, 0) = turnOn;
                     residual = 10000;
                     amrex::Real roughz0 = 0.1;
-                    for (const unsigned  ii = 0; ii < roughnessSize; ++ii) {
+                    for (const unsigned ii = 0; ii < roughnessSize; ++ii) {
                         const amrex::Real radius = std::sqrt(
                             std::pow(x1 - xrough_ptr[ii], 2) +
                             std::pow(x2 - yrough_ptr[ii], 2));
