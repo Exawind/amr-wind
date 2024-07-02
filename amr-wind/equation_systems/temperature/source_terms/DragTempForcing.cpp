@@ -22,7 +22,7 @@ void DragTempForcing::operator()(
     const int lev,
     const amrex::MFIter& mfi,
     const amrex::Box& bx,
-    const FieldState fstate,
+    const FieldState /*fstate*/,
     const amrex::Array4<amrex::Real>& src_term) const
 {
     const auto temperature = m_temperature(lev).const_array(mfi);
