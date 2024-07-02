@@ -89,7 +89,7 @@ void DragForcing::operator()(
         amrex::Real gpu_spongeVelZ = 0.0;
         amrex::Real residual = 1000;
         amrex::Real height_error = 0.0;
-        for (const unsigned ii = 0; ii < vsize; ++ii) {
+        for (unsigned ii = 0; ii < vsize; ++ii) {
             height_error = std::abs(x3 - local_gpu_vel_ht[ii]);
             if (height_error < residual) {
                 residual = height_error;

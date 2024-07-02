@@ -108,7 +108,7 @@ void TerrainDrag::post_init_actions()
                     // Terrain Height
                     amrex::Real residual = 10000;
                     amrex::Real terrainHt = 0.0;
-                    for (const unsigned ii = 0; ii < terrainSize; ++ii) {
+                    for (unsigned ii = 0; ii < terrainSize; ++ii) {
                         const amrex::Real radius = std::sqrt(
                             std::pow(x1 - xterrain_ptr[ii], 2) +
                             std::pow(x2 - yterrain_ptr[ii], 2));
@@ -124,7 +124,7 @@ void TerrainDrag::post_init_actions()
                     levelBlanking(i, j, k, 0) = turnOn;
                     residual = 10000;
                     amrex::Real roughz0 = 0.1;
-                    for (const unsigned ii = 0; ii < roughnessSize; ++ii) {
+                    for (unsigned ii = 0; ii < roughnessSize; ++ii) {
                         const amrex::Real radius = std::sqrt(
                             std::pow(x1 - xrough_ptr[ii], 2) +
                             std::pow(x2 - yrough_ptr[ii], 2));
@@ -146,7 +146,7 @@ void TerrainDrag::post_init_actions()
                     const amrex::Real x1 = prob_lo[0] + (i + 0.5) * dx[0];
                     const amrex::Real x2 = prob_lo[1] + (j + 0.5) * dx[1];
                     const amrex::Real x3 = prob_lo[2] + (k + 0.5) * dx[2];
-                    for (const unsigned ii = 0; ii < terrainSize; ++ii) {
+                    for (unsigned ii = 0; ii < terrainSize; ++ii) {
                         const amrex::Real radius = std::sqrt(
                             std::pow(x1 - xterrain_ptr[ii], 2) +
                             std::pow(x2 - yterrain_ptr[ii], 2));
