@@ -36,8 +36,6 @@ public:
 
     void post_advance_work() override {}
 
-    //    amrex::Real computeTerrainHeight(const amrex::Real x1,const
-    //    amrex::Real x2) const;
 private:
     CFDSim& m_sim;
     const FieldRepo& m_repo;

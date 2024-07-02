@@ -7,11 +7,11 @@
 
 namespace amr_wind::pde::icns {
 
-/** Adds the forcing term to include the presence of immersed boundary 
+/** Adds the forcing term to include the presence of immersed boundary
  *
- *  \ingroup icns_src 
+ *  \ingroup icns_src
  *
- *  
+ *
  */
 class DragForcing : public MomentumSource::Register<DragForcing>
 {
@@ -48,4 +48,4 @@ private:
 
 } // namespace amr_wind::pde::icns
 
-#endif 
+#endif

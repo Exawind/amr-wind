@@ -7,11 +7,12 @@
 
 namespace amr_wind::pde::temperature {
 
-/** Adding the source term to momentum equation to account for immersed boundary.
+/** Adding the source term to momentum equation to account for immersed
+ * boundary.
  *
- *  \ingroup temperature_src 
+ *  \ingroup temperature_src
  *
- *  
+ *
  */
 class DragTempForcing : public TemperatureSource::Register<DragTempForcing>
 {
@@ -38,4 +39,4 @@ private:
 
 } // namespace amr_wind::pde::temperature
 
-#endif 
+#endif
