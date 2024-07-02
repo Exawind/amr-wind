@@ -66,7 +66,7 @@ void DragForcing::operator()(
     // Copy Data
     const auto* local_gpu_vel_ht = gpu_vel_ht.data();
     const auto* local_gpu_vel_vals = gpu_vel_vals.data();
-    int vsize = gpu_vel_ht.size();
+    const unsigned vsize = gpu_vel_ht.size();
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real x1 = prob_lo[0] + (i + 0.5) * dx[0];
         const amrex::Real x2 = prob_lo[1] + (j + 0.5) * dx[1];

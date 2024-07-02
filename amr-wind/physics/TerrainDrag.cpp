@@ -97,8 +97,8 @@ void TerrainDrag::post_init_actions()
             auto levelBlanking = blanking.array(mfi);
             auto levelDrag = drag.array(mfi);
             auto levelz0 = terrainz0.array(mfi);
-            int terrainSize = m_xterrain.size();
-            int roughnessSize = m_xrough.size();
+            const unsigned  terrainSize = m_xterrain.size();
+            const unsigned roughnessSize = m_xrough.size();
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     // compute the source term
