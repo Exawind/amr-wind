@@ -18,7 +18,7 @@ class DragTempForcing : public TemperatureSource::Register<DragTempForcing>
 public:
     static std::string identifier() { return "DragTempForcing"; }
 
-  explicit DragTempForcing(const CFDSim& sim);
+    explicit DragTempForcing(const CFDSim& sim);
 
     ~DragTempForcing() override;
 
@@ -27,16 +27,15 @@ public:
         const amrex::MFIter& mfi,
         const amrex::Box& bx,
         const FieldState fstate,
-	const amrex::Array4<amrex::Real>& src_term) const override;
+        const amrex::Array4<amrex::Real>& src_term) const override;
 
- 
 private:
-  const CFDSim& m_sim;
-  const amrex::AmrCore&m_mesh;
-  Field& m_temperature;
-  Field& m_terrainBlank;
-  amrex::Real m_drag{10.0};
-  amrex::Real m_verificationMode{0};
+    const CFDSim& m_sim;
+    const amrex::AmrCore& m_mesh;
+    Field& m_temperature;
+    Field& m_terrainBlank;
+    amrex::Real m_drag{10.0};
+    amrex::Real m_verificationMode{0};
 };
 
 } // namespace amr_wind::pde::temperature

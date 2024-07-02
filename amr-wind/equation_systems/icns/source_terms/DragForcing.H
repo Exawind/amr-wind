@@ -18,7 +18,7 @@ class DragForcing : public MomentumSource::Register<DragForcing>
 public:
     static std::string identifier() { return "DragForcing"; }
 
-  explicit DragForcing(const CFDSim& sim);
+    explicit DragForcing(const CFDSim& sim);
 
     ~DragForcing() override;
 
@@ -27,24 +27,23 @@ public:
         const amrex::MFIter& mfi,
         const amrex::Box& bx,
         const FieldState fstate,
-	const amrex::Array4<amrex::Real>& src_term) const override;
+        const amrex::Array4<amrex::Real>& src_term) const override;
 
- 
 private:
-  const CFDSim& m_sim;
-  const amrex::AmrCore&m_mesh;
-  const Field& m_velocity;
-  Field& m_terrainBlank;
-  Field& m_terrainDrag;
-  Field& m_terrainz0;
-  amrex::Gpu::DeviceVector<amrex::Real> gpu_vel_ht;
-  amrex::Gpu::DeviceVector<amrex::Real> gpu_vel_vals;
-  amrex::Real m_drag{100.0};
-  amrex::Real m_spongeStrength{1.0};
-  amrex::Real m_spongeDensity{1.0};
-  amrex::Real m_spongeDistanceX{1000};
-  amrex::Real m_spongeDistanceY{1000};
-  amrex::Real m_verificationMode{0};
+    const CFDSim& m_sim;
+    const amrex::AmrCore& m_mesh;
+    const Field& m_velocity;
+    Field& m_terrainBlank;
+    Field& m_terrainDrag;
+    Field& m_terrainz0;
+    amrex::Gpu::DeviceVector<amrex::Real> gpu_vel_ht;
+    amrex::Gpu::DeviceVector<amrex::Real> gpu_vel_vals;
+    amrex::Real m_drag{100.0};
+    amrex::Real m_spongeStrength{1.0};
+    amrex::Real m_spongeDensity{1.0};
+    amrex::Real m_spongeDistanceX{1000};
+    amrex::Real m_spongeDistanceY{1000};
+    amrex::Real m_verificationMode{0};
 };
 
 } // namespace amr_wind::pde::icns
