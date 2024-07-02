@@ -7,7 +7,10 @@
 
 namespace amr_wind::terraindrag {
 
-namespace {} // namespace
+namespace {
+
+
+} // namespace
 
 /** Terraindrag Flow physics
  *  \ingroup physics
@@ -22,50 +25,37 @@ public:
 
     ~TerrainDrag() override = default;
 
-    void initialize_fields(int level, const amrex::Geometry& geom) override;
-
-    void post_init_actions() override {}
+  void initialize_fields(int /*level*/, const amrex::Geometry& /*geom*/) override{}
+  
+  void pre_init_actions() override;
+  
+  void post_init_actions() override;
 
     void post_regrid_actions() override {}
 
-    void pre_advance_work() override {}
+    void pre_advance_work() override{}
 
-    void post_advance_work() override {}
+  void post_advance_work() override{}
 
+  //    amrex::Real computeTerrainHeight(const amrex::Real x1,const amrex::Real x2) const;
 private:
-    CFDSim& m_sim;
-    const FieldRepo& m_repo;
-    const amrex::AmrCore& m_mesh;
-    Field& m_velocity;
-    // Blanking Field for Terrain or Buildings
-    Field& m_terrainBlank;
-    // Terrain Height field - Not in use now
-    Field& m_terrainDrag;
-    // Reading the Terrain Coordinates from  file
-    amrex::Vector<amrex::Real> m_xterrain, m_yterrain, m_zterrain;
-};
+  CFDSim& m_sim;
+  const FieldRepo& m_repo;
+  const amrex::AmrCore& m_mesh;
+  Field& m_velocity;
+  // Blanking Field for Terrain or Buildings 
+  Field& m_terrainBlank;
+  // Terrain Drag Force Term 
+  Field& m_terrainDrag;
+  // Reading the Terrain Coordinates from  file
+  amrex::Vector<amrex::Real> m_xterrain,m_yterrain,m_zterrain;
+  // Roughness Field
+  Field& m_terrainz0;
+  // Reading the Roughness Coordinates from file - Not Fully there yet 
+  // Need updates to ABLWallFunction in future 
+  amrex::Vector<amrex::Real> m_xrough,m_yrough,m_z0rough;
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real find_terrain_height(
-    unsigned long terrainSize,
-    const amrex::Real x1,
-    const amrex::Real x2,
-    amrex::Gpu::DeviceVector<amrex::Real> device_xterrain,
-    amrex::Gpu::DeviceVector<amrex::Real> device_yterrain,
-    amrex::Gpu::DeviceVector<amrex::Real> device_zterrain)
-{
-    amrex::Real terrainHt = 0;
-    amrex::Real residual = 300000;
-    for (unsigned long ii = 0; ii < terrainSize; ++ii) {
-        const amrex::Real radius = std::sqrt(
-            std::pow(x1 - device_xterrain[ii], 2) +
-            std::pow(x2 - device_yterrain[ii], 2));
-        if (radius < residual) {
-            residual = radius;
-            terrainHt = device_zterrain[ii];
-        }
-    }
-    return terrainHt;
-}
+};
 } // namespace amr_wind::terraindrag
 
 #endif
