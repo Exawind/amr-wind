@@ -1,5 +1,5 @@
-#ifndef DRAGFORCING_H
-#define DRAGFORCING_H
+#ifndef DRAGTEMPFORCING_H
+#define DRAGTEMPFORCING_H
 
 #include "amr-wind/equation_systems/temperature/TemperatureSource.H"
 #include "amr-wind/core/SimTime.H"
@@ -7,11 +7,11 @@
 
 namespace amr_wind::pde::temperature {
 
-/** Adds the non-linear terms from the Kosovic Model to Temperature Equation..
+/** Adding the source term to momentum equation to account for immersed boundary.
  *
- *  \ingroup temperature_src NonLinearSGS
+ *  \ingroup temperature_src 
  *
- *  \sa NonLinearSGS
+ *  
  */
 class DragTempForcing : public TemperatureSource::Register<DragTempForcing>
 {
@@ -38,4 +38,4 @@ private:
 
 } // namespace amr_wind::pde::temperature
 
-#endif /* NONLINEARSGSTERM_H */
+#endif 

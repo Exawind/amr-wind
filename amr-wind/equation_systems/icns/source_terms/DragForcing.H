@@ -7,11 +7,11 @@
 
 namespace amr_wind::pde::icns {
 
-/** Adds the non-linear terms from the Kosovic Model to Momentum Equation..
+/** Adds the forcing term to include the presence of immersed boundary 
  *
- *  \ingroup icns_src NonLinearSGS
+ *  \ingroup icns_src 
  *
- *  \sa NonLinearSGS
+ *  
  */
 class DragForcing : public MomentumSource::Register<DragForcing>
 {
@@ -48,4 +48,4 @@ private:
 
 } // namespace amr_wind::pde::icns
 
-#endif /* NONLINEARSGSTERM_H */
+#endif 
