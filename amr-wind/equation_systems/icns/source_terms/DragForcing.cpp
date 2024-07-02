@@ -93,9 +93,9 @@ void DragForcing::operator()(
             height_error = std::abs(x3 - local_gpu_vel_ht[ii]);
             if (height_error < residual) {
                 residual = height_error;
-                const unsigned ix = 3*ii;
-                const unsigned iy = 3*ii+1;
-                const unsigned iz = 3*ii+2;
+                const unsigned ix = 3 * ii;
+                const unsigned iy = 3 * ii + 1;
+                const unsigned iz = 3 * ii + 2;
                 gpu_spongeVelX = local_gpu_vel_vals[ix];
                 gpu_spongeVelY = local_gpu_vel_vals[iy];
                 gpu_spongeVelZ = local_gpu_vel_vals[iz];
