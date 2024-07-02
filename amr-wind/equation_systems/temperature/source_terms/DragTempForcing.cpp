@@ -8,7 +8,8 @@
 namespace amr_wind::pde::temperature {
 
 DragTempForcing::DragTempForcing(const CFDSim& sim)
-    : m_temperature(sim.repo().get_field("temperature"))
+    : m_mesh(sim.mesh())
+    , m_temperature(sim.repo().get_field("temperature"))
     , m_terrainBlank(sim.repo().get_field("terrainBlank"))
 {
     amrex::ParmParse pp("DragTempForcing");
