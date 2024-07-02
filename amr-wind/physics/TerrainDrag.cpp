@@ -49,7 +49,6 @@ TerrainDrag::TerrainDrag(CFDSim& sim)
 void TerrainDrag::post_init_actions()
 {
     BL_PROFILE("amr-wind::" + this->identifier() + "::post_init_actions");
-    // using namespace utils;
     const auto& geom_vec = m_sim.repo().mesh().Geom();
     const int nlevels = m_sim.repo().num_active_levels();
     for (int level = 0; level < nlevels; ++level) {
