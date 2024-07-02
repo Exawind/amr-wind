@@ -159,7 +159,7 @@ void GeostrophicForcing::operator()(
         }
         src_term(i, j, k, 0) += wfac * forcing[0];
         src_term(i, j, k, 1) += wfac * forcing[1];
-        src_term(i, j, k, 1) += wfac * hfac * forcing[2];
+        src_term(i, j, k, 2) += wfac * hfac * forcing[2];
     });
 }
 
