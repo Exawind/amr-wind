@@ -30,12 +30,9 @@ public:
         const amrex::Array4<amrex::Real>& src_term) const override;
 
 private:
-    const CFDSim& m_sim;
-    const amrex::AmrCore& m_mesh;
     Field& m_temperature;
     Field& m_terrainBlank;
     amrex::Real m_drag{10.0};
-    amrex::Real m_verificationMode{0};
 };
 
 } // namespace amr_wind::pde::temperature

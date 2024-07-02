@@ -8,14 +8,11 @@
 namespace amr_wind::pde::temperature {
 
 DragTempForcing::DragTempForcing(const CFDSim& sim)
-    : m_sim(sim)
-    , m_mesh(sim.mesh())
-    , m_temperature(sim.repo().get_field("temperature"))
+    : m_temperature(sim.repo().get_field("temperature"))
     , m_terrainBlank(sim.repo().get_field("terrainBlank"))
 {
     amrex::ParmParse pp("DragTempForcing");
     pp.query("dragCoefficient", m_drag);
-    pp.query("verificationMode", m_verificationMode);
 }
 
 DragTempForcing::~DragTempForcing() = default;
@@ -33,7 +30,6 @@ void DragTempForcing::operator()(
     const auto& geom = geom_vec[lev];
     const auto& dx = geom.CellSize();
     const amrex::Real gpu_drag = m_drag;
-    const amrex::Real gpu_verificationMode = m_verificationMode;
     const amrex::Real gpu_TRef = 300.0;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::Real Cd = gpu_drag / dx[0];
