@@ -8,9 +8,9 @@
 namespace amr_wind::pde::temperature {
 
 DragTempForcing::DragTempForcing(const CFDSim& sim)
-    : m_mesh(sim.mesh())
+    : m_sim(sim)
+    , m_mesh(sim.mesh())
     , m_temperature(sim.repo().get_field("temperature"))
-    , m_terrainBlank(sim.repo().get_field("terrainBlank"))
 {
     amrex::ParmParse pp("DragTempForcing");
     pp.query("dragCoefficient", m_drag);
@@ -26,7 +26,12 @@ void DragTempForcing::operator()(
     const amrex::Array4<amrex::Real>& src_term) const
 {
     const auto temperature = m_temperature(lev).const_array(mfi);
-    const auto blank = m_terrainBlank(lev).const_array(mfi);
+    bool is_terrain = this->m_sim.repo().field_exists("terrainBlank");
+    if (!is_terrain) {
+        amrex::Abort("Need terrain blanking variable to use this source term");
+    }
+    const auto m_terrainBlank = &this->m_sim.repo().get_field("terrainBlank");
+    const auto& blank = (*m_terrainBlank)(lev).const_array(mfi);
     const auto& geom_vec = m_mesh.Geom();
     const auto& geom = geom_vec[lev];
     const auto& dx = geom.CellSize();

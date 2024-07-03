@@ -42,9 +42,9 @@ private:
     const amrex::AmrCore& m_mesh;
     Field& m_velocity;
     // Blanking Field for Terrain or Buildings
-    Field& m_terrainBlank;
+    IntField& m_terrainBlank;
     // Terrain Drag Force Term
-    Field& m_terrainDrag;
+    IntField& m_terrainDrag;
     // Reading the Terrain Coordinates from  file
     amrex::Vector<amrex::Real> m_xterrain, m_yterrain, m_zterrain;
     // Roughness Field

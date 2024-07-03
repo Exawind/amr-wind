@@ -16,8 +16,8 @@ TerrainDrag::TerrainDrag(CFDSim& sim)
     , m_repo(sim.repo())
     , m_mesh(sim.mesh())
     , m_velocity(sim.repo().get_field("velocity"))
-    , m_terrainBlank(sim.repo().declare_field("terrainBlank", 1, 1, 1))
-    , m_terrainDrag(sim.repo().declare_field("terrainDrag", 1, 1, 1))
+    , m_terrainBlank(sim.repo().declare_int_field("terrainBlank", 1, 1, 1))
+    , m_terrainDrag(sim.repo().declare_int_field("terrainDrag", 1, 1, 1))
     , m_terrainz0(sim.repo().declare_field("terrainz0", 1, 1, 1))
 {
     std::string terrainfile("terrain.amrwind");
@@ -119,7 +119,7 @@ void TerrainDrag::post_init_actions()
                             break;
                         }
                     }
-                    const amrex::Real turnOn = (x3 <= terrainHt) ? 1.0 : 0.0;
+                    const unsigned turnOn = (x3 <= terrainHt) ? 1 : 0;
                     levelBlanking(i, j, k, 0) = turnOn;
                     residual = 10000;
                     amrex::Real roughz0 = 0.1;
@@ -154,10 +154,10 @@ void TerrainDrag::post_init_actions()
                             terrainHt = zterrain_ptr[ii];
                         }
                     }
-                    levelDrag(i, j, k, 0) = 0.0;
+                    levelDrag(i, j, k, 0) = 0;
                     if (x3 > terrainHt && k > 0 &&
                         levelBlanking(i, j, k - 1, 0) == 1) {
-                        levelDrag(i, j, k, 0) = 1.0;
+                        levelDrag(i, j, k, 0) = 1;
                     }
                 });
         }

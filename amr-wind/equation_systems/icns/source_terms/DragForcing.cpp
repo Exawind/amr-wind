@@ -11,9 +11,6 @@ DragForcing::DragForcing(const CFDSim& sim)
     : m_sim(sim)
     , m_mesh(sim.mesh())
     , m_velocity(sim.repo().get_field("velocity"))
-    , m_terrainBlank(sim.repo().get_field("terrainBlank"))
-    , m_terrainDrag(sim.repo().get_field("terrainDrag"))
-    , m_terrainz0(sim.repo().get_field("terrainz0"))
 {
     const auto& phy_mgr = m_sim.physics_manager();
     if (phy_mgr.contains("ABL")) {
@@ -49,9 +46,16 @@ void DragForcing::operator()(
 {
     const auto& vel =
         m_velocity.state(field_impl::dof_state(fstate))(lev).const_array(mfi);
-    const auto blank = m_terrainBlank(lev).const_array(mfi);
-    const auto drag = m_terrainDrag(lev).const_array(mfi);
-    const auto terrainz0 = m_terrainz0(lev).const_array(mfi);
+    bool is_terrain = this->m_sim.repo().field_exists("terrainBlank");
+    if (!is_terrain) {
+        amrex::Abort("Need terrain blanking variable to use this source term");
+    }
+    const auto m_terrainBlank = &this->m_sim.repo().get_field("terrainBlank");
+    const auto& blank = (*m_terrainBlank)(lev).const_array(mfi);
+    const auto m_terrainDrag = &this->m_sim.repo().get_field("terrainDrag");
+    const auto& drag = (*m_terrainDrag)(lev).const_array(mfi);
+    const auto m_terrainz0 = &this->m_sim.repo().get_field("terrainz0");
+    const auto& terrainz0 = (*m_terrainz0)(lev).const_array(mfi);
     const auto& geom_vec = m_mesh.Geom();
     const auto& geom = geom_vec[lev];
     const auto& dx = geom.CellSize();

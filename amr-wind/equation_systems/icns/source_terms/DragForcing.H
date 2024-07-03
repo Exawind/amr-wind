@@ -33,9 +33,6 @@ private:
     const CFDSim& m_sim;
     const amrex::AmrCore& m_mesh;
     const Field& m_velocity;
-    Field& m_terrainBlank;
-    Field& m_terrainDrag;
-    Field& m_terrainz0;
     amrex::Gpu::DeviceVector<amrex::Real> gpu_vel_ht;
     amrex::Gpu::DeviceVector<amrex::Real> gpu_vel_vals;
     amrex::Real m_drag{100.0};
