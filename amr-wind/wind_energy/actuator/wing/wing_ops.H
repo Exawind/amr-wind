@@ -13,13 +13,7 @@
 namespace amr_wind::actuator {
 namespace wing {
 
-/** Parse common data for modeling fixed wings as actuators
- */
-void read_inputs(
-    WingBaseData& /*wdata*/, ActInfo& /*info*/, const utils::ActParser& /*pp*/);
-
-/** Initialize core data structures when modeling fixed wings
- */
+// Initialize core data structures when modeling fixed wings
 void init_data_structures(WingBaseData& /*wdata*/, ActGrid& /*grid*/);
 
 void prepare_netcdf_file(

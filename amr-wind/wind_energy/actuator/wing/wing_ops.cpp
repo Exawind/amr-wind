@@ -7,31 +7,6 @@
 
 namespace amr_wind::actuator::wing {
 
-void read_inputs(WingBaseData& wdata, ActInfo& info, const utils::ActParser& pp)
-{
-    pp.get("num_points", wdata.num_pts);
-    pp.get("start", wdata.start);
-    pp.get("end", wdata.end);
-    pp.get_either("epsilon", wdata.eps_inp);
-    pp.get("pitch", wdata.pitch);
-
-    amrex::Real max_eps =
-        *std::max_element(wdata.eps_inp.begin(), wdata.eps_inp.end());
-    amrex::Real search_radius = max_eps * 3.0;
-    const auto& p1 = wdata.start;
-    const auto& p2 = wdata.end;
-    // clang-format off
-    info.bound_box = amrex::RealBox(
-        amrex::min(p1.x(), p2.x()) - search_radius,
-        amrex::min(p1.y(), p2.y()) - search_radius,
-        amrex::min(p1.z(), p2.z()) - search_radius,
-        amrex::max(p1.x(), p2.x()) + search_radius,
-        amrex::max(p1.y(), p2.y()) + search_radius,
-        amrex::max(p1.z(), p2.z()) + search_radius
-    );
-    // clang-format on
-}
-
 void init_data_structures(WingBaseData& wdata, ActGrid& grid)
 {
     int npts = wdata.num_pts;
