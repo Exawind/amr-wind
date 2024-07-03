@@ -40,6 +40,9 @@ struct WingBaseData
     //! Switch for turning on 2D Gaussian (off in spanwise)
     bool gauss_2D{false};
 
+    //! Switch for spanwise normalization in 2D setting
+    bool normalize_2D_spanwise{true};
+
     //! Switch for turning off force components of actuator
     amrex::Vector<int> force_coord_flags{1, 1, 1};
 

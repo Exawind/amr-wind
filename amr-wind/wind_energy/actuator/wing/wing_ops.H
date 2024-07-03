@@ -195,7 +195,7 @@ struct ComputeForceOp<
                     ? 0.5 * vmag * vmag
                     : 0.5 * wdata.prescribed_uinf * wdata.prescribed_uinf;
             // Length scale in spanwise direction
-            if (wdata.gauss_2D) {
+            if (wdata.gauss_2D && wdata.normalize_2D_spanwise) {
                 // Do not multiply by a length scale, but divide by number of
                 // points because the Gaussians of each point all overlap
                 qfac /= (amrex::Real)npts;

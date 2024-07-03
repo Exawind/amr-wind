@@ -33,6 +33,9 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
 
         // If spanwise components of Gaussian should be ignored
         pp.query("disable_spanwise_gaussian", wdata.gauss_2D);
+        // If spanwise components of Gaussian and forces should be normalized
+        // (on by default, not used unless gauss_2D = true)
+        pp.query("normalize_spanwise", wdata.normalize_2D_spanwise);
         // If certain components of force should be ignored
         // (check that correct number of components are specified)
         amrex::Vector<int> force_coord_flags_query_inp;
