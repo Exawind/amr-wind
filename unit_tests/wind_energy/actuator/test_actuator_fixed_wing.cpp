@@ -5,12 +5,7 @@
 #include "amr-wind/wind_energy/actuator/ActuatorContainer.H"
 #include "amr-wind/wind_energy/actuator/ActuatorModel.H"
 #include "amr-wind/wind_energy/actuator/ActParser.H"
-// #include "amr-wind/wind_energy/actuator/ActSrcLineOp.H"
-// #include "amr-wind/wind_energy/actuator/actuator_types.H"
 #include "amr-wind/wind_energy/actuator/wing/fixed_wing_ops.H"
-// #include "amr-wind/core/gpu_utils.H"
-// #include "amr-wind/core/vs/vector_space.H"
-// #include "amr-wind/utilities/trig_ops.H"
 
 namespace amr_wind_tests {
 namespace {
