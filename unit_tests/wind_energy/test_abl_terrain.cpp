@@ -26,29 +26,26 @@ void write_terrain(const std::string& fname)
 
 namespace amr_wind_tests {
 
-
-// Testing the terrain drag reading to ensure that terrain is properly setup 
+// Testing the terrain drag reading to ensure that terrain is properly setup
 class terrainTest : public MeshTest
 {
 protected:
-    void populate_parameters() override 
+    void populate_parameters() override
     {
         MeshTest::populate_parameters();
         // Make computational domain like ABL mesh
         {
             amrex::ParmParse pp("amr");
-            amrex::Vector<int> ncell{{32,32,16}};
+            amrex::Vector<int> ncell{{32, 32, 16}};
             pp.addarr("n_cell", ncell);
             pp.add("blocking_factor", 2);
-
         }
 
         {
             amrex::ParmParse pp("geometry");
-            amrex::Vector<amrex::Real> probhi{{1024,1024,512}};
+            amrex::Vector<amrex::Real> probhi{{1024, 1024, 512}};
             pp.addarr("prob_hi", probhi);
         }
-
     }
     std::string terrain_fname = "terrain.amrwind";
 };
@@ -71,14 +68,13 @@ TEST_F(terrainTest, terrain)
     pp.addarr("physics", physics);
     amr_wind::terraindrag::TerrainDrag terrain_drag(sim());
     terrain_drag.post_init_actions();
-    int value=100;
-    // Outside Point 
-    value=terrain_drag.returnBlankValue(5,5,1);
-    EXPECT_EQ(value,tol);
-    // Inside Point 
-    value=terrain_drag.returnBlankValue(15,10,1);
-    EXPECT_EQ(value,1+tol);
+    int value = 100;
+    // Outside Point
+    value = terrain_drag.returnBlankValue(5, 5, 1);
+    EXPECT_EQ(value, tol);
+    // Inside Point
+    value = terrain_drag.returnBlankValue(15, 10, 1);
+    EXPECT_EQ(value, 1 + tol);
 }
-
 
 } // namespace amr_wind_tests

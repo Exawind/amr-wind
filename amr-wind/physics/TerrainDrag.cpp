@@ -43,7 +43,7 @@ TerrainDrag::TerrainDrag(CFDSim& sim)
     file1.close();
     m_sim.io_manager().register_io_var("terrainDrag");
     m_sim.io_manager().register_io_var("terrainBlank");
-    m_sim.io_manager().register_io_var("terrainz0"); 
+    m_sim.io_manager().register_io_var("terrainz0");
 }
 
 void TerrainDrag::post_init_actions()
@@ -169,12 +169,12 @@ void TerrainDrag::pre_init_actions()
     BL_PROFILE("amr-wind::" + this->identifier() + "::pre_init_actions");
 }
 
-int TerrainDrag::returnBlankValue(int i,int j,int k)
+int TerrainDrag::returnBlankValue(int i, int j, int k)
 {
-    int lev=0;
+    int lev = 0;
     amrex::MFIter mfi(m_terrainBlank(lev));
-    const auto& levelBlanking = m_terrainBlank(lev).const_array(mfi);  
-    return levelBlanking(i,j,k);
+    const auto& levelBlanking = m_terrainBlank(lev).const_array(mfi);
+    return levelBlanking(i, j, k);
 }
 
 } // namespace amr_wind::terraindrag
