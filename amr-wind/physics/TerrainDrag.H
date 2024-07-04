@@ -36,6 +36,8 @@ public:
 
     void post_advance_work() override {}
 
+    int returnBlankValue(int i,int j,int k);
+
 private:
     CFDSim& m_sim;
     const FieldRepo& m_repo;

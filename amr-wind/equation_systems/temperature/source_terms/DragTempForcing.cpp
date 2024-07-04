@@ -30,7 +30,7 @@ void DragTempForcing::operator()(
     if (!is_terrain) {
         amrex::Abort("Need terrain blanking variable to use this source term");
     }
-    const auto m_terrainBlank = &this->m_sim.repo().get_field("terrainBlank");
+    auto* const m_terrainBlank = &this->m_sim.repo().get_field("terrainBlank");
     const auto& blank = (*m_terrainBlank)(lev).const_array(mfi);
     const auto& geom_vec = m_mesh.Geom();
     const auto& geom = geom_vec[lev];
