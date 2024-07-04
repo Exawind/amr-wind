@@ -56,10 +56,8 @@ TEST_F(terrainTest, terrain)
 
     // Write target wind file
     write_terrain(terrain_fname);
-    // Set up simulation parameters and mesh
     populate_parameters();
     initialize_mesh();
-    // Set up PDEs and physics objects
     auto& pde_mgr = sim().pde_manager();
     pde_mgr.register_icns();
     sim().init_physics();
