@@ -4,6 +4,7 @@
 #include <utility>
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/equation_systems/vof/volume_fractions.H"
+#include "amr-wind/utilities/IOManager.H"
 
 #include "AMReX_ParmParse.H"
 
@@ -682,13 +683,10 @@ void FreeSurface::write_ascii()
         << "WARNING: FreeSurface: ASCII output will impact performance"
         << std::endl;
 
-    const std::string post_dir = "post_processing";
+    const std::string post_dir = m_sim.io_manager().post_processing_directory();
     const std::string sname =
         amrex::Concatenate(m_label, m_sim.time().time_index());
 
-    if (!amrex::UtilCreateDirectory(post_dir, 0755)) {
-        amrex::CreateDirectoryFailed(post_dir);
-    }
     const std::string fname = post_dir + "/" + sname + ".txt";
 
     if (amrex::ParallelDescriptor::IOProcessor()) {
@@ -751,12 +749,10 @@ void FreeSurface::prepare_netcdf_file()
 {
 #ifdef AMR_WIND_USE_NETCDF
 
-    const std::string post_dir = "post_processing";
+    const std::string post_dir = m_sim.io_manager().post_processing_directory();
     const std::string sname =
         amrex::Concatenate(m_label, m_sim.time().time_index());
-    if (!amrex::UtilCreateDirectory(post_dir, 0755)) {
-        amrex::CreateDirectoryFailed(post_dir);
-    }
+
     m_ncfile_name = post_dir + "/" + sname + ".nc";
 
     // Only I/O processor handles NetCDF generation

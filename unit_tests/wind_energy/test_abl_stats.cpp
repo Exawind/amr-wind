@@ -13,18 +13,15 @@ void init_field1(amr_wind::Field& fld)
     const int nlevels = fld.repo().num_active_levels();
 
     for (int lev = 0; lev < nlevels; ++lev) {
-
-        for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.growntilebox();
-            const auto& farr = fld(lev).array(mfi);
-
-            // Give TKE gradient for nonzero diff term
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-                farr(i, j, k, 0) =
+        const auto& farrs = fld(lev).arrays();
+        amrex::ParallelFor(
+            fld(lev), amrex::IntVect(0),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                farrs[nbx](i, j, k) =
                     std::sin(0.01 * i) + std::pow(k, 0.2) + std::cos(0.01 * j);
             });
-        }
     }
+    amrex::Gpu::synchronize();
 }
 
 amrex::Real test_new_tke(
@@ -42,24 +39,23 @@ amrex::Real test_new_tke(
     for (int lev = 0; lev < tke.repo().num_active_levels(); ++lev) {
 
         // Form tke estimate by adding to the old tke field
-        for (amrex::MFIter mfi(tkeold(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& tke_old_arr = tkeold(lev).array(mfi);
-            const auto& buoy_prod_arr = buoy_prod(lev).const_array(mfi);
-            const auto& shear_prod_arr = shear_prod(lev).const_array(mfi);
-            const auto& dissipation_arr = dissipation(lev).const_array(mfi);
-            const auto& diffusion_arr = diffusion(lev).const_array(mfi);
-            const auto& conv_arr = conv_term(lev).const_array(mfi);
-
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    tke_old_arr(i, j, k) +=
-                        dt *
-                        (conv_arr(i, j, k) + shear_prod_arr(i, j, k) +
-                         buoy_prod_arr(i, j, k) - dissipation_arr(i, j, k) +
-                         diffusion_arr(i, j, k));
-                });
-        }
+        const auto& tke_old_arrs = tkeold(lev).arrays();
+        const auto& buoy_prod_arrs = buoy_prod(lev).const_arrays();
+        const auto& shear_prod_arrs = shear_prod(lev).const_arrays();
+        const auto& dissipation_arrs = dissipation(lev).const_arrays();
+        const auto& diffusion_arrs = diffusion(lev).const_arrays();
+        const auto& conv_arrs = conv_term(lev).const_arrays();
+        amrex::ParallelFor(
+            tkeold(lev), amrex::IntVect(0),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                tke_old_arrs[nbx](i, j, k) +=
+                    dt *
+                    (conv_arrs[nbx](i, j, k) + shear_prod_arrs[nbx](i, j, k) +
+                     buoy_prod_arrs[nbx](i, j, k) -
+                     dissipation_arrs[nbx](i, j, k) +
+                     diffusion_arrs[nbx](i, j, k));
+            });
+        amrex::Gpu::synchronize();
 
         // Difference between tke estimate and tke calculated by the code
         error_total += amrex::ReduceSum(
@@ -84,19 +80,16 @@ amrex::Real test_new_tke(
 void remove_nans(amr_wind::Field& field)
 {
     for (int lev = 0; lev < field.repo().num_active_levels(); ++lev) {
-
-        // Form tke estimate by adding to the old tke field
-        for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& field_arr = field(lev).array(mfi);
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    field_arr(i, j, k) = std::isnan(field_arr(i, j, k))
+        const auto& farrs = field(lev).arrays();
+        amrex::ParallelFor(
+            field(lev), amrex::IntVect(0), field(lev).nComp(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+                farrs[nbx](i, j, k, n) = std::isnan(farrs[nbx](i, j, k, n))
                                              ? 0.0
-                                             : field_arr(i, j, k);
-                });
-        }
+                                             : farrs[nbx](i, j, k, n);
+            });
     }
+    amrex::Gpu::synchronize();
 }
 } // namespace
 
