@@ -14,48 +14,39 @@ void OversetOps::initialize(CFDSim& sim)
     m_sim_ptr = &sim;
     // Queries for reinitialization options
     amrex::ParmParse pp("Overset");
-    pp.query("reinit_iterations", m_niterations);
-    pp.query("reinit_convg_interval", m_calcconvint);
-    pp.query("reinit_convg_tolerance", m_tol);
-    pp.query("reinit_rlscale", m_niterations);
-    pp.query("reinit_upw_margin", m_margin);
+    pp.query("reinit_iterations", m_n_iterations);
+    pp.query("reinit_convg_interval", m_calc_convg_interval);
+    pp.query("reinit_convg_tolerance", m_convg_tol);
+    pp.query("reinit_rlscale", m_relative_length_scale);
+    pp.query("reinit_upw_margin", m_upw_margin);
     pp.query("reinit_target_cutoff", m_target_cutoff);
 
     // Queries for coupling options
-    pp.query("replace_gradp_postsolve", m_replace_gp);
+    pp.query("replace_gradp_postsolve", m_replace_gradp_postsolve);
     // OversetOps does not control these coupling options, merely reports them
     pp.query("disable_coupled_nodal_proj", m_disable_nodal_proj);
     pp.query("disable_coupled_mac_proj", m_disable_mac_proj);
 
-    // Verbosity
     pp.query("verbose", m_verbose);
 
-    // Check for perturbational pressure
-    // (will be removed soon)
     amrex::ParmParse pp_icns("ICNS");
     pp_icns.query("use_perturb_pressure", m_perturb_p);
 
-    // Check for vof to determine if multiphase sim
     m_vof_exists = (*m_sim_ptr).repo().field_exists("vof");
-
-    // Set up pointer to MultiPhase physics
     if (m_vof_exists) {
         m_mphase = &(*m_sim_ptr).physics_manager().get<MultiPhase>();
     }
-
-    // Set up field to store pressure gradient
-    if (m_replace_gp) {
+    if (m_replace_gradp_postsolve) {
         m_gp_copy = &(*m_sim_ptr).repo().declare_field("gp_copy", 3);
     }
 
-    // Output parameters if verbose
     parameter_output();
 }
 
 void OversetOps::pre_advance_work()
 {
     // Pressure gradient not updated for current multiphase approach
-    if (!(m_vof_exists && m_use_hs_pgrad)) {
+    if (!(m_vof_exists && m_use_hydrostatic_gradp)) {
         // Update pressure gradient using updated overset pressure field
         update_gradp();
     }
@@ -63,14 +54,14 @@ void OversetOps::pre_advance_work()
     if (m_vof_exists) {
         // Reinitialize fields
         sharpen_nalu_data();
-        if (m_use_hs_pgrad) {
+        if (m_use_hydrostatic_gradp) {
             // Use hydrostatic pressure gradient
             set_hydrostatic_gradp();
         }
     }
 
     // If pressure gradient will be replaced, store current pressure gradient
-    if (m_replace_gp) {
+    if (m_replace_gradp_postsolve) {
         auto& gp = (*m_sim_ptr).repo().get_field("gp");
         for (int lev = 0; lev < (*m_sim_ptr).repo().num_active_levels();
              ++lev) {
@@ -141,7 +132,7 @@ void OversetOps::update_gradp()
 void OversetOps::post_advance_work()
 {
     // Replace and reapply pressure gradient if requested
-    if (m_replace_gp) {
+    if (m_replace_gradp_postsolve) {
         replace_masked_gradp();
     }
 }
@@ -160,22 +151,22 @@ void OversetOps::parameter_output() const
                        << !m_disable_nodal_proj << std::endl
                        << "---- Coupled MAC projection   : "
                        << !m_disable_mac_proj << std::endl
-                       << "---- Replace overset pres grad: " << m_replace_gp
-                       << std::endl;
+                       << "---- Replace overset pres grad: "
+                       << m_replace_gradp_postsolve << std::endl;
         if (m_vof_exists) {
             amrex::Print() << "Overset Reinitialization Parameters:\n"
-                           << "---- Maximum iterations   : " << m_niterations
+                           << "---- Maximum iterations   : " << m_n_iterations
                            << std::endl
-                           << "---- Convergence tolerance: " << m_tol
+                           << "---- Convergence tolerance: " << m_convg_tol
                            << std::endl
-                           << "---- Relative length scale: " << m_rlscale
-                           << std::endl
-                           << "---- Upwinding VOF margin : " << m_margin
+                           << "---- Relative length scale: "
+                           << m_relative_length_scale << std::endl
+                           << "---- Upwinding VOF margin : " << m_upw_margin
                            << std::endl;
             if (m_verbose > 1) {
                 // Less important or less used parameters
                 amrex::Print()
-                    << "---- Calc. conv. interval : " << m_calcconvint
+                    << "---- Calc. conv. interval : " << m_calc_convg_interval
                     << std::endl
                     << "---- Target field cutoff  : " << m_target_cutoff
                     << std::endl;
@@ -215,7 +206,8 @@ void OversetOps::sharpen_nalu_data()
     for (int lev = 0; lev < nlevels; ++lev) {
         // Thickness used here is user parameter, whatever works best
         auto dx = (geom[lev]).CellSizeArray();
-        const amrex::Real i_th = m_rlscale * std::cbrt(dx[0] * dx[1] * dx[2]);
+        const amrex::Real i_th =
+            m_relative_length_scale * std::cbrt(dx[0] * dx[1] * dx[2]);
 
         // Populate approximate signed distance function
         overset_ops::populate_psi(levelset(lev), vof(lev), i_th, m_asdf_tiny);
@@ -246,14 +238,14 @@ void OversetOps::sharpen_nalu_data()
     }
 
     // Pseudo-time loop
-    amrex::Real err = 100.0 * m_tol;
+    amrex::Real err = 100.0 * m_convg_tol;
     int n = 0;
-    while (n < m_niterations && err > m_tol) {
+    while (n < m_n_iterations && err > m_convg_tol) {
         // Increment step counter
         ++n;
 
         // Determine if convergence error is calculated this step
-        bool cconv = n % m_calcconvint == 0;
+        bool cconv = n % m_calc_convg_interval == 0;
         // Zero error if being calculated this step
         err = cconv ? 0.0 : err;
 
@@ -270,8 +262,8 @@ void OversetOps::sharpen_nalu_data()
             // Sharpening fluxes for vof, density, and momentum
             overset_ops::populate_sharpen_fluxes(
                 (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev),
-                (*target_vof)(lev), (*normal_vec)(lev), velocity(lev), m_margin,
-                m_mphase->rho1(), m_mphase->rho2());
+                (*target_vof)(lev), (*normal_vec)(lev), velocity(lev),
+                m_upw_margin, m_mphase->rho1(), m_mphase->rho2());
 
             // Process fluxes
             overset_ops::process_fluxes(
@@ -302,7 +294,7 @@ void OversetOps::sharpen_nalu_data()
             // Convergence tolerance determines what size of fluxes matter
             const amrex::Real ptfac_lev = overset_ops::calculate_pseudo_dt_flux(
                 (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev),
-                m_tol);
+                m_convg_tol);
             ptfac = amrex::min(ptfac, ptfac_lev);
         }
         amrex::ParallelDescriptor::ReduceRealMin(ptfac);
@@ -331,7 +323,7 @@ void OversetOps::sharpen_nalu_data()
 
         if (m_verbose > 0) {
             amrex::Print() << "OversetOps: sharpen step " << n << "  conv. err "
-                           << err << "  tol " << m_tol << std::endl;
+                           << err << "  tol " << m_convg_tol << std::endl;
         }
     }
 
