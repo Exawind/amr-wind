@@ -80,25 +80,13 @@ void populate_normal_vector(
                 int ibdy = 0;
                 int jbdy = 0;
                 int kbdy = 0;
-                if (iblank(i, j, k) != iblank(i - 1, j, k)) {
-                    ibdy = -1;
-                }
-                if (iblank(i, j, k) != iblank(i, j - 1, k)) {
-                    jbdy = -1;
-                }
-                if (iblank(i, j, k) != iblank(i, j, k - 1)) {
-                    kbdy = -1;
-                }
+                ibdy = (iblank(i, j, k) != iblank(i - 1, j, k)) ? -1 : ibdy;
+                jbdy = (iblank(i, j, k) != iblank(i, j - 1, k)) ? -1 : jbdy;
+                kbdy = (iblank(i, j, k) != iblank(i, j, k - 1)) ? -1 : kbdy;
                 // no cell should be isolated such that -1 and 1 are needed
-                if (iblank(i, j, k) != iblank(i + 1, j, k)) {
-                    ibdy = +1;
-                }
-                if (iblank(i, j, k) != iblank(i, j + 1, k)) {
-                    jbdy = +1;
-                }
-                if (iblank(i, j, k) != iblank(i, j, k + 1)) {
-                    kbdy = +1;
-                }
+                ibdy = (iblank(i, j, k) != iblank(i + 1, j, k)) ? +1 : ibdy;
+                jbdy = (iblank(i, j, k) != iblank(i, j + 1, k)) ? +1 : jbdy;
+                kbdy = (iblank(i, j, k) != iblank(i, j, k + 1)) ? +1 : kbdy;
                 // Calculate normal
                 amrex::Real mx, my, mz, mmag;
                 multiphase::youngs_fd_normal_neumann(

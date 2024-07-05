@@ -280,17 +280,18 @@ amrex::Real normal_vector_neumann_test_impl(
 
                     // Use L1 norm, check against non-neumann implementation
                     // Slope across overset boundary should be different
+                    constexpr amrex::Real slp_tol = 1e-8;
                     if (ibdy != 0) {
                         // x slope should be different
-                        error += std::abs(mx - mxn) > 1e-8 ? 0. : 1.0;
+                        error += std::abs(mx - mxn) > slp_tol ? 0. : 1.0;
                     }
                     if (jbdy != 0) {
                         // y slope should be different
-                        error += std::abs(my - myn) > 1e-8 ? 0. : 1.0;
+                        error += std::abs(my - myn) > slp_tol ? 0. : 1.0;
                     }
                     if (kbdy != 0) {
                         // z slope should be different
-                        error += std::abs(mz - mzn) > 1e-8 ? 0. : 1.0;
+                        error += std::abs(mz - mzn) > slp_tol ? 0. : 1.0;
                     }
                     // Slope should otherwise be the same
                     if (ibdy == 0 && jbdy == 0 && kbdy == 0) {
@@ -326,24 +327,12 @@ amrex::Real normal_vector_neumann_test_impl(
                     int ibdy = 0;
                     int jbdy = 0;
                     int kbdy = 0;
-                    if (iblank(i, j, k) != iblank(i - 1, j, k)) {
-                        ibdy = -1;
-                    }
-                    if (iblank(i, j, k) != iblank(i, j - 1, k)) {
-                        jbdy = -1;
-                    }
-                    if (iblank(i, j, k) != iblank(i, j, k - 1)) {
-                        kbdy = -1;
-                    }
-                    if (iblank(i, j, k) != iblank(i + 1, j, k)) {
-                        ibdy = +1;
-                    }
-                    if (iblank(i, j, k) != iblank(i, j + 1, k)) {
-                        jbdy = +1;
-                    }
-                    if (iblank(i, j, k) != iblank(i, j, k + 1)) {
-                        kbdy = +1;
-                    }
+                    ibdy = (iblank(i, j, k) != iblank(i - 1, j, k)) ? -1 : ibdy;
+                    jbdy = (iblank(i, j, k) != iblank(i, j - 1, k)) ? -1 : jbdy;
+                    kbdy = (iblank(i, j, k) != iblank(i, j, k - 1)) ? -1 : kbdy;
+                    ibdy = (iblank(i, j, k) != iblank(i + 1, j, k)) ? +1 : ibdy;
+                    jbdy = (iblank(i, j, k) != iblank(i, j + 1, k)) ? +1 : jbdy;
+                    kbdy = (iblank(i, j, k) != iblank(i, j, k + 1)) ? +1 : kbdy;
                     amrex::Real mxn, myn, mzn;
                     amr_wind::multiphase::youngs_fd_normal_neumann(
                         i, j, k, ibdy, jbdy, kbdy, vof_arr, mxn, myn, mzn);
@@ -384,7 +373,6 @@ amrex::Real normal_vector_neumann_test_impl(
 amrex::Real fit_plane_test_impl(amr_wind::Field& vof, const int dir)
 {
     amrex::Real error_total = 0.0;
-    const int d = dir;
 
     for (int lev = 0; lev < vof.repo().num_active_levels(); ++lev) {
 
@@ -397,9 +385,9 @@ amrex::Real fit_plane_test_impl(amr_wind::Field& vof, const int dir)
                 amrex::Real error = 0.0;
 
                 amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
-                    int ii = (d != 0 ? i : 0);
-                    int jj = (d != 1 ? j : 0);
-                    int kk = (d != 2 ? k : 0);
+                    int ii = (dir != 0 ? i : 0);
+                    int jj = (dir != 1 ? j : 0);
+                    int kk = (dir != 2 ? k : 0);
                     // Check multiphase cells
                     if (ii + jj + kk == 3) {
                         amrex::Real mx, my, mz, alpha;
@@ -407,9 +395,9 @@ amrex::Real fit_plane_test_impl(amr_wind::Field& vof, const int dir)
                             i, j, k, vof_arr, mx, my, mz, alpha);
 
                         // Check slope
-                        error += std::abs(mx - (d != 0 ? 0.5 : 0.0));
-                        error += std::abs(my - (d != 1 ? 0.5 : 0.0));
-                        error += std::abs(mz - (d != 2 ? 0.5 : 0.0));
+                        error += std::abs(mx - (dir != 0 ? 0.5 : 0.0));
+                        error += std::abs(my - (dir != 1 ? 0.5 : 0.0));
+                        error += std::abs(mz - (dir != 2 ? 0.5 : 0.0));
                         // Check intercept
                         error += std::abs(alpha - 0.5);
                     }
@@ -425,7 +413,6 @@ amrex::Real fit_plane_test_impl_h(
     amr_wind::Field& vof, const amrex::Real vof_val, const int dir)
 {
     amrex::Real error_total = 0.0;
-    const int d = dir;
     const amrex::Real vv = vof_val;
 
     for (int lev = 0; lev < vof.repo().num_active_levels(); ++lev) {
@@ -439,7 +426,7 @@ amrex::Real fit_plane_test_impl_h(
                 amrex::Real error = 0.0;
 
                 amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
-                    int ii = (d == 0 ? i : (d == 1 ? j : k));
+                    int ii = (dir == 0 ? i : (dir == 1 ? j : k));
                     // Check multiphase cells
                     if (ii == 1) {
                         amrex::Real mx, my, mz, alpha;
@@ -447,9 +434,9 @@ amrex::Real fit_plane_test_impl_h(
                             i, j, k, vof_arr, mx, my, mz, alpha);
 
                         // Check slope
-                        error += std::abs(mx - (d == 0 ? 1.0 : 0.0));
-                        error += std::abs(my - (d == 1 ? 1.0 : 0.0));
-                        error += std::abs(mz - (d == 2 ? 1.0 : 0.0));
+                        error += std::abs(mx - (dir == 0 ? 1.0 : 0.0));
+                        error += std::abs(my - (dir == 1 ? 1.0 : 0.0));
+                        error += std::abs(mz - (dir == 2 ? 1.0 : 0.0));
                         // Check intercept
                         error += std::abs(alpha - vv);
                     }
