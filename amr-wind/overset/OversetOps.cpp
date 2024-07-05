@@ -178,12 +178,12 @@ void OversetOps::parameter_output() const
 
 void OversetOps::sharpen_nalu_data()
 {
-    auto& repo = (*m_sim_ptr).repo();
-    auto nlevels = repo.num_active_levels();
-    auto geom = (*m_sim_ptr).mesh().Geom();
+    const auto& repo = (*m_sim_ptr).repo();
+    const auto nlevels = repo.num_active_levels();
+    const auto geom = (*m_sim_ptr).mesh().Geom();
 
     // Get blanking for cells
-    auto& iblank_cell = repo.get_int_field("iblank_cell");
+    const auto& iblank_cell = repo.get_int_field("iblank_cell");
 
     // Get fields that will be modified
     auto& vof = repo.get_field("vof");
@@ -241,13 +241,10 @@ void OversetOps::sharpen_nalu_data()
     amrex::Real err = 100.0 * m_convg_tol;
     int n = 0;
     while (n < m_n_iterations && err > m_convg_tol) {
-        // Increment step counter
         ++n;
-
-        // Determine if convergence error is calculated this step
-        bool cconv = n % m_calc_convg_interval == 0;
+        bool calc_convg = n % m_calc_convg_interval == 0;
         // Zero error if being calculated this step
-        err = cconv ? 0.0 : err;
+        err = calc_convg ? 0.0 : err;
 
         // Maximum possible value of pseudo time factor (dtau)
         amrex::Real ptfac = 1.0;
@@ -271,7 +268,7 @@ void OversetOps::sharpen_nalu_data()
                 iblank_cell(lev));
 
             // Measure convergence to determine if loop can stop
-            if (cconv) {
+            if (calc_convg) {
                 // Update error at specified interval of steps
                 const amrex::Real err_lev = overset_ops::measure_convergence(
                     (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev));
@@ -317,7 +314,7 @@ void OversetOps::sharpen_nalu_data()
         m_mphase->set_density_via_vof();
 
         // Ensure that err is same across processors
-        if (cconv) {
+        if (calc_convg) {
             amrex::ParallelDescriptor::ReduceRealMax(err);
         }
 
@@ -337,12 +334,12 @@ void OversetOps::sharpen_nalu_data()
 
 void OversetOps::set_hydrostatic_gradp()
 {
-    auto& repo = (*m_sim_ptr).repo();
-    auto nlevels = repo.num_active_levels();
-    auto geom = (*m_sim_ptr).mesh().Geom();
+    const auto& repo = (*m_sim_ptr).repo();
+    const auto nlevels = repo.num_active_levels();
+    const auto geom = (*m_sim_ptr).mesh().Geom();
 
     // Get blanking for cells
-    auto& iblank_cell = repo.get_int_field("iblank_cell");
+    const auto& iblank_cell = repo.get_int_field("iblank_cell");
 
     // Get fields that will be modified or used
     Field* rho0{nullptr};
@@ -357,7 +354,7 @@ void OversetOps::set_hydrostatic_gradp()
 
     // Replace initial gp with best guess (hydrostatic)
     for (int lev = 0; lev < nlevels; ++lev) {
-        overset_ops::replace_gradp_hs(
+        overset_ops::replace_gradp_hydrostatic(
             gp(lev), rho(lev), (*rho0)(lev), iblank_cell(lev),
             m_mphase->gravity()[2], m_perturb_p);
     }
@@ -365,14 +362,14 @@ void OversetOps::set_hydrostatic_gradp()
 
 void OversetOps::replace_masked_gradp()
 {
-    auto& repo = (*m_sim_ptr).repo();
-    auto nlevels = repo.num_active_levels();
+    const auto& repo = (*m_sim_ptr).repo();
+    const auto nlevels = repo.num_active_levels();
 
     // Get timestep
     const amrex::Real dt = (*m_sim_ptr).time().deltaT();
 
     // Get blanking for cells
-    auto& iblank_cell = repo.get_int_field("iblank_cell");
+    const auto& iblank_cell = repo.get_int_field("iblank_cell");
 
     // Get fields that will be modified or used
     auto& vel = repo.get_field("velocity");

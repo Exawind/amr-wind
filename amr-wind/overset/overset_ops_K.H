@@ -14,10 +14,10 @@ asdf(const amrex::Real a_vof, const amrex::Real i_th, const amrex::Real tiny)
 }
 
 amrex::Real AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE alpha_flux(
-    int i,
-    int j,
-    int k,
-    int dir,
+    const int i,
+    const int j,
+    const int k,
+    const int dir,
     const amrex::Real margin,
     amrex::Array4<amrex::Real const> const& vof,
     amrex::Array4<amrex::Real const> const& tg_vof,
@@ -69,10 +69,10 @@ amrex::Real AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE alpha_flux(
 }
 
 void AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE velocity_face(
-    int i,
-    int j,
-    int k,
-    int dir,
+    const int i,
+    const int j,
+    const int k,
+    const int dir,
     amrex::Array4<amrex::Real const> const& vof,
     amrex::Array4<amrex::Real const> const& velocity,
     amrex::Real& uface,

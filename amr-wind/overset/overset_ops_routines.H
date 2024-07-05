@@ -9,7 +9,7 @@ namespace amr_wind::overset_ops {
 // Populate approximate signed distance function using vof field
 void populate_psi(
     amrex::MultiFab& mf_psi,
-    amrex::MultiFab& mf_vof,
+    const amrex::MultiFab& mf_vof,
     const amrex::Real i_th,
     const amrex::Real asdf_tiny)
 {
@@ -43,8 +43,8 @@ void process_vof(amrex::MultiFab& mf_vof, const amrex::Real vof_tol)
 // Combine overset target vof field with current non-overset vof field
 void harmonize_vof(
     amrex::MultiFab& mf_vof_target,
-    amrex::MultiFab& mf_vof_original,
-    amrex::iMultiFab& mf_iblank)
+    const amrex::MultiFab& mf_vof_original,
+    const amrex::iMultiFab& mf_iblank)
 {
     for (amrex::MFIter mfi(mf_vof_target); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
@@ -65,8 +65,8 @@ void harmonize_vof(
 // Populate normal vector with special treatment of overset boundary
 void populate_normal_vector(
     amrex::MultiFab& mf_normvec,
-    amrex::MultiFab& mf_vof,
-    amrex::iMultiFab& mf_iblank)
+    const amrex::MultiFab& mf_vof,
+    const amrex::iMultiFab& mf_iblank)
 {
     for (amrex::MFIter mfi(mf_vof); mfi.isValid(); ++mfi) {
         const auto& gbxm1 = grow(mfi.growntilebox(), -1);
@@ -107,10 +107,10 @@ void populate_sharpen_fluxes(
     amrex::MultiFab& mf_fx,
     amrex::MultiFab& mf_fy,
     amrex::MultiFab& mf_fz,
-    amrex::MultiFab& mf_vof,
-    amrex::MultiFab& mf_target_vof,
-    amrex::MultiFab& mf_norm,
-    amrex::MultiFab& mf_velocity,
+    const amrex::MultiFab& mf_vof,
+    const amrex::MultiFab& mf_target_vof,
+    const amrex::MultiFab& mf_norm,
+    const amrex::MultiFab& mf_velocity,
     const amrex::Real margin,
     const amrex::Real rho1,
     const amrex::Real rho2)
@@ -179,7 +179,7 @@ void process_fluxes(
     amrex::MultiFab& mf_fx,
     amrex::MultiFab& mf_fy,
     amrex::MultiFab& mf_fz,
-    amrex::iMultiFab& mf_iblank)
+    const amrex::iMultiFab& mf_iblank)
 {
     int ncompx = mf_fx.nComp();
     int ncompy = mf_fy.nComp();
@@ -389,7 +389,7 @@ amrex::Real measure_convergence(
 }
 
 // Set levelset field to another quantity to view in plotfile for debugging
-void equate_field(amrex::MultiFab& mf_dest, amrex::MultiFab& mf_src)
+void equate_field(amrex::MultiFab& mf_dest, const amrex::MultiFab& mf_src)
 {
     for (amrex::MFIter mfi(mf_dest); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
@@ -406,11 +406,11 @@ void equate_field(amrex::MultiFab& mf_dest, amrex::MultiFab& mf_src)
 }
 
 // Replace pressure gradient with hydrostatic field in overset regions
-void replace_gradp_hs(
+void replace_gradp_hydrostatic(
     amrex::MultiFab& mf_gp,
-    amrex::MultiFab& mf_density,
-    amrex::MultiFab& mf_refdens,
-    amrex::iMultiFab& mf_iblank,
+    const amrex::MultiFab& mf_density,
+    const amrex::MultiFab& mf_refdens,
+    const amrex::iMultiFab& mf_iblank,
     const amrex::Real grav_z,
     const bool is_pptb)
 {
@@ -439,8 +439,8 @@ void replace_gradp_hs(
 // Swap pressure gradient values in overset region
 void replace_gradp(
     amrex::MultiFab& mf_gp,
-    amrex::MultiFab& mf_gp0,
-    amrex::iMultiFab& mf_iblank)
+    const amrex::MultiFab& mf_gp0,
+    const amrex::iMultiFab& mf_iblank)
 {
     for (amrex::MFIter mfi(mf_gp); mfi.isValid(); ++mfi) {
         const auto& gbx = mfi.growntilebox();
@@ -462,8 +462,8 @@ void replace_gradp(
 // Apply pressure gradient to velocity field
 void apply_pressure_gradient(
     amrex::MultiFab& mf_vel,
-    amrex::MultiFab& mf_density,
-    amrex::MultiFab& mf_gp,
+    const amrex::MultiFab& mf_density,
+    const amrex::MultiFab& mf_gp,
     const amrex::Real scaling_factor)
 {
     for (amrex::MFIter mfi(mf_gp); mfi.isValid(); ++mfi) {

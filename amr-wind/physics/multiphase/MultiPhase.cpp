@@ -521,7 +521,8 @@ void MultiPhase::levelset2vof()
 }
 
 // Do levelset2vof with iblank neumann and into supplied scratch field
-void MultiPhase::levelset2vof(IntField& iblank_cell, ScratchField& vof_scr)
+void MultiPhase::levelset2vof(
+    const IntField& iblank_cell, ScratchField& vof_scr)
 {
     const int nlevels = m_sim.repo().num_active_levels();
     (*m_levelset).fillpatch(m_sim.time().current_time());
