@@ -12,6 +12,12 @@ DragForcing::DragForcing(const CFDSim& sim)
     , m_mesh(sim.mesh())
     , m_velocity(sim.repo().get_field("velocity"))
 {
+    amrex::ParmParse pp("DragForcing");
+    pp.query("dragCoefficient", m_drag);
+    pp.query("spongeStrength", m_spongeStrength);
+    pp.query("spongeDensity", m_spongeDensity);
+    pp.query("spongeDistanceX", m_spongeDistanceX);
+    pp.query("spongeDistanceY", m_spongeDistanceY);
     const auto& phy_mgr = m_sim.physics_manager();
     if (phy_mgr.contains("ABL")) {
         const auto& abl = m_sim.physics_manager().get<amr_wind::ABL>();
@@ -25,14 +31,9 @@ DragForcing::DragForcing(const CFDSim& sim)
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, fa_velocity.line_average().begin(),
             fa_velocity.line_average().end(), gpu_vel_vals.begin());
+    } else {
+        m_spongeStrength = 0.0;
     }
-    amrex::ParmParse pp("DragForcing");
-    pp.query("dragCoefficient", m_drag);
-    pp.query("spongeStrength", m_spongeStrength);
-    pp.query("spongeDensity", m_spongeDensity);
-    pp.query("spongeDistanceX", m_spongeDistanceX);
-    pp.query("spongeDistanceY", m_spongeDistanceY);
-    pp.query("verificationMode", m_verificationMode);
 }
 
 DragForcing::~DragForcing() = default;
@@ -64,9 +65,14 @@ void DragForcing::operator()(
     const amrex::Real gpu_drag = m_drag;
     const amrex::Real gpu_spongeStrength = m_spongeStrength;
     const amrex::Real gpu_spongeDensity = m_spongeDensity;
-    const amrex::Real gpu_startX = prob_hi[0] - m_spongeDistanceX;
-    const amrex::Real gpu_startY = prob_hi[1] - m_spongeDistanceY;
-    const amrex::Real gpu_verificationMode = m_verificationMode;
+    const amrex::Real gpu_startX = (m_spongeDistanceX > 0)
+                                       ? prob_hi[0] - m_spongeDistanceX
+                                       : prob_lo[0] - m_spongeDistanceX;
+    const amrex::Real gpu_startY = (m_spongeDistanceY > 0)
+                                       ? prob_hi[1] - m_spongeDistanceY
+                                       : prob_lo[1] - m_spongeDistanceY;
+    const amrex::Real gpu_spongeX = (m_spongeDistanceX > 0) ? 1 : 0;
+    const amrex::Real gpu_spongeY = (m_spongeDistanceY > 0) ? 1 : 0;
     // Copy Data
     const auto* local_gpu_vel_ht = gpu_vel_ht.data();
     const auto* local_gpu_vel_vals = gpu_vel_vals.data();
@@ -77,16 +83,16 @@ void DragForcing::operator()(
         const amrex::Real x3 = prob_lo[2] + (k + 0.5) * dx[2];
         amrex::Real xdamping = 0;
         amrex::Real ydamping = 0;
-        if (x1 > gpu_startX) {
-            amrex::Real xi = (x1 - gpu_startX) / (prob_hi[0] - gpu_startX);
-            xdamping =
-                (1 - gpu_verificationMode) * gpu_spongeStrength * xi * xi;
-        }
-        if (x2 > gpu_startY) {
-            amrex::Real yi = (x2 - gpu_startY) / (prob_hi[1] - gpu_startY);
-            ydamping =
-                (1 - gpu_verificationMode) * gpu_spongeStrength * yi * yi;
-        }
+        amrex::Real xi = (gpu_spongeX == 1)
+                             ? (x1 - gpu_startX) / (prob_hi[0] - gpu_startX)
+                             : (gpu_startX - x1) / (gpu_startX - prob_lo[0]);
+        xi = std::max(xi, 0.0);
+        xdamping = gpu_spongeStrength * xi * xi;
+        amrex::Real yi = (gpu_spongeY == 1)
+                             ? (x2 - gpu_startY) / (prob_hi[1] - gpu_startY)
+                             : (gpu_startY - x2) / (gpu_startY - prob_lo[1]);
+        yi = std::max(yi, 0.0);
+        ydamping = gpu_spongeStrength * yi * yi;
         amrex::Real Cd = gpu_drag / dx[0];
         amrex::Real gpu_spongeVelX = 0.0;
         amrex::Real gpu_spongeVelY = 0.0;
@@ -119,7 +125,7 @@ void DragForcing::operator()(
             const amrex::Real m2 = std::sqrt(ux2 * ux2 + uy2 * uy2);
             const amrex::Real kappa = 0.41;
             const amrex::Real z0 = std::max(terrainz0(i, j, k), 1e-4);
-            const amrex::Real ustar = (1 - gpu_verificationMode) *
+            const amrex::Real ustar = std::min(gpu_spongeStrength, 1.0) *
                                       std::abs(m2 - m1) * kappa /
                                       std::log((x3 + z0) / z0);
             Dxz = -ustar * ustar * ux1 /

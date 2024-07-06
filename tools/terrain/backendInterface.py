@@ -35,7 +35,7 @@ class amrBackend():
             caseTerrain=Path(self.caseParent,self.caseName,"terrainTurbine")
             self.caseTerrain=caseTerrain.as_posix()
             caseTerrain.mkdir(parents=True,exist_ok=True)    
-        self.caseDomainType=self.yamlFile['domainType']
+        #self.caseDomainType=self.yamlFile['domainType']
         # if(self.caseDomainType=="corners"):
         #     pass
         self.caseNorth=self.yamlFile['north']
@@ -151,11 +151,14 @@ class amrBackend():
         minZ=np.amin(self.terrainX3)
         maxX=np.amax(self.terrainX1)
         maxY=np.amax(self.terrainX2)
-        terrainZMax=np.amax(self.terrainX3)
-        # Add 3 km for Rayleigh 
-        maxZ=terrainZMax+2000+3000
+        self.terrainZMax=np.amax(self.terrainX3)
+        # Add 1 km for ABL and 4 km for Rayleigh
+        self.ABLHeight=1000
+        self.RDLHeight=2000
+        self.maxZ=self.terrainZMax+self.ABLHeight+self.RDLHeight
+        self.maxZ=round(self.maxZ,-3)
         target.write("geometry.prob_lo \t\t\t = %g %g %g \n"%(minX,minY,minZ))
-        target.write("geometry.prob_hi \t\t\t = %g %g %g \n"%(maxX,maxY,maxZ))
+        target.write("geometry.prob_hi \t\t\t = %g %g %g \n"%(maxX,maxY,self.maxZ))
         if(periodic==1):
             target.write("geometry.is_periodic \t\t\t = 1 1 0\n")
         else:
@@ -170,16 +173,17 @@ class amrBackend():
         while (ny%8 !=0):
             ny=ny+1
         # Keeping the vertical height to account for gravity waves 
-        terrainZMax=np.amax(self.terrainX3)
-        # Add 3 km for Rayleigh 
-        zDomainHeight=terrainZMax+2000+3000
-        print("Terrain Maximum Height:",terrainZMax)
-        print("Domain Height:",zDomainHeight) 
+        # terrainZMax=np.amax(self.terrainX3)
+        # # Add 4 km for Rayleigh 
+        # zDomainHeight=terrainZMax+4000+4000
+        # zDomainHeight=zDomainHeight-(zDomainHeight%1000)
+        # print("Terrain Maximum Height:",terrainZMax)
+        # print("Domain Height:",zDomainHeight) 
         self.caseverticalAR=self.yamlFile['verticalAR']
-        nz=self.caseverticalAR*int(zDomainHeight/self.caseCellSize)
+        nz=self.caseverticalAR*int(self.maxZ/self.caseCellSize)
         while (nz%8 !=0):
             nz=nz+1
-        print("dx,dz",self.caseCellSize,zDomainHeight/nz)
+        print("dx,dz",self.caseCellSize,self.maxZ/nz)
         target.write("# Grid \n")
         target.write("amr.n_cell \t\t\t = %g %g %g\n"%(nx,ny,nz))
         target.write("amr.max_level \t\t\t = 0\n")
@@ -194,7 +198,7 @@ class amrBackend():
         self.restartOutput=self.yamlFile['restartOutput']
         target.write("time.stop_time \t\t\t = -1\n")
         target.write("time.max_step \t\t\t = %g\n"%(self.timeSteps))
-        target.write("time.initial_dt \t\t\t = 0.1\n")
+        target.write("time.initial_dt \t\t\t = 1.0\n")
         target.write("time.fixed_dt \t\t\t = -1\n")
         target.write("time.cfl \t\t\t = 0.9\n")
         target.write('time.plot_interval \t\t\t = %g\n'%(self.plotOutput))
@@ -258,31 +262,13 @@ class amrBackend():
         target.write("ABL.stats_output_format \t\t\t = netcdf\n")
         target.write("ABL.surface_roughness_z0 \t\t\t = %g\n"%(self.refRoughness))
         # Write Heights 
-        target.write("ABL.temperature_heights = 0  ") #750 850 1850 2850 3850 4850\n")
-        invLayer=750
-        target.write(" %g %g "%(np.amax(self.terrainX3),np.amax(self.terrainX3)+invLayer))
-        invLayerWidth=100 
-        target.write(" %g "%(np.amax(self.terrainX3)+invLayer+invLayerWidth))
-        zstart=np.amax(self.terrainX3)+invLayer+invLayerWidth+1000
-        while(zstart<10000):
-            target.write(" %g "%(zstart))
-            zstart+=1000
-        #target.write("ABL.temperature_values  \t\t\t = 300 300 308 311 314   317 321\n")
-        target.write("\n")
+        inversionHeight=round(self.terrainZMax,-3)+1000
+        inversionLayerThickness=round(self.terrainZMax,-3)+1000+100
+        lapseRate=0.003 
+        target.write("ABL.temperature_heights = %g %g %g %g %g \n"%(0.0,round(self.terrainZMax,-3),inversionHeight,inversionLayerThickness,self.maxZ)) 
         TRef=300
-        target.write("ABL.temperature_values  = %g "%(TRef))    
-        invLayer=750
-        target.write(" %g %g "%(TRef,TRef))
-        invStrength=8
-        target.write(" %g "%(TRef+invStrength))
-        zstart=np.amax(self.terrainX3)+invLayer+invLayerWidth+1000
-        lapseRate=3.0 # Per km 
-        TRef=TRef+invStrength+lapseRate
-        zstart=np.amax(self.terrainX3)+invLayer+invLayerWidth+1000
-        while(zstart<10000):
-            target.write(" %g "%(TRef))
-            zstart+=1000
-            TRef+=3
+        print(self.maxZ-inversionLayerThickness)
+        target.write("ABL.temperature_values  = %g %g %g %g %g "%(TRef,TRef,TRef,TRef+5,TRef+5+lapseRate*(self.maxZ-inversionLayerThickness)))    
         target.write("\n")
         target.write("ABL.wall_shear_stress_type \t\t\t = local\n")
         target.write("ABL.surface_temp_flux \t\t\t = %g\n"%(self.refHeatFlux))
@@ -315,22 +301,62 @@ class amrBackend():
         target.write("# Source\n")
         refLat=self.yamlFile["refLat"]
         refPeriod=self.yamlFile["refPeriod"]
-        if(terrain==1 and turbine==1):
-            target.write("ICNS.source_terms \t\t\t = BoussinesqBuoyancy CoriolisForcing GeostrophicForcing RayleighDamping NonLinearSGSTerm DragForcing ActuatorForcing \n")
-        elif(terrain==1):    
-            target.write("ICNS.source_terms \t\t\t = BoussinesqBuoyancy CoriolisForcing GeostrophicForcing RayleighDamping NonLinearSGSTerm DragForcing\n")
+        try: 
+            self.includeCoriolis=self.yamlFile["includeCoriolis"]
+        except:
+            self.includeCoriolis=False 
+        if(self.includeCoriolis):
+            try:
+                self.forcingHeight=self.yamlFile["forcingHeight"]
+            except: 
+                if(terrain==1 and turbine==1):
+                    target.write("ICNS.source_terms \t\t\t = BoussinesqBuoyancy CoriolisForcing GeostrophicForcing RayleighDamping NonLinearSGSTerm DragForcing ActuatorForcing \n")
+                elif(terrain==1):    
+                    target.write("ICNS.source_terms \t\t\t = BoussinesqBuoyancy CoriolisForcing GeostrophicForcing RayleighDamping NonLinearSGSTerm DragForcing\n")
+                else:
+                    target.write("ICNS.source_terms \t\t\t = BoussinesqBuoyancy CoriolisForcing GeostrophicForcing RayleighDamping NonLinearSGSTerm\n")
+                target.write("GeostrophicForcing.geostrophic_wind \t\t\t = %g %g %g\n"%(self.caseWindspeedX,self.caseWindspeedY,self.caseWindspeedZ))
+            else:
+                if(terrain==1 and turbine==1):
+                    target.write("ICNS.source_terms \t\t\t = BoussinesqBuoyancy CoriolisForcing ABLForcing RayleighDamping NonLinearSGSTerm DragForcing ActuatorForcing \n")
+                elif(terrain==1):    
+                    target.write("ICNS.source_terms \t\t\t = BoussinesqBuoyancy CoriolisForcing ABLForcing RayleighDamping NonLinearSGSTerm DragForcing\n")
+                else:
+                    target.write("ICNS.source_terms \t\t\t = BoussinesqBuoyancy CoriolisForcing ABLForcing RayleighDamping NonLinearSGSTerm\n")
+                target.write("ABLForcing.abl_forcing_height \t\t\t = %g \n"%(self.forcingHeight))
         else:
-            target.write("ICNS.source_terms \t\t\t = BoussinesqBuoyancy CoriolisForcing GeostrophicForcing RayleighDamping NonLinearSGSTerm\n")
+            try:
+                self.forcingHeight=self.yamlFile["forcingHeight"]
+            except: 
+                if(terrain==1 and turbine==1):
+                    target.write("ICNS.source_terms \t\t\t = BoussinesqBuoyancy GeostrophicForcing RayleighDamping NonLinearSGSTerm DragForcing ActuatorForcing \n")
+                elif(terrain==1):    
+                    target.write("ICNS.source_terms \t\t\t = BoussinesqBuoyancy GeostrophicForcing RayleighDamping NonLinearSGSTerm DragForcing\n")
+                else:
+                    target.write("ICNS.source_terms \t\t\t = BoussinesqBuoyancy GeostrophicForcing RayleighDamping NonLinearSGSTerm\n")
+                target.write("GeostrophicForcing.geostrophic_wind \t\t\t = %g %g %g\n"%(self.caseWindspeedX,self.caseWindspeedY,self.caseWindspeedZ))
+            else:
+                if(terrain==1 and turbine==1):
+                    target.write("ICNS.source_terms \t\t\t = BoussinesqBuoyancy ABLForcing RayleighDamping NonLinearSGSTerm DragForcing ActuatorForcing \n")
+                elif(terrain==1):    
+                    target.write("ICNS.source_terms \t\t\t = BoussinesqBuoyancy ABLForcing RayleighDamping NonLinearSGSTerm DragForcing\n")
+                else:
+                    target.write("ICNS.source_terms \t\t\t = BoussinesqBuoyancy ABLForcing RayleighDamping NonLinearSGSTerm\n")
+                target.write("ABLForcing.abl_forcing_height \t\t\t = %g \n"%(self.forcingHeight))
+        if(terrain==1 or turbine==1):
+            target.write("Temperature.source_terms = DragTempForcing\n")
+        target.write("RayleighDamping.force_coord_directions= 0 0 1\n")
         target.write("BoussinesqBuoyancy.reference_temperature \t\t\t = %g\n"%(self.refTemperature))
         target.write("BoussinesqBuoyancy.thermal_expansion_coeff \t\t\t = %g\n"%(1.0/self.refTemperature))
-        target.write("CoriolisForcing.east_vector \t\t\t = 1.0 0.0 0.0 \n")
-        target.write("CoriolisForcing.north_vector \t\t\t = 0.0 1.0 0.0 \n")
-        target.write("CoriolisForcing.latitude \t\t\t = %g \n"%(refLat))
-        target.write("CoriolisForcing.rotational_time_period \t\t\t = %g \n"%(refPeriod))
-        target.write("GeostrophicForcing.geostrophic_wind \t\t\t = %g %g %g\n"%(self.caseWindspeedX,self.caseWindspeedY,self.caseWindspeedZ))
+        if(self.includeCoriolis):
+            target.write("CoriolisForcing.east_vector \t\t\t = 1.0 0.0 0.0 \n")
+            target.write("CoriolisForcing.north_vector \t\t\t = 0.0 1.0 0.0 \n")
+            target.write("CoriolisForcing.latitude \t\t\t = %g \n"%(refLat))
+            target.write("CoriolisForcing.rotational_time_period \t\t\t = %g \n"%(refPeriod))
         target.write("RayleighDamping.reference_velocity \t\t\t = %g %g %g\n"%(self.caseWindspeedX,self.caseWindspeedY,self.caseWindspeedZ))
-        target.write("RayleighDamping.length_sloped_damping \t\t\t = 500\n")
-        target.write("RayleighDamping.length_complete_damping \t\t\t = 2500\n")
+        startRayleigh=self.maxZ-self.RDLHeight
+        target.write("RayleighDamping.length_sloped_damping \t\t\t = %g\n"%(500))
+        target.write("RayleighDamping.length_complete_damping \t\t\t = %g\n"%(self.maxZ-startRayleigh-500))
         target.write("RayleighDamping.time_scale \t\t\t = 20.0\n")     
 
     def createAMRBC(self,target,inflowOutflow=-1):
@@ -403,7 +429,10 @@ class amrBackend():
 
     def metMastRefinement(self,target):
         # Read Met Mast 
-        latList=self.yamlFile['metMastLat']
+        try:
+            latList=self.yamlFile['metMastLat']
+        except:
+            return 
         lonList=self.yamlFile['metMastLon']
         metMastHeight=self.yamlFile['metMastHeight']
         print(latList,len(latList))
@@ -608,9 +637,11 @@ class amrBackend():
 
     def createTurbineFiles(self):
         print("Creating Turbines")
-        latmin,lonmin=self.srtm.to_latlon(self.terrainX1[0,0],self.terrainX2[0,0])
-        latmax,lonmax=self.srtm.to_latlon(self.terrainX1[self.terrainX1.shape[0]-1,self.terrainX1.shape[1]-1], \
-                                          self.terrainX2[self.terrainX1.shape[0]-1,self.terrainX1.shape[1]-1])
+        latmin,lonmin=self.srtm.to_latlon(self.xref-abs(np.amin(self.terrainX1)),self.yref-abs(np.amin(self.terrainX2)))
+        latmax,lonmax=self.srtm.to_latlon(np.amax(self.terrainX1)+self.xref,np.amax(self.terrainX2)+self.yref)
+        print(self.xref,self.yref)
+        print(latmin,lonmin)
+        print(latmax,lonmax)
         self.turbineMarkType=self.yamlFile['turbineMarkType']
         if(self.turbineMarkType=='database'):
             xmin=latmin+0.01
@@ -634,7 +665,7 @@ class amrBackend():
                     index=index+1
                     self.caseTurbineLat.append(lat[i])
                     self.caseTurbineLon.append(lon[i]) 
-                    #print(xmin,xmax,lat[i],ymin,ymax,lon[i])
+                    print(xmin,xmax,lat[i],ymin,ymax,lon[i])
             target=Path(self.caseParent,self.caseName,"terrainTurbine","turbineLabels.info").open("w")
             target.write("Actuator.labels =")
             index=0
@@ -806,8 +837,8 @@ class amrBackend():
         pl = pv.Plotter()
         mesh2=pv.PolyData(data)
         mesh2['elevation']=data[:,2]
-        surf = mesh2.delaunay_2d()
-        pl.add_mesh(surf)
+        #surf = mesh2.delaunay_2d()
+        #pl.add_mesh(surf)
         for i in range(0,len(self.turbineX1)):
                 print("Plotting turbine",i+1)
                 newDisk=pv.Disc(center=(self.turbineX1[i],self.turbineX2[i],self.turbineX3[i]+80),inner=8,outer=50,normal=(1.0, 0.0,0.0), r_res=1, c_res=24)

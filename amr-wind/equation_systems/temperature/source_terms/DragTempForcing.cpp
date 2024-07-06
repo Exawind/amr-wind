@@ -14,6 +14,7 @@ DragTempForcing::DragTempForcing(const CFDSim& sim)
 {
     amrex::ParmParse pp("DragTempForcing");
     pp.query("dragCoefficient", m_drag);
+    pp.query("RefT", m_internalRefT);
 }
 
 DragTempForcing::~DragTempForcing() = default;
@@ -36,7 +37,7 @@ void DragTempForcing::operator()(
     const auto& geom = geom_vec[lev];
     const auto& dx = geom.CellSize();
     const amrex::Real gpu_drag = m_drag;
-    const amrex::Real gpu_TRef = 300.0;
+    const amrex::Real gpu_TRef = m_internalRefT;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::Real Cd = gpu_drag / dx[0];
         src_term(i, j, k, 0) -=

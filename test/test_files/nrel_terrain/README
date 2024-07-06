@@ -1,0 +1,6 @@
+This is the sample terrain case. You need to run "python3.XX backendinterface.py NREL.yaml" in the tools/terrain folder.
+The output of the python execution will be a file "terrain.amrwind". This file needs to be copied to this folder before 
+execution to avoid an error message. 
+
+The python tool backendinterface.py generates both precursor and terrain case folders. Modify the NREL.yaml file to cater
+to your needs and generate the cases. The terrain cases are designed to run with the Kosovic turbulence model. 

@@ -40,7 +40,6 @@ private:
     amrex::Real m_spongeDensity{1.0};
     amrex::Real m_spongeDistanceX{1000};
     amrex::Real m_spongeDistanceY{1000};
-    amrex::Real m_verificationMode{0};
 };
 
 } // namespace amr_wind::pde::icns

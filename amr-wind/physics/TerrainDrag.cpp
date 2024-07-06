@@ -16,8 +16,8 @@ TerrainDrag::TerrainDrag(CFDSim& sim)
     , m_repo(sim.repo())
     , m_mesh(sim.mesh())
     , m_velocity(sim.repo().get_field("velocity"))
-    , m_terrainBlank(sim.repo().declare_int_field("terrainBlank", 1, 1, 1))
-    , m_terrainDrag(sim.repo().declare_int_field("terrainDrag", 1, 1, 1))
+    , m_terrainBlank(sim.repo().declare_field("terrainBlank", 1, 1, 1))
+    , m_terrainDrag(sim.repo().declare_field("terrainDrag", 1, 1, 1))
     , m_terrainz0(sim.repo().declare_field("terrainz0", 1, 1, 1))
 {
     std::string terrainfile("terrain.amrwind");
@@ -174,7 +174,7 @@ int TerrainDrag::returnBlankValue(int i, int j, int k)
     int lev = 0;
     amrex::MFIter mfi(m_terrainBlank(lev));
     const auto& levelBlanking = m_terrainBlank(lev).const_array(mfi);
-    return levelBlanking(i, j, k);
+    return int(levelBlanking(i, j, k));
 }
 
 } // namespace amr_wind::terraindrag
