@@ -310,18 +310,15 @@ lower_bound(FType& field, const amrex::Real min_value, const int icomp = 0)
     const auto& repo = field.repo();
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
-
-        for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& field_arr = field(lev).array(mfi);
-
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    field_arr(i, j, k, icomp) =
-                        amrex::max(min_value, field_arr(i, j, k, icomp));
-                });
-        }
+        const auto& farrs = field(lev).arrays();
+        amrex::ParallelFor(
+            field(lev),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                farrs[nbx](i, j, k, icomp) =
+                    amrex::max(min_value, farrs[nbx](i, j, k, icomp));
+            });
     }
+    amrex::Gpu::synchronize();
 }
 
 /** Computes the global maximum of a field from all levels
@@ -378,28 +375,25 @@ inline void normalize(FType& field)
 
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
-
-        for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& field_arr = field(lev).array(mfi);
-
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    // Compute magnitude
-                    amrex::Real mag = 0.;
+        const auto& farrs = field(lev).arrays();
+        amrex::ParallelFor(
+            field(lev),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                auto farr = farrs[nbx];
+                // Compute magnitude
+                amrex::Real mag = 0.;
+                for (int icomp = 0; icomp < ncomp; ++icomp) {
+                    mag = mag + farr(i, j, k, icomp) * farr(i, j, k, icomp);
+                }
+                if (mag > eps) {
                     for (int icomp = 0; icomp < ncomp; ++icomp) {
-                        mag = mag + field_arr(i, j, k, icomp) *
-                                        field_arr(i, j, k, icomp);
+                        farr(i, j, k, icomp) =
+                            farr(i, j, k, icomp) / std::sqrt(mag);
                     }
-                    if (mag > eps) {
-                        for (int icomp = 0; icomp < ncomp; ++icomp) {
-                            field_arr(i, j, k, icomp) =
-                                field_arr(i, j, k, icomp) / std::sqrt(mag);
-                        }
-                    }
-                });
-        }
+                }
+            });
     }
+    amrex::Gpu::synchronize();
 }
 
 } // namespace amr_wind::field_ops
