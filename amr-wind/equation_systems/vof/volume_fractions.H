@@ -25,18 +25,18 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_finite_difference_normal(
     amrex::Real& my,
     amrex::Real& mz) noexcept
 {
-    amrex::Real mm1, mm2;
-
-    mm1 = volfrac(i - 1, j - 1, k - 1) + volfrac(i - 1, j - 1, k + 1) +
-          volfrac(i - 1, j + 1, k - 1) + volfrac(i - 1, j + 1, k + 1) +
-          2.0 * (volfrac(i - 1, j - 1, k) + volfrac(i - 1, j + 1, k) +
-                 volfrac(i - 1, j, k - 1) + volfrac(i - 1, j, k + 1)) +
-          4.0 * volfrac(i - 1, j, k);
-    mm2 = volfrac(i + 1, j - 1, k - 1) + volfrac(i + 1, j - 1, k + 1) +
-          volfrac(i + 1, j + 1, k - 1) + volfrac(i + 1, j + 1, k + 1) +
-          2.0 * (volfrac(i + 1, j - 1, k) + volfrac(i + 1, j + 1, k) +
-                 volfrac(i + 1, j, k - 1) + volfrac(i + 1, j, k + 1)) +
-          4.0 * volfrac(i + 1, j, k);
+    amrex::Real mm1 =
+        volfrac(i - 1, j - 1, k - 1) + volfrac(i - 1, j - 1, k + 1) +
+        volfrac(i - 1, j + 1, k - 1) + volfrac(i - 1, j + 1, k + 1) +
+        2.0 * (volfrac(i - 1, j - 1, k) + volfrac(i - 1, j + 1, k) +
+               volfrac(i - 1, j, k - 1) + volfrac(i - 1, j, k + 1)) +
+        4.0 * volfrac(i - 1, j, k);
+    amrex::Real mm2 =
+        volfrac(i + 1, j - 1, k - 1) + volfrac(i + 1, j - 1, k + 1) +
+        volfrac(i + 1, j + 1, k - 1) + volfrac(i + 1, j + 1, k + 1) +
+        2.0 * (volfrac(i + 1, j - 1, k) + volfrac(i + 1, j + 1, k) +
+               volfrac(i + 1, j, k - 1) + volfrac(i + 1, j, k + 1)) +
+        4.0 * volfrac(i + 1, j, k);
     mx = mm1 - mm2;
 
     mm1 = volfrac(i - 1, j - 1, k - 1) + volfrac(i - 1, j - 1, k + 1) +
@@ -77,8 +77,6 @@ youngs_finite_difference_normal_neumann(
     amrex::Real& my,
     amrex::Real& mz) noexcept
 {
-    amrex::Real mm1, mm2;
-
     // Do neumann condition via indices
     const int im1 = ibdy == -1 ? i : i - 1;
     const int jm1 = jbdy == -1 ? j : j - 1;
@@ -87,16 +85,16 @@ youngs_finite_difference_normal_neumann(
     const int jp1 = jbdy == +1 ? j : j + 1;
     const int kp1 = kbdy == +1 ? k : k + 1;
 
-    mm1 = volfrac(im1, jm1, km1) + volfrac(im1, jm1, kp1) +
-          volfrac(im1, jp1, km1) + volfrac(im1, jp1, kp1) +
-          2.0 * (volfrac(im1, jm1, k) + volfrac(im1, jp1, k) +
-                 volfrac(im1, j, km1) + volfrac(im1, j, kp1)) +
-          4.0 * volfrac(im1, j, k);
-    mm2 = volfrac(ip1, jm1, km1) + volfrac(ip1, jm1, kp1) +
-          volfrac(ip1, jp1, km1) + volfrac(ip1, jp1, kp1) +
-          2.0 * (volfrac(ip1, jm1, k) + volfrac(ip1, jp1, k) +
-                 volfrac(ip1, j, km1) + volfrac(ip1, j, kp1)) +
-          4.0 * volfrac(ip1, j, k);
+    amrex::Real mm1 = volfrac(im1, jm1, km1) + volfrac(im1, jm1, kp1) +
+                      volfrac(im1, jp1, km1) + volfrac(im1, jp1, kp1) +
+                      2.0 * (volfrac(im1, jm1, k) + volfrac(im1, jp1, k) +
+                             volfrac(im1, j, km1) + volfrac(im1, j, kp1)) +
+                      4.0 * volfrac(im1, j, k);
+    amrex::Real mm2 = volfrac(ip1, jm1, km1) + volfrac(ip1, jm1, kp1) +
+                      volfrac(ip1, jp1, km1) + volfrac(ip1, jp1, kp1) +
+                      2.0 * (volfrac(ip1, jm1, k) + volfrac(ip1, jp1, k) +
+                             volfrac(ip1, j, km1) + volfrac(ip1, j, kp1)) +
+                      4.0 * volfrac(ip1, j, k);
     mx = mm1 - mm2;
 
     mm1 = volfrac(im1, jm1, km1) + volfrac(im1, jm1, kp1) +
@@ -134,15 +132,14 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void mixed_youngs_central_normal(
     amrex::Real& mz) noexcept
 {
     amrex::Array2D<amrex::Real, 0, AMREX_SPACEDIM + 1, 0, AMREX_SPACEDIM> m;
-    amrex::Real m1, m2;
     // write the plane as: sgn(mx) X =  my Y +  mz Z + alpha
     //                           m00 X = m01 Y + m02 Z + alpha
-    m1 = volfrac(i - 1, j, k - 1) + volfrac(i - 1, j, k + 1) +
-         volfrac(i - 1, j - 1, k) + volfrac(i - 1, j + 1, k) +
-         volfrac(i - 1, j, k);
-    m2 = volfrac(i + 1, j, k - 1) + volfrac(i + 1, j, k + 1) +
-         volfrac(i + 1, j - 1, k) + volfrac(i + 1, j + 1, k) +
-         volfrac(i + 1, j, k);
+    amrex::Real m1 = volfrac(i - 1, j, k - 1) + volfrac(i - 1, j, k + 1) +
+                     volfrac(i - 1, j - 1, k) + volfrac(i - 1, j + 1, k) +
+                     volfrac(i - 1, j, k);
+    amrex::Real m2 = volfrac(i + 1, j, k - 1) + volfrac(i + 1, j, k + 1) +
+                     volfrac(i + 1, j - 1, k) + volfrac(i + 1, j + 1, k) +
+                     volfrac(i + 1, j, k);
 
     m(0, 0) = (m1 > m2) ? 1.0 : -1.0;
 
