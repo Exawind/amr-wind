@@ -421,7 +421,6 @@ void replace_gradp_hydrostatic(
         const amrex::Array4<const int>& iblank = mf_iblank.const_array(mfi);
         amrex::ParallelFor(
             gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                // Replace amr-wind vof values with originals
                 if (iblank(i, j, k) == -1) {
                     const amrex::Real dfac =
                         is_pptb ? rho(i, j, k) - rho0(i, j, k) : rho(i, j, k);
@@ -446,7 +445,6 @@ void replace_gradp(
         const amrex::Array4<const int>& iblank = mf_iblank.const_array(mfi);
         amrex::ParallelFor(
             gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                // Replace amr-wind vof values with originals
                 if (iblank(i, j, k) == -1) {
                     gp(i, j, k, 0) = gp0(i, j, k, 0);
                     gp(i, j, k, 1) = gp0(i, j, k, 1);
