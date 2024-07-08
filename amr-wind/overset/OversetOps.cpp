@@ -212,6 +212,7 @@ void OversetOps::sharpen_nalu_data()
         // Populate approximate signed distance function
         overset_ops::populate_psi(levelset(lev), vof(lev), i_th, m_asdf_tiny);
     }
+    amrex::Gpu::synchronize();
 
     // Convert levelset to vof to get target_vof
     m_mphase->levelset2vof(iblank_cell, *target_vof);
@@ -221,12 +222,14 @@ void OversetOps::sharpen_nalu_data()
         // A tolerance of 0 should do nothing
         overset_ops::process_vof((*target_vof)(lev), m_target_cutoff);
     }
+    amrex::Gpu::synchronize();
 
     // Replace vof with original values in amr domain
     for (int lev = 0; lev < nlevels; ++lev) {
         overset_ops::harmonize_vof(
             (*target_vof)(lev), vof(lev), iblank_cell(lev));
     }
+    amrex::Gpu::synchronize();
 
     // Put fluxes in vector for averaging down during iterations
     amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> fluxes(
@@ -275,6 +278,7 @@ void OversetOps::sharpen_nalu_data()
                 err = amrex::max(err, err_lev);
             }
         }
+        amrex::Gpu::synchronize();
 
         // Average down fluxes across levels for consistency
         for (int lev = nlevels - 1; lev > 0; --lev) {
@@ -305,6 +309,7 @@ void OversetOps::sharpen_nalu_data()
                 (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev),
                 rho(lev), velocity(lev), ptfac, m_vof_tol);
         }
+        amrex::Gpu::synchronize();
 
         // Fillpatch for ghost cells
         vof.fillpatch((*m_sim_ptr).time().current_time());
@@ -330,6 +335,7 @@ void OversetOps::sharpen_nalu_data()
     for (int lev = 0; lev < nlevels; ++lev) {
         overset_ops::equate_field(levelset(lev), velocity(lev));
     }
+    amrex::Gpu::synchronize();
 }
 
 void OversetOps::set_hydrostatic_gradp()
