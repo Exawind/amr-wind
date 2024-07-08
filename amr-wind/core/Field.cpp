@@ -391,22 +391,17 @@ void Field::to_uniform_space() noexcept
 
     // scale velocity to accommodate for mesh mapping -> U^bar = U * J/fac
     for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
-        for (amrex::MFIter mfi(mesh_fac(lev)); mfi.isValid(); ++mfi) {
-
-            amrex::Array4<amrex::Real> const& field = operator()(lev).array(
-                mfi);
-            amrex::Array4<amrex::Real const> const& fac =
-                mesh_fac(lev).const_array(mfi);
-            amrex::Array4<amrex::Real const> const& detJ =
-                mesh_detJ(lev).const_array(mfi);
-
-            amrex::ParallelFor(
-                mfi.growntilebox(), AMREX_SPACEDIM,
-                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                    field(i, j, k, n) *= detJ(i, j, k) / fac(i, j, k, n);
-                });
-        }
+        const auto& fac = mesh_fac(lev).const_arrays();
+        const auto& detJ = mesh_detJ(lev).const_arrays();
+        const auto& field = operator()(lev).arrays();
+        amrex::ParallelFor(
+            mesh_fac(lev), num_grow(), operator()(lev).nComp(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+                field[nbx](i, j, k, n) *=
+                    detJ[nbx](i, j, k) / fac[nbx](i, j, k, n);
+            });
     }
+    amrex::Gpu::synchronize();
     m_mesh_mapped = true;
 }
 
@@ -426,21 +421,18 @@ void Field::to_stretched_space() noexcept
 
     // scale field back to stretched mesh -> U = U^bar * fac/J
     for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
-        for (amrex::MFIter mfi(mesh_fac(lev)); mfi.isValid(); ++mfi) {
-            amrex::Array4<amrex::Real> const& field = operator()(lev).array(
-                mfi);
-            amrex::Array4<amrex::Real const> const& fac =
-                mesh_fac(lev).const_array(mfi);
-            amrex::Array4<amrex::Real const> const& detJ =
-                mesh_detJ(lev).const_array(mfi);
 
-            amrex::ParallelFor(
-                mfi.growntilebox(), AMREX_SPACEDIM,
-                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                    field(i, j, k, n) *= fac(i, j, k, n) / detJ(i, j, k);
-                });
-        }
+        const auto& fac = mesh_fac(lev).const_arrays();
+        const auto& detJ = mesh_detJ(lev).const_arrays();
+        const auto& field = operator()(lev).arrays();
+        amrex::ParallelFor(
+            mesh_fac(lev), num_grow(), operator()(lev).nComp(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+                field[nbx](i, j, k, n) *=
+                    fac[nbx](i, j, k, n) / detJ[nbx](i, j, k);
+            });
     }
+    amrex::Gpu::synchronize();
     m_mesh_mapped = false;
 }
 
