@@ -18,7 +18,7 @@ Kosovic<Transport>::Kosovic(CFDSim& sim)
     , m_vel(sim.repo().get_field("velocity"))
     , m_rho(sim.repo().get_field("density"))
     , m_Nij(sim.repo().declare_field("Nij", 9, 1, 1))
-    , m_divNij(sim.repo().declare_field("divNij", 3, 1, 1))
+    , m_divNij(sim.repo().declare_field("divNij", 3))
 {
     amrex::ParmParse pp("Kosovic");
     pp.query("Cb", m_Cb);

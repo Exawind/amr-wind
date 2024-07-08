@@ -44,16 +44,20 @@ private:
     const amrex::AmrCore& m_mesh;
     Field& m_velocity;
     // Blanking Field for Terrain or Buildings
-    Field& m_terrainBlank;
+    Field& m_terrain_blank;
     // Terrain Drag Force Term
-    Field& m_terrainDrag;
+    Field& m_terrain_drag;
     // Reading the Terrain Coordinates from  file
-    amrex::Vector<amrex::Real> m_xterrain, m_yterrain, m_zterrain;
+    amrex::Vector<amrex::Real> m_xterrain;
+    amrex::Vector<amrex::Real> m_yterrain;
+    amrex::Vector<amrex::Real> m_zterrain;
     // Roughness Field
     Field& m_terrainz0;
     // Reading the Roughness Coordinates from file - Not Fully there yet
     // Need updates to ABLWallFunction in future
-    amrex::Vector<amrex::Real> m_xrough, m_yrough, m_z0rough;
+    amrex::Vector<amrex::Real> m_xrough;
+    amrex::Vector<amrex::Real> m_yrough;
+    amrex::Vector<amrex::Real> m_z0rough;
 };
 } // namespace amr_wind::terraindrag
 

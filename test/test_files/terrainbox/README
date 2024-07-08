@@ -1,6 +1,0 @@
-This is a simple test case to verify the terrain setup. A box is created and a freestream velocity
-is specified. Diffusion is turned off. The flow field is sampled inside the terrain region. The sampled
-velocity should be a very small value (this method drives the cell center value towards zero).
-
-The createTerrain.py file can be used to change the size of the box and resolution. computeError.py file
-returns the mean value inside the box. 

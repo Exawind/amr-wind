@@ -33,13 +33,13 @@ private:
     const CFDSim& m_sim;
     const amrex::AmrCore& m_mesh;
     const Field& m_velocity;
-    amrex::Gpu::DeviceVector<amrex::Real> gpu_vel_ht;
-    amrex::Gpu::DeviceVector<amrex::Real> gpu_vel_vals;
+    amrex::Gpu::DeviceVector<amrex::Real> device_vel_ht;
+    amrex::Gpu::DeviceVector<amrex::Real> device_vel_vals;
     amrex::Real m_drag{100.0};
-    amrex::Real m_spongeStrength{1.0};
-    amrex::Real m_spongeDensity{1.0};
-    amrex::Real m_spongeDistanceX{1000};
-    amrex::Real m_spongeDistanceY{1000};
+    amrex::Real m_sponge_strength{1.0};
+    amrex::Real m_sponge_density{1.0};
+    amrex::Real m_sponge_distanceX{1000};
+    amrex::Real m_sponge_distanceY{1000};
 };
 
 } // namespace amr_wind::pde::icns

@@ -243,8 +243,7 @@ add_test_re(abl_godunov_rayleigh_damping)
 add_test_re(rankine)
 add_test_re(rankine-sym)
 add_test_re(terrainbox)
-add_test_re(nrel_precursor)
-add_test_re(nrel_terrain)
+
 
 if(NOT AMR_WIND_ENABLE_CUDA)
   add_test_re(ctv_godunov_plm)
@@ -302,6 +301,7 @@ add_test_red(abl_godunov_restart abl_godunov)
 add_test_red(abl_bndry_input_amr_native abl_bndry_output_native)
 add_test_red(abl_bndry_input_amr_native_mlbc abl_bndry_output_amr_native)
 add_test_red(abl_godunov_forcetimetable abl_godunov_timetable)
+add_test_red(nrel_precursor nrel_terrain)
 
 if(AMR_WIND_ENABLE_NETCDF)
   add_test_red(abl_bndry_input abl_bndry_output)
