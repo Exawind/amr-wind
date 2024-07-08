@@ -25,9 +25,8 @@ amrex::Real AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE alpha_flux(
 {
     // Set up neighbor indices
     const amrex::IntVect iv{i, j, k};
-    const amrex::IntVect ivm =
-        iv -
-        (amrex::IntVect){(int)(dir == 0), (int)(dir == 1), (int)(dir == 2)};
+    const amrex::IntVect v1{dir == 0, dir == 1, dir == 2};
+    const amrex::IntVect ivm = iv - v1;
 
     // Gradient of phi normal to interface
     const amrex::Real gphi = (vof(iv) - vof(ivm));
@@ -74,9 +73,8 @@ void AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE velocity_face(
 {
     // Set up neighbor indices
     const amrex::IntVect iv{i, j, k};
-    const amrex::IntVect ivm =
-        iv -
-        (amrex::IntVect){(int)(dir == 0), (int)(dir == 1), (int)(dir == 2)};
+    const amrex::IntVect v1{dir == 0, dir == 1, dir == 2};
+    const amrex::IntVect ivm = iv - v1;
 
     // Gradient of phi normal to interface
     const amrex::Real gphi = (vof(iv) - vof(ivm));
