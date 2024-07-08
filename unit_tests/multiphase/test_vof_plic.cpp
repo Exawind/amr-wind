@@ -39,11 +39,10 @@ void initialize_volume_fractions(
 {
     // grow the box by 1 so that x,y,z go out of bounds and min(max()) corrects
     // it and it fills the ghosts with wall values
-    const int d = dir;
     amrex::ParallelFor(grow(bx, 1), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-        int ii = (d != 0 ? i : 0);
-        int jj = (d != 1 ? j : 0);
-        int kk = (d != 2 ? k : 0);
+        int ii = (dir != 0 ? i : 0);
+        int jj = (dir != 1 ? j : 0);
+        int kk = (dir != 2 ? k : 0);
         if (ii + jj + kk > 3) {
             vof_arr(i, j, k) = 0.0;
         }
@@ -73,10 +72,9 @@ void initialize_volume_fractions_horizontal(
 {
     // grow the box by 1 so that x,y,z go out of bounds and min(max()) corrects
     // it and it fills the ghosts with wall values
-    const int d = dir;
     const amrex::Real vv = vof_val;
     amrex::ParallelFor(grow(bx, 1), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-        int ii = (d == 0 ? i : (d == 1 ? j : k));
+        int ii = (dir == 0 ? i : (dir == 1 ? j : k));
         if (ii > 1) {
             vof_arr(i, j, k) = 0.0;
         }
@@ -120,11 +118,10 @@ void init_vof(amr_wind::Field& vof)
 void initialize_iblank_distribution(
     const int dir, const amrex::Box& bx, const amrex::Array4<int>& iblk_arr)
 {
-    const int d = dir;
     amrex::ParallelFor(grow(bx, 1), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-        int ii = (d != 0 ? i : 0);
-        int jj = (d != 1 ? j : 0);
-        int kk = (d != 2 ? k : 0);
+        int ii = (dir != 0 ? i : 0);
+        int jj = (dir != 1 ? j : 0);
+        int kk = (dir != 2 ? k : 0);
         if (ii + jj + kk > 4 || ii + jj + kk < 2) {
             iblk_arr(i, j, k) = -1;
         } else {
@@ -149,16 +146,15 @@ void initialize_volume_fractions_iblank(
     const amrex::Array4<int>& iblk_arr)
 {
     // Does a horizontal interface that is different outside of iblank region
-    const int d = dir;
     amrex::ParallelFor(grow(bx, 1), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
         // Turns on index tangent to interface
-        int iit = (d != 0 ? i : 1);
-        int jjt = (d != 1 ? j : 1);
-        int kkt = (d != 2 ? k : 1);
+        int iit = (dir != 0 ? i : 1);
+        int jjt = (dir != 1 ? j : 1);
+        int kkt = (dir != 2 ? k : 1);
         // Turns on index normal to interface
-        int iin = (d == 0 ? i : 0);
-        int jjn = (d == 1 ? j : 0);
-        int kkn = (d == 2 ? k : 0);
+        int iin = (dir == 0 ? i : 0);
+        int jjn = (dir == 1 ? j : 0);
+        int kkn = (dir == 2 ? k : 0);
         // Ordinary vof distribution
         if (iin + jjn + kkn > 2) {
             vof_arr(i, j, k) = 0.0;
@@ -199,7 +195,6 @@ void init_vof_iblank(
 amrex::Real normal_vector_test_impl(amr_wind::Field& vof, const int dir)
 {
     amrex::Real error_total = 0.0;
-    const int d = dir;
 
     for (int lev = 0; lev < vof.repo().num_active_levels(); ++lev) {
 
@@ -216,15 +211,15 @@ amrex::Real normal_vector_test_impl(amr_wind::Field& vof, const int dir)
                     amr_wind::multiphase::mixed_youngs_central_normal(
                         i, j, k, vof_arr, mx, my, mz);
 
-                    int ii = (d != 0 ? i : 0);
-                    int jj = (d != 1 ? j : 0);
-                    int kk = (d != 2 ? k : 0);
+                    int ii = (dir != 0 ? i : 0);
+                    int jj = (dir != 1 ? j : 0);
+                    int kk = (dir != 2 ? k : 0);
 
                     // Use L1 norm, check cells where slope is known
                     if (ii + jj + kk == 3) {
-                        error += std::abs(mx - (d != 0 ? 0.5 : 0.0));
-                        error += std::abs(my - (d != 1 ? 0.5 : 0.0));
-                        error += std::abs(mz - (d != 2 ? 0.5 : 0.0));
+                        error += std::abs(mx - (dir != 0 ? 0.5 : 0.0));
+                        error += std::abs(my - (dir != 1 ? 0.5 : 0.0));
+                        error += std::abs(mz - (dir != 2 ? 0.5 : 0.0));
                     }
                 });
 
