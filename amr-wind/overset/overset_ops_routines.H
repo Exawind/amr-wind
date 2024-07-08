@@ -13,29 +13,27 @@ void populate_psi(
     const amrex::Real i_th,
     const amrex::Real asdf_tiny)
 {
-    const auto& psi_arrs = mf_psi.arrays();
-    const auto& vof_arrs = mf_vof.const_arrays();
+    const auto& psi = mf_psi.arrays();
+    const auto& vof = mf_vof.const_arrays();
     amrex::ParallelFor(
         mf_psi, mf_psi.n_grow,
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            psi_arrs[nbx](i, j, k) =
-                asdf(vof_arrs[nbx](i, j, k), i_th, asdf_tiny);
+            psi[nbx](i, j, k) = asdf(vof[nbx](i, j, k), i_th, asdf_tiny);
         });
 }
 
 // Modify a vof field to not have values that barely differ from 0 or 1
 void process_vof(amrex::MultiFab& mf_vof, const amrex::Real vof_tol)
 {
-    const auto& vof_arrs = mf_vof.arrays();
+    const auto& vof = mf_vof.arrays();
     amrex::ParallelFor(
         mf_vof, mf_vof.n_grow,
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            vof_arrs[nbx](i, j, k) =
-                vof_arrs[nbx](i, j, k) < vof_tol
+            vof[nbx](i, j, k) =
+                vof[nbx](i, j, k) < vof_tol
                     ? 0.0
-                    : (vof_arrs[nbx](i, j, k) > 1. - vof_tol
-                           ? 1.
-                           : vof_arrs[nbx](i, j, k));
+                    : (vof[nbx](i, j, k) > 1. - vof_tol ? 1.
+                                                        : vof[nbx](i, j, k));
         });
 }
 
@@ -45,15 +43,15 @@ void harmonize_vof(
     const amrex::MultiFab& mf_vof_original,
     const amrex::iMultiFab& mf_iblank)
 {
-    const auto& tg_vof_arrs = mf_vof_target.arrays();
-    const auto& og_vof_arrs = mf_vof_original.const_arrays();
-    const auto& iblank_arrs = mf_iblank.const_arrays();
+    const auto& tg_vof = mf_vof_target.arrays();
+    const auto& og_vof = mf_vof_original.const_arrays();
+    const auto& iblank = mf_iblank.const_arrays();
     amrex::ParallelFor(
         mf_vof_target,
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
             // Replace amr-wind vof values with originals
-            if (iblank_arrs[nbx](i, j, k) != -1) {
-                tg_vof_arrs[nbx](i, j, k) = og_vof_arrs[nbx](i, j, k);
+            if (iblank[nbx](i, j, k) != -1) {
+                tg_vof[nbx](i, j, k) = og_vof[nbx](i, j, k);
             }
         });
 }
@@ -64,46 +62,37 @@ void populate_normal_vector(
     const amrex::MultiFab& mf_vof,
     const amrex::iMultiFab& mf_iblank)
 {
-    const auto& normvec_arrs = mf_normvec.arrays();
-    const auto& vof_arrs = mf_vof.const_arrays();
-    const auto& iblank_arrs = mf_iblank.const_arrays();
+    const auto& normvec = mf_normvec.arrays();
+    const auto& vof = mf_vof.const_arrays();
+    const auto& iblank = mf_iblank.const_arrays();
     // Calculate gradients in each direction with centered diff
     amrex::ParallelFor(
         mf_normvec, mf_normvec.n_grow - amrex::IntVect(1),
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
             // Neumann condition across nalu bdy
             int ibdy =
-                (iblank_arrs[nbx](i, j, k) != iblank_arrs[nbx](i - 1, j, k))
-                    ? -1
-                    : 0;
+                (iblank[nbx](i, j, k) != iblank[nbx](i - 1, j, k)) ? -1 : 0;
             int jbdy =
-                (iblank_arrs[nbx](i, j, k) != iblank_arrs[nbx](i, j - 1, k))
-                    ? -1
-                    : 0;
+                (iblank[nbx](i, j, k) != iblank[nbx](i, j - 1, k)) ? -1 : 0;
             int kbdy =
-                (iblank_arrs[nbx](i, j, k) != iblank_arrs[nbx](i, j, k - 1))
-                    ? -1
-                    : 0;
+                (iblank[nbx](i, j, k) != iblank[nbx](i, j, k - 1)) ? -1 : 0;
             // no cell should be isolated such that -1 and 1 are needed
-            ibdy = (iblank_arrs[nbx](i, j, k) != iblank_arrs[nbx](i + 1, j, k))
-                       ? +1
-                       : ibdy;
-            jbdy = (iblank_arrs[nbx](i, j, k) != iblank_arrs[nbx](i, j + 1, k))
-                       ? +1
-                       : jbdy;
-            kbdy = (iblank_arrs[nbx](i, j, k) != iblank_arrs[nbx](i, j, k + 1))
-                       ? +1
-                       : kbdy;
+            ibdy =
+                (iblank[nbx](i, j, k) != iblank[nbx](i + 1, j, k)) ? +1 : ibdy;
+            jbdy =
+                (iblank[nbx](i, j, k) != iblank[nbx](i, j + 1, k)) ? +1 : jbdy;
+            kbdy =
+                (iblank[nbx](i, j, k) != iblank[nbx](i, j, k + 1)) ? +1 : kbdy;
             // Calculate normal
             amrex::Real mx, my, mz, mmag;
             multiphase::youngs_finite_difference_normal_neumann(
-                i, j, k, ibdy, jbdy, kbdy, vof_arrs[nbx], mx, my, mz);
+                i, j, k, ibdy, jbdy, kbdy, vof[nbx], mx, my, mz);
             // Normalize normal
             mmag = std::sqrt(mx * mx + my * my + mz * mz + 1e-20);
             // Save normal
-            normvec_arrs[nbx](i, j, k, 0) = mx / mmag;
-            normvec_arrs[nbx](i, j, k, 1) = my / mmag;
-            normvec_arrs[nbx](i, j, k, 2) = mz / mmag;
+            normvec[nbx](i, j, k, 0) = mx / mmag;
+            normvec[nbx](i, j, k, 1) = my / mmag;
+            normvec[nbx](i, j, k, 2) = mz / mmag;
         });
 }
 
@@ -382,14 +371,14 @@ amrex::Real measure_convergence(
 // Set levelset field to another quantity to view in plotfile for debugging
 void equate_field(amrex::MultiFab& mf_dest, const amrex::MultiFab& mf_src)
 {
-    const auto& dest_arrs = mf_dest.arrays();
-    const auto& src_arrs = mf_src.const_arrays();
+    const auto& dest = mf_dest.arrays();
+    const auto& src = mf_src.const_arrays();
     amrex::ParallelFor(
         mf_dest, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            dest_arrs[nbx](i, j, k) = std::sqrt(
-                src_arrs[nbx](i, j, k, 0) * src_arrs[nbx](i, j, k, 0) +
-                src_arrs[nbx](i, j, k, 1) * src_arrs[nbx](i, j, k, 1) +
-                src_arrs[nbx](i, j, k, 2) * src_arrs[nbx](i, j, k, 2));
+            dest[nbx](i, j, k) = std::sqrt(
+                src[nbx](i, j, k, 0) * src[nbx](i, j, k, 0) +
+                src[nbx](i, j, k, 1) * src[nbx](i, j, k, 1) +
+                src[nbx](i, j, k, 2) * src[nbx](i, j, k, 2));
         });
 }
 
@@ -402,20 +391,20 @@ void replace_gradp_hydrostatic(
     const amrex::Real grav_z,
     const bool is_pptb)
 {
-    const auto& gp_arrs = mf_gp.arrays();
-    const auto& rho_arrs = mf_density.const_arrays();
-    const auto& rho0_arrs = mf_refdens.const_arrays();
-    const auto& iblank_arrs = mf_iblank.const_arrays();
+    const auto& gp = mf_gp.arrays();
+    const auto& rho = mf_density.const_arrays();
+    const auto& rho0 = mf_refdens.const_arrays();
+    const auto& iblank = mf_iblank.const_arrays();
     amrex::ParallelFor(
         mf_gp, mf_gp.n_grow,
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            if (iblank_arrs[nbx](i, j, k) == -1) {
+            if (iblank[nbx](i, j, k) == -1) {
                 const amrex::Real dfac =
-                    is_pptb ? rho_arrs[nbx](i, j, k) - rho0_arrs[nbx](i, j, k)
-                            : rho_arrs[nbx](i, j, k);
-                gp_arrs[nbx](i, j, k, 0) = 0.;
-                gp_arrs[nbx](i, j, k, 1) = 0.;
-                gp_arrs[nbx](i, j, k, 2) = dfac * grav_z;
+                    is_pptb ? rho[nbx](i, j, k) - rho0[nbx](i, j, k)
+                            : rho[nbx](i, j, k);
+                gp[nbx](i, j, k, 0) = 0.;
+                gp[nbx](i, j, k, 1) = 0.;
+                gp[nbx](i, j, k, 2) = dfac * grav_z;
             }
         });
 }
@@ -426,16 +415,16 @@ void replace_gradp(
     const amrex::MultiFab& mf_gp0,
     const amrex::iMultiFab& mf_iblank)
 {
-    const auto gp_arrs = mf_gp.arrays();
-    const auto gp0_arrs = mf_gp0.const_arrays();
-    const auto iblank_arrs = mf_iblank.const_arrays();
+    const auto gp = mf_gp.arrays();
+    const auto gp0 = mf_gp0.const_arrays();
+    const auto iblank = mf_iblank.const_arrays();
     amrex::ParallelFor(
         mf_gp, mf_gp.n_grow,
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            if (iblank_arrs[nbx](i, j, k) == -1) {
-                gp_arrs[nbx](i, j, k, 0) = gp0_arrs[nbx](i, j, k, 0);
-                gp_arrs[nbx](i, j, k, 1) = gp0_arrs[nbx](i, j, k, 1);
-                gp_arrs[nbx](i, j, k, 2) = gp0_arrs[nbx](i, j, k, 2);
+            if (iblank[nbx](i, j, k) == -1) {
+                gp[nbx](i, j, k, 0) = gp0[nbx](i, j, k, 0);
+                gp[nbx](i, j, k, 1) = gp0[nbx](i, j, k, 1);
+                gp[nbx](i, j, k, 2) = gp0[nbx](i, j, k, 2);
             }
         });
 }
@@ -447,16 +436,15 @@ void apply_pressure_gradient(
     const amrex::MultiFab& mf_gp,
     const amrex::Real scaling_factor)
 {
-    const auto& vel_arrs = mf_vel.arrays();
-    const auto& rho_arrs = mf_density.const_arrays();
-    const auto& gp_arrs = mf_gp.const_arrays();
+    const auto& vel = mf_vel.arrays();
+    const auto& rho = mf_density.const_arrays();
+    const auto& gp = mf_gp.const_arrays();
     amrex::ParallelFor(
         mf_vel, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            const amrex::Real soverrho =
-                scaling_factor / rho_arrs[nbx](i, j, k);
-            vel_arrs[nbx](i, j, k, 0) -= gp_arrs[nbx](i, j, k, 0) * soverrho;
-            vel_arrs[nbx](i, j, k, 1) -= gp_arrs[nbx](i, j, k, 1) * soverrho;
-            vel_arrs[nbx](i, j, k, 2) -= gp_arrs[nbx](i, j, k, 2) * soverrho;
+            const amrex::Real soverrho = scaling_factor / rho[nbx](i, j, k);
+            vel[nbx](i, j, k, 0) -= gp[nbx](i, j, k, 0) * soverrho;
+            vel[nbx](i, j, k, 1) -= gp[nbx](i, j, k, 1) * soverrho;
+            vel[nbx](i, j, k, 2) -= gp[nbx](i, j, k, 2) * soverrho;
         });
 }
 
