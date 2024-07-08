@@ -4,7 +4,7 @@
 #            SIMULATION STOP            #
 #.......................................#
 time.stop_time               = 5.00     # Max (simulated) time to evolve
-time.max_step                = 10    	#-1000       # Max number of time steps
+time.max_step                = -10    	#-1000       # Max number of time steps
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
@@ -15,7 +15,7 @@ time.cfl              =   0.95          # CFL factor
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-time.plot_interval            =   1	# 100   # Steps between plot files
+time.plot_interval            =   10	# 100   # Steps between plot files
 time.checkpoint_interval      =  -100   # Steps between checkpoint files
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -26,8 +26,8 @@ incflo.use_godunov    = 1
 incflo.diffusion_type = 1
 incflo.godunov_type = "weno_z"
 
-incflo.initial_iterations = 0
-incflo.do_initial_proj    = false
+#incflo.initial_iterations = 0
+#incflo.do_initial_proj    = false
 incflo.verbose  = 3
 
 transport.viscosity = 0.0
@@ -57,18 +57,16 @@ geometry.prob_hi        =   1.0 0.5 1.0  # Hi corner coordinates
 geometry.is_periodic    =   0   1   0   # Periodicity x y z (0/1)
 
 # Boundary conditions
+TwoLayer.mvel = -1.0 0.0 0.0
+TwoLayer.pvel =  1.0 0.0 0.0
+
 xlo.type = "mass_inflow_outflow"
-#xlo.type = "mass_inflow"
 xlo.density = 1.0
 xlo.velocity.inflow_outflow_type = TwoLayer
-xlo.velocity.inflow_type = TwoLayer
 
 xhi.type = "mass_inflow_outflow"
 xhi.density = 1.0
 xhi.velocity.inflow_outflow_type = TwoLayer
-TwoLayer.mvel = 1.0 0.0 0.0
-TwoLayer.pvel = 1.0 0.0 0.0
-#xhi.type = "pressure_outflow"
 
 zlo.type =   "slip_wall"
 zhi.type =   "slip_wall"
