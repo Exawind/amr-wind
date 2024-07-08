@@ -499,13 +499,9 @@ void MultiPhase::levelset2vof()
                     mz = mz / normL1;
                     // Make sure that alpha is negative far away from the
                     // interface
-                    amrex::Real alpha;
-                    if (phi(i, j, k) < -eps) {
-                        alpha = -1.0;
-                    } else {
-                        alpha = phi(i, j, k) / normL1;
-                        alpha = alpha + 0.5;
-                    }
+                    const amrex::Real alpha = (phi(i, j, k) < -eps)
+                                                  ? -1.0
+                                                  : phi(i, j, k) / normL1 + 0.5;
                     if (alpha >= 1.0) {
                         volfrac(i, j, k) = 1.0;
                     } else if (alpha <= 0.0) {
@@ -567,13 +563,9 @@ void MultiPhase::levelset2vof(
                     mz = mz / normL1;
                     // Make sure that alpha is negative far away from the
                     // interface
-                    amrex::Real alpha;
-                    if (phi(i, j, k) < -eps) {
-                        alpha = -1.0;
-                    } else {
-                        alpha = phi(i, j, k) / normL1;
-                        alpha = alpha + 0.5;
-                    }
+                    const amrex::Real alpha = (phi(i, j, k) < -eps)
+                                                  ? -1.0
+                                                  : phi(i, j, k) / normL1 + 0.5;
                     if (alpha >= 1.0) {
                         volfrac(i, j, k) = 1.0;
                     } else if (alpha <= 0.0) {
