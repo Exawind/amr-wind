@@ -16,7 +16,7 @@ namespace amr_wind::multiphase {
  *  to zero.
  */
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_fd_normal(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_finite_difference_normal(
     const int i,
     const int j,
     const int k,
@@ -64,7 +64,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_fd_normal(
     mz = mm1 - mm2;
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_fd_normal_neumann(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void
+youngs_finite_difference_normal_neumann(
     const int i,
     const int j,
     const int k,
@@ -239,7 +240,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void mixed_youngs_central_normal(
     }
 
     // Youngs-CIAM scheme */
-    youngs_fd_normal(i, j, k, volfrac, m(3, 0), m(3, 1), m(3, 2));
+    youngs_finite_difference_normal(
+        i, j, k, volfrac, m(3, 0), m(3, 1), m(3, 2));
     // normalize the set (mx,my,mz): |mx|+|my|+|mz| = 1
     constexpr amrex::Real tiny = 1e-20;
     t0 = std::abs(m(3, 0)) + std::abs(m(3, 1)) + std::abs(m(3, 2)) + tiny;
@@ -525,7 +527,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real levelset_to_vof(
     amrex::Array4<amrex::Real const> const& phi) noexcept
 {
     amrex::Real mx, my, mz;
-    youngs_fd_normal(i, j, k, phi, mx, my, mz);
+    youngs_finite_difference_normal(i, j, k, phi, mx, my, mz);
     mx = std::abs(mx / 32.);
     my = std::abs(my / 32.);
     mz = std::abs(mz / 32.);

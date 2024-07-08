@@ -255,10 +255,11 @@ amrex::Real normal_vector_neumann_test_impl(
                     jbdy = (iblank(i, j, k) != iblank(i, j + 1, k)) ? +1 : jbdy;
                     kbdy = (iblank(i, j, k) != iblank(i, j, k + 1)) ? +1 : kbdy;
                     amrex::Real mxn, myn, mzn;
-                    amr_wind::multiphase::youngs_fd_normal_neumann(
-                        i, j, k, ibdy, jbdy, kbdy, vof_arr, mxn, myn, mzn);
+                    amr_wind::multiphase::
+                        youngs_finite_difference_normal_neumann(
+                            i, j, k, ibdy, jbdy, kbdy, vof_arr, mxn, myn, mzn);
                     amrex::Real mx, my, mz;
-                    amr_wind::multiphase::youngs_fd_normal(
+                    amr_wind::multiphase::youngs_finite_difference_normal(
                         i, j, k, vof_arr, mx, my, mz);
 
                     // Use L1 norm, check against non-neumann implementation
@@ -317,8 +318,9 @@ amrex::Real normal_vector_neumann_test_impl(
                     jbdy = (iblank(i, j, k) != iblank(i, j + 1, k)) ? +1 : jbdy;
                     kbdy = (iblank(i, j, k) != iblank(i, j, k + 1)) ? +1 : kbdy;
                     amrex::Real mxn, myn, mzn;
-                    amr_wind::multiphase::youngs_fd_normal_neumann(
-                        i, j, k, ibdy, jbdy, kbdy, vof_arr, mxn, myn, mzn);
+                    amr_wind::multiphase::
+                        youngs_finite_difference_normal_neumann(
+                            i, j, k, ibdy, jbdy, kbdy, vof_arr, mxn, myn, mzn);
 
                     // Use L1 norm, check for 0
                     if (iblank(i, j, k) == 1) {
