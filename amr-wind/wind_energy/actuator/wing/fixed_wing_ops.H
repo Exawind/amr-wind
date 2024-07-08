@@ -121,7 +121,7 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
             const auto wspan = wdata.end - wdata.start;
             // Flag for checking periodicity in spanwise direction
             bool warn_per{false};
-            std::string sdir{" "};
+            std::string sdir;
             auto per = data.sim().mesh().Geom()[0].periodicity();
             if (std::abs(wspan.x()) >=
                 std::max(std::abs(wspan.y()), std::abs(wspan.z()))) {

@@ -138,13 +138,13 @@ struct ComputeForceOp<
             wdata.motion_type, wdata.s_period, wdata.s_vector);
 
         // Build the local reference frame
-        vs::Vector wspan = wdata.end - wdata.start;
+        const vs::Vector wspan = wdata.end - wdata.start;
 
         // Use the global coord to orient the blade
         // The default is for inflow in the x direction
         auto blade_x = wdata.blade_x.unit();
-        auto blade_y = wspan.unit();
-        auto blade_z = (blade_x ^ blade_y).unit();
+        const auto blade_y = wspan.unit();
+        const auto blade_z = (blade_x ^ blade_y).unit();
         // Ensure orthogonality for new reference frame
         blade_x = (blade_y ^ blade_z).unit();
 
