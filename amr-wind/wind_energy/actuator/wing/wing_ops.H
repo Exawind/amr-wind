@@ -142,11 +142,10 @@ struct ComputeForceOp<
 
         // Use the global coord to orient the blade
         // The default is for inflow in the x direction
-        auto blade_x = wdata.blade_x.unit();
         const auto blade_y = wspan.unit();
-        const auto blade_z = (blade_x ^ blade_y).unit();
+        const auto blade_z = (wdata.blade_x.unit() ^ blade_y).unit();
         // Ensure orthogonality for new reference frame
-        blade_x = (blade_y ^ blade_z).unit();
+        const auto blade_x = (blade_y ^ blade_z).unit();
 
         // Calculate the aoa based on the pitch actuation table if supplied
         // (interpolate pitch angle at step n+1/2) or the initial pitch angle
