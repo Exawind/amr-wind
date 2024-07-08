@@ -111,9 +111,9 @@ void Actuator::pre_advance_work()
 
 void Actuator::communicate_turbine_io()
 {
+#ifdef AMR_WIND_USE_HELICS
     BL_PROFILE("amr-wind::actuator::Actuator::communicate_turbine_io");
 
-#ifdef AMR_WIND_USE_HELICS
     if (!m_sim.helics().is_activated()) {
         return;
     }
