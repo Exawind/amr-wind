@@ -60,9 +60,12 @@ void TerrainDrag::post_init_actions()
         auto& terrainz0 = m_terrainz0(level);
         auto& drag = m_terrain_drag(level);
         // copy terrain data to gpu
-        amrex::Gpu::DeviceVector<amrex::Real> device_xterrain(m_xterrain.size());
-        amrex::Gpu::DeviceVector<amrex::Real> device_yterrain(m_xterrain.size());
-        amrex::Gpu::DeviceVector<amrex::Real> device_zterrain(m_xterrain.size());
+        amrex::Gpu::DeviceVector<amrex::Real> device_xterrain(
+            m_xterrain.size());
+        amrex::Gpu::DeviceVector<amrex::Real> device_yterrain(
+            m_xterrain.size());
+        amrex::Gpu::DeviceVector<amrex::Real> device_zterrain(
+            m_xterrain.size());
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, m_xterrain.begin(), m_xterrain.end(),
             device_xterrain.begin());
@@ -119,7 +122,8 @@ void TerrainDrag::post_init_actions()
                             break;
                         }
                     }
-                    levelBlanking(i, j, k, 0) = static_cast<float>(x3 <= terrainHt);
+                    levelBlanking(i, j, k, 0) =
+                        static_cast<float>(x3 <= terrainHt);
                     residual = 10000;
                     amrex::Real roughz0 = 0.1;
                     for (unsigned ii = 0; ii < roughnessSize; ++ii) {

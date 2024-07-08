@@ -5,7 +5,6 @@
 #include "AMReX_Random.H"
 #include "amr-wind/wind_energy/ABL.H"
 
-
 namespace amr_wind::pde::icns {
 
 DragForcing::DragForcing(const CFDSim& sim)
@@ -67,11 +66,11 @@ void DragForcing::operator()(
     const amrex::Real device_sponge_strength = m_sponge_strength;
     const amrex::Real device_sponge_density = m_sponge_density;
     const amrex::Real device_startX = (m_sponge_distanceX > 0)
-                                       ? prob_hi[0] - m_sponge_distanceX
-                                       : prob_lo[0] - m_sponge_distanceX;
+                                          ? prob_hi[0] - m_sponge_distanceX
+                                          : prob_lo[0] - m_sponge_distanceX;
     const amrex::Real device_startY = (m_sponge_distanceY > 0)
-                                       ? prob_hi[1] - m_sponge_distanceY
-                                       : prob_lo[1] - m_sponge_distanceY;
+                                          ? prob_hi[1] - m_sponge_distanceY
+                                          : prob_lo[1] - m_sponge_distanceY;
     const unsigned device_spongeX = (m_sponge_distanceX > 0) ? 1 : 0;
     const unsigned device_spongeY = (m_sponge_distanceY > 0) ? 1 : 0;
     // Copy Data
@@ -84,14 +83,16 @@ void DragForcing::operator()(
         const amrex::Real x3 = prob_lo[2] + (k + 0.5) * dx[2];
         amrex::Real xdamping = 0;
         amrex::Real ydamping = 0;
-        amrex::Real xi = (device_spongeX == 1)
-                             ? (x1 - device_startX) / (prob_hi[0] - device_startX)
-                             : (device_startX - x1) / (device_startX - prob_lo[0]);
+        amrex::Real xi =
+            (device_spongeX == 1)
+                ? (x1 - device_startX) / (prob_hi[0] - device_startX)
+                : (device_startX - x1) / (device_startX - prob_lo[0]);
         xi = std::max(xi, 0.0);
         xdamping = device_sponge_strength * xi * xi;
-        amrex::Real yi = (device_spongeY == 1)
-                             ? (x2 - device_startY) / (prob_hi[1] - device_startY)
-                             : (device_startY - x2) / (device_startY - prob_lo[1]);
+        amrex::Real yi =
+            (device_spongeY == 1)
+                ? (x2 - device_startY) / (prob_hi[1] - device_startY)
+                : (device_startY - x2) / (device_startY - prob_lo[1]);
         yi = std::max(yi, 0.0);
         ydamping = device_sponge_strength * yi * yi;
         const amrex::Real Cd = device_drag / dx[0];
