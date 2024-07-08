@@ -20,7 +20,7 @@ Actuator::~Actuator() = default;
 
 void Actuator::pre_init_actions()
 {
-    BL_PROFILE("amr-wind::actuator::Actuator::post_init_actions");
+    BL_PROFILE("amr-wind::actuator::Actuator::pre_init_actions");
     amrex::ParmParse pp(identifier());
 
     amrex::Vector<std::string> labels;
