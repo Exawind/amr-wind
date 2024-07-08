@@ -77,12 +77,9 @@ void populate_normal_vector(
         amrex::ParallelFor(
             gbxm1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 // Neumann condition across nalu bdy
-                int ibdy = 0;
-                int jbdy = 0;
-                int kbdy = 0;
-                ibdy = (iblank(i, j, k) != iblank(i - 1, j, k)) ? -1 : ibdy;
-                jbdy = (iblank(i, j, k) != iblank(i, j - 1, k)) ? -1 : jbdy;
-                kbdy = (iblank(i, j, k) != iblank(i, j, k - 1)) ? -1 : kbdy;
+                int ibdy = (iblank(i, j, k) != iblank(i - 1, j, k)) ? -1 : 0;
+                int jbdy = (iblank(i, j, k) != iblank(i, j - 1, k)) ? -1 : 0;
+                int kbdy = (iblank(i, j, k) != iblank(i, j, k - 1)) ? -1 : 0;
                 // no cell should be isolated such that -1 and 1 are needed
                 ibdy = (iblank(i, j, k) != iblank(i + 1, j, k)) ? +1 : ibdy;
                 jbdy = (iblank(i, j, k) != iblank(i, j + 1, k)) ? +1 : jbdy;

@@ -245,27 +245,15 @@ amrex::Real normal_vector_neumann_test_impl(
                 amrex::Real error = 0.0;
 
                 amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
-                    int ibdy = 0;
-                    int jbdy = 0;
-                    int kbdy = 0;
-                    if (iblank(i, j, k) != iblank(i - 1, j, k)) {
-                        ibdy = -1;
-                    }
-                    if (iblank(i, j, k) != iblank(i, j - 1, k)) {
-                        jbdy = -1;
-                    }
-                    if (iblank(i, j, k) != iblank(i, j, k - 1)) {
-                        kbdy = -1;
-                    }
-                    if (iblank(i, j, k) != iblank(i + 1, j, k)) {
-                        ibdy = +1;
-                    }
-                    if (iblank(i, j, k) != iblank(i, j + 1, k)) {
-                        jbdy = +1;
-                    }
-                    if (iblank(i, j, k) != iblank(i, j, k + 1)) {
-                        kbdy = +1;
-                    }
+                    int ibdy =
+                        (iblank(i, j, k) != iblank(i - 1, j, k)) ? -1 : 0;
+                    int jbdy =
+                        (iblank(i, j, k) != iblank(i, j - 1, k)) ? -1 : 0;
+                    int kbdy =
+                        (iblank(i, j, k) != iblank(i, j, k - 1)) ? -1 : 0;
+                    ibdy = (iblank(i, j, k) != iblank(i + 1, j, k)) ? +1 : ibdy;
+                    jbdy = (iblank(i, j, k) != iblank(i, j + 1, k)) ? +1 : jbdy;
+                    kbdy = (iblank(i, j, k) != iblank(i, j, k + 1)) ? +1 : kbdy;
                     amrex::Real mxn, myn, mzn;
                     amr_wind::multiphase::youngs_fd_normal_neumann(
                         i, j, k, ibdy, jbdy, kbdy, vof_arr, mxn, myn, mzn);
@@ -319,12 +307,12 @@ amrex::Real normal_vector_neumann_test_impl(
                 amrex::Real error = 0.0;
 
                 amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
-                    int ibdy = 0;
-                    int jbdy = 0;
-                    int kbdy = 0;
-                    ibdy = (iblank(i, j, k) != iblank(i - 1, j, k)) ? -1 : ibdy;
-                    jbdy = (iblank(i, j, k) != iblank(i, j - 1, k)) ? -1 : jbdy;
-                    kbdy = (iblank(i, j, k) != iblank(i, j, k - 1)) ? -1 : kbdy;
+                    int ibdy =
+                        (iblank(i, j, k) != iblank(i - 1, j, k)) ? -1 : 0;
+                    int jbdy =
+                        (iblank(i, j, k) != iblank(i, j - 1, k)) ? -1 : 0;
+                    int kbdy =
+                        (iblank(i, j, k) != iblank(i, j, k - 1)) ? -1 : 0;
                     ibdy = (iblank(i, j, k) != iblank(i + 1, j, k)) ? +1 : ibdy;
                     jbdy = (iblank(i, j, k) != iblank(i, j + 1, k)) ? +1 : jbdy;
                     kbdy = (iblank(i, j, k) != iblank(i, j, k + 1)) ? +1 : kbdy;
