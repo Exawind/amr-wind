@@ -16,8 +16,8 @@ TerrainDrag::TerrainDrag(CFDSim& sim)
     , m_repo(sim.repo())
     , m_mesh(sim.mesh())
     , m_velocity(sim.repo().get_field("velocity"))
-    , m_terrain_blank(sim.repo().declare_int_field("terrainBlank", 1, 1, 1))
-    , m_terrain_drag(sim.repo().declare_int_field("terrainDrag", 1, 1, 1))
+    , m_terrain_blank(sim.repo().declare_int_field("terrain_blank", 1, 1, 1))
+    , m_terrain_drag(sim.repo().declare_int_field("terrain_drag", 1, 1, 1))
     , m_terrainz0(sim.repo().declare_field("terrainz0", 1, 1, 1))
 {
     std::string terrainfile("terrain.amrwind");

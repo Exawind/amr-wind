@@ -33,8 +33,8 @@ private:
     const CFDSim& m_sim;
     const amrex::AmrCore& m_mesh;
     const Field& m_velocity;
-    amrex::Gpu::DeviceVector<amrex::Real> device_vel_ht;
-    amrex::Gpu::DeviceVector<amrex::Real> device_vel_vals;
+    amrex::Gpu::DeviceVector<amrex::Real> m_device_vel_ht;
+    amrex::Gpu::DeviceVector<amrex::Real> m_device_vel_vals;
     amrex::Real m_drag{100.0};
     amrex::Real m_sponge_strength{1.0};
     amrex::Real m_sponge_density{1.0};
