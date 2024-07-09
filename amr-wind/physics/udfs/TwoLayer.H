@@ -40,6 +40,10 @@ struct TwoLayer
                 amrex::Print() << "***** filling custom velocity at " << iv << "..." << std::endl;
             if ((iv[0] ==  1) && (iv[1] == 1) && (iv[2] == 1))
                 amrex::Print() << "***** filling custom velocity at " << iv << "..." << std::endl;
+
+            if ((iv[0] ==  -1) && (iv[1] == -1) && (iv[2] == 0))
+                amrex::Print() << "***** Time is " << time << "..." << std::endl;
+
             // Compute quantities to set the field values. For example:
             // clang-format off
             const auto* problo = geom.ProbLo();
