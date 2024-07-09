@@ -47,7 +47,8 @@ void DragForcing::operator()(
 {
     const auto& vel =
         m_velocity.state(field_impl::dof_state(fstate))(lev).const_array(mfi);
-    const bool is_terrain = this->m_sim.repo().int_field_exists("terrain_blank");
+    const bool is_terrain =
+        this->m_sim.repo().int_field_exists("terrain_blank");
     if (!is_terrain) {
         amrex::Abort("Need terrain blanking variable to use this source term");
     }
@@ -68,11 +69,11 @@ void DragForcing::operator()(
     const amrex::Real sponge_strength = m_sponge_strength;
     const amrex::Real sponge_density = m_sponge_density;
     const amrex::Real startX = (m_sponge_distanceX > 0)
-                                          ? prob_hi[0] - m_sponge_distanceX
-                                          : prob_lo[0] - m_sponge_distanceX;
+                                   ? prob_hi[0] - m_sponge_distanceX
+                                   : prob_lo[0] - m_sponge_distanceX;
     const amrex::Real startY = (m_sponge_distanceY > 0)
-                                          ? prob_hi[1] - m_sponge_distanceY
-                                          : prob_lo[1] - m_sponge_distanceY;
+                                   ? prob_hi[1] - m_sponge_distanceY
+                                   : prob_lo[1] - m_sponge_distanceY;
     const unsigned spongeX = (m_sponge_distanceX > 0) ? 1 : 0;
     const unsigned spongeY = (m_sponge_distanceY > 0) ? 1 : 0;
     // Copy Data
@@ -85,19 +86,15 @@ void DragForcing::operator()(
         const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
         amrex::Real xdamping = 0;
         amrex::Real ydamping = 0;
-        amrex::Real xi =
-            (spongeX == 1)
-                ? (x- startX) / (prob_hi[0] - startX)
-                : (startX - x) / (startX - prob_lo[0]);
+        amrex::Real xi = (spongeX == 1) ? (x - startX) / (prob_hi[0] - startX)
+                                        : (startX - x) / (startX - prob_lo[0]);
         xi = std::max(xi, 0.0);
         xdamping = sponge_strength * xi * xi;
-        amrex::Real yi =
-            (spongeY == 1)
-                ? (y - startY) / (prob_hi[1] - startY)
-                : (startY - y) / (startY - prob_lo[1]);
+        amrex::Real yi = (spongeY == 1) ? (y - startY) / (prob_hi[1] - startY)
+                                        : (startY - y) / (startY - prob_lo[1]);
         yi = std::max(yi, 0.0);
         ydamping = sponge_strength * yi * yi;
-        const amrex::Real Cd = dragCoefficient/ dx[0];
+        const amrex::Real Cd = dragCoefficient / dx[0];
         amrex::Real spongeVelX = 0.0;
         amrex::Real spongeVelY = 0.0;
         amrex::Real spongeVelZ = 0.0;
@@ -141,16 +138,13 @@ void DragForcing::operator()(
         const amrex::Real CdM = std::min(Cd / (m + 1e-5), 1000.0);
         src_term(i, j, k, 0) -=
             (CdM * m * ux1 * blank(i, j, k) + Dxz * drag(i, j, k) +
-             (xdamping + ydamping) *
-                 (ux1 - sponge_density * spongeVelX));
+             (xdamping + ydamping) * (ux1 - sponge_density * spongeVelX));
         src_term(i, j, k, 1) -=
             (CdM * m * uy1 * blank(i, j, k) + Dyz * drag(i, j, k) +
-             (xdamping + ydamping) *
-                 (uy1 - sponge_density * spongeVelY));
+             (xdamping + ydamping) * (uy1 - sponge_density * spongeVelY));
         src_term(i, j, k, 2) -=
             (CdM * m * uz1 * blank(i, j, k) +
-             (xdamping + ydamping) *
-                 (uz1 - sponge_density * spongeVelZ));
+             (xdamping + ydamping) * (uz1 - sponge_density * spongeVelZ));
     });
 }
 
