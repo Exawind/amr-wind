@@ -26,6 +26,16 @@ VectorT<T>::operator*=(const T fac)
 
 template <typename T>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T>
+VectorT<T>::operator*=(const VectorT<T>& vin)
+{
+    vv[0] *= vin.x();
+    vv[1] *= vin.y();
+    vv[2] *= vin.z();
+    return *this;
+}
+
+template <typename T>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T>
 VectorT<T>::operator/=(const T fac)
 {
     vv[0] /= fac;

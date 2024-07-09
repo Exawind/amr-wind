@@ -131,11 +131,12 @@ Example for ``FixedWingLine``::
 
 .. input_param:: Actuator.FixedWingLine.pitch
 
-   **type:** Real number, optional
+   **type:** Real number, mandatory
    
    This is the pitch angle of the blade in degrees. All coordinates will be 
    pitched by this angle. In the case of a fixed wing, this would be the angle
-   of attack of the wing with respect to the inflow velocity.
+   of attack of the wing with respect to the inflow velocity. This argument is mandatory unless
+   a pitch timetable is specified.
 
 .. input_param:: Actuator.FixedWingLine.span_locs
 
@@ -168,11 +169,13 @@ Example for ``FixedWingLine``::
 .. input_param:: Actuator.F1.start
 
    **type:** List of 3 real numbers, mandatory
+
    This is the starting point of the wing where the first actuator point will be.
 
 .. input_param:: Actuator.F1.end
 
    **type:** List of 3 real numbers, mandatory
+
    This is the end point of the wing where the last actuator point will be.
 
 .. input_param:: Actuator.F1.output_frequency
@@ -191,13 +194,13 @@ Example for ``FixedWingLine``::
    and ``sine``. Linear motion moves the actuator at a constant velocity in a straight
    line whereas sine motion oscillates the actuator according to a temporal sine signal.
 
-.. input_param:: Actuator.FixedWindLine.velocity
+.. input_param:: Actuator.FixedWingLine.velocity
 
    **type:** List of 3 real numbers, mandatory when motion_type = ``linear``
 
    This vector provides the prescribed constant velocity of the actuator motion.
 
-.. input_param:: Actuator.FixedWindLine.sine_vector
+.. input_param:: Actuator.FixedWingLine.sine_vector
 
    **type:** List of 3 real numbers, mandatory when motion_type = ``sine``
 
@@ -205,11 +208,53 @@ Example for ``FixedWingLine``::
    moves according to the oscillatory sine signal. The range of motion of the actuator
    will be between (initial location + sine vector) and (initial location - sine vector).
 
-.. input_param:: Actuator.FixedWindLine.sine_period
+.. input_param:: Actuator.FixedWingLine.sine_period
 
    **type:** Real number, mandatory when motion_type = ``linear``
 
    This value specifies the temporal period of the sine signal.
+
+.. input_param:: Actuator.FixedWingLine.pitch_timetable
+
+   **type:** String, optional
+
+   File name of pitch timetable. This file must specify pitch angles 
+   at different times below a one-line header. When this argument is present,
+   the ``pitch`` argument is no longer mandatory, and it will not be used.
+
+.. input_param:: Actuator.FixedWingLine.disable_spanwise_gaussian
+
+   **type:** Boolean, optional, default = false
+
+   When this option is turned on, the actuator Gaussian is disabled in the spanwise Gaussian,
+   making the force distribution uniform in that direction. This option enables quasi-2D simulations
+   with a fixed wing. The code will print warning statements if the detected spanwise direction is 
+   not periodic.
+
+.. input_param:: Actuator.FixedWingLine.normalize_spanwise
+
+   **type:** Boolean, optional, default = true
+
+   When the ``disable_spanwise_gaussian`` is true, the default behavior is to normalize the
+   Gaussian and force quantities in the spanwise direction, preventing the number of actuator points
+   or the actuator point spacing from affecting the results. When this option is false, the
+   ordinary treatment of the Gaussian and force quantities in the spanwise direction is used instead.
+   Setting this option to false can be useful for verification studies.
+
+.. input_param:: Actuator.FixedWingLine.prescribed_uinf
+
+   **type:** Real, optional, default = -1.0
+
+   This input allows the freestream velocity sampled by the actuator routines to be overwritten with
+   a user-prescribed value. This feature becomes active when the prescribed value is nonnegative.
+
+.. input_param:: Actuator.FixedWingLine.active_force_dirs
+
+   **type:** List of 3 real numbers, optional, default = 1.0 1.0 1.0
+
+   By default, the actuator force is computed and applied in every coordinate direction. 
+   This input allows actuator force coordinate directions to be deactivated by specifying a 0.0 in 
+   for the x, y, or z component of this vector.
 
 
 TurbineFastLine

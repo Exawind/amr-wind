@@ -7,17 +7,13 @@
 #include "amr-wind/wind_energy/actuator/aero/AirfoilTable.H"
 #include "amr-wind/wind_energy/actuator/ActParser.H"
 #include "amr-wind/wind_energy/actuator/FLLCOp.H"
+#include "amr-wind/utilities/linear_interpolation.H"
+#include "amr-wind/core/vs/vector_space.H"
 
 namespace amr_wind::actuator {
 namespace wing {
 
-/** Parse common data for modeling fixed wings as actuators
- */
-void read_inputs(
-    WingBaseData& /*wdata*/, ActInfo& /*info*/, const utils::ActParser& /*pp*/);
-
-/** Initialize core data structures when modeling fixed wings
- */
+// Initialize core data structures when modeling fixed wings
 void init_data_structures(WingBaseData& /*wdata*/, ActGrid& /*grid*/);
 
 void prepare_netcdf_file(
@@ -141,21 +137,41 @@ struct ComputeForceOp<
             grid.pos, wdata.vel_tr, npts, time.current_time(), time.new_time(),
             wdata.motion_type, wdata.s_period, wdata.s_vector);
 
+        // Build the local reference frame
+        const vs::Vector wspan = wdata.end - wdata.start;
+
+        // Use the global coord to orient the blade
+        // The default is for inflow in the x direction
+        const auto blade_y = wspan.unit();
+        const auto blade_z = (wdata.blade_x.unit() ^ blade_y).unit();
+        // Ensure orthogonality for new reference frame
+        const auto blade_x = (blade_y ^ blade_z).unit();
+
+        // Calculate the aoa based on the pitch actuation table if supplied
+        // (interpolate pitch angle at step n+1/2) or the initial pitch angle
+        if (!wdata.pitch_timetable_file.empty()) {
+            const auto time_interp =
+                (time.current_time() + time.new_time()) / 2.0;
+            wdata.pitch = amr_wind::interp::linear_angle(
+                wdata.time_table, wdata.pitch_table, time_interp, 360.);
+            amrex::Print() << "Wing Ops: Current wing pitch (at time "
+                           << time_interp << " s) is " << wdata.pitch
+                           << " degrees.\n";
+            // Recalculate transformation matrix and update on grid struct
+            auto tmat = vs::quaternion(wspan, wdata.pitch);
+            grid.orientation.assign(npts, tmat);
+        }
+
+        // Get flags for each coordinate of force and put in vs::Vector
+        const vs::Vector force_coord_flags_vec = {
+            (amrex::Real)wdata.force_coord_flags[0],
+            (amrex::Real)wdata.force_coord_flags[1],
+            (amrex::Real)wdata.force_coord_flags[2]};
+
         // Calculate the local force using sampled velocity (at n)
         amrex::Real total_lift = 0.0;
         amrex::Real total_drag = 0.0;
         for (int ip = 0; ip < npts; ++ip) {
-
-            // Build the local reference frame
-            vs::Vector wspan = wdata.end - wdata.start;
-
-            // Use the global coord to orient the blade
-            // The default is for inflow in the x direction
-            auto blade_x = wdata.blade_x.unit();
-            auto blade_y = wspan.unit();
-            auto blade_z = (blade_x ^ blade_y).unit();
-            // Ensure orthogonality for new reference frame
-            blade_x = (blade_y ^ blade_z).unit();
 
             // Wind vector is relative to actuator motion
             vs::Vector windvector;
@@ -167,24 +183,47 @@ struct ComputeForceOp<
             const auto aoa = std::atan2(windvector[2], windvector[0]) +
                              amr_wind::utils::radians(wdata.pitch);
 
-            // Make up some Cl, Cd values
+            // Get Cl, Cd values
             amrex::Real cl, cd;
             aflookup(aoa, cl, cd);
 
-            // Assume unit chord
-            const auto qval = 0.5 * vmag * vmag * chord[ip] * dx[ip];
+            // Calculate factor for qval: 0.5 * Uinf * Uinf * dx
+            // but replace velocity magnitude if specified
+            auto qfac =
+                (wdata.prescribed_uinf < 0.0)
+                    ? 0.5 * vmag * vmag
+                    : 0.5 * wdata.prescribed_uinf * wdata.prescribed_uinf;
+            // Length scale in spanwise direction
+            if (wdata.gauss_2D && wdata.normalize_2D_spanwise) {
+                // Do not multiply by a length scale, but divide by number of
+                // points because the Gaussians of each point all overlap
+                qfac /= (amrex::Real)npts;
+                // Convert 3D Gaussian factor to 2D factor
+                constexpr amrex::Real G2D_from_3D =
+                    0.31830988618379067 / 0.17958712212516656;
+                qfac *= G2D_from_3D;
+                // Get rid of epsilon in spanwise direction
+                const amrex::Real eps_span = grid.epsilon[ip][1];
+                qfac *= eps_span;
+            } else {
+                // 3D implementation: multiply by spanwise dx
+                qfac *= dx[ip];
+            }
+
+            const auto qval = qfac * chord[ip];
             const auto lift = qval * cl;
             const auto drag = qval * cd;
 
             // Determine unit vector parallel and perpendicular to velocity
-            // vector
-            // Directions
             const auto drag_dir =
                 (blade_x * windvector.x() + blade_z * windvector.z()).unit();
             const auto lift_dir = (drag_dir ^ blade_y).unit();
 
             // Compute force on fluid from this section of wing
             grid.force[ip] = -(lift_dir * lift + drag * drag_dir);
+
+            // In global coords, zero disabled force components
+            grid.force[ip] *= force_coord_flags_vec;
 
             // Assign values for output
             wdata.vel_rel[ip] = windvector;

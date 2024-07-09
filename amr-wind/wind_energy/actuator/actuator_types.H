@@ -93,6 +93,9 @@ struct ActGrid
     //! Density at the sampled locations
     RealList density;
 
+    //! Switch for turning off distance components in Gaussian calculation
+    vs::Vector dcoord_flags{1.0, 1.0, 1.0};
+
     /** Helper method to resize the data arrays defined on the grid
      *
      *  \params Number of nodes that contain forcing data
