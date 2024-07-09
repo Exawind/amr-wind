@@ -55,6 +55,10 @@ MacProjOp::MacProjOp(
 {
     amrex::ParmParse pp("incflo");
     pp.query("density", m_rho_0);
+    amrex::ParmParse pp_ovst("Overset");
+    bool disable_ovst_mac = false;
+    pp_ovst.query("disable_coupled_mac_proj", disable_ovst_mac);
+    m_has_overset = m_has_overset && !disable_ovst_mac;
 }
 
 void MacProjOp::init_projector(const MacProjOp::FaceFabPtrVec& beta) noexcept
