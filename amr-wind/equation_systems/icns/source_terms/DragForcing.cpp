@@ -47,13 +47,15 @@ void DragForcing::operator()(
 {
     const auto& vel =
         m_velocity.state(field_impl::dof_state(fstate))(lev).const_array(mfi);
-    const bool is_terrain = this->m_sim.repo().field_exists("terrainBlank");
+    const bool is_terrain = this->m_sim.repo().int_field_exists("terrainBlank");
     if (!is_terrain) {
         amrex::Abort("Need terrain blanking variable to use this source term");
     }
-    auto* const m_terrain_blank = &this->m_sim.repo().get_field("terrainBlank");
+    auto* const m_terrain_blank =
+        &this->m_sim.repo().get_int_field("terrainBlank");
     const auto& blank = (*m_terrain_blank)(lev).const_array(mfi);
-    auto* const m_terrain_drag = &this->m_sim.repo().get_field("terrainDrag");
+    auto* const m_terrain_drag =
+        &this->m_sim.repo().get_int_field("terrainDrag");
     const auto& drag = (*m_terrain_drag)(lev).const_array(mfi);
     auto* const m_terrainz0 = &this->m_sim.repo().get_field("terrainz0");
     const auto& terrainz0 = (*m_terrainz0)(lev).const_array(mfi);

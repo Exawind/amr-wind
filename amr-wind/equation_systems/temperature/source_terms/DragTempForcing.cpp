@@ -27,11 +27,12 @@ void DragTempForcing::operator()(
     const amrex::Array4<amrex::Real>& src_term) const
 {
     const auto temperature = m_temperature(lev).const_array(mfi);
-    const bool is_terrain = this->m_sim.repo().field_exists("terrainBlank");
+    const bool is_terrain = this->m_sim.repo().int_field_exists("terrainBlank");
     if (!is_terrain) {
         amrex::Abort("Need terrain blanking variable to use this source term");
     }
-    auto* const m_terrain_blank = &this->m_sim.repo().get_field("terrainBlank");
+    auto* const m_terrain_blank =
+        &this->m_sim.repo().get_int_field("terrainBlank");
     const auto& blank = (*m_terrain_blank)(lev).const_array(mfi);
     const auto& geom_vec = m_mesh.Geom();
     const auto& geom = geom_vec[lev];

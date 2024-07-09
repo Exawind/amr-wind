@@ -30,7 +30,7 @@ transport.viscosity = 1.0e-15
 transport.laminar_prandtl = 0.7
 transport.turbulent_prandtl = 0.3333
 turbulence.model = Laminar
-
+io.int_outputs = terrainBlank TerrainDrag
 incflo.physics = FreeStream TerrainDrag
 ICNS.source_terms                        = DragForcing
 DragForcing.verificationMode = 1

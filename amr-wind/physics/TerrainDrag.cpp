@@ -16,8 +16,8 @@ TerrainDrag::TerrainDrag(CFDSim& sim)
     , m_repo(sim.repo())
     , m_mesh(sim.mesh())
     , m_velocity(sim.repo().get_field("velocity"))
-    , m_terrain_blank(sim.repo().declare_field("terrainBlank", 1, 1, 1))
-    , m_terrain_drag(sim.repo().declare_field("terrainDrag", 1, 1, 1))
+    , m_terrain_blank(sim.repo().declare_int_field("terrainBlank", 1, 1, 1))
+    , m_terrain_drag(sim.repo().declare_int_field("terrainDrag", 1, 1, 1))
     , m_terrainz0(sim.repo().declare_field("terrainz0", 1, 1, 1))
 {
     std::string terrainfile("terrain.amrwind");
@@ -41,8 +41,8 @@ TerrainDrag::TerrainDrag(CFDSim& sim)
         m_z0rough.push_back(value3);
     }
     file1.close();
-    m_sim.io_manager().register_io_var("terrainDrag");
-    m_sim.io_manager().register_io_var("terrainBlank");
+    m_sim.io_manager().register_output_int_var("terrainDrag");
+    m_sim.io_manager().register_output_int_var("terrainBlank");
     m_sim.io_manager().register_io_var("terrainz0");
 }
 
@@ -104,16 +104,16 @@ void TerrainDrag::post_init_actions()
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     // compute the source term
-                    const amrex::Real x1 = prob_lo[0] + (i + 0.5) * dx[0];
-                    const amrex::Real x2 = prob_lo[1] + (j + 0.5) * dx[1];
-                    const amrex::Real x3 = prob_lo[2] + (k + 0.5) * dx[2];
+                    const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
+                    const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
                     // Terrain Height
                     amrex::Real residual = 10000;
                     amrex::Real terrainHt = 0.0;
                     for (unsigned ii = 0; ii < terrainSize; ++ii) {
                         const amrex::Real radius = std::sqrt(
-                            std::pow(x1 - xterrain_ptr[ii], 2) +
-                            std::pow(x2 - yterrain_ptr[ii], 2));
+                            std::pow(x - xterrain_ptr[ii], 2) +
+                            std::pow(y - yterrain_ptr[ii], 2));
                         if (radius < residual) {
                             residual = radius;
                             terrainHt = zterrain_ptr[ii];
@@ -123,13 +123,13 @@ void TerrainDrag::post_init_actions()
                         }
                     }
                     levelBlanking(i, j, k, 0) =
-                        static_cast<float>(x3 <= terrainHt);
+                        static_cast<int>(z <= terrainHt);
                     residual = 10000;
                     amrex::Real roughz0 = 0.1;
                     for (unsigned ii = 0; ii < roughnessSize; ++ii) {
                         const amrex::Real radius = std::sqrt(
-                            std::pow(x1 - xrough_ptr[ii], 2) +
-                            std::pow(x2 - yrough_ptr[ii], 2));
+                            std::pow(x - xrough_ptr[ii], 2) +
+                            std::pow(y - yrough_ptr[ii], 2));
                         if (radius < residual) {
                             residual = radius;
                             roughz0 = z0rough_ptr[ii];
@@ -145,20 +145,20 @@ void TerrainDrag::post_init_actions()
                     // Terrain Height
                     amrex::Real residual = 10000;
                     amrex::Real terrainHt = 0.0;
-                    const amrex::Real x1 = prob_lo[0] + (i + 0.5) * dx[0];
-                    const amrex::Real x2 = prob_lo[1] + (j + 0.5) * dx[1];
-                    const amrex::Real x3 = prob_lo[2] + (k + 0.5) * dx[2];
+                    const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
+                    const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
                     for (unsigned ii = 0; ii < terrainSize; ++ii) {
                         const amrex::Real radius = std::sqrt(
-                            std::pow(x1 - xterrain_ptr[ii], 2) +
-                            std::pow(x2 - yterrain_ptr[ii], 2));
+                            std::pow(x - xterrain_ptr[ii], 2) +
+                            std::pow(y - yterrain_ptr[ii], 2));
                         if (radius < residual) {
                             residual = radius;
                             terrainHt = zterrain_ptr[ii];
                         }
                     }
                     levelDrag(i, j, k, 0) = 0;
-                    if (x3 > terrainHt && k > 0 &&
+                    if (z > terrainHt && k > 0 &&
                         levelBlanking(i, j, k - 1, 0) == 1) {
                         levelDrag(i, j, k, 0) = 1;
                     }
