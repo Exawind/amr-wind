@@ -54,7 +54,8 @@ void Kosovic<Transport>::update_turbulent_viscosity(
     const auto& den = m_rho.state(fstate);
     const auto& geom_vec = repo.mesh().Geom();
     const amrex::Real Cs_sqr = this->m_Cs * this->m_Cs;
-    const bool is_terrain = this->m_sim.repo().int_field_exists("terrain_blank");
+    const bool is_terrain =
+        this->m_sim.repo().int_field_exists("terrain_blank");
     const auto* m_terrain_blank =
         is_terrain ? &this->m_sim.repo().get_int_field("terrain_blank")
                    : nullptr;
@@ -94,11 +95,11 @@ void Kosovic<Transport>::update_turbulent_viscosity(
                     const amrex::Real z = problo[2] + (k + 0.5) * dz;
                     const amrex::Real fmu = std::exp(-z / locSwitchLoc);
                     const amrex::Real phiM =
-                        (locMOL < 0) ? std::pow(1 - 16 * z/ locMOL, -0.25)
+                        (locMOL < 0) ? std::pow(1 - 16 * z / locMOL, -0.25)
                                      : 1 + 5 * z / locMOL;
                     const amrex::Real ransL =
                         std::pow(0.41 * (k + 1) * dz / phiM, 2);
-                    amrex::Real turnOff = std::exp(-z/ locLESTurnOff);
+                    amrex::Real turnOff = std::exp(-z / locLESTurnOff);
                     amrex::Real viscosityScale =
                         locSurfaceFactor *
                             (std::pow(1 - fmu, locSurfaceRANSExp) *
