@@ -4,7 +4,7 @@
 #            SIMULATION STOP            #
 #.......................................#
 time.stop_time               = 20.00     # Max (simulated) time to evolve
-time.max_step                = -10    	#-1000       # Max number of time steps
+time.max_step                = 10    	#-1000       # Max number of time steps
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
@@ -57,7 +57,7 @@ geometry.prob_hi        =   1.0 0.5 1.0  # Hi corner coordinates
 geometry.is_periodic    =   0   0   0   # Periodicity x y z (0/1)
 
 # Boundary conditions
-TwoLayer.mvel = -1.0 -2.0  0.0
+TwoLayer.mvel =  1.0  2.0  0.0
 TwoLayer.pvel =  1.0  2.0  0.0
 
 xlo.type = "mass_inflow_outflow"
