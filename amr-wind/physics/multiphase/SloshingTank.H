@@ -35,6 +35,7 @@ public:
 private:
     Field& m_velocity;
     Field& m_levelset;
+    Field& m_pressure;
 
     //! Initial free surface amplitude magnitude
     amrex::Real m_amplitude{0.1};
@@ -44,6 +45,14 @@ private:
 
     //! Initial zero-level free-surface water depth
     amrex::Real m_waterlevel{0.0};
+
+    //! Stuff to get from MultiPhase physics
+    amrex::Real m_rho1{std::numeric_limits<amrex::Real>::quiet_NaN()};
+    amrex::Real m_rho2{std::numeric_limits<amrex::Real>::quiet_NaN()};
+    amrex::Vector<amrex::Real> m_gravity{
+        std::numeric_limits<amrex::Real>::quiet_NaN(),
+        std::numeric_limits<amrex::Real>::quiet_NaN(),
+        std::numeric_limits<amrex::Real>::quiet_NaN()};
 };
 
 } // namespace amr_wind

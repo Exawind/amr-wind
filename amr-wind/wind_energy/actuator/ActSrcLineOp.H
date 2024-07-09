@@ -102,6 +102,8 @@ void ActSrcOp<ActTrait, ActSrcLine>::operator()(
     const auto* eps = m_epsilon.data();
     const auto* tmat = m_orientation.data();
 
+    const auto dcoord_flags = m_data.grid().dcoord_flags;
+
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const vs::Vector cc{
             problo[0] + (i + 0.5) * dx[0],
@@ -115,7 +117,10 @@ void ActSrcOp<ActTrait, ActSrcLine>::operator()(
             constexpr amrex::Real wt = 0.5;
             const auto pos_ip = wt * pos[ip] + (1.0 - wt) * opos[ip];
             const auto dist = cc - pos_ip;
-            const auto dist_local = tmat[ip] & dist;
+            // Convert to local (chord, span, thickness) coords
+            const auto dist_local_3D = tmat[ip] & dist;
+            // In local coords, zero disabled distances (e.g., for 2D)
+            const auto dist_local = dist_local_3D * dcoord_flags;
             const auto gauss_fac = utils::gaussian3d(dist_local, eps[ip]);
             const auto& pforce = force[ip];
 

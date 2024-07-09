@@ -76,21 +76,23 @@ struct InitDataOp<Box>
                         const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
+                        amrex::Real phi_loc = 0;
                         if ((std::abs(x - x0) <= 0.5 * l) &&
                             (std::abs(y - y0) <= 0.5 * w) &&
                             (std::abs(z - z0) <= 0.5 * h)) {
-                            phi(i, j, k) = std::max(
+                            phi_loc = std::max(
                                 std::abs(x - x0) - 0.5 * l,
                                 std::max(
                                     std::abs(y - y0) - 0.5 * w,
                                     std::abs(z - z0) - 0.5 * h));
                         } else {
-                            phi(i, j, k) = std::min(
+                            phi_loc = std::min(
                                 std::abs(std::abs(x - x0) - 0.5 * l),
                                 std::min(
                                     std::abs(std::abs(y - y0) - 0.5 * w),
                                     std::abs(std::abs(z - z0) - 0.5 * h)));
                         }
+                        phi(i, j, k) = std::min(phi_loc, phi(i, j, k));
                     });
                 const auto& nbx = mfi.nodaltilebox();
                 amrex::ParallelFor(

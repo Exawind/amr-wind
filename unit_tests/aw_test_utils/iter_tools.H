@@ -20,6 +20,25 @@ namespace amr_wind_tests {
  *  @param field MultiFabs for each of the `nlevels` levels
  *  @param func Functor to execute over the MultiFabs
  */
+
+template <typename Functor>
+void run_algorithm_single_lev(
+    const int lev, amrex::MultiFab& lfab, const Functor& func)
+{
+    for (amrex::MFIter mfi(lfab); mfi.isValid(); ++mfi) {
+        func(lev, mfi);
+    }
+}
+
+template <typename Functor>
+void run_algorithm_single_lev(
+    const int lev, amrex::iMultiFab& lfab, const Functor& func)
+{
+    for (amrex::MFIter mfi(lfab); mfi.isValid(); ++mfi) {
+        func(lev, mfi);
+    }
+}
+
 template <typename Functor>
 void run_algorithm(
     const int nlevels,
@@ -28,10 +47,7 @@ void run_algorithm(
 {
     for (int lev = 0; lev < nlevels; ++lev) {
         auto& lfab = *field[lev];
-
-        for (amrex::MFIter mfi(lfab); mfi.isValid(); ++mfi) {
-            func(lev, mfi);
-        }
+        run_algorithm_single_lev(lev, lfab, func);
     }
 }
 
@@ -41,10 +57,29 @@ void run_algorithm(amr_wind::Field& field, const Functor& func)
     const int nlevels = field.repo().num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
         auto& lfab = field(lev);
+        run_algorithm_single_lev(lev, lfab, func);
+    }
+}
 
-        for (amrex::MFIter mfi(lfab); mfi.isValid(); ++mfi) {
-            func(lev, mfi);
-        }
+template <typename Functor>
+void run_algorithm(
+    const int nlevels,
+    amrex::Vector<amrex::iMultiFab*>& intfield,
+    const Functor& func)
+{
+    for (int lev = 0; lev < nlevels; ++lev) {
+        auto& lfab = *intfield[lev];
+        run_algorithm_single_lev(lev, lfab, func);
+    }
+}
+
+template <typename Functor>
+void run_algorithm(amr_wind::IntField& intfield, const Functor& func)
+{
+    const int nlevels = intfield.repo().num_active_levels();
+    for (int lev = 0; lev < nlevels; ++lev) {
+        auto& lfab = intfield(lev);
+        run_algorithm_single_lev(lev, lfab, func);
     }
 }
 
