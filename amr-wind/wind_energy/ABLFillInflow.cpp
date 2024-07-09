@@ -92,7 +92,9 @@ void ABLFillInflow::fillpatch_sibling_fields(
         lev, time, mfabs, ffabs, cfabs, nghost, lbcrec, fstate);
 
     for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
-        m_bndry_plane.populate_data(lev, time, m_field, *mfabs[i], 0, i);
+        // use new_time to populate boundary data instead of half-time
+        // to avoid interpolating from precursor data
+        m_bndry_plane.populate_data(lev, m_time.new_time(), m_field, *mfabs[i], 0, i);
     }
 }
 
