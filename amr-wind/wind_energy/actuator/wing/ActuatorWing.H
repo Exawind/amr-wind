@@ -37,6 +37,27 @@ struct WingBaseData
     //! Pitch angle for the wing
     amrex::Real pitch{0.0};
 
+    //! Switch for turning on 2D Gaussian (off in spanwise)
+    bool gauss_2D{false};
+
+    //! Switch for spanwise normalization in 2D setting
+    bool normalize_2D_spanwise{true};
+
+    //! Switch for turning off force components of actuator
+    amrex::Vector<int> force_coord_flags{1, 1, 1};
+
+    //! User-specified velocity magnitude, only active when nonnegative
+    amrex::Real prescribed_uinf{-1.0};
+
+    //! File name for pitch actuation table
+    std::string pitch_timetable_file;
+
+    //! Pitch actuation: time table
+    amrex::Vector<amrex::Real> time_table;
+
+    //! Pitch actuation: pitch angle table
+    amrex::Vector<amrex::Real> pitch_table;
+
     //! Relative velocity at the actuator node
     VecList vel_rel;
 
