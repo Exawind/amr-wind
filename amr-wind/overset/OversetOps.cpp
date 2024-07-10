@@ -22,6 +22,7 @@ void OversetOps::initialize(CFDSim& sim)
     pp.query("reinit_target_cutoff", m_target_cutoff);
 
     // Queries for coupling options
+    pp.query("use_hydrostatic_gradp", m_use_hydrostatic_gradp);
     pp.query("replace_gradp_postsolve", m_replace_gradp_postsolve);
     // OversetOps does not control these coupling options, merely reports them
     pp.query("disable_coupled_nodal_proj", m_disable_nodal_proj);
@@ -62,7 +63,7 @@ void OversetOps::pre_advance_work()
 
     // If pressure gradient will be replaced, store current pressure gradient
     if (m_replace_gradp_postsolve) {
-        auto& gp = (*m_sim_ptr).repo().get_field("gp");
+        const auto& gp = (*m_sim_ptr).repo().get_field("gp");
         for (int lev = 0; lev < (*m_sim_ptr).repo().num_active_levels();
              ++lev) {
             amrex::MultiFab::Copy(
@@ -307,7 +308,7 @@ void OversetOps::sharpen_nalu_data()
 
         // Average down fluxes across levels for consistency
         for (int lev = nlevels - 1; lev > 0; --lev) {
-            amrex::IntVect rr =
+            const amrex::IntVect rr =
                 geom[lev].Domain().size() / geom[lev - 1].Domain().size();
             amrex::average_down_faces(
                 GetArrOfConstPtrs(fluxes[lev]), fluxes[lev - 1], rr,
@@ -330,7 +331,7 @@ void OversetOps::sharpen_nalu_data()
 
         // Apply fluxes
         for (int lev = 0; lev < nlevels; ++lev) {
-            auto dx = (geom[lev]).CellSizeArray();
+            const auto dx = (geom[lev]).CellSizeArray();
 
             overset_ops::apply_fluxes(
                 (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), (*p_src)(lev),

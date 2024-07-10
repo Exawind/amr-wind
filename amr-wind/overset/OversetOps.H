@@ -30,8 +30,8 @@ private:
     // (will be removed soon)
     bool m_perturb_p{false};
 
-    // This is the only option for now
-    const bool m_use_hydrostatic_gradp{true};
+    // To avoid using sharpened pressure, use hydrostatic pressure
+    bool m_use_hydrostatic_gradp{false};
 
     // Coupling options
     bool m_disable_nodal_proj{false};
