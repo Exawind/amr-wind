@@ -13,7 +13,7 @@ struct ActInfo;
 
 namespace utils {
 
-  /** Convert a bounding box into amrex::Box index space at a given level
+/** Convert a bounding box into amrex::Box index space at a given level
  *
  *  \param rbx Bounding box as defined in global domain coordinates
  *  \param geom AMReX geometry information for a given level

@@ -55,16 +55,18 @@ void Actuator::post_init_actions()
 {
     BL_PROFILE("amr-wind::actuator::Actuator::post_init_actions");
 
-      amrex::Vector<int> act_proc_count(amrex::ParallelDescriptor::NProcs(), 0);
+    amrex::Vector<int> act_proc_count(amrex::ParallelDescriptor::NProcs(), 0);
     {
-      BL_PROFILE("amr-wind::actuator::Actuator::post_init_actions::determine_root_proc");
-    for (auto& act : m_actuators) {
-        act->determine_root_proc(act_proc_count);
-    }
+        BL_PROFILE(
+            "amr-wind::actuator::Actuator::post_init_actions::determine_root_"
+            "proc");
+        for (auto& act : m_actuators) {
+            act->determine_root_proc(act_proc_count);
+        }
     }
 
     {
-      BL_PROFILE("amr-wind::actuator::Actuator::post_init_actions::sanity");
+        BL_PROFILE("amr-wind::actuator::Actuator::post_init_actions::sanity");
         // Sanity check that we have processed the turbines correctly
         int nact =
             std::accumulate(act_proc_count.begin(), act_proc_count.end(), 0);
@@ -72,10 +74,10 @@ void Actuator::post_init_actions()
     }
 
     {
-      BL_PROFILE("amr-wind::actuator::Actuator::post_init_actions::init_src");
-    for (auto& act : m_actuators) {
-        act->init_actuator_source();
-    }
+        BL_PROFILE("amr-wind::actuator::Actuator::post_init_actions::init_src");
+        for (auto& act : m_actuators) {
+            act->init_actuator_source();
+        }
     }
 
     // Ensure velocity fills ghost cells prior to sampling
