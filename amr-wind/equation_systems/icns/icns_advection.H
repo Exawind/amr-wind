@@ -305,7 +305,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         if (fvm::Godunov::nghost_state > 0) {
             amrex::Array<Field*, AMREX_SPACEDIM> mac_vel = {
                 AMREX_D_DECL(&u_mac, &v_mac, &w_mac)};
-            dof_field.fillpatch_sibling_fields(time + 0.5*dt, u_mac.num_grow(), mac_vel);
+            dof_field.fillpatch_sibling_fields(
+                time + 0.5*dt, u_mac.num_grow(), mac_vel);
         }
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
