@@ -417,18 +417,18 @@ amrex::Real calculate_pseudo_dt_flux(
 
 // Apply reinitialization fluxes to modify fields
 void apply_fluxes(
-    amrex::MultiFab& mf_fx,
-    amrex::MultiFab& mf_fy,
-    amrex::MultiFab& mf_fz,
-    amrex::MultiFab& mf_psource,
+    const amrex::MultiFab& mf_fx,
+    const amrex::MultiFab& mf_fy,
+    const amrex::MultiFab& mf_fz,
+    const amrex::MultiFab& mf_psource,
     amrex::MultiFab& mf_vof,
     amrex::MultiFab& mf_dens,
     amrex::MultiFab& mf_vel,
     amrex::MultiFab& mf_gp,
     amrex::MultiFab& mf_pressure,
-    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx,
-    amrex::Real ptfac,
-    amrex::Real vof_tol)
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx,
+    const amrex::Real ptfac,
+    const amrex::Real vof_tol)
 {
     const auto& fx = mf_fx.const_arrays();
     const auto& fy = mf_fy.const_arrays();
@@ -444,31 +444,36 @@ void apply_fluxes(
         mf_vof, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
             const amrex::Real olddens = dens[nbx](i, j, k);
             vof[nbx](i, j, k) +=
-                ptfac * ((fx[nbx](i + 1, j, k, 0) - fx[nbx](i, j, k, 0)) +
-                         (fy[nbx](i, j + 1, k, 0) - fy[nbx](i, j, k, 0)) +
-                         (fz[nbx](i, j, k + 1, 0) - fz[nbx](i, j, k, 0)));
+                ptfac *
+                ((fx[nbx](i + 1, j, k, 0) - fx[nbx](i, j, k, 0)) / dx[0] +
+                 (fy[nbx](i, j + 1, k, 0) - fy[nbx](i, j, k, 0)) / dx[1] +
+                 (fz[nbx](i, j, k + 1, 0) - fz[nbx](i, j, k, 0)) / dx[2]);
             dens[nbx](i, j, k) +=
-                ptfac * ((fx[nbx](i + 1, j, k, 1) - fx[nbx](i, j, k, 1)) +
-                         (fy[nbx](i, j + 1, k, 1) - fy[nbx](i, j, k, 1)) +
-                         (fz[nbx](i, j, k + 1, 1) - fz[nbx](i, j, k, 1)));
+                ptfac *
+                ((fx[nbx](i + 1, j, k, 1) - fx[nbx](i, j, k, 1)) / dx[0] +
+                 (fy[nbx](i, j + 1, k, 1) - fy[nbx](i, j, k, 1)) / dx[1] +
+                 (fz[nbx](i, j, k + 1, 1) - fz[nbx](i, j, k, 1)) / dx[2]);
             vel[nbx](i, j, k, 0) =
                 1.0 / dens[nbx](i, j, k) *
                 (olddens * vel[nbx](i, j, k, 0) +
-                 ptfac * ((fx[nbx](i + 1, j, k, 2) - fx[nbx](i, j, k, 2)) +
-                          (fy[nbx](i, j + 1, k, 2) - fy[nbx](i, j, k, 2)) +
-                          (fz[nbx](i, j, k + 1, 2) - fz[nbx](i, j, k, 2))));
+                 ptfac *
+                     ((fx[nbx](i + 1, j, k, 2) - fx[nbx](i, j, k, 2)) / dx[0] +
+                      (fy[nbx](i, j + 1, k, 2) - fy[nbx](i, j, k, 2)) / dx[1] +
+                      (fz[nbx](i, j, k + 1, 2) - fz[nbx](i, j, k, 2)) / dx[2]));
             vel[nbx](i, j, k, 1) =
                 1.0 / dens[nbx](i, j, k) *
                 (olddens * vel[nbx](i, j, k, 1) +
-                 ptfac * ((fx[nbx](i + 1, j, k, 3) - fx[nbx](i, j, k, 3)) +
-                          (fy[nbx](i, j + 1, k, 3) - fy[nbx](i, j, k, 3)) +
-                          (fz[nbx](i, j, k + 1, 3) - fz[nbx](i, j, k, 3))));
+                 ptfac *
+                     ((fx[nbx](i + 1, j, k, 3) - fx[nbx](i, j, k, 3)) / dx[0] +
+                      (fy[nbx](i, j + 1, k, 3) - fy[nbx](i, j, k, 3)) / dx[1] +
+                      (fz[nbx](i, j, k + 1, 3) - fz[nbx](i, j, k, 3)) / dx[2]));
             vel[nbx](i, j, k, 2) =
                 1.0 / dens[nbx](i, j, k) *
                 (olddens * vel[nbx](i, j, k, 2) +
-                 ptfac * ((fx[nbx](i + 1, j, k, 4) - fx[nbx](i, j, k, 4)) +
-                          (fy[nbx](i, j + 1, k, 4) - fy[nbx](i, j, k, 4)) +
-                          (fz[nbx](i, j, k + 1, 4) - fz[nbx](i, j, k, 4))));
+                 ptfac *
+                     ((fx[nbx](i + 1, j, k, 4) - fx[nbx](i, j, k, 4)) / dx[0] +
+                      (fy[nbx](i, j + 1, k, 4) - fy[nbx](i, j, k, 4)) / dx[1] +
+                      (fz[nbx](i, j, k + 1, 4) - fz[nbx](i, j, k, 4)) / dx[2]));
             gp[nbx](i, j, k, 0) +=
                 ptfac *
                 ((fx[nbx](i + 1, j, k, 5) - fx[nbx](i, j, k, 5)) / dx[0] +
