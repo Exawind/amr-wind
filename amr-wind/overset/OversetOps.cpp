@@ -209,7 +209,7 @@ void OversetOps::sharpen_nalu_data()
     auto& gp = *gp_scr;
 
     // Give initial max possible value of pseudo-velocity scale
-    auto dx_lev0 = (geom[0]).CellSizeArray();
+    const auto dx_lev0 = (geom[0]).CellSizeArray();
     const amrex::Real max_pvscale =
         std::min(std::min(dx_lev0[0], dx_lev0[1]), dx_lev0[2]);
     amrex::Real pvscale = max_pvscale;
