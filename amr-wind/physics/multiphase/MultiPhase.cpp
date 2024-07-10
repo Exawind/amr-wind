@@ -488,7 +488,8 @@ void MultiPhase::levelset2vof()
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     amrex::Real mx, my, mz;
-                    multiphase::youngs_fd_normal(i, j, k, phi, mx, my, mz);
+                    multiphase::youngs_finite_difference_normal(
+                        i, j, k, phi, mx, my, mz);
                     mx = std::abs(mx / 32.);
                     my = std::abs(my / 32.);
                     mz = std::abs(mz / 32.);
@@ -498,13 +499,9 @@ void MultiPhase::levelset2vof()
                     mz = mz / normL1;
                     // Make sure that alpha is negative far away from the
                     // interface
-                    amrex::Real alpha;
-                    if (phi(i, j, k) < -eps) {
-                        alpha = -1.0;
-                    } else {
-                        alpha = phi(i, j, k) / normL1;
-                        alpha = alpha + 0.5;
-                    }
+                    const amrex::Real alpha = (phi(i, j, k) < -eps)
+                                                  ? -1.0
+                                                  : phi(i, j, k) / normL1 + 0.5;
                     if (alpha >= 1.0) {
                         volfrac(i, j, k) = 1.0;
                     } else if (alpha <= 0.0) {
@@ -521,7 +518,8 @@ void MultiPhase::levelset2vof()
 }
 
 // Do levelset2vof with iblank neumann and into supplied scratch field
-void MultiPhase::levelset2vof(IntField& iblank_cell, ScratchField& vof_scr)
+void MultiPhase::levelset2vof(
+    const IntField& iblank_cell, ScratchField& vof_scr)
 {
     const int nlevels = m_sim.repo().num_active_levels();
     (*m_levelset).fillpatch(m_sim.time().current_time());
@@ -542,31 +540,19 @@ void MultiPhase::levelset2vof(IntField& iblank_cell, ScratchField& vof_scr)
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     // Neumann of levelset across iblank boundaries
-                    int ibdy = 0;
-                    int jbdy = 0;
-                    int kbdy = 0;
-                    if (iblank(i, j, k) != iblank(i - 1, j, k)) {
-                        ibdy = -1;
-                    }
-                    if (iblank(i, j, k) != iblank(i, j - 1, k)) {
-                        jbdy = -1;
-                    }
-                    if (iblank(i, j, k) != iblank(i, j, k - 1)) {
-                        kbdy = -1;
-                    }
+                    int ibdy =
+                        (iblank(i, j, k) != iblank(i - 1, j, k)) ? -1 : 0;
+                    int jbdy =
+                        (iblank(i, j, k) != iblank(i, j - 1, k)) ? -1 : 0;
+                    int kbdy =
+                        (iblank(i, j, k) != iblank(i, j, k - 1)) ? -1 : 0;
                     // no cell should be isolated such that -1 and 1 are
                     // needed
-                    if (iblank(i, j, k) != iblank(i + 1, j, k)) {
-                        ibdy = +1;
-                    }
-                    if (iblank(i, j, k) != iblank(i, j + 1, k)) {
-                        jbdy = +1;
-                    }
-                    if (iblank(i, j, k) != iblank(i, j, k + 1)) {
-                        kbdy = +1;
-                    }
+                    ibdy = (iblank(i, j, k) != iblank(i + 1, j, k)) ? +1 : ibdy;
+                    jbdy = (iblank(i, j, k) != iblank(i, j + 1, k)) ? +1 : jbdy;
+                    kbdy = (iblank(i, j, k) != iblank(i, j, k + 1)) ? +1 : kbdy;
                     amrex::Real mx, my, mz;
-                    multiphase::youngs_fd_normal_neumann(
+                    multiphase::youngs_finite_difference_normal_neumann(
                         i, j, k, ibdy, jbdy, kbdy, phi, mx, my, mz);
                     mx = std::abs(mx / 32.);
                     my = std::abs(my / 32.);
@@ -577,13 +563,9 @@ void MultiPhase::levelset2vof(IntField& iblank_cell, ScratchField& vof_scr)
                     mz = mz / normL1;
                     // Make sure that alpha is negative far away from the
                     // interface
-                    amrex::Real alpha;
-                    if (phi(i, j, k) < -eps) {
-                        alpha = -1.0;
-                    } else {
-                        alpha = phi(i, j, k) / normL1;
-                        alpha = alpha + 0.5;
-                    }
+                    const amrex::Real alpha = (phi(i, j, k) < -eps)
+                                                  ? -1.0
+                                                  : phi(i, j, k) / normL1 + 0.5;
                     if (alpha >= 1.0) {
                         volfrac(i, j, k) = 1.0;
                     } else if (alpha <= 0.0) {

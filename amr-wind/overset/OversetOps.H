@@ -31,22 +31,22 @@ private:
     bool m_perturb_p{false};
 
     // This is the only option for now
-    const bool m_use_hs_pgrad{true};
+    const bool m_use_hydrostatic_gradp{true};
 
     // Coupling options
     bool m_disable_nodal_proj{false};
     bool m_disable_mac_proj{false};
-    bool m_replace_gp{false};
+    bool m_replace_gradp_postsolve{false};
 
     // Verbosity
     int m_verbose{0};
 
     // Reinitialization parameters
-    int m_niterations{10};
-    int m_calcconvint{1}; // calctolniter, cconv
-    amrex::Real m_tol = 1e-12;
-    amrex::Real m_rlscale = 1.5;
-    amrex::Real m_margin = 0.1;
+    int m_n_iterations{10};
+    int m_calc_convg_interval{1}; // calctolniter, cconv
+    amrex::Real m_convg_tol = 1e-12;
+    amrex::Real m_relative_length_scale = 1.5;
+    amrex::Real m_upw_margin = 0.1;
     amrex::Real m_target_cutoff = 0.0; // proc_tgvof_tol
 
     // Tolerance for VOF-related bound checks

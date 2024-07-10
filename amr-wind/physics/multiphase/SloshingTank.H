@@ -47,9 +47,12 @@ private:
     amrex::Real m_waterlevel{0.0};
 
     //! Stuff to get from MultiPhase physics
-    amrex::Real m_rho1{1000.};
-    amrex::Real m_rho2{1.};
-    amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
+    amrex::Real m_rho1{std::numeric_limits<amrex::Real>::quiet_NaN()};
+    amrex::Real m_rho2{std::numeric_limits<amrex::Real>::quiet_NaN()};
+    amrex::Vector<amrex::Real> m_gravity{
+        std::numeric_limits<amrex::Real>::quiet_NaN(),
+        std::numeric_limits<amrex::Real>::quiet_NaN(),
+        std::numeric_limits<amrex::Real>::quiet_NaN()};
 };
 
 } // namespace amr_wind

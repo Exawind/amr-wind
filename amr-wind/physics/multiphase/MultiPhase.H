@@ -53,7 +53,7 @@ public:
 
     void levelset2vof();
 
-    void levelset2vof(IntField& iblank_cell, ScratchField& vof_scr);
+    void levelset2vof(const IntField& iblank_cell, ScratchField& vof_scr);
 
     void favre_filtering();
 
