@@ -296,34 +296,34 @@ void ABLStats::write_ascii()
 {
     BL_PROFILE("amr-wind::ABLStats::write_ascii");
 
-    const std::string stat_dir = "post_processing";
+    const std::string post_dir = m_sim.io_manager().post_processing_directory();
     const auto& time = m_sim.time();
     m_pa_vel.output_line_average_ascii(
-        stat_dir + "/plane_average_velocity.txt", time.time_index(),
+        post_dir + "/plane_average_velocity.txt", time.time_index(),
         time.current_time());
     m_pa_temp.output_line_average_ascii(
-        stat_dir + "/plane_average_temperature.txt", time.time_index(),
+        post_dir + "/plane_average_temperature.txt", time.time_index(),
         time.current_time());
     m_pa_vel_fine.output_line_average_ascii(
-        stat_dir + "/plane_average_velocity_fine.txt", time.time_index(),
+        post_dir + "/plane_average_velocity_fine.txt", time.time_index(),
         time.current_time());
     m_pa_temp_fine.output_line_average_ascii(
-        stat_dir + "/plane_average_temperature_fine.txt", time.time_index(),
+        post_dir + "/plane_average_temperature_fine.txt", time.time_index(),
         time.current_time());
     m_pa_mueff.output_line_average_ascii(
-        stat_dir + "/plane_average_velocity_mueff.txt", time.time_index(),
+        post_dir + "/plane_average_velocity_mueff.txt", time.time_index(),
         time.current_time());
     m_pa_tt.output_line_average_ascii(
-        stat_dir + "/second_moment_temperature_temperature.txt",
+        post_dir + "/second_moment_temperature_temperature.txt",
         time.time_index(), time.current_time());
     m_pa_tu.output_line_average_ascii(
-        stat_dir + "/second_moment_temperature_velocity.txt", time.time_index(),
+        post_dir + "/second_moment_temperature_velocity.txt", time.time_index(),
         time.current_time());
     m_pa_uu.output_line_average_ascii(
-        stat_dir + "/second_moment_velocity_velocity.txt", time.time_index(),
+        post_dir + "/second_moment_velocity_velocity.txt", time.time_index(),
         time.current_time());
     m_pa_uuu.output_line_average_ascii(
-        stat_dir + "/third_moment_velocity_velocity_velocity.txt",
+        post_dir + "/third_moment_velocity_velocity_velocity.txt",
         time.time_index(), time.current_time());
 
     // Only I/O processor handles this file I/O
@@ -372,14 +372,11 @@ void ABLStats::prepare_ascii_file()
         return;
     }
 
-    const std::string stat_dir = "post_processing";
+    const std::string post_dir = m_sim.io_manager().post_processing_directory();
     const std::string sname =
         amrex::Concatenate("abl_statistics", m_sim.time().time_index());
 
-    if (!amrex::UtilCreateDirectory(stat_dir, 0755)) {
-        amrex::CreateDirectoryFailed(stat_dir);
-    }
-    m_ascii_file_name = stat_dir + "/" + sname + ".txt";
+    m_ascii_file_name = post_dir + "/" + sname + ".txt";
 
     std::ofstream outfile;
     outfile.open(m_ascii_file_name.c_str(), std::ios_base::out);
@@ -393,13 +390,11 @@ void ABLStats::prepare_netcdf_file()
 {
 #ifdef AMR_WIND_USE_NETCDF
 
-    const std::string stat_dir = "post_processing";
+    const std::string post_dir = m_sim.io_manager().post_processing_directory();
     const std::string sname =
         amrex::Concatenate("abl_statistics", m_sim.time().time_index());
-    if (!amrex::UtilCreateDirectory(stat_dir, 0755)) {
-        amrex::CreateDirectoryFailed(stat_dir);
-    }
-    m_ncfile_name = stat_dir + "/" + sname + ".nc";
+
+    m_ncfile_name = post_dir + "/" + sname + ".nc";
 
     // Only I/O processor handles NetCDF generation
     if (!amrex::ParallelDescriptor::IOProcessor()) {

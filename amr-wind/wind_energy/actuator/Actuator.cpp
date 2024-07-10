@@ -4,6 +4,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/utilities/io_utils.H"
+#include "amr-wind/utilities/IOManager.H"
 
 #include <algorithm>
 #include <memory>
@@ -19,7 +20,7 @@ Actuator::~Actuator() = default;
 
 void Actuator::pre_init_actions()
 {
-    BL_PROFILE("amr-wind::actuator::Actuator::post_init_actions");
+    BL_PROFILE("amr-wind::actuator::Actuator::pre_init_actions");
     amrex::ParmParse pp(identifier());
 
     amrex::Vector<std::string> labels;
@@ -87,6 +88,8 @@ void Actuator::post_init_actions()
 
 void Actuator::post_regrid_actions()
 {
+    BL_PROFILE("amr-wind::actuator::Actuator::post_regrid_actions");
+
     for (auto& act : m_actuators) {
         act->determine_influenced_procs();
     }
@@ -109,6 +112,8 @@ void Actuator::pre_advance_work()
 void Actuator::communicate_turbine_io()
 {
 #ifdef AMR_WIND_USE_HELICS
+    BL_PROFILE("amr-wind::actuator::Actuator::communicate_turbine_io");
+
     if (!m_sim.helics().is_activated()) {
         return;
     }
@@ -147,6 +152,8 @@ void Actuator::communicate_turbine_io()
  */
 void Actuator::setup_container()
 {
+    BL_PROFILE("amr-wind::actuator::Actuator::setup_container");
+
     const int ntotal = num_actuators();
     const int nlocal = static_cast<int>(std::count_if(
         m_actuators.begin(), m_actuators.end(),
@@ -258,7 +265,10 @@ void Actuator::compute_source_term()
 
 void Actuator::prepare_outputs()
 {
-    const std::string out_dir_prefix = "post_processing/actuator";
+    BL_PROFILE("amr-wind::actuator::Actuator::prepare_outputs");
+
+    const std::string post_dir = m_sim.io_manager().post_processing_directory();
+    const std::string out_dir_prefix = post_dir + "/actuator";
     const std::string sname =
         amrex::Concatenate(out_dir_prefix, m_sim.time().time_index());
     if (!amrex::UtilCreateDirectory(sname, 0755)) {
@@ -274,6 +284,8 @@ void Actuator::prepare_outputs()
 
 void Actuator::post_advance_work()
 {
+    BL_PROFILE("amr-wind::actuator::Actuator::post_advance_work");
+
     const int iproc = amrex::ParallelDescriptor::MyProc();
     for (auto& ac : m_actuators) {
         if (ac->info().root_proc == iproc) {
@@ -284,6 +296,7 @@ void Actuator::post_advance_work()
 
 ActuatorModel& Actuator::get_act_bylabel(const std::string& actlabel) const
 {
+    BL_PROFILE("amr-wind::actuator::Actuator::get_act_bylabel");
     int thisid = 0; // Default to first actuator
     for (const auto& act : m_actuators) {
         std::string thislabel = act->label();
@@ -298,6 +311,7 @@ ActuatorModel& Actuator::get_act_bylabel(const std::string& actlabel) const
 template <typename T>
 T* Actuator::get_actuator(std::string& key) const
 {
+    BL_PROFILE("amr-wind::actuator::Actuator::get_actuator");
     for (const auto& act : m_actuators) {
         std::string thislabel = act->label();
         if (thislabel == key) {

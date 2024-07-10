@@ -374,6 +374,9 @@ public:
                 ori.isLow() ? amrex::adjCellLo(domain, idir, nghost[idir])
                             : amrex::adjCellHi(domain, idir, nghost[idir]);
 
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
             for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
                 const auto& gbx = amrex::grow(mfi.validbox(), nghost);
                 const auto& bx = gbx & dbx;
