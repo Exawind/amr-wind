@@ -126,8 +126,9 @@ void populate_sharpen_fluxes(
         mf_fx, mf_fx.n_grow,
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
             // vof flux
-            amrex::Real flux = alpha_flux(
-                i, j, k, 0, margin, vof[nbx], tg_vof[nbx], norm[nbx]);
+            amrex::Real flux = Gamma * alpha_flux(
+                                           i, j, k, 0, margin, vof[nbx],
+                                           tg_vof[nbx], norm[nbx]);
             fx[nbx](i, j, k, 0) = flux;
             // density flux
             flux *= (rho1 - rho2);
@@ -150,8 +151,9 @@ void populate_sharpen_fluxes(
     amrex::ParallelFor(
         mf_fy, mf_fy.n_grow,
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            amrex::Real flux = alpha_flux(
-                i, j, k, 1, margin, vof[nbx], tg_vof[nbx], norm[nbx]);
+            amrex::Real flux = Gamma * alpha_flux(
+                                           i, j, k, 1, margin, vof[nbx],
+                                           tg_vof[nbx], norm[nbx]);
             fy[nbx](i, j, k, 0) = flux;
             flux *= (rho1 - rho2);
             fy[nbx](i, j, k, 1) = flux;
@@ -169,8 +171,9 @@ void populate_sharpen_fluxes(
     amrex::ParallelFor(
         mf_fz, mf_fz.n_grow,
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            amrex::Real flux = alpha_flux(
-                i, j, k, 2, margin, vof[nbx], tg_vof[nbx], norm[nbx]);
+            amrex::Real flux = Gamma * alpha_flux(
+                                           i, j, k, 2, margin, vof[nbx],
+                                           tg_vof[nbx], norm[nbx]);
             fz[nbx](i, j, k, 0) = flux;
             flux *= (rho1 - rho2);
             fz[nbx](i, j, k, 1) = flux;
