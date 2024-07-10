@@ -91,6 +91,13 @@ void ActSrcOp<ActTrait, ActSrcLine>::operator()(
     BL_PROFILE("amr-wind::ActSrcOp<" + fname + ">");
 
     const auto& bx = mfi.tilebox();
+
+    const auto bxa = utils::realbox_to_box(actObj.m_data.info().bound_box, geom);
+    const auto& bxi = bx & bxa;
+    if (bxi.isEmpty()) {
+      return;
+    }
+    
     const auto& sarr = m_act_src(lev).array(mfi);
     const auto& problo = geom.ProbLoArray();
     const auto& dx = geom.CellSizeArray();
