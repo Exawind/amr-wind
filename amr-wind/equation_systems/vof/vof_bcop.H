@@ -34,7 +34,7 @@ struct BCOp<VOF>
         const auto bc_time = (rho_state == FieldState::Old)
                                  ? m_time.current_time()
                                  : m_time.new_time();
-        if (!(rho_state == FieldState::Old || rho_state == FieldState::New)) {
+        if ((rho_state != FieldState::Old && rho_state != FieldState::New)) {
             amrex::Abort(
                 "vof_bcop.H apply_bcs(): a state other than New or Old was "
                 "used. The method of setting bc_time must be evaluated before "
