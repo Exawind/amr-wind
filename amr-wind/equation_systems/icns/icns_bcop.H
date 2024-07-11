@@ -54,6 +54,12 @@ struct BCOp<ICNS>
         const auto bc_time = (rho_state == FieldState::Old)
                                  ? m_time.current_time()
                                  : m_time.new_time();
+        if (!(rho_state == FieldState::Old || rho_state == FieldState::New)) {
+            amrex::Abort(
+                "icns_bcop.H apply_bcs(): a state other than New or Old was "
+                "used. The method of setting bc_time must be evaluated before "
+                "using a different state for this routine.\n");
+        }
         field.fillphysbc(bc_time, ng_diff);
         field.apply_bc_funcs(rho_state);
     }

@@ -39,10 +39,15 @@ struct BCOp<PDE, std::enable_if_t<std::is_base_of_v<ScalarTransport, PDE>>>
     {
         amrex::IntVect ng_diff(1);
         auto& field = m_fields.field;
-        // Currently, this is only called from old or new states
         const auto bc_time = (rho_state == FieldState::Old)
                                  ? m_time.current_time()
                                  : m_time.new_time();
+        if (!(rho_state == FieldState::Old || rho_state == FieldState::New)) {
+            amrex::Abort(
+                "BCOps.H apply_bcs(): a state other than New or Old was used. "
+                "The method of setting bc_time must be evaluated before using "
+                "a different state for this routine.\n");
+        }
         field.fillphysbc(bc_time, ng_diff);
         field.apply_bc_funcs(rho_state);
     }
