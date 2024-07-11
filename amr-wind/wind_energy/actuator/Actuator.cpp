@@ -31,18 +31,29 @@ void Actuator::pre_init_actions()
 
     const int nturbines = static_cast<int>(labels.size());
 
-    if(nturbines > 50){
-      amrex::Print() << "WARNING: There are many turbines in this case. Please ensure you have consolidated common turbine options under a common prefix. For example, the following: " << std::endl;
-      amrex::Print() << "  Actuator.Turb1.type            = UniformCtDisk" << std::endl;
-      amrex::Print() << "  Actuator.Turb1.epsilon         = 5.0 5.0 5.0" << std::endl;
-      amrex::Print() << "  Actuator.Turb2.type            = UniformCtDisk" << std::endl;
-      amrex::Print() << "  Actuator.Turb2.epsilon         = 5.0 5.0 5.0" << std::endl;
-      amrex::Print() << "becomes: " << std::endl;
-      amrex::Print() << "  Actuator.UniformCtDisk.epsilon = 5.0 5.0 5.0" << std::endl;
-      amrex::Print() << "  Actuator.Turb1.type            = UniformCtDisk" << std::endl;
-      amrex::Print() << "  Actuator.Turb2.type            = UniformCtDisk" << std::endl;
+    if (nturbines > 50) {
+        amrex::Print()
+            << "WARNING: There are many turbines in this case. Please ensure "
+               "you have consolidated common turbine options under a common "
+               "prefix. For example, the following: "
+            << std::endl;
+        amrex::Print() << "  Actuator.Turb1.type            = UniformCtDisk"
+                       << std::endl;
+        amrex::Print() << "  Actuator.Turb1.epsilon         = 5.0 5.0 5.0"
+                       << std::endl;
+        amrex::Print() << "  Actuator.Turb2.type            = UniformCtDisk"
+                       << std::endl;
+        amrex::Print() << "  Actuator.Turb2.epsilon         = 5.0 5.0 5.0"
+                       << std::endl;
+        amrex::Print() << "becomes: " << std::endl;
+        amrex::Print() << "  Actuator.UniformCtDisk.epsilon = 5.0 5.0 5.0"
+                       << std::endl;
+        amrex::Print() << "  Actuator.Turb1.type            = UniformCtDisk"
+                       << std::endl;
+        amrex::Print() << "  Actuator.Turb2.type            = UniformCtDisk"
+                       << std::endl;
     }
-    
+
     for (int i = 0; i < nturbines; ++i) {
         const std::string& tname = labels[i];
         const std::string& prefix = identifier() + "." + tname;
