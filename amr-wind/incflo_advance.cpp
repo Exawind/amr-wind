@@ -253,6 +253,12 @@ void incflo::ApplyPredictor(bool incremental_projection)
     }
 
     if (m_use_godunov) {
+        // ICNS source term (and viscous term) are in terms of momentum;
+        // convert to velocity for MAC velocities by dividing by density
+        amr_wind::field_ops::divide(
+            icns().fields().src_term, density_old, 0, 0, AMREX_SPACEDIM, 0,
+            false);
+
         const int nghost_force = 1;
         IntVect ng(nghost_force);
         icns().fields().src_term.fillpatch(m_time.current_time(), ng);
@@ -337,8 +343,8 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // Define (or if use_godunov, re-define) the forcing terms and viscous terms
     // independently for the right hand side, without 1/rho term
     // *************************************************************************************
-    icns().compute_source_term(amr_wind::FieldState::New);
-    icns().compute_diffusion_term(amr_wind::FieldState::New);
+    icns().compute_source_term(amr_wind::FieldState::NPH);
+    icns().compute_diffusion_term(amr_wind::FieldState::Old);
 
     // *************************************************************************************
     // Evaluate right hand side and store in velocity

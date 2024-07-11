@@ -31,7 +31,10 @@ struct BCOp<VOF>
     {
         amrex::IntVect ng_diff(1);
         auto& field = m_fields.field;
-        field.fillphysbc(m_time.new_time(), ng_diff);
+        const auto bc_time = (rho_state == FieldState::Old)
+                                 ? m_time.current_time()
+                                 : m_time.new_time();
+        field.fillphysbc(bc_time, ng_diff);
         field.apply_bc_funcs(rho_state);
     }
 

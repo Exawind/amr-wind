@@ -67,6 +67,71 @@ add(T1& dst, const T2& src, int srccomp, int dstcomp, int numcomp, int nghost)
     add(dst, src, srccomp, dstcomp, numcomp, amrex::IntVect(nghost));
 }
 
+/** Divide two fields \f$y = y / x\f$
+ *  \ingroup field_ops
+ *
+ *  \tparam T1 Field or ScratchField
+ *  \tparam T2 Field or ScratchField
+ *  \param [out] dst Field that is updated
+ *  \param [in] src Field to be divisor
+ *  \param [in] srccomp Starting component index of source field
+ *  \param [in] dstcomp Starting component index of destination field
+ *  \param [in] numcomp Number of components to be updated
+ *  \param [in] nghost Number of ghost cells to be updated
+ *  \param [in] iter_src_comp Flag of whether src components should be iterated
+ */
+template <typename T1, typename T2>
+inline void divide(
+    T1& dst,
+    const T2& src,
+    int srccomp,
+    int dstcomp,
+    int numcomp,
+    const amrex::IntVect& nghost,
+    const bool iter_src_comp)
+{
+    const int nlevels = dst.repo().num_active_levels();
+    for (int lev = 0; lev < nlevels; ++lev) {
+        if (iter_src_comp) {
+            amrex::MultiFab::Divide(
+                dst(lev), src(lev), srccomp, dstcomp, numcomp, nghost);
+        } else {
+            for (int n = 0; n < numcomp; ++n) {
+                amrex::MultiFab::Divide(
+                    dst(lev), src(lev), srccomp, dstcomp + n, 1, nghost);
+            }
+        }
+    }
+}
+
+/** Divide two fields \f$y = y / x\f$
+ *  \ingroup field_ops
+ *
+ *  \tparam T1 Field or ScratchField
+ *  \tparam T2 Field or ScratchField
+ *  \param [out] dst Field that is updated
+ *  \param [in] src Field to be divisor
+ *  \param [in] srccomp Starting component index of source field
+ *  \param [in] dstcomp Starting component index of destination field
+ *  \param [in] numcomp Number of components to be updated
+ *  \param [in] nghost Number of ghost cells to be updated
+ *  \param [in] iter_src_comp Flag of whether src components should be iterated
+ */
+template <typename T1, typename T2>
+inline void divide(
+    T1& dst,
+    const T2& src,
+    int srccomp,
+    int dstcomp,
+    int numcomp,
+    int nghost,
+    bool iter_src_comp)
+{
+    divide(
+        dst, src, srccomp, dstcomp, numcomp, amrex::IntVect(nghost),
+        iter_src_comp);
+}
+
 /** Copy source field to destination field
  *  \ingroup field_ops
  *
