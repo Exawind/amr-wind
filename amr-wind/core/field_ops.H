@@ -76,7 +76,8 @@ add(T1& dst, const T2& src, int srccomp, int dstcomp, int numcomp, int nghost)
  *  \param [in] src Field to be divisor
  *  \param [in] srccomp Starting component index of source field
  *  \param [in] dstcomp Starting component index of destination field
- *  \param [in] numcomp Number of components to be updated
+ *  \param [in] ncomp_src Number of components to divide by
+ *  \param [in] ncomp_dst Number of components to be divided
  *  \param [in] nghost Number of ghost cells to be updated
  *  \param [in] iter_src_comp Flag of whether src components should be iterated
  */
@@ -84,22 +85,28 @@ template <typename T1, typename T2>
 inline void divide(
     T1& dst,
     const T2& src,
-    int srccomp,
-    int dstcomp,
-    int numcomp,
-    const amrex::IntVect& nghost,
-    const bool iter_src_comp)
+    const int srccomp,
+    const int dstcomp,
+    const int ncomp_src,
+    const int ncomp_dst,
+    const amrex::IntVect& nghost)
 {
     const int nlevels = dst.repo().num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
-        if (iter_src_comp) {
+        if (ncomp_dst == ncomp_src) {
             amrex::MultiFab::Divide(
-                dst(lev), src(lev), srccomp, dstcomp, numcomp, nghost);
-        } else {
-            for (int n = 0; n < numcomp; ++n) {
+                dst(lev), src(lev), srccomp, dstcomp, ncomp_dst, nghost);
+        } else if (ncomp_src == 1) {
+            for (int n = 0; n < ncomp_dst; ++n) {
                 amrex::MultiFab::Divide(
-                    dst(lev), src(lev), srccomp, dstcomp + n, 1, nghost);
+                    dst(lev), src(lev), srccomp, dstcomp + n, ncomp_src,
+                    nghost);
             }
+        } else {
+            amrex::Abort(
+                "field_ops::divide : number of divisor components (ncomp_src) "
+                "must either be 1 or match number of dividend components "
+                "(ncomp_dst).\n");
         }
     }
 }
@@ -113,7 +120,8 @@ inline void divide(
  *  \param [in] src Field to be divisor
  *  \param [in] srccomp Starting component index of source field
  *  \param [in] dstcomp Starting component index of destination field
- *  \param [in] numcomp Number of components to be updated
+ *  \param [in] ncomp_src Number of components to divide by
+ *  \param [in] ncomp_dst Number of components to be divided
  *  \param [in] nghost Number of ghost cells to be updated
  *  \param [in] iter_src_comp Flag of whether src components should be iterated
  */
@@ -121,15 +129,15 @@ template <typename T1, typename T2>
 inline void divide(
     T1& dst,
     const T2& src,
-    int srccomp,
-    int dstcomp,
-    int numcomp,
-    int nghost,
-    bool iter_src_comp)
+    const int srccomp,
+    const int dstcomp,
+    const int ncomp_src,
+    const int ncomp_dst,
+    const int nghost)
 {
     divide(
-        dst, src, srccomp, dstcomp, numcomp, amrex::IntVect(nghost),
-        iter_src_comp);
+        dst, src, srccomp, dstcomp, ncomp_src, ncomp_dst,
+        amrex::IntVect(nghost));
 }
 
 /** Copy source field to destination field
@@ -148,9 +156,9 @@ template <typename T1, typename T2>
 inline void copy(
     T1& dst,
     const T2& src,
-    int srccomp,
-    int dstcomp,
-    int numcomp,
+    const int srccomp,
+    const int dstcomp,
+    const int numcomp,
     const amrex::IntVect& nghost)
 {
     const int nlevels = dst.repo().num_active_levels();
@@ -195,11 +203,11 @@ copy(T1& dst, const T2& src, int srccomp, int dstcomp, int numcomp, int nghost)
 template <typename T1, typename T2>
 inline void saxpy(
     T1& dst,
-    amrex::Real a,
+    const amrex::Real a,
     const T2& src,
-    int srccomp,
-    int dstcomp,
-    int numcomp,
+    const int srccomp,
+    const int dstcomp,
+    const int numcomp,
     const amrex::IntVect& nghost)
 {
     const int nlevels = dst.repo().num_active_levels();
@@ -225,12 +233,12 @@ inline void saxpy(
 template <typename T1, typename T2>
 inline void saxpy(
     T1& dst,
-    amrex::Real a,
+    const amrex::Real a,
     const T2& src,
-    int srccomp,
-    int dstcomp,
-    int numcomp,
-    int nghost)
+    const int srccomp,
+    const int dstcomp,
+    const int numcomp,
+    const int nghost)
 {
     saxpy(dst, a, src, srccomp, dstcomp, numcomp, amrex::IntVect(nghost));
 }
@@ -251,11 +259,11 @@ inline void saxpy(
 template <typename T1, typename T2>
 inline void xpay(
     T1& dst,
-    amrex::Real a,
+    const amrex::Real a,
     const T2& src,
-    int srccomp,
-    int dstcomp,
-    int numcomp,
+    const int srccomp,
+    const int dstcomp,
+    const int numcomp,
     const amrex::IntVect& nghost)
 {
     const int nlevels = dst.repo().num_active_levels();
@@ -281,12 +289,12 @@ inline void xpay(
 template <typename T1, typename T2>
 inline void xpay(
     T1& dst,
-    amrex::Real a,
+    const amrex::Real a,
     const T2& src,
-    int srccomp,
-    int dstcomp,
-    int numcomp,
-    int nghost)
+    const int srccomp,
+    const int dstcomp,
+    const int numcomp,
+    const int nghost)
 {
     xpay(dst, a, src, srccomp, dstcomp, numcomp, amrex::IntVect(nghost));
 }
@@ -310,14 +318,14 @@ inline void xpay(
 template <typename T1, typename T2, typename T3>
 inline void lincomb(
     T1& dst,
-    amrex::Real a,
+    const amrex::Real a,
     const T2& x,
-    int xcomp,
-    amrex::Real b,
+    const int xcomp,
+    const amrex::Real b,
     const T3& y,
-    int ycomp,
-    int dstcomp,
-    int numcomp,
+    const int ycomp,
+    const int dstcomp,
+    const int numcomp,
     const amrex::IntVect& nghost)
 {
     const int nlevels = dst.repo().num_active_levels();
@@ -347,15 +355,15 @@ inline void lincomb(
 template <typename T1, typename T2, typename T3>
 inline void lincomb(
     T1& dst,
-    amrex::Real a,
+    const amrex::Real a,
     const T2& x,
-    int xcomp,
-    amrex::Real b,
+    const int xcomp,
+    const amrex::Real b,
     const T3& y,
-    int ycomp,
-    int dstcomp,
-    int numcomp,
-    int nghost)
+    const int ycomp,
+    const int dstcomp,
+    const int numcomp,
+    const int nghost)
 {
     lincomb(
         dst, a, x, xcomp, b, y, ycomp, dstcomp, numcomp,

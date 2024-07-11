@@ -256,8 +256,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
         // ICNS source term (and viscous term) are in terms of momentum;
         // convert to velocity for MAC velocities by dividing by density
         amr_wind::field_ops::divide(
-            icns().fields().src_term, density_old, 0, 0, AMREX_SPACEDIM, 0,
-            false);
+            icns().fields().src_term, density_old, 0, 0, 1, AMREX_SPACEDIM, 0);
 
         const int nghost_force = 1;
         IntVect ng(nghost_force);
