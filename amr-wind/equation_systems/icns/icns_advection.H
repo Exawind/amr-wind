@@ -28,6 +28,8 @@ public:
         bool /*mesh_mapping*/,
         bool /*is_anelastic*/);
 
+    void set_inflow_velocity(amr_wind::PhysicsMgr& phy_mgr, amrex::Real time);
+
     void operator()(const FieldState fstate, const amrex::Real dt);
 
     static void mac_proj_to_uniform_space(

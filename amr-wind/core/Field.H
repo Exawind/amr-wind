@@ -352,6 +352,12 @@ public:
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost) noexcept;
 
+    void set_inflow_sibling_fields(
+        int lev,
+        amrex::Real time,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs,
+        const amrex::IntVect& nghost) noexcept;
+
     inline void fillpatch(
         int lev,
         amrex::Real time,
@@ -377,6 +383,15 @@ public:
         int lev, amrex::Real time, amrex::MultiFab& mfab, int nghost) noexcept
     {
         set_inflow(lev, time, mfab, amrex::IntVect(nghost));
+    }
+
+    inline void set_inflow_sibling_fields(
+        int lev,
+        amrex::Real time,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs,
+        int nghost) noexcept
+    {
+        set_inflow_sibling_fields(lev, time, mfabs, amrex::IntVect(nghost));
     }
 
     inline bool& in_uniform_space() { return m_mesh_mapped; }
