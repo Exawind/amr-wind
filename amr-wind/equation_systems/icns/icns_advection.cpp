@@ -109,7 +109,9 @@ void MacProjOp::init_projector(const amrex::Real beta) noexcept
     m_need_init = false;
 }
 
-void MacProjOp::set_inflow_velocity(amr_wind::PhysicsMgr& phy_mgr, amrex::Real time) {
+void MacProjOp::set_inflow_velocity(
+    amr_wind::PhysicsMgr& phy_mgr, amrex::Real time)
+{
     auto& velocity = m_repo.get_field("velocity");
     auto& u_mac = m_repo.get_field("u_mac");
     auto& v_mac = m_repo.get_field("v_mac");
