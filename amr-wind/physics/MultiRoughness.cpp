@@ -18,9 +18,11 @@ MultiRoughness::MultiRoughness(CFDSim& sim)
     , m_velocity(sim.repo().get_field("velocity"))
     , m_terrainz0(sim.repo().declare_field("lowerz0", 1, 1, 1))
 {
-    // No checks for the file as it is optional currently
     std::string roughnessfile("ground.roughness");
     std::ifstream file1(roughnessfile, std::ios::in);
+    if (!file1.good()) {
+        amrex::Abort("Cannot find ground.roughness");
+    }
     amrex::Real value1, value2, value3;
     while (file1 >> value1 >> value2 >> value3) {
         m_xrough.push_back(value1);

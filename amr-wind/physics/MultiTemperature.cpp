@@ -27,6 +27,9 @@ MultiTemperature::MultiTemperature(CFDSim& sim)
     // Read the first file
     std::string groundfile("ground.mesh");
     std::ifstream file1(groundfile, std::ios::in);
+    if (!file1.good()) {
+        amrex::Abort("Cannot find ground.meshfile");
+    }
     amrex::Real value1, value2, value3;
     while (file1 >> value1 >> value2) {
         m_xloc.push_back(value1);
@@ -37,6 +40,9 @@ MultiTemperature::MultiTemperature(CFDSim& sim)
     device_yloc.resize(m_yloc.size());
     std::string temperaturefile("ground.temperature");
     std::ifstream file2(temperaturefile, std::ios::in);
+    if (!file1.good()) {
+        amrex::Abort("Cannot find ground.temperature");
+    }
     while (file2 >> value3) {
         m_Tloc.push_back(value3);
     }
