@@ -168,6 +168,7 @@ void ABLVelWallFunc::wall_model(
 
     constexpr int idim = 2;
     const auto& repo = velocity.repo();
+    const auto& temperature = repo.get_field("temperature");
     const auto& density = repo.get_field("density", rho_state);
     const auto& viscosity = repo.get_field("velocity_mueff");
     const int nlevels = repo.num_active_levels();
@@ -180,17 +181,23 @@ void ABLVelWallFunc::wall_model(
     if (velocity.bc_type()[zlo] != BC::wall_model) {
         return;
     }
-
+    // Using multi-roughness only when available in registry
+    const bool is_surf_temp = repo.field_exists("surf_temp");
+    const auto* m_surf_temp =
+        is_surf_temp ? &repo.get_field("surf_temp") : nullptr;
+    const bool is_multi = repo.field_exists("lowerz0");
+    const auto* m_terrainz0 = is_multi ? &repo.get_field("lowerz0") : nullptr;
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
         const auto& domain = geom.Domain();
         amrex::MFItInfo mfi_info{};
-
+        const amrex::Real dz = geom.CellSize()[2];
         const auto& rho_lev = density(lev);
         const auto& vold_lev = velocity.state(FieldState::Old)(lev);
+        const auto& temperatureold_lev =
+            temperature.state(FieldState::Old)(lev);
         auto& vel_lev = velocity(lev);
         const auto& eta_lev = viscosity(lev);
-
         if (amrex::Gpu::notInLaunchRegion()) {
             mfi_info.SetDynamic(true);
         }
@@ -201,9 +208,16 @@ void ABLVelWallFunc::wall_model(
             const auto& bx = mfi.validbox();
             const auto& varr = vel_lev.array(mfi);
             const auto& vold_arr = vold_lev.const_array(mfi);
+            const auto& temperatureold_arr =
+                temperatureold_lev.const_array(mfi);
             const auto& den = rho_lev.const_array(mfi);
             const auto& eta = eta_lev.const_array(mfi);
-
+            const auto& z0_arr = (is_multi)
+                                     ? (*m_terrainz0)(lev).const_array(mfi)
+                                     : amrex::Array4<double>();
+            const auto& surf_temp_arr =
+                (is_multi) ? (*m_surf_temp)(lev).const_array(mfi)
+                           : amrex::Array4<double>();
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                 velocity.bc_type()[zlo] == BC::wall_model) {
                 amrex::ParallelFor(
@@ -213,15 +227,50 @@ void ABLVelWallFunc::wall_model(
                         const amrex::Real uu = vold_arr(i, j, k, 0);
                         const amrex::Real vv = vold_arr(i, j, k, 1);
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
-
+                        amrex::Real ustar = 1;
+                        // Using an explicit stratification correction to avoid
+                        // MOL iterations Can be changed with multi-roughness in
+                        // future Ref: J. F. Louis "A PARAMETRIC MODEL OF
+                        // VERTICAL EDDY FLUXES IN THE ATMOSPHERE"
+                        if (is_multi && is_surf_temp) {
+                            const amrex::Real bm = 9.4;
+                            const amrex::Real dm = 4.7;
+                            const amrex::Real theta_surface =
+                                surf_temp_arr(i, j, k);
+                            const amrex::Real theta =
+                                temperatureold_arr(i, j, k);
+                            const amrex::Real rib =
+                                (9.81 * dz * (theta - theta_surface)) /
+                                (theta * wspd * wspd);
+                            const amrex::Real cm =
+                                7.4 * 0.41 * 0.41 /
+                                std::pow(
+                                    std::log(0.5 * dz / z0_arr(i, j, k)), 2) *
+                                bm * std::sqrt(0.5 * dz / z0_arr(i, j, k));
+                            const amrex::Real Fm =
+                                (rib > 0)
+                                    ? 1 / std::pow(1 + dm * rib, 2)
+                                    : 1 - bm * rib /
+                                              (1 +
+                                               cm * std::sqrt(std::abs(rib)));
+                            ustar = wspd * 0.41 /
+                                    std::log(0.5 * dz / z0_arr(i, j, k)) *
+                                    std::sqrt(Fm);
+                        }
                         // Dirichlet BC
                         varr(i, j, k - 1, 2) = 0.0;
 
                         // Shear stress BC
                         varr(i, j, k - 1, 0) =
-                            tau.calc_vel_x(uu, wspd) * den(i, j, k) / mu;
+                            (is_multi)
+                                ? std::pow(ustar, 2) * uu / wspd *
+                                      den(i, j, k) / mu
+                                : tau.calc_vel_x(uu, wspd) * den(i, j, k) / mu;
                         varr(i, j, k - 1, 1) =
-                            tau.calc_vel_y(vv, wspd) * den(i, j, k) / mu;
+                            (is_multi)
+                                ? std::pow(ustar, 2) * vv / wspd *
+                                      den(i, j, k) / mu
+                                : tau.calc_vel_y(vv, wspd) * den(i, j, k) / mu;
                     });
             }
         }
@@ -292,12 +341,17 @@ void ABLTempWallFunc::wall_model(
     const auto& density = repo.get_field("density", rho_state);
     const auto& alpha = repo.get_field("temperature_mueff");
     const int nlevels = repo.num_active_levels();
-
+    const bool is_surf_temp = repo.field_exists("surf_temp");
+    const auto* m_surf_temp =
+        is_surf_temp ? &repo.get_field("surf_temp") : nullptr;
+    const bool is_multi = repo.field_exists("lowerz0");
+    const auto* m_terrainz0 = is_multi ? &repo.get_field("lowerz0") : nullptr;
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
         const auto& domain = geom.Domain();
+        // Read dz
+        const amrex::Real dz = geom.CellSize()[2];
         amrex::MFItInfo mfi_info{};
-
         const auto& rho_lev = density(lev);
         const auto& vold_lev = velocity.state(FieldState::Old)(lev);
         const auto& told_lev = temperature.state(FieldState::Old)(lev);
@@ -317,7 +371,12 @@ void ABLTempWallFunc::wall_model(
             const auto& tarr = theta.array(mfi);
             const auto& den = rho_lev.const_array(mfi);
             const auto& eta = eta_lev.const_array(mfi);
-
+            const auto& z0_arr = (is_multi)
+                                     ? (*m_terrainz0)(lev).const_array(mfi)
+                                     : amrex::Array4<double>();
+            const auto& surf_temp_arr =
+                (is_multi) ? (*m_surf_temp)(lev).const_array(mfi)
+                           : amrex::Array4<double>();
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                 temperature.bc_type()[zlo] == BC::wall_model) {
                 amrex::ParallelFor(
@@ -328,9 +387,35 @@ void ABLTempWallFunc::wall_model(
                         const amrex::Real vv = vold_arr(i, j, k, 1);
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
                         const amrex::Real theta2 = told_arr(i, j, k);
-                        tarr(i, j, k - 1) = den(i, j, k) *
-                                            tau.calc_theta(wspd, theta2) /
-                                            alphaT;
+                        amrex::Real ustarthetastar = 0.0;
+                        if (is_multi && is_surf_temp) {
+                            const amrex::Real bh = 9.4;
+                            const amrex::Real dh = 4.7;
+                            const amrex::Real theta_surface =
+                                surf_temp_arr(i, j, k);
+                            const amrex::Real rib =
+                                (9.81 * dz * (theta2 - theta_surface)) /
+                                (theta2 * wspd * wspd);
+                            const amrex::Real ah =
+                                0.41 / std::log(0.5 * dz / z0_arr(i, j, k));
+                            const amrex::Real ch =
+                                5.3 * std::pow(ah, 2) * bh *
+                                std::sqrt(0.5 * dz / z0_arr(i, j, k));
+                            const amrex::Real Fh =
+                                (rib > 0)
+                                    ? 1 / std::pow(1 + dh * rib, 2)
+                                    : 1 - bh * rib /
+                                              (1 +
+                                               ch * std::sqrt(std::abs(rib)));
+                            ustarthetastar = 1.0 / 0.7 * std::pow(ah, 2) *
+                                             wspd * (theta2 - theta_surface) *
+                                             Fh;
+                        }
+                        tarr(i, j, k - 1) =
+                            (is_multi)
+                                ? den(i, j, k) / alphaT * ustarthetastar
+                                : den(i, j, k) * tau.calc_theta(wspd, theta2) /
+                                      alphaT;
                     });
             }
         }
