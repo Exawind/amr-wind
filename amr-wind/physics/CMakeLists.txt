@@ -16,7 +16,6 @@ target_sources(${amr_wind_lib_name}
   ScalarAdvection.cpp
   VortexDipole.cpp
   BurggrafFlow.cpp
-  TerrainDrag.cpp
   MultiRoughness.cpp
   MultiTemperature.cpp		
   )
