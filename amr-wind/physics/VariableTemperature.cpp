@@ -93,9 +93,8 @@ void VariableTemperature::post_init_actions()
                             std::pow(y - yloc_ptr[ii], 2));
                         if (radius < residual) {
                             residual = radius;
-                            locT1 = Tloc_ptr[index*mesh_size + ii];
-                            locT2 =
-                                Tloc_ptr[(index + 1)*mesh_size + ii];
+                            locT1 = Tloc_ptr[index * mesh_size + ii];
+                            locT2 = Tloc_ptr[(index + 1) * mesh_size + ii];
                         }
                     }
                     level_surf_temp(i, j, k, 0) = locT1; // Lower Value
@@ -166,9 +165,8 @@ void VariableTemperature::pre_advance_work()
                             std::pow(y - yloc_ptr[ii], 2));
                         if (radius < residual) {
                             residual = radius;
-                            locT1 = Tloc_ptr[index * mesh_size  + ii];
-                            locT2 =
-                                Tloc_ptr[(index + 1) * mesh_size + ii];
+                            locT1 = Tloc_ptr[index * mesh_size + ii];
+                            locT2 = Tloc_ptr[(index + 1) * mesh_size + ii];
                         }
                     }
                     level_surf_temp(i, j, k, 0) = locT1;

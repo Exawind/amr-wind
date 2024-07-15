@@ -218,7 +218,7 @@ void ABLVelWallFunc::wall_model(
                                      : amrex::Array4<double>();
             const auto& surf_temp_arr =
                 (has_variable_surf_temp) ? (*m_surf_temp)(lev).const_array(mfi)
-                           : amrex::Array4<double>();
+                                         : amrex::Array4<double>();
             const amrex::Real louis_bm = m_louis_bm;
             const amrex::Real louis_dm = m_louis_dm;
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
@@ -235,7 +235,8 @@ void ABLVelWallFunc::wall_model(
                         // MOL iterations Can be changed with multi-roughness in
                         // future Ref: J. F. Louis "A PARAMETRIC MODEL OF
                         // VERTICAL EDDY FLUXES IN THE ATMOSPHERE"
-                        if (has_variable_surf_roughness && has_variable_surf_temp) {
+                        if (has_variable_surf_roughness &&
+                            has_variable_surf_temp) {
                             const amrex::Real theta_surface =
                                 surf_temp_arr(i, j, k, 1);
                             const amrex::Real theta =
@@ -378,7 +379,7 @@ void ABLTempWallFunc::wall_model(
                                      : amrex::Array4<double>();
             const auto& surf_temp_arr =
                 (has_variable_surf_temp) ? (*m_surf_temp)(lev).const_array(mfi)
-                                : amrex::Array4<double>();
+                                         : amrex::Array4<double>();
             const amrex::Real louis_bh = m_louis_bh;
             const amrex::Real louis_dh = m_louis_dh;
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
@@ -392,7 +393,8 @@ void ABLTempWallFunc::wall_model(
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
                         const amrex::Real theta2 = told_arr(i, j, k);
                         amrex::Real ustarthetastar = 0.0;
-                        if (has_variable_surf_roughness && has_variable_surf_temp) {
+                        if (has_variable_surf_roughness &&
+                            has_variable_surf_temp) {
                             const amrex::Real theta_surface =
                                 surf_temp_arr(i, j, k, 1);
                             const amrex::Real rib =
