@@ -72,7 +72,7 @@ private:
     amrex::Vector<amrex::Real> m_axis1;
     amrex::Vector<amrex::Real> m_axis2;
     amrex::Vector<amrex::Real> m_origin;
-    amrex::Vector<amrex::Real> m_normal{0.0, 0.0, 0.0};
+    amrex::Vector<amrex::Real> m_offset_vector{0.0, 0.0, 0.0};
     amrex::Vector<amrex::Real> m_poffsets;
     amrex::Vector<int> m_npts_dir;
 
