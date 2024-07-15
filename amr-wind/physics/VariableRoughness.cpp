@@ -1,4 +1,4 @@
-#include "amr-wind/physics/MultiRoughness.H"
+#include "amr-wind/physics/VariableRoughness.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_iMultiFab.H"
 #include "AMReX_MultiFabUtil.H"
@@ -7,21 +7,21 @@
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/utilities/IOManager.H"
 
-namespace amr_wind::multiroughness {
+namespace amr_wind::VariableRoughness {
 
 namespace {} // namespace
 
-MultiRoughness::MultiRoughness(CFDSim& sim)
+VariableRoughness::VariableRoughness(CFDSim& sim)
     : m_sim(sim)
     , m_repo(sim.repo())
     , m_mesh(sim.mesh())
     , m_velocity(sim.repo().get_field("velocity"))
     , m_terrainz0(sim.repo().declare_field("lowerz0", 1, 1, 1))
 {
-    std::string roughnessfile("ground.roughness");
+    std::string roughnessfile("ground_roughness.txt");
     std::ifstream file1(roughnessfile, std::ios::in);
     if (!file1.good()) {
-        amrex::Abort("Cannot find ground.roughness");
+        amrex::Abort("Cannot find file ground_roughness.txt");
     }
     amrex::Real value1, value2, value3;
     while (file1 >> value1 >> value2 >> value3) {
@@ -33,7 +33,7 @@ MultiRoughness::MultiRoughness(CFDSim& sim)
     m_sim.io_manager().register_io_var("lowerz0");
 }
 
-void MultiRoughness::post_init_actions()
+void VariableRoughness::post_init_actions()
 {
     BL_PROFILE("amr-wind::" + this->identifier() + "::post_init_actions");
     const auto& geom_vec = m_sim.repo().mesh().Geom();
@@ -86,9 +86,9 @@ void MultiRoughness::post_init_actions()
     }
 }
 
-void MultiRoughness::pre_init_actions()
+void VariableRoughness::pre_init_actions()
 {
     BL_PROFILE("amr-wind::" + this->identifier() + "::pre_init_actions");
 }
 
-} // namespace amr_wind::multiroughness
+} // namespace amr_wind::VariableRoughness

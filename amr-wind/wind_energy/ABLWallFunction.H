@@ -80,6 +80,8 @@ public:
         Field& velocity, const FieldState rho_state, const ShearStress& tau);
 
 private:
+    const amrex::Real m_louis_bm{9.4};
+    const amrex::Real m_louis_dm{4.7};
     const ABLWallFunction& m_wall_func;
     std::string m_wall_shear_stress_type{"moeng"};
 };
@@ -96,6 +98,8 @@ public:
         Field& temperature, const FieldState rho_state, const HeatFlux& tau);
 
 private:
+    const amrex::Real m_louis_bh{9.4};
+    const amrex::Real m_louis_dh{4.7};
     const ABLWallFunction& m_wall_func;
     std::string m_wall_shear_stress_type{"moeng"};
 };

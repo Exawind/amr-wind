@@ -1,27 +1,27 @@
-#ifndef MultiRoughness_H
-#define MultiRoughness_H
+#ifndef VariableRoughness_H
+#define VariableRoughness_H
 
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
-namespace amr_wind::multiroughness {
+namespace amr_wind::VariableRoughness {
 
 namespace {} // namespace
 
-/** Multiroughness Flow physics
+/** VariableRoughness Flow physics
  *  \ingroup physics
- Provides a way to include non uniform roughness lenght for ABL
+ Provides a way to include non uniform roughness length for ABL
  */
 
-class MultiRoughness : public Physics::Register<MultiRoughness>
+class VariableRoughness : public Physics::Register<VariableRoughness>
 {
 public:
-    static std::string identifier() { return "MultiRoughness"; }
+    static std::string identifier() { return "VariableRoughness"; }
 
-    explicit MultiRoughness(CFDSim& sim);
+    explicit VariableRoughness(CFDSim& sim);
 
-    ~MultiRoughness() override = default;
+    ~VariableRoughness() override = default;
 
     void
     initialize_fields(int /*level*/, const amrex::Geometry& /*geom*/) override
@@ -49,6 +49,6 @@ private:
     amrex::Vector<amrex::Real> m_yrough;
     amrex::Vector<amrex::Real> m_z0rough;
 };
-} // namespace amr_wind::multiroughness
+} // namespace amr_wind::VariableRoughness
 
 #endif

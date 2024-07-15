@@ -1,27 +1,27 @@
-#ifndef MultiTemperature_H
-#define MultiTemperature_H
+#ifndef VariableTemperature_H
+#define VariableTemperature_H
 
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"
 #include "amr-wind/CFDSim.H"
 
-namespace amr_wind::multitemperature {
+namespace amr_wind::VariableTemperature {
 
 namespace {} // namespace
 
-/** Multitemperature Flow physics
+/** VariableTemperature Flow physics
  *  \ingroup physics
  Provides a way to read non-uniform surface temperature into AMR - Wind
  */
 
-class MultiTemperature : public Physics::Register<MultiTemperature>
+class VariableTemperature : public Physics::Register<VariableTemperature>
 {
 public:
-    static std::string identifier() { return "MultiTemperature"; }
+    static std::string identifier() { return "VariableTemperature"; }
 
-    explicit MultiTemperature(CFDSim& sim);
+    explicit VariableTemperature(CFDSim& sim);
 
-    ~MultiTemperature() override = default;
+    ~VariableTemperature() override = default;
 
     void
     initialize_fields(int /*level*/, const amrex::Geometry& /*geom*/) override
@@ -45,8 +45,6 @@ private:
     Field& m_velocity;
     // Surface Temperature Field
     Field& m_surf_temp;
-    Field& m_surf_temp_lower;
-    Field& m_surf_temp_upper;
     amrex::Real m_current_time{100};
     amrex::Real m_separation{100};
     amrex::Vector<amrex::Real> m_xloc;
@@ -56,6 +54,6 @@ private:
     amrex::Gpu::DeviceVector<amrex::Real> device_yloc;
     amrex::Gpu::DeviceVector<amrex::Real> device_Tloc;
 };
-} // namespace amr_wind::multitemperature
+} // namespace amr_wind::VariableTemperature
 
 #endif
