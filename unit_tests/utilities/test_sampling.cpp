@@ -275,7 +275,7 @@ TEST_F(SamplingTest, plane_sampler)
         pp.addarr("origin", amrex::Vector<double>{0.0, 0.0, 0.0});
         pp.addarr("num_points", amrex::Vector<int>{3, 3});
         pp.addarr("offsets", amrex::Vector<double>{-1.0, 1.0});
-        pp.addarr("normal", amrex::Vector<double>{1.0, 0.0, 0.0});
+        pp.addarr("offset_vector", amrex::Vector<double>{1.0, 0.0, 0.0});
     }
 
     amr_wind::sampling::PlaneSampler plane(sim());
