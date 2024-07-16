@@ -106,7 +106,7 @@ inline void divide(
             amrex::Abort(
                 "field_ops::divide : number of divisor components (ncomp_src) "
                 "must either be 1 or match number of dividend components "
-                "(ncomp_dst).\n");
+                "(ncomp_dst).");
         }
     }
 }
