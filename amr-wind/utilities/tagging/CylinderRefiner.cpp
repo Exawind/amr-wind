@@ -30,6 +30,19 @@ CylinderRefiner::CylinderRefiner(
     pp.get("outer_radius", m_outer_radius);
     // Optional inner radius to restrict tagging to an annulus of the cylinder
     pp.query("inner_radius", m_inner_radius);
+
+    // Define the bounding box around the cylinder
+    const auto axis = m_end - m_start;
+    const auto proj =
+        m_outer_radius * sqrt(vs::Vector::one() - axis * axis / mag_sqr(axis));
+    const auto sm = m_start - proj;
+    const auto em = m_end - proj;
+    const auto sp = m_start + proj;
+    const auto ep = m_end + proj;
+    m_bound_box = amrex::RealBox(
+        amrex::min(sm[0], em[0]), amrex::min(sm[1], em[1]),
+        amrex::min(sm[2], em[2]), amrex::max(sp[0], ep[0]),
+        amrex::max(sp[1], ep[1]), amrex::max(sp[2], ep[2]));
 }
 
 void CylinderRefiner::operator()(
