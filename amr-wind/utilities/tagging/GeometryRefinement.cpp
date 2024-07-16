@@ -59,10 +59,10 @@ void GeometryRefinement::operator()(
         const auto& tag = tags.array(mfi);
 
         for (const auto& gg : m_geom_refiners) {
-            const auto bxa = utils::realbox_to_box(gg->bound_box(), geom);
+            const auto& bxa = utils::realbox_to_box(gg->bound_box(), geom);
             const auto& bxi = bx & bxa;
             if (bxi.isEmpty()) {
-                return;
+                continue;
             }
 
             (*gg)(bx, geom, tag);
