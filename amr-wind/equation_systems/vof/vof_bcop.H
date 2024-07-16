@@ -38,7 +38,7 @@ struct BCOp<VOF>
             amrex::Abort(
                 "vof_bcop.H apply_bcs(): a state other than New or Old was "
                 "used. The method of setting bc_time must be evaluated before "
-                "using a different state for this routine.\n");
+                "using a different state for this routine.");
         }
         field.fillphysbc(bc_time, ng_diff);
         field.apply_bc_funcs(rho_state);
