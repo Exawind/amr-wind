@@ -46,7 +46,7 @@ struct BCOp<PDE, std::enable_if_t<std::is_base_of_v<ScalarTransport, PDE>>>
             amrex::Abort(
                 "BCOps.H apply_bcs(): a state other than New or Old was used. "
                 "The method of setting bc_time must be evaluated before using "
-                "a different state for this routine.\n");
+                "a different state for this routine.");
         }
         field.fillphysbc(bc_time, ng_diff);
         field.apply_bc_funcs(rho_state);
