@@ -50,7 +50,7 @@ void ABLFillInflow::fillphysbc(
     FieldFillPatchOps<FieldBCDirichlet>::fillphysbc(
         lev, time, mfab, nghost, fstate);
 
-    m_bndry_plane.populate_data(lev, time, m_field, mfab);
+    m_bndry_plane.populate_data(lev, m_time.new_time(), m_field, mfab);
 }
 
 void ABLFillInflow::fillpatch_sibling_fields(
