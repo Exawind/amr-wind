@@ -30,10 +30,13 @@ public:
         const amrex::Geometry& geom,
         const amrex::Array4<amrex::TagBox::TagType>& tags) const override;
 
+    amrex::RealBox bound_box() const override { return m_bound_box; };
+
 protected:
     amrex::Gpu::DeviceVector<vs::Vector> m_hex_corners;
     amrex::Gpu::DeviceVector<vs::Vector> m_face_normals;
     amrex::Gpu::DeviceVector<int> m_face_origin;
+    amrex::RealBox m_bound_box;
 };
 
 } // namespace amr_wind::tagging

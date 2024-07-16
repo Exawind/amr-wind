@@ -5,6 +5,7 @@ target_sources(${amr_wind_lib_name}
       io.cpp
       bc_ops.cpp
       console_io.cpp
+      index_operations.cpp
       IOManager.cpp
       FieldPlaneAveraging.cpp
       FieldPlaneAveragingFine.cpp

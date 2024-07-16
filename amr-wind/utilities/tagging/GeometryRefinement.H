@@ -1,6 +1,7 @@
 #ifndef GEOMETRYREFINEMENT_H
 #define GEOMETRYREFINEMENT_H
 
+#include "amr-wind/utilities/index_operations.H"
 #include "amr-wind/utilities/tagging/RefinementCriteria.H"
 
 namespace amr_wind {
@@ -23,6 +24,8 @@ public:
         const amrex::Box&,
         const amrex::Geometry& geom,
         const amrex::Array4<amrex::TagBox::TagType>& tags) const = 0;
+
+    virtual amrex::RealBox bound_box() const = 0;
 };
 
 } // namespace tagging
