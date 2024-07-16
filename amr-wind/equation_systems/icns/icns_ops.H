@@ -82,7 +82,6 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
     {
         const auto rhostate = field_impl::phi_state(fstate);
         const auto& density = m_density.state(rhostate);
-        bool src_for_RHS(fstate == amr_wind::FieldState::New);
         Field const* mesh_fac =
             mesh_mapping
                 ? &(this->fields.repo.get_mesh_mapping_field(FieldLoc::CELL))
@@ -125,18 +124,10 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
                 for (const auto& src : this->sources) {
                     (*src)(lev, mfi, bx, fstate, vf);
                 }
-
-                // Multiply src terms by rho if being used for icns RHS
-                if (src_for_RHS) {
-                    amrex::ParallelFor(
-                        bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-                            vf(i, j, k, 0) *= rho(i, j, k);
-                            vf(i, j, k, 1) *= rho(i, j, k);
-                            vf(i, j, k, 2) *= rho(i, j, k);
-                        });
-                }
             }
         }
+        // Multiply velocity src terms by density for momentum equation
+        this->multiply_rho(fstate);
     }
 
     Field& grad_p;
