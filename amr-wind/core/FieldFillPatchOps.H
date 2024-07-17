@@ -415,7 +415,6 @@ public:
         const auto& gdata = geom.data();
         const auto& domain = geom.growPeriodicDomain(ng);
         const auto& bcfunc = bc_functor();
-        const auto& ncomp = m_field.num_comp();
 
         for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
             auto ori = oit();
@@ -424,15 +423,22 @@ public:
             }
 
             const int idir = ori.coordDir();
-            const auto& dbx =
-                ori.isLow() ? amrex::adjCellLo(domain, idir, nghost[idir])
-                            : amrex::adjCellHi(domain, idir, nghost[idir]);
+            for (int fdir = 0; fdir < AMREX_SPACEDIM; ++fdir) {
+
+                auto dbdy_lo = amrex::adjCellLo(domain, idir, nghost[idir]);
+                auto dbdy_hi = amrex::adjCellHi(domain, idir, nghost[idir]);
+                dbdy_lo = (idir == fdir)
+                              ? amrex::surroundingNodes(dbdy_lo, idir)
+                              : dbdy_lo;
+                dbdy_hi = (idir == fdir)
+                              ? amrex::surroundingNodes(dbdy_hi, idir)
+                              : dbdy_hi;
+                const auto& dbx = ori.isLow() ? dbdy_lo : dbdy_hi;
 
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-            for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-                auto& mfab = *mfabs[n];
+                auto& mfab = *mfabs[fdir];
                 for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
                     const auto& gbx = amrex::grow(mfi.validbox(), nghost);
                     const auto& bx = gbx & dbx;
@@ -445,10 +451,8 @@ public:
                         bx,
                         [=] AMREX_GPU_DEVICE(
                             const int i, const int j, const int k) noexcept {
-                            for (int n = 0; n < ncomp; ++n) {
-                                bcfunc.set_inflow(
-                                    {i, j, k}, marr, gdata, time, ori, n, 0, 0);
-                            }
+                            bcfunc.set_inflow(
+                                {i, j, k}, marr, gdata, time, ori, 0, 0, fdir);
                         });
                 }
             }

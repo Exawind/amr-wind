@@ -28,7 +28,7 @@ public:
         bool /*mesh_mapping*/,
         bool /*is_anelastic*/);
 
-    void set_inflow_velocity(amr_wind::PhysicsMgr& phy_mgr, amrex::Real time);
+    void set_inflow_velocity(amrex::Real time);
 
     void operator()(const FieldState fstate, const amrex::Real dt);
 
@@ -300,10 +300,13 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             diagnostics::PrintMaxMACVelLocations(repo, "before MAC projection");
         }
 
+        // Populate boundaries (valid cells) using velocity BCs
+        m_macproj_op.set_inflow_velocity(time + 0.5 * dt);
+
         // MAC projection
         m_macproj_op(fstate, dt);
 
-        // Fill mac velocities using velocity BCs
+        // Fill mac velocities (ghost cells) using velocity BCs
         if (fvm::Godunov::nghost_state > 0) {
             amrex::Array<Field*, AMREX_SPACEDIM> mac_vel = {
                 AMREX_D_DECL(&u_mac, &v_mac, &w_mac)};

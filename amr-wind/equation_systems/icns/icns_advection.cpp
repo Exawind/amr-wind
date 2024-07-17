@@ -109,8 +109,7 @@ void MacProjOp::init_projector(const amrex::Real beta) noexcept
     m_need_init = false;
 }
 
-void MacProjOp::set_inflow_velocity(
-    amr_wind::PhysicsMgr& phy_mgr, amrex::Real time)
+void MacProjOp::set_inflow_velocity(amrex::Real time)
 {
     auto& velocity = m_repo.get_field("velocity");
     auto& u_mac = m_repo.get_field("u_mac");
@@ -124,6 +123,8 @@ void MacProjOp::set_inflow_velocity(
         mac_vec[2] = &w_mac(lev);
         velocity.set_inflow_sibling_fields(lev, time, mac_vec, 0);
     }
+
+    // DO WE NEED TREATMENT FOR BOUNDARY PLANES?
 }
 
 //
