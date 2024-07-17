@@ -45,6 +45,7 @@ ICNS.source_terms = ActuatorForcing
 
 amr.n_cell              = 64 64 64   # Grid cells at coarsest AMRlevel
 amr.max_level           = 1           # Max AMR level in hierarchy
+amr.max_grid_size = 8
 geometry.prob_lo        =   -315.0 -315.0 -315.0
 geometry.prob_hi        =   315.0  315.0  315.0
 

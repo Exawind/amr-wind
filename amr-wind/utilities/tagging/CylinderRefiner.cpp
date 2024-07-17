@@ -35,10 +35,12 @@ CylinderRefiner::CylinderRefiner(
     const auto axis = m_end - m_start;
     const auto proj =
         m_outer_radius * sqrt(vs::Vector::one() - axis * axis / mag_sqr(axis));
-    const auto sm = m_start - proj;
-    const auto em = m_end - proj;
-    const auto sp = m_start + proj;
-    const auto ep = m_end + proj;
+    const amrex::Real search_fraction = 0.05;
+    const auto search_radius = (1.0 + search_fraction) * proj;
+    const auto sm = m_start - search_radius;
+    const auto em = m_end - search_radius;
+    const auto sp = m_start + search_radius;
+    const auto ep = m_end + search_radius;
     m_bound_box = amrex::RealBox(
         amrex::min(sm[0], em[0]), amrex::min(sm[1], em[1]),
         amrex::min(sm[2], em[2]), amrex::max(sp[0], ep[0]),
