@@ -60,9 +60,8 @@ void DragForcing::operator()(
     const auto& drag = (*m_terrain_drag)(lev).const_array(mfi);
     auto* const m_terrainz0 = &this->m_sim.repo().get_field("terrainz0");
     const auto& terrainz0 = (*m_terrainz0)(lev).const_array(mfi);
-    const auto& geom_vec = m_mesh.Geom();
-    const auto& geom = geom_vec[lev];
-    const auto& dx = geom.CellSize();
+    const auto& geom = m_mesh.Geom(lev);
+    const auto& dx = geom.CellSizeArray();
     const auto& prob_lo = geom.ProbLoArray();
     const auto& prob_hi = geom.ProbHiArray();
     const amrex::Real dragCoefficient = m_drag;

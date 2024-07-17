@@ -35,9 +35,8 @@ void DragTempForcing::operator()(
     auto* const m_terrain_blank =
         &this->m_sim.repo().get_int_field("terrain_blank");
     const auto& blank = (*m_terrain_blank)(lev).const_array(mfi);
-    const auto& geom_vec = m_mesh.Geom();
-    const auto& geom = geom_vec[lev];
-    const auto& dx = geom.CellSize();
+    const auto& geom = m_mesh.Geom(lev);
+    const auto& dx = geom.CellSizeArray();
     const amrex::Real drag = m_drag;
     const amrex::Real TRef = m_internalRefT;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
