@@ -113,10 +113,10 @@ private:
 
 #ifdef AMR_WIND_USE_OPENFAST
 
-    amrex::Array<float, 3> turbine_base_pos = {0, 0, 0};
-    amrex::Array<float, 3> current_hub_abs_pos = {0, 0, 0};
-    amrex::Array<float, 3> current_hub_rot_vel = {0, 0, 0};
-    amrex::Array<double, 9> current_hub_orient = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    amrex::Array<float, 3> m_turbine_base_pos = {0, 0, 0};
+    amrex::Array<float, 3> m_current_hub_abs_pos = {0, 0, 0};
+    amrex::Array<float, 3> m_current_hub_rot_vel = {0, 0, 0};
+    amrex::Array<double, 9> m_current_hub_orient = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 #endif
 

@@ -178,11 +178,11 @@ void DTUSpinnerSampler::bcast_turbine(
         amrex::ParallelDescriptor::Communicator());
 
     for (int i = 0; i < 9; i++) {
-        current_hub_orient[i] = turbine_pack[i];
+        m_current_hub_orient[i] = turbine_pack[i];
         if (i < 3) {
-            current_hub_abs_pos[i] = static_cast<float>(turbine_pack[i + 9]);
-            current_hub_rot_vel[i] = static_cast<float>(turbine_pack[i + 12]);
-            turbine_base_pos[i] = static_cast<float>(turbine_pack[i + 15]);
+            m_current_hub_abs_pos[i] = static_cast<float>(turbine_pack[i + 9]);
+            m_current_hub_rot_vel[i] = static_cast<float>(turbine_pack[i + 12]);
+            m_turbine_base_pos[i] = static_cast<float>(turbine_pack[i + 15]);
         }
     }
 }
@@ -269,9 +269,9 @@ void DTUSpinnerSampler::update_sampling_locations()
         get_turbine_data(m_turbine_label);
 
         m_hub_location = vs::Vector(
-            current_hub_abs_pos[0] + turbine_base_pos[0],
-            current_hub_abs_pos[1] + turbine_base_pos[1],
-            current_hub_abs_pos[2] + turbine_base_pos[2]);
+            m_current_hub_abs_pos[0] + m_turbine_base_pos[0],
+            m_current_hub_abs_pos[1] + m_turbine_base_pos[1],
+            m_current_hub_abs_pos[2] + m_turbine_base_pos[2]);
 
         // TODO: Do we need an offset from the hub location
         // to lidar start along shaft axis? Same for static angle misalignment?
@@ -281,11 +281,14 @@ void DTUSpinnerSampler::update_sampling_locations()
         m_lidar_center[2] = m_hub_location[2];
 
         m_hub_tilt = std::atan2(
-            -current_hub_orient[6], std::sqrt(
-                                        std::pow(current_hub_orient[7], 2.0) +
-                                        std::pow(current_hub_orient[8], 2.0)));
-        m_hub_roll = std::atan2(current_hub_orient[7], current_hub_orient[8]);
-        m_hub_yaw = std::atan2(current_hub_orient[3], current_hub_orient[0]);
+            -m_current_hub_orient[6],
+            std::sqrt(
+                std::pow(m_current_hub_orient[7], 2.0) +
+                std::pow(m_current_hub_orient[8], 2.0)));
+        m_hub_roll =
+            std::atan2(m_current_hub_orient[7], m_current_hub_orient[8]);
+        m_hub_yaw =
+            std::atan2(m_current_hub_orient[3], m_current_hub_orient[0]);
     }
 #endif
 
@@ -332,21 +335,21 @@ void DTUSpinnerSampler::update_sampling_locations()
 
 #ifdef AMR_WIND_USE_OPENFAST
     if (m_hub_debug) {
-        amrex::Print() << "Turbine Hub Pos: " << current_hub_abs_pos[0] << " "
-                       << current_hub_abs_pos[1] << " "
-                       << current_hub_abs_pos[2] << " " << std::endl;
-        amrex::Print() << "Turbine Rot Vel: " << current_hub_rot_vel[0] << " "
-                       << current_hub_rot_vel[1] << " "
-                       << current_hub_rot_vel[2] << " " << std::endl;
-        amrex::Print() << "Turbine Orient: " << current_hub_orient[0] << " "
-                       << current_hub_orient[1] << " " << current_hub_orient[2]
-                       << " " << std::endl;
-        amrex::Print() << "Turbine Orient: " << current_hub_orient[3] << " "
-                       << current_hub_orient[4] << " " << current_hub_orient[5]
-                       << " " << std::endl;
-        amrex::Print() << "Turbine Orient: " << current_hub_orient[6] << " "
-                       << current_hub_orient[7] << " " << current_hub_orient[8]
-                       << " " << std::endl;
+        amrex::Print() << "Turbine Hub Pos: " << m_current_hub_abs_pos[0] << " "
+                       << m_current_hub_abs_pos[1] << " "
+                       << m_current_hub_abs_pos[2] << " " << std::endl;
+        amrex::Print() << "Turbine Rot Vel: " << m_current_hub_rot_vel[0] << " "
+                       << m_current_hub_rot_vel[1] << " "
+                       << m_current_hub_rot_vel[2] << " " << std::endl;
+        amrex::Print() << "Turbine Orient: " << m_current_hub_orient[0] << " "
+                       << m_current_hub_orient[1] << " "
+                       << m_current_hub_orient[2] << " " << std::endl;
+        amrex::Print() << "Turbine Orient: " << m_current_hub_orient[3] << " "
+                       << m_current_hub_orient[4] << " "
+                       << m_current_hub_orient[5] << " " << std::endl;
+        amrex::Print() << "Turbine Orient: " << m_current_hub_orient[6] << " "
+                       << m_current_hub_orient[7] << " "
+                       << m_current_hub_orient[8] << " " << std::endl;
         amrex::Print() << "Yaw:Tilt:Roll: " << m_hub_yaw << " " << m_hub_tilt
                        << " " << m_hub_roll << std::endl;
         amrex::Print() << "Last Yaw:Tilt:Roll: " << m_last_hub_yaw << " "
