@@ -89,8 +89,7 @@ public:
     virtual void set_inflow_sibling_fields(
         int lev,
         amrex::Real time,
-        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs,
-        const amrex::IntVect& nghost) = 0;
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs) = 0;
 };
 
 /** Implementation that just fills a constant value on newly created grids
@@ -406,8 +405,7 @@ public:
     void set_inflow_sibling_fields(
         const int lev,
         const amrex::Real time,
-        const amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs,
-        const amrex::IntVect& nghost) override
+        const amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs) override
     {
         const auto& bctype = m_field.bc_type();
         const auto& geom = m_mesh.Geom(lev);
@@ -421,27 +419,23 @@ public:
             }
 
             const int idir = ori.coordDir();
-            const int ng = nghost[idir];
-            const auto& domain = geom.growPeriodicDomain(ng);
+            const auto& domain_box = geom.Domain();
             for (int fdir = 0; fdir < AMREX_SPACEDIM; ++fdir) {
 
-                auto dbdy_lo = amrex::adjCellLo(domain, idir, nghost[idir]);
-                auto dbdy_hi = amrex::adjCellHi(domain, idir, nghost[idir]);
-                dbdy_lo = (idir == fdir)
-                              ? amrex::surroundingNodes(dbdy_lo, idir)
-                              : dbdy_lo;
-                dbdy_hi = (idir == fdir)
-                              ? amrex::surroundingNodes(dbdy_hi, idir)
-                              : dbdy_hi;
-                const auto& dbx = ori.isLow() ? dbdy_lo : dbdy_hi;
+                // Only face-normal velocities populated here
+                if (idir != fdir) {
+                    continue;
+                }
+                const auto& dbx = ori.isLow() ? amrex::bdryLo(domain_box, idir)
+                                              : amrex::bdryHi(domain_box, idir);
 
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
                 auto& mfab = *mfabs[fdir];
                 for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
-                    const auto& gbx = amrex::grow(mfi.validbox(), nghost);
-                    const auto& bx = gbx & dbx;
+                    const auto& vbx = mfi.validbox();
+                    const auto& bx = vbx & dbx;
                     if (!bx.ok()) {
                         continue;
                     }

@@ -119,7 +119,7 @@ void MacProjOp::set_inflow_velocity(amrex::Real time)
     for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mac_vec = {
             AMREX_D_DECL(&u_mac(lev), &v_mac(lev), &w_mac(lev))};
-        velocity.set_inflow_sibling_fields(lev, time, mac_vec, 0);
+        velocity.set_inflow_sibling_fields(lev, time, mac_vec);
     }
 
     // DO WE NEED TREATMENT FOR BOUNDARY PLANES?

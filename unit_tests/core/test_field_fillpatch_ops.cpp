@@ -263,7 +263,7 @@ TEST_F(FieldFillPatchTest, dirichlet_sibling_inflow)
     // Test sibling set_inflow and check ghost cells
     amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mac_vel = {
         AMREX_D_DECL(&(*m_umac)(0), &(*m_vmac)(0), &(*m_wmac)(0))};
-    (*m_vel).set_inflow_sibling_fields(0, time().current_time(), mac_vel, 0);
+    (*m_vel).set_inflow_sibling_fields(0, time().current_time(), mac_vel);
     auto err = get_field_err(*m_umac, false, 0);
     EXPECT_DOUBLE_EQ(err, 0.);
     err = get_field_err(*m_vmac, false, 1);

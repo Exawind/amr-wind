@@ -289,14 +289,13 @@ void Field::set_inflow(
 void Field::set_inflow_sibling_fields(
     const int lev,
     const amrex::Real time,
-    const amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs,
-    const amrex::IntVect& ng) noexcept
+    const amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs) noexcept
 {
     BL_PROFILE("amr-wind::Field::set_inflow_sibling_fields");
     BL_ASSERT(m_info->m_fillpatch_op);
     BL_ASSERT(m_info->bc_initialized() && m_info->m_bc_copied_to_device);
     auto& fop = *(m_info->m_fillpatch_op);
-    fop.set_inflow_sibling_fields(lev, time, mfabs, ng);
+    fop.set_inflow_sibling_fields(lev, time, mfabs);
 }
 
 void Field::advance_states() noexcept
