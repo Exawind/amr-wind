@@ -75,7 +75,6 @@ CheckOptions:
   - { key: readability-identifier-naming.GlobalConstantIgnoredRegexp, value: "^.*"}
   - { key: readability-identifier-naming.NamespaceIgnoredRegexp, value: "Hydro"}
   - { key: readability-identifier-naming.PrivateMemberIgnoredRegexp, value: "(bottom_max_iter|do_fixed_iters|do_nsolve|nsolve_grid_size|bottom_solver_type|hypre_namespace|hypre_interface|bottom_rel_tol|bottom_abs_tol|verbose|max_iter|max_fmg_iters|num_pre_smooth|num_post_smooth|num_final_smooth|num_bottom_smooth|bottom_verbose).*"}
-  - { key: readability-identifier-naming.ProtectedMemberIgnoredRegexp, value: "^.*"}
   - { key: readability-identifier-naming.StructIgnoredRegexp, value: "(SC_DX|OpFM).*"}
   - { key: readability-identifier-naming.VariableIgnoredRegexp, value: "^.*"}
 ...
