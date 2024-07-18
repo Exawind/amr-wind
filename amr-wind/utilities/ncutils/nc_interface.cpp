@@ -345,7 +345,7 @@ NCVar NCGroup::def_array(
     int newid;
     auto ndims = dnames.size();
     std::vector<int> dimids(ndims);
-    for (int i = 0; i < ndims; ++i) {
+    for (int i = 0; i < static_cast<int>(ndims); ++i) {
         dimids[i] = dim(dnames[i]).dimid;
     }
 

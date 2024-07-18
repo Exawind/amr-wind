@@ -17,8 +17,6 @@ TEST_F(MMSMeshTest, mms_forcing)
 #if defined(AMREX_USE_HIP)
     GTEST_SKIP();
 #else
-    if (!pp_utils::has_managed_memory()) GTEST_SKIP();
-
     constexpr amrex::Real tol = 1.0e-12;
 
     // Initialize parameters
@@ -28,15 +26,17 @@ TEST_F(MMSMeshTest, mms_forcing)
     auto& pde_mgr = sim().pde_manager();
     pde_mgr.register_icns();
     sim().init_physics();
-    for (auto& pp : sim().physics()) pp->post_init_actions();
+    for (auto& pp : sim().physics()) {
+        pp->post_init_actions();
+    }
 
     auto fields = ICNSFields(sim())(sim().time());
     auto& src_term = fields.src_term;
     amr_wind::pde::icns::mms::MMSForcing mmsforcing(sim());
 
-    amrex::Real min_golds[AMREX_SPACEDIM] = {
+    const amrex::Array<amrex::Real, AMREX_SPACEDIM> min_golds = {
         -2.1397143441391857, -2.5061563892200622, -2.6756003260809429};
-    amrex::Real max_golds[AMREX_SPACEDIM] = {
+    const amrex::Array<amrex::Real, AMREX_SPACEDIM> max_golds = {
         2.0381534755116628, 2.2014865191023762, 2.4125363807493985};
     src_term.setVal(0.0);
 
