@@ -7,7 +7,7 @@
 namespace amr_wind::overset_ops {
 
 // Populate approximate signed distance function using vof field
-void populate_psi(
+void static populate_psi(
     amrex::MultiFab& mf_psi,
     const amrex::MultiFab& mf_vof,
     const amrex::Real i_th,
@@ -23,7 +23,7 @@ void populate_psi(
 }
 
 // Modify a vof field to not have values that barely differ from 0 or 1
-void process_vof(amrex::MultiFab& mf_vof, const amrex::Real vof_tol)
+void static process_vof(amrex::MultiFab& mf_vof, const amrex::Real vof_tol)
 {
     const auto& vof = mf_vof.arrays();
     amrex::ParallelFor(
@@ -38,7 +38,7 @@ void process_vof(amrex::MultiFab& mf_vof, const amrex::Real vof_tol)
 }
 
 // Combine overset target vof field with current non-overset vof field
-void harmonize_vof(
+void static harmonize_vof(
     amrex::MultiFab& mf_vof_target,
     const amrex::MultiFab& mf_vof_original,
     const amrex::iMultiFab& mf_iblank)
@@ -57,7 +57,7 @@ void harmonize_vof(
 }
 
 // Populate normal vector with special treatment of overset boundary
-void populate_normal_vector(
+void static populate_normal_vector(
     amrex::MultiFab& mf_normvec,
     const amrex::MultiFab& mf_vof,
     const amrex::iMultiFab& mf_iblank)
@@ -98,7 +98,7 @@ void populate_normal_vector(
 
 // Calculate fluxes for reinitialization over entire domain without concern for
 // overset bdy
-void populate_sharpen_fluxes(
+void static populate_sharpen_fluxes(
     amrex::MultiFab& mf_fx,
     amrex::MultiFab& mf_fy,
     amrex::MultiFab& mf_fz,
@@ -192,7 +192,7 @@ void populate_sharpen_fluxes(
 
 // Process reinitialization fluxes - zero non-internal to overset region;
 // also calculate pressure source / sink term as a function of fluxes
-void process_fluxes_calc_src(
+void static process_fluxes_calc_src(
     amrex::MultiFab& mf_fx,
     amrex::MultiFab& mf_fy,
     amrex::MultiFab& mf_fz,
@@ -332,7 +332,7 @@ void process_fluxes_calc_src(
         });
 }
 
-amrex::Real calculate_pseudo_velocity_scale(
+amrex::Real static calculate_pseudo_velocity_scale(
     const amrex::iMultiFab& mf_iblank,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx,
     const amrex::Real pvmax)
@@ -346,7 +346,7 @@ amrex::Real calculate_pseudo_velocity_scale(
 }
 
 // Calculate a type of CFL by measuring how much % VOF is being removed per cell
-amrex::Real calculate_pseudo_dt_flux(
+amrex::Real static calculate_pseudo_dt_flux(
     amrex::MultiFab& mf_fx,
     amrex::MultiFab& mf_fy,
     amrex::MultiFab& mf_fz,
@@ -416,7 +416,7 @@ amrex::Real calculate_pseudo_dt_flux(
 }
 
 // Apply reinitialization fluxes to modify fields
-void apply_fluxes(
+void static apply_fluxes(
     const amrex::MultiFab& mf_fx,
     const amrex::MultiFab& mf_fy,
     const amrex::MultiFab& mf_fz,
@@ -506,7 +506,7 @@ void apply_fluxes(
 }
 
 // Get the size of the smallest VOF flux to quantify convergence
-amrex::Real measure_convergence(
+amrex::Real static measure_convergence(
     amrex::MultiFab& mf_fx, amrex::MultiFab& mf_fy, amrex::MultiFab& mf_fz)
 {
     // Get the maximum flux magnitude, but just for vof fluxes
@@ -548,7 +548,8 @@ amrex::Real measure_convergence(
 }
 
 // Set levelset field to another quantity to view in plotfile for debugging
-void equate_field(amrex::MultiFab& mf_dest, const amrex::MultiFab& mf_src)
+void static equate_field(
+    amrex::MultiFab& mf_dest, const amrex::MultiFab& mf_src)
 {
     const auto& dest = mf_dest.arrays();
     const auto& src = mf_src.const_arrays();
@@ -562,7 +563,7 @@ void equate_field(amrex::MultiFab& mf_dest, const amrex::MultiFab& mf_src)
 }
 
 // Replace pressure gradient with hydrostatic field in overset regions
-void replace_gradp_hydrostatic(
+void static replace_gradp_hydrostatic(
     amrex::MultiFab& mf_gp,
     const amrex::MultiFab& mf_density,
     const amrex::MultiFab& mf_refdens,
@@ -589,7 +590,7 @@ void replace_gradp_hydrostatic(
 }
 
 // Swap pressure gradient values in overset region
-void replace_gradp(
+void static replace_gradp(
     amrex::MultiFab& mf_gp,
     const amrex::MultiFab& mf_gp0,
     const amrex::iMultiFab& mf_iblank)
@@ -609,7 +610,7 @@ void replace_gradp(
 }
 
 // Apply pressure gradient to velocity field
-void apply_pressure_gradient(
+void static apply_pressure_gradient(
     amrex::MultiFab& mf_vel,
     const amrex::MultiFab& mf_density,
     const amrex::MultiFab& mf_gp,

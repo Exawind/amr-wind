@@ -1,7 +1,7 @@
 #include "aw_test_utils/MeshTest.H"
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
-#include "amr-wind/overset/overset_ops_K.H"
+#include "amr-wind/overset/overset_ops_routines.H"
 
 namespace amr_wind_tests {
 
@@ -588,6 +588,109 @@ TEST_F(VOFOversetOps, gp_rho_face)
     error_total = check_gp_rho_face_impl(flux_z, dir, rho_liq, rho_gas);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
     EXPECT_NEAR(error_total, 0.0, 1e-15);
+}
+
+TEST_F(VOFOversetOps, pseudo_vscale_dt)
+{
+    populate_parameters();
+    initialize_mesh();
+
+    auto& repo = sim().repo();
+    const int nghost = 3;
+    auto& vof = repo.declare_field("vof", 1, nghost);
+    auto& tg_vof = repo.declare_field("target_vof", 1, nghost);
+    auto& norm = repo.declare_field("int_normal", 3, nghost);
+    auto& iblank = repo.declare_int_field("iblank_cell", 1, nghost);
+    iblank.setVal(-1);
+    constexpr amrex::Real margin = 0.1;
+    constexpr amrex::Real convg_tol = 1e-8;
+    // With simple fluxes, pseudo dt should be 100%
+    constexpr amrex::Real pdt_answer = 1.0;
+    // With a single level, pseudo velocity scale should be dx of lev 0
+    const auto dx_lev0 = repo.mesh().Geom(0).CellSizeArray();
+    const amrex::Real pvs_answer =
+        std::min(std::min(dx_lev0[0], dx_lev0[1]), dx_lev0[2]);
+
+    // Create flux fields
+    auto& flux_x =
+        repo.declare_field("flux_x", 1, 0, 1, amr_wind::FieldLoc::XFACE);
+    auto& flux_y =
+        repo.declare_field("flux_y", 1, 0, 1, amr_wind::FieldLoc::YFACE);
+    auto& flux_z =
+        repo.declare_field("flux_z", 1, 0, 1, amr_wind::FieldLoc::ZFACE);
+
+    // -- Variations in x direction -- //
+    int dir = 0;
+    // Initialize vof and other fields
+    init_vof_etc(vof, tg_vof, norm, dir);
+    // Populate flux field
+    calc_alpha_flux(flux_x, vof, tg_vof, norm, dir, margin);
+    // Calculate pseudo dt
+    amrex::Real ptfac = 100.0;
+    for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+        const amrex::Real ptfac_lev =
+            amr_wind::overset_ops::calculate_pseudo_dt_flux(
+                flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), convg_tol);
+        ptfac = amrex::min(ptfac, ptfac_lev);
+    }
+    amrex::ParallelDescriptor::ReduceRealMin(ptfac);
+    EXPECT_DOUBLE_EQ(ptfac, pdt_answer);
+    // Zero flux for subsequent tests
+    flux_x.setVal(0.0);
+
+    // -- Variations in y direction -- //
+    dir = 1;
+    // Initialize vof and other fields
+    init_vof_etc(vof, tg_vof, norm, dir);
+    // Populate flux field
+    calc_alpha_flux(flux_y, vof, tg_vof, norm, dir, margin);
+    // Calculate pseudo dt
+    ptfac = 100.0;
+    for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+        const amrex::Real ptfac_lev =
+            amr_wind::overset_ops::calculate_pseudo_dt_flux(
+                flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), convg_tol);
+        ptfac = amrex::min(ptfac, ptfac_lev);
+    }
+    amrex::ParallelDescriptor::ReduceRealMin(ptfac);
+    EXPECT_DOUBLE_EQ(ptfac, pdt_answer);
+    // Zero flux for subsequent test
+    flux_y.setVal(0.0);
+
+    // -- Variations in z direction -- //
+    dir = 2;
+    // Initialize vof and other fields
+    init_vof_etc(vof, tg_vof, norm, dir);
+    // Populate flux field
+    calc_alpha_flux(flux_z, vof, tg_vof, norm, dir, margin);
+    // Calculate pseudo dt
+    ptfac = 100.0;
+    for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+        const amrex::Real ptfac_lev =
+            amr_wind::overset_ops::calculate_pseudo_dt_flux(
+                flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), convg_tol);
+        ptfac = amrex::min(ptfac, ptfac_lev);
+    }
+    amrex::ParallelDescriptor::ReduceRealMin(ptfac);
+    EXPECT_DOUBLE_EQ(ptfac, pdt_answer);
+
+    // Pseudo-velocity scale, should be the smallest dx in iblank region
+    const auto& iblank_cell = repo.get_int_field("iblank_cell");
+    const amrex::Real max_pvscale = 100.;
+    amrex::Real pvscale = max_pvscale;
+    for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+        const amrex::Real pvscale_lev =
+            amr_wind::overset_ops::calculate_pseudo_velocity_scale(
+                iblank_cell(lev), repo.mesh().Geom(lev).CellSizeArray(),
+                max_pvscale);
+        pvscale = std::min(pvscale, pvscale_lev);
+    }
+    amrex::ParallelDescriptor::ReduceRealMin(pvscale);
+    EXPECT_DOUBLE_EQ(pvscale, pvs_answer);
+
+    /*
+        pseudo velocity scale!
+    */
 }
 
 } // namespace amr_wind_tests
