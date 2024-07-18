@@ -19,7 +19,7 @@ void populate_mms_params()
     // MMS Forcing
     {
         amrex::ParmParse pp("ICNS");
-        pp.add("source_terms", (std::string)"MMSForcing");
+        pp.add("source_terms", (std::string) "MMSForcing");
     }
 
     // Needed for initial conditions
@@ -56,4 +56,4 @@ void populate_mms_params()
         pp.add("fixed_dt", 0.05);
     }
 }
-} // namespace amr_wind_tests
+} // namespace amr_wind_tests::utils

@@ -69,7 +69,7 @@ TEST_F(MMSMeshTest, mms_error)
 
     const amrex::Real tol = 1.0e-12;
 
-    amrex::Array<amrex::Real,AMREX_SPACEDIM>  golds = {
+    amrex::Array<amrex::Real, AMREX_SPACEDIM> golds = {
         0.67158428586284569, 0.6978702996158761, 0.74092816587175314};
     EXPECT_NEAR(u_mms_err, golds[0], tol);
     EXPECT_NEAR(v_mms_err, golds[1], tol);

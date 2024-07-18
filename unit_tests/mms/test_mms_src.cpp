@@ -26,7 +26,9 @@ TEST_F(MMSMeshTest, mms_forcing)
     auto& pde_mgr = sim().pde_manager();
     pde_mgr.register_icns();
     sim().init_physics();
-    for (auto& pp : sim().physics()) {pp->post_init_actions();}
+    for (auto& pp : sim().physics()) {
+        pp->post_init_actions();
+    }
 
     auto fields = ICNSFields(sim())(sim().time());
     auto& src_term = fields.src_term;
