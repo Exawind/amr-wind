@@ -192,6 +192,8 @@ public:
             amr_wind::BCOpCreator<TestProfile, amr_wind::ConstDirichlet>;
         (*m_vel).register_fill_patch_op<amr_wind::FieldFillPatchOps<InflowOp>>(
             mesh(), time(), InflowOp(*m_vel));
+        (*m_vel).copy_bc_to_device();
+        EXPECT_TRUE((*m_vel).bc_initialized());
     }
 
     void prep_test()
