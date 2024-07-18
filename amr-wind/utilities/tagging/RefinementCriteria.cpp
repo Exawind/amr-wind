@@ -32,6 +32,7 @@ void RefineCriteriaManager::initialize()
 void RefineCriteriaManager::tag_cells(
     int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow)
 {
+    BL_PROFILE("amr-wind::RefineCriteriaManager::tag_cells");
     for (const auto& rc : m_refiners) {
         (*rc)(lev, tags, time, ngrow);
     }
