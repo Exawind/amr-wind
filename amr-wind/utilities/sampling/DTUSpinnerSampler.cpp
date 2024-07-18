@@ -374,36 +374,37 @@ void DTUSpinnerSampler::update_sampling_locations()
                 amrex::Real step_hub_yaw =
                     m_last_hub_yaw +
                     (std::fmod(
-                         std::fmod(m_hub_yaw - m_last_hub_yaw, twopi) + threepi,
-                         twopi) -
-                     pi) *
+                         std::fmod(m_hub_yaw - m_last_hub_yaw, m_twopi) +
+                             m_threepi,
+                         m_twopi) -
+                     m_pi) *
                         srat;
                 amrex::Real step_hub_tilt =
                     m_last_hub_tilt +
                     (std::fmod(
-                         std::fmod(m_hub_tilt - m_last_hub_tilt, twopi) +
-                             threepi,
-                         twopi) -
-                     pi) *
+                         std::fmod(m_hub_tilt - m_last_hub_tilt, m_twopi) +
+                             m_threepi,
+                         m_twopi) -
+                     m_pi) *
                         srat;
                 amrex::Real step_hub_roll =
                     m_last_hub_roll +
                     (std::fmod(
-                         std::fmod(m_hub_roll - m_last_hub_roll, twopi) +
-                             threepi,
-                         twopi) -
-                     pi) *
+                         std::fmod(m_hub_roll - m_last_hub_roll, m_twopi) +
+                             m_threepi,
+                         m_twopi) -
+                     m_pi) *
                         srat;
 
                 // Rotate beam unit vector
                 beam_vector = adjust_lidar_pattern(
-                    beam_vector, m_fixed_yaw + step_hub_yaw * radtodeg,
-                    m_fixed_tilt + step_hub_tilt * radtodeg,
-                    m_fixed_roll + step_hub_roll * radtodeg);
+                    beam_vector, m_fixed_yaw + step_hub_yaw * m_radtodeg,
+                    m_fixed_tilt + step_hub_tilt * m_radtodeg,
+                    m_fixed_roll + step_hub_roll * m_radtodeg);
 
                 // Interpolate lidar center
                 for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-                    step_lidar_center[d] =
+                    m_step_lidar_center[d] =
                         (step / m_ns) *
                             (m_lidar_center[d] - m_last_lidar_center[d]) +
                         m_last_lidar_center[d];
@@ -411,9 +412,9 @@ void DTUSpinnerSampler::update_sampling_locations()
 
                 // Beam start and end points
                 for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-                    m_start[d + offset] = step_lidar_center[d];
+                    m_start[d + offset] = m_step_lidar_center[d];
                     m_end[d + offset] =
-                        step_lidar_center[d] + beam_vector[d] * m_beam_length;
+                        m_step_lidar_center[d] + beam_vector[d] * m_beam_length;
                 }
 
                 m_time_sampling += dt_s;

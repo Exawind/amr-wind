@@ -62,7 +62,7 @@ public:
      */
     void update_sampling_locations() override;
 
-    void post_sample_actions() override{};
+    void post_sample_actions() override {};
 
     long num_points() const override { return (m_beam_points * m_ntotal); }
 
@@ -87,10 +87,10 @@ private:
     long m_ntotal{1};
 
     int m_update_count{0};
-    const amrex::Real radtodeg{180.0 / M_PI};
-    const amrex::Real pi{M_PI};
-    const amrex::Real twopi{2.0 * M_PI};
-    const amrex::Real threepi{3.0 * M_PI};
+    const amrex::Real m_radtodeg{180.0 / M_PI};
+    const amrex::Real m_pi{M_PI};
+    const amrex::Real m_twopi{2.0 * M_PI};
+    const amrex::Real m_threepi{3.0 * M_PI};
     amrex::Real m_time_sampling{0};
     PrismParameters m_InnerPrism;
     PrismParameters m_OuterPrism;
@@ -124,7 +124,7 @@ private:
     amrex::Real m_last_hub_roll{0};
     amrex::Real m_last_hub_tilt{0};
     amrex::Vector<amrex::Real> m_last_lidar_center{0.0, 0.0, 0.0};
-    amrex::Vector<amrex::Real> step_lidar_center{0.0, 0.0, 0.0};
+    amrex::Vector<amrex::Real> m_step_lidar_center{0.0, 0.0, 0.0};
 };
 
 } // namespace amr_wind::sampling
