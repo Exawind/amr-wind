@@ -262,9 +262,9 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_noslip)
     // Check that the result is not equal to the naive value
     EXPECT_GT(std::abs(shear_wall - s_naive), m_tol);
     // Answer that accounts for location of wall at cell face
-    const amrex::Real uz_wallface =
-        ((uz_bulk * 1.5 * m_dz + 2.0) / 3.0 + uz_bulk * 0.5 * m_dz + 2.0 - 0.0) /
-        m_dz;
+    const amrex::Real uz_wallface = ((uz_bulk * 1.5 * m_dz + 2.0) / 3.0 +
+                                     uz_bulk * 0.5 * m_dz + 2.0 - 0.0) /
+                                    m_dz;
     const amrex::Real wz_wallface = uz_wallface;
     const amrex::Real s_true =
         sqrt(2.0 * wz_wallface * wz_wallface + 2.0 * uz_wallface * uz_wallface);
@@ -294,9 +294,9 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_slip)
     // Answer that accounts for slip_wall BC
     // (tangential extrapolation, dirichlet normal)
     const amrex::Real uz_bulk = m_srate / 2.0;
-    const amrex::Real wz_wall =
-        ((uz_bulk * 1.5 * m_dz + 2.0) / 3.0 + uz_bulk * 0.5 * m_dz + 2.0 - 0.0) /
-        m_dz;
+    const amrex::Real wz_wall = ((uz_bulk * 1.5 * m_dz + 2.0) / 3.0 +
+                                 uz_bulk * 0.5 * m_dz + 2.0 - 0.0) /
+                                m_dz;
     const amrex::Real s_true =
         sqrt(2.0 * wz_wall * wz_wall + 2.0 * uz_bulk * uz_bulk);
     EXPECT_NEAR(shear_wall, s_true, m_tol);
@@ -339,9 +339,9 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_wallmodel)
     // Get value just above wall due to BC
     auto shear_wall = get_val_at_kindex(shear_prod, muturb, 0, 0) / 10. / 20.;
     // (tangential extrapolation, dirichlet normal)
-    const amrex::Real wz_wall =
-        ((uz_bulk * 1.5 * m_dz + 2.0) / 3.0 + uz_bulk * 0.5 * m_dz + 2.0 - 0.0) /
-        m_dz;
+    const amrex::Real wz_wall = ((uz_bulk * 1.5 * m_dz + 2.0) / 3.0 +
+                                 uz_bulk * 0.5 * m_dz + 2.0 - 0.0) /
+                                m_dz;
     const amrex::Real s_true =
         sqrt(2.0 * wz_wall * wz_wall + 2.0 * uz_bulk * uz_bulk);
     EXPECT_NEAR(shear_wall, s_true, m_tol);
@@ -385,9 +385,9 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_wallmodel_failnofillpatch)
     // Get value just above wall due to BC
     auto shear_wall = get_val_at_kindex(shear_prod, muturb, 0, 0) / 10. / 20.;
     // (tangential extrapolation, dirichlet normal)
-    const amrex::Real wz_wall =
-        ((uz_bulk * 1.5 * m_dz + 2.0) / 3.0 + uz_bulk * 0.5 * m_dz + 2.0 - 0.0) /
-        m_dz;
+    const amrex::Real wz_wall = ((uz_bulk * 1.5 * m_dz + 2.0) / 3.0 +
+                                 uz_bulk * 0.5 * m_dz + 2.0 - 0.0) /
+                                m_dz;
     const amrex::Real s_true =
         sqrt(2.0 * wz_wall * wz_wall + 2.0 * uz_bulk * uz_bulk);
     // This is checking the correct value -- without the fillpatch, it is wrong
@@ -399,7 +399,8 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_wallmodel_failnofillpatch)
     const amrex::Real uref = zref * uz_bulk + 2.0;
     const amrex::Real vmag_ref = std::sqrt(2.0 * uref * uref);
     const amrex::Real utau = kappa * vmag_ref / (std::log(zref / z0));
-    const amrex::Real uz_wm = uref / vmag_ref * std::pow(utau, 2) * m_rho0 / m_mu;
+    const amrex::Real uz_wm =
+        uref / vmag_ref * std::pow(utau, 2) * m_rho0 / m_mu;
 
     // Velocity gradient with wallmodel value included as dirichlet
     const amrex::Real uz_wmdirichlet =

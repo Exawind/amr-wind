@@ -215,8 +215,9 @@ TEST_F(TurbLESTest, test_smag_setup_calc)
     auto min_val = utils::field_min(muturb);
     auto max_val = utils::field_max(muturb);
     const amrex::Real tol = 1e-12;
-    const amrex::Real smag_answer =
-        rho0 * std::pow(Cs, 2) * std::pow(std::cbrt(m_dx * m_dy * m_dz), 2) * srate;
+    const amrex::Real smag_answer = rho0 * std::pow(Cs, 2) *
+                                    std::pow(std::cbrt(m_dx * m_dy * m_dz), 2) *
+                                    srate;
     EXPECT_NEAR(min_val, smag_answer, tol);
     EXPECT_NEAR(max_val, smag_answer, tol);
 
@@ -415,10 +416,11 @@ TEST_F(TurbLESTest, test_AMD_setup_calc)
     const auto max_val = utils::field_max(muturb);
     const amrex::Real tol = 1e-12;
 
-    const amrex::Real amd_answer = C *
-                                   (-1.0 * std::pow(scale / sqrt(6), 3) *
-                                    (m_dx * m_dx - 8 * m_dy * m_dy - m_dz * m_dz)) /
-                                   (1 * scale * scale);
+    const amrex::Real amd_answer =
+        C *
+        (-1.0 * std::pow(scale / sqrt(6), 3) *
+         (m_dx * m_dx - 8 * m_dy * m_dy - m_dz * m_dz)) /
+        (1 * scale * scale);
     EXPECT_NEAR(min_val, amd_answer, tol);
     EXPECT_NEAR(max_val, amd_answer, tol);
 
@@ -492,9 +494,9 @@ TEST_F(TurbLESTest, test_AMDNoTherm_setup_calc)
     const auto max_val = utils::field_max(muturb);
     const amrex::Real tol = 1e-12;
 
-    const amrex::Real amd_answer = -C * std::pow(scale, 3) *
-                                   (m_dx * m_dx - 8 * m_dy * m_dy + m_dz * m_dz) /
-                                   (6 * scale * scale);
+    const amrex::Real amd_answer =
+        -C * std::pow(scale, 3) *
+        (m_dx * m_dx - 8 * m_dy * m_dy + m_dz * m_dz) / (6 * scale * scale);
     EXPECT_NEAR(min_val, amd_answer, tol);
     EXPECT_NEAR(max_val, amd_answer, tol);
 }
@@ -558,9 +560,9 @@ TEST_F(TurbLESTest, test_kosovic_setup_calc)
     auto min_val = utils::field_min(muturb);
     auto max_val = utils::field_max(muturb);
     const amrex::Real tol = 1e-12;
-    const amrex::Real kosovic_answer = rho0 * std::pow(kosovic_Cs, 2) *
-                                       std::pow(std::cbrt(m_dx * m_dy * m_dz), 2) *
-                                       srate;
+    const amrex::Real kosovic_answer =
+        rho0 * std::pow(kosovic_Cs, 2) *
+        std::pow(std::cbrt(m_dx * m_dy * m_dz), 2) * srate;
     EXPECT_NEAR(min_val, kosovic_answer, tol);
     EXPECT_NEAR(max_val, kosovic_answer, tol);
 

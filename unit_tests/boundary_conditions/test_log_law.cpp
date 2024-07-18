@@ -34,10 +34,12 @@ TEST_F(LogLawTest, test_log_law)
     EXPECT_NEAR(utau, 0.1, m_tol);
 
     utau_expected = 0.05;
-    EXPECT_NEAR(ll.get_utau(log_law_actual(utau_expected)), utau_expected, m_tol);
+    EXPECT_NEAR(
+        ll.get_utau(log_law_actual(utau_expected)), utau_expected, m_tol);
 
     utau_expected = 2.0;
-    EXPECT_NEAR(ll.get_utau(log_law_actual(utau_expected)), utau_expected, m_tol);
+    EXPECT_NEAR(
+        ll.get_utau(log_law_actual(utau_expected)), utau_expected, m_tol);
 
     utau_expected = 0.5;
     ll.wspd_mean = log_law_actual(utau_expected);
