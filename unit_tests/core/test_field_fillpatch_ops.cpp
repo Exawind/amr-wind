@@ -131,12 +131,16 @@ amrex::Real get_field_err(
                         }
                     } else {
                         // First ghost cells only
-                        if (((i == -1 || i == 8) && (j >= 0 && j <= 7) &&
-                             (k >= 0 && k <= 7)) ||
+                        const bool is_ibdy =
+                            ((i == -1 || i == 8) && (j >= 0 && j <= 7) &&
+                             (k >= 0 && k <= 7));
+                        const bool is_jbdy =
                             ((j == -1 || j == 8) && (i >= 0 && i <= 7) &&
-                             (k >= 0 && k <= 7)) ||
+                             (k >= 0 && k <= 7));
+                        const bool is_kbdy =
                             ((k == -1 || k == 8) && (i >= 0 && i <= 7) &&
-                             (j >= 0 && j <= 7))) {
+                             (j >= 0 && j <= 7));
+                        if (is_ibdy || is_jbdy || is_kbdy) {
                             error += std::abs(f_arr(i, j, k, 0) - 1.0);
                             error += std::abs(f_arr(i, j, k, 1) - 2.0);
                             error += std::abs(f_arr(i, j, k, 2) - 3.0);
