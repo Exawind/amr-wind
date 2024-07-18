@@ -234,7 +234,9 @@ void calc_gp_rho_face(
     amr_wind::Field& gp,
     amr_wind::Field& rho,
     amr_wind::Field& vof,
-    const int& dir)
+    const int& dir,
+    const int& ioff = 0,
+    bool random_fflag = false)
 {
     run_algorithm(flux, [&](const int lev, const amrex::MFIter& mfi) {
         auto f_arr = flux(lev).array(mfi);
@@ -242,13 +244,138 @@ void calc_gp_rho_face(
         auto gp_arr = gp(lev).array(mfi);
         auto rho_arr = rho(lev).array(mfi);
         const auto& bx = mfi.validbox();
+        amrex::ParallelFor(
+            grow(bx, flux.num_grow()),
+            [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                amrex::Real u_f, v_f, w_f;
+                amrex::Real fac = 1.0;
+                if (random_fflag) {
+                    fac = ((i + j + k) % 8 == 0) ? 0. : fac;
+                    f_arr(i, j, k, 3 + ioff) = fac;
+                }
+                amr_wind::overset_ops::gp_rho_face(
+                    i, j, k, dir, vof_arr, gp_arr, rho_arr, u_f, v_f, w_f);
+                f_arr(i, j, k, 0 + ioff) = u_f * fac;
+                f_arr(i, j, k, 1 + ioff) = v_f * fac;
+                f_arr(i, j, k, 2 + ioff) = w_f * fac;
+            });
+    });
+}
+
+void calc_psrc(
+    amr_wind::Field& f_fx,
+    amr_wind::Field& f_fy,
+    amr_wind::Field& f_fz,
+    amr_wind::Field& f_vof,
+    amr_wind::Field& f_psrc,
+    amr_wind::Field& f_psrc_manual)
+{
+    constexpr amrex::Real tiny = std::numeric_limits<amrex::Real>::epsilon();
+    run_algorithm(f_vof, [&](const int lev, const amrex::MFIter& mfi) {
+        auto fx = f_fx(lev).const_array(mfi);
+        auto fy = f_fy(lev).const_array(mfi);
+        auto fz = f_fz(lev).const_array(mfi);
+        auto vof = f_vof(lev).const_array(mfi);
+        auto psrc = f_psrc(lev).array(mfi);
+        auto psmn = f_psrc_manual(lev).array(mfi);
+        const auto& bx = mfi.validbox();
         amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-            amrex::Real u_f, v_f, w_f;
-            amr_wind::overset_ops::gp_rho_face(
-                i, j, k, dir, vof_arr, gp_arr, rho_arr, u_f, v_f, w_f);
-            f_arr(i, j, k, 0) = u_f;
-            f_arr(i, j, k, 1) = v_f;
-            f_arr(i, j, k, 2) = w_f;
+            psrc(i, j, k) = amr_wind::overset_ops::gp_flux_tensor(
+                                i, j, k, fx, fy, fz, tiny) &&
+                            amr_wind::overset_ops::normal_reinit_tensor(
+                                i, j, k, fx, fy, fz, vof, tiny);
+
+            const amrex::Real fxgpx_flux =
+                (fx(i, j, k, 5) + fx(i, j, k - 1, 5) + fx(i, j - 1, k, 5) +
+                 fx(i, j - 1, k - 1, 5)) /
+                (fx(i, j, k, 8) + fx(i, j, k - 1, 8) + fx(i, j - 1, k, 8) +
+                 fx(i, j - 1, k - 1, 8) + tiny);
+            const amrex::Real fxgpy_flux =
+                (fx(i, j, k, 6) + fx(i, j, k - 1, 6) + fx(i, j - 1, k, 6) +
+                 fx(i, j - 1, k - 1, 6)) /
+                (fx(i, j, k, 8) + fx(i, j, k - 1, 8) + fx(i, j - 1, k, 8) +
+                 fx(i, j - 1, k - 1, 8) + tiny);
+            const amrex::Real fxgpz_flux =
+                (fx(i, j, k, 7) + fx(i, j, k - 1, 7) + fx(i, j - 1, k, 7) +
+                 fx(i, j - 1, k - 1, 7)) /
+                (fx(i, j, k, 8) + fx(i, j, k - 1, 8) + fx(i, j - 1, k, 8) +
+                 fx(i, j - 1, k - 1, 8) + tiny);
+
+            const amrex::Real fygpx_flux =
+                (fy(i, j, k, 5) + fy(i - 1, j, k, 5) + fy(i, j, k - 1, 5) +
+                 fy(i - 1, j, k - 1, 5)) /
+                (fy(i, j, k, 8) + fy(i - 1, j, k, 8) + fy(i, j, k - 1, 8) +
+                 fy(i - 1, j, k - 1, 8) + tiny);
+            const amrex::Real fygpy_flux =
+                (fy(i, j, k, 6) + fy(i - 1, j, k, 6) + fy(i, j, k - 1, 6) +
+                 fy(i - 1, j, k - 1, 6)) /
+                (fy(i, j, k, 8) + fy(i - 1, j, k, 8) + fy(i, j, k - 1, 8) +
+                 fy(i - 1, j, k - 1, 8) + tiny);
+            const amrex::Real fygpz_flux =
+                (fy(i, j, k, 7) + fy(i - 1, j, k, 7) + fy(i, j, k - 1, 7) +
+                 fy(i - 1, j, k - 1, 7)) /
+                (fy(i, j, k, 8) + fy(i - 1, j, k, 8) + fy(i, j, k - 1, 8) +
+                 fy(i - 1, j, k - 1, 8) + tiny);
+
+            const amrex::Real fzgpx_flux =
+                (fz(i, j, k, 5) + fz(i - 1, j, k, 5) + fz(i, j - 1, k, 5) +
+                 fz(i - 1, j - 1, k, 5)) /
+                (fz(i, j, k, 8) + fz(i - 1, j, k, 8) + fz(i, j - 1, k, 8) +
+                 fz(i - 1, j - 1, k, 8) + tiny);
+            const amrex::Real fzgpy_flux =
+                (fz(i, j, k, 6) + fz(i - 1, j, k, 6) + fz(i, j - 1, k, 6) +
+                 fz(i - 1, j - 1, k, 6)) /
+                (fz(i, j, k, 8) + fz(i - 1, j, k, 8) + fz(i, j - 1, k, 8) +
+                 fz(i - 1, j - 1, k, 8) + tiny);
+            const amrex::Real fzgpz_flux =
+                (fz(i, j, k, 7) + fz(i - 1, j, k, 7) + fz(i, j - 1, k, 7) +
+                 fz(i - 1, j - 1, k, 7)) /
+                (fz(i, j, k, 8) + fz(i - 1, j, k, 8) + fz(i, j - 1, k, 8) +
+                 fz(i - 1, j - 1, k, 8) + tiny);
+
+            // Calculate interface normal at pressure node
+            amrex::Real n0 =
+                ((vof(i, j, k) - vof(i - 1, j, k)) * fx(i, j, k, 8) +
+                 (vof(i, j - 1, k) - vof(i - 1, j - 1, k)) *
+                     fx(i, j - 1, k, 8) +
+                 (vof(i, j, k - 1) - vof(i - 1, j, k - 1)) *
+                     fx(i, j, k - 1, 8) +
+                 (vof(i, j - 1, k - 1) - vof(i - 1, j - 1, k - 1)) *
+                     fx(i, j - 1, k - 1, 8)) /
+                (fx(i, j, k, 8) + fx(i, j, k - 1, 8) + fx(i, j - 1, k, 8) +
+                 fx(i, j - 1, k - 1, 8) + tiny);
+            amrex::Real n1 =
+                ((vof(i, j, k) - vof(i, j - 1, k)) * fy(i, j, k, 8) +
+                 (vof(i - 1, j, k) - vof(i - 1, j - 1, k)) *
+                     fy(i - 1, j, k, 8) +
+                 (vof(i, j, k - 1) - vof(i, j - 1, k - 1)) *
+                     fy(i, j, k - 1, 8) +
+                 (vof(i - 1, j, k - 1) - vof(i - 1, j - 1, k - 1)) *
+                     fy(i - 1, j, k - 1, 8)) /
+                (fy(i, j, k, 8) + fy(i, j, k - 1, 8) + fy(i - 1, j, k, 8) +
+                 fy(i - 1, j, k - 1, 8) + tiny);
+            amrex::Real n2 =
+                ((vof(i, j, k) - vof(i, j, k - 1)) * fz(i, j, k, 8) +
+                 (vof(i - 1, j, k) - vof(i - 1, j, k - 1)) *
+                     fz(i - 1, j, k, 8) +
+                 (vof(i, j - 1, k) - vof(i, j - 1, k - 1)) *
+                     fz(i, j - 1, k, 8) +
+                 (vof(i - 1, j - 1, k) - vof(i - 1, j - 1, k - 1)) *
+                     fz(i - 1, j - 1, k, 8)) /
+                (fz(i, j, k, 8) + fz(i, j - 1, k, 8) + fz(i - 1, j, k, 8) +
+                 fz(i - 1, j - 1, k, 8) + tiny);
+            // Normalize vector
+            amrex::Real nmag = std::sqrt(n0 * n0 + n1 * n1 + n2 * n2) + tiny;
+            n0 /= nmag;
+            n1 /= nmag;
+            n2 /= nmag;
+
+            // Perform double contraction
+            psmn(i, j, k) = fxgpx_flux * n0 * n0 + fxgpy_flux * n0 * n1 +
+                            fxgpz_flux * n0 * n2 + fygpx_flux * n1 * n0 +
+                            fygpy_flux * n1 * n1 + fygpz_flux * n1 * n2 +
+                            fzgpx_flux * n2 * n0 + fzgpy_flux * n2 * n1 +
+                            fzgpz_flux * n2 * n2;
         });
     });
 }
@@ -418,6 +545,31 @@ amrex::Real check_gp_rho_face_impl(
                         flux_answer = 0.5 * (4.5 / rho_r + 4.0 / rho_l);
                         error += std::abs(f_arr(i, j, k, 2) - flux_answer);
                     }
+                });
+
+                return error;
+            });
+    }
+    return error_total;
+}
+
+amrex::Real
+check_psrc_manual_impl(amr_wind::Field& psrc, amr_wind::Field& psrc_manual)
+{
+    amrex::Real error_total = 0;
+
+    for (int lev = 0; lev < psrc.repo().num_active_levels(); ++lev) {
+
+        error_total += amrex::ReduceSum(
+            psrc(lev), psrc_manual(lev), 0,
+            [=] AMREX_GPU_HOST_DEVICE(
+                amrex::Box const& bx,
+                amrex::Array4<amrex::Real const> const& f_arr,
+                amrex::Array4<amrex::Real const> const& fm_arr) -> amrex::Real {
+                amrex::Real error = 0;
+
+                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                    error += std::abs(f_arr(i, j, k) - fm_arr(i, j, k));
                 });
 
                 return error;
@@ -687,10 +839,52 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     }
     amrex::ParallelDescriptor::ReduceRealMin(pvscale);
     EXPECT_DOUBLE_EQ(pvscale, pvs_answer);
+}
 
-    /*
-        pseudo velocity scale!
-    */
+TEST_F(VOFOversetOps, psource_manual)
+{
+    populate_parameters();
+    initialize_mesh();
+
+    const amrex::Real rho_liq = 1000.;
+    const amrex::Real rho_gas = 1.;
+
+    auto& repo = sim().repo();
+    const int nghost = 3;
+    auto& gp = repo.declare_field("gp", 3, nghost);
+    auto& rho = repo.declare_field("density", 1, nghost);
+    auto& vof = repo.declare_field("vof", 1, nghost);
+
+    auto& psrc = repo.declare_field("psrc", 1, 0, 1, amr_wind::FieldLoc::NODE);
+    auto& psmn =
+        repo.declare_field("psrc_manual", 1, 0, 1, amr_wind::FieldLoc::NODE);
+
+    // Create flux fields
+    auto& flux_x =
+        repo.declare_field("flux_x", 9, 1, 1, amr_wind::FieldLoc::XFACE);
+    auto& flux_y =
+        repo.declare_field("flux_y", 9, 1, 1, amr_wind::FieldLoc::YFACE);
+    auto& flux_z =
+        repo.declare_field("flux_z", 9, 1, 1, amr_wind::FieldLoc::ZFACE);
+
+    // Initialize gp_rho fluxes in every direction
+    int dir = 0;
+    init_gp_rho_etc(gp, rho, vof, dir, rho_liq, rho_gas);
+    calc_gp_rho_face(flux_x, gp, rho, vof, dir, 5, true);
+    dir = 1;
+    init_gp_rho_etc(gp, rho, vof, dir, rho_liq, rho_gas);
+    calc_gp_rho_face(flux_y, gp, rho, vof, dir, 5, true);
+    dir = 3;
+    init_gp_rho_etc(gp, rho, vof, dir, rho_liq, rho_gas);
+    calc_gp_rho_face(flux_z, gp, rho, vof, dir, 5, true);
+
+    // Calculate psrc with vector/tensor ops and manually
+    calc_psrc(flux_x, flux_y, flux_z, vof, psrc, psmn);
+
+    // Check difference
+    amrex::Real error_total = check_psrc_manual_impl(psrc, psmn);
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
+    EXPECT_NEAR(error_total, 0.0, 1e-10);
 }
 
 } // namespace amr_wind_tests

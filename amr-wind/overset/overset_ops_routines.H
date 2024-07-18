@@ -233,102 +233,10 @@ void static process_fluxes_calc_src(
     amrex::ParallelFor(
         mf_psource,
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            // Get components of outer product between f and gradp/rho
-            // from interpolating between values at neighboring faces
-            const amrex::Real fxgpx_flux =
-                (fx[nbx](i, j, k, 5) + fx[nbx](i, j, k - 1, 5) +
-                 fx[nbx](i, j - 1, k, 5) + fx[nbx](i, j - 1, k - 1, 5)) /
-                (fx[nbx](i, j, k, 8) + fx[nbx](i, j, k - 1, 8) +
-                 fx[nbx](i, j - 1, k, 8) + fx[nbx](i, j - 1, k - 1, 8) + tiny);
-            const amrex::Real fxgpy_flux =
-                (fx[nbx](i, j, k, 6) + fx[nbx](i, j, k - 1, 6) +
-                 fx[nbx](i, j - 1, k, 6) + fx[nbx](i, j - 1, k - 1, 6)) /
-                (fx[nbx](i, j, k, 8) + fx[nbx](i, j, k - 1, 8) +
-                 fx[nbx](i, j - 1, k, 8) + fx[nbx](i, j - 1, k - 1, 8) + tiny);
-            const amrex::Real fxgpz_flux =
-                (fx[nbx](i, j, k, 7) + fx[nbx](i, j, k - 1, 7) +
-                 fx[nbx](i, j - 1, k, 7) + fx[nbx](i, j - 1, k - 1, 7)) /
-                (fx[nbx](i, j, k, 8) + fx[nbx](i, j, k - 1, 8) +
-                 fx[nbx](i, j - 1, k, 8) + fx[nbx](i, j - 1, k - 1, 8) + tiny);
-
-            const amrex::Real fygpx_flux =
-                (fy[nbx](i, j, k, 5) + fy[nbx](i - 1, j, k, 5) +
-                 fy[nbx](i, j, k - 1, 5) + fy[nbx](i - 1, j, k - 1, 5)) /
-                (fy[nbx](i, j, k, 8) + fy[nbx](i - 1, j, k, 8) +
-                 fy[nbx](i, j, k - 1, 8) + fy[nbx](i - 1, j, k - 1, 8) + tiny);
-            const amrex::Real fygpy_flux =
-                (fy[nbx](i, j, k, 6) + fy[nbx](i - 1, j, k, 6) +
-                 fy[nbx](i, j, k - 1, 6) + fy[nbx](i - 1, j, k - 1, 6)) /
-                (fy[nbx](i, j, k, 8) + fy[nbx](i - 1, j, k, 8) +
-                 fy[nbx](i, j, k - 1, 8) + fy[nbx](i - 1, j, k - 1, 8) + tiny);
-            const amrex::Real fygpz_flux =
-                (fy[nbx](i, j, k, 7) + fy[nbx](i - 1, j, k, 7) +
-                 fy[nbx](i, j, k - 1, 7) + fy[nbx](i - 1, j, k - 1, 7)) /
-                (fy[nbx](i, j, k, 8) + fy[nbx](i - 1, j, k, 8) +
-                 fy[nbx](i, j, k - 1, 8) + fy[nbx](i - 1, j, k - 1, 8) + tiny);
-
-            const amrex::Real fzgpx_flux =
-                (fz[nbx](i, j, k, 5) + fz[nbx](i - 1, j, k, 5) +
-                 fz[nbx](i, j - 1, k, 5) + fz[nbx](i - 1, j - 1, k, 5)) /
-                (fz[nbx](i, j, k, 8) + fz[nbx](i - 1, j, k, 8) +
-                 fz[nbx](i, j - 1, k, 8) + fz[nbx](i - 1, j - 1, k, 8) + tiny);
-            const amrex::Real fzgpy_flux =
-                (fz[nbx](i, j, k, 6) + fz[nbx](i - 1, j, k, 6) +
-                 fz[nbx](i, j - 1, k, 6) + fz[nbx](i - 1, j - 1, k, 6)) /
-                (fz[nbx](i, j, k, 8) + fz[nbx](i - 1, j, k, 8) +
-                 fz[nbx](i, j - 1, k, 8) + fz[nbx](i - 1, j - 1, k, 8) + tiny);
-            const amrex::Real fzgpz_flux =
-                (fz[nbx](i, j, k, 7) + fz[nbx](i - 1, j, k, 7) +
-                 fz[nbx](i, j - 1, k, 7) + fz[nbx](i - 1, j - 1, k, 7)) /
-                (fz[nbx](i, j, k, 8) + fz[nbx](i - 1, j, k, 8) +
-                 fz[nbx](i, j - 1, k, 8) + fz[nbx](i - 1, j - 1, k, 8) + tiny);
-
-            // Calculate interface normal at pressure node
-            amrex::Real n0 =
-                ((vof[nbx](i, j, k) - vof[nbx](i - 1, j, k)) *
-                     fx[nbx](i, j, k, 8) +
-                 (vof[nbx](i, j - 1, k) - vof[nbx](i - 1, j - 1, k)) *
-                     fx[nbx](i, j - 1, k, 8) +
-                 (vof[nbx](i, j, k - 1) - vof[nbx](i - 1, j, k - 1)) *
-                     fx[nbx](i, j, k - 1, 8) +
-                 (vof[nbx](i, j - 1, k - 1) - vof[nbx](i - 1, j - 1, k - 1)) *
-                     fx[nbx](i, j - 1, k - 1, 8)) /
-                (fx[nbx](i, j, k, 8) + fx[nbx](i, j, k - 1, 8) +
-                 fx[nbx](i, j - 1, k, 8) + fx[nbx](i, j - 1, k - 1, 8) + tiny);
-            amrex::Real n1 =
-                ((vof[nbx](i, j, k) - vof[nbx](i, j - 1, k)) *
-                     fy[nbx](i, j, k, 8) +
-                 (vof[nbx](i - 1, j, k) - vof[nbx](i - 1, j - 1, k)) *
-                     fy[nbx](i - 1, j, k, 8) +
-                 (vof[nbx](i, j, k - 1) - vof[nbx](i, j - 1, k - 1)) *
-                     fy[nbx](i, j, k - 1, 8) +
-                 (vof[nbx](i - 1, j, k - 1) - vof[nbx](i - 1, j - 1, k - 1)) *
-                     fy[nbx](i - 1, j, k - 1, 8)) /
-                (fy[nbx](i, j, k, 8) + fy[nbx](i, j, k - 1, 8) +
-                 fy[nbx](i - 1, j, k, 8) + fy[nbx](i - 1, j, k - 1, 8) + tiny);
-            amrex::Real n2 =
-                ((vof[nbx](i, j, k) - vof[nbx](i, j, k - 1)) *
-                     fz[nbx](i, j, k, 8) +
-                 (vof[nbx](i - 1, j, k) - vof[nbx](i - 1, j, k - 1)) *
-                     fz[nbx](i - 1, j, k, 8) +
-                 (vof[nbx](i, j - 1, k) - vof[nbx](i, j - 1, k - 1)) *
-                     fz[nbx](i, j - 1, k, 8) +
-                 (vof[nbx](i - 1, j - 1, k) - vof[nbx](i - 1, j - 1, k - 1)) *
-                     fz[nbx](i - 1, j - 1, k, 8)) /
-                (fz[nbx](i, j, k, 8) + fz[nbx](i, j - 1, k, 8) +
-                 fz[nbx](i - 1, j, k, 8) + fz[nbx](i - 1, j - 1, k, 8) + tiny);
-            // Normalize vector
-            amrex::Real nmag = std::sqrt(n0 * n0 + n1 * n1 + n2 * n2) + tiny;
-            n0 /= nmag;
-            n1 /= nmag;
-            n2 /= nmag;
-
-            // Perform double contraction
-            sp[nbx](i, j, k) = fxgpx_flux * n0 * n0 + fxgpy_flux * n0 * n1 +
-                               fxgpz_flux * n0 * n2 + fygpx_flux * n1 * n0 +
-                               fygpy_flux * n1 * n1 + fygpz_flux * n1 * n2 +
-                               fzgpx_flux * n2 * n0 + fzgpy_flux * n2 * n1 +
-                               fzgpz_flux * n2 * n2;
+            sp[nbx](i, j, k) =
+                gp_flux_tensor(i, j, k, fx[nbx], fy[nbx], fz[nbx], tiny) &&
+                normal_reinit_tensor(
+                    i, j, k, fx[nbx], fy[nbx], fz[nbx], vof[nbx], tiny);
         });
 }
 
