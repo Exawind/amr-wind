@@ -91,16 +91,17 @@ void MLMGOptions::operator()(amrex::MLMG& mlmg)
         mlmg.setBottomSolver(amrex::MLMG::BottomSolver::hypre);
 
         mlmg.setHypreOptionsNamespace(hypre_namespace);
-        if (hypre_interface == "ij")
+        if (hypre_interface == "ij") {
             mlmg.setHypreInterface(amrex::Hypre::Interface::ij);
-        else if (hypre_interface == "semi_structured")
+        } else if (hypre_interface == "semi_structured") {
             mlmg.setHypreInterface(amrex::Hypre::Interface::semi_structed);
-        else if (hypre_interface == "structured")
+        } else if (hypre_interface == "structured") {
             mlmg.setHypreInterface(amrex::Hypre::Interface::structed);
-        else
+        } else {
             amrex::Abort(
                 "Invalid hypre interface. Valid options: ij semi_structured "
                 "structured");
+        }
 #else
         amrex::Abort("AMR-Wind was not built with hypre support");
 #endif

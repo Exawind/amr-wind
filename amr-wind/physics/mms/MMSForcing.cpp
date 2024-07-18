@@ -2,10 +2,7 @@
 #include "amr-wind/CFDSim.H"
 #include "masa.h"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
-namespace mms {
+
 
 /** MMS forcing term
  */
@@ -24,8 +21,8 @@ void MMSForcing::operator()(
     const FieldState /*fstate*/,
     const amrex::Array4<amrex::Real>& src_term) const
 {
-    auto& mms_src = m_mms_vel_source(lev);
-    const auto& mms_src_arr = mms_src.array(mfi);
+    const auto& mms_src = m_mms_vel_source(lev);
+    const auto& mms_src_arr = mms_src.const_array(mfi);
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         src_term(i, j, k, 0) += mms_src_arr(i, j, k, 0);
@@ -33,7 +30,4 @@ void MMSForcing::operator()(
         src_term(i, j, k, 2) += mms_src_arr(i, j, k, 2);
     });
 }
-} // namespace mms
-} // namespace icns
-} // namespace pde
 } // namespace amr_wind

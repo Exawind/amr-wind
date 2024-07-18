@@ -17,8 +17,6 @@ TEST_F(MMSMeshTest, mms_forcing)
 #if defined(AMREX_USE_HIP)
     GTEST_SKIP();
 #else
-    if (!pp_utils::has_managed_memory()) GTEST_SKIP();
-
     constexpr amrex::Real tol = 1.0e-12;
 
     // Initialize parameters

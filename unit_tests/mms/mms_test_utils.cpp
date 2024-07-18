@@ -1,7 +1,6 @@
 #include "mms_test_utils.H"
 
-namespace amr_wind_tests {
-namespace utils {
+namespace amr_wind_tests::utils {
 void populate_mms_params()
 {
     {
@@ -57,5 +56,4 @@ void populate_mms_params()
         pp.add("fixed_dt", 0.05);
     }
 }
-} // namespace utils
 } // namespace amr_wind_tests

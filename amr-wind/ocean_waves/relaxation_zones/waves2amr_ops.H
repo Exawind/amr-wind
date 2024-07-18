@@ -102,7 +102,7 @@ void postprocess_velocity_mfab_liquid(
 void postprocess_velocity_field_liquid(
     amr_wind::Field& vel_field,
     amr_wind::Field& lvs_field,
-    amrex::Vector<amrex::Geometry> geom_all)
+    amrex::Vector<amrex::Geometry>& geom_all)
 {
     int nlevels = vel_field.repo().num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -123,7 +123,7 @@ int update_offset_timestep(const int ntime, const int n0)
 
 void populate_fields_all_levels(
     amr_wind::ocean_waves::W2AWaves::MetaType& wdata,
-    amrex::Vector<amrex::Geometry> geom_all,
+    amrex::Vector<amrex::Geometry>& geom_all,
     amr_wind::Field& lvs_field,
     amr_wind::Field& vel_field,
     int ntime_off = 0)

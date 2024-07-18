@@ -4,21 +4,18 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 
-namespace amr_wind {
-namespace pde {
-namespace icns {
-namespace mms {
+namespace amr_wind::pde::icns::mms {
 
 class MMSForcing : public MomentumSource::Register<MMSForcing>
 {
 public:
-    static const std::string identifier() { return "MMSForcing"; }
+    static std::string identifier() { return "MMSForcing"; }
 
-    explicit MMSForcing(const CFDSim&);
+    explicit MMSForcing(const CFDSim& sim);
 
     virtual ~MMSForcing();
 
-    virtual void operator()(
+    void operator()(
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,
@@ -28,9 +25,6 @@ public:
 private:
     const Field& m_mms_vel_source;
 };
-} // namespace mms
-} // namespace icns
-} // namespace pde
 } // namespace amr_wind
 
 #endif /* MMSFORCING_H */
