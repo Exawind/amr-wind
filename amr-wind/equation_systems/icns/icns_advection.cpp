@@ -117,10 +117,8 @@ void MacProjOp::set_inflow_velocity(amrex::Real time)
     auto& w_mac = m_repo.get_field("w_mac");
 
     for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
-        amrex::Array<amrex::MultiFab*, ICNS::ndim> mac_vec;
-        mac_vec[0] = &u_mac(lev);
-        mac_vec[1] = &v_mac(lev);
-        mac_vec[2] = &w_mac(lev);
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mac_vec = {
+            AMREX_D_DECL(&u_mac(lev), &w_mac(lev), &w_mac(lev))};
         velocity.set_inflow_sibling_fields(lev, time, mac_vec, 0);
     }
 

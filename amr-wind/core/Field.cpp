@@ -287,9 +287,9 @@ void Field::set_inflow(
 }
 
 void Field::set_inflow_sibling_fields(
-    int lev,
-    amrex::Real time,
-    amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs,
+    const int lev,
+    const amrex::Real time,
+    const amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs,
     const amrex::IntVect& ng) noexcept
 {
     BL_PROFILE("amr-wind::Field::set_inflow_sibling_fields");

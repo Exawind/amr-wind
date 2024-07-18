@@ -404,16 +404,14 @@ public:
     }
 
     void set_inflow_sibling_fields(
-        int lev,
-        amrex::Real time,
-        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs,
+        const int lev,
+        const amrex::Real time,
+        const amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs,
         const amrex::IntVect& nghost) override
     {
-        const int ng = nghost[0];
         const auto& bctype = m_field.bc_type();
         const auto& geom = m_mesh.Geom(lev);
         const auto& gdata = geom.data();
-        const auto& domain = geom.growPeriodicDomain(ng);
         const auto& bcfunc = bc_functor();
 
         for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
@@ -423,6 +421,8 @@ public:
             }
 
             const int idir = ori.coordDir();
+            const int ng = nghost[idir];
+            const auto& domain = geom.growPeriodicDomain(ng);
             for (int fdir = 0; fdir < AMREX_SPACEDIM; ++fdir) {
 
                 auto dbdy_lo = amrex::adjCellLo(domain, idir, nghost[idir]);
