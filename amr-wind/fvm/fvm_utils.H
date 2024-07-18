@@ -43,33 +43,33 @@ inline void apply(const FvmOp& fvmop, const FType& fld)
             fvmop.template apply<stencil::StencilKHI>(lev, mfi);
 
             // edges
-            fvmop.template apply<stencil::StencilIHI_JLO>(lev, mfi);
-            fvmop.template apply<stencil::StencilIHI_JHI>(lev, mfi);
+            fvmop.template apply<stencil::StencilIhiJlo>(lev, mfi);
+            fvmop.template apply<stencil::StencilIhiJhi>(lev, mfi);
 
-            fvmop.template apply<stencil::StencilIHI_KLO>(lev, mfi);
-            fvmop.template apply<stencil::StencilIHI_KHI>(lev, mfi);
+            fvmop.template apply<stencil::StencilIhiKlo>(lev, mfi);
+            fvmop.template apply<stencil::StencilIhiKhi>(lev, mfi);
 
-            fvmop.template apply<stencil::StencilJHI_KLO>(lev, mfi);
-            fvmop.template apply<stencil::StencilJHI_KHI>(lev, mfi);
+            fvmop.template apply<stencil::StencilJhiKlo>(lev, mfi);
+            fvmop.template apply<stencil::StencilJhiKhi>(lev, mfi);
 
-            fvmop.template apply<stencil::StencilILO_JLO>(lev, mfi);
-            fvmop.template apply<stencil::StencilILO_JHI>(lev, mfi);
+            fvmop.template apply<stencil::StencilIloJlo>(lev, mfi);
+            fvmop.template apply<stencil::StencilIloJhi>(lev, mfi);
 
-            fvmop.template apply<stencil::StencilILO_KLO>(lev, mfi);
-            fvmop.template apply<stencil::StencilILO_KHI>(lev, mfi);
+            fvmop.template apply<stencil::StencilIloKlo>(lev, mfi);
+            fvmop.template apply<stencil::StencilIloKhi>(lev, mfi);
 
-            fvmop.template apply<stencil::StencilJLO_KLO>(lev, mfi);
-            fvmop.template apply<stencil::StencilJLO_KHI>(lev, mfi);
+            fvmop.template apply<stencil::StencilJloKlo>(lev, mfi);
+            fvmop.template apply<stencil::StencilJloKhi>(lev, mfi);
 
             // corners
-            fvmop.template apply<stencil::StencilILO_JLO_KLO>(lev, mfi);
-            fvmop.template apply<stencil::StencilILO_JLO_KHI>(lev, mfi);
-            fvmop.template apply<stencil::StencilILO_JHI_KLO>(lev, mfi);
-            fvmop.template apply<stencil::StencilILO_JHI_KHI>(lev, mfi);
-            fvmop.template apply<stencil::StencilIHI_JLO_KLO>(lev, mfi);
-            fvmop.template apply<stencil::StencilIHI_JLO_KHI>(lev, mfi);
-            fvmop.template apply<stencil::StencilIHI_JHI_KLO>(lev, mfi);
-            fvmop.template apply<stencil::StencilIHI_JHI_KHI>(lev, mfi);
+            fvmop.template apply<stencil::StencilIloJloKlo>(lev, mfi);
+            fvmop.template apply<stencil::StencilIloJloKhi>(lev, mfi);
+            fvmop.template apply<stencil::StencilIloJhiKlo>(lev, mfi);
+            fvmop.template apply<stencil::StencilIloJhiKhi>(lev, mfi);
+            fvmop.template apply<stencil::StencilIhiJloKlo>(lev, mfi);
+            fvmop.template apply<stencil::StencilIhiJloKhi>(lev, mfi);
+            fvmop.template apply<stencil::StencilIhiJhiKlo>(lev, mfi);
+            fvmop.template apply<stencil::StencilIhiJhiKhi>(lev, mfi);
         }
     }
 }
