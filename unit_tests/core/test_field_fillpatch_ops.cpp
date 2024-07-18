@@ -22,7 +22,7 @@ struct TestProfile
             const int dcomp,
             const int orig_comp) const
         {
-            const amrex::Vector<const amrex::Real> vel{1.0, 2.0, 3.0};
+            const amrex::Vector<amrex::Real> vel{1.0, 2.0, 3.0};
             field(iv[0], iv[1], iv[2], dcomp + comp) = vel[orig_comp + comp];
         }
     };
@@ -177,7 +177,6 @@ public:
     void set_up_dirichlet()
     {
         auto& ibctype = (*m_vel).bc_type();
-        const auto& geom = (*m_vel).repo().mesh().Geom(0);
         auto& fbcrec = (*m_vel).bcrec();
         for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
             for (int i = 0; i < (*m_vel).num_comp(); ++i) {
