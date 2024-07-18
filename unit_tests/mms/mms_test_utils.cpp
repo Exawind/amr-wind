@@ -19,7 +19,7 @@ void populate_mms_params()
     // MMS Forcing
     {
         amrex::ParmParse pp("ICNS");
-        pp.add("source_terms", "MMSForcing");
+        pp.add("source_terms", (std::string)"MMSForcing");
     }
 
     // Needed for initial conditions

@@ -13,7 +13,7 @@ public:
 
     explicit MMSForcing(const CFDSim& sim);
 
-    virtual ~MMSForcing();
+    ~MMSForcing() override = default;
 
     void operator()(
         const int lev,
@@ -25,6 +25,6 @@ public:
 private:
     const Field& m_mms_vel_source;
 };
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns::mms
 
 #endif /* MMSFORCING_H */

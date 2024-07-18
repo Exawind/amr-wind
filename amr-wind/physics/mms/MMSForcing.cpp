@@ -2,7 +2,7 @@
 #include "amr-wind/CFDSim.H"
 #include "masa.h"
 
-
+namespace amr_wind::pde::icns::mms {
 
 /** MMS forcing term
  */
@@ -11,8 +11,6 @@ MMSForcing::MMSForcing(const CFDSim& sim)
 {
     static_assert(AMREX_SPACEDIM == 3, "MMS implementation requires 3D domain");
 }
-
-MMSForcing::~MMSForcing() = default;
 
 void MMSForcing::operator()(
     const int lev,
@@ -30,4 +28,4 @@ void MMSForcing::operator()(
         src_term(i, j, k, 2) += mms_src_arr(i, j, k, 2);
     });
 }
-} // namespace amr_wind
+} // namespace amr_wind::pde::icns::mms

@@ -347,15 +347,19 @@ struct ReadInputsOp<W2AWaves>
             // Convert modes to spatial data
             modes_hosgrid::copy_complex(
                 wdata.n0, wdata.n1, wdata.mFS, wdata.eta_mptr);
-            wdata.sp_eta_vec.resize(wdata.n0 * wdata.n1, 0.0);
+            wdata.sp_eta_vec.resize(
+                static_cast<size_t>(wdata.n0 * wdata.n1), 0.0);
             modes_hosgrid::populate_hos_eta(
                 wdata.rmodes, wdata.plan, wdata.eta_mptr, wdata.sp_eta_vec);
             // Mesh is not yet created, so get data at every height
-            int n_hts = wdata.hvec.size();
-            wdata.sp_u_vec.resize(wdata.n0 * wdata.n1 * n_hts);
-            wdata.sp_v_vec.resize(wdata.n0 * wdata.n1 * n_hts);
-            wdata.sp_w_vec.resize(wdata.n0 * wdata.n1 * n_hts);
-            for (int iht = 0; iht < n_hts; ++iht) {
+            const auto n_hts = wdata.hvec.size();
+            wdata.sp_u_vec.resize(
+                static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
+            wdata.sp_v_vec.resize(
+                static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
+            wdata.sp_w_vec.resize(
+                static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
+            for (int iht = 0; iht < static_cast<int>(n_hts); ++iht) {
                 // Get sample height
                 amrex::Real ht = wdata.hvec[iht];
                 // Sample velocity
@@ -550,13 +554,17 @@ struct UpdateRelaxZonesOp<W2AWaves>
                     // Interpolation is needed
                     wdata.do_interp = true;
                     // Do resizing
-                    wdata.sp_eta_vec.resize(wdata.n0 * wdata.n1, 0.0);
+                    wdata.sp_eta_vec.resize(
+                        static_cast<size_t>(wdata.n0 * wdata.n1), 0.0);
                     wdata.sp_u_vec.resize(
-                        wdata.n0 * wdata.n1 * wdata.indvec.size());
+                        static_cast<size_t>(wdata.n0 * wdata.n1) *
+                        wdata.indvec.size());
                     wdata.sp_v_vec.resize(
-                        wdata.n0 * wdata.n1 * wdata.indvec.size());
+                        static_cast<size_t>(wdata.n0 * wdata.n1) *
+                        wdata.indvec.size());
                     wdata.sp_w_vec.resize(
-                        wdata.n0 * wdata.n1 * wdata.indvec.size());
+                        static_cast<size_t>(wdata.n0 * wdata.n1) *
+                        wdata.indvec.size());
                     // Sizes will remain constant and need for interpolation
                     // will remain until a regrid occurs
                 } else {
