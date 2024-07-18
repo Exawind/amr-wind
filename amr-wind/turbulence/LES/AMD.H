@@ -43,7 +43,7 @@ public:
     void parse_model_coeffs() override;
 
     //! No post advance work for this model
-    void post_advance_work() override {};
+    void post_advance_work() override{};
 
 private:
     //! Poincare coefficient (default value set for 2nd order AMR-wind
