@@ -22,7 +22,8 @@ struct TestProfile
             const int dcomp,
             const int orig_comp) const
         {
-            const amrex::Vector<amrex::Real> vel{1.0, 2.0, 3.0};
+            const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> vel{
+                1.0, 2.0, 3.0};
             field(iv[0], iv[1], iv[2], dcomp + comp) = vel[orig_comp + comp];
         }
     };
