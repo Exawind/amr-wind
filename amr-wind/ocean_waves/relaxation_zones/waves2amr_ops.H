@@ -348,7 +348,8 @@ struct ReadInputsOp<W2AWaves>
             modes_hosgrid::copy_complex(
                 wdata.n0, wdata.n1, wdata.mFS, wdata.eta_mptr);
             wdata.sp_eta_vec.resize(
-                static_cast<size_t>(wdata.n0 * wdata.n1), 0.0);
+                static_cast<size_t>(wdata.n0) * static_cast<size_t>(wdata.n1),
+                0.0);
             modes_hosgrid::populate_hos_eta(
                 wdata.rmodes, wdata.plan, wdata.eta_mptr, wdata.sp_eta_vec);
             // Mesh is not yet created, so get data at every height
@@ -555,7 +556,9 @@ struct UpdateRelaxZonesOp<W2AWaves>
                     wdata.do_interp = true;
                     // Do resizing
                     wdata.sp_eta_vec.resize(
-                        static_cast<size_t>(wdata.n0 * wdata.n1), 0.0);
+                        static_cast<size_t>(wdata.n0) *
+                            static_cast<size_t>(wdata.n1),
+                        0.0);
                     wdata.sp_u_vec.resize(
                         static_cast<size_t>(wdata.n0 * wdata.n1) *
                         wdata.indvec.size());

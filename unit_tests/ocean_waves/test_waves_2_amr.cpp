@@ -67,7 +67,6 @@ TEST_F(OceanWavesW2ATest, time_advance)
     read_flag = false;
     resize_flag = false;
     t_last = -1.0;
-    t_last_prior = t_last;
     ntime = 0;
     new_ntime = 40;
     newtime = 3.99;
