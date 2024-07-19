@@ -93,9 +93,9 @@ void MLMGOptions::operator()(amrex::MLMG& mlmg)
         mlmg.setHypreOptionsNamespace(m_hypre_namespace);
         if (m_hypre_interface == "ij") {
             mlmg.setHypreInterface(amrex::Hypre::Interface::ij);
-        } else if (hypre_interface == "semi_structured") {
+        } else if (m_hypre_interface == "semi_structured") {
             mlmg.setHypreInterface(amrex::Hypre::Interface::semi_structed);
-        } else if (hypre_interface == "structured") {
+        } else if (m_hypre_interface == "structured") {
             mlmg.setHypreInterface(amrex::Hypre::Interface::structed);
         } else {
             amrex::Abort(
