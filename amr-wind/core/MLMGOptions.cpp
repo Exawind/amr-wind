@@ -90,8 +90,8 @@ void MLMGOptions::operator()(amrex::MLMG& mlmg)
 #ifdef AMREX_USE_HYPRE
         mlmg.setBottomSolver(amrex::MLMG::BottomSolver::hypre);
 
-        mlmg.setHypreOptionsNamespace(hypre_namespace);
-        if (hypre_interface == "ij") {
+        mlmg.setHypreOptionsNamespace(m_hypre_namespace);
+        if (m_hypre_interface == "ij") {
             mlmg.setHypreInterface(amrex::Hypre::Interface::ij);
         } else if (hypre_interface == "semi_structured") {
             mlmg.setHypreInterface(amrex::Hypre::Interface::semi_structed);
