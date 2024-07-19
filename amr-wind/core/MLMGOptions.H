@@ -111,7 +111,7 @@ private:
 
     //! set grid size for nsolve
 #ifdef AMREX_USE_GPU
-    int nsolve_grid_size{64};
+    int m_nsolve_grid_size{64};
 #else
     int m_nsolve_grid_size{16};
 #endif
