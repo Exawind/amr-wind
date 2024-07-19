@@ -85,7 +85,8 @@ operator()(const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
 
     const auto& bx = mfi.tilebox();
 
-    const auto bxa = utils::realbox_to_box(m_data.info().bound_box, geom);
+    const auto bxa =
+        amr_wind::utils::realbox_to_box(m_data.info().bound_box, geom);
     const auto& bxi = bx & bxa;
     if (bxi.isEmpty()) {
         return;

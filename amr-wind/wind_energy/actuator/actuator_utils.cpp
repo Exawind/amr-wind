@@ -3,35 +3,13 @@
 
 namespace amr_wind::actuator::utils {
 
-amrex::Box
-realbox_to_box(const amrex::RealBox& rbx, const amrex::Geometry& geom)
-{
-    const auto* problo = geom.ProbLo();
-    const auto* probhi = geom.ProbHi();
-    const auto* dxi = geom.InvCellSize();
-
-    amrex::IntVect lo, hi;
-    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-        amrex::Real bbox_min = amrex::max(rbx.lo()[i], problo[i]);
-        amrex::Real bbox_max = amrex::min(rbx.hi()[i], probhi[i]);
-
-        amrex::Real rlo = std::floor((bbox_min - problo[i]) * dxi[i]);
-        amrex::Real rhi = std::ceil((bbox_max - problo[i]) * dxi[i]);
-
-        lo[i] = static_cast<int>(rlo);
-        hi[i] = static_cast<int>(rhi);
-    }
-
-    return amrex::Box{lo, hi};
-}
-
 std::set<int> determine_influenced_procs(
     const amrex::AmrCore& mesh, const amrex::RealBox& rbx)
 {
     std::set<int> procs;
     const int finest_level = mesh.finestLevel();
     const int nlevels = mesh.finestLevel() + 1;
-    auto bx = realbox_to_box(rbx, mesh.Geom(0));
+    auto bx = amr_wind::utils::realbox_to_box(rbx, mesh.Geom(0));
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& ba = mesh.boxArray(lev);
