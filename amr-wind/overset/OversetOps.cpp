@@ -30,12 +30,25 @@ void OversetOps::initialize(CFDSim& sim)
 
     pp.query("verbose", m_verbose);
 
-    amrex::ParmParse pp_icns("ICNS");
-    pp_icns.query("use_perturb_pressure", m_perturb_p);
-
     m_vof_exists = (*m_sim_ptr).repo().field_exists("vof");
     if (m_vof_exists) {
         m_mphase = &(*m_sim_ptr).physics_manager().get<MultiPhase>();
+
+        // Check combination of pressure options
+        if (m_mphase->perturb_pressure() &&
+            !m_mphase->reconstruct_true_pressure()) {
+            amrex::Abort(
+                "OversetOps: perturbational pressure is turned on, but true "
+                "pressure reconstruction is turned off. This approach will be "
+                "incorrect when coupling with Nalu-Wind.");
+        }
+        if (!m_mphase->perturb_pressure() &&
+            m_mphase->reconstruct_true_pressure()) {
+            amrex::Print()
+                << "WARNING (OversetOps): true pressure reconstruction is "
+                   "turned on, but it will remain inactive because "
+                   "perturbational pressure is turned off.\n";
+        }
     }
     if (m_replace_gradp_postsolve) {
         m_gp_copy = &(*m_sim_ptr).repo().declare_field("gp_copy", 3);
@@ -46,7 +59,6 @@ void OversetOps::initialize(CFDSim& sim)
 
 void OversetOps::pre_advance_work()
 {
-    // Pressure gradient not updated for current multiphase approach
     if (!(m_vof_exists && m_use_hydrostatic_gradp)) {
         // Update pressure gradient using updated overset pressure field
         update_gradp();
@@ -59,6 +71,10 @@ void OversetOps::pre_advance_work()
             // Use hydrostatic pressure gradient
             set_hydrostatic_gradp();
         } else {
+            if (m_mphase->perturb_pressure()) {
+                // Modify to be consistent with internal source terms
+                form_perturb_pressure();
+            }
             // Update pressure gradient using sharpened pressure field
             update_gradp();
         }
@@ -158,6 +174,11 @@ void OversetOps::parameter_output() const
                        << "---- Replace overset pres grad: "
                        << m_replace_gradp_postsolve << std::endl;
         if (m_vof_exists) {
+            amrex::Print() << "---- Perturbational pressure  : "
+                           << m_mphase->perturb_pressure() << std::endl
+                           << "---- Reconstruct true pressure: "
+                           << m_mphase->reconstruct_true_pressure()
+                           << std::endl;
             amrex::Print() << "Overset Reinitialization Parameters:\n"
                            << "---- Maximum iterations   : " << m_n_iterations
                            << std::endl
@@ -375,6 +396,16 @@ void OversetOps::sharpen_nalu_data()
     amrex::Gpu::synchronize();
 }
 
+void OversetOps::form_perturb_pressure()
+{
+    auto& pressure = (*m_sim_ptr).repo().get_field("p");
+    const auto& p0 = (*m_sim_ptr).repo().get_field("reference_pressure");
+    for (int lev = 0; lev < (*m_sim_ptr).repo().num_active_levels(); lev++) {
+        amrex::MultiFab::Subtract(
+            pressure(lev), p0(lev), 0, 0, 1, pressure.num_grow()[0]);
+    }
+}
+
 void OversetOps::set_hydrostatic_gradp()
 {
     const auto& repo = (*m_sim_ptr).repo();
@@ -388,7 +419,7 @@ void OversetOps::set_hydrostatic_gradp()
     Field* rho0{nullptr};
     auto& rho = repo.get_field("density");
     auto& gp = repo.get_field("gp");
-    if (m_perturb_p) {
+    if (m_mphase->perturb_pressure()) {
         rho0 = &((*m_sim_ptr).repo().get_field("reference_density"));
     } else {
         // Point to existing field, won't be used
@@ -399,7 +430,7 @@ void OversetOps::set_hydrostatic_gradp()
     for (int lev = 0; lev < nlevels; ++lev) {
         overset_ops::replace_gradp_hydrostatic(
             gp(lev), rho(lev), (*rho0)(lev), iblank_cell(lev),
-            m_mphase->gravity()[2], m_perturb_p);
+            m_mphase->gravity()[2], m_mphase->perturb_pressure());
     }
 }
 
