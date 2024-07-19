@@ -206,21 +206,21 @@ void process_fluxes_calc_src(
     amrex::ParallelFor(
         mf_fx, mf_fx.n_grow, mf_fx.n_comp,
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
-            bool zero_all =
+            const bool zero_all =
                 (iblank[nbx](i - 1, j, k) + iblank[nbx](i, j, k) > -2);
             fx[nbx](i, j, k, n) *= zero_all ? 0. : 1.;
         });
     amrex::ParallelFor(
         mf_fy, mf_fy.n_grow, mf_fy.n_comp,
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
-            bool zero_all =
+            const bool zero_all =
                 (iblank[nbx](i, j - 1, k) + iblank[nbx](i, j, k) > -2);
             fy[nbx](i, j, k, n) *= zero_all ? 0. : 1.;
         });
     amrex::ParallelFor(
         mf_fz, mf_fz.n_grow, mf_fz.n_comp,
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
-            bool zero_all =
+            const bool zero_all =
                 (iblank[nbx](i, j, k - 1) + iblank[nbx](i, j, k) > -2);
             fz[nbx](i, j, k, n) *= zero_all ? 0. : 1.;
         });
@@ -240,21 +240,19 @@ amrex::Real calculate_pseudo_velocity_scale(
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx,
     const amrex::Real pvmax)
 {
-    // Get minimum length scale from dx
-    const amrex::Real dx_min = std::min(std::min(dx[0], dx[1]), dx[2]);
     // The dx of this level should be considered if iblank = -1 here
     // Otherwise, set to max possible value for this mesh (level 0 values)
-    const amrex::Real pvscale = (mf_iblank.min(0) == -1) ? dx_min : pvmax;
-    return pvscale;
+    return (mf_iblank.min(0) == -1) ? std::min(std::min(dx[0], dx[1]), dx[2])
+                                    : pvmax;
 }
 
 // Calculate a type of CFL by measuring how much % VOF is being removed per cell
 amrex::Real calculate_pseudo_dt_flux(
-    amrex::MultiFab& mf_fx,
-    amrex::MultiFab& mf_fy,
-    amrex::MultiFab& mf_fz,
-    amrex::MultiFab& mf_vof,
-    amrex::Real tol)
+    const amrex::MultiFab& mf_fx,
+    const amrex::MultiFab& mf_fy,
+    const amrex::MultiFab& mf_fz,
+    const amrex::MultiFab& mf_vof,
+    const amrex::Real tol)
 {
     // Get the maximum flux magnitude, but just for vof fluxes
     const amrex::Real pdt_fx = amrex::ReduceMin(

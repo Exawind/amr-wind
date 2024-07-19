@@ -218,17 +218,15 @@ void OversetOps::sharpen_nalu_data()
     auto& gp_noghost = repo.get_field("gp");
     auto& p = repo.get_field("p");
 
-    // Create scratch fields for fluxes
     // 9 components are vof, density, 3 of velocity, 3 of gp, and psource flag
     auto flux_x = repo.create_scratch_field(9, 1, amr_wind::FieldLoc::XFACE);
     auto flux_y = repo.create_scratch_field(9, 1, amr_wind::FieldLoc::YFACE);
     auto flux_z = repo.create_scratch_field(9, 1, amr_wind::FieldLoc::ZFACE);
-    // Create scratch field for pressure source term
+
     auto p_src = repo.create_scratch_field(1, 0, amr_wind::FieldLoc::NODE);
-    // Create scratch fields for normal vector and target vof field
     auto normal_vec = repo.create_scratch_field(3, vof.num_grow()[0] - 1);
     auto target_vof = repo.create_scratch_field(1, vof.num_grow()[0]);
-    // Create scratch field for pressure gradient that has ghost cells
+
     // Sharpening fluxes (at faces) have 1 ghost, requiring fields to have >= 2
     auto gp_scr = repo.create_scratch_field(3, 2);
     auto& gp = *gp_scr;
@@ -249,10 +247,9 @@ void OversetOps::sharpen_nalu_data()
         // Populate approximate signed distance function
         overset_ops::populate_psi(levelset(lev), vof(lev), i_th, m_asdf_tiny);
 
-        // Populate gp scratch field
-        gp(lev).setVal(0.0); // for external boundaries
-        amrex::MultiFab::Copy(gp(lev), gp_noghost(lev), 0, 0, 3, 0); // nonghost
-        gp(lev).FillBoundary(geom[lev].periodicity());               // internal
+        gp(lev).setVal(0.0);
+        amrex::MultiFab::Copy(gp(lev), gp_noghost(lev), 0, 0, 3, 0);
+        gp(lev).FillBoundary(geom[lev].periodicity());
 
         // Get pseudo-velocity scale, proportional to smallest dx in iblank
         const amrex::Real pvscale_lev =
@@ -332,11 +329,9 @@ void OversetOps::sharpen_nalu_data()
 
         // Average down fluxes across levels for consistency
         for (int lev = nlevels - 1; lev > 0; --lev) {
-            const amrex::IntVect rr =
-                geom[lev].Domain().size() / geom[lev - 1].Domain().size();
             amrex::average_down_faces(
-                GetArrOfConstPtrs(fluxes[lev]), fluxes[lev - 1], rr,
-                geom[lev - 1]);
+                GetArrOfConstPtrs(fluxes[lev]), fluxes[lev - 1],
+                repo.mesh().refRatio(lev), geom[lev - 1]);
         }
 
         // Get pseudo dt (dtau)
@@ -362,7 +357,6 @@ void OversetOps::sharpen_nalu_data()
                 vof(lev), rho(lev), velocity(lev), gp(lev), p(lev), dx, ptfac,
                 m_vof_tol);
 
-            // Update ghost cells
             vof(lev).FillBoundary(geom[lev].periodicity());
             velocity(lev).FillBoundary(geom[lev].periodicity());
             gp(lev).FillBoundary(geom[lev].periodicity());

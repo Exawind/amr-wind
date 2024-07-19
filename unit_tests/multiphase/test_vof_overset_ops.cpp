@@ -874,7 +874,7 @@ TEST_F(VOFOversetOps, psource_manual)
     dir = 1;
     init_gp_rho_etc(gp, rho, vof, dir, rho_liq, rho_gas);
     calc_gp_rho_face(flux_y, gp, rho, vof, dir, 5, true);
-    dir = 3;
+    dir = 2;
     init_gp_rho_etc(gp, rho, vof, dir, rho_liq, rho_gas);
     calc_gp_rho_face(flux_z, gp, rho, vof, dir, 5, true);
 

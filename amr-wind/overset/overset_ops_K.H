@@ -105,10 +105,10 @@ void AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE velocity_face(
 }
 
 void AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE gp_rho_face(
-    int i,
-    int j,
-    int k,
-    int dir,
+    const int i,
+    const int j,
+    const int k,
+    const int dir,
     amrex::Array4<amrex::Real const> const& vof,
     amrex::Array4<amrex::Real const> const& gp,
     amrex::Array4<amrex::Real const> const& rho,
@@ -117,23 +117,20 @@ void AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE gp_rho_face(
     amrex::Real& wface)
 {
     // Set up neighbor indices
-    int ii = i;
-    int jj = j;
-    int kk = k;
-    ii += (dir == 0) ? -1 : 0;
-    jj += (dir == 1) ? -1 : 0;
-    kk += (dir == 2) ? -1 : 0;
+    const amrex::IntVect iv{i, j, k};
+    const amrex::IntVect dv{(int)(dir == 0), (int)(dir == 1), (int)(dir == 2)};
+    const amrex::IntVect ivm = iv - dv;
 
     // Gradient of phi normal to interface
-    const amrex::Real gphi = (vof(i, j, k) - vof(ii, jj, kk));
+    const amrex::Real gphi = (vof(iv) - vof(ivm));
 
     // Get velocities on both sides
-    const amrex::Real u_ = gp(i, j, k, 0) / rho(i, j, k);
-    const amrex::Real v_ = gp(i, j, k, 1) / rho(i, j, k);
-    const amrex::Real w_ = gp(i, j, k, 2) / rho(i, j, k);
-    const amrex::Real u_nb = gp(ii, jj, kk, 0) / rho(ii, jj, kk);
-    const amrex::Real v_nb = gp(ii, jj, kk, 1) / rho(ii, jj, kk);
-    const amrex::Real w_nb = gp(ii, jj, kk, 2) / rho(ii, jj, kk);
+    const amrex::Real u_ = gp(iv, 0) / rho(iv);
+    const amrex::Real v_ = gp(iv, 1) / rho(iv);
+    const amrex::Real w_ = gp(iv, 2) / rho(iv);
+    const amrex::Real u_nb = gp(ivm, 0) / rho(ivm);
+    const amrex::Real v_nb = gp(ivm, 1) / rho(ivm);
+    const amrex::Real w_nb = gp(ivm, 2) / rho(ivm);
     // Average value when gphi = 0
     uface = 0.5 * (u_ + u_nb);
     vface = 0.5 * (v_ + v_nb);

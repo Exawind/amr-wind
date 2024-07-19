@@ -64,11 +64,11 @@ amrex::Real calculate_pseudo_velocity_scale(
 
 // Calculate a type of CFL by measuring how much % VOF is being removed per cell
 amrex::Real calculate_pseudo_dt_flux(
-    amrex::MultiFab& mf_fx,
-    amrex::MultiFab& mf_fy,
-    amrex::MultiFab& mf_fz,
-    amrex::MultiFab& mf_vof,
-    amrex::Real tol);
+    const amrex::MultiFab& mf_fx,
+    const amrex::MultiFab& mf_fy,
+    const amrex::MultiFab& mf_fz,
+    const amrex::MultiFab& mf_vof,
+    const amrex::Real tol);
 
 // Apply reinitialization fluxes to modify fields
 void apply_fluxes(
