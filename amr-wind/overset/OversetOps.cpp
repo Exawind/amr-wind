@@ -58,6 +58,9 @@ void OversetOps::pre_advance_work()
         if (m_use_hydrostatic_gradp) {
             // Use hydrostatic pressure gradient
             set_hydrostatic_gradp();
+        } else {
+            // Update pressure gradient using sharpened pressure field
+            update_gradp();
         }
     }
 
