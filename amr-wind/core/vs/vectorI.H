@@ -134,6 +134,13 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T>& VectorT<T>::normalize()
     }
     return *this;
 }
+
+template <typename T>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T> sqrt(const VectorT<T>& v)
+{
+    return VectorT<T>{std::sqrt(v.x()), std::sqrt(v.y()), std::sqrt(v.z())};
+}
+
 } // namespace amr_wind::vs
 
 #endif /* VS_VECTORI_H */

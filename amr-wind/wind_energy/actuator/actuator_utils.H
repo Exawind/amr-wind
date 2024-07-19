@@ -3,6 +3,7 @@
 
 #include "amr-wind/core/vs/vector_space.H"
 #include "AMReX_AmrCore.H"
+#include "amr-wind/utilities/index_operations.H"
 #include <cmath>
 
 #include <set>
@@ -12,16 +13,6 @@ namespace amr_wind::actuator {
 struct ActInfo;
 
 namespace utils {
-
-/** Convert a bounding box into amrex::Box index space at a given level
- *
- *  \param rbx Bounding box as defined in global domain coordinates
- *  \param geom AMReX geometry information for a given level
- *  \return The Box instance that defines the index space equivalent to bounding
- * boxt
- */
-amrex::Box
-realbox_to_box(const amrex::RealBox& rbx, const amrex::Geometry& geom);
 
 /** Return a set of process IDs (MPI ranks) that contain AMR boxes that interact
  *  with a given actuator body.

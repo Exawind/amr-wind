@@ -246,7 +246,8 @@ add_test_re(abl_godunov_rayleigh_damping)
 add_test_re(rankine)
 add_test_re(rankine-sym)
 add_test_re(terrain_box)
-
+add_test_re(box_refinement)
+add_test_re(cylinder_refinement)
 
 if(NOT AMR_WIND_ENABLE_CUDA)
   add_test_re(ctv_godunov_plm)

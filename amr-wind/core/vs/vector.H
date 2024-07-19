@@ -85,6 +85,9 @@ struct VectorT
     //! Normalize the vector to unit vector
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T>& normalize();
 
+    //! Sqrt of each component
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T> sqrt(const VectorT&);
+
     //! Return the unit vector parallel to this vector
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T> unit() const
     {

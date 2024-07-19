@@ -47,8 +47,8 @@ public:
     {
         const auto& bx = mfi.tilebox();
 
-        const auto bxa =
-            utils::realbox_to_box(actObj.m_data.info().bound_box, geom);
+        const auto bxa = amr_wind::utils::realbox_to_box(
+            actObj.m_data.info().bound_box, geom);
         const auto& bxi = bx & bxa;
         if (bxi.isEmpty()) {
             return;
@@ -110,8 +110,8 @@ public:
     {
         const auto& bx = mfi.tilebox();
 
-        const auto bxa =
-            utils::realbox_to_box(actObj.m_data.info().bound_box, geom);
+        const auto bxa = amr_wind::utils::realbox_to_box(
+            actObj.m_data.info().bound_box, geom);
         const auto& bxi = bx & bxa;
         if (bxi.isEmpty()) {
             return;
@@ -175,8 +175,8 @@ public:
     {
         const auto& bx = mfi.tilebox();
 
-        const auto bxa =
-            utils::realbox_to_box(actObj.m_data.info().bound_box, geom);
+        const auto bxa = amr_wind::utils::realbox_to_box(
+            actObj.m_data.info().bound_box, geom);
         const auto& bxi = bx & bxa;
         if (bxi.isEmpty()) {
             return;

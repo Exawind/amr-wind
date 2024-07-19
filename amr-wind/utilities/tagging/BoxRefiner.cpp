@@ -86,9 +86,32 @@ BoxRefiner::BoxRefiner(const CFDSim& /*unused*/, const std::string& key)
     const auto face_normals = compute_face_normals(hex_corners);
     // Index of the starting corner for each face in the hex nodes list
     const amrex::Vector<int> face_origin{0, 1, 0, 2, 0, 4};
-    for (int i = 0; i < 8; ++i) {
-        amrex::Print() << hex_corners[i] << std::endl;
+
+    // Define the bounding box around the hexahedral
+    vs::Vector min_c(
+        vs::DTraits<amrex::Real>::max(), vs::DTraits<amrex::Real>::max(),
+        vs::DTraits<amrex::Real>::max());
+    vs::Vector max_c(
+        vs::DTraits<amrex::Real>::min(), vs::DTraits<amrex::Real>::min(),
+        vs::DTraits<amrex::Real>::min());
+    AMREX_ALWAYS_ASSERT(min_c.size() == hex_corners[0].size());
+    AMREX_ALWAYS_ASSERT(max_c.size() == min_c.size());
+    for (const auto& hc : hex_corners) {
+        for (int i = 0; i < min_c.size(); i++) {
+            min_c[i] = (min_c[i] > hc[i]) ? hc[i] : min_c[i];
+            max_c[i] = (hc[i] > max_c[i]) ? hc[i] : max_c[i];
+        }
     }
+    vs::Vector search_radius = vs::Vector::zero();
+    const amrex::Real search_fraction = 0.05;
+    AMREX_ALWAYS_ASSERT(search_radius.size() == min_c.size());
+    for (int i = 0; i < min_c.size(); i++) {
+        search_radius[i] = search_fraction * (max_c[i] - min_c[i]);
+    }
+    m_bound_box = amrex::RealBox(
+        min_c[0] - search_radius[0], min_c[1] - search_radius[1],
+        min_c[2] - search_radius[2], max_c[0] + search_radius[0],
+        max_c[1] + search_radius[1], max_c[2] + search_radius[2]);
 
     // Setup data on device
     m_hex_corners.resize(8);

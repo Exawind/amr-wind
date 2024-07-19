@@ -5,8 +5,7 @@
 #include "amr-wind/core/Field.H"
 #include "amr-wind/CFDSim.H"
 
-namespace amr_wind {
-namespace mms {
+namespace amr_wind::mms {
 
 using FuncDef = double (*)(double, double, double);
 
@@ -17,11 +16,11 @@ using FuncDef = double (*)(double, double, double);
 class MMS : public Physics::Register<MMS>
 {
 public:
-    static const std::string identifier() { return "MMS"; }
+    static std::string identifier() { return "MMS"; }
 
     explicit MMS(const CFDSim& sim);
 
-    virtual ~MMS() = default;
+    ~MMS() override = default;
 
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 
@@ -53,7 +52,6 @@ private:
         {"beta", 2.2}, {"gamma", 2.4}, {"delta", 2.0}, {"kx", 1.0},
         {"ky", 1.0},   {"kz", 1.0},    {"nu", 1.0}};
 };
-} // namespace mms
-} // namespace amr_wind
+} // namespace amr_wind::mms
 
 #endif /* MMS_H */
