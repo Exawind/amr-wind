@@ -118,6 +118,17 @@ The following input arguments are only valid for the W2AWaves wave type:
    This argument is only active if HOS_init_timestep is omitted. AMR-Wind will pick the
    time step in the modes closest to the specified time.
 
+.. input_param:: OceanWaves.label.fftw_planner_flag
+
+   **type:** String, optional, default = estimate
+
+   When setting up a plan for the inverse Fourier transform within the Waves2AMR library,
+   the FFTW algorithm can use different techniques to choose among available methods. Some of these
+   are faster than others, and the optimal choice can also depend on the architecture. The
+   default, "estimate", which corresponds to FFTW_ESTIMATE, is deterministic. The other
+   options are "exhaustive", "patient", and "measure". Variations from nondeterministic
+   approaches are tiny, on the order of machine precision.
+
 .. input_param:: OceanWaves.label.number_interp_points_in_z
 
    **type:** Integer, mandatory
