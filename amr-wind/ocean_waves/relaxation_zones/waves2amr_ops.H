@@ -215,6 +215,10 @@ struct ReadInputsOp<W2AWaves>
             pp.query("HOS_init_time", wdata.t_winit);
         }
 
+        // Default fftw_plan is deterministic
+        std::string fftw_planner_flag{"estimate"};
+        pp.query("fftw_planner_flag", fftw_planner_flag);
+
         amrex::Vector<amrex::Real> prob_lo_input(AMREX_SPACEDIM);
         amrex::ParmParse pp_geom("geometry");
         pp_geom.getarr("prob_lo", prob_lo_input);
@@ -300,9 +304,22 @@ struct ReadInputsOp<W2AWaves>
         wdata.v_mptr = modes_hosgrid::allocate_complex(wdata.n0, wdata.n1);
         wdata.w_mptr = modes_hosgrid::allocate_complex(wdata.n0, wdata.n1);
 
+        // Set up planner flag based on input
+        auto plan_f = modes_hosgrid::planner_flags::estimate;
+        if (fftw_planner_flag == "patient") {
+            plan_f = modes_hosgrid::planner_flags::patient;
+        } else if (fftw_planner_flag == "exhaustive") {
+            plan_f = modes_hosgrid::planner_flags::exhaustive;
+        } else if (fftw_planner_flag == "measure") {
+            plan_f = modes_hosgrid::planner_flags::measure;
+        } else if (!(fftw_planner_flag == "estimate")) {
+            amrex::Print()
+                << "WARNING (waves2amr_ops): invalid fftw_planner_flag "
+                   "specified; defaulting to estimate (FFTW_ESTIMATE).\n";
+        }
         // Set up plan for FFTW
-        wdata.plan =
-            modes_hosgrid::plan_ifftw(wdata.n0, wdata.n1, wdata.eta_mptr);
+        wdata.plan = modes_hosgrid::plan_ifftw(
+            wdata.n0, wdata.n1, wdata.eta_mptr, plan_f);
 
         // Create height vector for velocity mode conversion before
         // interpolation, with prob_lo as bottom
@@ -389,8 +406,7 @@ struct InitDataOp<W2AWaves>
 {
     void
     // cppcheck-suppress constParameterReference
-    operator()(
-        W2AWaves::DataType & data, int level, const amrex::Geometry & geom)
+    operator()(W2AWaves::DataType& data, int level, const amrex::Geometry& geom)
     {
 
 #ifdef AMR_WIND_USE_W2A
