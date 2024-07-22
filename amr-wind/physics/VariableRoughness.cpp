@@ -7,7 +7,7 @@
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/utilities/IOManager.H"
 
-namespace amr_wind::VariableRoughness {
+namespace amr_wind::variable_roughness {
 
 namespace {} // namespace
 
@@ -91,4 +91,4 @@ void VariableRoughness::pre_init_actions()
     BL_PROFILE("amr-wind::" + this->identifier() + "::pre_init_actions");
 }
 
-} // namespace amr_wind::VariableRoughness
+} // namespace amr_wind::variable_roughness

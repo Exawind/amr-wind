@@ -5,7 +5,7 @@
 #include "amr-wind/core/Field.H"
 #include "amr-wind/CFDSim.H"
 
-namespace amr_wind::VariableTemperature {
+namespace amr_wind::variable_temperature{
 
 namespace {} // namespace
 
@@ -50,10 +50,10 @@ private:
     amrex::Vector<amrex::Real> m_xloc;
     amrex::Vector<amrex::Real> m_yloc;
     amrex::Vector<amrex::Real> m_Tloc;
-    amrex::Gpu::DeviceVector<amrex::Real> device_xloc;
-    amrex::Gpu::DeviceVector<amrex::Real> device_yloc;
-    amrex::Gpu::DeviceVector<amrex::Real> device_Tloc;
+    amrex::Gpu::DeviceVector<amrex::Real> m_device_xloc;
+    amrex::Gpu::DeviceVector<amrex::Real> m_device_yloc;
+    amrex::Gpu::DeviceVector<amrex::Real> m_device_Tloc;
 };
-} // namespace amr_wind::VariableTemperature
+} // namespace amr_wind::variable_temperature
 
 #endif

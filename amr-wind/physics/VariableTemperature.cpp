@@ -7,7 +7,7 @@
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/utilities/IOManager.H"
 
-namespace amr_wind::VariableTemperature {
+namespace amr_wind::variable_temperature {
 
 namespace {} // namespace
 
@@ -35,8 +35,8 @@ VariableTemperature::VariableTemperature(CFDSim& sim)
         m_yloc.push_back(value2);
     }
     file1.close();
-    device_xloc.resize(m_xloc.size());
-    device_yloc.resize(m_yloc.size());
+    m_device_xloc.resize(m_xloc.size());
+    m_device_yloc.resize(m_yloc.size());
     std::string temperaturefile("ground_temperature.txt");
     std::ifstream file2(temperaturefile, std::ios::in);
     if (!file2.good()) {
@@ -45,7 +45,7 @@ VariableTemperature::VariableTemperature(CFDSim& sim)
     while (file2 >> value3) {
         m_Tloc.push_back(value3);
     }
-    device_Tloc.resize(m_Tloc.size());
+    m_device_Tloc.resize(m_Tloc.size());
     m_sim.io_manager().register_io_var("surf_temp");
 }
 
@@ -63,16 +63,16 @@ void VariableTemperature::post_init_actions()
         // Copy Temperature to gpu
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, m_xloc.begin(), m_xloc.end(),
-            device_xloc.begin());
+            m_device_xloc.begin());
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, m_yloc.begin(), m_yloc.end(),
-            device_yloc.begin());
+            m_device_yloc.begin());
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, m_Tloc.begin(), m_Tloc.end(),
-            device_Tloc.begin());
-        const auto* xloc_ptr = device_xloc.data();
-        const auto* yloc_ptr = device_yloc.data();
-        const auto* Tloc_ptr = device_Tloc.data();
+            m_device_Tloc.begin());
+        const auto* xloc_ptr = m_device_xloc.data();
+        const auto* yloc_ptr = m_device_yloc.data();
+        const auto* Tloc_ptr = m_device_Tloc.data();
         for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
             const auto& vbx = mfi.validbox();
             auto level_surf_temp = surf_temp.array(mfi);
@@ -143,9 +143,9 @@ void VariableTemperature::pre_advance_work()
         const auto& prob_lo = geom.ProbLoArray();
         auto& velocity = m_velocity(level);
         auto& surf_temp = m_surf_temp(level);
-        const auto* xloc_ptr = device_xloc.data();
-        const auto* yloc_ptr = device_yloc.data();
-        const auto* Tloc_ptr = device_Tloc.data();
+        const auto* xloc_ptr = m_device_xloc.data();
+        const auto* yloc_ptr = m_device_yloc.data();
+        const auto* Tloc_ptr = m_device_Tloc.data();
         for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
             const auto& vbx = mfi.validbox();
             auto level_surf_temp = surf_temp.array(mfi);
@@ -179,4 +179,4 @@ void VariableTemperature::pre_advance_work()
     }
 }
 
-} // namespace amr_wind::VariableTemperature
+} // namespace amr_wind::variable_temperature

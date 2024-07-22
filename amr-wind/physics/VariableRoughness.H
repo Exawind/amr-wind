@@ -5,7 +5,7 @@
 #include "amr-wind/core/Field.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
-namespace amr_wind::VariableRoughness {
+namespace amr_wind::variable_roughness {
 
 namespace {} // namespace
 
@@ -49,6 +49,6 @@ private:
     amrex::Vector<amrex::Real> m_yrough;
     amrex::Vector<amrex::Real> m_z0rough;
 };
-} // namespace amr_wind::VariableRoughness
+} // namespace amr_wind::variable_roughness
 
 #endif
