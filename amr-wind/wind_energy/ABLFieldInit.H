@@ -96,7 +96,7 @@ private:
     amrex::Real m_ref_height{50.0};
 
     //! Amplitude of temperature perturbations
-    amrex::Real m_deltaT{0.8};
+    amrex::Real m_delta_t{0.8};
 
     //! Mean for Gaussian number generator
     amrex::Real m_theta_gauss_mean{0.0};

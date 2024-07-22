@@ -214,11 +214,11 @@ void viscosity_to_uniform_space(
     const auto& mesh_fac_zf =
         repo.get_mesh_mapping_field(amr_wind::FieldLoc::ZFACE);
     const auto& mesh_detJ_xf =
-        repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::XFACE);
+        repo.get_mesh_mapping_det_j(amr_wind::FieldLoc::XFACE);
     const auto& mesh_detJ_yf =
-        repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::YFACE);
+        repo.get_mesh_mapping_det_j(amr_wind::FieldLoc::YFACE);
     const auto& mesh_detJ_zf =
-        repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::ZFACE);
+        repo.get_mesh_mapping_det_j(amr_wind::FieldLoc::ZFACE);
 
     // beta accounted for mesh mapping (x-face) = J/fac^2 * mu
     for (amrex::MFIter mfi(b[0]); mfi.isValid(); ++mfi) {

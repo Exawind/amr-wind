@@ -37,7 +37,7 @@ void tokenize(
 
 namespace amr_wind {
 
-helics_storage::helics_storage(CFDSim& sim) : m_sim(sim)
+HelicsStorage::HelicsStorage(CFDSim& sim) : m_sim(sim)
 {
 
 #ifdef AMR_WIND_USE_HELICS
@@ -99,7 +99,7 @@ helics_storage::helics_storage(CFDSim& sim) : m_sim(sim)
 #endif
 }
 
-void helics_storage::pre_advance_work()
+void HelicsStorage::pre_advance_work()
 {
 #ifdef AMR_WIND_USE_HELICS
     if (m_helics_activated) {
@@ -109,7 +109,7 @@ void helics_storage::pre_advance_work()
 #endif
 }
 
-void helics_storage::send_messages_to_controller()
+void HelicsStorage::send_messages_to_controller()
 {
 #ifdef AMR_WIND_USE_HELICS
     if (amrex::ParallelDescriptor::IOProcessor()) {
@@ -118,7 +118,7 @@ void helics_storage::send_messages_to_controller()
 #endif
 }
 
-void helics_storage::recv_messages_from_controller()
+void HelicsStorage::recv_messages_from_controller()
 {
 
     amrex::Print() << "recv message from controller at time: "
@@ -253,6 +253,6 @@ void helics_storage::recv_messages_from_controller()
 #endif
 }
 
-helics_storage::~helics_storage() = default;
+HelicsStorage::~HelicsStorage() = default;
 
 } // namespace amr_wind

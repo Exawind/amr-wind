@@ -27,8 +27,8 @@ BoussinesqBuoyancy::BoussinesqBuoyancy(const CFDSim& sim)
         m_beta = 1.0 / m_ref_theta;
     }
 
-    is_vof = sim.repo().field_exists("vof");
-    if (is_vof) {
+    m_is_vof = sim.repo().field_exists("vof");
+    if (m_is_vof) {
         m_vof = &sim.repo().get_field("vof");
     } else {
         // Point to something, will not be used
@@ -54,7 +54,7 @@ void BoussinesqBuoyancy::operator()(
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
         m_gravity[0], m_gravity[1], m_gravity[2]};
 
-    const bool ivf = is_vof;
+    const bool ivf = m_is_vof;
     const auto& vof_arr = (*m_vof)(lev).const_array(mfi);
     constexpr amrex::Real tol = 1e-12;
 

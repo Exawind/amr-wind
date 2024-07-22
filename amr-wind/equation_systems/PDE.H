@@ -130,14 +130,14 @@ public:
     {
         BL_PROFILE(
             "amr-wind::" + this->identifier() + "::compute_advection_term");
-        (*m_adv_op)(fstate, m_time.deltaT());
+        (*m_adv_op)(fstate, m_time.delta_t());
     }
 
     void pre_advection_actions(const FieldState fstate) override
     {
         BL_PROFILE(
             "amr-wind::" + this->identifier() + "::pre_advection_actions");
-        m_adv_op->preadvect(fstate, m_time.deltaT(), m_time.current_time());
+        m_adv_op->preadvect(fstate, m_time.delta_t(), m_time.current_time());
     }
 
     void compute_predictor_rhs(const DiffusionType difftype) override
@@ -145,7 +145,7 @@ public:
         BL_PROFILE(
             "amr-wind::" + this->identifier() + "::compute_predictor_rhs");
         m_rhs_op.predictor_rhs(
-            difftype, m_time.deltaT(), m_sim.has_mesh_mapping());
+            difftype, m_time.delta_t(), m_sim.has_mesh_mapping());
     }
 
     void compute_corrector_rhs(const DiffusionType difftype) override
@@ -153,7 +153,7 @@ public:
         BL_PROFILE(
             "amr-wind::" + this->identifier() + "::compute_corrector_rhs");
         m_rhs_op.corrector_rhs(
-            difftype, m_time.deltaT(), m_sim.has_mesh_mapping());
+            difftype, m_time.delta_t(), m_sim.has_mesh_mapping());
     }
 
     void solve(const amrex::Real dt) override

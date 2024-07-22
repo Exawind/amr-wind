@@ -41,7 +41,7 @@ struct ReadInputsOp<TurbineFast, SrcTrait>
         tf.num_blades = tdata.num_blades;
         tf.num_pts_blade = tdata.num_pts_blade;
         tf.num_pts_tower = tdata.num_pts_tower;
-        tf.dt_cfd = data.sim().time().deltaT();
+        tf.dt_cfd = data.sim().time().delta_t();
 
         pp.get("openfast_start_time", tf.start_time);
         pp.get("openfast_stop_time", tf.stop_time);
@@ -410,7 +410,7 @@ struct InitDataOp<TurbineFast, SrcTrait>
                                       ? time.stop_time()
                                       : std::numeric_limits<amrex::Real>::max();
         const amrex::Real stop2 = time.stop_time_index() > -1
-                                      ? time.stop_time_index() * time.deltaT()
+                                      ? time.stop_time_index() * time.delta_t()
                                       : std::numeric_limits<amrex::Real>::max();
         const amrex::Real cfd_stop = amrex::min(stop1, stop2);
         const amrex::Real cfd_start = time.current_time();
@@ -520,7 +520,7 @@ struct ComputeForceOp<TurbineFast, SrcTrait>
             for (int i = 0; i < tdata.num_blades; ++i) {
                 if (!(tdata.fllc[i].initialized) &&
                     (time.current_time() > tdata.fllc[i].fllc_start_time)) {
-                    FLLCInit(
+                    fllc_init(
                         tdata.fllc[i], tdata.blades[i], tdata.eps_chord[0]);
                 }
             }

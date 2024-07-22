@@ -330,7 +330,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void interp_perturb_vel(
         i += nynz;
     }
 
-    // Right quad (t = t+deltaT)
+    // Right quad (t = t+delta_t)
     vel_r[0] = wt.yl * wt.zl * t_grid.uvel[qidx[0]] +
                wt.yr * wt.zl * t_grid.uvel[qidx[1]] +
                wt.yr * wt.zr * t_grid.uvel[qidx[2]] +

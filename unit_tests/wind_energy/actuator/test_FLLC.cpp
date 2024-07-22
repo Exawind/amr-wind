@@ -24,7 +24,7 @@ TEST(TestFLLCData, data_initializes_with_cviews)
 
     data.nonuniform = false;
 
-    FLLCInit(data, view, 1.0);
+    fllc_init(data, view, 1.0);
 
     ASSERT_EQ(num_points, data.les_velocity.size());
     ASSERT_EQ(num_points, data.optimal_velocity.size());
@@ -58,7 +58,7 @@ TEST(TestFLLCData, data_initializes_with_cviews_nonuniform)
         view.chord[ip] = 1.;
     }
 
-    FLLCInit(data, view, 1.0);
+    fllc_init(data, view, 1.0);
 
     const int npts_r = static_cast<int>(data.nonuniform_r.size());
     const int npts_dr = static_cast<int>(data.nonuniform_dr.size());

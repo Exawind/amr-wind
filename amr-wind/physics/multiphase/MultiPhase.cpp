@@ -98,10 +98,10 @@ void MultiPhase::post_init_actions()
         };
     }
 
-    q0 = momentum_sum(0);
-    q1 = momentum_sum(1);
-    q2 = momentum_sum(2);
-    sumvof0 = volume_fraction_sum();
+    m_q0 = momentum_sum(0);
+    m_q1 = momentum_sum(1);
+    m_q2 = momentum_sum(2);
+    m_sumvof0 = volume_fraction_sum();
 
     // Check if water level is specified (from case definition)
     amrex::ParmParse pp_multiphase("MultiPhase");
@@ -113,21 +113,21 @@ void MultiPhase::post_init_actions()
             "specify water level.");
     }
     if (is_wlev) {
-        pp_multiphase.get("water_level", water_level0);
+        pp_multiphase.get("water_level", m_water_level0);
     }
     // Make rho0 field if both are specified
     if (m_use_perturb_pressure && is_wlev) {
         // Initialize rho0 field for perturbational density, pressure
         auto& rho0 = m_sim.repo().get_field("reference_density");
         hydrostatic::define_rho0(
-            rho0, m_rho1, m_rho2, water_level0, m_sim.mesh().Geom());
+            rho0, m_rho1, m_rho2, m_water_level0, m_sim.mesh().Geom());
 
         // Make p0 field if requested
         if (m_reconstruct_true_pressure) {
             // Initialize p0 field for reconstructing p
             auto& p0 = m_sim.repo().get_field("reference_pressure");
             hydrostatic::define_p0(
-                p0, m_rho1, m_rho2, water_level0, m_gravity[2],
+                p0, m_rho1, m_rho2, m_water_level0, m_gravity[2],
                 m_sim.mesh().Geom());
         }
     }
@@ -139,14 +139,14 @@ void MultiPhase::post_regrid_actions()
     if (m_use_perturb_pressure) {
         auto& rho0 = m_sim.repo().declare_field("reference_density", 1, 0, 1);
         hydrostatic::define_rho0(
-            rho0, m_rho1, m_rho2, water_level0, m_sim.mesh().Geom());
+            rho0, m_rho1, m_rho2, m_water_level0, m_sim.mesh().Geom());
         // Reinitialize p0 if needed
         if (m_reconstruct_true_pressure) {
             auto ng = (*m_vof).num_grow();
             auto& p0 = m_sim.repo().declare_nd_field(
                 "reference_pressure", 1, ng[0], 1);
             hydrostatic::define_p0(
-                p0, m_rho1, m_rho2, water_level0, m_gravity[2],
+                p0, m_rho1, m_rho2, m_water_level0, m_gravity[2],
                 m_sim.mesh().Geom());
         }
     }
@@ -175,15 +175,15 @@ void MultiPhase::post_advance_work()
         // Compute and print the total volume fraction, momenta, and differences
         if (m_verbose > 0) {
             m_total_volfrac = volume_fraction_sum();
-            amrex::Real mom_x = momentum_sum(0) - q0;
-            amrex::Real mom_y = momentum_sum(1) - q1;
-            amrex::Real mom_z = momentum_sum(2) - q2;
+            amrex::Real mom_x = momentum_sum(0) - m_q0;
+            amrex::Real mom_y = momentum_sum(1) - m_q1;
+            amrex::Real mom_z = momentum_sum(2) - m_q2;
             const auto& geom = m_sim.mesh().Geom();
             const amrex::Real total_vol = geom[0].ProbDomain().volume();
             amrex::Print() << "Volume of Fluid diagnostics:" << std::endl;
             amrex::Print() << "   Water Volume Fractions Sum, Difference : "
                            << m_total_volfrac << " "
-                           << m_total_volfrac - sumvof0 << std::endl;
+                           << m_total_volfrac - m_sumvof0 << std::endl;
             amrex::Print() << "   Air Volume Fractions Sum : "
                            << total_vol - m_total_volfrac << std::endl;
             amrex::Print() << "   Total Momentum Difference (x, y, z) : "

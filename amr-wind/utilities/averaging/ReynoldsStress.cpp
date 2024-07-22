@@ -61,7 +61,7 @@ void ReynoldsStress::operator()(
     const amrex::Real filter_width,
     const amrex::Real elapsed_time)
 {
-    const amrex::Real dt = time.deltaT();
+    const amrex::Real dt = time.delta_t();
     const amrex::Real filter =
         amrex::max(amrex::min(filter_width, elapsed_time), dt);
     const amrex::Real factor = amrex::max<amrex::Real>(filter - dt, 0.0);

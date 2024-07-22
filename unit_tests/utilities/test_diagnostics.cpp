@@ -94,13 +94,13 @@ protected:
         {
             amrex::ParmParse pp("geometry");
 
-            pp.addarr("prob_lo", problo);
-            pp.addarr("prob_hi", probhi);
+            pp.addarr("prob_lo", m_problo);
+            pp.addarr("prob_hi", m_probhi);
             pp.addarr("is_periodic", amrex::Vector<int>{{1, 1, 0}});
         }
     }
-    const amrex::Vector<amrex::Real> problo{{-5.0, -5.0, -2.0}};
-    const amrex::Vector<amrex::Real> probhi{{5.0, 5.0, 2.0}};
+    const amrex::Vector<amrex::Real> m_problo{{-5.0, -5.0, -2.0}};
+    const amrex::Vector<amrex::Real> m_probhi{{5.0, 5.0, 2.0}};
 };
 
 TEST_F(DiagnosticsTest, Max_Vel)

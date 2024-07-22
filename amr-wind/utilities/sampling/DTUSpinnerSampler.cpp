@@ -178,11 +178,11 @@ void DTUSpinnerSampler::bcast_turbine(
         amrex::ParallelDescriptor::Communicator());
 
     for (int i = 0; i < 9; i++) {
-        current_hub_orient[i] = turbine_pack[i];
+        m_current_hub_orient[i] = turbine_pack[i];
         if (i < 3) {
-            current_hub_abs_pos[i] = static_cast<float>(turbine_pack[i + 9]);
-            current_hub_rot_vel[i] = static_cast<float>(turbine_pack[i + 12]);
-            turbine_base_pos[i] = static_cast<float>(turbine_pack[i + 15]);
+            m_current_hub_abs_pos[i] = static_cast<float>(turbine_pack[i + 9]);
+            m_current_hub_rot_vel[i] = static_cast<float>(turbine_pack[i + 12]);
+            m_turbine_base_pos[i] = static_cast<float>(turbine_pack[i + 15]);
         }
     }
 }
@@ -269,9 +269,9 @@ void DTUSpinnerSampler::update_sampling_locations()
         get_turbine_data(m_turbine_label);
 
         m_hub_location = vs::Vector(
-            current_hub_abs_pos[0] + turbine_base_pos[0],
-            current_hub_abs_pos[1] + turbine_base_pos[1],
-            current_hub_abs_pos[2] + turbine_base_pos[2]);
+            m_current_hub_abs_pos[0] + m_turbine_base_pos[0],
+            m_current_hub_abs_pos[1] + m_turbine_base_pos[1],
+            m_current_hub_abs_pos[2] + m_turbine_base_pos[2]);
 
         // TODO: Do we need an offset from the hub location
         // to lidar start along shaft axis? Same for static angle misalignment?
@@ -281,11 +281,14 @@ void DTUSpinnerSampler::update_sampling_locations()
         m_lidar_center[2] = m_hub_location[2];
 
         m_hub_tilt = std::atan2(
-            -current_hub_orient[6], std::sqrt(
-                                        std::pow(current_hub_orient[7], 2.0) +
-                                        std::pow(current_hub_orient[8], 2.0)));
-        m_hub_roll = std::atan2(current_hub_orient[7], current_hub_orient[8]);
-        m_hub_yaw = std::atan2(current_hub_orient[3], current_hub_orient[0]);
+            -m_current_hub_orient[6],
+            std::sqrt(
+                std::pow(m_current_hub_orient[7], 2.0) +
+                std::pow(m_current_hub_orient[8], 2.0)));
+        m_hub_roll =
+            std::atan2(m_current_hub_orient[7], m_current_hub_orient[8]);
+        m_hub_yaw =
+            std::atan2(m_current_hub_orient[3], m_current_hub_orient[0]);
     }
 #endif
 
@@ -293,7 +296,7 @@ void DTUSpinnerSampler::update_sampling_locations()
     // Not current_time()
     amrex::Real time = m_sim.time().new_time();
     amrex::Real start_time = m_sim.time().start_time();
-    amrex::Real dt_sim = m_sim.time().deltaT();
+    amrex::Real dt_sim = m_sim.time().delta_t();
     const amrex::Real dt_s = m_scan_time / m_num_samples;
     amrex::Real start_diff = std::abs(time - start_time);
 
@@ -332,21 +335,21 @@ void DTUSpinnerSampler::update_sampling_locations()
 
 #ifdef AMR_WIND_USE_OPENFAST
     if (m_hub_debug) {
-        amrex::Print() << "Turbine Hub Pos: " << current_hub_abs_pos[0] << " "
-                       << current_hub_abs_pos[1] << " "
-                       << current_hub_abs_pos[2] << " " << std::endl;
-        amrex::Print() << "Turbine Rot Vel: " << current_hub_rot_vel[0] << " "
-                       << current_hub_rot_vel[1] << " "
-                       << current_hub_rot_vel[2] << " " << std::endl;
-        amrex::Print() << "Turbine Orient: " << current_hub_orient[0] << " "
-                       << current_hub_orient[1] << " " << current_hub_orient[2]
-                       << " " << std::endl;
-        amrex::Print() << "Turbine Orient: " << current_hub_orient[3] << " "
-                       << current_hub_orient[4] << " " << current_hub_orient[5]
-                       << " " << std::endl;
-        amrex::Print() << "Turbine Orient: " << current_hub_orient[6] << " "
-                       << current_hub_orient[7] << " " << current_hub_orient[8]
-                       << " " << std::endl;
+        amrex::Print() << "Turbine Hub Pos: " << m_current_hub_abs_pos[0] << " "
+                       << m_current_hub_abs_pos[1] << " "
+                       << m_current_hub_abs_pos[2] << " " << std::endl;
+        amrex::Print() << "Turbine Rot Vel: " << m_current_hub_rot_vel[0] << " "
+                       << m_current_hub_rot_vel[1] << " "
+                       << m_current_hub_rot_vel[2] << " " << std::endl;
+        amrex::Print() << "Turbine Orient: " << m_current_hub_orient[0] << " "
+                       << m_current_hub_orient[1] << " "
+                       << m_current_hub_orient[2] << " " << std::endl;
+        amrex::Print() << "Turbine Orient: " << m_current_hub_orient[3] << " "
+                       << m_current_hub_orient[4] << " "
+                       << m_current_hub_orient[5] << " " << std::endl;
+        amrex::Print() << "Turbine Orient: " << m_current_hub_orient[6] << " "
+                       << m_current_hub_orient[7] << " "
+                       << m_current_hub_orient[8] << " " << std::endl;
         amrex::Print() << "Yaw:Tilt:Roll: " << m_hub_yaw << " " << m_hub_tilt
                        << " " << m_hub_roll << std::endl;
         amrex::Print() << "Last Yaw:Tilt:Roll: " << m_last_hub_yaw << " "
@@ -374,36 +377,37 @@ void DTUSpinnerSampler::update_sampling_locations()
                 amrex::Real step_hub_yaw =
                     m_last_hub_yaw +
                     (std::fmod(
-                         std::fmod(m_hub_yaw - m_last_hub_yaw, twopi) + threepi,
-                         twopi) -
-                     pi) *
+                         std::fmod(m_hub_yaw - m_last_hub_yaw, m_twopi) +
+                             m_threepi,
+                         m_twopi) -
+                     m_pi) *
                         srat;
                 amrex::Real step_hub_tilt =
                     m_last_hub_tilt +
                     (std::fmod(
-                         std::fmod(m_hub_tilt - m_last_hub_tilt, twopi) +
-                             threepi,
-                         twopi) -
-                     pi) *
+                         std::fmod(m_hub_tilt - m_last_hub_tilt, m_twopi) +
+                             m_threepi,
+                         m_twopi) -
+                     m_pi) *
                         srat;
                 amrex::Real step_hub_roll =
                     m_last_hub_roll +
                     (std::fmod(
-                         std::fmod(m_hub_roll - m_last_hub_roll, twopi) +
-                             threepi,
-                         twopi) -
-                     pi) *
+                         std::fmod(m_hub_roll - m_last_hub_roll, m_twopi) +
+                             m_threepi,
+                         m_twopi) -
+                     m_pi) *
                         srat;
 
                 // Rotate beam unit vector
                 beam_vector = adjust_lidar_pattern(
-                    beam_vector, m_fixed_yaw + step_hub_yaw * radtodeg,
-                    m_fixed_tilt + step_hub_tilt * radtodeg,
-                    m_fixed_roll + step_hub_roll * radtodeg);
+                    beam_vector, m_fixed_yaw + step_hub_yaw * m_radtodeg,
+                    m_fixed_tilt + step_hub_tilt * m_radtodeg,
+                    m_fixed_roll + step_hub_roll * m_radtodeg);
 
                 // Interpolate lidar center
                 for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-                    step_lidar_center[d] =
+                    m_step_lidar_center[d] =
                         (step / m_ns) *
                             (m_lidar_center[d] - m_last_lidar_center[d]) +
                         m_last_lidar_center[d];
@@ -411,9 +415,9 @@ void DTUSpinnerSampler::update_sampling_locations()
 
                 // Beam start and end points
                 for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-                    m_start[d + offset] = step_lidar_center[d];
+                    m_start[d + offset] = m_step_lidar_center[d];
                     m_end[d + offset] =
-                        step_lidar_center[d] + beam_vector[d] * m_beam_length;
+                        m_step_lidar_center[d] + beam_vector[d] * m_beam_length;
                 }
 
                 m_time_sampling += dt_s;

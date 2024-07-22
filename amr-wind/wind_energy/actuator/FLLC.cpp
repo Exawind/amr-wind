@@ -3,7 +3,7 @@
 
 namespace amr_wind::actuator {
 
-void FLLCInit(
+void fllc_init(
     FLLCData& data, const ComponentView& view, const amrex::Real eps_chord)
 {
 
@@ -105,7 +105,7 @@ void FLLCInit(
     data.initialized = true;
 }
 
-void FLLCParse(const utils::ActParser& pp, FLLCData& data)
+void fllc_parse(const utils::ActParser& pp, FLLCData& data)
 {
     pp.query("epsilon", data.epsilon);
     pp.query("fllc_relaxation_factor", data.relaxation_factor);
