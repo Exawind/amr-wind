@@ -21,7 +21,7 @@ private:
     DeviceVecList m_epsilon;
     DeviceTensorList m_orientation;
 
-    bool init_old{false};
+    bool m_init_old{false};
 
     void copy_to_device();
 
@@ -56,7 +56,7 @@ void ActSrcOp<ActTrait, ActSrcLine>::copy_to_device()
     const auto& grid = m_data.grid();
 
     // Populate old positions before new positions are updated
-    if (init_old) {
+    if (m_init_old) {
         amrex::Gpu::copy(
             amrex::Gpu::deviceToDevice, m_pos.begin(), m_pos.end(),
             m_pos_old.begin());
@@ -75,11 +75,11 @@ void ActSrcOp<ActTrait, ActSrcLine>::copy_to_device()
         amrex::Gpu::hostToDevice, grid.orientation.begin(),
         grid.orientation.end(), m_orientation.begin());
 
-    if (!init_old) {
+    if (!m_init_old) {
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, grid.pos.begin(), grid.pos.end(),
             m_pos_old.begin());
-        init_old = true;
+        m_init_old = true;
     }
 }
 
@@ -91,6 +91,14 @@ void ActSrcOp<ActTrait, ActSrcLine>::operator()(
     BL_PROFILE("amr-wind::ActSrcOp<" + fname + ">");
 
     const auto& bx = mfi.tilebox();
+
+    const auto bxa =
+        amr_wind::utils::realbox_to_box(m_data.info().bound_box, geom);
+    const auto& bxi = bx & bxa;
+    if (bxi.isEmpty()) {
+        return;
+    }
+
     const auto& sarr = m_act_src(lev).array(mfi);
     const auto& problo = geom.ProbLoArray();
     const auto& dx = geom.CellSizeArray();

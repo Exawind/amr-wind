@@ -10,8 +10,6 @@ TEST_F(MMSMeshTest, mms_initialization)
 #if defined(AMREX_USE_HIP)
     GTEST_SKIP();
 #else
-    if (!pp_utils::has_managed_memory()) GTEST_SKIP();
-
     populate_parameters();
     utils::populate_mms_params();
 

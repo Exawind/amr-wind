@@ -1,7 +1,6 @@
 #include "mms_test_utils.H"
 
-namespace amr_wind_tests {
-namespace utils {
+namespace amr_wind_tests::utils {
 void populate_mms_params()
 {
     {
@@ -20,7 +19,7 @@ void populate_mms_params()
     // MMS Forcing
     {
         amrex::ParmParse pp("ICNS");
-        pp.add("source_terms", "MMSForcing");
+        pp.add("source_terms", (std::string) "MMSForcing");
     }
 
     // Needed for initial conditions
@@ -57,5 +56,4 @@ void populate_mms_params()
         pp.add("fixed_dt", 0.05);
     }
 }
-} // namespace utils
-} // namespace amr_wind_tests
+} // namespace amr_wind_tests::utils

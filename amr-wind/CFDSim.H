@@ -18,7 +18,7 @@ class IOManager;
 class PostProcessManager;
 class OversetManager;
 class ExtSolverMgr;
-class helics_storage;
+class HelicsStorage;
 
 namespace turbulence {
 class TurbulenceModel;
@@ -98,8 +98,8 @@ public:
     ExtSolverMgr& ext_solver_manager() { return *m_ext_solver_mgr; }
     const ExtSolverMgr& ext_solver_manager() const { return *m_ext_solver_mgr; }
 
-    helics_storage& helics() { return *m_helics; }
-    const helics_storage& helics() const { return *m_helics; }
+    HelicsStorage& helics() { return *m_helics; }
+    const HelicsStorage& helics() const { return *m_helics; }
 
     bool has_overset() const;
 
@@ -142,7 +142,7 @@ private:
 
     std::unique_ptr<ExtSolverMgr> m_ext_solver_mgr;
 
-    std::unique_ptr<helics_storage> m_helics;
+    std::unique_ptr<HelicsStorage> m_helics;
 
     bool m_mesh_mapping{false};
 };

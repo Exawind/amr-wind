@@ -42,7 +42,7 @@ private:
     amrex::Real m_beta{0.0};
 
     //! Check for VOF
-    bool is_vof{false};
+    bool m_is_vof{false};
 };
 } // namespace amr_wind::pde::icns
 

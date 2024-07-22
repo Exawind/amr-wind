@@ -309,9 +309,9 @@ public:
     void close();
 
 protected:
-    explicit NCFile(const int id) : NCGroup(id), is_open{true} {}
+    explicit NCFile(const int id) : NCGroup(id), m_is_open{true} {}
 
-    bool is_open{false};
+    bool m_is_open{false};
 };
 
 } // namespace ncutils

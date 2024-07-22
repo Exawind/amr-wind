@@ -5,8 +5,7 @@
 #include "AMReX_MultiFabUtil.H"
 #include "masa.h"
 
-namespace amr_wind {
-namespace mms {
+namespace amr_wind::mms {
 
 MMS::MMS(const CFDSim& sim)
     : m_time(sim.time())
@@ -17,7 +16,7 @@ MMS::MMS(const CFDSim& sim)
     , m_mms_vel_source(sim.repo().declare_cc_field(
           "mms_vel_source", m_velocity.num_comp(), m_velocity.num_grow()[0], 1))
 {
-    std::string masa_name = "";
+    std::string masa_name;
     amrex::ParmParse pp_mms("MMS");
     pp_mms.get("masa_name", masa_name);
     masa_init("mms", masa_name.c_str());
@@ -197,5 +196,4 @@ void MMS::post_advance_work()
     }
 }
 
-} // namespace mms
-} // namespace amr_wind
+} // namespace amr_wind::mms

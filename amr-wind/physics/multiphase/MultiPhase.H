@@ -69,7 +69,7 @@ public:
 
     amrex::Vector<amrex::Real> gravity() const { return m_gravity; }
 
-    amrex::Real water_level() const { return water_level0; }
+    amrex::Real water_level() const { return m_water_level0; }
 
 private:
     const CFDSim& m_sim;
@@ -96,7 +96,7 @@ private:
     bool m_reconstruct_true_pressure{false};
 
     // Info to create rho0
-    amrex::Real water_level0{0.0};
+    amrex::Real m_water_level0{0.0};
     // Info to reconstruct true pressure
     amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
 
@@ -115,10 +115,10 @@ private:
     // sum of volume fractions (for vof only)
     amrex::Real m_total_volfrac{0.0};
 
-    amrex::Real q0{0.0};
-    amrex::Real q1{0.0};
-    amrex::Real q2{0.0};
-    amrex::Real sumvof0{0.0};
+    amrex::Real m_q0{0.0};
+    amrex::Real m_q1{0.0};
+    amrex::Real m_q2{0.0};
+    amrex::Real m_sumvof0{0.0};
 };
 
 } // namespace amr_wind

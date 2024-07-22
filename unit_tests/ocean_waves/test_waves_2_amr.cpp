@@ -49,7 +49,6 @@ TEST_F(OceanWavesW2ATest, time_advance)
     ntime = 0;
     newtime = 0.001;
     t_last = -1.0;
-    t_last_prior = t_last;
     double_data = evaluate_read_resize(
         ntime, read_flag, resize_flag, t, t_last, new_ntime, t_winit, dt_modes,
         newtime);
@@ -68,14 +67,12 @@ TEST_F(OceanWavesW2ATest, time_advance)
     read_flag = false;
     resize_flag = false;
     t_last = -1.0;
-    t_last_prior = t_last;
     ntime = 0;
     new_ntime = 40;
     newtime = 3.99;
     double_data = evaluate_read_resize(
         ntime, read_flag, resize_flag, t, t_last, new_ntime, t_winit, dt_modes,
         newtime);
-    f_interp = (newtime - t_last_prior) / (t - t_last_prior);
     EXPECT_EQ(double_data, 1);
     EXPECT_EQ(ntime, 40);
     EXPECT_TRUE(read_flag);

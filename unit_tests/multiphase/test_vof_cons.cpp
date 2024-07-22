@@ -126,7 +126,7 @@ protected:
         }
         {
             amrex::ParmParse pp("time");
-            pp.add("fixed_dt", dt);
+            pp.add("fixed_dt", m_dt);
         }
         {
             amrex::ParmParse pp("VOF");
@@ -142,11 +142,11 @@ protected:
         const amrex::Real ft_time = 1.0 / m_vel;
 
         // Set timestep according to input
-        dt = ft_time / ((amrex::Real)m_nx) * CFL;
+        m_dt = ft_time / ((amrex::Real)m_nx) * CFL;
         // Round to nearest integer timesteps
-        int niter = (int)round(ft_time / dt);
+        int niter = (int)round(ft_time / m_dt);
         // Modify dt to fit niter
-        dt = ft_time / ((amrex::Real)niter);
+        m_dt = ft_time / ((amrex::Real)niter);
 
         populate_parameters();
         {
@@ -258,7 +258,7 @@ protected:
     const amrex::Real m_rho2 = 1.0;
     const amrex::Real m_vel = 5.0;
     const int m_nx = 3;
-    amrex::Real dt = 0.0; // will be set according to CFL
+    amrex::Real m_dt = 0.0; // will be set according to CFL
 };
 
 TEST_F(VOFConsTest, X) { testing_coorddir(0, 0.45); }

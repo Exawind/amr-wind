@@ -31,12 +31,12 @@ protected:
     void SetUp() final
     {
         const auto params = GetParam();
-        computer = std::make_unique<ops::base::AreaComputer>(
+        m_computer = std::make_unique<ops::base::AreaComputer>(
             params.radius, params.num_points_r, params.num_points_theta);
-        area = M_PI * params.radius * params.radius;
+        m_area = M_PI * params.radius * params.radius;
     }
-    std::unique_ptr<ops::base::AreaComputer> computer;
-    amrex::Real area;
+    std::unique_ptr<ops::base::AreaComputer> m_computer;
+    amrex::Real m_area;
 };
 
 TEST_P(TestAreaComputer, area_matches)
@@ -46,10 +46,10 @@ TEST_P(TestAreaComputer, area_matches)
 
     for (int i = 0; i < params.num_points_r; ++i) {
         for (int j = 0; j < params.num_points_theta; ++j) {
-            area_computed += computer->area_section(i);
+            area_computed += m_computer->area_section(i);
         }
     }
-    EXPECT_NEAR(area, area_computed, 1.e-12 * area);
+    EXPECT_NEAR(m_area, area_computed, 1.e-12 * m_area);
 }
 
 TEST_P(TestAreaComputer, weight_sums_to_one)
@@ -59,7 +59,7 @@ TEST_P(TestAreaComputer, weight_sums_to_one)
 
     for (int i = 0; i < params.num_points_r; ++i) {
         for (int j = 0; j < params.num_points_theta; ++j) {
-            weight_computed += computer->weight(i);
+            weight_computed += m_computer->weight(i);
         }
     }
     EXPECT_DOUBLE_EQ(1.0, weight_computed);
