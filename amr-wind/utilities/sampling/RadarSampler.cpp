@@ -83,7 +83,7 @@ void RadarSampler::initialize(const std::string& key)
 
     // Calculate total number of necessary beams per timstep
     // Due to subsampling freq
-    amrex::Real dt_sim = m_sim.time().deltaT();
+    amrex::Real dt_sim = m_sim.time().delta_t();
     amrex::Real dt_sample = 1.0 / m_sample_freq;
     double timestep_sample_ratio = dt_sim / dt_sample;
     m_ntotal = int(std::ceil(timestep_sample_ratio));
@@ -192,7 +192,7 @@ void RadarSampler::update_sampling_locations()
 {
     amrex::Real time = m_sim.time().current_time();
     amrex::Real start_time = m_sim.time().start_time();
-    amrex::Real dt_sim = m_sim.time().deltaT();
+    amrex::Real dt_sim = m_sim.time().delta_t();
     amrex::Real dt_sample = 1.0 / m_sample_freq;
     amrex::Real st_diff = time - start_time;
 

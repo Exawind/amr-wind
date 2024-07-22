@@ -181,7 +181,7 @@ void ThirdMomentAveraging::compute_average(
         auto mfab_arr3 = mfab3.const_array(mfi);
 
         amrex::Box pbx =
-            PerpendicularBox<IndexSelector>(bx, amrex::IntVect{0, 0, 0});
+            perpendicular_box<IndexSelector>(bx, amrex::IntVect{0, 0, 0});
 
         amrex::ParallelFor(
             amrex::Gpu::KernelInfo().setReduction(true), pbx,
@@ -191,7 +191,7 @@ void ThirdMomentAveraging::compute_average(
                 // Loop over the direction perpendicular to the plane.
                 // This reduces the atomic pressure on the destination arrays.
 
-                amrex::Box lbx = ParallelBox<IndexSelector>(
+                amrex::Box lbx = parallel_box<IndexSelector>(
                     bx, amrex::IntVect{p_i, p_j, p_k});
 
                 for (int k = lbx.smallEnd(2); k <= lbx.bigEnd(2); ++k) {

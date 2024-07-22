@@ -122,7 +122,7 @@ void incflo::ApplyProjection(
     // projects (U^*-U^n + dt Gp) rather than (U^* + dt Gp)
 
     bool proj_for_small_dt =
-        (time > 0.0 and m_time.deltaT() < 0.1 * m_time.deltaTNm1());
+        (time > 0.0 and m_time.delta_t() < 0.1 * m_time.delta_t_nm1());
 
     if (m_verbose > 2) {
         if (proj_for_small_dt) {
@@ -148,8 +148,9 @@ void incflo::ApplyProjection(
             ? &(m_repo.get_mesh_mapping_field(amr_wind::FieldLoc::CELL))
             : nullptr;
     amr_wind::Field const* mesh_detJ =
-        mesh_mapping ? &(m_repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::CELL))
-                     : nullptr;
+        mesh_mapping
+            ? &(m_repo.get_mesh_mapping_det_j(amr_wind::FieldLoc::CELL))
+            : nullptr;
     const auto* ref_density =
         is_anelastic ? &(m_repo.get_field("reference_density")) : nullptr;
 

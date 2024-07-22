@@ -122,7 +122,7 @@ protected:
             // zlo is defined in each case
         }
     }
-    void OneEqKsgs_setup_params() const
+    void one_eq_ksgs_setup_params() const
     {
         {
             amrex::ParmParse pp("turbulence");
@@ -235,7 +235,7 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_noslip)
         amrex::ParmParse pp("zlo");
         pp.add("type", (std::string) "no_slip_wall");
     }
-    OneEqKsgs_setup_params();
+    one_eq_ksgs_setup_params();
     test_calls_body();
     auto& muturb = sim().repo().get_field("mu_turb");
 
@@ -278,7 +278,7 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_slip)
         amrex::ParmParse pp("zlo");
         pp.add("type", (std::string) "slip_wall");
     }
-    OneEqKsgs_setup_params();
+    one_eq_ksgs_setup_params();
     test_calls_body();
     auto& muturb = sim().repo().get_field("mu_turb");
 
@@ -322,7 +322,7 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_wallmodel)
         amrex::ParmParse pp("incflo");
         pp.add("diffusion_type", 0);
     }
-    OneEqKsgs_setup_params();
+    one_eq_ksgs_setup_params();
     const bool do_postsolve = true;
     test_calls_body(do_postsolve);
     auto& muturb = sim().repo().get_field("mu_turb");
@@ -367,7 +367,7 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_wallmodel_failnofillpatch)
         amrex::ParmParse pp("incflo");
         pp.add("diffusion_type", 0);
     }
-    OneEqKsgs_setup_params();
+    one_eq_ksgs_setup_params();
     const bool do_postsolve = false;
     test_calls_body(do_postsolve);
     auto& muturb = sim().repo().get_field("mu_turb");
@@ -423,7 +423,7 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_zerogradient)
         amrex::ParmParse pp("zlo");
         pp.add("type", (std::string) "zero_gradient");
     }
-    OneEqKsgs_setup_params();
+    one_eq_ksgs_setup_params();
     test_calls_body();
     auto& muturb = sim().repo().get_field("mu_turb");
 
@@ -464,7 +464,7 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_symmetricwall)
         amrex::ParmParse pp("zlo");
         pp.add("type", (std::string) "symmetric_wall");
     }
-    OneEqKsgs_setup_params();
+    one_eq_ksgs_setup_params();
     test_calls_body();
     auto& muturb = sim().repo().get_field("mu_turb");
 

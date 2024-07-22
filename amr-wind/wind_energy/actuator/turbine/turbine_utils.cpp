@@ -34,7 +34,7 @@ void read_inputs(
     if (use_fllc) {
         for (int i = 0; i < tdata.num_blades; ++i) {
             tdata.fllc.emplace_back();
-            FLLCParse(pp, tdata.fllc.back());
+            fllc_parse(pp, tdata.fllc.back());
         }
     }
 
