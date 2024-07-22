@@ -83,41 +83,41 @@ protected:
 
         {
             amrex::ParmParse pp("amr");
-            amrex::Vector<int> ncell{{nx, nx, nx}};
+            amrex::Vector<int> ncell{{m_nx, m_nx, m_nx}};
             pp.add("max_level", 0);
-            pp.add("max_grid_size", nx);
+            pp.add("max_grid_size", m_nx);
             pp.addarr("n_cell", ncell);
         }
         {
             amrex::ParmParse pp("geometry");
-            pp.addarr("prob_lo", problo);
-            pp.addarr("prob_hi", probhi);
+            pp.addarr("prob_lo", m_problo);
+            pp.addarr("prob_hi", m_probhi);
         }
         {
             amrex::ParmParse pp("waveenergy");
             pp.add("output_frequency", 1);
-            pp.add("water_level", wlev);
+            pp.add("water_level", m_wlev);
         }
         {
             amrex::ParmParse pp("incflo");
-            amrex::Vector<amrex::Real> gvec{{0.0, 0.0, g}};
+            amrex::Vector<amrex::Real> gvec{{0.0, 0.0, m_g}};
             pp.addarr("gravity", gvec);
             amrex::Vector<std::string> physics{"MultiPhase"};
             pp.addarr("physics", physics);
         }
         {
             amrex::ParmParse pp("MultiPhase");
-            pp.add("density_fluid1", rho1);
+            pp.add("density_fluid1", m_rho1);
         }
     }
     // Parameters
-    const amrex::Vector<amrex::Real> problo{{0.0, 0.0, 0.0}};
-    const amrex::Vector<amrex::Real> probhi{{2.0, 2.0, 1.0}};
-    const int nx = 5;
-    const amrex::Real wlev = 0.25;
-    const amrex::Real g = -9;
-    const amrex::Real rho1 = 888;
-    const amrex::Real tol = 1e-12;
+    const amrex::Vector<amrex::Real> m_problo{{0.0, 0.0, 0.0}};
+    const amrex::Vector<amrex::Real> m_probhi{{2.0, 2.0, 1.0}};
+    const int m_nx = 5;
+    const amrex::Real m_wlev = 0.25;
+    const amrex::Real m_g = -9;
+    const amrex::Real m_rho1 = 888;
+    const amrex::Real m_tol = 1e-12;
 };
 
 TEST_F(WaveEnergyTest, checkoutput)
@@ -147,22 +147,22 @@ TEST_F(WaveEnergyTest, checkoutput)
     tool.wave_energy(ke, pe);
 
     // Check answers
-    const amrex::Real dx = 2.0 / (amrex::Real)nx;
-    const amrex::Real dz = 1.0 / (amrex::Real)nx;
+    const amrex::Real dx = 2.0 / (amrex::Real)m_nx;
+    const amrex::Real dz = 1.0 / (amrex::Real)m_nx;
     const amrex::Real cell_vol = dx * dx * dz;
     amrex::Real ke_ref =
-        0.5 * cell_vol / (wlev * 2.0 * 2.0) *
+        0.5 * cell_vol / (m_wlev * 2.0 * 2.0) *
         (4.0 * 5.0 * (1.0 + 4.0 + 9.0 + 16.0) + 25.0 +
          0.5 * (4.0 * 15.0 + 5.0 * (4.0 + 16.0) +
                 3.0 * (1.0 + 4.0 + 9.0 + 16.0)) +
          (4.0 * 10.0 + 5.0 * (1.0 + 9.0) + 2.0 * (1.0 + 4.0 + 9.0 + 16.0)));
-    EXPECT_NEAR(ke, ke_ref, tol);
+    EXPECT_NEAR(ke, ke_ref, m_tol);
     // Formula has been integrated in z, and uses exact interface locations
     amrex::Real pe_exact =
-        dx * dx * (-g) * 0.5 / (wlev * 2.0 * 2.0) *
+        dx * dx * (-m_g) * 0.5 / (m_wlev * 2.0 * 2.0) *
             (15.0 * std::pow(2.5 * dz, 2) + 10.0 * std::pow(3.0 * dz, 2)) +
-        0.5 * (-g) * wlev;
-    EXPECT_NEAR(pe, pe_exact, tol);
+        0.5 * (-m_g) * m_wlev;
+    EXPECT_NEAR(pe, pe_exact, m_tol);
 }
 
 } // namespace amr_wind_tests

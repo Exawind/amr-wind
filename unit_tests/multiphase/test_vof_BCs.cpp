@@ -160,7 +160,7 @@ protected:
         }
         {
             amrex::ParmParse pp("time");
-            pp.add("fixed_dt", dt);
+            pp.add("fixed_dt", m_dt);
         }
     }
 
@@ -326,7 +326,7 @@ protected:
     const amrex::Real m_rho2 = 1.0;
     const amrex::Real m_vel = 5.0;
     const amrex::Real m_vof_bdyval = 1.0;
-    const amrex::Real dt = 0.45 * 0.5 / m_vel; // first number is CFL
+    const amrex::Real m_dt = 0.45 * 0.5 / m_vel; // first number is CFL
 };
 
 constexpr double tol1 = 1.0e-15;

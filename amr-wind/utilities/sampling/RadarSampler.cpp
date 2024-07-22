@@ -90,8 +90,8 @@ void RadarSampler::initialize(const std::string& key)
 
     AMREX_ALWAYS_ASSERT(timestep_sample_ratio >= 1.0);
 
-    prior_cones.resize(num_points_scan());
-    current_cones.resize(num_points_scan());
+    m_prior_cones.resize(num_points_scan());
+    m_current_cones.resize(num_points_scan());
 
     RadarSampler::new_cone();
 
@@ -207,8 +207,8 @@ void RadarSampler::update_sampling_locations()
 
     m_ns = int(dt_sim / dt_sample) + time_corr;
 
-    los_unit.resize(m_ntotal * num_points_quad());
-    los_proj.resize(m_ntotal * num_points_quad());
+    m_los_unit.resize(m_ntotal * num_points_quad());
+    m_los_proj.resize(m_ntotal * num_points_quad());
 
     if (m_debug_print) {
         amrex::Print() << "-------------------------" << std::endl
@@ -257,25 +257,25 @@ void RadarSampler::update_sampling_locations()
             // Add rotated cone to current cones
             for (int i = 0; i < m_cone_size; ++i) {
                 vs::Vector temp_point(
-                    initial_cone[i][0] - m_start[0],
-                    initial_cone[i][1] - m_start[1],
-                    initial_cone[i][2] - m_start[2]);
+                    m_initial_cone[i][0] - m_start[0],
+                    m_initial_cone[i][1] - m_start[1],
+                    m_initial_cone[i][2] - m_start[2]);
                 vs::Vector swept_point(sampling_utils::rotate_euler_vector(
                     vertical_ref, sweep_angle, temp_point));
                 vs::Vector rotated_point(sampling_utils::rotate_euler_vector(
                     elevation_axis, elevation_angle, swept_point));
                 long point_index = i + k * m_cone_size;
-                current_cones[point_index][0] = rotated_point[0] + m_start[0];
-                current_cones[point_index][1] = rotated_point[1] + m_start[1];
-                current_cones[point_index][2] = rotated_point[2] + m_start[2];
+                m_current_cones[point_index][0] = rotated_point[0] + m_start[0];
+                m_current_cones[point_index][1] = rotated_point[1] + m_start[1];
+                m_current_cones[point_index][2] = rotated_point[2] + m_start[2];
 
                 // Add a single cap to help calc line of sight
                 if (i > conetipbegin && i < conetipend) {
                     vs::Vector unit_cone_point(rotated_point.normalize());
                     vs::Tensor unit_proj_mat =
                         sampling_utils::unit_projection_matrix(unit_cone_point);
-                    los_unit[cq_idx] = unit_cone_point;
-                    los_proj[cq_idx] = unit_proj_mat;
+                    m_los_unit[cq_idx] = unit_cone_point;
+                    m_los_proj[cq_idx] = unit_proj_mat;
                     cq_idx++;
                 }
             }
@@ -289,17 +289,17 @@ void RadarSampler::update_sampling_locations()
 
             for (int i = 0; i < m_cone_size; ++i) {
                 long point_index = i + k * m_cone_size;
-                current_cones[point_index][0] = m_fill_val;
-                current_cones[point_index][1] = m_fill_val;
-                current_cones[point_index][2] = m_fill_val;
+                m_current_cones[point_index][0] = m_fill_val;
+                m_current_cones[point_index][1] = m_fill_val;
+                m_current_cones[point_index][2] = m_fill_val;
 
                 // Create zero projection matrix
                 if (i > conetipbegin && i < conetipend) {
                     vs::Vector unit_zero_point(0.0, 0.0, 0.0);
                     vs::Tensor zero_mat =
                         sampling_utils::unit_projection_matrix(unit_zero_point);
-                    los_unit[cq_idx] = unit_zero_point;
-                    los_proj[cq_idx] = zero_mat;
+                    m_los_unit[cq_idx] = unit_zero_point;
+                    m_los_proj[cq_idx] = zero_mat;
                     cq_idx++;
                 }
             }
@@ -315,12 +315,12 @@ void RadarSampler::new_cone()
     vs::Vector origin_vector(0.0, 0.0, 0.0);
     vs::Vector init_axis(m_axis[0], m_axis[1], m_axis[2]);
 
-    initial_cone.resize(num_points_cone());
+    m_initial_cone.resize(num_points_cone());
     m_rays.resize(num_points_quad());
     m_weights.resize(num_points_quad());
 
     sampling_utils::spherical_cap_truncated_normal(
-        utils::radians(m_cone_angle), ntheta,
+        utils::radians(m_cone_angle), m_ntheta,
         sampling_utils::NormalRule::HALFPOWER, m_rays, m_weights);
 
     long nquad = num_points_quad();
@@ -345,8 +345,8 @@ void RadarSampler::new_cone()
                        << "nquad: " << nquad << "\t"
                        << "dx[2]: " << dx[2] << "\t"
                        << "m_npts: " << m_npts << "\t"
-                       << "ntheta: " << ntheta << "\t"
-                       << "nphi: " << nphi << std::endl
+                       << "ntheta: " << m_ntheta << "\t"
+                       << "nphi: " << m_nphi << std::endl
                        << "-------------------------" << std::endl;
     }
 
@@ -354,9 +354,9 @@ void RadarSampler::new_cone()
         for (int j = 0; j < nquad; ++j) {
             long pt_idx = j + n * nquad;
             const auto radius = dx[2] * n;
-            initial_cone[pt_idx][0] = radius * m_rays[j][0];
-            initial_cone[pt_idx][1] = radius * m_rays[j][1];
-            initial_cone[pt_idx][2] = radius * m_rays[j][2];
+            m_initial_cone[pt_idx][0] = radius * m_rays[j][0];
+            m_initial_cone[pt_idx][1] = radius * m_rays[j][1];
+            m_initial_cone[pt_idx][2] = radius * m_rays[j][2];
         }
     }
 
@@ -366,12 +366,12 @@ void RadarSampler::new_cone()
     // Initial cone points along input-file-given axis and is full size
     for (int i = 0; i < num_points_cone(); ++i) {
         vs::Vector temp_loc(
-            initial_cone[i][0], initial_cone[i][1], initial_cone[i][2]);
+            m_initial_cone[i][0], m_initial_cone[i][1], m_initial_cone[i][2]);
         vs::Vector new_rot(
             sampling_utils::rotate_euler_vector(tc_axis, tc_angle, temp_loc));
-        initial_cone[i][0] = new_rot[0] * m_beam_length + m_start[0];
-        initial_cone[i][1] = new_rot[1] * m_beam_length + m_start[1];
-        initial_cone[i][2] = new_rot[2] * m_beam_length + m_start[2];
+        m_initial_cone[i][0] = new_rot[0] * m_beam_length + m_start[0];
+        m_initial_cone[i][1] = new_rot[1] * m_beam_length + m_start[1];
+        m_initial_cone[i][2] = new_rot[2] * m_beam_length + m_start[2];
     }
 }
 
@@ -394,8 +394,8 @@ void RadarSampler::calc_lineofsight_velocity(
             vs::Vector temp_vel(
                 velocity_raw[p_idx][0], velocity_raw[p_idx][1],
                 velocity_raw[p_idx][2]);
-            vs::Vector los_vel_vector(temp_vel & los_proj[cq_idx]);
-            los_temp[p_idx] = (los_vel_vector & los_unit[cq_idx]);
+            vs::Vector los_vel_vector(temp_vel & m_los_proj[cq_idx]);
+            los_temp[p_idx] = (los_vel_vector & m_los_unit[cq_idx]);
         }
     }
 
@@ -466,16 +466,16 @@ void RadarSampler::sampling_locations(SampleLocType& locs) const
     locs.resize(num_points());
 
     for (int i = 0; i < num_points_scan(); ++i) {
-        locs[i][0] = (m_radar_iter > 0) ? prior_cones[i][0] : m_fill_val;
-        locs[i][1] = (m_radar_iter > 0) ? prior_cones[i][1] : m_fill_val;
-        locs[i][2] = (m_radar_iter > 0) ? prior_cones[i][2] : m_fill_val;
+        locs[i][0] = (m_radar_iter > 0) ? m_prior_cones[i][0] : m_fill_val;
+        locs[i][1] = (m_radar_iter > 0) ? m_prior_cones[i][1] : m_fill_val;
+        locs[i][2] = (m_radar_iter > 0) ? m_prior_cones[i][2] : m_fill_val;
     }
 
     for (int i = 0; i < num_points_scan(); ++i) {
         long ioff = i + num_points_scan();
-        locs[ioff][0] = current_cones[i][0];
-        locs[ioff][1] = current_cones[i][1];
-        locs[ioff][2] = current_cones[i][2];
+        locs[ioff][0] = m_current_cones[i][0];
+        locs[ioff][1] = m_current_cones[i][1];
+        locs[ioff][2] = m_current_cones[i][2];
     }
 }
 
@@ -488,9 +488,9 @@ void RadarSampler::cone_axis_locations(SampleLocType& axis_locs) const
         for (int i = 0; i < m_npts; ++i) {
             int pi = i + k * m_npts;
             long ci = i * num_points_quad() + k * num_points_cone();
-            axis_locs[pi][0] = prior_cones[ci][0];
-            axis_locs[pi][1] = prior_cones[ci][1];
-            axis_locs[pi][2] = prior_cones[ci][2];
+            axis_locs[pi][0] = m_prior_cones[ci][0];
+            axis_locs[pi][1] = m_prior_cones[ci][1];
+            axis_locs[pi][2] = m_prior_cones[ci][2];
         }
     }
 }
@@ -498,8 +498,8 @@ void RadarSampler::cone_axis_locations(SampleLocType& axis_locs) const
 void RadarSampler::post_sample_actions()
 {
 
-    prior_cones.resize(num_points_scan());
-    prior_cones = current_cones;
+    m_prior_cones.resize(num_points_scan());
+    m_prior_cones = m_current_cones;
 
     m_los_velocity_prior.resize(num_output_points());
     m_los_velocity_prior = m_los_velocity_next;
