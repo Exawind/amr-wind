@@ -111,7 +111,7 @@ void apply_relaxation_zone_field(
                         probhi[0]);
                     if (x <= problo[0] + gen_length) {
                         const amrex::Real Gamma =
-                            amr_wind::ocean_waves::utils::Gamma_generate(
+                            amr_wind::ocean_waves::utils::gamma_generate(
                                 x - problo[0], gen_length);
                         comp_arr(i, j, k) = targ_arr(i, j, k) * (1. - Gamma) +
                                             comp_arr(i, j, k) * Gamma;

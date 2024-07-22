@@ -42,7 +42,7 @@ void ABLFieldInit::initialize_from_inputfile()
     pp_abl.query("random_gauss_mean", m_theta_gauss_mean);
     pp_abl.query("random_gauss_var", m_theta_gauss_var);
     pp_abl.query("cutoff_height", m_theta_cutoff_height);
-    pp_abl.query("theta_amplitude", m_deltaT);
+    pp_abl.query("theta_amplitude", m_delta_t);
 
     pp_abl.query("init_tke", m_tke_init);
     pp_abl.query("init_tke_beare_profile", m_tke_init_profile);
@@ -294,7 +294,7 @@ void ABLFieldInit::perturb_temperature(
     const auto theta_cutoff_height = m_theta_cutoff_height;
     const auto theta_gauss_mean = m_theta_gauss_mean;
     const auto theta_gauss_var = m_theta_gauss_var;
-    const auto deltaT = m_deltaT;
+    const auto delta_t = m_delta_t;
 
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
@@ -311,7 +311,7 @@ void ABLFieldInit::perturb_temperature(
                 const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
                 if (z < theta_cutoff_height) {
                     theta(i, j, k) =
-                        deltaT * amrex::RandomNormal(
+                        delta_t * amrex::RandomNormal(
                                      theta_gauss_mean, theta_gauss_var, engine);
                 }
             });

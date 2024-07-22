@@ -28,7 +28,7 @@ ABLMesoForcingMom::ABLMesoForcingMom(const CFDSim& sim)
 
     if ((amrex::toLower(m_forcing_scheme) == "indirect") &&
         !m_update_transition_height) {
-        indirectForcingInit(); // do this once
+        indirect_forcing_init(); // do this once
     }
 }
 
@@ -228,8 +228,8 @@ void ABLMesoForcingMom::mean_velocity_heights(
             amrex::Print() << "current transition height = "
                            << m_transition_height << std::endl;
 
-            setTransitionWeighting();
-            indirectForcingInit();
+            set_transition_weighting();
+            indirect_forcing_init();
         }
 
         amrex::Array<amrex::Real, 4> ezP_U;
@@ -287,8 +287,8 @@ void ABLMesoForcingMom::mean_velocity_heights(
         }
 
         if (amrex::toLower(m_forcing_transition) == "indirecttodirect") {
-            blendForcings(error_U, error_U_direct, error_U);
-            blendForcings(error_V, error_V_direct, error_V);
+            blend_forcings(error_U, error_U_direct, error_U);
+            blend_forcings(error_V, error_V_direct, error_V);
 
             if (m_debug) {
                 for (size_t ih = 0; ih < n_levels; ih++) {
@@ -299,9 +299,9 @@ void ABLMesoForcingMom::mean_velocity_heights(
         }
     }
 
-    if (forcingToConstant()) {
-        constantForcingTransition(error_U);
-        constantForcingTransition(error_V);
+    if (forcing_to_constant()) {
+        constant_forcing_transition(error_U);
+        constant_forcing_transition(error_V);
 
         if (m_debug) {
             for (size_t ih = 0; ih < n_levels; ih++) {
@@ -336,7 +336,7 @@ void ABLMesoForcingMom::operator()(
         return;
     }
 
-    const auto& dt = m_time.deltaT();
+    const auto& dt = m_time.delta_t();
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
 

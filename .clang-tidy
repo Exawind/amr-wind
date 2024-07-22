@@ -71,7 +71,7 @@ CheckOptions:
   - { key: readability-identifier-naming.VariableCase, value: lower_case }
   - { key: readability-identifier-naming.GlobalConstantCase, value: UPPER_CASE }
   - { key: readability-identifier-naming.ClassIgnoredRegexp, value: "incflo"}
-  - { key: readability-identifier-naming.FunctionIgnoredRegexp, value: "^.*"}
+  - { key: readability-identifier-naming.FunctionIgnoredRegexp, value: "(Godunov_|setVal|ComputeDt|ComputePrescribeDt|ApplyPredictor|ApplyCorrector|ApplyPrescribeStep|ApplyProjection|UpdateGradP|ReadCheckpointFile|Factory|ReadParameters|InitialProjection|InitialIterations|PrintMax|CheckForNans|InitData|Evolve|buildInfoGetBuildDate|buildInfoGetComp|buildInfoGetGitHash|buildInfoGetCompVersion|FAST_).*"}
   - { key: readability-identifier-naming.GlobalConstantIgnoredRegexp, value: "^.*"}
   - { key: readability-identifier-naming.NamespaceIgnoredRegexp, value: "Hydro"}
   - { key: readability-identifier-naming.StructIgnoredRegexp, value: "(SC_DX|OpFM).*"}

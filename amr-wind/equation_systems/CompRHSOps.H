@@ -71,7 +71,7 @@ struct ComputeRHSOp
         auto& conv_term = fields.conv_term.state(fstate);
         auto& mask_cell = fields.repo.get_int_field("mask_cell");
         Field const* mesh_detJ =
-            mesh_mapping ? &(fields.repo.get_mesh_mapping_detJ(FieldLoc::CELL))
+            mesh_mapping ? &(fields.repo.get_mesh_mapping_det_j(FieldLoc::CELL))
                          : nullptr;
 
         for (int lev = 0; lev < nlevels; ++lev) {
@@ -190,7 +190,7 @@ struct ComputeRHSOp
         auto& conv_term_old = fields.conv_term.state(FieldState::Old);
         auto& mask_cell = fields.repo.get_int_field("mask_cell");
         Field const* mesh_detJ =
-            mesh_mapping ? &(fields.repo.get_mesh_mapping_detJ(FieldLoc::CELL))
+            mesh_mapping ? &(fields.repo.get_mesh_mapping_det_j(FieldLoc::CELL))
                          : nullptr;
 
         for (int lev = 0; lev < nlevels; ++lev) {

@@ -372,7 +372,7 @@ void OversetOps::replace_masked_gradp()
     const auto nlevels = repo.num_active_levels();
 
     // Get timestep
-    const amrex::Real dt = (*m_sim_ptr).time().deltaT();
+    const amrex::Real dt = (*m_sim_ptr).time().delta_t();
 
     // Get blanking for cells
     const auto& iblank_cell = repo.get_int_field("iblank_cell");

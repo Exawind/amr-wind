@@ -45,7 +45,7 @@ ABLModulatedPowerLaw::ABLModulatedPowerLaw(CFDSim& sim)
     pp.query("stop_time", m_stop_time);
     pp.query("degrees_per_second", m_degrees_per_sec);
 
-    pp.query("deltaT", m_deltaT);
+    pp.query("delta_t", m_delta_t);
     pp.query("theta_cutoff_height", m_theta_cutoff_height);
     pp.query("theta_gauss_mean", m_theta_gauss_mean);
     pp.query("theta_gauss_var", m_theta_gauss_var);
@@ -96,7 +96,7 @@ void ABLModulatedPowerLaw::pre_advance_work()
 
     if (m_time.current_time() > m_start_time &&
         m_time.current_time() < m_stop_time) {
-        m_wind_direction -= m_degrees_per_sec * m_time.deltaT();
+        m_wind_direction -= m_degrees_per_sec * m_time.delta_t();
     }
     const amrex::Real wind_direction = -m_wind_direction + 270.0;
     const amrex::Real wind_direction_radian = utils::radians(wind_direction);
@@ -222,7 +222,7 @@ void ABLModulatedPowerLaw::set_temperature(
 
     BL_PROFILE("amr-wind::ABLModulatedPowerLaw::set_temperature");
 
-    const amrex::Real deltaT = m_deltaT;
+    const amrex::Real delta_t = m_delta_t;
     const amrex::Real theta_cutoff_height = m_theta_cutoff_height;
     const amrex::Real theta_gauss_mean = m_theta_gauss_mean;
     const amrex::Real theta_gauss_var = m_theta_gauss_var;
@@ -278,7 +278,7 @@ void ABLModulatedPowerLaw::set_temperature(
                     arr(i, j, k) = theta;
 
                     if (z < theta_cutoff_height) {
-                        arr(i, j, k) += deltaT * amrex::RandomNormal(
+                        arr(i, j, k) += delta_t * amrex::RandomNormal(
                                                      theta_gauss_mean,
                                                      theta_gauss_var, engine);
                     }

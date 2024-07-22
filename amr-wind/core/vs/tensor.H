@@ -62,7 +62,7 @@ struct TensorT
     }
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE static constexpr TensorT<T>
-    I() noexcept
+    identity() noexcept
     {
         return TensorT{Traits::one(),  Traits::zero(), Traits::zero(),
                        Traits::zero(), Traits::one(),  Traits::zero(),

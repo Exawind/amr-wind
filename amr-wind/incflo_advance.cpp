@@ -305,8 +305,8 @@ void incflo::ApplyPredictor(bool incremental_projection)
         auto& field = eqn->fields().field;
         if (m_diff_type != DiffusionType::Explicit) {
             amrex::Real dt_diff = (m_diff_type == DiffusionType::Implicit)
-                                      ? m_time.deltaT()
-                                      : 0.5 * m_time.deltaT();
+                                      ? m_time.delta_t()
+                                      : 0.5 * m_time.delta_t();
 
             // Solve diffusion eqn. and update of the scalar field
             eqn->solve(dt_diff);
@@ -320,7 +320,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
                 eqn->fields().diff_term.state(amr_wind::FieldState::New);
             amr_wind::field_ops::copy(*diff_old, diff_new, 0, 0, 1, 0);
             eqn->compute_diffusion_term(amr_wind::FieldState::New);
-            amrex::Real dto2 = 0.5 * m_time.deltaT();
+            amrex::Real dto2 = 0.5 * m_time.delta_t();
             amr_wind::field_ops::saxpy(
                 eqn->fields().field, -dto2, *diff_old, 0, 0, 1, 0);
             amr_wind::field_ops::saxpy(
@@ -360,8 +360,8 @@ void incflo::ApplyPredictor(bool incremental_projection)
     if (m_diff_type == DiffusionType::Crank_Nicolson ||
         m_diff_type == DiffusionType::Implicit) {
         Real dt_diff = (m_diff_type == DiffusionType::Implicit)
-                           ? m_time.deltaT()
-                           : 0.5 * m_time.deltaT();
+                           ? m_time.delta_t()
+                           : 0.5 * m_time.delta_t();
         icns().solve(dt_diff);
     } else if (m_diff_type == DiffusionType::Explicit && m_use_godunov) {
         // explicit RK2
@@ -373,7 +373,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
             icns().fields().diff_term.state(amr_wind::FieldState::New);
         amr_wind::field_ops::copy(*diff_old, diff_new, 0, 0, AMREX_SPACEDIM, 0);
         icns().compute_diffusion_term(amr_wind::FieldState::New);
-        amrex::Real dto2 = 0.5 * m_time.deltaT();
+        amrex::Real dto2 = 0.5 * m_time.delta_t();
         amr_wind::field_ops::saxpy(
             icns().fields().field, -dto2, *diff_old, 0, 0, AMREX_SPACEDIM, 0);
         amr_wind::field_ops::saxpy(
@@ -391,7 +391,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
     //
     // ************************************************************************************
     ApplyProjection(
-        (density_new).vec_const_ptrs(), new_time, m_time.deltaT(),
+        (density_new).vec_const_ptrs(), new_time, m_time.delta_t(),
         incremental_projection);
 
     if (m_verbose > 2) {
@@ -563,8 +563,8 @@ void incflo::ApplyCorrector()
         auto& field = eqn->fields().field;
         if (m_diff_type != DiffusionType::Explicit) {
             amrex::Real dt_diff = (m_diff_type == DiffusionType::Implicit)
-                                      ? m_time.deltaT()
-                                      : 0.5 * m_time.deltaT();
+                                      ? m_time.delta_t()
+                                      : 0.5 * m_time.delta_t();
 
             // Solve diffusion eqn. and update of the scalar field
             eqn->solve(dt_diff);
@@ -599,8 +599,8 @@ void incflo::ApplyCorrector()
     if (m_diff_type == DiffusionType::Crank_Nicolson ||
         m_diff_type == DiffusionType::Implicit) {
         Real dt_diff = (m_diff_type == DiffusionType::Implicit)
-                           ? m_time.deltaT()
-                           : 0.5 * m_time.deltaT();
+                           ? m_time.delta_t()
+                           : 0.5 * m_time.delta_t();
         icns().solve(dt_diff);
     }
     icns().post_solve_actions();
@@ -610,7 +610,7 @@ void incflo::ApplyCorrector()
     // *************************************************************************************
     bool incremental = false;
     ApplyProjection(
-        (density_new).vec_const_ptrs(), new_time, m_time.deltaT(), incremental);
+        (density_new).vec_const_ptrs(), new_time, m_time.delta_t(), incremental);
 }
 
 void incflo::prescribe_advance()
@@ -706,8 +706,8 @@ void incflo::ApplyPrescribeStep()
         auto& field = eqn->fields().field;
         if (m_diff_type != DiffusionType::Explicit) {
             amrex::Real dt_diff = (m_diff_type == DiffusionType::Implicit)
-                                      ? m_time.deltaT()
-                                      : 0.5 * m_time.deltaT();
+                                      ? m_time.delta_t()
+                                      : 0.5 * m_time.delta_t();
 
             // Solve diffusion eqn. and update of the scalar field
             eqn->solve(dt_diff);

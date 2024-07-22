@@ -15,9 +15,9 @@ class ABLMesoscaleForcing
 public:
     ABLMesoscaleForcing(const CFDSim& sim, const std::string& identifier);
 
-    void indirectForcingInit();
+    void indirect_forcing_init();
 
-    static void invertMat(
+    static void invert_mat(
         const amrex::Array2D<amrex::Real, 0, 3, 0, 3>& m,
         amrex::Array2D<amrex::Real, 0, 3, 0, 3>& im);
 
@@ -73,19 +73,19 @@ protected:
     //
     // weighting profile manipulation
     //
-    void setTransitionWeighting(); // will override weighting profile
+    void set_transition_weighting(); // will override weighting profile
     void
-    updateWeights(); // interpolate current profile to planar averaging heights
+    update_weights(); // interpolate current profile to planar averaging heights
 
     //
     // forcing profile manipulation
     //
-    bool haveForcingTransition()
+    bool have_forcing_transition()
     {
         return (amrex::toLower(m_forcing_transition) != "none");
     }
 
-    bool forcingToConstant()
+    bool forcing_to_constant()
     {
         // - check if m_forcing_transition ends with "Constant"
         if (m_forcing_transition.length() < 8) {
@@ -99,13 +99,13 @@ protected:
     // - slope varies linearly from the actual gradient of the forcing profile
     // at m_transition_height
     //   to 0 at (m_transition_height + m_transition_thicnkess)
-    void constantForcingTransition(amrex::Vector<amrex::Real>& error);
+    void constant_forcing_transition(amrex::Vector<amrex::Real>& error);
 
     // - blend between a lower and upper forcing profile; the blending fraction
     // is assumed to be
     //   equal to W(z), but this is not a requirement; W=1 and W=0 correspond to
     //   the lower and upper profiles, respectively
-    void blendForcings(
+    void blend_forcings(
         const amrex::Vector<amrex::Real>& lower,
         const amrex::Vector<amrex::Real>& upper,
         amrex::Vector<amrex::Real>& error);

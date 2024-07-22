@@ -240,7 +240,7 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
             auto mask_arr = level_mask.const_array(mfi);
 
             amrex::Box pbx =
-                PerpendicularBox<IndexSelector>(bx, amrex::IntVect{0, 0, 0});
+                perpendicular_box<IndexSelector>(bx, amrex::IntVect{0, 0, 0});
 
             amrex::ParallelFor(
                 amrex::Gpu::KernelInfo().setReduction(true), pbx,
@@ -251,7 +251,7 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
                     // This reduces the atomic pressure on the destination
                     // arrays.
 
-                    amrex::Box lbx = ParallelBox<IndexSelector>(
+                    amrex::Box lbx = parallel_box<IndexSelector>(
                         bx, amrex::IntVect{p_i, p_j, p_k});
 
                     for (int k = lbx.smallEnd(2); k <= lbx.bigEnd(2); ++k) {
@@ -428,7 +428,7 @@ void VelPlaneAveragingFine::compute_hvelmag_averages(const IndexSelector& idxOp)
             auto mask_arr = level_mask.const_array(mfi);
 
             amrex::Box pbx =
-                PerpendicularBox<IndexSelector>(bx, amrex::IntVect{0, 0, 0});
+                perpendicular_box<IndexSelector>(bx, amrex::IntVect{0, 0, 0});
 
             amrex::ParallelFor(
                 amrex::Gpu::KernelInfo().setReduction(true), pbx,
@@ -439,7 +439,7 @@ void VelPlaneAveragingFine::compute_hvelmag_averages(const IndexSelector& idxOp)
                     // This reduces the atomic pressure on the destination
                     // arrays.
 
-                    amrex::Box lbx = ParallelBox<IndexSelector>(
+                    amrex::Box lbx = parallel_box<IndexSelector>(
                         bx, amrex::IntVect{p_i, p_j, p_k});
 
                     for (int k = lbx.smallEnd(2); k <= lbx.bigEnd(2); ++k) {
@@ -546,7 +546,7 @@ VelPlaneAveragingFine::line_hvelmag_average_interpolated(amrex::Real x) const
 }
 
 amrex::Real
-VelPlaneAveragingFine::line_Su_average_interpolated(amrex::Real x) const
+VelPlaneAveragingFine::line_su_average_interpolated(amrex::Real x) const
 {
     int ind;
     amrex::Real c;
@@ -556,7 +556,7 @@ VelPlaneAveragingFine::line_Su_average_interpolated(amrex::Real x) const
 }
 
 amrex::Real
-VelPlaneAveragingFine::line_Sv_average_interpolated(amrex::Real x) const
+VelPlaneAveragingFine::line_sv_average_interpolated(amrex::Real x) const
 {
     int ind;
     amrex::Real c;
