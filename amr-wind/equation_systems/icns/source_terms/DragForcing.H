@@ -36,7 +36,7 @@ private:
     const Field& m_velocity;
     amrex::Gpu::DeviceVector<amrex::Real> m_device_vel_ht;
     amrex::Gpu::DeviceVector<amrex::Real> m_device_vel_vals;
-    // Smaller value gives a nice smooth start 
+    // Smaller value gives a nice smooth start
     amrex::Real m_drag{10.0};
     amrex::Real m_sponge_strength{1.0};
     amrex::Real m_sponge_density{1.0};
