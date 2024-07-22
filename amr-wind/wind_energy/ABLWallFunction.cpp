@@ -22,7 +22,6 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     }
 
     amrex::ParmParse pp("ABL");
-
     pp.query("kappa", m_mo.kappa);
     pp.query("mo_gamma_m", m_mo.gamma_m);
     pp.query("mo_gamma_h", m_mo.gamma_h);
