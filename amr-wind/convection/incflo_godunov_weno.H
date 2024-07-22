@@ -94,10 +94,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_xbc(
 
         } else if (i == domhi - 1) {
 
-            sm = -0.2 * s(domhi + 1, j, k, n) + 0.75 * s(domhi, j, k, n) +
+            sp = -0.2 * s(domhi + 1, j, k, n) + 0.75 * s(domhi, j, k, n) +
                  0.5 * s(domhi - 1, j, k, n) - 0.05 * s(domhi - 2, j, k, n);
 
-            sp = sedge1;
+            sm = sedge1;
         }
     }
 }

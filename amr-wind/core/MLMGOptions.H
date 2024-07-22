@@ -65,29 +65,29 @@ private:
     // MLMG options
 
     //! Bottom solver type bicgstab, cg, hypre, etc.
-    std::string bottom_solver_type{"bicgstab"};
+    std::string m_bottom_solver_type{"bicgstab"};
 
     //! Options namespace for hypre solvers
-    std::string hypre_namespace{"hypre"};
+    std::string m_hypre_namespace{"hypre"};
 
     //! Options of hypre interface
-    std::string hypre_interface{"ij"};
+    std::string m_hypre_interface{"ij"};
 
     //! Relative tolerance for convergence of MLMG solvers
-    amrex::Real bottom_rel_tol{1.0e-4};
+    amrex::Real m_bottom_rel_tol{1.0e-4};
 
     //! Absolute tolerance for convergence checks
-    amrex::Real bottom_abs_tol{-1.0};
+    amrex::Real m_bottom_abs_tol{-1.0};
 
     /** Verbosity of the MLMG and Projector interfaces
      */
-    int verbose{0};
-    int max_iter{200};
-    int max_fmg_iters{0};
-    int num_pre_smooth{2};
-    int num_post_smooth{2};
-    int num_final_smooth{8};
-    int num_bottom_smooth{0};
+    int m_verbose{0};
+    int m_max_iter{200};
+    int m_max_fmg_iters{0};
+    int m_num_pre_smooth{2};
+    int m_num_post_smooth{2};
+    int m_num_final_smooth{8};
+    int m_num_bottom_smooth{0};
 
     /** Set verbosity for AMReX bottom solvers
      *
@@ -96,24 +96,24 @@ private:
      *  verbosity and `hypre.bamg_verbose` to control BoomerAMG verbosity (when
      *  used as a preconditioner).
      */
-    int bottom_verbose{0};
+    int m_bottom_verbose{0};
 
     //! Maximum iterations for the bottom solver
-    int bottom_max_iter{200};
+    int m_bottom_max_iter{200};
 
     //! If set to true, AMReX won't abort if linear solver doesn't converge
     //! within max iterations
-    bool do_fixed_iters{true};
+    bool m_do_fixed_iters{true};
 
     //! option to use the nsolve bottom solver
     //! added to help with overset masking
-    bool do_nsolve{false};
+    bool m_do_nsolve{false};
 
     //! set grid size for nsolve
 #ifdef AMREX_USE_GPU
-    int nsolve_grid_size{64};
+    int m_nsolve_grid_size{64};
 #else
-    int nsolve_grid_size{16};
+    int m_nsolve_grid_size{16};
 #endif
 };
 

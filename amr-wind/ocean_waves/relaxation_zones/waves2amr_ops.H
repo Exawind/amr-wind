@@ -102,7 +102,7 @@ void postprocess_velocity_mfab_liquid(
 void postprocess_velocity_field_liquid(
     amr_wind::Field& vel_field,
     amr_wind::Field& lvs_field,
-    amrex::Vector<amrex::Geometry> geom_all)
+    amrex::Vector<amrex::Geometry>& geom_all)
 {
     int nlevels = vel_field.repo().num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -123,7 +123,7 @@ int update_offset_timestep(const int ntime, const int n0)
 
 void populate_fields_all_levels(
     amr_wind::ocean_waves::W2AWaves::MetaType& wdata,
-    amrex::Vector<amrex::Geometry> geom_all,
+    amrex::Vector<amrex::Geometry>& geom_all,
     amr_wind::Field& lvs_field,
     amr_wind::Field& vel_field,
     int ntime_off = 0)
@@ -215,6 +215,10 @@ struct ReadInputsOp<W2AWaves>
             pp.query("HOS_init_time", wdata.t_winit);
         }
 
+        // Default fftw_plan is deterministic
+        std::string fftw_planner_flag{"estimate"};
+        pp.query("fftw_planner_flag", fftw_planner_flag);
+
         amrex::Vector<amrex::Real> prob_lo_input(AMREX_SPACEDIM);
         amrex::ParmParse pp_geom("geometry");
         pp_geom.getarr("prob_lo", prob_lo_input);
@@ -300,9 +304,22 @@ struct ReadInputsOp<W2AWaves>
         wdata.v_mptr = modes_hosgrid::allocate_complex(wdata.n0, wdata.n1);
         wdata.w_mptr = modes_hosgrid::allocate_complex(wdata.n0, wdata.n1);
 
+        // Set up planner flag based on input
+        auto plan_f = modes_hosgrid::planner_flags::estimate;
+        if (fftw_planner_flag == "patient") {
+            plan_f = modes_hosgrid::planner_flags::patient;
+        } else if (fftw_planner_flag == "exhaustive") {
+            plan_f = modes_hosgrid::planner_flags::exhaustive;
+        } else if (fftw_planner_flag == "measure") {
+            plan_f = modes_hosgrid::planner_flags::measure;
+        } else if (!(fftw_planner_flag == "estimate")) {
+            amrex::Print()
+                << "WARNING (waves2amr_ops): invalid fftw_planner_flag "
+                   "specified; defaulting to estimate (FFTW_ESTIMATE).\n";
+        }
         // Set up plan for FFTW
-        wdata.plan =
-            modes_hosgrid::plan_ifftw(wdata.n0, wdata.n1, wdata.eta_mptr);
+        wdata.plan = modes_hosgrid::plan_ifftw(
+            wdata.n0, wdata.n1, wdata.eta_mptr, plan_f);
 
         // Create height vector for velocity mode conversion before
         // interpolation, with prob_lo as bottom
@@ -347,15 +364,20 @@ struct ReadInputsOp<W2AWaves>
             // Convert modes to spatial data
             modes_hosgrid::copy_complex(
                 wdata.n0, wdata.n1, wdata.mFS, wdata.eta_mptr);
-            wdata.sp_eta_vec.resize(wdata.n0 * wdata.n1, 0.0);
+            wdata.sp_eta_vec.resize(
+                static_cast<size_t>(wdata.n0) * static_cast<size_t>(wdata.n1),
+                0.0);
             modes_hosgrid::populate_hos_eta(
                 wdata.rmodes, wdata.plan, wdata.eta_mptr, wdata.sp_eta_vec);
             // Mesh is not yet created, so get data at every height
-            int n_hts = wdata.hvec.size();
-            wdata.sp_u_vec.resize(wdata.n0 * wdata.n1 * n_hts);
-            wdata.sp_v_vec.resize(wdata.n0 * wdata.n1 * n_hts);
-            wdata.sp_w_vec.resize(wdata.n0 * wdata.n1 * n_hts);
-            for (int iht = 0; iht < n_hts; ++iht) {
+            const auto n_hts = wdata.hvec.size();
+            wdata.sp_u_vec.resize(
+                static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
+            wdata.sp_v_vec.resize(
+                static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
+            wdata.sp_w_vec.resize(
+                static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
+            for (int iht = 0; iht < static_cast<int>(n_hts); ++iht) {
                 // Get sample height
                 amrex::Real ht = wdata.hvec[iht];
                 // Sample velocity
@@ -550,13 +572,19 @@ struct UpdateRelaxZonesOp<W2AWaves>
                     // Interpolation is needed
                     wdata.do_interp = true;
                     // Do resizing
-                    wdata.sp_eta_vec.resize(wdata.n0 * wdata.n1, 0.0);
+                    wdata.sp_eta_vec.resize(
+                        static_cast<size_t>(wdata.n0) *
+                            static_cast<size_t>(wdata.n1),
+                        0.0);
                     wdata.sp_u_vec.resize(
-                        wdata.n0 * wdata.n1 * wdata.indvec.size());
+                        static_cast<size_t>(wdata.n0 * wdata.n1) *
+                        wdata.indvec.size());
                     wdata.sp_v_vec.resize(
-                        wdata.n0 * wdata.n1 * wdata.indvec.size());
+                        static_cast<size_t>(wdata.n0 * wdata.n1) *
+                        wdata.indvec.size());
                     wdata.sp_w_vec.resize(
-                        wdata.n0 * wdata.n1 * wdata.indvec.size());
+                        static_cast<size_t>(wdata.n0 * wdata.n1) *
+                        wdata.indvec.size());
                     // Sizes will remain constant and need for interpolation
                     // will remain until a regrid occurs
                 } else {

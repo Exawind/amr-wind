@@ -1,0 +1,103 @@
+# Generating the terrain file
+# Geometry
+geometry.prob_lo 			 = 0 0 0
+geometry.prob_hi 			 = 1024 1024 1024
+geometry.is_periodic 			 = 1 1 0
+# Grid 
+amr.n_cell 			 = 64 64  64
+# Switch to max level to 3 to turn on refinement boxes 
+amr.max_level 			 = 0
+time.stop_time 			 = -1
+time.max_step 			 = 2
+time.initial_dt 			 = 1.0
+time.fixed_dt 			 = -1
+time.cfl 			 = 0.9
+time.plot_interval 			 = 1000
+time.checkpoint_interval 			 = 1000
+# incflo 
+incflo.physics 			 = ABL Actuator
+incflo.density 			 = 1.225
+incflo.gravity 			 = 0.  0. -9.81  # Gravitational force (3D)
+incflo.velocity 			 = 10 0 0 
+incflo.verbose  			 = 0
+incflo.initial_iterations 			 = 8
+incflo.do_initial_proj 			 = true
+incflo.constant_density 			 = true
+incflo.use_godunov 			 = true
+incflo.godunov_type 			 = "weno_z"
+incflo.diffusion_type 			 = 2
+# transport equation parameters 
+transport.model 			 = ConstTransport
+transport.viscosity 			 = 1e-5
+transport.laminar_prandtl 			 = 0.7
+transport.turbulent_prandtl 			 = 0.333
+# turbulence equation parameters 
+turbulence.model 			 = Kosovic
+Kosovic.refMOL 			 = -1e30
+# Atmospheric boundary layer
+ABL.kappa 			 = .41
+ABL.normal_direction 			 = 2
+ABL.reference_temperature 			 = 300
+ABL.stats_output_format 			 = netcdf
+ABL.surface_roughness_z0 			 = 0.1
+ABL.temperature_heights = 0 0 1000 1100 3000 
+ABL.temperature_values  = 300 300 300 305 310.7 
+ABL.wall_shear_stress_type 			 = local
+ABL.surface_temp_flux 			 = 0
+# Source
+ICNS.source_terms 			 = BoussinesqBuoyancy CoriolisForcing GeostrophicForcing RayleighDamping NonLinearSGSTerm ActuatorForcing 
+GeostrophicForcing.geostrophic_wind 			 = 10 0 0
+RayleighDamping.force_coord_directions= 0 0 1
+BoussinesqBuoyancy.reference_temperature 			 = 300
+BoussinesqBuoyancy.thermal_expansion_coeff 			 = 0.00333333
+CoriolisForcing.east_vector 			 = 1.0 0.0 0.0 
+CoriolisForcing.north_vector 			 = 0.0 1.0 0.0 
+CoriolisForcing.latitude 			 = 43.5239 
+CoriolisForcing.rotational_time_period 			 = 86164.1 
+RayleighDamping.reference_velocity 			 = 10 0 0
+RayleighDamping.length_sloped_damping 			 = 500
+RayleighDamping.length_complete_damping 			 = 1500
+RayleighDamping.time_scale 			 = 20.0
+# BC 
+zhi.type 			 = "slip_wall"
+zhi.temperature_type 			 = "fixed_gradient"
+zhi.temperature 			 =  0.003
+zlo.type 			 = "wall_model"
+mac_proj.num_pre_smooth 			 = 8 
+mac_proj.num_post_smooth 			 = 8 
+mac_proj.mg_rtol 			 = 1.0e-4 
+mac_proj.mg_atol 			 = 1.0e-8 
+mac_proj.maxiter 			 = 360 
+nodal_proj.num_pre_smooth 			 = 8 
+nodal_proj.num_post_smooth 			 = 8 
+nodal_proj.mg_rtol 			 = 1.0e-4 
+nodal_proj.mg_atol 			 = 1.0e-8 
+diffusion.mg_rtol 			 = 1.0e-6 
+diffusion.mg_atol 			 = 1.0e-8 
+temperature_diffusion.mg_rtol 			 = 1.0e-6 
+temperature_diffusion.mg_atol 			 = 1.0e-8 
+nodal_proj.maxiter 			 = 360 
+Actuator.labels = Turb1  Turb2  Turb3  Turb4  
+Actuator.JoukowskyDisk.rotor_diameter = 100.0
+Actuator.JoukowskyDisk.hub_height     = 80.0
+Actuator.JoukowskyDisk.epsilon        = 5.0 5.0 5.0
+Actuator.JoukowskyDisk.yaw            = 270.0
+Actuator.JoukowskyDisk.output_frequency = 100
+Actuator.JoukowskyDisk.diameters_to_sample = 2.5
+Actuator.JoukowskyDisk.thrust_coeff  = 1.158093814 0.958191954 0.842281443 0.841410733 0.841410733 0.841410733 0.841410733 0.841410733 0.841410733 0.841410733 0.841410733 0.841410733 0.784534886 0.743327664 0.653457742 0.566093507 0.485349168 0.448263929 0.387457153 0.293997037 0.226171155 0.176059266   0.13865674 0.110481935 0.089183188 0.072941144 0.060464209 0.05074999 0.043180894 0.037323406
+Actuator.JoukowskyDisk.wind_speed  = 3.0 3.889649963239854 4.684006996752303 5.377830233987229 5.966542092267928 6.44625847394617 6.8138143922059236 7.066784852  7.203500851477444 7.22306038896904 7.320786359429763 7.535153078939617 7.864746237154081 8.30739130337076 8.860167873258558 9.519428936578247 10.280  10.681872976809931 11.13933247768231 12.08928744604103 13.12442240111568 14.237907914913496 15.422397632159566 16.670076738763772 17.972713521 19.321713675239476 20.708177009893884 22.122956165519163 23.556716965618207 25.0
+Actuator.JoukowskyDisk.num_points_r   = 5
+Actuator.JoukowskyDisk.num_points_t   = 5
+Actuator.JoukowskyDisk.rpm = 8 8 8 9.172052607 10.17611854 10.99428938 11.62116715 12.05261594 12.28578923 12.31914861 12.48582322 12.85143216 13.413563 14.16850788 15.11128509 15.16026965 15.16026965 15.16026965 15.16026965 15.16026965 15.16026965 15.16026965 15.16026965 15.16026965 15.16026965 15.16026  15.16026965 15.16026965 15.16026965 15.16026965
+# Turbine 1
+Actuator.Turb1.type = JoukowskyDisk 
+Actuator.Turb1.base_position  = 512 512 0
+# Turbine 2
+Actuator.Turb2.type = JoukowskyDisk 
+Actuator.Turb2.base_position  = 512 1024 0
+# Turbine 3
+Actuator.Turb3.type = JoukowskyDisk 
+Actuator.Turb3.base_position  = 1024 512 0
+# Turbine 4
+Actuator.Turb4.type = JoukowskyDisk 
+Actuator.Turb4.base_position  = 1024 1024 0

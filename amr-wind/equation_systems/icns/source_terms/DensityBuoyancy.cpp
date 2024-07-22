@@ -25,7 +25,7 @@ DensityBuoyancy::DensityBuoyancy(const CFDSim& sim)
     {
         amrex::ParmParse pp("incflo");
         pp.queryarr("gravity", m_gravity);
-        pp.query("density", rho_0);
+        pp.query("density", m_rho_0);
     }
 }
 
@@ -47,7 +47,7 @@ void DensityBuoyancy::operator()(
     const FieldState fstate,
     const amrex::Array4<amrex::Real>& vel_forces) const
 {
-    const amrex::Real density_0 = rho_0;
+    const amrex::Real density_0 = m_rho_0;
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
         m_gravity[0], m_gravity[1], m_gravity[2]};
 

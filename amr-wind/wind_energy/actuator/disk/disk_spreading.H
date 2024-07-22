@@ -46,6 +46,14 @@ public:
         const amrex::Geometry& geom)
     {
         const auto& bx = mfi.tilebox();
+
+        const auto bxa = amr_wind::utils::realbox_to_box(
+            actObj.m_data.info().bound_box, geom);
+        const auto& bxi = bx & bxa;
+        if (bxi.isEmpty()) {
+            return;
+        }
+
         const auto& sarr = actObj.m_act_src(lev).array(mfi);
         const auto& problo = geom.ProbLoArray();
         const auto& dx = geom.CellSizeArray();
@@ -101,6 +109,14 @@ public:
         const amrex::Geometry& geom)
     {
         const auto& bx = mfi.tilebox();
+
+        const auto bxa = amr_wind::utils::realbox_to_box(
+            actObj.m_data.info().bound_box, geom);
+        const auto& bxi = bx & bxa;
+        if (bxi.isEmpty()) {
+            return;
+        }
+
         const auto& sarr = actObj.m_act_src(lev).array(mfi);
         const auto& problo = geom.ProbLoArray();
         const auto& dx = geom.CellSizeArray();
@@ -158,6 +174,14 @@ public:
         const amrex::Geometry& geom)
     {
         const auto& bx = mfi.tilebox();
+
+        const auto bxa = amr_wind::utils::realbox_to_box(
+            actObj.m_data.info().bound_box, geom);
+        const auto& bxi = bx & bxa;
+        if (bxi.isEmpty()) {
+            return;
+        }
+
         const auto& sarr = actObj.m_act_src(lev).array(mfi);
         const auto& problo = geom.ProbLoArray();
         const auto& dx = geom.CellSizeArray();

@@ -77,14 +77,14 @@ void InletData::read_data(
     const size_t nc = fld->num_comp();
     const int nstart = m_components[static_cast<int>(fld->id())];
 
-    const int idx = closest_index(times, time);
+    const int idx = utils::closest_index(times, time);
     const int idxp1 = idx + 1;
     m_tn = times[idx];
     m_tnp1 = times[idxp1];
     AMREX_ALWAYS_ASSERT(((m_tn <= time) && (time <= m_tnp1)));
 
     const int normal = ori.coordDir();
-    const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
+    const amrex::GpuArray<int, 2> perp = utils::perpendicular_idx(normal);
 
     const auto& bx = (*m_data_n[ori])[lev].box();
     const auto& lo = bx.loVect();
@@ -150,7 +150,7 @@ void InletData::read_data_native(
     const int nstart =
         static_cast<int>(m_components[static_cast<int>(fld->id())]);
 
-    const int idx = closest_index(times, time);
+    const int idx = utils::closest_index(times, time);
     const int idxp1 = idx + 1;
 
     m_tn = times[idx];
@@ -381,7 +381,8 @@ void ABLBoundaryPlane::write_header()
             auto v_face = plane_grp.def_scalar("side", NC_INT);
             v_face.put(&face_dir);
 
-            const auto perp = perpendicular_idx<amrex::Vector<int>>(normal);
+            const auto perp =
+                utils::perpendicular_idx<amrex::Vector<int>>(normal);
             auto v_perp = plane_grp.def_var("perpendicular", NC_INT, {"pdim"});
             v_perp.put(perp.data());
 
@@ -427,7 +428,8 @@ void ABLBoundaryPlane::write_header()
         for (auto& plane_grp : ncf.all_groups()) {
             int normal;
             plane_grp.var("normal").get(&normal);
-            const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
+            const amrex::GpuArray<int, 2> perp =
+                utils::perpendicular_idx(normal);
 
             const int nlevels = plane_grp.num_groups();
             for (int lev = 0; lev < nlevels; ++lev) {
@@ -615,7 +617,8 @@ void ABLBoundaryPlane::read_header()
             int normal, face_dir;
             plane_grp.var("normal").get(&normal);
             plane_grp.var("side").get(&face_dir);
-            const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
+            const amrex::GpuArray<int, 2> perp =
+                utils::perpendicular_idx(normal);
             const amrex::Orientation ori(
                 normal, amrex::Orientation::Side(face_dir));
 
@@ -794,7 +797,7 @@ void ABLBoundaryPlane::read_file()
 
     if (m_out_fmt == "native") {
 
-        const int index = closest_index(m_in_times, time);
+        const int index = utils::closest_index(m_in_times, time);
         const int t_step1 = m_in_timesteps[index];
         const int t_step2 = m_in_timesteps[index + 1];
 
@@ -950,7 +953,7 @@ void ABLBoundaryPlane::write_data(
     BL_PROFILE("amr-wind::ABLBoundaryPlane::write_data");
     // Plane info
     const int normal = ori.coordDir();
-    const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
+    const amrex::GpuArray<int, 2> perp = utils::perpendicular_idx(normal);
     const amrex::IntVect v_offset = offset(ori.faceDir(), normal);
 
     // Field info
