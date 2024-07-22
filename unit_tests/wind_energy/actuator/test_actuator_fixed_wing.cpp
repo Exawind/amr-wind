@@ -183,6 +183,7 @@ struct ComputeForceOp<::amr_wind_tests::FixedWing, ActSrcLine>
 {
     void operator()(::amr_wind_tests::FixedWing::DataType& data)
     {
+        constexpr amrex::Real tol = 1.0e-15;
         const auto& meta = data.meta();
         const auto& grid = data.grid();
         ComputeForceOp<::amr_wind::actuator::FixedWing, ActSrcLine> actual_op;
@@ -192,20 +193,20 @@ struct ComputeForceOp<::amr_wind_tests::FixedWing, ActSrcLine>
         if (meta.pitch_timetable_file.empty()) {
             // Check position (using mid point)
             if (!(time > 0.0)) {
-                EXPECT_DOUBLE_EQ(grid.pos[10].x(), 1.0 * 0.0);
-                EXPECT_DOUBLE_EQ(grid.pos[10].y(), 0.5 * 0.0);
-                EXPECT_DOUBLE_EQ(grid.pos[10].z(), 0.7 * 0.0);
+                EXPECT_NEAR(grid.pos[10].x(), 1.0 * 0.0, tol);
+                EXPECT_NEAR(grid.pos[10].y(), 0.5 * 0.0, tol);
+                EXPECT_NEAR(grid.pos[10].z(), 0.7 * 0.0, tol);
             } else {
-                EXPECT_DOUBLE_EQ(grid.pos[10].x(), 1.0 * 0.2);
-                EXPECT_DOUBLE_EQ(grid.pos[10].y(), 0.5 * 0.2);
-                EXPECT_DOUBLE_EQ(grid.pos[10].z(), 0.7 * 0.2);
+                EXPECT_NEAR(grid.pos[10].x(), 1.0 * 0.2, tol);
+                EXPECT_NEAR(grid.pos[10].y(), 0.5 * 0.2, tol);
+                EXPECT_NEAR(grid.pos[10].z(), 0.7 * 0.2, tol);
             }
         } else {
             // Check pitch
             if (!(time > 0.0)) {
-                EXPECT_DOUBLE_EQ(meta.pitch, 0.0);
+                EXPECT_NEAR(meta.pitch, 0.0, tol);
             } else {
-                EXPECT_DOUBLE_EQ(meta.pitch, 90.0);
+                EXPECT_NEAR(meta.pitch, 90.0, tol);
             }
             // const auto dummy = grid.orientation;
             // Check rotation of epsilon
@@ -217,11 +218,11 @@ struct ComputeForceOp<::amr_wind_tests::FixedWing, ActSrcLine>
             }
             const auto ref_mat = vs::quaternion(meta.end - meta.start, angle);
             for (int n = 0; n < 9; ++n) {
-                EXPECT_DOUBLE_EQ(grid.orientation[0][n], ref_mat[n]);
-                EXPECT_DOUBLE_EQ(grid.orientation[1][n], ref_mat[n]);
+                EXPECT_NEAR(grid.orientation[0][n], ref_mat[n], tol);
+                EXPECT_NEAR(grid.orientation[1][n], ref_mat[n], tol);
             }
             // Check 2D nature of force
-            EXPECT_DOUBLE_EQ(grid.dcoord_flags[1], 0.0);
+            EXPECT_NEAR(grid.dcoord_flags[1], 0.0, tol);
         }
     }
 };
