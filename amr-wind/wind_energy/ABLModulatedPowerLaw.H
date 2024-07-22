@@ -34,7 +34,8 @@ public:
         const Field& fld,
         amrex::MultiFab& mfab,
         const int dcomp = 0,
-        const int orig_comp = 0) const;
+        const int orig_comp = 0,
+        const bool inflow_faces_only = false) const;
 
     void set_temperature(
         const int lev,

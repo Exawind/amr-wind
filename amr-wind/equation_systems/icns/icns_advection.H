@@ -5,6 +5,7 @@
 #include "amr-wind/equation_systems/AdvOp_MOL.H"
 #include "amr-wind/equation_systems/icns/icns.H"
 #include "amr-wind/equation_systems/vof/vof_momentum_flux.H"
+#include "amr-wind/core/Physics.H"
 
 #include "AMReX_MultiFabUtil.H"
 #include "hydro_MacProjector.H"
@@ -23,6 +24,7 @@ public:
 
     MacProjOp(
         FieldRepo& /*repo*/,
+        PhysicsMgr& /*phy_mgr*/,
         bool /*has_overset*/,
         bool /*variable_density*/,
         bool /*mesh_mapping*/,
@@ -48,6 +50,7 @@ private:
     void init_projector(const amrex::Real /*beta*/) noexcept;
 
     FieldRepo& m_repo;
+    PhysicsMgr& m_phy_mgr;
     std::unique_ptr<Hydro::MacProjector> m_mac_proj;
     MLMGOptions m_options;
     bool m_has_overset{false};
@@ -65,6 +68,7 @@ template <>
 struct AdvectionOp<ICNS, fvm::Godunov>
 {
     AdvectionOp(
+        CFDSim& sim,
         PDEFields& fields_in,
         bool has_overset,
         bool variable_density,
@@ -76,6 +80,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         , w_mac(fields_in.repo.get_field("w_mac"))
         , m_macproj_op(
               fields.repo,
+              sim.physics_manager(),
               has_overset,
               variable_density,
               mesh_mapping,
@@ -544,6 +549,7 @@ template <>
 struct AdvectionOp<ICNS, fvm::MOL>
 {
     AdvectionOp(
+        CFDSim& sim,
         PDEFields& fields_in,
         bool has_overset,
         bool variable_density,
@@ -556,6 +562,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
         , m_mesh_mapping(mesh_mapping)
         , m_macproj_op(
               fields.repo,
+              sim.physics_manager(),
               has_overset,
               variable_density,
               m_mesh_mapping,

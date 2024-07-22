@@ -15,6 +15,7 @@ template <>
 struct AdvectionOp<VOF, fvm::Godunov>
 {
     AdvectionOp(
+        CFDSim& /* sim */,
         PDEFields& fields_in,
         bool /*unused*/,
         bool /*unused*/,

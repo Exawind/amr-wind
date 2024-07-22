@@ -24,6 +24,7 @@ struct AdvectionOp<
 {
     // cppcheck-suppress uninitMemberVar
     AdvectionOp(
+        CFDSim& /* sim */,
         PDEFields& fields_in,
         bool /* has_overset */,
         bool /* variable density */,
