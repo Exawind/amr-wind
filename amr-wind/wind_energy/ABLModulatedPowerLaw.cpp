@@ -279,8 +279,8 @@ void ABLModulatedPowerLaw::set_temperature(
 
                     if (z < theta_cutoff_height) {
                         arr(i, j, k) += delta_t * amrex::RandomNormal(
-                                                     theta_gauss_mean,
-                                                     theta_gauss_var, engine);
+                                                      theta_gauss_mean,
+                                                      theta_gauss_var, engine);
                     }
                 });
         }

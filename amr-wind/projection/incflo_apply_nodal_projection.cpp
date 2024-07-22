@@ -148,8 +148,9 @@ void incflo::ApplyProjection(
             ? &(m_repo.get_mesh_mapping_field(amr_wind::FieldLoc::CELL))
             : nullptr;
     amr_wind::Field const* mesh_detJ =
-        mesh_mapping ? &(m_repo.get_mesh_mapping_det_j(amr_wind::FieldLoc::CELL))
-                     : nullptr;
+        mesh_mapping
+            ? &(m_repo.get_mesh_mapping_det_j(amr_wind::FieldLoc::CELL))
+            : nullptr;
     const auto* ref_density =
         is_anelastic ? &(m_repo.get_field("reference_density")) : nullptr;
 
