@@ -499,7 +499,7 @@ jobs:
             source ${EXAWIND_MANAGER}/start.sh && \
             spack-start && \
             ln -s ${GITHUB_WORKSPACE} amr-wind && \
-            quick-create-dev -s amr-wind+hypre+netcdf@main && \
+            quick-create-dev -s amr-wind@main && \
             spack -e e4s-build config add view:true && \
             spack -e e4s-build add cmake && \
             spack -e e4s-build concretize && \
