@@ -204,9 +204,9 @@ struct ComputeForceOp<::amr_wind_tests::FixedWing, ActSrcLine>
         } else {
             // Check pitch
             if (!(time > 0.0)) {
-              EXPECT_NEAR(meta.pitch, 0.0, tol);
+                EXPECT_NEAR(meta.pitch, 0.0, tol);
             } else {
-              EXPECT_NEAR(meta.pitch, 90.0, tol);
+                EXPECT_NEAR(meta.pitch, 90.0, tol);
             }
             // const auto dummy = grid.orientation;
             // Check rotation of epsilon
