@@ -10,10 +10,11 @@ namespace amr_wind::pde::temperature {
 DragTempForcing::DragTempForcing(const CFDSim& sim)
     : m_sim(sim)
     , m_mesh(sim.mesh())
+    , m_velocity(sim.repo().get_field("velocity"))
     , m_temperature(sim.repo().get_field("temperature"))
 {
     amrex::ParmParse pp("DragTempForcing");
-    pp.query("drag_coefficient", m_drag);
+    pp.query("dragCoefficient", m_drag);
     pp.query("RefT", m_internalRefT);
 }
 
@@ -23,10 +24,14 @@ void DragTempForcing::operator()(
     const int lev,
     const amrex::MFIter& mfi,
     const amrex::Box& bx,
-    const FieldState /*fstate*/,
+    const FieldState fstate,
     const amrex::Array4<amrex::Real>& src_term) const
 {
-    const auto temperature = m_temperature(lev).const_array(mfi);
+    const auto& vel =
+        m_velocity.state(field_impl::dof_state(fstate))(lev).const_array(mfi);
+    const auto& temperature =
+        m_temperature.state(field_impl::dof_state(fstate))(lev).const_array(
+            mfi);
     const bool is_terrain =
         this->m_sim.repo().int_field_exists("terrain_blank");
     if (!is_terrain) {
@@ -37,12 +42,17 @@ void DragTempForcing::operator()(
     const auto& blank = (*m_terrain_blank)(lev).const_array(mfi);
     const auto& geom = m_mesh.Geom(lev);
     const auto& dx = geom.CellSizeArray();
-    const amrex::Real drag = m_drag;
-    const amrex::Real TRef = m_internalRefT;
+    const amrex::Real gpu_drag = m_drag / dx[2];
+    const amrex::Real gpu_TRef = m_internalRefT;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        const amrex::Real Cd = drag / dx[0];
+        const amrex::Real ux1 = vel(i, j, k, 0);
+        const amrex::Real uy1 = vel(i, j, k, 1);
+        const amrex::Real uz1 = vel(i, j, k, 2);
+        const amrex::Real m = std::sqrt(ux1 * ux1 + uy1 * uy1 + uz1 * uz1);
+        const amrex::Real Cd = std::min(gpu_drag / (m + 1e-5), 10 / dx[2]);
+        ;
         src_term(i, j, k, 0) -=
-            (Cd * (temperature(i, j, k, 0) - TRef) * blank(i, j, k));
+            (Cd * (temperature(i, j, k, 0) - gpu_TRef) * blank(i, j, k, 0));
     });
 }
 

@@ -8,7 +8,8 @@
 namespace amr_wind::pde::icns {
 
 DragForcing::DragForcing(const CFDSim& sim)
-    : m_sim(sim)
+    : m_time(sim.time())
+    , m_sim(sim)
     , m_mesh(sim.mesh())
     , m_velocity(sim.repo().get_field("velocity"))
 {
@@ -79,6 +80,7 @@ void DragForcing::operator()(
     const auto* device_vel_ht = m_device_vel_ht.data();
     const auto* device_vel_vals = m_device_vel_vals.data();
     const unsigned vsize = m_device_vel_ht.size();
+    const auto& dt = m_time.deltaT();
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
         const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
@@ -93,7 +95,7 @@ void DragForcing::operator()(
                                         : (startY - y) / (startY - prob_lo[1]);
         yi = std::max(yi, 0.0);
         ydamping = sponge_strength * yi * yi;
-        const amrex::Real Cd = dragCoefficient / dx[0];
+        const amrex::Real Cd = dragCoefficient / dx[2];
         amrex::Real spongeVelX = 0.0;
         amrex::Real spongeVelY = 0.0;
         amrex::Real spongeVelZ = 0.0;
@@ -111,35 +113,42 @@ void DragForcing::operator()(
                 spongeVelZ = device_vel_vals[iz];
             }
         }
-        // Terrain Drag
         amrex::Real Dxz = 0.0;
         amrex::Real Dyz = 0.0;
+        amrex::Real bcforcing_x = 0;
+        amrex::Real bcforcing_y = 0;
         const amrex::Real ux1 = vel(i, j, k, 0);
         const amrex::Real uy1 = vel(i, j, k, 1);
         const amrex::Real uz1 = vel(i, j, k, 2);
         const amrex::Real m = std::sqrt(ux1 * ux1 + uy1 * uy1 + uz1 * uz1);
         if (drag(i, j, k) == 1) {
-            const amrex::Real m1 = std::sqrt(ux1 * ux1 + uy1 * uy1);
-            const amrex::Real ux2 = vel(i, j, k - 1, 0);
-            const amrex::Real uy2 = vel(i, j, k - 1, 1);
+            const amrex::Real ux2 = vel(i, j, k + 1, 0);
+            const amrex::Real uy2 = vel(i, j, k + 1, 1);
             const amrex::Real m2 = std::sqrt(ux2 * ux2 + uy2 * uy2);
             const amrex::Real kappa = 0.41;
             const amrex::Real z0 = std::max(terrainz0(i, j, k), 1e-4);
-            const amrex::Real ustar = std::min(sponge_strength, 1.0) *
-                                      std::abs(m2 - m1) * kappa /
-                                      std::log((z + z0) / z0);
+            const amrex::Real ustar = m2 * kappa / std::log(1.5 * dx[2] / z0);
+            const amrex::Real uTarget =
+                ustar / kappa * std::log(0.5 * dx[2] / z0);
+            const amrex::Real uxTarget =
+                uTarget * ux2 / (1e-5 + std::sqrt(ux2 * ux2 + uy2 * uy2));
+            const amrex::Real uyTarget =
+                uTarget * uy2 / (1e-5 + std::sqrt(ux2 * ux2 + uy2 * uy2));
+            bcforcing_x = -(uxTarget - ux1) / dt;
+            bcforcing_y = -(uyTarget - uy1) / dt;
             Dxz = -ustar * ustar * ux1 /
                   (1e-5 + std::sqrt(ux1 * ux1 + uy1 * uy1)) / dx[2];
             Dyz = -ustar * ustar * uy1 /
                   (1e-5 + std::sqrt(ux1 * ux1 + uy1 * uy1)) / dx[2];
         }
-        // Adjusting Cd for momentum
-        const amrex::Real CdM = std::min(Cd / (m + 1e-5), 1000.0);
+        const amrex::Real CdM = std::min(Cd / (m + 1e-5), 1000.0 / dx[2]);
         src_term(i, j, k, 0) -=
             (CdM * m * ux1 * blank(i, j, k) + Dxz * drag(i, j, k) +
+             bcforcing_x * drag(i, j, k) +
              (xdamping + ydamping) * (ux1 - sponge_density * spongeVelX));
         src_term(i, j, k, 1) -=
             (CdM * m * uy1 * blank(i, j, k) + Dyz * drag(i, j, k) +
+             bcforcing_y * drag(i, j, k) +
              (xdamping + ydamping) * (uy1 - sponge_density * spongeVelY));
         src_term(i, j, k, 2) -=
             (CdM * m * uz1 * blank(i, j, k) +
