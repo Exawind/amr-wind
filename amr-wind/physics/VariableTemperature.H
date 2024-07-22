@@ -5,7 +5,7 @@
 #include "amr-wind/core/Field.H"
 #include "amr-wind/CFDSim.H"
 
-namespace amr_wind::variable_temperature{
+namespace amr_wind::variable_temperature {
 
 namespace {} // namespace
 
