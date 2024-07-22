@@ -127,7 +127,7 @@ public:
         const auto& density = m_density.state(fstate);
         const auto& viscosity = m_pdefields.mueff;
         Field const* mesh_detJ =
-            m_mesh_mapping ? &(repo.get_mesh_mapping_detJ(FieldLoc::CELL))
+            m_mesh_mapping ? &(repo.get_mesh_mapping_det_j(FieldLoc::CELL))
                            : nullptr;
         std::unique_ptr<ScratchField> rho_times_detJ =
             m_mesh_mapping ? repo.create_scratch_field(
@@ -199,7 +199,7 @@ public:
         auto rhs_ptr = repo.create_scratch_field("rhs", field.num_comp(), 0);
         const auto& viscosity = m_pdefields.mueff;
         Field const* mesh_detJ =
-            m_mesh_mapping ? &(repo.get_mesh_mapping_detJ(FieldLoc::CELL))
+            m_mesh_mapping ? &(repo.get_mesh_mapping_det_j(FieldLoc::CELL))
                            : nullptr;
         std::unique_ptr<ScratchField> rho_times_detJ =
             m_mesh_mapping ? repo.create_scratch_field(
@@ -344,7 +344,7 @@ public:
         const auto& density = m_density.state(fstate);
         const auto& viscosity = m_pdefields.mueff;
         Field const* mesh_detJ =
-            m_mesh_mapping ? &(repo.get_mesh_mapping_detJ(FieldLoc::CELL))
+            m_mesh_mapping ? &(repo.get_mesh_mapping_det_j(FieldLoc::CELL))
                            : nullptr;
         std::unique_ptr<ScratchField> rho_times_detJ =
             m_mesh_mapping ? repo.create_scratch_field(
@@ -432,7 +432,7 @@ public:
         const auto& geom = repo.mesh().Geom();
 
         Field const* mesh_detJ =
-            m_mesh_mapping ? &(repo.get_mesh_mapping_detJ(FieldLoc::CELL))
+            m_mesh_mapping ? &(repo.get_mesh_mapping_det_j(FieldLoc::CELL))
                            : nullptr;
         std::unique_ptr<ScratchField> rho_times_detJ =
             m_mesh_mapping ? repo.create_scratch_field(

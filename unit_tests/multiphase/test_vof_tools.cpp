@@ -33,7 +33,7 @@ protected:
         }
     }
 
-    amrex::Real dx = 0.25;
+    amrex::Real m_dx = 0.25;
 };
 
 namespace {
@@ -283,18 +283,18 @@ TEST_F(VOFToolTest, levelset_to_vof)
 
     amrex::Real error_total = 0.0;
     // profile 0: horizontal
-    init_lvs(0, dx, levelset);
-    error_total = levelset_to_vof_test_impl(dx, levelset);
+    init_lvs(0, m_dx, levelset);
+    error_total = levelset_to_vof_test_impl(m_dx, levelset);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
     EXPECT_NEAR(error_total, 0.0, 1e-12);
     //  profile 1: parabola
-    init_lvs(1, dx, levelset);
-    error_total = levelset_to_vof_test_impl(dx, levelset);
+    init_lvs(1, m_dx, levelset);
+    error_total = levelset_to_vof_test_impl(m_dx, levelset);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
     EXPECT_NEAR(error_total, 0.0, 0.011);
     // profile 2: cosine
-    init_lvs(2, dx, levelset);
-    error_total = levelset_to_vof_test_impl(dx, levelset);
+    init_lvs(2, m_dx, levelset);
+    error_total = levelset_to_vof_test_impl(m_dx, levelset);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
     EXPECT_NEAR(error_total, 0.0, 0.016);
 }

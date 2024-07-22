@@ -187,7 +187,7 @@ Field& FieldRepo::get_mesh_mapping_field(FieldLoc floc) const
     return *fac;
 }
 
-Field& FieldRepo::get_mesh_mapping_detJ(FieldLoc floc) const
+Field& FieldRepo::get_mesh_mapping_det_j(FieldLoc floc) const
 {
     Field* detJ = nullptr;
     switch (floc) {

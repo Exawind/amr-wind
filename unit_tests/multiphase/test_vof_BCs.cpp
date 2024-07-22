@@ -160,12 +160,12 @@ protected:
         }
         {
             amrex::ParmParse pp("time");
-            pp.add("fixed_dt", dt);
+            pp.add("fixed_dt", m_dt);
         }
     }
 
     void
-    testing_BC_coorddir(const int option, const int dir, const amrex::Real tol)
+    testing_bc_coorddir(const int option, const int dir, const amrex::Real tol)
     {
 
         // Get string version of direction
@@ -326,15 +326,15 @@ protected:
     const amrex::Real m_rho2 = 1.0;
     const amrex::Real m_vel = 5.0;
     const amrex::Real m_vof_bdyval = 1.0;
-    const amrex::Real dt = 0.45 * 0.5 / m_vel; // first number is CFL
+    const amrex::Real m_dt = 0.45 * 0.5 / m_vel; // first number is CFL
 };
 
 constexpr double tol1 = 1.0e-15;
 constexpr double tol2 = 6.0e-2;
 
-TEST_F(VOFBCTest, dirichletX) { testing_BC_coorddir(1, 0, tol1); }
-TEST_F(VOFBCTest, slipwallY) { testing_BC_coorddir(2, 1, tol2); }
-TEST_F(VOFBCTest, noslipwallZ) { testing_BC_coorddir(3, 2, tol1); }
-TEST_F(VOFBCTest, pressureX) { testing_BC_coorddir(4, 0, tol1); }
+TEST_F(VOFBCTest, dirichletX) { testing_bc_coorddir(1, 0, tol1); }
+TEST_F(VOFBCTest, slipwallY) { testing_bc_coorddir(2, 1, tol2); }
+TEST_F(VOFBCTest, noslipwallZ) { testing_bc_coorddir(3, 2, tol1); }
+TEST_F(VOFBCTest, pressureX) { testing_bc_coorddir(4, 0, tol1); }
 
 } // namespace amr_wind_tests

@@ -244,7 +244,7 @@ struct ComputeForceOp<
                 wdata.component_view =
                     amr_wind::actuator::wing::make_component_view<ActTrait>(
                         data);
-                FLLCInit(
+                fllc_init(
                     *(wdata.fllc.get()), wdata.component_view,
                     wdata.epsilon_chord[0]);
             }

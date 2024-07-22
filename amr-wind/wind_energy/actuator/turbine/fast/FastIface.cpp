@@ -66,7 +66,7 @@ void FastIface::parse_inputs(
         !time.adaptive_timestep(),
         "Adaptive time-stepping not supported when OpenFAST is enabled");
 
-    m_dt_cfd = time.deltaT();
+    m_dt_cfd = time.delta_t();
 
     // Set OpenFAST end time to be at least as long as the CFD time. User
     // can choose a longer duration in input file.
@@ -74,7 +74,7 @@ void FastIface::parse_inputs(
                                   ? time.stop_time()
                                   : std::numeric_limits<amrex::Real>::max();
     const amrex::Real stop2 = time.stop_time_index() > 0
-                                  ? time.stop_time_index() * time.deltaT()
+                                  ? time.stop_time_index() * time.delta_t()
                                   : std::numeric_limits<amrex::Real>::max();
     const amrex::Real cfd_stop = amrex::min(stop1, stop2);
     m_stop_time = cfd_stop;

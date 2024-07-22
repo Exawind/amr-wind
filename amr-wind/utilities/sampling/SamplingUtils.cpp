@@ -59,9 +59,9 @@ vs::Tensor rotation_matrix(vs::Vector dst, vs::Vector src)
 
     const double small = 1e-14 * vs::mag(dst);
     if (std::abs(1 + ang) < small) {
-        return scale(vs::Tensor::I(), -1);
+        return scale(vs::Tensor::identity(), -1);
     }
-    return vs::Tensor::I() + vmat + scale((vmat & vmat), 1. / (1 + ang));
+    return vs::Tensor::identity() + vmat + scale((vmat & vmat), 1. / (1 + ang));
 }
 
 vs::Tensor skew_cross(vs::Vector a, vs::Vector b)

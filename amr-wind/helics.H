@@ -13,11 +13,11 @@
 
 namespace amr_wind {
 
-class helics_storage
+class HelicsStorage
 {
 public:
-    explicit helics_storage(CFDSim& sim);
-    ~helics_storage();
+    explicit HelicsStorage(CFDSim& sim);
+    ~HelicsStorage();
 
     void pre_advance_work();
     bool is_activated() const { return m_helics_activated; }

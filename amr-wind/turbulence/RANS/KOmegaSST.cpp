@@ -105,7 +105,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
     // Compute strain rate into shear production term
     fvm::strainrate(this->m_shear_prod, vel);
 
-    const amrex::Real deltaT = (this->m_sim).time().deltaT();
+    const amrex::Real delta_t = (this->m_sim).time().delta_t();
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
         m_gravity[0], m_gravity[1], m_gravity[2]};
     const amrex::Real Bfac = this->m_buoyancy_factor;
@@ -202,7 +202,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
                                         diss_amb;
 
                     tke_lhs_arr(i, j, k) = beta_star * rho_arr(i, j, k) *
-                                           sdr_arr(i, j, k) * deltaT;
+                                           sdr_arr(i, j, k) * delta_t;
 
                     // For SDR equation:
                     amrex::Real production_omega =
@@ -230,7 +230,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
                             (rho_arr(i, j, k) * beta * sdr_arr(i, j, k) +
                              0.5 * std::abs(cross_diffusion) /
                                  (sdr_arr(i, j, k) + 1e-15)) *
-                            deltaT;
+                            delta_t;
                     } else if (diff_type == DiffusionType::Implicit) {
                         /* Source term linearization is based on Florian
                            Menter's (1993) AIAA paper */
@@ -244,7 +244,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
                             (2.0 * rho_arr(i, j, k) * beta * sdr_arr(i, j, k) +
                              std::abs(cross_diffusion) /
                                  (sdr_arr(i, j, k) + 1e-15)) *
-                            deltaT;
+                            delta_t;
 
                     } else {
                         sdr_src_arr(i, j, k) =
@@ -256,7 +256,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
                                                 sdr_diss_amb;
 
                         sdr_lhs_arr(i, j, k) = 0.5 * rho_arr(i, j, k) * beta *
-                                               sdr_arr(i, j, k) * deltaT;
+                                               sdr_arr(i, j, k) * delta_t;
                     }
                 });
         }

@@ -84,7 +84,7 @@ public:
     long num_points() const override
     {
         return m_interp_steps * m_ntotal *
-               (m_npts + ntheta * m_npts * (nphi - 1));
+               (m_npts + m_ntheta * m_npts * (m_nphi - 1));
     }
 
     //! Number of probe locations to output
@@ -93,7 +93,7 @@ public:
     //! Number of sampling container locations per interp step
     long num_points_scan() const
     {
-        return m_ntotal * (m_npts + ntheta * m_npts * (nphi - 1));
+        return m_ntotal * (m_npts + m_ntheta * m_npts * (m_nphi - 1));
     }
 
     //! Number of probe locations on Radar axis
@@ -102,11 +102,11 @@ public:
     //! Number of probe locations in a cone
     long num_points_cone() const
     {
-        return m_npts + ntheta * m_npts * (nphi - 1);
+        return m_npts + m_ntheta * m_npts * (m_nphi - 1);
     }
 
     //! Number of probe locations in a spherical cap
-    long num_points_quad() const { return 1 + ntheta * (nphi - 1); }
+    long num_points_quad() const { return 1 + m_ntheta * (m_nphi - 1); }
 
     static void line_average(
         const std::vector<double>& weights,
@@ -134,18 +134,18 @@ protected:
     std::string m_label;
     int m_id{-1};
 
-    amrex::Real radtodeg{180.0 / M_PI};
+    amrex::Real m_radtodeg{180.0 / M_PI};
 
     amrex::Vector<amrex::Real> m_start;
     amrex::Vector<amrex::Real> m_end;
 
-    SamplerBase::SampleLocType initial_cone;
-    SamplerBase::SampleLocType current_cones;
-    SamplerBase::SampleLocType prior_cones;
-    SamplerBase::SampleLocType sample_cones;
+    SamplerBase::SampleLocType m_initial_cone;
+    SamplerBase::SampleLocType m_current_cones;
+    SamplerBase::SampleLocType m_prior_cones;
+    SamplerBase::SampleLocType m_sample_cones;
 
-    LosRotType los_proj;
-    LosUnitType los_unit;
+    LosRotType m_los_proj;
+    LosUnitType m_los_unit;
 
     std::vector<double> m_los_velocity;
     std::vector<double> m_los_velocity_next;
@@ -169,8 +169,8 @@ protected:
     amrex::Real m_reset_time;
     amrex::Vector<amrex::Real> m_elevation_angles;
 
-    int nphi{5};
-    int ntheta{5};
+    int m_nphi{5};
+    int m_ntheta{5};
 
     vs::Vector m_radar_rotation_axis;
 

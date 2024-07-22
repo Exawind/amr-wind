@@ -49,15 +49,15 @@ TEST_F(SimTimeTest, init)
     // Check that the timestep size during initialization respects the shrink
     // value
     time.set_current_cfl(cur_cfl * 0.5, 0.0, 0.0);
-    EXPECT_NEAR(time.deltaT(), 0.1 * dt_new, tol);
-    const double first_dt = time.deltaT();
+    EXPECT_NEAR(time.delta_t(), 0.1 * dt_new, tol);
+    const double first_dt = time.delta_t();
 
     bool stop_sim = time.new_timestep();
     EXPECT_TRUE(stop_sim);
     // Check that the timestep growth is not greater than 10% of the last
     // timestep
     time.set_current_cfl(cur_cfl * 0.5, 0.0, 0.0);
-    EXPECT_NEAR(time.deltaT(), 1.1 * first_dt, tol);
+    EXPECT_NEAR(time.delta_t(), 1.1 * first_dt, tol);
 }
 
 TEST_F(SimTimeTest, time_loop)

@@ -397,7 +397,7 @@ struct StencilKHI
     }
 };
 
-struct StencilILO_JLO
+struct StencilIloJlo
 {
     static constexpr int direction = 10;
 
@@ -437,7 +437,7 @@ struct StencilILO_JLO
     }
 };
 
-struct StencilJLO_KLO
+struct StencilJloKlo
 {
     static constexpr int direction = 11;
 
@@ -477,7 +477,7 @@ struct StencilJLO_KLO
     }
 };
 
-struct StencilILO_KLO
+struct StencilIloKlo
 {
     static constexpr int direction = 12;
 
@@ -517,7 +517,7 @@ struct StencilILO_KLO
     }
 };
 
-struct StencilIHI_JHI
+struct StencilIhiJhi
 {
     static constexpr int direction = 13;
 
@@ -557,7 +557,7 @@ struct StencilIHI_JHI
     }
 };
 
-struct StencilJHI_KHI
+struct StencilJhiKhi
 {
     static constexpr int direction = 14;
 
@@ -597,7 +597,7 @@ struct StencilJHI_KHI
     }
 };
 
-struct StencilIHI_KHI
+struct StencilIhiKhi
 {
     static constexpr int direction = 15;
 
@@ -637,7 +637,7 @@ struct StencilIHI_KHI
     }
 };
 
-struct StencilILO_JHI
+struct StencilIloJhi
 {
     static constexpr int direction = 16;
 
@@ -677,7 +677,7 @@ struct StencilILO_JHI
     }
 };
 
-struct StencilJLO_KHI
+struct StencilJloKhi
 {
     static constexpr int direction = 17;
 
@@ -717,7 +717,7 @@ struct StencilJLO_KHI
     }
 };
 
-struct StencilILO_KHI
+struct StencilIloKhi
 {
     static constexpr int direction = 18;
 
@@ -757,7 +757,7 @@ struct StencilILO_KHI
     }
 };
 
-struct StencilIHI_JLO
+struct StencilIhiJlo
 {
     static constexpr int direction = 19;
 
@@ -797,7 +797,7 @@ struct StencilIHI_JLO
     }
 };
 
-struct StencilJHI_KLO
+struct StencilJhiKlo
 {
     static constexpr int direction = 20;
 
@@ -837,7 +837,7 @@ struct StencilJHI_KLO
     }
 };
 
-struct StencilIHI_KLO
+struct StencilIhiKlo
 {
     static constexpr int direction = 21;
 
@@ -877,7 +877,7 @@ struct StencilIHI_KLO
     }
 };
 
-struct StencilILO_JLO_KLO
+struct StencilIloJloKlo
 {
     static constexpr int direction = 22;
 
@@ -918,7 +918,7 @@ struct StencilILO_JLO_KLO
     }
 };
 
-struct StencilILO_JHI_KLO
+struct StencilIloJhiKlo
 {
     static constexpr int direction = 23;
 
@@ -959,7 +959,7 @@ struct StencilILO_JHI_KLO
     }
 };
 
-struct StencilIHI_JLO_KLO
+struct StencilIhiJloKlo
 {
     static constexpr int direction = 24;
 
@@ -1000,7 +1000,7 @@ struct StencilIHI_JLO_KLO
     }
 };
 
-struct StencilIHI_JHI_KLO
+struct StencilIhiJhiKlo
 {
     static constexpr int direction = 25;
 
@@ -1041,7 +1041,7 @@ struct StencilIHI_JHI_KLO
     }
 };
 
-struct StencilILO_JLO_KHI
+struct StencilIloJloKhi
 {
     static constexpr int direction = 26;
 
@@ -1082,7 +1082,7 @@ struct StencilILO_JLO_KHI
     }
 };
 
-struct StencilILO_JHI_KHI
+struct StencilIloJhiKhi
 {
     static constexpr int direction = 27;
 
@@ -1123,7 +1123,7 @@ struct StencilILO_JHI_KHI
     }
 };
 
-struct StencilIHI_JLO_KHI
+struct StencilIhiJloKhi
 {
     static constexpr int direction = 28;
 
@@ -1164,7 +1164,7 @@ struct StencilIHI_JLO_KHI
     }
 };
 
-struct StencilIHI_JHI_KHI
+struct StencilIhiJhiKhi
 {
     static constexpr int direction = 29;
 
