@@ -168,7 +168,7 @@ vs::Tensor AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE gp_flux_tensor(
                                fz(i, j - 1, k, 8) + fz(i - 1, j - 1, k, 8) +
                                tiny;
 
-    auto f_otimes_gradp = vs::Tensor::I();
+    auto f_otimes_gradp = vs::Tensor::identity();
     // Average fluxes (faces) to nodes where pressure exists
     f_otimes_gradp.xx() = (fx(i, j, k, 5) + fx(i, j, k - 1, 5) +
                            fx(i, j - 1, k, 5) + fx(i, j - 1, k - 1, 5)) /
@@ -249,12 +249,12 @@ vs::Tensor AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE normal_reinit_tensor(
     n_zeta.normalize();
 
     // To do outer product between vectors, set up tensors
-    auto n_tensor = vs::Tensor::I();
-    auto n_tensor_T = vs::Tensor::I();
+    auto n_tensor = vs::Tensor::identity();
+    auto n_tensor_T = vs::Tensor::identity();
     n_tensor.rows(n_zeta, n_zeta, n_zeta);
     n_tensor_T.cols(n_zeta, n_zeta, n_zeta);
     // Multiply tensors elementwise
-    auto n_otimes_n = vs::Tensor::I();
+    auto n_otimes_n = vs::Tensor::identity();
     n_otimes_n.rows(
         n_tensor.x() * n_tensor_T.x(), n_tensor.y() * n_tensor_T.y(),
         n_tensor.z() * n_tensor_T.z());
