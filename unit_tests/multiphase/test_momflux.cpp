@@ -148,7 +148,7 @@ protected:
         }
         {
             amrex::ParmParse pp("time");
-            pp.add("fixed_dt", dt);
+            pp.add("fixed_dt", m_dt);
         }
         {
             amrex::ParmParse pp("transport");
@@ -296,7 +296,7 @@ protected:
     const amrex::Real m_rho1 = 1000.0;
     const amrex::Real m_rho2 = 1.0;
     const amrex::Real m_vel = 5.0;
-    const amrex::Real dt = 0.45 * 0.5 / m_vel; // first number is CFL
+    const amrex::Real m_dt = 0.45 * 0.5 / m_vel; // first number is CFL
 };
 
 TEST_F(MassMomFluxOpTest, fluxfaceX) { testing_coorddir(0); }

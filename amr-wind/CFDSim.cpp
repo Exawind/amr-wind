@@ -17,7 +17,7 @@ CFDSim::CFDSim(amrex::AmrCore& mesh)
     , m_io_mgr(new IOManager(*this))
     , m_post_mgr(new PostProcessManager(*this))
     , m_ext_solver_mgr(new ExtSolverMgr)
-    , m_helics(new helics_storage(*this))
+    , m_helics(new HelicsStorage(*this))
 {}
 
 CFDSim::~CFDSim() = default;

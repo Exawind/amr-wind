@@ -130,22 +130,22 @@ protected:
         }
         {
             amrex::ParmParse pp("OneEqKsgsM84_coeffs");
-            pp.add("Ceps", Ceps);
-            pp.add("Ce", Ce);
+            pp.add("Ceps", m_Ceps);
+            pp.add("Ce", m_Ce);
         }
         {
             amrex::ParmParse pp("incflo");
             amrex::Vector<std::string> physics{"ABL"};
             pp.addarr("physics", physics);
-            pp.add("density", rho0);
+            pp.add("density", m_rho0);
             amrex::Vector<amrex::Real> vvec{8.0, 0.0, 0.0};
             pp.addarr("velocity", vvec);
-            amrex::Vector<amrex::Real> gvec{0.0, 0.0, -gravz};
+            amrex::Vector<amrex::Real> gvec{0.0, 0.0, -m_gravz};
             pp.addarr("gravity", gvec);
         }
         {
             amrex::ParmParse pp("ABL");
-            pp.add("reference_temperature", Tref);
+            pp.add("reference_temperature", m_Tref);
             amrex::Vector<amrex::Real> t_hts{0.0, 100.0, 400.0};
             pp.addarr("temperature_heights", t_hts);
             amrex::Vector<amrex::Real> t_vals{265.0, 265.0, 268.0};
@@ -153,7 +153,7 @@ protected:
         }
         {
             amrex::ParmParse pp("transport");
-            pp.add("viscosity", mu);
+            pp.add("viscosity", m_mu);
         }
     }
     void test_calls_body(bool do_postsolve = false)
@@ -170,18 +170,18 @@ protected:
         auto& tmodel = sim().turbulence_model();
         // Set up velocity field with constant strainrate
         auto& vel = sim().repo().get_field("velocity");
-        init_field3(vel, srate);
+        init_field3(vel, m_srate);
         // Set up uniform unity density field
         auto& dens = sim().repo().get_field("density");
-        dens.setVal(rho0);
+        dens.setVal(m_rho0);
         // Set up temperature field with constant gradient in z
         auto& temp = sim().repo().get_field("temperature");
-        init_field1(temp, Tgz);
+        init_field1(temp, m_Tgz);
         // Give values to tlscale and tke arrays
         auto& tlscale = sim().repo().get_field("turb_lscale");
-        tlscale.setVal(tlscale_val);
+        tlscale.setVal(m_tlscale_val);
         auto& tke = sim().repo().get_field("tke");
-        tke.setVal(tke_val);
+        tke.setVal(m_tke_val);
 
         // Perform post init for physics
         // (turns on wall model if specified)
@@ -209,23 +209,23 @@ protected:
             amr_wind::FieldState::New, DiffusionType::Crank_Nicolson);
     }
 
-    const amrex::Real dx = 10.0 / 10.0;
-    const amrex::Real dy = 10.0 / 20.0;
-    const amrex::Real dz = 10.0 / 30.0;
-    const amrex::Real tol = 1.0e-12;
+    const amrex::Real m_dx = 10.0 / 10.0;
+    const amrex::Real m_dy = 10.0 / 20.0;
+    const amrex::Real m_dz = 10.0 / 30.0;
+    const amrex::Real m_tol = 1.0e-12;
     // Parser inputs for turbulence model
-    const amrex::Real Ceps = 0.11;
-    const amrex::Real Ce = 0.99;
-    const amrex::Real Tref = 263.5;
-    const amrex::Real gravz = 10.0;
-    const amrex::Real rho0 = 1.2;
+    const amrex::Real m_Ceps = 0.11;
+    const amrex::Real m_Ce = 0.99;
+    const amrex::Real m_Tref = 263.5;
+    const amrex::Real m_gravz = 10.0;
+    const amrex::Real m_rho0 = 1.2;
     // Constants for fields
-    const amrex::Real srate = 20.0;
-    const amrex::Real Tgz = 2.0;
-    const amrex::Real tlscale_val = 1.1;
-    const amrex::Real tke_val = 0.1;
+    const amrex::Real m_srate = 20.0;
+    const amrex::Real m_Tgz = 2.0;
+    const amrex::Real m_tlscale_val = 1.1;
+    const amrex::Real m_tke_val = 0.1;
     // Molecular viscosity
-    const amrex::Real mu = 1e-2;
+    const amrex::Real m_mu = 1e-2;
 };
 
 TEST_F(TurbLESTestBC, test_1eqKsgs_noslip)
@@ -244,14 +244,14 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_noslip)
 
     // Check for constant value in bulk
     auto shear_bulk = get_val_at_kindex(shear_prod, muturb, 0, 1) / 10. / 20.;
-    EXPECT_NEAR(shear_bulk, srate, tol);
+    EXPECT_NEAR(shear_bulk, m_srate, m_tol);
 
     // Velocity gradients assumed in setup (init_field3)
-    const amrex::Real uz_bulk = srate / 2.0;
+    const amrex::Real uz_bulk = m_srate / 2.0;
 
     // Naive cell-centered answer, with no_slip_wall (Dirichlet)
     const amrex::Real uz_wallcell =
-        (uz_bulk * 1.5 * dz + 2.0 - 0.0) / (2.0 * dz);
+        (uz_bulk * 1.5 * m_dz + 2.0 - 0.0) / (2.0 * m_dz);
     // Wall-normal direction
     const amrex::Real wz_wallcell = uz_wallcell;
 
@@ -260,15 +260,15 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_noslip)
     // Check for different value just above wall due to BC
     auto shear_wall = get_val_at_kindex(shear_prod, muturb, 0, 0) / 10. / 20.;
     // Check that the result is not equal to the naive value
-    EXPECT_GT(std::abs(shear_wall - s_naive), tol);
+    EXPECT_GT(std::abs(shear_wall - s_naive), m_tol);
     // Answer that accounts for location of wall at cell face
-    const amrex::Real uz_wallface =
-        ((uz_bulk * 1.5 * dz + 2.0) / 3.0 + uz_bulk * 0.5 * dz + 2.0 - 0.0) /
-        dz;
+    const amrex::Real uz_wallface = ((uz_bulk * 1.5 * m_dz + 2.0) / 3.0 +
+                                     uz_bulk * 0.5 * m_dz + 2.0 - 0.0) /
+                                    m_dz;
     const amrex::Real wz_wallface = uz_wallface;
     const amrex::Real s_true =
         sqrt(2.0 * wz_wallface * wz_wallface + 2.0 * uz_wallface * uz_wallface);
-    EXPECT_NEAR(shear_wall, s_true, tol);
+    EXPECT_NEAR(shear_wall, s_true, m_tol);
 }
 
 TEST_F(TurbLESTestBC, test_1eqKsgs_slip)
@@ -287,19 +287,19 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_slip)
 
     // Check for constant value in bulk
     auto shear_bulk = get_val_at_kindex(shear_prod, muturb, 0, 1) / 10. / 20.;
-    EXPECT_NEAR(shear_bulk, srate, tol);
+    EXPECT_NEAR(shear_bulk, m_srate, m_tol);
 
     // Check for different value just above wall due to BC
     auto shear_wall = get_val_at_kindex(shear_prod, muturb, 0, 0) / 10. / 20.;
     // Answer that accounts for slip_wall BC
     // (tangential extrapolation, dirichlet normal)
-    const amrex::Real uz_bulk = srate / 2.0;
-    const amrex::Real wz_wall =
-        ((uz_bulk * 1.5 * dz + 2.0) / 3.0 + uz_bulk * 0.5 * dz + 2.0 - 0.0) /
-        dz;
+    const amrex::Real uz_bulk = m_srate / 2.0;
+    const amrex::Real wz_wall = ((uz_bulk * 1.5 * m_dz + 2.0) / 3.0 +
+                                 uz_bulk * 0.5 * m_dz + 2.0 - 0.0) /
+                                m_dz;
     const amrex::Real s_true =
         sqrt(2.0 * wz_wall * wz_wall + 2.0 * uz_bulk * uz_bulk);
-    EXPECT_NEAR(shear_wall, s_true, tol);
+    EXPECT_NEAR(shear_wall, s_true, m_tol);
 }
 
 TEST_F(TurbLESTestBC, test_1eqKsgs_wallmodel)
@@ -332,19 +332,19 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_wallmodel)
 
     // Check for constant value in bulk
     auto shear_bulk = get_val_at_kindex(shear_prod, muturb, 0, 1) / 10. / 20.;
-    EXPECT_NEAR(shear_bulk, srate, tol);
+    EXPECT_NEAR(shear_bulk, m_srate, m_tol);
 
     // Velocity gradients assumed in setup (init_field3)
-    const amrex::Real uz_bulk = srate / 2.0;
+    const amrex::Real uz_bulk = m_srate / 2.0;
     // Get value just above wall due to BC
     auto shear_wall = get_val_at_kindex(shear_prod, muturb, 0, 0) / 10. / 20.;
     // (tangential extrapolation, dirichlet normal)
-    const amrex::Real wz_wall =
-        ((uz_bulk * 1.5 * dz + 2.0) / 3.0 + uz_bulk * 0.5 * dz + 2.0 - 0.0) /
-        dz;
+    const amrex::Real wz_wall = ((uz_bulk * 1.5 * m_dz + 2.0) / 3.0 +
+                                 uz_bulk * 0.5 * m_dz + 2.0 - 0.0) /
+                                m_dz;
     const amrex::Real s_true =
         sqrt(2.0 * wz_wall * wz_wall + 2.0 * uz_bulk * uz_bulk);
-    EXPECT_NEAR(shear_wall, s_true, tol);
+    EXPECT_NEAR(shear_wall, s_true, m_tol);
 }
 
 TEST_F(TurbLESTestBC, test_1eqKsgs_wallmodel_failnofillpatch)
@@ -377,42 +377,43 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_wallmodel_failnofillpatch)
 
     // Check for constant value in bulk
     auto shear_bulk = get_val_at_kindex(shear_prod, muturb, 0, 1) / 10. / 20.;
-    EXPECT_NEAR(shear_bulk, srate, tol);
+    EXPECT_NEAR(shear_bulk, m_srate, m_tol);
 
     // Velocity gradients assumed in setup (init_field3)
-    const amrex::Real uz_bulk = srate / 2.0;
+    const amrex::Real uz_bulk = m_srate / 2.0;
 
     // Get value just above wall due to BC
     auto shear_wall = get_val_at_kindex(shear_prod, muturb, 0, 0) / 10. / 20.;
     // (tangential extrapolation, dirichlet normal)
-    const amrex::Real wz_wall =
-        ((uz_bulk * 1.5 * dz + 2.0) / 3.0 + uz_bulk * 0.5 * dz + 2.0 - 0.0) /
-        dz;
+    const amrex::Real wz_wall = ((uz_bulk * 1.5 * m_dz + 2.0) / 3.0 +
+                                 uz_bulk * 0.5 * m_dz + 2.0 - 0.0) /
+                                m_dz;
     const amrex::Real s_true =
         sqrt(2.0 * wz_wall * wz_wall + 2.0 * uz_bulk * uz_bulk);
     // This is checking the correct value -- without the fillpatch, it is wrong
     // (passing test indicates fillpatch is needed after diffusion performed)
-    EXPECT_GT(std::abs(shear_wall - s_true), tol);
+    EXPECT_GT(std::abs(shear_wall - s_true), m_tol);
 
     // Shear value at the wall used by wall model
-    const amrex::Real zref = 0.5 * dz;
+    const amrex::Real zref = 0.5 * m_dz;
     const amrex::Real uref = zref * uz_bulk + 2.0;
     const amrex::Real vmag_ref = std::sqrt(2.0 * uref * uref);
     const amrex::Real utau = kappa * vmag_ref / (std::log(zref / z0));
-    const amrex::Real uz_wm = uref / vmag_ref * std::pow(utau, 2) * rho0 / mu;
+    const amrex::Real uz_wm =
+        uref / vmag_ref * std::pow(utau, 2) * m_rho0 / m_mu;
 
     // Velocity gradient with wallmodel value included as dirichlet
     const amrex::Real uz_wmdirichlet =
-        (1.0 / 3.0 * (uz_bulk * 1.5 * dz + 2.0) +
-         1.0 * (uz_bulk * 0.5 * dz + 2.0) - 4.0 / 3.0 * uz_wm) /
-        dz;
+        (1.0 / 3.0 * (uz_bulk * 1.5 * m_dz + 2.0) +
+         1.0 * (uz_bulk * 0.5 * m_dz + 2.0) - 4.0 / 3.0 * uz_wm) /
+        m_dz;
 
     // Naive answer, assumes wall Dirichlet
     const amrex::Real s_naive =
         sqrt(2.0 * wz_wall * wz_wall + 2.0 * uz_wmdirichlet * uz_wmdirichlet);
     // This is checking the wrong value
     // (passing test indicates it is wrong in expected way w/out fillpatch)
-    EXPECT_NEAR(shear_wall, s_naive, std::abs(shear_wall) * tol);
+    EXPECT_NEAR(shear_wall, s_naive, std::abs(shear_wall) * m_tol);
 }
 
 TEST_F(TurbLESTestBC, test_1eqKsgs_zerogradient)
@@ -431,29 +432,29 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_zerogradient)
 
     // Check for constant value in bulk
     auto shear_bulk = get_val_at_kindex(shear_prod, muturb, 0, 1) / 10. / 20.;
-    EXPECT_NEAR(shear_bulk, srate, tol);
+    EXPECT_NEAR(shear_bulk, m_srate, m_tol);
 
     // Velocity gradients assumed in setup (init_field3)
-    const amrex::Real uz_bulk = srate / 2.0;
+    const amrex::Real uz_bulk = m_srate / 2.0;
 
     // Naive answer, assumes extrapolation
-    const amrex::Real s_naive = srate;
+    const amrex::Real s_naive = m_srate;
     // Check for different value just above wall due to BC
     auto shear_wall = get_val_at_kindex(shear_prod, muturb, 0, 0) / 10. / 20.;
     // Check that the result is not equal to the naive value
-    EXPECT_GT(std::abs(shear_wall - s_naive), tol);
+    EXPECT_GT(std::abs(shear_wall - s_naive), m_tol);
     // Answer that accounts for BC (Neumann)
     const amrex::Real uz_wallface_neumann =
-        (1.0 / 3.0 * (uz_bulk * 1.5 * dz + 2.0) +
-         1.0 * (uz_bulk * 0.5 * dz + 2.0) -
-         4.0 / 3.0 * (uz_bulk * 0.5 * dz + 2.0)) /
-        dz;
+        (1.0 / 3.0 * (uz_bulk * 1.5 * m_dz + 2.0) +
+         1.0 * (uz_bulk * 0.5 * m_dz + 2.0) -
+         4.0 / 3.0 * (uz_bulk * 0.5 * m_dz + 2.0)) /
+        m_dz;
     // Neumann is applied to w as well
     const amrex::Real wz_wallface_neumann = uz_wallface_neumann;
     const amrex::Real s_true = sqrt(
         2.0 * wz_wallface_neumann * wz_wallface_neumann +
         2.0 * uz_wallface_neumann * uz_wallface_neumann);
-    EXPECT_NEAR(shear_wall, s_true, tol);
+    EXPECT_NEAR(shear_wall, s_true, m_tol);
 }
 
 TEST_F(TurbLESTestBC, test_1eqKsgs_symmetricwall)
@@ -472,32 +473,32 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_symmetricwall)
 
     // Check for constant value in bulk
     auto shear_bulk = get_val_at_kindex(shear_prod, muturb, 0, 1) / 10. / 20.;
-    EXPECT_NEAR(shear_bulk, srate, tol);
+    EXPECT_NEAR(shear_bulk, m_srate, m_tol);
 
     // Velocity gradients assumed in setup (init_field3)
-    const amrex::Real uz_bulk = srate / 2.0;
+    const amrex::Real uz_bulk = m_srate / 2.0;
 
     // Naive answer, assumes extrapolation
-    const amrex::Real s_naive = srate;
+    const amrex::Real s_naive = m_srate;
     // Check for different value just above wall due to BC
     auto shear_wall = get_val_at_kindex(shear_prod, muturb, 0, 0) / 10. / 20.;
     // Check that the result is not equal to the naive value
-    EXPECT_GT(std::abs(shear_wall - s_naive), tol);
+    EXPECT_GT(std::abs(shear_wall - s_naive), m_tol);
     // Answer that accounts for BC (Neumann)
     const amrex::Real uz_wallface_neumann =
-        (1.0 / 3.0 * (uz_bulk * 1.5 * dz + 2.0) +
-         1.0 * (uz_bulk * 0.5 * dz + 2.0) -
-         4.0 / 3.0 * (uz_bulk * 0.5 * dz + 2.0)) /
-        dz;
+        (1.0 / 3.0 * (uz_bulk * 1.5 * m_dz + 2.0) +
+         1.0 * (uz_bulk * 0.5 * m_dz + 2.0) -
+         4.0 / 3.0 * (uz_bulk * 0.5 * m_dz + 2.0)) /
+        m_dz;
     // Wall condition on w
     const amrex::Real wz_wallface =
-        (1.0 / 3.0 * (uz_bulk * 1.5 * dz + 2.0) +
-         1.0 * (uz_bulk * 0.5 * dz + 2.0) - 4.0 / 3.0 * (0.0)) /
-        dz;
+        (1.0 / 3.0 * (uz_bulk * 1.5 * m_dz + 2.0) +
+         1.0 * (uz_bulk * 0.5 * m_dz + 2.0) - 4.0 / 3.0 * (0.0)) /
+        m_dz;
     const amrex::Real s_true = sqrt(
         2.0 * wz_wallface * wz_wallface +
         2.0 * uz_wallface_neumann * uz_wallface_neumann);
-    EXPECT_NEAR(shear_wall, s_true, tol);
+    EXPECT_NEAR(shear_wall, s_true, m_tol);
 }
 
 } // namespace amr_wind_tests

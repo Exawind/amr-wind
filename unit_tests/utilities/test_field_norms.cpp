@@ -108,7 +108,7 @@ protected:
     // No file output during test
     void prepare_ascii_file() override {}
     void write_ascii() override {}
-    const amrex::Real tol = 1e-8;
+    const amrex::Real m_tol = 1e-8;
 };
 
 void FieldNormsImpl::check_output(
@@ -143,8 +143,8 @@ protected:
         {
             amrex::ParmParse pp("geometry");
 
-            pp.addarr("prob_lo", problo);
-            pp.addarr("prob_hi", probhi);
+            pp.addarr("prob_lo", m_problo);
+            pp.addarr("prob_hi", m_probhi);
             pp.addarr("is_periodic", amrex::Vector<int>{{1, 1, 0}});
         }
     }
@@ -162,14 +162,14 @@ protected:
         pp.add("labels", (std::string) "t1");
         amrex::ParmParse ppt1("tagging.t1");
         ppt1.add("type", (std::string) "FieldRefinement");
-        ppt1.add("field_name", fname);
-        ppt1.addarr("field_error", amrex::Vector<amrex::Real>{fref_val});
+        ppt1.add("field_name", m_fname);
+        ppt1.addarr("field_error", amrex::Vector<amrex::Real>{m_fref_val});
     }
     // Parameters to reuse
-    const amrex::Vector<amrex::Real> problo{{0.0, 0.0, -4.0}};
-    const amrex::Vector<amrex::Real> probhi{{128.0, 128.0, 124.0}};
-    const amrex::Real fref_val = 0.5;
-    const std::string fname = "flag";
+    const amrex::Vector<amrex::Real> m_problo{{0.0, 0.0, -4.0}};
+    const amrex::Vector<amrex::Real> m_probhi{{128.0, 128.0, 124.0}};
+    const amrex::Real m_fref_val = 0.5;
+    const std::string m_fname = "flag";
     const int m_nlev = 1;
     const int m_nx = 32;
     const int m_ny = 32;
@@ -203,10 +203,10 @@ TEST_F(FieldNormsTest, levelmask_on)
     // Repo and fields
     auto& repo = rmesh.field_repo();
     auto& velocity = repo.declare_field("velocity", 3, 2);
-    auto& flag = repo.declare_field(fname, 1, 2);
+    auto& flag = repo.declare_field(m_fname, 1, 2);
 
     // Set up scalar for determining refinement - all fine level
-    flag.setVal(2.0 * fref_val);
+    flag.setVal(2.0 * m_fref_val);
 
     // Initialize mesh refiner and remesh
     rmesh.init_refiner();
@@ -273,10 +273,10 @@ TEST_F(FieldNormsTest, levelmask_off)
     // Repo and fields
     auto& repo = rmesh.field_repo();
     auto& velocity = repo.declare_field("velocity", 3, 2);
-    auto& flag = repo.declare_field(fname, 1, 2);
+    auto& flag = repo.declare_field(m_fname, 1, 2);
 
     // Set up scalar for determining refinement - all fine level
-    flag.setVal(2.0 * fref_val);
+    flag.setVal(2.0 * m_fref_val);
 
     // Initialize mesh refiner and remesh
     rmesh.init_refiner();

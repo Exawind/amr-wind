@@ -570,14 +570,14 @@ NCFile NCFile::open_par(
 
 NCFile::~NCFile()
 {
-    if (is_open) {
+    if (m_is_open) {
         check_nc_error(nc_close(ncid));
     }
 }
 
 void NCFile::close()
 {
-    is_open = false;
+    m_is_open = false;
     check_nc_error(nc_close(ncid));
 }
 
