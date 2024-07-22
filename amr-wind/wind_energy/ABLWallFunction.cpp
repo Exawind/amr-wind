@@ -221,8 +221,8 @@ void ABLVelWallFunc::wall_model(
                         const amrex::Real blankTerrain =
                             (has_terrain) ? 1 - blank_arr(i, j, k, 0) : 1.0;
                         // Shear stress BC
-                        // Blank Terrain added to keep the boundary condition backward compatible 
-                        // while adding terrain sensitive BC 
+                        // Blank Terrain added to keep the boundary condition
+                        // backward compatible while adding terrain sensitive BC
                         varr(i, j, k - 1, 0) = blankTerrain *
                                                tau.calc_vel_x(uu, wspd) *
                                                den(i, j, k) / mu;
