@@ -37,8 +37,8 @@ public:
     amrex::Real weight(const int iRadius) const;
 
 private:
-    const amrex::Real area;
-    const amrex::Real geometry_factor;
+    const amrex::Real m_area;
+    const amrex::Real m_geometry_factor;
 };
 
 vs::Vector compute_coplanar_vector(const vs::Vector& normal);

@@ -32,8 +32,6 @@ TEST_F(MMSMeshTest, mms_error)
 #if defined(AMREX_USE_HIP)
     GTEST_SKIP();
 #else
-    if (!pp_utils::has_managed_memory()) GTEST_SKIP();
-
     populate_parameters();
     utils::populate_mms_params();
 
@@ -71,7 +69,7 @@ TEST_F(MMSMeshTest, mms_error)
 
     const amrex::Real tol = 1.0e-12;
 
-    amrex::Real golds[AMREX_SPACEDIM] = {
+    amrex::Array<amrex::Real, AMREX_SPACEDIM> golds = {
         0.67158428586284569, 0.6978702996158761, 0.74092816587175314};
     EXPECT_NEAR(u_mms_err, golds[0], tol);
     EXPECT_NEAR(v_mms_err, golds[1], tol);

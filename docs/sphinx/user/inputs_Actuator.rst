@@ -29,6 +29,20 @@ turbines as actuator disks and actuator line models.
    supported are: ``TurbineFastLine``, ``TurbineFastDisk``, and 
    ``FixedWingLine``.
 
+It is recommended to group common parameters across actuators using the ``Actuator.[type].[param]``. For example::
+
+   Actuator.Turb1.type            = UniformCtDisk"
+   Actuator.Turb1.epsilon         = 5.0 5.0 5.0"
+   Actuator.Turb2.type            = UniformCtDisk"
+   Actuator.Turb2.epsilon         = 5.0 5.0 5.0"
+
+becomes::
+
+   Actuator.UniformCtDisk.epsilon = 5.0 5.0 5.0"
+   Actuator.Turb1.type            = UniformCtDisk"
+   Actuator.Turb2.type            = UniformCtDisk"
+
+
 FixedWingLine
 """""""""""""
 

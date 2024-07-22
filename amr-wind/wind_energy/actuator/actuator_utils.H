@@ -3,6 +3,7 @@
 
 #include "amr-wind/core/vs/vector_space.H"
 #include "AMReX_AmrCore.H"
+#include "amr-wind/utilities/index_operations.H"
 #include <cmath>
 
 #include <set>

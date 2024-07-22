@@ -65,7 +65,7 @@ protected:
         pp.add("num_points", 21);
         pp.add("epsilon", 1.0);
         pp.add("pitch", 4.0);
-        pp.add("airfoil_table", afname);
+        pp.add("airfoil_table", m_afname);
         pp.add("airfoil_type", (std::string) "openfast");
         pp.add("motion_type", (std::string) "linear");
         pp.addarr("velocity", amrex::Vector<amrex::Real>{1.0, 0.5, 0.7});
@@ -83,20 +83,20 @@ protected:
         pp_a.add("type", (std::string) "TestFixedWingLine");
         amrex::ParmParse pp("Actuator.TestFixedWingLine");
         pp.add("num_points", 2);
-        pp.add("airfoil_table", afname);
+        pp.add("airfoil_table", m_afname);
         pp.add("airfoil_type", (std::string) "openfast");
         pp.addarr("epsilon", amrex::Vector<amrex::Real>{1.0, 2.0, 1.0});
         pp.addarr("span_locs", amrex::Vector<amrex::Real>{0.0, 1.0});
         pp.addarr("chord", amrex::Vector<amrex::Real>{2.0, 2.0});
         amrex::ParmParse pp_f("Actuator.F1");
-        pp_f.add("pitch_timetable", ptname);
+        pp_f.add("pitch_timetable", m_ptname);
         pp_f.add("disable_spanwise_gaussian", true);
         pp_f.addarr("start", amrex::Vector<amrex::Real>{0.0, -4.0, 0.0});
         pp_f.addarr("end", amrex::Vector<amrex::Real>{0.0, 4.0, 0.0});
     }
 
-    const std::string afname = "airfoil.txt";
-    const std::string ptname = "pitch.txt";
+    const std::string m_afname = "airfoil.txt";
+    const std::string m_ptname = "pitch.txt";
 };
 
 std::stringstream generate_openfast_airfoil()
@@ -258,7 +258,7 @@ protected:
 
 TEST_F(ActFixedWingTest, linear_motion) // pitch_table, 2D
 {
-    write_airfoil_file(afname);
+    write_airfoil_file(m_afname);
     initialize_domain();
     moving_wing_setup();
     ActPhysicsTest act(sim());
@@ -268,7 +268,7 @@ TEST_F(ActFixedWingTest, linear_motion) // pitch_table, 2D
     sim().time().new_timestep();
     act.pre_advance_work();
     // Delete airfoil
-    const char* fname = afname.c_str();
+    const char* fname = m_afname.c_str();
     {
         std::ifstream f(fname);
         if (f.good()) {
@@ -282,8 +282,8 @@ TEST_F(ActFixedWingTest, linear_motion) // pitch_table, 2D
 
 TEST_F(ActFixedWingTest, pitch_table_2D)
 {
-    write_airfoil_file(afname);
-    write_pitch_file(ptname);
+    write_airfoil_file(m_afname);
+    write_pitch_file(m_ptname);
     initialize_domain();
     pitching_wing_2D_setup();
     ActPhysicsTest act(sim());
@@ -294,7 +294,7 @@ TEST_F(ActFixedWingTest, pitch_table_2D)
     act.pre_advance_work();
     // Delete airfoil file
     {
-        const char* fname = afname.c_str();
+        const char* fname = m_afname.c_str();
         std::ifstream f(fname);
         if (f.good()) {
             remove(fname);
@@ -305,7 +305,7 @@ TEST_F(ActFixedWingTest, pitch_table_2D)
     }
     // Delete pitch file
     {
-        const char* fname = ptname.c_str();
+        const char* fname = m_ptname.c_str();
         std::ifstream f(fname);
         if (f.good()) {
             remove(fname);
