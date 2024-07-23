@@ -36,7 +36,7 @@ public:
 
     void post_advance_work() override {}
 
-    int returnBlankValue(int i, int j, int k);
+    int return_blank_value(int i, int j, int k);
 
 private:
     CFDSim& m_sim;

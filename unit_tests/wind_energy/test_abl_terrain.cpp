@@ -27,7 +27,7 @@ void write_terrain(const std::string& fname)
 namespace amr_wind_tests {
 
 // Testing the terrain drag reading to ensure that terrain is properly setup
-class terrainTest : public MeshTest
+class terraintest : public MeshTest
 {
 protected:
     void populate_parameters() override
@@ -47,15 +47,14 @@ protected:
             pp.addarr("prob_hi", probhi);
         }
     }
-    std::string terrain_fname = "terrain.amrwind";
+    std::string terrainfname = "terrain.amrwind";
 };
 
-TEST_F(terrainTest, terrain)
+TEST_F(terraintest, terrain)
 {
     constexpr amrex::Real tol = 0;
-
     // Write target wind file
-    write_terrain(terrain_fname);
+    write_terrain(terrainfname);
     populate_parameters();
     initialize_mesh();
     auto& pde_mgr = sim().pde_manager();
@@ -68,10 +67,10 @@ TEST_F(terrainTest, terrain)
     terrain_drag.post_init_actions();
     int value = 100;
     // Outside Point
-    value = terrain_drag.returnBlankValue(5, 5, 1);
+    value = terrain_drag.return_blank_value(5, 5, 1);
     EXPECT_EQ(value, tol);
     // Inside Point
-    value = terrain_drag.returnBlankValue(15, 10, 1);
+    value = terrain_drag.return_blank_value(15, 10, 1);
     EXPECT_EQ(value, 1 + tol);
 }
 
