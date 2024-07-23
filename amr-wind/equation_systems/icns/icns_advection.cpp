@@ -115,9 +115,13 @@ void MacProjOp::init_projector(const amrex::Real beta) noexcept
 void MacProjOp::set_inflow_velocity(amrex::Real time)
 {
     // Currently, input boundary planes account for inflow differently
+    // Also, MPL needs to be refactored to do this properly, defer for now
     if (m_phy_mgr.contains("ABL")) {
         if (m_phy_mgr.get<amr_wind::ABL>().bndry_plane().mode() ==
             io_mode::input) {
+            return;
+        }
+        if (m_phy_mgr.get<amr_wind::ABL>().abl_mpl().is_active()) {
             return;
         }
     }
@@ -131,15 +135,6 @@ void MacProjOp::set_inflow_velocity(amrex::Real time)
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mac_vec = {
             AMREX_D_DECL(&u_mac(lev), &v_mac(lev), &w_mac(lev))};
         velocity.set_inflow_sibling_fields(lev, time, mac_vec);
-
-        // TODO fix hack for ABL MPL
-        if (m_phy_mgr.contains("ABL")) {
-            auto& abl = m_phy_mgr.get<amr_wind::ABL>();
-            for (int i = 0; i < static_cast<int>(mac_vec.size()); i++) {
-                abl.abl_mpl().set_velocity(
-                    lev, time, velocity, *mac_vec[i], 0, i, true);
-            }
-        }
     }
 }
 

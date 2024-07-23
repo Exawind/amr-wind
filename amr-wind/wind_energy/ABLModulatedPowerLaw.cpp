@@ -113,8 +113,7 @@ void ABLModulatedPowerLaw::set_velocity(
     const Field& fld,
     amrex::MultiFab& mfab,
     const int dcomp,
-    const int orig_comp,
-    const bool inflow_faces_only) const
+    const int orig_comp) const
 {
 
     if (!m_activate_mpl) {
@@ -170,19 +169,13 @@ void ABLModulatedPowerLaw::set_velocity(
         }
 
         const int idir = ori.coordDir();
-        auto dbx = ori.isLow() ? amrex::adjCellLo(domain, idir, nghost)
-                               : amrex::adjCellHi(domain, idir, nghost);
+        const auto& dbx = ori.isLow() ? amrex::adjCellLo(domain, idir, nghost)
+                                      : amrex::adjCellHi(domain, idir, nghost);
 
         for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
             auto gbx = amrex::grow(mfi.validbox(), nghost);
             if (!gbx.cellCentered()) {
                 gbx.enclosedCells();
-                // Include boundary cell only for face velocities set_inflow
-                if (inflow_faces_only && idir == orig_comp) {
-                    dbx =
-                        (ori.isLow() ? amrex::adjCellHi(dbx, idir, 1)
-                                     : amrex::adjCellLo(dbx, idir, 1));
-                }
             }
             const auto& bx = gbx & dbx;
             if (!bx.ok()) {
