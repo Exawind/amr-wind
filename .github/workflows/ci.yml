@@ -499,14 +499,14 @@ jobs:
             source ${EXAWIND_MANAGER}/start.sh && \
             spack-start && \
             ln -s ${GITHUB_WORKSPACE} amr-wind && \
-            quick-create-dev -s amr-wind@main && \
+            quick-create-dev -s amr-wind~shared@main && \
             spack -e e4s-build config add view:true && \
             spack -e e4s-build add cmake && \
             spack -e e4s-build concretize && \
             spack manager external ${EXAWIND_MANAGER}/environments/e4s-build --exclude amr-wind && \
             spack install && \
-            spack cd -b amr-wind && \
-            spack build-env amr-wind ctest -j $(nproc) -L unit --output-on-failure \
+            spack cd -b amr-wind~shared && \
+            spack build-env amr-wind~shared ctest -j $(nproc) -L unit --output-on-failure \
           "
   Save-PR-Number:
     if: github.event_name == 'pull_request'
