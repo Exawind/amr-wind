@@ -11,7 +11,7 @@ namespace {
 const std::string level_prefix{"Level_"};
 }
 
-void GotoNextLine(std::istream& is)
+void goto_next_line(std::istream& is)
 {
     constexpr std::streamsize bl_ignore_max{100000};
     is.ignore(bl_ignore_max, '\n');
@@ -52,29 +52,29 @@ void incflo::ReadCheckpointFile()
 
     // Finest level
     is >> finest_level;
-    GotoNextLine(is);
+    goto_next_line(is);
 
     int nstep;
     amrex::Real cur_time, dt_restart;
     // Step count
     is >> nstep;
-    GotoNextLine(is);
+    goto_next_line(is);
 
     // Current time
     is >> cur_time;
-    GotoNextLine(is);
+    goto_next_line(is);
 
     m_time.set_restart_time(nstep, cur_time);
 
     // Time step size
     is >> dt_restart;
-    GotoNextLine(is);
+    goto_next_line(is);
 
-    is >> m_time.deltaTNm1();
-    GotoNextLine(is);
+    is >> m_time.delta_t_nm1();
+    goto_next_line(is);
 
-    is >> m_time.deltaTNm2();
-    GotoNextLine(is);
+    is >> m_time.delta_t_nm2();
+    goto_next_line(is);
 
     // Low coordinates of domain bounding box
     std::getline(is, line);
@@ -153,7 +153,7 @@ void incflo::ReadCheckpointFile()
     for (int lev = 0; lev <= finest_level; ++lev) {
         // read in level 'lev' BoxArray from Header
         ba_inp[lev].readFrom(is);
-        GotoNextLine(is);
+        goto_next_line(is);
     }
 
     // always use level 0 to check domain size

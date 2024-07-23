@@ -104,10 +104,10 @@ void CoarsenCheckpt::read_chkpt_add_baselevel()
     is >> dt_restart;
     GotoNextLine(is);
 
-    is >> sim().time().deltaTNm1();
+    is >> sim().time().delta_t_nm1();
     GotoNextLine(is);
 
-    is >> sim().time().deltaTNm2();
+    is >> sim().time().delta_t_nm2();
     GotoNextLine(is);
 
     // Low coordinates of domain bounding box

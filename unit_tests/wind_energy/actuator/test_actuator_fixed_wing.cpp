@@ -76,7 +76,7 @@ protected:
         pp_f.addarr("end", amrex::Vector<amrex::Real>{0.0, 4.0, 0.0});
     }
 
-    void pitching_wing_2D_setup()
+    void pitching_wing_2d_setup()
     {
         amrex::ParmParse pp_a("Actuator");
         pp_a.add("labels", (std::string) "F1");
@@ -286,7 +286,7 @@ TEST_F(ActFixedWingTest, pitch_table_2D)
     write_airfoil_file(m_afname);
     write_pitch_file(m_ptname);
     initialize_domain();
-    pitching_wing_2D_setup();
+    pitching_wing_2d_setup();
     ActPhysicsTest act(sim());
     act.pre_init_actions();
     act.post_init_actions();

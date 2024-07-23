@@ -22,7 +22,7 @@ void init_density(amr_wind::Field& density, const int k_thresh = -3)
     }
 }
 
-amrex::Real get_Fgz_sum(amr_wind::Field& src_term)
+amrex::Real get_fgz_sum(amr_wind::Field& src_term)
 {
     amrex::Real Fgz_sum = 0.0;
 
@@ -46,7 +46,7 @@ amrex::Real get_Fgz_sum(amr_wind::Field& src_term)
     return Fgz_sum;
 }
 
-void Fgtest_kernel(
+void fgtest_kernel(
     const amrex::Real Fz_ref,
     const int ncells,
     const int nz,
@@ -80,7 +80,7 @@ void Fgtest_kernel(
     my_incflo.icns().compute_source_term(fstate);
 
     // Check forcing average value
-    const amrex::Real Fz_avg = get_Fgz_sum(Fg_field) / ncells;
+    const amrex::Real Fz_avg = get_fgz_sum(Fg_field) / ncells;
     EXPECT_NEAR(Fz_ref, Fz_avg, 1e-8);
 }
 
@@ -144,7 +144,7 @@ TEST_F(GravityForcingTest, full_term_u)
     // Expected average gravity term
     amrex::Real Fg = -5.0;
     // Test with ordinary gravity term (rho not included)
-    Fgtest_kernel(Fg, m_nx * m_ny * m_nz, m_nz, amr_wind::FieldState::Old);
+    fgtest_kernel(Fg, m_nx * m_ny * m_nz, m_nz, amr_wind::FieldState::Old);
 }
 
 TEST_F(GravityForcingTest, full_term_rhou)
@@ -169,7 +169,7 @@ TEST_F(GravityForcingTest, full_term_rhou)
     }
     Fg *= fac / m_nz;
     // Test with ordinary gravity term (rho included)
-    Fgtest_kernel(Fg, m_nx * m_ny * m_nz, m_nz, amr_wind::FieldState::New);
+    fgtest_kernel(Fg, m_nx * m_ny * m_nz, m_nz, amr_wind::FieldState::New);
 }
 
 TEST_F(GravityForcingTest, perturb_const)
@@ -190,7 +190,7 @@ TEST_F(GravityForcingTest, perturb_const)
     // Expected average gravity term
     amrex::Real Fg = (1.0 - rho_ref) * gz / 1.0;
     // Test with ordinary gravity term (rho not multiplied)
-    Fgtest_kernel(Fg, m_nx * m_ny * m_nz, m_nz, amr_wind::FieldState::Old);
+    fgtest_kernel(Fg, m_nx * m_ny * m_nz, m_nz, amr_wind::FieldState::Old);
 }
 
 TEST_F(GravityForcingTest, perturb_field)
@@ -210,7 +210,7 @@ TEST_F(GravityForcingTest, perturb_field)
     }
     Fg *= fac / m_nz;
     // Test with ordinary gravity term (rho included)
-    Fgtest_kernel(
+    fgtest_kernel(
         Fg, m_nx * m_ny * m_nz, m_nz, amr_wind::FieldState::New, true);
 }
 

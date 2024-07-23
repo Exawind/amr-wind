@@ -118,7 +118,7 @@ void VortexPatchScalarVel::initialize_fields(
 void VortexPatchScalarVel::pre_advance_work()
 {
     const auto& time =
-        m_sim.time().current_time() + 0.5 * m_sim.time().deltaT();
+        m_sim.time().current_time() + 0.5 * m_sim.time().delta_t();
 
     const int nlevels = m_sim.repo().num_active_levels();
     const auto& geom = m_sim.mesh().Geom();

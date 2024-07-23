@@ -207,8 +207,8 @@ void optional_parameters(DiskBaseData& meta, const utils::ActParser& pp)
     // yawing
     const auto east = get_east_orientation();
 
-    auto normalRotOp = vs::Tensor::I();
-    auto sampleRotOp = vs::Tensor::I();
+    auto normalRotOp = vs::Tensor::identity();
+    auto sampleRotOp = vs::Tensor::identity();
 
     if (pp.contains("tilt")) {
         amrex::Real tilt;

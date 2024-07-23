@@ -319,7 +319,7 @@ protected:
             pp.addarr("is_periodic", amrex::Vector<int>{{1, 1, 0}});
         }
     }
-    void setup_grid0D(int ninst, const std::string& fsname)
+    void setup_grid_0d(int ninst, const std::string& fsname)
     {
         amrex::ParmParse pp(fsname);
         pp.add("output_frequency", 1);
@@ -328,8 +328,8 @@ protected:
         pp.addarr("start", m_pt_coord);
         pp.addarr("end", m_pt_coord);
     }
-    void setup_grid0D(int ninst) { setup_grid0D(ninst, "freesurface"); }
-    void setup_grid2D(int ninst)
+    void setup_grid_0d(int ninst) { setup_grid_0d(ninst, "freesurface"); }
+    void setup_grid_2d(int ninst)
     {
         amrex::ParmParse pp("freesurface");
         pp.add("output_frequency", 1);
@@ -338,7 +338,7 @@ protected:
         pp.addarr("start", m_pl_start);
         pp.addarr("end", m_pl_end);
     }
-    void setup_grid2D_narrow()
+    void setup_grid_2d_narrow()
     {
         amrex::ParmParse pp("freesurface");
         pp.add("output_frequency", 1);
@@ -378,7 +378,7 @@ TEST_F(FreeSurfaceTest, point)
     initialize_mesh();
     auto& repo = sim().repo();
     auto& vof = repo.declare_field("vof", 1, 2);
-    setup_grid0D(1);
+    setup_grid_0d(1);
 
     init_vof(vof, m_water_level0);
     auto& m_sim = sim();
@@ -404,7 +404,7 @@ TEST_F(FreeSurfaceTest, plane)
     initialize_mesh();
     auto& repo = sim().repo();
     auto& vof = repo.declare_field("vof", 1, 2);
-    setup_grid2D(1);
+    setup_grid_2d(1);
 
     init_vof(vof, m_water_level1);
     auto& m_sim = sim();
@@ -425,7 +425,7 @@ TEST_F(FreeSurfaceTest, multivalued)
     initialize_mesh();
     auto& repo = sim().repo();
     auto& vof = repo.declare_field("vof", 1, 2);
-    setup_grid2D(3);
+    setup_grid_2d(3);
 
     // Parameters of water level
     amrex::Real wl0 = m_probhi[2] * 2 / 3;
@@ -456,7 +456,7 @@ TEST_F(FreeSurfaceTest, sloped)
     initialize_mesh();
     auto& repo = sim().repo();
     auto& vof = repo.declare_field("vof", 1, 2);
-    setup_grid2D_narrow();
+    setup_grid_2d_narrow();
 
     amrex::Real slope = 0.125;
     amrex::Real domain_l = m_probhi[0];
@@ -490,10 +490,10 @@ TEST_F(FreeSurfaceTest, multisampler)
     auto& vof = repo.declare_field("vof", 1, 2);
 
     // Set up parameters for one sampler
-    setup_grid0D(1, "freesurface0");
+    setup_grid_0d(1, "freesurface0");
 
     // Set up parameters for another sampler
-    setup_grid2D_narrow();
+    setup_grid_2d_narrow();
 
     // Initialize VOF distribution and access sim
     init_vof(vof, m_water_level1);
@@ -517,7 +517,7 @@ TEST_F(FreeSurfaceTest, regrid)
     // Set up parameters for refinement
     setup_fieldrefinement();
     // Set up parameters for sampler
-    setup_grid2D(1);
+    setup_grid_2d(1);
     // Create mesh and initialize
     reset_prob_domain();
     auto rmesh = FSRefineMesh();
