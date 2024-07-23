@@ -53,7 +53,7 @@ struct FLLCData
  * @param pp Parser
  * @param data Data to be populated from parser
  */
-void FLLCParse(const utils::ActParser& pp, FLLCData& data);
+void fllc_parse(const utils::ActParser& pp, FLLCData& data);
 
 /**
  * @brief Initialize FLLC data structure. This should be called at the end of
@@ -63,7 +63,7 @@ void FLLCParse(const utils::ActParser& pp, FLLCData& data);
  * @param view Component view that has references to the grid data
  * @param eps_chord epsilon chord
  */
-void FLLCInit(
+void fllc_init(
     FLLCData& data, const ComponentView& view, const amrex::Real eps_chord);
 
 } // namespace amr_wind::actuator

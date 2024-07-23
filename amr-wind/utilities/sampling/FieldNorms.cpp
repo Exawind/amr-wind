@@ -35,7 +35,7 @@ void FieldNorms::initialize()
 }
 
 amrex::Real
-FieldNorms::L2_norm(amr_wind::Field& field, const int comp, const bool use_mask)
+FieldNorms::l2_norm(amr_wind::Field& field, const int comp, const bool use_mask)
 {
     amrex::Real nrm = 0.0;
 
@@ -101,7 +101,7 @@ void FieldNorms::process_field_norms()
     int ind = 0;
     for (const auto& fld : m_sim.io_manager().plot_fields()) {
         for (int comp = 0; comp < fld->num_comp(); ++comp) {
-            m_fnorms[ind++] = L2_norm(*fld, comp, m_use_mask);
+            m_fnorms[ind++] = l2_norm(*fld, comp, m_use_mask);
         }
     }
 }

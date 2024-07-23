@@ -664,7 +664,7 @@ void ABLStats::write_netcdf()
             // Solve for diffusion term using other terms
             calc_tke_diffusion(
                 *tke_diffusion, tke_buoy_prod, tke_shear_prod, tke_dissip,
-                m_sim.time().deltaT());
+                m_sim.time().delta_t());
             {
                 FieldPlaneAveraging pa_tke_buoy_prod(
                     tke_dissip, m_sim.time(), m_normal_dir);

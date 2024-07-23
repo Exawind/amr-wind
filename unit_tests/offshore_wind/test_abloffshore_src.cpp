@@ -122,7 +122,7 @@ TEST_F(ABLOffshoreMeshTest, abl_forcing)
         auto& time = sim().time();
         time.new_timestep();
         time.set_current_cfl(2.0, 0.0, 0.0);
-        EXPECT_NEAR(time.deltaT(), 0.1, tol);
+        EXPECT_NEAR(time.delta_t(), 0.1, tol);
 
         src_term.setVal(0.0);
         abl_forcing.set_mean_velocities(10.0, 5.0);
@@ -141,7 +141,7 @@ TEST_F(ABLOffshoreMeshTest, abl_forcing)
 
         // Targets are U = (20.0, 10.0, 0.0) set in initial conditions
         // Means (set above) V = (10.0, 5.0, 0.0)
-        // deltaT (set above) dt = 0.1
+        // delta_t (set above) dt = 0.1
         const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{
             {100.0, 50.0, 0.0}};
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {

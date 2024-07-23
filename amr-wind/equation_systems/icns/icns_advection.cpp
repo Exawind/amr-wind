@@ -316,11 +316,11 @@ void MacProjOp::mac_proj_to_uniform_space(
     const auto& mesh_fac_zf =
         repo.get_mesh_mapping_field(amr_wind::FieldLoc::ZFACE);
     const auto& mesh_detJ_xf =
-        repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::XFACE);
+        repo.get_mesh_mapping_det_j(amr_wind::FieldLoc::XFACE);
     const auto& mesh_detJ_yf =
-        repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::YFACE);
+        repo.get_mesh_mapping_det_j(amr_wind::FieldLoc::YFACE);
     const auto& mesh_detJ_zf =
-        repo.get_mesh_mapping_detJ(amr_wind::FieldLoc::ZFACE);
+        repo.get_mesh_mapping_det_j(amr_wind::FieldLoc::ZFACE);
 
     // scale U^mac to accommodate for mesh mapping -> U^bar = J/fac *
     // U^mac beta accounted for mesh mapping = J/fac^2 * 1/rho construct

@@ -71,6 +71,13 @@ public:
 
     amrex::Real water_level() const { return m_water_level0; }
 
+    bool perturb_pressure() const { return m_use_perturb_pressure; }
+
+    bool reconstruct_true_pressure() const
+    {
+        return m_reconstruct_true_pressure;
+    }
+
 private:
     const CFDSim& m_sim;
 

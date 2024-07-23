@@ -42,7 +42,7 @@ ABLMesoscaleForcing::ABLMesoscaleForcing(
             m_user_specified_weighting = true;
         }
 
-        if (!haveForcingTransition()) {
+        if (!have_forcing_transition()) {
             if (!m_user_specified_weighting) {
                 // default is to have uniform weighting throughout
                 amrex::Print()
@@ -64,7 +64,7 @@ ABLMesoscaleForcing::ABLMesoscaleForcing(
                                << m_transition_height + m_transition_thickness
                                << std::endl;
                 // set weighting profile
-                setTransitionWeighting();
+                set_transition_weighting();
             } else {
                 // expect to read transition_height history in netCDF input file
                 // and the weighting profile will need to be updated every step
@@ -83,7 +83,7 @@ ABLMesoscaleForcing::ABLMesoscaleForcing(
     } // if forcing scheme is "indirect"
 }
 
-void ABLMesoscaleForcing::setTransitionWeighting()
+void ABLMesoscaleForcing::set_transition_weighting()
 {
     amrex::Real zmin = m_mesh.Geom(0).ProbLo(m_axis);
     amrex::Real zmax = m_mesh.Geom(0).ProbHi(m_axis);
@@ -105,7 +105,7 @@ void ABLMesoscaleForcing::setTransitionWeighting()
     }
 }
 
-void ABLMesoscaleForcing::updateWeights()
+void ABLMesoscaleForcing::update_weights()
 {
     amrex::Print() << "Updating weights" << std::endl;
 
@@ -114,7 +114,7 @@ void ABLMesoscaleForcing::updateWeights()
             interp::linear(m_weighting_heights, m_weighting_values, m_zht[i]);
     }
 
-    if (haveForcingTransition()) {
+    if (have_forcing_transition()) {
         // note the blending weights will differ from the regression weights if
         // a user-specified weighting profile is specified
         for (int i = 0; i < m_nht; ++i) {
@@ -124,7 +124,7 @@ void ABLMesoscaleForcing::updateWeights()
     }
 }
 
-void ABLMesoscaleForcing::indirectForcingInit()
+void ABLMesoscaleForcing::indirect_forcing_init()
 {
     if (m_W.empty()) {
         // Will be here for:
@@ -134,12 +134,12 @@ void ABLMesoscaleForcing::indirectForcingInit()
         amrex::Print() << "Initializing indirect forcing" << std::endl;
         m_W.resize(m_nht);
         m_blend.resize(m_nht);
-        updateWeights();
-    } else if (haveForcingTransition()) {
+        update_weights();
+    } else if (have_forcing_transition()) {
         // Will be here for:
         // - partial profile assim w/ variable transition height
         amrex::Print() << "Reinitializing indirect forcing" << std::endl;
-        updateWeights();
+        update_weights();
     } else {
         amrex::Print() << "Should not be reinitializing indirect forcing!"
                        << std::endl;
@@ -165,10 +165,10 @@ void ABLMesoscaleForcing::indirectForcingInit()
         }
     }
     // Invert the matrix Z^T W Z
-    invertMat(zTz, m_im_zTz);
+    invert_mat(zTz, m_im_zTz);
 }
 
-void ABLMesoscaleForcing::invertMat(
+void ABLMesoscaleForcing::invert_mat(
     const amrex::Array2D<amrex::Real, 0, 3, 0, 3>& m,
     // cppcheck-suppress constParameterReference
     amrex::Array2D<amrex::Real, 0, 3, 0, 3>& im)
@@ -217,7 +217,7 @@ void ABLMesoscaleForcing::invertMat(
     im(3, 3) = det * (m(0, 0) * A1212 - m(0, 1) * A0212 + m(0, 2) * A0112);
 }
 
-void ABLMesoscaleForcing::constantForcingTransition(
+void ABLMesoscaleForcing::constant_forcing_transition(
     amrex::Vector<amrex::Real>& error)
 {
     // based on SOWFA6/src/ABLForcing/drivingForce/drivingForce.C
@@ -274,7 +274,7 @@ void ABLMesoscaleForcing::constantForcingTransition(
     }
 }
 
-void ABLMesoscaleForcing::blendForcings(
+void ABLMesoscaleForcing::blend_forcings(
     const amrex::Vector<amrex::Real>& lower, // W=1
     const amrex::Vector<amrex::Real>& upper, // W=0
     amrex::Vector<amrex::Real>& error)

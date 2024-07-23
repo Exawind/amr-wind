@@ -142,10 +142,10 @@ public: // public for GPU
     amrex::Real line_hvelmag_average_interpolated(amrex::Real x) const;
     /** evaluate line haverage at specific location for horizontal velocity
      * magnitude times x-velocity */
-    amrex::Real line_Su_average_interpolated(amrex::Real x) const;
+    amrex::Real line_su_average_interpolated(amrex::Real x) const;
     /** evaluate line haverage at specific location for horizontal velocity
      * magnitude times y-velocity */
-    amrex::Real line_Sv_average_interpolated(amrex::Real x) const;
+    amrex::Real line_sv_average_interpolated(amrex::Real x) const;
 };
 
 } // namespace amr_wind

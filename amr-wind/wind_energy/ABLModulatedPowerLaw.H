@@ -77,7 +77,7 @@ private:
     amrex::Gpu::DeviceVector<amrex::Real> m_thht_d;
     amrex::Gpu::DeviceVector<amrex::Real> m_thvv_d;
 
-    amrex::Real m_deltaT{0.8};
+    amrex::Real m_delta_t{0.8};
     amrex::Real m_theta_cutoff_height{250.0};
     amrex::Real m_theta_gauss_mean{0.0};
     amrex::Real m_theta_gauss_var{1.0};

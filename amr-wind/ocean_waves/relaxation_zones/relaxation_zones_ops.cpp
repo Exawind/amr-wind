@@ -116,7 +116,7 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                     // Generation region
                     if (x <= problo[0] + gen_length) {
                         const amrex::Real Gamma =
-                            utils::Gamma_generate(x - problo[0], gen_length);
+                            utils::gamma_generate(x - problo[0], gen_length);
                         const amrex::Real vf =
                             (1. - Gamma) * target_volfrac(i, j, k) * rampf +
                             Gamma * volfrac(i, j, k);
@@ -148,7 +148,7 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                     }
                     // Numerical beach (sponge layer)
                     if (x + beach_length >= probhi[0]) {
-                        const amrex::Real Gamma = utils::Gamma_absorb(
+                        const amrex::Real Gamma = utils::gamma_absorb(
                             x - (probhi[0] - beach_length), beach_length, 1.0);
                         if (has_beach) {
                             volfrac(i, j, k) =

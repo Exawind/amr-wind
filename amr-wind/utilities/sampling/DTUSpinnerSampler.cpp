@@ -296,7 +296,7 @@ void DTUSpinnerSampler::update_sampling_locations()
     // Not current_time()
     amrex::Real time = m_sim.time().new_time();
     amrex::Real start_time = m_sim.time().start_time();
-    amrex::Real dt_sim = m_sim.time().deltaT();
+    amrex::Real dt_sim = m_sim.time().delta_t();
     const amrex::Real dt_s = m_scan_time / m_num_samples;
     amrex::Real start_diff = std::abs(time - start_time);
 

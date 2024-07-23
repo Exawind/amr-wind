@@ -28,7 +28,7 @@ ABLMesoForcingTemp::ABLMesoForcingTemp(const CFDSim& sim)
 
     if ((amrex::toLower(m_forcing_scheme) == "indirect") &&
         !m_update_transition_height) {
-        indirectForcingInit(); // do this once
+        indirect_forcing_init(); // do this once
     }
 }
 
@@ -202,8 +202,8 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
             amrex::Print() << "current transition height = "
                            << m_transition_height << std::endl;
 
-            setTransitionWeighting();
-            indirectForcingInit();
+            set_transition_weighting();
+            indirect_forcing_init();
         }
 
         amrex::Array<amrex::Real, 4> ezP_T;
@@ -247,7 +247,7 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
         }
 
         if (amrex::toLower(m_forcing_transition) == "indirecttodirect") {
-            blendForcings(error_T, error_T_direct, error_T);
+            blend_forcings(error_T, error_T_direct, error_T);
 
             if (m_debug) {
                 for (size_t ih = 0; ih < n_levels; ih++) {
@@ -258,8 +258,8 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
         }
     }
 
-    if (forcingToConstant()) {
-        constantForcingTransition(error_T);
+    if (forcing_to_constant()) {
+        constant_forcing_transition(error_T);
 
         if (m_debug) {
             for (size_t ih = 0; ih < n_levels; ih++) {
@@ -290,7 +290,7 @@ void ABLMesoForcingTemp::operator()(
         return;
     }
 
-    const auto& dt = m_time.deltaT();
+    const auto& dt = m_time.delta_t();
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
 

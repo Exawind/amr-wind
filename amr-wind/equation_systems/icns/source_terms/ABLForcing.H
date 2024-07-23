@@ -43,7 +43,7 @@ public:
         const auto& current_time = m_time.current_time();
         const auto& new_time = m_time.new_time();
         const auto& nph_time = 0.5 * (current_time + new_time);
-        const auto& dt = m_time.deltaT();
+        const auto& dt = m_time.delta_t();
         const auto& t_step = m_time.time_index();
 
         if (!m_vel_timetable.empty()) {
