@@ -78,13 +78,6 @@ public:
         return m_reconstruct_true_pressure;
     }
 
-    bool perturb_pressure() const { return m_use_perturb_pressure; }
-
-    bool reconstruct_true_pressure() const
-    {
-        return m_reconstruct_true_pressure;
-    }
-
 private:
     const CFDSim& m_sim;
 
