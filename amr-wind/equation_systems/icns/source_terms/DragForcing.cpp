@@ -80,7 +80,7 @@ void DragForcing::operator()(
     const auto* device_vel_ht = m_device_vel_ht.data();
     const auto* device_vel_vals = m_device_vel_vals.data();
     const unsigned vsize = m_device_vel_ht.size();
-    const auto& dt = m_time.deltaT();
+    const auto& dt = m_time.delta_t();
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
         const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
