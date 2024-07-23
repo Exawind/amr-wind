@@ -86,7 +86,6 @@ void Kosovic<Transport>::update_turbulent_viscosity(
             const auto& mu_arr = mu_turb(lev).array(mfi);
             const auto& rho_arr = den(lev).const_array(mfi);
             const auto& divNijLevel = (this->m_divNij)(lev).array(mfi);
-            // const auto& blank_arr = (*m_terrain_blank)(lev).array(mfi);
             const auto& blank_arr =
                 has_terrain ? (*m_terrain_blank)(lev).const_array(mfi)
                             : amrex::Array4<int>();
