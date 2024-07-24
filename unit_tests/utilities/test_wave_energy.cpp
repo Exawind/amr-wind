@@ -36,7 +36,7 @@ void init_vof(amr_wind::Field& fld)
         // fully liquid and half liquid
         amrex::ParallelFor(
             fld(lev), amrex::IntVect(0),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 if (k < 2) {
                     vof_arrs[nbx](i, j, k) = 1.0;
                 } else {
