@@ -30,22 +30,21 @@ void init_field(amr_wind::Field& fld)
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
+        const auto& farrs = fld(lev).arrays();
 
-        for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.growntilebox();
-            const auto& farr = fld(lev).array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        amrex::ParallelFor(
+            fld(lev), amrex::IntVect(0),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + offset) * dx[0];
                 const amrex::Real y = problo[1] + (j + offset) * dx[1];
                 const amrex::Real z = problo[2] + (k + offset) * dx[2];
 
                 for (int d = 0; d < ncomp; d++) {
-                    farr(i, j, k, d) = x + y + z;
+                    farrs[nbx](i, j, k, d) = x + y + z;
                 }
             });
-        }
     }
+    amrex::Gpu::synchronize();
 }
 
 class SamplingImpl : public amr_wind::sampling::Sampling
