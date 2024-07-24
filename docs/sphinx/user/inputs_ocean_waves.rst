@@ -36,6 +36,19 @@ This section is for setting up wave forcing and relaxation zones.
    the entire width of the domain in the y direction and applying to all liquid at all depths
    (in z). Always on, unless relax_zone_out_length is included in the input file.
 
+.. input_param:: OceanWaves.label.numerical_beach_lfactor
+
+   **type:** Real, optional, default = 1.0
+
+   Length factor for numerical beach region. Following the formulation suggested by `Chen, Kelly, and Zang 
+   (2019) <https://www.sciencedirect.com/science/article/pii/S0029801819303919>`_, this factor increases the 
+   effective length of the numerical beach while keeping it as the same physical length. This approach stems
+   from the observation that waves are typically fully absorbed in the first half of the numerical beach,
+   leaving the second portion basically unused. Therefore, using a numerical beach length factor can
+   reduce the size of the required domain while still achieving the same results. For example, if a numerical beach
+   length of 2 wave lengths is needed, ``numerical_beach_length`` could be set to 1 wave length, and then
+   ``numerical_beach_lfactor`` would be set to 2.
+
 .. input_param:: OceanWaves.label.relax_zone_out_length
 
    **type:** Real, optional, default = 8.0
