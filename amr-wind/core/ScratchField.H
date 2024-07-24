@@ -70,18 +70,18 @@ public:
         return {*this, scomp, ncomp};
     }
 
-    void fillpatch(amrex::Real time) noexcept;
-    void fillpatch(amrex::Real time, const amrex::IntVect& ng) noexcept;
+    void fillpatch(const amrex::Real time) noexcept;
+    void fillpatch(const amrex::Real time, const amrex::IntVect& ng) noexcept;
 
     void fillpatch(
-        int lev,
-        amrex::Real time,
+        const int lev,
+        const amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost) noexcept;
 
     void fillpatch(
-        int lev,
-        amrex::Real time,
+        const int lev,
+        const amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost,
         amrex::Vector<amrex::BCRec>& bcrec) noexcept;

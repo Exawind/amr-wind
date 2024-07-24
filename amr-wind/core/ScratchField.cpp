@@ -47,13 +47,13 @@ scratch_field_bcrec(const amrex::Geometry& geom, const int ncomp)
 
 } // namespace
 
-void ScratchField::fillpatch(amrex::Real time) noexcept
+void ScratchField::fillpatch(const amrex::Real time) noexcept
 {
     fillpatch(time, num_grow());
 }
 
 void ScratchField::fillpatch(
-    amrex::Real time, const amrex::IntVect& ng) noexcept
+    const amrex::Real time, const amrex::IntVect& ng) noexcept
 {
     const int nlevels = repo().num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -62,8 +62,8 @@ void ScratchField::fillpatch(
 }
 
 void ScratchField::fillpatch(
-    int lev,
-    amrex::Real time,
+    const int lev,
+    const amrex::Real time,
     amrex::MultiFab& mfab,
     const amrex::IntVect& nghost) noexcept
 {
@@ -73,8 +73,8 @@ void ScratchField::fillpatch(
 }
 
 void ScratchField::fillpatch(
-    int lev,
-    amrex::Real time,
+    const int lev,
+    const amrex::Real time,
     amrex::MultiFab& mfab,
     const amrex::IntVect& nghost,
     amrex::Vector<amrex::BCRec>& bcrec) noexcept

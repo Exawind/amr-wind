@@ -163,8 +163,8 @@ amrex::Vector<const amrex::MultiFab*> Field::vec_const_ptrs() const noexcept
 }
 
 void Field::fillpatch(
-    int lev,
-    amrex::Real time,
+    const int lev,
+    const amrex::Real time,
     amrex::MultiFab& mfab,
     const amrex::IntVect& nghost) noexcept
 {
@@ -177,8 +177,8 @@ void Field::fillpatch(
 }
 
 void Field::fillpatch_from_coarse(
-    int lev,
-    amrex::Real time,
+    const int lev,
+    const amrex::Real time,
     amrex::MultiFab& mfab,
     const amrex::IntVect& nghost) noexcept
 {
@@ -190,7 +190,7 @@ void Field::fillpatch_from_coarse(
     fop.fillpatch_from_coarse(lev, time, mfab, nghost, field_state());
 }
 
-void Field::fillpatch(amrex::Real time, amrex::IntVect ng) noexcept
+void Field::fillpatch(const amrex::Real time, const amrex::IntVect ng) noexcept
 {
     BL_PROFILE("amr-wind::Field::fillpatch");
     BL_ASSERT(m_info->m_fillpatch_op);
@@ -203,14 +203,14 @@ void Field::fillpatch(amrex::Real time, amrex::IntVect ng) noexcept
     }
 }
 
-void Field::fillpatch(amrex::Real time) noexcept
+void Field::fillpatch(const amrex::Real time) noexcept
 {
     fillpatch(time, num_grow());
 }
 
 void Field::fillpatch_sibling_fields(
-    amrex::Real time,
-    amrex::IntVect ng,
+    const amrex::Real time,
+    const amrex::IntVect ng,
     amrex::Array<Field*, AMREX_SPACEDIM>& fields) const noexcept
 {
     BL_PROFILE("amr-wind::Field::fillpatch array");
@@ -235,8 +235,8 @@ void Field::fillpatch_sibling_fields(
 }
 
 void Field::fillphysbc(
-    int lev,
-    amrex::Real time,
+    const int lev,
+    const amrex::Real time,
     amrex::MultiFab& mfab,
     const amrex::IntVect& ng) noexcept
 {
@@ -247,7 +247,7 @@ void Field::fillphysbc(
     fop.fillphysbc(lev, time, mfab, ng, field_state());
 }
 
-void Field::fillphysbc(amrex::Real time, amrex::IntVect ng) noexcept
+void Field::fillphysbc(const amrex::Real time, const amrex::IntVect ng) noexcept
 {
     BL_PROFILE("amr-wind::Field::fillphysbc");
     BL_ASSERT(m_info->m_fillpatch_op);
@@ -260,7 +260,7 @@ void Field::fillphysbc(amrex::Real time, amrex::IntVect ng) noexcept
     }
 }
 
-void Field::fillphysbc(amrex::Real time) noexcept
+void Field::fillphysbc(const amrex::Real time) noexcept
 {
     fillphysbc(time, num_grow());
 }
@@ -274,8 +274,8 @@ void Field::apply_bc_funcs(const FieldState rho_state) noexcept
 }
 
 void Field::set_inflow(
-    int lev,
-    amrex::Real time,
+    const int lev,
+    const amrex::Real time,
     amrex::MultiFab& mfab,
     const amrex::IntVect& ng) noexcept
 {
