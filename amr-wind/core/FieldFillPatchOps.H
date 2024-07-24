@@ -369,7 +369,7 @@ public:
         const auto& ncomp = m_field.num_comp();
 
         for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
-            auto ori = oit();
+            const auto ori = oit();
             if (bctype[ori] != BC::mass_inflow) {
                 continue;
             }
@@ -413,7 +413,7 @@ public:
         const auto& bcfunc = bc_functor();
 
         for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
-            auto ori = oit();
+            const auto ori = oit();
             if (bctype[ori] != BC::mass_inflow) {
                 continue;
             }
