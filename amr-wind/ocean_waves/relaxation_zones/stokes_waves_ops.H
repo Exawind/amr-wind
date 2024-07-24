@@ -88,16 +88,48 @@ struct InitDataOp<StokesWaves>
             const auto& phi = m_levelset(level).array(mfi);
             const auto& vel = velocity(level).array(mfi);
 
-            const amrex::Real zsl = wdata.zsl;
+            const amrex::Real waveheight = wdata.wave_height;
+            const amrex::Real wavelength = wdata.wave_length;
+            const amrex::Real waterdepth = wdata.water_depth;
+            const amrex::Real zero_sea_level = wdata.zsl;
+            const amrex::Real g = wdata.g;
+            const int order = wdata.order;
             const auto& gbx3 = mfi.growntilebox(3);
-            amrex::ParallelFor(
-                gbx3, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                    phi(i, j, k) = zsl - z;
-                    vel(i, j, k, 0) = 0.0;
-                    vel(i, j, k, 1) = 0.0;
-                    vel(i, j, k, 2) = 0.0;
-                });
+
+            if (wdata.init_wave_field) {
+                amrex::ParallelFor(
+                    gbx3, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+
+                        amrex::Real eta{0.0}, u_w{0.0}, v_w{0.0}, w_w{0.0};
+
+                        relaxation_zones::stokes_waves(
+                            order, wavelength, waterdepth, waveheight,
+                            zero_sea_level, g, x, z, 0.0, eta, u_w, v_w, w_w);
+
+                        phi(i, j, k) = eta - z;
+                        if (phi(i, j, k) + 0.5 * dx[2] >= 0) {
+                            vel(i, j, k, 0) = u_w;
+                            vel(i, j, k, 1) = v_w;
+                            vel(i, j, k, 2) = w_w;
+                        } else {
+                            vel(i, j, k, 0) = 0.;
+                            vel(i, j, k, 1) = 0.;
+                            vel(i, j, k, 2) = 0.;
+                        }
+                    });
+
+            } else {
+                amrex::ParallelFor(
+                    gbx3, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                        phi(i, j, k) = zero_sea_level - z;
+                        vel(i, j, k, 0) = 0.0;
+                        vel(i, j, k, 1) = 0.0;
+                        vel(i, j, k, 2) = 0.0;
+                    });
+            }
         }
     }
 };
