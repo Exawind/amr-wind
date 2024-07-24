@@ -15,11 +15,13 @@ void init_velocity(amr_wind::Field& fld)
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& farrs = fld(lev).arrays();
-        amrex::ParallelFor(fld(lev), amrex::IntVect(0), [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            farrs[nbx](i, j, k, 0) = j;
-            farrs[nbx](i, j, k, 1) = k;
-            farrs[nbx](i, j, k, 2) = i;
-        });
+        amrex::ParallelFor(
+            fld(lev), amrex::IntVect(0),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                farrs[nbx](i, j, k, 0) = j;
+                farrs[nbx](i, j, k, 1) = k;
+                farrs[nbx](i, j, k, 2) = i;
+            });
     }
     amrex::Gpu::synchronize();
 }
