@@ -38,7 +38,8 @@ OceanWaves.Wave1.wave_height=0.04
 OceanWaves.Wave1.wave_length=2.0
 OceanWaves.Wave1.water_depth=1.0
 OceanWaves.Wave1.relax_zone_gen_length=4.0
-OceanWaves.Wave1.numerical_beach_length=8.0
+OceanWaves.Wave1.numerical_beach_length=2.0
+OceanWaves.Wave1.numerical_beach_lfactor=2.0
 MultiPhase.density_fluid1=1000.
 MultiPhase.density_fluid2=1.
 MultiPhase.interface_smoothing=0
@@ -49,13 +50,13 @@ MultiPhase.verbose=1
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
-amr.n_cell              = 480 16 32    # Grid cells at coarsest AMRlevel
+amr.n_cell              = 384 16 32    # Grid cells at coarsest AMRlevel
 amr.max_level = 0
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
 #.......................................#
 geometry.prob_lo        =     0.0   0.  -1   # Lo corner coordinates
-geometry.prob_hi        =     30.   1.   1  # Hi corner coordinates
+geometry.prob_hi        =     24.   1.   1  # Hi corner coordinates
 geometry.is_periodic    =     0     1     0   # Periodicity x y z (0/1)
 
 xlo.type =     "pressure_inflow"
