@@ -7,7 +7,7 @@ namespace amr_wind {
 
 void SimTime::parse_parameters()
 {
-    // Initialize deltaT to negative values
+    // Initialize delta_t to negative values
     for (amrex::Real& i : m_dt) {
         i = -1.0;
     }
@@ -213,7 +213,7 @@ void SimTime::set_current_cfl(
 
     } else {
         // If user has specified fixed DT then issue a warning if the timestep
-        // is larger than the deltaT determined from max. CFL considerations.
+        // is larger than the delta_t determined from max. CFL considerations.
         // Only issue warnings when the error is greater than 1% of the timestep
         // specified
         if ((1.0 - (dt_new / m_fixed_dt)) > 0.01) {

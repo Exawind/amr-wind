@@ -327,9 +327,9 @@ void IOManager::write_header(
         << end_level - start_level << "\n"
         << time.time_index() << "\n"
         << time.new_time() << "\n"
-        << time.deltaT() << "\n"
-        << time.deltaTNm1() << "\n"
-        << time.deltaTNm2() << "\n";
+        << time.delta_t() << "\n"
+        << time.delta_t_nm1() << "\n"
+        << time.delta_t_nm2() << "\n";
 
     const auto geom = mesh.Geom(0);
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {

@@ -26,7 +26,7 @@ free_surface_to_vof(amrex::Real eta, amrex::Real z, amrex::Real dz)
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-Gamma_generate(amrex::Real x, amrex::Real gen_length)
+gamma_generate(amrex::Real x, amrex::Real gen_length)
 {
     amrex::Real Gamma = 0.0;
     amrex::Real xtilde = std::max(std::min(1. - x / gen_length, 1.0), 0.0);
@@ -34,7 +34,7 @@ Gamma_generate(amrex::Real x, amrex::Real gen_length)
     return Gamma;
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real Gamma_absorb(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real gamma_absorb(
     amrex::Real x, amrex::Real absorb_length, amrex::Real absorb_length_factor)
 {
     amrex::Real Gamma = 0.0;
