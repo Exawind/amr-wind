@@ -45,8 +45,8 @@ public:
     //! Implementation that handles filling patches on a single level as well as
     //! across a coarse-fine interface.
     virtual void fillpatch(
-        int lev,
-        amrex::Real time,
+        const int lev,
+        const amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost,
         const FieldState fstate = FieldState::New) = 0;
@@ -54,8 +54,8 @@ public:
     //! Implementation that handles filling patches on a single level as well as
     //! across a coarse-fine interface, for an array of different fields
     virtual void fillpatch_sibling_fields(
-        int lev,
-        amrex::Real time,
+        const int lev,
+        const amrex::Real time,
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& mfabs,
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& ffabs,
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& cfabs,
@@ -65,26 +65,31 @@ public:
 
     //! Implementation that handles filling patches from a coarse to fine level
     virtual void fillpatch_from_coarse(
-        int lev,
-        amrex::Real time,
+        const int lev,
+        const amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost,
         const FieldState fstate = FieldState::New) = 0;
 
     //! Implementation that handles filling physical boundary conditions
     virtual void fillphysbc(
-        int lev,
-        amrex::Real time,
+        const int lev,
+        const amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost,
         const FieldState fstate = FieldState::New) = 0;
 
     virtual void set_inflow(
-        int lev,
-        amrex::Real time,
+        const int lev,
+        const amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost,
         const FieldState fstate = FieldState::New) = 0;
+
+    virtual void set_inflow_sibling_fields(
+        const int lev,
+        const amrex::Real time,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs) = 0;
 };
 
 /** Implementation that just fills a constant value on newly created grids
@@ -364,7 +369,7 @@ public:
         const auto& ncomp = m_field.num_comp();
 
         for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
-            auto ori = oit();
+            const auto ori = oit();
             if (bctype[ori] != BC::mass_inflow) {
                 continue;
             }
@@ -393,6 +398,57 @@ public:
                                 {i, j, k}, marr, gdata, time, ori, n, 0, 0);
                         }
                     });
+            }
+        }
+    }
+
+    void set_inflow_sibling_fields(
+        const int lev,
+        const amrex::Real time,
+        const amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs) override
+    {
+        const auto& bctype = m_field.bc_type();
+        const auto& geom = m_mesh.Geom(lev);
+        const auto& gdata = geom.data();
+        const auto& bcfunc = bc_functor();
+
+        for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+            const auto ori = oit();
+            if (bctype[ori] != BC::mass_inflow) {
+                continue;
+            }
+
+            const int idir = ori.coordDir();
+            const auto& domain_box = geom.Domain();
+            for (int fdir = 0; fdir < AMREX_SPACEDIM; ++fdir) {
+
+                // Only face-normal velocities populated here
+                if (idir != fdir) {
+                    continue;
+                }
+                const auto& dbx = ori.isLow() ? amrex::bdryLo(domain_box, idir)
+                                              : amrex::bdryHi(domain_box, idir);
+
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+                auto& mfab = *mfabs[fdir];
+                for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
+                    const auto& vbx = mfi.validbox();
+                    const auto& bx = vbx & dbx;
+                    if (!bx.ok()) {
+                        continue;
+                    }
+
+                    const auto& marr = mfab[mfi].array();
+                    amrex::ParallelFor(
+                        bx,
+                        [=] AMREX_GPU_DEVICE(
+                            const int i, const int j, const int k) noexcept {
+                            bcfunc.set_inflow(
+                                {i, j, k}, marr, gdata, time, ori, 0, 0, fdir);
+                        });
+                }
             }
         }
     }

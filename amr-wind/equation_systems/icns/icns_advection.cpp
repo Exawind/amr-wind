@@ -3,6 +3,7 @@
 #include "amr-wind/equation_systems/icns/icns_advection.H"
 #include "amr-wind/core/MLMGOptions.H"
 #include "amr-wind/utilities/console_io.H"
+#include "amr-wind/wind_energy/ABL.H"
 
 #include "AMReX_MultiFabUtil.H"
 #include "hydro_MacProjector.H"
@@ -42,11 +43,13 @@ amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> get_projection_bc(
 
 MacProjOp::MacProjOp(
     FieldRepo& repo,
+    PhysicsMgr& phy_mgr,
     bool has_overset,
     bool variable_density,
     bool mesh_mapping,
     bool is_anelastic)
     : m_repo(repo)
+    , m_phy_mgr(phy_mgr)
     , m_options("mac_proj")
     , m_has_overset(has_overset)
     , m_variable_density(variable_density)
@@ -107,6 +110,32 @@ void MacProjOp::init_projector(const amrex::Real beta) noexcept
             amrex::Orientation::high, bctype, m_repo.mesh().Geom()));
 
     m_need_init = false;
+}
+
+void MacProjOp::set_inflow_velocity(amrex::Real time)
+{
+    // Currently, input boundary planes account for inflow differently
+    // Also, MPL needs to be refactored to do this properly, defer for now
+    if (m_phy_mgr.contains("ABL")) {
+        if (m_phy_mgr.get<amr_wind::ABL>().bndry_plane().mode() ==
+            io_mode::input) {
+            return;
+        }
+        if (m_phy_mgr.get<amr_wind::ABL>().abl_mpl().is_active()) {
+            return;
+        }
+    }
+
+    auto& velocity = m_repo.get_field("velocity");
+    auto& u_mac = m_repo.get_field("u_mac");
+    auto& v_mac = m_repo.get_field("v_mac");
+    auto& w_mac = m_repo.get_field("w_mac");
+
+    for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mac_vec = {
+            AMREX_D_DECL(&u_mac(lev), &v_mac(lev), &w_mac(lev))};
+        velocity.set_inflow_sibling_fields(lev, time, mac_vec);
+    }
 }
 
 //

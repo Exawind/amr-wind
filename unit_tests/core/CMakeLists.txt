@@ -5,6 +5,7 @@ target_sources(
   test_simtime.cpp
   test_field.cpp
   test_field_ops.cpp
+  test_field_fillpatch_ops.cpp
   test_physics.cpp
   )
 
