@@ -152,6 +152,10 @@ struct UpdateRelaxZonesOp<StokesWaves>
                             vel(i, j, k, 0) = u_w;
                             vel(i, j, k, 1) = v_w;
                             vel(i, j, k, 2) = w_w;
+                        } else {
+                            vel(i, j, k, 0) = 0.;
+                            vel(i, j, k, 1) = 0.;
+                            vel(i, j, k, 2) = 0.;
                         }
                     });
             }
