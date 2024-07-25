@@ -1,5 +1,4 @@
 #include "amr-wind/convection/incflo_godunov_ppm.H"
-#include "amr-wind/convection/incflo_godunov_ppm_nolim.H"
 #include "amr-wind/convection/incflo_godunov_weno.H"
 #include "amr-wind/convection/incflo_godunov_minmod.H"
 #include "amr-wind/convection/incflo_godunov_upwind.H"

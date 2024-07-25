@@ -284,7 +284,9 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                 const bool godunov_use_ppm =
                     godunov_scheme == godunov::scheme::PPM;
                 const int limiter_type =
-                    (godunov_scheme == godunov::scheme::PPM_NOLIM) ? PPM::NoLimiter :  PPM::default_limiter;
+                    (godunov_scheme == godunov::scheme::PPM_NOLIM)
+                        ? PPM::NoLimiter
+                        : PPM::default_limiter;
                 HydroUtils::ExtrapVelToFaces(
                     dof_field(lev), src_term(lev), u_mac(lev), v_mac(lev),
                     w_mac(lev), dof_field.bcrec(),
@@ -427,22 +429,18 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                     const bool godunov_use_ppm =
                         godunov_scheme == godunov::scheme::PPM;
                     const int limiter_type =
-                        (godunov_scheme == godunov::scheme::PPM_NOLIM) ? PPM::NoLimiter :  PPM::default_limiter;
+                        (godunov_scheme == godunov::scheme::PPM_NOLIM)
+                            ? PPM::NoLimiter
+                            : PPM::default_limiter;
                     HydroUtils::ComputeFluxesOnBoxFromState(
                         bx, ICNS::ndim, mfi, q.const_array(mfi),
-                        AMREX_D_DECL(
-                            (*flux_x)(lev).array(mfi),
-                            (*flux_y)(lev).array(mfi),
-                            (*flux_z)(lev).array(mfi)),
-                        AMREX_D_DECL(
-                            (*face_x)(lev).array(mfi),
-                            (*face_y)(lev).array(mfi),
-                            (*face_z)(lev).array(mfi)),
+                        (*flux_x)(lev).array(mfi), (*flux_y)(lev).array(mfi),
+                        (*flux_z)(lev).array(mfi), (*face_x)(lev).array(mfi),
+                        (*face_y)(lev).array(mfi), (*face_z)(lev).array(mfi),
                         known_edge_state,
-                        AMREX_D_DECL(
-                            u_mac(lev).const_array(mfi),
-                            v_mac(lev).const_array(mfi),
-                            w_mac(lev).const_array(mfi)),
+                        u_mac(lev).const_array(mfi),
+                        v_mac(lev).const_array(mfi),
+                        w_mac(lev).const_array(mfi),
                         divu, fq.const_array(mfi), geom[lev], dt,
                         dof_field.bcrec(), dof_field.bcrec_device().data(),
                         iconserv.data(), godunov_use_ppm,
