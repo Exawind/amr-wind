@@ -14,18 +14,16 @@ void init_velocity(amr_wind::Field& fld)
     const int nlevels = fld.repo().num_active_levels();
 
     for (int lev = 0; lev < nlevels; ++lev) {
-
-        for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.validbox();
-            const auto& farr = fld(lev).array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-                farr(i, j, k, 0) = j;
-                farr(i, j, k, 1) = k;
-                farr(i, j, k, 2) = i;
+        const auto& farrs = fld(lev).arrays();
+        amrex::ParallelFor(
+            fld(lev), amrex::IntVect(0),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                farrs[nbx](i, j, k, 0) = j;
+                farrs[nbx](i, j, k, 1) = k;
+                farrs[nbx](i, j, k, 2) = i;
             });
-        }
     }
+    amrex::Gpu::synchronize();
 }
 
 void init_vof(amr_wind::Field& fld)
@@ -33,29 +31,28 @@ void init_vof(amr_wind::Field& fld)
     const int nlevels = fld.repo().num_active_levels();
 
     for (int lev = 0; lev < nlevels; ++lev) {
-
-        for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.validbox();
-            const auto& vof_arr = fld(lev).array(mfi);
-            // Top half is air, bottom is gas, middle row alternates between
-            // fully liquid and half liquid
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        const auto& vof_arrs = fld(lev).arrays();
+        // Top half is air, bottom is gas, middle row alternates between
+        // fully liquid and half liquid
+        amrex::ParallelFor(
+            fld(lev), amrex::IntVect(0),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 if (k < 2) {
-                    vof_arr(i, j, k) = 1.0;
+                    vof_arrs[nbx](i, j, k) = 1.0;
                 } else {
                     if (k == 2) {
                         if (i % 2 == 0) {
-                            vof_arr(i, j, k) = 0.5;
+                            vof_arrs[nbx](i, j, k) = 0.5;
                         } else {
-                            vof_arr(i, j, k) = 1.0;
+                            vof_arrs[nbx](i, j, k) = 1.0;
                         }
                     } else {
-                        vof_arr(i, j, k) = 0.0;
+                        vof_arrs[nbx](i, j, k) = 0.0;
                     }
                 }
             });
-        }
     }
+    amrex::Gpu::synchronize();
 }
 
 class WaveEnergyImpl : public amr_wind::wave_energy::WaveEnergy
