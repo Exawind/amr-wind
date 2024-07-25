@@ -36,6 +36,19 @@ This section is for setting up wave forcing and relaxation zones.
    the entire width of the domain in the y direction and applying to all liquid at all depths
    (in z). Always on, unless relax_zone_out_length is included in the input file.
 
+.. input_param:: OceanWaves.label.numerical_beach_length_factor
+
+   **type:** Real, optional, default = 1.0
+
+   Length factor for numerical beach region. Following the formulation suggested by `Chen, Kelly, and Zang 
+   (2019) <https://www.sciencedirect.com/science/article/pii/S0029801819303919>`_, this factor increases the 
+   effective length of the numerical beach while keeping it as the same physical length. This approach stems
+   from the observation that waves are typically fully absorbed in the first half of the numerical beach,
+   leaving the second portion basically unused. Therefore, using a numerical beach length factor can
+   reduce the size of the required domain while still achieving the same results. For example, if a numerical beach
+   length of 2 wave lengths is needed, ``numerical_beach_length`` could be set to 1 wave length, and then
+   ``numerical_beach_length_factor`` would be set to 2.
+
 .. input_param:: OceanWaves.label.relax_zone_out_length
 
    **type:** Real, optional, default = 8.0
@@ -80,7 +93,8 @@ The following input arguments are only valid for the LinearWaves and StokesWave 
 
    **type:** Real, mandatory
 
-   The wave length of the wave profile
+   The wave length of the wave profile. This argument can be omitted for Stokes waves if
+   the wave period is provided instead.
 
 .. input_param:: OceanWaves.label.wave_height
 
@@ -94,7 +108,38 @@ The following input arguments are only valid for the StokesWave wave type:
 
    **type:** Integer, mandatory
 
-   The order of the Stokes wave formula being used
+   The order of the Stokes wave formula being used. All Stokes wave theory (wave profile and
+   dispersion relation) is applied from `Fenton (1985)
+   <https://ascelibrary.org/doi/10.1061/%28ASCE%290733-950X%281985%29111%3A2%28216%29>`.
+   The minimum order is 2, and the maximum order is 5.
+
+.. input_param:: OceanWaves.label.wave_period
+
+   **type:** Real, optional
+
+   If the wave period is provided and the wave length is not, the wave length will be solved
+   iteratively using the wave height, the wave period, and the Stokes waves dispersion relation.
+   If the wave length is not provided, this argument becomes mandatory.
+
+.. input_param:: OceanWaves.label.stokes_wavelength_order
+
+   **type:** Real, optional
+
+   Specifies the order of the dispersion relation used to calculate the wave length. By default,
+   this is equal to the ``order`` of the waves. Practically, the minimum value is 1, and the
+   maximum is 5.
+
+.. input_param:: OceanWaves.label.stokes_wavelength_tolerance
+
+   **type:** Real, optional, default = 1e-10
+
+   Convergence tolerance of the iterative process to calculate the wave length.
+
+.. input_param:: OceanWaves.label.stokes_wavelength_iter_max
+
+   **type:** Integer, optional, default = 40
+
+   Maximum number of iterations during the process to calculate the wave length.
 
 The following input arguments are only valid for the W2AWaves wave type:
 
