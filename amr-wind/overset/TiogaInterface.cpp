@@ -29,19 +29,15 @@ void iblank_to_mask(const IntField& iblank, IntField& maskf)
         const auto& ibl = iblank(lev);
         auto& mask = maskf(lev);
 
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-        for (amrex::MFIter mfi(ibl); mfi.isValid(); ++mfi) {
-            const auto& gbx = mfi.growntilebox();
-            const auto& ibarr = ibl.const_array(mfi);
-            const auto& marr = mask.array(mfi);
-            amrex::ParallelFor(
-                gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    marr(i, j, k) = amrex::max(ibarr(i, j, k), 0);
-                });
-        }
+        const auto& ibarrs = ibl.const_arrays();
+        const auto& marrs = mask.arrays();
+        amrex::ParallelFor(
+            ibl, ibl.n_grow,
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                marrs[nbx](i, j, k) = amrex::max(ibarrs[nbx](i, j, k), 0);
+            });
     }
+    amrex::Gpu::synchronize();
 }
 
 void iblank_to_mask_hole(const IntField& iblank, IntField& maskf)
@@ -52,19 +48,15 @@ void iblank_to_mask_hole(const IntField& iblank, IntField& maskf)
         const auto& ibl = iblank(lev);
         auto& mask = maskf(lev);
 
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-        for (amrex::MFIter mfi(ibl); mfi.isValid(); ++mfi) {
-            const auto& gbx = mfi.growntilebox();
-            const auto& ibarr = ibl.const_array(mfi);
-            const auto& marr = mask.array(mfi);
-            amrex::ParallelFor(
-                gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    marr(i, j, k) = std::abs(ibarr(i, j, k));
-                });
-        }
+        const auto& ibarrs = ibl.const_arrays();
+        const auto& marrs = mask.arrays();
+        amrex::ParallelFor(
+            ibl, ibl.n_grow,
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                marrs[nbx](i, j, k) = std::abs(ibarrs[nbx](i, j, k));
+            });
     }
+    amrex::Gpu::synchronize();
 }
 } // namespace
 

@@ -62,22 +62,18 @@ amr_wind::nodal_projection::get_projection_bc(
 void amr_wind::nodal_projection::apply_dirichlet_vel(
     amrex::MultiFab& mf_velocity, amrex::iMultiFab& mf_iblank)
 {
-    for (amrex::MFIter mfi(mf_iblank); mfi.isValid(); ++mfi) {
-        const auto& gbx = mfi.growntilebox();
-        const amrex::Array4<amrex::Real>& varr = mf_velocity.array(mfi);
-        const amrex::Array4<const int>& iblank = mf_iblank.const_array(mfi);
+    const auto& vel = mf_velocity.arrays();
+    const auto& iblank = mf_iblank.const_arrays();
 
-        amrex::ParallelFor(
-            gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                // Pure solid-body points
-                if (iblank(i, j, k) == 0) {
-                    // Set velocity to 0 for now
-                    varr(i, j, k, 0) = 0.0;
-                    varr(i, j, k, 1) = 0.0;
-                    varr(i, j, k, 2) = 0.0;
-                }
-            });
-    }
+    amrex::ParallelFor(
+        mf_velocity, mf_velocity.n_grow, mf_velocity.n_comp,
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+            // Pure solid-body points
+            if (iblank[nbx](i, j, k) == 0) {
+                // Set velocity to 0 for now
+                vel[nbx](i, j, k, n) = 0.0;
+            }
+        });
 }
 
 /** Perform nodal projection
@@ -394,6 +390,7 @@ void incflo::ApplyProjection(
             amr_wind::nodal_projection::apply_dirichlet_vel(
                 velocity(lev), iblank(lev));
         }
+        amrex::Gpu::synchronize();
         auto div_vel_rhs =
             sim().repo().create_scratch_field(1, 0, amr_wind::FieldLoc::NODE);
         nodal_projector->computeRHS(div_vel_rhs->vec_ptrs(), vel, {}, {});
