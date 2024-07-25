@@ -438,13 +438,13 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                         (*flux_z)(lev).array(mfi), (*face_x)(lev).array(mfi),
                         (*face_y)(lev).array(mfi), (*face_z)(lev).array(mfi),
                         known_edge_state, u_mac(lev).const_array(mfi),
-                        v_mac(lev).const_array(mfi), w_mac(lev).const_array(mfi),
-                        divu, fq.const_array(mfi), geom[lev], dt,
-                        dof_field.bcrec(), dof_field.bcrec_device().data(),
-                        iconserv.data(), godunov_use_ppm,
-                        godunov_use_forces_in_trans, is_velocity,
-                        fluxes_are_area_weighted, postmac_advection_type,
-                        limiter_type);
+                        v_mac(lev).const_array(mfi),
+                        w_mac(lev).const_array(mfi), divu, fq.const_array(mfi),
+                        geom[lev], dt, dof_field.bcrec(),
+                        dof_field.bcrec_device().data(), iconserv.data(),
+                        godunov_use_ppm, godunov_use_forces_in_trans,
+                        is_velocity, fluxes_are_area_weighted,
+                        postmac_advection_type, limiter_type);
                 } else {
                     amrex::Abort("Invalid godunov scheme");
                 }
