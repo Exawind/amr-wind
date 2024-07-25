@@ -44,7 +44,7 @@ void MultiLevelVector::copy_to_field(Field& fld)
                 const int idx = (axis == 0) ? i : ((axis == 1) ? j : k);
                 farrs[nbx](i, j, k, 0) = d_ptr[idx];
             });
-        amrex::Gpu::synchronize();
     }
+    amrex::Gpu::synchronize();
 }
 } // namespace amr_wind
