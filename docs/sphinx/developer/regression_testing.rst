@@ -35,6 +35,8 @@ CMake configure phase: :cmakeval:`AMR_WIND_ENABLE_TESTS` and
    cd ${HOME}/exawind/source/amr-wind
    # Create a build directory
    mkdir build-test
+   # Move into the build directory
+   cd build-test
    # Run configure with testing flags
    cmake -DAMR_WIND_ENABLE_TESTS=ON -DAMR_WIND_TEST_WITH_FCOMPARE=ON ../
    # Build code
@@ -151,7 +153,7 @@ by ``fcompare`` that can be used for diagnostics.
   Total Test time (real) =   9.76 sec
 
   The following tests FAILED:
-  	  7 - abl_godunov (Failed)
+        7 - abl_godunov (Failed)
   Errors while running CTest
 
 During testing, :program:`fcompare` will calculate the differences for each
