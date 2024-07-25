@@ -193,7 +193,7 @@ void incflo::ApplyProjection(
         for (int lev = 0; lev <= finest_level; lev++) {
 
 #ifdef AMREX_USE_OMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (MFIter mfi(velocity(lev), TilingIfNotGPU()); mfi.isValid();
                  ++mfi) {
@@ -228,7 +228,7 @@ void incflo::ApplyProjection(
         // Create the Surface tension forcing term (Cell-centered)
         for (int lev = 0; lev <= finest_level; ++lev) {
 #ifdef AMREX_USE_OMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             {
                 amrex::MultiFab surf_tens_force;
@@ -284,7 +284,7 @@ void incflo::ApplyProjection(
             sigma[lev].define(
                 grids[lev], dmap[lev], ncomp, 0, MFInfo(), Factory(lev));
 #ifdef AMREX_USE_OMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (MFIter mfi(sigma[lev], TilingIfNotGPU()); mfi.isValid();
                  ++mfi) {
@@ -464,7 +464,7 @@ void incflo::ApplyProjection(
     for (int lev = 0; lev <= finest_level; lev++) {
 
 #ifdef AMREX_USE_OMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
         for (MFIter mfi(grad_p(lev), TilingIfNotGPU()); mfi.isValid(); ++mfi) {
             Box const& tbx = mfi.tilebox();

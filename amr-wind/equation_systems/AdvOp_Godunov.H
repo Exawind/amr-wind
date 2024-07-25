@@ -25,6 +25,7 @@ struct AdvectionOp<
     typename std::enable_if_t<std::is_base_of_v<ScalarTransport, PDE>>>
 {
     AdvectionOp(
+        CFDSim& /* sim */,
         PDEFields& fields_in,
         bool /* has_overset */,
         bool /* variable density */,

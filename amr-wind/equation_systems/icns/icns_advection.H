@@ -5,6 +5,7 @@
 #include "amr-wind/equation_systems/AdvOp_MOL.H"
 #include "amr-wind/equation_systems/icns/icns.H"
 #include "amr-wind/equation_systems/vof/vof_momentum_flux.H"
+#include "amr-wind/core/Physics.H"
 
 #include "AMReX_MultiFabUtil.H"
 #include "hydro_MacProjector.H"
@@ -23,10 +24,13 @@ public:
 
     MacProjOp(
         FieldRepo& /*repo*/,
+        PhysicsMgr& /*phy_mgr*/,
         bool /*has_overset*/,
         bool /*variable_density*/,
         bool /*mesh_mapping*/,
         bool /*is_anelastic*/);
+
+    void set_inflow_velocity(amrex::Real time);
 
     void operator()(const FieldState fstate, const amrex::Real dt);
 
@@ -46,6 +50,7 @@ private:
     void init_projector(const amrex::Real /*beta*/) noexcept;
 
     FieldRepo& m_repo;
+    PhysicsMgr& m_phy_mgr;
     std::unique_ptr<Hydro::MacProjector> m_mac_proj;
     MLMGOptions m_options;
     bool m_has_overset{false};
@@ -63,6 +68,7 @@ template <>
 struct AdvectionOp<ICNS, fvm::Godunov>
 {
     AdvectionOp(
+        CFDSim& sim,
         PDEFields& fields_in,
         bool has_overset,
         bool variable_density,
@@ -74,6 +80,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         , w_mac(fields_in.repo.get_field("w_mac"))
         , m_macproj_op(
               fields.repo,
+              sim.physics_manager(),
               has_overset,
               variable_density,
               mesh_mapping,
@@ -298,10 +305,13 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             diagnostics::PrintMaxMACVelLocations(repo, "before MAC projection");
         }
 
+        // Populate boundaries (valid cells) using velocity BCs
+        m_macproj_op.set_inflow_velocity(time + 0.5 * dt);
+
         // MAC projection
         m_macproj_op(fstate, dt);
 
-        // Fill mac velocities using velocity BCs
+        // Fill mac velocities (ghost cells) using velocity BCs
         if (fvm::Godunov::nghost_state > 0) {
             amrex::Array<Field*, AMREX_SPACEDIM> mac_vel = {
                 AMREX_D_DECL(&u_mac, &v_mac, &w_mac)};
@@ -539,6 +549,7 @@ template <>
 struct AdvectionOp<ICNS, fvm::MOL>
 {
     AdvectionOp(
+        CFDSim& sim,
         PDEFields& fields_in,
         bool has_overset,
         bool variable_density,
@@ -551,6 +562,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
         , m_mesh_mapping(mesh_mapping)
         , m_macproj_op(
               fields.repo,
+              sim.physics_manager(),
               has_overset,
               variable_density,
               m_mesh_mapping,
