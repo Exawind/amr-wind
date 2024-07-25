@@ -161,8 +161,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         // Predict
         //
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-            if ((godunov_scheme == godunov::scheme::PPM_NOLIM) ||
-                (godunov_scheme == godunov::scheme::WENOJS) ||
+            if ((godunov_scheme == godunov::scheme::WENOJS) ||
                 (godunov_scheme == godunov::scheme::WENOZ)) {
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
@@ -239,13 +238,6 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                         p += w_ad.size();
 
                         switch (godunov_scheme) {
-                        case godunov::scheme::PPM_NOLIM: {
-                            godunov::predict_ppm(
-                                lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz,
-                                Ipz, a_vel, a_vel, geom, dt, bcrec_device,
-                                false);
-                            break;
-                        }
                         case godunov::scheme::WENOJS: {
                             godunov::predict_weno(
                                 lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz,
@@ -262,7 +254,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                         }
                         default: {
                             amrex::Abort(
-                                "Only PPM_NOLIM, WENOZ, and WENOJS use this "
+                                "Only WENOZ, and WENOJS use this "
                                 "code path");
                         }
                         }
@@ -286,16 +278,19 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                 }
             } else if (
                 (godunov_scheme == godunov::scheme::PPM) ||
+                (godunov_scheme == godunov::scheme::PPM_NOLIM) ||
                 (godunov_scheme == godunov::scheme::PLM) ||
                 (godunov_scheme == godunov::scheme::BDS)) {
                 const bool godunov_use_ppm =
                     godunov_scheme == godunov::scheme::PPM;
+                const int limiter_type =
+                    (godunov_scheme == godunov::scheme::PPM_NOLIM) ? PPM::NoLimiter :  PPM::default_limiter;
                 HydroUtils::ExtrapVelToFaces(
                     dof_field(lev), src_term(lev), u_mac(lev), v_mac(lev),
                     w_mac(lev), dof_field.bcrec(),
                     dof_field.bcrec_device().data(), repo.mesh().Geom(lev), dt,
                     godunov_use_ppm, godunov_use_forces_in_trans,
-                    premac_advection_type);
+                    premac_advection_type, limiter_type);
             } else {
                 amrex::Abort("Invalid godunov scheme");
             }
@@ -407,8 +402,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                 const auto& bx = mfi.tilebox();
 
                 // These schemes are not in amrex-hydro yet
-                if ((godunov_scheme == godunov::scheme::PPM_NOLIM) ||
-                    (godunov_scheme == godunov::scheme::WENOJS) ||
+                if ((godunov_scheme == godunov::scheme::WENOJS) ||
                     (godunov_scheme == godunov::scheme::WENOZ)) {
                     amrex::FArrayBox tmpfab(
                         amrex::grow(bx, 1), ICNS::ndim * 14);
@@ -422,6 +416,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                         tmpfab.dataPtr(), geom, dt, godunov_scheme);
                 } else if (
                     (godunov_scheme == godunov::scheme::PPM) ||
+                    (godunov_scheme == godunov::scheme::PPM_NOLIM) ||
                     (godunov_scheme == godunov::scheme::PLM) ||
                     (godunov_scheme == godunov::scheme::BDS)) {
                     amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 1);
@@ -431,6 +426,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                     const bool known_edge_state = false;
                     const bool godunov_use_ppm =
                         godunov_scheme == godunov::scheme::PPM;
+                    const int limiter_type =
+                        (godunov_scheme == godunov::scheme::PPM_NOLIM) ? PPM::NoLimiter :  PPM::default_limiter;
                     HydroUtils::ComputeFluxesOnBoxFromState(
                         bx, ICNS::ndim, mfi, q.const_array(mfi),
                         AMREX_D_DECL(
@@ -450,7 +447,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                         dof_field.bcrec(), dof_field.bcrec_device().data(),
                         iconserv.data(), godunov_use_ppm,
                         godunov_use_forces_in_trans, is_velocity,
-                        fluxes_are_area_weighted, postmac_advection_type);
+                        fluxes_are_area_weighted, postmac_advection_type,
+                        limiter_type);
                 } else {
                     amrex::Abort("Invalid godunov scheme");
                 }
