@@ -400,7 +400,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_corner_couple_yx(
     int n,
     amrex::Real dt,
     amrex::Real dx,
-    bool iconserv,
+    bool /*iconserv*/,
     amrex::Real lo,
     amrex::Real hi,
     amrex::Array4<amrex::Real const> const& s,
@@ -430,7 +430,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_corner_couple_zx(
     int n,
     amrex::Real dt,
     amrex::Real dx,
-    bool iconserv,
+    bool /*iconserv*/,
     amrex::Real lo,
     amrex::Real hi,
     amrex::Array4<amrex::Real const> const& s,
@@ -460,7 +460,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_corner_couple_xy(
     int n,
     amrex::Real dt,
     amrex::Real dy,
-    bool iconserv,
+    bool /*iconserv*/,
     amrex::Real lo,
     amrex::Real hi,
     amrex::Array4<amrex::Real const> const& s,
@@ -490,7 +490,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_corner_couple_zy(
     int n,
     amrex::Real dt,
     amrex::Real dy,
-    bool iconserv,
+    bool /*iconserv*/,
     amrex::Real lo,
     amrex::Real hi,
     amrex::Array4<amrex::Real const> const& s,
@@ -520,7 +520,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_corner_couple_xz(
     int n,
     amrex::Real dt,
     amrex::Real dz,
-    bool iconserv,
+    bool /*iconserv*/,
     amrex::Real lo,
     amrex::Real hi,
     amrex::Array4<amrex::Real const> const& s,
@@ -550,14 +550,13 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_corner_couple_yz(
     int n,
     amrex::Real dt,
     amrex::Real dz,
-    bool iconserv,
+    bool /*iconserv*/,
     amrex::Real lo,
     amrex::Real hi,
     amrex::Array4<amrex::Real const> const& s,
     amrex::Array4<amrex::Real const> const& mac,
     amrex::Array4<amrex::Real const> const& state)
 {
-#if 1
     lo1 = lo -
           dt / (amrex::Real(3.0) * dz) *
               (state(i, j - 1, k + 1, n) * mac(i, j - 1, k + 1) -
