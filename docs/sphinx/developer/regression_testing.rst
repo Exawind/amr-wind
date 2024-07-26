@@ -152,6 +152,17 @@ The gold files directory is organized by ``${OS}/${COMPILER}/${COMPILER_VERSION}
    # Create the reference version of Golds (following the directory convention used above)
    cp -R golds/tmp/ golds/current/
 
+   # Because of test dependencies, this needs to be done twice
+   ctest -j 8
+   cp -R golds/tmp/ golds/current/
+
+.. tip::
+
+   The tests failing with "amrex::Error::0::Couldn't open file:" means
+   that the test simulation completed successfully but that no
+   comparison was made with :program:`fcompare` because the reference
+   gold files are missing.
+
 Once that is done (and it should only need to be done once), the test suite can be run with the following:
 
 .. code-block:: console
