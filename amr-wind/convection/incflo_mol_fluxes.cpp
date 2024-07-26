@@ -41,7 +41,7 @@ void mol::compute_convective_fluxes(
     Vector<Geometry> geom)
 {
     BL_PROFILE("amr-wind::mol::compute_convective_fluxes");
-    constexpr Real small_vel = 1.e-10;
+    constexpr Real small_vel = 1.e-8;
 
     const Box& domain_box = geom[lev].Domain();
     const int domain_ilo = domain_box.smallEnd(0);
