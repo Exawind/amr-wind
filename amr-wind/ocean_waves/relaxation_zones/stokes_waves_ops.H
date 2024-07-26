@@ -113,10 +113,6 @@ struct InitDataOp<StokesWaves>
                             vel(i, j, k, 0) = u_w;
                             vel(i, j, k, 1) = v_w;
                             vel(i, j, k, 2) = w_w;
-                        } else {
-                            vel(i, j, k, 0) = 0.;
-                            vel(i, j, k, 1) = 0.;
-                            vel(i, j, k, 2) = 0.;
                         }
                     });
 
@@ -125,9 +121,11 @@ struct InitDataOp<StokesWaves>
                     gbx3, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
                         phi(i, j, k) = zero_sea_level - z;
-                        vel(i, j, k, 0) = 0.0;
-                        vel(i, j, k, 1) = 0.0;
-                        vel(i, j, k, 2) = 0.0;
+                        if (phi(i, j, k) + 0.5 * dx[2] >= 0) {
+                            vel(i, j, k, 0) = 0.0;
+                            vel(i, j, k, 1) = 0.0;
+                            vel(i, j, k, 2) = 0.0;
+                        }
                     });
             }
         }
