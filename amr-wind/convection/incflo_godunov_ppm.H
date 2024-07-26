@@ -407,12 +407,18 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_corner_couple_yx(
     amrex::Array4<amrex::Real const> const& mac,
     amrex::Array4<amrex::Real const> const& state)
 {
-    lo1 = lo - dt/(amrex::Real(3.0)*dx)*( state(i+1,j-1,k,n)*mac(i+1,j-1,k)
-                                         -state(i  ,j-1,k,n)*mac(i  ,j-1,k) )
-             + dt/(amrex::Real(3.0)*dx)*s(i,j-1,k,n)*(mac(i+1,j-1,k)-mac(i,j-1,k));
-    hi1 = hi - dt/(amrex::Real(3.0)*dx)*( state(i+1,j  ,k,n)*mac(i+1,j  ,k)
-                                         -state(i  ,j  ,k,n)*mac(i  ,j  ,k) )
-             + dt/(amrex::Real(3.0)*dx)*s(i,j  ,k,n)*(mac(i+1,j  ,k) - mac(i,j  ,k));
+    lo1 = lo -
+          dt / (amrex::Real(3.0) * dx) *
+              (state(i + 1, j - 1, k, n) * mac(i + 1, j - 1, k) -
+               state(i, j - 1, k, n) * mac(i, j - 1, k)) +
+          dt / (amrex::Real(3.0) * dx) * s(i, j - 1, k, n) *
+              (mac(i + 1, j - 1, k) - mac(i, j - 1, k));
+    hi1 = hi -
+          dt / (amrex::Real(3.0) * dx) *
+              (state(i + 1, j, k, n) * mac(i + 1, j, k) -
+               state(i, j, k, n) * mac(i, j, k)) +
+          dt / (amrex::Real(3.0) * dx) * s(i, j, k, n) *
+              (mac(i + 1, j, k) - mac(i, j, k));
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_corner_couple_zx(
@@ -431,12 +437,18 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_corner_couple_zx(
     amrex::Array4<amrex::Real const> const& mac,
     amrex::Array4<amrex::Real const> const& state)
 {
-    lo1 = lo - dt/(amrex::Real(3.0)*dx)*(state(i+1,j,k-1,n)*mac(i+1,j,k-1)
-                                       - state(i  ,j,k-1,n)*mac(i  ,j,k-1))
-             + dt/(amrex::Real(3.0)*dx)*s(i,j,k-1,n)*(mac(i+1,j,k-1)-mac(i,j,k-1));
-    hi1 = hi - dt/(amrex::Real(3.0)*dx)*( state(i+1,j,k  ,n)*mac(i+1,j,k  )
-                                         -state(i  ,j,k  ,n)*mac(i  ,j,k  ) )
-             + dt/(amrex::Real(3.0)*dx)*s(i,j,k  ,n)*(mac(i+1,j,k  ) - mac(i,j,k  ));
+    lo1 = lo -
+          dt / (amrex::Real(3.0) * dx) *
+              (state(i + 1, j, k - 1, n) * mac(i + 1, j, k - 1) -
+               state(i, j, k - 1, n) * mac(i, j, k - 1)) +
+          dt / (amrex::Real(3.0) * dx) * s(i, j, k - 1, n) *
+              (mac(i + 1, j, k - 1) - mac(i, j, k - 1));
+    hi1 = hi -
+          dt / (amrex::Real(3.0) * dx) *
+              (state(i + 1, j, k, n) * mac(i + 1, j, k) -
+               state(i, j, k, n) * mac(i, j, k)) +
+          dt / (amrex::Real(3.0) * dx) * s(i, j, k, n) *
+              (mac(i + 1, j, k) - mac(i, j, k));
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_corner_couple_xy(
@@ -455,12 +467,18 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_corner_couple_xy(
     amrex::Array4<amrex::Real const> const& mac,
     amrex::Array4<amrex::Real const> const& state)
 {
-    lo1 = lo - dt/(amrex::Real(3.0)*dy)*( state(i-1,j+1,k,n)*mac(i-1,j+1,k)
-                                         -state(i-1,j  ,k,n)*mac(i-1,j  ,k) )
-             + dt/(amrex::Real(3.0)*dy)*s(i-1,j,k,n)*(mac(i-1,j+1,k)-mac(i-1,j,k));
-    hi1 = hi - dt/(amrex::Real(3.0)*dy)*( state(i  ,j+1,k,n)*mac(i  ,j+1,k)
-                                         -state(i  ,j  ,k,n)*mac(i  ,j  ,k) )
-             + dt/(amrex::Real(3.0)*dy)*s(i,j,k,n)*(mac(i,j+1,k)-mac(i,j,k));
+    lo1 = lo -
+          dt / (amrex::Real(3.0) * dy) *
+              (state(i - 1, j + 1, k, n) * mac(i - 1, j + 1, k) -
+               state(i - 1, j, k, n) * mac(i - 1, j, k)) +
+          dt / (amrex::Real(3.0) * dy) * s(i - 1, j, k, n) *
+              (mac(i - 1, j + 1, k) - mac(i - 1, j, k));
+    hi1 = hi -
+          dt / (amrex::Real(3.0) * dy) *
+              (state(i, j + 1, k, n) * mac(i, j + 1, k) -
+               state(i, j, k, n) * mac(i, j, k)) +
+          dt / (amrex::Real(3.0) * dy) * s(i, j, k, n) *
+              (mac(i, j + 1, k) - mac(i, j, k));
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_corner_couple_zy(
@@ -479,12 +497,18 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_corner_couple_zy(
     amrex::Array4<amrex::Real const> const& mac,
     amrex::Array4<amrex::Real const> const& state)
 {
-    lo1 = lo - dt/(amrex::Real(3.0)*dy)*( state(i,j+1,k-1,n)*mac(i,j+1,k-1)
-                                         -state(i,j  ,k-1,n)*mac(i,j  ,k-1) )
-             + dt/(amrex::Real(3.0)*dy)*s(i,j,k-1,n)*(mac(i,j+1,k-1)-mac(i,j,k-1));
-    hi1 = hi - dt/(amrex::Real(3.0)*dy)*( state(i,j+1,k  ,n)*mac(i,j+1,k  )
-                                         -state(i,j  ,k  ,n)*mac(i,j  ,k  ) )
-             + dt/(amrex::Real(3.0)*dy)*s(i,j,k,n)*(mac(i,j+1,k) - mac(i,j,k));
+    lo1 = lo -
+          dt / (amrex::Real(3.0) * dy) *
+              (state(i, j + 1, k - 1, n) * mac(i, j + 1, k - 1) -
+               state(i, j, k - 1, n) * mac(i, j, k - 1)) +
+          dt / (amrex::Real(3.0) * dy) * s(i, j, k - 1, n) *
+              (mac(i, j + 1, k - 1) - mac(i, j, k - 1));
+    hi1 = hi -
+          dt / (amrex::Real(3.0) * dy) *
+              (state(i, j + 1, k, n) * mac(i, j + 1, k) -
+               state(i, j, k, n) * mac(i, j, k)) +
+          dt / (amrex::Real(3.0) * dy) * s(i, j, k, n) *
+              (mac(i, j + 1, k) - mac(i, j, k));
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_corner_couple_xz(
@@ -503,12 +527,18 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_corner_couple_xz(
     amrex::Array4<amrex::Real const> const& mac,
     amrex::Array4<amrex::Real const> const& state)
 {
-    lo1 = lo - dt/(amrex::Real(3.0)*dz)*( state(i-1,j,k+1,n)*mac(i-1,j,k+1)
-                                         -state(i-1,j,k  ,n)*mac(i-1,j,k) )
-             + dt/(amrex::Real(3.0)*dz)*s(i-1,j,k,n)*(mac(i-1,j,k+1) - mac(i-1,j,k));
-    hi1 = hi - dt/(amrex::Real(3.0)*dz)*( state(i  ,j,k+1,n)*mac(i  ,j,k+1)
-                                         -state(i  ,j,k  ,n)*mac(i  ,j,k) )
-             + dt/(amrex::Real(3.0)*dz)*s(i,j,k,n)*(mac(i,j,k+1) - mac(i,j,k));
+    lo1 = lo -
+          dt / (amrex::Real(3.0) * dz) *
+              (state(i - 1, j, k + 1, n) * mac(i - 1, j, k + 1) -
+               state(i - 1, j, k, n) * mac(i - 1, j, k)) +
+          dt / (amrex::Real(3.0) * dz) * s(i - 1, j, k, n) *
+              (mac(i - 1, j, k + 1) - mac(i - 1, j, k));
+    hi1 = hi -
+          dt / (amrex::Real(3.0) * dz) *
+              (state(i, j, k + 1, n) * mac(i, j, k + 1) -
+               state(i, j, k, n) * mac(i, j, k)) +
+          dt / (amrex::Real(3.0) * dz) * s(i, j, k, n) *
+              (mac(i, j, k + 1) - mac(i, j, k));
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_corner_couple_yz(
@@ -528,12 +558,18 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_corner_couple_yz(
     amrex::Array4<amrex::Real const> const& state)
 {
 #if 1
-    lo1 = lo - dt/(amrex::Real(3.0)*dz)*( state(i,j-1,k+1,n)*mac(i,j-1,k+1)
-                                         -state(i,j-1,k  ,n)*mac(i,j-1,k  ) )
-             + dt/(amrex::Real(3.0)*dz)*s(i,j-1,k,n)*(mac(i,j-1,k+1)-mac(i,j-1,k));
-    hi1 = hi - dt/(amrex::Real(3.0)*dz)*( state(i,j  ,k+1,n)*mac(i,j  ,k+1)
-                                         -state(i,j  ,k  ,n)*mac(i,j  ,k  ) )
-             + dt/(amrex::Real(3.0)*dz)*s(i,j,k,n)*(mac(i,j,k+1) - mac(i,j,k));
+    lo1 = lo -
+          dt / (amrex::Real(3.0) * dz) *
+              (state(i, j - 1, k + 1, n) * mac(i, j - 1, k + 1) -
+               state(i, j - 1, k, n) * mac(i, j - 1, k)) +
+          dt / (amrex::Real(3.0) * dz) * s(i, j - 1, k, n) *
+              (mac(i, j - 1, k + 1) - mac(i, j - 1, k));
+    hi1 = hi -
+          dt / (amrex::Real(3.0) * dz) *
+              (state(i, j, k + 1, n) * mac(i, j, k + 1) -
+               state(i, j, k, n) * mac(i, j, k)) +
+          dt / (amrex::Real(3.0) * dz) * s(i, j, k, n) *
+              (mac(i, j, k + 1) - mac(i, j, k));
 }
 
 } // namespace
