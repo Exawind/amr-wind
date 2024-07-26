@@ -146,7 +146,7 @@ The gold files directory is organized by ``${OS}/${COMPILER}/${COMPILER_VERSION}
 
    # Ensure that you are in the build directory
    # Run CTest first time (all tests will fail as there are no golds to compare with)
-   # The tests will fail with amrex::Error::0::Couldn't open file:
+   # The tests will fail with "amrex::Error::0::Couldn't open file:"
    ctest -j 8
 
    # Create the reference version of Golds (following the directory convention used above)
