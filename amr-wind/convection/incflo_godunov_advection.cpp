@@ -175,7 +175,7 @@ void godunov::compute_fluxes(
     amrex::ParallelFor(
         xebox, ncomp,
         [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-            constexpr Real small_vel = 1.e-10;
+            constexpr Real small_vel = 1.e-8;
 
             Real uad = umac(i, j, k);
             Real fux = (std::abs(uad) < small_vel) ? 0. : 1.;
@@ -202,7 +202,7 @@ void godunov::compute_fluxes(
         },
         yebox, ncomp,
         [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-            constexpr Real small_vel = 1.e-10;
+            constexpr Real small_vel = 1.e-8;
 
             Real vad = vmac(i, j, k);
             Real fuy = (std::abs(vad) < small_vel) ? 0. : 1.;
@@ -230,7 +230,7 @@ void godunov::compute_fluxes(
         },
         zebox, ncomp,
         [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-            constexpr Real small_vel = 1.e-10;
+            constexpr Real small_vel = 1.e-8;
 
             Real wad = wmac(i, j, k);
             Real fuz = (std::abs(wad) < small_vel) ? 0. : 1.;
@@ -284,7 +284,7 @@ void godunov::compute_fluxes(
                 i, j, k, n, q, l_zylo, l_zyhi, wad, bc.lo(2), bc.hi(2), dlo.z,
                 dhi.z);
 
-            constexpr Real small_vel = 1.e-10;
+            constexpr Real small_vel = 1.e-8;
 
             Real st = (wad >= 0.) ? l_zylo : l_zyhi;
             Real fu = (std::abs(wad) < small_vel) ? 0.0 : 1.0;
@@ -303,7 +303,7 @@ void godunov::compute_fluxes(
                 i, j, k, n, q, l_yzlo, l_yzhi, vad, bc.lo(1), bc.hi(1), dlo.y,
                 dhi.y);
 
-            constexpr Real small_vel = 1.e-10;
+            constexpr Real small_vel = 1.e-8;
 
             Real st = (vad >= 0.) ? l_yzlo : l_yzhi;
             Real fu = (std::abs(vad) < small_vel) ? 0.0 : 1.0;
@@ -314,7 +314,7 @@ void godunov::compute_fluxes(
     amrex::ParallelFor(
         xbx, ncomp, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
             Real stl, sth;
-            constexpr Real small_vel = 1.e-10;
+            constexpr Real small_vel = 1.e-8;
             if (iconserv[n] != 0) {
                 stl = xlo(i, j, k, n) -
                       (0.5 * dtdy) *
@@ -389,7 +389,7 @@ void godunov::compute_fluxes(
                 i, j, k, n, q, l_xzlo, l_xzhi, uad, bc.lo(0), bc.hi(0), dlo.x,
                 dhi.x);
 
-            constexpr Real small_vel = 1.e-10;
+            constexpr Real small_vel = 1.e-8;
 
             Real st = (uad >= 0.) ? l_xzlo : l_xzhi;
             Real fu = (std::abs(uad) < small_vel) ? 0.0 : 1.0;
@@ -408,7 +408,7 @@ void godunov::compute_fluxes(
                 i, j, k, n, q, l_zxlo, l_zxhi, wad, bc.lo(2), bc.hi(2), dlo.z,
                 dhi.z);
 
-            constexpr Real small_vel = 1.e-10;
+            constexpr Real small_vel = 1.e-8;
 
             Real st = (wad >= 0.) ? l_zxlo : l_zxhi;
             Real fu = (std::abs(wad) < small_vel) ? 0.0 : 1.0;
@@ -418,7 +418,7 @@ void godunov::compute_fluxes(
     amrex::ParallelFor(
         ybx, ncomp, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
             Real stl, sth;
-            constexpr Real small_vel = 1.e-10;
+            constexpr Real small_vel = 1.e-8;
 
             if (iconserv[n] != 0) {
                 stl = ylo(i, j, k, n) -
@@ -494,7 +494,7 @@ void godunov::compute_fluxes(
                 i, j, k, n, q, l_xylo, l_xyhi, uad, bc.lo(0), bc.hi(0), dlo.x,
                 dhi.x);
 
-            constexpr Real small_vel = 1.e-10;
+            constexpr Real small_vel = 1.e-8;
 
             Real st = (uad >= 0.) ? l_xylo : l_xyhi;
             Real fu = (std::abs(uad) < small_vel) ? 0.0 : 1.0;
@@ -513,7 +513,7 @@ void godunov::compute_fluxes(
                 i, j, k, n, q, l_yxlo, l_yxhi, vad, bc.lo(1), bc.hi(1), dlo.y,
                 dhi.y);
 
-            constexpr Real small_vel = 1.e-10;
+            constexpr Real small_vel = 1.e-8;
 
             Real st = (vad >= 0.) ? l_yxlo : l_yxhi;
             Real fu = (std::abs(vad) < small_vel) ? 0.0 : 1.0;
@@ -523,7 +523,7 @@ void godunov::compute_fluxes(
     amrex::ParallelFor(
         zbx, ncomp, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
             Real stl, sth;
-            constexpr Real small_vel = 1.e-10;
+            constexpr Real small_vel = 1.e-8;
             if (iconserv[n] != 0) {
                 stl = zlo(i, j, k, n) -
                       (0.5 * dtdx) *

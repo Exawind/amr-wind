@@ -193,7 +193,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_pred_x_nolim(
 {
     using namespace amrex;
 
-    constexpr amrex::Real small_vel = 1e-10;
+    constexpr amrex::Real small_vel = 1e-8;
     constexpr amrex::Real sixth = 1.0 / 6.0;
 
     amrex::Real sedge1, sedge2, sp, sm;
@@ -256,7 +256,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_pred_y_nolim(
 {
     using namespace amrex;
 
-    constexpr amrex::Real small_vel = 1e-10;
+    constexpr amrex::Real small_vel = 1e-8;
     constexpr amrex::Real sixth = 1.0 / 6.0;
 
     amrex::Real sedge1, sedge2, sp, sm;
@@ -318,7 +318,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_pred_z_nolim(
 {
     using namespace amrex;
 
-    constexpr amrex::Real small_vel = 1e-10;
+    constexpr amrex::Real small_vel = 1e-8;
     constexpr amrex::Real sixth = 1.0 / 6.0;
 
     amrex::Real sedge1, sedge2, sp, sm;
@@ -386,7 +386,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_fpu_x_nolim(
     {
         using namespace amrex;
 
-        constexpr Real small_vel = 1e-10;
+        constexpr Real small_vel = 1e-8;
         constexpr Real sixth = 1.0 / 6.0;
 
         amrex::Real sedge1, sedge2, sp, sm;
@@ -453,7 +453,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_fpu_y_nolim(
     {
         using namespace amrex;
 
-        constexpr amrex::Real small_vel = 1e-10;
+        constexpr amrex::Real small_vel = 1e-8;
         constexpr amrex::Real sixth = 1.0 / 6.0;
 
         Real sedge1, sedge2, sp, sm;
@@ -520,7 +520,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_fpu_z_nolim(
     {
         using namespace amrex;
 
-        constexpr amrex::Real small_vel = 1e-10;
+        constexpr amrex::Real small_vel = 1e-8;
         constexpr amrex::Real sixth = 1.0 / 6.0;
 
         Real sedge1, sedge2, sp, sm;

@@ -224,7 +224,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_pred_x(
 
     using namespace amrex;
 
-    constexpr amrex::Real small_vel = 1e-10;
+    constexpr amrex::Real small_vel = 1e-8;
 
     amrex::Real sm2 = S(i - 2, j, k, n);
     amrex::Real sm1 = S(i - 1, j, k, n);
@@ -280,7 +280,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_pred_y(
 {
     using namespace amrex;
 
-    constexpr amrex::Real small_vel = 1e-10;
+    constexpr amrex::Real small_vel = 1e-8;
 
     amrex::Real sm2 = S(i, j - 2, k, n);
     amrex::Real sm1 = S(i, j - 1, k, n);
@@ -335,7 +335,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_pred_z(
 {
     using namespace amrex;
 
-    constexpr amrex::Real small_vel = 1e-10;
+    constexpr amrex::Real small_vel = 1e-8;
 
     amrex::Real sm2 = S(i, j, k - 2, n);
     amrex::Real sm1 = S(i, j, k - 1, n);
@@ -395,7 +395,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_x(
 
     using namespace amrex;
 
-    constexpr amrex::Real small_vel = 1e-10;
+    constexpr amrex::Real small_vel = 1e-8;
 
     amrex::Real sm2 = S(i - 2, j, k, n);
     amrex::Real sm1 = S(i - 1, j, k, n);
@@ -454,7 +454,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_y(
 
     using namespace amrex;
 
-    constexpr amrex::Real small_vel = 1e-10;
+    constexpr amrex::Real small_vel = 1e-8;
 
     amrex::Real sm2 = S(i, j - 2, k, n);
     amrex::Real sm1 = S(i, j - 1, k, n);
@@ -513,7 +513,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_z(
 
     using namespace amrex;
 
-    constexpr amrex::Real small_vel = 1e-10;
+    constexpr amrex::Real small_vel = 1e-8;
 
     amrex::Real sm2 = S(i, j, k - 2, n);
     amrex::Real sm1 = S(i, j, k - 1, n);

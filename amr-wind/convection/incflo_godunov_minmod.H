@@ -85,7 +85,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_minmod_fpu_x(
 
     using namespace amrex;
 
-    constexpr amrex::Real small_vel = 1e-10;
+    constexpr amrex::Real small_vel = 1e-8;
 
     amrex::Real sm1 = S(i - 1, j, k, n);
     amrex::Real s0 = S(i, j, k, n);
@@ -130,7 +130,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_minmod_fpu_y(
 
     using namespace amrex;
 
-    constexpr amrex::Real small_vel = 1e-10;
+    constexpr amrex::Real small_vel = 1e-8;
 
     amrex::Real sm1 = S(i, j - 1, k, n);
     amrex::Real s0 = S(i, j, k, n);
@@ -175,7 +175,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_minmod_fpu_z(
 
     using namespace amrex;
 
-    constexpr amrex::Real small_vel = 1e-10;
+    constexpr amrex::Real small_vel = 1e-8;
 
     amrex::Real sm1 = S(i, j, k - 1, n);
     amrex::Real s0 = S(i, j, k, n);
