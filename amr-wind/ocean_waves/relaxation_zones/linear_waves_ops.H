@@ -73,7 +73,7 @@ struct InitDataOp<LinearWaves>
 
                         phi(i, j, k) = eta - zc;
 
-                        if (phi(i, j, k) >= 0) {
+                        if (phi(i, j, k) + 0.5 * dx[2] >= 0) {
                             vel(i, j, k, 0) =
                                 omega * wave_height / 2.0 *
                                 std::cosh(
@@ -87,10 +87,6 @@ struct InitDataOp<LinearWaves>
                                     wave_number * (zc - zsl + water_depth)) /
                                 std::sinh(wave_number * water_depth) *
                                 std::sin(phase);
-                        } else {
-                            vel(i, j, k, 0) = 0.;
-                            vel(i, j, k, 1) = 0.;
-                            vel(i, j, k, 2) = 0.;
                         }
                     });
 
@@ -99,9 +95,11 @@ struct InitDataOp<LinearWaves>
                     gbx3, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
                         phi(i, j, k) = zsl - z;
-                        vel(i, j, k, 0) = 0.0;
-                        vel(i, j, k, 1) = 0.0;
-                        vel(i, j, k, 2) = 0.0;
+                        if (phi(i, j, k) + 0.5 * dx[2] >= 0) {
+                            vel(i, j, k, 0) = 0.0;
+                            vel(i, j, k, 1) = 0.0;
+                            vel(i, j, k, 2) = 0.0;
+                        }
                     });
             }
         }
