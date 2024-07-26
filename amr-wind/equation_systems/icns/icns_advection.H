@@ -282,8 +282,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                 (godunov_scheme == godunov::scheme::PLM) ||
                 (godunov_scheme == godunov::scheme::BDS)) {
                 const bool godunov_use_ppm =
-                    ( (godunov_scheme == godunov::scheme::PPM) ||
-                      (godunov_scheme == godunov::scheme::PPM_NOLIM) );
+                    ((godunov_scheme == godunov::scheme::PPM) ||
+                     (godunov_scheme == godunov::scheme::PPM_NOLIM));
                 const int limiter_type =
                     (godunov_scheme == godunov::scheme::PPM_NOLIM)
                         ? PPM::NoLimiter
@@ -428,8 +428,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                     const bool is_velocity = true;
                     const bool known_edge_state = false;
                     const bool godunov_use_ppm =
-                        ( (godunov_scheme == godunov::scheme::PPM) ||
-                          (godunov_scheme == godunov::scheme::PPM_NOLIM) );
+                        ((godunov_scheme == godunov::scheme::PPM) ||
+                         (godunov_scheme == godunov::scheme::PPM_NOLIM));
                     const int limiter_type =
                         (godunov_scheme == godunov::scheme::PPM_NOLIM)
                             ? PPM::NoLimiter

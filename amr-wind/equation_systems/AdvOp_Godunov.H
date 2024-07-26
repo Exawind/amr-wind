@@ -163,8 +163,8 @@ struct AdvectionOp<
                     const bool is_velocity = false;
                     const bool known_edge_state = false;
                     const bool godunov_use_ppm =
-                        ( (godunov_scheme == godunov::scheme::PPM) ||
-                          (godunov_scheme == godunov::scheme::PPM_NOLIM) );
+                        ((godunov_scheme == godunov::scheme::PPM) ||
+                         (godunov_scheme == godunov::scheme::PPM_NOLIM));
                     const int limiter_type =
                         (godunov_scheme == godunov::scheme::PPM_NOLIM)
                             ? PPM::NoLimiter
