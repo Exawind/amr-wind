@@ -18,16 +18,17 @@ ensure that they pass all tests before they are merged to the mainline codebase.
 Enabling and running regression tests
 -------------------------------------
 
-AMR-Wind uses `CTest <https://cmake.org/cmake/help/latest/manual/ctest.1.html>`_
-and its integration with `CMake
-<https://cmake.org/cmake/help/latest/manual/cmake.1.html>`_ for the nightly
-regression test suite. Developers can enable and use the tests locally on their
-machine to assist development of new features and ensuring that the
-modifications do not break current capabilities. Regression testing is not
-enabled by default in a CMake build and must be enabled explicitly by the user.
-To enable regression testing, the user must enable additional flags during the
-CMake configure phase: :cmakeval:`AMR_WIND_ENABLE_TESTS` and
-:cmakeval:`AMR_WIND_TEST_WITH_FCOMPARE` as shown below:
+AMR-Wind uses `CTest
+<https://cmake.org/cmake/help/latest/manual/ctest.1.html>`_ and its
+integration with `CMake
+<https://cmake.org/cmake/help/latest/manual/cmake.1.html>`_ for the
+nightly regression test suite. Developers can enable and use the tests
+locally on their machine to assist development of new features and
+ensuring that the modifications do not break current
+capabilities. Regression testing is not enabled by default in a CMake
+build and must be enabled explicitly by the user.  To enable
+regression testing, the user must enable additional flags during the
+CMake configure phase: :cmakeval:`AMR_WIND_ENABLE_TESTS` as shown below:
 
 .. code-block:: console
 
@@ -35,22 +36,24 @@ CMake configure phase: :cmakeval:`AMR_WIND_ENABLE_TESTS` and
    cd ${HOME}/exawind/source/amr-wind
    # Create a build directory
    mkdir build-test
+   cd build-test
    # Run configure with testing flags
-   cmake -DAMR_WIND_ENABLE_TESTS=ON -DAMR_WIND_TEST_WITH_FCOMPARE=ON ../
+   cmake -DAMR_WIND_ENABLE_TESTS=ON ../
    # Build code
    make -j 4
 
 .. tip::
 
-   The flag ``AMR_WIND_ENABLE_TESTS`` activates CTest facility and enables the
-   use of CTest to run the regression test facility. However, this in itself
-   does not check whether the tests are producing the correct output. The second
-   flag ``AMR_WIND_TEST_WITH_FCOMPARE`` uses AMReX :program:`fcompare` utility
-   to test the plotfile outputs against *gold files* to ensure that the results
-   haven't changed.
+   The flag ``AMR_WIND_ENABLE_TESTS`` activates CTest facility and
+   enables the use of CTest to run the regression test
+   facility. Running :program:`ctest` in this mode runs the tests but
+   the results of the tests are not compared to any reference (i.e.,
+   gold) files. A successful test in this mode indicates that the test
+   completed without error but it does not imply correctness. For
+   that, the reader is referred to the section on `Testing against
+   gold files`_.
 
-Upon successful build, you will notice that a new executable :program:`fcompare` is
-built, and CTest has been enabled.
+Upon successful build, you will notice CTest has been enabled.
 
 .. code-block:: console
 
@@ -85,32 +88,73 @@ version of AMR-Wind, build and run the executable once to generate the gold
 files and copy it into the appropriate directory and use them during the
 development process. This is not an ideal setup and will be rectified in future.
 We recommend running the unit tests to ensure that the build process worked
-correctly to generate the correct executable. The gold files directory is
-printed out during the configure phase, as shown below:
+correctly to generate the correct executable.
+
+To enable regression testing with gold files, the user must enable
+additional flags during the CMake configure phase:
+:cmakeval:`AMR_WIND_ENABLE_TESTS`,
+:cmakeval:`AMR_WIND_TEST_WITH_FCOMPARE`,
+:cmakeval:`AMR_WIND_REFERENCE_GOLDS_DIRECTORY`,
+:cmakeval:`AMR_WIND_SAVE_GOLDS`, and
+:cmakeval:`AMR_WIND_SAVED_GOLDS_DIRECTORY` as shown below:
+
+.. code-block:: console
+
+   # Switch to AMR-wind source code
+   cd ${HOME}/exawind/source/amr-wind
+   # Create a build directory
+   mkdir build-test
+   cd build-test
+   # Create the directory for the new gold files
+   mkdir -p golds/tmp
+   # Run configure with testing flags
+   # AMR_WIND_REFERENCE_GOLDS_DIRECTORY is the directory where the reference gold files are stored
+   # AMR_WIND_SAVE_GOLDS indicates that the gold files should be saved
+   # AMR_WIND_SAVED_GOLDS_DIRECTORY is the directory where the gold file are saved, it must exist
+   cmake -DAMR_WIND_ENABLE_TESTS=ON \
+         -DAMR_WIND_TEST_WITH_FCOMPARE=ON \
+         -DAMR_WIND_REFERENCE_GOLDS_DIRECTORY=$(pwd)/golds/current \
+         -DAMR_WIND_SAVE_GOLDS:BOOL=ON \
+         -DAMR_WIND_SAVED_GOLDS_DIRECTORY=$(pwd)/golds/tmp \
+         ../
+   # Build code
+   make -j 4
+
+The flag ``AMR_WIND_TEST_WITH_FCOMPARE`` uses AMReX
+:program:`fcompare` utility to test the plotfile outputs against *gold
+files* to ensure that the results haven't changed. Upon successful
+build, you will notice that a new executable :program:`fcompare` is
+built. The gold files directory is printed out during the configure
+phase, as shown below:
 
 .. code-block:: console
 
    -- AMR-Wind Information:
    -- CMAKE_SYSTEM_NAME = Darwin
    -- CMAKE_CXX_COMPILER_ID = AppleClang
-   -- CMAKE_CXX_COMPILER_VERSION = 11.0.0.11000033
-   -- CMAKE_BUILD_TYPE = RelWithDebInfo
-   -- Test golds directory for fcompare: $HOME/exawind/source/amr-wind/test/AMR-WindGoldFiles/Darwin/AppleClang/11.0.0.11000033
-   -- Configuring done
-   -- Generating done
-   -- Build files have been written to: $HOME/exawind/source/amr-wind/build-test
+   -- CMAKE_CXX_COMPILER_VERSION = 15.0.0.15000100
+   -- CMAKE_BUILD_TYPE = Release
+   -- Test golds directory for fcompare: ${HOME}/exawind/source/amr-wind/build-test/golds/current/Darwin/AppleClang/15.0.0.15000100
+   -- Gold files will be saved to: ${HOME}/exawind/source/amr-wind/build-test/golds/tmp/Darwin/AppleClang/15.0.0.15000100
+   -- Configuring done (1.3s)
+   -- Generating done (0.6s)
+   -- Build files have been written to: ${HOME}/exawind/source/amr-wind/build-test
 
-The default gold files directory is
-``test/AMR-WindGoldFiles/${OS}/${COMPILER}/${COMPILER_VERSION}``.
+The gold files directory is organized by ``${OS}/${COMPILER}/${COMPILER_VERSION}``. The reference gold files must first be created with a reference branch of AMR-Wind, then saved in the reference gold directory:
 
 .. code-block:: console
 
    # Ensure that you are in the build directory
    # Run CTest first time (all tests will fail as there are no golds to compare with)
+   # The tests will fail with amrex::Error::0::Couldn't open file:
    ctest -j 8
 
-   # Create initial version of Golds
-   cp -R test/test_files/* <absolute_path_to_test_golds>
+   # Create the reference version of Golds (following the directory convention used above)
+   cp -R golds/tmp/ golds/current/
+
+Once that is done (and it should only need to be done once), the test suite can be run with the following:
+
+.. code-block:: console
 
    # Rerun CTest again and all tests should pass
    ctest -j 8
