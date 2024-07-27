@@ -109,7 +109,9 @@ static void hybrid_fluxes(
                 lev, bx, ncomp, Fw_x, Fw_y, Fw_z, q.const_array(mfi),
                 u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
                 w_mac(lev).const_array(mfi), fq.const_array(mfi), velbc,
-                iconserv.data(), tmpfab.dataPtr(), geom, dt, mflux_scheme);
+                iconserv.data(), tmpfab.dataPtr(), geom, dt, mflux_scheme,
+                // HACK HACK HACK 
+                true);
 
             // Where interface is present, replace current momentum flux
             // quantities with those from mflux_scheme
@@ -152,7 +154,9 @@ static void hybrid_fluxes(
                 lev, bx, 1, Fw_x, Fw_y, Fw_z, rho_o(lev).const_array(mfi),
                 u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
                 w_mac(lev).const_array(mfi), frho.const_array(mfi), rhobc,
-                idnsty.data(), tmpfab.dataPtr(), geom, dt, mflux_scheme);
+                idnsty.data(), tmpfab.dataPtr(), geom, dt, mflux_scheme,
+                // HACK HACK HACK 
+                true);
 
             // When interface is present, divide by interpolated density to get
             // Favre-averaged flux value. Multiply all fluxes with advected

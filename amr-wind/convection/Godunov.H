@@ -29,7 +29,8 @@ void compute_fluxes(
     amrex::Real* p,
     amrex::Vector<amrex::Geometry> geom,
     amrex::Real dt,
-    godunov::scheme godunov_scheme);
+    godunov::scheme godunov_scheme,
+    bool godunov_use_forces_in_trans);
 
 void predict_weno(
     int lev,
