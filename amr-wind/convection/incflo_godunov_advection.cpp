@@ -355,8 +355,11 @@ void godunov::compute_fluxes(
                           (zylo(i, j, k + 1, n) - zylo(i, j, k, n));
             }
 
-            stl += (!use_forces_in_trans && fq) ? 0.5*l_dt*fq(i-1,j,k,n) : 0.;
-            sth += (!use_forces_in_trans && fq) ? 0.5*l_dt*fq(i  ,j,k,n) : 0.;
+            stl += (!use_forces_in_trans && fq)
+                       ? 0.5*l_dt*fq(i-1,j,k,n)
+                       : 0.;
+            sth +=
+                (!use_forces_in_trans && fq) ? 0.5*l_dt*fq(i  ,j,k,n) : 0.;
 
             auto bc = pbc[n];
             Godunov_cc_xbc_lo(i, j, k, n, q, stl, sth, umac, bc.lo(0), dlo.x);
@@ -463,8 +466,11 @@ void godunov::compute_fluxes(
                           (zxlo(i, j, k + 1, n) - zxlo(i, j, k, n));
             }
 
-            stl += (!use_forces_in_trans && fq) ? 0.5*l_dt*fq(i,j-1,k,n) : 0.;
-            sth += (!use_forces_in_trans && fq) ? 0.5*l_dt*fq(i,j  ,k,n) : 0.;
+            stl += (!use_forces_in_trans && fq)
+                       ? 0.5*l_dt*fq(i,j-1,k,n)
+                       : 0.;
+            sth +=
+                (!use_forces_in_trans && fq) ? 0.5*l_dt*fq(i,j  ,k,n) : 0.;
 
             auto bc = pbc[n];
             Godunov_cc_ybc_lo(i, j, k, n, q, stl, sth, vmac, bc.lo(1), dlo.y);
@@ -570,8 +576,11 @@ void godunov::compute_fluxes(
                           (yxlo(i, j + 1, k, n) - yxlo(i, j, k, n));
             }
 
-            stl += (!use_forces_in_trans && fq) ? 0.5*l_dt*fq(i,j,k-1,n) : 0.;
-            sth += (!use_forces_in_trans && fq) ? 0.5*l_dt*fq(i,j,k  ,n) : 0.;
+            stl += (!use_forces_in_trans && fq)
+                       ? 0.5*l_dt*fq(i,j,k-1,n)
+                       : 0.;
+            sth +=
+                (!use_forces_in_trans && fq) ? 0.5*l_dt*fq(i,j,k  ,n) : 0.;
 
             auto bc = pbc[n];
             Godunov_cc_zbc_lo(i, j, k, n, q, stl, sth, wmac, bc.lo(2), dlo.z);

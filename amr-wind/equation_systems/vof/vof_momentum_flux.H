@@ -110,7 +110,7 @@ static void hybrid_fluxes(
                 u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
                 w_mac(lev).const_array(mfi), fq.const_array(mfi), velbc,
                 iconserv.data(), tmpfab.dataPtr(), geom, dt, mflux_scheme,
-                // HACK HACK HACK 
+                // HACK HACK HACK
                 true);
 
             // Where interface is present, replace current momentum flux
@@ -155,7 +155,7 @@ static void hybrid_fluxes(
                 u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
                 w_mac(lev).const_array(mfi), frho.const_array(mfi), rhobc,
                 idnsty.data(), tmpfab.dataPtr(), geom, dt, mflux_scheme,
-                // HACK HACK HACK 
+                // HACK HACK HACK
                 true);
 
             // When interface is present, divide by interpolated density to get
