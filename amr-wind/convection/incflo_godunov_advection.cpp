@@ -356,7 +356,7 @@ void godunov::compute_fluxes(
             }
 
             stl += (!use_forces_in_trans && fq)
-                       ? 0.5 * l_dt * fq(i-1, j, k, n)
+                       ? 0.5 * l_dt * fq(i - 1, j, k, n)
                        : 0.;
             sth +=
                 (!use_forces_in_trans && fq) ? 0.5 * l_dt * fq(i, j, k, n) : 0.;
@@ -577,7 +577,7 @@ void godunov::compute_fluxes(
             }
 
             stl += (!use_forces_in_trans && fq)
-                       ? 0.5 * l_dt * fq(i, j, k-1, n)
+                       ? 0.5 * l_dt * fq(i, j, k - 1, n)
                        : 0.;
             sth +=
                 (!use_forces_in_trans && fq) ? 0.5 * l_dt * fq(i, j, k, n) : 0.;
