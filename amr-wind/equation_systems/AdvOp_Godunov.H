@@ -52,7 +52,9 @@ struct AdvectionOp<
             godunov_scheme = godunov::scheme::PPM;
         } else if (amrex::toLower(godunov_type) == "ppm_nolim") {
             godunov_scheme = godunov::scheme::PPM_NOLIM;
-            amrex::Print() << "WARNING: Using advection type ppm_nolim is not recommended. Prefer using wenoz." << std::endl;
+            amrex::Print() << "WARNING: Using advection type ppm_nolim is not "
+                              "recommended. Prefer using wenoz."
+                           << std::endl;
         } else if (amrex::toLower(godunov_type) == "bds") {
             godunov_scheme = godunov::scheme::BDS;
             advection_type = "BDS";
