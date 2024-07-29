@@ -13,7 +13,7 @@ ConstValue.density.value = 1.0
 ConstValue.velocity.value = 8.0 0.0 0.0
 
 incflo.use_godunov = 1
-incflo.godunov_type = "ppm_nolim"
+incflo.godunov_type = "wenoz"
 incflo.diffusion_type = 2
 incflo.do_initial_proj = 1
 incflo.initial_iterations = 3
