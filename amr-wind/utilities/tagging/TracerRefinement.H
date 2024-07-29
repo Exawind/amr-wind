@@ -27,7 +27,7 @@ private:
 
     int m_max_lev;
     amrex::Real m_value{0.1};
-    Field& m_tracer_scalar;
+    Field& m_passive_scalar;
 };
 
 } // namespace amr_wind

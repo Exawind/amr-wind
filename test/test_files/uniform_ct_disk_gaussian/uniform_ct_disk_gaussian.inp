@@ -35,7 +35,6 @@ Actuator.UniformCtDisk.sample_yaw = 270.0 # set velocity sampling to be in the n
 Actuator.UniformCtDisk.thrust_coeff = 0.0 0.7 1.2
 Actuator.UniformCtDisk.wind_speed = 0.0 10.0 12.0
 Actuator.UniformCtDisk.epsilon = 10.0
-Actuator.UniformCtDisk.density = 1.225
 Actuator.UniformCtDisk.diameters_to_sample = 1.0
 Actuator.UniformCtDisk.num_points_r = 5
 Actuator.UniformCtDisk.num_points_t = 20

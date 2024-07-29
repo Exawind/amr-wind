@@ -9,7 +9,7 @@ namespace amr_wind {
 TracerRefinement::TracerRefinement(const CFDSim& sim)
     : m_sim(sim)
     , m_max_lev(m_sim.mesh().maxLevel())
-    , m_tracer_scalar(sim.repo().get_field("passive_tracer"))
+    , m_passive_scalar(sim.repo().get_field("passive_scalar"))
 {}
 
 void TracerRefinement::initialize(const std::string& key)
@@ -29,10 +29,10 @@ void TracerRefinement::operator()(
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-    for (amrex::MFIter mfi(m_tracer_scalar(level), amrex::TilingIfNotGPU());
+    for (amrex::MFIter mfi(m_passive_scalar(level), amrex::TilingIfNotGPU());
          mfi.isValid(); ++mfi) {
         const auto& bx = mfi.tilebox();
-        const auto& tracer_arr = m_tracer_scalar(level).const_array(mfi);
+        const auto& tracer_arr = m_passive_scalar(level).const_array(mfi);
         const auto& tag = tags.array(mfi);
 
         amrex::ParallelFor(
