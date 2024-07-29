@@ -1,19 +1,19 @@
-#ifndef TRACERREFINEMENT_H
-#define TRACERREFINEMENT_H
+#ifndef PASSIVESCALARREFINEMENT_H
+#define PASSIVESCALARREFINEMENT_H
 
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/tagging/RefinementCriteria.H"
 
 namespace amr_wind {
 
-class TracerRefinement : public RefinementCriteria::Register<TracerRefinement>
+class PassiveScalarRefinement : public RefinementCriteria::Register<PassiveScalarRefinement>
 {
 public:
-    static std::string identifier() { return "TracerRefinement"; }
+    static std::string identifier() { return "PassiveScalarRefinement"; }
 
-    explicit TracerRefinement(const CFDSim& sim);
+    explicit PassiveScalarRefinement(const CFDSim& sim);
 
-    virtual ~TracerRefinement() = default;
+    virtual ~PassiveScalarRefinement() = default;
 
     //! Read input file and initialize boxarray used to refine each level
     virtual void initialize(const std::string& key) override;
@@ -32,4 +32,4 @@ private:
 
 } // namespace amr_wind
 
-#endif /* TRACERREFINEMENT_H */
+#endif /* PASSIVESCALARREFINEMENT_H */

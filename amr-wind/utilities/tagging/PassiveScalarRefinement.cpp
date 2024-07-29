@@ -1,4 +1,4 @@
-#include "amr-wind/utilities/tagging/TracerRefinement.H"
+#include "amr-wind/utilities/tagging/PassiveScalarRefinement.H"
 #include "amr-wind/CFDSim.H"
 
 #include "AMReX.H"
@@ -6,20 +6,20 @@
 
 namespace amr_wind {
 
-TracerRefinement::TracerRefinement(const CFDSim& sim)
+PassiveScalarRefinement::PassiveScalarRefinement(const CFDSim& sim)
     : m_sim(sim)
     , m_max_lev(m_sim.mesh().maxLevel())
     , m_passive_scalar(sim.repo().get_field("passive_scalar"))
 {}
 
-void TracerRefinement::initialize(const std::string& key)
+void PassiveScalarRefinement::initialize(const std::string& key)
 {
     amrex::ParmParse pp(key);
     pp.query("max_level", m_max_lev);
     pp.query("value", m_value);
 }
 
-void TracerRefinement::operator()(
+void PassiveScalarRefinement::operator()(
     int level, amrex::TagBoxArray& tags, amrex::Real, int)
 {
     if (level > m_max_lev) return;

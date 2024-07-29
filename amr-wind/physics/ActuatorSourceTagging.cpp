@@ -1,24 +1,24 @@
 #include "amr-wind/CFDSim.H"
-#include "amr-wind/physics/TracerTag.H"
+#include "amr-wind/physics/ActuatorSourceTagging.H"
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind {
 
-TracerTag::TracerTag(CFDSim& sim) : m_sim(sim)
+ActuatorSourceTagging::ActuatorSourceTagging(CFDSim& sim) : m_sim(sim)
 {
     auto& pseqn = sim.pde_manager().register_transport_pde("PassiveScalar");
     m_tracer = &(pseqn.fields().field);
 
-    amrex::ParmParse pp("TracerTag");
+    amrex::ParmParse pp("ActuatorSourceTagging");
     pp.query("act_src_threshold", m_src_threshold);
 }
 
-void TracerTag::initialize_fields(int level, const amrex::Geometry&)
+void ActuatorSourceTagging::initialize_fields(int level, const amrex::Geometry&)
 {
     (*m_tracer)(level).setVal(0.0);
 }
 
-void TracerTag::post_init_actions()
+void ActuatorSourceTagging::post_init_actions()
 {
 
     if (m_sim.repo().field_exists("actuator_src_term"))
@@ -28,11 +28,11 @@ void TracerTag::post_init_actions()
         m_iblank = &(m_sim.repo().get_int_field("iblank_cell"));
 }
 
-void TracerTag::post_advance_work()
+void ActuatorSourceTagging::post_advance_work()
 {
 
     if (!m_act_src && !m_iblank) {
-        amrex::Print() << "Warning TracerTag activated but neither actuators "
+        amrex::Print() << "Warning ActuatorSourceTagging activated but neither actuators "
                           "or overset are being used"
                        << std::endl;
         return;

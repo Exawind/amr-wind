@@ -1,5 +1,5 @@
-#ifndef TracerTag_H
-#define TracerTag_H
+#ifndef ACTUATORSOURCETAGGING_H
+#define ACTUATORSOURCETAGGING_H
 
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"
@@ -10,14 +10,14 @@ namespace amr_wind {
 /** Tracer Tagging physics
  *  \ingroup physics
  */
-class TracerTag : public Physics::Register<TracerTag>
+class ActuatorSourceTagging : public Physics::Register<ActuatorSourceTagging>
 {
 public:
-    static const std::string identifier() { return "TracerTag"; }
+    static const std::string identifier() { return "ActuatorSourceTagging"; }
 
-    explicit TracerTag(CFDSim& sim);
+    explicit ActuatorSourceTagging(CFDSim& sim);
 
-    virtual ~TracerTag() = default;
+    virtual ~ActuatorSourceTagging() = default;
 
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 
@@ -41,4 +41,4 @@ private:
 
 } // namespace amr_wind
 
-#endif /* TracerTag_H */
+#endif /* ACTUATORSOURCETAGGING_H */
