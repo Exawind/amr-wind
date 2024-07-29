@@ -32,47 +32,49 @@ void ActuatorSourceTagging::post_advance_work()
 {
 
     if (!m_act_src && !m_iblank) {
-        amrex::Print() << "Warning ActuatorSourceTagging activated but neither actuators "
-                          "or overset are being used"
-                       << std::endl;
+        amrex::Print()
+            << "Warning ActuatorSourceTagging activated but neither actuators "
+               "or overset are being used"
+            << std::endl;
         return;
     }
 
-    for (int level = 0; level <= m_sim.mesh().finestLevel(); ++level) {
-        for (amrex::MFIter mfi((*m_tracer)(level)); mfi.isValid(); ++mfi) {
-            const auto& vbx = mfi.tilebox();
-            auto tracer = (*m_tracer)(level).array(mfi);
+    const amrex::Real src_threshold = m_src_threshold;
+    for (int lev = 0; lev <= m_sim.mesh().finestLevel(); ++lev) {
 
-            if (m_act_src) {
+        const auto& tracer_arrs = (*m_tracer)(lev).arrays();
+        if (m_act_src) {
+            const auto& src_arrs = (*m_act_src)(lev).const_arrays();
+            amrex::ParallelFor(
+                (*m_tracer)(lev), m_tracer->num_grow(),
+                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                    const auto src = src_arrs[nbx];
+                    const amrex::Real srcmag = std::sqrt(
+                        src(i, j, k, 0) * src(i, j, k, 0) +
+                        src(i, j, k, 1) * src(i, j, k, 1) +
+                        src(i, j, k, 2) * src(i, j, k, 2));
 
-                auto src = (*m_act_src)(level).array(mfi);
-                const amrex::Real src_threshold = m_src_threshold;
+                    if (srcmag > src_threshold) {
+                        tracer_arrs[nbx](i, j, k) = 1.0;
+                    }
+                });
+        }
 
-                amrex::ParallelFor(
-                    vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::Real srcmag = std::sqrt(
-                            src(i, j, k, 0) * src(i, j, k, 0) +
-                            src(i, j, k, 1) * src(i, j, k, 1) +
-                            src(i, j, k, 2) * src(i, j, k, 2));
-
-                        if (srcmag > src_threshold) tracer(i, j, k) = 1.0;
-                    });
-            }
-
-            if (m_iblank) {
-                auto iblank = (*m_iblank)(level).array(mfi);
-                const bool tag_fringe = m_tag_fringe;
-                const bool tag_hole = m_tag_hole;
-                amrex::ParallelFor(
-                    vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        if (tag_fringe && iblank(i, j, k) == -1)
-                            tracer(i, j, k) = 1.0;
-                        if (tag_hole && iblank(i, j, k) == 0)
-                            tracer(i, j, k) = 1.0;
-                    });
-            }
+        if (m_iblank) {
+            const auto& iblank_arrs = (*m_iblank)(lev).const_arrays();
+            const bool tag_fringe = m_tag_fringe;
+            const bool tag_hole = m_tag_hole;
+            amrex::ParallelFor(
+                (*m_tracer)(lev), m_tracer->num_grow(),
+                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                    const auto ib = iblank_arrs[nbx](i, j, k);
+                    if ((tag_fringe && (ib == -1)) || (tag_hole && (ib == 0))) {
+                        tracer_arrs[nbx](i, j, k) = 1.0;
+                    }
+                });
         }
     }
+    amrex::Gpu::synchronize();
 }
 
 } // namespace amr_wind
