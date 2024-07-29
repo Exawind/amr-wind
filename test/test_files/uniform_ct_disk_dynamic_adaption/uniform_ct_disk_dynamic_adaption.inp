@@ -1,0 +1,84 @@
+time.stop_time               =   -100.0     # Max (simulated) time to evolve
+time.max_step                =   200         # Max number of time steps
+
+time.fixed_dt         =   -0.1      # Use this constant dt if > 0
+time.cfl              =   0.5         # CFL factor
+
+io.outputs = actuator_src_term
+io.derived_outputs = q_criterion q_criterion_nondim mag_vorticity
+time.plot_interval            =  10       # Steps between plot files
+time.checkpoint_interval      =  -1       # Steps between checkpoint files
+time.regrid_interval = 1
+
+ConstValue.density.value = 1.0
+ConstValue.velocity.value = 6.0 -3.0 0.0
+ConstValue.passive_scalar.value = 0.0
+
+incflo.use_godunov = 1
+incflo.godunov_type = "weno_z"
+incflo.do_initial_proj = 1
+incflo.initial_iterations = 3
+transport.viscosity = 1.0e-5
+transport.laminar_prandtl = 0.7
+transport.turbulent_prandtl = 0.3333
+transport.passive_scalar_laminar_schmidt = 1.0e-5
+transport.passive_scalar_turbulent_schmidt = 1.0e-3
+turbulence.model               = Smagorinsky
+Smagorinsky_coeffs.Cs          = 0.16
+
+incflo.physics = FreeStream ActuatorSourceTagging Actuator
+Actuator.labels = WTG01
+Actuator.type = UniformCtDisk
+
+Actuator.UniformCtDisk.rotor_diameter = 126.0
+Actuator.UniformCtDisk.base_position = 0.0 0.0 0.0
+Actuator.UniformCtDisk.hub_height = 0.0
+Actuator.UniformCtDisk.yaw = 315.0 # degrees (yaw is relative to north which defaults to {0,1,0})
+Actuator.UniformCtDisk.sample_yaw = 270.0 # set velocity sampling to be in the normal flow direction
+Actuator.UniformCtDisk.thrust_coeff = 0.0 0.7 1.2
+Actuator.UniformCtDisk.wind_speed = 0.0 10.0 12.0
+Actuator.UniformCtDisk.epsilon = 10.0
+Actuator.UniformCtDisk.diameters_to_sample = 1.0
+Actuator.UniformCtDisk.num_points_r = 5
+Actuator.UniformCtDisk.num_points_t = 3
+
+ICNS.source_terms = ActuatorForcing
+
+amr.n_cell              = 64 64 64   # Grid cells at coarsest AMRlevel
+amr.max_level           = 1           # Max AMR level in hierarchy
+geometry.prob_lo        =   -315.0 -315.0 -315.0
+geometry.prob_hi        =   315.0  315.0  315.0
+
+geometry.is_periodic    =   0 0 0  # Periodicity x y z (0/1)
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#        Mesh refinement                #
+#.......................................#
+tagging.labels = tracer
+tagging.tracer.type = FieldRefinement
+tagging.tracer.field_name = passive_scalar
+tagging.tracer.field_error = 0.3 0.3 0.3 0.3
+
+# Boundary conditions
+xlo.type = "mass_inflow"
+xlo.density = 1.0
+xlo.velocity = 6.0 -3.0 0.0
+xlo.passive_scalar = 0.0
+xhi.type = "pressure_outflow"
+
+yhi.type = "mass_inflow"
+yhi.density = 1.0
+yhi.velocity = 6.0 -3.0 0.0
+yhi.passive_scalar = 0.0
+ylo.type =   "pressure_outflow"
+
+zlo.type =   "slip_wall"
+zhi.type =   "slip_wall"
+
+incflo.verbose          =   0          # incflo_level
+nodal_proj.verbose = 0
+
+nodal_proj.mg_rtol = 1.0e-6
+nodal_proj.mg_atol = 1.0e-12
+mac_proj.mg_rtol = 1.0e-6
+mac_proj.mg_atol = 1.0e-12
