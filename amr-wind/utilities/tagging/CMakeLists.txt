@@ -9,7 +9,6 @@ target_sources(${amr_wind_lib_name} PRIVATE
   VorticityMagRefinement.cpp
   OversetRefinement.cpp
   GeometryRefinement.cpp
-  PassiveScalarRefinement.cpp
 
   # Geometry based refinement options
   BoxRefiner.cpp
