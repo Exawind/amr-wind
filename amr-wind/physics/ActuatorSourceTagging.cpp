@@ -10,7 +10,7 @@ ActuatorSourceTagging::ActuatorSourceTagging(CFDSim& sim) : m_sim(sim)
     m_tracer = &(pseqn.fields().field);
 
     amrex::ParmParse pp("ActuatorSourceTagging");
-    pp.query("act_src_threshold", m_src_threshold);
+    pp.query("actuator_source_threshold", m_src_threshold);
 }
 
 void ActuatorSourceTagging::initialize_fields(int level, const amrex::Geometry&)
@@ -21,11 +21,13 @@ void ActuatorSourceTagging::initialize_fields(int level, const amrex::Geometry&)
 void ActuatorSourceTagging::post_init_actions()
 {
 
-    if (m_sim.repo().field_exists("actuator_src_term"))
+    if (m_sim.repo().field_exists("actuator_src_term")) {
         m_act_src = &(m_sim.repo().get_field("actuator_src_term"));
+    }
 
-    if (m_sim.repo().field_exists("iblank_cell"))
+    if (m_sim.repo().field_exists("iblank_cell")) {
         m_iblank = &(m_sim.repo().get_int_field("iblank_cell"));
+    }
 }
 
 void ActuatorSourceTagging::post_advance_work()

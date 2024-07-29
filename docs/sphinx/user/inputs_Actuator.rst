@@ -1,15 +1,14 @@
-
 .. _inputs_actuator:
 
 Section: Actuator
 ~~~~~~~~~~~~~~~~~~
 
-This section controls  the actuator type models. This includes the actuator 
-disk and line models. The prefix is the label set in 
+This section controls  the actuator type models. This includes the actuator
+disk and line models. The prefix is the label set in
 ``incflo.physics``. For example
 ``incflo.physics = FreeStream Actuator``
-Actuator models are meant to simulate aerodynamic objects by using body forces 
-in the momentum equation. 
+Actuator models are meant to simulate aerodynamic objects by using body forces
+in the momentum equation.
 There are capabilities to simulate fixed wings as actuator lines and wind
 turbines as actuator disks and actuator line models.
 
@@ -17,16 +16,16 @@ turbines as actuator disks and actuator line models.
 .. input_param:: Actuator.labels
 
    **type:** String, mandatory
-   
+
    This string is used as an identifier for the current actuator.
 
 
 .. input_param:: Actuator.type
 
    **type:** String, mandatory
-   
+
    This string identifies the type of actuator to use. The ones currently
-   supported are: ``TurbineFastLine``, ``TurbineFastDisk``, and 
+   supported are: ``TurbineFastLine``, ``TurbineFastDisk``, and
    ``FixedWingLine``.
 
 It is recommended to group common parameters across actuators using the ``Actuator.[type].[param]``. For example::
@@ -48,43 +47,43 @@ FixedWingLine
 
 Example for ``FixedWingLine``::
 
-   incflo.physics = FreeStream Actuator 
-   Actuator.labels = F1 
-   Actuator.type = FixedWingLine 
-   Actuator.FixedWingLine.num_points = 21 
-   Actuator.FixedWingLine.epsilon = 3.0 3.0 3.0 
-   Actuator.FixedWingLine.epsilon_chord = 0.25 0.25 0.25 
+   incflo.physics = FreeStream Actuator
+   Actuator.labels = F1
+   Actuator.type = FixedWingLine
+   Actuator.FixedWingLine.num_points = 21
+   Actuator.FixedWingLine.epsilon = 3.0 3.0 3.0
+   Actuator.FixedWingLine.epsilon_chord = 0.25 0.25 0.25
    Actuator.FixedWingLine.fllc = 0
-   Actuator.FixedWingLine.pitch = 4.0 
-   Actuator.FixedWingLine.span_locs = 0.0 1.0 
-   Actuator.FixedWingLine.chord = 2.0 2.0 
-   Actuator.FixedWingLine.airfoil_table = DU21_A17.txt 
-   Actuator.FixedWingLine.airfoil_type = openfast 
-   Actuator.F1.start = 0.0 -4.0 0.0 
-   Actuator.F1.end = 0.0 4.0 0.0 
-   Actuator.F1.output_frequency = 10 
-   ICNS.source_terms = ActuatorForcing 
+   Actuator.FixedWingLine.pitch = 4.0
+   Actuator.FixedWingLine.span_locs = 0.0 1.0
+   Actuator.FixedWingLine.chord = 2.0 2.0
+   Actuator.FixedWingLine.airfoil_table = DU21_A17.txt
+   Actuator.FixedWingLine.airfoil_type = openfast
+   Actuator.F1.start = 0.0 -4.0 0.0
+   Actuator.F1.end = 0.0 4.0 0.0
+   Actuator.F1.output_frequency = 10
+   ICNS.source_terms = ActuatorForcing
 
 .. input_param:: Actuator.FixedWingLine.num_points
 
    **type:** int, mandatory
-   
-   This is the number of actuator points along the wing to be used in the 
+
+   This is the number of actuator points along the wing to be used in the
    simulation.
 
 .. input_param:: Actuator.FixedWingLine.epsilon
 
    **type:** List of 3 real numbers, mandatory
-   
+
    This is the value of epsilon in the chord, thicness and spanwise directions.
 
 .. input_param:: Actuator.FixedWingLine.epsilon_chord
 
    **type:** List of 3 real numbers, optional
-   
-   This is the value of epsilon/chord. This value will be used to compute 
-   epsilon as a function of the chord at every actuator point. A value of 
-   epsilon / chord ~ 0.25 is recommended for an optimal representation of the 
+
+   This is the value of epsilon/chord. This value will be used to compute
+   epsilon as a function of the chord at every actuator point. A value of
+   epsilon / chord ~ 0.25 is recommended for an optimal representation of the
    blade aerodynamics. When this variable is specified, the code will choose
    the maximum value between ``epsilon_chord * chord`` and ``epsilon`` for
    every actuator point.
@@ -146,8 +145,8 @@ Example for ``FixedWingLine``::
 .. input_param:: Actuator.FixedWingLine.pitch
 
    **type:** Real number, mandatory
-   
-   This is the pitch angle of the blade in degrees. All coordinates will be 
+
+   This is the pitch angle of the blade in degrees. All coordinates will be
    pitched by this angle. In the case of a fixed wing, this would be the angle
    of attack of the wing with respect to the inflow velocity. This argument is mandatory unless
    a pitch timetable is specified.
@@ -162,21 +161,21 @@ Example for ``FixedWingLine``::
 .. input_param:: Actuator.FixedWingLine.chord
 
    **type:** List of real numbers, mandatory
-   
-   These are the chord values at every span location. The length of this array 
+
+   These are the chord values at every span location. The length of this array
    needs to be the same length as ``span_locs``.
 
 .. input_param:: Actuator.FixedWingLine.airfoil_table
 
    **type:** String, mandatory
-   
+
    This is the name of the file that contains the lookup table for lift and drag
    coefficients.
 
 .. input_param:: Actuator.FixedWingLine.airfoil_type
 
    **type:** String, mandatory
-   
+
    This is the type of airfoil table lookup. The currently supported options are
    ``openfast`` and ``text``.
 
@@ -195,15 +194,15 @@ Example for ``FixedWingLine``::
 .. input_param:: Actuator.F1.output_frequency
 
    **type:** int, optional
-   
+
    This is how often to write actuator output. The default is ``10``.
 
 .. input_param:: Actuator.FixedWingLine.motion_type
 
    **type:** String, optional
 
-   The FixedWingLine actuator allows for motion, 
-   though other aspects of the actuator remain fixed (such as the orientation and 
+   The FixedWingLine actuator allows for motion,
+   though other aspects of the actuator remain fixed (such as the orientation and
    the dimensions). The currently supported options are ``none`` (default), ``linear``,
    and ``sine``. Linear motion moves the actuator at a constant velocity in a straight
    line whereas sine motion oscillates the actuator according to a temporal sine signal.
@@ -232,7 +231,7 @@ Example for ``FixedWingLine``::
 
    **type:** String, optional
 
-   File name of pitch timetable. This file must specify pitch angles 
+   File name of pitch timetable. This file must specify pitch angles
    at different times below a one-line header. When this argument is present,
    the ``pitch`` argument is no longer mandatory, and it will not be used.
 
@@ -242,7 +241,7 @@ Example for ``FixedWingLine``::
 
    When this option is turned on, the actuator Gaussian is disabled in the spanwise Gaussian,
    making the force distribution uniform in that direction. This option enables quasi-2D simulations
-   with a fixed wing. The code will print warning statements if the detected spanwise direction is 
+   with a fixed wing. The code will print warning statements if the detected spanwise direction is
    not periodic.
 
 .. input_param:: Actuator.FixedWingLine.normalize_spanwise
@@ -266,8 +265,8 @@ Example for ``FixedWingLine``::
 
    **type:** List of 3 real numbers, optional, default = 1.0 1.0 1.0
 
-   By default, the actuator force is computed and applied in every coordinate direction. 
-   This input allows actuator force coordinate directions to be deactivated by specifying a 0.0 in 
+   By default, the actuator force is computed and applied in every coordinate direction.
+   This input allows actuator force coordinate directions to be deactivated by specifying a 0.0 in
    for the x, y, or z component of this vector.
 
 
@@ -300,25 +299,25 @@ Example for ``TurbineFastLine``::
 .. input_param:: Actuator.TurbineFastLine.rotor_diameter
 
    **type:** Real number, required
-   
+
    This is the rotor diameter of the turbine to be simulated.
 
 .. input_param:: Actuator.TurbineFastLine.hub_height
 
    **type:** Real number, required
-   
+
    This is the hub height of the turbine.
 
 .. input_param:: Actuator.TurbineFastLine.num_points_blade
 
    **type:** int, required
-   
+
    This the number of actuator points along the blades.
 
 .. input_param:: Actuator.TurbineFastLine.num_points_tower
 
    **type:** int, required
-   
+
    This is the number of actuator points along the tower.
 
 .. input_param:: Actuator.TurbineFastLine.epsilon
@@ -344,20 +343,20 @@ Example for ``TurbineFastLine``::
 .. input_param:: Actuator.TurbineFastLine.openfast_start_time
 
    **type:** Real, required
-   
+
    This is the time at which to start the openfast simulation.
 
 .. input_param:: Actuator.TurbineFastLine.openfast_stop_time
 
    **type:** Real, required
-   
+
    This is the time at which to stop the openfast run.
 
-.. input_param:: Actuator.TurbineFastLine.nacelle_drag_coeff 
+.. input_param:: Actuator.TurbineFastLine.nacelle_drag_coeff
 
    **type:** Real, optional
-   
-   This is the drag coefficient of the nacelle. If this and the area of the 
+
+   This is the drag coefficient of the nacelle. If this and the area of the
    nacelle are specified, a value of epsilon for the nacelle is computed that
    would provide an optimal momentum thickness of the wake.
    This is also used to correct the sampled velocity at the location of the
@@ -366,30 +365,61 @@ Example for ``TurbineFastLine``::
 .. input_param:: Actuator.TurbineFastLine.nacelle_area
 
    **type:** Real, optional, default=0
-   
+
    This is the frontal area of the nacelle which is used to compute the force.
 
 .. input_param:: Actuator.TurbineFastLine.output_frequency
 
    **type:** int, optional, default=10
-   
-   This is how often to write actuator output. 
+
+   This is how often to write actuator output.
 
 .. input_param:: Actuator.TurbineFastLine.density
 
    **type:** Real, optional
-   
-   This is the density of the fluid specified in openfast. This is used to 
+
+   This is the density of the fluid specified in openfast. This is used to
    non-dimensionalize the forces from openfast.
 
 .. input_param:: Actuator.WTG01.openfast_input_file
 
    **type:** String, required
-   
+
    This is the name of the openfast input file with all the turbine information.
 
 
+ActuatorSourceTagging
+"""""""""""""""""""""
+
+It is possible to seed a passive scalar in the flow field at locations
+where the actuator source term value is above a certain
+threshold. This is useful for wake visualization and for dynamic
+adaptation of the mesh to the wake location. This is activated by
+adding ``ActuatorSourceTagging`` to ``incflo.physics``. It has the
+following input options:
+
+.. input_param:: ActuatorSourceTagging.actuator_source_threshold
+
+   **type:** Real, optional, default=0.1
+
+   Threshold value for the actuator source term above which the passive scalar will be set to 1.0.
 
 
+Additional input parameters are
+``transport.passive_scalar_laminar_schmidt`` and
+``transport.passive_scalar_turbulent_schmidt`` to set the diffusion of
+the passive scalar. This can be combined with the ``FieldRefinement`` criteria for mesh adapatation:
 
+.. code-block:: console
 
+   tagging.labels = tracer
+   tagging.tracer.type = FieldRefinement
+   tagging.tracer.field_name = passive_scalar
+   tagging.tracer.field_error = 0.3 0.3 0.3 0.3
+
+where the ``field_error`` is the value above which the cells should be
+tagged for refinement. Here is an example using the
+uniform_ct_disk_dynamic_adaptation regression test:
+
+.. image:: ./uniform_ct_disk_dynamic_adaptation.gif
+   :width: 300pt
