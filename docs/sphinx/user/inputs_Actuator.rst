@@ -408,7 +408,8 @@ following input options:
 Additional input parameters are
 ``transport.passive_scalar_laminar_schmidt`` and
 ``transport.passive_scalar_turbulent_schmidt`` to set the diffusion of
-the passive scalar. This can be combined with the ``FieldRefinement`` criteria for mesh adapatation:
+the passive scalar. This can be combined with the ``FieldRefinement``
+criteria for mesh adaptation:
 
 .. code-block:: console
 
