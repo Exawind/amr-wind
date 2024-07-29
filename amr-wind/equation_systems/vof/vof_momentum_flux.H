@@ -21,7 +21,8 @@ static void hybrid_fluxes(
     amrex::BCRec const* velbc,
     amrex::BCRec const* rhobc,
     const amrex::Real dt,
-    godunov::scheme mflux_scheme)
+    godunov::scheme mflux_scheme,
+    bool use_forces_in_trans)
 {
     // Get geometry
     const auto& geom = repo.mesh().Geom();
@@ -110,8 +111,7 @@ static void hybrid_fluxes(
                 u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
                 w_mac(lev).const_array(mfi), fq.const_array(mfi), velbc,
                 iconserv.data(), tmpfab.dataPtr(), geom, dt, mflux_scheme,
-                // HACK HACK HACK
-                true);
+                use_forces_in_trans);
 
             // Where interface is present, replace current momentum flux
             // quantities with those from mflux_scheme
@@ -155,8 +155,7 @@ static void hybrid_fluxes(
                 u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
                 w_mac(lev).const_array(mfi), frho.const_array(mfi), rhobc,
                 idnsty.data(), tmpfab.dataPtr(), geom, dt, mflux_scheme,
-                // HACK HACK HACK
-                true);
+                use_forces_in_trans);
 
             // When interface is present, divide by interpolated density to get
             // Favre-averaged flux value. Multiply all fluxes with advected

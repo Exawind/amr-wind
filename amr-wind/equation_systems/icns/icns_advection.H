@@ -467,7 +467,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                 repo, ICNS::ndim, iconserv, (*flux_x), (*flux_y), (*flux_z),
                 dof_field, src_term, rho_o, u_mac, v_mac, w_mac,
                 dof_field.bcrec_device().data(), rho_o.bcrec_device().data(),
-                dt, mflux_scheme);
+                dt, mflux_scheme, godunov_use_forces_in_trans);
         }
 
         amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> fluxes(
