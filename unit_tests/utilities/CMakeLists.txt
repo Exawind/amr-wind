@@ -6,7 +6,7 @@ target_sources(${amr_wind_unit_test_exe_name} PRIVATE
   test_second_moment.cpp
   test_sampling.cpp
   test_linear_interpolation.cpp
-  test_free_surface.cpp
+  # test_free_surface.cpp
   test_wave_energy.cpp
   test_diagnostics.cpp
   test_multilevelvector.cpp

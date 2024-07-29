@@ -193,6 +193,11 @@ void Sampling::sampling_post()
 void Sampling::post_regrid_actions()
 {
     BL_PROFILE("amr-wind::Sampling::post_regrid_actions");
+    
+    for (const auto& obj : m_samplers) {
+        obj->post_regrid_actions();
+    }
+    
     m_scontainer->Redistribute();
 }
 

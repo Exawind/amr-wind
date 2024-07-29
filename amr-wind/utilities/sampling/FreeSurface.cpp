@@ -2,34 +2,29 @@
 #include "amr-wind/utilities/io_utils.H"
 #include <AMReX_MultiFabUtil.H>
 #include <utility>
-#include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/equation_systems/vof/volume_fractions.H"
-#include "amr-wind/utilities/IOManager.H"
 
 #include "AMReX_ParmParse.H"
 
-namespace amr_wind::free_surface {
+namespace amr_wind::sampling {
 
-FreeSurface::FreeSurface(CFDSim& sim, std::string label)
-    : m_sim(sim), m_label(std::move(label)), m_vof(sim.repo().get_field("vof"))
+FreeSurfaceSampler::FreeSurfaceSampler(CFDSim& sim)
+    : m_sim(sim), m_vof(sim.repo().get_field("vof"))
 {}
 
-FreeSurface::~FreeSurface() = default;
+FreeSurfaceSampler::~FreeSurfaceSampler() = default;
 
-void FreeSurface::initialize()
+void FreeSurfaceSampler::initialize(const std::string& key)
 {
-    BL_PROFILE("amr-wind::FreeSurface::initialize");
+    BL_PROFILE("amr-wind::FreeSurfaceSampler::initialize");
 
     {
-        amrex::ParmParse pp(m_label);
-        pp.query("output_frequency", m_out_freq);
-        pp.query("output_format", m_out_fmt);
-        // Load parameters of freesurface sampling
-        pp.query("num_instances", m_ninst);
-        pp.query("search_direction", m_coorddir);
+        amrex::ParmParse pp(key);
+        pp.getarr("plane_start", m_start);
+        pp.getarr("plane_end", m_end);
         pp.getarr("num_points", m_npts_dir);
-        pp.getarr("start", m_start);
-        pp.getarr("end", m_end);
+        pp.query("search_direction", m_coorddir);
+        pp.query("num_instances", m_ninst);
         pp.query("max_sample_points_per_cell", m_ncmax);
         AMREX_ALWAYS_ASSERT(static_cast<int>(m_start.size()) == AMREX_SPACEDIM);
         AMREX_ALWAYS_ASSERT(static_cast<int>(m_end.size()) == AMREX_SPACEDIM);
@@ -53,7 +48,7 @@ void FreeSurface::initialize()
         }
         default: {
             amrex::Abort(
-                "FreeSurface: Invalid coordinate search direction "
+                "FreeSurfaceSampler: Invalid coordinate search direction "
                 "encountered");
             break;
         }
@@ -335,22 +330,17 @@ void FreeSurface::initialize()
                 });
         }
     }
-
-    if (m_out_fmt == "netcdf") {
-        prepare_netcdf_file();
-    }
 }
 
-void FreeSurface::post_advance_work()
+
+void FreeSurfaceSampler::sampling_locations(SampleLocType& locs) const {
+    // add implementation!!!
+}
+
+void FreeSurfaceSampler::update_sampling_locations()
 {
 
-    BL_PROFILE("amr-wind::FreeSurface::post_advance_work");
-    const auto& time = m_sim.time();
-    const int tidx = time.time_index();
-    // Skip processing if it is not an output timestep
-    if (!(tidx % m_out_freq == 0)) {
-        return;
-    }
+    BL_PROFILE("amr-wind::FreeSurfaceSampler::update_sampling_locations");
 
     // Zero data in output array
     for (int n = 0; n < m_npts * m_ninst; n++) {
@@ -518,13 +508,11 @@ void FreeSurface::post_advance_work()
             dout_ptr[n] = plo0[coorddir];
         });
     }
-
-    process_output();
 }
 
-void FreeSurface::post_regrid_actions()
+void FreeSurfaceSampler::post_regrid_actions()
 {
-    BL_PROFILE("amr-wind::FreeSurface::post_regrid_actions");
+    BL_PROFILE("amr-wind::FreeSurfaceSampler::post_regrid_actions");
     // Small number for floating-point comparisons
     constexpr amrex::Real eps = 1.0e-16;
     // Get working fields
@@ -665,175 +653,29 @@ void FreeSurface::post_regrid_actions()
     }
 }
 
-void FreeSurface::process_output()
-{
-    if (m_out_fmt == "ascii") {
-        write_ascii();
-    } else if (m_out_fmt == "netcdf") {
-        write_netcdf();
-    } else {
-        amrex::Abort("FreeSurface: Invalid output format encountered");
-    }
-}
-
-void FreeSurface::write_ascii()
-{
-    BL_PROFILE("amr-wind::FreeSurface::write_ascii");
-    amrex::Print()
-        << "WARNING: FreeSurface: ASCII output will impact performance"
-        << std::endl;
-
-    const std::string post_dir = m_sim.io_manager().post_processing_directory();
-    const std::string sname =
-        amrex::Concatenate(m_label, m_sim.time().time_index());
-
-    const std::string fname = post_dir + "/" + sname + ".txt";
-
-    if (amrex::ParallelDescriptor::IOProcessor()) {
-        //
-        // Have I/O processor open file and write everything.
-        //
-        std::ofstream File;
-
-        File.open(fname.c_str(), std::ios::out | std::ios::trunc);
-
-        if (!File.good()) {
-            amrex::FileOpenFailed(fname);
-        }
-
-        std::string str1 = "x";
-        std::string str2 = "y";
-        switch (m_coorddir) {
-        case 0: {
-            str1 = "y";
-            str2 = "z";
-            break;
-        }
-        case 1: {
-            str1 = "x";
-            str2 = "z";
-            break;
-        }
-        default: {
-            // Do nothing, initial settings are good
-            break;
-        }
-        }
-
-        // Metadata
-        File << m_sim.time().new_time() << '\n';
-        File << m_npts << '\n';
-        File << str1 << ' ' << m_npts_dir[0] << ' ' << str2 << ' '
-             << m_npts_dir[1] << '\n';
-
-        // Points in grid (x, y, z0, z1, ...)
-        for (int n = 0; n < m_npts; ++n) {
-            File << m_locs[n][0] << ' ' << m_locs[n][1];
-            for (int ni = 0; ni < m_ninst; ++ni) {
-                File << ' ' << m_out[ni * m_npts + n];
-            }
-            File << '\n';
-        }
-
-        File.flush();
-
-        File.close();
-
-        if (!File.good()) {
-            amrex::Abort("FreeSurface::write_ascii(): problem writing file");
-        }
-    }
-}
-
-void FreeSurface::prepare_netcdf_file()
-{
 #ifdef AMR_WIND_USE_NETCDF
-
-    const std::string post_dir = m_sim.io_manager().post_processing_directory();
-    const std::string sname =
-        amrex::Concatenate(m_label, m_sim.time().time_index());
-
-    m_ncfile_name = post_dir + "/" + sname + ".nc";
-
-    // Only I/O processor handles NetCDF generation
-    if (!amrex::ParallelDescriptor::IOProcessor()) {
-        return;
-    }
-
-    auto ncf = ncutils::NCFile::create(m_ncfile_name, NC_CLOBBER | NC_NETCDF4);
-    const std::string nt_name = "num_time_steps";
-    const std::string ngp_name = "num_grid_points";
-    const std::string ninst_name = "num_instances";
-    ncf.enter_def_mode();
-    ncf.put_attr("title", "AMR-Wind data sampling output");
-    ncf.put_attr("version", ioutils::amr_wind_version());
-    ncf.put_attr("created_on", ioutils::timestamp());
-    ncf.def_dim(nt_name, NC_UNLIMITED);
-    ncf.def_dim(ngp_name, m_npts);
-    ncf.def_dim(ninst_name, m_ninst);
-    ncf.def_dim("ndim2", 2);
-    ncf.def_var("time", NC_DOUBLE, {nt_name});
+void FreeSurfaceSampler::define_netcdf_metadata(
+    const ncutils::NCGroup& grp) const
+{
 
     // Metadata related to the 2D grid used to sample
-    const std::vector<int> ijk{m_npts_dir[0], m_npts_dir[1]};
-    ncf.put_attr("ijk_dims", ijk);
-    ncf.put_attr("start", m_start);
-    ncf.put_attr("end", m_end);
+    const std::vector<int> ijk{m_npts_dir[0], m_npts_dir[1], m_ninst};
+    grp.put_attr("sampling_type", identifier());
+    grp.put_attr("ijk_dims", ijk);
+    grp.put_attr("plane_start", m_start);
+    grp.put_attr("plane_end", m_end);
+}
 
-    // Set up array of data for locations in 2D grid
-    ncf.def_var("coordinates2D", NC_DOUBLE, {ngp_name, "ndim2"});
-
-    // Set up array for height outputs
-    ncf.def_var("heights", NC_DOUBLE, {nt_name, ninst_name, ngp_name});
-
-    ncf.exit_def_mode();
-
-    // Populate data that doesn't change
-    const std::vector<size_t> start{0, 0};
-    std::vector<size_t> count{0, 2};
-    count[0] = m_npts;
-    auto xy = ncf.var("coordinates2D");
-    xy.put(m_locs[0].data(), start, count);
-
+void FreeSurfaceSampler::populate_netcdf_metadata(
+    const ncutils::NCGroup& /*unused*/) const
+{}
 #else
-    amrex::Abort(
-        "NetCDF support was not enabled during build time. Please "
-        "recompile or "
-        "use native format");
+void FreeSurfaceSampler::define_netcdf_metadata(
+    const ncutils::NCGroup& /*unused*/) const
+{}
+void FreeSurfaceSampler::populate_netcdf_metadata(
+    const ncutils::NCGroup& /*unused*/) const
+{}
 #endif
-}
 
-void FreeSurface::write_netcdf()
-{
-#ifdef AMR_WIND_USE_NETCDF
-
-    if (!amrex::ParallelDescriptor::IOProcessor()) {
-        return;
-    }
-    auto ncf = ncutils::NCFile::open(m_ncfile_name, NC_WRITE);
-    const std::string nt_name = "num_time_steps";
-    // Index of the next timestep
-    const size_t nt = ncf.dim(nt_name).len();
-    {
-        auto time = m_sim.time().new_time();
-        ncf.var("time").put(&time, {nt}, {1});
-    }
-
-    std::vector<size_t> start{nt, 0, 0};
-    std::vector<size_t> count{1, 0, 0};
-
-    count[1] = 1;
-    count[2] = m_npts;
-    auto var = ncf.var("heights");
-    for (int ni = 0; ni < m_ninst; ++ni) {
-        var.put(
-            &m_out[static_cast<size_t>(ni) * static_cast<size_t>(m_npts)],
-            start, count);
-        ++start[1];
-    }
-
-    ncf.close();
-#endif
-}
-
-} // namespace amr_wind::free_surface
+} // namespace amr_wind::sampling
