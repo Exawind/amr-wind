@@ -152,7 +152,8 @@ struct AdvectionOp<
                         w_mac(lev).const_array(mfi),
                         src_term(lev).const_array(mfi),
                         dof_field.bcrec_device().data(), iconserv.data(),
-                        tmpfab.dataPtr(), geom, dt, godunov_scheme);
+                        tmpfab.dataPtr(), geom, dt, godunov_scheme,
+                        godunov_use_forces_in_trans);
                 } else if (
                     (godunov_scheme == godunov::scheme::PPM) ||
                     (godunov_scheme == godunov::scheme::PLM) ||
