@@ -162,8 +162,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         //
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             if ((godunov_scheme == godunov::scheme::PPM_NOLIM) ||
-                (godunov_scheme == godunov::scheme::WENOJS) ||
-                (godunov_scheme == godunov::scheme::WENOZ)) {
+                (godunov_scheme == godunov::scheme::WENOJS)) {
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
@@ -253,13 +252,6 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                                 true);
                             break;
                         }
-                        case godunov::scheme::WENOZ: {
-                            godunov::predict_weno(
-                                lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz,
-                                Ipz, a_vel, a_vel, geom, dt, bcrec_device,
-                                false);
-                            break;
-                        }
                         default: {
                             amrex::Abort(
                                 "Only PPM_NOLIM, WENOZ, and WENOJS use this "
@@ -287,6 +279,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             } else if (
                 (godunov_scheme == godunov::scheme::PPM) ||
                 (godunov_scheme == godunov::scheme::PLM) ||
+                (godunov_scheme == godunov::scheme::WENOZ) ||
                 (godunov_scheme == godunov::scheme::BDS)) {
                 const bool godunov_use_ppm =
                     godunov_scheme == godunov::scheme::PPM;
@@ -408,8 +401,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
                 // These schemes are not in amrex-hydro yet
                 if ((godunov_scheme == godunov::scheme::PPM_NOLIM) ||
-                    (godunov_scheme == godunov::scheme::WENOJS) ||
-                    (godunov_scheme == godunov::scheme::WENOZ)) {
+                    (godunov_scheme == godunov::scheme::WENOJS)) {
                     amrex::FArrayBox tmpfab(
                         amrex::grow(bx, 1), ICNS::ndim * 14);
                     godunov::compute_fluxes(
@@ -424,6 +416,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                 } else if (
                     (godunov_scheme == godunov::scheme::PPM) ||
                     (godunov_scheme == godunov::scheme::PLM) ||
+                    (godunov_scheme == godunov::scheme::WENOZ) ||
                     (godunov_scheme == godunov::scheme::BDS)) {
                     amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 1);
                     tmpfab.setVal<amrex::RunOn::Device>(0.0);

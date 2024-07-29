@@ -139,8 +139,7 @@ struct AdvectionOp<
                 }
 
                 if ((godunov_scheme == godunov::scheme::PPM_NOLIM) ||
-                    (godunov_scheme == godunov::scheme::WENOJS) ||
-                    (godunov_scheme == godunov::scheme::WENOZ)) {
+                    (godunov_scheme == godunov::scheme::WENOJS)) {
                     amrex::FArrayBox tmpfab(amrex::grow(bx, 1), PDE::ndim * 14);
 
                     godunov::compute_fluxes(
@@ -157,6 +156,7 @@ struct AdvectionOp<
                 } else if (
                     (godunov_scheme == godunov::scheme::PPM) ||
                     (godunov_scheme == godunov::scheme::PLM) ||
+                    (godunov_scheme == godunov::scheme::WENOZ) ||
                     (godunov_scheme == godunov::scheme::BDS)) {
                     amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 1);
                     tmpfab.setVal<amrex::RunOn::Device>(0.0);
