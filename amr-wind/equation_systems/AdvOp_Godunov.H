@@ -58,7 +58,7 @@ struct AdvectionOp<
         } else if (
             amrex::toLower(godunov_type) == "weno" ||
             amrex::toLower(godunov_type) == "weno_js") {
-            godunov_scheme = godunov::scheme::WENOJS;
+            godunov_scheme = godunov::scheme::WENO_JS;
         } else if (amrex::toLower(godunov_type) == "weno_z") {
             godunov_scheme = godunov::scheme::WENOZ;
         } else {
@@ -138,25 +138,12 @@ struct AdvectionOp<
                         });
                 }
 
-                if ((godunov_scheme == godunov::scheme::WENOJS)) {
-                    amrex::FArrayBox tmpfab(amrex::grow(bx, 1), PDE::ndim * 14);
-
-                    godunov::compute_fluxes(
-                        lev, bx, PDE::ndim, (*flux_x)(lev).array(mfi),
-                        (*flux_y)(lev).array(mfi), (*flux_z)(lev).array(mfi),
-                        (PDE::multiply_rho ? rhotrac : tra_arr),
-                        u_mac(lev).const_array(mfi),
-                        v_mac(lev).const_array(mfi),
-                        w_mac(lev).const_array(mfi),
-                        src_term(lev).const_array(mfi),
-                        dof_field.bcrec_device().data(), iconserv.data(),
-                        tmpfab.dataPtr(), geom, dt, godunov_scheme,
-                        godunov_use_forces_in_trans);
-                } else if (
+                if (
                     (godunov_scheme == godunov::scheme::PPM) ||
                     (godunov_scheme == godunov::scheme::PPM_NOLIM) ||
                     (godunov_scheme == godunov::scheme::PLM) ||
                     (godunov_scheme == godunov::scheme::WENOZ) ||
+                    (godunov_scheme == godunov::scheme::WENO_JS) ||
                     (godunov_scheme == godunov::scheme::BDS)) {
                     amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 1);
                     tmpfab.setVal<amrex::RunOn::Device>(0.0);
