@@ -90,7 +90,7 @@ amr_wind::nodal_projection::enforce_inout_solvability (
         vel_vec[lev][1] = new MultiFab(velocity(lev), amrex::make_alias, 1, 1);
         vel_vec[lev][2] = new MultiFab(velocity(lev), amrex::make_alias, 2, 1);
     }
-    Print() << "***** Calling enforceSolvability from AMR-Wind" << std::endl;
+
     HydroUtils::enforceInOutSolvability(vel_vec, bc_type, geom, true);
 }
 
@@ -177,7 +177,6 @@ void incflo::ApplyProjection(
     auto& grad_p = m_repo.get_field("gp");
     auto& pressure = m_repo.get_field("p");
     auto& velocity = icns().fields().field;
-//amrex::WriteSingleLevelPlotfile("plt_vel_pre_nodalproj", velocity(0), {"u","v","w"}, geom[0], 0.0, 0);
     auto& velocity_old = icns().fields().field.state(amr_wind::FieldState::Old);
     amr_wind::Field const* mesh_fac =
         mesh_mapping
