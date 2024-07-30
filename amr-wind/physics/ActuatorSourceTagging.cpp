@@ -25,7 +25,7 @@ void ActuatorSourceTagging::post_init_actions()
     m_has_iblank = m_repo.field_exists("iblank_cell");
 
     if (m_has_act_src) {
-        m_act_src = &(m_repo.get_field("actuator_src_erm"));
+        m_act_src = &(m_repo.get_field("actuator_src_term"));
     }
 
     if (m_has_iblank) {
