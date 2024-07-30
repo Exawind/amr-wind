@@ -23,7 +23,6 @@ void MassInflowOutflowBC::operator()(Field& /*field*/, const FieldState /*rho_st
     const int nlevels = m_field.repo().num_active_levels();
     const bool ib = (idim == 0), jb = (idim == 1), kb = (idim == 2);
 
-    amrex::Print() << "***** Applying MIO custom Neumann fills at orientation: " << idx << std::endl;
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& domain = repo.mesh().Geom(lev).Domain();
 
@@ -49,11 +48,6 @@ void MassInflowOutflowBC::operator()(Field& /*field*/, const FieldState /*rho_st
                                 bc_a(i-ib, j-jb, k-kb, n) = bc_a(i, j, k, n);
                             }
                         }
-
-                        /*for (int n = 0; n < ncomp; n++) {
-                            amrex::Print() << i << " " << j << " " << k << " " << n << std::endl;
-                            amrex::Print() << "result: " << vel(i-ib, j-jb, k-kb, idim) << " " << bc_a(i-ib, j-jb, k-kb, n) << " " << bc_a(i, j, k, n) << std::endl << std::endl;
-                        }*/
                     });
             }
 
@@ -66,11 +60,6 @@ void MassInflowOutflowBC::operator()(Field& /*field*/, const FieldState /*rho_st
                                 bc_a(i, j, k, n) = bc_a(i-ib, j-jb, k-kb, n);
                             }
                         }
-
-                        /*for (int n = 0; n < ncomp; n++) {
-                            amrex::Print() << i << " " << j << " " << k << " " << n << std::endl;
-                            amrex::Print() << "result: " << vel(i-ib, j-jb, k-kb, idim) << " " << bc_a(i-ib, j-jb, k-kb, n) << " " << bc_a(i, j, k, n) << std::endl << std::endl;
-                        }*/
                     });
             }
         }

@@ -328,8 +328,7 @@ void godunov::predict_godunov(
             stl += 0.5 * l_dt * f(i - 1, j, k, n);
             sth += 0.5 * l_dt * f(i, j, k, n);
         }
-//if ((i==0) && (j==0) && (k==0))
-//    amrex::Print() << "***** now calling Godunov_cc_xbc_lo/hi from predict_godunov" << std::endl;
+
         Godunov_cc_xbc_lo(i, j, k, n, q, stl, sth, u_ad, bc.lo(0), dlo.x);
         Godunov_cc_xbc_hi(i, j, k, n, q, stl, sth, u_ad, bc.hi(0), dhi.x);
 
