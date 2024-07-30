@@ -336,12 +336,12 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                         godunov_use_ppm, godunov_use_forces_in_trans,
                         is_velocity, fluxes_are_area_weighted,
                         postmac_advection_type, limiter_type);
-                } // mfi
+                }
                 amrex::Gpu::streamSynchronize();
             } else {
                 amrex::Abort("Invalid godunov scheme");
             }
-        } // lev
+        }
 
         // Multiphase flux operations
         if (mphase_vof) {
