@@ -424,3 +424,9 @@ uniform_ct_disk_dynamic_adaptation regression test:
 
 .. image:: ./uniform_ct_disk_dynamic_adaptation.gif
    :width: 300pt
+
+.. warning::
+
+   This is an experimental feature and there is no guidance yet on the
+   values that should be used for the passive scalar and tagging
+   criteria.
