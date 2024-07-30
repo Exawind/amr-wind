@@ -160,8 +160,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         //
         // Predict
         //
-        if (
-            (godunov_scheme == godunov::scheme::PPM) ||
+        if ((godunov_scheme == godunov::scheme::PPM) ||
             (godunov_scheme == godunov::scheme::PPM_NOLIM) ||
             (godunov_scheme == godunov::scheme::PLM) ||
             (godunov_scheme == godunov::scheme::WENOZ) ||
@@ -292,14 +291,12 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                 mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
                     .SetDynamic(true);
             }
-            if (
-                (godunov_scheme == godunov::scheme::PPM) ||
+            if ((godunov_scheme == godunov::scheme::PPM) ||
                 (godunov_scheme == godunov::scheme::PPM_NOLIM) ||
                 (godunov_scheme == godunov::scheme::PLM) ||
                 (godunov_scheme == godunov::scheme::WENOZ) ||
                 (godunov_scheme == godunov::scheme::WENO_JS) ||
-                (godunov_scheme == godunov::scheme::BDS))
-            {
+                (godunov_scheme == godunov::scheme::BDS)) {
                 const bool is_velocity = true;
                 const bool known_edge_state = false;
                 const bool godunov_use_ppm =
@@ -320,8 +317,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-                for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid(); ++mfi)
-                {
+                for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
+                     ++mfi) {
                     const auto& bx = mfi.tilebox();
                     amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 1);
                     tmpfab.setVal<amrex::RunOn::Device>(0.0);

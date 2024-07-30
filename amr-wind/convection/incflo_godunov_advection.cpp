@@ -118,7 +118,8 @@ void godunov::compute_fluxes(
     }
     default: {
         amrex::Abort(
-            "This code path only used in multiphase simulations with MINMOD and UPWIND");
+            "This code path only used in multiphase simulations with MINMOD "
+            "and UPWIND");
     }
     }
 

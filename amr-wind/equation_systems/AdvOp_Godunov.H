@@ -141,8 +141,7 @@ struct AdvectionOp<
                         });
                 }
 
-                if (
-                    (godunov_scheme == godunov::scheme::PPM) ||
+                if ((godunov_scheme == godunov::scheme::PPM) ||
                     (godunov_scheme == godunov::scheme::PPM_NOLIM) ||
                     (godunov_scheme == godunov::scheme::PLM) ||
                     (godunov_scheme == godunov::scheme::WENOZ) ||
