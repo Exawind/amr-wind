@@ -26,10 +26,12 @@ void ActuatorSourceTagging::post_init_actions()
 
     if (m_has_act_src) {
         m_act_src = &(m_repo.get_field("actuator_src_term"));
+        AMREX_ALWAYS_ASSERT(m_act_src->num_grow() <= m_tracer->num_grow());
     }
 
     if (m_has_iblank) {
         m_iblank = &(m_repo.get_int_field("iblank_cell"));
+        AMREX_ALWAYS_ASSERT(m_iblank->num_grow() <= m_tracer->num_grow());
     }
 }
 
@@ -50,7 +52,7 @@ void ActuatorSourceTagging::post_advance_work()
         if (m_has_act_src) {
             const auto& src_arrs = (*m_act_src)(lev).const_arrays();
             amrex::ParallelFor(
-                (*m_tracer)(lev), m_tracer->num_grow(),
+                (*m_tracer)(lev), m_act_src->num_grow(),
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                     const auto src = src_arrs[nbx];
                     const amrex::Real srcmag = std::sqrt(
@@ -69,7 +71,7 @@ void ActuatorSourceTagging::post_advance_work()
             const bool tag_fringe = m_tag_fringe;
             const bool tag_hole = m_tag_hole;
             amrex::ParallelFor(
-                (*m_tracer)(lev), m_tracer->num_grow(),
+                (*m_tracer)(lev), m_iblank->num_grow(),
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                     const auto ib = iblank_arrs[nbx](i, j, k);
                     if ((tag_fringe && (ib == -1)) || (tag_hole && (ib == 0))) {
