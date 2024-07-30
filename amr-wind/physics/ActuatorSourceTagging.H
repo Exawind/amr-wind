@@ -13,11 +13,11 @@ namespace amr_wind {
 class ActuatorSourceTagging : public Physics::Register<ActuatorSourceTagging>
 {
 public:
-    static const std::string identifier() { return "ActuatorSourceTagging"; }
+    static std::string identifier() { return "ActuatorSourceTagging"; }
 
     explicit ActuatorSourceTagging(CFDSim& sim);
 
-    virtual ~ActuatorSourceTagging() = default;
+    ~ActuatorSourceTagging() override = default;
 
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 
@@ -30,13 +30,15 @@ public:
     void post_advance_work() override;
 
 private:
-    CFDSim& m_sim;
+    const FieldRepo& m_repo;
     Field* m_act_src{nullptr};
     IntField* m_iblank{nullptr};
     Field* m_tracer{nullptr};
     amrex::Real m_src_threshold{0.1};
     bool m_tag_hole{false};
     bool m_tag_fringe{true};
+    bool m_has_act_src{false};
+    bool m_has_iblank{false};
 };
 
 } // namespace amr_wind

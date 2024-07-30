@@ -4,7 +4,7 @@
 
 namespace amr_wind {
 
-ActuatorSourceTagging::ActuatorSourceTagging(CFDSim& sim) : m_sim(sim)
+ActuatorSourceTagging::ActuatorSourceTagging(CFDSim& sim) : m_repo(sim.repo())
 {
     auto& pseqn = sim.pde_manager().register_transport_pde("PassiveScalar");
     m_tracer = &(pseqn.fields().field);
@@ -13,27 +13,29 @@ ActuatorSourceTagging::ActuatorSourceTagging(CFDSim& sim) : m_sim(sim)
     pp.query("actuator_source_threshold", m_src_threshold);
 }
 
-void ActuatorSourceTagging::initialize_fields(int level, const amrex::Geometry&)
+void ActuatorSourceTagging::initialize_fields(
+    int level, const amrex::Geometry& /*geom*/)
 {
     (*m_tracer)(level).setVal(0.0);
 }
 
 void ActuatorSourceTagging::post_init_actions()
 {
+    m_has_act_src = m_repo.field_exists("actuator_src_term");
+    m_has_iblank = m_repo.field_exists("iblank_cell");
 
-    if (m_sim.repo().field_exists("actuator_src_term")) {
-        m_act_src = &(m_sim.repo().get_field("actuator_src_term"));
+    if (m_has_act_src) {
+        m_act_src = &(m_repo.get_field("actuator_src_erm"));
     }
 
-    if (m_sim.repo().field_exists("iblank_cell")) {
-        m_iblank = &(m_sim.repo().get_int_field("iblank_cell"));
+    if (m_has_iblank) {
+        m_iblank = &(m_repo.get_int_field("iblank_cell"));
     }
 }
 
 void ActuatorSourceTagging::post_advance_work()
 {
-
-    if (!m_act_src && !m_iblank) {
+    if (!m_has_act_src && !m_has_iblank) {
         amrex::Print()
             << "Warning ActuatorSourceTagging activated but neither actuators "
                "or overset are being used"
@@ -42,10 +44,10 @@ void ActuatorSourceTagging::post_advance_work()
     }
 
     const amrex::Real src_threshold = m_src_threshold;
-    for (int lev = 0; lev <= m_sim.mesh().finestLevel(); ++lev) {
+    for (int lev = 0; lev <= m_repo.mesh().finestLevel(); ++lev) {
 
         const auto& tracer_arrs = (*m_tracer)(lev).arrays();
-        if (m_act_src) {
+        if (m_has_act_src) {
             const auto& src_arrs = (*m_act_src)(lev).const_arrays();
             amrex::ParallelFor(
                 (*m_tracer)(lev), m_tracer->num_grow(),
@@ -62,7 +64,7 @@ void ActuatorSourceTagging::post_advance_work()
                 });
         }
 
-        if (m_iblank) {
+        if (m_has_iblank) {
             const auto& iblank_arrs = (*m_iblank)(lev).const_arrays();
             const bool tag_fringe = m_tag_fringe;
             const bool tag_hole = m_tag_hole;
