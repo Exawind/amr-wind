@@ -7,9 +7,6 @@
 #include "amr-wind/projection/nodal_projection_ops.H"
 #include "hydro_utils.H"
 
-// for debugging
-#include "AMReX_PlotFileUtil.H"
-
 using namespace amrex;
 
 void amr_wind::nodal_projection::set_inflow_velocity(
@@ -356,8 +353,6 @@ void incflo::ApplyProjection(
             vel[lev]->FillBoundary(geom[lev].periodicity());
         }
     }
-//amrex::Print() << "*********** partition **********" << std::endl;
-//amrex::Print() << velocity(0)[0];
 
     // Need to apply custom Neumann funcs for inflow-outflow BC
     // after setting the inflow vels above.
@@ -368,8 +363,6 @@ void incflo::ApplyProjection(
         amr_wind::nodal_projection::enforce_inout_solvability(
             velocity, m_repo.mesh().Geom(), m_repo.num_active_levels());
     }
-
-//amrex::Print() << velocity(0)[0];
 
     if (is_anelastic) {
         for (int lev = 0; lev <= finest_level; ++lev) {
@@ -496,8 +489,6 @@ void incflo::ApplyProjection(
                 velocity(lev), velocity_old(lev), 0, 0, AMREX_SPACEDIM, 0);
         }
     }
-
-//amrex::WriteSingleLevelPlotfile("plt_vel_post_nodalproj", velocity(0), {"u","v","w"}, geom[0], 0.0, 0);
 
     // Get phi and fluxes
     auto phi = nodal_projector->getPhi();

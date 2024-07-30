@@ -43,7 +43,6 @@ void register_inflow_vel_dirichlet(
             mesh, time, InflowOp(field));
     } else if (inflow_udf == "TwoLayer") {
         using InflowOp = BCOpCreator<udf::TwoLayer, WallOp>;
-        amrex::Print() << "***** Registering TwoLayer UDF" << std::endl;
         field.register_fill_patch_op<FieldFillPatchOps<InflowOp>>(
             mesh, time, InflowOp(field));
     } else {

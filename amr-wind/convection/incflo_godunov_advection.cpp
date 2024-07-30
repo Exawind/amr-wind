@@ -312,8 +312,6 @@ void godunov::compute_fluxes(
                 (!use_forces_in_trans && fq) ? 0.5 * l_dt * fq(i, j, k, n) : 0.;
 
             auto bc = pbc[n];
-//if ((i==0) && (j==0) && (k==0))
-//    amrex::Print() << "***** now calling Godunov_cc_xbc_lo/hi from compute_fluxes" << std::endl;
             Godunov_cc_xbc_lo(i, j, k, n, q, stl, sth, umac, bc.lo(0), dlo.x);
             Godunov_cc_xbc_hi(i, j, k, n, q, stl, sth, umac, bc.hi(0), dhi.x);
 

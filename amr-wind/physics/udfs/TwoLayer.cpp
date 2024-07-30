@@ -10,13 +10,6 @@ namespace amr_wind::udf {
 
 TwoLayer::TwoLayer(const Field& fld)
 {
-    // This is a where the user can set some user defined variables
-    // This capability can be activated with the following in the input file:
-    // xlo.type = "mass_inflow"
-    // xlo.velocity.inflow_type = CustomVelocity
-    // CustomVelocity.foo = 1.0
-
-    // clang-format off
     {
        const int ncomp = fld.num_comp();
        amrex::ParmParse pp("TwoLayer");
@@ -33,10 +26,6 @@ TwoLayer::TwoLayer(const Field& fld)
             m_op.mvel[i] = mvel[i];
        }
     }
-    // clang-format on
-    //amrex::Abort(
-    //    "Please define the body of this function and the corresponding struct "
-    //    "in the header file before using it. Then remove this message");
 }
 
 } // namespace amr_wind::udf

@@ -215,8 +215,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             dof_field.fillpatch_sibling_fields(
                 time + 0.5 * dt, u_mac.num_grow(), mac_vel);
         }
-//amrex::Print() << "!!! umac after fillpatch" << std::endl;
-//amrex::Print() << u_mac(0)[0];
+
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             u_mac(lev).FillBoundary(geom[lev].periodicity());
             v_mac(lev).FillBoundary(geom[lev].periodicity());
