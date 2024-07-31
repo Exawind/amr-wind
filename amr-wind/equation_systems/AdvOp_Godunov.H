@@ -153,12 +153,18 @@ struct AdvectionOp<
                     const bool is_velocity = false;
                     const bool known_edge_state = false;
                     const bool godunov_use_ppm =
-                        ((godunov_scheme == godunov::scheme::PPM) ||
-                         (godunov_scheme == godunov::scheme::PPM_NOLIM));
-                    const int limiter_type =
-                        (godunov_scheme == godunov::scheme::PPM_NOLIM)
-                            ? PPM::NoLimiter
-                            : PPM::default_limiter;
+                        ((godunov_scheme != godunov::scheme::PLM) &&
+                         (godunov_scheme != godunov::scheme::BDS));
+                    int limiter_type;
+                    if (godunov_scheme == godunov::scheme::PPM_NOLIM) {
+                        limiter_type = PPM::NoLimiter;
+                    } else if (godunov_scheme == godunov::scheme::WENOZ) {
+                        limiter_type = PPM::WENOZ;
+                    } else if (godunov_scheme == godunov::scheme::WENO_JS) {
+                        limiter_type = PPM::WENO_JS;
+                    } else {
+                        limiter_type = PPM::default_limiter;
+                    }
                     HydroUtils::ComputeFluxesOnBoxFromState(
                         bx, PDE::ndim, mfi,
                         (PDE::multiply_rho ? rhotrac : tra_arr),

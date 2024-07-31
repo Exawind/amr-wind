@@ -167,10 +167,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             (godunov_scheme == godunov::scheme::WENO_JS) ||
             (godunov_scheme == godunov::scheme::BDS)) {
             const bool godunov_use_ppm =
-                ((godunov_scheme == godunov::scheme::PPM) ||
-                 (godunov_scheme == godunov::scheme::PPM_NOLIM) ||
-                 (godunov_scheme == godunov::scheme::WENOZ) ||
-                 (godunov_scheme == godunov::scheme::WENO_JS));
+              ((godunov_scheme != godunov::scheme::PLM) &&
+               (godunov_scheme != godunov::scheme::BDS));
             int limiter_type;
             if (godunov_scheme == godunov::scheme::PPM_NOLIM) {
                 limiter_type = PPM::NoLimiter;
