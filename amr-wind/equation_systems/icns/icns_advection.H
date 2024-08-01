@@ -293,7 +293,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                     w_mac(lev), dof_field.bcrec(),
                     dof_field.bcrec_device().data(), repo.mesh().Geom(lev), dt,
                     godunov_use_ppm, godunov_use_forces_in_trans,
-                    premac_advection_type, limiter_type);
+                    premac_advection_type, limiter_type,
+                    m_allow_inflow_on_outflow);
             } else {
                 amrex::Abort("Invalid godunov scheme");
             }
@@ -447,7 +448,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                         dof_field.bcrec_device().data(), iconserv.data(),
                         godunov_use_ppm, godunov_use_forces_in_trans,
                         is_velocity, fluxes_are_area_weighted,
-                        postmac_advection_type, limiter_type);
+                        postmac_advection_type, limiter_type,
+                        m_allow_inflow_on_outflow);
                 } else {
                     amrex::Abort("Invalid godunov scheme");
                 }
@@ -535,6 +537,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     bool godunov_use_forces_in_trans{false};
     int m_cons{1};
     int m_verbose{0};
+    const bool m_allow_inflow_on_outflow{false};
     std::string premac_advection_type{"Godunov"};
     std::string postmac_advection_type{"Godunov"};
 };
