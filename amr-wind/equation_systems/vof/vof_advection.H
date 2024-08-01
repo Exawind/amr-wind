@@ -20,6 +20,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
         bool /*unused*/,
         bool /*unused*/,
         bool /*unused*/,
+        bool /*unused*/,
         bool /*unused*/)
         : fields(fields_in)
         , u_mac(fields_in.repo.get_field("u_mac"))

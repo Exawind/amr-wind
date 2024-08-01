@@ -46,6 +46,7 @@ struct BCOp<VOF>
 
     PDEFields& m_fields;
     const SimTime& m_time;
+    bool has_inout_bndry{false};
 };
 
 } // namespace amr_wind::pde

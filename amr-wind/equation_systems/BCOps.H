@@ -27,6 +27,7 @@ struct BCOp<PDE, std::enable_if_t<std::is_base_of_v<ScalarTransport, PDE>>>
         const auto udfs = bc.get_dirichlet_udfs();
         scalar_bc::register_scalar_dirichlet(
             m_fields.field, m_fields.repo.mesh(), m_time, udfs);
+        has_inout_bndry = bc.has_inout_bndry();
 
         // Used for fillpatch operation on the source term
         BCSrcTerm bc_src(m_fields.src_term);
@@ -54,6 +55,7 @@ struct BCOp<PDE, std::enable_if_t<std::is_base_of_v<ScalarTransport, PDE>>>
 
     PDEFields& m_fields;
     const SimTime& m_time;
+    bool has_inout_bndry{false};
 };
 
 } // namespace amr_wind::pde
