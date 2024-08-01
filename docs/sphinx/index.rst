@@ -26,9 +26,10 @@ development effort. As with other codes in the
 `Exawind <https://github.com/exawind>`_ ecosystem, AMR-wind shares the following
 objectives:
 
-- an open, well-documented implementation of the state-of-the-art computational
-  models for modeling wind farm flow physics at various fidelities that are
-  backed by a comprehensive verification and validation (V&V) process;
+- an open, well-documented implementation of the state-of-the-art
+  computational models for modeling wind farm flow physics at various
+  fidelities that are backed by a comprehensive verification and
+  validation (V&V) process (:ref:`capabilities`);
 
 - be capable of performing the highest-fidelity simulations of flowfields within
   wind farms; and
