@@ -51,6 +51,9 @@ public:
     //! User-defined functions for Dirichlet-type boundaries
     amrex::Array<const std::string, 3> get_dirichlet_udfs();
 
+    //! Check if any of the boundaries is a mass-inflow-outflow
+    bool has_inout_bndry() const { return m_inout_bndry; }
+
 protected:
     //! Setup AMReX mathematical BC types
     virtual void set_bcrec() = 0;
@@ -86,6 +89,8 @@ protected:
             fbcrec[i].setHi(dir, bcrec);
         }
     }
+
+    bool m_inout_bndry{false};
 
     //! Field instance where BC is being set
     Field& m_field;
