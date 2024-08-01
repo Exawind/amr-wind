@@ -178,7 +178,8 @@ struct AdvectionOp<
                         dof_field.bcrec(), dof_field.bcrec_device().data(),
                         iconserv.data(), godunov_use_ppm,
                         godunov_use_forces_in_trans, is_velocity,
-                        fluxes_are_area_weighted, advection_type, limiter_type);
+                        fluxes_are_area_weighted, advection_type, limiter_type,
+                        m_allow_inflow_on_outflow);
                 } else {
                     amrex::Abort("Invalid godunov scheme");
                 }
@@ -232,6 +233,7 @@ struct AdvectionOp<
     std::string godunov_type;
     const bool fluxes_are_area_weighted{false};
     bool godunov_use_forces_in_trans{false};
+    const bool m_allow_inflow_on_outflow{false};
     std::string advection_type{"Godunov"};
 };
 
