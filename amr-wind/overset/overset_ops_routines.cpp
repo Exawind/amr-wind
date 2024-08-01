@@ -252,6 +252,7 @@ amrex::Real calculate_pseudo_dt_flux(
     const amrex::MultiFab& mf_fy,
     const amrex::MultiFab& mf_fz,
     const amrex::MultiFab& mf_vof,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx,
     const amrex::Real tol)
 {
     // Get the maximum flux magnitude, but just for vof fluxes
@@ -265,10 +266,10 @@ amrex::Real calculate_pseudo_dt_flux(
                 amrex::Real pdt_lim = 1.0;
                 if (fx(i, j, k, 0) > tol && vof(i, j, k) > tol) {
                     // VOF is removed from cell i
-                    pdt_lim = vof(i, j, k) / fx(i, j, k, 0);
+                    pdt_lim = vof(i, j, k) * dx[0] / fx(i, j, k, 0);
                 } else if (fx(i, j, k, 0) < -tol && vof(i - 1, j, k) > tol) {
                     // VOF is removed from cell i-1
-                    pdt_lim = vof(i - 1, j, k) / -fx(i, j, k, 0);
+                    pdt_lim = vof(i - 1, j, k) * dx[0] / -fx(i, j, k, 0);
                 }
                 pdt_fab = amrex::min(pdt_fab, pdt_lim);
             });
@@ -284,10 +285,10 @@ amrex::Real calculate_pseudo_dt_flux(
                 amrex::Real pdt_lim = 1.0;
                 if (fy(i, j, k, 0) > tol && vof(i, j, k) > tol) {
                     // VOF is removed from cell j
-                    pdt_lim = vof(i, j, k) / fy(i, j, k, 0);
+                    pdt_lim = vof(i, j, k) * dx[1] / fy(i, j, k, 0);
                 } else if (fy(i, j, k, 0) < -tol && vof(i, j - 1, k) > tol) {
                     // VOF is removed from cell j-1
-                    pdt_lim = vof(i, j - 1, k) / -fy(i, j, k, 0);
+                    pdt_lim = vof(i, j - 1, k) * dx[1] / -fy(i, j, k, 0);
                 }
                 pdt_fab = amrex::min(pdt_fab, pdt_lim);
             });
@@ -303,10 +304,10 @@ amrex::Real calculate_pseudo_dt_flux(
                 amrex::Real pdt_lim = 1.0;
                 if (fz(i, j, k, 0) > tol && vof(i, j, k) > tol) {
                     // VOF is removed from cell k
-                    pdt_lim = vof(i, j, k) / fz(i, j, k, 0);
+                    pdt_lim = vof(i, j, k) * dx[2] / fz(i, j, k, 0);
                 } else if (fz(i, j, k, 0) < -tol && vof(i, j, k - 1) > tol) {
                     // VOF is removed from cell k-1
-                    pdt_lim = vof(i, j, k - 1) / -fz(i, j, k, 0);
+                    pdt_lim = vof(i, j, k - 1) * dx[2] / -fz(i, j, k, 0);
                 }
                 pdt_fab = amrex::min(pdt_fab, pdt_lim);
             });

@@ -757,7 +757,7 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     constexpr amrex::Real margin = 0.1;
     constexpr amrex::Real convg_tol = 1e-8;
     // With simple fluxes, pseudo dt should be 100%
-    constexpr amrex::Real pdt_answer = 1.0;
+    constexpr amrex::Real pdt_answer = 1.0 / 8.0;
     // With a single level, pseudo velocity scale should be dx of lev 0
     const auto dx_lev0 = repo.mesh().Geom(0).CellSizeArray();
     const amrex::Real pvs_answer =
@@ -782,7 +782,8 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
         const amrex::Real ptfac_lev =
             amr_wind::overset_ops::calculate_pseudo_dt_flux(
-                flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), convg_tol);
+                flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), dx_lev0,
+                convg_tol);
         ptfac = amrex::min(ptfac, ptfac_lev);
     }
     amrex::ParallelDescriptor::ReduceRealMin(ptfac);
@@ -801,7 +802,7 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
         const amrex::Real ptfac_lev =
             amr_wind::overset_ops::calculate_pseudo_dt_flux(
-                flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), convg_tol);
+                flux_x(lev), flux_y(lev), flux_z(lev), vof(lev),dx_lev0, convg_tol);
         ptfac = amrex::min(ptfac, ptfac_lev);
     }
     amrex::ParallelDescriptor::ReduceRealMin(ptfac);
@@ -820,7 +821,7 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
         const amrex::Real ptfac_lev =
             amr_wind::overset_ops::calculate_pseudo_dt_flux(
-                flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), convg_tol);
+                flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), dx_lev0,convg_tol);
         ptfac = amrex::min(ptfac, ptfac_lev);
     }
     amrex::ParallelDescriptor::ReduceRealMin(ptfac);
