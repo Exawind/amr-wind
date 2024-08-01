@@ -320,8 +320,10 @@ void OversetOps::sharpen_nalu_data()
             // Measure convergence to determine if loop can stop
             if (calc_convg) {
                 // Update error at specified interval of steps
-                const amrex::Real err_lev = overset_ops::measure_convergence(
-                    (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev));
+                const amrex::Real err_lev =
+                    overset_ops::measure_convergence(
+                        (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev)) /
+                    pvscale;
                 err = amrex::max(err, err_lev);
             }
         }
