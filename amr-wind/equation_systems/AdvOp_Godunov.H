@@ -165,6 +165,10 @@ struct AdvectionOp<
                     } else {
                         limiter_type = PPM::default_limiter;
                     }
+                    if ((godunov_scheme == godunov::scheme::WENOZ) ||
+                        (godunov_scheme == godunov::scheme::WENO_JS)) {
+                        m_allow_inflow_on_outflow = true;
+                    }
                     HydroUtils::ComputeFluxesOnBoxFromState(
                         bx, PDE::ndim, mfi,
                         (PDE::multiply_rho ? rhotrac : tra_arr),
@@ -233,7 +237,7 @@ struct AdvectionOp<
     std::string godunov_type;
     const bool fluxes_are_area_weighted{false};
     bool godunov_use_forces_in_trans{false};
-    const bool m_allow_inflow_on_outflow{false};
+    bool m_allow_inflow_on_outflow{false};
     std::string advection_type{"Godunov"};
 };
 

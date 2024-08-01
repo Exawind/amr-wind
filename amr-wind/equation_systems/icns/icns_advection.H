@@ -179,6 +179,11 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             } else {
                 limiter_type = PPM::default_limiter;
             }
+            if ((godunov_scheme == godunov::scheme::WENOZ) ||
+                (godunov_scheme == godunov::scheme::WENO_JS)) {
+                m_allow_inflow_on_outflow = true;
+            }
+
             for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
                 HydroUtils::ExtrapVelToFaces(
                     dof_field(lev), src_term(lev), u_mac(lev), v_mac(lev),
@@ -313,6 +318,12 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                 } else {
                     limiter_type = PPM::default_limiter;
                 }
+
+                if ((godunov_scheme == godunov::scheme::WENOZ) ||
+                    (godunov_scheme == godunov::scheme::WENO_JS)) {
+                    m_allow_inflow_on_outflow = true;
+                }
+
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
@@ -422,7 +433,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     bool godunov_use_forces_in_trans{false};
     int m_cons{1};
     int m_verbose{0};
-    const bool m_allow_inflow_on_outflow{false};
+    bool m_allow_inflow_on_outflow{false};
     std::string premac_advection_type{"Godunov"};
     std::string postmac_advection_type{"Godunov"};
 };
