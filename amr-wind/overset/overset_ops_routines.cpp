@@ -252,7 +252,7 @@ amrex::Real calculate_pseudo_dt_flux(
     const amrex::MultiFab& mf_fy,
     const amrex::MultiFab& mf_fz,
     const amrex::MultiFab& mf_vof,
-    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx,
     const amrex::Real tol)
 {
     // Get the maximum flux magnitude, but just for vof fluxes
