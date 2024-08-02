@@ -2,7 +2,7 @@
 
 [User manual](https://exawind.github.io/amr-wind) | [API docs](https://exawind.github.io/amr-wind/api_docs) | [Nightly test dashboard](http://my.cdash.org/index.php?project=Exawind) 
 
-[![Powered by AMReX](https://amrex-codes.github.io/badges/powered%20by-AMReX-red.svg)](https://amrex-codes.github.io/amrex/) [![Build Status](https://github.com/Exawind/amr-wind/workflows/AMR-Wind-CI/badge.svg)](https://github.com/Exawind/amr-wind/actions)
+[![Powered by AMReX](https://amrex-codes.github.io/badges/powered%20by-AMReX-red.svg)](https://amrex-codes.github.io/amrex/) [![Build Status](https://github.com/Exawind/amr-wind/workflows/AMR-Wind-CI/badge.svg)](https://github.com/Exawind/amr-wind/actions) [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/9284/badge)](https://www.bestpractices.dev/projects/9284)
 
 
 AMR-Wind is a massively parallel, block-structured adaptive-mesh, incompressible
