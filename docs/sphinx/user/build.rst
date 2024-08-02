@@ -28,7 +28,11 @@ your system. The main dependencies are listed below:
 
 #. `Intel OneAPI
    <https://software.intel.com/content/www/us/en/develop/tools/oneapi.html>`_
-   for building with DPC++.
+   for building with SyCL.
+
+#. `AMD GPU
+   <https://www.amd.com/en/products/software/rocm.html>`_
+   for building with ROCM.
 
 Building from source
 --------------------

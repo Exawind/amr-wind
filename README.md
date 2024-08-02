@@ -56,7 +56,7 @@ modern C++ compiler that supports the C++17 standard. Users wishing to execute
 the code on high-performance computing (HPC) systems will also need MPI
 libraries installed on their system. The code can also be compiled using MPI+X, 
 where X can be OpenMP for CPU shared memory parallelism,
-CUDA to target NVIDIA GPUs, HIP for AMD GPUs, or DPC++ for Intel GPUs.
+CUDA to target NVIDIA GPUs, ROCM for AMD GPUs, or SyCL for Intel GPUs.
 
 ### Contributing, reporting bugs, and requesting help
 
