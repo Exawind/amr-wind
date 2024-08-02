@@ -172,9 +172,6 @@ private:
     // Prescribe advection velocity
     bool m_prescribe_vel = false;
 
-    // Account for mass-inflow-outflow boundary
-    bool has_inout_bndry = false;
-
     //! number of cells on all levels including covered cells
     amrex::Long m_cell_count{-1};
 
