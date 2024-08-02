@@ -279,7 +279,9 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
         }
     }
 
-    if (m_has_inout_bndry) { enforce_inout_solvability(mac_vec); }
+    if (m_has_inout_bndry) {
+        enforce_inout_solvability(mac_vec);
+    }
 
     m_mac_proj->setUMAC(mac_vec);
 

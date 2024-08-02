@@ -26,7 +26,6 @@ struct BCOp<ICNS>
         const auto udfs = bc.get_dirichlet_udfs();
         vel_bc::register_velocity_dirichlet(
             m_fields.field, m_fields.repo.mesh(), m_time, udfs);
-        has_inout_bndry = bc.has_inout_bndry();
 
         auto& density = m_fields.repo.get_field("density");
         const amrex::Real density_default = 1.0;
@@ -67,7 +66,6 @@ struct BCOp<ICNS>
 
     PDEFields& m_fields;
     const SimTime& m_time;
-    bool has_inout_bndry{false};
 };
 
 } // namespace amr_wind::pde

@@ -223,7 +223,7 @@ void BCVelocity::set_bcrec()
             break;
 
         case BC::mass_inflow_outflow:
-            m_inout_bndry = true;
+            m_field.set_inout_bndry();
             if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, amrex::BCType::direction_dependent);
             } else {
@@ -325,7 +325,7 @@ void BCScalar::set_bcrec()
             break;
 
         case BC::mass_inflow_outflow:
-            m_inout_bndry = true;
+            m_field.set_inout_bndry();
             if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, amrex::BCType::direction_dependent);
             } else {

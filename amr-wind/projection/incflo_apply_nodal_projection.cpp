@@ -355,14 +355,14 @@ void incflo::ApplyProjection(
 
     // Need to apply custom Neumann funcs for inflow-outflow BC
     // after setting the inflow vels above.
-    if (!proj_for_small_dt and !incremental) {
+    if (!proj_for_small_dt and !incremental and velocity.has_inout_bndry()) {
         velocity.apply_bc_funcs(amr_wind::FieldState::New);
     }
 
-    //if (has_inout_bndry) {
+    if (velocity.has_inout_bndry()) {
         amr_wind::nodal_projection::enforce_inout_solvability(
             velocity, m_repo.mesh().Geom(), m_repo.num_active_levels());
-    //}
+    }
 
     if (is_anelastic) {
         for (int lev = 0; lev <= finest_level; ++lev) {
