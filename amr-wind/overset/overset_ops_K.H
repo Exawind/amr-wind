@@ -32,12 +32,12 @@ amrex::Real AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE alpha_flux(
     // Gradient of phi normal to interface
     const amrex::Real gphi = (vof(iv) - vof(ivm));
     // Normal vector in each cell (already normalized)
-    const amrex::Real norm_ = normal(iv, dir);
-    const amrex::Real norm_nb = normal(ivm, dir);
+    const amrex::Real norm_ = std::abs(normal(iv, dir));
+    const amrex::Real norm_nb = std::abs(normal(ivm, dir));
 
     // Determine which delta_phi (and multiply by normal)
-    // The sign depends on side of flux face (like upwinding)
-    const amrex::Real dphi_ = (tg_vof(iv) - vof(iv)) * (-norm_);
+    // The sign depends on side of flux face
+    const amrex::Real dphi_ = (vof(iv) - tg_vof(iv)) * norm_;
     const amrex::Real dphi_nb = (tg_vof(ivm) - vof(ivm)) * norm_nb;
     // Average value used across the interface
     amrex::Real dphi_eval = 0.5 * (dphi_ + dphi_nb);
