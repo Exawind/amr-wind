@@ -1,0 +1,90 @@
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            SIMULATION STOP            #
+#.......................................#
+time.stop_time               =   16.0     # Max (simulated) time to evolve
+time.max_step                =   -20          # Max number of time steps
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#         TIME STEP COMPUTATION         #
+#.......................................#
+time.fixed_dt         =   0.4        # Use this constant dt if > 0
+time.cfl              =   0.95         # CFL factor
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            INPUT AND OUTPUT           #
+#.......................................#
+io.outputs = actuator_src_term
+io.derived_outputs = mag_vorticity
+time.plot_interval            =  1      # Steps between plot files
+time.checkpoint_interval      =  -1       # Steps between checkpoint files
+
+#"""""""""""""""""""""""""""""""""""""""#
+#    PARAMETERS FOR ACTUATOR TESTING    #
+#.......................................#
+Actuator.sample_midadvance = false
+Actuator.sample_vel_nmhalf = false
+Actuator.FixedWingLine.velpos_option = 0
+Actuator.FixedWingLine.forcepos_option = 1
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#               PHYSICS                 #
+#.......................................#
+ConstValue.density.value = 1.0
+ConstValue.velocity.value = 5.0 0.0 0.0
+
+incflo.use_godunov = 1
+incflo.godunov_type = weno_z
+incflo.diffusion_type = 0
+incflo.do_initial_proj = 1
+incflo.initial_iterations = 0
+transport.viscosity = 0.0
+transport.laminar_prandtl = 0.7
+transport.turbulent_prandtl = 0.3333
+turbulence.model = Laminar
+
+incflo.physics = FreeStream Actuator
+Actuator.labels = F1
+Actuator.type = FixedWingLine
+Actuator.FixedWingLine.pitch = 45.0
+Actuator.FixedWingLine.span_locs = 0.0 1.0
+Actuator.FixedWingLine.chord = 2.0 2.0
+Actuator.FixedWingLine.airfoil_table = ../DU21_A17_dragfree.txt
+Actuator.FixedWingLine.airfoil_type = openfast
+Actuator.FixedWingLine.output_frequency = 2
+Actuator.FixedWingLine.velocity = 0 0 5.0
+Actuator.F1.start = 0.0 -0.5 -40
+Actuator.F1.end = 0.0 0.5 -40
+
+ICNS.source_terms = ActuatorForcing
+amr.max_level           = 3           # Max AMR level in hierarchy
+tagging.labels = static
+tagging.static.type = CartBoxRefinement
+tagging.static.static_refinement_def = ../static_box.txt
+
+amr.n_cell              = 512 4 512    # Grid cells at coarsest AMRlevel
+geometry.prob_lo        =   -8192 -64 -8192
+geometry.prob_hi        =    8192  64  8192
+geometry.is_periodic    =   0   1   0   # Periodicity x y z (0/1)
+amr.blocking_factor_y = 4
+#nodal_proj.bottom_solver = hypre
+#mac_proj.bottom_solver = smoother
+Actuator.FixedWingLine.num_points = 3
+Actuator.FixedWingLine.epsilon = 3.0 3.0 3.0
+
+# Boundary conditions
+xlo.type = "mass_inflow"
+xlo.density = 1.0
+xlo.velocity = 5.0 0.0 0.0
+xhi.type = "pressure_outflow"
+zlo.type = "pressure_outflow"
+zhi.type = "pressure_inflow"
+
+incflo.verbose          =   0          # incflo_level
+nodal_proj.verbose = 0
+
+nodal_proj.mg_rtol = 1.0e-6
+nodal_proj.mg_atol = 1.0e-12
+mac_proj.mg_rtol = 1.0e-6
+mac_proj.mg_atol = 1.0e-12
+
+
