@@ -60,6 +60,14 @@ void OversetOps::initialize(CFDSim& sim)
 void OversetOps::pre_advance_work()
 {
     if (!(m_vof_exists && m_use_hydrostatic_gradp)) {
+        if (m_mphase != nullptr) {
+            // Avoid modifying pressure upon initialization, assume pressure = 0
+            if (m_mphase->perturb_pressure() &&
+                (*m_sim_ptr).time().current_time() > 0.0) {
+                // Modify to be consistent with internal source terms
+                form_perturb_pressure();
+            }
+        }
         // Update pressure gradient using updated overset pressure field
         update_gradp();
     }
@@ -71,10 +79,6 @@ void OversetOps::pre_advance_work()
             // Use hydrostatic pressure gradient
             set_hydrostatic_gradp();
         } else {
-            if (m_mphase->perturb_pressure()) {
-                // Modify to be consistent with internal source terms
-                form_perturb_pressure();
-            }
             // Update pressure gradient using sharpened pressure field
             update_gradp();
         }
@@ -334,8 +338,8 @@ void OversetOps::sharpen_nalu_data()
             amrex::IntVect rr =
                 geom[lev].Domain().size() / geom[lev - 1].Domain().size();
             amrex::average_down_faces(
-                GetArrOfConstPtrs(fluxes[lev]), fluxes[lev - 1],
-                rr, geom[lev - 1]);
+                GetArrOfConstPtrs(fluxes[lev]), fluxes[lev - 1], rr,
+                geom[lev - 1]);
         }
 
         // Get pseudo dt (dtau)
