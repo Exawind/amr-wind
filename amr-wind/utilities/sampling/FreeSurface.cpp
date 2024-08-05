@@ -332,9 +332,25 @@ void FreeSurfaceSampler::initialize(const std::string& key)
     }
 }
 
+void FreeSurfaceSampler::sampling_locations(SampleLocType& locs) const
+{
+    locs.resize(num_output_points());
 
-void FreeSurfaceSampler::sampling_locations(SampleLocType& locs) const {
-    // add implementation!!!
+    int idx = 0;
+    for (int j = 0; j < m_npts_dir[1]; ++j) {
+        for (int i = 0; i < m_npts_dir[0]; ++i) {
+            // Initialize output values to 0.0
+            for (int ni = 0; ni < m_ninst; ++ni) {
+                // Grid direction 1
+                locs[idx * m_ninst + ni][m_gc0] = m_locs[idx][0];
+                // Grid direction 2
+                locs[idx * m_ninst + ni][m_gc1] = m_locs[idx][1];
+                // Output direction
+                locs[idx * m_ninst + ni][m_coorddir] = m_out[idx * m_ninst + ni];
+            }
+            ++idx;
+        }
+    }
 }
 
 void FreeSurfaceSampler::update_sampling_locations()
