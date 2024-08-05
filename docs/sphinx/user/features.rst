@@ -72,7 +72,8 @@ Flow physics
      (stable, unstable, neutral), precursor simulations with inflow
      boundary planes for wind farm simulations, anelastic formulation,
      mesoscale forcing, geostrophic forcing, Coriolis forcing,
-     Monin-Obukhov similarity theory.
+     Monin-Obukhov similarity theory, gravity forcing, gravity wave
+     damping.
 
    * Actuator turbine representations: Joukowsky disks, uniform disks, actuator line
 
