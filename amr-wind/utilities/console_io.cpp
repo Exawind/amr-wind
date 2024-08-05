@@ -143,8 +143,7 @@ void print_banner(MPI_Comm comm, std::ostream& out)
         << "  OpenMP           :: "
 #ifdef AMREX_USE_OMP
         << "ON    (max threads = " << amrex::OpenMP::get_max_threads()
-        << ", num threads = " << amrex::OpenMP::get_num_threads() << ")"
-        << std::endl
+        << ")" << std::endl
 #else
         << "OFF" << std::endl
 #endif
