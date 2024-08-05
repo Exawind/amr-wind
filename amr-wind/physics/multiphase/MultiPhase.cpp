@@ -129,6 +129,9 @@ void MultiPhase::post_init_actions()
             hydrostatic::define_p0(
                 p0, m_rho1, m_rho2, m_water_level0, m_gravity[2],
                 m_sim.mesh().Geom());
+            // Construct full pressure using p + p0
+            auto& p = m_sim.repo().get_field("p");
+            field_ops::add(p, p0, 0, 0, 1, p.num_comp());
         }
     }
 }
