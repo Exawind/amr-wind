@@ -30,9 +30,9 @@ void OversetOps::initialize(CFDSim& sim)
 
     pp.query("verbose", m_verbose);
 
-    m_vof_exists = (*m_sim_ptr).repo().field_exists("vof");
+    m_vof_exists = m_sim_ptr->repo().field_exists("vof");
     if (m_vof_exists) {
-        m_mphase = &(*m_sim_ptr).physics_manager().get<MultiPhase>();
+        m_mphase = &m_sim_ptr->physics_manager().get<MultiPhase>();
 
         // Check combination of pressure options
         if (m_mphase->perturb_pressure() &&
@@ -51,7 +51,7 @@ void OversetOps::initialize(CFDSim& sim)
         }
     }
     if (m_replace_gradp_postsolve) {
-        m_gp_copy = &(*m_sim_ptr).repo().declare_field("gp_copy", 3);
+        m_gp_copy = &m_sim_ptr->repo().declare_field("gp_copy", 3);
     }
 
     parameter_output();
@@ -60,6 +60,14 @@ void OversetOps::initialize(CFDSim& sim)
 void OversetOps::pre_advance_work()
 {
     if (!(m_vof_exists && m_use_hydrostatic_gradp)) {
+        if (m_mphase != nullptr) {
+            // Avoid modifying pressure upon initialization, assume pressure = 0
+            if (m_mphase->perturb_pressure() &&
+                m_sim_ptr->time().current_time() > 0.0) {
+                // Modify to be consistent with internal source terms
+                form_perturb_pressure();
+            }
+        }
         // Update pressure gradient using updated overset pressure field
         update_gradp();
     }
@@ -71,10 +79,6 @@ void OversetOps::pre_advance_work()
             // Use hydrostatic pressure gradient
             set_hydrostatic_gradp();
         } else {
-            if (m_mphase->perturb_pressure()) {
-                // Modify to be consistent with internal source terms
-                form_perturb_pressure();
-            }
             // Update pressure gradient using sharpened pressure field
             update_gradp();
         }
@@ -82,9 +86,8 @@ void OversetOps::pre_advance_work()
 
     // If pressure gradient will be replaced, store current pressure gradient
     if (m_replace_gradp_postsolve) {
-        const auto& gp = (*m_sim_ptr).repo().get_field("gp");
-        for (int lev = 0; lev < (*m_sim_ptr).repo().num_active_levels();
-             ++lev) {
+        const auto& gp = m_sim_ptr->repo().get_field("gp");
+        for (int lev = 0; lev < m_sim_ptr->repo().num_active_levels(); ++lev) {
             amrex::MultiFab::Copy(
                 (*m_gp_copy)(lev), gp(lev), 0, 0, gp(lev).nComp(),
                 (m_gp_copy)->num_grow());
@@ -97,22 +100,22 @@ void OversetOps::update_gradp()
     BL_PROFILE("amr-wind::OversetOps::update_gradp");
 
     // Get relevant fields
-    auto& grad_p = (*m_sim_ptr).repo().get_field("gp");
-    auto& pressure = (*m_sim_ptr).repo().get_field("p");
-    auto& velocity = (*m_sim_ptr).repo().get_field("velocity");
+    auto& grad_p = m_sim_ptr->repo().get_field("gp");
+    auto& pressure = m_sim_ptr->repo().get_field("p");
+    auto& velocity = m_sim_ptr->repo().get_field("velocity");
 
     // Set up projection object
     std::unique_ptr<Hydro::NodalProjector> nodal_projector;
     // Boundary conditions from field, periodicity
     auto bclo = nodal_projection::get_projection_bc(
         amrex::Orientation::low, pressure,
-        (*m_sim_ptr).mesh().Geom(0).isPeriodic());
+        m_sim_ptr->mesh().Geom(0).isPeriodic());
     auto bchi = nodal_projection::get_projection_bc(
         amrex::Orientation::high, pressure,
-        (*m_sim_ptr).mesh().Geom(0).isPeriodic());
+        m_sim_ptr->mesh().Geom(0).isPeriodic());
     // Velocity multifab is needed for proper initialization, but only the size
     // matters for the purpose of calculating gradp, the values do not matter
-    int finest_level = (*m_sim_ptr).mesh().finestLevel();
+    int finest_level = m_sim_ptr->mesh().finestLevel();
     Vector<MultiFab*> vel;
     for (int lev = 0; lev <= finest_level; ++lev) {
         vel.push_back(&(velocity(lev)));
@@ -120,7 +123,7 @@ void OversetOps::update_gradp()
     amr_wind::MLMGOptions options("nodal_proj");
     // Create nodal projector with unity scaling factor for simplicity
     nodal_projector = std::make_unique<Hydro::NodalProjector>(
-        vel, 1.0, (*m_sim_ptr).mesh().Geom(0, finest_level), options.lpinfo());
+        vel, 1.0, m_sim_ptr->mesh().Geom(0, finest_level), options.lpinfo());
     // Set MLMG and NodalProjector options
     options(*nodal_projector);
     nodal_projector->setDomainBC(bclo, bchi);
@@ -203,9 +206,9 @@ void OversetOps::parameter_output() const
 
 void OversetOps::sharpen_nalu_data()
 {
-    const auto& repo = (*m_sim_ptr).repo();
+    const auto& repo = m_sim_ptr->repo();
     const auto nlevels = repo.num_active_levels();
-    const auto geom = (*m_sim_ptr).mesh().Geom();
+    const auto geom = m_sim_ptr->mesh().Geom();
 
     // Get blanking for cells
     const auto& iblank_cell = repo.get_int_field("iblank_cell");
@@ -333,7 +336,7 @@ void OversetOps::sharpen_nalu_data()
         for (int lev = nlevels - 1; lev > 0; --lev) {
             amrex::average_down_faces(
                 GetArrOfConstPtrs(fluxes[lev]), fluxes[lev - 1],
-                repo.mesh().refRatio(lev), geom[lev - 1]);
+                repo.mesh().refRatio(lev - 1), geom[lev - 1]);
         }
 
         // Get pseudo dt (dtau)
@@ -382,7 +385,7 @@ void OversetOps::sharpen_nalu_data()
     }
 
     // Fillpatch for pressure to make sure pressure stencil has all points
-    p.fillpatch((*m_sim_ptr).time().current_time());
+    p.fillpatch(m_sim_ptr->time().current_time());
 
     // Purely for debugging via visualization, should be removed later
     // Currently set up to overwrite the levelset field (not used as time
@@ -395,9 +398,9 @@ void OversetOps::sharpen_nalu_data()
 
 void OversetOps::form_perturb_pressure()
 {
-    auto& pressure = (*m_sim_ptr).repo().get_field("p");
-    const auto& p0 = (*m_sim_ptr).repo().get_field("reference_pressure");
-    for (int lev = 0; lev < (*m_sim_ptr).repo().num_active_levels(); lev++) {
+    auto& pressure = m_sim_ptr->repo().get_field("p");
+    const auto& p0 = m_sim_ptr->repo().get_field("reference_pressure");
+    for (int lev = 0; lev < m_sim_ptr->repo().num_active_levels(); lev++) {
         amrex::MultiFab::Subtract(
             pressure(lev), p0(lev), 0, 0, 1, pressure.num_grow()[0]);
     }
@@ -405,9 +408,9 @@ void OversetOps::form_perturb_pressure()
 
 void OversetOps::set_hydrostatic_gradp()
 {
-    const auto& repo = (*m_sim_ptr).repo();
+    const auto& repo = m_sim_ptr->repo();
     const auto nlevels = repo.num_active_levels();
-    const auto geom = (*m_sim_ptr).mesh().Geom();
+    const auto geom = m_sim_ptr->mesh().Geom();
 
     // Get blanking for cells
     const auto& iblank_cell = repo.get_int_field("iblank_cell");
@@ -417,7 +420,7 @@ void OversetOps::set_hydrostatic_gradp()
     auto& rho = repo.get_field("density");
     auto& gp = repo.get_field("gp");
     if (m_mphase->perturb_pressure()) {
-        rho0 = &((*m_sim_ptr).repo().get_field("reference_density"));
+        rho0 = &(m_sim_ptr->repo().get_field("reference_density"));
     } else {
         // Point to existing field, won't be used
         rho0 = &rho;
@@ -433,11 +436,11 @@ void OversetOps::set_hydrostatic_gradp()
 
 void OversetOps::replace_masked_gradp()
 {
-    const auto& repo = (*m_sim_ptr).repo();
+    const auto& repo = m_sim_ptr->repo();
     const auto nlevels = repo.num_active_levels();
 
     // Get timestep
-    const amrex::Real dt = (*m_sim_ptr).time().delta_t();
+    const amrex::Real dt = m_sim_ptr->time().delta_t();
 
     // Get blanking for cells
     const auto& iblank_cell = repo.get_int_field("iblank_cell");
