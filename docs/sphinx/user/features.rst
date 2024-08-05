@@ -11,8 +11,17 @@ capabilities and roadmap for future capabilities.
    If your project relies on a capability that is not yet present in
    AMR-Wind, please create an issue on the code project page.
 
+
+.. note::
+
+   This reflects the capabilities for AMR-Wind version 2.1.0 and above.
+
+
 Capabilities
 ------------
+
+Methods and models
+~~~~~~~~~~~~~~~~~~
 
 * Numerical methods
 
@@ -48,6 +57,15 @@ Capabilities
 
    * Reynolds-Average Navier-Stokes: :math:`k`-:math:`\omega` SST (and IDDES variant)
 
+* Transport models
+
+   * Constant transport coefficients
+
+   * Two phase transport
+
+Flow physics
+~~~~~~~~~~~~
+
 * Wind energy physics
 
    * Atmospheric boundary layer (ABL): various stability states
@@ -61,6 +79,30 @@ Capabilities
    * Coupling with OpenFAST
 
    * Coupling with Nalu-Wind for blade resolved simulations
+
+* Multiphase flows
+
+   * todo
+
+* Boundary conditions
+
+   * Periodic, outflow, inflow, walls, user-defined inflows
+
+   * Wall models (e.g., wall functions, stress)
+
+   * Inflow planes from precursor simulations
+
+   * Mesoscale forcing
+
+* Geometry
+
+   * Immersed boundary
+
+   * Coupling with Nalu-Wind for body-conforming meshes with overset methodology
+
+* Miscellaneous cases
+
+  * Verification and validation cases: convecting Taylor-Vortex, etc
 
 * Postprocessing:
 
@@ -80,33 +122,10 @@ Capabilities
 
    * in-situ post-processing with Ascent
 
-* Boundary conditions
+High performance computing
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-   * Periodic, outflow, inflow, walls, user-defined inflows
-
-   * Wall models (e.g., wall functions, stress)
-
-   * Inflow planes from precursor simulations
-
-   * Mesoscale forcing
-
-* Multiphase flows
-
-   * todo
-
-* Geometry
-
-   * Immersed boundary
-
-   * Coupling with Nalu-Wind for body-conforming meshes with overset methodology
-
-* Transport models
-
-   * Constant transport coefficients
-
-   * Two phase transport
-
-* High performance computing
+* Highly parallelized and performance portable
 
    * Shared memory parallelism with OpenMP threading
 
@@ -118,11 +137,12 @@ Capabilities
 
    * Supported build systems: cmake, spack
 
-* Linear solvers
+* Supported linear solvers
 
    * native AMReX solvers such as MLMG
 
    * hypre
+
 
 Roadmap
 -------
@@ -131,3 +151,21 @@ The roadmap is an evolving, living document and does not purport to
 track every future capability. It is not a promise of future
 capabilities. The main use case is to inform users of
 potential upcoming new capabilities.
+
+Current development
+~~~~~~~~~~~~~~~~~~~
+
+* Inflow-outflow BCs to enable coupling amr-wind to ERF mesoscale modeling software
+
+* Temporal and spatial varying MMC forcing
+
+* Complex terrain
+
+   * Improved wall conditions, e.g., non-uniform roughness, temperature and heat fluxes
+
+   * Complex terrain though immersed boundary methods
+
+Potential development
+~~~~~~~~~~~~~~~~~~~~~
+
+* TBD
