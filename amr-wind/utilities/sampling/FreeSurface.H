@@ -36,6 +36,9 @@ public:
     define_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
     void
     populate_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
+    void output_netcdf_data(
+        const ncutils::NCGroup& /*unused*/,
+        const size_t /*unused*/) const override;
 
     //! Name of this sampling object
     std::string label() const override { return m_label; }
@@ -55,7 +58,7 @@ public:
     //! Number of instances
     int num_instances() const { return m_ninst; }
     //! Number of points, total
-    long num_output_points() const {return m_npts * m_ninst; }
+    long num_output_points() const { return m_npts * m_ninst; }
     //! Locations
     amrex::Vector<amrex::Array<amrex::Real, 2>> locations() const
     {

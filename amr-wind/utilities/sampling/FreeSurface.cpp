@@ -346,7 +346,8 @@ void FreeSurfaceSampler::sampling_locations(SampleLocType& locs) const
                 // Grid direction 2
                 locs[idx * m_ninst + ni][m_gc1] = m_locs[idx][1];
                 // Output direction
-                locs[idx * m_ninst + ni][m_coorddir] = m_out[idx * m_ninst + ni];
+                locs[idx * m_ninst + ni][m_coorddir] =
+                    m_out[idx * m_ninst + ni];
             }
             ++idx;
         }
@@ -680,17 +681,33 @@ void FreeSurfaceSampler::define_netcdf_metadata(
     grp.put_attr("ijk_dims", ijk);
     grp.put_attr("plane_start", m_start);
     grp.put_attr("plane_end", m_end);
+    grp.def_var("points", NC_DOUBLE, {"num_time_steps", "num_points", "ndim"});
 }
 
 void FreeSurfaceSampler::populate_netcdf_metadata(
     const ncutils::NCGroup& /*unused*/) const
 {}
+void FreeSurfaceSampler::output_netcdf_data(
+    const ncutils::NCGroup& grp, const size_t nt) const
+{
+    // Write the coordinates every time
+    std::vector<size_t> start{nt, 0, 0};
+    std::vector<size_t> count{1, 0, AMREX_SPACEDIM};
+    SamplerBase::SampleLocType locs;
+    sampling_locations(locs);
+    auto xyz = grp.var("points");
+    count[1] = num_output_points();
+    xyz.put(locs[0].data(), start, count);
+}
 #else
 void FreeSurfaceSampler::define_netcdf_metadata(
     const ncutils::NCGroup& /*unused*/) const
 {}
 void FreeSurfaceSampler::populate_netcdf_metadata(
     const ncutils::NCGroup& /*unused*/) const
+{}
+void FreeSurfaceSampler::output_netcdf_data(
+    const ncutils::NCGroup& /*unused*/, const size_t /*unused*/) const
 {}
 #endif
 
