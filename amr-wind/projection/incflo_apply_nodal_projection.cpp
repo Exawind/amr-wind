@@ -334,9 +334,11 @@ void incflo::ApplyProjection(
 
     if (is_anelastic) {
         for (int lev = 0; lev <= finest_level; ++lev) {
-            amrex::Multiply(
-                velocity(lev), (*ref_density)(lev), 0, 0, density[lev]->nComp(),
-                0);
+            for (int idim = 0; idim < velocity.num_comp(); ++idim) {
+                amrex::Multiply(
+                    velocity(lev), (*ref_density)(lev), 0, idim,
+                    density[lev]->nComp(), 0);
+            }
         }
     }
 
@@ -435,9 +437,11 @@ void incflo::ApplyProjection(
 
     if (is_anelastic) {
         for (int lev = 0; lev <= finest_level; ++lev) {
-            amrex::Divide(
-                velocity(lev), (*ref_density)(lev), 0, 0, density[lev]->nComp(),
-                0);
+            for (int idim = 0; idim < velocity.num_comp(); ++idim) {
+                amrex::Divide(
+                    velocity(lev), (*ref_density)(lev), 0, idim,
+                    density[lev]->nComp(), 0);
+            }
         }
     }
 
