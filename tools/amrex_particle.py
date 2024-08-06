@@ -20,14 +20,14 @@ class AmrexParticleFile:
     """
 
     @classmethod
-    def load(cls, time_index, label="sampling", root_dir="post_processing"):
+    def load(cls, time_index, label="sampling", root_dir="post_processing", suffix="/particles"):
         """
         Args:
             time_index (int): Time index to load
             label (str): Label used for this set of probes
             root_dir (path): Path to the post_processing directory
         """
-        fpath = Path(root_dir) / ("%s%05d"%(label, time_index))
+        fpath = Path(root_dir) / ("%s%05d%s"%(label, time_index, suffix))
         return cls(fpath)
 
     def __init__(self, pdir):
