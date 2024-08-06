@@ -61,7 +61,7 @@ struct AdvectionOp<
         } else if (
             amrex::toLower(godunov_type) == "weno" ||
             amrex::toLower(godunov_type) == "weno_js") {
-            godunov_scheme = godunov::scheme::WENOJS;
+            godunov_scheme = godunov::scheme::WENO_JS;
         } else if (amrex::toLower(godunov_type) == "weno_z") {
             godunov_scheme = godunov::scheme::WENOZ;
         } else {
@@ -141,25 +141,11 @@ struct AdvectionOp<
                         });
                 }
 
-                if ((godunov_scheme == godunov::scheme::WENOJS) ||
-                    (godunov_scheme == godunov::scheme::WENOZ)) {
-                    amrex::FArrayBox tmpfab(amrex::grow(bx, 1), PDE::ndim * 14);
-
-                    godunov::compute_fluxes(
-                        lev, bx, PDE::ndim, (*flux_x)(lev).array(mfi),
-                        (*flux_y)(lev).array(mfi), (*flux_z)(lev).array(mfi),
-                        (PDE::multiply_rho ? rhotrac : tra_arr),
-                        u_mac(lev).const_array(mfi),
-                        v_mac(lev).const_array(mfi),
-                        w_mac(lev).const_array(mfi),
-                        src_term(lev).const_array(mfi),
-                        dof_field.bcrec_device().data(), iconserv.data(),
-                        tmpfab.dataPtr(), geom, dt, godunov_scheme,
-                        godunov_use_forces_in_trans);
-                } else if (
-                    (godunov_scheme == godunov::scheme::PPM) ||
+                if ((godunov_scheme == godunov::scheme::PPM) ||
                     (godunov_scheme == godunov::scheme::PPM_NOLIM) ||
                     (godunov_scheme == godunov::scheme::PLM) ||
+                    (godunov_scheme == godunov::scheme::WENOZ) ||
+                    (godunov_scheme == godunov::scheme::WENO_JS) ||
                     (godunov_scheme == godunov::scheme::BDS)) {
                     amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 1);
                     tmpfab.setVal<amrex::RunOn::Device>(0.0);
@@ -167,12 +153,22 @@ struct AdvectionOp<
                     const bool is_velocity = false;
                     const bool known_edge_state = false;
                     const bool godunov_use_ppm =
-                        ((godunov_scheme == godunov::scheme::PPM) ||
-                         (godunov_scheme == godunov::scheme::PPM_NOLIM));
-                    const int limiter_type =
-                        (godunov_scheme == godunov::scheme::PPM_NOLIM)
-                            ? PPM::NoLimiter
-                            : PPM::default_limiter;
+                        ((godunov_scheme != godunov::scheme::PLM) &&
+                         (godunov_scheme != godunov::scheme::BDS));
+                    int limiter_type;
+                    if (godunov_scheme == godunov::scheme::PPM_NOLIM) {
+                        limiter_type = PPM::NoLimiter;
+                    } else if (godunov_scheme == godunov::scheme::WENOZ) {
+                        limiter_type = PPM::WENOZ;
+                    } else if (godunov_scheme == godunov::scheme::WENO_JS) {
+                        limiter_type = PPM::WENO_JS;
+                    } else {
+                        limiter_type = PPM::default_limiter;
+                    }
+                    if ((godunov_scheme == godunov::scheme::WENOZ) ||
+                        (godunov_scheme == godunov::scheme::WENO_JS)) {
+                        m_allow_inflow_on_outflow = true;
+                    }
                     HydroUtils::ComputeFluxesOnBoxFromState(
                         bx, PDE::ndim, mfi,
                         (PDE::multiply_rho ? rhotrac : tra_arr),
@@ -241,7 +237,7 @@ struct AdvectionOp<
     std::string godunov_type;
     const bool fluxes_are_area_weighted{false};
     bool godunov_use_forces_in_trans{false};
-    const bool m_allow_inflow_on_outflow{false};
+    bool m_allow_inflow_on_outflow{false};
     std::string advection_type{"Godunov"};
 };
 
