@@ -7,6 +7,15 @@ time.cfl              =   0.95         # CFL factor
 time.plot_interval            =  10       # Steps between plot files
 time.checkpoint_interval      =  -100       # Steps between checkpoint files
 
+incflo.post_processing        = sampling
+sampling.output_frequency     = 10
+sampling.labels               = fs
+sampling.fields               = velocity vof
+sampling.fs.type              = FreeSurfaceSampler
+sampling.fs.plane_num_points  = 30 1
+sampling.fs.plane_start       = 0.0 0.025 0.0
+sampling.fs.plane_end         = 0.28 0.025 0.0
+
 io.output_default_variables = 0
 io.outputs = density vof
 io.derived_outputs = "components(velocity,0,2)" "components(gp,0,2)"
