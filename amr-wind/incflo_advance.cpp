@@ -60,6 +60,19 @@ void incflo::advance()
     }
 }
 
+void incflo::advance_nonlinear(int it_nonlinear)
+{
+    BL_PROFILE("amr_wind::incflo::Advance_Nonlinear");
+
+    if (it_nonlinear == 0) m_sim.pde_manager().advance_states();
+
+    ApplyPredictorNonLinear();
+
+    if (!m_use_godunov) {
+        amrex::Abort("Non-linear iterations are not supported for MOL");
+    }
+}
+
 // Apply predictor step
 //
 //  For Godunov, this completes the timestep. For MOL, this is the first part of
