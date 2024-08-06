@@ -61,13 +61,13 @@ yhi.type =   "no_slip_wall"
 diffusion.max_coarsening_level = 0
 
 incflo.verbose  = 0
-nodal_proj.mg_atol = 1.0e-09
+nodal_proj.mg_atol = 1.0e-12
 nodal_proj.verbose = 0
 nodal_proj.bottom_solver = hypre
 nodal_proj.max_coarsening_level = 0
 #
 mac_proj.mg_rtol = 1.0e-11
-mac_proj.mg_atol = 1.0e-09
+mac_proj.mg_atol = 1.0e-12
 mac_proj.do_semicoarsening = true
 mac_proj.bottom_solver = hypre
 mac_proj.bottom_verbose = 0
