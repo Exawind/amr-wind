@@ -54,10 +54,10 @@ public:
     //! Output functions for private variables
     //! Number of 2D grid points
     int num_gridpoints() const { return m_npts; }
-    long num_points() const { return m_npts; }
     //! Number of instances
     int num_instances() const { return m_ninst; }
     //! Number of points, total
+    long num_points() const { return m_npts * m_ninst; }
     long num_output_points() const { return m_npts * m_ninst; }
     //! Locations
     amrex::Vector<amrex::Array<amrex::Real, 2>> locations() const
