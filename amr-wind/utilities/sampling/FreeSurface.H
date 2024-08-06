@@ -9,7 +9,7 @@ namespace amr_wind::sampling {
 class FreeSurfaceSampler : public SamplerBase::Register<FreeSurfaceSampler>
 {
 public:
-    static std::string identifier() { return "FreeSurface"; }
+    static std::string identifier() { return "FreeSurfaceSampler"; }
 
     FreeSurfaceSampler(CFDSim& /*sim*/);
 

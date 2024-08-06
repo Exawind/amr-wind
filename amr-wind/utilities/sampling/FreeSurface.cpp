@@ -22,7 +22,7 @@ void FreeSurfaceSampler::initialize(const std::string& key)
         amrex::ParmParse pp(key);
         pp.getarr("plane_start", m_start);
         pp.getarr("plane_end", m_end);
-        pp.getarr("num_points", m_npts_dir);
+        pp.getarr("plane_num_points", m_npts_dir);
         pp.query("search_direction", m_coorddir);
         pp.query("num_instances", m_ninst);
         pp.query("max_sample_points_per_cell", m_ncmax);
