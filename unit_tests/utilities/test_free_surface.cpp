@@ -202,6 +202,7 @@ public:
     int check_output_vec(
         const std::string& op, amrex::Vector<amrex::Real> check_val);
     int check_pos(int cidx, const std::string& op, amrex::Real check_val);
+    int check_sloc(const std::string& op);
 
 protected:
     const amrex::Real m_tol = 1e-8;
@@ -285,6 +286,42 @@ int FreeSurfaceImpl::check_pos(
             } else {
                 if (op == "~") {
                     EXPECT_NEAR(locs[n][cidx], check_val, m_tol);
+                    ++icheck;
+                }
+            }
+        }
+    }
+    return icheck;
+}
+
+int FreeSurfaceImpl::check_sloc(const std::string& op)
+{
+    // Get number of points and sampling locations array
+    auto npts_tot = num_points();
+    amrex::Vector<amrex::Array<amrex::Real, AMREX_SPACEDIM>> locs;
+    output_locations(locs);
+    // Get locations from other functions
+    auto gridlocs = locations();
+    auto out = heights();
+    // Loop through grid points and check output
+    int icheck = 0;
+    for (int n = 0; n < npts_tot; ++n) {
+        if (op == "=") {
+            EXPECT_EQ(locs[n][0], gridlocs[n][0]);
+            EXPECT_EQ(locs[n][1], gridlocs[n][1]);
+            EXPECT_EQ(locs[n][2], out[n]);
+            ++icheck;
+        } else {
+            if (op == "<") {
+                EXPECT_LT(locs[n][0], gridlocs[n][0]);
+                EXPECT_LT(locs[n][1], gridlocs[n][1]);
+                EXPECT_LT(locs[n][2], out[n]);
+                ++icheck;
+            } else {
+                if (op == "~") {
+                    EXPECT_NEAR(locs[n][0], gridlocs[n][0], m_tol);
+                    EXPECT_NEAR(locs[n][1], gridlocs[n][1], m_tol);
+                    EXPECT_NEAR(locs[n][2], out[n], m_tol);
                     ++icheck;
                 }
             }
@@ -395,6 +432,9 @@ TEST_F(FreeSurfaceTest, point)
     // Check output value
     int nout = tool.check_output("~", m_water_level0);
     ASSERT_EQ(nout, 1);
+    // Check sampling locations
+    int nsloc = tool.check_sloc("~");
+    ASSERT_EQ(nsloc, 1);
 }
 
 TEST_F(FreeSurfaceTest, plane)
