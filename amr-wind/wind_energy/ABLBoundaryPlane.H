@@ -156,6 +156,8 @@ public:
         const int /*lev*/,
         const amrex::Orientation /*ori*/) const;
 
+    io_mode mode() const { return m_io_mode; }
+
 private:
     const amr_wind::SimTime& m_time;
     const FieldRepo& m_repo;

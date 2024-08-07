@@ -88,16 +88,46 @@ struct InitDataOp<StokesWaves>
             const auto& phi = m_levelset(level).array(mfi);
             const auto& vel = velocity(level).array(mfi);
 
-            const amrex::Real zsl = wdata.zsl;
+            const amrex::Real wave_height = wdata.wave_height;
+            const amrex::Real wave_length = wdata.wave_length;
+            const amrex::Real water_depth = wdata.water_depth;
+            const amrex::Real zero_sea_level = wdata.zsl;
+            const amrex::Real g = wdata.g;
+            const int order = wdata.order;
             const auto& gbx3 = mfi.growntilebox(3);
-            amrex::ParallelFor(
-                gbx3, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                    phi(i, j, k) = zsl - z;
-                    vel(i, j, k, 0) = 0.0;
-                    vel(i, j, k, 1) = 0.0;
-                    vel(i, j, k, 2) = 0.0;
-                });
+
+            if (wdata.init_wave_field) {
+                amrex::ParallelFor(
+                    gbx3, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+
+                        amrex::Real eta{0.0}, u_w{0.0}, v_w{0.0}, w_w{0.0};
+
+                        relaxation_zones::stokes_waves(
+                            order, wave_length, water_depth, wave_height,
+                            zero_sea_level, g, x, z, 0.0, eta, u_w, v_w, w_w);
+
+                        phi(i, j, k) = eta - z;
+                        if (phi(i, j, k) + 0.5 * dx[2] >= 0) {
+                            vel(i, j, k, 0) = u_w;
+                            vel(i, j, k, 1) = v_w;
+                            vel(i, j, k, 2) = w_w;
+                        }
+                    });
+
+            } else {
+                amrex::ParallelFor(
+                    gbx3, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                        phi(i, j, k) = zero_sea_level - z;
+                        if (phi(i, j, k) + 0.5 * dx[2] >= 0) {
+                            vel(i, j, k, 0) = 0.0;
+                            vel(i, j, k, 1) = 0.0;
+                            vel(i, j, k, 2) = 0.0;
+                        }
+                    });
+            }
         }
     }
 };
@@ -128,9 +158,9 @@ struct UpdateRelaxZonesOp<StokesWaves>
                 const auto& phi = m_ow_levelset(lev).array(mfi);
                 const auto& vel = m_ow_velocity(lev).array(mfi);
 
-                const amrex::Real waveheight = wdata.wave_height;
-                const amrex::Real wavelength = wdata.wave_length;
-                const amrex::Real waterdepth = wdata.water_depth;
+                const amrex::Real wave_height = wdata.wave_height;
+                const amrex::Real wave_length = wdata.wave_length;
+                const amrex::Real water_depth = wdata.water_depth;
                 const amrex::Real zero_sea_level = wdata.zsl;
                 const amrex::Real g = wdata.g;
                 const int order = wdata.order;
@@ -144,7 +174,7 @@ struct UpdateRelaxZonesOp<StokesWaves>
                         amrex::Real eta{0.0}, u_w{0.0}, v_w{0.0}, w_w{0.0};
 
                         relaxation_zones::stokes_waves(
-                            order, wavelength, waterdepth, waveheight,
+                            order, wave_length, water_depth, wave_height,
                             zero_sea_level, g, x, z, time, eta, u_w, v_w, w_w);
 
                         phi(i, j, k) = eta - z;
@@ -152,6 +182,10 @@ struct UpdateRelaxZonesOp<StokesWaves>
                             vel(i, j, k, 0) = u_w;
                             vel(i, j, k, 1) = v_w;
                             vel(i, j, k, 2) = w_w;
+                        } else {
+                            vel(i, j, k, 0) = 0.;
+                            vel(i, j, k, 1) = 0.;
+                            vel(i, j, k, 2) = 0.;
                         }
                     });
             }

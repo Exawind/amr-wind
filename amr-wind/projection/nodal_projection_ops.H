@@ -23,6 +23,9 @@ Array<amrex::LinOpBCType, AMREX_SPACEDIM> get_projection_bc(
     amr_wind::Field& pressure,
     const Array<int, AMREX_SPACEDIM>& is_periodic);
 
+void apply_dirichlet_vel(
+    amrex::MultiFab& mf_velocity, amrex::iMultiFab& mf_iblank);
+
 } // namespace amr_wind::nodal_projection
 
 #endif

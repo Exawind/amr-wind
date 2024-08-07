@@ -316,45 +316,50 @@ public:
             new T(*this, std::forward<Args>(args)...));
     }
 
-    void fillpatch(amrex::Real time) noexcept;
-    void fillpatch(amrex::Real time, amrex::IntVect ng) noexcept;
+    void fillpatch(const amrex::Real time) noexcept;
+    void fillpatch(const amrex::Real time, amrex::IntVect ng) noexcept;
     void fillpatch_sibling_fields(
-        amrex::Real time,
-        amrex::IntVect ng,
+        const amrex::Real time,
+        const amrex::IntVect ng,
         amrex::Array<Field*, AMREX_SPACEDIM>& fields) const noexcept;
 
-    void fillphysbc(amrex::Real time) noexcept;
-    void fillphysbc(amrex::Real time, amrex::IntVect ng) noexcept;
+    void fillphysbc(const amrex::Real time) noexcept;
+    void fillphysbc(const amrex::Real time, const amrex::IntVect ng) noexcept;
 
     void apply_bc_funcs(const FieldState rho_state) noexcept;
 
     void fillpatch(
-        int lev,
-        amrex::Real time,
+        const int lev,
+        const amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost) noexcept;
 
     void fillpatch_from_coarse(
-        int lev,
-        amrex::Real time,
+        const int lev,
+        const amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost) noexcept;
 
     void fillphysbc(
-        int lev,
-        amrex::Real time,
+        const int lev,
+        const amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost) noexcept;
 
     void set_inflow(
-        int lev,
-        amrex::Real time,
+        const int lev,
+        const amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost) noexcept;
 
+    void set_inflow_sibling_fields(
+        const int lev,
+        const amrex::Real time,
+        const amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs) noexcept;
+
     inline void fillpatch(
-        int lev,
-        amrex::Real time,
+        const int lev,
+        const amrex::Real time,
         amrex::MultiFab& mfab,
         const int nghost) noexcept
     {
@@ -362,19 +367,28 @@ public:
     }
 
     inline void fillpatch_from_coarse(
-        int lev, amrex::Real time, amrex::MultiFab& mfab, int nghost) noexcept
+        const int lev,
+        const amrex::Real time,
+        amrex::MultiFab& mfab,
+        const int nghost) noexcept
     {
         fillpatch_from_coarse(lev, time, mfab, amrex::IntVect(nghost));
     }
 
     inline void fillphysbc(
-        int lev, amrex::Real time, amrex::MultiFab& mfab, int nghost) noexcept
+        const int lev,
+        const amrex::Real time,
+        amrex::MultiFab& mfab,
+        const int nghost) noexcept
     {
         fillphysbc(lev, time, mfab, amrex::IntVect(nghost));
     }
 
     inline void set_inflow(
-        int lev, amrex::Real time, amrex::MultiFab& mfab, int nghost) noexcept
+        const int lev,
+        const amrex::Real time,
+        amrex::MultiFab& mfab,
+        const int nghost) noexcept
     {
         set_inflow(lev, time, mfab, amrex::IntVect(nghost));
     }

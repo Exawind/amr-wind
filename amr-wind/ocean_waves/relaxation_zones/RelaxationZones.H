@@ -25,6 +25,7 @@ struct RelaxZonesBaseData
     amrex::Real gen_length{4.0};
 
     amrex::Real beach_length{8.0};
+    amrex::Real beach_length_factor{1.0};
 
     bool init_wave_field{false};
 

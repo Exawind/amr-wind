@@ -1,6 +1,4 @@
 #include "amr-wind/convection/incflo_godunov_ppm.H"
-#include "amr-wind/convection/incflo_godunov_ppm_nolim.H"
-#include "amr-wind/convection/incflo_godunov_weno.H"
 #include "amr-wind/convection/incflo_godunov_minmod.H"
 #include "amr-wind/convection/incflo_godunov_upwind.H"
 #include "amr-wind/convection/Godunov.H"
@@ -25,7 +23,8 @@ void godunov::compute_fluxes(
     Real* p,
     Vector<amrex::Geometry> geom,
     Real dt,
-    godunov::scheme godunov_scheme)
+    godunov::scheme godunov_scheme,
+    bool use_forces_in_trans)
 {
 
     /* iconserv functionality: (would be better served by two flags)
@@ -88,54 +87,6 @@ void godunov::compute_fluxes(
 
     // Use PPM to generate Im and Ip */
     switch (godunov_scheme) {
-    case godunov::scheme::PPM_NOLIM: {
-        amrex::ParallelFor(
-            bxg1, ncomp,
-            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                Godunov_ppm_fpu_x_nolim(
-                    i, j, k, n, l_dt, dx, Imx(i, j, k, n), Ipx(i, j, k, n), q,
-                    umac, pbc[n], dlo.x, dhi.x);
-                Godunov_ppm_fpu_y_nolim(
-                    i, j, k, n, l_dt, dy, Imy(i, j, k, n), Ipy(i, j, k, n), q,
-                    vmac, pbc[n], dlo.y, dhi.y);
-                Godunov_ppm_fpu_z_nolim(
-                    i, j, k, n, l_dt, dz, Imz(i, j, k, n), Ipz(i, j, k, n), q,
-                    wmac, pbc[n], dlo.z, dhi.z);
-            });
-        break;
-    }
-    case godunov::scheme::WENOJS: {
-        amrex::ParallelFor(
-            bxg1, ncomp,
-            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                Godunov_weno_fpu_x(
-                    i, j, k, n, l_dt, dx, Imx(i, j, k, n), Ipx(i, j, k, n), q,
-                    umac, pbc[n], dlo.x, dhi.x, true);
-                Godunov_weno_fpu_y(
-                    i, j, k, n, l_dt, dy, Imy(i, j, k, n), Ipy(i, j, k, n), q,
-                    vmac, pbc[n], dlo.y, dhi.y, true);
-                Godunov_weno_fpu_z(
-                    i, j, k, n, l_dt, dz, Imz(i, j, k, n), Ipz(i, j, k, n), q,
-                    wmac, pbc[n], dlo.z, dhi.z, true);
-            });
-        break;
-    }
-    case godunov::scheme::WENOZ: {
-        amrex::ParallelFor(
-            bxg1, ncomp,
-            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                Godunov_weno_fpu_x(
-                    i, j, k, n, l_dt, dx, Imx(i, j, k, n), Ipx(i, j, k, n), q,
-                    umac, pbc[n], dlo.x, dhi.x, false);
-                Godunov_weno_fpu_y(
-                    i, j, k, n, l_dt, dy, Imy(i, j, k, n), Ipy(i, j, k, n), q,
-                    vmac, pbc[n], dlo.y, dhi.y, false);
-                Godunov_weno_fpu_z(
-                    i, j, k, n, l_dt, dz, Imz(i, j, k, n), Ipz(i, j, k, n), q,
-                    wmac, pbc[n], dlo.z, dhi.z, false);
-            });
-        break;
-    }
     case godunov::scheme::MINMOD: {
         amrex::ParallelFor(
             bxg1, ncomp,
@@ -167,15 +118,15 @@ void godunov::compute_fluxes(
     }
     default: {
         amrex::Abort(
-            "Only PPM_NOLIM, WENOZ, and WENOJS use this code path, or in "
-            "multiphase simulations, MINMOD and UPWIND also use it");
+            "This code path only used in multiphase simulations with MINMOD "
+            "and UPWIND");
     }
     }
 
     amrex::ParallelFor(
         xebox, ncomp,
         [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-            constexpr Real small_vel = 1.e-10;
+            constexpr Real small_vel = 1.e-8;
 
             Real uad = umac(i, j, k);
             Real fux = (std::abs(uad) < small_vel) ? 0. : 1.;
@@ -186,7 +137,7 @@ void godunov::compute_fluxes(
             // ,j,k) : 0.;
             Real lo = Ipx(i - 1, j, k, n); // + cons1;
             Real hi = Imx(i, j, k, n);     // + cons2;
-            if (fq) {
+            if (use_forces_in_trans && fq) {
                 lo += 0.5 * l_dt * fq(i - 1, j, k, n);
                 hi += 0.5 * l_dt * fq(i, j, k, n);
             }
@@ -202,7 +153,7 @@ void godunov::compute_fluxes(
         },
         yebox, ncomp,
         [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-            constexpr Real small_vel = 1.e-10;
+            constexpr Real small_vel = 1.e-8;
 
             Real vad = vmac(i, j, k);
             Real fuy = (std::abs(vad) < small_vel) ? 0. : 1.;
@@ -213,7 +164,7 @@ void godunov::compute_fluxes(
             // ,k) : 0.;
             Real lo = Ipy(i, j - 1, k, n); // + cons1;
             Real hi = Imy(i, j, k, n);     // + cons2;
-            if (fq) {
+            if (use_forces_in_trans && fq) {
                 lo += 0.5 * l_dt * fq(i, j - 1, k, n);
                 hi += 0.5 * l_dt * fq(i, j, k, n);
             }
@@ -230,7 +181,7 @@ void godunov::compute_fluxes(
         },
         zebox, ncomp,
         [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-            constexpr Real small_vel = 1.e-10;
+            constexpr Real small_vel = 1.e-8;
 
             Real wad = wmac(i, j, k);
             Real fuz = (std::abs(wad) < small_vel) ? 0. : 1.;
@@ -242,7 +193,7 @@ void godunov::compute_fluxes(
             // ,n)*divu(i,j,k  ) : 0.;
             Real lo = Ipz(i, j, k - 1, n); // + cons1;
             Real hi = Imz(i, j, k, n);     // + cons2;
-            if (fq) {
+            if (use_forces_in_trans && fq) {
                 lo += 0.5 * l_dt * fq(i, j, k - 1, n);
                 hi += 0.5 * l_dt * fq(i, j, k, n);
             }
@@ -284,7 +235,7 @@ void godunov::compute_fluxes(
                 i, j, k, n, q, l_zylo, l_zyhi, wad, bc.lo(2), bc.hi(2), dlo.z,
                 dhi.z);
 
-            constexpr Real small_vel = 1.e-10;
+            constexpr Real small_vel = 1.e-8;
 
             Real st = (wad >= 0.) ? l_zylo : l_zyhi;
             Real fu = (std::abs(wad) < small_vel) ? 0.0 : 1.0;
@@ -303,7 +254,7 @@ void godunov::compute_fluxes(
                 i, j, k, n, q, l_yzlo, l_yzhi, vad, bc.lo(1), bc.hi(1), dlo.y,
                 dhi.y);
 
-            constexpr Real small_vel = 1.e-10;
+            constexpr Real small_vel = 1.e-8;
 
             Real st = (vad >= 0.) ? l_yzlo : l_yzhi;
             Real fu = (std::abs(vad) < small_vel) ? 0.0 : 1.0;
@@ -314,7 +265,7 @@ void godunov::compute_fluxes(
     amrex::ParallelFor(
         xbx, ncomp, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
             Real stl, sth;
-            constexpr Real small_vel = 1.e-10;
+            constexpr Real small_vel = 1.e-8;
             if (iconserv[n] != 0) {
                 stl = xlo(i, j, k, n) -
                       (0.5 * dtdy) *
@@ -337,6 +288,7 @@ void godunov::compute_fluxes(
                           (vmac(i, j + 1, k) - vmac(i, j, k)) +
                       (0.5 * dtdz) * q(i, j, k, n) *
                           (wmac(i, j, k + 1) - wmac(i, j, k));
+
             } else {
                 stl = xlo(i, j, k, n) -
                       (0.25 * dtdy) *
@@ -352,6 +304,12 @@ void godunov::compute_fluxes(
                       (0.25 * dtdz) * (wmac(i, j, k + 1) + wmac(i, j, k)) *
                           (zylo(i, j, k + 1, n) - zylo(i, j, k, n));
             }
+
+            stl += (!use_forces_in_trans && fq)
+                       ? 0.5 * l_dt * fq(i - 1, j, k, n)
+                       : 0.;
+            sth +=
+                (!use_forces_in_trans && fq) ? 0.5 * l_dt * fq(i, j, k, n) : 0.;
 
             auto bc = pbc[n];
             Godunov_cc_xbc_lo(i, j, k, n, q, stl, sth, umac, bc.lo(0), dlo.x);
@@ -389,7 +347,7 @@ void godunov::compute_fluxes(
                 i, j, k, n, q, l_xzlo, l_xzhi, uad, bc.lo(0), bc.hi(0), dlo.x,
                 dhi.x);
 
-            constexpr Real small_vel = 1.e-10;
+            constexpr Real small_vel = 1.e-8;
 
             Real st = (uad >= 0.) ? l_xzlo : l_xzhi;
             Real fu = (std::abs(uad) < small_vel) ? 0.0 : 1.0;
@@ -408,7 +366,7 @@ void godunov::compute_fluxes(
                 i, j, k, n, q, l_zxlo, l_zxhi, wad, bc.lo(2), bc.hi(2), dlo.z,
                 dhi.z);
 
-            constexpr Real small_vel = 1.e-10;
+            constexpr Real small_vel = 1.e-8;
 
             Real st = (wad >= 0.) ? l_zxlo : l_zxhi;
             Real fu = (std::abs(wad) < small_vel) ? 0.0 : 1.0;
@@ -418,7 +376,7 @@ void godunov::compute_fluxes(
     amrex::ParallelFor(
         ybx, ncomp, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
             Real stl, sth;
-            constexpr Real small_vel = 1.e-10;
+            constexpr Real small_vel = 1.e-8;
 
             if (iconserv[n] != 0) {
                 stl = ylo(i, j, k, n) -
@@ -458,6 +416,12 @@ void godunov::compute_fluxes(
                           (zxlo(i, j, k + 1, n) - zxlo(i, j, k, n));
             }
 
+            stl += (!use_forces_in_trans && fq)
+                       ? 0.5 * l_dt * fq(i, j - 1, k, n)
+                       : 0.;
+            sth +=
+                (!use_forces_in_trans && fq) ? 0.5 * l_dt * fq(i, j, k, n) : 0.;
+
             auto bc = pbc[n];
             Godunov_cc_ybc_lo(i, j, k, n, q, stl, sth, vmac, bc.lo(1), dlo.y);
             Godunov_cc_ybc_hi(i, j, k, n, q, stl, sth, vmac, bc.hi(1), dhi.y);
@@ -494,7 +458,7 @@ void godunov::compute_fluxes(
                 i, j, k, n, q, l_xylo, l_xyhi, uad, bc.lo(0), bc.hi(0), dlo.x,
                 dhi.x);
 
-            constexpr Real small_vel = 1.e-10;
+            constexpr Real small_vel = 1.e-8;
 
             Real st = (uad >= 0.) ? l_xylo : l_xyhi;
             Real fu = (std::abs(uad) < small_vel) ? 0.0 : 1.0;
@@ -513,7 +477,7 @@ void godunov::compute_fluxes(
                 i, j, k, n, q, l_yxlo, l_yxhi, vad, bc.lo(1), bc.hi(1), dlo.y,
                 dhi.y);
 
-            constexpr Real small_vel = 1.e-10;
+            constexpr Real small_vel = 1.e-8;
 
             Real st = (vad >= 0.) ? l_yxlo : l_yxhi;
             Real fu = (std::abs(vad) < small_vel) ? 0.0 : 1.0;
@@ -523,7 +487,7 @@ void godunov::compute_fluxes(
     amrex::ParallelFor(
         zbx, ncomp, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
             Real stl, sth;
-            constexpr Real small_vel = 1.e-10;
+            constexpr Real small_vel = 1.e-8;
             if (iconserv[n] != 0) {
                 stl = zlo(i, j, k, n) -
                       (0.5 * dtdx) *
@@ -561,6 +525,12 @@ void godunov::compute_fluxes(
                       (0.25 * dtdy) * (vmac(i, j + 1, k) + vmac(i, j, k)) *
                           (yxlo(i, j + 1, k, n) - yxlo(i, j, k, n));
             }
+
+            stl += (!use_forces_in_trans && fq)
+                       ? 0.5 * l_dt * fq(i, j, k - 1, n)
+                       : 0.;
+            sth +=
+                (!use_forces_in_trans && fq) ? 0.5 * l_dt * fq(i, j, k, n) : 0.;
 
             auto bc = pbc[n];
             Godunov_cc_zbc_lo(i, j, k, n, q, stl, sth, wmac, bc.lo(2), dlo.z);

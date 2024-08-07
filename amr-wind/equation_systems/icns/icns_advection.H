@@ -5,6 +5,7 @@
 #include "amr-wind/equation_systems/AdvOp_MOL.H"
 #include "amr-wind/equation_systems/icns/icns.H"
 #include "amr-wind/equation_systems/vof/vof_momentum_flux.H"
+#include "amr-wind/core/Physics.H"
 
 #include "AMReX_MultiFabUtil.H"
 #include "hydro_MacProjector.H"
@@ -23,10 +24,13 @@ public:
 
     MacProjOp(
         FieldRepo& /*repo*/,
+        PhysicsMgr& /*phy_mgr*/,
         bool /*has_overset*/,
         bool /*variable_density*/,
         bool /*mesh_mapping*/,
         bool /*is_anelastic*/);
+
+    void set_inflow_velocity(amrex::Real time);
 
     void operator()(const FieldState fstate, const amrex::Real dt);
 
@@ -46,6 +50,7 @@ private:
     void init_projector(const amrex::Real /*beta*/) noexcept;
 
     FieldRepo& m_repo;
+    PhysicsMgr& m_phy_mgr;
     std::unique_ptr<Hydro::MacProjector> m_mac_proj;
     MLMGOptions m_options;
     bool m_has_overset{false};
@@ -63,6 +68,7 @@ template <>
 struct AdvectionOp<ICNS, fvm::Godunov>
 {
     AdvectionOp(
+        CFDSim& sim,
         PDEFields& fields_in,
         bool has_overset,
         bool variable_density,
@@ -74,6 +80,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         , w_mac(fields_in.repo.get_field("w_mac"))
         , m_macproj_op(
               fields.repo,
+              sim.physics_manager(),
               has_overset,
               variable_density,
               mesh_mapping,
@@ -103,7 +110,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         } else if (
             amrex::toLower(godunov_type) == "weno" ||
             amrex::toLower(godunov_type) == "weno_js") {
-            godunov_scheme = godunov::scheme::WENOJS;
+            godunov_scheme = godunov::scheme::WENO_JS;
         } else if (amrex::toLower(godunov_type) == "weno_z") {
             godunov_scheme = godunov::scheme::WENOZ;
         } else {
@@ -153,155 +160,54 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         //
         // Predict
         //
-        for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-            if ((godunov_scheme == godunov::scheme::PPM_NOLIM) ||
-                (godunov_scheme == godunov::scheme::WENOJS) ||
-                (godunov_scheme == godunov::scheme::WENOZ)) {
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-                {
-                    amrex::FArrayBox scratch;
-                    for (amrex::MFIter mfi(
-                             dof_field(lev), amrex::TilingIfNotGPU());
-                         mfi.isValid(); ++mfi) {
-                        amrex::Box const& bx = mfi.tilebox();
-                        amrex::Box const& bxg1 = amrex::grow(bx, 1);
-                        amrex::Box const& xbx = mfi.nodaltilebox(0);
-                        amrex::Box const& ybx = mfi.nodaltilebox(1);
-                        amrex::Box const& zbx = mfi.nodaltilebox(2);
+        if ((godunov_scheme == godunov::scheme::PPM) ||
+            (godunov_scheme == godunov::scheme::PPM_NOLIM) ||
+            (godunov_scheme == godunov::scheme::PLM) ||
+            (godunov_scheme == godunov::scheme::WENOZ) ||
+            (godunov_scheme == godunov::scheme::WENO_JS) ||
+            (godunov_scheme == godunov::scheme::BDS)) {
+            const bool godunov_use_ppm =
+                ((godunov_scheme != godunov::scheme::PLM) &&
+                 (godunov_scheme != godunov::scheme::BDS));
+            int limiter_type;
+            if (godunov_scheme == godunov::scheme::PPM_NOLIM) {
+                limiter_type = PPM::NoLimiter;
+            } else if (godunov_scheme == godunov::scheme::WENOZ) {
+                limiter_type = PPM::WENOZ;
+            } else if (godunov_scheme == godunov::scheme::WENO_JS) {
+                limiter_type = PPM::WENO_JS;
+            } else {
+                limiter_type = PPM::default_limiter;
+            }
+            if ((godunov_scheme == godunov::scheme::WENOZ) ||
+                (godunov_scheme == godunov::scheme::WENO_JS)) {
+                m_allow_inflow_on_outflow = true;
+            }
 
-                        amrex::Array4<amrex::Real> const& a_umac =
-                            u_mac(lev).array(mfi);
-                        amrex::Array4<amrex::Real> const& a_vmac =
-                            v_mac(lev).array(mfi);
-                        amrex::Array4<amrex::Real> const& a_wmac =
-                            w_mac(lev).array(mfi);
-                        amrex::Array4<amrex::Real const> const& a_vel =
-                            dof_field(lev).const_array(mfi);
-                        amrex::Array4<amrex::Real const> const& a_f =
-                            src_term(lev).const_array(mfi);
-
-                        scratch.resize(bxg1, ICNS::ndim * 12 + 3);
-                        //                Elixir eli = scratch.elixir(); // not
-                        //                needed because of streamSynchronize
-                        //                later
-                        amrex::Real* p = scratch.dataPtr();
-
-                        amrex::Array4<amrex::Real> Imx =
-                            makeArray4(p, bxg1, ICNS::ndim);
-                        p += Imx.size();
-                        amrex::Array4<amrex::Real> Ipx =
-                            makeArray4(p, bxg1, ICNS::ndim);
-                        p += Ipx.size();
-                        amrex::Array4<amrex::Real> Imy =
-                            makeArray4(p, bxg1, ICNS::ndim);
-                        p += Imy.size();
-                        amrex::Array4<amrex::Real> Ipy =
-                            makeArray4(p, bxg1, ICNS::ndim);
-                        p += Ipy.size();
-                        amrex::Array4<amrex::Real> Imz =
-                            makeArray4(p, bxg1, ICNS::ndim);
-                        p += Imz.size();
-                        amrex::Array4<amrex::Real> Ipz =
-                            makeArray4(p, bxg1, ICNS::ndim);
-                        p += Ipz.size();
-                        amrex::Array4<amrex::Real> u_ad = makeArray4(
-                            p,
-                            amrex::Box(bx)
-                                .grow(1, 1)
-                                .grow(2, 1)
-                                .surroundingNodes(0),
-                            1);
-                        p += u_ad.size();
-                        amrex::Array4<amrex::Real> v_ad = makeArray4(
-                            p,
-                            amrex::Box(bx)
-                                .grow(0, 1)
-                                .grow(2, 1)
-                                .surroundingNodes(1),
-                            1);
-                        p += v_ad.size();
-                        amrex::Array4<amrex::Real> w_ad = makeArray4(
-                            p,
-                            amrex::Box(bx)
-                                .grow(0, 1)
-                                .grow(1, 1)
-                                .surroundingNodes(2),
-                            1);
-                        p += w_ad.size();
-
-                        switch (godunov_scheme) {
-                        case godunov::scheme::PPM_NOLIM: {
-                            godunov::predict_ppm(
-                                lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz,
-                                Ipz, a_vel, a_vel, geom, dt, bcrec_device,
-                                false);
-                            break;
-                        }
-                        case godunov::scheme::WENOJS: {
-                            godunov::predict_weno(
-                                lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz,
-                                Ipz, a_vel, a_vel, geom, dt, bcrec_device,
-                                true);
-                            break;
-                        }
-                        case godunov::scheme::WENOZ: {
-                            godunov::predict_weno(
-                                lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz,
-                                Ipz, a_vel, a_vel, geom, dt, bcrec_device,
-                                false);
-                            break;
-                        }
-                        default: {
-                            amrex::Abort(
-                                "Only PPM_NOLIM, WENOZ, and WENOJS use this "
-                                "code path");
-                        }
-                        }
-
-                        godunov::make_trans_velocities(
-                            lev, amrex::Box(u_ad), amrex::Box(v_ad),
-                            amrex::Box(w_ad), u_ad, v_ad, w_ad, Imx, Ipx, Imy,
-                            Ipy, Imz, Ipz, a_vel, a_f, geom, dt, bcrec_device,
-                            godunov_use_forces_in_trans);
-
-                        godunov::predict_godunov(
-                            lev, bx, ICNS::ndim, xbx, ybx, zbx, a_umac, a_vmac,
-                            a_wmac, a_vel, u_ad, v_ad, w_ad, Imx, Ipx, Imy, Ipy,
-                            Imz, Ipz, a_f, p, geom, dt, bcrec_device,
-                            godunov_use_forces_in_trans);
-
-                        amrex::Gpu::streamSynchronize(); // otherwise we might
-                                                         // be using too much
-                                                         // memory
-                    }
-                }
-            } else if (
-                (godunov_scheme == godunov::scheme::PPM) ||
-                (godunov_scheme == godunov::scheme::PLM) ||
-                (godunov_scheme == godunov::scheme::BDS)) {
-                const bool godunov_use_ppm =
-                    godunov_scheme == godunov::scheme::PPM;
+            for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
                 HydroUtils::ExtrapVelToFaces(
                     dof_field(lev), src_term(lev), u_mac(lev), v_mac(lev),
                     w_mac(lev), dof_field.bcrec(),
                     dof_field.bcrec_device().data(), repo.mesh().Geom(lev), dt,
                     godunov_use_ppm, godunov_use_forces_in_trans,
-                    premac_advection_type);
-            } else {
-                amrex::Abort("Invalid godunov scheme");
+                    premac_advection_type, limiter_type,
+                    m_allow_inflow_on_outflow);
             }
+        } else {
+            amrex::Abort("Invalid godunov scheme");
         }
 
         if (m_verbose > 2) {
             diagnostics::PrintMaxMACVelLocations(repo, "before MAC projection");
         }
 
+        // Populate boundaries (valid cells) using velocity BCs
+        m_macproj_op.set_inflow_velocity(time + 0.5 * dt);
+
         // MAC projection
         m_macproj_op(fstate, dt);
 
-        // Fill mac velocities using velocity BCs
+        // Fill mac velocities (ghost cells) using velocity BCs
         if (fvm::Godunov::nghost_state > 0) {
             amrex::Array<Field*, AMREX_SPACEDIM> mac_vel = {
                 AMREX_D_DECL(&u_mac, &v_mac, &w_mac)};
@@ -389,63 +295,62 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                 mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
                     .SetDynamic(true);
             }
+            if ((godunov_scheme == godunov::scheme::PPM) ||
+                (godunov_scheme == godunov::scheme::PPM_NOLIM) ||
+                (godunov_scheme == godunov::scheme::PLM) ||
+                (godunov_scheme == godunov::scheme::WENOZ) ||
+                (godunov_scheme == godunov::scheme::WENO_JS) ||
+                (godunov_scheme == godunov::scheme::BDS)) {
+                const bool is_velocity = true;
+                const bool known_edge_state = false;
+                const bool godunov_use_ppm =
+                    ((godunov_scheme == godunov::scheme::PPM) ||
+                     (godunov_scheme == godunov::scheme::PPM_NOLIM) ||
+                     (godunov_scheme == godunov::scheme::WENOZ) ||
+                     (godunov_scheme == godunov::scheme::WENO_JS));
+                int limiter_type;
+                if (godunov_scheme == godunov::scheme::PPM_NOLIM) {
+                    limiter_type = PPM::NoLimiter;
+                } else if (godunov_scheme == godunov::scheme::WENOZ) {
+                    limiter_type = PPM::WENOZ;
+                } else if (godunov_scheme == godunov::scheme::WENO_JS) {
+                    limiter_type = PPM::WENO_JS;
+                } else {
+                    limiter_type = PPM::default_limiter;
+                }
+
+                if ((godunov_scheme == godunov::scheme::WENOZ) ||
+                    (godunov_scheme == godunov::scheme::WENO_JS)) {
+                    m_allow_inflow_on_outflow = true;
+                }
+
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-            for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
-                 ++mfi) {
-                const auto& bx = mfi.tilebox();
-
-                // These schemes are not in amrex-hydro yet
-                if ((godunov_scheme == godunov::scheme::PPM_NOLIM) ||
-                    (godunov_scheme == godunov::scheme::WENOJS) ||
-                    (godunov_scheme == godunov::scheme::WENOZ)) {
-                    amrex::FArrayBox tmpfab(
-                        amrex::grow(bx, 1), ICNS::ndim * 14);
-                    godunov::compute_fluxes(
-                        lev, bx, ICNS::ndim, (*flux_x)(lev).array(mfi),
-                        (*flux_y)(lev).array(mfi), (*flux_z)(lev).array(mfi),
-                        q.const_array(mfi), u_mac(lev).const_array(mfi),
-                        v_mac(lev).const_array(mfi),
-                        w_mac(lev).const_array(mfi), fq.const_array(mfi),
-                        dof_field.bcrec_device().data(), iconserv.data(),
-                        tmpfab.dataPtr(), geom, dt, godunov_scheme);
-                } else if (
-                    (godunov_scheme == godunov::scheme::PPM) ||
-                    (godunov_scheme == godunov::scheme::PLM) ||
-                    (godunov_scheme == godunov::scheme::BDS)) {
+                for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
+                     ++mfi) {
+                    const auto& bx = mfi.tilebox();
                     amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 1);
                     tmpfab.setVal<amrex::RunOn::Device>(0.0);
                     const auto& divu = tmpfab.array();
-                    const bool is_velocity = true;
-                    const bool known_edge_state = false;
-                    const bool godunov_use_ppm =
-                        godunov_scheme == godunov::scheme::PPM;
                     HydroUtils::ComputeFluxesOnBoxFromState(
                         bx, ICNS::ndim, mfi, q.const_array(mfi),
-                        AMREX_D_DECL(
-                            (*flux_x)(lev).array(mfi),
-                            (*flux_y)(lev).array(mfi),
-                            (*flux_z)(lev).array(mfi)),
-                        AMREX_D_DECL(
-                            (*face_x)(lev).array(mfi),
-                            (*face_y)(lev).array(mfi),
-                            (*face_z)(lev).array(mfi)),
-                        known_edge_state,
-                        AMREX_D_DECL(
-                            u_mac(lev).const_array(mfi),
-                            v_mac(lev).const_array(mfi),
-                            w_mac(lev).const_array(mfi)),
-                        divu, fq.const_array(mfi), geom[lev], dt,
-                        dof_field.bcrec(), dof_field.bcrec_device().data(),
-                        iconserv.data(), godunov_use_ppm,
-                        godunov_use_forces_in_trans, is_velocity,
-                        fluxes_are_area_weighted, postmac_advection_type);
-                } else {
-                    amrex::Abort("Invalid godunov scheme");
+                        (*flux_x)(lev).array(mfi), (*flux_y)(lev).array(mfi),
+                        (*flux_z)(lev).array(mfi), (*face_x)(lev).array(mfi),
+                        (*face_y)(lev).array(mfi), (*face_z)(lev).array(mfi),
+                        known_edge_state, u_mac(lev).const_array(mfi),
+                        v_mac(lev).const_array(mfi),
+                        w_mac(lev).const_array(mfi), divu, fq.const_array(mfi),
+                        geom[lev], dt, dof_field.bcrec(),
+                        dof_field.bcrec_device().data(), iconserv.data(),
+                        godunov_use_ppm, godunov_use_forces_in_trans,
+                        is_velocity, fluxes_are_area_weighted,
+                        postmac_advection_type, limiter_type,
+                        m_allow_inflow_on_outflow);
                 }
-
                 amrex::Gpu::streamSynchronize();
+            } else {
+                amrex::Abort("Invalid godunov scheme");
             }
         }
 
@@ -456,7 +361,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                 repo, ICNS::ndim, iconserv, (*flux_x), (*flux_y), (*flux_z),
                 dof_field, src_term, rho_o, u_mac, v_mac, w_mac,
                 dof_field.bcrec_device().data(), rho_o.bcrec_device().data(),
-                dt, mflux_scheme);
+                dt, mflux_scheme, godunov_use_forces_in_trans);
         }
 
         amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> fluxes(
@@ -528,6 +433,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     bool godunov_use_forces_in_trans{false};
     int m_cons{1};
     int m_verbose{0};
+    bool m_allow_inflow_on_outflow{false};
     std::string premac_advection_type{"Godunov"};
     std::string postmac_advection_type{"Godunov"};
 };
@@ -539,6 +445,7 @@ template <>
 struct AdvectionOp<ICNS, fvm::MOL>
 {
     AdvectionOp(
+        CFDSim& sim,
         PDEFields& fields_in,
         bool has_overset,
         bool variable_density,
@@ -551,6 +458,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
         , m_mesh_mapping(mesh_mapping)
         , m_macproj_op(
               fields.repo,
+              sim.physics_manager(),
               has_overset,
               variable_density,
               m_mesh_mapping,

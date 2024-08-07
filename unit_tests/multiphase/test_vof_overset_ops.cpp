@@ -399,41 +399,41 @@ amrex::Real check_alpha_flux_impl(amr_wind::Field& flux, const int& dir)
                     if (idx == 0) {
                         // Both within margin, will average
                         const amrex::Real flux_answer =
-                            0.5 * ((0.5 - 0.41) * -1.0 + (0.5 - 0.55) * -1.0);
+                            0.5 * ((0.5 - 0.41) * 1.0 + (0.5 - 0.55) * -1.0);
                         error += std::abs(f_arr(i, j, k) - flux_answer);
                     } else if (idx == 1) {
                         // Current is low, neighbor within margin
-                        const amrex::Real flux_answer = (0.2 - 0.1) * 1.0;
+                        const amrex::Real flux_answer = (0.2 - 0.1) * -1.0;
                         error += std::abs(f_arr(i, j, k) - flux_answer);
                     } else if (idx == 2) {
                         // Low on both sides, gphi > 0
-                        const amrex::Real flux_answer = (0.2 - 0.1) * -1.0;
+                        const amrex::Real flux_answer = (0.2 - 0.1) * 1.0;
                         error += std::abs(f_arr(i, j, k) - flux_answer);
                     } else if (idx == 3) {
                         // Opposite sides of margin, no conditional fits
                         const amrex::Real flux_answer =
-                            0.5 * ((0.8 - 0.7) * 1.0 + (0.22 - 0.2) * 1.0);
+                            0.5 * ((0.8 - 0.7) * -1.0 + (0.22 - 0.2) * 1.0);
                         error += std::abs(f_arr(i, j, k) - flux_answer);
                     } else if (idx == 4) {
                         // High on both sides, gphi < 0
-                        const amrex::Real flux_answer = (0.8 - 0.7) * -1.0;
+                        const amrex::Real flux_answer = (0.8 - 0.7) * 1.0;
                         error += std::abs(f_arr(i, j, k) - flux_answer);
                     } else if (idx == 5) {
                         // High on both sides, gphi > 0
-                        const amrex::Real flux_answer = (0.75 - 0.8) * 1.0;
+                        const amrex::Real flux_answer = (0.75 - 0.8) * -1.0;
                         error += std::abs(f_arr(i, j, k) - flux_answer);
                     } else if (idx == 6) {
                         // Current is within margin, neighbor is high
-                        const amrex::Real flux_answer = (0.75 - 0.8) * -1.0;
+                        const amrex::Real flux_answer = (0.75 - 0.8) * 1.0;
                         error += std::abs(f_arr(i, j, k) - flux_answer);
                     } else if (idx == 7) {
                         // Current is low, neighbor is within margin
-                        const amrex::Real flux_answer = (0.2 - 0.3) * 1.0;
+                        const amrex::Real flux_answer = (0.2 - 0.3) * -1.0;
                         error += std::abs(f_arr(i, j, k) - flux_answer);
                     } else if (idx == 8) {
                         // Opposite sides of margin, no conditional fits
                         const amrex::Real flux_answer =
-                            0.5 * ((0.6 - 0.7) * -1.0 + (0.2 - 0.3) * -1.0);
+                            0.5 * ((0.6 - 0.7) * -1.0 + (0.2 - 0.3) * 1.0);
                         error += std::abs(f_arr(i, j, k) - flux_answer);
                     }
                 });
@@ -756,12 +756,26 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     iblank.setVal(-1);
     constexpr amrex::Real margin = 0.1;
     constexpr amrex::Real convg_tol = 1e-8;
-    // With simple fluxes, pseudo dt should be 100%
-    constexpr amrex::Real pdt_answer = 1.0;
+    // With vof and target_vof arrays, max vof removed is 50%, doubling pdt
+    constexpr amrex::Real pdt_answer = 2.0;
     // With a single level, pseudo velocity scale should be dx of lev 0
     const auto dx_lev0 = repo.mesh().Geom(0).CellSizeArray();
     const amrex::Real pvs_answer =
         std::min(std::min(dx_lev0[0], dx_lev0[1]), dx_lev0[2]);
+
+    // Pseudo-velocity scale, should be the smallest dx in iblank region
+    const auto& iblank_cell = repo.get_int_field("iblank_cell");
+    const amrex::Real max_pvscale = 100.;
+    amrex::Real pvscale = max_pvscale;
+    for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+        const amrex::Real pvscale_lev =
+            amr_wind::overset_ops::calculate_pseudo_velocity_scale(
+                iblank_cell(lev), repo.mesh().Geom(lev).CellSizeArray(),
+                max_pvscale);
+        pvscale = std::min(pvscale, pvscale_lev);
+    }
+    amrex::ParallelDescriptor::ReduceRealMin(pvscale);
+    EXPECT_DOUBLE_EQ(pvscale, pvs_answer);
 
     // Create flux fields
     auto& flux_x =
@@ -782,7 +796,9 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
         const amrex::Real ptfac_lev =
             amr_wind::overset_ops::calculate_pseudo_dt_flux(
-                flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), convg_tol);
+                flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), dx_lev0,
+                convg_tol) /
+            pvscale;
         ptfac = amrex::min(ptfac, ptfac_lev);
     }
     amrex::ParallelDescriptor::ReduceRealMin(ptfac);
@@ -801,7 +817,9 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
         const amrex::Real ptfac_lev =
             amr_wind::overset_ops::calculate_pseudo_dt_flux(
-                flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), convg_tol);
+                flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), dx_lev0,
+                convg_tol) /
+            pvscale;
         ptfac = amrex::min(ptfac, ptfac_lev);
     }
     amrex::ParallelDescriptor::ReduceRealMin(ptfac);
@@ -820,25 +838,26 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
         const amrex::Real ptfac_lev =
             amr_wind::overset_ops::calculate_pseudo_dt_flux(
-                flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), convg_tol);
+                flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), dx_lev0,
+                convg_tol) /
+            pvscale;
         ptfac = amrex::min(ptfac, ptfac_lev);
     }
     amrex::ParallelDescriptor::ReduceRealMin(ptfac);
     EXPECT_DOUBLE_EQ(ptfac, pdt_answer);
 
-    // Pseudo-velocity scale, should be the smallest dx in iblank region
-    const auto& iblank_cell = repo.get_int_field("iblank_cell");
-    const amrex::Real max_pvscale = 100.;
-    amrex::Real pvscale = max_pvscale;
+    // Redo z direction with max being 1, as in overall algorithm
+    ptfac = 1.0;
     for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-        const amrex::Real pvscale_lev =
-            amr_wind::overset_ops::calculate_pseudo_velocity_scale(
-                iblank_cell(lev), repo.mesh().Geom(lev).CellSizeArray(),
-                max_pvscale);
-        pvscale = std::min(pvscale, pvscale_lev);
+        const amrex::Real ptfac_lev =
+            amr_wind::overset_ops::calculate_pseudo_dt_flux(
+                flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), dx_lev0,
+                convg_tol) /
+            pvscale;
+        ptfac = amrex::min(ptfac, ptfac_lev);
     }
-    amrex::ParallelDescriptor::ReduceRealMin(pvscale);
-    EXPECT_DOUBLE_EQ(pvscale, pvs_answer);
+    amrex::ParallelDescriptor::ReduceRealMin(ptfac);
+    EXPECT_DOUBLE_EQ(ptfac, 1.0);
 }
 
 TEST_F(VOFOversetOps, psource_manual)
