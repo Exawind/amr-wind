@@ -60,9 +60,9 @@ public:
     long num_points() const override { return m_npts * m_ninst; }
     long num_output_points() const override { return m_npts * m_ninst; }
     //! Locations
-    amrex::Vector<amrex::Array<amrex::Real, 2>> locations() const
+    amrex::Vector<amrex::Array<amrex::Real, 2>> grid_locations() const
     {
-        return m_locs;
+        return m_grid_locs;
     }
     //! Outputs (heights)
     amrex::Vector<amrex::Real> heights() const { return m_out; }
@@ -90,7 +90,7 @@ private:
     //! Parameters to set up plane
     amrex::Vector<amrex::Real> m_start, m_end;
     //! Locations of points in 2D grid
-    amrex::Vector<amrex::Array<amrex::Real, 2>> m_locs;
+    amrex::Vector<amrex::Array<amrex::Real, 2>> m_grid_locs;
     //! Output coordinate
     amrex::Vector<amrex::Real> m_out;
 

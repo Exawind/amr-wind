@@ -272,7 +272,7 @@ int FreeSurfaceImpl::check_pos(
 {
     // Get number of points and position array
     auto npts_tot = num_gridpoints();
-    auto locs = locations();
+    auto locs = grid_locations();
     // Loop through grid points and check output
     int icheck = 0;
     for (int n = 0; n < npts_tot; ++n) {
@@ -301,7 +301,7 @@ int FreeSurfaceImpl::check_sloc(const std::string& op)
     amrex::Vector<amrex::Array<amrex::Real, AMREX_SPACEDIM>> locs;
     output_locations(locs);
     // Get locations from other functions
-    auto gridlocs = locations();
+    auto gridlocs = grid_locations();
     auto out = heights();
     // Loop through grid points and check output
     int icheck = 0;

@@ -61,7 +61,7 @@ void FreeSurfaceSampler::initialize(const std::string& key)
     m_npts = m_npts_dir[0] * m_npts_dir[1];
 
     // Turn parameters into 2D grid
-    m_locs.resize(m_npts);
+    m_grid_locs.resize(m_npts);
     m_out.resize(static_cast<long>(m_npts) * m_ninst);
 
     // Get size of sample grid spacing
@@ -79,9 +79,9 @@ void FreeSurfaceSampler::initialize(const std::string& key)
                 m_out[idx * m_ninst + ni] = m_start[m_coorddir];
             }
             // Grid direction 1
-            m_locs[idx][0] = m_start[m_gc0] + dxs0 * i;
+            m_grid_locs[idx][0] = m_start[m_gc0] + dxs0 * i;
             // Grid direction 2
-            m_locs[idx][1] = m_start[m_gc1] + dxs1 * j;
+            m_grid_locs[idx][1] = m_start[m_gc1] + dxs1 * j;
 
             ++idx;
         }
@@ -342,9 +342,9 @@ void FreeSurfaceSampler::sampling_locations(SampleLocType& locs) const
             // Initialize output values to 0.0
             for (int ni = 0; ni < m_ninst; ++ni) {
                 // Grid direction 1
-                locs[idx * m_ninst + ni][m_gc0] = m_locs[idx][0];
+                locs[idx * m_ninst + ni][m_gc0] = m_grid_locs[idx][0];
                 // Grid direction 2
-                locs[idx * m_ninst + ni][m_gc1] = m_locs[idx][1];
+                locs[idx * m_ninst + ni][m_gc1] = m_grid_locs[idx][1];
                 // Output direction
                 locs[idx * m_ninst + ni][m_coorddir] =
                     m_out[idx * m_ninst + ni];
