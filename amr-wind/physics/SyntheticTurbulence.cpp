@@ -574,6 +574,7 @@ void SyntheticTurbulence::update_impl(
         const auto& gauss_scaling = m_gauss_scaling;
         const auto& epsilon = m_epsilon;
 
+        // this one
         for (amrex::MFIter mfi(m_turb_force(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
             const auto& turb_force_arr = m_turb_force(lev).array(mfi);

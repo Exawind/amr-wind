@@ -47,6 +47,7 @@ void apply_mms_vel(CFDSim& sim)
         const auto& dx = geom[lev].CellSizeArray();
         const auto& problo = geom[lev].ProbLoArray();
 
+        // this one
         for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.growntilebox();
             const auto& phi = levelset(lev).const_array(mfi);
@@ -90,6 +91,7 @@ void apply_dirichlet_vel(CFDSim& sim, const amrex::Vector<amrex::Real>& vel_bc)
         // Defining the "ghost-cell" band distance
         amrex::Real phi_b = std::cbrt(dx[0] * dx[1] * dx[2]);
 
+        // this one
         for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
             const auto& varr = velocity(lev).array(mfi);

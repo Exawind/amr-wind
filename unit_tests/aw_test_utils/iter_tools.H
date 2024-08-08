@@ -25,6 +25,7 @@ template <typename Functor>
 void run_algorithm_single_lev(
     const int lev, amrex::MultiFab& lfab, const Functor& func)
 {
+    // needs openmp pragma?
     for (amrex::MFIter mfi(lfab); mfi.isValid(); ++mfi) {
         func(lev, mfi);
     }
@@ -34,6 +35,7 @@ template <typename Functor>
 void run_algorithm_single_lev(
     const int lev, amrex::iMultiFab& lfab, const Functor& func)
 {
+    // needs openmp pragma?
     for (amrex::MFIter mfi(lfab); mfi.isValid(); ++mfi) {
         func(lev, mfi);
     }
