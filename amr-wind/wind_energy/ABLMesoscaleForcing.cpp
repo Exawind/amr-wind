@@ -249,9 +249,9 @@ void ABLMesoscaleForcing::constant_forcing_transition(
         hLevelBlendMax = m_nht - 1;
     }
 
-    amrex::Print() << "Forcing transition to constant"
-                   << " from " << m_zht[hLevelBlend1] << " to "
-                   << m_zht[hLevelBlendMax] << std::endl;
+    amrex::Print() << "Forcing transition to constant from "
+                   << m_zht[hLevelBlend1] << " to " << m_zht[hLevelBlendMax]
+                   << std::endl;
 
     // calculate initial slope
     amrex::Real slope0 = (error[hLevelBlend1] - error[hLevelBlend0]) /
