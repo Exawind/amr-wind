@@ -1,0 +1,9 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" title=" " alt="" coords="5,125,151,166"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1_cart_box_refinement.html" title="Static refinement with Cartesian&#45;aligned bounding boxes." alt="" coords="213,5,435,32"/>
+<area shape="rect" id="node3" href="$classamr__wind_1_1_field_refinement.html" title="AMR refinement using a given field (e.g., density)" alt="" coords="224,56,424,83"/>
+<area shape="rect" id="node4" href="$classamr__wind_1_1_geometry_refinement.html" title="AMR based on geometric shapes." alt="" coords="207,107,441,133"/>
+<area shape="rect" id="node5" href="$classamr__wind_1_1_overset_refinement.html" title=" " alt="" coords="214,157,434,184"/>
+<area shape="rect" id="node6" href="$classamr__wind_1_1_q_criterion_refinement.html" title="AMR refinement using Q criterion." alt="" coords="207,208,441,235"/>
+<area shape="rect" id="node7" href="$classamr__wind_1_1_vorticity_mag_refinement.html" title="AMR refinement using vorticity." alt="" coords="199,259,449,285"/>
+</map>

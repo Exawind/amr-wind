@@ -1,0 +1,5 @@
+<map id="amr_wind::ThirdMomentAveraging" name="amr_wind::ThirdMomentAveraging">
+<area shape="rect" id="node1" title="Compute the third moment with three fields." alt="" coords="5,228,252,255"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1_f_plane_averaging.html" title="Output average of a field on planes normal to a given direction." alt="" coords="27,95,230,136"/>
+<area shape="rect" id="node3" href="$classamr__wind_1_1_sim_time.html" title="Time manager for simulations." alt="" coords="53,5,205,32"/>
+</map>

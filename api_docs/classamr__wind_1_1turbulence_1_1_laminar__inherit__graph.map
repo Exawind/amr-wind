@@ -1,0 +1,7 @@
+<map id="amr_wind::turbulence::Laminar&lt; Transport &gt;" name="amr_wind::turbulence::Laminar&lt; Transport &gt;">
+<area shape="rect" id="node1" title="Laminar model." alt="" coords="31,396,205,437"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1turbulence_1_1_turb_model.html" title="Turbulence model with a specific transport model." alt="" coords="25,305,211,347"/>
+<area shape="rect" id="node3" href="$classamr__wind_1_1turbulence_1_1_turbulence_model.html" title="Abstract representation of a turbulence model." alt="" coords="37,215,199,256"/>
+<area shape="rect" id="node4" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="5,124,231,165"/>
+<area shape="rect" id="node5" href="$structamr__wind_1_1_factory.html" title="Runtime selection of options based on string keyword lookup." alt="" coords="42,5,194,47"/>
+</map>

@@ -1,0 +1,14 @@
+<map id="RelaxationZones.H" name="RelaxationZones.H">
+<area shape="rect" id="node1" title=" " alt="" coords="403,5,550,32"/>
+<area shape="rect" id="node2" href="$_linear_waves_8_h.html" title=" " alt="" coords="68,80,187,107"/>
+<area shape="rect" id="node5" href="$relaxation__zones__ops_8_h.html" title=" " alt="" coords="301,80,479,107"/>
+<area shape="rect" id="node11" href="$_stokes_waves_8_h.html" title=" " alt="" coords="503,80,626,107"/>
+<area shape="rect" id="node12" href="$_w2_a_waves_8_h.html" title=" " alt="" coords="693,80,801,107"/>
+<area shape="rect" id="node3" href="$linear__waves__ops_8_h.html" title=" " alt="" coords="51,155,203,181"/>
+<area shape="rect" id="node4" href="$_linear_waves_8cpp.html" title=" " alt="" coords="5,229,137,256"/>
+<area shape="rect" id="node6" href="$relaxation__zones__ops_8cpp.html" title=" " alt="" coords="228,155,419,181"/>
+<area shape="rect" id="node7" href="$stokes__waves__ops_8_h.html" title=" " alt="" coords="443,155,601,181"/>
+<area shape="rect" id="node9" href="$waves2amr__ops_8_h.html" title=" " alt="" coords="676,155,819,181"/>
+<area shape="rect" id="node8" href="$_stokes_waves_8cpp.html" title=" " alt="" coords="491,229,625,256"/>
+<area shape="rect" id="node10" href="$_w2_a_waves_8cpp.html" title=" " alt="" coords="741,229,863,256"/>
+</map>

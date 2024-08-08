@@ -1,0 +1,6 @@
+<map id="amr_wind::ib::BluffBodyBaseData" name="amr_wind::ib::BluffBodyBaseData">
+<area shape="rect" id="node1" title="Base data representation of an IB geometry." alt="" coords="180,5,420,32"/>
+<area shape="rect" id="node2" href="$structamr__wind_1_1ib_1_1_box_data.html" title=" " alt="" coords="5,80,176,107"/>
+<area shape="rect" id="node3" href="$structamr__wind_1_1ib_1_1_cylinder_data.html" title=" " alt="" coords="201,80,399,107"/>
+<area shape="rect" id="node4" href="$structamr__wind_1_1ib_1_1_sphere_data.html" title=" " alt="" coords="423,80,614,107"/>
+</map>

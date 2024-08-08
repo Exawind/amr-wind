@@ -1,0 +1,6 @@
+<map id="Physics models" name="Physics models">
+<area shape="rect" id="node1" href="$group__synth__turb.html" title="SyntheticTurbulence contains functions to inject turbulence into a CFD simulation." alt="" coords="182,5,339,31"/>
+<area shape="rect" id="node2" title="AMR&#45;Wind representation of different physics." alt="" coords="5,55,128,80"/>
+<area shape="rect" id="node3" href="$group__wind.html" title="Wind energy modeling." alt="" coords="176,55,345,80"/>
+<area shape="rect" id="node4" href="$group___breaking.html" title="Breaking Waves modeling." alt="" coords="195,104,326,129"/>
+</map>

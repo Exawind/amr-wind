@@ -1,0 +1,9 @@
+<map id="amr_wind::turbulence::KOmegaSSTIDDES&lt; Transport &gt;" name="amr_wind::turbulence::KOmegaSSTIDDES&lt; Transport &gt;">
+<area shape="rect" id="node1" title="K&#45;Omega&#45;SST&#45;IDDES Hybrid RANS/LES turbulence model." alt="" coords="5,577,244,619"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1turbulence_1_1_k_omega_s_s_t.html" title="K&#45;Omega&#45;SST RANS turbulence model." alt="" coords="25,487,224,528"/>
+<area shape="rect" id="node3" href="$classamr__wind_1_1turbulence_1_1_turb_model_base.html" title="Turbulence model aspects common to both LES and RANS models." alt="" coords="15,396,234,437"/>
+<area shape="rect" id="node4" href="$classamr__wind_1_1turbulence_1_1_turb_model.html" title="Turbulence model with a specific transport model." alt="" coords="31,305,218,347"/>
+<area shape="rect" id="node5" href="$classamr__wind_1_1turbulence_1_1_turbulence_model.html" title="Abstract representation of a turbulence model." alt="" coords="43,215,206,256"/>
+<area shape="rect" id="node6" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="12,124,237,165"/>
+<area shape="rect" id="node7" href="$structamr__wind_1_1_factory.html" title="Runtime selection of options based on string keyword lookup." alt="" coords="49,5,201,47"/>
+</map>

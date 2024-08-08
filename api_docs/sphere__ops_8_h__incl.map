@@ -1,0 +1,52 @@
+<map id="sphere_ops.H" name="sphere_ops.H">
+<area shape="rect" id="node1" title=" " alt="" coords="2333,5,2444,32"/>
+<area shape="rect" id="node2" href="$_sphere_8_h.html" title=" " alt="" coords="2384,80,2606,121"/>
+<area shape="rect" id="node15" href="$_i_b_ops_8_h.html" title=" " alt="" coords="2188,169,2410,211"/>
+<area shape="rect" id="node42" href="$_i_b_8_h.html" title=" " alt="" coords="1018,266,1271,293"/>
+<area shape="rect" id="node43" href="$bluff__body__ops_8_h.html" title=" " alt="" coords="2646,80,2869,121"/>
+<area shape="rect" id="node3" href="$_bluff_body_8_h.html" title=" " alt="" coords="2646,169,2869,211"/>
+<area shape="rect" id="node4" href="$_i_b_types_8_h.html" title=" " alt="" coords="2812,259,3034,300"/>
+<area shape="rect" id="node10" href="$vector__space_8_h.html" title=" " alt="" coords="3198,348,3378,389"/>
+<area shape="rect" id="node14" title=" " alt="" coords="1411,527,1470,553"/>
+<area shape="rect" id="node5" title=" " alt="" coords="2138,527,2198,553"/>
+<area shape="rect" id="node6" href="$_slice_8_h.html" title=" " alt="" coords="2947,445,3112,471"/>
+<area shape="rect" id="node9" title=" " alt="" coords="3096,601,3212,628"/>
+<area shape="rect" id="node13" title=" " alt="" coords="2848,355,2992,382"/>
+<area shape="rect" id="node7" title=" " alt="" coords="2994,527,3065,553"/>
+<area shape="rect" id="node8" title=" " alt="" coords="2223,527,2354,553"/>
+<area shape="rect" id="node11" href="$vector_8_h.html" title=" " alt="" coords="3242,527,3436,553"/>
+<area shape="rect" id="node12" href="$tensor_8_h.html" title=" " alt="" coords="3192,445,3385,471"/>
+<area shape="rect" id="node16" href="$_c_f_d_sim_8_h.html" title=" " alt="" coords="2058,266,2212,293"/>
+<area shape="rect" id="node17" title=" " alt="" coords="2372,445,2519,471"/>
+<area shape="rect" id="node18" href="$_sim_time_8_h.html" title=" " alt="" coords="2644,445,2836,471"/>
+<area shape="rect" id="node24" href="$_field_repo_8_h.html" title=" " alt="" coords="1673,355,1872,382"/>
+<area shape="rect" id="node34" href="$_p_d_e_base_8_h.html" title=" " alt="" coords="872,348,1078,389"/>
+<area shape="rect" id="node38" href="$_physics_8_h.html" title=" " alt="" coords="220,355,402,382"/>
+<area shape="rect" id="node40" href="$_mesh_map_8_h.html" title=" " alt="" coords="438,355,635,382"/>
+<area shape="rect" id="node41" href="$helics_8_h.html" title=" " alt="" coords="2173,355,2313,382"/>
+<area shape="rect" id="node19" title=" " alt="" coords="2466,527,2588,553"/>
+<area shape="rect" id="node20" title=" " alt="" coords="2612,527,2791,553"/>
+<area shape="rect" id="node21" title=" " alt="" coords="2815,527,2970,553"/>
+<area shape="rect" id="node22" title=" " alt="" coords="2028,527,2114,553"/>
+<area shape="rect" id="node23" title=" " alt="" coords="2378,527,2441,553"/>
+<area shape="rect" id="node25" title=" " alt="" coords="673,527,797,553"/>
+<area shape="rect" id="node26" href="$_field_desc_types_8_h.html" title=" " alt="" coords="1590,527,1824,553"/>
+<area shape="rect" id="node27" href="$_field_utils_8_h.html" title=" " alt="" coords="1346,445,1540,471"/>
+<area shape="rect" id="node28" title=" " alt="" coords="946,527,1092,553"/>
+<area shape="rect" id="node29" href="$_field_8_h.html" title=" " alt="" coords="1004,445,1170,471"/>
+<area shape="rect" id="node30" href="$_int_field_8_h.html" title=" " alt="" coords="1616,445,1798,471"/>
+<area shape="rect" id="node31" title=" " alt="" coords="1855,527,2004,553"/>
+<area shape="rect" id="node32" href="$_scratch_field_8_h.html" title=" " alt="" coords="1874,445,2087,471"/>
+<area shape="rect" id="node33" href="$_int_scratch_field_8_h.html" title=" " alt="" coords="2112,437,2297,479"/>
+<area shape="rect" id="node35" href="$_factory_8_h.html" title=" " alt="" coords="211,445,390,471"/>
+<area shape="rect" id="node36" href="$_coll_mgr_8_h.html" title=" " alt="" coords="465,445,648,471"/>
+<area shape="rect" id="node37" href="$_p_d_e_fields_8_h.html" title=" " alt="" coords="672,437,878,479"/>
+<area shape="rect" id="node39" title=" " alt="" coords="33,445,186,471"/>
+<area shape="rect" id="node44" href="$_multi_parser_8_h.html" title=" " alt="" coords="3137,177,3344,203"/>
+<area shape="rect" id="node46" href="$gradient_8_h.html" title=" " alt="" coords="2435,177,2622,203"/>
+<area shape="rect" id="node50" title=" " alt="" coords="2894,177,3062,203"/>
+<area shape="rect" id="node45" title=" " alt="" coords="3109,266,3268,293"/>
+<area shape="rect" id="node47" href="$fvm__utils_8_h.html" title=" " alt="" coords="2385,266,2578,293"/>
+<area shape="rect" id="node48" title=" " alt="" coords="2439,355,2570,382"/>
+<area shape="rect" id="node49" title=" " alt="" coords="2654,266,2787,293"/>
+</map>

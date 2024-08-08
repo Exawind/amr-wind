@@ -1,0 +1,5 @@
+<map id="amr_wind::pde::DiffusionOp&lt; PDE, Scheme, std::enable_if_t&lt; std::is_base_of_v&lt; ScalarTransport, PDE &gt; &gt; &gt;" name="amr_wind::pde::DiffusionOp&lt; PDE, Scheme, std::enable_if_t&lt; std::is_base_of_v&lt; ScalarTransport, PDE &gt; &gt; &gt;">
+<area shape="rect" id="node1" title="Diffusion operator for scalar transport equations." alt="" coords="5,200,256,271"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1pde_1_1_diff_solver_iface.html" title=" " alt="" coords="35,109,226,151"/>
+<area shape="rect" id="node3" href="$classamr__wind_1_1pde_1_1_diff_solver_iface.html" title="Base class for all diffusion operators." alt="" coords="35,5,226,47"/>
+</map>

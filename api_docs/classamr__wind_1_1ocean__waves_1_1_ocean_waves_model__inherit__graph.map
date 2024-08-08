@@ -1,0 +1,5 @@
+<map id="amr_wind::ocean_waves::OceanWavesModel" name="amr_wind::ocean_waves::OceanWavesModel">
+<area shape="rect" id="node1" title="Abstract representation of a wave model used for wave generation." alt="" coords="19,259,202,300"/>
+<area shape="rect" id="node2" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="5,139,216,209"/>
+<area shape="rect" id="node3" href="$structamr__wind_1_1_factory.html" title="Runtime selection of options based on string keyword lookup." alt="" coords="35,5,187,47"/>
+</map>

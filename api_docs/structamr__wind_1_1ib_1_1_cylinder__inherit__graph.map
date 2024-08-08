@@ -1,0 +1,5 @@
+<map id="amr_wind::ib::Cylinder" name="amr_wind::ib::Cylinder">
+<area shape="rect" id="node1" title=" " alt="" coords="25,155,193,181"/>
+<area shape="rect" id="node2" href="$structamr__wind_1_1ib_1_1_bluff_body_type.html" title=" " alt="" coords="5,80,212,107"/>
+<area shape="rect" id="node3" href="$structamr__wind_1_1ib_1_1_i_b_type.html" title="Abstract representation of an immersed boundary type." alt="" coords="30,5,187,32"/>
+</map>

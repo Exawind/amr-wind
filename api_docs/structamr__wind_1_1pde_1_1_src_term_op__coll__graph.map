@@ -1,0 +1,15 @@
+<map id="amr_wind::pde::SrcTermOp&lt; PDE &gt;" name="amr_wind::pde::SrcTermOp&lt; PDE &gt;">
+<area shape="rect" id="node1" title="Implementation of source terms for scalar transport equations." alt="" coords="2027,51,2223,93"/>
+<area shape="rect" id="node2" href="$structamr__wind_1_1pde_1_1_src_term_op_base.html" title="Base implementation of source terms for a PDE." alt="" coords="1781,51,1977,93"/>
+<area shape="rect" id="node3" href="$classamr__wind_1_1_field.html" title="Computational field." alt="" coords="1256,97,1381,124"/>
+<area shape="rect" id="node13" href="$structamr__wind_1_1pde_1_1_p_d_e_fields.html" title="Collection of fields related to a PDE." alt="" coords="1503,105,1693,132"/>
+<area shape="rect" id="node4" title=" " alt="" coords="812,183,972,225"/>
+<area shape="rect" id="node5" title=" " alt="" coords="257,205,415,232"/>
+<area shape="rect" id="node6" title=" " alt="" coords="55,191,94,217"/>
+<area shape="rect" id="node11" title=" " alt="" coords="260,137,412,178"/>
+<area shape="rect" id="node7" title=" " alt="" coords="293,64,379,91"/>
+<area shape="rect" id="node10" title=" " alt="" coords="625,123,788,165"/>
+<area shape="rect" id="node8" title=" " alt="" coords="5,54,144,95"/>
+<area shape="rect" id="node9" href="$classamr__wind_1_1_field_repo.html" title="Field Repository." alt="" coords="996,131,1155,157"/>
+<area shape="rect" id="node12" title=" " alt="" coords="55,120,94,147"/>
+</map>

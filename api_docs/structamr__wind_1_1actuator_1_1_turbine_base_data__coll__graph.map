@@ -1,0 +1,13 @@
+<map id="amr_wind::actuator::TurbineBaseData" name="amr_wind::actuator::TurbineBaseData">
+<area shape="rect" id="node1" title=" " alt="" coords="1389,183,1537,225"/>
+<area shape="rect" id="node2" title=" " alt="" coords="1079,183,1293,225"/>
+<area shape="rect" id="node3" href="$structamr__wind_1_1actuator_1_1_component_view.html" title="Slice of actutator data for components (tower, blade, etc)" alt="" coords="737,110,885,151"/>
+<area shape="rect" id="node4" href="$structamr__wind_1_1utils_1_1_slice.html" title=" " alt="" coords="438,110,599,151"/>
+<area shape="rect" id="node5" href="$structamr__wind_1_1utils_1_1_slice.html" title=" " alt="" coords="5,117,204,144"/>
+<area shape="rect" id="node6" href="$structamr__wind_1_1utils_1_1_slice.html" title=" " alt="" coords="424,175,613,217"/>
+<area shape="rect" id="node7" href="$structamr__wind_1_1utils_1_1_slice.html" title=" " alt="" coords="425,45,613,86"/>
+<area shape="rect" id="node8" title=" " alt="" coords="747,249,876,276"/>
+<area shape="rect" id="node10" title=" " alt="" coords="1101,259,1271,301"/>
+<area shape="rect" id="node9" title=" " alt="" coords="499,249,538,276"/>
+<area shape="rect" id="node11" href="$structamr__wind_1_1actuator_1_1_f_l_l_c_data.html" title=" " alt="" coords="737,305,885,346"/>
+</map>

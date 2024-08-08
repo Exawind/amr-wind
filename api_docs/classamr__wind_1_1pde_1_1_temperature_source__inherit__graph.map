@@ -1,0 +1,5 @@
+<map id="amr_wind::pde::TemperatureSource" name="amr_wind::pde::TemperatureSource">
+<area shape="rect" id="node1" title="Representation of a temperature source term." alt="" coords="5,229,213,271"/>
+<area shape="rect" id="node2" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="31,124,187,180"/>
+<area shape="rect" id="node3" href="$structamr__wind_1_1_factory.html" title="Runtime selection of options based on string keyword lookup." alt="" coords="33,5,185,47"/>
+</map>

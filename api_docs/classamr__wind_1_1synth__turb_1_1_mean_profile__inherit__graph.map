@@ -1,0 +1,5 @@
+<map id="amr_wind::synth_turb::MeanProfile" name="amr_wind::synth_turb::MeanProfile">
+<area shape="rect" id="node1" title=" " alt="" coords="99,5,261,47"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1synth__turb_1_1_linear_shear_profile.html" title=" " alt="" coords="5,95,168,136"/>
+<area shape="rect" id="node3" href="$classamr__wind_1_1synth__turb_1_1_power_law_profile.html" title=" " alt="" coords="192,95,355,136"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="amr_wind::MeshMap" name="amr_wind::MeshMap">
+<area shape="rect" id="node1" title="Abstract representation of different mesh mapping models." alt="" coords="5,200,163,227"/>
+<area shape="rect" id="node2" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="8,109,160,151"/>
+<area shape="rect" id="node3" href="$structamr__wind_1_1_factory.html" title="Runtime selection of options based on string keyword lookup." alt="" coords="8,5,160,47"/>
+</map>

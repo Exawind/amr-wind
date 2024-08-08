@@ -1,0 +1,7 @@
+<map id="amr_wind::actuator::ComponentView" name="amr_wind::actuator::ComponentView">
+<area shape="rect" id="node1" title="Slice of actutator data for components (tower, blade, etc)" alt="" coords="737,51,885,92"/>
+<area shape="rect" id="node2" href="$structamr__wind_1_1utils_1_1_slice.html" title=" " alt="" coords="438,5,599,47"/>
+<area shape="rect" id="node3" href="$structamr__wind_1_1utils_1_1_slice.html" title=" " alt="" coords="5,78,204,105"/>
+<area shape="rect" id="node4" href="$structamr__wind_1_1utils_1_1_slice.html" title=" " alt="" coords="424,71,613,112"/>
+<area shape="rect" id="node5" href="$structamr__wind_1_1utils_1_1_slice.html" title=" " alt="" coords="425,152,613,193"/>
+</map>
