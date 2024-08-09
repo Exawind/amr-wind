@@ -246,6 +246,7 @@ add_test_re(burggraf_flow)
 add_test_re(abl_godunov_rayleigh_damping)
 add_test_re(rankine)
 add_test_re(rankine-sym)
+add_test_re(terrain_box)
 add_test_re(box_refinement)
 add_test_re(cylinder_refinement)
 
@@ -263,6 +264,8 @@ if(AMR_WIND_ENABLE_NETCDF)
   add_test_re(abl_meso_input_dpa)
   add_test_re(abl_meso_input_ipa)
   add_test_re(abl_kosovic_neutral)
+  add_test_re(abl_kosovic_neutral_ib)
+  add_test_re(nrel_precursor)
 endif()
 
 if(AMR_WIND_ENABLE_MASA)
@@ -306,10 +309,12 @@ add_test_red(abl_bndry_input_amr_native abl_bndry_output_native)
 add_test_red(abl_bndry_input_amr_native_mlbc abl_bndry_output_amr_native)
 add_test_red(abl_godunov_forcetimetable abl_godunov_timetable)
 
+
 if(AMR_WIND_ENABLE_NETCDF)
   add_test_red(abl_bndry_input abl_bndry_output)
   add_test_red(abl_bndry_input_amr abl_bndry_output)
   add_test_red(abl_bndry_input_amr_inflow abl_bndry_output_amr_inflow)
+  add_test_red(nrel_terrain nrel_precursor)
 endif()
 
 #=============================================================================
