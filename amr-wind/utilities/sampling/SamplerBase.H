@@ -61,6 +61,9 @@ public:
     //! Run actions after sample (useful in interpolated subsampling)
     virtual void post_sample_actions() {}
 
+    //! Run actions after regrid (important when using field-based quantities)
+    virtual void post_regrid_actions() {}
+
     //! Run specific output for the sampler
     virtual bool output_netcdf_field(
         const std::vector<double>& /*unused*/,
