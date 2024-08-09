@@ -79,11 +79,11 @@ void MOData::update_fluxes(int max_iters)
     if (iter >= max_iters) {
         amrex::Print()
             << "MOData::update_fluxes: Convergence criteria not met after "
-            << max_iters << " iterations"
-            << "\nObuhov length = " << obukhov_len << " zeta = " << zeta
-            << "\npsi_m = " << psi_m << " psi_h = " << psi_h
-            << "\nutau = " << utau << " Tsurf = " << surf_temp
-            << " q = " << surf_temp_flux << std::endl;
+            << max_iters << " iterations\nObuhov length = " << obukhov_len
+            << " zeta = " << zeta << "\npsi_m = " << psi_m
+            << " psi_h = " << psi_h << "\nutau = " << utau
+            << " Tsurf = " << surf_temp << " q = " << surf_temp_flux
+            << std::endl;
     }
 }
 

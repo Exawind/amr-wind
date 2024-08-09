@@ -212,11 +212,10 @@ void RadarSampler::update_sampling_locations()
 
     if (m_debug_print) {
         amrex::Print() << "-------------------------" << std::endl
-                       << "ts_diff: " << ts_diff << "\t"
-                       << "m_ns: " << m_ns << "\t"
-                       << "m_ntotal: " << m_ntotal << "\t"
-                       << "Radar Time: " << m_radar_time << "\t"
-                       << "AMR Time: " << time << std::endl
+                       << "ts_diff: " << ts_diff << "\tm_ns: " << m_ns
+                       << "\tm_ntotal: " << m_ntotal
+                       << "\tRadar Time: " << m_radar_time
+                       << "\tAMR Time: " << time << std::endl
                        << "-------------------------" << std::endl;
     }
 
@@ -341,12 +340,10 @@ void RadarSampler::new_cone()
 
     if (m_debug_print) {
         amrex::Print() << "-------------------------" << std::endl
-                       << "Beam Length: " << m_beam_length << "\t"
-                       << "nquad: " << nquad << "\t"
-                       << "dx[2]: " << dx[2] << "\t"
-                       << "m_npts: " << m_npts << "\t"
-                       << "ntheta: " << m_ntheta << "\t"
-                       << "nphi: " << m_nphi << std::endl
+                       << "Beam Length: " << m_beam_length
+                       << "\tnquad: " << nquad << "\tdx[2]: " << dx[2]
+                       << "\tm_npts: " << m_npts << "\tntheta: " << m_ntheta
+                       << "\tnphi: " << m_nphi << std::endl
                        << "-------------------------" << std::endl;
     }
 

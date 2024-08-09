@@ -118,9 +118,7 @@ void main_main()
         output_stream.open(output_file);
 
         // Create Headers
-        output_stream << "x,"
-                      << "y,"
-                      << "z";
+        output_stream << "x,y,z";
         int num_vars = 0;
         for (auto const& name : var_names) {
             output_stream << "," << name;
