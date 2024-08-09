@@ -5,12 +5,7 @@ FreeSurfaceSampler
 
 .. toctree::
    :maxdepth: 2
-   :glob:
 
    ./fs_sampler_native
-
-NetCDF format: dam break example
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-ASCII format: dam break example
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   ./fs_sampler_netcdf
+   ./fs_sampler_ascii
