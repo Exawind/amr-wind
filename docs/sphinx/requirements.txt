@@ -1,0 +1,6 @@
+myst-nb
+numpy
+netCDF4
+matplotlib
+pandas
+pathlib

@@ -43,6 +43,7 @@ objectives:
    user/user
    theory/theory 
    developer/index
+   post_processing_examples/index
 
 
 Indices and tables
