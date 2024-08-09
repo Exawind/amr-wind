@@ -318,11 +318,10 @@ void DTUSpinnerSampler::update_sampling_locations()
     int n_totalsize = AMREX_SPACEDIM * (m_ntotal);
 
     if (m_hub_debug) {
-        amrex::Print() << "ts_diff: " << ts_diff << "\t"
-                       << "m_ns: " << m_ns << "\t"
-                       << "Spin Time: " << m_time_sampling << "\t"
-                       << "AMR Time: " << time << "\t"
-                       << "n_size: " << n_size << std::endl;
+        amrex::Print() << "ts_diff: " << ts_diff << "\tm_ns: " << m_ns
+                       << "\tSpin Time: " << m_time_sampling
+                       << "\tAMR Time: " << time << "\tn_size: " << n_size
+                       << std::endl;
     }
 
     // Resize these variables so they can store all the locations

@@ -72,7 +72,7 @@ zhi.temperature = 0.003 # tracer is used to specify potential temperature gradie
 
 mac_proj.verbose = 0
 mac_proj.bottom_verbose = 0
-mac_proj.mg_rtol = 1.0e-8
+mac_proj.mg_rtol = 1.0e-12
 mac_proj.mg_atol = 1.0e-12
 
 mac_proj.max_coarsening_level = 0
