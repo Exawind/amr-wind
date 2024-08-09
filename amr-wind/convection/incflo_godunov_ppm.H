@@ -18,7 +18,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_xbc(
     const amrex::Array4<const amrex::Real>& s,
     amrex::Real& lo,
     amrex::Real& hi,
-    amrex::Real& /* uedge */,
+    amrex::Real& velm,
+    amrex::Real& velp,
     const int bclo,
     const int bchi,
     const int domlo,
@@ -26,9 +27,11 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_xbc(
 {
     using namespace amrex;
 
+    // for MIO BC, use vel+ at bclo and vel- at bchi for determining ext_dir/foextrap treatment
     // Low X
     if (i <= domlo) {
-        if (bclo == BCType::ext_dir) {
+        if (bclo == BCType::ext_dir ||
+            (bclo == BCType::direction_dependent && velp >= 0.0)) {
             // IAMR does this but it breaks lo/hi symmetry
             // Real st = (uedge <= small_vel) ? hi : s(domlo-1,j,k,n);
             // So here we do something simpler...
@@ -39,7 +42,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_xbc(
 
         else if (
             bclo == BCType::foextrap || bclo == BCType::hoextrap ||
-            bclo == BCType::reflect_even) {
+            bclo == BCType::reflect_even ||
+            (bclo == BCType::direction_dependent && velp < 0.0)) {
             lo = hi;
 
         } else if (bclo == BCType::reflect_odd) {
@@ -50,7 +54,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_xbc(
 
     // High X
     if (i > domhi) {
-        if (bchi == BCType::ext_dir) {
+        if (bchi == BCType::ext_dir ||
+            (bchi == BCType::direction_dependent && velm <= 0.0)) {
             // IAMR does this but it breaks lo/hi symmetry
             // Real st = (uedge >= -small_vel)? lo : s(domhi+1,j,k,n);
             // So here we do something simpler...
@@ -61,7 +66,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_xbc(
 
         else if (
             bchi == BCType::foextrap || bchi == BCType::hoextrap ||
-            bchi == BCType::reflect_even) {
+            bchi == BCType::reflect_even ||
+            (bchi == BCType::direction_dependent && velm > 0.0)) {
             hi = lo;
 
         } else if (bchi == BCType::reflect_odd) {
@@ -79,7 +85,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_ybc(
     const amrex::Array4<const amrex::Real>& s,
     amrex::Real& lo,
     amrex::Real& hi,
-    amrex::Real /* vedge */,
+    amrex::Real& velm,
+    amrex::Real& velp,
     const int bclo,
     const int bchi,
     const int domlo,
@@ -89,7 +96,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_ybc(
 
     // Low Y
     if (j <= domlo) {
-        if (bclo == BCType::ext_dir) {
+        if (bclo == BCType::ext_dir ||
+            (bclo == BCType::direction_dependent && velp >= 0.0)) {
             // IAMR does this but it breaks lo/hi symmetry
             // Real st = (vedge <= small_vel) ? hi : s(i,domlo-1,k,n);
             // So here we do something simpler...
@@ -100,7 +108,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_ybc(
 
         else if (
             bclo == BCType::foextrap || bclo == BCType::hoextrap ||
-            bclo == BCType::reflect_even) {
+            bclo == BCType::reflect_even ||
+            (bclo == BCType::direction_dependent && velp < 0.0)) {
             lo = hi;
 
         } else if (bclo == BCType::reflect_odd) {
@@ -111,7 +120,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_ybc(
 
     // High Y
     if (j > domhi) {
-        if (bchi == BCType::ext_dir) {
+        if (bchi == BCType::ext_dir ||
+            (bchi == BCType::direction_dependent && velm <= 0.0)) {
             // IAMR does this but it breaks lo/hi symmetry
             // Real st = (vedge >= -small_vel)? lo : s(i,domhi+1,k,n);
             // So here we do something simpler...
@@ -122,7 +132,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_ybc(
 
         else if (
             bchi == BCType::foextrap || bchi == BCType::hoextrap ||
-            bchi == BCType::reflect_even) {
+            bchi == BCType::reflect_even ||
+            (bchi == BCType::direction_dependent && velm > 0.0)) {
             hi = lo;
 
         } else if (bchi == BCType::reflect_odd) {
@@ -140,7 +151,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_zbc(
     const amrex::Array4<const amrex::Real>& s,
     amrex::Real& lo,
     amrex::Real& hi,
-    amrex::Real /* wedge */,
+    amrex::Real& velm,
+    amrex::Real& velp,
     const int bclo,
     const int bchi,
     const int domlo,
@@ -150,7 +162,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_zbc(
 
     // Low Z
     if (k <= domlo) {
-        if (bclo == BCType::ext_dir) {
+        if (bclo == BCType::ext_dir ||
+            (bclo == BCType::direction_dependent && velp >= 0.0)) {
             // IAMR does this but it breaks lo/hi symmetry
             // Real st = (wedge <= small_vel) ? hi : s(i,j,domlo-1,n);
             // So here we do something simpler...
@@ -161,7 +174,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_zbc(
 
         else if (
             bclo == BCType::foextrap || bclo == BCType::hoextrap ||
-            bclo == BCType::reflect_even) {
+            bclo == BCType::reflect_even ||
+            (bclo == BCType::direction_dependent && velp < 0.0)) {
             lo = hi;
 
         } else if (bclo == BCType::reflect_odd) {
@@ -172,7 +186,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_zbc(
 
     // High Z
     if (k > domhi) {
-        if (bchi == BCType::ext_dir) {
+        if (bchi == BCType::ext_dir  ||
+            (bchi == BCType::direction_dependent && velm <= 0.0)) {
             // IAMR does this but it breaks lo/hi symmetry
             // Real st = (wedge >= -small_vel)? lo : s(i,j,domhi+1,n);
             // So here we do something simpler...
@@ -181,7 +196,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_zbc(
             hi = st;
         } else if (
             bchi == BCType::foextrap || bchi == BCType::hoextrap ||
-            bchi == BCType::reflect_even) {
+            bchi == BCType::reflect_even ||
+            (bchi == BCType::direction_dependent && velm > 0.0)) {
             hi = lo;
 
         } else if (bchi == BCType::reflect_odd) {
@@ -206,13 +222,15 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_xbc_lo(
     using namespace amrex;
 
     if (i == domlo) {
-        if (bclo == BCType::ext_dir && uedge(i, j, k) >= 0.) {
+        if ((bclo == BCType::ext_dir && uedge(i, j, k) >= 0.) ||
+            (bclo == BCType::direction_dependent && uedge(i, j, k) >= 0.)) {
             hi = s(domlo - 1, j, k, n);
             lo = hi;
         } else if (
             bclo == BCType::foextrap || bclo == BCType::hoextrap ||
             bclo == BCType::reflect_even ||
-            (bclo == BCType::ext_dir && uedge(i, j, k) < 0)) {
+            (bclo == BCType::ext_dir && uedge(i, j, k) < 0) ||
+            (bclo == BCType::direction_dependent && uedge(i, j, k) < 0)) {
             lo = hi;
 
         } else if (bclo == BCType::reflect_odd) {
@@ -239,13 +257,15 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_xbc_hi(
     using namespace amrex;
 
     if (i == domhi + 1) {
-        if (bchi == BCType::ext_dir && uedge(i, j, k) <= 0.) {
+        if ((bchi == BCType::ext_dir && uedge(i, j, k) <= 0.) ||
+            (bchi == BCType::direction_dependent && uedge(i, j, k) <= 0.)) {
             lo = s(domhi + 1, j, k, n);
             hi = lo;
         } else if (
             bchi == BCType::foextrap || bchi == BCType::hoextrap ||
             bchi == BCType::reflect_even ||
-            (bchi == BCType::ext_dir && uedge(i, j, k) > 0)) {
+            (bchi == BCType::ext_dir && uedge(i, j, k) > 0) ||
+            (bchi == BCType::direction_dependent && uedge(i, j, k) > 0)) {
             hi = lo;
 
         } else if (bchi == BCType::reflect_odd) {
@@ -272,13 +292,15 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_ybc_lo(
     using namespace amrex;
 
     if (j == domlo) {
-        if (bclo == BCType::ext_dir && vedge(i, j, k) >= 0.) {
+        if ((bclo == BCType::ext_dir && vedge(i, j, k) >= 0.) ||
+            (bclo == BCType::direction_dependent && vedge(i, j, k) >= 0.)) {
             hi = s(i, domlo - 1, k, n);
             lo = hi;
         } else if (
             bclo == BCType::foextrap || bclo == BCType::hoextrap ||
             bclo == BCType::reflect_even ||
-            (bclo == BCType::ext_dir && vedge(i, j, k) < 0)) {
+            (bclo == BCType::ext_dir && vedge(i, j, k) < 0) ||
+            (bclo == BCType::direction_dependent && vedge(i, j, k) < 0)) {
             lo = hi;
 
         } else if (bclo == BCType::reflect_odd) {
@@ -305,13 +327,15 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_ybc_hi(
     using namespace amrex;
 
     if (j == domhi + 1) {
-        if (bchi == BCType::ext_dir && vedge(i, j, k) <= 0.) {
+        if ((bchi == BCType::ext_dir && vedge(i, j, k) <= 0.) ||
+            (bchi == BCType::direction_dependent && vedge(i, j, k) <= 0.)) {
             lo = s(i, domhi + 1, k, n);
             hi = lo;
         } else if (
             bchi == BCType::foextrap || bchi == BCType::hoextrap ||
             bchi == BCType::reflect_even ||
-            (bchi == BCType::ext_dir && vedge(i, j, k) > 0)) {
+            (bchi == BCType::ext_dir && vedge(i, j, k) > 0) ||
+            (bchi == BCType::direction_dependent && vedge(i, j, k) > 0)) {
             hi = lo;
 
         } else if (bchi == BCType::reflect_odd) {
@@ -338,7 +362,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_zbc_lo(
     using namespace amrex;
 
     if (k == domlo) {
-        if (bclo == BCType::ext_dir && wedge(i, j, k) >= 0.) {
+        if ((bclo == BCType::ext_dir && wedge(i, j, k) >= 0.) ||
+            (bclo == BCType::direction_dependent && wedge(i, j, k) >= 0.)) {
             hi = s(i, j, domlo - 1, n);
             lo = hi;
         }
@@ -346,7 +371,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_zbc_lo(
         else if (
             bclo == BCType::foextrap || bclo == BCType::hoextrap ||
             bclo == BCType::reflect_even ||
-            (bclo == BCType::ext_dir && wedge(i, j, k) < 0)) {
+            (bclo == BCType::ext_dir && wedge(i, j, k) < 0) ||
+            (bclo == BCType::direction_dependent && wedge(i, j, k) < 0)) {
             lo = hi;
 
         } else if (bclo == BCType::reflect_odd) {
@@ -373,13 +399,15 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_cc_zbc_hi(
     using namespace amrex;
 
     if (k == domhi + 1) {
-        if (bchi == BCType::ext_dir && wedge(i, j, k) <= 0.) {
+        if ((bchi == BCType::ext_dir && wedge(i, j, k) <= 0.) ||
+            (bchi == BCType::direction_dependent && wedge(i, j, k) <= 0.)) {
             lo = s(i, j, domhi + 1, n);
             hi = lo;
         } else if (
             bchi == BCType::foextrap || bchi == BCType::hoextrap ||
             bchi == BCType::reflect_even ||
-            (bchi == BCType::ext_dir && wedge(i, j, k) > 0)) {
+            (bchi == BCType::ext_dir && wedge(i, j, k) > 0) ||
+            (bchi == BCType::direction_dependent && wedge(i, j, k) > 0)) {
             hi = lo;
 
         } else if (bchi == BCType::reflect_odd) {

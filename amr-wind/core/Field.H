@@ -396,6 +396,12 @@ public:
     inline bool& in_uniform_space() { return m_mesh_mapped; }
     inline bool in_uniform_space() const { return m_mesh_mapped; }
 
+    //! Check if any of the boundaries is a mass-inflow-outflow
+    inline bool has_inout_bndry() const { return m_inout_bndry; }
+
+    //! Set the inout_bndry flag
+    void set_inout_bndry() { m_inout_bndry = true; }
+
 protected:
     Field(
         FieldRepo& repo,
@@ -425,6 +431,9 @@ protected:
 
     //! Flag to track mesh mapping (to uniform space) of field
     bool m_mesh_mapped{false};
+
+    //! Flag to indicate whether any of the boundaries is mass-inflow-outflow
+    bool m_inout_bndry{false};
 };
 
 } // namespace amr_wind

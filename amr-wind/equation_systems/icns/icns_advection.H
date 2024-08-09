@@ -28,7 +28,8 @@ public:
         bool /*has_overset*/,
         bool /*variable_density*/,
         bool /*mesh_mapping*/,
-        bool /*is_anelastic*/);
+        bool /*is_anelastic*/,
+        bool /*has_inout_bndry*/);
 
     void set_inflow_velocity(amrex::Real time);
 
@@ -49,6 +50,8 @@ private:
     void init_projector(const FaceFabPtrVec& /*beta*/) noexcept;
     void init_projector(const amrex::Real /*beta*/) noexcept;
 
+    void enforce_inout_solvability(const amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>>& a_umac) noexcept;
+
     FieldRepo& m_repo;
     PhysicsMgr& m_phy_mgr;
     std::unique_ptr<Hydro::MacProjector> m_mac_proj;
@@ -58,6 +61,7 @@ private:
     bool m_variable_density{false};
     bool m_mesh_mapping{false};
     bool m_is_anelastic{false};
+    bool m_has_inout_bndry{false};
     amrex::Real m_rho_0{1.0};
 };
 
@@ -73,7 +77,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         bool has_overset,
         bool variable_density,
         bool mesh_mapping,
-        bool is_anelastic)
+        bool is_anelastic,
+        bool has_inout_bndry)
         : fields(fields_in)
         , u_mac(fields_in.repo.get_field("u_mac"))
         , v_mac(fields_in.repo.get_field("v_mac"))
@@ -84,7 +89,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
               has_overset,
               variable_density,
               mesh_mapping,
-              is_anelastic)
+              is_anelastic,
+              has_inout_bndry)
     {
 
         amrex::ParmParse pp("incflo");
@@ -450,7 +456,8 @@ struct AdvectionOp<ICNS, fvm::MOL>
         bool has_overset,
         bool variable_density,
         bool mesh_mapping,
-        bool is_anelastic)
+        bool is_anelastic,
+        bool has_inout_bndry)
         : fields(fields_in)
         , u_mac(fields_in.repo.get_field("u_mac"))
         , v_mac(fields_in.repo.get_field("v_mac"))
@@ -462,7 +469,8 @@ struct AdvectionOp<ICNS, fvm::MOL>
               has_overset,
               variable_density,
               m_mesh_mapping,
-              is_anelastic)
+              is_anelastic,
+              has_inout_bndry)
     {}
 
     void preadvect(

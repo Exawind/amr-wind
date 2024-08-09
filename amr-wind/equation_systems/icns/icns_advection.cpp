@@ -47,7 +47,8 @@ MacProjOp::MacProjOp(
     bool has_overset,
     bool variable_density,
     bool mesh_mapping,
-    bool is_anelastic)
+    bool is_anelastic,
+    bool has_inout_bndry)
     : m_repo(repo)
     , m_phy_mgr(phy_mgr)
     , m_options("mac_proj")
@@ -55,6 +56,7 @@ MacProjOp::MacProjOp(
     , m_variable_density(variable_density)
     , m_mesh_mapping(mesh_mapping)
     , m_is_anelastic(is_anelastic)
+    , m_has_inout_bndry(has_inout_bndry)
 {
     amrex::ParmParse pp("incflo");
     pp.query("density", m_rho_0);
@@ -62,6 +64,17 @@ MacProjOp::MacProjOp(
     bool disable_ovst_mac = false;
     pp_ovst.query("disable_coupled_mac_proj", disable_ovst_mac);
     m_has_overset = m_has_overset && !disable_ovst_mac;
+}
+
+void MacProjOp::enforce_inout_solvability (
+    const amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>>& a_umac
+) noexcept
+{
+    auto& velocity = m_repo.get_field("velocity");
+    amrex::BCRec const* bc_type = velocity.bcrec_device().data();
+    const amrex::Vector<amrex::Geometry>& geom = m_repo.mesh().Geom();
+
+    HydroUtils::enforceInOutSolvability(a_umac, bc_type, geom);
 }
 
 void MacProjOp::init_projector(const MacProjOp::FaceFabPtrVec& beta) noexcept
@@ -264,6 +277,10 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
                     density.num_comp(), 0);
             }
         }
+    }
+
+    if (m_has_inout_bndry) {
+        enforce_inout_solvability(mac_vec);
     }
 
     m_mac_proj->setUMAC(mac_vec);
