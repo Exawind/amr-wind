@@ -30,6 +30,8 @@ struct TwoLayer
             const int dcomp,
             const int orig_comp) const
         {
+if (iv[0] == 0 && iv[1] == 1 && iv[2] == 1) { amrex::Print() << "time: " << time << std::endl; }
+//if (iv[0] == -1 && iv[1] == 1 && iv[2] == 1) { amrex::Print() << "time: " << time << std::endl; }
             const auto* problo = geom.ProbLo();
             const auto* dx = geom.CellSize();
             const auto z = problo[2] + (iv[2] + 0.5) * dx[2];   // not true for w-mac vels
