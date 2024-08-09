@@ -57,8 +57,14 @@ public:
     //! Number of instances
     int num_instances() const { return m_ninst; }
     //! Number of points, total
-    long num_points() const override { return m_npts * m_ninst; }
-    long num_output_points() const override { return m_npts * m_ninst; }
+    long num_points() const override
+    {
+        return static_cast<long>(m_npts) * m_ninst;
+    }
+    long num_output_points() const override
+    {
+        return static_cast<long>(m_npts) * m_ninst;
+    }
     //! Locations
     amrex::Vector<amrex::Array<amrex::Real, 2>> grid_locations() const
     {
