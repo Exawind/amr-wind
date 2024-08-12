@@ -415,7 +415,8 @@ public:
 
         for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
             const auto ori = oit();
-            if (bctype[ori] != BC::mass_inflow) {
+            if ((bctype[ori] != BC::mass_inflow) &&
+                (bctype[ori] != BC::mass_inflow_outflow)) {
                 continue;
             }
 
