@@ -168,6 +168,8 @@ struct AdvectionOp<
                         (godunov_scheme == godunov::scheme::WENO_JS)) {
                         m_allow_inflow_on_outflow = true;
                     }
+                    amrex::Real dt_arg = (only_spatial) ? 0.0 : dt;
+
                     HydroUtils::ComputeFluxesOnBoxFromState(
                         bx, PDE::ndim, mfi,
                         (PDE::multiply_rho ? rhotrac : tra_arr),
@@ -177,7 +179,7 @@ struct AdvectionOp<
                         known_edge_state, u_mac(lev).const_array(mfi),
                         v_mac(lev).const_array(mfi),
                         w_mac(lev).const_array(mfi), divu,
-                        src_term(lev).const_array(mfi), geom[lev], dt,
+                        src_term(lev).const_array(mfi), geom[lev], dt_arg,
                         dof_field.bcrec(), dof_field.bcrec_device().data(),
                         iconserv.data(), godunov_use_ppm,
                         godunov_use_forces_in_trans, is_velocity,
@@ -186,58 +188,57 @@ struct AdvectionOp<
                 } else {
                     amrex::Abort("Invalid godunov scheme");
                 }
-                amrex::Gpu::streamSynchronize();
             }
-        }
-
-        amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> fluxes(
-            repo.num_active_levels());
-        for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-            fluxes[lev][0] = &(*flux_x)(lev);
-            fluxes[lev][1] = &(*flux_y)(lev);
-            fluxes[lev][2] = &(*flux_z)(lev);
-        }
-
-        // In order to enforce conservation across coarse-fine boundaries we
-        // must be sure to average down the fluxes before we use them
-        for (int lev = repo.num_active_levels() - 1; lev > 0; --lev) {
-            amrex::IntVect rr =
-                geom[lev].Domain().size() / geom[lev - 1].Domain().size();
-            amrex::average_down_faces(
-                GetArrOfConstPtrs(fluxes[lev]), fluxes[lev - 1], rr,
-                geom[lev - 1]);
-        }
-
-        for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-            for (amrex::MFIter mfi(dof_field(lev), amrex::TilingIfNotGPU());
-                 mfi.isValid(); ++mfi) {
-                const auto& bx = mfi.tilebox();
-
-                HydroUtils::ComputeDivergence(
-                    bx, conv_term(lev).array(mfi), (*flux_x)(lev).array(mfi),
-                    (*flux_y)(lev).array(mfi), (*flux_z)(lev).array(mfi),
-                    PDE::ndim, geom[lev], amrex::Real(-1.0),
-                    fluxes_are_area_weighted);
-            }
+            amrex::Gpu::streamSynchronize();
         }
     }
 
-    PDEFields& fields;
-    Field& density;
-    Field& u_mac;
-    Field& v_mac;
-    Field& w_mac;
-    amrex::Gpu::DeviceVector<int> iconserv;
+    amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>>
+        fluxes(repo.num_active_levels());
+    for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+        fluxes[lev][0] = &(*flux_x)(lev);
+        fluxes[lev][1] = &(*flux_y)(lev);
+        fluxes[lev][2] = &(*flux_z)(lev);
+    }
 
-    godunov::scheme godunov_scheme = godunov::scheme::WENOZ;
-    std::string godunov_type{"weno_z"};
-    const bool fluxes_are_area_weighted{false};
-    bool godunov_use_forces_in_trans{false};
-    bool m_allow_inflow_on_outflow{false};
-    std::string advection_type{"Godunov"};
+    // In order to enforce conservation across coarse-fine boundaries we
+    // must be sure to average down the fluxes before we use them
+    for (int lev = repo.num_active_levels() - 1; lev > 0; --lev) {
+        amrex::IntVect rr =
+            geom[lev].Domain().size() / geom[lev - 1].Domain().size();
+        amrex::average_down_faces(
+            GetArrOfConstPtrs(fluxes[lev]), fluxes[lev - 1], rr, geom[lev - 1]);
+    }
+
+    for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+        for (amrex::MFIter mfi(dof_field(lev), amrex::TilingIfNotGPU());
+             mfi.isValid(); ++mfi) {
+            const auto& bx = mfi.tilebox();
+
+            HydroUtils::ComputeDivergence(
+                bx, conv_term(lev).array(mfi), (*flux_x)(lev).array(mfi),
+                (*flux_y)(lev).array(mfi), (*flux_z)(lev).array(mfi), PDE::ndim,
+                geom[lev], amrex::Real(-1.0), fluxes_are_area_weighted);
+        }
+    }
+}
+
+PDEFields& fields;
+Field & density;
+Field & u_mac;
+Field & v_mac;
+Field & w_mac;
+amrex::Gpu::DeviceVector<int> iconserv;
+
+godunov::scheme godunov_scheme = godunov::scheme::WENOZ;
+std::string godunov_type{"weno_z"};
+const bool fluxes_are_area_weighted{false};
+bool godunov_use_forces_in_trans{false};
+bool m_allow_inflow_on_outflow{false};
+std::string advection_type{"Godunov"};
 };
 
 } // namespace amr_wind::pde
