@@ -168,8 +168,8 @@ struct DirichletOp
 
                 // Check if this boundary is a dirichlet or mixed type
                 const auto bctyp = (ori.isLow() ? bc.lo(idir) : bc.hi(idir));
-                if ((bctyp != amrex::BCType::ext_dir)
-                 && (bctyp != amrex::BCType::direction_dependent)) {
+                if ((bctyp != amrex::BCType::ext_dir) &&
+                    (bctyp != amrex::BCType::direction_dependent)) {
                     continue;
                 }
 
@@ -183,8 +183,8 @@ struct DirichletOp
                     continue;
                 }
 
-                if ((m_bc_type[ori] == BC::mass_inflow)
-                 || (m_bc_type[ori] == BC::mass_inflow_outflow)) {
+                if ((m_bc_type[ori] == BC::mass_inflow) ||
+                    (m_bc_type[ori] == BC::mass_inflow_outflow)) {
                     m_inflow_op(
                         iv, field, geom, time, ori, n, dcomp, orig_comp);
                 } else {

@@ -17,8 +17,8 @@ struct TwoLayer
         // velocities of the top and bottom layer respectively
         amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> top_vel = {0.0};
         amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> bottom_vel = {0.0};
-        amrex::Real z_part{0.5};        // z-coordinate that divides top and bottom
-        amrex::Real init_perturb{1.0};  // initial perturbation for testing
+        amrex::Real z_part{0.5}; // z-coordinate that divides top and bottom
+        amrex::Real init_perturb{1.0}; // initial perturbation for testing
 
         AMREX_GPU_DEVICE
         inline void operator()(
@@ -42,7 +42,7 @@ struct TwoLayer
                 vel = {bottom_vel[0], bottom_vel[1], 0.0};
             }
 
-            if (time == 0.0)  {
+            if (time == 0.0) {
                 vel[0] *= init_perturb;
                 vel[1] *= init_perturb;
             }

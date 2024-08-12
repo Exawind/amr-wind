@@ -66,9 +66,9 @@ MacProjOp::MacProjOp(
     m_has_overset = m_has_overset && !disable_ovst_mac;
 }
 
-void MacProjOp::enforce_inout_solvability (
-    const amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>>& a_umac
-) noexcept
+void MacProjOp::enforce_inout_solvability(
+    const amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>>&
+        a_umac) noexcept
 {
     auto& velocity = m_repo.get_field("velocity");
     amrex::BCRec const* bc_type = velocity.bcrec_device().data();

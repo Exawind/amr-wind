@@ -78,9 +78,10 @@ void amr_wind::nodal_projection::apply_dirichlet_vel(
         });
 }
 
-void
-amr_wind::nodal_projection::enforce_inout_solvability (
-    amr_wind::Field& velocity, const Vector<Geometry>& geom, const int num_levels)
+void amr_wind::nodal_projection::enforce_inout_solvability(
+    amr_wind::Field& velocity,
+    const Vector<Geometry>& geom,
+    const int num_levels)
 {
     BCRec const* bc_type = velocity.bcrec_device().data();
     Vector<Array<MultiFab*, AMREX_SPACEDIM>> vel_vec(num_levels);

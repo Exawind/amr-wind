@@ -2,15 +2,13 @@
 #include "amr-wind/boundary_conditions/MassInflowOutflowBC.H"
 
 namespace amr_wind {
-namespace {
-
-} // namespace
 
 MassInflowOutflowBC::MassInflowOutflowBC(Field& field, amrex::Orientation ori)
     : m_field(field), m_ori(ori)
 {}
 
-void MassInflowOutflowBC::operator()(Field& /*field*/, const FieldState /*rho_state*/)
+void MassInflowOutflowBC::operator()(
+    Field& /*field*/, const FieldState /*rho_state*/)
 {
     const auto& repo = m_field.repo();
     const auto& velocity = repo.get_field("velocity");
@@ -47,7 +45,8 @@ void MassInflowOutflowBC::operator()(Field& /*field*/, const FieldState /*rho_st
                         const amrex::IntVect ivm = iv - iv_dir;
                         if (vel(ivm[0], ivm[1], ivm[2], idim) < 0) {
                             for (int n = 0; n < ncomp; n++) {
-                                bc_a(ivm[0], ivm[1], ivm[2], n) = bc_a(i, j, k, n);
+                                bc_a(ivm[0], ivm[1], ivm[2], n) =
+                                    bc_a(i, j, k, n);
                             }
                         }
                     });
@@ -61,7 +60,8 @@ void MassInflowOutflowBC::operator()(Field& /*field*/, const FieldState /*rho_st
                         const amrex::IntVect ivm = iv - iv_dir;
                         if (vel(i, j, k, idim) > 0) {
                             for (int n = 0; n < ncomp; n++) {
-                                bc_a(i, j, k, n) = bc_a(ivm[0], ivm[1], ivm[2], n);
+                                bc_a(i, j, k, n) =
+                                    bc_a(ivm[0], ivm[1], ivm[2], n);
                             }
                         }
                     });

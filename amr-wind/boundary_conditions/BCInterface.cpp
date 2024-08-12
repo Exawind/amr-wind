@@ -104,12 +104,11 @@ void BCIface::set_bcfuncs()
             m_field.register_custom_bc<FixedGradientBC>(ori);
         }
 
-        if ((m_field.name() == "velocity")      // only velocity for now
+        if ((m_field.name() == "velocity") // only velocity for now
             && (bct == BC::mass_inflow_outflow)) {
 
             m_field.register_custom_bc<MassInflowOutflowBC>(ori);
         }
-
     }
 }
 
@@ -155,7 +154,8 @@ amrex::Array<const std::string, 3> BCIface::get_dirichlet_udfs()
 
                 if (has_inflow_outflow_udf && (inflow_outflow_udf != val)) {
                     amrex::Abort(
-                        "BC: Inflow-outflow UDF must be same for all inflow-outflow faces");
+                        "BC: Inflow-outflow UDF must be same for all "
+                        "inflow-outflow faces");
                 } else {
                     inflow_outflow_udf = val;
                     has_inflow_outflow_udf = true;
@@ -366,7 +366,8 @@ void BCScalar::read_values()
 
         amrex::ParmParse pp(bcid);
         if (((bct == BC::mass_inflow) && (const_dirichlet_inflow)) ||
-            ((bct == BC::mass_inflow_outflow) && (const_dirichlet_inflow_outflow))) {
+            ((bct == BC::mass_inflow_outflow) &&
+             (const_dirichlet_inflow_outflow))) {
             pp.getarr(fname.c_str(), bcval[ori], 0, ndim);
         } else {
             pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
