@@ -248,6 +248,7 @@ add_test_re(rankine)
 add_test_re(rankine-sym)
 add_test_re(box_refinement)
 add_test_re(cylinder_refinement)
+add_test_re(freestream_godunov_inout)
 
 if(NOT AMR_WIND_ENABLE_CUDA)
   add_test_re(ctv_godunov_plm)
