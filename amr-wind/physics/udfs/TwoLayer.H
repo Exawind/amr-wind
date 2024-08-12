@@ -15,9 +15,10 @@ struct TwoLayer
     struct DeviceOp
     {
         // velocities of the top and bottom layer respectively
-        //amrex::Real pvel{0.0};  amrex::Real mvel{0.0};
-        amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> pvel = {0.0};
-        amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> mvel = {0.0};
+        amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> top_vel = {0.0};
+        amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> bottom_vel = {0.0};
+        amrex::Real z_part{0.5};        // z-coordinate that divides top and bottom
+        amrex::Real init_perturb{1.0};  // initial perturbation for testing
 
         AMREX_GPU_DEVICE
         inline void operator()(
@@ -25,28 +26,25 @@ struct TwoLayer
             amrex::Array4<amrex::Real> const& field,
             amrex::GeometryData const& geom,
             const amrex::Real time,
-            amrex::Orientation ori,
+            amrex::Orientation /* ori */,
             const int comp,
             const int dcomp,
             const int orig_comp) const
         {
-if (iv[0] == 0 && iv[1] == 1 && iv[2] == 1) { amrex::Print() << "time: " << time << std::endl; }
-//if (iv[0] == -1 && iv[1] == 1 && iv[2] == 1) { amrex::Print() << "time: " << time << std::endl; }
             const auto* problo = geom.ProbLo();
             const auto* dx = geom.CellSize();
-            const auto z = problo[2] + (iv[2] + 0.5) * dx[2];   // not true for w-mac vels
+            const auto z = problo[2] + (iv[2] + 0.5) * dx[2];
 
             amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> vel;
-            if (z>=0.5) {
-                vel = {pvel[0], pvel[1], 0.0};
+            if (z >= z_part) {
+                vel = {top_vel[0], top_vel[1], 0.0};
             } else {
-                vel = {mvel[0], mvel[1], 0.0};
+                vel = {bottom_vel[0], bottom_vel[1], 0.0};
             }
 
-            // perturb by some factor at time 0
             if (time == 0.0)  {
-                vel[0] *= 0.9;
-                vel[1] *= 0.9;
+                vel[0] *= init_perturb;
+                vel[1] *= init_perturb;
             }
 
             field(iv[0], iv[1], iv[2], dcomp + comp) = vel[orig_comp + comp];

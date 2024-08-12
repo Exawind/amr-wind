@@ -57,8 +57,10 @@ geometry.prob_hi        =   1.0 0.5 1.0  # Hi corner coordinates
 geometry.is_periodic    =   0   1   0   # Periodicity x y z (0/1)
 
 # Boundary conditions
-TwoLayer.mvel = -1.0 0.0 0.0
-TwoLayer.pvel =  1.0 0.0 0.0
+TwoLayer.bottom_vel = -1.0 0.0 0.0
+TwoLayer.top_vel =  1.0 0.0 0.0
+TwoLayer.init_perturb = 0.9
+TwoLayer.z_partition = 0.5
 
 xlo.type = "mass_inflow_outflow"
 xlo.density = 1.0
