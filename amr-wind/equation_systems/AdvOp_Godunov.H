@@ -30,8 +30,7 @@ struct AdvectionOp<
         bool /* has_overset */,
         bool /* variable density */,
         bool /* mesh mapping */,
-        bool /* is_anelastic */,
-        bool /* has_inout_bndry */)
+        bool /* is_anelastic */)
         : fields(fields_in)
         , density(fields_in.repo.get_field("density"))
         , u_mac(fields_in.repo.get_field("u_mac"))

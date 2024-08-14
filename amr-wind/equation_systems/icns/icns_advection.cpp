@@ -47,8 +47,7 @@ MacProjOp::MacProjOp(
     bool has_overset,
     bool variable_density,
     bool mesh_mapping,
-    bool is_anelastic,
-    bool has_inout_bndry)
+    bool is_anelastic)
     : m_repo(repo)
     , m_phy_mgr(phy_mgr)
     , m_options("mac_proj")
@@ -56,7 +55,6 @@ MacProjOp::MacProjOp(
     , m_variable_density(variable_density)
     , m_mesh_mapping(mesh_mapping)
     , m_is_anelastic(is_anelastic)
-    , m_has_inout_bndry(has_inout_bndry)
 {
     amrex::ParmParse pp("incflo");
     pp.query("density", m_rho_0);
@@ -279,7 +277,9 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
         }
     }
 
-    if (m_has_inout_bndry) {
+    const bool has_inout_bndry =
+        (m_repo.get_field("velocity")).has_inout_bndry();
+    if (has_inout_bndry) {
         enforce_inout_solvability(mac_vec);
     }
 
