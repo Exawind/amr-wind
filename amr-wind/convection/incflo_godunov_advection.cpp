@@ -145,7 +145,8 @@ void godunov::compute_fluxes(
             auto bc = pbc[n];
 
             Godunov_trans_xbc(
-                i, j, k, n, q, lo, hi, uad, uad, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
+                i, j, k, n, q, lo, hi, uad, uad, bc.lo(0), bc.hi(0),
+                dlo.x, dhi.x);
             xlo(i, j, k, n) = lo;
             xhi(i, j, k, n) = hi;
             Real st = (uval) ? lo : hi;
@@ -172,7 +173,8 @@ void godunov::compute_fluxes(
             auto bc = pbc[n];
 
             Godunov_trans_ybc(
-                i, j, k, n, q, lo, hi, vad, vad, bc.lo(1), bc.hi(1), dlo.y, dhi.y);
+                i, j, k, n, q, lo, hi, vad, vad, bc.lo(1), bc.hi(1),
+                dlo.y, dhi.y);
 
             ylo(i, j, k, n) = lo;
             yhi(i, j, k, n) = hi;
@@ -199,7 +201,8 @@ void godunov::compute_fluxes(
             }
 
             Godunov_trans_zbc(
-                i, j, k, n, q, lo, hi, wad, wad, bc.lo(2), bc.hi(2), dlo.z, dhi.z);
+                i, j, k, n, q, lo, hi, wad, wad, bc.lo(2), bc.hi(2),
+                dlo.z, dhi.z);
 
             zlo(i, j, k, n) = lo;
             zhi(i, j, k, n) = hi;
@@ -232,8 +235,8 @@ void godunov::compute_fluxes(
 
             Real wad = wmac(i, j, k);
             Godunov_trans_zbc(
-                i, j, k, n, q, l_zylo, l_zyhi, wad, wad, bc.lo(2), bc.hi(2), dlo.z,
-                dhi.z);
+                i, j, k, n, q, l_zylo, l_zyhi, wad, wad, bc.lo(2), bc.hi(2),
+                dlo.z, dhi.z);
 
             constexpr Real small_vel = 1.e-8;
 
@@ -251,8 +254,8 @@ void godunov::compute_fluxes(
 
             Real vad = vmac(i, j, k);
             Godunov_trans_ybc(
-                i, j, k, n, q, l_yzlo, l_yzhi, vad, vad, bc.lo(1), bc.hi(1), dlo.y,
-                dhi.y);
+                i, j, k, n, q, l_yzlo, l_yzhi, vad, vad, bc.lo(1), bc.hi(1),
+                dlo.y, dhi.y);
 
             constexpr Real small_vel = 1.e-8;
 
@@ -344,8 +347,8 @@ void godunov::compute_fluxes(
 
             Real uad = umac(i, j, k);
             Godunov_trans_xbc(
-                i, j, k, n, q, l_xzlo, l_xzhi, uad, uad, bc.lo(0), bc.hi(0), dlo.x,
-                dhi.x);
+                i, j, k, n, q, l_xzlo, l_xzhi, uad, uad, bc.lo(0), bc.hi(0),
+                dlo.x, dhi.x);
 
             constexpr Real small_vel = 1.e-8;
 
@@ -363,8 +366,8 @@ void godunov::compute_fluxes(
 
             Real wad = wmac(i, j, k);
             Godunov_trans_zbc(
-                i, j, k, n, q, l_zxlo, l_zxhi, wad, wad, bc.lo(2), bc.hi(2), dlo.z,
-                dhi.z);
+                i, j, k, n, q, l_zxlo, l_zxhi, wad, wad, bc.lo(2), bc.hi(2),
+                dlo.z, dhi.z);
 
             constexpr Real small_vel = 1.e-8;
 
@@ -455,8 +458,8 @@ void godunov::compute_fluxes(
 
             Real uad = umac(i, j, k);
             Godunov_trans_xbc(
-                i, j, k, n, q, l_xylo, l_xyhi, uad, uad, bc.lo(0), bc.hi(0), dlo.x,
-                dhi.x);
+                i, j, k, n, q, l_xylo, l_xyhi, uad, uad, bc.lo(0), bc.hi(0),
+                dlo.x, dhi.x);
 
             constexpr Real small_vel = 1.e-8;
 
@@ -474,8 +477,8 @@ void godunov::compute_fluxes(
 
             Real vad = vmac(i, j, k);
             Godunov_trans_ybc(
-                i, j, k, n, q, l_yxlo, l_yxhi, vad, vad, bc.lo(1), bc.hi(1), dlo.y,
-                dhi.y);
+                i, j, k, n, q, l_yxlo, l_yxhi, vad, vad, bc.lo(1), bc.hi(1),
+                dlo.y, dhi.y);
 
             constexpr Real small_vel = 1.e-8;
 

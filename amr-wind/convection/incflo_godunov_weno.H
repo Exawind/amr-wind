@@ -71,8 +71,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_xbc(
 {
     using namespace amrex;
 
-    if (bclo == BCType::ext_dir || bclo == BCType::hoextrap
-     || (bclo == BCType::direction_dependent && velm >= 0.0)) {
+    if (bclo == BCType::ext_dir || bclo == BCType::hoextrap ||
+        (bclo == BCType::direction_dependent && velm >= 0.0)) {
         if (i == domlo) {
             sp = -0.2 * s(domlo - 1, j, k, n) + 0.75 * s(domlo, j, k, n) +
                  0.5 * s(domlo + 1, j, k, n) - 0.05 * s(domlo + 2, j, k, n);
@@ -88,8 +88,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_xbc(
         }
     }
 
-    if (bchi == BCType::ext_dir || bchi == BCType::hoextrap
-     || (bchi == BCType::direction_dependent && velp <= 0.0)) {
+    if (bchi == BCType::ext_dir || bchi == BCType::hoextrap ||
+        (bchi == BCType::direction_dependent && velp <= 0.0)) {
         if (i == domhi) {
             sm = -0.2 * s(domhi + 1, j, k, n) + 0.75 * s(domhi, j, k, n) +
                  0.5 * s(domhi - 1, j, k, n) - 0.05 * s(domhi - 2, j, k, n);
@@ -125,8 +125,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_ybc(
 {
     using namespace amrex;
 
-    if (bclo == BCType::ext_dir || bclo == BCType::hoextrap
-     || (bclo == BCType::direction_dependent && velm >= 0.0)) {
+    if (bclo == BCType::ext_dir || bclo == BCType::hoextrap ||
+        (bclo == BCType::direction_dependent && velm >= 0.0)) {
         if (j == domlo) {
             sp = -0.2 * s(i, domlo - 1, k, n) + 0.75 * s(i, domlo, k, n) +
                  0.5 * s(i, domlo + 1, k, n) - 0.05 * s(i, domlo + 2, k, n);
@@ -142,8 +142,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_ybc(
         }
     }
 
-    if (bchi == BCType::ext_dir || bchi == BCType::hoextrap
-     || (bchi == BCType::direction_dependent && velp <= 0.0)) {
+    if (bchi == BCType::ext_dir || bchi == BCType::hoextrap ||
+        (bchi == BCType::direction_dependent && velp <= 0.0)) {
         if (j == domhi) {
             sm = -0.2 * s(i, domhi + 1, k, n) + 0.75 * s(i, domhi, k, n) +
                  0.5 * s(i, domhi - 1, k, n) - 0.05 * s(i, domhi - 2, k, n);
@@ -179,8 +179,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_zbc(
 {
     using namespace amrex;
 
-    if (bclo == BCType::ext_dir || bclo == BCType::hoextrap
-     || (bclo == BCType::direction_dependent && velm >= 0.0)) {
+    if (bclo == BCType::ext_dir || bclo == BCType::hoextrap ||
+        (bclo == BCType::direction_dependent && velm >= 0.0)) {
         if (k == domlo) {
             sp = -0.2 * s(i, j, domlo - 1, n) + 0.75 * s(i, j, domlo, n) +
                  0.5 * s(i, j, domlo + 1, n) - 0.05 * s(i, j, domlo + 2, n);
@@ -196,8 +196,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_zbc(
         }
     }
 
-    if (bchi == BCType::ext_dir || bchi == BCType::hoextrap
-     || (bchi == BCType::direction_dependent && velp <= 0.0)) {
+    if (bchi == BCType::ext_dir || bchi == BCType::hoextrap ||
+        (bchi == BCType::direction_dependent && velp <= 0.0)) {
         if (k == domhi) {
             sm = -0.2 * s(i, j, domhi + 1, n) + 0.75 * s(i, j, domhi, n) +
                  0.5 * s(i, j, domhi - 1, n) - 0.05 * s(i, j, domhi - 2, n);
@@ -423,8 +423,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_x(
     amrex::Real sp = sedge2;
 
     Godunov_weno_xbc(
-        i, j, k, n, sm, sp, sedge1, sedge2, S, vel_edge(i, j, k), vel_edge(i+1, j, k),
-        bc.lo(0), bc.hi(0), domlo, domhi);
+        i, j, k, n, sm, sp, sedge1, sedge2, S, vel_edge(i, j, k),
+        vel_edge(i + 1, j, k), bc.lo(0), bc.hi(0), domlo, domhi);
 
     amrex::Real s6 = 6.0 * s0 - 3.0 * (sm + sp);
 
@@ -482,8 +482,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_y(
     amrex::Real sp = sedge2;
 
     Godunov_weno_ybc(
-        i, j, k, n, sm, sp, sedge1, sedge2, S, vel_edge(i, j, k),  vel_edge(i, j+1, k),
-        bc.lo(1), bc.hi(1), domlo, domhi);
+        i, j, k, n, sm, sp, sedge1, sedge2, S, vel_edge(i, j, k),
+        vel_edge(i, j + 1, k), bc.lo(1), bc.hi(1), domlo, domhi);
 
     amrex::Real s6 = 6.0 * s0 - 3.0 * (sm + sp);
 
@@ -541,8 +541,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_z(
     amrex::Real sp = sedge2;
 
     Godunov_weno_zbc(
-        i, j, k, n, sm, sp, sedge1, sedge2, S, vel_edge(i, j, k),  vel_edge(i, j, k+1),
-        bc.lo(2), bc.hi(2), domlo, domhi);
+        i, j, k, n, sm, sp, sedge1, sedge2, S, vel_edge(i, j, k),
+        vel_edge(i, j, k + 1), bc.lo(2), bc.hi(2), domlo, domhi);
 
     amrex::Real s6 = 6.0 * s0 - 3.0 * (sm + sp);
 
@@ -567,4 +567,3 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_z(
 } // namespace
 
 #endif
-

@@ -27,7 +27,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_xbc(
 {
     using namespace amrex;
 
-    // for MIO BC, use vel+ at bclo and vel- at bchi for determining ext_dir/foextrap treatment
+    // for MIO BC, use vel+ at bclo and vel- at bchi for determining
+    // ext_dir/foextrap treatment
     // Low X
     if (i <= domlo) {
         if (bclo == BCType::ext_dir ||
@@ -186,7 +187,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_zbc(
 
     // High Z
     if (k > domhi) {
-        if (bchi == BCType::ext_dir  ||
+        if (bchi == BCType::ext_dir ||
             (bchi == BCType::direction_dependent && velm <= 0.0)) {
             // IAMR does this but it breaks lo/hi symmetry
             // Real st = (wedge >= -small_vel)? lo : s(i,j,domhi+1,n);
