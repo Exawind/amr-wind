@@ -317,7 +317,15 @@ void incflo::do_advance()
     if (m_prescribe_vel) {
         prescribe_advance();
     } else {
-        advance();
+
+        for (int it_nl = 1; it_nl < m_adv_iters; ++it_nl) {
+
+            if (it_nl == 1) {
+                advance();
+            } else {
+                advance_nonlinear();
+            }
+        }
     }
     if (m_sim.has_overset()) {
         m_ovst_ops.post_advance_work();
