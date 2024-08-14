@@ -12,14 +12,14 @@ void MassInflowOutflowBC::operator()(
 {
     const auto& repo = m_field.repo();
     const auto& velocity = repo.get_field("velocity");
-    // const auto bcvals = m_field.bc_values_device();
     const int ncomp = m_field.num_comp();
-    // const int idx = static_cast<int>(m_ori);
     const int idim = m_ori.coordDir();
     const auto islow = m_ori.isLow();
     const auto ishigh = m_ori.isHigh();
     const int nlevels = m_field.repo().num_active_levels();
-    const amrex::IntVect iv_dir = {idim == 0, idim == 1, idim == 2};
+    const amrex::IntVect iv_dir = {static_cast<int>(idim == 0),
+                                   static_cast<int>(idim == 1),
+                                   static_cast<int>(idim == 2)};
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& domain = repo.mesh().Geom(lev).Domain();
@@ -33,7 +33,9 @@ void MassInflowOutflowBC::operator()(
 #endif
         for (amrex::MFIter mfi(m_field(lev), mfi_info); mfi.isValid(); ++mfi) {
             auto bx = mfi.validbox();
-            bx.grow({!iv_dir[0], !iv_dir[1], !iv_dir[2]});
+            bx.grow({static_cast<int>(idim != 0),
+                     static_cast<int>(idim != 1),
+                     static_cast<int>(idim != 2)});
             const auto& bc_a = m_field(lev).array(mfi);
             const auto& vel = velocity(lev).array(mfi);
 
