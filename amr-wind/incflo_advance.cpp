@@ -60,11 +60,9 @@ void incflo::advance()
     }
 }
 
-void incflo::advance_nonlinear(int it_nonlinear)
+void incflo::advance_nonlinear()
 {
     BL_PROFILE("amr_wind::incflo::Advance_Nonlinear");
-
-    if (it_nonlinear == 0) m_sim.pde_manager().advance_states();
 
     ApplyPredictorNonLinear();
 
@@ -432,6 +430,259 @@ void incflo::ApplyPredictor(bool incremental_projection)
     }
 }
 
+void incflo::ApplyPredictorNonLinear(bool incremental_projection)
+{
+    BL_PROFILE("amr-wind::incflo::ApplyPredictorNonLinear");
+
+    // We use the new time value for things computed on the "*" state
+    Real new_time = m_time.new_time();
+
+    if (m_verbose > 2) {
+        PrintMaxValues("before predictor step");
+    }
+
+    if (m_use_godunov) {
+        amr_wind::io::print_mlmg_header("Godunov:");
+    } else {
+        amr_wind::io::print_mlmg_header("Predictor:");
+    }
+
+    auto& icns_fields = icns().fields();
+    auto& velocity_new = icns_fields.field;
+    auto& velocity_old = velocity_new.state(amr_wind::FieldState::Old);
+
+    auto& density_new = density();
+    const auto& density_old = density_new.state(amr_wind::FieldState::Old);
+    auto& density_nph = density_new.state(amr_wind::FieldState::NPH);
+
+    // *************************************************************************************
+    // Compute viscosity / diffusive coefficients
+    // *************************************************************************************
+    // TODO: This sub-section has not been adjusted for mesh mapping - adjust in
+    // corrector too
+    m_sim.turbulence_model().update_turbulent_viscosity(
+        amr_wind::FieldState::Old, m_diff_type);
+    icns().compute_mueff(amr_wind::FieldState::Old);
+    for (auto& eqns : scalar_eqns()) {
+        eqns->compute_mueff(amr_wind::FieldState::Old);
+    }
+
+    // *************************************************************************************
+    // Define the forcing terms to use in the Godunov prediction
+    // *************************************************************************************
+    // TODO: Godunov has not been adjusted for mesh mapping - adjust in
+    // corrector too
+    if (m_use_godunov) {
+        icns().compute_source_term(amr_wind::FieldState::Old);
+        for (auto& seqn : scalar_eqns()) {
+            seqn->compute_source_term(amr_wind::FieldState::Old);
+        }
+    }
+
+    // TODO: This sub-section has not been adjusted for mesh mapping - adjust in
+    // corrector too
+    if (need_divtau()) {
+        // *************************************************************************************
+        // Compute explicit viscous term using old density (1/rho)
+        // *************************************************************************************
+        // Reuse existing buffer to avoid creating new multifabs
+        amr_wind::field_ops::copy(
+            velocity_new, velocity_old, 0, 0, velocity_new.num_comp(), 1);
+        icns().compute_diffusion_term(amr_wind::FieldState::Old);
+        if (m_use_godunov) {
+            auto& velocity_forces = icns_fields.src_term;
+            // only the old states are used in predictor
+            const auto& divtau = icns_fields.diff_term;
+
+            amr_wind::field_ops::add(
+                velocity_forces, divtau, 0, 0, AMREX_SPACEDIM, 0);
+        }
+        // *************************************************************************************
+        // Compute explicit diffusive terms
+        // *************************************************************************************
+        for (auto& eqn : scalar_eqns()) {
+            auto& field = eqn->fields().field;
+            // Reuse existing buffer to avoid creating new multifabs
+            amr_wind::field_ops::copy(
+                field, field.state(amr_wind::FieldState::Old), 0, 0,
+                field.num_comp(), 1);
+
+            eqn->compute_diffusion_term(amr_wind::FieldState::Old);
+
+            if (m_use_godunov) {
+                amr_wind::field_ops::add(
+                    eqn->fields().src_term, eqn->fields().diff_term, 0, 0,
+                    field.num_comp(), 0);
+            }
+        }
+    }
+
+    if (m_use_godunov) {
+        // ICNS source term (and viscous term) are in terms of momentum;
+        // convert to velocity for MAC velocities by dividing by density
+        amr_wind::field_ops::divide(
+            icns().fields().src_term, density_old, 0, 0, 1, AMREX_SPACEDIM, 0);
+
+        const int nghost_force = 1;
+        IntVect ng(nghost_force);
+        icns().fields().src_term.fillpatch(m_time.current_time(), ng);
+
+        for (auto& eqn : scalar_eqns()) {
+            eqn->fields().src_term.fillpatch(m_time.current_time(), ng);
+        }
+    }
+
+    // Extrapolate and apply MAC projection for advection velocities
+    icns().pre_advection_actions(amr_wind::FieldState::Old);
+
+    // For scalars only first
+    // *************************************************************************************
+    // if ( m_use_godunov) Compute the explicit advective terms
+    //                     R_u^(n+1/2), R_s^(n+1/2) and R_t^(n+1/2)
+    // if (!m_use_godunov) Compute the explicit advective terms
+    //                     R_u^n      , R_s^n       and R_t^n
+    // *************************************************************************************
+    // TODO: Advection computation for scalar equations have not been adjusted
+    // for mesh mapping
+    for (auto& seqn : scalar_eqns()) {
+        seqn->compute_advection_term(amr_wind::FieldState::Old);
+    }
+
+    // *************************************************************************************
+    // Update density first
+    // *************************************************************************************
+    if (m_sim.pde_manager().constant_density()) {
+        amr_wind::field_ops::copy(density_nph, density_old, 0, 0, 1, 1);
+    }
+
+    // TODO: This sub-section has not been adjusted for mesh mapping - adjust in
+    // corrector too.
+    // Perform scalar update one at a time. This is to allow an
+    // updated density at `n+1/2` to be computed before other scalars use it
+    // when computing their source terms.
+    for (auto& eqn : scalar_eqns()) {
+        // Compute (recompute for Godunov) the scalar forcing terms
+        eqn->compute_source_term(amr_wind::FieldState::NPH);
+
+        // Update the scalar (if explicit), or the RHS for implicit/CN
+        eqn->compute_predictor_rhs(m_diff_type);
+
+        auto& field = eqn->fields().field;
+        if (m_diff_type != DiffusionType::Explicit) {
+            amrex::Real dt_diff = (m_diff_type == DiffusionType::Implicit)
+                                      ? m_time.delta_t()
+                                      : 0.5 * m_time.delta_t();
+
+            // Solve diffusion eqn. and update of the scalar field
+            eqn->solve(dt_diff);
+
+            // Post-processing actions after a PDE solve
+        } else if (m_diff_type == DiffusionType::Explicit && m_use_godunov) {
+            // explicit RK2
+            std::unique_ptr<amr_wind::ScratchField> diff_old =
+                m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::CELL);
+            auto& diff_new =
+                eqn->fields().diff_term.state(amr_wind::FieldState::New);
+            amr_wind::field_ops::copy(*diff_old, diff_new, 0, 0, 1, 0);
+            eqn->compute_diffusion_term(amr_wind::FieldState::New);
+            amrex::Real dto2 = 0.5 * m_time.delta_t();
+            amr_wind::field_ops::saxpy(
+                eqn->fields().field, -dto2, *diff_old, 0, 0, 1, 0);
+            amr_wind::field_ops::saxpy(
+                eqn->fields().field, +dto2, diff_new, 0, 0, 1, 0);
+        }
+        eqn->post_solve_actions();
+
+        // Update scalar at n+1/2
+        amr_wind::field_ops::lincomb(
+            field.state(amr_wind::FieldState::NPH), 0.5,
+            field.state(amr_wind::FieldState::Old), 0, 0.5, field, 0, 0,
+            field.num_comp(), 1);
+    }
+
+    // With scalars computed, compute advection of momentum
+    icns().compute_advection_term(amr_wind::FieldState::Old);
+
+    // *************************************************************************************
+    // Define (or if use_godunov, re-define) the forcing terms and viscous terms
+    // independently for the right hand side, without 1/rho term
+    // *************************************************************************************
+    icns().compute_source_term(amr_wind::FieldState::NPH);
+    icns().compute_diffusion_term(amr_wind::FieldState::Old);
+
+    // *************************************************************************************
+    // Evaluate right hand side and store in velocity
+    // *************************************************************************************
+    icns().compute_predictor_rhs(m_diff_type);
+
+    for (int ia = 1; ia < m_adv_iters; ++ia) {
+        // Fillpatch the velocity
+        icns().fields().field.fillpatch(0.0);
+        // Get n + 1/2 velocity
+        amr_wind::field_ops::lincomb(
+            icns().fields().field.state(amr_wind::FieldState::NPH), 0.5,
+            icns().fields().field.state(amr_wind::FieldState::Old), 0, 0.5,
+            icns().fields().field, 0, 0, icns().fields().field.num_comp(),
+            icns().fields().field.num_grow());
+
+        // Recompute advection of momentum
+        icns().compute_advection_term(amr_wind::FieldState::NPH);
+
+        // Recompute source and diffusion terms (if requested?)
+        /* icns().compute_source_term(amr_wind::FieldState::NPH)
+           icns().compute_diffusion_term(amr_wind::FieldState::NPH)*/
+
+        // RHS
+        icns().compute_predictor_rhs(m_diff_type);
+    }
+    if (m_verbose > 2) {
+        PrintMaxVelLocations("after predictor rhs");
+    }
+
+    // *************************************************************************************
+    // Solve diffusion equation for u* but using eta_old at old time
+    // *************************************************************************************
+    if (m_diff_type == DiffusionType::Crank_Nicolson ||
+        m_diff_type == DiffusionType::Implicit) {
+        Real dt_diff = (m_diff_type == DiffusionType::Implicit)
+                           ? m_time.delta_t()
+                           : 0.5 * m_time.delta_t();
+        icns().solve(dt_diff);
+    } else if (m_diff_type == DiffusionType::Explicit && m_use_godunov) {
+        // explicit RK2
+        std::unique_ptr<amr_wind::ScratchField> diff_old =
+            m_repo.create_scratch_field(
+                AMREX_SPACEDIM, 0, amr_wind::FieldLoc::CELL);
+
+        auto& diff_new =
+            icns().fields().diff_term.state(amr_wind::FieldState::New);
+        amr_wind::field_ops::copy(*diff_old, diff_new, 0, 0, AMREX_SPACEDIM, 0);
+        icns().compute_diffusion_term(amr_wind::FieldState::New);
+        amrex::Real dto2 = 0.5 * m_time.delta_t();
+        amr_wind::field_ops::saxpy(
+            icns().fields().field, -dto2, *diff_old, 0, 0, AMREX_SPACEDIM, 0);
+        amr_wind::field_ops::saxpy(
+            icns().fields().field, +dto2, diff_new, 0, 0, AMREX_SPACEDIM, 0);
+    }
+    icns().post_solve_actions();
+
+    if (m_verbose > 2) {
+        PrintMaxVelLocations("after diffusion solve");
+    }
+
+    // ************************************************************************************
+    //
+    // Project velocity field, update pressure
+    //
+    // ************************************************************************************
+    ApplyProjection(
+        (density_new).vec_const_ptrs(), new_time, m_time.delta_t(),
+        incremental_projection);
+
+    if (m_verbose > 2) {
+        PrintMaxVelLocations("after nodal projection");
+    }
+}
 //
 // Apply corrector:
 //

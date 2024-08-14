@@ -98,6 +98,7 @@ public:
     void pre_advance_stage2();
     void do_advance();
     void advance();
+    void advance_nonlinear();
     void prescribe_advance();
     void post_advance_work();
 
@@ -134,6 +135,7 @@ public:
     void ComputePrescribeDt();
 
     void ApplyPredictor(bool incremental_projection = false);
+    void ApplyPredictorNonLinear(bool incremental_projection = false);
     void ApplyCorrector();
     void ApplyPrescribeStep();
 

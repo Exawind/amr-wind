@@ -139,6 +139,7 @@ struct AdvectionOp<
                                 rho_arr(i, j, k) * tra_arr(i, j, k, n);
                         });
                 }
+<<<<<<< HEAD
 
                 if ((godunov_scheme == godunov::scheme::PPM) ||
                     (godunov_scheme == godunov::scheme::PPM_NOLIM) ||
@@ -161,6 +162,7 @@ struct AdvectionOp<
                         limiter_type = PPM::WENOZ;
                     } else if (godunov_scheme == godunov::scheme::WENO_JS) {
                         limiter_type = PPM::WENO_JS;
+=======
                     } else {
                         limiter_type = PPM::default_limiter;
                     }
