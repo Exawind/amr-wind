@@ -3,6 +3,7 @@
 
 #include <AMReX_Gpu.H>
 #include <AMReX_BCRec.H>
+#include <hydro_bcs_K.H>
 
 /* This header file contains the inlined __host__ __device__ functions required
    for the scalar advection routines for 3D Godunov. It also contains function
@@ -18,63 +19,18 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_xbc(
     const amrex::Array4<const amrex::Real>& s,
     amrex::Real& lo,
     amrex::Real& hi,
-    amrex::Real& velm,
-    amrex::Real& velp,
+    amrex::Real macvel,
     const int bclo,
     const int bchi,
     const int domlo,
     const int domhi)
 {
-    using namespace amrex;
-
-    // for MIO BC, use vel+ at bclo and vel- at bchi for determining
-    // ext_dir/foextrap treatment
-    // Low X
     if (i <= domlo) {
-        if (bclo == BCType::ext_dir ||
-            (bclo == BCType::direction_dependent && velp >= 0.0)) {
-            // IAMR does this but it breaks lo/hi symmetry
-            // Real st = (uedge <= small_vel) ? hi : s(domlo-1,j,k,n);
-            // So here we do something simpler...
-            Real st = s(domlo - 1, j, k, n);
-            lo = st;
-            hi = st;
-        }
-
-        else if (
-            bclo == BCType::foextrap || bclo == BCType::hoextrap ||
-            bclo == BCType::reflect_even ||
-            (bclo == BCType::direction_dependent && velp < 0.0)) {
-            lo = hi;
-
-        } else if (bclo == BCType::reflect_odd) {
-            hi = 0.;
-            lo = 0.;
-        }
-    }
-
-    // High X
-    if (i > domhi) {
-        if (bchi == BCType::ext_dir ||
-            (bchi == BCType::direction_dependent && velm <= 0.0)) {
-            // IAMR does this but it breaks lo/hi symmetry
-            // Real st = (uedge >= -small_vel)? lo : s(domhi+1,j,k,n);
-            // So here we do something simpler...
-            Real st = s(domhi + 1, j, k, n);
-            lo = st;
-            hi = st;
-        }
-
-        else if (
-            bchi == BCType::foextrap || bchi == BCType::hoextrap ||
-            bchi == BCType::reflect_even ||
-            (bchi == BCType::direction_dependent && velm > 0.0)) {
-            hi = lo;
-
-        } else if (bchi == BCType::reflect_odd) {
-            hi = 0.;
-            lo = 0.;
-        }
+        HydroBC::SetEdgeBCsLo(
+            0, i, j, k, n, s, lo, hi, macvel, bclo, domlo, true);
+    } else if (i > domhi) {
+        HydroBC::SetEdgeBCsHi(
+            0, i, j, k, n, s, lo, hi, macvel, bchi, domhi, true);
     }
 }
 
@@ -86,61 +42,18 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_ybc(
     const amrex::Array4<const amrex::Real>& s,
     amrex::Real& lo,
     amrex::Real& hi,
-    amrex::Real& velm,
-    amrex::Real& velp,
+    amrex::Real macvel,
     const int bclo,
     const int bchi,
     const int domlo,
     const int domhi)
 {
-    using namespace amrex;
-
-    // Low Y
     if (j <= domlo) {
-        if (bclo == BCType::ext_dir ||
-            (bclo == BCType::direction_dependent && velp >= 0.0)) {
-            // IAMR does this but it breaks lo/hi symmetry
-            // Real st = (vedge <= small_vel) ? hi : s(i,domlo-1,k,n);
-            // So here we do something simpler...
-            Real st = s(i, domlo - 1, k, n);
-            lo = st;
-            hi = st;
-        }
-
-        else if (
-            bclo == BCType::foextrap || bclo == BCType::hoextrap ||
-            bclo == BCType::reflect_even ||
-            (bclo == BCType::direction_dependent && velp < 0.0)) {
-            lo = hi;
-
-        } else if (bclo == BCType::reflect_odd) {
-            hi = 0.;
-            lo = 0.;
-        }
-    }
-
-    // High Y
-    if (j > domhi) {
-        if (bchi == BCType::ext_dir ||
-            (bchi == BCType::direction_dependent && velm <= 0.0)) {
-            // IAMR does this but it breaks lo/hi symmetry
-            // Real st = (vedge >= -small_vel)? lo : s(i,domhi+1,k,n);
-            // So here we do something simpler...
-            Real st = s(i, domhi + 1, k, n);
-            lo = st;
-            hi = st;
-        }
-
-        else if (
-            bchi == BCType::foextrap || bchi == BCType::hoextrap ||
-            bchi == BCType::reflect_even ||
-            (bchi == BCType::direction_dependent && velm > 0.0)) {
-            hi = lo;
-
-        } else if (bchi == BCType::reflect_odd) {
-            hi = 0.;
-            lo = 0.;
-        }
+        HydroBC::SetEdgeBCsLo(
+            1, i, j, k, n, s, lo, hi, macvel, bclo, domlo, true);
+    } else if (j > domhi) {
+        HydroBC::SetEdgeBCsHi(
+            1, i, j, k, n, s, lo, hi, macvel, bchi, domhi, true);
     }
 }
 
@@ -152,59 +65,18 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_trans_zbc(
     const amrex::Array4<const amrex::Real>& s,
     amrex::Real& lo,
     amrex::Real& hi,
-    amrex::Real& velm,
-    amrex::Real& velp,
+    amrex::Real macvel,
     const int bclo,
     const int bchi,
     const int domlo,
     const int domhi)
 {
-    using namespace amrex;
-
-    // Low Z
     if (k <= domlo) {
-        if (bclo == BCType::ext_dir ||
-            (bclo == BCType::direction_dependent && velp >= 0.0)) {
-            // IAMR does this but it breaks lo/hi symmetry
-            // Real st = (wedge <= small_vel) ? hi : s(i,j,domlo-1,n);
-            // So here we do something simpler...
-            Real st = s(i, j, domlo - 1, n);
-            lo = st;
-            hi = st;
-        }
-
-        else if (
-            bclo == BCType::foextrap || bclo == BCType::hoextrap ||
-            bclo == BCType::reflect_even ||
-            (bclo == BCType::direction_dependent && velp < 0.0)) {
-            lo = hi;
-
-        } else if (bclo == BCType::reflect_odd) {
-            hi = 0.;
-            lo = 0.;
-        }
-    }
-
-    // High Z
-    if (k > domhi) {
-        if (bchi == BCType::ext_dir ||
-            (bchi == BCType::direction_dependent && velm <= 0.0)) {
-            // IAMR does this but it breaks lo/hi symmetry
-            // Real st = (wedge >= -small_vel)? lo : s(i,j,domhi+1,n);
-            // So here we do something simpler...
-            Real st = s(i, j, domhi + 1, n);
-            lo = st;
-            hi = st;
-        } else if (
-            bchi == BCType::foextrap || bchi == BCType::hoextrap ||
-            bchi == BCType::reflect_even ||
-            (bchi == BCType::direction_dependent && velm > 0.0)) {
-            hi = lo;
-
-        } else if (bchi == BCType::reflect_odd) {
-            hi = 0.;
-            lo = 0.;
-        }
+        HydroBC::SetEdgeBCsLo(
+            2, i, j, k, n, s, lo, hi, macvel, bclo, domlo, true);
+    } else if (k > domhi) {
+        HydroBC::SetEdgeBCsHi(
+            2, i, j, k, n, s, lo, hi, macvel, bchi, domhi, true);
     }
 }
 
