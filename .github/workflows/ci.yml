@@ -17,7 +17,7 @@ jobs:
     - name: Clone
       uses: actions/checkout@v4
     - name: Check formatting
-      uses: DoozyX/clang-format-lint-action@v0.18
+      uses: DoozyX/clang-format-lint-action@v0.18.1
       with:
         source: './amr-wind ./unit_tests ./tools/utilities'
         exclude: '.'
