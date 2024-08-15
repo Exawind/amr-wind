@@ -361,26 +361,6 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // *************************************************************************************
     icns().compute_predictor_rhs(m_diff_type);
 
-    for (int ia = 1; ia < m_adv_iters; ++ia) {
-        // Fillpatch the velocity
-        icns().fields().field.fillpatch(0.0);
-        // Get n + 1/2 velocity
-        amr_wind::field_ops::lincomb(
-            icns().fields().field.state(amr_wind::FieldState::NPH), 0.5,
-            icns().fields().field.state(amr_wind::FieldState::Old), 0, 0.5,
-            icns().fields().field, 0, 0, icns().fields().field.num_comp(),
-            icns().fields().field.num_grow());
-
-        // Recompute advection of momentum
-        icns().compute_advection_term(amr_wind::FieldState::NPH);
-
-        // Recompute source and diffusion terms (if requested?)
-        /* icns().compute_source_term(amr_wind::FieldState::NPH)
-           icns().compute_diffusion_term(amr_wind::FieldState::NPH)*/
-
-        // RHS
-        icns().compute_predictor_rhs(m_diff_type);
-    }
     if (m_verbose > 2) {
         PrintMaxVelLocations("after predictor rhs");
     }
@@ -430,6 +410,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
     }
 }
 
+// Predictor step for subsequent non-linear iterations within each timestep
 void incflo::ApplyPredictorNonLinear(bool incremental_projection)
 {
     BL_PROFILE("amr-wind::incflo::ApplyPredictorNonLinear");
@@ -438,7 +419,7 @@ void incflo::ApplyPredictorNonLinear(bool incremental_projection)
     Real new_time = m_time.new_time();
 
     if (m_verbose > 2) {
-        PrintMaxValues("before predictor step");
+        PrintMaxValues("before non-linear predictor step");
     }
 
     if (m_use_godunov) {
@@ -615,26 +596,26 @@ void incflo::ApplyPredictorNonLinear(bool incremental_projection)
     // *************************************************************************************
     icns().compute_predictor_rhs(m_diff_type);
 
-    for (int ia = 1; ia < m_adv_iters; ++ia) {
-        // Fillpatch the velocity
-        icns().fields().field.fillpatch(0.0);
-        // Get n + 1/2 velocity
-        amr_wind::field_ops::lincomb(
-            icns().fields().field.state(amr_wind::FieldState::NPH), 0.5,
-            icns().fields().field.state(amr_wind::FieldState::Old), 0, 0.5,
-            icns().fields().field, 0, 0, icns().fields().field.num_comp(),
-            icns().fields().field.num_grow());
+    // Interpolate the NPH velocity from Old and New states
+    // Fillpatch the velocity
+    icns().fields().field.fillpatch(0.0);
+    // Get n + 1/2 velocity
+    amr_wind::field_ops::lincomb(
+        icns().fields().field.state(amr_wind::FieldState::NPH), 0.5,
+        icns().fields().field.state(amr_wind::FieldState::Old), 0, 0.5,
+        icns().fields().field, 0, 0, icns().fields().field.num_comp(),
+        icns().fields().field.num_grow());
 
-        // Recompute advection of momentum
-        icns().compute_advection_term(amr_wind::FieldState::NPH);
+    // Recompute advection of momentum
+    icns().compute_advection_term(amr_wind::FieldState::NPH);
 
-        // Recompute source and diffusion terms (if requested?)
-        /* icns().compute_source_term(amr_wind::FieldState::NPH)
-           icns().compute_diffusion_term(amr_wind::FieldState::NPH)*/
+    // Recompute source and diffusion terms (if requested?)
+    /* icns().compute_source_term(amr_wind::FieldState::NPH)
+       icns().compute_diffusion_term(amr_wind::FieldState::NPH)*/
 
-        // RHS
-        icns().compute_predictor_rhs(m_diff_type);
-    }
+    // RHS
+    icns().compute_predictor_rhs(m_diff_type);
+    //
     if (m_verbose > 2) {
         PrintMaxVelLocations("after predictor rhs");
     }
