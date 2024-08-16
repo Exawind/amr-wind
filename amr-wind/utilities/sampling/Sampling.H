@@ -123,6 +123,9 @@ private:
     //! List of fields to be sampled for this collection of probes
     amrex::Vector<Field*> m_fields;
 
+    //! List of IntFields to be sampled for this collection of probes
+    amrex::Vector<IntField*> m_int_fields;
+
     //! List of derived fields to be sampled for this collection of probes
     std::unique_ptr<DerivedQtyMgr> m_derived_mgr;
 
@@ -155,6 +158,9 @@ private:
 
     // number of field components
     int m_ncomp{0};
+
+    // number of int field components
+    int m_nicomp{0};
 
     // number of derived field components
     int m_ndcomp{0};

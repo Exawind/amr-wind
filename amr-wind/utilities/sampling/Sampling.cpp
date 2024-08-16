@@ -26,6 +26,8 @@ void Sampling::initialize()
     amrex::Vector<std::string> labels;
     // Fields to be sampled - requested by user
     amrex::Vector<std::string> field_names;
+    // Int Fields to be sampled - requested by user
+    amrex::Vector<std::string> int_field_names;
     // Derived fields to be sampled - requested by user
     amrex::Vector<std::string> derived_field_names;
 
@@ -39,6 +41,10 @@ void Sampling::initialize()
         ioutils::assert_with_message(
             ioutils::all_distinct(field_names),
             "Duplicates in " + m_label + ".fields");
+        pp.getarr("int_fields", int_field_names);
+        ioutils::assert_with_message(
+            ioutils::all_distinct(int_field_names),
+            "Duplicates in " + m_label + ".int_fields");
         pp.queryarr("derived_fields", derived_field_names);
         pp.query("output_frequency", m_out_freq);
         pp.query("output_format", m_out_fmt);
@@ -53,8 +59,10 @@ void Sampling::initialize()
         if (!repo.field_exists(fname)) {
             amrex::Print()
                 << "WARNING: Sampling: Non-existent field requested: " << fname
-                << ". This is a mistake or the requested field is a derived "
-                   "field and should be added to the derived_fields parameter"
+                << ". This is a mistake or the requested field is a int field "
+                   "or a derived "
+                   "field and should be added to the int_fields/derived_fields "
+                   "parameter"
                 << std::endl;
             continue;
         }
@@ -62,6 +70,26 @@ void Sampling::initialize()
         auto& fld = repo.get_field(fname);
         m_ncomp += fld.num_comp();
         m_fields.emplace_back(&fld);
+        ioutils::add_var_names(m_var_names, fld.name(), fld.num_comp());
+    }
+
+    // Process field information
+    m_nicomp = 0;
+    for (const auto& fname : int_field_names) {
+        if (!repo.field_exists(fname)) {
+            amrex::Print()
+                << "WARNING: Sampling: Non-existent int_field requested: "
+                << fname
+                << ". This is a mistake or the requested  int_field is a "
+                   "derived "
+                   "field and should be added to the derived_fields parameter"
+                << std::endl;
+            continue;
+        }
+
+        auto& fld = repo.get_int_field(fname);
+        m_nicomp += fld.num_comp();
+        m_int_fields.emplace_back(&fld);
         ioutils::add_var_names(m_var_names, fld.name(), fld.num_comp());
     }
 
@@ -121,7 +149,7 @@ void Sampling::update_container()
     // Initialize the particle container based on user inputs
     m_scontainer = std::make_unique<SamplingContainer>(m_sim.mesh());
 
-    m_scontainer->setup_container(m_ncomp + m_ndcomp);
+    m_scontainer->setup_container(m_ncomp + m_nicomp + m_ndcomp);
 
     m_scontainer->initialize_particles(m_samplers);
 
@@ -176,8 +204,10 @@ void Sampling::sampling_workflow()
 
     m_scontainer->interpolate_fields(m_fields, 0);
 
+    m_scontainer->interpolate_fields(m_int_fields, m_ncomp);
+
     m_scontainer->interpolate_derived_fields(
-        *m_derived_mgr, m_sim.repo(), m_ncomp);
+        *m_derived_mgr, m_sim.repo(), m_ncomp + m_nicomp);
 
     fill_buffer();
 
