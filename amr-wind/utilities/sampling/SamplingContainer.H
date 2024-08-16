@@ -119,7 +119,6 @@ public:
 
     long& num_sampling_particles() { return m_total_particles; }
 
-private:
     /** Interpolate a field to the sampling locations
      *
      *  \param np Number of particles in the container
@@ -183,6 +182,7 @@ private:
         });
     }
 
+private:
     //! Interpolate from an array4 onto particles
     template <typename FType>
     void interpolate(
