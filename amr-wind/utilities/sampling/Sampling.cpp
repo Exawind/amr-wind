@@ -174,7 +174,7 @@ void Sampling::sampling_workflow()
 
     update_sampling_locations();
 
-    m_scontainer->interpolate_fields(m_fields);
+    m_scontainer->interpolate_fields(m_fields, 0);
 
     m_scontainer->interpolate_derived_fields(
         *m_derived_mgr, m_sim.repo(), m_ncomp);
