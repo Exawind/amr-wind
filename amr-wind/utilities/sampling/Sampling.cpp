@@ -41,7 +41,7 @@ void Sampling::initialize()
         ioutils::assert_with_message(
             ioutils::all_distinct(field_names),
             "Duplicates in " + m_label + ".fields");
-        pp.getarr("int_fields", int_field_names);
+        pp.queryarr("int_fields", int_field_names);
         ioutils::assert_with_message(
             ioutils::all_distinct(int_field_names),
             "Duplicates in " + m_label + ".int_fields");
