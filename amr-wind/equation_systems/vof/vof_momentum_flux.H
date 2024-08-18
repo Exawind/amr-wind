@@ -18,8 +18,10 @@ static void hybrid_fluxes(
     const Field& u_mac,
     const Field& v_mac,
     const Field& w_mac,
-    amrex::BCRec const* velbc,
-    amrex::BCRec const* rhobc,
+    amrex::Vector<amrex::BCRec> const& velbc,
+    amrex::BCRec const* velbc_d,
+    amrex::Vector<amrex::BCRec> const& rhobc,
+    amrex::BCRec const* rhobc_d,
     const amrex::Real dt,
     godunov::scheme mflux_scheme,
     bool use_forces_in_trans)
@@ -42,6 +44,13 @@ static void hybrid_fluxes(
     auto ftmp_z =
         repo.create_scratch_field(ncomp, 0, amr_wind::FieldLoc::ZFACE);
 
+    auto face_x =
+        repo.create_scratch_field(ncomp, 0, amr_wind::FieldLoc::XFACE);
+    auto face_y =
+        repo.create_scratch_field(ncomp, 0, amr_wind::FieldLoc::YFACE);
+    auto face_z =
+        repo.create_scratch_field(ncomp, 0, amr_wind::FieldLoc::ZFACE);
+
     // Create iconserv = 0 array for density, avoid multiplication by face vel
     amrex::Gpu::DeviceVector<int> idnsty;
     idnsty.resize(1, -1);
@@ -59,9 +68,6 @@ static void hybrid_fluxes(
             fvm::Godunov::nghost_src);
         amrex::MultiFab::Copy(
             fq, src_term(lev), 0, 0, ncomp, fvm::Godunov::nghost_src);
-        amrex::MultiFab frho(
-            src_term(lev).boxArray(), src_term(lev).DistributionMap(), 1,
-            fvm::Godunov::nghost_src);
 
         amrex::MultiFab::Multiply(
             q, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_state);
@@ -75,7 +81,25 @@ static void hybrid_fluxes(
             fq, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_src);
         amrex::MultiFab::Multiply(
             fq, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_src);
+
+        amrex::MultiFab frho(
+            src_term(lev).boxArray(), src_term(lev).DistributionMap(), 1,
+            fvm::Godunov::nghost_src);
         frho.setVal(0.0);
+
+        std::string advection_type = "Godunov";
+        int limiter_type = PPM::UPWIND; // default
+        if (mflux_scheme == godunov::scheme::MINMOD) {
+            limiter_type = PPM::MINMOD;
+        } else if (mflux_scheme != godunov::scheme::UPWIND) {
+            amrex::Abort("Unknown limiter type in vof_momentum_flux.H");
+        }
+
+        const bool known_edge_state = false;
+        const bool godunov_use_ppm = true;
+        const bool is_velocity = false;
+        const bool allow_inflow_on_outflow = true;
+        const bool fluxes_are_area_weighted = false;
 
         amrex::MFItInfo mfi_info;
         if (amrex::Gpu::notInLaunchRegion()) {
@@ -88,12 +112,7 @@ static void hybrid_fluxes(
         for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
              ++mfi) {
             const auto& bx = mfi.tilebox();
-            const auto& bxg1 = amrex::grow(bx, 1);
-            const auto& xbx = amrex::surroundingNodes(bx, 0);
-            const auto& ybx = amrex::surroundingNodes(bx, 1);
-            const auto& zbx = amrex::surroundingNodes(bx, 2);
-            // Memory for working arrays in godunov::compute_fluxes
-            amrex::FArrayBox tmpfab(amrex::grow(bx, 1), ncomp * 14);
+
             // Arrays for easy reference (w for working array)
             auto F_x = flux_x(lev).array(mfi);
             auto F_y = flux_y(lev).array(mfi);
@@ -101,17 +120,27 @@ static void hybrid_fluxes(
             auto Fw_x = (*ftmp_x)(lev).array(mfi);
             auto Fw_y = (*ftmp_y)(lev).array(mfi);
             auto Fw_z = (*ftmp_z)(lev).array(mfi);
-            // At this point in the solve, these are advected
-            auto ar_x = advrho_x(lev).const_array(mfi);
-            auto ar_y = advrho_y(lev).const_array(mfi);
-            auto ar_z = advrho_z(lev).const_array(mfi);
+
+            // Temporary divu
+            amrex::FArrayBox divufab(amrex::grow(bx, 1), 1);
+            divufab.setVal(0.);
+            const auto& divu = divufab.array();
+
             // Compute momentum flux quantities (multiplied by face velocity)
-            godunov::compute_fluxes(
-                lev, bx, ncomp, Fw_x, Fw_y, Fw_z, q.const_array(mfi),
+            HydroUtils::ComputeFluxesOnBoxFromState(
+                bx, ncomp, mfi, q.const_array(mfi), Fw_x, Fw_y, Fw_z,
+                (*face_x)(lev).array(mfi), (*face_y)(lev).array(mfi),
+                (*face_z)(lev).array(mfi), known_edge_state,
                 u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
-                w_mac(lev).const_array(mfi), fq.const_array(mfi), velbc,
-                iconserv.data(), tmpfab.dataPtr(), geom, dt, mflux_scheme,
-                use_forces_in_trans);
+                w_mac(lev).const_array(mfi), divu, fq.const_array(mfi),
+                geom[lev], dt, velbc, velbc_d, iconserv.data(), godunov_use_ppm,
+                use_forces_in_trans, is_velocity, fluxes_are_area_weighted,
+                advection_type, limiter_type, allow_inflow_on_outflow);
+
+            const auto& bxg1 = amrex::grow(bx, 1);
+            const auto& xbx = amrex::surroundingNodes(bx, 0);
+            const auto& ybx = amrex::surroundingNodes(bx, 1);
+            const auto& zbx = amrex::surroundingNodes(bx, 2);
 
             // Where interface is present, replace current momentum flux
             // quantities with those from mflux_scheme
@@ -150,12 +179,20 @@ static void hybrid_fluxes(
                 });
 
             // Compute density flux quantities (not multiplied by face velocity)
-            godunov::compute_fluxes(
-                lev, bx, 1, Fw_x, Fw_y, Fw_z, rho_o(lev).const_array(mfi),
+            HydroUtils::ComputeFluxesOnBoxFromState(
+                bx, 1, mfi, rho_o(lev).const_array(mfi), Fw_x, Fw_y, Fw_z,
+                (*face_x)(lev).array(mfi), (*face_y)(lev).array(mfi),
+                (*face_z)(lev).array(mfi), known_edge_state,
                 u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
-                w_mac(lev).const_array(mfi), frho.const_array(mfi), rhobc,
-                idnsty.data(), tmpfab.dataPtr(), geom, dt, mflux_scheme,
-                use_forces_in_trans);
+                w_mac(lev).const_array(mfi), divu, frho.const_array(mfi),
+                geom[lev], dt, rhobc, rhobc_d, idnsty.data(), godunov_use_ppm,
+                use_forces_in_trans, is_velocity, fluxes_are_area_weighted,
+                advection_type, limiter_type, allow_inflow_on_outflow);
+
+            // At this point in the solve, these are advected
+            auto ar_x = advrho_x(lev).const_array(mfi);
+            auto ar_y = advrho_y(lev).const_array(mfi);
+            auto ar_z = advrho_z(lev).const_array(mfi);
 
             // When interface is present, divide by interpolated density to get
             // Favre-averaged flux value. Multiply all fluxes with advected
