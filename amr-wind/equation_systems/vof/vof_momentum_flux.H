@@ -123,7 +123,7 @@ static void hybrid_fluxes(
 
             // Temporary divu
             amrex::FArrayBox divufab(amrex::grow(bx, 1), 1);
-            divufab.setVal(0.);
+            divufab.setVal<amrex::RunOn::Device>(0.0);
             const auto& divu = divufab.array();
 
             // Compute momentum flux quantities (multiplied by face velocity)
