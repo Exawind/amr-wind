@@ -246,7 +246,8 @@ TEST_F(MFluxSchemeTest, upwind)
     EXPECT_NEAR(0, Im, m_tol);
     EXPECT_NEAR(0, Ip, m_tol);
 
-    // Set up field n = 2;
+    // Set up field
+    n = 2;
     init_scalar_slopechange(sc, n, i);
     // Compute interpolated quantities at each face
     get_output_upwind(sc, wmac, dt, i, j, k, Im, Ip);
