@@ -31,8 +31,8 @@ def main():
     assert Path(args.f1).is_dir()
 
     cols_to_drop = ["uid", "set_id", "probe_id"]
-    p0df = AmrexParticleFile(args.f0)().drop(cols_to_drop, axis=1)
-    p1df = AmrexParticleFile(args.f1)().drop(cols_to_drop, axis=1)
+    p0df = AmrexParticleFile(Path(args.f0) / "particles")().drop(cols_to_drop, axis=1)
+    p1df = AmrexParticleFile(Path(args.f1) / "particles")().drop(cols_to_drop, axis=1)
 
     adiff = np.sqrt(np.square(p0df - p1df).sum(axis=0))
     rdiff = np.sqrt(np.square(p0df - p1df).sum(axis=0)) / np.sqrt(
