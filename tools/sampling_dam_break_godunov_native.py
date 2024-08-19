@@ -8,9 +8,6 @@ sys.path.append(AMR_WIND_PATH+'/tools/')
 import amrex_particle
 from amrex_particle import AmrexParticleFile
 
-plt.rc('text',usetex=True)
-plt.rc('font',family='serif')
-
 loc_dir = "."
 pp_dir = loc_dir + "/post_processing"
 
