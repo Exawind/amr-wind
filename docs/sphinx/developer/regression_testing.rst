@@ -154,7 +154,7 @@ The gold files directory is organized by ``${OS}/${COMPILER}/${COMPILER_VERSION}
 
    # Because of test dependencies, this needs to be done twice
    ctest -j 8
-   cp -R golds/tmp/ golds/current/
+   rsync -a --delete golds/tmp/ golds/current/
 
 .. tip::
 
