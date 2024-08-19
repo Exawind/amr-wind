@@ -1,5 +1,5 @@
-#ifndef FREESURFACE_H
-#define FREESURFACE_H
+#ifndef FREESURFACESAMPLER_H
+#define FREESURFACESAMPLER_H
 
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/sampling/SamplerBase.H"
@@ -111,4 +111,4 @@ private:
 
 } // namespace amr_wind::sampling
 
-#endif /* FREESURFACE_H */
+#endif /* FREESURFACESAMPLER_H */

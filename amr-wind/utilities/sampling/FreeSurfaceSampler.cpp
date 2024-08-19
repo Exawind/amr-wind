@@ -1,4 +1,4 @@
-#include "amr-wind/utilities/sampling/FreeSurface.H"
+#include "amr-wind/utilities/sampling/FreeSurfaceSampler.H"
 #include "amr-wind/utilities/io_utils.H"
 #include <AMReX_MultiFabUtil.H>
 #include <utility>

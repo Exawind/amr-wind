@@ -1,5 +1,5 @@
 #include "aw_test_utils/MeshTest.H"
-#include "amr-wind/utilities/sampling/FreeSurface.H"
+#include "amr-wind/utilities/sampling/FreeSurfaceSampler.H"
 #include "amr-wind/utilities/tagging/FieldRefinement.H"
 
 namespace amr_wind_tests {
