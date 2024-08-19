@@ -80,7 +80,7 @@ void Sampling::initialize()
             amrex::Print()
                 << "WARNING: Sampling: Non-existent int_field requested: "
                 << fname
-                << ". This is a mistake or the requested  int_field is a "
+                << ". This is a mistake or the requested int_field is a "
                    "derived "
                    "field and should be added to the derived_fields parameter"
                 << std::endl;
