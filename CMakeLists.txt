@@ -22,7 +22,7 @@ option(AMR_WIND_ENABLE_TESTS "Enable testing suite" OFF)
 option(AMR_WIND_TEST_WITH_FCOMPARE "Check test plots against gold files" OFF)
 option(AMR_WIND_SAVE_GOLDS "Provide a directory in which to save golds during testing" OFF)
 option(AMR_WIND_ENABLE_FPE_TRAP_FOR_TESTS "Enable FPE trapping in tests" ON)
-option(AMR_WIND_TEST_WITH_PYTHON "Enable testing relying on python, like postprocessing" ON)
+option(AMR_WIND_TEST_WITH_PYTHON "Enable testing relying on python, like postprocessing" OFF)
 
 #Options for the executable
 option(AMR_WIND_ENABLE_MPI "Enable MPI" OFF)
