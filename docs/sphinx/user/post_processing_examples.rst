@@ -10,6 +10,9 @@ to the post_processing directory, not checkpoint files or plotfiles).
    :maxdepth: 3
 
    sampling.rst
+
+Simple Outputs
+--------------
    
 The following types of post_processing outputs produce text files
 with each column labeled in a 1-line header, and due to their
