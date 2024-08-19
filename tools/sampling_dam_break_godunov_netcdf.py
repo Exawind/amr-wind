@@ -75,6 +75,3 @@ plt.ylabel(r'$z$',fontsize=16)
 plt.xlabel(r'$x$',fontsize=16)
 plt.colorbar()
 plt.savefig('plot_sampling_netcdf.pdf',format='pdf',dpi=300,bbox_inches="tight")
-
-# Line color gets darker with time
-# Points colored with sampled velocity magnitude
