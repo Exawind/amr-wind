@@ -22,6 +22,7 @@ option(AMR_WIND_ENABLE_TESTS "Enable testing suite" OFF)
 option(AMR_WIND_TEST_WITH_FCOMPARE "Check test plots against gold files" OFF)
 option(AMR_WIND_SAVE_GOLDS "Provide a directory in which to save golds during testing" OFF)
 option(AMR_WIND_ENABLE_FPE_TRAP_FOR_TESTS "Enable FPE trapping in tests" ON)
+option(AMR_WIND_TEST_WITH_PYTHON "Enable testing relying on python, like postprocessing" ON)
 
 #Options for the executable
 option(AMR_WIND_ENABLE_MPI "Enable MPI" OFF)
@@ -190,6 +191,11 @@ if(AMR_WIND_ENABLE_HELICS)
   target_include_directories(${amr_wind_lib_name} PUBLIC ${HELICS_INSTALL_DIR}/include)
   target_link_libraries(${amr_wind_lib_name} PUBLIC HELICS::helicsCpp98)
   target_compile_definitions(${amr_wind_lib_name} PRIVATE AMR_WIND_USE_HELICS)
+endif()
+
+if(AMR_WIND_TEST_WITH_PYTHON)
+  set(CMAKE_PREFIX_PATH ${PYTHON_DIR} ${CMAKE_PREFIX_PATH})
+  find_package(Python REQUIRED)
 endif()
 
 #Build amr-wind and link to amrex library
