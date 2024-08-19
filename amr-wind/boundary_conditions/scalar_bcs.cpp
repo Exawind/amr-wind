@@ -7,9 +7,9 @@ void register_scalar_dirichlet(
     const SimTime& time,
     const amrex::Array<const std::string, 3>& udfs)
 {
-    const std::string inflow_udf = udfs[0];
-    const std::string inflow_outflow_udf = udfs[1];
-    const std::string wall_udf = udfs[2];
+    const std::string& inflow_udf = udfs[0];
+    const std::string& inflow_outflow_udf = udfs[1];
+    const std::string& wall_udf = udfs[2];
 
     if ((inflow_udf == "ConstDirichlet") &&
         (inflow_outflow_udf == "ConstDirichlet") &&
