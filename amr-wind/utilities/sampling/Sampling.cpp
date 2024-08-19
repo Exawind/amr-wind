@@ -267,6 +267,10 @@ void Sampling::convert_velocity_lineofsight()
         }
         soffset += sample_size;
     }
+#else
+    amrex::Abort(
+        "NetCDF support was not enabled during build time. Please recompile or "
+        "use native format");
 #endif
 }
 
@@ -303,6 +307,10 @@ void Sampling::create_output_buffer()
     }
 
     m_netcdf_output_particles = m_output_buf.size() / nvars;
+#else
+    amrex::Abort(
+        "NetCDF support was not enabled during build time. Please recompile or "
+        "use native format");
 #endif
 }
 
@@ -313,6 +321,10 @@ void Sampling::fill_buffer()
     if (m_out_fmt == "netcdf") {
         m_scontainer->populate_buffer(m_sample_buf);
     }
+#else
+    amrex::Abort(
+        "NetCDF support was not enabled during build time. Please recompile or "
+        "use native format");
 #endif
 }
 
