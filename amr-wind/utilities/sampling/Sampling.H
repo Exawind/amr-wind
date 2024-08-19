@@ -79,8 +79,6 @@ public:
 #ifdef AMR_WIND_USE_NETCDF
         if (m_out_fmt == "netcdf") {
             return static_cast<int>(m_netcdf_output_particles);
-        } else {
-            return 0;
         }
 #else
         amrex::Abort(
@@ -88,6 +86,7 @@ public:
             "recompile or "
             "use native format");
 #endif
+        return 0;
     }
 
     const amrex::Vector<std::string>& var_names() const { return m_var_names; }
