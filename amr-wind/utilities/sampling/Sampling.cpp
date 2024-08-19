@@ -105,6 +105,13 @@ void Sampling::initialize()
         sampling_workflow();
         sampling_post();
     }
+
+    // Check
+    for (const auto& obj : m_samplers) {
+        if ((obj->do_convert_velocity_los()) && (m_out_fmt != "netcdf")) {
+            amrex::Abort("Velocity line of sight capability requires NetCDF");
+        }
+    }
 }
 
 void Sampling::update_container()
