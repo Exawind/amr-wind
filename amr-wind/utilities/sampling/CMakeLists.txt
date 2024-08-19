@@ -13,7 +13,7 @@ target_sources(${amr_wind_lib_name}
   FieldNorms.cpp
   KineticEnergy.cpp
   Enstrophy.cpp
-  FreeSurface.cpp
+  FreeSurfaceSampler.cpp
   VolumeSampler.cpp
   WaveEnergy.cpp
   )
