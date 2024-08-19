@@ -3,9 +3,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-plt.rc('text',usetex=True)
-plt.rc('font',family='serif')
-
 loc_dir = "."
 pp_dir = loc_dir + "/post_processing"
 
@@ -39,7 +36,7 @@ for n in range(nt):
     plt.plot(xshort,zshort,color=cstr)
     plt.scatter(xshort,zshort,c=vshort,cmap="jet",vmin=0.,vmax=2.)
 
-plt.ylabel(r'$z$',fontsize=16)
-plt.xlabel(r'$x$',fontsize=16)
+plt.ylabel('$z$',fontsize=16)
+plt.xlabel('$x$',fontsize=16)
 plt.colorbar()
 plt.savefig('plot_sampling_ascii.pdf',format='pdf',dpi=300,bbox_inches="tight")
