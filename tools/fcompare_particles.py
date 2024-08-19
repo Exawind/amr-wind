@@ -2,10 +2,6 @@ import numpy as np
 import argparse
 from pathlib import Path
 import pandas as pd
-import sys
-
-AMR_WIND_PATH = Path(__file__).parents[2].resolve()
-sys.path.append(str(AMR_WIND_PATH / "tools"))
 import amrex_particle
 from amrex_particle import AmrexParticleFile
 
