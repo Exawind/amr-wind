@@ -80,11 +80,10 @@ public:
         if (m_out_fmt == "netcdf") {
             return static_cast<int>(m_netcdf_output_particles);
         } else
-#else
+#endif
         {
             return 0;
         }
-#endif
     }
 
     const amrex::Vector<std::string>& var_names() const { return m_var_names; }
