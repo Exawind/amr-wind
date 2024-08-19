@@ -443,12 +443,25 @@ public:
                     }
 
                     const auto& marr = mfab[mfi].array();
+                    amrex::FArrayBox tmp_fab(bx, mfab.nComp());
+                    amrex::Elixir tmp_eli = tmp_fab.elixir();
+                    amrex::Array4<amrex::Real> const& tmp_marr =
+                        tmp_fab.array();
+
                     amrex::ParallelFor(
                         bx,
                         [=] AMREX_GPU_DEVICE(
                             const int i, const int j, const int k) noexcept {
                             bcfunc.set_inflow(
-                                {i, j, k}, marr, gdata, time, ori, 0, 0, fdir);
+                                {i, j, k}, tmp_marr, gdata, time, ori, 0, 0,
+                                fdir);
+
+                            if ((bctype[ori] == BC::mass_inflow_outflow) &&
+                                ((ori.isLow() && tmp_marr(i, j, k) >= 0) ||
+                                 (ori.isHigh() && tmp_marr(i, j, k) <= 0))) {
+
+                                marr(i, j, k) = tmp_marr(i, j, k);
+                            }
                         });
                 }
             }
