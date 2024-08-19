@@ -217,10 +217,11 @@ void Sampling::convert_velocity_lineofsight()
 {
     BL_PROFILE("amr-wind::Sampling::convert_velocity_lineofsight");
 
-#ifdef AMR_WIND_USE_NETCDF
     if (m_out_fmt != "netcdf") {
         return;
     }
+
+#ifdef AMR_WIND_USE_NETCDF
     amrex::Vector<int> vel_map(AMREX_SPACEDIM, 0);
     const amrex::Vector<std::string> vnames = {
         "velocityx", "velocityy", "velocityz"};
@@ -277,10 +278,12 @@ void Sampling::convert_velocity_lineofsight()
 void Sampling::create_output_buffer()
 {
     BL_PROFILE("amr-wind::Sampling::create_output_buffer");
-#ifdef AMR_WIND_USE_NETCDF
+
     if (m_out_fmt != "netcdf") {
         return;
     }
+
+#ifdef AMR_WIND_USE_NETCDF
     const long nvars = m_var_names.size();
     for (int iv = 0; iv < nvars; ++iv) {
         long offset = iv * m_scontainer->num_sampling_particles();
@@ -317,15 +320,16 @@ void Sampling::create_output_buffer()
 void Sampling::fill_buffer()
 {
     BL_PROFILE("amr-wind::Sampling::fill_buffer");
-#ifdef AMR_WIND_USE_NETCDF
     if (m_out_fmt == "netcdf") {
+#ifdef AMR_WIND_USE_NETCDF
         m_scontainer->populate_buffer(m_sample_buf);
-    }
 #else
-    amrex::Abort(
-        "NetCDF support was not enabled during build time. Please recompile or "
-        "use native format");
+        amrex::Abort(
+            "NetCDF support was not enabled during build time. Please "
+            "recompile or "
+            "use native format");
 #endif
+    }
 }
 
 void Sampling::process_output()
