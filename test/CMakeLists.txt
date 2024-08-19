@@ -97,12 +97,6 @@ function(add_test_re TEST_NAME)
     set_tests_properties(${TEST_NAME} PROPERTIES LABELS "regression;no_ci")
 endfunction(add_test_re)
 
-# Regression tests excluded from CI with additional check on sampling output
-function(add_test_res TEST_NAME)
-    add_test_r(${TEST_NAME})
-    set_tests_properties(${TEST_NAME} PROPERTIES LABELS "regression;no_ci")
-endfunction(add_test_r)
-
 # Regression test and excluded from CI with dependency
 function(add_test_red TEST_NAME TEST_DEPENDENCY)
     add_test_re(${TEST_NAME})
@@ -187,7 +181,7 @@ add_test_re(abl_godunov_geostrophic_timetable)
 add_test_re(abl_ksgsm84_godunov)
 add_test_re(abl_mol_cn)
 add_test_re(abl_mol_explicit)
-add_test_res(abl_sampling)
+add_test_re(abl_sampling)
 add_test_re(abl_stable)
 add_test_re(abl_unstable)
 add_test_re(abl_unstable_constant_wall_model)
