@@ -354,7 +354,7 @@ void FreeSurfaceSampler::sampling_locations(SampleLocType& locs) const
     }
 }
 
-void FreeSurfaceSampler::update_sampling_locations()
+bool FreeSurfaceSampler::update_sampling_locations()
 {
 
     BL_PROFILE("amr-wind::FreeSurfaceSampler::update_sampling_locations");
@@ -525,6 +525,8 @@ void FreeSurfaceSampler::update_sampling_locations()
             dout_ptr[n] = plo0[coorddir];
         });
     }
+
+    return true;
 }
 
 void FreeSurfaceSampler::post_regrid_actions()

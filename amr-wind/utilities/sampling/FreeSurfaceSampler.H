@@ -27,7 +27,7 @@ public:
     }
 
     //! Find heights associated with 2D sample locations
-    void update_sampling_locations() override;
+    bool update_sampling_locations() override;
 
     //! Redo some of the initialization work when the grid changes
     void post_regrid_actions() override;
