@@ -443,8 +443,7 @@ public:
                     }
 
                     const auto& marr = mfab[mfi].array();
-                    amrex::FArrayBox tmp_fab(bx, mfab.nComp());
-                    amrex::Elixir tmp_eli = tmp_fab.elixir();
+                    amrex::FArrayBox tmp_fab(bx, mfab.nComp(), amrex::The_Async_Arena());
                     amrex::Array4<amrex::Real> const& tmp_marr =
                         tmp_fab.array();
 
