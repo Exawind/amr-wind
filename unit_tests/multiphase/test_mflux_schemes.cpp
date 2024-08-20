@@ -199,7 +199,7 @@ TEST_F(MFluxSchemeTest, upwind)
     amrex::Real Ip = 0.0;
 
     // Initialize field variable
-    auto& sc = repo.declare_field("scalar", 1, 1);
+    auto& sc = repo.declare_field("scalar", 1, 2);
 
     // Parameters to be referenced during test
     amrex::Real adv_vel = 1.2;
@@ -270,7 +270,7 @@ TEST_F(MFluxSchemeTest, minmod)
     amrex::Real Ip = 0.0;
 
     // Initialize field variable
-    auto& sc = repo.declare_field("scalar", 1, 1);
+    auto& sc = repo.declare_field("scalar", 1, 2);
 
     // Initialize mac velocity
     repo.declare_face_normal_field({"umac", "vmac", "wmac"}, 1, 1, 1);
@@ -344,7 +344,7 @@ TEST_F(MFluxSchemeTest, minmodbdy)
     amrex::Real Ip = 0.0;
 
     // Initialize field variable
-    auto& sc = repo.declare_field("scalar", 1, 1);
+    auto& sc = repo.declare_field("scalar", 1, 2);
 
     // Initialize mac velocity
     repo.declare_face_normal_field({"umac", "vmac", "wmac"}, 1, 1, 1);
