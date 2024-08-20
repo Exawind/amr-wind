@@ -1,5 +1,5 @@
 #include "aw_test_utils/MeshTest.H"
-#include "amr-wind/utilities/sampling/FreeSurface.H"
+#include "amr-wind/utilities/sampling/FreeSurfaceSampler.H"
 #include "amr-wind/utilities/tagging/FieldRefinement.H"
 
 namespace amr_wind_tests {
@@ -191,22 +191,20 @@ private:
     std::unique_ptr<amr_wind::RefineCriteriaManager> m_mesh_refiner;
 };
 
-class FreeSurfaceImpl : public amr_wind::free_surface::FreeSurface
+class FreeSurfaceImpl : public amr_wind::sampling::FreeSurfaceSampler
 {
 public:
-    FreeSurfaceImpl(amr_wind::CFDSim& sim, const std::string& label)
-        : amr_wind::free_surface::FreeSurface(sim, label)
+    FreeSurfaceImpl(amr_wind::CFDSim& sim)
+        : amr_wind::sampling::FreeSurfaceSampler(sim)
     {}
     int check_output(const std::string& op, amrex::Real check_val);
     int check_output(int cidx, const std::string& op, amrex::Real check_val);
     int check_output_vec(
         const std::string& op, amrex::Vector<amrex::Real> check_val);
     int check_pos(int cidx, const std::string& op, amrex::Real check_val);
+    int check_sloc(const std::string& op);
 
 protected:
-    // No file output during test
-    void prepare_netcdf_file() override {}
-    void process_output() override {}
     const amrex::Real m_tol = 1e-8;
 };
 
@@ -274,7 +272,7 @@ int FreeSurfaceImpl::check_pos(
 {
     // Get number of points and position array
     auto npts_tot = num_gridpoints();
-    auto locs = locations();
+    auto locs = grid_locations();
     // Loop through grid points and check output
     int icheck = 0;
     for (int n = 0; n < npts_tot; ++n) {
@@ -288,6 +286,42 @@ int FreeSurfaceImpl::check_pos(
             } else {
                 if (op == "~") {
                     EXPECT_NEAR(locs[n][cidx], check_val, m_tol);
+                    ++icheck;
+                }
+            }
+        }
+    }
+    return icheck;
+}
+
+int FreeSurfaceImpl::check_sloc(const std::string& op)
+{
+    // Get number of points and sampling locations array
+    auto npts_tot = num_points();
+    amrex::Vector<amrex::Array<amrex::Real, AMREX_SPACEDIM>> locs;
+    output_locations(locs);
+    // Get locations from other functions
+    auto gridlocs = grid_locations();
+    auto out = heights();
+    // Loop through grid points and check output
+    int icheck = 0;
+    for (int n = 0; n < npts_tot; ++n) {
+        if (op == "=") {
+            EXPECT_EQ(locs[n][0], gridlocs[n][0]);
+            EXPECT_EQ(locs[n][1], gridlocs[n][1]);
+            EXPECT_EQ(locs[n][2], out[n]);
+            ++icheck;
+        } else {
+            if (op == "<") {
+                EXPECT_LT(locs[n][0], gridlocs[n][0]);
+                EXPECT_LT(locs[n][1], gridlocs[n][1]);
+                EXPECT_LT(locs[n][2], out[n]);
+                ++icheck;
+            } else {
+                if (op == "~") {
+                    EXPECT_NEAR(locs[n][0], gridlocs[n][0], m_tol);
+                    EXPECT_NEAR(locs[n][1], gridlocs[n][1], m_tol);
+                    EXPECT_NEAR(locs[n][2], out[n], m_tol);
                     ++icheck;
                 }
             }
@@ -324,9 +358,9 @@ protected:
         amrex::ParmParse pp(fsname);
         pp.add("output_frequency", 1);
         pp.add("num_instances", ninst);
-        pp.addarr("num_points", amrex::Vector<int>{1, 1});
-        pp.addarr("start", m_pt_coord);
-        pp.addarr("end", m_pt_coord);
+        pp.addarr("plane_num_points", amrex::Vector<int>{1, 1});
+        pp.addarr("plane_start", m_pt_coord);
+        pp.addarr("plane_end", m_pt_coord);
     }
     void setup_grid_0d(int ninst) { setup_grid_0d(ninst, "freesurface"); }
     void setup_grid_2d(int ninst)
@@ -334,19 +368,20 @@ protected:
         amrex::ParmParse pp("freesurface");
         pp.add("output_frequency", 1);
         pp.add("num_instances", ninst);
-        pp.addarr("num_points", amrex::Vector<int>{npts, npts});
-        pp.addarr("start", m_pl_start);
-        pp.addarr("end", m_pl_end);
+        pp.addarr("plane_num_points", amrex::Vector<int>{npts, npts});
+        pp.addarr("plane_start", m_pl_start);
+        pp.addarr("plane_end", m_pl_end);
     }
-    void setup_grid_2d_narrow()
+    void setup_grid_2d_narrow(const std::string& fsname)
     {
-        amrex::ParmParse pp("freesurface");
+        amrex::ParmParse pp(fsname);
         pp.add("output_frequency", 1);
         pp.add("num_instances", 1);
-        pp.addarr("num_points", amrex::Vector<int>{npts, npts});
-        pp.addarr("start", m_plnarrow_s);
-        pp.addarr("end", m_plnarrow_e);
+        pp.addarr("plane_num_points", amrex::Vector<int>{npts, npts});
+        pp.addarr("plane_start", m_plnarrow_s);
+        pp.addarr("plane_end", m_plnarrow_e);
     }
+    void setup_grid_2d_narrow() { setup_grid_2d_narrow("freesurface"); }
     void setup_fieldrefinement()
     {
         amrex::ParmParse pp("tagging");
@@ -382,9 +417,9 @@ TEST_F(FreeSurfaceTest, point)
 
     init_vof(vof, m_water_level0);
     auto& m_sim = sim();
-    FreeSurfaceImpl tool(m_sim, "freesurface");
-    tool.initialize();
-    tool.post_advance_work();
+    FreeSurfaceImpl tool(m_sim);
+    tool.initialize("freesurface");
+    tool.update_sampling_locations();
 
     // Check number of points
     auto ngp = tool.num_gridpoints();
@@ -397,6 +432,9 @@ TEST_F(FreeSurfaceTest, point)
     // Check output value
     int nout = tool.check_output("~", m_water_level0);
     ASSERT_EQ(nout, 1);
+    // Check sampling locations
+    int nsloc = tool.check_sloc("~");
+    ASSERT_EQ(nsloc, 1);
 }
 
 TEST_F(FreeSurfaceTest, plane)
@@ -408,9 +446,9 @@ TEST_F(FreeSurfaceTest, plane)
 
     init_vof(vof, m_water_level1);
     auto& m_sim = sim();
-    FreeSurfaceImpl tool(m_sim, "freesurface");
-    tool.initialize();
-    tool.post_advance_work();
+    FreeSurfaceImpl tool(m_sim);
+    tool.initialize("freesurface");
+    tool.update_sampling_locations();
 
     // Check number of points
     auto ngp = tool.num_gridpoints();
@@ -434,9 +472,9 @@ TEST_F(FreeSurfaceTest, multivalued)
 
     init_vof_multival(vof, wl0, wl1, wl2);
     auto& m_sim = sim();
-    FreeSurfaceImpl tool(m_sim, "freesurface");
-    tool.initialize();
-    tool.post_advance_work();
+    FreeSurfaceImpl tool(m_sim);
+    tool.initialize("freesurface");
+    tool.update_sampling_locations();
 
     // Check number of outputs
     auto heights = tool.heights();
@@ -462,9 +500,9 @@ TEST_F(FreeSurfaceTest, sloped)
     amrex::Real domain_l = m_probhi[0];
     init_vof_slope(vof, m_water_level2, slope, domain_l);
     auto& m_sim = sim();
-    FreeSurfaceImpl tool(m_sim, "freesurface");
-    tool.initialize();
-    tool.post_advance_work();
+    FreeSurfaceImpl tool(m_sim);
+    tool.initialize("freesurface");
+    tool.update_sampling_locations();
 
     // Calculate expected output values
     amrex::Vector<amrex::Real> out_vec(static_cast<long>(npts * npts), 0.0);
@@ -493,19 +531,22 @@ TEST_F(FreeSurfaceTest, multisampler)
     setup_grid_0d(1, "freesurface0");
 
     // Set up parameters for another sampler
-    setup_grid_2d_narrow();
+    setup_grid_2d_narrow("freesurface1");
 
     // Initialize VOF distribution and access sim
     init_vof(vof, m_water_level1);
     auto& m_sim = sim();
 
     // Initialize first sampler
-    FreeSurfaceImpl tool1(m_sim, "freesurface0");
-    tool1.initialize();
+    FreeSurfaceImpl tool1(m_sim);
+    // Populate label, would be done by Sampling
+    tool1.label() = "0";
+    tool1.initialize("freesurface0");
 
     // Initialize second sampler
-    FreeSurfaceImpl tool2(m_sim, "freesurface");
-    tool2.initialize();
+    FreeSurfaceImpl tool2(m_sim);
+    tool1.label() = "1";
+    tool2.initialize("freesurface1");
 }
 
 TEST_F(FreeSurfaceTest, regrid)
@@ -540,9 +581,9 @@ TEST_F(FreeSurfaceTest, regrid)
     auto& rsim = rmesh.sim();
 
     // Initialize sampler and check result on initial mesh
-    FreeSurfaceImpl tool(rsim, "freesurface");
-    tool.initialize();
-    tool.post_advance_work();
+    FreeSurfaceImpl tool(rsim);
+    tool.initialize("freesurface");
+    tool.update_sampling_locations();
     tool.check_output("~", m_water_level1);
 
     // Change scalar for determining refinement - no fine level
@@ -553,7 +594,7 @@ TEST_F(FreeSurfaceTest, regrid)
     tool.post_regrid_actions();
 
     // Check that result is unchanged on new mesh
-    tool.post_advance_work();
+    tool.update_sampling_locations();
     tool.check_output("~", m_water_level1);
 }
 
