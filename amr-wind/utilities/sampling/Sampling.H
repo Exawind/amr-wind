@@ -74,20 +74,15 @@ public:
         return static_cast<int>(m_total_particles);
     }
 
+#ifdef AMR_WIND_USE_NETCDF
     int num_netcdf_output_particles() const
     {
-#ifdef AMR_WIND_USE_NETCDF
         if (m_out_fmt == "netcdf") {
             return static_cast<int>(m_netcdf_output_particles);
         }
-#else
-        amrex::Abort(
-            "NetCDF support was not enabled during build time. Please "
-            "recompile or "
-            "use native format");
-#endif
         return 0;
     }
+#endif
 
     const amrex::Vector<std::string>& var_names() const { return m_var_names; }
 
