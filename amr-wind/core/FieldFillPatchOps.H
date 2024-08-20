@@ -452,52 +452,60 @@ public:
                         bx,
                         [=] AMREX_GPU_DEVICE(
                             const int i, const int j, const int k) noexcept {
-                            bcfunc.set_inflow(
-                                {i, j, k}, tmp_marr, gdata, time, ori, 0, 0,
-                                fdir);
+                        bcfunc.set_inflow(
+                            {i, j, k}, tmp_marr, gdata, time, ori, 0, 0, fdir);
 
-                            if ((bctype[ori] == BC::mass_inflow_outflow) &&
-                                ((ori.isLow() && tmp_marr(i, j, k) >= 0) ||
-                                 (ori.isHigh() && tmp_marr(i, j, k) <= 0))) {
+                        const bool is_outflow =
+                            (ori.isLow() && tmp_marr(i, j, k) < 0) ||
+                            (ori.isHigh() && tmp_marr(i, j, k) > 0);
+                        if ((bctype[ori] == BC::mass_inflow_outflow) &&
+                            is_outflow) {
+                            marr(i, j, k) = marr(i, j, k);
+                        } else {
+                            marr(i, j, k) = tmp_marr(i, j, k);
+                        }
 
-                                marr(i, j, k) = tmp_marr(i, j, k);
-                            }
-                        });
+                    });
                 }
             }
         }
     }
 
-protected:
-    Functor bc_functor() { return m_op(); }
 
-    Functor bc_functor_face(const int face_dir) { return m_op(face_dir); }
+protected
+    : Functor
+      bc_functor()
+{
+    return m_op();
+}
 
-    void check_face_mapper()
-    {
-        if (std::any_of(
-                m_mesh.refRatio().begin(), m_mesh.refRatio().end(),
-                [](amrex::IntVect iv) { return iv != amrex::IntVect(2); })) {
-            amrex::Print()
-                << "WARNING: Changing the face interpolator to FaceLinear "
-                   "because a refinement ratio is different than 2"
-                << std::endl;
-            m_face_mapper = field_impl::get_interpolation_operator(
-                FieldInterpolator::FaceLinear);
-        }
+Functor bc_functor_face(const int face_dir) { return m_op(face_dir); }
+
+void check_face_mapper()
+{
+    if (std::any_of(
+            m_mesh.refRatio().begin(), m_mesh.refRatio().end(),
+            [](amrex::IntVect iv) { return iv != amrex::IntVect(2); })) {
+        amrex::Print()
+            << "WARNING: Changing the face interpolator to FaceLinear "
+               "because a refinement ratio is different than 2"
+            << std::endl;
+        m_face_mapper = field_impl::get_interpolation_operator(
+            FieldInterpolator::FaceLinear);
     }
+}
 
-    const SimTime& m_time;
-    const amrex::AmrCore& m_mesh;
-    Field& m_field;
+const SimTime& m_time;
+const amrex::AmrCore& m_mesh;
+Field & m_field;
 
-    const BCOpCreator m_op;
+const BCOpCreator m_op;
 
-    //! Function that handles interpolation from coarse to fine level
-    amrex::Interpolater* m_mapper;
+//! Function that handles interpolation from coarse to fine level
+amrex::Interpolater* m_mapper;
 
-    //! Function that handles interpolation from coarse to fine level for faces
-    amrex::Interpolater* m_face_mapper;
+//! Function that handles interpolation from coarse to fine level for faces
+amrex::Interpolater* m_face_mapper;
 };
 
 } // namespace amr_wind
