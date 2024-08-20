@@ -187,7 +187,7 @@ function(add_test_pps TEST_NAME FORMAT NSTEPS)
     # need to somehow only install the requirements once, prior to testing, and then reference their location in testing
     add_test("${TEST_NAME}_sampling_${FORMAT}" sh -c "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} \
             \ ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.inp ${RUNTIME_OPTIONS} ${ADDL_RUNTIME_OPTIONS} > ${TEST_NAME}_sampling_${FORMAT}.log && \
-            \ ${Python_EXECUTABLE} -m venv .venv && source .venv/bin/activate && .venv/bin/pip3 install ${PYTHON_REQUIREMENTS} && \
+            \ ${Python3_EXECUTABLE} -m venv .venv && source .venv/bin/activate && .venv/bin/pip3 install ${PYTHON_REQUIREMENTS} && \
             \ .venv/bin/python ${PROJECT_SOURCE_DIR}/tools/sampling_${TEST_NAME}_${FORMAT}.py")
     # Set properties for test
     set_tests_properties("${TEST_NAME}_sampling_${FORMAT}" PROPERTIES

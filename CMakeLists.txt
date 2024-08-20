@@ -195,7 +195,7 @@ endif()
 
 if(AMR_WIND_TEST_WITH_PYTHON)
   set(CMAKE_PREFIX_PATH ${PYTHON_DIR} ${CMAKE_PREFIX_PATH})
-  find_package(Python REQUIRED)
+  find_package(Python3 REQUIRED)
 endif()
 
 #Build amr-wind and link to amrex library
