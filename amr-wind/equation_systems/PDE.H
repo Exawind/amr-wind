@@ -140,6 +140,14 @@ public:
         m_adv_op->preadvect(fstate, m_time.delta_t(), m_time.current_time());
     }
 
+    void nonlinear_advection_actions(const FieldState fstate) override
+    {
+        BL_PROFILE(
+            "amr-wind::" + this->identifier() + "::pre_advection_actions");
+        m_adv_op->preadvect_spatial(
+            fstate, m_time.delta_t(), m_time.current_time());
+    }
+
     void compute_predictor_rhs(const DiffusionType difftype) override
     {
         BL_PROFILE(

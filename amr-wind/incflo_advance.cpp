@@ -514,7 +514,7 @@ void incflo::ApplyPredictorNonLinear(bool incremental_projection)
     }
 
     // Extrapolate and apply MAC projection for advection velocities
-    icns().pre_advection_actions(amr_wind::FieldState::Old);
+    icns().nonlinear_advection_actions(amr_wind::FieldState::Old);
 
     // For scalars only first
     // *************************************************************************************
@@ -581,8 +581,20 @@ void incflo::ApplyPredictorNonLinear(bool incremental_projection)
             field.num_comp(), 1);
     }
 
-    // With scalars computed, compute advection of momentum
-    icns().compute_advection_term(amr_wind::FieldState::Old);
+    // Interpolate the NPH velocity from Old and New states
+    // Fillpatch the velocity
+    // change to new_time or remove
+    // icns().fields().field.fillpatch(0.0);
+    icns().fields().field.fillpatch(m_time.current_time());
+    // Get n + 1/2 velocity
+    amr_wind::field_ops::lincomb(
+        icns().fields().field.state(amr_wind::FieldState::NPH), 0.5,
+        icns().fields().field.state(amr_wind::FieldState::Old), 0, 0.5,
+        icns().fields().field, 0, 0, icns().fields().field.num_comp(),
+        icns().fields().field.num_grow());
+
+    // Compute advection of momentum at NPH
+    icns().compute_advection_term(amr_wind::FieldState::NPH);
 
     // *************************************************************************************
     // Define (or if use_godunov, re-define) the forcing terms and viscous terms
@@ -595,19 +607,6 @@ void incflo::ApplyPredictorNonLinear(bool incremental_projection)
     // Evaluate right hand side and store in velocity
     // *************************************************************************************
     icns().compute_predictor_rhs(m_diff_type);
-
-    // Interpolate the NPH velocity from Old and New states
-    // Fillpatch the velocity
-    icns().fields().field.fillpatch(0.0);
-    // Get n + 1/2 velocity
-    amr_wind::field_ops::lincomb(
-        icns().fields().field.state(amr_wind::FieldState::NPH), 0.5,
-        icns().fields().field.state(amr_wind::FieldState::Old), 0, 0.5,
-        icns().fields().field, 0, 0, icns().fields().field.num_comp(),
-        icns().fields().field.num_grow());
-
-    // Recompute advection of momentum
-    icns().compute_advection_term(amr_wind::FieldState::NPH);
 
     // Recompute source and diffusion terms (if requested?)
     /* icns().compute_source_term(amr_wind::FieldState::NPH)

@@ -42,6 +42,12 @@ struct AdvectionOp<VOF, fvm::Godunov>
         const amrex::Real /*unused*/)
     {}
 
+    void preadvect_spatial(
+        const FieldState /*unused*/,
+        const amrex::Real /*unused*/,
+        const amrex::Real /*unused*/)
+    {}
+
     void operator()(const FieldState /*unused*/, const amrex::Real dt)
     {
         static_assert(
