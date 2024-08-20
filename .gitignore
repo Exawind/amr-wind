@@ -22,3 +22,4 @@ settings.json
 .ccls
 .ccls-cache/
 build*
+__pycache__/
