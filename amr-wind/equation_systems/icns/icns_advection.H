@@ -49,6 +49,10 @@ private:
     void init_projector(const FaceFabPtrVec& /*beta*/) noexcept;
     void init_projector(const amrex::Real /*beta*/) noexcept;
 
+    void enforce_inout_solvability(
+        const amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>>&
+            a_umac) noexcept;
+
     FieldRepo& m_repo;
     PhysicsMgr& m_phy_mgr;
     std::unique_ptr<Hydro::MacProjector> m_mac_proj;
@@ -187,11 +191,10 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
                 HydroUtils::ExtrapVelToFaces(
                     dof_field(lev), src_term(lev), u_mac(lev), v_mac(lev),
-                    w_mac(lev), dof_field.bcrec(),
-                    dof_field.bcrec_device().data(), repo.mesh().Geom(lev), dt,
-                    godunov_use_ppm, godunov_use_forces_in_trans,
-                    premac_advection_type, limiter_type,
-                    m_allow_inflow_on_outflow);
+                    w_mac(lev), dof_field.bcrec(), bcrec_device.data(),
+                    repo.mesh().Geom(lev), dt, godunov_use_ppm,
+                    godunov_use_forces_in_trans, premac_advection_type,
+                    limiter_type, m_allow_inflow_on_outflow);
             }
         } else {
             amrex::Abort("Invalid godunov scheme");
@@ -360,8 +363,9 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             multiphase::hybrid_fluxes(
                 repo, ICNS::ndim, iconserv, (*flux_x), (*flux_y), (*flux_z),
                 dof_field, src_term, rho_o, u_mac, v_mac, w_mac,
-                dof_field.bcrec_device().data(), rho_o.bcrec_device().data(),
-                dt, mflux_scheme, godunov_use_forces_in_trans);
+                dof_field.bcrec(), dof_field.bcrec_device().data(),
+                rho_o.bcrec(), rho_o.bcrec_device().data(), dt, mflux_scheme,
+                godunov_use_forces_in_trans);
         }
 
         amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> fluxes(
