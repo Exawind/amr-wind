@@ -4,11 +4,6 @@
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake)
 
-# Temporary - needs to be replaced with something better
-if (AMR_WIND_TEST_WITH_PYTHON)
-  set(PYTHON_REQUIREMENTS "numpy netCDF4 matplotlib pathlib pandas")
-endif()
-
 if(AMR_WIND_ENABLE_MASA AND NOT AMR_WIND_ENABLE_MPI)
   message(WARNING "Running verification tests without MPI enabled will require long run times")
 endif()
