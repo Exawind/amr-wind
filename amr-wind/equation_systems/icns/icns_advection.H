@@ -283,14 +283,13 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             amrex::MultiFab q_nph(
                 dof_field(lev).boxArray(), dof_field(lev).DistributionMap(),
                 ICNS::ndim, fvm::Godunov::nghost_state);
-            dof_field.fillphysbc(
-                lev, time + 0.5 * dt, q_nph, dof_field.num_grow());
+            q_nph.setVal(0.0);
+            dof_field.fillphysbc(lev, time + 0.5 * dt, q_nph, 1);
 
             // Calculate fluxes using momentum directly
             if (!mphase_vof) {
                 // Ensure rho_nph is up-to-date
-                rho_nph.fillphysbc(
-                    lev, time + 0.5 * dt, rho_nph(lev), rho_nph.num_grow());
+                rho_nph.fillphysbc(lev, time + 0.5 * dt, rho_nph(lev), 1);
 
                 for (int idim = 0; idim < dof_field.num_comp(); ++idim) {
                     amrex::MultiFab::Multiply(
@@ -300,8 +299,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                         fq, rho_o(lev), 0, idim, 1, fvm::Godunov::nghost_src);
 
                     amrex::MultiFab::Multiply(
-                        q_nph, rho_nph(lev), 0, idim, 1,
-                        fvm::Godunov::nghost_src);
+                        q_nph, rho_nph(lev), 0, idim, 1, 1);
                 }
             }
 

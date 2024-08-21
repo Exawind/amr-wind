@@ -87,12 +87,12 @@ static void hybrid_fluxes(
         amrex::MultiFab q_nph(
             dof_field(lev).boxArray(), dof_field(lev).DistributionMap(), ncomp,
             fvm::Godunov::nghost_state);
-        dof_field.fillphysbc(lev, time + 0.5 * dt, q_nph, dof_field.num_grow());
+        q_nph.setVal(0.0);
+        dof_field.fillphysbc(lev, time + 0.5 * dt, q_nph, 1);
         // Density at NPH is fully calculated a priori
         // Multiply to get momentum at NPH
         for (int idim = 0; idim < dof_field.num_comp(); ++idim) {
-            amrex::MultiFab::Multiply(
-                q_nph, rho_nph(lev), 0, idim, 1, fvm::Godunov::nghost_state);
+            amrex::MultiFab::Multiply(q_nph, rho_nph(lev), 0, idim, 1, 1);
         }
 
         std::string advection_type = "Godunov";
