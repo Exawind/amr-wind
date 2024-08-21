@@ -51,8 +51,6 @@ void init_int_field(amr_wind::IntField& fld)
     const int ncomp = fld.num_comp();
 
     for (int lev = 0; lev < nlevels; ++lev) {
-        const auto& dx = mesh.Geom(lev).CellSizeArray();
-        const auto& problo = mesh.Geom(lev).ProbLoArray();
         const auto& farrs = fld(lev).arrays();
 
         amrex::ParallelFor(
