@@ -130,7 +130,7 @@ public:
     {
         BL_PROFILE(
             "amr-wind::" + this->identifier() + "::compute_advection_term");
-        (*m_adv_op)(fstate, m_time.delta_t());
+        (*m_adv_op)(fstate, m_time.delta_t(), m_time.current_time());
     }
 
     void pre_advection_actions(const FieldState fstate) override

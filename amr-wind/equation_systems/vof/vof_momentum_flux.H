@@ -12,9 +12,10 @@ static void hybrid_fluxes(
     ScratchField& flux_x,
     ScratchField& flux_y,
     ScratchField& flux_z,
-    const Field& dof_field,
+    Field& dof_field,
     const Field& src_term,
     const Field& rho_o,
+    const Field& rho_nph,
     const Field& u_mac,
     const Field& v_mac,
     const Field& w_mac,
@@ -23,6 +24,7 @@ static void hybrid_fluxes(
     amrex::Vector<amrex::BCRec> const& rhobc,
     amrex::BCRec const* rhobc_d,
     const amrex::Real dt,
+    const amrex::Real time,
     godunov::scheme mflux_scheme,
     bool use_forces_in_trans)
 {
@@ -87,6 +89,20 @@ static void hybrid_fluxes(
             fvm::Godunov::nghost_src);
         frho.setVal(0.0);
 
+        // Set up temporary arrays for NPH at boundaries
+        amrex::MultiFab q_nph(
+            dof_field(lev).boxArray(), dof_field(lev).DistributionMap(), ncomp,
+            fvm::Godunov::nghost_state);
+        dof_field.fillphysbc(lev, time + 0.5 * dt, q_nph, dof_field.num_grow());
+        // Density at NPH is fully calculated a priori
+        // Multiply to get momentum at NPH
+        amrex::MultiFab::Multiply(
+            q_nph, rho_nph(lev), 0, 0, 1, fvm::Godunov::nghost_state);
+        amrex::MultiFab::Multiply(
+            q_nph, rho_nph(lev), 0, 1, 1, fvm::Godunov::nghost_state);
+        amrex::MultiFab::Multiply(
+            q_nph, rho_nph(lev), 0, 2, 1, fvm::Godunov::nghost_state);
+
         std::string advection_type = "Godunov";
         int limiter_type = PPM::UPWIND; // default
         if (mflux_scheme == godunov::scheme::MINMOD) {
@@ -128,14 +144,15 @@ static void hybrid_fluxes(
 
             // Compute momentum flux quantities (multiplied by face velocity)
             HydroUtils::ComputeFluxesOnBoxFromState(
-                bx, ncomp, mfi, q.const_array(mfi), Fw_x, Fw_y, Fw_z,
-                (*face_x)(lev).array(mfi), (*face_y)(lev).array(mfi),
-                (*face_z)(lev).array(mfi), known_edge_state,
-                u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
-                w_mac(lev).const_array(mfi), divu, fq.const_array(mfi),
-                geom[lev], dt, velbc, velbc_d, iconserv.data(), godunov_use_ppm,
-                use_forces_in_trans, is_velocity, fluxes_are_area_weighted,
-                advection_type, limiter_type, allow_inflow_on_outflow);
+                bx, ncomp, mfi, q.const_array(mfi), q_nph.const_array(mfi),
+                Fw_x, Fw_y, Fw_z, (*face_x)(lev).array(mfi),
+                (*face_y)(lev).array(mfi), (*face_z)(lev).array(mfi),
+                known_edge_state, u_mac(lev).const_array(mfi),
+                v_mac(lev).const_array(mfi), w_mac(lev).const_array(mfi), divu,
+                fq.const_array(mfi), geom[lev], dt, velbc, velbc_d,
+                iconserv.data(), godunov_use_ppm, use_forces_in_trans,
+                is_velocity, fluxes_are_area_weighted, advection_type,
+                limiter_type, allow_inflow_on_outflow);
 
             const auto& bxg1 = amrex::grow(bx, 1);
             const auto& xbx = amrex::surroundingNodes(bx, 0);

@@ -42,7 +42,10 @@ struct AdvectionOp<VOF, fvm::Godunov>
         const amrex::Real /*unused*/)
     {}
 
-    void operator()(const FieldState /*unused*/, const amrex::Real dt)
+    void operator()(
+        const FieldState /*unused*/,
+        const amrex::Real dt,
+        const amrex::Real time)
     {
         static_assert(
             VOF::ndim == 1, "Invalid number of components for scalar");
@@ -67,6 +70,11 @@ struct AdvectionOp<VOF, fvm::Godunov>
                 dof_field(lev), dof_old(lev), 0, 0, dof_field.num_comp(),
                 dof_field.num_grow());
         }
+
+        // Note: Godunov advection algorithm would ordinarily do fillphysbc here
+        // to obtain NPH state in physical boundaries. However, because VOF
+        // advection is geometric upwinding, the advected field needs to be
+        // purely at the Old state (n).
 
         //
         // Advect volume using Implicit Eulerian Sweeping method with PLIC
