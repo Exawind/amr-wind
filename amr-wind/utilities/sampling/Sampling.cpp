@@ -76,7 +76,7 @@ void Sampling::initialize()
     // Process field information
     m_nicomp = 0;
     for (const auto& fname : int_field_names) {
-        if (!repo.field_exists(fname)) {
+        if (!repo.int_field_exists(fname)) {
             amrex::Print()
                 << "WARNING: Sampling: Non-existent int_field requested: "
                 << fname
