@@ -166,12 +166,14 @@ void Sampling::update_sampling_locations()
 
     amrex::Vector<bool> updated_position(false);
     for (const auto& obj : m_samplers) {
-      const bool updated_pos = obj->update_sampling_locations();
-      updated_position.push_back(updated_pos);
+        const bool updated_pos = obj->update_sampling_locations();
+        updated_position.push_back(updated_pos);
     }
 
-    if (std::any_of(updated_position.begin(), updated_position.end(), [](const auto& v) { return v; })) {
-      update_container();
+    if (std::any_of(
+            updated_position.begin(), updated_position.end(),
+            [](const auto& v) { return v; })) {
+        update_container();
     }
 }
 
