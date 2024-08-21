@@ -44,6 +44,26 @@ void init_field(amr_wind::Field& fld)
     amrex::Gpu::synchronize();
 }
 
+void init_int_field(amr_wind::IntField& fld)
+{
+    const auto& mesh = fld.repo().mesh();
+    const int nlevels = fld.repo().num_active_levels();
+    const int ncomp = fld.num_comp();
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& dx = mesh.Geom(lev).CellSizeArray();
+        const auto& problo = mesh.Geom(lev).ProbLoArray();
+        const auto& farrs = fld(lev).arrays();
+
+        amrex::ParallelFor(
+            fld(lev), fld.num_grow(), ncomp,
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+                farrs[nbx](i, j, k, n) = i + j + k;
+            });
+    }
+    amrex::Gpu::synchronize();
+}
+
 class SamplingImpl : public amr_wind::sampling::Sampling
 {
 public:
@@ -173,9 +193,11 @@ TEST_F(SamplingTest, sampling)
     auto& vel = repo.declare_field("velocity", 3, 2);
     auto& pres = repo.declare_nd_field("pressure", 1, 2);
     auto& rho = repo.declare_field("density", 1, 2);
+    auto& idxsum = repo.declare_int_field("idxsum", 1, 2);
     init_field(vel);
     init_field(pres);
     init_field(rho);
+    init_int_field(idxsum);
 
     {
         amrex::ParmParse pp("sampling");
@@ -186,6 +208,7 @@ TEST_F(SamplingTest, sampling)
             amrex::Vector<std::string>{"density", "pressure", "velocity"});
         pp.addarr(
             "derived_fields", amrex::Vector<std::string>{"mag_vorticity"});
+        pp.addarr("int_fields", amrex::Vector<std::string>{"idxsum"});
     }
     {
         amrex::ParmParse pp("sampling.line1");
@@ -209,9 +232,11 @@ TEST_F(SamplingTest, sampling_timing)
     auto& vel = repo.declare_field("velocity", 3, 2);
     auto& pres = repo.declare_nd_field("pressure", 1, 2);
     auto& rho = repo.declare_field("density", 1, 2);
+    auto& idxsum = repo.declare_int_field("idxsum", 1, 2);
     init_field(vel);
     init_field(pres);
     init_field(rho);
+    init_int_field(idxsum);
 
     {
         amrex::ParmParse pp("sampling");
@@ -223,6 +248,7 @@ TEST_F(SamplingTest, sampling_timing)
             amrex::Vector<std::string>{"density", "pressure", "velocity"});
         pp.addarr(
             "derived_fields", amrex::Vector<std::string>{"mag_vorticity"});
+        pp.addarr("int_fields", amrex::Vector<std::string>{"idxsum"});
     }
     {
         amrex::ParmParse pp("sampling.line1");
