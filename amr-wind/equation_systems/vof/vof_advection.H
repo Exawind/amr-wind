@@ -45,7 +45,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
     void operator()(
         const FieldState /*unused*/,
         const amrex::Real dt,
-        const amrex::Real time)
+        const amrex::Real /*unused*/)
     {
         static_assert(
             VOF::ndim == 1, "Invalid number of components for scalar");
