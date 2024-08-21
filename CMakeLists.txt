@@ -195,7 +195,17 @@ endif()
 
 if(AMR_WIND_TEST_WITH_PYTHON)
   set(CMAKE_PREFIX_PATH ${PYTHON_DIR} ${CMAKE_PREFIX_PATH})
-  find_package(Python3 REQUIRED)
+  find_package(Python3 REQUIRED COMPONENTS Interpreter)
+  # Developer note: modify this list if modifying scripts used in python-based regression tests
+  set(PYTHON_REQUIREMENTS numpy netCDF4 matplotlib pathlib pandas)
+  foreach(pymod IN LISTS PYTHON_REQUIREMENTS)
+    execute_process(COMMAND pip3 show ${pymod}
+                    RESULT_VARIABLE EXIT_CODE
+                    OUTPUT_QUIET)
+    if (NOT ${EXIT_CODE} EQUAL 0)
+      message(WARNING "The Python3 package \"${pymod}\" is not installed. Tests relying on python may fail.")
+    endif()
+  endforeach()
 endif()
 
 #Build amr-wind and link to amrex library

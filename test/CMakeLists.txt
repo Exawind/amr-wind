@@ -83,34 +83,6 @@ macro(setup_test)
     endif()
 endmacro(setup_test)
 
-macro(setup_pp_test)
-    set(CURRENT_TEST_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test_files/${TEST_NAME})
-    set(CURRENT_TEST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/test_files/${TEST_NAME})
-    file(GLOB TEST_FILES "${CURRENT_TEST_SOURCE_DIR}/*")
-    file(COPY ${TEST_FILES} DESTINATION "${CURRENT_TEST_BINARY_DIR}/")
-    set(RUNTIME_OPTIONS "time.max_step=10 io.plot_file=plt time.plot_interval=10 amrex.the_arena_is_managed=0 amrex.abort_on_out_of_gpu_memory=1")
-    if(AMR_WIND_ENABLE_FPE_TRAP_FOR_TESTS)
-      set(RUNTIME_OPTIONS "${RUNTIME_OPTIONS} amrex.signal_handling=1 amrex.fpe_trap_invalid=1 amrex.fpe_trap_zero=1 amrex.fpe_trap_overflow=1")
-    else()
-      set(RUNTIME_OPTIONS "${RUNTIME_OPTIONS} amrex.signal_handling=0")
-    endif()
-    if(AMR_WIND_ENABLE_MPI)
-      if(AMR_WIND_ENABLE_CUDA)
-        set(TEST_NP 2)
-      else()
-        set(TEST_NP 4)
-      endif()
-      set(MPI_COMMANDS "${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${TEST_NP} ${MPIEXEC_PREFLAGS}")
-    else()
-      set(TEST_NP 1)
-      unset(MPI_COMMANDS)
-    endif()
-    if(AMR_WIND_ENABLE_CUDA OR (AMR_WIND_ENABLE_HYPRE AND (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")))
-      set(FCOMPARE_TOLERANCE "-r 1e-10 --abs_tol 1.0e-12")
-      set(RUNTIME_OPTIONS "${RUNTIME_OPTIONS} io.skip_outputs=p gp")
-    endif()
-endmacro(setup_pp_test)
-
 # Standard regression test
 function(add_test_r TEST_NAME)
     setup_test()
@@ -182,13 +154,11 @@ endfunction(add_test_u)
 
 # Add test that also checks post-processing scripts: sampling
 function(add_test_pps TEST_NAME FORMAT NSTEPS)
-    setup_pp_test()
+    setup_test()
     set(ADDL_RUNTIME_OPTIONS "sampling.output_format=${FORMAT} time.plot_interval=-1 time.checkpoint_interval=-1 time.max_step=${NSTEPS}")
-    # need to somehow only install the requirements once, prior to testing, and then reference their location in testing
     add_test("${TEST_NAME}_sampling_${FORMAT}" sh -c "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} \
             \ ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.inp ${RUNTIME_OPTIONS} ${ADDL_RUNTIME_OPTIONS} > ${TEST_NAME}_sampling_${FORMAT}.log && \
-            \ ${Python3_EXECUTABLE} -m venv .venv && source .venv/bin/activate && .venv/bin/pip3 install ${PYTHON_REQUIREMENTS} && \
-            \ .venv/bin/python ${PROJECT_SOURCE_DIR}/tools/sampling_${TEST_NAME}_${FORMAT}.py")
+            \ ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/sampling_${TEST_NAME}_${FORMAT}.py")
     # Set properties for test
     set_tests_properties("${TEST_NAME}_sampling_${FORMAT}" PROPERTIES
                           TIMEOUT 5400
