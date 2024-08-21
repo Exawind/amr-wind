@@ -1,21 +1,21 @@
 Section: Boundary conditions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   
+
 This section controls the boundary conditions. Only non-periodic BC's need to be defined here.
 
 .. input_param:: xlo.type (or ylo.type, zlo.type, xhi.type, yhi.type, zhi.type)
 
    **type:** String, mandatory if non-periodic
-   
-   Boundary condition type on the lo (or hi) side of the domain. 
-   Current options are: periodic, pressure_inflow, pressure_outflow, mass_inflow, 
-   no_slip_wall, slip_wall, symmetric_wall and wall_model.
+
+   Boundary condition type on the lo (or hi) side of the domain.
+   Current options are: periodic, pressure_inflow, pressure_outflow, mass_inflow,
+   mass_inflow_outflow, no_slip_wall, slip_wall, symmetric_wall and wall_model.
 
 .. input_param:: xlo.temperature (or ylo.temperature, etc)
 
    **type:** Real, optional, default = 0.0
-   
-   Specifies a temperature gradient at the wall, only activated for slip_wall and wall_model BC types. 
+
+   Specifies a temperature gradient at the wall, only activated for slip_wall and wall_model BC types.
 
 Mass inflow boundary conditions
 ```````````````````````````````
@@ -42,3 +42,46 @@ If the user wants to define their own boundary conditions, this is done by editi
   CustomVelocity.foo = 1.0
 
 They do not both need to be defined at the same time. It is the user's responsibility to ensure that the source files are appropriately edited for their use case. Examples of how these files can be edited are found through comparison of the other mass_inflow functions in the `udfs` folder.
+
+Mass inflow-outflow boundary conditions
+```````````````````````````````````````
+
+The mass_inflow_outflow boundary condition is designed to handle both inflow and outflow at the same boundary.
+For the advection schemes, it implements a Neumann type behavior at the outflow cells and a Dirichlet behavior at the inflow cells.
+It uses Neumann conditions for the MAC and nodal projections and
+enforces solvability before the projections
+by correcting the outflow to match with the inflow within the specified mass_inflow_outflow boundaries.
+It uses a Dirichlet condition for the diffusion solver.
+
+Both the approaches mentioned above for the mass inflow condition,
+constant values and UDFs, can be used to specify the boundary values.
+The outflow values will be automatically replaced by a value from the interior cell
+to enforce the Neumann type behavior.
+See the ``freestream_godunov_inout`` test for an example that uses the TwoLayer UDF.
+This test involves two "layers" of the flow in the z-direction, with opposite directions.
+The input file options are copied here::
+
+  geometry.is_periodic    =   0   1   0   # Periodicity x y z (0/1)
+
+  # Boundary conditions
+  TwoLayer.bottom_vel   = -1.0 0.0 0.0
+  TwoLayer.top_vel      =  1.0 0.0 0.0
+  TwoLayer.init_perturb = 0.9
+  TwoLayer.z_partition  = 0.5
+
+  xlo.type = "mass_inflow_outflow"
+  xlo.density = 1.0
+  xlo.velocity.inflow_outflow_type = TwoLayer
+
+  xhi.type = "mass_inflow_outflow"
+  xhi.density = 1.0
+  xhi.velocity.inflow_outflow_type = TwoLayer
+
+  zlo.type =   "slip_wall"
+  zhi.type =   "slip_wall"
+
+
+The most applicable use case for this boundary condition is with the
+:ref:`amrwind-abl-bndry-io` for flows that change directions
+across the vertical coorinate or with time.
+The work to integrate this condition with the ABL class is under progress.
