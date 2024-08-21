@@ -58,10 +58,10 @@ constant values and UDFs, can be used to specify the boundary values.
 The outflow values will be automatically replaced by a value from the interior cell
 to enforce the Neumann type behavior.
 See the ``freestream_godunov_inout`` test for an example that uses the TwoLayer UDF.
-This test involves two "layers" of the flow in the z-direction, with opposite directions.
+This test involves two z-layers of the flow along opposite x-directions.
 The input file options are copied here::
 
-  geometry.is_periodic    =   0   1   0   # Periodicity x y z (0/1)
+  geometry.is_periodic  =  0   1   0   # Periodic in y
 
   # Boundary conditions
   TwoLayer.bottom_vel   = -1.0 0.0 0.0
@@ -77,11 +77,11 @@ The input file options are copied here::
   xhi.density = 1.0
   xhi.velocity.inflow_outflow_type = TwoLayer
 
-  zlo.type =   "slip_wall"
-  zhi.type =   "slip_wall"
+  zlo.type = "slip_wall"
+  zhi.type = "slip_wall"
 
 
 The most applicable use case for this boundary condition is with the
 :ref:`amrwind-abl-bndry-io` for flows that change directions
-across the vertical coorinate or with time.
+across the vertical coordinate or with time.
 The work to integrate this condition with the ABL class is under progress.
