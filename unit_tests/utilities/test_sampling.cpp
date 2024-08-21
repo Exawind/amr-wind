@@ -46,7 +46,6 @@ void init_field(amr_wind::Field& fld)
 
 void init_int_field(amr_wind::IntField& fld)
 {
-    const auto& mesh = fld.repo().mesh();
     const int nlevels = fld.repo().num_active_levels();
     const int ncomp = fld.num_comp();
 
