@@ -8,4 +8,5 @@ target_sources(${amr_wind_lib_name}
   Rankine.cpp
   CustomVelocity.cpp
   CustomScalar.cpp
+  TwoLayer.cpp
   )

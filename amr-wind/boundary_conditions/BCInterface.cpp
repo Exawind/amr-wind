@@ -1,6 +1,7 @@
 #include "amr-wind/boundary_conditions/BCInterface.H"
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/boundary_conditions/FixedGradientBC.H"
+#include "amr-wind/boundary_conditions/MassInflowOutflowBC.H"
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind {
@@ -64,6 +65,8 @@ void BCIface::read_bctype()
             ibctype[ori] = BC::pressure_outflow;
         } else if ((bcstr == "mass_inflow") || (bcstr == "mi")) {
             ibctype[ori] = BC::mass_inflow;
+        } else if ((bcstr == "mass_inflow_outflow") || (bcstr == "mio")) {
+            ibctype[ori] = BC::mass_inflow_outflow;
         } else if ((bcstr == "no_slip_wall") || (bcstr == "nsw")) {
             ibctype[ori] = BC::no_slip_wall;
         } else if ((bcstr == "slip_wall") || (bcstr == "sw")) {
@@ -100,18 +103,27 @@ void BCIface::set_bcfuncs()
         if (bct == BC::fixed_gradient) {
             m_field.register_custom_bc<FixedGradientBC>(ori);
         }
+
+        if ((m_field.name() == "velocity") // only velocity for now
+            && (bct == BC::mass_inflow_outflow)) {
+
+            m_field.register_custom_bc<MassInflowOutflowBC>(ori);
+        }
     }
 }
 
-std::pair<const std::string, const std::string> BCIface::get_dirichlet_udfs()
+amrex::Array<const std::string, 3> BCIface::get_dirichlet_udfs()
 {
     const auto& fname = m_field.name();
     const auto& bctype = m_field.bc_type();
     const std::string inflow_key = fname + ".inflow_type";
+    const std::string inflow_outflow_key = fname + ".inflow_outflow_type";
     const std::string wall_key = fname + ".wall_type";
     std::string inflow_udf{"ConstDirichlet"};
+    std::string inflow_outflow_udf{"ConstDirichlet"};
     std::string wall_udf{"ConstDirichlet"};
     bool has_inflow_udf = false;
+    bool has_inflow_outflow_udf = false;
     bool has_wall_udf = false;
 
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
@@ -135,6 +147,22 @@ std::pair<const std::string, const std::string> BCIface::get_dirichlet_udfs()
             }
         }
 
+        if (bct == BC::mass_inflow_outflow) {
+            if (pp.contains(inflow_outflow_key.c_str())) {
+                std::string val;
+                pp.get(inflow_outflow_key.c_str(), val);
+
+                if (has_inflow_outflow_udf && (inflow_outflow_udf != val)) {
+                    amrex::Abort(
+                        "BC: Inflow-outflow UDF must be same for all "
+                        "inflow-outflow faces");
+                } else {
+                    inflow_outflow_udf = val;
+                    has_inflow_outflow_udf = true;
+                }
+            }
+        }
+
         if (bct == BC::slip_wall) {
             if (pp.contains(wall_key.c_str())) {
                 std::string val;
@@ -151,7 +179,7 @@ std::pair<const std::string, const std::string> BCIface::get_dirichlet_udfs()
         }
     }
 
-    return {inflow_udf, wall_udf};
+    return {inflow_udf, inflow_outflow_udf, wall_udf};
 }
 
 void BCVelocity::set_bcrec()
@@ -191,6 +219,15 @@ void BCVelocity::set_bcrec()
                 set_bcrec_lo(dir, amrex::BCType::ext_dir);
             } else {
                 set_bcrec_hi(dir, amrex::BCType::ext_dir);
+            }
+            break;
+
+        case BC::mass_inflow_outflow:
+            m_field.set_inout_bndry();
+            if (side == amrex::Orientation::low) {
+                set_bcrec_lo(dir, amrex::BCType::direction_dependent);
+            } else {
+                set_bcrec_hi(dir, amrex::BCType::direction_dependent);
             }
             break;
 
@@ -287,6 +324,15 @@ void BCScalar::set_bcrec()
             }
             break;
 
+        case BC::mass_inflow_outflow:
+            m_field.set_inout_bndry();
+            if (side == amrex::Orientation::low) {
+                set_bcrec_lo(dir, amrex::BCType::direction_dependent);
+            } else {
+                set_bcrec_hi(dir, amrex::BCType::direction_dependent);
+            }
+            break;
+
         case BC::slip_wall:
         case BC::wall_model:
         case BC::fixed_gradient:
@@ -310,7 +356,8 @@ void BCScalar::read_values()
     auto& bcval = m_field.bc_values();
     const int ndim = m_field.num_comp();
     const auto udfs = get_dirichlet_udfs();
-    const auto const_dirichlet_inflow = udfs.first == "ConstDirichlet";
+    const auto const_dirichlet_inflow = udfs[0] == "ConstDirichlet";
+    const auto const_dirichlet_inflow_outflow = udfs[1] == "ConstDirichlet";
 
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
@@ -318,7 +365,9 @@ void BCScalar::read_values()
         const auto bct = bctype[ori];
 
         amrex::ParmParse pp(bcid);
-        if ((bct == BC::mass_inflow) && (const_dirichlet_inflow)) {
+        if (((bct == BC::mass_inflow) && (const_dirichlet_inflow)) ||
+            ((bct == BC::mass_inflow_outflow) &&
+             (const_dirichlet_inflow_outflow))) {
             pp.getarr(fname.c_str(), bcval[ori], 0, ndim);
         } else {
             pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
