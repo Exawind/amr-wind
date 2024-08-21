@@ -10,6 +10,7 @@
 #include "amr-wind/physics/udfs/BurggrafLid.H"
 #include "amr-wind/physics/udfs/Rankine.H"
 #include "amr-wind/physics/udfs/CustomVelocity.H"
+#include "amr-wind/physics/udfs/TwoLayer.H"
 
 namespace amr_wind::vel_bc {
 
@@ -40,6 +41,10 @@ void register_inflow_vel_dirichlet(
         using InflowOp = BCOpCreator<udf::CustomVelocity, WallOp>;
         field.register_fill_patch_op<FieldFillPatchOps<InflowOp>>(
             mesh, time, InflowOp(field));
+    } else if (inflow_udf == "TwoLayer") {
+        using InflowOp = BCOpCreator<udf::TwoLayer, WallOp>;
+        field.register_fill_patch_op<FieldFillPatchOps<InflowOp>>(
+            mesh, time, InflowOp(field));
     } else {
         amrex::Abort("Velocity BC: Invalid dirichlet BC type = " + inflow_udf);
     }
@@ -49,12 +54,15 @@ void register_velocity_dirichlet(
     Field& field,
     const amrex::AmrCore& mesh,
     const SimTime& time,
-    const std::pair<const std::string, const std::string>& udfs)
+    const amrex::Array<const std::string, 3>& udfs)
 {
-    const std::string inflow_udf = udfs.first;
-    const std::string wall_udf = udfs.second;
+    const std::string& inflow_udf = udfs[0];
+    const std::string& inflow_outflow_udf = udfs[1];
+    const std::string& wall_udf = udfs[2];
 
-    if ((inflow_udf == "ConstDirichlet") && (wall_udf == "ConstDirichlet")) {
+    if ((inflow_udf == "ConstDirichlet") &&
+        (inflow_outflow_udf == "ConstDirichlet") &&
+        (wall_udf == "ConstDirichlet")) {
         return;
     }
 
@@ -63,8 +71,15 @@ void register_velocity_dirichlet(
             "Velocity BC: Only constant dirichlet supported for Wall BC");
     }
 
-    register_inflow_vel_dirichlet<ConstDirichlet>(
-        field, inflow_udf, mesh, time);
+    if (inflow_udf != "ConstDirichlet") {
+        register_inflow_vel_dirichlet<ConstDirichlet>(
+            field, inflow_udf, mesh, time);
+    }
+
+    if (inflow_outflow_udf != "ConstDirichlet") {
+        register_inflow_vel_dirichlet<ConstDirichlet>(
+            field, inflow_outflow_udf, mesh, time);
+    }
 }
 
 } // namespace amr_wind::vel_bc

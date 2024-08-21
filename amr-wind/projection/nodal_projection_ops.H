@@ -26,6 +26,9 @@ Array<amrex::LinOpBCType, AMREX_SPACEDIM> get_projection_bc(
 void apply_dirichlet_vel(
     amrex::MultiFab& mf_velocity, amrex::iMultiFab& mf_iblank);
 
+void enforce_inout_solvability(
+    amr_wind::Field& velocity, const Vector<Geometry>& geom, int num_levels);
+
 } // namespace amr_wind::nodal_projection
 
 #endif

@@ -64,6 +64,17 @@ MacProjOp::MacProjOp(
     m_has_overset = m_has_overset && !disable_ovst_mac;
 }
 
+void MacProjOp::enforce_inout_solvability(
+    const amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>>&
+        a_umac) noexcept
+{
+    auto& velocity = m_repo.get_field("velocity");
+    amrex::BCRec const* bc_type = velocity.bcrec_device().data();
+    const amrex::Vector<amrex::Geometry>& geom = m_repo.mesh().Geom();
+
+    HydroUtils::enforceInOutSolvability(a_umac, bc_type, geom);
+}
+
 void MacProjOp::init_projector(const MacProjOp::FaceFabPtrVec& beta) noexcept
 {
     m_mac_proj = std::make_unique<Hydro::MacProjector>(
@@ -264,6 +275,12 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
                     density.num_comp(), 0);
             }
         }
+    }
+
+    const bool has_inout_bndry =
+        (m_repo.get_field("velocity")).has_inout_bndry();
+    if (has_inout_bndry) {
+        enforce_inout_solvability(mac_vec);
     }
 
     m_mac_proj->setUMAC(mac_vec);

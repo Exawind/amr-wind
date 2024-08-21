@@ -5,6 +5,7 @@
 #include "amr-wind/utilities/console_io.H"
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/projection/nodal_projection_ops.H"
+#include "hydro_utils.H"
 
 using namespace amrex;
 
@@ -46,6 +47,7 @@ amr_wind::nodal_projection::get_projection_bc(
                 r[dir] = LinOpBCType::Dirichlet;
                 break;
             }
+            case BC::mass_inflow_outflow:
             case BC::mass_inflow: {
                 r[dir] = LinOpBCType::inflow;
                 break;
@@ -74,6 +76,23 @@ void amr_wind::nodal_projection::apply_dirichlet_vel(
                 vel[nbx](i, j, k, n) = 0.0;
             }
         });
+}
+
+void amr_wind::nodal_projection::enforce_inout_solvability(
+    amr_wind::Field& velocity,
+    const Vector<Geometry>& geom,
+    const int num_levels)
+{
+    BCRec const* bc_type = velocity.bcrec_device().data();
+    Vector<Array<MultiFab*, AMREX_SPACEDIM>> vel_vec(num_levels);
+
+    for (int lev = 0; lev < num_levels; ++lev) {
+        vel_vec[lev][0] = new MultiFab(velocity(lev), amrex::make_alias, 0, 1);
+        vel_vec[lev][1] = new MultiFab(velocity(lev), amrex::make_alias, 1, 1);
+        vel_vec[lev][2] = new MultiFab(velocity(lev), amrex::make_alias, 2, 1);
+    }
+
+    HydroUtils::enforceInOutSolvability(vel_vec, bc_type, geom, true);
 }
 
 /** Perform nodal projection
@@ -329,7 +348,20 @@ void incflo::ApplyProjection(
         if (!proj_for_small_dt and !incremental) {
             amr_wind::nodal_projection::set_inflow_velocity(
                 m_sim.physics_manager(), velocity, lev, time, *vel[lev], 1);
+
+            // fill periodic boundaries to avoid corner cell issues
+            vel[lev]->FillBoundary(geom[lev].periodicity());
         }
+    }
+
+    // Need to apply custom Neumann funcs for inflow-outflow BC
+    // after setting the inflow vels above
+    // and then enforce solvability by matching outflow to inflow.
+    if (!proj_for_small_dt and !incremental and velocity.has_inout_bndry()) {
+        velocity.apply_bc_funcs(amr_wind::FieldState::New);
+
+        amr_wind::nodal_projection::enforce_inout_solvability(
+            velocity, m_repo.mesh().Geom(), m_repo.num_active_levels());
     }
 
     if (is_anelastic) {
