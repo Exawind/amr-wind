@@ -288,31 +288,21 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
             // Calculate fluxes using momentum directly
             if (!mphase_vof) {
-                amrex::MultiFab::Multiply(
-                    q, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_state);
-                amrex::MultiFab::Multiply(
-                    q, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_state);
-                amrex::MultiFab::Multiply(
-                    q, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_state);
-                // Source terms are at old state during calculation of advection
-                // terms
-                amrex::MultiFab::Multiply(
-                    fq, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_src);
-                amrex::MultiFab::Multiply(
-                    fq, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_src);
-                amrex::MultiFab::Multiply(
-                    fq, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_src);
-
-                // Ensure rho_nph is up-to-date and multiply for correct
-                // boundaries
+                // Ensure rho_nph is up-to-date
                 rho_nph.fillphysbc(
                     lev, time + 0.5 * dt, rho_nph(lev), rho_nph.num_grow());
-                amrex::MultiFab::Multiply(
-                    q_nph, rho_nph(lev), 0, 0, 1, fvm::Godunov::nghost_src);
-                amrex::MultiFab::Multiply(
-                    q_nph, rho_nph(lev), 0, 1, 1, fvm::Godunov::nghost_src);
-                amrex::MultiFab::Multiply(
-                    q_nph, rho_nph(lev), 0, 2, 1, fvm::Godunov::nghost_src);
+
+                for (int idim = 0; idim < dof_field.num_comp(); ++idim) {
+                    amrex::MultiFab::Multiply(
+                        q, rho_o(lev), 0, idim, 1, fvm::Godunov::nghost_state);
+                    // Source terms at old state during advection calculation
+                    amrex::MultiFab::Multiply(
+                        fq, rho_o(lev), 0, idim, 1, fvm::Godunov::nghost_src);
+
+                    amrex::MultiFab::Multiply(
+                        q_nph, rho_nph(lev), 0, idim, 1,
+                        fvm::Godunov::nghost_src);
+                }
             }
 
             amrex::MFItInfo mfi_info;

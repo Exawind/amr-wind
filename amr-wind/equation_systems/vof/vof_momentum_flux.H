@@ -71,18 +71,12 @@ static void hybrid_fluxes(
         amrex::MultiFab::Copy(
             fq, src_term(lev), 0, 0, ncomp, fvm::Godunov::nghost_src);
 
-        amrex::MultiFab::Multiply(
-            q, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_state);
-        amrex::MultiFab::Multiply(
-            q, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_state);
-        amrex::MultiFab::Multiply(
-            q, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_state);
-        amrex::MultiFab::Multiply(
-            fq, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_src);
-        amrex::MultiFab::Multiply(
-            fq, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_src);
-        amrex::MultiFab::Multiply(
-            fq, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_src);
+        for (int idim = 0; idim < dof_field.num_comp(); ++idim) {
+            amrex::MultiFab::Multiply(
+                q, rho_o(lev), 0, idim, 1, fvm::Godunov::nghost_state);
+            amrex::MultiFab::Multiply(
+                fq, rho_o(lev), 0, idim, 1, fvm::Godunov::nghost_src);
+        }
 
         amrex::MultiFab frho(
             src_term(lev).boxArray(), src_term(lev).DistributionMap(), 1,
@@ -96,12 +90,10 @@ static void hybrid_fluxes(
         dof_field.fillphysbc(lev, time + 0.5 * dt, q_nph, dof_field.num_grow());
         // Density at NPH is fully calculated a priori
         // Multiply to get momentum at NPH
-        amrex::MultiFab::Multiply(
-            q_nph, rho_nph(lev), 0, 0, 1, fvm::Godunov::nghost_state);
-        amrex::MultiFab::Multiply(
-            q_nph, rho_nph(lev), 0, 1, 1, fvm::Godunov::nghost_state);
-        amrex::MultiFab::Multiply(
-            q_nph, rho_nph(lev), 0, 2, 1, fvm::Godunov::nghost_state);
+        for (int idim = 0; idim < dof_field.num_comp(); ++idim) {
+            amrex::MultiFab::Multiply(
+                q_nph, rho_nph(lev), 0, idim, 1, fvm::Godunov::nghost_state);
+        }
 
         std::string advection_type = "Godunov";
         int limiter_type = PPM::UPWIND; // default
