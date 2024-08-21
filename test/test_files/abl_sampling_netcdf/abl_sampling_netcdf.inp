@@ -89,7 +89,7 @@ sampling.volume1.hi          = 500.0 500.0 500.0
 sampling.volume1.num_points  = 30 10 10
 
 sampling2.output_frequency    = 1
-sampling.output_format        = netcdf
+sampling2.output_format       = netcdf
 sampling2.fields              = velocity
 sampling2.int_fields          = mask_cell
 sampling2.derived_fields      = q_criterion_nondim
