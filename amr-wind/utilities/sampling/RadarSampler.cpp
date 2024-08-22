@@ -188,7 +188,7 @@ double RadarSampler::determine_current_sweep_angle() const
     }
 }
 
-void RadarSampler::update_sampling_locations()
+bool RadarSampler::update_sampling_locations()
 {
     amrex::Real time = m_sim.time().current_time();
     amrex::Real start_time = m_sim.time().start_time();
@@ -306,6 +306,8 @@ void RadarSampler::update_sampling_locations()
     }
 
     m_radar_iter++;
+
+    return true;
 }
 
 void RadarSampler::new_cone()

@@ -259,7 +259,7 @@ void DTUSpinnerSampler::get_turbine_data(const std::string& turbine_label)
 }
 #endif // AMR_WIND_USE_OPENFAST
 
-void DTUSpinnerSampler::update_sampling_locations()
+bool DTUSpinnerSampler::update_sampling_locations()
 {
     BL_PROFILE(
         "amr-wind::Sampling::DTUSpinnerSampler::update_sampling_locations");
@@ -435,6 +435,8 @@ void DTUSpinnerSampler::update_sampling_locations()
     m_last_lidar_center = m_lidar_center;
 
     m_update_count = m_update_count + 1;
+
+    return true;
 }
 
 #ifdef AMR_WIND_USE_NETCDF
