@@ -120,9 +120,9 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         } else {
             amrex::Print()
                 << "For godunov_type select between plm, ppm, "
-                   "ppm_nolim, bds, weno_js, and weno_z: it defaults to ppm"
+                   "ppm_nolim, bds, weno_js, and weno_z: it defaults to weno_z"
                 << std::endl;
-            godunov_scheme = godunov::scheme::PPM;
+            godunov_scheme = godunov::scheme::WENOZ;
         }
 
         // Flux calculation used in multiphase portions of domain
