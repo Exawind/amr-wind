@@ -197,7 +197,7 @@ if(AMR_WIND_TEST_WITH_PYTHON)
   set(CMAKE_PREFIX_PATH ${PYTHON_DIR} ${CMAKE_PREFIX_PATH})
   find_package(Python3 REQUIRED COMPONENTS Interpreter)
   # Developer note: modify this list if modifying scripts used in python-based regression tests
-  set(PYTHON_REQUIREMENTS numpy netCDF4 matplotlib pathlib pandas)
+  set(PYTHON_REQUIREMENTS numpy netCDF4 matplotlib pandas)
   foreach(pymod IN LISTS PYTHON_REQUIREMENTS)
     execute_process(COMMAND pip3 show ${pymod}
                     RESULT_VARIABLE EXIT_CODE
