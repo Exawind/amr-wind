@@ -24,7 +24,8 @@ The three examples will generate the same plot, shown here:
 Native format: dam break example
 --------------------------------
 To generate the data required to replicate this example, run the simulation contained in 
-test/test_files/dam_break_godunov with the sampling format set to "native".
+test/test_files/dam_break_godunov with the sampling format set to "native" and the sampling
+frequency (actually an interval) set to 30.
 
 .. literalinclude:: ../../../tools/sampling_dam_break_godunov_native.py
    :language: python
@@ -33,7 +34,7 @@ NetCDF format: dam break example
 --------------------------------
 To generate the data required to replicate this example, run the simulation contained in 
 test/test_files/dam_break_godunov with the sampling format set to "netcdf" (AMR-Wind must 
-also be compiled with NetCDF).
+also be compiled with NetCDF) and the sampling frequency (actually an interval) set to 30.
 
 Because the FreeSurfaceSampler tracks the interface location, the sample points change position 
 with time, and these changing positions are output as the "points" field. However, samplers that 
@@ -48,7 +49,8 @@ applied to other sampler types.
 ASCII format: dam break example
 --------------------------------
 To generate the data required to replicate this example, run the simulation contained in 
-test/test_files/dam_break_godunov with the sampling format set to "ascii".
+test/test_files/dam_break_godunov with the sampling format set to "ascii" and the sampling
+frequency (actually an interval) set to 30.
 
 .. literalinclude:: ../../../tools/sampling_dam_break_godunov_ascii.py
    :language: python

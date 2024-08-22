@@ -148,9 +148,9 @@ function(add_test_u TEST_NAME)
 endfunction(add_test_u)
 
 # Add test that also checks post-processing scripts: sampling
-function(add_test_pps TEST_NAME FORMAT NSTEPS)
+function(add_test_pps TEST_NAME FORMAT NINT NSTEPS)
     setup_test()
-    set(ADDL_RUNTIME_OPTIONS "sampling.output_format=${FORMAT} time.plot_interval=-1 time.checkpoint_interval=-1 time.max_step=${NSTEPS}")
+    set(ADDL_RUNTIME_OPTIONS "sampling.output_format=${FORMAT} sampling.output_frequency=${NINT} time.plot_interval=-1 time.checkpoint_interval=-1 time.max_step=${NSTEPS}")
     add_test("${TEST_NAME}_sampling_${FORMAT}" sh -c "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} \
             \ ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.inp ${RUNTIME_OPTIONS} ${ADDL_RUNTIME_OPTIONS} > ${TEST_NAME}_sampling_${FORMAT}.log && \
             \ ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/sampling_${TEST_NAME}_${FORMAT}.py")
@@ -343,11 +343,11 @@ endif()
 # Postprocessing tests
 #=============================================================================
 if (AMR_WIND_TEST_WITH_PYTHON)
-  add_test_pps(dam_break_godunov native 150)
+  add_test_pps(dam_break_godunov native 30 150)
+  add_test_pps(dam_break_godunov ascii 30 150)
   if(AMR_WIND_ENABLE_NETCDF)
-    add_test_pps(dam_break_godunov netcdf 150)
+    add_test_pps(dam_break_godunov netcdf 30 150)
   endif()
-  add_test_pps(dam_break_godunov ascii 150)
 endif()
 
 #=============================================================================
