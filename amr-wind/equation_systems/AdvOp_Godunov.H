@@ -133,13 +133,11 @@ struct AdvectionOp<
                 amrex::Array4<amrex::Real> rhotrac_nph;
 
                 // Fill physical boundaries of nph field
-                dof_nph.fillphysbc(
-                    lev, time + 0.5 * dt, dof_nph(lev), 1);
+                dof_nph.fillphysbc(lev, time + 0.5 * dt, dof_nph(lev), 1);
 
                 if (PDE::multiply_rho) {
                     // Fill physical boundaries of nph density
-                    den_nph.fillphysbc(
-                        lev, time + 0.5 * dt, den_nph(lev), 1);
+                    den_nph.fillphysbc(lev, time + 0.5 * dt, den_nph(lev), 1);
 
                     auto rhotrac_box =
                         amrex::grow(bx, fvm::Godunov::nghost_state);
