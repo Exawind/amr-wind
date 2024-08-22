@@ -67,6 +67,12 @@ actual keyword is determined by the labels provided to
 
    List of CFD simulation fields to sample and output
 
+.. input_param:: sampling.int_fields
+
+   **type:** List of one or more strings
+
+   List of CFD simulation int fields to sample and output (e.g. mask_cell)
+
 .. input_param:: sampling.derived_fields
 
    **type:** List of one or more strings
