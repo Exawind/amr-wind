@@ -164,7 +164,7 @@ void Sampling::update_sampling_locations()
 {
     BL_PROFILE("amr-wind::Sampling::update_sampling_locations");
 
-    amrex::Vector<bool> updated_position(false);
+    amrex::Vector<bool> updated_position;
     for (const auto& obj : m_samplers) {
         const bool updated_pos = obj->update_sampling_locations();
         updated_position.push_back(updated_pos);
