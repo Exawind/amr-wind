@@ -340,7 +340,8 @@ void ABLMesoForcingMom::operator()(
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
 
-    const int nh_max = (int)m_velAvg_ht.size() - 2;
+    // const int nh_max = (int)m_velAvg_ht.size() - 2;
+    const int nh_max = (int)m_meso_ht.size() - 2;
     const int lp1 = lev + 1;
     const amrex::Real* vheights = m_meso_ht.data();
     const amrex::Real* u_error_val = m_error_meso_avg_U.data();
