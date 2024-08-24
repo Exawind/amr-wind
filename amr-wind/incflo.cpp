@@ -318,13 +318,10 @@ void incflo::do_advance()
         prescribe_advance();
     } else {
 
+        advance();
         for (int it_nl = 1; it_nl < m_adv_iters; ++it_nl) {
 
-            if (it_nl == 1) {
-                advance();
-            } else {
-                advance_nonlinear();
-            }
+            advance_nonlinear();
         }
     }
     if (m_sim.has_overset()) {

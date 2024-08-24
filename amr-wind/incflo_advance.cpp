@@ -515,6 +515,7 @@ void incflo::ApplyPredictorNonLinear(bool incremental_projection)
 
     // Extrapolate and apply MAC projection for advection velocities
     icns().nonlinear_advection_actions(amr_wind::FieldState::Old);
+    // icns().nonlinear_advection_actions(amr_wind::FieldState::NPH);
 
     // For scalars only first
     // *************************************************************************************
@@ -662,6 +663,22 @@ void incflo::ApplyPredictorNonLinear(bool incremental_projection)
     if (m_verbose > 2) {
         PrintMaxVelLocations("after nodal projection");
     }
+
+    // ScratchField to store the old np1
+    // Should nghost be 0 here?
+    auto vel_np1_old = m_repo.create_scratch_field(
+        "vel_np1_old", AMREX_SPACEDIM, 1, amr_wind::FieldLoc::CELL);
+
+    auto vel_diff = m_repo.create_scratch_field(
+        "vel_diff", AMREX_SPACEDIM, 1, amr_wind::FieldLoc::CELL);
+    // lincomb to get old np1
+    amr_wind::field_ops::lincomb(
+        (*vel_np1_old), -0.5,
+        icns().fields().field.state(amr_wind::FieldState::Old), 0, 2,
+        icns().fields().field.state(amr_wind::FieldState::NPH), 0, 0,
+        icns().fields().field.num_comp(), 1);
+
+    amr_wind::io::print_nonlinear_residual(m_sim);
 }
 //
 // Apply corrector:

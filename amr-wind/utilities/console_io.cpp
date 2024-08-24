@@ -4,6 +4,7 @@
 #include "amr-wind/AMRWindVersion.H"
 #include "AMReX.H"
 #include "AMReX_OpenMP.H"
+#include "amr-wind/CFDSim.H"
 
 #ifdef AMR_WIND_USE_NETCDF
 #include "netcdf.h"
@@ -212,6 +213,60 @@ void print_tpls(std::ostream& out)
         out << "  No additional third-party libraries enabled" << std::endl
             << std::endl;
     }
+}
+
+void print_nonlinear_residual(CFDSim& sim)
+{
+    // using namespace amrex;
+    const int nlevels = sim.repo().num_active_levels();
+    const auto& geom = sim.mesh().Geom();
+    const auto& mesh = sim.mesh();
+
+    const auto& velocity_new = sim.pde_manager().icns().fields().field;
+    const auto& vel_np1_old = sim.repo().get_field("vel_np1_old");
+    auto& vel_diff = sim.repo().get_field("vel_diff");
+
+    // amrex::Real total_volume_frac = 0.0;
+    amrex::Real rms_ucell = 0.0;
+    amrex::Real rms_vcell = 0.0;
+    amrex::Real rms_wcell = 0.0;
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+
+        amrex::iMultiFab level_mask;
+        if (lev < nlevels - 1) {
+            level_mask = makeFineMask(
+                mesh.boxArray(lev), mesh.DistributionMap(lev),
+                mesh.boxArray(lev + 1), mesh.refRatio(lev), 1, 0);
+        } else {
+            level_mask.define(
+                mesh.boxArray(lev), mesh.DistributionMap(lev), 1, 0,
+                amrex::MFInfo());
+            level_mask.setVal(1);
+        }
+
+        const auto& vnew = velocity_new(lev);
+        const auto& velstar = vel_np1_old(lev);
+        auto& veldiff = vel_diff(lev);
+
+        for (amrex::MFIter mfi(velocity_new(lev)); mfi.isValid(); ++mfi) {
+            const auto bx = mfi.tilebox();
+            const auto& velstar_arr = velstar.const_array(mfi);
+            const auto& veldiff_arr = veldiff.array(mfi);
+            const auto& velnew_arr = vnew.const_array(mfi);
+
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    veldiff_arr(i, j, k, 0) =
+                        velnew_arr(i, j, k, 0) - velstar_arr(i, j, k, 0);
+                    veldiff_arr(i, j, k, 1) =
+                        velnew_arr(i, j, k, 1) - velstar_arr(i, j, k, 1);
+                    veldiff_arr(i, j, k, 2) =
+                        velnew_arr(i, j, k, 2) - velstar_arr(i, j, k, 2);
+                });
+        }
+    }
+    amrex::ParallelDescriptor::ReduceRealSum(rms_ucell);
 }
 
 } // namespace amr_wind::io
