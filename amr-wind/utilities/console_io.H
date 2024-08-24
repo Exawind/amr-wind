@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "AMReX_MLMG.H"
+#include "amr-wind/CFDSim.H"
 
 namespace amr_wind::io {
 
@@ -19,6 +20,8 @@ void print_mlmg_header(const std::string& /*key*/);
 void print_mlmg_info(const std::string& solve_name, const amrex::MLMG& mlmg);
 
 void print_tpls(std::ostream& /*out*/);
+
+void print_nonlinear_residual(CFDSim& sim);
 
 } // namespace amr_wind::io
 
