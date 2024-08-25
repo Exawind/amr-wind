@@ -678,7 +678,7 @@ void incflo::ApplyPredictorNonLinear(bool incremental_projection)
         icns().fields().field.state(amr_wind::FieldState::NPH), 0, 0,
         icns().fields().field.num_comp(), 1);
 
-    amr_wind::io::print_nonlinear_residual(m_sim);
+    amr_wind::io::print_nonlinear_residual(m_sim, *vel_diff, *vel_np1_old);
 }
 //
 // Apply corrector:
