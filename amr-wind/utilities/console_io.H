@@ -21,7 +21,9 @@ void print_mlmg_info(const std::string& solve_name, const amrex::MLMG& mlmg);
 
 void print_tpls(std::ostream& /*out*/);
 
-void print_nonlinear_residual(CFDSim& sim);
+// void print_nonlinear_residual(CFDSim& sim);
+void print_nonlinear_residual(
+    CFDSim& sim, ScratchField& vel_diff, ScratchField& vel_star);
 
 } // namespace amr_wind::io
 

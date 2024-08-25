@@ -215,7 +215,8 @@ void print_tpls(std::ostream& out)
     }
 }
 
-void print_nonlinear_residual(CFDSim& sim)
+void print_nonlinear_residual(
+    CFDSim& sim, ScratchField& vel_diff, ScratchField& vel_star)
 {
     // using namespace amrex;
     const int nlevels = sim.repo().num_active_levels();
@@ -223,13 +224,8 @@ void print_nonlinear_residual(CFDSim& sim)
     const auto& mesh = sim.mesh();
 
     const auto& velocity_new = sim.pde_manager().icns().fields().field;
-    const auto& vel_np1_old = sim.repo().get_field("vel_np1_old");
-    auto& vel_diff = sim.repo().get_field("vel_diff");
-
-    // amrex::Real total_volume_frac = 0.0;
-    amrex::Real rms_ucell = 0.0;
-    amrex::Real rms_vcell = 0.0;
-    amrex::Real rms_wcell = 0.0;
+    // const auto& vel_np1_old = sim.repo().get_field("vel_np1_old");
+    // auto& vel_diff = sim.repo().get_field("vel_diff");
 
     for (int lev = 0; lev < nlevels; ++lev) {
 
@@ -246,7 +242,9 @@ void print_nonlinear_residual(CFDSim& sim)
         }
 
         const auto& vnew = velocity_new(lev);
-        const auto& velstar = vel_np1_old(lev);
+        // const auto& velstar = vel_np1_old(lev);
+        // auto& veldiff = vel_diff(lev);
+        const auto& velstar = vel_star(lev);
         auto& veldiff = vel_diff(lev);
 
         for (amrex::MFIter mfi(velocity_new(lev)); mfi.isValid(); ++mfi) {
@@ -266,7 +264,22 @@ void print_nonlinear_residual(CFDSim& sim)
                 });
         }
     }
-    amrex::ParallelDescriptor::ReduceRealSum(rms_ucell);
+
+    amrex::Real rms_ucell = 0.0;
+    amrex::Real rms_vcell = 0.0;
+    amrex::Real rms_wcell = 0.0;
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        rms_ucell += vel_diff(lev).norm2(0);
+        rms_vcell += vel_diff(lev).norm2(1);
+        rms_wcell += vel_diff(lev).norm2(2);
+        amrex::Print() << "Non-linear residual for u velocity in level" << lev
+                       << "is " << rms_ucell << std::endl;
+        amrex::Print() << "Non-linear residual for v velocity in level" << lev
+                       << "is " << rms_vcell << std::endl;
+        amrex::Print() << "Non-linear residual for w velocity in level" << lev
+                       << "is " << rms_wcell << std::endl;
+    }
 }
 
 } // namespace amr_wind::io
