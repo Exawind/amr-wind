@@ -252,15 +252,19 @@ void print_nonlinear_residual(
             const auto& velstar_arr = velstar.const_array(mfi);
             const auto& veldiff_arr = veldiff.array(mfi);
             const auto& velnew_arr = vnew.const_array(mfi);
+            const auto& levelmask_arr = level_mask.const_array(mfi);
 
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     veldiff_arr(i, j, k, 0) =
-                        velnew_arr(i, j, k, 0) - velstar_arr(i, j, k, 0);
+                        (velnew_arr(i, j, k, 0) - velstar_arr(i, j, k, 0)) *
+                        levelmask_arr(i, j, k);
                     veldiff_arr(i, j, k, 1) =
-                        velnew_arr(i, j, k, 1) - velstar_arr(i, j, k, 1);
+                        (velnew_arr(i, j, k, 1) - velstar_arr(i, j, k, 1)) *
+                        levelmask_arr(i, j, k);
                     veldiff_arr(i, j, k, 2) =
-                        velnew_arr(i, j, k, 2) - velstar_arr(i, j, k, 2);
+                        (velnew_arr(i, j, k, 2) - velstar_arr(i, j, k, 2)) *
+                        levelmask_arr(i, j, k);
                 });
         }
     }
@@ -273,13 +277,13 @@ void print_nonlinear_residual(
         rms_ucell += vel_diff(lev).norm2(0);
         rms_vcell += vel_diff(lev).norm2(1);
         rms_wcell += vel_diff(lev).norm2(2);
-        amrex::Print() << "Non-linear residual for u velocity in level" << lev
-                       << "is " << rms_ucell << std::endl;
-        amrex::Print() << "Non-linear residual for v velocity in level" << lev
-                       << "is " << rms_vcell << std::endl;
-        amrex::Print() << "Non-linear residual for w velocity in level" << lev
-                       << "is " << rms_wcell << std::endl;
     }
+    amrex::Print() << "Non-linear residual for u velocity " << rms_ucell
+                   << std::endl;
+    amrex::Print() << "Non-linear residual for v velocity " << rms_vcell
+                   << std::endl;
+    amrex::Print() << "Non-linear residual for w velocity " << rms_wcell
+                   << std::endl;
 }
 
 } // namespace amr_wind::io

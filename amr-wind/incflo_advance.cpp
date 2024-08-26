@@ -436,6 +436,14 @@ void incflo::ApplyPredictorNonLinear(bool incremental_projection)
     const auto& density_old = density_new.state(amr_wind::FieldState::Old);
     auto& density_nph = density_new.state(amr_wind::FieldState::NPH);
 
+    icns().fields().field.fillpatch(m_time.current_time());
+    // Get n + 1/2 velocity
+    amr_wind::field_ops::lincomb(
+        icns().fields().field.state(amr_wind::FieldState::NPH), 0.5,
+        icns().fields().field.state(amr_wind::FieldState::Old), 0, 0.5,
+        icns().fields().field, 0, 0, icns().fields().field.num_comp(),
+        icns().fields().field.num_grow());
+
     // *************************************************************************************
     // Compute viscosity / diffusive coefficients
     // *************************************************************************************
@@ -514,8 +522,9 @@ void incflo::ApplyPredictorNonLinear(bool incremental_projection)
     }
 
     // Extrapolate and apply MAC projection for advection velocities
-    icns().nonlinear_advection_actions(amr_wind::FieldState::Old);
+    // icns().nonlinear_advection_actions(amr_wind::FieldState::Old);
     // icns().nonlinear_advection_actions(amr_wind::FieldState::NPH);
+    icns().nonlinear_advection_actions(amr_wind::FieldState::New);
 
     // For scalars only first
     // *************************************************************************************
@@ -586,13 +595,16 @@ void incflo::ApplyPredictorNonLinear(bool incremental_projection)
     // Fillpatch the velocity
     // change to new_time or remove
     // icns().fields().field.fillpatch(0.0);
-    icns().fields().field.fillpatch(m_time.current_time());
-    // Get n + 1/2 velocity
-    amr_wind::field_ops::lincomb(
-        icns().fields().field.state(amr_wind::FieldState::NPH), 0.5,
-        icns().fields().field.state(amr_wind::FieldState::Old), 0, 0.5,
-        icns().fields().field, 0, 0, icns().fields().field.num_comp(),
-        icns().fields().field.num_grow());
+
+    /*
+icns().fields().field.fillpatch(m_time.current_time());
+// Get n + 1/2 velocity
+amr_wind::field_ops::lincomb(
+    icns().fields().field.state(amr_wind::FieldState::NPH), 0.5,
+    icns().fields().field.state(amr_wind::FieldState::Old), 0, 0.5,
+    icns().fields().field, 0, 0, icns().fields().field.num_comp(),
+    icns().fields().field.num_grow());
+    */
 
     // Compute advection of momentum at NPH
     icns().compute_advection_term(amr_wind::FieldState::NPH);
@@ -673,12 +685,14 @@ void incflo::ApplyPredictorNonLinear(bool incremental_projection)
         "vel_diff", AMREX_SPACEDIM, 1, amr_wind::FieldLoc::CELL);
     // lincomb to get old np1
     amr_wind::field_ops::lincomb(
-        (*vel_np1_old), -0.5,
+        (*vel_np1_old), -1.0,
         icns().fields().field.state(amr_wind::FieldState::Old), 0, 2,
         icns().fields().field.state(amr_wind::FieldState::NPH), 0, 0,
         icns().fields().field.num_comp(), 1);
 
     amr_wind::io::print_nonlinear_residual(m_sim, *vel_diff, *vel_np1_old);
+    vel_np1_old.reset();
+    vel_diff.reset();
 }
 //
 // Apply corrector:
