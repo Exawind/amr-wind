@@ -60,7 +60,7 @@ void LidarSampler::initialize(const std::string& key)
     check_bounds();
 }
 
-void LidarSampler::update_sampling_locations()
+bool LidarSampler::update_sampling_locations()
 {
 
     amrex::Real time = m_sim.time().current_time();
@@ -84,6 +84,8 @@ void LidarSampler::update_sampling_locations()
     m_end[1] = m_start[1] + m_length * std::sin(current_azimuth) *
                                 std::sin(current_elevation);
     m_end[2] = m_start[2] + m_length * std::cos(current_elevation);
+
+    return true;
 }
 
 #ifdef AMR_WIND_USE_NETCDF

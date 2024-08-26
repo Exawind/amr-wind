@@ -74,10 +74,15 @@ public:
         return static_cast<int>(m_total_particles);
     }
 
-    int num_output_particles() const
+#ifdef AMR_WIND_USE_NETCDF
+    int num_netcdf_output_particles() const
     {
-        return static_cast<int>(m_output_particles);
+        if (m_out_fmt == "netcdf") {
+            return static_cast<int>(m_netcdf_output_particles);
+        }
+        return 0;
     }
+#endif
 
     const amrex::Vector<std::string>& var_names() const { return m_var_names; }
 
@@ -118,6 +123,9 @@ private:
     //! List of fields to be sampled for this collection of probes
     amrex::Vector<Field*> m_fields;
 
+    //! List of IntFields to be sampled for this collection of probes
+    amrex::Vector<IntField*> m_int_fields;
+
     //! List of derived fields to be sampled for this collection of probes
     std::unique_ptr<DerivedQtyMgr> m_derived_mgr;
 
@@ -128,16 +136,19 @@ private:
      */
     const std::string m_label;
 
+    //! Format of the data output (native, ascii, netcdf, etc.)
+#ifdef AMR_WIND_USE_NETCDF
+    std::string m_out_fmt{"netcdf"};
+    std::string m_ncfile_name;
+
     // Current sample buffer for full container
     std::vector<double> m_sample_buf;
 
     // Current sample buffer for output
     std::vector<double> m_output_buf;
 
-    //! Format of the data output (native, ascii, netcdf, etc.)
-#ifdef AMR_WIND_USE_NETCDF
-    std::string m_out_fmt{"netcdf"};
-    std::string m_ncfile_name;
+    //! Number of output particles in netcdf
+    size_t m_netcdf_output_particles{0};
 #else
     std::string m_out_fmt{"native"};
 #endif
@@ -148,14 +159,14 @@ private:
     // number of field components
     int m_ncomp{0};
 
+    // number of int field components
+    int m_nicomp{0};
+
     // number of derived field components
     int m_ndcomp{0};
 
     //! Number of sampling container particles:
     size_t m_total_particles{0};
-
-    //! Number of output particles
-    size_t m_output_particles{0};
 
     //! Frequency of data sampling and output
     int m_out_freq{100};

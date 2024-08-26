@@ -20,14 +20,14 @@ class AmrexParticleFile:
     """
 
     @classmethod
-    def load(cls, time_index, label="sampling", root_dir="post_processing"):
+    def load(cls, time_index, label="sampling", root_dir="post_processing", suffix="/particles"):
         """
         Args:
             time_index (int): Time index to load
             label (str): Label used for this set of probes
             root_dir (path): Path to the post_processing directory
         """
-        fpath = Path(root_dir) / ("%s%05d"%(label, time_index))
+        fpath = Path(root_dir) / ("%s%05d%s"%(label, time_index, suffix))
         return cls(fpath)
 
     def __init__(self, pdir):
@@ -67,7 +67,7 @@ class AmrexParticleFile:
             self.next_id = int(fh.readline().strip())
             self.finest_level = int(fh.readline().strip())
 
-            self.num_grids = np.empty((self.finest_level+1,), dtype=np.int)
+            self.num_grids = np.empty((self.finest_level+1,), dtype=int)
             self.grid_info = []
             for lev in range(self.finest_level+1):
                 ginfo = []
@@ -80,9 +80,9 @@ class AmrexParticleFile:
     def load_binary_data(self):
         """Read binary data into memory"""
         self.real_data = np.empty((self.num_particles,
-                                   self.ndim+self.num_reals), dtype=np.float)
+                                   self.ndim+self.num_reals), dtype=float)
         self.int_data = np.empty((self.num_particles,
-                                  self.num_ints), dtype=np.int)
+                                  self.num_ints), dtype=int)
 
         idata = self.int_data
         rdata = self.real_data
@@ -100,7 +100,7 @@ class AmrexParticleFile:
                 fh = bfiles[fstr]
                 fh.seek(offset)
                 ivals = np.fromfile(fh, dtype=np.int32, count=nints*npts)
-                rvals = np.fromfile(fh, dtype=np.float, count=nreals*npts)
+                rvals = np.fromfile(fh, dtype=float, count=nreals*npts)
 
                 for i, ii in enumerate(range(0, nints * npts, nints)):
                     pidx = ivals[ii + 2]

@@ -69,7 +69,7 @@ public:
             std::ofstream outfile;
             // Forces are recorded at n+1/2
             outfile.open(m_force_timetable, std::ios::out | std::ios::app);
-            outfile << std::fixed << std::setprecision(15) << nph_time << "\t"
+            outfile << std::setprecision(17) << nph_time << "\t"
                     << m_abl_forcing[0] << "\t" << m_abl_forcing[1] << "\t"
                     << 0.0 << std::endl;
         }

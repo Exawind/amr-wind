@@ -1,11 +1,21 @@
 time.stop_time               =   6     # Max (simulated) time to evolve
-time.max_step                =   20          # Max number of time steps
+time.max_step                =   150          # Max number of time steps
 
 time.fixed_dt         =   0.001        # Use this constant dt if > 0
 time.cfl              =   0.95         # CFL factor
 
 time.plot_interval            =  10       # Steps between plot files
 time.checkpoint_interval      =  -100       # Steps between checkpoint files
+
+incflo.post_processing        = sampling
+sampling.output_frequency     = 10
+sampling.output_format        = native
+sampling.labels               = fs
+sampling.fields               = velocity
+sampling.fs.type              = FreeSurfaceSampler
+sampling.fs.plane_num_points  = 40 1
+sampling.fs.plane_start       = 0.0 0.0625 0.0
+sampling.fs.plane_end         = 0.5 0.0625 0.0
 
 io.output_default_variables = 0
 io.outputs = density vof

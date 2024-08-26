@@ -78,7 +78,7 @@ incflo.verbose          =   0          # incflo_level
 #.......................................#
 incflo.post_processing       = sampling sampling2
 sampling.output_frequency    = 1
-sampling.output_format       = native
+sampling.output_format       = netcdf
 sampling.fields              = velocity
 sampling.int_fields          = mask_cell
 sampling.derived_fields      = mag_vorticity "components(velocity,0,1)" "grad(temperature)" "grad(density)"
@@ -89,9 +89,9 @@ sampling.volume1.hi          = 500.0 500.0 500.0
 sampling.volume1.num_points  = 30 10 10
 
 sampling2.output_frequency    = 1
-sampling2.output_format       = native
+sampling2.output_format       = netcdf
 sampling2.fields              = velocity
-sampling.int_fields           = mask_cell
+sampling2.int_fields          = mask_cell
 sampling2.derived_fields      = q_criterion_nondim
 sampling2.labels              = volume1
 sampling2.volume1.type        = VolumeSampler

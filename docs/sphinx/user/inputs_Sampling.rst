@@ -67,6 +67,12 @@ actual keyword is determined by the labels provided to
 
    List of CFD simulation fields to sample and output
 
+.. input_param:: sampling.int_fields
+
+   **type:** List of one or more strings
+
+   List of CFD simulation int fields to sample and output (e.g. mask_cell)
+
 .. input_param:: sampling.derived_fields
 
    **type:** List of one or more strings
@@ -158,3 +164,29 @@ Example::
   sampling.volume1.hi        = 3.0 1.0 0.5
   sampling.volume1.lo      = 0.0 0.0 -0.5
   sampling.volume1.num_points  = 30 10 10
+
+Sampling on the air-water interface
+```````````````````````````````````
+
+The ``FreeSurfaceSampler`` samples on the air-water interface, and it requires the 
+vof (volume-of-fluid) field to be present in order to function. The sample locations
+are specified using a grid that starts at ``plane_start`` and
+extends to ``plane_end``. The resolution in each direction is specified by
+``plane_num_points``. The coordinates of the sampling
+locations are determined by the location of the air-water interface in the search
+direction, specified by ``search_direction``, and the other coordinates are 
+determined by the ``plane_`` parameters. The default search direction parameter
+is 2, indicating the samplers will search for the interface along the z-direction. 
+Due to this design, it is best to specify a plane that is normal to the intended 
+search direction. Another optional parameter is ``num_instances``, which is available
+for cases where the interface location is multivalued along the search direction,
+such as during wave breaking. This parameter defaults to 1, and the sampler will
+automatically select the highest position along the search direction when the interface
+location is multivalued.
+
+Example::
+
+  sampling.fs1.type             = FreeSurfaceSampler
+  sampling.fs1.plane_start      = 4.0 -1.0 0.0
+  sampling.fs1.plane_end        = 0.0 1.0  0.0
+  sampling.fs1.plane_num_points = 20 10

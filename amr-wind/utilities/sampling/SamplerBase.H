@@ -56,10 +56,13 @@ public:
     virtual void output_locations(SampleLocType&) const = 0;
 
     //! Update the sampling locations
-    virtual void update_sampling_locations() {}
+    virtual bool update_sampling_locations() { return false; }
 
     //! Run actions after sample (useful in interpolated subsampling)
     virtual void post_sample_actions() {}
+
+    //! Run actions after regrid (important when using field-based quantities)
+    virtual void post_regrid_actions() {}
 
     //! Run specific output for the sampler
     virtual bool output_netcdf_field(

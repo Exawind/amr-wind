@@ -26,6 +26,8 @@ void Sampling::initialize()
     amrex::Vector<std::string> labels;
     // Fields to be sampled - requested by user
     amrex::Vector<std::string> field_names;
+    // Int Fields to be sampled - requested by user
+    amrex::Vector<std::string> int_field_names;
     // Derived fields to be sampled - requested by user
     amrex::Vector<std::string> derived_field_names;
 
@@ -39,6 +41,10 @@ void Sampling::initialize()
         ioutils::assert_with_message(
             ioutils::all_distinct(field_names),
             "Duplicates in " + m_label + ".fields");
+        pp.queryarr("int_fields", int_field_names);
+        ioutils::assert_with_message(
+            ioutils::all_distinct(int_field_names),
+            "Duplicates in " + m_label + ".int_fields");
         pp.queryarr("derived_fields", derived_field_names);
         pp.query("output_frequency", m_out_freq);
         pp.query("output_format", m_out_fmt);
@@ -53,8 +59,10 @@ void Sampling::initialize()
         if (!repo.field_exists(fname)) {
             amrex::Print()
                 << "WARNING: Sampling: Non-existent field requested: " << fname
-                << ". This is a mistake or the requested field is a derived "
-                   "field and should be added to the derived_fields parameter"
+                << ". This is a mistake or the requested field is a int field "
+                   "or a derived "
+                   "field and should be added to the int_fields/derived_fields "
+                   "parameter"
                 << std::endl;
             continue;
         }
@@ -62,6 +70,26 @@ void Sampling::initialize()
         auto& fld = repo.get_field(fname);
         m_ncomp += fld.num_comp();
         m_fields.emplace_back(&fld);
+        ioutils::add_var_names(m_var_names, fld.name(), fld.num_comp());
+    }
+
+    // Process field information
+    m_nicomp = 0;
+    for (const auto& fname : int_field_names) {
+        if (!repo.int_field_exists(fname)) {
+            amrex::Print()
+                << "WARNING: Sampling: Non-existent int_field requested: "
+                << fname
+                << ". This is a mistake or the requested int_field is a "
+                   "derived "
+                   "field and should be added to the derived_fields parameter"
+                << std::endl;
+            continue;
+        }
+
+        auto& fld = repo.get_int_field(fname);
+        m_nicomp += fld.num_comp();
+        m_int_fields.emplace_back(&fld);
         ioutils::add_var_names(m_var_names, fld.name(), fld.num_comp());
     }
 
@@ -94,15 +122,23 @@ void Sampling::initialize()
 
     update_container();
 
+#ifdef AMR_WIND_USE_NETCDF
     if (m_out_fmt == "netcdf") {
         prepare_netcdf_file();
+        m_sample_buf.assign(m_total_particles * m_var_names.size(), 0.0);
     }
-
-    m_sample_buf.assign(m_total_particles * m_var_names.size(), 0.0);
+#endif
 
     if (m_restart_sample) {
         sampling_workflow();
         sampling_post();
+    }
+
+    // Check
+    for (const auto& obj : m_samplers) {
+        if ((obj->do_convert_velocity_los()) && (m_out_fmt != "netcdf")) {
+            amrex::Abort("Velocity line of sight capability requires NetCDF");
+        }
     }
 }
 
@@ -113,7 +149,7 @@ void Sampling::update_container()
     // Initialize the particle container based on user inputs
     m_scontainer = std::make_unique<SamplingContainer>(m_sim.mesh());
 
-    m_scontainer->setup_container(m_ncomp + m_ndcomp);
+    m_scontainer->setup_container(m_ncomp + m_nicomp + m_ndcomp);
 
     m_scontainer->initialize_particles(m_samplers);
 
@@ -128,11 +164,17 @@ void Sampling::update_sampling_locations()
 {
     BL_PROFILE("amr-wind::Sampling::update_sampling_locations");
 
+    amrex::Vector<bool> updated_position;
     for (const auto& obj : m_samplers) {
-        obj->update_sampling_locations();
+        const bool updated_pos = obj->update_sampling_locations();
+        updated_position.push_back(updated_pos);
     }
 
-    update_container();
+    if (std::any_of(
+            updated_position.begin(), updated_position.end(),
+            [](const auto& v) { return v; })) {
+        update_container();
+    }
 }
 
 void Sampling::post_advance_work()
@@ -166,10 +208,12 @@ void Sampling::sampling_workflow()
 
     update_sampling_locations();
 
-    m_scontainer->interpolate_fields(m_fields);
+    m_scontainer->interpolate_fields(m_fields, 0);
+
+    m_scontainer->interpolate_fields(m_int_fields, m_ncomp);
 
     m_scontainer->interpolate_derived_fields(
-        *m_derived_mgr, m_sim.repo(), m_ncomp);
+        *m_derived_mgr, m_sim.repo(), m_ncomp + m_nicomp);
 
     fill_buffer();
 
@@ -187,12 +231,21 @@ void Sampling::sampling_post()
         obj->post_sample_actions();
     }
 
-    m_output_buf.clear();
+#ifdef AMR_WIND_USE_NETCDF
+    if (m_out_fmt == "netcdf") {
+        m_output_buf.clear();
+    }
+#endif
 }
 
 void Sampling::post_regrid_actions()
 {
     BL_PROFILE("amr-wind::Sampling::post_regrid_actions");
+
+    for (const auto& obj : m_samplers) {
+        obj->post_regrid_actions();
+    }
+
     m_scontainer->Redistribute();
 }
 
@@ -200,6 +253,11 @@ void Sampling::convert_velocity_lineofsight()
 {
     BL_PROFILE("amr-wind::Sampling::convert_velocity_lineofsight");
 
+    if (m_out_fmt != "netcdf") {
+        return;
+    }
+
+#ifdef AMR_WIND_USE_NETCDF
     amrex::Vector<int> vel_map(AMREX_SPACEDIM, 0);
     const amrex::Vector<std::string> vnames = {
         "velocityx", "velocityy", "velocityz"};
@@ -246,11 +304,22 @@ void Sampling::convert_velocity_lineofsight()
         }
         soffset += sample_size;
     }
+#else
+    amrex::Abort(
+        "NetCDF support was not enabled during build time. Please recompile or "
+        "use native format");
+#endif
 }
 
 void Sampling::create_output_buffer()
 {
     BL_PROFILE("amr-wind::Sampling::create_output_buffer");
+
+    if (m_out_fmt != "netcdf") {
+        return;
+    }
+
+#ifdef AMR_WIND_USE_NETCDF
     const long nvars = m_var_names.size();
     for (int iv = 0; iv < nvars; ++iv) {
         long offset = iv * m_scontainer->num_sampling_particles();
@@ -276,13 +345,27 @@ void Sampling::create_output_buffer()
         }
     }
 
-    m_output_particles = m_output_buf.size() / nvars;
+    m_netcdf_output_particles = m_output_buf.size() / nvars;
+#else
+    amrex::Abort(
+        "NetCDF support was not enabled during build time. Please recompile or "
+        "use native format");
+#endif
 }
 
 void Sampling::fill_buffer()
 {
     BL_PROFILE("amr-wind::Sampling::fill_buffer");
-    m_scontainer->populate_buffer(m_sample_buf);
+    if (m_out_fmt == "netcdf") {
+#ifdef AMR_WIND_USE_NETCDF
+        m_scontainer->populate_buffer(m_sample_buf);
+#else
+        amrex::Abort(
+            "NetCDF support was not enabled during build time. Please "
+            "recompile or "
+            "use native format");
+#endif
+    }
 }
 
 void Sampling::process_output()
@@ -437,7 +520,7 @@ void Sampling::write_netcdf()
         std::string vname = m_var_names[iv];
         start[1] = 0;
         count[1] = 0;
-        auto offset = iv * num_output_particles();
+        auto offset = iv * num_netcdf_output_particles();
         for (const auto& obj : m_samplers) {
             auto grp = ncf.group(obj->label());
             count[1] = obj->num_output_points();
