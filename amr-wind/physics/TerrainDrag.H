@@ -53,7 +53,7 @@ private:
     amrex::Vector<amrex::Real> m_zterrain;
     // Roughness Field
     Field& m_terrainz0;
-  Field& m_terrain_height;
+    Field& m_terrain_height;
     // Reading the Roughness Coordinates from file - Not Fully there yet
     // Need updates to ABLWallFunction in future
     amrex::Vector<amrex::Real> m_xrough;

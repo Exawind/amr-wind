@@ -16,8 +16,8 @@ TerrainDrag::TerrainDrag(CFDSim& sim)
     , m_repo(sim.repo())
     , m_mesh(sim.mesh())
     , m_velocity(sim.repo().get_field("velocity"))
-    , m_terrain_blank(sim.repo().declare_int_field("terrain_blank", 1,1,1))
-    , m_terrain_drag(sim.repo().declare_int_field("terrain_drag", 1,1,1))
+    , m_terrain_blank(sim.repo().declare_int_field("terrain_blank", 1, 1, 1))
+    , m_terrain_drag(sim.repo().declare_int_field("terrain_drag", 1, 1, 1))
     , m_terrainz0(sim.repo().declare_field("terrainz0", 1, 1, 1))
     , m_terrain_height(sim.repo().declare_field("terrain_height", 1, 1, 1))
 {
@@ -60,7 +60,7 @@ void TerrainDrag::post_init_actions()
         auto& velocity = m_velocity(level);
         auto& blanking = m_terrain_blank(level);
         auto& terrainz0 = m_terrainz0(level);
-	auto& terrain_height=m_terrain_height(level);
+        auto& terrain_height = m_terrain_height(level);
         auto& drag = m_terrain_drag(level);
         // copy terrain data to gpu
         amrex::Gpu::DeviceVector<amrex::Real> device_xterrain(
@@ -102,7 +102,7 @@ void TerrainDrag::post_init_actions()
             auto levelBlanking = blanking.array(mfi);
             auto levelDrag = drag.array(mfi);
             auto levelz0 = terrainz0.array(mfi);
-	    auto levelheight=terrain_height.array(mfi);
+            auto levelheight = terrain_height.array(mfi);
             const unsigned terrainSize = m_xterrain.size();
             const unsigned roughnessSize = m_xrough.size();
             amrex::ParallelFor(
@@ -122,11 +122,12 @@ void TerrainDrag::post_init_actions()
                             residual = radius;
                             terrainHt = zterrain_ptr[ii];
                         }
-		    }
+                    }
                     levelBlanking(i, j, k, 0) =
                         static_cast<int>(z <= terrainHt);
-		    levelheight(i,j,k,0)=std::max(std::abs(z-terrainHt),0.5*dx[2]);
-                  residual = 10000;
+                    levelheight(i, j, k, 0) =
+                        std::max(std::abs(z - terrainHt), 0.5 * dx[2]);
+                    residual = 10000;
                     amrex::Real roughz0 = 0.1;
                     for (unsigned ii = 0; ii < roughnessSize; ++ii) {
                         const amrex::Real radius = std::sqrt(
@@ -141,7 +142,7 @@ void TerrainDrag::post_init_actions()
                         }
                     }
                     levelz0(i, j, k, 0) = roughz0;
-		});
+                });
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     // Terrain Height
@@ -165,7 +166,7 @@ void TerrainDrag::post_init_actions()
                         levelDrag(i, j, k, 0) = 1;
                     }
                 });
-	}
+        }
     }
 }
 

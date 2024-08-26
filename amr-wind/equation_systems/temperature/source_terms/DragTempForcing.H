@@ -33,7 +33,7 @@ public:
 private:
     const CFDSim& m_sim;
     const amrex::AmrCore& m_mesh;
-  const Field& m_velocity;
+    const Field& m_velocity;
     const Field& m_temperature;
     amrex::Real m_drag{1.0};
     amrex::Real m_internalRefT{300.0};
