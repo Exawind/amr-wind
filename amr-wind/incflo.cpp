@@ -320,7 +320,8 @@ void incflo::do_advance()
 
         advance();
         for (int it_nl = 1; it_nl < m_adv_iters; ++it_nl) {
-
+            amrex::Print() << "Iteration " << it_nl << " in NL loop"
+                           << std::endl;
             advance_nonlinear();
         }
     }
