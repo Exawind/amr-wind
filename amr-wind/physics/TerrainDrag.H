@@ -36,7 +36,7 @@ public:
 
     void post_advance_work() override {}
 
-    int return_blank_value(int i, int j, int k);
+    int returnBlankValue(int i, int j, int k);
 
 private:
     CFDSim& m_sim;
@@ -53,6 +53,7 @@ private:
     amrex::Vector<amrex::Real> m_zterrain;
     // Roughness Field
     Field& m_terrainz0;
+  Field& m_terrain_height;
     // Reading the Roughness Coordinates from file - Not Fully there yet
     // Need updates to ABLWallFunction in future
     amrex::Vector<amrex::Real> m_xrough;

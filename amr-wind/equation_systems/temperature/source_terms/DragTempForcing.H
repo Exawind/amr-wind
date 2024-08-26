@@ -7,7 +7,7 @@
 
 namespace amr_wind::pde::temperature {
 
-/** Adding the source term to momentum equation to account for immersed
+/** Adding the source term to energy equation to account for immersed
  * boundary.
  *
  *  \ingroup temperature_src
@@ -33,7 +33,7 @@ public:
 private:
     const CFDSim& m_sim;
     const amrex::AmrCore& m_mesh;
-    const Field& m_velocity;
+  const Field& m_velocity;
     const Field& m_temperature;
     amrex::Real m_drag{1.0};
     amrex::Real m_internalRefT{300.0};
