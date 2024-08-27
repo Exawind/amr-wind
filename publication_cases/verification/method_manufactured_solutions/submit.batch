@@ -8,8 +8,8 @@ for cell in "${cells[@]}"
 do
     mkdir ${cell}
     cd ${cell} || exit
-    cp "../../${iname}" .
-        sed -i "/amr.n_cell/c\amr.n_cell=${cell} ${cell} ${cell}" "${iname}"
+    cp "../${iname}" .
+    sed -i "/amr.n_cell/c\amr.n_cell=${cell} ${cell} ${cell}" "${iname}"
     mpirun -n ${mpi_ranks} ${aw_exec} "${iname}" >> "mms.o"
     cd .. || exit
 done
