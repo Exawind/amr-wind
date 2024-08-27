@@ -1,0 +1,15 @@
+#!/bin/bash
+mpi_ranks=36
+aw_exec="amr_wind"
+
+cells=( 8 16 32 64 )
+iname="mms.inp"
+for cell in "${cells[@]}"
+do
+    mkdir ${cell}
+    cd ${cell} || exit
+    cp "../../${iname}" .
+        sed -i "/amr.n_cell/c\amr.n_cell=${cell} ${cell} ${cell}" "${iname}"
+    mpirun -n ${mpi_ranks} ${aw_exec} "${iname}" >> "mms.o"
+    cd .. || exit
+done
