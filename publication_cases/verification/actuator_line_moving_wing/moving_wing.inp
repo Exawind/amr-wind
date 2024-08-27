@@ -7,7 +7,7 @@ time.max_step                =   -20          # Max number of time steps
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
-time.fixed_dt         =   0.4        # Use this constant dt if > 0
+time.fixed_dt         =   0.5        # Use this constant dt if > 0
 time.cfl              =   0.95         # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -61,8 +61,6 @@ geometry.prob_lo        =   -8192 -64 -8192
 geometry.prob_hi        =    8192  64  8192
 geometry.is_periodic    =   0   1   0   # Periodicity x y z (0/1)
 amr.blocking_factor_y = 4
-#nodal_proj.bottom_solver = hypre
-#mac_proj.bottom_solver = smoother
 Actuator.FixedWingLine.num_points = 3
 Actuator.FixedWingLine.epsilon = 3.0 3.0 3.0
 

@@ -1,0 +1,26 @@
+#!/bin/bash
+aw_exec="amr_wind"
+
+# dx = 4, 2, 1, 0.5
+
+max_levels=( 3 4 5 6 )
+nprocs=( 8 32 128 512 )
+timesteps=( 0.5 0.25 0.125 0.0625 )
+pp_freqs=( 2 4 8 16 )
+
+for index in "${!max_levels[@]}"
+do
+    maxl=${max_levels[$index]}
+    dt=${timesteps[$index]}
+    ppf=${pp_freqs[$index]}
+    mpi_ranks=${nprocs[$index]}
+
+    mkdir ${maxl}
+    cd ${maxl} || exit
+    cp "../${iname}" .
+    sed -i "/amr.max_level/c\amr.max_level=${maxl}" "${iname}"
+    sed -i "/time.fixed_dt/c\time.fixed_dt=${dt}" "${iname}"
+    sed -i "/Actuator.FixedWingLine.output_frequency/c\Actuator.FixedWingLine.output_frequency=${ppf}" "${iname}"
+    mpirun -n ${mpi_ranks} ${aw_exec} "${iname}" >> "moving_wing.o"
+    cd .. || exit
+done
