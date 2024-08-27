@@ -1,0 +1,152 @@
+time.stop_time               =   -100.0     # Max (simulated) time to evolve
+time.max_step                =   50000         # Max number of time steps
+
+#time.fixed_dt         =   0.0025      # Use this constant dt if > 0
+time.fixed_dt         =   0.01      # Use this constant dt if > 0
+time.cfl              =   0.95         # CFL factor
+
+io.KE_int = 0
+io.outputs = actuator_src_term
+time.plot_interval            =  50       # Steps between plot files
+time.checkpoint_interval      =  -1       # Steps between checkpoint files
+
+ConstValue.density.value = 1.225
+ConstValue.velocity.value = 8.0 0.0 0.0
+
+incflo.use_godunov = 1
+incflo.godunov_type = "weno_z"
+incflo.do_initial_proj = 1
+incflo.initial_iterations = 3
+transport.viscosity = 1.0e-5
+transport.laminar_prandtl = 0.7
+transport.turbulent_prandtl = 0.3333
+#turbulence.model = Laminar
+turbulence.model               = Smagorinsky
+Smagorinsky_coeffs.Cs          = 0.16
+
+#incflo.physics = FreeStream
+
+incflo.physics = FreeStream Actuator
+Actuator.labels = WTG01
+Actuator.type = TurbineFastLine
+
+Actuator.TurbineFastLine.rotor_diameter = 126.0
+Actuator.TurbineFastLine.hub_height = 90.0
+Actuator.TurbineFastLine.num_points_blade = 64
+Actuator.TurbineFastLine.num_points_tower = 12
+Actuator.TurbineFastLine.epsilon = 10.0 10.0 10.0
+Actuator.TurbineFastLine.epsilon_tower = 5.0 5.0 5.0
+Actuator.TurbineFastLine.openfast_start_time = 0.0
+Actuator.TurbineFastLine.openfast_stop_time = 500.0
+Actuator.TurbineFastLine.nacelle_drag_coeff = 0.0
+Actuator.TurbineFastLine.nacelle_area = 0.0
+Actuator.TurbineFastLine.output_frequency = 10
+Actuator.TurbineFastLine.density = 1.225
+
+Actuator.WTG01.base_position = 5.0191 0. -89.56256
+Actuator.WTG01.openfast_input_file = "fast_inp/nrel5mw.fst"
+
+ICNS.source_terms = ActuatorForcing
+
+# amr.n_cell              = 1536 384 384
+# amr.max_level           = 0
+amr.n_cell              = 384 96 96
+amr.max_level           = 2
+
+geometry.prob_lo        =   -378.0 -378.0 -378.0
+geometry.prob_hi        =   2646.0  378.0  378.0
+
+geometry.is_periodic    =   0   0   0   # Periodicity x y z (0/1)
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#        Mesh refinement                #
+#.......................................#
+tagging.labels = refine0
+tagging.refine0.type = GeometryRefinement
+tagging.refine0.shapes = c0 c1
+
+tagging.refine0.c0.type = cylinder
+tagging.refine0.c0.start = -256.0 0 0
+tagging.refine0.c0.end = 2600.0 0 0
+tagging.refine0.c0.outer_radius = 189.0
+
+tagging.refine0.c1.type = cylinder
+tagging.refine0.c1.start = -189.0 0 0
+tagging.refine0.c1.end = 2646.0 0 0
+tagging.refine0.c1.outer_radius = 157.5
+
+# Boundary conditions
+xlo.type = "mass_inflow"
+xlo.density = 1.225
+xlo.velocity = 8.0 0.0 0.0
+xhi.type = "pressure_outflow"
+ylo.type =   "slip_wall"
+yhi.type =   "slip_wall"
+zlo.type =   "slip_wall"
+zhi.type =   "slip_wall"
+
+incflo.verbose          =   0          # incflo_level
+nodal_proj.verbose = 0
+
+nodal_proj.mg_rtol = 1.0e-6
+nodal_proj.mg_atol = 1.0e-12
+mac_proj.mg_rtol = 1.0e-6
+mac_proj.mg_atol = 1.0e-12
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#              Sampling                 #
+#.......................................#
+incflo.post_processing = sampling line_sampling
+# Frequency of output for the data
+sampling.output_frequency = 200
+sampling.labels = p_hub
+# Fields to output
+sampling.fields = velocity
+# Definitions for each probe
+sampling.p_hub.type = PlaneSampler
+sampling.p_hub.axis1 = -126.0 -126.0 0.0
+sampling.p_hub.axis2 = 126 126.0 0.0
+sampling.p_hub.origin = 0.0 0.0 0.0
+sampling.p_hub.num_points = 128 128
+sampling.p_hub.normal = 1.0 0.0 0.0
+sampling.p_hub.offsets = 126 256 384
+
+line_sampling.output_frequency = 1
+line_sampling.labels = line0 line1 line3 line6 line9 line12 line15
+line_sampling.fields = velocity
+
+line_sampling.line0.type       = LineSampler
+line_sampling.line0.num_points = 160
+line_sampling.line0.start      = 0.0 0.0 -126.0
+line_sampling.line0.end        = 0.0 0.0  126.0
+
+line_sampling.line1.type       = LineSampler
+line_sampling.line1.num_points = 160
+line_sampling.line1.start      = 126.0 0.0 -126.0
+line_sampling.line1.end        = 126.0 0.0  126.0
+
+line_sampling.line3.type       = LineSampler
+line_sampling.line3.num_points = 160
+line_sampling.line3.start      = 378.0 0.0 -126.0
+line_sampling.line3.end        = 378.0 0.0  126.0
+
+line_sampling.line6.type       = LineSampler
+line_sampling.line6.num_points = 160
+line_sampling.line6.start      = 756.0 0.0 -126.0
+line_sampling.line6.end        = 756.0 0.0  126.0
+
+line_sampling.line9.type       = LineSampler
+line_sampling.line9.num_points = 160
+line_sampling.line9.start      = 1134.0 0.0 -126.0
+line_sampling.line9.end        = 1134.0 0.0  126.0
+
+
+line_sampling.line12.type       = LineSampler
+line_sampling.line12.num_points = 160
+line_sampling.line12.start      = 1512.0 0.0 -126.0
+line_sampling.line12.end        = 1512.0 0.0  126.0
+
+line_sampling.line15.type       = LineSampler
+line_sampling.line15.num_points = 160
+line_sampling.line15.start      = 1890.0 0.0 -126.0
+line_sampling.line15.end        = 1890.0 0.0  126.0
