@@ -65,11 +65,10 @@ struct AdvectionOp<
         } else if (amrex::toLower(godunov_type) == "weno_z") {
             godunov_scheme = godunov::scheme::WENOZ;
         } else {
-            amrex::Print()
-                << "For godunov_type select between plm, ppm, "
-                   "ppm_nolim, bds, weno_js, and weno_z: it defaults to ppm"
-                << std::endl;
-            godunov_scheme = godunov::scheme::PPM;
+            amrex::Abort(
+                "Invalid godunov_type specified. For godunov_type select "
+                "between plm, ppm, ppm_nolim, bds, weno_js, and weno_z. If no "
+                "godunov_type is specified, the default weno_z is used.");
         }
         // TODO: Need iconserv flag to be adjusted???
         iconserv.resize(PDE::ndim, 1);
@@ -233,8 +232,8 @@ struct AdvectionOp<
     Field& w_mac;
     amrex::Gpu::DeviceVector<int> iconserv;
 
-    godunov::scheme godunov_scheme = godunov::scheme::PPM;
-    std::string godunov_type;
+    godunov::scheme godunov_scheme = godunov::scheme::WENOZ;
+    std::string godunov_type{"weno_z"};
     const bool fluxes_are_area_weighted{false};
     bool godunov_use_forces_in_trans{false};
     bool m_allow_inflow_on_outflow{false};
