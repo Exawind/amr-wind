@@ -84,12 +84,19 @@ void CartBoxRefinement::initialize(const std::string& key)
         pp.query("static_refinement_def", defn_file);
     }
 
-    std::ifstream ifh(defn_file, std::ios::in);
-    if (!ifh.good()) {
-        amrex::Abort("Cannot find input file: " + defn_file);
+    if (defn_file != (std::string) "string") {
+        std::ifstream ifh(defn_file, std::ios::in);
+        if (!ifh.good()) {
+            amrex::Abort("Cannot find input file: " + defn_file);
+        }
+        read_inputs(m_mesh, ifh);
+    } else {
+        std::string defn_inp;
+        amrex::ParmParse pp(key);
+        pp.get("static_refinement_input", defn_inp);
+        std::istringstream ifh(defn_inp);
+        read_inputs(m_mesh, ifh);
     }
-
-    read_inputs(m_mesh, ifh);
 }
 
 void CartBoxRefinement::read_inputs(
