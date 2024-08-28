@@ -320,8 +320,8 @@ void ABLMesoForcingMom::mean_velocity_heights(
         m_error_meso_avg_V.begin());
 
     for (size_t ih = 0; ih < n_levels; ih++) {
-        m_err_U[ih] = error_U[ih] * m_gain_coeff;
-        m_err_V[ih] = error_V[ih] * m_gain_coeff;
+        m_err_U[ih] = error_U[ih];
+        m_err_V[ih] = error_V[ih];
     }
 }
 
