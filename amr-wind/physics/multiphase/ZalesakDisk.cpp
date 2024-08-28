@@ -79,11 +79,11 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
                                  (z - zc) * (z - zc));
                 // then the slot
                 amrex::Real eps = std::cbrt(dx[0] * dx[1] * dx[2]);
-                if (y - yc <= radius && y - yc >= radius - depth &&
-                    std::abs(x - xc) <= width &&
-                    std::sqrt(
+                if (y - yc <= radius + 2.0 * eps && y - yc >= radius - depth &&
+                    std::abs(x - xc) <= width) {
+                    amrex::Real r = std::sqrt(
                         (x - xc) * (x - xc) + (y - yc) * (y - yc) +
-                        (z - zc) * (z - zc)) < radius + eps) {
+                        (z - zc) * (z - zc));
                     amrex::Real d1;
                     if (x > xc) {
                         d1 = std::abs(xc + width - x);
@@ -93,7 +93,14 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
                     const amrex::Real d2 = std::abs(y - (yc + radius - depth));
                     const amrex::Real min_dist = amrex::min(d1, d2);
 
-                    phi(i, j, k) = -min_dist;
+                    if (r <= radius) {
+                        // Inside the sphere, slot determines levelset values
+                        phi(i, j, k) = -min_dist;
+                    } else if (r < radius + 2.0 * eps) {
+                        // Outside of the sphere, pick farthest distance,
+                        // which helps with edges
+                        phi(i, j, k) = amrex::min(phi(i, j, k), -min_dist);
+                    }
                 }
 
                 amrex::Real smooth_heaviside;
