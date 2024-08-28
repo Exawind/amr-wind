@@ -71,14 +71,6 @@ as initial conditions and discretization options.
    Specifies which Godunov scheme to use. Options include ``plm``, ``ppm``, 
    ``ppm_nolim``, ``weno_js``, and ``weno_z``
    
-.. input_param:: incflo.use_ppm
-
-   **type:** Boolean, optional, default = true
-
-   When estimating the two states in a Godunov scheme a piecewise parabolic method (PPM) is used when this flag is true
-   or when the flag is false a less accurate piecewise linear method (PLM) is used instead.
-   Note: only used when :input_param:`incflo.use_godunov` = true.
-   
 .. input_param:: incflo.godunov_use_forces_in_trans
 
    **type:** Boolean, optional, default = false
@@ -96,21 +88,6 @@ as initial conditions and discretization options.
    a value of 1 is Crank-Nicolson and diffusion terms are on both the left and right hand sides,
    and a value of 2 (default) is a fully implicit diffusion where the entire diffusion term is handled on the left hand side.
    
-.. input_param:: incflo.rhoerr
-
-   **type:** Real number or a list of Real numbers
-
-   When :input_param:`amr.max_level` > 0 this will trigger mesh adaption for density that is greater than `incflo.rhoerr`.
-   This maybe specified as a single number for all levels or a value per AMR level.
-   
-.. input_param:: incflo.gradrhoerr
-
-   **type:** Real number or a list of Real numbers
-
-   When :input_param:`amr.max_level` > 0 this will trigger mesh adaption if the difference
-   between density at a cell center and its neighbors is greater than `incflo.gradrhoerr`. 
-   This maybe specified as a single number for all levels or a value per AMR level.
-
 .. input_param:: incflo.post_processing
 
    **type:** List of strings, optional
