@@ -2,6 +2,7 @@ time.max_step                = 10
 time.stop_time               = 100.0           # Max (simulated) time to evolve
 
 incflo.use_godunov                     = true
+incflo.godunov_type                    = ppm
 
 time.fixed_dt = 0.2
 
