@@ -30,16 +30,8 @@ void SamplingContainer::initialize_particles(
 {
     BL_PROFILE("amr-wind::SamplingContainer::initialize");
 
-    // We will assign all particles to the first box in level 0 and let
-    // redistribute scatter it to the appropriate rank and box.
     const int lev = 0;
-    const int iproc = amrex::ParallelDescriptor::MyProc();
-    const int owner = ParticleDistributionMap(lev)[0];
-
-    // Let only the MPI rank owning the first box do the work
-    if (owner != iproc) {
-        return;
-    }
+    const auto iproc = amrex::ParallelDescriptor::MyProc();
 
     long num_particles = 0;
     for (const auto& probes : samplers) {
@@ -47,45 +39,179 @@ void SamplingContainer::initialize_particles(
     }
     m_total_particles = num_particles;
 
-    const int grid_id = 0;
-    const int tile_id = 0;
-    // Setup has already processed runtime array information, safe to do
-    // GetParticles here.
-    auto& ptile = GetParticles(lev)[std::make_pair(grid_id, tile_id)];
-    ptile.resize(num_particles);
+    const int nprobes = static_cast<int>(samplers.size());
+    amrex::iMultiFab particle_counts(
+        ParticleBoxArray(lev), ParticleDistributionMap(lev), nprobes, 0,
+        amrex::MFInfo());
+    amrex::iMultiFab offsets(
+        ParticleBoxArray(lev), ParticleDistributionMap(lev), nprobes, 0,
+        amrex::MFInfo());
+    particle_counts.setVal(0);
+    offsets.setVal(0);
 
-    int pidx = 0;
-    const int nextid = static_cast<int>(ParticleType::NextID());
-    auto* pstruct = ptile.GetArrayOfStructs()().data();
-    SamplerBase::SampleLocType locs;
-    for (const auto& probe : samplers) {
-        probe->sampling_locations(locs);
+    const auto& dxinv = m_mesh.Geom(lev).InvCellSizeArray();
+    const auto& plo = m_mesh.Geom(lev).ProbLoArray();
+    for (int iprobe = 0; iprobe < nprobes; iprobe++) {
+        const auto& probe = samplers[iprobe];
+        SampleLocType sample_locs;
+        probe->sampling_locations(sample_locs);
+        const auto& locs = sample_locs.locations();
         const int npts = static_cast<int>(locs.size());
-        const auto probe_id = probe->id();
-        amrex::Gpu::DeviceVector<amrex::Array<amrex::Real, AMREX_SPACEDIM>>
-            dlocs(npts);
+        amrex::Gpu::DeviceVector<amrex::RealVect> dlocs(npts);
+
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, locs.begin(), locs.end(), dlocs.begin());
         const auto* dpos = dlocs.data();
 
-        amrex::ParallelFor(npts, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
-            const auto uid = pidx + ip;
-            auto& pp = pstruct[uid];
-            pp.id() = nextid + uid;
-            pp.cpu() = iproc;
+        // don't use openmp
+        for (amrex::MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi) {
+            const amrex::Box& box = mfi.tilebox();
 
-            for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-                pp.pos(n) = dpos[ip][n];
-            }
-            pp.idata(IIx::uid) = uid;
-            pp.idata(IIx::sid) = probe_id;
-            pp.idata(IIx::nid) = ip;
-        });
-        amrex::Gpu::streamSynchronize();
-        pidx += npts;
+            // count the number of particles in each cell
+            const auto& np_arr = particle_counts[mfi].array();
+            amrex::ParallelFor(
+                dlocs.size(), [=] AMREX_GPU_DEVICE(long ip) noexcept {
+                    const amrex::RealVect pos(
+                        AMREX_D_DECL(dpos[ip][0], dpos[ip][1], dpos[ip][2]));
+
+                    const amrex::IntVect div(AMREX_D_DECL(
+                        static_cast<int>(
+                            amrex::Math::floor((pos[0] - plo[0]) * dxinv[0])),
+                        static_cast<int>(
+                            amrex::Math::floor((pos[1] - plo[1]) * dxinv[1])),
+                        static_cast<int>(
+                            amrex::Math::floor((pos[2] - plo[2]) * dxinv[2]))));
+                    if (box.contains(div)) {
+                        amrex::Gpu::Atomic::AddNoRet(&np_arr(div, iprobe), 1);
+                    }
+                });
+        }
+        AMREX_ALWAYS_ASSERT(particle_counts.sum(iprobe) == npts);
     }
 
-    AMREX_ALWAYS_ASSERT(pidx == num_particles);
+    // compute the offsets and size the particle tiles
+    // don't use openmp
+    for (amrex::MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi) {
+        const amrex::Box& box = mfi.tilebox();
+        const auto ncells = static_cast<int>(box.numPts());
+
+        const auto& np_arr = particle_counts[mfi].const_array();
+        int* p_offsets = offsets[mfi].dataPtr();
+        const auto np_box = amrex::Scan::PrefixSum<int>(
+            ncells,
+            [=] AMREX_GPU_DEVICE(int i) -> int {
+                const auto iv = box.atOffset(i);
+                int total_np = 0;
+                for (int iprobe = 0; iprobe < nprobes; iprobe++) {
+                    total_np += np_arr(iv, iprobe);
+                }
+                return total_np;
+            },
+            [=] AMREX_GPU_DEVICE(int i, const int& xi) { p_offsets[i] = xi; },
+            amrex::Scan::Type::exclusive);
+
+        const auto& offsets_arr = offsets[mfi].array();
+        amrex::ParallelFor(
+            box, [=] AMREX_GPU_DEVICE(
+                     int i, int j, int AMREX_D_PICK(, , k)) noexcept {
+                const amrex::IntVect iv(AMREX_D_DECL(i, j, k));
+                for (int iprobe = 1; iprobe < nprobes; iprobe++) {
+                    offsets_arr(iv, iprobe) =
+                        offsets_arr(iv, iprobe - 1) + np_arr(iv, iprobe - 1);
+                }
+            });
+
+        const int grid_id = mfi.index();
+        const int tile_id = mfi.LocalTileIndex();
+        auto& ptile = GetParticles(lev)[std::make_pair(grid_id, tile_id)];
+        ptile.resize(np_box);
+
+        AMREX_ASSERT(
+            np_box ==
+            particle_counts[mfi].sum<amrex::RunOn::Device>(box, 0, nprobes));
+    }
+
+    for (int iprobe = 0; iprobe < nprobes; iprobe++) {
+        const auto& probe = samplers[iprobe];
+        const auto probe_id = probe->id();
+        SampleLocType sample_locs;
+        probe->sampling_locations(sample_locs);
+        const auto& locs = sample_locs.locations();
+        const int npts = static_cast<int>(locs.size());
+        amrex::Gpu::DeviceVector<amrex::RealVect> dlocs(npts);
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, locs.begin(), locs.end(), dlocs.begin());
+        const auto* p_dlocs = dlocs.data();
+        const auto& ids = sample_locs.ids();
+        amrex::Gpu::DeviceVector<amrex::Long> dids(npts);
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, ids.begin(), ids.end(), dids.begin());
+        const auto* p_dids = dids.data();
+
+        // don't use openmp
+        for (amrex::MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi) {
+            const amrex::Box& box = mfi.tilebox();
+            const auto& np_arr = particle_counts[mfi].const_array();
+            const auto& offset_arr = offsets[mfi].const_array();
+
+            const int grid_id = mfi.index();
+            const int tile_id = mfi.LocalTileIndex();
+            auto& ptile = GetParticles(lev)[std::make_pair(grid_id, tile_id)];
+            if (ptile.numParticles() == 0) {
+                continue;
+            }
+
+            const int np_probe =
+                particle_counts[mfi].sum<amrex::RunOn::Device>(box, iprobe, 1);
+            if (np_probe == 0) {
+                continue;
+            }
+
+            const amrex::Long nextid = ParticleType::NextID();
+            ParticleType::NextID(nextid + np_probe);
+
+            auto* pstruct = ptile.GetArrayOfStructs()().data();
+            amrex::ParallelFor(
+                box, [=] AMREX_GPU_DEVICE(
+                         int i, int j, int AMREX_D_PICK(, , k)) noexcept {
+                    const amrex::IntVect iv(AMREX_D_DECL(i, j, k));
+
+                    if (np_arr(iv, iprobe) > 0) {
+                        const int start = offset_arr(iv, iprobe);
+                        int n = start;
+                        for (int ip = 0; ip < npts; ip++) {
+                            const amrex::RealVect loc(AMREX_D_DECL(
+                                p_dlocs[ip][0], p_dlocs[ip][1],
+                                p_dlocs[ip][2]));
+
+                            const amrex::IntVect div(AMREX_D_DECL(
+                                static_cast<int>(amrex::Math::floor(
+                                    (loc[0] - plo[0]) * dxinv[0])),
+                                static_cast<int>(amrex::Math::floor(
+                                    (loc[1] - plo[1]) * dxinv[1])),
+                                static_cast<int>(amrex::Math::floor(
+                                    (loc[2] - plo[2]) * dxinv[2]))));
+                            if (div == iv) {
+                                auto& pp = pstruct[n];
+                                pp.id() = nextid + n;
+                                pp.cpu() = iproc;
+                                for (int idim = 0; idim < AMREX_SPACEDIM;
+                                     ++idim) {
+                                    pp.pos(idim) = loc[idim];
+                                }
+                                pp.idata(IIx::uid) = ip + npts * iprobe;
+                                pp.idata(IIx::sid) = probe_id;
+                                pp.idata(IIx::nid) =
+                                    static_cast<int>(p_dids[ip]);
+                                n++;
+                            }
+                        }
+                        AMREX_ALWAYS_ASSERT(np_arr(iv, iprobe) == (n - start));
+                    }
+                });
+            amrex::Gpu::streamSynchronize();
+        }
+    }
 }
 
 void SamplingContainer::interpolate_derived_fields(
