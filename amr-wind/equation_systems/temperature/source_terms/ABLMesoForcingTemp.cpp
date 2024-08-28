@@ -273,7 +273,7 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
         m_error_meso_avg_theta.begin());
 
     for (size_t ih = 0; ih < n_levels; ih++) {
-        m_err_Theta[ih] = error_T[ih] * m_gain_coeff;
+        m_err_Theta[ih] = error_T[ih];
     }
 
     return interpTflux;
