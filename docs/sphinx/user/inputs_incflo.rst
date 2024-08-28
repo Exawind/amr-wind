@@ -65,7 +65,7 @@ as initial conditions and discretization options.
    
 .. input_param:: incflo.godunov_type
 
-   **type:** String, optional, default = ppm
+   **type:** String, optional, default = weno_z
 
    Specifies which Godunov scheme to use. Options include ``plm``, ``ppm``, 
    ``ppm_nolim``, ``weno_js``, and ``weno_z``
