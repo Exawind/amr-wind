@@ -27,6 +27,9 @@ as initial conditions and discretization options.
 
    Specify reference velocity in the "x-", "y-", "z-direction". 
    Refer to the field initializer for your chosen :input_param:`incflo.physics` for how `incflo.velocity` is used.
+   In the context of ABL flows, this argument specifies the initial bulk velocity as well as the target velocity
+   for ABL forcing terms, unless reference values come from a file instead. Many field initializers do not use this
+   input argument.
    
 .. input_param:: incflo.verbose
 
