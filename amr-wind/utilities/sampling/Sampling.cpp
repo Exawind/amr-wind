@@ -470,14 +470,15 @@ void Sampling::prepare_netcdf_file()
     {
         const std::vector<size_t> start{0, 0};
         std::vector<size_t> count{0, AMREX_SPACEDIM};
-        SamplerBase::SampleLocType locs;
         for (const auto& obj : m_samplers) {
             auto grp = ncf.group(obj->label());
             obj->populate_netcdf_metadata(grp);
-            obj->output_locations(locs);
+            SampleLocType sample_locs;
+            obj->output_locations(sample_locs);
             auto xyz = grp.var("coordinates");
             count[0] = obj->num_output_points();
-            xyz.put(locs[0].data(), start, count);
+            const auto& locs = sample_locs.locations();
+            xyz.put(locs[0].begin(), start, count);
         }
     }
 

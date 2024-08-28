@@ -3,6 +3,7 @@
 #include <AMReX_MultiFabUtil.H>
 #include <utility>
 #include "amr-wind/equation_systems/vof/volume_fractions.H"
+#include "amr-wind/utilities/index_operations.H"
 
 #include "AMReX_ParmParse.H"
 
@@ -365,22 +366,36 @@ void FreeSurfaceSampler::check_bounds()
     }
 }
 
-void FreeSurfaceSampler::sampling_locations(SampleLocType& locs) const
+void FreeSurfaceSampler::sampling_locations(SampleLocType& sample_locs) const
 {
-    locs.resize(num_output_points());
+    AMREX_ALWAYS_ASSERT(sample_locs.locations().empty());
+
+    const int lev = 0;
+    const auto domain = m_sim.mesh().Geom(lev).Domain();
+    sampling_locations(sample_locs, domain);
+
+    AMREX_ALWAYS_ASSERT(sample_locs.locations().size() == num_points());
+}
+
+void FreeSurfaceSampler::sampling_locations(
+    SampleLocType& sample_locs, const amrex::Box& box) const
+{
+    AMREX_ALWAYS_ASSERT(sample_locs.locations().empty());
 
     int idx = 0;
+    const int lev = 0;
+    const auto& dxinv = m_sim.mesh().Geom(lev).InvCellSizeArray();
+    const auto& plo = m_sim.mesh().Geom(lev).ProbLoArray();
     for (int j = 0; j < m_npts_dir[1]; ++j) {
         for (int i = 0; i < m_npts_dir[0]; ++i) {
-            // Initialize output values to 0.0
             for (int ni = 0; ni < m_ninst; ++ni) {
-                // Grid direction 1
-                locs[idx * m_ninst + ni][m_gc0] = m_grid_locs[idx][0];
-                // Grid direction 2
-                locs[idx * m_ninst + ni][m_gc1] = m_grid_locs[idx][1];
-                // Output direction
-                locs[idx * m_ninst + ni][m_coorddir] =
-                    m_out[idx * m_ninst + ni];
+                amrex::RealVect loc;
+                loc[m_gc0] = m_grid_locs[idx][0];
+                loc[m_gc1] = m_grid_locs[idx][1];
+                loc[m_coorddir] = m_out[idx * m_ninst + ni];
+                if (utils::contains(box, loc, plo, dxinv)) {
+                    sample_locs.push_back(loc, idx * m_ninst + ni);
+                }
             }
             ++idx;
         }
@@ -727,11 +742,12 @@ void FreeSurfaceSampler::output_netcdf_data(
     // Write the coordinates every time
     std::vector<size_t> start{nt, 0, 0};
     std::vector<size_t> count{1, 0, AMREX_SPACEDIM};
-    SamplerBase::SampleLocType locs;
-    sampling_locations(locs);
+    SampleLocType sample_locs;
+    sampling_locations(sample_locs);
     auto xyz = grp.var("points");
     count[1] = num_output_points();
-    xyz.put(locs[0].data(), start, count);
+    const auto& locs = sample_locs.locations();
+    xyz.put(locs[0].begin(), start, count);
 }
 #else
 void FreeSurfaceSampler::define_netcdf_metadata(
