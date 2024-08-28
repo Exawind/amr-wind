@@ -47,7 +47,7 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
     const amrex::Real zc = m_loc[2];
     const amrex::Real radius = m_radius;
     const amrex::Real TT = m_TT;
-    const amrex::Real width = m_width;
+    const amrex::Real hwidth = m_halfwidth;
     const amrex::Real depth = m_depth;
 
     for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
@@ -79,27 +79,30 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
                                  (z - zc) * (z - zc));
                 // then the slot
                 amrex::Real eps = std::cbrt(dx[0] * dx[1] * dx[2]);
-                if (y - yc <= radius + 2.0 * eps && y - yc >= radius - depth &&
-                    std::abs(x - xc) <= width) {
-                    amrex::Real r = std::sqrt(
+                if (y - yc < radius + 2.0 * eps &&
+                    y - yc > radius - depth - 2.0 * eps &&
+                    std::abs(x - xc) < hwidth + 2.0 * eps) {
+                    const amrex::Real r = std::sqrt(
                         (x - xc) * (x - xc) + (y - yc) * (y - yc) +
                         (z - zc) * (z - zc));
-                    amrex::Real d1;
-                    if (x > xc) {
-                        d1 = std::abs(xc + width - x);
-                    } else {
-                        d1 = std::abs(xc - width - x);
-                    }
-                    const amrex::Real d2 = std::abs(y - (yc + radius - depth));
-                    const amrex::Real min_dist = amrex::min(d1, d2);
 
-                    if (r <= radius) {
+                    const amrex::Real sd_xr = -hwidth + (x - xc);
+                    const amrex::Real sd_xl = -hwidth - (x - xc);
+                    const amrex::Real sd_x = amrex::max(sd_xr, sd_xl);
+
+                    const amrex::Real sd_y = radius - depth - (y - yc);
+                    const amrex::Real min_signed_dist = amrex::max(sd_x, sd_y);
+
+                    if (r < radius - eps ||
+                        (r < radius && std::abs(x - xc) < hwidth)) {
                         // Inside the sphere, slot determines levelset values
-                        phi(i, j, k) = -min_dist;
+                        // Avoid using slot values past x edges near radius
+                        phi(i, j, k) = min_signed_dist;
                     } else if (r < radius + 2.0 * eps) {
                         // Outside of the sphere, pick farthest distance,
                         // which helps with edges
-                        phi(i, j, k) = amrex::min(phi(i, j, k), -min_dist);
+                        phi(i, j, k) =
+                            amrex::min(phi(i, j, k), min_signed_dist);
                     }
                 }
 
