@@ -57,11 +57,12 @@ as initial conditions and discretization options.
    
 .. input_param:: incflo.use_godunov
 
-   **type:** Boolean, optional, default = false
+   **type:** Boolean, optional, default = true
 
-   Specifies which advection scheme to use: either method of lines (false) or Godunov (true). 
-   The method of lines is the default option but Godunov is more accurate, 
-   can handle a larger CFL number, and more computational efficient.
+   Specifies which advection scheme to use: either Godunov (true) or method of lines (false). 
+   Godunov the default approach and has many advantages over the method of lines (MOL): better accuracy,
+   stability at larger CFL numbers, and greater computational efficiency. Setting this argument to false is 
+   not recommended, and active use or development relying on the method of lines (MOL) is very sparse.
    
 .. input_param:: incflo.godunov_type
 
