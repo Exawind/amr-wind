@@ -27,6 +27,9 @@ as initial conditions and discretization options.
 
    Specify reference velocity in the "x-", "y-", "z-direction". 
    Refer to the field initializer for your chosen :input_param:`incflo.physics` for how `incflo.velocity` is used.
+   In the context of ABL flows, this argument specifies the initial bulk velocity as well as the target velocity
+   for ABL forcing terms, unless reference values come from a file instead. Many field initializers do not use this
+   input argument.
    
 .. input_param:: incflo.verbose
 
@@ -57,11 +60,12 @@ as initial conditions and discretization options.
    
 .. input_param:: incflo.use_godunov
 
-   **type:** Boolean, optional, default = false
+   **type:** Boolean, optional, default = true
 
-   Specifies which advection scheme to use: either method of lines (false) or Godunov (true). 
-   The method of lines is the default option but Godunov is more accurate, 
-   can handle a larger CFL number, and more computational efficient.
+   Specifies which advection scheme to use: either Godunov (true) or method of lines (false). 
+   Godunov the default approach and has many advantages over the method of lines (MOL): better accuracy,
+   stability at larger CFL numbers, and greater computational efficiency. Setting this argument to false is 
+   not recommended, and active use or development relying on the method of lines (MOL) is very sparse.
    
 .. input_param:: incflo.godunov_type
 
@@ -69,14 +73,6 @@ as initial conditions and discretization options.
 
    Specifies which Godunov scheme to use. Options include ``plm``, ``ppm``, 
    ``ppm_nolim``, ``weno_js``, and ``weno_z``
-   
-.. input_param:: incflo.use_ppm
-
-   **type:** Boolean, optional, default = true
-
-   When estimating the two states in a Godunov scheme a piecewise parabolic method (PPM) is used when this flag is true
-   or when the flag is false a less accurate piecewise linear method (PLM) is used instead.
-   Note: only used when :input_param:`incflo.use_godunov` = true.
    
 .. input_param:: incflo.godunov_use_forces_in_trans
 
@@ -95,21 +91,6 @@ as initial conditions and discretization options.
    a value of 1 is Crank-Nicolson and diffusion terms are on both the left and right hand sides,
    and a value of 2 (default) is a fully implicit diffusion where the entire diffusion term is handled on the left hand side.
    
-.. input_param:: incflo.rhoerr
-
-   **type:** Real number or a list of Real numbers
-
-   When :input_param:`amr.max_level` > 0 this will trigger mesh adaption for density that is greater than `incflo.rhoerr`.
-   This maybe specified as a single number for all levels or a value per AMR level.
-   
-.. input_param:: incflo.gradrhoerr
-
-   **type:** Real number or a list of Real numbers
-
-   When :input_param:`amr.max_level` > 0 this will trigger mesh adaption if the difference
-   between density at a cell center and its neighbors is greater than `incflo.gradrhoerr`. 
-   This maybe specified as a single number for all levels or a value per AMR level.
-
 .. input_param:: incflo.post_processing
 
    **type:** List of strings, optional
