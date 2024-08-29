@@ -71,43 +71,48 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
                 vel(i, j, k, 0) = 2.0 * M_PI / TT * (0.5 - y);
                 vel(i, j, k, 1) = 2.0 * M_PI / TT * (x - 0.5);
                 vel(i, j, k, 2) = 0.0;
+
                 // First define the sphere
+                const amrex::Real r = std::sqrt(
+                    (x - xc) * (x - xc) + (y - yc) * (y - yc) +
+                    (z - zc) * (z - zc));
+                phi(i, j, k) = radius - r;
 
-                phi(i, j, k) =
-                    radius - std::sqrt(
-                                 (x - xc) * (x - xc) + (y - yc) * (y - yc) +
-                                 (z - zc) * (z - zc));
-                // then the slot
-                amrex::Real eps = std::cbrt(dx[0] * dx[1] * dx[2]);
-                if (y - yc < radius + 2.0 * eps &&
-                    y - yc > radius - depth - 2.0 * eps &&
-                    std::abs(x - xc) < hwidth + 2.0 * eps) {
-                    const amrex::Real r = std::sqrt(
-                        (x - xc) * (x - xc) + (y - yc) * (y - yc) +
-                        (z - zc) * (z - zc));
+                // Then the slot
+                // Signed distances in lateral (x, y) directions
+                const amrex::Real sd_xr = -hwidth + (x - xc);
+                const amrex::Real sd_xl = -hwidth - (x - xc);
+                const amrex::Real sd_x = amrex::max(sd_xr, sd_xl);
 
-                    const amrex::Real sd_xr = -hwidth + (x - xc);
-                    const amrex::Real sd_xl = -hwidth - (x - xc);
-                    const amrex::Real sd_x = amrex::max(sd_xr, sd_xl);
+                const amrex::Real sd_y = radius - depth - (y - yc);
+                const amrex::Real min_signed_dist = amrex::max(sd_x, sd_y);
 
-                    const amrex::Real sd_y = radius - depth - (y - yc);
-                    const amrex::Real min_signed_dist = amrex::max(sd_x, sd_y);
+                // Additional distance if past sphere (distance to corners)
+                const amrex::Real reduced_radius =
+                    std::sqrt(radius * radius - hwidth * hwidth);
+                const amrex::Real r_2D =
+                    std::sqrt(std::pow(y - yc, 2) + std::pow(z - zc, 2));
+                const amrex::Real sd_r = -std::sqrt(
+                    std::pow(r_2D - reduced_radius, 2) + std::pow(sd_x, 2));
 
-                    if (r < radius - eps ||
-                        (r < radius && std::abs(x - xc) < hwidth)) {
-                        // Inside the sphere, slot determines levelset values
-                        // Avoid using slot values past x edges near radius
+                bool in_slot_x_ymin =
+                    y - yc > radius - depth && std::abs(x - xc) < hwidth;
+                bool in_slot_r = r_2D < reduced_radius;
+
+                if (in_slot_x_ymin) {
+                    // Prescribe slot distances directly (overwrite sphere)
+                    if (in_slot_r) {
                         phi(i, j, k) = min_signed_dist;
-                    } else if (r < radius + 2.0 * eps) {
-                        // Outside of the sphere, pick farthest distance,
-                        // which helps with edges
-                        phi(i, j, k) =
-                            amrex::min(phi(i, j, k), min_signed_dist);
+                    } else {
+                        phi(i, j, k) = sd_r;
                     }
+                } else {
+                    // Select the minimum of the two
+                    phi(i, j, k) = amrex::min(phi(i, j, k), min_signed_dist);
                 }
 
                 amrex::Real smooth_heaviside;
-                eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
+                const amrex::Real eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
                 if (phi(i, j, k) > eps) {
                     smooth_heaviside = 1.0;
                 } else if (phi(i, j, k) < -eps) {
