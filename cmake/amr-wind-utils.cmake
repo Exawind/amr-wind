@@ -27,18 +27,57 @@ function(set_cuda_build_properties target)
 endfunction(set_cuda_build_properties)
 
 macro(init_amrex)
-  set(AMREX_SUBMOD_LOCATION "${CMAKE_SOURCE_DIR}/submods/amrex")
-  include(${CMAKE_SOURCE_DIR}/cmake/set_amrex_options.cmake)
-  list(APPEND CMAKE_MODULE_PATH "${AMREX_SUBMOD_LOCATION}/Tools/CMake")
-  add_subdirectory(${AMREX_SUBMOD_LOCATION})
-  set(FCOMPARE_EXE ${CMAKE_BINARY_DIR}/submods/amrex/Tools/Plotfile/amrex_fcompare
-    CACHE INTERNAL "Path to fcompare executable for regression tests")
+  if (${AMR_WIND_USE_INTERNAL_AMREX})
+    set(AMREX_SUBMOD_LOCATION "${PROJECT_SOURCE_DIR}/submods/amrex")
+    include(${PROJECT_SOURCE_DIR}/cmake/set_amrex_options.cmake)
+    list(APPEND CMAKE_MODULE_PATH "${AMREX_SUBMOD_LOCATION}/Tools/CMake")
+    add_subdirectory(${AMREX_SUBMOD_LOCATION})
+    set(FCOMPARE_EXE ${CMAKE_BINARY_DIR}/submods/amrex/Tools/Plotfile/amrex_fcompare
+      CACHE INTERNAL "Path to fcompare executable for regression tests")
+  else()
+    set(CMAKE_PREFIX_PATH ${AMREX_DIR} ${CMAKE_PREFIX_PATH})
+    list(APPEND AMREX_COMPONENTS
+      "3D" "PIC" "PARTICLES" "PDOUBLE" "DOUBLE" "LSOLVERS")
+    if (AMR_WIND_ENABLE_MPI)
+      list(APPEND AMREX_COMPONENTS "MPI")
+    endif()
+    if (AMR_WIND_ENABLE_OPENMP)
+      list(APPEND AMREX_COMPONENTS "OMP")
+    endif()
+    if (AMR_WIND_ENABLE_CUDA)
+      list(APPEND AMREX_COMPONENTS "CUDA")
+    endif()
+    if (AMR_WIND_ENABLE_SYCL)
+      list(APPEND AMREX_COMPONENTS "SYCL")
+    endif()
+    if (AMR_WIND_ENABLE_ROCM)
+      list(APPEND AMREX_COMPONENTS "HIP")
+    endif()
+    if (AMR_WIND_ENABLE_HYPRE)
+      list(APPEND AMREX_COMPONENTS "HYPRE")
+    endif()
+    if (AMR_WIND_ENABLE_TINY_PROFILE)
+      list(APPEND AMREX_COMPONENTS "TINY_PROFILE")
+    endif()
+    separate_arguments(AMREX_COMPONENTS)
+    find_package(AMReX CONFIG REQUIRED
+      COMPONENTS ${AMREX_COMPONENTS})
+    message(STATUS "Found AMReX = ${AMReX_DIR}")
+    set(FCOMPARE_EXE ${AMReX_DIR}/../../../bin/amrex_fcompare
+      CACHE INTERNAL "Path to fcompare executable for regression tests")
+  endif()
 endmacro(init_amrex)
 
 macro(init_amrex_hydro)
-  set(AMREX_HYDRO_SUBMOD_LOCATION "${CMAKE_SOURCE_DIR}/submods/AMReX-Hydro")
-  include(${CMAKE_SOURCE_DIR}/cmake/set_amrex_hydro_options.cmake)
-  add_subdirectory(${AMREX_HYDRO_SUBMOD_LOCATION})
+  if (${AMR_WIND_USE_INTERNAL_AMREX_HYDRO})
+    set(AMREX_HYDRO_SUBMOD_LOCATION "${PROJECT_SOURCE_DIR}/submods/AMReX-Hydro")
+    include(${PROJECT_SOURCE_DIR}/cmake/set_amrex_hydro_options.cmake)
+    add_subdirectory(${AMREX_HYDRO_SUBMOD_LOCATION})
+  else()
+    set(CMAKE_PREFIX_PATH ${AMReX-Hydro_DIR} ${CMAKE_PREFIX_PATH})
+    find_package(AMReX-Hydro CONFIG REQUIRED)
+    message(STATUS "Found AMReX-Hydro = ${AMReX-Hydro_DIR}")
+  endif()
 endmacro(init_amrex_hydro)
 
 macro(init_waves2amr)
@@ -79,7 +118,7 @@ macro(init_code_checks)
           COMMAND ${CMAKE_COMMAND} -E make_directory cppcheck
           # cppcheck ignores -isystem directories, so we change them to regular -I include directories (with no spaces either)
           COMMAND sed "s/isystem /I/g" ${CMAKE_BINARY_DIR}/compile_commands.json > cppcheck_compile_commands.json
-          COMMAND ${CPPCHECK_EXE} --template=gcc --inline-suppr --suppress=unusedFunction --suppress=useStlAlgorithm --suppress=missingIncludeSystem --std=c++17 --language=c++ --enable=all --project=cppcheck_compile_commands.json -i ${CMAKE_SOURCE_DIR}/submods/amrex/Src -i ${CMAKE_SOURCE_DIR}/submods/AMReX-Hydro -i ${CMAKE_SOURCE_DIR}/submods/Waves2AMR -i ${CMAKE_SOURCE_DIR}/submods/googletest --output-file=cppcheck-full-report.txt -j ${NP}
+          COMMAND ${CPPCHECK_EXE} --template=gcc --inline-suppr --suppress=unusedFunction --suppress=useStlAlgorithm --suppress=missingIncludeSystem --std=c++17 --language=c++ --enable=all --project=cppcheck_compile_commands.json -i ${PROJECT_SOURCE_DIR}/submods/amrex/Src -i ${PROJECT_SOURCE_DIR}/submods/AMReX-Hydro -i ${PROJECT_SOURCE_DIR}/submods/googletest --output-file=cppcheck-full-report.txt -j ${NP}
           COMMENT "Run cppcheck on project compile_commands.json"
           BYPRODUCTS cppcheck-full-report.txt
           WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/cppcheck
