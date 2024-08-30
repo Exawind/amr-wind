@@ -129,6 +129,10 @@ endif()
 
 include(set_compile_flags)
 
+if(ERF_ENABLE_MULTIBLOCK)
+    target_compile_definitions(${amr_wind_lib_name} PUBLIC ERF_USE_MULTIBLOCK)
+endif()
+
 if (AMR_WIND_ENABLE_W2A)
   # Turn on the use of the library via bool, it has already been included above
   target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_W2A)
@@ -185,7 +189,7 @@ if(AMR_WIND_ENABLE_ASCENT)
   target_compile_definitions(${amr_wind_lib_name} PRIVATE AMR_WIND_USE_ASCENT)
 endif()
 
-# Link with HELICS module 
+# Link with HELICS module
 if(AMR_WIND_ENABLE_HELICS)
   set(CMAKE_PREFIX_PATH ${HELICS_DIR} ${CMAKE_PREFIX_PATH})
   find_package(HELICS 3 REQUIRED)
