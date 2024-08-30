@@ -3,7 +3,7 @@
 cmake_minimum_required (VERSION 3.20 FATAL_ERROR)
 project(AMR-Wind CXX C)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 include(amr-wind-utils)
