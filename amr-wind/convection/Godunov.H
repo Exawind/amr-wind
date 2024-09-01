@@ -10,7 +10,6 @@ namespace godunov {
 
 enum class scheme { PLM, PPM, PPM_NOLIM, BDS, WENO_JS, WENOZ, MINMOD, UPWIND };
 
-
 } // namespace godunov
 
 #endif /* Godunov_H */
