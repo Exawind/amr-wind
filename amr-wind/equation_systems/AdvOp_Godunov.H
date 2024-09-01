@@ -80,12 +80,6 @@ struct AdvectionOp<
         const amrex::Real /*unused*/)
     {}
 
-    void preadvect_spatial(
-        const FieldState /*unused*/,
-        const amrex::Real /*unused*/,
-        const amrex::Real /*unused*/)
-    {}
-
     void operator()(const FieldState fstate, const amrex::Real dt)
     {
         static_assert(
@@ -145,7 +139,6 @@ struct AdvectionOp<
                                 rho_arr(i, j, k) * tra_arr(i, j, k, n);
                         });
                 }
-<<<<<<< HEAD
 
                 if ((godunov_scheme == godunov::scheme::PPM) ||
                     (godunov_scheme == godunov::scheme::PPM_NOLIM) ||
@@ -168,7 +161,6 @@ struct AdvectionOp<
                         limiter_type = PPM::WENOZ;
                     } else if (godunov_scheme == godunov::scheme::WENO_JS) {
                         limiter_type = PPM::WENO_JS;
-=======
                     } else {
                         limiter_type = PPM::default_limiter;
                     }
@@ -196,50 +188,51 @@ struct AdvectionOp<
                 } else {
                     amrex::Abort("Invalid godunov scheme");
                 }
+                amrex::Gpu::streamSynchronize();
             }
-            amrex::Gpu::streamSynchronize();
         }
-    }
 
-    amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>>
-        fluxes(repo.num_active_levels());
-    for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-        fluxes[lev][0] = &(*flux_x)(lev);
-        fluxes[lev][1] = &(*flux_y)(lev);
-        fluxes[lev][2] = &(*flux_z)(lev);
-    }
+        amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> fluxes(
+            repo.num_active_levels());
+        for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+            fluxes[lev][0] = &(*flux_x)(lev);
+            fluxes[lev][1] = &(*flux_y)(lev);
+            fluxes[lev][2] = &(*flux_z)(lev);
+        }
 
-    // In order to enforce conservation across coarse-fine boundaries we
-    // must be sure to average down the fluxes before we use them
-    for (int lev = repo.num_active_levels() - 1; lev > 0; --lev) {
-        amrex::IntVect rr =
-            geom[lev].Domain().size() / geom[lev - 1].Domain().size();
-        amrex::average_down_faces(
-            GetArrOfConstPtrs(fluxes[lev]), fluxes[lev - 1], rr, geom[lev - 1]);
-    }
+        // In order to enforce conservation across coarse-fine boundaries we
+        // must be sure to average down the fluxes before we use them
+        for (int lev = repo.num_active_levels() - 1; lev > 0; --lev) {
+            amrex::IntVect rr =
+                geom[lev].Domain().size() / geom[lev - 1].Domain().size();
+            amrex::average_down_faces(
+                GetArrOfConstPtrs(fluxes[lev]), fluxes[lev - 1], rr,
+                geom[lev - 1]);
+        }
 
-    for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+        for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-        for (amrex::MFIter mfi(dof_field(lev), amrex::TilingIfNotGPU());
-             mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.tilebox();
+            for (amrex::MFIter mfi(dof_field(lev), amrex::TilingIfNotGPU());
+                 mfi.isValid(); ++mfi) {
+                const auto& bx = mfi.tilebox();
 
-            HydroUtils::ComputeDivergence(
-                bx, conv_term(lev).array(mfi), (*flux_x)(lev).array(mfi),
-                (*flux_y)(lev).array(mfi), (*flux_z)(lev).array(mfi), PDE::ndim,
-                geom[lev], amrex::Real(-1.0), fluxes_are_area_weighted);
+                HydroUtils::ComputeDivergence(
+                    bx, conv_term(lev).array(mfi), (*flux_x)(lev).array(mfi),
+                    (*flux_y)(lev).array(mfi), (*flux_z)(lev).array(mfi),
+                    PDE::ndim, geom[lev], amrex::Real(-1.0),
+                    fluxes_are_area_weighted);
+            }
         }
     }
-}
 
-PDEFields& fields;
-Field & density;
-Field & u_mac;
-Field & v_mac;
-Field & w_mac;
-amrex::Gpu::DeviceVector<int> iconserv;
+    PDEFields& fields;
+    Field& density;
+    Field& u_mac;
+    Field& v_mac;
+    Field& w_mac;
+    amrex::Gpu::DeviceVector<int> iconserv;
 
 godunov::scheme godunov_scheme = godunov::scheme::WENOZ;
 std::string godunov_type{"weno_z"};

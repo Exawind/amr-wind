@@ -524,7 +524,8 @@ void incflo::ApplyPredictorNonLinear(bool incremental_projection)
     // Extrapolate and apply MAC projection for advection velocities
     // icns().nonlinear_advection_actions(amr_wind::FieldState::Old);
     // icns().nonlinear_advection_actions(amr_wind::FieldState::NPH);
-    icns().nonlinear_advection_actions(amr_wind::FieldState::New);
+    //icns().nonlinear_advection_actions(amr_wind::FieldState::New);
+    icns().pre_advection_actions(amr_wind::FieldState::NPH);
 
     // For scalars only first
     // *************************************************************************************
