@@ -168,7 +168,9 @@ struct AdvectionOp<
                         (godunov_scheme == godunov::scheme::WENO_JS)) {
                         m_allow_inflow_on_outflow = true;
                     }
-                    amrex::Real dt_arg = (only_spatial) ? 0.0 : dt;
+                    // if state is NPH, then n and n+1 are known, and only
+                    // spatial extrapolation is performed
+                    amrex::Real dt_arg = (fstate == FieldState::NPH) ? 0.0 : dt;
 
                     HydroUtils::ComputeFluxesOnBoxFromState(
                         bx, PDE::ndim, mfi,
