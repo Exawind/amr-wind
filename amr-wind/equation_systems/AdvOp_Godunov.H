@@ -112,6 +112,13 @@ struct AdvectionOp<
         auto& den_nph = density.state(amr_wind::FieldState::NPH);
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+            // Fill physical boundaries of nph field
+            dof_nph.fillphysbc(lev, time + 0.5 * dt, dof_nph(lev), 1);
+            if (PDE::multiply_rho) {
+                // Fill physical boundaries of nph density
+                den_nph.fillphysbc(lev, time + 0.5 * dt, den_nph(lev), 1);
+            }
+
             amrex::MFItInfo mfi_info;
             if (amrex::Gpu::notInLaunchRegion()) {
                 mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
@@ -132,13 +139,7 @@ struct AdvectionOp<
                 amrex::FArrayBox rhotrac_nph_fab;
                 amrex::Array4<amrex::Real> rhotrac_nph;
 
-                // Fill physical boundaries of nph field
-                dof_nph.fillphysbc(lev, time + 0.5 * dt, dof_nph(lev), 1);
-
                 if (PDE::multiply_rho) {
-                    // Fill physical boundaries of nph density
-                    den_nph.fillphysbc(lev, time + 0.5 * dt, den_nph(lev), 1);
-
                     auto rhotrac_box =
                         amrex::grow(bx, fvm::Godunov::nghost_state);
                     rhotracfab.resize(rhotrac_box, PDE::ndim);
