@@ -27,7 +27,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             doxygen graphviz
           python3 -m pip install --upgrade pip
-          pip3 install sphinx sphinx_rtd_theme
+          pip3 install sphinx sphinx_rtd_theme sphinx_toolbox
       - name: Build
         # execute from top-level amr-wind directory
         run: |
