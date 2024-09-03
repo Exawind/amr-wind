@@ -80,7 +80,7 @@ void ZalesakDiskScalarVel::initialize_fields(
     const amrex::Real zc = m_loc[2];
     const amrex::Real radius = m_radius;
     const amrex::Real TT = m_TT;
-    const amrex::Real hwidth = m_hwidth;
+    const amrex::Real hwidth = m_halfwidth;
     const amrex::Real depth = m_depth;
 
     for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
@@ -127,9 +127,9 @@ void ZalesakDiskScalarVel::initialize_fields(
                 const amrex::Real sd_r = -std::sqrt(
                     std::pow(r_2D - reduced_radius, 2) + std::pow(sd_x, 2));
 
-                bool in_slot_x_ymin =
+                const bool in_slot_x_ymin =
                     y - yc > radius - depth && std::abs(x - xc) < hwidth;
-                bool in_slot_r = r_2D < reduced_radius;
+                const bool in_slot_r = r_2D < reduced_radius;
 
                 if (in_slot_x_ymin) {
                     // Prescribe slot distances directly (overwrite sphere)

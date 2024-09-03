@@ -95,9 +95,9 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
                 const amrex::Real sd_r = -std::sqrt(
                     std::pow(r_2D - reduced_radius, 2) + std::pow(sd_x, 2));
 
-                bool in_slot_x_ymin =
+                const bool in_slot_x_ymin =
                     y - yc > radius - depth && std::abs(x - xc) < hwidth;
-                bool in_slot_r = r_2D < reduced_radius;
+                const bool in_slot_r = r_2D < reduced_radius;
 
                 if (in_slot_x_ymin) {
                     // Prescribe slot distances directly (overwrite sphere)

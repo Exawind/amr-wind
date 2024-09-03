@@ -69,7 +69,7 @@ private:
     amrex::Real m_radius{0.16};
 
     //! slot half-width value
-    amrex::Real m_hwidth{0.04};
+    amrex::Real m_halfwidth{0.04};
 
     //! slot depth
     amrex::Real m_depth{0.2};
