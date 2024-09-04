@@ -6,28 +6,23 @@ time.max_step                            = -1           # Max number of time ste
 time.fixed_dt                            = 0.125        # Use this constant dt if > 0
 time.cfl                                 = 0.95         # CFL factor
 
-time.plot_interval                       = 1200       # Steps between plot files
-time.checkpoint_interval                 = 1200       # Steps between checkpoint files
+time.plot_interval                       = 1200         # Steps between plot files
+time.checkpoint_interval                 = 1200         # Steps between checkpoint files
 ABL.bndry_file                           = bndry_file.native
-ABL.bndry_io_mode                        = 0          # 0 = write, 1 = read
+ABL.bndry_io_mode                        = 0            # 0 = write, 1 = read
 ABL.bndry_planes                         = ylo xlo
 ABL.bndry_output_start_time              = 7200.0
 ABL.bndry_var_names                      = velocity temperature tke
 
-incflo.physics                           = ABL # Actuator
-io.restart_file                          = ../spinup/chk14400   
-incflo.use_godunov                       = 1
-incflo.godunov_type                      = weno_z                 
-turbulence.model                         = OneEqKsgsM84   # For neutral ABL, use "Smagorinsky"
+incflo.physics                           = ABL
+io.restart_file                          = ../spinup/chk14400
+turbulence.model                         = OneEqKsgsM84 # For neutral ABL, use "Smagorinsky"
 TKE.source_terms                         = KsgsM84Src
-TKE.interpolation                        = PiecewiseConstant          
-incflo.gravity                           = 0.  0. -9.81   # Gravitational force (3D)
-incflo.density                           = 1.225          # Reference density; make sure this agrees with OpenFAST values
-transport.viscosity                      = 1.0e-5
+incflo.gravity                           = 0.  0. -9.81 # Gravitational force (3D)
+incflo.density                           = 1.225        # Reference density; make sure this agrees with OpenFAST values
+transport.viscosity                      = 1.0e-5       # Dynamic viscosity [N-s/m^2]
 transport.laminar_prandtl                = 0.7
 transport.turbulent_prandtl              = 0.3333
-
-incflo.verbose                           =   0          # incflo_level
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            GEOMETRY & BCs             #
@@ -49,12 +44,12 @@ zhi.temperature                          = 0.003
 ICNS.source_terms                        = BoussinesqBuoyancy CoriolisForcing ABLForcing
 incflo.velocity                          = 10.0 0.0 0.0
 ABLForcing.abl_forcing_height            = 86.5
-CoriolisForcing.latitude                 = 36.607322      # Southern Great Planes
+CoriolisForcing.latitude                 = 36.607322                 # Southern Great Plains
 CoriolisForcing.north_vector             = 0.0 1.0 0.0
 CoriolisForcing.east_vector              = 1.0 0.0 0.0
 BoussinesqBuoyancy.reference_temperature = 290.0
 ABL.reference_temperature                = 290.0
-ABL.temperature_heights                  = 0.0 600.0 700.0 1700.0    # Make sure the top height here goes above the domain height
+ABL.temperature_heights                  = 0.0 600.0 700.0 1700.0    # Make sure top height >= the domain height
 ABL.temperature_values                   = 290.0 290.0 298.0 301.0
 ABL.perturb_temperature                  = true
 ABL.cutoff_height                        = 50.0
@@ -65,7 +60,7 @@ ABL.Vperiods                             = 4.0
 ABL.deltaU                               = 1.0
 ABL.deltaV                               = 1.0
 ABL.kappa                                = .40
-ABL.surface_roughness_z0                 = 0.01  # meters
+ABL.surface_roughness_z0                 = 0.01  # [m]
 ABL.surface_temp_flux                    = 0.05  # Surface temperature flux [K-m/s]
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#

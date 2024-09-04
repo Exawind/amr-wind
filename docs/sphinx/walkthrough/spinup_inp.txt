@@ -1,26 +1,22 @@
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            SIMULATION CONTROL         #
 #.......................................#
-time.stop_time                           = 7200.0      # Max (simulated) time to evolve [s]
-time.max_step                            = -1          # Max number of time steps; -1 means termination set by timestamps
-time.fixed_dt                            = 0.5         # Use this constant dt if > 0
-time.cfl                                 = 0.95        # CFL factor, will produce warnings if exceeded using fixed_dt
+time.stop_time                           = 7200.0       # Max (simulated) time to evolve [s]
+time.max_step                            = -1           # Max number of time steps; -1 means termination set by timestamps
+time.fixed_dt                            = 0.5          # Use this constant dt if > 0
+time.cfl                                 = 0.95         # CFL factor, will produce warnings if exceeded using fixed_dt
 
-time.plot_interval                       = 1800        # Steps between plot files
-time.checkpoint_interval                 = 1800        # Steps between checkpoint files
+time.plot_interval                       = 1800         # Steps between plot files
+time.checkpoint_interval                 = 1800         # Steps between checkpoint files
 
 incflo.physics                           = ABL
-incflo.use_godunov                       = 1
-incflo.godunov_type                      = weno_z                 
 turbulence.model                         = OneEqKsgsM84 # For neutral ABL, use "Smagorinsky"
 TKE.source_terms                         = KsgsM84Src     
 incflo.gravity                           = 0.  0. -9.81 # Gravitational force (3D)
 incflo.density                           = 1.225        # Reference density; make sure this agrees with OpenFAST values
-transport.viscosity                      = 1.0e-5       # Dynamic viscosity (N-s/m^2)
+transport.viscosity                      = 1.0e-5       # Dynamic viscosity [N-s/m^2]
 transport.laminar_prandtl                = 0.7
 transport.turbulent_prandtl              = 0.3333
-
-incflo.verbose                           =   0          # incflo_level
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            GEOMETRY & BCs             #
@@ -47,7 +43,7 @@ CoriolisForcing.north_vector             = 0.0 1.0 0.0
 CoriolisForcing.east_vector              = 1.0 0.0 0.0
 BoussinesqBuoyancy.reference_temperature = 290.0
 ABL.reference_temperature                = 290.0
-ABL.temperature_heights                  = 0.0 600.0 700.0 1700.0    # Make sure the top height here goes above the domain height
+ABL.temperature_heights                  = 0.0 600.0 700.0 1700.0    # Make sure top height >= the domain height
 ABL.temperature_values                   = 290.0 290.0 298.0 301.0
 ABL.perturb_temperature                  = true
 ABL.cutoff_height                        = 50.0
@@ -58,7 +54,7 @@ ABL.Vperiods                             = 4.0
 ABL.deltaU                               = 1.0
 ABL.deltaV                               = 1.0
 ABL.kappa                                = .40
-ABL.surface_roughness_z0                 = 0.01  # meters
+ABL.surface_roughness_z0                 = 0.01  # [m]
 ABL.surface_temp_flux                    = 0.05  # Surface temperature flux [K-m/s]
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
