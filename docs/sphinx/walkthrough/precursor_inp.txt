@@ -35,7 +35,7 @@ incflo.verbose                           =   0          # incflo_level
 geometry.prob_lo                         = 0.       0.     0.   # Lo corner coordinates
 geometry.prob_hi                         = 2560.  2560.  1280.  # Hi corner coordinates
 amr.n_cell                               = 128 128 64           # Grid cells at coarsest AMRlevel
-amr.max_level                            = 2                    # Max AMR level in hierarchy 
+amr.max_level                            = 0                    # Max AMR level in hierarchy 
 geometry.is_periodic                     = 1   1   0            # Periodicity x y z (0/1)
 
 zlo.type                                 = wall_model
@@ -108,64 +108,3 @@ averaging.means.averaging_type           = ReAveraging
 
 averaging.stress.fields                  = velocity
 averaging.stress.averaging_type          = ReynoldsStress
-
-#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
-#            MESH REFINEMENT            #
-#.......................................#
-tagging.labels                           = T0_level_0_zone T1_level_0_zone T2_level_0_zone T0_level_1_zone T1_level_1_zone T2_level_1_zone
-
-# 1st refinement level
-tagging.T0_level_0_zone.type             = GeometryRefinement  
-tagging.T0_level_0_zone.shapes           = T0_level_0_zone     
-tagging.T0_level_0_zone.level            = 0                   
-tagging.T0_level_0_zone.T0_level_0_zone.type = box                 
-tagging.T0_level_0_zone.T0_level_0_zone.origin = 520.0 1040.0 0.0  # -1D, -2D
-tagging.T0_level_0_zone.T0_level_0_zone.xaxis = 360.0 0.0 0.0
-tagging.T0_level_0_zone.T0_level_0_zone.yaxis = 0.0 480.0 0.0
-tagging.T0_level_0_zone.T0_level_0_zone.zaxis = 0.0 0.0 360.0
-
-tagging.T1_level_0_zone.type             = GeometryRefinement  
-tagging.T1_level_0_zone.shapes           = T1_level_0_zone     
-tagging.T1_level_0_zone.level            = 0                   
-tagging.T1_level_0_zone.T1_level_0_zone.type = box                 
-tagging.T1_level_0_zone.T1_level_0_zone.origin = 1160.0 1040.0 0.0  # -1D, -2D
-tagging.T1_level_0_zone.T1_level_0_zone.xaxis = 360.0 0.0 0.0
-tagging.T1_level_0_zone.T1_level_0_zone.yaxis = 0.0 480.0 0.0
-tagging.T1_level_0_zone.T1_level_0_zone.zaxis = 0.0 0.0 360.0
-
-tagging.T2_level_0_zone.type             = GeometryRefinement  
-tagging.T2_level_0_zone.shapes           = T2_level_0_zone     
-tagging.T2_level_0_zone.level            = 0                   
-tagging.T2_level_0_zone.T2_level_0_zone.type = box                 
-tagging.T2_level_0_zone.T2_level_0_zone.origin = 1800.0 1040.0 0.0  # -1D, -2D
-tagging.T2_level_0_zone.T2_level_0_zone.xaxis = 360.0 0.0 0.0
-tagging.T2_level_0_zone.T2_level_0_zone.yaxis = 0.0 480.0 0.0
-tagging.T2_level_0_zone.T2_level_0_zone.zaxis = 0.0 0.0 360.0
-
-# 2nd refinement level
-tagging.T0_level_1_zone.type             = GeometryRefinement  
-tagging.T0_level_1_zone.shapes           = T0_level_1_zone     
-tagging.T0_level_1_zone.level            = 1                   
-tagging.T0_level_1_zone.T0_level_1_zone.type = box                 
-tagging.T0_level_1_zone.T0_level_1_zone.origin = 580.0 1100.0 20.0  # -0.5D, -1.5D
-tagging.T0_level_1_zone.T0_level_1_zone.xaxis = 180.0 0.0 0.0
-tagging.T0_level_1_zone.T0_level_1_zone.yaxis = 0.0 360.0 0.0
-tagging.T0_level_1_zone.T0_level_1_zone.zaxis = 0.0 0.0 180.0
-
-tagging.T1_level_1_zone.type             = GeometryRefinement  
-tagging.T1_level_1_zone.shapes           = T1_level_1_zone     
-tagging.T1_level_1_zone.level            = 1                   
-tagging.T1_level_1_zone.T1_level_1_zone.type = box                 
-tagging.T1_level_1_zone.T1_level_1_zone.origin = 1220.0 1100.0 20.0  # -0.5D, -1.5D
-tagging.T1_level_1_zone.T1_level_1_zone.xaxis = 180.0 0.0 0.0
-tagging.T1_level_1_zone.T1_level_1_zone.yaxis = 0.0 360.0 0.0
-tagging.T1_level_1_zone.T1_level_1_zone.zaxis = 0.0 0.0 180.0
-
-tagging.T2_level_1_zone.type             = GeometryRefinement  
-tagging.T2_level_1_zone.shapes           = T2_level_1_zone     
-tagging.T2_level_1_zone.level            = 1                   
-tagging.T2_level_1_zone.T2_level_1_zone.type = box                 
-tagging.T2_level_1_zone.T2_level_1_zone.origin = 1860.0 1100.0 20.0  # -0.5D, -1.5D
-tagging.T2_level_1_zone.T2_level_1_zone.xaxis = 180.0 0.0 0.0
-tagging.T2_level_1_zone.T2_level_1_zone.yaxis = 0.0 360.0 0.0
-tagging.T2_level_1_zone.T2_level_1_zone.zaxis = 0.0 0.0 180.0
