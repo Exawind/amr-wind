@@ -3,9 +3,21 @@
 Precursor (ABL) Walkthrough
 ===========================
 
-Now that we have AMR-Wind compiled, we can start to run simulations. In this section, we'll run two simulations of a weakly convective atmospheric boundary layer. The first simulation will be of a transient "spinup" phase, and the second simulation will serve as a "precursor" for a turbine simulation.
+With AMR-Wind compiled, we can run simulations. In this section, we will run two simulations of a
+weakly convective atmospheric boundary layer. The first simulation will be of a transient "spinup" phase,
+and the second simulation will serve as a "precursor" for a turbine simulation.
 
-Before we run anything, we first need to set up the [input](https://exawind.github.io/amr-wind/user/inputs.html) file (aka the "configuration"/"config" file). This is a text file, and its filename traditionally ends with `.i` or `.inp`. There are two general approaches to set one up: manually, or with the use of [amrwind-frontend](https://github.com/lawrenceccheung/amrwind-frontend). If I am setting up a big simulation, with many turbines and many refinement zones, I use amrwind-frontend. It shows the locations of all those objects, which is a great sanity check for expensive simulations. If I am running a simpler simulation, I will copy-paste text from a simulation that I have successfully run in the past. 
+Before simulating anything, we first need to set up the :doc:`input file <../user/inputs>`. This 
+is a text file, and its filename traditionally ends with ``.inp``. There are generally two approaches to 
+set one up: manually through a text editor, often beginning with an example file as a starting point,
+or with the use of `amr-wind-frontend <https://github.com/Exawind/amr-wind-frontend>`_. For larger 
+simulations, with many turbines and refinement zones, amr-wind-frontend is the ideal approach for 
+input-file setup. This tool shows the locations of the turbines and refinements, providing a great 
+sanity check for expensive simulations. For simpler simulations, with one or a handful of turbines,
+the manual approach is typically sufficient when beginning from a valid starting point. If you do not 
+have an input file on hand to use as a template, input files from the regression tests directory 
+("test/test_files/") in the AMR-Wind repository can serve as examples. Please consult the 
+:ref:`input file reference <input-file-ref>` to understand and appropriately modify the available input arguments.
 
 Spinup
 ------
