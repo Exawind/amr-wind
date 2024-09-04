@@ -112,9 +112,9 @@ and the AMR-Wind and OpenFAST repositories are cloned to the environment directo
     The fact we specified
     main and develop branches when we created the environment does not mean that the code in these repositories 
     must be on the main and develop branches, respectively. These references communicate to Spack a grouping of 
-    dependencies for each code. In many cases, using different commits or even your own fork for these codes will 
+    dependencies for each code. In many cases, using different commits or even your own fork for ExaWind codes will 
     not change their dependencies, and so the specification of main or master is typically the correct spec for 
-    whatever version of the code you are using.
+    whatever version of the code you are using. OpenFAST compatibility can vary more from version to version, though.
 
 
 The choice of compiler depends on the machine you are using. On Kestrel, the compiler for CPUs is ``oneapi``,
@@ -173,3 +173,14 @@ to add them to the path, enabling the executable to be used directly. When the s
     spack load amr-wind
 
 to make executables from amr-wind directly available.
+
+Find ROSCO dynamic library
+--------------------------
+
+On using ROSCO: OpenFAST requires the location of the ROSCO library file (either ``libdiscon.so`` (Linux) 
+or ``libdiscon.dylib`` (Mac)) as an argument within the ServoDyn input file.
+During the spack install command, the location of the installed 
+packages are printed to the screen. After installation is complete, these can be listed again more briefly
+by repeating the spack install command. To find the location of the ROSCO library, look for "rosco" among
+the listed locations. If ``<spack opt path>/rosco-<hash>`` is the directory provided by spack install,
+the .so .dylib file will be located within ``<spack opt path>/rosco-<hash>/lib/``.
