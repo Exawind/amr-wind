@@ -44,6 +44,7 @@ zhi.temperature                          = 0.003
 ICNS.source_terms                        = BoussinesqBuoyancy CoriolisForcing ABLForcing
 incflo.velocity                          = 10.0 0.0 0.0
 ABLForcing.abl_forcing_height            = 86.5
+ABLForcing.forcing_timetable_output_file = abl_forces.txt
 CoriolisForcing.latitude                 = 36.607322                 # Southern Great Plains
 CoriolisForcing.north_vector             = 0.0 1.0 0.0
 CoriolisForcing.east_vector              = 1.0 0.0 0.0
