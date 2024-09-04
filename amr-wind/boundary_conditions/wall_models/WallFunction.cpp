@@ -17,6 +17,10 @@ WallFunction::WallFunction(CFDSim& sim)
 {
     amrex::Real mu;
     amrex::Real rho{1.0};
+    amrex::Real amplitude;
+    amrex::Real wavenumber;
+    amrex::Real omega; 
+
     {
         amrex::ParmParse pp("BodyForce");
         amrex::Vector<amrex::Real> body_force{0.0, 0.0, 0.0};
@@ -44,6 +48,18 @@ WallFunction::WallFunction(CFDSim& sim)
             (geom.ProbLo(m_direction) +
              (m_log_law.ref_index + 0.5) * geom.CellSize(m_direction));
     }
+    ///Dyanmic wave stress
+    {
+    amrex::ParmParse pp("wave_mosd"); // "wave_mosd" is the prefix used in the input file
+    pp.query("amplitude", amplitude);
+    pp.query("wavenumber", wavenumber);
+    pp.query("frequency", omega);
+    }
+    m_mosd.amplitude = amplitude;
+    m_mosd.wavenumber = wavenumber;
+    m_mosd.omega = omega;
+
+
 }
 
 VelWallFunc::VelWallFunc(Field& /*unused*/, WallFunction& wall_func)
@@ -55,7 +71,8 @@ VelWallFunc::VelWallFunc(Field& /*unused*/, WallFunction& wall_func)
 
     if (m_wall_shear_stress_type == "constant" ||
         m_wall_shear_stress_type == "log_law" ||
-        m_wall_shear_stress_type == "schumann") {
+        m_wall_shear_stress_type == "schumann" ||
+	m_wall_shear_stress_type == "mosd")  {
         amrex::Print() << "Shear Stress model: " << m_wall_shear_stress_type
                        << std::endl;
     } else {
@@ -84,13 +101,16 @@ void VelWallFunc::wall_model(
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
-        const auto& domain = geom.Domain();
+	const auto& domain = geom.Domain();
         amrex::MFItInfo mfi_info{};
 
         const auto& rho_lev = density(lev);
         auto& vel_lev = velocity(lev);
         const auto& vold_lev = velocity.state(FieldState::Old)(lev);
         const auto& eta_lev = viscosity(lev);
+
+	const auto& problo = geom.ProbLoArray();
+        const auto& dx = geom.CellSizeArray();
 
         if (amrex::Gpu::notInLaunchRegion()) {
             mfi_info.SetDynamic(true);
@@ -105,6 +125,12 @@ void VelWallFunc::wall_model(
             const auto& den = rho_lev.const_array(mfi);
             const auto& eta = eta_lev.const_array(mfi);
 
+            ///Dyanmic wave stress
+            // Getting the closest integer of the vertical grid point of value dx (z=dx)
+            // this should be interpolated to be more accurate
+            const amrex::Real dx_dz = dx[0] / dx[2];
+            const int z_dx_integer = static_cast<int>(std::round(dx_dz));
+
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                 velocity.bc_type()[zlo] == BC::wall_model) {
                 amrex::ParallelFor(
@@ -116,14 +142,30 @@ void VelWallFunc::wall_model(
                         const amrex::Real vv =
                             vold_arr(i, j, k + idx_offset, 1);
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
-                        // Dirichlet BC
-                        varr(i, j, k - 1, 2) = 0.0;
 
+                        // Dirichlet BC
+                        //varr(i, j, k - 1, 2) = 0.0;
                         // Shear stress BC
+                        //varr(i, j, k - 1, 0) =
+                        //    tau.get_shear(uu, wspd) / mu * den(i, j, k);
+                        //varr(i, j, k - 1, 1) =
+                        //    tau.get_shear(vv, wspd) / mu * den(i, j, k);
+
+                        ///Dyanmic wave stress
+                        //if (m_wall_shear_stress_type == "mosd")
+                        // {
+                                                   
+                        const amrex::Real xc = problo[0] + (i + 0.5) * dx[0];
+                        const amrex::Real u_dx = vold_arr(i, j, k + z_dx_integer, 0);  
+                        const amrex::Real v_dx = vold_arr(i, j, k + z_dx_integer, 1);
+
                         varr(i, j, k - 1, 0) =
-                            tau.get_shear(uu, wspd) / mu * den(i, j, k);
+                            tau.get_shear(uu, wspd, u_dx, v_dx, xc, 0) / mu * den(i, j, k);
                         varr(i, j, k - 1, 1) =
-                            tau.get_shear(vv, wspd) / mu * den(i, j, k);
+                            tau.get_shear(vv, wspd, u_dx, v_dx, xc, 1) / mu * den(i, j, k);
+                        varr(i, j, k - 1, 2) = 0.0;
+                        
+			//}
                     });
             }
 
@@ -138,14 +180,19 @@ void VelWallFunc::wall_model(
                         const amrex::Real vv =
                             vold_arr(i, j, k - 1 - idx_offset, 1);
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
-                        // Dirichlet BC
+                        
+			const amrex::Real xc = problo[0] + (i + 0.5) * dx[0];
+                        const amrex::Real u_dx = vold_arr(i, j, k + z_dx_integer, 0);
+			const amrex::Real v_dx = vold_arr(i, j, k + z_dx_integer, 1);
+			
+			// Dirichlet BC
                         varr(i, j, k, 2) = 0.0;
 
                         // Shear stress BC
                         varr(i, j, k, 0) =
-                            -tau.get_shear(uu, wspd) / mu * den(i, j, k);
+                            -tau.get_shear(uu, wspd, u_dx, v_dx, xc, 0) / mu * den(i, j, k);
                         varr(i, j, k, 1) =
-                            -tau.get_shear(vv, wspd) / mu * den(i, j, k);
+                            -tau.get_shear(vv, wspd, u_dx, v_dx, xc, 1) / mu * den(i, j, k);
                     });
             }
         }
@@ -238,6 +285,12 @@ void VelWallFunc::operator()(Field& velocity, const FieldState rho_state)
         m_wall_func.update_umean();
         auto tau = SimpleShearSchumann(m_wall_func.log_law());
         wall_model(velocity, rho_state, tau);
+    } else if (m_wall_shear_stress_type == "mosd") {
+        m_wall_func.update_umean();
+        m_wall_func.update_utau_mean();
+        m_wall_func.update_time();
+        auto tau = SimpleShearMOSD(m_wall_func.log_law(), m_wall_func.mosd());
+        wall_model(velocity, rho_state, tau);
     }
 }
 
@@ -249,4 +302,10 @@ void WallFunction::update_umean()
 }
 
 void WallFunction::update_utau_mean() { m_log_law.update_utau_mean(); }
+
+void WallFunction::update_time()
+{
+    m_mosd.time = m_sim.time().current_time();
+
+}
 } // namespace amr_wind

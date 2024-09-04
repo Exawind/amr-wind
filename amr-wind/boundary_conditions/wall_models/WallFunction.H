@@ -5,6 +5,7 @@
 #include "amr-wind/core/FieldBCOps.H"
 #include "amr-wind/utilities/FieldPlaneAveragingFine.H"
 #include "amr-wind/boundary_conditions/wall_models/LogLaw.H"
+#include "amr-wind/boundary_conditions/wall_models/MOSD.H"
 
 namespace amr_wind {
 
@@ -22,10 +23,14 @@ public:
 
     amrex::Real utau() const { return m_log_law.utau_mean; }
     LogLaw log_law() const { return m_log_law; }
+    ///Dyanmic wave stress
+    MOSD mosd() const { return m_mosd; }
 
     //! Update the mean velocity at a given timestep
     void update_umean();
     void update_utau_mean();
+    ///Dyanmic wave stress
+    void update_time();
 
     ~WallFunction() = default;
 
@@ -38,6 +43,9 @@ private:
     LogLaw m_log_law;
     int m_direction{2}; ///< Direction normal to wall, hardcoded to z
     VelPlaneAveragingFine m_pa_vel;
+
+    // MOSD instance 
+    MOSD m_mosd;
 };
 
 /** Applies a shear-stress value at the domain boundary
