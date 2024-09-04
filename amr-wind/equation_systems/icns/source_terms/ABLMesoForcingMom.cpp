@@ -131,6 +131,11 @@ void ABLMesoForcingMom::mean_velocity_heights(
                          coeff_interp[1] * ncfile->meso_v()[rt];
     }
 
+    for (int ih = 0; ih < num_meso_ht; ih++) {
+        m_err_U[ih] = mesoInterpU[ih];
+        m_err_V[ih] = mesoInterpV[ih];
+    }
+
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, mesoInterpU.begin(), mesoInterpU.end(),
         m_error_meso_avg_U.begin());
@@ -138,11 +143,6 @@ void ABLMesoForcingMom::mean_velocity_heights(
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, mesoInterpV.begin(), mesoInterpV.end(),
         m_error_meso_avg_V.begin());
-
-    for (int ih = 0; ih < num_meso_ht; ih++) {
-        m_err_U[ih] = mesoInterpU[ih];
-        m_err_V[ih] = mesoInterpV[ih];
-    }
 }
 
 void ABLMesoForcingMom::mean_velocity_heights(
@@ -155,6 +155,7 @@ void ABLMesoForcingMom::mean_velocity_heights(
 
     amrex::Real currtime;
     currtime = m_time.current_time();
+    const auto& dt = m_time.delta_t();
 
     // First the index in time
     m_idx_time = utils::closest_index(ncfile->meso_times(), currtime);
@@ -311,6 +312,13 @@ void ABLMesoForcingMom::mean_velocity_heights(
         }
     }
 
+    for (size_t ih = 0; ih < n_levels; ih++) {
+        error_U[ih] = error_U[ih] * m_gain_coeff / dt;
+        error_V[ih] = error_V[ih] * m_gain_coeff / dt;
+        m_err_U[ih] = error_U[ih];
+        m_err_V[ih] = error_V[ih];
+    }
+
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, error_U.begin(), error_U.end(),
         m_error_meso_avg_U.begin());
@@ -318,11 +326,6 @@ void ABLMesoForcingMom::mean_velocity_heights(
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, error_V.begin(), error_V.end(),
         m_error_meso_avg_V.begin());
-
-    for (size_t ih = 0; ih < n_levels; ih++) {
-        m_err_U[ih] = error_U[ih];
-        m_err_V[ih] = error_V[ih];
-    }
 }
 
 void ABLMesoForcingMom::operator()(
@@ -336,7 +339,6 @@ void ABLMesoForcingMom::operator()(
         return;
     }
 
-    const auto& dt = m_time.delta_t();
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
 
@@ -346,7 +348,6 @@ void ABLMesoForcingMom::operator()(
     const amrex::Real* vheights = m_meso_ht.data();
     const amrex::Real* u_error_val = m_error_meso_avg_U.data();
     const amrex::Real* v_error_val = m_error_meso_avg_V.data();
-    const amrex::Real kcoeff = m_gain_coeff;
     const int idir = (int)m_axis;
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -366,8 +367,8 @@ void ABLMesoForcingMom::operator()(
                                   (ht - vheights[il]);
 
         // Compute Source term
-        src_term(i, j, k, 0) += kcoeff * u_err / dt;
-        src_term(i, j, k, 1) += kcoeff * v_err / dt;
+        src_term(i, j, k, 0) += u_err;
+        src_term(i, j, k, 1) += v_err;
 
         // No forcing in z-direction
     });

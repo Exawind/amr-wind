@@ -142,6 +142,7 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
 
     amrex::Real currtime;
     currtime = m_time.current_time();
+    const auto& dt = m_time.delta_t();
 
     // First the index in time
     m_idx_time = utils::closest_index(ncfile->meso_times(), currtime);
@@ -268,13 +269,14 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
         }
     }
 
+    for (size_t ih = 0; ih < n_levels; ih++) {
+        m_err_Theta[ih] = m_err_Theta[ih] * m_gain_coeff / dt;
+        m_err_Theta[ih] = error_T[ih];
+    }
+
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, error_T.begin(), error_T.end(),
         m_error_meso_avg_theta.begin());
-
-    for (size_t ih = 0; ih < n_levels; ih++) {
-        m_err_Theta[ih] = error_T[ih];
-    }
 
     return interpTflux;
 }
@@ -290,7 +292,6 @@ void ABLMesoForcingTemp::operator()(
         return;
     }
 
-    const auto& dt = m_time.delta_t();
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
 
@@ -298,7 +299,6 @@ void ABLMesoForcingTemp::operator()(
     const int lp1 = lev + 1;
     const amrex::Real* theights = m_meso_ht.data();
     const amrex::Real* theta_error_val = m_error_meso_avg_theta.data();
-    const amrex::Real kcoeff = m_gain_coeff;
     const int idir = (int)m_axis;
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -312,7 +312,7 @@ void ABLMesoForcingTemp::operator()(
                                       (ht - theights[il]);
 
         // Compute Source term
-        src_term(i, j, k, 0) += kcoeff * theta_err / dt;
+        src_term(i, j, k, 0) += theta_err;
     });
 }
 
