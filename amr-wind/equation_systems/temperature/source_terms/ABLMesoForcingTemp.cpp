@@ -270,7 +270,7 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
     }
 
     for (size_t ih = 0; ih < n_levels; ih++) {
-        m_err_Theta[ih] = m_err_Theta[ih] * m_gain_coeff / dt;
+        error_T[ih] = error_T[ih] * m_gain_coeff / dt;
         m_err_Theta[ih] = error_T[ih];
     }
 
