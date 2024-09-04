@@ -53,7 +53,7 @@ nodal_proj.mg_atol = 1.0e-10
 # Mesh Refinement
 amr.n_cell            = 64 64 4 # Grid cells at coarsest AMRlevel
 amr.blocking_factor = 4
-amr.n_error_buf = 2
+amr.n_error_buf = 4
 
 amrex.abort_on_out_of_memory=1
 amrex.the_arena_is_managed=1

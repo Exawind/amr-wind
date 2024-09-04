@@ -47,7 +47,7 @@ public:
 
     //! Populate and return a vector of probe locations to be sampled
     void sampling_locations(SampleLocType& /*locs*/) const override;
-    void update_sampling_locations() override;
+    bool update_sampling_locations() override;
     void cone_axis_locations(SampleLocType& /*locs*/) const;
     void output_locations(SampleLocType& locs) const override
     {

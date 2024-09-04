@@ -153,7 +153,7 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
             info.bound_box = amrex::RealBox(
                 minpx - search_radius, minpy - search_radius,
                 minpz - search_radius, maxpx + search_radius,
-                maxpy - search_radius, maxpz + search_radius);
+                maxpy + search_radius, maxpz + search_radius);
         } else if (amrex::toLower(wdata.motion_type) == "linear") {
             // Extend bounding box in case of velocity
             constexpr amrex::Real tiny = 1e-8;

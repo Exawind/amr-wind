@@ -33,7 +33,7 @@ public:
      *
      *
      */
-    void update_sampling_locations() override;
+    bool update_sampling_locations() override;
 
     void post_sample_actions() override {};
 

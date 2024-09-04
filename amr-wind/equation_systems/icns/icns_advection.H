@@ -106,6 +106,9 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             godunov_scheme = godunov::scheme::PPM;
         } else if (amrex::toLower(godunov_type) == "ppm_nolim") {
             godunov_scheme = godunov::scheme::PPM_NOLIM;
+            amrex::Print() << "WARNING: Using advection type ppm_nolim is not "
+                              "recommended. Prefer using weno_z."
+                           << std::endl;
         } else if (amrex::toLower(godunov_type) == "bds") {
             godunov_scheme = godunov::scheme::BDS;
             // use Godunov for premac, use BDS for postmac. Eventually
@@ -118,11 +121,10 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         } else if (amrex::toLower(godunov_type) == "weno_z") {
             godunov_scheme = godunov::scheme::WENOZ;
         } else {
-            amrex::Print()
-                << "For godunov_type select between plm, ppm, "
-                   "ppm_nolim, bds, weno_js, and weno_z: it defaults to ppm"
-                << std::endl;
-            godunov_scheme = godunov::scheme::PPM;
+            amrex::Abort(
+                "Invalid godunov_type specified. For godunov_type select "
+                "between plm, ppm, ppm_nolim, bds, weno_js, and weno_z. If no "
+                "godunov_type is specified, the default weno_z is used.");
         }
 
         // Flux calculation used in multiphase portions of domain
@@ -429,9 +431,9 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     MacProjOp m_macproj_op;
     amrex::Gpu::DeviceVector<int> iconserv;
 
-    godunov::scheme godunov_scheme = godunov::scheme::PPM;
+    godunov::scheme godunov_scheme = godunov::scheme::WENOZ;
     godunov::scheme mflux_scheme = godunov::scheme::UPWIND;
-    std::string godunov_type;
+    std::string godunov_type{"weno_z"};
     std::string mflux_type{"upwind"};
     const bool fluxes_are_area_weighted{false};
     bool godunov_use_forces_in_trans{false};

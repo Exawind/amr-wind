@@ -164,11 +164,17 @@ void Sampling::update_sampling_locations()
 {
     BL_PROFILE("amr-wind::Sampling::update_sampling_locations");
 
+    amrex::Vector<bool> updated_position;
     for (const auto& obj : m_samplers) {
-        obj->update_sampling_locations();
+        const bool updated_pos = obj->update_sampling_locations();
+        updated_position.push_back(updated_pos);
     }
 
-    update_container();
+    if (std::any_of(
+            updated_position.begin(), updated_position.end(),
+            [](const auto& v) { return v; })) {
+        update_container();
+    }
 }
 
 void Sampling::post_advance_work()
