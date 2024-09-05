@@ -1,0 +1,84 @@
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            SIMULATION STOP            #
+#.......................................#
+time.stop_time               =   120000.0     # Max (simulated) time to evolve
+#time.max_step                =   10          # Max number of time steps
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#         TIME STEP COMPUTATION         #
+#.......................................#
+time.fixed_dt         =   0.1        # Use this constant dt if > 0
+time.cfl              =   0.95         # CFL factor
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            INPUT AND OUTPUT           #
+#.......................................#
+time.plot_interval            =  1000       # Steps between plot files
+time.checkpoint_interval      =  5000       # Steps between checkpoint files
+ABL.stats_output_frequency    = 100
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#               PHYSICS                 #
+#.......................................#
+incflo.gravity          =   0.  0. -9.81  # Gravitational force (3D)
+incflo.density             = 1.0          # Reference density 
+
+## Solver options
+incflo.use_godunov = 1
+incflo.godunov_type = weno_z
+incflo.diffusion_type = 1
+turbulence.model = OneEqKsgsM84
+
+## Physical parameters
+transport.viscosity = 0.0
+transport.laminar_prandtl = 0.7
+transport.turbulent_prandtl = 0.3333
+
+## Forcing and BCs 
+incflo.physics = ABL
+ICNS.source_terms = BoussinesqBuoyancy CoriolisForcing GeostrophicForcing
+TKE.source_terms = KsgsM84Src
+BoussinesqBuoyancy.reference_temperature = 290
+ABL.reference_temperature = 290
+CoriolisForcing.latitude  = 90
+CoriolisForcing.rotational_time_period = 125663.706143591729539
+GeostrophicForcing.geostrophic_wind = 5 0 0
+ABL.kappa = .41
+ABL.surface_roughness_z0 = 0.05
+# Coriolis forcing parameter is 1e-4
+
+## Initial conditions
+incflo.velocity = 5 0 0
+ABL.perturb_temperature = true
+ABL.cutoff_height       = 50
+ABL.perturb_velocity    = true
+ABL.perturb_ref_height  = 50
+ABL.init_tke_beare_profile = true
+ABL.temperature_heights   = 0.0 920.
+ABL.temperature_values    = 290 292.76
+
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#        ADAPTIVE MESH REFINEMENT       #
+#.......................................#
+amr.n_cell              = 512 512 184 # Grid cells at coarsest AMRlevel
+amr.max_level           = 0           # Max AMR level in hierarchy 
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#              GEOMETRY                 #
+#.......................................#
+geometry.prob_lo        =   0.       0.     0.  # Lo corner coordinates
+geometry.prob_hi        =   2560  2560.   896.  # Hi corner coordinates
+geometry.is_periodic    =   1   1   0   # Periodicity x y z (0/1)
+
+# Boundary conditions
+zlo.type =   "wall_model"
+
+zhi.type =   "slip_wall"
+zhi.temperature_type = "fixed_gradient"
+zhi.temperature = 0.003 # tracer is used to specify potential temperature gradient
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#              VERBOSITY                #
+#.......................................#
+incflo.verbose          =   0          # incflo_level
