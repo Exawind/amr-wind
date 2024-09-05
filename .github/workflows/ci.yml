@@ -30,7 +30,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         build_type: [Release, Debug]
-        openmp_flag: [openmp, no-openmp]
+        openmp_flag: [OpenMP, NoOpenMP]
         include:
           - os: macos-latest
             install_deps: brew install mpich ccache
@@ -48,17 +48,13 @@ jobs:
           - build_type: Debug
             ctest_args: -L unit
             ccache_size: 500M
-          - openmp_flag: openmp
-            openmp_bool: ON
-          - openmp_flag: no-openmp
-            openmp_bool: OFF
         exclude:
           - os: macos-latest
             build_type: Debug
           - os: macos-latest
-            openmp_flag: openmp
+            openmp_flag: OpenMP
           - build_type: Release
-            openmp_flag: openmp
+            openmp_flag: OpenMP
     steps:
     - name: Clone
       uses: actions/checkout@v4
@@ -93,7 +89,7 @@ jobs:
           -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install-${{matrix.build_type}} \
           -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} \
           -DAMR_WIND_ENABLE_MPI:BOOL=ON \
-          -DAMR_WIND_ENABLE_OPENMP:BOOL=${{matrix.openmp_bool}} \
+          -DAMR_WIND_ENABLE_OPENMP:BOOL=${{ matrix.openmp_flag == 'OpenMP && 'ON' || 'OFF' }} \
           -DAMR_WIND_ENABLE_TESTS:BOOL=ON \
           -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
           -DCMAKE_CXX_COMPILER_LAUNCHER:STRING=ccache \
