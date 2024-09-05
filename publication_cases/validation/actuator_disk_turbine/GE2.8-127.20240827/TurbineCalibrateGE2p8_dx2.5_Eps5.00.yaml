@@ -1,0 +1,345 @@
+# ----- BEGIN Farm setup input file ----
+farm_usercomments: Test calibration process.
+refine_csvfile: ''
+refine_csvtextbox: "\n# CSV file should have columns with\n# level, upstream, downstream,\
+  \ lateral, below, above, options\nlevel, upstream, downstream, lateral, below, above,\
+  \ options\n0,     10,       10,         3,       2,     2,     center:farm\n1, \
+  \    2.5,      2.5,        2.5,     1.2,   1.2,   center:farm\n2,     1,       \
+  \ 1,          0.75,    0.8,   0.8,  \n"
+refine_deleteprev: true
+sampling_csvfile: ''
+sampling_csvtextbox: '
+
+  # CSV file should have columns withturbinescsv=
+
+  # name, type, upstream, downstream, lateral, below, above, n1, n2, options
+
+  name, type, upstream, downstream, lateral, below, above, n1, n2, options
+
+  #cl1, centerline, 1,  0, none, none,  none,  11, 11, none
+
+  #rp1, rotorplane, 2,  0, none, none,  none,  11, 11, none
+
+  #sw1, streamwise, 2,  1, 1, 0.5,  0.5,  11, 11, usedx:0.25 noffsets:1
+
+  hh,  hubheight,2560,2560,960, 0,  none,  11, 11, usedx:10 units:meter center:farm
+  orientation:x
+
+  '
+sampling_deleteprev: true
+sweep_autosetBC: true
+sweep_caseprefix: Calibrate_dx2p5_{CASENUM}_EPS5.00_WS_{WS}
+sweep_createsubmitscript: true
+sweep_dirprefix: Calibrate_dx2p5_{CASENUM}_EPS5.00_WS_{WS}
+sweep_inflowmode: uniform
+sweep_logfile: RunCalibration_dx2.5_Eps5.00_logfile.yaml
+sweep_submitjob: false
+sweep_usenewdirs: true
+sweep_winddirs: '270'
+sweep_windspeeds: 7 9 10 11
+turbines_autocalccenter: true
+turbines_backgroundmeshsize: 20.0
+turbines_coordsys: xy
+turbines_createnewdomain: true
+turbines_csvfile: ''
+turbines_csvtextbox: '
+
+  # CSV file should have columns with
+
+  # name, x, y, type, yaw, hubheight, options
+
+  T0,     0, 0, NREL 2.8-127 ADM bugfix, 270.0, 0.0, ADparam_TwrAero:True ADparam_TwrShadow:0
+
+  '
+turbines_deleteprev: true
+turbines_domainsize:
+- 5120.0
+- 1920.0
+- 1920.0
+turbines_farmcenter: null
+turbines_freespace: true
+wfarm_embedamrwindinput: '# --- Simulation time control parameters ---
+
+  time.stop_time                           = 360.0               # Max (simulated)
+  time to evolve [s]
+
+  time.max_step                            = -1
+
+  time.fixed_dt                            = 0.1                 # Fixed timestep
+  size (in seconds). If negative, then time.cfl is used
+
+  incflo.physics                           = FreeStream Actuator # List of physics
+  models to include in simulation.
+
+  incflo.verbose                           = 0
+
+  io.check_file                            = chk
+
+  incflo.use_godunov                       = true
+
+  incflo.godunov_type                      = weno_z
+
+  turbulence.model                         = Laminar
+
+  incflo.gravity                           = 0.0 0.0 -9.81       # Gravitational acceleration
+  vector (x,y,z) [m/s^2]
+
+  incflo.density                           = 1.225               # Fluid density [kg/m^3]
+
+  transport.viscosity                      = 1.872e-05           # Fluid dynamic viscosity
+  [kg/m-s]
+
+  transport.laminar_prandtl                = 0.7                 # Laminar prandtl
+  number
+
+  transport.turbulent_prandtl              = 0.3333              # Turbulent prandtl
+  number
+
+  ConstValue.density.value                 = 1.225
+
+  ConstValue.velocity.value                = 11.0 0.0 0.0
+
+
+  # --- Geometry and Mesh ---
+
+  geometry.prob_lo                         = -2560.0 -960.0 -960.0
+
+  geometry.prob_hi                         = 2560.0 960.0 960.0
+
+  amr.n_cell                               = 256 96 96           # Number of cells
+  in x, y, and z directions
+
+  amr.max_level                            = 3
+
+  geometry.is_periodic                     = 0 1 1
+
+  xlo.type                                 = mass_inflow
+
+  xlo.density                              = 1.225
+
+  xlo.velocity                             = 11.0 0.0 0.0
+
+  xhi.type                                 = pressure_outflow
+
+
+  # --- ABL parameters ---
+
+  ICNS.source_terms                        = ActuatorForcing
+
+  incflo.velocity                          = 11.0 0.0 0.0
+
+  ABLForcing.abl_forcing_height            = 0.0
+
+  time.plot_interval                       = 1000
+
+  io.plot_file                             = plt
+
+  io.KE_int                                = -1
+
+  Actuator.type                            = TurbineFastDisk
+
+  Actuator.TurbineFastDisk.epsilon         = 5.0 5.0 5.0
+
+  Actuator.TurbineFastDisk.epsilon_tower   = 5.0 5.0 5.0
+
+  Actuator.TurbineFastDisk.fllc            = false
+
+  Actuator.TurbineFastDisk.density         = 1.225
+
+
+  #---- tagging defs ----
+
+  tagging.labels                           = Farm_level_0_zone Farm_level_1_zone T0_level_2_zone
+
+  tagging.Farm_level_0_zone.type           = GeometryRefinement
+
+  tagging.Farm_level_0_zone.shapes         = Farm_level_0_zone
+
+  tagging.Farm_level_0_zone.level          = 0
+
+  tagging.Farm_level_0_zone.Farm_level_0_zone.type = box
+
+  tagging.Farm_level_0_zone.Farm_level_0_zone.origin = -1270.0 -381.0 -254.0
+
+  tagging.Farm_level_0_zone.Farm_level_0_zone.xaxis = 2540.0 0.0 0.0
+
+  tagging.Farm_level_0_zone.Farm_level_0_zone.yaxis = -0.0 762.0 -0.0
+
+  tagging.Farm_level_0_zone.Farm_level_0_zone.zaxis = 0.0 0.0 508.0
+
+  tagging.Farm_level_1_zone.type           = GeometryRefinement
+
+  tagging.Farm_level_1_zone.shapes         = Farm_level_1_zone
+
+  tagging.Farm_level_1_zone.level          = 1
+
+  tagging.Farm_level_1_zone.Farm_level_1_zone.type = box
+
+  tagging.Farm_level_1_zone.Farm_level_1_zone.origin = -317.5 -317.5 -152.4
+
+  tagging.Farm_level_1_zone.Farm_level_1_zone.xaxis = 635.0 0.0 0.0
+
+  tagging.Farm_level_1_zone.Farm_level_1_zone.yaxis = -0.0 635.0 -0.0
+
+  tagging.Farm_level_1_zone.Farm_level_1_zone.zaxis = 0.0 0.0 304.8
+
+  tagging.T0_level_2_zone.type             = GeometryRefinement
+
+  tagging.T0_level_2_zone.shapes           = T0_level_2_zone
+
+  tagging.T0_level_2_zone.level            = 2
+
+  tagging.T0_level_2_zone.T0_level_2_zone.type = box
+
+  tagging.T0_level_2_zone.T0_level_2_zone.origin = -127.0 -95.25 -101.60000000000001
+
+  tagging.T0_level_2_zone.T0_level_2_zone.xaxis = 254.0 0.0 0.0
+
+  tagging.T0_level_2_zone.T0_level_2_zone.yaxis = -0.0 190.5 -0.0
+
+  tagging.T0_level_2_zone.T0_level_2_zone.zaxis = 0.0 0.0 203.20000000000002
+
+
+  #---- actuator defs ----
+
+  Actuator.labels                          = T0
+
+  Actuator.T0.type                         = TurbineFastDisk
+
+  Actuator.T0.openfast_input_file          = T0_OpenFAST3p3_NREL2p8-127.bugfix/NREL-2p8-127.fst
+
+  Actuator.T0.base_position                = 0.0 0.0 -90.0
+
+  Actuator.T0.rotor_diameter               = 127.0
+
+  Actuator.T0.hub_height                   = 90.0
+
+  Actuator.T0.num_points_blade             = 64
+
+  Actuator.T0.num_points_tower             = 12
+
+  Actuator.T0.openfast_start_time          = 0.0
+
+  Actuator.T0.openfast_stop_time           = 1000.0
+
+  Actuator.T0.fllc                         = false
+
+  Actuator.T0.nacelle_drag_coeff           = 1.0
+
+  Actuator.T0.nacelle_area                 = 8.0
+
+  Actuator.T0.yaw                          = 270.0
+
+  Actuator.T0.output_frequency             = 10
+
+  Actuator.T0.density                      = 1.225
+
+  Actuator.T0.num_blades                   = 3
+
+  Actuator.T0.use_tip_correction           = true
+
+  Actuator.T0.use_root_correction          = true
+
+
+  #---- postprocessing defs ----
+
+  incflo.post_processing                   = sampling
+
+  sampling.type                            = Sampling
+
+  sampling.output_frequency                = 100
+
+  sampling.fields                          = velocity
+
+
+  #---- sample defs ----
+
+  sampling.labels                          = Farm_hh
+
+  sampling.Farm_hh.type                    = PlaneSampler
+
+  sampling.Farm_hh.num_points              = 513 193
+
+  sampling.Farm_hh.origin                  = -2560.0 -960.0 0.0
+
+  sampling.Farm_hh.axis1                   = 5120.0 0.0 0.0
+
+  sampling.Farm_hh.axis2                   = 0.0 1920.0 0.0
+
+  sampling.Farm_hh.normal                  = 0.0 0.0 0.0
+
+
+  #---- extra params ----
+
+  #== END AMR-WIND INPUT ==
+
+  '
+wfarm_embedturbinetype:
+  NREL 2.8-127 ADM bugfix: !!python/object/apply:collections.OrderedDict
+  - - - turbinetype_name
+      - NREL 2.8-127 ADM bugfix
+    - - turbinetype_comment
+      - null
+    - - Actuator_type
+      - TurbineFastDisk
+    - - Actuator_openfast_input_file
+      - OpenFAST3p3_NREL2p8-127.bugfix/NREL-2p8-127.fst
+    - - Actuator_rotor_diameter
+      - 127
+    - - Actuator_hub_height
+      - 90
+    - - Actuator_num_points_blade
+      - 64
+    - - Actuator_num_points_tower
+      - 12
+    - - Actuator_epsilon
+      - null
+    - - Actuator_epsilon_min
+      - null
+    - - Actuator_epsilon_chord
+      - null
+    - - Actuator_epsilon_tower
+      - null
+    - - Actuator_openfast_start_time
+      - 0.0
+    - - Actuator_openfast_stop_time
+      - 1000.0
+    - - Actuator_fllc
+      - null
+    - - Actuator_nacelle_drag_coeff
+      - 1.0
+    - - Actuator_nacelle_area
+      - 8.0
+    - - Actuator_output_frequency
+      - 10
+    - - Actuator_diameters_to_sample
+      - null
+    - - Actuator_thrust_coeff
+      - null
+    - - Actuator_wind_speed
+      - null
+    - - Actuator_rpm
+      - null
+    - - turbinetype_filelocation
+      - /projects/wind_uq/lcheung/amrwind-frontend/turbines
+    - - turbinetype_filedir
+      - OpenFAST3p3_NREL2p8-127.bugfix
+    - - Actuator_num_points_r
+      - null
+    - - Actuator_num_points_t
+      - null
+    - - Actuator_num_blades
+      - 3
+    - - Actuator_vortex_core_size
+      - null
+    - - Actuator_ct_region2
+      - null
+    - - Actuator_S0_alpha1
+      - null
+    - - Actuator_S0_alpha2
+      - null
+    - - Actuator_use_tip_correction
+      - true
+    - - Actuator_use_root_correction
+      - true
+# ----- END Farm setup input file ------
