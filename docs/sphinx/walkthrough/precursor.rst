@@ -21,90 +21,58 @@ have an input file on hand to use as a template, input files from the regression
 
 Spinup
 ------
-Here is the content of our spinup config file:
+Here is the content of our spinup input file:
 
 .. literalinclude:: ./spinup_inp.txt
    :linenos:
 
-To get an idea of what each of these lines means, see [here](https://exawind.github.io/amr-wind/user/inputs.html). Sometimes new input variables are added but aren't located in the docs, and in that case, you will need to look into the guts of the AMR-Wind code to deduce what those variables do.
+We are going to run the spinup simulation for a duration of two hours. The spinup simulation features a
+fairly small domain with a coarse uniform grid resolution of 20 m and does not employ any grid refinement.
 
-We are going to run the spinup simulation for a duration of two hours. In this tutorial, we are simulation a fairly small domain with a coarse uniform grid resolution of 20 m. The spinup simulation does not employ any grid refinement.
+When running simulations on a cluster, please follow the etiquette expected on the machine, which is typically to use
+a scratch directory as the active directory during a simulation run. In that context, you will also need a submission script.
+Please consult the user manual of your cluster to design such a script properly. 
 
-I am running this simulation on NREL's supercomputer Eagle, and I have this file placed in the directory `/projects/wakedynamics/orybchuk/amr-wind-tutorial/02_atmosphere/spinup`. The contents of this directory are 
-
-.. code-block:: console
-
-    analyze_spinup.ipynb  logs/  runfile.sbatch  spinup.i
-
-I like executing simulations in Eagle's scratch directory, so I also created `/scratch/orybchuk/wakedynamics/amr-wind-tutorial/02_atmosphere/spinup`. I `cd` into that `/scratch/` directory and then symbolically link to the config file in projects, with the command
-
-.. code-block:: console
-
-    ln -sf /projects/wakedynamics/orybchuk/amr-wind-tutorial/02_atmosphere/spinup/spinup.i .
-
-Now, the contents of the scratch directory are 
+Here are a few tips for submitting an AMR-Wind run. If you used a Spack environment to compile
+amr-wind, it is easiest to reference the amr-wind executable by activating Spack, activating the environment, and then using
+the command ``spack load amr-wind`` to have the correct executable available without needing to specify its full path. Finally,
+the syntax of the amr-wind command looks like
 
 .. code-block:: console
 
-    spinup.i
+    amr_wind spinup.inp
 
-To kick off the job on the Eagle's compute nodes, I use `runfile.sbatch`. Its contents are
+which should follow after an ``srun`` or ``mpiexec`` command (or similar) in a submission script to take advantage of parallelization.
+This particular simulation has about 1 million cells, which means that it is suited run with about 50-80 CPU ranks.
 
-.. literalinclude:: ./runfile.sbatch
-   :linenos:
-
-In this script, I symbolically link my AMR-Wind executable into the /scratch/ directory. I also run on two nodes, each of which have 36 cores, hence `-n 72`. Some of the other variables in this script, like `EXAWIND_DIR`, are specific to Eagle. You might not need to specify these in order to get AMR-Wind to run.
-
-To kick off the job, go into the /projects/ directory, and execute
-
-.. code-block:: console
-
-    sbatch runfile.sbatch
-
-You can view the job log by opening up `logs/job_output_filename.###.out`. Note: you need to manually create `logs/` before kicking off your simulation, otherwise your job will silently fail because of SLURM issues.
-
-If your job is successful, the log file will look something like this at the end:
-
-.. code-block:: console
-    
-    Writing plot file       plt14402 at time 7201
-    Writing checkpoint file chk14402 at time 7201
-    Time spent in InitData():    0.816465397
-    Time spent in Evolve():      2404.252191
-    Unused ParmParse Variables:
-       [TOP]::incflo.delp(nvals = 3)  :: [0., 0., 0.]
-
-    AMReX (22.05-29-g1305eb3d364d) finalized
-
-And the /scratch/ directory will now look something like
-
-.. code-block:: console
-
-    amr_wind@   chk05400/	chk09000/  chk12600/  chk14402/   core.27800  core.9246   plt05400/  plt09000/  plt12600/  plt14402/	      spinup.i@
-    chk00000/  chk01800/		    chk03600/		     chk07200/	chk10800/  chk14400/  core.27159  core.8529   plt00000/  plt01800/		  plt03600/		   plt07200/  plt10800/  plt14400/  post_processing/
-
-Once the spinup simulation is done, it is important to sanity check that the fields make sense. One quick test to do this would be to look at the evolution of horizontally averaged vertical profiles. The Jupyter notebook `analyze_spinup.ipynb` contains code to help with this.
-
-You can also open the `plt#####` files using Paraview or other software that AMReX is compatible with. These files show a volume of the instantaneous fields at that timestep.
+If the simulation completes, the last time step reported will be 14400 at time 7200 s, and the job directory will contain
+checkpoint (chk\*) and plotfile (plt\*) directories, along with a post_processing/ directory. Once the spinup simulation is done,
+it is helpful to sanity check that the flow field variables make sense. The ``plt#####`` files can be opened using Paraview or other
+visualization software that is AMReX-compatible. Another quick test is to plot the evolution of horizontally averaged vertical profiles,
+which are provided through the abl_statistics file within post_processing/.
 
 Precursor simulation
 --------------------
-After sufficiently spinning up turbulence, I kick off a "precursor simulation". 
-
-In the context of wind turbine LES, a precursor is a simulation that is run without a turbine for the explicit purpose of generating inflow boundary conditions. Due to the way LES works, spinup and precursor simulations are almost always run with cyclic boundary conditions. This means wind that exits the outflow simulation is then recirculated back into the inflow. If we want to simulate a statistically homogeneous atmosphere, that's fine. However, this is problematic if you have a wind turbine---turbines generate wakes, and we don't want wakes recirculating back into the inflow. So we run wind turbine simulations with a prescribed "inflow boundary condition" (where the wind data comes from the precursor) and an "outflow boundary condition" (usually a pressure BC).
+After sufficiently spinning up turbulence, the "precursor simulation" follows. 
+In the context of wind turbine LES, a precursor is a simulation that is run 
+without a turbine for the explicit purpose of generating inflow boundary conditions. 
+For computational efficiency, spinup and precursor simulations are almost always run
+with periodic boundary conditions. This means wind that exits the outflow simulation
+is then recirculated back into the inflow, which is a fine assumption for a statistically 
+homogeneous atmosphere. However, this is problematic when wind turbines are 
+present---turbines generate wakes, and these should not recirculate back to upstream
+of the turbine. So we run wind turbine simulations with a prescribed "inflow boundary condition" 
+(where the wind data comes from the precursor) and an "outflow boundary condition" (usually a pressure BC).
 
 Here is the content of the precursor simulation.
 
 .. literalinclude:: ./precursor_inp.txt
    :linenos:
 
-This file is almost identical to the spinup config file, except there are a few differences:
-* I run this simulation with pre-defined regions where the mesh is refined. The refinement locations are specified in the `tagging` section, and I tell AMR-Wind to use `amr.max_level=2` levels of refinement. This means my finest grid cell is now 20 / 2 / 2 = 5 m wide.
-* Because my finest mesh is now smaller, I also reduced my timestep by a factor of 4 to 0.125 seconds. 
-* I am starting this simulation from the last timestep of the spinup simulation, using the `io.restart_file` line
-* I am also now saving out boundary condition data, using the `ABL.bndry*` lines
-* I plan to make some videos of hub-height planes and cross sections, so I have increased the frequency of `sampling.output_frequency`
-
-Just like before, I create a projects directory `/projects/wakedynamics/orybchuk/amr-wind-tutorial/02_atmosphere/precursor` and a corresponding scratch directory `/scratch/orybchuk/wakedynamics/amr-wind-tutorial/02_atmosphere/precursor`  . After linking the config file, I kick off a job with `sbatch runfile.sbatch`, and I confirm that this job successfully ran to completion by checking the log file.
-
-Just like before, you can visualize the volume files using Paraview. Here, we're going to visualize the `sampling.xy-domain` and `sampling.xz-domain` data as well. That data is saved to `/scratch/orybchuk/wakedynamics/amr-wind-tutorial/02_atmosphere/precursor/post_processing/sampling14400.nc`. You can analyze data directly out of that file, but I like to reformat the data so that it is spatially sorted. To reformat data, run the code in `reformat_precursor_planes.ipynb`. To visualize the reformatted data, run `viz_precursor_planes.ipynb`.
+This file is almost identical to the spinup input file, except there are a few differences:
+    * Because the target inflow-outflow mesh (with turbines) will be much finer, requiring a smaller timestep,
+      the timestep is reduced by a factor of 4 to 0.125 seconds. This modification is not required, though.
+    * This simulation starts from the last timestep of the spinup simulation, using the ``io.restart_file`` line
+    * Now saving boundary condition data, using the ``ABL.bndry*`` lines
+    * For more detailed analysis in post-processing, the frequency of ``sampling.output_frequency`` is increased.
+      This argument actually refers to the output interval, so a smaller number means files are written more often.
