@@ -79,3 +79,7 @@ This file is almost identical to the spinup input file, except there are a few d
       precursor, though; this workflow will still function fine with an unmodified precursor time step.
     * For more detailed analysis in post-processing, the frequency of ``sampling.output_frequency`` is increased.
       This argument actually refers to the output interval, so a smaller number means files are written more often.
+
+|
+
+Go to the next step: :doc:`turbine`

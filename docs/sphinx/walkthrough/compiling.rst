@@ -184,3 +184,7 @@ packages are printed to the screen. After installation is complete, these can be
 by repeating the spack install command. To find the location of the ROSCO library, look for "rosco" among
 the listed locations. If ``<spack opt path>/rosco-<hash>`` is the directory provided by spack install,
 the .so .dylib file will be located within ``<spack opt path>/rosco-<hash>/lib/``.
+
+|
+
+Go to the next step: :doc:`precursor`
