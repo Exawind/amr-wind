@@ -1,0 +1,76 @@
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            SIMULATION STOP            #
+#.......................................#
+time.stop_time               =  20000.0     # Max (simulated) time to evolve
+#time.max_step                =  10         # Max number of time steps
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#         TIME STEP COMPUTATION         #
+#.......................................#
+time.fixed_dt         =   0.5               # Use this constant dt if > 0
+time.cfl              =   0.95              # CFL factor
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            INPUT AND OUTPUT           #
+#.......................................#
+time.plot_interval            =  7200       # Steps between plot files
+time.checkpoint_interval      =  14400      # Steps between checkpoint files
+ABL.stats_output_frequency = 10
+ABL.stats_output_format = netcdf
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#               PHYSICS                 #
+#.......................................#
+incflo.gravity        =  0.0  0.0 -9.81     # Gravitational force (3D)
+incflo.density        =  1.0                # Reference density
+
+incflo.use_godunov = 1
+incflo.godunov_type = weno_z
+incflo.diffusion_type = 1
+turbulence.model = OneEqKsgsM84
+
+transport.viscosity = 0.0
+transport.laminar_prandtl = 0.7
+transport.turbulent_prandtl = 0.3333
+
+incflo.physics = ABL
+ICNS.source_terms = BoussinesqBuoyancy CoriolisForcing GeostrophicForcing
+TKE.source_terms = KsgsM84Src
+BoussinesqBuoyancy.reference_temperature = 300.0
+CoriolisForcing.latitude = 90.0
+CoriolisForcing.rotational_time_period = 125663.706143591729539
+GeostrophicForcing.geostrophic_wind = 1.0 0.0 0.0
+ABL.kappa = .41
+ABL.surface_roughness_z0 = 0.1
+ABL.surface_temp_flux = 0.24
+
+incflo.velocity = 1.0 0.0 0.0
+ABL.reference_temperature = 300.0
+ABL.temperature_heights = 0.0 974. 1074. 2160.
+ABL.temperature_values  = 300 300. 308.  311.258
+ABL.perturb_temperature = true
+ABL.cutoff_height = 50.0
+ABL.perturb_velocity = false
+ABL.perturb_ref_height = 50.0
+ABL.Uperiods = 20.0
+ABL.Vperiods = 20.0
+ABL.deltaU = 1e-5
+ABL.deltaV = 1e-5
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#        ADAPTIVE MESH REFINEMENT       #
+#.......................................#
+amr.n_cell              = 512 512 216    # Grid cells at coarsest AMRlevel
+amr.max_level           = 0           # Max AMR level in hierarchy
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#              GEOMETRY                 #
+#.......................................#
+geometry.prob_lo        =   0.       0.     0.  # Lo corner coordinates
+geometry.prob_hi        =   5120.  5120.  2160.  # Hi corner coordinates
+geometry.is_periodic    =   1   1   0   # Periodicity x y z (0/1)
+# Boundary conditions
+zlo.type =   "wall_model"
+zlo.temperature_type = "wall_model"
+zhi.type =   "slip_wall"
+zhi.temperature_type = "fixed_gradient"
+zhi.temperature = 0.003
+zlo.tke_type = "fixed_gradient"
+incflo.verbose          =   0
