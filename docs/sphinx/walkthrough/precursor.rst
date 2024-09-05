@@ -70,9 +70,12 @@ Here is the content of the precursor simulation.
    :linenos:
 
 This file is almost identical to the spinup input file, except there are a few differences:
-    * Because the target inflow-outflow mesh (with turbines) will be much finer, requiring a smaller timestep,
-      the timestep is reduced by a factor of 4 to 0.125 seconds. This modification is not required, though.
     * This simulation starts from the last timestep of the spinup simulation, using the ``io.restart_file`` line
-    * Now saving boundary condition data, using the ``ABL.bndry*`` lines
+    * We are now saving boundary condition data, using the ``ABL.bndry*`` lines
+    * Because the simulation after the precursor (inflow-outflow simulation with turbines) will have a much
+      finer mesh, it will also require a smaller timestep, reduced by a factor of 4 to 0.125 seconds.
+      Reducing the timestep in the precursor simulation as well (the ``time.fixed_dt`` line) permits the boundary
+      plane and body force data to have better temporal resolution. This modification is not required for the 
+      precursor, though; this workflow will still function fine with an unmodified precursor time step.
     * For more detailed analysis in post-processing, the frequency of ``sampling.output_frequency`` is increased.
       This argument actually refers to the output interval, so a smaller number means files are written more often.
