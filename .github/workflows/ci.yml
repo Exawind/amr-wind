@@ -30,6 +30,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         build_type: [Release, Debug]
+        use_openmp: [ON, OFF]
         include:
           - os: macos-latest
             install_deps: brew install mpich ccache
@@ -50,6 +51,10 @@ jobs:
         exclude:
           - os: macos-latest
             build_type: Debug
+          - os: macos-latest
+            use_openmp: ON
+          - build_type: Release
+            use_openmp: ON
     steps:
     - name: Clone
       uses: actions/checkout@v4
@@ -84,6 +89,7 @@ jobs:
           -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install-${{matrix.build_type}} \
           -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} \
           -DAMR_WIND_ENABLE_MPI:BOOL=ON \
+          -DAMR_WIND_ENABLE_OPENMP:BOOL=${{matrix.use_openmp}} \
           -DAMR_WIND_ENABLE_TESTS:BOOL=ON \
           -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
           -DCMAKE_CXX_COMPILER_LAUNCHER:STRING=ccache \
