@@ -89,7 +89,7 @@ jobs:
           -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install-${{matrix.build_type}} \
           -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} \
           -DAMR_WIND_ENABLE_MPI:BOOL=ON \
-          -DAMR_WIND_ENABLE_OPENMP:BOOL=${{ matrix.openmp_flag == 'OpenMP && 'ON' || 'OFF' }} \
+          -DAMR_WIND_ENABLE_OPENMP:BOOL=${{ matrix.openmp_flag == 'OpenMP' && 'ON' || 'OFF' }} \
           -DAMR_WIND_ENABLE_TESTS:BOOL=ON \
           -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
           -DCMAKE_CXX_COMPILER_LAUNCHER:STRING=ccache \
