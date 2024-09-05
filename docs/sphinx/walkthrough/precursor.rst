@@ -26,6 +26,27 @@ Here is the content of our spinup input file:
 .. literalinclude:: ./spinup_inp.txt
    :linenos:
 
+.. collapse:: Further details about some input arguments
+
+   ABLForcing is the source term that pushes the flow field to a target
+   velocity. That target velocity is specified by ``incflo.velocity``.
+   The ABLForcing vector term is proportional to the difference between
+   the target velocity and the xy-planar average velocity at the
+   ``abl_forcing_height``. The ABLForcing term is applied uniformly to
+   the entire domain and is intended to mimic the atmospheric pressure
+   gradient in the context of a periodic domain.
+
+   BoussinesqBuoyancy implements the effect of buoyancy based on
+   differences between the local temperature and a reference temperature.
+   CoriolisForcing represents the effect of the rotation of the earth
+   on the flow field.
+
+   Predominantly, the ``ABL`` arguments refer to details of the initial
+   conditions, which also allow for perturbations designed to trip the onset
+   of turbulence. However, the ``surface_`` details and the ``kappa``
+   value inform the wall model at the lower boundary.
+
+
 We are going to run the spinup simulation for a duration of two hours. The spinup simulation features a
 fairly small domain with a coarse uniform grid resolution of 20 m and does not employ any grid refinement.
 
