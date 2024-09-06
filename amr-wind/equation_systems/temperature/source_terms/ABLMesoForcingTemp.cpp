@@ -118,8 +118,8 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
     amrex::Vector<amrex::Real> time_interpolated_theta(num_meso_ht);
 
     for (int i = 0; i < num_meso_ht; i++) {
-        int lt = m_idx_time * num_meso_ht + i;
-        int rt = (m_idx_time + 1) * num_meso_ht + i;
+        const int lt = m_idx_time * num_meso_ht + i;
+        const int rt = (m_idx_time + 1) * num_meso_ht + i;
 
         time_interpolated_theta[i] = coeff_interp[0] * ncfile->meso_temp()[lt] +
                                      coeff_interp[1] * ncfile->meso_temp()[rt];
@@ -171,8 +171,8 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
     amrex::Vector<amrex::Real> time_interpolated_theta(num_meso_ht);
 
     for (int i = 0; i < num_meso_ht; i++) {
-        int lt = m_idx_time * num_meso_ht + i;
-        int rt = (m_idx_time + 1) * num_meso_ht + i;
+        const int lt = m_idx_time * num_meso_ht + i;
+        const int rt = (m_idx_time + 1) * num_meso_ht + i;
 
         time_interpolated_theta[i] = coeff_interp[0] * ncfile->meso_temp()[lt] +
                                      coeff_interp[1] * ncfile->meso_temp()[rt];
