@@ -174,6 +174,8 @@ to add them to the path, enabling the executable to be used directly. When the s
 
 to make executables from amr-wind directly available.
 
+.. _rosco-dyn-lib:
+
 Find ROSCO dynamic library
 --------------------------
 

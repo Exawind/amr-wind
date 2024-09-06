@@ -60,7 +60,7 @@ ABL.inflow_outflow_mode = true
 ABL.wf_velocity = 7.612874161922772 0.05167978610261268
 ABL.wf_vmag = 7.655337919472146
 ABL.wf_theta = 291.0187046202964
-BodyForce.magnitude = 0.00034839850789284793 0.0009712494385077595 0.0
+# BodyForce.magnitude = 0.00034839850789284793 0.0009712494385077595 0.0
 BoussinesqBuoyancy.read_temperature_profile = true
 BoussinesqBuoyancy.tprofile_filename = avg_theta.dat
 ##-----------------------------------------------------#
