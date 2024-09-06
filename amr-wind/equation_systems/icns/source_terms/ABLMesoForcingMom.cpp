@@ -114,32 +114,32 @@ void ABLMesoForcingMom::mean_velocity_heights(
 
     int num_meso_ht = ncfile->nheights();
 
-    amrex::Vector<amrex::Real> mesoInterpU(num_meso_ht);
-    amrex::Vector<amrex::Real> mesoInterpV(num_meso_ht);
+    amrex::Vector<amrex::Real> time_interpolated_u(num_meso_ht);
+    amrex::Vector<amrex::Real> time_interpolated_v(num_meso_ht);
 
     for (int i = 0; i < num_meso_ht; i++) {
         int lt = m_idx_time * num_meso_ht + i;
         int rt = (m_idx_time + 1) * num_meso_ht + i;
 
-        mesoInterpU[i] = coeff_interp[0] * ncfile->meso_u()[lt] +
-                         coeff_interp[1] * ncfile->meso_u()[rt];
+        time_interpolated_u[i] = coeff_interp[0] * ncfile->meso_u()[lt] +
+                                 coeff_interp[1] * ncfile->meso_u()[rt];
 
-        mesoInterpV[i] = coeff_interp[0] * ncfile->meso_v()[lt] +
-                         coeff_interp[1] * ncfile->meso_v()[rt];
+        time_interpolated_v[i] = coeff_interp[0] * ncfile->meso_v()[lt] +
+                                 coeff_interp[1] * ncfile->meso_v()[rt];
     }
 
     for (int ih = 0; ih < num_meso_ht; ih++) {
-        m_err_U[ih] = mesoInterpU[ih];
-        m_err_V[ih] = mesoInterpV[ih];
+        m_err_U[ih] = time_interpolated_u[ih];
+        m_err_V[ih] = time_interpolated_v[ih];
     }
 
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, mesoInterpU.begin(), mesoInterpU.end(),
-        m_error_meso_avg_U.begin());
+        amrex::Gpu::hostToDevice, time_interpolated_u.begin(),
+        time_interpolated_u.end(), m_error_meso_avg_U.begin());
 
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, mesoInterpV.begin(), mesoInterpV.end(),
-        m_error_meso_avg_V.begin());
+        amrex::Gpu::hostToDevice, time_interpolated_v.begin(),
+        time_interpolated_v.end(), m_error_meso_avg_V.begin());
 }
 
 void ABLMesoForcingMom::mean_velocity_heights(
@@ -167,27 +167,27 @@ void ABLMesoForcingMom::mean_velocity_heights(
 
     int num_meso_ht = ncfile->nheights();
 
-    amrex::Vector<amrex::Real> mesoInterpU(num_meso_ht);
-    amrex::Vector<amrex::Real> mesoInterpV(num_meso_ht);
+    amrex::Vector<amrex::Real> time_interpolated_u(num_meso_ht);
+    amrex::Vector<amrex::Real> time_interpolated_v(num_meso_ht);
 
     for (int i = 0; i < num_meso_ht; i++) {
         int lt = m_idx_time * num_meso_ht + i;
         int rt = (m_idx_time + 1) * num_meso_ht + i;
 
-        mesoInterpU[i] = coeff_interp[0] * ncfile->meso_u()[lt] +
-                         coeff_interp[1] * ncfile->meso_u()[rt];
+        time_interpolated_u[i] = coeff_interp[0] * ncfile->meso_u()[lt] +
+                                 coeff_interp[1] * ncfile->meso_u()[rt];
 
-        mesoInterpV[i] = coeff_interp[0] * ncfile->meso_v()[lt] +
-                         coeff_interp[1] * ncfile->meso_v()[rt];
+        time_interpolated_v[i] = coeff_interp[0] * ncfile->meso_v()[lt] +
+                                 coeff_interp[1] * ncfile->meso_v()[rt];
     }
 
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, mesoInterpU.begin(), mesoInterpU.end(),
-        m_meso_u_vals.begin());
+        amrex::Gpu::hostToDevice, time_interpolated_u.begin(),
+        time_interpolated_u.end(), m_meso_u_vals.begin());
 
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, mesoInterpV.begin(), mesoInterpV.end(),
-        m_meso_v_vals.begin());
+        amrex::Gpu::hostToDevice, time_interpolated_v.begin(),
+        time_interpolated_v.end(), m_meso_v_vals.begin());
 
     // copy the spatially averaged velocity to GPU
     int numcomp = vavg.ncomp();
@@ -210,8 +210,8 @@ void ABLMesoForcingMom::mean_velocity_heights(
     amrex::Vector<amrex::Real> error_V(m_nht);
 
     for (int i = 0; i < m_nht; i++) {
-        error_U[i] = mesoInterpU[i] - uStats[i];
-        error_V[i] = mesoInterpV[i] - vStats[i];
+        error_U[i] = time_interpolated_u[i] - uStats[i];
+        error_V[i] = time_interpolated_v[i] - vStats[i];
     }
 
     if (amrex::toLower(m_forcing_scheme) == "indirect") {
