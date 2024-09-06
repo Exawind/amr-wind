@@ -32,6 +32,7 @@ protected:
     std::string m_forcing_scheme;
     amrex::Real m_gain_coeff{0.2}; // relaxation factor for all forcing schemes
     bool m_debug{false};           // print out profiles for debugging
+    bool m_tendency{false};        // check if tendency forcing
 
     // planar averaging heights
     amrex::Vector<amrex::Real> m_zht;

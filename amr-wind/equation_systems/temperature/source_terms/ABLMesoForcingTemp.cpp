@@ -21,9 +21,11 @@ ABLMesoForcingTemp::ABLMesoForcingTemp(const CFDSim& sim)
     abl.abl_statistics().register_meso_temp_forcing(this);
 
     if (!abl.abl_meso_file().is_tendency_forcing()) {
+        m_tendency = false;
         mean_temperature_init(
             abl.abl_statistics().theta_profile_fine(), abl.abl_meso_file());
     } else {
+        m_tendency = true;
         mean_temperature_init(abl.abl_meso_file());
     }
 
@@ -62,12 +64,9 @@ void ABLMesoForcingTemp::mean_temperature_init(
     AMREX_ALWAYS_ASSERT(m_mesh.Geom(0).Domain().length(m_axis) == m_nht);
 
     m_zht.resize(m_nht);
-
     m_theta_ht.resize(m_nht);
     m_theta_vals.resize(m_nht);
-
     m_err_Theta.resize(m_nht);
-
     m_error_meso_avg_theta.resize(m_nht);
 
     amrex::Gpu::copy(
@@ -116,22 +115,22 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
 
     const int num_meso_ht = ncfile->nheights();
 
-    amrex::Vector<amrex::Real> mesoInterptheta(num_meso_ht);
+    amrex::Vector<amrex::Real> time_interpolated_theta(num_meso_ht);
 
     for (int i = 0; i < num_meso_ht; i++) {
         int lt = m_idx_time * num_meso_ht + i;
         int rt = (m_idx_time + 1) * num_meso_ht + i;
 
-        mesoInterptheta[i] = coeff_interp[0] * ncfile->meso_temp()[lt] +
-                             coeff_interp[1] * ncfile->meso_temp()[rt];
+        time_interpolated_theta[i] = coeff_interp[0] * ncfile->meso_temp()[lt] +
+                                     coeff_interp[1] * ncfile->meso_temp()[rt];
     }
 
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, mesoInterptheta.begin(),
-        mesoInterptheta.end(), m_error_meso_avg_theta.begin());
+        amrex::Gpu::hostToDevice, time_interpolated_theta.begin(),
+        time_interpolated_theta.end(), m_error_meso_avg_theta.begin());
 
     for (int ih = 0; ih < num_meso_ht; ih++) {
-        m_err_Theta[ih] = mesoInterptheta[ih];
+        m_err_Theta[ih] = time_interpolated_theta[ih];
     }
 
     return interpTflux;
@@ -169,19 +168,19 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
 
     const int num_meso_ht = ncfile->nheights();
 
-    amrex::Vector<amrex::Real> mesoInterptheta(num_meso_ht);
+    amrex::Vector<amrex::Real> time_interpolated_theta(num_meso_ht);
 
     for (int i = 0; i < num_meso_ht; i++) {
         int lt = m_idx_time * num_meso_ht + i;
         int rt = (m_idx_time + 1) * num_meso_ht + i;
 
-        mesoInterptheta[i] = coeff_interp[0] * ncfile->meso_temp()[lt] +
-                             coeff_interp[1] * ncfile->meso_temp()[rt];
+        time_interpolated_theta[i] = coeff_interp[0] * ncfile->meso_temp()[lt] +
+                                     coeff_interp[1] * ncfile->meso_temp()[rt];
     }
 
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, mesoInterptheta.begin(),
-        mesoInterptheta.end(), m_meso_theta_vals.begin());
+        amrex::Gpu::hostToDevice, time_interpolated_theta.begin(),
+        time_interpolated_theta.end(), m_meso_theta_vals.begin());
 
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, tavg.line_average().begin(),
@@ -189,8 +188,10 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
 
     amrex::Vector<amrex::Real> error_T(m_nht);
 
-    for (size_t i = 0; i < m_nht; i++) {
-        error_T[i] = mesoInterptheta[i] - tavg.line_average()[i];
+    for (int i = 0; i < m_nht; i++) {
+        const amrex::Real height_interpolated_theta = amr_wind::interp::linear(
+            m_meso_ht, time_interpolated_theta, tavg.line_centroids()[i]);
+        error_T[i] = height_interpolated_theta - tavg.line_average()[i];
     }
 
     if (amrex::toLower(m_forcing_scheme) == "indirect") {
@@ -233,7 +234,7 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
                            << std::endl;
         }
         amrex::Vector<amrex::Real> error_T_direct(m_nht);
-        for (size_t ih = 0; ih < m_nht; ih++) {
+        for (int ih = 0; ih < m_nht; ih++) {
             error_T_direct[ih] = error_T[ih];
             error_T[ih] = 0.0;
             for (int j = 0; j < 4; j++) {
@@ -252,7 +253,7 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
             blend_forcings(error_T, error_T_direct, error_T);
 
             if (m_debug) {
-                for (size_t ih = 0; ih < m_nht; ih++) {
+                for (int ih = 0; ih < m_nht; ih++) {
                     amrex::Print()
                         << m_zht[ih] << " " << error_T[ih] << std::endl;
                 }
@@ -264,13 +265,13 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
         constant_forcing_transition(error_T);
 
         if (m_debug) {
-            for (size_t ih = 0; ih < m_nht; ih++) {
+            for (int ih = 0; ih < m_nht; ih++) {
                 amrex::Print() << m_zht[ih] << " " << error_T[ih] << std::endl;
             }
         }
     }
 
-    for (size_t ih = 0; ih < m_nht; ih++) {
+    for (int ih = 0; ih < m_nht; ih++) {
         error_T[ih] = error_T[ih] * m_gain_coeff / dt;
         m_err_Theta[ih] = error_T[ih];
     }
@@ -296,9 +297,16 @@ void ABLMesoForcingTemp::operator()(
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
 
-    const amrex::Real* theights_begin = m_meso_ht.data();
-    const amrex::Real* theights_end = m_meso_ht.data() + m_meso_ht.size();
+    // The z values corresponding to the forcing values is either the number of
+    // points in the netcdf input (for tendency) or the size of the plane
+    // averaged temperature (non tendency)
+    const amrex::Real* theights_begin =
+        (m_tendency) ? m_meso_ht.data() : m_theta_ht.data();
+    const amrex::Real* theights_end =
+        (m_tendency) ? m_meso_ht.data() + m_meso_ht.size()
+                     : m_theta_ht.data() + m_theta_ht.size();
     const amrex::Real* theta_error_val = m_error_meso_avg_theta.data();
+
     const int idir = (int)m_axis;
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {

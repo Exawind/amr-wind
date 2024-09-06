@@ -20,9 +20,11 @@ ABLMesoForcingMom::ABLMesoForcingMom(const CFDSim& sim)
     abl.abl_statistics().register_meso_mom_forcing(this);
 
     if (!abl.abl_meso_file().is_tendency_forcing()) {
+        m_tendency = false;
         mean_velocity_init(
             abl.abl_statistics().vel_profile(), abl.abl_meso_file());
     } else {
+        m_tendency = true;
         mean_velocity_init(abl.abl_meso_file());
     }
 
