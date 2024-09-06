@@ -1,6 +1,6 @@
 .. _precursor:
 
-Precursor (ABL) Walkthrough
+Precursor (ABL) walkthrough
 ===========================
 
 With AMR-Wind compiled, we can run simulations. In this section, we will run two simulations of a
@@ -19,8 +19,8 @@ have an input file on hand to use as a template, input files from the regression
 ("test/test_files/") in the AMR-Wind repository can serve as examples. Please consult the 
 :ref:`input file reference <input-file-ref>` to understand and appropriately modify the available input arguments.
 
-Spinup
-------
+Spinup simulation
+-----------------
 Here is the content of our spinup input file:
 
 .. literalinclude:: ./spinup_inp.txt
