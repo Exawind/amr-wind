@@ -3,6 +3,7 @@
 #include "amr-wind/wind_energy/ABL.H"
 #include "amr-wind/core/FieldUtils.H"
 #include "amr-wind/utilities/index_operations.H"
+#include "amr-wind/utilities/linear_interpolation.H"
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
 #include "AMReX_Print.H"
@@ -210,8 +211,12 @@ void ABLMesoForcingMom::mean_velocity_heights(
     amrex::Vector<amrex::Real> error_V(m_nht);
 
     for (int i = 0; i < m_nht; i++) {
-        error_U[i] = time_interpolated_u[i] - uStats[i];
-        error_V[i] = time_interpolated_v[i] - vStats[i];
+        const amrex::Real height_interpolated_u = amr_wind::interp::linear(
+            m_meso_ht, time_interpolated_u, vavg.line_centroids()[i]);
+        const amrex::Real height_interpolated_v = amr_wind::interp::linear(
+            m_meso_ht, time_interpolated_v, vavg.line_centroids()[i]);
+        error_U[i] = height_interpolated_u - uStats[i];
+        error_V[i] = height_interpolated_v - vStats[i];
     }
 
     if (amrex::toLower(m_forcing_scheme) == "indirect") {
