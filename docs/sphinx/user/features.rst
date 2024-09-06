@@ -57,11 +57,11 @@ Methods and models
 
    * Reynolds-Average Navier-Stokes: :math:`k`-:math:`\omega` SST (and IDDES variant)
 
-* Transport models
+* Diffusive transport models
 
    * Constant transport coefficients
 
-   * Two phase transport
+   * Two phase transport (separate coefficients for each material)
 
 Flow physics
 ~~~~~~~~~~~~
@@ -83,7 +83,22 @@ Flow physics
 
 * Multiphase flows
 
-   * todo
+   * Prescribed flow cases for verification of volume-of-fluid transport: Zalesak disk, vortex patch
+
+   * Prescribed flow cases for verification of momentum equation coupled to volume-of-fluid transport: Zalesak disk scalar vel, vortex patch scalar vel
+
+   * Validation and demonstration cases: sloshing tank, dam break, breaking waves, falling or inertial droplet
+
+   * Methods to initialize volume-of-fluid field from an initial levelset field
+
+   * Monitors conservation of mass and momentum
+
+* Ocean wave forcing (for multiphase flows)
+
+   * Wave types: linear (monochromatic), Stokes (2nd- to 5th-order), irregular (input by modes files from HOS-Ocean)
+
+   * Relaxation zones force wave profile to generate waves at lower x boundary or force toward quiescent flat interface at upper x boundary.
+     Wave profile can also be enforced (instead of numerical beach) at upper x boundary for periodic simulations.
 
 * Boundary conditions
 
@@ -109,11 +124,11 @@ Flow physics
 
    * Visualization with VisIt, Paraview, yt
 
-   * Sampling of fields with planes, point probes, lines, volumes, lidar, and radar
+   * Sampling of fields with planes, point probes, lines, volumes, lidar, and radar.
+
+   * Sampling of fields at probes that follow free surface of liquid-gas flows
 
    * Scalar outputs such as kinetic energy, enstrophy, total wave energy, and norms
-
-   * Free surface for gas-liquid interfaces
 
    * Turbulence averaging quantities such as Reynolds stresses
 
