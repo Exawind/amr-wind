@@ -61,8 +61,6 @@ private:
 
     // these are the instantaneous planar averages
     amrex::Gpu::DeviceVector<amrex::Real> m_velAvg_ht;
-    amrex::Gpu::DeviceVector<amrex::Real> m_uAvg_vals;
-    amrex::Gpu::DeviceVector<amrex::Real> m_vAvg_vals;
 
     // these specify the source term
     amrex::Gpu::DeviceVector<amrex::Real> m_error_meso_avg_U;

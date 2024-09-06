@@ -68,8 +68,6 @@ void ABLMesoForcingMom::mean_velocity_init(
 
     m_zht.resize(m_nht);
     m_velAvg_ht.resize(m_nht);
-    m_uAvg_vals.resize(m_nht);
-    m_vAvg_vals.resize(m_nht);
     m_error_meso_avg_U.resize(m_nht);
     m_error_meso_avg_V.resize(m_nht);
     m_err_U.resize(m_nht);
@@ -190,22 +188,7 @@ void ABLMesoForcingMom::mean_velocity_heights(
         amrex::Gpu::hostToDevice, time_interpolated_v.begin(),
         time_interpolated_v.end(), m_meso_v_vals.begin());
 
-    // copy the spatially averaged velocity to GPU
     int numcomp = vavg.ncomp();
-    amrex::Vector<amrex::Real> uStats(m_nht);
-    amrex::Vector<amrex::Real> vStats(m_nht);
-    for (int i = 0; i < m_nht; i++) {
-        uStats[i] = vavg.line_average()[numcomp * i];
-        vStats[i] = vavg.line_average()[numcomp * i + 1];
-    }
-
-    amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, uStats.begin(), uStats.end(),
-        m_uAvg_vals.begin());
-
-    amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, vStats.begin(), vStats.end(),
-        m_vAvg_vals.begin());
 
     amrex::Vector<amrex::Real> error_U(m_nht);
     amrex::Vector<amrex::Real> error_V(m_nht);
@@ -215,8 +198,9 @@ void ABLMesoForcingMom::mean_velocity_heights(
             m_meso_ht, time_interpolated_u, vavg.line_centroids()[i]);
         const amrex::Real height_interpolated_v = amr_wind::interp::linear(
             m_meso_ht, time_interpolated_v, vavg.line_centroids()[i]);
-        error_U[i] = height_interpolated_u - uStats[i];
-        error_V[i] = height_interpolated_v - vStats[i];
+        error_U[i] = height_interpolated_u - vavg.line_average()[numcomp * i];
+        error_V[i] =
+            height_interpolated_v - vavg.line_average()[numcomp * i + 1];
     }
 
     if (amrex::toLower(m_forcing_scheme) == "indirect") {
