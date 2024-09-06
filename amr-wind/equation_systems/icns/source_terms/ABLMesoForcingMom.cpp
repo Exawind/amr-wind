@@ -327,9 +327,14 @@ void ABLMesoForcingMom::operator()(
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
 
-    const int nh_max = (int)m_meso_ht.size() - 2;
-    const int lp1 = lev + 1;
-    const amrex::Real* vheights = m_meso_ht.data();
+    // The z values corresponding to the forcing values is either the number of
+    // points in the netcdf input (for tendency) or the size of the plane
+    // averaged velocities (non tendency)
+    const amrex::Real* vheights_begin =
+        (m_tendency) ? m_meso_ht.data() : m_velAvg_ht.data();
+    const amrex::Real* vheights_end =
+        (m_tendency) ? m_meso_ht.data() + m_meso_ht.size()
+                     : m_velAvg_ht.data() + m_velAvg_ht.size();
     const amrex::Real* u_error_val = m_error_meso_avg_U.data();
     const amrex::Real* v_error_val = m_error_meso_avg_V.data();
     const int idir = (int)m_axis;
@@ -337,18 +342,10 @@ void ABLMesoForcingMom::operator()(
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::IntVect iv(i, j, k);
         const amrex::Real ht = problo[idir] + (iv[idir] + 0.5) * dx[idir];
-        const int il = amrex::min(k / lp1, nh_max);
-        const int ir = il + 1;
-
-        amrex::Real u_err =
-            u_error_val[il] + ((u_error_val[ir] - u_error_val[il]) /
-                               (vheights[ir] - vheights[il])) *
-                                  (ht - vheights[il]);
-
-        amrex::Real v_err =
-            v_error_val[il] + ((v_error_val[ir] - v_error_val[il]) /
-                               (vheights[ir] - vheights[il])) *
-                                  (ht - vheights[il]);
+        const amrex::Real u_err = amr_wind::interp::linear(
+            vheights_begin, vheights_end, u_error_val, ht);
+        const amrex::Real v_err = amr_wind::interp::linear(
+            vheights_begin, vheights_end, v_error_val, ht);
 
         // Compute Source term
         src_term(i, j, k, 0) += u_err;
