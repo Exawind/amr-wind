@@ -10,6 +10,7 @@
 #include "amr-wind/helics.H"
 
 #ifdef ERF_USE_MULTIBLOCK
+#include "amr-wind/wind_energy/ABLReadERFFcn.H"
 class MultiBlockContainer;
 #endif
 
@@ -63,8 +64,11 @@ public:
     const SimTime& time() const { return m_time; }
 
 #ifdef ERF_USE_MULTIBLOCK
-    void set_mbc(MultiBlockContainer* mbc) {m_mbc = mbc;}
-    MultiBlockContainer** mbc() {return &m_mbc;}
+    void set_mbc(MultiBlockContainer* mbc) { m_mbc = mbc; }
+    MultiBlockContainer** mbc() { return &m_mbc; }
+
+    void set_read_erf(ReadERFFcn fcn) { m_read_erf = fcn; }
+    ReadERFFcn* get_read_erf() { return &m_read_erf; }
 #endif
 
     //! Return the field repository
@@ -157,6 +161,7 @@ private:
 
 #ifdef ERF_USE_MULTIBLOCK
     MultiBlockContainer* m_mbc = nullptr;
+    ReadERFFcn m_read_erf {nullptr};
 #endif
 };
 

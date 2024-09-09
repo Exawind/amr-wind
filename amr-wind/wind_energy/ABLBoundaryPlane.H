@@ -7,6 +7,10 @@
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include <AMReX_BndryRegister.H>
 
+#ifdef ERF_USE_MULTIBLOCK
+#include "amr-wind/wind_energy/ABLReadERFFcn.H"
+class MultiBlockContainer;
+#endif
 namespace amr_wind {
 
 enum struct io_mode { output, input, undefined };
@@ -57,7 +61,8 @@ public:
         const int lev,
         const Field* /*fld*/,
         const amrex::Real time,
-        const amrex::Vector<amrex::Real>& /*times*/);
+        const amrex::Vector<amrex::Real>& /*times*/,
+        const bool erf_multiblock = false);
 
     void interpolate(const amrex::Real /*time*/);
     bool is_populated(amrex::Orientation /*ori*/) const;
@@ -165,10 +170,23 @@ public:
 
     io_mode mode() const { return m_io_mode; }
 
+#ifdef ERF_USE_MULTIBLOCK
+    MultiBlockContainer* mbc() {return *m_mbc;}
+#endif
+
 private:
     const amr_wind::SimTime& m_time;
     const FieldRepo& m_repo;
     const amrex::AmrCore& m_mesh;
+
+#ifdef ERF_USE_MULTIBLOCK
+    // pointer to pointer : when ABL boundary plane gets intiialized, amr-wind
+    // CFDsim does not yet have the up to date pointer to the mbc or the read_erf function
+    // be careful: if this is used before amr-wind gets the mbc pointer set
+    // bad things will happen
+    MultiBlockContainer** m_mbc;
+    ReadERFFcn* m_read_erf {nullptr};
+#endif
 
 #ifdef AMR_WIND_USE_NETCDF
     void write_data(
