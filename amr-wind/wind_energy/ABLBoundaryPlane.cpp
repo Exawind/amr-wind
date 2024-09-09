@@ -148,7 +148,8 @@ void InletData::read_data_native(
     const int lev,
     const Field* fld,
     const amrex::Real time,
-    const amrex::Vector<amrex::Real>& times)
+    const amrex::Vector<amrex::Real>& times,
+    const bool erf_multiblock)
 {
     const size_t nc = fld->num_comp();
     const int nstart =
@@ -251,6 +252,9 @@ bool InletData::is_populated(amrex::Orientation ori) const
 
 ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
     : m_time(sim.time()), m_repo(sim.repo()), m_mesh(sim.mesh())
+#ifdef ERF_USE_MULTIBLOCK
+    , m_mbc(sim.mbc()), m_read_erf(sim.get_read_erf())
+#endif
 {
     amrex::ParmParse pp("ABL");
     int pp_io_mode = -1;
@@ -287,7 +291,7 @@ ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
     }
 #endif
 
-    if (!(m_out_fmt == "native" || m_out_fmt == "netcdf")) {
+    if (!(m_out_fmt == "native" || m_out_fmt == "netcdf" || m_out_fmt == "erf-multiblock")) {
         amrex::Print() << "Warning: boundary output format not recognized, "
                           "changing to native format"
                        << std::endl;
@@ -349,6 +353,9 @@ void ABLBoundaryPlane::initialize_data()
             amrex::Abort(
                 "ABLBoundaryPlane: invalid variable requested: " + fname);
         }
+    }
+    if (m_io_mode == io_mode::output and m_out_fmt == "erf-multiblock") {
+      amrex::Abort("ABLBoundaryPlane: can't output data in erf-multiblock mode");
     }
 }
 
@@ -856,6 +863,34 @@ void ABLBoundaryPlane::read_header()
                 m_in_data.define_level_data(ori, pbx, nc);
             }
         }
+    } else if (m_out_fmt == "erf-multiblock") {
+
+        m_in_times.push_back(-1.0e13); // create space for storing time at erf old and new timestep
+        m_in_times.push_back(-1.0e13);
+
+        int nc = 0;
+        for (auto* fld : m_fields) {
+            m_in_data.component(static_cast<int>(fld->id())) = nc;
+            nc += fld->num_comp();
+        }
+
+        // FIXME: need to generalize to lev > 0 somehow
+        const int lev = 0;
+        for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+            auto ori = oit();
+            // FIXME: would be safer and less storage to not allocate all of
+            // these but we do not use m_planes for input and need to detect
+            // mass inflow from field bcs same for define level data below
+            m_in_data.define_plane(ori);
+            const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
+            amrex::IntVect plo(minBox.loVect());
+            amrex::IntVect phi(minBox.hiVect());
+            const int normal = ori.coordDir();
+            plo[normal] = ori.isHigh() ? minBox.hiVect()[normal] + 1 : -1;
+            phi[normal] = ori.isHigh() ? minBox.hiVect()[normal] + 1 : -1;
+            const amrex::Box pbx(plo, phi);
+            m_in_data.define_level_data(ori, pbx, nc);
+        }
     }
 }
 
@@ -1051,13 +1086,202 @@ amrex::Vector<amrex::BoxArray> ABLBoundaryPlane::read_bndry_native_boxarrays(
     return bndry_bas;
 }
 
+amrex::Vector<amrex::BoxArray> ABLBoundaryPlane::read_bndry_native_boxarrays(
+    const std::string& chkname, const Field& field) const
+{
+    BL_PROFILE("amr-wind::ABLBoundaryPlane::read_bndry_native_boxarrays");
+    AMREX_ALWAYS_ASSERT(m_io_mode == io_mode::input);
+
+#ifndef AMR_WIND_USE_NETCDF
+    if (m_out_fmt == "netcdf") {
+        amrex::Abort("This is only used in the native format pathway");
+    }
+#endif
+
+    const int max_bndry_levels = boundary_native_file_levels();
+    amrex::Vector<amrex::BoxArray> bndry_bas(max_bndry_levels);
+
+    // Check if there are any header files
+    bool hdr_exists = false;
+    for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+        auto ori = oit();
+        const std::string hdr_name(
+            chkname + "/Header_" + std::to_string(ori) + "_" + field.name());
+        if (amrex::FileSystem::Exists(hdr_name)) {
+            hdr_exists = true;
+            break;
+        }
+    }
+
+    // If there are no header files, assume the entire domain is in the BoxArray
+    if (!hdr_exists) {
+        for (int ilev = 0; ilev < max_bndry_levels; ++ilev) {
+            amrex::Box domain = m_mesh.Geom(ilev).Domain();
+            bndry_bas[ilev] = amrex::BoxArray{domain};
+        }
+        return bndry_bas;
+    }
+
+    amrex::Vector<amrex::Vector<amrex::Box>> bndry_boxes(max_bndry_levels);
+    for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+        auto ori = oit();
+        const std::string hdr_name(
+            chkname + "/Header_" + std::to_string(ori) + "_" + field.name());
+
+        if (!amrex::FileSystem::Exists(hdr_name)) {
+            continue;
+        }
+
+        amrex::Vector<char> file_char_ptr;
+        amrex::ParallelDescriptor::ReadAndBcastFile(hdr_name, file_char_ptr);
+        std::string file_char_ptr_string(file_char_ptr.dataPtr());
+        std::istringstream is(file_char_ptr_string, std::istringstream::in);
+
+        std::string line;
+
+        // Title line
+        is >> line;
+
+        // Number of components
+        int ncomp = -1;
+        is >> ncomp;
+        ioutils::goto_next_line(is);
+        AMREX_ALWAYS_ASSERT(ncomp == field.num_comp());
+
+        // Skip the names
+        for (int nc = 0; nc < ncomp; nc++) {
+            ioutils::goto_next_line(is);
+        }
+
+        int spacedim, finest_level;
+        amrex::Real time;
+        is >> spacedim >> time >> finest_level;
+        const int nlevels = finest_level + 1;
+        AMREX_ALWAYS_ASSERT(nlevels <= max_bndry_levels);
+        AMREX_ALWAYS_ASSERT(AMREX_SPACEDIM == spacedim);
+        AMREX_ALWAYS_ASSERT(finest_level >= 0);
+
+        amrex::Array<amrex::Real, AMREX_SPACEDIM> prob_lo{
+            {AMREX_D_DECL(0., 0., 0.)}};
+        amrex::Array<amrex::Real, AMREX_SPACEDIM> prob_hi{
+            {AMREX_D_DECL(1., 1., 1.)}};
+        amrex::Array<amrex::Real, AMREX_SPACEDIM> prob_size{
+            {AMREX_D_DECL(1., 1., 1.)}};
+        for (int i = 0; i < spacedim; ++i) {
+            is >> prob_lo[i];
+        }
+        for (int i = 0; i < spacedim; ++i) {
+            is >> prob_hi[i];
+            prob_size[i] = prob_hi[i] - prob_lo[i];
+        }
+
+        const int normal = ori.coordDir();
+        const amrex::GpuArray<int, 2> perp = utils::perpendicular_idx(normal);
+        AMREX_ALWAYS_ASSERT(constants::is_close(
+            prob_lo[perp[0]], m_mesh.Geom(0).ProbLo(perp[0])));
+        AMREX_ALWAYS_ASSERT(constants::is_close(
+            prob_lo[perp[1]], m_mesh.Geom(0).ProbLo(perp[1])));
+        AMREX_ALWAYS_ASSERT(constants::is_close(
+            prob_hi[perp[0]], m_mesh.Geom(0).ProbHi(perp[0])));
+        AMREX_ALWAYS_ASSERT(constants::is_close(
+            prob_hi[perp[1]], m_mesh.Geom(0).ProbHi(perp[1])));
+
+        amrex::Vector<int> ref_ratio;
+        ref_ratio.resize(nlevels, 0);
+        for (int i = 0; i < finest_level; ++i) {
+            is >> ref_ratio[i];
+        }
+        ioutils::goto_next_line(is);
+
+        amrex::Vector<amrex::Box> prob_domain(nlevels);
+        for (int i = 0; i < nlevels; ++i) {
+            is >> prob_domain[i];
+            AMREX_ALWAYS_ASSERT(
+                prob_domain[i].smallEnd(perp[0]) ==
+                m_mesh.Geom(i).Domain().smallEnd(perp[0]));
+            AMREX_ALWAYS_ASSERT(
+                prob_domain[i].smallEnd(perp[1]) ==
+                m_mesh.Geom(i).Domain().smallEnd(perp[1]));
+            AMREX_ALWAYS_ASSERT(
+                prob_domain[i].bigEnd(perp[0]) ==
+                m_mesh.Geom(i).Domain().bigEnd(perp[0]));
+            AMREX_ALWAYS_ASSERT(
+                prob_domain[i].bigEnd(perp[1]) ==
+                m_mesh.Geom(i).Domain().bigEnd(perp[1]));
+        }
+
+        amrex::Vector<int> level_steps(nlevels);
+        for (int i = 0; i < nlevels; ++i) {
+            is >> level_steps[i];
+        }
+
+        amrex::Vector<amrex::Array<amrex::Real, AMREX_SPACEDIM>> cell_size(
+            nlevels, amrex::Array<amrex::Real, AMREX_SPACEDIM>{
+                         {AMREX_D_DECL(1., 1., 1.)}});
+        for (int ilev = 0; ilev < nlevels; ++ilev) {
+            for (int idim = 0; idim < spacedim; ++idim) {
+                is >> cell_size[ilev][idim];
+            }
+        }
+
+        int m_coordsys;
+        is >> m_coordsys;
+        int bwidth;
+        is >> bwidth;
+
+        for (int ilev = 0; ilev < nlevels; ++ilev) {
+            int levtmp, ngrids, levsteptmp;
+            amrex::Real gtime;
+            is >> levtmp >> ngrids >> gtime;
+            is >> levsteptmp;
+            amrex::Array<amrex::Real, 3> glo = {0.0};
+            amrex::Array<amrex::Real, 3> ghi = {0.0};
+            AMREX_ASSERT(ngrids == 1);
+            for (int igrid = 0; igrid < ngrids; ++igrid) {
+                for (int idim = 0; idim < spacedim; ++idim) {
+                    is >> glo[idim] >> ghi[idim];
+                }
+            }
+            std::string relname;
+            is >> relname;
+            std::string mf_name = chkname + "/" + relname;
+            const auto vismf = std::make_unique<amrex::VisMF>(mf_name);
+            auto ba = vismf->boxArray();
+            ba.growLo(normal, -1);
+            ba.growHi(normal, -1);
+            AMREX_ALWAYS_ASSERT(ba.size() == 1);
+            bndry_boxes[ilev].push_back(ba[0]);
+        }
+    }
+
+    for (int ilev = 0; ilev < bndry_boxes.size(); ilev++) {
+        amrex::BoxArray ba(
+            bndry_boxes[ilev].data(),
+            static_cast<int>(bndry_boxes[ilev].size()));
+        bndry_bas[ilev] = amrex::BoxArray(ba.minimalBox());
+    }
+    return bndry_bas;
+}
+
 void ABLBoundaryPlane::read_file(const bool nph_target_time)
 {
     BL_PROFILE("amr-wind::ABLBoundaryPlane::read_file");
     if (m_io_mode != io_mode::input) {
         return;
     }
-
+#ifdef ERF_USE_MULTIBLOCK
+    if (m_out_fmt == "erf-multiblock") {
+        //m_read_erf = sim.get_read_erf();
+        ReadERFFcn read_erf = *m_read_erf;
+        if (read_erf)
+        {
+            read_erf(m_time, m_in_times, m_in_data, m_fields, mbc());
+        } else {
+            amrex::Abort("read_erf function is undefined.");
+        }
+        return;
+    }
+#endif
     // populate planes and interpolate
     const amrex::Real time =
         nph_target_time ? m_time.current_time() + 0.5 * m_time.delta_t()

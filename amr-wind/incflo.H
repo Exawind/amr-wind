@@ -14,6 +14,7 @@
 #include "amr-wind/overset/OversetOps.H"
 
 #ifdef ERF_USE_MULTIBLOCK
+#include "amr-wind/wind_energy/ABLReadERFFcn.H"
 class MultiBlockContainer;
 #endif
 namespace amr_wind {
@@ -159,6 +160,7 @@ public:
 
 #ifdef ERF_USE_MULTIBLOCK
     void SetMultiBlockPointer(MultiBlockContainer *mbc) { m_sim.set_mbc(mbc); }
+    void set_read_erf(ReadERFFcn fcn) {m_sim.set_read_erf(fcn);}
 #endif
 
 private:
