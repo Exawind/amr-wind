@@ -38,6 +38,7 @@ Section                 Description
 ======================= ============================================================
 ``geometry``            Computational domain information
 ``amr``                 Mesh refinement controls
+``tagging``             Static and dynamic refinement options
 ``time``                Simulation time controls
 ``io``                  Input/Output controls
 ``incflo``              CFD algorithm and physics controls
@@ -49,7 +50,6 @@ Section                 Description
 ``Momentum sources``    Activate Momentum source terms and their parameters
 ``Boundary conditions`` Boundary condition types and gradients
 ``MLMG options``        Multi-Level Multi-Grid Linear solver options
-``Tagging``             Static and dynamic refinement options
 ``Sampling``            Data probes to sample field data during simulations
 ``Averaging``           Time averaging and correlations
 ======================= ============================================================
@@ -71,6 +71,7 @@ This section documents the parameters available within each section.
 
    inputs_geometry.rst
    inputs_amr.rst
+   inputs_tagging.rst
    inputs_time.rst
    inputs_io.rst
    inputs_incflo.rst
@@ -80,10 +81,8 @@ This section documents the parameters available within each section.
    inputs_ABL.rst
    inputs_ABL_meso_forcing.rst
    inputs_SyntheticTurbulence.rst
-   inputs_Static_Refinement.rst
    inputs_Boundary_conditions.rst
    inputs_MLMG.rst
-   inputs_AMR_Tagging.rst
    inputs_Sampling.rst
    inputs_Averaging.rst
    inputs_KineticEnergy.rst

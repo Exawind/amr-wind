@@ -1,5 +1,7 @@
+.. _inputs_turbulence:
+
 Section: turbulence
-~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 This section is for setting turbulence model parameters
 
@@ -7,9 +9,10 @@ This section is for setting turbulence model parameters
 
    **type:** String, optional, default = Laminar
 
-   Specifies which turbulence model to use, by default "Laminar" is chosen 
-   (effectively no turbulence model). 
-   Currently the only turbulence model is "Smagorinsky"
+   Specifies which turbulence model to use, by default "Laminar" is
+   chosen (effectively no turbulence model).  Currently the supported
+   turbulence models are "Smagorinsky", "AMD", "Kosovic", and
+   "OneEqKsgsM84", "KOmegaSST", and "KOmegaSSTIDDES".
 
    
 .. input_param:: Smagorinsky_coeffs.Cs

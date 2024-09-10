@@ -1,5 +1,7 @@
+.. _inputs_transport:
+
 Section: transport
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
 This section is for setting thermal and momentum diffusivities.
 
@@ -7,7 +9,7 @@ This section is for setting thermal and momentum diffusivities.
 
    **type:** String, optional, default = ConstTransport
 
-   Currently this is the only transport model implemented.
+   The implemented transport model are ConstTransport and TwoPhaseTransport.
    
 .. input_param:: transport.viscosity
 

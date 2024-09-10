@@ -28,7 +28,11 @@ your system. The main dependencies are listed below:
 
 #. `Intel OneAPI
    <https://software.intel.com/content/www/us/en/develop/tools/oneapi.html>`_
-   for building with DPC++.
+   for building with SyCL.
+
+#. `AMD GPU
+   <https://www.amd.com/en/products/software/rocm.html>`_
+   for building with ROCM.
 
 Building from source
 --------------------
@@ -84,6 +88,10 @@ Architecture options
 
    Enable `Intel OneAPI SyCL <https://software.intel.com/content/www/us/en/develop/tools/oneapi.html>`_ builds. Default: OFF
 
+.. cmakeval:: AMR_WIND_ENABLE_ROCM
+
+   Enable `AMD ROCM GPU <https://www.amd.com/en/products/software/rocm.html>`_ builds. Default: OFF
+
 Dependencies
 ~~~~~~~~~~~~~
 
@@ -134,13 +142,6 @@ Other AMR-Wind specific options
 .. cmakeval:: AMR_WIND_ENABLE_ALL_WARNINGS
 
    Enable compiler warnings during build. Default: OFF
-
-.. cmakeval:: AMR_WIND_ENABLE_FORTRAN
-
-   Build Fortran interfaces. Default: OFF
-
-   AMR-Wind itself has no Fortran code. This option is unused if
-   :cmakeval:`AMR_WIND_USE_INTERNAL_AMREX` is set to ``OFF``.
 
 General CMake options
 ~~~~~~~~~~~~~~~~~~~~~~
