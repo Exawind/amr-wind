@@ -170,7 +170,7 @@ struct AdvectionOp<
                     }
                     // if state is NPH, then n and n+1 are known, and only
                     // spatial extrapolation is performed
-                    amrex::Real dt_arg = (fstate == FieldState::NPH) ? 0.0 : dt;
+                    amrex::Real dt_extrap = (fstate == FieldState::NPH) ? 0.0 : dt;
 
                     HydroUtils::ComputeFluxesOnBoxFromState(
                         bx, PDE::ndim, mfi,
@@ -181,7 +181,7 @@ struct AdvectionOp<
                         known_edge_state, u_mac(lev).const_array(mfi),
                         v_mac(lev).const_array(mfi),
                         w_mac(lev).const_array(mfi), divu,
-                        src_term(lev).const_array(mfi), geom[lev], dt_arg,
+                        src_term(lev).const_array(mfi), geom[lev], dt_extrap,
                         dof_field.bcrec(), dof_field.bcrec_device().data(),
                         iconserv.data(), godunov_use_ppm,
                         godunov_use_forces_in_trans, is_velocity,
