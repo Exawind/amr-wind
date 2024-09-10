@@ -67,7 +67,7 @@ void ABLMesoForcingMom::mean_velocity_init(
     AMREX_ALWAYS_ASSERT(m_mesh.Geom(0).Domain().length(m_axis) == m_nht);
 
     m_zht.resize(m_nht);
-    m_velAvg_ht.resize(m_nht);
+    m_vavg_ht.resize(m_nht);
     m_error_meso_avg_U.resize(m_nht);
     m_error_meso_avg_V.resize(m_nht);
     m_err_U.resize(m_nht);
@@ -75,7 +75,7 @@ void ABLMesoForcingMom::mean_velocity_init(
 
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, vavg.line_centroids().begin(),
-        vavg.line_centroids().end(), m_velAvg_ht.begin());
+        vavg.line_centroids().end(), m_vavg_ht.begin());
 
     std::copy(
         vavg.line_centroids().begin(), vavg.line_centroids().end(),
@@ -332,10 +332,10 @@ void ABLMesoForcingMom::operator()(
     // points in the netcdf input (for tendency) or the size of the plane
     // averaged velocities (non tendency)
     const amrex::Real* vheights_begin =
-        (m_tendency) ? m_meso_ht.data() : m_velAvg_ht.data();
+        (m_tendency) ? m_meso_ht.data() : m_vavg_ht.data();
     const amrex::Real* vheights_end =
         (m_tendency) ? m_meso_ht.data() + m_meso_ht.size()
-                     : m_velAvg_ht.data() + m_velAvg_ht.size();
+                     : m_vavg_ht.data() + m_vavg_ht.size();
     const amrex::Real* u_error_val = m_error_meso_avg_U.data();
     const amrex::Real* v_error_val = m_error_meso_avg_V.data();
     const int idir = (int)m_axis;

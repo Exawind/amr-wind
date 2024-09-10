@@ -60,7 +60,7 @@ private:
     amrex::Gpu::DeviceVector<amrex::Real> m_meso_v_vals;
 
     // these are the instantaneous planar averages
-    amrex::Gpu::DeviceVector<amrex::Real> m_velAvg_ht;
+    amrex::Gpu::DeviceVector<amrex::Real> m_vavg_ht;
 
     // these specify the source term
     amrex::Gpu::DeviceVector<amrex::Real> m_error_meso_avg_U;
