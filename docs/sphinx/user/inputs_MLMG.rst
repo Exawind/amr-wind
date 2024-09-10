@@ -1,5 +1,7 @@
+.. _inputs_mlmg:
+
 Section: MLMG options
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 
 This section specifies the Multi-Level Multi-Grid (MLMG) options for each type
 of linear solve. There are three types of linear solves performed in amr-wind

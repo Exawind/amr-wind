@@ -1,5 +1,7 @@
+.. _inputs_synthetic_turbulence:
+
 Section: SyntheticTurbulence
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This section is for setting turbulence injection parameters.
 

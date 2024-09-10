@@ -1,8 +1,10 @@
 Theory Manual
-================================
+=============
+
+.. _governing_equations:
 
 Governing equations
-------------------------------------
+-------------------
 
 Conservation of fluid mass:
 
@@ -21,11 +23,19 @@ Tracer(s) advection:
 
 .. math:: \frac{\partial \rho s}{\partial t} + \nabla \cdot (\rho U s)  = 0
 
-Discretization 
--------------------------------------
-The numerical methdology used to solve the partial differential equations (PDEs)
-within AMR-Wind is documented in `Almgren et al. (JCP 1998)
-<https://ccse.lbl.gov/Publications/almgren/abchw.pdf>`_.
+.. _discretization:
+
+Discretization
+--------------
+
+The numerical methdology used to solve the partial differential
+equations (PDEs) within AMR-Wind is documented in `Almgren et
+al. (JCP 1998)
+<https://ccse.lbl.gov/Publications/almgren/abchw.pdf>`_. AMR-Wind uses
+`AMReX-Hydro
+<https://amrex-fluids.github.io/amrex-hydro/docs_html/Schemes.html>`_
+for many advection routines. The reader is referred to their
+documentation for implementation details.
 
 Time Step -- MOL
 ~~~~~~~~~~~~~~~~
@@ -135,8 +145,10 @@ Often for simulations involving walls, (e.g., channel flows, complex terrains et
 
    mapping.rst
 
+.. _multiphase:
+
 Multiphase flow modelling
-------------------------------------
+-------------------------
 
 AMR-Wind employs the volume-of-fluid method for simulating two-phase (water-air) flows. 
 More specifically, the volume fraction field is advected explicitly using a
@@ -148,8 +160,10 @@ is not modeled by AMR-Wind currently. For further detail, see
 `Kuhn, Deskos, Sprague (Computers & Fluids 2023)
 <https://doi.org/10.1016/j.compfluid.2022.105770>`_.
 
+.. _source_terms:
+
 Source terms
-------------------------------------
+------------
 
 Gravity Forcing
 ~~~~~~~~~~~~~~~~
@@ -174,6 +188,7 @@ Using the perturbational form implies that the hydrostatic pressure is removed f
    
 .. math:: p = p' - \int_z^{z_{max}} \rho_0 g dz + p(z = z_{max}) = p' - \int_z^{z_{max}} \rho_0 g dz
 
+.. _mesoscale_forcing:
 
 Mesoscale Forcing
 ~~~~~~~~~~~~~~~~~
@@ -196,17 +211,12 @@ approach can be used with NWP model output or observational data. For more
 information, see `Allaerts et al. (BLM 2020)
 <https://doi.org/10.1007/s10546-020-00538-5>`_
 
-The application of these forcing approaches is detailed in:
+The application of these forcing approaches is detailed :ref:`here <inputs_meso_forcing>`.
 
-.. toctree::
-   :glob:
-   :maxdepth: 2
-   
-   ../user/inputs_ABL_meso_forcing.rst
-
+.. _turbulence:
 
 Turbulence Models
------------------------------
+-----------------
 
 LES models for subgrid scales
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -306,11 +316,13 @@ length scale is modified as follows
 Here the term :math:`H=1.5 dz` specifies the location at which the length scale switches to :math:`L=C_s\Delta` and :math:`\phi_M`
 is the atmospheric stability function. Currently, the implementation for the stability function uses a single global value. 
 The implementation of the non-linear model is split into two parts. The subgrid-scale viscosity term is directly used 
-within the ``AMR-wind`` diffusion framework. The last two terms in :math:`M_{ij}` are added as source-terms in the momentum equation. 
+within the ``AMR-Wind`` diffusion framework. The last two terms in :math:`M_{ij}` are added as source-terms in the momentum equation. 
+
+.. _wall_models:
 
 Wall models
 -----------
-The wall models described in this section are implemented in ``AMR-wind`` for
+The wall models described in this section are implemented in ``AMR-Wind`` for
 running wall-bounded flows (non-ABL cases).
 
 Log-law wall model
@@ -329,7 +341,7 @@ Given a horizontal velocity magnitude
 :math:`z = z_{\mathrm{ref}}`, :math:`u_\tau` can be computed using a
 non-linear solve to satisfy `[eq:loglaw] <#eq:loglaw>`__.
 
-In ``AMR-wind`` Newton-Raphson iterations are used with a convergence
+In ``AMR-Wind`` Newton-Raphson iterations are used with a convergence
 criterion of :math:`\lvert u_\tau^{n+1} - u_\tau^n \rvert < 10^{-5}`.
 For this, derivative of
 :math:`\frac{\partial u_{\mathrm{mag}}}{\partial {u_\tau}}` is used,
