@@ -276,7 +276,8 @@ void incflo::Evolve()
 
         amrex::Real time1 = amrex::ParallelDescriptor::second();
         // Advance to time t + dt
-        do_advance();
+        for (int inonlin = 1; inonlin <= m_adv_iters; ++inonlin)
+            do_advance(inonlin);
 
         amrex::Print() << std::endl;
         amrex::Real time2 = amrex::ParallelDescriptor::second();
@@ -309,19 +310,19 @@ void incflo::Evolve()
     }
 }
 
-void incflo::do_advance()
+void incflo::do_advance(int inonlin)
 {
-    if (m_sim.has_overset()) {
+    if (m_sim.has_overset() && inonlin == 1) {
         m_ovst_ops.pre_advance_work();
     }
-    if (m_prescribe_vel) {
+    if (m_prescribe_vel && inonlin == 1) {
         prescribe_advance();
     } else {
-
-        advance();
-        for (int it_nl = 1; it_nl < m_adv_iters; ++it_nl) {
-            amrex::Print() << "Iteration " << it_nl << " in NL loop"
-                           << std::endl;
+        if (inonlin == 1) {
+            advance();
+        } else {
+            amrex::Print() << "Iteration " << inonlin
+                           << " in advection iteration loop" << std::endl;
             advance_nonlinear();
         }
     }
@@ -381,7 +382,9 @@ void incflo::init_physics_and_pde()
 
         // Get number of advection iterations
         pp.query("advection_iterations", m_adv_iters);
-        m_adv_iters = std::max(1, m_adv_iters);
+        if (m_adv_iters < 1)
+            amrex::Abort(
+                "The number of advection iterations cannot be less than 1");
     }
 
     auto& pde_mgr = m_sim.pde_manager();
