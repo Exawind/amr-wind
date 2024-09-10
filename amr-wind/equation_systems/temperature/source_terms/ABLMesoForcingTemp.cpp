@@ -65,7 +65,6 @@ void ABLMesoForcingTemp::mean_temperature_init(
 
     m_zht.resize(m_nht);
     m_theta_ht.resize(m_nht);
-    m_theta_vals.resize(m_nht);
     m_err_Theta.resize(m_nht);
     m_error_meso_avg_theta.resize(m_nht);
 
@@ -181,10 +180,6 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, time_interpolated_theta.begin(),
         time_interpolated_theta.end(), m_meso_theta_vals.begin());
-
-    amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, tavg.line_average().begin(),
-        tavg.line_average().end(), m_theta_vals.begin());
 
     amrex::Vector<amrex::Real> error_T(m_nht);
 
