@@ -1,5 +1,7 @@
+.. _inputs_ocean_waves:
+
 Section: Ocean Waves
-~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
 This section is for setting up wave forcing and relaxation zones.
 

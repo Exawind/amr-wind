@@ -124,18 +124,26 @@ The ``PlaneSampler`` samples the flow-field on two-dimensional planes defined by
 two axes: ``axis1`` and ``axis2`` with the bottom corner located at ``origin``
 and is divided into equally spaced nodes defined by the two entries in
 ``num_points`` vector. Multiple planes parallel to the reference planes can be
-sampled by specifying the ``normal`` vector along which the the planes are
+sampled by specifying the ``offset_vector`` vector along which the the planes are
 offset for as many planes as there are entries in the ``offset`` array.
 
 Example::
 
-  sampling.plane1.type        = PlaneSampler
-  sampling.plane1.axis1       = 0.0 1.0 0.0
-  sampling.plane1.axis2       = 0.0 0.0 1.0
-  sampling.plane1.origin      = 0.0 0.0 0.0
-  sampling.plane1.num_points  = 10 10
-  sampling.plane1.normal      = 1.0 0.0 0.0
-  sampling.plane1.offsets     = -10.0 0.0 10.0
+  sampling.plane1.type          = PlaneSampler
+  sampling.plane1.axis1         = 1.0 0.0 0.0
+  sampling.plane1.axis2         = 0.0 0.0 1.0
+  sampling.plane1.origin        = 0.0 0.0 0.0
+  sampling.plane1.num_points    = 10 10
+  sampling.plane1.offset_vector = 1.0 0.0 0.0
+  sampling.plane1.offsets       = 0.0 2.0 3.0
+
+Illustration of this example:
+
+.. figure:: planesampler.png
+   :alt: PlaneSampler
+   :width: 800
+
+   Example of sampling on planes.
 
 Sampling at arbitrary locations
 ````````````````````````````````

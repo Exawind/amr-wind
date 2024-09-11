@@ -1,5 +1,7 @@
+.. _inputs_amr:
+
 Section: amr
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~
 
 This section contains input parameters used by the core AMReX mesh data
 structure ``AmrCore`` to determine the base mesh and adaptive mesh refinement

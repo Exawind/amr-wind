@@ -1,4 +1,4 @@
-.. _sampling_freesurface_sampler.rst:
+.. _inputs_sampling_freesurface_sampler:
 
 FreeSurfaceSampler
 ==================

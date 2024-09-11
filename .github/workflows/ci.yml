@@ -17,7 +17,7 @@ jobs:
     - name: Clone
       uses: actions/checkout@v4
     - name: Check formatting
-      uses: DoozyX/clang-format-lint-action@v0.18.1
+      uses: DoozyX/clang-format-lint-action@v0.18.2
       with:
         source: './amr-wind ./unit_tests ./tools/utilities'
         exclude: '.'
@@ -30,6 +30,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         build_type: [Release, Debug]
+        openmp_flag: [OpenMP, NoOpenMP]
         include:
           - os: macos-latest
             install_deps: brew install mpich ccache
@@ -50,6 +51,10 @@ jobs:
         exclude:
           - os: macos-latest
             build_type: Debug
+          - os: macos-latest
+            openmp_flag: OpenMP
+          - build_type: Release
+            openmp_flag: OpenMP
     steps:
     - name: Clone
       uses: actions/checkout@v4
@@ -75,15 +80,16 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ${{matrix.ccache_cache}}
-        key: ccache-${{github.workflow}}-${{github.job}}-${{matrix.os}}-${{matrix.build_type}}-git-${{github.sha}}
+        key: ccache-${{github.workflow}}-${{github.job}}-${{matrix.os}}-${{matrix.build_type}}-${{matrix.openmp_flag}}-git-${{github.sha}}
         restore-keys: |
-             ccache-${{github.workflow}}-${{github.job}}-${{matrix.os}}-${{matrix.build_type}}-git-
+             ccache-${{github.workflow}}-${{github.job}}-${{matrix.os}}-${{matrix.build_type}}-${{matrix.openmp_flag}}-git-
     - name: Configure
       run: |
-        cmake -B ${{runner.workspace}}/build-ci-${{matrix.build_type}} \
-          -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install-${{matrix.build_type}} \
+        cmake -B ${{runner.workspace}}/build-ci-${{matrix.build_type}}-${{matrix.openmp_flag}} \
+          -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install-${{matrix.build_type}}-${{matrix.openmp_flag}} \
           -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} \
           -DAMR_WIND_ENABLE_MPI:BOOL=ON \
+          -DAMR_WIND_ENABLE_OPENMP:BOOL=${{ matrix.openmp_flag == 'OpenMP' && 'ON' || 'OFF' }} \
           -DAMR_WIND_ENABLE_TESTS:BOOL=ON \
           -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
           -DCMAKE_CXX_COMPILER_LAUNCHER:STRING=ccache \
@@ -93,15 +99,15 @@ jobs:
         echo "::add-matcher::.github/problem-matchers/gcc.json"
         ccache -z
         set -eu -o pipefail
-        cmake --build ${{runner.workspace}}/build-ci-${{matrix.build_type}} --parallel ${{env.NPROCS}} 2>&1 | \
-          tee -a ${{runner.workspace}}/build-ci-${{matrix.build_type}}/build-output.txt
+        cmake --build ${{runner.workspace}}/build-ci-${{matrix.build_type}}-${{matrix.openmp_flag}} --parallel ${{env.NPROCS}} 2>&1 | \
+          tee -a ${{runner.workspace}}/build-ci-${{matrix.build_type}}-${{matrix.openmp_flag}}/build-output.txt
     - name: Ccache Report
       run: |
         ccache -s
         ls ${{matrix.ccache_cache}}
         du -hs ${{matrix.ccache_cache}}
     - name: Report
-      working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}
+      working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}-${{matrix.openmp_flag}}
       run: |
         echo "::add-matcher::.github/problem-matchers/gcc.json"
         egrep "warning:|error:" build-output.txt | egrep -v "submods" \
@@ -110,7 +116,7 @@ jobs:
         cat build-output-warnings.txt
         exit $(tail -n 1 build-output-warnings.txt | awk '{print $2}')
     - name: Test
-      working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}
+      working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}-${{matrix.openmp_flag}}
       run: |
         ctest ${{matrix.ctest_args}} --output-on-failure
   GPU-Nvidia:

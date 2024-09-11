@@ -1,7 +1,7 @@
 .. _inputs_actuator:
 
 Section: Actuator
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 This section controls  the actuator type models. This includes the actuator
 disk and line models. The prefix is the label set in

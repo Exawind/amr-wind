@@ -1,5 +1,7 @@
+.. _inputs_momentum_sources:
+   
 Section: Momentum Sources
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
    
 .. input_param:: ICNS.source_terms
 

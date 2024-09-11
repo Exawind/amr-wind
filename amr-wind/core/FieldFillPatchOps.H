@@ -431,10 +431,10 @@ public:
                 const auto& dbx = ori.isLow() ? amrex::bdryLo(domain_box, idir)
                                               : amrex::bdryHi(domain_box, idir);
 
+                auto& mfab = *mfabs[fdir];
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-                auto& mfab = *mfabs[fdir];
                 for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
                     const auto& vbx = mfi.validbox();
                     const auto& bx = vbx & dbx;

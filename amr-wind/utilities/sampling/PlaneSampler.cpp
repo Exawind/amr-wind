@@ -26,9 +26,15 @@ void PlaneSampler::initialize(const std::string& key)
     pp.queryarr("offsets", m_poffsets);
     int noffsets = static_cast<int>(m_poffsets.size());
     if (noffsets > 0) {
-        pp.getarr("normal", m_normal);
+        if (pp.contains("normal")) {
+            amrex::Abort(
+                "PlaneSampler: option normal is deprecated and renamed to "
+                "offset_vector");
+        }
+
+        pp.getarr("offset_vector", m_offset_vector);
         AMREX_ALWAYS_ASSERT(
-            static_cast<int>(m_normal.size()) == AMREX_SPACEDIM);
+            static_cast<int>(m_offset_vector.size()) == AMREX_SPACEDIM);
     } else {
         m_poffsets.push_back(0.0);
     }
@@ -62,7 +68,7 @@ void PlaneSampler::sampling_locations(SampleLocType& locs) const
             for (int i = 0; i < m_npts_dir[0]; ++i) {
                 for (int d = 0; d < AMREX_SPACEDIM; ++d) {
                     locs[idx][d] = m_origin[d] + dx[d] * i + dy[d] * j +
-                                   m_poffsets[k] * m_normal[d];
+                                   m_poffsets[k] * m_offset_vector[d];
                 }
                 ++idx;
             }
@@ -80,7 +86,7 @@ void PlaneSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
     grp.put_attr("origin", m_origin);
     grp.put_attr("axis1", m_axis1);
     grp.put_attr("axis2", m_axis2);
-    grp.put_attr("axis3", m_normal);
+    grp.put_attr("offset_vector", m_offset_vector);
     grp.put_attr("offsets", m_poffsets);
 }
 

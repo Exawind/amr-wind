@@ -25,6 +25,7 @@ incflo.density             = 1.0          # Reference density
 io.derived_outputs = mag_vorticity "components(velocity,0,1)" "grad(temperature)"
 
 incflo.use_godunov = 1
+incflo.godunov_type = ppm
 incflo.diffusion_type = 2
 transport.viscosity = 1.0e-5
 transport.laminar_prandtl = 0.7
@@ -91,7 +92,7 @@ sampling.volume1.num_points  = 30 10 10
 sampling2.output_frequency    = 1
 sampling2.output_format       = native
 sampling2.fields              = velocity
-sampling.int_fields           = mask_cell
+sampling2.int_fields          = mask_cell
 sampling2.derived_fields      = q_criterion_nondim
 sampling2.labels              = volume1
 sampling2.volume1.type        = VolumeSampler

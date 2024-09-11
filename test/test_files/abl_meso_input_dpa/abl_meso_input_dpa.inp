@@ -1,7 +1,7 @@
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            SIMULATION STOP            #
 #.......................................#
-time.stop_time               =  14400.0     # Max (simulated) time to evolve
+time.stop_time               =  60.0     # Max (simulated) time to evolve
 time.max_step                =  10
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -23,6 +23,7 @@ incflo.gravity          =   0.  0. -9.81  # Gravitational force (3D)
 incflo.density             = 1.21629512          # Reference density 
 
 incflo.use_godunov = 1
+incflo.godunov_type = ppm
 incflo.diffusion_type = 0
 transport.viscosity = 1.0e-5
 transport.laminar_prandtl = 0.7
@@ -44,7 +45,7 @@ incflo.velocity = 0 0 0 # dummy values
 ABL.kappa = .41
 ABL.surface_roughness_z0 = 0.0002
 
-ABL.stats_output_frequency = 60
+ABL.stats_output_frequency = 1
 
 
 # testing:
