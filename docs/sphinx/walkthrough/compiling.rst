@@ -56,7 +56,7 @@ Then activate it:
 .. code-block:: console
 
     export EXAWIND_MANAGER=${REPO_DEST}/exawind-manager
-    source ${SPACK_MANAGER}/start.sh && spack-start
+    source ${EXAWIND_MANAGER}/start.sh && spack-start
 
 It is helpful to put the above commands as a function in your bash environment so they can be easily 
 called in the future when code needs to be altered and recompiled.
@@ -172,7 +172,13 @@ to add them to the path, enabling the executable to be used directly. When the s
 
     spack load amr-wind
 
-to make executables from amr-wind directly available.
+to make executables from amr-wind directly available. To verify that the package was loaded correctly, type
+
+.. code-block:: console
+
+    spack find --loaded
+
+which will display all the loaded packages.
 
 .. _rosco-dyn-lib:
 
