@@ -114,7 +114,6 @@ struct AdvectionOp<
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             dof_nph.fillphysbc(lev, time + 0.5 * dt, dof_nph(lev), 1);
             if (PDE::multiply_rho) {
-                // Fill physical boundaries of nph density
                 den_nph.fillphysbc(lev, time + 0.5 * dt, den_nph(lev), 1);
             }
 
