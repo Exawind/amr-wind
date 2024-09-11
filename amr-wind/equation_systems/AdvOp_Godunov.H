@@ -112,7 +112,6 @@ struct AdvectionOp<
         auto& den_nph = density.state(amr_wind::FieldState::NPH);
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-            // Fill physical boundaries of nph field
             dof_nph.fillphysbc(lev, time + 0.5 * dt, dof_nph(lev), 1);
             if (PDE::multiply_rho) {
                 // Fill physical boundaries of nph density
