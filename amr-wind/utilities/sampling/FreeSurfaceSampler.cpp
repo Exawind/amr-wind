@@ -209,7 +209,7 @@ void FreeSurfaceSampler::initialize(const std::string& key)
     auto& floc =
         m_sim.repo().declare_field("sample_loc_" + m_label, 2 * ncomp, 0, 1);
     auto& fidx =
-        m_sim.repo().declare_field("sample_idx_" + m_label, ncomp, 0, 1);
+        m_sim.repo().declare_int_field("sample_idx_" + m_label, ncomp, 0, 1);
 
     // Store locations and indices in fields
     for (int lev = 0; lev <= finest_level; lev++) {
@@ -307,7 +307,7 @@ void FreeSurfaceSampler::initialize(const std::string& key)
                     for (int n0 = n0_f; n0 < n0_a; ++n0) {
                         for (int n1 = n1_f; n1 < n1_a; ++n1) {
                             // Save index and location
-                            idx_arr(i, j, k, ns) = (amrex::Real)n1 * ntps0 + n0;
+                            idx_arr(i, j, k, ns) = n1 * ntps0 + n0;
                             loc_arr(i, j, k, 2 * ns) = s_gc0 + n0 * dxs0;
                             loc_arr(i, j, k, 2 * ns + 1) = s_gc1 + n1 * dxs1;
                             // Advance to next point
@@ -325,7 +325,7 @@ void FreeSurfaceSampler::initialize(const std::string& key)
                     // or set all values to -1 if not in fine mesh
                     int nstart = (mask_arr(i, j, k) == 0) ? 0 : ns;
                     for (int n = nstart; n < ncomp; ++n) {
-                        idx_arr(i, j, k, n) = -1.0;
+                        idx_arr(i, j, k, n) = -1;
                     }
                 });
         }
@@ -374,7 +374,7 @@ bool FreeSurfaceSampler::update_sampling_locations()
     auto* dlst_ptr = dout_last.data();
 
     // Get working fields
-    auto& fidx = m_sim.repo().get_field("sample_idx_" + m_label);
+    auto& fidx = m_sim.repo().get_int_field("sample_idx_" + m_label);
     auto& floc = m_sim.repo().get_field("sample_loc_" + m_label);
 
     const int finest_level = m_vof.repo().num_active_levels() - 1;
@@ -413,8 +413,7 @@ bool FreeSurfaceSampler::update_sampling_locations()
                         // Loop number of components
                         for (int n = 0; n < ncomp; ++n) {
                             // Get index of current component and cell
-                            const int idx =
-                                (int)std::round(idx_arr(i, j, k, n));
+                            const int idx = idx_arr(i, j, k, n);
                             // Proceed if there is sample point at this i,j,k,n
                             // and that cell height is below previous instance
                             if (idx >= 0 && dlst_ptr[amrex::max(0, idx)] >
@@ -535,7 +534,7 @@ void FreeSurfaceSampler::post_regrid_actions()
     // Small number for floating-point comparisons
     constexpr amrex::Real eps = 1.0e-16;
     // Get working fields
-    auto& fidx = m_sim.repo().get_field("sample_idx_" + m_label);
+    auto& fidx = m_sim.repo().get_int_field("sample_idx_" + m_label);
     auto& floc = m_sim.repo().get_field("sample_loc_" + m_label);
     // Provide variables from class to device
     const int ncomp = m_ncomp;
@@ -647,7 +646,7 @@ void FreeSurfaceSampler::post_regrid_actions()
                     for (int n0 = n0_f; n0 < n0_a; ++n0) {
                         for (int n1 = n1_f; n1 < n1_a; ++n1) {
                             // Save index and location
-                            idx_arr(i, j, k, ns) = (amrex::Real)n1 * ntps0 + n0;
+                            idx_arr(i, j, k, ns) = n1 * ntps0 + n0;
                             loc_arr(i, j, k, 2 * ns) = s_gc0 + n0 * dxs0;
                             loc_arr(i, j, k, 2 * ns + 1) = s_gc1 + n1 * dxs1;
                             // Advance to next point
@@ -665,7 +664,7 @@ void FreeSurfaceSampler::post_regrid_actions()
                     // or set all values to -1 if not in fine mesh
                     int nstart = (mask_arr(i, j, k) == 0) ? 0 : ns;
                     for (int n = nstart; n < ncomp; ++n) {
-                        idx_arr(i, j, k, n) = -1.0;
+                        idx_arr(i, j, k, n) = -1;
                     }
                 });
         }
