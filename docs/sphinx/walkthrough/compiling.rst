@@ -56,7 +56,7 @@ Then activate it:
 .. code-block:: console
 
     export EXAWIND_MANAGER=${REPO_DEST}/exawind-manager
-    source ${SPACK_MANAGER}/start.sh && spack-start
+    source ${EXAWIND_MANAGER}/start.sh && spack-start
 
 It is helpful to put the above commands as a function in your bash environment so they can be easily 
 called in the future when code needs to be altered and recompiled.
