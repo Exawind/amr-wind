@@ -224,8 +224,7 @@ void print_nonlinear_residual(
     const auto& mesh = sim.mesh();
 
     const auto& velocity_new = sim.pde_manager().icns().fields().field;
-    // const auto& vel_np1_old = sim.repo().get_field("vel_np1_old");
-    // auto& vel_diff = sim.repo().get_field("vel_diff");
+    const int ncomp = AMREX_SPACEDIM;
 
     for (int lev = 0; lev < nlevels; ++lev) {
 
@@ -242,8 +241,6 @@ void print_nonlinear_residual(
         }
 
         const auto& vnew = velocity_new(lev);
-        // const auto& velstar = vel_np1_old(lev);
-        // auto& veldiff = vel_diff(lev);
         const auto& velstar = vel_star(lev);
         auto& veldiff = vel_diff(lev);
 
@@ -255,35 +252,26 @@ void print_nonlinear_residual(
             const auto& levelmask_arr = level_mask.const_array(mfi);
 
             amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    veldiff_arr(i, j, k, 0) =
-                        (velnew_arr(i, j, k, 0) - velstar_arr(i, j, k, 0)) *
-                        levelmask_arr(i, j, k);
-                    veldiff_arr(i, j, k, 1) =
-                        (velnew_arr(i, j, k, 1) - velstar_arr(i, j, k, 1)) *
-                        levelmask_arr(i, j, k);
-                    veldiff_arr(i, j, k, 2) =
-                        (velnew_arr(i, j, k, 2) - velstar_arr(i, j, k, 2)) *
+                bx, AMREX_SPACEDIM,
+                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                    veldiff_arr(i, j, k, n) =
+                        (velnew_arr(i, j, k, n) - velstar_arr(i, j, k, n)) *
                         levelmask_arr(i, j, k);
                 });
         }
     }
 
-    amrex::Real rms_ucell = 0.0;
-    amrex::Real rms_vcell = 0.0;
-    amrex::Real rms_wcell = 0.0;
+    amrex::Array<amrex::Real, AMREX_SPACEDIM> rms_vel;
 
+    for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) rms_vel[idim] = 0.;
     for (int lev = 0; lev < nlevels; ++lev) {
-        rms_ucell += vel_diff(lev).norm2(0);
-        rms_vcell += vel_diff(lev).norm2(1);
-        rms_wcell += vel_diff(lev).norm2(2);
+        for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
+            rms_vel[idim] += vel_diff(lev).norm2(idim);
+        }
     }
-    amrex::Print() << "Non-linear residual for u velocity " << rms_ucell
-                   << std::endl;
-    amrex::Print() << "Non-linear residual for v velocity " << rms_vcell
-                   << std::endl;
-    amrex::Print() << "Non-linear residual for w velocity " << rms_wcell
-                   << std::endl;
+
+    amrex::Print() << "Non-linear residual for u  " << rms_vel[0] << " v "
+                   << rms_vel[1] << " w " << rms_vel[2] << std::endl;
 }
 
 } // namespace amr_wind::io
