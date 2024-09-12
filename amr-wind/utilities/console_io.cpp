@@ -240,25 +240,17 @@ void print_nonlinear_residual(
             level_mask.setVal(1);
         }
 
-        const auto& vnew = velocity_new(lev);
-        const auto& velstar = vel_star(lev);
-        auto& veldiff = vel_diff(lev);
-
-        for (amrex::MFIter mfi(velocity_new(lev)); mfi.isValid(); ++mfi) {
-            const auto bx = mfi.tilebox();
-            const auto& velstar_arr = velstar.const_array(mfi);
-            const auto& veldiff_arr = veldiff.array(mfi);
-            const auto& velnew_arr = vnew.const_array(mfi);
-            const auto& levelmask_arr = level_mask.const_array(mfi);
-
-            amrex::ParallelFor(
-                bx, AMREX_SPACEDIM,
-                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                    veldiff_arr(i, j, k, n) =
-                        (velnew_arr(i, j, k, n) - velstar_arr(i, j, k, n)) *
-                        levelmask_arr(i, j, k);
-                });
-        }
+        const auto& velnew_arr = velocity_new(lev).const_arrays();
+        const auto& velstar_arr = vel_star(lev).const_arrays();
+        const auto& veldiff_arr = vel_diff(lev).arrays();
+        const auto& levelmask_arr = level_mask.const_arrays();
+        amrex::ParallelFor(
+            velocity_new(lev), amrex::IntVect(0), AMREX_SPACEDIM,
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+                veldiff_arr[nbx](i, j, k, n) = (velnew_arr[nbx](i, j, k, n) -
+                                                velstar_arr[nbx](i, j, k, n)) *
+                                               levelmask_arr[nbx](i, j, k);
+            });
     }
 
     amrex::Array<amrex::Real, AMREX_SPACEDIM> rms_vel;
