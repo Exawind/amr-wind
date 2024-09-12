@@ -73,6 +73,9 @@ MultiPhase::MultiPhase(CFDSim& sim)
         amrex::Print() << "WARNING: single-phase density has been specified "
                           "but will not be used! (MultiPhase physics)\n";
     }
+
+    pp_multiphase.query("initialize_pressure", m_init_p);
+
     // Always populate gravity
     pp_incflo.queryarr("gravity", m_gravity);
 }
@@ -130,6 +133,19 @@ void MultiPhase::post_init_actions()
                 p0, m_rho1, m_rho2, m_water_level0, m_gravity[2],
                 m_sim.mesh().Geom());
         }
+    }
+
+    if (m_init_p && !is_wlev) {
+        amrex::Abort(
+            "Initialize pressure requested, but physics case does not "
+            "specify water level.");
+    }
+    // Make p field if both are specified
+    if (m_init_p && is_wlev) {
+        // Initialize rho0 field for perturbational density, pressure
+        auto& p = m_sim.repo().get_field("p");
+        hydrostatic::define_p0(
+            p, m_rho1, m_rho2, m_water_level0, m_gravity[2], m_sim.mesh().Geom());
     }
 }
 

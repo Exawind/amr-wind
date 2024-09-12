@@ -102,6 +102,8 @@ private:
     // Reconstructing true pressure field at end of timestep
     bool m_reconstruct_true_pressure{false};
 
+    bool m_init_p{false};
+
     // Info to create rho0
     amrex::Real m_water_level0{0.0};
     // Info to reconstruct true pressure
