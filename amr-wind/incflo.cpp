@@ -276,7 +276,7 @@ void incflo::Evolve()
 
         amrex::Real time1 = amrex::ParallelDescriptor::second();
         // Advance to time t + dt
-        for (int inonlin = 1; inonlin <= m_adv_iters; ++inonlin)
+        for (int inonlin = 0; inonlin < m_adv_iters; ++inonlin)
             do_advance(inonlin);
 
         amrex::Print() << std::endl;
@@ -312,13 +312,14 @@ void incflo::Evolve()
 
 void incflo::do_advance(int inonlin)
 {
-    if (m_sim.has_overset() && inonlin == 1) {
+    if (m_sim.has_overset()) {
         m_ovst_ops.pre_advance_work();
     }
-    if (m_prescribe_vel && inonlin == 1) {
+    if (m_prescribe_vel && inonlin == 0) {
         prescribe_advance();
     } else {
-        if (inonlin == 1) {
+        amrex::Print() << "INONLIN " << inonlin << std::endl;
+        if (inonlin == 0) {
             advance();
         } else {
             amrex::Print() << "Iteration " << inonlin
