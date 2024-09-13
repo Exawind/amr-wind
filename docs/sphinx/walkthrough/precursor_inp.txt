@@ -81,7 +81,7 @@ sampling.xy-domain.num_points            = 256 256
 sampling.xy-domain.origin                = 0.0 0.0 86.5      
 sampling.xy-domain.axis1                 = 2550.0 0.0 0.0      
 sampling.xy-domain.axis2                 = 0.0 2550.0 0.0      
-sampling.xy-domain.normal                = 0.0 0.0 1.0         
+sampling.xy-domain.offset_vector         = 0.0 0.0 1.0         
 sampling.xy-domain.offsets               = -63.45 0.0 63.45  
 
 sampling.xz-domain.type                  = PlaneSampler        
