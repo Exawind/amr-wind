@@ -62,7 +62,35 @@ In that case, using a constant, uniform body force vector is the standard approa
 time-averaged value from the precursor to populate ``BodyForce.magnitude``.
 
 Because we are simulating turbines, OpenFAST files need to be included for each of the turbines. In this walkthrough, we use
-2.8 MW turbines from NREL's `open source turbine repository <https://github.com/NREL/openfast-turbine-models/tree/master/IEA-scaled/NREL-2.8-127/OpenFAST>`_.
+2.8 MW turbines from NREL's `open source turbine repository <https://github.com/NREL/openfast-turbine-models>`_, and the specific
+turbine model is `here <https://github.com/NREL/openfast-turbine-models/tree/main/IEA-scaled/NREL-2.8-127/20_monolithic_opt2/OpenFAST>`_.
+
+.. collapse:: How to clone and copy these turbine files
+
+  Instead of cloning the entire repository of openfast turbine models, here are steps to clone only what is needed and 
+  copy it to the run directory. First, clone the repository as empty and enter its directory.
+  
+  .. code-block:: console
+
+    git clone -n --depth=1 --filter=tree:0 https://github.com/NREL/openfast-turbine-models.git && cd openfast-turbine-models
+
+  Then, check out only the path that we need.
+
+  .. code-block:: console
+
+    git sparse-checkout set --no-cone IEA-scaled/NREL-2.8-127/21_monolithic_opt2--hubht_120m/OpenFAST && git checkout
+    cd IEA-scaled/NREL-2.8-127/20_monolithic_opt2/OpenFAST/
+
+  Before copying the OpenFAST files to the run directory, follow the instructions below about what needs to be changed in the files.
+  After performing these changes, copy the OpenFAST model to the run directory using the names in the AMR-Wind input file.
+
+  .. code-block:: console
+
+    cd ..
+    cp -r OpenFAST/ <path to turbine run directory>/T0_OpenFAST
+    cp -r OpenFAST/ <path to turbine run directory>/T1_OpenFAST
+    cp -r OpenFAST/ <path to turbine run directory>/T2_OpenFAST
+
 When simulating OpenFAST turbines through AMR-Wind instead of directly through OpenFAST, it is important to make the
 following changes to the OpenFAST files:
 
@@ -76,6 +104,10 @@ When all of these steps are complete, the job directory for running the turbine 
 
 .. code-block:: console
 
-    avg_theta.dat  T0_AMRWind_AWAKEN/  T1_AMRWind_AWAKEN/  T2_AMRWind_AWAKEN/  turbine.inp
+    avg_theta.dat  T0_OpenFAST/  T1_OpenFAST/  T2_OpenFAST/  turbines.inp
 
 and the turbine inflow-outflow simulation is ready to be submitted.
+
+(TODO: As an example, insert paraview images of mesh and flowfield after x number of steps)
+
+(TODO: be more specific, listing filenames, in instructions to change the OpenFAST files)
