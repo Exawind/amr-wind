@@ -589,21 +589,6 @@ void incflo::ApplyPredictorNonLinear(bool incremental_projection)
             field.num_comp(), 1);
     }
 
-    // Interpolate the NPH velocity from Old and New states
-    // Fillpatch the velocity
-    // change to new_time or remove
-    // icns().fields().field.fillpatch(0.0);
-
-    /*
-icns().fields().field.fillpatch(m_time.current_time());
-// Get n + 1/2 velocity
-amr_wind::field_ops::lincomb(
-    icns().fields().field.state(amr_wind::FieldState::NPH), 0.5,
-    icns().fields().field.state(amr_wind::FieldState::Old), 0, 0.5,
-    icns().fields().field, 0, 0, icns().fields().field.num_comp(),
-    icns().fields().field.num_grow());
-    */
-
     // Compute advection of momentum at NPH
     icns().compute_advection_term(amr_wind::FieldState::NPH);
 
@@ -675,7 +660,6 @@ amr_wind::field_ops::lincomb(
     }
 
     // ScratchField to store the old np1
-    // Should nghost be 0 here?
     auto vel_np1_old = m_repo.create_scratch_field(
         "vel_np1_old", AMREX_SPACEDIM, 1, amr_wind::FieldLoc::CELL);
 
