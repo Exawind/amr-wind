@@ -36,7 +36,12 @@ ABLMeanBoussinesq::ABLMeanBoussinesq(const CFDSim& sim) : m_mesh(sim.mesh())
     amrex::ParmParse pp_incflo("incflo");
     pp_incflo.queryarr("gravity", m_gravity);
 
-    if (pp_boussinesq_buoyancy.contains("read_temperature_profile")) {
+    bool read_temp_prof = false;
+    pp_boussinesq_buoyancy.query("read_temperature_profile", read_temp_prof);
+
+    if ((!pp_boussinesq_buoyancy.contains("read_temperature_profile") &&
+         pp_boussinesq_buoyancy.contains("tprofile_filename")) ||
+        read_temp_prof) {
 
         m_const_profile = true;
 
