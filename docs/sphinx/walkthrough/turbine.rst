@@ -8,7 +8,7 @@ Now that we have run our precursor simulation and saved inflow boundary conditio
 .. literalinclude:: ./turbines_inp.txt
    :linenos:
 
-This file looks like the precursor input file, except the following changes:
+This file looks like the precursor input file, except for the following changes:
 
 * We are now reading in boundary condition data, not writing it out. Similarly, the x- and y- boundaries are no longer periodic, requiring 
   us to specify some extra characteristics about the inflow.
@@ -65,33 +65,24 @@ Because we are simulating turbines, OpenFAST files need to be included for each 
 2.8 MW turbines from NREL's `open source turbine repository <https://github.com/NREL/openfast-turbine-models>`_, and the specific
 turbine model is `here <https://github.com/NREL/openfast-turbine-models/tree/main/IEA-scaled/NREL-2.8-127/20_monolithic_opt2/OpenFAST>`_.
 
-.. collapse:: How to clone and copy these turbine files
 
-  Instead of cloning the entire repository of openfast turbine models, here are steps to clone only what is needed and 
-  copy it to the run directory. First, clone the repository as empty and enter its directory.
-  
-  .. code-block:: console
+Instead of cloning the entire repository of OpenFAST turbine models, we can clone only what is needed to run the full turbine simulation and then 
+copy it to the run directory. 
 
-    git clone -n --depth=1 --filter=tree:0 https://github.com/NREL/openfast-turbine-models.git && cd openfast-turbine-models
+First, clone the repository as empty and enter its directory.
 
-  Then, check out only the path that we need.
+.. code-block:: console
 
-  .. code-block:: console
+  git clone -n --depth=1 --filter=tree:0 https://github.com/NREL/openfast-turbine-models.git && cd openfast-turbine-models
 
-    git sparse-checkout set --no-cone IEA-scaled/NREL-2.8-127/21_monolithic_opt2--hubht_120m/OpenFAST && git checkout
-    cd IEA-scaled/NREL-2.8-127/20_monolithic_opt2/OpenFAST/
+Then, check out only the path that we need.
 
-  Before copying the OpenFAST files to the run directory, follow the instructions below about what needs to be changed in the files.
-  After performing these changes, copy the OpenFAST model to the run directory using the names in the AMR-Wind input file.
+.. code-block:: console
 
-  .. code-block:: console
+  git sparse-checkout set --no-cone IEA-scaled/NREL-2.8-127/20_monolithic_opt2/OpenFAST && git checkout
+  cd IEA-scaled/NREL-2.8-127/20_monolithic_opt2/OpenFAST/
 
-    cd ..
-    cp -r OpenFAST/ <path to turbine run directory>/T0_OpenFAST
-    cp -r OpenFAST/ <path to turbine run directory>/T1_OpenFAST
-    cp -r OpenFAST/ <path to turbine run directory>/T2_OpenFAST
-
-When simulating OpenFAST turbines through AMR-Wind instead of directly through OpenFAST, it is important to make the
+Note that, when simulating OpenFAST turbines through AMR-Wind instead of directly through OpenFAST, it is important to make the
 following changes to the OpenFAST files:
 
 * AeroDyn: Make sure ``WakeMod`` is ``0``
@@ -99,6 +90,16 @@ following changes to the OpenFAST files:
 * ``*.fst``: Set ``CompInflow`` to be ``2`` and ``OutFileFmt`` to be ``1``
 * ServoDyn: Make sure ``DLL_FileName`` points to a ``libdiscon.so`` file from ROSCO. If you compiled using exawind-manager,
   see the :ref:`section of the documentation <rosco-dyn-lib>` that discusses how to determine the correct path to this ROSCO library file.
+
+After performing these changes, copy the OpenFAST model to the run directory using the names in the AMR-Wind input file.
+
+.. code-block:: console
+
+  cd ..
+  cp -r OpenFAST/ <path to turbine run directory>/T0_OpenFAST
+  cp -r OpenFAST/ <path to turbine run directory>/T1_OpenFAST
+  cp -r OpenFAST/ <path to turbine run directory>/T2_OpenFAST
+
 
 When all of these steps are complete, the job directory for running the turbine simulation includes
 
