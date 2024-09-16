@@ -50,7 +50,7 @@ the tools directory of the AMR-Wind repo, as follows:
 
 .. code-block:: console
 
-    python <path to amr-wind repo>/tools/calc_inflowoutflow_stats.py -sf <path to precursor directory>/post_processing/abl_statistics14400.nc -ts 7200 -te 9000
+    python <path to amr-wind repo>/tools/calc_inflowoutflow_stats.py -sf <path to precursor directory>/post_processing/abl_statistics14400.nc -ts 7200 -te 7800
 
 
 The ``-ts`` and ``-te`` arguments communicate the start time and end time for the time averaging, respectively. Running the
@@ -90,10 +90,10 @@ Then, check out only the path that we need.
 Note that, when simulating OpenFAST turbines through AMR-Wind instead of directly through OpenFAST, it is important to make the
 following changes to the OpenFAST files:
 
-* AeroDyn: Make sure ``WakeMod`` is ``0``
-* ElastoDyn: Set the initial RPM ``RotSpeed`` and initial yaw angle ``NacYaw`` to reasonable values
-* ``*.fst``: Set ``CompInflow`` to be ``2`` and ``OutFileFmt`` to be ``1``
-* ServoDyn: Make sure ``DLL_FileName`` points to a ``libdiscon.so`` file from ROSCO. If you compiled using exawind-manager,
+* ``NREL-2p8-127_AeroDyn15.dat``: Make sure ``WakeMod`` is ``0``
+* ``NREL-2p8-127_ElastoDyn.dat``: Set the initial RPM ``RotSpeed`` and initial yaw angle ``NacYaw`` to reasonable values
+* ``NREL-2p8-127.fst``: Set ``CompInflow`` to be ``2`` and ``OutFileFmt`` to be ``1``
+* ``NREL-2p8-127_ServoDyn.dat``: Make sure ``DLL_FileName`` points to a ``libdiscon.so`` (on Linux) or ``libdiscon.dylib`` (on Mac) file from ROSCO. If you compiled using exawind-manager,
   see the :ref:`section of the documentation <rosco-dyn-lib>` that discusses how to determine the correct path to this ROSCO library file.
 
 After performing these changes, copy the OpenFAST model to the run directory using the names in the AMR-Wind input file.
@@ -116,4 +116,4 @@ and the turbine inflow-outflow simulation is ready to be submitted.
 
 (TODO: As an example, insert paraview images of mesh and flowfield after x number of steps)
 
-(TODO: be more specific, listing filenames, in instructions to change the OpenFAST files)
+(TODO: after checking flow field, check if current yaw angle is fine and update accordingly)
