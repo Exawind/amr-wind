@@ -60,6 +60,8 @@ controls when these files are output.
 
    Add variable names to this input argument to add them to the plotfile output. These must be variables that exist in the simulation and consist of integers (not real numbers).
 
+.. _inputs_io_derived:
+
 .. input_param:: io.derived_outputs
 
    **type:** List of strings, optional, default = ""
