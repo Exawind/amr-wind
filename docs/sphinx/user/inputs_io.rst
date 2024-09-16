@@ -60,6 +60,25 @@ controls when these files are output.
 
    Add variable names to this input argument to add them to the plotfile output. These must be variables that exist in the simulation and consist of integers (not real numbers).
 
+.. input_param:: io.derived_outputs
+
+   **type:** List of strings, optional, default = ""
+
+   Add derived variable names to this input argument
+   to add them to the plotfile output. These are derived
+   quantities that are functions of real variables that exist
+   in the simulation. Currently, the available derived quantity definitions
+   that operate on the velocity field are vorticity magnitude 
+   (``mag_vorticity``), q-criterion (``q_criterion``),
+   nondimensional q-criterion (``q_criterion_nondim``),
+   and strain rate magnitude (``mag_strainrate``). Generic
+   derived quantity definitions, which operate on fields specified as an argument,
+   include the gradient operator (``grad``), the divergence
+   operator (``div``), the laplacian operator (``laplacian``),
+   and components (``components``), which isolates the specified
+   component of a field.
+
+
 .. input_param:: io.skip_outputs
 
    **type:** List of strings, optional, default = ""
