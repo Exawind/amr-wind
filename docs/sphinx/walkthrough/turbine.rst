@@ -50,7 +50,7 @@ the tools directory of the AMR-Wind repo, as follows:
 
 .. code-block:: console
 
-    python <path to amr-wind repo>/tools/calc_inflowoutflow_stats.py -sf <path to precursor directory>/post_processing/abl_statistics14400.nc -ts 7212.5 -te 7800
+    python <path to amr-wind repo>/tools/calc_inflowoutflow_stats.py -sf <path to precursor directory>/post_processing/abl_statistics14400.nc -ts 7200 -te 7800
 
 
 The ``-ts`` and ``-te`` arguments communicate the start time and end time for the time averaging, respectively. Running the
