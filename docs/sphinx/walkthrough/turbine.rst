@@ -12,13 +12,18 @@ This file looks like the precursor input file, except for the following changes:
 
 * We are now reading in boundary condition data, not writing it out. Similarly, the x- and y- boundaries are no longer periodic, requiring 
   us to specify some extra characteristics about the inflow.
-* ``incflo.physics`` now includes ``Actuator`` so that turbine-related calculations can take place
+* ``incflo.physics`` now includes ``Actuator`` so that turbine-related calculations can take place.
 * Similarly, we remove ``ABLForcing`` from ``ICNS.source_terms``, and we replace it with three new forces: 
   ``BodyForce ABLMeanBoussinesq ActuatorForcing``. We then provide extra information about these forces.
   More on how to calculate these values down below.
 * We also add details under ``ABL`` to inform the wall function.
 * We add information about the turbines and surrounding mesh refinements into the input file. Because of the finer mesh, the small dt is
   required for this simulation.
+* ``time.fixed_dt`` is changed from 0.125 to 0.12. Although 0.125 is sufficient for the finer mesh in this simulation, there is an 
+  additional constraint of compatibility with the OpenFAST turbine model. The AMR-Wind time step size must be an integer multiple of
+  the recommended time step size of the turbine model (written as ``DT`` in the ``.fst`` OpenFAST input). For this turbine model,
+  the recommended DT is 0.01, requiring a change to the AMR-Wind dt. Due to this change in the time step size, we have also adjusted
+  the plotting, checkpoint, and sampling intervals.
 
 .. collapse:: Further details about these source terms and wf specifications
 

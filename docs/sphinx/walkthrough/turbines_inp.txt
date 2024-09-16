@@ -6,8 +6,8 @@ time.max_step                            = -1           # Max number of time ste
 time.fixed_dt                            = 0.12         # Use this constant dt if > 0
 time.cfl                                 = 0.95         # CFL factor
 
-time.plot_interval                       = 1200         # Steps between plot files
-time.checkpoint_interval                 = 1200         # Steps between checkpoint files
+time.plot_interval                       = 1250         # Steps between plot files
+time.checkpoint_interval                 = 1250         # Steps between checkpoint files
 ABL.bndry_file                           = ../precursor/bndry_file.native
 ABL.bndry_io_mode                        = 1            # 0 = write, 1 = read
 ABL.bndry_planes                         = ylo xlo
@@ -92,7 +92,7 @@ ABL.surface_temp_flux                    = 0.05  # Surface temperature flux [K-m
 incflo.post_processing                   = sampling averaging
 
 # --- Sampling parameters ---
-sampling.output_frequency                = 8
+sampling.output_frequency                = 100
 sampling.fields                          = velocity temperature
 
 #---- sample defs ----
