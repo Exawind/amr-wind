@@ -182,7 +182,7 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
         time_interpolated_theta.end(), m_meso_theta_vals.begin());
 
     amrex::Vector<amrex::Real> error_T(m_nht);
- 
+
     amrex::Vector<amrex::Real> meso_ht(num_meso_ht);
     amrex::Gpu::copy(
         amrex::Gpu::deviceToHost, m_meso_ht.begin(), m_meso_ht.end(),
