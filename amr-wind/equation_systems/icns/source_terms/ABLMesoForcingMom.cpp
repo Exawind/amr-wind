@@ -193,16 +193,16 @@ void ABLMesoForcingMom::mean_velocity_heights(
     amrex::Vector<amrex::Real> error_U(m_nht);
     amrex::Vector<amrex::Real> error_V(m_nht);
 
-    const auto & vavg_lc = vavg.line_centroids(); 
-    amrex::Vector<amrex::Real> meso_ht(m_meso_ht.size());
+    const auto& vavg_lc = vavg.line_centroids();
+    amrex::Vector<amrex::Real> meso_ht(num_meso_ht);
     amrex::Gpu::copy(
-      amrex::Gpu::DeviceToHost, m_meso_ht.begin(),
-        m_meso_ht.end(), meso_ht.begin());
+        amrex::Gpu::deviceToHost, m_meso_ht.begin(), m_meso_ht.end(),
+        meso_ht.begin());
     for (int i = 0; i < m_nht; i++) {
-        const amrex::Real height_interpolated_u = amr_wind::interp::linear(
-            meso_ht, time_interpolated_u, vavg_lc[i]);
-        const amrex::Real height_interpolated_v = amr_wind::interp::linear(
-            meso_ht, time_interpolated_v, vavg_lc[i]);
+        const amrex::Real height_interpolated_u =
+            amr_wind::interp::linear(meso_ht, time_interpolated_u, vavg_lc[i]);
+        const amrex::Real height_interpolated_v =
+            amr_wind::interp::linear(meso_ht, time_interpolated_v, vavg_lc[i]);
         error_U[i] = height_interpolated_u -
                      vavg.line_average()[static_cast<int>(numcomp * i)];
         error_V[i] = height_interpolated_v -
