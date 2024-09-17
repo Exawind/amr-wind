@@ -156,9 +156,22 @@ void VelWallFunc::wall_model(
                         // {
                                                    
                         const amrex::Real xc = problo[0] + (i + 0.5) * dx[0];
-                        const amrex::Real u_dx = vold_arr(i, j, k + z_dx_integer, 0);  
-                        const amrex::Real v_dx = vold_arr(i, j, k + z_dx_integer, 1);
+			//const amrex::Real u_dx = vold_arr(i, j, k + z_dx_integer, 0);  
+                        //const amrex::Real v_dx = vold_arr(i, j, k + z_dx_integer, 1);
 
+                        const int z_dx_low = static_cast<int>(std::floor(dx[0] / dx[2]));
+                        const int z_dx_up = z_dx_low + 1;
+                        const amrex::Real z_diff = dx[0]  - (z_dx_low + 0.5) * dx[2]; // Difference between position and lower grid point
+
+                        // Interpolate u and v using the lower and upper grid points
+                        const amrex::Real u_low = vold_arr(i, j, z_dx_low, 0);
+                        const amrex::Real u_up = vold_arr(i, j, z_dx_up, 0);
+                        const amrex::Real v_low = vold_arr(i, j, z_dx_low, 1);
+                        const amrex::Real v_up = vold_arr(i, j, z_dx_up, 1);
+
+                       // Linear interpolation for u and v
+                       const amrex::Real u_dx = u_low + (u_up - u_low) * (z_diff / dx[2]);
+                       const amrex::Real v_dx = v_low + (v_up - v_low) * (z_diff / dx[2]);
                         varr(i, j, k - 1, 0) =
                             tau.get_shear(uu, wspd, u_dx, v_dx, xc, 0) / mu * den(i, j, k);
                         varr(i, j, k - 1, 1) =
@@ -182,8 +195,8 @@ void VelWallFunc::wall_model(
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
                         
 			const amrex::Real xc = problo[0] + (i + 0.5) * dx[0];
-                        const amrex::Real u_dx = vold_arr(i, j, k + z_dx_integer, 0);
-			const amrex::Real v_dx = vold_arr(i, j, k + z_dx_integer, 1);
+                        const amrex::Real u_dx = vold_arr(i, j, k - 1 - z_dx_integer, 0);
+			const amrex::Real v_dx = vold_arr(i, j, k - 1 - z_dx_integer, 1);
 			
 			// Dirichlet BC
                         varr(i, j, k, 2) = 0.0;
