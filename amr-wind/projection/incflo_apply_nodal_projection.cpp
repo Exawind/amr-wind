@@ -83,7 +83,7 @@ void amr_wind::nodal_projection::enforce_inout_solvability(
     const Vector<Geometry>& geom,
     const int num_levels)
 {
-    BCRec const* bc_type = velocity.bcrec_device().data();
+    BCRec const* bc_type = velocity.bcrec().data();
     Vector<Array<MultiFab*, AMREX_SPACEDIM>> vel_vec(num_levels);
 
     for (int lev = 0; lev < num_levels; ++lev) {
