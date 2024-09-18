@@ -6,6 +6,7 @@ void iblank_to_mask_vof(
     const IntField& iblank, const Field& voff, IntField& maskf)
 {
     const auto& nlevels = iblank.repo().mesh().finestLevel() + 1;
+    constexpr amrex::Real band_tol = 1e-4;
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& ibl = iblank(lev);
@@ -28,7 +29,7 @@ void iblank_to_mask_vof(
                             near_interface =
                                 near_interface ||
                                 amr_wind::multiphase::interface_band(
-                                    ii, jj, kk, vofarrs[nbx], 1, 1e-4);
+                                    ii, jj, kk, vofarrs[nbx], 1, band_tol);
                         }
                     }
                 }
