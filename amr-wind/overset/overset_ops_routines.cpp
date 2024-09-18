@@ -28,7 +28,7 @@ void iblank_to_mask_vof(
                             near_interface =
                                 near_interface ||
                                 amr_wind::multiphase::interface_band(
-                                    ii, jj, kk, vofarrs[nbx], 1e-4);
+                                    ii, jj, kk, vofarrs[nbx], 1, 1e-4);
                         }
                     }
                 }
