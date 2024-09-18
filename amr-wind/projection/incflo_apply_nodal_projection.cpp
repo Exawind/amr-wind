@@ -417,7 +417,7 @@ void incflo::ApplyProjection(
         pp.query("disable_coupled_nodal_proj", disable_ovst_nodal);
     }
 
-    if ((sim().has_overset() && disable_ovst_nodal)) {
+    if ((sim().has_overset())) {
         // Similar approach to immersed boundary (ib) above
         auto& iblank = m_repo.get_int_field("iblank_cell");
         for (int lev = 0; lev <= finest_level; lev++) {
@@ -425,18 +425,20 @@ void incflo::ApplyProjection(
                 velocity(lev), iblank(lev));
         }
         amrex::Gpu::synchronize();
-        auto div_vel_rhs =
-            sim().repo().create_scratch_field(1, 0, amr_wind::FieldLoc::NODE);
-        nodal_projector->computeRHS(div_vel_rhs->vec_ptrs(), vel, {}, {});
-        // Mask the right-hand side of the Poisson solve for the nodes inside
-        // the body
-        const auto& imask_node = repo().get_int_field("mask_node");
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            amrex::MultiFab::Multiply(
-                *div_vel_rhs->vec_ptrs()[lev],
-                amrex::ToMultiFab(imask_node(lev)), 0, 0, 1, 0);
+        if (disable_ovst_nodal) {
+            auto div_vel_rhs = sim().repo().create_scratch_field(
+                1, 0, amr_wind::FieldLoc::NODE);
+            nodal_projector->computeRHS(div_vel_rhs->vec_ptrs(), vel, {}, {});
+            // Mask the right-hand side of the Poisson solve for the nodes
+            // inside the body
+            const auto& imask_node = repo().get_int_field("mask_node");
+            for (int lev = 0; lev <= finest_level; ++lev) {
+                amrex::MultiFab::Multiply(
+                    *div_vel_rhs->vec_ptrs()[lev],
+                    amrex::ToMultiFab(imask_node(lev)), 0, 0, 1, 0);
+            }
+            nodal_projector->setCustomRHS(div_vel_rhs->vec_const_ptrs());
         }
-        nodal_projector->setCustomRHS(div_vel_rhs->vec_const_ptrs());
     }
 
     // Setup masking for overset simulations
