@@ -124,9 +124,6 @@ void VelWallFunc::wall_model(
             const auto& den = rho_lev.const_array(mfi);
             const auto& eta = eta_lev.const_array(mfi);
 
-	    const amrex::Real dx_dz = dx[0] / dx[2];
-            const int z_dx_integer = static_cast<int>(std::round(dx_dz));
-
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                 velocity.bc_type()[zlo] == BC::wall_model) {
                 amrex::ParallelFor(
@@ -169,19 +166,14 @@ void VelWallFunc::wall_model(
                         const amrex::Real vv =
                             vold_arr(i, j, k - 1 - idx_offset, 1);
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
-                        
-			const amrex::Real xc = problo[0] + (i + 0.5) * dx[0];
-                        const amrex::Real u_dx = vold_arr(i, j, k - 1 - z_dx_integer, 0);
-			const amrex::Real v_dx = vold_arr(i, j, k - 1 - z_dx_integer, 1);
-			 
 			// Dirichlet BC
                         varr(i, j, k, 2) = 0.0;
 
                         // Shear stress BC
                         varr(i, j, k, 0) =
-                            -tau.get_shear(uu, wspd, u_dx, v_dx, xc, 0) / mu * den(i, j, k);
+                            -tau.get_shear(uu, wspd, 0, 0, 0, 0) / mu * den(i, j, k);
                         varr(i, j, k, 1) =
-                            -tau.get_shear(vv, wspd, u_dx, v_dx, xc, 1) / mu * den(i, j, k);
+                            -tau.get_shear(vv, wspd, 0, 0, 0, 1) / mu * den(i, j, k);
                     });
             }
         }

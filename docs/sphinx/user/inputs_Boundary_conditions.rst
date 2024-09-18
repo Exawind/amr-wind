@@ -93,17 +93,17 @@ Dynamic wall model (Wave model)
 The MOving Surface Drag (MOSD) model developed by `Ayala et al (2024)<https://doi.org/10.48550/arXiv.2401.12188>`_ is used as the dynamic wall model. The model calculates the stress (form drag) imparted by a moving wave. The model enables wave phase-resolving physics without the use of wave-phase adapting computational grids. 
 
 .. input_param:: wave_mosd.amplitude
-   **type:** Real, required
+   **type:** Real, required, default = 0.05
 
    Specifies the amplitude of the wave, only activated if ``WallFunction.wall_shear_stress_type = mosd``
 
 .. input_param:: wave_mosd.wavenumber
-   **type:** Real, required
+   **type:** Real, required, default = 4
 
    Specifies the wavenumber of the wave, only activated if ``WallFunction.wall_shear_stress_type = mosd``
 
 .. input_param:: wave_mosd.frequency
-   **type:** Real, required
+   **type:** Real, required, default = 0.8
 
    Specifies the frequency of the wave, only activated if ``WallFunction.wall_shear_stress_type = mosd``
 
@@ -114,5 +114,7 @@ Example::
   wave_mosd.amplitude = 0.05
   wave_mosd.wavenumber = 4
   wave_mosd.frequency = 0.8
+
+NOTE: This wall model is only aplicable for the lower boundary ``zlo.type``. Also, it is set for only monochromatic waves. 
 
 Currently, the dynamic wall model is only available for ``incflo.physics = ChannelFlow``. The work to integrate this condition with the ABL class is under progress. See the ``channel_mosd`` test for an example that uses the dynamic wall model.

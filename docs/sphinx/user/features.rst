@@ -61,7 +61,7 @@ Methods and models
 
    * Large Eddy Simulation: constant Smagorinsky,  AMD, one equation :math:`k_{sgs}`, Kosovic [:ref:`doc <turbulence>`, :ref:`inp <inputs_turbulence>`]
 
-   * Wall models: log-law, constant stress, Schumann [:ref:`doc <wall_models>`, :ref:`inp <inputs_abl>`]
+   * Wall models: log-law, constant stress, Schumann [:ref:`doc <wall_models>`, :ref:`inp <inputs_abl>`], dynamic (wave model) [:ref:`doc <wall_models>`, :ref:`inp <inputs_boundary_conditions>` 
 
    * Reynolds-Average Navier-Stokes: :math:`k`-:math:`\omega` SST (and IDDES variant) [:ref:`doc <turbulence>`, :ref:`inp <inputs_turbulence>`]
 

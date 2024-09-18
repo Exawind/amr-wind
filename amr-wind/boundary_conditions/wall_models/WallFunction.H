@@ -23,7 +23,6 @@ public:
 
     amrex::Real utau() const { return m_log_law.utau_mean; }
     LogLaw log_law() const { return m_log_law; }
-    ///Dyanmic wave stress
     MOSD mosd() const { return m_mosd; }
 
     //! Update the mean velocity at a given timestep
