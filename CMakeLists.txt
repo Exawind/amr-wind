@@ -38,7 +38,7 @@ set(AMR_WIND_PRECISION "DOUBLE" CACHE STRING "Floating point precision SINGLE or
 option(AMR_WIND_USE_INTERNAL_AMREX "Add AMReX as subproject" ON)
 option(AMR_WIND_USE_INTERNAL_AMREX_HYDRO "Add AMReX-Hydro as subproject" ON)
 option(AMR_WIND_USE_INTERNAL_WAVES2AMR "Add Waves2AMR as subproject" ON)
-option(AMR_WIND_ENABLE_HDF5 "Enable HDF5 library" OFF)
+option(AMR_WIND_ENABLE_HDF5 "Enable HDF5 library" ON)
 option(AMR_WIND_ENABLE_HDF5_ZFP "Enable ZFP compression in HDF5 library" OFF)
 option(AMR_WIND_ENABLE_NETCDF "Enable NetCDF library" OFF)
 option(AMR_WIND_ENABLE_MASA "Enable MASA library" OFF)
