@@ -84,6 +84,11 @@ void OversetOps::pre_advance_work()
             // Update pressure gradient using sharpened pressure field
             update_gradp();
         }
+        // Calculate vof-dependent node mask
+        const auto& iblank = m_sim_ptr->repo().get_int_field("iblank_node");
+        const auto& vof = m_sim_ptr->repo().get_field("vof");
+        auto& mask = m_sim_ptr->repo().get_int_field("mask_node");
+        overset_ops::iblank_to_mask_vof(iblank, vof, mask);
     }
 
     // If pressure gradient will be replaced, store current pressure gradient

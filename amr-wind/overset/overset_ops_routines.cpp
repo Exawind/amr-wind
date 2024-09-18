@@ -1,6 +1,46 @@
 #include "amr-wind/overset/overset_ops_routines.H"
 
 namespace amr_wind::overset_ops {
+
+void iblank_to_mask_vof(
+    const IntField& iblank, const Field& voff, IntField& maskf)
+{
+    const auto& nlevels = iblank.repo().mesh().finestLevel() + 1;
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& ibl = iblank(lev);
+        const auto& vof = voff(lev);
+        auto& mask = maskf(lev);
+
+        const auto& ibarrs = ibl.const_arrays();
+        const auto& vofarrs = vof.const_arrays();
+        const auto& marrs = mask.arrays();
+        amrex::ParallelFor(
+            ibl, ibl.n_grow,
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                // Default is masking all 0 and -1 iblanks
+                marrs[nbx](i, j, k) = amrex::max(ibarrs[nbx](i, j, k), 0);
+                // Check cells neighboring node for being near interface
+                bool near_interface = false;
+                for (int ii = i - 1; ii < i + 1; ii++) {
+                    for (int jj = j - 1; jj < j + 1; jj++) {
+                        for (int kk = k - 1; kk < k + 1; kk++) {
+                            near_interface =
+                                near_interface ||
+                                amr_wind::multiphase::interface_band(
+                                    ii, jj, kk, vofarrs[nbx], 1e-4);
+                        }
+                    }
+                }
+                // Do mask -1 cells near interface
+                if (ibarrs[nbx](i, j, k) == -1 && near_interface) {
+                    marrs[nbx](i, j, k) = 1;
+                }
+            });
+    }
+    amrex::Gpu::synchronize();
+}
+
 // Populate approximate signed distance function using vof field
 void populate_psi(
     amrex::MultiFab& mf_psi,
