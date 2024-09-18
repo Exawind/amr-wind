@@ -48,7 +48,6 @@ WallFunction::WallFunction(CFDSim& sim)
             (geom.ProbLo(m_direction) +
              (m_log_law.ref_index + 0.5) * geom.CellSize(m_direction));
     }
-    ///Dyanmic wave stress
     {
     amrex::ParmParse pp("wave_mosd"); // "wave_mosd" is the prefix used in the input file
     pp.query("amplitude", amplitude);
@@ -125,10 +124,7 @@ void VelWallFunc::wall_model(
             const auto& den = rho_lev.const_array(mfi);
             const auto& eta = eta_lev.const_array(mfi);
 
-            ///Dyanmic wave stress
-            // Getting the closest integer of the vertical grid point of value dx (z=dx)
-            // this should be interpolated to be more accurate
-            const amrex::Real dx_dz = dx[0] / dx[2];
+	    const amrex::Real dx_dz = dx[0] / dx[2];
             const int z_dx_integer = static_cast<int>(std::round(dx_dz));
 
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
@@ -142,43 +138,23 @@ void VelWallFunc::wall_model(
                         const amrex::Real vv =
                             vold_arr(i, j, k + idx_offset, 1);
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
-
-                        // Dirichlet BC
-                        //varr(i, j, k - 1, 2) = 0.0;
-                        // Shear stress BC
-                        //varr(i, j, k - 1, 0) =
-                        //    tau.get_shear(uu, wspd) / mu * den(i, j, k);
-                        //varr(i, j, k - 1, 1) =
-                        //    tau.get_shear(vv, wspd) / mu * den(i, j, k);
-
-                        ///Dyanmic wave stress
-                        //if (m_wall_shear_stress_type == "mosd")
-                        // {
-                                                   
-                        const amrex::Real xc = problo[0] + (i + 0.5) * dx[0];
-			//const amrex::Real u_dx = vold_arr(i, j, k + z_dx_integer, 0);  
-                        //const amrex::Real v_dx = vold_arr(i, j, k + z_dx_integer, 1);
-
-                        const int z_dx_low = static_cast<int>(std::floor(dx[0] / dx[2]));
-                        const int z_dx_up = z_dx_low + 1;
-                        const amrex::Real z_diff = dx[0]  - (z_dx_low + 0.5) * dx[2]; // Difference between position and lower grid point
-
-                        // Interpolate u and v using the lower and upper grid points
-                        const amrex::Real u_low = vold_arr(i, j, z_dx_low, 0);
-                        const amrex::Real u_up = vold_arr(i, j, z_dx_up, 0);
+                        const amrex::Real xc = problo[0] + (i + 0.5) * dx[0]; 
+			const int z_dx_low = static_cast<int>(std::floor(dx[0] / dx[2])); 
+			const int z_dx_up = z_dx_low + 1;
+			const amrex::Real z_diff = dx[0]  - (z_dx_low + 0.5) * dx[2];
+	                const amrex::Real u_low = vold_arr(i, j, z_dx_low, 0);
+            	 	const amrex::Real u_up = vold_arr(i, j, z_dx_up, 0);
                         const amrex::Real v_low = vold_arr(i, j, z_dx_low, 1);
                         const amrex::Real v_up = vold_arr(i, j, z_dx_up, 1);
-
-                       // Linear interpolation for u and v
-                       const amrex::Real u_dx = u_low + (u_up - u_low) * (z_diff / dx[2]);
-                       const amrex::Real v_dx = v_low + (v_up - v_low) * (z_diff / dx[2]);
-                        varr(i, j, k - 1, 0) =
+                        const amrex::Real u_dx = u_low + (u_up - u_low) * (z_diff / dx[2]);
+                        const amrex::Real v_dx = v_low + (v_up - v_low) * (z_diff / dx[2]);
+			
+			varr(i, j, k - 1, 0) =
                             tau.get_shear(uu, wspd, u_dx, v_dx, xc, 0) / mu * den(i, j, k);
                         varr(i, j, k - 1, 1) =
                             tau.get_shear(vv, wspd, u_dx, v_dx, xc, 1) / mu * den(i, j, k);
                         varr(i, j, k - 1, 2) = 0.0;
                         
-			//}
                     });
             }
 
@@ -197,7 +173,7 @@ void VelWallFunc::wall_model(
 			const amrex::Real xc = problo[0] + (i + 0.5) * dx[0];
                         const amrex::Real u_dx = vold_arr(i, j, k - 1 - z_dx_integer, 0);
 			const amrex::Real v_dx = vold_arr(i, j, k - 1 - z_dx_integer, 1);
-			
+			 
 			// Dirichlet BC
                         varr(i, j, k, 2) = 0.0;
 

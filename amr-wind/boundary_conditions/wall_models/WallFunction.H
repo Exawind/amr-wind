@@ -29,7 +29,6 @@ public:
     //! Update the mean velocity at a given timestep
     void update_umean();
     void update_utau_mean();
-    ///Dyanmic wave stress
     void update_time();
 
     ~WallFunction() = default;
@@ -44,7 +43,6 @@ private:
     int m_direction{2}; ///< Direction normal to wall, hardcoded to z
     VelPlaneAveragingFine m_pa_vel;
 
-    // MOSD instance 
     MOSD m_mosd;
 };
 
