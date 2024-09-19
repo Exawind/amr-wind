@@ -6,7 +6,7 @@
 
 namespace amr_wind {
 
-/** Dummy transition model for overset exchange of the gamma variable 
+/** Dummy transition model for overset exchange of the gamma variable
  *  \ingroup physics
  */
 class Intermittency : public Physics::Register<Intermittency>
