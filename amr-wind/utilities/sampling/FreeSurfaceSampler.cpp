@@ -29,6 +29,7 @@ void FreeSurfaceSampler::initialize(const std::string& key)
         AMREX_ALWAYS_ASSERT(static_cast<int>(m_start.size()) == AMREX_SPACEDIM);
         AMREX_ALWAYS_ASSERT(static_cast<int>(m_end.size()) == AMREX_SPACEDIM);
         AMREX_ALWAYS_ASSERT(static_cast<int>(m_npts_dir.size()) == 2);
+        check_bounds();
 
         switch (m_coorddir) {
         case 0: {
@@ -331,6 +332,7 @@ void FreeSurfaceSampler::initialize(const std::string& key)
         }
     }
 }
+void FreeSurfaceSampler::check_bounds() { amrex::Abort("implement"); }
 
 void FreeSurfaceSampler::sampling_locations(SampleLocType& locs) const
 {

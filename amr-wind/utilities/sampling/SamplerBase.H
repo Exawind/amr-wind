@@ -52,6 +52,9 @@ public:
     //! Populate the vector with coordinates of the sampling locations
     virtual void sampling_locations(SampleLocType&) const = 0;
 
+    //! Check and fix the bounds of the sampler so the probes are in the domain
+    virtual void check_bounds() = 0;
+
     //! Populate the vector with coordinates of the output locations
     virtual void output_locations(SampleLocType&) const = 0;
 
