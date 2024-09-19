@@ -332,7 +332,38 @@ void FreeSurfaceSampler::initialize(const std::string& key)
         }
     }
 }
-void FreeSurfaceSampler::check_bounds() { amrex::Abort("implement"); }
+void FreeSurfaceSampler::check_bounds()
+{
+    const int lev = 0;
+    const auto* prob_lo = m_sim.mesh().Geom(lev).ProbLo();
+    const auto* prob_hi = m_sim.mesh().Geom(lev).ProbHi();
+
+    bool all_ok = true;
+    for (int d = 0; d < AMREX_SPACEDIM; ++d) {
+        if (m_start[d] < prob_lo[d]) {
+            all_ok = false;
+            m_start[d] = prob_lo[d];
+        }
+        if (m_start[d] > prob_hi[d]) {
+            all_ok = false;
+            m_start[d] = prob_lo[d];
+        }
+        if (m_end[d] < prob_lo[d]) {
+            all_ok = false;
+            m_end[d] = prob_lo[d];
+        }
+        if (m_end[d] > prob_hi[d]) {
+            all_ok = false;
+            m_end[d] = prob_lo[d];
+        }
+    }
+    if (!all_ok) {
+        amrex::Print()
+            << "WARNING: FreeSurfaceSampler: Out of domain plane was "
+               "truncated to match domain"
+            << std::endl;
+    }
+}
 
 void FreeSurfaceSampler::sampling_locations(SampleLocType& locs) const
 {
