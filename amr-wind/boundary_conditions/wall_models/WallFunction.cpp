@@ -17,9 +17,6 @@ WallFunction::WallFunction(CFDSim& sim)
 {
     amrex::Real mu;
     amrex::Real rho{1.0};
-    amrex::Real amplitude;
-    amrex::Real wavenumber;
-    amrex::Real omega; 
 
     {
         amrex::ParmParse pp("BodyForce");
@@ -50,7 +47,7 @@ WallFunction::WallFunction(CFDSim& sim)
     }
     {
     amrex::ParmParse pp("wave_mosd"); // "wave_mosd" is the prefix used in the input file
-    pp.query("amplitude", m_mosd.aplitude);
+    pp.query("amplitude", m_mosd.amplitude);
     pp.query("wavenumber",m_mosd.wavenumber);
     pp.query("frequency",m_mosd.omega);
     }
