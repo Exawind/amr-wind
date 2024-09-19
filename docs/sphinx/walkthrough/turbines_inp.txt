@@ -10,12 +10,13 @@ time.plot_interval                       = 1250         # Steps between plot fil
 time.checkpoint_interval                 = 1250         # Steps between checkpoint files
 ABL.bndry_file                           = ../precursor/bndry_file.native
 ABL.bndry_io_mode                        = 1            # 0 = write, 1 = read
-ABL.bndry_planes                         = ylo xlo
+ABL.bndry_planes                         = xlo
 ABL.bndry_output_start_time              = 7200.0
 ABL.bndry_var_names                      = velocity temperature tke
 
 incflo.physics                           = ABL Actuator
 io.restart_file                          = ../spinup/chk14400           
+io.outputs                               = "actuator_src_term"
 turbulence.model                         = OneEqKsgsM84 # For neutral ABL, use "Smagorinsky"
 TKE.source_terms                         = KsgsM84Src         
 incflo.gravity                           = 0.  0. -9.81 # Gravitational force (3D)
@@ -39,11 +40,8 @@ xlo.temperature                          = 290.0
 xlo.tke                                  = 0.0
 xhi.type                                 = pressure_outflow    
 
-ylo.type                                 = mass_inflow         
-ylo.density                              = 1.225               
-ylo.temperature                          = 290.0               
-ylo.tke                                  = 0.0
-yhi.type                                 = pressure_outflow     
+ylo.type                                 = slip_wall         
+yhi.type                                 = slip_wall     
 
 zlo.type                                 = wall_model
 zhi.type                                 = slip_wall
