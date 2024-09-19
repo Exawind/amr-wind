@@ -122,7 +122,7 @@ void VelWallFunc::wall_model(
                 amrex::ParallelFor(
                     amrex::bdryLo(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::Real mu = eta(i, j, k);
+			const amrex::Real mu = eta(i, j, k);
                         const amrex::Real uu =
                             vold_arr(i, j, k + idx_offset, 0);
                         const amrex::Real vv =
@@ -131,6 +131,8 @@ void VelWallFunc::wall_model(
                         const amrex::Real xc = problo[0] + (i + 0.5) * dx[0]; 
 			const int k_lo = static_cast<int>(amrex::Math::floor(dx[0] / dx[2])); 
 			const int k_hi = k_lo + 1;
+	                AMREX_ALWAYS_ASSERT(bx.contains(amrex::IntVect(i,j,k_lo)));
+            		AMREX_ALWAYS_ASSERT(bx.contains(amrex::IntVect(i,j,k_hi)));
 			const amrex::Real z_diff = dx[0]  - (k_lo + 0.5) * dx[2];
 	                const amrex::Real u_low = vold_arr(i, j, k_lo, 0);
             	 	const amrex::Real u_up = vold_arr(i, j, k_hi, 0);
@@ -144,7 +146,7 @@ void VelWallFunc::wall_model(
                         varr(i, j, k - 1, 1) =
                             tau.get_shear(vv, wspd, u_dx, v_dx, xc, 1) / mu * den(i, j, k);
                         varr(i, j, k - 1, 2) = 0.0;
-                        
+			
                     });
             }
 
