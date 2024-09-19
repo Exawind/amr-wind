@@ -543,7 +543,7 @@ void replace_gradp(
     amrex::ParallelFor(
         mf_gp, mf_gp.n_grow,
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            if (iblank[nbx](i, j, k) == -1) {
+            if (iblank[nbx](i, j, k) <= 0) {
                 gp[nbx](i, j, k, 0) = gp0[nbx](i, j, k, 0);
                 gp[nbx](i, j, k, 1) = gp0[nbx](i, j, k, 1);
                 gp[nbx](i, j, k, 2) = gp0[nbx](i, j, k, 2);
