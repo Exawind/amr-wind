@@ -115,6 +115,6 @@ Example::
   wave_mosd.wavenumber = 4
   wave_mosd.frequency = 0.8
 
-NOTE: This wall model is only aplicable for the lower boundary ``zlo.type``. Also, it is set for only monochromatic waves. 
+.. note:: This wall model is only aplicable for the lower boundary ``zlo.type``. Also, it is set for only monochromatic waves. 
 
 Currently, the dynamic wall model is only available for ``incflo.physics = ChannelFlow``. The work to integrate this condition with the ABL class is under progress. See the ``channel_mosd`` test for an example that uses the dynamic wall model.

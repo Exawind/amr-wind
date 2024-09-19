@@ -50,14 +50,10 @@ WallFunction::WallFunction(CFDSim& sim)
     }
     {
     amrex::ParmParse pp("wave_mosd"); // "wave_mosd" is the prefix used in the input file
-    pp.query("amplitude", amplitude);
-    pp.query("wavenumber", wavenumber);
-    pp.query("frequency", omega);
+    pp.query("amplitude", m_mosd.aplitude);
+    pp.query("wavenumber",m_mosd.wavenumber);
+    pp.query("frequency",m_mosd.omega);
     }
-    m_mosd.amplitude = amplitude;
-    m_mosd.wavenumber = wavenumber;
-    m_mosd.omega = omega;
-
 
 }
 
@@ -136,13 +132,13 @@ void VelWallFunc::wall_model(
                             vold_arr(i, j, k + idx_offset, 1);
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
                         const amrex::Real xc = problo[0] + (i + 0.5) * dx[0]; 
-			const int z_dx_low = static_cast<int>(std::floor(dx[0] / dx[2])); 
-			const int z_dx_up = z_dx_low + 1;
-			const amrex::Real z_diff = dx[0]  - (z_dx_low + 0.5) * dx[2];
-	                const amrex::Real u_low = vold_arr(i, j, z_dx_low, 0);
-            	 	const amrex::Real u_up = vold_arr(i, j, z_dx_up, 0);
-                        const amrex::Real v_low = vold_arr(i, j, z_dx_low, 1);
-                        const amrex::Real v_up = vold_arr(i, j, z_dx_up, 1);
+			const int k_lo = static_cast<int>(amrex::Math::floor(dx[0] / dx[2])); 
+			const int k_hi = k_lo + 1;
+			const amrex::Real z_diff = dx[0]  - (k_lo + 0.5) * dx[2];
+	                const amrex::Real u_low = vold_arr(i, j, k_lo, 0);
+            	 	const amrex::Real u_up = vold_arr(i, j, k_hi, 0);
+                        const amrex::Real v_low = vold_arr(i, j, k_lo, 1);
+                        const amrex::Real v_up = vold_arr(i, j, k_hi, 1);
                         const amrex::Real u_dx = u_low + (u_up - u_low) * (z_diff / dx[2]);
                         const amrex::Real v_dx = v_low + (v_up - v_low) * (z_diff / dx[2]);
 			

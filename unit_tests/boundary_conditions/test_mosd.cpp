@@ -28,10 +28,10 @@ TEST_F(MOSDTest, test_mosd)
     populate_parameters();
     amr_wind::MOSD md;
 
-    const md.amplitude = 0.05; 
-    const md.wavenumber = 4;
-    const md.omega = 0.8;
-    const md.time = 0;
+    md.amplitude = 0.05; 
+    md.wavenumber = 4;
+    md.omega = 0.8;
+    md.time = 0;
 
     const amrex::Real utau = 0.1;
     const amrex::Real tau_wave_expected = 0.0;
@@ -43,13 +43,13 @@ TEST_F(MOSDTest, test_mosd)
     EXPECT_NEAR(tau_wave, tau_wave_expected, m_tol);
 
     
-    const tau_wave_expected = 0.0;
-    const x_c = 0.392699; //This give sin(pi/two) = one//
+    tau_wave_expected = 0.0;
+    x_c = 0.392699; //This give sin(pi/two) = one//
     //However, because this location is at the negative slope of the wave, the heaviside function will make the tau=zero
     EXPECT_NEAR(md.get_dyn_tau(u_dx,v_dx,x_c,unit_nor), tau_wave_expected, m_tol);
 
-    const tau_wave_expected = 0.02493;
-    const x_c = 1.0; //This give sin(four)= negative value
+    tau_wave_expected = 0.02493;
+    x_c = 1.0; //This give sin(four)= negative value
     //At this location we are in the possitive slope, therfore heaviside function will allow for stress
     EXPECT_NEAR(md.get_dyn_tau(u_dx,v_dx,x_c,unit_nor), tau_wave_expected, m_tol);
 
