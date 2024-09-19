@@ -10,7 +10,7 @@ time.plot_interval                       = 1200         # Steps between plot fil
 time.checkpoint_interval                 = 1200         # Steps between checkpoint files
 ABL.bndry_file                           = bndry_file.native
 ABL.bndry_io_mode                        = 0            # 0 = write, 1 = read
-ABL.bndry_planes                         = ylo xlo
+ABL.bndry_planes                         = xlo
 ABL.bndry_output_start_time              = 7200.0
 ABL.bndry_var_names                      = velocity temperature tke
 
