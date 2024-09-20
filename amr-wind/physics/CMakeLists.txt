@@ -17,6 +17,7 @@ target_sources(${amr_wind_lib_name}
   VortexDipole.cpp
   BurggrafFlow.cpp
   ActuatorSourceTagging.cpp
+  Intermittency.cpp
   )
 
 add_subdirectory(multiphase)
