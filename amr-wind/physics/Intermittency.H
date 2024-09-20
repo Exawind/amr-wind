@@ -31,7 +31,7 @@ public:
 private:
     Field& m_intermittency;
 
-    //! initial density value
+    //! initial intermittency value
     amrex::Real m_gamma{1.0};
 };
 
