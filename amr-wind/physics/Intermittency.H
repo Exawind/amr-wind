@@ -28,7 +28,7 @@ public:
     void post_advance_work() override {}
 
 private:
-    const Field& m_intermittency;
+    Field& m_intermittency;
 
     //! initial intermittency value
     amrex::Real m_gamma{1.0};
