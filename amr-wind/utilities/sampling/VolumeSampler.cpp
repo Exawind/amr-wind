@@ -48,7 +48,7 @@ void VolumeSampler::check_bounds()
         }
         if (m_lo[d] > prob_hi[d]) {
             all_ok = false;
-            m_lo[d] = prob_lo[d];
+            m_lo[d] = prob_hi[d];
         }
         if (m_hi[d] < prob_lo[d]) {
             all_ok = false;
@@ -56,7 +56,7 @@ void VolumeSampler::check_bounds()
         }
         if (m_hi[d] > prob_hi[d]) {
             all_ok = false;
-            m_hi[d] = prob_lo[d];
+            m_hi[d] = prob_hi[d];
         }
     }
     if (!all_ok) {

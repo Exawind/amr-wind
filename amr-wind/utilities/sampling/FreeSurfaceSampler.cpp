@@ -346,7 +346,7 @@ void FreeSurfaceSampler::check_bounds()
         }
         if (m_start[d] > prob_hi[d]) {
             all_ok = false;
-            m_start[d] = prob_lo[d];
+            m_start[d] = prob_hi[d];
         }
         if (m_end[d] < prob_lo[d]) {
             all_ok = false;
@@ -354,7 +354,7 @@ void FreeSurfaceSampler::check_bounds()
         }
         if (m_end[d] > prob_hi[d]) {
             all_ok = false;
-            m_end[d] = prob_lo[d];
+            m_end[d] = prob_hi[d];
         }
     }
     if (!all_ok) {
