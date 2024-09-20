@@ -33,8 +33,20 @@ void iblank_to_mask_vof(
                         }
                     }
                 }
+                // Check nodes neighboring node for being near solid
+                bool near_solid = false;
+                for (int ii = i - 1; ii < i + 2; ii++) {
+                    for (int jj = j - 1; jj < j + 2; jj++) {
+                        for (int kk = k - 1; kk < k + 2; kk++) {
+                            near_solid = ibarrs[nbx](ii, jj, kk) == 0
+                                             ? true
+                                             : near_solid;
+                        }
+                    }
+                }
                 // Do mask -1 cells near interface
-                if (ibarrs[nbx](i, j, k) == -1 && near_interface) {
+                if (ibarrs[nbx](i, j, k) == -1 &&
+                    (near_interface && !near_solid)) {
                     marrs[nbx](i, j, k) = 1;
                 }
             });
