@@ -46,12 +46,12 @@ WallFunction::WallFunction(CFDSim& sim)
              (m_log_law.ref_index + 0.5) * geom.CellSize(m_direction));
     }
     {
-    amrex::ParmParse pp("wave_mosd"); // "wave_mosd" is the prefix used in the input file
-    pp.query("amplitude", m_mosd.amplitude);
-    pp.query("wavenumber",m_mosd.wavenumber);
-    pp.query("frequency",m_mosd.omega);
+        amrex::ParmParse pp(
+            "wave_mosd"); // "wave_mosd" is the prefix used in the input file
+        pp.query("amplitude", m_mosd.amplitude);
+        pp.query("wavenumber", m_mosd.wavenumber);
+        pp.query("frequency", m_mosd.omega);
     }
-
 }
 
 VelWallFunc::VelWallFunc(Field& /*unused*/, WallFunction& wall_func)
@@ -64,7 +64,7 @@ VelWallFunc::VelWallFunc(Field& /*unused*/, WallFunction& wall_func)
     if (m_wall_shear_stress_type == "constant" ||
         m_wall_shear_stress_type == "log_law" ||
         m_wall_shear_stress_type == "schumann" ||
-	m_wall_shear_stress_type == "mosd")  {
+        m_wall_shear_stress_type == "mosd") {
         amrex::Print() << "Shear Stress model: " << m_wall_shear_stress_type
                        << std::endl;
     } else {
@@ -93,7 +93,7 @@ void VelWallFunc::wall_model(
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
-	const auto& domain = geom.Domain();
+        const auto& domain = geom.Domain();
         amrex::MFItInfo mfi_info{};
 
         const auto& rho_lev = density(lev);
@@ -101,7 +101,7 @@ void VelWallFunc::wall_model(
         const auto& vold_lev = velocity.state(FieldState::Old)(lev);
         const auto& eta_lev = viscosity(lev);
 
-	const auto& problo = geom.ProbLoArray();
+        const auto& problo = geom.ProbLoArray();
         const auto& dx = geom.CellSizeArray();
 
         if (amrex::Gpu::notInLaunchRegion()) {
@@ -122,31 +122,37 @@ void VelWallFunc::wall_model(
                 amrex::ParallelFor(
                     amrex::bdryLo(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-			const amrex::Real mu = eta(i, j, k);
+                        const amrex::Real mu = eta(i, j, k);
                         const amrex::Real uu =
                             vold_arr(i, j, k + idx_offset, 0);
                         const amrex::Real vv =
                             vold_arr(i, j, k + idx_offset, 1);
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
-                        const amrex::Real xc = problo[0] + (i + 0.5) * dx[0]; 
-			const int k_lo = static_cast<int>(amrex::Math::floor(dx[0] / dx[2])); 
-			const int k_hi = k_lo + 1;
-	                AMREX_ALWAYS_ASSERT(bx.contains(amrex::IntVect(i,j,k_lo)));
-            		AMREX_ALWAYS_ASSERT(bx.contains(amrex::IntVect(i,j,k_hi)));
-			const amrex::Real z_diff = dx[0]  - (k_lo + 0.5) * dx[2];
-	                const amrex::Real u_low = vold_arr(i, j, k_lo, 0);
-            	 	const amrex::Real u_up = vold_arr(i, j, k_hi, 0);
+                        const amrex::Real xc = problo[0] + (i + 0.5) * dx[0];
+                        const int k_lo =
+                            static_cast<int>(amrex::Math::floor(dx[0] / dx[2]));
+                        const int k_hi = k_lo + 1;
+                        AMREX_ALWAYS_ASSERT(
+                            bx.contains(amrex::IntVect(i, j, k_lo)));
+                        AMREX_ALWAYS_ASSERT(
+                            bx.contains(amrex::IntVect(i, j, k_hi)));
+                        const amrex::Real z_diff = dx[0] - (k_lo + 0.5) * dx[2];
+                        const amrex::Real u_low = vold_arr(i, j, k_lo, 0);
+                        const amrex::Real u_up = vold_arr(i, j, k_hi, 0);
                         const amrex::Real v_low = vold_arr(i, j, k_lo, 1);
                         const amrex::Real v_up = vold_arr(i, j, k_hi, 1);
-                        const amrex::Real u_dx = u_low + (u_up - u_low) * (z_diff / dx[2]);
-                        const amrex::Real v_dx = v_low + (v_up - v_low) * (z_diff / dx[2]);
-			
-			varr(i, j, k - 1, 0) =
-                            tau.get_shear(uu, wspd, u_dx, v_dx, xc, 0) / mu * den(i, j, k);
+                        const amrex::Real u_dx =
+                            u_low + (u_up - u_low) * (z_diff / dx[2]);
+                        const amrex::Real v_dx =
+                            v_low + (v_up - v_low) * (z_diff / dx[2]);
+
+                        varr(i, j, k - 1, 0) =
+                            tau.get_shear(uu, wspd, u_dx, v_dx, xc, 0) / mu *
+                            den(i, j, k);
                         varr(i, j, k - 1, 1) =
-                            tau.get_shear(vv, wspd, u_dx, v_dx, xc, 1) / mu * den(i, j, k);
+                            tau.get_shear(vv, wspd, u_dx, v_dx, xc, 1) / mu *
+                            den(i, j, k);
                         varr(i, j, k - 1, 2) = 0.0;
-			
                     });
             }
 
@@ -161,14 +167,16 @@ void VelWallFunc::wall_model(
                         const amrex::Real vv =
                             vold_arr(i, j, k - 1 - idx_offset, 1);
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
-			// Dirichlet BC
+                        // Dirichlet BC
                         varr(i, j, k, 2) = 0.0;
 
                         // Shear stress BC
                         varr(i, j, k, 0) =
-                            -tau.get_shear(uu, wspd, 0, 0, 0, 0) / mu * den(i, j, k);
+                            -tau.get_shear(uu, wspd, 0, 0, 0, 0) / mu *
+                            den(i, j, k);
                         varr(i, j, k, 1) =
-                            -tau.get_shear(vv, wspd, 0, 0, 0, 1) / mu * den(i, j, k);
+                            -tau.get_shear(vv, wspd, 0, 0, 0, 1) / mu *
+                            den(i, j, k);
                     });
             }
         }
@@ -279,9 +287,5 @@ void WallFunction::update_umean()
 
 void WallFunction::update_utau_mean() { m_log_law.update_utau_mean(); }
 
-void WallFunction::update_time()
-{
-    m_mosd.time = m_sim.time().current_time();
-
-}
+void WallFunction::update_time() { m_mosd.time = m_sim.time().current_time(); }
 } // namespace amr_wind

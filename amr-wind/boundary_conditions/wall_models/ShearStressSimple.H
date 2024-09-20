@@ -13,10 +13,15 @@ struct SimpleShearSchumann
         : utau2(ll.utau_mean * ll.utau_mean), wspd_mean(ll.wspd_mean), m_ll(ll)
     {}
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-    get_shear(amrex::Real u, amrex::Real /* wspd */, amrex::Real /*u_dx*/, amrex::Real /*v_dx*/, amrex::Real /*x_c*/, amrex::Real /*unit_nor*/) const
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real get_shear(
+        amrex::Real u,
+        amrex::Real /* wspd */,
+        amrex::Real /*u_dx*/,
+        amrex::Real /*v_dx*/,
+        amrex::Real /*x_c*/,
+        amrex::Real /*unit_nor*/) const
     {
-        return u / wspd_mean * utau2  ;
+        return u / wspd_mean * utau2;
     };
 
     amrex::Real utau2;
@@ -25,12 +30,15 @@ struct SimpleShearSchumann
 };
 struct SimpleShearLogLaw
 {
-    explicit SimpleShearLogLaw(const amr_wind::LogLaw& ll) 
-        : m_ll(ll)
-    {}
+    explicit SimpleShearLogLaw(const amr_wind::LogLaw& ll) : m_ll(ll) {}
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-    get_shear(amrex::Real u, amrex::Real wspd, amrex::Real /*u_dx*/, amrex::Real /*v_dx*/, amrex::Real /*x_c*/, amrex::Real /*unit_nor*/ ) const
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real get_shear(
+        amrex::Real u,
+        amrex::Real wspd,
+        amrex::Real /*u_dx*/,
+        amrex::Real /*v_dx*/,
+        amrex::Real /*x_c*/,
+        amrex::Real /*unit_nor*/) const
     {
         amrex::Real utau = m_ll.get_utau(wspd);
         return utau * utau * u / wspd;
@@ -39,20 +47,26 @@ struct SimpleShearLogLaw
     const amr_wind::LogLaw m_ll;
 };
 
-///Dyanmic wave stress
+/// Dyanmic wave stress
 struct SimpleShearMOSD
 {
-    explicit SimpleShearMOSD(const amr_wind::LogLaw& ll , const amr_wind::MOSD& md) 
-        : m_ll(ll) , m_md(md)
+    explicit SimpleShearMOSD(
+        const amr_wind::LogLaw& ll, const amr_wind::MOSD& md)
+        : m_ll(ll), m_md(md)
     {}
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-    get_shear(amrex::Real u, amrex::Real wspd, amrex::Real u_dx, amrex::Real v_dx, amrex::Real x_c, amrex::Real unit_nor) const
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real get_shear(
+        amrex::Real u,
+        amrex::Real wspd,
+        amrex::Real u_dx,
+        amrex::Real v_dx,
+        amrex::Real x_c,
+        amrex::Real unit_nor) const
     {
         amrex::Real utau = m_ll.get_utau(wspd);
         amrex::Real tau_vis = utau * utau * u / wspd;
 
-        amrex::Real tau_wave = m_md.get_dyn_tau(u_dx,v_dx,x_c,unit_nor);
+        amrex::Real tau_wave = m_md.get_dyn_tau(u_dx, v_dx, x_c, unit_nor);
 
         return tau_vis + tau_wave;
     };
@@ -60,8 +74,6 @@ struct SimpleShearMOSD
     const amr_wind::LogLaw m_ll;
     const amr_wind::MOSD m_md;
 };
-
-
 
 } // namespace amr_wind
 
