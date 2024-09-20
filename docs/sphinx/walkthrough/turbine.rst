@@ -117,8 +117,8 @@ and the turbine inflow-outflow simulation is ready to be submitted.
 
 Below we show the magnitude of the velocity at t=7350s (top) and at the final time (bottom), with the turbines displayed as 3D contours in both images. Note how the wakes can readily be seen.
 
-.. image:: ./Visualization/turbines_simulation_velocityx_w_turbines_timestep_15650.png
+.. image:: ./visualization/turbines_simulation_velocityx_w_turbines_timestep_15650.png
     :width: 100%
 
-.. image:: ./Visualization/turbines_simulation_velocityx_w_turbines_timestep_19400.png
+.. image:: ./visualization/turbines_simulation_velocityx_w_turbines_timestep_19400.png
     :width: 100%

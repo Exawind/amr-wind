@@ -74,7 +74,7 @@ which are provided through the abl_statistics file within post_processing/.
 
 As an example, here we use Paraview and display the magnitude of the velocity at the final time of the simulation.
 
-.. image:: ./Visualization/spinup_magnitude_of_velocity_timestep_14400.png
+.. image:: ./visualization/spinup_magnitude_of_velocity_timestep_14400.png
     :width: 100%
 
 Precursor simulation
