@@ -65,10 +65,10 @@ void PlaneSampler::check_bounds()
             const amrex::Vector<amrex::Real> points = {
                 point, point + m_axis1[d], point + m_axis2[d]};
             for (const auto& pt : points) {
-                if ((pt < prob_lo[d]) || (pt > prob_hi[d])) {
+                if ((pt <= prob_lo[d]) || (pt >= prob_hi[d])) {
                     amrex::Abort(
                         "PlaneSampler: Point out of domain. Redefine your "
-                        "planes so they are inside the domain.");
+                        "planes so they are completely inside the domain.");
                 }
             }
         }

@@ -106,21 +106,21 @@ void RadarSampler::check_bounds()
 
     bool all_ok = true;
     for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-        if (m_start[d] < prob_lo[d]) {
+        if (m_start[d] <= prob_lo[d]) {
             all_ok = false;
-            m_start[d] = prob_lo[d];
+            m_start[d] = prob_lo[d] + bounds_tol;
         }
-        if (m_start[d] > prob_hi[d]) {
+        if (m_start[d] >= prob_hi[d]) {
             all_ok = false;
-            m_start[d] = prob_lo[d];
+            m_start[d] = prob_hi[d] - bounds_tol;
         }
-        if (m_end[d] < prob_lo[d]) {
+        if (m_end[d] <= prob_lo[d]) {
             all_ok = false;
-            m_end[d] = prob_lo[d];
+            m_end[d] = prob_lo[d] + bounds_tol;
         }
-        if (m_end[d] > prob_hi[d]) {
+        if (m_end[d] >= prob_hi[d]) {
             all_ok = false;
-            m_end[d] = prob_lo[d];
+            m_end[d] = prob_hi[d] - bounds_tol;
         }
     }
     if (!all_ok) {

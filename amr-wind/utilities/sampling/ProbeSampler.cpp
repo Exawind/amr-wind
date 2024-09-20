@@ -38,13 +38,13 @@ void ProbeSampler::check_bounds()
     bool all_ok = true;
     for (int i = 0; i < m_npts; ++i) {
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-            if (m_probes[i][d] < prob_lo[d]) {
+            if (m_probes[i][d] <= prob_lo[d]) {
                 all_ok = false;
-                m_probes[i][d] = prob_lo[d];
+                m_probes[i][d] = prob_lo[d] + bounds_tol;
             }
-            if (m_probes[i][d] > prob_hi[d]) {
+            if (m_probes[i][d] >= prob_hi[d]) {
                 all_ok = false;
-                m_probes[i][d] = prob_hi[d];
+                m_probes[i][d] = prob_hi[d] - bounds_tol;
             }
         }
     }
