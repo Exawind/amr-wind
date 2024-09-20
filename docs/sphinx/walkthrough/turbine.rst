@@ -12,6 +12,7 @@ This file looks like the precursor input file, except for the following changes:
 
 * We are now reading in boundary condition data, not writing it out. Similarly, the x- and y- boundaries are no longer periodic, requiring 
   us to specify some extra characteristics about the inflow.
+* We added the line ``io.outputs="actuator_src_term"`` to output relevant information about the location of the turbines for plotting purposes
 * ``incflo.physics`` now includes ``Actuator`` so that turbine-related calculations can take place.
 * Similarly, we remove ``ABLForcing`` from ``ICNS.source_terms``, and we replace it with three new forces: 
   ``BodyForce ABLMeanBoussinesq ActuatorForcing``. We then provide extra information about these forces.
@@ -25,7 +26,7 @@ This file looks like the precursor input file, except for the following changes:
   the recommended DT is 0.01, requiring a change to the AMR-Wind dt. Due to this change in the time step size, we have also adjusted
   the plotting, checkpoint, and sampling intervals.
 
-.. collapse:: Further details about these source terms and wf specifications
+.. collapse:: Further details about these source terms and wall function (wf) specifications
 
     Now that this simulation is not periodic and will feature turbine wakes, the previous approach to forcing the velocity field
     (ABLForcing) is not viable. In addition to the inflow information from the precursor simulation, we also want to mimic
@@ -91,7 +92,7 @@ Note that, when simulating OpenFAST turbines through AMR-Wind instead of directl
 following changes to the OpenFAST files:
 
 * ``NREL-2p8-127_AeroDyn15.dat``: Make sure ``WakeMod`` is ``0``
-* ``NREL-2p8-127_ElastoDyn.dat``: Set the initial RPM ``RotSpeed`` and initial yaw angle ``NacYaw`` to reasonable values
+* ``NREL-2p8-127_ElastoDyn.dat``: Set the initial RPM ``RotSpeed`` and initial yaw angle ``NacYaw`` to reasonable values (in this walkthrough we use 13.5 RPM and 0 degrees, respectively)
 * ``NREL-2p8-127.fst``: Set ``CompInflow`` to be ``2`` and ``OutFileFmt`` to be ``1``
 * ``NREL-2p8-127_ServoDyn.dat``: Make sure ``DLL_FileName`` points to a ``libdiscon.so`` (on Linux) or ``libdiscon.dylib`` (on Mac) file from ROSCO. If you compiled using exawind-manager,
   see the :ref:`section of the documentation <rosco-dyn-lib>` that discusses how to determine the correct path to this ROSCO library file.
@@ -114,6 +115,10 @@ When all of these steps are complete, the job directory for running the turbine 
 
 and the turbine inflow-outflow simulation is ready to be submitted.
 
-(TODO: As an example, insert paraview images of mesh and flowfield after x number of steps)
+Below we show the magnitude of the velocity at t=7350s (top) and at the final time (bottom), with the turbines displayed as 3D contours in both images. Note how the wakes can readily be seen.
 
-(TODO: after checking flow field, check if current yaw angle is fine and update accordingly)
+.. image:: ./Visualization/turbines_simulation_velocityx_w_turbines_timestep_15650.png
+    :width: 100%
+
+.. image:: ./Visualization/turbines_simulation_velocityx_w_turbines_timestep_19400.png
+    :width: 100%

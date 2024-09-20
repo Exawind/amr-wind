@@ -72,6 +72,11 @@ it is helpful to sanity check that the flow field variables make sense. The ``pl
 visualization software that is AMReX-compatible. Another quick test is to plot the evolution of horizontally averaged vertical profiles,
 which are provided through the abl_statistics file within post_processing/.
 
+As an example, here we use Paraview and display the magnitude of the velocity at the final time of the simulation.
+
+.. image:: ./Visualization/spinup_magnitude_of_velocity_timestep_14400.png
+    :width: 100%
+
 Precursor simulation
 --------------------
 After sufficiently spinning up turbulence, the "precursor simulation" follows. 
