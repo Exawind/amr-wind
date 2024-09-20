@@ -272,9 +272,9 @@ TEST_F(SamplingTest, plane_sampler)
         amrex::ParmParse pp("plane");
         pp.addarr("axis1", amrex::Vector<double>{0.0, 1.0, 0.0});
         pp.addarr("axis2", amrex::Vector<double>{0.0, 0.0, 1.0});
-        pp.addarr("origin", amrex::Vector<double>{0.0, 0.0, 0.0});
+        pp.addarr("origin", amrex::Vector<double>{1.0, 1.0, 1.0});
         pp.addarr("num_points", amrex::Vector<int>{3, 3});
-        pp.addarr("offsets", amrex::Vector<double>{1.0, 10.0});
+        pp.addarr("offsets", amrex::Vector<double>{2.0, 10.0});
         pp.addarr("offset_vector", amrex::Vector<double>{1.0, 0.0, 0.0});
     }
 
