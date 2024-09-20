@@ -25,6 +25,9 @@ public:
 
     static std::string base_identifier() { return "SamplerBase"; }
 
+    static constexpr amrex::Real bounds_tol =
+        std::numeric_limits<amrex::Real>::epsilon();
+
     ~SamplerBase() override = default;
 
     //! Name used to refer to this sampler (e.g., myline1)
