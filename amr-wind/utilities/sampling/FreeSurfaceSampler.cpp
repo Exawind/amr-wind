@@ -29,6 +29,7 @@ void FreeSurfaceSampler::initialize(const std::string& key)
         AMREX_ALWAYS_ASSERT(static_cast<int>(m_start.size()) == AMREX_SPACEDIM);
         AMREX_ALWAYS_ASSERT(static_cast<int>(m_end.size()) == AMREX_SPACEDIM);
         AMREX_ALWAYS_ASSERT(static_cast<int>(m_npts_dir.size()) == 2);
+        check_bounds();
 
         switch (m_coorddir) {
         case 0: {
@@ -329,6 +330,38 @@ void FreeSurfaceSampler::initialize(const std::string& key)
                     }
                 });
         }
+    }
+}
+void FreeSurfaceSampler::check_bounds()
+{
+    const int lev = 0;
+    const auto* prob_lo = m_sim.mesh().Geom(lev).ProbLo();
+    const auto* prob_hi = m_sim.mesh().Geom(lev).ProbHi();
+
+    bool all_ok = true;
+    for (int d = 0; d < AMREX_SPACEDIM; ++d) {
+        if (m_start[d] < prob_lo[d]) {
+            all_ok = false;
+            m_start[d] = prob_lo[d];
+        }
+        if (m_start[d] > prob_hi[d]) {
+            all_ok = false;
+            m_start[d] = prob_lo[d];
+        }
+        if (m_end[d] < prob_lo[d]) {
+            all_ok = false;
+            m_end[d] = prob_lo[d];
+        }
+        if (m_end[d] > prob_hi[d]) {
+            all_ok = false;
+            m_end[d] = prob_lo[d];
+        }
+    }
+    if (!all_ok) {
+        amrex::Print()
+            << "WARNING: FreeSurfaceSampler: Out of domain plane was "
+               "truncated to match domain"
+            << std::endl;
     }
 }
 

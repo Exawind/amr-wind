@@ -1,12 +1,13 @@
 #include <limits>
 
 #include "amr-wind/utilities/sampling/PlaneSampler.H"
+#include "amr-wind/CFDSim.H"
 
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind::sampling {
 
-PlaneSampler::PlaneSampler(const CFDSim& /*unused*/) {}
+PlaneSampler::PlaneSampler(const CFDSim& sim) : m_sim(sim) {}
 
 PlaneSampler::~PlaneSampler() = default;
 
@@ -39,6 +40,8 @@ void PlaneSampler::initialize(const std::string& key)
         m_poffsets.push_back(0.0);
     }
 
+    check_bounds();
+
     // Update total number of points
     const size_t tmp = m_poffsets.size() * m_npts_dir[0] * m_npts_dir[1];
     if (tmp > static_cast<size_t>(std::numeric_limits<int>::max())) {
@@ -47,6 +50,29 @@ void PlaneSampler::initialize(const std::string& key)
             " exceeds 32-bit integer limits");
     }
     m_npts = static_cast<int>(tmp);
+}
+
+void PlaneSampler::check_bounds()
+{
+    const int lev = 0;
+    const auto* prob_lo = m_sim.mesh().Geom(lev).ProbLo();
+    const auto* prob_hi = m_sim.mesh().Geom(lev).ProbHi();
+
+    const int nplanes = static_cast<int>(m_poffsets.size());
+    for (int k = 0; k < nplanes; ++k) {
+        for (int d = 0; d < AMREX_SPACEDIM; ++d) {
+            const auto point = m_origin[d] + m_poffsets[k] * m_offset_vector[d];
+            const amrex::Vector<amrex::Real> points = {
+                point, point + m_axis1[d], point + m_axis2[d]};
+            for (const auto& pt : points) {
+                if ((pt < prob_lo[d]) || (pt > prob_hi[d])) {
+                    amrex::Abort(
+                        "PlaneSampler: Point out of domain. Redefine your "
+                        "planes so they are inside the domain.");
+                }
+            }
+        }
+    }
 }
 
 void PlaneSampler::sampling_locations(SampleLocType& locs) const

@@ -5,7 +5,7 @@
 
 namespace amr_wind::sampling {
 
-ProbeSampler::ProbeSampler(const CFDSim& /*unused*/) {}
+ProbeSampler::ProbeSampler(const CFDSim& sim) : m_sim(sim) {}
 
 ProbeSampler::~ProbeSampler() = default;
 
@@ -26,6 +26,32 @@ void ProbeSampler::initialize(const std::string& key)
     for (int i = 0; i < m_npts; ++i) {
         ifh >> m_probes[i][0] >> m_probes[i][1] >> m_probes[i][2];
         ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+    check_bounds();
+}
+
+void ProbeSampler::check_bounds()
+{
+    const int lev = 0;
+    const auto* prob_lo = m_sim.mesh().Geom(lev).ProbLo();
+    const auto* prob_hi = m_sim.mesh().Geom(lev).ProbHi();
+    bool all_ok = true;
+    for (int i = 0; i < m_npts; ++i) {
+        for (int d = 0; d < AMREX_SPACEDIM; ++d) {
+            if (m_probes[i][d] < prob_lo[d]) {
+                all_ok = false;
+                m_probes[i][d] = prob_lo[d];
+            }
+            if (m_probes[i][d] > prob_hi[d]) {
+                all_ok = false;
+                m_probes[i][d] = prob_hi[d];
+            }
+        }
+    }
+    if (!all_ok) {
+        amrex::Print() << "WARNING: ProbeSampler: Out of domain probe was "
+                          "truncated to match domain"
+                       << std::endl;
     }
 }
 
