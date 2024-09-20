@@ -138,7 +138,7 @@ Flow physics
 
    * Field plane averaging and second and third order moments
 
-   * Derived fields and field operators such as vorticity, q-criterion, strain-rates, gradients, divergence, laplacian
+   * Derived fields and field operators such as vorticity, q-criterion, strain-rates, gradients, divergence, laplacian [:ref:`inp <inputs_io_derived>`]
 
    * in-situ post-processing with Ascent
 

@@ -213,6 +213,20 @@ information, see `Allaerts et al. (BLM 2020)
 
 The application of these forcing approaches is detailed :ref:`here <inputs_meso_forcing>`.
 
+Actuator Forcing
+~~~~~~~~~~~~~~~~
+
+Calculating actuator forces relies on sampling the velocity field at actuator points
+at the beginning of each time step (*n*). Actuator-based models, i.e., actuator lines
+and actuator disks, rely on internal implementations (e.g., joukowsky disk, actuator-line wing)
+or external turbine tools (OpenFAST) that use these sampled velocities to calculate forces 
+and the motion of actuator points.
+When the Godunov method is used, the motion of actuator points must be incorporated
+into the application of actuator forces. This is because the Godunov method discretizes source terms
+at the half time step (*n+1/2*). Therefore, the actuator force vectors are calculated using 
+fluid velocities at *n*, and these actuator forces are applied at locations corresponding
+to *n+1/2*.
+
 .. _turbulence:
 
 Turbulence Models

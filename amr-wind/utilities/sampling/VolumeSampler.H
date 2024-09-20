@@ -28,6 +28,9 @@ public:
      */
     void initialize(const std::string& key) override;
 
+    //! Check and fix the bounds of the sampler so the probes are in the domain
+    void check_bounds() override;
+
     //! Populate and return a vector of probe locations to be sampled
     void sampling_locations(SampleLocType& /*locs*/) const override;
 
@@ -59,6 +62,8 @@ public:
     long num_output_points() const override { return m_npts; }
 
 private:
+    const CFDSim& m_sim;
+
     amrex::Vector<amrex::Real> m_hi;
     amrex::Vector<amrex::Real> m_lo;
     amrex::Vector<int> m_npts_dir;

@@ -35,7 +35,8 @@ public:
 
     enum class phase { FORWARD, FORWARD_PAUSE, REVERSE, REVERSE_PAUSE };
 
-    void check_bounds();
+    //! Check and fix the bounds of the sampler so the probes are in the domain
+    void check_bounds() override;
 
     void new_cone();
 
