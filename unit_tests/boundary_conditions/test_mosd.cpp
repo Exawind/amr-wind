@@ -34,24 +34,24 @@ TEST_F(MOSDTest, test_mosd)
     md.time = 0;
 
     const amrex::Real utau = 0.1;
-    const amrex::Real tau_wave_expected = 0.0;
     const amrex::Real u_dx = get_u_loglaw(utau);
     const amrex::Real v_dx = 0.0;
-    const amrex::Real x_c = 3.141592;  //For this location of the wave, the stress has to be zero, because sin(#pi)=zero//
     const amrex::Real unit_nor = 0.0;
-    auto tau_wave = md.get_dyn_tau(u_dx,v_dx,x_c,unit_nor);
-    EXPECT_NEAR(tau_wave, tau_wave_expected, m_tol);
+    {const amrex::Real tau_wave_expected = 0.0;
+    const amrex::Real x_c = 3.141592;
+    EXPECT_NEAR(md.get_dyn_tau(u_dx,v_dx,x_c,unit_nor), tau_wave_expected, m_tol);}
 
     
-    tau_wave_expected = 0.0;
-    x_c = 0.392699; //This give sin(pi/two) = one//
+    {const amrex::Real tau_wave_expected = 0.0;
+     const amrex::Real x_c = 0.392699; //This give sin(pi/two) = one//
     //However, because this location is at the negative slope of the wave, the heaviside function will make the tau=zero
-    EXPECT_NEAR(md.get_dyn_tau(u_dx,v_dx,x_c,unit_nor), tau_wave_expected, m_tol);
+    EXPECT_NEAR(md.get_dyn_tau(u_dx,v_dx,x_c,unit_nor), tau_wave_expected, m_tol);}
 
-    tau_wave_expected = 0.02493;
-    x_c = 1.0; //This give sin(four)= negative value
+    {const amrex::Real    tau_wave_expected = 0.02493;
+     const amrex::Real x_c = 1.0; //This give sin(four)= negative value
     //At this location we are in the possitive slope, therfore heaviside function will allow for stress
-    EXPECT_NEAR(md.get_dyn_tau(u_dx,v_dx,x_c,unit_nor), tau_wave_expected, m_tol);
+    EXPECT_NEAR(md.get_dyn_tau(u_dx,v_dx,x_c,unit_nor), tau_wave_expected, m_tol)
+    ;}
 
 }
 } // namespace amr_wind_tests
