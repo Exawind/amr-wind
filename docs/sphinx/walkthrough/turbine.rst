@@ -92,7 +92,7 @@ Note that, when simulating OpenFAST turbines through AMR-Wind instead of directl
 following changes to the OpenFAST files:
 
 * ``NREL-2p8-127_AeroDyn15.dat``: Make sure ``WakeMod`` is ``0``
-* ``NREL-2p8-127_ElastoDyn.dat``: Set the initial RPM ``RotSpeed`` and initial yaw angle ``NacYaw`` to reasonable values (in this walkthrough we use 13.5 RPM and 0 degrees, respectively)
+* ``NREL-2p8-127_ElastoDyn.dat``: Set the initial RPM ``RotSpeed`` and initial yaw angle ``NacYaw`` to reasonable values (in this walkthrough we use ``13.5`` RPM and ``0`` degrees, respectively)
 * ``NREL-2p8-127.fst``: Set ``CompInflow`` to be ``2`` and ``OutFileFmt`` to be ``1``
 * ``NREL-2p8-127_ServoDyn.dat``: Make sure ``DLL_FileName`` points to a ``libdiscon.so`` (on Linux) or ``libdiscon.dylib`` (on Mac) file from ROSCO. If you compiled using exawind-manager,
   see the :ref:`section of the documentation <rosco-dyn-lib>` that discusses how to determine the correct path to this ROSCO library file.
