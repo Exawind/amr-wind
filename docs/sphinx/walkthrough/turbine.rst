@@ -115,7 +115,10 @@ When all of these steps are complete, the job directory for running the turbine 
 
 and the turbine inflow-outflow simulation is ready to be submitted.
 
-Below we show the magnitude of the velocity at t=7350s (top) and at the final time (bottom), with the turbines displayed as 3D contours in both images. Note how the wakes can readily be seen.
+Below we show the magnitude of the velocity at t=7350s (top) and at the final time
+(bottom) of the simulation. In both images, the three turbines are displayed as 3D
+contours of the actuator_src_termx field. Note the turbine-induced wakes
+and their impact on the incoming flow for the downstream turbines.
 
 .. image:: ./visualization/turbines_simulation_velocityx_w_turbines_timestep_15650.png
     :width: 100%
