@@ -58,7 +58,7 @@ TEST_F(MOSDTest, test_mosd)
     {
         const amrex::Real tau_wave_expected = 0.02493;
         const amrex::Real x_c = 1.0; // This give sin(four)= negative value
-        // At this location we are in the possitive slope, therfore heaviside
+        // At this location we are in the positive slope, therefore heaviside
         // function will allow for stress
         EXPECT_NEAR(
             md.get_dyn_tau(u_dx, v_dx, x_c, unit_nor), tau_wave_expected,

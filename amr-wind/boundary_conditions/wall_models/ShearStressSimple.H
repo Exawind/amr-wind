@@ -47,7 +47,6 @@ struct SimpleShearLogLaw
     const amr_wind::LogLaw m_ll;
 };
 
-/// Dyanmic wave stress
 struct SimpleShearMOSD
 {
     explicit SimpleShearMOSD(

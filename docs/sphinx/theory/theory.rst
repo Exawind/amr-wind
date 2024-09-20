@@ -491,7 +491,7 @@ This wall model is used to calculate the stress due to moving surfaces,
 like ocean waves. It aims to introduce wave phase-resolving physics 
 at a cost similar to using the Log-law wall model, without the need of using 
 wave adapting computational grids. The model developed by `Ayala et al (2024)
-<https://doi.org/10.48550/arXiv.2401.12188>`_ has two components:
+<https://doi.org/10.1007/s10546-024-00884-8>`_ has two components:
 
 .. math:: \tau_{i3} = \frac{1}{\pi}|(\boldsymbol{u-C}) \cdot \boldsymbol{\hat{n}}|^2|\boldsymbol{\nabla} \eta|^2 \, \hat{n}_i  \, \text{H} \Bigl[ (u_j-C_j)\frac{\partial \eta}{\partial x_j} \Bigr] \, + \, \tau^{visc}_{i3}, \quad i = 1,2.
 
