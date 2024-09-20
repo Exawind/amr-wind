@@ -18,7 +18,7 @@ Intermittency::Intermittency(const CFDSim& sim)
 /** Initialize the intermittency field at the beginning of the
  *  simulation.
  */
-void Intermittency::initialize_fields(int level, const amrex::Geometry& geom)
+void Intermittency::initialize_fields(int level, const amrex::Geometry& /*geom*/)
 {
     using namespace utils;
 
