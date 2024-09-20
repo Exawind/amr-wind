@@ -191,7 +191,9 @@ During the spack install command, the location of the installed
 packages are printed to the screen. After installation is complete, these can be listed again more briefly
 by repeating the spack install command. To find the location of the ROSCO library, look for "rosco" among
 the listed locations. If ``<spack opt path>/rosco-<hash>`` is the directory provided by spack install,
-the .so .dylib file will be located within ``<spack opt path>/rosco-<hash>/lib/``.
+the ``libdiscon.so`` or ``libdiscon.dylib`` file will be located within ``<spack opt path>/rosco-<hash>/lib/``.
+
+The path to this library file will come into play when setting up the turbine simulation.
 
 |
 
