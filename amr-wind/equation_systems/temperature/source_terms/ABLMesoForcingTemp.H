@@ -52,7 +52,6 @@ private:
 
     // this is the instantaneous planar average (at AMR-Wind levels)
     amrex::Gpu::DeviceVector<amrex::Real> m_theta_ht;
-    amrex::Gpu::DeviceVector<amrex::Real> m_theta_vals;
 
     // this specifies the source term
     amrex::Gpu::DeviceVector<amrex::Real> m_error_meso_avg_theta;

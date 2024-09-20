@@ -1,5 +1,7 @@
+.. _inputs_boundary_conditions:
+
 Section: Boundary conditions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This section controls the boundary conditions. Only non-periodic BC's need to be defined here.
 

@@ -1,5 +1,7 @@
+.. _inputs_incflo:
+
 Section: incflo
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 This section deals with parameters that mostly determine how amr-wind is run such 
 as initial conditions and discretization options.
@@ -67,6 +69,8 @@ as initial conditions and discretization options.
    stability at larger CFL numbers, and greater computational efficiency. Setting this argument to false is 
    not recommended, and active use or development relying on the method of lines (MOL) is very sparse.
    
+.. _inputs_incflo_advection:
+
 .. input_param:: incflo.godunov_type
 
    **type:** String, optional, default = weno_z
@@ -81,6 +85,8 @@ as initial conditions and discretization options.
    Specifies if body forces are included in the transverse velocity prediction.
    Note: only used when :input_param:`incflo.use_godunov` = true.
    
+.. _inputs_incflo_diffusion:
+
 .. input_param:: incflo.diffusion_type
 
    **type:** Integer, optional, default = 2

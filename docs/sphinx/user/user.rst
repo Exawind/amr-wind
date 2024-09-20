@@ -5,6 +5,7 @@ User Manual
    :glob:
    :maxdepth: 2
 
+   features.rst
    build.rst
    inputs.rst
    abl_bndry_io.rst

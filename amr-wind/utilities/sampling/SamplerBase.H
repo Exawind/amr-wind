@@ -25,6 +25,9 @@ public:
 
     static std::string base_identifier() { return "SamplerBase"; }
 
+    static constexpr amrex::Real bounds_tol =
+        std::numeric_limits<amrex::Real>::epsilon();
+
     ~SamplerBase() override = default;
 
     //! Name used to refer to this sampler (e.g., myline1)
@@ -51,6 +54,9 @@ public:
 
     //! Populate the vector with coordinates of the sampling locations
     virtual void sampling_locations(SampleLocType&) const = 0;
+
+    //! Check and fix the bounds of the sampler so the probes are in the domain
+    virtual void check_bounds() = 0;
 
     //! Populate the vector with coordinates of the output locations
     virtual void output_locations(SampleLocType&) const = 0;

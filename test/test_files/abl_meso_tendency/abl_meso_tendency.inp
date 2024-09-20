@@ -67,12 +67,13 @@ ICNS.source_terms = BoussinesqBuoyancy ABLMesoForcingMom
 Temperature.source_terms = ABLMesoForcingTemp
 
 # initial conditions
-ABL.initial_condition_input_file = "meso_init.nc" # this is only for u,v
+ABL.initial_condition_input_file = "../abl_meso_input_dpa/meso_init.nc" # this is only for u,v
 ABL.temperature_heights = 50 150 250 350 450 550 650 750 850 950 1050 1150 1250 1350 1450 1550 1650 1750 1850 1950
 ABL.temperature_values = 283.71 283.73 284.13 284.95 285.65 286.01 286.40 286.85 287.28 287.60 287.87 288.20 288.55 288.79 289.20 289.49 289.94 290.42 290.92 291.49
 
 # forcing
-ABL.mesoscale_forcing = "meso_forcing.nc"
+ABL.mesoscale_forcing = "tendency_forcing.nc"
+ABL.tendency_forcing = true
 ABLMesoForcingMom.forcing_scheme = "direct"
 ABLMesoForcingTemp.forcing_scheme = "direct"
 

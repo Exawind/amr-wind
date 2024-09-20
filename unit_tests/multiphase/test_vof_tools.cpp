@@ -2,6 +2,7 @@
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
 #include "amr-wind/utilities/trig_ops.H"
+#include "amr-wind/core/field_ops.H"
 #include "amr-wind/equation_systems/vof/volume_fractions.H"
 #include "amr-wind/equation_systems/vof/vof_hybridsolver_ops.H"
 #include "amr-wind/equation_systems/vof/vof.H"
@@ -257,9 +258,18 @@ TEST_F(VOFToolTest, interface_band)
     const int ncomp = 1;
     const int nghost = 3;
     auto& vof = repo.declare_field("vof", ncomp, nghost);
+    auto& unity = repo.declare_field("unity", ncomp, nghost);
+    unity.setVal(1.0);
 
     init_vof(vof);
     amrex::Real error_total = interface_band_test_impl(vof);
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
+    EXPECT_EQ(error_total, 0.0);
+
+    // Invert VOF field, check again
+    amr_wind::field_ops::lincomb(
+        vof, -1.0, vof, 0, 1.0, unity, 0, 0, 1, nghost);
+    error_total = interface_band_test_impl(vof);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
     EXPECT_EQ(error_total, 0.0);
 }

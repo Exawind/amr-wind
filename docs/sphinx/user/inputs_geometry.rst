@@ -1,5 +1,7 @@
+.. _inputs_geometry:
+
 Section: geometry
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 This section deals with inputs related to the problem domain.
 

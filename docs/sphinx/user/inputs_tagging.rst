@@ -1,7 +1,7 @@
 .. _inputs_tagging:
 
-Section: AMR Tagging
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Section: tagging
+~~~~~~~~~~~~~~~~
 
 This section manages the various mesh refinement criteria that can be used to
 activate either static or adaptive mesh refinement during simulations. The
@@ -224,4 +224,26 @@ Example::
    If the absolute value of Q-criterion exceeds this value
    the cell is tagged for refinement.
    The user must specify a value for each level desired.
+
+.. _inputs_static_refinement:
+
+Static refinement
+`````````````````
+
+This section is for controlling the static mesh refinement of the
+grid. This is done a bit differently than the tagging criteria above
+in that an external file species the refinement regions.
+
+.. input_param:: tagging.static_refinement 
+
+   **type:** Boolean, optional, default = false
+   
+   Static refinement with Cartesian-aligned bounding boxes. 
+   
+.. input_param:: tagging.static_refinement_def
+
+   **type:** String
+   
+   Static refinement with Cartesian-aligned bounding boxes input file name. 
+   
 
