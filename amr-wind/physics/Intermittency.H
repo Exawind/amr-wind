@@ -17,7 +17,6 @@ public:
     explicit Intermittency(const CFDSim& sim);
 
     ~Intermittency() override = default;
-    //! Initialize the intermittency (gamma) field
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 
     void post_init_actions() override {}
