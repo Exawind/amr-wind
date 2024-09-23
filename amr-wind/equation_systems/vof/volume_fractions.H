@@ -507,7 +507,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool interface_band(
                 amrex::Real VOF = volfrac(i + ii, j + jj, k + kk);
                 VOF_max = amrex::max(VOF_max, VOF);
                 VOF_min = amrex::min(VOF_min, VOF);
-                if (VOF - 1.0 < tiny && VOF > tiny) {
+                if (VOF < 1.0 - tiny && VOF > tiny) {
                     VOF_mid = true;
                 }
             }

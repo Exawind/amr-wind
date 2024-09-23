@@ -1,12 +1,13 @@
 #include <limits>
 
 #include "amr-wind/utilities/sampling/VolumeSampler.H"
+#include "amr-wind/CFDSim.H"
 
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind::sampling {
 
-VolumeSampler::VolumeSampler(const CFDSim& /*unused*/) {}
+VolumeSampler::VolumeSampler(const CFDSim& sim) : m_sim(sim) {}
 
 VolumeSampler::~VolumeSampler() = default;
 
@@ -17,6 +18,7 @@ void VolumeSampler::initialize(const std::string& key)
     pp.getarr("hi", m_hi);
     pp.getarr("lo", m_lo);
     pp.getarr("num_points", m_npts_dir);
+    check_bounds();
     AMREX_ALWAYS_ASSERT(static_cast<int>(m_hi.size()) == AMREX_SPACEDIM);
     AMREX_ALWAYS_ASSERT(static_cast<int>(m_lo.size()) == AMREX_SPACEDIM);
     AMREX_ALWAYS_ASSERT(static_cast<int>(m_npts_dir.size()) == AMREX_SPACEDIM);
@@ -30,6 +32,38 @@ void VolumeSampler::initialize(const std::string& key)
             " exceeds 32-bit integer limits");
     }
     m_npts = static_cast<int>(tmp);
+}
+
+void VolumeSampler::check_bounds()
+{
+    const int lev = 0;
+    const auto* prob_lo = m_sim.mesh().Geom(lev).ProbLo();
+    const auto* prob_hi = m_sim.mesh().Geom(lev).ProbHi();
+
+    bool all_ok = true;
+    for (int d = 0; d < AMREX_SPACEDIM; ++d) {
+        if (m_lo[d] <= prob_lo[d]) {
+            all_ok = false;
+            m_lo[d] = prob_lo[d] + bounds_tol;
+        }
+        if (m_lo[d] >= prob_hi[d]) {
+            all_ok = false;
+            m_lo[d] = prob_hi[d] - bounds_tol;
+        }
+        if (m_hi[d] <= prob_lo[d]) {
+            all_ok = false;
+            m_hi[d] = prob_lo[d] + bounds_tol;
+        }
+        if (m_hi[d] >= prob_hi[d]) {
+            all_ok = false;
+            m_hi[d] = prob_hi[d] - bounds_tol;
+        }
+    }
+    if (!all_ok) {
+        amrex::Print() << "WARNING: LineSampler: Out of domain line was "
+                          "truncated to match domain"
+                       << std::endl;
+    }
 }
 
 void VolumeSampler::sampling_locations(SampleLocType& locs) const

@@ -183,9 +183,13 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
 
     amrex::Vector<amrex::Real> error_T(m_nht);
 
+    amrex::Vector<amrex::Real> meso_ht(num_meso_ht);
+    amrex::Gpu::copy(
+        amrex::Gpu::deviceToHost, m_meso_ht.begin(), m_meso_ht.end(),
+        meso_ht.begin());
     for (int i = 0; i < m_nht; i++) {
         const amrex::Real height_interpolated_theta = amr_wind::interp::linear(
-            m_meso_ht, time_interpolated_theta, tavg.line_centroids()[i]);
+            meso_ht, time_interpolated_theta, tavg.line_centroids()[i]);
         error_T[i] = height_interpolated_theta - tavg.line_average()[i];
     }
 

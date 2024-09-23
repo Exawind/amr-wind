@@ -27,7 +27,8 @@ public:
      */
     void initialize(const std::string& key) override;
 
-    void check_bounds();
+    //! Check and fix the bounds of the sampler so the probes are in the domain
+    void check_bounds() override;
 
     //! Populate and return a vector of probe locations to be sampled
     void sampling_locations(SampleLocType& /*locs*/) const override;
