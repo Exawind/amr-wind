@@ -318,14 +318,9 @@ void incflo::do_advance(int inonlin)
     if (m_prescribe_vel && inonlin == 0) {
         prescribe_advance();
     } else {
-        amrex::Print() << "INONLIN " << inonlin << std::endl;
-        if (inonlin == 0) {
-            advance();
-        } else {
-            amrex::Print() << "Iteration " << inonlin
-                           << " in advection iteration loop" << std::endl;
-            advance_nonlinear();
-        }
+        amrex::Print() << "Iteration " << inonlin
+                       << " in advection iteration loop" << std::endl;
+        advance(inonlin);
     }
     if (m_sim.has_overset()) {
         m_ovst_ops.post_advance_work();
