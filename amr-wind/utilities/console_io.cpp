@@ -224,6 +224,8 @@ void print_nonlinear_residual(
     const auto& mesh = sim.mesh();
 
     const auto& velocity_new = sim.pde_manager().icns().fields().field;
+    const auto& oset_mask = sim.repo().get_int_field("mask_cell");
+
     const int ncomp = AMREX_SPACEDIM;
 
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -244,12 +246,19 @@ void print_nonlinear_residual(
         const auto& velstar_arr = vel_star(lev).const_arrays();
         const auto& veldiff_arr = vel_diff(lev).arrays();
         const auto& levelmask_arr = level_mask.const_arrays();
+        const auto& osetmask_arr = oset_mask(lev).const_arrays();
+
         amrex::ParallelFor(
             velocity_new(lev), amrex::IntVect(0), AMREX_SPACEDIM,
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
-                veldiff_arr[nbx](i, j, k, n) = (velnew_arr[nbx](i, j, k, n) -
-                                                velstar_arr[nbx](i, j, k, n)) *
-                                               levelmask_arr[nbx](i, j, k);
+                if (osetmask_arr[nbx](i, j, k) == 0) {
+                    veldiff_arr[nbx](i, j, k, n) = 0.;
+                } else {
+                    veldiff_arr[nbx](i, j, k, n) =
+                        (velnew_arr[nbx](i, j, k, n) -
+                         velstar_arr[nbx](i, j, k, n)) *
+                        levelmask_arr[nbx](i, j, k);
+                }
             });
     }
 
