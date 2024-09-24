@@ -98,8 +98,7 @@ public:
     void pre_advance_stage2();
     void do_advance(int inonlin);
     void post_overset_work();
-    void advance();
-    void advance_nonlinear();
+    void advance(int inonlin);
     void prescribe_advance();
     void post_advance_work();
 
@@ -135,8 +134,7 @@ public:
     void ComputeDt(bool explicit_diffusion);
     void ComputePrescribeDt();
 
-    void ApplyPredictor(bool incremental_projection = false);
-    void ApplyPredictorNonLinear(bool incremental_projection = false);
+    void ApplyPredictor(bool incremental_projection = false, int inonlin = 0);
     void ApplyCorrector();
     void ApplyPrescribeStep();
 
