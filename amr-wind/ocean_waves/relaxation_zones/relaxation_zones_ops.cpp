@@ -126,27 +126,15 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                         // Force liquid velocity, update according to mom.
                         amrex::Real rho_ = rho1 * volfrac(i, j, k) +
                                            rho2 * (1.0 - volfrac(i, j, k));
-                        vel(i, j, k, 0) =
-                            (rho1 * volfrac(i, j, k) *
-                                 (rampf * (1. - Gamma) *
-                                      target_vel(i, j, k, 0) +
-                                  Gamma * vel(i, j, k, 0)) +
-                             rho2 * (1. - volfrac(i, j, k)) * vel(i, j, k, 0)) /
-                            rho_;
-                        vel(i, j, k, 1) =
-                            (rho1 * volfrac(i, j, k) *
-                                 (rampf * (1. - Gamma) *
-                                      target_vel(i, j, k, 1) +
-                                  Gamma * vel(i, j, k, 1)) +
-                             rho2 * (1. - volfrac(i, j, k)) * vel(i, j, k, 1)) /
-                            rho_;
-                        vel(i, j, k, 2) =
-                            (rho1 * volfrac(i, j, k) *
-                                 (rampf * (1. - Gamma) *
-                                      target_vel(i, j, k, 2) +
-                                  Gamma * vel(i, j, k, 2)) +
-                             rho2 * (1. - volfrac(i, j, k)) * vel(i, j, k, 2)) /
-                            rho_;
+                        for (int n = 0; n < vel.ncomp; ++n) {
+                            vel(i, j, k, n) = (rho1 * volfrac(i, j, k) *
+                                                   (rampf * (1. - Gamma) *
+                                                        target_vel(i, j, k, n) +
+                                                    Gamma * vel(i, j, k, n)) +
+                                               rho2 * (1. - volfrac(i, j, k)) *
+                                                   vel(i, j, k, n)) /
+                                              rho_;
+                        }
                     }
                     // Numerical beach (sponge layer)
                     if (x + beach_length >= probhi[0]) {
@@ -162,15 +150,12 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                             amrex::Real rho_ = rho1 * volfrac(i, j, k) +
                                                rho2 * (1.0 - volfrac(i, j, k));
                             // Target solution in liquid is vel = 0
-                            vel(i, j, k, 0) = (rho1 * volfrac(i, j, k) * Gamma +
-                                               rho2 * (1. - volfrac(i, j, k))) *
-                                              vel(i, j, k, 0) / rho_;
-                            vel(i, j, k, 1) = (rho1 * volfrac(i, j, k) * Gamma +
-                                               rho2 * (1. - volfrac(i, j, k))) *
-                                              vel(i, j, k, 1) / rho_;
-                            vel(i, j, k, 2) = (rho1 * volfrac(i, j, k) * Gamma +
-                                               rho2 * (1. - volfrac(i, j, k))) *
-                                              vel(i, j, k, 2) / rho_;
+                            for (int n = 0; n < vel.ncomp; ++n) {
+                                vel(i, j, k, n) =
+                                    (rho1 * volfrac(i, j, k) * Gamma +
+                                     rho2 * (1. - volfrac(i, j, k))) *
+                                    vel(i, j, k, n) / rho_;
+                            }
                         }
                         if (has_outprofile) {
                             const amrex::Real vf =
@@ -180,27 +165,16 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                             // Force liquid velocity, update according to mom.
                             amrex::Real rho_ = rho1 * volfrac(i, j, k) +
                                                rho2 * (1.0 - volfrac(i, j, k));
-                            vel(i, j, k, 0) = (rho1 * volfrac(i, j, k) *
-                                                   (rampf * (1. - Gamma) *
-                                                        target_vel(i, j, k, 0) +
-                                                    Gamma * vel(i, j, k, 0)) +
-                                               rho2 * (1. - volfrac(i, j, k)) *
-                                                   vel(i, j, k, 0)) /
-                                              rho_;
-                            vel(i, j, k, 1) = (rho1 * volfrac(i, j, k) *
-                                                   (rampf * (1. - Gamma) *
-                                                        target_vel(i, j, k, 1) +
-                                                    Gamma * vel(i, j, k, 1)) +
-                                               rho2 * (1. - volfrac(i, j, k)) *
-                                                   vel(i, j, k, 1)) /
-                                              rho_;
-                            vel(i, j, k, 2) = (rho1 * volfrac(i, j, k) *
-                                                   (rampf * (1. - Gamma) *
-                                                        target_vel(i, j, k, 2) +
-                                                    Gamma * vel(i, j, k, 2)) +
-                                               rho2 * (1. - volfrac(i, j, k)) *
-                                                   vel(i, j, k, 2)) /
-                                              rho_;
+                            for (int n = 0; n < vel.ncomp; ++n) {
+                                vel(i, j, k, n) =
+                                    (rho1 * volfrac(i, j, k) *
+                                         (rampf * (1. - Gamma) *
+                                              target_vel(i, j, k, n) +
+                                          Gamma * vel(i, j, k, n)) +
+                                     rho2 * (1. - volfrac(i, j, k)) *
+                                         vel(i, j, k, n)) /
+                                    rho_;
+                            }
                         }
                     }
 
