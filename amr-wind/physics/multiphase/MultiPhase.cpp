@@ -578,7 +578,7 @@ void MultiPhase::levelset2vof(
         }
     }
     // Fill ghost and boundary cells before simulation begins
-    vof_scr.fillpatch(0.0);
+    vof_scr.fillpatch(m_sim.time().current_time());
 }
 
 } // namespace amr_wind
