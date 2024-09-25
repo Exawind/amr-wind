@@ -213,9 +213,9 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
     }
     // This helps for having periodic boundaries, but will need to be addressed
     // for the general case
-    vof.fillpatch(0.0);
-    velocity.fillpatch(0.0);
-    density.fillpatch(0.0);
+    vof.fillpatch(time);
+    velocity.fillpatch(time);
+    density.fillpatch(time);
 }
 
 void prepare_netcdf_file(
