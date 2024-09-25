@@ -168,19 +168,27 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                             }
                         }
                         if (has_outprofile) {
-                            const amrex::Real vf =
-                                (1. - Gamma) * target_volfrac(i, j, k) * rampf +
+                            amrex::Real new_vof =
+                                (1. - Gamma) * target_volfrac(i, j, k) +
                                 Gamma * volfrac(i, j, k);
-                            volfrac(i, j, k) = (vf > 1. - 1.e-10) ? 1.0 : vf;
+                            new_vof =
+                                (new_vof > 1. - vof_tiny)
+                                    ? 1.0
+                                    : (new_vof < vof_tiny ? 0.0 : new_vof);
+                            const amrex::Real dvf = new_vof - volfrac(i, j, k);
+                            volfrac(i, j, k) += dvf;
                             // Force liquid velocity, update according to mom.
                             amrex::Real rho_ = rho1 * volfrac(i, j, k) +
                                                rho2 * (1.0 - volfrac(i, j, k));
                             for (int n = 0; n < vel.ncomp; ++n) {
+                                amrex::Real new_liq_vel =
+                                    (1. - Gamma) * target_vel(i, j, k, n) +
+                                    Gamma * vel(i, j, k, n);
+                                new_liq_vel =
+                                    rampf * new_liq_vel +
+                                    (vel(i, j, k, n) - rampf * vel(i, j, k, n));
                                 vel(i, j, k, n) =
-                                    (rho1 * volfrac(i, j, k) *
-                                         (rampf * (1. - Gamma) *
-                                              target_vel(i, j, k, n) +
-                                          Gamma * vel(i, j, k, n)) +
+                                    (rho1 * volfrac(i, j, k) * new_liq_vel +
                                      rho2 * (1. - volfrac(i, j, k)) *
                                          vel(i, j, k, n)) /
                                     rho_;
