@@ -465,7 +465,7 @@ void MultiPhase::favre_filtering()
                 });
         }
     }
-    m_velocity.fillpatch(0.0);
+    m_velocity.fillpatch(m_sim.time().current_time());
 }
 
 // Reconstructing the volume fraction from a levelset function
@@ -513,8 +513,8 @@ void MultiPhase::levelset2vof()
                 });
         }
     }
-    // Fill ghost and boundary cells before simulation begins
-    (*m_vof).fillpatch(0.0);
+    // Fill ghost and boundary cells
+    (*m_vof).fillpatch(m_sim.time().current_time());
 }
 
 // Do levelset2vof with iblank neumann and into supplied scratch field
@@ -578,7 +578,7 @@ void MultiPhase::levelset2vof(
         }
     }
     // Fill ghost and boundary cells before simulation begins
-    vof_scr.fillpatch(0.0);
+    vof_scr.fillpatch(m_sim.time().current_time());
 }
 
 } // namespace amr_wind
