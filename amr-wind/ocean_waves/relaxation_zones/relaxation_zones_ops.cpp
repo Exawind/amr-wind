@@ -155,11 +155,12 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                                               rho_;
                         }
                     }
-                    // Numerical beach (sponge layer)
+                    // Outlet region
                     if (x + beach_length >= probhi[0]) {
                         const amrex::Real Gamma = utils::gamma_absorb(
                             x - (probhi[0] - beach_length), beach_length,
                             beach_length_factor);
+                        // Numerical beach (sponge layer)
                         if (has_beach) {
                             volfrac(i, j, k) =
                                 (1.0 - Gamma) *
@@ -176,7 +177,9 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                                     vel(i, j, k, n) / rho_;
                             }
                         }
+                        // Forcing to wave profile instead
                         if (has_outprofile) {
+                            // Same steps as in wave generation region
                             amrex::Real new_vof =
                                 (1. - Gamma) * target_volfrac(i, j, k) +
                                 Gamma * volfrac(i, j, k);
@@ -186,18 +189,25 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                                     : (new_vof < vof_tiny ? 0.0 : new_vof);
                             const amrex::Real dvf = new_vof - volfrac(i, j, k);
                             volfrac(i, j, k) += dvf;
-                            // Force liquid velocity, update according to mom.
+                            const amrex::Real fvel_liq =
+                                (target_volfrac(i, j, k) > vof_tiny) ? 1.0
+                                                                     : 0.0;
                             amrex::Real rho_ = rho1 * volfrac(i, j, k) +
                                                rho2 * (1.0 - volfrac(i, j, k));
                             for (int n = 0; n < vel.ncomp; ++n) {
-                                amrex::Real new_liq_vel =
-                                    (1. - Gamma) * target_vel(i, j, k, n) +
-                                    Gamma * vel(i, j, k, n);
-                                new_liq_vel =
-                                    rampf * new_liq_vel +
-                                    (vel(i, j, k, n) - rampf * vel(i, j, k, n));
+                                amrex::Real vel_liq = vel(i, j, k, n);
+                                const amrex::Real dvel_liq =
+                                    ((1. - Gamma) * target_vel(i, j, k, n) +
+                                     Gamma * vel_liq) -
+                                    vel_liq;
+                                vel_liq += rampf * fvel_liq * dvel_liq;
+                                amrex::Real integrated_vel_liq =
+                                    volfrac(i, j, k) * vel_liq;
+                                integrated_vel_liq +=
+                                    rampf * fvel_liq * amrex::max(0.0, dvf) *
+                                    (target_vel(i, j, k, n) - vel(i, j, k, n));
                                 vel(i, j, k, n) =
-                                    (rho1 * volfrac(i, j, k) * new_liq_vel +
+                                    (rho1 * integrated_vel_liq +
                                      rho2 * (1. - volfrac(i, j, k)) *
                                          vel(i, j, k, n)) /
                                     rho_;
