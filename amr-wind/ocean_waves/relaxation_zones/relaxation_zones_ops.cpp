@@ -129,18 +129,22 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                                       : (new_vof < vof_tiny ? 0.0 : new_vof);
                         const amrex::Real dvf = new_vof - volfrac(i, j, k);
                         volfrac(i, j, k) += rampf * dvf;
-                        // Force liquid velocity, update according to mom.
+                        // Force liquid velocity only if target vof present
+                        const amrex::Real fvel_liq =
+                            (target_volfrac(i, j, k) > vof_tiny) ? 1.0 : 0.0;
                         amrex::Real rho_ = rho1 * volfrac(i, j, k) +
                                            rho2 * (1.0 - volfrac(i, j, k));
                         for (int n = 0; n < vel.ncomp; ++n) {
-                            amrex::Real new_liq_vel =
-                                (1. - Gamma) * target_vel(i, j, k, n) +
-                                Gamma * vel(i, j, k, n);
-                            new_liq_vel =
-                                rampf * new_liq_vel +
-                                (vel(i, j, k, n) - rampf * vel(i, j, k, n));
+                            // Get updated liquid velocity
+                            amrex::Real vel_liq = vel(i, j, k, n);
+                            const amrex::Real dvel_liq =
+                                ((1. - Gamma) * target_vel(i, j, k, n) +
+                                 Gamma * vel_liq) -
+                                vel_liq;
+                            vel_liq += rampf * fvel_liq * dvel_liq;
+                            // Update overall velocity using momentum
                             vel(i, j, k, n) =
-                                (rho1 * volfrac(i, j, k) * new_liq_vel +
+                                (rho1 * volfrac(i, j, k) * vel_liq +
                                  rho2 * (1. - volfrac(i, j, k)) *
                                      vel(i, j, k, n)) /
                                 rho_;
