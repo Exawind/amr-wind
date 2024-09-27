@@ -142,12 +142,17 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                                  Gamma * vel_liq) -
                                 vel_liq;
                             vel_liq += rampf * fvel_liq * dvel_liq;
+                            // If liquid was added, that liquid has target_vel
+                            amrex::Real integrated_vel_liq =
+                                volfrac(i, j, k) * vel_liq;
+                            integrated_vel_liq +=
+                                rampf * fvel_liq * amrex::max(0.0, dvf) *
+                                (target_vel(i, j, k, n) - vel(i, j, k, n));
                             // Update overall velocity using momentum
-                            vel(i, j, k, n) =
-                                (rho1 * volfrac(i, j, k) * vel_liq +
-                                 rho2 * (1. - volfrac(i, j, k)) *
-                                     vel(i, j, k, n)) /
-                                rho_;
+                            vel(i, j, k, n) = (rho1 * integrated_vel_liq +
+                                               rho2 * (1. - volfrac(i, j, k)) *
+                                                   vel(i, j, k, n)) /
+                                              rho_;
                         }
                     }
                     // Numerical beach (sponge layer)
