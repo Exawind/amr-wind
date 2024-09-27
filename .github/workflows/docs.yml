@@ -44,7 +44,7 @@ jobs:
       - name: Report
         run: |
           echo "::add-matcher::.github/problem-matchers/sphinx.json"
-          egrep "WARNING:" build-output.txt | sort | uniq | \
+          egrep "WARNING:|Warning:|ERROR:|Error:" build-output.txt | sort | uniq | \
             awk 'BEGIN{i=0}{print $0}{i++}END{print "Warnings: "i}' > build-output-warnings.txt
           cat build-output-warnings.txt
           exit $(tail -n 1 build-output-warnings.txt | awk '{print $2}')
