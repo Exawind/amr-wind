@@ -112,7 +112,7 @@ The following input arguments are only valid for the StokesWave wave type:
 
    The order of the Stokes wave formula being used. All Stokes wave theory (wave profile and
    dispersion relation) is applied from `Fenton (1985)
-   <https://ascelibrary.org/doi/10.1061/%28ASCE%290733-950X%281985%29111%3A2%28216%29>`.
+   <https://ascelibrary.org/doi/10.1061/%28ASCE%290733-950X%281985%29111%3A2%28216%29>`_.
    The minimum order is 2, and the maximum order is 5.
 
 .. input_param:: OceanWaves.label.wave_period

@@ -26,7 +26,6 @@ incflo.godunov_type="weno_z"
 transport.model = TwoPhaseTransport
 transport.viscosity_fluid1=0.0
 transport.viscosity_fluid2=0.0
-transport.laminar_prandtl = 0.7
 transport.turbulent_prandtl = 0.3333
 turbulence.model = Laminar 
 

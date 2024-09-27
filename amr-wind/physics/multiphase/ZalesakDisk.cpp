@@ -127,9 +127,9 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
                     rho1 * smooth_heaviside + rho2 * (1.0 - smooth_heaviside);
             });
     }
-    m_levelset.fillpatch(0.0);
-    m_velocity.fillpatch(0.0);
-    m_density.fillpatch(0.0);
+    m_levelset.fillpatch(m_sim.time().current_time());
+    m_velocity.fillpatch(m_sim.time().current_time());
+    m_density.fillpatch(m_sim.time().current_time());
 }
 
 void ZalesakDisk::pre_advance_work()

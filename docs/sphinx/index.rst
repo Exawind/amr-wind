@@ -41,6 +41,7 @@ objectives:
 .. toctree::
    :maxdepth: 2
 
+   walkthrough/index
    user/user
    theory/theory 
    developer/index

@@ -27,6 +27,7 @@ domain are prefixed with ``geometry.`` and so on. A sample input file is shown b
 .. literalinclude:: ./amr_wind_inputs.txt
    :linenos:
 
+.. _input-file-ref:
 
 Input file reference
 ---------------------

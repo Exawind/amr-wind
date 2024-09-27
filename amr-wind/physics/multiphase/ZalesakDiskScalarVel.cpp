@@ -168,9 +168,9 @@ void ZalesakDiskScalarVel::initialize_fields(
                 vel(i, j, k, 0) = amrex::min(1.0, amrex::max(0.0, 1.5 - dnorm));
             });
     }
-    m_levelset.fillpatch(0.0);
-    m_velocity.fillpatch(0.0);
-    m_density.fillpatch(0.0);
+    m_levelset.fillpatch(m_sim.time().current_time());
+    m_velocity.fillpatch(m_sim.time().current_time());
+    m_density.fillpatch(m_sim.time().current_time());
     output_error();
 }
 

@@ -112,7 +112,7 @@ void VortexPatchScalarVel::initialize_fields(
                 }
             });
     }
-    m_velocity.fillpatch(0.0);
+    m_velocity.fillpatch(m_sim.time().current_time());
 }
 
 void VortexPatchScalarVel::pre_advance_work()
