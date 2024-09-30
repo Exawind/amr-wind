@@ -271,7 +271,7 @@ void print_nonlinear_residual(
         }
     }
 
-    amrex::Print() << "Non-linear residual for u  " << rms_vel[0] << " v "
+    amrex::Print() << "Norm of change over advection iterations in u  " << rms_vel[0] << " v "
                    << rms_vel[1] << " w " << rms_vel[2] << std::endl;
 }
 
