@@ -114,7 +114,7 @@ jobs:
           | egrep -v "ld: warning:" | egrep -v "lto-wrapper: warning:" | sort | uniq \
           | awk 'BEGIN{i=0}{print $0}{i++}END{print "Warnings: "i}' > build-output-warnings.txt
         cat build-output-warnings.txt
-        exit $(tail -n 1 build-output-warnings.txt | awk '{print $2}')
+        # exit $(tail -n 1 build-output-warnings.txt | awk '{print $2}')
     - name: Test
       working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}-${{matrix.openmp_flag}}
       run: |

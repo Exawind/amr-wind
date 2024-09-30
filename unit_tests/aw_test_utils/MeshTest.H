@@ -63,8 +63,6 @@ protected:
 class RefineMesh : public AmrTestMesh
 {
 public:
-    RefineMesh() { m_refine_crit.clear(); };
-
     amrex::Vector<std::unique_ptr<amr_wind::RefinementCriteria>>&
     refine_criteria_vec()
     {
