@@ -5,22 +5,10 @@
 #include "amr-wind/utilities/IOManager.H"
 
 namespace amr_wind::averaging {
-namespace {
-
-const Field& get_field_or_error(const FieldRepo& repo, const std::string& fname)
-{
-    if (!repo.field_exists(fname)) {
-        amrex::Abort("ReynoldsStress: Cannot find field: " + fname);
-    }
-
-    return repo.get_field(fname);
-}
-
-} // namespace
 
 ReynoldsStress::ReynoldsStress(CFDSim& sim, const std::string& fname)
-    : m_field(get_field_or_error(sim.repo(), "velocity"))
-    , m_average(get_field_or_error(sim.repo(), "velocity_mean"))
+    : m_field(sim.repo().get_field("velocity"))
+    , m_average(sim.repo().get_field("velocity_mean"))
     , m_stress(sim.repo().declare_field(
           "velocity_stress",
           6, // number of components of the reynolds stress tensor
