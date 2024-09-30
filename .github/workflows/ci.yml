@@ -353,10 +353,6 @@ jobs:
           echo "CCACHE_EXTRAFILES=${{github.workspace}}/.clang-tidy" >> $GITHUB_ENV
           echo "CCACHE_MAXSIZE=50M" >> $GITHUB_ENV
           echo "CTCACHE_DIR=~/.cache/ctcache" >> $GITHUB_ENV
-          echo "CLANG_TIDY_VERSION=17" >> $GITHUB_ENV
-      - name: Install clang-tidy
-        run: |
-          clang-tidy --version
       - name: Install Ccache
         run: |
           wget https://github.com/ccache/ccache/releases/download/v4.8/ccache-4.8-linux-x86_64.tar.xz
@@ -386,7 +382,6 @@ jobs:
           -DAMR_WIND_ENABLE_ALL_WARNINGS:BOOL=ON \
           -DAMR_WIND_ENABLE_CLANG_TIDY:BOOL=ON \
           -DCMAKE_CXX_COMPILER_LAUNCHER:STRING=ccache \
-          -DCLANG_TIDY_EXEC_NAME:STRING=clang-tidy-${CLANG_TIDY_VERSION} \
           ${{github.workspace}}
       - name: Check
         working-directory: ${{runner.workspace}}/build-clang-tidy
