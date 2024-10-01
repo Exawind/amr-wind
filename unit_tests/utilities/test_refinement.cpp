@@ -57,14 +57,13 @@ TEST_F(NestRefineTest, box_refine)
     ss << "-10.0  65.0 0.0 15.0  75.0 20.0" << std::endl;
 
     create_mesh_instance<RefineMesh>();
-    std::unique_ptr<amr_wind::CartBoxRefinement> box_refine(
-        new amr_wind::CartBoxRefinement(sim()));
+    auto& ref_vec = mesh<RefineMesh>()->refine_criteria_vec();
+    ref_vec.emplace_back(std::make_unique<amr_wind::CartBoxRefinement>(sim()));
+    auto* box_refine =
+        dynamic_cast<amr_wind::CartBoxRefinement*>(ref_vec[0].get());
     box_refine->read_inputs(mesh(), ss);
-
     // Store the target boxarray for future tests
     auto targets = box_refine->boxarray_vec();
-
-    mesh<RefineMesh>()->refine_criteria_vec().push_back(std::move(box_refine));
     initialize_mesh();
 
     auto ba1 = mesh().boxArray(1);
