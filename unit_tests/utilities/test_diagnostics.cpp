@@ -183,11 +183,13 @@ TEST_F(DiagnosticsTest, Max_Vel_MultiLevel)
     ss << "1 // Number of boxes at this level" << std::endl;
     ss << "-5 -5 -2 5 5 2" << std::endl;
     create_mesh_instance<RefineMesh>();
-    std::unique_ptr<amr_wind::CartBoxRefinement> box_refine(
-        new amr_wind::CartBoxRefinement(sim()));
-    box_refine->read_inputs(mesh(), ss);
+    // std::unique_ptr<amr_wind::CartBoxRefinement> box_refine(
+    //     new amr_wind::CartBoxRefinement(sim()));
     auto& ref_vec = mesh<RefineMesh>()->refine_criteria_vec();
-    ref_vec.push_back(std::move(box_refine));
+    auto& box_refine = ref_vec.emplace_back(
+        std::make_unique<amr_wind::CartBoxRefinement>(sim()));
+    box_refine->read_inputs(mesh(), ss);
+    // ref_vec.push_back(std::move(box_refine));
     initialize_mesh();
 
     auto& repo = sim().repo();
