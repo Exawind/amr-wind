@@ -48,7 +48,6 @@ public:
      */
     virtual void operator()(
         int level, amrex::TagBoxArray& tags, amrex::Real time, int ngrow) = 0;
-
 };
 
 /** A collection of refinement criteria instances that are active during a
