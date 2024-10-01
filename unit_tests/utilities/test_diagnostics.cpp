@@ -184,8 +184,9 @@ TEST_F(DiagnosticsTest, Max_Vel_MultiLevel)
     ss << "-5 -5 -2 5 5 2" << std::endl;
     create_mesh_instance<RefineMesh>();
     auto& ref_vec = mesh<RefineMesh>()->refine_criteria_vec();
-    auto& box_refine = ref_vec.emplace_back(
-        std::make_unique<amr_wind::CartBoxRefinement>(sim()));
+    ref_vec.emplace_back(std::make_unique<amr_wind::CartBoxRefinement>(sim()));
+    auto* box_refine =
+        dynamic_cast<amr_wind::CartBoxRefinement*>(ref_vec[0].get());
     box_refine->read_inputs(mesh(), ss);
     initialize_mesh();
 
@@ -232,8 +233,9 @@ TEST_F(DiagnosticsTest, Max_MACvel_MultiLevel)
     ss << "-5 -5 -2 5 5 2" << std::endl;
     create_mesh_instance<RefineMesh>();
     auto& ref_vec = mesh<RefineMesh>()->refine_criteria_vec();
-    auto& box_refine = ref_vec.emplace_back(
-        std::make_unique<amr_wind::CartBoxRefinement>(sim()));
+    ref_vec.emplace_back(std::make_unique<amr_wind::CartBoxRefinement>(sim()));
+    auto* box_refine =
+        dynamic_cast<amr_wind::CartBoxRefinement*>(ref_vec[0].get());
     box_refine->read_inputs(mesh(), ss);
     initialize_mesh();
 

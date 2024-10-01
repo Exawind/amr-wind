@@ -49,9 +49,6 @@ public:
     virtual void operator()(
         int level, amrex::TagBoxArray& tags, amrex::Real time, int ngrow) = 0;
 
-    virtual void
-    read_inputs(const amrex::AmrCore& /*mesh*/, std::istream& /*ifh*/)
-    {}
 };
 
 /** A collection of refinement criteria instances that are active during a

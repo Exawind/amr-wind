@@ -36,7 +36,7 @@ public:
     //!
     //! Created separate from initialize to allow unit testing
     void
-    read_inputs(const amrex::AmrCore& /*mesh*/, std::istream& /*ifh*/) override;
+    read_inputs(const amrex::AmrCore& /*mesh*/, std::istream& /*ifh*/);
 
     //! Vector of boxarrays that define refinement zones at each level
     const amrex::Vector<amrex::BoxArray>& boxarray_vec() const
