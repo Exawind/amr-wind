@@ -76,7 +76,7 @@ This section is for setting up wave forcing and relaxation zones.
 
 .. input_param:: OceanWaves.label.timeramp_period
 
-   **type:** Real, optional, default = 2.0
+   **type:** Real, optional
 
    An initial ramp-up period for the wave forcing. Without specifying a period, the wave 
    forcing will begin at full strength.

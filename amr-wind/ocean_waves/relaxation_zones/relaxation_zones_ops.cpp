@@ -39,7 +39,7 @@ void read_inputs(
 
     wdata.has_ramp = pp.contains("timeramp_period");
     if (wdata.has_ramp) {
-        pp.query("timeramp_period", wdata.ramp_period);
+        pp.get("timeramp_period", wdata.ramp_period);
     }
 
     amrex::ParmParse pp_multiphase("MultiPhase");
@@ -59,6 +59,7 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
     const auto& mphase = sim.physics_manager().get<MultiPhase>();
     const amrex::Real rho1 = mphase.rho1();
     const amrex::Real rho2 = mphase.rho2();
+    constexpr amrex::Real vof_tiny = 1e-12;
 
     for (int lev = 0; lev < nlevels; ++lev) {
         auto& ls = m_ow_levelset(lev);
@@ -119,40 +120,47 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                     if (x <= problo[0] + gen_length) {
                         const amrex::Real Gamma =
                             utils::gamma_generate(x - problo[0], gen_length);
-                        const amrex::Real vf =
-                            (1. - Gamma) * target_volfrac(i, j, k) * rampf +
+                        // Get bounded new vof, incorporate with increment
+                        amrex::Real new_vof =
+                            (1. - Gamma) * target_volfrac(i, j, k) +
                             Gamma * volfrac(i, j, k);
-                        volfrac(i, j, k) = (vf > 1. - 1.e-10) ? 1.0 : vf;
-                        // Force liquid velocity, update according to mom.
+                        new_vof = (new_vof > 1. - vof_tiny)
+                                      ? 1.0
+                                      : (new_vof < vof_tiny ? 0.0 : new_vof);
+                        const amrex::Real dvf = new_vof - volfrac(i, j, k);
+                        volfrac(i, j, k) += rampf * dvf;
+                        // Force liquid velocity only if target vof present
+                        const amrex::Real fvel_liq =
+                            (target_volfrac(i, j, k) > vof_tiny) ? 1.0 : 0.0;
                         amrex::Real rho_ = rho1 * volfrac(i, j, k) +
                                            rho2 * (1.0 - volfrac(i, j, k));
-                        vel(i, j, k, 0) =
-                            (rho1 * volfrac(i, j, k) *
-                                 (rampf * (1. - Gamma) *
-                                      target_vel(i, j, k, 0) +
-                                  Gamma * vel(i, j, k, 0)) +
-                             rho2 * (1. - volfrac(i, j, k)) * vel(i, j, k, 0)) /
-                            rho_;
-                        vel(i, j, k, 1) =
-                            (rho1 * volfrac(i, j, k) *
-                                 (rampf * (1. - Gamma) *
-                                      target_vel(i, j, k, 1) +
-                                  Gamma * vel(i, j, k, 1)) +
-                             rho2 * (1. - volfrac(i, j, k)) * vel(i, j, k, 1)) /
-                            rho_;
-                        vel(i, j, k, 2) =
-                            (rho1 * volfrac(i, j, k) *
-                                 (rampf * (1. - Gamma) *
-                                      target_vel(i, j, k, 2) +
-                                  Gamma * vel(i, j, k, 2)) +
-                             rho2 * (1. - volfrac(i, j, k)) * vel(i, j, k, 2)) /
-                            rho_;
+                        for (int n = 0; n < vel.ncomp; ++n) {
+                            // Get updated liquid velocity
+                            amrex::Real vel_liq = vel(i, j, k, n);
+                            const amrex::Real dvel_liq =
+                                ((1. - Gamma) * target_vel(i, j, k, n) +
+                                 Gamma * vel_liq) -
+                                vel_liq;
+                            vel_liq += rampf * fvel_liq * dvel_liq;
+                            // If liquid was added, that liquid has target_vel
+                            amrex::Real integrated_vel_liq =
+                                volfrac(i, j, k) * vel_liq;
+                            integrated_vel_liq +=
+                                rampf * fvel_liq * amrex::max(0.0, dvf) *
+                                (target_vel(i, j, k, n) - vel(i, j, k, n));
+                            // Update overall velocity using momentum
+                            vel(i, j, k, n) = (rho1 * integrated_vel_liq +
+                                               rho2 * (1. - volfrac(i, j, k)) *
+                                                   vel(i, j, k, n)) /
+                                              rho_;
+                        }
                     }
-                    // Numerical beach (sponge layer)
+                    // Outlet region
                     if (x + beach_length >= probhi[0]) {
                         const amrex::Real Gamma = utils::gamma_absorb(
                             x - (probhi[0] - beach_length), beach_length,
                             beach_length_factor);
+                        // Numerical beach (sponge layer)
                         if (has_beach) {
                             volfrac(i, j, k) =
                                 (1.0 - Gamma) *
@@ -162,45 +170,48 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                             amrex::Real rho_ = rho1 * volfrac(i, j, k) +
                                                rho2 * (1.0 - volfrac(i, j, k));
                             // Target solution in liquid is vel = 0
-                            vel(i, j, k, 0) = (rho1 * volfrac(i, j, k) * Gamma +
-                                               rho2 * (1. - volfrac(i, j, k))) *
-                                              vel(i, j, k, 0) / rho_;
-                            vel(i, j, k, 1) = (rho1 * volfrac(i, j, k) * Gamma +
-                                               rho2 * (1. - volfrac(i, j, k))) *
-                                              vel(i, j, k, 1) / rho_;
-                            vel(i, j, k, 2) = (rho1 * volfrac(i, j, k) * Gamma +
-                                               rho2 * (1. - volfrac(i, j, k))) *
-                                              vel(i, j, k, 2) / rho_;
+                            for (int n = 0; n < vel.ncomp; ++n) {
+                                vel(i, j, k, n) =
+                                    (rho1 * volfrac(i, j, k) * Gamma +
+                                     rho2 * (1. - volfrac(i, j, k))) *
+                                    vel(i, j, k, n) / rho_;
+                            }
                         }
+                        // Forcing to wave profile instead
                         if (has_outprofile) {
-                            const amrex::Real vf =
-                                (1. - Gamma) * target_volfrac(i, j, k) * rampf +
+                            // Same steps as in wave generation region
+                            amrex::Real new_vof =
+                                (1. - Gamma) * target_volfrac(i, j, k) +
                                 Gamma * volfrac(i, j, k);
-                            volfrac(i, j, k) = (vf > 1. - 1.e-10) ? 1.0 : vf;
-                            // Force liquid velocity, update according to mom.
+                            new_vof =
+                                (new_vof > 1. - vof_tiny)
+                                    ? 1.0
+                                    : (new_vof < vof_tiny ? 0.0 : new_vof);
+                            const amrex::Real dvf = new_vof - volfrac(i, j, k);
+                            volfrac(i, j, k) += dvf;
+                            const amrex::Real fvel_liq =
+                                (target_volfrac(i, j, k) > vof_tiny) ? 1.0
+                                                                     : 0.0;
                             amrex::Real rho_ = rho1 * volfrac(i, j, k) +
                                                rho2 * (1.0 - volfrac(i, j, k));
-                            vel(i, j, k, 0) = (rho1 * volfrac(i, j, k) *
-                                                   (rampf * (1. - Gamma) *
-                                                        target_vel(i, j, k, 0) +
-                                                    Gamma * vel(i, j, k, 0)) +
-                                               rho2 * (1. - volfrac(i, j, k)) *
-                                                   vel(i, j, k, 0)) /
-                                              rho_;
-                            vel(i, j, k, 1) = (rho1 * volfrac(i, j, k) *
-                                                   (rampf * (1. - Gamma) *
-                                                        target_vel(i, j, k, 1) +
-                                                    Gamma * vel(i, j, k, 1)) +
-                                               rho2 * (1. - volfrac(i, j, k)) *
-                                                   vel(i, j, k, 1)) /
-                                              rho_;
-                            vel(i, j, k, 2) = (rho1 * volfrac(i, j, k) *
-                                                   (rampf * (1. - Gamma) *
-                                                        target_vel(i, j, k, 2) +
-                                                    Gamma * vel(i, j, k, 2)) +
-                                               rho2 * (1. - volfrac(i, j, k)) *
-                                                   vel(i, j, k, 2)) /
-                                              rho_;
+                            for (int n = 0; n < vel.ncomp; ++n) {
+                                amrex::Real vel_liq = vel(i, j, k, n);
+                                const amrex::Real dvel_liq =
+                                    ((1. - Gamma) * target_vel(i, j, k, n) +
+                                     Gamma * vel_liq) -
+                                    vel_liq;
+                                vel_liq += rampf * fvel_liq * dvel_liq;
+                                amrex::Real integrated_vel_liq =
+                                    volfrac(i, j, k) * vel_liq;
+                                integrated_vel_liq +=
+                                    rampf * fvel_liq * amrex::max(0.0, dvf) *
+                                    (target_vel(i, j, k, n) - vel(i, j, k, n));
+                                vel(i, j, k, n) =
+                                    (rho1 * integrated_vel_liq +
+                                     rho2 * (1. - volfrac(i, j, k)) *
+                                         vel(i, j, k, n)) /
+                                    rho_;
+                            }
                         }
                     }
 

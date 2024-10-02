@@ -20,9 +20,6 @@ time.checkpoint_interval      =  -1       # Steps between checkpoint files
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
 #.......................................#
-incflo.use_godunov = 1
-incflo.diffusion_type = 2
-incflo.godunov_type="weno_z"
 transport.model = TwoPhaseTransport
 transport.viscosity_fluid1=0.0
 transport.viscosity_fluid2=0.0
@@ -39,8 +36,6 @@ OceanWaves.Wave1.relax_zone_gen_length=4.0
 OceanWaves.Wave1.numerical_beach_length=8.0
 MultiPhase.density_fluid1=1000.
 MultiPhase.density_fluid2=1.
-MultiPhase.interface_smoothing=0
-MultiPhase.interface_smoothing_frequency=1
 ICNS.source_terms = GravityForcing
 ICNS.use_perturb_pressure = true
 ICNS.reconstruct_true_pressure = true
@@ -57,15 +52,10 @@ geometry.prob_lo        =     0.0   0.  -1   # Lo corner coordinates
 geometry.prob_hi        =     30.   1.   1  # Hi corner coordinates
 geometry.is_periodic    =     0     1     0   # Periodicity x y z (0/1)
 
-xlo.type =     "pressure_inflow"
+xlo.type =     "wave_generation"
 xhi.type =     "pressure_outflow"
-xlo.vof_type = "zero_gradient"
-xhi.vof_type = "zero_gradient"
 
 zlo.type =     "slip_wall"
-zhi.type =     "pressure_outflow"
-zlo.vof_type = "zero_gradient"
-zhi.vof_type = "zero_gradient"
+zhi.type =     "slip_wall"
 
 incflo.verbose=1
-
