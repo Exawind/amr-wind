@@ -195,6 +195,7 @@ public:
         }
         using InflowOp =
             amr_wind::BCOpCreator<TestProfile, amr_wind::ConstDirichlet>;
+        AMREX_ALWAYS_ASSERT(TestProfile(*m_vel).identifier() == "TestProfile");
         (*m_vel).register_fill_patch_op<amr_wind::FieldFillPatchOps<InflowOp>>(
             mesh(), time(), InflowOp(*m_vel));
         (*m_vel).copy_bc_to_device();
