@@ -14,7 +14,7 @@ time.cfl              =   0.95         # CFL factor
 #.......................................#
 time.plot_interval            =  10       # Steps between plot files
 time.checkpoint_interval      =  -1       # Steps between checkpoint files
-io.outputs = density velocity p vof ow_levelset ow_velocity w2a_levelset w2a_velocity
+io.outputs = density velocity p vof ow_levelset ow_velocity
 
 OceanWaves.label = W2A1
 OceanWaves.W2A1.type = W2AWaves
@@ -29,8 +29,6 @@ OceanWaves.W2A1.number_interp_above_surface = 5
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
 #.......................................#
-incflo.use_godunov = 1
-incflo.godunov_type = weno_z
 incflo.mflux_type = minmod
 transport.model = TwoPhaseTransport
 transport.viscosity_fluid1=1.0e-3
