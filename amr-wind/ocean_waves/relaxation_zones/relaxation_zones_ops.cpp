@@ -39,7 +39,7 @@ void read_inputs(
 
     wdata.has_ramp = pp.contains("timeramp_period");
     if (wdata.has_ramp) {
-        pp.query("timeramp_period", wdata.ramp_period);
+        pp.get("timeramp_period", wdata.ramp_period);
     }
 
     amrex::ParmParse pp_multiphase("MultiPhase");
