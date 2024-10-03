@@ -85,6 +85,25 @@ void PDEMgr::advance_states()
     for (auto& eqn : scalar_eqns()) {
         eqn->fields().field.advance_states();
     }
+
+    if (m_sim.repo().field_exists(
+            icns().fields().field.name(), FieldState::NPH)) {
+        icns()
+            .fields()
+            .field.state(FieldState::NPH)
+            .fillphysbc(
+                m_sim.time().current_time() + 0.5 * m_sim.time().delta_t());
+    }
+    for (auto& eqn : scalar_eqns()) {
+        eqn->fields().field.advance_states();
+        if (m_sim.repo().field_exists(
+                eqn->fields().field.name(), FieldState::NPH)) {
+            eqn->fields()
+                .field.state(FieldState::NPH)
+                .fillphysbc(
+                    m_sim.time().current_time() + 0.5 * m_sim.time().delta_t());
+        }
+    }
 }
 
 void PDEMgr::fillpatch_state_fields(

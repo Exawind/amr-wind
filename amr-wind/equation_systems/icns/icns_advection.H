@@ -241,6 +241,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         // cppcheck-suppress constVariableReference
         auto& conv_term = fields.conv_term;
         auto& dof_field = fields.field.state(fstate);
+        const auto& dof_nph = fields.field.state(amr_wind::FieldState::NPH);
 
         auto flux_x =
             repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::XFACE);
@@ -257,7 +258,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
         const auto& rho_o =
             repo.get_field("density").state(amr_wind::FieldState::Old);
-        auto& rho_nph =
+        const auto& rho_nph =
             repo.get_field("density").state(amr_wind::FieldState::NPH);
 
         const bool mphase_vof = repo.field_exists("vof");
@@ -283,13 +284,12 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             amrex::MultiFab q_nph(
                 dof_field(lev).boxArray(), dof_field(lev).DistributionMap(),
                 ICNS::ndim, fvm::Godunov::nghost_state);
-            q_nph.setVal(0.0);
-            dof_field.fillphysbc(lev, time + 0.5 * dt, q_nph, 1);
+            amrex::MultiFab::Copy(
+                q_nph, dof_nph(lev), 0, 0, ICNS::ndim,
+                fvm::Godunov::nghost_state);
 
             // Calculate fluxes using momentum directly
             if (!mphase_vof) {
-                // Ensure rho_nph is up-to-date
-                rho_nph.fillphysbc(lev, time + 0.5 * dt, rho_nph(lev), 1);
 
                 for (int idim = 0; idim < dof_field.num_comp(); ++idim) {
                     amrex::MultiFab::Multiply(

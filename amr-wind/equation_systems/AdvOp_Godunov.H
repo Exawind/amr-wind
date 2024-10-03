@@ -92,7 +92,7 @@ struct AdvectionOp<
         // cppcheck-suppress constVariableReference
         auto& conv_term = fields.conv_term;
         const auto& dof_field = fields.field.state(fstate);
-        auto& dof_nph = fields.field.state(amr_wind::FieldState::NPH);
+        const auto& dof_nph = fields.field.state(amr_wind::FieldState::NPH);
 
         auto flux_x =
             repo.create_scratch_field(PDE::ndim, 0, amr_wind::FieldLoc::XFACE);
@@ -109,13 +109,9 @@ struct AdvectionOp<
 
         // only needed if multiplying by rho below
         const auto& den = density.state(fstate);
-        auto& den_nph = density.state(amr_wind::FieldState::NPH);
+        const auto& den_nph = density.state(amr_wind::FieldState::NPH);
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-            dof_nph.fillphysbc(lev, time + 0.5 * dt, dof_nph(lev), 1);
-            if (PDE::multiply_rho) {
-                den_nph.fillphysbc(lev, time + 0.5 * dt, den_nph(lev), 1);
-            }
 
             amrex::MFItInfo mfi_info;
             if (amrex::Gpu::notInLaunchRegion()) {
