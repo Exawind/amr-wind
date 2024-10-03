@@ -242,6 +242,11 @@ void ABL::pre_advance_work()
     m_abl_mpl->pre_advance_work();
 }
 
+void ABL::pre_advection_actions()
+{
+    m_bndry_plane->pre_advection_actions();
+}
+
 /** Perform tasks at the end of a new timestep
  *
  *  For ABL simulations, this method writes all plane-averaged profiles and

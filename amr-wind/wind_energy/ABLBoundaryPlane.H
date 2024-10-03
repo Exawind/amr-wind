@@ -118,6 +118,8 @@ public:
 
     void pre_advance_work();
 
+    void pre_advection_actions();
+
     void post_advance_work();
 
     void initialize_data();
@@ -128,7 +130,7 @@ public:
 
     void read_header();
 
-    void read_file();
+    void read_file(const bool /*nph_target_time*/);
 
     void populate_data(
         const int /*lev*/,

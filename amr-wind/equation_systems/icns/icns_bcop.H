@@ -60,7 +60,9 @@ struct BCOp<ICNS>
                 "used. The method of setting bc_time must be evaluated before "
                 "using a different state for this routine.\n");
         }
-        field.fillphysbc(bc_time, ng_diff);
+        if (rho_state != FieldState::Old) {
+            field.fillphysbc(bc_time, ng_diff);
+        }
         field.apply_bc_funcs(rho_state);
     }
 

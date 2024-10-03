@@ -80,6 +80,8 @@ public:
 
     void pre_advance_work() override;
 
+    void pre_advection_actions();
+
     void post_advance_work() override;
 
     void register_forcing_term(pde::icns::ABLForcing* forcing) const
