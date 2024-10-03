@@ -270,7 +270,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // Extrapolate and apply MAC projection for advection velocities
     icns().pre_advection_actions(amr_wind::FieldState::Old);
 
-    // Do the physics pre advection -- this is for updating data after MAC projection
+    // Do physics pre advection -- for updating data after MAC projection
     for (auto& pp : m_sim.physics()) {
         pp->pre_advection_actions();
     }
