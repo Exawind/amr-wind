@@ -80,8 +80,7 @@ struct AdvectionOp<
         const amrex::Real /*unused*/)
     {}
 
-    void operator()(
-        const FieldState fstate, const amrex::Real dt)
+    void operator()(const FieldState fstate, const amrex::Real dt)
     {
         static_assert(
             PDE::ndim == 1, "Invalid number of components for scalar");
