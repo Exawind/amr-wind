@@ -231,8 +231,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         }
     }
 
-    void operator()(
-        const FieldState fstate, const amrex::Real dt, const amrex::Real time)
+    void operator()(const FieldState fstate, const amrex::Real dt)
     {
         const auto& repo = fields.repo;
         const auto& geom = repo.mesh().Geom();
@@ -374,10 +373,10 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             // Loop levels
             multiphase::hybrid_fluxes(
                 repo, ICNS::ndim, iconserv, (*flux_x), (*flux_y), (*flux_z),
-                dof_field, src_term, rho_o, rho_nph, u_mac, v_mac, w_mac,
-                dof_field.bcrec(), dof_field.bcrec_device().data(),
-                rho_o.bcrec(), rho_o.bcrec_device().data(), dt, time,
-                mflux_scheme, godunov_use_forces_in_trans);
+                dof_field, dof_nph, src_term, rho_o, rho_nph, u_mac, v_mac,
+                w_mac, dof_field.bcrec(), dof_field.bcrec_device().data(),
+                rho_o.bcrec(), rho_o.bcrec_device().data(), dt, mflux_scheme,
+                godunov_use_forces_in_trans);
         }
 
         amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> fluxes(
@@ -510,10 +509,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
         m_macproj_op(fstate, dt);
     }
 
-    void operator()(
-        const FieldState fstate,
-        const amrex::Real /*unused*/,
-        const amrex::Real /*unused*/)
+    void operator()(const FieldState fstate, const amrex::Real /*unused*/)
     {
 
         const auto& repo = fields.repo;

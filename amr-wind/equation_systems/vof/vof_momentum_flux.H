@@ -12,7 +12,8 @@ static void hybrid_fluxes(
     ScratchField& flux_x,
     ScratchField& flux_y,
     ScratchField& flux_z,
-    Field& dof_field,
+    const Field& dof_field,
+    const Field& dof_nph,
     const Field& src_term,
     const Field& rho_o,
     const Field& rho_nph,
@@ -24,7 +25,6 @@ static void hybrid_fluxes(
     amrex::Vector<amrex::BCRec> const& rhobc,
     amrex::BCRec const* rhobc_d,
     const amrex::Real dt,
-    const amrex::Real time,
     godunov::scheme mflux_scheme,
     bool use_forces_in_trans)
 {
@@ -87,8 +87,8 @@ static void hybrid_fluxes(
         amrex::MultiFab q_nph(
             dof_field(lev).boxArray(), dof_field(lev).DistributionMap(), ncomp,
             fvm::Godunov::nghost_state);
-        q_nph.setVal(0.0);
-        dof_field.fillphysbc(lev, time + 0.5 * dt, q_nph, 1);
+        amrex::MultiFab::Copy(
+            q_nph, dof_nph(lev), 0, 0, ncomp, fvm::Godunov::nghost_state);
         // Density at NPH is fully calculated a priori
         // Multiply to get momentum at NPH
         for (int idim = 0; idim < dof_field.num_comp(); ++idim) {
