@@ -112,7 +112,6 @@ struct AdvectionOp<
         const auto& den_nph = density.state(amr_wind::FieldState::NPH);
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-
             amrex::MFItInfo mfi_info;
             if (amrex::Gpu::notInLaunchRegion()) {
                 mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
