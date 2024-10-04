@@ -15,10 +15,12 @@ codebase
 cmake
 CMake
 concretization
+concretize
 concretized
 concretizing
 conda
 convecting
+cpp
 CTest
 datafile
 doxygen

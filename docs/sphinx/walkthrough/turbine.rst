@@ -1,3 +1,7 @@
+.. spelling::
+
+   termx
+
 .. _turbine:
 
 Turbine simulation walkthrough

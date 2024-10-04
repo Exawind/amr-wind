@@ -1,3 +1,7 @@
+.. spelling::
+
+   xy
+
 .. _precursor:
 
 Precursor (ABL) walkthrough
