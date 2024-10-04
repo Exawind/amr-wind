@@ -239,7 +239,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         const auto& src_term = fields.src_term;
         // cppcheck-suppress constVariableReference
         auto& conv_term = fields.conv_term;
-        auto& dof_field = fields.field.state(fstate);
+        const auto& dof_field = fields.field.state(fstate);
         const auto& dof_nph = fields.field.state(amr_wind::FieldState::NPH);
 
         auto flux_x =
