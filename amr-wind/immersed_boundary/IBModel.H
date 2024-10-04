@@ -12,7 +12,7 @@ class CFDSim;
 
 namespace ib {
 
-/** Abstract representation of an immersed boundary in the flowfield.
+/** Abstract representation of an immersed boundary in the flow field.
  *
  *  \ingroup immersed boundary
  *

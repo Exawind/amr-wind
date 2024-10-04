@@ -28,7 +28,7 @@ Tracer(s) advection:
 Discretization
 --------------
 
-The numerical methdology used to solve the partial differential
+The numerical methodology used to solve the partial differential
 equations (PDEs) within AMR-Wind is documented in `Almgren et
 al. (JCP 1998)
 <https://ccse.lbl.gov/Publications/almgren/abchw.pdf>`_. AMR-Wind uses
@@ -147,12 +147,12 @@ Often for simulations involving walls, (e.g., channel flows, complex terrains et
 
 .. _multiphase:
 
-Multiphase flow modelling
--------------------------
+Multiphase flow modeling
+------------------------
 
 AMR-Wind employs the volume-of-fluid method for simulating two-phase (water-air) flows. 
 More specifically, the volume fraction field is advected explicitly using a
-directionally split geometric approach, and the advection of momentum is 
+directional split geometric approach, and the advection of momentum is 
 discretized in a mass-consistent manner. Overall, this approach conserves mass
 and momentum while remaining stable at high density ratios (typically 1000).
 Viscosities can be specified for each fluid independently, but surface tension
@@ -174,7 +174,7 @@ The reference density (:math:`\rho_0`) is defined as ``1.0`` by default, can be 
 
 Using the perturbational form implies that the hydrostatic pressure is removed from the pressure variable, including its output. This means that the solution to the Poisson equation is actually the perturbational pressure, :math:`p'`, not :math:`p`. If the full pressure, :math:`p`, is desired for analysis or postprocessing purposes, the hydrostatic pressure can be added back to the pressure field via the input argument ``ICNS.reconstruct_true_pressure = true``. In order for this to operate in the code, the reference pressure field must be defined for the specific flow case being run. 
 
-- An example of this is in physics/multiphase/Multiphase.cpp. To construct the reference pressure field, the reference gravity term must be integrated. This particular example assumes that the reference density only varies in z (or is constant), gravity acts only in z, and the hydrostatic pressure at zhi is equal to 0. 
+- An example of this is in physics/multiphase/Multiphase.cpp. To construct the reference pressure field, the reference gravity term must be integrated. This particular example assumes that the reference density only varies in z (or is constant), gravity acts only in z, and the hydrostatic pressure at the high z boundary is equal to 0. 
 
 - In mathematical form, the derivation and calculation of the full pressure is as follows:
 
@@ -184,7 +184,7 @@ Using the perturbational form implies that the hydrostatic pressure is removed f
 
 .. math:: p = p' + \int_{z_{min}}^z \rho_0 g dz + p(z = z_{min}) 
 
-- reframe in reference to the top boundary, and assume :math:`p(z = z_{max}) = 0`
+- change reference frame to the top boundary, and assume :math:`p(z = z_{max}) = 0`
    
 .. math:: p = p' - \int_z^{z_{max}} \rho_0 g dz + p(z = z_{max}) = p' - \int_z^{z_{max}} \rho_0 g dz
 
@@ -218,7 +218,7 @@ Actuator Forcing
 
 Calculating actuator forces relies on sampling the velocity field at actuator points
 at the beginning of each time step (*n*). Actuator-based models, i.e., actuator lines
-and actuator disks, rely on internal implementations (e.g., joukowsky disk, actuator-line wing)
+and actuator disks, rely on internal implementations (e.g., Joukowsky disk, actuator-line wing)
 or external turbine tools (OpenFAST) that use these sampled velocities to calculate forces 
 and the motion of actuator points.
 When the Godunov method is used, the motion of actuator points must be incorporated
@@ -437,7 +437,7 @@ AMReX concepts before jumping into the AMR-Wind source code.
 
 The `Basics section
 <https://amrex-codes.github.io/amrex/docs_html/Basics_Chapter.html>`_ provides a
-thorough overview of the basic datastructures and ways to interact with these
+thorough overview of the basic data structures and ways to interact with these
 structures. The `GPU section
 <https://amrex-codes.github.io/amrex/docs_html/GPU_Chapter.html>`_ provides an
 overview of the AMReX GPU strategy and the higher-level functions (e.g.,
