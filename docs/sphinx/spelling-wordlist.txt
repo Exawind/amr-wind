@@ -1,4 +1,5 @@
 abl
+adaptively
 amr
 amrex
 anisotropic
@@ -43,6 +44,7 @@ incflo
 incompressibility
 initializer
 initializers
+iteratively
 Joukowsky
 kosovic
 levelset
@@ -55,6 +57,7 @@ multigrid
 Nalu
 namespace
 namespaces
+nd
 netcdf
 Nicolson
 normals
@@ -82,6 +85,7 @@ roadmap
 rosco
 Shubin
 smagorinsky
+solvability
 spack
 spinup
 src

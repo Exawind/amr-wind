@@ -72,11 +72,11 @@ controls when these files are output.
    in the simulation. Currently, the available derived quantity definitions
    that operate on the velocity field are vorticity magnitude 
    (``mag_vorticity``), q-criterion (``q_criterion``),
-   nondimensional q-criterion (``q_criterion_nondim``),
+   non-dimensional q-criterion (``q_criterion_nondim``),
    and strain rate magnitude (``mag_strainrate``). Generic
    derived quantity definitions, which operate on fields specified as an argument,
    include the gradient operator (``grad``), the divergence
-   operator (``div``), the laplacian operator (``laplacian``),
+   operator (``div``), the Laplacian operator (``laplacian``),
    and components (``components``), which isolates the specified
    component of a field.
 

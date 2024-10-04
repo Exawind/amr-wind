@@ -1,3 +1,12 @@
+.. spelling::
+
+   ntime
+   nheight
+   tflux
+   directToConstant
+   indirectToConstant
+   indirectToDirect
+
 .. _inputs_meso_forcing:
 
 Section: ABLMesoForcing
@@ -106,7 +115,7 @@ only third-order polynomial regression is supported.
 
    IPA regression weights at the corresponding
    :input_param:`ABLMesoForcing*.weighting_heights`. The default behavior is to
-   use uniform weighting. Nonuniform weighting is generally ill-adivsed as
+   use uniform weighting. Nonuniform weighting is generally ill-advised as
    runaway positive or negative forcing values may be possible.
 
 .. input_param:: ABLMesoForcing*.normalize_by_zmax
