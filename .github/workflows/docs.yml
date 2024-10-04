@@ -31,7 +31,8 @@ jobs:
       - name: Spellcheck
         # execute from top-level amr-wind directory
         run: |
-          sphinx-build -b spelling ./docs/sphinx ./build_docs/manual
+          echo "::add-matcher::.github/problem-matchers/sphinx.json"
+          sphinx-build -b spelling ./docs/sphinx ./build_docs/manual/spelling2>&1 | tee -a build-output.txt
       - name: Build
         # execute from top-level amr-wind directory
         run: |

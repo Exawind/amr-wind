@@ -33,6 +33,7 @@ extensions = [ 'sphinx.ext.mathjax', 'sphinx_toolbox.collapse', 'sphinx_copybutt
 
 spelling_word_list_filename = "spelling-wordlist.txt"
 spelling_show_suggestions = True
+spelling_warning = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
