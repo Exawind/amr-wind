@@ -80,7 +80,7 @@ public:
 
     void pre_advance_work() override;
 
-    void pre_advection_actions();
+    void pre_advection_actions() override;
 
     void post_advance_work() override;
 
