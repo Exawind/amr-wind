@@ -299,7 +299,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                         fq, rho_o(lev), 0, idim, 1, fvm::Godunov::nghost_src);
 
                     amrex::MultiFab::Multiply(
-                        q_nph, rho_nph(lev), 0, idim, 1, 1);
+                        q_nph, rho_nph(lev), 0, idim, 1,
+                        fvm::Godunov::nghost_state);
                 }
             }
 
