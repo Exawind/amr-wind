@@ -36,6 +36,7 @@ godunov
 hexahedral
 hypre
 incflo
+incompressibility
 initializer
 initializers
 Joukowsky
@@ -67,6 +68,7 @@ prandtl
 proj
 Raphson
 regrid
+regridding
 repo
 reStructuredText
 roadmap
