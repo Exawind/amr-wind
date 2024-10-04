@@ -132,7 +132,7 @@ public:
     //! Advance states for all registered PDEs at the beginning of a timestep
     void advance_states();
 
-    //! Prepare boundaries for all registered PDEs at the beginning of a timestep:
+    //! Prepare boundaries for registered PDEs at the beginning of a timestep:
     //! -- intended for when boundaries rely on intermediate time states (nph)
     void prepare_boundaries();
 
