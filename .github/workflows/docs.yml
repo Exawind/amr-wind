@@ -34,7 +34,7 @@ jobs:
       - name: Configure
         run: |
           cmake -B ${{runner.workspace}}/build-docs \
-            -DSPADES_ENABLE_DOCUMENTATION:BOOL=ON \
+            -DAMR_WIND_ENABLE_DOCUMENTATION:BOOL=ON \
             ${{github.workspace}}
       - name: Build
         # execute from top-level amr-wind directory
