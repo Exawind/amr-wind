@@ -143,6 +143,7 @@ struct ComputeRHSOp
      *
      *  \param difftype Indicating whether time-integration is explicit/implicit
      *  \param dt time step size
+     *  \param mesh_mapping flag to indicate if mesh mapping is used
      */
     void corrector_rhs(
         const DiffusionType difftype, const amrex::Real dt, bool mesh_mapping)

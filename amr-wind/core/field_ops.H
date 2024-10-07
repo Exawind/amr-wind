@@ -79,7 +79,6 @@ add(T1& dst, const T2& src, int srccomp, int dstcomp, int numcomp, int nghost)
  *  \param [in] ncomp_src Number of components to divide by
  *  \param [in] ncomp_dst Number of components to be divided
  *  \param [in] nghost Number of ghost cells to be updated
- *  \param [in] iter_src_comp Flag of whether src components should be iterated
  */
 template <typename T1, typename T2>
 inline void divide(
@@ -123,7 +122,6 @@ inline void divide(
  *  \param [in] ncomp_src Number of components to divide by
  *  \param [in] ncomp_dst Number of components to be divided
  *  \param [in] nghost Number of ghost cells to be updated
- *  \param [in] iter_src_comp Flag of whether src components should be iterated
  */
 template <typename T1, typename T2>
 inline void divide(
