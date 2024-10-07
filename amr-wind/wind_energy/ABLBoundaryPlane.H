@@ -158,6 +158,8 @@ public:
 
     io_mode mode() const { return m_io_mode; }
 
+    amrex::Real tinterp() const { return m_in_data.tinterp(); }
+
 private:
     const amr_wind::SimTime& m_time;
     const FieldRepo& m_repo;

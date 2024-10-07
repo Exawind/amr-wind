@@ -63,6 +63,7 @@ void ABLFillInflow::fillpatch_sibling_fields(
     const amrex::Vector<amrex::BCRec>& bcrec,
     const FieldState fstate)
 {
+    bool plane_data_unchanged = m_bndry_plane.tinterp() - time > 1e-12;
     // For an ABL fill, we just foextrap the mac velocities
     amrex::Vector<amrex::BCRec> lbcrec(m_field.num_comp());
     const auto& ibctype = m_field.bc_type();
@@ -74,9 +75,13 @@ void ABLFillInflow::fillpatch_sibling_fields(
         for (int i = 0; i < m_field.num_comp(); ++i) {
             if (bct == BC::mass_inflow) {
                 if (side == amrex::Orientation::low) {
-                    lbcrec[i].setLo(dir, amrex::BCType::foextrap);
+                    lbcrec[i].setLo(
+                        dir, plane_data_unchanged ? amrex::BCType::ext_dir
+                                                  : amrex::BCType::foextrap);
                 } else {
-                    lbcrec[i].setHi(dir, amrex::BCType::foextrap);
+                    lbcrec[i].setHi(
+                        dir, plane_data_unchanged ? amrex::BCType::ext_dir
+                                                  : amrex::BCType::foextrap);
                 }
             } else {
                 if (side == amrex::Orientation::low) {
@@ -91,11 +96,13 @@ void ABLFillInflow::fillpatch_sibling_fields(
     FieldFillPatchOps<FieldBCDirichlet>::fillpatch_sibling_fields(
         lev, time, mfabs, ffabs, cfabs, nghost, lbcrec, fstate);
 
-    for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
-        // use new_time to populate boundary data instead of half-time
-        // to avoid interpolating from precursor data
-        m_bndry_plane.populate_data(
-            lev, m_time.new_time(), m_field, *mfabs[i], 0, i);
+    if (!plane_data_unchanged) {
+        for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
+            // use new_time to populate boundary data instead of half-time
+            // to avoid interpolating from precursor data
+            m_bndry_plane.populate_data(
+                lev, m_time.new_time(), m_field, *mfabs[i], 0, i);
+        }
     }
 }
 

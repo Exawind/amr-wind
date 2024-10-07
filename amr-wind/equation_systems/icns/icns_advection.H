@@ -207,7 +207,6 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         m_macproj_op(fstate, dt);
 
         // Fill mac velocities (ghost cells) using velocity BCs
-        // !!! Intending to remove this call !!! //
         if (fvm::Godunov::nghost_state > 0) {
             amrex::Array<Field*, AMREX_SPACEDIM> mac_vel = {
                 AMREX_D_DECL(&u_mac, &v_mac, &w_mac)};
