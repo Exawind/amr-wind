@@ -37,7 +37,7 @@ class RefineCriteriaManager;
  *  \ref incflo::InitData "initialize mesh, physics modules, etc.".
  *
  *  <li> **Time loop** Run user-defined number of timesteps \ref incflo::Evolve
- *  "in a loop" that \ref incflo::Advance "advances" the flow-field.
+ *  "in a loop" that \ref incflo::advance "advances" the flow-field.
  *
  *  </ol>
  */
