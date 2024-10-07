@@ -12,7 +12,7 @@ namespace amr_wind::pde::icns {
  *
  *  \sa NonLinearSGS
  */
-.class NonLinearSGSTerm : public MomentumSource::Register<NonLinearSGSTerm>
+class NonLinearSGSTerm : public MomentumSource::Register<NonLinearSGSTerm>
 {
 public:
     static std::string identifier() { return "NonLinearSGSTerm"; }

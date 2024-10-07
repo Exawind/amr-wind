@@ -16,7 +16,7 @@ namespace ocean_waves {
 
 /** Abstract representation of an ocean wave type.
  *
- *  \ingroup immersed boundary
+ *  \ingroup immersed_boundary
  */
 struct OceanWavesType
 {};

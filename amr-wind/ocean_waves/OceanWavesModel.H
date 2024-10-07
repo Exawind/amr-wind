@@ -49,7 +49,7 @@ public:
 
 /** Concrete implementation of the WaveModel for different wave theories.
  *
- *  \ingroup OceanWaves
+ *  \ingroup ocean_waves
  *
  * \tparam WaveTheoryTrait A wave theory trait that defines the behavior of the
  * different actions (initialization, velocity update, free surface update)

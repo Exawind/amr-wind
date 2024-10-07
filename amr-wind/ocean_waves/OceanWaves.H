@@ -4,9 +4,8 @@
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/FieldRepo.H"
 
-/** \defgroup Ocean Waves module
+/** \defgroup ocean_waves Ocean Waves module
  *  Ocean Waves class
- *  \ingroup ocean_waves
  */
 
 namespace amr_wind {

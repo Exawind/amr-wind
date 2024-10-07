@@ -18,8 +18,8 @@ namespace amr_wind::pde::icns {
  *  - `east_vector`, `north_vector` (Optional) Vectors specifying the east and
  * north directions with respect to computational domain
  *
- *  - `rotational_time_period` Time period for planetary rotation (default: 86400
- * seconds)
+ *  - `rotational_time_period` Time period for planetary rotation (default:
+ * 86400 seconds)
  */
 CoriolisForcing::CoriolisForcing(const CFDSim& sim)
     : m_velocity(sim.repo().get_field("velocity"))
