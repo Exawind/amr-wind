@@ -118,6 +118,8 @@ public:
 
     void pre_advance_work();
 
+    void pre_predictor_work();
+
     void post_advance_work();
 
     void initialize_data();

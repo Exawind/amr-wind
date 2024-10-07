@@ -53,6 +53,9 @@ void incflo::advance()
 
     m_sim.pde_manager().advance_states();
     m_sim.pde_manager().prepare_boundaries();
+    for (auto& pp : m_sim.physics()) {
+        pp->pre_predictor_work();
+    }
 
     ApplyPredictor();
 

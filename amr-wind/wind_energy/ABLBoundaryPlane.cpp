@@ -312,6 +312,14 @@ void ABLBoundaryPlane::pre_advance_work()
     read_file();
 }
 
+void ABLBoundaryPlane::pre_predictor_work()
+{
+    if (!m_is_initialized) {
+        return;
+    }
+    read_file();
+}
+
 void ABLBoundaryPlane::post_advance_work()
 {
     if (!m_is_initialized) {
