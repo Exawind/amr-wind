@@ -82,6 +82,9 @@ public:
     //! Perform tasks necessary after advancing timestep
     virtual void post_advance_work() = 0;
 
+    //! Perform tasks necessary before calculating advection term
+    virtual void pre_advection_actions() {}
+
     //! Perform tasks necessary before applying the pressure correction
     virtual void pre_pressure_correction_work() {}
 

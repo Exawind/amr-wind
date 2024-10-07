@@ -50,7 +50,7 @@ void ABLFillInflow::fillphysbc(
     FieldFillPatchOps<FieldBCDirichlet>::fillphysbc(
         lev, time, mfab, nghost, fstate);
 
-    m_bndry_plane.populate_data(lev, m_time.new_time(), m_field, mfab);
+    m_bndry_plane.populate_data(lev, time, m_field, mfab);
 }
 
 void ABLFillInflow::fillpatch_sibling_fields(
@@ -94,8 +94,7 @@ void ABLFillInflow::fillpatch_sibling_fields(
     for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
         // use new_time to populate boundary data instead of half-time
         // to avoid interpolating from precursor data
-        m_bndry_plane.populate_data(
-            lev, m_time.new_time(), m_field, *mfabs[i], 0, i);
+        m_bndry_plane.populate_data(lev, time, m_field, *mfabs[i], 0, i);
     }
 }
 

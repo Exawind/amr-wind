@@ -52,6 +52,7 @@ void incflo::advance()
     BL_PROFILE("amr-wind::incflo::Advance");
 
     m_sim.pde_manager().advance_states();
+    m_sim.pde_manager().prepare_boundaries();
 
     ApplyPredictor();
 
@@ -269,6 +270,11 @@ void incflo::ApplyPredictor(bool incremental_projection)
 
     // Extrapolate and apply MAC projection for advection velocities
     icns().pre_advection_actions(amr_wind::FieldState::Old);
+
+    // Do physics pre advection -- for updating data after MAC projection
+    for (auto& pp : m_sim.physics()) {
+        pp->pre_advection_actions();
+    }
 
     // For scalars only first
     // *************************************************************************************
