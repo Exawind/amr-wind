@@ -56,7 +56,7 @@ void mol::compute_convective_fluxes(
     // At an ext_dir boundary, the boundary value is on the face, not cell
     // center.
     auto extdir_lohi = amr_wind::utils::has_extdir_or_ho(
-        h_bcrec, ncomp, static_cast<int>(Direction::x));
+        h_bcrec, ncomp, static_cast<int>(amrex::Direction::x));
     bool has_extdir_lo = extdir_lohi.first;
     bool has_extdir_hi = extdir_lohi.second;
     if ((has_extdir_lo and domain_ilo >= xbx.smallEnd(0) - 1) or
@@ -123,7 +123,7 @@ void mol::compute_convective_fluxes(
     }
 
     extdir_lohi = amr_wind::utils::has_extdir_or_ho(
-        h_bcrec, ncomp, static_cast<int>(Direction::y));
+        h_bcrec, ncomp, static_cast<int>(amrex::Direction::y));
     has_extdir_lo = extdir_lohi.first;
     has_extdir_hi = extdir_lohi.second;
     if ((has_extdir_lo and domain_jlo >= ybx.smallEnd(1) - 1) or
@@ -190,7 +190,7 @@ void mol::compute_convective_fluxes(
     }
 
     extdir_lohi = amr_wind::utils::has_extdir_or_ho(
-        h_bcrec, ncomp, static_cast<int>(Direction::z));
+        h_bcrec, ncomp, static_cast<int>(amrex::Direction::z));
     has_extdir_lo = extdir_lohi.first;
     has_extdir_hi = extdir_lohi.second;
     if ((has_extdir_lo and domain_klo >= zbx.smallEnd(2) - 1) or
