@@ -158,9 +158,12 @@ public:
         const int /*lev*/,
         const amrex::Orientation /*ori*/) const;
 
-    io_mode mode() const { return m_io_mode; }
+    bool is_data_newer_than(const amrex::Real time) const
+    {
+        return (m_in_data.tinterp() - time > 1e-12);
+    }
 
-    amrex::Real tinterp() const { return m_in_data.tinterp(); }
+    io_mode mode() const { return m_io_mode; }
 
 private:
     const amr_wind::SimTime& m_time;

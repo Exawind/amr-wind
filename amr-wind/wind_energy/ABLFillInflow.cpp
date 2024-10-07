@@ -47,10 +47,13 @@ void ABLFillInflow::fillphysbc(
     const amrex::IntVect& nghost,
     const FieldState fstate)
 {
-    FieldFillPatchOps<FieldBCDirichlet>::fillphysbc(
-        lev, time, mfab, nghost, fstate);
+    // This check is to avoid diffs -- it will be removed soon
+    if (fstate != FieldState::NPH) {
+        FieldFillPatchOps<FieldBCDirichlet>::fillphysbc(
+            lev, time, mfab, nghost, fstate);
 
-    m_bndry_plane.populate_data(lev, m_time.new_time(), m_field, mfab);
+        m_bndry_plane.populate_data(lev, m_time.new_time(), m_field, mfab);
+    }
 }
 
 void ABLFillInflow::fillpatch_sibling_fields(
@@ -63,7 +66,8 @@ void ABLFillInflow::fillpatch_sibling_fields(
     const amrex::Vector<amrex::BCRec>& bcrec,
     const FieldState fstate)
 {
-    bool plane_data_unchanged = m_bndry_plane.tinterp() - time > 1e-12;
+    // Avoid trying to read after planes have already been populated
+    bool plane_data_unchanged = m_bndry_plane.is_data_newer_than(time);
     // For an ABL fill, we just foextrap the mac velocities
     amrex::Vector<amrex::BCRec> lbcrec(m_field.num_comp());
     const auto& ibctype = m_field.bc_type();
