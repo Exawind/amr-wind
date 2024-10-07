@@ -65,16 +65,19 @@ void mol::compute_convective_fluxes(
             xbx, ncomp,
             [d_bcrec, q, domain_ilo, domain_ihi, umac,
              fx] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                bool extdir_or_ho_ilo = (d_bcrec[n].lo(0) == BCType::ext_dir) ||
-                                        (d_bcrec[n].lo(0) == BCType::hoextrap);
-                bool extdir_or_ho_ihi = (d_bcrec[n].hi(0) == BCType::ext_dir) ||
-                                        (d_bcrec[n].hi(0) == BCType::hoextrap);
+                bool extdir_or_ho_ilo =
+                    (d_bcrec[n].lo(0) == amrex::BCType::ext_dir) ||
+                    (d_bcrec[n].lo(0) == amrex::BCType::hoextrap);
+                bool extdir_or_ho_ihi =
+                    (d_bcrec[n].hi(0) == amrex::BCType::ext_dir) ||
+                    (d_bcrec[n].hi(0) == amrex::BCType::hoextrap);
                 amrex::Real qs;
-                if (i <= domain_ilo && (d_bcrec[n].lo(0) == BCType::ext_dir)) {
+                if (i <= domain_ilo &&
+                    (d_bcrec[n].lo(0) == amrex::BCType::ext_dir)) {
                     qs = q(domain_ilo - 1, j, k, n);
                 } else if (
                     i >= domain_ihi + 1 &&
-                    (d_bcrec[n].hi(0) == BCType::ext_dir)) {
+                    (d_bcrec[n].hi(0) == amrex::BCType::ext_dir)) {
                     qs = q(domain_ihi + 1, j, k, n);
                 } else {
                     amrex::Real qpls =
@@ -129,16 +132,19 @@ void mol::compute_convective_fluxes(
             ybx, ncomp,
             [d_bcrec, q, domain_jlo, domain_jhi, vmac,
              fy] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                bool extdir_or_ho_jlo = (d_bcrec[n].lo(1) == BCType::ext_dir) ||
-                                        (d_bcrec[n].lo(1) == BCType::hoextrap);
-                bool extdir_or_ho_jhi = (d_bcrec[n].hi(1) == BCType::ext_dir) ||
-                                        (d_bcrec[n].hi(1) == BCType::hoextrap);
+                bool extdir_or_ho_jlo =
+                    (d_bcrec[n].lo(1) == amrex::BCType::ext_dir) ||
+                    (d_bcrec[n].lo(1) == amrex::BCType::hoextrap);
+                bool extdir_or_ho_jhi =
+                    (d_bcrec[n].hi(1) == amrex::BCType::ext_dir) ||
+                    (d_bcrec[n].hi(1) == amrex::BCType::hoextrap);
                 amrex::Real qs;
-                if (j <= domain_jlo && (d_bcrec[n].lo(1) == BCType::ext_dir)) {
+                if (j <= domain_jlo &&
+                    (d_bcrec[n].lo(1) == amrex::BCType::ext_dir)) {
                     qs = q(i, domain_jlo - 1, k, n);
                 } else if (
                     j >= domain_jhi + 1 &&
-                    (d_bcrec[n].hi(1) == BCType::ext_dir)) {
+                    (d_bcrec[n].hi(1) == amrex::BCType::ext_dir)) {
                     qs = q(i, domain_jhi + 1, k, n);
                 } else {
                     amrex::Real qpls =
@@ -193,16 +199,19 @@ void mol::compute_convective_fluxes(
             zbx, ncomp,
             [d_bcrec, q, domain_klo, domain_khi, wmac,
              fz] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                bool extdir_or_ho_klo = (d_bcrec[n].lo(2) == BCType::ext_dir) ||
-                                        (d_bcrec[n].lo(2) == BCType::hoextrap);
-                bool extdir_or_ho_khi = (d_bcrec[n].hi(2) == BCType::ext_dir) ||
-                                        (d_bcrec[n].hi(2) == BCType::hoextrap);
+                bool extdir_or_ho_klo =
+                    (d_bcrec[n].lo(2) == amrex::BCType::ext_dir) ||
+                    (d_bcrec[n].lo(2) == amrex::BCType::hoextrap);
+                bool extdir_or_ho_khi =
+                    (d_bcrec[n].hi(2) == amrex::BCType::ext_dir) ||
+                    (d_bcrec[n].hi(2) == amrex::BCType::hoextrap);
                 amrex::Real qs;
-                if (k <= domain_klo && (d_bcrec[n].lo(2) == BCType::ext_dir)) {
+                if (k <= domain_klo &&
+                    (d_bcrec[n].lo(2) == amrex::BCType::ext_dir)) {
                     qs = q(i, j, domain_klo - 1, n);
                 } else if (
                     k >= domain_khi + 1 &&
-                    (d_bcrec[n].hi(2) == BCType::ext_dir)) {
+                    (d_bcrec[n].hi(2) == amrex::BCType::ext_dir)) {
                     qs = q(i, j, domain_khi + 1, n);
                 } else {
                     amrex::Real qpls =
