@@ -4,6 +4,7 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/PDEHelpers.H"
 #include "amr-wind/incflo_enums.H"
+#include "amr-wind/core/field_ops.H"
 
 #include "AMReX_ParmParse.H"
 
@@ -84,6 +85,47 @@ void PDEMgr::advance_states()
     icns().fields().field.advance_states();
     for (auto& eqn : scalar_eqns()) {
         eqn->fields().field.advance_states();
+    }
+}
+
+void PDEMgr::prepare_boundaries()
+{
+    // If state variables exist at NPH, fill their boundary cells
+    // Insert calculation of time at NPH
+    if (m_constant_density &&
+        m_sim.repo().field_exists("density", FieldState::NPH)) {
+        auto& nph_field =
+            m_sim.repo().get_field("density").state(FieldState::NPH);
+        auto& new_field =
+            m_sim.repo().get_field("density").state(FieldState::New);
+        // Need to check if this step is necessary
+        // Guessing that for no-op dirichlet bcs, the new needs to be copied to
+        // NPH
+        field_ops::copy(
+            nph_field, new_field, 0, 0, new_field.num_comp(),
+            new_field.num_grow());
+    }
+
+    if (m_sim.repo().field_exists(
+            icns().fields().field.base_name(), FieldState::NPH)) {
+        auto& nph_field = icns().fields().field.state(FieldState::NPH);
+        auto& new_field = icns().fields().field.state(FieldState::New);
+        field_ops::copy(
+            nph_field, new_field, 0, 0, new_field.num_comp(),
+            new_field.num_grow());
+        // insert fill physical boundary call
+    }
+    for (auto& eqn : scalar_eqns()) {
+        eqn->fields().field.advance_states();
+        if (m_sim.repo().field_exists(
+                eqn->fields().field.base_name(), FieldState::NPH)) {
+            auto& nph_field = eqn->fields().field.state(FieldState::NPH);
+            auto& new_field = eqn->fields().field.state(FieldState::New);
+            field_ops::copy(
+                nph_field, new_field, 0, 0, new_field.num_comp(),
+                new_field.num_grow());
+            // insert fill physical boundary call
+        }
     }
 }
 

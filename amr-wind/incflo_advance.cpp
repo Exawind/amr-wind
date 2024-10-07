@@ -52,6 +52,7 @@ void incflo::advance()
     BL_PROFILE("amr-wind::incflo::Advance");
 
     m_sim.pde_manager().advance_states();
+    m_sim.pde_manager().prepare_boundaries();
 
     ApplyPredictor();
 
