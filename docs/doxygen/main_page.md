@@ -62,30 +62,6 @@ When developing new features, we strongly recommend creating a unit-test and
 develop features incrementally and testing as you add capabilities. Unit-tests
 are also a good way to explore the usage of individual components of the code.
 
-### Building API documentation locally
-
-The API documentation is automatically generated from specially-formatted
-comments in the source code using [Doxygen](https://www.doxygen.nl/index.html).
-Please consult the [Doxygen
-manual](https://www.doxygen.nl/manual/docblocks.html) to learn about documenting
-code. To generate this documentation on your local machine, or to rebuild docs
-during code development process you'll need to install `doxygen` and `graphviz`
-executables on your system. Once these executables have been successfully
-installed on your system, you can generate this documentation by executing the
-following commands:
-
-~~~~~~~~~~~.sh
-git clone https://github.com/exawind/amr-wind.git
-cd amr-wind
-
-# Doxygen command should be executed from the top-level directory
-doxygen docs/doxygen/Doxyfile
-# The resulting documentation is in `build/html` directory
-
-# Open main page on your browser
-open build/html/index.html 
-~~~~~~~~~~~
- 
 ## Contributing
 
 AMR-Wind is an open-source code and we welcome contributions from the community.
