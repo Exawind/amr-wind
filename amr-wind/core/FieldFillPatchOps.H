@@ -173,10 +173,10 @@ class FieldFillPatchOps : public FieldFillPatchOpsBase
 public:
     using Functor = typename BCOpCreator::FunctorType;
     /**
-     *  @param field Field whose patches are filled by this instance
-     *  @param mesh  The mesh instance to determine amrex::Geometry at a level
-     *  @param time  Time instance
-     *  @param itype Interpolation type (default: conservative cell linear)
+     *  \param field Field whose patches are filled by this instance
+     *  \param mesh  The mesh instance to determine amrex::Geometry at a level
+     *  \param time  Time instance
+     *  \param itype Interpolation type (default: conservative cell linear)
      */
     FieldFillPatchOps(
         Field& field,

@@ -16,9 +16,9 @@ namespace amr_wind_tests {
  *  The functor is a void function that accepts two arguments: the current
  *  level, and an MFIter instance for the MultiFab at the given level.
  *
- *  @param nlevels Number of valid levels in the AMR hierarchy
- *  @param field MultiFabs for each of the `nlevels` levels
- *  @param func Functor to execute over the MultiFabs
+ *  \param nlevels Number of valid levels in the AMR hierarchy
+ *  \param field MultiFabs for each of the `nlevels` levels
+ *  \param func Functor to execute over the MultiFabs
  */
 
 template <typename Functor>

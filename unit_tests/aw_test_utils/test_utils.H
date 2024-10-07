@@ -56,9 +56,9 @@ field_max(const amr_wind::ScratchField& field, const int icomp = 0)
 
 /** Return the minimum value of a field over all AMR levels
  *
- *  @param nlevels Number of levels that existing in this AMR hierarchy
- *  @param field MultiFabs for the levels
- *  @param ncomp The field component for which min value is desired (default: 0)
+ *  \param nlevels Number of levels that existing in this AMR hierarchy
+ *  \param field MultiFabs for the levels
+ *  \param ncomp The field component for which min value is desired (default: 0)
  */
 inline amrex::Real field_min(
     const int nlevels,
@@ -74,9 +74,9 @@ inline amrex::Real field_min(
 
 /** Return the maximum value of a field over all AMR levels
  *
- *  @param nlevels Number of levels that existing in this AMR hierarchy
- *  @param field MultiFabs for the levels
- *  @param ncomp The field component for which max value is desired (default: 0)
+ *  \param nlevels Number of levels that existing in this AMR hierarchy
+ *  \param field MultiFabs for the levels
+ *  \param ncomp The field component for which max value is desired (default: 0)
  */
 inline amrex::Real field_max(
     const int nlevels,
@@ -92,9 +92,9 @@ inline amrex::Real field_max(
 
 /** Return the minimum value all components of a field over all AMR levels
  *
- *  @param nlevels Number of levels that existing in this AMR hierarchy
- *  @param field MultiFabs for the levels
- *  @param min_val Array of component values that are populated
+ *  \param nlevels Number of levels that existing in this AMR hierarchy
+ *  \param field MultiFabs for the levels
+ *  \param min_val Array of component values that are populated
  */
 inline void field_min(
     const int nlevels,
@@ -108,9 +108,9 @@ inline void field_min(
 
 /** Return the maximum value all components of a field over all AMR levels
  *
- *  @param nlevels Number of levels that existing in this AMR hierarchy
- *  @param field MultiFabs for the levels
- *  @param max_val Array of component values that are populated
+ *  \param nlevels Number of levels that existing in this AMR hierarchy
+ *  \param field MultiFabs for the levels
+ *  \param max_val Array of component values that are populated
  */
 inline void field_max(
     const int nlevels,

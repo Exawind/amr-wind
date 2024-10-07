@@ -34,11 +34,11 @@ GravityForcing::~GravityForcing() = default;
 
 /** Add the Gravity source term to the forcing array
  *
- *  @param lev AMR level
- *  @param mfi multiFab index
- *  @param bx Box to operate on
- *  @param FieldState field
- *  @param vel_forces Forcing source term
+ *  \param lev AMR level
+ *  \param mfi multiFab index
+ *  \param bx Box to operate on
+ *  \param FieldState field
+ *  \param vel_forces Forcing source term
  */
 void GravityForcing::operator()(
     const int lev,
