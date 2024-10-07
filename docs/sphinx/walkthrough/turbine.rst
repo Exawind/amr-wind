@@ -1,7 +1,3 @@
-.. spelling::
-
-   termx
-
 .. _turbine:
 
 Turbine simulation walkthrough
@@ -121,7 +117,7 @@ and the turbine inflow-outflow simulation is ready to be submitted.
 
 Below we show the magnitude of the velocity at t=7350s (top) and at the final time
 (bottom) of the simulation. In both images, the three turbines are displayed as 3D
-contours of the actuator_src_termx field. Note the turbine-induced wakes
+contours of the ``actuator_src_termx`` field. Note the turbine-induced wakes
 and their impact on the incoming flow for the downstream turbines.
 
 .. image:: ./visualization/turbines_simulation_velocityx_w_turbines_timestep_15650.png

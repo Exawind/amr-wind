@@ -5,7 +5,6 @@ CTest
 Ekman
 Euler
 Exascale
-Exascale
 Fortran
 Joukowsky
 MPI
@@ -13,16 +12,15 @@ Moeng
 Monin
 Nalu
 Navier
-Navier
 Neumann
 Nicolson
 Obukhov
 Poiseuille
 Raphson
 Shubin
-Viscosities
+viscosities
 Zalesak
-abl
+ABL
 adaptively
 advected
 amr
@@ -64,7 +62,7 @@ fllc
 freestream
 frontend
 geostrophic
-godunov
+Godunov
 hexahedral
 hypre
 incflo
@@ -72,7 +70,7 @@ incompressibility
 initializer
 initializers
 iteratively
-kosovic
+Kosovic
 levelset
 lidar
 mesoscale
@@ -94,7 +92,7 @@ plotfile
 plotfiles
 plt
 postprocessing
-prandtl
+Prandtl
 pre
 priori
 proj
@@ -104,7 +102,7 @@ regridding
 repo
 roadmap
 rosco
-smagorinsky
+Smagorinsky
 solvability
 spack
 spanwise
