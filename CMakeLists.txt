@@ -240,6 +240,8 @@ endif()
 
 if(AMR_WIND_ENABLE_DOCUMENTATION)
   add_subdirectory(docs)
+  add_dependencies(buildInfoamrwind_obj docs)
+  add_dependencies(gtest docs)
   add_dependencies(amrex_3d docs)
 endif()
 
