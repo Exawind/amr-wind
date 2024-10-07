@@ -22,7 +22,7 @@ actual keyword is determined by the labels provided to
    **type:** Integer, optional, default = 0
 
    Specify the output delay (in timesteps) when data sampling and output will begin
-   during a simulation. E.g., a delay of 100 will wait until the 100th timestep to 
+   during a simulation. E.g., a delay of 100 will wait until the hundredth timestep to 
    check if, according to the output frequency, sampling should be performed and 
    output to disk.
 
