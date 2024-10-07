@@ -7,7 +7,7 @@
 namespace amr_wind::field_norms {
 
 /** field norm object
- *  \ingroup Field Norm
+ *  \ingroup sampling
  *
  *  A concrete implementation of the post-processing interface that deals with
  *  norms of fields. FIXME: need to update this

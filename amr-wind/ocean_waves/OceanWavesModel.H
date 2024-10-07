@@ -14,7 +14,7 @@ namespace ocean_waves {
 
 /** Abstract representation of a wave model used for wave generation
  *
- *  \ingroup ocean waves
+ *  \ingroup ocean_waves
  *
  * This class is intended to represent a single wave model
  */

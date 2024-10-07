@@ -19,7 +19,7 @@ class OceanWavesModel;
 
 /** ocean waves modeling
  *
- *  \ingroup ocean waves
+ *  \ingroup ocean_waves
  *
  *  This class provides an interface to model
  *

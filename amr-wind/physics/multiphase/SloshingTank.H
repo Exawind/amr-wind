@@ -5,7 +5,7 @@
 #include "amr-wind/core/Field.H"
 
 /** Multiphase Sloshing Tank 3D physics
- *  \ingroup mulitphase_physics
+ *  \ingroup multiphase_physics
  *
  */
 

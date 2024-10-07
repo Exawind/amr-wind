@@ -7,7 +7,7 @@
 namespace amr_wind::wave_energy {
 
 /** wave energy object
- *  \ingroup Wave Energy
+ *  \ingroup sampling
  *
  *  A concrete implementation of the post-processing interface that deals with
  *  integrating total wave energy. This routine calculates the kinetic energy
