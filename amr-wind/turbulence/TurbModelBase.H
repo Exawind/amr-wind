@@ -141,7 +141,7 @@ public:
      *
      *  \f$\alpha_\mathrm{eff} = \alpha + \alpha_t\f$
      *
-     *  \param mueff Effective viscosity field
+     *  \param alphaeff Effective diffusivity field
      */
     void update_alphaeff(Field& alphaeff) override
     {
