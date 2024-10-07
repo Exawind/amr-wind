@@ -18,13 +18,13 @@ namespace amr_wind::wave_energy {
  *  in z.
  *
  *  Integral definitions (not output)
- *  KE_i = 0.5 * (Integral over liquid phase) \rho * u^2 dV
- *  PE_i = (Integral over liquid phase) \rho * g * z_liq dV
- *  (offset for PE would be 1/2 * Lx * Ly * \rho_liq * g * depth^2)
+ *  KE_i = 0.5 * (Integral over liquid phase) \\rho * u^2 dV
+ *  PE_i = (Integral over liquid phase) \\rho * g * z_liq dV
+ *  (offset for PE would be 1/2 * Lx * Ly * \\rho_liq * g * depth^2)
  *
  *  Normalized definitions (which are output) in form of avg kinematic energy
- *  KE = KE_i / (d * \rho_liq * Lx * Ly)
- *  PE = PE_i / (d * \rho_liq * Lx * Ly) + 1/2 * g * depth
+ *  KE = KE_i / (d * \\rho_liq * Lx * Ly)
+ *  PE = PE_i / (d * \\rho_liq * Lx * Ly) + 1/2 * g * depth
  */
 class WaveEnergy : public PostProcessBase::Register<WaveEnergy>
 {

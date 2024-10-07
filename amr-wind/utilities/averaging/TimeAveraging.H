@@ -35,11 +35,12 @@ public:
      *
      *  \param time SimTime instance
      *  \param filter_width Time-averaging window specified by user
-     *
      *  \param elapsed_time Time elapsed since averaging was initiated
      */
-    virtual void
-    operator()(const SimTime&, const amrex::Real, const amrex::Real) = 0;
+    virtual void operator()(
+        const SimTime& time,
+        const amrex::Real filter_width,
+        const amrex::Real elapsed_time) = 0;
 
     virtual const std::string& average_field_name() = 0;
 };
