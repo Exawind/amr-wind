@@ -15,6 +15,7 @@ option(AMR_WIND_ENABLE_ALL_WARNINGS "Show most warnings for most compilers" ON)
 option(AMR_WIND_ENABLE_CLANG_TIDY "Compile with clang-tidy static analysis" OFF)
 option(AMR_WIND_ENABLE_CPPCHECK "Enable cppcheck static analysis target" OFF)
 option(AMR_WIND_ENABLE_FCOMPARE "Enable building fcompare when not testing" OFF)
+option(AMR_WIND_ENABLE_DOCUMENTATION "Enable documentation target" OFF)
 
 #Enabling tests overrides the executable options
 option(AMR_WIND_ENABLE_UNIT_TESTS "Enable unit testing" ON)
@@ -235,6 +236,11 @@ if(AMR_WIND_ENABLE_TESTS)
   enable_testing()
   include(CTest)
   add_subdirectory(test)
+endif()
+
+if(AMR_WIND_ENABLE_DOCUMENTATION)
+  add_subdirectory(docs)
+  add_dependencies(amrex_3d docs)
 endif()
 
 #Define what we want to be installed during a make install

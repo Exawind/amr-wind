@@ -9,8 +9,7 @@ Section: Momentum Sources
    
    Activates source terms for the incompressible Navier-Stokes momentum
    equations. These strings can be entered in any order with a space between
-   each. Please consult `AMR-Wind developer documentation
-   <https://exawind.github.io/amr-wind/api_docs/group__icns__src.html>`_ for a
+   each. Please consult the :doc:`../doxygen/html/index` for a
    comprehensive list of all momentum source terms available. Note that the
    following input arguments specific to each source term will only be active
    if the corresponding source term (the root name) is listed in 

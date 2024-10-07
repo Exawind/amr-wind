@@ -15,10 +15,7 @@ namespace amr_wind::pde::icns {
  *  - `latitude`:  The latitude (in degrees) where the Coriolis term is
  * computed. This argument is mandatory.
  *
- *  - `east_vector`, `north_vector`
- *
- *    (Optional) Vectors specifying the east and north directions with respect
- *    to computational domain
+ *  - `east_vector`, `north_vector` (Optional) Vectors specifying the east and north directions with respect to computational domain
  *
  * - `rotational_time_period` Time period for planetary rotation (default: 86400
  *    seconds)

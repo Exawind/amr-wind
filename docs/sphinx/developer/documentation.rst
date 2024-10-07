@@ -5,7 +5,7 @@ Documentation - user manual and source code docs
 
 AMR-Wind comes with two different types of documentation:
 
-- User & developer manuals, such as the document you are reading now, that are
+- The manual, i.e., the document you are reading now, that is
   written using `Sphinx <https://www.sphinx-doc.org/en/master/index.html>`_, and
 
 - Inline documentation within C++ source code that are written in a format that can be
@@ -66,9 +66,7 @@ Documenting source code
 
 Source code (C++ files) are commented using a special format that allows Doxygen
 to extract the annotated comments and create source code documentation as well
-as inheritance diagrams. API documentation for the latest snapshot of the
-codebase can be browsed online `here
-<https://exawind.github.io/amr-wind/api_docs>`_. To build the documentation
+as inheritance diagrams. The :doc:`../doxygen/html/index` documentation for the latest snapshot of the codebase can be browsed in this manual. To build the documentation
 locally, first install ``doxygen`` and ``graphviz`` executables on your system.
 Once they are successfully installed, execute the following command from the
 root directory of ``amr-wind``
