@@ -134,7 +134,7 @@ void PDEMgr::prepare_boundaries()
     auto& v_mac = m_sim.repo().get_field("v_mac");
     auto& w_mac = m_sim.repo().get_field("w_mac");
     const amrex::IntVect zeros{0, 0, 0};
-    if (true) { //u_mac.num_grow() > zeros) {
+    if (u_mac.num_grow() > zeros) {
         amrex::Array<Field*, AMREX_SPACEDIM> mac_vel = {
             AMREX_D_DECL(&u_mac, &v_mac, &w_mac)};
         icns().fields().field.fillpatch_sibling_fields(
