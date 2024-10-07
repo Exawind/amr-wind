@@ -42,7 +42,7 @@ jobs:
         # execute from top-level amr-wind directory
         run: |
           echo "::add-matcher::.github/problem-matchers/sphinx.json"
-          cmake --build ${{runner.workspace}}/build-docs -t doxygen 2>&1 | tee -a build-output.txt
+          cmake --build ${{runner.workspace}}/build-docs -t docs 2>&1 | tee -a build-output.txt
           mv ${{runner.workspace}}/build-docs/docs/sphinx/html ./documentation
           touch ./documentation/.nojekyll
       - name: Report
