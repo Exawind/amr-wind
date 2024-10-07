@@ -33,6 +33,7 @@ spelling_word_list_filename = "spelling-wordlist.txt"
 spelling_exclude_patterns = ["doxygen/html/*"]
 spelling_show_suggestions = True
 spelling_warning = True
+spelling_ignore_contributor_names = False
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
