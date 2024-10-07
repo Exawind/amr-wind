@@ -58,7 +58,7 @@ public:
     T* get_actuator(std::string& key) const;
 
 protected:
-    //! Total number of actuator components (e.g., turbines) in the flowfield
+    //! Total number of actuator components (e.g., turbines) in the flow field
     int num_actuators() const { return static_cast<int>(m_actuators.size()); }
 
     virtual void prepare_outputs();

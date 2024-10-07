@@ -5,7 +5,7 @@ Coding Guidelines
 
 This section presents an incomplete list of coding guidelines currently used to
 develop AMR-Wind code. As is the case with rules, it might not apply to all
-circumstances. Please use your best judgement when trying to comply with the
+circumstances. Please use your best judgment when trying to comply with the
 rules and break them if necessary, but be ready to convince the rest of the
 team.
 

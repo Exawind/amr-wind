@@ -11,7 +11,7 @@ strategies. The refinement criteria is specified through :ref:`inputs_tagging`
 
    **type:** List of 3 integers, mandatory
 
-   The number of cells in the coarset level of AMR hierarchy
+   The number of cells in the coarsest level of AMR hierarchy
 
 .. input_param:: amr.max_level
 
