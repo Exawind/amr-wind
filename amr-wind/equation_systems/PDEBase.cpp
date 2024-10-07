@@ -91,7 +91,8 @@ void PDEMgr::advance_states()
 void PDEMgr::prepare_boundaries()
 {
     // If state variables exist at NPH, fill their boundary cells
-    // Insert calculation of time at NPH
+    const auto nph_time =
+        m_sim.time().current_time() + 0.5 * m_sim.time().delta_t();
     if (m_constant_density &&
         m_sim.repo().field_exists("density", FieldState::NPH)) {
         auto& nph_field =
@@ -126,6 +127,18 @@ void PDEMgr::prepare_boundaries()
                 new_field.num_grow());
             // insert fill physical boundary call
         }
+    }
+
+    // Fill mac velocities (ghost cells) using velocity BCs
+    auto& u_mac = m_sim.repo().get_field("u_mac");
+    auto& v_mac = m_sim.repo().get_field("v_mac");
+    auto& w_mac = m_sim.repo().get_field("w_mac");
+    const amrex::IntVect zeros{0, 0, 0};
+    if (true) { //u_mac.num_grow() > zeros) {
+        amrex::Array<Field*, AMREX_SPACEDIM> mac_vel = {
+            AMREX_D_DECL(&u_mac, &v_mac, &w_mac)};
+        icns().fields().field.fillpatch_sibling_fields(
+            nph_time, u_mac.num_grow(), mac_vel);
     }
 }
 
