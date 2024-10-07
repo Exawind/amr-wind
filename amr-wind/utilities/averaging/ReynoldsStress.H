@@ -7,7 +7,7 @@ namespace amr_wind::averaging {
 
 /** Compute correlation from 2 CFD fields
  *  The formula used to compute the correlations between two fields:
- *  A = <A> + a and B = <B> + b is <ab> = <AB>-<A><B>
+ *  A = < A > + a and B = < B > + b is < ab > = < AB > -< A >< B >
  *  where A and B are the mean values and a and b are the fluctuations
  *
  */
@@ -39,7 +39,7 @@ private:
     //! Reynolds averaged field
     const Field& m_average;
 
-    //! The stresses <AB>
+    //! The stresses < AB >
     Field& m_stress;
 
     //! The reynolds stresses < ab > = < AB > - < A > < B >
