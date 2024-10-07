@@ -130,7 +130,7 @@ public:
 
     void read_header();
 
-    void read_file();
+    void read_file(const bool /* nph_target_time*/);
 
     void populate_data(
         const int /*lev*/,
