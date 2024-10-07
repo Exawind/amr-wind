@@ -1,17 +1,5 @@
 # AMR-Wind API documentation {#mainpage}
 
-[AMR-Wind](https://github.com/exawind/amr-wind) is a massively parallel,
-block-structured adaptive-mesh, incompressible flow solver for wind turbine and
-wind farm simulations. The codebase is a wind-focused fork of
-[incflo](https://github.com/AMReX-Codes/incflo). The solver is built on top of
-the [AMReX library](https://amrex-codes.github.io/amrex). AMReX library provides
-the mesh data structures, mesh adaptivity, as well as the linear solvers used
-for solving the governing equations. AMR-Wind is actively developed and
-maintained by a dedicated multi-institutional team from [Lawrence Berkeley
-National Laboratory](https://www.lbl.gov/), [National Renewable Energy
-Laboratory](https://nrel.gov), and [Sandia National
-Laboratories](https://sandia.gov).
-
 This document is intended for developers who want to understand the C++ code
 structure and modify the codebase and, therefore, assumes that the reader is
 familiar with the installation, compilation, and execution steps. If you are new to
