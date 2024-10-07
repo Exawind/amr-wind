@@ -157,12 +157,6 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         const auto& dof_field = fields.field.state(fstate);
         auto bcrec_device = dof_field.bcrec_device();
 
-        for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-            u_mac(lev).setBndry(0.0);
-            v_mac(lev).setBndry(0.0);
-            w_mac(lev).setBndry(0.0);
-        }
-
         //
         // Predict
         //
