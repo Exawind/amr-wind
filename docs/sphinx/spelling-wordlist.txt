@@ -47,8 +47,6 @@ cpp
 datafile
 dimensionalize
 discretization
-discretization
-discretized
 discretized
 discretizes
 doxygen
@@ -78,7 +76,6 @@ microscale
 multigrid
 namespace
 namespaces
-nd
 netcdf
 normals
 ok
@@ -112,7 +109,6 @@ subgrid
 submodule
 submodules
 teardown
-th
 timestep
 timestepping
 timesteps

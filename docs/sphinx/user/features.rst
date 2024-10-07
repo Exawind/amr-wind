@@ -98,7 +98,7 @@ Flow physics
 
 * Ocean wave forcing (for multiphase flows) [:ref:`inp <inputs_ocean_waves>`]
 
-   * Wave types: linear (monochromatic), Stokes (2nd- to 5th-order), irregular (input by modes files from HOS-Ocean)
+   * Wave types: linear (monochromatic), Stokes (second to fifth order), irregular (input by modes files from HOS-Ocean)
 
    * Relaxation zones force wave profile to generate waves at lower x boundary or force toward quiescent flat interface at upper x boundary. Wave profile can also be enforced (instead of numerical beach) at upper x boundary for periodic simulations.
 
