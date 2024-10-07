@@ -47,7 +47,7 @@ struct FLLCData
 };
 
 /**
- * @brief Function to capture common parsing requirements for the filtered
+ * \brief Function to capture common parsing requirements for the filtered
  * lifting line correction
  *
  * \param pp Parser
@@ -56,7 +56,7 @@ struct FLLCData
 void fllc_parse(const utils::ActParser& pp, FLLCData& data);
 
 /**
- * @brief Initialize FLLC data structure. This should be called at the end of
+ * \brief Initialize FLLC data structure. This should be called at the end of
  * the first ComputeForceOp to ensure the data is fully populated
  *
  * \param data FLLC specific data and scratch fields
