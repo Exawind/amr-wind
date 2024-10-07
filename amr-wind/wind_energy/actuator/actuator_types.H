@@ -98,8 +98,8 @@ struct ActGrid
 
     /** Helper method to resize the data arrays defined on the grid
      *
-     *  \param Number of nodes that contain forcing data
-     *  \param Number of nodes where velocity field is sampled
+     *  \param num_force_pts Number of nodes that contain forcing data
+     *  \param num_vel_pts Number of nodes where velocity field is sampled
      */
     void resize(int num_force_pts, int num_vel_pts)
     {

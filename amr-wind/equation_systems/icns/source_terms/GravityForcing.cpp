@@ -37,7 +37,7 @@ GravityForcing::~GravityForcing() = default;
  *  \param lev AMR level
  *  \param mfi multiFab index
  *  \param bx Box to operate on
- *  \param FieldState field
+ *  \param fstate FieldState field
  *  \param vel_forces Forcing source term
  */
 void GravityForcing::operator()(
