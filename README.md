@@ -1,6 +1,6 @@
 # AMR-Wind 
 
-[User manual](https://exawind.github.io/amr-wind) | [API docs](https://exawind.github.io/amr-wind/api_docs) | [Nightly test dashboard](http://my.cdash.org/index.php?project=Exawind) 
+[Documentation](https://exawind.github.io/amr-wind) | [API docs](https://exawind.github.io/amr-wind/api_docs) | [Nightly test dashboard](http://my.cdash.org/index.php?project=Exawind) 
 
 [![Powered by AMReX](https://amrex-codes.github.io/badges/powered%20by-AMReX-red.svg)](https://amrex-codes.github.io/amrex/) [![Build Status](https://github.com/Exawind/amr-wind/workflows/AMR-Wind-CI/badge.svg)](https://github.com/Exawind/amr-wind/actions) [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/9284/badge)](https://www.bestpractices.dev/projects/9284)
 
@@ -32,17 +32,18 @@ objectives:
   models for modeling wind farm flow physics at various fidelities that are
   backed by a comprehensive verification and validation (V&V) process;
 
-- be capable of performing the highest-fidelity simulations of flowfields within
+- be capable of performing the highest-fidelity simulations of flow fields within
   wind farms; and 
 
-- be able to leverage the high-performance leadership class computating
+- be able to leverage the high-performance leadership class computing
   facilities available at DOE national laboratories.
 
 ## Documentation
 
-Documentation is organized into a [user manual](https://exawind.github.io/amr-wind)
-and a developer-focused [API
-documentation](https://exawind.github.io/amr-wind). You can either
+Documentation is available at https://exawind.github.io/amr-wind, which 
+includes a walkthrough tutorial, a user manual, notes on theory,
+and tips for developers. We also provide a developer-focused [API
+documentation](https://exawind.github.io/amr-wind/api_docs). You can either
 browse the docs online by following the links, or you can generate them locally
 after downloading the code. Please follow the instructions in user manual to
 build documentation locally.

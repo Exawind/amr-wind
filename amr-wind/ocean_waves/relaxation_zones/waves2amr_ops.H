@@ -615,8 +615,8 @@ struct UpdateRelaxZonesOp<W2AWaves>
                         sim.mesh().refRatio(lev - 1));
                 }
                 // Fill patch to get correct ghost cells after average down
-                m_ow_velocity.fillpatch(0.0);
-                m_ow_levelset.fillpatch(0.0);
+                m_ow_velocity.fillpatch(sim.time().new_time());
+                m_ow_levelset.fillpatch(sim.time().new_time());
 
                 // Prior t_last (corresponding to ow fields)
                 t_last = (wdata.ntime - 1) * wdata.dt_modes;
@@ -645,8 +645,8 @@ struct UpdateRelaxZonesOp<W2AWaves>
                     sim.mesh().refRatio(lev - 1));
             }
             // Fill patch to get correct ghost cells after average down
-            w2a_velocity.fillpatch(0.0);
-            w2a_levelset.fillpatch(0.0);
+            w2a_velocity.fillpatch(sim.time().new_time());
+            w2a_levelset.fillpatch(sim.time().new_time());
         }
 
         // Temporally interpolate at every timestep to get target solution

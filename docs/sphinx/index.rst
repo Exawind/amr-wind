@@ -31,16 +31,17 @@ objectives:
   fidelities that are backed by a comprehensive verification and
   validation (V&V) process (:ref:`capabilities`);
 
-- be capable of performing the highest-fidelity simulations of flowfields within
+- be capable of performing the highest-fidelity simulations of flow fields within
   wind farms; and
 
-- be able to leverage the high-performance leadership class computating
+- be able to leverage the high-performance leadership class computing
   facilities available at DOE national laboratories.
 
 
 .. toctree::
    :maxdepth: 2
 
+   walkthrough/index
    user/user
    theory/theory 
    developer/index

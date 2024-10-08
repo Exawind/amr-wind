@@ -25,9 +25,14 @@ jobs:
           export DEBIAN_FRONTEND=noninteractive
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            doxygen graphviz
+            doxygen graphviz libenchant-2-dev
           python3 -m pip install --upgrade pip
-          pip3 install sphinx sphinx_rtd_theme
+          pip3 install sphinx sphinx_rtd_theme sphinx_toolbox sphinx_copybutton pyenchant sphinxcontrib-spelling
+      - name: Spellcheck
+        # execute from top-level amr-wind directory
+        run: |
+          echo "::add-matcher::.github/problem-matchers/sphinx.json"
+          sphinx-build -b spelling ./docs/sphinx ./build_docs/manual/spelling 2>&1 | tee -a build-output.txt
       - name: Build
         # execute from top-level amr-wind directory
         run: |
@@ -44,7 +49,7 @@ jobs:
       - name: Report
         run: |
           echo "::add-matcher::.github/problem-matchers/sphinx.json"
-          egrep "WARNING:" build-output.txt | sort | uniq | \
+          egrep "WARNING:|Warning:|warning:|ERROR:|Error:|error:" build-output.txt | sort | uniq | \
             awk 'BEGIN{i=0}{print $0}{i++}END{print "Warnings: "i}' > build-output-warnings.txt
           cat build-output-warnings.txt
           exit $(tail -n 1 build-output-warnings.txt | awk '{print $2}')

@@ -3,7 +3,7 @@
 Section: transport
 ~~~~~~~~~~~~~~~~~~
 
-This section is for setting thermal and momentum diffusivities.
+This section is for setting thermal and momentum diffusivity coefficients.
 
 .. input_param:: transport.model
 

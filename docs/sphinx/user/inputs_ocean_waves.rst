@@ -76,7 +76,7 @@ This section is for setting up wave forcing and relaxation zones.
 
 .. input_param:: OceanWaves.label.timeramp_period
 
-   **type:** Real, optional, default = 2.0
+   **type:** Real, optional
 
    An initial ramp-up period for the wave forcing. Without specifying a period, the wave 
    forcing will begin at full strength.
@@ -112,7 +112,7 @@ The following input arguments are only valid for the StokesWave wave type:
 
    The order of the Stokes wave formula being used. All Stokes wave theory (wave profile and
    dispersion relation) is applied from `Fenton (1985)
-   <https://ascelibrary.org/doi/10.1061/%28ASCE%290733-950X%281985%29111%3A2%28216%29>`.
+   <https://ascelibrary.org/doi/10.1061/%28ASCE%290733-950X%281985%29111%3A2%28216%29>`_.
    The minimum order is 2, and the maximum order is 5.
 
 .. input_param:: OceanWaves.label.wave_period
@@ -201,5 +201,5 @@ The following input arguments are only valid for the W2AWaves wave type:
    **type:** Integer, optional, default = 1
 
    The number of points placed above the mean water surface for the velocity transformation process. The spacing
-   between the points above the surface is equal to the interp_spacing_at_surface. When setting this value, the wave height
+   between the points above the surface is equal to the ``interp_spacing_at_surface``. When setting this value, the wave height
    should be considered so that velocity can be accurately computed for portions of the waves above the mean surface.

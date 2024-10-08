@@ -11,7 +11,7 @@ to provide unit-testing capabilities for the source code. Unit tests are built
 by default when compiling AMR-Wind using CMake and can be run using the
 :program:`amr_wind_unit_tests` executable --- see :ref:`build` for details of
 building AMR-Wind with CMake. This section documents the process of running the
-unit tests, the unit test scaffodling facilities available within AMR-Wind unit
+unit tests, the unit test scaffolding facilities available within AMR-Wind unit
 testing infrastructure, and a brief overview of the process of creating new unit
 tests.
 
@@ -138,7 +138,7 @@ GoogleTest supports two types of tests: simple tests, and tests that require
 fixtures. Simple tests are tests that test standalone functions that require no
 additional data structures for its execution -- see `GoogleTest Simple Test docs
 <https://github.com/google/googletest/blob/master/googletest/docs/primer.md#simple-tests>`_.
-Test fixures, on the other hand, allow you to group all necessary data in a
+Test fixtures, on the other hand, allow you to group all necessary data in a
 custom test class that can be reused for multiple tests. Defining a new simple
 test requires the use of ``TEST()`` macro, and defining a new test with a
 fixture requires the use of ``TEST_F()`` macro. In AMR-Wind, we use test
@@ -164,7 +164,7 @@ of a test mesh, generating field data structures that will be used to set up and
 run the test. This is also complicated by the fact that AMReX creates several
 global data structures, e.g., Geometry and ParmParse, that must be properly
 reset between each test to ensure a clean environment for each test. AMR-Wind
-provides a few classes that provide the necessary scaffodling to quickly setup
+provides a few classes that provide the necessary scaffolding to quickly setup
 and run tests.
 
 Within the :file:`amr-wind/unit_tests` directory, the scaffolding utilities
@@ -328,7 +328,7 @@ through the test fixture :class:`MeshTest` described next.
 associated field data that will be used by the test. In addition to performing
 setup/teardown actions described in :class:`AmrexTest`, it also resets the
 default `amrex::Geometry` static data so that different tests can run on
-different problem domains perscribed by the test fixture.
+different problem domains prescribed by the test fixture.
 
 Almost all unit tests within AMR-Wind use :class:`MeshTest` as their base test
 fixture. In order to allow grouping tests in logical test suites. The following

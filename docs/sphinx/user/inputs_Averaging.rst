@@ -11,7 +11,7 @@ post-processing by
 Time-averaging can be done to compute the means of any variable and 
 is denoted by ``ReAveraging``. The code will add the prefix ``_mean`` 
 to any variable that is time-averaged.
-Reynolds stresses can also be computed using the ``ReynoldsStress`` avreaging 
+Reynolds stresses can also be computed using the ``ReynoldsStress`` averaging 
 type.
 Note that to compute the Reynolds stresses, the mean of the velocity
 field is required.

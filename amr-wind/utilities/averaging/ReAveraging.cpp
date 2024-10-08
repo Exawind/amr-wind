@@ -5,21 +5,9 @@
 #include "amr-wind/utilities/IOManager.H"
 
 namespace amr_wind::averaging {
-namespace {
-
-const Field& get_field_or_error(const FieldRepo& repo, const std::string& fname)
-{
-    if (!repo.field_exists(fname)) {
-        amrex::Abort("ReAveraing: Cannot find field: " + fname);
-    }
-
-    return repo.get_field(fname);
-}
-
-} // namespace
 
 ReAveraging::ReAveraging(CFDSim& sim, const std::string& fname)
-    : m_field(get_field_or_error(sim.repo(), fname))
+    : m_field(sim.repo().get_field(fname))
     , m_average(sim.repo().declare_field(
           avg_name(m_field.name()),
           m_field.num_comp(),
