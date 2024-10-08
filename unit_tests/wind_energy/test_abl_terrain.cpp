@@ -50,7 +50,7 @@ protected:
     std::string terrain_fname = "terrain.amrwind";
 };
 
-TEST_F(terraintest, terrain)
+TEST_F(TerrainTest, terrain)
 {
     constexpr amrex::Real tol = 0;
     // Write target wind file
@@ -65,7 +65,7 @@ TEST_F(terraintest, terrain)
     pp.addarr("physics", physics);
     amr_wind::terraindrag::TerrainDrag terrain_drag(sim());
     terrain_drag.post_init_actions();
-    const int value = 100;
+    int value = 100;
     // Outside Point
     value = terrain_drag.return_blank_value(5, 5, 1);
     EXPECT_EQ(value, tol);

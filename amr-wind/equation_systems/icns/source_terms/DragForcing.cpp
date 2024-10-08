@@ -14,7 +14,7 @@ DragForcing::DragForcing(const CFDSim& sim)
     , m_velocity(sim.repo().get_field("velocity"))
 {
     amrex::ParmParse pp("DragForcing");
-    pp.query("drag_coefficient", m_drag);
+    pp.query("drag_coefficient", m_drag_coefficient);
     pp.query("sponge_strength", m_sponge_strength);
     pp.query("sponge_density", m_sponge_density);
     pp.query("sponge_distance_west", m_sponge_distance_west);
@@ -71,7 +71,7 @@ void DragForcing::operator()(
     const auto& dx = geom.CellSizeArray();
     const auto& prob_lo = geom.ProbLoArray();
     const auto& prob_hi = geom.ProbHiArray();
-    const amrex::Real dragCoefficient = m_drag;
+    const amrex::Real drag_coefficient = m_drag_coefficient;
     const amrex::Real sponge_strength = m_sponge_strength;
     const amrex::Real sponge_density = m_sponge_density;
     const amrex::Real start_east = prob_hi[0] - m_sponge_distance_east;
@@ -87,10 +87,10 @@ void DragForcing::operator()(
     const auto* device_vel_vals = m_device_vel_vals.data();
     const unsigned vsize = m_device_vel_ht.size();
     const auto& dt = m_time.delta_t();
-    bool is_laminar = m_is_laminar;
+    const bool is_laminar = m_is_laminar;
     const amrex::Real scale_factor = (dx[2] < 1.0) ? 1.0 : 1.0 / dx[2];
     const amrex::Real Cd =
-        (is_laminar && dx[2] < 1) ? dragCoefficient : dragCoefficient / dx[2];
+        (is_laminar && dx[2] < 1) ? drag_coefficient : drag_coefficient / dx[2];
     const amrex::Real z0_min = 1e-4;
     const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     const amrex::Real kappa = 0.41;
@@ -134,8 +134,8 @@ void DragForcing::operator()(
         }
         amrex::Real Dxz = 0.0;
         amrex::Real Dyz = 0.0;
-        amrex::Real bcforcing_x = 0;
-        amrex::Real bcforcing_y = 0;
+        amrex::Real bc_forcing_x = 0;
+        amrex::Real bc_forcing_y = 0;
         const amrex::Real ux1 = vel(i, j, k, 0);
         const amrex::Real uy1 = vel(i, j, k, 1);
         const amrex::Real uz1 = vel(i, j, k, 2);
@@ -152,8 +152,8 @@ void DragForcing::operator()(
                 uTarget * ux2 / (tiny + std::sqrt(ux2 * ux2 + uy2 * uy2));
             const amrex::Real uyTarget =
                 uTarget * uy2 / (tiny + std::sqrt(ux2 * ux2 + uy2 * uy2));
-            bcforcing_x = -(uxTarget - ux1) / dt;
-            bcforcing_y = -(uyTarget - uy1) / dt;
+            bc_forcing_x = -(uxTarget - ux1) / dt;
+            bc_forcing_y = -(uyTarget - uy1) / dt;
             Dxz = -ustar * ustar * ux1 /
                   (tiny + std::sqrt(ux1 * ux1 + uy1 * uy1)) / dx[2];
             Dyz = -ustar * ustar * uy1 /
@@ -163,12 +163,12 @@ void DragForcing::operator()(
             std::min(Cd / (m + tiny), cd_max / scale_factor);
         src_term(i, j, k, 0) -=
             (CdM * m * ux1 * blank(i, j, k) + Dxz * drag(i, j, k) +
-             bcforcing_x * drag(i, j, k) +
+             bc_forcing_x * drag(i, j, k) +
              (xstart_damping + xend_damping + ystart_damping + yend_damping) *
                  (ux1 - sponge_density * spongeVelX));
         src_term(i, j, k, 1) -=
             (CdM * m * uy1 * blank(i, j, k) + Dyz * drag(i, j, k) +
-             bcforcing_y * drag(i, j, k) +
+             bc_forcing_y * drag(i, j, k) +
              (xstart_damping + xend_damping + ystart_damping + yend_damping) *
                  (uy1 - sponge_density * spongeVelY));
         src_term(i, j, k, 2) -=

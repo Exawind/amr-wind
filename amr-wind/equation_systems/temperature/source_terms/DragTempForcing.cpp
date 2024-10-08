@@ -15,7 +15,7 @@ DragTempForcing::DragTempForcing(const CFDSim& sim)
     , m_temperature(sim.repo().get_field("temperature"))
 {
     amrex::ParmParse pp("DragTempForcing");
-    pp.query("dragCoefficient", m_drag);
+    pp.query("dragCoefficient", m_drag_coefficient);
     pp.query("RefT", m_internalRefT);
 }
 
@@ -43,8 +43,8 @@ void DragTempForcing::operator()(
     const auto& blank = (*m_terrain_blank)(lev).const_array(mfi);
     const auto& geom = m_mesh.Geom(lev);
     const auto& dx = geom.CellSizeArray();
-    const amrex::Real gpu_drag = m_drag / dx[2];
-    const amrex::Real gpu_TRef = m_internalRefT;
+    const amrex::Real drag_coefficient = m_drag_coefficient / dx[2];
+    const amrex::Real reference_temperature = m_reference_temperature;
     const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     const amrex::Real cd_max = 10.0;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -52,9 +52,9 @@ void DragTempForcing::operator()(
         const amrex::Real uy1 = vel(i, j, k, 1);
         const amrex::Real uz1 = vel(i, j, k, 2);
         const amrex::Real m = std::sqrt(ux1 * ux1 + uy1 * uy1 + uz1 * uz1);
-        const amrex::Real Cd = std::min(gpu_drag / (m + tiny), cd_max / dx[2]);
+        const amrex::Real Cd = std::min(drag_coefficient / (m + tiny), cd_max / dx[2]);
         src_term(i, j, k, 0) -=
-            (Cd * (temperature(i, j, k, 0) - gpu_TRef) * blank(i, j, k, 0));
+            (Cd * (temperature(i, j, k, 0) - reference_temperature) * blank(i, j, k, 0));
     });
 }
 

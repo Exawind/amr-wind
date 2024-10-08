@@ -35,8 +35,8 @@ private:
     const amrex::AmrCore& m_mesh;
     const Field& m_velocity;
     const Field& m_temperature;
-    amrex::Real m_drag{1.0};
-    amrex::Real m_internalRefT{300.0};
+    amrex::Real m_drag_coefficient{1.0};
+    amrex::Real m_reference_temperature{300.0};
 };
 
 } // namespace amr_wind::pde::temperature
