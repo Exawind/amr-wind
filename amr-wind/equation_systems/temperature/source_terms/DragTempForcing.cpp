@@ -52,9 +52,11 @@ void DragTempForcing::operator()(
         const amrex::Real uy1 = vel(i, j, k, 1);
         const amrex::Real uz1 = vel(i, j, k, 2);
         const amrex::Real m = std::sqrt(ux1 * ux1 + uy1 * uy1 + uz1 * uz1);
-        const amrex::Real Cd = std::min(drag_coefficient / (m + tiny), cd_max / dx[2]);
+        const amrex::Real Cd =
+            std::min(drag_coefficient / (m + tiny), cd_max / dx[2]);
         src_term(i, j, k, 0) -=
-            (Cd * (temperature(i, j, k, 0) - reference_temperature) * blank(i, j, k, 0));
+            (Cd * (temperature(i, j, k, 0) - reference_temperature) *
+             blank(i, j, k, 0));
     });
 }
 
