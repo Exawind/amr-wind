@@ -94,6 +94,8 @@ void ProbeSampler::sampling_locations(SampleLocType& locs) const
 void ProbeSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
 {
     grp.put_attr("sampling_type", identifier());
+    grp.put_attr("offset_vector", m_offset_vector);
+    grp.put_attr("offsets", m_poffsets);
 }
 #else
 void ProbeSampler::define_netcdf_metadata(
