@@ -67,7 +67,7 @@ void ABLFillInflow::fillpatch_sibling_fields(
     const FieldState fstate)
 {
     // Avoid trying to read after planes have already been populated
-    bool plane_data_unchanged = m_bndry_plane.is_data_newer_than(time);
+    const bool plane_data_unchanged = m_bndry_plane.is_data_newer_than(time);
     // For an ABL fill, we just foextrap the mac velocities
     amrex::Vector<amrex::BCRec> lbcrec(m_field.num_comp());
     const auto& ibctype = m_field.bc_type();
