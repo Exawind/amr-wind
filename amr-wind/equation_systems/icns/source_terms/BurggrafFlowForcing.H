@@ -8,7 +8,7 @@ namespace amr_wind::pde::icns {
 
 /** Body forcing introduced to represent the Burrgraf cavity flow.
  *
- *  \ingroup icns_src burggraf flow
+ *  \ingroup icns_src burggraf_flow
  */
 class BurggrafFlowForcing : public MomentumSource::Register<BurggrafFlowForcing>
 {

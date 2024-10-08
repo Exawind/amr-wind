@@ -82,7 +82,7 @@ void incflo::init_mesh()
  *
  *  Modules initialized:
  *    - Registered \ref physics classes
- *    - Registered \ref PDE systems
+ *    - Registered PDE systems
  *    - Registered post-processing classes
  */
 void incflo::init_amr_wind_modules()

@@ -105,8 +105,8 @@ namespace {
  *. Initializes the dimensions and grid length, sizes in SynthTurbData. Also
  *  allocates the necessary memory for the perturbation velocities.
  *
- *. @param turbFile Information regarding NetCDF data identifiers
- *. @param turbGrid Turbulence data
+ *. \param turbFile Information regarding NetCDF data identifiers
+ *. \param turbGrid Turbulence data
  */
 void process_nc_file(const std::string& turb_filename, SynthTurbData& turb_grid)
 {
@@ -213,12 +213,12 @@ void load_turb_plane_data(
 /** Determine the left/right indices for a given point along a particular
  * direction
  *
- *  @param turb_grid Turbulence box data
- *  @param dir Direction of search (0 = x, 1 = y, 2 = z)
- *  @param xin Coordinate value in local coordinate frame corresponding to
+ *  \param turb_grid Turbulence box data
+ *  \param dir Direction of search (0 = x, 1 = y, 2 = z)
+ *  \param xin Coordinate value in local coordinate frame corresponding to
  * direction provided
- *  @param il Index of the lower bound (populated by this function)
- *  @param ir Index of the upper bound (populated by this function)
+ *  \param il Index of the lower bound (populated by this function)
+ *  \param ir Index of the upper bound (populated by this function)
  */
 void get_lr_indices(
     const SynthTurbData& turb_grid,
@@ -243,12 +243,12 @@ void get_lr_indices(
  *  This overload also populates the fractions of left/right states to be used
  *  for interpolations.
  *
- *  @param turb_grid Turbulence box data
- *  @param dir Direction of search (0 = x, 1 = y, 2 = z)
- *  @param xin Coordinate value in local coordinate frame corresponding to
+ *  \param turb_grid Turbulence box data
+ *  \param dir Direction of search (0 = x, 1 = y, 2 = z)
+ *  \param xin Coordinate value in local coordinate frame corresponding to
  *  direction provided
- *  @param il Index of the lower bound (populated by this function)
- *  @param ir Index of the upper bound (populated by this function)
+ *  \param il Index of the lower bound (populated by this function)
+ *  \param ir Index of the upper bound (populated by this function)
  */
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void get_lr_indices(
     const SynthTurbDeviceData& turb_grid,

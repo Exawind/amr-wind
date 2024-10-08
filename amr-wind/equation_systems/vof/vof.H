@@ -9,6 +9,10 @@
 
 namespace amr_wind::pde {
 
+/** \defgroup vof Volume of fluid
+ *
+ */
+
 struct VOF : ScalarTransport
 {
     using MLDiffOp = amrex::MLABecLaplacian;

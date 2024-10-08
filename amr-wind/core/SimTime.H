@@ -75,8 +75,8 @@ public:
 
     /** Set start time and index based on checkpoint/restart file
      *
-     *  @param tidx Time index from checkpoint file
-     *  @param time Time read from checkpoint file
+     *  \param tidx Time index from checkpoint file
+     *  \param time Time read from checkpoint file
      */
     void set_restart_time(int tidx, amrex::Real time);
 

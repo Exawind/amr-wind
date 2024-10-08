@@ -17,7 +17,7 @@ namespace ib {
 
 /** Abstract representation of an immersed boundary type.
  *
- *  \ingroup immersed boundary
+ *  \ingroup immersed_boundary
  */
 struct IBType
 {};
@@ -33,7 +33,7 @@ using DeviceTensorList = amrex::Gpu::DeviceVector<amr_wind::vs::Tensor>;
 
 /** Basic information that is common to all immersed boundary types.
  *
- *  \ingroup immersed boundary
+ *  \ingroup immersed_boundary
  */
 struct IBInfo
 {
@@ -54,7 +54,7 @@ struct IBInfo
 
 /** Abstract representation of data holder for specific immersed boundary types.
  *
- *  \ingroup immersed boundary
+ *  \ingroup immersed_boundary
  *
  */
 template <typename IBTrait>

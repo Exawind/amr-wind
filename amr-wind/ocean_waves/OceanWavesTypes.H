@@ -16,7 +16,7 @@ namespace ocean_waves {
 
 /** Abstract representation of an ocean wave type.
  *
- *  \ingroup immersed boundary
+ *  \ingroup immersed_boundary
  */
 struct OceanWavesType
 {};
@@ -29,7 +29,7 @@ using DeviceTensorList = amrex::Gpu::DeviceVector<amr_wind::vs::Tensor>;
 
 /** Basic information that is common to all wave models
  *
- *  \ingroup ocean waves
+ *  \ingroup ocean_waves
  */
 struct OceanWavesInfo
 {
@@ -51,7 +51,7 @@ struct OceanWavesInfo
 
 /** Abstract representation of data holder for specific ocean waves types.
  *
- *  \ingroup ocean waves
+ *  \ingroup ocean_waves
  *
  */
 template <typename OceanWavesTrait>

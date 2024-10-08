@@ -79,7 +79,6 @@ add(T1& dst, const T2& src, int srccomp, int dstcomp, int numcomp, int nghost)
  *  \param [in] ncomp_src Number of components to divide by
  *  \param [in] ncomp_dst Number of components to be divided
  *  \param [in] nghost Number of ghost cells to be updated
- *  \param [in] iter_src_comp Flag of whether src components should be iterated
  */
 template <typename T1, typename T2>
 inline void divide(
@@ -123,7 +122,6 @@ inline void divide(
  *  \param [in] ncomp_src Number of components to divide by
  *  \param [in] ncomp_dst Number of components to be divided
  *  \param [in] nghost Number of ghost cells to be updated
- *  \param [in] iter_src_comp Flag of whether src components should be iterated
  */
 template <typename T1, typename T2>
 inline void divide(
@@ -373,6 +371,7 @@ inline void lincomb(
 /** Set the lower bound for a given scalar field
  * \ingroup field_ops
  *
+ * \param [in] field Field that will be clipped
  * \param [in] min_value Minimum value for a given field
  * \param [in] icomp Component to set the minimum bound
  */
@@ -397,7 +396,7 @@ lower_bound(FType& field, const amrex::Real min_value, const int icomp = 0)
 /** Computes the global maximum of a field from all levels
  * \ingroup field_ops
  *
- * \param [in] field we need to compute its global maximum magnitude
+ * \param [in] field Field for global maximum magnitude
  */
 template <typename FType>
 inline amrex::Real global_max_magnitude(FType& field)
@@ -437,7 +436,7 @@ inline amrex::Real global_max_magnitude(FType& field)
 /** Normalizes a field using its magnitude
  * \ingroup field_ops
  *
- * \param [in] field that needs to be normalized
+ * \param [in] field Field that needs to be normalized
  */
 template <typename FType>
 inline void normalize(FType& field)

@@ -126,6 +126,7 @@ public:
      *  \param pvec Vector containing particle info
      *  \param pavec Array information for the real component data
      *  \param farr Array of field data for this multifab
+     *  \param problo Problem low values
      *  \param dxi Inverse cell size array
      *  \param dx Cell size array
      *  \param offset Offsets for cell/node/face fields
