@@ -298,12 +298,11 @@ TEST_F(SamplingTest, probe_sampler)
     cloud.sampling_locations(locs);
 
     ASSERT_EQ(locs.size(), 3 * 2);
-    const amrex::Vector<const amrex::Real> xprobe_golds{0.2, 60.2, 100.2,
-                                                        0.5, 60.5, 100.5};
-    const amrex::Vector<const amrex::Real> yprobe_golds{0.5,  2.5,  8.5,
-                                                        1.25, 3.25, 9.25};
-    const amrex::Vector<const amrex::Real> zprobe_golds{1.0, 4.0, 6.0,
-                                                        2.5, 5.5, 7.5};
+    const amrex::Vector<amrex::Real> xprobe_golds{0.2, 60.2, 100.2,
+                                                  0.5, 60.5, 100.5};
+    const amrex::Vector<amrex::Real> yprobe_golds{0.5,  2.5,  8.5,
+                                                  1.25, 3.25, 9.25};
+    const amrex::Vector<amrex::Real> zprobe_golds{1.0, 4.0, 6.0, 2.5, 5.5, 7.5};
     for (int n = 0; n < locs.size(); ++n) {
         EXPECT_NEAR(locs[n][0], xprobe_golds[n], tol);
         EXPECT_NEAR(locs[n][1], yprobe_golds[n], tol);
