@@ -10,7 +10,7 @@ namespace amr_wind::pde::temperature {
 /** Adding the source term to energy equation to account for immersed
  * boundary.
  *
- *  \ingroup temperature_src
+ *  
  *
  *
  */
