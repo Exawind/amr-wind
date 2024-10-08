@@ -24,7 +24,7 @@ TerrainDrag::TerrainDrag(CFDSim& sim)
     std::string terrainfile("terrain.amrwind");
     std::ifstream file(terrainfile, std::ios::in);
     if (!file.good()) {
-        amrex::Abort("Cannot find terrain.amrwind  file");
+        amrex::Abort("Cannot find terrain.amrwind file");
     }
     amrex::Real value1, value2, value3;
     while (file >> value1 >> value2 >> value3) {

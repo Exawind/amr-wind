@@ -91,7 +91,7 @@ void DragForcing::operator()(
     const amrex::Real scale_factor = (dx[2] < 1.0) ? 1.0 : 1.0 / dx[2];
     const amrex::Real Cd =
         (is_laminar && dx[2] < 1) ? dragCoefficient : dragCoefficient / dx[2];
-    const int z0_min = 1e-4;
+    const amrex::Real z0_min = 1e-4;
     const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     const amrex::Real kappa = 0.41;
     const amrex::Real cd_max = 1000.0;
