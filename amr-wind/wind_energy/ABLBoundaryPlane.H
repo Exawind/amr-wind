@@ -118,6 +118,8 @@ public:
 
     void pre_advance_work();
 
+    void pre_predictor_work();
+
     void post_advance_work();
 
     void initialize_data();
@@ -128,7 +130,7 @@ public:
 
     void read_header();
 
-    void read_file();
+    void read_file(const bool /* nph_target_time*/);
 
     void populate_data(
         const int /*lev*/,
@@ -155,6 +157,11 @@ public:
         const amrex::Box& /*bx*/,
         const int /*lev*/,
         const amrex::Orientation /*ori*/) const;
+
+    bool is_data_newer_than(const amrex::Real time) const
+    {
+        return (m_in_data.tinterp() - time > 1e-12);
+    }
 
     io_mode mode() const { return m_io_mode; }
 
