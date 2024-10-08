@@ -15,8 +15,8 @@ DragTempForcing::DragTempForcing(const CFDSim& sim)
     , m_temperature(sim.repo().get_field("temperature"))
 {
     amrex::ParmParse pp("DragTempForcing");
-    pp.query("dragCoefficient", m_drag_coefficient);
-    pp.query("RefT", m_internalRefT);
+    pp.query("drag_coefficient", m_drag_coefficient);
+    pp.query("reference_temperature", m_reference_temperature);
 }
 
 DragTempForcing::~DragTempForcing() = default;
