@@ -45,12 +45,14 @@ void DragTempForcing::operator()(
     const auto& dx = geom.CellSizeArray();
     const amrex::Real gpu_drag = m_drag / dx[2];
     const amrex::Real gpu_TRef = m_internalRefT;
+    const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
+    const amrex::Real cd_max = 10.0;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real ux1 = vel(i, j, k, 0);
         const amrex::Real uy1 = vel(i, j, k, 1);
         const amrex::Real uz1 = vel(i, j, k, 2);
         const amrex::Real m = std::sqrt(ux1 * ux1 + uy1 * uy1 + uz1 * uz1);
-        const amrex::Real Cd = std::min(gpu_drag / (m + 1e-5), 10 / dx[2]);
+        const amrex::Real Cd = std::min(gpu_drag / (m + tiny), cd_max / dx[2]);
         src_term(i, j, k, 0) -=
             (Cd * (temperature(i, j, k, 0) - gpu_TRef) * blank(i, j, k, 0));
     });

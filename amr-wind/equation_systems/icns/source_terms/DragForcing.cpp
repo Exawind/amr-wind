@@ -29,8 +29,7 @@ DragForcing::DragForcing(const CFDSim& sim)
     const auto& phy_mgr = m_sim.physics_manager();
     if (phy_mgr.contains("ABL")) {
         const auto& abl = m_sim.physics_manager().get<amr_wind::ABL>();
-        const VelPlaneAveraging& fa_velocity =
-            abl.abl_statistics().vel_profile_coarse();
+        const auto& fa_velocity = abl.abl_statistics().vel_profile_coarse();
         m_device_vel_ht.resize(fa_velocity.line_centroids().size());
         m_device_vel_vals.resize(fa_velocity.line_average().size());
         amrex::Gpu::copy(
@@ -92,6 +91,10 @@ void DragForcing::operator()(
     const amrex::Real scale_factor = (dx[2] < 1.0) ? 1.0 : 1.0 / dx[2];
     const amrex::Real Cd =
         (is_laminar && dx[2] < 1) ? dragCoefficient : dragCoefficient / dx[2];
+    const int z0_min = 1e-4;
+    const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
+    const amrex::Real kappa = 0.41;
+    const amrex::Real cd_max = 1000.0;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
         const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
@@ -141,24 +144,23 @@ void DragForcing::operator()(
             const amrex::Real ux2 = vel(i, j, k + 1, 0);
             const amrex::Real uy2 = vel(i, j, k + 1, 1);
             const amrex::Real m2 = std::sqrt(ux2 * ux2 + uy2 * uy2);
-            const amrex::Real kappa = 0.41;
-            const amrex::Real z0 = std::max(terrainz0(i, j, k), 1e-4);
+            const amrex::Real z0 = std::max(terrainz0(i, j, k), z0_min);
             const amrex::Real ustar = m2 * kappa / std::log(1.5 * dx[2] / z0);
             const amrex::Real uTarget =
                 ustar / kappa * std::log(0.5 * dx[2] / z0);
             const amrex::Real uxTarget =
-                uTarget * ux2 / (1e-5 + std::sqrt(ux2 * ux2 + uy2 * uy2));
+                uTarget * ux2 / (tiny + std::sqrt(ux2 * ux2 + uy2 * uy2));
             const amrex::Real uyTarget =
-                uTarget * uy2 / (1e-5 + std::sqrt(ux2 * ux2 + uy2 * uy2));
+                uTarget * uy2 / (tiny + std::sqrt(ux2 * ux2 + uy2 * uy2));
             bcforcing_x = -(uxTarget - ux1) / dt;
             bcforcing_y = -(uyTarget - uy1) / dt;
             Dxz = -ustar * ustar * ux1 /
-                  (1e-5 + std::sqrt(ux1 * ux1 + uy1 * uy1)) / dx[2];
+                  (tiny + std::sqrt(ux1 * ux1 + uy1 * uy1)) / dx[2];
             Dyz = -ustar * ustar * uy1 /
-                  (1e-5 + std::sqrt(ux1 * ux1 + uy1 * uy1)) / dx[2];
+                  (tiny + std::sqrt(ux1 * ux1 + uy1 * uy1)) / dx[2];
         }
         const amrex::Real CdM =
-            std::min(Cd / (m + 1e-5), 1000.0 / scale_factor);
+            std::min(Cd / (m + tiny), cd_max / scale_factor);
         src_term(i, j, k, 0) -=
             (CdM * m * ux1 * blank(i, j, k) + Dxz * drag(i, j, k) +
              bcforcing_x * drag(i, j, k) +
