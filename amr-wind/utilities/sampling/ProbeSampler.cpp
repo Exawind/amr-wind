@@ -20,13 +20,38 @@ void ProbeSampler::initialize(const std::string& key)
         amrex::Abort("Cannot find probe location file: " + pfile);
     }
 
-    ifh >> m_npts;
+    pp.queryarr("offsets", m_poffsets);
+    if (m_poffsets.size() > 0) {
+        pp.getarr("offset_vector", m_offset_vector);
+        AMREX_ALWAYS_ASSERT(
+            static_cast<int>(m_offset_vector.size()) == AMREX_SPACEDIM);
+    } else {
+        // No offsets is implemented as 1 offset of 0.
+        m_poffsets.push_back(0.0);
+    }
+
+    int npts_file = 0;
+    ifh >> npts_file;
     ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    SampleLocType probes_file;
+    probes_file.resize(npts_file);
+    m_npts = m_poffsets.size() * npts_file;
     m_probes.resize(m_npts);
-    for (int i = 0; i < m_npts; ++i) {
-        ifh >> m_probes[i][0] >> m_probes[i][1] >> m_probes[i][2];
+    // Read through points in file
+    for (int i = 0; i < npts_file; ++i) {
+        ifh >> probes_file[i][0] >> probes_file[i][1] >> probes_file[i][2];
         ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
+    // Incorporate offsets
+    for (int n = 0; n < m_poffsets.size(); ++n) {
+        for (int i = 0; i < npts_file; ++i) {
+            for (int d = 0; d < AMREX_SPACEDIM; ++d) {
+                m_probes[i + n * npts_file][d] =
+                    probes_file[i][d] + m_poffsets[n] * m_offset_vector[d];
+            }
+        }
+    }
+
     check_bounds();
 }
 
@@ -69,6 +94,8 @@ void ProbeSampler::sampling_locations(SampleLocType& locs) const
 void ProbeSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
 {
     grp.put_attr("sampling_type", identifier());
+    grp.put_attr("offset_vector", m_offset_vector);
+    grp.put_attr("offsets", m_poffsets);
 }
 #else
 void ProbeSampler::define_netcdf_metadata(

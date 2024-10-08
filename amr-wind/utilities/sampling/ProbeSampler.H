@@ -52,6 +52,9 @@ private:
     const CFDSim& m_sim;
     SampleLocType m_probes;
 
+    amrex::Vector<amrex::Real> m_offset_vector{0.0, 0.0, 0.0};
+    amrex::Vector<amrex::Real> m_poffsets;
+
     std::string m_label;
     int m_id{-1};
     int m_npts{0};
