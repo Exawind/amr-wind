@@ -158,6 +158,10 @@ Example::
 
 The first line of the file contains the total number of probes for this set.
 This is followed by the coordinates (three real numbers), one line per probe.
+This type of sampler also supports the ``offset_vector`` and ``offsets`` options
+implemented with the plane sampler, shown above. For the probe sampler, 
+these options apply offsets to the positions of all the points provided in the
+probe location file.
 
 Sampling on a volume
 `````````````````````

@@ -3,6 +3,7 @@
 
 #include "amr-wind/utilities/sampling/Sampling.H"
 #include "amr-wind/utilities/sampling/SamplingContainer.H"
+#include "amr-wind/utilities/sampling/ProbeSampler.H"
 #include "amr-wind/utilities/sampling/PlaneSampler.H"
 #include "amr-wind/utilities/sampling/VolumeSampler.H"
 #include "amr-wind/utilities/sampling/DTUSpinnerSampler.H"
@@ -59,6 +60,17 @@ void init_int_field(amr_wind::IntField& fld)
             });
     }
     amrex::Gpu::synchronize();
+}
+
+void write_probe_sampler_file(const std::string& fname)
+{
+    std::ofstream os(fname);
+    // Total number of points
+    os << "3\n";
+    // Coordinates
+    os << "0.0\t0.0\t0.0\n";
+    os << "60.0\t2.0\t3.0\n";
+    os << "100.0\t8.0\t5.0\n";
 }
 
 class SamplingImpl : public amr_wind::sampling::Sampling
@@ -262,6 +274,53 @@ TEST_F(SamplingTest, sampling_timing)
     sim().time().new_timestep();
     probes.post_advance_work();
     EXPECT_TRUE(probes.write_flag);
+}
+
+TEST_F(SamplingTest, probe_sampler)
+{
+    initialize_mesh();
+
+    constexpr amrex::Real tol = 1.0e-12;
+    std::string fname = "probes.txt";
+    // Write file
+    write_probe_sampler_file(fname);
+
+    {
+        amrex::ParmParse pp("cloud");
+        pp.add("probe_location_file", fname);
+        pp.addarr("offsets", amrex::Vector<double>{1.0, 2.5});
+        pp.addarr("offset_vector", amrex::Vector<double>{0.2, 0.5, 1.0});
+    }
+
+    amr_wind::sampling::ProbeSampler cloud(sim());
+    cloud.initialize("cloud");
+    amr_wind::sampling::ProbeSampler::SampleLocType locs;
+    cloud.sampling_locations(locs);
+
+    ASSERT_EQ(locs.size(), 3 * 2);
+    const amrex::Vector<const amrex::Real> xprobe_golds{0.2, 60.2, 100.2,
+                                                        0.5, 60.5, 100.5};
+    const amrex::Vector<const amrex::Real> yprobe_golds{0.5,  2.5,  8.5,
+                                                        1.25, 3.25, 9.25};
+    const amrex::Vector<const amrex::Real> zprobe_golds{1.0, 4.0, 6.0,
+                                                        2.5, 5.5, 7.5};
+    for (int n = 0; n < locs.size(); ++n) {
+        EXPECT_NEAR(locs[n][0], xprobe_golds[n], tol);
+        EXPECT_NEAR(locs[n][1], yprobe_golds[n], tol);
+        EXPECT_NEAR(locs[n][2], zprobe_golds[n], tol);
+    }
+
+    // Remove file
+    const char* fname_char = fname.c_str();
+    {
+        std::ifstream f(fname_char);
+        if (f.good()) {
+            remove(fname_char);
+        }
+        // Check that file is removed
+        std::ifstream ff(fname_char);
+        EXPECT_FALSE(ff.good());
+    }
 }
 
 TEST_F(SamplingTest, plane_sampler)
