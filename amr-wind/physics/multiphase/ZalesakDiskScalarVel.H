@@ -5,7 +5,7 @@
 #include "amr-wind/core/Field.H"
 
 /** Multiphase Zalesak disk physics
- *  \ingroup mulitphase_physics
+ *  \ingroup multiphase_physics
  *
  */
 namespace amr_wind::zds {

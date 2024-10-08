@@ -49,7 +49,7 @@ void incflo::pre_advance_stage2()
  */
 void incflo::advance()
 {
-    BL_PROFILE("amr-wind::incflo::Advance");
+    BL_PROFILE("amr-wind::incflo::advance");
 
     m_sim.pde_manager().advance_states();
 

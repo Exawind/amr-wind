@@ -7,7 +7,7 @@
 namespace amr_wind::enstrophy {
 
 /** enstrophy object
- *  \ingroup Enstrophy
+ *  \ingroup sampling
  *
  *  A concrete implementation of the post-processing interface that deals with
  *  the total enstrophy

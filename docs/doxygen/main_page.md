@@ -1,17 +1,5 @@
 # AMR-Wind API documentation {#mainpage}
 
-[AMR-Wind](https://github.com/exawind/amr-wind) is a massively parallel,
-block-structured adaptive-mesh, incompressible flow solver for wind turbine and
-wind farm simulations. The codebase is a wind-focused fork of
-[incflo](https://github.com/AMReX-Codes/incflo). The solver is built on top of
-the [AMReX library](https://amrex-codes.github.io/amrex). AMReX library provides
-the mesh data structures, mesh adaptivity, as well as the linear solvers used
-for solving the governing equations. AMR-Wind is actively developed and
-maintained by a dedicated multi-institutional team from [Lawrence Berkeley
-National Laboratory](https://www.lbl.gov/), [National Renewable Energy
-Laboratory](https://nrel.gov), and [Sandia National
-Laboratories](https://sandia.gov).
-
 This document is intended for developers who want to understand the C++ code
 structure and modify the codebase and, therefore, assumes that the reader is
 familiar with the installation, compilation, and execution steps. If you are new to
@@ -62,30 +50,6 @@ When developing new features, we strongly recommend creating a unit-test and
 develop features incrementally and testing as you add capabilities. Unit-tests
 are also a good way to explore the usage of individual components of the code.
 
-### Building API documentation locally
-
-The API documentation is automatically generated from specially-formatted
-comments in the source code using [Doxygen](https://www.doxygen.nl/index.html).
-Please consult the [Doxygen
-manual](https://www.doxygen.nl/manual/docblocks.html) to learn about documenting
-code. To generate this documentation on your local machine, or to rebuild docs
-during code development process you'll need to install `doxygen` and `graphviz`
-executables on your system. Once these executables have been successfully
-installed on your system, you can generate this documentation by executing the
-following commands:
-
-~~~~~~~~~~~.sh
-git clone https://github.com/exawind/amr-wind.git
-cd amr-wind
-
-# Doxygen command should be executed from the top-level directory
-doxygen docs/doxygen/Doxyfile
-# The resulting documentation is in `build/html` directory
-
-# Open main page on your browser
-open build/html/index.html 
-~~~~~~~~~~~
- 
 ## Contributing
 
 AMR-Wind is an open-source code and we welcome contributions from the community.

@@ -10,6 +10,7 @@ and extending the ``amr-wind`` source code for their own use cases.
    :maxdepth: 3
 
    documentation
+   ../doxygen/html/index
    unit_testing
    regression_testing
    verification

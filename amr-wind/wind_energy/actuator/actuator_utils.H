@@ -21,7 +21,7 @@ namespace utils {
  *  intersections with a bounding box ``rbox``.
  *
  *  \param mesh AMReX mesh instance
- *  \param rbox The bounding box that defines the region of influence of a
+ *  \param rbx The bounding box that defines the region of influence of a
  * turbine
  */
 std::set<int> determine_influenced_procs(
@@ -76,10 +76,10 @@ gaussian1d(const amrex::Real& dist, const amrex::Real& eps)
 
 /** Compute distance between two points
  *
- * @param origin Origin for the cylindrical coordinate system
- * @param normal Normal  relative to origin (defines cylinder orientation)
- * @param point1 location of the first point in Cartesian coordinates
- * @param point2 location of second point in Cartesian coordinates
+ * \param origin Origin for the cylindrical coordinate system
+ * \param normal Normal  relative to origin (defines cylinder orientation)
+ * \param point1 location of the first point in Cartesian coordinates
+ * \param point2 location of second point in Cartesian coordinates
  * @return distance between points in cylindrical coordinates
  * (angle is in radians)
  */
@@ -118,8 +118,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE vs::Vector delta_pnts_cyl(
 /** Compute weighting for a normalized linear interpolant
  *
  *
- * @param distance distance between sample location and the reference points
- * @param dX spacing between reference points
+ * \param distance distance between sample location and the reference points
+ * \param dX spacing between reference points
  * @return normalized integration weight at the sample location
  */
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real

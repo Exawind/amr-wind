@@ -47,6 +47,7 @@ public:
      *
      *  \param fstate State used for updates to differentiate logic in predictor
      *  and corrector steps.
+     *  \param diff_type diffusion solve type
      */
     virtual void update_turbulent_viscosity(
         const FieldState fstate, const DiffusionType diff_type) = 0;

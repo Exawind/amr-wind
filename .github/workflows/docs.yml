@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Clone
         uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: Python
         uses: actions/setup-python@v5
         with:
@@ -24,27 +26,24 @@ jobs:
         run: |
           export DEBIAN_FRONTEND=noninteractive
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
-            doxygen graphviz libenchant-2-dev
+          sudo apt-get install -y --no-install-recommends graphviz libenchant-2-dev
           python3 -m pip install --upgrade pip
-          pip3 install sphinx sphinx_rtd_theme sphinx_toolbox sphinx_copybutton pyenchant sphinxcontrib-spelling
-      - name: Spellcheck
-        # execute from top-level amr-wind directory
+          pip3 install sphinx sphinx_rtd_theme sphinx_toolbox sphinx_copybutton pyenchant sphinxcontrib-spelling doxysphinx
+      - name: Doxygen install
+        uses: ssciwr/doxygen-install@v1.6.0
+        with:
+          version: "1.12.0"
+      - name: Configure
         run: |
-          echo "::add-matcher::.github/problem-matchers/sphinx.json"
-          sphinx-build -b spelling ./docs/sphinx ./build_docs/manual/spelling 2>&1 | tee -a build-output.txt
+          cmake -B ${{runner.workspace}}/build-docs \
+            -DAMR_WIND_ENABLE_DOCUMENTATION:BOOL=ON \
+            ${{github.workspace}}
       - name: Build
         # execute from top-level amr-wind directory
         run: |
           echo "::add-matcher::.github/problem-matchers/sphinx.json"
-          sphinx-build -M html ./docs/sphinx ./build_docs/manual -W --keep-going -n 2>&1 | tee -a build-output.txt
-          # Doxygen output gets parsed wrong by the sphinx problem matcher so unregister it
-          echo "::remove-matcher owner=sphinx-problem-matcher-loose-no-severity::"
-          echo "::remove-matcher owner=sphinx-problem-matcher-loose::"
-          echo "::remove-matcher owner=sphinx-problem-matcher::"
-          doxygen ./docs/doxygen/Doxyfile
-          mv ./build_docs/manual/html ./documentation
-          mv ./build_docs/doxygen/html ./documentation/api_docs
+          cmake --build ${{runner.workspace}}/build-docs -t docs 2>&1 | tee -a build-output.txt
+          mv ${{runner.workspace}}/build-docs/docs/sphinx/html ./documentation
           touch ./documentation/.nojekyll
       - name: Report
         run: |

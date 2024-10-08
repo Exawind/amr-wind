@@ -105,6 +105,7 @@ struct Qcriterion
  *
  *  \param qcritphi [out] Field where the Q-criterion is populated
  *  \param phi [in] The velocity vector field
+ *  \param nondim [in] Flag for non-dimensional value
  */
 template <typename FTypeIn, typename FTypeOut>
 inline void

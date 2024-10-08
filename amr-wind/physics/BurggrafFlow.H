@@ -33,6 +33,7 @@ struct WExact
 } // namespace
 
 /** Burggraf Flow physics
+ *  \defgroup burggraf_flow Burggraf flow
  *  \ingroup physics
  */
 

@@ -114,6 +114,10 @@ Dependencies
 Other AMR-Wind specific options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. cmakeval:: AMR_WIND_ENABLE_DOCUMENTATION
+
+   Enable documentation. Default: OFF
+
 .. cmakeval:: AMR_WIND_ENABLE_TESTS
 
    Enable CTest testing. Default: OFF
