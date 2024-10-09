@@ -224,8 +224,6 @@ void print_nonlinear_residual(
     const auto& velocity_new = sim.pde_manager().icns().fields().field;
     const auto& oset_mask = sim.repo().get_int_field("mask_cell");
 
-    const int ncomp = AMREX_SPACEDIM;
-
     for (int lev = 0; lev < nlevels; ++lev) {
 
         amrex::iMultiFab level_mask;
