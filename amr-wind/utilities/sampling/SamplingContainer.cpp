@@ -33,11 +33,10 @@ void SamplingContainer::initialize_particles(
     const int lev = 0;
     const auto iproc = amrex::ParallelDescriptor::MyProc();
 
-    long num_particles = 0;
+    m_total_particles = 0;
     for (const auto& probes : samplers) {
-        num_particles += probes->num_points();
+        m_total_particles += probes->num_points();
     }
-    m_total_particles = num_particles;
 
     const int nprobes = static_cast<int>(samplers.size());
     amrex::iMultiFab particle_counts(
