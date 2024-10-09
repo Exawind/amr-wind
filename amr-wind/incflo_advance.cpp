@@ -354,15 +354,18 @@ void incflo::ApplyPredictor(bool incremental_projection, int inonlin)
     }
 
     // With scalars computed, compute advection of momentum
-    if (inonlin == 0) {
-        icns().compute_advection_term(amr_wind::FieldState::Old);
-    } else {
-        icns().compute_advection_term(amr_wind::FieldState::NPH);
-    }
+    // if (inonlin == 0) {
+    //    icns().compute_advection_term(amr_wind::FieldState::Old);
+    //} else {
+    //    icns().compute_advection_term(amr_wind::FieldState::NPH);
+    //}
+    const auto fstate =
+        (inonlin == 0) ? amr_wind::FieldState::Old : amr_wind::FieldState::NPH;
+    icns().compute_advection_term(fstate);
 
     // *************************************************************************************
-    // Define (or if use_godunov, re-define) the forcing terms and viscous terms
-    // independently for the right hand side, without 1/rho term
+    // Define (or if use_godunov, re-define) the forcing terms and viscous
+    // terms independently for the right hand side, without 1/rho term
     // *************************************************************************************
     icns().compute_source_term(amr_wind::FieldState::NPH);
     icns().compute_diffusion_term(amr_wind::FieldState::Old);
