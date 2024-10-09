@@ -53,7 +53,7 @@ Here is a sample content of precursor and inflow-outflow input files to drive te
 Setup using Python Tools
 ------------------------
 The setup of the terrain files can be cumbersome to do by hand. A set of python tools are made available at 
-`literature <https://github.com/hgopalan/amrTerrain/tree/main/src/backend>`_. A more comprehensive set of tools 
+`this link <https://github.com/hgopalan/amrTerrain/tree/main/src/backend>`_. A more comprehensive set of tools 
 will be available in future at: `windtools <https://github.com/rthedin/windtools>`_.
 
 The python code is executed as follows: 
