@@ -1,3 +1,6 @@
+.. spelling:word-list::
+
+   xy
 
 .. _terrain:
 
@@ -10,7 +13,7 @@ immersed boundary forcing method (IBFM). The theory for the technique can be fou
 
 The setup for the terrain follows the typical simulation of the atmospheric boundary layer (ABL) using 
 large eddy simulation or Reynolds-averaged Navier Stokes turbulence models. The IBFM can be used with
-periodic or infow-outflow boundary conditions with few modifications. 
+periodic or inflow-outflow boundary conditions with few modifications. 
 
 The first step in including the terrain is to set the terrain variables. This is accomplished 
 by modifying the ABL physics to include the ``TerrainDrag`` flow physics: ``incflo.physics = ABL TerrainDrag``.
@@ -53,7 +56,7 @@ Here is a sample content of precursor and inflow-outflow input files to drive te
 Setup using Python Tools
 ------------------------
 The setup of the terrain files can be cumbersome to do by hand. A set of python tools are made available at 
-`this link <https://github.com/hgopalan/amrTerrain/tree/main/src/backend>`_. A more comprehensive set of tools 
+`literature <https://github.com/hgopalan/amrTerrain/tree/main/src/backend>`_. A more comprehensive set of tools 
 will be available in future at: `windtools <https://github.com/rthedin/windtools>`_.
 
 The python code is executed as follows: 
@@ -62,17 +65,17 @@ The python code is executed as follows:
 
     python backendinterface.py nameofyamlfile.yaml 
 
-Sample input files are available in the github repository. A typical sample file looks as follows: 
+Sample input files are available in the GitHub repository. A typical sample file looks as follows: 
 
 .. literalinclude:: ./terrain_yaml.txt
    :linenos:
 
 The variable ``caseType`` takes three kinds of inputs: ``precursor`` or ``terrain`` or ``terrainTurbine``. For
 running terrain simulations, it is recommended to use ``caseType:terrain``. The use of ``caseType:terrainTurbine``
-also creates turbines aligned with the terrain height using the turbine lat and lon in the file ``turbine.csv``. 
+also creates turbines aligned with the terrain height using the turbine latitude and longitude in the file ``turbine.csv``. 
 
 The python code first reads the ``centerLat`` and ``centerLon`` and creates a domain of size specified by 
-``west``, ``east``, ``south``, and ``north``. For the example shown above, a domain size of 10 kms is created
+``west``, ``east``, ``south``, and ``north``. For the example shown above, a domain size of 10 km is created
 around ``centerLat`` and ``centerLon``. The terrain module uses the SRTM 30 m database to create the terrain. 
 It is possible to add a user-defined file to define the terrain by modifying the python code. 
 
@@ -80,7 +83,7 @@ The ``cellSize: 128`` sets a grid resolution of 128 m at level 0.The variable ``
 You do not need ``Hypre`` to run the high aspect ratio simulations. User has to manually edit the 
 input file to create refinement regions in area of interest around the terrain. 
 
-All other inputs in the yaml file are for creating a dummmy inputs to the amr-wind simulations and user can 
+All other inputs in the yaml file are for creating a dummy inputs to the amr-wind simulations and user can 
 modify them manually to fit their needs. The inputs ``caseType: "terrainTurbine"`` and ``turbineType: "UniformCtDisk"``
 are useful for aligning the turbine vertically with the terrain. The file includes all the turbines within the continental 
 US and have to be modified for other locations. The turbine type information is ad-hoc and has to be manually modified by 
