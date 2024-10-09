@@ -170,7 +170,8 @@ struct AdvectionOp<
                     }
                     // if state is NPH, then n and n+1 are known, and only
                     // spatial extrapolation is performed
-                    amrex::Real dt_extrap = (fstate == FieldState::NPH) ? 0.0 : dt;
+                    amrex::Real dt_extrap =
+                        (fstate == FieldState::NPH) ? 0.0 : dt;
 
                     HydroUtils::ComputeFluxesOnBoxFromState(
                         bx, PDE::ndim, mfi,
@@ -236,12 +237,12 @@ struct AdvectionOp<
     Field& w_mac;
     amrex::Gpu::DeviceVector<int> iconserv;
 
-godunov::scheme godunov_scheme = godunov::scheme::WENOZ;
-std::string godunov_type{"weno_z"};
-const bool fluxes_are_area_weighted{false};
-bool godunov_use_forces_in_trans{false};
-bool m_allow_inflow_on_outflow{false};
-std::string advection_type{"Godunov"};
+    godunov::scheme godunov_scheme = godunov::scheme::WENOZ;
+    std::string godunov_type{"weno_z"};
+    const bool fluxes_are_area_weighted{false};
+    bool godunov_use_forces_in_trans{false};
+    bool m_allow_inflow_on_outflow{false};
+    std::string advection_type{"Godunov"};
 };
 
 } // namespace amr_wind::pde
