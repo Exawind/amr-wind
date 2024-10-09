@@ -1,6 +1,3 @@
-.. spelling:word-list::
-
-   xy
 
 .. _terrain:
 
