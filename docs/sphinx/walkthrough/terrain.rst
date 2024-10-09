@@ -9,7 +9,7 @@ LES Simulation with Terrain
 
 In this walkthrough, we discuss the steps to setup a terrain simulation using the newly implemented 
 immersed boundary forcing method (IBFM). The theory for the technique can be found in the 
-`literature <https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2020MS002141>`_.
+`this link <https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2020MS002141>`_.
 
 The setup for the terrain follows the typical simulation of the atmospheric boundary layer (ABL) using 
 large eddy simulation or Reynolds-averaged Navier Stokes turbulence models. The IBFM can be used with
