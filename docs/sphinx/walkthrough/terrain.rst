@@ -1,3 +1,6 @@
+.. spelling:word-list::
+
+   xy
 
 .. _terrain:
 
@@ -5,7 +8,7 @@ LES Simulation with Terrain
 ============================
 
 In this walkthrough, we discuss the steps to setup a terrain simulation using the newly implemented 
-immersed boundary forcing method (IBFM). The theory for the technique can be found in the 
+immersed boundary forcing method (IBFM). The theory for the technique can be found at
 `this link <https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2020MS002141>`_.
 
 The setup for the terrain follows the typical simulation of the atmospheric boundary layer (ABL) using 
@@ -53,7 +56,7 @@ Here is a sample content of precursor and inflow-outflow input files to drive te
 Setup using Python Tools
 ------------------------
 The setup of the terrain files can be cumbersome to do by hand. A set of python tools are made available at 
-`literature <https://github.com/hgopalan/amrTerrain/tree/main/src/backend>`_. A more comprehensive set of tools 
+`this link <https://github.com/hgopalan/amrTerrain/tree/main/src/backend>`_. A more comprehensive set of tools 
 will be available in future at: `windtools <https://github.com/rthedin/windtools>`_.
 
 The python code is executed as follows: 

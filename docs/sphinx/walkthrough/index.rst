@@ -23,3 +23,4 @@ through precursor simulations, and then turbines are placed in the flow.
    compiling.rst
    precursor.rst
    turbine.rst
+   terrain.rst
