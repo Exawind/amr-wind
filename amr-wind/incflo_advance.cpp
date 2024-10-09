@@ -50,13 +50,16 @@ void incflo::pre_advance_stage2()
 void incflo::advance(int inonlin)
 {
     BL_PROFILE("amr-wind::incflo::advance");
-    if (inonlin == 0) m_sim.pde_manager().advance_states();
+    if (inonlin == 0) {
+        m_sim.pde_manager().advance_states()
+    };
 
     ApplyPredictor(false, inonlin);
 
     if (!m_use_godunov) {
-        if (inonlin > 0)
+        if (inonlin > 0) {
             amrex::Abort("Advection iterations are not supported for MOL");
+        }
 
         ApplyCorrector();
     }
