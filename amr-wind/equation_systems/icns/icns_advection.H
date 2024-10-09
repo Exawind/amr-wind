@@ -332,13 +332,13 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                     m_allow_inflow_on_outflow = true;
                 }
 
+                // if state is NPH, then n and n+1 are known, and only
+                // spatial extrapolation is performed
+                const amrex::Real dt_extrap =
+                    (fstate == FieldState::NPH) ? 0.0 : dt;
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-
-                // if state is NPH, then n and n+1 are known, and only
-                // spatial extrapolation is performed
-                amrex::Real dt_extrap = (fstate == FieldState::NPH) ? 0.0 : dt;
                 for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
                      ++mfi) {
                     const auto& bx = mfi.tilebox();
