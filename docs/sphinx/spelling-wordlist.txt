@@ -62,6 +62,7 @@ frontend
 geostrophic
 Godunov
 hexahedral
+homebrew
 hypre
 incflo
 incompressibility
