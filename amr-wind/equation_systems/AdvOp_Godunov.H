@@ -170,7 +170,7 @@ struct AdvectionOp<
                     }
                     // if state is NPH, then n and n+1 are known, and only
                     // spatial extrapolation is performed
-                    amrex::Real dt_extrap =
+                    const amrex::Real dt_extrap =
                         (fstate == FieldState::NPH) ? 0.0 : dt;
 
                     HydroUtils::ComputeFluxesOnBoxFromState(
