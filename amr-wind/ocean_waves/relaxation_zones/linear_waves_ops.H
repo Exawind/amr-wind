@@ -73,7 +73,9 @@ struct InitDataOp<LinearWaves>
 
                         phi(i, j, k) = eta - zc;
 
-                        if (phi(i, j, k) + 0.5 * dx[2] >= 0) {
+                        const amrex::Real cell_length_2D =
+                            std::sqrt(std::pow(dx[0], 2) + std::pow(dx[2], 2));
+                        if (phi(i, j, k) + cell_length_2D >= 0) {
                             vel(i, j, k, 0) =
                                 omega * wave_height / 2.0 *
                                 std::cosh(
@@ -95,7 +97,9 @@ struct InitDataOp<LinearWaves>
                     gbx3, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
                         phi(i, j, k) = zsl - z;
-                        if (phi(i, j, k) + 0.5 * dx[2] >= 0) {
+                        const amrex::Real cell_length_2D =
+                            std::sqrt(std::pow(dx[0], 2) + std::pow(dx[2], 2));
+                        if (phi(i, j, k) + cell_length_2D >= 0) {
                             vel(i, j, k, 0) = 0.0;
                             vel(i, j, k, 1) = 0.0;
                             vel(i, j, k, 2) = 0.0;
@@ -157,7 +161,9 @@ struct UpdateRelaxZonesOp<LinearWaves>
 
                         phi(i, j, k) = eta - zc;
 
-                        if (phi(i, j, k) + 0.5 * dx[2] >= 0) {
+                        const amrex::Real cell_length_2D =
+                            std::sqrt(std::pow(dx[0], 2) + std::pow(dx[2], 2));
+                        if (phi(i, j, k) + cell_length_2D >= 0) {
                             vel(i, j, k, 0) =
                                 omega * wave_height / 2.0 *
                                 std::cosh(
