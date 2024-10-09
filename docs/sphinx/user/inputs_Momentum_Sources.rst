@@ -174,7 +174,7 @@ Section: Momentum Sources
 
    The value of the sponge layer coefficient. It is recommended to use the default value of 1.0.  
 
-.. input_param:: DragForcing.sponge_strength
+.. input_param:: DragForcing.sponge_density
 
    **type:** Real, optional
 
