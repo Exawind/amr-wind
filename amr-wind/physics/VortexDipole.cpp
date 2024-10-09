@@ -36,6 +36,7 @@ void VortexDipole::initialize_fields(int level, const amrex::Geometry& geom)
 
     const auto& problo = geom.ProbLoArray();
 
+    // this one
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
         const auto& dx = geom.CellSizeArray();
