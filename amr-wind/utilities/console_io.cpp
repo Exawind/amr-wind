@@ -218,9 +218,7 @@ void print_tpls(std::ostream& out)
 void print_nonlinear_residual(
     CFDSim& sim, ScratchField& vel_diff, ScratchField& vel_star)
 {
-    // using namespace amrex;
     const int nlevels = sim.repo().num_active_levels();
-    const auto& geom = sim.mesh().Geom();
     const auto& mesh = sim.mesh();
 
     const auto& velocity_new = sim.pde_manager().icns().fields().field;

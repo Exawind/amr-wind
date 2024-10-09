@@ -51,7 +51,7 @@ void incflo::advance(int inonlin)
 {
     BL_PROFILE("amr-wind::incflo::advance");
     if (inonlin == 0) {
-        m_sim.pde_manager().advance_states()
+        m_sim.pde_manager().advance_states();
     };
 
     ApplyPredictor(false, inonlin);
