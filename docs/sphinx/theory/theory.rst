@@ -428,7 +428,7 @@ z direction (example: *half-channel* simulations) at the centerline.
    \end{aligned}
 
 
-.. _terrain:
+.. _terrainmodel:
 
 Terrain Model
 --------------
