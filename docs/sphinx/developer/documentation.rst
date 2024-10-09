@@ -53,13 +53,42 @@ to rely on comments to follow the code structure.
 Building documentation
 ----------------------
 
+Dependencies
+````````````
+
 To generate the AMR-Wind manual on a local machine, `doxygen`,
-`graphviz`, `doxysphinx`, and `sphinx` are required, as well as
-turning on the `AMR_WIND_ENABLE_DOCUMENTATION` cmake option.
+`graphviz`, `doxysphinx`, `enchant`, and `sphinx` are required.
+
+To install the required packages on Linux:
+
+.. code-block:: console
+
+    $ sudo apt-get install -y --no-install-recommends graphviz libenchant-2-dev
+
+and on OSX with homebrew:
+
+.. code-block:: console
+
+    $ brew install doxygen graphviz enchant
+
+To install the required python packages:
+
+.. code-block:: console
+
+    $ pip install sphinx sphinx_rtd_theme sphinx_toolbox sphinx_copybutton pyenchant sphinxcontrib-spelling doxysphinx
+
+Build
+`````
+
+Run the following command to build the documentation:
 
 .. code-block:: console
 
     $ cd build && cmake -DAMR_WIND_ENABLE_DOCUMENTATION:BOOL=ON .. && cmake --build . -t docs
+
+.. tip::
+
+   On OSX, before running the cmake, you may need to :code:`$ export PYENCHANT_LIBRARY_PATH=/opt/homebrew/lib/libenchant-2.dylib`
 
 The resulting documentation is in `docs/spinx/html`
 directory. Documentation can also be generated in other formats,
