@@ -116,7 +116,7 @@ Flow physics
 
 * Geometry
 
-   * Immersed boundary
+   * Immersed boundary forcing method with stair-case type terrain and wall function [:ref:`doc <terrain>`]
 
    * Coupling with Nalu-Wind for body-conforming meshes with overset methodology
 
@@ -179,8 +179,12 @@ Current development
 
 * Temporal and spatial varying MMC forcing
 
+* non-uniform roughness length, surface flux and temperature 
+
+* One-equation RANS model with wall function and stratification support 
+
 * Complex terrain
 
-   * Improved wall conditions, e.g., non-uniform roughness, temperature and heat fluxes
+   * Better terrain representation with embedded boundary support 
 
-   * Complex terrain though immersed boundary methods
+   * Support tools for making case creation easy 

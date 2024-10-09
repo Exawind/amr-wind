@@ -66,6 +66,7 @@ geostrophic
 Godunov
 hexahedral
 homebrew
+hydrostatic
 hypre
 incflo
 incompressible
