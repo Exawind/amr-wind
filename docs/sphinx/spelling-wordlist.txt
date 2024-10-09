@@ -65,7 +65,6 @@ frontend
 geostrophic
 Godunov
 hexahedral
-hydrostatic
 hypre
 incflo
 incompressible
