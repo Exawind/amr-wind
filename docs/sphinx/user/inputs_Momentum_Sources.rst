@@ -214,7 +214,7 @@ Section: Momentum Sources
 
    This term turns on the sponge layer in the west (-x) boundary. The default value is 0. 
 
-   .. input_param:: DragForcing.sponge_east
+.. input_param:: DragForcing.sponge_east
 
    **type:** int, optional
 
@@ -226,14 +226,14 @@ Section: Momentum Sources
 
    This term turns on the sponge layer in the south (-y) boundary. The default value is 0. 
 
-   .. input_param:: DragForcing.sponge_north
+.. input_param:: DragForcing.sponge_north
 
    **type:** int, optional
 
    This term turns on the sponge layer in the north (+y) boundary. The default value is 1. 
 
 
-   .. input_param:: DragForcing.is_laminar
+.. input_param:: DragForcing.is_laminar
 
    **type:** int, optional
 

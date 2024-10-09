@@ -4,7 +4,7 @@
 
 .. _terrain:
 
-LES Simulation with Terrain 
+LES with Terrain 
 ============================
 
 In this walkthrough, we discuss the steps to setup a terrain simulation using the newly implemented 

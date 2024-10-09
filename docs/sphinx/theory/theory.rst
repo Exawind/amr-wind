@@ -442,8 +442,8 @@ The forcing term in the momentum equation is given by:
 
    F_i = - \beta C_d u_i | u_i | 
 
-Here :math:`\beta` is the volume fraction of the cell covered by terrain, :math: `C_d` is a drag
-term  and :math: `u_i` is the wind speed. Currently, the volume fraction is 
+Here :math:`\beta` is the volume fraction of the cell covered by terrain, :math:`C_d` is a drag
+term  and :math:`u_i` is the wind speed. Currently, the volume fraction is 
 computed as a 0 or 1 using a simple nearest cell algorithm at each grid level. Future, updates 
 will incorporate the partial terrain overlap using the EB capability in AMReX. The calculation 
 of the drag coefficient term and the forcing term for the energy equation can be found in 
