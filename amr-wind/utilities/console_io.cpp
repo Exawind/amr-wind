@@ -271,8 +271,9 @@ void print_nonlinear_residual(
         }
     }
 
-    amrex::Print() << "Norm of change over advection iterations in u  " << rms_vel[0] << " v "
-                   << rms_vel[1] << " w " << rms_vel[2] << std::endl;
+    amrex::Print() << "Norm of change over advection iterations in u  "
+                   << rms_vel[0] << " v " << rms_vel[1] << " w " << rms_vel[2]
+                   << std::endl;
 }
 
 } // namespace amr_wind::io
