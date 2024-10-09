@@ -1,7 +1,7 @@
 .. _inputs_temperature_sources:
    
 Section: Temperature Sources
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    
 .. input_param:: temperature.source_terms
 
