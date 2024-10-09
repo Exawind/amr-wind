@@ -55,6 +55,9 @@ void incflo::advance(int inonlin)
     ApplyPredictor(false, inonlin);
 
     if (!m_use_godunov) {
+        if (inonlin > 0)
+            amrex::Abort("Advection iterations are not supported for MOL");
+
         ApplyCorrector();
     }
 }
