@@ -258,9 +258,8 @@ void print_nonlinear_residual(
             });
     }
 
-    amrex::Array<amrex::Real, AMREX_SPACEDIM> rms_vel;
+    amrex::Array<amrex::Real, AMREX_SPACEDIM> rms_vel = {0.0};
 
-    for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) rms_vel[idim] = 0.;
     for (int lev = 0; lev < nlevels; ++lev) {
         for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
             rms_vel[idim] += vel_diff(lev).norm2(idim);
