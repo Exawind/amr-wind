@@ -190,11 +190,15 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                 m_allow_inflow_on_outflow = true;
             }
 
+            // if state is NPH, then n and n+1 are known, and only
+            // spatial extrapolation is performed
+            const amrex::Real dt_extrap =
+                (fstate == FieldState::NPH) ? 0.0 : dt;
             for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
                 HydroUtils::ExtrapVelToFaces(
                     dof_field(lev), src_term(lev), u_mac(lev), v_mac(lev),
                     w_mac(lev), dof_field.bcrec(), bcrec_device.data(),
-                    repo.mesh().Geom(lev), dt, godunov_use_ppm,
+                    repo.mesh().Geom(lev), dt_extrap, godunov_use_ppm,
                     godunov_use_forces_in_trans, premac_advection_type,
                     limiter_type, m_allow_inflow_on_outflow);
             }
@@ -329,6 +333,10 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                     m_allow_inflow_on_outflow = true;
                 }
 
+                // if state is NPH, then n and n+1 are known, and only
+                // spatial extrapolation is performed
+                const amrex::Real dt_extrap =
+                    (fstate == FieldState::NPH) ? 0.0 : dt;
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
@@ -346,7 +354,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                         known_edge_state, u_mac(lev).const_array(mfi),
                         v_mac(lev).const_array(mfi),
                         w_mac(lev).const_array(mfi), divu, fq.const_array(mfi),
-                        geom[lev], dt, dof_field.bcrec(),
+                        geom[lev], dt_extrap, dof_field.bcrec(),
                         dof_field.bcrec_device().data(), iconserv.data(),
                         godunov_use_ppm, godunov_use_forces_in_trans,
                         is_velocity, fluxes_are_area_weighted,

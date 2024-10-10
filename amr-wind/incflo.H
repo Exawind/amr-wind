@@ -96,8 +96,9 @@ public:
     bool regrid_and_update();
     void pre_advance_stage1();
     void pre_advance_stage2();
-    void do_advance();
-    void advance();
+    void do_advance(const int inonlin);
+    void post_overset_work();
+    void advance(int inonlin);
     void prescribe_advance();
     void post_advance_work();
 
@@ -133,7 +134,8 @@ public:
     void ComputeDt(bool explicit_diffusion);
     void ComputePrescribeDt();
 
-    void ApplyPredictor(bool incremental_projection = false);
+    void
+    ApplyPredictor(bool incremental_projection = false, const int inonlin = 0);
     void ApplyCorrector();
     void ApplyPrescribeStep();
 
@@ -171,6 +173,9 @@ private:
 
     // Prescribe advection velocity
     bool m_prescribe_vel = false;
+
+    // Advection iterations every timestep
+    int m_adv_iters{1};
 
     //! number of cells on all levels including covered cells
     amrex::Long m_cell_count{-1};
