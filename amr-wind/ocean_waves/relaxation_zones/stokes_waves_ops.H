@@ -124,7 +124,7 @@ struct InitDataOp<StokesWaves>
                         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
                         phi(i, j, k) = zero_sea_level - z;
                         const amrex::Real cell_length_2D =
-                            std::sqrt(std::pow(dx[0], 2) + std::pow(dx[2], 2));
+                            std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
                         if (phi(i, j, k) + cell_length_2D >= 0) {
                             vel(i, j, k, 0) = 0.0;
                             vel(i, j, k, 1) = 0.0;
