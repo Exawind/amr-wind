@@ -90,7 +90,7 @@ void SamplingContainer::initialize_particles(
                     }
                 });
         }
-        AMREX_ALWAYS_ASSERT(particle_counts.sum(iprobe) == npts);
+        AMREX_ALWAYS_ASSERT(particle_counts.sum(iprobe) == probe->num_points());
     }
 
     // compute the offsets and size the particle tiles
