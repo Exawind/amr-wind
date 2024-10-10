@@ -298,13 +298,14 @@ int FreeSurfaceImpl::check_sloc(const std::string& op)
 {
     // Get number of points and sampling locations array
     auto npts_tot = num_points();
-    amrex::Vector<amrex::Array<amrex::Real, AMREX_SPACEDIM>> locs;
-    output_locations(locs);
+    amr_wind::sampling::SampleLocType sample_locs;
+    output_locations(sample_locs);
     // Get locations from other functions
     auto gridlocs = grid_locations();
     auto out = heights();
     // Loop through grid points and check output
     int icheck = 0;
+    const auto& locs = sample_locs.locations();
     for (int n = 0; n < npts_tot; ++n) {
         if (op == "=") {
             EXPECT_EQ(locs[n][0], gridlocs[n][0]);

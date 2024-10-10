@@ -4,6 +4,7 @@
 #include <AMReX_Vector.H>
 #include <AMReX_Box.H>
 #include <AMReX_RealBox.H>
+#include <AMReX_RealVect.H>
 #include <AMReX_Geometry.H>
 
 namespace amr_wind::utils {
@@ -34,6 +35,21 @@ AMREX_FORCE_INLINE T perpendicular_idx(const int normal)
         amrex::Abort("Invalid normal value to determine perpendicular indices");
     }
     return T{-1, -1};
+}
+
+//! Check if a point is inside a box
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool contains(
+    const amrex::Box& box,
+    const amrex::RealVect& pos,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& prob_lo,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dxinv)
+{
+    const amrex::IntVect iv(AMREX_D_DECL(
+        static_cast<int>(amrex::Math::floor((pos[0] - prob_lo[0]) * dxinv[0])),
+        static_cast<int>(amrex::Math::floor((pos[1] - prob_lo[1]) * dxinv[1])),
+        static_cast<int>(
+            amrex::Math::floor((pos[2] - prob_lo[2]) * dxinv[2]))));
+    return box.contains(iv);
 }
 
 /** Convert a bounding box into amrex::Box index space at a given level
