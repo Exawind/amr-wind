@@ -378,9 +378,9 @@ void incflo::init_physics_and_pde()
 
         // Get number of advection iterations
         pp.query("advection_iterations", m_adv_iters);
-        if (m_adv_iters < 1)
-            amrex::Abort(
-                "The number of advection iterations cannot be less than 1");
+        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+            m_adv_iters > 0,
+            "The number of advection iterations cannot be less than 1");
     }
 
     auto& pde_mgr = m_sim.pde_manager();
