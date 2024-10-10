@@ -96,7 +96,7 @@ public:
     bool regrid_and_update();
     void pre_advance_stage1();
     void pre_advance_stage2();
-    void do_advance(int inonlin);
+    void do_advance(const int inonlin);
     void post_overset_work();
     void advance(int inonlin);
     void prescribe_advance();
