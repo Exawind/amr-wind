@@ -48,12 +48,17 @@ void SamplingContainer::initialize_particles(
     particle_counts.setVal(0);
     offsets.setVal(0);
 
+    amrex::Vector<amrex::Box> owned_boxes;
+    for (auto const idx : particle_counts.IndexArray()) {
+        owned_boxes.push_back(particle_counts.boxArray()[idx]);
+    }
+
     const auto& dxinv = m_mesh.Geom(lev).InvCellSizeArray();
     const auto& plo = m_mesh.Geom(lev).ProbLoArray();
     for (int iprobe = 0; iprobe < nprobes; iprobe++) {
         const auto& probe = samplers[iprobe];
         SampleLocType sample_locs;
-        probe->sampling_locations(sample_locs);
+        probe->sampling_locations(sample_locs, owned_boxes);
         const auto& locs = sample_locs.locations();
         const int npts = static_cast<int>(locs.size());
         amrex::Gpu::DeviceVector<amrex::RealVect> dlocs(npts);
@@ -128,12 +133,6 @@ void SamplingContainer::initialize_particles(
         AMREX_ASSERT(
             np_box ==
             particle_counts[mfi].sum<amrex::RunOn::Device>(box, 0, nprobes));
-    }
-
-    auto const& index_array = particle_counts.IndexArray();
-    amrex::Vector<amrex::Box> owned_boxes;
-    for (auto const idx : index_array) {
-        owned_boxes.push_back(particle_counts.boxArray()[idx]);
     }
 
     for (int iprobe = 0; iprobe < nprobes; iprobe++) {
