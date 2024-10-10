@@ -58,19 +58,21 @@ void SamplingContainer::initialize_particles(
     for (int iprobe = 0; iprobe < nprobes; iprobe++) {
         const auto& probe = samplers[iprobe];
         const auto total_num_points = probe->num_points();
-        SampleLocType sample_locs;
-        probe->sampling_locations(sample_locs, owned_boxes);
-        const auto& locs = sample_locs.locations();
-        const int npts = static_cast<int>(locs.size());
-        amrex::Gpu::DeviceVector<amrex::RealVect> dlocs(npts);
-
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, locs.begin(), locs.end(), dlocs.begin());
-        const auto* dpos = dlocs.data();
 
         // don't use openmp
         for (amrex::MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi) {
             const amrex::Box& box = mfi.tilebox();
+
+            SampleLocType sample_locs;
+            probe->sampling_locations(sample_locs, {box});
+            const auto& locs = sample_locs.locations();
+            const int npts = static_cast<int>(locs.size());
+            amrex::Gpu::DeviceVector<amrex::RealVect> dlocs(npts);
+
+            amrex::Gpu::copy(
+                amrex::Gpu::hostToDevice, locs.begin(), locs.end(),
+                dlocs.begin());
+            const auto* dpos = dlocs.data();
 
             // count the number of particles in each cell
             const auto& np_arr = particle_counts[mfi].array();
@@ -140,19 +142,6 @@ void SamplingContainer::initialize_particles(
         const auto& probe = samplers[iprobe];
         const auto total_num_points = probe->num_points();
         const auto probe_id = probe->id();
-        SampleLocType sample_locs;
-        probe->sampling_locations(sample_locs, owned_boxes);
-        const auto& locs = sample_locs.locations();
-        const int npts = static_cast<int>(locs.size());
-        amrex::Gpu::DeviceVector<amrex::RealVect> dlocs(npts);
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, locs.begin(), locs.end(), dlocs.begin());
-        const auto* p_dlocs = dlocs.data();
-        const auto& ids = sample_locs.ids();
-        amrex::Gpu::DeviceVector<amrex::Long> dids(npts);
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, ids.begin(), ids.end(), dids.begin());
-        const auto* p_dids = dids.data();
 
         // don't use openmp
         for (amrex::MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi) {
@@ -175,6 +164,21 @@ void SamplingContainer::initialize_particles(
 
             const amrex::Long nextid = ParticleType::NextID();
             ParticleType::NextID(nextid + np_probe);
+
+            SampleLocType sample_locs;
+            probe->sampling_locations(sample_locs, {box});
+            const auto& locs = sample_locs.locations();
+            const int npts = static_cast<int>(locs.size());
+            amrex::Gpu::DeviceVector<amrex::RealVect> dlocs(npts);
+            amrex::Gpu::copy(
+                amrex::Gpu::hostToDevice, locs.begin(), locs.end(),
+                dlocs.begin());
+            const auto* p_dlocs = dlocs.data();
+            const auto& ids = sample_locs.ids();
+            amrex::Gpu::DeviceVector<amrex::Long> dids(npts);
+            amrex::Gpu::copy(
+                amrex::Gpu::hostToDevice, ids.begin(), ids.end(), dids.begin());
+            const auto* p_dids = dids.data();
 
             auto* pstruct = ptile.GetArrayOfStructs()().data();
             amrex::ParallelFor(

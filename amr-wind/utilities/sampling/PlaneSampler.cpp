@@ -107,12 +107,12 @@ void PlaneSampler::sampling_locations(
     for (int k = 0; k < nplanes; ++k) {
         for (int j = 0; j < m_npts_dir[1]; ++j) {
             for (int i = 0; i < m_npts_dir[0]; ++i) {
-                amrex::RealVect loc;
-                for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-                    loc[d] = m_origin[d] + dx[d] * i + dy[d] * j +
-                             m_poffsets[k] * m_offset_vector[d];
-                }
                 for (const auto& box : boxes) {
+                    amrex::RealVect loc;
+                    for (int d = 0; d < AMREX_SPACEDIM; ++d) {
+                        loc[d] = m_origin[d] + dx[d] * i + dy[d] * j +
+                                 m_poffsets[k] * m_offset_vector[d];
+                    }
                     if (utils::contains(box, loc, plo, dxinv)) {
                         sample_locs.push_back(loc, idx);
                         break;
