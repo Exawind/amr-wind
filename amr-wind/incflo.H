@@ -134,7 +134,7 @@ public:
     void ComputeDt(bool explicit_diffusion);
     void ComputePrescribeDt();
 
-    void ApplyPredictor(bool incremental_projection = false, int inonlin = 0);
+    void ApplyPredictor(bool incremental_projection = false, const int inonlin = 0);
     void ApplyCorrector();
     void ApplyPrescribeStep();
 
