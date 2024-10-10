@@ -47,7 +47,7 @@ void incflo::pre_advance_stage2()
  *
  * \callgraph
  */
-void incflo::advance(int inonlin)
+void incflo::advance(const int inonlin)
 {
     BL_PROFILE("amr-wind::incflo::advance");
     if (inonlin == 0) {
