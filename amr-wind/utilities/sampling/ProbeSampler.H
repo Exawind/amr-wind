@@ -29,13 +29,13 @@ public:
     void check_bounds() override;
 
     //! Populate the vector with coordinates of the sampling locations
-    void sampling_locations(SampleLocType& /*sample_locs**/) const override;
+    void sampling_locations(SampleLocType& /*sample_locs*/) const override;
 
     //! Populate the vector with coordinates of the sampling locations inside
-    //! boxes
+    //! a box
     void sampling_locations(
-        SampleLocType& /*sample_locs**/,
-        const amrex::Vector<amrex::Box>& /*boxes*/) const override;
+        SampleLocType& /*sample_locs*/,
+        const amrex::Box& /*box*/) const override;
 
     void output_locations(SampleLocType& sample_locs) const override
     {

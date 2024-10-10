@@ -87,9 +87,9 @@ public:
     virtual void sampling_locations(SampleLocType&) const = 0;
 
     //! Populate the vector with coordinates of the sampling locations inside
-    //! boxes
-    virtual void sampling_locations(
-        SampleLocType&, const amrex::Vector<amrex::Box>&) const = 0;
+    //! a box
+    virtual void
+    sampling_locations(SampleLocType&, const amrex::Box&) const = 0;
 
     //! Check and fix the bounds of the sampler so the probes are in the domain
     virtual void check_bounds() = 0;

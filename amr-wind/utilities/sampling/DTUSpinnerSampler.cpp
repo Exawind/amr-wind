@@ -139,13 +139,13 @@ void DTUSpinnerSampler::sampling_locations(SampleLocType& sample_locs) const
 
     const int lev = 0;
     const auto domain = m_sim.mesh().Geom(lev).Domain();
-    sampling_locations(sample_locs, {domain});
+    sampling_locations(sample_locs, domain);
 
     AMREX_ALWAYS_ASSERT(sample_locs.locations().size() == num_points());
 }
 
 void DTUSpinnerSampler::sampling_locations(
-    SampleLocType& sample_locs, const amrex::Vector<amrex::Box>& boxes) const
+    SampleLocType& sample_locs, const amrex::Box& box) const
 {
     AMREX_ALWAYS_ASSERT(sample_locs.locations().empty());
 
@@ -169,11 +169,8 @@ void DTUSpinnerSampler::sampling_locations(
                 m_start[0 + offset] + i * dx[0],
                 m_start[1 + offset] + i * dx[1],
                 m_start[2 + offset] + i * dx[2])};
-            for (const auto& box : boxes) {
-                if (utils::contains(box, loc, plo, dxinv)) {
-                    sample_locs.push_back(loc, i + k * m_beam_points);
-                    break;
-                }
+            if (utils::contains(box, loc, plo, dxinv)) {
+                sample_locs.push_back(loc, i + k * m_beam_points);
             }
         }
     }

@@ -93,12 +93,12 @@ void ProbeSampler::sampling_locations(SampleLocType& sample_locs) const
 
     const int lev = 0;
     const auto domain = m_sim.mesh().Geom(lev).Domain();
-    sampling_locations(sample_locs, {domain});
+    sampling_locations(sample_locs, domain);
     AMREX_ALWAYS_ASSERT(sample_locs.locations().size() == num_points());
 }
 
 void ProbeSampler::sampling_locations(
-    SampleLocType& sample_locs, const amrex::Vector<amrex::Box>& boxes) const
+    SampleLocType& sample_locs, const amrex::Box& box) const
 {
     AMREX_ALWAYS_ASSERT(sample_locs.locations().empty());
 
@@ -109,11 +109,8 @@ void ProbeSampler::sampling_locations(
     for (int i = 0; i < m_npts; ++i) {
         const amrex::RealVect loc = {
             AMREX_D_DECL(probe_locs[i][0], probe_locs[i][1], probe_locs[i][2])};
-        for (const auto& box : boxes) {
-            if (utils::contains(box, loc, plo, dxinv)) {
-                sample_locs.push_back(loc, i);
-                break;
-            }
+        if (utils::contains(box, loc, plo, dxinv)) {
+            sample_locs.push_back(loc, i);
         }
     }
 }

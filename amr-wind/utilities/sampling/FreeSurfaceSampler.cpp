@@ -372,13 +372,13 @@ void FreeSurfaceSampler::sampling_locations(SampleLocType& sample_locs) const
 
     const int lev = 0;
     const auto domain = m_sim.mesh().Geom(lev).Domain();
-    sampling_locations(sample_locs, {domain});
+    sampling_locations(sample_locs, domain);
 
     AMREX_ALWAYS_ASSERT(sample_locs.locations().size() == num_points());
 }
 
 void FreeSurfaceSampler::sampling_locations(
-    SampleLocType& sample_locs, const amrex::Vector<amrex::Box>& boxes) const
+    SampleLocType& sample_locs, const amrex::Box& box) const
 {
     AMREX_ALWAYS_ASSERT(sample_locs.locations().empty());
 
@@ -393,11 +393,8 @@ void FreeSurfaceSampler::sampling_locations(
                 loc[m_gc0] = m_grid_locs[idx][0];
                 loc[m_gc1] = m_grid_locs[idx][1];
                 loc[m_coorddir] = m_out[idx * m_ninst + ni];
-                for (const auto& box : boxes) {
-                    if (utils::contains(box, loc, plo, dxinv)) {
-                        sample_locs.push_back(loc, idx * m_ninst + ni);
-                        break;
-                    }
+                if (utils::contains(box, loc, plo, dxinv)) {
+                    sample_locs.push_back(loc, idx * m_ninst + ni);
                 }
             }
             ++idx;

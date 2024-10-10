@@ -474,13 +474,13 @@ void RadarSampler::sampling_locations(SampleLocType& sample_locs) const
         static_cast<int>(
             amrex::Math::floor((m_fill_val - plo[2]) * dxinv[2]))));
     const amrex::Box box_containing_fill_val(fill_val_iv, dom_hi);
-    sampling_locations(sample_locs, {box_containing_fill_val});
+    sampling_locations(sample_locs, box_containing_fill_val);
 
     AMREX_ALWAYS_ASSERT(sample_locs.locations().size() == num_points());
 }
 
 void RadarSampler::sampling_locations(
-    SampleLocType& sample_locs, const amrex::Vector<amrex::Box>& boxes) const
+    SampleLocType& sample_locs, const amrex::Box& box) const
 {
     AMREX_ALWAYS_ASSERT(sample_locs.locations().empty());
 
@@ -492,11 +492,8 @@ void RadarSampler::sampling_locations(
             (m_radar_iter > 0) ? m_prior_cones[i][0] : m_fill_val,
             (m_radar_iter > 0) ? m_prior_cones[i][1] : m_fill_val,
             (m_radar_iter > 0) ? m_prior_cones[i][2] : m_fill_val)};
-        for (const auto& box : boxes) {
-            if (utils::contains(box, loc, plo, dxinv)) {
-                sample_locs.push_back(loc, i);
-                break;
-            }
+        if (utils::contains(box, loc, plo, dxinv)) {
+            sample_locs.push_back(loc, i);
         }
     }
 
@@ -505,11 +502,8 @@ void RadarSampler::sampling_locations(
         const amrex::RealVect loc = {AMREX_D_DECL(
             m_current_cones[i][0], m_current_cones[i][1],
             m_current_cones[i][2])};
-        for (const auto& box : boxes) {
-            if (utils::contains(box, loc, plo, dxinv)) {
-                sample_locs.push_back(loc, ioff);
-                break;
-            }
+        if (utils::contains(box, loc, plo, dxinv)) {
+            sample_locs.push_back(loc, ioff);
         }
     }
 }

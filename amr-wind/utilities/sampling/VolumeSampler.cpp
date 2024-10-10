@@ -72,13 +72,13 @@ void VolumeSampler::sampling_locations(SampleLocType& sample_locs) const
 
     const int lev = 0;
     const auto domain = m_sim.mesh().Geom(lev).Domain();
-    sampling_locations(sample_locs, {domain});
+    sampling_locations(sample_locs, domain);
 
     AMREX_ALWAYS_ASSERT(sample_locs.locations().size() == num_points());
 }
 
 void VolumeSampler::sampling_locations(
-    SampleLocType& sample_locs, const amrex::Vector<amrex::Box>& boxes) const
+    SampleLocType& sample_locs, const amrex::Box& box) const
 {
     AMREX_ALWAYS_ASSERT(sample_locs.locations().empty());
 
@@ -97,11 +97,8 @@ void VolumeSampler::sampling_locations(
                 const amrex::RealVect loc = {AMREX_D_DECL(
                     m_lo[0] + dx[0] * i, m_lo[1] + dx[1] * j,
                     m_lo[2] + dx[2] * k)};
-                for (const auto& box : boxes) {
-                    if (utils::contains(box, loc, plo, dxinv)) {
-                        sample_locs.push_back(loc, idx);
-                        break;
-                    }
+                if (utils::contains(box, loc, plo, dxinv)) {
+                    sample_locs.push_back(loc, idx);
                 }
                 ++idx;
             }
