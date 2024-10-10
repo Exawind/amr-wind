@@ -1,0 +1,14 @@
+.. meta::6c1555f9e9c7cac129dfcce41ab8dfe8ce3e5cadebfd04e5ace6dd3047454f664b301c7648a550c8e880c1c9f7e1b5c50069aaa1c6f33a8162d95ba4e07f005c
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/PDETraits.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/PDETraits.H File Reference
+=========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _p_d_e_traits_8_h.html

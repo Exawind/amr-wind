@@ -1,0 +1,14 @@
+.. meta::a2cda1f36b020fe85e1aeefce286435888e918b165f0b0a4cf2ca63a833455dd23e0cc0b22f4e0d4ab2c117e1e4b277a62256b6ea6a73f28a353188d440420b8
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::FieldRefinement Class Reference
+
+FieldRefinement Class Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_field_refinement.html

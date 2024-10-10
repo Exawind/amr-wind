@@ -1,0 +1,14 @@
+.. meta::8e4b4e441e00bf2848b1854526e7b6657fb1d881a72e6d8db30f5b6c0391b7c7c1e12df77f6fa8aed0bf070396463842a336c4446b11879eada3d3455484fd7c
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::CFDSim Class Reference
+
+CFDSim Class Reference
+======================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_c_f_d_sim.html

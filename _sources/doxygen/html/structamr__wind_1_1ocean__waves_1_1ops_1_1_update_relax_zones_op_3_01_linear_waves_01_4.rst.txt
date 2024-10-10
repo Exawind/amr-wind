@@ -1,0 +1,14 @@
+.. meta::eb2ffd492dab988e52d18edde11de7ee6d6c3ed173abdb1e5f69445563cf371ef47c7a7ff9228158b419da3d81f0393138429607260e04c95057462adc9b875c
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ocean_waves::ops::UpdateRelaxZonesOp&lt; LinearWaves &gt; Struct Reference
+
+UpdateRelaxZonesOp&lt; LinearWaves &gt; Struct Reference
+========================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ocean__waves_1_1ops_1_1_update_relax_zones_op_3_01_linear_waves_01_4.html

@@ -1,0 +1,14 @@
+.. meta::92e4c73b768f5e661201f023be191270f280e4b795bc567a57e70c057d4fdf72517ef4c11622dc7558658ac4f980a47a4c35a9cf075da8bfa0ee28d102264ace
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::ICNS Struct Reference
+
+ICNS Struct Reference
+=====================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_i_c_n_s.html

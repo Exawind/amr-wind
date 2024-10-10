@@ -1,0 +1,14 @@
+.. meta::93b19812d5122620f11aa1e40e7fe247acebb500d9d4c85311ac5fc0bb9c1b235cc0f37ee7af7230d8db92a02b0f26f656a76635a9bf66d434780564db9ec8aa
+
+:orphan:
+
+.. title:: AMR-Wind API: Boundary conditions management
+
+Boundary conditions management
+==============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__field__bc.html

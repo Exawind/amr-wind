@@ -1,0 +1,14 @@
+.. meta::646ca13f7cf99639928dc8b2fe118446829b6aad02ca5dff21f35a700e44e74b772e9a8d54e6eac691a16b478da9dfc627a8e4f001d5903cb0322ab8e0f36b49
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::vs Namespace Reference
+
+vs Namespace Reference
+======================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1vs.html

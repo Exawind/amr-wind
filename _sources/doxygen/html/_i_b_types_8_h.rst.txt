@@ -1,0 +1,14 @@
+.. meta::77f7714bda7a2a217bb70d041a573e5ce12b81fa79aaec3a91836ed37f3e5f3377558c8e7717b193171162750fd453292f44af8c125cb31d510a28437f2dd603
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/immersed_boundary/IBTypes.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/immersed\_boundary/IBTypes.H File Reference
+========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _i_b_types_8_h.html

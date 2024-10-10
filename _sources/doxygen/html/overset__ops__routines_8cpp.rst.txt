@@ -1,0 +1,14 @@
+.. meta::5a8eccb441a940e4daab0c064b6aba0a2be4242ca152152f9f94469039bfd3c71beaedaee1ec9f27b14674d079f8aa13b687dbae411475ba5d249e10134ba6d9
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/overset/overset_ops_routines.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/overset/overset\_ops\_routines.cpp File Reference
+==============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: overset__ops__routines_8cpp.html

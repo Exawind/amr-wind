@@ -1,0 +1,31 @@
+<map id="amr_wind::turbulence::TurbulenceModel" name="amr_wind::turbulence::TurbulenceModel">
+<area shape="rect" id="Node000001" title=" " alt="" coords="613,133,776,173"/>
+<area shape="rect" id="Node000004" href="$classamr__wind_1_1turbulence_1_1_turb_model.html" title=" " alt="" coords="825,133,1012,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="790,151,825,151,825,156,790,156"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="339,133,564,173"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="578,151,613,151,613,156,578,156"/>
+<area shape="rect" id="Node000003" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="5,133,157,173"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="171,151,338,151,338,156,171,156"/>
+<area shape="rect" id="Node000005" href="$classamr__wind_1_1turbulence_1_1_laminar.html" title=" " alt="" coords="1084,101,1257,141"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="1025,137,1083,130,1084,135,1026,142"/>
+<area shape="rect" id="Node000006" href="$classamr__wind_1_1turbulence_1_1_turb_model_base.html" title=" " alt="" coords="1061,165,1280,205"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="1026,164,1061,169,1061,174,1025,170"/>
+<area shape="rect" id="Node000007" href="$classamr__wind_1_1turbulence_1_1_a_m_d.html" title=" " alt="" coords="1353,5,1516,45"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="1272,156,1278,151,1296,129,1302,105,1309,80,1328,55,1352,40,1355,45,1331,59,1314,82,1307,106,1301,131,1282,155,1275,160"/>
+<area shape="rect" id="Node000008" href="$classamr__wind_1_1turbulence_1_1_a_m_d_no_therm.html" title=" " alt="" coords="1329,69,1540,109"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="1261,158,1279,151,1303,135,1328,119,1358,107,1360,112,1331,124,1306,140,1281,156,1263,163"/>
+<area shape="rect" id="Node000009" href="$classamr__wind_1_1turbulence_1_1_k_omega_s_s_t.html" title=" " alt="" coords="1335,133,1534,173"/>
+<area shape="poly" id="edge8_Node000006_Node000009" title=" " alt="" coords="1293,168,1335,163,1336,168,1294,173"/>
+<area shape="rect" id="Node000011" href="$classamr__wind_1_1turbulence_1_1_kosovic.html" title=" " alt="" coords="1349,197,1520,237"/>
+<area shape="poly" id="edge10_Node000006_Node000011" title=" " alt="" coords="1294,198,1349,204,1349,210,1293,203"/>
+<area shape="rect" id="Node000012" href="$classamr__wind_1_1turbulence_1_1_one_eq_ksgs.html" title=" " alt="" coords="1338,261,1531,301"/>
+<area shape="poly" id="edge11_Node000006_Node000012" title=" " alt="" coords="1232,208,1330,247,1366,259,1364,264,1328,252,1230,213"/>
+<area shape="rect" id="Node000015" href="$classamr__wind_1_1turbulence_1_1_smagorinsky.html" title=" " alt="" coords="1333,325,1537,365"/>
+<area shape="poly" id="edge14_Node000006_Node000015" title=" " alt="" coords="1203,213,1260,263,1294,289,1331,311,1357,323,1355,328,1328,316,1291,293,1256,267,1199,217"/>
+<area shape="rect" id="Node000010" href="$classamr__wind_1_1turbulence_1_1_k_omega_s_s_t_i_d_d_e_s.html" title=" " alt="" coords="1589,133,1828,173"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="1548,151,1589,151,1589,156,1548,156"/>
+<area shape="rect" id="Node000013" href="$classamr__wind_1_1turbulence_1_1_one_eq_ksgs_m84.html" title=" " alt="" coords="1598,229,1819,269"/>
+<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="1545,266,1597,260,1598,265,1546,271"/>
+<area shape="rect" id="Node000014" href="$classamr__wind_1_1turbulence_1_1_one_eq_ksgs_s94.html" title=" " alt="" coords="1600,293,1817,333"/>
+<area shape="poly" id="edge13_Node000012_Node000014" title=" " alt="" coords="1546,292,1600,298,1599,303,1545,297"/>
+</map>

@@ -1,0 +1,14 @@
+.. meta::0e0cb4e67b0ea750df75999512e3cf20ce7493f8e2fc85e79d4ac32e6a88244d01999f2ec43ca61c4128cedd77836316a49f6127253291daa049520f8e02643b
+
+:orphan:
+
+.. title:: AMR-Wind API: Physics models
+
+Physics models
+==============
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__physics.html

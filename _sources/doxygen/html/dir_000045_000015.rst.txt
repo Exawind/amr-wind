@@ -1,0 +1,14 @@
+.. meta::22ba1ccdb0b88703127795b9946feb9ecf70a1d52e2d7fb6a775fd2a6f3b7ec44ccbaf1bfad4e1190b024555e8b2a59a552b9be0a5d964ab863c6a5c1274fc53
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/turbulence -&gt; equation_systems Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/turbulence -&gt; equation\_systems Relation
+========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000045_000015.html

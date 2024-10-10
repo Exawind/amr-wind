@@ -1,0 +1,14 @@
+.. meta::7b68f9a2c378d51b5929a908e210ed87a1609e8229a3e7e126f8fa6eade90223f3a68b5eb1ddaa49e5e35b1261b23b8fa1446e5ff8df8ea384c48276e46e8240
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::burggraf::BurggrafFlow Class Reference
+
+BurggrafFlow Class Reference
+============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1burggraf_1_1_burggraf_flow.html

@@ -1,0 +1,14 @@
+.. meta::8e6a092d77f8067f7742638b364945f2f50bbaec0fc530ae9b31caca44ef7f60379ba61f9e136abea9938ea51f9c4bd2bc8698afc2eab8b6a0a3c4141bcda254
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/helics.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/helics.H Source File
+=================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: helics_8_h_source.html
