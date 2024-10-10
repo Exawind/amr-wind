@@ -183,7 +183,7 @@ struct UpdateRelaxZonesOp<StokesWaves>
 
                         phi(i, j, k) = eta - z;
                         const amrex::Real cell_length_2D =
-                            std::sqrt(std::pow(dx[0], 2) + std::pow(dx[2], 2));
+                            std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
                         if (phi(i, j, k) + cell_length_2D >= 0) {
                             // Wave velocity within a cell of interface
                             vel(i, j, k, 0) = u_w;
