@@ -310,7 +310,7 @@ void incflo::Evolve()
     }
 }
 
-void incflo::do_advance(int inonlin)
+void incflo::do_advance(const int inonlin)
 {
     if (m_sim.has_overset()) {
         m_ovst_ops.pre_advance_work();
