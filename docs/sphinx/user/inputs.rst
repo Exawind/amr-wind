@@ -79,6 +79,7 @@ This section documents the parameters available within each section.
    inputs_transport.rst
    inputs_turbulence.rst
    inputs_Momentum_Sources.rst
+   inputs_Temperature_Sources.rst
    inputs_ABL.rst
    inputs_ABL_meso_forcing.rst
    inputs_SyntheticTurbulence.rst
