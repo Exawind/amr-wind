@@ -179,12 +179,4 @@ Current development
 
 * Temporal and spatial varying MMC forcing
 
-* non-uniform roughness length, surface flux and temperature 
 
-* One-equation RANS model with wall function and stratification support 
-
-* Complex terrain
-
-   * Better terrain representation with embedded boundary support 
-
-   * Support tools for making case creation easy 
