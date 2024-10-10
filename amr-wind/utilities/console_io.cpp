@@ -216,7 +216,7 @@ void print_tpls(std::ostream& out)
 }
 
 void print_nonlinear_residual(
-    CFDSim& sim, ScratchField& vel_diff, ScratchField& vel_star)
+    const CFDSim& sim, ScratchField& vel_diff, const ScratchField& vel_star)
 {
     const int nlevels = sim.repo().num_active_levels();
     const auto& mesh = sim.mesh();
