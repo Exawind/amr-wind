@@ -170,7 +170,7 @@ void incflo::advance(const int inonlin)
  *  <li> \ref incflo::ApplyProjection "Apply projection"
  *  </ol>
  */
-void incflo::ApplyPredictor(bool incremental_projection, int inonlin)
+void incflo::ApplyPredictor(bool incremental_projection, const int inonlin)
 {
     BL_PROFILE("amr-wind::incflo::ApplyPredictor");
     // We use the new time value for things computed on the "*" state
