@@ -902,11 +902,6 @@ void ABLBoundaryPlane::populate_data(
             amrex::Abort("No inflow data at this level.");
         }
 
-        if (ori.isHigh()) {
-            amrex::Warning(
-                "We typically don't inflow boundary planes on the high side.");
-        }
-
         const size_t nc = mfab.nComp();
 
 #ifdef AMREX_USE_OMP
