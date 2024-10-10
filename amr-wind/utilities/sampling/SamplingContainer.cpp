@@ -57,6 +57,7 @@ void SamplingContainer::initialize_particles(
     const auto& plo = m_mesh.Geom(lev).ProbLoArray();
     for (int iprobe = 0; iprobe < nprobes; iprobe++) {
         const auto& probe = samplers[iprobe];
+        const auto total_num_points = probe->num_points();
         SampleLocType sample_locs;
         probe->sampling_locations(sample_locs, owned_boxes);
         const auto& locs = sample_locs.locations();
@@ -90,7 +91,7 @@ void SamplingContainer::initialize_particles(
                     }
                 });
         }
-        AMREX_ALWAYS_ASSERT(particle_counts.sum(iprobe) == probe->num_points());
+        AMREX_ALWAYS_ASSERT(particle_counts.sum(iprobe) == total_num_points);
     }
 
     // compute the offsets and size the particle tiles
@@ -137,6 +138,7 @@ void SamplingContainer::initialize_particles(
 
     for (int iprobe = 0; iprobe < nprobes; iprobe++) {
         const auto& probe = samplers[iprobe];
+        const auto total_num_points = probe->num_points();
         const auto probe_id = probe->id();
         SampleLocType sample_locs;
         probe->sampling_locations(sample_locs, owned_boxes);
@@ -203,7 +205,8 @@ void SamplingContainer::initialize_particles(
                                      ++idim) {
                                     pp.pos(idim) = loc[idim];
                                 }
-                                pp.idata(IIx::uid) = ip + npts * iprobe;
+                                pp.idata(IIx::uid) =
+                                    p_dids[ip] + total_num_points * iprobe;
                                 pp.idata(IIx::sid) = probe_id;
                                 pp.idata(IIx::nid) =
                                     static_cast<int>(p_dids[ip]);
