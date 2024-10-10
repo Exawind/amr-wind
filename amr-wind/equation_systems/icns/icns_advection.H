@@ -192,7 +192,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
             // if state is NPH, then n and n+1 are known, and only
             // spatial extrapolation is performed
-            const amrex::Real dt_extrap = (fstate == FieldState::NPH) ? 0.0 : dt;
+            const amrex::Real dt_extrap =
+                (fstate == FieldState::NPH) ? 0.0 : dt;
             for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
                 HydroUtils::ExtrapVelToFaces(
                     dof_field(lev), src_term(lev), u_mac(lev), v_mac(lev),
