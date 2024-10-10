@@ -282,11 +282,9 @@ void incflo::ApplyPredictor(bool incremental_projection, const int inonlin)
     }
 
     // Extrapolate and apply MAC projection for advection velocities
-    if (inonlin == 0) {
-        icns().pre_advection_actions(amr_wind::FieldState::Old);
-    } else {
-        icns().pre_advection_actions(amr_wind::FieldState::NPH);
-    }
+    const auto fstate_preadv =
+        (inonlin == 0) ? amr_wind::FieldState::Old : amr_wind::FieldState::NPH;
+    icns().pre_advection_actions(fstate_preadv);
 
     // For scalars only first
     // *************************************************************************************
@@ -354,11 +352,6 @@ void incflo::ApplyPredictor(bool incremental_projection, const int inonlin)
     }
 
     // With scalars computed, compute advection of momentum
-    // if (inonlin == 0) {
-    //    icns().compute_advection_term(amr_wind::FieldState::Old);
-    //} else {
-    //    icns().compute_advection_term(amr_wind::FieldState::NPH);
-    //}
     const auto fstate =
         (inonlin == 0) ? amr_wind::FieldState::Old : amr_wind::FieldState::NPH;
     icns().compute_advection_term(fstate);
