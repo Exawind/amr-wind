@@ -415,7 +415,7 @@ void incflo::ApplyPredictor(bool incremental_projection, const int inonlin)
         PrintMaxVelLocations("after nodal projection");
     }
     // ScratchField to store the old np1
-    if (inonlin > 0) {
+    if (inonlin > 0 && m_verbose > 0) {
         auto vel_np1_old = m_repo.create_scratch_field(
             "vel_np1_old", AMREX_SPACEDIM, 1, amr_wind::FieldLoc::CELL);
 
