@@ -1082,7 +1082,7 @@ bool ABLBoundaryPlane::box_intersects_boundary(
     const int normal = ori.coordDir();
     amrex::IntVect plo(domBox.loVect());
     amrex::IntVect phi(domBox.hiVect());
-    plo[normal] = ori.isHigh() ? domBox.loVect()[normal] : 0;
+    plo[normal] = ori.isHigh() ? domBox.hiVect()[normal] : 0;
     phi[normal] = ori.isHigh() ? domBox.hiVect()[normal] : 0;
     const amrex::Box pbx(plo, phi);
     const auto& intersection = bx & pbx;
