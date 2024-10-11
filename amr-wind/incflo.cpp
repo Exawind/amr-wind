@@ -276,8 +276,9 @@ void incflo::Evolve()
 
         amrex::Real time1 = amrex::ParallelDescriptor::second();
         // Advance to time t + dt
-        for (int inonlin = 0; inonlin < m_adv_iters; ++inonlin)
-            do_advance(inonlin);
+        for (int iadvection_iteration = 0; iadvection_iteration < m_adv_iters;
+             ++iadvection_iteration)
+            do_advance(iadvection_iteration);
 
         amrex::Print() << std::endl;
         amrex::Real time2 = amrex::ParallelDescriptor::second();
@@ -310,17 +311,17 @@ void incflo::Evolve()
     }
 }
 
-void incflo::do_advance(const int inonlin)
+void incflo::do_advance(const int ifixed_point_iteration)
 {
     if (m_sim.has_overset()) {
         m_ovst_ops.pre_advance_work();
     }
-    if (m_prescribe_vel && inonlin == 0) {
+    if (m_prescribe_vel && ifixed_point_iteration == 0) {
         prescribe_advance();
     } else {
-        amrex::Print() << "Iteration " << inonlin
+        amrex::Print() << "Iteration " << ifixed_point_iteration
                        << " in advection iteration loop" << std::endl;
-        advance(inonlin);
+        advance(ifixed_point_iteration);
     }
     if (m_sim.has_overset()) {
         m_ovst_ops.post_advance_work();

@@ -96,7 +96,7 @@ public:
     bool regrid_and_update();
     void pre_advance_stage1();
     void pre_advance_stage2();
-    void do_advance(const int inonlin);
+    void do_advance(const int ifixed_point_iteration);
     void advance(int inonlin);
     void prescribe_advance();
     void post_advance_work();
@@ -133,8 +133,9 @@ public:
     void ComputeDt(bool explicit_diffusion);
     void ComputePrescribeDt();
 
-    void
-    ApplyPredictor(bool incremental_projection = false, const int inonlin = 0);
+    void ApplyPredictor(
+        bool incremental_projection = false,
+        const int ifixed_point_iteration = 0);
     void ApplyCorrector();
     void ApplyPrescribeStep();
 
