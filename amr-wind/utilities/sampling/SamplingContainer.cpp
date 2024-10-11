@@ -48,14 +48,17 @@ void SamplingContainer::initialize_particles(
     for (amrex::MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi) {
         const amrex::Box& box = mfi.tilebox();
 
-        amrex::Long np_box = 0;
+        int np_box = 0;
+        amrex::Vector<SampleLocType> vec_sample_locs(nprobes);
         for (int iprobe = 0; iprobe < nprobes; iprobe++) {
             const auto& probe = samplers[iprobe];
 
             SampleLocType sample_locs;
             probe->sampling_locations(sample_locs, {box});
             const auto& locs = sample_locs.locations();
-            np_box += static_cast<amrex::Long>(locs.size());
+            const int npts = static_cast<int>(locs.size());
+            np_box += static_cast<int>(npts);
+            vec_sample_locs[iprobe] = sample_locs;
         }
 
         const int grid_id = mfi.index();
@@ -70,8 +73,7 @@ void SamplingContainer::initialize_particles(
         int offset = 0;
         for (int iprobe = 0; iprobe < nprobes; iprobe++) {
             const auto& probe = samplers[iprobe];
-            SampleLocType sample_locs;
-            probe->sampling_locations(sample_locs, {box});
+            auto sample_locs = vec_sample_locs[iprobe];
             const auto& locs = sample_locs.locations();
             const int npts = static_cast<int>(locs.size());
             if (npts == 0) {
