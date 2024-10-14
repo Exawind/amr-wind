@@ -276,9 +276,10 @@ void incflo::Evolve()
 
         amrex::Real time1 = amrex::ParallelDescriptor::second();
         // Advance to time t + dt
-        for (int iadvection_iteration = 0; iadvection_iteration < m_adv_iters;
-             ++iadvection_iteration)
-            do_advance(iadvection_iteration);
+        for (int ifixed_point_iteration = 0;
+             ifixed_point_iteration < m_fixed_pt_iters;
+             ++ifixed_point_iteration)
+            do_advance(ifixed_point_iteration);
 
         amrex::Print() << std::endl;
         amrex::Real time2 = amrex::ParallelDescriptor::second();
@@ -319,8 +320,8 @@ void incflo::do_advance(const int ifixed_point_iteration)
     if (m_prescribe_vel && ifixed_point_iteration == 0) {
         prescribe_advance();
     } else {
-        amrex::Print() << "Iteration " << ifixed_point_iteration
-                       << " in advection iteration loop" << std::endl;
+        amrex::Print() << "Fixed point iteration " << ifixed_point_iteration
+                       << std::endl;
         advance(ifixed_point_iteration);
     }
     if (m_sim.has_overset()) {
@@ -378,10 +379,10 @@ void incflo::init_physics_and_pde()
         }
 
         // Get number of advection iterations
-        pp.query("advection_iterations", m_adv_iters);
+        pp.query("fixed_point_iterations", m_fixed_pt_iters);
         AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-            m_adv_iters > 0,
-            "The number of advection iterations cannot be less than 1");
+            m_fixed_pt_iters > 0,
+            "The number of fixed point iterations cannot be less than 1");
     }
 
     auto& pde_mgr = m_sim.pde_manager();
