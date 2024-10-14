@@ -47,15 +47,20 @@ void incflo::pre_advance_stage2()
  *
  * \callgraph
  */
-void incflo::advance()
+void incflo::advance(const int fixed_point_iteration)
 {
     BL_PROFILE("amr-wind::incflo::advance");
+    if (fixed_point_iteration == 0) {
+        m_sim.pde_manager().advance_states();
+    }
 
-    m_sim.pde_manager().advance_states();
-
-    ApplyPredictor();
+    ApplyPredictor(false, fixed_point_iteration);
 
     if (!m_use_godunov) {
+        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+            fixed_point_iteration == 0,
+            "Fixed point iterations are not supported for MOL");
+
         ApplyCorrector();
     }
 }
@@ -165,10 +170,10 @@ void incflo::advance()
  *  <li> \ref incflo::ApplyProjection "Apply projection"
  *  </ol>
  */
-void incflo::ApplyPredictor(bool incremental_projection)
+void incflo::ApplyPredictor(
+    const bool incremental_projection, const int fixed_point_iteration)
 {
     BL_PROFILE("amr-wind::incflo::ApplyPredictor");
-
     // We use the new time value for things computed on the "*" state
     Real new_time = m_time.new_time();
 
@@ -189,6 +194,16 @@ void incflo::ApplyPredictor(bool incremental_projection)
     auto& density_new = density();
     const auto& density_old = density_new.state(amr_wind::FieldState::Old);
     auto& density_nph = density_new.state(amr_wind::FieldState::NPH);
+
+    if (fixed_point_iteration > 0) {
+        icns().fields().field.fillpatch(m_time.current_time());
+        // Get n + 1/2 velocity
+        amr_wind::field_ops::lincomb(
+            icns().fields().field.state(amr_wind::FieldState::NPH), 0.5,
+            icns().fields().field.state(amr_wind::FieldState::Old), 0, 0.5,
+            icns().fields().field, 0, 0, icns().fields().field.num_comp(),
+            icns().fields().field.num_grow());
+    }
 
     // *************************************************************************************
     // Compute viscosity / diffusive coefficients
@@ -268,7 +283,10 @@ void incflo::ApplyPredictor(bool incremental_projection)
     }
 
     // Extrapolate and apply MAC projection for advection velocities
-    icns().pre_advection_actions(amr_wind::FieldState::Old);
+    const auto fstate_preadv = (fixed_point_iteration == 0)
+                                   ? amr_wind::FieldState::Old
+                                   : amr_wind::FieldState::NPH;
+    icns().pre_advection_actions(fstate_preadv);
 
     // For scalars only first
     // *************************************************************************************
@@ -336,11 +354,14 @@ void incflo::ApplyPredictor(bool incremental_projection)
     }
 
     // With scalars computed, compute advection of momentum
-    icns().compute_advection_term(amr_wind::FieldState::Old);
+    const auto fstate = (fixed_point_iteration == 0)
+                            ? amr_wind::FieldState::Old
+                            : amr_wind::FieldState::NPH;
+    icns().compute_advection_term(fstate);
 
     // *************************************************************************************
-    // Define (or if use_godunov, re-define) the forcing terms and viscous terms
-    // independently for the right hand side, without 1/rho term
+    // Define (or if use_godunov, re-define) the forcing terms and viscous
+    // terms independently for the right hand side, without 1/rho term
     // *************************************************************************************
     icns().compute_source_term(amr_wind::FieldState::NPH);
     icns().compute_diffusion_term(amr_wind::FieldState::Old);
@@ -397,8 +418,25 @@ void incflo::ApplyPredictor(bool incremental_projection)
     if (m_verbose > 2) {
         PrintMaxVelLocations("after nodal projection");
     }
-}
+    // ScratchField to store the old np1
+    if (fixed_point_iteration > 0 && m_verbose > 0) {
+        auto vel_np1_old = m_repo.create_scratch_field(
+            "vel_np1_old", AMREX_SPACEDIM, 1, amr_wind::FieldLoc::CELL);
 
+        auto vel_diff = m_repo.create_scratch_field(
+            "vel_diff", AMREX_SPACEDIM, 1, amr_wind::FieldLoc::CELL);
+        // lincomb to get old np1
+        amr_wind::field_ops::lincomb(
+            (*vel_np1_old), -1.0,
+            icns().fields().field.state(amr_wind::FieldState::Old), 0, 2,
+            icns().fields().field.state(amr_wind::FieldState::NPH), 0, 0,
+            icns().fields().field.num_comp(), 1);
+
+        amr_wind::io::print_nonlinear_residual(m_sim, *vel_diff, *vel_np1_old);
+        vel_np1_old.reset();
+        vel_diff.reset();
+    }
+}
 //
 // Apply corrector:
 //

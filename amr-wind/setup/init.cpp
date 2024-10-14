@@ -103,7 +103,7 @@ void incflo::InitialIterations()
             amrex::Print() << "In initial_iterations: iter = " << iter << "\n";
         }
 
-        ApplyPredictor(true);
+        ApplyPredictor(true, 0);
 
         {
             auto& vel = icns().fields().field;
