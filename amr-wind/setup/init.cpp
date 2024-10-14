@@ -29,7 +29,7 @@ void incflo::CheckAndSetUpDryRun()
     // Zero time steps, write plotfile and not checkpoint
     {
         ParmParse pp("time");
-        pp.add("max_step",(int)0);
+        pp.add("max_step", (int)0);
         pp.add("plot_interval", (int)1);
         pp.add("checkpoint_inteval", (int)-1);
     }
