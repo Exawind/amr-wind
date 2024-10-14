@@ -96,8 +96,8 @@ public:
     bool regrid_and_update();
     void pre_advance_stage1();
     void pre_advance_stage2();
-    void do_advance(const int ifixed_point_iteration);
-    void advance(int inonlin);
+    void do_advance(const int fixed_point_iteration);
+    void advance(const int fixed_point_iteration);
     void prescribe_advance();
     void post_advance_work();
 
@@ -134,8 +134,8 @@ public:
     void ComputePrescribeDt();
 
     void ApplyPredictor(
-        bool incremental_projection = false,
-        const int ifixed_point_iteration = 0);
+        const bool incremental_projection = false,
+        const int fixed_point_iteration = 0);
     void ApplyCorrector();
     void ApplyPrescribeStep();
 
@@ -175,7 +175,7 @@ private:
     bool m_prescribe_vel = false;
 
     // Fixed point iterations every timestep
-    int m_fixed_pt_iters{1};
+    int m_fixed_point_iterations{1};
 
     //! number of cells on all levels including covered cells
     amrex::Long m_cell_count{-1};

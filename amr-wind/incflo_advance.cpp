@@ -47,19 +47,19 @@ void incflo::pre_advance_stage2()
  *
  * \callgraph
  */
-void incflo::advance(const int ifixed_point_iteration)
+void incflo::advance(const int fixed_point_iteration)
 {
     BL_PROFILE("amr-wind::incflo::advance");
-    if (ifixed_point_iteration == 0) {
+    if (fixed_point_iteration == 0) {
         m_sim.pde_manager().advance_states();
     }
 
-    ApplyPredictor(false, ifixed_point_iteration);
+    ApplyPredictor(false, fixed_point_iteration);
 
     if (!m_use_godunov) {
         AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-            ifixed_point_iteration == 0,
-            "Advection iterations are not supported for MOL");
+            fixed_point_iteration == 0,
+            "Fixed point iterations are not supported for MOL");
 
         ApplyCorrector();
     }
@@ -171,7 +171,7 @@ void incflo::advance(const int ifixed_point_iteration)
  *  </ol>
  */
 void incflo::ApplyPredictor(
-    bool incremental_projection, const int ifixed_point_iteration)
+    const bool incremental_projection, const int fixed_point_iteration)
 {
     BL_PROFILE("amr-wind::incflo::ApplyPredictor");
     // We use the new time value for things computed on the "*" state
@@ -195,7 +195,7 @@ void incflo::ApplyPredictor(
     const auto& density_old = density_new.state(amr_wind::FieldState::Old);
     auto& density_nph = density_new.state(amr_wind::FieldState::NPH);
 
-    if (ifixed_point_iteration > 0) {
+    if (fixed_point_iteration > 0) {
         icns().fields().field.fillpatch(m_time.current_time());
         // Get n + 1/2 velocity
         amr_wind::field_ops::lincomb(
@@ -283,7 +283,7 @@ void incflo::ApplyPredictor(
     }
 
     // Extrapolate and apply MAC projection for advection velocities
-    const auto fstate_preadv = (ifixed_point_iteration == 0)
+    const auto fstate_preadv = (fixed_point_iteration == 0)
                                    ? amr_wind::FieldState::Old
                                    : amr_wind::FieldState::NPH;
     icns().pre_advection_actions(fstate_preadv);
@@ -354,7 +354,7 @@ void incflo::ApplyPredictor(
     }
 
     // With scalars computed, compute advection of momentum
-    const auto fstate = (ifixed_point_iteration == 0)
+    const auto fstate = (fixed_point_iteration == 0)
                             ? amr_wind::FieldState::Old
                             : amr_wind::FieldState::NPH;
     icns().compute_advection_term(fstate);
@@ -419,7 +419,7 @@ void incflo::ApplyPredictor(
         PrintMaxVelLocations("after nodal projection");
     }
     // ScratchField to store the old np1
-    if (ifixed_point_iteration > 0 && m_verbose > 0) {
+    if (fixed_point_iteration > 0 && m_verbose > 0) {
         auto vel_np1_old = m_repo.create_scratch_field(
             "vel_np1_old", AMREX_SPACEDIM, 1, amr_wind::FieldLoc::CELL);
 
