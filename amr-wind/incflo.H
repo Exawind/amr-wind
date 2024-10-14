@@ -174,6 +174,9 @@ private:
     // Prescribe advection velocity
     bool m_prescribe_vel = false;
 
+    // Perform a dry run (0 steps, output plotfile)
+    bool m_dry_run = false;
+
     // Fixed point iterations every timestep
     int m_fixed_point_iterations{1};
 
@@ -204,6 +207,7 @@ private:
     //
     ///////////////////////////////////////////////////////////////////////////
 
+    void CheckAndSetUpDryRun();
     void ReadParameters();
     void InitialProjection();
     void InitialIterations();

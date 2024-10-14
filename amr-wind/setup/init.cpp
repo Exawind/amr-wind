@@ -10,6 +10,38 @@
 
 using namespace amrex;
 
+void incflo::CheckAndSetUpDryRun()
+{
+    // Check if dry run is requested; exit if not
+    {
+        ParmParse pp("incflo");
+        pp.query("dry_run", m_dry_run);
+        if (!m_dry_run) {
+            return;
+        }
+    }
+    // Disable additional computations associated with initialization
+    {
+        ParmParse pp("incflo");
+        pp.add("initial_iterations", (int)0);
+        pp.add("do_initial_proj", (bool)false);
+    }
+    // Zero time steps, write plotfile and not checkpoint
+    {
+        ParmParse pp("time");
+        pp.add("max_step", (int)0);
+        pp.add("plot_interval", (int)1);
+        pp.add("checkpoint_inteval", (int)-1);
+    }
+    // Give prefix to plotfile
+    {
+        ParmParse pp("io");
+        std::string current_plt{"plt"};
+        pp.query("plot_file", current_plt);
+        pp.add("plot_file", (std::string) "dry_run_" + current_plt);
+    }
+}
+
 /** Parse the input file and populate parameters
  */
 void incflo::ReadParameters()
