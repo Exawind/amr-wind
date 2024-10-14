@@ -144,6 +144,10 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
         // Get copy of verbose
         pp.query("verbose", m_verbose);
+
+        amrex::ParmParse pp_eq("ICNS");
+        pp_eq.query(
+            "allow_inflow_at_pressure_outflow", m_allow_inflow_on_outflow);
     }
 
     void preadvect(
@@ -367,7 +371,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                 dof_field, src_term, rho_o, u_mac, v_mac, w_mac,
                 dof_field.bcrec(), dof_field.bcrec_device().data(),
                 rho_o.bcrec(), rho_o.bcrec_device().data(), dt, mflux_scheme,
-                godunov_use_forces_in_trans);
+                m_allow_inflow_on_outflow, godunov_use_forces_in_trans);
         }
 
         amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> fluxes(
