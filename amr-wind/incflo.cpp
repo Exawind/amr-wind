@@ -23,8 +23,11 @@ incflo::incflo()
     // constructor. No valid BoxArray and DistributionMapping have been defined.
     // But the arrays for them have been resized.
 
+    // Check if dry run is requested and set up if so
+    CheckAndSetUpDryRun();
+
+    // Read top-level parameters using ParmParse
     m_time.parse_parameters();
-    // Read inputs file using ParmParse
     ReadParameters();
 
     init_physics_and_pde();
@@ -124,7 +127,8 @@ void incflo::prepare_for_time_integration()
 {
     BL_PROFILE("amr-wind::incflo::prepare_for_time_integration");
     // Don't perform initial work if this is a restart
-    if (m_sim.io_manager().is_restart()) {
+    // but still need to write plot file for dry run of restart
+    if (m_sim.io_manager().is_restart() && !m_dry_run) {
         return;
     }
 
