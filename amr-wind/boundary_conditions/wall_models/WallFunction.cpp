@@ -163,22 +163,22 @@ void VelWallFunc::wall_model(
 
                                 // Check if the interpolation condition is
                                 // satisfied
-                                if (z_lo < z_interp && z_interp < z_hi) {
+                                if (z_lo <= z_interp && z_interp < z_hi) {
                                     const amrex::Real weight =
                                         (z_interp - z_lo) / (z_hi - z_lo);
-                                    const amrex::Real u_low =
+                                    const amrex::Real u_lo =
                                         vold_arr(i, j, k_lo, 0);
-                                    const amrex::Real u_up =
+                                    const amrex::Real u_hi =
                                         vold_arr(i, j, k_hi, 0);
-                                    const amrex::Real v_low =
+                                    const amrex::Real v_lo =
                                         vold_arr(i, j, k_lo, 1);
-                                    const amrex::Real v_up =
+                                    const amrex::Real v_hi =
                                         vold_arr(i, j, k_hi, 1);
 
                                     const amrex::Real u_dx =
-                                        u_low + (u_up - u_low) * weight;
+                                        u_lo + (u_hi - u_lo) * weight;
                                     const amrex::Real v_dx =
-                                        v_low + (v_up - v_low) * weight;
+                                        v_lo + (v_hi - v_lo) * weight;
 
                                     varr(i, j, k - 1, 0) =
                                         tau.get_shear(
