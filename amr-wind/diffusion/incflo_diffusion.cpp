@@ -18,7 +18,6 @@ Vector<Array<LinOpBCType, AMREX_SPACEDIM>> get_diffuse_tensor_bc(
         } else {
             auto bc = velocity.bc_type()[Orientation(dir, side)];
             switch (bc) {
-            case BC::pressure_inflow:
             case BC::pressure_outflow:
             case BC::zero_gradient: {
                 // All three components are Neumann
@@ -76,7 +75,6 @@ get_diffuse_scalar_bc(amr_wind::Field& scalar, Orientation::Side side) noexcept
         } else {
             auto bc = scalar.bc_type()[Orientation(dir, side)];
             switch (bc) {
-            case BC::pressure_inflow:
             case BC::pressure_outflow:
             case BC::zero_gradient:
             case BC::symmetric_wall:

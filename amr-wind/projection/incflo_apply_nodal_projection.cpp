@@ -42,7 +42,6 @@ amr_wind::nodal_projection::get_projection_bc(
         } else {
             auto bc = bctype[Orientation(dir, side)];
             switch (bc) {
-            case BC::pressure_inflow:
             case BC::pressure_outflow: {
                 r[dir] = LinOpBCType::Dirichlet;
                 break;

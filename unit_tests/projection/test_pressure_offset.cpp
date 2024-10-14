@@ -150,7 +150,7 @@ protected:
         amrex::ParmParse ppyhi("yhi");
         ppyhi.add("type", (std::string) "slip_wall");
         amrex::ParmParse ppzhi("zhi");
-        ppzhi.add("type", (std::string) "pressure_inflow");
+        ppzhi.add("type", (std::string) "pressure_outflow");
     }
 
     const amrex::Real m_rho_0 = 1.0;

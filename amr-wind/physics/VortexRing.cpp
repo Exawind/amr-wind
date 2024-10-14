@@ -205,7 +205,6 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
         } else {
 
             switch (bctype[amrex::Orientation(dir, amrex::Orientation::low)]) {
-            case BC::pressure_inflow:
             case BC::pressure_outflow: {
                 bclo[dir] = amrex::LinOpBCType::Dirichlet;
                 break;
@@ -216,7 +215,6 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
             };
 
             switch (bctype[amrex::Orientation(dir, amrex::Orientation::high)]) {
-            case BC::pressure_inflow:
             case BC::pressure_outflow: {
                 bchi[dir] = amrex::LinOpBCType::Dirichlet;
                 break;

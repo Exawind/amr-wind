@@ -25,7 +25,6 @@ amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> get_projection_bc(
         } else {
             auto bc = bctype[amrex::Orientation(dir, side)];
             switch (bc) {
-            case BC::pressure_inflow:
             case BC::pressure_outflow: {
                 r[dir] = amrex::LinOpBCType::Dirichlet;
                 break;

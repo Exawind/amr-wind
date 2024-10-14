@@ -32,7 +32,8 @@ The boundary conditions that can be specified in the input file are:
 - =pressure_outflow= :: =BCRec = foextrap= and =LinOpBCType = Neumann=. This is
   the standard outflow BC for velocity and scalars. For MAC projection and
   nodal-projection, it uses a Dirichlet BC for pressure. The value of pressure
-  at the boundary is specified in the input file (default = 0).
+  at the boundary is specified in the input file (default = 0). This can be
+  used as an inflow condition if ...
 
 - =no_slip_wall= :: Like =mass_inflow=, this sets =BCRec= to =ext_dir= and
   specifies Dirichlet BC for the linear solvers. However, it differs from
@@ -85,7 +86,6 @@ possible for scalars and tangential component of velocity.
 
 | Name             | Short | V_n         | V_t      | Scalar   | Source   |
 |------------------+-------+-------------+----------+----------+----------|
-| pressure_inflow  | pi    | foextrap    | foextrap | foextrap | foextrap |
 | pressure_outflow | po    | foextrap    | foextrap | foextrap | foextrap |
 | mass_inflow      | mi    | ext_dir     | ext_dir  | ext_dir  | foextrap |
 | no_slip_wall     | nsw   | ext_dir (0) | ext_dir  | ext_dir  | foextrap |
@@ -103,7 +103,6 @@ projection (pressure) and MAC projections.
 
 | Name             | Short | Linear solver BC |
 |------------------+-------+------------------|
-| pressure_inflow  | pi    | Dirichlet        |
 | pressure_outflow | po    | Dirichlet        |
 | mass_inflow      | mi    | Neumann          |
 | zero_gradient    | zg    | Neumann          |
@@ -118,7 +117,6 @@ projection (pressure) and MAC projections.
 
 | Name             | Short | Normal component | Tangential component |
 |------------------+-------+------------------+----------------------|
-| pressure_inflow  | pi    | Neumann          | Neumann              |
 | pressure_outflow | po    | Neumann          | Neumann              |
 | mass_inflow      | mi    | Dirichlet        | Dirichlet            |
 | zero_gradient    | zg    | Dirichlet (0)    | Neumann              |
@@ -134,7 +132,6 @@ projection (pressure) and MAC projections.
 
 | Name             | Short | Linear solver BC |
 |------------------+-------+------------------|
-| pressure_inflow  | pi    | Neumann          |
 | pressure_outflow | po    | Neumann          |
 | mass_inflow      | mi    | Dirichlet        |
 | zero_gradient    | zg    | Neumann          |

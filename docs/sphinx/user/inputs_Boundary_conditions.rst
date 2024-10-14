@@ -10,7 +10,7 @@ This section controls the boundary conditions. Only non-periodic BC's need to be
    **type:** String, mandatory if non-periodic
 
    Boundary condition type on the lo (or hi) side of the domain.
-   Current options are: periodic, pressure_inflow, pressure_outflow, mass_inflow,
+   Current options are: periodic, pressure_outflow, mass_inflow,
    mass_inflow_outflow, no_slip_wall, slip_wall, symmetric_wall and wall_model.
 
 .. input_param:: xlo.temperature (or ylo.temperature, etc)

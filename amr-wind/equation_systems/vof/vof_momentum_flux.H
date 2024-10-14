@@ -24,6 +24,7 @@ static void hybrid_fluxes(
     amrex::BCRec const* rhobc_d,
     const amrex::Real dt,
     godunov::scheme mflux_scheme,
+    bool allow_inflow_on_outflow,
     bool use_forces_in_trans)
 {
     // Get geometry
@@ -98,7 +99,6 @@ static void hybrid_fluxes(
         const bool known_edge_state = false;
         const bool godunov_use_ppm = true;
         const bool is_velocity = false;
-        const bool allow_inflow_on_outflow = true;
         const bool fluxes_are_area_weighted = false;
 
         amrex::MFItInfo mfi_info;

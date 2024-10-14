@@ -59,9 +59,7 @@ void BCIface::read_bctype()
             continue;
         }
 
-        if ((bcstr == "pressure_inflow") || (bcstr == "pi")) {
-            ibctype[ori] = BC::pressure_inflow;
-        } else if ((bcstr == "pressure_outflow") || (bcstr == "po")) {
+        if ((bcstr == "pressure_outflow") || (bcstr == "po")) {
             ibctype[ori] = BC::pressure_outflow;
         } else if ((bcstr == "mass_inflow") || (bcstr == "mi")) {
             ibctype[ori] = BC::mass_inflow;
@@ -202,7 +200,6 @@ void BCVelocity::set_bcrec()
             }
             break;
 
-        case BC::pressure_inflow:
         case BC::pressure_outflow:
         case BC::zero_gradient:
             if (side == amrex::Orientation::low) {
@@ -303,7 +300,6 @@ void BCScalar::set_bcrec()
             }
             break;
 
-        case BC::pressure_inflow:
         case BC::pressure_outflow:
         case BC::zero_gradient:
         case BC::symmetric_wall:
@@ -387,7 +383,7 @@ void BCPressure::read_values()
         const auto bct = bctype[ori];
 
         amrex::ParmParse pp(bcid);
-        if ((bct == BC::pressure_inflow) || (bct == BC::pressure_outflow)) {
+        if ((bct == BC::pressure_outflow)) {
             pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
         }
     }
