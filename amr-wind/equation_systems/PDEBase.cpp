@@ -114,7 +114,7 @@ void PDEMgr::prepare_boundaries()
         field_ops::copy(
             nph_field, new_field, 0, 0, new_field.num_comp(),
             new_field.num_grow());
-        nph_field.fillphysbc(nph_time);
+        // Insert fill physical boundary condition call here
     }
     for (auto& eqn : scalar_eqns()) {
         eqn->fields().field.advance_states();
@@ -125,7 +125,7 @@ void PDEMgr::prepare_boundaries()
             field_ops::copy(
                 nph_field, new_field, 0, 0, new_field.num_comp(),
                 new_field.num_grow());
-            nph_field.fillphysbc(nph_time);
+            // Insert fill physical boundary condition call here
         }
     }
 
