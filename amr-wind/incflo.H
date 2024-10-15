@@ -96,6 +96,7 @@ public:
     bool regrid_and_update();
     void pre_advance_stage1();
     void pre_advance_stage2();
+    void prepare_time_step();
     void do_advance(const int fixed_point_iteration);
     void advance(const int fixed_point_iteration);
     void prescribe_advance();

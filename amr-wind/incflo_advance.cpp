@@ -30,6 +30,15 @@ void incflo::pre_advance_stage2()
     m_sim.helics().pre_advance_work();
 }
 
+void incflo::prepare_time_step()
+{
+    m_sim.pde_manager().advance_states();
+    m_sim.pde_manager().prepare_boundaries();
+    for (auto& pp : m_sim.physics()) {
+        pp->pre_predictor_work();
+    }
+}
+
 /** Advance simulation state by one timestep
  *
  *  Performs the following actions at a given timestep
@@ -51,11 +60,7 @@ void incflo::advance(const int fixed_point_iteration)
 {
     BL_PROFILE("amr-wind::incflo::advance");
     if (fixed_point_iteration == 0) {
-        m_sim.pde_manager().advance_states();
-        m_sim.pde_manager().prepare_boundaries();
-        for (auto& pp : m_sim.physics()) {
-            pp->pre_predictor_work();
-        }
+        prepare_time_step();
     }
 
     ApplyPredictor(false, fixed_point_iteration);
@@ -660,7 +665,7 @@ void incflo::prescribe_advance()
 {
     BL_PROFILE("amr-wind::incflo::prescribe_advance");
 
-    m_sim.pde_manager().advance_states();
+    prepare_time_step();
 
     ApplyPrescribeStep();
 }
