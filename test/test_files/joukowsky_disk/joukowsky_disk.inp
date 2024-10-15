@@ -33,7 +33,6 @@ Actuator.JoukowskyDisk.thrust_coeff = 0.0 0.7 1.2
 Actuator.JoukowskyDisk.wind_speed = 0.0 10.0 12.0
 Actuator.JoukowskyDisk.rpm = 0.0 9.549296585513720146133 14.3239448782705802192
 Actuator.JoukowskyDisk.epsilon = 20.0
-Actuator.JoukowskyDisk.density = 1.225
 Actuator.JoukowskyDisk.diameters_to_sample = 1.0
 Actuator.JoukowskyDisk.num_points_r = 5
 Actuator.JoukowskyDisk.num_points_t = 3

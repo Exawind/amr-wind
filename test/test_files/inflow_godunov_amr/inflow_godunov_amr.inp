@@ -52,7 +52,6 @@ amr.n_cell            = 64 64 4 # Grid cells at coarsest AMRlevel
 amr.blocking_factor = 4
 amr.n_error_buf = 4
 
-amrex.abort_on_out_of_memory=1
 amrex.the_arena_is_managed=1
 amrex.async_out=0
 
