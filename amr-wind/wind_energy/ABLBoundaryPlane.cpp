@@ -810,7 +810,7 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
     if (m_io_mode != io_mode::input) {
         return;
     }
-#ifdef ERF_USE_MULTIBLOCK
+
     if (m_out_fmt == "erf-multiblock") {
         //m_read_erf = sim.get_read_erf();
         ReadERFFcn read_erf = *m_read_erf;
@@ -822,7 +822,7 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
         }
         return;
     }
-#endif
+
     // populate planes and interpolate
     const amrex::Real time =
         m_time.new_time() + (nph_target_time ? 0.5 : 0.0) *
