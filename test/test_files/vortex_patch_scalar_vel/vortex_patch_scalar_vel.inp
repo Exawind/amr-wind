@@ -15,7 +15,7 @@ time.cfl              =   0.45         # CFL factor
 #.......................................#
 time.plot_interval            =  400       # Steps between plot files
 time.checkpoint_interval      =  -100       # Steps between checkpoint files
-io.output_default_fields = 0
+io.output_default_variables = 0
 io.outputs = density velocity vof
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
