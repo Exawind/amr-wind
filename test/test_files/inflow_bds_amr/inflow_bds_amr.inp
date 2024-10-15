@@ -11,7 +11,6 @@ io.plot_file = plt
 io.check_file = chk
 #               PHYSICS                 #
 #.......................................#
-incflo.gravity          =   0.  0. 0.0  # Gravitational force (3D)
 
 incflo.use_godunov = 1
 incflo.godunov_type = "bds"
@@ -33,12 +32,10 @@ xlo.type = "mass_inflow"
 xlo.velocity = 1.0 1.0 0.0
 xlo.density = 1.0
 xhi.type = "pressure_outflow"
-xhi.pressure = 0.0
 ylo.type = "mass_inflow"
 ylo.velocity = 1.0 1.0 0.0
 ylo.density = 1.0
 yhi.type = "pressure_outflow"
-yhi.pressure = 0.0
 zlo.type = "slip_wall"
 zhi.type = "slip_wall"
 
