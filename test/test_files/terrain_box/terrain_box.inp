@@ -2,7 +2,7 @@
 #            SIMULATION STOP            #
 #.......................................#
 time.stop_time               =   -100.0     # Max (simulated) time to evolve
-time.max_step                =   1000         # Max number of time steps
+time.max_step                =   10        # Max number of time steps
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
@@ -33,7 +33,7 @@ turbulence.model = Laminar
 io.int_outputs = terrainBlank TerrainDrag
 incflo.physics = FreeStream TerrainDrag
 ICNS.source_terms                        = DragForcing
-DragForcing.verificationMode = 1
+DragForcing.is_laminar = 1
 amr.n_cell              =  56 56 104    # Grid cells at coarsest AMRlevel
 amr.max_level           = 0           # Max AMR level in hierarchy 
 geometry.prob_lo        =   0    0  0 
