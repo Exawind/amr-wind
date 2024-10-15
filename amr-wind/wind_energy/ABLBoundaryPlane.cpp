@@ -254,7 +254,7 @@ bool InletData::is_populated(amrex::Orientation ori) const
 
 ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
     : m_time(sim.time()), m_repo(sim.repo()), m_mesh(sim.mesh())
-#ifdef ERF_USE_MULTIBLOCK
+#ifdef ERF_AW_MULTIBLOCK
     , m_mbc(sim.mbc()), m_read_erf(sim.get_read_erf())
 #endif
 {
