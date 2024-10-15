@@ -8,12 +8,12 @@ amr.n_cell 			 = 80 156 64
 amr.max_level 			 = 0
 amr.blocking_factor              = 4
 time.stop_time 			 = -1
-time.max_step 			 = 20
+time.max_step 			 = 10
 time.initial_dt 			 = 1.0
 time.fixed_dt 			 = -1
 time.cfl 			 = 0.9
-time.plot_interval 			 = 10
-time.checkpoint_interval 			 = 10
+time.plot_interval 			 = 5
+time.checkpoint_interval 			 = 5
 io.int_outputs = terrain_blank terrain_drag
 # incflo 
 incflo.physics 			 = ABL TerrainDrag
@@ -92,4 +92,4 @@ temperature_diffusion.mg_rtol 			 = 1.0e-6
 temperature_diffusion.mg_atol 			 = 1.0e-8 
 nodal_proj.maxiter 			 = 360 
 #io 
-io.restart_file 			 = "../nrel_precursor/chk00010"
+io.restart_file 			 = "../nrel_precursor/chk00005"
