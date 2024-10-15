@@ -4,7 +4,6 @@ time.max_step                =   10         # Max number of time steps
 time.fixed_dt         =   0.1      # Use this constant dt if > 0
 time.cfl              =   0.95         # CFL factor
 
-io.KE_int = 0
 io.outputs = actuator_src_term
 time.plot_interval            =  1       # Steps between plot files
 time.checkpoint_interval      =  -1       # Steps between checkpoint files
