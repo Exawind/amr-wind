@@ -62,8 +62,10 @@ public:
     // Evolve solution to final time through repeated calls to Advance()
     void Evolve();
 
+#ifdef ERF_USE_MULTIBLOCK
     // Evolve solution in a multiblock framework by desired number of steps
     void Evolve_MB(int MBstep, int max_block_step);
+#endif
 
     // Tag cells for refinement
     void
