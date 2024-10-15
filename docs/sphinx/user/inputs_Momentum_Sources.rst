@@ -9,8 +9,7 @@ Section: Momentum Sources
    
    Activates source terms for the incompressible Navier-Stokes momentum
    equations. These strings can be entered in any order with a space between
-   each. Please consult `AMR-Wind developer documentation
-   <https://exawind.github.io/amr-wind/api_docs/group__icns__src.html>`_ for a
+   each. Please consult the :doc:`../doxygen/html/index` for a
    comprehensive list of all momentum source terms available. Note that the
    following input arguments specific to each source term will only be active
    if the corresponding source term (the root name) is listed in 
@@ -161,3 +160,82 @@ Section: Momentum Sources
    the uniform_timetable body force type and is only active for the uniform_timetable type.  Note that the code 
    expects there to be a single-line header at the beginning of the uniform timetable file; if no header exists, 
    the first line of data will be ignored.
+
+.. input_param:: DragForcing.drag_coefficient
+
+   **type:** Real, optional
+
+   This value specifies the coefficient for the forcing term in the immersed boundary forcing method. It is currently
+   recommended to use the default value to avoid initial numerical stability. 
+
+.. input_param:: DragForcing.sponge_strength
+
+   **type:** Real, optional
+
+   The value of the sponge layer coefficient. It is recommended to use the default value of 1.0.  
+
+.. input_param:: DragForcing.sponge_density
+
+   **type:** Real, optional
+
+   The value of the sponge layer density. It is recommended to use the default value of 1.0.  
+
+.. input_param:: DragForcing.sponge_distance_west
+
+   **type:** Real, optional
+
+   This value is specified as a negative value when the inflow x-velocity is <=0. The default value is -1000 m and can be changed if strong 
+   reflections are observed. 
+
+.. input_param:: DragForcing.sponge_distance_east
+
+   **type:** Real, optional
+
+   This value is specified as a positive value when the inflow x-velocity is >=0. The default value is 1000 m and can be changed if strong 
+   reflections are observed. 
+
+.. input_param:: DragForcing.sponge_distance_south
+
+   **type:** Real, optional
+
+   This value is specified as a negative value when the inflow y-velocity is <=0. The default value is -1000 m and can be changed if strong 
+   reflections are observed. 
+
+.. input_param:: DragForcing.sponge_distance_north
+
+   **type:** Real, optional
+
+   This value is specified as a positive value when the inflow y-velocity is >=0. The default value is 1000 m and can be changed if strong 
+   reflections are observed. 
+
+.. input_param:: DragForcing.sponge_west
+
+   **type:** int, optional
+
+   This term turns on the sponge layer in the west (-x) boundary. The default value is 0. 
+
+.. input_param:: DragForcing.sponge_east
+
+   **type:** int, optional
+
+   This term turns on the sponge layer in the east (+x) boundary. The default value is 1. 
+
+.. input_param:: DragForcing.sponge_south
+
+   **type:** int, optional
+
+   This term turns on the sponge layer in the south (-y) boundary. The default value is 0. 
+
+.. input_param:: DragForcing.sponge_north
+
+   **type:** int, optional
+
+   This term turns on the sponge layer in the north (+y) boundary. The default value is 1. 
+
+
+.. input_param:: DragForcing.is_laminar
+
+   **type:** int, optional
+
+   This term turns off the sponge layer. This term is required for terrain simulations with periodic 
+   boundary conditions. The default value is 0. 

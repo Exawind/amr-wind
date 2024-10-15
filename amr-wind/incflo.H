@@ -37,7 +37,7 @@ class RefineCriteriaManager;
  *  \ref incflo::InitData "initialize mesh, physics modules, etc.".
  *
  *  <li> **Time loop** Run user-defined number of timesteps \ref incflo::Evolve
- *  "in a loop" that \ref incflo::Advance "advances" the flow-field.
+ *  "in a loop" that \ref incflo::advance "advances" the flow-field.
  *
  *  </ol>
  */
@@ -96,8 +96,8 @@ public:
     bool regrid_and_update();
     void pre_advance_stage1();
     void pre_advance_stage2();
-    void do_advance();
-    void advance();
+    void do_advance(const int fixed_point_iteration);
+    void advance(const int fixed_point_iteration);
     void prescribe_advance();
     void post_advance_work();
 
@@ -133,7 +133,9 @@ public:
     void ComputeDt(bool explicit_diffusion);
     void ComputePrescribeDt();
 
-    void ApplyPredictor(bool incremental_projection = false);
+    void ApplyPredictor(
+        const bool incremental_projection = false,
+        const int fixed_point_iteration = 0);
     void ApplyCorrector();
     void ApplyPrescribeStep();
 
@@ -172,6 +174,12 @@ private:
     // Prescribe advection velocity
     bool m_prescribe_vel = false;
 
+    // Perform a dry run (0 steps, output plotfile)
+    bool m_dry_run = false;
+
+    // Fixed point iterations every timestep
+    int m_fixed_point_iterations{1};
+
     //! number of cells on all levels including covered cells
     amrex::Long m_cell_count{-1};
 
@@ -199,6 +207,7 @@ private:
     //
     ///////////////////////////////////////////////////////////////////////////
 
+    void CheckAndSetUpDryRun();
     void ReadParameters();
     void InitialProjection();
     void InitialIterations();

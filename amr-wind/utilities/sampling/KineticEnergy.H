@@ -7,7 +7,7 @@
 namespace amr_wind::kinetic_energy {
 
 /** kinetic energy object
- *  \ingroup Kinetic Energy
+ *  \ingroup sampling
  *
  *  A concrete implementation of the post-processing interface that deals with
  *  integrating total kinetic energy

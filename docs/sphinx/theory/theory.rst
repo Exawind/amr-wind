@@ -28,7 +28,7 @@ Tracer(s) advection:
 Discretization
 --------------
 
-The numerical methdology used to solve the partial differential
+The numerical methodology used to solve the partial differential
 equations (PDEs) within AMR-Wind is documented in `Almgren et
 al. (JCP 1998)
 <https://ccse.lbl.gov/Publications/almgren/abchw.pdf>`_. AMR-Wind uses
@@ -147,12 +147,12 @@ Often for simulations involving walls, (e.g., channel flows, complex terrains et
 
 .. _multiphase:
 
-Multiphase flow modelling
--------------------------
+Multiphase flow modeling
+------------------------
 
 AMR-Wind employs the volume-of-fluid method for simulating two-phase (water-air) flows. 
 More specifically, the volume fraction field is advected explicitly using a
-directionally split geometric approach, and the advection of momentum is 
+directional split geometric approach, and the advection of momentum is 
 discretized in a mass-consistent manner. Overall, this approach conserves mass
 and momentum while remaining stable at high density ratios (typically 1000).
 Viscosities can be specified for each fluid independently, but surface tension
@@ -174,7 +174,7 @@ The reference density (:math:`\rho_0`) is defined as ``1.0`` by default, can be 
 
 Using the perturbational form implies that the hydrostatic pressure is removed from the pressure variable, including its output. This means that the solution to the Poisson equation is actually the perturbational pressure, :math:`p'`, not :math:`p`. If the full pressure, :math:`p`, is desired for analysis or postprocessing purposes, the hydrostatic pressure can be added back to the pressure field via the input argument ``ICNS.reconstruct_true_pressure = true``. In order for this to operate in the code, the reference pressure field must be defined for the specific flow case being run. 
 
-- An example of this is in physics/multiphase/Multiphase.cpp. To construct the reference pressure field, the reference gravity term must be integrated. This particular example assumes that the reference density only varies in z (or is constant), gravity acts only in z, and the hydrostatic pressure at zhi is equal to 0. 
+- An example of this is in physics/multiphase/Multiphase.cpp. To construct the reference pressure field, the reference gravity term must be integrated. This particular example assumes that the reference density only varies in z (or is constant), gravity acts only in z, and the hydrostatic pressure at the high z boundary is equal to 0. 
 
 - In mathematical form, the derivation and calculation of the full pressure is as follows:
 
@@ -184,7 +184,7 @@ Using the perturbational form implies that the hydrostatic pressure is removed f
 
 .. math:: p = p' + \int_{z_{min}}^z \rho_0 g dz + p(z = z_{min}) 
 
-- reframe in reference to the top boundary, and assume :math:`p(z = z_{max}) = 0`
+- change reference frame to the top boundary, and assume :math:`p(z = z_{max}) = 0`
    
 .. math:: p = p' - \int_z^{z_{max}} \rho_0 g dz + p(z = z_{max}) = p' - \int_z^{z_{max}} \rho_0 g dz
 
@@ -218,7 +218,7 @@ Actuator Forcing
 
 Calculating actuator forces relies on sampling the velocity field at actuator points
 at the beginning of each time step (*n*). Actuator-based models, i.e., actuator lines
-and actuator disks, rely on internal implementations (e.g., joukowsky disk, actuator-line wing)
+and actuator disks, rely on internal implementations (e.g., Joukowsky disk, actuator-line wing)
 or external turbine tools (OpenFAST) that use these sampled velocities to calculate forces 
 and the motion of actuator points.
 When the Godunov method is used, the motion of actuator points must be incorporated
@@ -427,6 +427,62 @@ z direction (example: *half-channel* simulations) at the centerline.
        w &= 0
    \end{aligned}
 
+
+.. _terrainmodel:
+
+Terrain Model
+--------------
+
+An immersed boundary forcing method (IBFM) is used to represent the terrain. In this method,
+the effect of the terrain is modeled using a forcing term in the momentum and energy equation. 
+
+The forcing term in the momentum equation is given by: 
+
+.. math::
+
+   F_i = - \beta C_d u_i | u_i | 
+
+Here :math:`\beta` is the volume fraction of the cell covered by terrain, :math:`C_d` is a drag
+term  and :math:`u_i` is the wind speed. Currently, the volume fraction is 
+computed as a 0 or 1 using a simple nearest cell algorithm at each grid level. Future, updates 
+will incorporate the partial terrain overlap using the EB capability in AMReX. The calculation 
+of the drag coefficient term and the forcing term for the energy equation can be found in 
+`Muñoz‐Esparza, Domingo, et al.  (JAMS 2020) <https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2020MS002141>`_.
+
+The original formulation is designed for low Reynolds number cases and does not include a 
+method for applying a wall function. We propose the use of a forcing function to include 
+the wall effects. 
+
+First, compute the friction velocity from location k+1: 
+
+.. math::
+
+   u_*= |u_i[k+1]| \frac {\kappa}{\log [(z_{k+1}-z_k)/z0]}
+
+The expected wind speed at cell k is computed as follows: 
+
+.. math::
+
+   |u_n|= \frac{u_*}{\kappa} \log [0.5 (z_{k+1}-z_k)/z0]
+
+The methodology can be extended to include stability functions in a straight forward manner. The forcing 
+term is computed as 
+
+.. math::
+
+   F_i= - \frac {|u[k]| \hat{c} - |u_n|\hat{l}} {\tau}
+
+
+
+Here :math:`\hat{c}=(1,1,1)` is the existing normal vector from the grid and :math:`\hat{l}=(ux,uy,0)/|u_n|` is the value 
+from the log law. The calculation of :math:`\hat{l}` and :math:`u_*` can be modified in the future align with the normal (following 
+the orange arrow below).
+
+.. image:: ./images/terrain_normal.png
+   :align: center
+   :width: 30%
+
+
 Navigating source code
 ------------------------
 
@@ -437,7 +493,7 @@ AMReX concepts before jumping into the AMR-Wind source code.
 
 The `Basics section
 <https://amrex-codes.github.io/amrex/docs_html/Basics_Chapter.html>`_ provides a
-thorough overview of the basic datastructures and ways to interact with these
+thorough overview of the basic data structures and ways to interact with these
 structures. The `GPU section
 <https://amrex-codes.github.io/amrex/docs_html/GPU_Chapter.html>`_ provides an
 overview of the AMReX GPU strategy and the higher-level functions (e.g.,

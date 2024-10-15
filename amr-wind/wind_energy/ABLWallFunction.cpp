@@ -22,7 +22,6 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     }
 
     amrex::ParmParse pp("ABL");
-
     pp.query("kappa", m_mo.kappa);
     pp.query("mo_gamma_m", m_mo.gamma_m);
     pp.query("mo_gamma_h", m_mo.gamma_h);
@@ -171,7 +170,6 @@ void ABLVelWallFunc::wall_model(
     const auto& density = repo.get_field("density", rho_state);
     const auto& viscosity = repo.get_field("velocity_mueff");
     const int nlevels = repo.num_active_levels();
-
     amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
     amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
     if (velocity.bc_type()[zhi] == BC::wall_model) {
@@ -180,7 +178,9 @@ void ABLVelWallFunc::wall_model(
     if (velocity.bc_type()[zlo] != BC::wall_model) {
         return;
     }
-
+    const bool has_terrain = repo.int_field_exists("terrain_blank");
+    const auto* m_terrain_blank =
+        has_terrain ? &repo.get_int_field("terrain_blank") : nullptr;
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
         const auto& domain = geom.Domain();
@@ -203,7 +203,9 @@ void ABLVelWallFunc::wall_model(
             const auto& vold_arr = vold_lev.const_array(mfi);
             const auto& den = rho_lev.const_array(mfi);
             const auto& eta = eta_lev.const_array(mfi);
-
+            const auto& blank_arr =
+                has_terrain ? (*m_terrain_blank)(lev).const_array(mfi)
+                            : amrex::Array4<int>();
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                 velocity.bc_type()[zlo] == BC::wall_model) {
                 amrex::ParallelFor(
@@ -216,12 +218,17 @@ void ABLVelWallFunc::wall_model(
 
                         // Dirichlet BC
                         varr(i, j, k - 1, 2) = 0.0;
-
+                        const amrex::Real blankTerrain =
+                            (has_terrain) ? 1 - blank_arr(i, j, k, 0) : 1.0;
                         // Shear stress BC
-                        varr(i, j, k - 1, 0) =
-                            tau.calc_vel_x(uu, wspd) * den(i, j, k) / mu;
-                        varr(i, j, k - 1, 1) =
-                            tau.calc_vel_y(vv, wspd) * den(i, j, k) / mu;
+                        // Blank Terrain added to keep the boundary condition
+                        // backward compatible while adding terrain sensitive BC
+                        varr(i, j, k - 1, 0) = blankTerrain *
+                                               tau.calc_vel_x(uu, wspd) *
+                                               den(i, j, k) / mu;
+                        varr(i, j, k - 1, 1) = blankTerrain *
+                                               tau.calc_vel_y(vv, wspd) *
+                                               den(i, j, k) / mu;
                     });
             }
         }
@@ -292,7 +299,9 @@ void ABLTempWallFunc::wall_model(
     const auto& density = repo.get_field("density", rho_state);
     const auto& alpha = repo.get_field("temperature_mueff");
     const int nlevels = repo.num_active_levels();
-
+    const bool has_terrain = repo.int_field_exists("terrain_blank");
+    const auto* m_terrain_blank =
+        has_terrain ? &repo.get_int_field("terrain_blank") : nullptr;
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
         const auto& domain = geom.Domain();
@@ -317,6 +326,9 @@ void ABLTempWallFunc::wall_model(
             const auto& tarr = theta.array(mfi);
             const auto& den = rho_lev.const_array(mfi);
             const auto& eta = eta_lev.const_array(mfi);
+            const auto& blank_arr =
+                has_terrain ? (*m_terrain_blank)(lev).const_array(mfi)
+                            : amrex::Array4<int>();
 
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                 temperature.bc_type()[zlo] == BC::wall_model) {
@@ -328,7 +340,9 @@ void ABLTempWallFunc::wall_model(
                         const amrex::Real vv = vold_arr(i, j, k, 1);
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
                         const amrex::Real theta2 = told_arr(i, j, k);
-                        tarr(i, j, k - 1) = den(i, j, k) *
+                        const amrex::Real blankTerrain =
+                            (has_terrain) ? 1 - blank_arr(i, j, k, 0) : 1.0;
+                        tarr(i, j, k - 1) = blankTerrain * den(i, j, k) *
                                             tau.calc_theta(wspd, theta2) /
                                             alphaT;
                     });

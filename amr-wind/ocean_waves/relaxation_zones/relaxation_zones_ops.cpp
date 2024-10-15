@@ -162,17 +162,26 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                             beach_length_factor);
                         // Numerical beach (sponge layer)
                         if (has_beach) {
-                            volfrac(i, j, k) =
-                                (1.0 - Gamma) *
+                            // Get bounded new vof, save increment
+                            amrex::Real new_vof =
+                                (1. - Gamma) *
                                     utils::free_surface_to_vof(zsl, z, dx[2]) +
                                 Gamma * volfrac(i, j, k);
+                            new_vof =
+                                (new_vof > 1. - vof_tiny)
+                                    ? 1.0
+                                    : (new_vof < vof_tiny ? 0.0 : new_vof);
+                            const amrex::Real dvf = new_vof - volfrac(i, j, k);
+                            volfrac(i, j, k) = new_vof;
                             // Conserve momentum when density changes
                             amrex::Real rho_ = rho1 * volfrac(i, j, k) +
                                                rho2 * (1.0 - volfrac(i, j, k));
-                            // Target solution in liquid is vel = 0
+                            // Target solution in liquid is vel = 0, assume
+                            // added liquid already has target velocity
                             for (int n = 0; n < vel.ncomp; ++n) {
                                 vel(i, j, k, n) =
-                                    (rho1 * volfrac(i, j, k) * Gamma +
+                                    (rho1 * (volfrac(i, j, k) * Gamma -
+                                             amrex::max(0.0, dvf)) +
                                      rho2 * (1. - volfrac(i, j, k))) *
                                     vel(i, j, k, n) / rho_;
                             }

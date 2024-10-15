@@ -7,6 +7,7 @@ namespace amr_wind::fvm {
 
 /** Non-linear Term for Kosovic Model
  *  \ingroup fvm
+ *  \defgroup NonLinearSGS Non-linear Term for Kosovic Model
  */
 template <typename FTypeIn, typename FTypeOut>
 struct NonLinearSum

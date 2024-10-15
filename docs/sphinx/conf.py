@@ -17,8 +17,6 @@
 #
 # import os
 import sys
-# sys.path.insert(0, os.path.abspath('.'))
-#sys.path.append("../breathe")
 
 # -- General configuration ------------------------------------------------
 
@@ -29,13 +27,16 @@ import sys
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [ 'sphinx.ext.mathjax', 'sphinx_toolbox.collapse', 'sphinx_copybutton']
+extensions = [ 'sphinx.ext.mathjax', 'sphinx_toolbox.collapse', 'sphinx_copybutton', 'sphinxcontrib.spelling']
 
+spelling_word_list_filename = "spelling-wordlist.txt"
+spelling_exclude_patterns = ["doxygen/html/*"]
+spelling_show_suggestions = True
+spelling_warning = True
+spelling_ignore_contributor_names = False
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
-#breathe_projects = {"AMR-Wind": "../doxygen_output/xml/"}
-#breathe_default_project = "AMR-Wind"
 
 fortran_src ='../../src/'
 #fortran_ext =[' 'F90']

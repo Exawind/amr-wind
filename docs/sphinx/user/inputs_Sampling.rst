@@ -22,7 +22,7 @@ actual keyword is determined by the labels provided to
    **type:** Integer, optional, default = 0
 
    Specify the output delay (in timesteps) when data sampling and output will begin
-   during a simulation. E.g., a delay of 100 will wait until the 100th timestep to 
+   during a simulation. E.g., a delay of 100 will wait until the hundredth timestep to 
    check if, according to the output frequency, sampling should be performed and 
    output to disk.
 
@@ -158,6 +158,10 @@ Example::
 
 The first line of the file contains the total number of probes for this set.
 This is followed by the coordinates (three real numbers), one line per probe.
+This type of sampler also supports the ``offset_vector`` and ``offsets`` options
+implemented with the plane sampler, shown above. For the probe sampler, 
+these options apply offsets to the positions of all the points provided in the
+probe location file.
 
 Sampling on a volume
 `````````````````````
@@ -187,10 +191,10 @@ determined by the ``plane_`` parameters. The default search direction parameter
 is 2, indicating the samplers will search for the interface along the z-direction. 
 Due to this design, it is best to specify a plane that is normal to the intended 
 search direction. Another optional parameter is ``num_instances``, which is available
-for cases where the interface location is multivalued along the search direction,
+for cases where the interface location is multi-valued along the search direction,
 such as during wave breaking. This parameter defaults to 1, and the sampler will
 automatically select the highest position along the search direction when the interface
-location is multivalued.
+location is multi-valued.
 
 Example::
 

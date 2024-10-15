@@ -10,7 +10,7 @@ namespace amr_wind::ib {
 
 /** Base data representation of an IB geometry.
  *
- *  \ingroup ib
+ *  \ingroup immersed_boundary
  */
 struct BluffBodyBaseData
 {

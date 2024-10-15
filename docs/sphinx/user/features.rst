@@ -98,7 +98,7 @@ Flow physics
 
 * Ocean wave forcing (for multiphase flows) [:ref:`inp <inputs_ocean_waves>`]
 
-   * Wave types: linear (monochromatic), Stokes (2nd- to 5th-order), irregular (input by modes files from HOS-Ocean)
+   * Wave types: linear (monochromatic), Stokes (second to fifth order), irregular (input by modes files from HOS-Ocean)
 
    * Relaxation zones force wave profile to generate waves at lower x boundary or force toward quiescent flat interface at upper x boundary. Wave profile can also be enforced (instead of numerical beach) at upper x boundary for periodic simulations.
 
@@ -116,7 +116,7 @@ Flow physics
 
 * Geometry
 
-   * Immersed boundary
+   * Immersed boundary forcing method with stair-case type terrain and wall function [:ref:`doc <terrain>`]
 
    * Coupling with Nalu-Wind for body-conforming meshes with overset methodology
 
@@ -138,7 +138,7 @@ Flow physics
 
    * Field plane averaging and second and third order moments
 
-   * Derived fields and field operators such as vorticity, q-criterion, strain-rates, gradients, divergence, laplacian [:ref:`inp <inputs_io_derived>`]
+   * Derived fields and field operators such as vorticity, q-criterion, strain-rates, gradients, divergence, Laplacian [:ref:`inp <inputs_io_derived>`]
 
    * in-situ post-processing with Ascent
 
@@ -179,8 +179,4 @@ Current development
 
 * Temporal and spatial varying MMC forcing
 
-* Complex terrain
 
-   * Improved wall conditions, e.g., non-uniform roughness, temperature and heat fluxes
-
-   * Complex terrain though immersed boundary methods

@@ -14,6 +14,7 @@ as initial conditions and discretization options.
    Physics is additive and more than one type of physics may be used.
    Current implemented physics include FreeStream, SyntheticTurbulence, ABL, Actuator, RayleighTaylor, BoussinesqBubble, TaylorGreenVortex, and ScalarAdvection (which is an example of using a passive scalar advection).
    For multiphase simulations, the MultiPhase physics must be specified, and for forcing wave profiles into the domain, the OceanWaves physics must be specified as well.
+   For immersed boundary forcing method TerrainDrag must be specified and the folder should include a `terrain.amrwind` file. 
    
 .. input_param:: incflo.density
 
@@ -68,6 +69,16 @@ as initial conditions and discretization options.
    Godunov the default approach and has many advantages over the method of lines (MOL): better accuracy,
    stability at larger CFL numbers, and greater computational efficiency. Setting this argument to false is 
    not recommended, and active use or development relying on the method of lines (MOL) is very sparse.
+
+.. input_param:: incflo.dry_run
+
+   **type** Boolean, optional, default = false
+
+   Setting this option to true enables a "dry run" of the code. This is intended for checking if an input
+   file is set up properly and for investigating the initial state of a simulation. A dry run will make sure
+   that initial iterations and the initial projection are skipped, and it will complete no time steps. This is
+   to minimize the computational demands of such a run. A plot file with the prefix ``dry_run`` will be output
+   regardless of whether the simulation restarts from a checkpoint file or from scratch.
    
 .. _inputs_incflo_advection:
 

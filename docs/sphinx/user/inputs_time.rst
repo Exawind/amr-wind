@@ -41,7 +41,7 @@ This section also addresses the time-dependent nature of checkpoint files, plot 
 
    Initial timestep size (in seconds) used to initialize the simulation. 
    Only activated if :input_param:`time.fixed_dt` is negative 
-   (signalling CFL controlled time stepping) and if ``time.initial_dt`` is positive.
+   (signaling CFL controlled time stepping) and if ``time.initial_dt`` is positive.
    This parameter can be useful for starting CFL-controlled simulations like 
    Rayleigh-Taylor flow that initialize with zero velocity.
 
@@ -159,21 +159,21 @@ This section also addresses the time-dependent nature of checkpoint files, plot 
 
   **type:** Integer, optional, default = 0; default = start index upon restart
 
-  This user-specified parameter sets the base timestep onwards which the mesh is adaptively
+  This user-specified parameter sets the base timestep onward which the mesh is adaptively
   refined.
 
 .. input_param:: time.plot_start
 
   **type:** Integer, optional, default = 0; default = start index upon restart
 
-  This user-specified parameter sets the base timestep onwards which the output (plot files)
+  This user-specified parameter sets the base timestep onward which the output (plot files)
   are written to the disk. This parameter is specifically for offsetting the index following a restart.
 
 .. input_param:: time.checkpoint_start
 
   **type:** Integer, optional, default = 0; default = start index upon restart
 
-  This user-specified parameter sets the base timestep onwards which the checkpoint (restart) 
+  This user-specified parameter sets the base timestep onward which the checkpoint (restart) 
   files are written to the disk. This parameter is specifically for offsetting the index following a restart.
 
 .. input_param:: time.use_force_cfl

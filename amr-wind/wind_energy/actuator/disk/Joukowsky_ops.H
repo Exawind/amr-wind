@@ -119,7 +119,7 @@ struct InitDataOp<Joukowsky, ActSrcDisk>
 };
 
 /**
-  @brief Compute Forces following procedures of Sorenson 2020
+  \brief Compute Forces following procedures of Sorenson 2020
 
   Follow the procedure for computing body forces and applying tip/root
   corrections using a Joukowsky disk as outlined in:

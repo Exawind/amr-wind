@@ -201,5 +201,5 @@ The following input arguments are only valid for the W2AWaves wave type:
    **type:** Integer, optional, default = 1
 
    The number of points placed above the mean water surface for the velocity transformation process. The spacing
-   between the points above the surface is equal to the interp_spacing_at_surface. When setting this value, the wave height
+   between the points above the surface is equal to the ``interp_spacing_at_surface``. When setting this value, the wave height
    should be considered so that velocity can be accurately computed for portions of the waves above the mean surface.

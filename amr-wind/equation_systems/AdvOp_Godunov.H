@@ -178,6 +178,11 @@ struct AdvectionOp<
                         (godunov_scheme == godunov::scheme::WENO_JS)) {
                         m_allow_inflow_on_outflow = true;
                     }
+                    // if state is NPH, then n and n+1 are known, and only
+                    // spatial extrapolation is performed
+                    const amrex::Real dt_extrap =
+                        (fstate == FieldState::NPH) ? 0.0 : dt;
+
                     HydroUtils::ComputeFluxesOnBoxFromState(
                         bx, PDE::ndim, mfi,
                         (PDE::multiply_rho ? rhotrac : tra_arr),
@@ -188,7 +193,7 @@ struct AdvectionOp<
                         known_edge_state, u_mac(lev).const_array(mfi),
                         v_mac(lev).const_array(mfi),
                         w_mac(lev).const_array(mfi), divu,
-                        src_term(lev).const_array(mfi), geom[lev], dt,
+                        src_term(lev).const_array(mfi), geom[lev], dt_extrap,
                         dof_field.bcrec(), dof_field.bcrec_device().data(),
                         iconserv.data(), godunov_use_ppm,
                         godunov_use_forces_in_trans, is_velocity,

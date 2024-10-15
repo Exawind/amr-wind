@@ -15,7 +15,7 @@ class CFDSim;
 
 namespace actuator {
 
-/** Abstract representation of an actuator source in the flowfield.
+/** Abstract representation of an actuator source in the flow field.
  *
  *  \ingroup actuator
  *
