@@ -28,7 +28,6 @@ turbulence.model = Smagorinsky
 Smagorinsky_coeffs.Cs = 0.135
 incflo.physics = ABL
 ICNS.source_terms = CoriolisForcing GeostrophicForcing
-BoussinesqBuoyancy.reference_temperature = 290.0
 ABL.reference_temperature = 290.0
 CoriolisForcing.east_vector = 1.0 0.0 0.0
 CoriolisForcing.north_vector = 0.0 1.0 0.0
@@ -66,7 +65,6 @@ tagging.static.static_refinement_def = "static_box.txt"
 geometry.prob_lo        =   0.       0.     0.  # Lo corner coordinates
 geometry.prob_hi        =   1000.  1000.  1000.  # Hi corner coordinates
 geometry.is_periodic    =   0   0   0   # Periodicity x y z (0/1)
-incflo.delp             =   0.  0.  0.  # Prescribed (cyclic) pressure gradient
 # Boundary conditions
 xlo.type = "pressure_outflow"
 xhi.type = "mass_inflow"

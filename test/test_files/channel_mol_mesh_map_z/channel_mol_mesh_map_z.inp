@@ -1,4 +1,3 @@
-#include <type_traits>
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            SIMULATION STOP            #
 #.......................................#
@@ -63,26 +62,7 @@ incflo.verbose  = 0
 
 diffusion.max_coarsening_level = 0
 
-nodal_proj.mg_atol = 1.0e-12
-nodal_proj.verbose = 0
-nodal_proj.bottom_solver = hypre
-nodal_proj.max_coarsening_level = 0
-
 mac_proj.mg_rtol = 1.0e-11
-mac_proj.mg_atol = 1.0e-12
+mac_proj.mg_atol = 1.0e-11
 mac_proj.do_semicoarsening = true
-mac_proj.bottom_solver = hypre
-mac_proj.bottom_verbose = 0
-mac_proj.max_coarsening_level = 0
-mac_proj.bottom_rtol = 1.0e-12
-mac_proj.bottom_atol = 1.0e-16
-#
-hypre.hypre_solver = GMRES
-hypre.hypre_preconditioner = BoomerAMG
-hypre.recompute_preconditioner = 0
-hypre.verbose = 0
-hypre.bamg_verbose = 0
-hypre.num_krylov = 20
-hypre.bamg_max_levels = 4
-hypre.bamg_num_sweeps = 1
-#
+nodal_proj.mg_atol = 1.0e-11
