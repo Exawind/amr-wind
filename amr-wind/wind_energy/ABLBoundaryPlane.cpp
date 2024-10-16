@@ -911,11 +911,9 @@ void ABLBoundaryPlane::populate_data(
              ++mfi) {
 
             auto sbx = mfi.growntilebox(1);
-            if (!sbx.cellCentered()) {
-                sbx.enclosedCells();
-            }
             const auto& src = m_in_data.interpolate_data(ori, lev);
-            const auto& bx = sbx & src.box();
+            const auto& bx = utils::face_aware_boundary_box_intersection(
+                sbx, src.box(), ori);
             if (bx.isEmpty()) {
                 continue;
             }

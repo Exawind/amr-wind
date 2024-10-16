@@ -4,6 +4,7 @@
 #include "AMReX_Gpu.H"
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
+#include "amr-wind/utilities/index_operations.H"
 #include <AMReX_PlotFileUtil.H>
 
 #include <sstream>
@@ -174,10 +175,8 @@ void ABLModulatedPowerLaw::set_velocity(
 
         for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
             auto gbx = amrex::grow(mfi.validbox(), nghost);
-            if (!gbx.cellCentered()) {
-                gbx.enclosedCells();
-            }
-            const auto& bx = gbx & dbx;
+            const auto& bx =
+                utils::face_aware_boundary_box_intersection(gbx, dbx, ori);
             if (!bx.ok()) {
                 continue;
             }
@@ -251,10 +250,8 @@ void ABLModulatedPowerLaw::set_temperature(
 
         for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
             auto gbx = amrex::grow(mfi.validbox(), nghost);
-            if (!gbx.cellCentered()) {
-                gbx.enclosedCells();
-            }
-            const auto& bx = gbx & dbx;
+            const auto& bx =
+                utils::face_aware_boundary_box_intersection(gbx, dbx, ori);
             if (!bx.ok()) {
                 continue;
             }

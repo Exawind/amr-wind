@@ -36,12 +36,43 @@ AMREX_FORCE_INLINE T perpendicular_idx(const int normal)
     return T{-1, -1};
 }
 
+/** Get the intersection with a boundary box while considering if on face or
+ * cell. Intended for auxiliary boundary fill calls.
+ *
+ *  \param grown_interior_box box grown from domain interior to overlap with
+ * boundary
+ *  \param domain_boundary_box box representing domain boundary containing data
+ *  \param ori orientation of current boundary condition being evaluated
+ *  \return The Box instance representing the intersection of the two inputs
+ * with shifts added to consider the location of the field associated with the
+ * grown_interior_box
+ */
+inline amrex::Box face_aware_boundary_box_intersection(
+    amrex::Box grown_interior_box,
+    const amrex::Box& domain_boundary_box,
+    const amrex::Orientation& ori)
+{
+    const auto& field_location_vector = grown_interior_box.type();
+    if (!grown_interior_box.cellCentered()) {
+        grown_interior_box.enclosedCells();
+    }
+    auto bx = grown_interior_box & domain_boundary_box;
+    if (bx.isEmpty()) {
+        return bx;
+    }
+
+    if (ori.isHigh() && field_location_vector[ori.coordDir()] == 1) {
+        bx.shift(field_location_vector);
+    }
+    return bx;
+}
+
 /** Convert a bounding box into amrex::Box index space at a given level
  *
  *  \param rbx Bounding box as defined in global domain coordinates
  *  \param geom AMReX geometry information for a given level
  *  \return The Box instance that defines the index space equivalent to bounding
- * boxt
+ * box
  */
 amrex::Box
 realbox_to_box(const amrex::RealBox& rbx, const amrex::Geometry& geom);
