@@ -1,4 +1,5 @@
 #include "aw_test_utils/MeshTest.H"
+#include "amr-wind/utilities/index_operations.H"
 
 namespace amr_wind_tests {
 
@@ -26,18 +27,11 @@ void auxiliary_fill_boundary(amr_wind::Field& velocity, const int comp = 0)
                  mfi.isValid(); ++mfi) {
 
                 auto sbx = mfi.growntilebox(1);
-                const auto& field_location_vector = sbx.type();
-                if (!sbx.cellCentered()) {
-                    sbx.enclosedCells();
-                }
-                auto bx = sbx & domain_bdy_bx;
+                const auto& bx =
+                    amr_wind::utils::face_aware_boundary_box_intersection(
+                        sbx, domain_bdy_bx, ori);
                 if (bx.isEmpty()) {
                     continue;
-                }
-
-                if (ori.isHigh() &&
-                    field_location_vector[ori.coordDir()] == 1) {
-                    bx.shift(field_location_vector);
                 }
 
                 const auto& dest = velocity(lev).array(mfi);

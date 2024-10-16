@@ -4,6 +4,7 @@
 #include "AMReX_Gpu.H"
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
+#include "amr-wind/utilities/index_operations.H"
 #include <AMReX_PlotFileUtil.H>
 
 #include <sstream>
@@ -174,17 +175,10 @@ void ABLModulatedPowerLaw::set_velocity(
 
         for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
             auto gbx = amrex::grow(mfi.validbox(), nghost);
-            const auto& field_location_vector = gbx.type();
-            if (!gbx.cellCentered()) {
-                gbx.enclosedCells();
-            }
-            auto bx = gbx & dbx;
+            const auto& bx =
+                utils::face_aware_boundary_box_intersection(gbx, dbx, ori);
             if (!bx.ok()) {
                 continue;
-            }
-
-            if (ori.isHigh() && field_location_vector[ori.coordDir()] == 1) {
-                bx.shift(field_location_vector);
             }
 
             const auto& arr = mfab[mfi].array();
@@ -256,17 +250,10 @@ void ABLModulatedPowerLaw::set_temperature(
 
         for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
             auto gbx = amrex::grow(mfi.validbox(), nghost);
-            const auto& field_location_vector = gbx.type();
-            if (!gbx.cellCentered()) {
-                gbx.enclosedCells();
-            }
-            auto bx = gbx & dbx;
+            const auto& bx =
+                utils::face_aware_boundary_box_intersection(gbx, dbx, ori);
             if (!bx.ok()) {
                 continue;
-            }
-
-            if (ori.isHigh() && field_location_vector[ori.coordDir()] == 1) {
-                bx.shift(field_location_vector);
             }
 
             const auto& arr = mfab[mfi].array();

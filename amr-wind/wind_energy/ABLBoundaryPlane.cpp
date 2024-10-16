@@ -911,18 +911,11 @@ void ABLBoundaryPlane::populate_data(
              ++mfi) {
 
             auto sbx = mfi.growntilebox(1);
-            const auto& field_location_vector = sbx.type();
-            if (!sbx.cellCentered()) {
-                sbx.enclosedCells();
-            }
             const auto& src = m_in_data.interpolate_data(ori, lev);
-            auto bx = sbx & src.box();
+            const auto& bx = utils::face_aware_boundary_box_intersection(
+                sbx, src.box(), ori);
             if (bx.isEmpty()) {
                 continue;
-            }
-
-            if (ori.isHigh() && field_location_vector[ori.coordDir()] == 1) {
-                bx.shift(field_location_vector);
             }
 
             const auto& dest = mfab.array(mfi);
