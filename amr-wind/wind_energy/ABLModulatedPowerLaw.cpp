@@ -174,12 +174,17 @@ void ABLModulatedPowerLaw::set_velocity(
 
         for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
             auto gbx = amrex::grow(mfi.validbox(), nghost);
+            const auto& field_location_vector = gbx.type();
             if (!gbx.cellCentered()) {
                 gbx.enclosedCells();
             }
-            const auto& bx = gbx & dbx;
+            auto bx = gbx & dbx;
             if (!bx.ok()) {
                 continue;
+            }
+
+            if (ori.isHigh() && field_location_vector[ori.coordDir()] == 1) {
+                bx.shift(field_location_vector);
             }
 
             const auto& arr = mfab[mfi].array();
@@ -251,12 +256,17 @@ void ABLModulatedPowerLaw::set_temperature(
 
         for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
             auto gbx = amrex::grow(mfi.validbox(), nghost);
+            const auto& field_location_vector = gbx.type();
             if (!gbx.cellCentered()) {
                 gbx.enclosedCells();
             }
-            const auto& bx = gbx & dbx;
+            auto bx = gbx & dbx;
             if (!bx.ok()) {
                 continue;
+            }
+
+            if (ori.isHigh() && field_location_vector[ori.coordDir()] == 1) {
+                bx.shift(field_location_vector);
             }
 
             const auto& arr = mfab[mfi].array();
