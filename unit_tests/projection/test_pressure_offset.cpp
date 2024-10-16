@@ -85,8 +85,11 @@ void ptest_kernel(
     my_incflo.init_mesh();
     auto& density = my_incflo.sim().repo().get_field("density");
     auto& velocity = my_incflo.sim().repo().get_field("velocity");
+    auto& gp = my_incflo.sim().repo().get_field("gp");
     // Set uniform density
     density.setVal(rho_0);
+    // Zero pressure gradient
+    gp.setVal(0.0);
     // Set velocity as it would be with gravity forcing
     init_vel_z(velocity, w_0);
 
