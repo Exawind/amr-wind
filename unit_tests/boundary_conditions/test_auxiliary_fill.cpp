@@ -64,20 +64,20 @@ amrex::Real get_field_err(
                 // Do indices manually to check against box operations in code
                 if (ncomp == 1) {
                     // Checking a MAC velocity
-                    bool in_x_bdy = (i == -1 || i == 8);
-                    bool not_in_yz_bdy =
+                    const bool in_x_bdy = (i == -1 || i == 8);
+                    const bool not_in_yz_bdy =
                         (j >= 0 && j <= 7) && (k >= 0 && k <= 7);
-                    bool in_y_bdy = (j == -1 || j == 8);
-                    bool not_in_xz_bdy =
+                    const bool in_y_bdy = (j == -1 || j == 8);
+                    const bool not_in_xz_bdy =
                         (i >= 0 && i <= 7) && (k >= 0 && k <= 7);
-                    bool in_z_bdy = (k == -1 || k == 8);
-                    bool not_in_xy_bdy =
+                    const bool in_z_bdy = (k == -1 || k == 8);
+                    const bool not_in_xy_bdy =
                         (j >= 0 && j <= 7) && (i >= 0 && i <= 7);
                     if (comp == 0) {
                         // Checking u
                         if (check_all_ghost) {
                             // Ghost cells in boundaries, but not corners
-                            bool in_xf_bdy = (i == -1 || i == 9);
+                            const bool in_xf_bdy = (i == -1 || i == 9);
                             if ((in_xf_bdy && not_in_yz_bdy) ||
                                 (in_y_bdy && not_in_xz_bdy) ||
                                 (in_z_bdy && not_in_xy_bdy)) {
@@ -98,7 +98,7 @@ amrex::Real get_field_err(
                         // Checking v
                         if (check_all_ghost) {
                             // Ghost cells in boundaries, but not corners
-                            bool in_yf_bdy = (j == -1 || j == 9);
+                            const bool in_yf_bdy = (j == -1 || j == 9);
                             if ((in_x_bdy && not_in_yz_bdy) ||
                                 (in_yf_bdy && not_in_xz_bdy) ||
                                 (in_z_bdy && not_in_xy_bdy)) {
@@ -119,7 +119,7 @@ amrex::Real get_field_err(
                         // Checking w
                         if (check_all_ghost) {
                             // Ghost cells in boundaries, but not corners
-                            bool in_zf_bdy = (k == -1 || k == 9);
+                            const bool in_zf_bdy = (k == -1 || k == 9);
                             if ((in_x_bdy && not_in_yz_bdy) ||
                                 (in_y_bdy && not_in_xz_bdy) ||
                                 (in_zf_bdy && not_in_xy_bdy)) {
