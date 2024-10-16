@@ -89,6 +89,7 @@ void ptest_kernel(
     // Zero pressure gradient
     gp.setVal(0.0);
     // Set velocity as it would be with gravity forcing
+    velocity.setVal(0.0);
     init_vel_z(velocity, w_0);
 
     // If requested, form reference_pressure field
