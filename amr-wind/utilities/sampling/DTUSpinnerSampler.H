@@ -41,7 +41,13 @@ public:
      *
      *
      */
-    void sampling_locations(SampleLocType& /*locs*/) const override;
+    void sampling_locations(SampleLocType& /*sample_locs*/) const override;
+
+    //! Populate the vector with coordinates of the sampling locations inside
+    //! a box
+    void sampling_locations(
+        SampleLocType& /*sample_locs*/,
+        const amrex::Box& /*box*/) const override;
 
     static vs::Vector generate_lidar_pattern(
         PrismParameters InnerPrism, PrismParameters OuterPrism, double time);

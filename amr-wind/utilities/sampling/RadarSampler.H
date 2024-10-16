@@ -47,12 +47,19 @@ public:
     double determine_current_sweep_angle() const;
 
     //! Populate and return a vector of probe locations to be sampled
-    void sampling_locations(SampleLocType& /*locs*/) const override;
+    void sampling_locations(SampleLocType& /*sample_locs**/) const override;
+
+    //! Populate the vector with coordinates of the sampling locations inside
+    //! a box
+    void sampling_locations(
+        SampleLocType& /*sample_locs*/,
+        const amrex::Box& /*box*/) const override;
+
     bool update_sampling_locations() override;
-    void cone_axis_locations(SampleLocType& /*locs*/) const;
-    void output_locations(SampleLocType& locs) const override
+    void cone_axis_locations(SampleLocType& /*sample_locs*/) const;
+    void output_locations(SampleLocType& sample_locs) const override
     {
-        return cone_axis_locations(locs);
+        return cone_axis_locations(sample_locs);
     }
 
     void post_sample_actions() override;
@@ -140,10 +147,10 @@ protected:
     amrex::Vector<amrex::Real> m_start;
     amrex::Vector<amrex::Real> m_end;
 
-    SamplerBase::SampleLocType m_initial_cone;
-    SamplerBase::SampleLocType m_current_cones;
-    SamplerBase::SampleLocType m_prior_cones;
-    SamplerBase::SampleLocType m_sample_cones;
+    SampleLocType::LocType m_initial_cone;
+    SampleLocType::LocType m_current_cones;
+    SampleLocType::LocType m_prior_cones;
+    SampleLocType::LocType m_sample_cones;
 
     LosRotType m_los_proj;
     LosUnitType m_los_unit;
@@ -193,7 +200,7 @@ protected:
     long m_num_points_prior;
     long m_num_output_points_prior;
 
-    double m_fill_val{-99999.99};
+    amrex::Real m_fill_val{-99999.99};
 };
 
 } // namespace amr_wind::sampling

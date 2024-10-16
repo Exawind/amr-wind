@@ -1,6 +1,6 @@
 #include "amr-wind/utilities/sampling/ProbeSampler.H"
 #include "amr-wind/CFDSim.H"
-
+#include "amr-wind/utilities/index_operations.H"
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind::sampling {
@@ -34,23 +34,29 @@ void ProbeSampler::initialize(const std::string& key)
     ifh >> npts_file;
     ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     SampleLocType probes_file;
-    probes_file.resize(npts_file);
-    m_npts = m_poffsets.size() * npts_file;
-    m_probes.resize(m_npts);
     // Read through points in file
     for (int i = 0; i < npts_file; ++i) {
-        ifh >> probes_file[i][0] >> probes_file[i][1] >> probes_file[i][2];
+        amrex::RealVect loc;
+        ifh >> loc[0] >> loc[1] >> loc[2];
         ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        probes_file.push_back(loc, i);
     }
+    AMREX_ALWAYS_ASSERT(probes_file.locations().size() == npts_file);
     // Incorporate offsets
+    int idx = 0;
+    m_npts = m_poffsets.size() * npts_file;
+    const auto& locs_file = probes_file.locations();
     for (int n = 0; n < m_poffsets.size(); ++n) {
         for (int i = 0; i < npts_file; ++i) {
+            amrex::RealVect loc;
             for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-                m_probes[i + n * npts_file][d] =
-                    probes_file[i][d] + m_poffsets[n] * m_offset_vector[d];
+                loc[d] = locs_file[i][d] + m_poffsets[n] * m_offset_vector[d];
             }
+            m_probes.push_back(loc, idx);
+            ++idx;
         }
     }
+    AMREX_ALWAYS_ASSERT(m_probes.locations().size() == m_npts);
 
     check_bounds();
 }
@@ -60,16 +66,17 @@ void ProbeSampler::check_bounds()
     const int lev = 0;
     const auto* prob_lo = m_sim.mesh().Geom(lev).ProbLo();
     const auto* prob_hi = m_sim.mesh().Geom(lev).ProbHi();
+    auto& probe_locs = m_probes.locations();
     bool all_ok = true;
     for (int i = 0; i < m_npts; ++i) {
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-            if (m_probes[i][d] <= prob_lo[d]) {
+            if (probe_locs[i][d] <= prob_lo[d]) {
                 all_ok = false;
-                m_probes[i][d] = prob_lo[d] + bounds_tol;
+                probe_locs[i][d] = prob_lo[d] + bounds_tol;
             }
-            if (m_probes[i][d] >= prob_hi[d]) {
+            if (probe_locs[i][d] >= prob_hi[d]) {
                 all_ok = false;
-                m_probes[i][d] = prob_hi[d] - bounds_tol;
+                probe_locs[i][d] = prob_hi[d] - bounds_tol;
             }
         }
     }
@@ -80,12 +87,30 @@ void ProbeSampler::check_bounds()
     }
 }
 
-void ProbeSampler::sampling_locations(SampleLocType& locs) const
+void ProbeSampler::sampling_locations(SampleLocType& sample_locs) const
 {
-    locs.resize(m_npts);
+    AMREX_ALWAYS_ASSERT(sample_locs.locations().empty());
+
+    const int lev = 0;
+    const auto domain = m_sim.mesh().Geom(lev).Domain();
+    sampling_locations(sample_locs, domain);
+    AMREX_ALWAYS_ASSERT(sample_locs.locations().size() == num_points());
+}
+
+void ProbeSampler::sampling_locations(
+    SampleLocType& sample_locs, const amrex::Box& box) const
+{
+    AMREX_ALWAYS_ASSERT(sample_locs.locations().empty());
+
+    const auto& probe_locs = m_probes.locations();
+    const int lev = 0;
+    const auto& dxinv = m_sim.mesh().Geom(lev).InvCellSizeArray();
+    const auto& plo = m_sim.mesh().Geom(lev).ProbLoArray();
     for (int i = 0; i < m_npts; ++i) {
-        for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-            locs[i][d] = m_probes[i][d];
+        const amrex::RealVect loc = {
+            AMREX_D_DECL(probe_locs[i][0], probe_locs[i][1], probe_locs[i][2])};
+        if (utils::contains(box, loc, plo, dxinv)) {
+            sample_locs.push_back(loc, i);
         }
     }
 }

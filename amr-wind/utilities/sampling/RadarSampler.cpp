@@ -2,10 +2,8 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/tensor_ops.H"
 #include "amr-wind/utilities/trig_ops.H"
-
+#include "amr-wind/utilities/index_operations.H"
 #include "AMReX_ParmParse.H"
-
-#define PI 3.14159265
 
 namespace amr_wind::sampling {
 
@@ -219,8 +217,8 @@ bool RadarSampler::update_sampling_locations()
                        << "-------------------------" << std::endl;
     }
 
-    long conetipbegin = m_cone_size - 1 - num_points_quad();
-    long conetipend = m_cone_size;
+    const amrex::Long conetipbegin = m_cone_size - 1 - num_points_quad();
+    const amrex::Long conetipend = m_cone_size;
 
     // Loop for oversampling
     for (int k = 0; k < m_ntotal; k++) {
@@ -251,7 +249,7 @@ bool RadarSampler::update_sampling_locations()
                 vertical_ref, sweep_angle, radar_ref));
             vs::Vector elevation_axis(-vertical_ref ^ swept_axis);
 
-            long cq_idx = k * num_points_quad();
+            amrex::Long cq_idx = k * num_points_quad();
 
             // Add rotated cone to current cones
             for (int i = 0; i < m_cone_size; ++i) {
@@ -263,7 +261,7 @@ bool RadarSampler::update_sampling_locations()
                     vertical_ref, sweep_angle, temp_point));
                 vs::Vector rotated_point(sampling_utils::rotate_euler_vector(
                     elevation_axis, elevation_angle, swept_point));
-                long point_index = i + k * m_cone_size;
+                const amrex::Long point_index = i + k * m_cone_size;
                 m_current_cones[point_index][0] = rotated_point[0] + m_start[0];
                 m_current_cones[point_index][1] = rotated_point[1] + m_start[1];
                 m_current_cones[point_index][2] = rotated_point[2] + m_start[2];
@@ -284,10 +282,10 @@ bool RadarSampler::update_sampling_locations()
         } else {
             // This cone falls outside time bounds
             // For this timestep
-            long cq_idx = k * num_points_quad();
+            amrex::Long cq_idx = k * num_points_quad();
 
             for (int i = 0; i < m_cone_size; ++i) {
-                long point_index = i + k * m_cone_size;
+                const amrex::Long point_index = i + k * m_cone_size;
                 m_current_cones[point_index][0] = m_fill_val;
                 m_current_cones[point_index][1] = m_fill_val;
                 m_current_cones[point_index][2] = m_fill_val;
@@ -324,7 +322,7 @@ void RadarSampler::new_cone()
         utils::radians(m_cone_angle), m_ntheta,
         sampling_utils::NormalRule::HALFPOWER, m_rays, m_weights);
 
-    long nquad = num_points_quad();
+    const amrex::Long nquad = num_points_quad();
 
     if (m_debug_print) {
         for (int j = 0; j < nquad; ++j) {
@@ -351,7 +349,7 @@ void RadarSampler::new_cone()
 
     for (int n = 0; n < m_npts; ++n) {
         for (int j = 0; j < nquad; ++j) {
-            long pt_idx = j + n * nquad;
+            const amrex::Long pt_idx = j + n * nquad;
             const auto radius = dx[2] * n;
             m_initial_cone[pt_idx][0] = radius * m_rays[j][0];
             m_initial_cone[pt_idx][1] = radius * m_rays[j][1];
@@ -360,7 +358,7 @@ void RadarSampler::new_cone()
     }
 
     vs::Vector tc_axis = canon_vector ^ init_axis;
-    amrex::Real tc_angle = std::acos(init_axis & canon_vector) * 180.0 / PI;
+    amrex::Real tc_angle = std::acos(init_axis & canon_vector) * 180.0 / M_PI;
 
     // Initial cone points along input-file-given axis and is full size
     for (int i = 0; i < num_points_cone(); ++i) {
@@ -388,8 +386,8 @@ void RadarSampler::calc_lineofsight_velocity(
 
     for (int k = 0; k < m_ntotal; k++) {
         for (int i = 0; i < m_cone_size; ++i) {
-            long p_idx = i + k * m_cone_size;
-            long cq_idx = i % num_points_quad();
+            const amrex::Long p_idx = i + k * m_cone_size;
+            const amrex::Long cq_idx = i % num_points_quad();
             vs::Vector temp_vel(
                 velocity_raw[p_idx][0], velocity_raw[p_idx][1],
                 velocity_raw[p_idx][2]);
@@ -399,7 +397,7 @@ void RadarSampler::calc_lineofsight_velocity(
     }
 
     for (int k = 0; k < m_ntotal; k++) {
-        long a_start = k * num_points_axis();
+        const amrex::Long a_start = k * num_points_axis();
         std::vector<double> temp_vals(
             los_temp.begin() + k * num_points_cone(),
             los_temp.begin() + (k + 1) * num_points_cone());
@@ -419,13 +417,13 @@ std::vector<double> RadarSampler::modify_sample_data(
     // there are m_ntotal steps (cones) based on sampling rate
     AMREX_ALWAYS_ASSERT(static_cast<int>(sample_data.size()) == num_points());
 
-    const long n_cones = m_ntotal;
+    const amrex::Long n_cones = m_ntotal;
     std::vector<double> mod_data(num_output_points());
 
     for (int ic = 0; ic < n_cones; ++ic) {
-        long c_start = ic * num_points_cone();
-        long c_end = (ic + 1) * num_points_cone();
-        long a_start = ic * num_points_axis();
+        const amrex::Long c_start = ic * num_points_cone();
+        const amrex::Long c_end = (ic + 1) * num_points_cone();
+        const amrex::Long a_start = ic * num_points_axis();
 
         // Send a single cone to be line averaged
         std::vector<double> temp_vals(
@@ -440,7 +438,7 @@ void RadarSampler::line_average(
     const std::vector<double>& weights,
     const std::vector<double>& values,
     std::vector<double>& reduced,
-    long offset)
+    const amrex::Long offset)
 {
     const int nline = static_cast<int>(values.size() / weights.size());
     const int nquad = static_cast<int>(weights.size());
@@ -460,38 +458,71 @@ void RadarSampler::line_average(
     }
 }
 
-void RadarSampler::sampling_locations(SampleLocType& locs) const
+void RadarSampler::sampling_locations(SampleLocType& sample_locs) const
 {
-    locs.resize(num_points());
+    AMREX_ALWAYS_ASSERT(sample_locs.locations().empty());
 
+    // Need a box that contains the fill val position so that it does
+    // not get excluded from the write.
+    const int lev = 0;
+    const auto dom_hi = m_sim.mesh().Geom(lev).Domain().bigEnd();
+    const auto& dxinv = m_sim.mesh().Geom(lev).InvCellSizeArray();
+    const auto& plo = m_sim.mesh().Geom(lev).ProbLoArray();
+    const amrex::IntVect fill_val_iv(AMREX_D_DECL(
+        static_cast<int>(amrex::Math::floor((m_fill_val - plo[0]) * dxinv[0])),
+        static_cast<int>(amrex::Math::floor((m_fill_val - plo[1]) * dxinv[1])),
+        static_cast<int>(
+            amrex::Math::floor((m_fill_val - plo[2]) * dxinv[2]))));
+    const amrex::Box box_containing_fill_val(fill_val_iv, dom_hi);
+    sampling_locations(sample_locs, box_containing_fill_val);
+
+    AMREX_ALWAYS_ASSERT(sample_locs.locations().size() == num_points());
+}
+
+void RadarSampler::sampling_locations(
+    SampleLocType& sample_locs, const amrex::Box& box) const
+{
+    AMREX_ALWAYS_ASSERT(sample_locs.locations().empty());
+
+    const int lev = 0;
+    const auto& dxinv = m_sim.mesh().Geom(lev).InvCellSizeArray();
+    const auto& plo = m_sim.mesh().Geom(lev).ProbLoArray();
     for (int i = 0; i < num_points_scan(); ++i) {
-        locs[i][0] = (m_radar_iter > 0) ? m_prior_cones[i][0] : m_fill_val;
-        locs[i][1] = (m_radar_iter > 0) ? m_prior_cones[i][1] : m_fill_val;
-        locs[i][2] = (m_radar_iter > 0) ? m_prior_cones[i][2] : m_fill_val;
+        const amrex::RealVect loc = {AMREX_D_DECL(
+            (m_radar_iter > 0) ? m_prior_cones[i][0] : m_fill_val,
+            (m_radar_iter > 0) ? m_prior_cones[i][1] : m_fill_val,
+            (m_radar_iter > 0) ? m_prior_cones[i][2] : m_fill_val)};
+        if (utils::contains(box, loc, plo, dxinv)) {
+            sample_locs.push_back(loc, i);
+        }
     }
 
     for (int i = 0; i < num_points_scan(); ++i) {
-        long ioff = i + num_points_scan();
-        locs[ioff][0] = m_current_cones[i][0];
-        locs[ioff][1] = m_current_cones[i][1];
-        locs[ioff][2] = m_current_cones[i][2];
+        const amrex::Long ioff = i + num_points_scan();
+        const amrex::RealVect loc = {AMREX_D_DECL(
+            m_current_cones[i][0], m_current_cones[i][1],
+            m_current_cones[i][2])};
+        if (utils::contains(box, loc, plo, dxinv)) {
+            sample_locs.push_back(loc, ioff);
+        }
     }
 }
 
 // TODO: Create test for this calculation
 void RadarSampler::cone_axis_locations(SampleLocType& axis_locs) const
 {
-    axis_locs.resize(num_output_points());
-
     for (int k = 0; k < m_ntotal; k++) {
         for (int i = 0; i < m_npts; ++i) {
-            int pi = i + k * m_npts;
-            long ci = i * num_points_quad() + k * num_points_cone();
-            axis_locs[pi][0] = m_prior_cones[ci][0];
-            axis_locs[pi][1] = m_prior_cones[ci][1];
-            axis_locs[pi][2] = m_prior_cones[ci][2];
+            const amrex::Long pi = i + k * m_npts;
+            const amrex::Long ci =
+                i * num_points_quad() + k * num_points_cone();
+            const amrex::RealVect loc = {AMREX_D_DECL(
+                m_prior_cones[ci][0], m_prior_cones[ci][1],
+                m_prior_cones[ci][2])};
+            axis_locs.push_back(loc, pi);
         }
     }
+    AMREX_ALWAYS_ASSERT(axis_locs.locations().size() == num_output_points());
 }
 
 void RadarSampler::post_sample_actions()
@@ -537,21 +568,23 @@ void RadarSampler::output_netcdf_data(
     std::vector<size_t> start{nt, 0, 0};
     std::vector<size_t> count{1, 0, AMREX_SPACEDIM};
 
-    SamplerBase::SampleLocType locs;
-    cone_axis_locations(locs);
+    SampleLocType sample_locs;
+    cone_axis_locations(sample_locs);
     count[1] = num_output_points();
     auto xyz = grp.var("points");
-    xyz.put(locs[0].data(), start, count);
+    const auto& locs = sample_locs.locations();
+    xyz.put(locs[0].begin(), start, count);
 
     if (m_output_cone_points) {
         std::vector<size_t> cone_start{nt, 0, 0};
         std::vector<size_t> cone_count{1, 0, AMREX_SPACEDIM};
 
-        SamplerBase::SampleLocType conelocs;
+        SampleLocType conelocs;
         sampling_locations(conelocs);
         cone_count[1] = num_points();
         auto cone_xyz = grp.var("conepoints");
-        cone_xyz.put(conelocs[0].data(), cone_start, cone_count);
+        const auto& clocs = sample_locs.locations();
+        cone_xyz.put(clocs[0].begin(), cone_start, cone_count);
     }
 }
 

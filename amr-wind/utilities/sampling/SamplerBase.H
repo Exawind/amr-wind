@@ -1,6 +1,7 @@
 #ifndef SAMPLERBASE_H
 #define SAMPLERBASE_H
 
+#include <AMReX_RealVect.H>
 #include "amr-wind/core/Factory.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 
@@ -9,6 +10,39 @@ namespace amr_wind {
 class CFDSim;
 
 namespace sampling {
+
+struct SampleLocType
+{
+    using LocType = amrex::Vector<amrex::RealVect>;
+    using IdType = amrex::Vector<amrex::Long>;
+
+    void push_back(const amrex::RealVect& loc, const amrex::Long id)
+    {
+        m_locations.push_back(loc);
+        m_ids.push_back(id);
+    }
+
+    const LocType& locations() const
+    {
+        AMREX_ALWAYS_ASSERT(m_locations.size() == m_ids.size());
+        return m_locations;
+    }
+
+    LocType& locations()
+    {
+        AMREX_ALWAYS_ASSERT(m_locations.size() == m_ids.size());
+        return m_locations;
+    }
+
+    const IdType& ids() const
+    {
+        AMREX_ALWAYS_ASSERT(m_locations.size() == m_ids.size());
+        return m_ids;
+    }
+
+    LocType m_locations;
+    IdType m_ids;
+};
 
 /** Abstract representation of data probes to sample flow data
  *  \ingroup sampling
@@ -20,9 +54,6 @@ namespace sampling {
 class SamplerBase : public Factory<SamplerBase, CFDSim&>
 {
 public:
-    using SampleLocType =
-        amrex::Vector<amrex::Array<amrex::Real, AMREX_SPACEDIM>>;
-
     static std::string base_identifier() { return "SamplerBase"; }
 
     static constexpr amrex::Real bounds_tol =
@@ -54,6 +85,11 @@ public:
 
     //! Populate the vector with coordinates of the sampling locations
     virtual void sampling_locations(SampleLocType&) const = 0;
+
+    //! Populate the vector with coordinates of the sampling locations inside
+    //! a box
+    virtual void
+    sampling_locations(SampleLocType&, const amrex::Box&) const = 0;
 
     //! Check and fix the bounds of the sampler so the probes are in the domain
     virtual void check_bounds() = 0;
