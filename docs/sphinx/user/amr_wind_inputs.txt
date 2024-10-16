@@ -24,7 +24,6 @@ time.checkpoint_interval                    = 10000
 time.use_force_cfl                          = false
 
 # input/output settings
-io.KE_int                                   = -1
 io.check_file                               = "chk"
 io.plot_file                                = "plt"
 io.restart_file                             = ""

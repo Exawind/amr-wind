@@ -10,16 +10,14 @@ void init_vel_z(amr_wind::Field& vel, const amrex::Real w_const)
     const int nlevels = vel.repo().num_active_levels();
 
     for (int lev = 0; lev < nlevels; ++lev) {
-
-        for (amrex::MFIter mfi(vel(lev)); mfi.isValid(); ++mfi) {
-            auto gbx = mfi.growntilebox();
-            const auto& varr = vel(lev).array(mfi);
-
-            amrex::ParallelFor(gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-                varr(i, j, k, 2) = w_const;
+        const auto& varrs = vel(lev).arrays();
+        const amrex::IntVect ngs = vel.num_grow();
+        amrex::ParallelFor(
+            vel(lev), ngs, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+                varrs[nbx](i, j, k, 2) = w_const;
             });
-        }
     }
+    amrex::Gpu::synchronize();
 }
 
 void init_ref_p(
@@ -33,21 +31,21 @@ void init_ref_p(
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = geom[lev].CellSizeArray();
         const auto& probhi = geom[lev].ProbHiArray();
-        for (amrex::MFIter mfi(ref_p(lev)); mfi.isValid(); ++mfi) {
-            auto nbx = mfi.nodaltilebox();
-            const auto& p0_arr = ref_p(lev).array(mfi);
-
-            amrex::ParallelFor(nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        const auto& p0_arrs = ref_p(lev).arrays();
+        const amrex::IntVect ngs(0);
+        amrex::ParallelFor(
+            ref_p(lev), ngs,
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 // Height of pressure node
                 const amrex::Real hnode = k * dx[2];
                 // Integrated density from top
                 const amrex::Real irho = rho_0 * (probhi[2] - hnode);
 
                 // Multiply with force to get hydrostatic pressure
-                p0_arr(i, j, k) = -irho * F_g;
+                p0_arrs[nbx](i, j, k) = -irho * F_g;
             });
-        }
     }
+    amrex::Gpu::synchronize();
 }
 
 amrex::Real get_pbottom(amr_wind::Field& pressure)
@@ -85,9 +83,13 @@ void ptest_kernel(
     my_incflo.init_mesh();
     auto& density = my_incflo.sim().repo().get_field("density");
     auto& velocity = my_incflo.sim().repo().get_field("velocity");
+    auto& gp = my_incflo.sim().repo().get_field("gp");
     // Set uniform density
     density.setVal(rho_0);
+    // Zero pressure gradient
+    gp.setVal(0.0);
     // Set velocity as it would be with gravity forcing
+    velocity.setVal(0.0);
     init_vel_z(velocity, w_0);
 
     // If requested, form reference_pressure field

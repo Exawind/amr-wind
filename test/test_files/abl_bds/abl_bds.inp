@@ -72,7 +72,6 @@ zhi.temperature = 0.003 # tracer is used to specify potential temperature gradie
 #.......................................#
 incflo.verbose          =   0          # incflo_level
 
-amrex.abort_on_out_of_memory=1
 amrex.the_arena_is_managed=1
 amrex.async_out=0
 # needed because a debug build using BDS + amrex.the_arena_is_managed=0 OOMs the GPU (problem is in incflo as well)

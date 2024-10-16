@@ -23,7 +23,6 @@ io.derived_outputs = "components(velocity,0,1)" "components(gp,0,1)"
 #               PHYSICS                 #
 #.......................................#
 incflo.use_godunov  = 0
-incflo.godunov_type = "plm"
 transport.viscosity = 1e-3
 transport.laminar_prandtl = 1.0
 turbulence.model = Laminar
@@ -40,7 +39,6 @@ amr.max_level           =   0           # Max AMR level in hierarchy
 #.......................................#
 geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
 geometry.prob_hi        =   1.  1.  1.  # Hi corner coordinates
-geometry.prob_hi_physical  =   2.  2.  2.
 geometry.is_periodic    =   1   1   1   # Periodicity x y z (0/1)
 
 geometry.mesh_mapping = ConstantMap

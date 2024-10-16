@@ -46,8 +46,6 @@ time.cfl                       = 0.95                           # CFL factor
 #---------------------------------------#
 time.plot_interval             = 1000                           # Steps between plot files
 time.checkpoint_interval       = 1000                           # Steps between checkpoint files
-io.KE_int                      = 1                              
-io.line_plot_int               = 1                              
 
 [...snip...]
 ```

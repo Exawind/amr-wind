@@ -36,7 +36,6 @@ transport.turbulent_prandtl                 = 0.333
 # turbulence equation parameters
 turbulence.model                            = Kosovic
 Kosovic.surfaceRANS                         = false 
-Kosovic.surfaceRANSExp                      = 2
 Kosovic.writeTerms                          = false
 Kosovic.refMOL                              = -1e30
 # Atmospheric boundary layer
