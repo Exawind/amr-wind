@@ -47,13 +47,10 @@ void ABLFillInflow::fillphysbc(
     const amrex::IntVect& nghost,
     const FieldState fstate)
 {
-    // This check is to avoid diffs -- it will be removed soon
-    if (fstate != FieldState::NPH) {
-        FieldFillPatchOps<FieldBCDirichlet>::fillphysbc(
-            lev, time, mfab, nghost, fstate);
+    FieldFillPatchOps<FieldBCDirichlet>::fillphysbc(
+        lev, time, mfab, nghost, fstate);
 
-        m_bndry_plane.populate_data(lev, m_time.new_time(), m_field, mfab);
-    }
+    m_bndry_plane.populate_data(lev, m_time.new_time(), m_field, mfab);
 }
 
 void ABLFillInflow::fillpatch_sibling_fields(
