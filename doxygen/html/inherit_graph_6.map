@@ -1,0 +1,49 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$classamr__wind_1_1_a_b_l_mesoscale_forcing.html" title=" " alt="" coords="5,1069,240,1094"/>
+<area shape="rect" id="Node000001" href="$classamr__wind_1_1pde_1_1icns_1_1_a_b_l_meso_forcing_mom.html" title=" " alt="" coords="306,1029,477,1069"/>
+<area shape="poly" id="edge3_Node000000_Node000001" title=" " alt="" coords="243,1064,306,1057,306,1062,244,1070"/>
+<area shape="rect" id="Node000019" href="$classamr__wind_1_1pde_1_1temperature_1_1_a_b_l_meso_forcing_temp.html" title=" " alt="" coords="288,1093,495,1133"/>
+<area shape="poly" id="edge4_Node000000_Node000019" title=" " alt="" coords="243,1093,288,1098,287,1104,243,1098"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="29,510,217,565"/>
+<area shape="poly" id="edge7_Node000002_Node000001" title=" " alt="" coords="129,578,139,669,150,725,165,786,186,848,213,909,247,965,290,1015,307,1028,304,1032,286,1019,243,969,208,911,181,850,160,787,144,726,134,669,123,579"/>
+<area shape="rect" id="Node000003" href="$classamr__wind_1_1pde_1_1icns_1_1_a_b_l_forcing.html" title=" " alt="" coords="315,5,467,45"/>
+<area shape="poly" id="edge5_Node000002_Node000003" title=" " alt="" coords="123,496,134,405,144,348,160,287,181,225,208,163,243,106,286,55,314,37,317,42,290,59,247,109,213,166,186,227,165,289,150,350,139,406,129,496"/>
+<area shape="rect" id="Node000004" href="$classamr__wind_1_1pde_1_1icns_1_1_a_b_l_mean_boussinesq.html" title=" " alt="" coords="309,69,474,109"/>
+<area shape="poly" id="edge6_Node000002_Node000004" title=" " alt="" coords="126,496,140,417,168,316,189,262,215,211,248,162,286,119,307,105,310,110,290,123,252,165,220,213,194,265,173,317,145,418,131,497"/>
+<area shape="rect" id="Node000005" href="$classamr__wind_1_1pde_1_1icns_1_1_actuator_forcing.html" title=" " alt="" coords="315,133,467,173"/>
+<area shape="poly" id="edge8_Node000002_Node000005" title=" " alt="" coords="129,496,147,429,177,344,198,301,223,258,252,218,286,183,313,167,316,171,290,187,256,222,227,261,203,303,182,347,152,430,134,498"/>
+<area shape="rect" id="Node000006" href="$classamr__wind_1_1pde_1_1icns_1_1_body_force.html" title=" " alt="" coords="315,197,467,237"/>
+<area shape="poly" id="edge9_Node000002_Node000006" title=" " alt="" coords="134,496,155,440,187,373,230,306,257,275,286,247,314,231,317,236,290,251,261,278,235,309,191,376,160,443,139,498"/>
+<area shape="rect" id="Node000007" href="$classamr__wind_1_1pde_1_1icns_1_1_boussinesq_buoyancy.html" title=" " alt="" coords="307,261,475,301"/>
+<area shape="poly" id="edge10_Node000002_Node000007" title=" " alt="" coords="140,497,165,453,197,404,238,354,286,311,307,299,310,304,290,315,242,358,202,407,169,456,145,499"/>
+<area shape="rect" id="Node000008" href="$classamr__wind_1_1pde_1_1icns_1_1_burggraf_flow_forcing.html" title=" " alt="" coords="309,325,473,365"/>
+<area shape="poly" id="edge11_Node000002_Node000008" title=" " alt="" coords="152,497,210,435,247,403,287,375,311,363,313,368,289,380,250,407,214,439,156,501"/>
+<area shape="rect" id="Node000009" href="$classamr__wind_1_1pde_1_1icns_1_1_coriolis_forcing.html" title=" " alt="" coords="315,389,467,429"/>
+<area shape="poly" id="edge12_Node000002_Node000009" title=" " alt="" coords="175,500,228,469,287,439,317,427,319,432,289,444,231,473,178,505"/>
+<area shape="rect" id="Node000010" href="$classamr__wind_1_1pde_1_1icns_1_1_density_buoyancy.html" title=" " alt="" coords="315,453,467,493"/>
+<area shape="poly" id="edge13_Node000002_Node000010" title=" " alt="" coords="230,509,314,489,316,494,231,514"/>
+<area shape="rect" id="Node000011" href="$classamr__wind_1_1pde_1_1icns_1_1_drag_forcing.html" title=" " alt="" coords="315,517,467,557"/>
+<area shape="poly" id="edge14_Node000002_Node000011" title=" " alt="" coords="231,535,315,535,315,540,231,540"/>
+<area shape="rect" id="Node000012" href="$classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html" title=" " alt="" coords="314,581,469,621"/>
+<area shape="poly" id="edge15_Node000002_Node000012" title=" " alt="" coords="231,560,314,580,313,586,230,565"/>
+<area shape="rect" id="Node000013" href="$classamr__wind_1_1pde_1_1icns_1_1_gravity_forcing.html" title=" " alt="" coords="315,645,467,685"/>
+<area shape="poly" id="edge16_Node000002_Node000013" title=" " alt="" coords="178,570,231,601,289,631,319,643,317,648,287,636,228,606,175,574"/>
+<area shape="rect" id="Node000014" href="$classamr__wind_1_1pde_1_1icns_1_1_hurricane_forcing.html" title=" " alt="" coords="315,709,467,749"/>
+<area shape="poly" id="edge17_Node000002_Node000014" title=" " alt="" coords="156,574,214,636,250,668,289,695,316,708,314,713,287,700,247,672,210,640,152,578"/>
+<area shape="rect" id="Node000015" href="$classamr__wind_1_1pde_1_1icns_1_1_non_linear_s_g_s_term.html" title=" " alt="" coords="314,773,469,813"/>
+<area shape="poly" id="edge18_Node000002_Node000015" title=" " alt="" coords="145,575,169,618,202,668,242,717,290,759,315,773,313,778,286,764,238,721,197,671,165,621,140,578"/>
+<area shape="rect" id="Node000016" href="$classamr__wind_1_1pde_1_1icns_1_1_rayleigh_damping.html" title=" " alt="" coords="315,837,467,877"/>
+<area shape="poly" id="edge19_Node000002_Node000016" title=" " alt="" coords="139,577,160,632,191,699,235,766,261,796,290,823,317,839,314,844,286,827,257,800,230,769,187,701,155,634,134,579"/>
+<area shape="rect" id="Node000017" href="$classamr__wind_1_1pde_1_1icns_1_1_synth_turb_forcing.html" title=" " alt="" coords="315,901,467,941"/>
+<area shape="poly" id="edge20_Node000002_Node000017" title=" " alt="" coords="134,577,152,645,182,728,203,772,227,814,256,853,290,887,316,904,313,908,286,891,252,856,223,817,198,774,177,730,147,646,129,578"/>
+<area shape="rect" id="Node000018" href="$classamr__wind_1_1pde_1_1icns_1_1mms_1_1_m_m_s_forcing.html" title=" " alt="" coords="315,965,467,1005"/>
+<area shape="poly" id="edge21_Node000002_Node000018" title=" " alt="" coords="131,578,145,657,173,757,194,810,220,861,252,909,290,951,316,968,314,973,286,955,248,913,215,864,189,812,168,759,140,658,126,579"/>
+<area shape="rect" id="Node000020" title=" " alt="" coords="19,1182,227,1237"/>
+<area shape="poly" id="edge22_Node000020_Node000019" title=" " alt="" coords="203,1175,287,1143,323,1131,325,1136,289,1148,204,1180"/>
+<area shape="rect" id="Node000021" href="$classamr__wind_1_1pde_1_1temperature_1_1_body_force.html" title=" " alt="" coords="288,1157,495,1197"/>
+<area shape="poly" id="edge23_Node000020_Node000021" title=" " alt="" coords="240,1193,288,1187,288,1192,240,1198"/>
+<area shape="rect" id="Node000022" href="$classamr__wind_1_1pde_1_1temperature_1_1_drag_temp_forcing.html" title=" " alt="" coords="288,1221,495,1261"/>
+<area shape="poly" id="edge24_Node000020_Node000022" title=" " alt="" coords="240,1221,288,1226,288,1232,240,1226"/>
+<area shape="rect" id="Node000023" href="$classamr__wind_1_1pde_1_1temperature_1_1_hurricane_temp_forcing.html" title=" " alt="" coords="288,1285,495,1325"/>
+<area shape="poly" id="edge25_Node000020_Node000023" title=" " alt="" coords="204,1239,289,1271,325,1283,323,1288,287,1276,203,1244"/>
+</map>

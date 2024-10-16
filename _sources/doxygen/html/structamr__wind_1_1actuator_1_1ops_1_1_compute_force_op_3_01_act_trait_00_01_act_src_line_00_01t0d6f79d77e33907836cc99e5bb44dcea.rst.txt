@@ -1,0 +1,14 @@
+.. meta::678d18982d89f0c7d7b32800b363eb76413f88d94563e73609e614adedee6d8622379e1a59e522746d273458dc79cf36517e5f137c31a068419b5d5f5a279795
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::ComputeForceOp&lt; ActTrait, ActSrcLine, typename std::enable_if_t&lt; std::is_base_of_v&lt; WingType, ActTrait &gt; &amp;&amp;UseDefaultOp&lt; ActTrait, ActSrcLine &gt;::compute_force &gt; &gt; Struct Template Reference
+
+compute\_force &gt; &gt; Struct Template Reference
+==================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_compute_force_op_3_01_act_trait_00_01_act_src_line_00_01t0d6f79d77e33907836cc99e5bb44dcea.html

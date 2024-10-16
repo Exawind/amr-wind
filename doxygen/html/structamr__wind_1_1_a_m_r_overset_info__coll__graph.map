@@ -1,0 +1,16 @@
+<map id="amr_wind::AMROversetInfo" name="amr_wind::AMROversetInfo">
+<area shape="rect" id="Node000001" title=" " alt="" coords="663,179,863,205"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1tioga__iface_1_1_amr_dual_array.html" title=" " alt="" coords="351,63,520,103"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="534,100,640,131,694,154,740,177,737,182,692,159,638,136,533,105"/>
+<area shape="rect" id="Node000003" href="$structamr__wind_1_1tioga__iface_1_1_amr_dual_array.html" title=" " alt="" coords="5,177,172,217"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="144,169,195,148,276,122,353,100,354,105,277,127,197,153,146,174"/>
+<area shape="rect" id="Node000004" href="$structamr__wind_1_1tioga__iface_1_1_amr_dual_array.html" title=" " alt="" coords="346,127,525,182"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="186,183,345,163,346,168,187,188"/>
+<area shape="rect" id="Node000005" href="$structamr__wind_1_1tioga__iface_1_1_amr_dual_array.html" title=" " alt="" coords="345,207,525,247"/>
+<area shape="poly" id="edge6_Node000005_Node000003" title=" " alt="" coords="186,203,345,216,345,222,186,208"/>
+<area shape="rect" id="Node000006" href="$structamr__wind_1_1tioga__iface_1_1_amr_dual_array.html" title=" " alt="" coords="346,271,525,326"/>
+<area shape="poly" id="edge8_Node000006_Node000003" title=" " alt="" coords="153,220,197,235,346,276,345,281,195,240,152,225"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="539,164,662,178,662,183,538,169"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="539,222,638,215,709,202,710,207,639,220,539,228"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="538,283,588,272,638,258,695,231,741,203,744,207,698,235,640,262,589,278,539,288"/>
+</map>

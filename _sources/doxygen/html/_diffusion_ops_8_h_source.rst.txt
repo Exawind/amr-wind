@@ -1,0 +1,14 @@
+.. meta::8b4f5029c374e75dd4225bf2945819e5ad3fad6ea2b16fa8236762511648c70709e20245f1de883f9a8b7aaa046be61d1d0912c850a65ede99b2d70547c21138
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/DiffusionOps.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/DiffusionOps.H Source File
+=========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _diffusion_ops_8_h_source.html

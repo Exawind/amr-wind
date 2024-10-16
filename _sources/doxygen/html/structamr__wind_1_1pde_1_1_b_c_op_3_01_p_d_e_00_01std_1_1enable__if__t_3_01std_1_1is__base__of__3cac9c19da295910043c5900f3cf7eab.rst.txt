@@ -1,0 +1,14 @@
+.. meta::0b3fd8f0bf61591929e422f7fac3e3d3eb18bc28437044f0a87a35a9c71f6360f783602b8933d83da86d24234558d83901e9fb6d4b5b8bd8c194b168a71c3892
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::BCOp&lt; PDE, std::enable_if_t&lt; std::is_base_of_v&lt; ScalarTransport, PDE &gt; &gt; &gt; Struct Template Reference
+
+is\_base\_of\_v&lt; ScalarTransport, PDE &gt; &gt; &gt; Struct Template Reference
+=================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_b_c_op_3_01_p_d_e_00_01std_1_1enable__if__t_3_01std_1_1is__base__of__3cac9c19da295910043c5900f3cf7eab.html

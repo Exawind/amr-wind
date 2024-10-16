@@ -1,0 +1,14 @@
+.. meta::f8afdd7d81b1d075e03c4a0454525051b6962cb448d32a6b7726c437fade901e2eca2f422b2185ffd04285e92a2eca0ced5033cb2a3d49c255953951771afc75
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/fvm/strainrate.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/fvm/strainrate.H Source File
+=========================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: strainrate_8_h_source.html

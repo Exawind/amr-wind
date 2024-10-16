@@ -1,0 +1,14 @@
+.. meta::52bb807fb965b26e0c29d8a0ad3b3841391d1617bbd6e6709225e6836cb10dee78a6ea31ee4a5c4014ecddf893adc83885ea2d8c8d03747f85c27fb1aa58f8a6
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::uniformct Namespace Reference
+
+uniformct Namespace Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1actuator_1_1ops_1_1uniformct.html

@@ -1,0 +1,14 @@
+.. meta::6112197c24e922edb64179d0c90f13fc7ec827cac1b48da1a510987cf219f3adb9fce66541ca0730d47c15d61fd6ee2249ee1a29378aebd4f79b4aaf3ca3f56d
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tagging/CartBoxRefinement.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tagging/CartBoxRefinement.H Source File
+==============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _cart_box_refinement_8_h_source.html
