@@ -44,7 +44,8 @@ void auxiliary_fill_boundary(amr_wind::Field& velocity, const int comp = 0)
                 amrex::ParallelFor(
                     bx, ncomp,
                     [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                        dest(i, j, k, n) = static_cast<amrex::Real>(comp + n + 1);
+                        dest(i, j, k, n) =
+                            static_cast<amrex::Real>(comp + n + 1);
                     });
             }
         }
@@ -72,9 +73,13 @@ amrex::Real get_field_err(
                     if (comp == 0) {
                         // Checking u
                         if (check_all_ghost) {
-                            // Ghost cells in boundaries
-                            if (i == -1 || j == -1 || k == -1 || i == 9 ||
-                                j == 8 || k == 8) {
+                            // Ghost cells in boundaries, but not corners
+                            if (((i == -1 || i == 9) && (j >= 0 && j <= 7) &&
+                                 (k >= 0 && k <= 7)) ||
+                                ((j == -1 || j == 8) && (i >= 0 && i <= 7) &&
+                                 (k >= 0 && k <= 7)) ||
+                                ((k == -1 || k == 8) && (j >= 0 && j <= 7) &&
+                                 (i >= 0 && i <= 7))) {
                                 error += std::abs(f_arr(i, j, k) - 1.0);
                             } else {
                                 error += std::abs(f_arr(i, j, k) - 0.0);
@@ -91,9 +96,13 @@ amrex::Real get_field_err(
                     } else if (comp == 1) {
                         // Checking v
                         if (check_all_ghost) {
-                            // Ghost cells in boundaries
-                            if (i == -1 || j == -1 || k == -1 || i == 8 ||
-                                j == 9 || k == 8) {
+                            // Ghost cells in boundaries, but not corners
+                            if (((i == -1 || i == 8) && (j >= 0 && j <= 7) &&
+                                 (k >= 0 && k <= 7)) ||
+                                ((j == -1 || j == 9) && (i >= 0 && i <= 7) &&
+                                 (k >= 0 && k <= 7)) ||
+                                ((k == -1 || k == 8) && (j >= 0 && j <= 7) &&
+                                 (i >= 0 && i <= 7))) {
                                 error += std::abs(f_arr(i, j, k) - 2.0);
                             } else {
                                 error += std::abs(f_arr(i, j, k) - 0.0);
@@ -110,9 +119,13 @@ amrex::Real get_field_err(
                     } else {
                         // Checking w
                         if (check_all_ghost) {
-                            // Ghost cells in boundaries
-                            if (i == -1 || j == -1 || k == -1 || i == 8 ||
-                                j == 8 || k == 9) {
+                            // Ghost cells in boundaries, but not corners
+                            if (((i == -1 || i == 8) && (j >= 0 && j <= 7) &&
+                                 (k >= 0 && k <= 7)) ||
+                                ((j == -1 || j == 8) && (i >= 0 && i <= 7) &&
+                                 (k >= 0 && k <= 7)) ||
+                                ((k == -1 || k == 9) && (j >= 0 && j <= 7) &&
+                                 (i >= 0 && i <= 7))) {
                                 error += std::abs(f_arr(i, j, k) - 3.0);
                             } else {
                                 error += std::abs(f_arr(i, j, k) - 0.0);
