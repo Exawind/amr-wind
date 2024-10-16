@@ -185,23 +185,29 @@ amrex::Real get_field_err(
 class AuxiliaryFillTest : public MeshTest
 {
 public:
-    void set_up_fields()
+    void set_up_fields_cc()
     {
         auto& frepo = mesh().field_repo();
-        m_vel = &frepo.declare_field("velocity", 3, 2, 1);
+        m_vel = &frepo.declare_field("velocity", 3, 1, 1);
+
+        (*m_vel).setVal(0.);
+    }
+
+    void set_up_fields_face()
+    {
+        auto& frepo = mesh().field_repo();
         auto mac_vels = frepo.declare_face_normal_field(
             {"u_mac", "v_mac", "w_mac"}, 1, 1, 1);
         m_umac = mac_vels[0];
         m_vmac = mac_vels[1];
         m_wmac = mac_vels[2];
 
-        (*m_vel).setVal(0.);
         (*m_umac).setVal(0.);
         (*m_vmac).setVal(0.);
         (*m_wmac).setVal(0.);
     }
 
-    void prep_test()
+    void prep_test(const bool is_cc)
     {
         // Default dimensions are n_cell = 8 x 8 x 8
         MeshTest::populate_parameters();
@@ -211,7 +217,11 @@ public:
             pp.addarr("is_periodic", periodic);
         }
         initialize_mesh();
-        set_up_fields();
+        if (is_cc) {
+            set_up_fields_cc();
+        } else {
+            set_up_fields_face();
+        }
     }
 
     amr_wind::Field* m_vel;
@@ -222,42 +232,30 @@ public:
 
 TEST_F(AuxiliaryFillTest, velocity_cc)
 {
-    prep_test();
+    prep_test(true);
 
-    // Test fillpatch and check ghost cells
+    // Do fill and check ghost cells
     auxiliary_fill_boundary(*m_vel);
     const auto err = get_field_err(*m_vel, false);
     EXPECT_DOUBLE_EQ(err, 0.);
 }
 
-TEST_F(AuxiliaryFillTest, velocity_xface)
+TEST_F(AuxiliaryFillTest, velocity_face)
 {
-    prep_test();
+    prep_test(false);
 
-    // Test fillpatch and check ghost cells
+    // Do fill and check ghost cells
     auxiliary_fill_boundary(*m_umac, 0);
-    const auto err = get_field_err(*m_umac, true, 0);
-    EXPECT_DOUBLE_EQ(err, 0.);
-}
+    const auto u_err = get_field_err(*m_umac, true, 0);
+    EXPECT_DOUBLE_EQ(u_err, 0.);
 
-TEST_F(AuxiliaryFillTest, velocity_yface)
-{
-    prep_test();
-
-    // Test fillpatch and check ghost cells
     auxiliary_fill_boundary(*m_vmac, 1);
-    const auto err = get_field_err(*m_vmac, true, 1);
-    EXPECT_DOUBLE_EQ(err, 0.);
-}
+    const auto v_err = get_field_err(*m_vmac, true, 1);
+    EXPECT_DOUBLE_EQ(v_err, 0.);
 
-TEST_F(AuxiliaryFillTest, velocity_zface)
-{
-    prep_test();
-
-    // Test fillpatch and check ghost cells
     auxiliary_fill_boundary(*m_wmac, 2);
-    const auto err = get_field_err(*m_wmac, true, 2);
-    EXPECT_DOUBLE_EQ(err, 0.);
+    const auto w_err = get_field_err(*m_wmac, true, 2);
+    EXPECT_DOUBLE_EQ(w_err, 0.);
 }
 
 } // namespace amr_wind_tests
