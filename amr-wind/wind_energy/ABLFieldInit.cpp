@@ -29,8 +29,10 @@ void ABLFieldInit::initialize_from_inputfile()
         pp_abl.getarr("wind_heights", m_wind_heights);
         pp_abl.getarr("u_values", m_u_values);
         pp_abl.getarr("v_values", m_v_values);
+        pp_abl.getarr("tke_values", m_tke_values);
         AMREX_ALWAYS_ASSERT(m_wind_heights.size() == m_u_values.size());
         AMREX_ALWAYS_ASSERT(m_wind_heights.size() == m_v_values.size());
+        AMREX_ALWAYS_ASSERT(m_wind_heights.size() == m_tke_values.size());
     }
     // Temperature variation as a function of height
     pp_abl.getarr("temperature_heights", m_theta_heights);
@@ -96,12 +98,16 @@ void ABLFieldInit::initialize_from_inputfile()
         int num_wind_values = static_cast<int>(m_wind_heights.size());
         m_prof_u_d.resize(num_wind_values);
         m_prof_v_d.resize(num_wind_values);
+        m_prof_tke_d.resize(num_wind_values);
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, m_u_values.begin(), m_u_values.end(),
             m_prof_u_d.begin());
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, m_v_values.begin(), m_v_values.end(),
             m_prof_v_d.begin());
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, m_tke_values.begin(), m_tke_values.end(),
+            m_prof_tke_d.begin());
     }
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, m_theta_heights.begin(),
@@ -342,7 +348,7 @@ void ABLFieldInit::init_tke(
 {
     tke_fab.setVal(m_tke_init);
 
-    if (!m_tke_init_profile) {
+    if (!m_tke_init_profile || m_initial_wind_profile) {
         return;
     }
 
@@ -359,18 +365,45 @@ void ABLFieldInit::init_tke(
         const auto& bx = mfi.tilebox();
         const auto& tke = tke_fab.array(mfi);
 
-        // Profile definition from Beare et al. (2006)
-        amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+        if (m_initial_wind_profile) {
+            const int ntvals = static_cast<int>(m_theta_heights.size());
+            const amrex::Real* th = m_thht_d.data();
+            /*
+             * Set wind and temperature profiles from netcdf input
+             */
+            const amrex::Real* tke_data = m_prof_tke_d.data();
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                if (z < tke_cutoff_height) {
-                    tke(i, j, k) = tke_init_factor *
-                                   std::pow(1. - z / tke_cutoff_height, 3);
-                } else {
-                    tke(i, j, k) = 1.e-20;
-                }
-            });
+                    amrex::Real tke_prof = tke_data[0];
+
+                    for (int iz = 0; iz < ntvals - 1; ++iz) {
+                        if ((z > th[iz]) && (z <= th[iz + 1])) {
+
+                            const amrex::Real slopetke =
+                                (tke_data[iz + 1] - tke_data[iz]) /
+                                (th[iz + 1] - th[iz]);
+                            tke_prof = tke_data[iz] + (z - th[iz]) * slopetke;
+                        }
+                    }
+
+                    tke(i, j, k) = tke_prof;
+                });
+        } else {
+            // Profile definition from Beare et al. (2006)
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+
+                    if (z < tke_cutoff_height) {
+                        tke(i, j, k) = tke_init_factor *
+                                       std::pow(1. - z / tke_cutoff_height, 3);
+                    } else {
+                        tke(i, j, k) = 1.e-20;
+                    }
+                });
+        }
     }
 }
 
