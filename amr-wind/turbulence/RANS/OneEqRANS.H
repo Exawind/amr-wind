@@ -13,16 +13,15 @@ template <typename Transport>
 class OneEqRANS : public TurbModelBase<Transport>
 {
 public:
-
     static std::string identifier()
     {
         return "OneEqRANS-" + Transport::identifier();
     }
-    
+
     explicit OneEqRANS(CFDSim& sim);
 
-  //~OneEqRANS() override;
-    
+    //~OneEqRANS() override;
+
     std::string model_name() const override { return "OneEqRANS"; }
 
     //! Update the turbulent viscosity field
@@ -43,7 +42,6 @@ public:
 
     //! Return turbulence model coefficients
     TurbulenceModel::CoeffsDictType model_coeffs() const override;
-
 
 private:
     Field& m_vel;

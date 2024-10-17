@@ -30,14 +30,13 @@ private:
     Field& m_buoy_prod;
     Field& m_dissip;
     Field& m_tke;
-  amrex::Real m_heat_flux{0.0};
-  amrex::Real m_ref_temp{300.0};
-  const SimTime& m_time;
-  const CFDSim& m_sim;
-  const amrex::AmrCore& m_mesh;
-  const Field& m_velocity;
+    amrex::Real m_heat_flux{0.0};
+    amrex::Real m_ref_temp{300.0};
+    const SimTime& m_time;
+    const CFDSim& m_sim;
+    const amrex::AmrCore& m_mesh;
+    const Field& m_velocity;
 };
-
 
 } // namespace amr_wind::pde::tke
 
