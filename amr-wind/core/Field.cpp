@@ -230,7 +230,7 @@ void Field::fillpatch_sibling_fields(
         }
 
         fop.fillpatch_sibling_fields(
-            lev, time, mfabs, mfabs, cfabs, ng, m_info->m_bcrec, field_state());
+            lev, time, mfabs, mfabs, cfabs, ng, m_info->m_bcrec, m_info->m_bcrec, field_state());
     }
 }
 

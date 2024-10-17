@@ -61,12 +61,14 @@ void ABLFillInflow::fillpatch_sibling_fields(
     amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& cfabs,
     const amrex::IntVect& nghost,
     const amrex::Vector<amrex::BCRec>& bcrec,
+    const amrex::Vector<amrex::BCRec>& /* unused */,
     const FieldState fstate)
 {
     // Avoid trying to read after planes have already been populated
     const bool plane_data_unchanged = m_bndry_plane.is_data_newer_than(time);
     // For an ABL fill, we just foextrap the mac velocities
-    amrex::Vector<amrex::BCRec> lbcrec(m_field.num_comp());
+    amrex::Vector<amrex::BCRec> fp_bcrec(m_field.num_comp());
+    amrex::Vector<amrex::BCRec> ph_bcrec(m_field.num_comp());
     const auto& ibctype = m_field.bc_type();
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
@@ -76,26 +78,30 @@ void ABLFillInflow::fillpatch_sibling_fields(
         for (int i = 0; i < m_field.num_comp(); ++i) {
             if (bct == BC::mass_inflow) {
                 if (side == amrex::Orientation::low) {
-                    lbcrec[i].setLo(
+                    ph_bcrec[i].setLo(dir, amrex::BCType::foextrap);
+                    fp_bcrec[i].setLo(
                         dir, plane_data_unchanged ? amrex::BCType::ext_dir
                                                   : amrex::BCType::foextrap);
                 } else {
-                    lbcrec[i].setHi(
+                    ph_bcrec[i].setHi(dir, amrex::BCType::foextrap);
+                    fp_bcrec[i].setHi(
                         dir, plane_data_unchanged ? amrex::BCType::ext_dir
                                                   : amrex::BCType::foextrap);
                 }
             } else {
                 if (side == amrex::Orientation::low) {
-                    lbcrec[i].setLo(dir, bcrec[i].lo(dir));
+                    ph_bcrec[i].setLo(dir, bcrec[i].lo(dir));
+                    fp_bcrec[i].setLo(dir, bcrec[i].lo(dir));
                 } else {
-                    lbcrec[i].setHi(dir, bcrec[i].hi(dir));
+                    ph_bcrec[i].setHi(dir, bcrec[i].hi(dir));
+                    fp_bcrec[i].setHi(dir, bcrec[i].hi(dir));
                 }
             }
         }
     }
 
     FieldFillPatchOps<FieldBCDirichlet>::fillpatch_sibling_fields(
-        lev, time, mfabs, ffabs, cfabs, nghost, lbcrec, fstate);
+        lev, time, mfabs, ffabs, cfabs, nghost, fp_bcrec, ph_bcrec, fstate);
 
     if (!plane_data_unchanged) {
         for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
