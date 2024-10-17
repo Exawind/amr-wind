@@ -24,13 +24,13 @@ void ABLFieldInit::initialize_from_inputfile()
 {
     amrex::ParmParse pp_abl("ABL");
     //! Check for wind profile
-    pp_abl.query("initial_wind_profile",m_initial_wind_profile);
-    if(m_initial_wind_profile){
-      pp_abl.getarr("wind_heights",m_wind_heights);
-      pp_abl.getarr("u_values", m_u_values);
-      pp_abl.getarr("v_values", m_v_values);
-      AMREX_ALWAYS_ASSERT(m_wind_heights.size() == m_u_values.size());
-      AMREX_ALWAYS_ASSERT(m_wind_heights.size() == m_v_values.size());
+    pp_abl.query("initial_wind_profile", m_initial_wind_profile);
+    if (m_initial_wind_profile) {
+        pp_abl.getarr("wind_heights", m_wind_heights);
+        pp_abl.getarr("u_values", m_u_values);
+        pp_abl.getarr("v_values", m_v_values);
+        AMREX_ALWAYS_ASSERT(m_wind_heights.size() == m_u_values.size());
+        AMREX_ALWAYS_ASSERT(m_wind_heights.size() == m_v_values.size());
     }
     // Temperature variation as a function of height
     pp_abl.getarr("temperature_heights", m_theta_heights);
@@ -92,18 +92,17 @@ void ABLFieldInit::initialize_from_inputfile()
 
     m_thht_d.resize(num_theta_values);
     m_thvv_d.resize(num_theta_values);
-    if(m_initial_wind_profile)
-      {
-	int num_wind_values = static_cast<int>(m_wind_heights.size());
-	m_prof_u_d.resize(num_wind_values);
-	m_prof_v_d.resize(num_wind_values);
-	amrex::Gpu::copy(
-			 amrex::Gpu::hostToDevice, m_u_values.begin(), m_u_values.end(),
-			 m_prof_u_d.begin());
-	amrex::Gpu::copy(
-			 amrex::Gpu::hostToDevice, m_v_values.begin(), m_v_values.end(),
-			 m_prof_v_d.begin());
-      }
+    if (m_initial_wind_profile) {
+        int num_wind_values = static_cast<int>(m_wind_heights.size());
+        m_prof_u_d.resize(num_wind_values);
+        m_prof_v_d.resize(num_wind_values);
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, m_u_values.begin(), m_u_values.end(),
+            m_prof_u_d.begin());
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, m_v_values.begin(), m_v_values.end(),
+            m_prof_v_d.begin());
+    }
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, m_theta_heights.begin(),
         m_theta_heights.end(), m_thht_d.begin());
