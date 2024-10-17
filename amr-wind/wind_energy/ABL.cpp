@@ -242,6 +242,12 @@ void ABL::pre_advance_work()
     m_abl_mpl->pre_advance_work();
 }
 
+/** Perform tasks at the beginning of a timestep, but after pre_advance
+ *
+ *  For ABL simulations, this method updates plane data to new_time (n+1)
+ */
+void ABL::pre_predictor_work() { m_bndry_plane->pre_predictor_work(); }
+
 /** Perform tasks at the end of a new timestep
  *
  *  For ABL simulations, this method writes all plane-averaged profiles and

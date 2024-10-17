@@ -91,6 +91,7 @@ struct AdvectionOp<
         // cppcheck-suppress constVariableReference
         auto& conv_term = fields.conv_term;
         const auto& dof_field = fields.field.state(fstate);
+        const auto& dof_nph = fields.field.state(amr_wind::FieldState::NPH);
 
         auto flux_x =
             repo.create_scratch_field(PDE::ndim, 0, amr_wind::FieldLoc::XFACE);
@@ -107,6 +108,7 @@ struct AdvectionOp<
 
         // only needed if multiplying by rho below
         const auto& den = density.state(fstate);
+        const auto& den_nph = density.state(amr_wind::FieldState::NPH);
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             amrex::MFItInfo mfi_info;
@@ -121,15 +123,21 @@ struct AdvectionOp<
                  ++mfi) {
                 const auto& bx = mfi.tilebox();
                 auto rho_arr = den(lev).array(mfi);
+                auto rho_nph_arr = den_nph(lev).array(mfi);
                 auto tra_arr = dof_field(lev).array(mfi);
+                auto tra_nph_arr = dof_nph(lev).array(mfi);
                 amrex::FArrayBox rhotracfab;
                 amrex::Array4<amrex::Real> rhotrac;
+                amrex::FArrayBox rhotrac_nph_fab;
+                amrex::Array4<amrex::Real> rhotrac_nph;
 
                 if (PDE::multiply_rho) {
                     auto rhotrac_box =
                         amrex::grow(bx, fvm::Godunov::nghost_state);
                     rhotracfab.resize(rhotrac_box, PDE::ndim);
                     rhotrac = rhotracfab.array();
+                    rhotrac_nph_fab.resize(rhotrac_box, PDE::ndim);
+                    rhotrac_nph = rhotrac_nph_fab.array();
 
                     amrex::ParallelFor(
                         rhotrac_box, PDE::ndim,
@@ -137,6 +145,8 @@ struct AdvectionOp<
                             int i, int j, int k, int n) noexcept {
                             rhotrac(i, j, k, n) =
                                 rho_arr(i, j, k) * tra_arr(i, j, k, n);
+                            rhotrac_nph(i, j, k, n) =
+                                rho_nph_arr(i, j, k) * tra_nph_arr(i, j, k, n);
                         });
                 }
 
@@ -176,6 +186,7 @@ struct AdvectionOp<
                     HydroUtils::ComputeFluxesOnBoxFromState(
                         bx, PDE::ndim, mfi,
                         (PDE::multiply_rho ? rhotrac : tra_arr),
+                        (PDE::multiply_rho ? rhotrac_nph : tra_nph_arr),
                         (*flux_x)(lev).array(mfi), (*flux_y)(lev).array(mfi),
                         (*flux_z)(lev).array(mfi), (*face_x)(lev).array(mfi),
                         (*face_y)(lev).array(mfi), (*face_z)(lev).array(mfi),
