@@ -65,6 +65,10 @@ private:
     amrex::Vector<amrex::Real> m_theta_heights;
     amrex::Vector<amrex::Real> m_theta_values;
 
+  //! Adding option for wind heights similar to temperature heights
+  //! Speed-up RANS calculation using 1-D profile for flat surface 
+  bool m_initial_wind_profile{false};
+  amrex::Vector<amrex::Real> m_wind_heights;
     amrex::Vector<amrex::Real> m_u_values;
     amrex::Vector<amrex::Real> m_v_values;
 
