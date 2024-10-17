@@ -20,8 +20,6 @@ public:
 
     explicit OneEqRANS(CFDSim& sim);
 
-    //~OneEqRANS() override;
-
     std::string model_name() const override { return "OneEqRANS"; }
 
     //! Update the turbulent viscosity field
