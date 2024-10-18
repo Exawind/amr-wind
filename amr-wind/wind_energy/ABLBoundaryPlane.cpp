@@ -357,7 +357,7 @@ void ABLBoundaryPlane::initialize_data()
                 "ABLBoundaryPlane: invalid variable requested: " + fname);
         }
     }
-    if (m_io_mode == io_mode::output and m_out_fmt == "erf-multiblock") {
+    if ((m_io_mode == io_mode::output) && (m_out_fmt == "erf-multiblock")) {
       amrex::Abort("ABLBoundaryPlane: can't output data in erf-multiblock mode");
     }
 }
