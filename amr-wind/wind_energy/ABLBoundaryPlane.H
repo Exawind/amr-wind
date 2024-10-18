@@ -186,7 +186,7 @@ private:
     const amrex::AmrCore& m_mesh;
 
 #ifdef ERF_AMR_WIND_MULTIBLOCK
-    // pointer to pointer : when ABL boundary plane gets intiialized, amr-wind
+    // pointer to pointer : when ABL boundary plane gets initialized, amr-wind
     // CFDsim does not yet have the up to date pointer to the mbc or the
     // read_erf function, be careful: if this is used before amr-wind gets the
     // mbc pointer set bad things will happen
