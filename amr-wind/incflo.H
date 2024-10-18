@@ -64,7 +64,7 @@ public:
 
 #ifdef ERF_AW_MULTIBLOCK
     // Evolve solution in a multiblock framework by desired number of steps
-    void Evolve_MB(int MBstep, int max_block_step);
+    void Evolve_MultiBlock(int multiblock_step, int max_block_step);
 #endif
 
     // Tag cells for refinement
