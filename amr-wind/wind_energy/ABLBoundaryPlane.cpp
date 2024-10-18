@@ -251,9 +251,12 @@ bool InletData::is_populated(amrex::Orientation ori) const
 }
 
 ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
-    : m_time(sim.time()), m_repo(sim.repo()), m_mesh(sim.mesh())
+    : m_time(sim.time())
+    , m_repo(sim.repo())
+    , m_mesh(sim.mesh())
 #ifdef ERF_AW_MULTIBLOCK
-    , m_mbc(sim.mbc()), m_read_erf(sim.get_read_erf())
+    , m_mbc(sim.mbc())
+    , m_read_erf(sim.get_read_erf())
 #endif
 {
     amrex::ParmParse pp("ABL");
@@ -291,7 +294,8 @@ ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
     }
 #endif
 
-    if (!(m_out_fmt == "native" || m_out_fmt == "netcdf" || m_out_fmt == "erf-multiblock")) {
+    if (!((m_out_fmt == "native") || (m_out_fmt == "netcdf") ||
+          (m_out_fmt == "erf-multiblock"))) {
         amrex::Print() << "Warning: boundary output format not recognized, "
                           "changing to native format"
                        << std::endl;
@@ -355,7 +359,8 @@ void ABLBoundaryPlane::initialize_data()
         }
     }
     if ((m_io_mode == io_mode::output) && (m_out_fmt == "erf-multiblock")) {
-      amrex::Abort("ABLBoundaryPlane: can't output data in erf-multiblock mode");
+        amrex::Abort(
+            "ABLBoundaryPlane: can't output data in erf-multiblock mode");
     }
 }
 
@@ -865,7 +870,8 @@ void ABLBoundaryPlane::read_header()
         }
     } else if (m_out_fmt == "erf-multiblock") {
 
-        m_in_times.push_back(-1.0e13); // create space for storing time at erf old and new timestep
+        m_in_times.push_back(-1.0e13); // create space for storing time at erf
+                                       // old and new timestep
         m_in_times.push_back(-1.0e13);
 
         int nc = 0;
@@ -1272,10 +1278,9 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
 
 #ifdef ERF_AW_MULTIBLOCK
     if (m_out_fmt == "erf-multiblock") {
-        //m_read_erf = sim.get_read_erf();
+        // m_read_erf = sim.get_read_erf();
         ReadERFFunction read_erf = *m_read_erf;
-        if (read_erf)
-        {
+        if (read_erf) {
             read_erf(m_time, m_in_times, m_in_data, m_fields, mbc());
         } else {
             amrex::Abort("read_erf function is undefined.");

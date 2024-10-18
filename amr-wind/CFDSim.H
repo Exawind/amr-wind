@@ -186,7 +186,7 @@ private:
 
 #ifdef ERF_AW_MULTIBLOCK
     MultiBlockContainer* m_mbc = nullptr;
-    ReadERFFunction m_read_erf {nullptr};
+    ReadERFFunction m_read_erf{nullptr};
 #endif
 };
 

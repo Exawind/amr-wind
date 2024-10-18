@@ -161,8 +161,8 @@ public:
     void ReadCheckpointFile();
 
 #ifdef ERF_AW_MULTIBLOCK
-    void SetMultiBlockPointer(MultiBlockContainer *mbc) { m_sim.set_mbc(mbc); }
-    void set_read_erf(ReadERFFunction fcn) {m_sim.set_read_erf(fcn);}
+    void SetMultiBlockPointer(MultiBlockContainer* mbc) { m_sim.set_mbc(mbc); }
+    void set_read_erf(ReadERFFunction fcn) { m_sim.set_read_erf(fcn); }
 #endif
 
 private:

@@ -44,12 +44,12 @@ void ABLFieldInit::initialize_from_inputfile()
     // ABL-with-bubble
     pp_abl.query("use_bubble", m_use_bubble);
     if (m_use_bubble) {
-      amrex::Print() << "Initializing with bubble" << std::endl;
-      pp_abl.getarr("bubble_loc", m_bubble_loc);
-      pp_abl.query("bubble_radius", m_bubble_radius);
-      pp_abl.query("bubble_temp_ratio", m_bubble_temp_ratio);
+        amrex::Print() << "Initializing with bubble" << std::endl;
+        pp_abl.getarr("bubble_loc", m_bubble_loc);
+        pp_abl.query("bubble_radius", m_bubble_radius);
+        pp_abl.query("bubble_temp_ratio", m_bubble_temp_ratio);
     } else {
-      amrex::Print() << "Not initializing with bubble" << std::endl;
+        amrex::Print() << "Not initializing with bubble" << std::endl;
     }
 
     // Temperature variation as a function of height
@@ -304,8 +304,12 @@ void ABLFieldInit::operator()(
 
                 amrex::Real ratio = 1.0;
                 if (m_use_bubble) {
-                  amrex::Real radius = std::sqrt((x-bcx)*(x-bcx) + (y-bcy)*(y-bcy) + (z-bcz)*(z-bcz));
-                  ratio = 1.0 + (m_bubble_temp_ratio - 1.0) * exp(-0.5 * radius* radius / (m_bubble_radius * m_bubble_radius));
+                    amrex::Real radius = std::sqrt(
+                        (x - bcx) * (x - bcx) + (y - bcy) * (y - bcy) +
+                        (z - bcz) * (z - bcz));
+                    ratio = 1.0 + (m_bubble_temp_ratio - 1.0) *
+                                      exp(-0.5 * radius * radius /
+                                          (m_bubble_radius * m_bubble_radius));
                 }
                 temperature(i, j, k, 0) *= ratio;
 
