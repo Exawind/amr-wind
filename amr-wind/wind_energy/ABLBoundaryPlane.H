@@ -191,7 +191,7 @@ private:
     // be careful: if this is used before amr-wind gets the mbc pointer set
     // bad things will happen
     MultiBlockContainer** m_mbc;
-    ReadERFFcn* m_read_erf {nullptr};
+    ReadERFFunction* m_read_erf {nullptr};
 #endif
 
 #ifdef AMR_WIND_USE_NETCDF
