@@ -30,7 +30,8 @@ AMREX_FORCE_INLINE int closest_index(
 AMREX_FORCE_INLINE int
 closest_index_lbound(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
 {
-    auto const it = std::lower_bound(vec.begin(), vec.end(), value);
+    amrex::Real one_minus_eps = 1.0 - 1.e-8;
+    auto const it = std::lower_bound(vec.begin(), vec.end(), one_minus_eps*value);
     AMREX_ALWAYS_ASSERT(it != vec.end());
 
     const int idx = static_cast<int>(std::distance(vec.begin(), it));
