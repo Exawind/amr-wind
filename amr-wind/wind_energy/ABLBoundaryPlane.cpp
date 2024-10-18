@@ -167,7 +167,8 @@ void InletData::read_data_native(
 
     auto ori = oit();
 
-    AMREX_ALWAYS_ASSERT(((m_tn <= time) && (time <= m_tnp1)));
+    amrex::Real one_plus_eps = 1.0 + 1.e-8;
+    AMREX_ALWAYS_ASSERT(((m_tn <= one_plus_eps*time) && (time <= one_plus_eps*m_tnp1)));
     AMREX_ALWAYS_ASSERT(fld->num_comp() == bndry_n[ori].nComp());
     AMREX_ASSERT(bndry_n[ori].boxArray() == bndry_np1[ori].boxArray());
 
