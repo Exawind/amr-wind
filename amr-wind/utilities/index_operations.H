@@ -9,9 +9,9 @@
 
 namespace amr_wind::utils {
 
-//! Return closest index (from lower) of value in vector
+//! Return closest index (from lower) of value in vector, lbound verion for ERF coupling
 AMREX_FORCE_INLINE int
-closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
+closest_index_ubound(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
 {
     auto const it = std::upper_bound(vec.begin(), vec.end(), value);
     AMREX_ALWAYS_ASSERT(it != vec.end());
@@ -20,7 +20,6 @@ closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
     return std::max(idx - 1, 0);
 }
 
-//! This version is required for the ERF coupling
 AMREX_FORCE_INLINE int
 closest_index_lbound(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
 {

@@ -77,7 +77,7 @@ void InletData::read_data(
     const size_t nc = fld->num_comp();
     const int nstart = m_components[static_cast<int>(fld->id())];
 
-    const int idx = utils::closest_index(times, time);
+    const int idx = utils::closest_index_ubound(times, time);
     const int idxp1 = idx + 1;
     m_tn = times[idx];
     m_tnp1 = times[idxp1];
@@ -158,7 +158,7 @@ void InletData::read_data_native(
         // otherwise it will abort
         idx = utils::closest_index_lbound(times, time);
     } else {
-        idx = utils::closest_index(times, time);
+        idx = utils::closest_index_ubound(times, time);
     }
     const int idxp1 = idx + 1;
 
@@ -866,7 +866,7 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
 
     if (m_out_fmt == "native") {
 
-        const int index = utils::closest_index(m_in_times, time);
+        const int index = utils::closest_index_ubound(m_in_times, time);
         const int t_step1 = m_in_timesteps[index];
         const int t_step2 = m_in_timesteps[index + 1];
 
