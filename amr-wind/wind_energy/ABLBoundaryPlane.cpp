@@ -258,7 +258,7 @@ ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
     : m_time(sim.time())
     , m_repo(sim.repo())
     , m_mesh(sim.mesh())
-#ifdef ERF_AW_MULTIBLOCK
+#ifdef ERF_AMR_WIND_MULTIBLOCK
     , m_mbc(sim.mbc())
     , m_read_erf(sim.get_read_erf())
 #endif
@@ -819,7 +819,7 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
         return;
     }
 
-#ifdef ERF_AW_MULTIBLOCK
+#ifdef ERF_AMR_WIND_MULTIBLOCK
     if (m_out_fmt == "erf-multiblock") {
         // m_read_erf = sim.get_read_erf();
         ReadERFFunction read_erf = *m_read_erf;

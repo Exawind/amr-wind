@@ -129,8 +129,8 @@ endif()
 
 include(set_compile_flags)
 
-if(ERF_AW_MULTIBLOCK)
-    target_compile_definitions(${amr_wind_lib_name} PUBLIC ERF_AW_MULTIBLOCK)
+if(ERF_AMR_WIND_MULTIBLOCK)
+    target_compile_definitions(${amr_wind_lib_name} PUBLIC ERF_AMR_WIND_MULTIBLOCK)
 endif()
 
 if (AMR_WIND_ENABLE_W2A)
