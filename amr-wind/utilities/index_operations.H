@@ -9,9 +9,10 @@
 
 namespace amr_wind::utils {
 
-//! Return closest index (from lower) of value in vector, lbound verion for ERF coupling
-AMREX_FORCE_INLINE int
-closest_index_ubound(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
+//! Return closest index (from lower) of value in vector
+//! lbound verion is required for ERF coupling
+AMREX_FORCE_INLINE int closest_index_ubound(
+    const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
 {
     auto const it = std::upper_bound(vec.begin(), vec.end(), value);
     AMREX_ALWAYS_ASSERT(it != vec.end());
@@ -20,11 +21,12 @@ closest_index_ubound(const amrex::Vector<amrex::Real>& vec, const amrex::Real va
     return std::max(idx - 1, 0);
 }
 
-AMREX_FORCE_INLINE int
-closest_index_lbound(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
+AMREX_FORCE_INLINE int closest_index_lbound(
+    const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
 {
     amrex::Real one_minus_eps = 1.0 - 1.e-8;
-    auto const it = std::lower_bound(vec.begin(), vec.end(), one_minus_eps*value);
+    auto const it =
+        std::lower_bound(vec.begin(), vec.end(), one_minus_eps * value);
     AMREX_ALWAYS_ASSERT(it != vec.end());
 
     const int idx = static_cast<int>(std::distance(vec.begin(), it));

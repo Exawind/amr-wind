@@ -171,7 +171,7 @@ public:
     io_mode mode() const { return m_io_mode; }
 
 #ifdef ERF_AW_MULTIBLOCK
-    MultiBlockContainer* mbc() {return *m_mbc;}
+    MultiBlockContainer* mbc() { return *m_mbc; }
 #endif
 
 private:
@@ -181,11 +181,11 @@ private:
 
 #ifdef ERF_AW_MULTIBLOCK
     // pointer to pointer : when ABL boundary plane gets intiialized, amr-wind
-    // CFDsim does not yet have the up to date pointer to the mbc or the read_erf function
-    // be careful: if this is used before amr-wind gets the mbc pointer set
-    // bad things will happen
+    // CFDsim does not yet have the up to date pointer to the mbc or the
+    // read_erf function, be careful: if this is used before amr-wind gets the
+    // mbc pointer set bad things will happen
     MultiBlockContainer** m_mbc;
-    ReadERFFunction* m_read_erf {nullptr};
+    ReadERFFunction* m_read_erf{nullptr};
 #endif
 
 #ifdef AMR_WIND_USE_NETCDF
