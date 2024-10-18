@@ -96,9 +96,13 @@ void ABLFieldInit::initialize_from_inputfile()
     m_thvv_d.resize(num_theta_values);
     if (m_initial_wind_profile) {
         int num_wind_values = static_cast<int>(m_wind_heights.size());
+        m_windht_d.resize(num_wind_values);
         m_prof_u_d.resize(num_wind_values);
         m_prof_v_d.resize(num_wind_values);
         m_prof_tke_d.resize(num_wind_values);
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, m_wind_heights.begin(),
+            m_wind_heights.end(), m_windht_d.begin());
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, m_u_values.begin(), m_u_values.end(),
             m_prof_u_d.begin());
@@ -182,6 +186,7 @@ void ABLFieldInit::operator()(
     const amrex::Real rho_init = m_rho;
 
     const int ntvals = static_cast<int>(m_theta_heights.size());
+    const int nwvals = static_cast<int>(m_wind_heights.size());
     const amrex::Real* th = m_thht_d.data();
     const amrex::Real* tv = m_thvv_d.data();
 
@@ -189,6 +194,7 @@ void ABLFieldInit::operator()(
         /*
          * Set wind and temperature profiles from netcdf input
          */
+        const amrex::Real* windh = m_windht_d.data();
         const amrex::Real* uu = m_prof_u_d.data();
         const amrex::Real* vv = m_prof_v_d.data();
 
@@ -206,14 +212,17 @@ void ABLFieldInit::operator()(
                         const amrex::Real slope =
                             (tv[iz + 1] - tv[iz]) / (th[iz + 1] - th[iz]);
                         theta = tv[iz] + (z - th[iz]) * slope;
-
+                    }
+                }
+                for (int iz = 0; iz < nwvals - 1; ++iz) {
+                    if ((z > windh[iz]) && (z <= windh[iz + 1])) {
                         const amrex::Real slopeu =
-                            (uu[iz + 1] - uu[iz]) / (th[iz + 1] - th[iz]);
-                        umean_prof = uu[iz] + (z - th[iz]) * slopeu;
+                            (uu[iz + 1] - uu[iz]) / (windh[iz + 1] - windh[iz]);
+                        umean_prof = uu[iz] + (z - windh[iz]) * slopeu;
 
                         const amrex::Real slopev =
-                            (vv[iz + 1] - vv[iz]) / (th[iz + 1] - th[iz]);
-                        vmean_prof = vv[iz] + (z - th[iz]) * slopev;
+                            (vv[iz + 1] - vv[iz]) / (windh[iz + 1] - windh[iz]);
+                        vmean_prof = vv[iz] + (z - windh[iz]) * slopev;
                     }
                 }
 
@@ -348,7 +357,7 @@ void ABLFieldInit::init_tke(
 {
     tke_fab.setVal(m_tke_init);
 
-    if (!m_tke_init_profile || m_initial_wind_profile) {
+    if (!m_tke_init_profile && !m_initial_wind_profile) {
         return;
     }
 
@@ -366,8 +375,8 @@ void ABLFieldInit::init_tke(
         const auto& tke = tke_fab.array(mfi);
 
         if (m_initial_wind_profile) {
-            const int ntvals = static_cast<int>(m_theta_heights.size());
-            const amrex::Real* th = m_thht_d.data();
+            const int ntvals = static_cast<int>(m_wind_heights.size());
+            const amrex::Real* windh = m_windht_d.data();
             /*
              * Set wind and temperature profiles from netcdf input
              */
@@ -379,12 +388,13 @@ void ABLFieldInit::init_tke(
                     amrex::Real tke_prof = tke_data[0];
 
                     for (int iz = 0; iz < ntvals - 1; ++iz) {
-                        if ((z > th[iz]) && (z <= th[iz + 1])) {
+                        if ((z > windh[iz]) && (z <= windh[iz + 1])) {
 
                             const amrex::Real slopetke =
                                 (tke_data[iz + 1] - tke_data[iz]) /
-                                (th[iz + 1] - th[iz]);
-                            tke_prof = tke_data[iz] + (z - th[iz]) * slopetke;
+                                (windh[iz + 1] - windh[iz]);
+                            tke_prof =
+                                tke_data[iz] + (z - windh[iz]) * slopetke;
                         }
                     }
 

@@ -78,6 +78,7 @@ private:
     amrex::Gpu::DeviceVector<amrex::Real> m_thht_d;
     amrex::Gpu::DeviceVector<amrex::Real> m_thvv_d;
 
+    amrex::Gpu::DeviceVector<amrex::Real> m_windht_d;
     amrex::Gpu::DeviceVector<amrex::Real> m_prof_u_d;
     amrex::Gpu::DeviceVector<amrex::Real> m_prof_v_d;
     amrex::Gpu::DeviceVector<amrex::Real> m_prof_tke_d;
