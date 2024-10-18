@@ -8,7 +8,7 @@
 #include "amr-wind/utilities/io_utils.H"
 #include <AMReX_BndryRegister.H>
 
-#ifdef ERF_AW_MULTIBLOCK
+#ifdef ERF_AMR_WIND_MULTIBLOCK
 #include "amr-wind/wind_energy/ABLReadERFFcn.H"
 class MultiBlockContainer;
 #endif
@@ -176,7 +176,7 @@ public:
 
     io_mode mode() const { return m_io_mode; }
 
-#ifdef ERF_AW_MULTIBLOCK
+#ifdef ERF_AMR_WIND_MULTIBLOCK
     MultiBlockContainer* mbc() { return *m_mbc; }
 #endif
 
@@ -185,7 +185,7 @@ private:
     const FieldRepo& m_repo;
     const amrex::AmrCore& m_mesh;
 
-#ifdef ERF_AW_MULTIBLOCK
+#ifdef ERF_AMR_WIND_MULTIBLOCK
     // pointer to pointer : when ABL boundary plane gets intiialized, amr-wind
     // CFDsim does not yet have the up to date pointer to the mbc or the
     // read_erf function, be careful: if this is used before amr-wind gets the

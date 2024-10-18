@@ -9,7 +9,7 @@
 #include "amr-wind/core/MeshMap.H"
 #include "amr-wind/helics.H"
 
-#ifdef ERF_AW_MULTIBLOCK
+#ifdef ERF_AMR_WIND_MULTIBLOCK
 #include "amr-wind/wind_energy/ABLReadERFFcn.H"
 class MultiBlockContainer;
 #endif
@@ -67,7 +67,7 @@ public:
     SimTime& time() { return m_time; }
     const SimTime& time() const { return m_time; }
 
-#ifdef ERF_AW_MULTIBLOCK
+#ifdef ERF_AMR_WIND_MULTIBLOCK
     void set_mbc(MultiBlockContainer* mbc) { m_mbc = mbc; }
     MultiBlockContainer** mbc() { return &m_mbc; }
 
@@ -184,7 +184,7 @@ private:
     // State of solver - know if during an overset timestep or not
     bool m_during_overset_advance{false};
 
-#ifdef ERF_AW_MULTIBLOCK
+#ifdef ERF_AMR_WIND_MULTIBLOCK
     MultiBlockContainer* m_mbc = nullptr;
     ReadERFFunction m_read_erf{nullptr};
 #endif
