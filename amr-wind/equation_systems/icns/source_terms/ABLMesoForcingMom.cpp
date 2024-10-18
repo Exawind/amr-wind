@@ -101,7 +101,7 @@ void ABLMesoForcingMom::mean_velocity_heights(
     currtime = m_time.current_time();
 
     // First the index in time
-    m_idx_time = utils::closest_index(ncfile->meso_times(), currtime);
+    m_idx_time = utils::closest_index_ubound(ncfile->meso_times(), currtime);
 
     amrex::Array<amrex::Real, 2> coeff_interp{0.0, 0.0};
 
@@ -154,7 +154,7 @@ void ABLMesoForcingMom::mean_velocity_heights(
     const auto& dt = m_time.delta_t();
 
     // First the index in time
-    m_idx_time = utils::closest_index(ncfile->meso_times(), currtime);
+    m_idx_time = utils::closest_index_ubound(ncfile->meso_times(), currtime);
 
     amrex::Array<amrex::Real, 2> coeff_interp{0.0, 0.0};
 

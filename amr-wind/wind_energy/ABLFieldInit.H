@@ -47,6 +47,20 @@ public:
     void init_tke(const amrex::Geometry& geom, amrex::MultiFab& tke) const;
 
 private:
+    // ABL-with-bubble
+
+    //! Initial bubble location
+    amrex::Vector<amrex::Real> m_bubble_loc{{0.25, 0.25, 0.5}};
+
+    //! Initial bubble radius
+    amrex::Real m_bubble_radius{0.1};
+
+    //! Initial bubble
+    amrex::Real m_bubble_temp_ratio{1.1};
+
+    //! Whether or not to have temperature bubble
+    bool m_use_bubble{0};
+
     //! Initial velocity components
     amrex::Vector<amrex::Real> m_vel;
 
