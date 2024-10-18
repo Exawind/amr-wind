@@ -815,7 +815,7 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
 #ifdef ERF_AW_MULTIBLOCK
     if (m_out_fmt == "erf-multiblock") {
         //m_read_erf = sim.get_read_erf();
-        ReadERFFcn read_erf = *m_read_erf;
+        ReadERFFunction read_erf = *m_read_erf;
         if (read_erf)
         {
             read_erf(m_time, m_in_times, m_in_data, m_fields, mbc());

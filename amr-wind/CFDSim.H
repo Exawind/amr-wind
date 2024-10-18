@@ -67,8 +67,8 @@ public:
     void set_mbc(MultiBlockContainer* mbc) { m_mbc = mbc; }
     MultiBlockContainer** mbc() { return &m_mbc; }
 
-    void set_read_erf(ReadERFFcn fcn) { m_read_erf = fcn; }
-    ReadERFFcn* get_read_erf() { return &m_read_erf; }
+    void set_read_erf(ReadERFFunction fcn) { m_read_erf = fcn; }
+    ReadERFFunction* get_read_erf() { return &m_read_erf; }
 #endif
 
     //! Return the field repository
@@ -161,7 +161,7 @@ private:
 
 #ifdef ERF_AW_MULTIBLOCK
     MultiBlockContainer* m_mbc = nullptr;
-    ReadERFFcn m_read_erf {nullptr};
+    ReadERFFunction m_read_erf {nullptr};
 #endif
 };
 
