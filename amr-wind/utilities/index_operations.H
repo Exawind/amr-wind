@@ -26,7 +26,6 @@ AMREX_FORCE_INLINE int closest_index(
     return std::max(idx - 1, 0);
 }
 
-//! This version is required for the ERF coupling
 AMREX_FORCE_INLINE int
 closest_index_lbound(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
 {
