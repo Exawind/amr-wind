@@ -284,6 +284,7 @@ if(AMR_WIND_ENABLE_NETCDF)
   add_test_re(abl_sampling_netcdf)
   add_test_re(abl_kosovic_neutral_ib)
   add_test_re(nrel_precursor)
+  add_test_re(abl_wallrans_neutral)
 endif()
 
 if(AMR_WIND_ENABLE_MASA)

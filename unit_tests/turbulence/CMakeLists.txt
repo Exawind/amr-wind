@@ -3,5 +3,6 @@ target_sources(${amr_wind_unit_test_exe_name}
 
   test_turbulence_init.cpp
   test_turbulence_LES.cpp
+  test_turbulence_RANS.cpp
   test_turbulence_LES_bc.cpp
   )
