@@ -4,6 +4,7 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/PDEHelpers.H"
 #include "amr-wind/incflo_enums.H"
+#include "amr-wind/core/field_ops.H"
 
 #include "AMReX_ParmParse.H"
 
@@ -84,6 +85,60 @@ void PDEMgr::advance_states()
     icns().fields().field.advance_states();
     for (auto& eqn : scalar_eqns()) {
         eqn->fields().field.advance_states();
+    }
+}
+
+void PDEMgr::prepare_boundaries()
+{
+    // If state variables exist at NPH, fill their boundary cells
+    const auto nph_time =
+        m_sim.time().current_time() + 0.5 * m_sim.time().delta_t();
+    if (m_constant_density &&
+        m_sim.repo().field_exists("density", FieldState::NPH)) {
+        auto& nph_field =
+            m_sim.repo().get_field("density").state(FieldState::NPH);
+        auto& new_field =
+            m_sim.repo().get_field("density").state(FieldState::New);
+        // Need to check if this step is necessary
+        // Guessing that for no-op dirichlet bcs, the new needs to be copied to
+        // NPH
+        field_ops::copy(
+            nph_field, new_field, 0, 0, new_field.num_comp(),
+            new_field.num_grow());
+    }
+
+    if (m_sim.repo().field_exists(
+            icns().fields().field.base_name(), FieldState::NPH)) {
+        auto& nph_field = icns().fields().field.state(FieldState::NPH);
+        auto& new_field = icns().fields().field.state(FieldState::New);
+        field_ops::copy(
+            nph_field, new_field, 0, 0, new_field.num_comp(),
+            new_field.num_grow());
+        // Insert fill physical boundary condition call here
+    }
+    for (auto& eqn : scalar_eqns()) {
+        eqn->fields().field.advance_states();
+        if (m_sim.repo().field_exists(
+                eqn->fields().field.base_name(), FieldState::NPH)) {
+            auto& nph_field = eqn->fields().field.state(FieldState::NPH);
+            auto& new_field = eqn->fields().field.state(FieldState::New);
+            field_ops::copy(
+                nph_field, new_field, 0, 0, new_field.num_comp(),
+                new_field.num_grow());
+            // Insert fill physical boundary condition call here
+        }
+    }
+
+    // Fill mac velocities (ghost cells) using velocity BCs
+    auto& u_mac = m_sim.repo().get_field("u_mac");
+    auto& v_mac = m_sim.repo().get_field("v_mac");
+    auto& w_mac = m_sim.repo().get_field("w_mac");
+    const amrex::IntVect zeros{0, 0, 0};
+    if (u_mac.num_grow() > zeros) {
+        amrex::Array<Field*, AMREX_SPACEDIM> mac_vel = {
+            AMREX_D_DECL(&u_mac, &v_mac, &w_mac)};
+        icns().fields().field.fillpatch_sibling_fields(
+            nph_time, u_mac.num_grow(), mac_vel);
     }
 }
 

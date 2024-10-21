@@ -60,7 +60,8 @@ public:
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& ffabs,
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& cfabs,
         const amrex::IntVect& nghost,
-        const amrex::Vector<amrex::BCRec>& bcrec,
+        const amrex::Vector<amrex::BCRec>& fillpatch_bcrec,
+        const amrex::Vector<amrex::BCRec>& physbc_bcrec,
         const FieldState fstate = FieldState::New) = 0;
 
     //! Implementation that handles filling patches from a coarse to fine level
@@ -120,6 +121,7 @@ public:
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& /*ffabs*/,
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& /*cfabs*/,
         const amrex::IntVect& /*nghost*/,
+        const amrex::Vector<amrex::BCRec>& /*bcrec*/,
         const amrex::Vector<amrex::BCRec>& /*bcrec*/,
         const FieldState /*fstate*/) override
     {
@@ -272,14 +274,15 @@ public:
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& ffabs,
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& cfabs,
         const amrex::IntVect& nghost,
-        const amrex::Vector<amrex::BCRec>& bcrec,
+        const amrex::Vector<amrex::BCRec>& fillpatch_bcrec,
+        const amrex::Vector<amrex::BCRec>& physbc_bcrec,
         const FieldState /*fstate = FieldState::New*/) override
     {
 
         if (lev == 0) {
             for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
                 amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> physbc(
-                    m_mesh.Geom(lev), bcrec, bc_functor_face(i));
+                    m_mesh.Geom(lev), physbc_bcrec, bc_functor_face(i));
                 amrex::FillPatchSingleLevel(
                     *mfabs[i], nghost, time, {ffabs[i]}, {time}, 0, 0, 1,
                     m_mesh.Geom(lev), physbc, i);
@@ -287,19 +290,19 @@ public:
         } else {
             AMREX_D_TERM(
                 amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> cphysbcx(
-                    m_mesh.Geom(lev - 1), bcrec, bc_functor_face(0));
+                    m_mesh.Geom(lev - 1), physbc_bcrec, bc_functor_face(0));
                 , amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> cphysbcy(
-                      m_mesh.Geom(lev - 1), bcrec, bc_functor_face(1));
+                      m_mesh.Geom(lev - 1), physbc_bcrec, bc_functor_face(1));
                 , amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> cphysbcz(
-                      m_mesh.Geom(lev - 1), bcrec, bc_functor_face(2)););
+                      m_mesh.Geom(lev - 1), physbc_bcrec, bc_functor_face(2)););
 
             AMREX_D_TERM(
                 amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> fphysbcx(
-                    m_mesh.Geom(lev), bcrec, bc_functor_face(0));
+                    m_mesh.Geom(lev), physbc_bcrec, bc_functor_face(0));
                 , amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> fphysbcy(
-                      m_mesh.Geom(lev), bcrec, bc_functor_face(1));
+                      m_mesh.Geom(lev), physbc_bcrec, bc_functor_face(1));
                 , amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> fphysbcz(
-                      m_mesh.Geom(lev), bcrec, bc_functor_face(2)););
+                      m_mesh.Geom(lev), physbc_bcrec, bc_functor_face(2)););
 
             amrex::Array<
                 amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>>,
@@ -313,7 +316,8 @@ public:
 
             amrex::Array<int, AMREX_SPACEDIM> idx = {AMREX_D_DECL(0, 1, 2)};
             const amrex::Array<amrex::Vector<amrex::BCRec>, AMREX_SPACEDIM>
-                bcrec_arr = {AMREX_D_DECL(bcrec, bcrec, bcrec)};
+                bcrec_arr = {AMREX_D_DECL(
+                    fillpatch_bcrec, fillpatch_bcrec, fillpatch_bcrec)};
 
             amrex::FillPatchTwoLevels(
                 mfabs, nghost, time, {cfabs}, {time}, {ffabs}, {time}, 0, 0, 1,

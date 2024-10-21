@@ -118,6 +118,8 @@ public:
 
     void pre_advance_work();
 
+    void pre_predictor_work();
+
     void post_advance_work();
 
     void initialize_data();
@@ -128,7 +130,7 @@ public:
 
     void read_header();
 
-    void read_file();
+    void read_file(const bool /* nph_target_time*/);
 
     void populate_data(
         const int /*lev*/,
@@ -155,6 +157,12 @@ public:
         const amrex::Box& /*bx*/,
         const int /*lev*/,
         const amrex::Orientation /*ori*/) const;
+
+    bool is_data_newer_than(const amrex::Real time) const
+    {
+        // Will replace with m_in_data.tinterp()
+        return (m_intended_interp_time - time > 1e-12);
+    }
 
     io_mode mode() const { return m_io_mode; }
 
@@ -186,6 +194,8 @@ private:
 
     //! Start outputting after this time
     amrex::Real m_out_start_time{0.0};
+
+    amrex::Real m_intended_interp_time{0.0};
 
 #ifdef AMR_WIND_USE_NETCDF
     //! NetCDF time output counter

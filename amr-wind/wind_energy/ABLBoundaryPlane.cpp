@@ -301,7 +301,7 @@ void ABLBoundaryPlane::post_init_actions()
     write_header();
     write_file();
     read_header();
-    read_file();
+    read_file(false);
 }
 
 void ABLBoundaryPlane::pre_advance_work()
@@ -309,7 +309,15 @@ void ABLBoundaryPlane::pre_advance_work()
     if (!m_is_initialized) {
         return;
     }
-    read_file();
+    read_file(true);
+}
+
+void ABLBoundaryPlane::pre_predictor_work()
+{
+    if (!m_is_initialized) {
+        return;
+    }
+    read_file(false);
 }
 
 void ABLBoundaryPlane::post_advance_work()
@@ -751,7 +759,7 @@ void ABLBoundaryPlane::read_header()
     }
 }
 
-void ABLBoundaryPlane::read_file()
+void ABLBoundaryPlane::read_file(const bool nph_target_time)
 {
     BL_PROFILE("amr-wind::ABLBoundaryPlane::read_file");
     if (m_io_mode != io_mode::input) {
@@ -760,10 +768,14 @@ void ABLBoundaryPlane::read_file()
 
     // populate planes and interpolate
     const amrex::Real time = m_time.new_time();
+    const amrex::Real conditional_time =
+        m_time.new_time() + (nph_target_time ? 0.5 : 0.0) *
+                                (m_time.current_time() - m_time.new_time());
     AMREX_ALWAYS_ASSERT((m_in_times[0] <= time) && (time < m_in_times.back()));
 
     // return early if current data files can still be interpolated in time
     if ((m_in_data.tn() <= time) && (time < m_in_data.tnp1())) {
+        m_intended_interp_time = conditional_time;
         m_in_data.interpolate(time);
         return;
     }
@@ -859,6 +871,7 @@ void ABLBoundaryPlane::read_file()
         }
     }
 
+    m_intended_interp_time = conditional_time;
     m_in_data.interpolate(time);
 }
 
