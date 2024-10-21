@@ -25,11 +25,11 @@ public:
         const amrex::Array4<amrex::Real>& src_term) const override;
 
 private:
-    Field& m_turb_lscale;
-    Field& m_shear_prod;
-    Field& m_buoy_prod;
+    const Field& m_turb_lscale;
+    const Field& m_shear_prod;
+    const Field& m_buoy_prod;
     Field& m_dissip;
-    Field& m_tke;
+    const Field& m_tke;
     amrex::Real m_heat_flux{0.0};
     amrex::Real m_ref_temp{300.0};
     const SimTime& m_time;

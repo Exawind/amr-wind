@@ -94,6 +94,7 @@ void OneEqRANS<Transport>::update_turbulent_viscosity(
     const auto* m_terrain_blank =
         has_terrain_height ? &this->m_sim.repo().get_int_field("terrain_blank")
                            : nullptr;
+    const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = geom_vec[lev];
         const auto& problo = repo.mesh().Geom(lev).ProbLoArray();
@@ -134,10 +135,10 @@ void OneEqRANS<Transport>::update_turbulent_viscosity(
                     const amrex::Real lscale_b =
                         Cb_stable *
                         std::sqrt(
-                            tke_arr(i, j, k) / std::max(stratification, 1e-10));
-                    amrex::Real epsilon = std::pow(Cmu, 3) *
+                            tke_arr(i, j, k) / std::max(stratification, tiny));
+                    const amrex::Real epsilon = std::pow(Cmu, 3) *
                                           std::pow(tke_arr(i, j, k), 1.5) /
-                                          (tlscale_arr(i, j, k) + 1e-3);
+                                          (tlscale_arr(i, j, k) + tiny);
                     amrex::Real Rt = std::pow(tke_arr(i, j, k) / epsilon, 2) *
                                      stratification;
                     Rt = (Rt > Rtc) ? Rt
@@ -169,13 +170,13 @@ void OneEqRANS<Transport>::update_turbulent_viscosity(
                         (has_terrain_height) ? 1 - blank_arr(i, j, k) : 1;
                     mu_arr(i, j, k) =
                         (std::abs(x3 - probhi[2]) <= 200)
-                            ? 1e-10
+                            ? tiny
                             : rho_arr(i, j, k) * Cmu_Rt * tlscale_arr(i, j, k) *
                                   std::sqrt(tke_arr(i, j, k)) * blank_terrain;
                     const amrex::Real Cmu_prime_Rt = 0.556 / (1 + 0.277 * Rt);
                     const amrex::Real muPrime =
                         (std::abs(x3 - probhi[2]) <= 200)
-                            ? 1e-10
+                            ? tiny
                             : rho_arr(i, j, k) * Cmu_prime_Rt *
                                   tlscale_arr(i, j, k) *
                                   std::sqrt(tke_arr(i, j, k)) * blank_terrain;
@@ -204,6 +205,7 @@ void OneEqRANS<Transport>::update_alphaeff(Field& alphaeff)
     const amrex::Real beta = 1.0 / m_ref_theta;
     const amrex::Real Cmu = m_Cmu;
     const int nlevels = repo.num_active_levels();
+    const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     for (int lev = 0; lev < nlevels; ++lev) {
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
@@ -220,9 +222,9 @@ void OneEqRANS<Transport>::update_alphaeff(Field& alphaeff)
                           gradT_arr(i, j, k, 1) * gravity[1] +
                           gradT_arr(i, j, k, 2) * gravity[2]) *
                         beta;
-                    amrex::Real epsilon = std::pow(Cmu, 3) *
+                    const amrex::Real epsilon = std::pow(Cmu, 3) *
                                           std::pow(tke_arr(i, j, k), 1.5) /
-                                          tlscale_arr(i, j, k);
+                                          (tlscale_arr(i, j, k)+tiny);
                     amrex::Real Rt = std::pow(tke_arr(i, j, k) / epsilon, 2) *
                                      stratification;
                     Rt = (Rt < -1)

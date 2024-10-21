@@ -60,6 +60,7 @@ void Krans::operator()(
     const amrex::Real ref_temp = m_ref_temp;
     const amrex::Real heat_flux = 9.81 / ref_temp * m_heat_flux;
     const amrex::Real Cmu = 0.556;
+    const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::Real bcforcing = 0;
         amrex::Real dragforcing = 0;
@@ -76,7 +77,7 @@ void Krans::operator()(
                 (k == 0) ? problo[2] + (k + 0.5) * dx[2] : 0.5 * dx[2];
             ustar = m * kappa / std::log(x3 / z0);
             const amrex::Real rans_b = std::pow(
-                std::max(heat_flux, 0.0) * 0.41 * x3 / std::pow(0.556, 3),
+                std::max(heat_flux, tiny) * 0.41 * x3 / std::pow(Cmu, 3),
                 (2.0 / 3.0));
             bcforcing =
                 (ustar * ustar / (0.556 * 0.556) + rans_b - tke_arr(i, j, k)) /
@@ -86,12 +87,12 @@ void Krans::operator()(
             amrex::Real uz = vel(i, j, k, 2);
             const amrex::Real m = std::sqrt(ux * ux + uy * uy + uz * uz);
             const amrex::Real Cd =
-                std::min(10 / (dx[2] * m + 1e-5), 100 / dx[2]);
+                std::min(10 / (dx[2] * m + tiny), 100 / dx[2]);
             dragforcing = -Cd * m * tke_arr(i, j, k, 0);
         }
         dissip_arr(i, j, k) = std::pow(Cmu, 3) *
                               std::pow(tke_arr(i, j, k), 1.5) /
-                              (tlscale_arr(i, j, k) + 1e-3);
+                              (tlscale_arr(i, j, k) + tiny);
         src_term(i, j, k) += shear_prod_arr(i, j, k) + buoy_prod_arr(i, j, k) -
                              dissip_arr(i, j, k) + bcforcing + dragforcing;
     });
