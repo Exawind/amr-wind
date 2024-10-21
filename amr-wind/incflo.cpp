@@ -328,8 +328,10 @@ void incflo::do_advance(const int fixed_point_iteration)
     if (m_prescribe_vel && fixed_point_iteration == 0) {
         prescribe_advance();
     } else {
-        amrex::Print() << "Fixed point iteration " << fixed_point_iteration
-                       << std::endl;
+        if (m_fixed_point_iterations > 1) {
+            amrex::Print() << "Fixed point iteration " << fixed_point_iteration
+                           << std::endl;
+        }
         advance(fixed_point_iteration);
     }
     if (m_sim.has_overset()) {
