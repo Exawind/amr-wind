@@ -136,9 +136,9 @@ void OneEqRANS<Transport>::update_turbulent_viscosity(
                         Cb_stable *
                         std::sqrt(
                             tke_arr(i, j, k) / std::max(stratification, tiny));
-                    const amrex::Real epsilon = std::pow(Cmu, 3) *
-                                          std::pow(tke_arr(i, j, k), 1.5) /
-                                          (tlscale_arr(i, j, k) + tiny);
+                    const amrex::Real epsilon =
+                        std::pow(Cmu, 3) * std::pow(tke_arr(i, j, k), 1.5) /
+                        (tlscale_arr(i, j, k) + tiny);
                     amrex::Real Rt = std::pow(tke_arr(i, j, k) / epsilon, 2) *
                                      stratification;
                     Rt = (Rt > Rtc) ? Rt
@@ -222,9 +222,9 @@ void OneEqRANS<Transport>::update_alphaeff(Field& alphaeff)
                           gradT_arr(i, j, k, 1) * gravity[1] +
                           gradT_arr(i, j, k, 2) * gravity[2]) *
                         beta;
-                    const amrex::Real epsilon = std::pow(Cmu, 3) *
-                                          std::pow(tke_arr(i, j, k), 1.5) /
-                                          (tlscale_arr(i, j, k)+tiny);
+                    const amrex::Real epsilon =
+                        std::pow(Cmu, 3) * std::pow(tke_arr(i, j, k), 1.5) /
+                        (tlscale_arr(i, j, k) + tiny);
                     amrex::Real Rt = std::pow(tke_arr(i, j, k) / epsilon, 2) *
                                      stratification;
                     Rt = (Rt < -1)
