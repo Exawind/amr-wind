@@ -108,7 +108,7 @@ struct DiffusionOp<SDR, Scheme> : public DiffSolverIface<typename SDR::MLDiffOp>
         amrex::MLMG mlmg(*this->m_applier);
         mlmg.apply(
             this->m_pdefields.diff_term.state(tau_state).vec_ptrs(),
-            this->m_pdefields.field.vec_ptrs());
+            this->m_pdefields.field.state(fstate).vec_ptrs());
     }
 
     void

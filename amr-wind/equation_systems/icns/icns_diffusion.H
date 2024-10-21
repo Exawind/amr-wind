@@ -42,7 +42,9 @@ public:
         auto& divtau = this->m_pdefields.diff_term.state(tau_state);
 
         amrex::MLMG mlmg(*this->m_applier);
-        mlmg.apply(divtau.vec_ptrs(), this->m_pdefields.field.vec_ptrs());
+        mlmg.apply(
+            divtau.vec_ptrs(),
+            this->m_pdefields.field.state(fstate).vec_ptrs());
     }
 };
 
@@ -162,7 +164,8 @@ public:
         }
 
         amrex::MLMG mlmg(*m_applier_scalar);
-        mlmg.apply(divtau.vec_ptrs(), m_pdefields.field.vec_ptrs());
+        mlmg.apply(
+            divtau.vec_ptrs(), m_pdefields.field.state(fstate).vec_ptrs());
 
         if (!diff_for_RHS) {
             for (int lev = 0; lev < nlevels; ++lev) {
@@ -390,7 +393,7 @@ public:
             }
 
             auto divtau_comp = divtau.subview(i);
-            auto vel_comp = m_pdefields.field.subview(i);
+            auto vel_comp = m_pdefields.field.state(fstate).subview(i);
 
             amrex::MLMG mlmg(*m_applier_scalar[i]);
             mlmg.apply(divtau_comp.vec_ptrs(), vel_comp.vec_ptrs());
