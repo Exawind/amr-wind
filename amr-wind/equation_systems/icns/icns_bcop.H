@@ -47,21 +47,21 @@ struct BCOp<ICNS>
 
     /** Apply boundary conditions before a linear solve
      */
-    void apply_bcs(const FieldState rho_state)
+    void apply_bcs(const FieldState state)
     {
         amrex::IntVect ng_diff(1);
-        auto& field = m_fields.field;
-        const auto bc_time = (rho_state == FieldState::Old)
+        auto& field = m_fields.field.state(state);
+        const auto bc_time = (state == FieldState::Old)
                                  ? m_time.current_time()
                                  : m_time.new_time();
-        if ((rho_state != FieldState::Old && rho_state != FieldState::New)) {
+        if ((state != FieldState::Old && state != FieldState::New)) {
             amrex::Abort(
                 "icns_bcop.H apply_bcs(): a state other than New or Old was "
                 "used. The method of setting bc_time must be evaluated before "
                 "using a different state for this routine.\n");
         }
         field.fillphysbc(bc_time, ng_diff);
-        field.apply_bc_funcs(rho_state);
+        field.apply_bc_funcs(state);
     }
 
     PDEFields& m_fields;
