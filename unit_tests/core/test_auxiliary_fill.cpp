@@ -5,7 +5,8 @@ namespace amr_wind_tests {
 
 namespace {
 
-void auxiliary_fill_boundary(amr_wind::Field& velocity, const int comp = 0)
+void auxiliary_fill_boundary(
+    amr_wind::Field& velocity, amr_wind::IntField& indices, const int comp = 0)
 {
     const int nlevels = velocity.repo().num_active_levels();
     const int ncomp = velocity.num_comp();
@@ -27,19 +28,30 @@ void auxiliary_fill_boundary(amr_wind::Field& velocity, const int comp = 0)
                  mfi.isValid(); ++mfi) {
 
                 auto sbx = mfi.growntilebox(1);
+                auto shift_to_cc = amrex::IntVect(0);
                 const auto& bx =
                     amr_wind::utils::face_aware_boundary_box_intersection(
-                        sbx, domain_bdy_bx, ori);
+                        shift_to_cc, sbx, domain_bdy_bx, ori);
                 if (bx.isEmpty()) {
                     continue;
                 }
 
                 const auto& dest = velocity(lev).array(mfi);
+                const auto& idx = indices(lev).array(mfi);
                 amrex::ParallelFor(
                     bx, ncomp,
                     [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
                         dest(i, j, k, n) =
                             static_cast<amrex::Real>(comp + n + 1);
+                        idx(i + shift_to_cc[0], j + shift_to_cc[1],
+                            k + shift_to_cc[2], 3 * comp + 3 * n) =
+                            shift_to_cc[0];
+                        idx(i + shift_to_cc[0], j + shift_to_cc[1],
+                            k + shift_to_cc[2], 3 * comp + 3 * n + 1) =
+                            shift_to_cc[1];
+                        idx(i + shift_to_cc[0], j + shift_to_cc[1],
+                            k + shift_to_cc[2], 3 * comp + 3 * n + 2) =
+                            shift_to_cc[2];
                     });
             }
         }
@@ -47,17 +59,20 @@ void auxiliary_fill_boundary(amr_wind::Field& velocity, const int comp = 0)
 }
 
 amrex::Real get_field_err(
-    amr_wind::Field& field, const bool check_all_ghost, const int comp = 0)
+    amr_wind::Field& field,
+    amr_wind::IntField& indices,
+    const bool check_all_ghost,
+    const int comp = 0)
 {
     const int lev = 0;
     amrex::Real error_total = 0;
     const int ncomp = field.num_comp();
 
     error_total += amrex::ReduceSum(
-        field(lev), field(lev).nGrow(),
+        field(lev), indices(lev), field(lev).nGrow(),
         [=] AMREX_GPU_HOST_DEVICE(
-            amrex::Box const& bx,
-            amrex::Array4<amrex::Real const> const& f_arr) -> amrex::Real {
+            amrex::Box const& bx, amrex::Array4<amrex::Real const> const& f_arr,
+            amrex::Array4<int const> const& i_arr) -> amrex::Real {
             amrex::Real error = 0;
 
             amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
@@ -82,6 +97,21 @@ amrex::Real get_field_err(
                                 (in_y_bdy && not_in_xz_bdy) ||
                                 (in_z_bdy && not_in_xy_bdy)) {
                                 error += std::abs(f_arr(i, j, k) - 1.0);
+                                if (i == 9) {
+                                    error += std::abs((amrex::Real)(
+                                        i_arr(i - 1, j, k, 0) + 1));
+                                    error += std::abs((amrex::Real)(
+                                        i_arr(i - 1, j, k, 1) - 0));
+                                    error += std::abs((amrex::Real)(
+                                        i_arr(i - 1, j, k, 2) - 0));
+                                } else if (i == -1) {
+                                    error += std::abs(
+                                        (amrex::Real)(i_arr(i, j, k, 0) - 0));
+                                    error += std::abs(
+                                        (amrex::Real)(i_arr(i, j, k, 1) - 0));
+                                    error += std::abs(
+                                        (amrex::Real)(i_arr(i, j, k, 2) - 0));
+                                }
                             } else {
                                 error += std::abs(f_arr(i, j, k) - 0.0);
                             }
@@ -103,6 +133,21 @@ amrex::Real get_field_err(
                                 (in_yf_bdy && not_in_xz_bdy) ||
                                 (in_z_bdy && not_in_xy_bdy)) {
                                 error += std::abs(f_arr(i, j, k) - 2.0);
+                                if (j == 9) {
+                                    error += std::abs((amrex::Real)(
+                                        i_arr(i, j - 1, k, 3) - 0));
+                                    error += std::abs((amrex::Real)(
+                                        i_arr(i, j - 1, k, 4) + 1));
+                                    error += std::abs((amrex::Real)(
+                                        i_arr(i, j - 1, k, 5) - 0));
+                                } else if (j == -1) {
+                                    error += std::abs(
+                                        (amrex::Real)(i_arr(i, j, k, 3) - 0));
+                                    error += std::abs(
+                                        (amrex::Real)(i_arr(i, j, k, 4) - 0));
+                                    error += std::abs(
+                                        (amrex::Real)(i_arr(i, j, k, 5) - 0));
+                                }
                             } else {
                                 error += std::abs(f_arr(i, j, k) - 0.0);
                             }
@@ -124,6 +169,21 @@ amrex::Real get_field_err(
                                 (in_y_bdy && not_in_xz_bdy) ||
                                 (in_zf_bdy && not_in_xy_bdy)) {
                                 error += std::abs(f_arr(i, j, k) - 3.0);
+                                if (k == 9) {
+                                    error += std::abs((amrex::Real)(
+                                        i_arr(i, j, k - 1, 6)  - 0));
+                                    error += std::abs((amrex::Real)(
+                                        i_arr(i, j, k - 1, 7) - 0));
+                                    error += std::abs((amrex::Real)(
+                                        i_arr(i, j, k - 1, 8) + 1));
+                                } else if (k == -1) {
+                                    error += std::abs(
+                                        (amrex::Real)(i_arr(i, j, k, 6) - 0));
+                                    error += std::abs(
+                                        (amrex::Real)(i_arr(i, j, k, 7) - 0));
+                                    error += std::abs(
+                                        (amrex::Real)(i_arr(i, j, k, 8) - 0));
+                                }
                             } else {
                                 error += std::abs(f_arr(i, j, k) - 0.0);
                             }
@@ -189,6 +249,7 @@ public:
     {
         auto& frepo = mesh().field_repo();
         m_vel = &frepo.declare_field("velocity", 3, 1, 1);
+        m_ind = &frepo.declare_int_field("indices", 9, 1);
 
         (*m_vel).setVal(0.);
     }
@@ -201,6 +262,7 @@ public:
         m_umac = mac_vels[0];
         m_vmac = mac_vels[1];
         m_wmac = mac_vels[2];
+        m_ind = &frepo.declare_int_field("indices", 9, 1);
 
         (*m_umac).setVal(0.);
         (*m_vmac).setVal(0.);
@@ -228,6 +290,7 @@ public:
     amr_wind::Field* m_umac;
     amr_wind::Field* m_vmac;
     amr_wind::Field* m_wmac;
+    amr_wind::IntField* m_ind;
 };
 
 TEST_F(AuxiliaryFillTest, velocity_cc)
@@ -235,8 +298,8 @@ TEST_F(AuxiliaryFillTest, velocity_cc)
     prep_test(true);
 
     // Do fill and check ghost cells
-    auxiliary_fill_boundary(*m_vel);
-    const auto err = get_field_err(*m_vel, false);
+    auxiliary_fill_boundary(*m_vel, *m_ind);
+    const auto err = get_field_err(*m_vel, *m_ind, false);
     EXPECT_DOUBLE_EQ(err, 0.);
 }
 
@@ -245,16 +308,16 @@ TEST_F(AuxiliaryFillTest, velocity_face)
     prep_test(false);
 
     // Do fill and check ghost cells
-    auxiliary_fill_boundary(*m_umac, 0);
-    const auto u_err = get_field_err(*m_umac, true, 0);
+    auxiliary_fill_boundary(*m_umac, *m_ind, 0);
+    const auto u_err = get_field_err(*m_umac, *m_ind, true, 0);
     EXPECT_DOUBLE_EQ(u_err, 0.);
 
-    auxiliary_fill_boundary(*m_vmac, 1);
-    const auto v_err = get_field_err(*m_vmac, true, 1);
+    auxiliary_fill_boundary(*m_vmac, *m_ind, 1);
+    const auto v_err = get_field_err(*m_vmac, *m_ind, true, 1);
     EXPECT_DOUBLE_EQ(v_err, 0.);
 
-    auxiliary_fill_boundary(*m_wmac, 2);
-    const auto w_err = get_field_err(*m_wmac, true, 2);
+    auxiliary_fill_boundary(*m_wmac, *m_ind, 2);
+    const auto w_err = get_field_err(*m_wmac, *m_ind, true, 2);
     EXPECT_DOUBLE_EQ(w_err, 0.);
 }
 
