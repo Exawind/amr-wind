@@ -171,7 +171,7 @@ amrex::Real get_field_err(
                                 error += std::abs(f_arr(i, j, k) - 3.0);
                                 if (k == 9) {
                                     error += std::abs((amrex::Real)(
-                                        i_arr(i, j, k - 1, 6)  - 0));
+                                        i_arr(i, j, k - 1, 6) - 0));
                                     error += std::abs((amrex::Real)(
                                         i_arr(i, j, k - 1, 7) - 0));
                                     error += std::abs((amrex::Real)(
@@ -226,6 +226,10 @@ amrex::Real get_field_err(
                             error += std::abs(f_arr(i, j, k, 0) - 1.0);
                             error += std::abs(f_arr(i, j, k, 1) - 2.0);
                             error += std::abs(f_arr(i, j, k, 2) - 3.0);
+                            for (int ni = 0; ni < 9; ++ni) {
+                                error += std::abs(
+                                    (amrex::Real)(i_arr(i, j, k, ni) - 0));
+                            }
                         } else {
                             error += std::abs(f_arr(i, j, k, 0) - 0.0);
                             error += std::abs(f_arr(i, j, k, 1) - 0.0);
@@ -252,6 +256,7 @@ public:
         m_ind = &frepo.declare_int_field("indices", 9, 1);
 
         (*m_vel).setVal(0.);
+        (*m_ind).setVal(5);
     }
 
     void set_up_fields_face()
@@ -267,6 +272,7 @@ public:
         (*m_umac).setVal(0.);
         (*m_vmac).setVal(0.);
         (*m_wmac).setVal(0.);
+        (*m_ind).setVal(5);
     }
 
     void prep_test(const bool is_cc)
