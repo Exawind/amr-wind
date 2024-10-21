@@ -922,8 +922,9 @@ void ABLBoundaryPlane::populate_data(
 
             auto sbx = mfi.growntilebox(1);
             const auto& src = m_in_data.interpolate_data(ori, lev);
+            auto shift_to_cc = amrex::IntVect(0);
             const auto& bx = utils::face_aware_boundary_box_intersection(
-                sbx, src.box(), ori);
+                shift_to_cc, sbx, src.box(), ori);
             if (bx.isEmpty()) {
                 continue;
             }
@@ -934,8 +935,9 @@ void ABLBoundaryPlane::populate_data(
             amrex::ParallelFor(
                 bx, nc,
                 [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                    dest(i, j, k, n + dcomp) =
-                        src_arr(i, j, k, n + nstart + orig_comp);
+                    dest(i, j, k, n + dcomp) = src_arr(
+                        i + shift_to_cc[0], j + shift_to_cc[1],
+                        k + shift_to_cc[2], n + nstart + orig_comp);
                 });
         }
     }
