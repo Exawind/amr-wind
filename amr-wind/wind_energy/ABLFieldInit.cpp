@@ -377,9 +377,6 @@ void ABLFieldInit::init_tke(
         if (m_initial_wind_profile) {
             const int ntvals = static_cast<int>(m_wind_heights.size());
             const amrex::Real* windh = m_windht_d.data();
-            /*
-             * Set wind and temperature profiles from netcdf input
-             */
             const amrex::Real* tke_data = m_prof_tke_d.data();
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
