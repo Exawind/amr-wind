@@ -160,8 +160,7 @@ public:
 
     bool is_data_newer_than(const amrex::Real time) const
     {
-        // Will replace with m_in_data.tinterp()
-        return (m_intended_interp_time - time > 1e-12);
+        return (m_in_data.tinterp() - time > 1e-12);
     }
 
     io_mode mode() const { return m_io_mode; }
@@ -194,8 +193,6 @@ private:
 
     //! Start outputting after this time
     amrex::Real m_out_start_time{0.0};
-
-    amrex::Real m_intended_interp_time{0.0};
 
 #ifdef AMR_WIND_USE_NETCDF
     //! NetCDF time output counter
