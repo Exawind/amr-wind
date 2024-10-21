@@ -51,9 +51,8 @@ struct BCOp<ICNS>
     {
         amrex::IntVect ng_diff(1);
         auto& field = m_fields.field.state(state);
-        const auto bc_time = (state == FieldState::Old)
-                                 ? m_time.current_time()
-                                 : m_time.new_time();
+        const auto bc_time = (state == FieldState::Old) ? m_time.current_time()
+                                                        : m_time.new_time();
         if ((state != FieldState::Old && state != FieldState::New)) {
             amrex::Abort(
                 "icns_bcop.H apply_bcs(): a state other than New or Old was "
