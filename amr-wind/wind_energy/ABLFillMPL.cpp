@@ -86,7 +86,8 @@ void ABLFillMPL::fillpatch_sibling_fields(
             const auto bct = ibctype[ori];
             const int dir = ori.coordDir();
             for (int i = 0; i < m_field.num_comp(); ++i) {
-                if (bct == BC::mass_inflow) {
+                if ((bct == BC::mass_inflow) ||
+                    (bct == BC::mass_inflow_outflow)) {
                     if (side == amrex::Orientation::low) {
                         lbcrec[i].setLo(dir, amrex::BCType::foextrap);
                     } else {
