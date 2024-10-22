@@ -102,7 +102,7 @@ void BCIface::set_bcfuncs()
             m_field.register_custom_bc<FixedGradientBC>(ori);
         }
 
-        if ((m_field.name() == "velocity") // only velocity for now
+        if (((m_field.name() == "velocity") || (m_field.name() == "temperature"))
             && (bct == BC::mass_inflow_outflow)) {
 
             m_field.register_custom_bc<MassInflowOutflowBC>(ori);
