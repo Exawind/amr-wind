@@ -132,7 +132,7 @@ private:
     amrex::Vector<amrex::Real> m_last_lidar_center{0.0, 0.0, 0.0};
     amrex::Vector<amrex::Real> m_step_lidar_center{0.0, 0.0, 0.0};
 
-  amrex::Real m_fill_val{-99999.99};
+    amrex::Real m_fill_val{-99999.99};
 };
 
 } // namespace amr_wind::sampling
