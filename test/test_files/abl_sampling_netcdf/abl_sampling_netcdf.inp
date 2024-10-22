@@ -53,7 +53,7 @@ ABL.surface_roughness_z0 = 0.15
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
 amr.n_cell              = 48 48 48    # Grid cells at coarsest AMRlevel
-amr.max_level           = 0           # Max AMR level in hierarchy
+amr.max_level           = 1           # Max AMR level in hierarchy
 amr.max_grid_size       = 8
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -69,6 +69,17 @@ zlo.type =   "wall_model"
 zhi.type =   "slip_wall"
 zhi.temperature_type = "fixed_gradient"
 zhi.temperature = 0.003 # tracer is used to specify potential temperature gradient
+
+tagging.labels = box
+tagging.box.type = GeometryRefinement
+tagging.box.shapes = b0
+tagging.box.level  = 0
+
+tagging.box.b0.type = box
+tagging.box.b0.origin = 400.0 400.0 400.0
+tagging.box.b0.xaxis = 100.0 0.0 0.0
+tagging.box.b0.yaxis = 0.0 100.0 0.0
+tagging.box.b0.zaxis = 0.0 0.0 100.0
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              VERBOSITY                #
