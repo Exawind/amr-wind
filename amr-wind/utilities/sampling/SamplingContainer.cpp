@@ -80,7 +80,8 @@ void SamplingContainer::initialize_particles(
                 continue;
             }
 
-            const auto total_num_points = probe->num_points();
+            const auto uid_offset =
+                (iprobe == 0) ? 0 : samplers[iprobe - 1]->num_points();
             const auto probe_id = probe->id();
             amrex::Gpu::DeviceVector<amrex::RealVect> dlocs(npts);
             amrex::Gpu::copy(
@@ -117,7 +118,7 @@ void SamplingContainer::initialize_particles(
                     for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
                         pp.pos(idim) = loc[idim];
                     }
-                    pp.idata(IIx::uid) = p_dids[ip] + total_num_points * iprobe;
+                    pp.idata(IIx::uid) = p_dids[ip] + uid_offset;
                     pp.idata(IIx::sid) = probe_id;
                     pp.idata(IIx::nid) = static_cast<int>(p_dids[ip]);
                 });
