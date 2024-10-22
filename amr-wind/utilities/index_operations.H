@@ -73,7 +73,6 @@ inline amrex::Box face_aware_boundary_box_intersection(
     return bx;
 }
 
-
 // This version omits the shift to cell-centered data, often not needed
 inline amrex::Box face_aware_boundary_box_intersection(
     amrex::Box grown_interior_box,
