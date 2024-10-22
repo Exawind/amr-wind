@@ -182,9 +182,6 @@ void DTUSpinnerSampler::sampling_locations(
             if (utils::contains(box, loc, plo, dxinv)) {
                 sample_locs.push_back(loc, i + k * m_beam_points);
             }
-            else{
-              amrex::Print() << " this point not contained in domain: " << loc << std::endl;
-            }
         }
     }
 }
