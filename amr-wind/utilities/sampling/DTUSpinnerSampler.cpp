@@ -137,9 +137,19 @@ void DTUSpinnerSampler::sampling_locations(SampleLocType& sample_locs) const
 {
     AMREX_ALWAYS_ASSERT(sample_locs.locations().empty());
 
+    // Need a box that contains the fill val position so that it does
+    // not get excluded from the write.
     const int lev = 0;
-    const auto domain = m_sim.mesh().Geom(lev).Domain();
-    sampling_locations(sample_locs, domain);
+    const auto dom_hi = m_sim.mesh().Geom(lev).Domain().bigEnd();
+    const auto& dxinv = m_sim.mesh().Geom(lev).InvCellSizeArray();
+    const auto& plo = m_sim.mesh().Geom(lev).ProbLoArray();
+    const amrex::IntVect fill_val_iv(AMREX_D_DECL(
+        static_cast<int>(amrex::Math::floor((m_fill_val - plo[0]) * dxinv[0])),
+        static_cast<int>(amrex::Math::floor((m_fill_val - plo[1]) * dxinv[1])),
+        static_cast<int>(
+            amrex::Math::floor((m_fill_val - plo[2]) * dxinv[2]))));
+    const amrex::Box box_containing_fill_val(fill_val_iv, dom_hi);
+    sampling_locations(sample_locs, box_containing_fill_val);
 
     AMREX_ALWAYS_ASSERT(sample_locs.locations().size() == num_points());
 }
@@ -171,6 +181,9 @@ void DTUSpinnerSampler::sampling_locations(
                 m_start[2 + offset] + i * dx[2])};
             if (utils::contains(box, loc, plo, dxinv)) {
                 sample_locs.push_back(loc, i + k * m_beam_points);
+            }
+            else{
+              amrex::Print() << " this point not contained in domain: " << loc << std::endl;
             }
         }
     }
@@ -431,8 +444,8 @@ bool DTUSpinnerSampler::update_sampling_locations()
                 m_time_sampling += dt_s;
             } else {
                 for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-                    m_start[d + offset] = -99999.99;
-                    m_end[d + offset] = -99999.99;
+                    m_start[d + offset] = m_fill_val;
+                    m_end[d + offset] = m_fill_val;
                 }
             }
         }
