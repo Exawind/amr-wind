@@ -20,6 +20,7 @@ void init_vof(amr_wind::Field& vof_fld, amrex::Real water_level)
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
 
+        // this one
         for (amrex::MFIter mfi(vof_fld(lev)); mfi.isValid(); ++mfi) {
             auto bx = mfi.growntilebox();
             const auto& farr = vof_fld(lev).array(mfi);
@@ -56,6 +57,7 @@ void init_vof_multival(
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
 
+        // this one
         for (amrex::MFIter mfi(vof_fld(lev)); mfi.isValid(); ++mfi) {
             auto bx = mfi.growntilebox();
             const auto& farr = vof_fld(lev).array(mfi);
@@ -108,6 +110,7 @@ void init_vof_slope(
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
 
+        // this one
         for (amrex::MFIter mfi(vof_fld(lev)); mfi.isValid(); ++mfi) {
             auto bx = mfi.growntilebox();
             const auto& farr = vof_fld(lev).array(mfi);

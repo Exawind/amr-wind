@@ -32,6 +32,7 @@ void RainDrop::initialize_fields(int level, const amrex::Geometry& geom)
     const amrex::Real yc = m_loc[1];
     const amrex::Real zc = m_loc[2];
     const amrex::Real radius = m_radius;
+    // this one
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
         auto phi = levelset.array(mfi);
@@ -69,6 +70,7 @@ void RainDrop::initialize_fields(int level, const amrex::Geometry& geom)
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, m_vel.begin(), m_vel.end(), dvel.begin());
     const auto* vptr = dvel.data();
+    // this one
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
         auto vel = velocity.array(mfi);
