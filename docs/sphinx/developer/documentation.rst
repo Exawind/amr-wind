@@ -1,7 +1,7 @@
 .. _dev-documenting:
 
-Documentation - user manual and source code docs
-================================================
+Documentation
+=============
 
 AMR-Wind comes with two different types of documentation:
 
@@ -11,18 +11,19 @@ AMR-Wind comes with two different types of documentation:
 - Inline documentation within C++ source code that are written in a format that can be
   processed automatically by `Doxygen <http://www.doxygen.nl/manual/index.html>`_
 
-User documentation
-------------------
+Manual
+------
 
-AMR-Wind user documentation is written using a special format called
-ReStructured Text (ReST) and is converted into HTML and PDF formats using a
-python package Sphinx. Since the manuals are written in simple text files, they
-can be version controlled alongside the source code. Documentation is
-automatically generated with new updates to the GitHub repository and deployed
-at `AMR-Wind documentation site <https://exawind.github.io/amr-wind>`_.
+The AMR-Wind manual is written using a special format called
+ReStructured Text (ReST) and is converted into HTML and PDF formats
+using a python package Sphinx. Since the manuals are written in simple
+text files, they can be version controlled alongside the source
+code. Documentation is automatically generated with new updates to the
+GitHub repository and deployed at `AMR-Wind documentation site
+<https://exawind.github.io/amr-wind>`_.
 
-Writing user documentation
-``````````````````````````
+Writing documentation
+`````````````````````
 
 As mentioned previously, documentation is written using a special text format
 called reStructuredText. Sphinx user manual provides a `reST Primer
@@ -30,7 +31,7 @@ called reStructuredText. Sphinx user manual provides a `reST Primer
 provides an overview of this format and how to write documentation using this format.
 
 
-Documenting source code
+Source code documentation
 -------------------------
 
 Source code (C++ files) are commented using a special format that
@@ -52,14 +53,45 @@ to rely on comments to follow the code structure.
 Building documentation
 ----------------------
 
-To generate this documentation on a local machine, or to rebuild docs
-during code development, `doxygen`, `graphviz`, `doxysphinx`, and
-`sphinx` are required, as well as turning on the
-`AMR_WIND_ENABLE_DOCUMENTATION` cmake option.
-```{shell}
-$ cd build && cmake -DAMR_WIND_ENABLE_DOCUMENTATION:BOOL=ON .. && cmake --build . -t docs
-```
-The resulting documentation is in `docs/spinx/html` directory.Documentation can
-also be generated in other formats, consult `Sphinx docs
-<https://www.sphinx-doc.org/en/master/usage/builders/index.html>`_ for available
-formats and their usage.
+Dependencies
+````````````
+
+To generate the AMR-Wind manual on a local machine, `doxygen`,
+`graphviz`, `doxysphinx`, `enchant`, and `sphinx` are required.
+
+To install the required packages on Linux:
+
+.. code-block:: console
+
+    $ sudo apt-get install -y --no-install-recommends graphviz libenchant-2-dev
+
+and on OSX with homebrew:
+
+.. code-block:: console
+
+    $ brew install doxygen graphviz enchant
+
+To install the required python packages:
+
+.. code-block:: console
+
+    $ pip install sphinx sphinx_rtd_theme sphinx_toolbox sphinx_copybutton pyenchant sphinxcontrib-spelling doxysphinx
+
+Build
+`````
+
+Run the following command to build the documentation:
+
+.. code-block:: console
+
+    $ cd build && cmake -DAMR_WIND_ENABLE_DOCUMENTATION:BOOL=ON .. && cmake --build . -t docs
+
+.. tip::
+
+   On OSX, before running the cmake, you may need to :code:`$ export PYENCHANT_LIBRARY_PATH=/opt/homebrew/lib/libenchant-2.dylib`
+
+The resulting documentation is in `docs/spinx/html`
+directory. Documentation can also be generated in other formats,
+consult `Sphinx docs
+<https://www.sphinx-doc.org/en/master/usage/builders/index.html>`_ for
+available formats and their usage.

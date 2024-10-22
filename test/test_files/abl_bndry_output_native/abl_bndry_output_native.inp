@@ -27,7 +27,6 @@ turbulence.model = Smagorinsky
 Smagorinsky_coeffs.Cs = 0.135
 incflo.physics = ABL
 ICNS.source_terms = CoriolisForcing GeostrophicForcing
-BoussinesqBuoyancy.reference_temperature = 290.0
 ABL.reference_temperature = 290.0
 CoriolisForcing.east_vector = 1.0 0.0 0.0
 CoriolisForcing.north_vector = 0.0 1.0 0.0
@@ -49,7 +48,7 @@ ABL.kappa = .41
 ABL.surface_roughness_z0 = 0.01
 ABL.bndry_file = "bndry_files"
 ABL.bndry_io_mode = 0
-ABL.bndry_planes = ylo xlo
+ABL.bndry_planes = ylo xlo xhi
 ABL.bndry_output_start_time = 2.0
 ABL.bndry_var_names = velocity temperature
 ABL.bndry_output_format = native
@@ -64,7 +63,6 @@ amr.max_level           = 0           # Max AMR level in hierarchy
 geometry.prob_lo        =   0.       0.     0.  # Lo corner coordinates
 geometry.prob_hi        =   1000.  1000.  1000.  # Hi corner coordinates
 geometry.is_periodic    =   1   1   0   # Periodicity x y z (0/1)
-incflo.delp             =   0.  0.  0.  # Prescribed (cyclic) pressure gradient
 # Boundary conditions
 zlo.type =   "wall_model"
 

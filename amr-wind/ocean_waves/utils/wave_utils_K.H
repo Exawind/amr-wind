@@ -6,8 +6,8 @@
 
 namespace amr_wind::ocean_waves::utils {
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-free_surface_to_vof(amrex::Real eta, amrex::Real z, amrex::Real dz)
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real free_surface_to_vof(
+    const amrex::Real eta, const amrex::Real z, const amrex::Real dz)
 {
     amrex::Real volfrac = 0.0;
     if (eta - z >= dz / 2.) {
@@ -26,26 +26,25 @@ free_surface_to_vof(amrex::Real eta, amrex::Real z, amrex::Real dz)
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-gamma_generate(amrex::Real x, amrex::Real gen_length)
+gamma_generate(const amrex::Real x, const amrex::Real gen_length)
 {
-    amrex::Real Gamma = 0.0;
-    amrex::Real xtilde = std::max(std::min(1. - x / gen_length, 1.0), 0.0);
-    Gamma = 1.0 - std::expm1(std::pow(xtilde, 3.5)) / std::expm1(1.0);
-    return Gamma;
+    const amrex::Real xtilde =
+        std::max(std::min(1. - x / gen_length, 1.0), 0.0);
+    return (1.0 - std::expm1(std::pow(xtilde, 3.5)) / std::expm1(1.0));
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real gamma_absorb(
-    amrex::Real x, amrex::Real absorb_length, amrex::Real absorb_length_factor)
+    const amrex::Real x,
+    const amrex::Real absorb_length,
+    const amrex::Real absorb_length_factor)
 {
-    amrex::Real Gamma = 0.0;
-    amrex::Real xtilde =
-        std::max(std::abs(x) / (absorb_length * absorb_length_factor), 0.0);
-    Gamma = 1.0 - std::expm1(std::pow(xtilde, 3.5)) / std::expm1(1.0);
-    return Gamma;
+    const amrex::Real xtilde = std::max(
+        std::min(x / (absorb_length * absorb_length_factor), 1.0), 0.0);
+    return (1.0 - std::expm1(std::pow(xtilde, 3.5)) / std::expm1(1.0));
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-ramp(amrex::Real time, amrex::Real ramp_period)
+ramp(const amrex::Real time, const amrex::Real ramp_period)
 {
     amrex::Real f = 1.0;
     if (time < ramp_period) {

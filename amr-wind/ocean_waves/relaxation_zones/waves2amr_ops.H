@@ -90,7 +90,9 @@ void postprocess_velocity_mfab_liquid(
         amrex::ParallelFor(
             gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 // Set velocity to zero if no liquid present
-                if (phi(i, j, k) + 0.5 * dx[2] < 0.0) {
+                const amrex::Real cell_length_2D =
+                    std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
+                if (phi(i, j, k) + cell_length_2D >= 0) {
                     vel(i, j, k, 0) = 0.0;
                     vel(i, j, k, 1) = 0.0;
                     vel(i, j, k, 2) = 0.0;

@@ -41,6 +41,7 @@ public:
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& cfabs,
         const amrex::IntVect& nghost,
         const amrex::Vector<amrex::BCRec>& bcrec,
+        const amrex::Vector<amrex::BCRec>& /* unused */,
         const FieldState fstate = FieldState::New) override;
 
     //! Implementation that handles filling patches from a coarse to fine level

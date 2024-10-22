@@ -4,6 +4,7 @@
 #include "amr-wind/AMRWindVersion.H"
 #include "AMReX.H"
 #include "AMReX_OpenMP.H"
+#include "amr-wind/CFDSim.H"
 
 #ifdef AMR_WIND_USE_NETCDF
 #include "netcdf.h"
@@ -212,6 +213,62 @@ void print_tpls(std::ostream& out)
         out << "  No additional third-party libraries enabled" << std::endl
             << std::endl;
     }
+}
+
+void print_nonlinear_residual(
+    const CFDSim& sim, ScratchField& vel_diff, const ScratchField& vel_star)
+{
+    const int nlevels = sim.repo().num_active_levels();
+    const auto& mesh = sim.mesh();
+
+    const auto& velocity_new = sim.pde_manager().icns().fields().field;
+    const auto& oset_mask = sim.repo().get_int_field("mask_cell");
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+
+        amrex::iMultiFab level_mask;
+        if (lev < nlevels - 1) {
+            level_mask = makeFineMask(
+                mesh.boxArray(lev), mesh.DistributionMap(lev),
+                mesh.boxArray(lev + 1), mesh.refRatio(lev), 1, 0);
+        } else {
+            level_mask.define(
+                mesh.boxArray(lev), mesh.DistributionMap(lev), 1, 0,
+                amrex::MFInfo());
+            level_mask.setVal(1);
+        }
+
+        const auto& velnew_arr = velocity_new(lev).const_arrays();
+        const auto& velstar_arr = vel_star(lev).const_arrays();
+        const auto& veldiff_arr = vel_diff(lev).arrays();
+        const auto& levelmask_arr = level_mask.const_arrays();
+        const auto& osetmask_arr = oset_mask(lev).const_arrays();
+
+        amrex::ParallelFor(
+            velocity_new(lev), amrex::IntVect(0), AMREX_SPACEDIM,
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+                if (osetmask_arr[nbx](i, j, k) == 0) {
+                    veldiff_arr[nbx](i, j, k, n) = 0.;
+                } else {
+                    veldiff_arr[nbx](i, j, k, n) =
+                        (velnew_arr[nbx](i, j, k, n) -
+                         velstar_arr[nbx](i, j, k, n)) *
+                        levelmask_arr[nbx](i, j, k);
+                }
+            });
+    }
+
+    amrex::Array<amrex::Real, AMREX_SPACEDIM> rms_vel = {0.0};
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
+            rms_vel[idim] += vel_diff(lev).norm2(idim);
+        }
+    }
+
+    amrex::Print() << "Norm of change over fixed point iterations in u:  "
+                   << rms_vel[0] << ", v: " << rms_vel[1]
+                   << ", w: " << rms_vel[2] << std::endl;
 }
 
 } // namespace amr_wind::io

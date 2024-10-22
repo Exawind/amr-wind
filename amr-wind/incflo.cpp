@@ -23,8 +23,11 @@ incflo::incflo()
     // constructor. No valid BoxArray and DistributionMapping have been defined.
     // But the arrays for them have been resized.
 
+    // Check if dry run is requested and set up if so
+    CheckAndSetUpDryRun();
+
+    // Read top-level parameters using ParmParse
     m_time.parse_parameters();
-    // Read inputs file using ParmParse
     ReadParameters();
 
     init_physics_and_pde();
@@ -124,8 +127,13 @@ void incflo::prepare_for_time_integration()
 {
     BL_PROFILE("amr-wind::incflo::prepare_for_time_integration");
     // Don't perform initial work if this is a restart
-    if (m_sim.io_manager().is_restart()) {
+    // but still need to write plot file for dry run of restart
+    if (m_sim.io_manager().is_restart() && !m_dry_run) {
         return;
+    }
+
+    if (m_do_initial_proj || m_initial_iterations > 0) {
+        m_sim.pde_manager().prepare_boundaries();
     }
 
     if (m_do_initial_proj) {
@@ -276,7 +284,10 @@ void incflo::Evolve()
 
         amrex::Real time1 = amrex::ParallelDescriptor::second();
         // Advance to time t + dt
-        do_advance();
+        for (int fixed_point_iteration = 0;
+             fixed_point_iteration < m_fixed_point_iterations;
+             ++fixed_point_iteration)
+            do_advance(fixed_point_iteration);
 
         amrex::Print() << std::endl;
         amrex::Real time2 = amrex::ParallelDescriptor::second();
@@ -309,15 +320,19 @@ void incflo::Evolve()
     }
 }
 
-void incflo::do_advance()
+void incflo::do_advance(const int fixed_point_iteration)
 {
     if (m_sim.has_overset()) {
         m_ovst_ops.pre_advance_work();
     }
-    if (m_prescribe_vel) {
+    if (m_prescribe_vel && fixed_point_iteration == 0) {
         prescribe_advance();
     } else {
-        advance();
+        if (m_fixed_point_iterations > 1) {
+            amrex::Print() << "Fixed point iteration " << fixed_point_iteration
+                           << std::endl;
+        }
+        advance(fixed_point_iteration);
     }
     if (m_sim.has_overset()) {
         m_ovst_ops.post_advance_work();
@@ -372,6 +387,11 @@ void incflo::init_physics_and_pde()
         if (activate_overset) {
             m_sim.activate_overset();
         }
+
+        pp.query("fixed_point_iterations", m_fixed_point_iterations);
+        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+            m_fixed_point_iterations > 0,
+            "The number of fixed point iterations cannot be less than 1");
     }
 
     auto& pde_mgr = m_sim.pde_manager();

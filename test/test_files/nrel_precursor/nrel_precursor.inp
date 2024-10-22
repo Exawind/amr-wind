@@ -4,15 +4,16 @@ geometry.prob_lo 			 = -10005 -20005 0
 geometry.prob_hi 			 = 10005 20005 4000 
 geometry.is_periodic 			 = 1 1 0
 # Grid 
-amr.n_cell 			 = 160 312 128
+amr.n_cell 			 = 80 156 64
 amr.max_level 			 = 0
+amr.blocking_factor              = 4
 time.stop_time 			 = -1
-time.max_step 			 = 5000
-time.initial_dt 			 = 1.0
-time.fixed_dt 			 = -1
+time.max_step 			 = 10
+time.initial_dt 			 = 0.1
+time.fixed_dt 			 = 0.1
 time.cfl 			 = 0.9
-time.plot_interval 			 = 1000
-time.checkpoint_interval 			 = 1000
+time.plot_interval 			 = 5
+time.checkpoint_interval 			 = 5
 io.int_outputs = terrain_blank terrain_drag
 # incflo 
 incflo.physics 			 = ABL
@@ -53,10 +54,10 @@ ABL.temperature_values  = 300 300 300 305 310.7
 ABL.wall_shear_stress_type 			 = local
 ABL.surface_temp_flux 			 = 0
 ABL.bndry_file 			 = "bndry_files"
-ABL.bndry_write_frequency 			 = 100
+ABL.bndry_write_frequency 			 = 1
 ABL.bndry_io_mode 			 = 0
 ABL.bndry_planes 			 = xlo ylo 
-ABL.bndry_output_start_time 			 = 108.507
+ABL.bndry_output_start_time 			 = 0
 ABL.bndry_var_names 			 = velocity temperature
 ABL.bndry_output_format 			 = native
 # Source

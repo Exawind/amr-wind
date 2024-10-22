@@ -301,7 +301,7 @@ void ABLBoundaryPlane::post_init_actions()
     write_header();
     write_file();
     read_header();
-    read_file();
+    read_file(false);
 }
 
 void ABLBoundaryPlane::pre_advance_work()
@@ -309,7 +309,15 @@ void ABLBoundaryPlane::pre_advance_work()
     if (!m_is_initialized) {
         return;
     }
-    read_file();
+    read_file(true);
+}
+
+void ABLBoundaryPlane::pre_predictor_work()
+{
+    if (!m_is_initialized) {
+        return;
+    }
+    read_file(false);
 }
 
 void ABLBoundaryPlane::post_advance_work()
@@ -751,7 +759,7 @@ void ABLBoundaryPlane::read_header()
     }
 }
 
-void ABLBoundaryPlane::read_file()
+void ABLBoundaryPlane::read_file(const bool nph_target_time)
 {
     BL_PROFILE("amr-wind::ABLBoundaryPlane::read_file");
     if (m_io_mode != io_mode::input) {
@@ -759,7 +767,9 @@ void ABLBoundaryPlane::read_file()
     }
 
     // populate planes and interpolate
-    const amrex::Real time = m_time.new_time();
+    const amrex::Real time =
+        m_time.new_time() + (nph_target_time ? 0.5 : 0.0) *
+                                (m_time.current_time() - m_time.new_time());
     AMREX_ALWAYS_ASSERT((m_in_times[0] <= time) && (time < m_in_times.back()));
 
     // return early if current data files can still be interpolated in time
@@ -902,11 +912,6 @@ void ABLBoundaryPlane::populate_data(
             amrex::Abort("No inflow data at this level.");
         }
 
-        if (ori.isHigh()) {
-            amrex::Warning(
-                "We typically don't inflow boundary planes on the high side.");
-        }
-
         const size_t nc = mfab.nComp();
 
 #ifdef AMREX_USE_OMP
@@ -916,11 +921,10 @@ void ABLBoundaryPlane::populate_data(
              ++mfi) {
 
             auto sbx = mfi.growntilebox(1);
-            if (!sbx.cellCentered()) {
-                sbx.enclosedCells();
-            }
             const auto& src = m_in_data.interpolate_data(ori, lev);
-            const auto& bx = sbx & src.box();
+            auto shift_to_cc = amrex::IntVect(0);
+            const auto& bx = utils::face_aware_boundary_box_intersection(
+                shift_to_cc, sbx, src.box(), ori);
             if (bx.isEmpty()) {
                 continue;
             }
@@ -931,8 +935,9 @@ void ABLBoundaryPlane::populate_data(
             amrex::ParallelFor(
                 bx, nc,
                 [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                    dest(i, j, k, n + dcomp) =
-                        src_arr(i, j, k, n + nstart + orig_comp);
+                    dest(i, j, k, n + dcomp) = src_arr(
+                        i + shift_to_cc[0], j + shift_to_cc[1],
+                        k + shift_to_cc[2], n + nstart + orig_comp);
                 });
         }
     }
@@ -1087,7 +1092,7 @@ bool ABLBoundaryPlane::box_intersects_boundary(
     const int normal = ori.coordDir();
     amrex::IntVect plo(domBox.loVect());
     amrex::IntVect phi(domBox.hiVect());
-    plo[normal] = ori.isHigh() ? domBox.loVect()[normal] : 0;
+    plo[normal] = ori.isHigh() ? domBox.hiVect()[normal] : 0;
     phi[normal] = ori.isHigh() ? domBox.hiVect()[normal] : 0;
     const amrex::Box pbx(plo, phi);
     const auto& intersection = bx & pbx;

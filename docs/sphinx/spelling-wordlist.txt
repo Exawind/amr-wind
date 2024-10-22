@@ -1,3 +1,4 @@
+Boussinesq
 Burggraf
 CFL
 CMake
@@ -22,7 +23,9 @@ viscosities
 Zalesak
 ABL
 adaptively
+adaptivity
 advected
+advection
 amr
 amrex
 anelastic
@@ -62,8 +65,11 @@ frontend
 geostrophic
 Godunov
 hexahedral
+homebrew
+hydrostatic
 hypre
 incflo
+incompressible
 incompressibility
 initializer
 initializers
@@ -74,6 +80,7 @@ lidar
 mesoscale
 microscale
 multigrid
+multiphase
 namespace
 namespaces
 netcdf
@@ -102,6 +109,7 @@ rosco
 Smagorinsky
 solvability
 spack
+spacings
 spanwise
 spinup
 src
@@ -115,6 +123,7 @@ timesteps
 tke
 vel
 vof
+vorticity
 walkthrough
 weno
 yaml

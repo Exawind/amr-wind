@@ -109,7 +109,9 @@ struct InitDataOp<StokesWaves>
                             zero_sea_level, g, x, z, 0.0, eta, u_w, v_w, w_w);
 
                         phi(i, j, k) = eta - z;
-                        if (phi(i, j, k) + 0.5 * dx[2] >= 0) {
+                        const amrex::Real cell_length_2D =
+                            std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
+                        if (phi(i, j, k) + cell_length_2D >= 0) {
                             vel(i, j, k, 0) = u_w;
                             vel(i, j, k, 1) = v_w;
                             vel(i, j, k, 2) = w_w;
@@ -121,7 +123,9 @@ struct InitDataOp<StokesWaves>
                     gbx3, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
                         phi(i, j, k) = zero_sea_level - z;
-                        if (phi(i, j, k) + 0.5 * dx[2] >= 0) {
+                        const amrex::Real cell_length_2D =
+                            std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
+                        if (phi(i, j, k) + cell_length_2D >= 0) {
                             vel(i, j, k, 0) = 0.0;
                             vel(i, j, k, 1) = 0.0;
                             vel(i, j, k, 2) = 0.0;
@@ -178,7 +182,10 @@ struct UpdateRelaxZonesOp<StokesWaves>
                             zero_sea_level, g, x, z, time, eta, u_w, v_w, w_w);
 
                         phi(i, j, k) = eta - z;
-                        if (phi(i, j, k) + 0.5 * dx[2] >= 0) {
+                        const amrex::Real cell_length_2D =
+                            std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
+                        if (phi(i, j, k) + cell_length_2D >= 0) {
+                            // Wave velocity within a cell of interface
                             vel(i, j, k, 0) = u_w;
                             vel(i, j, k, 1) = v_w;
                             vel(i, j, k, 2) = w_w;
