@@ -65,15 +65,13 @@ TEST_F(TerrainTest, terrain)
     pp.addarr("physics", physics);
     amr_wind::terraindrag::TerrainDrag terrain_drag(sim());
     terrain_drag.post_init_actions();
-    int value = 100;
-    // Outside Point
     const auto& terrain_blank = sim().repo().get_int_field("terrain_blank");
-
-    const int value = field_probe(terrain_blank, 0, 5, 5, 1);
-    EXPECT_EQ(value, tol);
+    // Outside Point
+    const int value_out = utils::field_probe(terrain_blank, 0, 5, 5, 1);
+    EXPECT_EQ(value_out, tol);
     // Inside Point
-    value = terrain_drag.return_blank_value(15, 10, 1);
-    EXPECT_EQ(value, 1 + tol);
+    const int value_in = utils::field_probe(terrain_blank, 0, 15, 10, 1);
+    EXPECT_EQ(value_in, 1 + tol);
 }
 
 } // namespace amr_wind_tests
