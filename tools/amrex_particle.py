@@ -70,8 +70,10 @@ class AmrexParticleFile:
             self.num_grids = np.empty((self.finest_level+1,), dtype=int)
             self.grid_info = []
             for lev in range(self.finest_level+1):
-                ginfo = []
                 self.num_grids[lev] = int(fh.readline().strip())
+
+            for lev in range(self.finest_level+1):
+                ginfo = []
                 for _ in range(self.num_grids[lev]):
                     ginfo.append(
                         [int(ix) for ix in fh.readline().strip().split()])
