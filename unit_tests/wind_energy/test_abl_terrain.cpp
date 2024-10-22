@@ -67,7 +67,9 @@ TEST_F(TerrainTest, terrain)
     terrain_drag.post_init_actions();
     int value = 100;
     // Outside Point
-    value = terrain_drag.return_blank_value(5, 5, 1);
+    const auto& terrain_blank = sim().repo().get_int_field("terrain_blank");
+
+    const int value = field_probe(terrain_blank, 0, 5, 5, 1);
     EXPECT_EQ(value, tol);
     // Inside Point
     value = terrain_drag.return_blank_value(15, 10, 1);

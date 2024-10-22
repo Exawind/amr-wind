@@ -143,6 +143,31 @@ inline void field_minmax(
     field_max(nlevels, field, max_val);
 }
 
+inline amrex::Real field_probe(const amr_wind::Field& field, const int lev, const int i, const int j, const int k, const int icomp = 0)
+{
+  const amrex::IntVect iv_val = {i,j,k};
+  const amrex::Real value = amrex::ReduceSum(
+            field(lev), 0,
+            [=] AMREX_GPU_HOST_DEVICE(
+                amrex::Box const& bx,
+                amrex::Array4<amrex::Real const> const& field_arr)
+                -> amrex::Real {
+                amrex::Real val = 0.0;
+
+                if(bx.contains(iv_val)){
+                    amrex::Loop(bx, [=, &val](int i0, int j0, int k0) noexcept {
+                      const amrex::IntVect iv = {i0,j0,k0};
+                      if(iv == iv_val){
+                        val =  field_arr(iv, icomp);
+                      }
+                    });
+                }
+                return val;
+            });
+  amrex::ParallelDescriptor::ReduceRealSum(value);
+  return value;
+}
+
 } // namespace amr_wind_tests::utils
 
 #endif /* TEST_UTILS_H */
