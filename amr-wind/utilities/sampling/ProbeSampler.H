@@ -28,11 +28,18 @@ public:
     //! Check and fix the bounds of the sampler so the probes are in the domain
     void check_bounds() override;
 
-    void sampling_locations(SampleLocType& /*locs*/) const override;
+    //! Populate the vector with coordinates of the sampling locations
+    void sampling_locations(SampleLocType& /*sample_locs*/) const override;
 
-    void output_locations(SampleLocType& locs) const override
+    //! Populate the vector with coordinates of the sampling locations inside
+    //! a box
+    void sampling_locations(
+        SampleLocType& /*sample_locs*/,
+        const amrex::Box& /*box*/) const override;
+
+    void output_locations(SampleLocType& sample_locs) const override
     {
-        return sampling_locations(locs);
+        return sampling_locations(sample_locs);
     }
 
     void
