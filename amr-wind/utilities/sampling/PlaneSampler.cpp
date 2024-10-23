@@ -2,7 +2,7 @@
 
 #include "amr-wind/utilities/sampling/PlaneSampler.H"
 #include "amr-wind/CFDSim.H"
-
+#include "amr-wind/utilities/index_operations.H"
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind::sampling {
@@ -75,9 +75,21 @@ void PlaneSampler::check_bounds()
     }
 }
 
-void PlaneSampler::sampling_locations(SampleLocType& locs) const
+void PlaneSampler::sampling_locations(SampleLocType& sample_locs) const
 {
-    locs.resize(m_npts);
+    AMREX_ALWAYS_ASSERT(sample_locs.locations().empty());
+
+    const int lev = 0;
+    const auto domain = m_sim.mesh().Geom(lev).Domain();
+    sampling_locations(sample_locs, domain);
+
+    AMREX_ALWAYS_ASSERT(sample_locs.locations().size() == num_points());
+}
+
+void PlaneSampler::sampling_locations(
+    SampleLocType& sample_locs, const amrex::Box& box) const
+{
+    AMREX_ALWAYS_ASSERT(sample_locs.locations().empty());
 
     amrex::Array<amrex::Real, AMREX_SPACEDIM> dx;
     amrex::Array<amrex::Real, AMREX_SPACEDIM> dy;
@@ -89,12 +101,19 @@ void PlaneSampler::sampling_locations(SampleLocType& locs) const
 
     int idx = 0;
     const int nplanes = static_cast<int>(m_poffsets.size());
+    const int lev = 0;
+    const auto& dxinv = m_sim.mesh().Geom(lev).InvCellSizeArray();
+    const auto& plo = m_sim.mesh().Geom(lev).ProbLoArray();
     for (int k = 0; k < nplanes; ++k) {
         for (int j = 0; j < m_npts_dir[1]; ++j) {
             for (int i = 0; i < m_npts_dir[0]; ++i) {
+                amrex::RealVect loc;
                 for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-                    locs[idx][d] = m_origin[d] + dx[d] * i + dy[d] * j +
-                                   m_poffsets[k] * m_offset_vector[d];
+                    loc[d] = m_origin[d] + dx[d] * i + dy[d] * j +
+                             m_poffsets[k] * m_offset_vector[d];
+                }
+                if (utils::contains(box, loc, plo, dxinv)) {
+                    sample_locs.push_back(loc, idx);
                 }
                 ++idx;
             }

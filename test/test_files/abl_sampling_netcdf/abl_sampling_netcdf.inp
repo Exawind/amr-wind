@@ -53,7 +53,8 @@ ABL.surface_roughness_z0 = 0.15
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
 amr.n_cell              = 48 48 48    # Grid cells at coarsest AMRlevel
-amr.max_level           = 0           # Max AMR level in hierarchy
+amr.max_level           = 1           # Max AMR level in hierarchy
+amr.max_grid_size       = 8
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
@@ -69,6 +70,17 @@ zhi.type =   "slip_wall"
 zhi.temperature_type = "fixed_gradient"
 zhi.temperature = 0.003 # tracer is used to specify potential temperature gradient
 
+tagging.labels = box
+tagging.box.type = GeometryRefinement
+tagging.box.shapes = b0
+tagging.box.level  = 0
+
+tagging.box.b0.type = box
+tagging.box.b0.origin = 400.0 400.0 400.0
+tagging.box.b0.xaxis = 100.0 0.0 0.0
+tagging.box.b0.yaxis = 0.0 100.0 0.0
+tagging.box.b0.zaxis = 0.0 0.0 100.0
+
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              VERBOSITY                #
 #.......................................#
@@ -77,25 +89,60 @@ incflo.verbose          =   0          # incflo_level
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               SAMPLING                #
 #.......................................#
-incflo.post_processing       = sampling sampling2
-sampling.output_frequency    = 1
-sampling.output_format       = netcdf
-sampling.fields              = velocity
-sampling.int_fields          = mask_cell
-sampling.derived_fields      = mag_vorticity "components(velocity,0,1)" "grad(temperature)" "grad(density)"
-sampling.labels              = volume1
-sampling.volume1.type        = VolumeSampler
-sampling.volume1.lo          = 200.0 200.0 200.0
-sampling.volume1.hi          = 500.0 500.0 500.0
-sampling.volume1.num_points  = 30 10 10
+incflo.post_processing       = volume_sampling volume_sampling2 probe_sampling plane_sampling line_sampling
+volume_sampling.output_frequency    = 1
+volume_sampling.output_format       = netcdf
+volume_sampling.fields              = velocity
+volume_sampling.int_fields          = mask_cell
+volume_sampling.derived_fields      = mag_vorticity "components(velocity,0,1)" "grad(temperature)" "grad(density)"
+volume_sampling.labels              = volume1 volume2
+volume_sampling.volume1.type        = VolumeSampler
+volume_sampling.volume1.lo          = 200.0 200.0 200.0
+volume_sampling.volume1.hi          = 500.0 500.0 500.0
+volume_sampling.volume1.num_points  = 30 10 10
+volume_sampling.volume2.type        = VolumeSampler
+volume_sampling.volume2.lo          = 205.0 200.0 200.0
+volume_sampling.volume2.hi          = 505.0 500.0 500.0
+volume_sampling.volume2.num_points  = 30 10 10
 
-sampling2.output_frequency    = 1
-sampling2.output_format       = netcdf
-sampling2.fields              = velocity
-sampling2.int_fields          = mask_cell
-sampling2.derived_fields      = q_criterion_nondim
-sampling2.labels              = volume1
-sampling2.volume1.type        = VolumeSampler
-sampling2.volume1.lo          = 20.0 20.0 20.0
-sampling2.volume1.hi          = 50.0 50.0 50.0
-sampling2.volume1.num_points  = 5 5 5
+volume_sampling2.output_frequency    = 1
+volume_sampling2.output_format       = netcdf
+volume_sampling2.fields              = velocity
+volume_sampling2.int_fields          = mask_cell
+volume_sampling2.derived_fields      = q_criterion_nondim
+volume_sampling2.labels              = volume1
+volume_sampling2.volume1.type        = VolumeSampler
+volume_sampling2.volume1.lo          = 20.0 20.0 20.0
+volume_sampling2.volume1.hi          = 50.0 50.0 50.0
+volume_sampling2.volume1.num_points  = 5 5 5
+
+probe_sampling.output_frequency    = 1
+probe_sampling.output_format       = netcdf
+probe_sampling.fields              = velocity
+probe_sampling.int_fields          = mask_cell
+probe_sampling.labels              = probe1
+probe_sampling.probe1.type         = ProbeSampler
+probe_sampling.probe1.probe_location_file = "probe_locations.txt"
+probe_sampling.probe1.offset_vector = 0.0 1.0 1.0
+probe_sampling.probe1.offsets   = 0.0 200.0 400.0 600.0
+
+plane_sampling.output_frequency     = 1
+plane_sampling.output_format        = netcdf
+plane_sampling.fields               = velocity
+plane_sampling.labels               = plane1
+plane_sampling.plane1.type          = PlaneSampler
+plane_sampling.plane1.axis1         = 400.0 0.0 0.0
+plane_sampling.plane1.axis2         = 0.0 0.0 400.0
+plane_sampling.plane1.origin        = 200.0 200.0 200.0
+plane_sampling.plane1.num_points    = 10 10
+plane_sampling.plane1.offset_vector = 0.0 1.0 1.0
+plane_sampling.plane1.offsets       = 0.0 20.0 30.0 200.0
+
+line_sampling.output_frequency     = 1
+line_sampling.output_format        = netcdf
+line_sampling.fields               = velocity
+line_sampling.labels               = line1
+line_sampling.line1.type           = LineSampler
+line_sampling.line1.num_points     = 21
+line_sampling.line1.start          = 750.0 250.0 10.0
+line_sampling.line1.end            = 750.0 250.0 910.0

@@ -41,7 +41,13 @@ public:
      *
      *
      */
-    void sampling_locations(SampleLocType& /*locs*/) const override;
+    void sampling_locations(SampleLocType& /*sample_locs*/) const override;
+
+    //! Populate the vector with coordinates of the sampling locations inside
+    //! a box
+    void sampling_locations(
+        SampleLocType& /*sample_locs*/,
+        const amrex::Box& /*box*/) const override;
 
     static vs::Vector generate_lidar_pattern(
         PrismParameters InnerPrism, PrismParameters OuterPrism, double time);
@@ -125,6 +131,8 @@ private:
     amrex::Real m_last_hub_tilt{0};
     amrex::Vector<amrex::Real> m_last_lidar_center{0.0, 0.0, 0.0};
     amrex::Vector<amrex::Real> m_step_lidar_center{0.0, 0.0, 0.0};
+
+    amrex::Real m_fill_val{-99999.99};
 };
 
 } // namespace amr_wind::sampling
