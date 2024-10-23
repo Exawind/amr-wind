@@ -3,7 +3,7 @@
 Actuator Line Model Calibration
 ===============================
 
-This walkthrough provides an overview of important considerations for calibrating an Actuator Line Model (ALM) for wind turbine large eddy simulation (LES). The primary focus is on calibrating the :math:`\epsilon` parameter, which controls the spreading of turbine aerodynamic forces into body forces, effectively determining how these forces are distributed to the surrounding fluid. Also discussed are considerations regarding the simulation time step :math:`\Delta t`, the filtered lifting line correction (FLLC), the number of actuator node points, and the near-turbine resolution :math:`\Delta x`. The IEA-15MW-240 turbine model will be used here as an example [add link to turbine model?]
+This walkthrough provides an overview of important considerations for calibrating an Actuator Line Model (ALM) for wind turbine large eddy simulation (LES). The primary focus is on calibrating the :math:`\epsilon` parameter, which controls the spreading of turbine aerodynamic forces into body forces, effectively determining how these forces are distributed to the surrounding fluid. Also discussed are considerations regarding the simulation time step :math:`\Delta t`, the filtered lifting line correction (FLLC), the number of actuator node points, and the near-turbine resolution :math:`\Delta x`. The `IEA-15MW-240 <https://github.com/IEAWindTask37/IEA-15-240-RWT>`_ turbine model will be used here as an example.
 
 Calibrating Epsilon
 --------------------
@@ -17,8 +17,7 @@ In this tutorial, we will focus on calibrating the epsilon parameter to align th
 .. image:: ./calibration_images/calibration_mesh.png
     :width: 100%
 
-3. **Adjust Epsilon**: Run a series of AMR-Wind simulations over a range of epsilon values and wind speeds. Prior studies may be useful for choosing initial values. For instance, a general rule-of-thumb is that :math:`\epsilon / \Delta x \approx 2` seems to perform well for a variety of turbine models, however, this is not always true as seen for the IEA-15MW-240 model here. 
-  To adjust epsilon, change the actuator epsilon parameter(s) in the AMR-Wind input file, such as:
+3. **Adjust Epsilon**: Run a series of AMR-Wind simulations over a range of epsilon values and wind speeds. Prior studies may be useful for choosing initial values. For instance, a general rule-of-thumb is that :math:`\epsilon / \Delta x \approx 2` seems to perform well for a variety of turbine models, however, this is not always true as seen for the IEA-15MW-240 model here. To adjust epsilon, change the actuator epsilon parameter(s) in the AMR-Wind input file, such as:
 
 .. code-block:: console
 
@@ -42,10 +41,13 @@ The best agreement between the OpenFAST and ALM simulations is found for :math:`
 Filtered Lifting Line Correction 
 --------------------------------
 
-An alternative to manually calibrating :math:`\epsilon` is to use the FLLC, as document in 
-documented in `Martínez-Tossas et al. (JFM 2019) <https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/filtered-lifting-line-theory-and-application-to-the-actuator-line-model/EA90C34B7D48030D725B3AFDC06501DF>`_ 
-and 
-`Martínez-Tossas et al. (JFM 2024) <https://onlinelibrary.wiley.com/doi/full/10.1002/we.2872>`_.
+It has been shown that accurate predictions of the velocity field and loads along the blades are acheived with :math:`\epsilon^{opt} / c = 0.25` where :math:`c` is the chord length; however, this value of :math:`\epsilon` is typically much finer than can be resolved in practical LES. To correct issues related to the effects of finite span wings and tip vortices for coarse-scale LES that cannot resolve this optimal kernel size, the filtered lifting line correction (FLLC) can be used, as documented in `Martínez-Tossas et al. (JFM 2019) <https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/filtered-lifting-line-theory-and-application-to-the-actuator-line-model/EA90C34B7D48030D725B3AFDC06501DF>`_  and `Martínez-Tossas et al. (JFM 2024) <https://onlinelibrary.wiley.com/doi/full/10.1002/we.2872>`_.
+
+.. image:: ./calibration_images/FLLC_ALM_Openfast_Comparison.png
+    :width: 100%
+
+.. image:: ./calibration_images/FLLC_ALM_Openfast_blade_loading.png
+    :width: 100%
 
 Timestep Considerations
 -----------------------
