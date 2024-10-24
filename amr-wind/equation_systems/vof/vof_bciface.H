@@ -37,7 +37,6 @@ protected:
 
             // For the wall cases, the fillpatch BC is effectively a
             // contact-line model
-            case BC::pressure_inflow:
             case BC::pressure_outflow:
             case BC::zero_gradient:
             case BC::no_slip_wall:

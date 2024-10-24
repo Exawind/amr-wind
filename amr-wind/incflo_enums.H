@@ -4,7 +4,6 @@
 enum struct DiffusionType { Invalid, Explicit, Crank_Nicolson, Implicit };
 
 enum struct BC {
-    pressure_inflow,
     pressure_outflow,
     mass_inflow,
     mass_inflow_outflow,
