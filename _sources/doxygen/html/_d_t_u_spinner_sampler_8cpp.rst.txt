@@ -1,0 +1,14 @@
+.. meta::aa441b6b0148704a33fc0e47523a498aeddfc2f935e60560649ebd6321d6a26a66f41b5470e21c27ea4f1a5f5e3645cdd737d8f4a0a565020431cf30195c3a23
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/DTUSpinnerSampler.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/DTUSpinnerSampler.cpp File Reference
+====================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _d_t_u_spinner_sampler_8cpp.html

@@ -1,0 +1,14 @@
+.. meta::a78e6dff68ef79d87f35390963be87a7c6ef8433fb6bbfe20ba90b95ee53e6a1dab410b1a5037f984953d358586fa40d416d54a0408e8d5ac09b3817b5137ba1
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/multiphase/ZalesakDiskScalarVel.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/multiphase/ZalesakDiskScalarVel.cpp File Reference
+=======================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _zalesak_disk_scalar_vel_8cpp.html

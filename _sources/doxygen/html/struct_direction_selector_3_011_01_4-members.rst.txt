@@ -1,0 +1,14 @@
+.. meta::375cb219cba70a5b628753ba6833f403f3ac889af34a0eb3a1faf405ca6a7adea4cf7a1f2f7d65f1cbb746eaaaac106f94077aeb2afb91e534cece6045085df5
+
+:orphan:
+
+.. title:: AMR-Wind API: Member List
+
+Member List
+===========
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: struct_direction_selector_3_011_01_4-members.html

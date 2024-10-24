@@ -1,0 +1,14 @@
+.. meta::3b0b3a976af8636188771ba65f1d6b5f975a653ed836ae73c5fc8438dfa1eff742e9e2516a0c7d716ae458c0ae88ce62a3bad82eb799ff3346101df4127cfe5f
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ocean_waves::ops::InitDataOp&lt; WaveTheoryTrait, typename &gt; Struct Template Reference
+
+InitDataOp&lt; WaveTheoryTrait, typename &gt; Struct Template Reference
+=======================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ocean__waves_1_1ops_1_1_init_data_op.html

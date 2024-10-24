@@ -1,0 +1,14 @@
+.. meta::d42682a1fbcd5e6bc653a7506b8698948acc0eb33727cb65242d0fd535e10109a1f6f06be5b2c332888d09a6f0e4c073a00c969e5366491f717724f28635eb78
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::terraindrag::TerrainDrag Class Reference
+
+TerrainDrag Class Reference
+===========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1terraindrag_1_1_terrain_drag.html

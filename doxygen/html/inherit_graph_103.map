@@ -1,0 +1,45 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,484,169,539"/>
+<area shape="rect" id="Node000001" href="$classamr__wind_1_1_rain_drop.html" title=" " alt="" coords="255,5,410,31"/>
+<area shape="poly" id="edge80_Node000000_Node000001" title=" " alt="" coords="92,470,108,368,135,239,152,176,171,119,192,72,215,40,234,27,254,20,256,25,236,32,219,44,197,75,176,121,157,177,140,241,114,369,97,471"/>
+<area shape="rect" id="Node000002" href="$classamr__wind_1_1_rayleigh_taylor.html" title=" " alt="" coords="237,55,428,80"/>
+<area shape="poly" id="edge81_Node000000_Node000002" title=" " alt="" coords="86,470,91,390,98,340,109,286,126,233,148,180,178,132,216,89,236,76,238,81,219,93,182,135,153,183,131,234,115,288,103,341,96,390,91,471"/>
+<area shape="rect" id="Node000003" href="$classamr__wind_1_1_scalar_advection.html" title=" " alt="" coords="233,104,432,129"/>
+<area shape="poly" id="edge82_Node000000_Node000003" title=" " alt="" coords="88,469,96,397,117,308,133,261,155,216,182,175,216,139,232,127,235,132,219,143,186,178,159,219,138,263,122,309,101,398,93,470"/>
+<area shape="rect" id="Node000004" href="$classamr__wind_1_1_sloshing_tank.html" title=" " alt="" coords="243,153,422,179"/>
+<area shape="poly" id="edge83_Node000000_Node000004" title=" " alt="" coords="90,470,101,407,124,331,140,291,160,253,186,218,216,188,242,173,244,178,219,192,190,222,165,256,145,294,129,332,107,408,95,471"/>
+<area shape="rect" id="Node000005" href="$classamr__wind_1_1_synthetic_turbulence.html" title=" " alt="" coords="220,203,445,228"/>
+<area shape="poly" id="edge84_Node000000_Node000005" title=" " alt="" coords="93,470,108,417,131,353,167,290,189,262,216,237,235,226,237,230,219,241,193,266,171,293,136,356,113,418,99,472"/>
+<area shape="rect" id="Node000006" href="$classamr__wind_1_1_taylor_green_vortex.html" title=" " alt="" coords="225,252,440,277"/>
+<area shape="poly" id="edge85_Node000000_Node000006" title=" " alt="" coords="98,470,115,426,140,377,173,327,216,287,236,275,239,280,219,291,177,331,144,379,120,429,103,472"/>
+<area shape="rect" id="Node000007" href="$classamr__wind_1_1_vortex_dipole.html" title=" " alt="" coords="243,301,422,327"/>
+<area shape="poly" id="edge86_Node000000_Node000007" title=" " alt="" coords="105,470,124,437,149,400,180,365,216,336,242,323,244,328,219,340,183,369,153,403,129,440,110,473"/>
+<area shape="rect" id="Node000008" href="$classamr__wind_1_1_vortex_patch.html" title=" " alt="" coords="247,351,418,376"/>
+<area shape="poly" id="edge87_Node000000_Node000008" title=" " alt="" coords="116,471,160,426,187,404,216,385,246,373,248,378,219,390,190,408,164,430,120,475"/>
+<area shape="rect" id="Node000009" href="$classamr__wind_1_1_vortex_patch_scalar_vel.html" title=" " alt="" coords="217,400,448,425"/>
+<area shape="poly" id="edge88_Node000000_Node000009" title=" " alt="" coords="138,474,176,453,216,434,254,423,255,428,218,439,178,458,141,479"/>
+<area shape="rect" id="Node000010" href="$classamr__wind_1_1_vortex_ring.html" title=" " alt="" coords="250,449,415,475"/>
+<area shape="poly" id="edge89_Node000000_Node000010" title=" " alt="" coords="182,490,268,472,269,477,183,495"/>
+<area shape="rect" id="Node000011" href="$classamr__wind_1_1_zalesak_disk.html" title=" " alt="" coords="245,499,420,524"/>
+<area shape="poly" id="edge90_Node000000_Node000011" title=" " alt="" coords="183,509,245,509,245,514,183,514"/>
+<area shape="rect" id="Node000012" href="$classamr__wind_1_1actuator_1_1_actuator.html" title=" " alt="" coords="259,549,407,589"/>
+<area shape="poly" id="edge91_Node000000_Node000012" title=" " alt="" coords="183,531,259,549,258,554,182,536"/>
+<area shape="rect" id="Node000013" href="$classamr__wind_1_1burggraf_1_1_burggraf_flow.html" title=" " alt="" coords="258,613,407,653"/>
+<area shape="poly" id="edge92_Node000000_Node000013" title=" " alt="" coords="134,545,174,573,218,598,259,613,257,618,216,603,171,578,131,550"/>
+<area shape="rect" id="Node000014" href="$classamr__wind_1_1channel__flow_1_1_channel_flow.html" title=" " alt="" coords="243,677,422,717"/>
+<area shape="poly" id="edge93_Node000000_Node000014" title=" " alt="" coords="114,549,158,608,187,637,219,662,244,675,242,680,216,667,183,641,154,612,110,552"/>
+<area shape="rect" id="Node000015" href="$classamr__wind_1_1ctv_1_1_convecting_taylor_vortex.html" title=" " alt="" coords="235,741,430,781"/>
+<area shape="poly" id="edge94_Node000000_Node000015" title=" " alt="" coords="104,551,122,593,146,640,179,687,219,727,238,738,236,743,216,731,175,690,142,643,117,595,100,553"/>
+<area shape="rect" id="Node000016" href="$classamr__wind_1_1hybrid__rans__les__abl_1_1_hybrid_r_a_n_s_l_e_s_a_b_l.html" title=" " alt="" coords="227,805,438,845"/>
+<area shape="poly" id="edge95_Node000000_Node000016" title=" " alt="" coords="99,551,113,606,136,670,171,735,193,765,219,791,236,802,233,807,216,795,189,768,167,738,131,673,108,607,93,553"/>
+<area shape="rect" id="Node000017" href="$classamr__wind_1_1ib_1_1_i_b.html" title=" " alt="" coords="269,869,396,895"/>
+<area shape="poly" id="edge96_Node000000_Node000017" title=" " alt="" coords="94,552,104,619,126,701,142,744,162,784,188,822,219,855,243,869,270,877,268,882,240,874,216,859,184,825,158,787,137,746,120,703,99,620,89,553"/>
+<area shape="rect" id="Node000018" href="$classamr__wind_1_1mms_1_1_m_m_s.html" title=" " alt="" coords="249,919,416,944"/>
+<area shape="poly" id="edge97_Node000000_Node000018" title=" " alt="" coords="92,552,99,628,118,723,135,773,156,821,184,865,219,904,234,914,250,921,248,926,231,919,216,908,180,869,152,823,130,775,113,724,94,628,87,552"/>
+<area shape="rect" id="Node000019" href="$classamr__wind_1_1ocean__waves_1_1_ocean_waves.html" title=" " alt="" coords="241,969,424,1009"/>
+<area shape="poly" id="edge98_Node000000_Node000019" title=" " alt="" coords="91,552,96,636,103,688,114,743,130,800,152,856,182,908,219,953,243,970,240,974,216,957,177,911,148,858,125,802,109,745,97,689,90,636,86,552"/>
+<area shape="rect" id="Node000020" href="$classamr__wind_1_1terraindrag_1_1_terrain_drag.html" title=" " alt="" coords="249,1033,416,1073"/>
+<area shape="poly" id="edge99_Node000000_Node000020" title=" " alt="" coords="96,552,112,662,139,801,156,871,175,933,196,984,219,1019,233,1030,250,1039,248,1043,231,1035,215,1022,191,987,170,935,150,872,134,803,107,662,91,553"/>
+<area shape="rect" id="Node000021" href="$classamr__wind_1_1zds_1_1_zalesak_disk_scalar_vel.html" title=" " alt="" coords="230,1097,435,1137"/>
+<area shape="poly" id="edge100_Node000000_Node000021" title=" " alt="" coords="95,552,109,674,134,833,151,912,171,984,194,1043,219,1083,233,1094,230,1098,215,1086,189,1046,166,986,146,914,129,834,104,675,90,553"/>
+</map>

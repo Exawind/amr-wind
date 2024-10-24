@@ -1,0 +1,14 @@
+.. meta::8546aa9a35ebd45e4fce1e388540982acc7f6c5d8fb0ba10ab97d1ca4ba0b0614bbdd4e05076dfb48a2c62e36032c016e30361b679a23b371020a50217763e82
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ShearStressConstant Struct Reference
+
+ShearStressConstant Struct Reference
+====================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_shear_stress_constant.html

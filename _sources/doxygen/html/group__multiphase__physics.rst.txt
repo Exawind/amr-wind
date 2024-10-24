@@ -1,0 +1,14 @@
+.. meta::6eff03b8a3cc81b177667c72fb9c560cec4c3410272e65077907857485fac4212daa3c1e46197e1c210d1c518e76f9ba8632af294892e5d5267ab7af4810851b
+
+:orphan:
+
+.. title:: AMR-Wind API: Multiphase physics
+
+Multiphase physics
+==================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__multiphase__physics.html

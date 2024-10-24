@@ -1,0 +1,14 @@
+.. meta::2fdd41b0bf05e5d315faf02c8b446b659a3320f2ca203bc046b08021957ab11a636e5be4edea8be361eba2a48a3456ca0482c89f56f98b63c579ae16d382c719
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::PDEMgr Class Reference
+
+PDEMgr Class Reference
+======================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1_p_d_e_mgr.html

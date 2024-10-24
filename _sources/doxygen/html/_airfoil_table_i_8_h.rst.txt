@@ -1,0 +1,14 @@
+.. meta::b1ec59217ae064900037b5d296d64611c022dc48b7f67cda447659afa24a70e01b5ae39fd3986c52125fa84d570fa696ed0f9420277d6fb9102174da3fd047bc
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/aero/AirfoilTableI.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator/aero/AirfoilTableI.H File Reference
+======================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _airfoil_table_i_8_h.html

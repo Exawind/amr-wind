@@ -1,0 +1,42 @@
+<map id="amr_wind::BoussinesqBubble" name="amr_wind::BoussinesqBubble">
+<area shape="rect" id="Node000001" title=" " alt="" coords="1901,193,2115,219"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="1592,122,1752,162"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1766,143,1822,149,1878,158,1931,173,1978,191,1976,196,1930,178,1877,163,1821,154,1765,148"/>
+<area shape="rect" id="Node000003" href="$classamr__wind_1_1_field.html" title=" " alt="" coords="1609,189,1735,215"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="1748,201,1776,202,1901,203,1901,209,1776,207,1748,207"/>
+<area shape="rect" id="Node000004" href="$classamr__wind_1_1_field_repo.html" title=" " alt="" coords="1331,161,1490,187"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="1504,181,1609,193,1609,198,1504,187"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="1023,149,1185,189"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="1199,168,1331,170,1331,175,1199,173"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="656,128,743,153"/>
+<area shape="poly" id="edge10_Node000003_Node000006" title=" " alt="" coords="756,133,836,129,1020,122,1164,119,1308,126,1491,146,1530,153,1569,163,1636,187,1634,192,1567,169,1529,158,1490,151,1307,131,1164,125,1021,127,836,134,756,139"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="757,142,1022,160,1022,166,756,147"/>
+<area shape="rect" id="Node000012" href="$structamr__wind_1_1_field_info.html" title=" " alt="" coords="1029,221,1179,247"/>
+<area shape="poly" id="edge13_Node000012_Node000006" title=" " alt="" coords="753,155,837,179,937,202,1029,219,1028,224,936,207,835,185,751,160"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="152,118,291,158"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="305,136,655,138,655,143,305,141"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="623,47,775,87"/>
+<area shape="poly" id="edge7_Node000005_Node000008" title=" " alt="" coords="789,80,890,101,999,129,1052,146,1050,151,998,134,889,107,788,86"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="202,5,241,31"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="255,18,563,49,624,56,623,61,562,54,254,24"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="5,248,44,273"/>
+<area shape="poly" id="edge9_Node000008_Node000010" title=" " alt="" coords="30,234,41,203,58,167,82,132,113,104,154,87,209,74,275,66,348,61,497,58,623,61,623,66,497,64,348,66,276,71,210,79,155,92,116,108,86,135,62,169,46,205,35,236"/>
+<area shape="rect" id="Node000015" title=" " alt="" coords="143,248,300,273"/>
+<area shape="poly" id="edge17_Node000015_Node000010" title=" " alt="" coords="58,258,143,258,143,263,58,263"/>
+<area shape="rect" id="Node000016" title=" " alt="" coords="379,337,536,363"/>
+<area shape="poly" id="edge19_Node000016_Node000010" title=" " alt="" coords="58,274,69,278,147,300,209,311,352,330,379,335,378,340,352,335,208,316,146,305,67,283,56,279"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="1331,214,1491,254"/>
+<area shape="poly" id="edge11_Node000003_Node000011" title=" " alt="" coords="1504,220,1609,207,1609,212,1505,225"/>
+<area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="1193,231,1330,231,1330,237,1193,237"/>
+<area shape="rect" id="Node000013" title=" " alt="" coords="587,209,812,249"/>
+<area shape="poly" id="edge14_Node000012_Node000013" title=" " alt="" coords="826,232,836,233,999,233,1028,232,1028,238,999,238,836,238,826,238"/>
+<area shape="rect" id="Node000014" href="$classamr__wind_1_1_field_fill_patch_ops_base.html" title=" " alt="" coords="132,182,311,222"/>
+<area shape="poly" id="edge15_Node000013_Node000014" title=" " alt="" coords="325,202,563,213,587,214,586,220,563,218,324,207"/>
+<area shape="poly" id="edge16_Node000013_Node000015" title=" " alt="" coords="313,258,432,256,562,247,586,245,587,250,563,253,432,261,314,264"/>
+<area shape="rect" id="Node000017" title=" " alt="" coords="590,324,809,379"/>
+<area shape="poly" id="edge22_Node000017_Node000015" title=" " alt="" coords="282,274,353,291,475,315,590,333,589,339,474,320,351,297,281,280"/>
+<area shape="poly" id="edge18_Node000011_Node000016" title=" " alt="" coords="548,335,561,330,573,320,585,310,642,294,713,282,882,269,1053,263,1185,257,1330,241,1331,246,1186,262,1053,269,883,275,714,287,643,299,588,315,576,325,564,335,550,340"/>
+<area shape="poly" id="edge20_Node000001_Node000017" title=" " alt="" coords="823,345,1103,341,1673,341,1722,337,1770,326,1817,310,1861,291,1937,250,1988,216,1991,221,1940,255,1864,296,1819,315,1772,331,1723,342,1673,346,1103,346,823,350"/>
+<area shape="rect" id="Node000018" href="$classamr__wind_1_1_boussinesq_bubble_field_init.html" title=" " alt="" coords="115,365,328,405"/>
+<area shape="poly" id="edge21_Node000017_Node000018" title=" " alt="" coords="342,390,449,391,562,383,603,376,604,381,563,389,449,396,342,395"/>
+</map>
