@@ -1,3 +1,4 @@
+AeroDyn 
 Boussinesq
 Burggraf
 CFL
@@ -8,6 +9,7 @@ Euler
 Exascale
 Fortran
 Joukowsky
+Jupyter
 MPI
 Moeng
 Monin
