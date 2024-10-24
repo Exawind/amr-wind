@@ -5,7 +5,6 @@ import pandas as pd
 import amrex_particle
 from amrex_particle import AmrexParticleFile
 
-
 def main():
     """Compare particle files"""
     parser = argparse.ArgumentParser(description="A comparison tool for particles")
@@ -30,9 +29,11 @@ def main():
     assert Path(args.f0).is_dir()
     assert Path(args.f1).is_dir()
 
-    cols_to_drop = ["uid", "set_id", "probe_id"]
-    p0df = AmrexParticleFile(Path(args.f0) / "particles")().drop(cols_to_drop, axis=1)
-    p1df = AmrexParticleFile(Path(args.f1) / "particles")().drop(cols_to_drop, axis=1)
+    p0df = AmrexParticleFile(Path(args.f0) / "particles")()
+    p1df = AmrexParticleFile(Path(args.f1) / "particles")()
+    assert p0df.shape == p1df.shape
+    p0df.sort_values(by=["uid"], inplace=True, kind="stable", ignore_index=True)
+    p1df.sort_values(by=["uid"], inplace=True, kind="stable", ignore_index=True)
 
     adiff = np.sqrt(np.square(p0df - p1df).sum(axis=0))
     rdiff = np.sqrt(np.square(p0df - p1df).sum(axis=0)) / np.sqrt(

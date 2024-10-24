@@ -174,13 +174,4 @@ void TerrainDrag::pre_init_actions()
 {
     BL_PROFILE("amr-wind::" + this->identifier() + "::pre_init_actions");
 }
-
-int TerrainDrag::return_blank_value(int i, int j, int k)
-{
-    int lev = 0;
-    amrex::MFIter mfi(m_terrain_blank(lev));
-    const auto& terrain_blank = m_terrain_blank(lev).const_array(mfi);
-    return int(terrain_blank(i, j, k));
-}
-
 } // namespace amr_wind::terraindrag

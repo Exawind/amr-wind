@@ -132,6 +132,10 @@ public:
     //! Advance states for all registered PDEs at the beginning of a timestep
     void advance_states();
 
+    //! Prepare boundaries for registered PDEs at the beginning of a timestep:
+    //! -- intended for when boundaries rely on intermediate time states (nph)
+    void prepare_boundaries();
+
     //! Call fillpatch operator on state variables for all registered PDEs
     void fillpatch_state_fields(
         const amrex::Real time, const FieldState fstate = FieldState::New);

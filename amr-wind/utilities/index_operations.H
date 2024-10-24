@@ -4,6 +4,7 @@
 #include <AMReX_Vector.H>
 #include <AMReX_Box.H>
 #include <AMReX_RealBox.H>
+#include <AMReX_RealVect.H>
 #include <AMReX_Geometry.H>
 
 namespace amr_wind::utils {
@@ -39,6 +40,8 @@ AMREX_FORCE_INLINE T perpendicular_idx(const int normal)
 /** Get the intersection with a boundary box while considering if on face or
  * cell. Intended for auxiliary boundary fill calls.
  *
+ *  \param shift_to_cc output index vector to shift from output box to
+ *  a cell-centered representation.
  *  \param grown_interior_box box grown from domain interior to overlap with
  * boundary
  *  \param domain_boundary_box box representing domain boundary containing data
@@ -48,10 +51,12 @@ AMREX_FORCE_INLINE T perpendicular_idx(const int normal)
  * grown_interior_box
  */
 inline amrex::Box face_aware_boundary_box_intersection(
+    amrex::IntVect& shift_to_cc,
     amrex::Box grown_interior_box,
     const amrex::Box& domain_boundary_box,
     const amrex::Orientation& ori)
 {
+    shift_to_cc = {0, 0, 0};
     const auto& field_location_vector = grown_interior_box.type();
     if (!grown_interior_box.cellCentered()) {
         grown_interior_box.enclosedCells();
@@ -63,8 +68,35 @@ inline amrex::Box face_aware_boundary_box_intersection(
 
     if (ori.isHigh() && field_location_vector[ori.coordDir()] == 1) {
         bx.shift(field_location_vector);
+        shift_to_cc = -field_location_vector;
     }
     return bx;
+}
+
+// This version omits the shift to cell-centered data, often not needed
+inline amrex::Box face_aware_boundary_box_intersection(
+    amrex::Box grown_interior_box,
+    const amrex::Box& domain_boundary_box,
+    const amrex::Orientation& ori)
+{
+    amrex::IntVect shift_to_cc = {0, 0, 0};
+    return face_aware_boundary_box_intersection(
+        shift_to_cc, grown_interior_box, domain_boundary_box, ori);
+}
+
+//! Check if a point is inside a box
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool contains(
+    const amrex::Box& box,
+    const amrex::RealVect& pos,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& prob_lo,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dxinv)
+{
+    const amrex::IntVect iv(AMREX_D_DECL(
+        static_cast<int>(amrex::Math::floor((pos[0] - prob_lo[0]) * dxinv[0])),
+        static_cast<int>(amrex::Math::floor((pos[1] - prob_lo[1]) * dxinv[1])),
+        static_cast<int>(
+            amrex::Math::floor((pos[2] - prob_lo[2]) * dxinv[2]))));
+    return box.contains(iv);
 }
 
 /** Convert a bounding box into amrex::Box index space at a given level

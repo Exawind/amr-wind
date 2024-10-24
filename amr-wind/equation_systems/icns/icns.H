@@ -42,7 +42,6 @@ struct ICNS : VectorTransport
     static constexpr bool multiply_rho = true;
     static constexpr bool has_diffusion = true;
 
-    // n+1/2 velocity for advection iterations
     static constexpr bool need_nph_state = true;
 };
 
