@@ -40,11 +40,13 @@ Five different wind speeds WS = 5 m/s, 6.5 m/s, 9 m/s, 11 m/s, 14 m/s are includ
 
 The best agreement between the OpenFAST and ALM simulations is found for :math:`\epsilon = 2.0`, which leads to a 0.3% relative error in generated power at 9.0m/s. This value was also found to perform well at the other wind speeds. 
 
-In addition to comparing turbine performance metrics, it is important to make sure the ALM has not introduced non-physical oscillations in the blade loading. The mean axial and tangential blade loading curves are shown below at 9.0m/s across the six different epsilon values. Again, the value of  :math:`\epsilon = 2.0` agrees well with the OpenFAST curve, and does not have significant osciallations along the blade span. 
+In addition to comparing turbine performance metrics, it is important to make sure the ALM has not introduced non-physical oscillations in the blade loading. The mean axial and tangential blade loading curves are shown below at 9.0m/s and 6.0m/s across a range of different epsilon values. Again, the value of  :math:`\epsilon = 2.0` agrees well with the OpenFAST curve and does not have significant osciallations along the blade span. 
 
-.. image:: ./calibration_images/ALM_Openfast_blade_loading.png
+.. image:: ./calibration_images/ALM_Openfast_blade_loading_9.0.png
     :width: 100%
 
+.. image:: ./calibration_images/ALM_Openfast_blade_loading_6.5.png
+    :width: 100%
 
 5. **Iterate**: Repeat the process, adjusting epsilon as necessary until the ALM results align closely with the OpenFAST data.
 
@@ -75,7 +77,7 @@ Here, epsilon and epsilon_min correspond to the value of :math:`\epsilon` for th
 
     Actuator.T0.fllc                         = true
 
-As shown in the figures below, FLLC generally improves blade loading results while maintaining or improving the agreement in turbine performance with OpenFAST.
+As shown in the figures below, FLLC generally improves blade loading results while maintaining the agreement in turbine performance with OpenFAST.
 
 .. image:: ./calibration_images/FLLC_ALM_Openfast_Comparison.png
     :width: 100%
