@@ -2,7 +2,7 @@
 
 #include "amr-wind/utilities/sampling/VolumeSampler.H"
 #include "amr-wind/CFDSim.H"
-
+#include "amr-wind/utilities/index_operations.H"
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind::sampling {
@@ -66,10 +66,25 @@ void VolumeSampler::check_bounds()
     }
 }
 
-void VolumeSampler::sampling_locations(SampleLocType& locs) const
+void VolumeSampler::sampling_locations(SampleLocType& sample_locs) const
 {
-    locs.resize(m_npts);
+    AMREX_ALWAYS_ASSERT(sample_locs.locations().empty());
 
+    const int lev = 0;
+    const auto domain = m_sim.mesh().Geom(lev).Domain();
+    sampling_locations(sample_locs, domain);
+
+    AMREX_ALWAYS_ASSERT(sample_locs.locations().size() == num_points());
+}
+
+void VolumeSampler::sampling_locations(
+    SampleLocType& sample_locs, const amrex::Box& box) const
+{
+    AMREX_ALWAYS_ASSERT(sample_locs.locations().empty());
+
+    const int lev = 0;
+    const auto& dxinv = m_sim.mesh().Geom(lev).InvCellSizeArray();
+    const auto& plo = m_sim.mesh().Geom(lev).ProbLoArray();
     const amrex::Array<amrex::Real, AMREX_SPACEDIM> dx = {
         (m_hi[0] - m_lo[0]) / m_npts_dir[0],
         (m_hi[1] - m_lo[1]) / m_npts_dir[1],
@@ -79,9 +94,12 @@ void VolumeSampler::sampling_locations(SampleLocType& locs) const
     for (int k = 0; k < m_npts_dir[2]; ++k) {
         for (int j = 0; j < m_npts_dir[1]; ++j) {
             for (int i = 0; i < m_npts_dir[0]; ++i) {
-                locs[idx][0] = m_lo[0] + dx[0] * i;
-                locs[idx][1] = m_lo[1] + dx[1] * j;
-                locs[idx][2] = m_lo[2] + dx[2] * k;
+                const amrex::RealVect loc = {AMREX_D_DECL(
+                    m_lo[0] + dx[0] * i, m_lo[1] + dx[1] * j,
+                    m_lo[2] + dx[2] * k)};
+                if (utils::contains(box, loc, plo, dxinv)) {
+                    sample_locs.push_back(loc, idx);
+                }
                 ++idx;
             }
         }

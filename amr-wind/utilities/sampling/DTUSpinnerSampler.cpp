@@ -2,6 +2,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/tensor_ops.H"
 #include "amr-wind/utilities/linear_interpolation.H"
+#include "amr-wind/utilities/index_operations.H"
 #include "AMReX_ParmParse.H"
 
 #ifdef AMR_WIND_USE_OPENFAST
@@ -132,22 +133,37 @@ vs::Vector DTUSpinnerSampler::generate_lidar_pattern(
         reflection_2, sampling_utils::reflect(reflection_1, axis));
 }
 
-//
-
-void DTUSpinnerSampler::sampling_locations(SampleLocType& locs) const
+void DTUSpinnerSampler::sampling_locations(SampleLocType& sample_locs) const
 {
+    AMREX_ALWAYS_ASSERT(sample_locs.locations().empty());
 
-    // The total number of points at this time step
-    long n_samples = m_beam_points * m_ntotal;
+    // Need a box that contains the fill val position so that it does
+    // not get excluded from the write.
+    const int lev = 0;
+    const auto dom_hi = m_sim.mesh().Geom(lev).Domain().bigEnd();
+    const auto& dxinv = m_sim.mesh().Geom(lev).InvCellSizeArray();
+    const auto& plo = m_sim.mesh().Geom(lev).ProbLoArray();
+    const amrex::IntVect fill_val_iv(AMREX_D_DECL(
+        static_cast<int>(amrex::Math::floor((m_fill_val - plo[0]) * dxinv[0])),
+        static_cast<int>(amrex::Math::floor((m_fill_val - plo[1]) * dxinv[1])),
+        static_cast<int>(
+            amrex::Math::floor((m_fill_val - plo[2]) * dxinv[2]))));
+    const amrex::Box box_containing_fill_val(fill_val_iv, dom_hi);
+    sampling_locations(sample_locs, box_containing_fill_val);
 
-    // Resize to number of points in line times number of sampling times
-    if (locs.size() < n_samples) {
-        locs.resize(n_samples);
-    }
+    AMREX_ALWAYS_ASSERT(sample_locs.locations().size() == num_points());
+}
 
+void DTUSpinnerSampler::sampling_locations(
+    SampleLocType& sample_locs, const amrex::Box& box) const
+{
+    AMREX_ALWAYS_ASSERT(sample_locs.locations().empty());
+
+    const int lev = 0;
+    const auto& dxinv = m_sim.mesh().Geom(lev).InvCellSizeArray();
+    const auto& plo = m_sim.mesh().Geom(lev).ProbLoArray();
     const amrex::Real ndiv = amrex::max(m_beam_points - 1, 1);
     amrex::Array<amrex::Real, AMREX_SPACEDIM> dx;
-
     // Loop per subsampling
     for (int k = 0; k < m_ntotal; ++k) {
 
@@ -159,9 +175,12 @@ void DTUSpinnerSampler::sampling_locations(SampleLocType& locs) const
         }
 
         for (int i = 0; i < m_beam_points; ++i) {
-            for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-                locs[i + k * m_beam_points][d] =
-                    m_start[d + offset] + i * dx[d];
+            const amrex::RealVect loc = {AMREX_D_DECL(
+                m_start[0 + offset] + i * dx[0],
+                m_start[1 + offset] + i * dx[1],
+                m_start[2 + offset] + i * dx[2])};
+            if (utils::contains(box, loc, plo, dxinv)) {
+                sample_locs.push_back(loc, i + k * m_beam_points);
             }
         }
     }
@@ -422,8 +441,8 @@ bool DTUSpinnerSampler::update_sampling_locations()
                 m_time_sampling += dt_s;
             } else {
                 for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-                    m_start[d + offset] = -99999.99;
-                    m_end[d + offset] = -99999.99;
+                    m_start[d + offset] = m_fill_val;
+                    m_end[d + offset] = m_fill_val;
                 }
             }
         }
@@ -512,8 +531,8 @@ void DTUSpinnerSampler::output_netcdf_data(
     std::vector<size_t> count{1, 0, AMREX_SPACEDIM};
     std::vector<size_t> starti{nt, 0};
     std::vector<size_t> counti{1, 0};
-    SamplerBase::SampleLocType locs;
-    sampling_locations(locs);
+    SampleLocType sample_locs;
+    sampling_locations(sample_locs);
 
     auto xyz = grp.var("points");
     auto xp = grp.var("points_x");
@@ -522,7 +541,8 @@ void DTUSpinnerSampler::output_netcdf_data(
     count[1] = num_points();
     counti[1] = num_points();
 
-    xyz.put(locs[0].data(), start, count);
+    const auto& locs = sample_locs.locations();
+    xyz.put(locs[0].begin(), start, count);
 
     auto n_samples = m_beam_points * m_ntotal;
 
