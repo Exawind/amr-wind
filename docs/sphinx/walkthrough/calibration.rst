@@ -40,7 +40,7 @@ Five different wind speeds WS = 5 m/s, 6.5 m/s, 9 m/s, 11 m/s, 14 m/s are includ
 
 The best agreement between the OpenFAST and ALM simulations is found for :math:`\epsilon = 2.0`, which leads to a 0.3% relative error in generated power at 9.0m/s. This value was also found to perform well at the other wind speeds. 
 
-In addition to comparing turbine performance metrics, it is important to make sure the ALM has not introduced non-physical oscillations in the blade loading. The mean axial and tangential blade loading curves are shown below at 9.0m/s and 6.0m/s across a range of different epsilon values. Again, the value of  :math:`\epsilon = 2.0` agrees well with the OpenFAST curve and does not have significant osciallations along the blade span. 
+In addition to comparing turbine performance metrics, it is important to make sure the ALM has not introduced non-physical oscillations in the blade loading. The mean axial and tangential blade loading curves are shown below at 9.0m/s and 6.5m/s across a range of different epsilon values. Again, the value of  :math:`\epsilon = 2.0` agrees well with the OpenFAST curve and does not have significant osciallations along the blade span. 
 
 .. image:: ./calibration_images/ALM_Openfast_blade_loading_9.0.png
     :width: 100%
@@ -85,28 +85,27 @@ As shown in the figures below, FLLC generally improves blade loading results whi
 .. image:: ./calibration_images/FLLC_ALM_Openfast_blade_loading.png
     :width: 100%
 
-Note that raising the number of aerodyn blade points may significantly increase computational cost. Here, the average solve time per timestep without FLLC was 1.82s whereas it was 3.26s with FLLC.
+Note that raising the number of aerodyn blade points may significantly increase computational cost. In the example here, there was a 1.8 times slowdown in the average solve time per timestep when using FLLC.
 
 Timestep considerations
 -----------------------
 
 In addition to the CFL condition, there is a general rule-of-thumb that the timestep, :math:`\Delta t`, should be set such that the blade(tip) does not rotate more than a grid cell per time step. Below, we verify this criterion is satisfied for the timestep :math:`\Delta t=0.02` used here, based on the rotor speed output from OpenFAST.
 
-The mean rotor speed ranges from 30.0 deg/s to 45.4 deg/s as the wind speed ranged from 5m/s to 14m/s. This means that, based on the mean rotor speeds and AMR-Wind timestep, the blades rotate between 0.60 – 0.91 deg/timesteps on average. The circumference of the rotor disk is :math:`240\pi` and, on average, the blades rotate between 0.0016 – 0.0025 rotations/timestep. Therefore, the blades move between 1.25 − 1.90 m/timestep or between 0.5 − 0.76 :math:`\Delta x` m/timestep. This distance is indeed less than a grid cell per timestep. 
+The mean rotor speed is found to range from 30.0 deg/s to 45.4 deg/s as the wind speed ranged from 5m/s to 14m/s. This means that, based on the mean rotor speeds and AMR-Wind timestep, the blades rotate between 0.60 – 0.91 deg/timesteps on average. The circumference of the rotor disk is :math:`240\pi` and, on average, the blades rotate between 0.0016 – 0.0025 rotations/timestep. Therefore, the blades move between 1.25 − 1.90 m/timestep or between 0.5 − 0.76 :math:`\Delta x` m/timestep. This distance is indeed less than a grid cell per timestep. 
 
-Number of actuator node points
--------------------------------
-The number of actuator node points in the ALM influences the resolution of the aerodynamic model. Here are some guidelines:
+.. Number of actuator node points
+.. -------------------------------
+.. The number of actuator node points in the ALM influences the resolution of the aerodynamic model. Here are some guidelines:
 
-Resources
----------
+Input File
+----------
 
-There are several resources we could link to including:
+An example of the AMR-Wind input file used for the ALM calibration with :math:`\epsilon=2.0` at a wind speed of 9.0m/s is included below:
 
-- User friendly Jupyter notebook for comparing stand alone OpenFAST and AMR-Wind results and plotting blade loading
+.. literalinclude:: ./calibrate_inp.txt
+   :linenos:
 
-- Python script for interpolating Aerodyn file (for FLLC)
+Additional Resources
+--------------------
 
-- Example input files
-
-I'm not sure the best place to store/input these.
