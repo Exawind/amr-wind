@@ -23,7 +23,17 @@ ABLFieldInit::ABLFieldInit()
 void ABLFieldInit::initialize_from_inputfile()
 {
     amrex::ParmParse pp_abl("ABL");
-
+    //! Check for wind profile
+    pp_abl.query("initial_wind_profile", m_initial_wind_profile);
+    if (m_initial_wind_profile) {
+        pp_abl.getarr("wind_heights", m_wind_heights);
+        pp_abl.getarr("u_values", m_u_values);
+        pp_abl.getarr("v_values", m_v_values);
+        pp_abl.getarr("tke_values", m_tke_values);
+        AMREX_ALWAYS_ASSERT(m_wind_heights.size() == m_u_values.size());
+        AMREX_ALWAYS_ASSERT(m_wind_heights.size() == m_v_values.size());
+        AMREX_ALWAYS_ASSERT(m_wind_heights.size() == m_tke_values.size());
+    }
     // Temperature variation as a function of height
     pp_abl.getarr("temperature_heights", m_theta_heights);
     pp_abl.getarr("temperature_values", m_theta_values);
@@ -84,7 +94,25 @@ void ABLFieldInit::initialize_from_inputfile()
 
     m_thht_d.resize(num_theta_values);
     m_thvv_d.resize(num_theta_values);
-
+    if (m_initial_wind_profile) {
+        int num_wind_values = static_cast<int>(m_wind_heights.size());
+        m_windht_d.resize(num_wind_values);
+        m_prof_u_d.resize(num_wind_values);
+        m_prof_v_d.resize(num_wind_values);
+        m_prof_tke_d.resize(num_wind_values);
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, m_wind_heights.begin(),
+            m_wind_heights.end(), m_windht_d.begin());
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, m_u_values.begin(), m_u_values.end(),
+            m_prof_u_d.begin());
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, m_v_values.begin(), m_v_values.end(),
+            m_prof_v_d.begin());
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, m_tke_values.begin(), m_tke_values.end(),
+            m_prof_tke_d.begin());
+    }
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, m_theta_heights.begin(),
         m_theta_heights.end(), m_thht_d.begin());
@@ -158,13 +186,15 @@ void ABLFieldInit::operator()(
     const amrex::Real rho_init = m_rho;
 
     const int ntvals = static_cast<int>(m_theta_heights.size());
+    const int nwvals = static_cast<int>(m_wind_heights.size());
     const amrex::Real* th = m_thht_d.data();
     const amrex::Real* tv = m_thvv_d.data();
 
-    if (m_init_uvtheta_profile) {
+    if (m_init_uvtheta_profile || m_initial_wind_profile) {
         /*
          * Set wind and temperature profiles from netcdf input
          */
+        const amrex::Real* windh = m_windht_d.data();
         const amrex::Real* uu = m_prof_u_d.data();
         const amrex::Real* vv = m_prof_v_d.data();
 
@@ -182,14 +212,17 @@ void ABLFieldInit::operator()(
                         const amrex::Real slope =
                             (tv[iz + 1] - tv[iz]) / (th[iz + 1] - th[iz]);
                         theta = tv[iz] + (z - th[iz]) * slope;
-
+                    }
+                }
+                for (int iz = 0; iz < nwvals - 1; ++iz) {
+                    if ((z > windh[iz]) && (z <= windh[iz + 1])) {
                         const amrex::Real slopeu =
-                            (uu[iz + 1] - uu[iz]) / (th[iz + 1] - th[iz]);
-                        umean_prof = uu[iz] + (z - th[iz]) * slopeu;
+                            (uu[iz + 1] - uu[iz]) / (windh[iz + 1] - windh[iz]);
+                        umean_prof = uu[iz] + (z - windh[iz]) * slopeu;
 
                         const amrex::Real slopev =
-                            (vv[iz + 1] - vv[iz]) / (th[iz + 1] - th[iz]);
-                        vmean_prof = vv[iz] + (z - th[iz]) * slopev;
+                            (vv[iz + 1] - vv[iz]) / (windh[iz + 1] - windh[iz]);
+                        vmean_prof = vv[iz] + (z - windh[iz]) * slopev;
                     }
                 }
 
@@ -324,7 +357,7 @@ void ABLFieldInit::init_tke(
 {
     tke_fab.setVal(m_tke_init);
 
-    if (!m_tke_init_profile) {
+    if (!m_tke_init_profile && !m_initial_wind_profile) {
         return;
     }
 
@@ -341,18 +374,43 @@ void ABLFieldInit::init_tke(
         const auto& bx = mfi.tilebox();
         const auto& tke = tke_fab.array(mfi);
 
-        // Profile definition from Beare et al. (2006)
-        amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+        if (m_initial_wind_profile) {
+            const int ntvals = static_cast<int>(m_wind_heights.size());
+            const amrex::Real* windh = m_windht_d.data();
+            const amrex::Real* tke_data = m_prof_tke_d.data();
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                if (z < tke_cutoff_height) {
-                    tke(i, j, k) = tke_init_factor *
-                                   std::pow(1. - z / tke_cutoff_height, 3);
-                } else {
-                    tke(i, j, k) = 1.e-20;
-                }
-            });
+                    amrex::Real tke_prof = tke_data[0];
+
+                    for (int iz = 0; iz < ntvals - 1; ++iz) {
+                        if ((z > windh[iz]) && (z <= windh[iz + 1])) {
+
+                            const amrex::Real slopetke =
+                                (tke_data[iz + 1] - tke_data[iz]) /
+                                (windh[iz + 1] - windh[iz]);
+                            tke_prof =
+                                tke_data[iz] + (z - windh[iz]) * slopetke;
+                        }
+                    }
+
+                    tke(i, j, k) = tke_prof;
+                });
+        } else {
+            // Profile definition from Beare et al. (2006)
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+
+                    if (z < tke_cutoff_height) {
+                        tke(i, j, k) = tke_init_factor *
+                                       std::pow(1. - z / tke_cutoff_height, 3);
+                    } else {
+                        tke(i, j, k) = 1.e-20;
+                    }
+                });
+        }
     }
 }
 
