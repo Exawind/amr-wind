@@ -26,14 +26,21 @@ void ABLFieldInit::initialize_from_inputfile()
     //! Check for wind profile
     pp_abl.query("initial_wind_profile", m_initial_wind_profile);
     if (m_initial_wind_profile) {
-        pp_abl.getarr("wind_heights", m_wind_heights);
-        pp_abl.getarr("u_values", m_u_values);
-        pp_abl.getarr("v_values", m_v_values);
-        pp_abl.getarr("tke_values", m_tke_values);
-        AMREX_ALWAYS_ASSERT(m_wind_heights.size() == m_u_values.size());
-        AMREX_ALWAYS_ASSERT(m_wind_heights.size() == m_v_values.size());
-        AMREX_ALWAYS_ASSERT(m_wind_heights.size() == m_tke_values.size());
-    }
+        pp_abl.query("rans_1dprofile_file", m_1d_rans);
+        if (!m_1d_rans.empty()) {
+            std::ifstream ransfile(m_1d_rans, std::ios::in);
+            if (!ransfile.good()) {
+                amrex::Abort("Cannot find 1-D RANS profile file " + m_1d_rans);
+            }
+            amrex::Real value1, value2, value3, value4;
+            while (ransfile >> value1 >> value2 >> value3 >> value4) {
+                m_wind_heights.push_back(value1);
+                m_u_values.push_back(value2);
+                m_v_values.push_back(value3);
+                m_tke_values.push_back(value4);
+            }
+        }
+    } 
     // Temperature variation as a function of height
     pp_abl.getarr("temperature_heights", m_theta_heights);
     pp_abl.getarr("temperature_values", m_theta_values);
@@ -71,7 +78,8 @@ void ABLFieldInit::initialize_from_inputfile()
         pp_incflo.get("density", m_rho);
     } else {
         pp_mphase.get("density_fluid2", m_rho);
-        // Note: density field will later be overwritten by MultiPhase post_init
+        // Note: density field will later be overwritten by MultiPhase
+        // post_init
     }
 
     amrex::ParmParse pp_forcing("ABLForcing");
@@ -232,7 +240,8 @@ void ABLFieldInit::operator()(
             });
     } else {
         /*
-         * Set uniform/linear wind profile with specified temperature profile
+         * Set uniform/linear wind profile with specified temperature
+         * profile
          */
         const bool linear_profile = m_linear_profile;
 
@@ -287,8 +296,9 @@ void ABLFieldInit::operator()(
             });
     }
 
-    // velocity perturbations may be added on top of the simple wind profiles
-    // specified in the input file or the general profiles from a netcdf input
+    // velocity perturbations may be added on top of the simple wind
+    // profiles specified in the input file or the general profiles from
+    // a netcdf input
     if (m_perturb_vel) {
         const amrex::Real aval =
             m_Uperiods * 2.0 * pi / (probhi[1] - problo[1]);

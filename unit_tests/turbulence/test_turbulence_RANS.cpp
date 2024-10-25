@@ -7,16 +7,11 @@ namespace amr_wind_tests {
 
 namespace {
 
-void init_field3(amr_wind::Field& fld, amrex::Real srate)
+void init_strain_field(amr_wind::Field& fld, amrex::Real srate)
 {
     const auto& mesh = fld.repo().mesh();
     const int nlevels = fld.repo().num_active_levels();
-
-    amrex::Real offset = 0.0;
-    if (fld.field_location() == amr_wind::FieldLoc::CELL) {
-        offset = 0.5;
-    }
-
+    amrex::Real offset = (fld.field_location() == amr_wind::FieldLoc::CELL)? 0.5: 0.0;
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
@@ -38,15 +33,12 @@ void init_field3(amr_wind::Field& fld, amrex::Real srate)
     }
 }
 
-void init_field1(amr_wind::Field& fld, amrex::Real tgrad)
+void init_temperature_field(amr_wind::Field& fld, amrex::Real tgrad)
 {
     const auto& mesh = fld.repo().mesh();
     const int nlevels = fld.repo().num_active_levels();
 
-    amrex::Real offset = 0.0;
-    if (fld.field_location() == amr_wind::FieldLoc::CELL) {
-        offset = 0.5;
-    }
+    amrex::Real offset = (fld.field_location() == amr_wind::FieldLoc::CELL)? 0.5: 0.0;
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = mesh.Geom(lev).CellSizeArray();
@@ -154,13 +146,13 @@ TEST_F(TurbRANSTest, test_1eqKrans_setup_calc)
     const amrex::Real tke_val = 0.1;
     // Set up velocity field with constant strainrate
     auto& vel = sim().repo().get_field("velocity");
-    init_field3(vel, srate);
+    init_strain_field(vel, srate);
     // Set up uniform unity density field
     auto& dens = sim().repo().get_field("density");
     dens.setVal(rho0);
     // Set up temperature field with constant gradient in z
     auto& temp = sim().repo().get_field("temperature");
-    init_field1(temp, Tgz);
+    init_temperature_field(temp, Tgz);
     // Give values to tlscale and tke arrays
     auto& tlscale = sim().repo().get_field("turb_lscale");
     tlscale.setVal(tlscale_val);
@@ -183,7 +175,6 @@ TEST_F(TurbRANSTest, test_1eqKrans_setup_calc)
         (0.556 + 0.108 * Rt) / (1 + 0.308 * Rt + 0.00837 * std::pow(Rt, 2));
     const amrex::Real tol = 0.12;
     const amrex::Real nut_max = rho0 * Cmu_Rt * tlscale_val * sqrt(tke_val);
-    amrex::Print() << nut_max << " " << max_val << std::endl;
     EXPECT_NEAR(max_val, nut_max, tol);
 }
 

@@ -37,6 +37,9 @@ void Krans::operator()(
         m_velocity.state(field_impl::dof_state(fstate))(lev).const_array(mfi);
     const bool has_terrain =
         this->m_sim.repo().int_field_exists("terrain_blank");
+    if(has_terrain){
+        
+    }
     const auto* const m_terrain_blank =
         has_terrain ? &this->m_sim.repo().get_int_field("terrain_blank")
                     : nullptr;

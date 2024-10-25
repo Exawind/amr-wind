@@ -68,6 +68,8 @@ private:
     //! Adding option for wind heights similar to temperature heights
     //! Speed-up RANS calculation using 1-D profile for flat surface
     bool m_initial_wind_profile{false};
+    //! File name for 1-D data file
+    std::string m_1d_rans;
     amrex::Vector<amrex::Real> m_wind_heights;
     amrex::Vector<amrex::Real> m_u_values;
     amrex::Vector<amrex::Real> m_v_values;
