@@ -40,7 +40,7 @@ void ABLFieldInit::initialize_from_inputfile()
                 m_tke_values.push_back(value4);
             }
         }
-    } 
+    }
     // Temperature variation as a function of height
     pp_abl.getarr("temperature_heights", m_theta_heights);
     pp_abl.getarr("temperature_values", m_theta_values);
