@@ -136,7 +136,7 @@ To activate the Spack environment now, first activate Spack by repeating these c
 .. code-block:: console
 
     export EXAWIND_MANAGER=${REPO_DEST}/exawind-manager
-    source ${SPACK_MANAGER}/start.sh && spack-start
+    source ${EXAWIND_MANAGER}/start.sh && spack-start
 
 Now, the Spack environment can be activated.
 

@@ -70,6 +70,11 @@ struct AdvectionOp<
                 "between plm, ppm, ppm_nolim, bds, weno_js, and weno_z. If no "
                 "godunov_type is specified, the default weno_z is used.");
         }
+
+        amrex::ParmParse pp_eq{fields_in.field.base_name()};
+        pp_eq.query(
+            "allow_inflow_at_pressure_outflow", m_allow_inflow_on_outflow);
+
         // TODO: Need iconserv flag to be adjusted???
         iconserv.resize(PDE::ndim, 1);
     }
@@ -174,10 +179,7 @@ struct AdvectionOp<
                     } else {
                         limiter_type = PPM::default_limiter;
                     }
-                    if ((godunov_scheme == godunov::scheme::WENOZ) ||
-                        (godunov_scheme == godunov::scheme::WENO_JS)) {
-                        m_allow_inflow_on_outflow = true;
-                    }
+
                     // if state is NPH, then n and n+1 are known, and only
                     // spatial extrapolation is performed
                     const amrex::Real dt_extrap =
