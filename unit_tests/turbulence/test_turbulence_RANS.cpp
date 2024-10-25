@@ -11,7 +11,8 @@ void init_strain_field(amr_wind::Field& fld, amrex::Real srate)
 {
     const auto& mesh = fld.repo().mesh();
     const int nlevels = fld.repo().num_active_levels();
-    amrex::Real offset = (fld.field_location() == amr_wind::FieldLoc::CELL)? 0.5: 0.0;
+    amrex::Real offset =
+        (fld.field_location() == amr_wind::FieldLoc::CELL) ? 0.5 : 0.0;
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
@@ -38,7 +39,8 @@ void init_temperature_field(amr_wind::Field& fld, amrex::Real tgrad)
     const auto& mesh = fld.repo().mesh();
     const int nlevels = fld.repo().num_active_levels();
 
-    amrex::Real offset = (fld.field_location() == amr_wind::FieldLoc::CELL)? 0.5: 0.0;
+    amrex::Real offset =
+        (fld.field_location() == amr_wind::FieldLoc::CELL) ? 0.5 : 0.0;
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = mesh.Geom(lev).CellSizeArray();
