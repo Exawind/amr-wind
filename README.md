@@ -70,6 +70,16 @@ through pull-requests on GitHub. Please refer to the
 [coding guidelines](https://exawind.github.io/amr-wind/developer/coding_guidelines.html) as
 a reference for the best practices currently used to develop AMR-Wind.
 
+### User discussion, feedback, and community support
+
+The development team manages a mailing list for AMR-Wind users. Invites for quarterly user meetings,
+along with occasional announcements, are sent to this list.
+Quarterly meetings provide development updates and a forum for discussion and feedback.
+If you would like to join this mailing list, please send a request to amr-wind-maintainers@groups.nrel.gov,
+and we will be happy to add your email address. Our maintainers email is also available for direct
+inquiries about AMR-Wind, but the GitHub page (issues, discussions, pull requests) is preferred
+for the majority of questions.
+
 ## Versioning and tags
 
 AMR-Wind uses a type of semantic versioning to help users navigate different versions of the code, 
