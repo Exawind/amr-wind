@@ -740,7 +740,7 @@ void ABLBoundaryPlane::read_header()
                     })) {
                 continue;
             }
-amrex::Print() << "!!! read_header(): ori " << ori << " entered." << std::endl;
+//amrex::Print() << "!!! read_header(): ori " << ori << " entered." << std::endl;
 
             m_in_data.define_plane(ori);
 
@@ -856,7 +856,7 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
                          (field.bc_type()[ori] != BC::mass_inflow_outflow))) {
                         continue;
                     }
-amrex::Print() << "!!! read_file(): ori " << ori << " entered for " << field.name() << std::endl;
+//amrex::Print() << "!!! read_file(): ori " << ori << " entered for " << field.name() << std::endl;
 
                     std::string facename1 =
                         amrex::Concatenate(filename1 + '_', ori, 1);
@@ -903,7 +903,7 @@ void ABLBoundaryPlane::populate_data(
              (fld.bc_type()[ori] != BC::mass_inflow_outflow))) {
             continue;
         }
-amrex::Print() << "!!! populate_data(): ori " << ori << " entered for " << fld.name() << std::endl;
+//amrex::Print() << "!!! populate_data(): ori " << ori << " entered for " << fld.name() << std::endl;
 
         // Only proceed with data population if fine levels touch the boundary
         if (lev > 0) {
