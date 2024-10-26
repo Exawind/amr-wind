@@ -51,6 +51,7 @@ void KransAxell::operator()(
     const amrex::Real Cmu = 0.556;
     const amrex::Real sponge_start = m_sponge_start;
     const amrex::Real ref_tke = m_ref_tke;
+    const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::Real bcforcing = 0;
         const amrex::Real ux = vel(i, j, k, 0);
@@ -76,7 +77,7 @@ void KransAxell::operator()(
             zi * zi * (tke_arr(i, j, k) - ref_tke);
         dissip_arr(i, j, k) = std::pow(Cmu, 3) *
                               std::pow(tke_arr(i, j, k), 1.5) /
-                              (tlscale_arr(i, j, k) + 1e-3);
+                              (tlscale_arr(i, j, k) + tiny );
         src_term(i, j, k) += shear_prod_arr(i, j, k) + buoy_prod_arr(i, j, k) -
                              dissip_arr(i, j, k) - sponge_forcing + bcforcing;
     });
@@ -116,7 +117,7 @@ void KransAxell::operator()(
                     const amrex::Real m =
                         std::sqrt(ux * ux + uy * uy + uz * uz);
                     const amrex::Real Cd =
-                        std::min(10 / (dx[2] * m + 1e-5), 100 / dx[2]);
+                        std::min(10 / (dx[2] * m + tiny), 100 / dx[2]);
                     dragforcing = -Cd * m * tke_arr(i, j, k, 0);
                 }
                 src_term(i, j, k) += terrainforcing + dragforcing;
