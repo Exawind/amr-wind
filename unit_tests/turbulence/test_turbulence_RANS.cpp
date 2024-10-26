@@ -92,7 +92,7 @@ TEST_F(TurbRANSTest, test_1eqKrans_setup_calc)
     const amrex::Real rho0 = 1.2;
     {
         amrex::ParmParse pp("turbulence");
-        pp.add("model", (std::string) "OneEqRANS");
+        pp.add("model", (std::string) "KLAxell");
     }
     {
         amrex::ParmParse pp("incflo");

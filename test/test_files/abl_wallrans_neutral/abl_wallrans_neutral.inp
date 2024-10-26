@@ -36,8 +36,8 @@ transport.viscosity                         = 0.0
 transport.laminar_prandtl                   = 0.7
 transport.turbulent_prandtl                 = 0.333
 # turbulence equation parameters
-turbulence.model                            = OneEqRANS
-TKE.source_terms = Krans
+turbulence.model                            = KLAxell
+TKE.source_terms                            = KransAxell
 # Atmospheric boundary layer
 ABL.Uperiods                                = 12.0
 ABL.Vperiods                                = 12.0

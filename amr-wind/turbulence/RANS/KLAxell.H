@@ -1,5 +1,5 @@
-#ifndef ONEEQRANS_H
-#define ONEEQRANS_H
+#ifndef KLAXELL_H
+#define KLAXELL_H
 
 #include <string>
 #include "amr-wind/turbulence/TurbModelBase.H"
@@ -10,17 +10,19 @@ namespace amr_wind::turbulence {
  *  \ingroup turb_model
  */
 template <typename Transport>
-class OneEqRANS : public TurbModelBase<Transport>
+class KLAxell : public TurbModelBase<Transport>
 {
 public:
     static std::string identifier()
     {
-        return "OneEqRANS-" + Transport::identifier();
+        return "KLAxell-" + Transport::identifier();
     }
 
-    explicit OneEqRANS(CFDSim& sim);
+    explicit KLAxell(CFDSim& sim);
 
-    std::string model_name() const override { return "OneEqRANS"; }
+    //~KLAxell() override;
+
+    std::string model_name() const override { return "KLAxell"; }
 
     //! Update the turbulent viscosity field
     void update_turbulent_viscosity(
@@ -62,4 +64,4 @@ private:
 
 } // namespace amr_wind::turbulence
 
-#endif /* ONEEQRANS_H */
+#endif /* KLAXELL_H */

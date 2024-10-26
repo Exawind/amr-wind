@@ -1,5 +1,5 @@
-#ifndef Krans_H
-#define Krans_H
+#ifndef KransAxell_H
+#define KransAxell_H
 
 #include "amr-wind/equation_systems/tke/TKESource.H"
 
@@ -8,14 +8,14 @@ namespace amr_wind::pde::tke {
 /** TKE source term based on Axell 2011 paper
  *  \ingroup tke_src turb_model we_abl
  */
-class Krans : public TKESource::Register<Krans>
+class KransAxell : public TKESource::Register<KransAxell>
 {
 public:
-    static std::string identifier() { return "Krans"; }
+    static std::string identifier() { return "KransAxell"; }
 
-    explicit Krans(const CFDSim& /*sim*/);
+    explicit KransAxell(const CFDSim& /*sim*/);
 
-    ~Krans() override;
+    ~KransAxell() override;
 
     void operator()(
         const int lev,
@@ -25,13 +25,15 @@ public:
         const amrex::Array4<amrex::Real>& src_term) const override;
 
 private:
-    const Field& m_turb_lscale;
-    const Field& m_shear_prod;
-    const Field& m_buoy_prod;
+    Field& m_turb_lscale;
+    Field& m_shear_prod;
+    Field& m_buoy_prod;
     Field& m_dissip;
-    const Field& m_tke;
+    Field& m_tke;
     amrex::Real m_heat_flux{0.0};
     amrex::Real m_ref_temp{300.0};
+    amrex::Real m_sponge_start{600};
+    amrex::Real m_ref_tke{1e-10};
     const SimTime& m_time;
     const CFDSim& m_sim;
     const amrex::AmrCore& m_mesh;
@@ -40,4 +42,4 @@ private:
 
 } // namespace amr_wind::pde::tke
 
-#endif /* Krans_H */
+#endif /* KransAxell_H */

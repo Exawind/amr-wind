@@ -1,4 +1,4 @@
-#include "amr-wind/turbulence/RANS/OneEqRANS.H"
+#include "amr-wind/turbulence/RANS/KLAxell.H"
 #include "amr-wind/equation_systems/PDEBase.H"
 #include "amr-wind/turbulence/TurbModelDefs.H"
 #include "amr-wind/fvm/gradient.H"
@@ -12,7 +12,7 @@ namespace amr_wind {
 namespace turbulence {
 
 template <typename Transport>
-OneEqRANS<Transport>::OneEqRANS(CFDSim& sim)
+KLAxell<Transport>::KLAxell(CFDSim& sim)
     : TurbModelBase<Transport>(sim)
     , m_vel(sim.repo().get_field("velocity"))
     , m_turb_lscale(sim.repo().declare_field("turb_lscale", 1))
@@ -27,7 +27,7 @@ OneEqRANS<Transport>::OneEqRANS(CFDSim& sim)
     m_tke = &(tke_eqn.fields().field);
     auto& phy_mgr = this->m_sim.physics_manager();
     if (!phy_mgr.contains("ABL")) {
-        amrex::Abort("OneEqRANS model only works with ABL physics");
+        amrex::Abort("KLAxell model only works with ABL physics");
     }
     {
         amrex::ParmParse pp("ABL");
@@ -40,11 +40,12 @@ OneEqRANS<Transport>::OneEqRANS(CFDSim& sim)
     }
 
     // TKE source term to be added to PDE
-    turb_utils::inject_turbulence_src_terms(pde::TKE::pde_name(), {"Krans"});
+    turb_utils::inject_turbulence_src_terms(
+        pde::TKE::pde_name(), {"KransAxell"});
 }
 
 template <typename Transport>
-void OneEqRANS<Transport>::parse_model_coeffs()
+void KLAxell<Transport>::parse_model_coeffs()
 {
     const std::string coeffs_dict = this->model_name() + "_coeffs";
     amrex::ParmParse pp(coeffs_dict);
@@ -54,7 +55,7 @@ void OneEqRANS<Transport>::parse_model_coeffs()
 }
 
 template <typename Transport>
-TurbulenceModel::CoeffsDictType OneEqRANS<Transport>::model_coeffs() const
+TurbulenceModel::CoeffsDictType KLAxell<Transport>::model_coeffs() const
 {
     return TurbulenceModel::CoeffsDictType{
         {"Cmu", this->m_Cmu},
@@ -63,7 +64,7 @@ TurbulenceModel::CoeffsDictType OneEqRANS<Transport>::model_coeffs() const
 }
 
 template <typename Transport>
-void OneEqRANS<Transport>::update_turbulent_viscosity(
+void KLAxell<Transport>::update_turbulent_viscosity(
     const FieldState fstate, const DiffusionType /*unused*/)
 {
     BL_PROFILE(
@@ -94,11 +95,9 @@ void OneEqRANS<Transport>::update_turbulent_viscosity(
     const auto* m_terrain_blank =
         has_terrain_height ? &this->m_sim.repo().get_int_field("terrain_blank")
                            : nullptr;
-    const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = geom_vec[lev];
         const auto& problo = repo.mesh().Geom(lev).ProbLoArray();
-        const auto& probhi = repo.mesh().Geom(lev).ProbHiArray();
         const amrex::Real dz = geom.CellSize()[2];
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
@@ -135,10 +134,10 @@ void OneEqRANS<Transport>::update_turbulent_viscosity(
                     const amrex::Real lscale_b =
                         Cb_stable *
                         std::sqrt(
-                            tke_arr(i, j, k) / std::max(stratification, tiny));
-                    const amrex::Real epsilon =
-                        std::pow(Cmu, 3) * std::pow(tke_arr(i, j, k), 1.5) /
-                        (tlscale_arr(i, j, k) + tiny);
+                            tke_arr(i, j, k) / std::max(stratification, 1e-10));
+                    amrex::Real epsilon = std::pow(Cmu, 3) *
+                                          std::pow(tke_arr(i, j, k), 1.5) /
+                                          (tlscale_arr(i, j, k) + 1e-3);
                     amrex::Real Rt = std::pow(tke_arr(i, j, k) / epsilon, 2) *
                                      stratification;
                     Rt = (Rt > Rtc) ? Rt
@@ -169,17 +168,12 @@ void OneEqRANS<Transport>::update_turbulent_viscosity(
                     const int blank_terrain =
                         (has_terrain_height) ? 1 - blank_arr(i, j, k) : 1;
                     mu_arr(i, j, k) =
-                        (std::abs(x3 - probhi[2]) <= 200)
-                            ? tiny
-                            : rho_arr(i, j, k) * Cmu_Rt * tlscale_arr(i, j, k) *
-                                  std::sqrt(tke_arr(i, j, k)) * blank_terrain;
+                        rho_arr(i, j, k) * Cmu_Rt * tlscale_arr(i, j, k) *
+                        std::sqrt(tke_arr(i, j, k)) * blank_terrain;
                     const amrex::Real Cmu_prime_Rt = 0.556 / (1 + 0.277 * Rt);
                     const amrex::Real muPrime =
-                        (std::abs(x3 - probhi[2]) <= 200)
-                            ? tiny
-                            : rho_arr(i, j, k) * Cmu_prime_Rt *
-                                  tlscale_arr(i, j, k) *
-                                  std::sqrt(tke_arr(i, j, k)) * blank_terrain;
+                        rho_arr(i, j, k) * Cmu_prime_Rt * tlscale_arr(i, j, k) *
+                        std::sqrt(tke_arr(i, j, k)) * blank_terrain;
                     buoy_prod_arr(i, j, k) = -muPrime * stratification;
                     shear_prod_arr(i, j, k) *=
                         shear_prod_arr(i, j, k) * mu_arr(i, j, k);
@@ -191,7 +185,7 @@ void OneEqRANS<Transport>::update_turbulent_viscosity(
 }
 
 template <typename Transport>
-void OneEqRANS<Transport>::update_alphaeff(Field& alphaeff)
+void KLAxell<Transport>::update_alphaeff(Field& alphaeff)
 {
 
     BL_PROFILE("amr-wind::" + this->identifier() + "::update_alphaeff");
@@ -205,7 +199,6 @@ void OneEqRANS<Transport>::update_alphaeff(Field& alphaeff)
     const amrex::Real beta = 1.0 / m_ref_theta;
     const amrex::Real Cmu = m_Cmu;
     const int nlevels = repo.num_active_levels();
-    const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     for (int lev = 0; lev < nlevels; ++lev) {
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
@@ -222,9 +215,9 @@ void OneEqRANS<Transport>::update_alphaeff(Field& alphaeff)
                           gradT_arr(i, j, k, 1) * gravity[1] +
                           gradT_arr(i, j, k, 2) * gravity[2]) *
                         beta;
-                    const amrex::Real epsilon =
-                        std::pow(Cmu, 3) * std::pow(tke_arr(i, j, k), 1.5) /
-                        (tlscale_arr(i, j, k) + tiny);
+                    amrex::Real epsilon = std::pow(Cmu, 3) *
+                                          std::pow(tke_arr(i, j, k), 1.5) /
+                                          tlscale_arr(i, j, k);
                     amrex::Real Rt = std::pow(tke_arr(i, j, k) / epsilon, 2) *
                                      stratification;
                     Rt = (Rt < -1)
@@ -242,7 +235,7 @@ void OneEqRANS<Transport>::update_alphaeff(Field& alphaeff)
 }
 
 template <typename Transport>
-void OneEqRANS<Transport>::update_scalar_diff(
+void KLAxell<Transport>::update_scalar_diff(
     Field& deff, const std::string& name)
 {
 
@@ -255,12 +248,12 @@ void OneEqRANS<Transport>::update_scalar_diff(
             deff, 2.0, mu_turb, 0, 0, deff.num_comp(), deff.num_grow());
     } else {
         amrex::Abort(
-            "OneEqRANS:update_scalar_diff not implemented for field " + name);
+            "KLAxell:update_scalar_diff not implemented for field " + name);
     }
 }
 
 template <typename Transport>
-void OneEqRANS<Transport>::post_advance_work()
+void KLAxell<Transport>::post_advance_work()
 {
 
     BL_PROFILE("amr-wind::" + this->identifier() + "::post_advance_work");
@@ -268,6 +261,6 @@ void OneEqRANS<Transport>::post_advance_work()
 
 } // namespace turbulence
 
-INSTANTIATE_TURBULENCE_MODEL(OneEqRANS);
+INSTANTIATE_TURBULENCE_MODEL(KLAxell);
 
 } // namespace amr_wind
