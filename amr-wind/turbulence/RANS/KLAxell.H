@@ -20,8 +20,6 @@ public:
 
     explicit KLAxell(CFDSim& sim);
 
-    //~KLAxell() override;
-
     std::string model_name() const override { return "KLAxell"; }
 
     //! Update the turbulent viscosity field
