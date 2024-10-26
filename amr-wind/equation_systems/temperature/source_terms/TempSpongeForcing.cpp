@@ -10,7 +10,6 @@ namespace amr_wind::pde::temperature {
 
 TempSpongeForcing::TempSpongeForcing(const CFDSim& sim)
     : m_sim(sim)
-    , m_mesh(sim.mesh())
     , m_temperature(sim.repo().get_field("temperature"))
 {
     amrex::ParmParse pp_abl("ABL");

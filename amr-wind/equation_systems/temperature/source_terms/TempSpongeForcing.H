@@ -24,7 +24,6 @@ public:
         const amrex::Array4<amrex::Real>& src_term) const override;
 
 private:
-    const CFDSim& m_sim;
     const amrex::AmrCore& m_mesh;
     const Field& m_temperature;
     amrex::Vector<amrex::Real> m_theta_heights;
