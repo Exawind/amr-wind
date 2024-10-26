@@ -77,7 +77,7 @@ void KransAxell::operator()(
             zi * zi * (tke_arr(i, j, k) - ref_tke);
         dissip_arr(i, j, k) = std::pow(Cmu, 3) *
                               std::pow(tke_arr(i, j, k), 1.5) /
-                              (tlscale_arr(i, j, k) + tiny );
+                              (tlscale_arr(i, j, k) + tiny);
         src_term(i, j, k) += shear_prod_arr(i, j, k) + buoy_prod_arr(i, j, k) -
                              dissip_arr(i, j, k) - sponge_forcing + bcforcing;
     });
