@@ -32,6 +32,8 @@ KLAxell<Transport>::KLAxell(CFDSim& sim)
     {
         amrex::ParmParse pp("ABL");
         pp.get("reference_temperature", m_ref_theta);
+        pp.get("surface_temp_flux", m_surf_flux);
+        pp.query("length_scale_switch", m_lengthscale_switch);
     }
 
     {
@@ -95,6 +97,12 @@ void KLAxell<Transport>::update_turbulent_viscosity(
     const auto* m_terrain_blank =
         has_terrain_height ? &this->m_sim.repo().get_int_field("terrain_blank")
                            : nullptr;
+    const amrex::Real Rtc = -1.0;
+    const amrex::Real Rtmin = -3.0;
+    const amrex::Real lambda = 30.0;
+    const amrex::Real kappa = 0.41;
+    const amrex::Real surf_flux = m_surf_flux;
+    const amrex::Real lengthscale_switch = m_lengthscale_switch;
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = geom_vec[lev];
         const auto& problo = repo.mesh().Geom(lev).ProbLoArray();
@@ -114,10 +122,6 @@ void KLAxell<Transport>::update_turbulent_viscosity(
             const auto& blank_arr =
                 has_terrain_height ? (*m_terrain_blank)(lev).const_array(mfi)
                                    : amrex::Array4<int>();
-            const amrex::Real Rtc = -1.0;
-            const amrex::Real Rtmin = -3.0;
-            const amrex::Real lambda = 30.0;
-            const amrex::Real kappa = 0.41;
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     amrex::Real stratification =
@@ -162,6 +166,14 @@ void KLAxell<Transport>::update_turbulent_viscosity(
                                   std::sqrt(
                                       0.56 * tke_arr(i, j, k) / stratification))
                             : tlscale_arr(i, j, k);
+                    tlscale_arr(i, j, k) =
+                        (std::abs(surf_flux) < 1e-5 && x3 <= lengthscale_switch)
+                            ? lscale_s
+                            : tlscale_arr(i, j, k);
+                    Rt =
+                        (std::abs(surf_flux) < 1e-5 && x3 <= lengthscale_switch)
+                            ? 0.0
+                            : Rt;
                     const amrex::Real Cmu_Rt =
                         (0.556 + 0.108 * Rt) /
                         (1 + 0.308 * Rt + 0.00837 * std::pow(Rt, 2));
