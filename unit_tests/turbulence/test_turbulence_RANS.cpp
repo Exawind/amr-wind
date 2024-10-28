@@ -120,7 +120,7 @@ TEST_F(TurbRANSTest, test_1eqKrans_setup_calc)
         pp.addarr("v_values", v_vals);
         amrex::Vector<amrex::Real> tke_vals{0.1, 0.1, 0.1};
         pp.addarr("tke_values", tke_vals);
-        pp.add("surface_temp_flux", 0.0)
+        pp.add("surface_temp_flux", 0.0);
     }
 
     // Initialize necessary parts of solver
