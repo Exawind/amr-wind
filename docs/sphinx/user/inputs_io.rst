@@ -3,10 +3,10 @@
 Section: io
 ~~~~~~~~~~~~~~~~~
 
-This section deals with parameters that affect input/output to the simulation, 
-solely the checkpoint and plot files. These inputs do not affect when these files 
-are output, but they address file naming and high-level parameters. The "time" section 
-controls when these files are output. 
+This section deals with parameters that affect input/output to the simulation,
+solely the checkpoint and plot files. These inputs do not affect when these files
+are output, but they address file naming and high-level parameters. The "time" section
+controls when these files are output.
 
 | Primary location in code: ``amr-wind/utilities/IOManager.cpp``.
 
@@ -14,16 +14,16 @@ controls when these files are output.
 
    **type:** String, optional, default = "chk"
 
-   If :input_param:`time.checkpoint_interval` or :input_param:`time.checkpoint_time_interval` is greater than zero this is the name of the checkpoint 
+   If :input_param:`time.checkpoint_interval` or :input_param:`time.checkpoint_time_interval` is greater than zero this is the name of the checkpoint
    file appended with the current timestep
-   
+
 .. input_param:: io.plot_file
 
    **type:** String, optional, default = "plt"
 
    If :input_param:`time.plot_interval` or :input_param:`time.plot_time_interval` is greater than zero this is the name of the plot
    file appended with the current timestep.
-   
+
 .. input_param:: io.restart_file
 
    **type:** String, optional, default = ""
@@ -41,7 +41,7 @@ controls when these files are output.
    **type:** Boolean, optional, default = true
 
    Based on what fields are active in a simulation, `amr-wind` generates a list of variables to output to plotfiles (e.g., velocity, density, and p). If these defaults are not desired, this input argument can be set to false.
-   
+
 .. input_param:: io.allow_missing_restart_fields
 
    **type:** Boolean, optional, default = true
@@ -70,7 +70,7 @@ controls when these files are output.
    to add them to the plotfile output. These are derived
    quantities that are functions of real variables that exist
    in the simulation. Currently, the available derived quantity definitions
-   that operate on the velocity field are vorticity magnitude 
+   that operate on the velocity field are vorticity magnitude
    (``mag_vorticity``), q-criterion (``q_criterion``),
    non-dimensional q-criterion (``q_criterion_nondim``),
    and strain rate magnitude (``mag_strainrate``). Generic
@@ -86,3 +86,21 @@ controls when these files are output.
    **type:** List of strings, optional, default = ""
 
    Add variable names to this input argument to omit them from the plotfile output. These refer to variables that are be real numbers, and this is a way to individually omit default output variables.
+
+.. input_param:: io.output_hdf5_plotfile
+
+   **type:** Boolean, optional, default = false
+
+   Flag indicating whether or not to output HDF5 plot files.
+
+.. input_param:: io.hdf5_compression
+
+   **type:** String, optional, default = "None@0"
+
+   String for requesting a particular ZFP compression in HDF5 plot files.
+
+.. input_param:: io.nfiles
+
+   **type:** Int, optional, default = 256
+
+   Number of plot and checkpoint data files per write. If the system's IO prefers fewer or more files, this number can be modified with this option.
