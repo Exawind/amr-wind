@@ -103,4 +103,4 @@ controls when these files are output.
 
    **type:** Int, optional, default = 256
 
-   Number of plot and checkpoint data files per write. If our system's IO prefers fewer or more files, this number can be modified with this option.
+   Number of plot and checkpoint data files per write. If the system's IO prefers fewer or more files, this number can be modified with this option.
