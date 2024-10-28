@@ -51,6 +51,7 @@ void IOManager::initialize_io()
     pp.query("hdf5_compression", m_hdf5_compression);
 #endif
 #endif
+    pp.query("nfiles", m_nfiles);
 
     // ParmParse requires us to read in a vector
     pp.queryarr("outputs", out_vars);
@@ -124,6 +125,8 @@ void IOManager::initialize_io()
         auto& fld = repo.get_field(fname);
         m_chk_fields.emplace_back(&fld);
     }
+
+    amrex::VisMF::SetNOutFiles(m_nfiles);
 }
 
 void IOManager::write_plot_file()
