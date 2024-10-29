@@ -427,7 +427,21 @@ z direction (example: *half-channel* simulations) at the centerline.
        w &= 0
    \end{aligned}
 
-<<<<<<< HEAD
+Dynamic wall model (Wave model)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This wall model is used to calculate the stress due to moving surfaces,
+like ocean waves. It aims to introduce wave phase-resolving physics 
+at a cost similar to using the Log-law wall model, without the need of using
+wave adapting computational grids. The model was developed by `Ayala et al. (2024) <https://doi.org/10.1007/s10546-024-00884-8>`_.
+
+.. math:: \tau_{i3} = \frac{1}{\pi}|(\boldsymbol{u-C}) \cdot \boldsymbol{\hat{n}}|^2|\boldsymbol{\nabla} \eta|^2 \, \hat{n}_i  \, \text{H} \Bigl[ (u_j-C_j)\frac{\partial \eta}{\partial x_j} \Bigr] \, + \, \tau^{visc}_{i3}, \quad i = 1,2.
+
+The first component gives the form drag due to ocean waves, where :math:`\boldsymbol{C}`
+is the wave velocity vector, :math:`\eta` is the surface height distribution and
+:math:`\hat{\boldsymbol n} = \boldsymbol{\nabla} \eta /|\boldsymbol{\nabla} \eta|`. The
+second component (:math:`\tau^{visc}_{i3}`) is the stress due to unresolved effects,
+like viscous effects. For this component, the ``Log-law wall model`` is used.
 
 .. _terrainmodel:
 
@@ -482,25 +496,6 @@ the orange arrow below).
 .. image:: ./images/terrain_normal.png
    :align: center
    :width: 30%
-
-=======
-Dynamic wall model (Wave model)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-This wall model is used to calculate the stress due to moving surfaces,
-like ocean waves. It aims to introduce wave phase-resolving physics 
-at a cost similar to using the Log-law wall model, without the need of using 
-wave adapting computational grids. The model developed by `Ayala et al (2024)
-<https://doi.org/10.1007/s10546-024-00884-8>`_ has two components:
-
-.. math:: \tau_{i3} = \frac{1}{\pi}|(\boldsymbol{u-C}) \cdot \boldsymbol{\hat{n}}|^2|\boldsymbol{\nabla} \eta|^2 \, \hat{n}_i  \, \text{H} \Bigl[ (u_j-C_j)\frac{\partial \eta}{\partial x_j} \Bigr] \, + \, \tau^{visc}_{i3}, \quad i = 1,2.
-
-The first component gives the form drag due to ocean waves, where, :math::`\boldsymbol{C}` 
-is the wave velocity vector, :math:: `\eta` is the surface height distribution and 
-:math:: `\hat{\boldsymbol n} =  \boldsymbol \nabla \eta /|\boldsymbol{\nabla} \eta|`. The 
-second component (:math:: `\tau^{visc}_{i3}`) is the stress due to unresolved effects, 
-like viscous effects. For this component, the ``Log-law wall model`` is used. 
->>>>>>> a81f4667... making the modifications and adding more documenation
 
 Navigating source code
 ------------------------
