@@ -17,15 +17,9 @@ TempSpongeForcing::TempSpongeForcing(const CFDSim& sim)
     pp_abl.getarr("temperature_heights", m_theta_heights);
     pp_abl.getarr("temperature_values", m_theta_values);
     AMREX_ALWAYS_ASSERT(m_theta_heights.size() == m_theta_values.size());
-<<<<<<< HEAD
     const int num_theta_values = static_cast<int>(m_theta_heights.size());
     m_thht_d.resize(num_theta_values);
     m_thvv_d.resize(num_theta_values);
-=======
-    int num_theta_values = static_cast<int>(m_theta_heights.size());
-    m_theta_heights_d.resize(num_theta_values);
-    m_theta_values_d.resize(num_theta_values);
->>>>>>> d7fef06b (Removing magic numbers and some code reorganization.)
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, m_theta_heights.begin(),
         m_theta_heights.end(), m_theta_heights_d.begin());
