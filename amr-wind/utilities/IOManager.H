@@ -162,6 +162,9 @@ private:
     std::string m_hdf5_compression{"None@0"};
 #endif
 #endif
+
+    //! Number of plot and checkpoint data files per write
+    int m_nfiles{256};
 };
 
 } // namespace amr_wind
