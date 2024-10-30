@@ -81,7 +81,7 @@ void KransAxell::operator()(
         src_term(i, j, k) += shear_prod_arr(i, j, k) + buoy_prod_arr(i, j, k) -
                              dissip_arr(i, j, k) - sponge_forcing + bcforcing;
     });
-    //! Add terrain components
+    // Add terrain components
     const bool has_terrain =
         this->m_sim.repo().int_field_exists("terrain_blank");
     if (has_terrain) {
