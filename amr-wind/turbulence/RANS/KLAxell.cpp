@@ -116,80 +116,151 @@ void KLAxell<Transport>::update_turbulent_viscosity(
             const auto& tke_arr = (*this->m_tke)(lev).array(mfi);
             const auto& buoy_prod_arr = (this->m_buoy_prod)(lev).array(mfi);
             const auto& shear_prod_arr = (this->m_shear_prod)(lev).array(mfi);
-            const auto& ht_arr = has_terrain_height
-                                     ? (*m_terrain_height)(lev).const_array(mfi)
-                                     : amrex::Array4<double>();
-            const auto& blank_arr =
-                has_terrain_height ? (*m_terrain_blank)(lev).const_array(mfi)
-                                   : amrex::Array4<int>();
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real stratification =
-                        -(gradT_arr(i, j, k, 0) * gravity[0] +
-                          gradT_arr(i, j, k, 1) * gravity[1] +
-                          gradT_arr(i, j, k, 2) * gravity[2]) *
-                        beta;
-                    amrex::Real x3 = problo[2] + (k + 0.5) * dz;
-                    x3 = (has_terrain_height)
-                             ? std::max(x3 - ht_arr(i, j, k), 0.5 * dz)
-                             : x3;
-                    const amrex::Real lscale_s =
-                        (lambda * kappa * x3) / (lambda + kappa * x3);
-                    const amrex::Real lscale_b =
-                        Cb_stable *
-                        std::sqrt(
-                            tke_arr(i, j, k) / std::max(stratification, 1e-10));
-                    amrex::Real epsilon = std::pow(Cmu, 3) *
-                                          std::pow(tke_arr(i, j, k), 1.5) /
-                                          (tlscale_arr(i, j, k) + 1e-3);
-                    amrex::Real Rt = std::pow(tke_arr(i, j, k) / epsilon, 2) *
-                                     stratification;
-                    Rt = (Rt > Rtc) ? Rt
-                                    : std::max(
-                                          Rt, Rt - std::pow(Rt - Rtc, 2) /
-                                                       (Rt + Rtmin - 2 * Rtc));
-                    tlscale_arr(i, j, k) =
-                        (stratification > 0)
-                            ? std::sqrt(
-                                  std::pow(lscale_s * lscale_b, 2) /
-                                  (std::pow(lscale_s, 2) +
-                                   std::pow(lscale_b, 2)))
-                            : lscale_s *
-                                  std::sqrt(
-                                      1.0 - std::pow(Cmu, 6.0) *
-                                                std::pow(Cb_unstable, -2.0) *
-                                                Rt);
-                    tlscale_arr(i, j, k) =
-                        (stratification > 0)
-                            ? std::min(
-                                  tlscale_arr(i, j, k),
-                                  std::sqrt(
-                                      0.56 * tke_arr(i, j, k) / stratification))
-                            : tlscale_arr(i, j, k);
-                    tlscale_arr(i, j, k) =
-                        (std::abs(surf_flux) < 1e-5 && x3 <= lengthscale_switch)
-                            ? lscale_s
-                            : tlscale_arr(i, j, k);
-                    Rt =
-                        (std::abs(surf_flux) < 1e-5 && x3 <= lengthscale_switch)
-                            ? 0.0
-                            : Rt;
-                    const amrex::Real Cmu_Rt =
-                        (0.556 + 0.108 * Rt) /
-                        (1 + 0.308 * Rt + 0.00837 * std::pow(Rt, 2));
-                    const int blank_terrain =
-                        (has_terrain_height) ? 1 - blank_arr(i, j, k) : 1;
-                    mu_arr(i, j, k) =
-                        rho_arr(i, j, k) * Cmu_Rt * tlscale_arr(i, j, k) *
-                        std::sqrt(tke_arr(i, j, k)) * blank_terrain;
-                    const amrex::Real Cmu_prime_Rt = 0.556 / (1 + 0.277 * Rt);
-                    const amrex::Real muPrime =
-                        rho_arr(i, j, k) * Cmu_prime_Rt * tlscale_arr(i, j, k) *
-                        std::sqrt(tke_arr(i, j, k)) * blank_terrain;
-                    buoy_prod_arr(i, j, k) = -muPrime * stratification;
-                    shear_prod_arr(i, j, k) *=
-                        shear_prod_arr(i, j, k) * mu_arr(i, j, k);
-                });
+            //! Add terrain components
+            const bool has_terrain =
+                this->m_sim.repo().int_field_exists("terrain_blank");
+            if (has_terrain) {
+                const auto& ht_arr = (*m_terrain_height)(lev).const_array(mfi);
+                const auto& blank_arr =
+                    (*m_terrain_blank)(lev).const_array(mfi);
+                amrex::ParallelFor(
+                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        amrex::Real stratification =
+                            -(gradT_arr(i, j, k, 0) * gravity[0] +
+                              gradT_arr(i, j, k, 1) * gravity[1] +
+                              gradT_arr(i, j, k, 2) * gravity[2]) *
+                            beta;
+                        const amrex::Real z = std::max(
+                            problo[2] + (k + 0.5) * dz - ht_arr(i, j, k),
+                            0.5 * dz);
+                        const amrex::Real lscale_s =
+                            (lambda * kappa * z) / (lambda + kappa * z);
+                        const amrex::Real lscale_b =
+                            Cb_stable * std::sqrt(
+                                            tke_arr(i, j, k) /
+                                            std::max(stratification, 1e-10));
+                        amrex::Real epsilon = std::pow(Cmu, 3) *
+                                              std::pow(tke_arr(i, j, k), 1.5) /
+                                              (tlscale_arr(i, j, k) + 1e-3);
+                        amrex::Real Rt =
+                            std::pow(tke_arr(i, j, k) / epsilon, 2) *
+                            stratification;
+                        Rt = (Rt > Rtc)
+                                 ? Rt
+                                 : std::max(
+                                       Rt, Rt - std::pow(Rt - Rtc, 2) /
+                                                    (Rt + Rtmin - 2 * Rtc));
+                        tlscale_arr(i, j, k) =
+                            (stratification > 0)
+                                ? std::sqrt(
+                                      std::pow(lscale_s * lscale_b, 2) /
+                                      (std::pow(lscale_s, 2) +
+                                       std::pow(lscale_b, 2)))
+                                : lscale_s *
+                                      std::sqrt(
+                                          1.0 -
+                                          std::pow(Cmu, 6.0) *
+                                              std::pow(Cb_unstable, -2.0) * Rt);
+                        tlscale_arr(i, j, k) =
+                            (stratification > 0)
+                                ? std::min(
+                                      tlscale_arr(i, j, k),
+                                      std::sqrt(
+                                          Cmu * tke_arr(i, j, k) /
+                                          stratification))
+                                : tlscale_arr(i, j, k);
+                        tlscale_arr(i, j, k) = (std::abs(surf_flux) < 1e-5 &&
+                                                z <= lengthscale_switch)
+                                                   ? lscale_s
+                                                   : tlscale_arr(i, j, k);
+                        Rt = (std::abs(surf_flux) < 1e-5 &&
+                              z <= lengthscale_switch)
+                                 ? 0.0
+                                 : Rt;
+                        const amrex::Real Cmu_Rt =
+                            (Cmu + 0.108 * Rt) /
+                            (1 + 0.308 * Rt + 0.00837 * std::pow(Rt, 2));
+                        mu_arr(i, j, k) = rho_arr(i, j, k) * Cmu_Rt *
+                                          tlscale_arr(i, j, k) *
+                                          std::sqrt(tke_arr(i, j, k)) *
+                                          (1 - blank_arr(i, j, k));
+                        const amrex::Real Cmu_prime_Rt = Cmu / (1 + 0.277 * Rt);
+                        const amrex::Real muPrime =
+                            rho_arr(i, j, k) * Cmu_prime_Rt *
+                            tlscale_arr(i, j, k) * std::sqrt(tke_arr(i, j, k)) *
+                            (1 - blank_arr(i, j, k));
+                        buoy_prod_arr(i, j, k) = -muPrime * stratification;
+                        shear_prod_arr(i, j, k) *=
+                            shear_prod_arr(i, j, k) * mu_arr(i, j, k);
+                    });
+            } else {
+                amrex::ParallelFor(
+                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        amrex::Real stratification =
+                            -(gradT_arr(i, j, k, 0) * gravity[0] +
+                              gradT_arr(i, j, k, 1) * gravity[1] +
+                              gradT_arr(i, j, k, 2) * gravity[2]) *
+                            beta;
+                        const amrex::Real z = problo[2] + (k + 0.5) * dz;
+                        const amrex::Real lscale_s =
+                            (lambda * kappa * z) / (lambda + kappa * z);
+                        const amrex::Real lscale_b =
+                            Cb_stable * std::sqrt(
+                                            tke_arr(i, j, k) /
+                                            std::max(stratification, 1e-10));
+                        amrex::Real epsilon = std::pow(Cmu, 3) *
+                                              std::pow(tke_arr(i, j, k), 1.5) /
+                                              (tlscale_arr(i, j, k) + 1e-3);
+                        amrex::Real Rt =
+                            std::pow(tke_arr(i, j, k) / epsilon, 2) *
+                            stratification;
+                        Rt = (Rt > Rtc)
+                                 ? Rt
+                                 : std::max(
+                                       Rt, Rt - std::pow(Rt - Rtc, 2) /
+                                                    (Rt + Rtmin - 2 * Rtc));
+                        tlscale_arr(i, j, k) =
+                            (stratification > 0)
+                                ? std::sqrt(
+                                      std::pow(lscale_s * lscale_b, 2) /
+                                      (std::pow(lscale_s, 2) +
+                                       std::pow(lscale_b, 2)))
+                                : lscale_s *
+                                      std::sqrt(
+                                          1.0 -
+                                          std::pow(Cmu, 6.0) *
+                                              std::pow(Cb_unstable, -2.0) * Rt);
+                        tlscale_arr(i, j, k) =
+                            (stratification > 0)
+                                ? std::min(
+                                      tlscale_arr(i, j, k),
+                                      std::sqrt(
+                                          Cmu * tke_arr(i, j, k) /
+                                          stratification))
+                                : tlscale_arr(i, j, k);
+                        tlscale_arr(i, j, k) = (std::abs(surf_flux) < 1e-5 &&
+                                                z <= lengthscale_switch)
+                                                   ? lscale_s
+                                                   : tlscale_arr(i, j, k);
+                        Rt = (std::abs(surf_flux) < 1e-5 &&
+                              z <= lengthscale_switch)
+                                 ? 0.0
+                                 : Rt;
+                        const amrex::Real Cmu_Rt =
+                            (Cmu + 0.108 * Rt) /
+                            (1 + 0.308 * Rt + 0.00837 * std::pow(Rt, 2));
+                        mu_arr(i, j, k) = rho_arr(i, j, k) * Cmu_Rt *
+                                          tlscale_arr(i, j, k) *
+                                          std::sqrt(tke_arr(i, j, k));
+                        const amrex::Real Cmu_prime_Rt = Cmu / (1 + 0.277 * Rt);
+                        const amrex::Real muPrime =
+                            rho_arr(i, j, k) * Cmu_prime_Rt *
+                            tlscale_arr(i, j, k) * std::sqrt(tke_arr(i, j, k));
+                        buoy_prod_arr(i, j, k) = -muPrime * stratification;
+                        shear_prod_arr(i, j, k) *=
+                            shear_prod_arr(i, j, k) * mu_arr(i, j, k);
+                    });
+            }
         }
     }
 

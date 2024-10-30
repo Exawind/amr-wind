@@ -6,6 +6,9 @@
 namespace amr_wind::pde::tke {
 
 /** TKE source term based on Axell 2011 paper
+ * Axell, L. B., & Liungman, O. (2001). A one-equation turbulence model for
+ * geophysical applications: comparison with data and the k− ε model.
+ * Environmental Fluid Mechanics, 1, 71-106.
  *  \ingroup tke_src turb_model we_abl
  */
 class KransAxell : public TKESource::Register<KransAxell>
@@ -34,6 +37,7 @@ private:
     amrex::Real m_ref_temp{300.0};
     amrex::Real m_sponge_start{600};
     amrex::Real m_ref_tke{1e-10};
+    amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
     const SimTime& m_time;
     const CFDSim& m_sim;
     const amrex::AmrCore& m_mesh;

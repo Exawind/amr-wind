@@ -23,6 +23,10 @@ KransAxell::KransAxell(const CFDSim& sim)
     pp.query("reference_temperature", m_ref_temp);
     pp.query("surface_temp_flux", m_heat_flux);
     pp.query("meso_sponge_start", m_sponge_start);
+    {
+        amrex::ParmParse pp_incflow("incflo");
+        pp_incflow.queryarr("gravity", m_gravity);
+    }
 }
 
 KransAxell::~KransAxell() = default;
@@ -47,30 +51,30 @@ void KransAxell::operator()(
     const auto& dx = geom.CellSizeArray();
     const auto& dt = m_time.delta_t();
     const amrex::Real ref_temp = m_ref_temp;
-    const amrex::Real heat_flux = 9.81 / ref_temp * m_heat_flux;
+    const amrex::Real heat_flux =
+        std::abs(m_gravity[2]) / ref_temp * m_heat_flux;
     const amrex::Real Cmu = 0.556;
     const amrex::Real sponge_start = m_sponge_start;
     const amrex::Real ref_tke = m_ref_tke;
     const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
+    const amrex::Real kappa = 0.41;
+    const amrex::Real z0 = 0.1;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::Real bcforcing = 0;
         const amrex::Real ux = vel(i, j, k, 0);
         const amrex::Real uy = vel(i, j, k, 1);
         amrex::Real ustar = 0.4;
+        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
         if (k == 0) {
-            const amrex::Real x3 = problo[2] + (k + 0.5) * dx[2];
             const amrex::Real m = std::sqrt(ux * ux + uy * uy);
-            const amrex::Real kappa = 0.41;
-            const amrex::Real z0 = 0.1;
-            ustar = m * kappa / std::log(x3 / z0);
+
+            ustar = m * kappa / std::log(z / z0);
             const amrex::Real rans_b = std::pow(
-                std::max(heat_flux, 0.0) * 0.41 * x3 / std::pow(0.556, 3),
+                std::max(heat_flux, 0.0) * kappa * z / std::pow(Cmu, 3),
                 (2.0 / 3.0));
             bcforcing =
-                (ustar * ustar / (0.556 * 0.556) + rans_b - tke_arr(i, j, k)) /
-                dt;
+                (ustar * ustar / (Cmu * Cmu) + rans_b - tke_arr(i, j, k)) / dt;
         }
-        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
         const amrex::Real zi =
             std::max((z - sponge_start) / (probhi[2] - sponge_start), 0.0);
         const amrex::Real sponge_forcing =
@@ -98,29 +102,23 @@ void KransAxell::operator()(
                 const amrex::Real ux = vel(i, j, k, 0);
                 const amrex::Real uy = vel(i, j, k, 1);
                 amrex::Real ustar = 0.4;
-                const amrex::Real x3 = 0.5 * dx[2];
-                if (drag_arr(i, j, k) == 1) {
-                    amrex::Real m = std::sqrt(ux * ux + uy * uy);
-                    const amrex::Real kappa = 0.41;
-                    const amrex::Real z0 = 0.1;
-                    ustar = m * kappa / std::log(x3 / z0);
-                    const amrex::Real rans_b = std::pow(
-                        std::max(heat_flux, 0.0) * 0.41 * x3 /
-                            std::pow(0.556, 3),
-                        (2.0 / 3.0));
-                    terrainforcing = (ustar * ustar / (0.556 * 0.556) + rans_b -
-                                      tke_arr(i, j, k)) /
-                                     dt;
-                }
-                if (blank_arr(i, j, k) == 1) {
-                    const amrex::Real uz = vel(i, j, k, 2);
-                    const amrex::Real m =
-                        std::sqrt(ux * ux + uy * uy + uz * uz);
-                    const amrex::Real Cd =
-                        std::min(10 / (dx[2] * m + tiny), 100 / dx[2]);
-                    dragforcing = -Cd * m * tke_arr(i, j, k, 0);
-                }
-                src_term(i, j, k) += terrainforcing + dragforcing;
+                const amrex::Real z = 0.5 * dx[2];
+                amrex::Real m = std::sqrt(ux * ux + uy * uy);
+                ustar = m * kappa / std::log(z / z0);
+                const amrex::Real rans_b = std::pow(
+                    std::max(heat_flux, 0.0) * kappa * z / std::pow(Cmu, 3),
+                    (2.0 / 3.0));
+                terrainforcing =
+                    (ustar * ustar / (Cmu * Cmu) + rans_b - tke_arr(i, j, k)) /
+                    dt;
+                const amrex::Real uz = vel(i, j, k, 2);
+                m = std::sqrt(ux * ux + uy * uy + uz * uz);
+                const amrex::Real Cd =
+                    std::min(10 / (dx[2] * m + tiny), 100 / dx[2]);
+                dragforcing = -Cd * m * tke_arr(i, j, k, 0);
+
+                src_term(i, j, k) += drag_arr(i, j, k) * terrainforcing +
+                                     blank_arr(i, j, k) * dragforcing;
             });
     }
 }
