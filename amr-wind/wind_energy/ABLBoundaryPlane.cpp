@@ -735,8 +735,9 @@ void ABLBoundaryPlane::read_header()
 
             if (std::all_of(
                     m_fields.begin(), m_fields.end(), [ori](const auto* fld) {
-                        return ((fld->bc_type()[ori] != BC::mass_inflow) &&
-                                (fld->bc_type()[ori] != BC::mass_inflow_outflow));
+                        return (
+                            (fld->bc_type()[ori] != BC::mass_inflow) &&
+                            (fld->bc_type()[ori] != BC::mass_inflow_outflow));
                     })) {
                 continue;
             }
