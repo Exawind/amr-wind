@@ -169,7 +169,6 @@ void ABLModulatedPowerLaw::set_velocity(
             (bctype[ori] != BC::mass_inflow_outflow)) {
             continue;
         }
-//amrex::Print() << "!!! set_velocity(): ori " << ori << " entered for " << fld.name() << std::endl;
 
         const int idir = ori.coordDir();
         const auto& dbx = ori.isLow() ? amrex::adjCellLo(domain, idir, nghost)
@@ -246,7 +245,6 @@ void ABLModulatedPowerLaw::set_temperature(
             (bctype[ori] != BC::mass_inflow_outflow)) {
             continue;
         }
-//amrex::Print() << "!!! set_temperature(): ori " << ori << " entered for " << fld.name() << std::endl;
 
         const int idir = ori.coordDir();
         const auto& dbx = ori.isLow() ? amrex::adjCellLo(domain, idir, nghost)
