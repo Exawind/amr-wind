@@ -63,6 +63,23 @@ bisection_search(const It begin, const It end, const T& x)
 
 template <typename It, typename T>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Index
+nearest_search(const It begin, const It end, const T& x)
+{
+
+    auto idx = bisection_search(begin, end, x);
+    if ((idx.lim == Limits::LOWLIM) || (idx.lim == Limits::UPLIM)) {
+        return idx;
+    }
+
+    if ((x - begin[idx.idx]) > (begin[idx.idx + 1] - x)) {
+        idx.idx += 1;
+    }
+
+    return idx;
+}
+
+template <typename It, typename T>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Index
 find_index(const It begin, const It end, const T& x, const int hint = 1)
 {
     auto idx = check_bounds(begin, end, x);
@@ -86,27 +103,35 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
         const C1 xbegin,
         const C1 xend,
         const C2 yinp,
-        const typename std::iterator_traits<C1>::value_type& xout)
+        const typename std::iterator_traits<C1>::value_type& xout,
+        const int ncomp = 1,
+        const int comp = 0)
 {
     using DType1 = typename std::iterator_traits<C1>::value_type;
     const auto idx = bisection_search(xbegin, xend, xout);
 
     if ((idx.lim == Limits::LOWLIM) || (idx.lim == Limits::UPLIM)) {
-        return yinp[idx.idx];
+        return yinp[ncomp * idx.idx + comp];
     }
     static constexpr DType1 eps = 1.0e-8;
     const int j = idx.idx;
     const auto denom = (xbegin[j + 1] - xbegin[j]);
     const auto facR = (denom > eps) ? ((xout - xbegin[j]) / denom) : 1.0;
     const auto facL = static_cast<DType1>(1.0) - facR;
-    return facL * yinp[j] + facR * yinp[j + 1];
+    return facL * yinp[ncomp * j + comp] + facR * yinp[ncomp * (j + 1) + comp];
 }
 
 template <typename C1, typename C2>
-inline typename C2::value_type
-linear(const C1& xinp, const C2& yinp, const typename C1::value_type& xout)
+inline typename C2::value_type linear(
+    const C1& xinp,
+    const C2& yinp,
+    const typename C1::value_type& xout,
+    const int ncomp = 1,
+    const int comp = 0)
 {
-    return linear(xinp.data(), (xinp.data() + xinp.size()), yinp.data(), xout);
+    return linear(
+        xinp.data(), (xinp.data() + xinp.size()), yinp.data(), xout, ncomp,
+        comp);
 }
 
 template <typename C1, typename C2>
@@ -138,7 +163,13 @@ linear_monotonic(const C1& xinp, const C2& yinp, const C1& xout, C2& yout)
 }
 
 template <typename C1, typename C2>
-inline void linear(const C1& xinp, const C2& yinp, const C1& xout, C2& yout)
+inline void linear(
+    const C1& xinp,
+    const C2& yinp,
+    const C1& xout,
+    C2& yout,
+    const int ncomp = 1,
+    const int comp = 0)
 {
     AMREX_ASSERT(
         static_cast<amrex::Long>(xinp.size()) ==
@@ -149,7 +180,7 @@ inline void linear(const C1& xinp, const C2& yinp, const C1& xout, C2& yout)
 
     int npts = xout.size();
     for (int i = 0; i < npts; ++i) {
-        yout[i] = linear(xinp, yinp, xout[i]);
+        yout[i] = linear(xinp, yinp, xout[i], ncomp, comp);
     }
 }
 

@@ -4,6 +4,7 @@
 #include "AMReX_Gpu.H"
 #include "AMReX_Random.H"
 #include "amr-wind/wind_energy/ABL.H"
+#include "amr-wind/utilities/linear_interpolation.H"
 
 namespace amr_wind::pde::icns {
 
@@ -115,23 +116,22 @@ void DragForcing::operator()(
         yi_end = sponge_north * std::max(yi_end, 0.0);
         ystart_damping = sponge_strength * yi_start * yi_start;
         yend_damping = sponge_strength * yi_end * yi_end;
-        amrex::Real spongeVelX = 0.0;
-        amrex::Real spongeVelY = 0.0;
-        amrex::Real spongeVelZ = 0.0;
-        amrex::Real residual = 1000;
-        amrex::Real height_error = 0.0;
-        for (unsigned ii = 0; ii < vsize; ++ii) {
-            height_error = std::abs(z - device_vel_ht[ii]);
-            if (height_error < residual) {
-                residual = height_error;
-                const unsigned ix = 3 * ii;
-                const unsigned iy = 3 * ii + 1;
-                const unsigned iz = 3 * ii + 2;
-                spongeVelX = device_vel_vals[ix];
-                spongeVelY = device_vel_vals[iy];
-                spongeVelZ = device_vel_vals[iz];
-            }
-        }
+
+        const amrex::Real spongeVelX =
+            (vsize > 0) ? interp::linear(
+                              device_vel_ht, device_vel_ht + vsize,
+                              device_vel_vals, z, 3, 0)
+                        : 0.0;
+        const amrex::Real spongeVelY =
+            (vsize > 0) ? interp::linear(
+                              device_vel_ht, device_vel_ht + vsize,
+                              device_vel_vals, z, 3, 1)
+                        : 0.0;
+        const amrex::Real spongeVelZ =
+            (vsize > 0) ? interp::linear(
+                              device_vel_ht, device_vel_ht + vsize,
+                              device_vel_vals, z, 3, 2)
+                        : 0.0;
         amrex::Real Dxz = 0.0;
         amrex::Real Dyz = 0.0;
         amrex::Real bc_forcing_x = 0;
