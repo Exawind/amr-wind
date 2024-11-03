@@ -15,4 +15,5 @@ target_sources(${amr_wind_lib_name} PRIVATE
   RayleighDamping.cpp
   NonLinearSGSTerm.cpp
   DragForcing.cpp
+  ForestForcing.cpp
   )
