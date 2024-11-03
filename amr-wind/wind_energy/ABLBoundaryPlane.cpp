@@ -735,7 +735,9 @@ void ABLBoundaryPlane::read_header()
 
             if (std::all_of(
                     m_fields.begin(), m_fields.end(), [ori](const auto* fld) {
-                        return fld->bc_type()[ori] != BC::mass_inflow;
+                        return (
+                            (fld->bc_type()[ori] != BC::mass_inflow) &&
+                            (fld->bc_type()[ori] != BC::mass_inflow_outflow));
                     })) {
                 continue;
             }
@@ -850,7 +852,8 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
                     auto ori = oit();
 
                     if ((!m_in_data.is_populated(ori)) ||
-                        (field.bc_type()[ori] != BC::mass_inflow)) {
+                        ((field.bc_type()[ori] != BC::mass_inflow) &&
+                         (field.bc_type()[ori] != BC::mass_inflow_outflow))) {
                         continue;
                     }
 
@@ -895,7 +898,8 @@ void ABLBoundaryPlane::populate_data(
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
         if ((!m_in_data.is_populated(ori)) ||
-            (fld.bc_type()[ori] != BC::mass_inflow)) {
+            ((fld.bc_type()[ori] != BC::mass_inflow) &&
+             (fld.bc_type()[ori] != BC::mass_inflow_outflow))) {
             continue;
         }
 

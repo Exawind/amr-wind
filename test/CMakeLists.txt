@@ -322,6 +322,7 @@ endif()
 # Regression tests excluded from CI with a test dependency
 #=============================================================================
 add_test_red(abl_bndry_input_native abl_bndry_output_native)
+add_test_red(abl_bndry_input_native_inout abl_bndry_output_native)
 add_test_red(abl_godunov_restart abl_godunov)
 add_test_red(abl_bndry_input_amr_native abl_bndry_output_native)
 add_test_red(abl_bndry_input_amr_native_xhi abl_bndry_output_native)
