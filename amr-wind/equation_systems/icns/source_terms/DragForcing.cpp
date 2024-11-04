@@ -117,20 +117,19 @@ void DragForcing::operator()(
         ystart_damping = sponge_strength * yi_start * yi_start;
         yend_damping = sponge_strength * yi_end * yi_end;
 
-        const auto idx = interp::bisection_search(device_vel_ht, device_vel_ht + vsize, z);
+        const auto idx =
+            interp::bisection_search(device_vel_ht, device_vel_ht + vsize, z);
         const amrex::Real spongeVelX =
             (vsize > 0) ? interp::linear_impl(
-                              device_vel_ht, 
-                              device_vel_vals, z, idx, 3, 0)
+                              device_vel_ht, device_vel_vals, z, idx, 3, 0)
                         : 0.0;
         const amrex::Real spongeVelY =
             (vsize > 0) ? interp::linear_impl(
-                              device_vel_ht, 
-                              device_vel_vals, z, idx, 3, 1)
+                              device_vel_ht, device_vel_vals, z, idx, 3, 1)
                         : 0.0;
         const amrex::Real spongeVelZ =
             (vsize > 0) ? interp::linear_impl(
-                              device_vel_ht,  device_vel_vals, z, idx, 3, 2)
+                              device_vel_ht, device_vel_vals, z, idx, 3, 2)
                         : 0.0;
         amrex::Real Dxz = 0.0;
         amrex::Real Dyz = 0.0;

@@ -128,8 +128,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
         const C1 xend,
         const C2 yinp,
         const typename std::iterator_traits<C1>::value_type& xout,
-    const int ncomp = 1,
-    const int comp = 0)
+        const int ncomp = 1,
+        const int comp = 0)
 {
     const auto idx = bisection_search(xbegin, xend, xout);
     return linear_impl(xbegin, yinp, xout, idx, ncomp, comp);
@@ -144,12 +144,16 @@ inline typename C2::value_type linear(
     const int comp = 0)
 {
     return linear(
-      xinp.data(), (xinp.data() + xinp.size()), yinp.data(), xout, ncomp, comp);
+        xinp.data(), (xinp.data() + xinp.size()), yinp.data(), xout, ncomp,
+        comp);
 }
 
 template <typename C1, typename C2>
-inline void
-linear_monotonic(const C1& xinp, const C2& yinp, const C1& xout, C2& yout,
+inline void linear_monotonic(
+    const C1& xinp,
+    const C2& yinp,
+    const C1& xout,
+    C2& yout,
     const int ncomp = 1,
     const int comp = 0)
 {
@@ -171,7 +175,9 @@ linear_monotonic(const C1& xinp, const C2& yinp, const C1& xout, C2& yout,
             const auto denom = (xinp[j + 1] - xinp[j]);
             const auto facR = (denom > eps) ? ((x - xinp[j]) / denom) : 1.0;
             const auto facL = static_cast<typename C1::value_type>(1.0) - facR;
-            yout[i] = facL * yinp[ncomp * j + comp] + facR * yinp[ncomp * (j + 1) + comp];;
+            yout[i] = facL * yinp[ncomp * j + comp] +
+                      facR * yinp[ncomp * (j + 1) + comp];
+            ;
         }
         hint = idx.idx + 1;
     }
@@ -195,7 +201,7 @@ inline void linear(
 
     int npts = xout.size();
     for (int i = 0; i < npts; ++i) {
-      yout[i] = linear(xinp, yinp, xout[i], ncomp, comp);
+        yout[i] = linear(xinp, yinp, xout[i], ncomp, comp);
     }
 }
 
