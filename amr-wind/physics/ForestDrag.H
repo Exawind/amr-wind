@@ -45,7 +45,6 @@ private:
     Field& m_velocity;
     //! Forest Drag Force Term
     Field& m_forest_drag;
-    //! Reading the Forest Coordinates from  file
     amrex::Vector<amrex::Real> m_type_forest;
     amrex::Vector<amrex::Real> m_x_forest;
     amrex::Vector<amrex::Real> m_y_forest;
