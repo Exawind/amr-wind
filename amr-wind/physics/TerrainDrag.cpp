@@ -6,6 +6,8 @@
 #include "AMReX_ParReduce.H"
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/utilities/IOManager.H"
+#include "amr-wind/utilities/io_utils.H"
+#include "amr-wind/utilities/linear_interpolation.H"
 
 namespace amr_wind::terraindrag {
 
@@ -21,27 +23,23 @@ TerrainDrag::TerrainDrag(CFDSim& sim)
     , m_terrainz0(sim.repo().declare_field("terrainz0", 1, 1, 1))
     , m_terrain_height(sim.repo().declare_field("terrain_height", 1, 1, 1))
 {
-    std::string terrainfile("terrain.amrwind");
-    std::ifstream file(terrainfile, std::ios::in);
-    if (!file.good()) {
-        amrex::Abort("Cannot find terrain.amrwind file");
-    }
-    amrex::Real value1, value2, value3;
-    while (file >> value1 >> value2 >> value3) {
-        m_xterrain.push_back(value1);
-        m_yterrain.push_back(value2);
-        m_zterrain.push_back(value3);
+    std::string terrain_file("terrain.amrwind");
+    std::string roughness_file("terrain.roughness");
+    amrex::ParmParse pp(identifier());
+    pp.query("terrain_file", terrain_file);
+    pp.query("roughness_file", roughness_file);
+
+    ioutils::read_flat_grid_file(
+        terrain_file, m_xterrain, m_yterrain, m_zterrain);
+
+    // No checks for the file as it is optional currently
+    std::ifstream file(roughness_file, std::ios::in);
+    if (file.good()) {
+        ioutils::read_flat_grid_file(
+            roughness_file, m_xrough, m_yrough, m_z0rough);
     }
     file.close();
-    // No checks for the file as it is optional currently
-    std::string roughnessfile("terrain.roughness");
-    std::ifstream file1(roughnessfile, std::ios::in);
-    while (file1 >> value1 >> value2 >> value3) {
-        m_xrough.push_back(value1);
-        m_yrough.push_back(value2);
-        m_z0rough.push_back(value3);
-    }
-    file1.close();
+
     m_sim.io_manager().register_output_int_var("terrain_drag");
     m_sim.io_manager().register_output_int_var("terrain_blank");
     m_sim.io_manager().register_io_var("terrainz0");
@@ -63,12 +61,12 @@ void TerrainDrag::post_init_actions()
         auto& terrain_height = m_terrain_height(level);
         auto& drag = m_terrain_drag(level);
         // copy terrain data to gpu
-        amrex::Gpu::DeviceVector<amrex::Real> device_xterrain(
-            m_xterrain.size());
-        amrex::Gpu::DeviceVector<amrex::Real> device_yterrain(
-            m_xterrain.size());
-        amrex::Gpu::DeviceVector<amrex::Real> device_zterrain(
-            m_xterrain.size());
+        const auto xterrain_size = m_xterrain.size();
+        const auto yterrain_size = m_yterrain.size();
+        const auto zterrain_size = m_zterrain.size();
+        amrex::Gpu::DeviceVector<amrex::Real> device_xterrain(xterrain_size);
+        amrex::Gpu::DeviceVector<amrex::Real> device_yterrain(yterrain_size);
+        amrex::Gpu::DeviceVector<amrex::Real> device_zterrain(zterrain_size);
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, m_xterrain.begin(), m_xterrain.end(),
             device_xterrain.begin());
@@ -82,9 +80,12 @@ void TerrainDrag::post_init_actions()
         const auto* yterrain_ptr = device_yterrain.data();
         const auto* zterrain_ptr = device_zterrain.data();
         // Copy Roughness to gpu
-        amrex::Gpu::DeviceVector<amrex::Real> device_xrough(m_xrough.size());
-        amrex::Gpu::DeviceVector<amrex::Real> device_yrough(m_xrough.size());
-        amrex::Gpu::DeviceVector<amrex::Real> device_z0rough(m_xrough.size());
+        const auto xrough_size = m_xrough.size();
+        const auto yrough_size = m_yrough.size();
+        const auto z0rough_size = m_z0rough.size();
+        amrex::Gpu::DeviceVector<amrex::Real> device_xrough(xrough_size);
+        amrex::Gpu::DeviceVector<amrex::Real> device_yrough(yrough_size);
+        amrex::Gpu::DeviceVector<amrex::Real> device_z0rough(z0rough_size);
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, m_xrough.begin(), m_xrough.end(),
             device_xrough.begin());
@@ -103,8 +104,6 @@ void TerrainDrag::post_init_actions()
             auto levelDrag = drag.array(mfi);
             auto levelz0 = terrainz0.array(mfi);
             auto levelheight = terrain_height.array(mfi);
-            const unsigned terrainSize = m_xterrain.size();
-            const unsigned roughnessSize = m_xrough.size();
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     // compute the source term
@@ -112,54 +111,35 @@ void TerrainDrag::post_init_actions()
                     const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
                     const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
                     // Terrain Height
-                    amrex::Real residual = 10000;
-                    amrex::Real terrainHt = 0.0;
-                    for (unsigned ii = 0; ii < terrainSize; ++ii) {
-                        const amrex::Real radius = std::sqrt(
-                            std::pow(x - xterrain_ptr[ii], 2) +
-                            std::pow(y - yterrain_ptr[ii], 2));
-                        if (radius < residual) {
-                            residual = radius;
-                            terrainHt = zterrain_ptr[ii];
-                        }
-                    }
+                    const amrex::Real terrainHt = interp::bilinear(
+                        xterrain_ptr, xterrain_ptr + xterrain_size,
+                        yterrain_ptr, yterrain_ptr + yterrain_size,
+                        yterrain_size, zterrain_ptr, x, y);
                     levelBlanking(i, j, k, 0) =
                         static_cast<int>(z <= terrainHt);
                     levelheight(i, j, k, 0) =
                         std::max(std::abs(z - terrainHt), 0.5 * dx[2]);
-                    residual = 10000;
+
                     amrex::Real roughz0 = 0.1;
-                    for (unsigned ii = 0; ii < roughnessSize; ++ii) {
-                        const amrex::Real radius = std::sqrt(
-                            std::pow(x - xrough_ptr[ii], 2) +
-                            std::pow(y - yrough_ptr[ii], 2));
-                        if (radius < residual) {
-                            residual = radius;
-                            roughz0 = z0rough_ptr[ii];
-                        }
-                        if (radius < dx[0]) {
-                            break;
-                        }
+                    if (xrough_size > 0) {
+                        roughz0 = interp::bilinear(
+                            xrough_ptr, xrough_ptr + xrough_size, yrough_ptr,
+                            yrough_ptr + yrough_size, yrough_size, z0rough_ptr,
+                            x, y);
                     }
                     levelz0(i, j, k, 0) = roughz0;
                 });
+
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    // Terrain Height
-                    amrex::Real residual = 10000;
-                    amrex::Real terrainHt = 0.0;
                     const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
                     const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
                     const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
-                    for (unsigned ii = 0; ii < terrainSize; ++ii) {
-                        const amrex::Real radius = std::sqrt(
-                            std::pow(x - xterrain_ptr[ii], 2) +
-                            std::pow(y - yterrain_ptr[ii], 2));
-                        if (radius < residual) {
-                            residual = radius;
-                            terrainHt = zterrain_ptr[ii];
-                        }
-                    }
+                    const amrex::Real terrainHt = interp::bilinear(
+                        xterrain_ptr, xterrain_ptr + xterrain_size,
+                        yterrain_ptr, yterrain_ptr + yterrain_size,
+                        yterrain_size, zterrain_ptr, x, y);
+
                     levelDrag(i, j, k, 0) = 0;
                     if (z > terrainHt && k > 0 &&
                         levelBlanking(i, j, k - 1, 0) == 1) {
