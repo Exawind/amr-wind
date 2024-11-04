@@ -103,7 +103,7 @@ void ForestDrag::post_init_actions()
         for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
             const auto& vbx = mfi.validbox();
             auto levelDrag = drag.array(mfi);
-            const unsigned forestSize = m_x_forest.size();
+            const auto forestSize = m_x_forest.size();
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     // compute the source term
