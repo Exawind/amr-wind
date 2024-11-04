@@ -490,15 +490,15 @@ jobs:
         run: |
           /bin/bash -c " \
             source ${EXAWIND_MANAGER}/start.sh && \
+            spack-start && \
             mkdir -p ${EXAWIND_MANAGER}/environments/exawind && \
             cd ${EXAWIND_MANAGER}/environments/exawind && \
             ln -s ${GITHUB_WORKSPACE} amr-wind && \
-            spack-start && \
             spack -e e4s-build config add view:true && \
-            spack -e e4s-build add cmake && \
+            spack -e e4s-build add cmake^zlib-ng~new_strategies && \
             spack -e e4s-build concretize -f && \
             quick-create-dev -s amr-wind+hypre+netcdf@main && \
-            spack manager external ${EXAWIND_MANAGER}/environments/e4s-build --exclude amr-wind cmake && \
+            spack manager external ${EXAWIND_MANAGER}/environments/e4s-build --exclude amr-wind && \
             spack concretize -f && \
             spack install && \
             spack cd -b amr-wind && \
