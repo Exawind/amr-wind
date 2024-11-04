@@ -292,6 +292,8 @@ void KLAxell<Transport>::update_alphaeff(Field& alphaeff)
             const auto& tke_arr = (*this->m_tke)(lev).array(mfi);
             const auto& gradT_arr = (*gradT)(lev).array(mfi);
             const auto& tlscale_arr = (this->m_turb_lscale)(lev).array(mfi);
+            const amrex::Real Rtc = -1.0;
+            const amrex::Real Rtmin = -3.0;
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     amrex::Real stratification =
@@ -304,9 +306,10 @@ void KLAxell<Transport>::update_alphaeff(Field& alphaeff)
                                           tlscale_arr(i, j, k);
                     amrex::Real Rt = std::pow(tke_arr(i, j, k) / epsilon, 2) *
                                      stratification;
-                    Rt = (Rt < -1)
-                             ? std::max(Rt, Rt - pow(1 + Rt, 2) / (Rt - 1))
-                             : Rt;
+                    Rt = (Rt > Rtc) ? Rt
+                                    : std::max(
+                                          Rt, Rt - std::pow(Rt - Rtc, 2) /
+                                                       (Rt + Rtmin - 2 * Rtc));
                     const amrex::Real prandtlRt =
                         (1 + 0.193 * Rt) / (1 + 0.0302 * Rt);
                     alphaeff_arr(i, j, k) =
