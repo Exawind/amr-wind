@@ -45,7 +45,7 @@ void TempSpongeForcing::operator()(
         m_temperature.state(field_impl::dof_state(fstate))(lev).const_array(
             mfi);
     const amrex::Real sponge_start = m_sponge_start;
-    const unsigned vsize = m_theta_heights_d.size();
+    const auto vsize = m_theta_heights_d.size();
     const auto* theta_heights_d = m_theta_heights_d.data();
     const auto* theta_values_d = m_theta_values_d.data();
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {

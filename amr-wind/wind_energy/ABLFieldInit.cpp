@@ -442,6 +442,7 @@ void ABLFieldInit::init_tke(
                     tke(i, j, k) = tke_prof;
                 });
         } else {
+            const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
             // Profile definition from Beare et al. (2006)
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -451,7 +452,7 @@ void ABLFieldInit::init_tke(
                         tke(i, j, k) = tke_init_factor *
                                        std::pow(1. - z / tke_cutoff_height, 3);
                     } else {
-                        tke(i, j, k) = 1.e-20;
+                        tke(i, j, k) = tiny;
                     }
                 });
         }

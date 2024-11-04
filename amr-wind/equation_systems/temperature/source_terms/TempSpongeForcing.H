@@ -28,7 +28,6 @@ private:
     const Field& m_temperature;
     amrex::Vector<amrex::Real> m_theta_heights;
     amrex::Vector<amrex::Real> m_theta_values;
-    // Device copies of the above arrays
     amrex::Gpu::DeviceVector<amrex::Real> m_theta_heights_d;
     amrex::Gpu::DeviceVector<amrex::Real> m_theta_values_d;
     amrex::Real m_sponge_start{600};
