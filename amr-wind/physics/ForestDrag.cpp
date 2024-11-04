@@ -99,7 +99,6 @@ void ForestDrag::post_init_actions()
         const auto* cd_forest_ptr = device_cd_forest.data();
         const auto* lai_forest_ptr = device_lai_forest.data();
         const auto* laimax_forest_ptr = device_laimax_forest.data();
-        const auto& phy_mgr = m_sim.physics_manager();
         for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
             const auto& vbx = mfi.validbox();
             auto levelDrag = drag.array(mfi);
