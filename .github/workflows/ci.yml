@@ -498,7 +498,8 @@ jobs:
             spack -e e4s-build add cmake && \
             spack -e e4s-build concretize -f && \
             quick-create-dev -s amr-wind+hypre+netcdf@main && \
-            spack manager external ${EXAWIND_MANAGER}/environments/e4s-build --exclude amr-wind && \
+            spack manager external ${EXAWIND_MANAGER}/environments/e4s-build --exclude amr-wind cmake && \
+            spack concretize -f && \
             spack install && \
             spack cd -b amr-wind && \
             spack build-env amr-wind ctest -j $(nproc) -L unit --output-on-failure \
