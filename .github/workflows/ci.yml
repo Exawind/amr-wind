@@ -494,6 +494,7 @@ jobs:
             cd ${EXAWIND_MANAGER}/environments/exawind && \
             ln -s ${GITHUB_WORKSPACE} amr-wind && \
             spack-start && \
+            spack -e e4s-build config add view:true && \
             quick-create-dev -s amr-wind+hypre+netcdf@main && \
             spack manager external ${EXAWIND_MANAGER}/environments/e4s-build --exclude amr-wind && \
             spack install && \
