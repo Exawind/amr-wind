@@ -23,18 +23,18 @@ ForestDrag::ForestDrag(CFDSim& sim)
     if (!file.good()) {
         amrex::Abort("Cannot find forest.amrwind file");
     }
-    //! TreeType xc yc ht diameter cd lai zm
+    //! TreeType xc yc height diameter cd lai laimax
     amrex::Real value1, value2, value3, value4, value5, value6, value7, value8;
     while (file >> value1 >> value2 >> value3 >> value4 >> value5 >> value6 >>
            value7 >> value8) {
         m_type_forest.push_back(value1);
         m_x_forest.push_back(value2);
         m_y_forest.push_back(value3);
-        m_ht_forest.push_back(value4);
-        m_dia_forest.push_back(value5);
+        m_height_forest.push_back(value4);
+        m_diameter_forest.push_back(value5);
         m_cd_forest.push_back(value6);
         m_lai_forest.push_back(value7);
-        m_lm_forest.push_back(value8);
+        m_laimax_forest.push_back(value8);
     }
     file.close();
     m_sim.io_manager().register_output_var("forest_drag");
@@ -57,16 +57,16 @@ void ForestDrag::post_init_actions()
             m_x_forest.size());
         amrex::Gpu::DeviceVector<amrex::Real> device_y_forest(
             m_y_forest.size());
-        amrex::Gpu::DeviceVector<amrex::Real> device_ht_forest(
-            m_ht_forest.size());
-        amrex::Gpu::DeviceVector<amrex::Real> device_dia_forest(
-            m_dia_forest.size());
+        amrex::Gpu::DeviceVector<amrex::Real> device_height_forest(
+            m_height_forest.size());
+        amrex::Gpu::DeviceVector<amrex::Real> device_diameter_forest(
+            m_diameter_forest.size());
         amrex::Gpu::DeviceVector<amrex::Real> device_cd_forest(
             m_cd_forest.size());
         amrex::Gpu::DeviceVector<amrex::Real> device_lai_forest(
             m_lai_forest.size());
-        amrex::Gpu::DeviceVector<amrex::Real> device_lm_forest(
-            m_lm_forest.size());
+        amrex::Gpu::DeviceVector<amrex::Real> device_laimax_forest(
+            m_laimax_forest.size());
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, m_type_forest.begin(),
             m_type_forest.end(), device_type_forest.begin());
@@ -77,11 +77,11 @@ void ForestDrag::post_init_actions()
             amrex::Gpu::hostToDevice, m_y_forest.begin(), m_y_forest.end(),
             device_y_forest.begin());
         amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, m_ht_forest.begin(), m_ht_forest.end(),
-            device_ht_forest.begin());
+            amrex::Gpu::hostToDevice, m_height_forest.begin(),
+            m_height_forest.end(), device_height_forest.begin());
         amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, m_dia_forest.begin(), m_dia_forest.end(),
-            device_dia_forest.begin());
+            amrex::Gpu::hostToDevice, m_diameter_forest.begin(),
+            m_diameter_forest.end(), device_diameter_forest.begin());
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, m_cd_forest.begin(), m_cd_forest.end(),
             device_cd_forest.begin());
@@ -89,16 +89,16 @@ void ForestDrag::post_init_actions()
             amrex::Gpu::hostToDevice, m_lai_forest.begin(), m_lai_forest.end(),
             device_lai_forest.begin());
         amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, m_lm_forest.begin(), m_lm_forest.end(),
-            device_lm_forest.begin());
+            amrex::Gpu::hostToDevice, m_laimax_forest.begin(),
+            m_laimax_forest.end(), device_laimax_forest.begin());
         const auto* type_forest_ptr = device_type_forest.data();
         const auto* x_forest_ptr = device_x_forest.data();
         const auto* y_forest_ptr = device_y_forest.data();
-        const auto* ht_forest_ptr = device_ht_forest.data();
-        const auto* dia_forest_ptr = device_dia_forest.data();
+        const auto* height_forest_ptr = device_height_forest.data();
+        const auto* diameter_forest_ptr = device_diameter_forest.data();
         const auto* cd_forest_ptr = device_cd_forest.data();
         const auto* lai_forest_ptr = device_lai_forest.data();
-        const auto* lm_forest_ptr = device_lm_forest.data();
+        const auto* laimax_forest_ptr = device_laimax_forest.data();
         const auto& phy_mgr = m_sim.physics_manager();
         for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
             const auto& vbx = mfi.validbox();
@@ -113,23 +113,25 @@ void ForestDrag::post_init_actions()
                     levelDrag(i, j, k) = 0.0;
                     for (unsigned ii = 0; ii < forestSize; ++ii) {
                         const amrex::Real radius = std::sqrt(
-                            std::pow(x - x_forest_ptr[ii], 2) +
-                            std::pow(y - y_forest_ptr[ii], 2));
+                            (x - x_forest_ptr[ii]) * (x - x_forest_ptr[ii]) +
+                            (y - y_forest_ptr[ii]) * (y - y_forest_ptr[ii]));
                         amrex::Real af = 0.0;
-                        if (z <= ht_forest_ptr[ii] &&
-                            radius <= (0.5 * dia_forest_ptr[ii])) {
+                        if (z <= height_forest_ptr[ii] &&
+                            radius <= (0.5 * diameter_forest_ptr[ii])) {
                             if (type_forest_ptr[ii] == 1) {
-                                af = lai_forest_ptr[ii] / ht_forest_ptr[ii];
+                                af = lai_forest_ptr[ii] / height_forest_ptr[ii];
                             } else if (type_forest_ptr[ii] == 2) {
                                 amrex::Real ztree = 0;
                                 amrex::Real expFun = 0;
                                 amrex::Real ratio = 0;
                                 const amrex::Real treeZm =
-                                    lm_forest_ptr[ii] * ht_forest_ptr[ii];
-                                const amrex::Real dz = ht_forest_ptr[ii] / 100;
-                                while (ztree <= ht_forest_ptr[ii]) {
-                                    ratio = (ht_forest_ptr[ii] - treeZm) /
-                                            (ht_forest_ptr[ii] - ztree);
+                                    laimax_forest_ptr[ii] *
+                                    height_forest_ptr[ii];
+                                const amrex::Real dz =
+                                    height_forest_ptr[ii] / 100;
+                                while (ztree <= height_forest_ptr[ii]) {
+                                    ratio = (height_forest_ptr[ii] - treeZm) /
+                                            (height_forest_ptr[ii] - ztree);
                                     if (z < treeZm) {
                                         expFun = expFun +
                                                  std::pow(ratio, 6.0) *
@@ -142,15 +144,15 @@ void ForestDrag::post_init_actions()
                                     }
                                     ztree = ztree + dz;
                                 }
-                                const amrex::Real treeLm =
+                                const amrex::Real treelaimax =
                                     lai_forest_ptr[ii] / (expFun * dz);
-                                ratio = (ht_forest_ptr[ii] - treeZm) /
-                                        (ht_forest_ptr[ii] - z);
+                                ratio = (height_forest_ptr[ii] - treeZm) /
+                                        (height_forest_ptr[ii] - z);
                                 if (z < treeZm) {
-                                    af = treeLm * std::pow(ratio, 6.0) *
+                                    af = treelaimax * std::pow(ratio, 6.0) *
                                          std::exp(6 * (1 - ratio));
-                                } else if (z <= ht_forest_ptr[ii]) {
-                                    af = treeLm * std::pow(ratio, 0.5) *
+                                } else if (z <= height_forest_ptr[ii]) {
+                                    af = treelaimax * std::pow(ratio, 0.5) *
                                          std::exp(0.5 * (1 - ratio));
                                 }
                             }

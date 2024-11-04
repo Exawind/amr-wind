@@ -48,11 +48,11 @@ private:
     amrex::Vector<amrex::Real> m_type_forest;
     amrex::Vector<amrex::Real> m_x_forest;
     amrex::Vector<amrex::Real> m_y_forest;
-    amrex::Vector<amrex::Real> m_ht_forest;
-    amrex::Vector<amrex::Real> m_dia_forest;
+    amrex::Vector<amrex::Real> m_height_forest;
+    amrex::Vector<amrex::Real> m_diameter_forest;
     amrex::Vector<amrex::Real> m_cd_forest;
     amrex::Vector<amrex::Real> m_lai_forest;
-    amrex::Vector<amrex::Real> m_lm_forest;
+    amrex::Vector<amrex::Real> m_laimax_forest;
 };
 } // namespace amr_wind::Forestdrag
 
