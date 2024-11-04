@@ -54,15 +54,13 @@ void TempSpongeForcing::operator()(
         const amrex::Real zi =
             std::max((z - sponge_start) / (prob_hi[2] - sponge_start), 0.0);
         amrex::Real ref_temp = temperature(i, j, k);
-        amrex::Real residual = 1000;
-        amrex::Real height_error = 0.0;
         if (zi > 0) {
             const auto idx = interp::bisection_search(
                 theta_heights_d, theta_heights_d + vsize, z);
-            const amrex::Real ref_temp =
-                (vsize > 0) ? interp::linear_impl(
-                                  theta_heights_d, theta_values_d, z, idx)
-                            : temperature(i, j, k);
+            ref_temp = (vsize > 0)
+                           ? interp::linear_impl(
+                                 theta_heights_d, theta_values_d, z, idx)
+                           : temperature(i, j, k);
         }
         src_term(i, j, k, 0) -= zi * zi * (temperature(i, j, k) - ref_temp);
     });
