@@ -99,39 +99,46 @@ find_index(const It begin, const It end, const T& x, const int hint = 1)
 template <typename C1, typename C2>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     typename std::iterator_traits<C2>::value_type
-    linear(
+    linear_impl(
         const C1 xbegin,
-        const C1 xend,
         const C2 yinp,
         const typename std::iterator_traits<C1>::value_type& xout,
-        const int ncomp = 1,
-        const int comp = 0)
+        const Index& idx)
 {
     using DType1 = typename std::iterator_traits<C1>::value_type;
-    const auto idx = bisection_search(xbegin, xend, xout);
 
     if ((idx.lim == Limits::LOWLIM) || (idx.lim == Limits::UPLIM)) {
-        return yinp[ncomp * idx.idx + comp];
+        return yinp[idx.idx];
     }
     static constexpr DType1 eps = 1.0e-8;
     const int j = idx.idx;
     const auto denom = (xbegin[j + 1] - xbegin[j]);
     const auto facR = (denom > eps) ? ((xout - xbegin[j]) / denom) : 1.0;
     const auto facL = static_cast<DType1>(1.0) - facR;
-    return facL * yinp[ncomp * j + comp] + facR * yinp[ncomp * (j + 1) + comp];
+    return facL * yinp[j] + facR * yinp[j + 1];
+}
+
+template <typename C1, typename C2>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    typename std::iterator_traits<C2>::value_type
+    linear(
+        const C1 xbegin,
+        const C1 xend,
+        const C2 yinp,
+        const typename std::iterator_traits<C1>::value_type& xout)
+{
+    const auto idx = bisection_search(xbegin, xend, xout);
+    return linear_impl(xbegin, yinp, xout, idx);
 }
 
 template <typename C1, typename C2>
 inline typename C2::value_type linear(
     const C1& xinp,
     const C2& yinp,
-    const typename C1::value_type& xout,
-    const int ncomp = 1,
-    const int comp = 0)
+    const typename C1::value_type& xout)
 {
     return linear(
-        xinp.data(), (xinp.data() + xinp.size()), yinp.data(), xout, ncomp,
-        comp);
+        xinp.data(), (xinp.data() + xinp.size()), yinp.data(), xout);
 }
 
 template <typename C1, typename C2>
@@ -167,9 +174,7 @@ inline void linear(
     const C1& xinp,
     const C2& yinp,
     const C1& xout,
-    C2& yout,
-    const int ncomp = 1,
-    const int comp = 0)
+    C2& yout)
 {
     AMREX_ASSERT(
         static_cast<amrex::Long>(xinp.size()) ==
@@ -180,7 +185,7 @@ inline void linear(
 
     int npts = xout.size();
     for (int i = 0; i < npts; ++i) {
-        yout[i] = linear(xinp, yinp, xout[i], ncomp, comp);
+        yout[i] = linear(xinp, yinp, xout[i]);
     }
 }
 
