@@ -121,16 +121,16 @@ void DragForcing::operator()(
         const amrex::Real spongeVelX =
             (vsize > 0) ? interp::linear_impl(
                               device_vel_ht, 
-                              device_vel_vals, z, idx)
+                              device_vel_vals, z, idx, 3, 0)
                         : 0.0;
         const amrex::Real spongeVelY =
             (vsize > 0) ? interp::linear_impl(
                               device_vel_ht, 
-                              device_vel_vals, z, idx)
+                              device_vel_vals, z, idx, 3, 1)
                         : 0.0;
         const amrex::Real spongeVelZ =
             (vsize > 0) ? interp::linear_impl(
-                              device_vel_ht,  device_vel_vals, z, idx)
+                              device_vel_ht,  device_vel_vals, z, idx, 3, 2)
                         : 0.0;
         amrex::Real Dxz = 0.0;
         amrex::Real Dyz = 0.0;

@@ -103,19 +103,21 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
         const C1 xbegin,
         const C2 yinp,
         const typename std::iterator_traits<C1>::value_type& xout,
-        const Index& idx)
+        const Index& idx,
+        const int ncomp = 1,
+        const int comp = 0)
 {
     using DType1 = typename std::iterator_traits<C1>::value_type;
 
     if ((idx.lim == Limits::LOWLIM) || (idx.lim == Limits::UPLIM)) {
-        return yinp[idx.idx];
+        return yinp[ncomp * idx.idx + comp];
     }
     static constexpr DType1 eps = 1.0e-8;
     const int j = idx.idx;
     const auto denom = (xbegin[j + 1] - xbegin[j]);
     const auto facR = (denom > eps) ? ((xout - xbegin[j]) / denom) : 1.0;
     const auto facL = static_cast<DType1>(1.0) - facR;
-    return facL * yinp[j] + facR * yinp[j + 1];
+    return facL * yinp[ncomp * j + comp] + facR * yinp[ncomp * (j + 1) + comp];
 }
 
 template <typename C1, typename C2>
@@ -125,25 +127,31 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
         const C1 xbegin,
         const C1 xend,
         const C2 yinp,
-        const typename std::iterator_traits<C1>::value_type& xout)
+        const typename std::iterator_traits<C1>::value_type& xout,
+    const int ncomp = 1,
+    const int comp = 0)
 {
     const auto idx = bisection_search(xbegin, xend, xout);
-    return linear_impl(xbegin, yinp, xout, idx);
+    return linear_impl(xbegin, yinp, xout, idx, ncomp, comp);
 }
 
 template <typename C1, typename C2>
 inline typename C2::value_type linear(
     const C1& xinp,
     const C2& yinp,
-    const typename C1::value_type& xout)
+    const typename C1::value_type& xout,
+    const int ncomp = 1,
+    const int comp = 0)
 {
     return linear(
-        xinp.data(), (xinp.data() + xinp.size()), yinp.data(), xout);
+      xinp.data(), (xinp.data() + xinp.size()), yinp.data(), xout, ncomp, comp);
 }
 
 template <typename C1, typename C2>
 inline void
-linear_monotonic(const C1& xinp, const C2& yinp, const C1& xout, C2& yout)
+linear_monotonic(const C1& xinp, const C2& yinp, const C1& xout, C2& yout,
+    const int ncomp = 1,
+    const int comp = 0)
 {
     static constexpr typename C1::value_type eps = 1.0e-8;
     AMREX_ASSERT(xinp.size() == yinp.size());
@@ -157,13 +165,13 @@ linear_monotonic(const C1& xinp, const C2& yinp, const C1& xout, C2& yout)
             find_index(xinp.data(), (xinp.data() + xinp.size()), x, hint);
 
         if ((idx.lim == Limits::LOWLIM) || (idx.lim == Limits::UPLIM)) {
-            yout[i] = yinp[idx.idx];
+            yout[i] = yinp[ncomp * idx.idx + comp];
         } else if (idx.lim == Limits::VALID) {
             int j = idx.idx;
             const auto denom = (xinp[j + 1] - xinp[j]);
             const auto facR = (denom > eps) ? ((x - xinp[j]) / denom) : 1.0;
             const auto facL = static_cast<typename C1::value_type>(1.0) - facR;
-            yout[i] = facL * yinp[j] + facR * yinp[j + 1];
+            yout[i] = facL * yinp[ncomp * j + comp] + facR * yinp[ncomp * (j + 1) + comp];;
         }
         hint = idx.idx + 1;
     }
@@ -174,7 +182,9 @@ inline void linear(
     const C1& xinp,
     const C2& yinp,
     const C1& xout,
-    C2& yout)
+    C2& yout,
+    const int ncomp = 1,
+    const int comp = 0)
 {
     AMREX_ASSERT(
         static_cast<amrex::Long>(xinp.size()) ==
@@ -185,7 +195,7 @@ inline void linear(
 
     int npts = xout.size();
     for (int i = 0; i < npts; ++i) {
-        yout[i] = linear(xinp, yinp, xout[i]);
+      yout[i] = linear(xinp, yinp, xout[i], ncomp, comp);
     }
 }
 
