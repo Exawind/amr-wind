@@ -53,6 +53,8 @@ void KLAxell<Transport>::parse_model_coeffs()
     amrex::ParmParse pp(coeffs_dict);
     pp.query("Cmu", this->m_Cmu);
     pp.query("Cmu_prime", this->m_Cmu_prime);
+    pp.query("Cb_stable", this->m_Cb_stable);
+    pp.query("Cb_unstable", this->m_Cb_unstable);
     pp.query("prandtl", this->m_prandtl);
 }
 
@@ -62,6 +64,8 @@ TurbulenceModel::CoeffsDictType KLAxell<Transport>::model_coeffs() const
     return TurbulenceModel::CoeffsDictType{
         {"Cmu", this->m_Cmu},
         {"Cmu_prime", this->m_Cmu_prime},
+        {"Cb_stable", this->m_Cb_stable},
+        {"Cb_unstable", this->m_Cb_unstable},
         {"prandtl", this->m_prandtl}};
 }
 
@@ -82,26 +86,19 @@ void KLAxell<Transport>::update_turbulent_viscosity(
         m_gravity[0], m_gravity[1], m_gravity[2]};
     const amrex::Real beta = 1.0 / m_ref_theta;
     const amrex::Real Cmu = m_Cmu;
-    const amrex::Real Cb_stable = 0.25;
-    const amrex::Real Cb_unstable = 0.35;
+    const amrex::Real Cb_stable = m_Cb_stable;
+    const amrex::Real Cb_unstable = m_Cb_unstable;
     auto& mu_turb = this->mu_turb();
     const auto& den = this->m_rho.state(fstate);
     const auto& repo = mu_turb.repo();
     const auto& geom_vec = repo.mesh().Geom();
     const int nlevels = repo.num_active_levels();
-    const bool has_terrain_height =
-        this->m_sim.repo().field_exists("terrain_height");
-    const auto* m_terrain_height =
-        has_terrain_height ? &this->m_sim.repo().get_field("terrain_height")
-                           : nullptr;
-    const auto* m_terrain_blank =
-        has_terrain_height ? &this->m_sim.repo().get_int_field("terrain_blank")
-                           : nullptr;
     const amrex::Real Rtc = -1.0;
     const amrex::Real Rtmin = -3.0;
     const amrex::Real lambda = 30.0;
     const amrex::Real kappa = 0.41;
     const amrex::Real surf_flux = m_surf_flux;
+    const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     const amrex::Real lengthscale_switch = m_lengthscale_switch;
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = geom_vec[lev];
@@ -120,6 +117,10 @@ void KLAxell<Transport>::update_turbulent_viscosity(
             const bool has_terrain =
                 this->m_sim.repo().int_field_exists("terrain_blank");
             if (has_terrain) {
+                const auto* m_terrain_height =
+                    &this->m_sim.repo().get_field("terrain_height");
+                const auto* m_terrain_blank =
+                    &this->m_sim.repo().get_int_field("terrain_blank");
                 const auto& ht_arr = (*m_terrain_height)(lev).const_array(mfi);
                 const auto& blank_arr =
                     (*m_terrain_blank)(lev).const_array(mfi);
@@ -138,10 +139,10 @@ void KLAxell<Transport>::update_turbulent_viscosity(
                         const amrex::Real lscale_b =
                             Cb_stable * std::sqrt(
                                             tke_arr(i, j, k) /
-                                            std::max(stratification, 1e-10));
+                                            std::max(stratification, tiny));
                         amrex::Real epsilon = std::pow(Cmu, 3) *
                                               std::pow(tke_arr(i, j, k), 1.5) /
-                                              (tlscale_arr(i, j, k) + 1e-3);
+                                              (tlscale_arr(i, j, k) + tiny);
                         amrex::Real Rt =
                             std::pow(tke_arr(i, j, k) / epsilon, 2) *
                             stratification;
@@ -207,10 +208,10 @@ void KLAxell<Transport>::update_turbulent_viscosity(
                         const amrex::Real lscale_b =
                             Cb_stable * std::sqrt(
                                             tke_arr(i, j, k) /
-                                            std::max(stratification, 1e-10));
+                                            std::max(stratification, tiny));
                         amrex::Real epsilon = std::pow(Cmu, 3) *
                                               std::pow(tke_arr(i, j, k), 1.5) /
-                                              (tlscale_arr(i, j, k) + 1e-3);
+                                              (tlscale_arr(i, j, k) + tiny);
                         amrex::Real Rt =
                             std::pow(tke_arr(i, j, k) / epsilon, 2) *
                             stratification;

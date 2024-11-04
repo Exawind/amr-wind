@@ -1,5 +1,5 @@
-#ifndef KransAxell_H
-#define KransAxell_H
+#ifndef KRANSAXELL_H
+#define KRANSAXELL_H
 
 #include "amr-wind/equation_systems/tke/TKESource.H"
 
@@ -46,4 +46,4 @@ private:
 
 } // namespace amr_wind::pde::tke
 
-#endif /* KransAxell_H */
+#endif /* KRANSAXELL_H */

@@ -52,6 +52,8 @@ private:
     //! Turbulence constant
     amrex::Real m_Cmu{0.556};
     amrex::Real m_Cmu_prime{0.556};
+    amrex::Real m_Cb_stable{0.25};
+    amrex::Real m_Cb_unstable{0.35};
     amrex::Real m_prandtl{1.0};
     Field& m_temperature;
     //! Gravity vector (m/s^2)
