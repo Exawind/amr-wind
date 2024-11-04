@@ -1,6 +1,7 @@
 
 #include "amr-wind/equation_systems/temperature/source_terms/TempSpongeForcing.H"
 #include "amr-wind/utilities/IOManager.H"
+#include "amr-wind/utilities/linear_interpolation.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
@@ -56,13 +57,12 @@ void TempSpongeForcing::operator()(
         amrex::Real residual = 1000;
         amrex::Real height_error = 0.0;
         if (zi > 0) {
-            for (unsigned ii = 0; ii < vsize; ++ii) {
-                height_error = std::abs(z - theta_heights_d[ii]);
-                if (height_error < residual) {
-                    residual = height_error;
-                    ref_temp = theta_values_d[ii];
-                }
-            }
+            const auto idx = interp::bisection_search(
+                theta_heights_d, theta_heights_d + vsize, z);
+            const amrex::Real ref_temp =
+                (vsize > 0) ? interp::linear_impl(
+                                  theta_heights_d, theta_values_d, z, idx)
+                            : temperature(i, j, k);
         }
         src_term(i, j, k, 0) -= zi * zi * (temperature(i, j, k) - ref_temp);
     });
