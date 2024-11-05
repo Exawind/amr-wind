@@ -33,7 +33,7 @@ private:
     Field& m_buoy_prod;
     Field& m_dissip;
     Field& m_tke;
-    amrex::REal m_Cmu{0.556};
+    amrex::Real m_Cmu{0.556};
     amrex::Real m_heat_flux{0.0};
     amrex::Real m_ref_temp{300.0};
     amrex::Real m_z0{0.1};

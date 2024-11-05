@@ -22,7 +22,7 @@ KransAxell::KransAxell(const CFDSim& sim)
     amrex::ParmParse pp("ABL");
     pp.query("Cmu", m_Cmu);
     pp.query("kappa", m_kappa);
-    pp.query("surface_roughness_z0".m_z0);
+    pp.query("surface_roughness_z0", m_z0);
     pp.query("reference_temperature", m_ref_temp);
     pp.query("surface_temp_flux", m_heat_flux);
     pp.query("meso_sponge_start", m_sponge_start);
@@ -69,8 +69,7 @@ void KransAxell::operator()(
         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
         if (k == 0) {
             const amrex::Real m = std::sqrt(ux * ux + uy * uy);
-
-            ustar = m * kappa / std::log(z / z0);
+            const amrex::Real ustar = m * kappa / std::log(z / z0);
             const amrex::Real rans_b = std::pow(
                 std::max(heat_flux, 0.0) * kappa * z / std::pow(Cmu, 3),
                 (2.0 / 3.0));
