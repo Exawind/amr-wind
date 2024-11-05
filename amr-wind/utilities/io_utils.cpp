@@ -25,13 +25,13 @@ void read_flat_grid_file(
     xs.resize(nx);
     ys.resize(ny);
     zs.resize(nx * ny);
-    for (int n = 0; n < nx; n++) {
+    for (size_t n = 0; n < nx; n++) {
         file >> xs[n];
     }
-    for (int n = 0; n < ny; n++) {
+    for (size_t n = 0; n < ny; n++) {
         file >> ys[n];
     }
-    for (int n = 0; n < nx * ny; n++) {
+    for (size_t n = 0; n < nx * ny; n++) {
         file >> zs[n];
     }
     file.close();
