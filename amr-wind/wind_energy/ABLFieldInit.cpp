@@ -249,13 +249,13 @@ void ABLFieldInit::operator()(
                 const amrex::Real theta =
                     (ntvals > 0) ? interp::linear_impl(th, tv, z, idx) : tv[0];
                 idx = interp::bisection_search(windh, uu + nwvals, z);
-                const amrex::Real umean_prof = (nwvals > 0)
-                                 ? interp::linear_impl(windh, uu, z, idx)
+                const amrex::Real umean_prof =
+                    (nwvals > 0) ? interp::linear_impl(windh, uu, z, idx)
                                  : uu[0];
                 const auto idx =
                     interp::bisection_search(windh, vv + nwvals, z);
-                const amrex::Real vmean_prof = (nwvals > 0)
-                                 ? interp::linear_impl(windh, vv, z, idx)
+                const amrex::Real vmean_prof =
+                    (nwvals > 0) ? interp::linear_impl(windh, vv, z, idx)
                                  : vv[0];
 
                 temperature(i, j, k, 0) += theta;
