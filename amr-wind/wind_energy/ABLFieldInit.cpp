@@ -245,16 +245,14 @@ void ABLFieldInit::operator()(
                 const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
                 density(i, j, k) = rho_init;
-                auto idx = interp::bisection_search(th, tv + ntvals, z);
                 const amrex::Real theta =
-                    (ntvals > 0) ? interp::linear_impl(th, tv, z, idx) : tv[0];
-                idx = interp::bisection_search(windh, uu + nwvals, z);
+                    (ntvals > 0) ? interp::linear(th, th + ntvals, tv, z)
+                                 : tv[0];
                 const amrex::Real umean_prof =
-                    (nwvals > 0) ? interp::linear_impl(windh, uu, z, idx)
+                    (nwvals > 0) ? interp::linear(windh, windh + nwvals, uu, z)
                                  : uu[0];
-                idx = interp::bisection_search(windh, vv + nwvals, z);
                 const amrex::Real vmean_prof =
-                    (nwvals > 0) ? interp::linear_impl(windh, vv, z, idx)
+                    (nwvals > 0) ? interp::linear(windh, windh + nwvals, vv, z)
                                  : vv[0];
 
                 temperature(i, j, k, 0) += theta;
@@ -414,11 +412,9 @@ void ABLFieldInit::init_tke(
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                    const auto idx =
-                        interp::bisection_search(windh, tke_data + nwvals, z);
                     const amrex::Real tke_prof =
                         (nwvals > 0)
-                            ? interp::linear_impl(windh, tke_data, z, idx)
+                            ? interp::linear(windh, windh + nwvals, tke_data, z)
                             : tiny;
 
                     tke(i, j, k) = tke_prof;
