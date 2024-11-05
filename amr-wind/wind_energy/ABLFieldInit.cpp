@@ -7,7 +7,7 @@
 #include "amr-wind/utilities/trig_ops.H"
 #include "AMReX_Gpu.H"
 #include "AMReX_ParmParse.H"
-
+#include "amr-wind/utilities/linear_interpolation.H"
 namespace amr_wind {
 
 ABLFieldInit::ABLFieldInit()
@@ -23,7 +23,24 @@ ABLFieldInit::ABLFieldInit()
 void ABLFieldInit::initialize_from_inputfile()
 {
     amrex::ParmParse pp_abl("ABL");
-
+    //! Check for wind profile
+    pp_abl.query("initial_wind_profile", m_initial_wind_profile);
+    if (m_initial_wind_profile) {
+        pp_abl.query("rans_1dprofile_file", m_1d_rans);
+        if (!m_1d_rans.empty()) {
+            std::ifstream ransfile(m_1d_rans, std::ios::in);
+            if (!ransfile.good()) {
+                amrex::Abort("Cannot find 1-D RANS profile file " + m_1d_rans);
+            }
+            amrex::Real value1, value2, value3, value4;
+            while (ransfile >> value1 >> value2 >> value3 >> value4) {
+                m_wind_heights.push_back(value1);
+                m_u_values.push_back(value2);
+                m_v_values.push_back(value3);
+                m_tke_values.push_back(value4);
+            }
+        }
+    }
     // Temperature variation as a function of height
     pp_abl.getarr("temperature_heights", m_theta_heights);
     pp_abl.getarr("temperature_values", m_theta_values);
@@ -61,7 +78,8 @@ void ABLFieldInit::initialize_from_inputfile()
         pp_incflo.get("density", m_rho);
     } else {
         pp_mphase.get("density_fluid2", m_rho);
-        // Note: density field will later be overwritten by MultiPhase post_init
+        // Note: density field will later be overwritten by MultiPhase
+        // post_init
     }
 
     amrex::ParmParse pp_forcing("ABLForcing");
@@ -84,7 +102,25 @@ void ABLFieldInit::initialize_from_inputfile()
 
     m_thht_d.resize(num_theta_values);
     m_thvv_d.resize(num_theta_values);
-
+    if (m_initial_wind_profile) {
+        int num_wind_values = static_cast<int>(m_wind_heights.size());
+        m_windht_d.resize(num_wind_values);
+        m_prof_u_d.resize(num_wind_values);
+        m_prof_v_d.resize(num_wind_values);
+        m_prof_tke_d.resize(num_wind_values);
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, m_wind_heights.begin(),
+            m_wind_heights.end(), m_windht_d.begin());
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, m_u_values.begin(), m_u_values.end(),
+            m_prof_u_d.begin());
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, m_v_values.begin(), m_v_values.end(),
+            m_prof_v_d.begin());
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, m_tke_values.begin(), m_tke_values.end(),
+            m_prof_tke_d.begin());
+    }
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, m_theta_heights.begin(),
         m_theta_heights.end(), m_thht_d.begin());
@@ -158,6 +194,7 @@ void ABLFieldInit::operator()(
     const amrex::Real rho_init = m_rho;
 
     const int ntvals = static_cast<int>(m_theta_heights.size());
+    const int nwvals = static_cast<int>(m_wind_heights.size());
     const amrex::Real* th = m_thht_d.data();
     const amrex::Real* tv = m_thvv_d.data();
 
@@ -197,9 +234,35 @@ void ABLFieldInit::operator()(
                 velocity(i, j, k, 0) += umean_prof;
                 velocity(i, j, k, 1) += vmean_prof;
             });
+    } else if (m_initial_wind_profile) {
+        //! RANS 1-D profile
+        const amrex::Real* windh = m_windht_d.data();
+        const amrex::Real* uu = m_prof_u_d.data();
+        const amrex::Real* vv = m_prof_v_d.data();
+
+        amrex::ParallelFor(
+            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+
+                density(i, j, k) = rho_init;
+                const amrex::Real theta =
+                    (ntvals > 0) ? interp::linear(th, th + ntvals, tv, z)
+                                 : tv[0];
+                const amrex::Real umean_prof =
+                    (nwvals > 0) ? interp::linear(windh, windh + nwvals, uu, z)
+                                 : uu[0];
+                const amrex::Real vmean_prof =
+                    (nwvals > 0) ? interp::linear(windh, windh + nwvals, vv, z)
+                                 : vv[0];
+
+                temperature(i, j, k, 0) += theta;
+                velocity(i, j, k, 0) += umean_prof;
+                velocity(i, j, k, 1) += vmean_prof;
+            });
     } else {
         /*
-         * Set uniform/linear wind profile with specified temperature profile
+         * Set uniform/linear wind profile with specified temperature
+         * profile
          */
         const bool linear_profile = m_linear_profile;
 
@@ -254,8 +317,9 @@ void ABLFieldInit::operator()(
             });
     }
 
-    // velocity perturbations may be added on top of the simple wind profiles
-    // specified in the input file or the general profiles from a netcdf input
+    // velocity perturbations may be added on top of the simple wind
+    // profiles specified in the input file or the general profiles from
+    // a netcdf input
     if (m_perturb_vel) {
         const amrex::Real aval =
             m_Uperiods * 2.0 * pi / (probhi[1] - problo[1]);
@@ -324,7 +388,7 @@ void ABLFieldInit::init_tke(
 {
     tke_fab.setVal(m_tke_init);
 
-    if (!m_tke_init_profile) {
+    if (!m_tke_init_profile && !m_initial_wind_profile) {
         return;
     }
 
@@ -340,19 +404,35 @@ void ABLFieldInit::init_tke(
          ++mfi) {
         const auto& bx = mfi.tilebox();
         const auto& tke = tke_fab.array(mfi);
+        const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
+        if (m_initial_wind_profile) {
+            const int nwvals = static_cast<int>(m_wind_heights.size());
+            const amrex::Real* windh = m_windht_d.data();
+            const amrex::Real* tke_data = m_prof_tke_d.data();
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                    const amrex::Real tke_prof =
+                        (nwvals > 0)
+                            ? interp::linear(windh, windh + nwvals, tke_data, z)
+                            : tiny;
 
-        // Profile definition from Beare et al. (2006)
-        amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                    tke(i, j, k) = tke_prof;
+                });
+        } else {
+            // Profile definition from Beare et al. (2006)
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                if (z < tke_cutoff_height) {
-                    tke(i, j, k) = tke_init_factor *
-                                   std::pow(1. - z / tke_cutoff_height, 3);
-                } else {
-                    tke(i, j, k) = 1.e-20;
-                }
-            });
+                    if (z < tke_cutoff_height) {
+                        tke(i, j, k) = tke_init_factor *
+                                       std::pow(1. - z / tke_cutoff_height, 3);
+                    } else {
+                        tke(i, j, k) = tiny;
+                    }
+                });
+        }
     }
 }
 
