@@ -324,7 +324,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
 {
     const auto xidx = bisection_search(xbegin, xend, xout);
     const auto yidx = bisection_search(ybegin, yend, yout);
-    return bilinear_impl(xbegin, ybegin, static_cast<int>(yend-ybegin), zinp, xout, yout, xidx, yidx);
+    return bilinear_impl(
+        xbegin, ybegin, static_cast<int>(yend - ybegin), zinp, xout, yout, xidx,
+        yidx);
 }
 
 template <typename C1, typename C2>

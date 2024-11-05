@@ -16,8 +16,8 @@ void read_flat_grid_file(
         amrex::Abort("Cannot find file");
     }
 
-    int nx = 0;
-    int ny = 0;
+    size_t nx = 0;
+    size_t ny = 0;
     file >> nx;
     file >> ny;
     AMREX_ALWAYS_ASSERT(nx > 0);
