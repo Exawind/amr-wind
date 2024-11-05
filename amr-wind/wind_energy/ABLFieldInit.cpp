@@ -252,8 +252,7 @@ void ABLFieldInit::operator()(
                 const amrex::Real umean_prof =
                     (nwvals > 0) ? interp::linear_impl(windh, uu, z, idx)
                                  : uu[0];
-                const auto idx =
-                    interp::bisection_search(windh, vv + nwvals, z);
+                idx = interp::bisection_search(windh, vv + nwvals, z);
                 const amrex::Real vmean_prof =
                     (nwvals > 0) ? interp::linear_impl(windh, vv, z, idx)
                                  : vv[0];

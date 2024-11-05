@@ -66,7 +66,6 @@ void KransAxell::operator()(
         amrex::Real bcforcing = 0;
         const amrex::Real ux = vel(i, j, k, 0);
         const amrex::Real uy = vel(i, j, k, 1);
-        amrex::Real ustar = 0.4;
         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
         if (k == 0) {
             const amrex::Real m = std::sqrt(ux * ux + uy * uy);
