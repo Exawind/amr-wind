@@ -138,8 +138,9 @@ void TerrainDrag::post_init_actions()
                         zterrain_ptr, x, y);
 
                     levelDrag(i, j, k, 0) = 0;
-                    if (z > terrainHt && k > 0 &&
-                        levelBlanking(i, j, k - 1, 0) == 1) {
+                    AMREX_ALWAYS_ASSERT((z > terrainHt) == (levelBlanking(i, j, k, 0) == 0));
+                    if ((z > terrainHt) && (k > 0) &&
+                        (levelBlanking(i, j, k - 1, 0) == 1)) {
                         levelDrag(i, j, k, 0) = 1;
                     }
                 });
