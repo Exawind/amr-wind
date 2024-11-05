@@ -318,14 +318,13 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
         const C1 xend,
         const C1 ybegin,
         const C1 yend,
-        const int ny,
         const C2 zinp,
         const typename std::iterator_traits<C1>::value_type& xout,
         const typename std::iterator_traits<C1>::value_type& yout)
 {
     const auto xidx = bisection_search(xbegin, xend, xout);
     const auto yidx = bisection_search(ybegin, yend, yout);
-    return bilinear_impl(xbegin, ybegin, ny, zinp, xout, yout, xidx, yidx);
+    return bilinear_impl(xbegin, ybegin, static_cast<int>(yend-ybegin), zinp, xout, yout, xidx, yidx);
 }
 
 template <typename C1, typename C2>
@@ -339,7 +338,7 @@ inline typename C2::value_type bilinear(
     AMREX_ALWAYS_ASSERT((xinp.size() * yinp.size()) == zinp.size());
     return bilinear(
         xinp.data(), (xinp.data() + xinp.size()), yinp.data(),
-        (yinp.data() + yinp.size()), yinp.size(), zinp.data(), xout, yout);
+        (yinp.data() + yinp.size()), zinp.data(), xout, yout);
 }
 
 } // namespace amr_wind::interp

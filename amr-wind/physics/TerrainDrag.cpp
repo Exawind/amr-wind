@@ -113,8 +113,7 @@ void TerrainDrag::post_init_actions()
                     // Terrain Height
                     const amrex::Real terrainHt = interp::bilinear(
                         xterrain_ptr, xterrain_ptr + xterrain_size,
-                        yterrain_ptr, yterrain_ptr + yterrain_size,
-                        yterrain_size, zterrain_ptr, x, y);
+                        yterrain_ptr, yterrain_ptr + yterrain_size, zterrain_ptr, x, y);
                     levelBlanking(i, j, k, 0) =
                         static_cast<int>(z <= terrainHt);
                     levelheight(i, j, k, 0) =
@@ -124,7 +123,7 @@ void TerrainDrag::post_init_actions()
                     if (xrough_size > 0) {
                         roughz0 = interp::bilinear(
                             xrough_ptr, xrough_ptr + xrough_size, yrough_ptr,
-                            yrough_ptr + yrough_size, yrough_size, z0rough_ptr,
+                            yrough_ptr + yrough_size, z0rough_ptr,
                             x, y);
                     }
                     levelz0(i, j, k, 0) = roughz0;
@@ -138,7 +137,7 @@ void TerrainDrag::post_init_actions()
                     const amrex::Real terrainHt = interp::bilinear(
                         xterrain_ptr, xterrain_ptr + xterrain_size,
                         yterrain_ptr, yterrain_ptr + yterrain_size,
-                        yterrain_size, zterrain_ptr, x, y);
+                        zterrain_ptr, x, y);
 
                     levelDrag(i, j, k, 0) = 0;
                     if (z > terrainHt && k > 0 &&
