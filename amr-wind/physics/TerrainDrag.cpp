@@ -106,11 +106,9 @@ void TerrainDrag::post_init_actions()
             auto levelheight = terrain_height.array(mfi);
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    // compute the source term
                     const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
                     const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
                     const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
-                    // Terrain Height
                     const amrex::Real terrainHt = interp::bilinear(
                         xterrain_ptr, xterrain_ptr + xterrain_size,
                         yterrain_ptr, yterrain_ptr + yterrain_size,
