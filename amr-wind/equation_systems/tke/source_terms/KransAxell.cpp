@@ -3,7 +3,7 @@
 #include "amr-wind/equation_systems/tke/source_terms/KransAxell.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/turbulence/TurbulenceModel.H"
-
+#include "amr-wind/utilities/linear_interpolation.H"
 namespace amr_wind::pde::tke {
 
 KransAxell::KransAxell(const CFDSim& sim)
@@ -20,6 +20,9 @@ KransAxell::KransAxell(const CFDSim& sim)
     AMREX_ALWAYS_ASSERT(sim.turbulence_model().model_name() == "KLAxell");
     auto coeffs = sim.turbulence_model().model_coeffs();
     amrex::ParmParse pp("ABL");
+    pp.query("Cmu", m_Cmu);
+    pp.query("kappa", m_kappa);
+    pp.query("surface_roughness_z0".m_z0);
     pp.query("reference_temperature", m_ref_temp);
     pp.query("surface_temp_flux", m_heat_flux);
     pp.query("meso_sponge_start", m_sponge_start);
@@ -53,12 +56,12 @@ void KransAxell::operator()(
     const amrex::Real ref_temp = m_ref_temp;
     const amrex::Real heat_flux =
         std::abs(m_gravity[2]) / ref_temp * m_heat_flux;
-    const amrex::Real Cmu = 0.556;
+    const amrex::Real Cmu = m_Cmu;
     const amrex::Real sponge_start = m_sponge_start;
     const amrex::Real ref_tke = m_ref_tke;
     const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
-    const amrex::Real kappa = 0.41;
-    const amrex::Real z0 = 0.1;
+    const amrex::Real kappa = m_kappa;
+    const amrex::Real z0 = m_z0;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::Real bcforcing = 0;
         const amrex::Real ux = vel(i, j, k, 0);
@@ -101,10 +104,9 @@ void KransAxell::operator()(
                 amrex::Real dragforcing = 0;
                 const amrex::Real ux = vel(i, j, k, 0);
                 const amrex::Real uy = vel(i, j, k, 1);
-                amrex::Real ustar = 0.4;
                 const amrex::Real z = 0.5 * dx[2];
                 amrex::Real m = std::sqrt(ux * ux + uy * uy);
-                ustar = m * kappa / std::log(z / z0);
+                const amrex::Real ustar = m * kappa / std::log(z / z0);
                 const amrex::Real rans_b = std::pow(
                     std::max(heat_flux, 0.0) * kappa * z / std::pow(Cmu, 3),
                     (2.0 / 3.0));

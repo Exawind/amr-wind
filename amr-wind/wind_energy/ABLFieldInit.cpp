@@ -7,7 +7,7 @@
 #include "amr-wind/utilities/trig_ops.H"
 #include "AMReX_Gpu.H"
 #include "AMReX_ParmParse.H"
-
+#include "amr-wind/utilities/linear_interpolation.H"
 namespace amr_wind {
 
 ABLFieldInit::ABLFieldInit()
@@ -245,28 +245,18 @@ void ABLFieldInit::operator()(
                 const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
                 density(i, j, k) = rho_init;
-                amrex::Real theta = tv[0];
-                amrex::Real umean_prof = uu[0];
-                amrex::Real vmean_prof = vv[0];
-
-                for (int iz = 0; iz < ntvals - 1; ++iz) {
-                    if ((z > th[iz]) && (z <= th[iz + 1])) {
-                        const amrex::Real slope =
-                            (tv[iz + 1] - tv[iz]) / (th[iz + 1] - th[iz]);
-                        theta = tv[iz] + (z - th[iz]) * slope;
-                    }
-                }
-                for (int iz = 0; iz < nwvals - 1; ++iz) {
-                    if ((z > windh[iz]) && (z <= windh[iz + 1])) {
-                        const amrex::Real slopeu =
-                            (uu[iz + 1] - uu[iz]) / (windh[iz + 1] - windh[iz]);
-                        umean_prof = uu[iz] + (z - windh[iz]) * slopeu;
-
-                        const amrex::Real slopev =
-                            (vv[iz + 1] - vv[iz]) / (windh[iz + 1] - windh[iz]);
-                        vmean_prof = vv[iz] + (z - windh[iz]) * slopev;
-                    }
-                }
+                auto idx = interp::bisection_search(th, tv + ntvals, z);
+                theta =
+                    (ntvals > 0) ? interp::linear_impl(th, tv, z, idx) : tv[0];
+                idx = interp::bisection_search(windh, uu + nwvals, z);
+                umean_prof = (nwvals > 0)
+                                 ? interp::linear_impl(windh, uu, z, idx)
+                                 : uu[0];
+                const auto idx =
+                    interp::bisection_search(windh, vv + nwvals, z);
+                vmean_prof = (nwvals > 0)
+                                 ? interp::linear_impl(windh, vv, z, idx)
+                                 : vv[0];
 
                 temperature(i, j, k, 0) += theta;
                 velocity(i, j, k, 0) += umean_prof;
@@ -417,32 +407,24 @@ void ABLFieldInit::init_tke(
          ++mfi) {
         const auto& bx = mfi.tilebox();
         const auto& tke = tke_fab.array(mfi);
-
+        const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
         if (m_initial_wind_profile) {
-            const int ntvals = static_cast<int>(m_wind_heights.size());
+            const int nwvals = static_cast<int>(m_wind_heights.size());
             const amrex::Real* windh = m_windht_d.data();
             const amrex::Real* tke_data = m_prof_tke_d.data();
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-
-                    amrex::Real tke_prof = tke_data[0];
-
-                    for (int iz = 0; iz < ntvals - 1; ++iz) {
-                        if ((z > windh[iz]) && (z <= windh[iz + 1])) {
-
-                            const amrex::Real slopetke =
-                                (tke_data[iz + 1] - tke_data[iz]) /
-                                (windh[iz + 1] - windh[iz]);
-                            tke_prof =
-                                tke_data[iz] + (z - windh[iz]) * slopetke;
-                        }
-                    }
+                    const auto idx =
+                        interp::bisection_search(windh, tke_data + nwvals, z);
+                    tke_prof =
+                        (nwvals > 0)
+                            ? interp::linear_impl(windh, tke_data, z, idx)
+                            : tiny;
 
                     tke(i, j, k) = tke_prof;
                 });
         } else {
-            const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
             // Profile definition from Beare et al. (2006)
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {

@@ -33,8 +33,11 @@ private:
     Field& m_buoy_prod;
     Field& m_dissip;
     Field& m_tke;
+    amrex::REal m_Cmu{0.556};
     amrex::Real m_heat_flux{0.0};
     amrex::Real m_ref_temp{300.0};
+    amrex::Real m_z0{0.1};
+    amrex::Real m_kappa{0.41};
     amrex::Real m_sponge_start{600};
     amrex::Real m_ref_tke{1e-10};
     amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
