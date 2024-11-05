@@ -246,15 +246,15 @@ void ABLFieldInit::operator()(
 
                 density(i, j, k) = rho_init;
                 auto idx = interp::bisection_search(th, tv + ntvals, z);
-                theta =
+                const amrex::Real theta =
                     (ntvals > 0) ? interp::linear_impl(th, tv, z, idx) : tv[0];
                 idx = interp::bisection_search(windh, uu + nwvals, z);
-                umean_prof = (nwvals > 0)
+                const amrex::Real umean_prof = (nwvals > 0)
                                  ? interp::linear_impl(windh, uu, z, idx)
                                  : uu[0];
                 const auto idx =
                     interp::bisection_search(windh, vv + nwvals, z);
-                vmean_prof = (nwvals > 0)
+                const amrex::Real vmean_prof = (nwvals > 0)
                                  ? interp::linear_impl(windh, vv, z, idx)
                                  : vv[0];
 
@@ -417,7 +417,7 @@ void ABLFieldInit::init_tke(
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
                     const auto idx =
                         interp::bisection_search(windh, tke_data + nwvals, z);
-                    tke_prof =
+                    const amrex::Real tke_prof =
                         (nwvals > 0)
                             ? interp::linear_impl(windh, tke_data, z, idx)
                             : tiny;
