@@ -129,19 +129,11 @@ void TerrainDrag::post_init_actions()
 
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
-                    const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
-                    const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
-                    const amrex::Real terrainHt = interp::bilinear(
-                        xterrain_ptr, xterrain_ptr + xterrain_size,
-                        yterrain_ptr, yterrain_ptr + yterrain_size,
-                        zterrain_ptr, x, y);
-
-                    levelDrag(i, j, k, 0) = 0;
-                    AMREX_ALWAYS_ASSERT((z > terrainHt) == (levelBlanking(i, j, k, 0) == 0));
-                    if ((z > terrainHt) && (k > 0) &&
+                    if ((levelBlanking(i, j, k, 0) == 0) && (k > 0) &&
                         (levelBlanking(i, j, k - 1, 0) == 1)) {
                         levelDrag(i, j, k, 0) = 1;
+                    } else {
+                        levelDrag(i, j, k, 0) = 0;
                     }
                 });
         }
