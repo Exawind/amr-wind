@@ -770,8 +770,8 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
 
     // populate planes and interpolate
     const amrex::Real time =
-        m_time.new_time() + (nph_target_time ? 0.5 : 0.0) *
-                                (m_time.current_time() - m_time.new_time());
+        nph_target_time ? m_time.current_time() + 0.5 * m_time.delta_t()
+                        : m_time.new_time();
     AMREX_ALWAYS_ASSERT((m_in_times[0] <= time) && (time < m_in_times.back()));
 
     // return early if current data files can still be interpolated in time
@@ -893,7 +893,7 @@ void ABLBoundaryPlane::populate_data(
 
     AMREX_ALWAYS_ASSERT(
         ((m_in_data.tn() <= time) || (time <= m_in_data.tnp1())));
-    AMREX_ALWAYS_ASSERT(std::abs(time - m_in_data.tinterp()) < 1e-6);
+    AMREX_ALWAYS_ASSERT(std::abs(time - m_in_data.tinterp()) < 1e-12);
 
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
