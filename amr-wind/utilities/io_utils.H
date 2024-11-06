@@ -74,6 +74,18 @@ inline void assert_with_message(const bool val, const std::string& msg)
         amrex::Abort(msg);
     }
 }
+
+/** Read a flattened 2D grid file
+ *
+ *  File is assumed to contain a single column with the following data:
+ *  [nx, ny, x values (len = nx), y values (len = ny), z values (len = nx * ny)]
+ */
+void read_flat_grid_file(
+    const std::string& fname,
+    amrex::Vector<amrex::Real>& xs,
+    amrex::Vector<amrex::Real>& ys,
+    amrex::Vector<amrex::Real>& zs);
+
 } // namespace amr_wind::ioutils
 
 #endif /* IO_UTILS_H */

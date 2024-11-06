@@ -30,13 +30,14 @@ transport.viscosity = 1.0e-15
 transport.laminar_prandtl = 0.7
 transport.turbulent_prandtl = 0.3333
 turbulence.model = Laminar
-io.int_outputs = terrainBlank TerrainDrag
+io.int_outputs = terrain_blank terrain_drag
 incflo.physics = FreeStream TerrainDrag
 ICNS.source_terms                        = DragForcing
 DragForcing.is_laminar = 1
+TerrainDrag.terrain_file = "terrain.amrwind"
 amr.n_cell              =  56 56 104    # Grid cells at coarsest AMRlevel
-amr.max_level           = 0           # Max AMR level in hierarchy 
-geometry.prob_lo        =   0    0  0 
+amr.max_level           = 0           # Max AMR level in hierarchy
+geometry.prob_lo        =   0    0  0
 geometry.prob_hi        =   1024 1024 1024
 geometry.is_periodic    =   0   0   0   # Periodicity x y z (0/1)
 
@@ -51,13 +52,12 @@ zlo.type =   "slip_wall"
 zhi.type =   "slip_wall"
 
 incflo.verbose          =   0          # incflo_level
-nodal_proj.verbose = 0
-
 
 incflo.post_processing = sampling
 sampling.labels = volume1
-sampling.fields = velocity terrainBlank
+sampling.fields = velocity
+sampling.int_fields = terrain_blank
 sampling.volume1.type        = VolumeSampler
 sampling.volume1.hi        = 600 600 200
-sampling.volume1.lo      =  400 400 0 
+sampling.volume1.lo      =  400 400 1e-16
 sampling.volume1.num_points  = 10 10 20

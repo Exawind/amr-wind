@@ -65,18 +65,25 @@ private:
     amrex::Vector<amrex::Real> m_theta_heights;
     amrex::Vector<amrex::Real> m_theta_values;
 
+    //! Adding option for wind heights similar to temperature heights
+    //! Speed-up RANS calculation using 1-D profile for flat surface
+    bool m_initial_wind_profile{false};
+    //! File name for 1-D data file
+    std::string m_1d_rans;
+    amrex::Vector<amrex::Real> m_wind_heights;
     amrex::Vector<amrex::Real> m_u_values;
     amrex::Vector<amrex::Real> m_v_values;
-
+    amrex::Vector<amrex::Real> m_tke_values;
     ///@}
 
     // Device copies of the above arrays
     amrex::Gpu::DeviceVector<amrex::Real> m_thht_d;
     amrex::Gpu::DeviceVector<amrex::Real> m_thvv_d;
 
+    amrex::Gpu::DeviceVector<amrex::Real> m_windht_d;
     amrex::Gpu::DeviceVector<amrex::Real> m_prof_u_d;
     amrex::Gpu::DeviceVector<amrex::Real> m_prof_v_d;
-
+    amrex::Gpu::DeviceVector<amrex::Real> m_prof_tke_d;
     //! Initial density field
     amrex::Real m_rho;
 
