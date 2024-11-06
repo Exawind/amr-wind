@@ -60,7 +60,7 @@ void VolumeSampler::check_bounds()
         }
     }
     if (!all_ok) {
-        amrex::Print() << "WARNING: LineSampler: Out of domain line was "
+        amrex::Print() << "WARNING: VolumeSampler: Out of domain line was "
                           "truncated to match domain"
                        << std::endl;
     }

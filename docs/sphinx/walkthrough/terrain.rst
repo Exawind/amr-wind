@@ -15,10 +15,15 @@ The setup for the terrain follows the typical simulation of the atmospheric boun
 large eddy simulation or Reynolds-averaged Navier Stokes turbulence models. The IBFM can be used with
 periodic or inflow-outflow boundary conditions with few modifications. 
 
-The first step in including the terrain is to set the terrain variables. This is accomplished 
-by modifying the ABL physics to include the ``TerrainDrag`` flow physics: ``incflo.physics = ABL TerrainDrag``.
-This looks for the ``terrain.amrwind`` text file in the case folder. The file contains the terrain height 
-in the format ``x y terrainHt``. 
+The first step in including the terrain is to set the terrain
+variables. This is accomplished by modifying the ABL physics to
+include the ``TerrainDrag`` flow physics: ``incflo.physics = ABL
+TerrainDrag``.  This looks for the ``terrain.amrwind`` text file in
+the case folder (this is the default name, the user can modify the
+file it searches for by specifying the ``TerrainDrag.terrain_file``
+input parameter). The file contains the terrain height as a single
+column organized as: ``nx, ny, x values (of length nx), y values (of
+length ny), terrain height values (of length nx x ny)``.
 
 The second step is the inclusion of the terrain forcing in the momentum and energy equations. This is 
 accomplished by adding ``DragForcing`` and ``DragTempForcing`` terms to ``ICNS.source_terms`` and 
