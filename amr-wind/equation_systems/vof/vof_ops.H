@@ -23,8 +23,6 @@ struct FieldRegOp<VOF, Scheme>
         auto& curvature = repo.declare_cc_field("interface_curvature", 1, 1, 1);
 
         levelset.set_default_fillpatch_bc(sim.time());
-        levelset.register_fill_patch_op<amr_wind::FieldFillPatchOps<FieldBCDirichlet>>(
-            repo.mesh(), sim.time());
 
         curvature.set_default_fillpatch_bc(sim.time());
 
