@@ -27,7 +27,7 @@ AMREX_FORCE_INLINE amrex::Real stokes_wave_length(
     // Begin Newton-Raphson iterations
     int iter = 0;
     // First guess is first-order
-    amrex::Real k = (omega*omega) / g;
+    amrex::Real k = (omega * omega) / g;
     // Cannot skip loop
     amrex::Real f = tol + 1.0;
     while (std::abs(f) > tol && iter < iter_max) {
