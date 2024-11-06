@@ -80,6 +80,7 @@ This section documents the parameters available within each section.
    inputs_turbulence.rst
    inputs_Momentum_Sources.rst
    inputs_Temperature_Sources.rst
+   inputs_TKE_Sources.rst 
    inputs_ABL.rst
    inputs_ABL_meso_forcing.rst
    inputs_SyntheticTurbulence.rst
@@ -91,3 +92,4 @@ This section documents the parameters available within each section.
    inputs_Enstrophy.rst
    inputs_Actuator.rst
    inputs_ocean_waves.rst
+

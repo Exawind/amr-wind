@@ -186,3 +186,25 @@ This section is for setting atmospheric boundary layer parameters.
    **type:** Real, optional, default = 1.01325e5
 
    Reference pressure at the bottom of the domain. Used for anelastic ABL.
+
+.. input_param:: ABL.initial_wind_profile 
+
+   **type:** Boolean, optional, default= false
+
+   Activates the reading of wind speed profile from a file. Recommended for 
+   RANS models. 
+
+.. input_param:: ABL.rans_1dprofile_file 
+
+   **type:** String, optional, default = ""
+
+   This input is required when the ABL.initial_wind_profile is set to True. 
+
+.. input_param:: ABL.meso_sponge_start 
+
+   **type:** Real, optional, default = 650
+
+   Height at which the forcing term is enabled for the RANS model. It is enabled by 
+   default for turbulent kinetic energy and needs to be enabled for temperature
+   as follows: `Temperature.source_terms  = TempSpongeForcing`
+

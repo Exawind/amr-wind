@@ -232,6 +232,65 @@ to *n+1/2*.
 Turbulence Models
 -----------------
 
+RANS models
+~~~~~~~~~~~~~
+
+The RANS models are available in two flavors: wall-modeled and wall-resolved. The former model is 
+designed for cases with :math:`y+ > 30` while the latter requires :math:`y+ < 5`. The wall-modeled RANS 
+model available in AMR-Wind is based on the work of `Axell and Liungman (EFM 2001 ) <https://link.springer.com/article/10.1023/A:1011560202388>`_.
+
+Axell One-Equation RANS Model 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The one-equation model solves the transport equation for turbulent kinetic energy (TKE). The length scale is computed using algebraic equations. 
+The transport equation for TKE is given by: 
+
+.. math:: \frac{ \partial (\rho k)}{\partial t} 
+   + \nabla \cdot (\rho U k)  =  P_s + P_b - \epsilon + D 
+
+Here :math:`P_s` is the shear production term, :math:`P_b` is the buoyancy production/destruction term, :math:`\epsilon` is the turbulent dissipation 
+rate and :math:`D` is the turbulent diffusion term. These terms are computed as follows 
+
+.. math:: P_s= \nu_t S^2
+
+.. math:: P_b= -{\nu_t}^{'} N^2 
+
+.. math:: \epsilon= C_0 \frac{k^3/2}{L}
+
+.. math:: D = \frac{\partial}{\partial x_j} [(\nu+\nu_t)\frac{\partial U_j}{\partial x_i}]
+
+Here :math:`P_s` is the strain rate, :math:`P_b` is the buoyancy frequency and :math:`L` is the length scale computed algebraically.
+The strain rate and buoyancy frequency are computed using the same method used in the literature and are not repeated here. The 
+length scale is computed as follows: 
+
+.. math:: \frac{1}{L^2} = \frac{1}{Ls^2} + \frac{1}{Lb^2}
+
+The shear length scale is given by :math:`Ls=\kappa z`. An upper limit can be imposed for the shear length scale to avoid excessive values. 
+In the current model, it is set to 30 and can be modified to be computed from Geostrophic wind too. The buoyancy length scale is given by 
+
+.. math:: Lb = Cb \frac{\sqrt{k}}{N} 
+
+The implementation methodology is different for stable/neutral and unstable stratification and follows the recommendation in the paper. The
+turbulent viscosity is computed as follows: 
+
+..  math:: \nu_t = C_\mu \sqrt{k} L 
+
+..  math:: {\nu_t}^{'} = {C_\mu}^{'} \sqrt{k} L 
+
+Here :math:`C_\mu` and :math:`{C_\mu}^{'}` are non-uniform model constants which depend on :math:`C_0` and turbulent Richardson number 
+:math:`Rt`. The calculations of these terms can be found in the reference. The turbulent Prandtl number also depends on the turbulent 
+Richardson number and is computed using am empirical expression from the reference. The boundary condition for TKE at the lower boundary 
+is given by: 
+
+.. math:: k = k_w ^ {(2/3)}
+
+.. math:: k_w = \frac{{u_*}^{3}}{{C_0}^3} + \frac{\max{(Q,0)}\kappa d_1}{{C_0}^3}
+
+Here :math:`Q` is the sensible heat flux at the surface and :math:`d_1`  is the near-wall distance. For cases with terrain, there is also 
+a check for near-wall distance from the surface of the terrain. The wall boundary condition is implemented as a forcing term at the first cell 
+above the lower surface and terrain. 
+
+
 LES models for subgrid scales
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Smagorinsky model
