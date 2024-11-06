@@ -84,8 +84,8 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
     int wave_order = 2;
     constexpr amrex::Real g = 9.81;
     constexpr amrex::Real tol_lambda = 1e-10;
-    int iter_max =
-        -1; // To return computed wavelength from first guess of wavenumber k
+    // To return computed wavelength from first guess of wavenumber k
+    int iter_max = -1; 
 
     // Check initial guess of wavenumber k for Newton iterations
     amrex::Real lambda =
