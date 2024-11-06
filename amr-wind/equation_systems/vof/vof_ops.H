@@ -23,7 +23,6 @@ struct FieldRegOp<VOF, Scheme>
         auto& curvature = repo.declare_cc_field("interface_curvature", 1, 1, 1);
 
         levelset.set_default_fillpatch_bc(sim.time());
-
         curvature.set_default_fillpatch_bc(sim.time());
 
         // Register fields for output/restart
