@@ -76,19 +76,38 @@ TEST_F(WaveTheoriesTest, StokesWaves)
 
 TEST_F(WaveTheoriesTest, StokesWaveLength)
 {
-
-    amrex::Real wave_height = 0.2;
-    amrex::Real wave_period = 2.2;
-    amrex::Real water_depth = 5.0;
-    int wave_order = 5;
+    // Values of wave_height, wave_period and water_depth taken from https://www.sciencedirect.com/science/article/pii/S0029801817306066
+    amrex::Real wave_height = 0.16;
+    amrex::Real wave_period = 1.6;
+    amrex::Real water_depth = 18.;
+    int wave_order = 2;
     constexpr amrex::Real g = 9.81;
     constexpr amrex::Real tol_lambda = 1e-10;
-    amrex::Real lambda =
-        amr_wind::ocean_waves::relaxation_zones::stokes_wave_length(
-            wave_period, water_depth, wave_height, wave_order, g, tol_lambda,
-            20);
+    int iter_max = -1; // To return computed wavelength from first guess of wavenumber k
 
-    // Relation to check is from course notes:
+    // Check initial guess of wavenumber k for Newton iterations
+    amrex::Real lambda = 
+        amr_wind::ocean_waves::relaxation_zones::stokes_wave_length(
+            wave_period, water_depth, wave_height, wave_order, g, tol_lambda, iter_max);
+    
+    const amrex::Real k_Newton = 2.0 * M_PI / lambda;
+
+    // Compare with expected wavenumber from theory k = omega^2/g, where omega = 2Pi/wave_period
+    const amrex::Real k_theory = (2.0*M_PI/wave_period)*(2.0*M_PI/wave_period)/g;
+    
+    EXPECT_NEAR(k_Newton, k_theory, 1e-8);
+
+    // Check wave theory
+    wave_height = 0.2;
+    wave_period = 2.2;
+    water_depth = 5.0;
+    wave_order = 5;
+    iter_max = 20;
+
+    lambda = amr_wind::ocean_waves::relaxation_zones::stokes_wave_length(
+            wave_period, water_depth, wave_height, wave_order, g, tol_lambda, iter_max);
+
+    // Relation to check is Eq.(24) from course notes:
     // https://www.caee.utexas.edu/prof/kinnas/ce358/oenotes/kinnas_stokes11.pdf
     amrex::Real k = 2.0 * M_PI / lambda;
     const amrex::Real RHS1 = 2.0 * M_PI / (wave_period * std::sqrt(g * k));
@@ -112,8 +131,9 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
     wave_period = 1.5;
     water_depth = 0.9;
     wave_order = 3;
+    iter_max = 31;
     lambda = amr_wind::ocean_waves::relaxation_zones::stokes_wave_length(
-        wave_period, water_depth, wave_height, wave_order, g, tol_lambda, 31);
+        wave_period, water_depth, wave_height, wave_order, g, tol_lambda, iter_max);
 
     k = 2.0 * M_PI / lambda;
     const amrex::Real RHS2 = 2.0 * M_PI / (wave_period * std::sqrt(g * k));
