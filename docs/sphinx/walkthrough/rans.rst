@@ -15,7 +15,7 @@ file for RANS is very similar to LES. The only modifications required are
 ``TKE.source_terms = KransAxell``
 
 However, a LES like setup takes a lot of time to convergence and is not required. It is recommended to use 
-a more realistic vertical sounding to start the RANS simulations to speed up convergence. 
+a more realistic vertical profile to start the RANS simulations to speed up convergence. 
 
 ``ABL.temperature_heights = 0  8.03137  16.0627  24.0941...``
 
