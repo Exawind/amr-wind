@@ -14,7 +14,7 @@ file for RANS is very similar to LES. The only modifications required are
 
 ``TKE.source_terms = KransAxell``
 
-However, a LES like setup takes a lot of time to convergence and is not required. An one-dimensional vertical 
+However, a LES like setup takes a lot of time to convergence and is not required. A one-dimensional vertical 
 solver is provided to generate vertical profiles for use with the RANS model (can be used with LES but not always 
 required). The solver is available at `this link <https://github.com/hgopalan/onedterrainsolver>`_.
 
