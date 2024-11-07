@@ -238,6 +238,7 @@ RANS models
 The RANS models are available in two flavors: wall-modeled and wall-resolved. The former model is 
 designed for cases with :math:`y+ > 30` while the latter requires :math:`y+ < 5`. The wall-modeled RANS 
 model available in AMR-Wind is based on the work of `Axell and Liungman (EFM 2001 ) <https://link.springer.com/article/10.1023/A:1011560202388>`_.
+The code also includes Menter's K-Omega SST model with IDDES support. 
 
 Axell One-Equation RANS Model 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

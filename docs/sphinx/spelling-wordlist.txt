@@ -11,7 +11,9 @@ Exascale
 Fortran
 Joukowsky
 Jupyter
+Liungman
 MPI
+Menter 
 Moeng
 Monin
 Nalu
