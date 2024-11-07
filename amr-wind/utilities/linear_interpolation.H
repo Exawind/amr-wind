@@ -270,6 +270,79 @@ inline void linear_angle(
     }
 }
 
+template <typename C1, typename C2>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    typename std::iterator_traits<C2>::value_type
+    bilinear_impl(
+        const C1 xbegin,
+        const C1 ybegin,
+        const int ny,
+        const C2 zinp,
+        const typename std::iterator_traits<C1>::value_type& xout,
+        const typename std::iterator_traits<C1>::value_type& yout,
+        const Index& xidx,
+        const Index& yidx)
+{
+    using DType1 = typename std::iterator_traits<C1>::value_type;
+
+    if ((xidx.lim == Limits::LOWLIM) || (xidx.lim == Limits::UPLIM) ||
+        (yidx.lim == Limits::LOWLIM) || (yidx.lim == Limits::UPLIM)) {
+        return zinp[xidx.idx * ny + yidx.idx];
+    }
+
+    const int i = xidx.idx;
+    const int j = yidx.idx;
+
+    static constexpr DType1 eps = 1.0e-8;
+    const auto xdenom = (xbegin[i + 1] - xbegin[i]);
+    const auto xfacR = (xdenom > eps) ? ((xout - xbegin[i]) / xdenom) : 1.0;
+    const auto xfacL = static_cast<DType1>(1.0) - xfacR;
+    const auto ydenom = (ybegin[j + 1] - ybegin[j]);
+    const auto yfacR = (ydenom > eps) ? ((yout - ybegin[j]) / ydenom) : 1.0;
+    const auto yfacL = static_cast<DType1>(1.0) - yfacR;
+
+    const auto z00 = zinp[i * ny + j];
+    const auto z10 = zinp[(i + 1) * ny + j];
+    const auto z01 = zinp[i * ny + (j + 1)];
+    const auto z11 = zinp[(i + 1) * ny + (j + 1)];
+
+    return z00 * xfacL * yfacL + z10 * xfacR * yfacL + z01 * xfacL * yfacR +
+           z11 * xfacR * yfacR;
+}
+
+template <typename C1, typename C2>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    typename std::iterator_traits<C2>::value_type
+    bilinear(
+        const C1 xbegin,
+        const C1 xend,
+        const C1 ybegin,
+        const C1 yend,
+        const C2 zinp,
+        const typename std::iterator_traits<C1>::value_type& xout,
+        const typename std::iterator_traits<C1>::value_type& yout)
+{
+    const auto xidx = bisection_search(xbegin, xend, xout);
+    const auto yidx = bisection_search(ybegin, yend, yout);
+    return bilinear_impl(
+        xbegin, ybegin, static_cast<int>(yend - ybegin), zinp, xout, yout, xidx,
+        yidx);
+}
+
+template <typename C1, typename C2>
+inline typename C2::value_type bilinear(
+    const C1& xinp,
+    const C1& yinp,
+    const C2& zinp,
+    const typename C1::value_type& xout,
+    const typename C1::value_type& yout)
+{
+    AMREX_ALWAYS_ASSERT((xinp.size() * yinp.size()) == zinp.size());
+    return bilinear(
+        xinp.data(), (xinp.data() + xinp.size()), yinp.data(),
+        (yinp.data() + yinp.size()), zinp.data(), xout, yout);
+}
+
 } // namespace amr_wind::interp
 
 #endif /* LINEAR_INTERPOLATION_H */

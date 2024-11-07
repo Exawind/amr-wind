@@ -32,7 +32,7 @@ MultiPhase::MultiPhase(CFDSim& sim)
         // Create levelset as a auxiliary field only !
         m_levelset = &(m_sim.repo().get_field("levelset"));
         const amrex::Real levelset_default = 0.0;
-        BCScalar bc_ls(*m_levelset);
+        BCFillPatchExtrap bc_ls(*m_levelset);
         bc_ls(levelset_default);
         m_levelset->fillpatch(sim.time().current_time());
     } else if (amrex::toLower(m_interface_model) == "levelset") {

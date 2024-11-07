@@ -173,6 +173,34 @@ TEST(LinearInterpolation, lin_interp_single_multicomponent)
     }
 }
 
+TEST(LinearInterpolation, bilin_interp_single)
+{
+    namespace interp = amr_wind::interp;
+
+    const amrex::Real mult_facx = 2.0 + 10.0 * amrex::Random();
+    const amrex::Real mult_facy = 2.0 + 10.0 * amrex::Random();
+    std::vector<amrex::Real> xvec(10), yvec(5);
+    std::vector<amrex::Real> zvec(xvec.size() * yvec.size());
+    std::iota(xvec.begin(), xvec.end(), 0.0);
+    std::iota(yvec.begin(), yvec.end(), 0.0);
+
+    for (int i = 0; i < static_cast<int>(xvec.size()); i++) {
+        for (int j = 0; j < static_cast<int>(yvec.size()); j++) {
+            zvec[i * yvec.size() + j] =
+                mult_facx * xvec[i] * mult_facy * yvec[j];
+        }
+    }
+
+    std::vector<amrex::Real> xtest{2.5, 4.5, 6.3, 8.8};
+    std::vector<amrex::Real> ytest{1.1, 2.3, 3.1, 3.8};
+    for (const auto& x : xtest) {
+        for (const auto& y : ytest) {
+            const auto z = interp::bilinear(xvec, yvec, zvec, x, y);
+            EXPECT_NEAR(z, mult_facx * x * mult_facy * y, 1.0e-12);
+        }
+    }
+}
+
 TEST(LinearInterpolation, lin_interp)
 {
     namespace interp = amr_wind::interp;
