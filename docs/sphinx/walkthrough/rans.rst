@@ -31,7 +31,7 @@ following variables in the input file:
 ``ABL.meso_sponge_start                       = 650.0``
 
 The first variable looks for a ``rans_1dprofile_file``. The file contains `z u v tke` (in that order, column format). The initial sounding can be 
-provided from some external source. The sounding is read  and used to create the initial profile for simulations. 
+provided from some external source. The profile is read  and used to create the initial profile for simulations. 
 Changing the initial condition speeds up the convergence of the precursor simulation by more than 200%. The last term 
 ``meso_sponge_start`` is a forcing term to provide a speed-up of computation. The turbulent kinetic energy in the upper atmosphere 
 is really small and can oscillate before reaching a converged state. This term forces the convergence faster by removing the oscillation. 
