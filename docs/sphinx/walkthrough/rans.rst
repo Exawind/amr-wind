@@ -34,7 +34,7 @@ The first variable looks for a ``rans_1dprofile_file``. The file contains `z u v
 provided from some external source. The profile is read  and used to create the initial profile for simulations. 
 Changing the initial condition speeds up the convergence of the precursor simulation. The last term 
 ``meso_sponge_start`` is a forcing term to provide a speed-up of computation. The turbulent kinetic energy in the upper atmosphere 
-is really small and can oscillate before reaching a converged state. This term forces the convergence faster by removing the oscillation. 
+is small and can oscillate before reaching a converged state. This term forces the convergence faster by removing the oscillation. 
 The forcing is enabled only for the turbulent kinetic energy and temperature terms. The wind speed uses the Rayleigh damping. 
 
 The RANS model can be used with terrain using the same method from LES with terrain by making the changes discussed above. 
