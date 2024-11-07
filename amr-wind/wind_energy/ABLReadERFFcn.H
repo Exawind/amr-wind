@@ -8,7 +8,7 @@ class InletData;
 }
 
 using ReadERFFunction = std::function<void(
-    const amr_wind::SimTime&,
+    const amrex::Real time,
     amrex::Vector<amrex::Real>&,
     amr_wind::InletData&,
     const amrex::Vector<amr_wind::Field*>&,

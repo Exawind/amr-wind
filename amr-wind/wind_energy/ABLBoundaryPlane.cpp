@@ -819,12 +819,17 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
         return;
     }
 
+    // populate planes and interpolate
+    const amrex::Real time =
+        m_time.new_time() + (nph_target_time ? 0.5 : 0.0) *
+                                (m_time.current_time() - m_time.new_time());
+
 #ifdef ERF_AMR_WIND_MULTIBLOCK
     if (m_out_fmt == "erf-multiblock") {
         // m_read_erf = sim.get_read_erf();
         ReadERFFunction read_erf = *m_read_erf;
         if (read_erf) {
-            read_erf(m_time, m_in_times, m_in_data, m_fields, mbc());
+            read_erf(time, m_in_times, m_in_data, m_fields, mbc());
         } else {
             amrex::Abort("read_erf function is undefined.");
         }
@@ -832,10 +837,6 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
     }
 #endif
 
-    // populate planes and interpolate
-    const amrex::Real time =
-        m_time.new_time() + (nph_target_time ? 0.5 : 0.0) *
-                                (m_time.current_time() - m_time.new_time());
     AMREX_ALWAYS_ASSERT((m_in_times[0] <= time) && (time < m_in_times.back()));
 
     // return early if current data files can still be interpolated in time
