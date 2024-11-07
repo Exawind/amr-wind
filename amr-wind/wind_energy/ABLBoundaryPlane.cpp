@@ -77,7 +77,7 @@ void InletData::read_data(
     const size_t nc = fld->num_comp();
     const int nstart = m_components[static_cast<int>(fld->id())];
 
-    const int idx = utils::closest_index(times, time);
+    const int idx = utils::closest_index_ubound(times, time);
     const int idxp1 = idx + 1;
     m_tn = times[idx];
     m_tnp1 = times[idxp1];
@@ -144,13 +144,22 @@ void InletData::read_data_native(
     const int lev,
     const Field* fld,
     const amrex::Real time,
-    const amrex::Vector<amrex::Real>& times)
+    const amrex::Vector<amrex::Real>& times,
+    const bool erf_multiblock)
 {
     const size_t nc = fld->num_comp();
     const int nstart =
         static_cast<int>(m_components[static_cast<int>(fld->id())]);
 
-    const int idx = utils::closest_index(times, time);
+    int idx;
+    if (erf_multiblock) {
+        // the time is often equal to the new time for multiblock
+        // hence the need for a lower-bound version of this function
+        // otherwise it will abort
+        idx = utils::closest_index_lbound(times, time);
+    } else {
+        idx = utils::closest_index_ubound(times, time);
+    }
     const int idxp1 = idx + 1;
 
     m_tn = times[idx];
@@ -158,7 +167,9 @@ void InletData::read_data_native(
 
     auto ori = oit();
 
-    AMREX_ALWAYS_ASSERT(((m_tn <= time) && (time <= m_tnp1)));
+    amrex::Real one_plus_eps = 1.0 + 1.e-8;
+    AMREX_ALWAYS_ASSERT(
+        ((m_tn <= one_plus_eps * time) && (time <= one_plus_eps * m_tnp1)));
     AMREX_ALWAYS_ASSERT(fld->num_comp() == bndry_n[ori].nComp());
     AMREX_ASSERT(bndry_n[ori].boxArray() == bndry_np1[ori].boxArray());
 
@@ -244,7 +255,13 @@ bool InletData::is_populated(amrex::Orientation ori) const
 }
 
 ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
-    : m_time(sim.time()), m_repo(sim.repo()), m_mesh(sim.mesh())
+    : m_time(sim.time())
+    , m_repo(sim.repo())
+    , m_mesh(sim.mesh())
+#ifdef ERF_AMR_WIND_MULTIBLOCK
+    , m_mbc(sim.mbc())
+    , m_read_erf(sim.get_read_erf())
+#endif
 {
     amrex::ParmParse pp("ABL");
     int pp_io_mode = -1;
@@ -281,7 +298,8 @@ ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
     }
 #endif
 
-    if (!(m_out_fmt == "native" || m_out_fmt == "netcdf")) {
+    if (!((m_out_fmt == "native") || (m_out_fmt == "netcdf") ||
+          (m_out_fmt == "erf-multiblock"))) {
         amrex::Print() << "Warning: boundary output format not recognized, "
                           "changing to native format"
                        << std::endl;
@@ -343,6 +361,10 @@ void ABLBoundaryPlane::initialize_data()
             amrex::Abort(
                 "ABLBoundaryPlane: invalid variable requested: " + fname);
         }
+    }
+    if ((m_io_mode == io_mode::output) && (m_out_fmt == "erf-multiblock")) {
+        amrex::Abort(
+            "ABLBoundaryPlane: can't output data in erf-multiblock mode");
     }
 }
 
@@ -758,6 +780,35 @@ void ABLBoundaryPlane::read_header()
                 m_in_data.define_level_data(ori, pbx, nc);
             }
         }
+    } else if (m_out_fmt == "erf-multiblock") {
+
+        m_in_times.push_back(-1.0e13); // create space for storing time at erf
+                                       // old and new timestep
+        m_in_times.push_back(-1.0e13);
+
+        int nc = 0;
+        for (auto* fld : m_fields) {
+            m_in_data.component(static_cast<int>(fld->id())) = nc;
+            nc += fld->num_comp();
+        }
+
+        // FIXME: need to generalize to lev > 0 somehow
+        const int lev = 0;
+        for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+            auto ori = oit();
+            // FIXME: would be safer and less storage to not allocate all of
+            // these but we do not use m_planes for input and need to detect
+            // mass inflow from field bcs same for define level data below
+            m_in_data.define_plane(ori);
+            const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
+            amrex::IntVect plo(minBox.loVect());
+            amrex::IntVect phi(minBox.hiVect());
+            const int normal = ori.coordDir();
+            plo[normal] = ori.isHigh() ? minBox.hiVect()[normal] + 1 : -1;
+            phi[normal] = ori.isHigh() ? minBox.hiVect()[normal] + 1 : -1;
+            const amrex::Box pbx(plo, phi);
+            m_in_data.define_level_data(ori, pbx, nc);
+        }
     }
 }
 
@@ -767,6 +818,19 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
     if (m_io_mode != io_mode::input) {
         return;
     }
+
+#ifdef ERF_AMR_WIND_MULTIBLOCK
+    if (m_out_fmt == "erf-multiblock") {
+        // m_read_erf = sim.get_read_erf();
+        ReadERFFunction read_erf = *m_read_erf;
+        if (read_erf) {
+            read_erf(m_time, m_in_times, m_in_data, m_fields, mbc());
+        } else {
+            amrex::Abort("read_erf function is undefined.");
+        }
+        return;
+    }
+#endif
 
     // populate planes and interpolate
     const amrex::Real time =
@@ -808,7 +872,7 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
 
     if (m_out_fmt == "native") {
 
-        const int index = utils::closest_index(m_in_times, time);
+        const int index = utils::closest_index_ubound(m_in_times, time);
         const int t_step1 = m_in_timesteps[index];
         const int t_step2 = m_in_timesteps[index + 1];
 

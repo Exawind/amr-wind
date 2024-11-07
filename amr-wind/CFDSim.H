@@ -9,6 +9,11 @@
 #include "amr-wind/core/MeshMap.H"
 #include "amr-wind/helics.H"
 
+#ifdef ERF_AMR_WIND_MULTIBLOCK
+#include "amr-wind/wind_energy/ABLReadERFFcn.H"
+class MultiBlockContainer;
+#endif
+
 /** AMR-Wind
  *
  *  All C++ code in AMR-Wind is organized within the amr_wind namespace.
@@ -57,6 +62,14 @@ public:
     //! Return simulation time control
     SimTime& time() { return m_time; }
     const SimTime& time() const { return m_time; }
+
+#ifdef ERF_AMR_WIND_MULTIBLOCK
+    void set_mbc(MultiBlockContainer* mbc) { m_mbc = mbc; }
+    MultiBlockContainer** mbc() { return &m_mbc; }
+
+    void set_read_erf(ReadERFFunction fcn) { m_read_erf = fcn; }
+    ReadERFFunction* get_read_erf() { return &m_read_erf; }
+#endif
 
     //! Return the field repository
     FieldRepo& repo() { return m_repo; }
@@ -145,6 +158,11 @@ private:
     std::unique_ptr<HelicsStorage> m_helics;
 
     bool m_mesh_mapping{false};
+
+#ifdef ERF_AMR_WIND_MULTIBLOCK
+    MultiBlockContainer* m_mbc = nullptr;
+    ReadERFFunction m_read_erf{nullptr};
+#endif
 };
 
 } // namespace amr_wind
