@@ -41,7 +41,7 @@ a 25% speed-up of computation. The turbulent kinetic energy in the upper atmosph
 reaching a converged state. This term forces the convergence faster by removing the oscillation. The forcing is enabled only 
 for the turbulent kinetic energy and temperature terms. The wind speed uses the Rayleigh damping. 
 
-The RANS model can be used with terrain using the same method from LES with Terrain by making the changes discussed above. 
+The RANS model can be used with terrain using the same method from LES with terrain by making the changes discussed above. 
 It is recommended for terrain RANS simulations to setup the grid as follows: 
 
 .. image:: ./visualization/RANSSetup.png
