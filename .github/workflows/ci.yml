@@ -122,14 +122,14 @@ jobs:
   GPU-Nvidia:
     name: GPU-CUDA
     needs: Formatting
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        cuda_ver: [11.4]
+        cuda_ver: [12.6]
         include:
-          - cuda_ver: "11.4"
-            cuda_pkg: 11-4
-            cuda_extra: libcurand-dev-11-4 cuda-cupti-dev-11-4
+          - cuda_ver: "12.6"
+            cuda_pkg: 12-6
+            cuda_extra: libcurand-dev-12-6 cuda-cupti-dev-12-6
     steps:
       - name: Clone
         uses: actions/checkout@v4
@@ -186,7 +186,7 @@ jobs:
   GPU-AMD:
     name: GPU-HIP
     needs: Formatting
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Clone
         uses: actions/checkout@v4
@@ -214,15 +214,18 @@ jobs:
       - name: Prepare HIP environment
         run: |
           ${{github.workspace}}/submods/amrex/.github/workflows/dependencies/ubuntu_free_disk_space.sh
-          wget -q -O - https://repo.radeon.com/rocm/rocm.gpg.key | sudo apt-key add -
-          echo 'deb [arch=amd64] https://repo.radeon.com/rocm/apt/5.6.1/ ubuntu main' | sudo tee /etc/apt/sources.list.d/rocm.list
+          wget https://repo.radeon.com/rocm/rocm.gpg.key -O - | gpg --dearmor | sudo tee /etc/apt/keyrings/rocm.gpg > /dev/null
+          curl -O https://repo.radeon.com/rocm/rocm.gpg.key
+          sudo apt-key add rocm.gpg.key
+          echo 'deb [arch=amd64] https://repo.radeon.com/rocm/apt/${1-latest} ${UBUNTU_CODENAME} main' | sudo tee /etc/apt/sources.list.d/rocm.list
           echo 'export PATH=/opt/rocm/llvm/bin:/opt/rocm/bin:/opt/rocm/profiler/bin:/opt/rocm/opencl/bin:$PATH' | sudo tee -a /etc/profile.d/rocm.sh
           sudo apt-get update
-          sudo apt-get install -y \
-              build-essential rocm-dev rocrand-dev rocprim-dev
+          sudo apt-get install -y --no-install-recommends build-essential rocm-dev rocrand-dev rocprim-dev
       - name: Configure and build
         run: |
           source /etc/profile.d/rocm.sh
+          hipcc --version
+          hipconfig --full
           which clang
           which clang++
           cmake -B build \
@@ -248,7 +251,7 @@ jobs:
   GPU-Intel:
     name: GPU-SYCL
     needs: Formatting
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Clone
         uses: actions/checkout@v4
