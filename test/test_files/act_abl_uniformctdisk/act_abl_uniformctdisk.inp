@@ -38,7 +38,6 @@ Kosovic.refMOL 			 = -1e30
 ABL.kappa 			 = .41
 ABL.normal_direction 			 = 2
 ABL.reference_temperature 			 = 300
-ABL.stats_output_format 			 = netcdf
 ABL.surface_roughness_z0 			 = 0.1
 ABL.temperature_heights = 0 0 1000 1100 3000 
 ABL.temperature_values  = 300 300 300 305 310.7 
