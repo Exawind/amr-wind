@@ -217,7 +217,7 @@ jobs:
           wget https://repo.radeon.com/rocm/rocm.gpg.key -O - | gpg --dearmor | sudo tee /etc/apt/keyrings/rocm.gpg > /dev/null
           curl -O https://repo.radeon.com/rocm/rocm.gpg.key
           sudo apt-key add rocm.gpg.key
-          echo 'deb [arch=amd64] https://repo.radeon.com/rocm/apt/${1-latest} ${UBUNTU_CODENAME} main' | sudo tee /etc/apt/sources.list.d/rocm.list
+          echo 'deb [arch=amd64] https://repo.radeon.com/rocm/apt/6.2.1/ ubuntu main' | sudo tee /etc/apt/sources.list.d/rocm.list
           echo 'export PATH=/opt/rocm/llvm/bin:/opt/rocm/bin:/opt/rocm/profiler/bin:/opt/rocm/opencl/bin:$PATH' | sudo tee -a /etc/profile.d/rocm.sh
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends build-essential rocm-dev rocrand-dev rocprim-dev
