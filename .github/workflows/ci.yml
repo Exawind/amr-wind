@@ -125,11 +125,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        cuda_ver: [12.6]
+        cuda_ver: [12.4]
         include:
-          - cuda_ver: "12.6"
-            cuda_pkg: 12-6
-            cuda_extra: libcurand-dev-12-6 cuda-cupti-dev-12-6
+          - cuda_ver: "12.4"
+            cuda_pkg: 12-4
+            cuda_extra: libcurand-dev-12-4 cuda-cupti-dev-12-4
     steps:
       - name: Clone
         uses: actions/checkout@v4
