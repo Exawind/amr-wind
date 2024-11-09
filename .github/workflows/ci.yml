@@ -156,8 +156,8 @@ jobs:
       - name: Prepare CUDA environment
         run: |
           ${{github.workspace}}/submods/amrex/.github/workflows/dependencies/ubuntu_free_disk_space.sh
-          curl -O https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.0-1_all.deb
-          sudo dpkg -i cuda-keyring_1.0-1_all.deb
+          wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
+          sudo dpkg -i cuda-keyring_1.1-1_all.deb
           sudo apt-get update
           sudo apt-get install -y cuda-command-line-tools-${{matrix.cuda_pkg}} cuda-compiler-${{matrix.cuda_pkg}} cuda-minimal-build-${{matrix.cuda_pkg}} cuda-nvml-dev-${{matrix.cuda_pkg}} cuda-nvtx-${{matrix.cuda_pkg}} libcurand-dev-${{matrix.cuda_pkg}} cuda-cupti-dev-${{matrix.cuda_pkg}}
       - name: Configure and build
