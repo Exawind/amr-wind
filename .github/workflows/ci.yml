@@ -28,7 +28,7 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-24.04, macos-latest]
         build_type: [Release, Debug]
         openmp_flag: [OpenMP, NoOpenMP]
         include:
@@ -37,7 +37,7 @@ jobs:
             comp: llvm
             procs: $(sysctl -n hw.ncpu)
             ccache_cache: /Users/runner/Library/Caches/ccache
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             install_deps: sudo apt-get install -y mpich libmpich-dev
             comp: gnu
             procs: $(nproc)
@@ -333,7 +333,7 @@ jobs:
 #          exit $(tail -n 1 cppcheck-ci-report.txt | awk '{print $2}')
   Lint-clang-tidy:
     needs: Formatting
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Clone
         uses: actions/checkout@v4
@@ -403,7 +403,7 @@ jobs:
           exit $(tail -n 1 clang-tidy-ci-report.txt | awk '{print $2}')
   Lint-codeql:
     needs: Formatting
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Clone
         uses: actions/checkout@v4
@@ -451,7 +451,7 @@ jobs:
           sarif_file: sarif-results/cpp.sarif
   Lint-codespell:
     needs: Formatting
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Clone
         uses: actions/checkout@v4
@@ -470,7 +470,7 @@ jobs:
         run: codespell
   Docker:
     needs: Formatting
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     container:
       image: ecpe4s/exawind-snapshot
       env:
@@ -501,7 +501,7 @@ jobs:
           "
   Save-PR-Number:
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Save PR number
         env:
