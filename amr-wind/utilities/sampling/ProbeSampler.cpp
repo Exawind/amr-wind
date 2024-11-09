@@ -46,11 +46,11 @@ void ProbeSampler::initialize(const std::string& key)
     int idx = 0;
     m_npts = static_cast<int>(m_poffsets.size()) * npts_file;
     const auto& locs_file = probes_file.locations();
-    for (int n = 0; n < m_poffsets.size(); ++n) {
+    for (double m_poffset : m_poffsets) {
         for (int i = 0; i < npts_file; ++i) {
             amrex::RealVect loc;
             for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-                loc[d] = locs_file[i][d] + m_poffsets[n] * m_offset_vector[d];
+                loc[d] = locs_file[i][d] + m_poffset * m_offset_vector[d];
             }
             m_probes.push_back(loc, idx);
             ++idx;
