@@ -44,7 +44,7 @@ void ProbeSampler::initialize(const std::string& key)
     AMREX_ALWAYS_ASSERT(probes_file.locations().size() == npts_file);
     // Incorporate offsets
     int idx = 0;
-    m_npts = m_poffsets.size() * npts_file;
+    m_npts = static_cast<int>(m_poffsets.size()) * npts_file;
     const auto& locs_file = probes_file.locations();
     for (int n = 0; n < m_poffsets.size(); ++n) {
         for (int i = 0; i < npts_file; ++i) {
