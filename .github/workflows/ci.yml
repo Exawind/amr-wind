@@ -123,12 +123,6 @@ jobs:
     name: GPU-CUDA
     needs: Formatting
     runs-on: ubuntu-24.04
-    strategy:
-      matrix:
-        cuda_ver: [12.4]
-        include:
-          - cuda_ver: "12.4"
-            cuda_pkg: 12-4
     steps:
       - name: Clone
         uses: actions/checkout@v4
@@ -159,23 +153,23 @@ jobs:
           wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb
           sudo dpkg -i cuda-keyring_1.1-1_all.deb
           sudo apt-get update
-          sudo apt-get install -y cuda-command-line-tools-${{matrix.cuda_pkg}} cuda-compiler-${{matrix.cuda_pkg}} cuda-minimal-build-${{matrix.cuda_pkg}} cuda-nvml-dev-${{matrix.cuda_pkg}} cuda-nvtx-${{matrix.cuda_pkg}} libcurand-dev-${{matrix.cuda_pkg}} cuda-cupti-dev-${{matrix.cuda_pkg}}
+          sudo apt-get install -y cuda-command-line-tools-12-4 cuda-compiler-12-4 cuda-minimal-build-12-4 cuda-nvml-dev-12-4 cuda-nvtx-12-4 libcurand-dev-12-4 cuda-cupti-dev-12-4
       - name: Configure and build
         run: |
-          export PATH=/usr/local/nvidia/bin:/usr/local/cuda-${{matrix.cuda_ver}}/bin:${PATH}
-          export LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda-${{matrix.cuda_ver}}/lib:${LD_LIBRARY_PATH}
-          cmake -B build-${{matrix.cuda_pkg}} \
+          export PATH=/usr/local/nvidia/bin:/usr/local/cuda-12.4/bin:${PATH}
+          export LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda-12.4/lib:${LD_LIBRARY_PATH}
+          cmake -B build-cuda \
             -DCMAKE_BUILD_TYPE:STRING=Release \
             -DAMR_WIND_ENABLE_MPI:BOOL=OFF \
             -DAMR_WIND_ENABLE_CUDA:BOOL=ON \
             -DAMReX_CUDA_ERROR_CAPTURE_THIS:BOOL=ON \
             -DCMAKE_CUDA_COMPILE_SEPARABLE_COMPILATION:BOOL=ON \
-            -DCMAKE_CUDA_ARCHITECTURES=70 \
+            -DCMAKE_CUDA_ARCHITECTURES=80 \
             -DCMAKE_CUDA_COMPILER_LAUNCHER:STRING=ccache \
             -DCMAKE_CXX_COMPILER_LAUNCHER:STRING=ccache \
             ${{github.workspace}}
           ccache -z
-          cmake --build build-${{matrix.cuda_pkg}} --parallel ${{env.NPROCS}}
+          cmake --build build-cuda --parallel ${{env.NPROCS}}
       - name: Ccache Report
         run: |
           ccache -s
