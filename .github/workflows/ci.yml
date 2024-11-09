@@ -243,7 +243,7 @@ jobs:
   GPU-Intel:
     name: GPU-SYCL
     needs: Formatting
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Clone
         uses: actions/checkout@v4
