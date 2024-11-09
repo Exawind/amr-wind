@@ -23,15 +23,15 @@ void incflo::CheckAndSetUpDryRun()
     // Disable additional computations associated with initialization
     {
         ParmParse pp("incflo");
-        pp.add("initial_iterations", (int)0);
-        pp.add("do_initial_proj", (bool)false);
+        pp.add("initial_iterations", 0);
+        pp.add("do_initial_proj", false);
     }
     // Zero time steps, write plotfile and not checkpoint
     {
         ParmParse pp("time");
-        pp.add("max_step", (int)0);
-        pp.add("plot_interval", (int)1);
-        pp.add("checkpoint_inteval", (int)-1);
+        pp.add("max_step", 0);
+        pp.add("plot_interval", 1);
+        pp.add("checkpoint_inteval", (-1));
     }
     // Give prefix to plotfile
     {

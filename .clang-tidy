@@ -18,7 +18,9 @@ Checks: 'bugprone-*,
          -readability-isolate-declaration,
          -readability-avoid-const-params-in-decls,
          -readability-identifier-length,
-         -readability-function-cognitive-complexity'
+         -readability-function-cognitive-complexity,
+         -readability-redundant-inline-specifier,
+         -readability-avoid-nested-conditional-operator'
 WarningsAsErrors: ''
 HeaderFilterRegex: '.*'
 HeaderFileExtensions: ['', "H", 'h', 'hh', 'hpp', 'hxx']
