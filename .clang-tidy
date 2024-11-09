@@ -22,7 +22,6 @@ Checks: 'bugprone-*,
 WarningsAsErrors: ''
 HeaderFilterRegex: '.*'
 HeaderFileExtensions: ['', "H", 'h', 'hh', 'hpp', 'hxx']
-AnalyzeTemporaryDtors: false
 FormatStyle:     none
 User:            user
 CheckOptions:
