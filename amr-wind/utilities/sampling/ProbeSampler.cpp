@@ -21,7 +21,7 @@ void ProbeSampler::initialize(const std::string& key)
     }
 
     pp.queryarr("offsets", m_poffsets);
-    if (m_poffsets.size() > 0) {
+    if (!m_poffsets.empty()) {
         pp.getarr("offset_vector", m_offset_vector);
         AMREX_ALWAYS_ASSERT(
             static_cast<int>(m_offset_vector.size()) == AMREX_SPACEDIM);
