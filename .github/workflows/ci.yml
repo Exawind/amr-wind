@@ -153,12 +153,11 @@ jobs:
           wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb
           sudo dpkg -i cuda-keyring_1.1-1_all.deb
           sudo apt-get update
-          #sudo apt-get install -y cuda-command-line-tools-12-4 cuda-compiler-12-4 cuda-minimal-build-12-4 cuda-nvml-dev-12-4 cuda-nvtx-12-4 libcurand-dev-12-4 cuda-cupti-dev-12-4
-          sudo apt-get install -y cuda-toolkit
+          sudo apt-get install -y cuda-command-line-tools-12-6 cuda-compiler-12-6 cuda-minimal-build-12-6 cuda-nvml-dev-12-6 cuda-nvtx-12-6 libcurand-dev-12-6 cuda-cupti-dev-12-6
       - name: Configure and build
         run: |
-          export PATH=/usr/local/nvidia/bin:/usr/local/cuda-12.4/bin:${PATH}
-          export LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda-12.4/lib:${LD_LIBRARY_PATH}
+          export PATH=/usr/local/nvidia/bin:/usr/local/cuda-12.6/bin:${PATH}
+          export LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda-12.6/lib:${LD_LIBRARY_PATH}
           cmake -B build-cuda \
             -DCMAKE_BUILD_TYPE:STRING=Release \
             -DAMR_WIND_ENABLE_MPI:BOOL=OFF \
@@ -209,7 +208,7 @@ jobs:
           ${{github.workspace}}/submods/amrex/.github/workflows/dependencies/ubuntu_free_disk_space.sh
           sudo mkdir --parents --mode=0755 /etc/apt/keyrings
           wget https://repo.radeon.com/rocm/rocm.gpg.key -O - | gpg --dearmor | sudo tee /etc/apt/keyrings/rocm.gpg > /dev/null
-          echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] https://repo.radeon.com/rocm/apt/6.2.4 noble main" | sudo tee --append /etc/apt/sources.list.d/rocm.list
+          echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] https://repo.radeon.com/rocm/apt/6.2.1 noble main" | sudo tee --append /etc/apt/sources.list.d/rocm.list
           echo -e 'Package: *\nPin: release o=repo.radeon.com\nPin-Priority: 600' | sudo tee /etc/apt/preferences.d/rocm-pin-600
           echo 'export PATH=/opt/rocm/llvm/bin:/opt/rocm/bin:/opt/rocm/profiler/bin:/opt/rocm/opencl/bin:$PATH' | sudo tee -a /etc/profile.d/rocm.sh
           sudo apt-get update
