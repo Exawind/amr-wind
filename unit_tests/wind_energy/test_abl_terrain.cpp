@@ -57,14 +57,14 @@ protected:
             pp.addarr("prob_hi", probhi);
         }
     }
-    std::string terrain_fname = "terrain.amrwind";
+    std::string m_terrain_fname = "terrain.amrwind";
 };
 
 TEST_F(TerrainTest, terrain)
 {
     constexpr amrex::Real tol = 0;
     // Write target wind file
-    write_terrain(terrain_fname);
+    write_terrain(m_terrain_fname);
     populate_parameters();
     initialize_mesh();
     auto& pde_mgr = sim().pde_manager();

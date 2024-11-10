@@ -118,7 +118,8 @@ void SamplingContainer::initialize_particles(
                     for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
                         pp.pos(idim) = loc[idim];
                     }
-                    pp.idata(IIx::uid) = p_dids[ip] + uid_offset;
+                    pp.idata(IIx::uid) =
+                        static_cast<int>(p_dids[ip] + uid_offset);
                     pp.idata(IIx::sid) = probe_id;
                     pp.idata(IIx::nid) = static_cast<int>(p_dids[ip]);
                 });

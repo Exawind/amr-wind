@@ -1076,7 +1076,6 @@ int ABLBoundaryPlane::boundary_native_file_levels()
     int nlevels = 0;
     const std::string chkname =
         m_filename + amrex::Concatenate("/bndry_output", m_in_timesteps[0]);
-    const std::string level_prefix = "Level_";
     for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
         const std::string levname = amrex::LevelFullPath(lev, chkname);
         if (amrex::FileExists(levname)) {

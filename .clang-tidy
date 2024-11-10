@@ -12,17 +12,19 @@ Checks: 'bugprone-*,
          performance-*,
          -performance-avoid-endl,
          -performance-inefficient-string-concatenation,
+         -performance-enum-size,
          portability-*,
          readability-*,
          -readability-magic-numbers,
          -readability-isolate-declaration,
          -readability-avoid-const-params-in-decls,
          -readability-identifier-length,
-         -readability-function-cognitive-complexity'
+         -readability-function-cognitive-complexity,
+         -readability-redundant-inline-specifier,
+         -readability-avoid-nested-conditional-operator'
 WarningsAsErrors: ''
 HeaderFilterRegex: '.*'
 HeaderFileExtensions: ['', "H", 'h', 'hh', 'hpp', 'hxx']
-AnalyzeTemporaryDtors: false
 FormatStyle:     none
 User:            user
 CheckOptions:
@@ -71,7 +73,7 @@ CheckOptions:
   - { key: readability-identifier-naming.VariableCase, value: lower_case }
   - { key: readability-identifier-naming.GlobalConstantCase, value: UPPER_CASE }
   - { key: readability-identifier-naming.ClassIgnoredRegexp, value: "incflo"}
-  - { key: readability-identifier-naming.FunctionIgnoredRegexp, value: "(Godunov_|setVal|ComputeDt|ComputePrescribeDt|ApplyPredictor|ApplyCorrector|ApplyPrescribeStep|ApplyProjection|UpdateGradP|ReadCheckpointFile|Factory|ReadParameters|InitialProjection|InitialIterations|PrintMax|CheckForNans|InitData|Evolve|buildInfoGet|FAST_).*"}
+  - { key: readability-identifier-naming.FunctionIgnoredRegexp, value: "(CheckAndSetUpDryRun|Godunov_|setVal|ComputeDt|ComputePrescribeDt|ApplyPredictor|ApplyCorrector|ApplyPrescribeStep|ApplyProjection|UpdateGradP|ReadCheckpointFile|Factory|ReadParameters|InitialProjection|InitialIterations|PrintMax|CheckForNans|InitData|Evolve|buildInfoGet|FAST_).*"}
   - { key: readability-identifier-naming.GlobalConstantIgnoredRegexp, value: "^.*"}
   - { key: readability-identifier-naming.NamespaceIgnoredRegexp, value: "Hydro"}
   - { key: readability-identifier-naming.StructIgnoredRegexp, value: "(SC_DX|OpFM).*"}

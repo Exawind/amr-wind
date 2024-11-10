@@ -153,7 +153,8 @@ TEST(LinearInterpolation, lin_interp_single_multicomponent)
     namespace interp = amr_wind::interp;
 
     const int ncomp = 3;
-    std::vector<amrex::Real> xvec(10), yvec(ncomp * 10);
+    std::vector<amrex::Real> xvec(10);
+    std::vector<amrex::Real> yvec(static_cast<unsigned long>(ncomp * 10));
     std::iota(xvec.begin(), xvec.end(), 0.0);
     const amrex::Vector<amrex::Real> mult_facs = {
         2.0 + 10.0 * amrex::Random(), 2.0 + 10.0 * amrex::Random(),
