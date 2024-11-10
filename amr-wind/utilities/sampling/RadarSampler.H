@@ -59,7 +59,7 @@ public:
     void cone_axis_locations(SampleLocType& /*sample_locs*/) const;
     void output_locations(SampleLocType& sample_locs) const override
     {
-        return cone_axis_locations(sample_locs);
+        cone_axis_locations(sample_locs);
     }
 
     void post_sample_actions() override;

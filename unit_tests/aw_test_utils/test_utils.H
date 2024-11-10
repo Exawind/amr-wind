@@ -194,8 +194,7 @@ inline amrex::Real field_probe(
     const int k,
     const int icomp = 0)
 {
-    amrex::Real value =
-        field_probe_impl<amrex::Real>(field, lev, i, j, k, icomp);
+    auto value = field_probe_impl<amrex::Real>(field, lev, i, j, k, icomp);
     amrex::ParallelDescriptor::ReduceRealSum(value);
     return value;
 }

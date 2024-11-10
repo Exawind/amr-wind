@@ -122,7 +122,7 @@ protected:
             amrex::ParmParse pp("incflo");
             amrex::Vector<std::string> physics{"MultiPhase"};
             pp.addarr("physics", physics);
-            pp.add("use_godunov", (int)1);
+            pp.add("use_godunov", 1);
         }
         {
             amrex::ParmParse pp("time");

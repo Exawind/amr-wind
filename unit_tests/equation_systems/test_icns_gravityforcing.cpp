@@ -111,7 +111,7 @@ protected:
         }
         {
             amrex::ParmParse pp("incflo");
-            pp.add("use_godunov", (int)1);
+            pp.add("use_godunov", 1);
         }
         {
             amrex::ParmParse pp("ICNS");
@@ -133,7 +133,7 @@ TEST_F(GravityForcingTest, full_term_u)
     populate_parameters();
     {
         amrex::ParmParse pp("ICNS");
-        pp.add("use_perturb_pressure", (bool)false);
+        pp.add("use_perturb_pressure", false);
     }
     // Modify gravity to make sure it works
     {
@@ -153,7 +153,7 @@ TEST_F(GravityForcingTest, full_term_rhou)
     populate_parameters();
     {
         amrex::ParmParse pp("ICNS");
-        pp.add("use_perturb_pressure", (bool)false);
+        pp.add("use_perturb_pressure", false);
     }
     // Modify gravity to make sure it works
     {
@@ -180,7 +180,7 @@ TEST_F(GravityForcingTest, perturb_const)
     populate_parameters();
     {
         amrex::ParmParse pp("ICNS");
-        pp.add("use_perturb_pressure", (bool)true);
+        pp.add("use_perturb_pressure", true);
     }
     // Modify gravity to make sure it works
     {
@@ -200,7 +200,7 @@ TEST_F(GravityForcingTest, perturb_field)
     populate_parameters();
     {
         amrex::ParmParse pp("ICNS");
-        pp.add("use_perturb_pressure", (bool)true);
+        pp.add("use_perturb_pressure", true);
     }
     // Expected average gravity term
     amrex::Real Fg = gz;
