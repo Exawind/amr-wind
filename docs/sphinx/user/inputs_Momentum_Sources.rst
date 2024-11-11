@@ -239,3 +239,30 @@ Section: Momentum Sources
 
    This term turns off the sponge layer. This term is required for terrain simulations with periodic 
    boundary conditions. The default value is 0. 
+
+
+The following arguments are influential when :input_param:`GravityForcing` is used
+
+   .. input_param:: ICNS.use_perturb_pressure
+
+   **type:** Boolean, optional, default = false
+   
+   When this option is off, the GravityForcing term is simply :math:`g`, which becomes
+   :math:`\rho g` when included in the momentum equation. By activating this option,
+   the momentum term applied by GravityForcing will become :math:`(\rho - \rho_0) g`,
+   where :math:`rho_0` is some constant reference density profile. The reference density field
+   can be created by either MultiPhase physics or anelastic ABL physics. By using the
+   reference density, the pressure field seen by the solver is represented as a
+   perturbation from a reference pressure field, enabling pressure_outflow boundary
+   conditions to better handle certain flows, e.g., those with equilibrium pressure gradients
+   parallel to the outflow plane.
+
+   .. input_param:: ICNS.reconstruct_true_pressure
+
+   **type:** Boolean, optional, default = false
+   
+   This option is only valid when the perturbational pressure form is being used, i.e.,
+   :input_param:`ICNS.use_perturb_pressure` = true. Reconstructing the true pressure
+   adds back the reference pressure profile to obtain the full pressure after the
+   pressure solve has been performed. This makes no difference to the flow evolution,
+   but it changes the field available for post-processing or coupling to overset solvers.

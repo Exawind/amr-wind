@@ -23,6 +23,13 @@ as initial conditions and discretization options.
    Specify reference density. 
    For the most part if :input_param:`incflo.constant_density` = true then `incflo.density` sets a constant density everywhere.
    Refer to the field initializer for your chosen :input_param:`incflo.physics` for how `incflo.density` is used.
+
+.. input_param:: incflo.gravity
+
+   **type:** List of three Real numbers, optional, default = 0 0 -9.81
+
+   Acceleration due to gravity in m/s\ :sup:`2` \. This constant vector is used by all parts
+   of the solver related to gravity.
    
 .. input_param:: incflo.velocity
 
