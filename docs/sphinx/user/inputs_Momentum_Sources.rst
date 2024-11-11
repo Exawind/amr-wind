@@ -241,7 +241,7 @@ Section: Momentum Sources
    boundary conditions. The default value is 0. 
 
 
-The following arguments are influential when :input_param:`GravityForcing` is used
+The following arguments are influential when ``GravityForcing`` is included in :input_param:`ICNS.source_terms`.
 
    .. input_param:: ICNS.use_perturb_pressure
 
