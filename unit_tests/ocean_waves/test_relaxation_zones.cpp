@@ -53,7 +53,7 @@ protected:
             amrex::ParmParse pp("incflo");
             amrex::Vector<std::string> phystr{"MultiPhase", "OceanWaves"};
             pp.addarr("physics", phystr);
-            pp.add("use_godunov", (int)1);
+            pp.add("use_godunov", 1);
         }
     }
 };

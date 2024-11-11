@@ -286,8 +286,9 @@ void incflo::Evolve()
         // Advance to time t + dt
         for (int fixed_point_iteration = 0;
              fixed_point_iteration < m_fixed_point_iterations;
-             ++fixed_point_iteration)
+             ++fixed_point_iteration) {
             do_advance(fixed_point_iteration);
+        }
 
         amrex::Print() << std::endl;
         amrex::Real time2 = amrex::ParallelDescriptor::second();
