@@ -129,7 +129,7 @@ probe_sampling.probe1.offsets   = 0.0 200.0 400.0 600.0
 plane_sampling.output_frequency     = 1
 plane_sampling.output_format        = native
 plane_sampling.fields               = velocity
-plane_sampling.labels               = plane1
+plane_sampling.labels               = plane1 plane2
 plane_sampling.plane1.type          = PlaneSampler
 plane_sampling.plane1.axis1         = 400.0 0.0 0.0
 plane_sampling.plane1.axis2         = 0.0 0.0 400.0
@@ -137,6 +137,14 @@ plane_sampling.plane1.origin        = 200.0 200.0 200.0
 plane_sampling.plane1.num_points    = 10 10
 plane_sampling.plane1.offset_vector = 0.0 1.0 1.0
 plane_sampling.plane1.offsets       = 0.0 20.0 30.0 200.0
+
+plane_sampling.plane2.type          = PlaneSampler
+plane_sampling.plane2.axis1         = 1000.0 0.0 0.0
+plane_sampling.plane2.axis2         = 0.0 1000.0 0.0
+plane_sampling.plane2.origin        = 0.0 0.0 500.0
+plane_sampling.plane2.num_points    = 10 10
+plane_sampling.plane2.offset_vector = 0.0 0.0 1.0
+plane_sampling.plane2.offsets       = 0.0 499.0
 
 line_sampling.output_frequency     = 1
 line_sampling.output_format        = native
