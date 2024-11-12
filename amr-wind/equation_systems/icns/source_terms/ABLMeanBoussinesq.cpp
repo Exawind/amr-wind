@@ -73,7 +73,7 @@ void ABLMeanBoussinesq::operator()(
         m_gravity[0], m_gravity[1], m_gravity[2]};
 
     // Mean temperature profile used to compute background forcing term
-    
+
     const int idir = m_axis;
     const amrex::Real* theights = m_theta_ht.data();
     const amrex::Real* tvals = m_theta_vals.data();
@@ -82,8 +82,8 @@ void ABLMeanBoussinesq::operator()(
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::IntVect iv(i, j, k);
         const amrex::Real ht = problo[idir] + (iv[idir] + 0.5) * dx[idir];
-        const amrex::Real temp = amr_wind::interp::linear(
-	    theights, theights_end, tvals, ht);
+        const amrex::Real temp =
+            amr_wind::interp::linear(theights, theights_end, tvals, ht);
         const amrex::Real fac = beta * (temp - T0);
         src_term(i, j, k, 0) += gravity[0] * fac;
         src_term(i, j, k, 1) += gravity[1] * fac;
