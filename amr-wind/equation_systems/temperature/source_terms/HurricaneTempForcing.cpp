@@ -4,6 +4,7 @@
 #include "amr-wind/core/vs/vstraits.H"
 #include "amr-wind/wind_energy/ABL.H"
 #include "amr-wind/core/FieldUtils.H"
+#include "amr-wind/utilities/linear_interpolation.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
@@ -44,23 +45,15 @@ void HurricaneTempForcing::operator()(
     const amrex::Real dTzh = m_dTzh;
 
     // Mean velocity profile used to compute background hurricane forcing term
-    //
-    // Assumes that the velocity profile is at the cell-centers of the finest
-    // level grid. For finer meshes, it will extrapolate beyond the Level0
-    // cell-centers for the lo/hi cells.
 
     const int idir = m_axis;
-    const int nh_max = static_cast<int>(m_vel_ht.size()) - 2;
-    const int lp1 = lev + 1;
     const amrex::Real* heights = m_vel_ht.data();
+    const amrex::Real* heights_end = m_vel_ht.data() + m_vel_ht.size();
     const amrex::Real* vals = m_vel_vals.data();
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::IntVect iv(i, j, k);
         const amrex::Real ht = problo[idir] + (iv[idir] + 0.5) * dx[idir];
-
-        const int il = amrex::min(k / lp1, nh_max);
-        const int ir = il + 1;
 
         /*const amrex::Real umean =
             vals[3 * il + 0] + ((vals[3 * ir + 0] - vals[3 * il + 0]) /
@@ -69,9 +62,7 @@ void HurricaneTempForcing::operator()(
         */
         const amrex::Real dTdR_z = dTdR * (dTzh - ht) / dTzh;
         const amrex::Real vmean =
-            vals[3 * il + 1] + ((vals[3 * ir + 1] - vals[3 * il + 1]) /
-                                (heights[ir] - heights[il])) *
-                                   (ht - heights[il]);
+            amr_wind::interp::linear(heights, heights_end, vals, ht, 3, 1);
 
         src_term(i, j, k) -= vmean * dTdR_z;
     });

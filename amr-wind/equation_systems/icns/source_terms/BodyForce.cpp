@@ -121,10 +121,9 @@ void BodyForce::operator()(
     const auto& nph_time = 0.5 * (m_time.current_time() + m_time.new_time());
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
-    const int lp1 = lev + 1;
-    const int nh_max = (int)m_prof_x.size() - 2;
 
     const amrex::Real* force_ht = m_ht.data();
+    const amrex::Real* force_ht_end = m_ht.data() + m_ht.size();
     const amrex::Real* force_x = m_prof_x.data();
     const amrex::Real* force_y = m_prof_y.data();
 
@@ -134,19 +133,10 @@ void BodyForce::operator()(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::IntVect iv(i, j, k);
                 const amrex::Real ht = problo[2] + (iv[2] + 0.5) * dx[2];
-                const int il = amrex::min(k / lp1, nh_max);
-                const int ir = il + 1;
-                amrex::Real fx;
-                amrex::Real fy;
-
-                fx = force_x[il] + ((force_x[ir] - force_x[il]) /
-                                    (force_ht[ir] - force_ht[il])) *
-                                       (ht - force_ht[il]);
-
-                fy = force_y[il] + ((force_y[ir] - force_y[il]) /
-                                    (force_ht[ir] - force_ht[il])) *
-                                       (ht - force_ht[il]);
-
+                const amrex::Real fx = amr_wind::interp::linear(
+                    force_ht, force_ht_end, force_x, ht);
+                const amrex::Real fy = amr_wind::interp::linear(
+                    force_ht, force_ht_end, force_y, ht);
                 src_term(i, j, k, 0) += fx;
                 src_term(i, j, k, 1) += fy;
             });
