@@ -66,9 +66,14 @@ void RefineCheckpt::run_utility()
     } else {
         refine_chkpt_file();
         const int start_level = 1;
+        int end_level = finestLevel();
+        {
+            amrex::ParmParse pp("amr");
+            pp.query("max_refined_level", end_level);
+        }
         amrex::Print() << "Writing refined levels: " << start_level << " - "
-                       << finestLevel() << std::endl;
-        sim().io_manager().write_checkpoint_file(start_level);
+                       << end_level << std::endl;
+        sim().io_manager().write_checkpoint_file(start_level, end_level);
     }
 }
 

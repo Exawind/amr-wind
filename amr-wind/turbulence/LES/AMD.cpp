@@ -86,8 +86,7 @@ void AMD<Transport>::update_turbulent_viscosity(
         tpa_deriv_d.begin());
 
     const amrex::Real* p_tpa_coord_begin = tpa_coord_d.data();
-    const amrex::Real* p_tpa_coord_end =
-        tpa_coord_d.data() + tpa_coord_d.size();
+    const amrex::Real* p_tpa_coord_end = tpa_coord_d.end();
     const amrex::Real* p_tpa_deriv = tpa_deriv_d.data();
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {

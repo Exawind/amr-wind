@@ -58,6 +58,40 @@ void PlaneSampler::check_bounds()
     const auto* prob_lo = m_sim.mesh().Geom(lev).ProbLo();
     const auto* prob_hi = m_sim.mesh().Geom(lev).ProbHi();
 
+    // Do the checks based on a small fraction of the minimum dx
+    const auto& fine_geom = m_sim.mesh().Geom(m_sim.mesh().finestLevel());
+    amrex::Real min_dx = fine_geom.CellSize(0);
+    for (int d = 1; d < AMREX_SPACEDIM; ++d) {
+        min_dx = std::min(fine_geom.CellSize(d), min_dx);
+    }
+    const auto tol = std::max(1e-10 * min_dx, bounds_tol);
+
+    // First fix the origin so that it is within bounds, if it is close enough
+    for (int d = 0; d < AMREX_SPACEDIM; ++d) {
+        if (amrex::Math::abs(m_origin[d] - prob_lo[d]) < tol) {
+            m_origin[d] = prob_lo[d] + tol;
+        }
+        if (amrex::Math::abs(m_origin[d] - prob_hi[d]) < tol) {
+            m_origin[d] = prob_hi[d] - tol;
+        }
+    }
+
+    // Fix the axis so that it is within bounds, if it is close enough
+    for (int d = 0; d < AMREX_SPACEDIM; ++d) {
+        if (amrex::Math::abs(m_origin[d] + m_axis1[d] - prob_lo[d]) < 2 * tol) {
+            m_axis1[d] = prob_lo[d] - m_origin[d] + 2 * tol;
+        }
+        if (amrex::Math::abs(m_origin[d] + m_axis1[d] - prob_hi[d]) < 2 * tol) {
+            m_axis1[d] = prob_hi[d] - m_origin[d] - 2 * tol;
+        }
+        if (amrex::Math::abs(m_origin[d] + m_axis2[d] - prob_lo[d]) < 2 * tol) {
+            m_axis2[d] = prob_lo[d] - m_origin[d] + 2 * tol;
+        }
+        if (amrex::Math::abs(m_origin[d] + m_axis2[d] - prob_hi[d]) < 2 * tol) {
+            m_axis2[d] = prob_hi[d] - m_origin[d] - 2 * tol;
+        }
+    }
+
     const int nplanes = static_cast<int>(m_poffsets.size());
     for (int k = 0; k < nplanes; ++k) {
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
