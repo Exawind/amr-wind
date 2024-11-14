@@ -123,7 +123,7 @@ void BodyForce::operator()(
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
 
     const amrex::Real* force_ht = m_ht.data();
-    const amrex::Real* force_ht_end = m_ht.data() + m_ht.size();
+    const amrex::Real* force_ht_end = m_ht.end();
     const amrex::Real* force_x = m_prof_x.data();
     const amrex::Real* force_y = m_prof_y.data();
 

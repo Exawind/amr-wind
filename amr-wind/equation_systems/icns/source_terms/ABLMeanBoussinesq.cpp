@@ -77,7 +77,7 @@ void ABLMeanBoussinesq::operator()(
     const int idir = m_axis;
     const amrex::Real* theights = m_theta_ht.data();
     const amrex::Real* tvals = m_theta_vals.data();
-    const amrex::Real* theights_end = m_theta_ht.data() + m_theta_ht.size();
+    const amrex::Real* theights_end = m_theta_ht.end();
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::IntVect iv(i, j, k);
