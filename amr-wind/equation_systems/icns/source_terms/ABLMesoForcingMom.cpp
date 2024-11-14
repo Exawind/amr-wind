@@ -338,9 +338,8 @@ void ABLMesoForcingMom::operator()(
     // averaged velocities (non tendency)
     const amrex::Real* vheights_begin =
         (m_tendency) ? m_meso_ht.data() : m_vavg_ht.data();
-    const amrex::Real* vheights_end = (m_tendency)
-                                          ? m_meso_ht.data() + m_meso_ht.size()
-                                          : m_vavg_ht.data() + m_vavg_ht.size();
+    const amrex::Real* vheights_end =
+        (m_tendency) ? m_meso_ht.end() : m_vavg_ht.end();
     const amrex::Real* u_error_val = m_error_meso_avg_U.data();
     const amrex::Real* v_error_val = m_error_meso_avg_V.data();
     const int idir = (int)m_axis;

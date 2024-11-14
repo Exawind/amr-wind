@@ -302,8 +302,7 @@ void ABLMesoForcingTemp::operator()(
     const amrex::Real* theights_begin =
         (m_tendency) ? m_meso_ht.data() : m_theta_ht.data();
     const amrex::Real* theights_end =
-        (m_tendency) ? m_meso_ht.data() + m_meso_ht.size()
-                     : m_theta_ht.data() + m_theta_ht.size();
+        (m_tendency) ? m_meso_ht.end() : m_theta_ht.end();
     const amrex::Real* theta_error_val = m_error_meso_avg_theta.data();
 
     const int idir = (int)m_axis;
