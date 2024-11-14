@@ -1,6 +1,7 @@
 #include "amr-wind/equation_systems/temperature/source_terms/BodyForce.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/trig_ops.H"
+#include "amr-wind/utilities/linear_interpolation.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
@@ -72,10 +73,9 @@ void BodyForce::operator()(
 
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
-    const int lp1 = lev + 1;
-    const int nh_max = (int)m_prof_theta.size() - 2;
 
     const amrex::Real* force_ht = m_ht.data();
+    const amrex::Real* force_ht_end = m_ht.end();
     const amrex::Real* force_theta = m_prof_theta.data();
 
     if (m_type == "height_varying" || m_type == "height-varying") {
@@ -84,14 +84,8 @@ void BodyForce::operator()(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::IntVect iv(i, j, k);
                 const amrex::Real ht = problo[2] + (iv[2] + 0.5) * dx[2];
-                const int il = amrex::min(k / lp1, nh_max);
-                const int ir = il + 1;
-                amrex::Real ftheta;
-
-                ftheta =
-                    force_theta[il] + ((force_theta[ir] - force_theta[il]) /
-                                       (force_ht[ir] - force_ht[il])) *
-                                          (ht - force_ht[il]);
+                const amrex::Real ftheta = amr_wind::interp::linear(
+                    force_ht, force_ht_end, force_theta, ht);
 
                 src_term(i, j, k, 0) += ftheta;
             });
