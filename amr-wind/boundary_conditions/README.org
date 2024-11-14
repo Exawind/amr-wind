@@ -33,7 +33,8 @@ The boundary conditions that can be specified in the input file are:
   the standard outflow BC for velocity and scalars. For MAC projection and
   nodal-projection, it uses a Dirichlet BC for pressure. The value of pressure
   at the boundary is specified in the input file (default = 0). This can be
-  used as an inflow condition if ...
+  used as an inflow condition (though not recommended) via the input argument
+  "allow_inflow_at_pressure_outflow" associated with the desired equation.
 
 - =no_slip_wall= :: Like =mass_inflow=, this sets =BCRec= to =ext_dir= and
   specifies Dirichlet BC for the linear solvers. However, it differs from
