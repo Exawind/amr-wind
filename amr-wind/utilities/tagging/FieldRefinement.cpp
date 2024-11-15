@@ -26,8 +26,8 @@ void FieldRefinement::initialize(const std::string& key)
     }
     m_field = &(m_sim.repo().get_field(fname));
 
-    amrex::Vector<double> field_err;
-    amrex::Vector<double> grad_err;
+    amrex::Vector<amrex::Real> field_err;
+    amrex::Vector<amrex::Real> grad_err;
     pp.queryarr("field_error", field_err);
     pp.queryarr("grad_error", grad_err);
 
