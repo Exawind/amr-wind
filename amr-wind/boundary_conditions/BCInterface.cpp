@@ -47,7 +47,8 @@ void BCIface::read_bctype()
 
         // Protect against copy/paste errors where user intended to add a BC but
         // forgot to turn off periodic in that direction, or vice versa.
-        if (geom.isPeriodic(ori.coordDir()) && bcstr != "null") {
+        if (geom.isPeriodic(ori.coordDir()) &&
+            ((bcstr != "null") && (bcstr != "periodic"))) {
             amrex::Abort(
                 "Setting " + bcstr + " BC on a periodic face " + bcid +
                 " is not allowed");
