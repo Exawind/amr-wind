@@ -74,10 +74,18 @@ struct W2AWavesData : public RelaxZonesBaseData
     ~W2AWavesData()
     {
 #ifdef AMR_WIND_USE_W2A
-        delete[] eta_mptr;
-        delete[] u_mptr;
-        delete[] v_mptr;
-        delete[] w_mptr;
+        if (eta_mptr) {
+            delete[] eta_mptr;
+        }
+        if (u_mptr) {
+            delete[] u_mptr;
+        }
+        if (v_mptr) {
+            delete[] v_mptr;
+        }
+        if (w_mptr) {
+            delete[] w_mptr;
+        }
 #endif
     }
 };
