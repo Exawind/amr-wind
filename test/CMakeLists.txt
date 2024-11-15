@@ -322,13 +322,15 @@ endif()
 #=============================================================================
 # Regression tests excluded from CI with a test dependency
 #=============================================================================
-add_test_red(abl_bndry_input_native abl_bndry_output_native)
-add_test_red(abl_bndry_input_native_inout abl_bndry_output_native)
-add_test_red(abl_godunov_restart abl_godunov)
-add_test_red(abl_bndry_input_amr_native abl_bndry_output_native)
-add_test_red(abl_bndry_input_amr_native_xhi abl_bndry_output_native)
-add_test_red(abl_bndry_input_amr_native_mlbc abl_bndry_output_amr_native)
-add_test_red(abl_godunov_forcetimetable abl_godunov_timetable)
+if(AMR_WIND_TEST_WITH_FCOMPARE)
+  add_test_red(abl_bndry_input_native abl_bndry_output_native)
+  add_test_red(abl_bndry_input_native_inout abl_bndry_output_native)
+  add_test_red(abl_godunov_restart abl_godunov)
+  add_test_red(abl_bndry_input_amr_native abl_bndry_output_native)
+  add_test_red(abl_bndry_input_amr_native_xhi abl_bndry_output_native)
+  add_test_red(abl_bndry_input_amr_native_mlbc abl_bndry_output_amr_native)
+  add_test_red(abl_godunov_forcetimetable abl_godunov_timetable)
+endif()
 
 if(AMR_WIND_ENABLE_NETCDF)
   add_test_red(abl_bndry_input abl_bndry_output)
