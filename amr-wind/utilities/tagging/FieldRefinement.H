@@ -68,21 +68,21 @@ public:
                 const auto gerr = m_grad_error[level];
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::Real axp =
+                        const auto axp =
                             std::abs(farr(i + 1, j, k) - farr(i, j, k));
-                        const amrex::Real ayp =
+                        const auto ayp =
                             std::abs(farr(i, j + 1, k) - farr(i, j, k));
-                        const amrex::Real azp =
+                        const auto azp =
                             std::abs(farr(i, j, k + 1) - farr(i, j, k));
-                        const amrex::Real axm =
+                        const auto axm =
                             std::abs(farr(i - 1, j, k) - farr(i, j, k));
-                        const amrex::Real aym =
+                        const auto aym =
                             std::abs(farr(i, j - 1, k) - farr(i, j, k));
-                        const amrex::Real azm =
+                        const auto azm =
                             std::abs(farr(i, j, k - 1) - farr(i, j, k));
-                        const amrex::Real ax = amrex::max(axp, axm);
-                        const amrex::Real ay = amrex::max(ayp, aym);
-                        const amrex::Real az = amrex::max(azp, azm);
+                        const auto ax = amrex::max(axp, axm);
+                        const auto ay = amrex::max(ayp, aym);
+                        const auto az = amrex::max(azp, azm);
                         if (amrex::max(ax, ay, az) >= gerr) {
                             tag(i, j, k) = amrex::TagBox::SET;
                         }
