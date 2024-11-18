@@ -70,18 +70,18 @@ void FieldRefinement::operator()(
 {
     const bool tag_grad = level <= m_max_lev_grad;
     if (tag_grad) {
-        if (m_field == nullptr) {
+        if (m_field != nullptr) {
             m_field->fillpatch(level, time, (*m_field)(level), 1);
-        } else if (m_int_field == nullptr) {
+        } else if (m_int_field != nullptr) {
             (*m_int_field)(level).FillBoundary(
                 m_sim.repo().mesh().Geom(level).periodicity());
         }
     }
 
-    if (m_field == nullptr) {
+    if (m_field != nullptr) {
         const auto& mfab = (*m_field)(level);
         tag(level, tags, mfab);
-    } else if (m_int_field == nullptr) {
+    } else if (m_int_field != nullptr) {
         const auto& mfab = (*m_int_field)(level);
         tag(level, tags, mfab);
     }
