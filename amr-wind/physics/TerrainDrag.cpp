@@ -51,7 +51,7 @@ TerrainDrag::TerrainDrag(CFDSim& sim)
 
 void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
 {
-    BL_PROFILE("amr-wind::" + this->identifier() + "::post_init_actions");
+    BL_PROFILE("amr-wind::" + this->identifier() + "::initialize_fields");
     const auto& dx = geom.CellSizeArray();
     const auto& prob_lo = geom.ProbLoArray();
     auto& velocity = m_velocity(level);
