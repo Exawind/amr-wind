@@ -66,7 +66,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real combine_linear(
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE WaveVec harmonize_profiles_1D(
     const amrex::Real x,
-    const amrex::Real z,
     const amrex::Real left_bdy,
     const amrex::Real left_length,
     const amrex::Real right_bdy,

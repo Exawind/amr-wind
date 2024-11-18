@@ -122,7 +122,7 @@ struct InitDataOp<StokesWaves>
                     const auto outlet = has_beach ? quiescent : wave_sol;
 
                     auto local_profile = utils::harmonize_profiles_1D(
-                        x, z, problo[0], gen_length, probhi[0], beach_length,
+                        x, problo[0], gen_length, probhi[0], beach_length,
                         wave_sol, bulk, outlet);
 
                     phi(i, j, k) = local_profile[3] - z;
