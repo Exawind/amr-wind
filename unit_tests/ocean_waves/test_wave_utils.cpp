@@ -128,4 +128,17 @@ TEST_F(WaveUtilsTest, ramp)
     EXPECT_NEAR(f_ramp_past, 1.0, tol);
 }
 
+TEST_F(WaveUtilsTest, combine_linear)
+{
+    constexpr amrex::Real tol = 1e-12;
+    constexpr amrex::Real Gamma = 0.7;
+    constexpr amrex::Real target = 2.0;
+    constexpr amrex::Real current = 1.5;
+
+    const amrex::Real result =
+        amr_wind::ocean_waves::utils::combine_linear(Gamma, target, current);
+
+    EXPECT_NEAR(result, (1.0 - Gamma) * target + Gamma * current, tol);
+}
+
 } // namespace amr_wind_tests
