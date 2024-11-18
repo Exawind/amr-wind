@@ -119,9 +119,8 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                         const amrex::Real Gamma =
                             utils::gamma_generate(x - problo[0], gen_length);
                         // Get bounded new vof, incorporate with increment
-                        amrex::Real new_vof =
-                            (1. - Gamma) * target_volfrac(i, j, k) +
-                            Gamma * volfrac(i, j, k);
+                        amrex::Real new_vof = utils::combine_linear(
+                            Gamma, target_volfrac(i, j, k), volfrac(i, j, k));
                         new_vof = (new_vof > 1. - vof_tiny)
                                       ? 1.0
                                       : (new_vof < vof_tiny ? 0.0 : new_vof);
@@ -136,8 +135,8 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                             // Get updated liquid velocity
                             amrex::Real vel_liq = vel(i, j, k, n);
                             const amrex::Real dvel_liq =
-                                ((1. - Gamma) * target_vel(i, j, k, n) +
-                                 Gamma * vel_liq) -
+                                utils::combine_linear(
+                                    Gamma, target_vel(i, j, k, n), vel_liq) -
                                 vel_liq;
                             vel_liq += rampf * fvel_liq * dvel_liq;
                             // If liquid was added, that liquid has target_vel
@@ -161,10 +160,10 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                         // Numerical beach (sponge layer)
                         if (has_beach) {
                             // Get bounded new vof, save increment
-                            amrex::Real new_vof =
-                                (1. - Gamma) *
-                                    utils::free_surface_to_vof(zsl, z, dx[2]) +
-                                Gamma * volfrac(i, j, k);
+                            amrex::Real new_vof = utils::combine_linear(
+                                Gamma,
+                                utils::free_surface_to_vof(zsl, z, dx[2]),
+                                volfrac(i, j, k));
                             new_vof =
                                 (new_vof > 1. - vof_tiny)
                                     ? 1.0
@@ -187,9 +186,9 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                         // Forcing to wave profile instead
                         if (has_outprofile) {
                             // Same steps as in wave generation region
-                            amrex::Real new_vof =
-                                (1. - Gamma) * target_volfrac(i, j, k) +
-                                Gamma * volfrac(i, j, k);
+                            amrex::Real new_vof = utils::combine_linear(
+                                Gamma, target_volfrac(i, j, k),
+                                volfrac(i, j, k));
                             new_vof =
                                 (new_vof > 1. - vof_tiny)
                                     ? 1.0
@@ -204,8 +203,9 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                             for (int n = 0; n < vel.ncomp; ++n) {
                                 amrex::Real vel_liq = vel(i, j, k, n);
                                 const amrex::Real dvel_liq =
-                                    ((1. - Gamma) * target_vel(i, j, k, n) +
-                                     Gamma * vel_liq) -
+                                    utils::combine_linear(
+                                        Gamma, target_vel(i, j, k, n),
+                                        vel_liq) -
                                     vel_liq;
                                 vel_liq += rampf * fvel_liq * dvel_liq;
                                 amrex::Real integrated_vel_liq =
