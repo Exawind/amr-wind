@@ -109,7 +109,8 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
             const amrex::Real terrainHt = interp::bilinear(
                 xterrain_ptr, xterrain_ptr + xterrain_size, yterrain_ptr,
                 yterrain_ptr + yterrain_size, zterrain_ptr, x, y);
-            levelBlanking[nbx](i, j, k, 0) = static_cast<int>(z <= terrainHt);
+            levelBlanking[nbx](i, j, k, 0) =
+                static_cast<int>((z <= terrainHt) && (z > 0));
             levelheight[nbx](i, j, k, 0) =
                 std::max(std::abs(z - terrainHt), 0.5 * dx[2]);
 
