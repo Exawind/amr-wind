@@ -22,13 +22,11 @@ public:
 
     ~TerrainDrag() override = default;
 
-    void
-    initialize_fields(int /*level*/, const amrex::Geometry& /*geom*/) override
-    {}
+    void initialize_fields(int level, const amrex::Geometry& geom) override;
 
-    void pre_init_actions() override;
+    void pre_init_actions() override {};
 
-    void post_init_actions() override;
+    void post_init_actions() override {}
 
     void post_regrid_actions() override {}
 
