@@ -132,14 +132,6 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
                 levelDrag[nbx](i, j, k, 0) = 0;
             }
         });
-
-    m_terrain_blank(level).FillBoundary(geom.periodicity());
-    m_terrain_drag(level).FillBoundary(geom.periodicity());
-    const auto time = m_sim.time().current_time();
-    m_terrainz0.fillpatch(
-        level, time, m_terrainz0(level), m_terrainz0.num_grow());
-    m_terrain_height.fillpatch(
-        level, time, m_terrain_height(level), m_terrain_height.num_grow());
 }
 
 } // namespace amr_wind::terraindrag
