@@ -45,6 +45,8 @@ TerrainDrag::TerrainDrag(CFDSim& sim)
     m_sim.io_manager().register_io_var("terrainz0");
     m_sim.io_manager().register_io_var("terrain_height");
 
+    m_terrain_blank.setVal(0.0);
+    m_terrain_drag.setVal(0.0);
     m_terrainz0.set_default_fillpatch_bc(m_sim.time());
     m_terrain_height.set_default_fillpatch_bc(m_sim.time());
 }
@@ -96,43 +98,40 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
     const auto* xrough_ptr = device_xrough.data();
     const auto* yrough_ptr = device_yrough.data();
     const auto* z0rough_ptr = device_z0rough.data();
-    for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.validbox();
-        auto levelBlanking = blanking.array(mfi);
-        auto levelDrag = drag.array(mfi);
-        auto levelz0 = terrainz0.array(mfi);
-        auto levelheight = terrain_height.array(mfi);
-        amrex::ParallelFor(
-            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
-                const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
-                const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
-                const amrex::Real terrainHt = interp::bilinear(
-                    xterrain_ptr, xterrain_ptr + xterrain_size, yterrain_ptr,
-                    yterrain_ptr + yterrain_size, zterrain_ptr, x, y);
-                levelBlanking(i, j, k, 0) = static_cast<int>(z <= terrainHt);
-                levelheight(i, j, k, 0) =
-                    std::max(std::abs(z - terrainHt), 0.5 * dx[2]);
+    auto levelBlanking = blanking.arrays();
+    auto levelDrag = drag.arrays();
+    auto levelz0 = terrainz0.arrays();
+    auto levelheight = terrain_height.arrays();
+    amrex::ParallelFor(
+        blanking, m_terrain_blank.num_grow(),
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
+            const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
+            const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
+            const amrex::Real terrainHt = interp::bilinear(
+                xterrain_ptr, xterrain_ptr + xterrain_size, yterrain_ptr,
+                yterrain_ptr + yterrain_size, zterrain_ptr, x, y);
+            levelBlanking[nbx](i, j, k, 0) = static_cast<int>(z <= terrainHt);
+            levelheight[nbx](i, j, k, 0) =
+                std::max(std::abs(z - terrainHt), 0.5 * dx[2]);
 
-                amrex::Real roughz0 = 0.1;
-                if (xrough_size > 0) {
-                    roughz0 = interp::bilinear(
-                        xrough_ptr, xrough_ptr + xrough_size, yrough_ptr,
-                        yrough_ptr + yrough_size, z0rough_ptr, x, y);
-                }
-                levelz0(i, j, k, 0) = roughz0;
-            });
-
-        amrex::ParallelFor(
-            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                if ((levelBlanking(i, j, k, 0) == 0) && (k > 0) &&
-                    (levelBlanking(i, j, k - 1, 0) == 1)) {
-                    levelDrag(i, j, k, 0) = 1;
-                } else {
-                    levelDrag(i, j, k, 0) = 0;
-                }
-            });
-    }
+            amrex::Real roughz0 = 0.1;
+            if (xrough_size > 0) {
+                roughz0 = interp::bilinear(
+                    xrough_ptr, xrough_ptr + xrough_size, yrough_ptr,
+                    yrough_ptr + yrough_size, z0rough_ptr, x, y);
+            }
+            levelz0[nbx](i, j, k, 0) = roughz0;
+        });
+    amrex::ParallelFor(
+        blanking, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            if ((levelBlanking[nbx](i, j, k, 0) == 0) && (k > 0) &&
+                (levelBlanking[nbx](i, j, k - 1, 0) == 1)) {
+                levelDrag[nbx](i, j, k, 0) = 1;
+            } else {
+                levelDrag[nbx](i, j, k, 0) = 0;
+            }
+        });
 
     m_terrain_blank(level).FillBoundary(geom.periodicity());
     m_terrain_drag(level).FillBoundary(geom.periodicity());
