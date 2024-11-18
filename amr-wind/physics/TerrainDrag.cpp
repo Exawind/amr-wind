@@ -141,8 +141,7 @@ void TerrainDrag::post_init_actions()
         }
     }
 
-    for (int level = 0; level < nlevels; ++level)
-    {
+    for (int level = 0; level < nlevels; ++level) {
         const auto& geom = m_sim.repo().mesh().Geom(level);
         m_terrain_blank(level).FillBoundary(geom.periodicity());
         m_terrain_drag(level).FillBoundary(geom.periodicity());
