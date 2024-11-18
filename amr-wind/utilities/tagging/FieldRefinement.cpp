@@ -24,8 +24,7 @@ void FieldRefinement::initialize(const std::string& key)
     if (repo.field_exists(fname)) {
         m_field = &(m_sim.repo().get_field(fname));
         AMREX_ALWAYS_ASSERT(m_field->num_grow() > amrex::IntVect{0});
-    }
-    else if (repo.int_field_exists(fname)) {
+    } else if (repo.int_field_exists(fname)) {
         m_int_field = &(m_sim.repo().get_int_field(fname));
         AMREX_ALWAYS_ASSERT(m_int_field->num_grow() > amrex::IntVect{0});
     } else {
@@ -64,63 +63,27 @@ void FieldRefinement::initialize(const std::string& key)
 }
 
 void FieldRefinement::operator()(
-    int level, amrex::TagBoxArray& tags, amrex::Real time, int /*ngrow*/)
+    const int level,
+    amrex::TagBoxArray& tags,
+    const amrex::Real time,
+    const int /*ngrow*/)
 {
-    const bool tag_field = level <= m_max_lev_field;
     const bool tag_grad = level <= m_max_lev_grad;
     if (tag_grad) {
         if (m_field) {
             m_field->fillpatch(level, time, (*m_field)(level), 1);
-        }
-        else if(m_int_field){
-          (*m_int_field)(level).FillBoundary(m_sim.repo().mesh().Geom(level).periodicity());
+        } else if (m_int_field) {
+            (*m_int_field)(level).FillBoundary(
+                m_sim.repo().mesh().Geom(level).periodicity());
         }
     }
 
-    const auto& mfab = (*m_field)(level);
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-    for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid();
-         ++mfi) {
-        const auto& bx = mfi.tilebox();
-        const auto& tag = tags.array(mfi);
-        const auto& farr = mfab.const_array(mfi);
-
-        if (tag_field) {
-            const auto fld_err = m_field_error[level];
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    if (farr(i, j, k) > fld_err) {
-                        tag(i, j, k) = amrex::TagBox::SET;
-                    }
-                });
-        }
-
-        if (tag_grad) {
-            const auto gerr = m_grad_error[level];
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real axp =
-                        std::abs(farr(i + 1, j, k) - farr(i, j, k));
-                    const amrex::Real ayp =
-                        std::abs(farr(i, j + 1, k) - farr(i, j, k));
-                    const amrex::Real azp =
-                        std::abs(farr(i, j, k + 1) - farr(i, j, k));
-                    const amrex::Real axm =
-                        std::abs(farr(i - 1, j, k) - farr(i, j, k));
-                    const amrex::Real aym =
-                        std::abs(farr(i, j - 1, k) - farr(i, j, k));
-                    const amrex::Real azm =
-                        std::abs(farr(i, j, k - 1) - farr(i, j, k));
-                    const amrex::Real ax = amrex::max(axp, axm);
-                    const amrex::Real ay = amrex::max(ayp, aym);
-                    const amrex::Real az = amrex::max(azp, azm);
-                    if (amrex::max(ax, ay, az) >= gerr) {
-                        tag(i, j, k) = amrex::TagBox::SET;
-                    }
-                });
-        }
+    if (m_field) {
+        const auto& mfab = (*m_field)(level);
+        tag(level, tags, mfab);
+    } else if (m_int_field) {
+        const auto& mfab = (*m_int_field)(level);
+        tag(level, tags, mfab);
     }
 }
 
