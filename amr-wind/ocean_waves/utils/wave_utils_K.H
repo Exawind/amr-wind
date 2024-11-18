@@ -4,6 +4,8 @@
 #include <AMReX_FArrayBox.H>
 #include <cmath>
 
+using WaveVec = amrex::GpuArray<amrex::Real, 4>;
+
 namespace amr_wind::ocean_waves::utils {
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real free_surface_to_vof(
@@ -52,6 +54,14 @@ ramp(const amrex::Real time, const amrex::Real ramp_period)
             (1.0 / M_PI) * std::sin(M_PI * (time / ramp_period));
     }
     return f;
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real combine_linear(
+    const amrex::Real factor,
+    const amrex::Real target,
+    const amrex::Real current)
+{
+    return (1. - factor) * target + factor * current;
 }
 
 } // namespace amr_wind::ocean_waves::utils
