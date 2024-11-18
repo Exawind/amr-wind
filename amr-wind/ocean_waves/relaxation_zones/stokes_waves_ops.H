@@ -111,19 +111,19 @@ struct InitDataOp<StokesWaves>
                     relaxation_zones::stokes_waves(
                         order, wave_length, water_depth, wave_height,
                         zero_sea_level, g, x, z, 0.0, eta_w, u_w, v_w, w_w);
-                    const WaveVec wave_sol{u_w, v_w, w_w, eta_w};
+                    const utils::WaveVec wave_sol{u_w, v_w, w_w, eta_w};
 
                     // Quiescent profile
-                    const WaveVec quiescent{0.0, 0.0, 0.0, zero_sea_level};
+                    const utils::WaveVec quiescent{
+                        0.0, 0.0, 0.0, zero_sea_level};
 
                     // Specify initial state for each region of domain
                     const auto bulk = init_wave_field ? wave_sol : quiescent;
                     const auto outlet = has_beach ? quiescent : wave_sol;
 
-                    auto local_profile =
-                        ocean_waves::utils::harmonize_profiles_1D(
-                            x, z, problo[0], gen_length, probhi[0],
-                            beach_length, wave_sol, bulk, outlet);
+                    auto local_profile = utils::harmonize_profiles_1D(
+                        x, z, problo[0], gen_length, probhi[0], beach_length,
+                        wave_sol, bulk, outlet);
 
                     phi(i, j, k) = local_profile[3] - z;
                     const amrex::Real cell_length_2D =

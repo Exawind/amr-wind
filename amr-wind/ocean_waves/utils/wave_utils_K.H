@@ -4,9 +4,9 @@
 #include <AMReX_FArrayBox.H>
 #include <cmath>
 
-using WaveVec = amrex::GpuArray<amrex::Real, 4>;
-
 namespace amr_wind::ocean_waves::utils {
+
+using WaveVec = amrex::GpuArray<amrex::Real, 4>;
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real free_surface_to_vof(
     const amrex::Real eta, const amrex::Real z, const amrex::Real dz)
