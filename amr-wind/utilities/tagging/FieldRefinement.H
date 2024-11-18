@@ -5,6 +5,7 @@
 
 namespace amr_wind {
 class Field;
+class IntField;
 
 /** AMR refinement using a given field (e.g., density)
  *  \ingroup amr_utils
@@ -40,6 +41,7 @@ private:
     const CFDSim& m_sim;
 
     Field* m_field{nullptr};
+    IntField* m_int_field{nullptr};
 
     amrex::Vector<amrex::Real> m_field_error;
     amrex::Vector<amrex::Real> m_grad_error;

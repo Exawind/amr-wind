@@ -21,10 +21,16 @@ void FieldRefinement::initialize(const std::string& key)
     pp.query("field_name", fname);
 
     const auto& repo = m_sim.repo();
-    if (!repo.field_exists(fname)) {
+    if (repo.field_exists(fname)) {
+        m_field = &(m_sim.repo().get_field(fname));
+        AMREX_ALWAYS_ASSERT(m_field->num_grow() > amrex::IntVect{0});
+    }
+    else if (repo.int_field_exists(fname)) {
+        m_int_field = &(m_sim.repo().get_int_field(fname));
+        AMREX_ALWAYS_ASSERT(m_int_field->num_grow() > amrex::IntVect{0});
+    } else {
         amrex::Abort("FieldRefinement: Cannot find field = " + fname);
     }
-    m_field = &(m_sim.repo().get_field(fname));
 
     amrex::Vector<amrex::Real> field_err;
     amrex::Vector<amrex::Real> grad_err;
@@ -63,7 +69,12 @@ void FieldRefinement::operator()(
     const bool tag_field = level <= m_max_lev_field;
     const bool tag_grad = level <= m_max_lev_grad;
     if (tag_grad) {
-        m_field->fillpatch(level, time, (*m_field)(level), 1);
+        if (m_field) {
+            m_field->fillpatch(level, time, (*m_field)(level), 1);
+        }
+        else if(m_int_field){
+          (*m_int_field)(level).FillBoundary(m_sim.repo().mesh().Geom(level).periodicity());
+        }
     }
 
     const auto& mfab = (*m_field)(level);
