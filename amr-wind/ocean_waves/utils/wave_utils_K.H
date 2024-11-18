@@ -82,9 +82,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE WaveVec harmonize_profiles_1D(
     } else {
         // Combine solutions in central region using relax zone length scales
         const amrex::Real Gamma_left =
-            gamma_generate(x - (left_bdy + left_length), left_length);
+            gamma_generate(x - (left_bdy + left_length), 0.5 * left_length);
         const amrex::Real Gamma_right = gamma_absorb(
-            x - (right_bdy - 2.0 * right_length), right_length, 1.0);
+            x - (right_bdy - 1.5 * right_length), 0.5 * right_length, 1.0);
         const bool right_inactive = Gamma_right > 1.0 - 1e-12;
         WaveVec combo;
         for (int n = 0; n < 4; ++n) {

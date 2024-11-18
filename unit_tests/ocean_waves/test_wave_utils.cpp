@@ -141,4 +141,59 @@ TEST_F(WaveUtilsTest, combine_linear)
     EXPECT_NEAR(result, (1.0 - Gamma) * target + Gamma * current, tol);
 }
 
+TEST_F(WaveUtilsTest, harmonize_profiles)
+{
+    constexpr amrex::Real tol = 1e-12;
+    constexpr amrex::Real problo_x = -1.0;
+    constexpr amrex::Real probhi_x = 1.0;
+    constexpr amrex::Real gen_length = 0.2;
+    constexpr amrex::Real beach_length = 0.4;
+
+    const amr_wind::ocean_waves::utils::WaveVec left{1.0, 2.0, 3.0, 0.1};
+    const amr_wind::ocean_waves::utils::WaveVec bulk{0.0, 1.1, 2.0, 0.0};
+    const amr_wind::ocean_waves::utils::WaveVec right{-1.0, 1.0, 0.5, -0.1};
+
+    amrex::Real x = -0.9;
+    auto result = amr_wind::ocean_waves::utils::harmonize_profiles_1D(
+        x, problo_x, gen_length, probhi_x, beach_length, left, bulk, right);
+    for (int n = 0; n < 4; ++n) {
+        EXPECT_NEAR(left[n], result[n], tol);
+    }
+
+    x = -0.75;
+    result = amr_wind::ocean_waves::utils::harmonize_profiles_1D(
+        x, problo_x, gen_length, probhi_x, beach_length, left, bulk, right);
+    const amrex::Real Gamma_l = amr_wind::ocean_waves::utils::gamma_generate(
+        x - (problo_x + gen_length), 0.5 * gen_length);
+    for (int n = 0; n < 4; ++n) {
+        EXPECT_NEAR(
+            (1.0 - Gamma_l) * left[n] + Gamma_l * bulk[n], result[n], tol);
+    }
+
+    x = 0.;
+    result = amr_wind::ocean_waves::utils::harmonize_profiles_1D(
+        x, problo_x, gen_length, probhi_x, beach_length, left, bulk, right);
+    for (int n = 0; n < 4; ++n) {
+        EXPECT_NEAR(bulk[n], result[n], tol);
+    }
+
+    x = 0.5;
+    result = amr_wind::ocean_waves::utils::harmonize_profiles_1D(
+        x, problo_x, gen_length, probhi_x, beach_length, left, bulk, right);
+    const amrex::Real Gamma_r = amr_wind::ocean_waves::utils::gamma_absorb(
+        x - (probhi_x - beach_length) + 0.5 * beach_length, 0.5 * beach_length,
+        1.0);
+    for (int n = 0; n < 4; ++n) {
+        EXPECT_NEAR(
+            (1.0 - Gamma_r) * right[n] + Gamma_r * bulk[n], result[n], tol);
+    }
+
+    x = 0.8;
+    result = amr_wind::ocean_waves::utils::harmonize_profiles_1D(
+        x, problo_x, gen_length, probhi_x, beach_length, left, bulk, right);
+    for (int n = 0; n < 4; ++n) {
+        EXPECT_NEAR(right[n], result[n], tol);
+    }
+}
+
 } // namespace amr_wind_tests
