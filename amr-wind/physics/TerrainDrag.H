@@ -40,7 +40,6 @@ private:
     CFDSim& m_sim;
     const FieldRepo& m_repo;
     const amrex::AmrCore& m_mesh;
-    Field& m_velocity;
     //! Blanking Field for Terrain or Buildings
     IntField& m_terrain_blank;
     //! Terrain Drag Force Term
