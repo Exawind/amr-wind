@@ -64,7 +64,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real combine_linear(
     return (1. - factor) * target + factor * current;
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE WaveVec harmonize_profiles_1D(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE WaveVec harmonize_profiles_1d(
     const amrex::Real x,
     const amrex::Real left_bdy,
     const amrex::Real left_length,
@@ -79,21 +79,20 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE WaveVec harmonize_profiles_1D(
         return left;
     } else if (x + right_length >= right_bdy) {
         return right;
-    } else {
-        // Combine solutions in central region using relax zone length scales
-        const amrex::Real Gamma_left =
-            gamma_generate(x - (left_bdy + left_length), 0.5 * left_length);
-        const amrex::Real Gamma_right = gamma_absorb(
-            x - (right_bdy - 1.5 * right_length), 0.5 * right_length, 1.0);
-        const bool right_inactive = Gamma_right > 1.0 - 1e-12;
-        WaveVec combo;
-        for (int n = 0; n < 4; ++n) {
-            combo[n] = right_inactive
-                           ? combine_linear(Gamma_left, left[n], bulk[n])
-                           : combine_linear(Gamma_right, right[n], bulk[n]);
-        }
-        return combo;
     }
+    // Combine solutions in central region using relax zone length scales
+    const amrex::Real Gamma_left =
+        gamma_generate(x - (left_bdy + left_length), 0.5 * left_length);
+    const amrex::Real Gamma_right = gamma_absorb(
+        x - (right_bdy - 1.5 * right_length), 0.5 * right_length, 1.0);
+    const bool right_inactive = Gamma_right > 1.0 - 1e-12;
+    WaveVec combo;
+    for (int n = 0; n < 4; ++n) {
+        combo[n] = right_inactive
+                       ? combine_linear(Gamma_left, left[n], bulk[n])
+                       : combine_linear(Gamma_right, right[n], bulk[n]);
+    }
+    return combo;
 }
 
 } // namespace amr_wind::ocean_waves::utils
