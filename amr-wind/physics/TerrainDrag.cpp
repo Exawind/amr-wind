@@ -44,15 +44,17 @@ TerrainDrag::TerrainDrag(CFDSim& sim)
     m_sim.io_manager().register_output_int_var("terrain_blank");
     m_sim.io_manager().register_io_var("terrainz0");
     m_sim.io_manager().register_io_var("terrain_height");
+
+    m_terrainz0.set_default_fillpatch_bc(m_sim.time());
+    m_terrain_height.set_default_fillpatch_bc(m_sim.time());
 }
 
 void TerrainDrag::post_init_actions()
 {
     BL_PROFILE("amr-wind::" + this->identifier() + "::post_init_actions");
-    const auto& geom_vec = m_sim.repo().mesh().Geom();
     const int nlevels = m_sim.repo().num_active_levels();
     for (int level = 0; level < nlevels; ++level) {
-        const auto& geom = geom_vec[level];
+        const auto& geom = m_sim.repo().mesh().Geom(level);
         const auto& dx = geom.CellSizeArray();
         const auto& prob_lo = geom.ProbLoArray();
         auto& velocity = m_velocity(level);
@@ -138,6 +140,16 @@ void TerrainDrag::post_init_actions()
                 });
         }
     }
+
+    for (int level = 0; level < nlevels; ++level)
+    {
+        const auto& geom = m_sim.repo().mesh().Geom(level);
+        m_terrain_blank(level).FillBoundary(geom.periodicity());
+        m_terrain_drag(level).FillBoundary(geom.periodicity());
+    }
+    const auto time = m_sim.time().current_time();
+    m_terrainz0.fillphysbc(time);
+    m_terrain_height.fillphysbc(time);
 }
 
 void TerrainDrag::pre_init_actions()
