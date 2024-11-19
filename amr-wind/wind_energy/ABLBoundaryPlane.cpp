@@ -912,9 +912,7 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
         const int nlevels = boundary_native_file_levels();
         for (int lev = 0; lev < nlevels; ++lev) {
             for (auto* fld : m_fields) {
-
                 auto& field = *fld;
-                const auto& geom = field.repo().mesh().Geom();
 
                 const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
                 amrex::BoxArray ba(minBox);
