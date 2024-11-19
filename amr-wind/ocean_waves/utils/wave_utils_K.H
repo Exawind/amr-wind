@@ -77,7 +77,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE WaveVec harmonize_profiles_1d(
     // Initialize boundary regions entirely with boundary solutions
     if (x <= left_bdy + left_length) {
         return left;
-    } else if (x + right_length >= right_bdy) {
+    }
+    if (x + right_length >= right_bdy) {
         return right;
     }
     // Combine solutions in central region using relax zone length scales
