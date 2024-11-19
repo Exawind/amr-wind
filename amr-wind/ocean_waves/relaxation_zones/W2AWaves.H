@@ -86,6 +86,7 @@ struct W2AWavesData : public RelaxZonesBaseData
         if (w_mptr) {
             delete[] w_mptr;
         }
+        fftw_destroy_plan(plan);
 #endif
     }
 };
