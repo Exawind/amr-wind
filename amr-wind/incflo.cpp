@@ -75,8 +75,11 @@ void incflo::init_mesh()
             regrid(lev, m_time.current_time());
         }
 
-        for (auto& pp : m_sim.physics()) {
-            pp->post_regrid_actions();
+        // If regrid happened, call post regrid actions
+        if (finestLevel() <= maxLevel()) {
+            for (auto& pp : m_sim.physics()) {
+                pp->post_regrid_actions();
+            }
         }
 
         if (ParallelDescriptor::IOProcessor()) {

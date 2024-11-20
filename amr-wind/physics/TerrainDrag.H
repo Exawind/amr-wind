@@ -28,7 +28,7 @@ public:
 
     void post_init_actions() override {}
 
-  void post_regrid_actions() override;
+    void post_regrid_actions() override;
 
     void pre_advance_work() override {}
 
