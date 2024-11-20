@@ -192,7 +192,7 @@ void TiogaInterface::register_solution(
     m_cell_vars = cell_vars;
     m_node_vars = node_vars;
 
-    const amrex::Real time_fillpatch = m_sim.during_overset_advance()
+    const amrex::Real time_fillpatch = m_sim.is_during_overset_advance()
                                            ? m_sim.time().new_time()
                                            : m_sim.time().current_time();
 
@@ -295,7 +295,7 @@ void TiogaInterface::update_solution()
 {
     auto& repo = m_sim.repo();
 
-    const amrex::Real time_fillpatch = m_sim.during_overset_advance()
+    const amrex::Real time_fillpatch = m_sim.is_during_overset_advance()
                                            ? m_sim.time().new_time()
                                            : m_sim.time().current_time();
 

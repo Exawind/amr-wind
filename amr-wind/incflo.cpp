@@ -269,7 +269,7 @@ void incflo::post_advance_work()
     }
 
     if (m_sim.has_overset()) {
-        m_sim.during_overset_advance(false);
+        m_sim.set_during_overset_advance(false);
     }
 }
 
@@ -337,7 +337,7 @@ void incflo::do_advance(const int fixed_point_iteration)
 {
     if (m_sim.has_overset()) {
         m_ovst_ops.pre_advance_work();
-        m_sim.during_overset_advance(true);
+        m_sim.set_during_overset_advance(true);
     }
     if (m_prescribe_vel && fixed_point_iteration == 0) {
         prescribe_advance();

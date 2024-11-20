@@ -117,12 +117,12 @@ public:
 
     bool has_mesh_mapping() const { return m_mesh_mapping; }
 
-    void during_overset_advance(const bool flag)
+    void set_during_overset_advance(const bool flag)
     {
         m_during_overset_advance = flag;
     }
 
-    bool during_overset_advance() const { return m_during_overset_advance; }
+    bool is_during_overset_advance() const { return m_during_overset_advance; }
 
     bool is_anelastic() const;
 
