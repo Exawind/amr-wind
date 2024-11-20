@@ -140,13 +140,14 @@ public:
                         const auto az = amrex::max(azp, azm);
                         const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
                         const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
+                        const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
                         bool add_cell = false;
                         for (unsigned ii = 0; ii < vsize; ++ii) {
-                            if (x >= device_xmin_list[ii] &&
-                                x <= device_xmax_list[ii] &&
-                                y >= device_ymin_list[ii] &&
-                                y <= device_ymax_list[ii] &&
-                                level <= device_level_list[ii]) {
+                            if (x >= device_xmin_list[i] &&
+                                x <= device_xmax_list[i] &&
+                                y >= device_ymin_list[i] &&
+                                y <= device_ymax_list[i] &&
+                                level <= device_level_list[i] && z > dx[2]) {
                                 add_cell = true;
                                 break;
                             }
