@@ -80,6 +80,8 @@ Example::
   tagging.f1.type = FieldRefinement
   tagging.f1.field_name = density
   tagging.f1.grad_error = 0.1. 0.1 0.1
+  tagging.f1.box_lo = 10.0 10.0 10.0
+  tagging.f1.box_hi = 20.0 20.0 20.0
 
 .. input_param:: tagging.FieldRefinement.field_name
 
@@ -100,6 +102,20 @@ Example::
 
    List of gradient error values at each level. The user must specify a value for
    each level desired.
+
+.. input_param:: tagging.FieldRefinement.box_lo
+
+   **type:** Vector<Real>, optional
+
+   List of the low corner values for a bounding box where the tagging
+   will be active. By default the bounding box will span the entire domain.
+
+.. input_param:: tagging.FieldRefinement.box_hi
+
+   **type:** Vector<Real>, optional
+
+   List of the high corner values for a bounding box where the tagging
+   will be active. By default the bounding box will span the entire domain.
 
 Refinement using geometry
 `````````````````````````

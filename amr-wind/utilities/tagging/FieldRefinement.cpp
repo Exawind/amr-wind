@@ -12,6 +12,7 @@ FieldRefinement::FieldRefinement(const CFDSim& sim)
           m_sim.mesh().maxLevel() + 1, std::numeric_limits<amrex::Real>::max())
     , m_grad_error(
           m_sim.mesh().maxLevel() + 1, std::numeric_limits<amrex::Real>::max())
+    , m_tagging_box(m_sim.repo().mesh().Geom(0).ProbDomain())
 {}
 
 void FieldRefinement::initialize(const std::string& key)
@@ -35,6 +36,17 @@ void FieldRefinement::initialize(const std::string& key)
     amrex::Vector<amrex::Real> grad_err;
     pp.queryarr("field_error", field_err);
     pp.queryarr("grad_error", grad_err);
+
+    amrex::Vector<amrex::Real> box_lo(AMREX_SPACEDIM, 0);
+    amrex::Vector<amrex::Real> box_hi(AMREX_SPACEDIM, 0);
+    if (pp.queryarr("box_lo", box_lo, 0, static_cast<int>(box_lo.size())) ==
+        1) {
+        m_tagging_box.setLo(box_lo);
+    }
+    if (pp.queryarr("box_hi", box_hi, 0, static_cast<int>(box_hi.size())) ==
+        1) {
+        m_tagging_box.setHi(box_hi);
+    }
 
     if ((field_err.empty()) && (grad_err.empty())) {
         amrex::Abort(
