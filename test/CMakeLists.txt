@@ -338,6 +338,7 @@ if(AMR_WIND_ENABLE_NETCDF)
   add_test_red(abl_bndry_input_amr abl_bndry_output)
   add_test_red(abl_bndry_input_amr_inflow abl_bndry_output_amr_inflow)
   add_test_red(nrel_terrain nrel_precursor)
+  add_test_red(nrel_terrain_amr nrel_precursor)
 endif()
 
 #=============================================================================
