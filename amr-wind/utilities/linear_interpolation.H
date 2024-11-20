@@ -63,6 +63,23 @@ bisection_search(const It begin, const It end, const T& x)
 
 template <typename It, typename T>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Index
+nearest_search(const It begin, const It end, const T& x)
+{
+
+    auto idx = bisection_search(begin, end, x);
+    if ((idx.lim == Limits::LOWLIM) || (idx.lim == Limits::UPLIM)) {
+        return idx;
+    }
+
+    if ((x - begin[idx.idx]) > (begin[idx.idx + 1] - x)) {
+        idx.idx += 1;
+    }
+
+    return idx;
+}
+
+template <typename It, typename T>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Index
 find_index(const It begin, const It end, const T& x, const int hint = 1)
 {
     auto idx = check_bounds(begin, end, x);
@@ -82,36 +99,63 @@ find_index(const It begin, const It end, const T& x, const int hint = 1)
 template <typename C1, typename C2>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     typename std::iterator_traits<C2>::value_type
-    linear(
+    linear_impl(
         const C1 xbegin,
-        const C1 xend,
         const C2 yinp,
-        const typename std::iterator_traits<C1>::value_type& xout)
+        const typename std::iterator_traits<C1>::value_type& xout,
+        const Index& idx,
+        const int ncomp = 1,
+        const int comp = 0)
 {
     using DType1 = typename std::iterator_traits<C1>::value_type;
-    const auto idx = bisection_search(xbegin, xend, xout);
 
     if ((idx.lim == Limits::LOWLIM) || (idx.lim == Limits::UPLIM)) {
-        return yinp[idx.idx];
+        return yinp[ncomp * idx.idx + comp];
     }
     static constexpr DType1 eps = 1.0e-8;
     const int j = idx.idx;
     const auto denom = (xbegin[j + 1] - xbegin[j]);
     const auto facR = (denom > eps) ? ((xout - xbegin[j]) / denom) : 1.0;
     const auto facL = static_cast<DType1>(1.0) - facR;
-    return facL * yinp[j] + facR * yinp[j + 1];
+    return facL * yinp[ncomp * j + comp] + facR * yinp[ncomp * (j + 1) + comp];
 }
 
 template <typename C1, typename C2>
-inline typename C2::value_type
-linear(const C1& xinp, const C2& yinp, const typename C1::value_type& xout)
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    typename std::iterator_traits<C2>::value_type
+    linear(
+        const C1 xbegin,
+        const C1 xend,
+        const C2 yinp,
+        const typename std::iterator_traits<C1>::value_type& xout,
+        const int ncomp = 1,
+        const int comp = 0)
 {
-    return linear(xinp.data(), (xinp.data() + xinp.size()), yinp.data(), xout);
+    const auto idx = bisection_search(xbegin, xend, xout);
+    return linear_impl(xbegin, yinp, xout, idx, ncomp, comp);
 }
 
 template <typename C1, typename C2>
-inline void
-linear_monotonic(const C1& xinp, const C2& yinp, const C1& xout, C2& yout)
+inline typename C2::value_type linear(
+    const C1& xinp,
+    const C2& yinp,
+    const typename C1::value_type& xout,
+    const int ncomp = 1,
+    const int comp = 0)
+{
+    return linear(
+        xinp.data(), (xinp.data() + xinp.size()), yinp.data(), xout, ncomp,
+        comp);
+}
+
+template <typename C1, typename C2>
+inline void linear_monotonic(
+    const C1& xinp,
+    const C2& yinp,
+    const C1& xout,
+    C2& yout,
+    const int ncomp = 1,
+    const int comp = 0)
 {
     static constexpr typename C1::value_type eps = 1.0e-8;
     AMREX_ASSERT(xinp.size() == yinp.size());
@@ -125,20 +169,28 @@ linear_monotonic(const C1& xinp, const C2& yinp, const C1& xout, C2& yout)
             find_index(xinp.data(), (xinp.data() + xinp.size()), x, hint);
 
         if ((idx.lim == Limits::LOWLIM) || (idx.lim == Limits::UPLIM)) {
-            yout[i] = yinp[idx.idx];
+            yout[i] = yinp[ncomp * idx.idx + comp];
         } else if (idx.lim == Limits::VALID) {
             int j = idx.idx;
             const auto denom = (xinp[j + 1] - xinp[j]);
             const auto facR = (denom > eps) ? ((x - xinp[j]) / denom) : 1.0;
             const auto facL = static_cast<typename C1::value_type>(1.0) - facR;
-            yout[i] = facL * yinp[j] + facR * yinp[j + 1];
+            yout[i] = facL * yinp[ncomp * j + comp] +
+                      facR * yinp[ncomp * (j + 1) + comp];
+            ;
         }
         hint = idx.idx + 1;
     }
 }
 
 template <typename C1, typename C2>
-inline void linear(const C1& xinp, const C2& yinp, const C1& xout, C2& yout)
+inline void linear(
+    const C1& xinp,
+    const C2& yinp,
+    const C1& xout,
+    C2& yout,
+    const int ncomp = 1,
+    const int comp = 0)
 {
     AMREX_ASSERT(
         static_cast<amrex::Long>(xinp.size()) ==
@@ -149,7 +201,7 @@ inline void linear(const C1& xinp, const C2& yinp, const C1& xout, C2& yout)
 
     int npts = xout.size();
     for (int i = 0; i < npts; ++i) {
-        yout[i] = linear(xinp, yinp, xout[i]);
+        yout[i] = linear(xinp, yinp, xout[i], ncomp, comp);
     }
 }
 
@@ -216,6 +268,79 @@ inline void linear_angle(
     for (int i = 0; i < npts; ++i) {
         yout[i] = linear_angle(xinp, yinp, xout[i], upper_bound);
     }
+}
+
+template <typename C1, typename C2>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    typename std::iterator_traits<C2>::value_type
+    bilinear_impl(
+        const C1 xbegin,
+        const C1 ybegin,
+        const int ny,
+        const C2 zinp,
+        const typename std::iterator_traits<C1>::value_type& xout,
+        const typename std::iterator_traits<C1>::value_type& yout,
+        const Index& xidx,
+        const Index& yidx)
+{
+    using DType1 = typename std::iterator_traits<C1>::value_type;
+
+    if ((xidx.lim == Limits::LOWLIM) || (xidx.lim == Limits::UPLIM) ||
+        (yidx.lim == Limits::LOWLIM) || (yidx.lim == Limits::UPLIM)) {
+        return zinp[xidx.idx * ny + yidx.idx];
+    }
+
+    const int i = xidx.idx;
+    const int j = yidx.idx;
+
+    static constexpr DType1 eps = 1.0e-8;
+    const auto xdenom = (xbegin[i + 1] - xbegin[i]);
+    const auto xfacR = (xdenom > eps) ? ((xout - xbegin[i]) / xdenom) : 1.0;
+    const auto xfacL = static_cast<DType1>(1.0) - xfacR;
+    const auto ydenom = (ybegin[j + 1] - ybegin[j]);
+    const auto yfacR = (ydenom > eps) ? ((yout - ybegin[j]) / ydenom) : 1.0;
+    const auto yfacL = static_cast<DType1>(1.0) - yfacR;
+
+    const auto z00 = zinp[i * ny + j];
+    const auto z10 = zinp[(i + 1) * ny + j];
+    const auto z01 = zinp[i * ny + (j + 1)];
+    const auto z11 = zinp[(i + 1) * ny + (j + 1)];
+
+    return z00 * xfacL * yfacL + z10 * xfacR * yfacL + z01 * xfacL * yfacR +
+           z11 * xfacR * yfacR;
+}
+
+template <typename C1, typename C2>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    typename std::iterator_traits<C2>::value_type
+    bilinear(
+        const C1 xbegin,
+        const C1 xend,
+        const C1 ybegin,
+        const C1 yend,
+        const C2 zinp,
+        const typename std::iterator_traits<C1>::value_type& xout,
+        const typename std::iterator_traits<C1>::value_type& yout)
+{
+    const auto xidx = bisection_search(xbegin, xend, xout);
+    const auto yidx = bisection_search(ybegin, yend, yout);
+    return bilinear_impl(
+        xbegin, ybegin, static_cast<int>(yend - ybegin), zinp, xout, yout, xidx,
+        yidx);
+}
+
+template <typename C1, typename C2>
+inline typename C2::value_type bilinear(
+    const C1& xinp,
+    const C1& yinp,
+    const C2& zinp,
+    const typename C1::value_type& xout,
+    const typename C1::value_type& yout)
+{
+    AMREX_ALWAYS_ASSERT((xinp.size() * yinp.size()) == zinp.size());
+    return bilinear(
+        xinp.data(), (xinp.data() + xinp.size()), yinp.data(),
+        (yinp.data() + yinp.size()), zinp.data(), xout, yout);
 }
 
 } // namespace amr_wind::interp

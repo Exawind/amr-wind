@@ -49,6 +49,9 @@ macro(setup_test)
     file(GLOB TEST_FILES "${CURRENT_TEST_SOURCE_DIR}/*")
     file(COPY ${TEST_FILES} DESTINATION "${CURRENT_TEST_BINARY_DIR}/")
     set(RUNTIME_OPTIONS "time.max_step=10 io.plot_file=plt time.plot_interval=10 amrex.the_arena_is_managed=0 amrex.abort_on_out_of_gpu_memory=1 amrex.abort_on_unused_inputs=1")
+    if(NOT AMR_WIND_TEST_WITH_FCOMPARE) #Avoid all I/O otherwise
+      set(RUNTIME_OPTIONS "${RUNTIME_OPTIONS} time.plot_interval=-1 time.checkpoint_interval=-1")
+    endif()
     if(AMR_WIND_ENABLE_FPE_TRAP_FOR_TESTS)
       set(RUNTIME_OPTIONS "${RUNTIME_OPTIONS} amrex.signal_handling=1 amrex.fpe_trap_invalid=1 amrex.fpe_trap_zero=1 amrex.fpe_trap_overflow=1")
     else()
@@ -263,10 +266,10 @@ add_test_re(abl_godunov_rayleigh_damping)
 add_test_re(rankine)
 add_test_re(rankine-sym)
 add_test_re(terrain_box)
+add_test_re(terrain_box_amr)
 add_test_re(box_refinement)
 add_test_re(cylinder_refinement)
 add_test_re(freestream_godunov_inout)
-
 add_test_re(ctv_godunov_plm)
 add_test_re(ctv_bds)
 add_test_re(ctv_mol_mesh_map)
@@ -283,6 +286,7 @@ if(AMR_WIND_ENABLE_NETCDF)
   add_test_re(abl_sampling_netcdf)
   add_test_re(abl_kosovic_neutral_ib)
   add_test_re(nrel_precursor)
+  add_test_re(abl_wallrans_neutral)
 endif()
 
 if(AMR_WIND_ENABLE_MASA)
@@ -292,7 +296,6 @@ if(AMR_WIND_ENABLE_MASA)
   add_test_re(mms_mol)
 endif()
 
-# TODO: Enable hypre capability on GPUs
 if(AMR_WIND_ENABLE_HYPRE)
   add_test_re(abl_godunov_hypre)
   add_test_re(channel_kwsst_hypre)
@@ -320,13 +323,15 @@ endif()
 #=============================================================================
 # Regression tests excluded from CI with a test dependency
 #=============================================================================
-add_test_red(abl_bndry_input_native abl_bndry_output_native)
-add_test_red(abl_godunov_restart abl_godunov)
-add_test_red(abl_bndry_input_amr_native abl_bndry_output_native)
-add_test_red(abl_bndry_input_amr_native_xhi abl_bndry_output_native)
-add_test_red(abl_bndry_input_amr_native_mlbc abl_bndry_output_amr_native)
-add_test_red(abl_godunov_forcetimetable abl_godunov_timetable)
-
+if(AMR_WIND_TEST_WITH_FCOMPARE)
+  add_test_red(abl_bndry_input_native abl_bndry_output_native)
+  add_test_red(abl_bndry_input_native_inout abl_bndry_output_native)
+  add_test_red(abl_godunov_restart abl_godunov)
+  add_test_red(abl_bndry_input_amr_native abl_bndry_output_native)
+  add_test_red(abl_bndry_input_amr_native_xhi abl_bndry_output_native)
+  add_test_red(abl_bndry_input_amr_native_mlbc abl_bndry_output_amr_native)
+  add_test_red(abl_godunov_forcetimetable abl_godunov_timetable)
+endif()
 
 if(AMR_WIND_ENABLE_NETCDF)
   add_test_red(abl_bndry_input abl_bndry_output)
@@ -353,7 +358,3 @@ if (AMR_WIND_TEST_WITH_PYTHON)
     add_test_pps(dam_break_godunov netcdf 30 150)
   endif()
 endif()
-
-#=============================================================================
-# Performance tests
-#=============================================================================

@@ -87,8 +87,9 @@ template <typename ActTrait>
 void ActSrcOp<ActTrait, ActSrcLine>::operator()(
     const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
 {
-    const std::string fname = ActTrait::identifier() + ActSrcLine::identifier();
-    BL_PROFILE("amr-wind::ActSrcOp<" + fname + ">");
+    BL_PROFILE(
+        "amr-wind::ActSrcOp<" + ActTrait::identifier() +
+        ActSrcLine::identifier() + ">");
 
     const auto& bx = mfi.tilebox();
 

@@ -79,8 +79,9 @@ void ActSrcOp<
     std::enable_if_t<std::is_base_of_v<TurbineType, ActTrait>>>::
 operator()(const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
 {
-    const std::string fname = ActTrait::identifier() + ActSrcDisk::identifier();
-    BL_PROFILE("amr-wind::ActSrcOp<" + fname + ">");
+    BL_PROFILE(
+        "amr-wind::ActSrcOp<" + ActTrait::identifier() +
+        ActSrcDisk::identifier() + ">");
 
     const auto& bx = mfi.tilebox();
 

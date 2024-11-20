@@ -735,7 +735,9 @@ void ABLBoundaryPlane::read_header()
 
             if (std::all_of(
                     m_fields.begin(), m_fields.end(), [ori](const auto* fld) {
-                        return fld->bc_type()[ori] != BC::mass_inflow;
+                        return (
+                            (fld->bc_type()[ori] != BC::mass_inflow) &&
+                            (fld->bc_type()[ori] != BC::mass_inflow_outflow));
                     })) {
                 continue;
             }
@@ -768,8 +770,8 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
 
     // populate planes and interpolate
     const amrex::Real time =
-        m_time.new_time() + (nph_target_time ? 0.5 : 0.0) *
-                                (m_time.current_time() - m_time.new_time());
+        nph_target_time ? m_time.current_time() + 0.5 * m_time.delta_t()
+                        : m_time.new_time();
     AMREX_ALWAYS_ASSERT((m_in_times[0] <= time) && (time < m_in_times.back()));
 
     // return early if current data files can still be interpolated in time
@@ -850,7 +852,8 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
                     auto ori = oit();
 
                     if ((!m_in_data.is_populated(ori)) ||
-                        (field.bc_type()[ori] != BC::mass_inflow)) {
+                        ((field.bc_type()[ori] != BC::mass_inflow) &&
+                         (field.bc_type()[ori] != BC::mass_inflow_outflow))) {
                         continue;
                     }
 
@@ -895,7 +898,8 @@ void ABLBoundaryPlane::populate_data(
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
         if ((!m_in_data.is_populated(ori)) ||
-            (fld.bc_type()[ori] != BC::mass_inflow)) {
+            ((fld.bc_type()[ori] != BC::mass_inflow) &&
+             (fld.bc_type()[ori] != BC::mass_inflow_outflow))) {
             continue;
         }
 
@@ -1072,7 +1076,6 @@ int ABLBoundaryPlane::boundary_native_file_levels()
     int nlevels = 0;
     const std::string chkname =
         m_filename + amrex::Concatenate("/bndry_output", m_in_timesteps[0]);
-    const std::string level_prefix = "Level_";
     for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
         const std::string levname = amrex::LevelFullPath(lev, chkname);
         if (amrex::FileExists(levname)) {

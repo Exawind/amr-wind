@@ -14,7 +14,7 @@ as initial conditions and discretization options.
    Physics is additive and more than one type of physics may be used.
    Current implemented physics include FreeStream, SyntheticTurbulence, ABL, Actuator, RayleighTaylor, BoussinesqBubble, TaylorGreenVortex, and ScalarAdvection (which is an example of using a passive scalar advection).
    For multiphase simulations, the MultiPhase physics must be specified, and for forcing wave profiles into the domain, the OceanWaves physics must be specified as well.
-   For immersed boundary forcing method TerrainDrag must be specified and the folder should include a `terrain.amrwind` file. 
+   For immersed boundary forcing method TerrainDrag must be specified and the folder should include a terrain file (default name: `terrain.amrwind`, user control is `TerrainDrag.terrain_file`) file.
    
 .. input_param:: incflo.density
 
@@ -23,6 +23,13 @@ as initial conditions and discretization options.
    Specify reference density. 
    For the most part if :input_param:`incflo.constant_density` = true then `incflo.density` sets a constant density everywhere.
    Refer to the field initializer for your chosen :input_param:`incflo.physics` for how `incflo.density` is used.
+
+.. input_param:: incflo.gravity
+
+   **type:** List of three Real numbers, optional, default = 0 0 -9.81
+
+   Acceleration due to gravity in m/s\ :sup:`2` \. This constant vector is used by all parts
+   of the solver related to gravity.
    
 .. input_param:: incflo.velocity
 

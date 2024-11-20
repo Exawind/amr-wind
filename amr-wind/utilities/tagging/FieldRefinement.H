@@ -5,6 +5,7 @@
 
 namespace amr_wind {
 class Field;
+class IntField;
 
 /** AMR refinement using a given field (e.g., density)
  *  \ingroup amr_utils
@@ -32,14 +33,69 @@ public:
     //! Read input file and initialize boxarray used to refine each level
     void initialize(const std::string& key) override;
 
-    void
-    operator()(int level, amrex::TagBoxArray& tags, amrex::Real time, int ngrow)
-        override;
+    void operator()(
+        const int level,
+        amrex::TagBoxArray& tags,
+        const amrex::Real time,
+        const int ngrow) override;
+
+    template <typename MF>
+    void tag(const int level, amrex::TagBoxArray& tags, const MF& mfab)
+    {
+        const bool tag_field = level <= m_max_lev_field;
+        const bool tag_grad = level <= m_max_lev_grad;
+
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+        for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid();
+             ++mfi) {
+            const auto& bx = mfi.tilebox();
+            const auto& tag = tags.array(mfi);
+            const auto& farr = mfab.const_array(mfi);
+
+            if (tag_field) {
+                const auto fld_err = m_field_error[level];
+                amrex::ParallelFor(
+                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        if (farr(i, j, k) > fld_err) {
+                            tag(i, j, k) = amrex::TagBox::SET;
+                        }
+                    });
+            }
+
+            if (tag_grad) {
+                const auto gerr = m_grad_error[level];
+                amrex::ParallelFor(
+                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        const auto axp =
+                            std::abs(farr(i + 1, j, k) - farr(i, j, k));
+                        const auto ayp =
+                            std::abs(farr(i, j + 1, k) - farr(i, j, k));
+                        const auto azp =
+                            std::abs(farr(i, j, k + 1) - farr(i, j, k));
+                        const auto axm =
+                            std::abs(farr(i - 1, j, k) - farr(i, j, k));
+                        const auto aym =
+                            std::abs(farr(i, j - 1, k) - farr(i, j, k));
+                        const auto azm =
+                            std::abs(farr(i, j, k - 1) - farr(i, j, k));
+                        const auto ax = amrex::max(axp, axm);
+                        const auto ay = amrex::max(ayp, aym);
+                        const auto az = amrex::max(azp, azm);
+                        if (amrex::max(ax, ay, az) >= gerr) {
+                            tag(i, j, k) = amrex::TagBox::SET;
+                        }
+                    });
+            }
+        }
+    }
 
 private:
     const CFDSim& m_sim;
 
     Field* m_field{nullptr};
+    IntField* m_int_field{nullptr};
 
     amrex::Vector<amrex::Real> m_field_error;
     amrex::Vector<amrex::Real> m_grad_error;

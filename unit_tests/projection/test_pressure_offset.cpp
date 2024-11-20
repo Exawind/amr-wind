@@ -137,7 +137,7 @@ protected:
         }
         {
             amrex::ParmParse pp("incflo");
-            pp.add("use_godunov", (int)1);
+            pp.add("use_godunov", 1);
         }
 
         // Boundary conditions
@@ -184,7 +184,7 @@ TEST_F(ProjPerturb, full_p_perturb)
     populate_parameters();
     {
         amrex::ParmParse pp("ICNS");
-        pp.add("reconstruct_true_pressure", (bool)true);
+        pp.add("reconstruct_true_pressure", true);
     }
 
     // Test with gravity term omitted, then added as reference pressure

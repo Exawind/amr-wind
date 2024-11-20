@@ -63,7 +63,7 @@ Methods and models
 
    * Wall models: log-law, constant stress, Schumann [:ref:`doc <wall_models>`, :ref:`inp <inputs_abl>`], dynamic (wave model) [:ref:`doc <wall_models>`, :ref:`inp <inputs_boundary_conditions>` 
 
-   * Reynolds-Average Navier-Stokes: :math:`k`-:math:`\omega` SST (and IDDES variant) [:ref:`doc <turbulence>`, :ref:`inp <inputs_turbulence>`]
+   * Reynolds-Average Navier-Stokes: :math:`k`-:math:`\omega` SST (and IDDES variant) and One-equation TKE model of Axell and Liungman [:ref:`doc <turbulence>`, :ref:`inp <inputs_turbulence>`]
 
 * Transport models
 

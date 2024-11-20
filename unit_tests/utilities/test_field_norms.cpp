@@ -165,11 +165,22 @@ protected:
         ppt1.add("field_name", m_fname);
         ppt1.addarr("field_error", amrex::Vector<amrex::Real>{m_fref_val});
     }
+    void setup_intfieldrefinement()
+    {
+        amrex::ParmParse pp("tagging");
+        pp.add("labels", (std::string) "t1");
+        amrex::ParmParse ppt1("tagging.t1");
+        ppt1.add("type", (std::string) "FieldRefinement");
+        ppt1.add("field_name", m_ifname);
+        ppt1.addarr("field_error", amrex::Vector<int>{m_ifref_val});
+    }
     // Parameters to reuse
     const amrex::Vector<amrex::Real> m_problo{{0.0, 0.0, -4.0}};
     const amrex::Vector<amrex::Real> m_probhi{{128.0, 128.0, 124.0}};
     const amrex::Real m_fref_val = 0.5;
     const std::string m_fname = "flag";
+    const int m_ifref_val = 1;
+    const std::string m_ifname = "iflag";
     const int m_nlev = 1;
     const int m_nx = 32;
     const int m_ny = 32;
@@ -310,6 +321,75 @@ TEST_F(FieldNormsTest, levelmask_off)
         ((m_ncell0 * 8.) * (m_cv0 / 8.) * m_w * m_w +
          m_ncell0 * m_cv0 * lev0_fac * lev0_fac * m_w * m_w) /
         m_dv);
+    tool.check_output(unorm, vnorm, wnorm);
+
+    // Change scalar for determining refinement - no fine level
+    flag.setVal(0.0);
+
+    // Regrid
+    rmesh.remesh();
+
+    // Check result on new mesh
+    tool.post_advance_work();
+    // Only base level exists, which includes factor
+    unorm =
+        std::sqrt(m_ncell0 * m_cv0 * lev0_fac * lev0_fac * m_u * m_u / m_dv);
+    vnorm =
+        std::sqrt(m_ncell0 * m_cv0 * lev0_fac * lev0_fac * m_v * m_v / m_dv);
+    wnorm =
+        std::sqrt(m_ncell0 * m_cv0 * lev0_fac * lev0_fac * m_w * m_w / m_dv);
+    tool.check_output(unorm, vnorm, wnorm);
+}
+
+TEST_F(FieldNormsTest, levelmask_on_int_refinement)
+{
+    bool levelmask = true;
+    // Set up parameters for domain
+    populate_parameters();
+    // Set up parameters for refinement
+    setup_intfieldrefinement();
+    // Set up parameters for sampler
+    setup_fnorm(levelmask);
+    // Create mesh and initialize
+    reset_prob_domain();
+    auto rmesh = FNRefinemesh();
+    rmesh.initialize_mesh(0.0);
+
+    // Repo and fields
+    auto& repo = rmesh.field_repo();
+    auto& velocity = repo.declare_field("velocity", 3, 2);
+    auto& flag = repo.declare_int_field(m_ifname, 1, 2);
+
+    // Set up scalar for determining refinement - all fine level
+    flag.setVal(2 * m_ifref_val);
+
+    // Initialize mesh refiner and remesh
+    rmesh.init_refiner();
+    rmesh.remesh();
+
+    // Initialize velocity distribution and access sim
+    const amrex::Real lev0_fac = 1.5;
+    init_velocity(velocity, m_u, m_v, m_w, lev0_fac);
+    auto& rsim = rmesh.sim();
+
+    // Initialize IOManager because FieldNorms relies on it
+    auto& io_mgr = rsim.io_manager();
+    // Set up velocity as an output (plot) variable
+    io_mgr.register_output_var("velocity");
+    io_mgr.initialize_io();
+
+    // Initialize sampler and check result on initial mesh
+    FieldNormsImpl tool(rsim, "fieldnorm");
+    tool.initialize();
+    tool.post_advance_work();
+    // Only highest level will be counted
+    // sqrt(number of cells * cell volume * cell value * cell value)
+    amrex::Real unorm =
+        std::sqrt((m_ncell0 * 8.) * (m_cv0 / 8.) * m_u * m_u / m_dv);
+    amrex::Real vnorm =
+        std::sqrt((m_ncell0 * 8.) * (m_cv0 / 8.) * m_v * m_v / m_dv);
+    amrex::Real wnorm =
+        std::sqrt((m_ncell0 * 8.) * (m_cv0 / 8.) * m_w * m_w / m_dv);
     tool.check_output(unorm, vnorm, wnorm);
 
     // Change scalar for determining refinement - no fine level

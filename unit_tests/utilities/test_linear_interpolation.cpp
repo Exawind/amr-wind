@@ -60,6 +60,46 @@ TEST(LinearInterpolation, bisection_search)
     }
 }
 
+TEST(LinearInterpolation, nearest_search)
+{
+    namespace interp = amr_wind::interp;
+    std::vector<amrex::Real> xvec(10);
+    std::iota(xvec.begin(), xvec.end(), 0.0);
+
+    const auto* start = xvec.data();
+    const auto* end = xvec.data() + xvec.size();
+    {
+        const auto idx = interp::nearest_search(start, end, 5.0);
+        EXPECT_EQ(idx.idx, 5);
+        EXPECT_EQ(idx.lim, interp::Limits::VALID);
+    }
+    {
+        const auto idx = interp::nearest_search(start, end, 1.1);
+        EXPECT_EQ(idx.idx, 1);
+        EXPECT_EQ(idx.lim, interp::Limits::VALID);
+    }
+    {
+        const auto idx = interp::nearest_search(start, end, 1.6);
+        EXPECT_EQ(idx.idx, 2);
+        EXPECT_EQ(idx.lim, interp::Limits::VALID);
+    }
+    {
+        const auto idx = interp::nearest_search(start, end, 3.5);
+        EXPECT_EQ(idx.idx, 3);
+        EXPECT_EQ(idx.lim, interp::Limits::VALID);
+    }
+    {
+        const auto idx = interp::nearest_search(start, end, -1.0);
+        EXPECT_EQ(idx.idx, 0);
+        EXPECT_EQ(idx.lim, interp::Limits::LOWLIM);
+    }
+    {
+        const auto idx = interp::nearest_search(start, end, 9.1);
+        EXPECT_EQ(idx.idx, 9);
+        EXPECT_EQ(idx.lim, interp::Limits::UPLIM);
+    }
+}
+
 TEST(LinearInterpolation, find_index)
 {
     namespace interp = amr_wind::interp;
@@ -105,6 +145,60 @@ TEST(LinearInterpolation, lin_interp_single)
     for (const auto& x : xtest) {
         const auto y = interp::linear(xvec, yvec, x);
         EXPECT_NEAR(y, mult_fac * x, 1.0e-12);
+    }
+}
+
+TEST(LinearInterpolation, lin_interp_single_multicomponent)
+{
+    namespace interp = amr_wind::interp;
+
+    const int ncomp = 3;
+    std::vector<amrex::Real> xvec(10);
+    std::vector<amrex::Real> yvec(static_cast<unsigned long>(ncomp * 10));
+    std::iota(xvec.begin(), xvec.end(), 0.0);
+    const amrex::Vector<amrex::Real> mult_facs = {
+        2.0 + 10.0 * amrex::Random(), 2.0 + 10.0 * amrex::Random(),
+        2.0 + 10.0 * amrex::Random()};
+    for (int i = 0; i < static_cast<int>(xvec.size()); i++) {
+        for (int n = 0; n < ncomp; n++) {
+            yvec[ncomp * i + n] = mult_facs[n] * xvec[i];
+        }
+    }
+
+    std::vector<amrex::Real> xtest{2.5, 4.5, 6.3, 8.8};
+    for (const auto& x : xtest) {
+        for (int n = 0; n < ncomp; n++) {
+            const auto y = interp::linear(xvec, yvec, x, 3, n);
+            EXPECT_NEAR(y, mult_facs[n] * x, 1.0e-12);
+        }
+    }
+}
+
+TEST(LinearInterpolation, bilin_interp_single)
+{
+    namespace interp = amr_wind::interp;
+
+    const amrex::Real mult_facx = 2.0 + 10.0 * amrex::Random();
+    const amrex::Real mult_facy = 2.0 + 10.0 * amrex::Random();
+    std::vector<amrex::Real> xvec(10), yvec(5);
+    std::vector<amrex::Real> zvec(xvec.size() * yvec.size());
+    std::iota(xvec.begin(), xvec.end(), 0.0);
+    std::iota(yvec.begin(), yvec.end(), 0.0);
+
+    for (int i = 0; i < static_cast<int>(xvec.size()); i++) {
+        for (int j = 0; j < static_cast<int>(yvec.size()); j++) {
+            zvec[i * yvec.size() + j] =
+                mult_facx * xvec[i] * mult_facy * yvec[j];
+        }
+    }
+
+    std::vector<amrex::Real> xtest{2.5, 4.5, 6.3, 8.8};
+    std::vector<amrex::Real> ytest{1.1, 2.3, 3.1, 3.8};
+    for (const auto& x : xtest) {
+        for (const auto& y : ytest) {
+            const auto z = interp::bilinear(xvec, yvec, zvec, x, y);
+            EXPECT_NEAR(z, mult_facx * x * mult_facy * y, 1.0e-12);
+        }
     }
 }
 
