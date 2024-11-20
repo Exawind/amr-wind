@@ -49,6 +49,7 @@ public:
         const auto& geom = m_sim.repo().mesh().Geom(level);
         const auto& prob_lo = geom.ProbLoArray();
         const auto& dx = geom.CellSizeArray();
+        const auto tagging_box = m_tagging_box;
 
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
@@ -69,7 +70,7 @@ public:
                             prob_lo[2] + (k + 0.5) * dx[2])};
 
                         if ((farr(i, j, k) > fld_err) &&
-                            (m_tagging_box.contains(coord))) {
+                            (tagging_box.contains(coord))) {
                             tag(i, j, k) = amrex::TagBox::SET;
                         }
                     });
@@ -99,7 +100,7 @@ public:
                         const auto ay = amrex::max(ayp, aym);
                         const auto az = amrex::max(azp, azm);
                         if ((amrex::max(ax, ay, az) >= gerr) &&
-                            (m_tagging_box.contains(coord))) {
+                            (tagging_box.contains(coord))) {
                             tag(i, j, k) = amrex::TagBox::SET;
                         }
                     });
