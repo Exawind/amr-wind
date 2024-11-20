@@ -74,6 +74,14 @@ void incflo::init_mesh()
         for (int lev = finestLevel(); lev <= maxLevel(); ++lev) {
             regrid(lev, m_time.current_time());
         }
+
+        // If regrid happened, call post regrid actions
+        if (finestLevel() <= maxLevel()) {
+            for (auto& pp : m_sim.physics()) {
+                pp->post_regrid_actions();
+            }
+        }
+
         if (ParallelDescriptor::IOProcessor()) {
             amrex::Print() << "Grid summary: " << std::endl;
             printGridSummary(amrex::OutStream(), 0, finest_level);

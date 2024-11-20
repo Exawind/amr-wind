@@ -132,5 +132,12 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
             }
         });
 }
+void TerrainDrag::post_regrid_actions()
+{
+    const int nlevels = m_sim.repo().num_active_levels();
+    for (int lev = 0; lev < nlevels; ++lev) {
+        initialize_fields(lev, m_sim.repo().mesh().Geom(lev));
+    }
+}
 
 } // namespace amr_wind::terraindrag
