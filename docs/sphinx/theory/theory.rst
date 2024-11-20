@@ -488,7 +488,7 @@ z direction (example: *half-channel* simulations) at the centerline.
    \end{aligned}
 
 Dynamic wall model (Wave model)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This wall model is used to calculate the stress due to moving surfaces,
 like ocean waves. It aims to introduce wave phase-resolving physics 
