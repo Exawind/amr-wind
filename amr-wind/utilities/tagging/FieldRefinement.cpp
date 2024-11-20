@@ -39,10 +39,12 @@ void FieldRefinement::initialize(const std::string& key)
 
     amrex::Vector<amrex::Real> box_lo(AMREX_SPACEDIM, 0);
     amrex::Vector<amrex::Real> box_hi(AMREX_SPACEDIM, 0);
-    if (pp.queryarr("box_lo", box_lo, 0, static_cast<int>(box_lo.size()))) {
+    if (pp.queryarr("box_lo", box_lo, 0, static_cast<int>(box_lo.size())) ==
+        1) {
         m_tagging_box.setLo(box_lo);
     }
-    if (pp.queryarr("box_hi", box_hi, 0, static_cast<int>(box_hi.size()))) {
+    if (pp.queryarr("box_hi", box_hi, 0, static_cast<int>(box_hi.size())) ==
+        1) {
         m_tagging_box.setHi(box_hi);
     }
 

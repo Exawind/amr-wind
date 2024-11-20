@@ -174,7 +174,7 @@ protected:
         ppt1.add("field_name", m_ifname);
         ppt1.addarr("field_error", amrex::Vector<int>{m_ifref_val});
     }
-    void setup_tagging_box()
+    static void setup_tagging_box()
     {
         amrex::ParmParse ppt1("tagging.t1");
         amrex::Vector<amrex::Real> blo = {3.0, 3.0, 3.0};
