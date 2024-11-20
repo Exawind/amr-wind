@@ -36,6 +36,15 @@ void FieldRefinement::initialize(const std::string& key)
     pp.queryarr("field_error", field_err);
     pp.queryarr("grad_error", grad_err);
 
+    amrex::Vector<amrex::Real> box_lo(AMREX_SPACEDIM);
+    amrex::Vector<amrex::Real> box_hi(AMREX_SPACEDIM);
+    pp.queryarr("box_lo", box_lo, 0, static_cast<int>(box_lo.size()));
+    pp.queryarr("box_hi", box_hi, 0, static_cast<int>(box_hi.size()));
+    m_tagging_box = amrex::RealBox(box_lo.data(), box_hi.data());
+    if (!m_tagging_box.ok()) {
+        m_tagging_box = m_sim.repo().mesh().Geom(0).ProbDomain();
+    }
+
     if ((field_err.empty()) && (grad_err.empty())) {
         amrex::Abort(
             "FieldRefinement: Must specify at least one of field_error or "
