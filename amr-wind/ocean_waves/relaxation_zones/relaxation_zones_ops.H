@@ -4,6 +4,7 @@
 #include "amr-wind/ocean_waves/relaxation_zones/RelaxationZones.H"
 #include "amr-wind/ocean_waves/OceanWavesTypes.H"
 #include "amr-wind/ocean_waves/OceanWavesOps.H"
+#include "amr-wind/ocean_waves/utils/wave_utils_K.H"
 #include "amr-wind/core/MultiParser.H"
 #include "amr-wind/fvm/gradient.H"
 

@@ -82,6 +82,7 @@ struct InitDataOp<StokesWaves>
         // cppcheck-suppress constVariableReference
         auto& velocity = sim.repo().get_field("velocity");
         const auto& problo = geom.ProbLoArray();
+        const auto& probhi = geom.ProbHiArray();
         const auto& dx = geom.CellSizeArray();
         for (amrex::MFIter mfi(m_levelset(level)); mfi.isValid(); ++mfi) {
 
@@ -92,46 +93,47 @@ struct InitDataOp<StokesWaves>
             const amrex::Real wave_length = wdata.wave_length;
             const amrex::Real water_depth = wdata.water_depth;
             const amrex::Real zero_sea_level = wdata.zsl;
+            const amrex::Real gen_length = wdata.gen_length;
+            const amrex::Real beach_length = wdata.beach_length;
             const amrex::Real g = wdata.g;
             const int order = wdata.order;
+            const bool has_beach = wdata.has_beach;
+            const bool init_wave_field = wdata.init_wave_field;
             const auto& gbx3 = mfi.growntilebox(3);
 
-            if (wdata.init_wave_field) {
-                amrex::ParallelFor(
-                    gbx3, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+            amrex::ParallelFor(
+                gbx3, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                        amrex::Real eta{0.0}, u_w{0.0}, v_w{0.0}, w_w{0.0};
+                    // Wave profile
+                    amrex::Real eta_w{0.0}, u_w{0.0}, v_w{0.0}, w_w{0.0};
+                    relaxation_zones::stokes_waves(
+                        order, wave_length, water_depth, wave_height,
+                        zero_sea_level, g, x, z, 0.0, eta_w, u_w, v_w, w_w);
+                    const utils::WaveVec wave_sol{u_w, v_w, w_w, eta_w};
 
-                        relaxation_zones::stokes_waves(
-                            order, wave_length, water_depth, wave_height,
-                            zero_sea_level, g, x, z, 0.0, eta, u_w, v_w, w_w);
+                    // Quiescent profile
+                    const utils::WaveVec quiescent{
+                        0.0, 0.0, 0.0, zero_sea_level};
 
-                        phi(i, j, k) = eta - z;
-                        const amrex::Real cell_length_2D =
-                            std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
-                        if (phi(i, j, k) + cell_length_2D >= 0) {
-                            vel(i, j, k, 0) = u_w;
-                            vel(i, j, k, 1) = v_w;
-                            vel(i, j, k, 2) = w_w;
-                        }
-                    });
+                    // Specify initial state for each region of domain
+                    const auto bulk = init_wave_field ? wave_sol : quiescent;
+                    const auto outlet = has_beach ? quiescent : wave_sol;
 
-            } else {
-                amrex::ParallelFor(
-                    gbx3, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                        phi(i, j, k) = zero_sea_level - z;
-                        const amrex::Real cell_length_2D =
-                            std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
-                        if (phi(i, j, k) + cell_length_2D >= 0) {
-                            vel(i, j, k, 0) = 0.0;
-                            vel(i, j, k, 1) = 0.0;
-                            vel(i, j, k, 2) = 0.0;
-                        }
-                    });
-            }
+                    const auto local_profile = utils::harmonize_profiles_1d(
+                        x, problo[0], gen_length, probhi[0], beach_length,
+                        wave_sol, bulk, outlet);
+
+                    phi(i, j, k) = local_profile[3] - z;
+                    const amrex::Real cell_length_2D =
+                        std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
+                    if (phi(i, j, k) + cell_length_2D >= 0) {
+                        vel(i, j, k, 0) = local_profile[0];
+                        vel(i, j, k, 1) = local_profile[1];
+                        vel(i, j, k, 2) = local_profile[2];
+                    }
+                });
         }
     }
 };
