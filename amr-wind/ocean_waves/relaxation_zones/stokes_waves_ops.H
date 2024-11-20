@@ -121,7 +121,7 @@ struct InitDataOp<StokesWaves>
                     const auto bulk = init_wave_field ? wave_sol : quiescent;
                     const auto outlet = has_beach ? quiescent : wave_sol;
 
-                    auto local_profile = utils::harmonize_profiles_1d(
+                    const auto local_profile = utils::harmonize_profiles_1d(
                         x, problo[0], gen_length, probhi[0], beach_length,
                         wave_sol, bulk, outlet);
 
