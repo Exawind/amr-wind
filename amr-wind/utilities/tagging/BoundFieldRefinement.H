@@ -105,11 +105,11 @@ public:
                         const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
                         bool add_cell = false;
                         for (unsigned ii = 0; ii < vsize; ++ii) {
-                            if (x >= device_xmin_list[i] &&
-                                x <= device_xmax_list[i] &&
-                                y >= device_ymin_list[i] &&
-                                y <= device_ymax_list[i] &&
-                                level <= device_level_list[i] && z > dx[2]) {
+                            if (x >= device_xmin_list[ii] &&
+                                x <= device_xmax_list[ii] &&
+                                y >= device_ymin_list[ii] &&
+                                y <= device_ymax_list[ii] &&
+                                level <= device_level_list[ii] && z > dx[2]) {
                                 add_cell = true;
                                 break;
                             }
@@ -143,11 +143,11 @@ public:
                         const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
                         bool add_cell = false;
                         for (unsigned ii = 0; ii < vsize; ++ii) {
-                            if (x >= device_xmin_list[i] &&
-                                x <= device_xmax_list[i] &&
-                                y >= device_ymin_list[i] &&
-                                y <= device_ymax_list[i] &&
-                                level <= device_level_list[i] && z > dx[2]) {
+                            if (x >= device_xmin_list[ii] &&
+                                x <= device_xmax_list[ii] &&
+                                y >= device_ymin_list[ii] &&
+                                y <= device_ymax_list[ii] &&
+                                level <= device_level_list[ii] && z > dx[2]) {
                                 add_cell = true;
                                 break;
                             }
