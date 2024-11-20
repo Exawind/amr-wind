@@ -48,7 +48,6 @@ public:
         const bool tag_grad = level <= m_max_lev_grad;
         const auto& geom = m_sim.repo().mesh().Geom(level);
         const auto& prob_lo = geom.ProbLoArray();
-        const auto& prob_hi = geom.ProbHiArray();
         const auto& dx = geom.CellSizeArray();
 
 #ifdef AMREX_USE_OMP
