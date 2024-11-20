@@ -133,6 +133,9 @@ public:
 
     void read_header();
 
+    amrex::Vector<amrex::BoxArray> read_bndry_native_boxarrays(
+        const std::string& chkname, const Field& field) const;
+
     void read_file(const bool /* nph_target_time*/);
 
     void populate_data(
@@ -180,7 +183,7 @@ private:
         const int /*lev*/,
         const Field* /*fld*/);
 #endif
-    int boundary_native_file_levels();
+    int boundary_native_file_levels() const;
 
     std::string m_title{"ABL boundary planes"};
 

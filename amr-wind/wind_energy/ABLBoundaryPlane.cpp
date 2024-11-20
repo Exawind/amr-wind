@@ -848,6 +848,174 @@ void ABLBoundaryPlane::read_header()
     }
 }
 
+amrex::Vector<amrex::BoxArray> ABLBoundaryPlane::read_bndry_native_boxarrays(
+    const std::string& chkname, const Field& field) const
+{
+    BL_PROFILE("amr-wind::ABLBoundaryPlane::read_bndry_native_boxarrays");
+    AMREX_ALWAYS_ASSERT(m_io_mode == io_mode::input);
+
+#ifndef AMR_WIND_USE_NETCDF
+    if (m_out_fmt == "netcdf") {
+        amrex::Abort("This is only used in the native format pathway");
+    }
+#endif
+
+    const int max_bndry_levels = boundary_native_file_levels();
+    amrex::Vector<amrex::BoxArray> bndry_bas(max_bndry_levels);
+
+    // Check if there are any header files
+    bool hdr_exists = false;
+    for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+        auto ori = oit();
+        const std::string hdr_name(
+            chkname + "/Header_" + std::to_string(ori) + "_" + field.name());
+        if (amrex::FileSystem::Exists(hdr_name)) {
+            hdr_exists = true;
+            break;
+        }
+    }
+
+    // If there are no header files, assume the entire domain is in the BoxArray
+    if (!hdr_exists) {
+        for (int ilev = 0; ilev < max_bndry_levels; ++ilev) {
+            amrex::Box domain = m_mesh.Geom(ilev).Domain();
+            bndry_bas[ilev] = amrex::BoxArray{domain};
+        }
+        return bndry_bas;
+    }
+
+    amrex::Vector<amrex::Vector<amrex::Box>> bndry_boxes(max_bndry_levels);
+    for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+        auto ori = oit();
+        const std::string hdr_name(
+            chkname + "/Header_" + std::to_string(ori) + "_" + field.name());
+
+        if (!amrex::FileSystem::Exists(hdr_name)) {
+            continue;
+        }
+
+        amrex::Vector<char> file_char_ptr;
+        amrex::ParallelDescriptor::ReadAndBcastFile(hdr_name, file_char_ptr);
+        std::string file_char_ptr_string(file_char_ptr.dataPtr());
+        std::istringstream is(file_char_ptr_string, std::istringstream::in);
+
+        std::string line, word;
+
+        // Title line
+        is >> line;
+
+        // Number of components
+        int ncomp = -1;
+        is >> ncomp;
+        ioutils::goto_next_line(is);
+        AMREX_ALWAYS_ASSERT(ncomp == field.num_comp());
+
+        // Skip the names
+        for (int nc = 0; nc < ncomp; nc++) {
+            ioutils::goto_next_line(is);
+        }
+
+        int spacedim, finest_level;
+        amrex::Real time;
+        is >> spacedim >> time >> finest_level;
+        const int nlevels = finest_level + 1;
+        AMREX_ALWAYS_ASSERT(nlevels <= max_bndry_levels);
+        AMREX_ALWAYS_ASSERT(AMREX_SPACEDIM == spacedim);
+        AMREX_ALWAYS_ASSERT(finest_level >= 0);
+
+        amrex::Array<amrex::Real, AMREX_SPACEDIM> prob_lo{
+            {AMREX_D_DECL(0., 0., 0.)}};
+        amrex::Array<amrex::Real, AMREX_SPACEDIM> prob_hi{
+            {AMREX_D_DECL(1., 1., 1.)}};
+        amrex::Array<amrex::Real, AMREX_SPACEDIM> prob_size{
+            {AMREX_D_DECL(1., 1., 1.)}};
+        for (int i = 0; i < spacedim; ++i) {
+            is >> prob_lo[i];
+        }
+        for (int i = 0; i < spacedim; ++i) {
+            is >> prob_hi[i];
+            prob_size[i] = prob_hi[i] - prob_lo[i];
+        }
+
+        const int normal = ori.coordDir();
+        const amrex::GpuArray<int, 2> perp = utils::perpendicular_idx(normal);
+        AMREX_ALWAYS_ASSERT(prob_lo[perp[0]] == m_mesh.Geom(0).ProbLo(perp[0]));
+        AMREX_ALWAYS_ASSERT(prob_lo[perp[1]] == m_mesh.Geom(0).ProbLo(perp[1]));
+        AMREX_ALWAYS_ASSERT(prob_hi[perp[0]] == m_mesh.Geom(0).ProbHi(perp[0]));
+        AMREX_ALWAYS_ASSERT(prob_hi[perp[1]] == m_mesh.Geom(0).ProbHi(perp[1]));
+
+        amrex::Vector<int> ref_ratio;
+        ref_ratio.resize(nlevels, 0);
+        for (int i = 0; i < finest_level; ++i) {
+            is >> ref_ratio[i];
+        }
+        ioutils::goto_next_line(is);
+
+        amrex::Vector<amrex::Box> prob_domain(nlevels);
+        for (int i = 0; i < nlevels; ++i) {
+            is >> prob_domain[i];
+            AMREX_ALWAYS_ASSERT(
+                prob_domain[i].smallEnd(perp[0]) ==
+                m_mesh.Geom(i).Domain().smallEnd(perp[0]));
+            AMREX_ALWAYS_ASSERT(
+                prob_domain[i].smallEnd(perp[1]) ==
+                m_mesh.Geom(i).Domain().smallEnd(perp[1]));
+            AMREX_ALWAYS_ASSERT(
+                prob_domain[i].bigEnd(perp[0]) ==
+                m_mesh.Geom(i).Domain().bigEnd(perp[0]));
+            AMREX_ALWAYS_ASSERT(
+                prob_domain[i].bigEnd(perp[1]) ==
+                m_mesh.Geom(i).Domain().bigEnd(perp[1]));
+        }
+
+        amrex::Vector<int> level_steps(nlevels);
+        for (int i = 0; i < nlevels; ++i) {
+            is >> level_steps[i];
+        }
+
+        amrex::Vector<amrex::Array<amrex::Real, AMREX_SPACEDIM>> cell_size(
+            nlevels, amrex::Array<amrex::Real, AMREX_SPACEDIM>{
+                         {AMREX_D_DECL(1., 1., 1.)}});
+        for (int ilev = 0; ilev < nlevels; ++ilev) {
+            for (int idim = 0; idim < spacedim; ++idim) {
+                is >> cell_size[ilev][idim];
+            }
+        }
+
+        int m_coordsys;
+        is >> m_coordsys;
+        int bwidth;
+        is >> bwidth;
+
+        for (int ilev = 0; ilev < nlevels; ++ilev) {
+            int levtmp, ngrids, levsteptmp;
+            amrex::Real gtime;
+            is >> levtmp >> ngrids >> gtime;
+            is >> levsteptmp;
+            amrex::Real glo[3], ghi[3];
+            AMREX_ASSERT(ngrids == 1);
+            for (int igrid = 0; igrid < ngrids; ++igrid) {
+                for (int idim = 0; idim < spacedim; ++idim) {
+                    is >> glo[idim] >> ghi[idim];
+                }
+            }
+            std::string relname;
+            is >> relname;
+            std::string mf_name = chkname + "/" + relname;
+            const auto vismf = std::make_unique<amrex::VisMF>(mf_name);
+            const auto ba = vismf->boxArray();
+            AMREX_ALWAYS_ASSERT(ba.size() == 1);
+            bndry_boxes[ilev].push_back(ba[0]);
+        }
+    }
+
+    for (int ilev = 0; ilev < bndry_boxes.size(); ilev++) {
+        amrex::BoxArray ba(bndry_boxes[ilev].data(), bndry_boxes[ilev].size());
+        bndry_bas[ilev] = amrex::BoxArray(ba.minimalBox());
+    }
+    return bndry_bas;
+}
+
 void ABLBoundaryPlane::read_file(const bool nph_target_time)
 {
     BL_PROFILE("amr-wind::ABLBoundaryPlane::read_file");
@@ -910,12 +1078,20 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
         const std::string level_prefix = "Level_";
 
         const int nlevels = boundary_native_file_levels();
+        const auto bndry_bas =
+            read_bndry_native_boxarrays(chkname1, *(m_fields[0]));
         for (int lev = 0; lev < nlevels; ++lev) {
             for (auto* fld : m_fields) {
                 auto& field = *fld;
 
-                const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
-                amrex::BoxArray ba(minBox);
+                {
+                    const amrex::Box& minBox =
+                        m_mesh.boxArray(lev).minimalBox();
+                    amrex::BoxArray ba(minBox);
+                    amrex::Print() << "old ba: " << ba << std::endl;
+                }
+                const auto& ba = bndry_bas[lev];
+                amrex::Print() << "ba: " << ba << std::endl;
                 amrex::DistributionMapping dm{ba};
 
                 amrex::BndryRegister bndry1(
@@ -1156,7 +1332,7 @@ void ABLBoundaryPlane::impl_buffer_field(
 #endif
 
 // Count the number of levels defined by the native boundary files
-int ABLBoundaryPlane::boundary_native_file_levels()
+int ABLBoundaryPlane::boundary_native_file_levels() const
 {
     int nlevels = 0;
     const std::string chkname =
