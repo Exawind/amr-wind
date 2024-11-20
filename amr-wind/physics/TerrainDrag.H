@@ -28,13 +28,11 @@ public:
 
     void post_init_actions() override {}
 
-    void post_regrid_actions() override {}
+  void post_regrid_actions() override;
 
     void pre_advance_work() override {}
 
     void post_advance_work() override {}
-
-    int return_blank_value(int i, int j, int k);
 
 private:
     CFDSim& m_sim;
