@@ -267,6 +267,10 @@ void incflo::post_advance_work()
     if (m_time.write_checkpoint()) {
         m_sim.io_manager().write_checkpoint_file();
     }
+
+    if (m_sim.has_overset()) {
+        m_sim.during_overset_advance(false);
+    }
 }
 
 /** Perform time-integration for user-defined time or timesteps.
@@ -333,6 +337,7 @@ void incflo::do_advance(const int fixed_point_iteration)
 {
     if (m_sim.has_overset()) {
         m_ovst_ops.pre_advance_work();
+        m_sim.during_overset_advance(true);
     }
     if (m_prescribe_vel && fixed_point_iteration == 0) {
         prescribe_advance();

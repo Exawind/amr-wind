@@ -192,13 +192,17 @@ void TiogaInterface::register_solution(
     m_cell_vars = cell_vars;
     m_node_vars = node_vars;
 
+    const amrex::Real time_fillpatch = m_sim.during_overset_advance()
+                                           ? m_sim.time().new_time()
+                                           : m_sim.time().current_time();
+
     // Move cell variables into scratch field
     {
         int icomp = 0;
         for (const auto& cvar : m_cell_vars) {
             auto& fld = repo.get_field(cvar);
             const int ncomp = fld.num_comp();
-            fld.fillpatch(m_sim.time().new_time());
+            fld.fillpatch(time_fillpatch);
             field_ops::copy(*m_qcell, fld, 0, icomp, ncomp, num_ghost);
             icomp += ncomp;
         }
@@ -210,7 +214,7 @@ void TiogaInterface::register_solution(
         for (const auto& cvar : m_cell_vars) {
             auto& fld = repo.get_field(cvar);
             const int ncomp = fld.num_comp();
-            fld.fillpatch(m_sim.time().new_time());
+            fld.fillpatch(time_fillpatch);
             // Device to host copy happens here
             const int nlevels = repo.num_active_levels();
             for (int lev = 0; lev < nlevels; ++lev) {
@@ -227,7 +231,7 @@ void TiogaInterface::register_solution(
             auto& fld = repo.get_field(cvar);
 
             const int ncomp = fld.num_comp();
-            fld.fillpatch(m_sim.time().new_time());
+            fld.fillpatch(time_fillpatch);
             field_ops::copy(*m_qnode, fld, 0, icomp, ncomp, num_ghost);
             icomp += ncomp;
         }
@@ -239,7 +243,7 @@ void TiogaInterface::register_solution(
         for (const auto& cvar : m_node_vars) {
             auto& fld = repo.get_field(cvar);
             const int ncomp = fld.num_comp();
-            fld.fillpatch(m_sim.time().new_time());
+            fld.fillpatch(time_fillpatch);
             // Device to host copy happens here
             const int nlevels = repo.num_active_levels();
             for (int lev = 0; lev < nlevels; ++lev) {
@@ -291,6 +295,10 @@ void TiogaInterface::update_solution()
 {
     auto& repo = m_sim.repo();
 
+    const amrex::Real time_fillpatch = m_sim.during_overset_advance()
+                                           ? m_sim.time().new_time()
+                                           : m_sim.time().current_time();
+
     // Update cell variables on device
     {
         int icomp = 0;
@@ -302,7 +310,7 @@ void TiogaInterface::update_solution()
             for (int lev = 0; lev < nlevels; ++lev) {
                 htod_memcpy(fld(lev), (*m_qcell_host)(lev), icomp, 0, ncomp);
             }
-            fld.fillpatch(m_sim.time().new_time());
+            fld.fillpatch(time_fillpatch);
             icomp += ncomp;
         }
     }
@@ -318,7 +326,7 @@ void TiogaInterface::update_solution()
             for (int lev = 0; lev < nlevels; ++lev) {
                 htod_memcpy(fld(lev), (*m_qnode_host)(lev), icomp, 0, ncomp);
             }
-            fld.fillpatch(m_sim.time().new_time());
+            fld.fillpatch(time_fillpatch);
             icomp += ncomp;
         }
     }

@@ -117,6 +117,10 @@ public:
 
     bool has_mesh_mapping() const { return m_mesh_mapping; }
 
+    void during_overset_advance(const bool flag) {m_during_overset_advance = flag; }
+
+    bool during_overset_advance() const {return m_during_overset_advance; }
+
     bool is_anelastic() const;
 
 private:
@@ -145,6 +149,9 @@ private:
     std::unique_ptr<HelicsStorage> m_helics;
 
     bool m_mesh_mapping{false};
+
+    // State of solver - know if during an overset timestep or not
+    bool m_during_overset_advance{false};
 };
 
 } // namespace amr_wind
