@@ -174,6 +174,14 @@ protected:
         ppt1.add("field_name", m_ifname);
         ppt1.addarr("field_error", amrex::Vector<int>{m_ifref_val});
     }
+    void setup_tagging_box()
+    {
+        amrex::ParmParse ppt1("tagging.t1");
+        amrex::Vector<amrex::Real> blo = {3.0, 3.0, 3.0};
+        amrex::Vector<amrex::Real> bhi = {30.0, 30.0, 30.0};
+        ppt1.addarr("box_lo", blo);
+        ppt1.addarr("box_hi", bhi);
+    }
     // Parameters to reuse
     const amrex::Vector<amrex::Real> m_problo{{0.0, 0.0, -4.0}};
     const amrex::Vector<amrex::Real> m_probhi{{128.0, 128.0, 124.0}};
@@ -264,6 +272,63 @@ TEST_F(FieldNormsTest, levelmask_on)
     wnorm =
         std::sqrt(m_ncell0 * m_cv0 * lev0_fac * lev0_fac * m_w * m_w / m_dv);
     tool.check_output(unorm, vnorm, wnorm);
+}
+
+TEST_F(FieldNormsTest, levelmask_on_with_box)
+{
+    bool levelmask = true;
+    // Set up parameters for domain
+    populate_parameters();
+    // Set up parameters for refinement
+    setup_fieldrefinement();
+    setup_tagging_box();
+    // Set up parameters for sampler
+    setup_fnorm(levelmask);
+    // Create mesh and initialize
+    reset_prob_domain();
+    auto rmesh = FNRefinemesh();
+    rmesh.initialize_mesh(0.0);
+
+    // Repo and fields
+    auto& repo = rmesh.field_repo();
+    auto& velocity = repo.declare_field("velocity", 3, 2);
+    auto& flag = repo.declare_field(m_fname, 1, 2);
+
+    // Set up scalar for determining refinement - all fine level
+    flag.setVal(2.0 * m_fref_val);
+
+    // Initialize mesh refiner and remesh
+    rmesh.init_refiner();
+    rmesh.remesh();
+
+    // Initialize velocity distribution and access sim
+    const amrex::Real lev0_fac = 1.5;
+    init_velocity(velocity, m_u, m_v, m_w, lev0_fac);
+    auto& rsim = rmesh.sim();
+
+    // Initialize IOManager because FieldNorms relies on it
+    auto& io_mgr = rsim.io_manager();
+    // Set up velocity as an output (plot) variable
+    io_mgr.register_output_var("velocity");
+    io_mgr.initialize_io();
+
+    // Initialize sampler and check result on initial mesh
+    FieldNormsImpl tool(rsim, "fieldnorm");
+    tool.initialize();
+    tool.post_advance_work();
+    tool.check_output(
+        1.342655804506534, 1.9393917176204616, 4.0279674135195087);
+
+    // Change scalar for determining refinement - no fine level
+    flag.setVal(0.0);
+
+    // Regrid
+    rmesh.remesh();
+
+    // Check result on new mesh
+    tool.post_advance_work();
+    tool.check_output(
+        1.3500000000000343, 1.9499999999999589, 4.0500000000000043);
 }
 
 // Not sure why this option would be used, but it is available
