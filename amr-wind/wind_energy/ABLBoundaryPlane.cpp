@@ -1003,7 +1003,8 @@ amrex::Vector<amrex::BoxArray> ABLBoundaryPlane::read_bndry_native_boxarrays(
             is >> relname;
             std::string mf_name = chkname + "/" + relname;
             const auto vismf = std::make_unique<amrex::VisMF>(mf_name);
-            const auto ba = vismf->boxArray();
+            auto ba = vismf->boxArray();
+            ba.growLo(normal, -1);
             AMREX_ALWAYS_ASSERT(ba.size() == 1);
             bndry_boxes[ilev].push_back(ba[0]);
         }
@@ -1011,6 +1012,7 @@ amrex::Vector<amrex::BoxArray> ABLBoundaryPlane::read_bndry_native_boxarrays(
 
     for (int ilev = 0; ilev < bndry_boxes.size(); ilev++) {
         amrex::BoxArray ba(bndry_boxes[ilev].data(), bndry_boxes[ilev].size());
+        amrex::Print() << "at lev : " << ilev << " ba: " << ba << std::endl;
         bndry_bas[ilev] = amrex::BoxArray(ba.minimalBox());
     }
     return bndry_bas;
@@ -1084,14 +1086,7 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
             for (auto* fld : m_fields) {
                 auto& field = *fld;
 
-                {
-                    const amrex::Box& minBox =
-                        m_mesh.boxArray(lev).minimalBox();
-                    amrex::BoxArray ba(minBox);
-                    amrex::Print() << "old ba: " << ba << std::endl;
-                }
                 const auto& ba = bndry_bas[lev];
-                amrex::Print() << "ba: " << ba << std::endl;
                 amrex::DistributionMapping dm{ba};
 
                 amrex::BndryRegister bndry1(
