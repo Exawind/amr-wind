@@ -1,9 +1,11 @@
 #ifndef FIELDREFINEMENT_H
 #define FIELDREFINEMENT_H
 
+#include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/tagging/RefinementCriteria.H"
 
 namespace amr_wind {
+class CFDSim;
 class Field;
 class IntField;
 
@@ -44,6 +46,10 @@ public:
     {
         const bool tag_field = level <= m_max_lev_field;
         const bool tag_grad = level <= m_max_lev_grad;
+        const auto& geom = m_sim.repo().mesh().Geom(level);
+        const auto& prob_lo = geom.ProbLoArray();
+        const auto& dx = geom.CellSizeArray();
+        const auto tagging_box = m_tagging_box;
 
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
@@ -58,7 +64,13 @@ public:
                 const auto fld_err = m_field_error[level];
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        if (farr(i, j, k) > fld_err) {
+                        const amrex::RealVect coord = {AMREX_D_DECL(
+                            prob_lo[0] + (i + 0.5) * dx[0],
+                            prob_lo[1] + (j + 0.5) * dx[1],
+                            prob_lo[2] + (k + 0.5) * dx[2])};
+
+                        if ((farr(i, j, k) > fld_err) &&
+                            (tagging_box.contains(coord))) {
                             tag(i, j, k) = amrex::TagBox::SET;
                         }
                     });
@@ -68,6 +80,10 @@ public:
                 const auto gerr = m_grad_error[level];
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        const amrex::RealVect coord = {AMREX_D_DECL(
+                            prob_lo[0] + (i + 0.5) * dx[0],
+                            prob_lo[1] + (j + 0.5) * dx[1],
+                            prob_lo[2] + (k + 0.5) * dx[2])};
                         const auto axp =
                             std::abs(farr(i + 1, j, k) - farr(i, j, k));
                         const auto ayp =
@@ -83,7 +99,8 @@ public:
                         const auto ax = amrex::max(axp, axm);
                         const auto ay = amrex::max(ayp, aym);
                         const auto az = amrex::max(azp, azm);
-                        if (amrex::max(ax, ay, az) >= gerr) {
+                        if ((amrex::max(ax, ay, az) >= gerr) &&
+                            (tagging_box.contains(coord))) {
                             tag(i, j, k) = amrex::TagBox::SET;
                         }
                     });
@@ -102,6 +119,7 @@ private:
 
     int m_max_lev_field{-1};
     int m_max_lev_grad{-1};
+    amrex::RealBox m_tagging_box;
 };
 
 } // namespace amr_wind
