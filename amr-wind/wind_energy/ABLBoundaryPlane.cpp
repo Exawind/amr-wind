@@ -1154,9 +1154,6 @@ void ABLBoundaryPlane::populate_data(
     if (m_io_mode != io_mode::input) {
         return;
     }
-    if (time - m_in_data.tinterp() > 1e-12) {
-        return;
-    }
 
     AMREX_ALWAYS_ASSERT(
         ((m_in_data.tn() <= time) || (time <= m_in_data.tnp1())));
