@@ -16,12 +16,36 @@ public:
 
     static std::string identifier() { return "ConstTransport"; }
 
-    explicit ConstTransport(CFDSim& sim) : m_repo(sim.repo())
+    explicit ConstTransport(CFDSim& sim)
+        : m_repo(sim.repo()), m_phy_mgr(sim.physics_manager())
     {
         amrex::ParmParse pp("transport");
         pp.query("viscosity", m_mu);
         pp.query("laminar_prandtl", m_Pr);
         pp.query("turbulent_prandtl", m_Prt);
+
+        // Backwards compatibility
+        amrex::ParmParse pp_boussinesq_buoyancy("BoussinesqBuoyancy");
+        if (pp.contains("thermal_expansion_coefficient")) {
+            pp.get("thermal_expansion_coefficient", m_beta);
+            if (pp_boussinesq_buoyancy.contains("thermal_expansion_coeff")) {
+                amrex::Print()
+                    << "WARNING: BoussinesqBuoyancy.thermal_expansion_coeff "
+                       "option has been deprecated in favor of "
+                       "transport.thermal_expansion_coefficient. Ignoring the "
+                       "BoussinesqBuoyancy option in favor of the transport "
+                       "option."
+                    << std::endl;
+            }
+        } else if (pp_boussinesq_buoyancy.contains("thermal_expansion_coeff")) {
+            amrex::Print()
+                << "WARNING: BoussinesqBuoyancy.thermal_expansion_coeff option "
+                   "has been deprecated in favor of "
+                   "transport.thermal_expansion_coefficient. Please replace "
+                   "this option."
+                << std::endl;
+            pp_boussinesq_buoyancy.get("thermal_expansion_coeff", m_beta);
+        }
     }
 
     ~ConstTransport() override = default;
@@ -87,9 +111,40 @@ public:
         return diff;
     }
 
+    //! Return the thermal diffusivity field
+    inline std::unique_ptr<ScratchField> beta() override
+    {
+        auto beta = m_repo.create_scratch_field(1, 1);
+
+        amrex::Real beta_const = m_beta;
+        if (m_phy_mgr.contains("ABL")) {
+            const int normal_dir = 2;
+            amrex::Vector<amrex::Real> gravity{0.0, 0.0, -9.81};
+            amrex::Real ref_theta = 0.0;
+            {
+                amrex::ParmParse pp("ABL");
+                pp.get("reference_temperature", ref_theta);
+            }
+            {
+                amrex::ParmParse pp("incflo");
+                pp.queryarr("gravity", gravity);
+            }
+            beta_const = -gravity[normal_dir] / ref_theta;
+        }
+
+        for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
+            (*beta)(lev).setVal(beta_const);
+        }
+
+        return beta;
+    }
+
 private:
     //! Reference to the field repository (for creating scratch fields)
     FieldRepo& m_repo;
+
+    //! Reference to the physics manager
+    const PhysicsMgr& m_phy_mgr;
 
     //! (Laminar) dynamic viscosity
     amrex::Real m_mu{1.0e-5};
@@ -99,6 +154,9 @@ private:
 
     //! Turbulent Prandtl number
     amrex::Real m_Prt{1.0};
+
+    //! Thermal expansion coefficient
+    amrex::Real m_beta{0.0};
 };
 
 } // namespace amr_wind::transport

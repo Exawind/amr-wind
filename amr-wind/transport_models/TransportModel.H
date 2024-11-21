@@ -39,6 +39,9 @@ public:
     //! Scalar diffusivity based on Schmidt number
     virtual std::unique_ptr<ScratchField>
     scalar_diffusivity(const std::string& scalar_name) = 0;
+
+    //! Thermal expansion coefficient
+    virtual std::unique_ptr<ScratchField> beta() = 0;
 };
 } // namespace amr_wind::transport
 

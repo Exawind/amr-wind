@@ -221,6 +221,17 @@ public:
         return diff;
     }
 
+    //! Return the thermal diffusivity field
+    inline std::unique_ptr<ScratchField> beta() override
+    {
+        amrex::Abort("TwoPhase thermal expansion coefficient not implemented");
+        auto beta = m_repo.create_scratch_field(1, 1);
+        for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
+            (*beta)(lev).setVal(0.0);
+        }
+        return beta;
+    }
+
 private:
     //! Reference to the CFD sim
     CFDSim& m_sim;
