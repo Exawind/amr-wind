@@ -5,6 +5,7 @@
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/index_operations.H"
+#include "amr-wind/utilities/constants.H"
 #include <AMReX_PlotFileUtil.H>
 
 namespace amr_wind {
@@ -899,7 +900,7 @@ amrex::Vector<amrex::BoxArray> ABLBoundaryPlane::read_bndry_native_boxarrays(
         std::string file_char_ptr_string(file_char_ptr.dataPtr());
         std::istringstream is(file_char_ptr_string, std::istringstream::in);
 
-        std::string line, word;
+        std::string line;
 
         // Title line
         is >> line;
@@ -939,10 +940,14 @@ amrex::Vector<amrex::BoxArray> ABLBoundaryPlane::read_bndry_native_boxarrays(
 
         const int normal = ori.coordDir();
         const amrex::GpuArray<int, 2> perp = utils::perpendicular_idx(normal);
-        AMREX_ALWAYS_ASSERT(prob_lo[perp[0]] == m_mesh.Geom(0).ProbLo(perp[0]));
-        AMREX_ALWAYS_ASSERT(prob_lo[perp[1]] == m_mesh.Geom(0).ProbLo(perp[1]));
-        AMREX_ALWAYS_ASSERT(prob_hi[perp[0]] == m_mesh.Geom(0).ProbHi(perp[0]));
-        AMREX_ALWAYS_ASSERT(prob_hi[perp[1]] == m_mesh.Geom(0).ProbHi(perp[1]));
+        AMREX_ALWAYS_ASSERT(constants::is_close(
+            prob_lo[perp[0]], m_mesh.Geom(0).ProbLo(perp[0])));
+        AMREX_ALWAYS_ASSERT(constants::is_close(
+            prob_lo[perp[1]], m_mesh.Geom(0).ProbLo(perp[1])));
+        AMREX_ALWAYS_ASSERT(constants::is_close(
+            prob_hi[perp[0]], m_mesh.Geom(0).ProbHi(perp[0])));
+        AMREX_ALWAYS_ASSERT(constants::is_close(
+            prob_hi[perp[1]], m_mesh.Geom(0).ProbHi(perp[1])));
 
         amrex::Vector<int> ref_ratio;
         ref_ratio.resize(nlevels, 0);
@@ -992,7 +997,8 @@ amrex::Vector<amrex::BoxArray> ABLBoundaryPlane::read_bndry_native_boxarrays(
             amrex::Real gtime;
             is >> levtmp >> ngrids >> gtime;
             is >> levsteptmp;
-            amrex::Real glo[3], ghi[3];
+            amrex::Array<amrex::Real, 3> glo = {0.0};
+            amrex::Array<amrex::Real, 3> ghi = {0.0};
             AMREX_ASSERT(ngrids == 1);
             for (int igrid = 0; igrid < ngrids; ++igrid) {
                 for (int idim = 0; idim < spacedim; ++idim) {
@@ -1011,7 +1017,9 @@ amrex::Vector<amrex::BoxArray> ABLBoundaryPlane::read_bndry_native_boxarrays(
     }
 
     for (int ilev = 0; ilev < bndry_boxes.size(); ilev++) {
-        amrex::BoxArray ba(bndry_boxes[ilev].data(), bndry_boxes[ilev].size());
+        amrex::BoxArray ba(
+            bndry_boxes[ilev].data(),
+            static_cast<int>(bndry_boxes[ilev].size()));
         amrex::Print() << "at lev : " << ilev << " ba: " << ba << std::endl;
         bndry_bas[ilev] = amrex::BoxArray(ba.minimalBox());
     }
@@ -1149,7 +1157,8 @@ void ABLBoundaryPlane::populate_data(
 
     AMREX_ALWAYS_ASSERT(
         ((m_in_data.tn() <= time) || (time <= m_in_data.tnp1())));
-    AMREX_ALWAYS_ASSERT(std::abs(time - m_in_data.tinterp()) < 1e-12);
+    AMREX_ALWAYS_ASSERT(
+        std::abs(time - m_in_data.tinterp()) < constants::TIGHT_TOL);
 
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
