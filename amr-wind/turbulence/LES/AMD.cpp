@@ -104,10 +104,10 @@ void AMD<Transport>::update_turbulent_viscosity(
                 const auto rho_arr = rho_arrs[nbx];
                 const auto gradVel_arr = gradVel_arrs[nbx];
                 const auto gradT_arr = gradT_arrs[nbx];
-                const auto beta = beta_arrs[nbx](i, j, k);
+                const auto beta_val = beta_arrs[nbx](i, j, k);
                 mu_arr(i, j, k) =
                     rho_arr(i, j, k) * amd_muvel(
-                                           i, j, k, dx, beta, C_poincare,
+                                           i, j, k, dx, beta_val, C_poincare,
                                            gradVel_arr, gradT_arr,
                                            p_tpa_coord_begin, p_tpa_coord_end,
                                            p_tpa_deriv, normal_dir, nlo);
