@@ -238,10 +238,10 @@ void ABL::pre_advance_work()
             m_stats->vel_profile_coarse());
     }
 
-    m_bndry_plane->pre_advance_work();
     if (!m_sim.has_overset()) {
-        m_abl_mpl->pre_advance_work();
+        m_bndry_plane->pre_advance_work();
     }
+    m_abl_mpl->pre_advance_work();
 }
 
 /** Perform tasks at the beginning of a timestep, but after pre_advance
