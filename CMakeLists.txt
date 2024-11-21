@@ -11,7 +11,6 @@ include(amr-wind-utils)
 ########################## OPTIONS #####################################
 
 #General options for the project
-option(AMR_WIND_ENABLE_ALL_WARNINGS "Show most warnings for most compilers" ON)
 option(AMR_WIND_ENABLE_CLANG_TIDY "Compile with clang-tidy static analysis" OFF)
 option(AMR_WIND_ENABLE_CPPCHECK "Enable cppcheck static analysis target" OFF)
 option(AMR_WIND_ENABLE_FCOMPARE "Enable building fcompare when not testing" OFF)
@@ -35,9 +34,6 @@ option(AMR_WIND_ENABLE_TINY_PROFILE "Enable AMReX TinyProfile support" OFF)
 set(AMR_WIND_PRECISION "DOUBLE" CACHE STRING "Floating point precision SINGLE or DOUBLE")
 
 # Third party libraries
-option(AMR_WIND_USE_INTERNAL_AMREX "Add AMReX as subproject" ON)
-option(AMR_WIND_USE_INTERNAL_AMREX_HYDRO "Add AMReX-Hydro as subproject" ON)
-option(AMR_WIND_USE_INTERNAL_WAVES2AMR "Add Waves2AMR as subproject" ON)
 option(AMR_WIND_ENABLE_HDF5 "Enable HDF5 library" OFF)
 option(AMR_WIND_ENABLE_HDF5_ZFP "Enable ZFP compression in HDF5 library" OFF)
 option(AMR_WIND_ENABLE_NETCDF "Enable NetCDF library" OFF)
