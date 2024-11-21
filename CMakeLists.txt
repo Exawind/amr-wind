@@ -182,7 +182,7 @@ if(AMR_WIND_ENABLE_ASCENT)
   else()
     target_link_libraries(${amr_wind_lib_name} PUBLIC ascent::ascent)
   endif()
-  target_compile_definitions(${amr_wind_lib_name} PRIVATE AMR_WIND_USE_ASCENT)
+  target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_ASCENT)
 endif()
 
 # Link with HELICS module 
@@ -191,7 +191,7 @@ if(AMR_WIND_ENABLE_HELICS)
   find_package(HELICS 3 REQUIRED)
   target_include_directories(${amr_wind_lib_name} PUBLIC ${HELICS_INSTALL_DIR}/include)
   target_link_libraries(${amr_wind_lib_name} PUBLIC HELICS::helicsCpp98)
-  target_compile_definitions(${amr_wind_lib_name} PRIVATE AMR_WIND_USE_HELICS)
+  target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_HELICS)
 endif()
 
 if(AMR_WIND_TEST_WITH_PYTHON)
