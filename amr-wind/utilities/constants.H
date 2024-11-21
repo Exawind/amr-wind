@@ -1,7 +1,7 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-#include "AMReX_Real.H"
+#include "AMReX_REAL.H"
 #include "AMReX_Math.H"
 #include "AMReX_GpuQualifiers.H"
 
