@@ -56,13 +56,9 @@ void AMD<Transport>::update_turbulent_viscosity(
     const auto& vel = m_vel.state(fstate);
     const auto& temp = m_temperature.state(fstate);
     const auto& den = m_rho.state(fstate);
+    const auto beta = (this->m_transport).beta();
     const auto& geom_vec = repo.mesh().Geom();
-    amrex::Real beta = 0.0;
     const int normal_dir = m_normal_dir;
-    auto& phy_mgr = this->m_sim.physics_manager();
-    if (phy_mgr.contains("ABL")) {
-        beta = -m_gravity[normal_dir] / m_ref_theta;
-    }
 
     const amrex::Real C_poincare = m_C;
 
@@ -98,6 +94,7 @@ void AMD<Transport>::update_turbulent_viscosity(
         const auto& gradVel_arrs = (*gradVel)(lev).const_arrays();
         const auto& gradT_arrs = (*gradT)(lev).const_arrays();
         const auto& rho_arrs = den(lev).const_arrays();
+        const auto& beta_arrs = (*beta)(lev).const_arrays();
         const auto& mu_arrs = mu_turb(lev).arrays();
         const auto& mu_turb_lev = mu_turb(lev);
         amrex::ParallelFor(
@@ -107,6 +104,7 @@ void AMD<Transport>::update_turbulent_viscosity(
                 const auto rho_arr = rho_arrs[nbx];
                 const auto gradVel_arr = gradVel_arrs[nbx];
                 const auto gradT_arr = gradT_arrs[nbx];
+                const auto beta = beta_arrs[nbx](i, j, k);
                 mu_arr(i, j, k) =
                     rho_arr(i, j, k) * amd_muvel(
                                            i, j, k, dx, beta, C_poincare,
