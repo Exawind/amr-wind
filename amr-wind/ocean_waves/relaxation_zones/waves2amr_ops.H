@@ -414,36 +414,18 @@ struct InitDataOp<W2AWaves>
 
 #ifdef AMR_WIND_USE_W2A
         auto& wdata = data.meta();
-        bool init_waves = wdata.init_wave_field;
 
         auto& sim = data.sim();
 
+        // Fill ow fields, then populate flow fields according to setup
+        auto& ow_levelset = sim.repo().get_field("ow_levelset");
+        auto& ow_velocity = sim.repo().get_field("ow_velocity");
         auto& levelset = sim.repo().get_field("levelset");
         auto& velocity = sim.repo().get_field("velocity");
 
         const auto& problo = geom.ProbLoArray();
+        const auto& probhi = geom.ProbHiArray();
         const auto& dx = geom.CellSizeArray();
-
-        // Blank initialization if asked for
-        if (!init_waves) {
-            // Loop to populate field data
-            for (amrex::MFIter mfi(levelset(level)); mfi.isValid(); ++mfi) {
-                auto phi = levelset(level).array(mfi);
-                auto vel = velocity(level).array(mfi);
-                const auto& vbx = mfi.validbox();
-                const auto& gbx = grow(vbx, 3);
-                const amrex::Real zsl = wdata.zsl;
-                amrex::ParallelFor(
-                    gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                        phi(i, j, k) = zsl - z;
-                        vel(i, j, k, 0) = 0.0;
-                        vel(i, j, k, 1) = 0.0;
-                        vel(i, j, k, 2) = 0.0;
-                    });
-            }
-            return;
-        }
 
         // Set t_last to 0.0 to signify information read in
         wdata.t_last = 0.0;
@@ -457,20 +439,59 @@ struct InitDataOp<W2AWaves>
         // Interpolate to MultiFabs (one level at a time)
         interp_to_mfab::interp_eta_to_levelset_multifab(
             wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, wdata.zsl,
-            wdata.sp_eta_vec, levelset(level), problo, dx);
+            wdata.sp_eta_vec, ow_levelset(level), problo, dx);
         interp_to_mfab::interp_velocity_to_multifab(
             wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, indvec, wdata.hvec,
-            wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec, velocity(level),
+            wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec, ow_velocity(level),
             problo, dx);
-        // Zero velocity in pure liquid cells
-        postprocess_velocity_mfab_liquid(velocity(level), levelset(level), dx);
+        // Zero velocity in pure air cells
+        postprocess_velocity_mfab_liquid(
+            ow_velocity(level), ow_levelset(level), dx);
 
-        // Copy to ow fields for future interpolation
-        auto& ow_levelset = sim.repo().get_field("ow_levelset");
-        auto& ow_velocity = sim.repo().get_field("ow_velocity");
-        amrex::MultiFab::Copy(ow_levelset(level), levelset(level), 0, 0, 1, 3);
-        amrex::MultiFab::Copy(
-            ow_velocity(level), velocity(level), 0, 0, AMREX_SPACEDIM, 3);
+        // Populate flow fields according to intended forcing and init setup
+        for (amrex::MFIter mfi(levelset(level)); mfi.isValid(); ++mfi) {
+            const auto& ow_phi = ow_levelset(level).array(mfi);
+            const auto& ow_vel = ow_velocity(level).array(mfi);
+            const auto& phi = levelset(level).array(mfi);
+            const auto& vel = velocity(level).array(mfi);
+            const bool has_beach = wdata.has_beach;
+            const bool init_wave_field = wdata.init_wave_field;
+            const auto& gbx3 = mfi.growntilebox(3);
+
+            amrex::ParallelFor(
+                gbx3, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+
+                    const amrex::Real gen_length = wdata.gen_length;
+                    const amrex::Real beach_length = wdata.beach_length;
+                    const amrex::Real zero_sea_level = wdata.zsl;
+                    // Wave profile
+                    const utils::WaveVec wave_sol{
+                        ow_vel(i, j, k, 0), ow_vel(i, j, k, 1),
+                        ow_vel(i, j, k, 2), ow_phi(i, j, k) + z};
+                    // Quiescent profile
+                    const utils::WaveVec quiescent{
+                        0.0, 0.0, 0.0, zero_sea_level};
+
+                    // Specify initial state for each region of domain
+                    const auto bulk = init_wave_field ? wave_sol : quiescent;
+                    const auto outlet = has_beach ? quiescent : wave_sol;
+
+                    const auto local_profile = utils::harmonize_profiles_1d(
+                        x, problo[0], gen_length, probhi[0], beach_length,
+                        wave_sol, bulk, outlet);
+
+                    phi(i, j, k) = local_profile[3] - z;
+                    const amrex::Real cell_length_2D =
+                        std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
+                    if (phi(i, j, k) + cell_length_2D >= 0) {
+                        vel(i, j, k, 0) = local_profile[0];
+                        vel(i, j, k, 1) = local_profile[1];
+                        vel(i, j, k, 2) = local_profile[2];
+                    }
+                });
+        }
 
         // Start w2a fields at 0, some areas will not be modified
         auto& w2a_levelset = sim.repo().get_field("w2a_levelset");
