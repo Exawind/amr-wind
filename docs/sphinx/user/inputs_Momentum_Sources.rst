@@ -121,6 +121,33 @@ Section: Momentum Sources
    
    The start time for writing to the forcing timetable output file. The default is 0.
 
+.. input_param:: ABLForcing.abl_forcing_off_height
+
+   **type:** Real, required for multiphase simulations with ABL
+   
+   This parameter indicates the vertical distance above the water level that the ABL
+   forcing term should be turned off. This tuning parameter is used to avoid applying 
+   the ABL forcing to ocean waves. This is not used when the volume fraction field (vof)
+   is not present in the simulation.
+
+.. input_param:: ABLForcing.abl_forcing_off_height
+
+   **type:** Real, required for multiphase simulations with ABL
+   
+   This parameter indicates the vertical distance above the water level and the "off height"
+   that the ABL forcing term should be ramped from zero to full strength. This is not used
+   when the volume fraction field (vof) is not present in the simulation.
+
+.. input_param:: ABLForcing.abl_forcing_band
+
+   **type:** Real, optional for multiphase simulations with ABL
+   
+   This parameter is an additional safeguard against applying ABL forcing within the waves.
+   This specifies the number of computational cells in a band around the air-water interface
+   that the ABL forcing should be deactivated. While the other arguments relate to the height coordinate
+   within the domain, this argument is relative to the actual position of water in the simulation.
+   The default value is 2.
+
 .. input_param:: BodyForce.type
 
    **type:** String, optional
