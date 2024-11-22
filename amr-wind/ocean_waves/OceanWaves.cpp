@@ -23,7 +23,7 @@ OceanWaves::OceanWaves(CFDSim& sim)
             "OceanWaves requires MultiPhase or TerrainDrag physics to be "
             "active");
     }
-    if (!sim.physics_manager.contains("MultiPhase")) {
+    if (!sim.physics_manager().contains("MultiPhase")) {
         m_multiphase_mode = false;
     }
     m_ow_levelset.set_default_fillpatch_bc(sim.time());
@@ -81,7 +81,7 @@ void OceanWaves::pre_advance_work()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::pre_advance_work");
     if (!m_multiphase_mode) {
-        m_owm->update_relax_zones();
+        m_owm->update_relax_zones(true);
     }
 }
 
@@ -99,7 +99,7 @@ void OceanWaves::post_advance_work()
 void OceanWaves::relaxation_zones()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::update_relaxation_zones");
-    m_owm->update_relax_zones();
+    m_owm->update_relax_zones(false);
     m_owm->apply_relax_zones();
     m_owm->reset_regrid_flag();
 }

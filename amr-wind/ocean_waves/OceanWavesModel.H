@@ -32,9 +32,9 @@ public:
 
     virtual void read_inputs(const ::amr_wind::utils::MultiParser&) = 0;
 
-    virtual void init_waves(int, const amrex::Geometry&) = 0;
+    virtual void init_waves(int, const amrex::Geometry&, bool) = 0;
 
-    virtual void update_relax_zones() = 0;
+    virtual void update_relax_zones(bool) = 0;
 
     virtual void apply_relax_zones() = 0;
 
@@ -91,9 +91,9 @@ public:
         m_out_op.read_io_options(pp);
     }
 
-    void update_relax_zones() override
+    void update_relax_zones(bool for_forcing_term) override
     {
-        ops::UpdateRelaxZonesOp<WaveTheoryTrait>()(m_data);
+        ops::UpdateRelaxZonesOp<WaveTheoryTrait>()(m_data, for_forcing_term);
     }
 
     void apply_relax_zones() override
@@ -112,9 +112,9 @@ public:
 
     void write_outputs() override { m_out_op.write_outputs(); }
 
-    void init_waves(int level, const amrex::Geometry& geom) override
+    void init_waves(int level, const amrex::Geometry& geom, bool multiphase_mode) override
     {
-        ops::InitDataOp<WaveTheoryTrait>()(m_data, level, geom);
+        ops::InitDataOp<WaveTheoryTrait>()(m_data, level, geom, multiphase_mode);
     }
 };
 
