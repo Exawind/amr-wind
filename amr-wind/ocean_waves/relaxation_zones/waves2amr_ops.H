@@ -501,7 +501,7 @@ struct InitDataOp<W2AWaves>
 }; // namespace ocean_waves
 
 template <>
-struct UpdateRelaxZonesOp<W2AWaves>
+struct UpdateTargetFieldsOp<W2AWaves>
 {
     // cppcheck-suppress constParameterReference
     void operator()(W2AWaves::DataType& data, bool for_forcing_term)

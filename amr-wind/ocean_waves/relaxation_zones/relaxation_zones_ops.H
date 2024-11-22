@@ -51,7 +51,7 @@ struct UseDefaultOp
 };
 
 template <typename WaveTheoryTrait>
-struct UpdateRelaxZonesOp<
+struct UpdateTargetFieldsOp<
     WaveTheoryTrait,
     typename std::enable_if_t<
         std::is_base_of_v<RelaxZonesType, WaveTheoryTrait>>>

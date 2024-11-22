@@ -120,7 +120,7 @@ struct InitDataOp<LinearWaves>
 }; // namespace amr_wind::ocean_waves::ops
 
 template <>
-struct UpdateRelaxZonesOp<LinearWaves>
+struct UpdateTargetFieldsOp<LinearWaves>
 {
     void operator()(LinearWaves::DataType& data, bool for_forcing_term)
     {

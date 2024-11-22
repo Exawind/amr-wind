@@ -34,7 +34,7 @@ public:
 
     virtual void init_waves(int, const amrex::Geometry&, bool) = 0;
 
-    virtual void update_relax_zones(bool) = 0;
+    virtual void update_target_fields(bool) = 0;
 
     virtual void apply_relax_zones() = 0;
 
@@ -91,9 +91,9 @@ public:
         m_out_op.read_io_options(pp);
     }
 
-    void update_relax_zones(bool for_forcing_term) override
+    void update_target_fields(bool for_forcing_term) override
     {
-        ops::UpdateRelaxZonesOp<WaveTheoryTrait>()(m_data, for_forcing_term);
+        ops::UpdateTargetFieldsOp<WaveTheoryTrait>()(m_data, for_forcing_term);
     }
 
     void apply_relax_zones() override

@@ -145,7 +145,7 @@ struct InitDataOp<StokesWaves>
 };
 
 template <>
-struct UpdateRelaxZonesOp<StokesWaves>
+struct UpdateTargetFieldsOp<StokesWaves>
 {
     void operator()(StokesWaves::DataType& data, bool for_forcing_term)
     {

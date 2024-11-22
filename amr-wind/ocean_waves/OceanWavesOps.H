@@ -32,7 +32,7 @@ template <typename WaveTheoryTrait, typename = void>
 struct InitDataOp;
 
 template <typename WaveTheoryTrait, typename = void>
-struct UpdateRelaxZonesOp;
+struct UpdateTargetFieldsOp;
 
 template <typename WaveTheoryTrait, typename = void>
 struct ApplyRelaxZonesOp;
