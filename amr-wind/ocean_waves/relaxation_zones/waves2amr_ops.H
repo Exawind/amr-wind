@@ -406,7 +406,8 @@ struct InitDataOp<W2AWaves>
     void
     // cppcheck-suppress constParameterReference
     operator()(
-        W2AWaves::DataType & data, int level, const amrex::Geometry & geom, bool multiphase_mode)
+        W2AWaves::DataType &
+            data, int level, const amrex::Geometry & geom, bool multiphase_mode)
     {
 
 #ifdef AMR_WIND_USE_W2A
@@ -417,8 +418,12 @@ struct InitDataOp<W2AWaves>
         // Fill ow fields, then populate flow fields according to setup
         auto& ow_levelset = sim.repo().get_field("ow_levelset");
         auto& ow_velocity = sim.repo().get_field("ow_velocity");
-        auto& levelset = sim.repo().get_field("levelset");
         auto& velocity = sim.repo().get_field("velocity");
+
+        Field* levelset{nullptr};
+        if (multiphase_mode) {
+            levelset = &sim.repo().get_field("levelset");
+        }
 
         const auto& problo = geom.ProbLoArray();
         const auto& probhi = geom.ProbHiArray();
@@ -448,15 +453,17 @@ struct InitDataOp<W2AWaves>
         // Populate flow fields according to intended forcing and init setup
         const auto& ow_phi = ow_levelset(level).const_arrays();
         const auto& ow_vel = ow_velocity(level).const_arrays();
-        const auto& phi = levelset(level).arrays();
         const auto& vel = velocity(level).arrays();
+        const auto& phi_arrs = multiphase_mode
+                                   ? (*levelset)(level).arrays()
+                                   : amrex::MultiArray4<amrex::Real>();
 
         const amrex::Real gen_length = wdata.gen_length;
         const amrex::Real beach_length = wdata.beach_length;
         const amrex::Real zero_sea_level = wdata.zsl;
 
-        const bool has_beach = wdata.has_beach;
-        const bool init_wave_field = wdata.init_wave_field;
+        const bool has_beach = wdata.has_beach && multiphase_mode;
+        const bool init_wave_field = wdata.init_wave_field || !multiphase_mode;
 
         amrex::ParallelFor(
             velocity(level), amrex::IntVect(3),
@@ -479,13 +486,16 @@ struct InitDataOp<W2AWaves>
                     x, problo[0], gen_length, probhi[0], beach_length, wave_sol,
                     bulk, outlet);
 
-                phi[nbx](i, j, k) = local_profile[3] - z;
+                const amrex::Real phi = local_profile[3] - z;
                 const amrex::Real cell_length_2D =
                     std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
-                if (phi[nbx](i, j, k) + cell_length_2D >= 0) {
+                if (phi + cell_length_2D >= 0) {
                     vel[nbx](i, j, k, 0) = local_profile[0];
                     vel[nbx](i, j, k, 1) = local_profile[1];
                     vel[nbx](i, j, k, 2) = local_profile[2];
+                }
+                if (multiphase_mode) {
+                    phi_arrs[nbx](i, j, k) = phi;
                 }
             });
 
@@ -580,8 +590,8 @@ struct UpdateTargetFieldsOp<W2AWaves>
                 const int dir = 0;
                 flag_xlo =
                     (interp_to_mfab::check_lateral_overlap_lo(
-                         wdata.gen_length, dir, ow_velocity.vec_ptrs(),
-                         geom) == 1);
+                         wdata.gen_length, dir, ow_velocity.vec_ptrs(), geom) ==
+                     1);
                 // No overlap with gen region means no interp, unless ...
                 if (wdata.has_outprofile) {
                     // ... if overlap exists here, needing interp
