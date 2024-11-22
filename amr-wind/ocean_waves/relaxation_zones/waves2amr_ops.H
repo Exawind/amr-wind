@@ -454,6 +454,11 @@ struct InitDataOp<W2AWaves>
             const auto& ow_vel = ow_velocity(level).array(mfi);
             const auto& phi = levelset(level).array(mfi);
             const auto& vel = velocity(level).array(mfi);
+
+            const amrex::Real gen_length = wdata.gen_length;
+            const amrex::Real beach_length = wdata.beach_length;
+            const amrex::Real zero_sea_level = wdata.zsl;
+
             const bool has_beach = wdata.has_beach;
             const bool init_wave_field = wdata.init_wave_field;
             const auto& gbx3 = mfi.growntilebox(3);
@@ -463,9 +468,6 @@ struct InitDataOp<W2AWaves>
                     const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                    const amrex::Real gen_length = wdata.gen_length;
-                    const amrex::Real beach_length = wdata.beach_length;
-                    const amrex::Real zero_sea_level = wdata.zsl;
                     // Wave profile
                     const utils::WaveVec wave_sol{
                         ow_vel(i, j, k, 0), ow_vel(i, j, k, 1),
