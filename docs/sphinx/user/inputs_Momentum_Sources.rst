@@ -130,7 +130,7 @@ Section: Momentum Sources
    the ABL forcing to ocean waves. This is not used when the volume fraction field (vof)
    is not present in the simulation.
 
-.. input_param:: ABLForcing.abl_forcing_off_height
+.. input_param:: ABLForcing.abl_forcing_ramp_height
 
    **type:** Real, required for multiphase simulations with ABL
    
