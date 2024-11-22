@@ -82,23 +82,20 @@ void postprocess_velocity_mfab_liquid(
     amrex::MultiFab& lvs_mfab,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx)
 {
-    for (amrex::MFIter mfi(vel_mfab); mfi.isValid(); ++mfi) {
-        auto vel = vel_mfab.array(mfi);
-        auto phi = lvs_mfab.const_array(mfi);
-        const auto& vbx = mfi.validbox();
-        const auto& gbx = grow(vbx, 3);
-        amrex::ParallelFor(
-            gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                // Set velocity to zero if no liquid present
-                const amrex::Real cell_length_2D =
-                    std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
-                if (phi(i, j, k) + cell_length_2D >= 0) {
-                    vel(i, j, k, 0) = 0.0;
-                    vel(i, j, k, 1) = 0.0;
-                    vel(i, j, k, 2) = 0.0;
-                }
-            });
-    }
+    auto vel = vel_mfab.arrays();
+    const auto phi = lvs_mfab.const_arrays();
+    amrex::ParallelFor(
+        vel_mfab, amrex::IntVect(3),
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            // Set velocity to zero if no liquid present
+            const amrex::Real cell_length_2D =
+                std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
+            if (phi[nbx](i, j, k) + cell_length_2D >= 0) {
+                vel[nbx](i, j, k, 0) = 0.0;
+                vel[nbx](i, j, k, 1) = 0.0;
+                vel[nbx](i, j, k, 2) = 0.0;
+            }
+        });
 }
 
 void postprocess_velocity_field_liquid(
@@ -449,51 +446,48 @@ struct InitDataOp<W2AWaves>
             ow_velocity(level), ow_levelset(level), dx);
 
         // Populate flow fields according to intended forcing and init setup
-        for (amrex::MFIter mfi(levelset(level)); mfi.isValid(); ++mfi) {
-            const auto& ow_phi = ow_levelset(level).array(mfi);
-            const auto& ow_vel = ow_velocity(level).array(mfi);
-            const auto& phi = levelset(level).array(mfi);
-            const auto& vel = velocity(level).array(mfi);
+        const auto& ow_phi = ow_levelset(level).const_arrays();
+        const auto& ow_vel = ow_velocity(level).const_arrays();
+        const auto& phi = levelset(level).arrays();
+        const auto& vel = velocity(level).arrays();
 
-            const amrex::Real gen_length = wdata.gen_length;
-            const amrex::Real beach_length = wdata.beach_length;
-            const amrex::Real zero_sea_level = wdata.zsl;
+        const amrex::Real gen_length = wdata.gen_length;
+        const amrex::Real beach_length = wdata.beach_length;
+        const amrex::Real zero_sea_level = wdata.zsl;
 
-            const bool has_beach = wdata.has_beach;
-            const bool init_wave_field = wdata.init_wave_field;
-            const auto& gbx3 = mfi.growntilebox(3);
+        const bool has_beach = wdata.has_beach;
+        const bool init_wave_field = wdata.init_wave_field;
 
-            amrex::ParallelFor(
-                gbx3, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+        amrex::ParallelFor(
+            velocity(level), amrex::IntVect(3),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                    // Wave profile
-                    const utils::WaveVec wave_sol{
-                        ow_vel(i, j, k, 0), ow_vel(i, j, k, 1),
-                        ow_vel(i, j, k, 2), ow_phi(i, j, k) + z};
-                    // Quiescent profile
-                    const utils::WaveVec quiescent{
-                        0.0, 0.0, 0.0, zero_sea_level};
+                // Wave profile
+                const utils::WaveVec wave_sol{
+                    ow_vel[nbx](i, j, k, 0), ow_vel[nbx](i, j, k, 1),
+                    ow_vel[nbx](i, j, k, 2), ow_phi[nbx](i, j, k) + z};
+                // Quiescent profile
+                const utils::WaveVec quiescent{0.0, 0.0, 0.0, zero_sea_level};
 
-                    // Specify initial state for each region of domain
-                    const auto bulk = init_wave_field ? wave_sol : quiescent;
-                    const auto outlet = has_beach ? quiescent : wave_sol;
+                // Specify initial state for each region of domain
+                const auto bulk = init_wave_field ? wave_sol : quiescent;
+                const auto outlet = has_beach ? quiescent : wave_sol;
 
-                    const auto local_profile = utils::harmonize_profiles_1d(
-                        x, problo[0], gen_length, probhi[0], beach_length,
-                        wave_sol, bulk, outlet);
+                const auto local_profile = utils::harmonize_profiles_1d(
+                    x, problo[0], gen_length, probhi[0], beach_length, wave_sol,
+                    bulk, outlet);
 
-                    phi(i, j, k) = local_profile[3] - z;
-                    const amrex::Real cell_length_2D =
-                        std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
-                    if (phi(i, j, k) + cell_length_2D >= 0) {
-                        vel(i, j, k, 0) = local_profile[0];
-                        vel(i, j, k, 1) = local_profile[1];
-                        vel(i, j, k, 2) = local_profile[2];
-                    }
-                });
-        }
+                phi[nbx](i, j, k) = local_profile[3] - z;
+                const amrex::Real cell_length_2D =
+                    std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
+                if (phi[nbx](i, j, k) + cell_length_2D >= 0) {
+                    vel[nbx](i, j, k, 0) = local_profile[0];
+                    vel[nbx](i, j, k, 1) = local_profile[1];
+                    vel[nbx](i, j, k, 2) = local_profile[2];
+                }
+            });
 
         // Start w2a fields at 0, some areas will not be modified
         auto& w2a_levelset = sim.repo().get_field("w2a_levelset");
@@ -676,31 +670,29 @@ struct UpdateRelaxZonesOp<W2AWaves>
 
         // Temporally interpolate at every timestep to get target solution
         for (int lev = 0; lev < nlevels; ++lev) {
-            for (amrex::MFIter mfi(m_ow_levelset(lev)); mfi.isValid(); ++mfi) {
-                auto phi = m_ow_levelset(lev).array(mfi);
-                auto vel = m_ow_velocity(lev).array(mfi);
-                auto W2A_phi = w2a_levelset(lev).array(mfi);
-                auto W2A_vel = w2a_velocity(lev).array(mfi);
+            auto phi = m_ow_levelset(lev).arrays();
+            auto vel = m_ow_velocity(lev).arrays();
+            auto W2A_phi = w2a_levelset(lev).arrays();
+            auto W2A_vel = w2a_velocity(lev).arrays();
 
-                const amrex::Real W2A_t = wdata.t;
-                const auto& gbx = mfi.growntilebox(3);
-                amrex::ParallelFor(
-                    gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        // Interpolate temporally every time
-                        phi(i, j, k) += (W2A_phi(i, j, k) - phi(i, j, k)) *
-                                        (newtime - t_last) /
-                                        (W2A_t - t_last + 1e-16);
-                        vel(i, j, k, 0) +=
-                            (W2A_vel(i, j, k, 0) - vel(i, j, k, 0)) *
-                            (newtime - t_last) / (W2A_t - t_last + 1e-16);
-                        vel(i, j, k, 1) +=
-                            (W2A_vel(i, j, k, 1) - vel(i, j, k, 1)) *
-                            (newtime - t_last) / (W2A_t - t_last + 1e-16);
-                        vel(i, j, k, 2) +=
-                            (W2A_vel(i, j, k, 2) - vel(i, j, k, 2)) *
-                            (newtime - t_last) / (W2A_t - t_last + 1e-16);
-                    });
-            }
+            const amrex::Real W2A_t = wdata.t;
+            amrex::ParallelFor(
+                m_ow_levelset(lev), amrex::IntVect(3),
+                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                    // Interpolate temporally every time
+                    phi[nbx](i, j, k) +=
+                        (W2A_phi[nbx](i, j, k) - phi[nbx](i, j, k)) *
+                        (newtime - t_last) / (W2A_t - t_last + 1e-16);
+                    vel[nbx](i, j, k, 0) +=
+                        (W2A_vel[nbx](i, j, k, 0) - vel[nbx](i, j, k, 0)) *
+                        (newtime - t_last) / (W2A_t - t_last + 1e-16);
+                    vel[nbx](i, j, k, 1) +=
+                        (W2A_vel[nbx](i, j, k, 1) - vel[nbx](i, j, k, 1)) *
+                        (newtime - t_last) / (W2A_t - t_last + 1e-16);
+                    vel[nbx](i, j, k, 2) +=
+                        (W2A_vel[nbx](i, j, k, 2) - vel[nbx](i, j, k, 2)) *
+                        (newtime - t_last) / (W2A_t - t_last + 1e-16);
+                });
         }
 #else
         amrex::ignore_unused(data);
