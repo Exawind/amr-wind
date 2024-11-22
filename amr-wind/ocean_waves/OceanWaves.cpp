@@ -17,7 +17,7 @@ OceanWaves::OceanWaves(CFDSim& sim)
     , m_ow_velocity(
           sim.repo().declare_field("ow_velocity", AMREX_SPACEDIM, 3, 1))
 {
-    if ((!sim.physics_manager().contains("MultiPhase") ||
+    if (!(sim.physics_manager().contains("MultiPhase") ||
          sim.physics_manager().contains("TerrainDrag"))) {
         amrex::Abort(
             "OceanWaves requires MultiPhase or TerrainDrag physics to be "
