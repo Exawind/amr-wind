@@ -4,6 +4,7 @@
 #include "AMReX_Gpu.H"
 #include "AMReX_Random.H"
 #include "amr-wind/wind_energy/ABL.H"
+#include "amr-wind/physics/TerrainDrag.H"
 #include "amr-wind/utilities/linear_interpolation.H"
 
 namespace amr_wind::pde::icns {
@@ -42,6 +43,13 @@ DragForcing::DragForcing(const CFDSim& sim)
     } else {
         m_sponge_strength = 0.0;
     }
+    if (phy_mgr.contains("OceanWaves")) {
+        const auto terrain_phys =
+            m_sim.physics_manager().get<amr_wind::terraindrag::TerrainDrag>();
+        const auto target_vel_name = terrain_phys.wave_velocity_field_name();
+        m_target_vel = &sim.repo().get_field(target_vel_name);
+        m_terrain_is_waves = true;
+    }
 }
 
 DragForcing::~DragForcing() = default;
@@ -68,6 +76,12 @@ void DragForcing::operator()(
     const auto& drag = (*m_terrain_drag)(lev).const_array(mfi);
     auto* const m_terrainz0 = &this->m_sim.repo().get_field("terrainz0");
     const auto& terrainz0 = (*m_terrainz0)(lev).const_array(mfi);
+
+    const bool is_waves = m_terrain_is_waves;
+    const auto& target_vel_arr = is_waves
+                                     ? (*m_target_vel)(lev).const_array(mfi)
+                                     : amrex::Array4<amrex::Real>();
+
     const auto& geom = m_mesh.Geom(lev);
     const auto& dx = geom.CellSizeArray();
     const auto& prob_lo = geom.ProbLoArray();
@@ -158,20 +172,29 @@ void DragForcing::operator()(
             Dyz = -ustar * ustar * uy1 /
                   (tiny + std::sqrt(ux1 * ux1 + uy1 * uy1)) / dx[2];
         }
+        amrex::Real target_u = 0.;
+        amrex::Real target_v = 0.;
+        amrex::Real target_w = 0.;
+        if (is_waves) {
+            target_u = target_vel_arr(i, j, k, 0);
+            target_v = target_vel_arr(i, j, k, 1);
+            target_w = target_vel_arr(i, j, k, 2);
+        }
+
         const amrex::Real CdM =
             std::min(Cd / (m + tiny), cd_max / scale_factor);
         src_term(i, j, k, 0) -=
-            (CdM * m * ux1 * blank(i, j, k) + Dxz * drag(i, j, k) +
+            (CdM * m * (ux1 - target_u) * blank(i, j, k) + Dxz * drag(i, j, k) +
              bc_forcing_x * drag(i, j, k) +
              (xstart_damping + xend_damping + ystart_damping + yend_damping) *
                  (ux1 - sponge_density * spongeVelX));
         src_term(i, j, k, 1) -=
-            (CdM * m * uy1 * blank(i, j, k) + Dyz * drag(i, j, k) +
+            (CdM * m * (uy1 - target_v) * blank(i, j, k) + Dyz * drag(i, j, k) +
              bc_forcing_y * drag(i, j, k) +
              (xstart_damping + xend_damping + ystart_damping + yend_damping) *
                  (uy1 - sponge_density * spongeVelY));
         src_term(i, j, k, 2) -=
-            (CdM * m * uz1 * blank(i, j, k) +
+            (CdM * m * (uz1 - target_w) * blank(i, j, k) +
              (xstart_damping + xend_damping + ystart_damping + yend_damping) *
                  (uz1 - sponge_density * spongeVelZ));
     });

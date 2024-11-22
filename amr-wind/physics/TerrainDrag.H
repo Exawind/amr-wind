@@ -34,7 +34,7 @@ public:
 
     void post_advance_work() override {}
 
-    std::string wave_velocity_field_name() { return m_wave_velocity_name; }
+    std::string wave_velocity_field_name() const { return m_wave_velocity_name; }
 
 private:
     CFDSim& m_sim;
