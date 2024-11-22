@@ -34,6 +34,8 @@ public:
 
     void post_advance_work() override {}
 
+    std::string wave_velocity_field_name() { return m_wave_velocity_name; }
+
 private:
     CFDSim& m_sim;
     const FieldRepo& m_repo;
@@ -54,6 +56,14 @@ private:
     amrex::Vector<amrex::Real> m_xrough;
     amrex::Vector<amrex::Real> m_yrough;
     amrex::Vector<amrex::Real> m_z0rough;
+
+    //! Terrain Drag Force Term
+    bool m_terrain_is_waves{false};
+    Field* m_wave_volume_fraction{nullptr};
+    Field* m_wave_negative_elevation{nullptr};
+    const std::string m_wave_volume_fraction_name{"ow_vof"};
+    const std::string m_wave_negative_elevation_name{"ow_levelset"};
+    const std::string m_wave_velocity_name{"ow_velocity"};
 };
 } // namespace amr_wind::terraindrag
 
