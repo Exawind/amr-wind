@@ -130,9 +130,7 @@ void VelWallFunc::wall_model(
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
                         const amrex::Real xc = problo[0] + (i + 0.5) * dx[0];
 
-                        // Check if dx[0] > dx[2]
                         if (dx[0] <= dx[2]) {
-                            // Handle the case where dx[0] <= dx[2]
                             // Use the nearest cell value without interpolation
                             const int k_nearest =
                                 static_cast<int>(std::round(dx[0] / dx[2]));
@@ -148,67 +146,40 @@ void VelWallFunc::wall_model(
                                 tau.get_shear(vv, wspd, u_dx, v_dx, xc, 1) /
                                 mu * den(i, j, k);
                         } else {
-                            // Case where dx[0] > dx[2]
                             const int k_lo = static_cast<int>(
                                 std::floor(dx[0] / dx[2] - 0.5));
                             const int k_hi = k_lo + 1;
 
-                            // Ensure the interpolation points are within the
-                            // valid box
                             if (bx.contains(amrex::IntVect(i, j, k_lo)) &&
                                 bx.contains(amrex::IntVect(i, j, k_hi))) {
                                 const amrex::Real z_lo = (k_lo + 0.5) * dx[2];
                                 const amrex::Real z_hi = (k_hi + 0.5) * dx[2];
                                 const amrex::Real z_interp = dx[0];
+                                AMREX_ALWAYS_ASSERT(
+                                    (z_lo <= z_interp) && (z_interp < z_hi));
 
-                                // Check if the interpolation condition is
-                                // satisfied
-                                if (z_lo <= z_interp && z_interp < z_hi) {
-                                    const amrex::Real weight =
-                                        (z_interp - z_lo) / (z_hi - z_lo);
-                                    const amrex::Real u_lo =
-                                        vold_arr(i, j, k_lo, 0);
-                                    const amrex::Real u_hi =
-                                        vold_arr(i, j, k_hi, 0);
-                                    const amrex::Real v_lo =
-                                        vold_arr(i, j, k_lo, 1);
-                                    const amrex::Real v_hi =
-                                        vold_arr(i, j, k_hi, 1);
+                                const amrex::Real weight =
+                                    (z_interp - z_lo) / (z_hi - z_lo);
+                                const amrex::Real u_lo =
+                                    vold_arr(i, j, k_lo, 0);
+                                const amrex::Real u_hi =
+                                    vold_arr(i, j, k_hi, 0);
+                                const amrex::Real v_lo =
+                                    vold_arr(i, j, k_lo, 1);
+                                const amrex::Real v_hi =
+                                    vold_arr(i, j, k_hi, 1);
 
-                                    const amrex::Real u_dx =
-                                        u_lo + (u_hi - u_lo) * weight;
-                                    const amrex::Real v_dx =
-                                        v_lo + (v_hi - v_lo) * weight;
+                                const amrex::Real u_dx =
+                                    u_lo + (u_hi - u_lo) * weight;
+                                const amrex::Real v_dx =
+                                    v_lo + (v_hi - v_lo) * weight;
 
-                                    varr(i, j, k - 1, 0) =
-                                        tau.get_shear(
-                                            uu, wspd, u_dx, v_dx, xc, 0) /
-                                        mu * den(i, j, k);
-                                    varr(i, j, k - 1, 1) =
-                                        tau.get_shear(
-                                            vv, wspd, u_dx, v_dx, xc, 1) /
-                                        mu * den(i, j, k);
-                                } else {
-                                    // Fallback: use nearest point if
-                                    // interpolation condition is not met
-                                    const int k_nearest =
-                                        (z_interp - z_lo < z_hi - z_interp)
-                                            ? k_lo
-                                            : k_hi;
-                                    const amrex::Real u_dx =
-                                        vold_arr(i, j, k_nearest, 0);
-                                    const amrex::Real v_dx =
-                                        vold_arr(i, j, k_nearest, 1);
-
-                                    varr(i, j, k - 1, 0) =
-                                        tau.get_shear(
-                                            uu, wspd, u_dx, v_dx, xc, 0) /
-                                        mu * den(i, j, k);
-                                    varr(i, j, k - 1, 1) =
-                                        tau.get_shear(
-                                            vv, wspd, u_dx, v_dx, xc, 1) /
-                                        mu * den(i, j, k);
-                                }
+                                varr(i, j, k - 1, 0) =
+                                    tau.get_shear(uu, wspd, u_dx, v_dx, xc, 0) /
+                                    mu * den(i, j, k);
+                                varr(i, j, k - 1, 1) =
+                                    tau.get_shear(vv, wspd, u_dx, v_dx, xc, 1) /
+                                    mu * den(i, j, k);
                             } else {
                                 // Fallback: use the original cell value if
                                 // interpolation points are out of bounds
