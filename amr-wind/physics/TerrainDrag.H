@@ -26,11 +26,11 @@ public:
 
     void pre_init_actions() override {}
 
-    void post_init_actions() override {}
+    void post_init_actions() override;
 
     void post_regrid_actions() override;
 
-    void pre_advance_work() override {}
+    void pre_advance_work() override;
 
     void post_advance_work() override {}
 
@@ -57,13 +57,14 @@ private:
     amrex::Vector<amrex::Real> m_yrough;
     amrex::Vector<amrex::Real> m_z0rough;
 
-    //! Terrain Drag Force Term
+    //! Terrain Drag for waves
     bool m_terrain_is_waves{false};
     Field* m_wave_volume_fraction{nullptr};
     Field* m_wave_negative_elevation{nullptr};
     const std::string m_wave_volume_fraction_name{"ow_vof"};
     const std::string m_wave_negative_elevation_name{"ow_levelset"};
     const std::string m_wave_velocity_name{"ow_velocity"};
+    void convert_waves_to_blank_and_drag_flags();
 };
 } // namespace amr_wind::terraindrag
 

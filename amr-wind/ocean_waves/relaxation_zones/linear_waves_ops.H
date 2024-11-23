@@ -1,7 +1,6 @@
 #ifndef LINEAR_WAVES_OPS_H
 #define LINEAR_WAVES_OPS_H
 
-#include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/ocean_waves/relaxation_zones/LinearWaves.H"
 #include "amr-wind/ocean_waves/OceanWavesOps.H"
 #include "amr-wind/ocean_waves/OceanWaves.H"
@@ -19,8 +18,11 @@ struct ReadInputsOp<LinearWaves>
         auto& wdata = data.meta();
         auto& info = data.info();
         relaxation_zones::read_inputs(wdata, info, pp);
-        // Get gravity from MultiPhase physics, assume negative z
-        wdata.g = -data.sim().physics_manager().get<MultiPhase>().gravity()[2];
+        // Get gravity, assume negative z
+        amrex::Vector<amrex::Real> gravity{0.0, 0.0, -9.81};
+        amrex::ParmParse pp_incflo("incflo");
+        pp_incflo.queryarr("gravity", gravity);
+        wdata.g = -gravity[2];
 
         pp.get("wave_length", wdata.wave_length);
         pp.get("wave_height", wdata.wave_height);

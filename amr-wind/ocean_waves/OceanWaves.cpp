@@ -17,12 +17,6 @@ OceanWaves::OceanWaves(CFDSim& sim)
     , m_ow_velocity(
           sim.repo().declare_field("ow_velocity", AMREX_SPACEDIM, 3, 1))
 {
-    if (!(sim.physics_manager().contains("MultiPhase") ||
-         sim.physics_manager().contains("TerrainDrag"))) {
-        amrex::Abort(
-            "OceanWaves requires MultiPhase or TerrainDrag physics to be "
-            "active");
-    }
     if (!sim.physics_manager().contains("MultiPhase")) {
         m_multiphase_mode = false;
     }
@@ -37,6 +31,13 @@ void OceanWaves::pre_init_actions()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::pre_init_actions");
     amrex::ParmParse pp(identifier());
+
+    if (!(m_multiphase_mode ||
+          m_sim.physics_manager().contains("TerrainDrag"))) {
+        amrex::Abort(
+            "OceanWaves requires MultiPhase or TerrainDrag physics to be "
+            "active");
+    }
 
     std::string label;
     pp.query("label", label);
@@ -68,6 +69,9 @@ void OceanWaves::post_init_actions()
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::post_init_actions");
     if (m_multiphase_mode) {
         relaxation_zones();
+    } else {
+        m_owm->update_target_fields(true);
+        m_owm->update_target_volume_fraction();
     }
 }
 
@@ -82,6 +86,7 @@ void OceanWaves::pre_advance_work()
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::pre_advance_work");
     if (!m_multiphase_mode) {
         m_owm->update_target_fields(true);
+        m_owm->update_target_volume_fraction();
     }
 }
 
@@ -98,10 +103,16 @@ void OceanWaves::post_advance_work()
  */
 void OceanWaves::relaxation_zones()
 {
-    BL_PROFILE("amr-wind::ocean_waves::OceanWaves::update_relaxation_zones");
+    BL_PROFILE("amr-wind::ocean_waves::OceanWaves::relaxation_zones");
     m_owm->update_target_fields(false);
     m_owm->apply_relax_zones();
     m_owm->reset_regrid_flag();
+}
+
+void OceanWaves::update_target_volume_fraction()
+{
+    BL_PROFILE("amr-wind::ocean_waves::OceanWaves::update_target_volume_fraction");
+    m_owm->update_target_volume_fraction();
 }
 
 void OceanWaves::prepare_outputs()

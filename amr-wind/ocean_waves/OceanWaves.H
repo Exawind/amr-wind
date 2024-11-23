@@ -52,6 +52,8 @@ protected:
 private:
     void relaxation_zones();
 
+    void update_target_volume_fraction();
+
     CFDSim& m_sim;
 
     //! Unique pointer to the ocean waves model

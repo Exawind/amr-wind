@@ -38,6 +38,8 @@ public:
 
     virtual void apply_relax_zones() = 0;
 
+    virtual void update_target_volume_fraction() = 0;
+
     virtual void prepare_outputs(const std::string&) = 0;
 
     virtual void write_outputs() = 0;
@@ -99,6 +101,11 @@ public:
     void apply_relax_zones() override
     {
         ops::ApplyRelaxZonesOp<WaveTheoryTrait>()(m_data);
+    }
+
+    void update_target_volume_fraction() override
+    {
+        ops::UpdateTargetVolumeFractionOp<WaveTheoryTrait>()(m_data);
     }
 
     void prepare_outputs(const std::string& out_dir) override

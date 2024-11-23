@@ -1,7 +1,6 @@
 #ifndef STOKES_WAVES_OPS_H
 #define STOKES_WAVES_OPS_H
 
-#include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/ocean_waves/relaxation_zones/StokesWaves.H"
 #include "amr-wind/ocean_waves/relaxation_zones/stokes_waves_K.H"
 #include "amr-wind/ocean_waves/OceanWavesOps.H"
@@ -21,8 +20,12 @@ struct ReadInputsOp<StokesWaves>
         auto& info = data.info();
         relaxation_zones::read_inputs(wdata, info, pp);
 
-        // Get gravity from MultiPhase physics, assume negative z
-        wdata.g = -data.sim().physics_manager().get<MultiPhase>().gravity()[2];
+        // Get gravity, assume negative z
+        amrex::Vector<amrex::Real> gravity{0.0, 0.0, -9.81};
+        amrex::ParmParse pp_incflo("incflo");
+        pp_incflo.queryarr("gravity", gravity);
+        wdata.g = -gravity[2];
+        
         // Get wave attributes
         pp.get("wave_height", wdata.wave_height);
         pp.get("order", wdata.order);

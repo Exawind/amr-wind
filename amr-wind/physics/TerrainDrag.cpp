@@ -61,6 +61,10 @@ TerrainDrag::TerrainDrag(CFDSim& sim)
 
 void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
 {
+    if (m_terrain_is_waves) {
+        return;
+    }
+
     BL_PROFILE("amr-wind::" + this->identifier() + "::initialize_fields");
     const auto& dx = geom.CellSizeArray();
     const auto& prob_lo = geom.ProbLoArray();
@@ -74,68 +78,125 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
     auto levelz0 = terrainz0.arrays();
     auto levelheight = terrain_height.arrays();
 
+    const auto xterrain_size = m_xterrain.size();
+    const auto yterrain_size = m_yterrain.size();
+    const auto zterrain_size = m_zterrain.size();
+    amrex::Gpu::DeviceVector<amrex::Real> device_xterrain(xterrain_size);
+    amrex::Gpu::DeviceVector<amrex::Real> device_yterrain(yterrain_size);
+    amrex::Gpu::DeviceVector<amrex::Real> device_zterrain(zterrain_size);
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, m_xterrain.begin(), m_xterrain.end(),
+        device_xterrain.begin());
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, m_yterrain.begin(), m_yterrain.end(),
+        device_yterrain.begin());
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, m_zterrain.begin(), m_zterrain.end(),
+        device_zterrain.begin());
+    const auto* xterrain_ptr = device_xterrain.data();
+    const auto* yterrain_ptr = device_yterrain.data();
+    const auto* zterrain_ptr = device_zterrain.data();
+    // Copy Roughness to gpu
+    const auto xrough_size = m_xrough.size();
+    const auto yrough_size = m_yrough.size();
+    const auto z0rough_size = m_z0rough.size();
+    amrex::Gpu::DeviceVector<amrex::Real> device_xrough(xrough_size);
+    amrex::Gpu::DeviceVector<amrex::Real> device_yrough(yrough_size);
+    amrex::Gpu::DeviceVector<amrex::Real> device_z0rough(z0rough_size);
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, m_xrough.begin(), m_xrough.end(),
+        device_xrough.begin());
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, m_yrough.begin(), m_yrough.end(),
+        device_yrough.begin());
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, m_z0rough.begin(), m_z0rough.end(),
+        device_z0rough.begin());
+    const auto* xrough_ptr = device_xrough.data();
+    const auto* yrough_ptr = device_yrough.data();
+    const auto* z0rough_ptr = device_z0rough.data();
+
+    amrex::ParallelFor(
+        blanking, m_terrain_blank.num_grow(),
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
+            const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
+            const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
+            const amrex::Real terrainHt = interp::bilinear(
+                xterrain_ptr, xterrain_ptr + xterrain_size, yterrain_ptr,
+                yterrain_ptr + yterrain_size, zterrain_ptr, x, y);
+            levelBlanking[nbx](i, j, k, 0) =
+                static_cast<int>((z <= terrainHt) && (z > prob_lo[2]));
+            levelheight[nbx](i, j, k, 0) =
+                std::max(std::abs(z - terrainHt), 0.5 * dx[2]);
+
+            amrex::Real roughz0 = 0.1;
+            if (xrough_size > 0) {
+                roughz0 = interp::bilinear(
+                    xrough_ptr, xrough_ptr + xrough_size, yrough_ptr,
+                    yrough_ptr + yrough_size, z0rough_ptr, x, y);
+            }
+            levelz0[nbx](i, j, k, 0) = roughz0;
+        });
+
+    amrex::ParallelFor(
+        blanking, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            if ((levelBlanking[nbx](i, j, k, 0) == 0) && (k > 0) &&
+                (levelBlanking[nbx](i, j, k - 1, 0) == 1)) {
+                levelDrag[nbx](i, j, k, 0) = 1;
+            } else {
+                levelDrag[nbx](i, j, k, 0) = 0;
+            }
+        });
+}
+
+void TerrainDrag::post_init_actions()
+{
     if (!m_terrain_is_waves) {
-        const auto xterrain_size = m_xterrain.size();
-        const auto yterrain_size = m_yterrain.size();
-        const auto zterrain_size = m_zterrain.size();
-        amrex::Gpu::DeviceVector<amrex::Real> device_xterrain(xterrain_size);
-        amrex::Gpu::DeviceVector<amrex::Real> device_yterrain(yterrain_size);
-        amrex::Gpu::DeviceVector<amrex::Real> device_zterrain(zterrain_size);
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, m_xterrain.begin(), m_xterrain.end(),
-            device_xterrain.begin());
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, m_yterrain.begin(), m_yterrain.end(),
-            device_yterrain.begin());
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, m_zterrain.begin(), m_zterrain.end(),
-            device_zterrain.begin());
-        const auto* xterrain_ptr = device_xterrain.data();
-        const auto* yterrain_ptr = device_yterrain.data();
-        const auto* zterrain_ptr = device_zterrain.data();
-        // Copy Roughness to gpu
-        const auto xrough_size = m_xrough.size();
-        const auto yrough_size = m_yrough.size();
-        const auto z0rough_size = m_z0rough.size();
-        amrex::Gpu::DeviceVector<amrex::Real> device_xrough(xrough_size);
-        amrex::Gpu::DeviceVector<amrex::Real> device_yrough(yrough_size);
-        amrex::Gpu::DeviceVector<amrex::Real> device_z0rough(z0rough_size);
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, m_xrough.begin(), m_xrough.end(),
-            device_xrough.begin());
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, m_yrough.begin(), m_yrough.end(),
-            device_yrough.begin());
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, m_z0rough.begin(), m_z0rough.end(),
-            device_z0rough.begin());
-        const auto* xrough_ptr = device_xrough.data();
-        const auto* yrough_ptr = device_yrough.data();
-        const auto* z0rough_ptr = device_z0rough.data();
+        return;
+    }
+    BL_PROFILE("amr-wind::" + this->identifier() + "::post_init_actions");
+    convert_waves_to_blank_and_drag_flags();
+}
 
-        amrex::ParallelFor(
-            blanking, m_terrain_blank.num_grow(),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
-                const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
-                const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
-                const amrex::Real terrainHt = interp::bilinear(
-                    xterrain_ptr, xterrain_ptr + xterrain_size, yterrain_ptr,
-                    yterrain_ptr + yterrain_size, zterrain_ptr, x, y);
-                levelBlanking[nbx](i, j, k, 0) =
-                    static_cast<int>((z <= terrainHt) && (z > prob_lo[2]));
-                levelheight[nbx](i, j, k, 0) =
-                    std::max(std::abs(z - terrainHt), 0.5 * dx[2]);
+void TerrainDrag::pre_advance_work()
+{
+    if (!m_terrain_is_waves) {
+        return;
+    }
+    BL_PROFILE("amr-wind::" + this->identifier() + "::pre_advance_work");
+    convert_waves_to_blank_and_drag_flags();
+}
 
-                amrex::Real roughz0 = 0.1;
-                if (xrough_size > 0) {
-                    roughz0 = interp::bilinear(
-                        xrough_ptr, xrough_ptr + xrough_size, yrough_ptr,
-                        yrough_ptr + yrough_size, z0rough_ptr, x, y);
-                }
-                levelz0[nbx](i, j, k, 0) = roughz0;
-            });
+void TerrainDrag::post_regrid_actions()
+{
+    if (m_terrain_is_waves) {
+        convert_waves_to_blank_and_drag_flags();
     } else {
+        const int nlevels = m_sim.repo().num_active_levels();
+        for (int lev = 0; lev < nlevels; ++lev) {
+            initialize_fields(lev, m_sim.repo().mesh().Geom(lev));
+        }
+    }
+}
+
+void TerrainDrag::convert_waves_to_blank_and_drag_flags()
+{
+    const int nlevels = m_sim.repo().num_active_levels();
+    for (int level = 0; level < nlevels; ++level) {
+        const auto geom = m_sim.repo().mesh().Geom(level);
+        const auto& dx = geom.CellSizeArray();
+        const auto& prob_lo = geom.ProbLoArray();
+        auto& blanking = m_terrain_blank(level);
+        auto& terrainz0 = m_terrainz0(level);
+        auto& terrain_height = m_terrain_height(level);
+        auto& drag = m_terrain_drag(level);
+
+        auto levelBlanking = blanking.arrays();
+        auto levelDrag = drag.arrays();
+        auto levelz0 = terrainz0.arrays();
+        auto levelheight = terrain_height.arrays();
+
         const auto negative_wave_elevation =
             (*m_wave_negative_elevation)(level).const_arrays();
         const auto wave_vol_frac =
@@ -151,26 +212,17 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
                 levelheight[nbx](i, j, k, 0) = std::max(
                     std::abs(negative_wave_elevation[nbx](i, j, k)),
                     0.5 * dx[2]);
-
-                // Set uniform roughness (ocean surface)
-                levelz0[nbx](i, j, k, 0) = 1e-4;
             });
-    }
-    amrex::ParallelFor(
-        blanking, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            if ((levelBlanking[nbx](i, j, k, 0) == 0) && (k > 0) &&
-                (levelBlanking[nbx](i, j, k - 1, 0) == 1)) {
-                levelDrag[nbx](i, j, k, 0) = 1;
-            } else {
-                levelDrag[nbx](i, j, k, 0) = 0;
-            }
-        });
-}
-void TerrainDrag::post_regrid_actions()
-{
-    const int nlevels = m_sim.repo().num_active_levels();
-    for (int lev = 0; lev < nlevels; ++lev) {
-        initialize_fields(lev, m_sim.repo().mesh().Geom(lev));
+        amrex::ParallelFor(
+            blanking,
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                if ((levelBlanking[nbx](i, j, k, 0) == 0) && (k > 0) &&
+                    (levelBlanking[nbx](i, j, k - 1, 0) == 1)) {
+                    levelDrag[nbx](i, j, k, 0) = 1;
+                } else {
+                    levelDrag[nbx](i, j, k, 0) = 0;
+                }
+            });
     }
 }
 

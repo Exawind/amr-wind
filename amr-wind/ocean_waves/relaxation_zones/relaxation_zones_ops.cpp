@@ -228,6 +228,27 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
     density.fillpatch(time);
 }
 
+void update_target_vof(CFDSim& sim, const RelaxZonesBaseData& wdata)
+{
+    const int nlevels = sim.repo().num_active_levels();
+    auto& m_ow_levelset = sim.repo().get_field("ow_levelset");
+    auto& m_ow_vof = sim.repo().get_field("ow_vof");
+    const auto& geom = sim.mesh().Geom();
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& dx = geom[lev].CellSizeArray();
+        const auto target_phi = m_ow_levelset(lev).arrays();
+        auto target_volfrac = m_ow_vof(lev).arrays();
+        const amrex::Real eps = 2. * std::cbrt(dx[0] * dx[1] * dx[2]);
+        amrex::ParallelFor(
+            m_ow_vof(lev), amrex::IntVect(2),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                target_volfrac[nbx](i, j, k) =
+                    multiphase::levelset_to_vof(i, j, k, eps, target_phi[nbx]);
+            });
+    }
+}
+
 void prepare_netcdf_file(
     const std::string& ncfile,
     const RelaxZonesBaseData& meta,
