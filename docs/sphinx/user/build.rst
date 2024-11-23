@@ -103,14 +103,6 @@ Dependencies
 
    Enable NetCDF outputs. Default: OFF
 
-.. cmakeval:: AMR_WIND_USE_INTERNAL_AMREX
-
-   Use a super-build with the AMReX tracked as a submodule. Default: ON
-
-   If set to ``OFF``, then provide the the path to the existing AMReX
-   installation either through ``AMREX_DIR`` variable or via
-   ``CMAKE_PREFIX_PATH``.
-
 Other AMR-Wind specific options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -142,10 +134,6 @@ Other AMR-Wind specific options
 
    Enable performing tests that rely on python, primarily consists of checks 
    for post-processing scripts in tools directory. Default: OFF
-
-.. cmakeval:: AMR_WIND_ENABLE_ALL_WARNINGS
-
-   Enable compiler warnings during build. Default: OFF
 
 General CMake options
 ~~~~~~~~~~~~~~~~~~~~~~

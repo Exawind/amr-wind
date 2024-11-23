@@ -5,7 +5,7 @@ geometry.prob_hi                         = 10005 20005 4000
 geometry.is_periodic                     = 0 0 0
 # Grid
 amr.n_cell                       = 80 156 64
-amr.max_level                    = 2
+amr.max_level                    = 1
 amr.blocking_factor              = 4
 time.stop_time                   = -1
 time.max_step                    = 10
