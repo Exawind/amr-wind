@@ -95,6 +95,7 @@ public:
             for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
                 int scomp_curr = scomp;
                 for (const auto* fld : fields) {
+                    AMREX_ALWAYS_ASSERT(fld->num_grow() > amrex::IntVect{0});
                     const auto farr = (*fld)(lev).const_array(pti);
                     interpolate(
                         pti, farr, lev, fld->field_location(), fld->num_comp(),

@@ -51,7 +51,8 @@ struct W2AWavesData : public RelaxZonesBaseData
     // FFTW plan
     fftw_plan plan;
     // FFTW pointers to store modes ready for ifft
-    fftw_complex *eta_mptr, *u_mptr, *v_mptr, *w_mptr;
+    fftw_complex *eta_mptr = nullptr, *u_mptr = nullptr, *v_mptr = nullptr,
+                 *w_mptr = nullptr;
     // ReadModes object
     ReadModes rmodes;
 #endif
@@ -69,6 +70,25 @@ struct W2AWavesData : public RelaxZonesBaseData
         sp_w_vec;
     // Spacing of spatial data
     amrex::Real sp_dx{0.}, sp_dy{0.};
+
+    ~W2AWavesData()
+    {
+#ifdef AMR_WIND_USE_W2A
+        if (eta_mptr) {
+            delete[] eta_mptr;
+        }
+        if (u_mptr) {
+            delete[] u_mptr;
+        }
+        if (v_mptr) {
+            delete[] v_mptr;
+        }
+        if (w_mptr) {
+            delete[] w_mptr;
+        }
+        fftw_destroy_plan(plan);
+#endif
+    }
 };
 
 struct W2AWaves : public RelaxZonesType

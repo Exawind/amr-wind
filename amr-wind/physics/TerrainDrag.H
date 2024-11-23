@@ -22,27 +22,22 @@ public:
 
     ~TerrainDrag() override = default;
 
-    void
-    initialize_fields(int /*level*/, const amrex::Geometry& /*geom*/) override
-    {}
+    void initialize_fields(int level, const amrex::Geometry& geom) override;
 
-    void pre_init_actions() override;
+    void pre_init_actions() override {}
 
-    void post_init_actions() override;
+    void post_init_actions() override {}
 
-    void post_regrid_actions() override {}
+    void post_regrid_actions() override;
 
     void pre_advance_work() override {}
 
     void post_advance_work() override {}
 
-    int return_blank_value(int i, int j, int k);
-
 private:
     CFDSim& m_sim;
     const FieldRepo& m_repo;
     const amrex::AmrCore& m_mesh;
-    Field& m_velocity;
     //! Blanking Field for Terrain or Buildings
     IntField& m_terrain_blank;
     //! Terrain Drag Force Term

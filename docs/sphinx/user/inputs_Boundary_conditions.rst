@@ -87,3 +87,28 @@ The most applicable use case for this boundary condition is with the
 :ref:`amrwind-abl-bndry-io` for flows that change directions
 across the vertical coordinate or with time.
 The work to integrate this condition with the ABL class is under progress.
+
+Pressure outflow boundary conditions
+````````````````````````````````````
+
+The pressure_outflow boundary condition is the most common boundary condition used
+when flow out of a boundary is desired. By default, this sets the pressure at the outflow
+plane to 0 and assumes a zero gradient for other flow quantities (e.g., velocity and
+scalars). Also by default, this boundary condition clips fluxes that would be advected
+into the domain, which is for the sake of stability.
+
+Having a uniform pressure value at the outflow is not often physically valid for
+flows of interest, such as stratified ABLs and ocean waves. However, instead of changing
+the target pressure of the boundary condition, it is typically more useful to change the
+formulation of the source terms, transforming the pressure variable into the difference
+between the true pressure and some constant, non-uniform reference pressure profile.
+In the context of stratified ABLs, which typically apply gravity through the 
+BoussinesqBuoyancy source term, this pressure modification is realized with the
+additional source term ABLMeanBoussinesq. In the context of ocean waves, which typically
+apply gravity through the GravityForcing source term, this pressure modification is
+realized through the input option "ICNS.use_perturb_pressure".
+
+Finally, the default clipping of inflow at pressure_outflow boundaries can be disabled.
+This is not recommended, but it is possible with the input option
+"allow_inflow_at_pressure_outflow". This input argument is appended to the PDE name
+where it should be applied (e.g., ICNS, temperature, or tke).

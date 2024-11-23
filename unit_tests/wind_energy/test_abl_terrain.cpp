@@ -57,14 +57,14 @@ protected:
             pp.addarr("prob_hi", probhi);
         }
     }
-    std::string terrain_fname = "terrain.amrwind";
+    std::string m_terrain_fname = "terrain.amrwind";
 };
 
 TEST_F(TerrainTest, terrain)
 {
     constexpr amrex::Real tol = 0;
     // Write target wind file
-    write_terrain(terrain_fname);
+    write_terrain(m_terrain_fname);
     populate_parameters();
     initialize_mesh();
     auto& pde_mgr = sim().pde_manager();
@@ -74,7 +74,11 @@ TEST_F(TerrainTest, terrain)
     amrex::Vector<std::string> physics{"terrainDrag"};
     pp.addarr("physics", physics);
     amr_wind::terraindrag::TerrainDrag terrain_drag(sim());
-    terrain_drag.post_init_actions();
+    const int nlevels = sim().repo().num_active_levels();
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& geom = sim().repo().mesh().Geom(lev);
+        terrain_drag.initialize_fields(lev, geom);
+    }
     const auto& terrain_blank = sim().repo().get_int_field("terrain_blank");
     // Outside Point
     const int value_out = utils::field_probe(terrain_blank, 0, 5, 5, 1);

@@ -22,7 +22,7 @@ ABLAnelastic::ABLAnelastic(CFDSim& sim) : m_sim(sim)
         {
             // ensure use of perturbational pressure form
             amrex::ParmParse pp("ICNS");
-            pp.add("use_perturb_pressure", (bool)true);
+            pp.add("use_perturb_pressure", true);
         }
         if (conserv != 1) {
             amrex::Abort("ABLAnelastic is not supported for icns_conserv != 1");

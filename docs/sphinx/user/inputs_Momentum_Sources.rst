@@ -121,6 +121,33 @@ Section: Momentum Sources
    
    The start time for writing to the forcing timetable output file. The default is 0.
 
+.. input_param:: ABLForcing.abl_forcing_off_height
+
+   **type:** Real, required for multiphase simulations with ABL
+   
+   This parameter indicates the vertical distance above the water level that the ABL
+   forcing term should be turned off. This tuning parameter is used to avoid applying 
+   the ABL forcing to ocean waves. This is not used when the volume fraction field (vof)
+   is not present in the simulation.
+
+.. input_param:: ABLForcing.abl_forcing_ramp_height
+
+   **type:** Real, required for multiphase simulations with ABL
+   
+   This parameter indicates the vertical distance above the water level and the "off height"
+   that the ABL forcing term should be ramped from zero to full strength. This is not used
+   when the volume fraction field (vof) is not present in the simulation.
+
+.. input_param:: ABLForcing.abl_forcing_band
+
+   **type:** Real, optional for multiphase simulations with ABL
+   
+   This parameter is an additional safeguard against applying ABL forcing within the waves.
+   This specifies the number of computational cells in a band around the air-water interface
+   that the ABL forcing should be deactivated. While the other arguments relate to the height coordinate
+   within the domain, this argument is relative to the actual position of water in the simulation.
+   The default value is 2.
+
 .. input_param:: BodyForce.type
 
    **type:** String, optional
@@ -239,3 +266,30 @@ Section: Momentum Sources
 
    This term turns off the sponge layer. This term is required for terrain simulations with periodic 
    boundary conditions. The default value is 0. 
+
+
+The following arguments are influential when ``GravityForcing`` is included in :input_param:`ICNS.source_terms`.
+
+   .. input_param:: ICNS.use_perturb_pressure
+
+   **type:** Boolean, optional, default = false
+   
+   When this option is off, the GravityForcing term is simply :math:`g`, which becomes
+   :math:`\rho g` when included in the momentum equation. By activating this option,
+   the momentum term applied by GravityForcing will become :math:`(\rho - \rho_0) g`,
+   where :math:`rho_0` is some constant reference density profile. The reference density field
+   can be created by either MultiPhase physics or anelastic ABL physics. By using the
+   reference density, the pressure field seen by the solver is represented as a
+   perturbation from a reference pressure field, enabling pressure_outflow boundary
+   conditions to better handle certain flows, e.g., those with equilibrium pressure gradients
+   parallel to the outflow plane.
+
+   .. input_param:: ICNS.reconstruct_true_pressure
+
+   **type:** Boolean, optional, default = false
+   
+   This option is only valid when the perturbational pressure form is being used, i.e.,
+   :input_param:`ICNS.use_perturb_pressure` = true. Reconstructing the true pressure
+   adds back the reference pressure profile to obtain the full pressure after the
+   pressure solve has been performed. This makes no difference to the flow evolution,
+   but it changes the field available for post-processing or coupling to overset solvers.

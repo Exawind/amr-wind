@@ -12,6 +12,7 @@ FieldRefinement::FieldRefinement(const CFDSim& sim)
           m_sim.mesh().maxLevel() + 1, std::numeric_limits<amrex::Real>::max())
     , m_grad_error(
           m_sim.mesh().maxLevel() + 1, std::numeric_limits<amrex::Real>::max())
+    , m_tagging_box(m_sim.repo().mesh().Geom(0).ProbDomain())
 {}
 
 void FieldRefinement::initialize(const std::string& key)
@@ -21,15 +22,31 @@ void FieldRefinement::initialize(const std::string& key)
     pp.query("field_name", fname);
 
     const auto& repo = m_sim.repo();
-    if (!repo.field_exists(fname)) {
+    if (repo.field_exists(fname)) {
+        m_field = &(m_sim.repo().get_field(fname));
+        AMREX_ALWAYS_ASSERT(m_field->num_grow() > amrex::IntVect{0});
+    } else if (repo.int_field_exists(fname)) {
+        m_int_field = &(m_sim.repo().get_int_field(fname));
+        AMREX_ALWAYS_ASSERT(m_int_field->num_grow() > amrex::IntVect{0});
+    } else {
         amrex::Abort("FieldRefinement: Cannot find field = " + fname);
     }
-    m_field = &(m_sim.repo().get_field(fname));
 
-    amrex::Vector<double> field_err;
-    amrex::Vector<double> grad_err;
+    amrex::Vector<amrex::Real> field_err;
+    amrex::Vector<amrex::Real> grad_err;
     pp.queryarr("field_error", field_err);
     pp.queryarr("grad_error", grad_err);
+
+    amrex::Vector<amrex::Real> box_lo(AMREX_SPACEDIM, 0);
+    amrex::Vector<amrex::Real> box_hi(AMREX_SPACEDIM, 0);
+    if (pp.queryarr("box_lo", box_lo, 0, static_cast<int>(box_lo.size())) ==
+        1) {
+        m_tagging_box.setLo(box_lo);
+    }
+    if (pp.queryarr("box_hi", box_hi, 0, static_cast<int>(box_hi.size())) ==
+        1) {
+        m_tagging_box.setHi(box_hi);
+    }
 
     if ((field_err.empty()) && (grad_err.empty())) {
         amrex::Abort(
@@ -58,58 +75,27 @@ void FieldRefinement::initialize(const std::string& key)
 }
 
 void FieldRefinement::operator()(
-    int level, amrex::TagBoxArray& tags, amrex::Real time, int /*ngrow*/)
+    const int level,
+    amrex::TagBoxArray& tags,
+    const amrex::Real time,
+    const int /*ngrow*/)
 {
-    const bool tag_field = level <= m_max_lev_field;
     const bool tag_grad = level <= m_max_lev_grad;
     if (tag_grad) {
-        m_field->fillpatch(level, time, (*m_field)(level), 1);
+        if (m_field != nullptr) {
+            m_field->fillpatch(level, time, (*m_field)(level), 1);
+        } else if (m_int_field != nullptr) {
+            (*m_int_field)(level).FillBoundary(
+                m_sim.repo().mesh().Geom(level).periodicity());
+        }
     }
 
-    const auto& mfab = (*m_field)(level);
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-    for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid();
-         ++mfi) {
-        const auto& bx = mfi.tilebox();
-        const auto& tag = tags.array(mfi);
-        const auto& farr = mfab.const_array(mfi);
-
-        if (tag_field) {
-            const auto fld_err = m_field_error[level];
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    if (farr(i, j, k) > fld_err) {
-                        tag(i, j, k) = amrex::TagBox::SET;
-                    }
-                });
-        }
-
-        if (tag_grad) {
-            const auto gerr = m_grad_error[level];
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real axp =
-                        std::abs(farr(i + 1, j, k) - farr(i, j, k));
-                    const amrex::Real ayp =
-                        std::abs(farr(i, j + 1, k) - farr(i, j, k));
-                    const amrex::Real azp =
-                        std::abs(farr(i, j, k + 1) - farr(i, j, k));
-                    const amrex::Real axm =
-                        std::abs(farr(i - 1, j, k) - farr(i, j, k));
-                    const amrex::Real aym =
-                        std::abs(farr(i, j - 1, k) - farr(i, j, k));
-                    const amrex::Real azm =
-                        std::abs(farr(i, j, k - 1) - farr(i, j, k));
-                    const amrex::Real ax = amrex::max(axp, axm);
-                    const amrex::Real ay = amrex::max(ayp, aym);
-                    const amrex::Real az = amrex::max(azp, azm);
-                    if (amrex::max(ax, ay, az) >= gerr) {
-                        tag(i, j, k) = amrex::TagBox::SET;
-                    }
-                });
-        }
+    if (m_field != nullptr) {
+        const auto& mfab = (*m_field)(level);
+        tag(level, tags, mfab);
+    } else if (m_int_field != nullptr) {
+        const auto& mfab = (*m_int_field)(level);
+        tag(level, tags, mfab);
     }
 }
 

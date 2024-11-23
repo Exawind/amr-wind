@@ -2,7 +2,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/core/FieldUtils.H"
 #include "amr-wind/wind_energy/ABL.H"
-
+#include "amr-wind/utilities/linear_interpolation.H"
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind::pde::icns {
@@ -73,28 +73,17 @@ void ABLMeanBoussinesq::operator()(
         m_gravity[0], m_gravity[1], m_gravity[2]};
 
     // Mean temperature profile used to compute background forcing term
-    //
-    // Assumes that the temperature profile is at the cell-centers of the level
-    // 0 grid. For finer meshes, it will extrapolate beyond the Level0
-    // cell-centers for the lo/hi cells.
-    //
+
     const int idir = m_axis;
-    const int nh_max = static_cast<int>(m_theta_ht.size()) - 2;
-    const int lp1 = lev + 1;
     const amrex::Real* theights = m_theta_ht.data();
     const amrex::Real* tvals = m_theta_vals.data();
+    const amrex::Real* theights_end = m_theta_ht.end();
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        amrex::Real temp = T0;
         amrex::IntVect iv(i, j, k);
         const amrex::Real ht = problo[idir] + (iv[idir] + 0.5) * dx[idir];
-
-        const int il = amrex::min(k / lp1, nh_max);
-        const int ir = il + 1;
-        temp = tvals[il] +
-               ((tvals[ir] - tvals[il]) / (theights[ir] - theights[il])) *
-                   (ht - theights[il]);
-
+        const amrex::Real temp =
+            amr_wind::interp::linear(theights, theights_end, tvals, ht);
         const amrex::Real fac = beta * (temp - T0);
         src_term(i, j, k, 0) += gravity[0] * fac;
         src_term(i, j, k, 1) += gravity[1] * fac;

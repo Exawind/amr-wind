@@ -33,7 +33,7 @@ public:
 
     void output_locations(SampleLocType& sample_locs) const override
     {
-        return sampling_locations(sample_locs);
+        sampling_locations(sample_locs);
     }
 
     //! Find heights associated with 2D sample locations

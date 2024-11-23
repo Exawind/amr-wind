@@ -74,6 +74,14 @@ void incflo::init_mesh()
         for (int lev = finestLevel(); lev <= maxLevel(); ++lev) {
             regrid(lev, m_time.current_time());
         }
+
+        // If regrid happened, call post regrid actions
+        if (finestLevel() <= maxLevel()) {
+            for (auto& pp : m_sim.physics()) {
+                pp->post_regrid_actions();
+            }
+        }
+
         if (ParallelDescriptor::IOProcessor()) {
             amrex::Print() << "Grid summary: " << std::endl;
             printGridSummary(amrex::OutStream(), 0, finest_level);
@@ -286,8 +294,9 @@ void incflo::Evolve()
         // Advance to time t + dt
         for (int fixed_point_iteration = 0;
              fixed_point_iteration < m_fixed_point_iterations;
-             ++fixed_point_iteration)
+             ++fixed_point_iteration) {
             do_advance(fixed_point_iteration);
+        }
 
         amrex::Print() << std::endl;
         amrex::Real time2 = amrex::ParallelDescriptor::second();

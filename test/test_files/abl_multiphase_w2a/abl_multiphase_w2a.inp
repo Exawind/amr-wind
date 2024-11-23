@@ -1,0 +1,89 @@
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            SIMULATION STOP            #
+#.......................................#
+time.stop_time               =   12.25     # Max (simulated) time to evolve
+time.max_step                =   10
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#         TIME STEP COMPUTATION         #
+#.......................................#
+time.fixed_dt         =   0.5        # Use this constant dt if > 0
+time.cfl              =   0.95         # CFL factor
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            INPUT AND OUTPUT           #
+#.......................................#
+time.plot_interval            =  10       # Steps between plot files
+time.checkpoint_interval      =  -1       # Steps between checkpoint files
+time.use_force_cfl            = false
+io.outputs = density velocity p vof ow_levelset ow_velocity
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#               PHYSICS                 #
+#.......................................#
+incflo.mflux_type = minmod
+transport.model = TwoPhaseTransport
+transport.viscosity_fluid1=1.0e-3
+transport.viscosity_fluid2=1.8e-5
+turbulence.model = Laminar 
+
+incflo.physics = MultiPhase ABL OceanWaves
+MultiPhase.density_fluid1=1000
+MultiPhase.density_fluid2=1.25
+ICNS.source_terms = BoussinesqBuoyancy CoriolisForcing ABLForcing GravityForcing
+ICNS.use_perturb_pressure = true
+
+MultiPhase.density_fluid1=1020.
+MultiPhase.density_fluid2=1.3223
+
+BoussinesqBuoyancy.reference_temperature = 263.5
+CoriolisForcing.east_vector = 1.0 0.0 0.0
+CoriolisForcing.north_vector = 0.0 1.0 0.0
+CoriolisForcing.latitude = 90.0
+CoriolisForcing.rotational_time_period = 90405.5439881955
+ABLForcing.abl_forcing_height = 200
+ABLForcing.abl_forcing_off_height = 10.0
+ABLForcing.abl_forcing_ramp_height = 10.0
+ABLForcing.abl_forcing_band = 1
+incflo.velocity = 6.128355544951824  5.142300877492314 0.0
+
+BoussinesqBuoyancy.reference_temperature = 263.5
+ABL.reference_temperature = 263.5
+ABL.temperature_heights = -5.0 0.0 100 400.0 1001.0
+ABL.temperature_values = 263.5 265.0 265.0 268.0 270.0
+ABL.perturb_temperature = false
+ABL.cutoff_height = 50.0
+ABL.perturb_velocity = true
+ABL.perturb_ref_height = 50.0
+ABL.Uperiods = 4.0
+ABL.Vperiods = 4.0
+ABL.deltaU = 1e-5
+ABL.deltaV = 1e-5
+ABL.normal_direction = 2
+
+OceanWaves.label = W2A1
+OceanWaves.W2A1.type = W2AWaves
+OceanWaves.W2A1.HOS_modes_filename = ../ow_w2a/modes_HOS_SWENSE.dat
+OceanWaves.W2A1.relax_zone_gen_length=900
+OceanWaves.W2A1.relax_zone_out_length=900
+# These variables should change with resolution in z
+OceanWaves.W2A1.number_interp_points_in_z = 35
+OceanWaves.W2A1.interp_spacing_at_surface = 10.
+OceanWaves.W2A1.number_interp_above_surface = 5
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#        ADAPTIVE MESH REFINEMENT       #
+#.......................................#
+amr.n_cell              = 64 64 32
+amr.max_level = 1
+tagging.labels = sr         
+tagging.sr.type = CartBoxRefinement                         
+tagging.sr.static_refinement_def = static_box.refine
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#              GEOMETRY                 #
+#.......................................#
+geometry.prob_lo        =     0.0  0.0  -1000   # Lo corner coordinates
+geometry.prob_hi        =     9.3717632253682877E+03 9.3717632253682877E+03 1000  # Hi corner coordinates
+geometry.is_periodic    =     1     1     0   # Periodicity x y z (0/1)
+
+zlo.type =   slip_wall
+zhi.type =   slip_wall
