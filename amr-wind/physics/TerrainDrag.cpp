@@ -76,7 +76,7 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
     auto levelBlanking = blanking.arrays();
     auto levelDrag = drag.arrays();
     auto levelz0 = terrainz0.arrays();
-    auto levelheight = terrain_height.arrays();
+    auto levelHeight = terrain_height.arrays();
 
     const auto xterrain_size = m_xterrain.size();
     const auto yterrain_size = m_yterrain.size();
@@ -127,7 +127,7 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
                 yterrain_ptr + yterrain_size, zterrain_ptr, x, y);
             levelBlanking[nbx](i, j, k, 0) =
                 static_cast<int>((z <= terrainHt) && (z > prob_lo[2]));
-            levelheight[nbx](i, j, k, 0) =
+            levelHeight[nbx](i, j, k, 0) =
                 std::max(std::abs(z - terrainHt), 0.5 * dx[2]);
 
             amrex::Real roughz0 = 0.1;
@@ -195,7 +195,7 @@ void TerrainDrag::convert_waves_to_blank_and_drag_flags()
         auto levelBlanking = blanking.arrays();
         auto levelDrag = drag.arrays();
         auto levelz0 = terrainz0.arrays();
-        auto levelheight = terrain_height.arrays();
+        auto levelHeight = terrain_height.arrays();
 
         const auto negative_wave_elevation =
             (*m_wave_negative_elevation)(level).const_arrays();
@@ -209,7 +209,7 @@ void TerrainDrag::convert_waves_to_blank_and_drag_flags()
                 const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
                 levelBlanking[nbx](i, j, k, 0) = static_cast<int>(
                     (wave_vol_frac[nbx](i, j, k) >= 0.5) && (z > prob_lo[2]));
-                levelheight[nbx](i, j, k, 0) =
+                levelHeight[nbx](i, j, k, 0) =
                     -negative_wave_elevation[nbx](i, j, k);
             });
         amrex::ParallelFor(
