@@ -418,6 +418,7 @@ struct InitDataOp<W2AWaves>
         // Fill ow fields, then populate flow fields according to setup
         auto& ow_levelset = sim.repo().get_field("ow_levelset");
         auto& ow_velocity = sim.repo().get_field("ow_velocity");
+
         auto& velocity = sim.repo().get_field("velocity");
 
         Field* levelset{nullptr};
