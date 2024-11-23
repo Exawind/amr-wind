@@ -7,7 +7,7 @@
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/utilities/IOManager.H"
 
-namespace amr_wind::Forestdrag {
+namespace amr_wind::forestdrag {
 
 namespace {} // namespace
 
@@ -135,4 +135,4 @@ void ForestDrag::pre_init_actions()
 {
     BL_PROFILE("amr-wind::" + this->identifier() + "::pre_init_actions");
 }
-} // namespace amr_wind::Forestdrag
+} // namespace amr_wind::forestdrag

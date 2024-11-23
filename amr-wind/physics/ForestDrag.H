@@ -5,7 +5,7 @@
 #include "amr-wind/core/Field.H"
 #include "amr-wind/CFDSim.H"
 
-namespace amr_wind::Forestdrag {
+namespace amr_wind::forestdrag {
 
 namespace {} // namespace
 
@@ -60,6 +60,6 @@ private:
     amrex::Vector<Forest> m_forests;
     amrex::Gpu::DeviceVector<Forest> m_d_forests;
 };
-} // namespace amr_wind::Forestdrag
+} // namespace amr_wind::forestdrag
 
 #endif
