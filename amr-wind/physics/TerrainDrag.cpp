@@ -209,9 +209,8 @@ void TerrainDrag::convert_waves_to_blank_and_drag_flags()
                 const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
                 levelBlanking[nbx](i, j, k, 0) = static_cast<int>(
                     (wave_vol_frac[nbx](i, j, k) >= 0.5) && (z > prob_lo[2]));
-                levelheight[nbx](i, j, k, 0) = std::max(
-                    std::abs(negative_wave_elevation[nbx](i, j, k)),
-                    0.5 * dx[2]);
+                levelheight[nbx](i, j, k, 0) =
+                    -negative_wave_elevation[nbx](i, j, k);
             });
         amrex::ParallelFor(
             blanking,
