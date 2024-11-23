@@ -111,7 +111,8 @@ void OceanWaves::relaxation_zones()
 
 void OceanWaves::update_target_volume_fraction()
 {
-    BL_PROFILE("amr-wind::ocean_waves::OceanWaves::update_target_volume_fraction");
+    BL_PROFILE(
+        "amr-wind::ocean_waves::OceanWaves::update_target_volume_fraction");
     m_owm->update_target_volume_fraction();
 }
 

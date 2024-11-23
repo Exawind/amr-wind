@@ -54,8 +54,9 @@ struct InitDataOp<LinearWaves>
         const auto& dx = geom.CellSizeArray();
 
         const auto& vel = velocity(level).arrays();
-        const auto& phi_arrs = multiphase_mode ? (*levelset)(level).arrays()
-                                               : amrex::MultiArray4<amrex::Real>();
+        const auto& phi_arrs = multiphase_mode
+                                   ? (*levelset)(level).arrays()
+                                   : amrex::MultiArray4<amrex::Real>();
 
         const amrex::Real zero_sea_level = wdata.zsl;
         const amrex::Real gen_length = wdata.gen_length;

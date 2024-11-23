@@ -119,9 +119,11 @@ public:
 
     void write_outputs() override { m_out_op.write_outputs(); }
 
-    void init_waves(int level, const amrex::Geometry& geom, bool multiphase_mode) override
+    void init_waves(
+        int level, const amrex::Geometry& geom, bool multiphase_mode) override
     {
-        ops::InitDataOp<WaveTheoryTrait>()(m_data, level, geom, multiphase_mode);
+        ops::InitDataOp<WaveTheoryTrait>()(
+            m_data, level, geom, multiphase_mode);
     }
 };
 

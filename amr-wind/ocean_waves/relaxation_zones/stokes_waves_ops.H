@@ -25,7 +25,7 @@ struct ReadInputsOp<StokesWaves>
         amrex::ParmParse pp_incflo("incflo");
         pp_incflo.queryarr("gravity", gravity);
         wdata.g = -gravity[2];
-        
+
         // Get wave attributes
         pp.get("wave_height", wdata.wave_height);
         pp.get("order", wdata.order);
@@ -94,8 +94,9 @@ struct InitDataOp<StokesWaves>
         const auto& dx = geom.CellSizeArray();
 
         const auto& vel = velocity(level).arrays();
-        const auto& phi_arrs = multiphase_mode ? (*levelset)(level).arrays()
-                                              : amrex::MultiArray4<amrex::Real>();
+        const auto& phi_arrs = multiphase_mode
+                                   ? (*levelset)(level).arrays()
+                                   : amrex::MultiArray4<amrex::Real>();
 
         const amrex::Real wave_height = wdata.wave_height;
         const amrex::Real wave_length = wdata.wave_length;
