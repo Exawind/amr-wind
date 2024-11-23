@@ -45,14 +45,20 @@ private:
     Field& m_velocity;
     //! Forest Drag Force Term
     Field& m_forest_drag;
-    amrex::Vector<amrex::Real> m_type_forest;
-    amrex::Vector<amrex::Real> m_x_forest;
-    amrex::Vector<amrex::Real> m_y_forest;
-    amrex::Vector<amrex::Real> m_height_forest;
-    amrex::Vector<amrex::Real> m_diameter_forest;
-    amrex::Vector<amrex::Real> m_cd_forest;
-    amrex::Vector<amrex::Real> m_lai_forest;
-    amrex::Vector<amrex::Real> m_laimax_forest;
+    Field& m_forest_blank;
+    struct Forest
+    {
+        amrex::Real type_forest;
+        amrex::Real x_forest;
+        amrex::Real y_forest;
+        amrex::Real height_forest;
+        amrex::Real diameter_forest;
+        amrex::Real cd_forest;
+        amrex::Real lai_forest;
+        amrex::Real laimax_forest;
+    };
+    amrex::Vector<Forest> m_forests;
+    amrex::Gpu::DeviceVector<Forest> m_d_forests;
 };
 } // namespace amr_wind::Forestdrag
 
