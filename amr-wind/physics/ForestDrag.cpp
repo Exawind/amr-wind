@@ -65,16 +65,22 @@ void ForestDrag::post_init_actions()
         for (unsigned ii = 0; ii < forestSize; ++ii) {
             amrex::Real treelaimax = 0;
             amrex::Real treeZm = 0.0;
-            if (forests_ptr[ii].type_forest == 2) {
+            const amrex::Real type_forest = forests_ptr[ii].type_forest;
+            const amrex::Real x_forest = forests_ptr[ii].x_forest;
+            const amrex::Real y_forest = forests_ptr[ii].y_forest;
+            const amrex::Real height_forest = forests_ptr[ii].height_forest;
+            const amrex::Real diameter_forest = forests_ptr[ii].diameter_forest;
+            const amrex::Real cd_forest = forests_ptr[ii].cd_forest;
+            const amrex::Real lai_forest = forests_ptr[ii].lai_forest;
+            const amrex::Real laimax_forest = forests_ptr[ii].laimax_forest;
+            if (type_forest == 2) {
                 amrex::Real ztree = 0;
                 amrex::Real expFun = 0;
                 amrex::Real ratio = 0;
-                treeZm = forests_ptr[ii].laimax_forest *
-                         forests_ptr[ii].height_forest;
-                const amrex::Real dz = forests_ptr[ii].height_forest / 100;
-                while (ztree <= forests_ptr[ii].height_forest) {
-                    ratio = (forests_ptr[ii].height_forest - treeZm) /
-                            (forests_ptr[ii].height_forest - ztree);
+                treeZm = laimax_forest * height_forest;
+                const amrex::Real dz = height_forest / 100;
+                while (ztree <= height_forest) {
+                    ratio = (height_forest - treeZm) / (height_forest - ztree);
                     if (ztree < treeZm) {
                         expFun = expFun + std::pow(ratio, 6.0) *
                                               std::exp(6 * (1 - ratio));
@@ -84,7 +90,7 @@ void ForestDrag::post_init_actions()
                     }
                     ztree = ztree + dz;
                 }
-                treelaimax = forests_ptr[ii].lai_forest / (expFun * dz);
+                treelaimax = lai_forest / (expFun * dz);
             }
             for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
                 const auto& vbx = mfi.validbox();
@@ -98,29 +104,26 @@ void ForestDrag::post_init_actions()
                         const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
                         const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
                         const amrex::Real radius = std::sqrt(
-                            (x - forests_ptr[ii].x_forest) *
-                                (x - forests_ptr[ii].x_forest) +
-                            (y - forests_ptr[ii].y_forest) *
-                                (y - forests_ptr[ii].y_forest));
-                        if (z <= forests_ptr[ii].height_forest &&
-                            radius <= (0.5 * forests_ptr[ii].diameter_forest)) {
-                            if (forests_ptr[ii].type_forest == 1) {
-                                af = forests_ptr[ii].lai_forest /
-                                     forests_ptr[ii].height_forest;
-                            } else if (forests_ptr[ii].type_forest == 2) {
+                            (x - x_forest) * (x - x_forest) +
+                            (y - y_forest) * (y - y_forest));
+                        if (z <= height_forest &&
+                            radius <= (0.5 * diameter_forest)) {
+                            if (type_forest == 1) {
+                                af = lai_forest / height_forest;
+                            } else if (type_forest == 2) {
                                 const amrex::Real ratio =
-                                    (forests_ptr[ii].height_forest - treeZm) /
-                                    (forests_ptr[ii].height_forest - z);
+                                    (height_forest - treeZm) /
+                                    (height_forest - z);
                                 if (z < treeZm) {
                                     af = treelaimax * std::pow(ratio, 6.0) *
                                          std::exp(6 * (1 - ratio));
-                                } else if (z <= forests_ptr[ii].height_forest) {
+                                } else if (z <= height_forest) {
                                     af = treelaimax * std::pow(ratio, 0.5) *
                                          std::exp(0.5 * (1 - ratio));
                                 }
                             }
                             levelBlank(i, j, k) = ii + 1;
-                            levelDrag(i, j, k) = forests_ptr[ii].cd_forest * af;
+                            levelDrag(i, j, k) = cd_forest * af;
                         }
                     });
             }
