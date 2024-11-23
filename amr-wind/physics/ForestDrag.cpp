@@ -20,9 +20,11 @@ ForestDrag::ForestDrag(CFDSim& sim)
     , m_forest_blank(sim.repo().declare_field("forest_blank", 1, 1, 1))
 {
     std::string forestfile("forest.amrwind");
+    amrex::ParmParse pp(identifier());
+    pp.query("forest_file", forestfile);
     std::ifstream file(forestfile, std::ios::in);
     if (!file.good()) {
-        amrex::Abort("Cannot find forest.amrwind file");
+        amrex::Abort("Cannot find file " +forestfile);
     }
     //! TreeType xc yc height diameter cd lai laimax
     amrex::Real value1, value2, value3, value4, value5, value6, value7, value8;
