@@ -17,7 +17,7 @@ public:
 
     static std::string identifier() { return "TwoPhaseTransport"; }
 
-    explicit TwoPhaseTransport(CFDSim& sim) : m_sim(sim), m_repo(sim.repo())
+    explicit TwoPhaseTransport(const CFDSim& sim) : m_sim(sim), m_repo(sim.repo())
     {
         auto& physics_mgr = m_sim.physics_manager();
         if (!physics_mgr.contains("MultiPhase")) {
@@ -234,7 +234,7 @@ public:
 
 private:
     //! Reference to the CFD sim
-    CFDSim& m_sim;
+    const CFDSim& m_sim;
 
     //! Reference to the field repository (for creating scratch fields)
     FieldRepo& m_repo;
