@@ -33,6 +33,9 @@ CoriolisForcing.north_vector = 0.0 1.0 0.0
 CoriolisForcing.latitude = 90.0
 CoriolisForcing.rotational_time_period = 90405.5439881955
 GeostrophicForcing.geostrophic_wind = 8.0 0.0 0.0
+temperature.source_terms = DragTempForcing
+DragTempForcing.reference_temperature = 265.0
+
 incflo.velocity = 8.0 0.0 0.0
 ABL.reference_temperature = 263.5
 ABL.temperature_heights = 0.0 100 400.0
