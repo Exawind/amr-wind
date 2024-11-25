@@ -88,10 +88,9 @@ struct UpdateTargetVolumeFractionOp<
     {
         BL_PROFILE("amr-wind::ocean_waves::OceanWaves::update_target_vof");
 
-        const auto& wdata = data.meta();
         auto& sim = data.sim();
 
-        relaxation_zones::update_target_vof(sim, wdata);
+        relaxation_zones::update_target_vof(sim);
     }
 };
 

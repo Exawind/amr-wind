@@ -228,7 +228,7 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
     density.fillpatch(time);
 }
 
-void update_target_vof(CFDSim& sim, const RelaxZonesBaseData& wdata)
+void update_target_vof(CFDSim& sim)
 {
     const int nlevels = sim.repo().num_active_levels();
     auto& m_ow_levelset = sim.repo().get_field("ow_levelset");
