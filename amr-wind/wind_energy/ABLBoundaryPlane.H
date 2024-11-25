@@ -5,6 +5,7 @@
 #include "amr-wind/CFDSim.H"
 #include "AMReX_Gpu.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
+#include "amr-wind/utilities/io_utils.H"
 #include <AMReX_BndryRegister.H>
 
 namespace amr_wind {
@@ -126,9 +127,14 @@ public:
 
     void write_header();
 
+    void write_bndry_native_header(const std::string& chkname);
+
     void write_file();
 
     void read_header();
+
+    amrex::Vector<amrex::BoxArray> read_bndry_native_boxarrays(
+        const std::string& chkname, const Field& field) const;
 
     void read_file(const bool /* nph_target_time*/);
 
@@ -177,7 +183,7 @@ private:
         const int /*lev*/,
         const Field* /*fld*/);
 #endif
-    int boundary_native_file_levels();
+    int boundary_native_file_levels() const;
 
     std::string m_title{"ABL boundary planes"};
 
