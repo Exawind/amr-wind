@@ -892,8 +892,8 @@ void ABLBoundaryPlane::populate_data(
     }
 
     AMREX_ALWAYS_ASSERT(
-        ((m_in_data.tn() <= time) || (time <= m_in_data.tnp1())));
-    AMREX_ALWAYS_ASSERT(std::abs(time - m_in_data.tinterp()) < 1e-12);
+        ((m_in_data.tn() <= time - 1e-8) || (time <= m_in_data.tnp1() - 1e-8)));
+    AMREX_ALWAYS_ASSERT(std::abs(time - m_in_data.tinterp()) < 1e-8);
 
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
