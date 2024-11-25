@@ -28,7 +28,7 @@ void init_data_structures(CFDSim&);
  */
 void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata);
 
-void update_target_vof(CFDSim& sim, const RelaxZonesBaseData& wdata);
+void update_target_vof(CFDSim& sim);
 
 void prepare_netcdf_file(
     const std::string& /*ncfile*/,
