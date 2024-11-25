@@ -10,7 +10,7 @@ namespace amr_wind::transport {
 /** Two-phase fluid transport model with piece-wise constant properties
  *  \ingroup transport
  */
-class TwoPhaseTransport : public TransportModel
+class TwoPhaseTransport : public TransportModel::Register<TwoPhaseTransport>
 {
 public:
     static constexpr bool constant_properties = false;
