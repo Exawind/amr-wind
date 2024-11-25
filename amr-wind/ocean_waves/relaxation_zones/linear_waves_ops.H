@@ -24,6 +24,7 @@ struct ReadInputsOp<LinearWaves>
 
         pp.get("wave_length", wdata.wave_length);
         pp.get("wave_height", wdata.wave_height);
+        pp.get("wave_phase_offset_time", wdata.wave_offset_time);
     }
 };
 
@@ -58,7 +59,9 @@ struct InitDataOp<LinearWaves>
 
         const amrex::Real wave_height = wdata.wave_height;
         const amrex::Real wave_length = wdata.wave_length;
+        const amrex::Real offset_time = wdata.wave_offset_time;
         const amrex::Real water_depth = wdata.water_depth;
+
         amrex::ParallelFor(
             m_velocity(level), amrex::IntVect(3),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
@@ -69,7 +72,7 @@ struct InitDataOp<LinearWaves>
                 const amrex::Real omega = std::pow(
                     wave_number * g * std::tanh(wave_number * water_depth),
                     0.5);
-                const amrex::Real phase = wave_number * x;
+                const amrex::Real phase = wave_number * x - omega * offset_time;
 
                 // Wave profile
                 const amrex::Real eta_w =
@@ -137,6 +140,7 @@ struct UpdateRelaxZonesOp<LinearWaves>
 
             const amrex::Real wave_height = wdata.wave_height;
             const amrex::Real wave_length = wdata.wave_length;
+            const amrex::Real offset_time = wdata.wave_offset_time;
             const amrex::Real water_depth = wdata.water_depth;
             const amrex::Real zero_sea_level = wdata.zsl;
             const amrex::Real g = wdata.g;
@@ -151,7 +155,8 @@ struct UpdateRelaxZonesOp<LinearWaves>
                     const amrex::Real omega = std::pow(
                         wave_number * g * std::tanh(wave_number * water_depth),
                         0.5);
-                    const amrex::Real phase = wave_number * x - omega * time;
+                    const amrex::Real phase =
+                        wave_number * x - omega * (time + offset_time);
 
                     const amrex::Real eta =
                         wave_height / 2.0 * std::cos(phase) + zero_sea_level;
