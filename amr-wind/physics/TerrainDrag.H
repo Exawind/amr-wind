@@ -34,6 +34,10 @@ public:
 
     void post_advance_work() override {}
 
+    //! Terrain Drag for waves
+
+    void convert_waves_to_blank_and_drag_flags();
+    
     std::string wave_velocity_field_name() const
     {
         return m_wave_velocity_name;
@@ -67,7 +71,6 @@ private:
     const std::string m_wave_volume_fraction_name{"ow_vof"};
     const std::string m_wave_negative_elevation_name{"ow_levelset"};
     const std::string m_wave_velocity_name{"ow_velocity"};
-    void convert_waves_to_blank_and_drag_flags();
 };
 } // namespace amr_wind::terraindrag
 
