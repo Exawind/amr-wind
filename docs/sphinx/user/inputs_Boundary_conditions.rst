@@ -88,6 +88,37 @@ The most applicable use case for this boundary condition is with the
 across the vertical coordinate or with time.
 The work to integrate this condition with the ABL class is under progress.
 
+Dynamic wall model (Wave model)
+```````````````````````````````
+The Moving Surface Drag (MOSD) model developed by `Ayala et al (2024) <https://doi.org/10.1007/s10546-024-00884-8>`_ is used as the dynamic wall model. The model calculates the stress (form drag) imparted by a moving wave. The model enables wave phase-resolving physics without the use of wave-phase adapting computational grids. 
+
+.. input_param:: wave_mosd.amplitude
+   **type:** Real, required, default = 0.05
+
+   Specifies the amplitude of the wave, only activated if ``WallFunction.wall_shear_stress_type = mosd``
+
+.. input_param:: wave_mosd.wavenumber
+   **type:** Real, required, default = 4
+
+   Specifies the wave number of the wave, only activated if ``WallFunction.wall_shear_stress_type = mosd``
+
+.. input_param:: wave_mosd.frequency
+   **type:** Real, required, default = 0.8
+
+   Specifies the frequency of the wave, only activated if ``WallFunction.wall_shear_stress_type = mosd``
+
+Example::
+
+  zlo.type =   "wall_model"
+  WallFunction.wall_shear_stress_type = mosd
+  wave_mosd.amplitude = 0.05
+  wave_mosd.wavenumber = 4
+  wave_mosd.frequency = 0.8
+
+.. note:: This wall model is only applicable for the lower boundary ``zlo.type``. Also, it is set for only monochromatic waves. 
+
+Currently, the dynamic wall model is only available for ``incflo.physics = ChannelFlow``. The work to integrate this condition with the ABL class is under progress. See the ``channel_mosd`` test for an example that uses the dynamic wall model.
+
 Pressure outflow boundary conditions
 ````````````````````````````````````
 

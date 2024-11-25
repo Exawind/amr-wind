@@ -164,6 +164,12 @@ This section is for setting atmospheric boundary layer parameters.
    Wall shear stress model: options include
    "constant", "local", "Schumann", and "Moeng"
 
+.. input_param:: ABL.bndry_output_format
+
+   **type:** String, optional, default = "native"
+
+   Output of boundary plane files. Valid values are ``netcdf`` and ``native``.
+
 .. input_param:: ABL.initial_condition_input_file
 
    **type:** String, optional, default= ""

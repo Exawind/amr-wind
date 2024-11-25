@@ -14,6 +14,8 @@ const char* buildInfoGetGitHash(int i);
 
 namespace amr_wind::ioutils {
 
+void goto_next_line(std::istream& is);
+
 inline std::string amr_wind_version()
 {
     return {amrex::buildInfoGetGitHash(1)};
