@@ -7,7 +7,7 @@
 
 namespace amr_wind::forestdrag {
 
-namespace {} // namespace
+namespace {
 struct Forest
 {
     amrex::Real m_type_forest;
@@ -20,6 +20,8 @@ struct Forest
     amrex::Real m_laimax_forest;
 
     amrex::Real calc_lm() const;
+    amrex::Real
+    calc_af(const amrex::Real z, const amrex::Real treelaimax) const;
 };
 
 amrex::Real Forest::calc_lm() const
@@ -29,7 +31,7 @@ amrex::Real Forest::calc_lm() const
         amrex::Real ztree = 0;
         amrex::Real expFun = 0;
         amrex::Real ratio = 0;
-        amrex::Real treeZm = m_laimax_forest * m_height_forest;
+        const amrex::Real treeZm = m_laimax_forest * m_height_forest;
         const amrex::Real dz = m_height_forest / 100;
         while (ztree <= m_height_forest) {
             ratio = (m_height_forest - treeZm) / (m_height_forest - ztree);
@@ -46,6 +48,28 @@ amrex::Real Forest::calc_lm() const
     }
     return treelaimax;
 }
+
+amrex::Real
+Forest::calc_af(const amrex::Real z, const amrex::Real treelaimax) const
+{
+    amrex::Real af = 0.0;
+    if (m_type_forest == 1) {
+        af = m_lai_forest / m_height_forest;
+    } else if (m_type_forest == 2) {
+        const amrex::Real treeZm = m_laimax_forest * m_height_forest;
+        const amrex::Real ratio =
+            (m_height_forest - treeZm) / (m_height_forest - z);
+        if (z < treeZm) {
+            af = treelaimax * std::pow(ratio, 6.0) * std::exp(6 * (1 - ratio));
+        } else if (z <= m_height_forest) {
+            af =
+                treelaimax * std::pow(ratio, 0.5) * std::exp(0.5 * (1 - ratio));
+        }
+    }
+    return af;
+}
+} // namespace
+
 /** Forestdrag Flow physics
  *  \ingroup physics
  */
@@ -84,6 +108,7 @@ private:
     Field& m_forest_drag;
     Field& m_forest_blank;
     amrex::Vector<Forest> m_forests;
+    amrex::Gpu::DeviceVector<Forest> m_d_forests;
 };
 } // namespace amr_wind::forestdrag
 
