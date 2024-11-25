@@ -26,7 +26,8 @@ BoussinesqBuoyancy::BoussinesqBuoyancy(const CFDSim& sim)
         amrex::ParmParse pp("transport");
         pp.query("model", transport_model_name);
     }
-    m_transport = transport::TransportModel::create(transport_model_name, sim);
+    std::unique_ptr<transport::TransportModel> transport = transport::TransportModel::create(transport_model_name, sim);
+    m_beta = transport->beta();
 
     m_is_vof = sim.repo().field_exists("vof");
     if (m_is_vof) {
@@ -61,7 +62,7 @@ void BoussinesqBuoyancy::operator()(
     const auto& temp =
         m_temperature.state(field_impl::phi_state(fstate))(lev).const_array(
             mfi);
-    const auto& beta = (*m_transport->beta())(lev).const_array(mfi);
+    const auto& beta = (*m_beta)(lev).const_array(mfi);
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real T = temp(i, j, k, 0);
         const amrex::Real fac_air = beta(i,j,k) * (T0 - T);

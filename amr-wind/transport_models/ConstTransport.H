@@ -9,7 +9,7 @@ namespace amr_wind::transport {
 /** Fluid transport model with constant properties
  *  \ingroup transport
  */
-class ConstTransport : public TransportModel
+class ConstTransport : public TransportModel::Register<ConstTransport>
 {
 public:
     static constexpr bool constant_properties = true;
