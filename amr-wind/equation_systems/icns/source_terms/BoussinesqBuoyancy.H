@@ -1,6 +1,7 @@
 #ifndef BOUSSINESQBUOYANCY_H
 #define BOUSSINESQBUOYANCY_H
 
+#include "amr-wind/transport_models/TransportModel.H"
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 
@@ -38,11 +39,11 @@ private:
     //! Reference temperature (Kelvin)
     amrex::Real m_ref_theta{300.0};
 
-    //! Thermal expansion coefficient
-    amrex::Real m_beta{0.0};
-
     //! Check for VOF
     bool m_is_vof{false};
+
+  //! Transport model
+  std::unique_ptr<transport::TransportModel> m_transport;
 };
 } // namespace amr_wind::pde::icns
 

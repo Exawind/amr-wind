@@ -21,11 +21,12 @@ BoussinesqBuoyancy::BoussinesqBuoyancy(const CFDSim& sim)
         amr_wind::pde::icns::BoussinesqBuoyancy::identifier());
     pp_boussinesq_buoyancy.get("reference_temperature", m_ref_theta);
 
-    if (pp_boussinesq_buoyancy.contains("thermal_expansion_coeff")) {
-        pp_boussinesq_buoyancy.get("thermal_expansion_coeff", m_beta);
-    } else {
-        m_beta = 1.0 / m_ref_theta;
+    std::string transport_model_name = "ConstTransport";
+    {
+        amrex::ParmParse pp("transport");
+        pp.query("model", transport_model_name);
     }
+    m_transport = transport::TransportModel::create(transport_model_name, sim);
 
     m_is_vof = sim.repo().field_exists("vof");
     if (m_is_vof) {
@@ -50,7 +51,6 @@ void BoussinesqBuoyancy::operator()(
     const amrex::Array4<amrex::Real>& src_term) const
 {
     const amrex::Real T0 = m_ref_theta;
-    const amrex::Real beta = m_beta;
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
         m_gravity[0], m_gravity[1], m_gravity[2]};
 
@@ -61,9 +61,10 @@ void BoussinesqBuoyancy::operator()(
     const auto& temp =
         m_temperature.state(field_impl::phi_state(fstate))(lev).const_array(
             mfi);
+    const auto& beta = (*m_transport->beta())(lev).const_array(mfi);
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real T = temp(i, j, k, 0);
-        const amrex::Real fac_air = beta * (T0 - T);
+        const amrex::Real fac_air = beta(i,j,k) * (T0 - T);
         // If vof exists, ignore Boussinesq term in cells with liquid
         // If no vof, assume single phase and use the term for air everywhere
         const amrex::Real fac =
