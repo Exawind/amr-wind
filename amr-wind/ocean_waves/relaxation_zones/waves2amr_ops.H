@@ -506,7 +506,7 @@ struct InitDataOp<W2AWaves>
         w2a_levelset.setVal(0.0);
         w2a_velocity.setVal(0.0);
 #else
-        amrex::ignore_unused(data, level, geom);
+        amrex::ignore_unused(data, level, geom, multiphase_mode);
 #endif
     }
 }; // namespace ocean_waves
@@ -717,7 +717,7 @@ struct UpdateTargetFieldsOp<W2AWaves>
                 });
         }
 #else
-        amrex::ignore_unused(data);
+        amrex::ignore_unused(data, for_forcing_term);
 #endif
     }
 };
