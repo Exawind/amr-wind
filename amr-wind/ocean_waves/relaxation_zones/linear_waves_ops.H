@@ -24,7 +24,7 @@ struct ReadInputsOp<LinearWaves>
 
         pp.get("wave_length", wdata.wave_length);
         pp.get("wave_height", wdata.wave_height);
-        pp.get("wave_phase_offset_time", wdata.wave_offset_time);
+        pp.query("wave_phase_offset_time", wdata.wave_offset_time);
     }
 };
 
