@@ -183,18 +183,18 @@ void TerrainDrag::post_regrid_actions()
 void TerrainDrag::convert_waves_to_blank_and_drag_flags()
 {
     const int nlevels = m_sim.repo().num_active_levels();
+    // Uniform, low roughness for waves
+    m_terrainz0.setVal(1e-4);
     for (int level = 0; level < nlevels; ++level) {
         const auto geom = m_sim.repo().mesh().Geom(level);
         const auto& dx = geom.CellSizeArray();
         const auto& prob_lo = geom.ProbLoArray();
         auto& blanking = m_terrain_blank(level);
-        auto& terrainz0 = m_terrainz0(level);
         auto& terrain_height = m_terrain_height(level);
         auto& drag = m_terrain_drag(level);
 
         auto levelBlanking = blanking.arrays();
         auto levelDrag = drag.arrays();
-        auto levelz0 = terrainz0.arrays();
         auto levelHeight = terrain_height.arrays();
 
         const auto negative_wave_elevation =
