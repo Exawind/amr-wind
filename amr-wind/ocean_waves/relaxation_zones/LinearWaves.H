@@ -9,7 +9,7 @@ struct LinearWavesData : public RelaxZonesBaseData
 {
     amrex::Real wave_height{0.1};
     amrex::Real wave_length{1.0};
-    amrex::Real wave_offset_time{0.0};
+    amrex::Real wave_phase_offset{0.0};
 };
 
 struct LinearWaves : public RelaxZonesType
