@@ -77,7 +77,7 @@ MultiPhase::MultiPhase(CFDSim& sim)
     pp_incflo.queryarr("gravity", m_gravity);
 }
 
-InterfaceCapturingMethod MultiPhase::interface_capturing_method()
+InterfaceCapturingMethod MultiPhase::interface_capturing_method() const
 {
     return m_interface_capturing_method;
 }
