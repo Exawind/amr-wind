@@ -2,6 +2,7 @@
 #define TRANSPORTMODEL_H
 
 #include "amr-wind/core/Factory.H"
+#include "amr-wind/CFDSim.H"
 #include "amr-wind/core/FieldRepo.H"
 
 namespace amr_wind::transport {
@@ -25,10 +26,12 @@ namespace amr_wind::transport {
 /** Abstract representation of a transport model
  *  \ingroup transport
  */
-class TransportModel
+class TransportModel: public Factory<TransportModel, const CFDSim&>
 {
 public:
-    virtual ~TransportModel() = default;
+    static std::string base_identifier() { return "TransportModel"; }
+
+  virtual ~TransportModel() = default;
 
     //! Dynamic laminar viscosity (kg/m/s)
     virtual std::unique_ptr<ScratchField> mu() = 0;

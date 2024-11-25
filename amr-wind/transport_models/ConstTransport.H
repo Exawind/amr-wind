@@ -16,7 +16,7 @@ public:
 
     static std::string identifier() { return "ConstTransport"; }
 
-    explicit ConstTransport(CFDSim& sim)
+    explicit ConstTransport(const CFDSim& sim)
         : m_repo(sim.repo()), m_phy_mgr(sim.physics_manager())
     {
         amrex::ParmParse pp("transport");
