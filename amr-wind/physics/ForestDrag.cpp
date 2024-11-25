@@ -24,25 +24,24 @@ ForestDrag::ForestDrag(CFDSim& sim)
     pp.query("forest_file", forestfile);
     std::ifstream file(forestfile, std::ios::in);
     if (!file.good()) {
-        amrex::Abort("Cannot find file " +forestfile);
+        amrex::Abort("Cannot find file " + forestfile);
     }
     //! TreeType xc yc height diameter cd lai laimax
     amrex::Real value1, value2, value3, value4, value5, value6, value7, value8;
     while (file >> value1 >> value2 >> value3 >> value4 >> value5 >> value6 >>
            value7 >> value8) {
         Forest f;
-        f.type_forest = value1;
-        f.x_forest = value2;
-        f.y_forest = value3;
-        f.height_forest = value4;
-        f.diameter_forest = value5;
-        f.cd_forest = value6;
-        f.lai_forest = value7;
-        f.laimax_forest = value8;
+        f.m_type_forest = value1;
+        f.m_x_forest = value2;
+        f.m_y_forest = value3;
+        f.m_height_forest = value4;
+        f.m_diameter_forest = value5;
+        f.m_cd_forest = value6;
+        f.m_lai_forest = value7;
+        f.m_laimax_forest = value8;
         m_forests.push_back(f);
     }
     file.close();
-    m_d_forests.resize(m_forests.size());
     m_sim.io_manager().register_output_var("forest_drag");
     m_sim.io_manager().register_output_var("forest_blank");
 }
@@ -59,41 +58,20 @@ void ForestDrag::post_init_actions()
         auto& velocity = m_velocity(level);
         auto& drag = m_forest_drag(level);
         auto& blank = m_forest_blank(level);
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, m_forests.begin(), m_forests.end(),
-            m_d_forests.begin());
-        const auto* forests_ptr = m_d_forests.data();
-        const auto forestSize = m_d_forests.size();
+        unsigned forestSize = m_forests.size();
         for (unsigned ii = 0; ii < forestSize; ++ii) {
-            amrex::Real treelaimax = 0;
+            amrex::Real treelaimax = m_forests[ii].calc_lm();
+            const amrex::Real type_forest = m_forests[ii].m_type_forest;
+            const amrex::Real x_forest = m_forests[ii].m_x_forest;
+            const amrex::Real y_forest = m_forests[ii].m_y_forest;
+            const amrex::Real height_forest = m_forests[ii].m_height_forest;
+            const amrex::Real diameter_forest = m_forests[ii].m_diameter_forest;
+            const amrex::Real cd_forest = m_forests[ii].m_cd_forest;
+            const amrex::Real lai_forest = m_forests[ii].m_lai_forest;
             amrex::Real treeZm = 0.0;
-            const amrex::Real type_forest = forests_ptr[ii].type_forest;
-            const amrex::Real x_forest = forests_ptr[ii].x_forest;
-            const amrex::Real y_forest = forests_ptr[ii].y_forest;
-            const amrex::Real height_forest = forests_ptr[ii].height_forest;
-            const amrex::Real diameter_forest = forests_ptr[ii].diameter_forest;
-            const amrex::Real cd_forest = forests_ptr[ii].cd_forest;
-            const amrex::Real lai_forest = forests_ptr[ii].lai_forest;
-            const amrex::Real laimax_forest = forests_ptr[ii].laimax_forest;
-            if (type_forest == 2) {
-                amrex::Real ztree = 0;
-                amrex::Real expFun = 0;
-                amrex::Real ratio = 0;
-                treeZm = laimax_forest * height_forest;
-                const amrex::Real dz = height_forest / 100;
-                while (ztree <= height_forest) {
-                    ratio = (height_forest - treeZm) / (height_forest - ztree);
-                    if (ztree < treeZm) {
-                        expFun = expFun + std::pow(ratio, 6.0) *
-                                              std::exp(6 * (1 - ratio));
-                    } else {
-                        expFun = expFun + std::pow(ratio, 0.5) *
-                                              std::exp(0.5 * (1 - ratio));
-                    }
-                    ztree = ztree + dz;
-                }
-                treelaimax = lai_forest / (expFun * dz);
-            }
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
             for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
                 const auto& vbx = mfi.validbox();
                 auto levelDrag = drag.array(mfi);

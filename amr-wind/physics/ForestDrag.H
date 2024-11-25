@@ -8,7 +8,44 @@
 namespace amr_wind::forestdrag {
 
 namespace {} // namespace
+struct Forest
+{
+    amrex::Real m_type_forest;
+    amrex::Real m_x_forest;
+    amrex::Real m_y_forest;
+    amrex::Real m_height_forest;
+    amrex::Real m_diameter_forest;
+    amrex::Real m_cd_forest;
+    amrex::Real m_lai_forest;
+    amrex::Real m_laimax_forest;
 
+    amrex::Real calc_lm() const;
+};
+
+amrex::Real Forest::calc_lm() const
+{
+    amrex::Real treelaimax = 0.0;
+    if (m_type_forest == 2) {
+        amrex::Real ztree = 0;
+        amrex::Real expFun = 0;
+        amrex::Real ratio = 0;
+        amrex::Real treeZm = m_laimax_forest * m_height_forest;
+        const amrex::Real dz = m_height_forest / 100;
+        while (ztree <= m_height_forest) {
+            ratio = (m_height_forest - treeZm) / (m_height_forest - ztree);
+            if (ztree < treeZm) {
+                expFun =
+                    expFun + std::pow(ratio, 6.0) * std::exp(6 * (1 - ratio));
+            } else {
+                expFun =
+                    expFun + std::pow(ratio, 0.5) * std::exp(0.5 * (1 - ratio));
+            }
+            ztree = ztree + dz;
+        }
+        treelaimax = m_lai_forest / (expFun * dz);
+    }
+    return treelaimax;
+}
 /** Forestdrag Flow physics
  *  \ingroup physics
  */
@@ -46,19 +83,7 @@ private:
     //! Forest Drag Force Term
     Field& m_forest_drag;
     Field& m_forest_blank;
-    struct Forest
-    {
-        amrex::Real type_forest;
-        amrex::Real x_forest;
-        amrex::Real y_forest;
-        amrex::Real height_forest;
-        amrex::Real diameter_forest;
-        amrex::Real cd_forest;
-        amrex::Real lai_forest;
-        amrex::Real laimax_forest;
-    };
     amrex::Vector<Forest> m_forests;
-    amrex::Gpu::DeviceVector<Forest> m_d_forests;
 };
 } // namespace amr_wind::forestdrag
 
