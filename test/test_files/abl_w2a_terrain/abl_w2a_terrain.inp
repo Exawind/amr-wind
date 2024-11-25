@@ -65,9 +65,9 @@ OceanWaves.label = W2A1
 OceanWaves.W2A1.type = W2AWaves
 OceanWaves.W2A1.HOS_modes_filename = ../ow_w2a/modes_HOS_SWENSE.dat
 # Offset to include wave troughs in domain
-OceanWaves.W2A1.zero_sea_level = 0
+OceanWaves.W2A1.zero_sea_level = 10
 # These variables should change with resolution in z
-OceanWaves.W2A1.number_interp_points_in_z = 3
+OceanWaves.W2A1.number_interp_points_in_z = 6
 OceanWaves.W2A1.interp_spacing_at_surface = 2.
 OceanWaves.W2A1.number_interp_above_surface = 3
 
