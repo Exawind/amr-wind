@@ -36,8 +36,8 @@ public:
 
     //! Terrain Drag for waves
 
-    void convert_waves_to_blank_and_drag_flags();
-    
+    void convert_waves_to_terrain_fields();
+
     std::string wave_velocity_field_name() const
     {
         return m_wave_velocity_name;

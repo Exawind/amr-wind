@@ -156,7 +156,7 @@ void TerrainDrag::post_init_actions()
         return;
     }
     BL_PROFILE("amr-wind::" + this->identifier() + "::post_init_actions");
-    convert_waves_to_blank_and_drag_flags();
+    convert_waves_to_terrain_fields();
 }
 
 void TerrainDrag::pre_advance_work()
@@ -165,13 +165,13 @@ void TerrainDrag::pre_advance_work()
         return;
     }
     BL_PROFILE("amr-wind::" + this->identifier() + "::pre_advance_work");
-    convert_waves_to_blank_and_drag_flags();
+    convert_waves_to_terrain_fields();
 }
 
 void TerrainDrag::post_regrid_actions()
 {
     if (m_terrain_is_waves) {
-        convert_waves_to_blank_and_drag_flags();
+        convert_waves_to_terrain_fields();
     } else {
         const int nlevels = m_sim.repo().num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {
@@ -180,7 +180,7 @@ void TerrainDrag::post_regrid_actions()
     }
 }
 
-void TerrainDrag::convert_waves_to_blank_and_drag_flags()
+void TerrainDrag::convert_waves_to_terrain_fields()
 {
     const int nlevels = m_sim.repo().num_active_levels();
     // Uniform, low roughness for waves
