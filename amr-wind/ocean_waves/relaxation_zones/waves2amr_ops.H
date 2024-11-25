@@ -294,7 +294,8 @@ struct ReadInputsOp<W2AWaves>
         if (std::abs(depth - (wdata.zsl - prob_lo_input[2])) > 1e-3 * depth) {
             amrex::Print()
                 << "WARNING: Mismatch between water depths from AMR-Wind "
-                   "domain and HOS data interpreted by Waves2AMR";
+                   "domain and HOS data interpreted by Waves2AMR. \n   This "
+                   "warning is not a concern when using waves as terrain.\n";
         }
 
         // Allocate pointers for FFTW
@@ -332,59 +333,51 @@ struct ReadInputsOp<W2AWaves>
                 std::to_string(flag));
         }
 
-        // If init_wave_field is activated and initialization will be done, get
-        // modes on every processor
-        if (wdata.init_wave_field && data.sim().time().time_index() == 0) {
-            bool no_EOF = wdata.rmodes.get_data(
+        // Get modes on every processor (unless requested to skip?)
+        bool no_EOF = wdata.rmodes.get_data(
+            wdata.ntime + wdata.n_offset, wdata.mX, wdata.mY, wdata.mZ,
+            wdata.mFS);
+        if (!no_EOF) {
+            // End of file detected, reset reading
+            wdata.n_offset = update_offset_timestep(wdata.ntime, wdata.n_winit);
+            // Print warning to screen
+            amrex::Print()
+                << "WARNING (waves2amr_ops): end of mode data file "
+                   "detected, resetting to beginning of mode data.\n";
+            // Read data again, now from a valid timestep
+            no_EOF = wdata.rmodes.get_data(
                 wdata.ntime + wdata.n_offset, wdata.mX, wdata.mY, wdata.mZ,
                 wdata.mFS);
+            // If no valid data is detected at this point, abort
             if (!no_EOF) {
-                // End of file detected, reset reading
-                wdata.n_offset =
-                    update_offset_timestep(wdata.ntime, wdata.n_winit);
-                // Print warning to screen
-                amrex::Print()
-                    << "WARNING (waves2amr_ops): end of mode data file "
-                       "detected, resetting to beginning of mode data.\n";
-                // Read data again, now from a valid timestep
-                no_EOF = wdata.rmodes.get_data(
-                    wdata.ntime + wdata.n_offset, wdata.mX, wdata.mY, wdata.mZ,
-                    wdata.mFS);
-                // If no valid data is detected at this point, abort
-                if (!no_EOF) {
-                    amrex::Abort(
-                        "waves2amr_ops: end of mode data file detected after "
-                        "resetting to beginning; please evaluate HOS_init_time "
-                        "or HOS_init_timestep and check the length of the mode "
-                        "file.");
-                }
+                amrex::Abort(
+                    "waves2amr_ops: end of mode data file detected after "
+                    "resetting to beginning; please evaluate HOS_init_time "
+                    "or HOS_init_timestep and check the length of the mode "
+                    "file.");
             }
+        }
 
-            // Convert modes to spatial data
-            modes_hosgrid::copy_complex(
-                wdata.n0, wdata.n1, wdata.mFS, wdata.eta_mptr);
-            wdata.sp_eta_vec.resize(
-                static_cast<size_t>(wdata.n0) * static_cast<size_t>(wdata.n1),
-                0.0);
-            modes_hosgrid::populate_hos_eta(
-                wdata.rmodes, wdata.plan, wdata.eta_mptr, wdata.sp_eta_vec);
-            // Mesh is not yet created, so get data at every height
-            const auto n_hts = wdata.hvec.size();
-            wdata.sp_u_vec.resize(
-                static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
-            wdata.sp_v_vec.resize(
-                static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
-            wdata.sp_w_vec.resize(
-                static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
-            for (int iht = 0; iht < static_cast<int>(n_hts); ++iht) {
-                // Get sample height
-                amrex::Real ht = wdata.hvec[iht];
-                // Sample velocity
-                modes_hosgrid::populate_hos_vel(
-                    wdata.rmodes, ht, wdata.mX, wdata.mY, wdata.mZ, wdata.plan,
-                    wdata.u_mptr, wdata.v_mptr, wdata.w_mptr, wdata.sp_u_vec,
-                    wdata.sp_v_vec, wdata.sp_w_vec, iht * wdata.n0 * wdata.n1);
-            }
+        // Convert modes to spatial data
+        modes_hosgrid::copy_complex(
+            wdata.n0, wdata.n1, wdata.mFS, wdata.eta_mptr);
+        wdata.sp_eta_vec.resize(
+            static_cast<size_t>(wdata.n0) * static_cast<size_t>(wdata.n1), 0.0);
+        modes_hosgrid::populate_hos_eta(
+            wdata.rmodes, wdata.plan, wdata.eta_mptr, wdata.sp_eta_vec);
+        // Mesh is not yet created, so get data at every height
+        const auto n_hts = wdata.hvec.size();
+        wdata.sp_u_vec.resize(static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
+        wdata.sp_v_vec.resize(static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
+        wdata.sp_w_vec.resize(static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
+        for (int iht = 0; iht < static_cast<int>(n_hts); ++iht) {
+            // Get sample height
+            amrex::Real ht = wdata.hvec[iht];
+            // Sample velocity
+            modes_hosgrid::populate_hos_vel(
+                wdata.rmodes, ht, wdata.mX, wdata.mY, wdata.mZ, wdata.plan,
+                wdata.u_mptr, wdata.v_mptr, wdata.w_mptr, wdata.sp_u_vec,
+                wdata.sp_v_vec, wdata.sp_w_vec, iht * wdata.n0 * wdata.n1);
         }
 
         // Declare fields for HOS
