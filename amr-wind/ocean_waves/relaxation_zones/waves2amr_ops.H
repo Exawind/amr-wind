@@ -90,7 +90,7 @@ void postprocess_velocity_mfab_liquid(
             // Set velocity to zero if no liquid present
             const amrex::Real cell_length_2D =
                 std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
-            if (phi[nbx](i, j, k) + cell_length_2D >= 0) {
+            if (phi[nbx](i, j, k) + cell_length_2D < 0) {
                 vel[nbx](i, j, k, 0) = 0.0;
                 vel[nbx](i, j, k, 1) = 0.0;
                 vel[nbx](i, j, k, 2) = 0.0;
