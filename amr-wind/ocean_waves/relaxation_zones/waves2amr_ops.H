@@ -294,7 +294,7 @@ struct ReadInputsOp<W2AWaves>
         if (std::abs(depth - (wdata.zsl - prob_lo_input[2])) > 1e-3 * depth) {
             amrex::Print()
                 << "WARNING: Mismatch between water depths from AMR-Wind "
-                   "domain and HOS data interpreted by Waves2AMR. \n   This "
+                   "domain and HOS data interpreted by Waves2AMR. \n   ^This "
                    "warning is not a concern when using waves as terrain.\n";
         }
 
