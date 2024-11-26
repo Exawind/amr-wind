@@ -50,7 +50,7 @@ amrex::Real Forest::calc_lm() const
     return treelaimax;
 }
 
-amrex::Real
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
 Forest::calc_af(const amrex::Real z, const amrex::Real treelaimax) const
 {
     amrex::Real af = 0.0;
