@@ -83,6 +83,7 @@ void ForestDrag::initialize_fields(int level, const amrex::Geometry& geom)
                 const auto* d_forests = m_d_forests.data();
                 amrex::ParallelFor(
                     vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                      const auto tgam = std::tgamma(1.3);
                         const auto x = prob_lo[0] + (i + 0.5) * dx[0];
                         const auto y = prob_lo[1] + (j + 0.5) * dx[1];
                         const auto z = prob_lo[2] + (k + 0.5) * dx[2];
