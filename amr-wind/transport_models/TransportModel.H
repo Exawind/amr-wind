@@ -45,6 +45,9 @@ public:
 
     //! Thermal expansion coefficient
     virtual std::unique_ptr<ScratchField> beta() = 0;
+
+  //! Reference temperature
+  virtual amrex::Real reference_temperature() = 0;
 };
 } // namespace amr_wind::transport
 

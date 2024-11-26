@@ -221,7 +221,7 @@ public:
         return diff;
     }
 
-    //! Return the thermal diffusivity field
+    //! Return the thermal expansion coefficient
     inline std::unique_ptr<ScratchField> beta() override
     {
         amrex::Abort("TwoPhase thermal expansion coefficient not implemented");
@@ -231,6 +231,9 @@ public:
         }
         return beta;
     }
+
+   inline amrex::Real reference_temperature() override {return m_reference_temperature;}
+
 
 private:
     //! Reference to the CFD sim
@@ -256,6 +259,9 @@ private:
 
     //! Turbulent Prandtl number
     amrex::Real m_Prt{1.0};
+
+  //! Reference temperature
+    amrex::Real m_reference_temperature{-1.0};
 };
 
 } // namespace amr_wind::transport

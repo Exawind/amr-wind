@@ -17,17 +17,13 @@ namespace amr_wind::pde::icns {
 BoussinesqBuoyancy::BoussinesqBuoyancy(const CFDSim& sim)
     : m_temperature(sim.repo().get_field("temperature"))
 {
-    amrex::ParmParse pp_boussinesq_buoyancy(
-        amr_wind::pde::icns::BoussinesqBuoyancy::identifier());
-    pp_boussinesq_buoyancy.get("reference_temperature", m_ref_theta);
-
     std::string transport_model_name = "ConstTransport";
     {
         amrex::ParmParse pp("transport");
         pp.query("model", transport_model_name);
     }
-    std::unique_ptr<transport::TransportModel> transport = transport::TransportModel::create(transport_model_name, sim);
-    m_beta = transport->beta();
+    m_transport = transport::TransportModel::create(transport_model_name, sim);
+    m_beta = m_transport->beta();
 
     m_is_vof = sim.repo().field_exists("vof");
     if (m_is_vof) {
@@ -51,7 +47,7 @@ void BoussinesqBuoyancy::operator()(
     const FieldState fstate,
     const amrex::Array4<amrex::Real>& src_term) const
 {
-    const amrex::Real T0 = m_ref_theta;
+  const amrex::Real T0 = m_transport->reference_temperature();
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
         m_gravity[0], m_gravity[1], m_gravity[2]};
 
