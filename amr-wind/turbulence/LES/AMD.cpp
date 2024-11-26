@@ -24,11 +24,9 @@ AMD<Transport>::AMD(CFDSim& sim)
     , m_pa_temp(m_temperature, sim.time(), m_normal_dir, true)
 {
     auto& phy_mgr = this->m_sim.physics_manager();
-    if (phy_mgr.contains("ABL")) {
-        {
-            amrex::ParmParse pp("incflo");
-            pp.queryarr("gravity", m_gravity);
-        }
+    {
+        amrex::ParmParse pp("incflo");
+        pp.queryarr("gravity", m_gravity);
     }
 }
 
@@ -80,6 +78,8 @@ void AMD<Transport>::update_turbulent_viscosity(
     const amrex::Real* p_tpa_coord_begin = tpa_coord_d.data();
     const amrex::Real* p_tpa_coord_end = tpa_coord_d.end();
     const amrex::Real* p_tpa_deriv = tpa_deriv_d.data();
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
+        m_gravity[0], m_gravity[1], m_gravity[2]};
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = geom_vec[lev];
@@ -103,8 +103,8 @@ void AMD<Transport>::update_turbulent_viscosity(
                 const auto beta_val = beta_arrs[nbx](i, j, k);
                 mu_arr(i, j, k) =
                     rho_arr(i, j, k) * amd_muvel(
-                                           i, j, k, dx, beta_val, C_poincare,
-                                           gradVel_arr, gradT_arr,
+                                           i, j, k, dx, beta_val, gravity,
+                                           C_poincare, gradVel_arr, gradT_arr,
                                            p_tpa_coord_begin, p_tpa_coord_end,
                                            p_tpa_deriv, normal_dir, nlo);
             });

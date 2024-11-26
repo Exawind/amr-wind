@@ -69,7 +69,8 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real amd_muvel(
     int k,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx, // Grid spacing
     const amrex::Real beta, // Thermal expansion coefficient
-    const amrex::Real C,    // Poincare const
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& gravity,
+    const amrex::Real C, // Poincare const
     const amrex::Array4<amrex::Real const>& gradVel,
     const amrex::Array4<amrex::Real const>& gradT,
     const amrex::Real* gradTbar_coord_begin,
@@ -108,7 +109,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real amd_muvel(
     }
     denom = std::max(1e-15, denom);
     num_shear *= -C;
-    num_buoy *= C * beta;
+    num_buoy *= C * beta * std::abs(gravity[normal_dir]);
     return std::max(1e-15, (num_shear + num_buoy) / denom);
 }
 
