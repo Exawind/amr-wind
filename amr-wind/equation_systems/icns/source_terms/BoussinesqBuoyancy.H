@@ -1,8 +1,8 @@
 #ifndef BOUSSINESQBUOYANCY_H
 #define BOUSSINESQBUOYANCY_H
 
-#include "amr-wind/transport_models/TransportModel.H"
 #include "amr-wind/core/FieldRepo.H"
+#include "amr-wind/transport_models/TransportModel.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 
 namespace amr_wind::pde::icns {

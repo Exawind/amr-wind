@@ -2,6 +2,7 @@
 #define ABLMEANBOUSSINESQ_H
 
 #include "amr-wind/core/FieldRepo.H"
+#include "amr-wind/transport_models/TransportModel.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
 
@@ -45,8 +46,11 @@ private:
     //! Reference temperature (Kelvin)
     amrex::Real m_ref_theta{300.0};
 
-    //! Thermal expansion coefficient
-    amrex::Real m_beta{0.0};
+  //! Transport model
+  std::unique_ptr<transport::TransportModel> m_transport;
+  
+  //! Thermal expansion coefficient
+  std::unique_ptr<ScratchField> m_beta;
 
     int m_axis{2};
 
