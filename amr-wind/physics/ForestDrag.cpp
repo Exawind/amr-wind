@@ -77,7 +77,7 @@ void ForestDrag::initialize_fields(int level, const amrex::Geometry& geom)
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.validbox();
+        const auto& vbx = mfi.tilebox();
         for (int nf = 0; nf < static_cast<int>(m_forests.size()); nf++) {
             if (vbx.contains(m_forests[nf].bounding_box(geom))) {
                 const auto& levelDrag = drag.array(mfi);
