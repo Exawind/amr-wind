@@ -21,7 +21,6 @@ ABLMeanBoussinesq::ABLMeanBoussinesq(const CFDSim& sim)
     : m_mesh(sim.mesh()), m_transport(sim.transport_model())
 
 {
-
     const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
     abl.register_mean_boussinesq_term(this);
 
