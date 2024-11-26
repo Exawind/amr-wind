@@ -26,12 +26,12 @@ namespace amr_wind::transport {
 /** Abstract representation of a transport model
  *  \ingroup transport
  */
-class TransportModel: public Factory<TransportModel, const CFDSim&>
+class TransportModel : public Factory<TransportModel, const CFDSim&>
 {
 public:
     static std::string base_identifier() { return "TransportModel"; }
 
-  virtual ~TransportModel() = default;
+    virtual ~TransportModel() = default;
 
     //! Dynamic laminar viscosity (kg/m/s)
     virtual std::unique_ptr<ScratchField> mu() = 0;
@@ -46,8 +46,8 @@ public:
     //! Thermal expansion coefficient
     virtual std::unique_ptr<ScratchField> beta() = 0;
 
-  //! Reference temperature
-  virtual amrex::Real reference_temperature() = 0;
+    //! Reference temperature
+    virtual amrex::Real reference_temperature() = 0;
 };
 } // namespace amr_wind::transport
 

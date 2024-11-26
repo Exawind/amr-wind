@@ -39,11 +39,11 @@ private:
     //! Check for VOF
     bool m_is_vof{false};
 
-  //! Transport model
-  std::unique_ptr<transport::TransportModel> m_transport;
-  
-  //! Thermal expansion coefficient
-  std::unique_ptr<ScratchField> m_beta;
+    //! Transport model
+    std::unique_ptr<transport::TransportModel> m_transport;
+
+    //! Thermal expansion coefficient
+    std::unique_ptr<ScratchField> m_beta;
 };
 } // namespace amr_wind::pde::icns
 

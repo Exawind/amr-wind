@@ -86,7 +86,7 @@ void ABLMeanBoussinesq::operator()(
         const amrex::Real ht = problo[idir] + (iv[idir] + 0.5) * dx[idir];
         const amrex::Real temp =
             amr_wind::interp::linear(theights, theights_end, tvals, ht);
-        const amrex::Real fac = beta(i,j,k) * (temp - T0);
+        const amrex::Real fac = beta(i, j, k) * (temp - T0);
         src_term(i, j, k, 0) += gravity[0] * fac;
         src_term(i, j, k, 1) += gravity[1] * fac;
         src_term(i, j, k, 2) += gravity[2] * fac;
