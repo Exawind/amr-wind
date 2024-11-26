@@ -8,7 +8,6 @@
 
 namespace amr_wind::forestdrag {
 
-namespace {
 struct Forest
 {
     amrex::Real m_type_forest;
@@ -81,7 +80,6 @@ struct Forest
             real_bounding_box(geom.ProbLoArray()), geom);
     }
 };
-} // namespace
 
 /** Forestdrag Flow physics
  *  \ingroup physics
