@@ -36,12 +36,12 @@ private:
 
     amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
 
-    //! Reference temperature (Kelvin)
-    amrex::Real m_ref_theta{300.0};
-
     //! Check for VOF
     bool m_is_vof{false};
 
+  //! Transport model
+  std::unique_ptr<transport::TransportModel> m_transport;
+  
   //! Thermal expansion coefficient
   std::unique_ptr<ScratchField> m_beta;
 };

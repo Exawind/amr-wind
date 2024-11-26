@@ -150,7 +150,7 @@ public:
         return diff;
     }
 
-    //! Return the thermal diffusivity field
+    //! Return the thermal expansion coefficient
     inline std::unique_ptr<ScratchField> beta() override
     {
         auto beta = m_repo.create_scratch_field(1, 1);
@@ -166,6 +166,9 @@ public:
 
         return beta;
     }
+
+  inline amrex::Real reference_temperature() override {return m_reference_temperature;}
+  
 
 private:
     //! Reference to the field repository (for creating scratch fields)
