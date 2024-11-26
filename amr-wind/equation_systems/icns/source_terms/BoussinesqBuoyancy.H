@@ -34,8 +34,9 @@ private:
     const Field& m_temperature;
 
     amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
+
     //! Transport model
-    std::unique_ptr<transport::TransportModel> m_transport;
+    const transport::TransportModel& m_transport;
 
     //! Thermal expansion coefficient
     std::unique_ptr<ScratchField> m_beta;

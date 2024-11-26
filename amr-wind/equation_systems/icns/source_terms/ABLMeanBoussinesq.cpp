@@ -17,7 +17,9 @@ namespace amr_wind::pde::icns {
  *  - `read_temperature_profile`
  *  - `tprofile_filename`
  */
-ABLMeanBoussinesq::ABLMeanBoussinesq(const CFDSim& sim) : m_mesh(sim.mesh())
+ABLMeanBoussinesq::ABLMeanBoussinesq(const CFDSim& sim)
+    : m_mesh(sim.mesh()), m_transport(sim.transport_model())
+
 {
 
     const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
@@ -26,13 +28,7 @@ ABLMeanBoussinesq::ABLMeanBoussinesq(const CFDSim& sim) : m_mesh(sim.mesh())
     amrex::ParmParse pp_boussinesq_buoyancy("BoussinesqBuoyancy");
     pp_boussinesq_buoyancy.get("reference_temperature", m_ref_theta);
 
-    std::string transport_model_name = "ConstTransport";
-    {
-        amrex::ParmParse pp("transport");
-        pp.query("model", transport_model_name);
-    }
-    m_transport = transport::TransportModel::create(transport_model_name, sim);
-    m_beta = m_transport->beta();
+    m_beta = m_transport.beta();
 
     // gravity in `incflo` namespace
     amrex::ParmParse pp_incflo("incflo");

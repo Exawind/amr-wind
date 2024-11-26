@@ -536,6 +536,7 @@ TEST_F(ABLMeshTest, boussinesq)
     pde_mgr.register_icns();
     pde_mgr.register_transport_pde("Temperature");
     sim().init_physics();
+    sim().create_transport_model();
 
     amr_wind::pde::icns::BoussinesqBuoyancy bb(sim());
 
@@ -582,6 +583,7 @@ TEST_F(ABLMeshTest, boussinesq_nph)
     pde_mgr.register_icns();
     pde_mgr.register_transport_pde("Temperature");
     sim().init_physics();
+    sim().create_transport_model();
 
     amr_wind::pde::icns::BoussinesqBuoyancy bb(sim());
 

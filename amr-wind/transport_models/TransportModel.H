@@ -44,10 +44,10 @@ public:
     scalar_diffusivity(const std::string& scalar_name) = 0;
 
     //! Thermal expansion coefficient
-    virtual std::unique_ptr<ScratchField> beta() = 0;
+    virtual std::unique_ptr<ScratchField> beta() const = 0;
 
     //! Reference temperature
-    virtual amrex::Real reference_temperature() = 0;
+    virtual amrex::Real reference_temperature() const = 0;
 };
 } // namespace amr_wind::transport
 
