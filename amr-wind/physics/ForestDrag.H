@@ -24,6 +24,7 @@ struct Forest
     calc_af(const amrex::Real z, const amrex::Real treelaimax) const;
 };
 
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
 amrex::Real Forest::calc_lm() const
 {
     amrex::Real treelaimax = 0.0;
