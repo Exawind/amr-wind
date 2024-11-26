@@ -115,7 +115,6 @@ public:
 
 private:
     CFDSim& m_sim;
-    Field& m_velocity;
     Field& m_forest_drag;
     Field& m_forest_blank;
     amrex::Vector<Forest> m_forests;

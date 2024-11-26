@@ -11,7 +11,6 @@ namespace amr_wind::forestdrag {
 
 ForestDrag::ForestDrag(CFDSim& sim)
     : m_sim(sim)
-    , m_velocity(sim.repo().get_field("velocity"))
     , m_forest_drag(sim.repo().declare_field("forest_drag", 1, 1, 1))
     , m_forest_blank(sim.repo().declare_field("forest_blank", 1, 1, 1))
 {
@@ -68,7 +67,6 @@ void ForestDrag::initialize_fields(int level, const amrex::Geometry& geom)
     BL_PROFILE("amr-wind::" + this->identifier() + "::initialize_fields");
     const auto& dx = geom.CellSizeArray();
     const auto& prob_lo = geom.ProbLoArray();
-    auto& velocity = m_velocity(level);
     auto& drag = m_forest_drag(level);
     auto& blank = m_forest_blank(level);
     drag.setVal(0.0);
@@ -76,7 +74,7 @@ void ForestDrag::initialize_fields(int level, const amrex::Geometry& geom)
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-    for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
+    for (amrex::MFIter mfi(m_forest_drag(level)); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.tilebox();
         for (int nf = 0; nf < static_cast<int>(m_forests.size()); nf++) {
             if (vbx.contains(m_forests[nf].bounding_box(geom))) {
