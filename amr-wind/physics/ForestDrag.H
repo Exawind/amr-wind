@@ -48,33 +48,28 @@ struct Forest
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
     calc_af(const amrex::Real z, const amrex::Real treelaimax) const
     {
-        amrex::Real af = 0.0;
         if (m_type_forest == 1) {
-            af = m_lai_forest / m_height_forest;
+            return m_lai_forest / m_height_forest;
         } else if (m_type_forest == 2) {
-            const amrex::Real treeZm = m_laimax_forest * m_height_forest;
-            const amrex::Real ratio =
+            const auto treeZm = m_laimax_forest * m_height_forest;
+            const auto ratio =
                 (m_height_forest - treeZm) / (m_height_forest - z);
-            if (z < treeZm) {
-                af = treelaimax * std::pow(ratio, 6.0) *
-                     std::exp(6 * (1 - ratio));
-            } else if (z <= m_height_forest) {
-                af = treelaimax * std::pow(ratio, 0.5) *
-                     std::exp(0.5 * (1 - ratio));
-            }
+            const auto exponent = (z < treeZm) ? 6.0 : 0.5;
+            return treelaimax * std::pow(ratio, exponent) *
+                   std::exp(exponent * (1 - ratio));
         }
-        return af;
+        return 0.0;
     }
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::RealBox real_bounding_box(
         const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& prob_lo) const
     {
-        const amrex::Real x1 = m_x_forest - 0.5 * m_diameter_forest;
-        const amrex::Real y1 = m_y_forest - 0.5 * m_diameter_forest;
-        const amrex::Real z1 = prob_lo[2];
-        const amrex::Real x2 = m_x_forest + 0.5 * m_diameter_forest;
-        const amrex::Real y2 = m_y_forest + 0.5 * m_diameter_forest;
-        const amrex::Real z2 = m_height_forest;
+        const auto x1 = m_x_forest - 0.5 * m_diameter_forest;
+        const auto y1 = m_y_forest - 0.5 * m_diameter_forest;
+        const auto z1 = prob_lo[2];
+        const auto x2 = m_x_forest + 0.5 * m_diameter_forest;
+        const auto y2 = m_y_forest + 0.5 * m_diameter_forest;
+        const auto z2 = m_height_forest;
         return {x1, y1, z1, x2, y2, z2};
     }
 
