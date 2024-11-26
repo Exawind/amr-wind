@@ -26,11 +26,13 @@ ABLMeanBoussinesq::ABLMeanBoussinesq(const CFDSim& sim) : m_mesh(sim.mesh())
     amrex::ParmParse pp_boussinesq_buoyancy("BoussinesqBuoyancy");
     pp_boussinesq_buoyancy.get("reference_temperature", m_ref_theta);
 
-    if (pp_boussinesq_buoyancy.contains("thermal_expansion_coeff")) {
-        pp_boussinesq_buoyancy.get("thermal_expansion_coeff", m_beta);
-    } else {
-        m_beta = 1.0 / m_ref_theta;
+    std::string transport_model_name = "ConstTransport";
+    {
+        amrex::ParmParse pp("transport");
+        pp.query("model", transport_model_name);
     }
+    m_transport = transport::TransportModel::create(transport_model_name, sim);
+    m_beta = m_transport->beta();
 
     // gravity in `incflo` namespace
     amrex::ParmParse pp_incflo("incflo");
@@ -60,7 +62,7 @@ ABLMeanBoussinesq::~ABLMeanBoussinesq() = default;
 
 void ABLMeanBoussinesq::operator()(
     const int lev,
-    const amrex::MFIter& /*mfi*/,
+    const amrex::MFIter& mfi,
     const amrex::Box& bx,
     const FieldState /*fstate*/,
     const amrex::Array4<amrex::Real>& src_term) const
@@ -68,7 +70,7 @@ void ABLMeanBoussinesq::operator()(
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
     const amrex::Real T0 = m_ref_theta;
-    const amrex::Real beta = m_beta;
+    const auto& beta = (*m_beta)(lev).const_array(mfi);
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
         m_gravity[0], m_gravity[1], m_gravity[2]};
 
@@ -84,7 +86,7 @@ void ABLMeanBoussinesq::operator()(
         const amrex::Real ht = problo[idir] + (iv[idir] + 0.5) * dx[idir];
         const amrex::Real temp =
             amr_wind::interp::linear(theights, theights_end, tvals, ht);
-        const amrex::Real fac = beta * (temp - T0);
+        const amrex::Real fac = beta(i,j,k) * (temp - T0);
         src_term(i, j, k, 0) += gravity[0] * fac;
         src_term(i, j, k, 1) += gravity[1] * fac;
         src_term(i, j, k, 2) += gravity[2] * fac;
