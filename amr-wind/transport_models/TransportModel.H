@@ -31,7 +31,7 @@ class TransportModel : public Factory<TransportModel, const CFDSim&>
 public:
     static std::string base_identifier() { return "TransportModel"; }
 
-    virtual ~TransportModel() = default;
+    ~TransportModel() override = default;
 
     //! Dynamic laminar viscosity (kg/m/s)
     virtual std::unique_ptr<ScratchField> mu() = 0;

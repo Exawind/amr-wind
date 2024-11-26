@@ -23,7 +23,6 @@ AMD<Transport>::AMD(CFDSim& sim)
     , m_rho(sim.repo().get_field("density"))
     , m_pa_temp(m_temperature, sim.time(), m_normal_dir, true)
 {
-    auto& phy_mgr = this->m_sim.physics_manager();
     {
         amrex::ParmParse pp("incflo");
         pp.queryarr("gravity", m_gravity);

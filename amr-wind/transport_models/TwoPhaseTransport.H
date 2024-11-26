@@ -21,11 +21,11 @@ public:
     explicit TwoPhaseTransport(const CFDSim& sim)
         : m_sim(sim), m_repo(sim.repo())
     {
-        auto& physics_mgr = m_sim.physics_manager();
+        const auto& physics_mgr = m_sim.physics_manager();
         if (!physics_mgr.contains("MultiPhase")) {
             amrex::Abort("TwoPhaseTransport requires MultiPhase physics");
         }
-        auto& multiphase = physics_mgr.get<MultiPhase>();
+        const auto& multiphase = physics_mgr.get<MultiPhase>();
         m_ifacetype = multiphase.interface_capturing_method();
 
         amrex::ParmParse pp("transport");
