@@ -48,17 +48,18 @@ struct Forest
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
     calc_af(const amrex::Real z, const amrex::Real treelaimax) const
     {
+        amrex::Real af = 0.0;
         if (m_type_forest == 1) {
-            return m_lai_forest / m_height_forest;
+            af = m_lai_forest / m_height_forest;
         } else if (m_type_forest == 2) {
             const auto treeZm = m_laimax_forest * m_height_forest;
             const auto ratio =
                 (m_height_forest - treeZm) / (m_height_forest - z);
             const auto exponent = (z < treeZm) ? 6.0 : 0.5;
-            return treelaimax * std::pow(ratio, exponent) *
-                   std::exp(exponent * (1 - ratio));
+            af = treelaimax * std::pow(ratio, exponent) *
+                 std::exp(exponent * (1 - ratio));
         }
-        return 0.0;
+        return af;
     }
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::RealBox real_bounding_box(
