@@ -26,10 +26,6 @@ AMD<Transport>::AMD(CFDSim& sim)
     auto& phy_mgr = this->m_sim.physics_manager();
     if (phy_mgr.contains("ABL")) {
         {
-            amrex::ParmParse pp("ABL");
-            pp.get("reference_temperature", m_ref_theta);
-        }
-        {
             amrex::ParmParse pp("incflo");
             pp.queryarr("gravity", m_gravity);
         }
