@@ -2,6 +2,7 @@
 #define CONSTTRANSPORT_H
 
 #include "amr-wind/transport_models/TransportModel.H"
+#include "amr-wind/utilities/constants.H"
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind::transport {
@@ -162,6 +163,22 @@ public:
 
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
             (*beta)(lev).setVal(beta_val);
+        }
+
+        if (m_repo.field_exists("vof")) {
+            const auto& vof = m_repo.get_field("vof");
+            for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
+                const auto& beta_arrs = (*beta)(lev).arrays();
+                const auto& vof_arrs = vof(lev).const_arrays();
+                amrex::ParallelFor(
+                    (*beta)(lev), beta->num_grow(),
+                    [=] AMREX_GPU_DEVICE(
+                        int nbx, int i, int j, int k) noexcept {
+                        if (vof_arrs[nbx](i, j, k) <= constants::TIGHT_TOL) {
+                            beta_arrs[nbx](i, j, k) = 0.0;
+                        }
+                    });
+            }
         }
 
         return beta;
