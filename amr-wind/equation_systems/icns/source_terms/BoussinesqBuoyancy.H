@@ -32,13 +32,8 @@ public:
 
 private:
     const Field& m_temperature;
-    const Field* m_vof;
 
     amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
-
-    //! Check for VOF
-    bool m_is_vof{false};
-
     //! Transport model
     std::unique_ptr<transport::TransportModel> m_transport;
 
