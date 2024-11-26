@@ -47,7 +47,7 @@ void BoussinesqBuoyancy::operator()(
     const FieldState fstate,
     const amrex::Array4<amrex::Real>& src_term) const
 {
-  const amrex::Real T0 = m_transport->reference_temperature();
+    const amrex::Real T0 = m_transport->reference_temperature();
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
         m_gravity[0], m_gravity[1], m_gravity[2]};
 
@@ -61,7 +61,7 @@ void BoussinesqBuoyancy::operator()(
     const auto& beta = (*m_beta)(lev).const_array(mfi);
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real T = temp(i, j, k, 0);
-        const amrex::Real fac_air = beta(i,j,k) * (T0 - T);
+        const amrex::Real fac_air = beta(i, j, k) * (T0 - T);
         // If vof exists, ignore Boussinesq term in cells with liquid
         // If no vof, assume single phase and use the term for air everywhere
         const amrex::Real fac =

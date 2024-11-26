@@ -28,7 +28,7 @@ public:
         amrex::ParmParse pp_boussinesq_buoyancy("BoussinesqBuoyancy");
         amrex::ParmParse pp_abl("ABL");
         if (pp.contains("thermal_expansion_coefficient")) {
-            pp.get("thermal_expansion_coefficient", m_beta);
+            pp.get("thermal_expansion_coefficient", m_constant_beta);
             if (pp_boussinesq_buoyancy.contains("thermal_expansion_coeff")) {
                 amrex::Print()
                     << "WARNING: BoussinesqBuoyancy.thermal_expansion_coeff "
@@ -45,12 +45,13 @@ public:
                    "transport.thermal_expansion_coefficient. Please replace "
                    "this option."
                 << std::endl;
-            pp_boussinesq_buoyancy.get("thermal_expansion_coeff", m_beta);
+            pp_boussinesq_buoyancy.get(
+                "thermal_expansion_coeff", m_constant_beta);
         }
 
         if (pp.contains("reference_temperature")) {
-          pp.get("reference_temperature", m_reference_temperature);
-          if (pp_boussinesq_buoyancy.contains("reference_temperature")) {
+            pp.get("reference_temperature", m_reference_temperature);
+            if (pp_boussinesq_buoyancy.contains("reference_temperature")) {
                 amrex::Print()
                     << "WARNING: BoussinesqBuoyancy.reference_temperature "
                        "option has been deprecated in favor of "
@@ -58,16 +59,15 @@ public:
                        "BoussinesqBuoyancy option in favor of the transport "
                        "option."
                     << std::endl;
-          }
-          else if(pp_abl.contains("reference_temperature")){
+            } else if (pp_abl.contains("reference_temperature")) {
                 amrex::Print()
                     << "WARNING: ABL.reference_temperature "
                        "option has been deprecated in favor of "
                        "transport.reference_temperature. Ignoring the "
                        "ABL option in favor of the transport "
                        "option."
-                    << std::endl;            
-          }
+                    << std::endl;
+            }
         } else if (pp_boussinesq_buoyancy.contains("reference_temperature")) {
             amrex::Print()
                 << "WARNING: BoussinesqBuoyancy.reference_temperature option "
@@ -75,14 +75,14 @@ public:
                    "transport.reference_temperature. Please replace "
                    "this option."
                 << std::endl;
-            pp_boussinesq_buoyancy.get("reference_temperature", m_reference_temperature);
-        }else if (pp_abl.contains("reference_temperature")) {
-            amrex::Print()
-                << "WARNING: ABL.reference_temperature option "
-                   "has been deprecated in favor of "
-                   "transport.reference_temperature. Please replace "
-                   "this option."
-                << std::endl;
+            pp_boussinesq_buoyancy.get(
+                "reference_temperature", m_reference_temperature);
+        } else if (pp_abl.contains("reference_temperature")) {
+            amrex::Print() << "WARNING: ABL.reference_temperature option "
+                              "has been deprecated in favor of "
+                              "transport.reference_temperature. Please replace "
+                              "this option."
+                           << std::endl;
             pp_abl.get("reference_temperature", m_reference_temperature);
         }
     }
@@ -155,20 +155,22 @@ public:
     {
         auto beta = m_repo.create_scratch_field(1, 1);
 
-        amrex::Real beta_const = m_beta;
+        amrex::Real beta_val = m_constant_beta;
         if (m_reference_temperature > 0.0) {
-            beta_const = 1.0 / m_reference_temperature;
+            beta_val = 1.0 / m_reference_temperature;
         }
 
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
-            (*beta)(lev).setVal(beta_const);
+            (*beta)(lev).setVal(beta_val);
         }
 
         return beta;
     }
 
-  inline amrex::Real reference_temperature() override {return m_reference_temperature;}
-  
+    inline amrex::Real reference_temperature() override
+    {
+        return m_reference_temperature;
+    }
 
 private:
     //! Reference to the field repository (for creating scratch fields)
@@ -186,10 +188,10 @@ private:
     //! Turbulent Prandtl number
     amrex::Real m_Prt{1.0};
 
-    //! Thermal expansion coefficient
-    amrex::Real m_beta{0.0};
+    //! Constant thermal expansion coefficient
+    amrex::Real m_constant_beta{0.0};
 
-  //! Reference temperature
+    //! Reference temperature
     amrex::Real m_reference_temperature{-1.0};
 };
 

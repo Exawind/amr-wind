@@ -131,7 +131,7 @@ void KLAxell<Transport>::update_turbulent_viscosity(
                             -(gradT_arr(i, j, k, 0) * gravity[0] +
                               gradT_arr(i, j, k, 1) * gravity[1] +
                               gradT_arr(i, j, k, 2) * gravity[2]) *
-                          beta_arr(i,j,k);
+                            beta_arr(i, j, k);
                         const amrex::Real z = std::max(
                             problo[2] + (k + 0.5) * dz - ht_arr(i, j, k),
                             0.5 * dz);
@@ -202,7 +202,7 @@ void KLAxell<Transport>::update_turbulent_viscosity(
                             -(gradT_arr(i, j, k, 0) * gravity[0] +
                               gradT_arr(i, j, k, 1) * gravity[1] +
                               gradT_arr(i, j, k, 2) * gravity[2]) *
-                          beta_arr(i,j,k);
+                            beta_arr(i, j, k);
                         const amrex::Real z = problo[2] + (k + 0.5) * dz;
                         const amrex::Real lscale_s =
                             (lambda * kappa * z) / (lambda + kappa * z);
