@@ -1021,7 +1021,6 @@ amrex::Vector<amrex::BoxArray> ABLBoundaryPlane::read_bndry_native_boxarrays(
         amrex::BoxArray ba(
             bndry_boxes[ilev].data(),
             static_cast<int>(bndry_boxes[ilev].size()));
-        amrex::Print() << "at lev : " << ilev << " ba: " << ba << std::endl;
         bndry_bas[ilev] = amrex::BoxArray(ba.minimalBox());
     }
     return bndry_bas;
