@@ -47,7 +47,7 @@ private:
     amrex::Real m_ref_theta{300.0};
 
     //! Transport model
-    std::unique_ptr<transport::TransportModel> m_transport;
+    const transport::TransportModel& m_transport;
 
     //! Thermal expansion coefficient
     std::unique_ptr<ScratchField> m_beta;

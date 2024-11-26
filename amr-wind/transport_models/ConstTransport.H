@@ -152,7 +152,7 @@ public:
     }
 
     //! Return the thermal expansion coefficient
-    inline std::unique_ptr<ScratchField> beta() override
+    inline std::unique_ptr<ScratchField> beta() const override
     {
         auto beta = m_repo.create_scratch_field(1, 1);
 
@@ -184,7 +184,7 @@ public:
         return beta;
     }
 
-    inline amrex::Real reference_temperature() override
+    inline amrex::Real reference_temperature() const override
     {
         return m_reference_temperature;
     }

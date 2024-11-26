@@ -305,6 +305,7 @@ TEST_F(ABLOffshoreMeshTest, boussinesq)
     pde_mgr.register_icns();
     pde_mgr.register_transport_pde("Temperature");
     sim().init_physics();
+    sim().create_transport_model();
     auto& mphase = sim().physics_manager().get<amr_wind::MultiPhase>();
     // Make sure to read water level
     mphase.post_init_actions();
