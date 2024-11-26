@@ -1011,6 +1011,7 @@ amrex::Vector<amrex::BoxArray> ABLBoundaryPlane::read_bndry_native_boxarrays(
             const auto vismf = std::make_unique<amrex::VisMF>(mf_name);
             auto ba = vismf->boxArray();
             ba.growLo(normal, -1);
+            ba.growHi(normal, -1);
             AMREX_ALWAYS_ASSERT(ba.size() == 1);
             bndry_boxes[ilev].push_back(ba[0]);
         }
@@ -1020,7 +1021,6 @@ amrex::Vector<amrex::BoxArray> ABLBoundaryPlane::read_bndry_native_boxarrays(
         amrex::BoxArray ba(
             bndry_boxes[ilev].data(),
             static_cast<int>(bndry_boxes[ilev].size()));
-        amrex::Print() << "at lev : " << ilev << " ba: " << ba << std::endl;
         bndry_bas[ilev] = amrex::BoxArray(ba.minimalBox());
     }
     return bndry_bas;
