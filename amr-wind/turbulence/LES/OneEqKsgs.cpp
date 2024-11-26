@@ -43,7 +43,6 @@ OneEqKsgsM84<Transport>::OneEqKsgsM84(CFDSim& sim)
 
     {
         amrex::ParmParse pp("ABL");
-        pp.get("reference_temperature", m_ref_theta);
         pp.query("enable_hybrid_rl_mode", m_hybrid_rl);
     }
 
@@ -101,7 +100,7 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
 
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
         m_gravity[0], m_gravity[1], m_gravity[2]};
-    const amrex::Real beta = 1.0 / m_ref_theta;
+    const auto beta = (this->m_transport).beta();
 
     auto& mu_turb = this->mu_turb();
     const amrex::Real Ce = this->m_Ce;
@@ -127,6 +126,7 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
             const auto& tke_arr = (*this->m_tke)(lev).array(mfi);
             const auto& buoy_prod_arr = (this->m_buoy_prod)(lev).array(mfi);
             const auto& shear_prod_arr = (this->m_shear_prod)(lev).array(mfi);
+            const auto& beta_arr = (*beta)(lev).array(mfi);
 
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -134,7 +134,7 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
                         -(gradT_arr(i, j, k, 0) * gravity[0] +
                           gradT_arr(i, j, k, 1) * gravity[1] +
                           gradT_arr(i, j, k, 2) * gravity[2]) *
-                        beta;
+                      beta_arr(i,j,k);
                     if (stratification > 1e-10) {
                         tlscale_arr(i, j, k) = amrex::min<amrex::Real>(
                             ds, 0.76 * std::sqrt(

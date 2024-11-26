@@ -31,7 +31,6 @@ KLAxell<Transport>::KLAxell(CFDSim& sim)
     }
     {
         amrex::ParmParse pp("ABL");
-        pp.get("reference_temperature", m_ref_theta);
         pp.get("surface_temp_flux", m_surf_flux);
         pp.query("length_scale_switch", m_lengthscale_switch);
     }
@@ -84,7 +83,7 @@ void KLAxell<Transport>::update_turbulent_viscosity(
 
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
         m_gravity[0], m_gravity[1], m_gravity[2]};
-    const amrex::Real beta = 1.0 / m_ref_theta;
+    const auto beta = (this->m_transport).beta();
     const amrex::Real Cmu = m_Cmu;
     const amrex::Real Cb_stable = m_Cb_stable;
     const amrex::Real Cb_unstable = m_Cb_unstable;
@@ -113,6 +112,8 @@ void KLAxell<Transport>::update_turbulent_viscosity(
             const auto& tke_arr = (*this->m_tke)(lev).array(mfi);
             const auto& buoy_prod_arr = (this->m_buoy_prod)(lev).array(mfi);
             const auto& shear_prod_arr = (this->m_shear_prod)(lev).array(mfi);
+            const auto& beta_arr = (*beta)(lev).array(mfi);
+
             //! Add terrain components
             const bool has_terrain =
                 this->m_sim.repo().int_field_exists("terrain_blank");
@@ -130,7 +131,7 @@ void KLAxell<Transport>::update_turbulent_viscosity(
                             -(gradT_arr(i, j, k, 0) * gravity[0] +
                               gradT_arr(i, j, k, 1) * gravity[1] +
                               gradT_arr(i, j, k, 2) * gravity[2]) *
-                            beta;
+                          beta_arr(i,j,k);
                         const amrex::Real z = std::max(
                             problo[2] + (k + 0.5) * dz - ht_arr(i, j, k),
                             0.5 * dz);
@@ -201,7 +202,7 @@ void KLAxell<Transport>::update_turbulent_viscosity(
                             -(gradT_arr(i, j, k, 0) * gravity[0] +
                               gradT_arr(i, j, k, 1) * gravity[1] +
                               gradT_arr(i, j, k, 2) * gravity[2]) *
-                            beta;
+                          beta_arr(i,j,k);
                         const amrex::Real z = problo[2] + (k + 0.5) * dz;
                         const amrex::Real lscale_s =
                             (lambda * kappa * z) / (lambda + kappa * z);
