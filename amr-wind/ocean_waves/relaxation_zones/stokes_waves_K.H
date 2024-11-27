@@ -364,6 +364,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_waves(
     amrex::Real x,
     amrex::Real z,
     amrex::Real time,
+    amrex::Real phase_offset,
     amrex::Real& eta,
     amrex::Real& u_w,
     amrex::Real& v_w,
@@ -391,7 +392,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_waves(
     //    d4 * std::pow(eps, 4) * std::sqrt(g / std::pow(k, 3));
 
     const amrex::Real omega = c * wavenumber;
-    const amrex::Real phase = wavenumber * x - omega * time;
+    const amrex::Real phase = wavenumber * x - omega * time - phase_offset;
 
     eta = (eps * std::cos(phase)                           // first order term
            + std::pow(eps, 2) * b22 * std::cos(2. * phase) // second order term
