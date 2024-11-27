@@ -5,6 +5,8 @@
 #include "amr-wind/core/Field.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/index_operations.H"
+#include "amr-wind/utilities/integrals.H"
+#include "amr-wind/utilities/constants.H"
 
 namespace amr_wind::forestdrag {
 
@@ -24,23 +26,18 @@ struct Forest
     {
         amrex::Real treelaimax = 0.0;
         if (m_type_forest == 2) {
-            amrex::Real ztree = 0;
-            amrex::Real expFun = 0;
-            amrex::Real ratio = 0;
             const amrex::Real treeZm = m_laimax_forest * m_height_forest;
-            const amrex::Real dz = m_height_forest / 100;
-            while (ztree <= m_height_forest) {
-                ratio = (m_height_forest - treeZm) / (m_height_forest - ztree);
-                if (ztree < treeZm) {
-                    expFun = expFun +
-                             std::pow(ratio, 6.0) * std::exp(6 * (1 - ratio));
-                } else {
-                    expFun = expFun +
-                             std::pow(ratio, 0.5) * std::exp(0.5 * (1 - ratio));
-                }
-                ztree = ztree + dz;
-            }
-            treelaimax = m_lai_forest / (expFun * dz);
+            const int n = 100;
+            const amrex::Real int_0_fh = amr_wind::utils::trapz(
+                0, m_height_forest - constants::TIGHT_TOL, n,
+                [=](const amrex::Real x) noexcept {
+                    const amrex::Real ratio =
+                        (m_height_forest - treeZm) / (m_height_forest - x);
+                    const auto exponent = (x < treeZm) ? 6.0 : 0.5;
+                    return std::pow(ratio, exponent) *
+                           std::exp(exponent * (1 - ratio));
+                });
+            treelaimax = m_lai_forest / int_0_fh;
         }
         return treelaimax;
     }
