@@ -24,6 +24,15 @@ struct ReadInputsOp<LinearWaves>
 
         pp.get("wave_length", wdata.wave_length);
         pp.get("wave_height", wdata.wave_height);
+        pp.query("wave_phase_offset_radians", wdata.wave_phase_offset);
+        if (!pp.contains("wave_phase_offset_radians")) {
+            pp.query("wave_phase_offset_degrees", wdata.wave_phase_offset);
+            wdata.wave_phase_offset *= M_PI / 180.;
+        } else if (pp.contains("wave_phase_offset_degrees")) {
+            amrex::Abort(
+                "ReadInputsOp<LinearWaves> : wave phase offset is specified in "
+                "both radians and degrees. Please use only one.");
+        }
     }
 };
 
@@ -58,7 +67,9 @@ struct InitDataOp<LinearWaves>
 
         const amrex::Real wave_height = wdata.wave_height;
         const amrex::Real wave_length = wdata.wave_length;
+        const amrex::Real phase_offset = wdata.wave_phase_offset;
         const amrex::Real water_depth = wdata.water_depth;
+
         amrex::ParallelFor(
             m_velocity(level), amrex::IntVect(3),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
@@ -69,7 +80,7 @@ struct InitDataOp<LinearWaves>
                 const amrex::Real omega = std::pow(
                     wave_number * g * std::tanh(wave_number * water_depth),
                     0.5);
-                const amrex::Real phase = wave_number * x;
+                const amrex::Real phase = wave_number * x - phase_offset;
 
                 // Wave profile
                 const amrex::Real eta_w =
@@ -137,6 +148,7 @@ struct UpdateRelaxZonesOp<LinearWaves>
 
             const amrex::Real wave_height = wdata.wave_height;
             const amrex::Real wave_length = wdata.wave_length;
+            const amrex::Real phase_offset = wdata.wave_phase_offset;
             const amrex::Real water_depth = wdata.water_depth;
             const amrex::Real zero_sea_level = wdata.zsl;
             const amrex::Real g = wdata.g;
@@ -151,7 +163,8 @@ struct UpdateRelaxZonesOp<LinearWaves>
                     const amrex::Real omega = std::pow(
                         wave_number * g * std::tanh(wave_number * water_depth),
                         0.5);
-                    const amrex::Real phase = wave_number * x - omega * time;
+                    const amrex::Real phase =
+                        wave_number * x - omega * time - phase_offset;
 
                     const amrex::Real eta =
                         wave_height / 2.0 * std::cos(phase) + zero_sea_level;
