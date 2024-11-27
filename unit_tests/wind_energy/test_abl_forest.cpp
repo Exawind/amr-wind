@@ -45,7 +45,6 @@ protected:
 
 TEST_F(ForestTest, forest)
 {
-    constexpr amrex::Real n_forests = 3.0;
     // Write target wind file
     write_forest(m_forest_fname);
     populate_parameters();
@@ -62,10 +61,17 @@ TEST_F(ForestTest, forest)
         const auto& geom = sim().repo().mesh().Geom(lev);
         forest_drag.initialize_fields(lev, geom);
     }
-    const auto& forest_id = sim().repo().get_field("forest_id");
-    const amrex::Real value_max =
-        amr_wind::field_ops::global_max_magnitude(forest_id);
-    EXPECT_EQ(value_max, n_forests);
+
+    constexpr amrex::Real n_forests = 3.0;
+    const auto& f_id = sim().repo().get_field("forest_id");
+    const amrex::Real max_id = amr_wind::field_ops::global_max_magnitude(f_id);
+    EXPECT_EQ(max_id, n_forests);
+
+    constexpr amrex::Real expected_max_drag = 0.050285714285714288;
+    const auto& f_drag = sim().repo().get_field("forest_drag");
+    const amrex::Real max_drag =
+        amr_wind::field_ops::global_max_magnitude(f_drag);
+    EXPECT_NEAR(max_drag, expected_max_drag, amr_wind::constants::TIGHT_TOL);
 }
 
 } // namespace amr_wind_tests
