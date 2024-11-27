@@ -174,7 +174,7 @@ public:
                     (*beta)(lev), beta->num_grow(),
                     [=] AMREX_GPU_DEVICE(
                         int nbx, int i, int j, int k) noexcept {
-                        if (vof_arrs[nbx](i, j, k) <= constants::TIGHT_TOL) {
+                        if (vof_arrs[nbx](i, j, k) > constants::TIGHT_TOL) {
                             beta_arrs[nbx](i, j, k) = 0.0;
                         }
                     });

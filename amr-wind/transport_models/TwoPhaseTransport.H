@@ -304,9 +304,9 @@ public:
                     [=] AMREX_GPU_DEVICE(
                         int nbx, int i, int j, int k) noexcept {
                         if (vof_arrs[nbx](i, j, k) > constants::TIGHT_TOL) {
-                            beta_arrs[nbx](i, j, k) = beta_val;
-                        } else {
                             beta_arrs[nbx](i, j, k) = 0.0;
+                        } else {
+                            beta_arrs[nbx](i, j, k) = beta_val;
                         }
                     });
             }
@@ -334,7 +334,8 @@ public:
                                      std::sin(
                                          phi_arrs[nbx](i, j, k) * M_PI / eps));
                         }
-                        beta_arrs[nbx](i, j, k) = beta_val * smooth_heaviside;
+                        beta_arrs[nbx](i, j, k) =
+                            beta_val * (1 - smooth_heaviside);
                     });
             }
         }
