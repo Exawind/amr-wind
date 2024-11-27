@@ -9,10 +9,10 @@ void write_forest(const std::string& fname)
 {
     std::ofstream os(fname);
     //! Write forest
-    os << "1  1024 512 45 200  0.2 6 0.8 \n";
-    os << "1  1024 1024 35 200  0.2 6 0.8 \n";
-    os << "1  1024 1224 75 200  0.2 6 0.8 \n";
-    os << "2  1024 1524 120 200 0.2 10 0.8 \n";
+    os << "1  512 256 45 200  0.2 6 0.8 \n";
+    os << "1  512 512 35 200  0.2 6 0.8 \n";
+    os << "1  512 612 75 200  0.2 6 0.8 \n";
+    os << "2  512 762 120 200 0.2 10 0.8 \n";
 }
 
 } // namespace
@@ -45,7 +45,7 @@ protected:
 
 TEST_F(ForestTest, forest)
 {
-    constexpr amrex::Real maxtol = 4.0;
+    constexpr amrex::Real n_forests = 3.0;
     // Write target wind file
     write_forest(m_forest_fname);
     populate_parameters();
@@ -62,10 +62,10 @@ TEST_F(ForestTest, forest)
         const auto& geom = sim().repo().mesh().Geom(lev);
         forest_drag.initialize_fields(lev, geom);
     }
-    const auto& forest_blank = sim().repo().get_field("forest_blank");
-    //! Maximun Value
-    const amrex::Real value_max = amr_wind::field_ops::global_max_magnitude(forest_blank);
-    EXPECT_EQ(value_max, maxtol);
+    const auto& forest_id = sim().repo().get_field("forest_id");
+    const amrex::Real value_max =
+        amr_wind::field_ops::global_max_magnitude(forest_id);
+    EXPECT_EQ(value_max, n_forests);
 }
 
 } // namespace amr_wind_tests

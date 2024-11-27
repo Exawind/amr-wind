@@ -10,6 +10,7 @@ namespace amr_wind::forestdrag {
 
 struct Forest
 {
+    int m_id{-1};
     amrex::Real m_type_forest;
     amrex::Real m_x_forest;
     amrex::Real m_y_forest;
@@ -114,7 +115,7 @@ public:
 private:
     CFDSim& m_sim;
     Field& m_forest_drag;
-    Field& m_forest_blank;
+    Field& m_forest_id;
     std::string m_forest_file{"forest.amrwind"};
 };
 } // namespace amr_wind::forestdrag

@@ -12,18 +12,18 @@ namespace amr_wind::forestdrag {
 ForestDrag::ForestDrag(CFDSim& sim)
     : m_sim(sim)
     , m_forest_drag(sim.repo().declare_field("forest_drag", 1, 1, 1))
-    , m_forest_blank(sim.repo().declare_field("forest_blank", 1, 1, 1))
+    , m_forest_id(sim.repo().declare_field("forest_id", 1, 1, 1))
 {
 
     amrex::ParmParse pp(identifier());
     pp.query("forest_file", m_forest_file);
 
     m_sim.io_manager().register_output_var("forest_drag");
-    m_sim.io_manager().register_output_var("forest_blank");
+    m_sim.io_manager().register_output_var("forest_id");
 
     m_forest_drag.setVal(0.0);
-    m_forest_blank.setVal(-1.0);
-    m_forest_blank.set_default_fillpatch_bc(m_sim.time());
+    m_forest_id.setVal(-1.0);
+    m_forest_id.set_default_fillpatch_bc(m_sim.time());
     m_forest_drag.set_default_fillpatch_bc(m_sim.time());
 }
 
@@ -40,9 +40,9 @@ void ForestDrag::initialize_fields(int level, const amrex::Geometry& geom)
     const auto& dx = geom.CellSizeArray();
     const auto& prob_lo = geom.ProbLoArray();
     auto& drag = m_forest_drag(level);
-    auto& blank = m_forest_blank(level);
+    auto& fst_id = m_forest_id(level);
     drag.setVal(0.0);
-    blank.setVal(-1.0);
+    fst_id.setVal(-1.0);
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
@@ -52,7 +52,7 @@ void ForestDrag::initialize_fields(int level, const amrex::Geometry& geom)
             const auto bxi = vbx & forests[nf].bounding_box(geom);
             if (!bxi.isEmpty()) {
                 const auto& levelDrag = drag.array(mfi);
-                const auto& levelBlank = blank.array(mfi);
+                const auto& levelId = fst_id.array(mfi);
                 const auto* forests_ptr = d_forests.data();
                 amrex::ParallelFor(
                     bxi, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -66,7 +66,7 @@ void ForestDrag::initialize_fields(int level, const amrex::Geometry& geom)
                         if (z <= fst.m_height_forest &&
                             radius <= (0.5 * fst.m_diameter_forest)) {
                             const auto treelaimax = fst.lm();
-                            levelBlank(i, j, k) = nf;
+                            levelId(i, j, k) = fst.m_id;
                             levelDrag(i, j, k) +=
                                 fst.m_cd_forest *
                                 fst.area_fraction(z, treelaimax);
@@ -98,10 +98,12 @@ amrex::Vector<Forest> ForestDrag::read_forest(const int level) const
     amrex::Vector<Forest> forests;
     const auto& geom = m_sim.repo().mesh().Geom(level);
     const auto& ba = m_sim.repo().mesh().boxArray(level);
+    int cnt = 0;
     amrex::Real value1, value2, value3, value4, value5, value6, value7, value8;
     while (file >> value1 >> value2 >> value3 >> value4 >> value5 >> value6 >>
            value7 >> value8) {
         Forest f;
+        f.m_id = cnt;
         f.m_type_forest = value1;
         f.m_x_forest = value2;
         f.m_y_forest = value3;
@@ -116,6 +118,7 @@ amrex::Vector<Forest> ForestDrag::read_forest(const int level) const
         if (ba.intersects(bx)) {
             forests.push_back(f);
         }
+        cnt++;
     }
     file.close();
     return forests;
