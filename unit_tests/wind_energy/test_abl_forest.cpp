@@ -3,6 +3,7 @@
 #include "aw_test_utils/test_utils.H"
 #include "amr-wind/physics/ForestDrag.H"
 #include "amr-wind/core/field_ops.H"
+#include "amr-wind/utilities/sampling/FieldNorms.H"
 
 namespace {
 void write_forest(const std::string& fname)
@@ -72,6 +73,11 @@ TEST_F(ForestTest, forest)
     const amrex::Real max_drag =
         amr_wind::field_ops::global_max_magnitude(f_drag);
     EXPECT_NEAR(max_drag, expected_max_drag, amr_wind::constants::TIGHT_TOL);
+
+    constexpr amrex::Real expected_norm_drag = 0.0030635155406915832;
+    const auto fnorm = amr_wind::field_norms::FieldNorms(sim(), "fieldnorm");
+    const auto norm_drag = fnorm.l2_norm(f_drag, 0, false);
+    EXPECT_NEAR(norm_drag, expected_norm_drag, amr_wind::constants::TIGHT_TOL);
 }
 
 } // namespace amr_wind_tests
