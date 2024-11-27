@@ -65,10 +65,10 @@ void ForestDrag::initialize_fields(int level, const amrex::Geometry& geom)
                             (y - fst.m_y_forest) * (y - fst.m_y_forest));
                         if (z <= fst.m_height_forest &&
                             radius <= (0.5 * fst.m_diameter_forest)) {
-                            const auto treelaimax = fst.calc_lm();
+                            const auto treelaimax = fst.lm();
                             levelBlank(i, j, k) = nf;
                             levelDrag(i, j, k) +=
-                                fst.m_cd_forest * fst.calc_af(z, treelaimax);
+                                fst.m_cd_forest * fst.af(z, treelaimax);
                         }
                     });
             }

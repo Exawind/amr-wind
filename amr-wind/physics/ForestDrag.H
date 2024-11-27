@@ -19,7 +19,7 @@ struct Forest
     amrex::Real m_lai_forest;
     amrex::Real m_laimax_forest;
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real calc_lm() const
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real lm() const
     {
         amrex::Real treelaimax = 0.0;
         if (m_type_forest == 2) {
@@ -45,7 +45,7 @@ struct Forest
     }
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-    calc_af(const amrex::Real z, const amrex::Real treelaimax) const
+    af(const amrex::Real z, const amrex::Real treelaimax) const
     {
         amrex::Real af = 0.0;
         if (m_type_forest == 1) {
