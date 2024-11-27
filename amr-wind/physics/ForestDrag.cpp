@@ -68,7 +68,8 @@ void ForestDrag::initialize_fields(int level, const amrex::Geometry& geom)
                             const auto treelaimax = fst.lm();
                             levelBlank(i, j, k) = nf;
                             levelDrag(i, j, k) +=
-                                fst.m_cd_forest * fst.af(z, treelaimax);
+                                fst.m_cd_forest *
+                                fst.area_fraction(z, treelaimax);
                         }
                     });
             }

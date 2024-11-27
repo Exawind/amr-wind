@@ -45,7 +45,7 @@ struct Forest
     }
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-    af(const amrex::Real z, const amrex::Real treelaimax) const
+    area_fraction(const amrex::Real z, const amrex::Real treelaimax) const
     {
         amrex::Real af = 0.0;
         if (m_type_forest == 1) {
