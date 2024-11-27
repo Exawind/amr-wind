@@ -64,11 +64,13 @@ struct Forest
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::RealBox real_bounding_box(
         const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& prob_lo) const
     {
-        const auto x1 = m_x_forest - 0.5 * m_diameter_forest;
-        const auto y1 = m_y_forest - 0.5 * m_diameter_forest;
+        const amrex::Real search_tol = 1.1;
+        const amrex::Real search_radius = 0.5 * search_tol * m_diameter_forest;
+        const auto x1 = m_x_forest - search_radius;
+        const auto y1 = m_y_forest - search_radius;
         const auto z1 = prob_lo[2];
-        const auto x2 = m_x_forest + 0.5 * m_diameter_forest;
-        const auto y2 = m_y_forest + 0.5 * m_diameter_forest;
+        const auto x2 = m_x_forest + search_radius;
+        const auto y2 = m_y_forest + search_radius;
         const auto z2 = m_height_forest;
         return {x1, y1, z1, x2, y2, z2};
     }
@@ -107,12 +109,13 @@ public:
 
     void post_advance_work() override {}
 
+    amrex::Vector<Forest> read_forest(const int level) const;
+
 private:
     CFDSim& m_sim;
     Field& m_forest_drag;
     Field& m_forest_blank;
-    amrex::Vector<Forest> m_forests;
-    amrex::Gpu::DeviceVector<Forest> m_d_forests;
+    std::string m_forest_file{"forest.amrwind"};
 };
 } // namespace amr_wind::forestdrag
 

@@ -14,45 +14,10 @@ ForestDrag::ForestDrag(CFDSim& sim)
     , m_forest_drag(sim.repo().declare_field("forest_drag", 1, 1, 1))
     , m_forest_blank(sim.repo().declare_field("forest_blank", 1, 1, 1))
 {
-    std::string forestfile("forest.amrwind");
+
     amrex::ParmParse pp(identifier());
-    pp.query("forest_file", forestfile);
-    std::ifstream file(forestfile, std::ios::in);
-    if (!file.good()) {
-        amrex::Abort("Cannot find file " + forestfile);
-    }
+    pp.query("forest_file", m_forest_file);
 
-    //! TreeType xc yc height diameter cd lai laimax
-    amrex::Real value1, value2, value3, value4, value5, value6, value7, value8;
-    while (file >> value1 >> value2 >> value3 >> value4 >> value5 >> value6 >>
-           value7 >> value8) {
-        Forest f;
-        f.m_type_forest = value1;
-        f.m_x_forest = value2;
-        f.m_y_forest = value3;
-        f.m_height_forest = value4;
-        f.m_diameter_forest = value5;
-        f.m_cd_forest = value6;
-        f.m_lai_forest = value7;
-        f.m_laimax_forest = value8;
-
-        // Only keep a forest if the ranks owns it
-        const int nlevels = m_sim.repo().num_active_levels();
-        for (int level = 0; level < nlevels; ++level) {
-            const auto& geom = m_sim.repo().mesh().Geom(level);
-            const auto bx = f.bounding_box(geom);
-            const auto& ba = m_sim.repo().mesh().boxArray(level);
-            if (ba.contains(bx)) {
-                m_forests.push_back(f);
-                break;
-            }
-        }
-    }
-    file.close();
-    m_d_forests.resize(m_forests.size());
-    amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, m_forests.begin(), m_forests.end(),
-        m_d_forests.begin());
     m_sim.io_manager().register_output_var("forest_drag");
     m_sim.io_manager().register_output_var("forest_blank");
 
@@ -65,6 +30,13 @@ ForestDrag::ForestDrag(CFDSim& sim)
 void ForestDrag::initialize_fields(int level, const amrex::Geometry& geom)
 {
     BL_PROFILE("amr-wind::" + this->identifier() + "::initialize_fields");
+
+    const auto forests = read_forest(level);
+    amrex::Gpu::DeviceVector<Forest> d_forests(forests.size());
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, forests.begin(), forests.end(),
+        d_forests.begin());
+
     const auto& dx = geom.CellSizeArray();
     const auto& prob_lo = geom.ProbLoArray();
     auto& drag = m_forest_drag(level);
@@ -76,18 +48,18 @@ void ForestDrag::initialize_fields(int level, const amrex::Geometry& geom)
 #endif
     for (amrex::MFIter mfi(m_forest_drag(level)); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.growntilebox();
-        for (int nf = 0; nf < static_cast<int>(m_forests.size()); nf++) {
-            if (vbx.contains(m_forests[nf].bounding_box(geom))) {
+        for (int nf = 0; nf < static_cast<int>(forests.size()); nf++) {
+            const auto bxi = vbx & forests[nf].bounding_box(geom);
+            if (!bxi.isEmpty()) {
                 const auto& levelDrag = drag.array(mfi);
                 const auto& levelBlank = blank.array(mfi);
-                const auto* d_forests = m_d_forests.data();
+                const auto* forests_ptr = d_forests.data();
                 amrex::ParallelFor(
-                    vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const auto tgam = std::tgamma(1.3);
+                    bxi, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const auto x = prob_lo[0] + (i + 0.5) * dx[0];
                         const auto y = prob_lo[1] + (j + 0.5) * dx[1];
                         const auto z = prob_lo[2] + (k + 0.5) * dx[2];
-                        const auto& fst = d_forests[nf];
+                        const auto& fst = forests_ptr[nf];
                         const auto radius = std::sqrt(
                             (x - fst.m_x_forest) * (x - fst.m_x_forest) +
                             (y - fst.m_y_forest) * (y - fst.m_y_forest));
@@ -110,5 +82,41 @@ void ForestDrag::post_regrid_actions()
     for (int lev = 0; lev < nlevels; ++lev) {
         initialize_fields(lev, m_sim.repo().mesh().Geom(lev));
     }
+}
+
+amrex::Vector<Forest> ForestDrag::read_forest(const int level) const
+{
+    BL_PROFILE("amr-wind::" + this->identifier() + "::read_forest");
+
+    std::ifstream file(m_forest_file, std::ios::in);
+    if (!file.good()) {
+        amrex::Abort("Cannot find file " + m_forest_file);
+    }
+
+    //! TreeType xc yc height diameter cd lai laimax
+    amrex::Vector<Forest> forests;
+    const auto& geom = m_sim.repo().mesh().Geom(level);
+    const auto& ba = m_sim.repo().mesh().boxArray(level);
+    amrex::Real value1, value2, value3, value4, value5, value6, value7, value8;
+    while (file >> value1 >> value2 >> value3 >> value4 >> value5 >> value6 >>
+           value7 >> value8) {
+        Forest f;
+        f.m_type_forest = value1;
+        f.m_x_forest = value2;
+        f.m_y_forest = value3;
+        f.m_height_forest = value4;
+        f.m_diameter_forest = value5;
+        f.m_cd_forest = value6;
+        f.m_lai_forest = value7;
+        f.m_laimax_forest = value8;
+
+        // Only keep a forest if the rank owns it
+        const auto bx = f.bounding_box(geom);
+        if (ba.intersects(bx)) {
+            forests.push_back(f);
+        }
+    }
+    file.close();
+    return forests;
 }
 } // namespace amr_wind::forestdrag
