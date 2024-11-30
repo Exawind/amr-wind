@@ -52,6 +52,8 @@ protected:
 private:
     void relaxation_zones();
 
+    void update_target_volume_fraction();
+
     CFDSim& m_sim;
 
     //! Unique pointer to the ocean waves model
@@ -68,6 +70,11 @@ private:
 
     //! Ocean waves pressure gradient
     // Field& m_ow_pressure;
+
+    //! Multiphase mode forces the velocity and vof in the domain
+    //! When off, single-phase mode simply provides the target variables, and
+    //! forcing is handled in other parts of the code
+    bool m_multiphase_mode{true};
 };
 
 } // namespace ocean_waves

@@ -18,7 +18,7 @@ OceanWaves::OceanWaves(CFDSim& sim)
           sim.repo().declare_field("ow_velocity", AMREX_SPACEDIM, 3, 1))
 {
     if (!sim.physics_manager().contains("MultiPhase")) {
-        amrex::Abort("OceanWaves requires Multiphase physics to be active");
+        m_multiphase_mode = false;
     }
     m_ow_levelset.set_default_fillpatch_bc(sim.time());
     m_ow_vof.set_default_fillpatch_bc(sim.time());
@@ -31,6 +31,13 @@ void OceanWaves::pre_init_actions()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::pre_init_actions");
     amrex::ParmParse pp(identifier());
+
+    if (!(m_multiphase_mode ||
+          m_sim.physics_manager().contains("TerrainDrag"))) {
+        amrex::Abort(
+            "OceanWaves requires MultiPhase or TerrainDrag physics to be "
+            "active");
+    }
 
     std::string label;
     pp.query("label", label);
@@ -54,13 +61,18 @@ void OceanWaves::pre_init_actions()
 void OceanWaves::initialize_fields(int level, const amrex::Geometry& geom)
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::initialize_fields");
-    m_owm->init_waves(level, geom);
+    m_owm->init_waves(level, geom, m_multiphase_mode);
 }
 
 void OceanWaves::post_init_actions()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::post_init_actions");
-    relaxation_zones();
+    if (m_multiphase_mode) {
+        relaxation_zones();
+    } else {
+        m_owm->update_target_fields(true);
+        m_owm->update_target_volume_fraction();
+    }
 }
 
 void OceanWaves::post_regrid_actions()
@@ -72,12 +84,18 @@ void OceanWaves::post_regrid_actions()
 void OceanWaves::pre_advance_work()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::pre_advance_work");
+    if (!m_multiphase_mode) {
+        m_owm->update_target_fields(true);
+        m_owm->update_target_volume_fraction();
+    }
 }
 
 void OceanWaves::post_advance_work()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::post_init_actions");
-    relaxation_zones();
+    if (m_multiphase_mode) {
+        relaxation_zones();
+    }
 }
 
 /** Update ocean waves relaxation zones
@@ -85,10 +103,17 @@ void OceanWaves::post_advance_work()
  */
 void OceanWaves::relaxation_zones()
 {
-    BL_PROFILE("amr-wind::ocean_waves::OceanWaves::update_relaxation_zones");
-    m_owm->update_relax_zones();
+    BL_PROFILE("amr-wind::ocean_waves::OceanWaves::relaxation_zones");
+    m_owm->update_target_fields(false);
     m_owm->apply_relax_zones();
     m_owm->reset_regrid_flag();
+}
+
+void OceanWaves::update_target_volume_fraction()
+{
+    BL_PROFILE(
+        "amr-wind::ocean_waves::OceanWaves::update_target_volume_fraction");
+    m_owm->update_target_volume_fraction();
 }
 
 void OceanWaves::prepare_outputs()

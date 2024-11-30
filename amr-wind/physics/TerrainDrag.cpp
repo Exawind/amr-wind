@@ -22,22 +22,31 @@ TerrainDrag::TerrainDrag(CFDSim& sim)
     , m_terrainz0(sim.repo().declare_field("terrainz0", 1, 1, 1))
     , m_terrain_height(sim.repo().declare_field("terrain_height", 1, 1, 1))
 {
-    std::string terrain_file("terrain.amrwind");
-    std::string roughness_file("terrain.roughness");
-    amrex::ParmParse pp(identifier());
-    pp.query("terrain_file", terrain_file);
-    pp.query("roughness_file", roughness_file);
 
-    ioutils::read_flat_grid_file(
-        terrain_file, m_xterrain, m_yterrain, m_zterrain);
+    m_terrain_is_waves = sim.physics_manager().contains("OceanWaves");
 
-    // No checks for the file as it is optional currently
-    std::ifstream file(roughness_file, std::ios::in);
-    if (file.good()) {
+    if (!m_terrain_is_waves) {
+        std::string terrain_file("terrain.amrwind");
+        std::string roughness_file("terrain.roughness");
+        amrex::ParmParse pp(identifier());
+        pp.query("terrain_file", terrain_file);
+        pp.query("roughness_file", roughness_file);
+
         ioutils::read_flat_grid_file(
-            roughness_file, m_xrough, m_yrough, m_z0rough);
+            terrain_file, m_xterrain, m_yterrain, m_zterrain);
+
+        // No checks for the file as it is optional currently
+        std::ifstream file(roughness_file, std::ios::in);
+        if (file.good()) {
+            ioutils::read_flat_grid_file(
+                roughness_file, m_xrough, m_yrough, m_z0rough);
+        }
+        file.close();
+    } else {
+        m_wave_volume_fraction = &m_repo.get_field(m_wave_volume_fraction_name);
+        m_wave_negative_elevation =
+            &m_repo.get_field(m_wave_negative_elevation_name);
     }
-    file.close();
 
     m_sim.io_manager().register_output_int_var("terrain_drag");
     m_sim.io_manager().register_output_int_var("terrain_blank");
@@ -52,6 +61,10 @@ TerrainDrag::TerrainDrag(CFDSim& sim)
 
 void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
 {
+    if (m_terrain_is_waves) {
+        return;
+    }
+
     BL_PROFILE("amr-wind::" + this->identifier() + "::initialize_fields");
     const auto& dx = geom.CellSizeArray();
     const auto& prob_lo = geom.ProbLoArray();
@@ -59,6 +72,12 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
     auto& terrainz0 = m_terrainz0(level);
     auto& terrain_height = m_terrain_height(level);
     auto& drag = m_terrain_drag(level);
+
+    auto levelBlanking = blanking.arrays();
+    auto levelDrag = drag.arrays();
+    auto levelz0 = terrainz0.arrays();
+    auto levelHeight = terrain_height.arrays();
+
     const auto xterrain_size = m_xterrain.size();
     const auto yterrain_size = m_yterrain.size();
     const auto zterrain_size = m_zterrain.size();
@@ -96,10 +115,7 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
     const auto* xrough_ptr = device_xrough.data();
     const auto* yrough_ptr = device_yrough.data();
     const auto* z0rough_ptr = device_z0rough.data();
-    auto levelBlanking = blanking.arrays();
-    auto levelDrag = drag.arrays();
-    auto levelz0 = terrainz0.arrays();
-    auto levelheight = terrain_height.arrays();
+
     amrex::ParallelFor(
         blanking, m_terrain_blank.num_grow(),
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
@@ -111,7 +127,7 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
                 yterrain_ptr + yterrain_size, zterrain_ptr, x, y);
             levelBlanking[nbx](i, j, k, 0) =
                 static_cast<int>((z <= terrainHt) && (z > prob_lo[2]));
-            levelheight[nbx](i, j, k, 0) =
+            levelHeight[nbx](i, j, k, 0) =
                 std::max(std::abs(z - terrainHt), 0.5 * dx[2]);
 
             amrex::Real roughz0 = 0.1;
@@ -122,6 +138,7 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
             }
             levelz0[nbx](i, j, k, 0) = roughz0;
         });
+
     amrex::ParallelFor(
         blanking, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
             if ((levelBlanking[nbx](i, j, k, 0) == 0) && (k > 0) &&
@@ -132,11 +149,79 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
             }
         });
 }
+
+void TerrainDrag::post_init_actions()
+{
+    if (!m_terrain_is_waves) {
+        return;
+    }
+    BL_PROFILE("amr-wind::" + this->identifier() + "::post_init_actions");
+    convert_waves_to_terrain_fields();
+}
+
+void TerrainDrag::pre_advance_work()
+{
+    if (!m_terrain_is_waves) {
+        return;
+    }
+    BL_PROFILE("amr-wind::" + this->identifier() + "::pre_advance_work");
+    convert_waves_to_terrain_fields();
+}
+
 void TerrainDrag::post_regrid_actions()
 {
+    if (m_terrain_is_waves) {
+        convert_waves_to_terrain_fields();
+    } else {
+        const int nlevels = m_sim.repo().num_active_levels();
+        for (int lev = 0; lev < nlevels; ++lev) {
+            initialize_fields(lev, m_sim.repo().mesh().Geom(lev));
+        }
+    }
+}
+
+void TerrainDrag::convert_waves_to_terrain_fields()
+{
     const int nlevels = m_sim.repo().num_active_levels();
-    for (int lev = 0; lev < nlevels; ++lev) {
-        initialize_fields(lev, m_sim.repo().mesh().Geom(lev));
+    // Uniform, low roughness for waves
+    m_terrainz0.setVal(1e-4);
+    for (int level = 0; level < nlevels; ++level) {
+        const auto geom = m_sim.repo().mesh().Geom(level);
+        const auto& dx = geom.CellSizeArray();
+        const auto& prob_lo = geom.ProbLoArray();
+        auto& blanking = m_terrain_blank(level);
+        auto& terrain_height = m_terrain_height(level);
+        auto& drag = m_terrain_drag(level);
+
+        auto levelBlanking = blanking.arrays();
+        auto levelDrag = drag.arrays();
+        auto levelHeight = terrain_height.arrays();
+
+        const auto negative_wave_elevation =
+            (*m_wave_negative_elevation)(level).const_arrays();
+        const auto wave_vol_frac =
+            (*m_wave_volume_fraction)(level).const_arrays();
+
+        // Get terrain blanking from ocean waves fields
+        amrex::ParallelFor(
+            blanking, m_terrain_blank.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
+                levelBlanking[nbx](i, j, k, 0) = static_cast<int>(
+                    (wave_vol_frac[nbx](i, j, k) >= 0.5) && (z > prob_lo[2]));
+                levelHeight[nbx](i, j, k, 0) =
+                    -negative_wave_elevation[nbx](i, j, k);
+            });
+        amrex::ParallelFor(
+            blanking,
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                if ((levelBlanking[nbx](i, j, k, 0) == 0) && (k > 0) &&
+                    (levelBlanking[nbx](i, j, k - 1, 0) == 1)) {
+                    levelDrag[nbx](i, j, k, 0) = 1;
+                } else {
+                    levelDrag[nbx](i, j, k, 0) = 0;
+                }
+            });
     }
 }
 
