@@ -112,7 +112,7 @@ void KLAxell<Transport>::update_turbulent_viscosity(
             const auto& tke_arr = (*this->m_tke)(lev).array(mfi);
             const auto& buoy_prod_arr = (this->m_buoy_prod)(lev).array(mfi);
             const auto& shear_prod_arr = (this->m_shear_prod)(lev).array(mfi);
-            const auto& beta_arr = (*beta)(lev).array(mfi);
+            const auto& beta_arr = (*beta)(lev).const_array(mfi);
 
             //! Add terrain components
             const bool has_terrain =
@@ -281,7 +281,7 @@ void KLAxell<Transport>::update_alphaeff(Field& alphaeff)
     fvm::gradient(*gradT, m_temperature);
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
         m_gravity[0], m_gravity[1], m_gravity[2]};
-    const amrex::Real beta = 1.0 / m_ref_theta;
+    const auto beta = (this->m_transport).beta();
     const amrex::Real Cmu = m_Cmu;
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -293,6 +293,7 @@ void KLAxell<Transport>::update_alphaeff(Field& alphaeff)
             const auto& tke_arr = (*this->m_tke)(lev).array(mfi);
             const auto& gradT_arr = (*gradT)(lev).array(mfi);
             const auto& tlscale_arr = (this->m_turb_lscale)(lev).array(mfi);
+            const auto& beta_arr = (*beta)(lev).const_array(mfi);
             const amrex::Real Rtc = -1.0;
             const amrex::Real Rtmin = -3.0;
             amrex::ParallelFor(
@@ -301,7 +302,7 @@ void KLAxell<Transport>::update_alphaeff(Field& alphaeff)
                         -(gradT_arr(i, j, k, 0) * gravity[0] +
                           gradT_arr(i, j, k, 1) * gravity[1] +
                           gradT_arr(i, j, k, 2) * gravity[2]) *
-                        beta;
+                        beta_arr(i, j, k);
                     amrex::Real epsilon = std::pow(Cmu, 3) *
                                           std::pow(tke_arr(i, j, k), 1.5) /
                                           tlscale_arr(i, j, k);

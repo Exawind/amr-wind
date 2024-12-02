@@ -356,6 +356,14 @@ public:
         return m_reference_temperature;
     }
 
+    //! Return the reference temperature
+    inline std::unique_ptr<ScratchField> ref_theta() const override
+    {
+        amrex::Abort("ref temp not implemented");
+        auto ref_theta = m_repo.create_scratch_field(1, 1);
+        return ref_theta;
+    }
+
 private:
     //! Reference to the CFD sim
     const CFDSim& m_sim;

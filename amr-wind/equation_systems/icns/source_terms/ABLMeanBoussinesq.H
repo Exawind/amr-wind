@@ -43,14 +43,14 @@ private:
     amrex::Gpu::DeviceVector<amrex::Real> m_theta_ht;
     amrex::Gpu::DeviceVector<amrex::Real> m_theta_vals;
 
-    //! Reference temperature (Kelvin)
-    amrex::Real m_ref_theta{300.0};
-
     //! Transport model
     const transport::TransportModel& m_transport;
 
     //! Thermal expansion coefficient
     std::unique_ptr<ScratchField> m_beta;
+
+    //! Reference temperature
+    std::unique_ptr<ScratchField> m_ref_theta;
 
     int m_axis{2};
 

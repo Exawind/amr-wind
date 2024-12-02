@@ -50,9 +50,6 @@ private:
     //! discretization)
     amrex::Real m_C{0.333333333333333};
 
-    //! Reference temperature (Kelvin)
-    amrex::Real m_ref_theta{300.0};
-
     //! Wall-normal direction axis
     int m_normal_dir{2};
 
