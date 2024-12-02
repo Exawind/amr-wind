@@ -14,6 +14,7 @@ BoussinesqBuoyancy::BoussinesqBuoyancy(const CFDSim& sim)
     , m_transport(sim.transport_model())
 {
     m_beta = m_transport.beta();
+    m_ref_theta = m_transport.ref_theta();
 
     // gravity in `incflo` namespace
     amrex::ParmParse pp_incflo("incflo");
@@ -29,7 +30,6 @@ void BoussinesqBuoyancy::operator()(
     const FieldState fstate,
     const amrex::Array4<amrex::Real>& src_term) const
 {
-    const amrex::Real T0 = m_transport.reference_temperature();
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
         m_gravity[0], m_gravity[1], m_gravity[2]};
 
@@ -37,8 +37,10 @@ void BoussinesqBuoyancy::operator()(
         m_temperature.state(field_impl::phi_state(fstate))(lev).const_array(
             mfi);
     const auto& beta = (*m_beta)(lev).const_array(mfi);
+    const auto& ref_theta = (*m_ref_theta)(lev).const_array(mfi);
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real T = temp(i, j, k, 0);
+        const amrex::Real T0 = ref_theta(i, j, k);
         const amrex::Real fac = beta(i, j, k) * (T0 - T);
 
         src_term(i, j, k, 0) += gravity[0] * fac;

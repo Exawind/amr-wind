@@ -126,7 +126,7 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
             const auto& tke_arr = (*this->m_tke)(lev).array(mfi);
             const auto& buoy_prod_arr = (this->m_buoy_prod)(lev).array(mfi);
             const auto& shear_prod_arr = (this->m_shear_prod)(lev).array(mfi);
-            const auto& beta_arr = (*beta)(lev).array(mfi);
+            const auto& beta_arr = (*beta)(lev).const_array(mfi);
 
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {

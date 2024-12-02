@@ -1,3 +1,4 @@
+#include "amr-wind/transport_models/TransportModel.H"
 #include "amr-wind/wind_energy/ABLWallFunction.H"
 #include "amr-wind/wind_energy/ABL.H"
 #include "amr-wind/utilities/tensor_ops.H"
@@ -42,8 +43,6 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
             << std::endl;
     }
 
-    pp.get("reference_temperature", m_mo.ref_temp);
-
     if (pp.contains("surface_temp_flux")) {
         pp.query("surface_temp_flux", m_mo.surf_temp_flux);
     } else if (pp.contains("surface_temp_rate")) {
@@ -54,9 +53,9 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
         } else {
             amrex::Print()
                 << "ABLWallFunction: Initial surface temperature not found for "
-                   "ABL. Assuming to be equal to the reference temperature "
-                << m_mo.ref_temp << std::endl;
-            m_surf_temp_init = m_mo.ref_temp;
+                   "ABL. Assuming to be equal to the reference temperature"
+                << std::endl;
+            m_surf_temp_init = sim.transport_model().reference_temperature();
         }
         if (pp.contains("surface_temp_rate_tstart")) {
             pp.get("surface_temp_rate_tstart", m_surf_temp_rate_tstart);

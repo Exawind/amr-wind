@@ -276,11 +276,9 @@ TEST_F(TurbLESTest, test_1eqKsgs_setup_calc)
     initialize_mesh();
     auto& pde_mgr = sim().pde_manager();
     pde_mgr.register_icns();
+    sim().create_transport_model();
     sim().init_physics();
-
-    // Create turbulence model
     sim().create_turbulence_model();
-    // Get turbulence model
     auto& tmodel = sim().turbulence_model();
 
     // Get coefficients

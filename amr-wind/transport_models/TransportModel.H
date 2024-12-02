@@ -48,6 +48,9 @@ public:
 
     //! Reference temperature
     virtual amrex::Real reference_temperature() const = 0;
+
+    //! Reference temperature
+    virtual std::unique_ptr<ScratchField> ref_theta() const = 0;
 };
 } // namespace amr_wind::transport
 
