@@ -310,8 +310,6 @@ TEST_F(ABLOffshoreMeshTest, boussinesq)
     // Make sure to read water level
     mphase.post_init_actions();
 
-    amr_wind::pde::icns::BoussinesqBuoyancy bb(sim());
-
     auto& src_term = pde_mgr.icns().fields().src_term;
 
     auto& temperature =
@@ -330,6 +328,11 @@ TEST_F(ABLOffshoreMeshTest, boussinesq)
         init_abl_temperature_field(geom[lev], bx, temp_arr, btm_temp_ht);
         const auto& vof_arr = volume_fraction(lev).array(mfi);
         init_vof_field(geom[lev], bx, vof_arr, waterlev);
+    });
+
+    amr_wind::pde::icns::BoussinesqBuoyancy bb(sim());
+    run_algorithm(temperature, [&](const int lev, const amrex::MFIter& mfi) {
+        const auto bx = mfi.validbox();
         const auto& src_arr = src_term(lev).array(mfi);
         bb(lev, mfi, bx, amr_wind::FieldState::Old, src_arr);
     });
