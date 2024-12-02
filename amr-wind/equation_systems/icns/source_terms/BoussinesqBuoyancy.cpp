@@ -8,11 +8,6 @@ namespace amr_wind::pde::icns {
 
 /** Boussinesq buoyancy source term for ABL simulations
  *
- *  Reads in the following parameters from `BoussinesqBuoyancy` namespace:
- *
- *  - `reference_temperature` (Mandatory) temperature (`T0`) in Kelvin
- *  - `thermal_expansion_coeff` Optional, default = `1.0 / T0`
- *  - `gravity` acceleration due to gravity (m/s)
  */
 BoussinesqBuoyancy::BoussinesqBuoyancy(const CFDSim& sim)
     : m_temperature(sim.repo().get_field("temperature"))
