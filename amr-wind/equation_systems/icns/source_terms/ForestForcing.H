@@ -7,7 +7,7 @@
 
 namespace amr_wind::pde::icns {
 
-/** Adds the forcing term to include the presence of immersed boundary
+/** Adds a forcing term to represent forest terrain
  *
  *  \ingroup icns_src
  *
