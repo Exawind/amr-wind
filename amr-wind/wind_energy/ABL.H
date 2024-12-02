@@ -115,6 +115,7 @@ public:
     }
 
     const ABLBoundaryPlane& bndry_plane() const { return *m_bndry_plane; }
+    ABLBoundaryPlane& bndry_plane() { return *m_bndry_plane; }
     const ABLModulatedPowerLaw& abl_mpl() const { return *m_abl_mpl; }
 
     //! Return the ABL statistics calculator
