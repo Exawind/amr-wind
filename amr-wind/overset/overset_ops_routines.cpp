@@ -2,7 +2,7 @@
 
 namespace amr_wind::overset_ops {
 
-void iblank_to_mask_vof(
+void iblank_node_to_mask_vof(
     const IntField& iblank, const Field& voff, IntField& maskf)
 {
     const auto& nlevels = iblank.repo().mesh().finestLevel() + 1;
@@ -52,6 +52,80 @@ void iblank_to_mask_vof(
             });
     }
     amrex::Gpu::synchronize();
+}
+
+void prepare_mask_cell_for_MAC(FieldRepo& repo)
+{
+    const bool vof_exists = repo.field_exists("vof");
+
+    if (vof_exists) {
+        IntField& mask_field = repo.get_int_field("mask_cell");
+        const IntField& iblank = repo.get_int_field("iblank_cell");
+        const Field& f_vof = repo.get_field("vof");
+        const auto& nlevels = repo.mesh().finestLevel() + 1;
+        constexpr amrex::Real band_tol = 1e-4;
+
+        for (int lev = 0; lev < nlevels; ++lev) {
+            const auto& ibl = iblank(lev);
+            const auto& vof = f_vof(lev);
+            auto& mask = mask_field(lev);
+
+            const auto& ibarrs = ibl.const_arrays();
+            const auto& vofarrs = vof.const_arrays();
+            const auto& marrs = mask.arrays();
+            amrex::ParallelFor(
+                ibl, ibl.n_grow,
+                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                    // Default is masking all 0 and -1 iblanks
+                    marrs[nbx](i, j, k) = amrex::max(ibarrs[nbx](i, j, k), 0);
+                    // Check cells neighboring node for being near interface
+                    bool near_interface = amr_wind::multiphase::interface_band(
+                        i, j, k, vofarrs[nbx], 1, band_tol);
+                    // Check neighboring cells for being near solid
+                    bool near_solid = false;
+                    for (int ii = i - 1; ii < i + 2; ii++) {
+                        for (int jj = j - 1; jj < j + 2; jj++) {
+                            for (int kk = k - 1; kk < k + 2; kk++) {
+                                near_solid = ibarrs[nbx](ii, jj, kk) == 0
+                                                 ? true
+                                                 : near_solid;
+                            }
+                        }
+                    }
+                    // Do mask -1 cells near interface
+                    if (ibarrs[nbx](i, j, k) == -1 &&
+                        (near_interface && !near_solid)) {
+                        marrs[nbx](i, j, k) = 1;
+                    }
+                });
+        }
+        amrex::Gpu::synchronize();
+    }
+}
+
+void revert_mask_cell_after_MAC(FieldRepo& repo)
+{
+    const bool vof_exists = repo.field_exists("vof");
+
+    if (vof_exists) {
+        IntField& maskf = repo.get_int_field("mask_cell");
+        const IntField& iblank = repo.get_int_field("iblank_cell");
+        const auto& nlevels = repo.mesh().finestLevel() + 1;
+
+        for (int lev = 0; lev < nlevels; ++lev) {
+            const auto& ibl = iblank(lev);
+            auto& mask = maskf(lev);
+
+            const auto& ibarrs = ibl.const_arrays();
+            const auto& marrs = mask.arrays();
+            amrex::ParallelFor(
+                ibl, ibl.n_grow,
+                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                    marrs[nbx](i, j, k) = amrex::max(ibarrs[nbx](i, j, k), 0);
+                });
+        }
+        amrex::Gpu::synchronize();
+    }
 }
 
 // Populate approximate signed distance function using vof field

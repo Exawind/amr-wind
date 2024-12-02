@@ -4,6 +4,7 @@
 #include "amr-wind/core/MLMGOptions.H"
 #include "amr-wind/utilities/console_io.H"
 #include "amr-wind/wind_energy/ABL.H"
+#include "amr-wind/overset/overset_ops_routines.H"
 
 #include "AMReX_MultiFabUtil.H"
 #include "hydro_MacProjector.H"
@@ -76,6 +77,12 @@ void MacProjOp::enforce_inout_solvability(
 
 void MacProjOp::init_projector(const MacProjOp::FaceFabPtrVec& beta) noexcept
 {
+    // Prepare masking for projection
+    if (m_has_overset) {
+        amr_wind::overset_ops::prepare_mask_cell_for_MAC(m_repo);
+    }
+
+    // Prepare projector
     m_mac_proj = std::make_unique<Hydro::MacProjector>(
         m_repo.mesh().Geom(0, m_repo.num_active_levels() - 1));
     m_mac_proj->initProjector(
@@ -99,6 +106,12 @@ void MacProjOp::init_projector(const MacProjOp::FaceFabPtrVec& beta) noexcept
 
 void MacProjOp::init_projector(const amrex::Real beta) noexcept
 {
+    // Prepare masking for projection
+    if (m_has_overset) {
+        amr_wind::overset_ops::prepare_mask_cell_for_MAC(m_repo);
+    }
+
+    // Prepare projector
     m_mac_proj = std::make_unique<Hydro::MacProjector>(
         m_repo.mesh().Geom(0, m_repo.num_active_levels() - 1));
     m_mac_proj->initProjector(
@@ -306,6 +319,11 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
                     density.num_comp(), 0);
             }
         }
+    }
+
+    // Prepare masking for remainder of algorithmn
+    if (m_has_overset) {
+        amr_wind::overset_ops::revert_mask_cell_after_MAC(m_repo);
     }
 
     io::print_mlmg_info("MAC_projection", m_mac_proj->getMLMG());
