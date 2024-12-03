@@ -58,6 +58,7 @@ ABL.bndry_output_format = netcdf
 amr.n_cell              = 24 24 24    # Grid cells at coarsest AMRlevel
 amr.max_level           = 1           # Max AMR level in hierarchy
 amr.n_error_buf         = 0
+amr.max_grid_size       = 8
 
 tagging.labels = static
 tagging.static.type = "CartBoxRefinement"
