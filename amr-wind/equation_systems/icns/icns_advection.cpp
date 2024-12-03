@@ -321,7 +321,7 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
         }
     }
 
-    // Prepare masking for remainder of algorithmn
+    // Prepare masking for remainder of algorithm
     if (m_has_overset) {
         amr_wind::overset_ops::revert_mask_cell_after_MAC(m_repo);
     }
