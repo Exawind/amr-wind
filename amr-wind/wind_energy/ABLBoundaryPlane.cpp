@@ -1249,6 +1249,27 @@ void ABLBoundaryPlane::write_data(
     const auto n_buffers = m_mesh.boxArray(lev).size();
     amrex::Vector<BufferData> buffers(n_buffers);
 
+    // Compute the minimal offset from the edge of the domain (in case
+    // the refinement zones don't coincide with the low edge)
+    amrex::IntVect min_lo(std::numeric_limits<int>::max());
+    min_lo[normal] = 0;
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+    for (amrex::MFIter mfi((*fld)(lev), false); mfi.isValid(); ++mfi) {
+
+        const auto& bx = mfi.tilebox();
+        const auto& blo = bx.loVect();
+        const auto& bhi = bx.hiVect();
+
+        if ((blo[normal] == dlo[normal] && ori.isLow()) ||
+            (bhi[normal] == dhi[normal] && ori.isHigh())) {
+            min_lo[perp[0]] = std::min(min_lo[perp[0]], blo[perp[0]]);
+            min_lo[perp[1]] = std::min(min_lo[perp[1]], blo[perp[1]]);
+        }
+    }
+    amrex::ParallelDescriptor::ReduceIntMin(min_lo.begin(), min_lo.size());
+
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
@@ -1278,8 +1299,9 @@ void ABLBoundaryPlane::write_data(
             amrex::Gpu::streamSynchronize();
 
             buffer.start = {
-                m_out_counter, static_cast<size_t>(lo[perp[0]]),
-                static_cast<size_t>(lo[perp[1]]), 0};
+                m_out_counter,
+                static_cast<size_t>(lo[perp[0]] - min_lo[perp[0]]),
+                static_cast<size_t>(lo[perp[1]] - min_lo[perp[1]]), 0};
             buffer.count = {1, n0, n1, nc};
         } else if (bhi[normal] == dhi[normal] && ori.isHigh()) {
             amrex::IntVect lo(blo);
@@ -1302,8 +1324,9 @@ void ABLBoundaryPlane::write_data(
             amrex::Gpu::streamSynchronize();
 
             buffer.start = {
-                m_out_counter, static_cast<size_t>(lo[perp[0]]),
-                static_cast<size_t>(lo[perp[1]]), 0};
+                m_out_counter,
+                static_cast<size_t>(lo[perp[0]] - min_lo[perp[0]]),
+                static_cast<size_t>(lo[perp[1]] - min_lo[perp[1]]), 0};
             buffer.count = {1, n0, n1, nc};
         }
     }
