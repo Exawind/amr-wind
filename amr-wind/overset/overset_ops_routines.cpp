@@ -54,7 +54,7 @@ void iblank_node_to_mask_vof(
     amrex::Gpu::synchronize();
 }
 
-void prepare_mask_cell_for_MAC(FieldRepo& repo)
+void prepare_mask_cell_for_mac(FieldRepo& repo)
 {
     const bool vof_exists = repo.field_exists("vof");
 
@@ -103,7 +103,7 @@ void prepare_mask_cell_for_MAC(FieldRepo& repo)
     }
 }
 
-void revert_mask_cell_after_MAC(FieldRepo& repo)
+void revert_mask_cell_after_mac(FieldRepo& repo)
 {
     const bool vof_exists = repo.field_exists("vof");
 

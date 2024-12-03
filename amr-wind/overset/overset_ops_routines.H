@@ -12,9 +12,9 @@ namespace amr_wind::overset_ops {
 void iblank_node_to_mask_vof(
     const IntField& iblank, const Field& vof, IntField& maskf);
 
-void prepare_mask_cell_for_MAC(FieldRepo& repo);
+void prepare_mask_cell_for_mac(FieldRepo& repo);
 
-void revert_mask_cell_after_MAC(FieldRepo& repo);
+void revert_mask_cell_after_mac(FieldRepo& repo);
 
 // Populate approximate signed distance function using vof field
 void populate_psi(

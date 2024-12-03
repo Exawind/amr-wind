@@ -79,7 +79,7 @@ void MacProjOp::init_projector(const MacProjOp::FaceFabPtrVec& beta) noexcept
 {
     // Prepare masking for projection
     if (m_has_overset) {
-        amr_wind::overset_ops::prepare_mask_cell_for_MAC(m_repo);
+        amr_wind::overset_ops::prepare_mask_cell_for_mac(m_repo);
     }
 
     // Prepare projector
@@ -108,7 +108,7 @@ void MacProjOp::init_projector(const amrex::Real beta) noexcept
 {
     // Prepare masking for projection
     if (m_has_overset) {
-        amr_wind::overset_ops::prepare_mask_cell_for_MAC(m_repo);
+        amr_wind::overset_ops::prepare_mask_cell_for_mac(m_repo);
     }
 
     // Prepare projector
@@ -323,7 +323,7 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
 
     // Prepare masking for remainder of algorithm
     if (m_has_overset) {
-        amr_wind::overset_ops::revert_mask_cell_after_MAC(m_repo);
+        amr_wind::overset_ops::revert_mask_cell_after_mac(m_repo);
     }
 
     io::print_mlmg_info("MAC_projection", m_mac_proj->getMLMG());
