@@ -9,6 +9,8 @@
 
 namespace amr_wind::overset_ops {
 
+void iblank_to_mask(const IntField& iblank, IntField& maskf);
+
 void iblank_node_to_mask_vof(
     const IntField& iblank, const Field& vof, IntField& maskf);
 

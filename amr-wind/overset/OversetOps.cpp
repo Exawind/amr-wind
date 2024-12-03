@@ -26,10 +26,6 @@ void OversetOps::initialize(CFDSim& sim)
     // Queries for coupling options
     pp.query("use_hydrostatic_gradp", m_use_hydrostatic_gradp);
     pp.query("replace_gradp_postsolve", m_replace_gradp_postsolve);
-    // OversetOps does not control these coupling options, merely reports them
-    pp.query("disable_coupled_nodal_proj", m_disable_nodal_proj);
-    pp.query("disable_coupled_mac_proj", m_disable_mac_proj);
-
     pp.query("verbose", m_verbose);
 
     m_vof_exists = m_sim_ptr->repo().field_exists("vof");
@@ -84,13 +80,11 @@ void OversetOps::pre_advance_work()
             // Update pressure gradient using sharpened pressure field
             update_gradp();
         }
-        if (!m_disable_nodal_proj) {
-            // Calculate vof-dependent node mask
-            const auto& iblank = m_sim_ptr->repo().get_int_field("iblank_node");
-            const auto& vof = m_sim_ptr->repo().get_field("vof");
-            auto& mask = m_sim_ptr->repo().get_int_field("mask_node");
-            overset_ops::iblank_node_to_mask_vof(iblank, vof, mask);
-        }
+        // Calculate vof-dependent node mask
+        const auto& iblank = m_sim_ptr->repo().get_int_field("iblank_node");
+        const auto& vof = m_sim_ptr->repo().get_field("vof");
+        auto& mask = m_sim_ptr->repo().get_int_field("mask_node");
+        overset_ops::iblank_node_to_mask_vof(iblank, vof, mask);
     }
 
     // If pressure gradient will be replaced, store current pressure gradient
@@ -185,10 +179,6 @@ void OversetOps::parameter_output() const
     if (m_verbose > 0) {
         // Important parameters
         amrex::Print() << "\nOverset Coupling Parameters: \n"
-                       << "---- Coupled nodal projection : "
-                       << !m_disable_nodal_proj << std::endl
-                       << "---- Coupled MAC projection   : "
-                       << !m_disable_mac_proj << std::endl
                        << "---- Replace overset pres grad: "
                        << m_replace_gradp_postsolve << std::endl;
         if (m_vof_exists) {

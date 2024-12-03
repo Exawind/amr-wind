@@ -2,6 +2,39 @@
 
 namespace amr_wind::overset_ops {
 
+/** Convert iblanks to AMReX mask
+ *
+ *  \f{align}
+ *  \mathrm{mask}_{i,j,k} = \begin{cases}
+ *  1 & \mathrm{IBLANK}_{i, j, k} = 1 \\
+ *  0 & \mathrm{IBLANK}_{i, j, k} \leq 0
+ *  \end{cases}
+ *  \f}
+ */
+void iblank_to_mask(const IntField& iblank, IntField& maskf)
+{
+    const auto& nlevels = iblank.repo().mesh().finestLevel() + 1;
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& ibl = iblank(lev);
+        auto& mask = maskf(lev);
+
+        const auto& ibarrs = ibl.const_arrays();
+        const auto& marrs = mask.arrays();
+        amrex::ParallelFor(
+            ibl, ibl.n_grow,
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                marrs[nbx](i, j, k) = amrex::max(ibarrs[nbx](i, j, k), 0);
+            });
+    }
+    amrex::Gpu::synchronize();
+}
+
+/** VOF-sensitive conversion of iblank to mask at nodes
+ *
+ * Masks most of the domain, including a layer around solid bodies, but avoids
+ * masking cells near the interface
+ */
 void iblank_node_to_mask_vof(
     const IntField& iblank, const Field& voff, IntField& maskf)
 {
@@ -54,6 +87,10 @@ void iblank_node_to_mask_vof(
     amrex::Gpu::synchronize();
 }
 
+/** VOF-sensitive conversion of iblank to mask at cells
+ *
+ * Same concept as iblank_node_to_mask_vof, but for MAC projection
+ */
 void prepare_mask_cell_for_mac(FieldRepo& repo)
 {
     const bool vof_exists = repo.field_exists("vof");
@@ -103,6 +140,12 @@ void prepare_mask_cell_for_mac(FieldRepo& repo)
     }
 }
 
+/** Convert iblank to mask using ordinary method
+ *
+ * Intended to return mask_cell back to original values following
+ * prepare_mask_cell_for_mac because mask_cell is used in other parts of the
+ * flow solver, not just the MAC projection
+ */
 void revert_mask_cell_after_mac(FieldRepo& repo)
 {
     const bool vof_exists = repo.field_exists("vof");
@@ -110,21 +153,8 @@ void revert_mask_cell_after_mac(FieldRepo& repo)
     if (vof_exists) {
         IntField& maskf = repo.get_int_field("mask_cell");
         const IntField& iblank = repo.get_int_field("iblank_cell");
-        const auto& nlevels = repo.mesh().finestLevel() + 1;
 
-        for (int lev = 0; lev < nlevels; ++lev) {
-            const auto& ibl = iblank(lev);
-            auto& mask = maskf(lev);
-
-            const auto& ibarrs = ibl.const_arrays();
-            const auto& marrs = mask.arrays();
-            amrex::ParallelFor(
-                ibl, ibl.n_grow,
-                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                    marrs[nbx](i, j, k) = amrex::max(ibarrs[nbx](i, j, k), 0);
-                });
-        }
-        amrex::Gpu::synchronize();
+        iblank_to_mask(iblank, maskf);
     }
 }
 
