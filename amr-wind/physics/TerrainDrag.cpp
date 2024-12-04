@@ -136,6 +136,7 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
             }
         });
 }
+
 void TerrainDrag::post_regrid_actions()
 {
     const int nlevels = m_sim.repo().num_active_levels();
