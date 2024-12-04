@@ -59,8 +59,10 @@ MacProjOp::MacProjOp(
     amrex::ParmParse pp("incflo");
     pp.query("density", m_rho_0);
 #ifdef AMR_WIND_USE_FFT
-    amrex::ParmParse pp("mac_proj");
-    pp.query("use_fft", m_use_fft);
+    {
+        amrex::ParmParse pp("mac_proj");
+        pp.query("use_fft", m_use_fft);
+    }
 #endif
 }
 
