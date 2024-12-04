@@ -58,7 +58,7 @@ private:
     std::unique_ptr<Hydro::MacProjector> m_mac_proj;
 #ifdef AMR_WIND_ENABLE_FFT
     std::unique_ptr<Hydro::FFTMacProjector> m_fft_mac_proj;
-    bool m_use_fft = true; // use fft if possible
+    bool m_use_fft{true}; // use fft if possible
 #endif
     MLMGOptions m_options;
     bool m_has_overset{false};
