@@ -75,4 +75,4 @@ incflo.verbose          =   0          # incflo_level
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              MAC Proj                 #
 #.......................................#
-mac_proj.use_fft = 0 #explicilty disable FFT based MAC projection
+mac_proj.use_fft = 0 #explicitly disable FFT based MAC projection
