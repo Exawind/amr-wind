@@ -135,7 +135,7 @@ Section: Momentum Sources
    **type:** Real, required for multiphase simulations with ABL
    
    This parameter indicates the vertical distance above the water level and the "off height"
-   that the ABL forcing term should be ramped from zero to full strength. This is not used
+   that the ABL forcing term should ramp up from zero to full strength. This is not used
    when the volume fraction field (vof) is not present in the simulation.
 
 .. input_param:: ABLForcing.abl_forcing_band
