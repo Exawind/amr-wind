@@ -81,10 +81,10 @@ actual keyword is determined by the labels provided to
 AMReX particle binary format
 ````````````````````````````
 
-The native format can be read into a data frame using Python
-scripts. We provide an example in the source code and the :ref:`post
-processing documentation <post_processing>`. A typical data frame
-might look like:
+The native format can be read by ParaView or using Python scripts. We
+provide an example in the source code and the :ref:`post processing
+documentation <post_processing>`. A typical data frame might look
+like:
 
 .. code::
 
@@ -99,7 +99,8 @@ where ``uid`` is the global probe id, ``set_id`` is the label id
 (e.g., ``plane_sampling.labels = plane1 plane2``, numbered as the user
 input order), ``probe_id`` is the local probe id to this label,
 ``*co`` are the coordinates of the probe, and the other columns are
-the user requested sampled fields.
+the user requested sampled fields. The same labels are seeing by other
+visualization tools such as ParaView.
 
 Sampling along a line
 ``````````````````````
