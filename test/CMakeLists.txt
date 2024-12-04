@@ -323,6 +323,9 @@ if(AMR_WIND_ENABLE_W2A)
   add_test_re(abl_multiphase_w2a)
 endif()
 
+if(AMR_WIND_ENABLE_FFT)
+  add_test_re(abl_godunov_nofft)
+endif()
 #=============================================================================
 # Regression tests excluded from CI with a test dependency
 #=============================================================================
