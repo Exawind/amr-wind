@@ -195,6 +195,10 @@ if(AMR_WIND_ENABLE_HELICS)
   target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_HELICS)
 endif()
 
+if(AMR_WIND_ENABLE_FFT)
+  target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_FFT)
+endif()
+
 if(AMR_WIND_TEST_WITH_PYTHON)
   set(CMAKE_PREFIX_PATH ${PYTHON_DIR} ${CMAKE_PREFIX_PATH})
   find_package(Python3 REQUIRED COMPONENTS Interpreter)
