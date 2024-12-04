@@ -3,62 +3,13 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/PDEBase.H"
 #include "amr-wind/core/field_ops.H"
+#include "amr-wind/overset/overset_ops_routines.H"
 #include "amr-wind/utilities/IOManager.H"
 #include "AMReX_ParmParse.H"
 
 #include <memory>
 #include <numeric>
 namespace amr_wind {
-
-namespace {
-
-/** Convert iblanks to AMReX mask
- *
- *  \f{align}
- *  \mathrm{mask}_{i,j,k} = \begin{cases}
- *  1 & \mathrm{IBLANK}_{i, j, k} = 1 \\
- *  0 & \mathrm{IBLANK}_{i, j, k} \leq 0
- *  \end{cases}
- *  \f}
- */
-void iblank_to_mask(const IntField& iblank, IntField& maskf)
-{
-    const auto& nlevels = iblank.repo().mesh().finestLevel() + 1;
-
-    for (int lev = 0; lev < nlevels; ++lev) {
-        const auto& ibl = iblank(lev);
-        auto& mask = maskf(lev);
-
-        const auto& ibarrs = ibl.const_arrays();
-        const auto& marrs = mask.arrays();
-        amrex::ParallelFor(
-            ibl, ibl.n_grow,
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                marrs[nbx](i, j, k) = amrex::max(ibarrs[nbx](i, j, k), 0);
-            });
-    }
-    amrex::Gpu::synchronize();
-}
-
-void iblank_to_mask_hole(const IntField& iblank, IntField& maskf)
-{
-    const auto& nlevels = iblank.repo().mesh().finestLevel() + 1;
-
-    for (int lev = 0; lev < nlevels; ++lev) {
-        const auto& ibl = iblank(lev);
-        auto& mask = maskf(lev);
-
-        const auto& ibarrs = ibl.const_arrays();
-        const auto& marrs = mask.arrays();
-        amrex::ParallelFor(
-            ibl, ibl.n_grow,
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                marrs[nbx](i, j, k) = std::abs(ibarrs[nbx](i, j, k));
-            });
-    }
-    amrex::Gpu::synchronize();
-}
-} // namespace
 
 AMROversetInfo::AMROversetInfo(const int nglobal, const int nlocal)
     : level(nglobal)
@@ -93,9 +44,6 @@ TiogaInterface::TiogaInterface(CFDSim& sim)
           FieldLoc::NODE))
 {
     m_sim.io_manager().register_output_int_var(m_iblank_cell.name());
-
-    amrex::ParmParse pp("Overset");
-    pp.query("disable_coupled_nodal_proj", m_disable_nodal_proj);
 }
 
 // clang-format on
@@ -151,12 +99,8 @@ void TiogaInterface::post_overset_conn_work()
         m_iblank_node(lev).FillBoundary(m_sim.mesh().Geom()[lev].periodicity());
     }
 
-    iblank_to_mask(m_iblank_cell, m_mask_cell);
-    if (m_disable_nodal_proj) {
-        iblank_to_mask_hole(m_iblank_node, m_mask_node);
-    } else {
-        iblank_to_mask(m_iblank_node, m_mask_node);
-    }
+    overset_ops::iblank_to_mask(m_iblank_cell, m_mask_cell);
+    overset_ops::iblank_to_mask(m_iblank_node, m_mask_node);
 
     // Update equation systems after a connectivity update
     m_sim.pde_manager().icns().post_regrid_actions();

@@ -32,8 +32,6 @@ private:
     bool m_use_hydrostatic_gradp{false};
 
     // Coupling options
-    bool m_disable_nodal_proj{false};
-    bool m_disable_mac_proj{false};
     bool m_replace_gradp_postsolve{false};
 
     // Verbosity
