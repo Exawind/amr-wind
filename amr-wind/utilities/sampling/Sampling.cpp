@@ -421,7 +421,7 @@ void Sampling::write_ascii()
     write_info_file(info_name);
 }
 
-void Sampling::write_info_file(const std::string fname)
+void Sampling::write_info_file(const std::string& fname)
 {
     BL_PROFILE("amr-wind::Sampling::write_info_file");
 

@@ -110,7 +110,7 @@ protected:
     virtual void write_ascii();
 
     //! Output extra information for certain formats
-    void write_info_file(const std::string fname);
+    void write_info_file(const std::string& fname);
 
     SamplingContainer& sampling_container() { return *m_scontainer; }
 
