@@ -46,6 +46,7 @@ class AmrexParticleFile:
         """
         if not hasattr(self, "df"):
             self.parse_header()
+            self.parse_info()
             self.load_binary_data()
         return self.df
 
@@ -78,6 +79,14 @@ class AmrexParticleFile:
                     ginfo.append(
                         [int(ix) for ix in fh.readline().strip().split()])
                 self.grid_info.append(ginfo)
+
+    def parse_info(self):
+        """Parse the sampling info file"""
+        self.info = {}
+        with open(self.pdir.parent / "sampling_info", 'r') as fh:
+            for line in fh:
+                (key, val) = line.split()
+                self.info[key] = float(val)
 
     def load_binary_data(self):
         """Read binary data into memory"""
