@@ -100,7 +100,9 @@ where ``uid`` is the global probe id, ``set_id`` is the label id
 input order), ``probe_id`` is the local probe id to this label,
 ``*co`` are the coordinates of the probe, and the other columns are
 the user requested sampled fields. The same labels are seeing by other
-visualization tools such as ParaView.
+visualization tools such as ParaView. The directory also contains a
+``sampling_info`` file where additional information (e.g., time) is
+stored.
 
 Sampling along a line
 ``````````````````````
