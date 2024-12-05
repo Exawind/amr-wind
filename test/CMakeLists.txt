@@ -323,6 +323,93 @@ if(AMR_WIND_ENABLE_W2A)
   add_test_re(abl_multiphase_w2a)
 endif()
 
+if(AMR_WIND_ENABLE_OPENFAST)
+  set(ACT_UNIFORM_ALM_TEST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/test_files/act_uniform_alm)
+  set(RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR ${ACT_UNIFORM_ALM_TEST_BINARY_DIR}/r-test)
+  set(5MW_BASELINE_DIR glue-codes/openfast/5MW_Baseline)
+  set(5MW_LAND_DIR glue-codes/openfast-cpp/5MW_Land_DLL_WTurb_cpp)
+  set(AERO_FILE NRELOffshrBsline5MW_Onshore_AeroDyn15.dat)
+  set(ELASTO_FILE NRELOffshrBsline5MW_Onshore_ElastoDyn.dat)
+  set(SERVO_FILE NRELOffshrBsline5MW_Onshore_ServoDyn.dat)
+  file(MAKE_DIRECTORY ${ACT_UNIFORM_ALM_TEST_BINARY_DIR})
+  if(NOT EXISTS "${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}")
+    execute_process(
+      COMMAND bash -c "${GIT_EXECUTABLE} clone -n --depth=1 --filter=tree:0 git@github.com:OpenFAST/r-test.git"
+      WORKING_DIRECTORY
+      "${ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
+      COMMAND bash -c "${GIT_EXECUTABLE} sparse-checkout set --no-cone ${5MW_BASELINE_DIR} ${5MW_LAND_DIR}"
+      WORKING_DIRECTORY
+      "${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
+      COMMAND bash -c "${GIT_EXECUTABLE} checkout"
+      WORKING_DIRECTORY
+      "${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E create_symlink
+      ${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}/${5MW_LAND_DIR}/${AERO_FILE}
+      ${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}/${5MW_BASELINE_DIR}/${AERO_FILE}
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E create_symlink
+      ${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}/${5MW_LAND_DIR}/${ELASTO_FILE}
+      ${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}/${5MW_BASELINE_DIR}/${ELASTO_FILE}
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E create_symlink
+      ${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}/${5MW_LAND_DIR}/${SERVO_FILE}
+      ${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}/${5MW_BASELINE_DIR}/${SERVO_FILE}
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
+      COMMAND bash -c "sed -i -e 's/5   PCMode/0   PCMode/g' ${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}/${5MW_LAND_DIR}/${SERVO_FILE}"
+      WORKING_DIRECTORY
+      "${ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
+      COMMAND bash -c "sed -i -e 's/5   VSContrl/1   VSContrl/g' ${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}/${5MW_LAND_DIR}/${SERVO_FILE}"
+      WORKING_DIRECTORY
+      "${ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
+      COMMAND bash -c "sed -i -e 's/9999.9   VS_RtGnSp/1161.963   VS_RtGnSp/g' ${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}/${5MW_LAND_DIR}/${SERVO_FILE}"
+      WORKING_DIRECTORY
+      "${ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
+      COMMAND bash -c "sed -i -e 's/9999.9   VS_RtTq/43093.55   VS_RtTq/g' ${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}/${5MW_LAND_DIR}/${SERVO_FILE}"
+      WORKING_DIRECTORY
+      "${ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
+      COMMAND bash -c "sed -i -e 's/9999.9   VS_Rgn2K/0.0255764   VS_Rgn2K/g' ${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}/${5MW_LAND_DIR}/${SERVO_FILE}"
+      WORKING_DIRECTORY
+      "${ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
+      COMMAND bash -c "sed -i -e 's/9999.9   VS_SlPc/10.0   VS_SlPc/g' ${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}/${5MW_LAND_DIR}/${SERVO_FILE}"
+      WORKING_DIRECTORY
+      "${ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
+      COMMAND bash -c "sed -i -e 's/1   WakeMod/0   WakeMod/g' ${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}/${5MW_LAND_DIR}/${AERO_FILE}"
+      WORKING_DIRECTORY
+      "${ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
+      COMMAND bash -c "sed -i -e 's/True          YawDOF/False         YawDOF/g' ${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}/${5MW_LAND_DIR}/${ELASTO_FILE}"
+      WORKING_DIRECTORY
+      "${ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+  endif()
+  add_test_re(act_uniform_alm)
+  if(AMR_WIND_ENABLE_NETCDF)
+    add_test_red(act_uniform_alm_restart act_uniform_alm)
+  endif()
+endif()
+
 #=============================================================================
 # Regression tests excluded from CI with a test dependency
 #=============================================================================
