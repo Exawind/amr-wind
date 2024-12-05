@@ -1,3 +1,4 @@
+#include <AMReX.H>
 #include <memory>
 
 #include "amr-wind/equation_systems/icns/icns_advection.H"
@@ -130,6 +131,12 @@ void MacProjOp::init_projector(const amrex::Real beta) noexcept
             m_fft_mac_proj = std::make_unique<Hydro::FFTMacProjector>(
                 m_repo.mesh().Geom(0), lobc, hibc);
             return;
+        } else {
+            amrex::ParmParse pp("mac_proj");
+            if (pp.contains("use_fft")) {
+                amrex::Print() << "WARNING: FFT MAC projection disabled due to "
+                                  "multiple levels/overset\n";
+            }
         }
     }
 #endif
