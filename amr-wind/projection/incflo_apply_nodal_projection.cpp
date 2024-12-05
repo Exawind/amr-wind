@@ -209,6 +209,7 @@ void incflo::ApplyProjection(
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
+            // this one
             for (MFIter mfi(velocity(lev), TilingIfNotGPU()); mfi.isValid();
                  ++mfi) {
                 Box const& bx = mfi.tilebox();
@@ -266,6 +267,7 @@ void incflo::ApplyProjection(
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
+            // this one
             for (MFIter mfi(sigma[lev], TilingIfNotGPU()); mfi.isValid();
                  ++mfi) {
                 Box const& bx = mfi.tilebox();
@@ -464,6 +466,7 @@ void incflo::ApplyProjection(
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
+        // this one
         for (MFIter mfi(grad_p(lev), TilingIfNotGPU()); mfi.isValid(); ++mfi) {
             Box const& tbx = mfi.tilebox();
             Box const& nbx = mfi.nodaltilebox();
