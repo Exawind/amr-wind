@@ -29,8 +29,11 @@ def main():
     assert Path(args.f0).is_dir()
     assert Path(args.f1).is_dir()
 
-    p0df = AmrexParticleFile(Path(args.f0) / "particles")()
-    p1df = AmrexParticleFile(Path(args.f1) / "particles")()
+    p0f = AmrexParticleFile(Path(args.f0) / "particles")
+    p1f = AmrexParticleFile(Path(args.f1) / "particles")
+    p0df = p0f()
+    p1df = p1f()
+    assert np.abs(p0f.info["time"] - p1f.info["time"]) <= args.abs_tol
     assert p0df.shape == p1df.shape
     p0df.sort_values(by=["uid"], inplace=True, kind="stable", ignore_index=True)
     p1df.sort_values(by=["uid"], inplace=True, kind="stable", ignore_index=True)
