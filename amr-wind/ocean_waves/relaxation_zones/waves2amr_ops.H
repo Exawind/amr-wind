@@ -428,8 +428,7 @@ struct InitDataOp<W2AWaves>
         wdata.t_last = 0.0;
 
         // indvec is complete upon initialization (all heights every proc)
-        amrex::Vector<int> indvec;
-        indvec.resize(wdata.hvec.size());
+        amrex::Vector<int> indvec(wdata.hvec.size());
         for (int n = 0; n < indvec.size(); ++n) {
             indvec[n] = n;
         }
