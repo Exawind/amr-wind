@@ -11,10 +11,10 @@ void SamplingContainer::setup_container(
     BL_PROFILE("amr-wind::SamplingContainer::setup");
     const bool communicate_comp = true;
     for (int i = 0; i < num_real_components; ++i) {
-        AddRealComp(communicate_comp);
+        AddRealComp(static_cast<int>(communicate_comp));
     }
     for (int i = 0; i < num_int_components; ++i) {
-        AddIntComp(communicate_comp);
+        AddIntComp(static_cast<int>(communicate_comp));
     }
 
     const int nlevels = m_mesh.finestLevel() + 1;

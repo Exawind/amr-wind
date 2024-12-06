@@ -6,6 +6,8 @@
 #include "amr-wind/core/MLMGOptions.H"
 #include "amr-wind/projection/nodal_projection_ops.H"
 #include <hydro_NodalProjector.H>
+#include "amr-wind/wind_energy/ABL.H"
+#include "amr-wind/wind_energy/ABLBoundaryPlane.H"
 
 namespace amr_wind {
 
@@ -92,6 +94,12 @@ void OversetOps::pre_advance_work()
                 (*m_gp_copy)(lev), gp(lev), 0, 0, gp(lev).nComp(),
                 (m_gp_copy)->num_grow());
         }
+    }
+
+    // Pre advance work for plane was skipped for overset solver, do it here
+    if (m_sim_ptr->physics_manager().contains("ABL")) {
+        auto& abl = m_sim_ptr->physics_manager().get<ABL>();
+        abl.bndry_plane().pre_advance_work();
     }
 }
 

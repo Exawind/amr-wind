@@ -65,6 +65,15 @@ struct ReadInputsOp<StokesWaves>
                                << wdata.wave_length << " m.\n";
             }
         }
+        pp.query("wave_phase_offset_radians", wdata.wave_phase_offset);
+        if (!pp.contains("wave_phase_offset_radians")) {
+            pp.query("wave_phase_offset_degrees", wdata.wave_phase_offset);
+            wdata.wave_phase_offset *= M_PI / 180.;
+        } else if (pp.contains("wave_phase_offset_degrees")) {
+            amrex::Abort(
+                "ReadInputsOp<StokesWaves> : wave phase offset is specified in "
+                "both radians and degrees. Please use only one.");
+        }
     }
 };
 
@@ -90,6 +99,7 @@ struct InitDataOp<StokesWaves>
 
         const amrex::Real wave_height = wdata.wave_height;
         const amrex::Real wave_length = wdata.wave_length;
+        const amrex::Real phase_offset = wdata.wave_phase_offset;
         const amrex::Real water_depth = wdata.water_depth;
         const amrex::Real zero_sea_level = wdata.zsl;
         const amrex::Real gen_length = wdata.gen_length;
@@ -109,7 +119,8 @@ struct InitDataOp<StokesWaves>
                 amrex::Real eta_w{0.0}, u_w{0.0}, v_w{0.0}, w_w{0.0};
                 relaxation_zones::stokes_waves(
                     order, wave_length, water_depth, wave_height,
-                    zero_sea_level, g, x, z, 0.0, eta_w, u_w, v_w, w_w);
+                    zero_sea_level, g, x, z, 0.0, phase_offset, eta_w, u_w, v_w,
+                    w_w);
                 const utils::WaveVec wave_sol{u_w, v_w, w_w, eta_w};
 
                 // Quiescent profile
@@ -162,6 +173,7 @@ struct UpdateRelaxZonesOp<StokesWaves>
 
             const amrex::Real wave_height = wdata.wave_height;
             const amrex::Real wave_length = wdata.wave_length;
+            const amrex::Real phase_offset = wdata.wave_phase_offset;
             const amrex::Real water_depth = wdata.water_depth;
             const amrex::Real zero_sea_level = wdata.zsl;
             const amrex::Real g = wdata.g;
@@ -177,7 +189,8 @@ struct UpdateRelaxZonesOp<StokesWaves>
 
                     relaxation_zones::stokes_waves(
                         order, wave_length, water_depth, wave_height,
-                        zero_sea_level, g, x, z, time, eta, u_w, v_w, w_w);
+                        zero_sea_level, g, x, z, time, phase_offset, eta, u_w,
+                        v_w, w_w);
 
                     phi[nbx](i, j, k) = eta - z;
                     const amrex::Real cell_length_2D =
