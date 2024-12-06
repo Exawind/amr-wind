@@ -1,0 +1,14 @@
+.. meta::adce2cb00c7351cc9046c33410ee76b43178cf49a372137bd4d71a1624bf5fc92677bf93f3f981da6b9c0eedcf169784a5742e5123eadfdc3de80b8533dd8757
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/integrals.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/integrals.H File Reference
+=================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: integrals_8_h.html

@@ -1,0 +1,14 @@
+.. meta::aa3ca2283c6e0c827e3579666dbd4bb8834ab3624ad181da2232d92417550f76286dbc8857cac6f30935f8ca00127844b52f735fc8397fcd0898102096d491fb
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/LineSampler.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/LineSampler.H Source File
+=========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _line_sampler_8_h_source.html

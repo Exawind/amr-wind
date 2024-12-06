@@ -1,0 +1,14 @@
+.. meta::6d960cc1fbab5e251e0877279ad49e56c6589573ce5b894824dc38ca82efe82e0023f2a1d02a7d7b34631850f97a36b292cecc51b42f6bf7999972d6a88da547
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::SimpleShearMOSD Struct Reference
+
+SimpleShearMOSD Struct Reference
+================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_simple_shear_m_o_s_d.html

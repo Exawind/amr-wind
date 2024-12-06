@@ -1,0 +1,14 @@
+.. meta::eae14c4046ebf65a3e4d82a59242f2fbf0a424e7b64f819c1dbead09b753b36e3d10cef60fbe29042fa30d747e91d926de986de58d3ac3606e4814b9738e8879
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/temperature/source_terms/TempSpongeForcing.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/temperature/source\_terms/TempSpongeForcing.H Source File
+========================================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _temp_sponge_forcing_8_h_source.html

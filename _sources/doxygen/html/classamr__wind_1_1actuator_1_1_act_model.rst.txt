@@ -1,0 +1,14 @@
+.. meta::869b5a6412ccdf1a06c528fb591e8806c57ac9973701d81a29dac4d0f5b287c56d5721c4236cc68ba7478876ec534bf0b2585e289d59bd60415b40896e4e831a
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ActModel&lt; ActTrait, SrcTrait &gt; Class Template Reference
+
+ActModel&lt; ActTrait, SrcTrait &gt; Class Template Reference
+=============================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1actuator_1_1_act_model.html

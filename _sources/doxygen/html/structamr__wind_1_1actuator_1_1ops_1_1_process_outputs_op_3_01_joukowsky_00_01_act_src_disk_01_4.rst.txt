@@ -1,0 +1,14 @@
+.. meta::a94bcb510a54ccc6d9c70df6c1f5797b28bf0034b973ecc05bf1fbd405769344cab2bf69b393e0f150057bedd6d4f015511f2bd602a858ba10d021fe273e1184
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::ProcessOutputsOp&lt; Joukowsky, ActSrcDisk &gt; Struct Reference
+
+ProcessOutputsOp&lt; Joukowsky, ActSrcDisk &gt; Struct Reference
+================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_process_outputs_op_3_01_joukowsky_00_01_act_src_disk_01_4.html

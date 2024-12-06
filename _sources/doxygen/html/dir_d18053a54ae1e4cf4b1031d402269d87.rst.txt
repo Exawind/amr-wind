@@ -1,0 +1,14 @@
+.. meta::abcb7d3b5d2fc729d4f1df92365a26fe6b96d7e72827da3401285edd3292bc90967232780b2b035b1e5758c545b51657dada6a9192d364d250b3bb651011bb15
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/averaging Directory Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/averaging Directory Reference
+====================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_d18053a54ae1e4cf4b1031d402269d87.html

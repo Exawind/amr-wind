@@ -1,0 +1,14 @@
+.. meta::96f81eba7de60fd1764bfed1c1a20a2fef9885ae9230267dc466cd62777332590f3286b3f6157a7ac92866b7823ad6c42ce7300598a34858bfaa5ad2c2198da2
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ABLFieldInitFile Class Reference
+
+ABLFieldInitFile Class Reference
+================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_a_b_l_field_init_file.html

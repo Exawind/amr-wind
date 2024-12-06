@@ -1,0 +1,14 @@
+.. meta::3d7e57d17317e00057cd48412846d373bfd62122f2c6f8dd4f6f489c9a1918a6855ea02c813b72ce7245f79a4803adfdc84dacbddacc86f455fef2c5468c19de
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::SimpleShearSchumann Struct Reference
+
+SimpleShearSchumann Struct Reference
+====================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_simple_shear_schumann.html

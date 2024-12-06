@@ -1,0 +1,14 @@
+.. meta::b73155c8d8a2add2c861f5925588834ac8615611ad1623b65e62f7e4225b0c21104a065c2331c3f06214d16b51e5013ea717af54bf44e4df06f32f24ee597a0f
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/ChannelFlow.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/ChannelFlow.cpp File Reference
+===================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _channel_flow_8cpp.html

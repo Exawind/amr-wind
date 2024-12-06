@@ -1,0 +1,14 @@
+.. meta::2b99aeac0db0f989f01b96f24fb8b961418d38083de5ac5b49d2052dea17473b0c5bb4f593e840377472860673d4ae1600eb419841e3aafa2c47c87987588d3b
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/TerrainDrag.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/TerrainDrag.H Source File
+==============================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _terrain_drag_8_h_source.html

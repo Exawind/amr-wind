@@ -1,0 +1,14 @@
+.. meta::8f218b74b30147a1d2baa8c9b164a0f33265bdfdd5eafbcd5ba24b257beacf6e298b0f237d56eeb8af99240ec315a85e75bf79f5be953184b5a0536735d58298
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ShearStressMoeng Struct Reference
+
+ShearStressMoeng Struct Reference
+=================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_shear_stress_moeng.html
