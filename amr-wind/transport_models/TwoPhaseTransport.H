@@ -3,6 +3,7 @@
 
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/transport_models/TransportModel.H"
+#include "amr-wind/utilities/constants.H"
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind::transport {
@@ -10,20 +11,21 @@ namespace amr_wind::transport {
 /** Two-phase fluid transport model with piece-wise constant properties
  *  \ingroup transport
  */
-class TwoPhaseTransport : public TransportModel
+class TwoPhaseTransport : public TransportModel::Register<TwoPhaseTransport>
 {
 public:
     static constexpr bool constant_properties = false;
 
     static std::string identifier() { return "TwoPhaseTransport"; }
 
-    explicit TwoPhaseTransport(CFDSim& sim) : m_sim(sim), m_repo(sim.repo())
+    explicit TwoPhaseTransport(const CFDSim& sim)
+        : m_sim(sim), m_repo(sim.repo())
     {
-        auto& physics_mgr = m_sim.physics_manager();
+        const auto& physics_mgr = m_sim.physics_manager();
         if (!physics_mgr.contains("MultiPhase")) {
             amrex::Abort("TwoPhaseTransport requires MultiPhase physics");
         }
-        auto& multiphase = physics_mgr.get<MultiPhase>();
+        const auto& multiphase = physics_mgr.get<MultiPhase>();
         m_ifacetype = multiphase.interface_capturing_method();
 
         amrex::ParmParse pp("transport");
@@ -43,6 +45,77 @@ public:
             amrex::Print()
                 << "WARNING: single-phase laminar_prandtl has been specified "
                    "but will not be used! (TwoPhaseTransport)\n";
+        }
+
+        // Backwards compatibility
+        amrex::ParmParse pp_boussinesq_buoyancy("BoussinesqBuoyancy");
+        amrex::ParmParse pp_abl("ABL");
+        if (pp.contains("thermal_expansion_coefficient")) {
+            pp.get("thermal_expansion_coefficient", m_constant_beta);
+            if (pp_boussinesq_buoyancy.contains("thermal_expansion_coeff")) {
+                amrex::Print()
+                    << "WARNING: BoussinesqBuoyancy.thermal_expansion_coeff "
+                       "option has been deprecated in favor of "
+                       "transport.thermal_expansion_coefficient. Ignoring the "
+                       "BoussinesqBuoyancy option in favor of the transport "
+                       "option."
+                    << std::endl;
+            }
+        } else if (pp_boussinesq_buoyancy.contains("thermal_expansion_coeff")) {
+            amrex::Print()
+                << "WARNING: BoussinesqBuoyancy.thermal_expansion_coeff option "
+                   "has been deprecated in favor of "
+                   "transport.thermal_expansion_coefficient. Please replace "
+                   "this option."
+                << std::endl;
+            pp_boussinesq_buoyancy.get(
+                "thermal_expansion_coeff", m_constant_beta);
+        }
+
+        if (pp.contains("reference_temperature")) {
+            pp.get("reference_temperature", m_reference_temperature);
+            if (pp_boussinesq_buoyancy.contains("reference_temperature")) {
+                amrex::Print()
+                    << "WARNING: BoussinesqBuoyancy.reference_temperature "
+                       "option has been deprecated in favor of "
+                       "transport.reference_temperature. Ignoring the "
+                       "BoussinesqBuoyancy option in favor of the transport "
+                       "option."
+                    << std::endl;
+            } else if (pp_abl.contains("reference_temperature")) {
+                amrex::Print()
+                    << "WARNING: ABL.reference_temperature "
+                       "option has been deprecated in favor of "
+                       "transport.reference_temperature. Ignoring the "
+                       "ABL option in favor of the transport "
+                       "option."
+                    << std::endl;
+            }
+        } else if (pp_boussinesq_buoyancy.contains("reference_temperature")) {
+            amrex::Print()
+                << "WARNING: BoussinesqBuoyancy.reference_temperature option "
+                   "has been deprecated in favor of "
+                   "transport.reference_temperature. Please replace "
+                   "this option."
+                << std::endl;
+            pp_boussinesq_buoyancy.get(
+                "reference_temperature", m_reference_temperature);
+        } else if (pp_abl.contains("reference_temperature")) {
+            amrex::Print() << "WARNING: ABL.reference_temperature option "
+                              "has been deprecated in favor of "
+                              "transport.reference_temperature. Please replace "
+                              "this option."
+                           << std::endl;
+            pp_abl.get("reference_temperature", m_reference_temperature);
+        }
+        if ((m_reference_temperature > 0.0) && (m_constant_beta > 0.0)) {
+            amrex::Print()
+                << "WARNING: specified both thermal_expansion_coefficient and "
+                   "reference_temperature. Using reference_temperature to "
+                   "define the thermal_expansion_coefficient. Remove "
+                   "reference_temperature from the inputs if desiring "
+                   "thermal_expansion_coefficient."
+                << std::endl;
         }
     }
 
@@ -221,9 +294,79 @@ public:
         return diff;
     }
 
+    //! Return the thermal expansion coefficient
+    inline std::unique_ptr<ScratchField> beta() const override
+    {
+        auto beta = m_repo.create_scratch_field(1, 1);
+
+        const amrex::Real beta_val = (m_reference_temperature > 0.0)
+                                         ? 1.0 / m_reference_temperature
+                                         : m_constant_beta;
+
+        if (m_ifacetype == InterfaceCapturingMethod::VOF) {
+            const auto& vof = m_repo.get_field("vof");
+            for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
+                const auto& beta_arrs = (*beta)(lev).arrays();
+                const auto& vof_arrs = vof(lev).const_arrays();
+                amrex::ParallelFor(
+                    (*beta)(lev), beta->num_grow(),
+                    [=] AMREX_GPU_DEVICE(
+                        int nbx, int i, int j, int k) noexcept {
+                        if (vof_arrs[nbx](i, j, k) > constants::TIGHT_TOL) {
+                            beta_arrs[nbx](i, j, k) = 0.0;
+                        } else {
+                            beta_arrs[nbx](i, j, k) = beta_val;
+                        }
+                    });
+            }
+        } else if (m_ifacetype == InterfaceCapturingMethod::LS) {
+            const auto& levelset = m_repo.get_field("levelset");
+            for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
+                const auto& dx = m_repo.mesh().Geom(lev).CellSizeArray();
+                const auto& beta_arrs = (*beta)(lev).arrays();
+                const auto& phi_arrs = levelset(lev).const_arrays();
+                const amrex::Real eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
+                amrex::ParallelFor(
+                    (*beta)(lev), beta->num_grow(),
+                    [=] AMREX_GPU_DEVICE(
+                        int nbx, int i, int j, int k) noexcept {
+                        amrex::Real smooth_heaviside;
+                        if (phi_arrs[nbx](i, j, k) > eps) {
+                            smooth_heaviside = 1.0;
+                        } else if (phi_arrs[nbx](i, j, k) < -eps) {
+                            smooth_heaviside = 0.;
+                        } else {
+                            smooth_heaviside =
+                                0.5 *
+                                (1.0 + phi_arrs[nbx](i, j, k) / eps +
+                                 1.0 / M_PI *
+                                     std::sin(
+                                         phi_arrs[nbx](i, j, k) * M_PI / eps));
+                        }
+                        beta_arrs[nbx](i, j, k) =
+                            beta_val * (1 - smooth_heaviside);
+                    });
+            }
+        }
+        return beta;
+    }
+
+    inline amrex::Real reference_temperature() const override
+    {
+        return m_reference_temperature;
+    }
+
+    //! Return the reference temperature
+    inline std::unique_ptr<ScratchField> ref_theta() const override
+    {
+        amrex::Abort("ref temp not implemented");
+        auto ref_theta = m_repo.create_scratch_field(1, 1);
+        return ref_theta;
+    }
+
 private:
     //! Reference to the CFD sim
-    CFDSim& m_sim;
+    const CFDSim& m_sim;
 
     //! Reference to the field repository (for creating scratch fields)
     FieldRepo& m_repo;
@@ -245,6 +388,12 @@ private:
 
     //! Turbulent Prandtl number
     amrex::Real m_Prt{1.0};
+
+    //! Constant thermal expansion coefficient
+    amrex::Real m_constant_beta{0.0};
+
+    //! Reference temperature
+    amrex::Real m_reference_temperature{-1.0};
 };
 
 } // namespace amr_wind::transport

@@ -39,7 +39,6 @@ struct MOData
 
     amrex::Real surf_temp_flux{0.0}; ///< Heat flux
     amrex::Real surf_temp;           ///< Instantaneous surface temperature
-    amrex::Real ref_temp;            ///< Reference temperature
 
     amrex::Real gamma_m{5.0};
     amrex::Real gamma_h{5.0};
