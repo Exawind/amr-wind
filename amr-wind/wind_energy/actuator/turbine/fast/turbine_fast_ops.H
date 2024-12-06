@@ -183,11 +183,12 @@ determine_influenced_procs<TurbineFast>(typename TurbineFast::DataType& data)
     info.procs =
         utils::determine_influenced_procs(data.sim().mesh(), info.bound_box);
 
-    AMREX_ALWAYS_ASSERT(info.root_proc > -1);
-    // During regrid, the influenced processes might have changed and might
-    // no longer include the root proc. We insert it back to ensure that it
-    // is always present on the list.
-    info.procs.insert(info.root_proc);
+    if (info.root_proc > -1) {
+        // During regrid, the influenced processes might have changed and might
+        // no longer include the root proc. We insert it back to ensure that it
+        // is always present on the list.
+        info.procs.insert(info.root_proc);
+    }
 
     const int iproc = amrex::ParallelDescriptor::MyProc();
     auto in_proc = info.procs.find(iproc);
