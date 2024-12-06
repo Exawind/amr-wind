@@ -144,8 +144,8 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
     currtime = m_time.current_time();
     const auto& dt = m_time.delta_t();
 
-
-    const amrex::Real interpTflux = amr_wind::interp::linear(ncfile->meso_times(), ncfile->meso_tflux(), currtime);
+    const amrex::Real interpTflux = amr_wind::interp::linear(
+        ncfile->meso_times(), ncfile->meso_tflux(), currtime);
 
     if (m_forcing_scheme.empty()) {
         // no temperature profile assimilation
@@ -156,7 +156,9 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
 
     for (int i = 0; i < m_nht; i++) {
         const amrex::Real interpolated_theta = amr_wind::interp::bilinear(
-            ncfile->meso_times(), ncfile->meso_heights(), ncfile->meso_temp(), currtime, tavg.line_centroids()[i]);
+
+            ncfile->meso_times(), ncfile->meso_heights(), ncfile->meso_temp(),
+            currtime, tavg.line_centroids()[i]);
         error_T[i] = interpolated_theta - tavg.line_average()[i];
     }
 
@@ -169,10 +171,11 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
 
             amrex::Array<amrex::Real, 2> coeff_interp{0.0, 0.0};
 
-            const amrex::Real denom =
-                ncfile->meso_times()[m_idx_time + 1] - ncfile->meso_times()[m_idx_time];
+            const amrex::Real denom = ncfile->meso_times()[m_idx_time + 1] -
+                                      ncfile->meso_times()[m_idx_time];
 
-            coeff_interp[0] = (ncfile->meso_times()[m_idx_time + 1] - currtime) / denom;
+            coeff_interp[0] =
+                (ncfile->meso_times()[m_idx_time + 1] - currtime) / denom;
             coeff_interp[1] = 1.0 - coeff_interp[0];
             m_transition_height =
                 coeff_interp[0] * ncfile->meso_transition_height()[m_idx_time] +
