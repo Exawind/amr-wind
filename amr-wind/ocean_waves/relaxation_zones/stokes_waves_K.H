@@ -401,7 +401,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_waves(
                (b42 * std::cos(2. * phase) + b44 * std::cos(4. * phase)) +
            std::pow(eps, 5) *
                (-(b53 + b55) * std::cos(phase) + b53 * std::cos(3 * phase) +
-                b55 * std::cos(5 * phase))) +
+                b55 * std::cos(5 * phase))) /
+              wavenumber +
           zsl;
 
     // Compute cosines
