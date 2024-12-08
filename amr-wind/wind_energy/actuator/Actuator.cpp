@@ -64,7 +64,9 @@ void Actuator::pre_init_actions()
         pp.query("type", type);
         pp1.query("type", type);
         AMREX_ALWAYS_ASSERT(!type.empty());
-        cnt_turbfastline += (type == "TurbineFastLine") ? 1 : 0;
+        cnt_turbfastline +=
+            ((type == "TurbineFastLine") || (type == "TurbineFastDisk")) ? 1
+                                                                         : 0;
 
         auto obj = ActuatorModel::create(type, m_sim, tname, i);
 
