@@ -428,11 +428,8 @@ struct InitDataOp<W2AWaves>
         wdata.t_last = 0.0;
 
         // indvec is complete upon initialization (all heights every proc)
-        amrex::Vector<int> indvec;
-        indvec.resize(wdata.hvec.size());
-        for (int n = 0; n < indvec.size(); ++n) {
-            indvec[n] = n;
-        }
+        amrex::Vector<int> indvec(wdata.hvec.size());
+        std::iota(indvec.begin(), indvec.end(), 0);
         // Interpolate to MultiFabs (one level at a time)
         interp_to_mfab::interp_eta_to_levelset_multifab(
             wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, wdata.zsl,
