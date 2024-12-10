@@ -108,7 +108,6 @@ tagging.T1_level_3_zone.T1_level_3_zone.zaxis = 0.0 0.0 151.2
 #---- actuator defs ----
 Actuator.labels                          = T0 T1               
 Actuator.T0.type                         = TurbineFastLine     
-Actuator.T0.openfast_input_file          = nrel5mw.fst
 Actuator.T0.base_position                = 0.0 -250.0 -90.0    
 Actuator.T0.rotor_diameter               = 126.0               
 Actuator.T0.hub_height                   = 90.0                
@@ -127,7 +126,6 @@ Actuator.T0.output_frequency             = 1
 Actuator.T0.density                      = 1.225               
 Actuator.T0.num_blades                   = 3                   
 Actuator.T1.type                         = TurbineFastLine     
-Actuator.T1.openfast_input_file          = nrel5mw.fst
 Actuator.T1.base_position                = 0.0 250.0 -90.0     
 Actuator.T1.rotor_diameter               = 126.0               
 Actuator.T1.hub_height                   = 90.0                
