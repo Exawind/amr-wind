@@ -323,6 +323,44 @@ if(AMR_WIND_ENABLE_W2A)
   add_test_re(abl_multiphase_w2a)
 endif()
 
+if(AMR_WIND_ENABLE_OPENFAST)
+  set(ACT_UNIFORM_ALM_TEST_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test_files/act_uniform_alm)
+  set(ACT_UNIFORM_ALM_TEST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/test_files/act_uniform_alm)
+  set(RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR ${ACT_UNIFORM_ALM_TEST_BINARY_DIR}/r-test)
+  set(5MW_BASELINE_DIR glue-codes/openfast/5MW_Baseline)
+  set(5MW_LAND_DIR glue-codes/openfast-cpp/5MW_Land_DLL_WTurb_cpp)
+  set(AERO_FILE NRELOffshrBsline5MW_Onshore_AeroDyn15.dat)
+  set(ELASTO_FILE NRELOffshrBsline5MW_Onshore_ElastoDyn.dat)
+  set(SERVO_FILE NRELOffshrBsline5MW_Onshore_ServoDyn.dat)
+  file(MAKE_DIRECTORY ${ACT_UNIFORM_ALM_TEST_BINARY_DIR})
+  if(NOT EXISTS "${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}")
+    execute_process(
+      COMMAND bash -c "${GIT_EXECUTABLE} clone -n --depth=1 --filter=tree:0 git@github.com:OpenFAST/r-test.git"
+      WORKING_DIRECTORY
+      "${ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
+      COMMAND bash -c "${GIT_EXECUTABLE} sparse-checkout set --no-cone ${5MW_BASELINE_DIR} ${5MW_LAND_DIR}"
+      WORKING_DIRECTORY
+      "${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
+      COMMAND bash -c "${GIT_EXECUTABLE} checkout"
+      WORKING_DIRECTORY
+      "${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
+      COMMAND bash -c "${GIT_EXECUTABLE} apply ${ACT_UNIFORM_ALM_TEST_SOURCE_DIR}/custom_openfast_options.patch"
+      WORKING_DIRECTORY
+      "${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+  endif()
+  add_test_re(act_uniform_alm)
+  if(AMR_WIND_ENABLE_NETCDF)
+    add_test_red(act_uniform_alm_restart act_uniform_alm)
+  endif()
+endif()
+
 #=============================================================================
 # Regression tests excluded from CI with a test dependency
 #=============================================================================
