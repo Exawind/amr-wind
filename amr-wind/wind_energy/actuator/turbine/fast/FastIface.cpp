@@ -202,6 +202,7 @@ void FastIface::init_turbine(const int local_id)
 
     case SimMode::restart: {
         fast_restart_turbine(fi);
+        prepare_netcdf_file(fi);
         break;
     }
     }
@@ -367,6 +368,12 @@ void FastIface::prepare_netcdf_file(FastTurbine& fi)
     }
 
     const std::string fname = m_output_dir + "/" + fi.tlabel + ".nc";
+
+    // Don't overwrite existing
+    if (amrex::FileSystem::Exists(fname)) {
+        return;
+    }
+
     auto ncf = ncutils::NCFile::create(fname, NC_CLOBBER | NC_NETCDF4);
     const std::string nt_name = "num_time_steps";
     const std::string np_name = "num_vel_points";
