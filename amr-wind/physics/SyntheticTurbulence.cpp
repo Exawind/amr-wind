@@ -250,7 +250,7 @@ void get_lr_indices(
  *  \param il Index of the lower bound (populated by this function)
  *  \param ir Index of the upper bound (populated by this function)
  */
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE void get_lr_indices(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void get_lr_indices(
     const SynthTurbDeviceData& turb_grid,
     const int dir,
     const amrex::Real xin,

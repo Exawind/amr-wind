@@ -25,7 +25,7 @@ AMREX_FORCE_INLINE amrex::IntVect offset(const int face_dir, const int normal)
 }
 
 #ifdef AMR_WIND_USE_NETCDF
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE int
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE int
 plane_idx(const int i, const int j, const int k, const int perp, const int lo)
 {
     return (static_cast<int>(perp == 0) * i + static_cast<int>(perp == 1) * j +

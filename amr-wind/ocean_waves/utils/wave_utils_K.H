@@ -45,7 +45,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real gamma_absorb(
     return (1.0 - std::expm1(std::pow(xtilde, 3.5)) / std::expm1(1.0));
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
 ramp(const amrex::Real time, const amrex::Real ramp_period)
 {
     amrex::Real f = 1.0;

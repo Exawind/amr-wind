@@ -128,7 +128,7 @@ linear_basis_1d(const amrex::Real distance, const amrex::Real dX)
     return amrex::max(0.0, 1.0 - distance / dX) / dX;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE vs::Vector compute_tangential_vector(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE vs::Vector compute_tangential_vector(
     const vs::Vector& center, const vs::Vector& normal, const vs::Vector& point)
 {
     const auto blade_axis = (point - center).normalize();

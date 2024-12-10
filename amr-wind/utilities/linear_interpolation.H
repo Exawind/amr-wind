@@ -19,7 +19,7 @@ struct Index
 };
 
 template <typename It, typename T>
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE Index
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Index
 check_bounds(const It begin, const It end, const T& x)
 {
     const int sz = static_cast<int>(end - begin);

@@ -18,7 +18,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE T dot_prod(const T* x, const T* y)
 /** Return the magnitude of a 3-D vector
  */
 template <typename T>
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE T vec_mag(const T* x)
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T vec_mag(const T* x)
 {
     return std::sqrt(dot_prod(x, x));
 }
@@ -26,7 +26,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE T vec_mag(const T* x)
 /** Convert a given vector to a unit vector
  */
 template <typename T>
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE void vec_normalize(T* x)
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void vec_normalize(T* x)
 {
     static_assert(
         AMREX_SPACEDIM == 3, "Vector ops only defined for AMREX_SPACEDIM == 3");
@@ -50,7 +50,7 @@ dot_prod(const T* x, const T* y, const int ndim)
 /** Compute the cross product of two vectors `a`, `b` and update `c`
  */
 template <typename T>
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE void
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void
 cross_prod(const T* a, const T* b, T* c)
 {
     static_assert(

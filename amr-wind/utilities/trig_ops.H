@@ -28,14 +28,14 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE constexpr amrex::Real half_pi()
 }
 
 //! Convert from degrees to radians
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
 radians(const amrex::Real deg_val)
 {
     return pi() * deg_val / 180.0;
 }
 
 //! Convert from radians to degrees
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
 degrees(const amrex::Real rad_val)
 {
     return 180.0 * rad_val / pi();
