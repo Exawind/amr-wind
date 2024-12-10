@@ -76,7 +76,7 @@ hypre.num_krylov = 20
 hypre.bamg_max_levels = 4
 hypre.bamg_num_sweeps = 2
 hypre.bamg_relax_order = 0
-hypre.bamg_coarsen_type: 8
-hypre.bamg_interp_type: 6
-hypre.bamg_relax_type: 18
-hypre.bamg_cycle_type: 1
+hypre.bamg_coarsen_type = 8
+hypre.bamg_interp_type = 6
+hypre.bamg_relax_type = 18
+hypre.bamg_cycle_type = 1
