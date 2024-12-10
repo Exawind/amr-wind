@@ -70,7 +70,7 @@ amrex::Real filtering_test_impl(amr_wind::Field& scalar, const int pdegree)
 
         error_total += amrex::ReduceSum(
             (*filtered_scalar)(lev), 0,
-            [=] AMREX_GPU_HOST_DEVICE(
+            [=] AMREX_GPU_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& filter_arr)
                 -> amrex::Real {

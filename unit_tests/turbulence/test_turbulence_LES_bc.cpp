@@ -18,7 +18,7 @@ amrex::Real get_val_at_kindex(
 
     error_total += amrex::ReduceSum(
         field(lev), divisor(lev), 0,
-        [=] AMREX_GPU_HOST_DEVICE(
+        [=] AMREX_GPU_DEVICE(
             amrex::Box const& bx, amrex::Array4<amrex::Real const> const& f_arr,
             amrex::Array4<amrex::Real const> const& div_arr) -> amrex::Real {
             amrex::Real error = 0;

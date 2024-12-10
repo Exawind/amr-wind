@@ -5,7 +5,7 @@
 
 namespace amr_wind {
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
 GaussianPulseFV::operator()(
     const amrex::Real x,
     const amrex::Real /*unused*/,
@@ -29,7 +29,7 @@ GaussianPulseFV::operator()(
     return val;
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
 TwoDimGaussianPulseFV::operator()(
     const amrex::Real x,
     const amrex::Real y,
@@ -55,7 +55,7 @@ TwoDimGaussianPulseFV::operator()(
     return val;
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real SquarePulseFV::operator()(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real SquarePulseFV::operator()(
     const amrex::Real x,
     const amrex::Real /*unused*/,
     const amrex::Real dx,
@@ -77,7 +77,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real SquarePulseFV::operator()(
     return val;
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
 GaussianWavePacketFV::operator()(
     const amrex::Real x,
     const amrex::Real /*unused*/,
@@ -107,7 +107,7 @@ GaussianWavePacketFV::operator()(
     return cell_integral / 2;
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
 GaussianWavePacket::operator()(
     const amrex::Real x,
     const amrex::Real x0,
@@ -276,7 +276,7 @@ ScalarAdvection::compute_error(const Shape& scalar_function)
         amrex::Real err_lev = amrex::ParReduce(
             amrex::TypeList<amrex::ReduceOpSum>{},
             amrex::TypeList<amrex::Real>{}, scalar, amrex::IntVect(0),
-            [=] AMREX_GPU_HOST_DEVICE(int box_no, int i, int j, int k)
+            [=] AMREX_GPU_DEVICE(int box_no, int i, int j, int k)
                 -> amrex::GpuTuple<amrex::Real> {
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                 const amrex::Real y = problo[1] + (j + 0.5) * dx[1];

@@ -48,7 +48,7 @@ amrex::Real get_field_err(
 
     error_total += amrex::ReduceSum(
         field(lev), field(lev).nGrow(),
-        [=] AMREX_GPU_HOST_DEVICE(
+        [=] AMREX_GPU_DEVICE(
             amrex::Box const& bx,
             amrex::Array4<amrex::Real const> const& f_arr) -> amrex::Real {
             amrex::Real error = 0;

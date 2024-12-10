@@ -85,7 +85,7 @@ inline amrex::Box face_aware_boundary_box_intersection(
 }
 
 //! Check if a point is inside a box
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool contains(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE bool contains(
     const amrex::Box& box,
     const amrex::RealVect& pos,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& prob_lo,

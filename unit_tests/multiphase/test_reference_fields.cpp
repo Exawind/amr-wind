@@ -20,7 +20,7 @@ amrex::Real density_test_impl(
 
         error_total += amrex::ReduceSum(
             rho0(lev), 0,
-            [=] AMREX_GPU_HOST_DEVICE(
+            [=] AMREX_GPU_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& rho0_arr)
                 -> amrex::Real {
@@ -63,7 +63,7 @@ amrex::Real pressure_test_impl(
 
         error_total += amrex::ReduceSum(
             p0(lev), ngrow,
-            [=] AMREX_GPU_HOST_DEVICE(
+            [=] AMREX_GPU_DEVICE(
                 amrex::Box const& nbx,
                 amrex::Array4<amrex::Real const> const& p0_arr) -> amrex::Real {
                 amrex::Real error = 0;

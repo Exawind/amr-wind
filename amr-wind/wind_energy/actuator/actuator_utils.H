@@ -39,7 +39,7 @@ void determine_root_proc(
  *
  *  \return Gaussian smearing factor in 3D
  */
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
 gaussian3d(const vs::Vector& dist, const vs::Vector& eps)
 {
     const vs::Vector rr{
@@ -64,7 +64,7 @@ gaussian3d(const vs::Vector& dist, const vs::Vector& eps)
  *
  *  \return Gaussian smearing factor in 1D
  */
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
 gaussian1d(const amrex::Real& dist, const amrex::Real& eps)
 {
     const amrex::Real fac = 0.5641895835477563;
@@ -83,7 +83,7 @@ gaussian1d(const amrex::Real& dist, const amrex::Real& eps)
  * @return distance between points in cylindrical coordinates
  * (angle is in radians)
  */
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE vs::Vector delta_pnts_cyl(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE vs::Vector delta_pnts_cyl(
     const vs::Vector& origin,
     const vs::Vector& normal,
     const vs::Vector& point1,
@@ -122,13 +122,13 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE vs::Vector delta_pnts_cyl(
  * \param dX spacing between reference points
  * @return normalized integration weight at the sample location
  */
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
 linear_basis_1d(const amrex::Real distance, const amrex::Real dX)
 {
     return amrex::max(0.0, 1.0 - distance / dX) / dX;
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE vs::Vector compute_tangential_vector(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE vs::Vector compute_tangential_vector(
     const vs::Vector& center, const vs::Vector& normal, const vs::Vector& point)
 {
     const auto blade_axis = (point - center).normalize();

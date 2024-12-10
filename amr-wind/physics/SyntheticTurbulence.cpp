@@ -20,7 +20,7 @@ struct LinearShearOp
     const amrex::Real m_vstart;
     const amrex::Real m_vstop;
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
     operator()(amrex::Real ht) const
     {
         amrex::Real vel =
@@ -61,7 +61,7 @@ struct PowerLawOp
     const amrex::Real m_umin;
     const amrex::Real m_umax;
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
     operator()(amrex::Real height) const
     {
         const amrex::Real heff = height - m_hoffset;
@@ -250,7 +250,7 @@ void get_lr_indices(
  *  \param il Index of the lower bound (populated by this function)
  *  \param ir Index of the upper bound (populated by this function)
  */
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void get_lr_indices(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE void get_lr_indices(
     const SynthTurbDeviceData& turb_grid,
     const int dir,
     const amrex::Real xin,
@@ -280,7 +280,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void get_lr_indices(
  *
  *  @return True if the point is inside the 2-D box
  */
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool find_point_in_box(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE bool find_point_in_box(
     const SynthTurbDeviceData& t_grid, const vs::Vector& pt, InterpWeights& wt)
 {
     // Get y and z w.r.t. the lower corner of the grid
@@ -300,7 +300,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool find_point_in_box(
 
 /** Interpolate the perturbation velocity to a given point from the grid data
  */
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void interp_perturb_vel(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE void interp_perturb_vel(
     const SynthTurbDeviceData& t_grid, const InterpWeights& wt, vs::Vector& vel)
 {
     const int nz = t_grid.box_dims[2];

@@ -57,7 +57,7 @@ amrex::Real KineticEnergy::calculate_kinetic_energy()
 
         Kinetic_energy += amrex::ReduceSum(
             m_density(lev), m_velocity(lev), level_mask, 0,
-            [=] AMREX_GPU_HOST_DEVICE(
+            [=] AMREX_GPU_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& den_arr,
                 amrex::Array4<amrex::Real const> const& vel_arr,

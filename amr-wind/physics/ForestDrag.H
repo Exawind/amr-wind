@@ -22,7 +22,7 @@ struct Forest
     amrex::Real m_lai_forest;
     amrex::Real m_laimax_forest;
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real lm() const
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real lm() const
     {
         amrex::Real treelaimax = 0.0;
         if (m_type_forest == 2) {
@@ -42,7 +42,7 @@ struct Forest
         return treelaimax;
     }
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
     area_fraction(const amrex::Real z, const amrex::Real treelaimax) const
     {
         amrex::Real af = 0.0;
@@ -59,7 +59,7 @@ struct Forest
         return af;
     }
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::RealBox real_bounding_box(
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::RealBox real_bounding_box(
         const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& prob_lo) const
     {
         const amrex::Real search_tol = 1.1;
@@ -73,7 +73,7 @@ struct Forest
         return {x0, y0, z0, x1, y1, z1};
     }
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Box
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Box
     bounding_box(const amrex::Geometry& geom) const
     {
         return utils::realbox_to_box(

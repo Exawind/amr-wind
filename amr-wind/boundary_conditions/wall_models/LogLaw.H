@@ -29,7 +29,7 @@ struct LogLaw
 
     void update_utau_mean() { utau_mean = get_utau(wspd_mean); }
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
     get_utau(amrex::Real wspd) const
     {
         amrex::Real utau_iter = -1;

@@ -19,7 +19,7 @@ struct Index
 };
 
 template <typename It, typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Index
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE Index
 check_bounds(const It begin, const It end, const T& x)
 {
     const int sz = static_cast<int>(end - begin);
@@ -35,7 +35,7 @@ check_bounds(const It begin, const It end, const T& x)
 }
 
 template <typename It, typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Index
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE Index
 bisection_search(const It begin, const It end, const T& x)
 {
     auto idx = check_bounds(begin, end, x);
@@ -62,7 +62,7 @@ bisection_search(const It begin, const It end, const T& x)
 }
 
 template <typename It, typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Index
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE Index
 nearest_search(const It begin, const It end, const T& x)
 {
 
@@ -79,7 +79,7 @@ nearest_search(const It begin, const It end, const T& x)
 }
 
 template <typename It, typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Index
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE Index
 find_index(const It begin, const It end, const T& x, const int hint = 1)
 {
     auto idx = check_bounds(begin, end, x);
@@ -97,7 +97,7 @@ find_index(const It begin, const It end, const T& x, const int hint = 1)
 }
 
 template <typename C1, typename C2>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE
     typename std::iterator_traits<C2>::value_type
     linear_impl(
         const C1 xbegin,
@@ -121,7 +121,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
 }
 
 template <typename C1, typename C2>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE
     typename std::iterator_traits<C2>::value_type
     linear(
         const C1 xbegin,
@@ -208,7 +208,7 @@ inline void linear(
 // Angles in yinp should be defined between [-upper_bound, +upper_bound]
 // Use cases would be degrees (upper_bound =360) and radians (upper_bound =2pi)
 template <typename C1, typename C2>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE
     typename std::iterator_traits<C2>::value_type
     linear_angle(
         const C1 xbegin,
@@ -271,7 +271,7 @@ inline void linear_angle(
 }
 
 template <typename C1, typename C2>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE
     typename std::iterator_traits<C2>::value_type
     bilinear_impl(
         const C1 xbegin,
@@ -311,7 +311,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
 }
 
 template <typename C1, typename C2>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE
     typename std::iterator_traits<C2>::value_type
     bilinear(
         const C1 xbegin,

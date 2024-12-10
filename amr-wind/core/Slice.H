@@ -34,31 +34,31 @@ struct Slice
 
     explicit Slice(T* pbegin, T* pend) : ptr_begin(pbegin), ptr_end(pend) {}
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE reference
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE reference
     operator[](const size_t idx)
     {
         return *(ptr_begin + idx);
     }
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const_reference
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE const_reference
     operator[](const size_type idx) const
     {
         return *(ptr_begin + idx);
     }
 
-    AMREX_GPU_HOST_DEVICE size_type size() const
+    AMREX_GPU_DEVICE size_type size() const
     {
         return (ptr_end - ptr_begin);
     }
 
-    AMREX_GPU_HOST_DEVICE pointer data() { return ptr_begin; }
-    AMREX_GPU_HOST_DEVICE iterator begin() { return ptr_begin; }
-    AMREX_GPU_HOST_DEVICE iterator end() { return ptr_end; }
-    AMREX_GPU_HOST_DEVICE const_iterator data() const { return ptr_begin; }
-    AMREX_GPU_HOST_DEVICE const_iterator begin() const { return ptr_begin; }
-    AMREX_GPU_HOST_DEVICE const_iterator end() const { return ptr_end; }
-    AMREX_GPU_HOST_DEVICE const_iterator cbegin() const { return ptr_begin; }
-    AMREX_GPU_HOST_DEVICE const_iterator cend() const { return ptr_end; }
+    AMREX_GPU_DEVICE pointer data() { return ptr_begin; }
+    AMREX_GPU_DEVICE iterator begin() { return ptr_begin; }
+    AMREX_GPU_DEVICE iterator end() { return ptr_end; }
+    AMREX_GPU_DEVICE const_iterator data() const { return ptr_begin; }
+    AMREX_GPU_DEVICE const_iterator begin() const { return ptr_begin; }
+    AMREX_GPU_DEVICE const_iterator end() const { return ptr_end; }
+    AMREX_GPU_DEVICE const_iterator cbegin() const { return ptr_begin; }
+    AMREX_GPU_DEVICE const_iterator cend() const { return ptr_end; }
 };
 
 template <typename T>

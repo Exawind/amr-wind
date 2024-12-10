@@ -9,7 +9,7 @@
 #include <AMReX_REAL.H>
 
 namespace {
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
 analytical_smagorinsky_profile(
     const amrex::Real h,
     const amrex::Real Cs,

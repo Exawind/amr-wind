@@ -11,12 +11,12 @@ namespace {
 
 struct UExact
 {
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
     operator()(amrex::Real /*v0*/, amrex::Real /*a*/, amrex::Real /*z*/) const;
     const int m_comp{0};
 };
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real UExact::operator()(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real UExact::operator()(
     const amrex::Real v0, const amrex::Real a, const amrex::Real z) const
 {
     return v0 * (1.0 - std::exp(-a * z) * std::cos(-a * z));
@@ -24,12 +24,12 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real UExact::operator()(
 
 struct VExact
 {
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
     operator()(amrex::Real /*v0*/, amrex::Real /*a*/, amrex::Real /*z*/) const;
     const int m_comp{1};
 };
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real VExact::operator()(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real VExact::operator()(
     const amrex::Real v0, const amrex::Real a, const amrex::Real z) const
 {
     return -v0 * std::exp(-a * z) * std::sin(-a * z);
@@ -161,7 +161,7 @@ amrex::Real EkmanSpiral::compute_error(const Field& field)
         const auto& fld = field(lev);
         error += amrex::ReduceSum(
             fld, level_mask, 0,
-            [=] AMREX_GPU_HOST_DEVICE(
+            [=] AMREX_GPU_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& fld_arr,
                 amrex::Array4<int const> const& mask_arr) -> amrex::Real {

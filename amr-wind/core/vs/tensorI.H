@@ -8,7 +8,7 @@
 namespace amr_wind::vs {
 
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE TensorT<T>::TensorT(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE TensorT<T>::TensorT(
     const VectorT<T>& x,
     const VectorT<T>& y,
     const VectorT<T>& z,
@@ -22,7 +22,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE TensorT<T>::TensorT(
 }
 
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void TensorT<T>::rows(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE void TensorT<T>::rows(
     const VectorT<T>& x, const VectorT<T>& y, const VectorT<T>& z) noexcept
 {
     // clang-format off
@@ -33,7 +33,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void TensorT<T>::rows(
 }
 
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void TensorT<T>::cols(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE void TensorT<T>::cols(
     const VectorT<T>& x, const VectorT<T>& y, const VectorT<T>& z) noexcept
 {
     // clang-format off
@@ -45,42 +45,42 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void TensorT<T>::cols(
 
 // clang-format off
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE
 VectorT<T> TensorT<T>::x() const noexcept
 {
     return VectorT<T>{vv[0], vv[1], vv[2]};
 }
 
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE
 VectorT<T> TensorT<T>::y() const noexcept
 {
     return VectorT<T>{vv[3], vv[4], vv[5]};
 }
 
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE
 VectorT<T> TensorT<T>::z() const noexcept
 {
     return VectorT<T>{vv[6], vv[7], vv[8]};
 }
 
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE
 VectorT<T> TensorT<T>::cx() const noexcept
 {
     return VectorT<T>{vv[0], vv[3], vv[6]};
 }
 
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE
 VectorT<T> TensorT<T>::cy() const noexcept
 {
     return VectorT<T>{vv[1], vv[4], vv[7]};
 }
 
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE
 VectorT<T> TensorT<T>::cz() const noexcept
 {
     return VectorT<T>{vv[2], vv[5], vv[8]};
@@ -99,7 +99,7 @@ OStream& operator<<(OStream& out, const TensorT<T>& t)
 }
 
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T>
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE VectorT<T>
 operator&(const TensorT<T>& t, const VectorT<T>& v)
 {
     VectorT<T> out;
@@ -110,7 +110,7 @@ operator&(const TensorT<T>& t, const VectorT<T>& v)
 }
 
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T>
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE VectorT<T>
 operator&(const VectorT<T>& v, const TensorT<T>& t)
 {
     VectorT<T> out;
@@ -121,7 +121,7 @@ operator&(const VectorT<T>& v, const TensorT<T>& t)
 }
 
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE TensorT<T>
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE TensorT<T>
 operator&(const TensorT<T>& t1, const TensorT<T>& t2)
 {
     TensorT<T> t3;
@@ -142,7 +142,7 @@ operator&(const TensorT<T>& t1, const TensorT<T>& t2)
 }
 
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE TensorT<T>
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE TensorT<T>
 operator+(const TensorT<T>& t1, const TensorT<T>& t2)
 {
     return TensorT<T>{
@@ -152,7 +152,7 @@ operator+(const TensorT<T>& t1, const TensorT<T>& t2)
 }
 
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE TensorT<T>
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE TensorT<T>
 operator-(const TensorT<T>& t1, const TensorT<T>& t2)
 {
     return TensorT<T>{
@@ -162,7 +162,7 @@ operator-(const TensorT<T>& t1, const TensorT<T>& t2)
 }
 
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE T
 operator&&(const TensorT<T>& t1, const TensorT<T>& t2)
 {
     return (
@@ -172,19 +172,19 @@ operator&&(const TensorT<T>& t1, const TensorT<T>& t2)
 }
 
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T mag_sqr(const TensorT<T>& t)
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE T mag_sqr(const TensorT<T>& t)
 {
     // cppcheck-suppress duplicateExpression
     return (t && t);
 }
 
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T mag(const TensorT<T>& t)
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE T mag(const TensorT<T>& t)
 {
     return std::sqrt(mag_sqr(t));
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Tensor xrot(const amrex::Real angle)
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE Tensor xrot(const amrex::Real angle)
 {
     const amrex::Real ang = utils::radians(angle);
     const amrex::Real cval = std::cos(ang);
@@ -193,7 +193,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Tensor xrot(const amrex::Real angle)
     return Tensor{1.0, 0.0, 0.0, 0.0, cval, sval, 0.0, -sval, cval};
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Tensor yrot(const amrex::Real angle)
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE Tensor yrot(const amrex::Real angle)
 {
     const amrex::Real ang = utils::radians(angle);
     const amrex::Real cval = std::cos(ang);
@@ -202,7 +202,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Tensor yrot(const amrex::Real angle)
     return Tensor{cval, 0.0, -sval, 0.0, 1.0, 0.0, sval, 0.0, cval};
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Tensor zrot(const amrex::Real angle)
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE Tensor zrot(const amrex::Real angle)
 {
     const amrex::Real ang = utils::radians(angle);
     const amrex::Real cval = std::cos(ang);
@@ -211,7 +211,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Tensor zrot(const amrex::Real angle)
     return Tensor{cval, sval, 0.0, -sval, cval, 0.0, 0.0, 0.0, 1.0};
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Tensor
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE Tensor
 quaternion(const Vector& axis, const amrex::Real angle)
 {
     const amrex::Real ang = -1.0 * utils::radians(angle);

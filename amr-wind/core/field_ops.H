@@ -410,7 +410,7 @@ inline amrex::Real global_max_magnitude(FType& field)
         amrex::Real maxglobal_lev = 0.0;
         maxglobal_lev = amrex::ReduceMax(
             field(lev), 0.,
-            [=] AMREX_GPU_HOST_DEVICE(
+            [=] AMREX_GPU_DEVICE(
                 amrex::Box const& b,
                 amrex::Array4<amrex::Real const> const& field_arr)
                 -> amrex::Real {

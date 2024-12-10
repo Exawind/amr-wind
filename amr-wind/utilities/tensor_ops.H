@@ -8,7 +8,7 @@ namespace amr_wind::utils {
 /** Compute the dot product of two vectors
  */
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T dot_prod(const T* x, const T* y)
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE T dot_prod(const T* x, const T* y)
 {
     static_assert(
         AMREX_SPACEDIM == 3, "Vector ops only defined for AMREX_SPACEDIM == 3");
@@ -18,7 +18,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T dot_prod(const T* x, const T* y)
 /** Return the magnitude of a 3-D vector
  */
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T vec_mag(const T* x)
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE T vec_mag(const T* x)
 {
     return std::sqrt(dot_prod(x, x));
 }
@@ -26,7 +26,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T vec_mag(const T* x)
 /** Convert a given vector to a unit vector
  */
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void vec_normalize(T* x)
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE void vec_normalize(T* x)
 {
     static_assert(
         AMREX_SPACEDIM == 3, "Vector ops only defined for AMREX_SPACEDIM == 3");
@@ -37,7 +37,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void vec_normalize(T* x)
 }
 
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE T
 dot_prod(const T* x, const T* y, const int ndim)
 {
     T sum = 0.0;
@@ -50,7 +50,7 @@ dot_prod(const T* x, const T* y, const int ndim)
 /** Compute the cross product of two vectors `a`, `b` and update `c`
  */
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE void
 cross_prod(const T* a, const T* b, T* c)
 {
     static_assert(
@@ -63,7 +63,7 @@ cross_prod(const T* a, const T* b, T* c)
 /** Compute the transformation `{y} = [A] {x}`
  */
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void transform_vec(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE void transform_vec(
     const amrex::Array2D<T, 0, AMREX_SPACEDIM, 0, AMREX_SPACEDIM>& tmat,
     const T* x,
     T* y)
@@ -78,7 +78,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void transform_vec(
 /** Compute the transformation `{y} = {x}^T [A]`
  */
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void inv_transform_vec(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE void inv_transform_vec(
     const amrex::Array2D<T, 0, AMREX_SPACEDIM, 0, AMREX_SPACEDIM>& tmat,
     const T* x,
     T* y)
