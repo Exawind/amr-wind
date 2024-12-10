@@ -8,7 +8,7 @@ namespace amr_wind::ocean_waves::utils {
 
 using WaveVec = amrex::GpuArray<amrex::Real, 4>;
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real free_surface_to_vof(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real free_surface_to_vof(
     const amrex::Real eta, const amrex::Real z, const amrex::Real dz)
 {
     amrex::Real volfrac = 0.0;
@@ -27,7 +27,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real free_surface_to_vof(
     return volfrac;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
 gamma_generate(const amrex::Real x, const amrex::Real gen_length)
 {
     const amrex::Real xtilde =
@@ -35,7 +35,7 @@ gamma_generate(const amrex::Real x, const amrex::Real gen_length)
     return (1.0 - std::expm1(std::pow(xtilde, 3.5)) / std::expm1(1.0));
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real gamma_absorb(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real gamma_absorb(
     const amrex::Real x,
     const amrex::Real absorb_length,
     const amrex::Real absorb_length_factor)
@@ -56,7 +56,7 @@ ramp(const amrex::Real time, const amrex::Real ramp_period)
     return f;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real combine_linear(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real combine_linear(
     const amrex::Real factor,
     const amrex::Real target,
     const amrex::Real current)
@@ -64,7 +64,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real combine_linear(
     return (1. - factor) * target + factor * current;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE WaveVec harmonize_profiles_1d(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE WaveVec harmonize_profiles_1d(
     const amrex::Real x,
     const amrex::Real left_bdy,
     const amrex::Real left_length,

@@ -16,7 +16,7 @@ struct MOSD
     amrex::Real omega{0.8};
     amrex::Real time;
 
-    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real get_dyn_tau(
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real get_dyn_tau(
         const amrex::Real u_dx,
         const amrex::Real v_dx,
         const amrex::Real xc,

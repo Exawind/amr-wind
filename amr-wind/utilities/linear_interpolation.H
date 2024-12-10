@@ -35,7 +35,7 @@ check_bounds(const It begin, const It end, const T& x)
 }
 
 template <typename It, typename T>
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE Index
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Index
 bisection_search(const It begin, const It end, const T& x)
 {
     auto idx = check_bounds(begin, end, x);
@@ -62,7 +62,7 @@ bisection_search(const It begin, const It end, const T& x)
 }
 
 template <typename It, typename T>
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE Index
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Index
 nearest_search(const It begin, const It end, const T& x)
 {
 
@@ -79,7 +79,7 @@ nearest_search(const It begin, const It end, const T& x)
 }
 
 template <typename It, typename T>
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE Index
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Index
 find_index(const It begin, const It end, const T& x, const int hint = 1)
 {
     auto idx = check_bounds(begin, end, x);

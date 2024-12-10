@@ -122,7 +122,7 @@ AMREX_FORCE_INLINE amrex::Real stokes_wave_length(
     return 2.0 * M_PI / k;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
     int StokesOrder,
     amrex::Real wavenumber,
     amrex::Real waterdepth,

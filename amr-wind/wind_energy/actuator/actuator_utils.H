@@ -83,7 +83,7 @@ gaussian1d(const amrex::Real& dist, const amrex::Real& eps)
  * @return distance between points in cylindrical coordinates
  * (angle is in radians)
  */
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE vs::Vector delta_pnts_cyl(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE vs::Vector delta_pnts_cyl(
     const vs::Vector& origin,
     const vs::Vector& normal,
     const vs::Vector& point1,

@@ -271,7 +271,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE void mixed_youngs_central_normal(
 /* Computes alpha: m1*x1 + m2* x2 + m3*x3 = alpha
  * given that m1+m2+m3=1 (m1,m2,m3>0) and the volumetric fraction volF
  */
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
     const amrex::Real b1,
     const amrex::Real b2,
     const amrex::Real b3,
