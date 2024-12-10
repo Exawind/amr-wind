@@ -20,8 +20,7 @@ struct DirectionSelector
 template <>
 struct DirectionSelector<0>
 {
-    AMREX_GPU_DEVICE int
-    operator()(int i, int /*unused*/, int /*unused*/) const
+    AMREX_GPU_DEVICE int operator()(int i, int /*unused*/, int /*unused*/) const
     {
         return i;
     };
@@ -32,8 +31,7 @@ struct DirectionSelector<0>
 template <>
 struct DirectionSelector<1>
 {
-    AMREX_GPU_DEVICE int
-    operator()(int /*unused*/, int j, int /*unused*/) const
+    AMREX_GPU_DEVICE int operator()(int /*unused*/, int j, int /*unused*/) const
     {
         return j;
     };
@@ -44,8 +42,7 @@ struct DirectionSelector<1>
 template <>
 struct DirectionSelector<2>
 {
-    AMREX_GPU_DEVICE int
-    operator()(int /*unused*/, int /*unused*/, int k) const
+    AMREX_GPU_DEVICE int operator()(int /*unused*/, int /*unused*/, int k) const
     {
         return k;
     };

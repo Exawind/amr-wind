@@ -129,10 +129,7 @@ struct VectorT
         return vv[pos];
     }
 
-    AMREX_GPU_DEVICE AMREX_FORCE_INLINE T* data() noexcept
-    {
-        return vv.data();
-    }
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE T* data() noexcept { return vv.data(); }
     AMREX_GPU_DEVICE AMREX_FORCE_INLINE const T* data() const noexcept
     {
         return vv.data();

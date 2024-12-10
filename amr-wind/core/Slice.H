@@ -34,8 +34,7 @@ struct Slice
 
     explicit Slice(T* pbegin, T* pend) : ptr_begin(pbegin), ptr_end(pend) {}
 
-    AMREX_GPU_DEVICE AMREX_FORCE_INLINE reference
-    operator[](const size_t idx)
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE reference operator[](const size_t idx)
     {
         return *(ptr_begin + idx);
     }
@@ -46,10 +45,7 @@ struct Slice
         return *(ptr_begin + idx);
     }
 
-    AMREX_GPU_DEVICE size_type size() const
-    {
-        return (ptr_end - ptr_begin);
-    }
+    AMREX_GPU_DEVICE size_type size() const { return (ptr_end - ptr_begin); }
 
     AMREX_GPU_DEVICE pointer data() { return ptr_begin; }
     AMREX_GPU_DEVICE iterator begin() { return ptr_begin; }

@@ -82,44 +82,17 @@ struct TensorT
     AMREX_GPU_DEVICE AMREX_FORCE_INLINE VectorT<T> cy() const noexcept;
     AMREX_GPU_DEVICE AMREX_FORCE_INLINE VectorT<T> cz() const noexcept;
 
-    AMREX_GPU_DEVICE AMREX_FORCE_INLINE T& xx() & noexcept
-    {
-        return vv[0];
-    }
-    AMREX_GPU_DEVICE AMREX_FORCE_INLINE T& xy() & noexcept
-    {
-        return vv[1];
-    }
-    AMREX_GPU_DEVICE AMREX_FORCE_INLINE T& xz() & noexcept
-    {
-        return vv[2];
-    }
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE T& xx() & noexcept { return vv[0]; }
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE T& xy() & noexcept { return vv[1]; }
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE T& xz() & noexcept { return vv[2]; }
 
-    AMREX_GPU_DEVICE AMREX_FORCE_INLINE T& yx() & noexcept
-    {
-        return vv[3];
-    }
-    AMREX_GPU_DEVICE AMREX_FORCE_INLINE T& yy() & noexcept
-    {
-        return vv[4];
-    }
-    AMREX_GPU_DEVICE AMREX_FORCE_INLINE T& yz() & noexcept
-    {
-        return vv[5];
-    }
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE T& yx() & noexcept { return vv[3]; }
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE T& yy() & noexcept { return vv[4]; }
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE T& yz() & noexcept { return vv[5]; }
 
-    AMREX_GPU_DEVICE AMREX_FORCE_INLINE T& zx() & noexcept
-    {
-        return vv[6];
-    }
-    AMREX_GPU_DEVICE AMREX_FORCE_INLINE T& zy() & noexcept
-    {
-        return vv[7];
-    }
-    AMREX_GPU_DEVICE AMREX_FORCE_INLINE T& zz() & noexcept
-    {
-        return vv[8];
-    }
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE T& zx() & noexcept { return vv[6]; }
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE T& zy() & noexcept { return vv[7]; }
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE T& zz() & noexcept { return vv[8]; }
 
     AMREX_GPU_DEVICE AMREX_FORCE_INLINE const T& xx() const& noexcept
     {
@@ -170,10 +143,7 @@ struct TensorT
         return vv[pos];
     }
 
-    AMREX_GPU_DEVICE AMREX_FORCE_INLINE T* data() noexcept
-    {
-        return vv.data();
-    }
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE T* data() noexcept { return vv.data(); }
     AMREX_GPU_DEVICE AMREX_FORCE_INLINE const T* data() const noexcept
     {
         return vv.data();

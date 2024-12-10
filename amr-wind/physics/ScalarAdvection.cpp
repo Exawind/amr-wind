@@ -5,8 +5,7 @@
 
 namespace amr_wind {
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
-GaussianPulseFV::operator()(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real GaussianPulseFV::operator()(
     const amrex::Real x,
     const amrex::Real /*unused*/,
     const amrex::Real dx,
@@ -107,8 +106,7 @@ GaussianWavePacketFV::operator()(
     return cell_integral / 2;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
-GaussianWavePacket::operator()(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real GaussianWavePacket::operator()(
     const amrex::Real x,
     const amrex::Real x0,
     const amrex::Real amplitude,

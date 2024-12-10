@@ -8,8 +8,7 @@
 namespace amr_wind::vs {
 
 template <typename T>
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE VectorT<T>
-VectorT<T>::operator-() const
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE VectorT<T> VectorT<T>::operator-() const
 {
     return VectorT<T>{-vv[0], -vv[1], -vv[2]};
 }

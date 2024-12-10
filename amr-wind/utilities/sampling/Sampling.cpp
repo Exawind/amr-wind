@@ -394,8 +394,7 @@ void Sampling::impl_write_native()
 
     m_scontainer->WritePlotFile(
         name, "particles", m_var_names, int_var_names,
-        [=] AMREX_GPU_DEVICE(
-            const SamplingContainer::SuperParticleType& p) {
+        [=] AMREX_GPU_DEVICE(const SamplingContainer::SuperParticleType& p) {
             return p.id() > 0;
         });
 
