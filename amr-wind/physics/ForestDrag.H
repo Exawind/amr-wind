@@ -73,8 +73,7 @@ struct Forest
         return {x0, y0, z0, x1, y1, z1};
     }
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Box
-    bounding_box(const amrex::Geometry& geom) const
+    amrex::Box bounding_box(const amrex::Geometry& geom) const
     {
         return utils::realbox_to_box(
             real_bounding_box(geom.ProbLoArray()), geom);
