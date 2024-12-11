@@ -11,7 +11,7 @@ amrex::Real amr_wind::diagnostics::get_vel_max(
 {
     return amrex::ReduceMax(
         vel, level_mask, 0,
-        [=] AMREX_GPU_DEVICE(
+        [=] AMREX_GPU_HOST_DEVICE(
             amrex::Box const& bx,
             amrex::Array4<amrex::Real const> const& vel_arr,
             amrex::Array4<int const> const& mask_arr) -> amrex::Real {
@@ -54,7 +54,7 @@ amrex::Real amr_wind::diagnostics::get_vel_loc(
 
     return amrex::ReduceMax(
         vel, level_mask, 0,
-        [=] AMREX_GPU_DEVICE(
+        [=] AMREX_GPU_HOST_DEVICE(
             amrex::Box const& bx,
             amrex::Array4<amrex::Real const> const& vel_arr,
             amrex::Array4<int const> const& mask_arr) -> amrex::Real {
@@ -82,7 +82,7 @@ amrex::Real amr_wind::diagnostics::get_macvel_max(
 {
     return amrex::ReduceMax(
         macvel, level_mask, 0,
-        [=] AMREX_GPU_DEVICE(
+        [=] AMREX_GPU_HOST_DEVICE(
             amrex::Box const& bx,
             amrex::Array4<amrex::Real const> const& mvel_arr,
             amrex::Array4<int const> const& mask_arr) -> amrex::Real {
@@ -128,7 +128,7 @@ amrex::Real amr_wind::diagnostics::get_macvel_loc(
 
     return amrex::ReduceMax(
         macvel, level_mask, 0,
-        [=] AMREX_GPU_DEVICE(
+        [=] AMREX_GPU_HOST_DEVICE(
             amrex::Box const& bx,
             amrex::Array4<amrex::Real const> const& mvel_arr,
             amrex::Array4<int const> const& mask_arr) -> amrex::Real {
