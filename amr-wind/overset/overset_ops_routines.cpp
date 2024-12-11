@@ -258,7 +258,7 @@ amrex::Real calculate_pseudo_dt_flux(
     // Get the maximum flux magnitude, but just for vof fluxes
     const amrex::Real pdt_fx = amrex::ReduceMin(
         mf_fx, mf_vof, 0,
-        [=] AMREX_GPU_DEVICE(
+        [=] AMREX_GPU_HOST_DEVICE(
             amrex::Box const& bx, amrex::Array4<amrex::Real const> const& fx,
             amrex::Array4<amrex::Real const> const& vof) -> amrex::Real {
             amrex::Real pdt_fab = 1.0;
