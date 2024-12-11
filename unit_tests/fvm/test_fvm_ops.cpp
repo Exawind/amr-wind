@@ -91,7 +91,7 @@ amrex::Real strainrate_test_impl(amr_wind::Field& vel, const int pdegree)
 
         error_total += amrex::ReduceSum(
             (*str)(lev), 0,
-            [=] AMREX_GPU_DEVICE(
+            [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& str_arr)
                 -> amrex::Real {
@@ -148,7 +148,7 @@ amrex::Real nonlinearsum_test_impl(amr_wind::Field& vel, const int pdegree)
 
         error_total += amrex::ReduceSum(
             (*nonlinearsum)(lev), 0,
-            [=] AMREX_GPU_DEVICE(
+            [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& nonlinearsum_arr)
                 -> amrex::Real {
@@ -236,7 +236,7 @@ amrex::Real vorticity_test_impl(amr_wind::Field& vel, const int pdegree)
 
         error_total += amrex::ReduceSum(
             (*vorticity)(lev), 0,
-            [=] AMREX_GPU_DEVICE(
+            [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& vort_arr)
                 -> amrex::Real {
@@ -301,7 +301,7 @@ amrex::Real vorticity_mag_test_impl(amr_wind::Field& vel, const int pdegree)
 
         error_total += amrex::ReduceSum(
             (*vorticity)(lev), (*vrt_mag)(lev), 0,
-            [=] AMREX_GPU_DEVICE(
+            [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& vrt_arr,
                 amrex::Array4<amrex::Real const> const& vrt_mag_arr)
@@ -365,7 +365,7 @@ amrex::Real q_criterion_test_impl(amr_wind::Field& vel, const int pdegree)
 
         error_total += amrex::ReduceSum(
             (*qcrit)(lev), 0,
-            [=] AMREX_GPU_DEVICE(
+            [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& qcrit_arr)
                 -> amrex::Real {

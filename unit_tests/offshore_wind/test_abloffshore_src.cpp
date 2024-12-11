@@ -29,7 +29,7 @@ amrex::Real get_val_at_height(
 
     error_total += amrex::ReduceSum(
         field(lev), 0,
-        [=] AMREX_GPU_DEVICE(
+        [=] AMREX_GPU_HOST_DEVICE(
             amrex::Box const& bx,
             amrex::Array4<amrex::Real const> const& f_arr) -> amrex::Real {
             amrex::Real error = 0;

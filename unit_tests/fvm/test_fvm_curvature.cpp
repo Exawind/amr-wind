@@ -71,7 +71,7 @@ amrex::Real curvature_test_impl(amr_wind::Field& scalar, const int pdegree)
 
         error_total += amrex::ReduceSum(
             (*curv_scalar)(lev), 0,
-            [=] AMREX_GPU_DEVICE(
+            [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& curv_arr)
                 -> amrex::Real {

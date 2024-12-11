@@ -60,7 +60,7 @@ amrex::Real test_new_tke(
         // Difference between tke estimate and tke calculated by the code
         error_total += amrex::ReduceSum(
             tke(lev), tkeold(lev), 0,
-            [=] AMREX_GPU_DEVICE(
+            [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& tke_arr,
                 amrex::Array4<amrex::Real const> const& tke_est)

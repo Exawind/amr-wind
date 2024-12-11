@@ -85,7 +85,7 @@ amrex::Real grad_test_impl(amr_wind::Field& vel, const int pdegree)
 
         error_total += amrex::ReduceSum(
             (*grad_vel)(lev), 0,
-            [=] AMREX_GPU_DEVICE(
+            [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& gvel) -> amrex::Real {
                 amrex::Real error = 0.0;
@@ -166,7 +166,7 @@ amrex::Real laplacian_test_impl(amr_wind::Field& vel, const int pdegree)
 
         error_total += amrex::ReduceSum(
             (*lap)(lev), 0,
-            [=] AMREX_GPU_DEVICE(
+            [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& lap_arr)
                 -> amrex::Real {
@@ -223,7 +223,7 @@ amrex::Real divergence_test_impl(amr_wind::Field& vel, const int pdegree)
 
         error_total += amrex::ReduceSum(
             (*div)(lev), 0,
-            [=] AMREX_GPU_DEVICE(
+            [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& div_arr)
                 -> amrex::Real {

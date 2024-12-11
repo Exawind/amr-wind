@@ -55,7 +55,7 @@ amrex::Real get_pbottom(amr_wind::Field& pressure)
     for (int lev = 0; lev < pressure.repo().num_active_levels(); ++lev) {
         pb_sum += amrex::ReduceSum(
             pressure(lev), 0,
-            [=] AMREX_GPU_DEVICE(
+            [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& nbx,
                 amrex::Array4<amrex::Real const> const& p_arr) -> amrex::Real {
                 amrex::Real pb_sum_fab = 0.0;

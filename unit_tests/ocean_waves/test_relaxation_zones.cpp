@@ -129,7 +129,7 @@ amrex::Real field_error(amr_wind::Field& comp, amr_wind::Field& targ, int ncomp)
     for (int lev = 0; lev < comp.repo().num_active_levels(); ++lev) {
         error_total += amrex::ReduceSum(
             comp(lev), targ(lev), 0,
-            [=] AMREX_GPU_DEVICE(
+            [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& comp_arr,
                 amrex::Array4<amrex::Real const> const& targ_arr)
@@ -163,7 +163,7 @@ amrex::Real gas_velocity_error(
     for (int lev = 0; lev < vel.repo().num_active_levels(); ++lev) {
         error_total += amrex::ReduceSum(
             vel(lev), vof(lev), 0,
-            [=] AMREX_GPU_DEVICE(
+            [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& vel_arr,
                 amrex::Array4<amrex::Real const> const& vof_arr)

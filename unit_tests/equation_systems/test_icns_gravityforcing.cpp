@@ -29,7 +29,7 @@ amrex::Real get_fgz_sum(amr_wind::Field& src_term)
     for (int lev = 0; lev < src_term.repo().num_active_levels(); ++lev) {
         Fgz_sum += amrex::ReduceSum(
             src_term(lev), 0,
-            [=] AMREX_GPU_DEVICE(
+            [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& Fg_arr) -> amrex::Real {
                 amrex::Real Fgz_sum_fab = 0.0;
