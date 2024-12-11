@@ -357,6 +357,7 @@ void OversetOps::sharpen_nalu_data()
                 m_convg_tol);
             ptfac = amrex::min(ptfac, ptfac_lev);
         }
+        amrex::Gpu::synchronize();
         amrex::ParallelDescriptor::ReduceRealMin(ptfac);
 
         // Conform pseudo dt (dtau) to pseudo CFL
@@ -375,7 +376,6 @@ void OversetOps::sharpen_nalu_data()
             velocity(lev).FillBoundary(geom[lev].periodicity());
             gp(lev).FillBoundary(geom[lev].periodicity());
         }
-
         amrex::Gpu::synchronize();
 
         // Update density (fillpatch built in)
@@ -440,6 +440,7 @@ void OversetOps::set_hydrostatic_gradp()
             gp(lev), rho(lev), (*rho0)(lev), iblank_cell(lev),
             m_mphase->gravity()[2], m_mphase->perturb_pressure());
     }
+    amrex::Gpu::synchronize();
 }
 
 void OversetOps::replace_masked_gradp()
@@ -468,6 +469,7 @@ void OversetOps::replace_masked_gradp()
         // Reapply pressure gradient term
         overset_ops::apply_pressure_gradient(vel(lev), rho(lev), gp(lev), dt);
     }
+    amrex::Gpu::synchronize();
 }
 
 } // namespace amr_wind
