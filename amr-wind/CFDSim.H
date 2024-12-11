@@ -20,6 +20,10 @@ class OversetManager;
 class ExtSolverMgr;
 class HelicsStorage;
 
+namespace transport {
+class TransportModel;
+}
+
 namespace turbulence {
 class TurbulenceModel;
 }
@@ -74,6 +78,12 @@ public:
         return m_physics_mgr.objects();
     }
 
+    transport::TransportModel& transport_model() { return *m_transport; }
+    const transport::TransportModel& transport_model() const
+    {
+        return *m_transport;
+    }
+
     turbulence::TurbulenceModel& turbulence_model() { return *m_turbulence; }
     const turbulence::TurbulenceModel& turbulence_model() const
     {
@@ -102,6 +112,9 @@ public:
     const HelicsStorage& helics() const { return *m_helics; }
 
     bool has_overset() const;
+
+    //! Instantiate the transport model based on user inputs
+    void create_transport_model();
 
     //! Instantiate the turbulence model based on user inputs
     void create_turbulence_model();
@@ -136,6 +149,8 @@ private:
     pde::PDEMgr m_pde_mgr;
 
     PhysicsMgr m_physics_mgr;
+
+    std::unique_ptr<transport::TransportModel> m_transport;
 
     std::unique_ptr<turbulence::TurbulenceModel> m_turbulence;
 
