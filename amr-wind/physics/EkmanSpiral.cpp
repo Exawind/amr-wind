@@ -161,7 +161,7 @@ amrex::Real EkmanSpiral::compute_error(const Field& field)
         const auto& fld = field(lev);
         error += amrex::ReduceSum(
             fld, level_mask, 0,
-            [=] AMREX_GPU_DEVICE(
+            [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& fld_arr,
                 amrex::Array4<int const> const& mask_arr) -> amrex::Real {
