@@ -58,7 +58,7 @@ using ZDir = DirectionSelector<2>;
 // For example, if we're using ZDir, return a box covering the x-y plane.
 // The IntVect is used to set the constant index in the parallel direction.
 template <typename IndexSelector>
-AMREX_GPU_DEVICE amrex::Box
+AMREX_GPU_HOST_DEVICE amrex::Box
 perpendicular_box(const amrex::Box& bx, const amrex::IntVect& iv)
 {
     amrex::IntVect plane_lo, plane_hi;
