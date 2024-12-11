@@ -143,6 +143,7 @@ struct InitDataOp<StokesWaves>
                     vel[nbx](i, j, k, 2) = local_profile[2];
                 }
             });
+        amrex::Gpu::synchronize();
     }
 };
 
@@ -207,6 +208,7 @@ struct UpdateRelaxZonesOp<StokesWaves>
                     }
                 });
         }
+        amrex::Gpu::synchronize();
     }
 };
 
