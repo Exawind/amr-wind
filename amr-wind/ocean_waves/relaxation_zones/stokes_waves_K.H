@@ -156,6 +156,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
     }
 
     amrex::Real S = 2. * std::exp(2. * kd) / (std::exp(4. * kd) + 1.);
+    amrex::Real C = 1.0 - S;
     amrex::Real Sh = std::sinh(kd);
     amrex::Real Th = std::tanh(kd);
     amrex::Real CTh = (1. + std::exp(-2 * kd)) / (1. - std::exp(-2 * kd));
