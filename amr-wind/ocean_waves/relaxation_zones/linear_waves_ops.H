@@ -118,6 +118,7 @@ struct InitDataOp<LinearWaves>
                     vel[nbx](i, j, k, 2) = local_profile[2];
                 }
             });
+        amrex::Gpu::synchronize();
     }
 };
 
@@ -196,6 +197,7 @@ struct UpdateRelaxZonesOp<LinearWaves>
                     }
                 });
         }
+        amrex::Gpu::synchronize();
     }
 };
 
