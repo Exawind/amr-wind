@@ -126,7 +126,7 @@ void FreeSurfaceSampler::initialize(const std::string& key)
             ncomp,
             amrex::ReduceMax(
                 level_mask, 0,
-                [=] AMREX_GPU_DEVICE(
+                [=] AMREX_GPU_HOST_DEVICE(
                     amrex::Box const& bx,
                     amrex::Array4<int const> const& mask_arr) -> int {
                     int ns_fab = 0;
