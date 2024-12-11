@@ -115,6 +115,7 @@ void AMD<Transport>::update_turbulent_viscosity(
                                            p_tpa_deriv, normal_dir, nlo);
             });
     }
+    amrex::Gpu::synchronize();
 
     mu_turb.fillpatch(this->m_sim.time().current_time());
 }
