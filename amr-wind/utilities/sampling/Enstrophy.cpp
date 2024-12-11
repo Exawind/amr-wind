@@ -60,7 +60,7 @@ amrex::Real Enstrophy::calculate_enstrophy()
 
         total_enstrophy += amrex::ReduceSum(
             m_density(lev), (*vorticity)(lev), level_mask, 0,
-            [=] AMREX_GPU_DEVICE(
+            [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& den_arr,
                 amrex::Array4<amrex::Real const> const& vort_arr,

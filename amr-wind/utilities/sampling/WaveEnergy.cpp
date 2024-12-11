@@ -75,7 +75,7 @@ amrex::Real WaveEnergy::calculate_kinetic_energy()
 
         wave_ke += amrex::ReduceSum(
             m_vof(lev), m_velocity(lev), level_mask, 0,
-            [=] AMREX_GPU_DEVICE(
+            [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& vof_arr,
                 amrex::Array4<amrex::Real const> const& vel_arr,
@@ -136,7 +136,7 @@ amrex::Real WaveEnergy::calculate_potential_energy()
 
         wave_pe += amrex::ReduceSum(
             m_vof(lev), level_mask, 0,
-            [=] AMREX_GPU_DEVICE(
+            [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& vof_arr,
                 amrex::Array4<int const> const& mask_arr) -> amrex::Real {
