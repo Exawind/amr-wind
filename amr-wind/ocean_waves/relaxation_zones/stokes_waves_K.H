@@ -156,6 +156,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
     }
 
     amrex::Real S = 2. * std::exp(2. * kd) / (std::exp(4. * kd) + 1.);
+    amrex::Real C = 1.0 - S;
     amrex::Real Sh = std::sinh(kd);
     amrex::Real Th = std::tanh(kd);
     amrex::Real CTh = (1. + std::exp(-2 * kd)) / (1. - std::exp(-2 * kd));
@@ -163,9 +164,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
     c0 = std::sqrt(Th);
     a11 = 1. / std::sinh(kd); // Hyperbolic cosecant
     // Second order coefficients
-    a22 = 3. * std::pow(S, 2) / (2 * std::pow(1 - S, 2));
-    b22 = CTh * (1 + 2. * S) / (2 * (1 - S));
-    c2 = std::sqrt(Th) * (2 + 7 * std::pow(S, 2)) / (4 * std::pow(1 - S, 2));
+    a22 = 3. * std::pow(S, 2) / (2 * std::pow(C, 2));
+    b22 = CTh * (1 + 2. * S) / (2 * C);
+    c2 = std::sqrt(Th) * (2 + 7 * std::pow(S, 2)) / (4 * std::pow(C, 2));
     d2 = -std::sqrt(CTh) / 2.;
     e2 = Th * (2 + 2 * S + 5 * std::pow(S, 2)) / (4 * std::pow(1 - S, 2));
     if (StokesOrder == 2) {
