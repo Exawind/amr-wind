@@ -75,7 +75,7 @@ amrex::Real FieldNorms::l2_norm(
 
         nrm += amrex::ReduceSum(
             field(lev), level_mask, nghost,
-            [=] AMREX_GPU_DEVICE(
+            [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& field_arr,
                 amrex::Array4<int const> const& mask_arr) -> amrex::Real {
