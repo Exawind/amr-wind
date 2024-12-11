@@ -8,7 +8,7 @@ namespace amr_wind::utils {
 /** Compute the dot product of two vectors
  */
 template <typename T>
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE T dot_prod(const T* x, const T* y)
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T dot_prod(const T* x, const T* y)
 {
     static_assert(
         AMREX_SPACEDIM == 3, "Vector ops only defined for AMREX_SPACEDIM == 3");
@@ -37,7 +37,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void vec_normalize(T* x)
 }
 
 template <typename T>
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE T
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T
 dot_prod(const T* x, const T* y, const int ndim)
 {
     T sum = 0.0;
