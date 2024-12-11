@@ -121,7 +121,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE
 }
 
 template <typename C1, typename C2>
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     typename std::iterator_traits<C2>::value_type
     linear(
         const C1 xbegin,

@@ -13,16 +13,19 @@
 namespace amr_wind::utils {
 
 //! Return \f$\pi\f$ as an amrex::Real
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE constexpr amrex::Real pi() { return M_PI; }
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE constexpr amrex::Real pi()
+{
+    return M_PI;
+}
 
 //! Return \f$2 \pi\f$
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE constexpr amrex::Real two_pi()
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE constexpr amrex::Real two_pi()
 {
     return 2.0 * M_PI;
 }
 
 //! Return \f$\pi / 2\f$
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE constexpr amrex::Real half_pi()
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE constexpr amrex::Real half_pi()
 {
     return 0.5 * M_PI;
 }
