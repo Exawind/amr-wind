@@ -208,7 +208,7 @@ inline void linear(
 // Angles in yinp should be defined between [-upper_bound, +upper_bound]
 // Use cases would be degrees (upper_bound =360) and radians (upper_bound =2pi)
 template <typename C1, typename C2>
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     typename std::iterator_traits<C2>::value_type
     linear_angle(
         const C1 xbegin,
