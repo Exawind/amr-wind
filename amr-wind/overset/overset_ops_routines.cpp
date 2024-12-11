@@ -277,7 +277,7 @@ amrex::Real calculate_pseudo_dt_flux(
         });
     const amrex::Real pdt_fy = amrex::ReduceMin(
         mf_fy, mf_vof, 0,
-        [=] AMREX_GPU_DEVICE(
+        [=] AMREX_GPU_HOST_DEVICE(
             amrex::Box const& bx, amrex::Array4<amrex::Real const> const& fy,
             amrex::Array4<amrex::Real const> const& vof) -> amrex::Real {
             amrex::Real pdt_fab = 1.0;
@@ -296,7 +296,7 @@ amrex::Real calculate_pseudo_dt_flux(
         });
     const amrex::Real pdt_fz = amrex::ReduceMin(
         mf_fz, mf_vof, 0,
-        [=] AMREX_GPU_DEVICE(
+        [=] AMREX_GPU_HOST_DEVICE(
             amrex::Box const& bx, amrex::Array4<amrex::Real const> const& fz,
             amrex::Array4<amrex::Real const> const& vof) -> amrex::Real {
             amrex::Real pdt_fab = 1.0;
@@ -414,7 +414,7 @@ amrex::Real measure_convergence(
     // Get the maximum flux magnitude, but just for vof fluxes
     const amrex::Real err_fx = amrex::ReduceMax(
         mf_fx, 0,
-        [=] AMREX_GPU_DEVICE(
+        [=] AMREX_GPU_HOST_DEVICE(
             amrex::Box const& bx,
             amrex::Array4<amrex::Real const> const& fx) -> amrex::Real {
             amrex::Real err_fab = -1.0;
@@ -425,7 +425,7 @@ amrex::Real measure_convergence(
         });
     const amrex::Real err_fy = amrex::ReduceMax(
         mf_fy, 0,
-        [=] AMREX_GPU_DEVICE(
+        [=] AMREX_GPU_HOST_DEVICE(
             amrex::Box const& bx,
             amrex::Array4<amrex::Real const> const& fy) -> amrex::Real {
             amrex::Real err_fab = -1.0;
@@ -436,7 +436,7 @@ amrex::Real measure_convergence(
         });
     const amrex::Real err_fz = amrex::ReduceMax(
         mf_fz, 0,
-        [=] AMREX_GPU_DEVICE(
+        [=] AMREX_GPU_HOST_DEVICE(
             amrex::Box const& bx,
             amrex::Array4<amrex::Real const> const& fz) -> amrex::Real {
             amrex::Real err_fab = -1.0;
