@@ -71,6 +71,7 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                     multiphase::levelset_to_vof(i, j, k, eps, target_phi[nbx]);
             });
     }
+    amrex::Gpu::synchronize();
 
     // Get time
     const auto& time = sim.time().new_time();
@@ -221,6 +222,8 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                     rho1 * volfrac(i, j, k) + rho2 * (1. - volfrac(i, j, k));
             });
     }
+    amrex::Gpu::synchronize();
+
     // This helps for having periodic boundaries, but will need to be addressed
     // for the general case
     vof.fillpatch(time);

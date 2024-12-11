@@ -515,6 +515,7 @@ void incflo::ApplyProjection(
             amr_wind::nodal_projection::apply_dirichlet_vel(
                 velocity(lev), iblank(lev));
         }
+        amrex::Gpu::synchronize();
     }
 
     velocity.fillpatch(m_time.new_time());
