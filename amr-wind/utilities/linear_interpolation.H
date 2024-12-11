@@ -97,7 +97,7 @@ find_index(const It begin, const It end, const T& x, const int hint = 1)
 }
 
 template <typename C1, typename C2>
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     typename std::iterator_traits<C2>::value_type
     linear_impl(
         const C1 xbegin,
