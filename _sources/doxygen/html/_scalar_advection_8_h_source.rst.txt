@@ -1,0 +1,14 @@
+.. meta::bf50bd51623512c8068f54410f0641b78a43d4c446e42e1dc6be74810c1e0bb18a9b646a8d1910b27de339ffeebba45ca6e017452ffe66e4c6fe3820ea487d61
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/ScalarAdvection.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/ScalarAdvection.H Source File
+==================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _scalar_advection_8_h_source.html

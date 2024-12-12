@@ -1,0 +1,14 @@
+.. meta::45027bba9c8d4d58d7ed723a104266cff1827fbfe52cac1eebe04c2f8b0d8d6d4b1a0480f5ea820a2140b2d244e2082dc1aa1d4cbe141a453ea88d52ae188039
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::ReadInputsOp&lt; UniformCt, ActSrcDisk &gt; Struct Reference
+
+ReadInputsOp&lt; UniformCt, ActSrcDisk &gt; Struct Reference
+============================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_read_inputs_op_3_01_uniform_ct_00_01_act_src_disk_01_4.html

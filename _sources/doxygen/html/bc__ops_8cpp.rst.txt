@@ -1,0 +1,14 @@
+.. meta::75050d434ccde4ee2c31e4ca811eee796245185d61ba030b0e92f88639fb8ea65ee5a16b8ce81697131c6cbcd36fb7143147acaa0d7e6d4fb2981c83709fc9d9
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/bc_ops.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/bc\_ops.cpp File Reference
+=================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: bc__ops_8cpp.html

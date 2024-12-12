@@ -1,0 +1,14 @@
+.. meta::d0299b4b68d287328bf4881683515946c1a970ea21937369911385f4ab8e10c3ab11f9fff834b1919aadf3a3545b7d86c5a4fe7f2aa2534a90bc27a782292b7f
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tagging/CartBoxRefinement.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tagging/CartBoxRefinement.cpp File Reference
+===================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _cart_box_refinement_8cpp.html

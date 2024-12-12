@@ -1,0 +1,14 @@
+.. meta::09fd89728161b72035d935257949a013c4ab231c1dcb347f66c7ef77e825772a78ca1eecfea4c74bbf074f833b05d31a9a60bc68753d29ceacae152f060bf0d4
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::VortexRing Class Reference
+
+VortexRing Class Reference
+==========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_vortex_ring.html

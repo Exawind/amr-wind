@@ -1,0 +1,14 @@
+.. meta::d46b1fdc9c60e85236bb1313bb67d11b0ef943113e352c450f3a4e001d3e9511c6f3b69197168ce0c18073c0d2f57269e79f18e7b25501dfcc6e513525647adf
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ocean_waves::relaxation_zones Namespace Reference
+
+relaxation\_zones Namespace Reference
+=====================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1ocean__waves_1_1relaxation__zones.html

@@ -1,0 +1,14 @@
+.. meta::dc824ea494dd5d442004e5d8212088230de53944c38331b2d3cdb1bba697a3d021752a071c983d74ed07d882b2cc2de240c5dc9effa9010801bf1afdc25da766
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::AdvectionOp&lt; ICNS, fvm::MOL &gt; Struct Reference
+
+MOL &gt; Struct Reference
+=========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_advection_op_3_01_i_c_n_s_00_01fvm_1_1_m_o_l_01_4.html
