@@ -16,7 +16,7 @@ namespace amr_wind::multiphase {
  *  to zero.
  */
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE void youngs_finite_difference_normal(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_finite_difference_normal(
     const int i,
     const int j,
     const int k,
@@ -64,7 +64,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE void youngs_finite_difference_normal(
     mz = mm1 - mm2;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE void
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void
 youngs_finite_difference_normal_neumann(
     const int i,
     const int j,
@@ -122,7 +122,7 @@ youngs_finite_difference_normal_neumann(
     mz = mm1 - mm2;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE void mixed_youngs_central_normal(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void mixed_youngs_central_normal(
     const int i,
     const int j,
     const int k,
@@ -356,7 +356,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
  * (4) order coefficients: b1<b2<b3;
  * (5) calculate volume (NOTE: it is assumed:s0=t0=0; ds0=dt0=1.)
  */
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real cut_volume(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real cut_volume(
     const amrex::Real m1,
     const amrex::Real m2,
     const amrex::Real m3,
@@ -443,7 +443,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real cut_volume(
     return FL3D;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE void fit_plane(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fit_plane(
     const int i,
     const int j,
     const int k,
@@ -488,7 +488,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE void fit_plane(
             amrex::min<amrex::Real>(0.0, my) + amrex::min<amrex::Real>(0.0, mz);
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE bool interface_band(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool interface_band(
     const int i,
     const int j,
     const int k,
@@ -516,7 +516,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE bool interface_band(
     return (std::abs(VOF_max - VOF_min) > tiny || VOF_mid);
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real levelset_to_vof(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real levelset_to_vof(
     const int i,
     const int j,
     const int k,
