@@ -96,6 +96,7 @@ void postprocess_velocity_mfab_liquid(
                 vel[nbx](i, j, k, 2) = 0.0;
             }
         });
+    amrex::Gpu::synchronize();
 }
 
 void postprocess_velocity_field_liquid(
@@ -485,6 +486,7 @@ struct InitDataOp<W2AWaves>
                     vel[nbx](i, j, k, 2) = local_profile[2];
                 }
             });
+        amrex::Gpu::synchronize();
 
         // Start w2a fields at 0, some areas will not be modified
         auto& w2a_levelset = sim.repo().get_field("w2a_levelset");
@@ -691,6 +693,7 @@ struct UpdateRelaxZonesOp<W2AWaves>
                         (newtime - t_last) / (W2A_t - t_last + 1e-16);
                 });
         }
+        amrex::Gpu::synchronize();
 #else
         amrex::ignore_unused(data);
 #endif
