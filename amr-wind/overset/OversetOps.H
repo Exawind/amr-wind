@@ -32,7 +32,7 @@ private:
     bool m_use_hydrostatic_gradp{false};
 
     // Coupling options
-    bool m_replace_gradp_postsolve{false};
+    bool m_replace_gradp_postsolve{true};
 
     // Verbosity
     int m_verbose{0};
