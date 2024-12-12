@@ -9,7 +9,7 @@
 
 namespace amr_wind {
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real FatCore::operator()(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real FatCore::operator()(
     const amrex::Real r,
     const amrex::Real /*unused*/,
     const amrex::Real z,
@@ -31,7 +31,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real FatCore::operator()(
     return 0.0;
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real CollidingRings::operator()(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real CollidingRings::operator()(
     const amrex::Real r,
     const amrex::Real theta,
     const amrex::Real z,

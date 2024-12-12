@@ -13,7 +13,7 @@ namespace amr_wind::zds {
 namespace {
 struct SCexact
 {
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
         amrex::Real /*xc*/,
         amrex::Real /*yc*/,
         amrex::Real /*zc*/,

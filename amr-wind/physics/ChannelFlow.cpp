@@ -297,7 +297,7 @@ amrex::Real ChannelFlow::compute_error(const IndexSelector& idxOp)
         error += amrex::ParReduce(
             amrex::TypeList<amrex::ReduceOpSum>{},
             amrex::TypeList<amrex::Real>{}, vel, amrex::IntVect(0),
-            [=] AMREX_GPU_HOST_DEVICE(int box_no, int i, int j, int k)
+            [=] AMREX_GPU_DEVICE(int box_no, int i, int j, int k)
                 -> amrex::GpuTuple<amrex::Real> {
                 auto const& vel_bx = vel_arr[box_no];
                 auto const& mask_bx = mask_arr[box_no];
@@ -369,7 +369,7 @@ amrex::Real ChannelFlow::compute_analytical_smagorinsky_error()
         error += amrex::ParReduce(
             amrex::TypeList<amrex::ReduceOpSum>{},
             amrex::TypeList<amrex::Real>{}, vel, amrex::IntVect(0),
-            [=] AMREX_GPU_HOST_DEVICE(int box_no, int i, int j, int k)
+            [=] AMREX_GPU_DEVICE(int box_no, int i, int j, int k)
                 -> amrex::GpuTuple<amrex::Real> {
                 auto const& vel_bx = vel_arr[box_no];
                 auto const& mask_bx = mask_arr[box_no];

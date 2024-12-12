@@ -8,7 +8,7 @@ namespace amr_wind::channel_map {
 
 namespace {
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_fac(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real eval_fac(
     const amrex::Real x,
     const amrex::Real beta,
     const amrex::Real prob_lo,
@@ -23,7 +23,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_fac(
                   std::tanh(beta));
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real eval_coord(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real eval_coord(
     const amrex::Real x,
     const amrex::Real beta,
     const amrex::Real prob_lo,

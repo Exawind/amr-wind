@@ -78,7 +78,7 @@ private:
 
 struct GaussianWavePacket
 {
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
         const amrex::Real /*x*/,
         const amrex::Real /*x0*/,
         const amrex::Real /*amplitude*/,
@@ -88,7 +88,7 @@ struct GaussianWavePacket
 
 struct GaussianPulseFV
 {
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
         const amrex::Real /*x*/,
         const amrex::Real /*unused*/,
         const amrex::Real /*dx*/,
@@ -104,7 +104,7 @@ struct GaussianPulseFV
 
 struct TwoDimGaussianPulseFV
 {
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
         const amrex::Real /*x*/,
         const amrex::Real /*y*/,
         const amrex::Real /*dx*/,
@@ -120,7 +120,7 @@ struct TwoDimGaussianPulseFV
 
 struct SquarePulseFV
 {
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
         const amrex::Real /*x*/,
         const amrex::Real /*unused*/,
         const amrex::Real /*dx*/,
@@ -136,7 +136,7 @@ struct SquarePulseFV
 
 struct GaussianWavePacketFV
 {
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
         const amrex::Real /*x*/,
         const amrex::Real /*unused*/,
         const amrex::Real /*dx*/,
