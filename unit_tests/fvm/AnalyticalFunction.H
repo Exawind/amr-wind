@@ -6,7 +6,7 @@
 
 namespace amr_wind_tests::analytical_function {
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real phi_eval(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real phi_eval(
     int degree,
     const amrex::Real* coeff,
     amrex::Real x,
@@ -29,7 +29,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real phi_eval(
     return phi;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real filter_eval(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real filter_eval(
     int degree,
     const amrex::Real* coeff,
     amrex::Real x,
@@ -68,7 +68,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real filter_eval(
     return filt_phi;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real dphidx_eval(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real dphidx_eval(
     int degree,
     const amrex::Real* coeff,
     amrex::Real x,
@@ -91,7 +91,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real dphidx_eval(
     return dphidx;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real dphidy_eval(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real dphidy_eval(
     int degree,
     const amrex::Real* coeff,
     amrex::Real x,
@@ -114,7 +114,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real dphidy_eval(
     return dphidy;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real dphidz_eval(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real dphidz_eval(
     int degree,
     const amrex::Real* coeff,
     amrex::Real x,
@@ -137,7 +137,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real dphidz_eval(
     return dphidz;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real laplacian(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real laplacian(
     int degree,
     const amrex::Real* coeffx,
     const amrex::Real* coeffy,
@@ -169,7 +169,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real laplacian(
     return lap;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real divergence(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real divergence(
     int degree,
     const amrex::Real* coeffx,
     const amrex::Real* coeffy,
@@ -200,7 +200,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real divergence(
     return div;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real strainrate(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real strainrate(
     int degree,
     const amrex::Real* coeffx,
     const amrex::Real* coeffy,
@@ -227,7 +227,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real strainrate(
         (vz + wy) * (vz + wy) + (wx + uz) * (wx + uz));
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_11(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_11(
     int degree,
     const amrex::Real* coeffx,
     const amrex::Real* coeffy,
@@ -247,7 +247,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_11(
            3 * (ux * ux + vx * vx + wx * wx) + (ux * ux + vx * uy + wx * uz);
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_12(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_12(
     int degree,
     const amrex::Real* coeffx,
     const amrex::Real* coeffy,
@@ -270,7 +270,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_12(
            3 * (ux * uy + vx * vy + wx * wy) + (ux * vx + vx * vy + wx * vz);
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_13(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_13(
     int degree,
     const amrex::Real* coeffx,
     const amrex::Real* coeffy,
@@ -293,7 +293,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_13(
            3 * (ux * uz + vx * vz + wx * wz) + (ux * wx + vx * wy + wx * wz);
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_21(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_21(
     int degree,
     const amrex::Real* coeffx,
     const amrex::Real* coeffy,
@@ -316,7 +316,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_21(
            3 * (uy * ux + vy * vx + wy * wx) + (uy * ux + vy * uy + wy * uz);
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_22(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_22(
     int degree,
     const amrex::Real* coeffx,
     const amrex::Real* coeffy,
@@ -336,7 +336,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_22(
            3 * (uy * vx + vy * vy + wy * wy) + (uy * vx + vy * vy + wy * vz);
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_23(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_23(
     int degree,
     const amrex::Real* coeffx,
     const amrex::Real* coeffy,
@@ -359,7 +359,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_23(
            3 * (uy * wx + vy * vz + wy * wz) + (uy * wx + vy * wy + wy * wz);
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_31(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_31(
     int degree,
     const amrex::Real* coeffx,
     const amrex::Real* coeffy,
@@ -382,7 +382,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_31(
            3 * (uz * ux + vz * vx + wz * wx) + (uz * ux + vz * uy + wz * uz);
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_32(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_32(
     int degree,
     const amrex::Real* coeffx,
     const amrex::Real* coeffy,
@@ -405,7 +405,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_32(
            3 * (uz * uy + vz * vy + wz * wy) + (uz * vx + vz * vy + wz * vz);
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_33(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_33(
     int degree,
     const amrex::Real* coeffx,
     const amrex::Real* coeffy,
@@ -425,7 +425,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real nonlinearsum_33(
            3 * (uz * uz + vz * vz + wz * wz) + (uz * wx + vz * wy + wz * wz);
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real vorticity_x(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real vorticity_x(
     int degree,
     const amrex::Real* /* coeffx */,
     const amrex::Real* coeffy,
@@ -441,7 +441,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real vorticity_x(
     return wy - vz;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real vorticity_y(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real vorticity_y(
     int degree,
     const amrex::Real* coeffx,
     const amrex::Real* /* coeffy */,
@@ -457,7 +457,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real vorticity_y(
     return uz - wx;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real vorticity_z(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real vorticity_z(
     int degree,
     const amrex::Real* coeffx,
     const amrex::Real* coeffy,
@@ -473,7 +473,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real vorticity_z(
     return vx - uy;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real vorticity_mag(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real vorticity_mag(
     int degree,
     const amrex::Real* coeffx,
     const amrex::Real* coeffy,
@@ -495,7 +495,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real vorticity_mag(
         (uy - vx) * (uy - vx) + (vz - wy) * (vz - wy) + (wx - uz) * (wx - uz));
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real curvature(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real curvature(
     int degree,
     const amrex::Real* coeff,
     amrex::Real x,
@@ -556,7 +556,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real curvature(
            std::pow(phix * phix + phiy * phiy + phiz * phiz, 1.5);
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real q_criterion(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real q_criterion(
     int degree,
     const amrex::Real* coeffx,
     const amrex::Real* coeffy,
