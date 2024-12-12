@@ -10,14 +10,14 @@ namespace amr_wind::burggraf {
 
 namespace {
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
 UExact::operator()(const amrex::Real x, const amrex::Real y) const
 {
     return 8 * (std::pow(x, 4) - 2 * std::pow(x, 3) + std::pow(x, 2)) *
            (4 * std::pow(y, 3) - 2 * y);
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
 VExact::operator()(const amrex::Real x, const amrex::Real y) const
 {
     return -8 * (4 * std::pow(x, 3) - 6 * std::pow(x, 2) + 2 * x) *
@@ -139,7 +139,7 @@ amrex::Real BurggrafFlow::compute_error(const Field& field)
         error += amrex::ParReduce(
             amrex::TypeList<amrex::ReduceOpSum>{},
             amrex::TypeList<amrex::Real>{}, fld, amrex::IntVect(0),
-            [=] AMREX_GPU_HOST_DEVICE(int box_no, int i, int j, int k)
+            [=] AMREX_GPU_DEVICE(int box_no, int i, int j, int k)
                 -> amrex::GpuTuple<amrex::Real> {
                 auto const& fld_bx = fld_arr[box_no];
                 auto const& mask_bx = mask_arr[box_no];

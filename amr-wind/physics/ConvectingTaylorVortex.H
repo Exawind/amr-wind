@@ -10,7 +10,7 @@ namespace amr_wind::ctv {
 namespace {
 struct UExact
 {
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
         const amrex::Real /*u0*/,
         const amrex::Real /*v0*/,
         const amrex::Real /*omega*/,
@@ -22,7 +22,7 @@ struct UExact
 
 struct VExact
 {
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
         const amrex::Real /*u0*/,
         const amrex::Real /*v0*/,
         const amrex::Real /*omega*/,
@@ -34,7 +34,7 @@ struct VExact
 
 struct WExact
 {
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
         const amrex::Real /*unused*/,
         const amrex::Real /*unused*/,
         const amrex::Real /*unused*/,
@@ -46,7 +46,7 @@ struct WExact
 
 struct GpxExact
 {
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
         const amrex::Real /*u0*/,
         const amrex::Real /*unused*/,
         const amrex::Real /*omega*/,
@@ -58,7 +58,7 @@ struct GpxExact
 
 struct GpyExact
 {
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
         const amrex::Real /*unused*/,
         const amrex::Real /*v0*/,
         const amrex::Real /*omega*/,
@@ -70,7 +70,7 @@ struct GpyExact
 
 struct GpzExact
 {
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
         const amrex::Real /*unused*/,
         const amrex::Real /*unused*/,
         const amrex::Real /*unused*/,

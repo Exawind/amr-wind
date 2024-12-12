@@ -30,7 +30,7 @@ static constexpr amrex::Real LARGE_NUM =
     static_cast<amrex::Real>(std::numeric_limits<amrex::Real>::max() * 1e-10);
 
 //! Closeness comparison
-AMREX_FORCE_INLINE AMREX_GPU_HOST_DEVICE bool
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool
 is_close(const amrex::Real a, const amrex::Real b)
 {
     return amrex::Math::abs(a - b) < EPS;

@@ -9,7 +9,7 @@ namespace amr_wind::utils {
  *  Prefer exact evaluation of the integral over using this function
  */
 template <typename Function>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real trapz(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real trapz(
     const amrex::Real xa, const amrex::Real xb, const int n, const Function& f)
 {
 

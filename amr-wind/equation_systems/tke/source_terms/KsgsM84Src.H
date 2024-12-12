@@ -35,13 +35,13 @@ private:
     Field& m_tke;
 };
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real calc_ceps_local(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real calc_ceps_local(
     const amrex::Real Ceps, const amrex::Real tlscale, const amrex::Real ds)
 {
     return (Ceps / 0.93) * (0.19 + (0.74 * tlscale / ds));
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real calc_dissip(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real calc_dissip(
     const amrex::Real Ceps, const amrex::Real tke, const amrex::Real tlscale)
 {
     return Ceps * std::sqrt(tke) * tke / tlscale;

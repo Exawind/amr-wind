@@ -10,7 +10,7 @@ namespace amr_wind::ctv {
 
 namespace {
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real UExact::operator()(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real UExact::operator()(
     const amrex::Real u0,
     const amrex::Real v0,
     const amrex::Real omega,
@@ -23,7 +23,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real UExact::operator()(
                     std::exp(-2.0 * omega * t);
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real VExact::operator()(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real VExact::operator()(
     const amrex::Real u0,
     const amrex::Real v0,
     const amrex::Real omega,
@@ -36,7 +36,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real VExact::operator()(
                     std::exp(-2.0 * omega * t);
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real WExact::operator()(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real WExact::operator()(
     const amrex::Real /*unused*/,
     const amrex::Real /*unused*/,
     const amrex::Real /*unused*/,
@@ -47,7 +47,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real WExact::operator()(
     return 0.0;
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GpxExact::operator()(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real GpxExact::operator()(
     const amrex::Real u0,
     const amrex::Real /*unused*/,
     const amrex::Real omega,
@@ -60,7 +60,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GpxExact::operator()(
            std::exp(-4.0 * omega * t);
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GpyExact::operator()(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real GpyExact::operator()(
     const amrex::Real /*unused*/,
     const amrex::Real v0,
     const amrex::Real omega,
@@ -73,7 +73,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GpyExact::operator()(
            std::exp(-4.0 * omega * t);
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GpzExact::operator()(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real GpzExact::operator()(
     const amrex::Real /*unused*/,
     const amrex::Real /*unused*/,
     const amrex::Real /*unused*/,
@@ -271,7 +271,7 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
         error += amrex::ParReduce(
             amrex::TypeList<amrex::ReduceOpSum>{},
             amrex::TypeList<amrex::Real>{}, fld, amrex::IntVect(0),
-            [=] AMREX_GPU_HOST_DEVICE(int box_no, int i, int j, int k)
+            [=] AMREX_GPU_DEVICE(int box_no, int i, int j, int k)
                 -> amrex::GpuTuple<amrex::Real> {
                 auto const& fld_bx = fld_arr[box_no];
                 auto const& mask_bx = mask_arr[box_no];

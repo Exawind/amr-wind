@@ -9,7 +9,7 @@
 namespace amr_wind::zds {
 
 namespace {
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real SCexact::operator()(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real SCexact::operator()(
     amrex::Real xc0,
     amrex::Real yc0,
     const amrex::Real zc0,
@@ -281,7 +281,7 @@ amrex::Real ZalesakDiskScalarVel::compute_error(const Field& field)
         error += amrex::ParReduce(
             amrex::TypeList<amrex::ReduceOpSum>{},
             amrex::TypeList<amrex::Real>{}, fld, amrex::IntVect(0),
-            [=] AMREX_GPU_HOST_DEVICE(int box_no, int i, int j, int k)
+            [=] AMREX_GPU_DEVICE(int box_no, int i, int j, int k)
                 -> amrex::GpuTuple<amrex::Real> {
                 auto const& fld_bx = fld_arr[box_no];
                 auto const& mask_bx = mask_arr[box_no];

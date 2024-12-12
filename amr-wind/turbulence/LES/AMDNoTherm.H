@@ -48,7 +48,7 @@ private:
     const Field& m_rho;
 };
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amd_base_muvel(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real amd_base_muvel(
     int i,
     int j,
     int k,
