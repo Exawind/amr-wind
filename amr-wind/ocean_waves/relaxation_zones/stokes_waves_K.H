@@ -41,7 +41,10 @@ AMREX_FORCE_INLINE amrex::Real stokes_wave_length(
     amrex::Real f = tol + 1.0;
     while (std::abs(f) > tol && iter < iter_max) {
         // Calculate current constants
-        const amrex::Real S = 1.0 / std::cosh(2.0 * k * d);
+
+        // Exponential definition of S = sech(2kd)
+        const amrex::Real S =
+            2. * std::exp(2. * k * d) / (std::exp(4. * k * d) + 1.);
         const amrex::Real C = 1.0 - S;
         const amrex::Real eps = k * H / 2.0;
         const amrex::Real C0 = std::sqrt(std::tanh(k * d));
@@ -164,10 +167,12 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
         kd = 50 * M_PI;
     }
 
+    // Exponential definition of S = sech(2kd)
     amrex::Real S = 2. * std::exp(2. * kd) / (std::exp(4. * kd) + 1.);
     amrex::Real C = 1.0 - S;
     amrex::Real Sh = std::sinh(kd);
     amrex::Real Th = std::tanh(kd);
+    // Exponential definition of coth(kd)
     amrex::Real CTh = (1. + std::exp(-2 * kd)) / (1. - std::exp(-2 * kd));
 
     c0 = std::sqrt(Th);
@@ -177,18 +182,18 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
     b22 = CTh * (1 + 2. * S) / (2 * C);
     c2 = std::sqrt(Th) * (2 + 7 * std::pow(S, 2)) / (4 * std::pow(C, 2));
     d2 = -std::sqrt(CTh) / 2.;
-    e2 = Th * (2 + 2 * S + 5 * std::pow(S, 2)) / (4 * std::pow(1 - S, 2));
+    e2 = Th * (2 + 2 * S + 5 * std::pow(S, 2)) / (4 * std::pow(C, 2));
     if (StokesOrder == 2) {
         return;
     }
 
     // Third order coefficients
     a31 = (-4 - 20 * S + 10 * std::pow(S, 2) - 13 * std::pow(S, 3)) /
-          (8 * Sh * std::pow(1 - S, 3));
-    a33 = (-2 * std::pow(S, 2) + 11 * std::pow(S, 3)) /
-          (8 * Sh * std::pow(1 - S, 3));
+          (8 * Sh * std::pow(C, 3));
+    a33 =
+        (-2 * std::pow(S, 2) + 11 * std::pow(S, 3)) / (8 * Sh * std::pow(C, 3));
     b31 = -3 * (1 + 3 * S + 3 * std::pow(S, 2) + 2 * std::pow(S, 3)) /
-          (8 * std::pow(1 - S, 3));
+          (8 * std::pow(C, 3));
     if (StokesOrder == 3) {
         return;
     }
@@ -196,28 +201,28 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
     // Fourth order coefficients
     a42 = (12 * S - 14 * std::pow(S, 2) - 264 * std::pow(S, 3) -
            45 * std::pow(S, 4) - 13 * std::pow(S, 5)) /
-          (24 * std::pow(1 - S, 5));
+          (24 * std::pow(C, 5));
     a44 = (10 * std::pow(S, 3) - 174 * std::pow(S, 4) + 291 * std::pow(S, 5) +
            278 * std::pow(S, 6)) /
-          (48 * (3 + 2 * S) * std::pow(1 - S, 5));
+          (48 * (3 + 2 * S) * std::pow(C, 5));
     b42 = CTh *
           (6 - 26 * S - 182 * std::pow(S, 2) - 204 * std::pow(S, 3) -
            25 * std::pow(S, 4) + 26 * std::pow(S, 5)) /
-          (6 * (3 + 2 * S) * std::pow(1 - S, 4));
+          (6 * (3 + 2 * S) * std::pow(C, 4));
     b44 = CTh *
           (24 + 92 * S + 122 * std::pow(S, 2) + 66 * std::pow(S, 3) +
            67 * std::pow(S, 4) + 34 * std::pow(S, 5)) /
-          (24 * (3 + 2 * S) * std::pow(1 - S, 4));
+          (24 * (3 + 2 * S) * std::pow(C, 4));
     c4 = std::sqrt(Th) *
          (4 + 32 * S - 116 * std::pow(S, 2) - 400 * std::pow(S, 3) -
           71 * std::pow(S, 4) + 146 * std::pow(S, 5)) /
-         (32 * std::pow(1 - S, 5));
+         (32 * std::pow(C, 5));
     d4 = std::sqrt(CTh) * (2 + 4 * S + std::pow(S, 2) + 2 * std::pow(S, 3)) /
-         (8 * std::pow(1 - S, 3));
+         (8 * std::pow(C, 3));
     e4 = Th *
          (8 + 12 * S - 152 * std::pow(S, 2) - 308 * std::pow(S, 3) -
           42 * std::pow(S, 4) + 77 * std::pow(S, 5)) /
-         (32 * std::pow(1 - S, 5));
+         (32 * std::pow(C, 5));
     if (StokesOrder == 4) {
         return;
     }
@@ -227,26 +232,26 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
         (-1184 + 32 * S + 13232 * std::pow(S, 2) + 21712 * std::pow(S, 3) +
          20940 * std::pow(S, 4) + 12554 * std::pow(S, 5) -
          500 * std::pow(S, 6) - 3341 * std::pow(S, 7) - 670 * std::pow(S, 8)) /
-        (64 * Sh * (3 + 2 * S) * (4 + S) * std::pow(1 - S, 6));
+        (64 * Sh * (3 + 2 * S) * (4 + S) * std::pow(C, 6));
     a53 = (4 * S + 105 * pow(S, 2) + 198 * std::pow(S, 3) -
            1376 * std::pow(S, 4) - 1302 * std::pow(S, 5) -
            117 * std::pow(S, 6) + 58 * std::pow(S, 7)) /
-          (32 * Sh * (3 + 2 * S) * std::pow(1 - S, 6));
+          (32 * Sh * (3 + 2 * S) * std::pow(C, 6));
     a55 =
         (-6 * std::pow(S, 3) + 272 * std::pow(S, 4) - 1552 * std::pow(S, 5) +
          852 * std::pow(S, 6) + 2029 * std::pow(S, 7) + 430 * std::pow(S, 8)) /
-        (64 * Sh * (3 + 2 * S) * (4 + S) * std::pow(1 - S, 6));
+        (64 * Sh * (3 + 2 * S) * (4 + S) * std::pow(C, 6));
     b53 = 9 *
           (132 + 17 * S - 2216 * std::pow(S, 2) - 5897 * std::pow(S, 3) -
            6292 * std::pow(S, 4) - 2687 * std::pow(S, 5) +
            194 * std::pow(S, 6) + 467 * std::pow(S, 7) + 82 * std::pow(S, 8)) /
-          (128 * (3 + 2 * S) * (4 + S) * std::pow(1 - S, 6));
+          (128 * (3 + 2 * S) * (4 + S) * std::pow(C, 6));
     b55 =
         5 *
         (300 + 1579 * S + 3176 * std::pow(S, 2) + 2949 * std::pow(S, 3) +
          1188 * std::pow(S, 4) + 675 * std::pow(S, 5) + 1326 * std::pow(S, 6) +
          827 * std::pow(S, 7) + 130 * std::pow(S, 8)) /
-        (384 * (3 + 2 * S) * (4 + S) * std::pow(1 - S, 6));
+        (384 * (3 + 2 * S) * (4 + S) * std::pow(C, 6));
     if (StokesOrder == 5) {
         return;
     }
