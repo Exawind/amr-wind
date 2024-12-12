@@ -143,8 +143,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
     amrex::Real& a22,
     amrex::Real& b22,
     amrex::Real& c2,
-    amrex::Real& d2,
-    amrex::Real& e2,
     amrex::Real& a31,
     amrex::Real& a33,
     amrex::Real& b31,
@@ -153,8 +151,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
     amrex::Real& b42,
     amrex::Real& b44,
     amrex::Real& c4,
-    amrex::Real& d4,
-    amrex::Real& e4,
     amrex::Real& a51,
     amrex::Real& a53,
     amrex::Real& a55,
@@ -181,8 +177,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
     a22 = 3. * std::pow(S, 2) / (2 * std::pow(C, 2));
     b22 = CTh * (1 + 2. * S) / (2 * C);
     c2 = std::sqrt(Th) * (2 + 7 * std::pow(S, 2)) / (4 * std::pow(C, 2));
-    d2 = -std::sqrt(CTh) / 2.;
-    e2 = Th * (2 + 2 * S + 5 * std::pow(S, 2)) / (4 * std::pow(C, 2));
     if (StokesOrder == 2) {
         return;
     }
@@ -216,12 +210,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
     c4 = std::sqrt(Th) *
          (4 + 32 * S - 116 * std::pow(S, 2) - 400 * std::pow(S, 3) -
           71 * std::pow(S, 4) + 146 * std::pow(S, 5)) /
-         (32 * std::pow(C, 5));
-    d4 = std::sqrt(CTh) * (2 + 4 * S + std::pow(S, 2) + 2 * std::pow(S, 3)) /
-         (8 * std::pow(C, 3));
-    e4 = Th *
-         (8 + 12 * S - 152 * std::pow(S, 2) - 308 * std::pow(S, 3) -
-          42 * std::pow(S, 4) + 77 * std::pow(S, 5)) /
          (32 * std::pow(C, 5));
     if (StokesOrder == 4) {
         return;
@@ -389,22 +377,18 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE void stokes_waves(
 
     // some parameters
     amrex::Real c0{0.0};
-    amrex::Real a11{0.0}, a22{0.0}, b22{0.0}, c2{0.0}, d2{0.0}, e2{0.0};
+    amrex::Real a11{0.0}, a22{0.0}, b22{0.0}, c2{0.0};
     amrex::Real a31{0.0}, a33{0.0}, b31{0.0}, a42{0.0}, a44{0.0};
-    amrex::Real b42{0.0}, b44{0.0}, c4{0.0}, d4{0.0}, e4{0.0};
+    amrex::Real b42{0.0}, b44{0.0}, c4{0.0};
     amrex::Real a51{0.0}, a53{0.0}, a55{0.0}, b53{0.0}, b55{0.0};
 
     stokes_coefficients(
-        StokesOrder, wavenumber, waterdepth, c0, a11, a22, b22, c2, d2, e2, a31,
-        a33, b31, a42, a44, b42, b44, c4, d4, e4, a51, a53, a55, b53, b55);
+        StokesOrder, wavenumber, waterdepth, c0, a11, a22, b22, c2, a31, a33,
+        b31, a42, a44, b42, b44, c4, a51, a53, a55, b53, b55);
 
     const amrex::Real eps = wavenumber * waveheight / 2.; // Steepness (ka)
     const amrex::Real c = (c0 + std::pow(eps, 2) * c2 + std::pow(eps, 4) * c4) *
                           std::sqrt(g / wavenumber);
-    // const amrex::Real Q =
-    //    c * waterdepth * std::sqrt(std::pow(k, 3) / g) +
-    //    d2 * std::pow(eps, 2) +
-    //    d4 * std::pow(eps, 4) * std::sqrt(g / std::pow(k, 3));
 
     const amrex::Real omega = c * wavenumber;
     const amrex::Real phase = wavenumber * x - omega * time - phase_offset;

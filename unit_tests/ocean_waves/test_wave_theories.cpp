@@ -15,12 +15,12 @@ TEST_F(WaveTheoriesTest, StokesWaves)
     amrex::Real wavenumber = 2.0;
     amrex::Real waterdepth = 0.376991;
     int StokesOrder = 5;
-    amrex::Real c0, a11, a22, b22, c2, d2, e2, a31, a33, b31, a42;
-    amrex::Real a44, b42, b44, c4, d4, e4, a51, a53, a55, b53, b55;
+    amrex::Real c0, a11, a22, b22, c2, a31, a33, b31, a42;
+    amrex::Real a44, b42, b44, c4, a51, a53, a55, b53, b55;
 
     amr_wind::ocean_waves::relaxation_zones::stokes_coefficients(
-        StokesOrder, wavenumber, waterdepth, c0, a11, a22, b22, c2, d2, e2, a31,
-        a33, b31, a42, a44, b42, b44, c4, d4, e4, a51, a53, a55, b53, b55);
+        StokesOrder, wavenumber, waterdepth, c0, a11, a22, b22, c2, a31, a33,
+        b31, a42, a44, b42, b44, c4, a51, a53, a55, b53, b55);
 
     // Gold coefficient values taken from table 2 of
     // Fenton, J. Fifth Order Stokes Theory for Steady Waves
@@ -45,10 +45,6 @@ TEST_F(WaveTheoriesTest, StokesWaves)
     const amrex::Real gold_C0 = 0.798448;
     const amrex::Real gold_C2 = 1.940215;
     const amrex::Real gold_C4 = -12.970403;
-    const amrex::Real gold_D2 = -0.626215;
-    const amrex::Real gold_D4 = 3.257104;
-    const amrex::Real gold_E2 = 1.781926;
-    const amrex::Real gold_E4 = -11.573657;
 
     EXPECT_NEAR(gold_A11, a11, CoeffTol);
     EXPECT_NEAR(gold_A22, a22, CoeffTol);
@@ -68,10 +64,6 @@ TEST_F(WaveTheoriesTest, StokesWaves)
     EXPECT_NEAR(gold_C0, c0, CoeffTol);
     EXPECT_NEAR(gold_C2, c2, CoeffTol);
     EXPECT_NEAR(gold_C4, c4, CoeffTol);
-    EXPECT_NEAR(gold_D2, d2, CoeffTol);
-    EXPECT_NEAR(gold_D4, d4, CoeffTol);
-    EXPECT_NEAR(gold_E2, e2, CoeffTol);
-    EXPECT_NEAR(gold_E4, e4, CoeffTol);
 }
 
 TEST_F(WaveTheoriesTest, StokesWaveLength)
