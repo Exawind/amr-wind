@@ -8,6 +8,15 @@
 // Fenton, J., Fifth Order Stokes Theory for Steady Waves
 // Journal of Waterway, Port, Coastal and Ocean Engineering, 1985, 111, 216-234
 
+// Updated Table 1 from Fenton 1985 found in
+// Fenton, J., Nonlinear Wave Theories
+// The Sea Vol. 9 Ocean Engineering Science, 1990
+// https://johndfenton.com/Papers/Fenton90b-Nonlinear-wave-theories.pdf
+
+// Relevant results are summarized in
+// Kinnas S. A., Notes on fifth order gravity wave theory
+// https://www.caee.utexas.edu/prof/kinnas/ce358/oenotes/kinnas_stokes11.pdf
+
 namespace amr_wind::ocean_waves::relaxation_zones {
 
 // Compute wavelength as a function of wave period, water depth, and g
