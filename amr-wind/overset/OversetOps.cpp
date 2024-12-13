@@ -24,7 +24,6 @@ void OversetOps::initialize(CFDSim& sim)
     pp.query("reinit_target_cutoff", m_target_cutoff);
 
     // Queries for coupling options
-    pp.query("use_hydrostatic_gradp", m_use_hydrostatic_gradp);
     pp.query("replace_gradp_postsolve", m_replace_gradp_postsolve);
     pp.query("verbose", m_verbose);
 
@@ -57,29 +56,22 @@ void OversetOps::initialize(CFDSim& sim)
 
 void OversetOps::pre_advance_work()
 {
-    if (!(m_vof_exists && m_use_hydrostatic_gradp)) {
-        if (m_mphase != nullptr) {
-            // Avoid modifying pressure upon initialization, assume pressure = 0
-            if (m_mphase->perturb_pressure() &&
-                m_sim_ptr->time().current_time() > 0.0) {
-                // Modify to be consistent with internal source terms
-                form_perturb_pressure();
-            }
+    if (m_mphase != nullptr) {
+        // Avoid modifying pressure upon initialization, assume pressure = 0
+        if (m_mphase->perturb_pressure() &&
+            m_sim_ptr->time().current_time() > 0.0) {
+            // Modify to be consistent with internal source terms
+            form_perturb_pressure();
         }
-        // Update pressure gradient using updated overset pressure field
-        update_gradp();
     }
+    // Update pressure gradient using updated overset pressure field
+    update_gradp();
 
     if (m_vof_exists) {
         // Reinitialize fields
         sharpen_nalu_data();
-        if (m_use_hydrostatic_gradp) {
-            // Use hydrostatic pressure gradient
-            set_hydrostatic_gradp();
-        } else {
-            // Update pressure gradient using sharpened pressure field
-            update_gradp();
-        }
+        // Update pressure gradient using sharpened pressure field
+        update_gradp();
         // Calculate vof-dependent node mask
         const auto& iblank = m_sim_ptr->repo().get_int_field("iblank_node");
         const auto& vof = m_sim_ptr->repo().get_field("vof");
@@ -408,34 +400,6 @@ void OversetOps::form_perturb_pressure()
     for (int lev = 0; lev < m_sim_ptr->repo().num_active_levels(); lev++) {
         amrex::MultiFab::Subtract(
             pressure(lev), p0(lev), 0, 0, 1, pressure.num_grow()[0]);
-    }
-}
-
-void OversetOps::set_hydrostatic_gradp()
-{
-    const auto& repo = m_sim_ptr->repo();
-    const auto nlevels = repo.num_active_levels();
-    const auto geom = m_sim_ptr->mesh().Geom();
-
-    // Get blanking for cells
-    const auto& iblank_cell = repo.get_int_field("iblank_cell");
-
-    // Get fields that will be modified or used
-    Field* rho0{nullptr};
-    auto& rho = repo.get_field("density");
-    auto& gp = repo.get_field("gp");
-    if (m_mphase->perturb_pressure()) {
-        rho0 = &(m_sim_ptr->repo().get_field("reference_density"));
-    } else {
-        // Point to existing field, won't be used
-        rho0 = &rho;
-    }
-
-    // Replace initial gp with best guess (hydrostatic)
-    for (int lev = 0; lev < nlevels; ++lev) {
-        overset_ops::replace_gradp_hydrostatic(
-            gp(lev), rho(lev), (*rho0)(lev), iblank_cell(lev),
-            m_mphase->gravity()[2], m_mphase->perturb_pressure());
     }
 }
 

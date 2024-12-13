@@ -620,33 +620,6 @@ void equate_field(amrex::MultiFab& mf_dest, const amrex::MultiFab& mf_src)
         });
 }
 
-// Replace pressure gradient with hydrostatic field in overset regions
-void replace_gradp_hydrostatic(
-    amrex::MultiFab& mf_gp,
-    const amrex::MultiFab& mf_density,
-    const amrex::MultiFab& mf_refdens,
-    const amrex::iMultiFab& mf_iblank,
-    const amrex::Real grav_z,
-    const bool is_pptb)
-{
-    const auto& gp = mf_gp.arrays();
-    const auto& rho = mf_density.const_arrays();
-    const auto& rho0 = mf_refdens.const_arrays();
-    const auto& iblank = mf_iblank.const_arrays();
-    amrex::ParallelFor(
-        mf_gp, mf_gp.n_grow,
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            if (iblank[nbx](i, j, k) == -1) {
-                const amrex::Real dfac =
-                    is_pptb ? rho[nbx](i, j, k) - rho0[nbx](i, j, k)
-                            : rho[nbx](i, j, k);
-                gp[nbx](i, j, k, 0) = 0.;
-                gp[nbx](i, j, k, 1) = 0.;
-                gp[nbx](i, j, k, 2) = dfac * grav_z;
-            }
-        });
-}
-
 // Swap pressure gradient values in overset region
 void replace_gradp(
     amrex::MultiFab& mf_gp,

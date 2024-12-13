@@ -103,15 +103,6 @@ amrex::Real measure_convergence(
 // Set levelset field to another quantity to view in plotfile for debugging
 void equate_field(amrex::MultiFab& mf_dest, const amrex::MultiFab& mf_src);
 
-// Replace pressure gradient with hydrostatic field in overset regions
-void replace_gradp_hydrostatic(
-    amrex::MultiFab& mf_gp,
-    const amrex::MultiFab& mf_density,
-    const amrex::MultiFab& mf_refdens,
-    const amrex::iMultiFab& mf_iblank,
-    const amrex::Real grav_z,
-    const bool is_pptb);
-
 // Swap pressure gradient values in overset region
 void replace_gradp(
     amrex::MultiFab& mf_gp,
