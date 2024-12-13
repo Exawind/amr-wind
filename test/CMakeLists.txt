@@ -77,7 +77,7 @@ macro(setup_test)
       set(SAVE_GOLDS_COMMAND "&& cp -R ${PLOT_TEST} ${SAVED_GOLDS_DIRECTORY}/${TEST_NAME}/")
     endif()
     if(AMR_WIND_TEST_WITH_FCOMPARE AND (NOT "${TEST_NAME}" MATCHES "hdf5$"))
-      set(FCOMPARE_COMMAND "&& ${FCOMPARE_EXE} ${FCOMPARE_TOLERANCE} ${PLOT_GOLD} ${PLOT_TEST}")
+      set(FCOMPARE_COMMAND "&& CUDA_LAUNCH_BLOCKING=1 ${FCOMPARE_EXE} ${FCOMPARE_TOLERANCE} ${PLOT_GOLD} ${PLOT_TEST}")
     endif()
 endmacro(setup_test)
 
@@ -267,6 +267,7 @@ add_test_re(rankine)
 add_test_re(rankine-sym)
 add_test_re(terrain_box)
 add_test_re(terrain_box_amr)
+add_test_re(forest_drag)
 add_test_re(box_refinement)
 add_test_re(cylinder_refinement)
 add_test_re(freestream_godunov_inout)
@@ -278,6 +279,7 @@ add_test_re(ctv_mol_mesh_map_explicit)
 if(AMR_WIND_ENABLE_NETCDF)
   add_test_re(abl_bndry_output)
   add_test_re(abl_bndry_output_amr_inflow)
+  add_test_re(abl_bndry_output_amr_upper)
   add_test_re(abl_virtual_lidar)
   add_test_re(abl_meso_input_dpa)
   add_test_re(abl_meso_input_ipa)
@@ -318,6 +320,45 @@ endif()
 
 if(AMR_WIND_ENABLE_W2A)
   add_test_re(ow_w2a)
+  add_test_re(abl_multiphase_w2a)
+endif()
+
+if(AMR_WIND_ENABLE_OPENFAST)
+  set(ACT_UNIFORM_ALM_TEST_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test_files/act_uniform_alm)
+  set(ACT_UNIFORM_ALM_TEST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/test_files/act_uniform_alm)
+  set(RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR ${ACT_UNIFORM_ALM_TEST_BINARY_DIR}/r-test)
+  set(5MW_BASELINE_DIR glue-codes/openfast/5MW_Baseline)
+  set(5MW_LAND_DIR glue-codes/openfast-cpp/5MW_Land_DLL_WTurb_cpp)
+  set(AERO_FILE NRELOffshrBsline5MW_Onshore_AeroDyn15.dat)
+  set(ELASTO_FILE NRELOffshrBsline5MW_Onshore_ElastoDyn.dat)
+  set(SERVO_FILE NRELOffshrBsline5MW_Onshore_ServoDyn.dat)
+  file(MAKE_DIRECTORY ${ACT_UNIFORM_ALM_TEST_BINARY_DIR})
+  if(NOT EXISTS "${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}")
+    execute_process(
+      COMMAND bash -c "${GIT_EXECUTABLE} clone -n --depth=1 --filter=tree:0 git@github.com:OpenFAST/r-test.git"
+      WORKING_DIRECTORY
+      "${ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
+      COMMAND bash -c "${GIT_EXECUTABLE} sparse-checkout set --no-cone ${5MW_BASELINE_DIR} ${5MW_LAND_DIR}"
+      WORKING_DIRECTORY
+      "${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
+      COMMAND bash -c "${GIT_EXECUTABLE} checkout"
+      WORKING_DIRECTORY
+      "${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
+      COMMAND bash -c "${GIT_EXECUTABLE} apply ${ACT_UNIFORM_ALM_TEST_SOURCE_DIR}/custom_openfast_options.patch"
+      WORKING_DIRECTORY
+      "${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+  endif()
+  add_test_re(act_uniform_alm)
+  if(AMR_WIND_ENABLE_NETCDF)
+    add_test_red(act_uniform_alm_restart act_uniform_alm)
+  endif()
 endif()
 
 #=============================================================================
@@ -337,6 +378,7 @@ if(AMR_WIND_ENABLE_NETCDF)
   add_test_red(abl_bndry_input abl_bndry_output)
   add_test_red(abl_bndry_input_amr abl_bndry_output)
   add_test_red(abl_bndry_input_amr_inflow abl_bndry_output_amr_inflow)
+  add_test_red(abl_bndry_input_amr_upper abl_bndry_output_amr_upper)
   add_test_red(nrel_terrain nrel_precursor)
   add_test_red(nrel_terrain_amr nrel_precursor)
 endif()

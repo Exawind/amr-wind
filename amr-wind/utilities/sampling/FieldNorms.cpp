@@ -34,8 +34,8 @@ void FieldNorms::initialize()
     prepare_ascii_file();
 }
 
-amrex::Real
-FieldNorms::l2_norm(amr_wind::Field& field, const int comp, const bool use_mask)
+amrex::Real FieldNorms::l2_norm(
+    const amr_wind::Field& field, const int comp, const bool use_mask)
 {
     amrex::Real nrm = 0.0;
 

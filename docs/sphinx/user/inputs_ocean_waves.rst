@@ -104,6 +104,25 @@ The following input arguments are only valid for the LinearWaves and StokesWave 
 
    The amplitude of the wave profile
 
+.. input_param:: OceanWaves.label.wave_phase_offset_radians
+
+   **type** Real, optional, default = 0.
+
+   This specifies a phase offset to the target wave profile.
+   It is in terms of phase (radians) relative to the wave, not
+   in terms of time. Note that this argument should be retained
+   when restarting a simulation so that the phase of the wave forcing
+   is consistent with the preceding simulation.
+
+.. input_param:: OceanWaves.label.wave_phase_offset_degrees
+
+   **type** Real, optional, default = 0.
+
+   This specifies a phase offset to the target wave profile
+   in terms of degrees. If the offset is specified in both radians
+   and degrees, the code will abort; only one of these arguments
+   can be used at a time.
+
 The following input arguments are only valid for the StokesWave wave type:
 
 .. input_param:: OceanWaves.label.order

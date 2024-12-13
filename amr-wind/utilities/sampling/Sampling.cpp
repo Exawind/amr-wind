@@ -394,10 +394,12 @@ void Sampling::impl_write_native()
 
     m_scontainer->WritePlotFile(
         name, "particles", m_var_names, int_var_names,
-        [=] AMREX_GPU_HOST_DEVICE(
-            const SamplingContainer::SuperParticleType& p) {
+        [=] AMREX_GPU_DEVICE(const SamplingContainer::SuperParticleType& p) {
             return p.id() > 0;
         });
+
+    const std::string info_name = name + "/sampling_info";
+    write_info_file(info_name);
 }
 
 void Sampling::write_ascii()
@@ -413,6 +415,32 @@ void Sampling::write_ascii()
 
     const std::string fname = post_dir + "/" + sname + ".txt";
     m_scontainer->WriteAsciiFile(fname);
+
+    const std::string info_name = post_dir + "/" + sname + "_info.txt";
+    write_info_file(info_name);
+}
+
+void Sampling::write_info_file(const std::string& fname)
+{
+    BL_PROFILE("amr-wind::Sampling::write_info_file");
+
+    // Only I/O processor writes the info file
+    if (!amrex::ParallelDescriptor::IOProcessor()) {
+        return;
+    }
+
+    if ((m_out_fmt != "native") && (m_out_fmt != "ascii")) {
+        amrex::Abort(
+            "write_info_file is implemented only for native and ascii formats");
+    }
+
+    std::ofstream fh(fname.c_str(), std::ios::out);
+    if (!fh.good()) {
+        amrex::FileOpenFailed(fname);
+    }
+
+    fh << "time " << m_sim.time().new_time() << std::endl;
+    fh.close();
 }
 
 void Sampling::prepare_netcdf_file()
