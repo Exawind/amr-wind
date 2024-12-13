@@ -15,6 +15,7 @@ void populate_psi(
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
             psi[nbx](i, j, k) = asdf(vof[nbx](i, j, k), i_th, asdf_tiny);
         });
+    amrex::Gpu::synchronize();
 }
 
 // Modify a vof field to not have values that barely differ from 0 or 1
@@ -30,6 +31,7 @@ void process_vof(amrex::MultiFab& mf_vof, const amrex::Real vof_tol)
                     : (vof[nbx](i, j, k) > 1. - vof_tol ? 1.
                                                         : vof[nbx](i, j, k));
         });
+    amrex::Gpu::synchronize();
 }
 
 // Combine overset target vof field with current non-overset vof field
@@ -49,6 +51,7 @@ void harmonize_vof(
                 tg_vof[nbx](i, j, k) = og_vof[nbx](i, j, k);
             }
         });
+    amrex::Gpu::synchronize();
 }
 
 // Populate normal vector with special treatment of overset boundary
@@ -89,6 +92,7 @@ void populate_normal_vector(
             normvec[nbx](i, j, k, 1) = my / mmag;
             normvec[nbx](i, j, k, 2) = mz / mmag;
         });
+    amrex::Gpu::synchronize();
 }
 
 // Calculate fluxes for reinitialization over entire domain without concern for
@@ -143,6 +147,7 @@ void populate_sharpen_fluxes(
             // process_fluxes_calc_src
             fx[nbx](i, j, k, 8) = 1.0;
         });
+    amrex::Gpu::synchronize();
     amrex::ParallelFor(
         mf_fy, mf_fy.n_grow,
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
@@ -163,6 +168,7 @@ void populate_sharpen_fluxes(
             fy[nbx](i, j, k, 7) = flux * wf;
             fy[nbx](i, j, k, 8) = 1.0;
         });
+    amrex::Gpu::synchronize();
     amrex::ParallelFor(
         mf_fz, mf_fz.n_grow,
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
@@ -183,6 +189,7 @@ void populate_sharpen_fluxes(
             fz[nbx](i, j, k, 7) = flux * wf;
             fz[nbx](i, j, k, 8) = 1.0;
         });
+    amrex::Gpu::synchronize();
 }
 
 // Process reinitialization fluxes - zero non-internal to overset region;
@@ -210,6 +217,7 @@ void process_fluxes_calc_src(
                 (iblank[nbx](i - 1, j, k) + iblank[nbx](i, j, k) > -2);
             fx[nbx](i, j, k, n) *= zero_all ? 0. : 1.;
         });
+    amrex::Gpu::synchronize();
     amrex::ParallelFor(
         mf_fy, mf_fy.n_grow, mf_fy.n_comp,
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
@@ -217,6 +225,7 @@ void process_fluxes_calc_src(
                 (iblank[nbx](i, j - 1, k) + iblank[nbx](i, j, k) > -2);
             fy[nbx](i, j, k, n) *= zero_all ? 0. : 1.;
         });
+    amrex::Gpu::synchronize();
     amrex::ParallelFor(
         mf_fz, mf_fz.n_grow, mf_fz.n_comp,
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
@@ -224,6 +233,7 @@ void process_fluxes_calc_src(
                 (iblank[nbx](i, j, k - 1) + iblank[nbx](i, j, k) > -2);
             fz[nbx](i, j, k, n) *= zero_all ? 0. : 1.;
         });
+    amrex::Gpu::synchronize();
     // With knowledge of fluxes, compute pressure source term
     amrex::ParallelFor(
         mf_psource,
@@ -233,6 +243,7 @@ void process_fluxes_calc_src(
                 normal_reinit_tensor(
                     i, j, k, fx[nbx], fy[nbx], fz[nbx], vof[nbx], tiny);
         });
+    amrex::Gpu::synchronize();
 }
 
 amrex::Real calculate_pseudo_velocity_scale(
@@ -400,11 +411,13 @@ void apply_fluxes(
                                                         : vof[nbx](i, j, k));
             // Density bounds are enforced elsewhere
         });
+    amrex::Gpu::synchronize();
     amrex::ParallelFor(
         mf_pressure,
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
             p[nbx](i, j, k) += ptfac * sp[nbx](i, j, k);
         });
+    amrex::Gpu::synchronize();
 }
 
 // Get the size of the smallest VOF flux to quantify convergence
@@ -461,6 +474,7 @@ void equate_field(amrex::MultiFab& mf_dest, const amrex::MultiFab& mf_src)
                 src[nbx](i, j, k, 1) * src[nbx](i, j, k, 1) +
                 src[nbx](i, j, k, 2) * src[nbx](i, j, k, 2));
         });
+    amrex::Gpu::synchronize();
 }
 
 // Replace pressure gradient with hydrostatic field in overset regions
@@ -488,6 +502,7 @@ void replace_gradp_hydrostatic(
                 gp[nbx](i, j, k, 2) = dfac * grav_z;
             }
         });
+    amrex::Gpu::synchronize();
 }
 
 // Swap pressure gradient values in overset region
@@ -508,6 +523,7 @@ void replace_gradp(
                 gp[nbx](i, j, k, 2) = gp0[nbx](i, j, k, 2);
             }
         });
+    amrex::Gpu::synchronize();
 }
 
 // Apply pressure gradient to velocity field
@@ -527,6 +543,7 @@ void apply_pressure_gradient(
             vel[nbx](i, j, k, 1) -= gp[nbx](i, j, k, 1) * soverrho;
             vel[nbx](i, j, k, 2) -= gp[nbx](i, j, k, 2) * soverrho;
         });
+    amrex::Gpu::synchronize();
 }
 
 } // namespace amr_wind::overset_ops

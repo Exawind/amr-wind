@@ -75,6 +75,7 @@ void amr_wind::nodal_projection::apply_dirichlet_vel(
                 vel[nbx](i, j, k, n) = 0.0;
             }
         });
+    amrex::Gpu::synchronize();
 }
 
 void amr_wind::nodal_projection::enforce_inout_solvability(
