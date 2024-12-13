@@ -1,0 +1,202 @@
+# -*- coding: utf-8 -*-
+
+"""\
+AMReX Plot File Processor
+-----------------------------
+
+This module provides a python class :class:`AmrexPlotFile` that can parse
+the plot files written out by AMR-Wind.
+
+"""
+
+import os
+import pathlib
+import amrex.space3d as amr
+
+
+class AmrexPlotFile:
+    """AmrexPlotFile reader
+
+    Loads AMReX plot file data for a single timestep
+    """
+
+    def __init__(self, hname):
+        """
+        Args:
+            hname (path like): header file name
+        """
+
+        # Disallow OMP/MPI for now
+        if amr.Config.have_mpi:
+            nprocs = amr.ParallelDescriptor.NProcs()
+            assert nprocs == 1
+        if amr.Config.have_omp:
+            nthreads = int(os.environ["OMP_NUM_THREADS"])
+            assert nthreads == 1
+
+        self.fname = pathlib.Path(hname)
+        assert self.fname.exists()
+
+    def __call__(self):
+        """Parse the header file"""
+        if not hasattr(self, "mfs"):
+            self.parse_header()
+            self.load_data()
+        return self.mfs
+
+    def parse_header(self):
+        """Parse the header"""
+        with open(self.fname, "r") as f:
+            self.version = f.readline()
+            self.ncomp = int(f.readline())
+            self.names = []
+            for _ in range(self.ncomp):
+                self.names.append(f.readline().rstrip())
+            self.spacedim = int(f.readline())
+            self.time = float(f.readline())
+            self.nlevels = int(f.readline())
+
+            self.prob_lo = [float(x) for x in f.readline().split()]
+            self.prob_hi = [float(x) for x in f.readline().split()]
+            self.ref_ratio = [int(x) for x in f.readline().split()]
+
+            line = [
+                int(x)
+                for x in f.readline()
+                .rstrip()
+                .replace("(", " ")
+                .replace(")", " ")
+                .replace(",", " ")
+                .split()
+            ]
+            self.prob_domain = []
+            for ilev in range(self.nlevels + 1):
+                offset = ilev * 9
+                small_end = amr.IntVect(line[0 + offset : 3 + offset])
+                big_end = amr.IntVect(line[3 + offset : 6 + offset])
+                t = amr.IntVect(line[6 + offset : 9 + offset])
+                self.prob_domain.append(amr.Box(small_end, big_end))
+
+            self.level_steps = [int(x) for x in f.readline().rstrip().split()]
+
+            self.cell_sizes = []
+            for ilev in range(self.nlevels + 1):
+                line = [float(x) for x in f.readline().rstrip().split()]
+                self.cell_sizes.append(line)
+
+            self.coord_system = int(f.readline())
+            self.bwidth = int(f.readline())
+
+            self.mf_names = []
+            self.level_steps = []
+            self.ngrids = []
+            self.glohis = [[] for _ in range(self.nlevels + 1)]
+            for ilev in range(self.nlevels + 1):
+                line = f.readline().split()
+                lev = int(line[0])
+                self.ngrids.append(int(line[1]))
+                gtime = float(line[2])
+                self.level_steps.append(int(f.readline()))
+                nglohis = []
+                for igrid in range(self.ngrids[ilev]):
+                    glos = []
+                    ghis = []
+                    for idim in range(self.spacedim):
+                        glo, ghi = [float(x) for x in f.readline().split()]
+                        glos.append(glo)
+                        ghis.append(ghi)
+                    nglohis.append([glos, ghis])
+                self.glohis[ilev] = nglohis
+                assert len(self.glohis[ilev]) == self.ngrids[ilev]
+                self.mf_names.append(f.readline().rstrip())
+
+    def load_data(self):
+        """Read data into memory"""
+        self.mfs = []
+        for mf_name in self.mf_names:
+            self.mfs.append(amr.VisMF.Read(str(self.fname.parent / mf_name)))
+
+    def write(self, fname):
+        """
+        Args:
+            fname (path): folder name for writing
+        """
+        hname = pathlib.Path(fname) / self.fname.name
+        assert hname != self.fname
+        self.write_header(hname)
+        self.write_data(fname)
+
+    def write_header(self, fname):
+        """Write header file
+
+        Args:
+            fname (path): header file name for writing
+        """
+        fname.parent.mkdir(exist_ok=True, parents=True)
+        with open(fname, "w") as f:
+            f.write(self.version)
+            f.write(str(self.ncomp) + "\n")
+            f.write("\n".join(self.names))
+            f.write("\n")
+            f.write(f"{self.spacedim}\n")
+            f.write(f"{self.time:.17g}\n")
+            f.write(f"{self.nlevels}\n")
+            f.write(" ".join([f"{x:.17g}" for x in self.prob_lo]))
+            f.write(" \n")
+            f.write(" ".join([f"{x:.17g}" for x in self.prob_hi]))
+            f.write(" \n")
+            f.write(" ".join([f"{x:.17g}" for x in self.ref_ratio]))
+            f.write(" \n")
+            line = "("
+            for ilev in range(self.nlevels + 1):
+                line += "("
+                for idim in range(self.spacedim):
+                    end = "," if idim != self.spacedim - 1 else ")"
+                    line += str(self.prob_domain[ilev].small_end[idim]) + end
+                line += " ("
+                for idim in range(self.spacedim):
+                    end = "," if idim != self.spacedim - 1 else ")"
+                    line += str(self.prob_domain[ilev].big_end[idim]) + end
+                line += " ("
+                for idim in range(self.spacedim):
+                    end = "," if idim != self.spacedim - 1 else ")"
+                    line += str(0) + end
+                end = " (" if ilev != self.nlevels else ""
+                line += ")" + end
+            f.write(f"{line} \n")
+
+            f.write(" ".join([str(x) for x in self.level_steps]))
+            f.write(" \n")
+
+            for ilev in range(self.nlevels + 1):
+                f.write(" ".join([str(x) for x in self.cell_sizes[ilev]]))
+                f.write(" \n")
+
+            f.write(f"{self.coord_system}\n")
+            f.write(f"{self.bwidth}\n")
+
+            for ilev in range(self.nlevels + 1):
+                f.write(f"{ilev} {self.ngrids[ilev]} {self.time:.17g}\n")
+                f.write(f"{self.level_steps[ilev]}\n")
+                for igrid in range(self.ngrids[ilev]):
+                    for idim in range(self.spacedim):
+                        glo = self.glohis[ilev][igrid][0][idim]
+                        ghi = self.glohis[ilev][igrid][1][idim]
+                        f.write(f"{glo:.17g} {ghi:.17g}\n")
+                f.write(f"{self.mf_names[ilev]}\n")
+
+    def write_data(self, fname):
+        """Write data file
+
+        Args:
+            fname (path): header file name for writing
+        """
+        assert fname.exists()
+        assert hasattr(self, "mfs")
+        for mf_name, mf in zip(self.mf_names, self.mfs):
+            fdir = pathlib.Path(fname / mf_name).parent
+            fdir.mkdir(exist_ok=True, parents=True)
+            amr.VisMF.Write(mf, str(fname / mf_name))
+
+    def __repr__(self):
+        return "<%s: %s>" % (self.__class__.__name__, self.fname.stem)
