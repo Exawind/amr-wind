@@ -1,6 +1,7 @@
 import argparse
 import glob
 import pathlib
+import shutil
 import amrex.space3d as amr
 from amrex_plotfile import AmrexPlotFile
 import numpy as np
@@ -171,6 +172,13 @@ def main():
             refine(plti, ori, args.refinement_ratio)
             interpolate(plt, plti, ori, args.refinement_ratio)
             plti.write(wname)
+
+    # Copy the time file
+    tname = "time.dat"
+    spath = pathlib.Path(args.fdir)
+    src_time_file = spath / tname
+    dst_time_file = pathlib.Path(spath.name) / tname
+    shutil.copyfile(src_time_file, dst_time_file)
 
 
 if __name__ == "__main__":
