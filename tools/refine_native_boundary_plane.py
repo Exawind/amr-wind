@@ -85,9 +85,13 @@ def refine(plt, ori, refinement_ratio):
             plt.glohis[ilev][igrid][0][normal] = offset - dx
             plt.glohis[ilev][igrid][1][normal] = offset + dx
 
-        ba = amr.BoxArray(plt.prob_domain[ilev])
+        bac = plt.mfs[ilev].box_array()
+        rr = amr.IntVect(refinement_ratio)
+        rr[normal] = 1
+        baf = bac.refine(rr)
+
         dm = plt.mfs[ilev].dm()
-        plt.mfs[ilev] = amr.MultiFab(ba, dm, plt.ncomp, 0)
+        plt.mfs[ilev] = amr.MultiFab(baf, dm, plt.ncomp, 0)
         plt.mfs[ilev].set_val(0.0)
 
 
