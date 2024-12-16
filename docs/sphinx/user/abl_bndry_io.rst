@@ -115,3 +115,9 @@ at a time. The different ``Header*`` files must be linked to
 The different boundaries are counted as ``xlo = 0``, ``ylo = 1``,
 ``zlo = 2``, ``xhi = 3``, ``yhi = 4``, and ``zhi = 5``. The boundary
 files can now be loaded into the visualizers.
+
+AMR-Wind provides Python tools for reading and manipulating boundary
+file data. These are located in the ``tools`` folder of Python
+scripts. One of the provided examples,
+``refine_native_boundary_plane.py``, is a utility to refine boundary
+planes.
