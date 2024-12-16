@@ -535,17 +535,17 @@ void ABLBoundaryPlane::write_bndry_native_header(const std::string& chkname)
                     if (ori.isLow()) {
                         const int lo = bndry_dom.smallEnd(normal);
                         const auto plo = geom.ProbLo(normal);
-                        bndry_dom.setSmall(normal, lo - 1);
+                        bndry_dom.setSmall(normal, lo - m_out_rad);
                         bndry_dom.setBig(normal, lo);
-                        bndry_prob.setLo(normal, plo - dx[normal]);
+                        bndry_prob.setLo(normal, plo - m_out_rad * dx[normal]);
                         bndry_prob.setHi(normal, plo + dx[normal]);
                     } else {
                         const int hi = bndry_dom.bigEnd(normal);
                         const auto phi = geom.ProbHi(normal);
                         bndry_dom.setSmall(normal, hi);
-                        bndry_dom.setBig(normal, hi + 1);
+                        bndry_dom.setBig(normal, hi + m_out_rad);
                         bndry_prob.setLo(normal, phi - dx[normal]);
-                        bndry_prob.setHi(normal, phi + dx[normal]);
+                        bndry_prob.setHi(normal, phi + m_out_rad * dx[normal]);
                     }
                     bndry_geoms[lev] = amrex::Geometry(bndry_dom, &bndry_prob);
                     amrex::Box minBox = m_mesh.boxArray(lev).minimalBox();
