@@ -79,14 +79,11 @@ def refine(plt, ori, refinement_ratio):
 
         dx = plt.cell_sizes[ilev][normal]
         for igrid in range(plt.ngrids[ilev]):
-            if is_low(ori):
-                plo = plt.prob_lo[normal] + refinement_ratio * dx
-                plt.glohis[ilev][igrid][0][normal] = plo - dx
-                plt.glohis[ilev][igrid][1][normal] = plo + dx
-            else:
-                phi = plt.prob_hi[normal] - refinement_ratio * dx
-                plt.glohis[ilev][igrid][0][normal] = phi - dx
-                plt.glohis[ilev][igrid][1][normal] = phi + dx
+            glo = plt.glohis[ilev][igrid][0][normal]
+            ghi = plt.glohis[ilev][igrid][1][normal]
+            offset = (ghi + glo) / 2
+            plt.glohis[ilev][igrid][0][normal] = offset - dx
+            plt.glohis[ilev][igrid][1][normal] = offset + dx
 
         ba = amr.BoxArray(plt.prob_domain[ilev])
         dm = plt.mfs[ilev].dm()
@@ -109,15 +106,15 @@ def interpolate(plt, plti, ori, refinement_ratio):
         xhi = his[perp[0]]
         ylo = los[perp[1]]
         yhi = his[perp[1]]
-        nx = plt.prob_domain[ilev].size[perp[0]]
-        ny = plt.prob_domain[ilev].size[perp[1]]
+        nx = plt.mfs[ilev].box_array()[0].size[perp[0]]
+        ny = plt.mfs[ilev].box_array()[0].size[perp[1]]
         dx = plt.cell_sizes[ilev][perp[0]]
         dy = plt.cell_sizes[ilev][perp[1]]
         x = np.linspace(xlo + 0.5 * dx, xhi - 0.5 * dx, nx)
-        y = np.linspace(ylo + 0.5 * dy, yhi - 0.5 * dy, nx)
+        y = np.linspace(ylo + 0.5 * dy, yhi - 0.5 * dy, ny)
 
-        nxi = plti.prob_domain[ilev].size[perp[0]]
-        nyi = plti.prob_domain[ilev].size[perp[1]]
+        nxi = plti.mfs[ilev].box_array()[0].size[perp[0]]
+        nyi = plti.mfs[ilev].box_array()[0].size[perp[1]]
         dxi = plti.cell_sizes[ilev][perp[0]]
         dyi = plti.cell_sizes[ilev][perp[1]]
         xi = np.linspace(xlo + 0.5 * dxi, xhi - 0.5 * dxi, nxi)
