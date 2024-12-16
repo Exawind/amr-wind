@@ -112,6 +112,12 @@ void fllc_parse(const utils::ActParser& pp, FLLCData& data)
     pp.query("fllc_start_time", data.fllc_start_time);
     std::string typeString = "variable_chord";
     pp.query("fllc_type", typeString);
+    const int match = FLLCTypeMap.count(typeString);
+    if (match == 0) {
+        amrex::Abort(
+            "fllc_parse: Invalid fllc_type provided. Available options are "
+            "constant_chord and variable_chord.");
+    }
     data.correction_type = FLLCTypeMap.at(typeString);
     pp.query("fllc_nonuniform", data.nonuniform);
     pp.query("fllc_epsilon_dr_ratio", data.eps_dr);
