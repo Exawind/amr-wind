@@ -707,7 +707,8 @@ void ABLBoundaryPlane::read_header()
         ncf.var("time").get(m_in_times.data());
 
         // Sanity check the input file time
-        AMREX_ALWAYS_ASSERT(m_in_times[0] <= m_time.current_time());
+        AMREX_ALWAYS_ASSERT(
+            m_in_times[0] <= m_time.current_time() + constants::LOOSE_TOL);
 
         for (auto& plane_grp : ncf.all_groups()) {
             int normal, face_dir;
@@ -1038,7 +1039,9 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
     const amrex::Real time =
         nph_target_time ? m_time.current_time() + 0.5 * m_time.delta_t()
                         : m_time.new_time();
-    AMREX_ALWAYS_ASSERT((m_in_times[0] <= time) && (time < m_in_times.back()));
+    AMREX_ALWAYS_ASSERT(
+        (m_in_times[0] <= time + constants::LOOSE_TOL) &&
+        (time < m_in_times.back() + constants::LOOSE_TOL));
 
     // return early if current data files can still be interpolated in time
     if ((m_in_data.tn() <= time) && (time < m_in_data.tnp1())) {
@@ -1079,7 +1082,8 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
         const int t_step2 = m_in_timesteps[index + 1];
 
         AMREX_ALWAYS_ASSERT(
-            (m_in_times[index] <= time) && (time <= m_in_times[index + 1]));
+            (m_in_times[index] <= time + constants::LOOSE_TOL) &&
+            (time <= m_in_times[index + 1] + constants::LOOSE_TOL));
 
         const std::string chkname1 =
             m_filename + amrex::Concatenate("/bndry_output", t_step1);
