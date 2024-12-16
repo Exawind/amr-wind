@@ -10,10 +10,16 @@
 namespace amr_wind::utils {
 
 //! Return closest index (from lower) of value in vector
-AMREX_FORCE_INLINE int
-closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
+AMREX_FORCE_INLINE int closest_index(
+    const amrex::Vector<amrex::Real>& vec,
+    const amrex::Real value,
+    const amrex::Real tol = 0.0)
 {
-    auto const it = std::upper_bound(vec.begin(), vec.end(), value);
+    auto it = std::upper_bound(vec.begin(), vec.end(), value);
+    if (it == vec.end()) {
+        // Try again with tolerance added
+        it = std::upper_bound(vec.begin(), vec.end(), value - tol);
+    }
     AMREX_ALWAYS_ASSERT(it != vec.end());
 
     const int idx = static_cast<int>(std::distance(vec.begin(), it));
