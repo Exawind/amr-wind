@@ -721,6 +721,36 @@ amrex::Real check_iblank_cell_impl(amr_wind::IntField& mask_cell)
     }
     return error_total;
 }
+
+amrex::Real check_iblank_cell_default_impl(amr_wind::IntField& mask_cell)
+{
+    amrex::Real error_total = 0;
+
+    for (int lev = 0; lev < mask_cell.repo().num_active_levels(); ++lev) {
+
+        error_total += amrex::ReduceSum(
+            mask_cell(lev), 0,
+            [=] AMREX_GPU_HOST_DEVICE(
+                amrex::Box const& bx,
+                amrex::Array4<int const> const& i_arr) -> amrex::Real {
+                amrex::Real error = 0;
+
+                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                    bool in_overset_x = (i >= 1 && i <= 6);
+                    bool in_overset_y = (j >= 1 && j <= 6);
+                    bool in_overset_z = (k >= 1 && k <= 6);
+                    if (in_overset_x && in_overset_y && in_overset_z) {
+                        error += std::abs(i_arr(i, j, k) - 0);
+                    } else {
+                        error += std::abs(i_arr(i, j, k) - 1);
+                    }
+                });
+
+                return error;
+            });
+    }
+    return error_total;
+}
 } // namespace
 
 TEST_F(VOFOversetOps, alpha_flux)
@@ -1077,11 +1107,17 @@ TEST_F(VOFOversetOps, projection_masks)
     // Check against expectations
     amrex::Real error_node = check_iblank_node_impl(mask_node);
     amrex::Real error_cell = check_iblank_cell_impl(mask_cell);
-
     amrex::ParallelDescriptor::ReduceRealSum(error_node);
     amrex::ParallelDescriptor::ReduceRealSum(error_cell);
-
     EXPECT_NEAR(error_node, 0.0, 1e-10);
+    EXPECT_NEAR(error_cell, 0.0, 1e-10);
+
+    // Change mask_cell to default (single-phase) approach
+    amr_wind::overset_ops::revert_mask_cell_after_mac(repo);
+
+    // Check against expectations
+    error_cell = check_iblank_cell_default_impl(mask_cell);
+    amrex::ParallelDescriptor::ReduceRealSum(error_cell);
     EXPECT_NEAR(error_cell, 0.0, 1e-10);
 }
 
