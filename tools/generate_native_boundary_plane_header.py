@@ -18,6 +18,15 @@ import numpy as np
 import pandas as pd
 
 
+def variable_names(field, ncomp):
+    if ncomp == 1:
+        return [field]
+    elif ncomp == 3:
+        return [f"{field}{x}" for x in ["x", "y", "z"]]
+    else:
+        raise Exception("Invalid ncomp")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="A tool to generate native boundary planes header files"
@@ -149,7 +158,7 @@ def main():
             with open(hname, "w") as f:
                 f.write("HyperCLaw-V1.1\n")
                 f.write(f"{ncomp}\n")
-                names = [f"comp_{x}" for x in range(ncomp)]
+                names = variable_names(field, ncomp)
                 f.write("\n".join(names))
                 f.write("\n")
                 f.write(f"{spacedim}\n")
