@@ -104,17 +104,20 @@ def main():
                 [x / (ref_ratio[ilev - 1] ** ilev) for x in cell_sizes[0]]
             )
 
+        level_steps = [step] * nlevels
+
         for field, ori in itertools.product(fields, oris):
             mfs = []
             for ilev in range(nlevels):
                 mf_h_name = fpath / f"{lvl_pfx}{ilev}" / f"{field}_{ori}_H"
                 mfs.append(amr.VisMF.Read(str(mf_h_name).replace("_H", "")))
             ncomp = mfs[0].num_comp
+            vnames = variable_names(field, ncomp)
 
-            ngrids = []
+            bas = [mf.box_array() for mf in mfs]
+
+            ngrids = [ba.size for ba in bas]
             for ilev in range(nlevels):
-                ba = mfs[ilev].box_array()
-                ngrids.append(ba.size)
                 assert ngrids[ilev] == 1
 
             normal = au.normal_from_ori(ori)
@@ -158,8 +161,7 @@ def main():
             with open(hname, "w") as f:
                 f.write("HyperCLaw-V1.1\n")
                 f.write(f"{ncomp}\n")
-                names = variable_names(field, ncomp)
-                f.write("\n".join(names))
+                f.write("\n".join(vnames))
                 f.write("\n")
                 f.write(f"{spacedim}\n")
                 f.write(f"{time:.17g}\n")
@@ -173,7 +175,7 @@ def main():
 
                 line = "("
                 for ilev in range(nlevels):
-                    ba = mfs[ilev].box_array()
+                    ba = bas[ilev]
                     small_end = ba[0].small_end
                     big_end = ba[0].big_end
                     line += "("
@@ -192,7 +194,6 @@ def main():
                     line += ")" + end
                 f.write(f"{line} \n")
 
-                level_steps = [step] * nlevels
                 f.write(" ".join([str(x) for x in level_steps]))
                 f.write(" \n")
 
