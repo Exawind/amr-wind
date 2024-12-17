@@ -53,10 +53,10 @@ jobs:
           cat build-output-warnings.txt
           exit $(tail -n 1 build-output-warnings.txt | awk '{print $2}')
       - name: Deploy
-        if: github.event_name == 'push'
-        uses: JamesIves/github-pages-deploy-action@releases/v3
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-          BRANCH: gh-pages
-          FOLDER: documentation
-          SINGLE_COMMIT: true
+          token: ${{secrets.GITHUB_TOKEN}}
+          branch: gh-pages
+          folder: documentation
+          single-commit: true
