@@ -269,6 +269,11 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real stokes_sinh_sin(
     amrex::Real zsl,
     amrex::Real z)
 {
+    amrex::Real nkdz = n * wavenumber * (waterdepth + (z - zsl));
+    if (nkdz > 50. * M_PI) {
+        nkdz = 50. * M_PI;
+    }
+
     amrex::Real D = 0.0;
     if (m == 1 && n == 1) {
         D = a11;
@@ -298,8 +303,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real stokes_sinh_sin(
         D = a55;
     }
 
-    return std::pow(eps, m) * D * n * wavenumber *
-           std::sinh(n * wavenumber * (waterdepth + (z - zsl))) *
+    return std::pow(eps, m) * D * n * wavenumber * std::sinh(nkdz) *
            std::sin(n * phase);
 }
 
@@ -322,6 +326,11 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real stokes_cosh_cos(
     amrex::Real zsl,
     amrex::Real z)
 {
+    amrex::Real nkdz = n * wavenumber * (waterdepth + (z - zsl));
+    if (nkdz > 50. * M_PI) {
+        nkdz = 50. * M_PI;
+    }
+
     amrex::Real D = 0.0;
     if (m == 1 && n == 1) {
         D = a11;
@@ -351,8 +360,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real stokes_cosh_cos(
         D = a55;
     }
 
-    return std::pow(eps, m) * D * n * wavenumber *
-           std::cosh(n * wavenumber * (waterdepth + (z - zsl))) *
+    return std::pow(eps, m) * D * n * wavenumber * std::cosh(nkdz) *
            std::cos(n * phase);
 }
 
