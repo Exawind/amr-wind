@@ -157,7 +157,8 @@ def main():
 
             hname = fpath / f"Header_{ori}_{field}"
             if hname.exists():
-                raise Exception(f"{hname} exists already.")
+                print(f"{hname} exists already. Skipping.")
+                continue
             with open(hname, "w") as f:
                 f.write("HyperCLaw-V1.1\n")
                 f.write(f"{ncomp}\n")
