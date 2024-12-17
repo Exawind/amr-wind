@@ -103,12 +103,14 @@ Example for ``FixedWingLine``::
 
 .. input_param:: Actuator.FixedWingLine.fllc_type
 
-  **type:** String, optional
+  **type:** String, optional, default = ``variable_chord``
 
-  This option tells whether to use the original fllc formulation as outlined in
-  `Martinez-Tossas and Meneveau (2019) <https://doi.org/10.1017/jfm.2018.994>`_
-  which assumes a constant chord length across blade (`constant_chord`), or
-  to use a new formulation which accounts for chord variations (`variable_chord`).
+  This option tells whether to use the original fllc formulation outlined in
+  `Martinez-Tossas and Meneveau (2019) <https://doi.org/10.1017/jfm.2018.994>`_,
+  which assumes a constant chord length across blade (specified as ``constant_chord``), or
+  to use a new formulation outlined in `Martinez-Tossas et al. (2023)
+  <https://www.nrel.gov/docs/fy24osti/85343.pdf>`_, which accounts for chord
+  variations (specified as ``variable_chord``).
 
 .. input_param:: Actuator.FixedWingLine.fllc_relaxation_factor
 
