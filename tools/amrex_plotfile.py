@@ -2,7 +2,7 @@
 
 """\
 AMReX Plot File Processor
------------------------------
+-------------------------
 
 This module provides a python class :class:`AmrexPlotFile` that can parse
 the plot files written out by AMR-Wind.
@@ -54,7 +54,8 @@ class AmrexPlotFile:
                 self.names.append(f.readline().rstrip())
             self.spacedim = int(f.readline())
             self.time = float(f.readline())
-            self.nlevels = int(f.readline())
+            self.finest_level = int(f.readline())
+            self.nlevels = self.finest_level + 1
 
             self.prob_lo = [float(x) for x in f.readline().split()]
             self.prob_hi = [float(x) for x in f.readline().split()]
@@ -70,7 +71,7 @@ class AmrexPlotFile:
                 .split()
             ]
             self.prob_domain = []
-            for ilev in range(self.nlevels + 1):
+            for ilev in range(self.nlevels):
                 offset = ilev * 9
                 small_end = amr.IntVect(line[0 + offset : 3 + offset])
                 big_end = amr.IntVect(line[3 + offset : 6 + offset])
@@ -80,7 +81,7 @@ class AmrexPlotFile:
             self.level_steps = [int(x) for x in f.readline().rstrip().split()]
 
             self.cell_sizes = []
-            for ilev in range(self.nlevels + 1):
+            for ilev in range(self.nlevels):
                 line = [float(x) for x in f.readline().rstrip().split()]
                 self.cell_sizes.append(line)
 
@@ -90,8 +91,8 @@ class AmrexPlotFile:
             self.mf_names = []
             self.level_steps = []
             self.ngrids = []
-            self.glohis = [[] for _ in range(self.nlevels + 1)]
-            for ilev in range(self.nlevels + 1):
+            self.glohis = [[] for _ in range(self.nlevels)]
+            for ilev in range(self.nlevels):
                 line = f.readline().split()
                 lev = int(line[0])
                 self.ngrids.append(int(line[1]))
@@ -140,7 +141,7 @@ class AmrexPlotFile:
             f.write("\n")
             f.write(f"{self.spacedim}\n")
             f.write(f"{self.time:.17g}\n")
-            f.write(f"{self.nlevels}\n")
+            f.write(f"{self.finest_level}\n")
             f.write(" ".join([f"{x:.17g}" for x in self.prob_lo]))
             f.write(" \n")
             f.write(" ".join([f"{x:.17g}" for x in self.prob_hi]))
@@ -148,7 +149,7 @@ class AmrexPlotFile:
             f.write(" ".join([f"{x:.17g}" for x in self.ref_ratio]))
             f.write(" \n")
             line = "("
-            for ilev in range(self.nlevels + 1):
+            for ilev in range(self.nlevels):
                 line += "("
                 for idim in range(self.spacedim):
                     end = "," if idim != self.spacedim - 1 else ")"
@@ -161,21 +162,21 @@ class AmrexPlotFile:
                 for idim in range(self.spacedim):
                     end = "," if idim != self.spacedim - 1 else ")"
                     line += str(0) + end
-                end = " (" if ilev != self.nlevels else ""
+                end = " (" if ilev != self.finest_level else ""
                 line += ")" + end
             f.write(f"{line} \n")
 
             f.write(" ".join([str(x) for x in self.level_steps]))
             f.write(" \n")
 
-            for ilev in range(self.nlevels + 1):
+            for ilev in range(self.nlevels):
                 f.write(" ".join([str(x) for x in self.cell_sizes[ilev]]))
                 f.write(" \n")
 
             f.write(f"{self.coord_system}\n")
             f.write(f"{self.bwidth}\n")
 
-            for ilev in range(self.nlevels + 1):
+            for ilev in range(self.nlevels):
                 f.write(f"{ilev} {self.ngrids[ilev]} {self.time:.17g}\n")
                 f.write(f"{self.level_steps[ilev]}\n")
                 for igrid in range(self.ngrids[ilev]):
