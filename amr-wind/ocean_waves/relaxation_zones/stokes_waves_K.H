@@ -365,7 +365,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real stokes_cosh_cos(
 }
 
 // Based on Fenton 1985
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE void stokes_waves(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_waves(
     int StokesOrder,
     amrex::Real wavelength,
     amrex::Real waterdepth,
