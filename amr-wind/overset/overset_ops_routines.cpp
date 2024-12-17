@@ -50,7 +50,7 @@ void iblank_node_to_mask_vof(
         const auto& vofarrs = vof.const_arrays();
         const auto& marrs = mask.arrays();
         amrex::ParallelFor(
-            ibl, ibl.n_grow,
+            ibl, amrex::IntVect(0),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 // Default is masking all 0 and -1 iblanks
                 marrs[nbx](i, j, k) = amrex::max(ibarrs[nbx](i, j, k), 0);
@@ -83,6 +83,7 @@ void iblank_node_to_mask_vof(
                     marrs[nbx](i, j, k) = 1;
                 }
             });
+        mask.FillBoundary(maskf.repo().mesh().Geom(lev).periodicity());
     }
     amrex::Gpu::synchronize();
 }
@@ -111,7 +112,7 @@ void prepare_mask_cell_for_mac(FieldRepo& repo)
             const auto& vofarrs = vof.const_arrays();
             const auto& marrs = mask.arrays();
             amrex::ParallelFor(
-                ibl, ibl.n_grow,
+                ibl, amrex::IntVect(0),
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                     // Default is masking all 0 and -1 iblanks
                     marrs[nbx](i, j, k) = amrex::max(ibarrs[nbx](i, j, k), 0);
@@ -135,6 +136,7 @@ void prepare_mask_cell_for_mac(FieldRepo& repo)
                         marrs[nbx](i, j, k) = 1;
                     }
                 });
+            mask.FillBoundary(mask_field.repo().mesh().Geom(lev).periodicity());
         }
         amrex::Gpu::synchronize();
     }
