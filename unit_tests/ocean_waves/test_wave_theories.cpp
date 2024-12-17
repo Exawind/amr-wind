@@ -10,16 +10,16 @@ class WaveTheoriesTest : public MeshTest
 
 TEST_F(WaveTheoriesTest, StokesWaves)
 {
-    amrex::Real CoeffTol = 1e-4;
+    amrex::Real coeff_tol = 1e-4;
 
     amrex::Real wavenumber = 2.0;
-    amrex::Real waterdepth = 0.376991;
-    int StokesOrder = 5;
+    amrex::Real water_depth = 0.376991;
+    int stokes_order = 5;
     amrex::Real c0, a11, a22, b22, c2, a31, a33, b31, a42;
     amrex::Real a44, b42, b44, c4, a51, a53, a55, b53, b55;
 
     amr_wind::ocean_waves::relaxation_zones::stokes_coefficients(
-        StokesOrder, wavenumber, waterdepth, c0, a11, a22, b22, c2, a31, a33,
+        stokes_order, wavenumber, water_depth, c0, a11, a22, b22, c2, a31, a33,
         b31, a42, a44, b42, b44, c4, a51, a53, a55, b53, b55);
 
     // Gold coefficient values taken from table 2 of
@@ -46,41 +46,41 @@ TEST_F(WaveTheoriesTest, StokesWaves)
     const amrex::Real gold_C2 = 1.940215;
     const amrex::Real gold_C4 = -12.970403;
 
-    EXPECT_NEAR(gold_A11, a11, CoeffTol);
-    EXPECT_NEAR(gold_A22, a22, CoeffTol);
-    EXPECT_NEAR(gold_A31, a31, CoeffTol);
-    EXPECT_NEAR(gold_A33, a33, CoeffTol);
-    EXPECT_NEAR(gold_A42, a42, CoeffTol);
-    EXPECT_NEAR(gold_A44, a44, CoeffTol);
-    EXPECT_NEAR(gold_A51, a51, CoeffTol);
-    EXPECT_NEAR(gold_A53, a53, CoeffTol);
-    EXPECT_NEAR(gold_A55, a55, CoeffTol);
-    EXPECT_NEAR(gold_B22, b22, CoeffTol);
-    EXPECT_NEAR(gold_B31, b31, CoeffTol);
-    EXPECT_NEAR(gold_B42, b42, CoeffTol);
-    EXPECT_NEAR(gold_B44, b44, CoeffTol);
-    EXPECT_NEAR(gold_B53, b53, CoeffTol);
-    EXPECT_NEAR(gold_B55, b55, CoeffTol);
-    EXPECT_NEAR(gold_C0, c0, CoeffTol);
-    EXPECT_NEAR(gold_C2, c2, CoeffTol);
-    EXPECT_NEAR(gold_C4, c4, CoeffTol);
+    EXPECT_NEAR(gold_A11, a11, coeff_tol);
+    EXPECT_NEAR(gold_A22, a22, coeff_tol);
+    EXPECT_NEAR(gold_A31, a31, coeff_tol);
+    EXPECT_NEAR(gold_A33, a33, coeff_tol);
+    EXPECT_NEAR(gold_A42, a42, coeff_tol);
+    EXPECT_NEAR(gold_A44, a44, coeff_tol);
+    EXPECT_NEAR(gold_A51, a51, coeff_tol);
+    EXPECT_NEAR(gold_A53, a53, coeff_tol);
+    EXPECT_NEAR(gold_A55, a55, coeff_tol);
+    EXPECT_NEAR(gold_B22, b22, coeff_tol);
+    EXPECT_NEAR(gold_B31, b31, coeff_tol);
+    EXPECT_NEAR(gold_B42, b42, coeff_tol);
+    EXPECT_NEAR(gold_B44, b44, coeff_tol);
+    EXPECT_NEAR(gold_B53, b53, coeff_tol);
+    EXPECT_NEAR(gold_B55, b55, coeff_tol);
+    EXPECT_NEAR(gold_C0, c0, coeff_tol);
+    EXPECT_NEAR(gold_C2, c2, coeff_tol);
+    EXPECT_NEAR(gold_C4, c4, coeff_tol);
 }
 
 TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
 {
-    amrex::Real Tol = 1e-4;
+    amrex::Real tol = 1e-4;
 
     amrex::Real g = 9.81;
-    int StokesOrder = 5;
-    // wavenumber k and waterdepth d chosen so that kd = 0.758932
+    int stokes_order = 5;
+    // wavenumber k and water_depth d chosen so that kd = 0.758932
     // to match value of column 3 from table 2 in
     // Fenton, J. Fifth Order Stokes Theory for Steady Waves
     // Journal of Waterway, Port, Coastal and Ocean Engineering, 1985, 111,
     // 216-234
     amrex::Real wavenumber = 2.0;
-    amrex::Real waterdepth = 0.376991;
+    amrex::Real water_depth = 0.376991;
     amrex::Real wavelength = 2. * M_PI / wavenumber;
-    amrex::Real waveheight = 0.1;
+    amrex::Real wave_height = 0.1;
     amrex::Real zsl = 0.;
     amrex::Real x = 0.;
     amrex::Real z = -0.25;
@@ -92,7 +92,7 @@ TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
     amrex::Real w_w = 0.;
 
     amr_wind::ocean_waves::relaxation_zones::stokes_waves(
-        StokesOrder, wavelength, waterdepth, waveheight, zsl, g, x, z, time,
+        stokes_order, wavelength, water_depth, wave_height, zsl, g, x, z, time,
         phase_offset, eta, u_w, v_w, w_w);
 
     // Coefficients values taken from column 3 of table 2 of
@@ -106,11 +106,11 @@ TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
     amrex::Real B53 = -103.44536875;
     amrex::Real B55 = 37.200027;
 
-    amrex::Real eps = wavenumber * waveheight / 2.;
-    amrex::Real S = 2. * std::exp(2. * wavenumber * waterdepth) /
-                    (std::exp(4. * wavenumber * waterdepth) + 1.);
+    amrex::Real eps = wavenumber * wave_height / 2.;
+    amrex::Real S = 2. * std::exp(2. * wavenumber * water_depth) /
+                    (std::exp(4. * wavenumber * water_depth) + 1.);
     amrex::Real C = 1.0 - S;
-    amrex::Real C0 = std::sqrt(std::tanh(wavenumber * waterdepth));
+    amrex::Real C0 = std::sqrt(std::tanh(wavenumber * water_depth));
     amrex::Real C2 = C0 * (2 + 7 * std::pow(S, 2)) / (4 * std::pow(C, 2));
     amrex::Real C4 = C0 *
                      (4 + 32 * S - 116 * std::pow(S, 2) - 400 * std::pow(S, 3) -
@@ -135,12 +135,12 @@ TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
             wavenumber +
         zsl;
 
-    EXPECT_NEAR(eta, eta_theory, Tol);
+    EXPECT_NEAR(eta, eta_theory, tol);
 
     // Re-evaluate with new set of coefficients
     // Deep-water limit (k*d->\infty)
-    waterdepth = 100;
-    waveheight = 0.16;
+    water_depth = 100;
+    wave_height = 0.16;
     wavenumber = 0.156;
     wavelength = 2. * M_PI / wavenumber;
     zsl = 0.;
@@ -154,7 +154,7 @@ TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
     w_w = 0.;
 
     amr_wind::ocean_waves::relaxation_zones::stokes_waves(
-        StokesOrder, wavelength, waterdepth, waveheight, zsl, g, x, z, time,
+        stokes_order, wavelength, water_depth, wave_height, zsl, g, x, z, time,
         phase_offset, eta, u_w, v_w, w_w);
 
     // Coefficients values taken from column 1 of table 2 of
@@ -168,7 +168,7 @@ TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
     B53 = 0.7734375;
     B55 = 0.3255208;
 
-    eps = wavenumber * waveheight / 2.;
+    eps = wavenumber * wave_height / 2.;
     // Coefficients computed analytically by taking limit kd -> \infty and
     // simplified accordingly
     // Note that in this limit S = 0 and C = 1 and thus they are omitted here
@@ -193,7 +193,7 @@ TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
             wavenumber +
         zsl;
 
-    EXPECT_NEAR(eta, eta_theory, Tol);
+    EXPECT_NEAR(eta, eta_theory, tol);
 }
 
 TEST_F(WaveTheoriesTest, StokesWaveLength)
@@ -215,14 +215,14 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
             wave_period, water_depth, wave_height, wave_order, g, tol_lambda,
             iter_max);
 
-    const amrex::Real k_Newton = 2.0 * M_PI / lambda;
+    const amrex::Real k_newton = 2.0 * M_PI / lambda;
 
     // Compare with expected wavenumber from theory k = omega^2/g, where omega =
     // 2Pi/wave_period
     const amrex::Real k_theory =
         (2.0 * M_PI / wave_period) * (2.0 * M_PI / wave_period) / g;
 
-    EXPECT_NEAR(k_Newton, k_theory, 1e-8);
+    EXPECT_NEAR(k_newton, k_theory, 1e-8);
 
     // Check wave theory
     wave_height = 0.2;
