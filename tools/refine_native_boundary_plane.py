@@ -4,6 +4,7 @@ import pathlib
 import shutil
 import amrex.space3d as amr
 from amrex_plotfile import AmrexPlotFile
+import amrex_utils as au
 import numpy as np
 from scipy.interpolate import RegularGridInterpolator
 
@@ -14,40 +15,6 @@ def parse_fields_from_header_name(hname):
 
 def parse_orientations_from_header_name(hname):
     return int(hname.split("_")[-2])
-
-
-def is_low(ori):
-    if ori == 0 or ori == 1 or ori == 2:
-        return True
-    else:
-        return False
-
-
-def normal_from_ori(ori):
-    """Return the normal directions given an orientation"""
-    if ori == 0 or ori == 3:
-        return 0
-    elif ori == 1 or ori == 4:
-        return 1
-    elif ori == 2 or ori == 5:
-        return 2
-    else:
-        raise Exception("Invalid ori")
-    return -1
-
-
-def perpendicular_from_ori(ori):
-    """Return the perpendicular directions given an orientation"""
-    normal = normal_from_ori(ori)
-    if normal == 0:
-        return [1, 2]
-    elif normal == 1:
-        return [0, 2]
-    elif normal == 2:
-        return [0, 1]
-    else:
-        raise Exception("Invalid normal")
-    return [-1, -1]
 
 
 def slice_from_normal(normal, i, comp):
@@ -64,10 +31,10 @@ def slice_from_normal(normal, i, comp):
 
 def refine(plt, ori, refinement_ratio):
     """Update data in a boundary plane for integer refinement."""
-    normal = normal_from_ori(ori)
-    perp = perpendicular_from_ori(ori)
+    normal = au.normal_from_ori(ori)
+    perp = au.perpendicular_from_ori(ori)
 
-    for ilev in range(plt.nlevels + 1):
+    for ilev in range(plt.nlevels):
         small_endi = plt.prob_domain[ilev].small_end
         big_endi = plt.prob_domain[ilev].big_end
         for p in perp:
@@ -97,10 +64,10 @@ def refine(plt, ori, refinement_ratio):
 
 def interpolate(plt, plti, ori, refinement_ratio):
     """Interpolate from one boundary file to another"""
-    normal = normal_from_ori(ori)
-    perp = perpendicular_from_ori(ori)
+    normal = au.normal_from_ori(ori)
+    perp = au.perpendicular_from_ori(ori)
 
-    for ilev in range(plt.nlevels + 1):
+    for ilev in range(plt.nlevels):
         assert plt.mfs[ilev].box_array().size == 1
         assert plt.ngrids[ilev] == 1
         original = plt.mfs[ilev].to_xp()[0]
