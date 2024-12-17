@@ -58,8 +58,6 @@ private:
     Field& m_temperature;
     //! Gravity vector (m/s^2)
     amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
-    //! Reference temperature (Kelvin)
-    amrex::Real m_ref_theta{300.0};
     amrex::Real m_surf_flux{0};
     amrex::Real m_lengthscale_switch{800};
 };

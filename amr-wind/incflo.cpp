@@ -430,6 +430,7 @@ void incflo::init_physics_and_pde()
         amrex::ParmParse pp("incflo");
         pp.query("prescribe_velocity", m_prescribe_vel);
     }
+    m_sim.create_transport_model();
     m_sim.create_turbulence_model();
 
     // Initialize the refinement criteria

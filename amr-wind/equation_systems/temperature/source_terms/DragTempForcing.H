@@ -4,6 +4,7 @@
 #include "amr-wind/equation_systems/temperature/TemperatureSource.H"
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/CFDSim.H"
+#include "amr-wind/transport_models/TransportModel.H"
 
 namespace amr_wind::pde::temperature {
 
@@ -29,7 +30,12 @@ private:
     const Field& m_velocity;
     const Field& m_temperature;
     amrex::Real m_drag_coefficient{1.0};
-    amrex::Real m_reference_temperature{300.0};
+
+    //! Transport model
+    const transport::TransportModel& m_transport;
+
+    //! Reference temperature
+    std::unique_ptr<ScratchField> m_ref_theta;
 };
 
 } // namespace amr_wind::pde::temperature
