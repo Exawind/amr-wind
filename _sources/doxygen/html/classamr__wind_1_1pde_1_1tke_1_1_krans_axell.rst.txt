@@ -1,0 +1,14 @@
+.. meta::9bbda2e65768a8c70746d49fbe2eeb702528f7d92c22feeb473e15497c62bc1c96b9675e92f7cdece03fe504208206774c56507d1a32e1fd9ea343d180d845ac
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::tke::KransAxell Class Reference
+
+KransAxell Class Reference
+==========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html

@@ -1,0 +1,14 @@
+.. meta::c8cb1964bc9256f7164d4fcdf2cfd17fd3e3238b6efc3b2094725dde1e4a198d0189d024bbbd1453b1741d9dd8e5c5c530626bcdcf1c76fd1706f1be11849d0b
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/bc_ops.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/bc\_ops.H File Reference
+===============================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: bc__ops_8_h.html
