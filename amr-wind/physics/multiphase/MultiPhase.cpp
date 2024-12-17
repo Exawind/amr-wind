@@ -304,6 +304,7 @@ void MultiPhase::set_density_via_levelset()
         auto& density = m_density(lev);
         auto& levelset = (*m_levelset)(lev);
 
+        // this one
         for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
             const auto& vbx = mfi.validbox();
             const auto& dx = geom[lev].CellSizeArray();
@@ -342,6 +343,7 @@ void MultiPhase::set_density_via_vof(amr_wind::FieldState fstate)
         auto& density = m_density.state(fstate)(lev);
         auto& vof = (*m_vof).state(fstate)(lev);
 
+        // this one
         for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
             const auto& vbx = mfi.validbox();
             const amrex::Array4<amrex::Real>& F = vof.array(mfi);
@@ -381,6 +383,7 @@ void MultiPhase::calculate_advected_facedensity()
 
     for (int lev = 0; lev < nlevels; ++lev) {
 
+        // this one
         for (amrex::MFIter mfi((*m_vof)(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
             const auto& bxg1 = amrex::grow(bx, 1);
@@ -429,6 +432,7 @@ void MultiPhase::favre_filtering()
         auto& velocity = m_velocity(lev);
         auto& density = m_density(lev);
 
+        // this one
         for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.growntilebox(1);
             const amrex::Array4<amrex::Real>& vel = velocity.array(mfi);
@@ -450,6 +454,7 @@ void MultiPhase::favre_filtering()
         auto& vof = (*m_vof)(lev);
         auto& mom_fil = (*momentum_filter)(lev);
         auto& rho_fil = (*density_filter)(lev);
+        // this one
         for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
             const auto& vbx = mfi.validbox();
             const amrex::Array4<amrex::Real>& vel = velocity.array(mfi);
@@ -480,6 +485,7 @@ void MultiPhase::levelset2vof()
         auto& vof = (*m_vof)(lev);
         const auto& dx = geom[lev].CellSizeArray();
 
+        // this one
         for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
             const auto& vbx = mfi.validbox();
             const amrex::Array4<amrex::Real>& phi = levelset.array(mfi);

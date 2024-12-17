@@ -81,6 +81,7 @@ void Kosovic<Transport>::update_turbulent_viscosity(
         const amrex::Real locSurfaceRANSExp = m_surfaceRANSExp;
         const amrex::Real locSurfaceFactor = m_surfaceFactor;
         const amrex::Real locC1 = m_C1;
+        // this one
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
             const auto& mu_arr = mu_turb(lev).array(mfi);
@@ -140,6 +141,7 @@ void Kosovic<Transport>::update_alphaeff(Field& alphaeff)
     const amrex::Real muCoeff = (m_refMOL < 0) ? 3 : 1;
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
+        // this one
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
             const auto& muturb_arr = mu_turb(lev).array(mfi);

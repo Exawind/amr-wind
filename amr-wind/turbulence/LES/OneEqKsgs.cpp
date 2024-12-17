@@ -118,6 +118,7 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
         const amrex::Real dz = geom.CellSize()[2];
         const amrex::Real ds = std::cbrt(dx * dy * dz);
 
+        // this one
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
             const auto& mu_arr = mu_turb(lev).array(mfi);
@@ -181,6 +182,7 @@ void OneEqKsgsM84<Transport>::update_alphaeff(Field& alphaeff)
         const amrex::Real dz = geom.CellSize()[2];
         const amrex::Real ds = std::cbrt(dx * dy * dz);
 
+        // this one
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
             const auto& muturb_arr = mu_turb(lev).array(mfi);
@@ -247,6 +249,7 @@ void OneEqKsgsM84<Transport>::post_advance_work()
         const amrex::Real dz = geom.CellSize()[2];
         const amrex::Real ds = std::cbrt(dx * dy * dz);
 
+        // this one
         for (amrex::MFIter mfi(tke(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.growntilebox();
             const auto& tke_arr = tke(lev).array(mfi);
