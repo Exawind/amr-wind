@@ -8,7 +8,7 @@
 
 namespace amr_wind::multiphase {
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void eulerian_implicit(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE void eulerian_implicit(
     const int i,
     const int j,
     const int k,
@@ -76,7 +76,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void eulerian_implicit(
     }
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_eulerian_fluxes(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE void balance_eulerian_fluxes(
     const int i,
     const int j,
     const int k,
@@ -104,7 +104,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_eulerian_fluxes(
         0.0, amrex::min<amrex::Real>(1.0, volfrac(i, j, k)));
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fluxes_bc_save(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE void fluxes_bc_save(
     const int i,
     const int j,
     const int k,
@@ -181,7 +181,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fluxes_bc_save(
     }
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void c_mask(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE void c_mask(
     const int i,
     const int j,
     const int k,
@@ -195,7 +195,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void c_mask(
     }
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void remove_vof_debris(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE void remove_vof_debris(
     const int i,
     const int j,
     const int k,

@@ -126,6 +126,8 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
             }
             levelz0[nbx](i, j, k, 0) = roughz0;
         });
+    amrex::Gpu::synchronize();
+
     amrex::ParallelFor(
         blanking, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
             if ((levelBlanking[nbx](i, j, k, 0) == 0) && (k > 0) &&
@@ -135,7 +137,9 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
                 levelDrag[nbx](i, j, k, 0) = 0;
             }
         });
+    amrex::Gpu::synchronize();
 }
+
 void TerrainDrag::post_regrid_actions()
 {
     const int nlevels = m_sim.repo().num_active_levels();

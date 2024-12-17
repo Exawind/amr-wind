@@ -54,6 +54,7 @@ void Actuator::pre_init_actions()
                        << std::endl;
     }
 
+    int cnt_turbfast = 0;
     for (int i = 0; i < nturbines; ++i) {
         const std::string& tname = labels[i];
         const std::string& prefix = identifier() + "." + tname;
@@ -63,6 +64,9 @@ void Actuator::pre_init_actions()
         pp.query("type", type);
         pp1.query("type", type);
         AMREX_ALWAYS_ASSERT(!type.empty());
+        cnt_turbfast +=
+            ((type == "TurbineFastLine") || (type == "TurbineFastDisk")) ? 1
+                                                                         : 0;
 
         auto obj = ActuatorModel::create(type, m_sim, tname, i);
 
@@ -72,6 +76,10 @@ void Actuator::pre_init_actions()
         obj->read_inputs(inp);
         m_actuators.emplace_back(std::move(obj));
     }
+    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+        cnt_turbfast <= amrex::ParallelDescriptor::NProcs(),
+        "Number of OpenFAST turbines must match or be lower than the number of "
+        "ranks");
 }
 
 void Actuator::post_init_actions()
@@ -112,6 +120,20 @@ void Actuator::post_init_actions()
 void Actuator::post_regrid_actions()
 {
     BL_PROFILE("amr-wind::actuator::Actuator::post_regrid_actions");
+
+    const bool compute_root_proc = std::any_of(
+        m_actuators.begin(), m_actuators.end(),
+        [](const auto& act) { return act->info().root_proc == -1; });
+    if (compute_root_proc) {
+        amrex::Vector<int> act_proc_count(
+            amrex::ParallelDescriptor::NProcs(), 0);
+        for (auto& act : m_actuators) {
+            auto& info = act->info();
+            info.procs =
+                utils::determine_influenced_procs(m_sim.mesh(), info.bound_box);
+            utils::determine_root_proc(act->info(), act_proc_count);
+        }
+    }
 
     for (auto& act : m_actuators) {
         act->determine_influenced_procs();

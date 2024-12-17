@@ -92,9 +92,10 @@ void InletData::read_data(
     const size_t n0 = bx.length(perp[0]);
     const size_t n1 = bx.length(perp[1]);
 
+    // start counting at zero because of netcdf indexing
     amrex::Vector<size_t> start{
-        static_cast<size_t>(idx), static_cast<size_t>(lo[perp[0]]),
-        static_cast<size_t>(lo[perp[1]]), 0};
+        static_cast<size_t>(idx), static_cast<size_t>(0),
+        static_cast<size_t>(0), 0};
     amrex::Vector<size_t> count{1, n0, n1, nc};
     amrex::Vector<amrex::Real> buffer(n0 * n1 * nc);
     grp.var(fld->name()).get(buffer.data(), start, count);
@@ -534,21 +535,25 @@ void ABLBoundaryPlane::write_bndry_native_header(const std::string& chkname)
                     if (ori.isLow()) {
                         const int lo = bndry_dom.smallEnd(normal);
                         const auto plo = geom.ProbLo(normal);
-                        bndry_dom.setSmall(normal, lo);
+                        bndry_dom.setSmall(normal, lo - m_out_rad);
                         bndry_dom.setBig(normal, lo);
-                        bndry_prob.setLo(normal, plo);
+                        bndry_prob.setLo(normal, plo - m_out_rad * dx[normal]);
                         bndry_prob.setHi(normal, plo + dx[normal]);
                     } else {
                         const int hi = bndry_dom.bigEnd(normal);
                         const auto phi = geom.ProbHi(normal);
                         bndry_dom.setSmall(normal, hi);
-                        bndry_dom.setBig(normal, hi);
+                        bndry_dom.setBig(normal, hi + m_out_rad);
                         bndry_prob.setLo(normal, phi - dx[normal]);
-                        bndry_prob.setHi(normal, phi);
+                        bndry_prob.setHi(normal, phi + m_out_rad * dx[normal]);
                     }
                     bndry_geoms[lev] = amrex::Geometry(bndry_dom, &bndry_prob);
-                    const amrex::Box& minBox =
-                        m_mesh.boxArray(lev).minimalBox();
+                    amrex::Box minBox = m_mesh.boxArray(lev).minimalBox();
+                    if (ori.isLow()) {
+                        minBox.setSmall(normal, bndry_dom.smallEnd(normal));
+                    } else {
+                        minBox.setBig(normal, bndry_dom.bigEnd(normal));
+                    }
                     bndry_bas[lev] = amrex::BoxArray(bndry_dom & minBox);
                 }
 
@@ -1249,6 +1254,27 @@ void ABLBoundaryPlane::write_data(
     const auto n_buffers = m_mesh.boxArray(lev).size();
     amrex::Vector<BufferData> buffers(n_buffers);
 
+    // Compute the minimal offset from the edge of the domain (in case
+    // the refinement zones don't coincide with the low edge)
+    amrex::IntVect min_lo(std::numeric_limits<int>::max());
+    min_lo[normal] = 0;
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+    for (amrex::MFIter mfi((*fld)(lev), false); mfi.isValid(); ++mfi) {
+
+        const auto& bx = mfi.tilebox();
+        const auto& blo = bx.loVect();
+        const auto& bhi = bx.hiVect();
+
+        if ((blo[normal] == dlo[normal] && ori.isLow()) ||
+            (bhi[normal] == dhi[normal] && ori.isHigh())) {
+            min_lo[perp[0]] = std::min(min_lo[perp[0]], blo[perp[0]]);
+            min_lo[perp[1]] = std::min(min_lo[perp[1]], blo[perp[1]]);
+        }
+    }
+    amrex::ParallelDescriptor::ReduceIntMin(min_lo.begin(), min_lo.size());
+
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
@@ -1278,8 +1304,9 @@ void ABLBoundaryPlane::write_data(
             amrex::Gpu::streamSynchronize();
 
             buffer.start = {
-                m_out_counter, static_cast<size_t>(lo[perp[0]]),
-                static_cast<size_t>(lo[perp[1]]), 0};
+                m_out_counter,
+                static_cast<size_t>(lo[perp[0]] - min_lo[perp[0]]),
+                static_cast<size_t>(lo[perp[1]] - min_lo[perp[1]]), 0};
             buffer.count = {1, n0, n1, nc};
         } else if (bhi[normal] == dhi[normal] && ori.isHigh()) {
             amrex::IntVect lo(blo);
@@ -1302,8 +1329,9 @@ void ABLBoundaryPlane::write_data(
             amrex::Gpu::streamSynchronize();
 
             buffer.start = {
-                m_out_counter, static_cast<size_t>(lo[perp[0]]),
-                static_cast<size_t>(lo[perp[1]]), 0};
+                m_out_counter,
+                static_cast<size_t>(lo[perp[0]] - min_lo[perp[0]]),
+                static_cast<size_t>(lo[perp[1]] - min_lo[perp[1]]), 0};
             buffer.count = {1, n0, n1, nc};
         }
     }

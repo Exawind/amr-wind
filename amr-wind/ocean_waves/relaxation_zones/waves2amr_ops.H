@@ -96,6 +96,7 @@ void postprocess_velocity_mfab_liquid(
                 vel[nbx](i, j, k, 2) = 0.0;
             }
         });
+    amrex::Gpu::synchronize();
 }
 
 void postprocess_velocity_field_liquid(
@@ -428,11 +429,8 @@ struct InitDataOp<W2AWaves>
         wdata.t_last = 0.0;
 
         // indvec is complete upon initialization (all heights every proc)
-        amrex::Vector<int> indvec;
-        indvec.resize(wdata.hvec.size());
-        for (int n = 0; n < indvec.size(); ++n) {
-            indvec[n] = n;
-        }
+        amrex::Vector<int> indvec(wdata.hvec.size());
+        std::iota(indvec.begin(), indvec.end(), 0);
         // Interpolate to MultiFabs (one level at a time)
         interp_to_mfab::interp_eta_to_levelset_multifab(
             wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, wdata.zsl,
@@ -488,6 +486,7 @@ struct InitDataOp<W2AWaves>
                     vel[nbx](i, j, k, 2) = local_profile[2];
                 }
             });
+        amrex::Gpu::synchronize();
 
         // Start w2a fields at 0, some areas will not be modified
         auto& w2a_levelset = sim.repo().get_field("w2a_levelset");
@@ -694,6 +693,7 @@ struct UpdateRelaxZonesOp<W2AWaves>
                         (newtime - t_last) / (W2A_t - t_last + 1e-16);
                 });
         }
+        amrex::Gpu::synchronize();
 #else
         amrex::ignore_unused(data);
 #endif

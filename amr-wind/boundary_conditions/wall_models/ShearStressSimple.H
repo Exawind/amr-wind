@@ -13,7 +13,7 @@ struct SimpleShearSchumann
         : utau2(ll.utau_mean * ll.utau_mean), wspd_mean(ll.wspd_mean), m_ll(ll)
     {}
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real get_shear(
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real get_shear(
         amrex::Real u,
         amrex::Real /* wspd */,
         amrex::Real /*u_dx*/,
@@ -32,7 +32,7 @@ struct SimpleShearLogLaw
 {
     explicit SimpleShearLogLaw(const amr_wind::LogLaw& ll) : m_ll(ll) {}
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real get_shear(
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real get_shear(
         amrex::Real u,
         amrex::Real wspd,
         amrex::Real /*u_dx*/,
@@ -54,7 +54,7 @@ struct SimpleShearMOSD
         : m_ll(ll), m_md(md)
     {}
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real get_shear(
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real get_shear(
         amrex::Real u,
         amrex::Real wspd,
         amrex::Real u_dx,

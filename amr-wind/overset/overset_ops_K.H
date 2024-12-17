@@ -7,14 +7,14 @@
 namespace amr_wind::overset_ops {
 
 // Approximate signed distance function
-amrex::Real AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+amrex::Real AMREX_GPU_DEVICE AMREX_FORCE_INLINE
 asdf(const amrex::Real a_vof, const amrex::Real i_th, const amrex::Real tiny)
 {
     // function of local vof value and interface thickness
     return (i_th * log((a_vof + tiny) / (1. - a_vof + tiny)));
 }
 
-amrex::Real AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE alpha_flux(
+amrex::Real AMREX_GPU_DEVICE AMREX_FORCE_INLINE alpha_flux(
     const int i,
     const int j,
     const int k,
@@ -61,7 +61,7 @@ amrex::Real AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE alpha_flux(
     return dphi_eval;
 }
 
-void AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE velocity_face(
+void AMREX_GPU_DEVICE AMREX_FORCE_INLINE velocity_face(
     const int i,
     const int j,
     const int k,
@@ -104,7 +104,7 @@ void AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE velocity_face(
     }
 }
 
-void AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE gp_rho_face(
+void AMREX_GPU_DEVICE AMREX_FORCE_INLINE gp_rho_face(
     const int i,
     const int j,
     const int k,
@@ -148,7 +148,7 @@ void AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE gp_rho_face(
     }
 }
 
-vs::Tensor AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE gp_flux_tensor(
+vs::Tensor AMREX_GPU_DEVICE AMREX_FORCE_INLINE gp_flux_tensor(
     const int i,
     const int j,
     const int k,
@@ -201,7 +201,7 @@ vs::Tensor AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE gp_flux_tensor(
     return f_otimes_gradp;
 }
 
-vs::Tensor AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE normal_reinit_tensor(
+vs::Tensor AMREX_GPU_DEVICE AMREX_FORCE_INLINE normal_reinit_tensor(
     const int i,
     const int j,
     const int k,

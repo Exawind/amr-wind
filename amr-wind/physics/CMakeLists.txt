@@ -19,6 +19,7 @@ target_sources(${amr_wind_lib_name}
   TerrainDrag.cpp
   ActuatorSourceTagging.cpp
   Intermittency.cpp
+  ForestDrag.cpp
   )
 
 add_subdirectory(multiphase)

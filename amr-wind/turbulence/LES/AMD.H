@@ -63,7 +63,7 @@ private:
     amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
 };
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amd_muvel(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real amd_muvel(
     int i,
     int j,
     int k,
@@ -112,7 +112,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amd_muvel(
     return std::max(1e-15, (num_shear + num_buoy) / denom);
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amd_thermal_diff(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real amd_thermal_diff(
     int i,
     int j,
     int k,
