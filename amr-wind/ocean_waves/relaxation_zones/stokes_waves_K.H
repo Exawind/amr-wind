@@ -250,7 +250,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
     }
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real stokes_sinh_sin(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real stokes_sinh_sin(
     int m,
     int n,
     amrex::Real phase,
@@ -307,7 +307,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real stokes_sinh_sin(
            std::sin(n * phase);
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real stokes_cosh_cos(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real stokes_cosh_cos(
     int m,
     int n,
     amrex::Real phase,
