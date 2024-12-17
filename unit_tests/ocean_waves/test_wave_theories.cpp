@@ -66,6 +66,136 @@ TEST_F(WaveTheoriesTest, StokesWaves)
     EXPECT_NEAR(gold_C4, c4, CoeffTol);
 }
 
+TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
+{
+    amrex::Real Tol = 1e-4;
+
+    amrex::Real g = 9.81;
+    int StokesOrder = 5;
+    // wavenumber k and waterdepth d chosen so that kd = 0.758932
+    // to match value of column 3 from table 2 in
+    // Fenton, J. Fifth Order Stokes Theory for Steady Waves
+    // Journal of Waterway, Port, Coastal and Ocean Engineering, 1985, 111,
+    // 216-234
+    amrex::Real wavenumber = 2.0;
+    amrex::Real waterdepth = 0.376991;
+    amrex::Real wavelength = 2. * M_PI / wavenumber;
+    amrex::Real waveheight = 0.1;
+    amrex::Real zsl = 0.;
+    amrex::Real x = 0.;
+    amrex::Real z = -0.25;
+    amrex::Real phase_offset = 0.;
+    amrex::Real time = 0.;
+    amrex::Real eta = 0.;
+    amrex::Real u_w = 0.;
+    amrex::Real v_w = 0.;
+    amrex::Real w_w = 0.;
+
+    amr_wind::ocean_waves::relaxation_zones::stokes_waves(
+        StokesOrder, wavelength, waterdepth, waveheight, zsl, g, x, z, time,
+        phase_offset, eta, u_w, v_w, w_w);
+
+    // Coefficients values taken from column 3 of table 2 of
+    // Fenton, J. Fifth Order Stokes Theory for Steady Waves
+    // Journal of Waterway, Port, Coastal and Ocean Engineering, 1985, 111,
+    // 216-234
+    amrex::Real B22 = 2.502414;
+    amrex::Real B31 = -5.731666;
+    amrex::Real B42 = -32.407508;
+    amrex::Real B44 = 14.033758;
+    amrex::Real B53 = -103.44536875;
+    amrex::Real B55 = 37.200027;
+
+    amrex::Real eps = wavenumber * waveheight / 2.;
+    amrex::Real S = 2. * std::exp(2. * wavenumber * waterdepth) /
+                    (std::exp(4. * wavenumber * waterdepth) + 1.);
+    amrex::Real C = 1.0 - S;
+    amrex::Real C0 = std::sqrt(std::tanh(wavenumber * waterdepth));
+    amrex::Real C2 = C0 * (2 + 7 * std::pow(S, 2)) / (4 * std::pow(C, 2));
+    amrex::Real C4 = C0 *
+                     (4 + 32 * S - 116 * std::pow(S, 2) - 400 * std::pow(S, 3) -
+                      71 * std::pow(S, 4) + 146 * std::pow(S, 5)) /
+                     (32 * std::pow(C, 5));
+    amrex::Real wave_speed =
+        (C0 + std::pow(eps, 2) * C2 + std::pow(eps, 4) * C4) *
+        std::sqrt(g / wavenumber);
+
+    amrex::Real omega = wave_speed * wavenumber;
+    amrex::Real phase = wavenumber * x - omega * time - phase_offset;
+
+    // Check against Eq. (14) from Fenton 1985
+    amrex::Real eta_theory =
+        (eps * std::cos(phase) + std::pow(eps, 2) * B22 * std::cos(2. * phase) +
+         std::pow(eps, 3) * B31 * (std::cos(phase) - std::cos(3. * phase)) +
+         std::pow(eps, 4) *
+             (B42 * std::cos(2. * phase) + B44 * std::cos(4. * phase)) +
+         std::pow(eps, 5) *
+             (-(B53 + B55) * std::cos(phase) + B53 * std::cos(3 * phase) +
+              B55 * std::cos(5 * phase))) /
+            wavenumber +
+        zsl;
+
+    EXPECT_NEAR(eta, eta_theory, Tol);
+
+    // Re-evaluate with new set of coefficients
+    // Deep-water limit (k*d->\infty)
+    waterdepth = 100;
+    waveheight = 0.16;
+    wavenumber = 0.156;
+    wavelength = 2. * M_PI / wavenumber;
+    zsl = 0.;
+    x = 4.;
+    z = 0.;
+    phase_offset = M_PI;
+    time = 2.7;
+    eta = 0.;
+    u_w = 0.;
+    v_w = 0.;
+    w_w = 0.;
+
+    amr_wind::ocean_waves::relaxation_zones::stokes_waves(
+        StokesOrder, wavelength, waterdepth, waveheight, zsl, g, x, z, time,
+        phase_offset, eta, u_w, v_w, w_w);
+
+    // Coefficients values taken from column 1 of table 2 of
+    // Fenton, J. Fifth Order Stokes Theory for Steady Waves
+    // Journal of Waterway, Port, Coastal and Ocean Engineering, 1985, 111,
+    // 216-234
+    B22 = 0.5;
+    B31 = -0.375;
+    B42 = 0.3333333;
+    B44 = 0.3333333;
+    B53 = 0.7734375;
+    B55 = 0.3255208;
+
+    eps = wavenumber * waveheight / 2.;
+    // Coefficients computed analytically by taking limit kd -> \infty and
+    // simplified accordingly
+    // Note that in this limit S = 0 and C = 1 and thus they are omitted here
+    C0 = 1.0;
+    C2 = 0.5;
+    C4 = 0.125;
+    wave_speed = (C0 + std::pow(eps, 2) * C2 + std::pow(eps, 4) * C4) *
+                 std::sqrt(g / wavenumber);
+
+    omega = wave_speed * wavenumber;
+    phase = wavenumber * x - omega * time - phase_offset;
+
+    // Matches Eq. (18) from Fenton 1985
+    eta_theory =
+        (eps * std::cos(phase) + std::pow(eps, 2) * B22 * std::cos(2. * phase) +
+         std::pow(eps, 3) * B31 * (std::cos(phase) - std::cos(3. * phase)) +
+         std::pow(eps, 4) *
+             (B42 * std::cos(2. * phase) + B44 * std::cos(4. * phase)) +
+         std::pow(eps, 5) *
+             (-(B53 + B55) * std::cos(phase) + B53 * std::cos(3 * phase) +
+              B55 * std::cos(5 * phase))) /
+            wavenumber +
+        zsl;
+
+    EXPECT_NEAR(eta, eta_theory, Tol);
+}
+
 TEST_F(WaveTheoriesTest, StokesWaveLength)
 {
     // Values of wave_height, wave_period and water_depth taken from
