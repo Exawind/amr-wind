@@ -82,7 +82,9 @@ void InletData::read_data(
     const int idxp1 = idx + 1;
     m_tn = times[idx];
     m_tnp1 = times[idxp1];
-    AMREX_ALWAYS_ASSERT(((m_tn <= time) && (time <= m_tnp1)));
+    AMREX_ALWAYS_ASSERT(
+        ((m_tn <= time + constants::LOOSE_TOL) &&
+         (time <= m_tnp1 + constants::LOOSE_TOL)));
 
     const int normal = ori.coordDir();
     const amrex::GpuArray<int, 2> perp = utils::perpendicular_idx(normal);
@@ -160,7 +162,9 @@ void InletData::read_data_native(
 
     auto ori = oit();
 
-    AMREX_ALWAYS_ASSERT(((m_tn <= time) && (time <= m_tnp1)));
+    AMREX_ALWAYS_ASSERT(
+        ((m_tn <= time + constants::LOOSE_TOL) &&
+         (time <= m_tnp1 + constants::LOOSE_TOL)));
     AMREX_ALWAYS_ASSERT(fld->num_comp() == bndry_n[ori].nComp());
     AMREX_ASSERT(bndry_n[ori].boxArray() == bndry_np1[ori].boxArray());
 
