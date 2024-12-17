@@ -153,7 +153,7 @@ jobs:
           wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb
           sudo dpkg -i cuda-keyring_1.1-1_all.deb
           sudo apt-get update
-          sudo apt-get install -y cuda-command-line-tools-12-6 cuda-compiler-12-6 cuda-minimal-build-12-6 cuda-nvml-dev-12-6 cuda-nvtx-12-6 libcurand-dev-12-6 cuda-cupti-dev-12-6
+          sudo apt-get install -y cuda-command-line-tools-12-6 cuda-compiler-12-6 cuda-minimal-build-12-6 cuda-nvml-dev-12-6 cuda-nvtx-12-6 libcurand-dev-12-6 cuda-cupti-dev-12-6 libcusparse-dev-12-6
       - name: Configure and build
         run: |
           export PATH=/usr/local/nvidia/bin:/usr/local/cuda-12.6/bin:${PATH}
@@ -212,7 +212,7 @@ jobs:
           echo -e 'Package: *\nPin: release o=repo.radeon.com\nPin-Priority: 600' | sudo tee /etc/apt/preferences.d/rocm-pin-600
           echo 'export PATH=/opt/rocm/llvm/bin:/opt/rocm/bin:/opt/rocm/profiler/bin:/opt/rocm/opencl/bin:$PATH' | sudo tee -a /etc/profile.d/rocm.sh
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends build-essential rocm-dev rocrand-dev rocprim-dev hiprand-dev
+          sudo apt-get install -y --no-install-recommends build-essential rocm-dev rocrand-dev rocprim-dev hiprand-dev rocsparse-dev
       - name: Configure and build
         run: |
           source /etc/profile.d/rocm.sh
