@@ -196,6 +196,98 @@ TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
     EXPECT_NEAR(eta, eta_theory, tol);
 }
 
+TEST_F(WaveTheoriesTest, StokesWavesVelocityComponents)
+{
+    amrex::Real tol = 1e-4;
+
+    amrex::Real g = 9.81;
+    int stokes_order = 5;
+    // wavenumber k and water_depth d chosen so that kd = 0.758932
+    // to match value of column 3 from table 2 in
+    // Fenton, J. Fifth Order Stokes Theory for Steady Waves
+    // Journal of Waterway, Port, Coastal and Ocean Engineering, 1985, 111,
+    // 216-234
+    amrex::Real wavenumber = 2.0;
+    amrex::Real water_depth = 0.376991;
+    amrex::Real wavelength = 2. * M_PI / wavenumber;
+    amrex::Real wave_height = 0.1;
+    amrex::Real zsl = 0.;
+    amrex::Real x = 0.;
+    amrex::Real z = -0.25;
+    amrex::Real phase_offset = 0.;
+    amrex::Real time = 0.;
+    amrex::Real eta = 0.;
+    amrex::Real u_w = 0.;
+    amrex::Real v_w = 0.;
+    amrex::Real w_w = 0.;
+
+    amr_wind::ocean_waves::relaxation_zones::stokes_waves(
+        stokes_order, wavelength, water_depth, wave_height, zsl, g, x, z, time,
+        phase_offset, eta, u_w, v_w, w_w);
+
+    // Coefficients values taken from column 3 of table 2 of
+    // Fenton, J. Fifth Order Stokes Theory for Steady Waves
+    // Journal of Waterway, Port, Coastal and Ocean Engineering, 1985, 111,
+    // 216-234
+    const amrex::Real A11 = 1.208490;
+    const amrex::Real A22 = 0.799840;
+    const amrex::Real A31 = -9.105340;
+    const amrex::Real A33 = 0.368275;
+    const amrex::Real A42 = -12.196150;
+    const amrex::Real A44 = 0.058723;
+    const amrex::Real A51 = 108.46831725;
+    const amrex::Real A53 = -6.941756;
+    const amrex::Real A55 = -0.074979;
+
+    const amrex::Real eps = wavenumber * wave_height / 2.;
+    const amrex::Real S = 2. * std::exp(2. * wavenumber * water_depth) /
+                          (std::exp(4. * wavenumber * water_depth) + 1.);
+    const amrex::Real C = 1.0 - S;
+    const amrex::Real C0 = std::sqrt(std::tanh(wavenumber * water_depth));
+    const amrex::Real C2 = C0 * (2 + 7 * std::pow(S, 2)) / (4 * std::pow(C, 2));
+    const amrex::Real C4 =
+        C0 *
+        (4 + 32 * S - 116 * std::pow(S, 2) - 400 * std::pow(S, 3) -
+         71 * std::pow(S, 4) + 146 * std::pow(S, 5)) /
+        (32 * std::pow(C, 5));
+    const amrex::Real wave_speed =
+        (C0 + std::pow(eps, 2) * C2 + std::pow(eps, 4) * C4) *
+        std::sqrt(g / wavenumber);
+
+    const amrex::Real omega = wave_speed * wavenumber;
+    const amrex::Real phase = wavenumber * x - omega * time - phase_offset;
+
+    // Compare with theoretical Results from Kinnas
+    // https://www.sciencedirect.com/science/article/pii/S0029801817306066
+    // Define coefficients using Eq.(19)
+    amrex::Vector<amrex::Real> a(stokes_order);
+    a[0] = A11 + (eps * eps) * A31 + std::pow(eps, 4) * A51;
+    a[1] = A22 + (eps * eps) * A42;
+    a[2] = A33 + (eps * eps) * A53;
+    a[3] = A44;
+    a[4] = A55;
+
+    // Horizontal velocity from Eq.(21) and vertical velocity from Eq.(23) in
+    // Kinnas
+    amrex::Real horizontal_velocity = 0.;
+    amrex::Real vertical_velocity = 0.;
+    for (int n = 0; n < stokes_order; n++) {
+        horizontal_velocity +=
+            std::pow(eps, n + 1) * (n + 1) * a[n] *
+            std::cosh((n + 1) * wavenumber * (water_depth + (z - zsl))) *
+            std::cos((n + 1) * phase);
+        vertical_velocity +=
+            std::pow(eps, n + 1) * (n + 1) * a[n] *
+            std::sinh((n + 1) * wavenumber * (water_depth + (z - zsl))) *
+            std::sin((n + 1) * phase);
+    }
+    horizontal_velocity *= (C0 * std::sqrt(g / wavenumber));
+    vertical_velocity *= (C0 * std::sqrt(g / wavenumber));
+
+    EXPECT_NEAR(u_w, horizontal_velocity, tol);
+    EXPECT_NEAR(w_w, vertical_velocity, tol);
+}
+
 TEST_F(WaveTheoriesTest, StokesWaveLength)
 {
     // Values of wave_height, wave_period and water_depth taken from
