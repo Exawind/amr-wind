@@ -46,9 +46,9 @@ void OversetOps::initialize(CFDSim& sim)
                    "turned on, but it will remain inactive because "
                    "perturbational pressure is turned off.\n";
         }
-    }
-    if (m_replace_gradp_postsolve) {
-        m_gp_copy = &m_sim_ptr->repo().declare_field("gp_copy", 3);
+        if (m_replace_gradp_postsolve) {
+            m_gp_copy = &m_sim_ptr->repo().declare_field("gp_copy", 3);
+        }
     }
 
     parameter_output();
@@ -77,15 +77,17 @@ void OversetOps::pre_advance_work()
         const auto& vof = m_sim_ptr->repo().get_field("vof");
         auto& mask = m_sim_ptr->repo().get_int_field("mask_node");
         overset_ops::iblank_node_to_mask_vof(iblank, vof, mask);
-    }
 
-    // If pressure gradient will be replaced, store current pressure gradient
-    if (m_replace_gradp_postsolve) {
-        const auto& gp = m_sim_ptr->repo().get_field("gp");
-        for (int lev = 0; lev < m_sim_ptr->repo().num_active_levels(); ++lev) {
-            amrex::MultiFab::Copy(
-                (*m_gp_copy)(lev), gp(lev), 0, 0, gp(lev).nComp(),
-                (m_gp_copy)->num_grow());
+        // If pressure gradient will be replaced, store current pressure
+        // gradient
+        if (m_replace_gradp_postsolve) {
+            const auto& gp = m_sim_ptr->repo().get_field("gp");
+            for (int lev = 0; lev < m_sim_ptr->repo().num_active_levels();
+                 ++lev) {
+                amrex::MultiFab::Copy(
+                    (*m_gp_copy)(lev), gp(lev), 0, 0, gp(lev).nComp(),
+                    (m_gp_copy)->num_grow());
+            }
         }
     }
 
@@ -156,7 +158,7 @@ void OversetOps::update_gradp()
 void OversetOps::post_advance_work()
 {
     // Replace and reapply pressure gradient if requested
-    if (m_replace_gradp_postsolve) {
+    if (m_vof_exists && m_replace_gradp_postsolve) {
         replace_masked_gradp();
     }
 }
@@ -168,34 +170,30 @@ void OversetOps::post_advance_work()
 void OversetOps::parameter_output() const
 {
     // Print the details
-    if (m_verbose > 0) {
+    if (m_verbose > 0 && m_vof_exists) {
         // Important parameters
         amrex::Print() << "\nOverset Coupling Parameters: \n"
                        << "---- Replace overset pres grad: "
                        << m_replace_gradp_postsolve << std::endl;
-        if (m_vof_exists) {
-            amrex::Print() << "---- Perturbational pressure  : "
-                           << m_mphase->perturb_pressure() << std::endl
-                           << "---- Reconstruct true pressure: "
-                           << m_mphase->reconstruct_true_pressure()
+        amrex::Print() << "---- Perturbational pressure  : "
+                       << m_mphase->perturb_pressure() << std::endl
+                       << "---- Reconstruct true pressure: "
+                       << m_mphase->reconstruct_true_pressure() << std::endl;
+        amrex::Print() << "Overset Reinitialization Parameters:\n"
+                       << "---- Maximum iterations   : " << m_n_iterations
+                       << std::endl
+                       << "---- Convergence tolerance: " << m_convg_tol
+                       << std::endl
+                       << "---- Relative length scale: "
+                       << m_relative_length_scale << std::endl
+                       << "---- Upwinding VOF margin : " << m_upw_margin
+                       << std::endl;
+        if (m_verbose > 1) {
+            // Less important or less used parameters
+            amrex::Print() << "---- Calc. conv. interval : "
+                           << m_calc_convg_interval << std::endl
+                           << "---- Target field cutoff  : " << m_target_cutoff
                            << std::endl;
-            amrex::Print() << "Overset Reinitialization Parameters:\n"
-                           << "---- Maximum iterations   : " << m_n_iterations
-                           << std::endl
-                           << "---- Convergence tolerance: " << m_convg_tol
-                           << std::endl
-                           << "---- Relative length scale: "
-                           << m_relative_length_scale << std::endl
-                           << "---- Upwinding VOF margin : " << m_upw_margin
-                           << std::endl;
-            if (m_verbose > 1) {
-                // Less important or less used parameters
-                amrex::Print()
-                    << "---- Calc. conv. interval : " << m_calc_convg_interval
-                    << std::endl
-                    << "---- Target field cutoff  : " << m_target_cutoff
-                    << std::endl;
-            }
         }
         amrex::Print() << std::endl;
     }
