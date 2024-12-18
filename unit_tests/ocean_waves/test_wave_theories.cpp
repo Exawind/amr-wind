@@ -261,17 +261,40 @@ TEST_F(WaveTheoriesTest, StokesWavesVelocityComponents)
     // https://www.sciencedirect.com/science/article/pii/S0029801817306066
     // Define coefficients using Eq.(19)
     amrex::Vector<amrex::Real> a(stokes_order);
-    a[0] = A11 + (eps * eps) * A31 + std::pow(eps, 4) * A51;
-    a[1] = A22 + (eps * eps) * A42;
-    a[2] = A33 + (eps * eps) * A53;
-    a[3] = A44;
-    a[4] = A55;
+    if (stokes_order == 2) {
+        a[0] = A11;
+        a[1] = A22;
+    }
+    if (stokes_order == 3) {
+        a[0] = A11 + (eps * eps) * A31;
+        a[1] = A22;
+        a[2] = A33;
+    }
+    if (stokes_order == 4) {
+        a[0] = A11 + (eps * eps) * A31;
+        a[1] = A22 + (eps * eps) * A42;
+        a[2] = A33;
+        a[3] = A44;
+    }
+    if (stokes_order == 5) {
+        a[0] = A11 + (eps * eps) * A31 + std::pow(eps, 4) * A51;
+        a[1] = A22 + (eps * eps) * A42;
+        a[2] = A33 + (eps * eps) * A53;
+        a[3] = A44;
+        a[4] = A55;
+    }
 
     // Horizontal velocity from Eq.(21) and vertical velocity from Eq.(23) in
     // Kinnas
-    amrex::Real horizontal_velocity = 0.;
-    amrex::Real vertical_velocity = 0.;
-    for (int n = 0; n < stokes_order; n++) {
+    // Initialize to first order terms
+    amrex::Real horizontal_velocity =
+        eps * a[0] * std::cosh(wavenumber * (water_depth + (z - zsl))) *
+        std::cos(phase);
+    amrex::Real vertical_velocity =
+        eps * a[0] * std::sinh(wavenumber * (water_depth + (z - zsl))) *
+        std::sin(phase);
+
+    for (int n = 1; n < stokes_order; ++n) {
         horizontal_velocity +=
             std::pow(eps, n + 1) * (n + 1) * a[n] *
             std::cosh((n + 1) * wavenumber * (water_depth + (z - zsl))) *
