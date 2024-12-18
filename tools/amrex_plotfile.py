@@ -35,7 +35,6 @@ class AmrexPlotFile:
             assert nthreads == 1
 
         self.fname = pathlib.Path(hname)
-        assert self.fname.exists()
 
     def __call__(self):
         """Parse the header file"""
@@ -46,6 +45,7 @@ class AmrexPlotFile:
 
     def parse_header(self):
         """Parse the header"""
+        assert self.fname.exists()
         with open(self.fname, "r") as f:
             self.version = f.readline()
             self.ncomp = int(f.readline())
@@ -123,7 +123,6 @@ class AmrexPlotFile:
             fname (path): folder name for writing
         """
         hname = pathlib.Path(fname) / self.fname.name
-        assert hname != self.fname
         self.write_header(hname)
         self.write_data(fname)
 
@@ -199,5 +198,35 @@ class AmrexPlotFile:
             fdir.mkdir(exist_ok=True, parents=True)
             amr.VisMF.Write(mf, str(fname / mf_name))
 
+    def define(self, mfs, vnames, mf_names, step, time, prob_lo, prob_hi, ref_ratio, prob_domain, glohis):
+        assert len(mfs) == len(mf_names)
+        assert len(mfs) == len(prob_domain)
+        assert len(mfs) - 1 <= len(ref_ratio)
+        self.version = "HyperCLaw-V1.1\n"
+        self.mfs = mfs
+        self.ncomp = self.mfs[0].num_comp
+        self.names = vnames
+        self.spacedim = amr.Config.spacedim
+        self.time = time
+        self.finest_level = len(self.mfs) - 1
+        self.nlevels = self.finest_level + 1
+        self.prob_lo = prob_lo
+        self.prob_hi = prob_hi
+        self.ref_ratio = ref_ratio
+        self.prob_domain = prob_domain
+        self.level_steps = [step] * self.nlevels
+        self.cell_sizes = [
+            [(self.prob_hi[i] - self.prob_lo[i]) / (prob_domain[0].size[i]) for i in range(self.spacedim)]
+        ]
+        for ilev in range(1, self.nlevels):
+            self.cell_sizes.append(
+                [x / (self.ref_ratio[ilev - 1] ** ilev) for x in self.cell_sizes[0]]
+            )
+        self.coord_system = 0
+        self.bwidth = 0
+        self.ngrids = [mf.box_array().size for mf in self.mfs]
+        self.glohis = glohis
+        self.mf_names = mf_names
+        
     def __repr__(self):
         return "<%s: %s>" % (self.__class__.__name__, self.fname.stem)

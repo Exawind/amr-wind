@@ -17,18 +17,6 @@ def parse_orientations_from_header_name(hname):
     return int(hname.split("_")[-2])
 
 
-def slice_from_normal(normal, i, comp):
-    """Returns a numpy slice for convenient indexing in boundary planes"""
-    if normal == 0:
-        return np.s_[i, :, :, comp]
-    if normal == 1:
-        return np.s_[:, i, :, comp]
-    if normal == 2:
-        return np.s_[:, :, i, comp]
-    else:
-        raise Exception("Invalid normal")
-
-
 def refine(plt, ori, refinement_ratio):
     """Update data in a boundary plane for integer refinement."""
     normal = au.normal_from_ori(ori)
@@ -94,7 +82,7 @@ def interpolate(plt, plti, ori, refinement_ratio):
 
         for i in range(original.shape[normal]):
             for nc in range(plt.ncomp):
-                slc = slice_from_normal(normal, i, nc)
+                slc = au.slice_from_normal(normal, i, nc)
                 data = original[slc]
                 interp = RegularGridInterpolator(
                     (x, y), data, bounds_error=False, fill_value=None

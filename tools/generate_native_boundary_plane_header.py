@@ -18,15 +18,6 @@ import numpy as np
 import pandas as pd
 
 
-def variable_names(field, ncomp):
-    if ncomp == 1:
-        return [field]
-    elif ncomp == 3:
-        return [f"{field}{x}" for x in ["x", "y", "z"]]
-    else:
-        raise Exception("Invalid ncomp")
-
-
 def main():
     parser = argparse.ArgumentParser(
         description="A tool to generate native boundary planes header files"
@@ -123,7 +114,7 @@ def main():
                 mf_h_name = fpath / f"{lvl_pfx}{ilev}" / f"{field}_{ori}_H"
                 mfs.append(amr.VisMF.Read(str(mf_h_name).replace("_H", "")))
             ncomp = mfs[0].num_comp
-            vnames = variable_names(field, ncomp)
+            vnames = au.variable_names(field, ncomp)
 
             bas = [mf.box_array() for mf in mfs]
 
