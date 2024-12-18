@@ -45,6 +45,12 @@ def main():
         required=True,
         type=str,
     )
+    parser.add_argument(
+        "-o",
+        "--overwrite",
+        action="store_true",
+        help="Force overwrite of existing header files",
+    )
     args = parser.parse_args()
 
     amr.initialize([])
@@ -81,11 +87,6 @@ def main():
     for fname in sorted(glob.glob(f"{args.fdir}/{pfx}" + "*")):
         print(f"Generating Header files for data in {fname}")
         fpath = pathlib.Path(fname)
-        hname = fpath / f"Header_{ori}_{field}"
-        if hname.exists():
-            print(f"{hname} exists already. Skipping.")
-            continue
-
         step = int(fpath.name.replace(pfx, ""))
         time = (times.time[times.step == step]).values[0]
 
@@ -112,6 +113,11 @@ def main():
         level_steps = [step] * nlevels
 
         for field, ori in itertools.product(fields, oris):
+            hname = fpath / f"Header_{ori}_{field}"
+            if hname.exists() and not args.overwrite:
+                print(f"{hname} exists already. Skipping.")
+                continue
+
             mfs = []
             for ilev in range(nlevels):
                 mf_h_name = fpath / f"{lvl_pfx}{ilev}" / f"{field}_{ori}_H"
