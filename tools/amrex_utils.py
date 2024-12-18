@@ -8,6 +8,7 @@ Utilities from amrex operations
 
 import numpy as np
 
+
 def is_low(ori):
     """Return whether the orientation is a low face."""
     if ori == 0 or ori == 1 or ori == 2:
@@ -42,6 +43,7 @@ def perpendicular_from_ori(ori):
         raise Exception("Invalid normal")
     return [-1, -1]
 
+
 def variable_names(field, ncomp):
     if ncomp == 1:
         return [field]
@@ -49,6 +51,7 @@ def variable_names(field, ncomp):
         return [f"{field}{x}" for x in ["x", "y", "z"]]
     else:
         raise Exception("Invalid ncomp")
+
 
 def slice_from_normal(normal, i, comp):
     """Returns a numpy slice for convenient indexing in boundary planes"""
@@ -60,5 +63,3 @@ def slice_from_normal(normal, i, comp):
         return np.s_[:, :, i, comp]
     else:
         raise Exception("Invalid normal")
-
-

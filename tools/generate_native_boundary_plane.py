@@ -5,17 +5,19 @@ A tool to generate native boundary planes
 This script is for generating boundary plane data.
 
 """
+
 import pathlib
 import numpy as np
 import amrex.space3d as amr
 from amrex_plotfile import AmrexPlotFile
 import amrex_utils as au
 
+
 def main():
     amr.initialize([])
 
     bdir = pathlib.Path("bndry_file")
-    
+
     field = "velocity"
     ori = 0
     ncomp = 3
@@ -36,44 +38,48 @@ def main():
     normal = au.normal_from_ori(ori)
     perp = au.perpendicular_from_ori(ori)
     domain_lo = amr.IntVect(0)
-    domain_hi = amr.IntVect(n_cell[0]-1, n_cell[1]-1, n_cell[2]-1)
+    domain_hi = amr.IntVect(n_cell[0] - 1, n_cell[1] - 1, n_cell[2] - 1)
     domain_lo[normal] = -1 if au.is_low(ori) else domain_hi[normal]
-    domain_hi[normal] = 0 if au.is_low(ori) else domain_hi[normal]+1
+    domain_hi[normal] = 0 if au.is_low(ori) else domain_hi[normal] + 1
     domain = amr.Box(domain_lo, domain_hi)
 
     dx_normal = (prob_hi[normal] - prob_lo[normal]) / (n_cell[normal])
     plo_normal = prob_lo[normal]
     phi_normal = prob_hi[normal]
     n_cell[normal] = 2
-    prob_lo[normal] = plo_normal - dx_normal if au.is_low(ori) else phi_normal - dx_normal
-    prob_hi[normal] = plo_normal + dx_normal if au.is_low(ori) else phi_normal + dx_normal
+    prob_lo[normal] = (
+        plo_normal - dx_normal if au.is_low(ori) else phi_normal - dx_normal
+    )
+    prob_hi[normal] = (
+        plo_normal + dx_normal if au.is_low(ori) else phi_normal + dx_normal
+    )
 
     cell_sizes = []
     for ilev in range(nlevels):
         cs = [(prob_hi[i] - prob_lo[i]) / (n_cell[i]) for i in range(spacedim)]
         if ilev > 0:
-            cs = [x/(ref_ratio[ilev-1] ** ilev) for x in cs]
+            cs = [x / (ref_ratio[ilev - 1] ** ilev) for x in cs]
         cell_sizes.append(cs)
 
     prob_domain = [domain]
     bas = [amr.BoxArray(domain)]
     for i in range(1, nlevels):
-        small_end = prob_domain[ilev-1].small_end
-        big_end = prob_domain[ilev-1].big_end
+        small_end = prob_domain[ilev - 1].small_end
+        big_end = prob_domain[ilev - 1].big_end
         for p in perp:
-            small_end[p] *= ref_ratio[ilev-1]
-            big_end[p] = (big_end[p] + 1) * ref_ratio[ilev-1] - 1
+            small_end[p] *= ref_ratio[ilev - 1]
+            big_end[p] = (big_end[p] + 1) * ref_ratio[ilev - 1] - 1
         if not au.is_low(ori):
-            small_end[normal] = small_end[normal] * ref_ratio[ilev-1] + 1
-            big_end[normal] = small_end[normal]+1
-            
+            small_end[normal] = small_end[normal] * ref_ratio[ilev - 1] + 1
+            big_end[normal] = small_end[normal] + 1
+
         prob_domain.append(amr.Box(small_end, big_end))
         bas.append(amr.BoxArray(prob_domain[ilev]))
-    
+
     # time/step data
     nsteps = 100
-    steps = [x for x in range(nsteps+1)]
-    times = np.linspace(0, 5, nsteps+1)
+    steps = [x for x in range(nsteps + 1)]
+    times = np.linspace(0, 5, nsteps + 1)
 
     for step, time in zip(steps, times):
         odir = bdir / f"bndry_output{step:05d}"
@@ -109,7 +115,18 @@ def main():
         mf_names = [f"{lvl_pfx}{x}/{field}_{ori}" for x in range(nlevels)]
 
         plt = AmrexPlotFile(hname)
-        plt.define(mfs, vnames, mf_names, step, time, prob_lo, prob_hi, ref_ratio, prob_domain, glohis)
+        plt.define(
+            mfs,
+            vnames,
+            mf_names,
+            step,
+            time,
+            prob_lo,
+            prob_hi,
+            ref_ratio,
+            prob_domain,
+            glohis,
+        )
 
         for ilev in range(nlevels):
             data = plt.mfs[ilev].to_xp()[0]
@@ -131,12 +148,20 @@ def main():
             for i in range(data.shape[normal]):
                 for nc in range(plt.ncomp):
                     slc = au.slice_from_normal(normal, i, nc)
-                    data[slc] = np.exp(-((xg-xc)**2/(2*sigma**2) + (yg-xc)**2/(2*sigma**2))) * time
+                    data[slc] = (
+                        np.exp(
+                            -(
+                                (xg - xc) ** 2 / (2 * sigma**2)
+                                + (yg - xc) ** 2 / (2 * sigma**2)
+                            )
+                        )
+                        * time
+                    )
 
         plt.write(hname.parent)
 
     np.savetxt(bdir / "time.dat", np.c_[steps, times], fmt="%.17g")
-    
+
+
 if __name__ == "__main__":
     main()
-

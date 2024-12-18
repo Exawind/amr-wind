@@ -198,7 +198,19 @@ class AmrexPlotFile:
             fdir.mkdir(exist_ok=True, parents=True)
             amr.VisMF.Write(mf, str(fname / mf_name))
 
-    def define(self, mfs, vnames, mf_names, step, time, prob_lo, prob_hi, ref_ratio, prob_domain, glohis):
+    def define(
+        self,
+        mfs,
+        vnames,
+        mf_names,
+        step,
+        time,
+        prob_lo,
+        prob_hi,
+        ref_ratio,
+        prob_domain,
+        glohis,
+    ):
         assert len(mfs) == len(mf_names)
         assert len(mfs) == len(prob_domain)
         assert len(mfs) - 1 <= len(ref_ratio)
@@ -216,7 +228,10 @@ class AmrexPlotFile:
         self.prob_domain = prob_domain
         self.level_steps = [step] * self.nlevels
         self.cell_sizes = [
-            [(self.prob_hi[i] - self.prob_lo[i]) / (prob_domain[0].size[i]) for i in range(self.spacedim)]
+            [
+                (self.prob_hi[i] - self.prob_lo[i]) / (prob_domain[0].size[i])
+                for i in range(self.spacedim)
+            ]
         ]
         for ilev in range(1, self.nlevels):
             self.cell_sizes.append(
@@ -227,6 +242,6 @@ class AmrexPlotFile:
         self.ngrids = [mf.box_array().size for mf in self.mfs]
         self.glohis = glohis
         self.mf_names = mf_names
-        
+
     def __repr__(self):
         return "<%s: %s>" % (self.__class__.__name__, self.fname.stem)
