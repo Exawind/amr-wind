@@ -81,6 +81,11 @@ def main():
     for fname in sorted(glob.glob(f"{args.fdir}/{pfx}" + "*")):
         print(f"Generating Header files for data in {fname}")
         fpath = pathlib.Path(fname)
+        hname = fpath / f"Header_{ori}_{field}"
+        if hname.exists():
+            print(f"{hname} exists already. Skipping.")
+            continue
+
         step = int(fpath.name.replace(pfx, ""))
         time = (times.time[times.step == step]).values[0]
 
@@ -155,10 +160,6 @@ def main():
                     nglohis.append([glos, ghis])
                 glohis[ilev] = nglohis
 
-            hname = fpath / f"Header_{ori}_{field}"
-            if hname.exists():
-                print(f"{hname} exists already. Skipping.")
-                continue
             with open(hname, "w") as f:
                 f.write("HyperCLaw-V1.1\n")
                 f.write(f"{ncomp}\n")
