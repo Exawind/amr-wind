@@ -261,28 +261,11 @@ TEST_F(WaveTheoriesTest, StokesWavesVelocityComponents)
     // https://www.sciencedirect.com/science/article/pii/S0029801817306066
     // Define coefficients using Eq.(19)
     amrex::Vector<amrex::Real> a(stokes_order);
-    if (stokes_order == 2) {
-        a[0] = A11;
-        a[1] = A22;
-    }
-    if (stokes_order == 3) {
-        a[0] = A11 + (eps * eps) * A31;
-        a[1] = A22;
-        a[2] = A33;
-    }
-    if (stokes_order == 4) {
-        a[0] = A11 + (eps * eps) * A31;
-        a[1] = A22 + (eps * eps) * A42;
-        a[2] = A33;
-        a[3] = A44;
-    }
-    if (stokes_order == 5) {
-        a[0] = A11 + (eps * eps) * A31 + std::pow(eps, 4) * A51;
-        a[1] = A22 + (eps * eps) * A42;
-        a[2] = A33 + (eps * eps) * A53;
-        a[3] = A44;
-        a[4] = A55;
-    }
+    a[0] = A11 + (eps * eps) * A31 + std::pow(eps, 4) * A51;
+    a[1] = A22 + (eps * eps) * A42;
+    a[2] = A33 + (eps * eps) * A53;
+    a[3] = A44;
+    a[4] = A55;
 
     // Horizontal velocity from Eq.(21) and vertical velocity from Eq.(23) in
     // Kinnas
