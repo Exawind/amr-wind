@@ -39,7 +39,7 @@ def refine(plt, ori, refinement_ratio):
         big_endi = plt.prob_domain[ilev].big_end
         for p in perp:
             small_endi[p] *= refinement_ratio
-            big_endi[p] = big_endi[p] * refinement_ratio + 1
+            big_endi[p] = (big_endi[p] + 1) * refinement_ratio - 1
         plt.prob_domain[ilev] = amr.Box(small_endi, big_endi)
 
         plt.cell_sizes[ilev] = [x / refinement_ratio for x in plt.cell_sizes[ilev]]
