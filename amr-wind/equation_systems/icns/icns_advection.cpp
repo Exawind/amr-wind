@@ -322,6 +322,8 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
 
 #ifdef AMR_WIND_USE_FFT
     if (m_fft_mac_proj) {
+        // This is set on mac_vec[0] since FFT based projection is restricted to
+        // a single level
         m_fft_mac_proj->setUMAC(mac_vec[0]);
     } else
 #endif
