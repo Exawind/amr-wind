@@ -167,7 +167,8 @@ struct UpdateRelaxZonesOp<LinearWaves>
                         wave_number * g * std::tanh(wave_number * water_depth),
                         0.5);
                     const amrex::Real phase =
-                        wave_number * (x - current * time) - omega * time - phase_offset;
+                        wave_number * (x - current * time) - omega * time -
+                        phase_offset;
 
                     const amrex::Real eta =
                         wave_height / 2.0 * std::cos(phase) + zero_sea_level;
@@ -179,11 +180,12 @@ struct UpdateRelaxZonesOp<LinearWaves>
                     if (phi[nbx](i, j, k) + cell_length_2D >= 0) {
                         vel[nbx](i, j, k, 0) =
                             omega * wave_height / 2.0 *
-                            std::cosh(
-                                wave_number *
-                                (z - zero_sea_level + water_depth)) /
-                            std::sinh(wave_number * water_depth) *
-                            std::cos(phase) + current;
+                                std::cosh(
+                                    wave_number *
+                                    (z - zero_sea_level + water_depth)) /
+                                std::sinh(wave_number * water_depth) *
+                                std::cos(phase) +
+                            current;
                         vel[nbx](i, j, k, 1) = 0.0;
                         vel[nbx](i, j, k, 2) =
                             omega * wave_height / 2.0 *
