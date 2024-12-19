@@ -258,15 +258,19 @@ class AmrexPlotFile:
             for ilev in range(self.nlevels):
                 for igrid in range(self.ngrids[ilev]):
                     data = self.mfs[ilev].to_xp()[igrid]
-                    los = self.glohis[ilev][igrid][0]
-                    his = self.glohis[ilev][igrid][1]
-                    nxs = self.mfs[ilev].box_array()[igrid].size
-                    dxs = self.cell_sizes[ilev]
-                    xs = []
-                    for lo, hi, nx, dx in zip(los, his, nxs, dxs):
-                        xs.append(np.linspace(lo + 0.5 * dx, hi - 0.5 * dx, nx))
-                    xg, yg, zg = np.meshgrid(xs[0], xs[1], xs[2], indexing="ij")
+                    xg, yg, zg = self.coordinates(ilev, igrid)
                     data[:, :, :, icomp] = functor(xg, yg, zg, self.time)
+
+    def coordinates(self, ilev, igrid):
+        los = self.glohis[ilev][igrid][0]
+        his = self.glohis[ilev][igrid][1]
+        nxs = self.mfs[ilev].box_array()[igrid].size
+        dxs = self.cell_sizes[ilev]
+        xs = []
+        for lo, hi, nx, dx in zip(los, his, nxs, dxs):
+            xs.append(np.linspace(lo + 0.5 * dx, hi - 0.5 * dx, nx))
+        xg, yg, zg = np.meshgrid(xs[0], xs[1], xs[2], indexing="ij")
+        return xg, yg, zg
 
     def __repr__(self):
         return "<%s: %s>" % (self.__class__.__name__, self.fname.stem)

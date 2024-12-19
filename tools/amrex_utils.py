@@ -7,6 +7,7 @@ Utilities from amrex operations
 """
 
 import numpy as np
+from scipy.interpolate import RegularGridInterpolator
 
 
 def is_low(ori):
@@ -53,13 +54,29 @@ def variable_names(field, ncomp):
         raise Exception("Invalid ncomp")
 
 
-def slice_from_normal(normal, i, comp):
-    """Returns a numpy slice for convenient indexing in boundary planes"""
-    if normal == 0:
-        return np.s_[i, :, :, comp]
-    if normal == 1:
-        return np.s_[:, i, :, comp]
-    if normal == 2:
-        return np.s_[:, :, i, comp]
-    else:
-        raise Exception("Invalid normal")
+def ncomp_from_field(field):
+    return 3 if field == "velocity" else 1
+
+
+def interpolate(plt, plti):
+    """Interpolate from one plt file to another"""
+    assert plt.nlevels == plti.nlevels
+    for ilev in range(plt.nlevels):
+        assert plt.ngrids[ilev] == plti.ngrids[ilev]
+        for igrid in range(plt.ngrids[ilev]):
+            original = plt.mfs[ilev].to_xp()[igrid]
+            xg, yg, zg = plt.coordinates(ilev, igrid)
+
+            datai = plti.mfs[ilev].to_xp()[igrid]
+            xgi, ygi, zgi = plti.coordinates(ilev, igrid)
+
+            for nc in range(plt.ncomp):
+                data = original[:, :, :, nc]
+                interp = RegularGridInterpolator(
+                    (xg[:, 0, 0], yg[0, :, 0], zg[0, 0, :]),
+                    data,
+                    bounds_error=False,
+                    fill_value=None,
+                )
+                datai = plti.mfs[ilev].to_xp()[0]
+                datai[:, :, :, nc] = interp((xgi, ygi, zgi))

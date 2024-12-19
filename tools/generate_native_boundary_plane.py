@@ -78,7 +78,9 @@ def main():
 
     for step, time in zip(steps, times):
         odir = bdir / f"bndry_output{step:05d}"
-        bp = nbp.NativeBoundaryPlane(args.iname, field, ncomp, ori, step, time, odir)
+        print(f"Generating {odir}")
+        bp = nbp.NativeBoundaryPlane(field, ncomp, ori, odir)
+        bp.define_from_file(args.iname, step, time)
         bp.evaluate(functors)
         bp.write()
 
