@@ -36,6 +36,18 @@ class Gaussian:
         )
 
 
+class Constant:
+    """Constant functor."""
+
+    def __init__(self, constant):
+        self.constant = constant
+
+    def __call__(self, xg, yg, zg, time):
+        assert xg.shape == yg.shape
+        assert xg.shape == zg.shape
+        return self.constant * np.ones(xg.shape)
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="A tool to generate native boundary planes"
