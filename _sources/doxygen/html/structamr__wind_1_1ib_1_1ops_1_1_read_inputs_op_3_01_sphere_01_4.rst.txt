@@ -1,0 +1,14 @@
+.. meta::ae38e7c07719ebeee85c0213e01aa0d919ed7aafe12508235d5265e3fa9f001f384f9cd6c8e251ebf0f602267b6c499808e837afb3de0a4d379d96bbed5d2d43
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib::ops::ReadInputsOp&lt; Sphere &gt; Struct Reference
+
+ReadInputsOp&lt; Sphere &gt; Struct Reference
+=============================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ib_1_1ops_1_1_read_inputs_op_3_01_sphere_01_4.html

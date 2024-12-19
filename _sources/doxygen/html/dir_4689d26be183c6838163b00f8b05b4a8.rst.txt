@@ -1,0 +1,14 @@
+.. meta::ccdfb820a7a98afb0f5c8bedbceef3f6033affe1542af107b0f464103013d8f80852ded106f0e2ad51fe089749bf77855f960add99980b987f9f0ed0241dced1
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/core/vs Directory Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/core/vs Directory Reference
+========================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_4689d26be183c6838163b00f8b05b4a8.html

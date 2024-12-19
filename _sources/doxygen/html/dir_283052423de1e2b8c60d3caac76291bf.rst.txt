@@ -1,0 +1,14 @@
+.. meta::c13c9636d1bb6e2a480ec155382db433dbf21f5948257efd19d72aa40cdaef059ca2a2ddc10f032460e1feec1b139a280d1db6c731f09148c425df945735faf3
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/wing Directory Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator/wing Directory Reference
+===========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_283052423de1e2b8c60d3caac76291bf.html

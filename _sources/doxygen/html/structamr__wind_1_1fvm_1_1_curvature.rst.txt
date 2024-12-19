@@ -1,0 +1,14 @@
+.. meta::9e769dd3f5d8b056db04b6d0439e07d66798f357512d6df45fabfe76950bf0a365b2f4243a51a177b90f2a9dfc7618d1b05777444dc2a2a3ea458a6c34f63c42
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::fvm::Curvature&lt; FTypeIn, FTypeOut &gt; Struct Template Reference
+
+Curvature&lt; FTypeIn, FTypeOut &gt; Struct Template Reference
+==============================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1fvm_1_1_curvature.html

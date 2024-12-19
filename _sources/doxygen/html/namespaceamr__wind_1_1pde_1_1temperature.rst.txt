@@ -1,0 +1,14 @@
+.. meta::a24836621ff2b5caccadd064068abc7cf176bc85a15a92d96d37e81fd5a86b2c356a6d88de501c1ff0a7fae9cc84c77e0e29efd1ca9bcddd87f7fc1da3c7a062
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::temperature Namespace Reference
+
+temperature Namespace Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1pde_1_1temperature.html

@@ -1,0 +1,14 @@
+.. meta::6d961c0533e49becf6ccf55eb7438f0aa19cb2568b9fcf0ccbad88f8f1888ce1750101b8f5d99c7e76642107da9103a80bdb1ea910c56fdad05e056ed589c438
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::fvm::Laplacian&lt; FTypeIn, FTypeOut &gt; Struct Template Reference
+
+Laplacian&lt; FTypeIn, FTypeOut &gt; Struct Template Reference
+==============================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1fvm_1_1_laplacian.html

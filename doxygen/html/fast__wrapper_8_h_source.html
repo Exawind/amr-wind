@@ -1,0 +1,360 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/turbine/fast/fast_wrapper.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/turbine/fast/fast_wrapper.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/fast__wrapper_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-wind-energy-actuator-turbine-fast-fast-wrapper-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/turbine/fast/fast_wrapper.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-wind-energy-actuator-turbine-fast-fast-wrapper-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.12.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/turbine/fast/fast_wrapper.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.12.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a class="el" href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a class="el" href="dir_b33158d99c61436f71711cd504567082.html">wind_energy</a></li><li class="navelem"><a class="el" href="dir_2567ce0339a2f4c98b2bf9035a686857.html">actuator</a></li><li class="navelem"><a class="el" href="dir_6c7aa54462983b4ee77771ca2153663c.html">turbine</a></li><li class="navelem"><a class="el" href="dir_d47a39efe398f362ca1fbc368cda4476.html">fast</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">fast_wrapper.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="fast__wrapper_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef FAST_WRAPPER_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define FAST_WRAPPER_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceexw__fast.html">exw_fast</a> {</div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#ifdef AMR_WIND_USE_OPENFAST</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;FAST_Library.h&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>}</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">extern</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceexw__fast.html#a63789d9b605988f5e446dfb5e852d7ab">exw_fast_output_redirect</a>(<span class="keywordtype">char</span>*);</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> <a class="code hl_function" href="namespaceexw__fast.html#ab5da6e06b42bd146d346dc1a1f42c828">fast_strlen</a>() { <span class="keywordflow">return</span> INTERFACE_STRING_LENGTH; }</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="fast__wrapper_8_h.html#a81ca9c11efc79926a7a037d4e42a8b1a">   16</a></span><span class="preprocessor">#define ErrID_None 0</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="fast__wrapper_8_h.html#a2b97f730a03bb5f8a4fe2840ee0e8909">   17</a></span><span class="preprocessor">#define ErrID_Info 1</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="fast__wrapper_8_h.html#adb67bfb080de3b1ca6cecf1f2d7be206">   18</a></span><span class="preprocessor">#define ErrID_Warn 2</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="fast__wrapper_8_h.html#a6570ca9eeb6c052bd11dd13159af5adc">   19</a></span><span class="preprocessor">#define ErrID_Severe 3</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="fast__wrapper_8_h.html#a9638bcc7e66360a2766fffe707e14eed">   20</a></span><span class="preprocessor">#define ErrID_Fatal 4</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structexw__fast_1_1_op_f_m___input_type.html">   22</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structexw__fast_1_1_op_f_m___input_type.html">OpFM_InputType</a></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>{};</div>
+</div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structexw__fast_1_1_op_f_m___output_type.html">   24</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structexw__fast_1_1_op_f_m___output_type.html">OpFM_OutputType</a></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>{};</div>
+</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="};">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structexw__fast_1_1_s_c___d_x___input_type.html">   27</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structexw__fast_1_1_s_c___d_x___input_type.html">SC_DX_InputType</a></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>{};</div>
+</div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="};">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structexw__fast_1_1_s_c___d_x___output_type.html">   29</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structexw__fast_1_1_s_c___d_x___output_type.html">SC_DX_OutputType</a></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>{};</div>
+</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="namespaceexw__fast.html#ab5da6e06b42bd146d346dc1a1f42c828">   32</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> <a class="code hl_function" href="namespaceexw__fast.html#ab5da6e06b42bd146d346dc1a1f42c828">fast_strlen</a>() { <span class="keywordflow">return</span> 1025; }</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="namespaceexw__fast.html#a63789d9b605988f5e446dfb5e852d7ab">   34</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceexw__fast.html#a63789d9b605988f5e446dfb5e852d7ab">exw_fast_output_redirect</a>(<span class="keywordtype">char</span>* <span class="comment">/*unused*/</span>) {}</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">inline</span> <span class="keywordtype">void</span></div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="}">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="namespaceexw__fast.html#a9b2ce4e9e2e6dae937143669dd7e8542">   37</a></span><a class="code hl_function" href="namespaceexw__fast.html#a9b2ce4e9e2e6dae937143669dd7e8542">FAST_AllocateTurbines</a>(<span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>, <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>, <span class="keywordtype">char</span>* <span class="comment">/*unused*/</span>)</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>{}</div>
+</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="namespaceexw__fast.html#a9a68a2ca0fc87a4016b0ee9f41d8af89">   39</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceexw__fast.html#a9a68a2ca0fc87a4016b0ee9f41d8af89">FAST_DeallocateTurbines</a>(<span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>, <span class="keywordtype">char</span>* <span class="comment">/*unused*/</span>) {}</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">inline</span> <span class="keywordtype">void</span></div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="}">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="namespaceexw__fast.html#a76933ef8bc2c6e3ed60629d8e2d524f1">   41</a></span><a class="code hl_function" href="namespaceexw__fast.html#a76933ef8bc2c6e3ed60629d8e2d524f1">FAST_OpFM_Solution0</a>(<span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>, <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>, <span class="keywordtype">char</span>* <span class="comment">/*unused*/</span>)</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>{}</div>
+</div>
+<div class="foldopen" id="foldopen00043" data-start="{" data-end="}">
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="namespaceexw__fast.html#ada43aa6561fa76beb6a84d3503fdd6ec">   43</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceexw__fast.html#ada43aa6561fa76beb6a84d3503fdd6ec">FAST_OpFM_Step</a>(<span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>, <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>, <span class="keywordtype">char</span>* <span class="comment">/*unused*/</span>)</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>{}</div>
+</div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="}">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="namespaceexw__fast.html#a3b6ad2bec24bcc57b326919b67f60213">   45</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceexw__fast.html#a3b6ad2bec24bcc57b326919b67f60213">FAST_CreateCheckpoint</a>(</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>, <span class="keywordtype">char</span>* <span class="comment">/*unused*/</span>, <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>, <span class="keywordtype">char</span>* <span class="comment">/*unused*/</span>)</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>{}</div>
+</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="foldopen" id="foldopen00049" data-start="{" data-end="}">
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="namespaceexw__fast.html#acc79de8e9564427013f8b582e9f7f79a">   49</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceexw__fast.html#acc79de8e9564427013f8b582e9f7f79a">FAST_HubPosition</a>(</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">float</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">float</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordtype">double</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordtype">char</span>* <span class="comment">/*unused*/</span>)</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>{}</div>
+</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="foldopen" id="foldopen00058" data-start="{" data-end="}">
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="namespaceexw__fast.html#a2d0d96d7258a4d6ac2d53751d2a8dfb0">   58</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceexw__fast.html#a2d0d96d7258a4d6ac2d53751d2a8dfb0">FAST_OpFM_Init</a>(</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordtype">double</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">float</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">float</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">float</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordtype">double</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <a class="code hl_struct" href="structexw__fast_1_1_op_f_m___input_type.html">OpFM_InputType</a>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <a class="code hl_struct" href="structexw__fast_1_1_op_f_m___output_type.html">OpFM_OutputType</a>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <a class="code hl_struct" href="structexw__fast_1_1_s_c___d_x___input_type.html">SC_DX_InputType</a>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <a class="code hl_struct" href="structexw__fast_1_1_s_c___d_x___output_type.html">SC_DX_OutputType</a>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordtype">char</span>* <span class="comment">/*unused*/</span>)</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>{}</div>
+</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="foldopen" id="foldopen00084" data-start="{" data-end="}">
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="namespaceexw__fast.html#a48cddde5954b4549e949cdaec1e02cd4">   84</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceexw__fast.html#a48cddde5954b4549e949cdaec1e02cd4">FAST_OpFM_Restart</a>(</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordtype">char</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordtype">double</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <a class="code hl_struct" href="structexw__fast_1_1_op_f_m___input_type.html">OpFM_InputType</a>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <a class="code hl_struct" href="structexw__fast_1_1_op_f_m___output_type.html">OpFM_OutputType</a>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <a class="code hl_struct" href="structexw__fast_1_1_s_c___d_x___input_type.html">SC_DX_InputType</a>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <a class="code hl_struct" href="structexw__fast_1_1_s_c___d_x___output_type.html">SC_DX_OutputType</a>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordtype">int</span>* <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordtype">char</span>* <span class="comment">/*unused*/</span>)</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>{}</div>
+</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>} <span class="comment">// namespace exw_fast</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="preprocessor">#endif </span><span class="comment">/* FAST_WRAPPER_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="anamespaceexw__fast_html"><div class="ttname"><a href="namespaceexw__fast.html">exw_fast</a></div><div class="ttdef"><b>Definition</b> fast_types.H:8</div></div>
+<div class="ttc" id="anamespaceexw__fast_html_a2d0d96d7258a4d6ac2d53751d2a8dfb0"><div class="ttname"><a href="namespaceexw__fast.html#a2d0d96d7258a4d6ac2d53751d2a8dfb0">exw_fast::FAST_OpFM_Init</a></div><div class="ttdeci">void FAST_OpFM_Init(int *, double *, const char *, int *, int *, int *, int *, float *, float *, int *, int *, float *, int *, double *, int *, int *, int *, OpFM_InputType *, OpFM_OutputType *, SC_DX_InputType *, SC_DX_OutputType *, int *, char *)</div><div class="ttdef"><b>Definition</b> fast_wrapper.H:58</div></div>
+<div class="ttc" id="anamespaceexw__fast_html_a3b6ad2bec24bcc57b326919b67f60213"><div class="ttname"><a href="namespaceexw__fast.html#a3b6ad2bec24bcc57b326919b67f60213">exw_fast::FAST_CreateCheckpoint</a></div><div class="ttdeci">void FAST_CreateCheckpoint(int *, char *, int *, char *)</div><div class="ttdef"><b>Definition</b> fast_wrapper.H:45</div></div>
+<div class="ttc" id="anamespaceexw__fast_html_a48cddde5954b4549e949cdaec1e02cd4"><div class="ttname"><a href="namespaceexw__fast.html#a48cddde5954b4549e949cdaec1e02cd4">exw_fast::FAST_OpFM_Restart</a></div><div class="ttdeci">void FAST_OpFM_Restart(int *, char *, int *, double *, int *, int *, int *, OpFM_InputType *, OpFM_OutputType *, SC_DX_InputType *, SC_DX_OutputType *, int *, char *)</div><div class="ttdef"><b>Definition</b> fast_wrapper.H:84</div></div>
+<div class="ttc" id="anamespaceexw__fast_html_a63789d9b605988f5e446dfb5e852d7ab"><div class="ttname"><a href="namespaceexw__fast.html#a63789d9b605988f5e446dfb5e852d7ab">exw_fast::exw_fast_output_redirect</a></div><div class="ttdeci">void exw_fast_output_redirect(char *)</div><div class="ttdef"><b>Definition</b> fast_wrapper.H:34</div></div>
+<div class="ttc" id="anamespaceexw__fast_html_a76933ef8bc2c6e3ed60629d8e2d524f1"><div class="ttname"><a href="namespaceexw__fast.html#a76933ef8bc2c6e3ed60629d8e2d524f1">exw_fast::FAST_OpFM_Solution0</a></div><div class="ttdeci">void FAST_OpFM_Solution0(int *, int *, char *)</div><div class="ttdef"><b>Definition</b> fast_wrapper.H:41</div></div>
+<div class="ttc" id="anamespaceexw__fast_html_a9a68a2ca0fc87a4016b0ee9f41d8af89"><div class="ttname"><a href="namespaceexw__fast.html#a9a68a2ca0fc87a4016b0ee9f41d8af89">exw_fast::FAST_DeallocateTurbines</a></div><div class="ttdeci">void FAST_DeallocateTurbines(int *, char *)</div><div class="ttdef"><b>Definition</b> fast_wrapper.H:39</div></div>
+<div class="ttc" id="anamespaceexw__fast_html_a9b2ce4e9e2e6dae937143669dd7e8542"><div class="ttname"><a href="namespaceexw__fast.html#a9b2ce4e9e2e6dae937143669dd7e8542">exw_fast::FAST_AllocateTurbines</a></div><div class="ttdeci">void FAST_AllocateTurbines(int *, int *, char *)</div><div class="ttdef"><b>Definition</b> fast_wrapper.H:37</div></div>
+<div class="ttc" id="anamespaceexw__fast_html_ab5da6e06b42bd146d346dc1a1f42c828"><div class="ttname"><a href="namespaceexw__fast.html#ab5da6e06b42bd146d346dc1a1f42c828">exw_fast::fast_strlen</a></div><div class="ttdeci">constexpr int fast_strlen()</div><div class="ttdef"><b>Definition</b> fast_wrapper.H:32</div></div>
+<div class="ttc" id="anamespaceexw__fast_html_acc79de8e9564427013f8b582e9f7f79a"><div class="ttname"><a href="namespaceexw__fast.html#acc79de8e9564427013f8b582e9f7f79a">exw_fast::FAST_HubPosition</a></div><div class="ttdeci">void FAST_HubPosition(int *, float *, float *, double *, int *, char *)</div><div class="ttdef"><b>Definition</b> fast_wrapper.H:49</div></div>
+<div class="ttc" id="anamespaceexw__fast_html_ada43aa6561fa76beb6a84d3503fdd6ec"><div class="ttname"><a href="namespaceexw__fast.html#ada43aa6561fa76beb6a84d3503fdd6ec">exw_fast::FAST_OpFM_Step</a></div><div class="ttdeci">void FAST_OpFM_Step(int *, int *, char *)</div><div class="ttdef"><b>Definition</b> fast_wrapper.H:43</div></div>
+<div class="ttc" id="astructexw__fast_1_1_op_f_m___input_type_html"><div class="ttname"><a href="structexw__fast_1_1_op_f_m___input_type.html">exw_fast::OpFM_InputType</a></div><div class="ttdef"><b>Definition</b> fast_wrapper.H:23</div></div>
+<div class="ttc" id="astructexw__fast_1_1_op_f_m___output_type_html"><div class="ttname"><a href="structexw__fast_1_1_op_f_m___output_type.html">exw_fast::OpFM_OutputType</a></div><div class="ttdef"><b>Definition</b> fast_wrapper.H:25</div></div>
+<div class="ttc" id="astructexw__fast_1_1_s_c___d_x___input_type_html"><div class="ttname"><a href="structexw__fast_1_1_s_c___d_x___input_type.html">exw_fast::SC_DX_InputType</a></div><div class="ttdef"><b>Definition</b> fast_wrapper.H:28</div></div>
+<div class="ttc" id="astructexw__fast_1_1_s_c___d_x___output_type_html"><div class="ttname"><a href="structexw__fast_1_1_s_c___d_x___output_type.html">exw_fast::SC_DX_OutputType</a></div><div class="ttdef"><b>Definition</b> fast_wrapper.H:30</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

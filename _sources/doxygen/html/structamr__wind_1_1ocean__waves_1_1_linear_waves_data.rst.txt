@@ -1,0 +1,14 @@
+.. meta::309370441f76d970da35896737c1edc19fffa86ea476eaeca75a384301d1852aeb5b2d780770db9067a0103f25a16070664b1c9b5f203c1d460077ce810427df
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ocean_waves::LinearWavesData Struct Reference
+
+LinearWavesData Struct Reference
+================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ocean__waves_1_1_linear_waves_data.html
