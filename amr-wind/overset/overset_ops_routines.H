@@ -5,8 +5,18 @@
 #include "AMReX_MultiFab.H"
 #include "amr-wind/equation_systems/vof/volume_fractions.H"
 #include "amr-wind/overset/overset_ops_K.H"
+#include "amr-wind/core/FieldRepo.H"
 
 namespace amr_wind::overset_ops {
+
+void iblank_to_mask(const IntField& iblank, IntField& maskf);
+
+void iblank_node_to_mask_vof(
+    const IntField& iblank, const Field& vof, IntField& maskf);
+
+void prepare_mask_cell_for_mac(FieldRepo& repo);
+
+void revert_mask_cell_after_mac(FieldRepo& repo);
 
 // Populate approximate signed distance function using vof field
 void populate_psi(
@@ -92,15 +102,6 @@ amrex::Real measure_convergence(
 
 // Set levelset field to another quantity to view in plotfile for debugging
 void equate_field(amrex::MultiFab& mf_dest, const amrex::MultiFab& mf_src);
-
-// Replace pressure gradient with hydrostatic field in overset regions
-void replace_gradp_hydrostatic(
-    amrex::MultiFab& mf_gp,
-    const amrex::MultiFab& mf_density,
-    const amrex::MultiFab& mf_refdens,
-    const amrex::iMultiFab& mf_iblank,
-    const amrex::Real grav_z,
-    const bool is_pptb);
 
 // Swap pressure gradient values in overset region
 void replace_gradp(

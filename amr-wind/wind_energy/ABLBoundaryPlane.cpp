@@ -78,11 +78,13 @@ void InletData::read_data(
     const size_t nc = fld->num_comp();
     const int nstart = m_components[static_cast<int>(fld->id())];
 
-    const int idx = utils::closest_index(times, time);
+    const int idx = utils::closest_index(times, time, constants::LOOSE_TOL);
     const int idxp1 = idx + 1;
     m_tn = times[idx];
     m_tnp1 = times[idxp1];
-    AMREX_ALWAYS_ASSERT(((m_tn <= time) && (time <= m_tnp1)));
+    AMREX_ALWAYS_ASSERT(
+        ((m_tn <= time + constants::LOOSE_TOL) &&
+         (time <= m_tnp1 + constants::LOOSE_TOL)));
 
     const int normal = ori.coordDir();
     const amrex::GpuArray<int, 2> perp = utils::perpendicular_idx(normal);
@@ -152,7 +154,7 @@ void InletData::read_data_native(
     const int nstart =
         static_cast<int>(m_components[static_cast<int>(fld->id())]);
 
-    const int idx = utils::closest_index(times, time);
+    const int idx = utils::closest_index(times, time, constants::LOOSE_TOL);
     const int idxp1 = idx + 1;
 
     m_tn = times[idx];
@@ -160,7 +162,9 @@ void InletData::read_data_native(
 
     auto ori = oit();
 
-    AMREX_ALWAYS_ASSERT(((m_tn <= time) && (time <= m_tnp1)));
+    AMREX_ALWAYS_ASSERT(
+        ((m_tn <= time + constants::LOOSE_TOL) &&
+         (time <= m_tnp1 + constants::LOOSE_TOL)));
     AMREX_ALWAYS_ASSERT(fld->num_comp() == bndry_n[ori].nComp());
     AMREX_ASSERT(bndry_n[ori].boxArray() == bndry_np1[ori].boxArray());
 
@@ -711,7 +715,8 @@ void ABLBoundaryPlane::read_header()
         ncf.var("time").get(m_in_times.data());
 
         // Sanity check the input file time
-        AMREX_ALWAYS_ASSERT(m_in_times[0] <= m_time.current_time());
+        AMREX_ALWAYS_ASSERT(
+            m_in_times[0] <= m_time.current_time() + constants::LOOSE_TOL);
 
         for (auto& plane_grp : ncf.all_groups()) {
             int normal, face_dir;
@@ -1042,7 +1047,9 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
     const amrex::Real time =
         nph_target_time ? m_time.current_time() + 0.5 * m_time.delta_t()
                         : m_time.new_time();
-    AMREX_ALWAYS_ASSERT((m_in_times[0] <= time) && (time < m_in_times.back()));
+    AMREX_ALWAYS_ASSERT(
+        (m_in_times[0] <= time + constants::LOOSE_TOL) &&
+        (time < m_in_times.back() + constants::LOOSE_TOL));
 
     // return early if current data files can still be interpolated in time
     if ((m_in_data.tn() <= time) && (time < m_in_data.tnp1())) {
@@ -1078,12 +1085,14 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
 
     if (m_out_fmt == "native") {
 
-        const int index = utils::closest_index(m_in_times, time);
+        const int index =
+            utils::closest_index(m_in_times, time, constants::LOOSE_TOL);
         const int t_step1 = m_in_timesteps[index];
         const int t_step2 = m_in_timesteps[index + 1];
 
         AMREX_ALWAYS_ASSERT(
-            (m_in_times[index] <= time) && (time <= m_in_times[index + 1]));
+            (m_in_times[index] <= time + constants::LOOSE_TOL) &&
+            (time <= m_in_times[index + 1] + constants::LOOSE_TOL));
 
         const std::string chkname1 =
             m_filename + amrex::Concatenate("/bndry_output", t_step1);
@@ -1161,9 +1170,10 @@ void ABLBoundaryPlane::populate_data(
     }
 
     AMREX_ALWAYS_ASSERT(
-        ((m_in_data.tn() <= time) || (time <= m_in_data.tnp1())));
+        ((m_in_data.tn() <= time - constants::LOOSE_TOL) ||
+         (time <= m_in_data.tnp1() - constants::LOOSE_TOL)));
     AMREX_ALWAYS_ASSERT(
-        std::abs(time - m_in_data.tinterp()) < constants::TIGHT_TOL);
+        std::abs(time - m_in_data.tinterp()) < constants::LOOSE_TOL);
 
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
