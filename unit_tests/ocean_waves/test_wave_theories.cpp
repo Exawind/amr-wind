@@ -10,7 +10,7 @@ class WaveTheoriesTest : public MeshTest
 
 TEST_F(WaveTheoriesTest, StokesWaves)
 {
-    amrex::Real coeff_tol = 1e-4;
+    constexpr amrex::Real coeff_tol = 1e-4;
 
     amrex::Real wavenumber = 2.0;
     amrex::Real water_depth = 0.376991;
