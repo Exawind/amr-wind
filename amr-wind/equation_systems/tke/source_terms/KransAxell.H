@@ -40,7 +40,7 @@ private:
     amrex::Real m_kappa{0.41};
     amrex::Real m_mol_length{10000};
     amrex::Real m_gamma_m{5.0};
-    amrex::Real m_beta_m{16.0};    
+    amrex::Real m_beta_m{16.0};
     amrex::Real m_sponge_start{600};
     amrex::Real m_ref_tke{1e-10};
     amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};

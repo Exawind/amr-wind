@@ -105,7 +105,7 @@ private:
     std::string m_wall_shear_stress_type{"moeng"};
     std::string m_surface_flux_method{"uniform"};
     amrex::Real m_mol_length{10000};
-    amrex::Real m_surface_roughness{0.1};    
+    amrex::Real m_surface_roughness{0.1};
 };
 
 } // namespace amr_wind

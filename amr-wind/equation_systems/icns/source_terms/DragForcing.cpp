@@ -27,10 +27,10 @@ DragForcing::DragForcing(const CFDSim& sim)
     pp.query("sponge_south", m_sponge_south);
     pp.query("sponge_north", m_sponge_north);
     pp.query("is_laminar", m_is_laminar);
-    amrex::ParmParse pp_abl("ABL");    
+    amrex::ParmParse pp_abl("ABL");
     pp_abl.query("mol_length", m_mol_length);
     pp_abl.query("mo_gamma_m", m_gamma_m);
-    pp_abl.query("mo_beta_m", m_beta_m);    
+    pp_abl.query("mo_beta_m", m_beta_m);
     const auto& phy_mgr = m_sim.physics_manager();
     if (phy_mgr.contains("ABL")) {
         const auto& abl = m_sim.physics_manager().get<amr_wind::ABL>();
@@ -91,7 +91,7 @@ void DragForcing::operator()(
     } else {
         const amrex::Real x = std::sqrt(std::sqrt(1 - m_beta_m * zeta));
         psi_m_cell = 2.0 * std::log(0.5 * (1.0 + x)) + log(0.5 * (1 + x * x)) -
-                      2.0 * std::atan(x) + utils::half_pi();
+                     2.0 * std::atan(x) + utils::half_pi();
     }
     //! Cell Value
     const auto& prob_lo = geom.ProbLoArray();
