@@ -114,6 +114,8 @@ Flow physics
 
    * Synthetic turbulence [:ref:`inp <inputs_synthetic_turbulence>`]
 
+   * Arbitrarily spatially and time varying boundary conditions using Python tools [:ref:`inp <inputs_native_boundary_plane>`]
+
 * Geometry
 
    * Immersed boundary forcing method with stair-case type terrain and wall function [:ref:`doc <terrain>`]
