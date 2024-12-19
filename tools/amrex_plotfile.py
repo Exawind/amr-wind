@@ -11,6 +11,7 @@ the plot files written out by AMR-Wind.
 
 import os
 import pathlib
+import numpy as np
 import amrex.space3d as amr
 
 
@@ -53,6 +54,7 @@ class AmrexPlotFile:
             for _ in range(self.ncomp):
                 self.names.append(f.readline().rstrip())
             self.spacedim = int(f.readline())
+            assert self.spacedim == 3
             self.time = float(f.readline())
             self.finest_level = int(f.readline())
             self.nlevels = self.finest_level + 1
@@ -117,12 +119,14 @@ class AmrexPlotFile:
         for mf_name in self.mf_names:
             self.mfs.append(amr.VisMF.Read(str(self.fname.parent / mf_name)))
 
-    def write(self, fname):
+    def write(self, fname, overwrite=False):
         """
         Args:
             fname (path): folder name for writing
         """
         hname = pathlib.Path(fname) / self.fname.name
+        if not overwrite:
+            assert hname != self.fname
         self.write_header(hname)
         self.write_data(fname)
 
@@ -242,6 +246,27 @@ class AmrexPlotFile:
         self.ngrids = [mf.box_array().size for mf in self.mfs]
         self.glohis = glohis
         self.mf_names = mf_names
+
+    def evaluate(self, functors):
+        """Evaluate dictionary of functors on the plot file MultiFabs
+
+        Args:
+            functors (dict): dictionary of functors to be evaluated of format {field_name: functor}
+        """
+        for name, functor in functors.items():
+            icomp = self.names.index(name)
+            for ilev in range(self.nlevels):
+                for igrid in range(self.ngrids[ilev]):
+                    data = self.mfs[ilev].to_xp()[igrid]
+                    los = self.glohis[ilev][igrid][0]
+                    his = self.glohis[ilev][igrid][1]
+                    nxs = self.mfs[ilev].box_array()[igrid].size
+                    dxs = self.cell_sizes[ilev]
+                    xs = []
+                    for lo, hi, nx, dx in zip(los, his, nxs, dxs):
+                        xs.append(np.linspace(lo + 0.5 * dx, hi - 0.5 * dx, nx))
+                    xg, yg, zg = np.meshgrid(xs[0], xs[1], xs[2], indexing="ij")
+                    data[:, :, :, icomp] = functor(xg, yg, zg, self.time)
 
     def __repr__(self):
         return "<%s: %s>" % (self.__class__.__name__, self.fname.stem)

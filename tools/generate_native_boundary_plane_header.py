@@ -56,24 +56,33 @@ def main():
 
     coord_system = 0
     bwidth = 0
-    prob_lo = [0, 0, 0]
-    prob_hi = [0, 0, 0]
-    n_cell = [0, 0, 0]
+
+    pp = amr.ParmParse("")
+    pp.addfile(args.iname)
+    pp_geom = amr.ParmParse("geometry")
+    prob_lo = [
+        pp_geom.get_real("prob_lo", 0),
+        pp_geom.get_real("prob_lo", 1),
+        pp_geom.get_real("prob_lo", 2),
+    ]
+    prob_hi = [
+        pp_geom.get_real("prob_hi", 0),
+        pp_geom.get_real("prob_hi", 1),
+        pp_geom.get_real("prob_hi", 2),
+    ]
+    pp_amr = amr.ParmParse("amr")
+    n_cell = [
+        pp_amr.get_int("n_cell", 0),
+        pp_amr.get_int("n_cell", 1),
+        pp_amr.get_int("n_cell", 2),
+    ]
+
     ref_ratio = []
     with open(args.iname, "r") as f:
         for line in f:
-            if "geometry.prob_lo" in line:
-                line = line.split()
-                prob_lo = [float(x) for x in line[2 : (2 + spacedim)]]
-            elif "geometry.prob_hi" in line:
-                line = line.split()
-                prob_hi = [float(x) for x in line[2 : (2 + spacedim)]]
-            elif "amr.ref_ratio" in line:
+            if "amr.ref_ratio" in line:
                 line = line.split()
                 ref_ratio = [int(x) for x in line[2:]]
-            elif "amr.n_cell" in line:
-                line = line.split()
-                n_cell = [int(x) for x in line[2 : (2 + spacedim)]]
 
     for fname in sorted(glob.glob(f"{args.fdir}/{pfx}" + "*")):
         print(f"Generating Header files for data in {fname}")
