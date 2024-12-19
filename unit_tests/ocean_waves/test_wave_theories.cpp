@@ -12,7 +12,7 @@ TEST_F(WaveTheoriesTest, StokesWaves)
 {
     constexpr amrex::Real coeff_tol = 1e-4;
 
-    amrex::Real wavenumber = 2.0;
+    constexpr amrex::Real wavenumber = 2.0;
     constexpr amrex::Real water_depth = 0.376991;
     constexpr int stokes_order = 5;
     amrex::Real c0, a11, a22, b22, c2, a31, a33, b31, a42;
@@ -68,10 +68,10 @@ TEST_F(WaveTheoriesTest, StokesWaves)
 
 TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
 {
-    amrex::Real tol = 1e-4;
+    constexpr amrex::Real tol = 1e-4;
 
-    amrex::Real g = 9.81;
-    int stokes_order = 5;
+    constexpr amrex::Real g = 9.81;
+    constexpr int stokes_order = 5;
     // wavenumber k and water_depth d chosen so that kd = 0.758932
     // to match value of column 3 from table 2 in
     // Fenton, J. Fifth Order Stokes Theory for Steady Waves
@@ -198,24 +198,24 @@ TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
 
 TEST_F(WaveTheoriesTest, StokesWavesVelocityComponents)
 {
-    amrex::Real tol = 1e-4;
+    constexpr amrex::Real tol = 1e-4;
 
-    amrex::Real g = 9.81;
-    int stokes_order = 5;
+    constexpr amrex::Real g = 9.81;
+    constexpr int stokes_order = 5;
     // wavenumber k and water_depth d chosen so that kd = 0.758932
     // to match value of column 3 from table 2 in
     // Fenton, J. Fifth Order Stokes Theory for Steady Waves
     // Journal of Waterway, Port, Coastal and Ocean Engineering, 1985, 111,
     // 216-234
-    amrex::Real wavenumber = 2.0;
-    amrex::Real water_depth = 0.376991;
-    amrex::Real wavelength = 2. * M_PI / wavenumber;
-    amrex::Real wave_height = 0.1;
-    amrex::Real zsl = 0.;
-    amrex::Real x = 0.;
-    amrex::Real z = -0.25;
-    amrex::Real phase_offset = 0.;
-    amrex::Real time = 0.;
+    constexpr amrex::Real wavenumber = 2.0;
+    constexpr amrex::Real water_depth = 0.376991;
+    constexpr amrex::Real wavelength = 2. * M_PI / wavenumber;
+    constexpr amrex::Real wave_height = 0.1;
+    constexpr amrex::Real zsl = 0.;
+    constexpr amrex::Real x = 0.;
+    constexpr amrex::Real z = -0.25;
+    constexpr amrex::Real phase_offset = 0.;
+    constexpr amrex::Real time = 0.;
     amrex::Real eta = 0.;
     amrex::Real u_w = 0.;
     amrex::Real v_w = 0.;
