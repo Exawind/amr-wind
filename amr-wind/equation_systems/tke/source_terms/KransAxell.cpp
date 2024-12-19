@@ -1,5 +1,4 @@
 #include <AMReX_Orientation.H>
-
 #include "amr-wind/equation_systems/tke/source_terms/KransAxell.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/turbulence/TurbulenceModel.H"
@@ -25,6 +24,9 @@ KransAxell::KransAxell(const CFDSim& sim)
     pp.query("surface_roughness_z0", m_z0);
     pp.query("reference_temperature", m_ref_temp);
     pp.query("surface_temp_flux", m_heat_flux);
+    pp.query("mol_length", m_mol_length);
+    pp.query("mo_gamma_m", m_gamma_m);
+    pp.query("mo_beta_m", m_beta_m);      
     pp.query("meso_sponge_start", m_sponge_start);
     {
         amrex::ParmParse pp_incflow("incflo");
@@ -49,7 +51,6 @@ void KransAxell::operator()(
     const auto& dissip_arr = (this->m_dissip)(lev).array(mfi);
     const auto& tke_arr = m_tke(lev).array(mfi);
     const auto& geom = m_mesh.Geom(lev);
-    const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& probhi = m_mesh.Geom(lev).ProbHiArray();
     const auto& dx = geom.CellSizeArray();
     const auto& dt = m_time.delta_t();
@@ -62,14 +63,23 @@ void KransAxell::operator()(
     const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     const amrex::Real kappa = m_kappa;
     const amrex::Real z0 = m_z0;
+    amrex::Real psi_m = 0;
+    const amrex::Real zeta = 0.5 * dx[2] / m_mol_length;
+    if (zeta > 0) {
+        psi_m = -m_gamma_m * zeta;
+    } else {
+        const amrex::Real x = std::sqrt(std::sqrt(1 - m_beta_m * zeta));
+        psi_m = 2.0 * std::log(0.5 * (1.0 + x)) + log(0.5 * (1 + x * x)) -
+                      2.0 * std::atan(x) + 2 * std::atan(1.0);
+    }
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::Real bcforcing = 0;
         const amrex::Real ux = vel(i, j, k, 0);
         const amrex::Real uy = vel(i, j, k, 1);
-        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+        const amrex::Real z = (k + 0.5) * dx[2];
         if (k == 0) {
             const amrex::Real m = std::sqrt(ux * ux + uy * uy);
-            const amrex::Real ustar = m * kappa / std::log(z / z0);
+            const amrex::Real ustar = m * kappa / ( std::log(z / z0) + psi_m);
             const amrex::Real rans_b = std::pow(
                 std::max(heat_flux, 0.0) * kappa * z / std::pow(Cmu, 3),
                 (2.0 / 3.0));
@@ -104,7 +114,7 @@ void KransAxell::operator()(
                 const amrex::Real uy = vel(i, j, k, 1);
                 const amrex::Real z = 0.5 * dx[2];
                 amrex::Real m = std::sqrt(ux * ux + uy * uy);
-                const amrex::Real ustar = m * kappa / std::log(z / z0);
+                const amrex::Real ustar = m * kappa / ( std::log(z / z0) + psi_m);
                 const amrex::Real rans_b = std::pow(
                     std::max(heat_flux, 0.0) * kappa * z / std::pow(Cmu, 3),
                     (2.0 / 3.0));
