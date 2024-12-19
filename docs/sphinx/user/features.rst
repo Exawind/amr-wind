@@ -1,5 +1,6 @@
 .. _capabilities:
 
+
 Capabilities and Roadmap
 ========================
 
@@ -11,10 +12,9 @@ capabilities and roadmap for future capabilities.
    If your project relies on a capability that is not yet present in
    AMR-Wind, please create an issue on the code project page.
 
-
-.. note::
-
-   This reflects the capabilities for AMR-Wind version 2.1.0 and above.
+   Please acknowledge as a publication co-author any developer that
+   has significantly contributed to implementing or improving specific
+   capability that was used for that publication.
 
 
 Capabilities
@@ -113,6 +113,8 @@ Flow physics
    * Mesoscale forcing [:ref:`doc <mesoscale_forcing>`, :ref:`inp <inputs_meso_forcing>`]
 
    * Synthetic turbulence [:ref:`inp <inputs_synthetic_turbulence>`]
+
+   * Arbitrarily spatially and time varying boundary conditions using Python tools [:ref:`inp <inputs_native_boundary_plane>`]
 
 * Geometry
 
