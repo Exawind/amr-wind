@@ -13,7 +13,7 @@ TEST_F(WaveTheoriesTest, StokesWaves)
     constexpr amrex::Real coeff_tol = 1e-4;
 
     amrex::Real wavenumber = 2.0;
-    amrex::Real water_depth = 0.376991;
+    constexpr amrex::Real water_depth = 0.376991;
     int stokes_order = 5;
     amrex::Real c0, a11, a22, b22, c2, a31, a33, b31, a42;
     amrex::Real a44, b42, b44, c4, a51, a53, a55, b53, b55;
