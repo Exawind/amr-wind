@@ -302,7 +302,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_waves(
     // https://www.caee.utexas.edu/prof/kinnas/ce358/oenotes/kinnas_stokes11.pdf
     // Define coefficients using Eq.(19)
 
-    amrex::Vector<amrex::Real> a(stokes_order);
+    const int MAX_ORDER = 5;
+    amrex::GpuArray<amrex::Real, MAX_ORDER> a;
     if (stokes_order == 2) {
         a[0] = a11;
         a[1] = a22;
