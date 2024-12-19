@@ -51,6 +51,7 @@ void KransAxell::operator()(
     const auto& dissip_arr = (this->m_dissip)(lev).array(mfi);
     const auto& tke_arr = m_tke(lev).array(mfi);
     const auto& geom = m_mesh.Geom(lev);
+    const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& probhi = m_mesh.Geom(lev).ProbHiArray();
     const auto& dx = geom.CellSizeArray();
     const auto& dt = m_time.delta_t();
@@ -76,7 +77,7 @@ void KransAxell::operator()(
         amrex::Real bcforcing = 0;
         const amrex::Real ux = vel(i, j, k, 0);
         const amrex::Real uy = vel(i, j, k, 1);
-        const amrex::Real z = (k + 0.5) * dx[2];
+        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
         if (k == 0) {
             const amrex::Real m = std::sqrt(ux * ux + uy * uy);
             const amrex::Real ustar = m * kappa / ( std::log(z / z0) + psi_m);
