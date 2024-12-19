@@ -1,5 +1,12 @@
 .. _capabilities:
 
+
+Capabilities and Roadmap
+========================
+
+This section documents a non-exhaustive list of current AMR-Wind
+capabilities and roadmap for future capabilities.
+
 .. tip::
 
    If your project relies on a capability that is not yet present in
@@ -8,13 +15,6 @@
    Please acknowledge as a publication co-author any developer that
    has significantly contributed to implementing or improving specific
    capability that was used for that publication.
-
-
-Capabilities and Roadmap
-========================
-
-This section documents a non-exhaustive list of current AMR-Wind
-capabilities and roadmap for future capabilities.
 
 
 Capabilities
