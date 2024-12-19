@@ -48,6 +48,9 @@ private:
     int m_sponge_south{0};
     int m_sponge_north{1};
     bool m_is_laminar{false};
+    amrex::Real m_mol_length{10000};
+    amrex::Real m_gamma_m{5.0};
+    amrex::Real m_beta_m{16.0};
 };
 
 } // namespace amr_wind::pde::icns

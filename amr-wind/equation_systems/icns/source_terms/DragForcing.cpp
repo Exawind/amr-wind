@@ -70,6 +70,26 @@ void DragForcing::operator()(
     const auto& terrainz0 = (*m_terrainz0)(lev).const_array(mfi);
     const auto& geom = m_mesh.Geom(lev);
     const auto& dx = geom.CellSizeArray();
+    //! Upper value
+    amrex::Real psi_m_upper = 0;
+    amrex::Real zeta = 1.5 * dx[2] / m_mol_length;
+    if (zeta > 0) {
+        psi_m_upper = -m_gamma_m * zeta;
+    } else {
+        const amrex::Real x = std::sqrt(std::sqrt(1 - m_beta_m * zeta));
+        psi_m_upper = 2.0 * std::log(0.5 * (1.0 + x)) + log(0.5 * (1 + x * x)) -
+                      2.0 * std::atan(x) + utils::half_pi();
+    }
+    amrex::Real psi_m_cell = 0;
+    zeta = 0.5 * dx[2] / m_mol_length;
+    if (zeta > 0) {
+        psi_m_cell = -m_gamma_m * zeta;
+    } else {
+        const amrex::Real x = std::sqrt(std::sqrt(1 - m_beta_m * zeta));
+        psi_m_cell = 2.0 * std::log(0.5 * (1.0 + x)) + log(0.5 * (1 + x * x)) -
+                      2.0 * std::atan(x) + utils::half_pi();
+    }
+    //! Cell Value
     const auto& prob_lo = geom.ProbLoArray();
     const auto& prob_hi = geom.ProbHiArray();
     const amrex::Real drag_coefficient = m_drag_coefficient;
@@ -144,9 +164,10 @@ void DragForcing::operator()(
             const amrex::Real uy2 = vel(i, j, k + 1, 1);
             const amrex::Real m2 = std::sqrt(ux2 * ux2 + uy2 * uy2);
             const amrex::Real z0 = std::max(terrainz0(i, j, k), z0_min);
-            const amrex::Real ustar = m2 * kappa / std::log(1.5 * dx[2] / z0);
+            const amrex::Real ustar =
+                m2 * kappa / (std::log(1.5 * dx[2] / z0) + psi_m_upper);
             const amrex::Real uTarget =
-                ustar / kappa * std::log(0.5 * dx[2] / z0);
+                ustar / kappa * (std::log(0.5 * dx[2] / z0) + psi_m_cell);
             const amrex::Real uxTarget =
                 uTarget * ux2 / (tiny + std::sqrt(ux2 * ux2 + uy2 * uy2));
             const amrex::Real uyTarget =

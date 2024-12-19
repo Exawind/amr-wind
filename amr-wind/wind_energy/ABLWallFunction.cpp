@@ -145,6 +145,11 @@ ABLVelWallFunc::ABLVelWallFunc(
 {
     amrex::ParmParse pp("ABL");
     pp.query("wall_shear_stress_type", m_wall_shear_stress_type);
+    pp.query("surface_flux_method", m_surface_flux_method);
+    pp.query("mol_length", m_mol_length);
+    pp.query("surface_roughness_z0", m_surface_roughness);
+    pp.query("mo_gamma_m", m_gamma_m);
+    pp.query("mo_beta_m", m_beta_m);
     m_wall_shear_stress_type = amrex::toLower(m_wall_shear_stress_type);
 
     if (m_wall_shear_stress_type == "constant" ||
@@ -181,11 +186,25 @@ void ABLVelWallFunc::wall_model(
     const bool has_terrain = repo.int_field_exists("terrain_blank");
     const auto* m_terrain_blank =
         has_terrain ? &repo.get_int_field("terrain_blank") : nullptr;
+    const amrex::Real kappa = 0.41; //! May change in future for water bodies
+    const amrex::Real surface_roughness = m_surface_roughness;
+    amrex::Real psi_m = 0.0;
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
         const auto& domain = geom.Domain();
+        const auto& dx = geom.CellSizeArray();
         amrex::MFItInfo mfi_info{};
-
+        if (m_surface_flux_method == "mol") {
+            const amrex::Real zeta = dx[2] / m_mol_length;
+            if (zeta > 0) {
+                psi_m = -m_gamma_m * zeta;
+            } else {
+                const amrex::Real x = std::sqrt(std::sqrt(1 - m_beta_m * zeta));
+                psi_m = 2.0 * std::log(0.5 * (1.0 + x)) +
+                        log(0.5 * (1 + x * x)) - 2.0 * std::atan(x) +
+                        utils::half_pi();
+            }
+        }
         const auto& rho_lev = density(lev);
         const auto& vold_lev = velocity.state(FieldState::Old)(lev);
         auto& vel_lev = velocity(lev);
@@ -208,6 +227,35 @@ void ABLVelWallFunc::wall_model(
                             : amrex::Array4<int>();
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                 velocity.bc_type()[zlo] == BC::wall_model) {
+                if (m_surface_flux_method == "mol") {
+                    amrex::ParallelFor(
+                        amrex::bdryLo(bx, idim),
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real mu = eta(i, j, k);
+                            const amrex::Real uu = vold_arr(i, j, k, 0);
+                            const amrex::Real vv = vold_arr(i, j, k, 1);
+                            const amrex::Real wspd =
+                                std::sqrt(uu * uu + vv * vv);
+                            const amrex::Real drag_term =
+                                std::log(dx[2] / surface_roughness) + psi_m;
+                            const amrex::Real ustar = wspd * kappa / drag_term;
+                            // Dirichlet BC
+                            varr(i, j, k - 1, 2) = 0.0;
+                            const amrex::Real blankTerrain =
+                                (has_terrain) ? 1 - blank_arr(i, j, k, 0) : 1.0;
+                            // Shear stress BC
+                            // Blank Terrain added to keep the boundary
+                            // condition backward compatible while adding
+                            // terrain sensitive BC
+                            varr(i, j, k - 1, 0) = blankTerrain * ustar *
+                                                   ustar * uu / wspd *
+                                                   den(i, j, k) / mu;
+                            varr(i, j, k - 1, 1) = blankTerrain * ustar *
+                                                   ustar * vv / wspd *
+                                                   den(i, j, k) / mu;
+                        });
+                }
+            } else if (m_surface_flux_method == "uniform") {
                 amrex::ParallelFor(
                     amrex::bdryLo(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -221,14 +269,15 @@ void ABLVelWallFunc::wall_model(
                         const amrex::Real blankTerrain =
                             (has_terrain) ? 1 - blank_arr(i, j, k, 0) : 1.0;
                         // Shear stress BC
-                        // Blank Terrain added to keep the boundary condition
-                        // backward compatible while adding terrain sensitive BC
+                        // Blank Terrain added to keep the boundary
+                        // condition backward compatible while adding
+                        // terrain sensitive BC
                         varr(i, j, k - 1, 0) = blankTerrain *
                                                tau.calc_vel_x(uu, wspd) *
                                                den(i, j, k) / mu;
-                        varr(i, j, k - 1, 1) = blankTerrain *
-                                               tau.calc_vel_y(vv, wspd) *
-                                               den(i, j, k) / mu;
+                        varr(i, j, k - 1, 1) =
+                            blankTerrain * tau.calc_vel_y(vv, wspd) *
+                            den(i, j, k) / mu * den(i, j, k) / mu;
                     });
             }
         }
@@ -272,6 +321,9 @@ ABLTempWallFunc::ABLTempWallFunc(
 {
     amrex::ParmParse pp("ABL");
     pp.query("wall_shear_stress_type", m_wall_shear_stress_type);
+    pp.query("surface_flux_method", m_surface_flux_method);
+    pp.query("mol_length", m_mol_length);
+    pp.query("surface_roughness_z0", m_surface_roughness);
     m_wall_shear_stress_type = amrex::toLower(m_wall_shear_stress_type);
     amrex::Print() << "Heat Flux model: " << m_wall_shear_stress_type
                    << std::endl;
@@ -302,6 +354,7 @@ void ABLTempWallFunc::wall_model(
     const bool has_terrain = repo.int_field_exists("terrain_blank");
     const auto* m_terrain_blank =
         has_terrain ? &repo.get_int_field("terrain_blank") : nullptr;
+
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
         const auto& domain = geom.Domain();
@@ -332,20 +385,23 @@ void ABLTempWallFunc::wall_model(
 
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                 temperature.bc_type()[zlo] == BC::wall_model) {
-                amrex::ParallelFor(
-                    amrex::bdryLo(bx, idim),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::Real alphaT = eta(i, j, k);
-                        const amrex::Real uu = vold_arr(i, j, k, 0);
-                        const amrex::Real vv = vold_arr(i, j, k, 1);
-                        const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
-                        const amrex::Real theta2 = told_arr(i, j, k);
-                        const amrex::Real blankTerrain =
-                            (has_terrain) ? 1 - blank_arr(i, j, k, 0) : 1.0;
-                        tarr(i, j, k - 1) = blankTerrain * den(i, j, k) *
-                                            tau.calc_theta(wspd, theta2) /
-                                            alphaT;
-                    });
+                if (m_surface_flux_method == "uniform") {
+                    amrex::ParallelFor(
+                        amrex::bdryLo(bx, idim),
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real alphaT = eta(i, j, k);
+                            const amrex::Real uu = vold_arr(i, j, k, 0);
+                            const amrex::Real vv = vold_arr(i, j, k, 1);
+                            const amrex::Real wspd =
+                                std::sqrt(uu * uu + vv * vv);
+                            const amrex::Real theta2 = told_arr(i, j, k);
+                            const amrex::Real blankTerrain =
+                                (has_terrain) ? 1 - blank_arr(i, j, k, 0) : 1.0;
+                            tarr(i, j, k - 1) = blankTerrain * den(i, j, k) *
+                                                tau.calc_theta(wspd, theta2) /
+                                                alphaT;
+                        });
+                }
             }
         }
     }

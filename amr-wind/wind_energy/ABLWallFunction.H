@@ -82,6 +82,11 @@ public:
 private:
     const ABLWallFunction& m_wall_func;
     std::string m_wall_shear_stress_type{"moeng"};
+    std::string m_surface_flux_method{"uniform"};
+    amrex::Real m_mol_length{10000};
+    amrex::Real m_surface_roughness{0.1};
+    amrex::Real m_gamma_m{5.0};
+    amrex::Real m_beta_m{16.0};
 };
 
 class ABLTempWallFunc : public FieldBCIface
@@ -98,6 +103,9 @@ public:
 private:
     const ABLWallFunction& m_wall_func;
     std::string m_wall_shear_stress_type{"moeng"};
+    std::string m_surface_flux_method{"uniform"};
+    amrex::Real m_mol_length{10000};
+    amrex::Real m_surface_roughness{0.1};    
 };
 
 } // namespace amr_wind
