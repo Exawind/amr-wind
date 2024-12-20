@@ -55,11 +55,11 @@ private:
     amrex::Real m_gamma_m{5.0};
     amrex::Real m_beta_m{16.0};
 
-    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real stability(
-        amrex::Real z,
-        amrex::Real mol_length,
-        amrex::Real gamma_m,
-        amrex::Real beta_m) const
+    amrex::Real stability(
+        const amrex::Real z,
+        const amrex::Real mol_length,
+        const amrex::Real gamma_m,
+        const amrex::Real beta_m) const
     {
         const amrex::Real zeta = z / mol_length;
         amrex::Real psi_m = 0;

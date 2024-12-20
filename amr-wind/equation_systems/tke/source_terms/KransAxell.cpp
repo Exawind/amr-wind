@@ -26,6 +26,10 @@ KransAxell::KransAxell(const CFDSim& sim)
     pp.query("reference_temperature", m_ref_temp);
     pp.query("surface_temp_flux", m_heat_flux);
     pp.query("meso_sponge_start", m_sponge_start);
+    pp.query("wall_het_model", m_wall_het_model);
+    pp.query("mol_length", m_mol_length);
+    pp.query("mo_gamma_m", m_gamma_m);
+    pp.query("mo_beta_m", m_beta_m);
     {
         amrex::ParmParse pp_incflow("incflo");
         pp_incflow.queryarr("gravity", m_gravity);
@@ -62,6 +66,10 @@ void KransAxell::operator()(
     const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     const amrex::Real kappa = m_kappa;
     const amrex::Real z0 = m_z0;
+    amrex::Real psi_m = 0.0;
+    if (m_wall_het_model == "mol") {
+        psi_m = stability(0.5 * dx[2], m_mol_length, m_gamma_m, m_beta_m);
+    }
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::Real bcforcing = 0;
         const amrex::Real ux = vel(i, j, k, 0);
@@ -69,7 +77,7 @@ void KransAxell::operator()(
         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
         if (k == 0) {
             const amrex::Real m = std::sqrt(ux * ux + uy * uy);
-            const amrex::Real ustar = m * kappa / std::log(z / z0);
+            const amrex::Real ustar = m * kappa / (std::log(z / z0) - psi_m);
             const amrex::Real rans_b = std::pow(
                 std::max(heat_flux, 0.0) * kappa * z / std::pow(Cmu, 3),
                 (2.0 / 3.0));
@@ -104,7 +112,8 @@ void KransAxell::operator()(
                 const amrex::Real uy = vel(i, j, k, 1);
                 const amrex::Real z = 0.5 * dx[2];
                 amrex::Real m = std::sqrt(ux * ux + uy * uy);
-                const amrex::Real ustar = m * kappa / std::log(z / z0);
+                const amrex::Real ustar =
+                    m * kappa / (std::log(z / z0) - psi_m);
                 const amrex::Real rans_b = std::pow(
                     std::max(heat_flux, 0.0) * kappa * z / std::pow(Cmu, 3),
                     (2.0 / 3.0));
