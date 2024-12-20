@@ -92,6 +92,12 @@ void ABLMeanBoussinesq::operator()(
 {
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
+    amrex::FArrayBox beta_fab(
+      bx, 1, amrex::The_Async_Arena());
+    amrex::Array4<amrex::Real> const& beta_arr =
+      beta_fab.array();
+    m_transport.beta(beta_arr);
+
     const auto& beta = (*m_beta)(lev).const_array(mfi);
     const auto& ref_theta = (*m_ref_theta)(lev).const_array(mfi);
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{

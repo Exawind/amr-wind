@@ -164,33 +164,43 @@ public:
     inline std::unique_ptr<ScratchField> beta() const override
     {
         auto beta = m_repo.create_scratch_field(1, 1);
+        for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+            for (amrex::MFIter mfi(beta(lev), mfi_info); mfi.isValid();
+                 ++mfi) {
+                const auto& bx = mfi.tilebox();
+                const auto& beta_arr = (*beta)(lev).array(mfi);
+                beta(lev, mfi, bx, beta_arr);
+            }
+        }
+        return beta;
+    }
 
+  //! Compute the thermal expansion coefficient
+  inline void beta(const int lev, const     const amrex::MFIter& mfi,
+    const amrex::Box& bx, const amrex::Array4<amrex::Real>& beta) const override{
+    
         const amrex::Real beta_val = (m_reference_temperature > 0.0)
                                          ? 1.0 / m_reference_temperature
                                          : m_constant_beta;
 
-        for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
-            (*beta)(lev).setVal(beta_val);
-        }
-
+        beta.setVal(beta_val);
         if (m_repo.field_exists("vof")) {
-            const auto& vof = m_repo.get_field("vof");
-            for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
-                const auto& beta_arrs = (*beta)(lev).arrays();
-                const auto& vof_arrs = vof(lev).const_arrays();
-                amrex::ParallelFor(
-                    (*beta)(lev), beta->num_grow(),
-                    [=] AMREX_GPU_DEVICE(
-                        int nbx, int i, int j, int k) noexcept {
-                        if (vof_arrs[nbx](i, j, k) > constants::TIGHT_TOL) {
-                            beta_arrs[nbx](i, j, k) = 0.0;
-                        }
-                    });
-            }
+          const auto& vof_arr = vof(lev).const_array(mfi);
+          amrex::ParallelFor(
+            bx, beta->num_grow(),
+            [=] AMREX_GPU_DEVICE(
+              int i, int j, int k) noexcept {
+              if (vof_arr(i, j, k) > constants::TIGHT_TOL) {
+                beta(i, j, k) = 0.0;
+              }
+          });
         }
+        
+  }
 
-        return beta;
-    }
 
     inline amrex::Real reference_temperature() const override
     {

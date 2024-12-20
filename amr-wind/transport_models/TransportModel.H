@@ -1,4 +1,4 @@
-#ifndef TRANSPORTMODEL_H
+\#ifndef TRANSPORTMODEL_H
 #define TRANSPORTMODEL_H
 
 #include "amr-wind/core/Factory.H"
@@ -45,6 +45,9 @@ public:
 
     //! Thermal expansion coefficient
     virtual std::unique_ptr<ScratchField> beta() const = 0;
+
+    //! Thermal expansion coefficient
+  virtual void beta(const amrex::Array4<amrex::Real>& beta) const = 0;
 
     //! Reference temperature
     virtual amrex::Real reference_temperature() const = 0;
