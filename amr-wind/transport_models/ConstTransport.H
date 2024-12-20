@@ -165,10 +165,9 @@ public:
     {
         auto beta = m_repo.create_scratch_field(1, 1);
 
-        amrex::Real beta_val = m_constant_beta;
-        if (m_reference_temperature > 0.0) {
-            beta_val = 1.0 / m_reference_temperature;
-        }
+        const amrex::Real beta_val = (m_reference_temperature > 0.0)
+                                         ? 1.0 / m_reference_temperature
+                                         : m_constant_beta;
 
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
             (*beta)(lev).setVal(beta_val);
@@ -202,7 +201,7 @@ public:
     inline std::unique_ptr<ScratchField> ref_theta() const override
     {
         if (m_reference_temperature < 0.0) {
-            amrex::Abort("reference temperature was not set");
+            amrex::Abort("Reference temperature was not set");
         }
 
         auto ref_theta = m_repo.create_scratch_field(1, 1);

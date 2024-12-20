@@ -359,8 +359,14 @@ public:
     //! Return the reference temperature
     inline std::unique_ptr<ScratchField> ref_theta() const override
     {
-        amrex::Abort("ref temp not implemented");
+        if (m_reference_temperature < 0.0) {
+            amrex::Abort("Reference temperature was not set");
+        }
+
         auto ref_theta = m_repo.create_scratch_field(1, 1);
+        for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
+            (*ref_theta)(lev).setVal(m_reference_temperature);
+        }
         return ref_theta;
     }
 
