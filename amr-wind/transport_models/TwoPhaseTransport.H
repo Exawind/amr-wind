@@ -298,58 +298,19 @@ public:
     inline std::unique_ptr<ScratchField> beta() const override
     {
         auto beta = m_repo.create_scratch_field(1, ngrow);
-
-        const amrex::Real beta_val = (m_reference_temperature > 0.0)
-                                         ? 1.0 / m_reference_temperature
-                                         : m_constant_beta;
-
-        if (m_ifacetype == InterfaceCapturingMethod::VOF) {
-            const auto& vof = m_repo.get_field("vof");
-            for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
-                const auto& beta_arrs = (*beta)(lev).arrays();
-                const auto& vof_arrs = vof(lev).const_arrays();
-                amrex::ParallelFor(
-                    (*beta)(lev), beta->num_grow(),
-                    [=] AMREX_GPU_DEVICE(
-                        int nbx, int i, int j, int k) noexcept {
-                        if (vof_arrs[nbx](i, j, k) > constants::TIGHT_TOL) {
-                            beta_arrs[nbx](i, j, k) = 0.0;
-                        } else {
-                            beta_arrs[nbx](i, j, k) = beta_val;
-                        }
-                    });
-            }
-        } else if (m_ifacetype == InterfaceCapturingMethod::LS) {
-            const auto& levelset = m_repo.get_field("levelset");
-            for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
-                const auto& dx = m_repo.mesh().Geom(lev).CellSizeArray();
-                const auto& beta_arrs = (*beta)(lev).arrays();
-                const auto& phi_arrs = levelset(lev).const_arrays();
-                const amrex::Real eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
-                amrex::ParallelFor(
-                    (*beta)(lev), beta->num_grow(),
-                    [=] AMREX_GPU_DEVICE(
-                        int nbx, int i, int j, int k) noexcept {
-                        amrex::Real smooth_heaviside;
-                        if (phi_arrs[nbx](i, j, k) > eps) {
-                            smooth_heaviside = 1.0;
-                        } else if (phi_arrs[nbx](i, j, k) < -eps) {
-                            smooth_heaviside = 0.;
-                        } else {
-                            smooth_heaviside =
-                                0.5 *
-                                (1.0 + phi_arrs[nbx](i, j, k) / eps +
-                                 1.0 / M_PI *
-                                     std::sin(
-                                         phi_arrs[nbx](i, j, k) * M_PI / eps));
-                        }
-                        beta_arrs[nbx](i, j, k) =
-                            beta_val * (1 - smooth_heaviside);
-                    });
+        for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+            for (amrex::MFIter mfi((*beta)(lev)); mfi.isValid(); ++mfi) {
+                const auto& bx = mfi.tilebox();
+                const auto& beta_arr = (*beta)(lev).array(mfi);
+                beta_impl(lev, mfi, bx, beta_arr);
             }
         }
         return beta;
     }
+
     //! Compute the thermal expansion coefficient
     inline void beta_impl(
         const int lev,
@@ -357,7 +318,42 @@ public:
         const amrex::Box& bx,
         const amrex::Array4<amrex::Real>& beta) const override
     {
-        amrex::Abort("Not implemented");
+        const amrex::Real beta_val = (m_reference_temperature > 0.0)
+                                         ? 1.0 / m_reference_temperature
+                                         : m_constant_beta;
+
+        if (m_ifacetype == InterfaceCapturingMethod::VOF) {
+            const auto& vof = m_repo.get_field("vof");
+            const auto& vof_arr = vof(lev).const_array(mfi);
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    if (vof_arr(i, j, k) > constants::TIGHT_TOL) {
+                        beta(i, j, k) = 0.0;
+                    } else {
+                        beta(i, j, k) = beta_val;
+                    }
+                });
+        } else if (m_ifacetype == InterfaceCapturingMethod::LS) {
+            const auto& levelset = m_repo.get_field("levelset");
+            const auto& dx = m_repo.mesh().Geom(lev).CellSizeArray();
+            const auto& phi_arr = levelset(lev).const_array(mfi);
+            const amrex::Real eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    amrex::Real smooth_heaviside;
+                    if (phi_arr(i, j, k) > eps) {
+                        smooth_heaviside = 1.0;
+                    } else if (phi_arr(i, j, k) < -eps) {
+                        smooth_heaviside = 0.;
+                    } else {
+                        smooth_heaviside =
+                            0.5 * (1.0 + phi_arr(i, j, k) / eps +
+                                   1.0 / M_PI *
+                                       std::sin(phi_arr(i, j, k) * M_PI / eps));
+                    }
+                    beta(i, j, k) = beta_val * (1 - smooth_heaviside);
+                });
+        }
     }
 
     inline amrex::Real reference_temperature() const override
