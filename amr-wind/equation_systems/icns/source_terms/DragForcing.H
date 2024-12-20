@@ -59,7 +59,7 @@ private:
         const amrex::Real z,
         const amrex::Real mol_length,
         const amrex::Real gamma_m,
-        const amrex::Real beta_m) 
+        const amrex::Real beta_m)
     {
         const amrex::Real zeta = z / mol_length;
         amrex::Real psi_m = 0;
