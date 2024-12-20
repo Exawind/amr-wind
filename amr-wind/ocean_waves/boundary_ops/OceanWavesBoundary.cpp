@@ -37,6 +37,7 @@ OceanWavesBoundary::OceanWavesBoundary(CFDSim& sim)
 
 void OceanWavesBoundary::post_init_actions()
 {
+    initialize_data();
     // Update boundary data (at n)
 }
 
