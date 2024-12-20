@@ -224,16 +224,23 @@ class NativeBoundaryPlane:
         perp = au.perpendicular_from_ori(self.ori)
 
         for ilev in range(self.plt.nlevels):
+            self.plt.cell_sizes[ilev] = [
+                x / refinement_ratio for x in self.plt.cell_sizes[ilev]
+            ]
+
+        plo = self.plt.prob_lo[normal]
+        phi = self.plt.prob_hi[normal]
+        offset = (phi + plo) / 2
+        self.plt.prob_lo[normal] = offset - self.plt.cell_sizes[0][normal]
+        self.plt.prob_hi[normal] = offset + self.plt.cell_sizes[0][normal]
+
+        for ilev in range(self.plt.nlevels):
             small_endi = self.plt.prob_domain[ilev].small_end
             big_endi = self.plt.prob_domain[ilev].big_end
             for p in perp:
                 small_endi[p] *= refinement_ratio
                 big_endi[p] = (big_endi[p] + 1) * refinement_ratio - 1
             self.plt.prob_domain[ilev] = amr.Box(small_endi, big_endi)
-
-            self.plt.cell_sizes[ilev] = [
-                x / refinement_ratio for x in self.plt.cell_sizes[ilev]
-            ]
 
             dx = self.plt.cell_sizes[ilev][normal]
             for igrid in range(self.plt.ngrids[ilev]):
