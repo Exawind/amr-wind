@@ -48,6 +48,30 @@ private:
     int m_sponge_south{0};
     int m_sponge_north{1};
     bool m_is_laminar{false};
+    std::string m_wall_het_model{"none"};
+    amrex::Real m_mol_length{10000};
+    amrex::Real m_z0{0.1};
+    amrex::Real m_kappa{0.41};
+    amrex::Real m_gamma_m{5.0};
+    amrex::Real m_beta_m{16.0};
+
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real stability(
+        amrex::Real z,
+        amrex::Real mol_length,
+        amrex::Real gamma_m,
+        amrex::Real beta_m) const
+    {
+        const amrex::Real zeta = z / mol_length;
+        amrex::Real psi_m = 0;
+        if (zeta > 0) {
+            psi_m = -gamma_m * zeta;
+        } else {
+            amrex::Real x = std::sqrt(std::sqrt(1 - beta_m * zeta));
+            psi_m = 2.0 * std::log(0.5 * (1.0 + x)) + log(0.5 * (1 + x * x)) -
+                    2.0 * std::atan(x) + 2.0 * std::atan(1.0);
+        }
+        return psi_m;
+    }
 };
 
 } // namespace amr_wind::pde::icns
