@@ -148,7 +148,7 @@ public:
     inline std::unique_ptr<ScratchField> mu() override
     {
         // Select the interface capturing method
-        auto mu = m_repo.create_scratch_field(1, 1);
+        auto mu = m_repo.create_scratch_field(1, ngrow);
 
         if (m_ifacetype == InterfaceCapturingMethod::VOF) {
 
@@ -213,7 +213,7 @@ public:
     inline std::unique_ptr<ScratchField> alpha() override
     {
         // Select the interface capturing method
-        auto alpha = m_repo.create_scratch_field(1, 1);
+        auto alpha = m_repo.create_scratch_field(1, ngrow);
 
         if (m_ifacetype == InterfaceCapturingMethod::VOF) {
 
@@ -297,7 +297,7 @@ public:
     //! Return the thermal expansion coefficient
     inline std::unique_ptr<ScratchField> beta() const override
     {
-        auto beta = m_repo.create_scratch_field(1, 1);
+        auto beta = m_repo.create_scratch_field(1, ngrow);
 
         const amrex::Real beta_val = (m_reference_temperature > 0.0)
                                          ? 1.0 / m_reference_temperature
@@ -350,6 +350,15 @@ public:
         }
         return beta;
     }
+    //! Compute the thermal expansion coefficient
+    inline void beta_impl(
+        const int lev,
+        const amrex::MFIter& mfi,
+        const amrex::Box& bx,
+        const amrex::Array4<amrex::Real>& beta) const override
+    {
+        amrex::Abort("Not implemented");
+    }
 
     inline amrex::Real reference_temperature() const override
     {
@@ -363,7 +372,7 @@ public:
             amrex::Abort("Reference temperature was not set");
         }
 
-        auto ref_theta = m_repo.create_scratch_field(1, 1);
+        auto ref_theta = m_repo.create_scratch_field(1, ngrow);
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
             (*ref_theta)(lev).setVal(m_reference_temperature);
         }

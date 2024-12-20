@@ -128,7 +128,7 @@ public:
     //! Return the dynamic visocity field
     inline std::unique_ptr<ScratchField> mu() override
     {
-        auto mu = m_repo.create_scratch_field(1, 1);
+        auto mu = m_repo.create_scratch_field(1, ngrow);
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
             (*mu)(lev).setVal(m_mu);
         }
@@ -163,44 +163,48 @@ public:
     //! Return the thermal expansion coefficient
     inline std::unique_ptr<ScratchField> beta() const override
     {
-        auto beta = m_repo.create_scratch_field(1, 1);
+        auto beta = m_repo.create_scratch_field(1, ngrow);
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-            for (amrex::MFIter mfi(beta(lev), mfi_info); mfi.isValid();
-                 ++mfi) {
+            for (amrex::MFIter mfi((*beta)(lev)); mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.tilebox();
                 const auto& beta_arr = (*beta)(lev).array(mfi);
-                beta(lev, mfi, bx, beta_arr);
+                beta_impl(lev, mfi, bx, beta_arr);
             }
         }
         return beta;
     }
 
-  //! Compute the thermal expansion coefficient
-  inline void beta(const int lev, const     const amrex::MFIter& mfi,
-    const amrex::Box& bx, const amrex::Array4<amrex::Real>& beta) const override{
-    
+    //! Compute the thermal expansion coefficient
+    inline void beta_impl(
+        const int lev,
+        const amrex::MFIter& mfi,
+        const amrex::Box& bx,
+        const amrex::Array4<amrex::Real>& beta) const override
+    {
+
         const amrex::Real beta_val = (m_reference_temperature > 0.0)
                                          ? 1.0 / m_reference_temperature
                                          : m_constant_beta;
 
-        beta.setVal(beta_val);
-        if (m_repo.field_exists("vof")) {
-          const auto& vof_arr = vof(lev).const_array(mfi);
-          amrex::ParallelFor(
-            bx, beta->num_grow(),
-            [=] AMREX_GPU_DEVICE(
-              int i, int j, int k) noexcept {
-              if (vof_arr(i, j, k) > constants::TIGHT_TOL) {
-                beta(i, j, k) = 0.0;
-              }
-          });
-        }
-        
-  }
+        amrex::ParallelFor(
+            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                beta(i, j, k) = beta_val;
+            });
 
+        if (m_repo.field_exists("vof")) {
+            const auto& vof = m_repo.get_field("vof");
+            const auto& vof_arr = vof(lev).const_array(mfi);
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    if (vof_arr(i, j, k) > constants::TIGHT_TOL) {
+                        beta(i, j, k) = 0.0;
+                    }
+                });
+        }
+    }
 
     inline amrex::Real reference_temperature() const override
     {
@@ -214,7 +218,7 @@ public:
             amrex::Abort("Reference temperature was not set");
         }
 
-        auto ref_theta = m_repo.create_scratch_field(1, 1);
+        auto ref_theta = m_repo.create_scratch_field(1, ngrow);
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
             (*ref_theta)(lev).setVal(m_reference_temperature);
         }

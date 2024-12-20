@@ -46,9 +46,6 @@ private:
     //! Transport model
     const transport::TransportModel& m_transport;
 
-    //! Thermal expansion coefficient
-    std::unique_ptr<ScratchField> m_beta;
-
     //! Reference temperature
     std::unique_ptr<ScratchField> m_ref_theta;
 
