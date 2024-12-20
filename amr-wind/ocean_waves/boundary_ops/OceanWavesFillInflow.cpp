@@ -1,13 +1,15 @@
-#include "amr-wind/wind_energy/OceanWavesFillInflow.H"
+#include "amr-wind/ocean_waves/boundary_ops/OceanWavesFillInflow.H"
 
 namespace amr_wind {
 
 OceanWavesFillInflow::OceanWavesFillInflow(
     Field& field,
     const amrex::AmrCore& mesh,
-    const SimTime& time)
+    const SimTime& time,
+    const OceanWavesBoundary& ow_bndry)
     : FieldFillPatchOps<FieldBCDirichlet>(
           field, mesh, time, FieldInterpolator::CellConsLinear)
+    , m_ow_bndry(ow_bndry)
 {}
 
 OceanWavesFillInflow::~OceanWavesFillInflow() = default;
@@ -22,7 +24,13 @@ void OceanWavesFillInflow::fillpatch(
     FieldFillPatchOps<FieldBCDirichlet>::fillpatch(
         lev, time, mfab, nghost, fstate);
 
-    // ** //
+    if (m_field.base_name() == "velocity") {
+        m_ow_bndry.set_velocity(lev, time, m_field, mfab);
+    } else if (m_field.base_name() == "vof") {
+        m_ow_bndry.set_vof(lev, time, m_field, mfab);
+    } else if (m_field.base_name() == "density") {
+        m_ow_bndry.set_density(lev, time, m_field, mfab);
+    }
 }
 
 void OceanWavesFillInflow::fillpatch_from_coarse(
@@ -35,7 +43,13 @@ void OceanWavesFillInflow::fillpatch_from_coarse(
     FieldFillPatchOps<FieldBCDirichlet>::fillpatch_from_coarse(
         lev, time, mfab, nghost, fstate);
 
-    // ** //
+    if (m_field.base_name() == "velocity") {
+        m_ow_bndry.set_velocity(lev, time, m_field, mfab);
+    } else if (m_field.base_name() == "vof") {
+        m_ow_bndry.set_vof(lev, time, m_field, mfab);
+    } else if (m_field.base_name() == "density") {
+        m_ow_bndry.set_density(lev, time, m_field, mfab);
+    }
 }
 
 void OceanWavesFillInflow::fillphysbc(
@@ -48,7 +62,13 @@ void OceanWavesFillInflow::fillphysbc(
     FieldFillPatchOps<FieldBCDirichlet>::fillphysbc(
         lev, time, mfab, nghost, fstate);
 
-    // ** //
+    if (m_field.base_name() == "velocity") {
+        m_ow_bndry.set_velocity(lev, time, m_field, mfab);
+    } else if (m_field.base_name() == "vof") {
+        m_ow_bndry.set_vof(lev, time, m_field, mfab);
+    } else if (m_field.base_name() == "density") {
+        m_ow_bndry.set_density(lev, time, m_field, mfab);
+    }
 }
 
 void OceanWavesFillInflow::fillpatch_sibling_fields(
@@ -62,46 +82,44 @@ void OceanWavesFillInflow::fillpatch_sibling_fields(
     const amrex::Vector<amrex::BCRec>& /* unused */,
     const FieldState fstate)
 {
-    // Avoid trying to read after planes have already been populated
-    const bool plane_data_unchanged = m_bndry_plane.is_data_newer_than(time);
-    // For an ABL fill, we just foextrap the mac velocities
-    amrex::Vector<amrex::BCRec> fp_bcrec(m_field.num_comp());
-    amrex::Vector<amrex::BCRec> ph_bcrec(m_field.num_comp());
+    // First foextrap the MAC velocities
+    amrex::Vector<amrex::BCRec> lbcrec(m_field.num_comp());
     const auto& ibctype = m_field.bc_type();
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
         const auto side = ori.faceDir();
         const auto bct = ibctype[ori];
         const int dir = ori.coordDir();
-        for (int i = 0; i < m_field.num_comp(); ++i) {
-            if ((bct == BC::mass_inflow) || (bct == BC::mass_inflow_outflow)) {
-                if (side == amrex::Orientation::low) {
-                    ph_bcrec[i].setLo(dir, amrex::BCType::foextrap);
-                    fp_bcrec[i].setLo(
-                        dir, plane_data_unchanged ? amrex::BCType::ext_dir
-                                                  : amrex::BCType::foextrap);
+        for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+            auto ori = oit();
+            const auto side = ori.faceDir();
+            const auto bct = ibctype[ori];
+            const int dir = ori.coordDir();
+            for (int i = 0; i < m_field.num_comp(); ++i) {
+                if ((bct == BC::mass_inflow) ||
+                    (bct == BC::mass_inflow_outflow)) {
+                    if (side == amrex::Orientation::low) {
+                        lbcrec[i].setLo(dir, amrex::BCType::foextrap);
+                    } else {
+                        lbcrec[i].setHi(dir, amrex::BCType::foextrap);
+                    }
                 } else {
-                    ph_bcrec[i].setHi(dir, amrex::BCType::foextrap);
-                    fp_bcrec[i].setHi(
-                        dir, plane_data_unchanged ? amrex::BCType::ext_dir
-                                                  : amrex::BCType::foextrap);
-                }
-            } else {
-                if (side == amrex::Orientation::low) {
-                    ph_bcrec[i].setLo(dir, bcrec[i].lo(dir));
-                    fp_bcrec[i].setLo(dir, bcrec[i].lo(dir));
-                } else {
-                    ph_bcrec[i].setHi(dir, bcrec[i].hi(dir));
-                    fp_bcrec[i].setHi(dir, bcrec[i].hi(dir));
+                    if (side == amrex::Orientation::low) {
+                        lbcrec[i].setLo(dir, bcrec[i].lo(dir));
+                    } else {
+                        lbcrec[i].setHi(dir, bcrec[i].hi(dir));
+                    }
                 }
             }
         }
     }
 
     FieldFillPatchOps<FieldBCDirichlet>::fillpatch_sibling_fields(
-        lev, time, mfabs, ffabs, cfabs, nghost, fp_bcrec, ph_bcrec, fstate);
+            lev, time, mfabs, ffabs, cfabs, nghost, lbcrec, lbcrec, fstate);
 
-    // fill target
+    for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
+            m_ow_bndry.set_velocity(lev, time, m_field, *mfabs[i], 0, i);
+        }
 }
 
 } // namespace amr_wind

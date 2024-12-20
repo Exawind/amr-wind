@@ -3,6 +3,7 @@
 
 #include "amr-wind/core/FieldFillPatchOps.H"
 #include "amr-wind/core/FieldBCOps.H"
+#include "amr-wind/ocean_waves/boundary_ops/OceanWavesBoundary.H"
 
 namespace amr_wind {
 
@@ -12,7 +13,8 @@ public:
     OceanWavesFillInflow(
         Field& field,
         const amrex::AmrCore& mesh,
-        const SimTime& time);
+        const SimTime& time,
+        const OceanWavesBoundary& ow_bndry);
 
     ~OceanWavesFillInflow() override;
 
@@ -49,6 +51,9 @@ public:
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost,
         const FieldState fstate = FieldState::New) override;
+
+protected:
+    const OceanWavesBoundary& m_ow_bndry;
 
 };
 
