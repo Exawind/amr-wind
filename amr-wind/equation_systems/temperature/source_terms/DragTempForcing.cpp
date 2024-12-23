@@ -18,6 +18,9 @@ DragTempForcing::DragTempForcing(const CFDSim& sim)
     amrex::ParmParse pp("DragTempForcing");
     pp.query("drag_coefficient", m_drag_coefficient);
     m_ref_theta = m_transport.ref_theta();
+    if (pp.contains("reference_temperature")) {
+      amrex::Abort("DragTempForcing.reference_temperature has been deprecated. Please replace with transport.reference_temperature.");
+    }
 }
 
 DragTempForcing::~DragTempForcing() = default;
