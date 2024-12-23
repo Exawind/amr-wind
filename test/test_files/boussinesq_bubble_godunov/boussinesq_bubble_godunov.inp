@@ -15,6 +15,7 @@ time.checkpoint_interval           =  -100         # Steps between checkpoint fi
 transport.viscosity = 0.00001
 transport.laminar_prandtl = 0.33333333333333337
 transport.reference_temperature = 0.0
+transport.thermal_expansion_coefficient = 1.0
 turbulence.model = Laminar
 
 amr.max_level           =   1
@@ -31,7 +32,6 @@ incflo.gravity          = 0. 0. 0.5
 
 incflo.physics = BoussinesqBubble
 ICNS.source_terms = BoussinesqBuoyancy
-BoussinesqBuoyancy.thermal_expansion_coeff = 1.0
 
 zlo.type                = "sw"
 zhi.type                = "sw"

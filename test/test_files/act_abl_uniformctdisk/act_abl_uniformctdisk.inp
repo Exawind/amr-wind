@@ -32,6 +32,7 @@ transport.viscosity 			 = 1e-5
 transport.laminar_prandtl 			 = 0.7
 transport.turbulent_prandtl 			 = 0.333
 transport.reference_temperature 			 = 300
+transport.thermal_expansion_coefficient 			 = 0.00333333
 # turbulence equation parameters 
 turbulence.model 			 = Kosovic
 Kosovic.refMOL 			 = -1e30
@@ -47,7 +48,6 @@ ABL.surface_temp_flux 			 = 0
 ICNS.source_terms 			 = BoussinesqBuoyancy CoriolisForcing GeostrophicForcing RayleighDamping NonLinearSGSTerm ActuatorForcing 
 GeostrophicForcing.geostrophic_wind 			 = 10 0 0
 RayleighDamping.force_coord_directions= 0 0 1
-BoussinesqBuoyancy.thermal_expansion_coeff 			 = 0.00333333
 CoriolisForcing.east_vector 			 = 1.0 0.0 0.0 
 CoriolisForcing.north_vector 			 = 0.0 1.0 0.0 
 CoriolisForcing.latitude 			 = 43.5239 
