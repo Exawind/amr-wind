@@ -1,0 +1,15 @@
+<map id="amr_wind::FieldRepo" name="amr_wind::FieldRepo">
+<area shape="rect" id="Node000001" title=" " alt="" coords="66,328,225,353"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="64,211,227,251"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="148,264,148,327,143,327,143,264"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="31,115,118,141"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="93,150,134,209,130,212,88,153"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="5,5,144,45"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="77,59,77,115,72,115,72,59"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="143,108,295,148"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="199,161,161,212,157,209,195,157"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="183,13,222,38"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="204,51,207,84,213,107,208,109,201,84,199,52"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="249,13,287,38"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="259,51,230,109,226,107,254,49"/>
+</map>

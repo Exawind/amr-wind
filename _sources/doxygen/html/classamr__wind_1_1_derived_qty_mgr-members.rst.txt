@@ -1,0 +1,14 @@
+.. meta::4988509eb7255ebfa8c14d0f86fc9cb9bb6f6fe9dd4da75f70e366b24eb619d70b3262a37f4fc6c3beed1f21e3ece3f8ab4abe09f6f3b010ffd297f1bcaf5ed5
+
+:orphan:
+
+.. title:: AMR-Wind API: Member List
+
+Member List
+===========
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_derived_qty_mgr-members.html

@@ -1,0 +1,14 @@
+.. meta::7695d85874dc89dd89c24204c82aedff566c066fd0bc428f8fc964e6bf6eb122fe693b2072da658e18f1f3b61fd298710ba87f913d9f6030b6b450731cc3ee69
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::temperature::TempSpongeForcing Class Reference
+
+TempSpongeForcing Class Reference
+=================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1temperature_1_1_temp_sponge_forcing.html

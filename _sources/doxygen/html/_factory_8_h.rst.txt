@@ -1,0 +1,14 @@
+.. meta::532c85ded406a7c431641b0ce716a1f2dfc012024cd2869d288fccd8ab028c48e258d9a58f7ee29786b115aca735da6e759067413e10b6dd4d7f08432fa9c821
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/core/Factory.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/core/Factory.H File Reference
+==========================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _factory_8_h.html

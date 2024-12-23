@@ -1,0 +1,14 @@
+.. meta::3556a811fb1f19c94bca67fdc9ac1a179e72f2e447dc8f90f1a715840b04fbcf80963107d09628155be94fa2f78ad0de696fc9b15be80a9db7e65c76e279d9c8
+
+:orphan:
+
+.. title:: AMR-Wind API: exw_fast::SC_DX_OutputType Struct Reference
+
+SC\_DX\_OutputType Struct Reference
+===================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structexw__fast_1_1_s_c___d_x___output_type.html

@@ -1,0 +1,14 @@
+.. meta::87a322e6bae208a727a6a5b46e84c2e50183755751c7e6e1c0ac1f736949360ddcd0ac1e34ac3c48cc0c942661869c5d6ce6becfc1cfa055560759aac7bd3585
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::diagnostics Namespace Reference
+
+diagnostics Namespace Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1diagnostics.html

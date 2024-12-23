@@ -1,0 +1,14 @@
+.. meta::0ba702a4923210f07a4fad80cc8337afb7e86478bceaeac6cf01b40c923b06bb3ae2d4113e732b181504210bbb2d5f16c2f83080186fa899e7f575a1a7e0df68
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::RainDrop Class Reference
+
+RainDrop Class Reference
+========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_rain_drop.html

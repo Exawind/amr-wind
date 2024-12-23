@@ -1,0 +1,14 @@
+.. meta::e0d64d30477a22dcbad8c118f98444c6dcc5572b99c7d76ca91166123151bdfe3da3321f7d17eb4a1aae409d4230b3d54a0107af25dd274ea8235c2818f1e57f
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ocean_waves::OWModel&lt; WaveTheoryTrait &gt; Class Template Reference
+
+OWModel&lt; WaveTheoryTrait &gt; Class Template Reference
+=========================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1ocean__waves_1_1_o_w_model.html

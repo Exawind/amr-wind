@@ -1,0 +1,39 @@
+<map id="amr_wind::actuator::FixedWingData" name="amr_wind::actuator::FixedWingData">
+<area shape="rect" id="Node000001" title=" " alt="" coords="1407,141,1555,181"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1actuator_1_1_wing_base_data.html" title=" " alt="" coords="1209,141,1357,181"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1371,159,1407,159,1407,164,1371,164"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="879,54,966,79"/>
+<area shape="poly" id="edge17_Node000001_Node000003" title=" " alt="" coords="980,65,1076,70,1186,83,1273,102,1358,127,1407,140,1406,145,1357,132,1271,107,1185,88,1076,76,980,70"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="969,82,1057,112,1135,132,1210,146,1209,152,1134,137,1055,117,967,87"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="456,5,595,45"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="609,31,880,60,879,65,608,37"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="819,140,1026,180"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="1040,158,1209,158,1209,164,1040,163"/>
+<area shape="rect" id="Node000006" href="$structamr__wind_1_1actuator_1_1_f_l_l_c_data.html" title=" " alt="" coords="451,69,599,109"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="613,95,699,106,790,121,855,137,854,143,789,127,698,111,613,100"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="447,219,604,245"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="618,226,716,218,788,206,800,198,812,190,842,178,844,183,815,194,803,203,790,210,716,224,618,231"/>
+<area shape="rect" id="Node000016" title=" " alt="" coords="813,204,1032,244"/>
+<area shape="poly" id="edge20_Node000016_Node000007" title=" " alt="" coords="579,246,644,260,717,267,789,260,865,242,866,247,790,265,717,272,644,265,578,251"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="89,219,127,245"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="141,229,447,229,447,235,141,235"/>
+<area shape="rect" id="Node000009" href="$structamr__wind_1_1actuator_1_1_component_view.html" title=" " alt="" coords="849,385,997,425"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="960,375,1070,294,1208,200,1244,179,1246,184,1211,205,1073,299,963,379"/>
+<area shape="rect" id="Node000010" href="$structamr__wind_1_1utils_1_1_slice.html" title=" " alt="" coords="431,344,619,384"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="633,372,849,395,848,400,633,378"/>
+<area shape="rect" id="Node000011" href="$structamr__wind_1_1vs_1_1_vector_t.html" title=" " alt="" coords="6,325,210,350"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="224,342,431,355,431,361,224,347"/>
+<area shape="rect" id="Node000012" href="$structamr__wind_1_1utils_1_1_slice.html" title=" " alt="" coords="9,415,207,441"/>
+<area shape="poly" id="edge11_Node000010_Node000012" title=" " alt="" coords="205,411,431,376,432,381,205,416"/>
+<area shape="rect" id="Node000013" href="$structamr__wind_1_1utils_1_1_slice.html" title=" " alt="" coords="431,472,620,512"/>
+<area shape="poly" id="edge14_Node000013_Node000012" title=" " alt="" coords="202,440,235,445,431,475,430,481,234,451,201,445"/>
+<area shape="rect" id="Node000015" href="$structamr__wind_1_1utils_1_1_slice.html" title=" " alt="" coords="445,408,606,448"/>
+<area shape="poly" id="edge16_Node000015_Node000012" title=" " alt="" coords="221,425,444,425,444,431,221,431"/>
+<area shape="poly" id="edge12_Node000009_Node000013" title=" " alt="" coords="633,477,710,465,789,448,868,423,870,428,790,453,711,470,634,482"/>
+<area shape="rect" id="Node000014" href="$structamr__wind_1_1vs_1_1_tensor_t.html" title=" " alt="" coords="5,521,211,546"/>
+<area shape="poly" id="edge13_Node000013_Node000014" title=" " alt="" coords="224,539,314,538,406,529,476,510,477,515,407,535,314,544,224,544"/>
+<area shape="poly" id="edge15_Node000009_Node000015" title=" " alt="" coords="620,428,702,428,789,424,848,417,849,422,790,429,703,434,620,434"/>
+<area shape="poly" id="edge18_Node000001_Node000016" title=" " alt="" coords="1046,227,1195,225,1277,218,1357,205,1398,194,1436,179,1438,184,1400,199,1358,211,1278,223,1196,230,1046,233"/>
+<area shape="rect" id="Node000017" href="$classamr__wind_1_1actuator_1_1_airfoil_table.html" title=" " alt="" coords="451,133,599,173"/>
+<area shape="poly" id="edge19_Node000016_Node000017" title=" " alt="" coords="613,145,700,149,746,157,791,171,803,180,815,190,842,201,840,206,812,194,800,184,788,176,745,163,699,155,613,150"/>
+</map>

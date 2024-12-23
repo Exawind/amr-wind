@@ -1,0 +1,14 @@
+.. meta::36a130efed79abe563021915db26eeb12982310760d8f98cdccfdf5ee4a223ef953c771e865d9c0c50c836ae15ab84baa24578b2c5013ee5352400d81f39cfff
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/vof -&gt; core Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/vof -&gt; core Relation
+======================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000049_000009.html
