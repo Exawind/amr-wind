@@ -26,15 +26,11 @@ amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> get_projection_bc(
             r[dir] = amrex::LinOpBCType::Periodic;
         } else {
             auto bc = bctype[amrex::Orientation(dir, side)];
-            switch (bc) {
-            case BC::pressure_outflow: {
+            if (bc == BC::pressure_outflow) {
                 r[dir] = amrex::LinOpBCType::Dirichlet;
-                break;
-            }
-            default:
+            } else {
                 r[dir] = amrex::LinOpBCType::Neumann;
-                break;
-            };
+            }
         }
     }
     return r;
