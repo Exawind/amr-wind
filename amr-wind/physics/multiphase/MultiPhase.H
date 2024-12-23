@@ -63,7 +63,7 @@ public:
 
     amrex::Real momentum_sum(int n);
 
-    InterfaceCapturingMethod interface_capturing_method();
+    InterfaceCapturingMethod interface_capturing_method() const;
 
     amrex::Real rho1() const { return m_rho1; }
 

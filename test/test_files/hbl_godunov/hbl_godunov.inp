@@ -38,11 +38,11 @@ incflo.density                           = 1.17                # Fluid density [
 transport.viscosity                      = 1.853e-05           # Fluid dynamic viscosity [kg/m-s]
 transport.laminar_prandtl                = 0.7                 # Laminar prandtl number
 transport.turbulent_prandtl              = 0.3333              # Turbulent prandtl number
+transport.reference_temperature = 300.0
 
 
 incflo.physics = ABL
 ICNS.source_terms = BoussinesqBuoyancy CoriolisForcing HurricaneForcing
-ABL.reference_temperature = 300.0
 ABL.surface_roughness_z0=0.0028
 ABL.wall_shear_stress_type="donelan"
 ABL.log_law_height=10.
@@ -53,8 +53,6 @@ ABL.surface_temp_flux = 0.03
 ABL.linear_profile = 1
 ABL.top_velocity = 0.0 33.3 0.0
 ABL.bottom_velocity = 0.0 40. 0.0
-
-BoussinesqBuoyancy.reference_temperature = 300.0
 
 CoriolisForcing.latitude = 90. 
 CoriolisForcing.rotational_time_period   = 86164.0900027328    
