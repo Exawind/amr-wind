@@ -5,6 +5,7 @@
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/wind_energy/ABL.H"
+#include "amr-wind/ocean_waves/OceanWaves.H"
 
 using namespace amrex;
 
