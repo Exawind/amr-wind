@@ -128,7 +128,7 @@ public:
     //! Return the dynamic visocity field
     inline std::unique_ptr<ScratchField> mu() override
     {
-        auto mu = m_repo.create_scratch_field(1, ngrow);
+        auto mu = m_repo.create_scratch_field(1, m_ngrow);
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
             (*mu)(lev).setVal(m_mu);
         }
@@ -163,7 +163,7 @@ public:
     //! Return the thermal expansion coefficient
     inline std::unique_ptr<ScratchField> beta() const override
     {
-        auto beta = m_repo.create_scratch_field(1, ngrow);
+        auto beta = m_repo.create_scratch_field(1, m_ngrow);
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
@@ -218,7 +218,7 @@ public:
             amrex::Abort("Reference temperature was not set");
         }
 
-        auto ref_theta = m_repo.create_scratch_field(1, ngrow);
+        auto ref_theta = m_repo.create_scratch_field(1, m_ngrow);
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
             (*ref_theta)(lev).setVal(m_reference_temperature);
         }

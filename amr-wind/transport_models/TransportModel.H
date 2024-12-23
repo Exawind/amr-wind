@@ -60,7 +60,7 @@ public:
     virtual std::unique_ptr<ScratchField> ref_theta() const = 0;
 
 protected:
-    const int ngrow{1};
+    const int m_ngrow{1};
 };
 } // namespace amr_wind::transport
 

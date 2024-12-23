@@ -148,7 +148,7 @@ public:
     inline std::unique_ptr<ScratchField> mu() override
     {
         // Select the interface capturing method
-        auto mu = m_repo.create_scratch_field(1, ngrow);
+        auto mu = m_repo.create_scratch_field(1, m_ngrow);
 
         if (m_ifacetype == InterfaceCapturingMethod::VOF) {
 
@@ -213,7 +213,7 @@ public:
     inline std::unique_ptr<ScratchField> alpha() override
     {
         // Select the interface capturing method
-        auto alpha = m_repo.create_scratch_field(1, ngrow);
+        auto alpha = m_repo.create_scratch_field(1, m_ngrow);
 
         if (m_ifacetype == InterfaceCapturingMethod::VOF) {
 
@@ -297,7 +297,7 @@ public:
     //! Return the thermal expansion coefficient
     inline std::unique_ptr<ScratchField> beta() const override
     {
-        auto beta = m_repo.create_scratch_field(1, ngrow);
+        auto beta = m_repo.create_scratch_field(1, m_ngrow);
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
@@ -368,7 +368,7 @@ public:
             amrex::Abort("Reference temperature was not set");
         }
 
-        auto ref_theta = m_repo.create_scratch_field(1, ngrow);
+        auto ref_theta = m_repo.create_scratch_field(1, m_ngrow);
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
             (*ref_theta)(lev).setVal(m_reference_temperature);
         }
