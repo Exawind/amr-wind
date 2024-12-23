@@ -203,26 +203,24 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
             bclo[dir] = amrex::LinOpBCType::Periodic;
             bchi[dir] = amrex::LinOpBCType::Periodic;
         } else {
-
-            switch (bctype[amrex::Orientation(dir, amrex::Orientation::low)]) {
-            case BC::pressure_outflow: {
-                bclo[dir] = amrex::LinOpBCType::Dirichlet;
-                break;
+            {
+                auto bc =
+                    bctype[amrex::Orientation(dir, amrex::Orientation::low)];
+                if (bc == BC::pressure_outflow) {
+                    bclo[dir] = amrex::LinOpBCType::Dirichlet;
+                } else {
+                    bclo[dir] = amrex::LinOpBCType::Neumann;
+                }
             }
-            default:
-                bclo[dir] = amrex::LinOpBCType::Neumann;
-                break;
-            };
-
-            switch (bctype[amrex::Orientation(dir, amrex::Orientation::high)]) {
-            case BC::pressure_outflow: {
-                bchi[dir] = amrex::LinOpBCType::Dirichlet;
-                break;
+            {
+                auto bc =
+                    bctype[amrex::Orientation(dir, amrex::Orientation::high)];
+                if (bc == BC::pressure_outflow) {
+                    bchi[dir] = amrex::LinOpBCType::Dirichlet;
+                } else {
+                    bchi[dir] = amrex::LinOpBCType::Neumann;
+                }
             }
-            default:
-                bchi[dir] = amrex::LinOpBCType::Neumann;
-                break;
-            };
         }
     }
 
