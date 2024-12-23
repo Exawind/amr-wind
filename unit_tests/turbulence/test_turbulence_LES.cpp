@@ -263,13 +263,17 @@ TEST_F(TurbLESTest, test_1eqKsgs_setup_calc)
     }
     {
         amrex::ParmParse pp("ABL");
-        pp.add("reference_temperature", Tref);
         pp.add("surface_temp_rate", -0.25);
         amrex::Vector<amrex::Real> t_hts{0.0, 100.0, 400.0};
         pp.addarr("temperature_heights", t_hts);
         amrex::Vector<amrex::Real> t_vals{265.0, 265.0, 268.0};
         pp.addarr("temperature_values", t_vals);
     }
+        // Transport
+        {
+            amrex::ParmParse pp("transport");
+            pp.add("reference_temperature", Tref);
+        }
 
     // Initialize necessary parts of solver
     populate_parameters();
@@ -363,12 +367,17 @@ TEST_F(TurbLESTest, test_AMD_setup_calc)
     }
     {
         amrex::ParmParse pp("ABL");
-        pp.add("reference_temperature", Tref);
         amrex::Vector<amrex::Real> t_hts{0.0, 100.0, 400.0};
         pp.addarr("temperature_heights", t_hts);
         amrex::Vector<amrex::Real> t_vals{200.0, 200.0, 200.0};
         pp.addarr("temperature_values", t_vals);
     }
+            // Transport
+        {
+            amrex::ParmParse pp("transport");
+            pp.add("reference_temperature", Tref);
+        }
+
 
     // Initialize necessary parts of solver
     populate_parameters();

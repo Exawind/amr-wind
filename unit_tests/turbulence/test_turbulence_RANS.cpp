@@ -106,7 +106,6 @@ TEST_F(TurbRANSTest, test_1eqKrans_setup_calc)
     }
     {
         amrex::ParmParse pp("ABL");
-        pp.add("reference_temperature", Tref);
         pp.add("surface_temp_rate", 0.0);
         pp.add("initial_wind_profile", true);
         amrex::Vector<amrex::Real> t_hts{0.0, 100.0, 4000.0};
@@ -122,6 +121,12 @@ TEST_F(TurbRANSTest, test_1eqKrans_setup_calc)
         pp.addarr("tke_values", tke_vals);
         pp.add("surface_temp_flux", 0.0);
     }
+            // Transport
+        {
+            amrex::ParmParse pp("transport");
+        pp.add("reference_temperature", Tref);
+        }
+
 
     // Initialize necessary parts of solver
     populate_parameters();
