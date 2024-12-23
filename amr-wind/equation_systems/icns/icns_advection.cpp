@@ -5,6 +5,7 @@
 #include "amr-wind/core/MLMGOptions.H"
 #include "amr-wind/utilities/console_io.H"
 #include "amr-wind/wind_energy/ABL.H"
+#include "amr-wind/ocean_waves/OceanWaves.H"
 #include "amr-wind/overset/overset_ops_routines.H"
 
 #include "AMReX_MultiFabUtil.H"
@@ -174,6 +175,13 @@ void MacProjOp::set_inflow_velocity(amrex::Real time)
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mac_vec = {
             AMREX_D_DECL(&u_mac(lev), &v_mac(lev), &w_mac(lev))};
         velocity.set_inflow_sibling_fields(lev, time, mac_vec);
+        if (m_phy_mgr.contains("OceanWaves")) {
+            auto& ow = m_phy_mgr.get<amr_wind::ocean_waves::OceanWaves>();
+            for (int dir = 0; dir < ICNS::ndim; ++dir) {
+                ow.ow_bndry().set_velocity(
+                    lev, time, velocity, *mac_vec[dir], 0, dir);
+            }
+        }
     }
 }
 

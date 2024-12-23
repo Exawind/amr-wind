@@ -23,6 +23,9 @@ OceanWaves::OceanWaves(CFDSim& sim)
     m_ow_levelset.set_default_fillpatch_bc(sim.time());
     m_ow_vof.set_default_fillpatch_bc(sim.time());
     m_ow_velocity.set_default_fillpatch_bc(sim.time());
+
+    // Instantiate the ABL boundary plane IO
+    m_ow_bndry = std::make_unique<OceanWavesBoundary>(sim);
 }
 
 OceanWaves::~OceanWaves() = default;
@@ -61,6 +64,7 @@ void OceanWaves::post_init_actions()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::post_init_actions");
     relaxation_zones();
+    m_ow_bndry->post_init_actions();
 }
 
 void OceanWaves::post_regrid_actions()
@@ -72,6 +76,13 @@ void OceanWaves::post_regrid_actions()
 void OceanWaves::pre_advance_work()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::pre_advance_work");
+    m_ow_bndry->pre_advance_work();
+}
+
+void OceanWaves::pre_predictor_work()
+{
+    BL_PROFILE("amr-wind::ocean_waves::OceanWaves::pre_predictor_work");
+    m_ow_bndry->pre_predictor_work();
 }
 
 void OceanWaves::post_advance_work()
