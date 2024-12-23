@@ -145,6 +145,12 @@ ABLVelWallFunc::ABLVelWallFunc(
 {
     amrex::ParmParse pp("ABL");
     pp.query("wall_shear_stress_type", m_wall_shear_stress_type);
+    pp.query("wall_het_model", m_wall_het_model);
+    pp.query("mol_length", m_mol_length);
+    pp.query("surface_roughness_z0", m_z0);
+    pp.query("kappa", m_kappa);
+    pp.query("mo_gamma_m", m_gamma_m);
+    pp.query("mo_beta_m", m_beta_m);
     m_wall_shear_stress_type = amrex::toLower(m_wall_shear_stress_type);
 
     if (m_wall_shear_stress_type == "constant" ||
@@ -185,7 +191,7 @@ void ABLVelWallFunc::wall_model(
         const auto& geom = repo.mesh().Geom(lev);
         const auto& domain = geom.Domain();
         amrex::MFItInfo mfi_info{};
-
+        const auto& dx = geom.CellSizeArray();
         const auto& rho_lev = density(lev);
         const auto& vold_lev = velocity.state(FieldState::Old)(lev);
         auto& vel_lev = velocity(lev);
@@ -208,28 +214,72 @@ void ABLVelWallFunc::wall_model(
                             : amrex::Array4<int>();
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                 velocity.bc_type()[zlo] == BC::wall_model) {
-                amrex::ParallelFor(
-                    amrex::bdryLo(bx, idim),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::Real mu = eta(i, j, k);
-                        const amrex::Real uu = vold_arr(i, j, k, 0);
-                        const amrex::Real vv = vold_arr(i, j, k, 1);
-                        const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
+                if (m_wall_het_model == "mol") {
+                    const amrex::Real z = 0.5 * dx[2];
+                    const amrex::Real zeta = z / m_mol_length;
+                    amrex::Real psi_m = 0;
+                    if (zeta > 0) {
+                        psi_m = -m_gamma_m * zeta;
+                    } else {
+                        amrex::Real x =
+                            std::sqrt(std::sqrt(1 - m_beta_m * zeta));
+                        psi_m = 2.0 * std::log(0.5 * (1.0 + x)) +
+                                log(0.5 * (1 + x * x)) - 2.0 * std::atan(x) +
+                                utils::half_pi();
+                    }
+                    const amrex::Real z0 = m_z0;
+                    const amrex::Real kappa = m_kappa;
+                    amrex::ParallelFor(
+                        amrex::bdryLo(bx, idim),
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real mu = eta(i, j, k);
+                            const amrex::Real uu = vold_arr(i, j, k, 0);
+                            const amrex::Real vv = vold_arr(i, j, k, 1);
+                            const amrex::Real wspd =
+                                std::sqrt(uu * uu + vv * vv);
+                            const amrex::Real drag = std::log(z / z0) - psi_m;
+                            const amrex::Real ustar = wspd * kappa / drag;
+                            // Dirichlet BC
+                            varr(i, j, k - 1, 2) = 0.0;
+                            const amrex::Real blankTerrain =
+                                (has_terrain) ? 1 - blank_arr(i, j, k, 0) : 1.0;
+                            // Shear stress BC
+                            // Blank Terrain added to keep the boundary
+                            // condition backward compatible while adding
+                            // terrain sensitive BC
+                            varr(i, j, k - 1, 0) = blankTerrain * ustar *
+                                                   ustar * uu / wspd *
+                                                   den(i, j, k) / mu;
+                            varr(i, j, k - 1, 1) = blankTerrain * ustar *
+                                                   ustar * vv / wspd *
+                                                   den(i, j, k) / mu;
+                        });
+                } else {
+                    amrex::ParallelFor(
+                        amrex::bdryLo(bx, idim),
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real mu = eta(i, j, k);
+                            const amrex::Real uu = vold_arr(i, j, k, 0);
+                            const amrex::Real vv = vold_arr(i, j, k, 1);
+                            const amrex::Real wspd =
+                                std::sqrt(uu * uu + vv * vv);
 
-                        // Dirichlet BC
-                        varr(i, j, k - 1, 2) = 0.0;
-                        const amrex::Real blankTerrain =
-                            (has_terrain) ? 1 - blank_arr(i, j, k, 0) : 1.0;
-                        // Shear stress BC
-                        // Blank Terrain added to keep the boundary condition
-                        // backward compatible while adding terrain sensitive BC
-                        varr(i, j, k - 1, 0) = blankTerrain *
-                                               tau.calc_vel_x(uu, wspd) *
-                                               den(i, j, k) / mu;
-                        varr(i, j, k - 1, 1) = blankTerrain *
-                                               tau.calc_vel_y(vv, wspd) *
-                                               den(i, j, k) / mu;
-                    });
+                            // Dirichlet BC
+                            varr(i, j, k - 1, 2) = 0.0;
+                            const amrex::Real blankTerrain =
+                                (has_terrain) ? 1 - blank_arr(i, j, k, 0) : 1.0;
+                            // Shear stress BC
+                            // Blank Terrain added to keep the boundary
+                            // condition backward compatible while adding
+                            // terrain sensitive BC
+                            varr(i, j, k - 1, 0) = blankTerrain *
+                                                   tau.calc_vel_x(uu, wspd) *
+                                                   den(i, j, k) / mu;
+                            varr(i, j, k - 1, 1) = blankTerrain *
+                                                   tau.calc_vel_y(vv, wspd) *
+                                                   den(i, j, k) / mu;
+                        });
+                }
             }
         }
     }
@@ -272,6 +322,14 @@ ABLTempWallFunc::ABLTempWallFunc(
 {
     amrex::ParmParse pp("ABL");
     pp.query("wall_shear_stress_type", m_wall_shear_stress_type);
+    pp.query("wall_het_model", m_wall_het_model);
+    pp.query("mol_length", m_mol_length);
+    pp.query("surface_roughness_z0", m_z0);
+    pp.query("kappa", m_kappa);
+    pp.query("mo_gamma_m", m_gamma_m);
+    pp.query("mo_beta_m", m_beta_m);
+    pp.query("mo_gamma_h", m_gamma_h);
+    pp.query("mo_beta_h", m_beta_h);
     m_wall_shear_stress_type = amrex::toLower(m_wall_shear_stress_type);
     amrex::Print() << "Heat Flux model: " << m_wall_shear_stress_type
                    << std::endl;
@@ -306,7 +364,7 @@ void ABLTempWallFunc::wall_model(
         const auto& geom = repo.mesh().Geom(lev);
         const auto& domain = geom.Domain();
         amrex::MFItInfo mfi_info{};
-
+        const auto& dx = geom.CellSizeArray();
         const auto& rho_lev = density(lev);
         const auto& vold_lev = velocity.state(FieldState::Old)(lev);
         const auto& told_lev = temperature.state(FieldState::Old)(lev);
@@ -332,20 +390,76 @@ void ABLTempWallFunc::wall_model(
 
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                 temperature.bc_type()[zlo] == BC::wall_model) {
-                amrex::ParallelFor(
-                    amrex::bdryLo(bx, idim),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::Real alphaT = eta(i, j, k);
-                        const amrex::Real uu = vold_arr(i, j, k, 0);
-                        const amrex::Real vv = vold_arr(i, j, k, 1);
-                        const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
-                        const amrex::Real theta2 = told_arr(i, j, k);
-                        const amrex::Real blankTerrain =
-                            (has_terrain) ? 1 - blank_arr(i, j, k, 0) : 1.0;
-                        tarr(i, j, k - 1) = blankTerrain * den(i, j, k) *
-                                            tau.calc_theta(wspd, theta2) /
-                                            alphaT;
-                    });
+                if (m_wall_het_model == "mol") {
+                    const amrex::Real z = 0.5 * dx[2];
+                    const amrex::Real zeta = z / m_mol_length;
+                    amrex::Real psi_m = 0.0;
+                    amrex::Real psi_h = 0.0;
+                    amrex::Real phi_h = 1.0;
+                    if (zeta > 0) {
+                        psi_m = -m_gamma_m * zeta;
+                    } else {
+                        amrex::Real x =
+                            std::sqrt(std::sqrt(1 - m_beta_m * zeta));
+                        psi_m = 2.0 * std::log(0.5 * (1.0 + x)) +
+                                log(0.5 * (1 + x * x)) - 2.0 * std::atan(x) +
+                                utils::half_pi();
+                    }
+                    if (zeta > 0) {
+                        psi_h = -m_gamma_h * zeta;
+                        phi_h = 1 + m_gamma_h * zeta;
+                    } else {
+                        amrex::Real x = std::sqrt(1 - m_beta_h * zeta);
+                        psi_h = 2.0 * std::log(0.5 * (1 + x));
+                        phi_h = 1.0 / std::sqrt(1 - m_beta_h * zeta);
+                    }
+                    const amrex::Real z0 = m_z0;
+                    const amrex::Real kappa = m_kappa;
+                    const amrex::Real gravity_mod = 9.81;
+                    const amrex::Real mol_length = m_mol_length;
+                    amrex::ParallelFor(
+                        amrex::bdryLo(bx, idim),
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real alphaT = eta(i, j, k);
+                            const amrex::Real uu = vold_arr(i, j, k, 0);
+                            const amrex::Real vv = vold_arr(i, j, k, 1);
+                            const amrex::Real wspd =
+                                std::sqrt(uu * uu + vv * vv);
+                            const amrex::Real theta2 = told_arr(i, j, k);
+                            const amrex::Real drag = std::log(z / z0) - psi_m;
+                            const amrex::Real ustar = wspd * kappa / drag;
+                            const amrex::Real thetastar =
+                                -theta2 * ustar * ustar /
+                                (kappa * gravity_mod * mol_length);
+                            const amrex::Real surf_temp_flux =
+                                ustar * thetastar;
+                            const amrex::Real surf_temp =
+                                surf_temp_flux * (std::log(z / z0) - psi_h) /
+                                    (ustar * kappa) +
+                                theta2;
+                            const amrex::Real blankTerrain =
+                                (has_terrain) ? 1 - blank_arr(i, j, k, 0) : 1.0;
+                            tarr(i, j, k - 1) = blankTerrain * den(i, j, k) *
+                                                ustar * kappa / phi_h *
+                                                (theta2 - surf_temp) / alphaT;
+                        });
+                } else {
+                    amrex::ParallelFor(
+                        amrex::bdryLo(bx, idim),
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real alphaT = eta(i, j, k);
+                            const amrex::Real uu = vold_arr(i, j, k, 0);
+                            const amrex::Real vv = vold_arr(i, j, k, 1);
+                            const amrex::Real wspd =
+                                std::sqrt(uu * uu + vv * vv);
+                            const amrex::Real theta2 = told_arr(i, j, k);
+                            const amrex::Real blankTerrain =
+                                (has_terrain) ? 1 - blank_arr(i, j, k, 0) : 1.0;
+                            tarr(i, j, k - 1) = blankTerrain * den(i, j, k) *
+                                                tau.calc_theta(wspd, theta2) /
+                                                alphaT;
+                        });
+                }
             }
         }
     }
