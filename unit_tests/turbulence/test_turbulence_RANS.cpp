@@ -121,12 +121,11 @@ TEST_F(TurbRANSTest, test_1eqKrans_setup_calc)
         pp.addarr("tke_values", tke_vals);
         pp.add("surface_temp_flux", 0.0);
     }
-            // Transport
-        {
-            amrex::ParmParse pp("transport");
+    // Transport
+    {
+        amrex::ParmParse pp("transport");
         pp.add("reference_temperature", Tref);
-        }
-
+    }
 
     // Initialize necessary parts of solver
     populate_parameters();

@@ -41,11 +41,11 @@ void ABLMeshTest::populate_parameters()
         pp.add("angular_frequency", 1.0);
     }
 
-        // Transport
-        {
-            amrex::ParmParse pp("transport");
-            pp.add("reference_temperature", 300.0);
-        }
+    // Transport
+    {
+        amrex::ParmParse pp("transport");
+        pp.add("reference_temperature", 300.0);
+    }
 
     // ABL Forcing
     {
