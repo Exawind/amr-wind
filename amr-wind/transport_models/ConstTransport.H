@@ -86,15 +86,6 @@ public:
                            << std::endl;
             pp_abl.get("reference_temperature", m_reference_temperature);
         }
-        if ((m_reference_temperature > 0.0) && (m_constant_beta > 0.0)) {
-            amrex::Print()
-                << "WARNING: specified both thermal_expansion_coefficient and "
-                   "reference_temperature. Using reference_temperature to "
-                   "define the thermal_expansion_coefficient. Remove "
-                   "reference_temperature from the inputs if desiring "
-                   "thermal_expansion_coefficient."
-                << std::endl;
-        }
     }
 
     ~ConstTransport() override = default;
@@ -185,9 +176,9 @@ public:
         const amrex::Array4<amrex::Real>& beta) const override
     {
 
-        const amrex::Real beta_val = (m_reference_temperature > 0.0)
-                                         ? 1.0 / m_reference_temperature
-                                         : m_constant_beta;
+        const amrex::Real beta_val = (m_constant_beta > 0.0)
+                                         ? m_constant_beta
+                                         : 1.0 / m_reference_temperature;
 
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
