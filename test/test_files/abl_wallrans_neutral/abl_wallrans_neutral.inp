@@ -35,6 +35,7 @@ transport.model                             = ConstTransport
 transport.viscosity                         = 0.0
 transport.laminar_prandtl                   = 0.7
 transport.turbulent_prandtl                 = 0.333
+transport.reference_temperature                   = 300.
 # turbulence equation parameters
 turbulence.model                            = KLAxell
 TKE.source_terms                            = KransAxell
@@ -49,7 +50,6 @@ ABL.normal_direction                        = 2
 ABL.perturb_ref_height                      = 50.0
 ABL.perturb_velocity                        = true
 ABL.perturb_temperature                     = false
-ABL.reference_temperature                   = 300.
 ABL.stats_output_format                     = netcdf
 ABL.surface_roughness_z0                    = 0.1
 ABL.initial_wind_profile                    = true
@@ -60,7 +60,6 @@ ABL.wall_shear_stress_type                  = local
 ABL.surface_temp_flux                       = 0.0
 # Source 
 ICNS.source_terms                           = BoussinesqBuoyancy CoriolisForcing GeostrophicForcing RayleighDamping 
-BoussinesqBuoyancy.reference_temperature    = 300.0
 BoussinesqBuoyancy.thermal_expansion_coeff  = 0.003333
 #CoriolisForcing.east_vector                 = 1.0 0.0 0.0
 #CoriolisForcing.latitude                    = 45.0
