@@ -62,6 +62,8 @@ void KransAxell::operator()(
     const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     const amrex::Real kappa = m_kappa;
     const amrex::Real z0 = m_z0;
+    const bool has_terrain =
+        this->m_sim.repo().int_field_exists("terrain_blank");
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
         m_gravity[0], m_gravity[1], m_gravity[2]};
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -87,11 +89,10 @@ void KransAxell::operator()(
                               std::pow(tke_arr(i, j, k), 1.5) /
                               (tlscale_arr(i, j, k) + tiny);
         src_term(i, j, k) += shear_prod_arr(i, j, k) + buoy_prod_arr(i, j, k) -
-                             dissip_arr(i, j, k) - sponge_forcing + bcforcing;
+                             dissip_arr(i, j, k) - sponge_forcing +
+                             (1 - has_terrain) * bcforcing;
     });
     // Add terrain components
-    const bool has_terrain =
-        this->m_sim.repo().int_field_exists("terrain_blank");
     if (has_terrain) {
         const auto* const m_terrain_blank =
             &this->m_sim.repo().get_int_field("terrain_blank");
@@ -99,13 +100,16 @@ void KransAxell::operator()(
             &this->m_sim.repo().get_int_field("terrain_drag");
         const auto& blank_arr = (*m_terrain_blank)(lev).const_array(mfi);
         const auto& drag_arr = (*m_terrain_drag)(lev).const_array(mfi);
+        auto* const m_terrain_height =
+            &this->m_sim.repo().get_field("terrain_height");
+        const auto& terrain_height = (*m_terrain_height)(lev).const_array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real terrainforcing = 0;
                 amrex::Real dragforcing = 0;
                 const amrex::Real ux = vel(i, j, k, 0);
                 const amrex::Real uy = vel(i, j, k, 1);
-                const amrex::Real z = 0.5 * dx[2];
+                amrex::Real z = 0.5 * dx[2];
                 amrex::Real m = std::sqrt(ux * ux + uy * uy);
                 const amrex::Real ustar = m * kappa / std::log(z / z0);
                 const amrex::Real T0 = ref_theta_arr(i, j, k);
@@ -121,9 +125,16 @@ void KransAxell::operator()(
                 const amrex::Real Cd =
                     std::min(10 / (dx[2] * m + tiny), 100 / dx[2]);
                 dragforcing = -Cd * m * tke_arr(i, j, k, 0);
-
+                z = std::max(
+                    problo[2] + (k + 0.5) * dx[2] - terrain_height(i, j, k),
+                    0.5 * dx[2]);
+                const amrex::Real zi = std::max(
+                    (z - sponge_start) / (probhi[2] - sponge_start), 0.0);
+                const amrex::Real sponge_forcing =
+                    zi * zi * (tke_arr(i, j, k) - ref_tke);
                 src_term(i, j, k) += drag_arr(i, j, k) * terrainforcing +
-                                     blank_arr(i, j, k) * dragforcing;
+                                     blank_arr(i, j, k) * dragforcing +
+                                     has_terrain * sponge_forcing;
             });
     }
 }

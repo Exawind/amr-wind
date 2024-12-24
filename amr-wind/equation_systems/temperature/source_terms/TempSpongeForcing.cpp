@@ -10,7 +10,9 @@
 namespace amr_wind::pde::temperature {
 
 TempSpongeForcing::TempSpongeForcing(const CFDSim& sim)
-    : m_mesh(sim.mesh()), m_temperature(sim.repo().get_field("temperature"))
+    : m_mesh(sim.mesh())
+    , m_temperature(sim.repo().get_field("temperature"))
+    , m_sim(sim)
 {
     amrex::ParmParse pp_abl("ABL");
     //! Temperature variation as a function of height
@@ -49,20 +51,47 @@ void TempSpongeForcing::operator()(
     const auto vsize = m_theta_heights_d.size();
     const auto* theta_heights_d = m_theta_heights_d.data();
     const auto* theta_values_d = m_theta_values_d.data();
-    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
-        const amrex::Real zi =
-            std::max((z - sponge_start) / (prob_hi[2] - sponge_start), 0.0);
-        amrex::Real ref_temp = temperature(i, j, k);
-        if (zi > 0) {
-            ref_temp = (vsize > 0)
-                           ? interp::linear(
-                                 theta_heights_d, theta_heights_d + vsize,
-                                 theta_values_d, z)
-                           : temperature(i, j, k);
-        }
-        src_term(i, j, k, 0) -= zi * zi * (temperature(i, j, k) - ref_temp);
-    });
+    const bool has_terrain = this->m_sim.repo().field_exists("terrain_height");
+    if (has_terrain) {
+        auto* const m_terrain_height =
+            &this->m_sim.repo().get_field("terrain_height");
+        const auto& terrain_height = (*m_terrain_height)(lev).const_array(mfi);
+        amrex::ParallelFor(
+            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                const amrex::Real z = std::max(
+                    prob_lo[2] + (k + 0.5) * dx[2] - terrain_height(i, j, k),
+                    0.5 * dx[2]);
+                const amrex::Real zi = std::max(
+                    (z - sponge_start) / (prob_hi[2] - sponge_start), 0.0);
+                amrex::Real ref_temp = temperature(i, j, k);
+                if (zi > 0) {
+                    ref_temp = (vsize > 0) ? interp::linear(
+                                                 theta_heights_d,
+                                                 theta_heights_d + vsize,
+                                                 theta_values_d, z)
+                                           : temperature(i, j, k);
+                }
+                src_term(i, j, k, 0) -=
+                    zi * zi * (temperature(i, j, k) - ref_temp);
+            });
+    } else {
+        amrex::ParallelFor(
+            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
+                const amrex::Real zi = std::max(
+                    (z - sponge_start) / (prob_hi[2] - sponge_start), 0.0);
+                amrex::Real ref_temp = temperature(i, j, k);
+                if (zi > 0) {
+                    ref_temp = (vsize > 0) ? interp::linear(
+                                                 theta_heights_d,
+                                                 theta_heights_d + vsize,
+                                                 theta_values_d, z)
+                                           : temperature(i, j, k);
+                }
+                src_term(i, j, k, 0) -=
+                    zi * zi * (temperature(i, j, k) - ref_temp);
+            });
+    }
 }
 
 } // namespace amr_wind::pde::temperature

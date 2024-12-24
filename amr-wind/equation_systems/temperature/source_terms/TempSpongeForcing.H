@@ -31,6 +31,7 @@ private:
     amrex::Gpu::DeviceVector<amrex::Real> m_theta_heights_d;
     amrex::Gpu::DeviceVector<amrex::Real> m_theta_values_d;
     amrex::Real m_sponge_start{600};
+    const CFDSim& m_sim;
 };
 
 } // namespace amr_wind::pde::temperature
