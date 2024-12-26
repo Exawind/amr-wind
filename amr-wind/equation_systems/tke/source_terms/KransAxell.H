@@ -45,7 +45,7 @@ private:
     const CFDSim& m_sim;
     const amrex::AmrCore& m_mesh;
     const Field& m_velocity;
-    
+
     //! Transport model
     const transport::TransportModel& m_transport;
 
