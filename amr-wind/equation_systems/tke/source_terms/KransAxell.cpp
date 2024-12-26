@@ -68,6 +68,10 @@ void KransAxell::operator()(
     const amrex::Real z0 = m_z0;
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
         m_gravity[0], m_gravity[1], m_gravity[2]};
+    amrex::Real psi_m = 0.0;
+    if (m_wall_het_model == "mol") {
+        psi_m = stability(0.5 * dx[2], m_mol_length, m_gamma_m, m_beta_m);
+    }
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::Real bcforcing = 0;
         const amrex::Real ux = vel(i, j, k, 0);
@@ -75,7 +79,7 @@ void KransAxell::operator()(
         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
         if (k == 0) {
             const amrex::Real m = std::sqrt(ux * ux + uy * uy);
-            const amrex::Real ustar = m * kappa / std::log(z / z0);
+            const amrex::Real ustar = m * kappa / (std::log(z / z0) - psi_m);
             const amrex::Real T0 = ref_theta_arr(i, j, k);
             const amrex::Real hf = std::abs(gravity[2]) / T0 * heat_flux;
             const amrex::Real rans_b = std::pow(
@@ -111,7 +115,8 @@ void KransAxell::operator()(
                 const amrex::Real uy = vel(i, j, k, 1);
                 const amrex::Real z = 0.5 * dx[2];
                 amrex::Real m = std::sqrt(ux * ux + uy * uy);
-                const amrex::Real ustar = m * kappa / std::log(z / z0);
+                const amrex::Real ustar =
+                    m * kappa / (std::log(z / z0) - psi_m);
                 const amrex::Real T0 = ref_theta_arr(i, j, k);
                 const amrex::Real hf = std::abs(gravity[2]) / T0 * heat_flux;
                 const amrex::Real rans_b = std::pow(
