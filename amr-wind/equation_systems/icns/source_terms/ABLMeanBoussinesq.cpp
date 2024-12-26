@@ -8,50 +8,74 @@
 namespace amr_wind::pde::icns {
 
 /** Boussinesq buoyancy source term for ABL simulations
- *
- *  Reads in the following parameters from `ABLMeanBoussinesq` namespace:
- *
- *  - `reference_temperature` (Mandatory) temperature (`T0`) in Kelvin
- *  - `thermal_expansion_coeff` Optional, default = `1.0 / T0`
- *  - `gravity` acceleration due to gravity (m/s)
- *  - `read_temperature_profile`
- *  - `tprofile_filename`
  */
-ABLMeanBoussinesq::ABLMeanBoussinesq(const CFDSim& sim) : m_mesh(sim.mesh())
-{
+ABLMeanBoussinesq::ABLMeanBoussinesq(const CFDSim& sim)
+    : m_mesh(sim.mesh()), m_transport(sim.transport_model())
 
+{
     const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
     abl.register_mean_boussinesq_term(this);
 
-    amrex::ParmParse pp_boussinesq_buoyancy("BoussinesqBuoyancy");
-    pp_boussinesq_buoyancy.get("reference_temperature", m_ref_theta);
-
-    if (pp_boussinesq_buoyancy.contains("thermal_expansion_coeff")) {
-        pp_boussinesq_buoyancy.get("thermal_expansion_coeff", m_beta);
-    } else {
-        m_beta = 1.0 / m_ref_theta;
-    }
+    m_ref_theta = m_transport.ref_theta();
 
     // gravity in `incflo` namespace
     amrex::ParmParse pp_incflo("incflo");
     pp_incflo.queryarr("gravity", m_gravity);
 
+    // Backwards compatibility
+    amrex::ParmParse pp_boussinesq_buoyancy("BoussinesqBuoyancy");
+    amrex::ParmParse pp_abl("ABLMeanBoussinesq");
+
     bool read_temp_prof = false;
-    pp_boussinesq_buoyancy.query("read_temperature_profile", read_temp_prof);
+    if (pp_abl.contains("read_temperature_profile")) {
+        pp_abl.get("read_temperature_profile", read_temp_prof);
+        if (pp_boussinesq_buoyancy.contains("read_temperature_profile")) {
+            amrex::Print()
+                << "WARNING: BoussinesqBuoyancy.read_temperature_profile "
+                   "option has been deprecated in favor of "
+                   "ABLMeanBoussinesq.read_temperature_profile. Ignoring the"
+                   "BoussinesqBuoyancy option in favor of the "
+                   "ABLMeanBoussinesq "
+                   "option."
+                << std::endl;
+        }
+    } else if (pp_boussinesq_buoyancy.contains("read_temperature_profile")) {
+        amrex::Print()
+            << "WARNING: BoussinesqBuoyancy.read_temperature_profile option "
+               "has been deprecated in favor of "
+               "ABLMeanBoussinesq.read_temperature_profile. Please replace "
+               "this option."
+            << std::endl;
+        pp_boussinesq_buoyancy.get("read_temperature_profile", read_temp_prof);
+    }
 
-    if ((!pp_boussinesq_buoyancy.contains("read_temperature_profile") &&
-         pp_boussinesq_buoyancy.contains("tprofile_filename")) ||
-        read_temp_prof) {
-
-        m_const_profile = true;
-
-        std::string tprofile_filename;
+    std::string tprofile_filename;
+    if (pp_abl.contains("temperature_profile_filename")) {
+        pp_abl.get("temperature_profile_filename", tprofile_filename);
+        if (pp_boussinesq_buoyancy.contains("tprofile_filename")) {
+            amrex::Print() << "WARNING: BoussinesqBuoyancy.tprofile_filename "
+                              "option has been deprecated in favor of "
+                              "ABLMeanBoussinesq.temperature_profile_filename. "
+                              "Ignoring the"
+                              "BoussinesqBuoyancy option in favor of the "
+                              "ABLMeanBoussinesq "
+                              "option."
+                           << std::endl;
+        }
+    } else if (pp_boussinesq_buoyancy.contains("tprofile_filename")) {
+        amrex::Print()
+            << "WARNING: BoussinesqBuoyancy.tprofile_filename option "
+               "has been deprecated in favor of "
+               "ABLMeanBoussinesq.temperature_profile_filename. Please replace "
+               "this option."
+            << std::endl;
         pp_boussinesq_buoyancy.get("tprofile_filename", tprofile_filename);
+    }
 
+    if ((read_temp_prof) && (tprofile_filename.empty())) {
+        m_const_profile = true;
         read_temperature_profile(tprofile_filename);
-
     } else {
-
         mean_temperature_init(abl.abl_statistics().theta_profile());
     }
 }
@@ -60,15 +84,19 @@ ABLMeanBoussinesq::~ABLMeanBoussinesq() = default;
 
 void ABLMeanBoussinesq::operator()(
     const int lev,
-    const amrex::MFIter& /*mfi*/,
+    const amrex::MFIter& mfi,
     const amrex::Box& bx,
     const FieldState /*fstate*/,
     const amrex::Array4<amrex::Real>& src_term) const
 {
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
-    const amrex::Real T0 = m_ref_theta;
-    const amrex::Real beta = m_beta;
+
+    amrex::FArrayBox beta_fab(bx, 1, amrex::The_Async_Arena());
+    amrex::Array4<amrex::Real> const& beta_arr = beta_fab.array();
+    m_transport.beta_impl(lev, mfi, bx, beta_arr);
+
+    const auto& ref_theta = (*m_ref_theta)(lev).const_array(mfi);
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
         m_gravity[0], m_gravity[1], m_gravity[2]};
 
@@ -82,9 +110,10 @@ void ABLMeanBoussinesq::operator()(
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::IntVect iv(i, j, k);
         const amrex::Real ht = problo[idir] + (iv[idir] + 0.5) * dx[idir];
+        const amrex::Real T0 = ref_theta(i, j, k);
         const amrex::Real temp =
             amr_wind::interp::linear(theights, theights_end, tvals, ht);
-        const amrex::Real fac = beta * (temp - T0);
+        const amrex::Real fac = beta_arr(i, j, k) * (temp - T0);
         src_term(i, j, k, 0) += gravity[0] * fac;
         src_term(i, j, k, 1) += gravity[1] * fac;
         src_term(i, j, k, 2) += gravity[2] * fac;

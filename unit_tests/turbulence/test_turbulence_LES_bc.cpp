@@ -145,7 +145,6 @@ protected:
         }
         {
             amrex::ParmParse pp("ABL");
-            pp.add("reference_temperature", m_Tref);
             amrex::Vector<amrex::Real> t_hts{0.0, 100.0, 400.0};
             pp.addarr("temperature_heights", t_hts);
             amrex::Vector<amrex::Real> t_vals{265.0, 265.0, 268.0};
@@ -154,6 +153,7 @@ protected:
         {
             amrex::ParmParse pp("transport");
             pp.add("viscosity", m_mu);
+            pp.add("reference_temperature", m_Tref);
         }
     }
     void test_calls_body(bool do_postsolve = false)

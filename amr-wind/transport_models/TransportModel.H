@@ -2,6 +2,7 @@
 #define TRANSPORTMODEL_H
 
 #include "amr-wind/core/Factory.H"
+#include "amr-wind/CFDSim.H"
 #include "amr-wind/core/FieldRepo.H"
 
 namespace amr_wind::transport {
@@ -25,10 +26,12 @@ namespace amr_wind::transport {
 /** Abstract representation of a transport model
  *  \ingroup transport
  */
-class TransportModel
+class TransportModel : public Factory<TransportModel, const CFDSim&>
 {
 public:
-    virtual ~TransportModel() = default;
+    static std::string base_identifier() { return "TransportModel"; }
+
+    ~TransportModel() override = default;
 
     //! Dynamic laminar viscosity (kg/m/s)
     virtual std::unique_ptr<ScratchField> mu() = 0;
@@ -39,6 +42,25 @@ public:
     //! Scalar diffusivity based on Schmidt number
     virtual std::unique_ptr<ScratchField>
     scalar_diffusivity(const std::string& scalar_name) = 0;
+
+    //! Thermal expansion coefficient
+    virtual std::unique_ptr<ScratchField> beta() const = 0;
+
+    //! Thermal expansion coefficient
+    virtual void beta_impl(
+        const int lev,
+        const amrex::MFIter& mfi,
+        const amrex::Box& bx,
+        const amrex::Array4<amrex::Real>& beta) const = 0;
+
+    //! Reference temperature
+    virtual amrex::Real reference_temperature() const = 0;
+
+    //! Reference temperature
+    virtual std::unique_ptr<ScratchField> ref_theta() const = 0;
+
+protected:
+    const int m_ngrow{1};
 };
 } // namespace amr_wind::transport
 
