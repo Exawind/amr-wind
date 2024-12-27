@@ -14,7 +14,6 @@ DragTempForcing::DragTempForcing(const CFDSim& sim)
     , m_mesh(sim.mesh())
     , m_velocity(sim.repo().get_field("velocity"))
     , m_temperature(sim.repo().get_field("temperature"))
-    , m_transport(sim.transport_model())
 {
     amrex::ParmParse pp("DragTempForcing");
     pp.query("drag_coefficient", m_drag_coefficient);
@@ -26,6 +25,8 @@ DragTempForcing::DragTempForcing(const CFDSim& sim)
     pp_abl.query("kappa", m_kappa);
     pp_abl.query("mo_gamma_m", m_gamma_m);
     pp_abl.query("mo_beta_m", m_beta_m);
+    pp_abl.query("mo_gamma_m", m_gamma_h);
+    pp_abl.query("mo_beta_m", m_beta_h);
 }
 
 DragTempForcing::~DragTempForcing() = default;
@@ -61,7 +62,7 @@ void DragTempForcing::operator()(
     const amrex::Real psi_m = 0.0;
     const amrex::Real psi_h_neighbour = 0.0;
     const amrex::Real psi_h_cell = 0.0;
-    const amrex::Real m_kappa = kappa;
+    const amrex::Real kappa = m_kappa;
     const amrex::Real z0 = m_z0;
     const amrex::Real mol_length = m_mol_length;
     const auto& dt = m_time.delta_t();

@@ -37,6 +37,8 @@ private:
     amrex::Real m_kappa{0.41};
     amrex::Real m_gamma_m{5.0};
     amrex::Real m_beta_m{16.0};
+    amrex::Real m_gamma_h{5.0};
+    amrex::Real m_beta_h{16.0};
 
     static amrex::Real stability(
         const amrex::Real z,
@@ -63,7 +65,7 @@ private:
         const amrex::Real beta_h)
     {
         const amrex::Real zeta = z / mol_length;
-        amrex::Real psi_m = 0;
+        amrex::Real psi_h = 0;
         if (zeta > 0) {
             psi_h = -gamma_h * zeta;
         } else {
