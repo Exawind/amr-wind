@@ -132,9 +132,10 @@ void KransAxell::operator()(
                     (z - sponge_start) / (probhi[2] - sponge_start), 0.0);
                 const amrex::Real sponge_forcing =
                     zi * zi * (tke_arr(i, j, k) - ref_tke);
-                src_term(i, j, k) += drag_arr(i, j, k) * terrainforcing +
-                                     blank_arr(i, j, k) * dragforcing +
-                                     static_cast<int>(has_terrain) * sponge_forcing;
+                src_term(i, j, k) +=
+                    drag_arr(i, j, k) * terrainforcing +
+                    blank_arr(i, j, k) * dragforcing +
+                    static_cast<int>(has_terrain) * sponge_forcing;
             });
     }
 }
