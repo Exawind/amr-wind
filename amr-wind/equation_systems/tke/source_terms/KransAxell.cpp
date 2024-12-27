@@ -90,7 +90,7 @@ void KransAxell::operator()(
                               (tlscale_arr(i, j, k) + tiny);
         src_term(i, j, k) += shear_prod_arr(i, j, k) + buoy_prod_arr(i, j, k) -
                              dissip_arr(i, j, k) - sponge_forcing +
-                             (1 - has_terrain) * bcforcing;
+                             (1 - static_cast<int>(has_terrain)) * bcforcing;
     });
     // Add terrain components
     if (has_terrain) {
@@ -134,7 +134,7 @@ void KransAxell::operator()(
                     zi * zi * (tke_arr(i, j, k) - ref_tke);
                 src_term(i, j, k) += drag_arr(i, j, k) * terrainforcing +
                                      blank_arr(i, j, k) * dragforcing +
-                                     has_terrain * sponge_forcing;
+                                     static_cast<int>(has_terrain) * sponge_forcing;
             });
     }
 }
