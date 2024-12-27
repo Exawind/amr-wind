@@ -59,9 +59,9 @@ void DragTempForcing::operator()(
     const amrex::Real drag_coefficient = m_drag_coefficient / dx[2];
     const amrex::Real internal_temperature = m_internal_temperature;
     const amrex::Real gravity_mod = 9.81;
-    const amrex::Real psi_m = 0.0;
-    const amrex::Real psi_h_neighbour = 0.0;
-    const amrex::Real psi_h_cell = 0.0;
+    amrex::Real psi_m = 0.0;
+    amrex::Real psi_h_neighbour = 0.0;
+    amrex::Real psi_h_cell = 0.0;
     const amrex::Real kappa = m_kappa;
     const amrex::Real z0 = m_z0;
     const amrex::Real mol_length = m_mol_length;
