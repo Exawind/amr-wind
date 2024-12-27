@@ -431,7 +431,7 @@ void ABLTempWallFunc::wall_model(
                                 -theta2 * ustar * ustar /
                                 (kappa * gravity_mod * mol_length);
                             const amrex::Real surf_temp_flux =
-                                ustar * thetastar;
+                                -ustar * thetastar;
                             const amrex::Real surf_temp =
                                 surf_temp_flux * (std::log(z / z0) - psi_h) /
                                     (ustar * kappa) +
