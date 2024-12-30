@@ -139,13 +139,10 @@ void ABLMesoForcingMom::mean_velocity_heights(
     currtime = m_time.current_time();
     const auto& dt = m_time.delta_t();
 
-    const int num_meso_ht = ncfile->nheights();
-
-    const int numcomp = vavg.ncomp();
-
     amrex::Vector<amrex::Real> error_U(m_nht);
     amrex::Vector<amrex::Real> error_V(m_nht);
 
+    const int numcomp = vavg.ncomp();
     const auto& vavg_lc = vavg.line_centroids();
     for (int i = 0; i < m_nht; i++) {
         const amrex::Real interpolated_u = amr_wind::interp::bilinear(
