@@ -151,20 +151,10 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
             // possible unexpected behaviors, as described in
             // ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7
             // First the index in time
-            m_idx_time = utils::closest_index(ncfile->meso_times(), currtime);
 
-            amrex::Array<amrex::Real, 2> coeff_interp{0.0, 0.0};
-
-            const amrex::Real denom = ncfile->meso_times()[m_idx_time + 1] -
-                                      ncfile->meso_times()[m_idx_time];
-
-            coeff_interp[0] =
-                (ncfile->meso_times()[m_idx_time + 1] - currtime) / denom;
-            coeff_interp[1] = 1.0 - coeff_interp[0];
-            m_transition_height =
-                coeff_interp[0] * ncfile->meso_transition_height()[m_idx_time] +
-                coeff_interp[1] *
-                    ncfile->meso_transition_height()[m_idx_time + 1];
+            m_transition_height = amr_wind::interp::linear(
+                ncfile->meso_times(), ncfile->meso_transition_height(),
+                currtime);
             amrex::Print() << "current transition height = "
                            << m_transition_height << std::endl;
 
