@@ -100,31 +100,17 @@ void ABLMesoForcingMom::mean_velocity_heights(
     amrex::Real currtime;
     currtime = m_time.current_time();
 
-    // First the index in time
-    m_idx_time = utils::closest_index(ncfile->meso_times(), currtime);
-
-    amrex::Array<amrex::Real, 2> coeff_interp{0.0, 0.0};
-
-    amrex::Real denom =
-        ncfile->meso_times()[m_idx_time + 1] - ncfile->meso_times()[m_idx_time];
-
-    coeff_interp[0] = (ncfile->meso_times()[m_idx_time + 1] - currtime) / denom;
-    coeff_interp[1] = 1.0 - coeff_interp[0];
-
-    int num_meso_ht = ncfile->nheights();
+    const int num_meso_ht = ncfile->nheights();
 
     amrex::Vector<amrex::Real> time_interpolated_u(num_meso_ht);
     amrex::Vector<amrex::Real> time_interpolated_v(num_meso_ht);
 
     for (int i = 0; i < num_meso_ht; i++) {
-        const int lt = m_idx_time * num_meso_ht + i;
-        const int rt = (m_idx_time + 1) * num_meso_ht + i;
 
-        time_interpolated_u[i] = coeff_interp[0] * ncfile->meso_u()[lt] +
-                                 coeff_interp[1] * ncfile->meso_u()[rt];
-
-        time_interpolated_v[i] = coeff_interp[0] * ncfile->meso_v()[lt] +
-                                 coeff_interp[1] * ncfile->meso_v()[rt];
+        time_interpolated_u[i] = amr_wind::interp::linear(
+            ncfile->meso_times(), ncfile->meso_u(), currtime);
+        time_interpolated_v[i] = amr_wind::interp::linear(
+            ncfile->meso_times(), ncfile->meso_v(), currtime);
     }
 
     for (int ih = 0; ih < num_meso_ht; ih++) {
