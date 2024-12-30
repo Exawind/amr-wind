@@ -149,11 +149,11 @@ void ABLMesoForcingMom::mean_velocity_heights(
     const auto& vavg_lc = vavg.line_centroids();
     for (int i = 0; i < m_nht; i++) {
         const amrex::Real interpolated_u = amr_wind::interp::bilinear(
-            ncfile->meso_times(), m_meso_ht, ncfile->meso_u(), currtime,
-            vavg_lc[i]);
+            ncfile->meso_times(), ncfile->meso_heights(), ncfile->meso_u(),
+            currtime, vavg_lc[i]);
         const amrex::Real interpolated_v = amr_wind::interp::bilinear(
-            ncfile->meso_times(), m_meso_ht, ncfile->meso_v(), currtime,
-            vavg_lc[i]);
+            ncfile->meso_times(), ncfile->meso_heights(), ncfile->meso_v(),
+            currtime, vavg_lc[i]);
         error_U[i] =
             interpolated_u - vavg.line_average()[static_cast<int>(numcomp * i)];
         error_V[i] = interpolated_v - vavg.line_average()[(numcomp * i + 1)];
