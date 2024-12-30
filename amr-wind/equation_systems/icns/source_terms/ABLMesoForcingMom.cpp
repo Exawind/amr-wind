@@ -144,16 +144,18 @@ void ABLMesoForcingMom::mean_velocity_heights(
 
     const int numcomp = vavg.ncomp();
     const auto& vavg_lc = vavg.line_centroids();
+    const auto& vavg_lavg = vavg.line_average();
+    const auto& meso_times = ncfile->meso_times();
+    const auto& meso_heights = ncfile->meso_heights();
+
     for (int i = 0; i < m_nht; i++) {
         const amrex::Real interpolated_u = amr_wind::interp::bilinear(
-            ncfile->meso_times(), ncfile->meso_heights(), ncfile->meso_u(),
-            currtime, vavg_lc[i]);
+            meso_times, meso_heights, ncfile->meso_u(), currtime, vavg_lc[i]);
         const amrex::Real interpolated_v = amr_wind::interp::bilinear(
-            ncfile->meso_times(), ncfile->meso_heights(), ncfile->meso_v(),
-            currtime, vavg_lc[i]);
-        error_U[i] =
-            interpolated_u - vavg.line_average()[static_cast<int>(numcomp * i)];
-        error_V[i] = interpolated_v - vavg.line_average()[(numcomp * i + 1)];
+            meso_times, meso_heights, ncfile->meso_v(), currtime, vavg_lc[i]);
+        error_U[i] = interpolated_u - vavg_lavg[static_cast<int>(numcomp * i)];
+        error_V[i] =
+            interpolated_v - vavg_lavg[static_cast<int>(numcomp * i + 1)];
     }
 
     if (amrex::toLower(m_forcing_scheme) == "indirect") {
@@ -161,8 +163,7 @@ void ABLMesoForcingMom::mean_velocity_heights(
             // possible unexpected behaviors, as described in
             // ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7
             m_transition_height = amr_wind::interp::linear(
-                ncfile->meso_times(), ncfile->meso_transition_height(),
-                currtime);
+                meso_times, ncfile->meso_transition_height(), currtime);
             amrex::Print() << "current transition height = "
                            << m_transition_height << std::endl;
 
