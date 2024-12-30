@@ -88,20 +88,20 @@ void KransAxell::operator()(
         dissip_arr(i, j, k) = std::pow(Cmu, 3) *
                               std::pow(tke_arr(i, j, k), 1.5) /
                               (tlscale_arr(i, j, k) + tiny);
-        src_term(i, j, k) += shear_prod_arr(i, j, k) + buoy_prod_arr(i, j, k) -
-                             dissip_arr(i, j, k) - sponge_forcing +
-                             (1 - static_cast<int>(has_terrain)) * bcforcing;
+        src_term(i, j, k) +=
+            shear_prod_arr(i, j, k) + buoy_prod_arr(i, j, k) -
+            dissip_arr(i, j, k) -
+            (1 - static_cast<int>(has_terrain)) * (sponge_forcing - bcforcing);
     });
-    // Add terrain components
     if (has_terrain) {
         const auto* const m_terrain_blank =
             &this->m_sim.repo().get_int_field("terrain_blank");
         const auto* const m_terrain_drag =
             &this->m_sim.repo().get_int_field("terrain_drag");
-        const auto& blank_arr = (*m_terrain_blank)(lev).const_array(mfi);
-        const auto& drag_arr = (*m_terrain_drag)(lev).const_array(mfi);
         auto* const m_terrain_height =
             &this->m_sim.repo().get_field("terrain_height");
+        const auto& blank_arr = (*m_terrain_blank)(lev).const_array(mfi);
+        const auto& drag_arr = (*m_terrain_drag)(lev).const_array(mfi);
         const auto& terrain_height = (*m_terrain_height)(lev).const_array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -134,8 +134,9 @@ void KransAxell::operator()(
                     zi * zi * (tke_arr(i, j, k) - ref_tke);
                 src_term(i, j, k) +=
                     drag_arr(i, j, k) * terrainforcing +
-                    blank_arr(i, j, k) * dragforcing +
+                    blank_arr(i, j, k) * dragforcing -
                     static_cast<int>(has_terrain) * sponge_forcing;
+                ;
             });
     }
 }
