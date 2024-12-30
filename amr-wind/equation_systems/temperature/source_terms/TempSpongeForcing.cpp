@@ -128,11 +128,12 @@ void TempSpongeForcing::operator()(
                     yi_end = sponge_north * std::max(yi_end, 0.0);
                     ystart_damping = sponge_strength * yi_start * yi_start;
                     yend_damping = sponge_strength * yi_end * yi_end;
-                    const amrex::Real ref_temp = (vsize > 0) ? interp::linear(
-                                                 theta_heights_d,
-                                                 theta_heights_d + vsize,
-                                                 theta_values_d, z)
-                                           : temperature(i, j, k);
+                    const amrex::Real ref_temp =
+                        (vsize > 0)
+                            ? interp::linear(
+                                  theta_heights_d, theta_heights_d + vsize,
+                                  theta_values_d, z)
+                            : temperature(i, j, k);
                     src_term(i, j, k, 0) -=
                         (xstart_damping + xend_damping + ystart_damping +
                          yend_damping) *

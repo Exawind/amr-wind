@@ -197,10 +197,8 @@ void KransAxell::operator()(
             const amrex::Real sponge_density = m_sponge_density;
             const amrex::Real start_east = probhi[0] - m_sponge_distance_east;
             const amrex::Real start_west = problo[0] - m_sponge_distance_west;
-            const amrex::Real start_north =
-                probhi[1] - m_sponge_distance_north;
-            const amrex::Real start_south =
-                problo[1] - m_sponge_distance_south;
+            const amrex::Real start_north = probhi[1] - m_sponge_distance_north;
+            const amrex::Real start_south = problo[1] - m_sponge_distance_south;
             const int sponge_east = m_sponge_east;
             const int sponge_west = m_sponge_west;
             const int sponge_south = m_sponge_south;
@@ -232,15 +230,16 @@ void KransAxell::operator()(
                     yi_end = sponge_north * std::max(yi_end, 0.0);
                     ystart_damping = sponge_strength * yi_start * yi_start;
                     yend_damping = sponge_strength * yi_end * yi_end;
-                    const amrex::Real ref_tke = (vsize > 0)
-                                  ? interp::linear(
-                                        wind_heights_d, wind_heights_d + vsize,
-                                        tke_values_d, z)
-                                  : tke_arr(i, j, k, 0);
+                    const amrex::Real ref_tke =
+                        (vsize > 0)
+                            ? interp::linear(
+                                  wind_heights_d, wind_heights_d + vsize,
+                                  tke_values_d, z)
+                            : tke_arr(i, j, k, 0);
                     src_term(i, j, k, 0) -=
                         (xstart_damping + xend_damping + ystart_damping +
                          yend_damping) *
-                        (tke_arr(i,j,k) - sponge_density * ref_tke);
+                        (tke_arr(i, j, k) - sponge_density * ref_tke);
                 });
         }
     }
