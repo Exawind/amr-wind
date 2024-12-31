@@ -3,3 +3,4 @@ target_sources(${amr_wind_lib_name}
   OceanWaves.cpp
   )
 add_subdirectory(relaxation_zones)
+add_subdirectory(boundary_ops)

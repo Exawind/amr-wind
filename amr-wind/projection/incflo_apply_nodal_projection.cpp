@@ -26,6 +26,10 @@ void amr_wind::nodal_projection::set_inflow_velocity(
         bndry_plane.populate_data(lev, time, vel_fld, vel_mfab);
         abl.abl_mpl().set_velocity(lev, time, vel_fld, vel_mfab);
     }
+    if (phy_mgr.contains("OceanWaves")) {
+        auto& ow = phy_mgr.get<amr_wind::ocean_waves::OceanWaves>();
+        ow.ow_bndry().set_velocity(lev, time, vel_fld, vel_mfab);
+    }
 }
 
 Array<amrex::LinOpBCType, AMREX_SPACEDIM>
