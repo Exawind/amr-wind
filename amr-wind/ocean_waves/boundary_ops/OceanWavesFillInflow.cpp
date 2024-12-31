@@ -115,11 +115,11 @@ void OceanWavesFillInflow::fillpatch_sibling_fields(
     }
 
     FieldFillPatchOps<FieldBCDirichlet>::fillpatch_sibling_fields(
-            lev, time, mfabs, ffabs, cfabs, nghost, lbcrec, lbcrec, fstate);
+        lev, time, mfabs, ffabs, cfabs, nghost, lbcrec, lbcrec, fstate);
 
     for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
-            m_ow_bndry.set_velocity(lev, time, m_field, *mfabs[i], 0, i);
-        }
+        m_ow_bndry.set_velocity(lev, time, m_field, *mfabs[i], 0, i);
+    }
 }
 
 } // namespace amr_wind

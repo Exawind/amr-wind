@@ -54,7 +54,6 @@ public:
 
 protected:
     const OceanWavesBoundary& m_ow_bndry;
-
 };
 
 } // namespace amr_wind
