@@ -372,6 +372,7 @@ if(AMR_WIND_TEST_WITH_FCOMPARE)
   add_test_red(abl_bndry_input_amr_native_xhi abl_bndry_output_native)
   add_test_red(abl_bndry_input_amr_native_mlbc abl_bndry_output_amr_native)
   add_test_red(abl_godunov_forcetimetable abl_godunov_timetable)
+  add_test_red(abl_multiphase_laminar_input abl_multiphase_laminar)
 endif()
 
 if(AMR_WIND_ENABLE_NETCDF)
