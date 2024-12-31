@@ -24,6 +24,7 @@ incflo.mflux_type = minmod
 transport.model = TwoPhaseTransport
 transport.viscosity_fluid1=1.0e-3
 transport.viscosity_fluid2=1.8e-5
+transport.reference_temperature = 263.5
 turbulence.model = Laminar 
 
 incflo.physics = MultiPhase ABL OceanWaves
@@ -35,7 +36,6 @@ ICNS.use_perturb_pressure = true
 MultiPhase.density_fluid1=1020.
 MultiPhase.density_fluid2=1.3223
 
-BoussinesqBuoyancy.reference_temperature = 263.5
 CoriolisForcing.east_vector = 1.0 0.0 0.0
 CoriolisForcing.north_vector = 0.0 1.0 0.0
 CoriolisForcing.latitude = 90.0
@@ -46,8 +46,6 @@ ABLForcing.abl_forcing_ramp_height = 10.0
 ABLForcing.abl_forcing_band = 1
 incflo.velocity = 6.128355544951824  5.142300877492314 0.0
 
-BoussinesqBuoyancy.reference_temperature = 263.5
-ABL.reference_temperature = 263.5
 ABL.temperature_heights = -5.0 0.0 100 400.0 1001.0
 ABL.temperature_values = 263.5 265.0 265.0 268.0 270.0
 ABL.perturb_temperature = false

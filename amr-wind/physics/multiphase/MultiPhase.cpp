@@ -77,7 +77,7 @@ MultiPhase::MultiPhase(CFDSim& sim)
     pp_incflo.queryarr("gravity", m_gravity);
 }
 
-InterfaceCapturingMethod MultiPhase::interface_capturing_method()
+InterfaceCapturingMethod MultiPhase::interface_capturing_method() const
 {
     return m_interface_capturing_method;
 }
@@ -305,7 +305,7 @@ void MultiPhase::set_density_via_levelset()
         auto& levelset = (*m_levelset)(lev);
 
         for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
-            const auto& vbx = mfi.validbox();
+            const auto& vbx = mfi.growntilebox();
             const auto& dx = geom[lev].CellSizeArray();
 
             const amrex::Array4<amrex::Real>& phi = levelset.array(mfi);
@@ -331,7 +331,6 @@ void MultiPhase::set_density_via_levelset()
                 });
         }
     }
-    m_density.fillpatch(m_sim.time().current_time());
 }
 
 void MultiPhase::set_density_via_vof(amr_wind::FieldState fstate)
@@ -343,7 +342,7 @@ void MultiPhase::set_density_via_vof(amr_wind::FieldState fstate)
         auto& vof = (*m_vof).state(fstate)(lev);
 
         for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
-            const auto& vbx = mfi.validbox();
+            const auto& vbx = mfi.growntilebox();
             const amrex::Array4<amrex::Real>& F = vof.array(mfi);
             const amrex::Array4<amrex::Real>& rho = density.array(mfi);
             const amrex::Real captured_rho1 = m_rho1;
@@ -355,7 +354,6 @@ void MultiPhase::set_density_via_vof(amr_wind::FieldState fstate)
                 });
         }
     }
-    m_density.fillpatch(m_sim.time().current_time());
 }
 
 void MultiPhase::set_nph_density()

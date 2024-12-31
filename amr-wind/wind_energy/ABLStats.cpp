@@ -55,7 +55,6 @@ void ABLStats::initialize()
         pp.query("normal_direction", m_normal_dir);
         AMREX_ASSERT((0 <= m_normal_dir) && (m_normal_dir < AMREX_SPACEDIM));
         pp.query("kappa", m_kappa);
-        pp.get("reference_temperature", m_ref_theta);
         pp.query("stats_do_energy_budget", m_do_energy_budget);
     }
 
@@ -337,9 +336,10 @@ void ABLStats::write_ascii()
     }
 
     double wstar = 0.0;
+    const auto ref_theta = m_sim.transport_model().reference_temperature();
     auto Q = m_abl_wall_func.mo().surf_temp_flux;
     if (Q > 1e-10) {
-        wstar = std::cbrt(m_gravity * Q * m_zi / m_ref_theta);
+        wstar = std::cbrt(m_gravity * Q * m_zi / ref_theta);
     }
     auto L = m_abl_wall_func.mo().obukhov_len;
 
@@ -525,11 +525,12 @@ void ABLStats::write_netcdf()
         ncf.var("ustar").put(&ustar, {nt}, {1});
         double wstar = 0.0;
         auto Q = m_abl_wall_func.mo().surf_temp_flux;
+        const auto ref_theta = m_sim.transport_model().reference_temperature();
         ncf.var("Q").put(&Q, {nt}, {1});
         auto Tsurf = m_abl_wall_func.mo().surf_temp;
         ncf.var("Tsurf").put(&Tsurf, {nt}, {1});
         if (Q > 1e-10) {
-            wstar = std::cbrt(m_gravity * Q * m_zi / m_ref_theta);
+            wstar = std::cbrt(m_gravity * Q * m_zi / ref_theta);
         }
         ncf.var("wstar").put(&wstar, {nt}, {1});
         double L = m_abl_wall_func.mo().obukhov_len;

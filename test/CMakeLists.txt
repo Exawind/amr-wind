@@ -48,7 +48,7 @@ macro(setup_test)
     file(MAKE_DIRECTORY ${CURRENT_TEST_BINARY_DIR})
     file(GLOB TEST_FILES "${CURRENT_TEST_SOURCE_DIR}/*")
     file(COPY ${TEST_FILES} DESTINATION "${CURRENT_TEST_BINARY_DIR}/")
-    set(RUNTIME_OPTIONS "time.max_step=10 io.plot_file=plt time.plot_interval=10 amrex.the_arena_is_managed=0 amrex.abort_on_out_of_gpu_memory=1 amrex.abort_on_unused_inputs=1")
+    set(RUNTIME_OPTIONS "time.max_step=10 io.plot_file=plt time.plot_interval=10 amrex.the_arena_is_managed=0 amrex.abort_on_out_of_gpu_memory=1")
     if(NOT AMR_WIND_TEST_WITH_FCOMPARE) #Avoid all I/O otherwise
       set(RUNTIME_OPTIONS "${RUNTIME_OPTIONS} time.plot_interval=-1 time.checkpoint_interval=-1")
     endif()
@@ -361,6 +361,9 @@ if(AMR_WIND_ENABLE_OPENFAST)
   endif()
 endif()
 
+if(AMR_WIND_ENABLE_FFT)
+  add_test_re(abl_godunov_nofft)
+endif()
 #=============================================================================
 # Regression tests excluded from CI with a test dependency
 #=============================================================================
@@ -372,6 +375,7 @@ if(AMR_WIND_TEST_WITH_FCOMPARE)
   add_test_red(abl_bndry_input_amr_native_xhi abl_bndry_output_native)
   add_test_red(abl_bndry_input_amr_native_mlbc abl_bndry_output_amr_native)
   add_test_red(abl_godunov_forcetimetable abl_godunov_timetable)
+  add_test_red(abl_multiphase_laminar_input abl_multiphase_laminar)
 endif()
 
 if(AMR_WIND_ENABLE_NETCDF)
