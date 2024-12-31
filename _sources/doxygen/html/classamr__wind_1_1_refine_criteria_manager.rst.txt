@@ -1,0 +1,14 @@
+.. meta::51115a737aef7e9d536e7260084e6bdfb931fa695f08fa3460f8195ad1fb1e0765d826ef99383710d44230c4f6aec5519483ff3ac4e7381966e8b9882a86de49
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::RefineCriteriaManager Class Reference
+
+RefineCriteriaManager Class Reference
+=====================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_refine_criteria_manager.html

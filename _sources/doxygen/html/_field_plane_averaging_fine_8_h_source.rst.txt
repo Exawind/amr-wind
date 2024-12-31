@@ -1,0 +1,14 @@
+.. meta::c071d4d5254249c0d71025e55ac94f834596376f07bdffd20e4285a102575e9afe9eb45a5f5662483992cd996c80f01a4ba66f6e51b5f81b64320148cc58a24e
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/FieldPlaneAveragingFine.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/FieldPlaneAveragingFine.H Source File
+============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _field_plane_averaging_fine_8_h_source.html

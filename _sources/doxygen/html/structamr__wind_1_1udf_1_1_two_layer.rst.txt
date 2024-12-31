@@ -1,0 +1,14 @@
+.. meta::d0a8f5e5149ca71302396c08bee1bb32d1d06fde5e525f325607ee35041a15075c4b763af3bf2960a1b38273d63a4aef6e82fcc4350a9d8c08ad11bbf6eb6dcf
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::udf::TwoLayer Struct Reference
+
+TwoLayer Struct Reference
+=========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1udf_1_1_two_layer.html

@@ -1,0 +1,14 @@
+.. meta::71580975b7cd9b56be13556a254efd0ce1fa9d44c59abf50029f4c8d70bb13cf56850108da2c745604c0403c6840901469abcfffa0065f87fa9d55ca70c12bd3
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::TurbineFast Struct Reference
+
+TurbineFast Struct Reference
+============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1_turbine_fast.html

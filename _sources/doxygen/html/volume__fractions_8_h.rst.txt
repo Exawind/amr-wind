@@ -1,0 +1,14 @@
+.. meta::48cae0c786e0b9fce617b1cb1913b33629ad353c61062295b601710347ead61e6f8e13689c07b4313417f1ac1927920e9dbb4da8483802fb154f20217ec2b48b
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/vof/volume_fractions.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/vof/volume\_fractions.H File Reference
+=====================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: volume__fractions_8_h.html

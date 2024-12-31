@@ -1,0 +1,14 @@
+.. meta::5170bbb8dbb8b52f2f820033b2de8d18d4cddd2de0037c83f4f893238e6ad65f7a99653dc0f8f53336299e4f9a69c9af87a2e0df7a1ba4b9d04a09100c699359
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/RadarSampler.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/RadarSampler.H Source File
+==========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _radar_sampler_8_h_source.html

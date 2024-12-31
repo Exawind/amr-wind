@@ -1,0 +1,14 @@
+.. meta::25cb32cd412470cabe13d89296d82d804b6e53e5377a594f0cc5a3eb2a235cb308b3bbd9412bc3c92c90e5d909eb3d651d7b8ff94325252134fe5047edf51ce3
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ABLWallFunction Class Reference
+
+ABLWallFunction Class Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_a_b_l_wall_function.html

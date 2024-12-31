@@ -1,0 +1,14 @@
+.. meta::b51dcdd06f5ed5fd9dc96ed36f3ccca85205d0573635875b69cc7be1f656ddce76cebb42525b4f3fb3f3c10a4147ec6d2c0c8d12029250d9f671b4c32bcc7745
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/core/gpu_utils.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/core/gpu\_utils.H File Reference
+=============================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: gpu__utils_8_h.html
