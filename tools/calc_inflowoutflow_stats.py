@@ -98,8 +98,8 @@ class ABLInflowOutflowPrep:
                             'ABL.wf_velocity',
                             'ABL.wf_vmag',
                             'ABL.wf_theta',
-                            'BoussinesqBuoyancy.read_temperature_profile',
-                            'BoussinesqBuoyancy.tprofile_filename',
+                            'ABLMeanBoussinesq.read_temperature_profile',
+                            'ABLMeanBoussinesq.temperature_profile_filename',
                             'BodyForce.magnitude']
             for warn in warning_list:
                 if warn in line:
@@ -127,8 +127,8 @@ class ABLInflowOutflowPrep:
         wf_velmag_line = f"ABL.wf_vmag = {self.hvelmag}\n"
         wf_theta_line = f"ABL.wf_theta = {self.theta_mean}\n"
         bodyforce_mag_line = f"BodyForce.magnitude = {self.abl_force_x} {self.abl_force_y} 0.0\n"
-        bouss_read_line = "BoussinesqBuoyancy.read_temperature_profile = true\n"
-        bouss_profile_line = "BoussinesqBuoyancy.tprofile_filename = avg_theta.dat\n"
+        bouss_read_line = "ABLMeanBoussinesq.read_temperature_profile = true\n"
+        bouss_profile_line = "ABLMeanBoussinesq.temperature_profile_filename = avg_theta.dat\n"
         outro_line = "#-----------------------------------------------------#\n"
         
         ### Modify input file

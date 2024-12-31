@@ -16,12 +16,8 @@ CustomScalar::CustomScalar(const Field& fld)
     // xlo.temperature.inflow_type = CustomScalar
     // CustomScalar.foo = 1.0
 
-    // clang-format off
-    //{
-    //    amrex::ParmParse pp("CustomScalar");
-    //    pp.query("foo", m_op.foo);
-    //}
-    // clang-format on
+    amrex::ParmParse pp("CustomScalar");
+    pp.query("foo", m_op.foo);
     const int ncomp = fld.num_comp();
     AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
         (ncomp == 1), "CustomScalar requires field with 1 component");

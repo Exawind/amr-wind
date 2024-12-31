@@ -1,3 +1,4 @@
+#include <AMReX.H>
 #include <memory>
 
 #include "amr-wind/equation_systems/icns/icns_advection.H"
@@ -25,15 +26,11 @@ amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> get_projection_bc(
             r[dir] = amrex::LinOpBCType::Periodic;
         } else {
             auto bc = bctype[amrex::Orientation(dir, side)];
-            switch (bc) {
-            case BC::pressure_outflow: {
+            if (bc == BC::pressure_outflow) {
                 r[dir] = amrex::LinOpBCType::Dirichlet;
-                break;
-            }
-            default:
+            } else {
                 r[dir] = amrex::LinOpBCType::Neumann;
-                break;
-            };
+            }
         }
     }
     return r;
@@ -58,6 +55,12 @@ MacProjOp::MacProjOp(
 {
     amrex::ParmParse pp("incflo");
     pp.query("density", m_rho_0);
+#ifdef AMR_WIND_USE_FFT
+    {
+        amrex::ParmParse pp("mac_proj");
+        pp.query("use_fft", m_use_fft);
+    }
+#endif
 }
 
 void MacProjOp::enforce_inout_solvability(
@@ -108,6 +111,32 @@ void MacProjOp::init_projector(const amrex::Real beta) noexcept
     }
 
     // Prepare projector
+    m_need_init = false;
+
+    auto& pressure = m_repo.get_field("p");
+    const auto& bctype = pressure.bc_type();
+
+    auto const& lobc = get_projection_bc(
+        amrex::Orientation::low, bctype, m_repo.mesh().Geom());
+    auto const& hibc = get_projection_bc(
+        amrex::Orientation::high, bctype, m_repo.mesh().Geom());
+
+#ifdef AMR_WIND_USE_FFT
+    if (m_use_fft) {
+        if (m_repo.num_active_levels() == 1 && m_has_overset == false) {
+            m_fft_mac_proj = std::make_unique<Hydro::FFTMacProjector>(
+                m_repo.mesh().Geom(0), lobc, hibc);
+            return;
+        } else {
+            amrex::ParmParse pp("mac_proj");
+            if (pp.contains("use_fft")) {
+                amrex::Print() << "WARNING: FFT MAC projection disabled due to "
+                                  "multiple levels/overset\n";
+            }
+        }
+    }
+#endif
+
     m_mac_proj = std::make_unique<Hydro::MacProjector>(
         m_repo.mesh().Geom(0, m_repo.num_active_levels() - 1));
     m_mac_proj->initProjector(
@@ -119,16 +148,7 @@ void MacProjOp::init_projector(const amrex::Real beta) noexcept
 
     m_options(*m_mac_proj);
 
-    auto& pressure = m_repo.get_field("p");
-    const auto& bctype = pressure.bc_type();
-
-    m_mac_proj->setDomainBC(
-        get_projection_bc(
-            amrex::Orientation::low, bctype, m_repo.mesh().Geom()),
-        get_projection_bc(
-            amrex::Orientation::high, bctype, m_repo.mesh().Geom()));
-
-    m_need_init = false;
+    m_mac_proj->setDomainBC(lobc, hibc);
 }
 
 void MacProjOp::set_inflow_velocity(amrex::Real time)
@@ -268,7 +288,12 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
         if (m_need_init) {
             init_projector(factor / m_rho_0);
         } else {
-            m_mac_proj->updateBeta(factor / m_rho_0);
+#ifdef AMR_WIND_USE_FFT
+            if (!m_fft_mac_proj)
+#endif
+            {
+                m_mac_proj->updateBeta(factor / m_rho_0);
+            }
         }
     }
 
@@ -291,7 +316,16 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
         enforce_inout_solvability(mac_vec);
     }
 
-    m_mac_proj->setUMAC(mac_vec);
+#ifdef AMR_WIND_USE_FFT
+    if (m_fft_mac_proj) {
+        // This is set on mac_vec[0] since FFT based projection is restricted to
+        // a single level
+        m_fft_mac_proj->setUMAC(mac_vec[0]);
+    } else
+#endif
+    {
+        m_mac_proj->setUMAC(mac_vec);
+    }
 
     if (m_has_overset) {
         auto phif = m_repo.create_scratch_field(1, 1, amr_wind::FieldLoc::CELL);
@@ -304,7 +338,14 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
             phif->vec_ptrs(), m_options.rel_tol, m_options.abs_tol);
 
     } else {
-        m_mac_proj->project(m_options.rel_tol, m_options.abs_tol);
+#ifdef AMR_WIND_USE_FFT
+        if (m_fft_mac_proj) {
+            m_fft_mac_proj->project();
+        } else
+#endif
+        {
+            m_mac_proj->project(m_options.rel_tol, m_options.abs_tol);
+        }
     }
 
     if (m_is_anelastic) {
@@ -322,7 +363,9 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
         amr_wind::overset_ops::revert_mask_cell_after_mac(m_repo);
     }
 
-    io::print_mlmg_info("MAC_projection", m_mac_proj->getMLMG());
+    if (m_mac_proj) {
+        io::print_mlmg_info("MAC_projection", m_mac_proj->getMLMG());
+    }
 }
 
 void MacProjOp::mac_proj_to_uniform_space(

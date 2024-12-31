@@ -13,10 +13,16 @@ DragTempForcing::DragTempForcing(const CFDSim& sim)
     , m_mesh(sim.mesh())
     , m_velocity(sim.repo().get_field("velocity"))
     , m_temperature(sim.repo().get_field("temperature"))
+    , m_transport(sim.transport_model())
 {
     amrex::ParmParse pp("DragTempForcing");
     pp.query("drag_coefficient", m_drag_coefficient);
-    pp.query("reference_temperature", m_reference_temperature);
+    m_ref_theta = m_transport.ref_theta();
+    if (pp.contains("reference_temperature")) {
+        amrex::Abort(
+            "DragTempForcing.reference_temperature has been deprecated. Please "
+            "replace with transport.reference_temperature.");
+    }
 }
 
 DragTempForcing::~DragTempForcing() = default;
@@ -44,7 +50,7 @@ void DragTempForcing::operator()(
     const auto& geom = m_mesh.Geom(lev);
     const auto& dx = geom.CellSizeArray();
     const amrex::Real drag_coefficient = m_drag_coefficient / dx[2];
-    const amrex::Real reference_temperature = m_reference_temperature;
+    const auto& ref_theta = (*m_ref_theta)(lev).const_array(mfi);
     const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     const amrex::Real cd_max = 10.0;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -54,9 +60,9 @@ void DragTempForcing::operator()(
         const amrex::Real m = std::sqrt(ux1 * ux1 + uy1 * uy1 + uz1 * uz1);
         const amrex::Real Cd =
             std::min(drag_coefficient / (m + tiny), cd_max / dx[2]);
+        const amrex::Real T0 = ref_theta(i, j, k);
         src_term(i, j, k, 0) -=
-            (Cd * (temperature(i, j, k, 0) - reference_temperature) *
-             blank(i, j, k, 0));
+            (Cd * (temperature(i, j, k, 0) - T0) * blank(i, j, k, 0));
     });
 }
 

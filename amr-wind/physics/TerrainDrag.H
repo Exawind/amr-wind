@@ -7,8 +7,6 @@
 
 namespace amr_wind::terraindrag {
 
-namespace {} // namespace
-
 /** Terraindrag Flow physics
  *  \ingroup physics
  */
