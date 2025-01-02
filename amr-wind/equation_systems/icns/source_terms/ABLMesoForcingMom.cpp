@@ -108,9 +108,9 @@ void ABLMesoForcingMom::mean_velocity_heights(
     for (int i = 0; i < num_meso_ht; i++) {
 
         time_interpolated_u[i] = amr_wind::interp::linear(
-            ncfile->meso_times(), ncfile->meso_u(), currtime);
+            ncfile->meso_times(), ncfile->meso_u(), currtime, num_meso_ht, i);
         time_interpolated_v[i] = amr_wind::interp::linear(
-            ncfile->meso_times(), ncfile->meso_v(), currtime);
+            ncfile->meso_times(), ncfile->meso_v(), currtime, num_meso_ht, i);
     }
 
     for (int ih = 0; ih < num_meso_ht; ih++) {
