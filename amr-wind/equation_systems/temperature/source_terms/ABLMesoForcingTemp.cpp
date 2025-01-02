@@ -105,7 +105,8 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
 
     for (int i = 0; i < num_meso_ht; i++) {
         time_interpolated_theta[i] = amr_wind::interp::linear(
-            ncfile->meso_times(), ncfile->meso_temp(), currtime);
+            ncfile->meso_times(), ncfile->meso_temp(), currtime, num_meso_ht,
+            i);
     }
 
     amrex::Gpu::copy(
