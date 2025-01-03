@@ -18,6 +18,7 @@ void split_advection_step(
     Field const& w_mac,
     amrex::GpuArray<BC, AMREX_SPACEDIM * 2> BCs,
     amrex::Vector<amrex::Geometry> geom,
+    amrex::Real time,
     amrex::Real dt,
     bool rm_debris);
 
