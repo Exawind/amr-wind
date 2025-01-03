@@ -59,7 +59,7 @@ private:
     //! Gravity vector (m/s^2)
     amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
     amrex::Real m_surf_flux{0};
-    amrex::Real m_lengthscale_switch{800};
+    amrex::Real m_meso_sponge_start{2000};
 };
 
 } // namespace amr_wind::turbulence
