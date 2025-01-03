@@ -32,7 +32,7 @@ KLAxell<Transport>::KLAxell(CFDSim& sim)
     {
         amrex::ParmParse pp("ABL");
         pp.get("surface_temp_flux", m_surf_flux);
-        pp.query("length_scale_switch", m_lengthscale_switch);
+        pp.query("meso_sponge_start", m_meso_sponge_start);
     }
 
     {
@@ -98,7 +98,7 @@ void KLAxell<Transport>::update_turbulent_viscosity(
     const amrex::Real kappa = 0.41;
     const amrex::Real surf_flux = m_surf_flux;
     const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
-    const amrex::Real lengthscale_switch = m_lengthscale_switch;
+    const amrex::Real lengthscale_switch = m_meso_sponge_start;
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = geom_vec[lev];
         const auto& problo = repo.mesh().Geom(lev).ProbLoArray();

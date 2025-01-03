@@ -24,6 +24,7 @@ public:
         const amrex::Array4<amrex::Real>& src_term) const override;
 
 private:
+    const SimTime& m_time;
     const amrex::AmrCore& m_mesh;
     std::string m_1d_rans;
     const Field& m_velocity;

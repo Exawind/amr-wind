@@ -10,7 +10,8 @@
 namespace amr_wind::pde::icns {
 
 WindSpongeForcing::WindSpongeForcing(const CFDSim& sim)
-    : m_mesh(sim.mesh())
+    : m_time(sim.time())
+    , m_mesh(sim.mesh())
     , m_velocity(sim.repo().get_field("velocity"))
     , m_sim(sim)
 {
@@ -68,7 +69,7 @@ void WindSpongeForcing::operator()(
     const auto& velocity =
         m_velocity.state(field_impl::dof_state(fstate))(lev).const_array(mfi);
     const amrex::Real sponge_start = m_meso_start;
-    const amrex::Real meso_timescale = m_meso_timescale;
+    const amrex::Real meso_timescale = m_time.delta_t();
     const auto vsize = m_wind_heights_d.size();
     const auto* wind_heights_d = m_wind_heights_d.data();
     const auto* u_values_d = m_u_values_d.data();

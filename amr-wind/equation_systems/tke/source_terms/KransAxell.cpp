@@ -38,7 +38,6 @@ KransAxell::KransAxell(const CFDSim& sim)
             m_wind_heights.push_back(value1);
             m_tke_values.push_back(value5);
         }
-        pp.query("meso_timescale", m_meso_timescale);
         int num_wind_values = static_cast<int>(m_wind_heights.size());
         m_wind_heights_d.resize(num_wind_values);
         m_tke_values_d.resize(num_wind_values);
@@ -99,7 +98,6 @@ void KransAxell::operator()(
     const bool has_terrain =
         this->m_sim.repo().int_field_exists("terrain_blank");
     const amrex::Real sponge_start = m_meso_start;
-    const amrex::Real meso_timescale = m_meso_timescale;
     const auto vsize = m_wind_heights_d.size();
     const auto* wind_heights_d = m_wind_heights_d.data();
     const auto* tke_values_d = m_tke_values_d.data();
@@ -130,7 +128,7 @@ void KransAxell::operator()(
                                   : tke_arr(i, j, k, 0);
         }
         const amrex::Real sponge_forcing =
-            1.0 / meso_timescale * (tke_arr(i, j, k) - ref_tke);
+            1.0 / dt * (tke_arr(i, j, k) - ref_tke);
         dissip_arr(i, j, k) = std::pow(Cmu, 3) *
                               std::pow(tke_arr(i, j, k), 1.5) /
                               (tlscale_arr(i, j, k) + tiny);
@@ -185,7 +183,7 @@ void KransAxell::operator()(
                                   : tke_arr(i, j, k, 0);
                 }
                 const amrex::Real sponge_forcing =
-                    1.0 / meso_timescale * (tke_arr(i, j, k) - ref_tke);
+                    1.0 / dt * (tke_arr(i, j, k) - ref_tke);
                 src_term(i, j, k) +=
                     drag_arr(i, j, k) * terrainforcing +
                     blank_arr(i, j, k) * dragforcing -
