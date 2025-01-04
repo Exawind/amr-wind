@@ -62,8 +62,7 @@ public:
         const int lev,
         const Field* /*fld*/,
         const amrex::Real time,
-        const amrex::Vector<amrex::Real>& /*times*/,
-        const bool erf_multiblock = false);
+        const amrex::Vector<amrex::Real>& /*times*/);
 
     void interpolate(const amrex::Real /*time*/);
     bool is_populated(amrex::Orientation /*ori*/) const;

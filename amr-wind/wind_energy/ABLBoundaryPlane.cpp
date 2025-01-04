@@ -148,8 +148,7 @@ void InletData::read_data_native(
     const int lev,
     const Field* fld,
     const amrex::Real time,
-    const amrex::Vector<amrex::Real>& times,
-    const bool erf_multiblock)
+    const amrex::Vector<amrex::Real>& times)
 {
     const size_t nc = fld->num_comp();
     const int nstart =
@@ -1120,6 +1119,7 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
     AMREX_ALWAYS_ASSERT(
         (m_in_times[0] <= time + constants::LOOSE_TOL) &&
         (time < m_in_times.back() + constants::LOOSE_TOL));
+
     // return early if current data files can still be interpolated in time
     if ((m_in_data.tn() <= time) && (time < m_in_data.tnp1())) {
         m_in_data.interpolate(time);
