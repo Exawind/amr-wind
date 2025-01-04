@@ -363,6 +363,7 @@ void ABLFieldInit::perturb_temperature(
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
+    // this one
     for (amrex::MFIter mfi(theta_fab, amrex::TilingIfNotGPU()); mfi.isValid();
          ++mfi) {
         const auto& bx = mfi.tilebox();
@@ -400,6 +401,7 @@ void ABLFieldInit::init_tke(
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
+    // this one
     for (amrex::MFIter mfi(tke_fab, amrex::TilingIfNotGPU()); mfi.isValid();
          ++mfi) {
         const auto& bx = mfi.tilebox();

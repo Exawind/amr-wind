@@ -70,6 +70,7 @@ void ChannelFlowMap::create_cell_node_map(int lev, const amrex::Geometry& geom)
         prob_hi[0] - prob_lo[0], prob_hi[1] - prob_lo[1],
         prob_hi[2] - prob_lo[2]};
 
+    // this one
     for (amrex::MFIter mfi((*m_mesh_scale_fac_cc)(lev)); mfi.isValid(); ++mfi) {
 
         const auto& bx = mfi.growntilebox();
@@ -149,6 +150,7 @@ void ChannelFlowMap::create_face_map(int lev, const amrex::Geometry& geom)
         prob_hi[0] - prob_lo[0], prob_hi[1] - prob_lo[1],
         prob_hi[2] - prob_lo[2]};
 
+    // this one
     for (amrex::MFIter mfi((*m_mesh_scale_fac_xf)(lev)); mfi.isValid(); ++mfi) {
 
         const auto& bx = mfi.growntilebox();
@@ -181,6 +183,7 @@ void ChannelFlowMap::create_face_map(int lev, const amrex::Geometry& geom)
             });
     }
 
+    // this one
     for (amrex::MFIter mfi((*m_mesh_scale_fac_yf)(lev)); mfi.isValid(); ++mfi) {
 
         const auto& bx = mfi.growntilebox();
@@ -213,6 +216,7 @@ void ChannelFlowMap::create_face_map(int lev, const amrex::Geometry& geom)
             });
     }
 
+    // this one
     for (amrex::MFIter mfi((*m_mesh_scale_fac_zf)(lev)); mfi.isValid(); ++mfi) {
 
         const auto& bx = mfi.growntilebox();
@@ -277,6 +281,7 @@ void ChannelFlowMap::create_non_uniform_mesh(
         probhi_physical[0] - prob_lo[0], probhi_physical[1] - prob_lo[1],
         probhi_physical[2] - prob_lo[2]};
 
+    // this one
     for (amrex::MFIter mfi((*m_non_uniform_coord_cc)(lev)); mfi.isValid();
          ++mfi) {
 

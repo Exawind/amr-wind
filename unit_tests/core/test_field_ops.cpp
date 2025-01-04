@@ -21,6 +21,7 @@ public:
         for (int lev = 0; lev < nlevels; ++lev) {
             const auto& dx = geom[lev].CellSizeArray();
             const auto& problo = geom[lev].ProbLoArray();
+            // this one
             for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.tilebox();
                 const auto& field_arr = field(lev).array(mfi);
