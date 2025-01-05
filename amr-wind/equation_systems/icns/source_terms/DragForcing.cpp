@@ -68,6 +68,8 @@ void DragForcing::operator()(
     const auto& drag = (*m_terrain_drag)(lev).const_array(mfi);
     auto* const m_terrainz0 = &this->m_sim.repo().get_field("terrainz0");
     const auto& terrainz0 = (*m_terrainz0)(lev).const_array(mfi);
+    const auto* m_terrain_vf = &this->m_sim.repo().get_field("terrain_vf");
+    const auto& vf_arr = (*m_terrain_vf)(lev).const_array(mfi);
     const auto& geom = m_mesh.Geom(lev);
     const auto& dx = geom.CellSizeArray();
     const auto& prob_lo = geom.ProbLoArray();
@@ -161,17 +163,17 @@ void DragForcing::operator()(
         const amrex::Real CdM =
             std::min(Cd / (m + tiny), cd_max / scale_factor);
         src_term(i, j, k, 0) -=
-            (CdM * m * ux1 * blank(i, j, k) + Dxz * drag(i, j, k) +
-             bc_forcing_x * drag(i, j, k) +
+            (CdM * m * ux1 * blank(i, j, k) * vf_arr(i, j, k) +
+             Dxz * drag(i, j, k) + bc_forcing_x * drag(i, j, k) +
              (xstart_damping + xend_damping + ystart_damping + yend_damping) *
                  (ux1 - sponge_density * spongeVelX));
         src_term(i, j, k, 1) -=
-            (CdM * m * uy1 * blank(i, j, k) + Dyz * drag(i, j, k) +
-             bc_forcing_y * drag(i, j, k) +
+            (CdM * m * uy1 * blank(i, j, k) * vf_arr(i, j, k) +
+             Dyz * drag(i, j, k) + bc_forcing_y * drag(i, j, k) +
              (xstart_damping + xend_damping + ystart_damping + yend_damping) *
                  (uy1 - sponge_density * spongeVelY));
         src_term(i, j, k, 2) -=
-            (CdM * m * uz1 * blank(i, j, k) +
+            (CdM * m * uz1 * blank(i, j, k) * vf_arr(i, j, k) +
              (xstart_damping + xend_damping + ystart_damping + yend_damping) *
                  (uz1 - sponge_density * spongeVelZ));
     });

@@ -59,6 +59,8 @@ void Kosovic<Transport>::update_turbulent_viscosity(
     const auto* m_terrain_blank =
         has_terrain ? &this->m_sim.repo().get_int_field("terrain_blank")
                     : nullptr;
+    const auto* m_terrain_vf =
+        has_terrain ? &this->m_sim.repo().get_field("terrain_vf") : nullptr;
     // Populate strainrate into the turbulent viscosity arrays to avoid creating
     // a temporary buffer
     fvm::strainrate(mu_turb, vel);
@@ -89,6 +91,9 @@ void Kosovic<Transport>::update_turbulent_viscosity(
             const auto& blank_arr =
                 has_terrain ? (*m_terrain_blank)(lev).const_array(mfi)
                             : amrex::Array4<int>();
+            const auto& vf_arr = has_terrain
+                                     ? (*m_terrain_vf)(lev).const_array(mfi)
+                                     : amrex::Array4<double>();
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real rho = rho_arr(i, j, k);
@@ -107,7 +112,9 @@ void Kosovic<Transport>::update_turbulent_viscosity(
                              std::pow(fmu, locSurfaceRANSExp) * ransL) +
                         (1 - locSurfaceFactor) * smag_factor;
                     const amrex::Real blankTerrain =
-                        (has_terrain) ? 1 - blank_arr(i, j, k, 0) : 1.0;
+                        (has_terrain)
+                            ? 1 - blank_arr(i, j, k, 0) * vf_arr(i, j, k, 0)
+                            : 1.0;
                     mu_arr(i, j, k) *=
                         rho * viscosityScale * turnOff * blankTerrain;
                     amrex::Real stressScale =

@@ -51,6 +51,9 @@ private:
     //! Roughness fields
     Field& m_terrainz0;
     Field& m_terrain_height;
+    Field& m_terrain_vf;
+    //! binary, pyramid or EB
+    std::string m_terrain_cut_model{"pyramid"};
 };
 } // namespace amr_wind::terraindrag
 

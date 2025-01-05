@@ -21,20 +21,24 @@ TerrainDrag::TerrainDrag(CFDSim& sim)
     , m_terrain_drag(sim.repo().declare_int_field("terrain_drag", 1, 1, 1))
     , m_terrainz0(sim.repo().declare_field("terrainz0", 1, 1, 1))
     , m_terrain_height(sim.repo().declare_field("terrain_height", 1, 1, 1))
+    , m_terrain_vf(sim.repo().declare_field("terrain_vf", 1, 1, 1))
 {
     amrex::ParmParse pp(identifier());
     pp.query("terrain_file", m_terrain_file);
     pp.query("roughness_file", m_roughness_file);
+    pp.query("terrain_cut_model", m_terrain_cut_model);
 
     m_sim.io_manager().register_output_int_var("terrain_drag");
     m_sim.io_manager().register_output_int_var("terrain_blank");
     m_sim.io_manager().register_io_var("terrainz0");
     m_sim.io_manager().register_io_var("terrain_height");
+    m_sim.io_manager().register_io_var("terrain_vf");
 
     m_terrain_blank.setVal(0.0);
     m_terrain_drag.setVal(0.0);
     m_terrainz0.set_default_fillpatch_bc(m_sim.time());
     m_terrain_height.set_default_fillpatch_bc(m_sim.time());
+    m_terrain_vf.set_default_fillpatch_bc(m_sim.time());
 }
 
 void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
@@ -63,6 +67,7 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
     auto& terrainz0 = m_terrainz0(level);
     auto& terrain_height = m_terrain_height(level);
     auto& drag = m_terrain_drag(level);
+    auto& terrain_vf=m_terrain_vf(level);
     const auto xterrain_size = xterrain.size();
     const auto yterrain_size = yterrain.size();
     const auto zterrain_size = zterrain.size();
@@ -104,6 +109,8 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
     auto levelDrag = drag.arrays();
     auto levelz0 = terrainz0.arrays();
     auto levelheight = terrain_height.arrays();
+    auto levelvf=terrain_vf.arrays();
+    std::string terrain_cut_model = m_terrain_cut_model;
     amrex::ParallelFor(
         blanking, m_terrain_blank.num_grow(),
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
@@ -115,6 +122,7 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
                 yterrain_ptr + yterrain_size, zterrain_ptr, x, y);
             levelBlanking[nbx](i, j, k, 0) =
                 static_cast<int>((z <= terrainHt) && (z > prob_lo[2]));
+            levelvf[nbx](i,j,k,0)=static_cast<float>(levelBlanking[nbx](i,j,k,0));
             levelheight[nbx](i, j, k, 0) =
                 std::max(std::abs(z - terrainHt), 0.5 * dx[2]);
 
@@ -138,6 +146,24 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
             }
         });
     amrex::Gpu::synchronize();
+    if (terrain_cut_model == "pyramid") {
+        amrex::ParallelFor(
+            blanking,
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                if ((levelDrag[nbx](i, j, k + 1, 0) == 1) && (k > 0)) {
+                    const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
+                    const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
+                    const amrex::Real terrainHt = interp::bilinear(
+                        xterrain_ptr, xterrain_ptr + xterrain_size,
+                        yterrain_ptr, yterrain_ptr + yterrain_size,
+                        zterrain_ptr, x, y);
+                    const amrex::Real dz = terrainHt - (z - 0.5 * dx[2]);
+                    levelvf[nbx](i, j, k, 0) = 0.33 * dz / dx[2];
+                }
+            });
+        amrex::Gpu::synchronize();
+    }
 }
 
 void TerrainDrag::post_regrid_actions()

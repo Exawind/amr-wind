@@ -97,8 +97,10 @@ void KransAxell::operator()(
             &this->m_sim.repo().get_int_field("terrain_blank");
         const auto* const m_terrain_drag =
             &this->m_sim.repo().get_int_field("terrain_drag");
+        const auto* m_terrain_vf = &this->m_sim.repo().get_field("terrain_vf");
         const auto& blank_arr = (*m_terrain_blank)(lev).const_array(mfi);
         const auto& drag_arr = (*m_terrain_drag)(lev).const_array(mfi);
+        const auto& vf_arr = (*m_terrain_vf)(lev).const_array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real terrainforcing = 0;
@@ -122,8 +124,9 @@ void KransAxell::operator()(
                     std::min(10 / (dx[2] * m + tiny), 100 / dx[2]);
                 dragforcing = -Cd * m * tke_arr(i, j, k, 0);
 
-                src_term(i, j, k) += drag_arr(i, j, k) * terrainforcing +
-                                     blank_arr(i, j, k) * dragforcing;
+                src_term(i, j, k) +=
+                    drag_arr(i, j, k) * terrainforcing +
+                    blank_arr(i, j, k) * vf_arr(i, j, k) * dragforcing;
             });
     }
 }
