@@ -124,8 +124,7 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
                 static_cast<int>((z <= terrainHt) && (z > prob_lo[2]));
             levelvf[nbx](i, j, k, 0) =
                 static_cast<float>(levelBlanking[nbx](i, j, k, 0));
-            levelheight[nbx](i, j, k, 0) =
-                std::max(std::abs(z - terrainHt), 0.5 * dx[2]);
+            levelheight[nbx](i, j, k, 0) = terrainHt;
 
             amrex::Real roughz0 = 0.1;
             if (xrough_size > 0) {

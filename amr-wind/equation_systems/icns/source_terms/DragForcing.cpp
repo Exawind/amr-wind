@@ -118,28 +118,28 @@ void DragForcing::operator()(
         yi_end = sponge_north * std::max(yi_end, 0.0);
         ystart_damping = sponge_strength * yi_start * yi_start;
         yend_damping = sponge_strength * yi_end * yi_end;
-
+        const amrex::Real ux1 = vel(i, j, k, 0);
+        const amrex::Real uy1 = vel(i, j, k, 1);
+        const amrex::Real uz1 = vel(i, j, k, 2);
         const auto idx =
             interp::bisection_search(device_vel_ht, device_vel_ht + vsize, z);
         const amrex::Real spongeVelX =
             (vsize > 0) ? interp::linear_impl(
                               device_vel_ht, device_vel_vals, z, idx, 3, 0)
-                        : 0.0;
+                        : ux1;
         const amrex::Real spongeVelY =
             (vsize > 0) ? interp::linear_impl(
                               device_vel_ht, device_vel_vals, z, idx, 3, 1)
-                        : 0.0;
+                        : uy1;
         const amrex::Real spongeVelZ =
             (vsize > 0) ? interp::linear_impl(
                               device_vel_ht, device_vel_vals, z, idx, 3, 2)
-                        : 0.0;
+                        : uz1;
         amrex::Real Dxz = 0.0;
         amrex::Real Dyz = 0.0;
         amrex::Real bc_forcing_x = 0;
         amrex::Real bc_forcing_y = 0;
-        const amrex::Real ux1 = vel(i, j, k, 0);
-        const amrex::Real uy1 = vel(i, j, k, 1);
-        const amrex::Real uz1 = vel(i, j, k, 2);
+
         const amrex::Real m = std::sqrt(ux1 * ux1 + uy1 * uy1 + uz1 * uz1);
         if (drag(i, j, k) == 1 && (!is_laminar)) {
             const amrex::Real ux2 = vel(i, j, k + 1, 0);

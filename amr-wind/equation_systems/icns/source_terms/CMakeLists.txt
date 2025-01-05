@@ -16,4 +16,5 @@ target_sources(${amr_wind_lib_name} PRIVATE
   NonLinearSGSTerm.cpp
   DragForcing.cpp
   ForestForcing.cpp
+  WindSpongeForcing.cpp
   )

@@ -25,12 +25,47 @@ KransAxell::KransAxell(const CFDSim& sim)
     pp.query("kappa", m_kappa);
     pp.query("surface_roughness_z0", m_z0);
     pp.query("surface_temp_flux", m_heat_flux);
-    pp.query("meso_sponge_start", m_sponge_start);
+    pp.query("meso_sponge_start", m_meso_start);
+    pp.query("rans_1dprofile_file", m_1d_rans);
+    pp.query("horizontal_sponge_tke", m_horizontal_sponge);
+    if (!m_1d_rans.empty()) {
+        std::ifstream ransfile(m_1d_rans, std::ios::in);
+        if (!ransfile.good()) {
+            amrex::Abort("Cannot find 1-D RANS profile file " + m_1d_rans);
+        }
+        amrex::Real value1, value2, value3, value4, value5;
+        while (ransfile >> value1 >> value2 >> value3 >> value4 >> value5) {
+            m_wind_heights.push_back(value1);
+            m_tke_values.push_back(value5);
+        }
+        int num_wind_values = static_cast<int>(m_wind_heights.size());
+        m_wind_heights_d.resize(num_wind_values);
+        m_tke_values_d.resize(num_wind_values);
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, m_wind_heights.begin(),
+            m_wind_heights.end(), m_wind_heights_d.begin());
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, m_tke_values.begin(), m_tke_values.end(),
+            m_tke_values_d.begin());
+    } else {
+        amrex::Abort("Cannot find 1-D RANS profile file " + m_1d_rans);
+    }
     {
         amrex::ParmParse pp_incflow("incflo");
         pp_incflow.queryarr("gravity", m_gravity);
     }
     m_ref_theta = m_transport.ref_theta();
+    amrex::ParmParse pp_drag("DragForcing");
+    pp_drag.query("sponge_strength", m_sponge_strength);
+    pp_drag.query("sponge_density", m_sponge_density);
+    pp_drag.query("sponge_distance_west", m_sponge_distance_west);
+    pp_drag.query("sponge_distance_east", m_sponge_distance_east);
+    pp_drag.query("sponge_distance_south", m_sponge_distance_south);
+    pp_drag.query("sponge_distance_north", m_sponge_distance_north);
+    pp_drag.query("sponge_west", m_sponge_west);
+    pp_drag.query("sponge_east", m_sponge_east);
+    pp_drag.query("sponge_south", m_sponge_south);
+    pp_drag.query("sponge_north", m_sponge_north);
 }
 
 KransAxell::~KransAxell() = default;
@@ -57,21 +92,25 @@ void KransAxell::operator()(
     const auto& dt = m_time.delta_t();
     const amrex::Real heat_flux = m_heat_flux;
     const amrex::Real Cmu = m_Cmu;
-    const amrex::Real sponge_start = m_sponge_start;
-    const amrex::Real ref_tke = m_ref_tke;
     const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     const amrex::Real kappa = m_kappa;
     const amrex::Real z0 = m_z0;
+    const bool has_terrain =
+        this->m_sim.repo().int_field_exists("terrain_blank");
+    const amrex::Real sponge_start = m_meso_start;
+    const auto vsize = m_wind_heights_d.size();
+    const auto* wind_heights_d = m_wind_heights_d.data();
+    const auto* tke_values_d = m_tke_values_d.data();
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
         m_gravity[0], m_gravity[1], m_gravity[2]};
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::Real bcforcing = 0;
-        const amrex::Real ux = vel(i, j, k, 0);
-        const amrex::Real uy = vel(i, j, k, 1);
         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
         if (k == 0) {
+            const amrex::Real ux = vel(i, j, k + 1, 0);
+            const amrex::Real uy = vel(i, j, k + 1, 1);
             const amrex::Real m = std::sqrt(ux * ux + uy * uy);
-            const amrex::Real ustar = m * kappa / std::log(z / z0);
+            const amrex::Real ustar = m * kappa / std::log(3 * z / z0);
             const amrex::Real T0 = ref_theta_arr(i, j, k);
             const amrex::Real hf = std::abs(gravity[2]) / T0 * heat_flux;
             const amrex::Real rans_b = std::pow(
@@ -79,37 +118,46 @@ void KransAxell::operator()(
             bcforcing =
                 (ustar * ustar / (Cmu * Cmu) + rans_b - tke_arr(i, j, k)) / dt;
         }
+        amrex::Real ref_tke = tke_arr(i, j, k);
         const amrex::Real zi =
             std::max((z - sponge_start) / (probhi[2] - sponge_start), 0.0);
+        if (zi > 0) {
+            ref_tke = (vsize > 0) ? interp::linear(
+                                        wind_heights_d, wind_heights_d + vsize,
+                                        tke_values_d, z)
+                                  : tke_arr(i, j, k, 0);
+        }
         const amrex::Real sponge_forcing =
-            zi * zi * (tke_arr(i, j, k) - ref_tke);
+            1.0 / dt * (tke_arr(i, j, k) - ref_tke);
         dissip_arr(i, j, k) = std::pow(Cmu, 3) *
                               std::pow(tke_arr(i, j, k), 1.5) /
                               (tlscale_arr(i, j, k) + tiny);
-        src_term(i, j, k) += shear_prod_arr(i, j, k) + buoy_prod_arr(i, j, k) -
-                             dissip_arr(i, j, k) - sponge_forcing + bcforcing;
+        src_term(i, j, k) +=
+            shear_prod_arr(i, j, k) + buoy_prod_arr(i, j, k) -
+            dissip_arr(i, j, k) -
+            (1 - static_cast<int>(has_terrain)) * (sponge_forcing - bcforcing);
     });
-    // Add terrain components
-    const bool has_terrain =
-        this->m_sim.repo().int_field_exists("terrain_blank");
     if (has_terrain) {
         const auto* const m_terrain_blank =
             &this->m_sim.repo().get_int_field("terrain_blank");
         const auto* const m_terrain_drag =
             &this->m_sim.repo().get_int_field("terrain_drag");
+        auto* const m_terrain_height =
+            &this->m_sim.repo().get_field("terrain_height");
         const auto* m_terrain_vf = &this->m_sim.repo().get_field("terrain_vf");
         const auto& blank_arr = (*m_terrain_blank)(lev).const_array(mfi);
         const auto& drag_arr = (*m_terrain_drag)(lev).const_array(mfi);
+        const auto& terrain_height = (*m_terrain_height)(lev).const_array(mfi);
         const auto& vf_arr = (*m_terrain_vf)(lev).const_array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real terrainforcing = 0;
                 amrex::Real dragforcing = 0;
-                const amrex::Real ux = vel(i, j, k, 0);
-                const amrex::Real uy = vel(i, j, k, 1);
-                const amrex::Real z = 0.5 * dx[2];
+                amrex::Real ux = vel(i, j, k + 1, 0);
+                amrex::Real uy = vel(i, j, k + 1, 1);
+                amrex::Real z = 0.5 * dx[2];
                 amrex::Real m = std::sqrt(ux * ux + uy * uy);
-                const amrex::Real ustar = m * kappa / std::log(z / z0);
+                const amrex::Real ustar = m * kappa / std::log(3.0 * z / z0);
                 const amrex::Real T0 = ref_theta_arr(i, j, k);
                 const amrex::Real hf = std::abs(gravity[2]) / T0 * heat_flux;
                 const amrex::Real rans_b = std::pow(
@@ -118,16 +166,84 @@ void KransAxell::operator()(
                 terrainforcing =
                     (ustar * ustar / (Cmu * Cmu) + rans_b - tke_arr(i, j, k)) /
                     dt;
+                ux = vel(i, j, k, 0);
+                uy = vel(i, j, k, 1);
                 const amrex::Real uz = vel(i, j, k, 2);
                 m = std::sqrt(ux * ux + uy * uy + uz * uz);
                 const amrex::Real Cd =
                     std::min(10 / (dx[2] * m + tiny), 100 / dx[2]);
                 dragforcing = -Cd * m * tke_arr(i, j, k, 0);
-
+                z = std::max(
+                    problo[2] + (k + 0.5) * dx[2] - terrain_height(i, j, k),
+                    0.5 * dx[2]);
+                const amrex::Real zi = std::max(
+                    (z - sponge_start) / (probhi[2] - sponge_start), 0.0);
+                amrex::Real ref_tke = tke_arr(i, j, k);
+                if (zi > 0) {
+                    ref_tke = (vsize > 0)
+                                  ? interp::linear(
+                                        wind_heights_d, wind_heights_d + vsize,
+                                        tke_values_d, z)
+                                  : tke_arr(i, j, k, 0);
+                }
+                const amrex::Real sponge_forcing =
+                    1.0 / dt * (tke_arr(i, j, k) - ref_tke);
                 src_term(i, j, k) +=
                     drag_arr(i, j, k) * terrainforcing +
-                    blank_arr(i, j, k) * vf_arr(i, j, k) * dragforcing;
+                    blank_arr(i, j, k) * dragforcing -
+                    static_cast<int>(has_terrain) * sponge_forcing;
+                ;
             });
+        if (m_horizontal_sponge) {
+            const amrex::Real sponge_strength = m_sponge_strength;
+            const amrex::Real sponge_density = m_sponge_density;
+            const amrex::Real start_east = probhi[0] - m_sponge_distance_east;
+            const amrex::Real start_west = problo[0] - m_sponge_distance_west;
+            const amrex::Real start_north = probhi[1] - m_sponge_distance_north;
+            const amrex::Real start_south = problo[1] - m_sponge_distance_south;
+            const int sponge_east = m_sponge_east;
+            const int sponge_west = m_sponge_west;
+            const int sponge_south = m_sponge_south;
+            const int sponge_north = m_sponge_north;
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                    amrex::Real xstart_damping = 0;
+                    amrex::Real ystart_damping = 0;
+                    amrex::Real xend_damping = 0;
+                    amrex::Real yend_damping = 0;
+                    amrex::Real xi_end =
+                        (x - start_east) / (probhi[0] - start_east);
+                    amrex::Real xi_start =
+                        (start_west - x) / (start_west - problo[0]);
+                    xi_start = sponge_west * std::max(xi_start, 0.0);
+                    xi_end = sponge_east * std::max(xi_end, 0.0);
+                    xstart_damping =
+                        sponge_west * sponge_strength * xi_start * xi_start;
+                    xend_damping =
+                        sponge_east * sponge_strength * xi_end * xi_end;
+                    amrex::Real yi_end =
+                        (y - start_north) / (probhi[1] - start_north);
+                    amrex::Real yi_start =
+                        (start_south - y) / (start_south - problo[1]);
+                    yi_start = sponge_south * std::max(yi_start, 0.0);
+                    yi_end = sponge_north * std::max(yi_end, 0.0);
+                    ystart_damping = sponge_strength * yi_start * yi_start;
+                    yend_damping = sponge_strength * yi_end * yi_end;
+                    const amrex::Real ref_tke =
+                        (vsize > 0)
+                            ? interp::linear(
+                                  wind_heights_d, wind_heights_d + vsize,
+                                  tke_values_d, z)
+                            : tke_arr(i, j, k, 0);
+                    src_term(i, j, k, 0) -=
+                        (xstart_damping + xend_damping + ystart_damping +
+                         yend_damping) *
+                        (tke_arr(i, j, k) - sponge_density * ref_tke);
+                });
+        }
     }
 }
 

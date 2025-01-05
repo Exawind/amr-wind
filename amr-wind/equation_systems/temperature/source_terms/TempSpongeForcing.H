@@ -30,7 +30,20 @@ private:
     amrex::Vector<amrex::Real> m_theta_values;
     amrex::Gpu::DeviceVector<amrex::Real> m_theta_heights_d;
     amrex::Gpu::DeviceVector<amrex::Real> m_theta_values_d;
-    amrex::Real m_sponge_start{600};
+    amrex::Real m_meso_start{600};
+    amrex::Real m_meso_timescale{30};
+    bool m_horizontal_sponge{false};
+    amrex::Real m_sponge_strength{1.0};
+    amrex::Real m_sponge_density{1.0};
+    amrex::Real m_sponge_distance_west{-1000};
+    amrex::Real m_sponge_distance_east{1000};
+    amrex::Real m_sponge_distance_south{-1000};
+    amrex::Real m_sponge_distance_north{1000};
+    int m_sponge_west{0};
+    int m_sponge_east{1};
+    int m_sponge_south{0};
+    int m_sponge_north{1};
+    const CFDSim& m_sim;
 };
 
 } // namespace amr_wind::pde::temperature
