@@ -67,7 +67,7 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
     auto& terrainz0 = m_terrainz0(level);
     auto& terrain_height = m_terrain_height(level);
     auto& drag = m_terrain_drag(level);
-    auto& terrain_vf=m_terrain_vf(level);
+    auto& terrain_vf = m_terrain_vf(level);
     const auto xterrain_size = xterrain.size();
     const auto yterrain_size = yterrain.size();
     const auto zterrain_size = zterrain.size();
@@ -109,7 +109,7 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
     auto levelDrag = drag.arrays();
     auto levelz0 = terrainz0.arrays();
     auto levelheight = terrain_height.arrays();
-    auto levelvf=terrain_vf.arrays();
+    auto levelvf = terrain_vf.arrays();
     std::string terrain_cut_model = m_terrain_cut_model;
     amrex::ParallelFor(
         blanking, m_terrain_blank.num_grow(),
@@ -122,7 +122,8 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
                 yterrain_ptr + yterrain_size, zterrain_ptr, x, y);
             levelBlanking[nbx](i, j, k, 0) =
                 static_cast<int>((z <= terrainHt) && (z > prob_lo[2]));
-            levelvf[nbx](i,j,k,0)=static_cast<float>(levelBlanking[nbx](i,j,k,0));
+            levelvf[nbx](i, j, k, 0) =
+                static_cast<float>(levelBlanking[nbx](i, j, k, 0));
             levelheight[nbx](i, j, k, 0) =
                 std::max(std::abs(z - terrainHt), 0.5 * dx[2]);
 
