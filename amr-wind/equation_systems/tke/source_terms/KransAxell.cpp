@@ -190,7 +190,7 @@ void KransAxell::operator()(
                     1.0 / dt * (tke_arr(i, j, k) - ref_tke);
                 src_term(i, j, k) +=
                     drag_arr(i, j, k) * terrainforcing +
-                    blank_arr(i, j, k) * dragforcing -
+                    blank_arr(i, j, k) * vf_arr(i,j,k) dragforcing -
                     static_cast<int>(has_terrain) * sponge_forcing;
                 ;
             });
