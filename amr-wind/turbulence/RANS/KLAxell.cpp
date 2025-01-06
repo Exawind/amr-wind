@@ -122,12 +122,9 @@ void KLAxell<Transport>::update_turbulent_viscosity(
                     &this->m_sim.repo().get_field("terrain_height");
                 const auto* m_terrain_blank =
                     &this->m_sim.repo().get_int_field("terrain_blank");
-                const auto* m_terrain_vf =
-                    &this->m_sim.repo().get_field("terrain_vf");
                 const auto& ht_arr = (*m_terrain_height)(lev).const_array(mfi);
                 const auto& blank_arr =
                     (*m_terrain_blank)(lev).const_array(mfi);
-                const auto& vf_arr = (*m_terrain_vf)(lev).const_array(mfi);
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         amrex::Real stratification =
@@ -185,15 +182,15 @@ void KLAxell<Transport>::update_turbulent_viscosity(
                         const amrex::Real Cmu_Rt =
                             (Cmu + 0.108 * Rt) /
                             (1 + 0.308 * Rt + 0.00837 * std::pow(Rt, 2));
-                        mu_arr(i, j, k) =
-                            rho_arr(i, j, k) * Cmu_Rt * tlscale_arr(i, j, k) *
-                            std::sqrt(tke_arr(i, j, k)) *
-                            (1 - blank_arr(i, j, k) * vf_arr(i, j, k));
+                        mu_arr(i, j, k) = rho_arr(i, j, k) * Cmu_Rt *
+                                          tlscale_arr(i, j, k) *
+                                          std::sqrt(tke_arr(i, j, k)) *
+                                          (1 - blank_arr(i, j, k));
                         const amrex::Real Cmu_prime_Rt = Cmu / (1 + 0.277 * Rt);
                         const amrex::Real muPrime =
                             rho_arr(i, j, k) * Cmu_prime_Rt *
                             tlscale_arr(i, j, k) * std::sqrt(tke_arr(i, j, k)) *
-                            (1 - blank_arr(i, j, k) * vf_arr(i, j, k));
+                            (1 - blank_arr(i, j, k));
                         buoy_prod_arr(i, j, k) = -muPrime * stratification;
                         shear_prod_arr(i, j, k) *=
                             shear_prod_arr(i, j, k) * mu_arr(i, j, k);

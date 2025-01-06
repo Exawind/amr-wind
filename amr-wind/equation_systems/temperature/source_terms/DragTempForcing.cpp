@@ -44,9 +44,6 @@ void DragTempForcing::operator()(
     if (!is_terrain) {
         amrex::Abort("Need terrain blanking variable to use this source term");
     }
-    auto* const m_terrain_blank =
-        &this->m_sim.repo().get_int_field("terrain_blank");
-    const auto& blank = (*m_terrain_blank)(lev).const_array(mfi);
     const auto* m_terrain_vf = &this->m_sim.repo().get_field("terrain_vf");
     const auto& vf_arr = (*m_terrain_vf)(lev).const_array(mfi);
     const auto& geom = m_mesh.Geom(lev);
@@ -64,8 +61,7 @@ void DragTempForcing::operator()(
             std::min(drag_coefficient / (m + tiny), cd_max / dx[2]);
         const amrex::Real T0 = ref_theta(i, j, k);
         src_term(i, j, k, 0) -=
-            (Cd * (temperature(i, j, k, 0) - T0) * blank(i, j, k, 0) *
-             vf_arr(i, j, k, 0));
+            (Cd * (temperature(i, j, k, 0) - T0) * vf_arr(i, j, k, 0));
     });
 }
 

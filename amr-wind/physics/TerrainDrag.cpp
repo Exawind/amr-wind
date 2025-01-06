@@ -36,9 +36,9 @@ TerrainDrag::TerrainDrag(CFDSim& sim)
 
     m_terrain_blank.setVal(0.0);
     m_terrain_drag.setVal(0.0);
+    m_terrain_vf.setVal(0.0);
     m_terrainz0.set_default_fillpatch_bc(m_sim.time());
     m_terrain_height.set_default_fillpatch_bc(m_sim.time());
-    m_terrain_vf.set_default_fillpatch_bc(m_sim.time());
 }
 
 void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
@@ -146,11 +146,11 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
             }
         });
     amrex::Gpu::synchronize();
-    if (terrain_cut_model == "pyramid") {
+    if (terrain_cut_model == "cut-cell") {
         amrex::ParallelFor(
             blanking,
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                if ((levelDrag[nbx](i, j, k + 1, 0) == 1) && (k > 0)) {
+                if ((levelDrag[nbx](i, j, k, 0) == 1) && (k > 0)) {
                     const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
                     const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
                     const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
@@ -158,8 +158,8 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
                         xterrain_ptr, xterrain_ptr + xterrain_size,
                         yterrain_ptr, yterrain_ptr + yterrain_size,
                         zterrain_ptr, x, y);
-                    const amrex::Real dz = terrainHt - (z - 0.5 * dx[2]);
-                    levelvf[nbx](i, j, k, 0) = 0.33 * dz / dx[2];
+                    const amrex::Real dz = terrainHt - (z - dx[2]);
+                    levelvf[nbx](i, j, k, 0) = dz / dx[2];
                 }
             });
         amrex::Gpu::synchronize();

@@ -52,8 +52,8 @@ private:
     Field& m_terrainz0;
     Field& m_terrain_height;
     Field& m_terrain_vf;
-    //! binary, pyramid or EB
-    std::string m_terrain_cut_model{"pyramid"};
+    //! binary, cut-cell or EB
+    std::string m_terrain_cut_model{"cut-cell"};
 };
 } // namespace amr_wind::terraindrag
 

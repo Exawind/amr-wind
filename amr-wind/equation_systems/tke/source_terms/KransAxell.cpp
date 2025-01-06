@@ -138,14 +138,11 @@ void KransAxell::operator()(
             (1 - static_cast<int>(has_terrain)) * (sponge_forcing - bcforcing);
     });
     if (has_terrain) {
-        const auto* const m_terrain_blank =
-            &this->m_sim.repo().get_int_field("terrain_blank");
         const auto* const m_terrain_drag =
             &this->m_sim.repo().get_int_field("terrain_drag");
         auto* const m_terrain_height =
             &this->m_sim.repo().get_field("terrain_height");
         const auto* m_terrain_vf = &this->m_sim.repo().get_field("terrain_vf");
-        const auto& blank_arr = (*m_terrain_blank)(lev).const_array(mfi);
         const auto& drag_arr = (*m_terrain_drag)(lev).const_array(mfi);
         const auto& terrain_height = (*m_terrain_height)(lev).const_array(mfi);
         const auto& vf_arr = (*m_terrain_vf)(lev).const_array(mfi);
@@ -190,7 +187,7 @@ void KransAxell::operator()(
                     1.0 / dt * (tke_arr(i, j, k) - ref_tke);
                 src_term(i, j, k) +=
                     drag_arr(i, j, k) * terrainforcing +
-                    blank_arr(i, j, k) * vf_arr(i, j, k) * dragforcing -
+                    vf_arr(i, j, k) * dragforcing -
                     static_cast<int>(has_terrain) * sponge_forcing;
                 ;
             });

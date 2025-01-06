@@ -60,9 +60,6 @@ void DragForcing::operator()(
     if (!is_terrain) {
         amrex::Abort("Need terrain blanking variable to use this source term");
     }
-    auto* const m_terrain_blank =
-        &this->m_sim.repo().get_int_field("terrain_blank");
-    const auto& blank = (*m_terrain_blank)(lev).const_array(mfi);
     auto* const m_terrain_drag =
         &this->m_sim.repo().get_int_field("terrain_drag");
     const auto& drag = (*m_terrain_drag)(lev).const_array(mfi);
@@ -163,17 +160,17 @@ void DragForcing::operator()(
         const amrex::Real CdM =
             std::min(Cd / (m + tiny), cd_max / scale_factor);
         src_term(i, j, k, 0) -=
-            (CdM * m * ux1 * blank(i, j, k) * vf_arr(i, j, k) +
-             Dxz * drag(i, j, k) + bc_forcing_x * drag(i, j, k) +
+            (CdM * m * ux1 * vf_arr(i, j, k) + Dxz * drag(i, j, k) +
+             bc_forcing_x * drag(i, j, k) +
              (xstart_damping + xend_damping + ystart_damping + yend_damping) *
                  (ux1 - sponge_density * spongeVelX));
         src_term(i, j, k, 1) -=
-            (CdM * m * uy1 * blank(i, j, k) * vf_arr(i, j, k) +
-             Dyz * drag(i, j, k) + bc_forcing_y * drag(i, j, k) +
+            (CdM * m * uy1 * vf_arr(i, j, k) + Dyz * drag(i, j, k) +
+             bc_forcing_y * drag(i, j, k) +
              (xstart_damping + xend_damping + ystart_damping + yend_damping) *
                  (uy1 - sponge_density * spongeVelY));
         src_term(i, j, k, 2) -=
-            (CdM * m * uz1 * blank(i, j, k) * vf_arr(i, j, k) +
+            (CdM * m * uz1 * vf_arr(i, j, k) +
              (xstart_damping + xend_damping + ystart_damping + yend_damping) *
                  (uz1 - sponge_density * spongeVelZ));
     });
