@@ -24,7 +24,6 @@ OceanWaves::OceanWaves(CFDSim& sim)
     m_ow_vof.set_default_fillpatch_bc(sim.time());
     m_ow_velocity.set_default_fillpatch_bc(sim.time());
 
-    // Instantiate the ABL boundary plane IO
     m_ow_bndry = std::make_unique<OceanWavesBoundary>(sim);
 }
 
