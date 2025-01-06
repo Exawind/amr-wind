@@ -91,21 +91,8 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
     amrex::Real currtime;
     currtime = m_time.current_time();
 
-    // First the index in time
-    m_idx_time = utils::closest_index(ncfile->meso_times(), currtime);
-
-    amrex::Array<amrex::Real, 2> coeff_interp{0.0, 0.0};
-
-    amrex::Real denom =
-        ncfile->meso_times()[m_idx_time + 1] - ncfile->meso_times()[m_idx_time];
-
-    coeff_interp[0] = (ncfile->meso_times()[m_idx_time + 1] - currtime) / denom;
-    coeff_interp[1] = 1.0 - coeff_interp[0];
-
-    amrex::Real interpTflux;
-
-    interpTflux = coeff_interp[0] * ncfile->meso_tflux()[m_idx_time] +
-                  coeff_interp[1] * ncfile->meso_tflux()[m_idx_time + 1];
+    const amrex::Real interpTflux = amr_wind::interp::linear(
+        ncfile->meso_times(), ncfile->meso_tflux(), currtime);
 
     if (m_forcing_scheme.empty()) {
         // no temperature profile assimilation
@@ -117,11 +104,9 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
     amrex::Vector<amrex::Real> time_interpolated_theta(num_meso_ht);
 
     for (int i = 0; i < num_meso_ht; i++) {
-        const int lt = m_idx_time * num_meso_ht + i;
-        const int rt = (m_idx_time + 1) * num_meso_ht + i;
-
-        time_interpolated_theta[i] = coeff_interp[0] * ncfile->meso_temp()[lt] +
-                                     coeff_interp[1] * ncfile->meso_temp()[rt];
+        time_interpolated_theta[i] = amr_wind::interp::linear(
+            ncfile->meso_times(), ncfile->meso_temp(), currtime, num_meso_ht,
+            i);
     }
 
     amrex::Gpu::copy(
@@ -144,63 +129,33 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
     currtime = m_time.current_time();
     const auto& dt = m_time.delta_t();
 
-    // First the index in time
-    m_idx_time = utils::closest_index(ncfile->meso_times(), currtime);
-
-    amrex::Array<amrex::Real, 2> coeff_interp{0.0, 0.0};
-
-    amrex::Real denom =
-        ncfile->meso_times()[m_idx_time + 1] - ncfile->meso_times()[m_idx_time];
-
-    coeff_interp[0] = (ncfile->meso_times()[m_idx_time + 1] - currtime) / denom;
-    coeff_interp[1] = 1.0 - coeff_interp[0];
-
-    amrex::Real interpTflux;
-
-    interpTflux = coeff_interp[0] * ncfile->meso_tflux()[m_idx_time] +
-                  coeff_interp[1] * ncfile->meso_tflux()[m_idx_time + 1];
+    const amrex::Real interpTflux = amr_wind::interp::linear(
+        ncfile->meso_times(), ncfile->meso_tflux(), currtime);
 
     if (m_forcing_scheme.empty()) {
         // no temperature profile assimilation
         return interpTflux;
     }
 
-    const int num_meso_ht = ncfile->nheights();
-
-    amrex::Vector<amrex::Real> time_interpolated_theta(num_meso_ht);
-
-    for (int i = 0; i < num_meso_ht; i++) {
-        const int lt = m_idx_time * num_meso_ht + i;
-        const int rt = (m_idx_time + 1) * num_meso_ht + i;
-
-        time_interpolated_theta[i] = coeff_interp[0] * ncfile->meso_temp()[lt] +
-                                     coeff_interp[1] * ncfile->meso_temp()[rt];
-    }
-
-    amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, time_interpolated_theta.begin(),
-        time_interpolated_theta.end(), m_meso_theta_vals.begin());
-
     amrex::Vector<amrex::Real> error_T(m_nht);
 
-    amrex::Vector<amrex::Real> meso_ht(num_meso_ht);
-    amrex::Gpu::copy(
-        amrex::Gpu::deviceToHost, m_meso_ht.begin(), m_meso_ht.end(),
-        meso_ht.begin());
     for (int i = 0; i < m_nht; i++) {
-        const amrex::Real height_interpolated_theta = amr_wind::interp::linear(
-            meso_ht, time_interpolated_theta, tavg.line_centroids()[i]);
-        error_T[i] = height_interpolated_theta - tavg.line_average()[i];
+        const amrex::Real interpolated_theta = amr_wind::interp::bilinear(
+
+            ncfile->meso_times(), ncfile->meso_heights(), ncfile->meso_temp(),
+            currtime, tavg.line_centroids()[i]);
+        error_T[i] = interpolated_theta - tavg.line_average()[i];
     }
 
     if (amrex::toLower(m_forcing_scheme) == "indirect") {
         if (m_update_transition_height) {
             // possible unexpected behaviors, as described in
             // ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7
-            m_transition_height =
-                coeff_interp[0] * ncfile->meso_transition_height()[m_idx_time] +
-                coeff_interp[1] *
-                    ncfile->meso_transition_height()[m_idx_time + 1];
+            // First the index in time
+
+            m_transition_height = amr_wind::interp::linear(
+                ncfile->meso_times(), ncfile->meso_transition_height(),
+                currtime);
             amrex::Print() << "current transition height = "
                            << m_transition_height << std::endl;
 
