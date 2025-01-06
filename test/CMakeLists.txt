@@ -327,6 +327,7 @@ if(AMR_WIND_ENABLE_OPENFAST)
   set(ACT_UNIFORM_ALM_TEST_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test_files/act_uniform_alm)
   set(ACT_UNIFORM_ALM_TEST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/test_files/act_uniform_alm)
   set(RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR ${ACT_UNIFORM_ALM_TEST_BINARY_DIR}/r-test)
+  set(RTEST_TAG "v3.5.4")
   set(5MW_BASELINE_DIR glue-codes/openfast/5MW_Baseline)
   set(5MW_LAND_DIR glue-codes/openfast-cpp/5MW_Land_DLL_WTurb_cpp)
   set(AERO_FILE NRELOffshrBsline5MW_Onshore_AeroDyn15.dat)
@@ -340,12 +341,17 @@ if(AMR_WIND_ENABLE_OPENFAST)
       "${ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
       COMMAND_ERROR_IS_FATAL ANY)
     execute_process(
+      COMMAND bash -c "${GIT_EXECUTABLE} fetch --all --tags"
+      WORKING_DIRECTORY
+      "${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
       COMMAND bash -c "${GIT_EXECUTABLE} sparse-checkout set --no-cone ${5MW_BASELINE_DIR} ${5MW_LAND_DIR}"
       WORKING_DIRECTORY
       "${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
       COMMAND_ERROR_IS_FATAL ANY)
     execute_process(
-      COMMAND bash -c "${GIT_EXECUTABLE} checkout"
+      COMMAND bash -c "${GIT_EXECUTABLE} checkout ${RTEST_TAG}"
       WORKING_DIRECTORY
       "${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
       COMMAND_ERROR_IS_FATAL ANY)
