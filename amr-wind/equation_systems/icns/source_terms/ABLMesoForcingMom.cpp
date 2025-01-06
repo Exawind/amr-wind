@@ -154,8 +154,7 @@ void ABLMesoForcingMom::mean_velocity_heights(
         const amrex::Real interpolated_v = amr_wind::interp::bilinear(
             meso_times, meso_heights, ncfile->meso_v(), currtime, vavg_lc[i]);
         error_U[i] = interpolated_u - vavg_lavg[static_cast<int>(numcomp * i)];
-        error_V[i] =
-            interpolated_v - vavg_lavg[static_cast<int>(numcomp * i + 1)];
+        error_V[i] = interpolated_v - vavg_lavg[numcomp * i + 1];
     }
 
     if (amrex::toLower(m_forcing_scheme) == "indirect") {
