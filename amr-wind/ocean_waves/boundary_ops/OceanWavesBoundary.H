@@ -23,10 +23,6 @@ public:
     //! Execute initialization actions after mesh has been fully generated
     void post_init_actions();
 
-    void pre_advance_work();
-
-    void pre_predictor_work();
-
     void initialize_data();
 
     void set_velocity(

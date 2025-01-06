@@ -62,8 +62,8 @@ void OceanWaves::initialize_fields(int level, const amrex::Geometry& geom)
 void OceanWaves::post_init_actions()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::post_init_actions");
-    relaxation_zones();
     m_ow_bndry->post_init_actions();
+    relaxation_zones();
 }
 
 void OceanWaves::post_regrid_actions()
@@ -75,13 +75,15 @@ void OceanWaves::post_regrid_actions()
 void OceanWaves::pre_advance_work()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::pre_advance_work");
-    m_ow_bndry->pre_advance_work();
+    // Update ow values for advection boundaries
+    m_owm->update_relax_zones();
 }
 
 void OceanWaves::pre_predictor_work()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::pre_predictor_work");
-    m_ow_bndry->pre_predictor_work();
+    // Update ow values for boundary fills at new time
+    m_owm->update_relax_zones();
 }
 
 void OceanWaves::post_advance_work()

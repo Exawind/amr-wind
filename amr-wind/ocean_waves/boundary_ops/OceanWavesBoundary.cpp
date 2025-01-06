@@ -38,18 +38,6 @@ OceanWavesBoundary::OceanWavesBoundary(CFDSim& sim)
 void OceanWavesBoundary::post_init_actions()
 {
     initialize_data();
-    // Update boundary data (at n)
-}
-
-void OceanWavesBoundary::pre_advance_work()
-{
-    // Update boundary data for advection boundaries (nph for velocity, n for
-    // vof)
-}
-
-void OceanWavesBoundary::pre_predictor_work()
-{
-    // Update boundary data for future fills (n+1 for velocity and vof)
 }
 
 void OceanWavesBoundary::initialize_data()
