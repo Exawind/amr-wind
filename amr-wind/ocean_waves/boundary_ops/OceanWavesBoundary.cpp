@@ -37,12 +37,7 @@ OceanWavesBoundary::OceanWavesBoundary(CFDSim& sim)
 
 void OceanWavesBoundary::post_init_actions()
 {
-    initialize_data();
-}
-
-void OceanWavesBoundary::initialize_data()
-{
-    BL_PROFILE("amr-wind::OceanWavesBoundary::initialize_data");
+    BL_PROFILE("amr-wind::OceanWavesBoundary::post_init_actions");
     if (m_activate_ow_bndry) {
         m_repo.get_field("velocity")
             .register_fill_patch_op<OceanWavesFillInflow>(
