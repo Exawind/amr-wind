@@ -196,6 +196,7 @@ void ABLFieldInit::operator()(
     const int ntvals = static_cast<int>(m_theta_heights.size());
     const int nwvals = static_cast<int>(m_wind_heights.size());
     const amrex::Real* th = m_thht_d.data();
+    const amrex::Real* th_end = m_thht_d.end();
     const amrex::Real* tv = m_thvv_d.data();
 
     if (m_init_uvtheta_profile) {
@@ -210,29 +211,10 @@ void ABLFieldInit::operator()(
                 const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
                 density(i, j, k) = rho_init;
-                amrex::Real theta = tv[0];
-                amrex::Real umean_prof = uu[0];
-                amrex::Real vmean_prof = vv[0];
-
-                for (int iz = 0; iz < ntvals - 1; ++iz) {
-                    if ((z > th[iz]) && (z <= th[iz + 1])) {
-                        const amrex::Real slope =
-                            (tv[iz + 1] - tv[iz]) / (th[iz + 1] - th[iz]);
-                        theta = tv[iz] + (z - th[iz]) * slope;
-
-                        const amrex::Real slopeu =
-                            (uu[iz + 1] - uu[iz]) / (th[iz + 1] - th[iz]);
-                        umean_prof = uu[iz] + (z - th[iz]) * slopeu;
-
-                        const amrex::Real slopev =
-                            (vv[iz + 1] - vv[iz]) / (th[iz + 1] - th[iz]);
-                        vmean_prof = vv[iz] + (z - th[iz]) * slopev;
-                    }
-                }
-
-                temperature(i, j, k, 0) += theta;
-                velocity(i, j, k, 0) += umean_prof;
-                velocity(i, j, k, 1) += vmean_prof;
+                const auto idx = interp::bisection_search(th, th_end, z);
+                temperature(i, j, k, 0) += interp::linear_impl(th, tv, z, idx);
+                velocity(i, j, k, 0) += interp::linear_impl(th, uu, z, idx);
+                velocity(i, j, k, 1) += interp::linear_impl(th, vv, z, idx);
             });
     } else if (m_initial_wind_profile) {
         //! RANS 1-D profile
