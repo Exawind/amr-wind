@@ -55,7 +55,6 @@ protected:
     virtual void prepare_outputs();
 
 private:
-    void relaxation_zones();
 
     CFDSim& m_sim;
 

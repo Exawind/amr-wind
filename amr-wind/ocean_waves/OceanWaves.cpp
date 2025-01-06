@@ -63,7 +63,9 @@ void OceanWaves::post_init_actions()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::post_init_actions");
     m_ow_bndry->post_init_actions();
-    relaxation_zones();
+    m_owm->update_relax_zones(m_sim.time().current_time());
+    m_owm->apply_relax_zones();
+    m_owm->reset_regrid_flag();
 }
 
 void OceanWaves::post_regrid_actions()
@@ -90,18 +92,10 @@ void OceanWaves::pre_predictor_work()
 void OceanWaves::post_advance_work()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::post_init_actions");
-    relaxation_zones();
-}
-
-/** Update ocean waves relaxation zones
- *
- */
-void OceanWaves::relaxation_zones()
-{
-    BL_PROFILE("amr-wind::ocean_waves::OceanWaves::update_relaxation_zones");
-    m_owm->update_relax_zones(m_sim.time().new_time());
+    // Relax zones are up-to-date because of pre-predictor
     m_owm->apply_relax_zones();
     m_owm->reset_regrid_flag();
+
 }
 
 void OceanWaves::prepare_outputs()
