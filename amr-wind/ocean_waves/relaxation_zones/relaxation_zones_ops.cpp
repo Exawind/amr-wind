@@ -224,8 +224,6 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
     }
     amrex::Gpu::synchronize();
 
-    // This helps for having periodic boundaries, but will need to be addressed
-    // for the general case
     vof.fillpatch(time);
     velocity.fillpatch(time);
     density.fillpatch(time);
